@@ -141,7 +141,7 @@ cflags_runtime = [
     *cflags_base,
 ]
 
-config.linker_version = "Wii/1.7"
+config.linker_version = "GC/3.0"
 
 Matching = True
 NonMatching = False
