@@ -1,0 +1,13 @@
+__pycache__
+.idea
+.ninja_deps
+.ninja_log
+*.exe
+build
+build.ninja
+objdiff.json
+orig/*/*
+!orig/*/.gitkeep
+tools/mwcc_compiler/*
+!tools/mwcc_compiler/.gitkeep
+/*.txt

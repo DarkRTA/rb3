@@ -1,0 +1,25 @@
+Sections:
+	.init       type:code
+	extab       type:rodata
+	extabindex  type:rodata
+	.text       type:code
+	.ctors      type:rodata
+	.dtors      type:rodata
+	.rodata     type:rodata
+	.data       type:data
+	.sdata      type:data
+	.sbss       type:bss
+	.sdata2     type:rodata
+	.sbss2      type:bss
+	.bss        type:bss
+
+Runtime/global_destructor_chain.c:
+	.text       start:0x806F5690 end:0x806F56F0
+	.sbss       start:0x808E4F00 end:0x808E4F08
+
+Runtime/__init_cpp_exceptions.cpp:
+	.text       start:0x806F6A68 end:0x806F6AD8
+	.ctors      start:0x807EFD20 end:0x807EFD24 rename:.ctors$10
+	.dtors      start:0x807F0060 end:0x807F0064 rename:.dtors$10
+	.dtors      start:0x807F0064 end:0x807F0068 rename:.dtors$15
+	.sdata      start:0x808E32A0 end:0x808E32A8
