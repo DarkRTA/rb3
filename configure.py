@@ -30,10 +30,7 @@ VERSIONS = [
     "SZBE69",  # 0
 ]
 
-if len(VERSIONS) > 1:
-    versions_str = ", ".join(VERSIONS[:-1]) + f" or {VERSIONS[-1]}"
-else:
-    versions_str = VERSIONS[0]
+versions_str = VERSIONS[0]
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -134,13 +131,43 @@ config.ldflags = [
 # Base flags, common to most GC/Wii games.
 # Generally leave untouched, with overrides added below.
 cflags_base = [
+    "-nodefaults",
+    "-proc gekko",
+    "-align powerpc",
+    "-enum int",
+    "-fp hardware",
+    "-Cpp_exceptions off",
+    # "-W all",
+    "-O4,p",
+    "-inline auto",
+    '-pragma "cats off"',
+    '-pragma "warn_notinlined off"',
+    "-maxerrors 1",
+    "-nosyspath",
+    "-RTTI off",
+    "-fp_contract on",
+    "-str reuse",
+    "-i include",
+    "-i libc",
+    f"-DVERSION={version_num}",
 ]
+
+# Debug flags
+if config.debug:
+    cflags_base.extend(["-sym on", "-DDEBUG=1"])
+else:
+    cflags_base.append("-DNDEBUG=1")
 
 # Metrowerks library flags
 cflags_runtime = [
     *cflags_base,
+    "-use_lmw_stmw on",
+    "-str reuse,pool,readonly",
+    "-gccinc",
+    "-common off",
 ]
 
+cflags_runtime.append("-inline auto")
 config.linker_version = "GC/3.0"
 
 Matching = True
@@ -157,10 +184,8 @@ config.libs = [
         "objects": [
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
-            # TODO: need to implement all
-            #Object(NonMatching, "Runtime/Gecko_ExceptionPPC.cp"),
         ],
-    }
+    },
 ]
 
 if args.mode == "configure":
