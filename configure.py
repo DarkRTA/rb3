@@ -192,6 +192,7 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
+            Object(Matching, "Runtime/mem.c"),
             Object(Matching, "Runtime/qsort.c"),
             Object(Matching, "Runtime/rand.c"),
             Object(Matching, "Runtime/global_destructor_chain.c"),
