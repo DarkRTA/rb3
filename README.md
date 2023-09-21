@@ -47,8 +47,8 @@ Building
   git clone https://github.com/DarkRTA/rb3.git
   ```
 - Download [GC_WII_COMPILERS.zip](https://cdn.discordapp.com/attachments/727918646525165659/1129759991696457728/GC_WII_COMPILERS.zip)
-- Extract the _contents_ of the `GC` directory to `tools/mwcc_compiler`.
-  - Resulting structure should be (for example) `tools/mwcc_compiler/1.3.2/mwcceppc.exe`
+- Extract the _contents_ of the zip file to `tools/mwcc_compiler`.
+  - Resulting structure should be (for example) `tools/mwcc_compiler/GC/1.3.2/mwcceppc.exe`
 - Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.  
 ![](assets/dolphin-extract.png)
 - Configure:
