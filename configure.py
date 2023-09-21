@@ -148,8 +148,9 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse",
     "-i include",
-    "-i libc",
+    "-i include/Runtime",
     f"-DVERSION={version_num}",
+    "-func_align 4",
 ]
 
 # Debug flags
@@ -178,10 +179,11 @@ config.warn_missing_source = False
 config.libs = [
     {
         "lib": "Runtime.PPCEABI.H",
-        "mw_version": config.linker_version,
+        "mw_version": "Wii/1.3",
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
+            Object(Matching, "Runtime/rand.c"),
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
         ],

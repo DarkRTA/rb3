@@ -13,6 +13,10 @@ Sections:
 	.sbss2      type:bss
 	.bss        type:bss
 
+Runtime/rand.c:
+	.text       start:0x806EAA74 end:0x806EAA9C
+	.sdata      start:0x808E3268 end:0x808E326C
+
 Runtime/global_destructor_chain.c:
 	.text       start:0x806F5690 end:0x806F56F0
 	.sbss       start:0x808E4F00 end:0x808E4F08
