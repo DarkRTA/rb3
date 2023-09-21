@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-int fwide(FILE* stream, int mode);
+int fwide(FILE *stream, int mode);
 
 #ifdef __cplusplus
 }

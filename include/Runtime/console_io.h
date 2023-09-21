@@ -8,7 +8,9 @@
 extern "C" {
 #endif
 
-int __write_console(__file_handle handle, unsigned char * buffer, size_t * count, __idle_proc idle_proc);
+int __write_console(
+	__file_handle handle, unsigned char *buffer, size_t *count,
+	__idle_proc idle_proc);
 
 #ifdef __cplusplus
 }
