@@ -178,6 +178,15 @@ config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
     {
+        "lib": "rb3",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_base,
+        "host": False,
+        "objects": [
+            Object(Matching, "rb3/main.cpp"),
+        ],
+    },
+    {
         "lib": "Runtime.PPCEABI.H",
         "mw_version": "Wii/1.3",
         "cflags": cflags_runtime,
