@@ -18,6 +18,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.abspath(os.path.join(script_dir, ".."))
 src_dir = os.path.join(root_dir, "src")
 include_dir = os.path.join(root_dir, "include")
+msl_c_dir = os.path.join(root_dir, "include", "MSL_C")
 
 include_pattern = re.compile(r'^#include\s*[<"](.+?)[>"]$')
 guard_pattern = re.compile(r'^#ifndef\s+(.*)$')
@@ -27,10 +28,13 @@ defines = set()
 def import_h_file(in_file: str, r_path: str) -> str:
     rel_path = os.path.join(root_dir, r_path, in_file)
     inc_path = os.path.join(include_dir, in_file)
+    msl_c_path = os.path.join(msl_c_dir, in_file)
     if os.path.exists(rel_path):
       return import_c_file(rel_path)
     elif os.path.exists(inc_path):
       return import_c_file(inc_path)
+    elif os.path.exists(msl_c_path):
+      return import_c_file(msl_c_path)
     else:
       print("Failed to locate", in_file)
       exit(1)

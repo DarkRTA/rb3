@@ -16,15 +16,18 @@ Sections:
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
-Runtime/mem.c:
+MSL_C/mem.c:
 	.text       start:0x806E7E94 end:0x806E8004
 
-Runtime/qsort.c:
+MSL_C/qsort.c:
 	.text       start:0x806EA904 end:0x806EAA74
 
-Runtime/rand.c:
+MSL_C/rand.c:
 	.text       start:0x806EAA74 end:0x806EAA9C
 	.sdata      start:0x808E3268 end:0x808E326C
+
+MSL_C/string.c:
+	.text       start:0x806EC028 end:0x806EC378
 
 Runtime/global_destructor_chain.c:
 	.text       start:0x806F5690 end:0x806F56F0

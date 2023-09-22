@@ -148,7 +148,7 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse",
     "-i include",
-    "-i include/Runtime",
+    "-i include/MSL_C",
     f"-DVERSION={version_num}",
     "-func_align 4",
 ]
@@ -187,14 +187,23 @@ config.libs = [
         ],
     },
     {
+        "lib": "MSL_C",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_runtime,
+        "host": False,
+        "objects": [
+            Object(Matching, "MSL_C/mem.c"),
+            Object(Matching, "MSL_C/qsort.c"),
+            Object(Matching, "MSL_C/rand.c"),
+            Object(Matching, "MSL_C/string.c"),
+        ]
+    },
+    {
         "lib": "Runtime.PPCEABI.H",
         "mw_version": "Wii/1.3",
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "Runtime/mem.c"),
-            Object(Matching, "Runtime/qsort.c"),
-            Object(Matching, "Runtime/rand.c"),
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
         ],
