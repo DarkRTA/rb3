@@ -19,6 +19,12 @@ rb3/main.cpp:
 unknown/fn_8014F364.cpp:
 	.text		start:0x8014F364 end:0x8014F374
 
+unknown/fn_803C18F0.cpp:
+	.text		start:0x803C18F0 end:0x803C1900
+
+unknown/fn_803C1900.cpp:
+	.text		start:0x803C1900 end:0x803C190C
+
 MSL_C/mem.c:
 	.text       start:0x806E7E94 end:0x806E8004
 
