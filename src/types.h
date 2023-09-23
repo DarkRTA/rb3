@@ -1,7 +1,6 @@
 #ifndef RB3_TYPES_H
 #define RB3_TYPES_H
 
-#ifdef GAMECUBE
 typedef char int8;
 typedef short int16;
 typedef int int32;
@@ -19,7 +18,6 @@ typedef long long32;
 typedef unsigned long ulong32;
 
 typedef int32 bool32;
-#endif
 
 #ifdef NULL
 #undef NULL
