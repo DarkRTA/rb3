@@ -2,9 +2,15 @@
 
 class String {
 public:
+    int len;
+    char * text;
+
     String();
     String(char * src);
     String(String * src);
     ~String();
-    operator_=(char * src);
+
+    void fn_80361F88(String * src); // clone?
+    void operator_=(char * src);
+    bool operator_==(char * src); // TODO match this
 };
