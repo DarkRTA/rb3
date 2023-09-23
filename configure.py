@@ -147,8 +147,8 @@ cflags_base = [
     "-RTTI off",
     "-fp_contract on",
     "-str reuse",
-    "-i include",
-    "-i include/MSL_C",
+    "-i src",
+    "-i src/MSL_C",
     f"-DVERSION={version_num}",
     "-func_align 4",
 ]
