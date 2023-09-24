@@ -187,6 +187,15 @@ config.libs = [
         ],
     },
     {
+        "lib": "unknown",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_runtime,
+        "host": False,
+        "objects": [
+            Object(Matching, "unknown/string.cpp"),
+        ],
+    },
+    {
         "lib": "MSL_C",
         "mw_version": "Wii/1.3",
         "cflags": cflags_runtime,
