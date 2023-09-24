@@ -195,7 +195,7 @@ config.libs = [
             Object(Matching, "MSL_C/mem.c"),
             Object(Matching, "MSL_C/qsort.c"),
             Object(Matching, "MSL_C/rand.c"),
-            Object(Matching, "MSL_C/string.c"),
+            Object(NonMatching, "MSL_C/string.c"),
         ]
     },
     {

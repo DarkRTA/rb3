@@ -29,6 +29,7 @@ char* strcat(char *, const char *);
 char* strncpy(char *, const char *, size_t);
 char* strchr(const char *, int);
 char* strrchr(const char *, int);
+char* strtok(const char *, const char *);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <types.h>
 
 #define K1 0x80808080
 #define K2 0xfefefeff
@@ -244,7 +245,64 @@ char* strrchr(const char *str, int chr) {
     return(c ? 0 : (char*)p);
 }
 
-/*
+extern unsigned char* lbl_808E3270;
+extern unsigned char* lbl_808E3274;
+
+// to whoever at metrowerks wrote this: why
+// NONMATCHING: insruction swap
+unsigned char *strtok(unsigned char *str, unsigned char *delim) {
+    unsigned char tmp4;
+    unsigned char *tmp1;
+	unsigned char *tmp2;
+	unsigned char *tmp3;
+	unsigned char arr1[32] = { 0 };
+    unsigned char bit;
+    unsigned char idx;
+
+	if (str != 0) {
+		lbl_808E3274 = str;
+	}
+
+    tmp1 = delim - 1;
+
+	while (tmp4 = (unsigned char)*++tmp1) {
+        bit = 1 << (tmp4 & 0x7);
+        idx = tmp4 >> 3 & 0x1F;
+		arr1[idx] |= bit;
+	}
+
+	tmp1 = lbl_808E3274 - 1;
+
+    while (tmp4 = *++tmp1) {
+        bit = 1 << (tmp4 & 0x7);
+        idx = tmp4 >> 3 & 0x1F;
+	    if (!(arr1[idx] & bit)) break;
+    }
+
+
+	if (tmp4 == 0) {
+		lbl_808E3274 = lbl_808E3270;
+		return 0;
+	}
+
+    tmp2 = tmp1;
+    while (tmp4 = *++tmp1) {
+        bit = 1 << (tmp4 & 0x7);
+        idx = tmp4 >> 3 & 0x1F;
+	    if ((arr1[idx] & bit)) break;
+    }
+
+	if (tmp4 == 0) {
+		lbl_808E3274 = lbl_808E3270;
+		return tmp2;
+	}
+	// there is a really annoying instruction swap right here
+    lbl_808E3274 = tmp1 + 1;
+	*tmp1 = 0;
+	return tmp2;
+
+}
+
 char* strstr(const char *str, const char *pat) {
     unsigned char* s1 = (unsigned char*)str - 1;
     unsigned char* p1 = (unsigned char*)pat - 1;
@@ -271,4 +329,3 @@ char* strstr(const char *str, const char *pat) {
 
     return 0;
 }
-*/
