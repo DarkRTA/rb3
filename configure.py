@@ -200,6 +200,15 @@ config.libs = [
         "objects": [
         ],
     },
+    {
+        "lib": "unknown",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "quazal/quazal_stuff.cpp")
+        ],
+    },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
     {
