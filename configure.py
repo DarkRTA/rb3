@@ -128,7 +128,14 @@ config.ldflags = [
     "-listclosure",
 ]
 
-cflags_rb3 = [
+cflags_base = [
+    "-i src/libs",
+    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common",
+    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
+    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
+    "-i src/libs/PowerPC_EABI_Support/MetroTRK",
+    "-i src/libs/std",
+    "-i src",
     "-nodefaults",
     "-proc gekko",
     "-align powerpc",
@@ -142,39 +149,22 @@ cflags_rb3 = [
     '-pragma "warn_notinlined off"',
     "-maxerrors 1",
     "-nosyspath",
-    "-RTTI on",
     "-fp_contract on",
     "-str reuse",
-    "-i src",
-    "-i src/MSL_C",
     "-func_align 4",
+    "-gccinc"
+];
+cflags_rb3 = [
+    *cflags_base,
+    "-RTTI on",
 ]
 
 
 # Metrowerks library flags
 cflags_runtime = [
-    "-nodefaults",
-    "-proc gekko",
-    "-align powerpc",
-    "-enum int",
-    "-fp hardware",
-    "-Cpp_exceptions off",
-    # "-W all",
-    "-O4,p",
-    "-inline auto",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-RTTI off",
-    "-fp_contract on",
-    "-str reuse",
-    "-i src",
-    "-i src/MSL_C",
-    "-func_align 4",
+    *cflags_base,
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
-    "-gccinc",
     "-common off",
 ]
 
@@ -202,15 +192,22 @@ config.libs = [
         ],
     },
     {
+        "lib": "unknown",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+        ],
+    },
+    # anything below this line does not need to be decompiled
+    # you can attempt to match these if you want though
+    {
         "lib": "MSL_C",
         "mw_version": "Wii/1.3",
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "MSL_C/mem.c"),
-            Object(Matching, "MSL_C/qsort.c"),
-            Object(Matching, "MSL_C/rand.c"),
-            Object(NonMatching, "MSL_C/string.c"),
+            Object(Matching, "MSL_C/text_1.c"),
         ]
     },
     {
