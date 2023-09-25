@@ -206,7 +206,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "quazal/unk_0x800A515C.cpp")
+            Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },
     # anything below this line does not need to be decompiled
