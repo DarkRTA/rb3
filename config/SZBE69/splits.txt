@@ -13,18 +13,21 @@ Sections:
 	.sbss2      type:bss
 	.bss        type:bss
 
+rb3/app.cpp:
+	.text       start:0x8000F364 end:0x8000F804
+
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
 
-MSL_C/sdata_1.c:
-	.sdata      start:0x808e3270 end:0x808e3280
-
 Runtime/global_destructor_chain.c:
 	.text       start:0x806F5690 end:0x806F56F0
 	.sbss       start:0x808E4F00 end:0x808E4F08
+
+MSL_C/sdata_1.c:
+	.sdata      start:0x808E3270 end:0x808E3280
 
 Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x806F6A68 end:0x806F6AD8

@@ -129,12 +129,12 @@ config.ldflags = [
 ]
 
 cflags_base = [
-    "-i src/libs",
-    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common",
-    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
-    "-i src/libs/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
-    "-i src/libs/PowerPC_EABI_Support/MetroTRK",
-    "-i src/libs/std",
+    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common",
+    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
+    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
+    "-i src/PowerPC_EABI_Support/MetroTRK",
+    "-i src/RVL_SDK",
+    "-i src/std",
     "-i src",
     "-nodefaults",
     "-proc gekko",
@@ -189,6 +189,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "rb3/main.cpp"),
+            Object(NonMatching, "rb3/app.cpp"),
         ],
     },
     {
@@ -208,6 +209,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "MSL_C/text_1.c"),
+            Object(Matching, "MSL_C/sdata_1.c"),
         ]
     },
     {

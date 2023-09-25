@@ -1,4 +1,4 @@
-#include <rb3/App.hpp>
+#include <rb3/app.hpp>
 
 int main(int argc, char **argv)
 {
