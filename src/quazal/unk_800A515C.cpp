@@ -19,16 +19,16 @@ Quazal::ProductSpecifics::~ProductSpecifics()
 // // fn_800A51AC
 // // ------------------------------------
 
-// extern "C" int fn_800179A8(int, int*, int);
-// extern "C" void fn_800A49A0(int**, int);
-// extern "C" int fn_800A5278();
-// extern "C" int** fn_800A51AC(int**);
-// extern int lbl_8082A608[];
-// extern int lbl_8082A650[];
+// extern "C" s32 fn_800179A8(s32, s32*, s32);
+// extern "C" void fn_800A49A0(s32**, s32);
+// extern "C" s32 fn_800A5278();
+// extern "C" s32** fn_800A51AC(s32**);
+// extern s32 lbl_8082A608[];
+// extern s32 lbl_8082A650[];
 
-// int** fn_800A51AC(int** arg0) {
-//     int temp_r3;
-//     int var_r4;
+// s32** fn_800A51AC(s32** arg0) {
+//     s32 temp_r3;
+//     s32 var_r4;
 
 //     temp_r3 = fn_800179A8(4, &lbl_8082A650[0], 0x15);
 //     var_r4 = temp_r3;
@@ -46,11 +46,11 @@ Quazal::ProductSpecifics::~ProductSpecifics()
 // // fn_800A5214
 // // ------------------------------------
 
-// extern "C" void fn_800A4C84(int, int*);
-// extern "C" int** fn_800A5214(int**,int);
-// extern int lbl_8082A608[];
+// extern "C" void fn_800A4C84(s32, s32*);
+// extern "C" s32** fn_800A5214(s32**,s32);
+// extern s32 lbl_8082A608[];
 
-// int** fn_800A5214(int** arg0, int arg1) {
+// s32** fn_800A5214(s32** arg0, s32 arg1) {
 //     if (arg0 != '\0') {
 //         *arg0 = &lbl_8082A608[0];
 //         fn_800A4C84(0, &lbl_8082A608[0]);
@@ -78,7 +78,7 @@ Quazal::NetZSpecifics::~NetZSpecifics()
 // // ------------------------------------
 // // fn_800A530C
 // // ------------------------------------
-int Quazal::NetZSpecifics::fn_800A530C()
+s32 Quazal::NetZSpecifics::fn_800A530C()
 {
 	return 1;
 }
