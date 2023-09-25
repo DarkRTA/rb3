@@ -1,5 +1,5 @@
-#ifndef QUAZAL_HPP
-#define QUAZAL_HPP
+#ifndef QUAZAL_UNK_800A515C_HPP
+#define QUAZAL_UNK_800A515C_HPP
 namespace Quazal {
     class ProductSpecifics {
         public:
