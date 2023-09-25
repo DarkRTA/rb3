@@ -128,9 +128,31 @@ config.ldflags = [
     "-listclosure",
 ]
 
-# Base flags, common to most GC/Wii games.
-# Generally leave untouched, with overrides added below.
-cflags_base = [
+cflags_rb3 = [
+    "-nodefaults",
+    "-proc gekko",
+    "-align powerpc",
+    "-enum int",
+    "-fp hardware",
+    "-Cpp_exceptions off",
+    # "-W all",
+    "-O4,p",
+    "-inline auto",
+    '-pragma "cats off"',
+    '-pragma "warn_notinlined off"',
+    "-maxerrors 1",
+    "-nosyspath",
+    "-RTTI on",
+    "-fp_contract on",
+    "-str reuse",
+    "-i src",
+    "-i src/MSL_C",
+    "-func_align 4",
+]
+
+
+# Metrowerks library flags
+cflags_runtime = [
     "-nodefaults",
     "-proc gekko",
     "-align powerpc",
@@ -149,24 +171,17 @@ cflags_base = [
     "-str reuse",
     "-i src",
     "-i src/MSL_C",
-    f"-DVERSION={version_num}",
     "-func_align 4",
-]
-
-# Debug flags
-if config.debug:
-    cflags_base.extend(["-sym on", "-DDEBUG=1"])
-else:
-    cflags_base.append("-DNDEBUG=1")
-
-# Metrowerks library flags
-cflags_runtime = [
-    *cflags_base,
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-gccinc",
     "-common off",
 ]
+
+# Debug flags
+if config.debug:
+    cflags_rb3.extend(["-sym dwarf-2"])
+    cflags_runtime.extend(["-sym dwarf-2"])
 
 cflags_runtime.append("-inline auto")
 config.linker_version = "GC/3.0"
@@ -180,7 +195,7 @@ config.libs = [
     {
         "lib": "rb3",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_base,
+        "cflags": cflags_rb3,
         "host": False,
         "objects": [
             Object(Matching, "rb3/main.cpp"),
