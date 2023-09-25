@@ -1,6 +1,5 @@
-// ------------------------------------
-// class layouts
-// ------------------------------------
+#ifndef QUAZAL_HPP
+#define QUAZAL_HPP
 namespace Quazal {
     class ProductSpecifics {
         public:
@@ -20,3 +19,4 @@ namespace Quazal {
             virtual void fn_800A5338();
     };
 }
+#endif
