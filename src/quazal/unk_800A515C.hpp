@@ -3,6 +3,7 @@
 namespace Quazal
 {
 
+// fn_800A5368 - compiler generated function
 struct unk_53B0 {
 	unk_53B0();
 	~unk_53B0();
