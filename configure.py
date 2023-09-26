@@ -143,21 +143,22 @@ cflags_base = [
     "-fp hardware",
     "-Cpp_exceptions off",
     # "-W all",
-    "-O4,p",
+    "-O4,s",
     "-inline auto",
     '-pragma "cats off"',
     '-pragma "warn_notinlined off"',
     "-maxerrors 1",
     "-nosyspath",
     "-fp_contract on",
-    "-str reuse",
+    "-str reuse,pool",
     "-func_align 4",
-    "-gccinc"
+    "-gccinc",
 ];
 cflags_rb3 = [
     *cflags_base,
     "-sdata 2",
     "-RTTI on",
+    "-sdata 2",
 ]
 
 
@@ -191,6 +192,7 @@ config.libs = [
         "objects": [
             Object(Matching, "rb3/main.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
+            Object(NonMatching, "rb3/unk_803242cc.cpp"),
         ],
     },
     {

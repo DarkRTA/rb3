@@ -1,6 +1,12 @@
 #ifndef UNKNOWN_HPP
 #define UNKNOWN_HPP
 #include "types.h"
+#include "rb3/symbol.hpp"
+#include "rb3/textfile.hpp"
+extern int fn_80324278;
+extern int lbl_808556A4;
+extern char lbl_808E3060;
+extern int lbl_8097C1B8;
 
 struct unk_80901348 {
 	virtual void virt04();
@@ -91,11 +97,11 @@ extern int lbl_808FB8A0;
 extern int lbl_808FF430;
 extern int lbl_808FEC10;
 extern int lbl_808FDA84;
-unk_80990E38 *lbl_80990E38;
+extern unk_80990E38 *lbl_80990E38;
 extern int lbl_808F3EC8;
 extern int lbl_80900870;
-unk_80901348 *lbl_80901348;
-unk_80901348 *lbl_808FC398;
+extern unk_80901348 *lbl_80901348;
+extern unk_80901348 *lbl_808FC398;
 extern int lbl_8091B8D8;
 extern int lbl_80992AE8;
 extern int lbl_80805798;
@@ -131,4 +137,13 @@ extern "C" void fn_80083734();
 extern "C" void fn_8007E3C0();
 extern "C" void fn_80083174();
 extern "C" void fn_80084160();
+extern "C" void fn_80320CDC(); /* extern */
+extern "C" char *fn_803243F0(); /* extern */
+extern "C" void fn_80329CFC(int, int); /* extern */
+extern "C" void fn_80335354(Symbol, void *(*)(void)); /* extern */
+extern "C" void *fn_8034F3D0(void *, char *, void *); /* extern */
+extern "C" s8 fn_8035C934(char *, bool); /* extern */
+extern "C" void fn_80324338(); /* static */
+extern "C" void fn_80324338();
+extern "C" TextFile *fn_8032436C(void);
 #endif

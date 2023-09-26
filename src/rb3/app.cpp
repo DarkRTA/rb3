@@ -11,6 +11,7 @@ void App::Run()
 }
 
 // NONMATCHING: several incorrect types, may not be functionally identical
+#pragma sdata 0
 void App::RunWithoutDebugging()
 {
 	void *sp10;
