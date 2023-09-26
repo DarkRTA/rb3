@@ -64,24 +64,24 @@ void OSSetCurrentThread(OSThread* thread);
 void OSInitMutexQueue(OSMutexQueue* queue);
 void OSInitThreadQueue(OSThreadQueue* queue);
 OSThread* OSGetCurrentThread(void);
-bool32 OSIsThreadTerminated(OSThread* thread);
+BOOL OSIsThreadTerminated(OSThread* thread);
 s32 OSDisableScheduler(void);
 s32 OSEnableScheduler(void);
 s32 __OSGetEffectivePriority(OSThread* thread);
 void __OSPromoteThread(OSThread* thread, s32 prio);
 void __OSReschedule(void);
 void OSYieldThread(void);
-bool32 OSCreateThread(OSThread* thread, OSThreadFunc func, void* funcArg,
+BOOL OSCreateThread(OSThread* thread, OSThreadFunc func, void* funcArg,
                     void* stackBegin, u32 stackSize, s32 prio, u16 flags);
 void OSExitThread(OSThread* thread);
 void OSCancelThread(OSThread* thread);
-bool32 OSJoinThread(OSThread* thread, void* val);
+BOOL OSJoinThread(OSThread* thread, void* val);
 void OSDetachThread(OSThread* thread);
 s32 OSResumeThread(OSThread* thread);
 s32 OSSuspendThread(OSThread* thread);
 void OSSleepThread(OSThreadQueue* queue);
 void OSWakeupThread(OSThreadQueue* queue);
-bool32 OSSetThreadPriority(OSThread* thread, s32 prio);
+BOOL OSSetThreadPriority(OSThread* thread, s32 prio);
 s32 OSGetThreadPriority(OSThread* thread);
 void OSClearStack(u8 val);
 void OSSleepTicks(s64 ticks);

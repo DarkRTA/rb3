@@ -33,8 +33,8 @@ struct MEMiHeapHead* MEMDestroyFrmHeap(struct MEMiHeapHead* heap);
 void* MEMAllocFromFrmHeapEx(struct MEMiHeapHead* heap, u32 size, s32 align);
 void MEMFreeToFrmHeap(struct MEMiHeapHead* heap, u32 flags);
 u32 MEMGetAllocatableSizeForFrmHeapEx(struct MEMiHeapHead* heap, s32 align);
-bool32 MEMRecordStateForFrmHeap(struct MEMiHeapHead* heap, u32 id);
-bool32 MEMFreeByStateToFrmHeap(struct MEMiHeapHead* heap, u32 id);
+BOOL MEMRecordStateForFrmHeap(struct MEMiHeapHead* heap, u32 id);
+BOOL MEMFreeByStateToFrmHeap(struct MEMiHeapHead* heap, u32 id);
 u32 MEMAdjustFrmHeap(struct MEMiHeapHead* heap);
 u32 MEMResizeForMBlockFrmHeap(struct MEMiHeapHead* heap, void* memBlock,
                               u32 size);

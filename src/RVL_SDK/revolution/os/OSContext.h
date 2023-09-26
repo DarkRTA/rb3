@@ -31,7 +31,7 @@ typedef struct OSContext {
 void OSSaveFPUContext(OSContext* ctx);
 void OSSetCurrentContext(OSContext* ctx);
 OSContext* OSGetCurrentContext(void);
-bool32 OSSaveContext(OSContext* ctx);
+BOOL OSSaveContext(OSContext* ctx);
 void OSLoadContext(OSContext* ctx);
 void* OSGetStackPointer(void);
 void OSSwitchFiber(void* func, void* stack);

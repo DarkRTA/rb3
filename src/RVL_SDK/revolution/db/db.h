@@ -9,12 +9,12 @@ extern "C" {
 typedef struct OSDebugInterface;
 
 extern struct OSDebugInterface* __DBInterface;
-extern bool32 DBVerbose;
+extern BOOL DBVerbose;
 
 void DBInit(void);
 void __DBExceptionDestinationAux(void);
 void __DBExceptionDestination(void);
-bool32 __DBIsExceptionMarked(u8 exc);
+BOOL __DBIsExceptionMarked(u8 exc);
 void DBPrintf(const char* msg, ...);
 
 #ifdef __cplusplus

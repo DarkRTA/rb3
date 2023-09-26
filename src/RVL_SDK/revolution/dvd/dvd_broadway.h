@@ -32,32 +32,32 @@ typedef struct DVDVideoReportKey {
 
 typedef void (*DVDLowCallback)(u32 intType);
 
-bool32 DVDLowInit(void);
-bool32 DVDLowReadDiskID(struct DVDDiskID* out, DVDLowCallback callback);
-bool32 DVDLowOpenPartition(const u32 offset, const ESTicket* const ticket,
+BOOL DVDLowInit(void);
+BOOL DVDLowReadDiskID(struct DVDDiskID* out, DVDLowCallback callback);
+BOOL DVDLowOpenPartition(const u32 offset, const ESTicket* const ticket,
 u32 certsSize, const u8* const certs, ESTitleMeta* tmd, DVDLowCallback callback);
-bool32 DVDLowClosePartition(DVDLowCallback callback);
-bool32 DVDLowUnencryptedRead(void* dst, u32 size, u32 offset, DVDLowCallback callback);
-bool32 DVDLowStopMotor(bool32 eject, bool32 kill, DVDLowCallback callback);
-bool32 DVDLowInquiry(struct DVDDriveInfo* out, DVDLowCallback callback);
-bool32 DVDLowRequestError(DVDLowCallback callback);
-bool32 DVDLowSetSpinupFlag(bool32 enable);
-bool32 DVDLowReset(DVDLowCallback callback);
-bool32 DVDLowAudioBufferConfig(bool32 enable, u32 size, DVDLowCallback callback);
-bool32 DVDLowSetMaximumRotation(u32 speed, DVDLowCallback callback);
-bool32 DVDLowRead(void* dst, u32 size, u32 offset, DVDLowCallback callback);
-bool32 DVDLowSeek(u32 offset, DVDLowCallback callback);
+BOOL DVDLowClosePartition(DVDLowCallback callback);
+BOOL DVDLowUnencryptedRead(void* dst, u32 size, u32 offset, DVDLowCallback callback);
+BOOL DVDLowStopMotor(BOOL eject, BOOL kill, DVDLowCallback callback);
+BOOL DVDLowInquiry(struct DVDDriveInfo* out, DVDLowCallback callback);
+BOOL DVDLowRequestError(DVDLowCallback callback);
+BOOL DVDLowSetSpinupFlag(BOOL enable);
+BOOL DVDLowReset(DVDLowCallback callback);
+BOOL DVDLowAudioBufferConfig(BOOL enable, u32 size, DVDLowCallback callback);
+BOOL DVDLowSetMaximumRotation(u32 speed, DVDLowCallback callback);
+BOOL DVDLowRead(void* dst, u32 size, u32 offset, DVDLowCallback callback);
+BOOL DVDLowSeek(u32 offset, DVDLowCallback callback);
 u32 DVDLowGetCoverRegister(void);
 u32 DVDLowGetStatusRegister(void);
 u32 DVDLowGetControlRegister(void);
-bool32 DVDLowPrepareCoverRegister(DVDLowCallback callback);
-bool32 DVDLowPrepareStatusRegister(DVDLowCallback callback);
-bool32 DVDLowPrepareControlRegister(DVDLowCallback callback);
+BOOL DVDLowPrepareCoverRegister(DVDLowCallback callback);
+BOOL DVDLowPrepareStatusRegister(DVDLowCallback callback);
+BOOL DVDLowPrepareControlRegister(DVDLowCallback callback);
 u32 DVDLowGetImmBufferReg(void);
-bool32 DVDLowUnmaskStatusInterrupts(void);
-bool32 DVDLowMaskCoverInterrupt(void);
-bool32 DVDLowClearCoverInterrupt(DVDLowCallback callback);
-bool32 __DVDLowTestAlarm(const struct OSAlarm* alarm);
+BOOL DVDLowUnmaskStatusInterrupts(void);
+BOOL DVDLowMaskCoverInterrupt(void);
+BOOL DVDLowClearCoverInterrupt(DVDLowCallback callback);
+BOOL __DVDLowTestAlarm(const struct OSAlarm* alarm);
 
 #ifdef __cplusplus
 }

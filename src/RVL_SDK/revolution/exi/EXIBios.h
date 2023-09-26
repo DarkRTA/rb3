@@ -35,23 +35,23 @@ typedef struct EXIData {
     EXIItem items[3]; // at 0x28
 } EXIData;
 
-bool32 EXIImm(EXIChannel chan, void* buf, s32 len, u32 type,
+BOOL EXIImm(EXIChannel chan, void* buf, s32 len, u32 type,
             EXICallback callback);
-bool32 EXIImmEx(EXIChannel chan, void* buf, s32 len, u32 type);
-bool32 EXIDma(EXIChannel chan, void* buf, s32 len, u32 type,
+BOOL EXIImmEx(EXIChannel chan, void* buf, s32 len, u32 type);
+BOOL EXIDma(EXIChannel chan, void* buf, s32 len, u32 type,
             EXICallback callback);
-bool32 EXISync(EXIChannel chan);
-void EXIClearInterrupts(EXIChannel chan, bool32 exi, bool32 tc, bool32 ext);
+BOOL EXISync(EXIChannel chan);
+void EXIClearInterrupts(EXIChannel chan, BOOL exi, BOOL tc, BOOL ext);
 EXICallback EXISetExiCallback(EXIChannel chan, EXICallback callback);
 void EXIProbeReset(void);
-bool32 EXIProbe(EXIChannel chan);
-bool32 EXIAttach(EXIChannel chan, EXICallback callback);
-bool32 EXIDetach(EXIChannel chan);
-bool32 EXISelect(EXIChannel chan, u32 dev, u32 freq);
-bool32 EXIDeselect(EXIChannel chan);
+BOOL EXIProbe(EXIChannel chan);
+BOOL EXIAttach(EXIChannel chan, EXICallback callback);
+BOOL EXIDetach(EXIChannel chan);
+BOOL EXISelect(EXIChannel chan, u32 dev, u32 freq);
+BOOL EXIDeselect(EXIChannel chan);
 void EXIInit(void);
-bool32 EXILock(EXIChannel chan, u32 dev, EXICallback callback);
-bool32 EXIUnlock(EXIChannel chan);
+BOOL EXILock(EXIChannel chan, u32 dev, EXICallback callback);
+BOOL EXIUnlock(EXIChannel chan);
 s32 EXIGetID(EXIChannel chan, u32 dev, u32* out);
 
 #ifdef __cplusplus

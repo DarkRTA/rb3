@@ -42,9 +42,9 @@ typedef struct SCRegion {
     char name[3]; // at 0x1
 } SCRegion;
 
-bool32 __SCF1(const char* type, char* buf, u32 sz);
-bool32 SCGetProductAreaString(char* buf, u32 sz);
-bool32 SCGetProductGameRegionString(char* buf, u32 sz);
+BOOL __SCF1(const char* type, char* buf, u32 sz);
+BOOL SCGetProductAreaString(char* buf, u32 sz);
+BOOL SCGetProductGameRegionString(char* buf, u32 sz);
 s8 SCGetProductGameRegion(void);
 s8 SCGetProductArea(void);
 

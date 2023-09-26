@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-bool32 __DVDCheckDevice(void);
+BOOL __DVDCheckDevice(void);
 
 #ifdef __cplusplus
 }

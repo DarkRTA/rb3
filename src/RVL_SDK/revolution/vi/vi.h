@@ -51,7 +51,7 @@ void VIConfigurePan(u16 x, u16 y, u16 w, u16 h);
 void VIFlush(void);
 void VISetNextFrameBuffer(void* fb);
 
-void VISetBlack(bool32 black);
+void VISetBlack(BOOL black);
 s32 VIGetRetraceCount(void);
 
 VITvFormat VIGetTvFormat(void);

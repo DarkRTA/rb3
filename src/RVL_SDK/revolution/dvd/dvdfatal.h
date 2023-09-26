@@ -6,8 +6,8 @@ extern "C" {
 #endif
 
 void __DVDShowFatalMessage(void);
-bool32 DVDSetAutoFatalMessaging(bool32 enable);
-bool32 __DVDGetAutoFatalMessaging(void);
+BOOL DVDSetAutoFatalMessaging(BOOL enable);
+BOOL __DVDGetAutoFatalMessaging(void);
 void __DVDPrintFatalMessage(void);
 
 #ifdef __cplusplus

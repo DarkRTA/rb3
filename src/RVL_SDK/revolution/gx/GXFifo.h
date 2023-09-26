@@ -9,7 +9,7 @@ extern "C" {
 GX_DECL_PUBLIC_STRUCT(GXFifoObj, 128);
 
 void GXSetCPUFifo(GXFifoObj*);
-bool32 GXGetCPUFifo(GXFifoObj*);
+BOOL GXGetCPUFifo(GXFifoObj*);
 
 u32 GXGetFifoCount(GXFifoObj*);
 u8 GXGetFifoWrap(GXFifoObj*);

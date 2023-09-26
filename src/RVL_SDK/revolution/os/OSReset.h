@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-typedef bool32 (*OSShutdownFunction)(u32 pass, u32 event);
+typedef BOOL (*OSShutdownFunction)(u32 pass, u32 event);
 
 typedef enum { OS_SD_PASS_FIRST, OS_SD_PASS_SECOND } OSShutdownPass;
 
@@ -29,7 +29,7 @@ typedef struct OSShutdownFunctionQueue {
 } OSShutdownFunctionQueue;
 
 void OSRegisterShutdownFunction(OSShutdownFunctionInfo* info);
-bool32 __OSCallShutdownFunctions(u32 pass, u32 event);
+BOOL __OSCallShutdownFunctions(u32 pass, u32 event);
 void __OSShutdownDevices(u32 event);
 void __OSGetDiscState(u8* out);
 void OSShutdownSystem(void);

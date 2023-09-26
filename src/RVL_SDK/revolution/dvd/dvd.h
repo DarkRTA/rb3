@@ -109,10 +109,10 @@ typedef struct DVDPartitionParams {
 } DVDPartitionParams;
 
 void DVDInit(void);
-bool32 DVDInquiryAsync(DVDCommandBlock*, DVDDriveInfo*, DVDCBCallback);
+BOOL DVDInquiryAsync(DVDCommandBlock*, DVDDriveInfo*, DVDCBCallback);
 u32 __DVDGetCoverStatus(void);
 void __DVDPrepareReset(void);
-bool32 __DVDTestAlarm(const OSAlarm*);
+BOOL __DVDTestAlarm(const OSAlarm*);
 
 #ifdef __cplusplus
 }

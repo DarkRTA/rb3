@@ -43,7 +43,7 @@ typedef struct DSPTask {
     struct DSPTask* prev;            // at 0x3C
 } DSPTask;
 
-extern bool32 __DSP_rude_task_pending;
+extern BOOL __DSP_rude_task_pending;
 extern DSPTask* __DSP_rude_task;
 extern DSPTask* __DSP_tmp_task;
 extern DSPTask* __DSP_last_task;

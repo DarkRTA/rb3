@@ -145,7 +145,7 @@ typedef struct IPCRequestEx {
     IPCRequest base;           // at 0x0
     IPCAsyncCallback callback; // at 0x20
     void* callbackArg;         // at 0x24
-    bool32 reboot;               // at 0x28
+    BOOL reboot;               // at 0x28
     OSThreadQueue queue;       // at 0x2C
     char padding[64 - 0x34];
 } IPCRequestEx;

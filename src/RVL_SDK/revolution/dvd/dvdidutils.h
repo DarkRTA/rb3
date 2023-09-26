@@ -15,7 +15,7 @@ typedef struct DVDDiskID {
     char padding[0x20 - 0xA];
 } DVDDiskID;
 
-bool32 DVDCompareDiskID(const DVDDiskID* id1, const DVDDiskID* id2);
+BOOL DVDCompareDiskID(const DVDDiskID* id1, const DVDDiskID* id2);
 
 #ifdef __cplusplus
 }

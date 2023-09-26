@@ -32,15 +32,15 @@ typedef struct OSSramEx {
 
 void __OSInitSram(void);
 OSSramEx* __OSLockSramEx(void);
-bool32 __OSUnlockSramEx(bool32 save);
-bool32 __OSSyncSram(void);
-bool32 __OSReadROM(void* dst, s32 size, const void* src);
+BOOL __OSUnlockSramEx(BOOL save);
+BOOL __OSSyncSram(void);
+BOOL __OSReadROM(void* dst, s32 size, const void* src);
 u16 OSGetWirelessID(s32 pad);
 void OSSetWirelessID(s32 pad, u16 id);
 u16 OSGetGbsMode(void);
 void OSSetGbsMode(u16 gbs);
-bool32 __OSGetRTCFlags(u32* out);
-bool32 __OSClearRTCFlags(void);
+BOOL __OSGetRTCFlags(u32* out);
+BOOL __OSClearRTCFlags(void);
 
 #ifdef __cplusplus
 }

@@ -9,13 +9,13 @@ extern "C" {
 // General-purpose typedef
 typedef void* DSPMail;
 
-bool32 DSPCheckMailToDSP(void);
-bool32 DSPCheckMailFromDSP(void);
+BOOL DSPCheckMailToDSP(void);
+BOOL DSPCheckMailFromDSP(void);
 DSPMail DSPReadMailFromDSP(void);
 void DSPSendMailToDSP(DSPMail mail);
 void DSPAssertInt(void);
 void DSPInit(void);
-bool32 DSPCheckInit(void);
+BOOL DSPCheckInit(void);
 DSPTask* DSPAddTask(DSPTask* task);
 DSPTask* DSPCancelTask(DSPTask* task);
 DSPTask* DSPAssertTask(DSPTask* task);

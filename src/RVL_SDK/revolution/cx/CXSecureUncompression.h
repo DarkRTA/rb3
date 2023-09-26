@@ -8,7 +8,7 @@ extern "C" {
 #include "types.h"
 
 
-bool32 CXiLHVerifyTable(u16*, u32);
+BOOL CXiLHVerifyTable(u16*, u32);
 
 #ifdef __cplusplus
 }

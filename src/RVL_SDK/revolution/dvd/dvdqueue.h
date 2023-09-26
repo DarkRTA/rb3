@@ -7,9 +7,9 @@ extern "C" {
 #endif
 
 DVDCommandBlock* __DVDPopWaitingQueue();
-bool32 __DVDCheckWaitingQueue();
+BOOL __DVDCheckWaitingQueue();
 DVDCommandBlock* __DVDGetNextWaitingQueue();
-bool32 __DVDDequeueWaitingQueue(DVDCommandBlock* block);
+BOOL __DVDDequeueWaitingQueue(DVDCommandBlock* block);
 
 #ifdef __cplusplus
 }

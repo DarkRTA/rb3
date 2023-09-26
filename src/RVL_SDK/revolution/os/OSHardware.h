@@ -56,7 +56,7 @@ typedef struct OSBootInfo_s {
 } OSBootInfo;
 
 typedef struct OSDebugInterface {
-    bool32 usingDebugger;    // at 0x0
+    BOOL usingDebugger;    // at 0x0
     u32 exceptionMask;     // at 0x4
     void* exceptionHook;   // at 0x8
     void* exceptionHookLR; // at 0xC
@@ -134,7 +134,7 @@ OS_DEF_GLOBAL_VAR(void*, IOS_HEAP_END,                   0x8000314C);
 OS_DEF_GLOBAL_VAR(u32, GDDR_VENDOR_CODE,                 0x80003158);
 OS_DEF_GLOBAL_VAR(u8, BOOT_PROGRAM_TARGET,               0x8000315C);
 OS_DEF_GLOBAL_VAR(u8, APPLOADER_TARGET,                  0x8000315D);
-OS_DEF_GLOBAL_VAR(bool32, MIOS_SHUTDOWN_FLAG,              0x80003164);
+OS_DEF_GLOBAL_VAR(BOOL, MIOS_SHUTDOWN_FLAG,              0x80003164);
 OS_DEF_GLOBAL_VAR(u8, CURRENT_APP_NAME,                  0x80003180);
 OS_DEF_GLOBAL_VAR(u8, CURRENT_APP_TYPE,                  0x80003184);
 OS_DEF_GLOBAL_VAR(u8, LOCKED_FLAG,                       0x80003187);

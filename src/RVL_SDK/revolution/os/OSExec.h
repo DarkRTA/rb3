@@ -14,7 +14,7 @@ typedef struct OSExecParams {
     char UNK_0x14[0x1C - 0x14];
 } OSExecParams;
 
-extern bool32 __OSInReboot;
+extern BOOL __OSInReboot;
 extern void* __OSNextPartitionType;
 
 void __OSGetExecParams(OSExecParams* out);

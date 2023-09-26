@@ -16,7 +16,7 @@ typedef struct DVDDir{
 
 typedef struct DVDDirEntry{
     u32 entryNum;
-    bool32 isDir;
+    BOOL isDir;
     char* name;
 } DVDDirEntry;
 
@@ -29,13 +29,13 @@ typedef struct DVDFileInfo {
     DVDCallback callback;
 } DVDFileInfo;
 
-extern bool32 __DVDLongFileNameFlag;
+extern BOOL __DVDLongFileNameFlag;
 
 s32 DVDConvertPathToEntrynum(const char* pathPtr);
-bool32 DVDFastOpen(s32 entrynum, DVDFileInfo* fileInfo);
-bool32 DVDClose(DVDFileInfo* fileInfo);
-bool32 DVDGetCurrentDir(char* path, u32 maxlen);
-bool32 DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, DVDCallback callback, s32 prio);
+BOOL DVDFastOpen(s32 entrynum, DVDFileInfo* fileInfo);
+BOOL DVDClose(DVDFileInfo* fileInfo);
+BOOL DVDGetCurrentDir(char* path, u32 maxlen);
+BOOL DVDReadAsyncPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, DVDCallback callback, s32 prio);
 s32 DVDReadPrio(DVDFileInfo* fileInfo, void* addr, s32 length, s32 offset, s32 prio);
 u32 DVDGetTransferredSize(DVDCommandBlock* block);
 

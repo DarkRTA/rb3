@@ -51,7 +51,7 @@ u16 OSSetFontEncode(u16 encode);
 u32 OSLoadFont(OSFontHeader* font, void* dst);
 const char* OSGetFontTexel(const char* str, void* dst, s32 xOfs, s32 arg3,
                            u32* widthOut);
-bool32 OSInitFont(OSFontHeader* font);
+BOOL OSInitFont(OSFontHeader* font);
 const char* OSGetFontTexture(const char* str, void** texOut, u32* xOut,
                              u32* yOut, u32* widthOut);
 const char* OSGetFontWidth(const char* str, u32* widthOut);

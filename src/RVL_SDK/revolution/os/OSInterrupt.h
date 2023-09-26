@@ -54,9 +54,9 @@ extern u32 __OSLastInterruptSrr0;
 extern s16 __OSLastInterrupt;
 extern s64 __OSLastInterruptTime;
 
-bool32 OSDisableInterrupts(void);
-bool32 OSEnableInterrupts(void);
-bool32 OSRestoreInterrupts(bool32 status);
+BOOL OSDisableInterrupts(void);
+BOOL OSEnableInterrupts(void);
+BOOL OSRestoreInterrupts(BOOL status);
 
 OSInterruptHandler __OSSetInterruptHandler(OSInterruptType type,
                                            OSInterruptHandler handler);

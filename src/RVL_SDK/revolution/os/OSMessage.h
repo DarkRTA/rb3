@@ -21,9 +21,9 @@ typedef struct OSMessageQueue {
 } OSMessageQueue;
 
 void OSInitMessageQueue(OSMessageQueue* queue, OSMessage* buffer, s32 capacity);
-bool32 OSSendMessage(OSMessageQueue* queue, OSMessage mesg, u32 flags);
-bool32 OSReceiveMessage(OSMessageQueue* queue, OSMessage* mesg, u32 flags);
-bool32 OSJamMessage(OSMessageQueue* queue, OSMessage mesg, u32 flags);
+BOOL OSSendMessage(OSMessageQueue* queue, OSMessage mesg, u32 flags);
+BOOL OSReceiveMessage(OSMessageQueue* queue, OSMessage* mesg, u32 flags);
+BOOL OSJamMessage(OSMessageQueue* queue, OSMessage mesg, u32 flags);
 
 #ifdef __cplusplus
 }

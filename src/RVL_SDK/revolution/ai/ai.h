@@ -24,7 +24,7 @@ void AISetDSPSampleRate(u32 rate);
 u32 AIGetDSPSampleRate(void);
 u32 AIGetDMAStartAddr(void);
 u32 AIGetDMALength(void);
-bool32 AICheckInit(void);
+BOOL AICheckInit(void);
 void AIInit(void* stack);
 void __AIDHandler(s32 intr, struct OSContext* ctx);
 
