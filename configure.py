@@ -156,7 +156,7 @@ cflags_base = [
 ];
 cflags_rb3 = [
     *cflags_base,
-    "-sdata 2"
+    "-sdata 2",
     "-RTTI on",
 ]
 
