@@ -1,7 +1,6 @@
 #ifndef UNKNOWN_HPP
 #define UNKNOWN_HPP
 #include "types.h"
-#include "rb3/synthwii.hpp"
 
 struct unk_80901348 {
 	virtual void virt04();
@@ -48,6 +47,42 @@ struct unk_808FC398 {
 	virtual void virt14();
 	virtual void virt18();
 };
+
+struct unk_80990E38 {
+	virtual void virt04();
+	virtual void virt08();
+	virtual void virt0C();
+	virtual void virt10();
+	virtual void virt14();
+	virtual void virt18();
+	virtual void virt1C();
+	virtual void virt20();
+	virtual void virt24();
+	virtual void virt28();
+	virtual void virt2C();
+	virtual void virt30();
+	virtual void virt34();
+	virtual void virt38();
+	virtual void virt3C();
+	virtual void virt40();
+	virtual void virt44();
+	virtual void virt48();
+	virtual void virt4C();
+	virtual void virt50();
+	virtual void virt54();
+	virtual void virt58();
+	virtual void virt5C();
+	virtual void virt60();
+	virtual void virt64();
+	virtual void virt68();
+	virtual void virt6C();
+	virtual void virt70();
+	virtual void virt74();
+	virtual void virt78();
+	virtual void virt80();
+	virtual void virt84();
+	virtual void virt88();
+};
 // data
 extern int lbl_8097CD88;
 extern int lbl_808FFF3C;
@@ -56,7 +91,7 @@ extern int lbl_808FB8A0;
 extern int lbl_808FF430;
 extern int lbl_808FEC10;
 extern int lbl_808FDA84;
-SynthWii *lbl_80990E38;
+unk_80990E38 *lbl_80990E38;
 extern int lbl_808F3EC8;
 extern int lbl_80900870;
 unk_80901348 *lbl_80901348;

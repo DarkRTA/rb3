@@ -1,7 +1,6 @@
 #include "app.hpp"
 
 #include <revolution/OS.h>
-#include "rb3/synthwii.hpp"
 
 #include "unknown.hpp"
 #include "types.h"
