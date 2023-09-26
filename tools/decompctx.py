@@ -1,15 +1,5 @@
 #!/usr/bin/env python3
 
-###
-# Generates a ctx.c file, usable for "Context" on https://decomp.me.
-#
-# Usage:
-#   python3 tools/decompctx.py src/file.cpp
-#
-# If changes are made, please submit a PR to
-# https://github.com/encounter/dtk-template
-###
-
 import argparse
 import os
 import re
@@ -17,59 +7,62 @@ import re
 script_dir = os.path.dirname(os.path.realpath(__file__))
 root_dir = os.path.abspath(os.path.join(script_dir, ".."))
 src_dir = os.path.join(root_dir, "src")
-include_dir = os.path.join(root_dir, "include")
-msl_c_dir = os.path.join(root_dir, "include", "MSL_C")
+include_dirs = [
+    os.path.join(root_dir, "src", "PowerPC_EABI_Support", "MSL_C", "MSL_Common"),
+    os.path.join(
+        root_dir, "src", "PowerPC_EABI_Support", "MSL_C", "MSL_Common_Embedded"
+    ),
+    os.path.join(
+        root_dir, "src", "PowerPC_EABI_Support", "MSL_C", "MSL_Common_Embedded", "Math"
+    ),
+    os.path.join(root_dir, "src", "PowerPC_EABI_Support", "MetroTRK"),
+    os.path.join(root_dir, "src", "RVL_SDK"),
+    os.path.join(root_dir, "src", "std"),
+    os.path.join(root_dir, "src"),
+]
 
 include_pattern = re.compile(r'^#include\s*[<"](.+?)[>"]$')
-guard_pattern = re.compile(r'^#ifndef\s+(.*)$')
+guard_pattern = re.compile(r"^#ifndef\s+(.*)$")
 
 defines = set()
 
-def import_h_file(in_file: str, r_path: str) -> str:
+
+def import_h_file(in_file, r_path) -> str:
     rel_path = os.path.join(root_dir, r_path, in_file)
-    inc_path = os.path.join(include_dir, in_file)
-    msl_c_path = os.path.join(msl_c_dir, in_file)
     if os.path.exists(rel_path):
-      return import_c_file(rel_path)
-    elif os.path.exists(inc_path):
-      return import_c_file(inc_path)
-    elif os.path.exists(msl_c_path):
-      return import_c_file(msl_c_path)
+        return import_c_file(rel_path)
+    for include_dir in include_dirs:
+        inc_path = os.path.join(include_dir, in_file)
+        if os.path.exists(inc_path):
+            return import_c_file(inc_path)
     else:
-      print("Failed to locate", in_file)
-      exit(1)
+        print("Failed to locate", in_file)
+        return ""
+
 
 def import_c_file(in_file) -> str:
     in_file = os.path.relpath(in_file, root_dir)
-    out_text = ''
+    out_text = ""
 
-    try:
-      with open(in_file, encoding="utf-8") as file:
-        out_text += process_file(in_file, list(file))
-    except Exception:
-      with open(in_file) as file:
-        out_text += process_file(in_file, list(file))
-    return out_text
-
-def process_file(in_file: str, lines) -> str:
-    out_text = ''
-    for idx, line in enumerate(lines):
-      guard_match = guard_pattern.match(line.strip())
-      if idx == 0:
-        if guard_match:
-          if guard_match[1] in defines:
-            break
-          defines.add(guard_match[1])
-        print("Processing file", in_file)
-      include_match = include_pattern.match(line.strip())
-      if include_match and not include_match[1].endswith(".s"):
-        out_text += f"/* \"{in_file}\" line {idx} \"{include_match[1]}\" */\n"
-        out_text += import_h_file(include_match[1], os.path.dirname(in_file))
-        out_text += f"/* end \"{include_match[1]}\" */\n"
-      else:
-        out_text += line
+    with open(in_file) as file:
+        for idx, line in enumerate(file):
+            guard_match = guard_pattern.match(line.strip())
+            if idx == 0:
+                if guard_match:
+                    if guard_match[1] in defines:
+                        break
+                    defines.add(guard_match[1])
+                print("Processing file", in_file)
+            include_match = include_pattern.match(line.strip())
+            if include_match:
+                out_text += f'/* "{in_file}" line {idx} "{include_match[1]}" */\n'
+                out_text += import_h_file(include_match[1], os.path.dirname(in_file))
+                out_text += f'/* end "{include_match[1]}" */\n'
+            else:
+                out_text += line
 
     return out_text
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -83,7 +76,7 @@ def main():
 
     output = import_c_file(args.c_file)
 
-    with open(os.path.join(root_dir, "ctx.c"), "w", encoding="utf-8") as f:
+    with open(os.path.join(root_dir, "ctx.c"), "w", encoding="UTF-8") as f:
         f.write(output)
 
 
