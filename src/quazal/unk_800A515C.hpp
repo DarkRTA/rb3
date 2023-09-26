@@ -2,6 +2,15 @@
 #define QUAZAL_UNK_800A515C_HPP
 namespace Quazal
 {
+
+// fn_800A5368 - compiler generated function
+struct unk_53B0 {
+	unk_53B0();
+	~unk_53B0();
+}
+
+extern unk_53B0 lbl_53B0();
+
 class ProductSpecifics {
 public:
 	ProductSpecifics(); // aka fn_800A515C
