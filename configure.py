@@ -193,6 +193,7 @@ config.libs = [
             Object(Matching, "rb3/main.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/unk_803242cc.cpp"),
+            Object(NonMatching, "rb3/unk_800AB914.cpp")
         ],
     },
     {
@@ -210,15 +211,6 @@ config.libs = [
         "host": False,
         "objects": [
             Object(NonMatching, "quazal/unk_800A515C.cpp")
-        ],
-    },
-    {
-        "lib": "unknown",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
-        "host": False,
-        "objects": [
-            Object(NonMatching, "wii/unk_800AB914.cpp")
         ],
     },
     # anything below this line does not need to be decompiled
