@@ -1,5 +1,4 @@
 #include "string.hpp"
-#include "textfile.hpp"
 #include "textstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
