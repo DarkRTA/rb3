@@ -25,13 +25,13 @@ String::String(const String& str){
 
 // extern "C" void fn_80361C90(String*, int);
 
-// String::~String(){
-//     if(this != nullptr){
-//         if(len != 0){
-//             fn_80361C90(this, len);
-//         }
-//     }
-// }
+extern "C" void fn_80354878(int, int, char*);
+
+String::~String(){
+    if(len != 0){
+        fn_80354878(len + 1, 1, text);
+    }
+}
 
 // void String::fn_80362260(int x){
 //     fn_80361C90(this, 0);
