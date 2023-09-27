@@ -1,3 +1,5 @@
+#ifndef _ARKFILE_HPP
+#define _ARKFILE_HPP
 #include <types.h>
 class ArkFile {
 public:
@@ -8,3 +10,4 @@ public:
     u8 unkBlock2[12];
     u32 fpos;
 };
+#endif
