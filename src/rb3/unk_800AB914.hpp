@@ -2,8 +2,7 @@
 #define WII_UNK_800AB914_HPP
 
 // static fxn linked to these: fn_800AB960
-namespace DiscErrorMgrWii
-{
+namespace DiscErrorMgrWii {
 class Callback {
 public:
 	Callback();

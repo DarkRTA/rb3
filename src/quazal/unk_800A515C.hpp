@@ -1,7 +1,6 @@
 #ifndef QUAZAL_UNK_800A515C_HPP
 #define QUAZAL_UNK_800A515C_HPP
-namespace Quazal
-{
+namespace Quazal {
 
 // fn_800A5368 - compiler generated function
 struct unk_53B0 {
