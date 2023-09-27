@@ -193,7 +193,8 @@ config.libs = [
             Object(Matching, "rb3/main.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/unk_803242cc.cpp"),
-            Object(NonMatching, "rb3/unk_800AB914.cpp")
+            Object(NonMatching, "rb3/unk_800AB914.cpp"),
+            Object(Matching, "rb3/arkfile.cpp")
         ],
     },
     {
