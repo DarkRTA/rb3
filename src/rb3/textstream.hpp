@@ -4,7 +4,7 @@
 class TextStream {
 	public:
 		TextStream();
-        virtual void fn_8000DD10();
+        virtual ~TextStream(); // fn_8000DD10
 };
 
 #endif

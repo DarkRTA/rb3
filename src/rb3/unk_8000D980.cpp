@@ -7,3 +7,7 @@
 const char* String::GetText() const {
     return text;
 }
+
+TextStream::~TextStream() {
+    
+}
