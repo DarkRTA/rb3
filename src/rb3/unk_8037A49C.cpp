@@ -3,6 +3,8 @@
 #include "unknown.hpp"
 
 // fn_8037A67C
-TextStream::TextStream(){ }
+TextStream::TextStream()
+{
+}
 
 // fn_8000DD10

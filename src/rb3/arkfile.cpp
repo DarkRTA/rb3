@@ -1,22 +1,24 @@
 #include <rb3/arkfile.hpp>
 
-u32 ArkFile::Seek(int offset, int mode) {
-	switch(mode) {
-		case 0:
-			this->fpos = offset;
-			break;
-		case 1:
-			this->fpos += offset;
-			break;
-		case 2:
-			this->fpos = this->filesize + offset;
-			break;
-		default:
-			break;
+u32 ArkFile::Seek(int offset, int mode)
+{
+	switch (mode) {
+	case 0:
+		this->fpos = offset;
+		break;
+	case 1:
+		this->fpos += offset;
+		break;
+	case 2:
+		this->fpos = this->filesize + offset;
+		break;
+	default:
+		break;
 	}
 	return this->fpos;
 }
 
-u32 ArkFile::FilePos() {
+u32 ArkFile::FilePos()
+{
 	return this->fpos;
 }
