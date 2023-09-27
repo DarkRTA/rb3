@@ -212,6 +212,15 @@ config.libs = [
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },
+    {
+        "lib": "unknown",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "wii/unk_800AB914.cpp")
+        ],
+    },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
     {
