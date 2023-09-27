@@ -7,7 +7,7 @@ namespace Quazal
 struct unk_53B0 {
 	unk_53B0();
 	~unk_53B0();
-}
+};
 
 extern unk_53B0 lbl_53B0();
 
