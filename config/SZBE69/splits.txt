@@ -13,6 +13,9 @@ Sections:
 	.sbss2      type:bss
 	.bss        type:bss
 
+rb3/unk_8000D980.cpp:
+	.text       start:0x8000D980 end:0x8000F364
+
 rb3/app.cpp:
 	.text       start:0x8000F364 end:0x8000F804
 
@@ -35,6 +38,12 @@ rb3/unk_803242cc.cpp:
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
+
+rb3/unk_80357E10.cpp:
+	.text       start:0x80357E10 end:0x80365214
+
+rb3/unk_8037A49C.cpp:
+	.text       start:0x8037A49C end:0x8037AD34
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
