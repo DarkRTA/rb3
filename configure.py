@@ -152,7 +152,6 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse,pool",
     "-func_align 4",
-    "-ipa file",
     "-gccinc",
 ];
 cflags_rb3 = [
