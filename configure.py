@@ -152,13 +152,15 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse,pool",
     "-func_align 4",
+    "-ipa file",
     "-gccinc",
 ];
 cflags_rb3 = [
     *cflags_base,
     "-sdata 2",
+    "-sdata2 2",
+    "-pragma \"merge_float_consts on\"",
     "-RTTI on",
-    "-sdata 2",
 ]
 
 
@@ -172,11 +174,11 @@ cflags_runtime = [
 
 # Debug flags
 if config.debug:
-    cflags_rb3.extend(["-sym dwarf-2"])
-    cflags_runtime.extend(["-sym dwarf-2"])
+    cflags_rb3.extend(["-sym dwarf-2,full"])
+    cflags_runtime.extend(["-sym dwarf-2,full"])
 
 cflags_runtime.append("-inline auto")
-config.linker_version = "GC/3.0"
+config.linker_version = "Wii/1.1"
 
 Matching = True
 NonMatching = False
