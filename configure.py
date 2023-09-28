@@ -177,7 +177,7 @@ if config.debug:
     cflags_runtime.extend(["-sym dwarf-2,full"])
 
 cflags_runtime.append("-inline auto")
-config.linker_version = "Wii/1.1"
+config.linker_version = "GC/3.0"
 
 Matching = True
 NonMatching = False
