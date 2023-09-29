@@ -34,7 +34,10 @@ rb3/unk_800AB914.cpp:
 	.data       start:0x8082ADF0 end:0x8082AE04
 
 rb3/arkfile.cpp:
-	.text       start:0x802E76E0 end:0x802E7730
+	.text       start:0x802E76D8 end:0x802E7748
+
+rb3/filegetext.cpp:
+	.text       start:0x802FA918 end:0x802FA994
 
 rb3/unk_803242cc.cpp:
 	.text       start:0x803242CC end:0x8032443C
