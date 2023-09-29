@@ -1,13 +1,29 @@
-__pycache__
-.idea
+# Cache directories
+.idea/
+.vs/
+__pycache__/
+
+# Ninja
+build/
 .ninja_deps
 .ninja_log
-*.exe
-build
 build.ninja
 objdiff.json
-orig/*/*
-!orig/*/.gitkeep
+
+# Excluded tools
 tools/mwcc_compiler/*
-!tools/mwcc_compiler/.gitkeep
-/*.txt
+
+# Original game files
+orig/*
+!orig/SZBE69.sha1
+
+# Used to persist certain empty folders
+# Search patterns covering folders that need to be persisted must end with an asterisk,
+# or else this file will always be ignored
+!*.gitkeep
+
+# General-purpose ignore
+ignore/
+ignored/
+*.ignore.*
+*.ignored.*
