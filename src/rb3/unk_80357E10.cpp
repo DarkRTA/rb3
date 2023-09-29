@@ -77,6 +77,17 @@ bool String::AreStringsDifferent(const String* str){
     return strcmp(str->text, text);
 }
 
+// returns true if strings are NOT different (matching)
+// returns false if strings ARE different (non matching)
+bool String::AreStringsIdentical(const char* str){
+    if(str == nullptr) return false;
+    else return strcmp(str, text) == 0;
+}
+
+bool String::AreStringsIdentical(const String* str){
+    return strcmp(str->text, text) == 0;
+}
+
 extern int fn_80354848(int, int);
 extern void fn_80354878(int, int, char*);
 
@@ -143,7 +154,7 @@ int String::fn_803623E8(char* str){
 
 bool String::SubstrExistsInString(char* str){
     int index = FindIndexOfSubstring(str, 0) + 1;
-    return (index != 0) ? 1 : 0;
+    return (index != 0);
 }
 
 void String::ReplaceCharsInString(char old_char, char new_char){
@@ -152,6 +163,18 @@ void String::ReplaceCharsInString(char old_char, char new_char){
         if(*p == old_char)
             *p = new_char;
     }
+}
+
+void String::SwapStrings(String* s){
+    char* temp_text;
+    unsigned int temp_len;
+
+    temp_text = text;
+    text = s->text;
+    temp_len = len;
+    len = s->len;
+    s->text = temp_text;
+    s->len = temp_len;
 }
 
 // finds index of the first instance of char argument in string at an offset
@@ -178,4 +201,14 @@ void String::ToLower()
 		*p = c;
 		p++;
 	}
+}
+
+extern char fn_80018734(char);
+
+// rename this method once you figure out what fn_80018734 does
+void String::fn_80362730(){
+    char* p;
+    for(p = text; *p != '\0'; p++){
+        *p = fn_80018734(*p);
+    }
 }
