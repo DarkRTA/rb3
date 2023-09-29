@@ -21,3 +21,9 @@ orig/*
 # Search patterns covering folders that need to be persisted must end with an asterisk,
 # or else this file will always be ignored
 !*.gitkeep
+
+# General-purpose ignore
+ignore/
+ignored/
+*.ignore.*
+*.ignored.*
