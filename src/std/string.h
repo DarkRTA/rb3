@@ -20,6 +20,7 @@ int strcmp(const char*, const char*);
 int strncmp(const char*, const char*, size_t);
 
 char* strchr(const char*, int);
+char* strrchr(const char*, int);
 char* strstr(const char*, const char*);
 
 size_t strlen(const char*);
