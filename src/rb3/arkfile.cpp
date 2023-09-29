@@ -1,6 +1,6 @@
 #include <rb3/arkfile.hpp>
 
-u32 ArkFile::stub_802E76D8() {
+u32 ArkFile::fn_802E76D8_stub() {
 	return 0;
 }
 
