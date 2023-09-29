@@ -110,6 +110,23 @@ void String::Reserve(unsigned int arg){
     }
 }
 
+void String::fn_80361F88(String* str){
+    const char* t = str->GetText();
+    fn_80361F04(t);
+}
+
+void String::fn_80361FC4(char c){
+    int iVar2 = GetTextLength();
+    Reserve(iVar2 + 1);
+    *(text + iVar2) = c;
+    *(text + iVar2 + 1) = '\0';
+}
+
+// assigns char** to this String's text field
+void String::fn_803620B4(char** str){
+    this->operator=(*str);
+}
+
 // does strstr, and returns the index of where it begins
 int String::FindIndexOfSubstring(const char* str, int idx){
     char* found = strstr(text + idx, str);

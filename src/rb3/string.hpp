@@ -16,7 +16,10 @@ public:
 	const char *GetText() const; // fn_8000DB9C
 	void fn_80362260(unsigned int); // fn_80362260
 	void Reserve(unsigned int); // fn_80361C90
-	void fn_80361F04();
+	void fn_80361F04(const char*); // fn_80361F04
+	void fn_80361F88(String*); // fn_80361F88
+	void fn_80361FC4(char); // fn_80361FC4
+	void fn_803620B4(char**); // fn_803620B4
 
 	bool AreStringsDifferent(const char*); // fn_80362144
 	bool AreStringsDifferent(const String*); // fn_80362188
