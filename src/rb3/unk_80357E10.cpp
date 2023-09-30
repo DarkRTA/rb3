@@ -59,7 +59,7 @@ String *String::operator=(const char *str)
 		return this;
 	}
 	if (str == 0 || (*str == '\0')) {
-		fn_80362260(0);
+		CreateEmptyString(0);
 	} else {
 		Reserve(strlen(str));
 		strcpy(text, str);
@@ -120,28 +120,28 @@ void String::Reserve(unsigned int arg)
 	}
 }
 
-void String::fn_80361F88(String *str)
+String* String::AppendString(String *str)
 {
 	const char *t = str->GetText();
-	fn_80361F04(t);
+	return AppendString(t);
 }
 
-void String::fn_80361FC4(char c)
+String* String::AppendChar(char c)
 {
 	int iVar2 = GetTextLength();
 	Reserve(iVar2 + 1);
-	*(text + iVar2) = c;
-	*(text + iVar2 + 1) = '\0';
+	text[iVar2] = c;
+	text[iVar2 + 1] = '\0';
+	return this;
 }
 
 // assigns char** to this String's text field
-void String::fn_803620B4(char **str)
-{
-	this->operator=(*str);
+String* String::operator=(const char** str){
+	return this->operator=(*str);
 }
 
 // does strstr, and returns the index of where it begins
-int String::FindIndexOfSubstring(const char *str, int idx)
+int String::FindIndexOfSubstringAtOffset(const char *str, int idx)
 {
 	char *found = strstr(text + idx, str);
 	if (found != nullptr) {
@@ -150,7 +150,11 @@ int String::FindIndexOfSubstring(const char *str, int idx)
 	return -1;
 }
 
-int String::FindLastIndexOfChar(char charg)
+int String::FindIndexOfSubstringStrStr(char* c){
+	return FindIndexOfSubstringAtOffset(c, 0);
+}
+
+int String::FindLastIndexOfChar(char charg) const
 {
 	char *found = strrchr(text, charg);
 	if (found != (char *)0) {
@@ -162,9 +166,8 @@ int String::FindLastIndexOfChar(char charg)
 static const size_t npos = -1;
 
 // not fully matched! fix this
-// also figure out exactly what this is supposed to do
-int String::fn_803623E8(char *str)
-{
+// similar to std::string::find_last_of
+int String::FindLastOf(char *str) const {
 	int a;
 	int lastIndex;
 	if (str == nullptr)
@@ -188,7 +191,7 @@ int String::fn_803623E8(char *str)
 
 bool String::SubstrExistsInString(char *str)
 {
-	int index = FindIndexOfSubstring(str, 0) + 1;
+	int index = FindIndexOfSubstringAtOffset(str, 0) + 1;
 	return (index != 0);
 }
 
@@ -228,6 +231,10 @@ int String::FindFirstIndexOfCharAtOffset(char charg, int idx)
 	return -1;
 }
 
+int String::FindFirstIndexOfChar(char c){
+	return FindFirstIndexOfCharAtOffset(c, 0);
+}
+
 extern char fn_80018764(char);
 
 void String::ToLower()
@@ -251,4 +258,135 @@ void String::fn_80362730()
 	for (p = text; *p != '\0'; p++) {
 		*p = fn_80018734(*p);
 	}
+}
+
+// copies the text inside str->text, and puts it into this String's text
+String* String::CopyString(String* str){
+	const char* s;
+	Reserve(str->len);
+	s = str->GetText();
+	strcpy(text, s);
+	return this;
+}
+
+// creates an empty char* for this->text, of length arg
+void String::CreateEmptyString(unsigned int arg){
+	Reserve(arg);
+	text[arg] = 0;
+}
+
+// similar to std::string::find_first_of
+int String::FindFirstOf(char* str, int arg){
+	char* p1;
+	char* p2;
+	if(str == nullptr) return -1;
+	for(p1 = text + arg; *p1 != '\0'; p1++){
+		for(p2 = str; *p2 != '\0'; p2++){
+			if(*p1 == *p2){
+				return p1 - text;
+			}
+		}
+	}
+	return -1;
+}
+
+char* String::GetTextAtOffset(int arg){
+	return text + arg;
+}
+
+// appending str to String->text
+String* String::AppendString(const char* str){
+	int iVar2;
+	if(str == nullptr || *str == '\0') return this;
+	iVar2 = GetTextLength();
+	Reserve(iVar2 + strlen(str));
+	strcpy(text + iVar2, str);
+	return this;
+}
+
+// not matching - need to call the copy constructor instead of the assignment operator
+String* String::fn_80361E38(String str, const char* chrstr){
+	*this = str;
+	return this->AppendString(chrstr);
+}
+
+// not matching - need to call the copy constructor instead of the assignment operator
+String* String::fn_80361E7C(String str, char c){
+	*this = str;
+	return this->AppendChar(c);
+}
+
+// not matching - need to call the copy constructor instead of the assignment operator
+String* String::fn_80361EC0(String str, String* str2){
+	*this = str;
+	return this->AppendString(str2);
+}
+
+// what even is the point of this fxn? it's in String's vtable,
+// but all it does is just call AppendString
+String* String::VirtuallyAppendString(const char* asdf){
+	return AppendString(asdf);
+}
+
+// get char #arg from the back
+char String::GetCharFromBackIndex(int arg){
+	return *(len + (text + arg));
+}
+
+// get char* #arg from the back
+char* String::GetSubstrFromBackIndex(int arg){
+	return len + (text + arg);
+}
+
+// is text < str->text? if so, return true 
+bool String::IsThisStrLessThan(String* str) const {
+	return (strcmp(text, str->text) < 0);
+}
+
+// like the other method above but it doesn't use strstr
+int String::FindIndexOfSubstring(char* str){
+	int rv;
+	if(str == nullptr) return -1;
+	else {
+		rv = -1;
+		for(char* p4 = str; *p4 != '\0'; p4++){
+			int x = FindLastIndexOfChar(*p4);
+			if(x == npos) return -1;
+			if(rv == -1){
+				rv = x;
+			}
+			else if(x != p4 - str + rv){
+				return -1;
+			}
+		}
+	}
+	if(rv == -1) return -1;
+	return rv;
+}
+
+String String::CreateSubstringFromString(unsigned int index, unsigned int substr_len) const {
+	char buf[512];
+	if(index + substr_len >= len){
+		return String(text + index);
+	}
+	else {
+		strncpy(buf, text + index, substr_len);
+		buf[substr_len] = '\0';
+		return String(buf);
+	}
+}
+
+String String::CreateSubstringFromString(unsigned int index){
+	return String((char*)(text + index));
+}
+
+String* String::ClearString(){
+	text[0] = '\0';
+	return this;
+}
+
+String* String::TruncateString(unsigned int index){
+	if(index >= len) return this;
+	text[index] = '\0';
+	return this;
 }
