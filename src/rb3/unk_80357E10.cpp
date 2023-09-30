@@ -220,7 +220,7 @@ void String::SwapStrings(String *s)
 // finds index of the first instance of char argument in string at an offset
 int String::FindFirstIndexOfCharAtOffset(char charg, int idx)
 {
-	char *p = text + idx;
+	char *p = &text[idx];
 
 	while ((*p != '\0') && (*p != charg))
 		p++;
@@ -280,7 +280,7 @@ int String::FindFirstOf(char* str, int arg){
 	char* p1;
 	char* p2;
 	if(str == nullptr) return -1;
-	for(p1 = text + arg; *p1 != '\0'; p1++){
+	for(p1 = &text[arg]; *p1 != '\0'; p1++){
 		for(p2 = str; *p2 != '\0'; p2++){
 			if(*p1 == *p2){
 				return p1 - text;
@@ -291,7 +291,7 @@ int String::FindFirstOf(char* str, int arg){
 }
 
 char* String::GetTextAtOffset(int arg){
-	return text + arg;
+	return &text[arg];
 }
 
 // appending str to String->text
@@ -300,7 +300,7 @@ String* String::AppendString(const char* str){
 	if(str == nullptr || *str == '\0') return this;
 	iVar2 = GetTextLength();
 	Reserve(iVar2 + strlen(str));
-	strcpy(text + iVar2, str);
+	strcpy(&text[iVar2], str);
 	return this;
 }
 
