@@ -330,12 +330,12 @@ String* String::VirtuallyAppendString(const char* asdf){
 
 // get char #arg from the back
 char String::GetCharFromBackIndex(int arg){
-	return *(len + (text + arg));
+	return text[len + arg];
 }
 
 // get char* #arg from the back
 char* String::GetSubstrFromBackIndex(int arg){
-	return len + (text + arg);
+	return &text[len + arg];
 }
 
 // is text < str->text? if so, return true 
