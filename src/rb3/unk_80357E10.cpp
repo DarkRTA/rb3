@@ -367,17 +367,17 @@ int String::FindIndexOfSubstring(char* str){
 String String::CreateSubstringFromString(unsigned int index, unsigned int substr_len) const {
 	char buf[512];
 	if(index + substr_len >= len){
-		return String(text + index);
+		return String(&text[index]);
 	}
 	else {
-		strncpy(buf, text + index, substr_len);
+		strncpy(buf, &text[index], substr_len);
 		buf[substr_len] = '\0';
 		return String(buf);
 	}
 }
 
 String String::CreateSubstringFromString(unsigned int index){
-	return String((char*)(text + index));
+	return String(&text[index]);
 }
 
 String* String::ClearString(){
