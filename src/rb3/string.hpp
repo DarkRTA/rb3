@@ -52,6 +52,8 @@ public:
 	int FindFirstIndexOfCharAtOffset(char, int); // fn_803622A4
 	void fn_80362730(); // fn_80362730
 
+	String* ReplaceTextAtIndex(unsigned int, unsigned int, char*); // fn_803627CC
+
 	String *operator=(const char *);
 	void ToLower();
 	virtual ~String();

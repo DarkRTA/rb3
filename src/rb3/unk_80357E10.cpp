@@ -390,3 +390,44 @@ String* String::TruncateString(unsigned int index){
 	text[index] = '\0';
 	return this;
 }
+
+// replaces this->text with the contents of buffer, at this->text index length
+// start: the starting index of the text you want to replace
+// length: how many chars you want the replacement to be
+// buffer: the replacement chars
+String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, char* buffer){
+    char* text_offsetted;
+    char* var_r4;
+    char* var_r5;
+    unsigned int bufferLength, end;
+    char* tmp = 0;
+    char c;
+
+    end = start + length;
+    if (end > len){
+        length = len - start;
+    }
+
+    bufferLength = strlen(buffer);
+    if (bufferLength > length){
+        String str_tmp;
+        str_tmp.Reserve(bufferLength + (GetTextLength() - length));
+        strncpy(str_tmp.text, text, start);
+        strncpy(str_tmp.text + start, buffer, bufferLength);
+        strcpy(str_tmp.text + (bufferLength + start), text + (length + start));
+        SwapStrings(&str_tmp);
+    }
+    else {
+        strncpy(text + start, buffer, bufferLength);
+        text_offsetted = text + start;
+        var_r4 = text_offsetted + bufferLength;
+        var_r5 = text_offsetted + length;
+        while(*var_r5 != '\0'){
+            c = *var_r5++;
+            *var_r4++ = c;
+        }
+        *var_r4 = *var_r5;
+    }
+
+    return this;
+}
