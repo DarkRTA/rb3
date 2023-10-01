@@ -1,4 +1,5 @@
 #include "string.hpp"
+#include "textfilestream.hpp"
 #include "textstream.hpp"
 #include "unknown.hpp"
 
@@ -7,4 +8,7 @@ TextStream::TextStream()
 {
 }
 
-// fn_8000DD10
+// fn_8037A58C - TextFileStream ctor
+TextFileStream::TextFileStream(){
+    
+}
