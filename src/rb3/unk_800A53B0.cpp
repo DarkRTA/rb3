@@ -5,7 +5,13 @@
 
 // fn_800A6E18
 // probably inline
-unsigned int String::GetTextLength()
+unsigned int String::GetStrLen()
 {
 	return strlen(text);
 }
+
+// // fn_800A6BD0
+// // also probably inline
+// unsigned short String::GetTextLengthWithoutStrLen(){
+// 	return len;
+// }

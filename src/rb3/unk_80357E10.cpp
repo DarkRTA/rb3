@@ -120,15 +120,17 @@ void String::Reserve(unsigned int arg)
 	}
 }
 
-String* String::AppendString(String *str)
+// MAKE THIS OPERATOR += OVERLOAD
+String* String::operator+=(String *str)
 {
 	const char *t = str->GetText();
-	return AppendString(t);
+	return *this += t;
 }
 
-String* String::AppendChar(char c)
+
+String* String::operator+=(char c)
 {
-	int iVar2 = GetTextLength();
+	int iVar2 = GetStrLen();
 	Reserve(iVar2 + 1);
 	text[iVar2] = c;
 	text[iVar2 + 1] = '\0';
@@ -165,28 +167,19 @@ int String::FindLastIndexOfChar(char charg) const
 
 static const size_t npos = -1;
 
-// not fully matched! fix this
 // similar to std::string::find_last_of
 int String::FindLastOf(char *str) const {
-	int a;
-	int lastIndex;
-	if (str == nullptr)
-		return -1;
-	else {
-		a = -1;
-		while (*str != '\0') {
-			lastIndex = FindLastIndexOfChar(*str);
-			if ((lastIndex != npos) && (lastIndex > a)) {
-				a = lastIndex;
-			}
-			str++;
+	if (str == nullptr) return -1;
+
+	int a = -1;
+	for(char* tmp = str; *tmp != '\0'; tmp++){
+		int lastIndex = FindLastIndexOfChar(*tmp);
+		if((lastIndex != npos) && (lastIndex > a)){
+			a = lastIndex;
 		}
-		lastIndex = -1;
-		if (a != -1) {
-			lastIndex = a;
-		}
-		return lastIndex;
 	}
+	
+	return (a != -1) ? a : -1;
 }
 
 bool String::SubstrExistsInString(char *str)
@@ -239,19 +232,16 @@ extern char fn_80018764(char);
 
 void String::ToLower()
 {
-	char c;
-	char *p = text;
-
-	while (*p != '\0') {
-		c = fn_80018764(*p);
-		*p = c;
-		p++;
+	char* p;
+	for(p = text; *p != '\0'; p++){
+		*p = fn_80018764(*p);
 	}
 }
 
 extern char fn_80018734(char);
 
 // rename this method once you figure out what fn_80018734 does
+// my guess? it's ToUpper
 void String::fn_80362730()
 {
 	char *p;
@@ -294,38 +284,43 @@ char* String::GetTextAtOffset(int arg){
 	return &text[arg];
 }
 
+// MAKE THIS OPERATOR += OVERLOAD
 // appending str to String->text
-String* String::AppendString(const char* str){
+String* String::operator+=(const char* str){
 	int iVar2;
 	if(str == nullptr || *str == '\0') return this;
-	iVar2 = GetTextLength();
+	iVar2 = GetStrLen();
 	Reserve(iVar2 + strlen(str));
 	strcpy(&text[iVar2], str);
 	return this;
 }
 
+// MAKE THIS OPERATOR+ OVERLOAD
 // not matching - need to call the copy constructor instead of the assignment operator
-String* String::fn_80361E38(String str, const char* chrstr){
-	*this = str;
-	return this->AppendString(chrstr);
+String String::operator+(const char* chrstr){
+	String ret(*this);
+	ret += chrstr;
+	return ret;
 }
 
 // not matching - need to call the copy constructor instead of the assignment operator
-String* String::fn_80361E7C(String str, char c){
-	*this = str;
-	return this->AppendChar(c);
+String String::operator+(char c){
+	String ret(*this);
+	ret += c;
+	return ret;
 }
 
 // not matching - need to call the copy constructor instead of the assignment operator
-String* String::fn_80361EC0(String str, String* str2){
-	*this = str;
-	return this->AppendString(str2);
+String String::operator+(String* str){
+	String ret(*this);
+	ret += str;
+	return ret;
 }
 
 // what even is the point of this fxn? it's in String's vtable,
-// but all it does is just call AppendString
-String* String::VirtuallyAppendString(const char* asdf){
-	return AppendString(asdf);
+// but all it does is just call +=
+String* String::VirtualAppend(const char* asdf){
+	return this->operator+=(asdf);
 }
 
 // get char #arg from the back
@@ -395,7 +390,7 @@ String* String::TruncateString(unsigned int index){
 // start: the starting index of the text you want to replace
 // length: how many chars you want the replacement to be
 // buffer: the replacement chars
-String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, char* buffer){
+String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, const char* buffer){
     char* text_offsetted;
     char* var_r4;
     char* var_r5;
@@ -411,7 +406,7 @@ String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, char
     bufferLength = strlen(buffer);
     if (bufferLength > length){
         String str_tmp;
-        str_tmp.Reserve(bufferLength + (GetTextLength() - length));
+        str_tmp.Reserve(bufferLength + (GetStrLen() - length));
         strncpy(str_tmp.text, text, start);
         strncpy(str_tmp.text + start, buffer, bufferLength);
         strcpy(str_tmp.text + (bufferLength + start), text + (length + start));
@@ -430,4 +425,107 @@ String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, char
     }
 
     return this;
+}
+
+extern char lbl_80858CA0[];
+
+String* String::ReplaceTextAtIndexWithLabel(unsigned int start, unsigned int length){
+	return ReplaceTextAtIndex(start, length, &lbl_80858CA0[0]);
+}
+
+String* String::ReplaceTextAtIndex(unsigned int start, const char* buf){
+	return ReplaceTextAtIndex(start, 0, buf);
+}
+
+String* String::ReplaceTextAtIndex(unsigned int start, String* str){
+	return ReplaceTextAtIndex(start, 0, str->GetText());
+}
+
+extern void fn_800A6BD0(String*);
+
+void String::fn_80362560(char* buf, String* str){
+	str->IsTextLengthZero();
+	int var_r31, var_r30;
+
+	var_r31 = 0;
+	var_r30 = FindFirstOf(buf, 0);
+
+	while(var_r30 != npos){
+		if(var_r30 > var_r31){
+			String sp14 = CreateSubstringFromString(var_r31, var_r30 - var_r31);
+			str->fn_801CEDFC(&sp14);
+		}
+		var_r31 = var_r30 + 1;
+		var_r30 = FindFirstOf(buf, var_r31);
+	}
+	if(var_r31 < GetStrLen()){
+		String sp14 = CreateSubstringFromString(var_r31, GetStrLen() - var_r31);
+		str->fn_801CEDFC(&sp14);
+	}
+	fn_800A6BD0(str);
+}
+
+// inserts the char c into this->text at index idx, cnt times
+String* String::InsertCharAtIndex(int idx, unsigned int cnt, char c){
+	String sp8;
+	char* temp_r0;
+	char* var_r4;
+	unsigned int var_ctr;
+
+	sp8.Reserve(cnt + GetStrLen());
+	strncpy(sp8.text, text, idx);
+	for(int i = 0; i < cnt; i++){
+		sp8.text[idx + i] = c;
+	}
+	strcpy(&sp8.text[cnt + idx], &text[idx]);
+	SwapStrings(&sp8);
+	return this;
+}
+
+int fn_80362A50(char* arg0, char* arg1, char* arg2, char* arg3){
+    int var_r31;
+    int temp_r31;
+    char* temp_r3;
+    char* var_r27;
+    
+    *arg3 = 0;
+    var_r31 = 0;
+
+    while(true){
+        temp_r3 = strstr(arg0, arg1);
+        if(temp_r3 == 0) break;
+        temp_r31 = temp_r3 - arg0;
+        strncat(arg3, arg0, temp_r31);
+        strcat(arg3, arg2);
+        arg0 = strlen(arg1) + (arg0 + temp_r31);
+        var_r31 = 1;
+    }
+    
+    strcat(arg3, arg0); 
+    return var_r31;
+}
+
+char fn_80362AF4(char* arg0, char* arg1, int arg2){
+    int var_r5_2;
+    char temp_r0;
+    char var_r5;
+    char* var_r3;
+    char* var_r4;
+
+    var_r3 = arg0;
+    var_r4 = arg1;
+    var_r5_2 = arg2 - 1;
+
+    while(*var_r4 != 0 && (var_r5_2 != 0)){
+        temp_r0 = *var_r4++;
+        *var_r3++ = temp_r0;
+        var_r5_2 -= 1;
+    }
+    
+    var_r5 = 0;
+    *var_r3 = 0;
+    if((var_r5_2 != 0) || (*var_r4 == 0)){
+        var_r5 = 1;
+    }
+    return var_r5;
 }
