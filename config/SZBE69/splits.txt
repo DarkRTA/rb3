@@ -36,8 +36,14 @@ rb3/unk_800AB914.cpp:
 rb3/unk_800AC804.cpp:
 	.text       start:0x800AC804 end:0x800B45D0
 
+rb3/unk_802E434C.cpp:
+	.text       start:0x802E434C end:0x802E76D8
+
 rb3/arkfile.cpp:
 	.text       start:0x802E76D8 end:0x802E7748
+
+rb3/unk_802E7748.cpp:
+	.text       start:0x802E7748 end:0x802E9034
 
 rb3/filegetext.cpp:
 	.text       start:0x802FA918 end:0x802FA994
@@ -47,6 +53,13 @@ rb3/unk_803242cc.cpp:
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
+
+rb3/unk_80341E10.cpp:
+	.text       start:0x80341E10 end:0x8034A7DC
+	.data       start:0x80856788 end:0x808567C8
+
+rb3/unk_8034C9F8.cpp:
+	.text       start:0x8034C9F8 end:0x8034D068
 
 rb3/string.cpp:
 	.text       start:0x80361B10 end:0x80362A50
