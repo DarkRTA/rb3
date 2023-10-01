@@ -201,6 +201,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_800A53B0.cpp"),
             Object(NonMatching, "rb3/unk_800AC804.cpp"),
             Object(NonMatching, "rb3/filegetext.cpp"),
+            Object(NonMatching, "rb3/string.cpp"),
             Object(Matching, "rb3/arkfile.cpp")
         ],
     },
