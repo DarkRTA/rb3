@@ -2,6 +2,7 @@
 #define RB3_FILESTREAM_HPP
 #include "binstream.hpp"
 #include "string.hpp"
+#include "asyncfilewii.hpp"
 
 class FileStream : BinStream {
 public:

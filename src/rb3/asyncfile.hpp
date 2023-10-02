@@ -3,11 +3,11 @@
 #include "file.hpp"
 #include "string.hpp"
 
-class AsyncFile: File {
+class AsyncFile : File {
 public:
 	AsyncFile(const char*, int);
 	virtual ~AsyncFile();
-	virtual String fn_802E8678();
+	virtual String GetStringMember();
 	virtual void fn_802E7E8C();
 	virtual void fn_802E7F7C();
 	virtual void fn_802E7F00();
@@ -21,28 +21,28 @@ public:
 	virtual void fn_802E8608();
 	virtual void fn_802E8030();
 	virtual void fn_802E81AC();
-	virtual void unk1() = 0;
+	virtual void v_unk1() = 0;
 	virtual void fn_8077BAA0();
-	virtual void unk2() = 0;
-	virtual void unk3() = 0;
-	virtual void unk4() = 0;
-	virtual void unk5() = 0;
-	virtual void unk6() = 0;
-	virtual void unk7() = 0;
-	virtual void unk8() = 0;
-	virtual void unk9() = 0;
+	virtual void v_unk2() = 0;
+	virtual void v_unk3() = 0;
+	virtual void v_unk4() = 0;
+	virtual void v_unk5() = 0;
+	virtual void v_unk6() = 0;
+	virtual void v_unk7() = 0;
+	virtual void v_unk8() = 0;
+	virtual void v_unk9() = 0;
 
-	int unk4_async;
-	char unk8_async;
-	char unk9_async;
-	String unkc_async;
-	int unk18_async;
-	int unk1c_async;
-	int unk20_async;
-	int unk24_async;
-	int unk28_async;
-	int unk2c_async;
-	int unk30_async;
+	int unk4;
+	char unk8;
+	char unk9;
+	String unkc;
+	int unk18;
+	int unk1c;
+	int unk20;
+	int unk24;
+	int unk28;
+	int unk2c;
+	int unk30;
 };
 
 #endif
