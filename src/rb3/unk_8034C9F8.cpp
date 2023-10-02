@@ -5,11 +5,13 @@
 #include "unknown.hpp"
 #include "std/string.h"
 
+extern AsyncFileWii NewFile(const char*, int);
+
 // fn_8034C9F8
 // ctor
 FileStream::FileStream(char c, char* arg1, int arg2) : BinStream(c) {
 	int var_r31;
-	int temp_r3;
+	// AsyncFileWii temp_r3;
 	unk20 = 0;
 	unk24 = 0;
 	if(arg2 == 0){

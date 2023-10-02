@@ -5,7 +5,7 @@ class TextStream {
 public:
 	TextStream();
 	virtual ~TextStream(); // fn_8000DD10
-	// virtual TextStream* VirtualAppend() = 0; // turns out there's a void fxn here, given VirtualAppend in String, this must be some sort of appending/operator+= overload fn
+	virtual void VirtualAppend(const char*) = 0;
 };
 
 #endif

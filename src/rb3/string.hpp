@@ -15,7 +15,7 @@ public:
 	String(unsigned int, char); // fn_80361D1C
 
 	virtual ~String();
-	virtual String* VirtualAppend(const char*); // fn_80361E34
+	virtual void VirtualAppend(const char*); // fn_80361E34
 
 	String operator+(const char*); // fn_80361E38
 	String operator+(char); // fn_80361E7C
