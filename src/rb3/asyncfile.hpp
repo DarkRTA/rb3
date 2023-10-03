@@ -28,11 +28,12 @@ public:
 	virtual int V_Unk20(char*, int) = 0;
 	virtual int V_Unk21() = 0;
 	virtual void V_Unk22() = 0;
-	virtual int V_Unk23() = 0;
+	virtual void V_Unk23() = 0;
 	virtual int V_Unk24() = 0;
 	virtual void V_Unk25() = 0;
 
 	void fn_802E8530();
+	void fn_802E7E2C();
 
 	int unk4;
 	bool unk8;

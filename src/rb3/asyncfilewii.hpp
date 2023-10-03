@@ -15,11 +15,12 @@ public:
 	virtual int V_Unk20(char*, int); // fn_802E8C50
 	virtual int V_Unk21(); // fn_802E8C54
 	virtual void V_Unk22(); // fn_802E8C5C
-	virtual int V_Unk23(); // fn_802E8CB8
+	virtual void V_Unk23(); // fn_802E8CB8
 	virtual int V_Unk24(); // fn_802E8D28
 	virtual void V_Unk25(); // fn_802E8F1C
 
-	void fn_802E7E2C();
+	
+	void fn_800E1114();
 
 	unsigned int unk38;
 	char unk3c;

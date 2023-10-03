@@ -5,6 +5,7 @@
 #include "file.hpp"
 #include "asyncfile.hpp"
 #include "asyncfilewii.hpp"
+#include "asyncfilecnt.hpp"
 #include "arkfile.hpp"
 
 // fn_802E7B68
@@ -47,7 +48,7 @@ AsyncFileWii::~AsyncFileWii(){
 
 extern void fn_80354238(char*);
 
-void AsyncFileWii::fn_802E7E2C(){
+void AsyncFile::fn_802E7E2C(){
 	if(unk4 & 4){
 		V_Unk9();
 	}
@@ -290,16 +291,30 @@ void AsyncFileWii::V_Unk22(){
 
 // fn_802E8CB8
 // calls fn_80735FB0
+void AsyncFileWii::V_Unk23(){
+	unk3c = 1;
+}
+
+unsigned int fn_802E85D0(unsigned int a, unsigned int b){
+	if (b < a) return b;
+	return a;
+}
 
 // fn_802E8530
 void AsyncFile::fn_802E8530(){
 	if((unk8 == 0) && (unk4 & 2)){
 		if(unk1c != lbl_808517C8[0]){
-			V_Unk21();
+			V_Unk22();
 		}
+		fn_802E85D0(unk18, lbl_808517C8[0]);
 		V_Unk23();
 		unk1c = 0;
 	}
+}
+
+// fn_802E7810
+String ArkFile::GetStringMember(){
+	return str;
 }
 
 // fn_802E7748
@@ -315,4 +330,88 @@ unsigned int ArkFile::GetFileSize(){
 // fn_802E7760
 int ArkFile::V_Unk13(){
 	return unk14;
+}
+
+extern void fn_802EA488(int*, int*);
+extern int lbl_80902278;
+
+// fn_802E7790
+int ArkFile::V_Unk14(int* a){
+	fn_802EA488(&lbl_80902278, a);
+    *a = unk1c;
+    return (unk18 == 0);
+}
+
+// // fn_802E77E4
+// int ArkFile::V_Unk16(){
+
+// }
+
+// fn_802E7768
+void ArkFile::fn_802E7768(int a){
+	unk18--;
+	unk1c += a;
+	fpos += a;
+}
+
+extern char fn_802FB54C(const char*, int);
+
+// fn_802E8680
+AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
+	char* temp_r30;
+    int temp_r31;
+    char* temp_r3_2;
+    char* temp_r3_3;
+    char* var_r31;
+	char temp_r3;
+	unk38 = 0;
+	unk3c = 0;
+	unk44 = -1;
+	unk48 = 0;
+	temp_r3 = fn_802FB54C(c, 0);
+	if(temp_r3 != 0){
+		temp_r30 = (char*)c + 4;
+		temp_r3_2 = strchr(temp_r30, 0x2F);
+		if(temp_r3_2 != 0){
+			var_r31 = temp_r3_2 + 1;
+			temp_r3_3 = strchr(var_r31, 0x2F);
+			if(temp_r3_3 != 0){
+				var_r31 = temp_r3_3;
+			}
+		}
+		else {
+			var_r31 = temp_r30 + strlen(temp_r30);
+		}
+		temp_r31 = var_r31 - temp_r30;
+		// strncpy(arg0 + 0x4A, temp_r30, temp_r31);
+        // (arg0 + temp_r31)->unk4A = 0;
+		unkc = temp_r30 + temp_r31;
+		unkc.GetText();
+		unk9 = 1;
+	}
+
+	//  if (temp_r3 != 0) {
+    //     temp_r30 = arg1 + 4;
+    //     temp_r3_2 = strchr(temp_r30, 0x2F);
+    //     if (temp_r3_2 != 0) {
+    //         var_r31 = temp_r3_2 + 1;
+    //         temp_r3_3 = strchr(var_r31, 0x2F);
+    //         if (temp_r3_3 != 0) {
+    //             var_r31 = temp_r3_3;
+    //         }
+    //     } else {
+    //         var_r31 = temp_r30 + strlen(temp_r30);
+    //     }
+    //     temp_r31 = var_r31 - temp_r30;
+    //     strncpy(arg0 + 0x4A, temp_r30, temp_r31);
+    //     (arg0 + temp_r31)->unk4A = 0;
+    //     __as__6StringFPCc(arg0 + 0xC, temp_r30 + temp_r31);
+    //     GetText__6StringCFv(arg0 + 0xC);
+    //     arg0->unk9 = 1;
+    // }
+}
+
+// fn_802E8B10
+AsyncFileCNT::~AsyncFileCNT(){
+	fn_802E7E2C();
 }
