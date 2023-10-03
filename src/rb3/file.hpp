@@ -16,7 +16,7 @@ public:
 	virtual void V_Unk9() = 0;
 	virtual bool V_Unk10() = 0;
 	virtual bool V_Unk11() = 0;
-	virtual unsigned int V_Unk12() = 0;
+	virtual unsigned int GetFileSize() = 0;
 	virtual int V_Unk13() = 0;
 	virtual int V_Unk14(int*) = 0;
 	virtual int V_Unk15(int*); // fn_802E7818

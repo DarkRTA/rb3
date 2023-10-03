@@ -5,6 +5,7 @@
 #include "file.hpp"
 #include "asyncfile.hpp"
 #include "asyncfilewii.hpp"
+#include "arkfile.hpp"
 
 // fn_802E7B68
 // AsyncFile's ctor
@@ -82,7 +83,7 @@ bool AsyncFile::V_Unk4(char* arg1, int arg2){
 	}
 	else {
 		temp_r6 = unk18;
-		temp_r7 = unk20;
+		temp_r7 = filesize;
 		if(temp_r6 + arg2 > temp_r7){
 			sp8 = temp_r7 - temp_r6;
 		}
@@ -127,7 +128,7 @@ bool AsyncFile::V_Unk6(char* arg1, int arg2){
 		memcpy(unk28 + unk1c, r27, r28);
 		unk1c += r28;
 		unk18 += r28;
-		if(unk18 > unk20) unk20 = unk18;
+		if(unk18 > filesize) filesize = unk18;
 	}
 	return (arg2 != 0);
 }
@@ -159,9 +160,9 @@ unsigned int AsyncFile::V_Unk7(int arg1, int arg2){
 	sp10 = unk18;
 	if(arg2 == 1) sp10 += arg1;
 	else if(arg2 == 0) sp10 = arg1;
-	else if(arg2 == 2) sp10 = unk20 + arg1;
+	else if(arg2 == 2) sp10 = filesize + arg1;
 	
-	sp8 = unk20;
+	sp8 = filesize;
 	fn_802E8438(&sp10, &lbl_808517D0, &sp8);
 	unk18 = sp10;
 	V_Unk22();
@@ -188,7 +189,7 @@ void AsyncFile::V_Unk9(){
 
 // fn_802E85E0
 bool AsyncFile::V_Unk10(){
-	return (unk18 == unk20);
+	return (unk18 == filesize);
 }
 
 // fn_802E85F8
@@ -197,8 +198,8 @@ bool AsyncFile::V_Unk11(){
 }
 
 // fn_802E8600
-unsigned int AsyncFile::V_Unk12(){
-	return unk20;
+unsigned int AsyncFile::GetFileSize(){
+	return filesize;
 }
 
 // fn_802E8608
@@ -257,14 +258,14 @@ extern bool fn_80735CD0(int, int*);
 
 // fn_802E8BCC
 void AsyncFileWii::V_Unk18(char* a, int b){
-	unk20 = 0;
+	filesize = 0;
 	
 	unkc.GetText();
 	int ret = fn_807359C0();
 	unk8 = (ret + 1) == 0;
 	if(unk8 == 0){
 		if(fn_80735CD0(ret, &unk44) != 0){
-			unk20 = unk78;
+			filesize = unk78;
 			unk40 = 1;
 			return;
 		}
@@ -296,7 +297,22 @@ void AsyncFile::fn_802E8530(){
 		if(unk1c != lbl_808517C8[0]){
 			V_Unk21();
 		}
-		V_Unk22();
+		V_Unk23();
 		unk1c = 0;
 	}
+}
+
+// fn_802E7748
+bool ArkFile::V_Unk11(){
+	return unk24 != 0;
+}
+
+// fn_802E7758
+unsigned int ArkFile::GetFileSize(){
+	return filesize;
+}
+
+// fn_802E7760
+int ArkFile::V_Unk13(){
+	return unk14;
 }

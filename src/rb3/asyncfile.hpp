@@ -17,7 +17,7 @@ public:
 	virtual void V_Unk9(); // fn_802E84B4
 	virtual bool V_Unk10(); // fn_802E85E0
 	virtual bool V_Unk11(); // fn_802E85F8
-	virtual unsigned int V_Unk12(); // fn_802E8600
+	virtual unsigned int GetFileSize(); // fn_802E8600
 	virtual int V_Unk13(); // fn_802E8608
 	virtual int V_Unk14(int*); // fn_802E8030
 	virtual int V_Unk15(int*); // fn_802E81AC
@@ -40,7 +40,7 @@ public:
 	String unkc;
 	unsigned int unk18;
 	int unk1c;
-	unsigned int unk20;
+	unsigned int filesize;
 	int unk24;
 	char* unk28;
 	char* unk2c;
