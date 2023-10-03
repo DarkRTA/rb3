@@ -25,11 +25,11 @@ public:
 	
 	virtual void V_Unk18(char*, int) = 0;
 	virtual int V_Unk19() = 0;
-	virtual int V_Unk20() = 0;
+	virtual int V_Unk20(char*, int) = 0;
 	virtual int V_Unk21() = 0;
 	virtual void V_Unk22() = 0;
 	virtual int V_Unk23() = 0;
-	virtual void V_Unk24() = 0;
+	virtual int V_Unk24() = 0;
 	virtual void V_Unk25() = 0;
 
 	void fn_802E8530();
