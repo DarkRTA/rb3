@@ -25,7 +25,7 @@ public:
 	virtual int V_Unk13(); // fn_802E7760
 	virtual int V_Unk14(int*); // fn_802E7790
 	
-	virtual int V_Unk16(); // fn_802E77E4
+	virtual int V_Unk16(int*); // fn_802E77E4
 	virtual void V_Unk17(); // links to fn_8077BAA0, which returns 0
 	virtual void V_Unk18() = 0;
 

@@ -20,7 +20,7 @@ public:
 	virtual int V_Unk13() = 0;
 	virtual int V_Unk14(int*) = 0;
 	virtual int V_Unk15(int*); // fn_802E7818
-	virtual int V_Unk16() = 0;
+	virtual int V_Unk16(int*) = 0;
 	virtual void V_Unk17(); // links to fn_8077BAA0, which returns 0
 
 	static int sOpenCount[4];

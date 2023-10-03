@@ -6,10 +6,9 @@
 
 class AsyncFileCNT : AsyncFile {
 public:
-
 	AsyncFileCNT(const char*, int);
 	virtual ~AsyncFileCNT();
-	virtual int V_Unk16(); // fn_802E8774
+	virtual int V_Unk16(int*); // fn_802E8774
 	
 	virtual void V_Unk18(char*, int); // fn_802E8784
 	virtual int V_Unk19(); // fn_802E88C0
@@ -23,7 +22,7 @@ public:
 	unsigned int unk38;
 	int unk3c;
 	int unk40;
-	int unk44;
+	int unk44; // probably a class
 	char unk48; 
 	char unk49;
 	char unk4a;

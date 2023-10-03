@@ -8,7 +8,7 @@ class AsyncFileWii : AsyncFile {
 public:
 	AsyncFileWii(const char*, int);
 	virtual ~AsyncFileWii();	
-	virtual int V_Unk16(); // links to fn_8077BAA0, which returns 0
+	virtual int V_Unk16(int*); // links to fn_8077BAA0, which returns 0
 	
 	virtual void V_Unk18(char*, int); // fn_802E8BCC
 	virtual int V_Unk19(); // fn_802E8C48

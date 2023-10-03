@@ -293,6 +293,23 @@ void AsyncFileWii::V_Unk22(){
 // calls fn_80735FB0
 void AsyncFileWii::V_Unk23(){
 	unk3c = 1;
+	// V_Unk8();
+}
+
+// fn_802E8D28
+int AsyncFileWii::V_Unk24(){
+
+}
+
+extern bool fn_80735E60(int);
+
+// fn_802E8F1C
+void AsyncFileWii::V_Unk25(){
+	if(unk40 > -1){
+		while(V_Unk24() == 0);
+		unk8 = (fn_80735E60(unk44) == 0);
+	}
+	unk40 = -1;
 }
 
 unsigned int fn_802E85D0(unsigned int a, unsigned int b){
@@ -342,10 +359,12 @@ int ArkFile::V_Unk14(int* a){
     return (unk18 == 0);
 }
 
-// // fn_802E77E4
-// int ArkFile::V_Unk16(){
+extern void fn_802EB6E4(int*, int, int, int);
 
-// }
+// fn_802E77E4
+int ArkFile::V_Unk16(int* a){
+	fn_802EB6E4(a, unk4, unk8 + fpos, unkc + fpos);
+}
 
 // fn_802E7768
 void ArkFile::fn_802E7768(int a){
@@ -414,4 +433,62 @@ AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
 // fn_802E8B10
 AsyncFileCNT::~AsyncFileCNT(){
 	fn_802E7E2C();
+}
+
+// fn_802E8774
+int AsyncFileCNT::V_Unk16(int* a){
+	*a = 0;
+	return 0;
+}
+
+// fn_802E8784
+void AsyncFileCNT::V_Unk18(char* c, int a){
+
+}
+
+// fn_802E88C0
+int AsyncFileCNT::V_Unk19(){
+	return 1;
+}
+
+// fn_802E88C8
+int AsyncFileCNT::V_Unk20(char*, int){
+
+}
+
+// fn_802E88CC
+int AsyncFileCNT::V_Unk21(){
+	return 1;
+}
+
+// fn_802E88D4
+void AsyncFileCNT::V_Unk22(){
+	if(V_Unk8()){
+		unk8 = 1;
+	}
+}
+
+// fn_802E892C
+void AsyncFileCNT::V_Unk23(){
+
+}
+
+// fn_802E89FC
+int AsyncFileCNT::V_Unk24(){
+
+}
+
+// fn_802E8AA4
+void AsyncFileCNT::V_Unk25(){
+
+}
+
+extern unsigned char lbl_808E3018;
+
+// fn_802E8F88
+bool fn_802E8F88(){
+	if(lbl_808E3018 != 0){
+		return (fn_807359C0() + 1) != 0;
+	}
+    return 0;
 }

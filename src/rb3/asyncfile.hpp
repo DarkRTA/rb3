@@ -21,7 +21,7 @@ public:
 	virtual int V_Unk13(); // fn_802E8608
 	virtual int V_Unk14(int*); // fn_802E8030
 	virtual int V_Unk15(int*); // fn_802E81AC
-	virtual int V_Unk16() = 0;
+	virtual int V_Unk16(int*) = 0;
 	
 	virtual void V_Unk18(char*, int) = 0;
 	virtual int V_Unk19() = 0;
