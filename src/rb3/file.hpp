@@ -9,7 +9,7 @@ public:
 	virtual String GetStringMember();
 	virtual int V_Unk3(char*, int) = 0;
 	virtual bool V_Unk4(char*, int) = 0;
-	virtual int V_Unk5(int, int) = 0;
+	virtual int V_Unk5(char*, int) = 0;
 	virtual bool V_Unk6(char*, int); // links to fn_8077BAA0, which returns 0
 	virtual unsigned int V_Unk7(int, int) = 0;
 	virtual unsigned int V_Unk8() = 0;

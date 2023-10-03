@@ -24,7 +24,7 @@ public:
 	virtual int V_Unk16() = 0;
 	
 	virtual void V_Unk18(char*, int) = 0;
-	virtual int V_Unk19(char*, int) = 0;
+	virtual int V_Unk19() = 0;
 	virtual int V_Unk20() = 0;
 	virtual int V_Unk21() = 0;
 	virtual void V_Unk22() = 0;
