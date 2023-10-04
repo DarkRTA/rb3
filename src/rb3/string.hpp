@@ -63,6 +63,9 @@ public:
 	String* replace(unsigned int, const char*); // fn_803629F4
 	String* replace(unsigned int, String*); // fn_80362A00
 
+	// symbols found in RB2:
+	// npos__6String, __ct__6StringF6Symbol, __as__6StringF6Symbol, find_first_of__6StringCFPCc
+
 	// probably inline header methods
 	unsigned int GetStrLen(); // fn_800A6E18
 	bool IsTextLengthZero(); // fn_800AFE60

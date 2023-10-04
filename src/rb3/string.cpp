@@ -45,12 +45,12 @@ String::String(unsigned int arg, char charg)
 	text[arg] = '\0';
 }
 
-extern "C" void fn_80354878(int, int, char *);
+extern void MemOrPoolFree(int, int, void *);
 
 String::~String()
 {
 	if (len != 0) {
-		fn_80354878(len + 1, 1, text); // MemOrPoolFree
+		MemOrPoolFree(len + 1, 1, text); // MemOrPoolFree
 	}
 }
 
@@ -94,22 +94,21 @@ bool String::operator==(const String& str) const
 	return strcmp(str.text, text) == 0;
 }
 
-extern int fn_80354848(int, int);
-extern void fn_80354878(int, int, char *);
+extern int MemOrPoolAlloc(int, int);
 
-// Redo this once you have fn_80354848 and fn_80354878 defined
+// Redo this once you have MemOrPoolAlloc and MemOrPoolFree defined
 // rk wanted to call this MemmyUppies but i had to put a stop to it
 // -- dark
 void String::reserve(unsigned int arg)
 {
 	void *dest;
 	if (arg > len) {
-		dest = (void *)fn_80354848(arg + 1, 1); // this fn: MemOrPoolAlloc
+		dest = (void *)MemOrPoolAlloc(arg + 1, 1); // this fn: MemOrPoolAlloc 
 		memcpy(dest, text, len + 1);
 		*((char *)dest + arg) = 0;
 
 		if (len != 0) {
-			fn_80354878(len + 1, 1, text); // this fn: MemOrPoolFree
+			MemOrPoolFree(len + 1, 1, text); // this fn: MemOrPoolFree
 		}
 
 		len = arg;
@@ -276,8 +275,6 @@ char* String::operator[](unsigned int arg){
 	return &text[arg];
 }
 
-// MAKE THIS OPERATOR += OVERLOAD
-// appending str to String->text
 String* String::operator+=(const char* str){
 	int iVar2;
 	if(str == nullptr || *str == '\0') return this;
