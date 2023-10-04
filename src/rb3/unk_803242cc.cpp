@@ -25,10 +25,10 @@ extern "C" void fn_80324338()
 }
 
 // NONMATCHING: struct size
-extern "C" TextFile *fn_8032436C(void)
-{
-	return new TextFile();
-}
+// extern "C" TextFile *fn_8032436C(void)
+// {
+// 	return new TextFile();
+// }
 
 // NONMATCHING: parent struct needs work
 TextFile::TextFile()

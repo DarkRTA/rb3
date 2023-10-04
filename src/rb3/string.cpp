@@ -314,8 +314,8 @@ String String::operator+(String* str){
 
 // what even is the point of this fxn? it's in String's vtable,
 // but all it does is just call +=
-String* String::VirtualAppend(const char* asdf){
-	return this->operator+=(asdf);
+void String::VirtualAppend(const char* asdf){
+	this->operator+=(asdf);
 }
 
 // get char #arg from the back
