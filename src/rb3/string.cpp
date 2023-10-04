@@ -30,7 +30,7 @@ String::String(const String &str)
 {
 	len = 0;
 	text = &lbl_808E4560;
-	*this = str.GetText();
+	*this = str.c_str();
 }
 
 String::String(unsigned int arg, char charg)
@@ -118,14 +118,14 @@ void String::reserve(unsigned int arg)
 
 String* String::operator+=(const String& str)
 {
-	const char *t = str.GetText();
+	const char *t = str.c_str();
 	return *this += t;
 }
 
 
 String* String::operator+=(char c)
 {
-	int iVar2 = GetStrLen();
+	int iVar2 = length();
 	reserve(iVar2 + 1);
 	text[iVar2] = c;
 	text[iVar2 + 1] = '\0';
@@ -246,7 +246,7 @@ void String::ToUpper()
 String* String::operator=(const String& str){
 	const char* s;
 	reserve(str.len);
-	s = str.GetText();
+	s = str.c_str();
 	strcpy(text, s);
 	return this;
 }
@@ -278,7 +278,7 @@ char* String::operator[](unsigned int arg){
 String* String::operator+=(const char* str){
 	int iVar2;
 	if(str == nullptr || *str == '\0') return this;
-	iVar2 = GetStrLen();
+	iVar2 = length();
 	reserve(iVar2 + strlen(str));
 	strcpy(&text[iVar2], str);
 	return this;
@@ -388,7 +388,7 @@ String* String::replace(unsigned int start, unsigned int length, const char* buf
     bufferLength = strlen(buffer);
     if (bufferLength > length){
         String str_tmp;
-        str_tmp.reserve(bufferLength + (GetStrLen() - length));
+        str_tmp.reserve(bufferLength + (length() - length));
         strncpy(str_tmp.text, text, start);
         strncpy(str_tmp.text + start, buffer, bufferLength);
         strcpy(str_tmp.text + (bufferLength + start), text + (length + start));
@@ -420,7 +420,7 @@ String* String::replace(unsigned int start, const char* buf){
 }
 
 String* String::replace(unsigned int start, String* str){
-	return replace(start, 0, str->GetText());
+	return replace(start, 0, str->c_str());
 }
 
 extern void fn_800A6BD0(String*);
@@ -440,8 +440,8 @@ void String::fn_80362560(char* buf, String* str){
 		var_r31 = var_r30 + 1;
 		var_r30 = find_first_of(buf, var_r31);
 	}
-	if(var_r31 < GetStrLen()){
-		String sp14 = substr(var_r31, GetStrLen() - var_r31);
+	if(var_r31 < length()){
+		String sp14 = substr(var_r31, length() - var_r31);
 		str->fn_801CEDFC(&sp14);
 	}
 	fn_800A6BD0(str);
@@ -454,7 +454,7 @@ String* String::insert(int idx, unsigned int cnt, char c){
 	char* var_r4;
 	unsigned int var_ctr;
 
-	sp8.reserve(cnt + GetStrLen());
+	sp8.reserve(cnt + length());
 	strncpy(sp8.text, text, idx);
 	for(int i = 0; i < cnt; i++){
 		sp8.text[idx + i] = c;

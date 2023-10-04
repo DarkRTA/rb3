@@ -5,7 +5,7 @@
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
-const char *String::GetText() const
+const char *String::c_str() const
 {
 	return text;
 }
@@ -25,7 +25,7 @@ extern String lbl_8097BB0C;
 
 // fn_8000EC5C
 FilePath::FilePath(const char* str){
-	fn_8034C91C(lbl_8097BB0C.GetText(), str);
+	fn_8034C91C(lbl_8097BB0C.c_str(), str);
 }
 
 // fn_8000EA28

@@ -64,12 +64,12 @@ public:
 	String* replace(unsigned int, String*); // fn_80362A00
 
 	// symbols found in RB2:
-	// npos__6String, __ct__6StringF6Symbol, __as__6StringF6Symbol, find_first_of__6StringCFPCc
+	// empty__6StringCFv, npos__6String, __ct__6StringF6Symbol, __as__6StringF6Symbol, find_first_of__6StringCFPCc
 
 	// probably inline header methods
-	unsigned int GetStrLen(); // fn_800A6E18
+	unsigned int length(); // fn_800A6E18
 	bool IsTextLengthZero(); // fn_800AFE60
-	const char *GetText() const; // fn_8000DB9C
+	const char *c_str() const; // fn_8000DB9C
 	void fn_801CEDFC(String*);	
 };
 

@@ -62,7 +62,7 @@ int File::V_Unk15(int* a){
 	return 1;
 }
 
-// fn_802E7E8C
+// fn_802E7E8C - Read
 int AsyncFile::V_Unk3(char* arg1, int arg2){
 	int sp8 = arg2;
 	V_Unk4(arg1, arg2);
@@ -71,7 +71,7 @@ int AsyncFile::V_Unk3(char* arg1, int arg2){
 	return sp8;
 }
 
-// fn_802E7F7C
+// fn_802E7F7C - ReadAsync
 bool AsyncFile::V_Unk4(char* arg1, int arg2){
 	int sp8;
 	int temp_r6;
@@ -105,9 +105,9 @@ int AsyncFile::V_Unk5(char* arg1, int arg2){
 	return arg2;
 }
 
-extern int lbl_808517C8[];
+extern int lbl_808517C8[]; // RB2 calls this "gBufferSize"
 
-// fn_802E81D4
+// fn_802E81D4 - Write
 bool AsyncFile::V_Unk6(char* arg1, int arg2){
 	if(unk8 != 0) return false;
 	if(unk28 == 0){
@@ -150,7 +150,7 @@ bool fn_802E8438(long long* a, long long* b, long long* c){
 	return false;
 }
 
-// fn_802E8300
+// fn_802E8300 - Seek
 unsigned int AsyncFile::V_Unk7(int arg1, int arg2){
 	long long sp10;
 	long long sp8;
@@ -169,17 +169,17 @@ unsigned int AsyncFile::V_Unk7(int arg1, int arg2){
 	V_Unk22();
 	if(unk28 != 0 && unk4 & 2){
 		unk1c = lbl_808517C8[0];
-		fn_802E8530();
+		fn_802E8530(); // FillBuffer
 	}
 	return unk18;
 }
 
-// fn_802E84AC
+// fn_802E84AC - Tell
 unsigned int AsyncFile::V_Unk8(){
 	return unk18;
 }
 
-// fn_802E84B4
+// fn_802E84B4 - Flush
 void AsyncFile::V_Unk9(){
 	if(unk8 == 0 && unk4 & 4){
 		V_Unk20(unk28, unk1c);
@@ -188,27 +188,27 @@ void AsyncFile::V_Unk9(){
 	}
 }
 
-// fn_802E85E0
+// fn_802E85E0 - Eof
 bool AsyncFile::V_Unk10(){
 	return (unk18 == filesize);
 }
 
-// fn_802E85F8
+// fn_802E85F8 - Fail
 bool AsyncFile::V_Unk11(){
 	return unk8;
 }
 
-// fn_802E8600
+// fn_802E8600 - Size
 unsigned int AsyncFile::GetFileSize(){
 	return filesize;
 }
 
-// fn_802E8608
+// fn_802E8608 - UncompressedSize
 int AsyncFile::V_Unk13(){
 	return unk24;
 }
 
-// fn_802E8030
+// fn_802E8030 - ReadDone
 int AsyncFile::V_Unk14(int* a){
 	int temp_r28;
 
@@ -235,7 +235,7 @@ int AsyncFile::V_Unk14(int* a){
 		unk18 += temp_r28;
 		unk30 -= temp_r28;
 		unk2c += temp_r28;
-		fn_802E8530();
+		fn_802E8530(); // FillBuffer
 		*a = unk34;
 		return 0;
 	}
@@ -261,7 +261,7 @@ extern bool fn_80735CD0(int, int*);
 void AsyncFileWii::V_Unk18(char* a, int b){
 	filesize = 0;
 	
-	unkc.GetText();
+	unkc.c_str();
 	int ret = fn_807359C0();
 	unk8 = (ret + 1) == 0;
 	if(unk8 == 0){
@@ -405,7 +405,7 @@ AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
 		// strncpy(arg0 + 0x4A, temp_r30, temp_r31);
         // (arg0 + temp_r31)->unk4A = 0;
 		unkc = temp_r30 + temp_r31;
-		unkc.GetText();
+		unkc.c_str();
 		unk9 = 1;
 	}
 
@@ -425,7 +425,7 @@ AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
     //     strncpy(arg0 + 0x4A, temp_r30, temp_r31);
     //     (arg0 + temp_r31)->unk4A = 0;
     //     __as__6StringFPCc(arg0 + 0xC, temp_r30 + temp_r31);
-    //     GetText__6StringCFv(arg0 + 0xC);
+    //     c_str__6StringCFv(arg0 + 0xC);
     //     arg0->unk9 = 1;
     // }
 }

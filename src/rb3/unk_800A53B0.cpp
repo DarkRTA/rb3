@@ -5,7 +5,7 @@
 
 // fn_800A6E18
 // probably inline
-unsigned int String::GetStrLen()
+unsigned int String::length()
 {
 	return strlen(text);
 }

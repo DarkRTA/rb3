@@ -9,8 +9,8 @@ public:
 	ArkFile(const char*, int);
 	virtual ~ArkFile(); // fn_802E73FC
 	virtual String GetStringMember(); // fn_802E7810
-	virtual int V_Unk3(char*, int); // fn_802E748C
-	virtual bool V_Unk4(char*, int); // fn_802E7500
+	virtual int V_Unk3(char*, int); // fn_802E748C - likely Read
+	virtual bool V_Unk4(char*, int); // fn_802E7500 - likely ReadAsync
 
 	// no function definitions found for these?
 	virtual int V_Unk5(char*, int); // fn_802E76D8
