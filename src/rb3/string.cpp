@@ -3,7 +3,7 @@
 #include "unknown.hpp"
 #include "std/string.h"
 
-extern char lbl_808E4560;
+extern char lbl_808E4560; // RB2 marks this as "gEmpty"
 
 String::String()
 {
@@ -18,6 +18,7 @@ String::String(const char *str)
 	*this = str;
 }
 
+// char** should actually be Symbol
 String::String(const char **str)
 {
 	len = 0;
@@ -36,7 +37,7 @@ String::String(unsigned int arg, char charg)
 {
 	len = 0;
 	text = &lbl_808E4560;
-	Reserve(arg);
+	reserve(arg);
 
 	for (int i = 0; i < arg; i++)
 		text[i] = charg;
@@ -49,7 +50,7 @@ extern "C" void fn_80354878(int, int, char *);
 String::~String()
 {
 	if (len != 0) {
-		fn_80354878(len + 1, 1, text);
+		fn_80354878(len + 1, 1, text); // MemOrPoolFree
 	}
 }
 
@@ -59,17 +60,15 @@ String *String::operator=(const char *str)
 		return this;
 	}
 	if (str == 0 || (*str == '\0')) {
-		CreateEmptyString(0);
+		resize(0);
 	} else {
-		Reserve(strlen(str));
+		reserve(strlen(str));
 		strcpy(text, str);
 	}
 	return this;
 }
 
-// returns false if strings are NOT different (matching)
-// returns true if strings ARE different (non matching)
-bool String::AreStringsDifferent(const char *str)
+bool String::operator!=(const char *str) const
 {
 	if (str == nullptr)
 		return true;
@@ -77,14 +76,12 @@ bool String::AreStringsDifferent(const char *str)
 		return strcmp(str, text);
 }
 
-bool String::AreStringsDifferent(const String *str)
+bool String::operator!=(const String& str) const
 {
-	return strcmp(str->text, text);
+	return strcmp(str.text, text);
 }
 
-// returns true if strings are NOT different (matching)
-// returns false if strings ARE different (non matching)
-bool String::AreStringsIdentical(const char *str)
+bool String::operator==(const char *str) const 
 {
 	if (str == nullptr)
 		return false;
@@ -92,9 +89,9 @@ bool String::AreStringsIdentical(const char *str)
 		return strcmp(str, text) == 0;
 }
 
-bool String::AreStringsIdentical(const String *str)
+bool String::operator==(const String& str) const
 {
-	return strcmp(str->text, text) == 0;
+	return strcmp(str.text, text) == 0;
 }
 
 extern int fn_80354848(int, int);
@@ -103,16 +100,16 @@ extern void fn_80354878(int, int, char *);
 // Redo this once you have fn_80354848 and fn_80354878 defined
 // rk wanted to call this MemmyUppies but i had to put a stop to it
 // -- dark
-void String::Reserve(unsigned int arg)
+void String::reserve(unsigned int arg)
 {
 	void *dest;
 	if (arg > len) {
-		dest = (void *)fn_80354848(arg + 1, 1);
+		dest = (void *)fn_80354848(arg + 1, 1); // this fn: MemOrPoolAlloc
 		memcpy(dest, text, len + 1);
 		*((char *)dest + arg) = 0;
 
 		if (len != 0) {
-			fn_80354878(len + 1, 1, text);
+			fn_80354878(len + 1, 1, text); // this fn: MemOrPoolFree
 		}
 
 		len = arg;
@@ -120,9 +117,9 @@ void String::Reserve(unsigned int arg)
 	}
 }
 
-String* String::operator+=(String *str)
+String* String::operator+=(const String& str)
 {
-	const char *t = str->GetText();
+	const char *t = str.GetText();
 	return *this += t;
 }
 
@@ -130,19 +127,19 @@ String* String::operator+=(String *str)
 String* String::operator+=(char c)
 {
 	int iVar2 = GetStrLen();
-	Reserve(iVar2 + 1);
+	reserve(iVar2 + 1);
 	text[iVar2] = c;
 	text[iVar2 + 1] = '\0';
 	return this;
 }
 
 // assigns char** to this String's text field
+// RB2 calls this "operator=(Symbol)"
 String* String::operator=(const char** str){
 	return this->operator=(*str);
 }
 
-// does strstr, and returns the index of where it begins
-int String::FindIndexOfSubstringAtOffset(const char *str, int idx)
+int String::find(const char *str, unsigned int idx) const
 {
 	char *found = strstr(text + idx, str);
 	if (found != nullptr) {
@@ -151,14 +148,14 @@ int String::FindIndexOfSubstringAtOffset(const char *str, int idx)
 	return -1;
 }
 
-int String::FindIndexOfSubstringStrStr(char* c){
-	return FindIndexOfSubstringAtOffset(c, 0);
+int String::find(const char* c) const {
+	return find(c, 0);
 }
 
-int String::FindLastIndexOfChar(char charg) const
+int String::find_last_of(char charg) const
 {
 	char *found = strrchr(text, charg);
-	if (found != (char *)0) {
+	if (found != nullptr) {
 		return found - text;
 	}
 	return -1;
@@ -167,12 +164,12 @@ int String::FindLastIndexOfChar(char charg) const
 static const size_t npos = -1;
 
 // similar to std::string::find_last_of
-int String::FindLastOf(char *str) const {
+int String::find_last_of(const char *str) const {
 	if (str == nullptr) return -1;
 
 	int a = -1;
-	for(char* tmp = str; *tmp != '\0'; tmp++){
-		int lastIndex = FindLastIndexOfChar(*tmp);
+	for(char* tmp = (char*)str; *tmp != '\0'; tmp++){
+		int lastIndex = find_last_of(*tmp);
 		if((lastIndex != npos) && (lastIndex > a)){
 			a = lastIndex;
 		}
@@ -181,13 +178,13 @@ int String::FindLastOf(char *str) const {
 	return (a != -1) ? a : -1;
 }
 
-bool String::SubstrExistsInString(char *str)
+bool String::contains(const char *str) const
 {
-	int index = FindIndexOfSubstringAtOffset(str, 0) + 1;
+	int index = find(str, 0) + 1;
 	return (index != 0);
 }
 
-void String::ReplaceCharsInString(char old_char, char new_char)
+void String::ReplaceAll(char old_char, char new_char)
 {
 	char *p;
 	for (p = text; *p != '\0'; p++) {
@@ -196,21 +193,21 @@ void String::ReplaceCharsInString(char old_char, char new_char)
 	}
 }
 
-void String::SwapStrings(String *s)
+void String::swap(String& s)
 {
 	char *temp_text;
 	unsigned int temp_len;
 
 	temp_text = text;
-	text = s->text;
+	text = s.text;
 	temp_len = len;
-	len = s->len;
-	s->text = temp_text;
-	s->len = temp_len;
+	len = s.len;
+	s.text = temp_text;
+	s.len = temp_len;
 }
 
 // finds index of the first instance of char argument in string at an offset
-int String::FindFirstIndexOfCharAtOffset(char charg, int idx)
+int String::find(char charg, int idx)
 {
 	char *p = &text[idx];
 
@@ -223,8 +220,8 @@ int String::FindFirstIndexOfCharAtOffset(char charg, int idx)
 	return -1;
 }
 
-int String::FindFirstIndexOfChar(char c){
-	return FindFirstIndexOfCharAtOffset(c, 0);
+int String::find(char c){
+	return find(c, 0);
 }
 
 extern char fn_80018764(char);
@@ -239,9 +236,7 @@ void String::ToLower()
 
 extern char fn_80018734(char);
 
-// rename this method once you figure out what fn_80018734 does
-// my guess? it's ToUpper
-void String::fn_80362730()
+void String::ToUpper()
 {
 	char *p;
 	for (p = text; *p != '\0'; p++) {
@@ -249,28 +244,26 @@ void String::fn_80362730()
 	}
 }
 
-// copies the text inside str->text, and puts it into this String's text
-String* String::CopyString(String* str){
+String* String::operator=(const String& str){
 	const char* s;
-	Reserve(str->len);
-	s = str->GetText();
+	reserve(str.len);
+	s = str.GetText();
 	strcpy(text, s);
 	return this;
 }
 
-// creates an empty char* for this->text, of length arg
-void String::CreateEmptyString(unsigned int arg){
-	Reserve(arg);
+void String::resize(unsigned int arg){
+	reserve(arg);
 	text[arg] = 0;
 }
 
 // similar to std::string::find_first_of
-int String::FindFirstOf(char* str, int arg){
+int String::find_first_of(const char* str, unsigned int arg) const {
 	char* p1;
 	char* p2;
 	if(str == nullptr) return -1;
 	for(p1 = &text[arg]; *p1 != '\0'; p1++){
-		for(p2 = str; *p2 != '\0'; p2++){
+		for(p2 = (char*)str; *p2 != '\0'; p2++){
 			if(*p1 == *p2){
 				return p1 - text;
 			}
@@ -279,7 +272,7 @@ int String::FindFirstOf(char* str, int arg){
 	return -1;
 }
 
-char* String::GetTextAtOffset(int arg){
+char* String::operator[](unsigned int arg){
 	return &text[arg];
 }
 
@@ -289,12 +282,12 @@ String* String::operator+=(const char* str){
 	int iVar2;
 	if(str == nullptr || *str == '\0') return this;
 	iVar2 = GetStrLen();
-	Reserve(iVar2 + strlen(str));
+	reserve(iVar2 + strlen(str));
 	strcpy(&text[iVar2], str);
 	return this;
 }
 
-String String::operator+(const char* chrstr){
+String String::operator+(const char* chrstr) const {
 	String ret(*this);
 	ret += chrstr;
 	return ret;
@@ -308,39 +301,36 @@ String String::operator+(char c){
 
 String String::operator+(String* str){
 	String ret(*this);
-	ret += str;
+	ret += *str;
 	return ret;
 }
 
 // what even is the point of this fxn? it's in String's vtable,
 // but all it does is just call +=
-void String::VirtualAppend(const char* asdf){
+void String::Print(const char* asdf){
 	this->operator+=(asdf);
 }
 
 // get char #arg from the back
-char String::GetCharFromBackIndex(int arg){
+char String::rcharAt(int arg){
 	return text[len + arg];
 }
 
-// get char* #arg from the back
-char* String::GetSubstrFromBackIndex(int arg){
+char* String::rindex(int arg){
 	return &text[len + arg];
 }
 
-// is text < str->text? if so, return true 
-bool String::IsThisStrLessThan(String* str) const {
-	return (strcmp(text, str->text) < 0);
+bool String::operator<(const String& str) const {
+	return (strcmp(text, str.text) < 0);
 }
 
-// like the other method above but it doesn't use strstr
-int String::FindIndexOfSubstring(char* str){
+int String::rfind(const char* str) const {
 	int rv;
 	if(str == nullptr) return -1;
 	else {
 		rv = -1;
-		for(char* p4 = str; *p4 != '\0'; p4++){
-			int x = FindLastIndexOfChar(*p4);
+		for(char* p4 = (char*)str; *p4 != '\0'; p4++){
+			int x = find_last_of(*p4);
 			if(x == npos) return -1;
 			if(rv == -1){
 				rv = x;
@@ -354,7 +344,7 @@ int String::FindIndexOfSubstring(char* str){
 	return rv;
 }
 
-String String::CreateSubstringFromString(unsigned int index, unsigned int substr_len) const {
+String String::substr(unsigned int index, unsigned int substr_len) const {
 	char buf[512];
 	if(index + substr_len >= len){
 		return String(&text[index]);
@@ -366,16 +356,16 @@ String String::CreateSubstringFromString(unsigned int index, unsigned int substr
 	}
 }
 
-String String::CreateSubstringFromString(unsigned int index){
+String String::substr(unsigned int index){
 	return String(&text[index]);
 }
 
-String* String::ClearString(){
+String* String::erase(){
 	text[0] = '\0';
 	return this;
 }
 
-String* String::TruncateString(unsigned int index){
+String* String::erase(unsigned int index){
 	if(index >= len) return this;
 	text[index] = '\0';
 	return this;
@@ -385,7 +375,7 @@ String* String::TruncateString(unsigned int index){
 // start: the starting index of the text you want to replace
 // length: how many chars you want the replacement to be
 // buffer: the replacement chars
-String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, const char* buffer){
+String* String::replace(unsigned int start, unsigned int length, const char* buffer){
     char* text_offsetted;
     char* var_r4;
     char* var_r5;
@@ -401,11 +391,11 @@ String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, cons
     bufferLength = strlen(buffer);
     if (bufferLength > length){
         String str_tmp;
-        str_tmp.Reserve(bufferLength + (GetStrLen() - length));
+        str_tmp.reserve(bufferLength + (GetStrLen() - length));
         strncpy(str_tmp.text, text, start);
         strncpy(str_tmp.text + start, buffer, bufferLength);
         strcpy(str_tmp.text + (bufferLength + start), text + (length + start));
-        SwapStrings(&str_tmp);
+        swap(str_tmp);
     }
     else {
         strncpy(text + start, buffer, bufferLength);
@@ -422,18 +412,18 @@ String* String::ReplaceTextAtIndex(unsigned int start, unsigned int length, cons
     return this;
 }
 
-extern char lbl_80858CA0[];
+extern char lbl_80858CA0[]; // appears to be empty (all 0's)
 
-String* String::ReplaceTextAtIndexWithLabel(unsigned int start, unsigned int length){
-	return ReplaceTextAtIndex(start, length, &lbl_80858CA0[0]);
+void String::erase(unsigned int start, unsigned int length){
+	replace(start, length, &lbl_80858CA0[0]);
 }
 
-String* String::ReplaceTextAtIndex(unsigned int start, const char* buf){
-	return ReplaceTextAtIndex(start, 0, buf);
+String* String::replace(unsigned int start, const char* buf){
+	return replace(start, 0, buf);
 }
 
-String* String::ReplaceTextAtIndex(unsigned int start, String* str){
-	return ReplaceTextAtIndex(start, 0, str->GetText());
+String* String::replace(unsigned int start, String* str){
+	return replace(start, 0, str->GetText());
 }
 
 extern void fn_800A6BD0(String*);
@@ -443,36 +433,36 @@ void String::fn_80362560(char* buf, String* str){
 	int var_r31, var_r30;
 
 	var_r31 = 0;
-	var_r30 = FindFirstOf(buf, 0);
+	var_r30 = find_first_of(buf, 0);
 
 	while(var_r30 != npos){
 		if(var_r30 > var_r31){
-			String sp14 = CreateSubstringFromString(var_r31, var_r30 - var_r31);
+			String sp14 = substr(var_r31, var_r30 - var_r31);
 			str->fn_801CEDFC(&sp14);
 		}
 		var_r31 = var_r30 + 1;
-		var_r30 = FindFirstOf(buf, var_r31);
+		var_r30 = find_first_of(buf, var_r31);
 	}
 	if(var_r31 < GetStrLen()){
-		String sp14 = CreateSubstringFromString(var_r31, GetStrLen() - var_r31);
+		String sp14 = substr(var_r31, GetStrLen() - var_r31);
 		str->fn_801CEDFC(&sp14);
 	}
 	fn_800A6BD0(str);
 }
 
 // inserts the char c into this->text at index idx, cnt times
-String* String::InsertCharAtIndex(int idx, unsigned int cnt, char c){
+String* String::insert(int idx, unsigned int cnt, char c){
 	String sp8;
 	char* temp_r0;
 	char* var_r4;
 	unsigned int var_ctr;
 
-	sp8.Reserve(cnt + GetStrLen());
+	sp8.reserve(cnt + GetStrLen());
 	strncpy(sp8.text, text, idx);
 	for(int i = 0; i < cnt; i++){
 		sp8.text[idx + i] = c;
 	}
 	strcpy(&sp8.text[cnt + idx], &text[idx]);
-	SwapStrings(&sp8);
+	swap(sp8);
 	return this;
 }

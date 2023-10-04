@@ -8,7 +8,7 @@
 // the result goes in dest.
 // if a change was made, this fn returns true. 
 // if no changes to the original string were made, return false
-bool ReplaceSubstrWithSubstr(char* src, char* substr_old, char* substr_new, char* dest){
+bool SearchReplace(const char* src, const char* substr_old, const char* substr_new, char* dest){
     bool changed;
     int temp_r31;
     char* temp_r3;
@@ -34,7 +34,7 @@ bool ReplaceSubstrWithSubstr(char* src, char* substr_old, char* substr_new, char
 // sorta like strncpy, except for the return value
 // returns true if the copy operation was terminated because of reaching the maximum length or encountering the end of src, 
 // and 0 otherwise.
-bool StrNCpy(char* dest, char* src, int cnt){
+bool StrNCopy(char* dest, const char* src, int cnt){
     int var_r5_2;
     char temp_r0;
     bool max_len_reached;
@@ -42,7 +42,7 @@ bool StrNCpy(char* dest, char* src, int cnt){
     char* var_r4;
 
     var_r3 = dest;
-    var_r4 = src;
+    var_r4 = (char*)src;
     var_r5_2 = cnt - 1;
 
     while(*var_r4 != 0 && (var_r5_2 != 0)){

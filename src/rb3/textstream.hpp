@@ -5,7 +5,7 @@ class TextStream {
 public:
 	TextStream();
 	virtual ~TextStream(); // fn_8000DD10
-	virtual void VirtualAppend(const char*) = 0;
+	virtual void Print(const char*) = 0;
 };
 
 #endif
