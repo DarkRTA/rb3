@@ -2,6 +2,7 @@
 #define RB3_SYMBOL_H
 
 class Symbol {
+public:
 	char* m_string;
 	Symbol(); // ctor pulled from RB2
 	Symbol(char*); //ctor pulled from gdrb
