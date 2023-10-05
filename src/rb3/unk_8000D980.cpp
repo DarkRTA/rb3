@@ -1,6 +1,7 @@
 #include "string.hpp"
 #include "textstream.hpp"
 #include "filepath.hpp"
+#include "objref.hpp"
 #include "unknown.hpp"
 
 // fn_8000DB9C
@@ -32,3 +33,13 @@ FilePath::FilePath(const char* str){
 FilePath::~FilePath(){
 
 }
+
+// fn_8000ED3C
+ObjRef::ObjRef(){
+
+}
+
+// fn_8000DD10 - could possibly be an inline
+// ObjRef::~ObjRef(){
+
+// }
