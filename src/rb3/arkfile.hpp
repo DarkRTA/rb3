@@ -9,8 +9,8 @@ public:
 	ArkFile(const char*, int);
 	virtual ~ArkFile(); // fn_802E73FC
 	virtual String GetStringMember(); // fn_802E7810
-	virtual int Read(void*, int); // fn_802E748C - likely Read
-	virtual bool ReadAsync(void*, int); // fn_802E7500 - likely ReadAsync
+	virtual int Read(void*, int); // fn_802E748C
+	virtual bool ReadAsync(void*, int); // fn_802E7500
 
 	// in ieee's arkfile.cpp
 	virtual int V_Unk5(void*, int); // fn_802E76D8
@@ -42,8 +42,8 @@ public:
 	s32 unk4;
 	s32 unk8;
 	s32 unkc;
-	u32 filesize;
-	s32 unk14;
+	unsigned int size;
+	unsigned int size_uncompressed;
 	s32 unk18;
 	s32 unk1c;
 	u32 fpos;

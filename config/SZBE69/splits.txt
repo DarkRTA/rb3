@@ -40,13 +40,16 @@ rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
 rb3/unk_802E434C.cpp:
-	.text       start:0x802E434C end:0x802E76D8
+	.text       start:0x802E434C end:0x802E72CC
 
 rb3/arkfile.cpp:
-	.text       start:0x802E76D8 end:0x802E7748
+	.text       start:0x802E72CC end:0x802E7828
+
+rb3/asyncfile.cpp:
+	.text       start:0x802E7828 end:0x802E8680
 
 rb3/unk_802E7748.cpp:
-	.text       start:0x802E7748 end:0x802E9034
+	.text       start:0x802E8680 end:0x802E9034
 
 rb3/filegetext.cpp:
 	.text       start:0x802FA918 end:0x802FA994

@@ -35,8 +35,8 @@ public:
 	void FillBuffer(); // fn_802E8530
 	void Terminate(); // fn_802E7E2C
 
-	// fn_802E7AA8 - possibly New__9AsyncFileFPCci
-	// fn_802E7BE4 - possibly Init__9AsyncFileFv
+	// fn_802E7AA8 - possibly AsyncFile* New__9AsyncFileFPCci
+	// fn_802E7BE4 - possibly void Init__9AsyncFileFv
 
 	int unk4;
 	bool failed;

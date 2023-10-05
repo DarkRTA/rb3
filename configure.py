@@ -207,7 +207,8 @@ config.libs = [
             Object(NonMatching, "rb3/unk_800BF1A8.cpp"),
             Object(NonMatching, "rb3/filegetext.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
-            Object(Matching, "rb3/arkfile.cpp")
+            Object(NonMatching, "rb3/arkfile.cpp"),
+            Object(NonMatching, "rb3/asyncfile.cpp")
         ],
     },
     {
