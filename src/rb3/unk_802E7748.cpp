@@ -12,7 +12,7 @@
 // AsyncFile's ctor
 AsyncFile::AsyncFile(const char* arg1, int arg2) : 
 	unk4(arg2), failed(0), unk9(0), str(arg1),
-	unk18(0), unk1c(0), unk28(0), 
+	fpos(0), unk1c(0), unk28(0), 
 	unk2c(0), unk30(0) { }
 
 // fn_802E8610
@@ -81,15 +81,15 @@ bool AsyncFile::ReadAsync(void* arg1, int arg2){
 	sp8 = arg2;
 	if(failed != 0) return false;
 	if(unk28 == 0){
-		V_Unk23();
+		V_Unk22();
 	}
 	else {
-		temp_r6 = unk18;
+		temp_r6 = fpos;
 		temp_r7 = size;
 		if(temp_r6 + arg2 > temp_r7){
 			sp8 = temp_r7 - temp_r6;
 		}
-		// unk2c = arg1;
+		unk2c = (char*)arg1;
 		unk30 = sp8;
 		unk34 = 0;
 		ReadDone(sp8);
@@ -123,14 +123,14 @@ bool AsyncFile::Write(const void* arg1, int arg2){
 			r28 -= r26;
 			r27 += r26;
 			unk1c = lbl_808517C8[0];
-			unk18 += r26;
+			fpos += r26;
 			Flush();
 			if(failed) return false;
 		}
 		memcpy(unk28 + unk1c, r27, r28);
 		unk1c += r28;
-		unk18 += r28;
-		if(unk18 > size) size = unk18;
+		fpos += r28;
+		if(fpos > size) size = fpos;
 	}
 	return (arg2 != 0);
 }
@@ -156,28 +156,28 @@ unsigned int AsyncFile::Seek(int arg1, int arg2){
 	long long sp10;
 	long long sp8;
 
-	if(failed != 0) return unk18;
+	if(failed != 0) return fpos;
 	if(unk4 & 4) Flush();
 
-	sp10 = unk18;
+	sp10 = fpos;
 	if(arg2 == 1) sp10 += arg1;
 	else if(arg2 == 0) sp10 = arg1;
 	else if(arg2 == 2) sp10 = size + arg1;
 	
 	sp8 = size;
 	fn_802E8438(&sp10, &lbl_808517D0, &sp8);
-	unk18 = sp10;
-	V_Unk22();
+	fpos = sp10;
+	V_Unk21();
 	if(unk28 != 0 && unk4 & 2){
 		unk1c = lbl_808517C8[0];
 		FillBuffer(); // FillBuffer
 	}
-	return unk18;
+	return fpos;
 }
 
 // fn_802E84AC - Tell
 unsigned int AsyncFile::Tell(){
-	return unk18;
+	return fpos;
 }
 
 // fn_802E84B4 - Flush
@@ -191,7 +191,7 @@ void AsyncFile::Flush(){
 
 // fn_802E85E0 - Eof
 bool AsyncFile::Eof(){
-	return (unk18 == size);
+	return (fpos == size);
 }
 
 // fn_802E85F8 - Fail
@@ -206,7 +206,7 @@ unsigned int AsyncFile::Size(){
 
 // fn_802E8608 - UncompressedSize
 unsigned int AsyncFile::UncompressedSize(){
-	return unk24;
+	return size_uncompressed;
 }
 
 // fn_802E8030 - ReadDone
@@ -233,7 +233,7 @@ int AsyncFile::ReadDone(int& a){
 		memcpy(unk2c, unk28 + unk1c, temp_r28);
 		unk34 += temp_r28;
 		unk1c = lbl_808517C8[0];
-		unk18 += temp_r28;
+		fpos += temp_r28;
 		unk30 -= temp_r28;
 		unk2c += temp_r28;
 		FillBuffer(); // FillBuffer
@@ -243,7 +243,7 @@ int AsyncFile::ReadDone(int& a){
 	memcpy(unk2c, unk28 + unk1c, unk30);
 	unk34 += unk30;
 	unk1c += unk30;
-	unk18 += unk30;
+	fpos += unk30;
     unk30 = 0;
 	a = unk34;
 	return 1;
@@ -322,10 +322,10 @@ unsigned int fn_802E85D0(unsigned int a, unsigned int b){
 void AsyncFile::FillBuffer(){
 	if((failed == 0) && (unk4 & 2)){
 		if(unk1c != lbl_808517C8[0]){
-			V_Unk22();
+			V_Unk21();
 		}
-		fn_802E85D0(unk18, lbl_808517C8[0]);
-		V_Unk23();
+		fn_802E85D0(fpos, lbl_808517C8[0]);
+		V_Unk22();
 		unk1c = 0;
 	}
 }
@@ -368,7 +368,7 @@ int ArkFile::V_Unk16(int* a){
 }
 
 // fn_802E7768
-void ArkFile::fn_802E7768(int a){
+void ArkFile::TaskDone(int a){
 	unk18--;
 	unk1c += a;
 	fpos += a;

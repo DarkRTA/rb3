@@ -35,14 +35,17 @@ public:
 	void FillBuffer(); // fn_802E8530
 	void Terminate(); // fn_802E7E2C
 
+	// fn_802E7AA8 - possibly New__9AsyncFileFPCci
+	// fn_802E7BE4 - possibly Init__9AsyncFileFv
+
 	int unk4;
 	bool failed;
 	char unk9;
 	String str;
-	unsigned int unk18;
+	unsigned int fpos;
 	int unk1c;
 	unsigned int size;
-	int unk24;
+	unsigned int size_uncompressed;
 	char* unk28;
 	char* unk2c;
 	int unk30;

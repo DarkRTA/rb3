@@ -26,7 +26,7 @@ public:
 	virtual int ReadDone(int&); // fn_802E7790
 	
 	virtual int V_Unk16(int*); // fn_802E77E4
-	virtual void V_Unk17(); // links to fn_8077BAA0, which returns 0
+	
 	virtual void _Open() = 0;
 
 	// u32 ReturnsZero(); // 0x802E76D8; marked to be labeled as fn_802E76D8_ret0 in syms.txt... but it's already labeled as ReturnsZero
@@ -36,7 +36,7 @@ public:
 
 	void fn_800E1114();
 	bool fn_802E4F2C();
-	void fn_802E7768(int);
+	void TaskDone(int);
 	
 
 	s32 unk4;

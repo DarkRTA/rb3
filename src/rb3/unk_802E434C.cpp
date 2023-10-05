@@ -37,14 +37,14 @@ ArkFile::~ArkFile(){
 }
 
 // fn_802E748C
-int ArkFile::V_Unk3(char* c, int a){
-	if(V_Unk4(c, a) == 0) return 0;
+int ArkFile::Read(void* c, int a){
+	if(ReadAsync(c, a) == 0) return 0;
 	int sp8 = -1;
-	while(V_Unk14(&sp8) == 0);
+	while(ReadDone(sp8) == 0);
 	return sp8;
 }
 
 // fn_802E7500
-bool ArkFile::V_Unk4(char* c, int a){
+bool ArkFile::ReadAsync(void* c, int a){
 	// this one's gross, i don't wanna do it
 }
