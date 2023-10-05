@@ -1,6 +1,7 @@
 #ifndef RB3_STRING_HPP
 #define RB3_STRING_HPP
 #include "textstream.hpp"
+#include "symbol.hpp"
 
 class String : TextStream {
 public:
@@ -9,7 +10,7 @@ public:
 	
 	String();
 	String(const char *);
-	String(const char **); // fn_80361BC0
+	String(Symbol); // fn_80361BC0
 	String(const String &);
 	void reserve(unsigned int); // fn_80361C90
 	String(unsigned int, char); // fn_80361D1C
@@ -24,7 +25,7 @@ public:
 	String* operator+=(const String&); // fn_80361F88
 	String* operator+=(char); // fn_80361FC4
 	String *operator=(const char *);
-	String* operator=(const char **); // fn_803620B4
+	String* operator=(Symbol); // fn_803620B4
 	String* operator=(const String&); // fn_803620BC
 	
 	char* operator[](unsigned int); // fn_80362110
@@ -64,7 +65,7 @@ public:
 	String* replace(unsigned int, String*); // fn_80362A00
 
 	// symbols found in RB2:
-	// empty__6StringCFv, npos__6String, __ct__6StringF6Symbol, __as__6StringF6Symbol, find_first_of__6StringCFPCc
+	// empty__6StringCFv, npos__6String, find_first_of__6StringCFPCc
 
 	// probably inline header methods
 	unsigned int length(); // fn_800A6E18

@@ -19,6 +19,6 @@ BinStream::~BinStream(){
 
 extern char lbl_808567BC[]; //this label contains "<unnamed>"
 
-const char* BinStream::GetStreamName(){
+const char* BinStream::Name() const {
 	return "<unnamed>"; // lbl_808567BC
 }
