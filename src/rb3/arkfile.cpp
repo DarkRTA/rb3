@@ -60,7 +60,7 @@ bool ArkFile::ReadAsync(void* c, int a){
 	// this one's gross, i don't wanna do it
 }
 
-bool ArkFile::Write(const void* a, int b) {
+int ArkFile::V_Unk5(void* a, int b) {
 	return 0;
 }
 

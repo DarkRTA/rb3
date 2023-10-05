@@ -13,7 +13,7 @@ public:
 	virtual bool ReadAsync(void*, int); // fn_802E7500
 
 	// in ieee's arkfile.cpp
-	virtual int V_Unk5(void*, int); // fn_802E76D8
+	virtual int V_Unk5(void*, int); // links to fn_802E76D8, which returns 0
 	virtual bool Write(const void*, int); // links to fn_8077BAA0, which returns 0
 	virtual unsigned int Seek(int, int); // fn_802E76E0
 	virtual unsigned int Tell(); // fn_802E7728
