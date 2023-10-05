@@ -5,10 +5,11 @@
 #include "unknown.hpp"
 #include "std/string.h"
 
-extern AsyncFileWii NewFile(const char*, int);
+// extern AsyncFileWii NewFile(const char*, int);
 
 // fn_8034C9F8
 // ctor
+// RB2 has this as char *param_1,FileType param_2,bool param_3
 FileStream::FileStream(char c, char* arg1, int arg2) : BinStream(c) {
 	int var_r31;
 	// AsyncFileWii temp_r3;

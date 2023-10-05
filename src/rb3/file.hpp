@@ -7,18 +7,18 @@ public:
 	File();
 	virtual ~File();
 	virtual String GetStringMember();
-	virtual int V_Unk3(char*, int) = 0;
-	virtual bool V_Unk4(char*, int) = 0;
+	virtual int Read(void*, int) = 0;
+	virtual bool ReadAsync(void*, int) = 0;
 	virtual int V_Unk5(char*, int) = 0;
-	virtual bool V_Unk6(char*, int); // links to fn_8077BAA0, which returns 0
-	virtual unsigned int V_Unk7(int, int) = 0;
-	virtual unsigned int V_Unk8() = 0;
-	virtual void V_Unk9() = 0;
-	virtual bool V_Unk10() = 0;
-	virtual bool V_Unk11() = 0;
-	virtual unsigned int GetFileSize() = 0;
-	virtual int V_Unk13() = 0;
-	virtual int V_Unk14(int*) = 0;
+	virtual bool Write(const void*, int); // links to fn_8077BAA0, which returns 0
+	virtual unsigned int Seek(int, int) = 0;
+	virtual unsigned int Tell() = 0;
+	virtual void Flush() = 0;
+	virtual bool Eof() = 0;
+	virtual bool Fail() = 0;
+	virtual unsigned int Size() = 0;
+	virtual unsigned int UncompressedSize() = 0;
+	virtual int ReadDone(int&) = 0;
 	virtual int V_Unk15(int*); // fn_802E7818
 	virtual int V_Unk16(int*) = 0;
 	virtual void V_Unk17(); // links to fn_8077BAA0, which returns 0

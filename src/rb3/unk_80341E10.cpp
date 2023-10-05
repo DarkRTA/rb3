@@ -6,8 +6,8 @@
 
 // fn_80342D18
 // BinStream's ctor
-BinStream::BinStream(char c){
-	unk04 = c;
+BinStream::BinStream(bool b){
+	unk04 = b;
 	unk08 = 0;
 }
 

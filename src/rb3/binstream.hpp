@@ -3,7 +3,7 @@
 
 class BinStream {
 public:
-	BinStream(char);
+	BinStream(bool);
 	virtual ~BinStream();
 	virtual void V_Unk1() = 0;
 	virtual void V_Unk2() = 0;
