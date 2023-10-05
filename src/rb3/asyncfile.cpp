@@ -33,8 +33,6 @@ void AsyncFile::Terminate(){ // Terminate
 	fn_80354238(unk28); // MemFree
 }
 
-
-
 // fn_802E7E8C - Read
 int AsyncFile::Read(void* arg1, int arg2){
 	int sp8 = arg2;
@@ -53,7 +51,7 @@ bool AsyncFile::ReadAsync(void* arg1, int arg2){
 	sp8 = arg2;
 	if(failed != 0) return false;
 	if(unk28 == 0){
-		V_Unk22();
+		_SeekToTell();
 	}
 	else {
 		temp_r6 = fpos;
@@ -239,7 +237,7 @@ void AsyncFile::FillBuffer(){
 			V_Unk21();
 		}
 		fn_802E85D0(fpos, lbl_808517C8[0]);
-		V_Unk22();
+		_SeekToTell();
 		unk1c = 0;
 	}
 }

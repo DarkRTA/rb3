@@ -113,11 +113,11 @@ unsigned int ArkFile::UncompressedSize(){
 	return size_uncompressed;
 }
 
-extern void fn_802EA488(int*, int*);
+extern void fn_802EA488(int*); // this is BlockMgr::Poll()
 
 // fn_802E7790
 int ArkFile::ReadDone(int& a){
-	// fn_802EA488(&lbl_80902278, a);
+	fn_802EA488(lbl_80902278); // lbl_80902278 is a BlockMgr* named "TheBlockMgr"
     a = unk1c;
     return (unk18 == 0);
 }

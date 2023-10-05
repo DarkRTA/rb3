@@ -27,8 +27,8 @@ public:
 	virtual int V_Unk19() = 0;
 	virtual int _Write(const void*, int) = 0;
 	virtual int V_Unk21() = 0;
-	virtual void V_Unk22() = 0;
-	virtual void V_Unk23() = 0;
+	virtual void _SeekToTell() = 0;
+	virtual void _ReadAsync(void*, int) = 0;
 	virtual int _ReadDone() = 0;
 	virtual void _Close() = 0;
 

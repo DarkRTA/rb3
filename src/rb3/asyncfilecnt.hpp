@@ -10,14 +10,14 @@ public:
 	virtual ~AsyncFileCNT();
 	virtual int V_Unk16(int*); // fn_802E8774
 	
-	virtual void V_Unk18(char*, int); // fn_802E8784
+	virtual void _Open(); // fn_802E8784
 	virtual int V_Unk19(); // fn_802E88C0
-	virtual int V_Unk20(char*, int); // fn_802E88C8
+	virtual int _Write(const void*, int); // fn_802E88C8
 	virtual int V_Unk21(); // fn_802E88CC
-	virtual void V_Unk22(); // fn_802E88D4
-	virtual void V_Unk23(); // fn_802E892C
+	virtual void _SeekToTell(); // fn_802E88D4
+	virtual void _ReadAsync(void*, int); // fn_802E892C
 	virtual int _ReadDone(); // fn_802E89FC
-	virtual void V_Unk25(); // fn_802E8AA4
+	virtual void _Close(); // fn_802E8AA4
 
 	unsigned int unk38;
 	int unk3c;
