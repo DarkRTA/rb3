@@ -10,14 +10,14 @@ public:
 	virtual ~AsyncFileWii();	
 	virtual int V_Unk16(int*); // links to fn_8077BAA0, which returns 0
 	
-	virtual void V_Unk18(char*, int); // fn_802E8BCC
+	virtual void _Open(); // fn_802E8BCC
 	virtual int V_Unk19(); // fn_802E8C48
-	virtual int V_Unk20(char*, int); // fn_802E8C50
+	virtual int _Write(const void*, int); // fn_802E8C50
 	virtual int V_Unk21(); // fn_802E8C54
 	virtual void V_Unk22(); // fn_802E8C5C
 	virtual void V_Unk23(); // fn_802E8CB8
-	virtual int V_Unk24(); // fn_802E8D28
-	virtual void V_Unk25(); // fn_802E8F1C
+	virtual int _ReadDone(); // fn_802E8D28
+	virtual void _Close(); // fn_802E8F1C
 
 	
 	void fn_800E1114();

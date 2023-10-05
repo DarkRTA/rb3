@@ -11,7 +11,7 @@
 // fn_802E7B68
 // AsyncFile's ctor
 AsyncFile::AsyncFile(const char* arg1, int arg2) : 
-	unk4(arg2), unk8(0), unk9(0), unkc(arg1),
+	unk4(arg2), failed(0), unk9(0), str(arg1),
 	unk18(0), unk1c(0), unk28(0), 
 	unk2c(0), unk30(0) { }
 
@@ -29,7 +29,7 @@ String File::GetStringMember(){
 // fn_802E8678
 // gets AsyncFile's String member
 String AsyncFile::GetStringMember(){
-	return String(unkc);
+	return String(str);
 }
 
 // fn_802E8B7C
@@ -43,17 +43,18 @@ AsyncFileWii::AsyncFileWii(const char* arg1, int arg2) : AsyncFile(arg1, arg2) {
 // fn_802E8FC8
 // AsyncFileWii's dtor
 AsyncFileWii::~AsyncFileWii(){
-	fn_802E7E2C();
+	Terminate();
 }
 
 extern void fn_80354238(char*);
 
-void AsyncFile::fn_802E7E2C(){
+// fn_802E7E2C
+void AsyncFile::Terminate(){ // Terminate
 	if(unk4 & 4){
-		V_Unk9();
+		Flush();
 	}
-	V_Unk25();
-	fn_80354238(unk28);
+	_Close();
+	fn_80354238(unk28); // MemFree
 }
 
 // fn_802E7818
@@ -63,44 +64,44 @@ int File::V_Unk15(int* a){
 }
 
 // fn_802E7E8C - Read
-int AsyncFile::V_Unk3(char* arg1, int arg2){
+int AsyncFile::Read(void* arg1, int arg2){
 	int sp8 = arg2;
-	V_Unk4(arg1, arg2);
-	if(unk8 != 0) return 0;
-	while(V_Unk14(&sp8) == 0);
+	ReadAsync(arg1, arg2);
+	if(failed != 0) return 0;
+	while(ReadDone(sp8) == 0);
 	return sp8;
 }
 
 // fn_802E7F7C - ReadAsync
-bool AsyncFile::V_Unk4(char* arg1, int arg2){
+bool AsyncFile::ReadAsync(void* arg1, int arg2){
 	int sp8;
 	int temp_r6;
 	unsigned int temp_r7;
 
 	sp8 = arg2;
-	if(unk8 != 0) return false;
+	if(failed != 0) return false;
 	if(unk28 == 0){
 		V_Unk23();
 	}
 	else {
 		temp_r6 = unk18;
-		temp_r7 = filesize;
+		temp_r7 = size;
 		if(temp_r6 + arg2 > temp_r7){
 			sp8 = temp_r7 - temp_r6;
 		}
-		unk2c = arg1;
+		// unk2c = arg1;
 		unk30 = sp8;
 		unk34 = 0;
-		V_Unk14(&sp8);
+		ReadDone(sp8);
 	}
-	return (unk8 == 0);
+	return (failed == 0);
 }
 
 // fn_802E7F00
-int AsyncFile::V_Unk5(char* arg1, int arg2){
+int AsyncFile::V_Unk5(void* arg1, int arg2){
 	int sp8;
-	V_Unk6(arg1, arg2);
-	if(unk8 != 0) return 0;
+	Write(arg1, arg2);
+	if(failed != 0) return 0;
 	while(V_Unk15(&sp8) == 0);
 	return arg2;
 }
@@ -108,14 +109,14 @@ int AsyncFile::V_Unk5(char* arg1, int arg2){
 extern int lbl_808517C8[]; // RB2 calls this "gBufferSize"
 
 // fn_802E81D4 - Write
-bool AsyncFile::V_Unk6(char* arg1, int arg2){
-	if(unk8 != 0) return false;
+bool AsyncFile::Write(const void* arg1, int arg2){
+	if(failed != 0) return false;
 	if(unk28 == 0){
-		V_Unk20(arg1, arg2);
+		_Write(arg1, arg2);
 	}
 	else {
 		int r28 = arg2;
-		char* r27 = arg1;
+		char* r27 = (char*)arg1;
 		while(unk1c + r28 > lbl_808517C8[0]){
 			int r26 = lbl_808517C8[0] - unk1c;
 			memcpy(unk28 + unk1c, r27, r26);
@@ -123,13 +124,13 @@ bool AsyncFile::V_Unk6(char* arg1, int arg2){
 			r27 += r26;
 			unk1c = lbl_808517C8[0];
 			unk18 += r26;
-			V_Unk9();
-			if(unk8) return false;
+			Flush();
+			if(failed) return false;
 		}
 		memcpy(unk28 + unk1c, r27, r28);
 		unk1c += r28;
 		unk18 += r28;
-		if(unk18 > filesize) filesize = unk18;
+		if(unk18 > size) size = unk18;
 	}
 	return (arg2 != 0);
 }
@@ -151,77 +152,77 @@ bool fn_802E8438(long long* a, long long* b, long long* c){
 }
 
 // fn_802E8300 - Seek
-unsigned int AsyncFile::V_Unk7(int arg1, int arg2){
+unsigned int AsyncFile::Seek(int arg1, int arg2){
 	long long sp10;
 	long long sp8;
 
-	if(unk8 != 0) return unk18;
-	if(unk4 & 4) V_Unk9();
+	if(failed != 0) return unk18;
+	if(unk4 & 4) Flush();
 
 	sp10 = unk18;
 	if(arg2 == 1) sp10 += arg1;
 	else if(arg2 == 0) sp10 = arg1;
-	else if(arg2 == 2) sp10 = filesize + arg1;
+	else if(arg2 == 2) sp10 = size + arg1;
 	
-	sp8 = filesize;
+	sp8 = size;
 	fn_802E8438(&sp10, &lbl_808517D0, &sp8);
 	unk18 = sp10;
 	V_Unk22();
 	if(unk28 != 0 && unk4 & 2){
 		unk1c = lbl_808517C8[0];
-		fn_802E8530(); // FillBuffer
+		FillBuffer(); // FillBuffer
 	}
 	return unk18;
 }
 
 // fn_802E84AC - Tell
-unsigned int AsyncFile::V_Unk8(){
+unsigned int AsyncFile::Tell(){
 	return unk18;
 }
 
 // fn_802E84B4 - Flush
-void AsyncFile::V_Unk9(){
-	if(unk8 == 0 && unk4 & 4){
-		V_Unk20(unk28, unk1c);
+void AsyncFile::Flush(){
+	if(failed == 0 && unk4 & 4){
+		_Write(unk28, unk1c);
 		while(V_Unk21() == 0);
 		unk1c = 0;
 	}
 }
 
 // fn_802E85E0 - Eof
-bool AsyncFile::V_Unk10(){
-	return (unk18 == filesize);
+bool AsyncFile::Eof(){
+	return (unk18 == size);
 }
 
 // fn_802E85F8 - Fail
-bool AsyncFile::V_Unk11(){
-	return unk8;
+bool AsyncFile::Fail(){
+	return failed;
 }
 
 // fn_802E8600 - Size
-unsigned int AsyncFile::GetFileSize(){
-	return filesize;
+unsigned int AsyncFile::Size(){
+	return size;
 }
 
 // fn_802E8608 - UncompressedSize
-int AsyncFile::V_Unk13(){
+unsigned int AsyncFile::UncompressedSize(){
 	return unk24;
 }
 
 // fn_802E8030 - ReadDone
-int AsyncFile::V_Unk14(int* a){
+int AsyncFile::ReadDone(int& a){
 	int temp_r28;
 
-	if(unk8 != 0){
-		*a = 0;
+	if(failed != 0){
+		a = 0;
 		return 1;
 	}
 	if(unk28 != 0 && unk30 == 0){
-		*a = unk34;
+		a = unk34;
 		return 1;
 	}
-	if(V_Unk24() == 0){
-		*a = unk34;
+	if(_ReadDone() == 0){
+		a = unk34;
 		return 0;
 	}
 	
@@ -235,8 +236,8 @@ int AsyncFile::V_Unk14(int* a){
 		unk18 += temp_r28;
 		unk30 -= temp_r28;
 		unk2c += temp_r28;
-		fn_802E8530(); // FillBuffer
-		*a = unk34;
+		FillBuffer(); // FillBuffer
+		a = unk34;
 		return 0;
 	}
 	memcpy(unk2c, unk28 + unk1c, unk30);
@@ -244,7 +245,7 @@ int AsyncFile::V_Unk14(int* a){
 	unk1c += unk30;
 	unk18 += unk30;
     unk30 = 0;
-	*a = unk34;
+	a = unk34;
 	return 1;
 }
 
@@ -257,57 +258,57 @@ int AsyncFile::V_Unk15(int* a){
 extern int fn_807359C0();
 extern bool fn_80735CD0(int, int*);
 
-// fn_802E8BCC
-void AsyncFileWii::V_Unk18(char* a, int b){
-	filesize = 0;
+// fn_802E8BCC - _Open?
+void AsyncFileWii::_Open(){
+	size = 0;
 	
-	unkc.c_str();
-	int ret = fn_807359C0();
-	unk8 = (ret + 1) == 0;
-	if(unk8 == 0){
-		if(fn_80735CD0(ret, &unk44) != 0){
-			filesize = unk78;
+	str.c_str();
+	int ret = fn_807359C0(); // DVDConvertPathToEntrynum?
+	failed = (ret + 1) == 0;
+	if(failed == 0){
+		if(fn_80735CD0(ret, &unk44) != 0){ // DVDFastOpen?
+			size = unk78;
 			unk40 = 1;
 			return;
 		}
-		unk8 = 1;
+		failed = 1;
 	}
 }
 
 // fn_802E8C48
 int AsyncFileWii::V_Unk19(){ return 1; }
 
-// fn_802E8C50
-int AsyncFileWii::V_Unk20(char* c, int a){ }
+// fn_802E8C50 - _Write --> returns 0
+int AsyncFileWii::_Write(const void* c, int a){ }
 
 // fn_802E8C54
 int AsyncFileWii::V_Unk21(){ return 1; }
 
 // fn_802E8C5C
 void AsyncFileWii::V_Unk22(){
-	while(V_Unk24() == 0);
-	unk38 = V_Unk8();
+	while(_ReadDone() == 0);
+	unk38 = Tell();
 }
 
 // fn_802E8CB8
 // calls fn_80735FB0
 void AsyncFileWii::V_Unk23(){
 	unk3c = 1;
-	// V_Unk8();
+	// Tell();
 }
 
-// fn_802E8D28
-int AsyncFileWii::V_Unk24(){
-
+// fn_802E8D28 - _ReadDone
+int AsyncFileWii::_ReadDone(){
+	return 0;
 }
 
 extern bool fn_80735E60(int);
 
-// fn_802E8F1C
-void AsyncFileWii::V_Unk25(){
+// fn_802E8F1C - _Close
+void AsyncFileWii::_Close(){
 	if(unk40 > -1){
-		while(V_Unk24() == 0);
-		unk8 = (fn_80735E60(unk44) == 0);
+		while(_ReadDone() == 0);
+		failed = (fn_80735E60(unk44) == 0);
 	}
 	unk40 = -1;
 }
@@ -317,9 +318,9 @@ unsigned int fn_802E85D0(unsigned int a, unsigned int b){
 	return a;
 }
 
-// fn_802E8530
-void AsyncFile::fn_802E8530(){
-	if((unk8 == 0) && (unk4 & 2)){
+// FillBuffer
+void AsyncFile::FillBuffer(){
+	if((failed == 0) && (unk4 & 2)){
 		if(unk1c != lbl_808517C8[0]){
 			V_Unk22();
 		}
@@ -335,27 +336,27 @@ String ArkFile::GetStringMember(){
 }
 
 // fn_802E7748
-bool ArkFile::V_Unk11(){
+bool ArkFile::Fail(){
 	return unk24 != 0;
 }
 
 // fn_802E7758
-unsigned int ArkFile::GetFileSize(){
+unsigned int ArkFile::Size(){
 	return filesize;
 }
 
 // fn_802E7760
-int ArkFile::V_Unk13(){
+unsigned int ArkFile::UncompressedSize(){
 	return unk14;
 }
 
-extern void fn_802EA488(int*, int*);
+extern void fn_802EA488(int*, int);
 extern int lbl_80902278;
 
 // fn_802E7790
-int ArkFile::V_Unk14(int* a){
+int ArkFile::ReadDone(int& a){
 	fn_802EA488(&lbl_80902278, a);
-    *a = unk1c;
+    a = unk1c;
     return (unk18 == 0);
 }
 
@@ -363,7 +364,7 @@ extern void fn_802EB6E4(int*, int, int, int);
 
 // fn_802E77E4
 int ArkFile::V_Unk16(int* a){
-	fn_802EB6E4(a, unk4, unk8 + fpos, unkc + fpos);
+	fn_802EB6E4(a, unk4, unkc + fpos, unkc + fpos);
 }
 
 // fn_802E7768
@@ -404,8 +405,8 @@ AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
 		temp_r31 = var_r31 - temp_r30;
 		// strncpy(arg0 + 0x4A, temp_r30, temp_r31);
         // (arg0 + temp_r31)->unk4A = 0;
-		unkc = temp_r30 + temp_r31;
-		unkc.c_str();
+		str = temp_r30 + temp_r31;
+		str.c_str();
 		unk9 = 1;
 	}
 
@@ -432,7 +433,7 @@ AsyncFileCNT::AsyncFileCNT(const char* c, int a) : AsyncFile(c, a) {
 
 // fn_802E8B10
 AsyncFileCNT::~AsyncFileCNT(){
-	fn_802E7E2C();
+	Terminate();
 }
 
 // fn_802E8774
@@ -463,8 +464,8 @@ int AsyncFileCNT::V_Unk21(){
 
 // fn_802E88D4
 void AsyncFileCNT::V_Unk22(){
-	if(V_Unk8()){
-		unk8 = 1;
+	if(Tell()){
+		failed = 1;
 	}
 }
 
@@ -474,8 +475,8 @@ void AsyncFileCNT::V_Unk23(){
 }
 
 // fn_802E89FC
-int AsyncFileCNT::V_Unk24(){
-
+int AsyncFileCNT::_ReadDone(){
+	return 0;
 }
 
 // fn_802E8AA4

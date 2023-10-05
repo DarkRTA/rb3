@@ -1,10 +1,10 @@
 #include <rb3/arkfile.hpp>
 
-u32 ArkFile::ReturnsZero() {
+bool ArkFile::Write(const void* a, int b) {
 	return 0;
 }
 
-u32 ArkFile::Seek(int offset, int mode) {
+unsigned int ArkFile::Seek(int offset, int mode) {
 	switch(mode) {
 		case 0:
 			this->fpos = offset;
@@ -21,12 +21,14 @@ u32 ArkFile::Seek(int offset, int mode) {
 	return this->fpos;
 }
 
-u32 ArkFile::FilePos()
+unsigned int ArkFile::Tell()
 {
 	return this->fpos;
 }
 
+void ArkFile::Flush(){ }
 
-bool ArkFile::EndOfFile() {
+
+bool ArkFile::Eof() {
 	return (this->filesize - this->fpos) == 0;
 }

@@ -16,7 +16,7 @@ public:
 	virtual int V_Unk21(); // fn_802E88CC
 	virtual void V_Unk22(); // fn_802E88D4
 	virtual void V_Unk23(); // fn_802E892C
-	virtual int V_Unk24(); // fn_802E89FC
+	virtual int _ReadDone(); // fn_802E89FC
 	virtual void V_Unk25(); // fn_802E8AA4
 
 	unsigned int unk38;
