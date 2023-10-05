@@ -22,3 +22,9 @@ extern char lbl_808567BC[]; //this label contains "<unnamed>"
 const char* BinStream::Name() const {
 	return "<unnamed>"; // lbl_808567BC
 }
+
+// fn_80342E44
+void BinStream::DisableEncryption(){
+	delete unk08;
+	unk08 = 0;
+}

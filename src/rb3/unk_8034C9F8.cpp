@@ -28,11 +28,11 @@ FileStream::FileStream(char c, char* arg1, int arg2) : BinStream(c) {
 		}
 	}
 
-	str = arg1;
-	unk1c = var_r31;
+	fname = arg1;
+	failed = var_r31;
 	// temp_r3 = NewFile(arg1, var_r31);
 	// unkC = temp_r3;
-	// unk1C = (char) (temp_r3 == 0)
+	// failed = (char) (temp_r3 == 0)
 
 }
 
@@ -41,7 +41,7 @@ FileStream::FileStream(char c, char* arg1, int arg2) : BinStream(c) {
 FileStream::FileStream(char c) : BinStream(c) {
 	unk20 = 0;
 	unk24 = 0;
-	unk1c = 0;
+	failed = 0;
 }
 
 extern bool fn_8000EC3C(FileStream*);
@@ -55,4 +55,9 @@ FileStream::~FileStream(){
 	}
 	fn_8034CD84(this);
 	// fn_800E1114
+}
+
+// fn_8034CD7C
+bool FileStream::Fail(){
+	return failed;
 }

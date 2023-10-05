@@ -19,8 +19,6 @@ public:
 	virtual int _ReadDone(); // fn_802E8D28
 	virtual void _Close(); // fn_802E8F1C
 
-	void fn_800E1114();
-
 	unsigned int unk38;
 	char unk3c;
 	int unk40;
