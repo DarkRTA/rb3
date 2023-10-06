@@ -12,10 +12,7 @@ const char *String::c_str() const
 }
 
 // fn_8000DD10
-// this could also possibly be an inline
-TextStream::~TextStream()
-{
-}
+// generic dtor function
 
 // fn_8000EC00
 FilePath::FilePath(const String& str) : String(str) {

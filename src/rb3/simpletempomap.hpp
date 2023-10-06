@@ -1,0 +1,26 @@
+#ifndef RB3_SIMPLETEMPOMAP_HPP
+#define RB3_SIMPLETEMPOMAP_HPP
+#include "tempomap.hpp"
+
+class SimpleTempoMap : TempoMap {
+public:
+	SimpleTempoMap();
+	virtual ~SimpleTempoMap(); // fn_8037A410
+	virtual double TickToTime(float) const; // fn_8037A4FC
+	virtual double TimeToTick(float) const; // fn_8037A508
+	virtual float GetTempo(int) const; // fn_8037A514
+	virtual int V_Unk5(int i); // fn_8037A548
+	virtual double GetTempoBPM(int) const; // fn_8037A528
+	virtual int GetNumTempoChangePoints(); // fn_8000F90C, returns 1 - GetNumTempoChangePoints
+	virtual int GetTempoChangePoint(); // links to fn_8077BAA0, which returns 0 - GetTempoChangePoint
+	
+	virtual void V_Unk10(); // links to fn_8076F540, which returns void
+	virtual void V_Unk11(); // links to fn_8076F540, which returns void
+	virtual void V_Unk12(); // links to fn_8077BAA0, which returns 0
+	virtual void V_Unk13(); // links to fn_8077BAA0, which returns 0
+	virtual void V_Unk14(); // links to fn_8076F540, which returns void
+
+	float unk4;
+};
+
+#endif
