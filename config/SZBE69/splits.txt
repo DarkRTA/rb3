@@ -70,11 +70,14 @@ rb3/unk_80341E10.cpp:
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
+rb3/unk_80357E10.cpp:
+	.text       start:0x80357E10 end:0x80361B10
+
 rb3/string.cpp:
 	.text       start:0x80361B10 end:0x80362A50
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/unk_80357E10.cpp:
+rb3/unk_80362A50.cpp:
 	.text       start:0x80362A50 end:0x80365214
 
 rb3/unk_8037A49C.cpp:
