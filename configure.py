@@ -209,7 +209,8 @@ config.libs = [
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
-            Object(NonMatching, "rb3/asyncfilecnt.cpp")
+            Object(NonMatching, "rb3/asyncfilecnt.cpp"),
+            Object(NonMatching, "rb3/textstream.cpp")
         ],
     },
     {

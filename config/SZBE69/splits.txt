@@ -78,7 +78,10 @@ rb3/unk_80357E10.cpp:
 	.text       start:0x80362A50 end:0x80365214
 
 rb3/unk_8037A49C.cpp:
-	.text       start:0x8037A49C end:0x8037AD34
+	.text       start:0x8037A49C end:0x8037A67C
+
+rb3/textstream.cpp:
+	.text       start:0x8037A67C end:0x8037AA74
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
