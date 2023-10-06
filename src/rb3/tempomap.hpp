@@ -4,7 +4,7 @@
 class TempoMap {
 public:
 	TempoMap();
-	virtual ~TempoMap();
+	virtual ~TempoMap(); // fn_8000DD10 - generic dtor
 };
 
 #endif
