@@ -207,13 +207,14 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
             Object(NonMatching, "rb3/unk_800BF1A8.cpp"),
             Object(NonMatching, "rb3/unk_8037A3D8.cpp"),
-            Object(NonMatching, "rb3/unk_802DDE34.cpp"),
+            Object(NonMatching, "rb3/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/filegetext.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
-            Object(NonMatching, "rb3/textstream.cpp")
+            Object(NonMatching, "rb3/textstream.cpp"),
+            Object(Matching, "rb3/rand2.cpp")
         ],
     },
     {

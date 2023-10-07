@@ -4,7 +4,7 @@
 class Rand2 {
 public:
 	Rand2(int);
-	// Int(); // returns a byte?
+	int Int();
 	int num;
 };
 
