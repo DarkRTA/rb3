@@ -97,3 +97,8 @@ BinStream* BinStream::WriteEndian4(unsigned int i){
 	WriteEndian(&i, 4);
 	return this;
 }
+
+BinStream* BinStream::ReadEndian4(unsigned int* i){
+	ReadEndian(i, 4);
+	return this;
+}

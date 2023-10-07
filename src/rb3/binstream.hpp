@@ -18,7 +18,7 @@ public:
 	virtual void V_Unk9() = 0;
 	virtual void V_Unk10() = 0;
 
-	char unk04;
+	bool unk04;
 	char* unk08;
 
 	// taken from RB2
@@ -38,6 +38,7 @@ public:
 	//void Seek(int, BinStream::SeekType);
 
 	BinStream* WriteEndian4(unsigned int);
+	BinStream* ReadEndian4(unsigned int*);
 
 };
 

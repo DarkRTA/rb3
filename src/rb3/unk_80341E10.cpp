@@ -3,6 +3,7 @@
 #include "binstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
+#include "symbol.hpp"
 
 // fn_80342D18
 // BinStream's ctor
@@ -34,5 +35,47 @@ BinStream* BinStream::operator<<(const char* c){
 	unsigned int size = strlen(c);
 	WriteEndian4(size);
 	Write(c, size);
+	return this;
+}
+
+// fn_80342B38
+BinStream* BinStream::operator<<(const Symbol& s){
+	char* str = s.m_string;
+	unsigned int size = strlen(str);
+	WriteEndian4(size);
+	Write(str, size);
+	return this;
+}
+
+// fn_80342B98
+BinStream* BinStream::operator<<(const String& str){
+	unsigned int size = str.len;
+	WriteEndian4(size);
+	Write(str.c_str(), size);
+	return this;
+}
+
+// fn_80342C58
+BinStream* BinStream::operator>>(Symbol& s){
+	char why[0x200];
+	ReadString(why, 0x200);
+	s = Symbol(why);
+	return this;
+}
+
+// fn_80342C00
+void BinStream::ReadString(char* c, int i){
+	unsigned int a;
+	ReadEndian4(&a);
+	Read(c, a);
+	c[a] = 0;
+}
+
+// fn_80342CB4
+BinStream* BinStream::operator>>(String& s){
+	unsigned int a;
+	ReadEndian4(&a);
+	s.resize(a);
+	Read((char*)s.c_str(), a);
 	return this;
 }

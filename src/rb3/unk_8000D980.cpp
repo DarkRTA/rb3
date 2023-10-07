@@ -3,6 +3,7 @@
 #include "filepath.hpp"
 #include "objref.hpp"
 #include "unknown.hpp"
+#include "symbol.hpp"
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
@@ -40,3 +41,9 @@ ObjRef::ObjRef(){
 // ObjRef::~ObjRef(){
 
 // }
+
+// fn_8000DCA8
+Symbol* Symbol::operator=(const Symbol& s){
+	m_string = s.m_string;
+	return this;
+}
