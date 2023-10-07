@@ -2,6 +2,10 @@
 #include "textstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
+#include "jsonobject.hpp"
+#include "jsonconverter.hpp"
+#include "jsonarray.hpp"
+#include "jsonstring.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -15,3 +19,49 @@ unsigned int String::length()
 // unsigned short String::GetTextLengthWithoutStrLen(){
 // 	return len;
 // }
+
+// fn_800A6360
+JsonObject::JsonObject(){
+	unk4 = 0;
+}
+
+extern void fn_800C6D4C();
+
+// fn_800A6378
+JsonObject::~JsonObject(){
+	fn_800C6D4C();
+}
+
+// fn_800A673C
+JsonConverter::JsonConverter(){
+	
+}
+
+// fn_800A6AF0
+JsonConverter::~JsonConverter(){
+
+}
+
+extern void fn_800C7690();
+
+// fn_800A63EC
+JsonArray::JsonArray(){
+	fn_800C7690();
+}
+
+// fn_800A6430
+JsonArray::~JsonArray(){
+
+}
+
+extern void fn_800C74C8();
+
+// fn_800A6520
+JsonString::JsonString(){
+	fn_800C74C8();
+}
+
+// fn_800A6574
+JsonString::~JsonString(){
+
+}

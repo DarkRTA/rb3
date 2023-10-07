@@ -69,8 +69,11 @@ public:
 
 	// probably inline header methods
 	unsigned int length(); // fn_800A6E18
-	bool IsTextLengthZero(); // fn_800AFE60
 	const char *c_str() const; // fn_8000DB9C
+	// fn_8000DAC4
+
+	// may not actually be string methods
+	bool IsTextLengthZero(); // fn_800AFE60
 	void fn_801CEDFC(String*);	
 };
 
