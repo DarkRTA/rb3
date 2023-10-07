@@ -79,3 +79,32 @@ BinStream* BinStream::operator>>(String& s){
 	Read((char*)s.c_str(), a);
 	return this;
 }
+
+extern unsigned int* fn_802DDE34(unsigned int*, unsigned int);
+
+// fn_80342D98
+void BinStream::EnableReadEncryption(){
+	unsigned int a;
+	ReadEndian4(&a);
+	unk08 = new Rand2(a);
+}
+
+extern unsigned int fn_802DDCDC(BinStream*);
+
+// fn_80342DE4
+void BinStream::EnableWriteEncryption(int i){
+	unsigned int a = fn_802DDCDC(this);
+	WriteEndian4(a);
+	unk08 = new Rand2(a);
+}
+
+// fn_80343058
+
+extern void fn_80343114(void*, void*, int);
+
+void BinStream::ReadEndian(void* v, int i){
+	Read(v, i);
+	if(unk04 != 0){
+		fn_80343114(v, v, i);
+	}
+}

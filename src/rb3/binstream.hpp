@@ -2,6 +2,7 @@
 #define RB3_BINSTREAM_HPP
 #include "symbol.hpp"
 #include "string.hpp"
+#include "rand2.hpp"
 
 class BinStream {
 public:
@@ -19,7 +20,7 @@ public:
 	virtual void V_Unk10() = 0;
 
 	bool unk04;
-	char* unk08;
+	Rand2* unk08;
 
 	// taken from RB2
 	BinStream* operator<<(const char*);
@@ -39,6 +40,9 @@ public:
 
 	BinStream* WriteEndian4(unsigned int);
 	BinStream* ReadEndian4(unsigned int*);
+
+	void fn_80342D98();
+	void fn_80342DE4();
 
 };
 
