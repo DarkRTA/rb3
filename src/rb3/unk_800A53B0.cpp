@@ -6,6 +6,8 @@
 #include "jsonconverter.hpp"
 #include "jsonarray.hpp"
 #include "jsonstring.hpp"
+#include "jsondouble.hpp"
+#include "jsonint.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -25,16 +27,16 @@ JsonObject::JsonObject(){
 	unk4 = 0;
 }
 
-extern void fn_800C6D4C();
+extern void fn_800C6D4C(int);
 
 // fn_800A6378
 JsonObject::~JsonObject(){
-	fn_800C6D4C();
+	fn_800C6D4C(unk4);
 }
 
 // fn_800A673C
 JsonConverter::JsonConverter(){
-	
+
 }
 
 // fn_800A6AF0
@@ -63,5 +65,29 @@ JsonString::JsonString(){
 
 // fn_800A6574
 JsonString::~JsonString(){
+
+}
+
+extern void fn_800C72E8(JsonDouble*);
+
+// fn_800A6688
+JsonDouble::JsonDouble(){
+	fn_800C72E8(this);
+}
+
+// fn_800A66DC
+JsonDouble::~JsonDouble(){
+
+}
+
+extern void fn_800C71D4(JsonInt*);
+
+// fn_800A65D4
+JsonInt::JsonInt(){
+	fn_800C71D4(this);
+}
+
+// fn_800A6628
+JsonInt::~JsonInt(){
 
 }
