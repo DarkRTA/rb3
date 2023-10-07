@@ -20,26 +20,26 @@ void TextFileStream::Print(const char* c){
 
 // fn_8037A4FC
 double SimpleTempoMap::TickToTime(float f) const {
-    return f * unk4;
+    return f * ms_per_tick;
 }
 
 // fn_8037A508
 double SimpleTempoMap::TimeToTick(float f) const {
-    return f / unk4;
+    return f / ms_per_tick;
 }
 
 extern float lbl_807F04A4; // 480.0f
 
 // fn_8037A514
 float SimpleTempoMap::GetTempo(int i) const {
-    return lbl_807F04A4 * unk4;
+    return lbl_807F04A4 * ms_per_tick;
 }
 
 extern float lbl_807F04A8; // 60000.0f
 
 // fn_8037A528
 double SimpleTempoMap::GetTempoBPM(int i) const {
-    return lbl_807F04A8 / (lbl_807F04A4 * unk4);
+    return lbl_807F04A8 / (lbl_807F04A4 * ms_per_tick);
 }
 
 extern float lbl_807F00D0; // 1000.0f

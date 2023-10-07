@@ -4,6 +4,7 @@
 #include "unknown.hpp"
 #include "std/string.h"
 #include "symbol.hpp"
+#include "bufstream.hpp"
 
 // fn_80342D18
 // BinStream's ctor
@@ -49,7 +50,7 @@ BinStream* BinStream::operator<<(const Symbol& s){
 
 // fn_80342B98
 BinStream* BinStream::operator<<(const String& str){
-	unsigned int size = str.len;
+	unsigned int size = str.length();
 	WriteEndian4(size);
 	Write(str.c_str(), size);
 	return this;
@@ -80,8 +81,6 @@ BinStream* BinStream::operator>>(String& s){
 	return this;
 }
 
-extern unsigned int* fn_802DDE34(unsigned int*, unsigned int);
-
 // fn_80342D98
 void BinStream::EnableReadEncryption(){
 	unsigned int a;
@@ -107,4 +106,57 @@ void BinStream::ReadEndian(void* v, int i){
 	if(unk04 != 0){
 		fn_80343114(v, v, i);
 	}
+}
+
+void BinStream::Read(void* v, int i){
+	void* temp_r31;
+	unsigned char* var_r30;
+
+	var_r30 = (unsigned char*)v;
+	if(Fail() != 0){
+		Name();
+		memset(var_r30, 0, i);
+		return;
+	}
+	ReadImpl(var_r30, i);
+	if(unk08 != nullptr){
+		temp_r31 = var_r30 + i;
+		while(var_r30 < temp_r31){
+			*var_r30++ ^= unk08->Int();
+		}
+	}
+}
+
+// fn_803431F4
+BufStream::BufStream(void* v, int i, bool b) : BinStream(b) {
+	unk1c = 0;
+	unk20 = 0;
+	unkc = v;
+	unk10 = (v == 0);
+	fpos = 0;
+	size = i;
+}
+
+// fn_80343270
+BufStream::~BufStream(){
+	DeleteChecksum();
+}
+
+
+// fn_803436BC
+const char* BufStream::Name() const {
+	if(!name.empty()){
+		return name.c_str();
+	}
+	return BinStream::Name();
+}
+
+// fn_80343708
+void BufStream::SetName(const char* c){
+	name = c;
+}
+
+// fn_80343710
+bool BufStream::Eof() {
+	return (size - fpos == 0);
 }

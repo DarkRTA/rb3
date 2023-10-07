@@ -47,3 +47,8 @@ Symbol* Symbol::operator=(const Symbol& s){
 	m_string = s.m_string;
 	return this;
 }
+
+// fn_8000EC3C
+bool String::empty() const {
+	return (*text == '\0');
+}

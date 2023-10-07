@@ -9,10 +9,11 @@
 #include "jsondouble.hpp"
 #include "jsonint.hpp"
 #include "binstream.hpp"
+#include "bufstream.hpp"
 
 // fn_800A6E18
 // probably inline
-unsigned int String::length()
+unsigned int String::length() const
 {
 	return strlen(text);
 }
@@ -101,4 +102,9 @@ BinStream* BinStream::WriteEndian4(unsigned int i){
 BinStream* BinStream::ReadEndian4(unsigned int* i){
 	ReadEndian(i, 4);
 	return this;
+}
+
+// fn_800A9C70
+int BufStream::Tell(){
+	return fpos;
 }

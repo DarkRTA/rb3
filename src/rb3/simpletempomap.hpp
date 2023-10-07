@@ -20,7 +20,7 @@ public:
 	virtual int V_Unk13(int, int*); // links to fn_8077BAA0, which returns 0
 	virtual void V_Unk14(); // links to fn_8076F540, which returns void
 
-	float unk4;
+	float ms_per_tick;
 };
 
 #endif

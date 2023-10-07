@@ -65,11 +65,12 @@ public:
 	String* replace(unsigned int, String*); // fn_80362A00
 
 	// symbols found in RB2:
-	// empty__6StringCFv, npos__6String, find_first_of__6StringCFPCc
+	// npos__6String, find_first_of__6StringCFPCc
 
 	// probably inline header methods
-	unsigned int length(); // fn_800A6E18
+	unsigned int length() const; // fn_800A6E18
 	const char *c_str() const; // fn_8000DB9C
+	bool empty() const; // fn_8000EC3C
 	// fn_8000DAC4
 
 	// may not actually be string methods
