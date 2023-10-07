@@ -45,6 +45,6 @@ double SimpleTempoMap::GetTempoBPM(int i) const {
 extern float lbl_807F00D0; // 1000.0f
 
 // fn_8037A548
-int SimpleTempoMap::V_Unk5(int i){
+int SimpleTempoMap::GetTempoUSecs(int i){
     return GetTempo(i) * lbl_807F00D0;
 }

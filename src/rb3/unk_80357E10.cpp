@@ -38,7 +38,7 @@ float MultiTempoTempoMap::GetTempo(int i) const {
 }
 
 // fn_803582F8
-int MultiTempoTempoMap::V_Unk5(int i){
+int MultiTempoTempoMap::GetTempoUSecs(int i){
 
 }
 

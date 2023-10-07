@@ -108,3 +108,17 @@ BinStream* BinStream::ReadEndian4(unsigned int* i){
 int BufStream::Tell(){
 	return fpos;
 }
+
+// fn_800A7730
+BinStream* BinStream::ReadSingle(void* v){
+	Read(v, 1);
+	return this;
+}
+
+// fn_800A7764
+BinStream* BinStream::ReadSingleIntoBool(bool* b){
+	unsigned char c;
+	ReadSingle(&c);
+	*b = (c != 0);
+	return this;
+}

@@ -96,6 +96,9 @@ rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
 
+rb3/unk_8050FA30.cpp:
+	.text       start:0x8050472C end:0x80522990
+
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
 

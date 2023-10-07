@@ -8,7 +8,7 @@ public:
 	virtual double TickToTime(float) const = 0;
 	virtual double TimeToTick(float) const = 0;
 	virtual float GetTempo(int) const = 0;
-	virtual int V_Unk5(int i) = 0;
+	virtual int GetTempoUSecs(int i) = 0;
 	virtual double GetTempoBPM(int) const = 0;
 	virtual int GetNumTempoChangePoints() const = 0;
 	virtual int GetTempoChangePoint(int) const = 0;

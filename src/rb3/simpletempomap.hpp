@@ -9,7 +9,7 @@ public:
 	virtual double TickToTime(float) const; // fn_8037A4FC
 	virtual double TimeToTick(float) const; // fn_8037A508
 	virtual float GetTempo(int) const; // fn_8037A514
-	virtual int V_Unk5(int i); // fn_8037A548
+	virtual int GetTempoUSecs(int i); // fn_8037A548
 	virtual double GetTempoBPM(int) const; // fn_8037A528
 	virtual int GetNumTempoChangePoints() const; // fn_8000F90C, returns 1 - GetNumTempoChangePoints
 	virtual int GetTempoChangePoint(int) const; // links to fn_8077BAA0, which returns 0 - GetTempoChangePoint

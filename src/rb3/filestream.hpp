@@ -11,7 +11,7 @@ public:
 	FileStream(char); // RB2 says this is FileStream(File*, bool)
 	virtual ~FileStream(); // fn_8034CB20
 
-	virtual void V_Unk1(); // fn_8034CCA8
+	virtual void Flush(); // fn_8034CCA8
 	virtual int Tell(); // fn_8034CD30
 	virtual bool Eof(); // fn_8034CD44
 	virtual bool Fail(); // fn_8034CD7C

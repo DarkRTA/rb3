@@ -1,6 +1,8 @@
 #ifndef RB3_TEXTFILESTREAM_HPP
 #define RB3_TEXTFILESTREAM_HPP
 #include "textstream.hpp"
+#include "filestream.hpp"
+#include "binstream.hpp"
 
 class TextFileStream : TextStream {
 public:

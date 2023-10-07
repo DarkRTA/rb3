@@ -7,7 +7,7 @@ class BufStream : BinStream {
 public:
 	BufStream(void*, int, bool);
 	virtual ~BufStream(); // fn_80343270
-	virtual void V_Unk1(); // fn_8076F540, returns void
+	virtual void Flush(); // fn_8076F540, returns void
 	virtual int Tell(); // fn_800A9C70
 	virtual bool Eof(); // fn_80343710
 	virtual bool Fail(); // fn_800DB158

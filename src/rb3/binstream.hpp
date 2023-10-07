@@ -8,7 +8,7 @@ class BinStream {
 public:
 	BinStream(bool);
 	virtual ~BinStream();
-	virtual void V_Unk1() = 0;
+	virtual void Flush() = 0;
 	virtual int Tell() = 0;
 	virtual bool Eof() = 0;
 	virtual bool Fail() = 0;
@@ -43,6 +43,8 @@ public:
 
 	BinStream* WriteEndian4(unsigned int);
 	BinStream* ReadEndian4(unsigned int*);
+	BinStream* ReadSingle(void*);
+	BinStream* ReadSingleIntoBool(bool*);
 
 };
 

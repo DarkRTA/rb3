@@ -5,6 +5,7 @@
 #include "std/string.h"
 #include "symbol.hpp"
 #include "bufstream.hpp"
+#include "bufstreamnand.hpp"
 
 // fn_80342D18
 // BinStream's ctor
@@ -160,3 +161,8 @@ void BufStream::SetName(const char* c){
 bool BufStream::Eof() {
 	return (size - fpos == 0);
 }
+
+// // fn_803437A8
+// BufStreamNAND::~BufStreamNAND(){
+
+// }
