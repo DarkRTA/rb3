@@ -10,6 +10,13 @@ TempoMap::TempoMap(){
 
 }
 
+extern void fn_803581AC(int*);
+
+// fn_80357E10
+MultiTempoTempoMap::MultiTempoTempoMap(){
+    fn_803581AC(unk4);
+}
+
 // fn_80358FA8
 MultiTempoTempoMap::~MultiTempoTempoMap(){
     

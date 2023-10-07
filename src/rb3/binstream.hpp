@@ -37,6 +37,8 @@ public:
 	void DisableEncryption();
 	//void Seek(int, BinStream::SeekType);
 
+	BinStream* WriteEndian4(unsigned int);
+
 };
 
 #endif

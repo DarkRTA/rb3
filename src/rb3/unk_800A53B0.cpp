@@ -8,6 +8,7 @@
 #include "jsonstring.hpp"
 #include "jsondouble.hpp"
 #include "jsonint.hpp"
+#include "binstream.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -90,4 +91,9 @@ JsonInt::JsonInt(){
 // fn_800A6628
 JsonInt::~JsonInt(){
 
+}
+
+BinStream* BinStream::WriteEndian4(unsigned int i){
+	WriteEndian(&i, 4);
+	return this;
 }

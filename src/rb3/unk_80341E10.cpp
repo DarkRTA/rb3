@@ -28,3 +28,11 @@ void BinStream::DisableEncryption(){
 	delete unk08;
 	unk08 = 0;
 }
+
+// fn_80342AD8
+BinStream* BinStream::operator<<(const char* c){
+	unsigned int size = strlen(c);
+	WriteEndian4(size);
+	Write(c, size);
+	return this;
+}

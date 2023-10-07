@@ -30,7 +30,7 @@ public:
 	// CompareTick__18MultiTempoTempoMapFfRCQ218MultiTempoTempoMap14TempoInfoPoint
 	// CompareTime__18MultiTempoTempoMapFfRCQ218MultiTempoTempoMap14TempoInfoPoint
 
-	String* unk4;
+	int* unk4; // some unknown class/pointer to some unknown class
 	float unk8;
 	float unkc;
 	float unk10;
