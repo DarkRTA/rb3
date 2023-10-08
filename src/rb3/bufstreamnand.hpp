@@ -14,7 +14,7 @@ public:
 	
 	virtual void ReadImpl(void*, int); // fn_80343B98
 	virtual void WriteImpl(void*, int); // fn_80343C9C
-	virtual void SeekImpl(int, int); // fn_80343D90 - the second int should actually be of type SeekType
+	virtual void SeekImpl(int, BinStream::SeekType); // fn_80343D90 - the second int should actually be of type SeekType
 
 	virtual void Unk11(); // fn_80343FD0
 	virtual void Unk12(); // fn_803440EC

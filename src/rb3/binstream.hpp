@@ -6,6 +6,10 @@
 
 class BinStream {
 public:
+	enum SeekType {
+		SeekMode0, SeekMode1, SeekMode2
+	};
+
 	BinStream(bool);
 	virtual ~BinStream();
 	virtual void Flush() = 0;
@@ -17,7 +21,7 @@ public:
 	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
 	virtual void ReadImpl(void*, int) = 0;
 	virtual void WriteImpl(void*, int) = 0;
-	virtual void SeekImpl(int, int) = 0; // the second int should actually be of type BinStream::SeekType
+	virtual void SeekImpl(int, SeekType) = 0; // the second int should actually be of type BinStream::SeekType
 
 	bool unk04;
 	Rand2* unk08;
@@ -39,8 +43,9 @@ public:
 	void EnableReadEncryption();
 	void EnableWriteEncryption(int);
 	void DisableEncryption();
-	//void Seek(int, BinStream::SeekType);
+	void Seek(int, SeekType);
 
+	// not taken from RB2, found in the asm
 	BinStream* WriteEndian4(unsigned int);
 	BinStream* ReadEndian4(unsigned int*);
 	BinStream* ReadSingle(void*);

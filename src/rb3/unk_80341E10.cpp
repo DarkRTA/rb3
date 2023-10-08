@@ -128,6 +128,45 @@ void BinStream::Read(void* v, int i){
 	}
 }
 
+extern int fn_800CF370(int, int);
+
+void BinStream::Write(const void* v, int i){
+	unsigned char sp8[512];
+    if(Fail() != 0){
+		Name();
+		return;
+	}
+	if(unk08 == nullptr){
+		WriteImpl((void*)v, i);
+		return;
+	}
+	while(i > 0){
+		int temp_r29 = fn_800CF370(0x200, i);
+        for(int j = 0; j < temp_r29; j++) {
+            unsigned char x = (unsigned char)unk08->Int();
+            sp8[j] = x ^ ((const char*)v)[j];
+        }
+		WriteImpl(&sp8, temp_r29);
+		i -= 0x200;
+		(char*)v += 0x200;
+	}
+}
+
+// fn_80343058 - Seek
+void BinStream::Seek(int i, SeekType s){
+	Fail();
+	SeekImpl(i, s);
+}
+
+void BinStream::WriteEndian(const void* v, int i){
+	char sp8;
+	if(unk04 != 0){
+		fn_80343114((void*)v, &sp8, i);
+		Write(&sp8, i);
+	}
+	else Write(v, i);
+}
+
 // fn_803431F4
 BufStream::BufStream(void* v, int i, bool b) : BinStream(b) {
 	unk1c = 0;
