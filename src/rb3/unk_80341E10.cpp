@@ -166,9 +166,8 @@ void BinStream::WriteEndian(const void* v, int i){
 }
 
 // fn_803431F4
-BufStream::BufStream(void* v, int i, bool b) : BinStream(b) {
-	unk1c = 0;
-	unk20 = 0;
+BufStream::BufStream(void* v, int i, bool b) : BinStream(b), 
+	unk1c(0), unk20(0) {
 	unkc = v;
 	unk10 = (v == 0);
 	fpos = 0;
@@ -191,22 +190,27 @@ void BufStream::WriteImpl(const void* v, int a){
 }
 
 // fn_80343658
-void BufStream::SeekImpl(int a, SeekType s){
-	if(s == 1){
-		a += fpos;
-	}
-	else if(s < 1){
-		if(s < 0) return;
-	}
-	else {
-		if(2 < s) return;
-		a += size;
-	}
-	if((-1 < a) && (a <= size)){
-		fpos = a;
-		return;
-	}
-	unk10 = true;
+void BufStream::SeekImpl(int i, SeekType s){
+	int newPos;
+    switch(s){
+        case SeekMode0:
+            newPos = i;
+            break;
+        case SeekMode1:
+            newPos = fpos + i;
+            break;
+        case SeekMode2:
+            newPos = size + i;
+            break;
+        default:
+            return;
+    }
+
+    if((newPos < 0) || (newPos > size)){
+        unk10 = true;
+        return;
+    }
+    fpos = newPos;
 }
 
 // fn_803436BC
