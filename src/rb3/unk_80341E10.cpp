@@ -128,8 +128,6 @@ void BinStream::Read(void* v, int i){
 	}
 }
 
-extern int fn_800CF370(int, int);
-
 void BinStream::Write(const void* v, int i){
 	unsigned char sp8[512];
     if(Fail() != 0){
@@ -141,7 +139,7 @@ void BinStream::Write(const void* v, int i){
 		return;
 	}
 	while(i > 0){
-		int temp_r29 = fn_800CF370(0x200, i);
+		int temp_r29 = Minimum(0x200, i);
         for(int j = 0; j < temp_r29; j++) {
             unsigned char x = (unsigned char)unk08->Int();
             sp8[j] = x ^ ((const char*)v)[j];
@@ -182,6 +180,34 @@ BufStream::~BufStream(){
 	DeleteChecksum();
 }
 
+// fn_803435E4
+void BufStream::WriteImpl(const void* v, int a){
+	if(fpos + a > size){
+		a = size - fpos;
+		unk10 = true;
+	}
+	memcpy((char*)unkc + fpos, v, a);
+	fpos += a;
+}
+
+// fn_80343658
+void BufStream::SeekImpl(int a, SeekType s){
+	if(s == 1){
+		a += fpos;
+	}
+	else if(s < 1){
+		if(s < 0) return;
+	}
+	else {
+		if(2 < s) return;
+		a += size;
+	}
+	if((-1 < a) && (a <= size)){
+		fpos = a;
+		return;
+	}
+	unk10 = true;
+}
 
 // fn_803436BC
 const char* BufStream::Name() const {
@@ -201,7 +227,7 @@ bool BufStream::Eof() {
 	return (size - fpos == 0);
 }
 
-// // fn_803437A8
-// BufStreamNAND::~BufStreamNAND(){
+// fn_803437A8
+BufStreamNAND::~BufStreamNAND(){
 
-// }
+}

@@ -39,6 +39,9 @@ rb3/unk_800AC804.cpp:
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
+rb3/unk_800C67F8.cpp:
+	.text       start:0x800C67F8 end:0x800F6DE4
+
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 

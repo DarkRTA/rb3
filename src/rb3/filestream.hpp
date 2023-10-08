@@ -19,7 +19,7 @@ public:
 	virtual void V_Unk6(); // links to fn_8077BAA0, which returns 0
 	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
 	virtual void ReadImpl(void*, int); // fn_8034CBCC // ReadImpl
-	virtual void WriteImpl(void*, int); // fn_8034CC50 - WriteImpl
+	virtual void WriteImpl(const void*, int); // fn_8034CC50 - WriteImpl
 	virtual void SeekImpl(int, SeekType); // fn_8034CCBC - SeekImpl
 
 	// RB2 FileStream vtable methods:

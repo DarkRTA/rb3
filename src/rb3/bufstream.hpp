@@ -14,8 +14,8 @@ public:
 	virtual const char* Name() const; // fn_803436BC
 	
 	virtual void ReadImpl(void*, int); // fn_80343538
-	virtual void WriteImpl(void*, int); // fn_803435E4
-	virtual void SeekImpl(int, SeekType); // fn_80343658 - the second int should actually be of type SeekType
+	virtual void WriteImpl(const void*, int); // fn_803435E4
+	virtual void SeekImpl(int, SeekType); // fn_80343658
 
 	// RB2 methods
 	// Flush, Tell, Eof, Fail, Name, ReadImpl, WriteImpl, SeekImpl

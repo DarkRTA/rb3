@@ -13,14 +13,11 @@ public:
 	virtual const char* Name() const; // fn_803436BC
 	
 	virtual void ReadImpl(void*, int); // fn_80343B98
-	virtual void WriteImpl(void*, int); // fn_80343C9C
+	virtual void WriteImpl(const void*, int); // fn_80343C9C
 	virtual void SeekImpl(int, BinStream::SeekType); // fn_80343D90 - the second int should actually be of type SeekType
 
 	virtual void Unk11(); // fn_80343FD0
 	virtual void Unk12(); // fn_803440EC
-
-	// void DeleteChecksum();
-	// void SetName(const char*);
 
 };
 

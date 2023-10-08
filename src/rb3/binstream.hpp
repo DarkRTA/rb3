@@ -20,7 +20,7 @@ public:
 	virtual void V_Unk6(); // links to fn_8077BAA0, which returns 0
 	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
 	virtual void ReadImpl(void*, int) = 0;
-	virtual void WriteImpl(void*, int) = 0;
+	virtual void WriteImpl(const void*, int) = 0;
 	virtual void SeekImpl(int, SeekType) = 0; // the second int should actually be of type BinStream::SeekType
 
 	bool unk04;
