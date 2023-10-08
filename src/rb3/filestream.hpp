@@ -3,6 +3,7 @@
 #include "binstream.hpp"
 #include "string.hpp"
 #include "file.hpp"
+#include "streamchecksum.hpp"
 
 class FileStream : BinStream {
 public:
@@ -32,8 +33,8 @@ public:
 	File* file;
 	String fname;
 	bool failed;
-	int unk20;
-	int unk24;
+	StreamChecksum* unk20;
+	int unk24; // probably a ptr to another class
 };
 
 #endif
