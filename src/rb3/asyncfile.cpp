@@ -242,7 +242,7 @@ void AsyncFile::FillBuffer(){
 	}
 }
 
-// fn_802E7E10
+// fn_802E7E10 - swaps endians for an int
 int fn_802E7E10(int i){
 	unsigned int ui = i;
 	return ui >> 0x18 | ui << 0x18 | ui >> 8 & 0xFF00 | (ui & 0xFF00) << 8;

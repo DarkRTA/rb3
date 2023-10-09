@@ -10,6 +10,7 @@
 #include "jsonint.hpp"
 #include "binstream.hpp"
 #include "bufstream.hpp"
+#include "matchmakingsettings.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -121,4 +122,20 @@ BinStream* BinStream::ReadSingleIntoBool(bool* b){
 	ReadSingle(&c);
 	*b = (c != 0);
 	return this;
+}
+
+// fn_800A7844
+MatchmakingSettings::~MatchmakingSettings(){
+
+}
+
+// fn_800A71BC
+void MatchmakingSettings::SetMode(Symbol s, int i){
+	unk4 = s;
+	unk8 = i;
+}
+
+// fn_800A7DE0
+void MatchmakingSettings::SetRanked(bool b){
+	unkc = b;
 }
