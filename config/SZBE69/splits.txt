@@ -39,6 +39,18 @@ rb3/unk_800AC804.cpp:
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
+rb3/unk_800C67F8.cpp:
+	.text       start:0x800C67F8 end:0x800F6DE4
+
+rb3/rand2.cpp:
+	.text       start:0x802DDE34 end:0x802DDEA0
+
+rb3/unk_802DDEA0.cpp:
+	.text       start:0x802DDEA0 end:0x802E0C40
+
+rb3/unk_802E0CA0.cpp:
+	.text       start:0x802E0CA0 end:0x802E40D0
+
 rb3/unk_802E434C.cpp:
 	.text       start:0x802E434C end:0x802E72CC
 
@@ -70,15 +82,28 @@ rb3/unk_80341E10.cpp:
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
+rb3/unk_80357E10.cpp:
+	.text       start:0x80357E10 end:0x80361B10
+
 rb3/string.cpp:
 	.text       start:0x80361B10 end:0x80362A50
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/unk_80357E10.cpp:
+rb3/unk_80362A50.cpp:
 	.text       start:0x80362A50 end:0x80365214
 
+rb3/unk_8037A3D8.cpp:
+	.text       start:0x8037A3D8 end:0x8037A488
+
 rb3/unk_8037A49C.cpp:
-	.text       start:0x8037A49C end:0x8037AD34
+	.text       start:0x8037A49C end:0x8037A67C
+
+rb3/textstream.cpp:
+	.text       start:0x8037A67C end:0x8037AA74
+	.data       start:0x80874510 end:0x80874550
+
+rb3/unk_8050FA30.cpp:
+	.text       start:0x8050472C end:0x80522990
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC

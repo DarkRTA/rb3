@@ -2,30 +2,39 @@
 #define RB3_FILESTREAM_HPP
 #include "binstream.hpp"
 #include "string.hpp"
-#include "asyncfilewii.hpp"
+#include "file.hpp"
+#include "streamchecksum.hpp"
 
 class FileStream : BinStream {
 public:
-	FileStream(char, char*, int);
-	FileStream(char);
+
+	enum FileType {
+		FileType0, FileType1, FileType2, FileType3
+	};
+
+	FileStream(const char*, FileType, bool); // RB2 says this is FileStream(const char*, FileStream::FileType, bool)
+	FileStream(File*, bool); // RB2 says this is FileStream(File*, bool)
 	virtual ~FileStream(); // fn_8034CB20
 
-	virtual void V_Unk1(); // fn_8034CCA8
-	virtual void V_Unk2(); // fn_8034CD30
-	virtual void V_Unk3(); // fn_8034CD44
-	virtual void V_Unk4(); // fn_8034CD7C
-	virtual const char* GetStreamName(); // fn_800C20FC
+	virtual void Flush(); // fn_8034CCA8
+	virtual int Tell(); // fn_8034CD30
+	virtual bool Eof(); // fn_8034CD44
+	virtual bool Fail(); // fn_8034CD7C
+	virtual const char* Name() const; // fn_800C20FC
 	virtual void V_Unk6(); // links to fn_8077BAA0, which returns 0
 	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
-	virtual void V_Unk8(); // fn_8034CBCC
-	virtual void V_Unk9(); // fn_8034CC50
-	virtual void V_Unk10(); // fn_8034CCBC
+	virtual void ReadImpl(void*, int); // fn_8034CBCC // ReadImpl
+	virtual void WriteImpl(const void*, int); // fn_8034CC50
+	virtual void SeekImpl(int, SeekType); // fn_8034CCBC
+	
+	void DeleteChecksum();
+	void StartChecksum();
 
-	char unkc; // actually supposed to be the class AsyncFileWii - NewFile() will return this
-	String str;
-	int unk1c; // either a char or bool, probably a bool
-	int unk20;
-	int unk24;
+	File* file;
+	String fname;
+	bool failed;
+	StreamChecksum* unk20;
+	int unk24; // probably a ptr to another class
 };
 
 #endif

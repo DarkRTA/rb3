@@ -5,6 +5,6 @@
 
 // fn_800C20FC
 // probably inlined
-const char* FileStream::GetStreamName(){
-    return str.c_str();
+const char* FileStream::Name() const {
+    return fname.c_str();
 }

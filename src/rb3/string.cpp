@@ -2,6 +2,7 @@
 #include "textstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
+#include "symbol.hpp"
 
 extern char lbl_808E4560; // RB2 marks this as "gEmpty"
 
@@ -18,12 +19,11 @@ String::String(const char *str)
 	*this = str;
 }
 
-// char** should actually be Symbol
-String::String(const char **str)
+String::String(Symbol s)
 {
 	len = 0;
 	text = &lbl_808E4560;
-	*this = *str;
+	*this = s.m_string;
 }
 
 String::String(const String &str)
@@ -132,10 +132,8 @@ String* String::operator+=(char c)
 	return this;
 }
 
-// assigns char** to this String's text field
-// RB2 calls this "operator=(Symbol)"
-String* String::operator=(const char** str){
-	return this->operator=(*str);
+String* String::operator=(Symbol s){
+	return this->operator=(s.m_string);
 }
 
 int String::find(const char *str, unsigned int idx) const
@@ -372,7 +370,7 @@ String* String::erase(unsigned int index){
 // start: the starting index of the text you want to replace
 // length: how many chars you want the replacement to be
 // buffer: the replacement chars
-String* String::replace(unsigned int start, unsigned int length, const char* buffer){
+String* String::replace(unsigned int start, unsigned int n, const char* buffer){
     char* text_offsetted;
     char* var_r4;
     char* var_r5;
@@ -380,25 +378,25 @@ String* String::replace(unsigned int start, unsigned int length, const char* buf
     char* tmp = 0;
     char c;
 
-    end = start + length;
+    end = start + n;
     if (end > len){
-        length = len - start;
+        n = len - start;
     }
 
     bufferLength = strlen(buffer);
-    if (bufferLength > length){
+    if (bufferLength > n){
         String str_tmp;
-        str_tmp.reserve(bufferLength + (length() - length));
+        str_tmp.reserve(bufferLength + (length() - n));
         strncpy(str_tmp.text, text, start);
         strncpy(str_tmp.text + start, buffer, bufferLength);
-        strcpy(str_tmp.text + (bufferLength + start), text + (length + start));
+        strcpy(str_tmp.text + (bufferLength + start), text + (n + start));
         swap(str_tmp);
     }
     else {
         strncpy(text + start, buffer, bufferLength);
         text_offsetted = text + start;
         var_r4 = text_offsetted + bufferLength;
-        var_r5 = text_offsetted + length;
+        var_r5 = text_offsetted + n;
         while(*var_r5 != '\0'){
             c = *var_r5++;
             *var_r4++ = c;

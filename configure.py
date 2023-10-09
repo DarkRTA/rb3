@@ -196,6 +196,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_803242cc.cpp"),
             Object(NonMatching, "rb3/unk_800AB914.cpp"),
             Object(NonMatching, "rb3/unk_80357E10.cpp"),
+            Object(NonMatching, "rb3/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/unk_8037A49C.cpp"),
             Object(NonMatching, "rb3/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unk_800A53B0.cpp"),
@@ -205,11 +206,18 @@ config.libs = [
             Object(NonMatching, "rb3/unk_802E434C.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
             Object(NonMatching, "rb3/unk_800BF1A8.cpp"),
+            Object(NonMatching, "rb3/unk_8037A3D8.cpp"),
+            Object(NonMatching, "rb3/unk_802DDEA0.cpp"),
+            Object(NonMatching, "rb3/unk_8050FA30.cpp"),
+            Object(NonMatching, "rb3/unk_800C67F8.cpp"),
+            Object(NonMatching, "rb3/unk_802E0CA0.cpp"),
             Object(NonMatching, "rb3/filegetext.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
-            Object(NonMatching, "rb3/asyncfilecnt.cpp")
+            Object(NonMatching, "rb3/asyncfilecnt.cpp"),
+            Object(NonMatching, "rb3/textstream.cpp"), # should be matching, linker is being weird
+            Object(Matching, "rb3/rand2.cpp")
         ],
     },
     {

@@ -1,9 +1,10 @@
 #ifndef MSL_PRINTF_H
 #define MSL_PRINTF_H
-
 #include <stdarg.h>
 #include <stdio.h>
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 //printf
 //printf_s
@@ -22,4 +23,7 @@ int snprintf(char*, size_t, const char*, ...);
 int sprintf(char*, const char*, ...);
 //sprintf_s
 
+#ifdef __cplusplus
+}
+#endif
 #endif

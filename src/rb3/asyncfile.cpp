@@ -225,9 +225,9 @@ int AsyncFile::V_Unk15(int* a){
 	return V_Unk21();
 }
 
-unsigned int fn_802E85D0(unsigned int a, unsigned int b){
-	if (b < a) return b;
-	return a;
+// fn_802E85D0
+unsigned int Minimum(unsigned int a, unsigned int b){
+	return (b < a) ? b : a;
 }
 
 // FillBuffer
@@ -236,8 +236,14 @@ void AsyncFile::FillBuffer(){
 		if(unk1c != lbl_808517C8[0]){
 			V_Unk21();
 		}
-		fn_802E85D0(fpos, lbl_808517C8[0]);
+		Minimum(fpos, lbl_808517C8[0]);
 		_SeekToTell();
 		unk1c = 0;
 	}
+}
+
+// fn_802E7E10 - swaps endians for an int
+int fn_802E7E10(int i){
+	unsigned int ui = i;
+	return ui >> 0x18 | ui << 0x18 | ui >> 8 & 0xFF00 | (ui & 0xFF00) << 8;
 }

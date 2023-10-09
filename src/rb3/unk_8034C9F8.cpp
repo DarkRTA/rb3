@@ -4,55 +4,78 @@
 #include "binstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
+#include "file.hpp"
 
-// extern AsyncFileWii NewFile(const char*, int);
+extern File* NewFile(const char*, int);
 
 // fn_8034C9F8
 // ctor
-// RB2 has this as char *param_1,FileType param_2,bool param_3
-FileStream::FileStream(char c, char* arg1, int arg2) : BinStream(c) {
-	int var_r31;
-	// AsyncFileWii temp_r3;
-	unk20 = 0;
-	unk24 = 0;
-	if(arg2 == 0){
-		var_r31 = 2;
+FileStream::FileStream(const char* c, FileType ft, bool b) : BinStream(b), unk20(0), unk24(0) {
+	int fsize;
+	if(ft == 0){
+		fsize = 2;
 	}
-	else if(arg2 == 2){
-		var_r31 = 0x10002;
+	else if(ft == 2){
+		fsize = 0x10002;
 	}
-	else{
-		var_r31 = 0xA04;
-		if(arg2 == 3){
-			var_r31 = 0x304;
+	else {
+		fsize = 0xA04;
+		if(ft == 3){
+			fsize = 0x304;
 		}
 	}
-
-	str = arg1;
-	unk1c = var_r31;
-	// temp_r3 = NewFile(arg1, var_r31);
-	// unkC = temp_r3;
-	// unk1C = (char) (temp_r3 == 0)
-
+	fname = c;
+	file = NewFile(c, fsize);
+	failed = (file == 0);
 }
 
 // fn_8034CAB8
 // ctor
-FileStream::FileStream(char c) : BinStream(c) {
+FileStream::FileStream(File* f, bool b) : BinStream(b) {
 	unk20 = 0;
 	unk24 = 0;
-	unk1c = 0;
+	file = f;
+	failed = false;
 }
-
-extern bool fn_8000EC3C(FileStream*);
-extern void fn_8034CD84(FileStream*);
 
 // fn_8034CB20
 // dtor
 FileStream::~FileStream(){
-	if(fn_8000EC3C(this) == 0){
-
+	if(fname.empty()){
+		if(file == 0){
+			Flush();
+		}
 	}
-	fn_8034CD84(this);
+	DeleteChecksum();
 	// fn_800E1114
+}
+
+// fn_8034CCA8
+void FileStream::Flush(){
+	file->Flush();
+}
+
+// fn_8034CD30
+int FileStream::Tell(){
+	return file->Tell();
+}
+
+// fn_8034CD44
+bool FileStream::Eof(){
+	return (file->Eof() != false);
+}
+
+// fn_8034CD7C
+bool FileStream::Fail(){
+	return failed;
+}
+
+// fn_8034CC50
+void FileStream::WriteImpl(const void* v, int i){
+	
+}
+
+// fn_8034CCBC
+void FileStream::SeekImpl(int i, SeekType s){
+
 }

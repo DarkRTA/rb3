@@ -3,6 +3,9 @@
 #include "filepath.hpp"
 #include "objref.hpp"
 #include "unknown.hpp"
+#include "symbol.hpp"
+#include "message.hpp"
+#include "matchmakingsettings.hpp"
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
@@ -12,10 +15,7 @@ const char *String::c_str() const
 }
 
 // fn_8000DD10
-// this could also possibly be an inline
-TextStream::~TextStream()
-{
-}
+// generic dtor function
 
 // fn_8000EC00
 FilePath::FilePath(const String& str) : String(str) {
@@ -43,3 +43,24 @@ ObjRef::ObjRef(){
 // ObjRef::~ObjRef(){
 
 // }
+
+// fn_8000DCA8
+Symbol* Symbol::operator=(const Symbol& s){
+	m_string = s.m_string;
+	return this;
+}
+
+// fn_8000EC3C
+bool String::empty() const {
+	return (*text == '\0');
+}
+
+// fn_8000DF60
+Message::~Message(){
+	
+}
+
+// fn_8000DF3C
+Symbol MatchmakingSettings::GetSymbol() const {
+	return unk4;
+} 
