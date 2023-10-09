@@ -11,6 +11,7 @@
 #include "binstream.hpp"
 #include "bufstream.hpp"
 #include "matchmakingsettings.hpp"
+#include "symbol.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -138,4 +139,32 @@ void MatchmakingSettings::SetMode(Symbol s, int i){
 // fn_800A7DE0
 void MatchmakingSettings::SetRanked(bool b){
 	unkc = b;
+}
+
+// fn_800A71FC
+void MatchmakingSettings::AddCustomSetting(int i, int j){
+
+}
+
+// fn_800A75FC - WriteSingle
+BinStream* BinStream::WriteSingle(char c){
+	Write(&c, 1);
+	return this;
+}
+
+// fn_800A7DE8
+bool MatchmakingSettings::GetRanked() const {
+	return unkc;
+}
+
+extern char* lbl_808540E0; // RB2 marks this as gNullStr
+
+// fn_800A7C40
+Symbol::Symbol(){
+	m_string = lbl_808540E0;
+}
+
+// fn_800A7B30
+MatchmakingSettings::MatchmakingSettings(){
+	
 }

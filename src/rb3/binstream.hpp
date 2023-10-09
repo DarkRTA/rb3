@@ -50,6 +50,7 @@ public:
 	BinStream* ReadEndian4(unsigned int*);
 	BinStream* ReadSingle(void*);
 	BinStream* ReadSingleIntoBool(bool*);
+	BinStream* WriteSingle(char);
 
 };
 

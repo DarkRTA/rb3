@@ -5,6 +5,7 @@
 
 class MatchmakingSettings {
 public:
+	MatchmakingSettings(); // fn_800A7B30
 	virtual ~MatchmakingSettings(); // fn_800A7844
 	virtual void SetMode(Symbol, int); // fn_800A71BC
 	virtual void SetRanked(bool); // fn_800A7DE0
@@ -18,6 +19,10 @@ public:
 
 	void Save(BinStream&) const;
 	void Load(BinStream&);
+
+	bool GetRanked() const;
+	Symbol GetSymbol() const; // fn_8000DF3C
+
 
 	Symbol unk4;
 	unsigned int unk8;

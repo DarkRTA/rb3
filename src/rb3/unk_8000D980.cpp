@@ -5,6 +5,7 @@
 #include "unknown.hpp"
 #include "symbol.hpp"
 #include "message.hpp"
+#include "matchmakingsettings.hpp"
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
@@ -58,3 +59,8 @@ bool String::empty() const {
 Message::~Message(){
 	
 }
+
+// fn_8000DF3C
+Symbol MatchmakingSettings::GetSymbol() const {
+	return unk4;
+} 
