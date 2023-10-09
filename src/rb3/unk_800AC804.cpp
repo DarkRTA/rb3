@@ -6,13 +6,14 @@
 
 // fn_800AFE60
 // probably inline
-bool String::IsTextLengthZero(){
-    return len == 0;
+bool String::IsTextLengthZero()
+{
+	return len == 0;
 }
 
-extern void fn_800AE758(Message*, int);
+extern void fn_800AE758(Message *, int);
 
 // fn_800AE714
-Message::Message(){
-
+Message::Message()
+{
 }

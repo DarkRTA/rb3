@@ -18,25 +18,26 @@ const char *String::c_str() const
 // generic dtor function
 
 // fn_8000EC00
-FilePath::FilePath(const String& str) : String(str) {
-
+FilePath::FilePath(const String &str) : String(str)
+{
 }
 
 extern String lbl_8097BB0C;
 
 // fn_8000EC5C
-FilePath::FilePath(const char* str){
+FilePath::FilePath(const char *str)
+{
 	fn_8034C91C(lbl_8097BB0C.c_str(), str);
 }
 
 // fn_8000EA28
-FilePath::~FilePath(){
-
+FilePath::~FilePath()
+{
 }
 
 // fn_8000ED3C
-ObjRef::ObjRef(){
-
+ObjRef::ObjRef()
+{
 }
 
 // fn_8000DD10 - could possibly be an inline
@@ -45,22 +46,25 @@ ObjRef::ObjRef(){
 // }
 
 // fn_8000DCA8
-Symbol* Symbol::operator=(const Symbol& s){
+Symbol *Symbol::operator=(const Symbol &s)
+{
 	m_string = s.m_string;
 	return this;
 }
 
 // fn_8000EC3C
-bool String::empty() const {
+bool String::empty() const
+{
 	return (*text == '\0');
 }
 
 // fn_8000DF60
-Message::~Message(){
-	
+Message::~Message()
+{
 }
 
 // fn_8000DF3C
-Symbol MatchmakingSettings::GetSymbol() const {
+Symbol MatchmakingSettings::GetSymbol() const
+{
 	return unk4;
-} 
+}

@@ -17,8 +17,8 @@ public:
 	virtual void V_Unk9(); // fn_80358B08
 	virtual void V_Unk10(); // fn_80358864
 	virtual void V_Unk11(int, int); // fn_80358880
-	virtual int V_Unk12(int, int*); // fn_80358914
-	virtual int V_Unk13(int, int*); // fn_803589B8
+	virtual int V_Unk12(int, int *); // fn_80358914
+	virtual int V_Unk13(int, int *); // fn_803589B8
 	virtual void V_Unk14(); // fn_803589E8
 
 	// symbols from RB2:
@@ -30,7 +30,7 @@ public:
 	// CompareTick__18MultiTempoTempoMapFfRCQ218MultiTempoTempoMap14TempoInfoPoint
 	// CompareTime__18MultiTempoTempoMapFfRCQ218MultiTempoTempoMap14TempoInfoPoint
 
-	int* unk4; // some unknown class/pointer to some unknown class
+	int *unk4; // some unknown class/pointer to some unknown class
 	float unk8;
 	float unkc;
 	float unk10;

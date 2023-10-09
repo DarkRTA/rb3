@@ -6,16 +6,16 @@
 
 class AsyncFileCNT : AsyncFile {
 public:
-	AsyncFileCNT(const char*, int);
+	AsyncFileCNT(const char *, int);
 	virtual ~AsyncFileCNT();
-	virtual int V_Unk16(int*); // fn_802E8774
-	
+	virtual int V_Unk16(int *); // fn_802E8774
+
 	virtual void _Open(); // fn_802E8784
 	virtual int V_Unk19(); // fn_802E88C0
-	virtual int _Write(const void*, int); // fn_802E88C8
+	virtual int _Write(const void *, int); // fn_802E88C8
 	virtual int V_Unk21(); // fn_802E88CC
 	virtual void _SeekToTell(); // fn_802E88D4
-	virtual void _ReadAsync(void*, int); // fn_802E892C
+	virtual void _ReadAsync(void *, int); // fn_802E892C
 	virtual int _ReadDone(); // fn_802E89FC
 	virtual void _Close(); // fn_802E8AA4
 
@@ -23,10 +23,11 @@ public:
 	int unk3c;
 	int unk40;
 	int unk44; // probably a class
-	char unk48; 
+	char unk48;
 	char unk49;
 	char unk4a;
-	int unk4c, unk50, unk54, unk58, unk5c, unk60, unk64, unk68, unk6c, unk70, unk74;
+	int unk4c, unk50, unk54, unk58, unk5c, unk60, unk64, unk68, unk6c, unk70,
+		unk74;
 	int unk78;
 };
 

@@ -1,10 +1,11 @@
 #include <types.h>
 #include <std/string.h>
 // nonmatching, i give up for now
-extern "C" char * FileGetExt(char*);
+extern "C" char *FileGetExt(char *);
 
-char * FileGetExt(char* filename) { // 802fa918
-/*
+char *FileGetExt(char *filename)
+{ // 802fa918
+	/*
 	char cVar1;
 	int iVar2;
 	char *endfile;
@@ -31,18 +32,17 @@ char * FileGetExt(char* filename) { // 802fa918
 	return endfile;*/
 
 	size_t len = strlen(filename);
-	char* ext = filename + len;
-	char* search = ext - 1;
+	char *ext = filename + len;
+	char *search = ext - 1;
 	size_t extensionless_len = ext - filename;
 	if (search >= filename) {
 		char needle;
 		while (needle = *search, needle != '.') {
-			switch(needle) {
-				case '/':
-				case '\\':
-					return ext;
-				default:
-					;
+			switch (needle) {
+			case '/':
+			case '\\':
+				return ext;
+			default:;
 			}
 			if (needle != '/') {
 				continue;

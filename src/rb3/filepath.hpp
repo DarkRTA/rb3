@@ -4,11 +4,11 @@
 
 class FilePath : String {
 public:
-	FilePath(const String&);
-	FilePath(const char*);
+	FilePath(const String &);
+	FilePath(const char *);
 	virtual ~FilePath();
 
-	void fn_8034C91C(const char*, const char*);
+	void fn_8034C91C(const char *, const char *);
 };
 
 #endif

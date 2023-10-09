@@ -27,98 +27,109 @@ unsigned int String::length() const
 // }
 
 // fn_800A6360
-JsonObject::JsonObject(){
+JsonObject::JsonObject()
+{
 	unk4 = 0;
 }
 
 extern void fn_800C6D4C(int);
 
 // fn_800A6378
-JsonObject::~JsonObject(){
+JsonObject::~JsonObject()
+{
 	fn_800C6D4C(unk4);
 }
 
 // fn_800A673C
-JsonConverter::JsonConverter(){
-
+JsonConverter::JsonConverter()
+{
 }
 
 // fn_800A6AF0
-JsonConverter::~JsonConverter(){
-
+JsonConverter::~JsonConverter()
+{
 }
 
 extern void fn_800C7690();
 
 // fn_800A63EC
-JsonArray::JsonArray(){
+JsonArray::JsonArray()
+{
 	fn_800C7690();
 }
 
 // fn_800A6430
-JsonArray::~JsonArray(){
-
+JsonArray::~JsonArray()
+{
 }
 
 extern void fn_800C74C8();
 
 // fn_800A6520
-JsonString::JsonString(){
+JsonString::JsonString()
+{
 	fn_800C74C8();
 }
 
 // fn_800A6574
-JsonString::~JsonString(){
-
+JsonString::~JsonString()
+{
 }
 
-extern void fn_800C72E8(JsonDouble*);
+extern void fn_800C72E8(JsonDouble *);
 
 // fn_800A6688
-JsonDouble::JsonDouble(){
+JsonDouble::JsonDouble()
+{
 	fn_800C72E8(this);
 }
 
 // fn_800A66DC
-JsonDouble::~JsonDouble(){
-
+JsonDouble::~JsonDouble()
+{
 }
 
-extern void fn_800C71D4(JsonInt*);
+extern void fn_800C71D4(JsonInt *);
 
 // fn_800A65D4
-JsonInt::JsonInt(){
+JsonInt::JsonInt()
+{
 	fn_800C71D4(this);
 }
 
 // fn_800A6628
-JsonInt::~JsonInt(){
-
+JsonInt::~JsonInt()
+{
 }
 
-BinStream* BinStream::WriteEndian4(unsigned int i){
+BinStream *BinStream::WriteEndian4(unsigned int i)
+{
 	WriteEndian(&i, 4);
 	return this;
 }
 
-BinStream* BinStream::ReadEndian4(unsigned int* i){
+BinStream *BinStream::ReadEndian4(unsigned int *i)
+{
 	ReadEndian(i, 4);
 	return this;
 }
 
 // fn_800A9C70
-int BufStream::Tell(){
+int BufStream::Tell()
+{
 	return fpos;
 }
 
 // fn_800A7730
-BinStream* BinStream::ReadSingle(void* v){
+BinStream *BinStream::ReadSingle(void *v)
+{
 	Read(v, 1);
 	return this;
 }
 
 // fn_800A7764
-BinStream* BinStream::ReadSingleIntoBool(bool* b){
+BinStream *BinStream::ReadSingleIntoBool(bool *b)
+{
 	unsigned char c;
 	ReadSingle(&c);
 	*b = (c != 0);
@@ -126,45 +137,50 @@ BinStream* BinStream::ReadSingleIntoBool(bool* b){
 }
 
 // fn_800A7844
-MatchmakingSettings::~MatchmakingSettings(){
-
+MatchmakingSettings::~MatchmakingSettings()
+{
 }
 
 // fn_800A71BC
-void MatchmakingSettings::SetMode(Symbol s, int i){
+void MatchmakingSettings::SetMode(Symbol s, int i)
+{
 	unk4 = s;
 	unk8 = i;
 }
 
 // fn_800A7DE0
-void MatchmakingSettings::SetRanked(bool b){
+void MatchmakingSettings::SetRanked(bool b)
+{
 	unkc = b;
 }
 
 // fn_800A71FC
-void MatchmakingSettings::AddCustomSetting(int i, int j){
-
+void MatchmakingSettings::AddCustomSetting(int i, int j)
+{
 }
 
 // fn_800A75FC - WriteSingle
-BinStream* BinStream::WriteSingle(char c){
+BinStream *BinStream::WriteSingle(char c)
+{
 	Write(&c, 1);
 	return this;
 }
 
 // fn_800A7DE8
-bool MatchmakingSettings::GetRanked() const {
+bool MatchmakingSettings::GetRanked() const
+{
 	return unkc;
 }
 
-extern char* lbl_808540E0; // RB2 marks this as gNullStr
+extern char *lbl_808540E0; // RB2 marks this as gNullStr
 
 // fn_800A7C40
-Symbol::Symbol(){
+Symbol::Symbol()
+{
 	m_string = lbl_808540E0;
 }
 
 // fn_800A7B30
-MatchmakingSettings::MatchmakingSettings(){
-	
+MatchmakingSettings::MatchmakingSettings()
+{
 }
