@@ -115,9 +115,9 @@ if not is_windows():
 
 # Tool versions
 config.compilers_tag = "1"
-config.dtk_tag = "v0.5.2"
+config.dtk_tag = "v0.5.5"
 config.sjiswrap_tag = "v1.1.1"
-config.wibo_tag = "0.5.1"
+config.wibo_tag = "0.6.3"
 
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
@@ -126,6 +126,7 @@ config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
+    "-code_merging all",
 ]
 
 cflags_base = [
@@ -177,7 +178,7 @@ if config.debug:
     cflags_runtime.extend(["-sym dwarf-2,full"])
 
 cflags_runtime.append("-inline auto")
-config.linker_version = "GC/3.0"
+config.linker_version = "Wii/1.3"
 
 Matching = True
 NonMatching = False
