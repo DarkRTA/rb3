@@ -214,6 +214,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_802E0CA0.cpp"),
             Object(NonMatching, "rb3/unk_8034C91C.cpp"),
             Object(NonMatching, "rb3/filegetext.cpp"),
+            Object(NonMatching, "rb3/unk_802FA994.cpp"),
             Object(NonMatching, "rb3/unk_800AAE1C.cpp"),
             Object(NonMatching, "rb3/unk_8037AD40.cpp"),
             Object(NonMatching, "rb3/unk_802F98DC.cpp"),

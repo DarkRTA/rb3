@@ -109,7 +109,8 @@ extern char lbl_808E2DA0;
 
 // loose functions
 int Minimum(int, int);
-void FileQualifiedFilename(char*, int, const char*, int);
+void FileQualifiedFilename(char*, int, const char*);
+extern "C" char* FileGetDrive(char*);
 
 extern "C" int fn_806F61D4();
 extern "C" void fn_8030F9EC(void *);

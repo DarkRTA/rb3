@@ -75,6 +75,9 @@ rb3/unk_802F98DC.cpp:
 rb3/filegetext.cpp:
 	.text       start:0x802FA918 end:0x802FA994
 
+rb3/unk_802FA994.cpp:
+	.text       start:0x802FA994 end:0x802FB4AC
+
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
