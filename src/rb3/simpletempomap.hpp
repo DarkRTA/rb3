@@ -4,7 +4,7 @@
 
 class SimpleTempoMap : TempoMap {
 public:
-	SimpleTempoMap();
+	SimpleTempoMap(float); // fn_8037A49C
 	virtual ~SimpleTempoMap(); // fn_8037A410
 	virtual double TickToTime(float) const; // fn_8037A4FC
 	virtual double TimeToTick(float) const; // fn_8037A508

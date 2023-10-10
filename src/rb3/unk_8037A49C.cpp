@@ -19,6 +19,13 @@ void TextFileStream::Print(const char *c)
 	// }
 }
 
+extern float lbl_807F04A4; // 480.0f
+
+// fn_8037A49C
+SimpleTempoMap::SimpleTempoMap(float f){
+	ms_per_tick = f / 480.0f;
+}
+
 // fn_8037A4FC
 double SimpleTempoMap::TickToTime(float f) const
 {
@@ -30,8 +37,6 @@ double SimpleTempoMap::TimeToTick(float f) const
 {
 	return f / ms_per_tick;
 }
-
-extern float lbl_807F04A4; // 480.0f
 
 // fn_8037A514
 float SimpleTempoMap::GetTempo(int i) const

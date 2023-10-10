@@ -29,6 +29,9 @@ quazal/unk_800A515C.cpp:
 rb3/unk_800A53B0.cpp:
 	.text       start:0x800A53B0 end:0x800AAD98
 
+rb3/unk_800AAE1C.cpp:
+	.text       start:0x800AAE1C end:0x800AB8C4
+
 rb3/unk_800AB914.cpp:
 	.text       start:0x800AB914 end:0x800AB960
 	.data       start:0x8082ADF0 end:0x8082AE04
@@ -79,6 +82,9 @@ rb3/unk_80341E10.cpp:
 	.text       start:0x80341E10 end:0x8034A7DC
 	.data       start:0x80856788 end:0x808567C8
 
+rb3/unk_8034C91C.cpp:
+	.text       start:0x8034C444 end:0x8034C988
+
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
@@ -101,6 +107,9 @@ rb3/unk_8037A49C.cpp:
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
+
+rb3/unk_8037AD40.cpp:
+	.text       start:0x8037AD40 end:0x80392960
 
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
