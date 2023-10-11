@@ -12,6 +12,7 @@
 #include "bufstream.hpp"
 #include "matchmakingsettings.hpp"
 #include "symbol.hpp"
+#include "memstream.hpp"
 
 // fn_800A6E18
 // probably inline
@@ -167,9 +168,8 @@ BinStream *BinStream::WriteSingle(char c)
 }
 
 // fn_800A7DE8
-bool MatchmakingSettings::GetRanked() const
-{
-	return unkc;
+bool MemStream::Fail(){
+	return failed;
 }
 
 extern char *lbl_808540E0; // RB2 marks this as gNullStr

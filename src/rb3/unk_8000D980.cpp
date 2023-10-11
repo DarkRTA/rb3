@@ -63,8 +63,8 @@ Message::~Message()
 {
 }
 
-// fn_8000DF3C
-Symbol MatchmakingSettings::GetSymbol() const
-{
-	return unk4;
-}
+// // fn_8000DF3C
+// Symbol MatchmakingSettings::GetSymbol() const
+// {
+// 	return unk4;
+// }
