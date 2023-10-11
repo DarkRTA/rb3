@@ -15,33 +15,33 @@ char* FileGetDrive(char* c){
     return lbl_809072C8;
 }
 
-extern "C" char* fn_802FAA10(char*, char*);
+extern "C" char* FileGetBase(char*, char*);
 extern char lbl_809073C8[];
 
 // fn_802FAA10
-char* fn_802FAA10(char* arg0, char* arg1){
+char* FileGetBase(char* fname, char* base){
     char* ext;
     char* dir;
 
-    if(arg1 == 0) arg1 = lbl_809073C8;
-    dir = strrchr(arg0, '/');
-    if ((dir != 0) || (dir = strrchr(arg0, '\\'), (dir != 0))) {
-        strcpy(arg1, dir + 1);
+    if(base == 0) base = lbl_809073C8;
+    dir = strrchr(fname, '/');
+    if ((dir != 0) || (dir = strrchr(fname, '\\'), (dir != 0))) {
+        strcpy(base, dir + 1);
     } 
-    else strcpy(arg1, arg0);
+    else strcpy(base, fname);
     
-    ext = strrchr(arg1, '.');
+    ext = strrchr(base, '.');
     if (ext != 0) {
         *ext = 0;
     }
-    return arg1;
+    return base;
 }
 
-extern "C" char* fn_802FAAC0(char*);
+extern "C" char* FileGetName(char*);
 extern char lbl_809074C8[];
 
 // fn_802FAAC0
-char* fn_802FAAC0(char* arg){
+char* FileGetName(char* arg){
     char* dir = strrchr(arg, '/');
     if ((dir != 0) || (dir = strrchr(arg, '\\'), (dir != 0))) {
         strcpy(lbl_809074C8, dir + 1);
@@ -50,24 +50,23 @@ char* fn_802FAAC0(char* arg){
     return lbl_809074C8;
 }
 
-extern "C" bool fn_802FAE68(char*, char*, bool);
-extern "C" bool fn_802FAF0C(char*, char*);
+extern "C" bool FileMatch(const char*, const char*);
 
 // fn_802FAE68
-bool fn_802FAE68(char* arg0, char* arg1, bool arg2){
+bool FileMatchInternal(const char* arg0, const char* arg1, bool arg2){
     for(; *arg0 != 0; arg0++){
-        if(fn_802FAF0C(arg0, arg1)) return true;
+        if(FileMatch(arg0, arg1)) return true;
         if(!arg2 && (*arg0 == '/' || *arg0 == '\\'))  return false;
     }
     return (*arg1 == *arg0);
 }
 
 // fn_802FAF0C
-bool fn_802FAF0C(char* param1, char* param2){
+bool FileMatch(const char* param1, const char* param2){
     if(param2 == 0) return false;
     while(*param2 != '\0') {
-        if(*param2 == '*') return fn_802FAE68(param1, param2 + 1, 0);
-        if(*param2 == '&') return fn_802FAE68(param1, param2 + 1, 1);
+        if(*param2 == '*') return FileMatchInternal(param1, param2 + 1, 0);
+        if(*param2 == '&') return FileMatchInternal(param1, param2 + 1, 1);
         if(*param1 == '\0') break;
         if(*param2 == '?'){
             if((*param1 == '\\') || (*param1 == '/')) return 0;

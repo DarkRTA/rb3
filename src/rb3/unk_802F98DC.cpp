@@ -21,11 +21,11 @@ void FileNormalizePath(char* c){
     }
 }
 
-extern "C" char* fn_802FA848(char*, char*);
+extern "C" char* FileGetPath(char*, char*);
 extern char lbl_809071C8[];
 
 // fn_802FA848
-char* fn_802FA848(char* arg1, char* arg2){
+char* FileGetPath(char* arg1, char* arg2){
     char* p2;
     if(arg2 == 0) arg2 = lbl_809071C8;
     if(arg1 != 0){
