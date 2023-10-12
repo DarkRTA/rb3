@@ -5,9 +5,11 @@
 #include "string.hpp"
 #include "memstream.hpp"
 
+// this class is 0x34 big! according to NewNetMessage()
 class SyncObjMsg : NetMessage {
 public:
-	SyncObjMsg(String&, unsigned int); // fn_800AAE4C
+	SyncObjMsg(); // fn_800AAE4C
+	// SyncObjMsg(String&, unsigned int); // found in RB2
 	virtual ~SyncObjMsg(); // fn_800BA1EC
 	virtual void Save(BinStream&) const; // fn_800BA7E0
 	virtual void Load(BinStream&); // fn_800BA84C
@@ -22,6 +24,8 @@ public:
 
 	// int unk14;
 	MemStream* unk14;
+
+	void NewNetMessage(); // fn_800AAE1C
 
 	void fn_800BA788(BinStream&) const;
 };
