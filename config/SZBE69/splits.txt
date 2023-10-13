@@ -29,12 +29,18 @@ quazal/unk_800A515C.cpp:
 rb3/unk_800A53B0.cpp:
 	.text       start:0x800A53B0 end:0x800AAD98
 
+rb3/unk_800AAE1C.cpp:
+	.text       start:0x800AAE1C end:0x800AB8C4
+
 rb3/unk_800AB914.cpp:
 	.text       start:0x800AB914 end:0x800AB960
 	.data       start:0x8082ADF0 end:0x8082AE04
 
 rb3/unk_800AC804.cpp:
 	.text       start:0x800AC804 end:0x800B45D0
+
+rb3/unk_800B4630.cpp:
+	.text       start:0x800B4630 end:0x800BC50C
 
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
@@ -66,8 +72,17 @@ rb3/asyncfilecnt.cpp:
 rb3/asyncfilewii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
+rb3/unk_802F98DC.cpp:
+	.text       start:0x802F98DC end:0x802FA918
+
 rb3/filegetext.cpp:
 	.text       start:0x802FA918 end:0x802FA994
+
+rb3/unk_802FA994.cpp:
+	.text       start:0x802FA994 end:0x802FB4AC
+
+rb3/unk_802FB548.cpp:
+	.text       start:0x802FB548 end:0x802FDA80
 
 rb3/unk_803242cc.cpp:
 	.text       start:0x803242CC end:0x8032443C
@@ -79,8 +94,14 @@ rb3/unk_80341E10.cpp:
 	.text       start:0x80341E10 end:0x8034A7DC
 	.data       start:0x80856788 end:0x808567C8
 
+rb3/unk_8034C91C.cpp:
+	.text       start:0x8034C444 end:0x8034C988
+
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
+
+rb3/unk_80354A30.cpp:
+	.text       start:0x80354A30 end:0x80355190
 
 rb3/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x80361B10
@@ -101,6 +122,9 @@ rb3/unk_8037A49C.cpp:
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
+
+rb3/unk_8037AD40.cpp:
+	.text       start:0x8037AD40 end:0x80392960
 
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990

@@ -32,6 +32,8 @@ void* memchr(const void*, int, size_t);
 void* memcpy(void* dest, const void* src, size_t n);
 void* memset(void* dest, int val, size_t count);
 
+char* strtok(char*, const char*);
+
 #ifdef __cplusplus
 }
 #endif

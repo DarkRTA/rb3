@@ -20,8 +20,7 @@ public:
 	void Save(BinStream &) const;
 	void Load(BinStream &);
 
-	bool GetRanked() const;
-	Symbol GetSymbol() const; // fn_8000DF3C
+	// Symbol GetSymbol() const; // fn_8000DF3C
 
 	Symbol unk4;
 	unsigned int unk8;

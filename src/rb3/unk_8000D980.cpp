@@ -22,12 +22,12 @@ FilePath::FilePath(const String &str) : String(str)
 {
 }
 
-extern String lbl_8097BB0C;
+extern String* lbl_8097BB0C;
 
 // fn_8000EC5C
 FilePath::FilePath(const char *str)
 {
-	fn_8034C91C(lbl_8097BB0C.c_str(), str);
+	Set(lbl_8097BB0C->c_str(), str);
 }
 
 // fn_8000EA28
@@ -63,8 +63,8 @@ Message::~Message()
 {
 }
 
-// fn_8000DF3C
-Symbol MatchmakingSettings::GetSymbol() const
-{
-	return unk4;
-}
+// // fn_8000DF3C
+// Symbol MatchmakingSettings::GetSymbol() const
+// {
+// 	return unk4;
+// }
