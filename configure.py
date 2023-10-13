@@ -210,7 +210,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_8037A3D8.cpp"),
             Object(NonMatching, "rb3/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unk_8050FA30.cpp"),
-            Object(NonMatching, "rb3/unk_800C67F8.cpp"),
+            Object(NonMatching, "rb3/unk_800C9D04.cpp"),
             Object(NonMatching, "rb3/unk_802E0CA0.cpp"),
             Object(NonMatching, "rb3/unk_8034C91C.cpp"),
             Object(Matching, "rb3/filegetext.cpp"),
@@ -245,6 +245,19 @@ config.libs = [
         "objects": [
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
+    },
+    {
+        "lib": "json-c",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "json-c/arraylist.c"),
+            Object(NonMatching, "json-c/json_object.c"),
+            Object(NonMatching, "json-c/json_tokener.c"),
+            Object(NonMatching, "json-c/linkhash.c"),
+            Object(Matching, "json-c/printbuf.c")
+        ]
     },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though

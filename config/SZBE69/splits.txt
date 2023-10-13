@@ -45,8 +45,26 @@ rb3/unk_800B4630.cpp:
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
-rb3/unk_800C67F8.cpp:
-	.text       start:0x800C67F8 end:0x800F6DE4
+json-c/arraylist.c:
+	.text       start:0x800C68E0 end:0x800C6B4C
+
+json-c/json_object.c:
+	.text       start:0x800C6B4C end:0x800C7714
+
+json-c/json_tokener.c:
+	.text       start:0x800C7714 end:0x800C92AC
+
+json-c/linkhash.c:
+	.text       start:0x800C92AC end:0x800C999C
+	.rodata     start:0x807F00C0 end:0x807F00C8
+	.data       start:0x8082E5B0 end:0x8082E5D0
+
+json-c/printbuf.c:
+	.text       start:0x800C999C end:0x800C9D04
+	.sbss       start:0x808E3E98 end:0x808E3EA0
+
+rb3/unk_800C9D04.cpp:
+	.text       start:0x800C9D04 end:0x800F6DE4
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
