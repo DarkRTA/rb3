@@ -4,7 +4,7 @@
 
 class JsonInt : JsonObject {
 public:
-	JsonInt(); // fn_800A65D4
+	JsonInt(int); // fn_800A65D4
 	virtual ~JsonInt(); // fn_800A6628
 };
 

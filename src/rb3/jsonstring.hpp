@@ -4,7 +4,7 @@
 
 class JsonString : JsonObject {
 public:
-	JsonString(); // fn_800A6520
+	JsonString(const char*); // fn_800A6520
 	virtual ~JsonString(); // fn_800A6574
 };
 

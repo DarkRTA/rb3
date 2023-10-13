@@ -28,17 +28,18 @@ unsigned int String::length() const
 // }
 
 // fn_800A6360
-JsonObject::JsonObject()
-{
-	unk4 = 0;
-}
+// JsonObject::JsonObject()
+// {
+// 	json_object_struct = 0;
+// }
 
-extern void fn_800C6D4C(int);
+// extern void fn_800C6D4C(int);
 
 // fn_800A6378
 JsonObject::~JsonObject()
 {
-	fn_800C6D4C(unk4);
+	// fn_800C6D4C(unk4);
+	json_object_put(json_object_struct);
 }
 
 // fn_800A673C
@@ -51,12 +52,13 @@ JsonConverter::~JsonConverter()
 {
 }
 
-extern void fn_800C7690();
+// extern void fn_800C7690();
 
 // fn_800A63EC
 JsonArray::JsonArray()
 {
-	fn_800C7690();
+	// fn_800C7690();
+	json_object_struct = json_object_new_array();
 }
 
 // fn_800A6430
@@ -64,12 +66,13 @@ JsonArray::~JsonArray()
 {
 }
 
-extern void fn_800C74C8();
+// extern void fn_800C74C8();
 
 // fn_800A6520
-JsonString::JsonString()
+JsonString::JsonString(const char* s)
 {
-	fn_800C74C8();
+	// fn_800C74C8();
+	json_object_struct = json_object_new_string(s);
 }
 
 // fn_800A6574
@@ -77,12 +80,11 @@ JsonString::~JsonString()
 {
 }
 
-extern void fn_800C72E8(JsonDouble *);
-
 // fn_800A6688
-JsonDouble::JsonDouble()
+JsonDouble::JsonDouble(double d)
 {
-	fn_800C72E8(this);
+	// fn_800C72E8(this);
+	json_object_struct = json_object_new_double(d);
 }
 
 // fn_800A66DC
@@ -90,12 +92,11 @@ JsonDouble::~JsonDouble()
 {
 }
 
-extern void fn_800C71D4(JsonInt *);
-
 // fn_800A65D4
-JsonInt::JsonInt()
+JsonInt::JsonInt(int i)
 {
-	fn_800C71D4(this);
+	// fn_800C71D4(this);
+	json_object_struct = json_object_new_int(i);
 }
 
 // fn_800A6628
