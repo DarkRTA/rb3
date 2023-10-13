@@ -34,6 +34,8 @@ void* memset(void* dest, int val, size_t count);
 
 char* strtok(char*, const char*);
 
+char *strdup(const char *s);
+
 #ifdef __cplusplus
 }
 #endif

@@ -19,6 +19,8 @@ extern "C" {
 #define EXIT_FAILURE -1
 #endif // ifndef EXIT_SUCCESS
 
+void *realloc(void *ptr, size_t size);
+
 #ifdef __cplusplus
 };
 #endif // ifdef __cplusplus

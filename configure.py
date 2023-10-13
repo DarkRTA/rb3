@@ -252,7 +252,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "json-c/arraylist.c"),
+            Object(Matching, "json-c/arraylist.c"),
             Object(NonMatching, "json-c/json_object.c"),
             Object(NonMatching, "json-c/json_tokener.c"),
             Object(NonMatching, "json-c/linkhash.c"),
