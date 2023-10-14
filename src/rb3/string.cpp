@@ -3,6 +3,7 @@
 #include "unknown.hpp"
 #include "std/string.h"
 #include "symbol.hpp"
+#include "jsonconverter.hpp"
 
 extern char lbl_808E4560; // RB2 marks this as "gEmpty"
 
@@ -449,11 +450,11 @@ String *String::replace(unsigned int start, String *str)
 	return replace(start, 0, str->c_str());
 }
 
-extern void fn_800A6BD0(String *);
+extern void fn_801CEDFC(UnknownJsonConverterMember*, String*);
 
-void String::fn_80362560(char *buf, String *str)
+void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem)
 {
-	str->IsTextLengthZero();
+	mem->fn_800AFE60();
 	int var_r31, var_r30;
 
 	var_r31 = 0;
@@ -462,16 +463,16 @@ void String::fn_80362560(char *buf, String *str)
 	while (var_r30 != npos) {
 		if (var_r30 > var_r31) {
 			String sp14 = substr(var_r31, var_r30 - var_r31);
-			str->fn_801CEDFC(&sp14);
+			fn_801CEDFC(mem, &sp14);
 		}
 		var_r31 = var_r30 + 1;
 		var_r30 = find_first_of(buf, var_r31);
 	}
 	if (var_r31 < length()) {
 		String sp14 = substr(var_r31, length() - var_r31);
-		str->fn_801CEDFC(&sp14);
+		fn_801CEDFC(mem, &sp14);
 	}
-	fn_800A6BD0(str);
+	mem->fn_800A6BD0();
 }
 
 // inserts the char c into this->text at index idx, cnt times

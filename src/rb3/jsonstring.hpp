@@ -2,7 +2,7 @@
 #define RB3_JSONSTRING_HPP
 #include "jsonobject.hpp"
 
-class JsonString : JsonObject {
+class JsonString : public JsonObject {
 public:
 	JsonString(const char*); // fn_800A6520
 	virtual ~JsonString(); // fn_800A6574

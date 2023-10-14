@@ -2,7 +2,7 @@
 #define RB3_JSONARRAY_HPP
 #include "jsonobject.hpp"
 
-class JsonArray : JsonObject {
+class JsonArray : public JsonObject {
 public:
 	JsonArray(); // fn_800A63EC
 	virtual ~JsonArray(); // fn_800A6430
