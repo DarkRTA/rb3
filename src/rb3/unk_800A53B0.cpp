@@ -39,6 +39,16 @@ JsonObject::~JsonObject()
 	json_object_put(json_object_struct);
 }
 
+// fn_800A63DC
+const char* JsonObject::GetString(){
+	return json_object_get_string(json_object_struct);
+}
+
+// fn_800A63E4
+enum json_type JsonObject::Type(){
+	return json_object_get_type(json_object_struct);
+}
+
 // fn_800A673C
 JsonConverter::JsonConverter()
 {
@@ -63,6 +73,17 @@ JsonArray::~JsonArray()
 	}
 }
 
+// fn_800A64C4
+void JsonArray::Append(JsonObject* obj){
+	json_object_get(obj->GetJsonObjectStruct());
+	json_object_array_add(json_object_struct, obj->GetJsonObjectStruct());
+}
+
+// fn_800A6518
+int JsonArray::Length(){
+	return json_object_array_length(json_object_struct);
+}
+
 // fn_800A6520
 JsonString::JsonString(const char* s)
 {
@@ -72,6 +93,11 @@ JsonString::JsonString(const char* s)
 // fn_800A6574
 JsonString::~JsonString()
 {
+}
+
+// fn_800A65CC
+const char* JsonString::GetString(){
+	return json_object_get_string(json_object_struct);
 }
 
 // fn_800A6688
@@ -85,6 +111,11 @@ JsonDouble::~JsonDouble()
 {
 }
 
+// fn_800A6734
+double JsonDouble::GetDouble(){
+	return json_object_get_double(json_object_struct);
+}
+
 // fn_800A65D4
 JsonInt::JsonInt(int i)
 {
@@ -94,6 +125,11 @@ JsonInt::JsonInt(int i)
 // fn_800A6628
 JsonInt::~JsonInt()
 {
+}
+
+// fn_800A6680
+int JsonInt::GetInt(){
+	return json_object_get_int(json_object_struct);
 }
 
 BinStream *BinStream::WriteEndian4(unsigned int i)

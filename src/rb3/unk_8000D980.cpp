@@ -6,6 +6,7 @@
 #include "symbol.hpp"
 #include "message.hpp"
 #include "matchmakingsettings.hpp"
+#include "jsonobject.hpp"
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
@@ -68,3 +69,8 @@ Message::~Message()
 // {
 // 	return unk4;
 // }
+
+// fn_8000DF3C
+json_object* JsonObject::GetJsonObjectStruct(){
+	return json_object_struct;
+}
