@@ -251,14 +251,38 @@ void fn_800A6EA8(JsonConverter* jc, JsonObject* obj){
 	fn_800A6EF4(&jc->mem, obj);
 }
 
+extern "C" void fn_800A6F1C(UnknownJsonConverterMember*, UnknownJsonConverterMember*);
+
 // fn_800A6A24
 
 // fn_800A6EF4
+void fn_800A6EF4(UnknownJsonConverterMember* mem, JsonObject* obj){
+	UnknownJsonConverterMember i;
+	fn_800A6F1C(mem, &i);
+}
+
+extern "C" void fn_800A6FA4(UnknownJsonConverterMember*, unsigned short);
+extern "C" void fn_800A6FB4(UnknownJsonConverterMember*, UnknownJsonConverterMember*);
 
 // fn_800A6F1C
-// R3 = UnknownJsonConverterMember*
-// R4 = ...
-// return void?
+void fn_800A6F1C(UnknownJsonConverterMember* mem1, UnknownJsonConverterMember* mem2){
+	if(mem1->unk4 != mem1->unk6){
+		// A6A24
+		fn_800A6FB4(mem1, mem2);
+		fn_800A6FA4(mem1, 1);
+	}
+}
+
+// fn_800A6FA4
+void fn_800A6FA4(UnknownJsonConverterMember* mem, unsigned short i){
+	mem->unk4 += i;
+}
+
+// fn_800A6FB4
+void fn_800A6FB4(UnknownJsonConverterMember* mem1, UnknownJsonConverterMember* mem2){
+	if(mem1 == 0) return;
+	mem1->unk0 = mem2->unk0;
+}
 
 // ---------------------------------------------------------------
 
