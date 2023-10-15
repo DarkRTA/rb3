@@ -258,9 +258,9 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "json-c/arraylist.c"),
-            Object(NonMatching, "json-c/json_object.c"),
+            Object(Matching, "json-c/json_object.c"),
             Object(NonMatching, "json-c/json_tokener.c"),
-            Object(NonMatching, "json-c/linkhash.c"),
+            Object(Matching, "json-c/linkhash.c"),
             Object(Matching, "json-c/printbuf.c")
         ]
     },
