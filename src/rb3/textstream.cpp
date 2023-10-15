@@ -7,10 +7,6 @@ TextStream::TextStream()
 {
 }
 
-TextStream::~TextStream()
-{
-}
-
 // fn_8037A68C
 TextStream *TextStream::operator<<(char c)
 {
