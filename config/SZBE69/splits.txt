@@ -26,8 +26,24 @@ quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
-rb3/unk_800A53B0.cpp:
-	.text       start:0x800A53B0 end:0x800AAD98
+rb3/jsonobject.cpp:
+	.text       start:0x800A6360 end:0x800A63EC
+	.data       start:0x8082AA20 end:0x8082AA2C
+
+rb3/jsonarray.cpp:
+	.text       start:0x800A63EC end:0x800A6520
+
+rb3/jsonstring.cpp:
+	.text       start:0x800A6520 end:0x800A65D4
+
+rb3/jsonint.cpp:
+	.text       start:0x800A65D4 end:0x800A6688
+
+rb3/jsondouble.cpp:
+	.text       start:0x800A6688 end:0x800A673C
+
+rb3/unk_800A673C.cpp:
+	.text       start:0x800A673C end:0x800AAD98
 
 rb3/unk_800AAE1C.cpp:
 	.text       start:0x800AAE1C end:0x800AB8C4
