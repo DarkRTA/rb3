@@ -126,7 +126,7 @@ config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
-    "-code_merging all",
+    # "-code_merging all",
 ]
 
 cflags_base = [
@@ -200,11 +200,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/unk_8037A49C.cpp"),
             Object(NonMatching, "rb3/unk_8000D980.cpp"),
-            Object(Matching, "rb3/jsonobject.cpp"),
-            Object(NonMatching, "rb3/jsonarray.cpp"),
-            Object(NonMatching, "rb3/jsonstring.cpp"),
-            Object(NonMatching, "rb3/jsonint.cpp"),
-            Object(NonMatching, "rb3/jsondouble.cpp"),
+            Object(Matching, "rb3/jsonobjects.cpp"),
             Object(NonMatching, "rb3/unk_800A673C.cpp"),
             Object(NonMatching, "rb3/unk_800AC804.cpp"),
             Object(NonMatching, "rb3/unk_80341E10.cpp"),
@@ -230,7 +226,7 @@ config.libs = [
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
-            Object(Matching, "rb3/textstream.cpp"), # should be matching, linker is being weird
+            Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/rand2.cpp")
         ],
     },
