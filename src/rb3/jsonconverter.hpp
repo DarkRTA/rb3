@@ -15,14 +15,18 @@ public:
 
 class UnknownJsonConverterMember {
 public:
-	JsonObject** unk0; // possibly a ptr to another class
+	JsonObject** unk0;
 	unsigned short unk4;
 	unsigned short unk6;
 
+
+	~UnknownJsonConverterMember(); // fn_800A6790
 	bool fn_800AFE60();
-	unsigned short fn_800A6BD0();
+	unsigned short GetUnk4(); // fn_800A6BD0
+	JsonObject** fn_800A6A24(); // fn_800A6A24
+	void fn_800A6FA4(unsigned short); // fn_800A6FA4
 	// void fn_801CEDFC(String*);
-	// fn_800A6790 - dtor?
+	
 };
 
 class JsonConverter : public JsonArray {

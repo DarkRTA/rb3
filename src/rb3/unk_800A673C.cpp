@@ -17,16 +17,12 @@
 
 // fn_800A6E18
 // probably inline
-unsigned int String::length() const
-{
-	return strlen(text);
-}
+unsigned int String::length() const { return strlen(text); }
 
 // fn_800A6BD0
-// also probably inline
-unsigned short UnknownJsonConverterMember::fn_800A6BD0(){
-	return unk4;
-}
+#pragma dont_inline on
+unsigned short UnknownJsonConverterMember::GetUnk4(){ return unk4; }
+#pragma dont_inline reset
 
 extern "C" UnknownJsonConverterMember* fn_800A6A38(UnknownJsonConverterMember*, Dummy*);
 
@@ -34,6 +30,37 @@ extern "C" UnknownJsonConverterMember* fn_800A6A38(UnknownJsonConverterMember*, 
 JsonConverter::JsonConverter(){
 	Dummy i;
 	fn_800A6A38(&mem, &i);
+}
+
+extern "C" UnknownJsonConverterMember* fn_800A67E8(UnknownJsonConverterMember*, int);
+
+// fn_800A6790
+UnknownJsonConverterMember::~UnknownJsonConverterMember(){
+	fn_800A67E8(this, -1);
+}
+
+extern "C" UnknownJsonConverterMember* fn_800A6868(UnknownJsonConverterMember*, int);
+
+// fn_800A67E8
+UnknownJsonConverterMember* fn_800A67E8(UnknownJsonConverterMember* mem, int i){
+	fn_800A6868(mem, 0);
+	return mem;
+}
+
+extern "C" UnknownJsonConverterMember* fn_800A6868(UnknownJsonConverterMember*, int);
+extern "C" void fn_800A6940(UnknownJsonConverterMember*, JsonObject**, unsigned short);
+extern "C" UnknownJsonConverterMember* fn_800A68E8(UnknownJsonConverterMember*, int);
+
+// fn_800A6868
+UnknownJsonConverterMember* fn_800A6868(UnknownJsonConverterMember* mem, int i){
+	if(mem->unk0 != 0){
+		fn_800A6940(mem, mem->unk0, mem->unk6);
+	}
+	mem->unk0 = nullptr;
+	mem->unk4 = 0;
+	mem->unk6 = 0;
+	fn_800A68E8(mem, -1);
+	return mem;
 }
 
 extern "C" UnknownJsonConverterMember* fn_800A6A78(UnknownJsonConverterMember*, Dummy*);
@@ -53,28 +80,47 @@ UnknownJsonConverterMember* fn_800A6A78(UnknownJsonConverterMember* mem, Dummy* 
 	return mem;
 }
 
-extern "C" void fn_800A6AE8(UnknownJsonConverterMember*, Dummy*, int);
+extern "C" void fn_800A6AE8(UnknownJsonConverterMember*, Dummy*, JsonObject**);
 
 // fn_800A6AA8
 UnknownJsonConverterMember* fn_800A6AA8(UnknownJsonConverterMember* mem, Dummy* d){
-	fn_800A6AE8(mem, d, 0);
+	fn_800A6AE8(mem, d, nullptr);
 	mem->unk4 = 0;
 	mem->unk6 = 0;
 	return mem;
 }
 
 // fn_800A6AE8
-void fn_800A6AE8(UnknownJsonConverterMember* mem, Dummy* d, JsonObject** i){ mem->unk0 = i; }
+void fn_800A6AE8(UnknownJsonConverterMember* mem, Dummy* d, JsonObject** j){ mem->unk0 = j; }
+
+extern "C" JsonObject** fn_800A6BBC(UnknownJsonConverterMember*, int);
 
 // fn_800A6AF0
 JsonConverter::~JsonConverter(){
-	unsigned short var_r31;
-	if(mem.fn_800A6BD0() != 0){
-		var_r31 = mem.fn_800A6BD0() - 1;
+	short var_r31;
+	JsonObject** o;
+	if(mem.GetUnk4() != 0){
+		var_r31 = mem.GetUnk4() - 1;
 		while(var_r31 >= 0){
+			o = fn_800A6BBC(&mem, var_r31);
+			if(o){
+				
+			}
 			var_r31--;
 		}
 	}
+}
+
+extern "C" JsonObject** fn_800A6BC0(UnknownJsonConverterMember*, int);
+
+// fn_800A6BBC
+JsonObject** fn_800A6BBC(UnknownJsonConverterMember* mem, int i){
+	return fn_800A6BC0(mem, i);
+}
+
+// fn_800A6BC0
+JsonObject** fn_800A6BC0(UnknownJsonConverterMember* mem, int i){
+	return &mem->unk0[i];
 }
 
 // ---------------------------------------------------------------
@@ -144,13 +190,9 @@ void fn_800A6EA8(JsonConverter* jc, JsonObject* obj){
 
 extern "C" void fn_800A6F1C(UnknownJsonConverterMember*, JsonObject**);
 
-extern "C" JsonObject** fn_800A6A24(UnknownJsonConverterMember*);
-
 #pragma dont_inline on
 // fn_800A6A24
-JsonObject** fn_800A6A24(UnknownJsonConverterMember* mem){
-	return &(mem->unk0[mem->unk4]);
-}
+JsonObject** UnknownJsonConverterMember::fn_800A6A24(){ return &unk0[unk4]; }
 #pragma dont_inline reset
 
 // fn_800A6EF4
@@ -159,7 +201,6 @@ void fn_800A6EF4(UnknownJsonConverterMember* mem, JsonObject* obj){
 	fn_800A6F1C(mem, &j);
 }
 
-extern "C" void fn_800A6FA4(UnknownJsonConverterMember*, unsigned short);
 extern "C" void fn_800A6FB4(JsonObject**, JsonObject**);
 extern void fn_800A6FC8(UnknownJsonConverterMember*, JsonObject**, JsonObject**, char*, int, int);
 
@@ -167,20 +208,18 @@ extern void fn_800A6FC8(UnknownJsonConverterMember*, JsonObject**, JsonObject**,
 void fn_800A6F1C(UnknownJsonConverterMember* mem, JsonObject** obj){
 	char c;
 	if(mem->unk4 != mem->unk6){
-		JsonObject** x = fn_800A6A24(mem);
+		JsonObject** x = mem->fn_800A6A24();
 		fn_800A6FB4(x, obj);
-		fn_800A6FA4(mem, 1);
+		mem->fn_800A6FA4(1);
 		return;
 	}
-	JsonObject** tmp = fn_800A6A24(mem);
+	JsonObject** tmp = mem->fn_800A6A24();
 	c = 0;
 	fn_800A6FC8(mem, tmp, obj, &c, 1, 1);
 }
 
 // fn_800A6FA4
-void fn_800A6FA4(UnknownJsonConverterMember* mem, unsigned short i){
-	mem->unk4 += i;
-}
+void UnknownJsonConverterMember::fn_800A6FA4(unsigned short i){ unk4 += i; }
 
 // fn_800A6FB4
 void fn_800A6FB4(JsonObject** j1, JsonObject** j2){

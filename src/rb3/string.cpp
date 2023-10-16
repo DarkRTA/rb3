@@ -472,7 +472,7 @@ void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem)
 		String sp14 = substr(var_r31, length() - var_r31);
 		fn_801CEDFC(mem, &sp14);
 	}
-	mem->fn_800A6BD0();
+	mem->GetUnk4();
 }
 
 // inserts the char c into this->text at index idx, cnt times
