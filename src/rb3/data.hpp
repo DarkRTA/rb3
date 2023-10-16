@@ -23,7 +23,11 @@ public:
 	DataNode(const void*, int);
 	DataNode(DataArray*, DataType);
 	~DataNode();
-	DataNode* Evaluate();
+	DataNode* Evaluate() const;
+	DataNode* ForceSym(const DataArray*) const; // fn_80322F80
+	DataNode* LiteralStr(const DataArray*) const; // fn_80323004
+	double Float(const DataArray*) const; // fn_80323024
+	bool operator==(const DataNode&) const; // fn_80323360
 
 	DataArray* arr;
 	DataType type;
