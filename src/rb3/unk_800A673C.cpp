@@ -64,7 +64,7 @@ UnknownJsonConverterMember* fn_800A6AA8(UnknownJsonConverterMember* mem, Dummy* 
 }
 
 // fn_800A6AE8
-void fn_800A6AE8(UnknownJsonConverterMember* mem, Dummy* d, int i){ mem->unk0 = i; }
+void fn_800A6AE8(UnknownJsonConverterMember* mem, Dummy* d, JsonObject** i){ mem->unk0 = i; }
 
 // fn_800A6AF0
 JsonConverter::~JsonConverter(){
@@ -79,43 +79,35 @@ JsonConverter::~JsonConverter(){
 
 // ---------------------------------------------------------------
 
-extern "C" JsonArray* fn_800A6BD8(JsonConverter*);
 extern "C" void fn_800A6EA8(JsonConverter*, JsonObject*);
 
 // fn_800A6BD8
-JsonArray* fn_800A6BD8(JsonConverter* jc){
+JsonArray* JsonConverter::ToJsonArray(){
 	JsonArray* j = new JsonArray();
-	fn_800A6EA8(jc, j);
+	fn_800A6EA8(this, j);
 	return j;
 }
-
-extern "C" JsonString* fn_800A6C34(JsonConverter*, const char*);
 
 // fn_800A6C34
-JsonString* fn_800A6C34(JsonConverter* jc, const char* c){
+JsonString* JsonConverter::ToJsonString(const char* c){
 	JsonString* j = new JsonString(c);
-	fn_800A6EA8(jc, j);
+	fn_800A6EA8(this, j);
 	return j;
 }
-
-extern "C" JsonInt* fn_800A6C98(JsonConverter*, int);
 
 // fn_800A6C98
-JsonInt* fn_800A6C98(JsonConverter* jc, int i){
+JsonInt* JsonConverter::ToJsonInt(int i){
 	JsonInt* j = new JsonInt(i);
-	fn_800A6EA8(jc, j);
+	fn_800A6EA8(this, j);
 	return j;
 }
-
-extern "C" JsonDouble* fn_800A6CFC(JsonConverter*, double);
 
 // fn_800A6CFC
-JsonDouble* fn_800A6CFC(JsonConverter* jc, double d){
+JsonDouble* JsonConverter::ToJsonDouble(double d){
 	JsonDouble* j = new JsonDouble(d);
-	fn_800A6EA8(jc, j);
+	fn_800A6EA8(this, j);
 	return j;
 }
-
 
 extern "C" JsonObject* fn_800A6D68(JsonConverter*, String);
 
@@ -133,9 +125,9 @@ JsonObject* fn_800A6D68(JsonConverter* jc, String str){
 
 extern "C" JsonObject* fn_800A6E20(JsonConverter*, JsonArray*, int);
 
-// fn_800A6E20
+// fn_800A6E20 - GetJsonObjectAtJsonArrayIndex
 JsonObject* fn_800A6E20(JsonConverter* jc, JsonArray* ja, int i){
-	ja->Length();
+	if(i >= 0) ja->Length();
 	JsonObject* obj = new JsonObject();
 	obj->json_object_struct = json_object_array_get_idx(ja->GetJsonObjectStruct(), i);
 	fn_800A6EA8(jc, obj);
@@ -150,26 +142,39 @@ void fn_800A6EA8(JsonConverter* jc, JsonObject* obj){
 	fn_800A6EF4(&jc->mem, obj);
 }
 
-extern "C" void fn_800A6F1C(UnknownJsonConverterMember*, UnknownJsonConverterMember*);
+extern "C" void fn_800A6F1C(UnknownJsonConverterMember*, JsonObject**);
 
+extern "C" JsonObject** fn_800A6A24(UnknownJsonConverterMember*);
+
+#pragma dont_inline on
 // fn_800A6A24
+JsonObject** fn_800A6A24(UnknownJsonConverterMember* mem){
+	return &(mem->unk0[mem->unk4]);
+}
+#pragma dont_inline reset
 
 // fn_800A6EF4
 void fn_800A6EF4(UnknownJsonConverterMember* mem, JsonObject* obj){
-	UnknownJsonConverterMember i;
-	fn_800A6F1C(mem, &i);
+	JsonObject* j = obj;
+	fn_800A6F1C(mem, &j);
 }
 
 extern "C" void fn_800A6FA4(UnknownJsonConverterMember*, unsigned short);
-extern "C" void fn_800A6FB4(UnknownJsonConverterMember*, UnknownJsonConverterMember*);
+extern "C" void fn_800A6FB4(JsonObject**, JsonObject**);
+extern void fn_800A6FC8(UnknownJsonConverterMember*, JsonObject**, JsonObject**, char*, int, int);
 
 // fn_800A6F1C
-void fn_800A6F1C(UnknownJsonConverterMember* mem1, UnknownJsonConverterMember* mem2){
-	if(mem1->unk4 != mem1->unk6){
-		// A6A24
-		fn_800A6FB4(mem1, mem2);
-		fn_800A6FA4(mem1, 1);
+void fn_800A6F1C(UnknownJsonConverterMember* mem, JsonObject** obj){
+	char c;
+	if(mem->unk4 != mem->unk6){
+		JsonObject** x = fn_800A6A24(mem);
+		fn_800A6FB4(x, obj);
+		fn_800A6FA4(mem, 1);
+		return;
 	}
+	JsonObject** tmp = fn_800A6A24(mem);
+	c = 0;
+	fn_800A6FC8(mem, tmp, obj, &c, 1, 1);
 }
 
 // fn_800A6FA4
@@ -178,9 +183,9 @@ void fn_800A6FA4(UnknownJsonConverterMember* mem, unsigned short i){
 }
 
 // fn_800A6FB4
-void fn_800A6FB4(UnknownJsonConverterMember* mem1, UnknownJsonConverterMember* mem2){
-	if(mem1 == 0) return;
-	mem1->unk0 = mem2->unk0;
+void fn_800A6FB4(JsonObject** j1, JsonObject** j2){
+	if(j1 == nullptr) return;
+	else *j1 = *j2;
 }
 
 // ---------------------------------------------------------------
