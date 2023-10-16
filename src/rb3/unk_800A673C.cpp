@@ -227,6 +227,20 @@ void fn_800A6FB4(JsonObject** j1, JsonObject** j2){
 	else *j1 = *j2;
 }
 
+// both UnknownJsonConverterMember methods
+
+extern "C" void fn_800A7108(UnknownJsonConverterMember*, unsigned short);
+
+// fn_800A7108
+void fn_800A7108(UnknownJsonConverterMember* mem, unsigned short us) { mem->unk4 = us; }
+
+extern "C" void fn_800A7100(UnknownJsonConverterMember*, unsigned short);
+
+// fn_800A7100
+void fn_800A7100(UnknownJsonConverterMember* mem, unsigned short us){ mem->unk6 = us; }
+
+// fn_800A71B0
+
 // ---------------------------------------------------------------
 
 BinStream *BinStream::WriteEndian4(unsigned int i)

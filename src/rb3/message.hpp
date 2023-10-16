@@ -6,6 +6,8 @@ public:
 	Message(); //fn_800AE714
 	virtual ~Message(); // fn_8000DF60
 	virtual void Unk1() = 0;
+
+	// DataArray* unk4;
 };
 
 #endif
