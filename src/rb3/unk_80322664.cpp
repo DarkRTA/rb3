@@ -8,22 +8,21 @@ extern DataArray* fn_8035CF9C(int, int, int);
 DataNode::DataNode(const char* c){
     DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
     da = new DataArray(c, strlen(c) + 1);
-    arr = da;
-    type = StringDtaType;
+    value.dataArray = da;
+    type = STRING_VALUE;
 }
 
 // fn_8032324C
 DataNode::DataNode(const String& s){
     DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
     da = new DataArray(s.c_str(), s.length() + 1);
-    arr = da;
-    type = StringDtaType;
+    type = STRING_VALUE;
 }
 
 // fn_80322F80
 DataNode* DataNode::ForceSym(const DataArray* da) const {
     DataNode* n = Evaluate();
-    if(n->type == SymbolDtaType){
+    if(n->type == SYMBOL){
         return n;
     }
     Symbol s;
@@ -31,10 +30,10 @@ DataNode* DataNode::ForceSym(const DataArray* da) const {
 
 // fn_80323004
 DataNode* DataNode::LiteralStr(const DataArray* da) const {
-    if(type == SymbolDtaType){
+    if(type == SYMBOL){
         return (DataNode*)this;
     }
-    else return this->arr->node;
+    // else return this->parent->node;
 }
 
 // fn_80323024

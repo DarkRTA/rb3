@@ -3,15 +3,39 @@
 #include "symbol.hpp"
 #include "string.hpp"
 
-enum DataType {
-	Int, Float, Variable, Func, Object, SymbolDtaType, Unhandled, IfDef, Else, EndIf,
-	Array = 0x10,
-	Command, StringDtaType, Property, Glob,
-	Define = 0x20,
-	Include, Merge, IfNDef, Autorun, Undef
+class DataArray; // forward declaration
+
+union DataNodeValue {
+    int intVal;
+    float floatVal;
+    DataArray *dataArray;
+    int *object; // should be Object?
+    char *strVal;
 };
 
-class DataArray; // forward declaration
+enum DataType {
+	INT_VALUE = 0,
+    FLOAT_VALUE = 1,
+    VAR = 2,
+    FUNC = 3,
+    OBJECT = 4,
+    SYMBOL = 5,
+    EMPTY = 6,
+    IFDEF = 7,
+    ELSE = 8,
+    ENDIF = 9,
+    ARRAY = 16,
+    COMMAND = 17,
+    STRING_VALUE = 18,
+    OBJECT_PROP_REF = 19,
+    GLOB = 20,
+    DEFINE = 32,
+    INCLUDE = 33,
+    MERGE = 34,
+    IFNDEF = 35,
+    AUTORUN = 36,
+    UNDEF = 37
+};
 
 class DataNode {
 public:
@@ -29,7 +53,7 @@ public:
 	double Float(const DataArray*) const; // fn_80323024
 	bool operator==(const DataNode&) const; // fn_80323360
 
-	DataArray* arr;
+	DataNodeValue value;
 	DataType type;
 };
 
@@ -48,12 +72,12 @@ public:
 	void Remove(const DataNode&);
 	bool Contains(const DataNode&);
 
-	DataNode* node;
+	DataNode* nodes;
 	Symbol* symbol;
-	short size;
-	short unka;
-	short unkc;
-	short unke;
+	short mNodeCount;
+	short mRefCount;
+	short mLine;
+	short mUnknown;
 };
 
 #endif
