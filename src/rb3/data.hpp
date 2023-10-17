@@ -2,6 +2,7 @@
 #define RB3_DATA_HPP
 #include "symbol.hpp"
 #include "string.hpp"
+#include "textstream.hpp"
 
 class DataArray; // forward declaration
 
@@ -46,7 +47,7 @@ public:
 	DataNode(const char*); // fn_803231CC
 	DataNode(const String&); // fn_8032324C
 	DataNode(const void*, int);
-	DataNode(DataArray*, DataType);
+	DataNode(DataArray*, DataType); // fn_80323318
 	~DataNode();
 	DataNode* Evaluate() const;
 	int Int(const DataArray*) const; // fn_80322F28
@@ -61,6 +62,9 @@ public:
 	DataArray* Array(const DataArray*) const; // fn_8032313C
 	DataArray* LiteralArray(const DataArray*) const; // fn_80323160
 	bool operator==(const DataNode&) const; // fn_80323360
+	bool operator!=(const DataNode&) const; // fn_80323508
+	DataNode* operator=(const DataNode&); // fn_803235D4
+	void Print(TextStream&, bool) const; // fn_8032364C
 
 	DataNodeValue value;
 	DataType type;

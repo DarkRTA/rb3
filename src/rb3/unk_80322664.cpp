@@ -20,6 +20,13 @@ DataNode::DataNode(const String& s){
     type = STRING_VALUE;
 }
 
+// fn_80323318
+DataNode::DataNode(DataArray* da, DataType ty){
+    value.dataArray = da;
+    value.dataArray->IncRefCount();
+    type = ty;
+}
+
 // fn_80322F28
 int DataNode::Int(const DataArray* da) const {
     DataNode* n = Evaluate();
@@ -48,7 +55,7 @@ Symbol* DataNode::ForceSym(const DataArray* da) const {
     if(n->type == SYMBOL){
         return n->value.symVal;
     }
-    Symbol s;
+    Symbol s(n->value.symVal->m_string);
 }
 
 // fn_80322FC8
@@ -91,8 +98,110 @@ DataArray* DataNode::LiteralArray(const DataArray* da) const {
 // fn_80323360
 bool DataNode::operator==(const DataNode& dn) const {
     if(type == dn.type){
-        if(type == 0x12){
-            // return strcmp()
+        if(type == STRING_VALUE){
+            return strcmp(value.strVal, dn.value.strVal) == 0;
         }
+        else return (value.intVal == dn.value.intVal);
+    }
+    else if((type == OBJECT) || (dn.type == OBJECT)){
+
+    }
+    else if((type == STRING_VALUE) || (dn.type == STRING_VALUE)){
+        return strcmp(LiteralStr(nullptr), dn.LiteralStr(nullptr)) == 0;
+    }
+    else if((type == FLOAT_VALUE) || (dn.type == FLOAT_VALUE)){
+        return (LiteralFloat(nullptr) == dn.LiteralFloat(nullptr));
+    }
+    else return false;
+}
+
+// fn_80323508
+bool DataNode::operator!=(const DataNode& dn) const {
+    return !(*this == dn);
+}
+
+// fn_803235D4
+DataNode* DataNode::operator=(const DataNode& dn) {
+    if(type & 0x10){
+        value.dataArray->DecRefCount();
+    }
+    value = dn.value;
+    type = dn.type;
+    if(dn.type & 0x10){
+        dn.value.dataArray->IncRefCount();
+    }
+    return this;
+}
+
+// fn_8032364C
+void DataNode::Print(TextStream& ts, bool b) const {
+    switch(type){
+        case INT_VALUE: ts << value.intVal; break;
+        case FLOAT_VALUE: ts << value.floatVal; break;
+        case VAR:
+            // DataVarName__FPC8DataNode gets called here
+            ts << "$";
+            break;
+        case FUNC:
+            // DataFuncName__FPFP9DataArray_8DataNode gets called here
+            // ts << (Symbol)0xE8;
+            break;
+        case OBJECT:
+            if(value.dataArray == nullptr){
+                ts << "<null>";
+            }
+            break;
+        case SYMBOL:
+            if(!b){
+                ts << "'";
+                ts << value.strVal;
+                ts << "'";
+            }
+            else ts << value.strVal;
+            break;
+        case EMPTY: ts << "invalid"; break;
+        case IFDEF:
+            ts << "\n#ifdef ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
+        case ELSE: ts << "\n#else\n"; break;
+        case ENDIF: ts << "\n#endif\n"; break;
+        case ARRAY:
+        case COMMAND:
+        case OBJECT_PROP_REF:
+            break;
+        case STRING_VALUE:
+            break;
+        case GLOB:
+            break;
+        case DEFINE:
+            ts << "\n#define ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
+        case INCLUDE:
+            ts << "\n#include ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
+        case MERGE:
+            ts << "\n#merge ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
+        case IFNDEF:
+            ts << "\n#ifndef ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
+        case AUTORUN:
+            ts << "\n#autorun\n";
+            break;
+        case UNDEF:
+            ts << "\n#undef ";
+            ts << value.strVal;
+            ts << "\n";
+            break;
     }
 }
