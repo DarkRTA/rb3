@@ -7,6 +7,7 @@
 #include "message.hpp"
 #include "matchmakingsettings.hpp"
 #include "jsonobject.hpp"
+#include "data.hpp"
 
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
@@ -62,6 +63,12 @@ bool String::empty() const
 // fn_8000DF60
 Message::~Message()
 {
+	unk4->DecRefCount();
+}
+
+// fn_800DFC4
+void DataArray::DecRefCount(){
+	if(--mRefCount == 0) delete this;
 }
 
 // // fn_8000DF3C

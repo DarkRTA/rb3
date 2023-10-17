@@ -16,8 +16,10 @@ bool UnknownJsonConverterMember::fn_800AFE60()
 extern void fn_800AE758(Message *, int);
 
 // fn_800AE714
-Message::Message()
+Message::Message(DataArray* da)
 {
+	unk4 = da;
+	unk4->IncRefCount();
 }
 
 // fn_800AE758

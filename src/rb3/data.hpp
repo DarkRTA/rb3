@@ -82,6 +82,7 @@ public:
 	bool Contains(const DataNode&);
 
 	void IncRefCount(); // fn_800AE758
+	void DecRefCount(); // fn_8000DFC4
 
 	DataNode* mNodes;
 	Symbol* symbol;
