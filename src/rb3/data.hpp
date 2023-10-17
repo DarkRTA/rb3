@@ -10,6 +10,7 @@ union DataNodeValue {
     float floatVal;
     DataArray *dataArray;
     int *object; // should be Object?
+	Symbol* symVal;
     char *strVal;
 };
 
@@ -48,9 +49,17 @@ public:
 	DataNode(DataArray*, DataType);
 	~DataNode();
 	DataNode* Evaluate() const;
-	DataNode* ForceSym(const DataArray*) const; // fn_80322F80
-	DataNode* LiteralStr(const DataArray*) const; // fn_80323004
-	double Float(const DataArray*) const; // fn_80323024
+	int Int(const DataArray*) const; // fn_80322F28
+	int LiteralInt(const DataArray*) const; // fn_80322F4C
+	Symbol* Sym(const DataArray*) const; // fn_80322F54
+	Symbol* LiteralSym(const DataArray*) const; // fn_80322F78
+	Symbol* ForceSym(const DataArray*) const; // fn_80322F80
+	const char* Str(const DataArray*) const; // fn_80322FC8
+	const char* LiteralStr(const DataArray*) const; // fn_80323004
+	float Float(const DataArray*) const; // fn_80323024
+	float LiteralFloat(const DataArray*) const; // fn_8032307C
+	DataArray* Array(const DataArray*) const; // fn_8032313C
+	DataArray* LiteralArray(const DataArray*) const; // fn_80323160
 	bool operator==(const DataNode&) const; // fn_80323360
 
 	DataNodeValue value;
@@ -72,7 +81,9 @@ public:
 	void Remove(const DataNode&);
 	bool Contains(const DataNode&);
 
-	DataNode* nodes;
+	void IncRefCount(); // fn_800AE758
+
+	DataNode* mNodes;
 	Symbol* symbol;
 	short mNodeCount;
 	short mRefCount;

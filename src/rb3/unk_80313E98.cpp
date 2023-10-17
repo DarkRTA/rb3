@@ -4,9 +4,9 @@
 extern DataNode* NodesAlloc(int);
 
 DataArray::DataArray(int i){
-    // size = i;
-    // unka = 1;
-    // unkc = 0;
-    // unke = 0;
-    // node = NodesAlloc(i << 3);
+    mNodeCount = i;
+    mRefCount = 1;
+    mLine = 0;
+    mUnknown = 0;
+    // nodes = NodesAlloc(i << 3);
 }
