@@ -126,7 +126,7 @@ config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
-    # "-code_merging all",
+    "-code_merging all",
 ]
 
 cflags_base = [
@@ -160,7 +160,7 @@ cflags_rb3 = [
     "-sdata 2",
     "-sdata2 2",
     "-pragma \"merge_float_consts on\"",
-    "-RTTI on"
+    "-RTTI on",
 ]
 
 

@@ -43,14 +43,18 @@ JsonString::JsonString(const char* s){ json_object_struct = json_object_new_stri
 // fn_800A6574
 JsonString::~JsonString(){ }
 
+#pragma force_active on
 // fn_800A65CC
 const char* JsonString::GetString(){ return json_object_get_string(json_object_struct); }
+#pragma force_active reset
 
 // fn_800A65D4
 JsonInt::JsonInt(int i){ json_object_struct = json_object_new_int(i); }
 
+#pragma force_active on
 // fn_800A6628
 JsonInt::~JsonInt(){ }
+#pragma force_active reset
 
 // fn_800A6680
 int JsonInt::GetInt(){ return json_object_get_int(json_object_struct); }
@@ -58,8 +62,10 @@ int JsonInt::GetInt(){ return json_object_get_int(json_object_struct); }
 // fn_800A6688
 JsonDouble::JsonDouble(double d){ json_object_struct = json_object_new_double(d); }
 
+#pragma force_active on
 // fn_800A66DC
 JsonDouble::~JsonDouble(){ }
+#pragma force_active reset
 
 // fn_800A6734
 double JsonDouble::GetDouble(){ return json_object_get_double(json_object_struct); }
