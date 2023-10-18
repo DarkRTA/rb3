@@ -200,7 +200,10 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/unk_8037A49C.cpp"),
             Object(NonMatching, "rb3/unk_8000D980.cpp"),
-            Object(NonMatching, "rb3/unk_800A53B0.cpp"),
+            Object(NonMatching, "rb3/unk_80313E98.cpp"),
+            Object(NonMatching, "rb3/unk_80322664.cpp"),
+            Object(Matching, "rb3/jsonobjects.cpp"),
+            Object(NonMatching, "rb3/unk_800A673C.cpp"),
             Object(NonMatching, "rb3/unk_800AC804.cpp"),
             Object(NonMatching, "rb3/unk_80341E10.cpp"),
             Object(NonMatching, "rb3/unk_8034C9F8.cpp"),
@@ -210,7 +213,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_8037A3D8.cpp"),
             Object(NonMatching, "rb3/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unk_8050FA30.cpp"),
-            Object(NonMatching, "rb3/unk_800C67F8.cpp"),
+            Object(NonMatching, "rb3/unk_800C9D04.cpp"),
             Object(NonMatching, "rb3/unk_802E0CA0.cpp"),
             Object(NonMatching, "rb3/unk_8034C91C.cpp"),
             Object(Matching, "rb3/filegetext.cpp"),
@@ -225,7 +228,7 @@ config.libs = [
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
-            Object(NonMatching, "rb3/textstream.cpp"), # should be matching, linker is being weird
+            Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/rand2.cpp")
         ],
     },
@@ -245,6 +248,19 @@ config.libs = [
         "objects": [
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
+    },
+    {
+        "lib": "json-c",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(Matching, "json-c/arraylist.c"),
+            Object(Matching, "json-c/json_object.c"),
+            Object(NonMatching, "json-c/json_tokener.c"),
+            Object(Matching, "json-c/linkhash.c"),
+            Object(Matching, "json-c/printbuf.c")
+        ]
     },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though

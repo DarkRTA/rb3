@@ -26,8 +26,12 @@ quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
-rb3/unk_800A53B0.cpp:
-	.text       start:0x800A53B0 end:0x800AAD98
+rb3/jsonobjects.cpp:
+	.text       start:0x800A6360 end:0x800A673C
+	.data       start:0x8082A960 end:0x8082AA40
+
+rb3/unk_800A673C.cpp:
+	.text       start:0x800A673C end:0x800AAD98
 
 rb3/unk_800AAE1C.cpp:
 	.text       start:0x800AAE1C end:0x800AB8C4
@@ -45,8 +49,27 @@ rb3/unk_800B4630.cpp:
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
-rb3/unk_800C67F8.cpp:
-	.text       start:0x800C67F8 end:0x800F6DE4
+json-c/arraylist.c:
+	.text       start:0x800C68E0 end:0x800C6B4C
+
+json-c/json_object.c:
+	.text       start:0x800C6B4C end:0x800C7714
+	.data       start:0x8082E1D0 end:0x8082E248
+
+json-c/json_tokener.c:
+	.text       start:0x800C7714 end:0x800C92AC
+
+json-c/linkhash.c:
+	.text       start:0x800C92AC end:0x800C999C
+	.rodata     start:0x807F00C0 end:0x807F00C8
+	.data       start:0x8082E5B0 end:0x8082E5D0
+
+json-c/printbuf.c:
+	.text       start:0x800C999C end:0x800C9D04
+	.sbss       start:0x808E3E98 end:0x808E3EA0
+
+rb3/unk_800C9D04.cpp:
+	.text       start:0x800C9D04 end:0x800F6DE4
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
@@ -83,6 +106,12 @@ rb3/unk_802FA994.cpp:
 
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
+
+rb3/unk_80313E98.cpp:
+	.text       start:0x80313E98 end:0x80318588
+
+rb3/unk_80322664.cpp:
+	.text       start:0x80322664 end:0x803240F0
 
 rb3/unk_803242cc.cpp:
 	.text       start:0x803242CC end:0x8032443C
@@ -121,7 +150,7 @@ rb3/unk_8037A49C.cpp:
 
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
-	.data       start:0x80874510 end:0x80874550
+	.data       start:0x80874520 end:0x80874550
 
 rb3/unk_8037AD40.cpp:
 	.text       start:0x8037AD40 end:0x80392960

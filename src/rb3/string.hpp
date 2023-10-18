@@ -2,6 +2,7 @@
 #define RB3_STRING_HPP
 #include "textstream.hpp"
 #include "symbol.hpp"
+#include "jsonconverter.hpp"
 
 class String : TextStream {
 public:
@@ -48,7 +49,7 @@ public:
 	bool contains(const char *) const; // fn_80362530
 
 	// TODO: figure out what this does
-	void fn_80362560(char *, String *); // fn_80362560
+	void fn_80362560(char *, UnknownJsonConverterMember *); // fn_80362560
 
 	String substr(unsigned int); // fn_80362660
 	String substr(unsigned int, unsigned int) const; // fn_8036266C
@@ -72,10 +73,6 @@ public:
 	const char *c_str() const; // fn_8000DB9C
 	bool empty() const; // fn_8000EC3C
 	// fn_8000DAC4
-
-	// may not actually be string methods
-	bool IsTextLengthZero(); // fn_800AFE60
-	void fn_801CEDFC(String *);
 };
 
 #endif
