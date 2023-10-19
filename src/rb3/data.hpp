@@ -48,7 +48,7 @@ public:
 	DataNode(const String&); // fn_8032324C
 	DataNode(const void*, int);
 	DataNode(DataArray*, DataType); // fn_80323318
-	~DataNode();
+	~DataNode(); // fn_8000DFE4
 	DataNode* Evaluate() const;
 	int Int(const DataArray*) const; // fn_80322F28
 	int LiteralInt(const DataArray*) const; // fn_80322F4C
@@ -63,6 +63,7 @@ public:
 	DataArray* LiteralArray(const DataArray*) const; // fn_80323160
 	bool operator==(const DataNode&) const; // fn_80323360
 	bool operator!=(const DataNode&) const; // fn_80323508
+	bool NotNull() const; // fn_80323530
 	DataNode* operator=(const DataNode&); // fn_803235D4
 	void Print(TextStream&, bool) const; // fn_8032364C
 
@@ -87,6 +88,7 @@ public:
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
+	int GetNodeCount(); // fn_8000FDA0
 
 	DataNode* mNodes;
 	Symbol* symbol;

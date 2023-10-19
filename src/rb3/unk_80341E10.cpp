@@ -6,6 +6,7 @@
 #include "symbol.hpp"
 #include "bufstream.hpp"
 #include "bufstreamnand.hpp"
+#include "idatachunk.hpp"
 
 // fn_80342D18
 // BinStream's ctor
@@ -258,3 +259,5 @@ bool BufStream::Eof()
 BufStreamNAND::~BufStreamNAND()
 {
 }
+
+// fn_8034A03C

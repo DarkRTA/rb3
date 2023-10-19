@@ -19,6 +19,13 @@ const char *String::c_str() const
 // fn_8000DD10
 // generic dtor function
 
+// fn_8000DFE4
+DataNode::~DataNode(){
+	if((type & 0x10) != 0){
+		value.dataArray->DecRefCount();
+	}
+}
+
 // fn_8000EC00
 FilePath::FilePath(const String &str) : String(str)
 {

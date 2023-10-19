@@ -120,6 +120,22 @@ bool DataNode::operator!=(const DataNode& dn) const {
     return !(*this == dn);
 }
 
+// fn_80323530
+bool DataNode::NotNull() const {
+    DataNode* n = Evaluate();
+    DataType t = n->type;
+    if(t == SYMBOL){
+        return n->value.strVal[0] != 0;
+    }
+    else if(t == STRING_VALUE){
+        return (n->value.dataArray->GetNodeCount() ^ -1) != 0;
+    }
+    else if(t == GLOB){
+        return (n->value.dataArray->GetNodeCount() & 0xFFFFFFFF) != 0;
+    }
+    else return (n->value.dataArray != 0);
+}
+
 // fn_803235D4
 DataNode* DataNode::operator=(const DataNode& dn) {
     if(type & 0x10){

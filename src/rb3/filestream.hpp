@@ -5,21 +5,18 @@
 #include "file.hpp"
 #include "streamchecksum.hpp"
 
-class FileStream : BinStream {
-public:
-	enum FileType {
-		FileType0,
-		FileType1,
-		FileType2,
-		FileType3
-	};
+enum FileType {
+	FileType0,
+	FileType1,
+	FileType2,
+	FileType3
+};
 
-	FileStream(
-		const char *, FileType,
-		bool); // RB2 says this is FileStream(const char*, FileStream::FileType, bool)
+class FileStream : public BinStream {
+public:
+	FileStream(const char*, FileType, bool); // fn_8034C9F8
 	FileStream(File *, bool); // RB2 says this is FileStream(File*, bool)
 	virtual ~FileStream(); // fn_8034CB20
-
 	virtual void Flush(); // fn_8034CCA8
 	virtual int Tell(); // fn_8034CD30
 	virtual bool Eof(); // fn_8034CD44

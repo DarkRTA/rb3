@@ -4,9 +4,10 @@
 extern DataNode* NodesAlloc(int);
 
 DataArray::DataArray(int i){
+    symbol = &Symbol();
     mNodeCount = i;
     mRefCount = 1;
     mLine = 0;
     mUnknown = 0;
-    // nodes = NodesAlloc(i << 3);
+    mNodes = NodesAlloc(i << 3);
 }

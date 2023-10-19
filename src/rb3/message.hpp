@@ -4,7 +4,8 @@
 
 class Message {
 public:
-	Message(DataArray*); //fn_800AE714
+	Message(); // fn_8000FFE0
+	Message(DataArray*); // fn_800AE714
 	virtual ~Message(); // fn_8000DF60
 	virtual void Unk1() = 0;
 

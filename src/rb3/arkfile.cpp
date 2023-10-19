@@ -36,6 +36,7 @@ extern char *lbl_808517C0; // "."
 ArkFile::ArkFile(const char *c, int a)
 	: unk18(0), unk1c(0), fpos(0), unk24(0), unk2c(1), str(c)
 {
+	// FileMakePath(".", c, 0);
 	if (a & 4) {
 		unk24 = 1;
 	}
