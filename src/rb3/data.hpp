@@ -68,6 +68,8 @@ public:
 	void Print(TextStream&, bool) const; // fn_8032364C
 
 	void CreateEmptyDataNode(); // fn_801C7058
+	DataType GetType(); // same code as JsonObject::GetJsonObjectStruct()
+	void AssignValue(const DataNode&); // same code as Symbol::operator=(const Symbol&)
 
 	DataNodeValue value;
 	DataType type;

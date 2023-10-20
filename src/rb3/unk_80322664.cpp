@@ -120,31 +120,39 @@ bool DataNode::operator!=(const DataNode& dn) const {
     return !(*this == dn);
 }
 
+#pragma dont_inline on
+DataType DataNode::GetType(){ return type; }
+#pragma dont_inline reset
+
 // fn_80323530
 bool DataNode::NotNull() const {
     DataNode* n = Evaluate();
-    DataType t = n->type;
+    DataType t = n->GetType();
     if(t == SYMBOL){
         return n->value.strVal[0] != 0;
     }
     else if(t == STRING_VALUE){
-        return (n->value.dataArray->GetNodeCount() ^ -1) != 0;
+        return (n->value.dataArray->GetNodeCount() < -1);
     }
     else if(t == GLOB){
-        return (n->value.dataArray->GetNodeCount() & 0xFFFFFFFF) != 0;
+        return (n->value.dataArray->GetNodeCount() & -1);
     }
     else return (n->value.dataArray != 0);
 }
+
+#pragma dont_inline on
+void DataNode::AssignValue(const DataNode& dn){ value = dn.value; }
+#pragma dont_inline reset
 
 // fn_803235D4
 DataNode* DataNode::operator=(const DataNode& dn) {
     if(type & 0x10){
         value.dataArray->DecRefCount();
     }
-    value = dn.value;
+    AssignValue(dn);
     type = dn.type;
-    if(dn.type & 0x10){
-        dn.value.dataArray->IncRefCount();
+    if(type & 0x10){
+        value.dataArray->IncRefCount();
     }
     return this;
 }
