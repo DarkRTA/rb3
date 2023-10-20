@@ -4,6 +4,13 @@
 #include "syncallmsg.hpp"
 #include "string.hpp"
 
+#pragma dont_inline on
+// fn_800AAE9C
+NetMessage::NetMessage(){
+
+}
+#pragma dont_inline reset
+
 // fn_800AAE1C
 void SyncObjMsg::NewNetMessage(){
     // *this = *(new SyncObjMsg());
@@ -11,13 +18,8 @@ void SyncObjMsg::NewNetMessage(){
 }
 
 // fn_800AAE4C
-SyncObjMsg::SyncObjMsg(){
+SyncObjMsg::SyncObjMsg() : unk14(false) {
     
-}
-
-// fn_800AAE9C
-NetMessage::NetMessage(){
-
 }
 
 // fn_800AAEAC

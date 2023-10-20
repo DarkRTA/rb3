@@ -26,6 +26,28 @@ DataNode::~DataNode(){
 	}
 }
 
+extern DataArray* fn_8035CF9C(int, int, int);
+extern void fn_8000E114(DataNode*, DataNode*);
+extern "C" DataNode* fn_8000DF50(DataArray*, int);
+
+// fn_8000DF50
+DataNode* fn_8000DF50(DataArray* da, int i){
+	return &da->mNodes[i];
+}
+
+// fn_8000E048
+Message::Message(DataNode* dn1, DataNode* dn2, DataNode* dn3){
+	DataNode* local_dn1;
+	DataNode* local_dn2;
+	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
+	if(da != 0) da = new DataArray(4);
+	unk4 = da;
+	local_dn2 = dn1;
+	fn_8000E114(local_dn1, local_dn2);
+	local_dn1 = fn_8000DF50(unk4, 1);
+
+}
+
 // fn_8000EC00
 FilePath::FilePath(const String &str) : String(str)
 {
@@ -42,6 +64,15 @@ FilePath::FilePath(const char *str)
 // fn_8000EA28
 FilePath::~FilePath()
 {
+}
+
+extern "C" const char* fn_8000ECC0(DataArray*);
+extern DataNode* fn_8000DF50();
+
+// fn_8000ECC0
+const char* fn_8000ECC0(DataArray* da){ // what's R4? there's an extra argument
+	DataNode* dn = fn_8000DF50();
+	return dn->Str(da);
 }
 
 // fn_8000ED3C

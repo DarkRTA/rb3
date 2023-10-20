@@ -67,6 +67,8 @@ public:
 	DataNode* operator=(const DataNode&); // fn_803235D4
 	void Print(TextStream&, bool) const; // fn_8032364C
 
+	void CreateEmptyDataNode(); // fn_801C7058
+
 	DataNodeValue value;
 	DataType type;
 };
@@ -91,7 +93,7 @@ public:
 	int GetNodeCount(); // fn_8000FDA0
 
 	DataNode* mNodes;
-	Symbol* symbol;
+	Symbol symbol;
 	short mNodeCount;
 	short mRefCount;
 	short mLine;

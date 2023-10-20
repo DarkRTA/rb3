@@ -200,6 +200,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/simpletempomap.cpp"),
             Object(NonMatching, "rb3/textfilestream.cpp"),
+            Object(NonMatching, "rb3/unk_80188850.cpp"),
             Object(NonMatching, "rb3/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unk_80313E98.cpp"),

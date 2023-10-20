@@ -74,6 +74,9 @@ json-c/printbuf.c:
 rb3/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800F6DE4
 
+rb3/unk_80188850.cpp:
+	.text       start:0x80188850 end:0x801D6A5C
+
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
