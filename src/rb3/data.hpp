@@ -87,10 +87,12 @@ public:
 	void Remove(int);
 	void Remove(const DataNode&);
 	bool Contains(const DataNode&);
+	void SortNodes(); // fn_80316E84
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
 	int GetNodeCount(); // fn_8000FDA0
+	DataNode* GetNodeAtIndex(int); // fn_8000DF50
 
 	DataNode* mNodes;
 	Symbol symbol;

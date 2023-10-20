@@ -31,8 +31,8 @@ extern void fn_8000E114(DataNode*, DataNode*);
 extern "C" DataNode* fn_8000DF50(DataArray*, int);
 
 // fn_8000DF50
-DataNode* fn_8000DF50(DataArray* da, int i){
-	return &da->mNodes[i];
+DataNode* DataArray::GetNodeAtIndex(int i){
+	return &mNodes[i];
 }
 
 // fn_8000E048
