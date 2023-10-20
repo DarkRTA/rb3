@@ -50,11 +50,12 @@ public:
 	void Seek(int, SeekType);
 
 	// not taken from RB2, found in the asm
-	BinStream *WriteEndian4(unsigned int);
-	BinStream *ReadEndian4(unsigned int *);
-	BinStream *ReadSingle(void *);
-	BinStream *ReadSingleIntoBool(bool *);
-	BinStream *WriteSingle(char);
+	BinStream *WriteWord(unsigned int);
+	BinStream *ReadWord(void *);
+	BinStream *ReadByte(void *);
+	BinStream *ReadByteIntoBool(bool *);
+	BinStream *WriteByte(char);
+	BinStream* ReadHalfWord(void*); // fn_801CCA70
 };
 
 #endif

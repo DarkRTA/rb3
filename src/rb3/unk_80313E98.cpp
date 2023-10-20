@@ -33,12 +33,12 @@ DataArray::~DataArray(){
 int NodeCmp(const void* a, const void* b){
     DataNode* da = (DataNode*)a;
     DataNode* db = (DataNode*)b;
-    switch(da->type){
+    switch(da->GetType()){
         case FLOAT_VALUE: 
         case EMPTY:
             double d1 = da->LiteralFloat(nullptr);
             double d2 = db->LiteralFloat(nullptr);
-            if(d1 == d2) return -1;
+            if(d1 < d2) return -1;
             return (d1 != d2);
         case STRING_VALUE:
         case SYMBOL:
