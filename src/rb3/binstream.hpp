@@ -57,6 +57,7 @@ public:
 	BinStream *WriteByte(char);
 	BinStream* WriteHalfWord(short); // fn_801CB744
 	BinStream* ReadHalfWord(void*); // fn_801CCA70
+	BinStream* WriteFloat(float); // fn_800B95C4
 };
 
 #endif
