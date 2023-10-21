@@ -7,6 +7,12 @@ void DataNode::CreateEmptyDataNode(){
     type = EMPTY;
 }
 
+// fn_801CB744
+BinStream* BinStream::WriteHalfWord(short us){
+    WriteEndian(&us, 2);
+    return this;
+}
+
 // fn_801CCA70
 BinStream* BinStream::ReadHalfWord(void* v){
     ReadEndian(v, 2);

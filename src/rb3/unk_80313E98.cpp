@@ -54,3 +54,33 @@ void DataArray::SortNodes(){
     if(mNodeCount <= 0) return;
     qsort(mNodes, mNodeCount, 8, NodeCmp);
 }
+
+// fn_80317B18
+void DataArray::SaveGlob(BinStream& bs, bool b) const {
+    if(b){
+        int i = -1 - mNodeCount;
+        bs.WriteWord(i);
+        bs.Write(mNodes, i);
+    }
+    else {
+        bs.WriteHalfWord(mNodeCount);
+        bs.Write(mNodes, -mNodeCount);
+    }
+}
+
+// fn_80317B9C
+void DataArray::LoadGlob(BinStream& bs, bool b){
+    int v;
+    NodesFree(-mNodeCount, mNodes);
+    if(b){
+        bs.ReadWord(&v);
+        mNodeCount = -(v + 1);
+        mNodes = NodesAlloc(-mNodeCount);
+        bs.Read(mNodes, v);
+    }
+    else {
+        bs.ReadHalfWord(&mNodeCount);
+        mNodes = NodesAlloc(-mNodeCount);
+        bs.Read(mNodes, -mNodeCount);
+    }
+}

@@ -2,6 +2,7 @@
 #define RB3_DATA_HPP
 #include "symbol.hpp"
 #include "string.hpp"
+#include "binstream.hpp"
 #include "textstream.hpp"
 
 class DataArray; // forward declaration
@@ -90,6 +91,8 @@ public:
 	void Remove(const DataNode&);
 	bool Contains(const DataNode&);
 	void SortNodes(); // fn_80316E84
+	void SaveGlob(BinStream&, bool) const; // fn_80317B18
+	void LoadGlob(BinStream&, bool); // fn_80317B9C
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
