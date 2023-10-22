@@ -42,11 +42,12 @@ enum DataType {
 
 class DataNode {
 public:
-	DataNode();
-	DataNode(int);
+	DataNode(); // fn_801C7058
+	DataNode(int); // fn_8000E128?
 	DataNode(const DataNode&);
 	DataNode(const char*); // fn_803231CC
 	DataNode(const String&); // fn_8032324C
+	DataNode(Symbol); // fn_8000E114
 	DataNode(const void*, int);
 	DataNode(DataArray*, DataType); // fn_80323318
 	~DataNode(); // fn_8000DFE4
@@ -68,7 +69,6 @@ public:
 	DataNode* operator=(const DataNode&); // fn_803235D4
 	void Print(TextStream&, bool) const; // fn_8032364C
 
-	void CreateEmptyDataNode(); // fn_801C7058
 	DataType GetType(); // same code as JsonObject::GetJsonObjectStruct()
 	void AssignValue(const DataNode&); // same code as Symbol::operator=(const Symbol&)
 

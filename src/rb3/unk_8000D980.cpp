@@ -27,7 +27,6 @@ DataNode::~DataNode(){
 }
 
 extern DataArray* fn_8035CF9C(int, int, int);
-extern void fn_8000E114(DataNode*, DataNode*);
 extern "C" DataNode* fn_8000DF50(DataArray*, int);
 
 // fn_8000DF50
@@ -36,16 +35,16 @@ DataNode* DataArray::GetNodeAtIndex(int i){
 }
 
 // fn_8000E048
-Message::Message(DataNode* dn1, DataNode* dn2, DataNode* dn3){
-	DataNode* local_dn1;
-	DataNode* local_dn2;
+Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
 	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
 	if(da != 0) da = new DataArray(4);
 	unk4 = da;
-	local_dn2 = dn1;
-	fn_8000E114(local_dn1, local_dn2);
-	local_dn1 = fn_8000DF50(unk4, 1);
+}
 
+// fn_8000E114
+DataNode::DataNode(Symbol s){
+	type = SYMBOL;
+	value.strVal = s.m_string;
 }
 
 // fn_8000EC00

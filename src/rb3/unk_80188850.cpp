@@ -2,7 +2,7 @@
 #include "binstream.hpp"
 
 // fn_801C7058
-void DataNode::CreateEmptyDataNode(){
+DataNode::DataNode(){
     value.intVal = 0;
     type = EMPTY;
 }
