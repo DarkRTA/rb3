@@ -7,6 +7,7 @@
 #include "bufstream.hpp"
 #include "bufstreamnand.hpp"
 #include "idatachunk.hpp"
+#include "cacheid.hpp"
 
 #pragma dont_inline on
 // fn_80342D18
@@ -289,3 +290,6 @@ BufStreamNAND::~BufStreamNAND()
 }
 
 // fn_8034A03C
+
+// fn_80344350
+CacheID::CacheID(){}
