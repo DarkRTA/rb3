@@ -2,6 +2,7 @@
 #include "asyncfile.hpp"
 #include "std/string.h"
 #include "string.hpp"
+#include "unknown.hpp"
 
 // fn_802E7B68
 // AsyncFile's ctor
@@ -256,11 +257,13 @@ int AsyncFile::V_Unk15(int *a)
 	return V_Unk21();
 }
 
+#pragma dont_inline on
 // fn_802E85D0
 unsigned int Minimum(unsigned int a, unsigned int b)
 {
 	return (b < a) ? b : a;
 }
+#pragma dont_inline reset
 
 // FillBuffer
 void AsyncFile::FillBuffer()
@@ -269,14 +272,14 @@ void AsyncFile::FillBuffer()
 		if (unk1c != lbl_808517C8[0]) {
 			V_Unk21();
 		}
-		Minimum(fpos, lbl_808517C8[0]);
+		Minimum((unsigned int)(fpos), (unsigned int)(lbl_808517C8[0]));
 		_SeekToTell();
 		unk1c = 0;
 	}
 }
 
 // fn_802E7E10 - swaps endians for an int
-int fn_802E7E10(int i)
+unsigned int SwapEndianWord(int i)
 {
 	unsigned int ui = i;
 	return ui >> 0x18 | ui << 0x18 | ui >> 8 & 0xFF00 | (ui & 0xFF00) << 8;

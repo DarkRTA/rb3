@@ -25,6 +25,35 @@ BinStream::~BinStream()
 	delete unk08;
 }
 
+// fn_803422B4
+long long SwapEndianDoubleWord(long long lol){
+
+}
+
+#pragma dont_inline on
+// fn_80343114
+void SwapEndians(void* v1, void* v2, int num_bytes){
+	switch(num_bytes){
+		case 2:
+			unsigned short* s1 = (unsigned short*)v1;
+			short* s2 = (short*)v2;
+			*s2 = SwapEndianHalfWord(*s1); 
+			break;
+		case 4:
+			int* i1 = (int*)v1;
+			int* i2 = (int*)v2;
+			*i2 = SwapEndianWord(*i1); 
+			break;
+		case 8: 
+			long long* l1 = (long long*)v1;
+			long long* l2 = (long long*)v2;
+			*l2 = SwapEndianDoubleWord(*l1);
+			break;
+		default: break;
+	}
+}
+#pragma dont_inline reset
+
 extern char lbl_808567BC[]; //this label contains "<unnamed>"
 
 const char *BinStream::Name() const
@@ -114,14 +143,11 @@ void BinStream::EnableWriteEncryption(int i)
 }
 
 // fn_80343058
-
-extern void fn_80343114(void *, void *, int);
-
 void BinStream::ReadEndian(void *v, int i)
 {
 	Read(v, i);
 	if (unk04 != 0) {
-		fn_80343114(v, v, i);
+		SwapEndians(v, v, i);
 	}
 }
 
@@ -179,7 +205,7 @@ void BinStream::WriteEndian(const void *v, int i)
 {
 	char sp8;
 	if (unk04 != 0) {
-		fn_80343114((void *)v, &sp8, i);
+		SwapEndians((void *)v, &sp8, i);
 		Write(&sp8, i);
 	} else
 		Write(v, i);
