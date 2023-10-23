@@ -19,6 +19,34 @@ const char *String::c_str() const
 // fn_8000DD10
 // generic dtor function
 
+// fn_8000DFE4
+DataNode::~DataNode(){
+	if((type & 0x10) != 0){
+		value.dataArray->DecRefCount();
+	}
+}
+
+extern DataArray* fn_8035CF9C(int, int, int);
+extern "C" DataNode* fn_8000DF50(DataArray*, int);
+
+// fn_8000DF50
+DataNode* DataArray::GetNodeAtIndex(int i){
+	return &mNodes[i];
+}
+
+// fn_8000E048
+Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
+	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
+	if(da != 0) da = new DataArray(4);
+	unk4 = da;
+}
+
+// fn_8000E114
+DataNode::DataNode(Symbol s){
+	type = SYMBOL;
+	value.strVal = s.m_string;
+}
+
 // fn_8000EC00
 FilePath::FilePath(const String &str) : String(str)
 {
@@ -35,6 +63,15 @@ FilePath::FilePath(const char *str)
 // fn_8000EA28
 FilePath::~FilePath()
 {
+}
+
+extern "C" const char* fn_8000ECC0(DataArray*);
+extern DataNode* fn_8000DF50();
+
+// fn_8000ECC0
+const char* fn_8000ECC0(DataArray* da){ // what's R4? there's an extra argument
+	DataNode* dn = fn_8000DF50();
+	return dn->Str(da);
 }
 
 // fn_8000ED3C

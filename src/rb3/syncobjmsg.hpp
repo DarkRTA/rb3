@@ -21,9 +21,7 @@ public:
 
 	String tag;
 	unsigned int dirty_mask;
-
-	// int unk14;
-	MemStream* unk14;
+	MemStream unk14;
 
 	void NewNetMessage(); // fn_800AAE1C
 

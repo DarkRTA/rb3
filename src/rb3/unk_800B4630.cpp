@@ -3,13 +3,19 @@
 #include "string.hpp"
 #include "memstream.hpp"
 
+// fn_800B95C4
+BinStream* BinStream::WriteFloat(float f){
+    WriteEndian(&f, 4);
+    return this;
+}
+
 extern int fn_800A9C78(MemStream*);
 
 // fn_800BA7E0
 void SyncObjMsg::Save(BinStream& bs) const {
     bs << tag;
-    bs.WriteEndian4(dirty_mask);
-    bs.WriteEndian4(fn_800A9C78(unk14));
+    bs.WriteWord(dirty_mask);
+    bs.WriteWord(fn_800A9C78((MemStream*)(&unk14)));
     fn_800BA788(bs);
 }
 
@@ -17,8 +23,8 @@ void SyncObjMsg::Save(BinStream& bs) const {
 void SyncObjMsg::Load(BinStream& bs){
     unsigned int ui;
     bs >> tag;
-    bs.ReadEndian4(&dirty_mask);
-    bs.ReadEndian4(&ui);
+    bs.ReadWord(&dirty_mask);
+    bs.ReadWord(&ui);
 }
 
 extern char lbl_8082C43C[];

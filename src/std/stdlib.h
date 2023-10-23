@@ -19,6 +19,7 @@ extern "C" {
 #define EXIT_FAILURE -1
 #endif // ifndef EXIT_SUCCESS
 
+void qsort(void *base, size_t nitems, size_t size, int (*compar)(const void *, const void*));
 void *realloc(void *ptr, size_t size);
 
 #ifdef __cplusplus

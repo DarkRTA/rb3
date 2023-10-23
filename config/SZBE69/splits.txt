@@ -22,6 +22,9 @@ rb3/app.cpp:
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
+rb3/unk_8000F9B0.cpp:
+	.text       start:0x8000F9B0 end:0x800125A8
+
 quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
@@ -70,6 +73,12 @@ json-c/printbuf.c:
 
 rb3/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800F6DE4
+
+rb3/unk_800F6DF8.cpp:
+	.text       start:0x800F6DF8 end:0x8011AEC4
+
+rb3/unk_80188850.cpp:
+	.text       start:0x80188850 end:0x801D6A5C
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
@@ -145,8 +154,12 @@ rb3/unk_80362A50.cpp:
 rb3/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A488
 
-rb3/unk_8037A49C.cpp:
-	.text       start:0x8037A49C end:0x8037A67C
+rb3/simpletempomap.cpp:
+	.text       start:0x8037A49C end:0x8037A58C
+	.rodata     start:0x807F04A4 end:0x807F04AC
+
+rb3/textfilestream.cpp:
+	.text       start:0x8037A58C end:0x8037A67C
 
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74

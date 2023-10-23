@@ -6,7 +6,10 @@
 #include "symbol.hpp"
 #include "bufstream.hpp"
 #include "bufstreamnand.hpp"
+#include "idatachunk.hpp"
+#include "cacheid.hpp"
 
+#pragma dont_inline on
 // fn_80342D18
 // BinStream's ctor
 BinStream::BinStream(bool b)
@@ -14,6 +17,7 @@ BinStream::BinStream(bool b)
 	unk04 = b;
 	unk08 = 0;
 }
+#pragma dont_inline reset
 
 // fn_80342D34
 // BinStream's dtor
@@ -21,6 +25,35 @@ BinStream::~BinStream()
 {
 	delete unk08;
 }
+
+// fn_803422B4
+long long SwapEndianDoubleWord(long long lol){
+
+}
+
+#pragma dont_inline on
+// fn_80343114
+void SwapEndians(void* v1, void* v2, int num_bytes){
+	switch(num_bytes){
+		case 2:
+			unsigned short* s1 = (unsigned short*)v1;
+			short* s2 = (short*)v2;
+			*s2 = SwapEndianHalfWord(*s1); 
+			break;
+		case 4:
+			int* i1 = (int*)v1;
+			int* i2 = (int*)v2;
+			*i2 = SwapEndianWord(*i1); 
+			break;
+		case 8: 
+			long long* l1 = (long long*)v1;
+			long long* l2 = (long long*)v2;
+			*l2 = SwapEndianDoubleWord(*l1);
+			break;
+		default: break;
+	}
+}
+#pragma dont_inline reset
 
 extern char lbl_808567BC[]; //this label contains "<unnamed>"
 
@@ -40,7 +73,7 @@ void BinStream::DisableEncryption()
 BinStream *BinStream::operator<<(const char *c)
 {
 	unsigned int size = strlen(c);
-	WriteEndian4(size);
+	WriteWord(size);
 	Write(c, size);
 	return this;
 }
@@ -50,7 +83,7 @@ BinStream *BinStream::operator<<(const Symbol &s)
 {
 	char *str = s.m_string;
 	unsigned int size = strlen(str);
-	WriteEndian4(size);
+	WriteWord(size);
 	Write(str, size);
 	return this;
 }
@@ -59,7 +92,7 @@ BinStream *BinStream::operator<<(const Symbol &s)
 BinStream *BinStream::operator<<(const String &str)
 {
 	unsigned int size = str.length();
-	WriteEndian4(size);
+	WriteWord(size);
 	Write(str.c_str(), size);
 	return this;
 }
@@ -77,7 +110,7 @@ BinStream *BinStream::operator>>(Symbol &s)
 void BinStream::ReadString(char *c, int i)
 {
 	unsigned int a;
-	ReadEndian4(&a);
+	ReadWord(&a);
 	Read(c, a);
 	c[a] = 0;
 }
@@ -86,7 +119,7 @@ void BinStream::ReadString(char *c, int i)
 BinStream *BinStream::operator>>(String &s)
 {
 	unsigned int a;
-	ReadEndian4(&a);
+	ReadWord(&a);
 	s.resize(a);
 	Read((char *)s.c_str(), a);
 	return this;
@@ -96,7 +129,7 @@ BinStream *BinStream::operator>>(String &s)
 void BinStream::EnableReadEncryption()
 {
 	unsigned int a;
-	ReadEndian4(&a);
+	ReadWord(&a);
 	unk08 = new Rand2(a);
 }
 
@@ -106,19 +139,16 @@ extern unsigned int fn_802DDCDC(BinStream *);
 void BinStream::EnableWriteEncryption(int i)
 {
 	unsigned int a = fn_802DDCDC(this);
-	WriteEndian4(a);
+	WriteWord(a);
 	unk08 = new Rand2(a);
 }
 
 // fn_80343058
-
-extern void fn_80343114(void *, void *, int);
-
 void BinStream::ReadEndian(void *v, int i)
 {
 	Read(v, i);
 	if (unk04 != 0) {
-		fn_80343114(v, v, i);
+		SwapEndians(v, v, i);
 	}
 }
 
@@ -176,7 +206,7 @@ void BinStream::WriteEndian(const void *v, int i)
 {
 	char sp8;
 	if (unk04 != 0) {
-		fn_80343114((void *)v, &sp8, i);
+		SwapEndians((void *)v, &sp8, i);
 		Write(&sp8, i);
 	} else
 		Write(v, i);
@@ -258,3 +288,8 @@ bool BufStream::Eof()
 BufStreamNAND::~BufStreamNAND()
 {
 }
+
+// fn_8034A03C
+
+// fn_80344350
+CacheID::CacheID(){}
