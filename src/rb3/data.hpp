@@ -99,6 +99,8 @@ public:
 	int GetNodeCount(); // fn_8000FDA0
 	DataNode* GetNodeAtIndex(int); // fn_8000DF50
 
+	static DataArray* fn_8035CF9C(int, int, int);
+
 	DataNode* mNodes;
 	Symbol symbol;
 	short mNodeCount;

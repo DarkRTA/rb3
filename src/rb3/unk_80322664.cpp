@@ -6,7 +6,7 @@ extern DataArray* fn_8035CF9C(int, int, int);
 
 // fn_803231CC
 DataNode::DataNode(const char* c){
-    DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
+    DataArray* da = DataArray::fn_8035CF9C(0x10, 0x10, 1);
     da = new DataArray(c, strlen(c) + 1);
     value.dataArray = da;
     type = STRING_VALUE;
