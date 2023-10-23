@@ -8,6 +8,7 @@
 #include "bufstreamnand.hpp"
 #include "idatachunk.hpp"
 
+#pragma dont_inline on
 // fn_80342D18
 // BinStream's ctor
 BinStream::BinStream(bool b)
@@ -15,6 +16,7 @@ BinStream::BinStream(bool b)
 	unk04 = b;
 	unk08 = 0;
 }
+#pragma dont_inline reset
 
 // fn_80342D34
 // BinStream's dtor
