@@ -6,17 +6,16 @@
 #include "simpletempomap.hpp"
 
 // fn_8037A58C - TextFileStream ctor
-TextFileStream::TextFileStream(const char *c, bool b) : unk4(c, b ? FileType3 : FileType1, true) { }
-
-extern char lbl_808E5870; // "\r\n"
+TextFileStream::TextFileStream(const char *c, bool b) : unk4(c, b ? FileStream::FileType3 : FileStream::FileType1, true) { }
 
 // fn_8037A5F8
 void TextFileStream::Print(const char *c)
 {
+	static char kCRLF[3] = "\r\n";
 	char* p = (char*)c;
 	while(*p != '\0'){
 		if(*p == '\n' && p[1] != '\r')
-			unk4.Write(&lbl_808E5870, 2);
+			unk4.Write(kCRLF, 2);
 		else unk4.Write(p, 1);
 		p++;
 	}
