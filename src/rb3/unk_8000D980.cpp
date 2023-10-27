@@ -9,12 +9,14 @@
 #include "jsonobject.hpp"
 #include "data.hpp"
 
+#pragma dont_inline on
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
 const char *String::c_str() const
 {
 	return text;
 }
+#pragma dont_inline reset
 
 // fn_8000DD10
 // generic dtor function
@@ -35,7 +37,7 @@ DataNode* DataArray::GetNodeAtIndex(int i){
 }
 
 // fn_8000E048
-Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
+Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2){
 	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
 	if(da != 0) da = new DataArray(4);
 	unk4 = da;
@@ -52,12 +54,12 @@ FilePath::FilePath(const String &str) : String(str)
 {
 }
 
-extern String* lbl_8097BB0C;
+extern String lbl_8097BB0C;
 
 // fn_8000EC5C
 FilePath::FilePath(const char *str)
 {
-	Set(lbl_8097BB0C->c_str(), str);
+	Set(lbl_8097BB0C.c_str(), str);
 }
 
 // fn_8000EA28

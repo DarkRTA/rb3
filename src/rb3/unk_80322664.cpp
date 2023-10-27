@@ -56,6 +56,7 @@ Symbol* DataNode::ForceSym(const DataArray* da) const {
         return n->value.symVal;
     }
     Symbol s(n->value.symVal->m_string);
+    return &s;
 }
 
 // fn_80322FC8

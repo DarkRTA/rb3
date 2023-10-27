@@ -110,8 +110,9 @@ extern char lbl_808E2DA0;
 // loose functions
 int Minimum(int, int);
 unsigned int Minimum(unsigned int, unsigned int);
-unsigned short SwapEndianHalfWord(unsigned short);
-unsigned int SwapEndianWord(int);
+unsigned short SwapDataHalfWord(unsigned short);
+unsigned int SwapDataWord(int);
+long long SwapDataDoubleWord(long long);
 
 void FileQualifiedFilename(char*, int, const char*);
 extern "C" char* FileGetDrive(char*);
