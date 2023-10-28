@@ -157,8 +157,8 @@ cflags_base = [
 ];
 cflags_rb3 = [
     *cflags_base,
-    "-sdata 3",
-    "-sdata2 3",
+    "-sdata 2",
+    "-sdata2 2",
     "-pragma \"merge_float_consts on\"",
     "-RTTI on",
 ]
