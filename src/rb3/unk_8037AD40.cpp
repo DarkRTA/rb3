@@ -12,13 +12,16 @@ int DecodeUTF8(unsigned short& us, const char* str){
         return 1;
     }
     unsigned char c1 = str[1];
-    if(((c + 0x40) & 0xFF) <= 0x1FU){
+    if(((unsigned char)(c + 0x40) ) <= 0x1FU){
         us = ((c - 0xc0) << 6) + c1 - 0x80;
         return 2;
     }
     unsigned char c2 = str[2];
-    if(((c + 0x20) & 0xFF) <= 0xFU){
-        us = (((c - 0xe0) << 0xC) + ((c1 - 0x80) << 6) + c2) - 0x80;
+    if(((unsigned char)(c + 0x20)) <= 0xFU){
+        int x3 = ((c - 0xe0) << 0xC) ;
+        int x2 =  ((c1 - 0x80) << 6);
+        x3 += x2;
+        us = x3 + c2 - 0x80;
         return 3;
     }
     us = 0x2A;
@@ -233,6 +236,34 @@ void UTF8ToLower(unsigned short arg0, char* arg1) {
     else if (var_r3 < 0x800U) {
         if ((unsigned short) (var_r3 + 0xFF40) <= 0x1DU) {
             var_r3 = (var_r3 + 0x20) & 0xffff;
+        }
+        arg1[0] = (((var_r3 >> 6) & 0x3FF ) + 0xC0); 
+        arg1[1] = ((var_r3 % 64) + 0x80);
+    }
+    else{
+        temp_r6 = (var_r3 >> 6) & 0x3FF;
+        arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
+        arg1[1] = ((temp_r6 % 64) + 0x80);
+        arg1[2] = ((var_r3 % 64) + 0x80);
+    }
+    
+}
+
+// fn_8037B66C
+void UTF8ToUpper(unsigned short arg0, char* arg1) {
+    int temp_r6;
+    int var_r3;
+
+    var_r3 = arg0;
+    if (var_r3 < 0x80U) {
+        if ((unsigned short) (var_r3 + 0xFF9F) <= 0x19U) {
+            arg1[0] = (var_r3 - 0x20);
+        }
+        else arg1[0] = var_r3;
+    }
+    else if (var_r3 < 0x800U) {
+        if ((unsigned short) (var_r3 + 0xFF20) <= 0x1DU) {
+            var_r3 = (var_r3 - 0x20) & 0xffff;
         }
         arg1[0] = (((var_r3 >> 6) & 0x3FF ) + 0xC0); 
         arg1[1] = ((var_r3 % 64) + 0x80);

@@ -129,12 +129,12 @@ void BinStream::EnableReadEncryption()
 	unk08 = new Rand2(a);
 }
 
-extern unsigned int fn_802DDCDC(BinStream *);
+extern unsigned int fn_802DDCDC();
 
 // fn_80342DE4
 void BinStream::EnableWriteEncryption(int i)
 {
-	unsigned int a = fn_802DDCDC(this);
+	unsigned int a = fn_802DDCDC();
 	WriteWord(a);
 	unk08 = new Rand2(a);
 }
