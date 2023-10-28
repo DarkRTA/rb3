@@ -80,6 +80,12 @@ rb3/unk_800F6DF8.cpp:
 rb3/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
 
+rb3/unk_8022BE84.cpp:
+	.text       start:0x8022BE84 end:0x8024729C
+
+rb3/unk_802A5E04.cpp:
+	.text       start:0x802A5E04 end:0x802AC67C
+
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
