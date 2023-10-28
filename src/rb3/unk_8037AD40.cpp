@@ -219,7 +219,7 @@ int fn_8037B9F0(char* arg0, unsigned short* arg1) {
 extern "C" void fn_8037B60C(unsigned short, char*);
 
 // fn_8037B60C
-void fn_8037B60C(unsigned short arg0, char* arg1) {
+void UTF8ToLower(unsigned short arg0, char* arg1) {
     int temp_r6;
     int var_r3;
 
