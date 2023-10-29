@@ -31,16 +31,22 @@ DataNode::~DataNode(){
 extern DataArray* fn_8035CF9C(int, int, int);
 extern "C" DataNode* fn_8000DF50(DataArray*, int);
 
+#pragma dont_inline on
 // fn_8000DF50
 DataNode* DataArray::GetNodeAtIndex(int i){
 	return &mNodes[i];
 }
+#pragma dont_inline reset
 
 // fn_8000E048
 Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2){
 	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
 	if(da != 0) da = new DataArray(4);
 	unk4 = da;
+
+	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
+    unk4->GetNodeAtIndex(2)->operator=(dn1);
+    unk4->GetNodeAtIndex(3)->operator=(dn2);
 }
 
 // fn_8000E114
