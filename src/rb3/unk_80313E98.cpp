@@ -2,12 +2,17 @@
 #include "symbol.hpp"
 #include "std/string.h"
 #include "std/stdlib.h"
+#include "stringstrummedmsg.hpp"
 
 // fn_80313F64
 Symbol GetStringStrummedSymbol(){
     static Symbol lbl_8091A254("string_strummed");
     return lbl_8091A254;
 }
+
+// fn_80313E98
+StringStrummedMsg::StringStrummedMsg(int i1, int i2, int i3, int i4) : 
+    Message(GetStringStrummedSymbol(), DataNode(i1), DataNode(i2), DataNode(i3), DataNode(i4)) { }
 
 // fn_80313FB0
 Symbol GetStringStoppedSymbol(){

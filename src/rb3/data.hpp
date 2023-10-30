@@ -43,7 +43,7 @@ enum DataType {
 class DataNode {
 public:
 	DataNode(); // fn_801C7058
-	DataNode(int); // fn_8000E128?
+	DataNode(int); // fn_8000E128(?)
 	DataNode(const DataNode&);
 	DataNode(const char*); // fn_803231CC
 	DataNode(const String&); // fn_8032324C

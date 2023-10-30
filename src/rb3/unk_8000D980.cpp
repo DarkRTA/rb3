@@ -55,6 +55,12 @@ DataNode::DataNode(Symbol s){
 	value.strVal = s.m_string;
 }
 
+// fn_8000E128
+DataNode::DataNode(int i){
+	value.intVal = i;
+	type = EMPTY;
+}
+
 // fn_8000EC00
 FilePath::FilePath(const String &str) : String(str)
 {
