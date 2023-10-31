@@ -39,11 +39,12 @@ Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
 	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
 	if(da != 0) da = new DataArray(4);
 	unk4 = da;
+	DataNode* dn = da->GetNodeAtIndex(3);
 }
 
 // fn_8000E114
 DataNode::DataNode(Symbol s){
-	type = kDataSymbol;
+	type = kDataObject; // ????? it's either this or func which is *definitely* wrong
 	value.strVal = s.m_string;
 }
 
