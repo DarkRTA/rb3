@@ -16,28 +16,28 @@ union DataNodeValue {
     char *strVal;
 };
 
-enum DataType {
-	kDataInt = 0,
-    kDataFloat = 1,
-    kDataVar = 2,
-    kDataFunc = 3,
-    kDataObject = 4,
-    kDataSymbol = 5,
-    kDataUnhandled = 6,
-    kDataIfdef = 7,
-    kDataElse = 8,
-    kDataEndif = 9,
-    kDataArray = 16,
-    kDataCommand = 17,
-    kDataString = 18,
-    kDataProperty = 19,
-    kDataGlob = 20,
-    kDataDefine = 32,
-    kDataInclude = 33,
-    kDataMerge = 34,
-    kDataIfndef = 35,
-    kDataAutorun = 36,
-    kDataUndef = 37
+enum DataTypes { /* differs from serialized, for... some reason */
+    kDataUnhandled=0,
+    kDataFloat=1,
+    kDataVariable=2,
+    kDataSymbol=3,
+    kDataFunc=4,
+    kDataObject=5,
+    kDataInt=6,
+    kDataIfdef=7,
+    kDataElse=8,
+    kDataEndif=9,
+    kDataArray=16,
+    kDataCommand=17,
+    kDataString=18,
+    kDataProperty=19,
+    kDataGlob=20,
+    kDataDefine=32,
+    kDataInclude=33,
+    kDataMerge=34,
+    kDataIfndef=35,
+    kDataAutorun=36,
+    kDataUndef=37
 };
 
 class DataNode {
@@ -49,7 +49,7 @@ public:
 	DataNode(const String&); // fn_8032324C
 	DataNode(Symbol); // fn_8000E114
 	DataNode(const void*, int);
-	DataNode(DataArray*, DataType); // fn_80323318
+	DataNode(DataArray*, DataTypes); // fn_80323318
 	~DataNode(); // fn_8000DFE4
 	DataNode* Evaluate() const;
 	int Int(const DataArray*) const; // fn_80322F28
@@ -69,11 +69,11 @@ public:
 	DataNode* operator=(const DataNode&); // fn_803235D4
 	void Print(TextStream&, bool) const; // fn_8032364C
 
-	DataType GetType(); // same code as JsonObject::GetJsonObjectStruct()
+	DataTypes GetType(); // same code as JsonObject::GetJsonObjectStruct()
 	void AssignValue(const DataNode&); // same code as Symbol::operator=(const Symbol&)
 
 	DataNodeValue value;
-	DataType type;
+	DataTypes type;
 };
 
 class DataArray {

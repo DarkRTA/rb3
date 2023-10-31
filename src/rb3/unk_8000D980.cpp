@@ -43,7 +43,7 @@ Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
 
 // fn_8000E114
 DataNode::DataNode(Symbol s){
-	type = SYMBOL;
+	type = kDataSymbol;
 	value.strVal = s.m_string;
 }
 

@@ -72,7 +72,11 @@ json-c/printbuf.c:
 	.sbss       start:0x808E3E98 end:0x808E3EA0
 
 rb3/unk_800C9D04.cpp:
-	.text       start:0x800C9D04 end:0x800F6DE4
+	.text       start:0x800C9D04 end:0x800DB158
+
+rb3/netstream.cpp:
+	.text       start:0x800DB158 end:0x800DB160
+	.data       start:0x80853BC0 end:0x80853C18
 
 rb3/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4

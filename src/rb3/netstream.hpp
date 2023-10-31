@@ -14,8 +14,11 @@ class NetStream : BinStream {
 	virtual void V_Unk8(); // links to fn_8077BAA0, which returns 0
 	void fn_803088BC(void *, size_t); // TODO figure out actual types
 	void fn_803089D4(int, int); // see above comment
-	u8 undef1[8];
+
+	u8 undef1[4];
+	u8 aaaa;
+	u8 undef2[3];
 	BinStream *binstream_maybe; // ????
-	u8 undef2[16];
+	u8 undef3[16];
 };
 #endif
