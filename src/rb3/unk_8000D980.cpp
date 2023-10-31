@@ -79,12 +79,11 @@ FilePath::~FilePath()
 {
 }
 
-extern "C" const char* fn_8000ECC0(DataArray*);
-extern DataNode* fn_8000DF50();
+extern "C" const char* fn_8000ECC0(DataArray*, int);
 
 // fn_8000ECC0
-const char* fn_8000ECC0(DataArray* da){ // what's R4? there's an extra argument
-	DataNode* dn = fn_8000DF50();
+const char* fn_8000ECC0(DataArray* da, int i){
+	DataNode* dn = da->GetNodeAtIndex(i);
 	return dn->Str(da);
 }
 
