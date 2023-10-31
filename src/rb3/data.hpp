@@ -43,7 +43,7 @@ enum DataType {
 class DataNode {
 public:
 	DataNode(); // fn_801C7058
-	DataNode(int); // fn_8000E128(?)
+	DataNode(int); // fn_8000E128
 	DataNode(const DataNode&);
 	DataNode(const char*); // fn_803231CC
 	DataNode(const String&); // fn_8032324C
@@ -98,6 +98,7 @@ public:
 	void DecRefCount(); // fn_8000DFC4
 	int GetNodeCount(); // fn_8000FDA0
 	DataNode* GetNodeAtIndex(int); // fn_8000DF50
+	const char* GetStrAtIndex(int); // fn_8000ECC0
 
 	static DataArray* fn_8035CF9C(int, int, int);
 

@@ -79,12 +79,10 @@ FilePath::~FilePath()
 {
 }
 
-extern "C" const char* fn_8000ECC0(DataArray*, int);
-
 // fn_8000ECC0
-const char* fn_8000ECC0(DataArray* da, int i){
-	DataNode* dn = da->GetNodeAtIndex(i);
-	return dn->Str(da);
+const char* DataArray::GetStrAtIndex(int i){
+	DataNode* dn = GetNodeAtIndex(i);
+	return dn->Str(this);
 }
 
 // fn_8000ED3C
