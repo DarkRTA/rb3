@@ -16,7 +16,7 @@ union DataNodeValue {
 	char *strVal;
 };
 
-enum DataTypes { /* differs from serialized, for... some reason */
+enum DataTypes { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
 	kDataUnhandled = 0,
 	kDataFloat = 1,
 	kDataVariable = 2,
