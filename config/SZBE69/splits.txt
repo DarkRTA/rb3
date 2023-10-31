@@ -76,7 +76,6 @@ rb3/unk_800C9D04.cpp:
 
 rb3/netstream.cpp:
 	.text       start:0x800DB158 end:0x800DB160
-	.data       start:0x80853BC0 end:0x80853C18
 
 rb3/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4
