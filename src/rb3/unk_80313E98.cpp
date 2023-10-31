@@ -57,6 +57,61 @@ Symbol GetKeyboardHighHandPlacementSymbol(){
     return lbl_808FC8D4;
 }
 
+extern int gIndent;
+
+// fn_80315A70
+void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
+    DataNode* dn = mNodes;
+    DataNode* dn_end = &mNodes[mNodeCount];
+    char begin = '\0';
+    char end = '\0';
+    if(ty == 0x10){
+        begin = '(';
+        end = ')';
+    }
+    else if(ty == 0x11){
+        begin = '{';
+        end = '}';
+    }
+    else if(ty == 0x13){
+        begin = '[';
+        end = ']';
+    }
+
+    while(dn < dn_end){
+        if (dn->GetType() & 0x10) break;
+        dn++;
+    }
+    
+    if((dn == dn_end) || !b){
+        ts << begin;
+        DataNode* lol = mNodes;
+        if(lol->GetType() == 5){
+            lol->Print(ts, b);
+            lol++;
+        }
+        ts << " ";
+        gIndent += 3;
+        while(lol < dn_end){
+            ts.Space(gIndent);
+            lol->Print(ts, b);
+            ts << " ";
+            lol++;
+        }
+        gIndent -= 3;
+        ts.Space(gIndent);
+        ts << end;
+    }
+    else {
+        ts << begin;
+        for(DataNode* bruh = mNodes; bruh < dn_end; bruh++){
+            if(bruh != mNodes) ts << "\n";
+            bruh->Print(ts, b);
+        }
+        ts << end;
+    }
+}
+
 extern DataNode* NodesAlloc(int);
 
 DataArray::DataArray(int i) : symbol(), mNodeCount(i), mRefCount(1), mLine(0), mUnknown(0) {

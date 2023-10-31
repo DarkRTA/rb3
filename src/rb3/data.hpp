@@ -99,6 +99,7 @@ public:
 	int GetNodeCount(); // fn_8000FDA0
 	DataNode* GetNodeAtIndex(int); // fn_8000DF50
 	const char* GetStrAtIndex(int); // fn_8000ECC0
+	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 
 	static DataArray* fn_8035CF9C(int, int, int);
 
