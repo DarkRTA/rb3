@@ -193,3 +193,9 @@ void DataArray::LoadGlob(BinStream& bs, bool b){
         bs.Read(mNodes, -mNodeCount);
     }
 }
+
+// fn_80316CB0
+void DataArray::SetFileLine(Symbol s, int i){
+    symbol = s;
+    mLine = i;
+}
