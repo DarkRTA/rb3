@@ -8,7 +8,7 @@ class ArkFile : File {
 public:
 	ArkFile(const char *, int);
 	virtual ~ArkFile(); // fn_802E73FC
-	virtual String GetStringMember(); // fn_802E7810
+	virtual String Filename(); // fn_802E7810
 	virtual int Read(void *, int); // fn_802E748C
 	virtual bool ReadAsync(void *, int); // fn_802E7500
 
@@ -50,6 +50,6 @@ public:
 	s32 unk24;
 	s32 unk28;
 	s8 unk2c;
-	String str;
+	String fname;
 };
 #endif

@@ -7,7 +7,7 @@ class AsyncFile : File {
 public:
 	AsyncFile(const char *, int);
 	virtual ~AsyncFile();
-	virtual String GetStringMember();
+	virtual String Filename();
 	virtual int Read(void *, int); // fn_802E7E8C
 	virtual bool ReadAsync(void *, int); // fn_802E7F7C
 	virtual int V_Unk5(void *, int); // fn_802E7F00
@@ -41,7 +41,7 @@ public:
 	int unk4;
 	bool failed;
 	char unk9;
-	String str;
+	String fname;
 	unsigned int fpos;
 	int unk1c;
 	unsigned int size;
