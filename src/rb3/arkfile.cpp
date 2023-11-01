@@ -3,17 +3,20 @@
 
 int File::sOpenCount[4];
 
+#pragma dont_inline on
 // fn_802E73DC
 File::File()
 {
 	sOpenCount[0]++;
 }
 
+
 // fn_802E738C
 File::~File()
 {
 	sOpenCount[0]--;
 }
+#pragma dont_inline reset
 
 // fn_802E780C
 String File::GetStringMember()
