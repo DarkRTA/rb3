@@ -158,6 +158,16 @@ DataNode* DataNode::operator=(const DataNode& dn) {
     return this;
 }
 
+extern "C" DataNode* fn_80323178(DataNode*, DataNode*);
+
+// fn_80323178
+DataNode* fn_80323178(DataNode* dn1, DataNode* dn2){
+    dn1->AssignValue(*dn2);
+    dn1->type = dn2->type;
+    if(dn1->type & 0x10) dn1->value.dataArray->IncRefCount();
+    return dn1;
+}
+
 // fn_8032364C
 void DataNode::Print(TextStream& ts, bool b) const {
     switch(type){
