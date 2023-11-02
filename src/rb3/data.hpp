@@ -16,7 +16,7 @@ union DataNodeValue {
 	char *strVal;
 };
 
-enum DataTypes { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
+enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
 	kDataUnhandled = 0,
 	kDataFloat = 1,
 	kDataVariable = 2,
@@ -49,7 +49,7 @@ public:
 	DataNode(const String&); // fn_8032324C
 	DataNode(Symbol); // fn_8000E114
 	DataNode(const void *, int);
-	DataNode(DataArray *, DataTypes); // fn_80323318
+	DataNode(DataArray *, DataType); // fn_80323318
 	~DataNode(); // fn_8000DFE4
 	DataNode *Evaluate() const;
 	int Int(const DataArray *) const; // fn_80322F28
@@ -69,12 +69,12 @@ public:
 	DataNode *operator=(const DataNode &); // fn_803235D4
 	void Print(TextStream &, bool) const; // fn_8032364C
 
-	DataTypes GetType(); // same code as JsonObject::GetJsonObjectStruct()
+	DataType GetType(); // same code as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
 		const DataNode &); // same code as Symbol::operator=(const Symbol&)
 
 	DataNodeValue value;
-	DataTypes type;
+	DataType type;
 };
 
 class DataArray {
