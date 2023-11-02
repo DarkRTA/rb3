@@ -92,6 +92,8 @@ public:
 	void Remove(const DataNode &); // fn_80316150
 	bool Contains(const DataNode &) const; // fn_80316190
 	void SortNodes(); // fn_80316E84
+	void Save(BinStream&) const; // fn_803171F8
+	void Load(BinStream&);
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
 
@@ -102,8 +104,6 @@ public:
 	const char* GetStrAtIndex(int); // fn_8000ECC0
 	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
-
-	static DataArray *fn_8035CF9C(int, int, int);
 
 	DataNode *mNodes;
 	Symbol symbol;

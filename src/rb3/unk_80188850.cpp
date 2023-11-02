@@ -4,7 +4,7 @@
 // fn_801C7058
 DataNode::DataNode(){
     value.intVal = 0;
-    type = EMPTY;
+    type = kDataUnhandled;
 }
 
 // fn_801CB744

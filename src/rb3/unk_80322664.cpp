@@ -7,13 +7,13 @@ extern DataArray* fn_8035CF9C(int, int, int);
 
 // fn_803231CC
 DataNode::DataNode(const char* c){
-    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
+    value.dataArray = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
     type = kDataString;
 }
 
 // fn_8032324C
 DataNode::DataNode(const String& s){
-    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
+    value.dataArray = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
     type = kDataString;
 }
 

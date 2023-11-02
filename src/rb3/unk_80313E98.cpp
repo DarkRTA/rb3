@@ -316,3 +316,15 @@ bool DataArray::Contains(const DataNode& dn) const {
     }
     return false;
 }
+
+extern void fn_80317278(BinStream*, DataNode*);
+
+// fn_803171F8
+void DataArray::Save(BinStream& bs) const {
+    bs.WriteHalfWord(mNodeCount);
+    bs.WriteHalfWord(mLine);
+    bs.WriteHalfWord(mUnknown);
+    for(int i = 0; i < mNodeCount; i++){
+        fn_80317278(&bs, &mNodes[i]);
+    }
+}
