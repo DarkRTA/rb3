@@ -208,6 +208,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/rg_messages.cpp"),
+            Object(NonMatching, "rb3/key_messages.cpp"),
             Object(NonMatching, "rb3/unk_80313E98.cpp"),
             Object(NonMatching, "rb3/unk_80322664.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
