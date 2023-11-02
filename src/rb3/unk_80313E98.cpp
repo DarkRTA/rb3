@@ -34,14 +34,14 @@ int NodeCmp(const void* a, const void* b){
     DataNode* da = (DataNode*)a;
     DataNode* db = (DataNode*)b;
     switch(da->GetType()){
-        case FLOAT_VALUE: 
-        case EMPTY:
+        case kDataFloat:
+        case kDataInt:
             double d1 = da->LiteralFloat(nullptr);
             double d2 = db->LiteralFloat(nullptr);
             if(d1 < d2) return -1;
             return (d1 != d2);
-        case STRING_VALUE:
-        case SYMBOL:
+        case kDataString:
+        case kDataObject:
             const char* s1 = da->Str(nullptr);
             const char* s2 = db->Str(nullptr);
             return stricmp(s1, s2);
