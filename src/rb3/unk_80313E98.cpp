@@ -2,6 +2,7 @@
 #include "symbol.hpp"
 #include "std/string.h"
 #include "std/stdlib.h"
+#include "common.hpp"
 
 // fn_80315324
 Symbol GetKeyboardKeyReleasedSymbol(){
@@ -198,4 +199,32 @@ void DataArray::LoadGlob(BinStream& bs, bool b){
 void DataArray::SetFileLine(Symbol s, int i){
     symbol = s;
     mLine = i;
+}
+
+extern "C" void fn_80315CFC(DataArray*, int, DataNode*);
+
+void fn_80315CFC(DataArray* da, int count, DataNode* dn) {
+    // seems to reconstruct or add a DataNode to a DataArray
+    int i = 0;
+    int newNodeCount = da->mNodeCount + 1;
+    DataNode* oldNodes = da->mNodes; // Save all nodes pointer
+    // allocate new nodes
+    da->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+    
+    for(i = 0; i < count; i++){
+        new (&da->mNodes[i]) DataNode(oldNodes[i]);
+    }
+    for(; i < count + 1; i++){
+        new (&da->mNodes[i]) DataNode(*dn);
+    }
+    for(; i < newNodeCount; i++){
+        new (&da->mNodes[i]) DataNode(oldNodes[i - 1]);
+    }
+    for(i = 0; i < da->mNodeCount; i++){
+        oldNodes[i].~DataNode();
+    }
+
+    // free old nodes
+    NodesFree(da->mNodeCount * sizeof(DataNode), oldNodes);
+    da->mNodeCount = newNodeCount;
 }
