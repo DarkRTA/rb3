@@ -200,60 +200,78 @@ void DataArray::SetFileLine(Symbol s, int i){
     mLine = i;
 }
 
-extern "C" void fn_80315CFC(DataArray*, int, DataNode*);
-
-void fn_80315CFC(DataArray* da, int count, DataNode* dn) {
-    // seems to reconstruct or add a DataNode to a DataArray
+// fn_80315CFC
+void DataArray::Insert(int count, const DataNode& dn){
     int i = 0;
-    int newNodeCount = da->mNodeCount + 1;
-    DataNode* oldNodes = da->mNodes; // Save all nodes pointer
+    int newNodeCount = mNodeCount + 1;
+    DataNode* oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    da->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
     
     for(i = 0; i < count; i++){
-        new (&da->mNodes[i]) DataNode(oldNodes[i]);
+        new (&mNodes[i]) DataNode(oldNodes[i]);
     }
     for(; i < count + 1; i++){
-        new (&da->mNodes[i]) DataNode(*dn);
+        new (&mNodes[i]) DataNode(dn);
     }
     for(; i < newNodeCount; i++){
-        new (&da->mNodes[i]) DataNode(oldNodes[i - 1]);
+        new (&mNodes[i]) DataNode(oldNodes[i - 1]);
     }
-    for(i = 0; i < da->mNodeCount; i++){
+    for(i = 0; i < mNodeCount; i++){
         oldNodes[i].~DataNode();
     }
 
     // free old nodes
-    NodesFree(da->mNodeCount * sizeof(DataNode), oldNodes);
-    da->mNodeCount = newNodeCount;
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newNodeCount;
 }
 
 extern "C" void fn_80315E1C(DataArray*, int, DataArray*);
 
 // fn_80315E1C
-void fn_80315E1C(DataArray* da1, int count, DataArray* da2) {
-    if((da2 == 0) || (da2->GetNodeCount() == 0)) return;
+void DataArray::InsertNodes(int count, const DataArray* da){
+    if((da == 0) || (da->GetNodeCount() == 0)) return;
     int i = 0;
-    int da1cnt = da2->GetNodeCount();
-    int newNodeCount = da1->mNodeCount + da1cnt;
-    DataNode* oldNodes = da1->mNodes; // Save all nodes pointer
+    int dacnt = da->GetNodeCount();
+    int newNodeCount = mNodeCount + dacnt;
+    DataNode* oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    da1->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
 
     for(i = 0; i < count; i++){
-        new (&da1->mNodes[i]) DataNode(oldNodes[i]);
+        new (&mNodes[i]) DataNode(oldNodes[i]);
     }
     
-    for(; i < count + da1cnt; i++){
-        new (&da1->mNodes[i]) DataNode(*da2->GetNodeAtIndex(i - count));
+    for(; i < count + dacnt; i++){
+        new (&mNodes[i]) DataNode(*da->GetNodeAtIndex(i - count));
     }
 
     for(; i < newNodeCount; i++){
-        new (&da1->mNodes[i]) DataNode(oldNodes[i - da1cnt]);
+        new (&mNodes[i]) DataNode(oldNodes[i - dacnt]);
     }
-    for(i = 0; i < da1->mNodeCount; i++){
+    for(i = 0; i < mNodeCount; i++){
         oldNodes[i].~DataNode();
     }
-    NodesFree(da1->mNodeCount * sizeof(DataNode), oldNodes);
-    da1->mNodeCount = newNodeCount;
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newNodeCount;
+}
+
+// fn_80315F74
+void DataArray::Resize(int i) {
+    DataNode* oldNodes = mNodes;
+    mNodes = NodesAlloc(i * sizeof(DataNode));
+    int min = Minimum(mNodeCount, i);
+    int cnt = 0;
+    for(cnt = 0; cnt < min; cnt++){
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for(; cnt < i; cnt++){
+        new (&mNodes[cnt]) DataNode();
+    }
+    for(cnt = 0; cnt < mNodeCount; cnt++){
+        oldNodes[cnt].~DataNode();
+    }
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = i;
+    mUnknown = 0;
 }

@@ -85,9 +85,9 @@ public:
 
 	int Size() const;
 	void Int(int) const;
-	void Insert(int, const DataNode &);
-	void InsertNodes(int, const DataArray &);
-	void Resize(int);
+	void Insert(int, const DataNode &); // fn_80315CFC
+	void InsertNodes(int, const DataArray*); // fn_80315E1C
+	void Resize(int); // fn_80315F74
 	void Remove(int);
 	void Remove(const DataNode &);
 	bool Contains(const DataNode &);
@@ -97,8 +97,8 @@ public:
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
-	int GetNodeCount(); // fn_8000FDA0
-	DataNode* GetNodeAtIndex(int); // fn_8000DF50
+	int GetNodeCount() const; // fn_8000FDA0
+	DataNode* GetNodeAtIndex(int) const; // fn_8000DF50
 	const char* GetStrAtIndex(int); // fn_8000ECC0
 	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
