@@ -51,14 +51,14 @@ Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2){
 
 // fn_8000E114
 DataNode::DataNode(Symbol s){
-	type = SYMBOL;
+	type = kDataObject; // ????? it's either this or func which is *definitely* wrong
 	value.strVal = s.m_string;
 }
 
 // fn_8000E128
 DataNode::DataNode(int i){
 	value.intVal = i;
-	type = EMPTY;
+	type = kDataInt;
 }
 
 // fn_8000EC00

@@ -8,17 +8,17 @@ extern DataArray* fn_8035CF9C(int, int, int);
 // fn_803231CC
 DataNode::DataNode(const char* c){
     value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
-    type = STRING_VALUE;
+    type = kDataString;
 }
 
 // fn_8032324C
 DataNode::DataNode(const String& s){
     value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
-    type = STRING_VALUE;
+    type = kDataString;
 }
 
 // fn_80323318
-DataNode::DataNode(DataArray* da, DataType ty){
+DataNode::DataNode(DataArray* da, DataTypes ty){
     value.dataArray = da;
     value.dataArray->IncRefCount();
     type = ty;
@@ -49,7 +49,7 @@ Symbol* DataNode::LiteralSym(const DataArray* da) const {
 // fn_80322F80
 Symbol* DataNode::ForceSym(const DataArray* da) const {
     DataNode* n = Evaluate();
-    if(n->type == SYMBOL){
+    if(n->type == kDataObject){
         return n->value.symVal;
     }
     Symbol s(n->value.symVal->m_string);
@@ -59,26 +59,26 @@ Symbol* DataNode::ForceSym(const DataArray* da) const {
 // fn_80322FC8
 const char* DataNode::Str(const DataArray* da) const {
     DataNode* n = Evaluate();
-    if(n->type == SYMBOL) return n->value.strVal;
+    if(n->type == kDataObject) return n->value.strVal;
     else return n->value.dataArray->mNodes->value.strVal;
 }
 
 // fn_80323004
 const char* DataNode::LiteralStr(const DataArray* da) const {
-    if(type == SYMBOL) return value.strVal;
+    if(type == kDataObject) return value.strVal;
     else return value.dataArray->mNodes->value.strVal;
 }
 
 // fn_80323024
 float DataNode::Float(const DataArray* da) const {
     DataNode* n = Evaluate();
-    if(n->type == EMPTY) return n->value.intVal;
+    if(n->type == kDataInt) return n->value.intVal;
     else return n->value.floatVal;
 }
 
 // fn_8032307C
 float DataNode::LiteralFloat(const DataArray* da) const {
-    if(type == EMPTY) return value.intVal;
+    if(type == kDataInt) return value.intVal;
     else return value.floatVal;
 }
 
@@ -96,18 +96,18 @@ DataArray* DataNode::LiteralArray(const DataArray* da) const {
 // fn_80323360
 bool DataNode::operator==(const DataNode& dn) const {
     if(type == dn.type){
-        if(type == STRING_VALUE){
+        if(type == kDataString){
             return strcmp(value.strVal, dn.value.strVal) == 0;
         }
         else return (value.intVal == dn.value.intVal);
     }
-    else if((type == OBJECT) || (dn.type == OBJECT)){
+    else if((type == kDataFunc) || (dn.type == kDataFunc)){
 
     }
-    else if((type == STRING_VALUE) || (dn.type == STRING_VALUE)){
+    else if((type == kDataString) || (dn.type == kDataString)){
         return strcmp(LiteralStr(nullptr), dn.LiteralStr(nullptr)) == 0;
     }
-    else if((type == FLOAT_VALUE) || (dn.type == FLOAT_VALUE)){
+    else if((type == kDataFloat) || (dn.type == kDataFloat)){
         return (LiteralFloat(nullptr) == dn.LiteralFloat(nullptr));
     }
     else return false;
@@ -119,20 +119,20 @@ bool DataNode::operator!=(const DataNode& dn) const {
 }
 
 #pragma dont_inline on
-DataType DataNode::GetType(){ return type; }
+DataTypes DataNode::GetType(){ return type; }
 #pragma dont_inline reset
 
 // fn_80323530
 bool DataNode::NotNull() const {
     DataNode* n = Evaluate();
-    DataType t = n->GetType();
-    if(t == SYMBOL){
+    DataTypes t = n->GetType();
+    if(t == kDataObject){
         return n->value.strVal[0] != 0;
     }
-    else if(t == STRING_VALUE){
+    else if(t == kDataString){
         return (n->value.dataArray->GetNodeCount() < -1);
     }
-    else if(t == GLOB){
+    else if(t == kDataGlob){
         return (n->value.dataArray->GetNodeCount() & -1);
     }
     else return (n->value.dataArray != 0);
@@ -165,22 +165,22 @@ DataNode::DataNode(const DataNode& dn){
 // fn_8032364C
 void DataNode::Print(TextStream& ts, bool b) const {
     switch(type){
-        case INT_VALUE: ts << value.intVal; break;
-        case FLOAT_VALUE: ts << value.floatVal; break;
-        case VAR:
+        case kDataUnhandled: ts << value.intVal; break;
+        case kDataFloat: ts << value.floatVal; break;
+        case kDataVariable:
             // DataVarName__FPC8DataNode gets called here
             ts << "$";
             break;
-        case FUNC:
+        case kDataSymbol:
             // DataFuncName__FPFP9DataArray_8DataNode gets called here
             // ts << (Symbol)0xE8;
             break;
-        case OBJECT:
+        case kDataFunc:
             if(value.dataArray == nullptr){
                 ts << "<null>";
             }
             break;
-        case SYMBOL:
+        case kDataObject:
             if(!b){
                 ts << "'";
                 ts << value.strVal;
@@ -188,46 +188,46 @@ void DataNode::Print(TextStream& ts, bool b) const {
             }
             else ts << value.strVal;
             break;
-        case EMPTY: ts << "invalid"; break;
-        case IFDEF:
+        case kDataInt: ts << "invalid"; break;
+        case kDataIfdef:
             ts << "\n#ifdef ";
             ts << value.strVal;
             ts << "\n";
             break;
-        case ELSE: ts << "\n#else\n"; break;
-        case ENDIF: ts << "\n#endif\n"; break;
-        case ARRAY:
-        case COMMAND:
-        case OBJECT_PROP_REF:
+        case kDataElse: ts << "\n#else\n"; break;
+        case kDataEndif: ts << "\n#endif\n"; break;
+        case kDataArray:
+        case kDataCommand:
+        case kDataProperty:
             break;
-        case STRING_VALUE:
+        case kDataString:
             break;
-        case GLOB:
+        case kDataGlob:
             break;
-        case DEFINE:
+        case kDataDefine:
             ts << "\n#define ";
             ts << value.strVal;
             ts << "\n";
             break;
-        case INCLUDE:
+        case kDataInclude:
             ts << "\n#include ";
             ts << value.strVal;
             ts << "\n";
             break;
-        case MERGE:
+        case kDataMerge:
             ts << "\n#merge ";
             ts << value.strVal;
             ts << "\n";
             break;
-        case IFNDEF:
+        case kDataIfndef:
             ts << "\n#ifndef ";
             ts << value.strVal;
             ts << "\n";
             break;
-        case AUTORUN:
+        case kDataAutorun:
             ts << "\n#autorun\n";
             break;
-        case UNDEF:
+        case kDataUndef:
             ts << "\n#undef ";
             ts << value.strVal;
             ts << "\n";
