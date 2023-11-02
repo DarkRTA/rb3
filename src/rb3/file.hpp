@@ -6,7 +6,7 @@ class File {
 public:
 	File();
 	virtual ~File();
-	virtual String GetStringMember();
+	virtual String Filename();
 	virtual int Read(void *, int) = 0;
 	virtual bool ReadAsync(void *, int) = 0;
 	virtual int V_Unk5(char *, int) = 0;

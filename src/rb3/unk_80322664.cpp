@@ -1,22 +1,19 @@
 #include "data.hpp"
 #include "string.hpp"
 #include "std/string.h"
+#include "common.hpp"
 
 extern DataArray* fn_8035CF9C(int, int, int);
 
 // fn_803231CC
 DataNode::DataNode(const char* c){
-    DataArray* da = DataArray::fn_8035CF9C(0x10, 0x10, 1);
-    da = new DataArray(c, strlen(c) + 1);
-    value.dataArray = da;
+    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
     type = kDataString;
 }
 
 // fn_8032324C
 DataNode::DataNode(const String& s){
-    DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
-    da = new DataArray(s.c_str(), s.length() + 1);
-    value.dataArray = da;
+    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
     type = kDataString;
 }
 
@@ -56,6 +53,7 @@ Symbol* DataNode::ForceSym(const DataArray* da) const {
         return n->value.symVal;
     }
     Symbol s(n->value.symVal->m_string);
+    return &s;
 }
 
 // fn_80322FC8
@@ -155,6 +153,13 @@ DataNode* DataNode::operator=(const DataNode& dn) {
         value.dataArray->IncRefCount();
     }
     return this;
+}
+
+// fn_80323178
+DataNode::DataNode(const DataNode& dn){
+    AssignValue(dn);
+    type = dn.type;
+    if(type & 0x10) value.dataArray->IncRefCount();
 }
 
 // fn_8032364C

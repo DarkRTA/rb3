@@ -34,8 +34,8 @@ AsyncFileCNT::AsyncFileCNT(const char *c, int a) : AsyncFile(c, a)
 		temp_r31 = var_r31 - temp_r30;
 		// strncpy(arg0 + 0x4A, temp_r30, temp_r31);
 		// (arg0 + temp_r31)->unk4A = 0;
-		str = temp_r30 + temp_r31;
-		str.c_str();
+		fname = temp_r30 + temp_r31;
+		fname.c_str();
 		unk9 = 1;
 	}
 

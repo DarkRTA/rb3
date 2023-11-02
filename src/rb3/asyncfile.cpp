@@ -7,7 +7,7 @@
 // fn_802E7B68
 // AsyncFile's ctor
 AsyncFile::AsyncFile(const char *arg1, int arg2)
-	: unk4(arg2), failed(0), unk9(0), str(arg1), fpos(0), unk1c(0), unk28(0),
+	: unk4(arg2), failed(0), unk9(0), fname(arg1), fpos(0), unk1c(0), unk28(0),
 	  unk2c(0), unk30(0)
 {
 }
@@ -19,10 +19,9 @@ AsyncFile::~AsyncFile()
 }
 
 // fn_802E8678
-// gets AsyncFile's String member
-String AsyncFile::GetStringMember()
+String AsyncFile::Filename()
 {
-	return String(str);
+	return String(fname);
 }
 
 extern void fn_80354238(char *);
@@ -279,7 +278,7 @@ void AsyncFile::FillBuffer()
 }
 
 // fn_802E7E10 - swaps endians for an int
-unsigned int SwapEndianWord(int i)
+unsigned int SwapDataWord(int i)
 {
 	unsigned int ui = i;
 	return ui >> 0x18 | ui << 0x18 | ui >> 8 & 0xFF00 | (ui & 0xFF00) << 8;

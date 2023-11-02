@@ -3,20 +3,23 @@
 
 int File::sOpenCount[4];
 
+#pragma dont_inline on
 // fn_802E73DC
 File::File()
 {
 	sOpenCount[0]++;
 }
 
+
 // fn_802E738C
 File::~File()
 {
 	sOpenCount[0]--;
 }
+#pragma dont_inline reset
 
 // fn_802E780C
-String File::GetStringMember()
+String File::Filename()
 {
 	return String();
 }
@@ -28,15 +31,15 @@ int File::V_Unk15(int *a)
 	return 1;
 }
 
-extern void FileMakePath(char *, const char *, char *);
+extern "C" char* FileMakePath(char*, char*, char*);
 extern int lbl_80902234;
 extern char *lbl_808517C0; // "."
 
 // fn_802E72CC
 ArkFile::ArkFile(const char *c, int a)
-	: unk18(0), unk1c(0), fpos(0), unk24(0), unk2c(1), str(c)
+	: unk18(0), unk1c(0), fpos(0), unk24(0), unk2c(1), fname(c)
 {
-	// FileMakePath(".", c, 0);
+	FileMakePath(".", (char*)c, nullptr);
 	if (a & 4) {
 		unk24 = 1;
 	}
@@ -107,9 +110,9 @@ bool ArkFile::Eof()
 }
 
 // fn_802E7810
-String ArkFile::GetStringMember()
+String ArkFile::Filename()
 {
-	return str;
+	return fname;
 }
 
 // fn_802E7748

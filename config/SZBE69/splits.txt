@@ -80,8 +80,17 @@ rb3/netstream.cpp:
 rb3/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4
 
+rb3/unk_801660DC.cpp:
+	.text       start:0x801660DC end:0x80184CA0
+
 rb3/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
+
+rb3/unk_8022BE84.cpp:
+	.text       start:0x8022BE84 end:0x8024729C
+
+rb3/unk_802A5E04.cpp:
+	.text       start:0x802A5E04 end:0x802AC67C
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
@@ -119,8 +128,13 @@ rb3/unk_802FA994.cpp:
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
+rb3/rg_messages.cpp:
+	.text       start:0x80313E98 end:0x80314814
+	.data       start:0x808546F0 end:0x80854A08
+	.bss        start:0x8091A254 end:0x8091A290
+
 rb3/unk_80313E98.cpp:
-	.text       start:0x80313E98 end:0x80318588
+	.text       start:0x80314814 end:0x80318588
 
 rb3/unk_80322664.cpp:
 	.text       start:0x80322664 end:0x803240F0
@@ -131,9 +145,15 @@ rb3/unk_803242cc.cpp:
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/unk_80341E10.cpp:
-	.text       start:0x80341E10 end:0x8034A7DC
+rb3/bink.cpp:
+	.text       start:0x80341E10 end:0x80342ACC
+
+rb3/binstream.cpp:
+	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
+
+rb3/unk_803431F4.cpp:
+	.text       start:0x803431F4 end:0x8034A7DC
 
 rb3/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C988
@@ -163,6 +183,7 @@ rb3/simpletempomap.cpp:
 
 rb3/textfilestream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
+	.sdata2     start:0x808E5870 end:0x808E5878
 
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74

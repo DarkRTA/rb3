@@ -9,12 +9,14 @@
 #include "jsonobject.hpp"
 #include "data.hpp"
 
+#pragma dont_inline on
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
 const char *String::c_str() const
 {
 	return text;
 }
+#pragma dont_inline reset
 
 // fn_8000DD10
 // generic dtor function
@@ -29,17 +31,22 @@ DataNode::~DataNode(){
 extern DataArray* fn_8035CF9C(int, int, int);
 extern "C" DataNode* fn_8000DF50(DataArray*, int);
 
+#pragma dont_inline on
 // fn_8000DF50
 DataNode* DataArray::GetNodeAtIndex(int i){
 	return &mNodes[i];
 }
+#pragma dont_inline reset
 
 // fn_8000E048
-Message::Message(Symbol* s, DataNode* dn2, DataNode* dn3){
+Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2){
 	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
 	if(da != 0) da = new DataArray(4);
 	unk4 = da;
-	DataNode* dn = da->GetNodeAtIndex(3);
+
+	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
+    unk4->GetNodeAtIndex(2)->operator=(dn1);
+    unk4->GetNodeAtIndex(3)->operator=(dn2);
 }
 
 // fn_8000E114
@@ -48,17 +55,23 @@ DataNode::DataNode(Symbol s){
 	value.strVal = s.m_string;
 }
 
+// fn_8000E128
+DataNode::DataNode(int i){
+	value.intVal = i;
+	type = kDataInt;
+}
+
 // fn_8000EC00
 FilePath::FilePath(const String &str) : String(str)
 {
 }
 
-extern String* lbl_8097BB0C;
+extern String lbl_8097BB0C;
 
 // fn_8000EC5C
 FilePath::FilePath(const char *str)
 {
-	Set(lbl_8097BB0C->c_str(), str);
+	Set(lbl_8097BB0C.c_str(), str);
 }
 
 // fn_8000EA28
@@ -66,13 +79,10 @@ FilePath::~FilePath()
 {
 }
 
-extern "C" const char* fn_8000ECC0(DataArray*);
-extern DataNode* fn_8000DF50();
-
 // fn_8000ECC0
-const char* fn_8000ECC0(DataArray* da){ // what's R4? there's an extra argument
-	DataNode* dn = fn_8000DF50();
-	return dn->Str(da);
+const char* DataArray::GetStrAtIndex(int i){
+	DataNode* dn = GetNodeAtIndex(i);
+	return dn->Str(this);
 }
 
 // fn_8000ED3C

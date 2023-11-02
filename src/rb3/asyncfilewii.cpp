@@ -31,7 +31,7 @@ void AsyncFileWii::_Open()
 {
 	size = 0;
 
-	str.c_str();
+	fname.c_str();
 	int ret = fn_807359C0(); // DVDConvertPathToEntrynum?
 	failed = (ret + 1) == 0;
 	if (failed == 0) {

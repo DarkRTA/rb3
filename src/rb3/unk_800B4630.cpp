@@ -2,6 +2,7 @@
 #include "binstream.hpp"
 #include "string.hpp"
 #include "memstream.hpp"
+#include "message.hpp"
 
 // fn_800B95C4
 BinStream* BinStream::WriteFloat(float f){
@@ -38,4 +39,16 @@ void SyncObjMsg::Print(TextStream& ts) const {
 // fn_800BB518
 int MemStream::Tell(){
     return pos;
+}
+
+// fn_800B7D98
+Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2, const DataNode& dn3){
+    DataArray* da = DataArray::fn_8035CF9C(0x10, 0x10, 1);
+	if(da != 0) da = new DataArray(4);
+	unk4 = da;
+
+	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
+    unk4->GetNodeAtIndex(2)->operator=(dn1);
+    unk4->GetNodeAtIndex(3)->operator=(dn2);
+    unk4->GetNodeAtIndex(4)->operator=(dn3);
 }
