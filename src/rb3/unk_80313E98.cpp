@@ -227,3 +227,33 @@ void fn_80315CFC(DataArray* da, int count, DataNode* dn) {
     NodesFree(da->mNodeCount * sizeof(DataNode), oldNodes);
     da->mNodeCount = newNodeCount;
 }
+
+extern "C" void fn_80315E1C(DataArray*, int, DataArray*);
+
+// fn_80315E1C
+void fn_80315E1C(DataArray* da1, int count, DataArray* da2) {
+    if((da2 == 0) || (da2->GetNodeCount() == 0)) return;
+    int i = 0;
+    int da1cnt = da2->GetNodeCount();
+    int newNodeCount = da1->mNodeCount + da1cnt;
+    DataNode* oldNodes = da1->mNodes; // Save all nodes pointer
+    // allocate new nodes
+    da1->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+
+    for(i = 0; i < count; i++){
+        new (&da1->mNodes[i]) DataNode(oldNodes[i]);
+    }
+    
+    for(; i < count + da1cnt; i++){
+        new (&da1->mNodes[i]) DataNode(*da2->GetNodeAtIndex(i - count));
+    }
+
+    for(; i < newNodeCount; i++){
+        new (&da1->mNodes[i]) DataNode(oldNodes[i - da1cnt]);
+    }
+    for(i = 0; i < da1->mNodeCount; i++){
+        oldNodes[i].~DataNode();
+    }
+    NodesFree(da1->mNodeCount * sizeof(DataNode), oldNodes);
+    da1->mNodeCount = newNodeCount;
+}
