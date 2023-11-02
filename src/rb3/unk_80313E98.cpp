@@ -275,3 +275,44 @@ void DataArray::Resize(int i) {
     mNodeCount = i;
     mUnknown = 0;
 }
+
+// fn_80316064
+void DataArray::Remove(int i){
+    DataNode* oldNodes = mNodes;
+    int newCnt = mNodeCount - 1;
+    mNodes = NodesAlloc(newCnt * sizeof(DataNode));
+    int cnt = 0;
+    for(cnt = 0; cnt < i; cnt++){
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for(; i < newCnt; i++){
+        new (&mNodes[i]) DataNode(oldNodes[i + 1]);
+    }
+    for(int j = 0; j < mNodeCount; j++){
+        oldNodes[j].~DataNode();
+    }
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newCnt;
+}
+
+// fn_80316150
+void DataArray::Remove(const DataNode& dn){
+    int searchType = dn.value.intVal;
+    for(int lol = mNodeCount - 1; lol >= 0; lol--){
+        if(mNodes[lol].value.intVal == searchType){
+            Remove(lol);
+            return;
+        }
+    }
+}
+
+// fn_80316190
+bool DataArray::Contains(const DataNode& dn) const {
+    int searchType = dn.value.intVal;
+    for(int lol = mNodeCount - 1; lol >= 0; lol--){
+        if(mNodes[lol].value.intVal == searchType){
+            return true;
+        }
+    }
+    return false;
+}

@@ -88,9 +88,9 @@ public:
 	void Insert(int, const DataNode &); // fn_80315CFC
 	void InsertNodes(int, const DataArray*); // fn_80315E1C
 	void Resize(int); // fn_80315F74
-	void Remove(int);
-	void Remove(const DataNode &);
-	bool Contains(const DataNode &);
+	void Remove(int); // fn_80316064
+	void Remove(const DataNode &); // fn_80316150
+	bool Contains(const DataNode &) const; // fn_80316190
 	void SortNodes(); // fn_80316E84
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
