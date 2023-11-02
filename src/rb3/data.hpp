@@ -69,9 +69,9 @@ public:
 	DataNode *operator=(const DataNode &); // fn_803235D4
 	void Print(TextStream &, bool) const; // fn_8032364C
 
-	DataType GetType(); // same code as JsonObject::GetJsonObjectStruct()
+	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
-		const DataNode &); // same code as Symbol::operator=(const Symbol&)
+		const DataNode &); // same asm as Symbol::operator=(const Symbol&)
 
 	DataNodeValue value;
 	DataType type;
