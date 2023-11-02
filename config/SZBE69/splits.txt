@@ -135,6 +135,7 @@ rb3/rg_messages.cpp:
 
 rb3/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
+	.data       start:0x80854A08 end:0x80854D00
 
 rb3/unk_80313E98.cpp:
 	.text       start:0x80315A70 end:0x80318588

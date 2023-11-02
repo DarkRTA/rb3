@@ -5,7 +5,7 @@
 class RGProgramChangeMsg : Message {
 public:
 	RGProgramChangeMsg(int, int); // fn_80314474
-	~RGProgramChangeMsg(); // fn_800A7FF4
+	virtual ~RGProgramChangeMsg(); // fn_800A7FF4
 };
 
 #endif

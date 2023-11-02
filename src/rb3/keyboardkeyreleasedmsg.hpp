@@ -5,7 +5,7 @@
 class KeyboardKeyReleasedMsg : Message {
 public:
 	KeyboardKeyReleasedMsg(int, int); // fn_80315298
-	~KeyboardKeyReleasedMsg(); // fn_800A7FF4
+	virtual ~KeyboardKeyReleasedMsg(); // fn_800A7FF4
 };
 
 #endif

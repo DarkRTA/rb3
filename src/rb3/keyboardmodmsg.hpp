@@ -5,7 +5,7 @@
 class KeyboardModMsg : Message {
 public:
 	KeyboardModMsg(int, int); // fn_80315370
-	~KeyboardModMsg(); // fn_800A7FF4
+	virtual ~KeyboardModMsg(); // fn_800A7FF4
 };
 
 #endif
