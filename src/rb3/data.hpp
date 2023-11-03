@@ -68,6 +68,7 @@ public:
 	bool NotNull() const; // fn_80323530
 	DataNode *operator=(const DataNode &); // fn_803235D4
 	void Print(TextStream &, bool) const; // fn_8032364C
+	void Save(BinStream&) const; // fn_80323A18
 
 	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
