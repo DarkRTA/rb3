@@ -8,9 +8,9 @@ DataNode::DataNode(){
 }
 
 // fn_801CB744
-BinStream* BinStream::WriteHalfWord(short us){
+BinStream& BinStream::WriteHalfWord(short us){
     WriteEndian(&us, 2);
-    return this;
+    return *this;
 }
 
 // fn_801CCA70
