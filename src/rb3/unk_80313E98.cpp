@@ -263,16 +263,18 @@ bool DataArray::Contains(const DataNode& dn) const {
     return false;
 }
 
+#pragma dont_inline on
+// fn_80317278
+BinStream& operator<<(BinStream& bs, const DataNode& dn){
+    dn.Save(bs);
+    return bs;
+}
+#pragma dont_inline reset
+
 // fn_803171F8
 void DataArray::Save(BinStream& bs) const {
     bs << mNodeCount << mLine << mUnknown;
     for(int i = 0; i < mNodeCount; i++){
         bs << mNodes[i];
     }
-}
-
-// fn_80317278
-BinStream& BinStream::operator<<(const DataNode& dn){
-    dn.Save(*this);
-    return *this;
 }
