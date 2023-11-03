@@ -1,9 +1,6 @@
 #ifndef RB3_TEXTSTREAM_HPP
 #define RB3_TEXTSTREAM_HPP
 #include "symbol.hpp"
-#include "data.hpp"
-
-class DataArray; // forward declaration
 
 class TextStream {
 public:
@@ -24,9 +21,6 @@ public:
 	TextStream *operator<<(Symbol); // fn_8037A97C
 	TextStream *operator<<(bool); // fn_8037A9BC
 	void Space(int); // fn_8037AA10
-
-	friend TextStream& operator<<(const DataArray*); // fn_80317E5C
-
 };
 
 #endif

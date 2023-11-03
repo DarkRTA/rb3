@@ -279,11 +279,31 @@ void DataArray::Save(BinStream& bs) const {
     }
 }
 
+// fn_80317AE0
+BinStream& operator>>(BinStream& bs, DataNode* dn){
+    dn->Load(bs);
+    return bs;
+}
+
 // fn_80317E5C
 TextStream& operator<<(TextStream& ts, const DataArray* da){
     if(da != nullptr) da->Print(ts, kDataArray, false);
     else ts << "<null>";
     return ts;
+}
+
+extern DataArray* fn_8035CF9C(int, int, int);
+
+// fn_80317EB8
+BinStream& operator>>(BinStream& bs, DataArray*& da){
+    bool b;
+    bs >> b;
+    if(b){
+        da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(0);
+        da->Load(bs);
+    }
+    else da = nullptr;
+    return bs;
 }
 
 // fn_80317F3C
