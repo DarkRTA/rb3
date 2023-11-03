@@ -114,7 +114,7 @@ void DataArray::SortNodes(){
 void DataArray::SaveGlob(BinStream& bs, bool b) const {
     if(b){
         int i = -1 - mNodeCount;
-        bs.WriteWord(i);
+        bs << (unsigned int)i;
         bs.Write(mNodes, i);
     }
     else {
@@ -125,16 +125,16 @@ void DataArray::SaveGlob(BinStream& bs, bool b) const {
 
 // fn_80317B9C
 void DataArray::LoadGlob(BinStream& bs, bool b){
-    int v;
+    unsigned int v;
     NodesFree(-mNodeCount, mNodes);
     if(b){
-        bs.ReadWord(&v);
+        bs >> v;
         mNodeCount = -(v + 1);
         mNodes = NodesAlloc(-mNodeCount);
         bs.Read(mNodes, v);
     }
     else {
-        bs.ReadHalfWord(&mNodeCount);
+        bs >> mNodeCount;
         mNodes = NodesAlloc(-mNodeCount);
         bs.Read(mNodes, -mNodeCount);
     }

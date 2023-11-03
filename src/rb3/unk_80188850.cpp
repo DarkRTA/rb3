@@ -4,7 +4,7 @@
 // fn_801C7058
 DataNode::DataNode(){
     value.intVal = 0;
-    type = kDataUnhandled;
+    type = kDataInt;
 }
 
 // fn_801CB744
@@ -14,7 +14,7 @@ BinStream& BinStream::operator<<(short s){
 }
 
 // fn_801CCA70
-BinStream* BinStream::ReadHalfWord(void* v){
-    ReadEndian(v, 2);
-    return this;
+BinStream& BinStream::operator>>(short& s){
+    ReadEndian(&s, 2);
+    return *this;
 }

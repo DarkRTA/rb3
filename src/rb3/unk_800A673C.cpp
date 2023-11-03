@@ -243,16 +243,16 @@ void fn_800A7100(UnknownJsonConverterMember* mem, unsigned short us){ mem->unk6 
 
 // ---------------------------------------------------------------
 
-BinStream *BinStream::WriteWord(unsigned int i)
-{
-	WriteEndian(&i, 4);
-	return this;
+// fn_800A7638
+BinStream& BinStream::operator<<(unsigned int ui){
+	WriteEndian(&ui, 4);
+	return *this;
 }
 
-BinStream *BinStream::ReadWord(void *v)
-{
-	ReadEndian(v, 4);
-	return this;
+// fn_800A77B4
+BinStream& BinStream::operator>>(unsigned int& ui){
+	ReadEndian(&ui, 4);
+	return *this;
 }
 
 // fn_800A9C70
@@ -263,20 +263,18 @@ int BufStream::Tell()
 
 #pragma dont_inline on
 // fn_800A7730
-BinStream *BinStream::ReadByte(void *v)
-{
-	Read(v, 1);
-	return this;
+BinStream& BinStream::operator>>(unsigned char& c){
+	Read(&c, 1);
+	return *this;
 }
 #pragma dont_inline reset
 
 // fn_800A7764
-BinStream *BinStream::ReadByteIntoBool(bool *b)
-{
+BinStream& BinStream::operator>>(bool& b){
 	unsigned char c;
-	ReadByte(&c);
-	*b = (c != 0);
-	return this;
+	*this >> c;
+	b = (c != 0);
+	return *this;
 }
 
 // fn_800A7844
@@ -303,10 +301,9 @@ void MatchmakingSettings::AddCustomSetting(int i, int j)
 }
 
 // fn_800A75FC
-BinStream *BinStream::WriteByte(char c)
-{
+BinStream& BinStream::operator<<(char c){
 	Write(&c, 1);
-	return this;
+	return *this;
 }
 
 // fn_800A7DE8

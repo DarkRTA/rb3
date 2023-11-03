@@ -3,11 +3,12 @@
 #include "string.hpp"
 #include "memstream.hpp"
 #include "message.hpp"
+#include "common.hpp"
 
 // fn_800B95C4
-BinStream* BinStream::WriteFloat(float f){
+BinStream& BinStream::operator<<(float f){
     WriteEndian(&f, 4);
-    return this;
+    return *this;
 }
 
 extern int fn_800A9C78(MemStream*);
@@ -15,8 +16,8 @@ extern int fn_800A9C78(MemStream*);
 // fn_800BA7E0
 void SyncObjMsg::Save(BinStream& bs) const {
     bs << tag;
-    bs.WriteWord(dirty_mask);
-    bs.WriteWord(fn_800A9C78((MemStream*)(&unk14)));
+    bs << dirty_mask;
+    bs << (unsigned int)fn_800A9C78((MemStream*)(&unk14));
     fn_800BA788(bs);
 }
 
@@ -24,8 +25,8 @@ void SyncObjMsg::Save(BinStream& bs) const {
 void SyncObjMsg::Load(BinStream& bs){
     unsigned int ui;
     bs >> tag;
-    bs.ReadWord(&dirty_mask);
-    bs.ReadWord(&ui);
+    bs >> dirty_mask;
+    bs >> ui;
 }
 
 extern char lbl_8082C43C[];
@@ -41,11 +42,11 @@ int MemStream::Tell(){
     return pos;
 }
 
+extern DataArray* fn_8035CF9C(int, int, int);
+
 // fn_800B7D98
 Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2, const DataNode& dn3){
-    DataArray* da = DataArray::fn_8035CF9C(0x10, 0x10, 1);
-	if(da != 0) da = new DataArray(4);
-	unk4 = da;
+    unk4 = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(5);
 
 	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
     unk4->GetNodeAtIndex(2)->operator=(dn1);

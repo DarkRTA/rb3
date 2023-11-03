@@ -69,7 +69,7 @@ void BinStream::DisableEncryption()
 BinStream *BinStream::operator<<(const char *c)
 {
 	unsigned int size = strlen(c);
-	WriteWord(size);
+	*this << size;
 	Write(c, size);
 	return this;
 }
@@ -79,7 +79,7 @@ BinStream *BinStream::operator<<(const Symbol &s)
 {
 	char *str = s.m_string;
 	unsigned int size = strlen(str);
-	WriteWord(size);
+	*this << size;
 	Write(str, size);
 	return this;
 }
@@ -88,7 +88,7 @@ BinStream *BinStream::operator<<(const Symbol &s)
 BinStream *BinStream::operator<<(const String &str)
 {
 	unsigned int size = str.length();
-	WriteWord(size);
+	*this << size;
 	Write(str.c_str(), size);
 	return this;
 }
@@ -106,7 +106,7 @@ BinStream *BinStream::operator>>(Symbol &s)
 void BinStream::ReadString(char *c, int i)
 {
 	unsigned int a;
-	ReadWord(&a);
+	*this >> a;
 	Read(c, a);
 	c[a] = 0;
 }
@@ -115,7 +115,7 @@ void BinStream::ReadString(char *c, int i)
 BinStream *BinStream::operator>>(String &s)
 {
 	unsigned int a;
-	ReadWord(&a);
+	*this >> a;
 	s.resize(a);
 	Read((char *)s.c_str(), a);
 	return this;
@@ -125,7 +125,7 @@ BinStream *BinStream::operator>>(String &s)
 void BinStream::EnableReadEncryption()
 {
 	unsigned int a;
-	ReadWord(&a);
+	*this >> a;
 	unk08 = new Rand2(a);
 }
 
@@ -135,7 +135,7 @@ extern unsigned int fn_802DDCDC();
 void BinStream::EnableWriteEncryption(int i)
 {
 	unsigned int a = fn_802DDCDC();
-	WriteWord(a);
+	*this << a;
 	unk08 = new Rand2(a);
 }
 
