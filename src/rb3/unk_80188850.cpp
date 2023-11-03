@@ -8,8 +8,8 @@ DataNode::DataNode(){
 }
 
 // fn_801CB744
-BinStream& BinStream::WriteHalfWord(short us){
-    WriteEndian(&us, 2);
+BinStream& BinStream::operator<<(short s){
+    WriteEndian(&s, 2);
     return *this;
 }
 

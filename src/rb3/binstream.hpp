@@ -55,7 +55,7 @@ public:
 	BinStream *ReadByte(void *);
 	BinStream *ReadByteIntoBool(bool *);
 	BinStream *WriteByte(char);
-	BinStream& WriteHalfWord(short); // fn_801CB744
+	BinStream& operator<<(short); // fn_801CB744
 	BinStream* ReadHalfWord(void*); // fn_801CCA70
 	BinStream* WriteFloat(float); // fn_800B95C4
 };

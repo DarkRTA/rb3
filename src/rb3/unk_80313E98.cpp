@@ -118,7 +118,7 @@ void DataArray::SaveGlob(BinStream& bs, bool b) const {
         bs.Write(mNodes, i);
     }
     else {
-        bs.WriteHalfWord(mNodeCount);
+        bs << mNodeCount;
         bs.Write(mNodes, -mNodeCount);
     }
 }
@@ -267,7 +267,7 @@ extern void fn_80317278(BinStream*, DataNode*);
 
 // fn_803171F8
 void DataArray::Save(BinStream& bs) const {
-    bs.WriteHalfWord(mNodeCount).WriteHalfWord(mLine).WriteHalfWord(mUnknown);
+    bs << mNodeCount << mLine << mUnknown;
     for(int i = 0; i < mNodeCount; i++){
         fn_80317278(&bs, &mNodes[i]);
     }
