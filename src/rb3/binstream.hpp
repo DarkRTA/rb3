@@ -31,11 +31,11 @@ public:
 	Rand2 *unk08;
 
 	// taken from RB2
-	BinStream *operator<<(const char *);
-	BinStream *operator<<(const Symbol &);
-	BinStream *operator<<(const String &);
-	BinStream *operator>>(Symbol &);
-	BinStream *operator>>(String &);
+	BinStream& operator<<(const char *);
+	BinStream& operator<<(const Symbol &);
+	BinStream& operator<<(const String &);
+	BinStream& operator>>(Symbol &);
+	BinStream& operator>>(String &);
 
 	void WriteEndian(const void *, int);
 	void Write(const void *, int);

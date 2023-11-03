@@ -66,40 +66,40 @@ void BinStream::DisableEncryption()
 }
 
 // fn_80342AD8
-BinStream *BinStream::operator<<(const char *c)
+BinStream& BinStream::operator<<(const char *c)
 {
 	unsigned int size = strlen(c);
 	*this << size;
 	Write(c, size);
-	return this;
+	return *this;
 }
 
 // fn_80342B38
-BinStream *BinStream::operator<<(const Symbol &s)
+BinStream& BinStream::operator<<(const Symbol &s)
 {
 	char *str = s.m_string;
 	unsigned int size = strlen(str);
 	*this << size;
 	Write(str, size);
-	return this;
+	return *this;
 }
 
 // fn_80342B98
-BinStream *BinStream::operator<<(const String &str)
+BinStream& BinStream::operator<<(const String &str)
 {
 	unsigned int size = str.length();
 	*this << size;
 	Write(str.c_str(), size);
-	return this;
+	return *this;
 }
 
 // fn_80342C58
-BinStream *BinStream::operator>>(Symbol &s)
+BinStream& BinStream::operator>>(Symbol &s)
 {
 	char why[0x200];
 	ReadString(why, 0x200);
 	s = Symbol(why);
-	return this;
+	return *this;
 }
 
 // fn_80342C00
@@ -112,13 +112,13 @@ void BinStream::ReadString(char *c, int i)
 }
 
 // fn_80342CB4
-BinStream *BinStream::operator>>(String &s)
+BinStream& BinStream::operator>>(String &s)
 {
 	unsigned int a;
 	*this >> a;
 	s.resize(a);
 	Read((char *)s.c_str(), a);
-	return this;
+	return *this;
 }
 
 // fn_80342D98
