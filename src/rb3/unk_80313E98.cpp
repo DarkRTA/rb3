@@ -265,8 +265,8 @@ bool DataArray::Contains(const DataNode& dn) const {
 
 #pragma dont_inline on
 // fn_80317278
-BinStream& operator<<(BinStream& bs, const DataNode& dn){
-    dn.Save(bs);
+BinStream& operator<<(BinStream& bs, const DataNode* dn){
+    dn->Save(bs);
     return bs;
 }
 #pragma dont_inline reset
@@ -275,6 +275,23 @@ BinStream& operator<<(BinStream& bs, const DataNode& dn){
 void DataArray::Save(BinStream& bs) const {
     bs << mNodeCount << mLine << mUnknown;
     for(int i = 0; i < mNodeCount; i++){
-        bs << mNodes[i];
+        bs << &mNodes[i];
     }
+}
+
+// fn_80317E5C
+TextStream& operator<<(TextStream& ts, const DataArray* da){
+    if(da != nullptr) da->Print(ts, kDataArray, false);
+    else ts << "<null>";
+    return ts;
+}
+
+// fn_80317F3C
+BinStream& operator<<(BinStream& bs, const DataArray* da){
+    if(da != nullptr){
+        bs << (char)1;
+        da->Save(bs);
+    }
+    else bs << (char)0;
+    return bs;
 }

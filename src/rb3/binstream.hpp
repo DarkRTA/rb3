@@ -5,7 +5,9 @@
 #include "rand2.hpp"
 #include "data.hpp"
 
-class DataNode; // forward declaration
+// forward declarations
+class DataNode;
+class DataArray;
 
 class BinStream {
 public:
@@ -61,7 +63,7 @@ public:
 	BinStream& operator<<(short); // fn_801CB744
 	BinStream& operator>>(short&); // fn_801CCA70
 	BinStream& operator<<(float); // fn_800B95C4
-	friend BinStream& operator<<(const DataNode&); // fn_80317278
+	friend BinStream& operator<<(const DataNode*); // fn_80317278
 };
 
 #endif
