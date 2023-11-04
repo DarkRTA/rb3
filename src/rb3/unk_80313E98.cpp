@@ -4,6 +4,28 @@
 #include "std/stdlib.h"
 #include "common.hpp"
 
+extern int lbl_8091A47C;
+extern int lbl_8091A480;
+extern "C" void fn_80315C3C(int);
+
+#pragma dont_inline on
+// fn_80315C3C
+void fn_80315C3C(int i){
+    lbl_8091A480 += 1;
+    lbl_8091A47C += i;
+}
+#pragma dont_inline reset
+
+extern bool lbl_808E4468;
+extern void* MemOrPoolAlloc(int, int);
+
+DataNode* NodesAlloc(int i){
+    if(lbl_808E4468){
+        fn_80315C3C(i);
+    }
+    return (DataNode*)MemOrPoolAlloc(i, 1);
+}
+
 extern int gIndent;
 
 // fn_80315A70
@@ -12,15 +34,15 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
     DataNode* dn_end = &mNodes[mNodeCount];
     char begin = '\0';
     char end = '\0';
-    if(ty == 0x10){
+    if(ty == kDataArray){
         begin = '(';
         end = ')';
     }
-    else if(ty == 0x11){
+    else if(ty == kDataCommand){
         begin = '{';
         end = '}';
     }
-    else if(ty == 0x13){
+    else if(ty == kDataProperty){
         begin = '[';
         end = ']';
     }
@@ -33,7 +55,7 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
     if((dn == dn_end) || !b){
         ts << begin;
         DataNode* lol = mNodes;
-        if(lol->GetType() == 5){
+        if(lol->GetType() == kDataObject){
             lol->Print(ts, b);
             lol++;
         }
