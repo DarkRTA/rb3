@@ -50,6 +50,7 @@ extern int gIndent;
 
 // fn_80315A70
 void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
+    DataNode* lol;
     DataNode* dn = mNodes;
     DataNode* dn_end = &mNodes[mNodeCount];
     char begin = '\0';
@@ -72,9 +73,9 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
         dn++;
     }
     
-    if((dn == dn_end) || !b){
+    if((dn != dn_end) && !b){
         ts << begin;
-        DataNode* lol = mNodes;
+        lol = mNodes;
         if(lol->GetType() == kDataObject){
             lol->Print(ts, b);
             lol++;
@@ -93,9 +94,9 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
     }
     else {
         ts << begin;
-        for(DataNode* bruh = mNodes; bruh < dn_end; bruh++){
-            if(bruh != mNodes) ts << "\n";
-            bruh->Print(ts, b);
+        for(lol = mNodes; lol < dn_end; lol++){
+            if(lol != mNodes) ts << "\n";
+            lol->Print(ts, b);
         }
         ts << end;
     }
