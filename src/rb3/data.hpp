@@ -103,6 +103,7 @@ public:
 	void DecRefCount(); // fn_8000DFC4
 	int GetNodeCount() const; // fn_8000FDA0
 	DataNode* GetNodeAtIndex(int) const; // fn_8000DF50
+	float GetFloatAtIndex(int) const; // fn_800D7964
 	const char* GetStrAtIndex(int); // fn_8000ECC0
 	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
