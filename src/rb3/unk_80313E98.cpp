@@ -26,6 +26,28 @@ DataNode* NodesAlloc(int i){
     else return (DataNode*)MemOrPoolAlloc(i, 1);
 }
 
+extern char* lbl_8091A478; // 4 bytes long
+
+// this probably isn't a pointer
+extern char* lbl_8091A484; // 0x14 bytes long
+extern "C" bool fn_80315C7C(void*);
+
+#pragma dont_inline on
+// fn_80315C7C
+
+// Checks if v is within a memory region
+bool fn_80315C7C(void* v){
+    return (v >= lbl_8091A478) && (v < &lbl_8091A478[(int)lbl_8091A484]);
+}
+#pragma dont_inline reset
+
+extern void MemOrPoolFree(int, int, void*);
+
+void NodesFree(int i, DataNode* dn){
+    fn_80315C7C(dn);
+    MemOrPoolFree(i, 1, dn);
+}
+
 extern int gIndent;
 
 // fn_80315A70
