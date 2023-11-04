@@ -4,15 +4,17 @@
 #include "std/stdlib.h"
 #include "common.hpp"
 
-extern int lbl_8091A47C;
+extern char* lbl_8091A47C;
 extern int lbl_8091A480;
-extern "C" void fn_80315C3C(int);
+extern "C" char* fn_80315C3C(int);
 
 #pragma dont_inline on
 // fn_80315C3C
-void fn_80315C3C(int i){
+char* fn_80315C3C(int i){
     lbl_8091A480 += 1;
+    char* old = lbl_8091A47C;
     lbl_8091A47C += i;
+    return old;
 }
 #pragma dont_inline reset
 
@@ -20,10 +22,8 @@ extern bool lbl_808E4468;
 extern void* MemOrPoolAlloc(int, int);
 
 DataNode* NodesAlloc(int i){
-    if(lbl_808E4468){
-        fn_80315C3C(i);
-    }
-    return (DataNode*)MemOrPoolAlloc(i, 1);
+    if(lbl_808E4468) return (DataNode*)fn_80315C3C(i);
+    else return (DataNode*)MemOrPoolAlloc(i, 1);
 }
 
 extern int gIndent;
