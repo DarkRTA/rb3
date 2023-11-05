@@ -116,6 +116,9 @@ long long SwapDataDoubleWord(long long);
 
 void FileQualifiedFilename(char*, int, const char*);
 extern "C" char* FileGetDrive(char*);
+extern "C" char* FileGetBase(char* fname, char* base);
+extern "C" char* FileGetExt(char*);
+extern "C" bool FileMatch(const char* param1, const char* param2);
 
 extern "C" int fn_806F61D4();
 extern "C" void fn_8030F9EC(void *);
