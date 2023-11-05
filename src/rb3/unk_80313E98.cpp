@@ -306,6 +306,8 @@ bool DataArray::Contains(const DataNode& dn) const {
     return false;
 }
 
+// fn_803161D4 - https://decomp.me/scratch/KWNxW
+
 #pragma dont_inline on
 // fn_80317278
 BinStream& operator<<(BinStream& bs, const DataNode* dn){

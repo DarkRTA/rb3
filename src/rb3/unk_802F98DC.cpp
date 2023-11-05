@@ -1,6 +1,7 @@
 #include "std/string.h"
 #include "unknown.hpp"
 #include "string.hpp"
+#include "data.hpp"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 
 // fn_802FA190
@@ -131,4 +132,36 @@ char* FileMakePath(char* c1, char* c2, char* c3){
     }
     *c3_ptr = 0;
     return c3;
+}
+
+extern char lbl_80906DA8[];
+extern "C" DataNode fn_802F9940();
+
+// fn_802F9940
+DataNode fn_802F9940(){
+    return DataNode(lbl_80906DA8);
+}
+
+extern char lbl_80906CA8[];
+extern "C" DataNode fn_802F994C();
+
+// fn_802F994C
+DataNode fn_802F994C(){
+    return DataNode(lbl_80906CA8);
+}
+
+extern "C" DataNode fn_802F9958(DataArray*);
+
+// fn_802F9958
+DataNode fn_802F9958(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetDrive(str));
+}
+
+extern "C" DataNode fn_802F999C(DataArray*);
+
+// fn_802F999C
+DataNode fn_802F999C(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetPath(str, '\0'));
 }
