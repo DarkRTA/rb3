@@ -1,7 +1,8 @@
 #include "file_ops.hpp"
 #include "std/string.h"
 
-extern char lbl_809071C8[];
+// extern char lbl_809071C8[];
+char lbl_809071C8[0x100];
 
 // fn_802FA848
 char* FileGetPath(char* arg1, char* arg2){
