@@ -1,7 +1,6 @@
 #include "file_ops.hpp"
 #include "std/string.h"
 
-// extern char lbl_809071C8[];
 char lbl_809071C8[0x100];
 
 // fn_802FA848
@@ -24,4 +23,18 @@ char* FileGetPath(char* arg1, char* arg2){
     *arg2 = '.';
     arg2[1] = '\0';
     return arg2;
+}
+
+// fn_802FA918
+char* FileGetExt(char* filename){
+	char* end = filename + strlen(filename);
+	for(char* search = end - 1; search >= filename; search--){
+		if(*search == '.'){
+			return search + 1;
+		}
+		else if(*search == '/' || *search == '\\'){
+			return end;
+		}
+	}
+	return end;
 }
