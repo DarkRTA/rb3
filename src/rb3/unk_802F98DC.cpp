@@ -176,10 +176,54 @@ DataNode OnFileAbsolutePath(DataArray* da){
     return DataNode(FileMakePath(str1, str2, '\0'));
 }
 
+// fn_802F9B3C
+DataNode OnFileRelativePath(DataArray* da){
+    return DataNode();
+}
+
+// fn_802F9BA0
+DataNode OnWithFileRoot(DataArray* da){
+    return DataNode();
+}
+
 extern "C" DataNode* fn_802F9C54(DataArray*, int);
 
 // fn_802F9C54
 DataNode* fn_802F9C54(DataArray* da, int i){
     DataNode* dn = da->GetNodeAtIndex(i);
     return dn->Evaluate();
+}
+
+// fn_802F9C78
+DataNode OnSynchProc(DataArray* da){
+    return DataNode();
+}
+
+extern "C" void FileInit();
+extern "C" void fn_801F0530(char*);
+extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray*));
+extern "C" char* OptionStr(const char*, const char*);
+
+// fn_802F9CC4
+void FileInit(){
+    strcpy(gRoot, ".");
+    strcpy(gExecRoot, ".");
+    char* path = FileMakePath(gExecRoot, "../../system/run", '\0');
+    strcpy(gSystemRoot, path);
+    fn_801F0530(gRoot);
+    DataRegisterFunc(Symbol("file_root"), OnFileRoot);
+    DataRegisterFunc(Symbol("file_exec_root"), OnFileExecRoot);
+    DataRegisterFunc(Symbol("file_get_drive"), OnFileGetDrive);
+    DataRegisterFunc(Symbol("file_get_path"), OnFileGetPath);
+    DataRegisterFunc(Symbol("file_get_base"), OnFileGetBase);
+    DataRegisterFunc(Symbol("file_get_ext"), OnFileGetExt);
+    DataRegisterFunc(Symbol("file_match"), OnFileMatch);
+    DataRegisterFunc(Symbol("file_absolute_path"), OnFileAbsolutePath);
+    DataRegisterFunc(Symbol("file_relative_path"), OnFileRelativePath);
+    DataRegisterFunc(Symbol("with_file_root"), OnWithFileRoot);
+    DataRegisterFunc(Symbol("synch_proc"), OnSynchProc);
+    char* str = OptionStr("file_order", '\0');
+    if(str != nullptr && (*str != '\0')){
+        
+    }
 }
