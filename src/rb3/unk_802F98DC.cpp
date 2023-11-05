@@ -109,28 +109,34 @@ char* FileMakePath(char* c1, char* c2, char* c3){
     return c3;
 }
 
-extern char lbl_80906DA8[];
-extern "C" DataNode fn_802F9940();
+extern char gRoot[];
+extern char gExecRoot[];
+extern char gSystemRoot[];
+
+// fn_802F991C
+char* FileRoot(){
+    return gRoot;
+}
+
+// fn_802F9928
+char* FileExecRoot(){
+    return gExecRoot;
+}
+
+// fn_802F9934
+char* FileSystemRoot(){
+    return gSystemRoot;
+}
 
 // fn_802F9940
-DataNode fn_802F9940(){
-    return DataNode(lbl_80906DA8);
+DataNode OnFileExecRoot(DataArray* da){
+    return DataNode(gExecRoot);
 }
-
-extern char lbl_80906CA8[];
-extern "C" DataNode fn_802F994C();
 
 // fn_802F994C
-DataNode fn_802F994C(){
-    return DataNode(lbl_80906CA8);
+DataNode OnFileRoot(DataArray* da){
+    return DataNode(gRoot);
 }
-
-// DataNode FileGetDriveDataNode(); // fn_802F9958
-// 	DataNode FileGetPathDataNode(); // fn_802F999C
-// 	DataNode FileGetBaseDataNode(); // fn_802F99E4
-// 	DataNode FileGetExtDataNode(); // fn_802F9A2C
-// 	DataNode FileMatchDataNode(); // fn_802F9A70
-// 	DataNode FileMakePathDataNode(); // fn_802F9AD4
 
 // fn_802F9958
 DataNode OnFileGetDrive(DataArray* da){
@@ -164,7 +170,7 @@ DataNode OnFileMatch(DataArray* da){
 }
 
 // fn_802F9AD4
-DataNode OnFileMakePath(DataArray* da){
+DataNode OnFileAbsolutePath(DataArray* da){
     char* str2 = (char*) da->GetStrAtIndex(2);
     char* str1 = (char*) da->GetStrAtIndex(1);
     return DataNode(FileMakePath(str1, str2, '\0'));
