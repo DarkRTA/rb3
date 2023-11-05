@@ -38,3 +38,49 @@ char* FileGetExt(char* filename){
 	}
 	return end;
 }
+
+char lbl_809072C8[0x100];
+
+// fn_802FA994
+char* FileGetDrive(char* c){
+    char* p1 = strchr(c, ':');
+    if(p1 != 0){
+        strncpy(lbl_809072C8, c, p1 - c);
+        lbl_809072C8[p1 - c] = '\0';
+    }
+    else lbl_809072C8[0] = '\0';
+    return lbl_809072C8;
+}
+
+char lbl_809073C8[0x100];
+
+// fn_802FAA10
+char* FileGetBase(char* fname, char* base){
+    char* ext;
+    char* dir;
+
+    if(base == 0) base = lbl_809073C8;
+    dir = strrchr(fname, '/');
+    if ((dir != 0) || (dir = strrchr(fname, '\\'), (dir != 0))) {
+        strcpy(base, dir + 1);
+    } 
+    else strcpy(base, fname);
+    
+    ext = strrchr(base, '.');
+    if (ext != 0) {
+        *ext = 0;
+    }
+    return base;
+}
+
+char lbl_809074C8[0x100];
+
+// fn_802FAAC0
+char* FileGetName(char* arg){
+    char* dir = strrchr(arg, '/');
+    if ((dir != 0) || (dir = strrchr(arg, '\\'), (dir != 0))) {
+        strcpy(lbl_809074C8, dir + 1);
+    } 
+    else strcpy(lbl_809074C8, arg);
+    return lbl_809074C8;
+}

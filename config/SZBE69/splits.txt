@@ -120,11 +120,11 @@ rb3/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
 
 rb3/file_ops.cpp:
-	.text       start:0x802FA848 end:0x802FA994
-	.bss        start:0x809071C8 end:0x809072C8
+	.text       start:0x802FA848 end:0x802FAB40
+	.bss        start:0x809071C8 end:0x809075C8
 
 rb3/unk_802FA994.cpp:
-	.text       start:0x802FA994 end:0x802FB4AC
+	.text       start:0x802FAB40 end:0x802FB4AC
 
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
