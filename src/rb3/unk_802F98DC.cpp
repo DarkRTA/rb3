@@ -175,3 +175,11 @@ DataNode OnFileAbsolutePath(DataArray* da){
     char* str1 = (char*) da->GetStrAtIndex(1);
     return DataNode(FileMakePath(str1, str2, '\0'));
 }
+
+extern "C" DataNode* fn_802F9C54(DataArray*, int);
+
+// fn_802F9C54
+DataNode* fn_802F9C54(DataArray* da, int i){
+    DataNode* dn = da->GetNodeAtIndex(i);
+    return dn->Evaluate();
+}
