@@ -125,33 +125,47 @@ DataNode fn_802F994C(){
     return DataNode(lbl_80906CA8);
 }
 
+// DataNode FileGetDriveDataNode(); // fn_802F9958
+// 	DataNode FileGetPathDataNode(); // fn_802F999C
+// 	DataNode FileGetBaseDataNode(); // fn_802F99E4
+// 	DataNode FileGetExtDataNode(); // fn_802F9A2C
+// 	DataNode FileMatchDataNode(); // fn_802F9A70
+// 	DataNode FileMakePathDataNode(); // fn_802F9AD4
+
 // fn_802F9958
-DataNode DataArray::FileGetDriveDataNode(){
-    char* str = (char*) GetStrAtIndex(1);
+DataNode OnFileGetDrive(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
     return DataNode(FileGetDrive(str));
 }
 
 // fn_802F999C
-DataNode DataArray::FileGetPathDataNode(){
-    char* str = (char*) GetStrAtIndex(1);
+DataNode OnFileGetPath(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
     return DataNode(FileGetPath(str, '\0'));
 }
 
 // fn_802F99E4
-DataNode DataArray::FileGetBaseDataNode(){
-    char* str = (char*) GetStrAtIndex(1);
+DataNode OnFileGetBase(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
     return DataNode(FileGetBase(str, '\0'));
 }
 
 // fn_802F9A2C
-DataNode DataArray::FileGetExtDataNode(){
-    char* str = (char*) GetStrAtIndex(1);
+DataNode OnFileGetExt(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
     return DataNode(FileGetExt(str));
 }
 
 // fn_802F9A70
-DataNode DataArray::FileMatchDataNode(){
-    char* str2 = (char*) GetStrAtIndex(2);
-    char* str1 = (char*) GetStrAtIndex(1);
+DataNode OnFileMatch(DataArray* da){
+    char* str2 = (char*) da->GetStrAtIndex(2);
+    char* str1 = (char*) da->GetStrAtIndex(1);
     return DataNode(FileMatch(str1, str2));
+}
+
+// fn_802F9AD4
+DataNode OnFileMakePath(DataArray* da){
+    char* str2 = (char*) da->GetStrAtIndex(2);
+    char* str1 = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileMakePath(str1, str2, '\0'));
 }

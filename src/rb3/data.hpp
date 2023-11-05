@@ -108,12 +108,6 @@ public:
 	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 
-	DataNode FileGetDriveDataNode(); // fn_802F9958
-	DataNode FileGetPathDataNode(); // fn_802F999C
-	DataNode FileGetBaseDataNode(); // fn_802F99E4
-	DataNode FileGetExtDataNode(); // fn_802F9A2C
-	DataNode FileMatchDataNode(); // fn_802F9A70
-
 	DataNode *mNodes;
 	Symbol symbol;
 	short mNodeCount;
