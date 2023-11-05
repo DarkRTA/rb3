@@ -14,7 +14,4 @@ unsigned short SwapDataHalfWord(unsigned short);
 unsigned int SwapDataWord(int);
 long long SwapDataDoubleWord(long long);
 
-void FileQualifiedFilename(char*, int, const char*);
-extern "C" char* FileGetDrive(char*);
-
 #endif
