@@ -37,6 +37,58 @@ extern DataNode DataAddEq(DataArray*);
 extern DataNode DataSub(DataArray*);
 // fn_8031D0FC
 extern DataNode DataSubEq(DataArray*);
+// fn_8031CF24
+extern DataNode DataMean(DataArray*);
+// fn_8031CFD0
+extern DataNode DataClamp(DataArray*);
+// fn_8031D180
+extern DataNode DataClampEq(DataArray*);
+// fn_8031D204
+extern DataNode DataMultiply(DataArray*);
+// fn_8031D2DC
+extern DataNode DataMultiplyEq(DataArray*);
+// fn_8031D360
+extern DataNode DataDivide(DataArray*);
+// fn_8031D3CC
+extern DataNode DataDivideEq(DataArray*);
+// fn_8031D450
+extern DataNode DataSqrt(DataArray*);
+// fn_8031D490
+extern DataNode DataMod(DataArray*);
+// fn_8031D56C
+extern DataNode DataDist(DataArray*);
+// fn_8031D664
+extern DataNode DataSymbol(DataArray*);
+// fn_8031D700
+extern DataNode DataInt(DataArray*);
+// fn_8031D6A8
+extern DataNode DataChar(DataArray*);
+// fn_8031D7C4
+extern DataNode DataRound(DataArray*);
+// fn_8031D810
+extern DataNode DataFloor(DataArray*);
+// fn_8031D850
+extern DataNode DataCeil(DataArray*);
+// fn_8031B86C
+extern DataNode DataSet(DataArray*);
+// fn_8031B970
+extern DataNode DataIfElse(DataArray*);
+// fn_8031B9F0
+extern DataNode DataIf(DataArray*);
+// fn_8031BA98
+extern DataNode DataUnless(DataArray*);
+// fn_8031BB68
+extern DataNode DataEq(DataArray*);
+// fn_8031BCC8
+extern DataNode DataNe(DataArray*);
+// fn_8031BD1C
+extern DataNode DataLe(DataArray*);
+// fn_8031BD8C
+extern DataNode DataLt(DataArray*);
+// fn_8031BDF8
+extern DataNode DataGe(DataArray*);
+// fn_8031BE68
+extern DataNode DataGt(DataArray*);
 
 // fn_80320CDC
 void DataInitFuncs(){
@@ -57,4 +109,30 @@ void DataInitFuncs(){
     DataRegisterFunc(Symbol("+="), DataAddEq);
     DataRegisterFunc(Symbol("-"), DataSub);
     DataRegisterFunc(Symbol("-="), DataSubEq);
+    DataRegisterFunc(Symbol("mean"), DataMean);
+    DataRegisterFunc(Symbol("clamp"), DataClamp);
+    DataRegisterFunc(Symbol("clamp_eq"), DataClampEq);
+    DataRegisterFunc(Symbol("*"), DataMultiply);
+    DataRegisterFunc(Symbol("*="), DataMultiplyEq);
+    DataRegisterFunc(Symbol("/"), DataDivide);
+    DataRegisterFunc(Symbol("/="), DataDivideEq);
+    DataRegisterFunc(Symbol("sqrt"), DataSqrt);
+    DataRegisterFunc(Symbol("mod"), DataMod);
+    DataRegisterFunc(Symbol("dist"), DataDist);
+    DataRegisterFunc(Symbol("symbol"), DataSymbol);
+    DataRegisterFunc(Symbol("int"), DataInt);
+    DataRegisterFunc(Symbol("char"), DataChar);
+    DataRegisterFunc(Symbol("round"), DataRound);
+    DataRegisterFunc(Symbol("floor"), DataFloor);
+    DataRegisterFunc(Symbol("ceil"), DataCeil);
+    DataRegisterFunc(Symbol("set"), DataSet);
+    DataRegisterFunc(Symbol("if_else"), DataIfElse);
+    DataRegisterFunc(Symbol("if"), DataIf);
+    DataRegisterFunc(Symbol("unless"), DataUnless);
+    DataRegisterFunc(Symbol("=="), DataEq);
+    DataRegisterFunc(Symbol("!="), DataNe);
+    DataRegisterFunc(Symbol("<="), DataLe);
+    DataRegisterFunc(Symbol("<"), DataLt);
+    DataRegisterFunc(Symbol(">="), DataGe);
+    DataRegisterFunc(Symbol(">"), DataGt);
 }
