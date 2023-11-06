@@ -1,14 +1,9 @@
 #include "string.hpp"
 #include "textstream.hpp"
 #include "binstream.hpp"
-#include "unknown.hpp"
 #include "std/string.h"
 #include "symbol.hpp"
-#include "bufstream.hpp"
-#include "bufstreamnand.hpp"
-#include "idatachunk.hpp"
-#include "cacheid.hpp"
-#include "cacheidwii.hpp"
+#include "common.hpp"
 
 const char *BinStream::Name() const
 {
@@ -159,7 +154,15 @@ void BinStream::Seek(int i, SeekType s)
 	SeekImpl(i, s);
 }
 
-#pragma dont_inline on
+// fn_80343058
+void BinStream::ReadEndian(void *v, int i)
+{
+	Read(v, i);
+	if (unk04 != 0) {
+		SwapData(v, v, i);
+	}
+}
+
 // fn_80343114
 void SwapData(const void* v1, void* v2, int num_bytes){
 	switch(num_bytes){
@@ -179,16 +182,6 @@ void SwapData(const void* v1, void* v2, int num_bytes){
 			*l2 = SwapDataDoubleWord(*l1);
 			break;
 		default: break;
-	}
-}
-#pragma dont_inline reset
-
-// fn_80343058
-void BinStream::ReadEndian(void *v, int i)
-{
-	Read(v, i);
-	if (unk04 != 0) {
-		SwapData(v, v, i);
 	}
 }
 

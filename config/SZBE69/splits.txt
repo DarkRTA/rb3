@@ -141,6 +141,9 @@ rb3/key_messages.cpp:
 rb3/unk_80313E98.cpp:
 	.text       start:0x80315A70 end:0x80318588
 
+rb3/unk_8031B028.cpp:
+	.text       start:0x8031B028 end:0x80322600
+
 rb3/unk_80322664.cpp:
 	.text       start:0x80322664 end:0x803240F0
 
