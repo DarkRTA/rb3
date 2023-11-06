@@ -8,7 +8,7 @@
 // fn_8037A58C - TextFileStream ctor
 TextFileStream::TextFileStream(const char *c, bool b) : unk4(c, b ? FileStream::FileType3 : FileStream::FileType1, true) { }
 
-static char kCRLF[2] = {'\r', '\n'};
+static const char kCRLF[2] = {'\r', '\n'};
 
 // fn_8037A5F8
 void TextFileStream::Print(const char *c)
