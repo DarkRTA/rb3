@@ -2,6 +2,7 @@
 #include "string.hpp"
 #include "file_ops.hpp"
 #include "data.hpp"
+#include "common.hpp"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 
 // fn_802FA190
@@ -186,10 +187,8 @@ DataNode OnWithFileRoot(DataArray* da){
     return DataNode();
 }
 
-extern "C" DataNode* fn_802F9C54(DataArray*, int);
-
 // fn_802F9C54
-DataNode* fn_802F9C54(DataArray* da, int i){
+DataNode* EvaluateNodeAtIndex(DataArray* da, int i){
     DataNode* dn = da->GetNodeAtIndex(i);
     return dn->Evaluate();
 }

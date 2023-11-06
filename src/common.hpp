@@ -3,9 +3,13 @@
 #include "types.h"
 #include "rb3/symbol.hpp"
 #include "rb3/textfile.hpp"
+#include "rb3/data.hpp"
 
 // placement new
 inline void* operator new (unsigned long size, void* p) { return p; }
+
+// evaluate a DataNode at a particular index
+DataNode* EvaluateNodeAtIndex(DataArray*, int);
 
 // misc functions
 int Minimum(int, int);

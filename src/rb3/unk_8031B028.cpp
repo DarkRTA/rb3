@@ -1,5 +1,9 @@
 #include "data.hpp"
 #include "symbol.hpp"
+#include "common.hpp"
+#include "file_ops.hpp"
+#include "string.hpp"
+#include "std/string.h"
 
 extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray*));
 
@@ -11,8 +15,17 @@ extern DataNode DataNextName(DataArray*);
 extern DataNode DataPrintf(DataArray*);
 // fn_8031B62C
 extern DataNode DataSprintf(DataArray*);
+
 // fn_8031B7DC
-extern DataNode DataSprint(DataArray*);
+DataNode DataSprint(DataArray* da){
+    String str;
+    for(int i = 1; i < da->GetNodeCount(); i++){
+        DataNode* dn = EvaluateNodeAtIndex(da, i);
+        dn->Print(str, true);
+    }
+    return DataNode(str.c_str());
+}
+
 // fn_8031B504
 // extern DataNode DataFuncObj::New(DataArray*);
 // fn_8031DC40
@@ -71,24 +84,58 @@ extern DataNode DataFloor(DataArray*);
 extern DataNode DataCeil(DataArray*);
 // fn_8031B86C
 extern DataNode DataSet(DataArray*);
+
 // fn_8031B970
-extern DataNode DataIfElse(DataArray*);
+DataNode DataIfElse(DataArray* da){
+    DataNode* dn = da->GetNodeAtIndex(1);
+    if(dn->NotNull()){
+        return DataNode(*EvaluateNodeAtIndex(da, 2));
+    }
+    else {
+        return DataNode(*EvaluateNodeAtIndex(da, 3));
+    }
+}
+
 // fn_8031B9F0
 extern DataNode DataIf(DataArray*);
 // fn_8031BA98
 extern DataNode DataUnless(DataArray*);
+
+bool DataNodeIsNull(DataNode* dn){
+    return (!dn->NotNull());
+}
+
 // fn_8031BB68
 extern DataNode DataEq(DataArray*);
+DataNode DataEq(DataArray* da){
+    DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+    DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+    return DataNode(dn1->operator==(*dn2));
+}
+
 // fn_8031BCC8
 extern DataNode DataNe(DataArray*);
+
 // fn_8031BD1C
-extern DataNode DataLe(DataArray*);
+DataNode DataLe(DataArray* da){
+    return DataNode(da->GetFloatAtIndex(1) <= da->GetFloatAtIndex(2));
+}
+
 // fn_8031BD8C
-extern DataNode DataLt(DataArray*);
+DataNode DataLt(DataArray* da){
+    return DataNode(da->GetFloatAtIndex(1) < da->GetFloatAtIndex(2));
+}
+
 // fn_8031BDF8
-extern DataNode DataGe(DataArray*);
+DataNode DataGe(DataArray* da){
+    return DataNode(da->GetFloatAtIndex(1) >= da->GetFloatAtIndex(2));
+}
+
 // fn_8031BE68
-extern DataNode DataGt(DataArray*);
+DataNode DataGt(DataArray* da){
+    return DataNode(da->GetFloatAtIndex(1) > da->GetFloatAtIndex(2));
+}
+
 // fn_8031BED4
 extern DataNode DataNot(DataArray*);
 // fn_8031BF18
@@ -149,14 +196,28 @@ extern DataNode DataRandomElem(DataArray*);
 extern DataNode DataRandom(DataArray*);
 // fn_8031E32C
 extern DataNode DataRandomSeed(DataArray*);
+
 // fn_8031E370
-extern DataNode DataNotify(DataArray*);
+DataNode DataNotify(DataArray* da){
+    return DataNode(0);
+}
+
 // fn_8031E378
-extern DataNode DataNotifyBeta(DataArray*);
+DataNode DataNotifyBeta(DataArray* da){
+    return DataNode(0);
+}
+
 // fn_8031E380
-extern DataNode DataFail(DataArray*);
+DataNode DataFail(DataArray* da){
+    return DataNode(0);
+}
+
 // fn_8031E388
-extern DataNode DataNotifyOnce(DataArray*);
+DataNode DataNotifyOnce(DataArray* da){
+    return DataNode(0);
+}
+
+
 // fn_8031E470
 extern DataNode DataSwitch(DataArray*);
 // fn_8031E390
@@ -219,18 +280,35 @@ extern DataNode DataFindExists(DataArray*);
 extern DataNode DataFindElem(DataArray*);
 // fn_8031F690
 extern DataNode DataFindObj(DataArray*);
+
 // fn_8031F7C0
-extern DataNode DataBasename(DataArray*);
+DataNode DataBasename(DataArray* da){
+    char* base = FileGetBase((char*)da->GetStrAtIndex(1), '\0');
+    return DataNode(base);
+}
+
 // fn_8031F808
 extern DataNode DataDirname(DataArray*);
+
 // fn_8031F8A8
-extern DataNode DataHasSubStr(DataArray*);
+DataNode DataHasSubStr(DataArray* da){
+    return DataNode((int)strstr(da->GetStrAtIndex(1), da->GetStrAtIndex(2)));
+}
+
 // fn_8031F90C
 extern DataNode DataHasAnySubStr(DataArray*);
+
 // fn_8031F9B4
-extern DataNode DataFindSubStr(DataArray*);
+DataNode DataFindSubStr(DataArray* da){
+    String str(da->GetStrAtIndex(1));
+    return DataNode(str.find(da->GetStrAtIndex(2)));
+}
+
 // fn_8031FD80
-extern DataNode DataStrlen(DataArray*);
+DataNode DataStrlen(DataArray* da){
+    return DataNode(strlen(da->GetStrAtIndex(1)));
+}
+
 // fn_8031FDC4
 extern DataNode DataStrElem(DataArray*);
 // fn_8031FED0
@@ -241,10 +319,21 @@ extern DataNode DataSubStr(DataArray*);
 extern DataNode DataStrCat(DataArray*);
 // fn_8031FBAC
 extern DataNode DataStringFlags(DataArray*);
+
 // fn_8031FCC0
-extern DataNode DataStrToLower(DataArray*);
+DataNode DataStrToLower(DataArray* da){
+    String str(da->GetStrAtIndex(1));
+    str.ToLower();
+    return DataNode(str);
+}
+
 // fn_8031FD20
-extern DataNode DataStrToUpper(DataArray*);
+DataNode DataStrToUpper(DataArray* da){
+    String str(da->GetStrAtIndex(1));
+    str.ToUpper();
+    return DataNode(str);
+}
+
 // fn_8031FE44
 extern DataNode DataStrIEq(DataArray*);
 // fn_8031FF7C
