@@ -233,6 +233,60 @@ extern DataNode DataFindSubStr(DataArray*);
 extern DataNode DataStrlen(DataArray*);
 // fn_8031FDC4
 extern DataNode DataStrElem(DataArray*);
+// fn_8031FED0
+extern DataNode DataSearchReplace(DataArray*);
+// fn_8031FA30
+extern DataNode DataSubStr(DataArray*);
+// fn_8031FAD0
+extern DataNode DataStrCat(DataArray*);
+// fn_8031FBAC
+extern DataNode DataStringFlags(DataArray*);
+// fn_8031FCC0
+extern DataNode DataStrToLower(DataArray*);
+// fn_8031FD20
+extern DataNode DataStrToUpper(DataArray*);
+// fn_8031FE44
+extern DataNode DataStrIEq(DataArray*);
+// fn_8031FF7C
+extern DataNode DataPushBack(DataArray*);
+// fn_80320004
+extern DataNode DataSort(DataArray*);
+// fn_8031C6C4
+extern DataNode DataVar(DataArray*);
+// fn_8031B904
+extern DataNode DataSetVar(DataArray*);
+// fn_8031C710
+extern DataNode DataPackColor(DataArray*);
+// fn_8031C7C4
+extern DataNode DataUnpackColor(DataArray*);
+// fn_803200E8
+extern DataNode OnSetThis(DataArray*);
+// fn_80320150
+extern DataNode DataMacroElem(DataArray*);
+// fn_8032024C
+extern DataNode DataMergeDirs(DataArray*);
+// fn_8031EA24
+extern DataNode DataQuote(DataArray*);
+// fn_8032080C
+extern DataNode DataQuasiquote(DataArray*);
+// fn_8032084C
+extern DataNode DataUnquote(DataArray*);
+// fn_8032088C
+extern DataNode DataGetDateTime(DataArray*);
+// fn_8032008C
+extern DataNode DataWith(DataArray*);
+// fn_80320048
+extern DataNode DataGetType(DataArray*);
+// fn_80320C20
+extern DataNode DataObjectList(DataArray*);
+// fn_80320B34
+extern DataNode DataFileList(DataArray*);
+// fn_80320BD8
+extern DataNode DataFileListPaths(DataArray*);
+// fn_80320CCC
+extern DataNode DataDisableNotify(DataArray*);
+// fn_80320CD4
+extern DataNode DataFilterNotify(DataArray*);
 
 // fn_80320CDC
 void DataInitFuncs(){
@@ -351,4 +405,34 @@ void DataInitFuncs(){
     DataRegisterFunc(Symbol("find_substr"), DataFindSubStr);
     DataRegisterFunc(Symbol("strlen"), DataStrlen);
     DataRegisterFunc(Symbol("str_elem"), DataStrElem);
+    DataRegisterFunc(Symbol("search_replace"), DataSearchReplace);
+    DataRegisterFunc(Symbol("substr"), DataSubStr);
+    DataRegisterFunc(Symbol("strcat"), DataStrCat);
+    DataRegisterFunc(Symbol("string_flags"), DataStringFlags);
+    DataRegisterFunc(Symbol("tolower"), DataStrToLower);
+    DataRegisterFunc(Symbol("toupper"), DataStrToUpper);
+    DataRegisterFunc(Symbol("strieq"), DataStrIEq);
+    DataRegisterFunc(Symbol("push_back"), DataPushBack);
+    DataRegisterFunc(Symbol("sort"), DataSort);
+    DataRegisterFunc(Symbol("var"), DataVar);
+    DataRegisterFunc(Symbol("set_var"), DataSetVar);
+    DataRegisterFunc(Symbol("pack_color"), DataPackColor);
+    DataRegisterFunc(Symbol("unpack_color"), DataUnpackColor);
+    DataRegisterFunc(Symbol("set_this"), OnSetThis);
+    DataRegisterFunc(Symbol("macro_elem"), DataMacroElem);
+    DataRegisterFunc(Symbol("merge_dirs"), DataMergeDirs);
+    DataRegisterFunc(Symbol("quote"), DataQuote);
+    DataRegisterFunc(Symbol("'"), DataQuote);
+    DataRegisterFunc(Symbol("quasiquote"), DataQuasiquote);
+    DataRegisterFunc(Symbol("`"), DataQuasiquote);
+    DataRegisterFunc(Symbol("unquote"), DataUnquote);
+    DataRegisterFunc(Symbol(","), DataUnquote);
+    DataRegisterFunc(Symbol("get_date_time"), DataGetDateTime);
+    DataRegisterFunc(Symbol("with"), DataWith);
+    DataRegisterFunc(Symbol("type"), DataGetType);
+    DataRegisterFunc(Symbol("object_list"), DataObjectList);
+    DataRegisterFunc(Symbol("file_list"), DataFileList);
+    DataRegisterFunc(Symbol("file_list_paths"), DataFileListPaths);
+    DataRegisterFunc(Symbol("disable_notify"), DataDisableNotify);
+    DataRegisterFunc(Symbol("filter_notify"), DataFilterNotify);
 }
