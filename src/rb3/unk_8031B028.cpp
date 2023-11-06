@@ -137,9 +137,20 @@ DataNode DataGt(DataArray* da){
 }
 
 // fn_8031BED4
-extern DataNode DataNot(DataArray*);
+DataNode DataNot(DataArray* da){
+    return DataNode(DataNodeIsNull(da->GetNodeAtIndex(1)));
+}
+
 // fn_8031BF18
-extern DataNode DataAnd(DataArray*);
+DataNode DataAnd(DataArray* da){
+    for(int i = 1; i < da->GetNodeCount(); i++){
+        if(DataNodeIsNull(da->GetNodeAtIndex(i))){
+            return DataNode(0);
+        }
+    }
+    return DataNode(1);
+}
+
 // fn_8031BF9C
 extern DataNode DataOr(DataArray*);
 // fn_8031C020
@@ -334,8 +345,16 @@ DataNode DataStrToUpper(DataArray* da){
     return DataNode(str);
 }
 
+// fn_8031FEA8
+bool StrICmpIsDifferent(const char* c, const char* d){
+    return !stricmp(c, d);
+}
+
 // fn_8031FE44
-extern DataNode DataStrIEq(DataArray*);
+DataNode DataStrIEq(DataArray* da){
+    return DataNode(StrICmpIsDifferent(da->GetStrAtIndex(1), da->GetStrAtIndex(2)));
+}
+
 // fn_8031FF7C
 extern DataNode DataPushBack(DataArray*);
 // fn_80320004
