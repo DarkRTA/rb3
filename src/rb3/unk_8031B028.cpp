@@ -123,6 +123,62 @@ extern DataNode DataDo(DataArray*);
 extern DataNode DataNew(DataArray*);
 // fn_8031D890
 extern DataNode DataDelete(DataArray*);
+// fn_8031DD0C
+extern DataNode DataObject(DataArray*);
+// fn_8031DE08
+extern DataNode DataExists(DataArray*);
+// fn_8031DEB8
+extern DataNode DataLocalize(DataArray*);
+// fn_8031DF18
+extern DataNode DataLocalizeSeparatedInt(DataArray*);
+// fn_8031DF5C
+extern DataNode DataLocalizeFloat(DataArray*);
+// fn_8031DFC8
+extern DataNode DataStartsWith(DataArray*);
+// fn_8031B764
+extern DataNode DataPrint(DataArray*);
+// fn_8031E06C
+extern DataNode DataTime(DataArray*);
+// fn_8031E170
+extern DataNode DataRandomInt(DataArray*);
+// fn_8031E1D4
+extern DataNode DataRandomFloat(DataArray*);
+// fn_8031E25C
+extern DataNode DataRandomElem(DataArray*);
+// fn_8031E2CC
+extern DataNode DataRandom(DataArray*);
+// fn_8031E32C
+extern DataNode DataRandomSeed(DataArray*);
+// fn_8031E370
+extern DataNode DataNotify(DataArray*);
+// fn_8031E378
+extern DataNode DataNotifyBeta(DataArray*);
+// fn_8031E380
+extern DataNode DataFail(DataArray*);
+// fn_8031E388
+extern DataNode DataNotifyOnce(DataArray*);
+// fn_8031E470
+extern DataNode DataSwitch(DataArray*);
+// fn_8031E390
+extern DataNode DataCond(DataArray*);
+// fn_8031E5FC
+extern DataNode DataInsertElems(DataArray*);
+// fn_8031E674
+extern DataNode DataInsertElem(DataArray*);
+// fn_8031E6F0
+extern DataNode DataPrintArray(DataArray*);
+// fn_8031E744
+extern DataNode DataSize(DataArray*);
+// fn_8031E7D4
+extern DataNode DataRemoveElem(DataArray*);
+// fn_8031E83C
+extern DataNode DataResize(DataArray*);
+// fn_8031E8A0
+extern DataNode DataNewArray(DataArray*);
+// fn_8031E9A0
+extern DataNode DataSetElem(DataArray*);
+// fn_8031EA64
+extern DataNode DataEval(DataArray*);
 
 // fn_80320CDC
 void DataInitFuncs(){
@@ -186,4 +242,32 @@ void DataInitFuncs(){
     DataRegisterFunc(Symbol("do"), DataDo);
     DataRegisterFunc(Symbol("new"), DataNew);
     DataRegisterFunc(Symbol("delete"), DataDelete);
+    DataRegisterFunc(Symbol("object"), DataObject);
+    DataRegisterFunc(Symbol("exists"), DataExists);
+    DataRegisterFunc(Symbol("localize"), DataLocalize);
+    DataRegisterFunc(Symbol("localize_separated_int"), DataLocalizeSeparatedInt);
+    DataRegisterFunc(Symbol("localize_float"), DataLocalizeFloat);
+    DataRegisterFunc(Symbol("startswith"), DataStartsWith);
+    DataRegisterFunc(Symbol("print"), DataPrint);
+    DataRegisterFunc(Symbol("time"), DataTime);
+    DataRegisterFunc(Symbol("random_int"), DataRandomInt);
+    DataRegisterFunc(Symbol("random_float"), DataRandomFloat);
+    DataRegisterFunc(Symbol("random_elem"), DataRandomElem);
+    DataRegisterFunc(Symbol("random"), DataRandom);
+    DataRegisterFunc(Symbol("random_seed"), DataRandomSeed);
+    DataRegisterFunc(Symbol("notify"), DataNotify);
+    DataRegisterFunc(Symbol("notify_beta"), DataNotifyBeta);
+    DataRegisterFunc(Symbol("fail"), DataFail);
+    DataRegisterFunc(Symbol("notify_once"), DataNotifyOnce);
+    DataRegisterFunc(Symbol("switch"), DataSwitch);
+    DataRegisterFunc(Symbol("cond"), DataCond);
+    DataRegisterFunc(Symbol("insert_elems"), DataInsertElems);
+    DataRegisterFunc(Symbol("insert_elem"), DataInsertElem);
+    DataRegisterFunc(Symbol("print_array"), DataPrintArray);
+    DataRegisterFunc(Symbol("size"), DataSize);
+    DataRegisterFunc(Symbol("remove_elem"), DataRemoveElem);
+    DataRegisterFunc(Symbol("resize"), DataResize);
+    DataRegisterFunc(Symbol("array"), DataNewArray);
+    DataRegisterFunc(Symbol("set_elem"), DataSetElem);
+    DataRegisterFunc(Symbol("eval"), DataEval);
 }
