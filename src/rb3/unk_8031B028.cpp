@@ -89,6 +89,40 @@ extern DataNode DataLt(DataArray*);
 extern DataNode DataGe(DataArray*);
 // fn_8031BE68
 extern DataNode DataGt(DataArray*);
+// fn_8031BED4
+extern DataNode DataNot(DataArray*);
+// fn_8031BF18
+extern DataNode DataAnd(DataArray*);
+// fn_8031BF9C
+extern DataNode DataOr(DataArray*);
+// fn_8031C020
+extern DataNode DataXor(DataArray*);
+// fn_8031C08C
+extern DataNode DataBitAnd(DataArray*);
+// fn_8031C108
+extern DataNode DataAndEqual(DataArray*);
+// fn_8031C224
+extern DataNode DataMaskEqual(DataArray*);
+// fn_8031C45C
+extern DataNode DataBitOr(DataArray*);
+// fn_8031C340
+extern DataNode DataOrEqual(DataArray*);
+// fn_8031C4D8
+extern DataNode DataBitXor(DataArray*);
+// fn_8031C534
+extern DataNode DataBitNot(DataArray*);
+// fn_8031C574
+extern DataNode DataLowestBit(DataArray*);
+// fn_8031C5E4
+extern DataNode DataCountBits(DataArray*);
+// fn_8031C628
+extern DataNode DataWhile(DataArray*);
+// fn_8031C904
+extern DataNode DataDo(DataArray*);
+// fn_8031D8EC
+extern DataNode DataNew(DataArray*);
+// fn_8031D890
+extern DataNode DataDelete(DataArray*);
 
 // fn_80320CDC
 void DataInitFuncs(){
@@ -135,4 +169,21 @@ void DataInitFuncs(){
     DataRegisterFunc(Symbol("<"), DataLt);
     DataRegisterFunc(Symbol(">="), DataGe);
     DataRegisterFunc(Symbol(">"), DataGt);
+    DataRegisterFunc(Symbol("!"), DataNot);
+    DataRegisterFunc(Symbol("&&"), DataAnd);
+    DataRegisterFunc(Symbol("||"), DataOr);
+    DataRegisterFunc(Symbol("^^"), DataXor);
+    DataRegisterFunc(Symbol("&"), DataBitAnd);
+    DataRegisterFunc(Symbol("&="), DataAndEqual);
+    DataRegisterFunc(Symbol("mask_eq"), DataMaskEqual);
+    DataRegisterFunc(Symbol("|"), DataBitOr);
+    DataRegisterFunc(Symbol("|="), DataOrEqual);
+    DataRegisterFunc(Symbol("^"), DataBitXor);
+    DataRegisterFunc(Symbol("~"), DataBitNot);
+    DataRegisterFunc(Symbol("lowest_bit"), DataLowestBit);
+    DataRegisterFunc(Symbol("count_bits"), DataCountBits);
+    DataRegisterFunc(Symbol("while"), DataWhile);
+    DataRegisterFunc(Symbol("do"), DataDo);
+    DataRegisterFunc(Symbol("new"), DataNew);
+    DataRegisterFunc(Symbol("delete"), DataDelete);
 }
