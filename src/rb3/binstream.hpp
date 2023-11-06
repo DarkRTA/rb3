@@ -19,8 +19,8 @@ public:
 	virtual bool Eof() = 0;
 	virtual bool Fail() = 0;
 	virtual const char *Name() const; // fn_80342ACC
-	virtual void V_Unk6(); // links to fn_8077BAA0, which returns 0
-	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
+	virtual int V_Unk6(); // links to fn_8077BAA0, which returns 0
+	virtual int V_Unk7(); // links to fn_8077BAA0, which returns 0
 	virtual void ReadImpl(void *, int) = 0;
 	virtual void WriteImpl(const void *, int) = 0;
 	virtual void SeekImpl(
