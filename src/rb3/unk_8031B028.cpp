@@ -179,6 +179,60 @@ extern DataNode DataNewArray(DataArray*);
 extern DataNode DataSetElem(DataArray*);
 // fn_8031EA64
 extern DataNode DataEval(DataArray*);
+// fn_8031EAA8
+extern DataNode DataReverseInterp(DataArray*);
+// fn_8031EB78
+extern DataNode DataInterp(DataArray*);
+// fn_8031EBFC
+extern DataNode DataInc(DataArray*);
+// fn_8031ECF8
+extern DataNode DataDec(DataArray*);
+// fn_8031F1D0
+extern DataNode DataRun(DataArray*);
+// fn_8031F27C
+extern DataNode OnReadFile(DataArray*);
+// fn_8031F30C
+extern DataNode OnWriteFile(DataArray*);
+// fn_8031F374
+extern DataNode OnFileExists(DataArray*);
+// fn_8031F3BC
+extern DataNode OnFileReadOnly(DataArray*);
+// fn_8031EDF4
+extern DataNode DataHandleType(DataArray*);
+// fn_8031EEC8
+extern DataNode DataHandleTypeRet(DataArray*);
+// fn_8031F02C
+extern DataNode DataHandle(DataArray*);
+// fn_8031F128
+extern DataNode DataHandleRet(DataArray*);
+// fn_8031F448
+extern DataNode DataContains(DataArray*);
+// fn_8031EF60
+extern DataNode DataExport(DataArray*);
+// fn_8031F400
+extern DataNode DataExit(DataArray*);
+// fn_8031F5F8
+extern DataNode DataFind(DataArray*);
+// fn_8031F4F0
+extern DataNode DataFindExists(DataArray*);
+// fn_8031BBD0
+extern DataNode DataFindElem(DataArray*);
+// fn_8031F690
+extern DataNode DataFindObj(DataArray*);
+// fn_8031F7C0
+extern DataNode DataBasename(DataArray*);
+// fn_8031F808
+extern DataNode DataDirname(DataArray*);
+// fn_8031F8A8
+extern DataNode DataHasSubStr(DataArray*);
+// fn_8031F90C
+extern DataNode DataHasAnySubStr(DataArray*);
+// fn_8031F9B4
+extern DataNode DataFindSubStr(DataArray*);
+// fn_8031FD80
+extern DataNode DataStrlen(DataArray*);
+// fn_8031FDC4
+extern DataNode DataStrElem(DataArray*);
 
 // fn_80320CDC
 void DataInitFuncs(){
@@ -270,4 +324,31 @@ void DataInitFuncs(){
     DataRegisterFunc(Symbol("array"), DataNewArray);
     DataRegisterFunc(Symbol("set_elem"), DataSetElem);
     DataRegisterFunc(Symbol("eval"), DataEval);
+    DataRegisterFunc(Symbol("reverse_interp"), DataReverseInterp);
+    DataRegisterFunc(Symbol("interp"), DataInterp);
+    DataRegisterFunc(Symbol("++"), DataInc);
+    DataRegisterFunc(Symbol("--"), DataDec);
+    DataRegisterFunc(Symbol("run"), DataRun);
+    DataRegisterFunc(Symbol("read_file"), OnReadFile);
+    DataRegisterFunc(Symbol("write_file"), OnWriteFile);
+    DataRegisterFunc(Symbol("file_exists"), OnFileExists);
+    DataRegisterFunc(Symbol("file_read_only"), OnFileReadOnly);
+    DataRegisterFunc(Symbol("handle_type"), DataHandleType);
+    DataRegisterFunc(Symbol("handle_type_ret"), DataHandleTypeRet);
+    DataRegisterFunc(Symbol("handle"), DataHandle);
+    DataRegisterFunc(Symbol("handle_ret"), DataHandleRet);
+    DataRegisterFunc(Symbol("contains"), DataContains);
+    DataRegisterFunc(Symbol("export"), DataExport);
+    DataRegisterFunc(Symbol("exit"), DataExit);
+    DataRegisterFunc(Symbol("find"), DataFind);
+    DataRegisterFunc(Symbol("find_exists"), DataFindExists);
+    DataRegisterFunc(Symbol("find_elem"), DataFindElem);
+    DataRegisterFunc(Symbol("find_obj"), DataFindObj);
+    DataRegisterFunc(Symbol("basename"), DataBasename);
+    DataRegisterFunc(Symbol("dirname"), DataDirname);
+    DataRegisterFunc(Symbol("has_substr"), DataHasSubStr);
+    DataRegisterFunc(Symbol("has_any_substr"), DataHasAnySubStr);
+    DataRegisterFunc(Symbol("find_substr"), DataFindSubStr);
+    DataRegisterFunc(Symbol("strlen"), DataStrlen);
+    DataRegisterFunc(Symbol("str_elem"), DataStrElem);
 }
