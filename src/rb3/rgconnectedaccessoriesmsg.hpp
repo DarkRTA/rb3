@@ -5,7 +5,7 @@
 class RGConnectedAccessoriesMsg : Message {
 public:
 	RGConnectedAccessoriesMsg(int, int); // fn_80314114
-	~RGConnectedAccessoriesMsg(); // fn_800A7FF4
+	virtual ~RGConnectedAccessoriesMsg(); // fn_800A7FF4
 };
 
 #endif

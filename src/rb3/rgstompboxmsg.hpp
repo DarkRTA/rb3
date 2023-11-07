@@ -5,7 +5,7 @@
 class RGStompBoxMsg : Message {
 public:
 	RGStompBoxMsg(int, int); // fn_8031439C
-	~RGStompBoxMsg(); // fn_800A7FF4
+	virtual ~RGStompBoxMsg(); // fn_800A7FF4
 };
 
 #endif

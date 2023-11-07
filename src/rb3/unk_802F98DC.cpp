@@ -1,6 +1,8 @@
 #include "std/string.h"
-#include "unknown.hpp"
 #include "string.hpp"
+#include "file_ops.hpp"
+#include "data.hpp"
+#include "common.hpp"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 
 // fn_802FA190
@@ -19,31 +21,6 @@ void FileNormalizePath(char* c){
         if(*p == '\\') *p = '/';
         else *p = fn_80018764(*p);
     }
-}
-
-extern "C" char* FileGetPath(char*, char*);
-extern char lbl_809071C8[];
-
-// fn_802FA848
-char* FileGetPath(char* arg1, char* arg2){
-    char* p2;
-    if(arg2 == 0) arg2 = lbl_809071C8;
-    if(arg1 != 0){
-        strcpy(arg2, arg1);
-        p2 = arg2 + strlen(arg2);
-        p2--;        
-        while(p2 >= arg2 && *p2 != '/' && *p2 != '\\') {
-            p2--;
-        }
-        if(p2 >= arg2){
-            if((p2 == arg2) || (p2[-1] == ':')) p2[1] = '\0';
-            else *p2 = '\0';
-            return arg2;
-        }
-    }
-    *arg2 = '.';
-    arg2[1] = '\0';
-    return arg2;
 }
 
 extern "C" char* FileMakePath(char*, char*, char*);
@@ -131,4 +108,121 @@ char* FileMakePath(char* c1, char* c2, char* c3){
     }
     *c3_ptr = 0;
     return c3;
+}
+
+extern char gRoot[];
+extern char gExecRoot[];
+extern char gSystemRoot[];
+
+// fn_802F991C
+char* FileRoot(){
+    return gRoot;
+}
+
+// fn_802F9928
+char* FileExecRoot(){
+    return gExecRoot;
+}
+
+// fn_802F9934
+char* FileSystemRoot(){
+    return gSystemRoot;
+}
+
+// fn_802F9940
+DataNode OnFileExecRoot(DataArray* da){
+    return DataNode(gExecRoot);
+}
+
+// fn_802F994C
+DataNode OnFileRoot(DataArray* da){
+    return DataNode(gRoot);
+}
+
+// fn_802F9958
+DataNode OnFileGetDrive(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetDrive(str));
+}
+
+// fn_802F999C
+DataNode OnFileGetPath(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetPath(str, '\0'));
+}
+
+// fn_802F99E4
+DataNode OnFileGetBase(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetBase(str, '\0'));
+}
+
+// fn_802F9A2C
+DataNode OnFileGetExt(DataArray* da){
+    char* str = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileGetExt(str));
+}
+
+// fn_802F9A70
+DataNode OnFileMatch(DataArray* da){
+    char* str2 = (char*) da->GetStrAtIndex(2);
+    char* str1 = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileMatch(str1, str2));
+}
+
+// fn_802F9AD4
+DataNode OnFileAbsolutePath(DataArray* da){
+    char* str2 = (char*) da->GetStrAtIndex(2);
+    char* str1 = (char*) da->GetStrAtIndex(1);
+    return DataNode(FileMakePath(str1, str2, '\0'));
+}
+
+// fn_802F9B3C
+DataNode OnFileRelativePath(DataArray* da){
+    return DataNode();
+}
+
+// fn_802F9BA0
+DataNode OnWithFileRoot(DataArray* da){
+    return DataNode();
+}
+
+// fn_802F9C54
+DataNode* EvaluateNodeAtIndex(DataArray* da, int i){
+    DataNode* dn = da->GetNodeAtIndex(i);
+    return dn->Evaluate();
+}
+
+// fn_802F9C78
+DataNode OnSynchProc(DataArray* da){
+    return DataNode();
+}
+
+extern "C" void FileInit();
+extern "C" void fn_801F0530(char*);
+extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray*));
+extern "C" char* OptionStr(const char*, const char*);
+
+// fn_802F9CC4
+void FileInit(){
+    strcpy(gRoot, ".");
+    strcpy(gExecRoot, ".");
+    char* path = FileMakePath(gExecRoot, "../../system/run", '\0');
+    strcpy(gSystemRoot, path);
+    fn_801F0530(gRoot);
+    DataRegisterFunc(Symbol("file_root"), OnFileRoot);
+    DataRegisterFunc(Symbol("file_exec_root"), OnFileExecRoot);
+    DataRegisterFunc(Symbol("file_get_drive"), OnFileGetDrive);
+    DataRegisterFunc(Symbol("file_get_path"), OnFileGetPath);
+    DataRegisterFunc(Symbol("file_get_base"), OnFileGetBase);
+    DataRegisterFunc(Symbol("file_get_ext"), OnFileGetExt);
+    DataRegisterFunc(Symbol("file_match"), OnFileMatch);
+    DataRegisterFunc(Symbol("file_absolute_path"), OnFileAbsolutePath);
+    DataRegisterFunc(Symbol("file_relative_path"), OnFileRelativePath);
+    DataRegisterFunc(Symbol("with_file_root"), OnWithFileRoot);
+    DataRegisterFunc(Symbol("synch_proc"), OnSynchProc);
+    char* str = OptionStr("file_order", '\0');
+    if(str != nullptr && (*str != '\0')){
+        
+    }
 }

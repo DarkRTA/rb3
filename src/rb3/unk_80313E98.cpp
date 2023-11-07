@@ -4,77 +4,66 @@
 #include "std/stdlib.h"
 #include "common.hpp"
 
-// fn_80315324
-Symbol GetKeyboardKeyReleasedSymbol(){
-    static Symbol lbl_808FC8B4("keyboard_key_released");
-    return lbl_808FC8B4;
+extern char* lbl_8091A47C;
+extern int lbl_8091A480;
+extern "C" char* fn_80315C3C(int);
+
+#pragma dont_inline on
+// fn_80315C3C
+char* fn_80315C3C(int i){
+    lbl_8091A480 += 1;
+    char* old = lbl_8091A47C;
+    lbl_8091A47C += i;
+    return old;
 }
 
-// fn_803153FC
-Symbol GetKeyboardModSymbol(){
-    static Symbol lbl_808FC8B8("keyboard_mod");
-    return lbl_808FC8B8;
+extern bool lbl_808E4468;
+extern void* MemOrPoolAlloc(int, int);
+
+DataNode* NodesAlloc(int i){
+    if(lbl_808E4468) return (DataNode*)fn_80315C3C(i);
+    else return (DataNode*)MemOrPoolAlloc(i, 1);
 }
 
-// fn_803154D4
-Symbol GetKeyboardExpressionPedalSymbol(){
-    static Symbol lbl_808FC8BC("keyboard_expression_pedal");
-    return lbl_808FC8BC;
+extern char* lbl_8091A478; // 4 bytes long
+
+// this probably isn't a pointer
+extern char* lbl_8091A484; // 0x14 bytes long
+extern "C" bool fn_80315C7C(void*);
+
+// fn_80315C7C
+
+// Checks if v is within a memory region
+bool fn_80315C7C(void* v){
+    return (v >= lbl_8091A478) && (v < &lbl_8091A478[(int)lbl_8091A484]);
 }
 
-// fn_803155AC
-Symbol GetKeyboardConnectedAccessoriesSymbol(){
-    static Symbol lbl_808FC8C0("keyboard_connected_accessories");
-    return lbl_808FC8C0;
-}
+extern void MemOrPoolFree(int, int, void*);
 
-// fn_80315684
-Symbol GetKeyboardSustainSymbol(){
-    static Symbol lbl_808FC8C4("keyboard_sustain");
-    return lbl_808FC8C4;
+void NodesFree(int i, DataNode* dn){
+    fn_80315C7C(dn);
+    MemOrPoolFree(i, 1, dn);
 }
-
-// fn_8031575C
-Symbol GetKeyboardStompBoxSymbol(){
-    static Symbol lbl_808FC8C8("keyboard_stomp_box");
-    return lbl_808FC8C8;
-}
-
-// fn_80315874
-Symbol GetKeysAccelerometerSymbol(){
-    static Symbol lbl_808FC8CC("keys_accelerometer");
-    return lbl_808FC8CC;
-}
-
-// fn_8031594C
-Symbol GetKeyboardLowHandPlacementSymbol(){
-    static Symbol lbl_808FC8D0("keyboard_low_hand_placement");
-    return lbl_808FC8D0;
-}
-
-// fn_80315A24
-Symbol GetKeyboardHighHandPlacementSymbol(){
-    static Symbol lbl_808FC8D4("keyboard_high_hand_placement");
-    return lbl_808FC8D4;
-}
+#pragma dont_inline reset
 
 extern int gIndent;
 
 // fn_80315A70
 void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
+    DataNode* lol;
     DataNode* dn = mNodes;
     DataNode* dn_end = &mNodes[mNodeCount];
     char begin = '\0';
     char end = '\0';
-    if(ty == 0x10){
+    if(ty == kDataArray){
         begin = '(';
         end = ')';
     }
-    else if(ty == 0x11){
+    else if(ty == kDataCommand){
         begin = '{';
         end = '}';
     }
-    else if(ty == 0x13){
+    else if(ty == kDataProperty){
         begin = '[';
         end = ']';
     }
@@ -84,10 +73,10 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
         dn++;
     }
     
-    if((dn == dn_end) || !b){
+    if((dn != dn_end) && !b){
         ts << begin;
-        DataNode* lol = mNodes;
-        if(lol->GetType() == 5){
+        lol = mNodes;
+        if(lol->GetType() == kDataObject){
             lol->Print(ts, b);
             lol++;
         }
@@ -105,9 +94,9 @@ void DataArray::Print(TextStream& ts, DataType ty, bool b) const {
     }
     else {
         ts << begin;
-        for(DataNode* bruh = mNodes; bruh < dn_end; bruh++){
-            if(bruh != mNodes) ts << "\n";
-            bruh->Print(ts, b);
+        for(lol = mNodes; lol < dn_end; lol++){
+            if(lol != mNodes) ts << "\n";
+            lol->Print(ts, b);
         }
         ts << end;
     }
@@ -168,27 +157,27 @@ void DataArray::SortNodes(){
 void DataArray::SaveGlob(BinStream& bs, bool b) const {
     if(b){
         int i = -1 - mNodeCount;
-        bs.WriteWord(i);
+        bs << (unsigned int)i;
         bs.Write(mNodes, i);
     }
     else {
-        bs.WriteHalfWord(mNodeCount);
+        bs << mNodeCount;
         bs.Write(mNodes, -mNodeCount);
     }
 }
 
 // fn_80317B9C
 void DataArray::LoadGlob(BinStream& bs, bool b){
-    int v;
+    unsigned int v;
     NodesFree(-mNodeCount, mNodes);
     if(b){
-        bs.ReadWord(&v);
+        bs >> v;
         mNodeCount = -(v + 1);
         mNodes = NodesAlloc(-mNodeCount);
         bs.Read(mNodes, v);
     }
     else {
-        bs.ReadHalfWord(&mNodeCount);
+        bs >> mNodeCount;
         mNodes = NodesAlloc(-mNodeCount);
         bs.Read(mNodes, -mNodeCount);
     }
@@ -200,60 +189,174 @@ void DataArray::SetFileLine(Symbol s, int i){
     mLine = i;
 }
 
-extern "C" void fn_80315CFC(DataArray*, int, DataNode*);
-
-void fn_80315CFC(DataArray* da, int count, DataNode* dn) {
-    // seems to reconstruct or add a DataNode to a DataArray
+// fn_80315CFC
+void DataArray::Insert(int count, const DataNode& dn){
     int i = 0;
-    int newNodeCount = da->mNodeCount + 1;
-    DataNode* oldNodes = da->mNodes; // Save all nodes pointer
+    int newNodeCount = mNodeCount + 1;
+    DataNode* oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    da->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
     
     for(i = 0; i < count; i++){
-        new (&da->mNodes[i]) DataNode(oldNodes[i]);
+        new (&mNodes[i]) DataNode(oldNodes[i]);
     }
     for(; i < count + 1; i++){
-        new (&da->mNodes[i]) DataNode(*dn);
+        new (&mNodes[i]) DataNode(dn);
     }
     for(; i < newNodeCount; i++){
-        new (&da->mNodes[i]) DataNode(oldNodes[i - 1]);
+        new (&mNodes[i]) DataNode(oldNodes[i - 1]);
     }
-    for(i = 0; i < da->mNodeCount; i++){
+    for(i = 0; i < mNodeCount; i++){
         oldNodes[i].~DataNode();
     }
 
     // free old nodes
-    NodesFree(da->mNodeCount * sizeof(DataNode), oldNodes);
-    da->mNodeCount = newNodeCount;
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newNodeCount;
 }
 
 extern "C" void fn_80315E1C(DataArray*, int, DataArray*);
 
 // fn_80315E1C
-void fn_80315E1C(DataArray* da1, int count, DataArray* da2) {
-    if((da2 == 0) || (da2->GetNodeCount() == 0)) return;
+void DataArray::InsertNodes(int count, const DataArray* da){
+    if((da == 0) || (da->GetNodeCount() == 0)) return;
     int i = 0;
-    int da1cnt = da2->GetNodeCount();
-    int newNodeCount = da1->mNodeCount + da1cnt;
-    DataNode* oldNodes = da1->mNodes; // Save all nodes pointer
+    int dacnt = da->GetNodeCount();
+    int newNodeCount = mNodeCount + dacnt;
+    DataNode* oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    da1->mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
 
     for(i = 0; i < count; i++){
-        new (&da1->mNodes[i]) DataNode(oldNodes[i]);
+        new (&mNodes[i]) DataNode(oldNodes[i]);
     }
     
-    for(; i < count + da1cnt; i++){
-        new (&da1->mNodes[i]) DataNode(*da2->GetNodeAtIndex(i - count));
+    for(; i < count + dacnt; i++){
+        new (&mNodes[i]) DataNode(*da->GetNodeAtIndex(i - count));
     }
 
     for(; i < newNodeCount; i++){
-        new (&da1->mNodes[i]) DataNode(oldNodes[i - da1cnt]);
+        new (&mNodes[i]) DataNode(oldNodes[i - dacnt]);
     }
-    for(i = 0; i < da1->mNodeCount; i++){
+    for(i = 0; i < mNodeCount; i++){
         oldNodes[i].~DataNode();
     }
-    NodesFree(da1->mNodeCount * sizeof(DataNode), oldNodes);
-    da1->mNodeCount = newNodeCount;
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newNodeCount;
+}
+
+// fn_80315F74
+void DataArray::Resize(int i) {
+    DataNode* oldNodes = mNodes;
+    mNodes = NodesAlloc(i * sizeof(DataNode));
+    int min = Minimum(mNodeCount, i);
+    int cnt = 0;
+    for(cnt = 0; cnt < min; cnt++){
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for(; cnt < i; cnt++){
+        new (&mNodes[cnt]) DataNode();
+    }
+    for(cnt = 0; cnt < mNodeCount; cnt++){
+        oldNodes[cnt].~DataNode();
+    }
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = i;
+    mUnknown = 0;
+}
+
+// fn_80316064
+void DataArray::Remove(int i){
+    DataNode* oldNodes = mNodes;
+    int newCnt = mNodeCount - 1;
+    mNodes = NodesAlloc(newCnt * sizeof(DataNode));
+    int cnt = 0;
+    for(cnt = 0; cnt < i; cnt++){
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for(; i < newCnt; i++){
+        new (&mNodes[i]) DataNode(oldNodes[i + 1]);
+    }
+    for(int j = 0; j < mNodeCount; j++){
+        oldNodes[j].~DataNode();
+    }
+    NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
+    mNodeCount = newCnt;
+}
+
+// fn_80316150
+void DataArray::Remove(const DataNode& dn){
+    int searchType = dn.value.intVal;
+    for(int lol = mNodeCount - 1; lol >= 0; lol--){
+        if(mNodes[lol].value.intVal == searchType){
+            Remove(lol);
+            return;
+        }
+    }
+}
+
+// fn_80316190
+bool DataArray::Contains(const DataNode& dn) const {
+    int searchType = dn.value.intVal;
+    for(int lol = mNodeCount - 1; lol >= 0; lol--){
+        if(mNodes[lol].value.intVal == searchType){
+            return true;
+        }
+    }
+    return false;
+}
+
+// fn_803161D4 - https://decomp.me/scratch/KWNxW
+
+#pragma dont_inline on
+// fn_80317278
+BinStream& operator<<(BinStream& bs, const DataNode* dn){
+    dn->Save(bs);
+    return bs;
+}
+#pragma dont_inline reset
+
+// fn_803171F8
+void DataArray::Save(BinStream& bs) const {
+    bs << mNodeCount << mLine << mUnknown;
+    for(int i = 0; i < mNodeCount; i++){
+        bs << &mNodes[i];
+    }
+}
+
+// fn_80317AE0
+BinStream& operator>>(BinStream& bs, DataNode* dn){
+    dn->Load(bs);
+    return bs;
+}
+
+// fn_80317E5C
+TextStream& operator<<(TextStream& ts, const DataArray* da){
+    if(da != nullptr) da->Print(ts, kDataArray, false);
+    else ts << "<null>";
+    return ts;
+}
+
+extern DataArray* fn_8035CF9C(int, int, int);
+
+// fn_80317EB8
+BinStream& operator>>(BinStream& bs, DataArray*& da){
+    bool b;
+    bs >> b;
+    if(b){
+        da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(0);
+        da->Load(bs);
+    }
+    else da = nullptr;
+    return bs;
+}
+
+// fn_80317F3C
+BinStream& operator<<(BinStream& bs, const DataArray* da){
+    if(da != nullptr){
+        bs << (char)1;
+        da->Save(bs);
+    }
+    else bs << (char)0;
+    return bs;
 }

@@ -5,7 +5,7 @@
 class RGAccelerometerMsg : Message {
 public:
 	RGAccelerometerMsg(int, int, int, int); // fn_80313FFC
-	~RGAccelerometerMsg(); // fn_800A7FF4
+	virtual ~RGAccelerometerMsg(); // fn_800A7FF4
 };
 
 #endif

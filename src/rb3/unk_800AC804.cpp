@@ -32,3 +32,9 @@ Message::Message(DataArray* da)
 void DataArray::IncRefCount(){
 	mRefCount++;
 }
+
+// fn_800B27F0
+DataArray* DataArray::GetArrayAtIndex(int i) const {
+	DataNode* dn = GetNodeAtIndex(i);
+	return dn->Array(this);
+}

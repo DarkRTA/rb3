@@ -33,7 +33,7 @@ extern "C" DataNode* fn_8000DF50(DataArray*, int);
 
 #pragma dont_inline on
 // fn_8000DF50
-DataNode* DataArray::GetNodeAtIndex(int i){
+DataNode* DataArray::GetNodeAtIndex(int i) const {
 	return &mNodes[i];
 }
 #pragma dont_inline reset
@@ -80,7 +80,7 @@ FilePath::~FilePath()
 }
 
 // fn_8000ECC0
-const char* DataArray::GetStrAtIndex(int i){
+const char* DataArray::GetStrAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->Str(this);
 }

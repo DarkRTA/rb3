@@ -7,18 +7,18 @@ extern DataArray* fn_8035CF9C(int, int, int);
 
 // fn_803231CC
 DataNode::DataNode(const char* c){
-    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
+    value.dataArray = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
     type = kDataString;
 }
 
 // fn_8032324C
 DataNode::DataNode(const String& s){
-    value.dataArray = new (DataArray::fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
+    value.dataArray = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
     type = kDataString;
 }
 
 // fn_80323318
-DataNode::DataNode(DataArray* da, DataTypes ty){
+DataNode::DataNode(DataArray* da, DataType ty){
     value.dataArray = da;
     value.dataArray->IncRefCount();
     type = ty;
@@ -119,13 +119,13 @@ bool DataNode::operator!=(const DataNode& dn) const {
 }
 
 #pragma dont_inline on
-DataTypes DataNode::GetType(){ return type; }
+DataType DataNode::GetType(){ return type; }
 #pragma dont_inline reset
 
 // fn_80323530
 bool DataNode::NotNull() const {
     DataNode* n = Evaluate();
-    DataTypes t = n->GetType();
+    DataType t = n->GetType();
     if(t == kDataObject){
         return n->value.strVal[0] != 0;
     }

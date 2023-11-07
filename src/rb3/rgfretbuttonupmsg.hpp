@@ -5,7 +5,7 @@
 class RGFretButtonUpMsg : Message {
 public:
 	RGFretButtonUpMsg(int, int, int); // fn_8031471C
-	~RGFretButtonUpMsg(); // fn_800A7FF4
+	virtual ~RGFretButtonUpMsg(); // fn_800A7FF4
 };
 
 #endif

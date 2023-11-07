@@ -4,7 +4,7 @@
 #include "symbol.hpp"
 #include "jsonconverter.hpp"
 
-class String : TextStream {
+class String : public TextStream {
 public:
 	unsigned int len;
 	char *text;

@@ -19,8 +19,8 @@ public:
 	virtual bool Eof() = 0;
 	virtual bool Fail() = 0;
 	virtual const char *Name() const; // fn_80342ACC
-	virtual void V_Unk6(); // links to fn_8077BAA0, which returns 0
-	virtual void V_Unk7(); // links to fn_8077BAA0, which returns 0
+	virtual int V_Unk6(); // links to fn_8077BAA0, which returns 0
+	virtual int V_Unk7(); // links to fn_8077BAA0, which returns 0
 	virtual void ReadImpl(void *, int) = 0;
 	virtual void WriteImpl(const void *, int) = 0;
 	virtual void SeekImpl(
@@ -31,11 +31,11 @@ public:
 	Rand2 *unk08;
 
 	// taken from RB2
-	BinStream *operator<<(const char *);
-	BinStream *operator<<(const Symbol &);
-	BinStream *operator<<(const String &);
-	BinStream *operator>>(Symbol &);
-	BinStream *operator>>(String &);
+	BinStream& operator<<(const char *);
+	BinStream& operator<<(const Symbol &);
+	BinStream& operator<<(const String &);
+	BinStream& operator>>(Symbol &);
+	BinStream& operator>>(String &);
 
 	void WriteEndian(const void *, int);
 	void Write(const void *, int);
@@ -50,14 +50,14 @@ public:
 	void Seek(int, SeekType);
 
 	// not taken from RB2, found in the asm
-	BinStream *WriteWord(unsigned int);
-	BinStream *ReadWord(void *);
-	BinStream *ReadByte(void *);
-	BinStream *ReadByteIntoBool(bool *);
-	BinStream *WriteByte(char);
-	BinStream* WriteHalfWord(short); // fn_801CB744
-	BinStream* ReadHalfWord(void*); // fn_801CCA70
-	BinStream* WriteFloat(float); // fn_800B95C4
+	BinStream& operator<<(unsigned int); // fn_800A7638
+	BinStream& operator>>(unsigned int&); // fn_800A77B4
+	BinStream& operator>>(unsigned char&); // fn_800A7730
+	BinStream& operator>>(bool&); // fn_800A7764
+	BinStream& operator<<(char); // fn_800A75FC
+	BinStream& operator<<(short); // fn_801CB744
+	BinStream& operator>>(short&); // fn_801CCA70
+	BinStream& operator<<(float); // fn_800B95C4
 };
 
 #endif

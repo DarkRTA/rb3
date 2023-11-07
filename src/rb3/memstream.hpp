@@ -14,8 +14,8 @@ public:
 	virtual bool Eof(); // fn_802CCBB8
 	virtual bool Fail(); // fn_800A7DE8
 	
-	virtual void V_Unk6(); // fn_8077BAA0 - returns 0
-	virtual void V_Unk7(); // fn_8077BAA0 - returns 0
+	virtual int V_Unk6(); // fn_8077BAA0 - returns 0
+	virtual int V_Unk7(); // fn_8077BAA0 - returns 0
 	virtual void ReadImpl(void *, int); // fn_80354F78
 	virtual void WriteImpl(const void *, int); // fn_80355004
 	virtual void SeekImpl(int, SeekType); // fn_803550B0

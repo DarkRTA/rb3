@@ -5,7 +5,7 @@
 class RGSwingMsg : Message {
 public:
 	RGSwingMsg(int, int); // fn_8031454C
-	~RGSwingMsg(); // fn_800A7FF4
+	virtual ~RGSwingMsg(); // fn_800A7FF4
 };
 
 #endif
