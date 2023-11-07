@@ -325,14 +325,35 @@ DataNode DataInsertElem(DataArray* da){
 extern DataNode DataPrintArray(DataArray*);
 // fn_8031E744
 extern DataNode DataSize(DataArray*);
+
 // fn_8031E7D4
-extern DataNode DataRemoveElem(DataArray*);
+DataNode DataRemoveElem(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    DataNode* dn = EvaluateNodeAtIndex(da, 2);
+    a->Remove(*dn);
+    return DataNode(0);
+}
+
 // fn_8031E83C
-extern DataNode DataResize(DataArray*);
+DataNode DataResize(DataArray* da){
+    int i = da->GetIntAtIndex(2);
+    DataArray* a = da->GetArrayAtIndex(1);
+    a->Resize(i);
+    return DataNode(0);
+}
+
 // fn_8031E8A0
 extern DataNode DataNewArray(DataArray*);
+
 // fn_8031E9A0
-extern DataNode DataSetElem(DataArray*);
+DataNode DataSetElem(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    int i = da->GetIntAtIndex(2);
+    DataNode* dn = EvaluateNodeAtIndex(da, 3);
+    DataNode* dn2 = a->GetNodeAtIndex(i);
+    dn2->operator=(*dn);
+    return DataNode(*dn2);
+}
 
 // fn_8031EA64
 DataNode DataEval(DataArray* da){
@@ -475,9 +496,23 @@ DataNode DataStrIEq(DataArray* da){
 }
 
 // fn_8031FF7C
-extern DataNode DataPushBack(DataArray*);
+DataNode DataPushBack(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    int cnt = a->GetNodeCount();
+    a->Resize(cnt + 1);
+    DataNode* dn = EvaluateNodeAtIndex(da, 2);
+    DataNode* dn2 = a->GetNodeAtIndex(cnt);
+    dn2->operator=(*dn);
+    return DataNode(0);
+}
+
 // fn_80320004
-extern DataNode DataSort(DataArray*);
+DataNode DataSort(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    a->SortNodes();
+    return DataNode(0);
+}
+
 // fn_8031C6C4
 extern DataNode DataVar(DataArray*);
 // fn_8031B904
@@ -500,14 +535,23 @@ DataNode DataQuote(DataArray* da){
 
 // fn_8032080C
 extern DataNode DataQuasiquote(DataArray*);
+
 // fn_8032084C
-extern DataNode DataUnquote(DataArray*);
+DataNode DataUnquote(DataArray* da){
+    return DataNode(*EvaluateNodeAtIndex(da, 1));
+}
+
 // fn_8032088C
 extern DataNode DataGetDateTime(DataArray*);
 // fn_8032008C
 extern DataNode DataWith(DataArray*);
+
 // fn_80320048
-extern DataNode DataGetType(DataArray*);
+DataNode DataGetType(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    return DataNode(dn->GetType());
+}
+
 // fn_80320C20
 extern DataNode DataObjectList(DataArray*);
 // fn_80320B34
