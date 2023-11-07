@@ -80,7 +80,7 @@ FilePath::~FilePath()
 }
 
 // fn_8000ECC0
-const char* DataArray::GetStrAtIndex(int i){
+const char* DataArray::GetStrAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->Str(this);
 }

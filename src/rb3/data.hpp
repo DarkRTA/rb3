@@ -105,7 +105,8 @@ public:
 	DataNode* GetNodeAtIndex(int) const; // fn_8000DF50
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
-	const char* GetStrAtIndex(int); // fn_8000ECC0
+	const char* GetStrAtIndex(int) const; // fn_8000ECC0
+	DataArray* GetArrayAtIndex(int) const; // fn_800B27F0
 	void Print(TextStream&, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 

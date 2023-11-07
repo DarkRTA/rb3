@@ -28,10 +28,24 @@ DataNode DataSprint(DataArray* da){
 
 // fn_8031B504
 // extern DataNode DataFuncObj::New(DataArray*);
+
 // fn_8031DC40
-extern DataNode DataGetElem(DataArray*);
+DataNode DataGetElem(DataArray* da){
+    int i = da->GetIntAtIndex(2);
+    DataArray* a = da->GetArrayAtIndex(1);
+    DataNode* dn = a->GetNodeAtIndex(i);
+    return DataNode(*dn);
+}
+
 // fn_8031DCA4
-extern DataNode DataGetLastElem(DataArray*);
+DataNode DataGetLastElem(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    int c_a = a->GetNodeCount();
+    int c_da = da->GetNodeCount();
+    DataNode* dn = da->GetNodeAtIndex(c_da - 1);
+    return DataNode(*dn);
+}
+
 // fn_8031DA1C
 extern DataNode DataForEach(DataArray*);
 // fn_8031DB20
@@ -153,24 +167,72 @@ DataNode DataAnd(DataArray* da){
 
 // fn_8031BF9C
 extern DataNode DataOr(DataArray*);
+DataNode DataOr(DataArray* da){
+    for(int i = 1; i < da->GetNodeCount(); i++){
+        DataNode* dn = da->GetNodeAtIndex(i);
+        if(dn->NotNull()) return DataNode(1);
+    }
+    return DataNode(0);
+}
+
 // fn_8031C020
-extern DataNode DataXor(DataArray*);
+DataNode DataXor(DataArray* da){
+    return DataNode(da->GetNodeAtIndex(1)->NotNull() !=
+        da->GetNodeAtIndex(2)->NotNull());
+}
+
 // fn_8031C08C
-extern DataNode DataBitAnd(DataArray*);
+DataNode DataBitAnd(DataArray* da){
+    int res = da->GetIntAtIndex(1);
+    for(int i = 2; i < da->GetNodeCount(); i++){
+        res &= da->GetIntAtIndex(i);
+    }
+    return DataNode(res);
+}
+
 // fn_8031C108
 extern DataNode DataAndEqual(DataArray*);
 // fn_8031C224
 extern DataNode DataMaskEqual(DataArray*);
+
 // fn_8031C45C
-extern DataNode DataBitOr(DataArray*);
+DataNode DataBitOr(DataArray* da){
+    int res = da->GetIntAtIndex(1);
+    for(int i = 2; i < da->GetNodeCount(); i++){
+        res |= da->GetIntAtIndex(i);
+    }
+    return DataNode(res);
+}
+
 // fn_8031C340
 extern DataNode DataOrEqual(DataArray*);
+
 // fn_8031C4D8
-extern DataNode DataBitXor(DataArray*);
+DataNode DataBitXor(DataArray* da){
+    return DataNode(da->GetIntAtIndex(1) ^ da->GetIntAtIndex(2));
+}
+
 // fn_8031C534
-extern DataNode DataBitNot(DataArray*);
+DataNode DataBitNot(DataArray* da){
+    return DataNode(~da->GetIntAtIndex(1));
+}
+
+extern "C" int fn_8031C5B8(int);
+
+// fn_8031C5B8
+int GetLowestBit(int i){
+    if(i == 0) return 0;
+    int j = 1;
+    while(!(j & i)) j *= 2;
+    return j;
+}
+
 // fn_8031C574
 extern DataNode DataLowestBit(DataArray*);
+DataNode DataLowestBit(DataArray* da){
+    return DataNode(GetLowestBit(da->GetIntAtIndex(1)));
+}
+
 // fn_8031C5E4
 extern DataNode DataCountBits(DataArray*);
 // fn_8031C628
@@ -191,8 +253,15 @@ extern DataNode DataLocalize(DataArray*);
 extern DataNode DataLocalizeSeparatedInt(DataArray*);
 // fn_8031DF5C
 extern DataNode DataLocalizeFloat(DataArray*);
+
 // fn_8031DFC8
-extern DataNode DataStartsWith(DataArray*);
+DataNode DataStartsWith(DataArray* da){
+    int i;
+    if(da->GetNodeCount() > 3) i = da->GetIntAtIndex(3);
+    else i = strlen(da->GetStrAtIndex(2));
+    return DataNode(!strncmp(da->GetStrAtIndex(1), da->GetStrAtIndex(2), i));
+}
+
 // fn_8031B764
 extern DataNode DataPrint(DataArray*);
 // fn_8031E06C
@@ -233,10 +302,25 @@ DataNode DataNotifyOnce(DataArray* da){
 extern DataNode DataSwitch(DataArray*);
 // fn_8031E390
 extern DataNode DataCond(DataArray*);
+
 // fn_8031E5FC
-extern DataNode DataInsertElems(DataArray*);
+DataNode DataInsertElems(DataArray* da){
+    DataArray* a3 = da->GetArrayAtIndex(3);
+    int i = da->GetIntAtIndex(2);
+    DataArray* a1 = da->GetArrayAtIndex(1);
+    a1->InsertNodes(i, a3);
+    return DataNode(0);
+}
+
 // fn_8031E674
-extern DataNode DataInsertElem(DataArray*);
+DataNode DataInsertElem(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    int i = da->GetIntAtIndex(2);
+    DataNode* dn = EvaluateNodeAtIndex(da, 3);
+    a->Insert(i, *dn);
+    return DataNode(0);
+}
+
 // fn_8031E6F0
 extern DataNode DataPrintArray(DataArray*);
 // fn_8031E744
@@ -249,8 +333,13 @@ extern DataNode DataResize(DataArray*);
 extern DataNode DataNewArray(DataArray*);
 // fn_8031E9A0
 extern DataNode DataSetElem(DataArray*);
+
 // fn_8031EA64
-extern DataNode DataEval(DataArray*);
+DataNode DataEval(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    return DataNode(*dn->Evaluate());
+}
+
 // fn_8031EAA8
 extern DataNode DataReverseInterp(DataArray*);
 // fn_8031EB78
@@ -307,7 +396,15 @@ DataNode DataHasSubStr(DataArray* da){
 }
 
 // fn_8031F90C
-extern DataNode DataHasAnySubStr(DataArray*);
+DataNode DataHasAnySubStr(DataArray* da){
+    DataArray* arr = da->GetArrayAtIndex(2);
+    for(int i = 0; i < arr->GetNodeCount(); i++){
+        if(strstr(da->GetStrAtIndex(1), arr->GetStrAtIndex(i))){
+            return DataNode(1);
+        }
+    }
+    return DataNode(0);
+}
 
 // fn_8031F9B4
 DataNode DataFindSubStr(DataArray* da){
@@ -320,12 +417,34 @@ DataNode DataStrlen(DataArray* da){
     return DataNode(strlen(da->GetStrAtIndex(1)));
 }
 
+extern char lbl_808E5860;
 // fn_8031FDC4
-extern DataNode DataStrElem(DataArray*);
+DataNode DataStrElem(DataArray* da){
+    Symbol s(&lbl_808E5860);
+    int i = da->GetIntAtIndex(2);
+    const char* c = da->GetStrAtIndex(1);
+    return DataNode(s);
+}
+
+extern "C" DataNode* fn_800E7878(DataArray*, int);
+
 // fn_8031FED0
-extern DataNode DataSearchReplace(DataArray*);
+DataNode DataSearchReplace(DataArray* da){
+    char* str;
+    bool changed = SearchReplace(da->GetStrAtIndex(1), da->GetStrAtIndex(2), da->GetStrAtIndex(3), str);
+    DataNode dn(str);
+    DataNode* asdf = fn_800E7878(da, 4);
+    return DataNode(changed);
+}
+
 // fn_8031FA30
-extern DataNode DataSubStr(DataArray*);
+DataNode DataSubStr(DataArray* da){
+    String str(da->GetStrAtIndex(1));
+    int i = da->GetIntAtIndex(2);
+    int j = da->GetIntAtIndex(3);
+    return DataNode(str.substr(i, j));
+}
+
 // fn_8031FAD0
 extern DataNode DataStrCat(DataArray*);
 // fn_8031FBAC
@@ -373,8 +492,12 @@ extern DataNode OnSetThis(DataArray*);
 extern DataNode DataMacroElem(DataArray*);
 // fn_8032024C
 extern DataNode DataMergeDirs(DataArray*);
+
 // fn_8031EA24
-extern DataNode DataQuote(DataArray*);
+DataNode DataQuote(DataArray* da){
+    return DataNode(*da->GetNodeAtIndex(1));
+}
+
 // fn_8032080C
 extern DataNode DataQuasiquote(DataArray*);
 // fn_8032084C

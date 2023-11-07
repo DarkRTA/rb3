@@ -14,6 +14,7 @@ DataNode* EvaluateNodeAtIndex(DataArray*, int);
 // misc functions
 int Minimum(int, int);
 unsigned int Minimum(unsigned int, unsigned int);
+bool SearchReplace(const char*, const char*, const char*, char*);
 
 // functions to swap endians of data
 void SwapData(const void*, void*, int);

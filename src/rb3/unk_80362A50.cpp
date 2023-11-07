@@ -2,6 +2,7 @@
 #include "textstream.hpp"
 #include "unknown.hpp"
 #include "std/string.h"
+#include "common.hpp"
 
 // fn_80362A50
 // searches for occurrences of substring substr_old within string src, and replaces each occurrence with substr_new.
