@@ -90,12 +90,23 @@ extern DataNode DataSymbol(DataArray*);
 extern DataNode DataInt(DataArray*);
 // fn_8031D6A8
 extern DataNode DataChar(DataArray*);
+
 // fn_8031D7C4
-extern DataNode DataRound(DataArray*);
+DataNode DataRound(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    return DataNode(Round(dn->LiteralFloat(nullptr)));
+}
+
 // fn_8031D810
-extern DataNode DataFloor(DataArray*);
+DataNode DataFloor(DataArray* da){
+    return DataNode(FloorThunk(da->GetFloatAtIndex(1)));
+}
+
 // fn_8031D850
-extern DataNode DataCeil(DataArray*);
+DataNode DataCeil(DataArray* da){
+    return DataNode(CeilThunk(da->GetFloatAtIndex(1)));
+}
+
 // fn_8031B86C
 extern DataNode DataSet(DataArray*);
 
@@ -120,7 +131,6 @@ bool DataNodeIsNull(DataNode* dn){
 }
 
 // fn_8031BB68
-extern DataNode DataEq(DataArray*);
 DataNode DataEq(DataArray* da){
     DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
     DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
@@ -166,7 +176,6 @@ DataNode DataAnd(DataArray* da){
 }
 
 // fn_8031BF9C
-extern DataNode DataOr(DataArray*);
 DataNode DataOr(DataArray* da){
     for(int i = 1; i < da->GetNodeCount(); i++){
         DataNode* dn = da->GetNodeAtIndex(i);
@@ -322,7 +331,14 @@ DataNode DataInsertElem(DataArray* da){
 }
 
 // fn_8031E6F0
+extern TextStream* TheDebug;
 extern DataNode DataPrintArray(DataArray*);
+DataNode DataPrintArray(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    a->Print(*TheDebug, (DataType)0x10, false);
+    return DataNode(0);
+}
+
 // fn_8031E744
 extern DataNode DataSize(DataArray*);
 
@@ -435,7 +451,8 @@ DataNode DataFindSubStr(DataArray* da){
 
 // fn_8031FD80
 DataNode DataStrlen(DataArray* da){
-    return DataNode(strlen(da->GetStrAtIndex(1)));
+    int len = strlen(da->GetStrAtIndex(1));
+    return DataNode(len);
 }
 
 extern char lbl_808E5860;

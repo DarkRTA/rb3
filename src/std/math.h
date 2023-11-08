@@ -83,6 +83,7 @@ float sinf(float);
 float tanf(float);
 double modf(double, double*);
 float fabsf(float);
+double fabs(double);
 
 #ifdef __cplusplus
 };

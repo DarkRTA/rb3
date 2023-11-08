@@ -44,6 +44,7 @@ class DataNode {
 public:
 	DataNode(); // fn_801C7058
 	DataNode(int); // fn_8000E128
+	DataNode(float); // fn_800B30B8
 	DataNode(const DataNode&); // fn_80323178
 	DataNode(const char*); // fn_803231CC
 	DataNode(const String&); // fn_8032324C
