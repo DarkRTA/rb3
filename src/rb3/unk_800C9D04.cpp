@@ -15,16 +15,20 @@ float DataArray::GetFloatAtIndex(int i) const {
     return dn->Float(this);
 }
 
-// fn_800D81AC
-
-extern "C" float fn_800D81B0(double d);
-extern "C" double fn_800D81D4(double d);
-// fn_800D81B0
-float fn_800D81B0(double d){
-	return fn_800D81D4(d);
-}
-
 // fn_800D81D4
-double fn_800D81D4(double d){
-	return fabs(d);
+double FAbs(double d){
+	return __fabs(d);
 }
+
+#pragma dont_inline on
+// fn_800D81B0
+float FAbsFloat(double d){
+	return FAbs(d);
+}
+
+// fn_800D81AC
+float AbsThunk(double d){
+	return FAbsFloat(d);
+}
+
+#pragma dont_inline reset

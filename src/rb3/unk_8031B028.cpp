@@ -54,8 +54,17 @@ extern DataNode DataForEachInt(DataArray*);
 extern DataNode DataMin(DataArray*);
 // fn_8031CAF0
 extern DataNode DataMax(DataArray*);
+
 // fn_8031CBCC
-extern DataNode DataAbs(DataArray*);
+DataNode DataAbs(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    float f = AbsThunk(dn->LiteralFloat(da));
+    if(dn->GetType() == kDataInt){
+        return DataNode((int)f);
+    }
+    else return DataNode(f);
+}
+
 // fn_8031CC5C
 extern DataNode DataAdd(DataArray*);
 // fn_8031CD70
@@ -425,7 +434,11 @@ DataNode DataBasename(DataArray* da){
 }
 
 // fn_8031F808
-extern DataNode DataDirname(DataArray*);
+DataNode DataDirname(DataArray* da){
+    String s(FileGetPath((char*)da->GetStrAtIndex(1), '\0'));
+    int i = s.find_last_of("/");
+    return DataNode(s[i]);
+}
 
 // fn_8031F8A8
 DataNode DataHasSubStr(DataArray* da){
@@ -485,8 +498,17 @@ DataNode DataSubStr(DataArray* da){
 
 // fn_8031FAD0
 extern DataNode DataStrCat(DataArray*);
+
 // fn_8031FBAC
-extern DataNode DataStringFlags(DataArray*);
+DataNode DataStringFlags(DataArray* da){
+    int i = da->GetIntAtIndex(1);
+    DataArray* a = da->GetArrayAtIndex(2);
+    String s('\0');
+    for(int j = 0; j < a->GetNodeCount(); j++){
+        Symbol sym((char*)a->GetStrAtIndex(j));
+    }
+    return DataNode(s);
+}
 
 // fn_8031FCC0
 DataNode DataStrToLower(DataArray* da){
@@ -517,9 +539,7 @@ DataNode DataPushBack(DataArray* da){
     DataArray* a = da->GetArrayAtIndex(1);
     int cnt = a->GetNodeCount();
     a->Resize(cnt + 1);
-    DataNode* dn = EvaluateNodeAtIndex(da, 2);
-    DataNode* dn2 = a->GetNodeAtIndex(cnt);
-    dn2->operator=(*dn);
+    *a->GetNodeAtIndex(cnt) = *EvaluateNodeAtIndex(da, 2);
     return DataNode(0);
 }
 

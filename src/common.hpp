@@ -26,5 +26,6 @@ long long SwapDataDoubleWord(long long);
 // thunks
 float FloorThunk(double);
 float CeilThunk(double);
+float AbsThunk(double);
 
 #endif
