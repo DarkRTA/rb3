@@ -98,8 +98,11 @@ rb3/unk_8022BE84.cpp:
 rb3/unk_802A5E04.cpp:
 	.text       start:0x802A5E04 end:0x802AC67C
 
+rb3/interpolators.cpp:
+	.text       start:0x802DCEDC end:0x802DD9A4
+
 rb3/unk_802DCEDC.cpp:
-	.text       start:0x802DCEDC end:0x802DDE24
+	.text       start:0x802DD9A4 end:0x802DDE24
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
