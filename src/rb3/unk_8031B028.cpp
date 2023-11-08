@@ -69,22 +69,65 @@ DataNode DataAbs(DataArray* da){
 extern DataNode DataAdd(DataArray*);
 // fn_8031CD70
 extern DataNode DataAddEq(DataArray*);
+
 // fn_8031CDF4
-extern DataNode DataSub(DataArray*);
+DataNode DataSub(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    if(da->GetNodeCount() == 2){
+        if(dn->GetType() == kDataFloat){
+            return DataNode(-dn->LiteralFloat(da));
+        }
+        else return DataNode(-dn->LiteralInt(da));
+    }
+    else {
+        DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+        if(dn->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+            return DataNode(dn->LiteralFloat(da) - dn2->LiteralFloat(da));
+        }
+        else {
+            return DataNode(dn->LiteralInt(da) - dn2->LiteralInt(da));
+        }
+    }
+}
+
 // fn_8031D0FC
 extern DataNode DataSubEq(DataArray*);
+
 // fn_8031CF24
-extern DataNode DataMean(DataArray*);
+DataNode DataMean(DataArray* da){
+    float sum = 0.0;
+    int cnt = da->GetNodeCount();
+    for(int i = 1; i < cnt; i++){
+        sum += da->GetFloatAtIndex(i);
+    }
+    return DataNode(sum / (cnt - 1));
+}
+
 // fn_8031CFD0
 extern DataNode DataClamp(DataArray*);
 // fn_8031D180
 extern DataNode DataClampEq(DataArray*);
+
 // fn_8031D204
-extern DataNode DataMultiply(DataArray*);
+DataNode DataMultiply(DataArray* da){
+    DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+    DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+    if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+        return DataNode(dn1->LiteralFloat(da) * dn2->LiteralFloat(da));
+    }
+    else {
+        return DataNode(dn1->LiteralInt(da) * dn2->LiteralInt(da));
+    }
+}
+
 // fn_8031D2DC
 extern DataNode DataMultiplyEq(DataArray*);
+
 // fn_8031D360
-extern DataNode DataDivide(DataArray*);
+DataNode DataDivide(DataArray* da){
+    return DataNode(da->GetFloatAtIndex(1) / da->GetFloatAtIndex(2));
+}
+
 // fn_8031D3CC
 extern DataNode DataDivideEq(DataArray*);
 // fn_8031D450
@@ -323,10 +366,7 @@ extern DataNode DataCond(DataArray*);
 
 // fn_8031E5FC
 DataNode DataInsertElems(DataArray* da){
-    DataArray* a3 = da->GetArrayAtIndex(3);
-    int i = da->GetIntAtIndex(2);
-    DataArray* a1 = da->GetArrayAtIndex(1);
-    a1->InsertNodes(i, a3);
+    da->GetArrayAtIndex(1)->InsertNodes(da->GetIntAtIndex(2), da->GetArrayAtIndex(3));
     return DataNode(0);
 }
 
