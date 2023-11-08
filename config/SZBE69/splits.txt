@@ -83,6 +83,9 @@ rb3/unk_800DB160.cpp:
 rb3/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4
 
+rb3/unk_8011AED8.cpp:
+	.text       start:0x8011AED8 end:0x80159E30
+
 rb3/unk_801660DC.cpp:
 	.text       start:0x801660DC end:0x80184CA0
 

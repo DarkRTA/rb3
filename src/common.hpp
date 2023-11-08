@@ -27,5 +27,8 @@ long long SwapDataDoubleWord(long long);
 float FloorThunk(double);
 float CeilThunk(double);
 float AbsThunk(double);
+float PowThunk(double, double);
+float ATanThunk(double);
+float PowFloat(double, double);
 
 #endif
