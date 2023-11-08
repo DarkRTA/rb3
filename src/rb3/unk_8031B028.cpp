@@ -40,10 +40,8 @@ DataNode DataGetElem(DataArray* da){
 // fn_8031DCA4
 DataNode DataGetLastElem(DataArray* da){
     DataArray* a = da->GetArrayAtIndex(1);
-    int c_a = a->GetNodeCount();
-    int c_da = da->GetNodeCount();
-    DataNode* dn = da->GetNodeAtIndex(c_da - 1);
-    return DataNode(*dn);
+    int b = a->GetNodeCount();
+    return DataNode(*a->GetNodeAtIndex(a->GetNodeCount() - 1));
 }
 
 // fn_8031DA1C
@@ -66,7 +64,20 @@ DataNode DataAbs(DataArray* da){
 }
 
 // fn_8031CC5C
-extern DataNode DataAdd(DataArray*);
+DataNode DataAdd(DataArray* da){
+    float sum_f = 0.0;
+    int sum_int = 0;
+    for(int i = 1; i < da->GetNodeCount(); i++){
+        DataNode* dn = EvaluateNodeAtIndex(da, i);
+        if(dn->GetType() == kDataInt){
+            sum_int += dn->GetIntVal();
+        }
+        else {
+            sum_f += dn->LiteralFloat(da);
+        }
+    }
+}
+
 // fn_8031CD70
 extern DataNode DataAddEq(DataArray*);
 
@@ -140,8 +151,15 @@ extern DataNode DataDist(DataArray*);
 extern DataNode DataSymbol(DataArray*);
 // fn_8031D700
 extern DataNode DataInt(DataArray*);
+
+extern char lbl_808E4478[2];
 // fn_8031D6A8
-extern DataNode DataChar(DataArray*);
+DataNode DataChar(DataArray* da){
+    DataNode* dn = EvaluateNodeAtIndex(da, 1);
+    lbl_808E4478[0] = dn->Int(nullptr);
+    lbl_808E4478[1] = 0;
+    return DataNode(lbl_808E4478);
+}
 
 // fn_8031D7C4
 DataNode DataRound(DataArray* da){
@@ -190,7 +208,10 @@ DataNode DataEq(DataArray* da){
 }
 
 // fn_8031BCC8
-extern DataNode DataNe(DataArray*);
+DataNode DataNe(DataArray* da){
+    DataNode dn = DataEq(da);
+    return DataNode(dn.GetIntVal() == 0);
+}
 
 // fn_8031BD1C
 DataNode DataLe(DataArray* da){
@@ -327,16 +348,46 @@ DataNode DataStartsWith(DataArray* da){
 extern DataNode DataPrint(DataArray*);
 // fn_8031E06C
 extern DataNode DataTime(DataArray*);
+
+extern int RandomInt(int, int);
 // fn_8031E170
-extern DataNode DataRandomInt(DataArray*);
+DataNode DataRandomInt(DataArray* da){
+    return DataNode(RandomInt(da->GetIntAtIndex(1), da->GetIntAtIndex(2)));
+}
+
+extern float RandomFloat();
+extern float RandomFloat(float, float);
 // fn_8031E1D4
-extern DataNode DataRandomFloat(DataArray*);
+DataNode DataRandomFloat(DataArray* da){
+    if(da->GetNodeCount() > 1){
+        return DataNode(RandomFloat(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2)));
+    }
+    else return DataNode(RandomFloat());
+}
+
 // fn_8031E25C
-extern DataNode DataRandomElem(DataArray*);
+DataNode DataRandomElem(DataArray* da){
+    DataArray* a = da->GetArrayAtIndex(1);
+    int b = a->GetNodeCount();
+    int c_a = a->GetNodeCount();
+    DataNode* dn = a->GetNodeAtIndex(RandomInt(0, c_a));
+    return DataNode(*dn);
+}
+
 // fn_8031E2CC
-extern DataNode DataRandom(DataArray*);
+DataNode DataRandom(DataArray* da){
+    int i = da->GetNodeCount();
+    int j = RandomInt(1, i);
+    DataNode* dn = EvaluateNodeAtIndex(da, j);
+    return DataNode(*dn);
+}
+
+extern void SeedRand(int);
 // fn_8031E32C
-extern DataNode DataRandomSeed(DataArray*);
+DataNode DataRandomSeed(DataArray* da){
+    SeedRand(da->GetIntAtIndex(1));
+    return DataNode(0);
+}
 
 // fn_8031E370
 DataNode DataNotify(DataArray* da){
@@ -635,10 +686,16 @@ extern DataNode DataObjectList(DataArray*);
 extern DataNode DataFileList(DataArray*);
 // fn_80320BD8
 extern DataNode DataFileListPaths(DataArray*);
+
 // fn_80320CCC
-extern DataNode DataDisableNotify(DataArray*);
+DataNode DataDisableNotify(DataArray* da){
+    return DataNode(0);
+}
+
 // fn_80320CD4
-extern DataNode DataFilterNotify(DataArray*);
+DataNode DataFilterNotify(DataArray* da){
+    return DataNode(0);
+}
 
 // fn_80320CDC
 void DataInitFuncs(){
