@@ -54,8 +54,8 @@ void ExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5){
     unkc = f3;
     unk10 = f4;
     unk8 = f2;
-    if(AbsThunk(f0) < (float)0.000001) unk1c = (float)1.0;
-    else unk1c = (float)1.0 / f0;
+    if(AbsThunk(f0) < 0.000001f) unk1c = 1.0f;
+    else unk1c = 1.0f / f0;
     unk14 = f5;
     unk18 = f2 - f1;
 }
@@ -95,8 +95,8 @@ void InvExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5)
     unkc = f3;
     unk10 = f4;
     unk8 = f2;
-    if(AbsThunk(f0) < (float)0.000001) unk1c = (float)1.0;
-    else unk1c = (float)1.0 / f0;
+    if(AbsThunk(f0) < 0.000001f) unk1c = 1.0f;
+    else unk1c = 1.0f / f0;
     unk14 = f5;
     unk18 = f2 - f1;
 }
@@ -113,13 +113,13 @@ void InvExpInterpolator::Reset(const DataArray* da){
 
 // fn_802DD5B8
 double InvExpInterpolator::Eval(float f){
-    float pow_res = PowThunk(-(unk1c * (f - unkc) - (float)1.0), unk14);
-    return ((float)1.0 - pow_res) * unk18 + unk4;
+    float pow_res = PowThunk(-(unk1c * (f - unkc) - 1.0f), unk14);
+    return (1.0f - pow_res) * unk18 + unk4;
 }
 
 // fn_802DD61C
 ATanInterpolator::ATanInterpolator(float f1, float f2, float f3, float f4, float f5) :
-    unk14((float)0.0, (float)0.0, (float)0.0, (float)0.0){
+    unk14(0.0f, 0.0f, 0.0f, 0.0f){
         Reset(f1, f2, f3, f4, f5);
 }
 
@@ -142,14 +142,15 @@ float ATanThunk(double d){
 
 // fn_802DD738
 void ATanInterpolator::Reset(float f1, float f2, float f3, float f4, float f5){
-    unk14.Reset(-f5, f5, f3, f4);
+    float f31 = -f5;
+    unk14.Reset(f31, f5, f3, f4);
     unkc = f3;
     unk10 = f4;
     unk4 = f1;
     unk8 = f2;
-    float ftan = ATanThunk(f5);
+    float ftan = ATanThunk(f31);
     unk30 = (f2 - f1) / (-ftan - ftan);
-    unk34 = (float)0.5 * (f2 - f1) + f1;
+    unk34 = 0.5f * (f2 - f1) + f1;
     unk38 = f5;
 }
 
@@ -159,11 +160,13 @@ void ATanInterpolator::Reset(const DataArray* da){
     if(da->GetNodeCount() > 5){
         f5 = da->GetFloatAtIndex(5);
     }
-    else f5 = (float)10.0;
+    else f5 = 10.0f;
     Reset(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3), da->GetFloatAtIndex(4), f5);
 }
 
 // fn_802DD944
 double ATanInterpolator::Eval(float f){
-    return (ATanThunk(unk14.Eval(f)) * unk30) + unk34;
+    float ret= ATanThunk(unk14.Eval(f));
+    ret *= unk30;
+    return ret + unk34;
 }

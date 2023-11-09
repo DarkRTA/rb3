@@ -487,8 +487,11 @@ extern DataNode DataInc(DataArray*);
 extern DataNode DataDec(DataArray*);
 // fn_8031F1D0
 extern DataNode DataRun(DataArray*);
+
 // fn_8031F27C
 extern DataNode OnReadFile(DataArray*);
+
+
 // fn_8031F30C
 extern DataNode OnWriteFile(DataArray*);
 // fn_8031F374
