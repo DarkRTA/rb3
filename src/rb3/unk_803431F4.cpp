@@ -91,8 +91,12 @@ BufStreamNAND::~BufStreamNAND()
 
 #pragma dont_inline on
 // fn_80344350
-CacheID::CacheID(){}
+CacheID::CacheID()
+{
+}
 #pragma dont_inline reset
 
 // fn_803442FC
-CacheIDWii::CacheIDWii(){}
+CacheIDWii::CacheIDWii()
+{
+}

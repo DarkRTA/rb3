@@ -450,7 +450,7 @@ String *String::replace(unsigned int start, String *str)
 	return replace(start, 0, str->c_str());
 }
 
-extern void fn_801CEDFC(UnknownJsonConverterMember*, String*);
+extern void fn_801CEDFC(UnknownJsonConverterMember *, String *);
 
 void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem)
 {

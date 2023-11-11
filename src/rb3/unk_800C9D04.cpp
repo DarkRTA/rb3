@@ -10,24 +10,28 @@ int Minimum(int x, int y)
 }
 
 // fn_800D7964
-float DataArray::GetFloatAtIndex(int i) const {
-	DataNode* dn = GetNodeAtIndex(i);
-    return dn->Float(this);
+float DataArray::GetFloatAtIndex(int i) const
+{
+	DataNode *dn = GetNodeAtIndex(i);
+	return dn->Float(this);
 }
 
 // fn_800D81D4
-double FAbs(double d){
+double FAbs(double d)
+{
 	return __fabs(d);
 }
 
 #pragma dont_inline on
 // fn_800D81B0
-float FAbsFloat(double d){
+float FAbsFloat(double d)
+{
 	return FAbs(d);
 }
 
 // fn_800D81AC
-float AbsThunk(double d){
+float AbsThunk(double d)
+{
 	return FAbsFloat(d);
 }
 

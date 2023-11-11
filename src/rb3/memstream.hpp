@@ -13,7 +13,7 @@ public:
 	virtual int Tell(); // fn_800BB518
 	virtual bool Eof(); // fn_802CCBB8
 	virtual bool Fail(); // fn_800A7DE8
-	
+
 	virtual int V_Unk6(); // fn_8077BAA0 - returns 0
 	virtual int V_Unk7(); // fn_8077BAA0 - returns 0
 	virtual void ReadImpl(void *, int); // fn_80354F78
@@ -22,7 +22,7 @@ public:
 
 	bool failed;
 	int pos;
-	void* unk14;
+	void *unk14;
 
 	void Compact();
 };

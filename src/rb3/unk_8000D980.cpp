@@ -22,41 +22,48 @@ const char *String::c_str() const
 // generic dtor function
 
 // fn_8000DFE4
-DataNode::~DataNode(){
-	if((type & 0x10) != 0){
+DataNode::~DataNode()
+{
+	if ((type & 0x10) != 0) {
 		value.dataArray->DecRefCount();
 	}
 }
 
-extern DataArray* fn_8035CF9C(int, int, int);
-extern "C" DataNode* fn_8000DF50(DataArray*, int);
+extern DataArray *fn_8035CF9C(int, int, int);
+extern "C" DataNode *fn_8000DF50(DataArray *, int);
 
 #pragma dont_inline on
 // fn_8000DF50
-DataNode* DataArray::GetNodeAtIndex(int i) const {
+DataNode *DataArray::GetNodeAtIndex(int i) const
+{
 	return &mNodes[i];
 }
 #pragma dont_inline reset
 
 // fn_8000E048
-Message::Message(Symbol s, const DataNode& dn1, const DataNode& dn2){
-	DataArray* da = fn_8035CF9C(0x10, 0x10, 1);
-	if(da != 0) da = new DataArray(4);
+Message::Message(Symbol s, const DataNode &dn1, const DataNode &dn2)
+{
+	DataArray *da = fn_8035CF9C(0x10, 0x10, 1);
+	if (da != 0)
+		da = new DataArray(4);
 	unk4 = da;
 
 	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
-    unk4->GetNodeAtIndex(2)->operator=(dn1);
-    unk4->GetNodeAtIndex(3)->operator=(dn2);
+	unk4->GetNodeAtIndex(2)->operator=(dn1);
+	unk4->GetNodeAtIndex(3)->operator=(dn2);
 }
 
 // fn_8000E114
-DataNode::DataNode(Symbol s){
-	type = kDataObject; // ????? it's either this or func which is *definitely* wrong
+DataNode::DataNode(Symbol s)
+{
+	type =
+		kDataObject; // ????? it's either this or func which is *definitely* wrong
 	value.strVal = s.m_string;
 }
 
 // fn_8000E128
-DataNode::DataNode(int i){
+DataNode::DataNode(int i)
+{
 	value.intVal = i;
 	type = kDataInt;
 }
@@ -80,8 +87,9 @@ FilePath::~FilePath()
 }
 
 // fn_8000ECC0
-const char* DataArray::GetStrAtIndex(int i) const {
-	DataNode* dn = GetNodeAtIndex(i);
+const char *DataArray::GetStrAtIndex(int i) const
+{
+	DataNode *dn = GetNodeAtIndex(i);
 	return dn->Str(this);
 }
 
@@ -115,8 +123,10 @@ Message::~Message()
 }
 
 // fn_800DFC4
-void DataArray::DecRefCount(){
-	if(--mRefCount == 0) delete this;
+void DataArray::DecRefCount()
+{
+	if (--mRefCount == 0)
+		delete this;
 }
 
 // // fn_8000DF3C
@@ -126,6 +136,7 @@ void DataArray::DecRefCount(){
 // }
 
 // fn_8000DF3C
-json_object* JsonObject::GetJsonObjectStruct(){
+json_object *JsonObject::GetJsonObjectStruct()
+{
 	return json_object_struct;
 }

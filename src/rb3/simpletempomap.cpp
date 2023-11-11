@@ -1,7 +1,8 @@
 #include "simpletempomap.hpp"
 
 // fn_8037A49C
-SimpleTempoMap::SimpleTempoMap(float f){
+SimpleTempoMap::SimpleTempoMap(float f)
+{
 	ms_per_tick = f / 480.0f;
 }
 

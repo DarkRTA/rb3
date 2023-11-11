@@ -11,7 +11,7 @@ const char *BinStream::Name() const
 }
 
 // fn_80342AD8
-BinStream& BinStream::operator<<(const char *c)
+BinStream &BinStream::operator<<(const char *c)
 {
 	unsigned int size = strlen(c);
 	*this << size;
@@ -20,7 +20,7 @@ BinStream& BinStream::operator<<(const char *c)
 }
 
 // fn_80342B38
-BinStream& BinStream::operator<<(const Symbol &s)
+BinStream &BinStream::operator<<(const Symbol &s)
 {
 	char *str = s.m_string;
 	unsigned int size = strlen(str);
@@ -30,7 +30,7 @@ BinStream& BinStream::operator<<(const Symbol &s)
 }
 
 // fn_80342B98
-BinStream& BinStream::operator<<(const String &str)
+BinStream &BinStream::operator<<(const String &str)
 {
 	unsigned int size = str.length();
 	*this << size;
@@ -50,7 +50,7 @@ void BinStream::ReadString(char *c, int i)
 #pragma dont_inline reset
 
 // fn_80342C58
-BinStream& BinStream::operator>>(Symbol &s)
+BinStream &BinStream::operator>>(Symbol &s)
 {
 	char why[0x200];
 	ReadString(why, 0x200);
@@ -59,7 +59,7 @@ BinStream& BinStream::operator>>(Symbol &s)
 }
 
 // fn_80342CB4
-BinStream& BinStream::operator>>(String &s)
+BinStream &BinStream::operator>>(String &s)
 {
 	unsigned int a;
 	*this >> a;
@@ -70,7 +70,9 @@ BinStream& BinStream::operator>>(String &s)
 
 // fn_80342D18
 // BinStream's ctor
-BinStream::BinStream(bool b) : unk04(b), unk08(0) { }
+BinStream::BinStream(bool b) : unk04(b), unk08(0)
+{
+}
 
 // fn_80342D34
 // BinStream's dtor
@@ -164,24 +166,26 @@ void BinStream::ReadEndian(void *v, int i)
 }
 
 // fn_80343114
-void SwapData(const void* v1, void* v2, int num_bytes){
-	switch(num_bytes){
-		case 2:
-			unsigned short* s1 = (unsigned short*)v1;
-			short* s2 = (short*)v2;
-			*s2 = SwapDataHalfWord(*s1); 
-			break;
-		case 4:
-			int* i1 = (int*)v1;
-			int* i2 = (int*)v2;
-			*i2 = SwapDataWord(*i1); 
-			break;
-		case 8: 
-			long long* l1 = (long long*)v1;
-			long long* l2 = (long long*)v2;
-			*l2 = SwapDataDoubleWord(*l1);
-			break;
-		default: break;
+void SwapData(const void *v1, void *v2, int num_bytes)
+{
+	switch (num_bytes) {
+	case 2:
+		unsigned short *s1 = (unsigned short *)v1;
+		short *s2 = (short *)v2;
+		*s2 = SwapDataHalfWord(*s1);
+		break;
+	case 4:
+		int *i1 = (int *)v1;
+		int *i2 = (int *)v2;
+		*i2 = SwapDataWord(*i1);
+		break;
+	case 8:
+		long long *l1 = (long long *)v1;
+		long long *l2 = (long long *)v2;
+		*l2 = SwapDataDoubleWord(*l1);
+		break;
+	default:
+		break;
 	}
 }
 

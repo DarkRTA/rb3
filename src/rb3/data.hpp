@@ -45,9 +45,9 @@ public:
 	DataNode(); // fn_801C7058
 	DataNode(int); // fn_8000E128
 	DataNode(float); // fn_800B30B8
-	DataNode(const DataNode&); // fn_80323178
-	DataNode(const char*); // fn_803231CC
-	DataNode(const String&); // fn_8032324C
+	DataNode(const DataNode &); // fn_80323178
+	DataNode(const char *); // fn_803231CC
+	DataNode(const String &); // fn_8032324C
 	DataNode(Symbol); // fn_8000E114
 	DataNode(const void *, int);
 	DataNode(DataArray *, DataType); // fn_80323318
@@ -69,8 +69,8 @@ public:
 	bool NotNull() const; // fn_80323530
 	DataNode *operator=(const DataNode &); // fn_803235D4
 	void Print(TextStream &, bool) const; // fn_8032364C
-	void Save(BinStream&) const; // fn_80323A18
-	void Load(BinStream&); // fn_80323B64
+	void Save(BinStream &) const; // fn_80323A18
+	void Load(BinStream &); // fn_80323B64
 
 	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
@@ -90,26 +90,26 @@ public:
 	int Size() const;
 	void Int(int) const;
 	void Insert(int, const DataNode &); // fn_80315CFC
-	void InsertNodes(int, const DataArray*); // fn_80315E1C
+	void InsertNodes(int, const DataArray *); // fn_80315E1C
 	void Resize(int); // fn_80315F74
 	void Remove(int); // fn_80316064
 	void Remove(const DataNode &); // fn_80316150
 	bool Contains(const DataNode &) const; // fn_80316190
 	void SortNodes(); // fn_80316E84
-	void Save(BinStream&) const; // fn_803171F8
-	void Load(BinStream&);
+	void Save(BinStream &) const; // fn_803171F8
+	void Load(BinStream &);
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
 	int GetNodeCount() const; // fn_8000FDA0
-	DataNode* GetNodeAtIndex(int) const; // fn_8000DF50
+	DataNode *GetNodeAtIndex(int) const; // fn_8000DF50
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
-	const char* GetStrAtIndex(int) const; // fn_8000ECC0
-	DataArray* GetArrayAtIndex(int) const; // fn_800B27F0
-	void Print(TextStream&, DataType, bool) const; // fn_80315A70
+	const char *GetStrAtIndex(int) const; // fn_8000ECC0
+	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
+	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 
 	DataNode *mNodes;

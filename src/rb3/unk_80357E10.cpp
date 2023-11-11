@@ -7,7 +7,9 @@
 
 #pragma dont_inline on
 // fn_8035824C
-TempoMap::TempoMap(){ }
+TempoMap::TempoMap()
+{
+}
 #pragma dont_inline reset
 
 extern void fn_803581AC(int *);

@@ -6,9 +6,9 @@
 class InvExpInterpolator : Interpolator {
 public:
 	InvExpInterpolator(float, float, float, float, float); // fn_802DD37C
-	
+
 	virtual double Eval(float); // fn_802DD5B8
-	virtual void Reset(const DataArray*); // fn_802DD4C4
+	virtual void Reset(const DataArray *); // fn_802DD4C4
 	virtual ~InvExpInterpolator(); // fn_800E0DEC
 
 	void Reset(float, float, float, float, float); // fn_802DD3F8

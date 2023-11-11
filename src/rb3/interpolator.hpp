@@ -6,7 +6,7 @@ class Interpolator {
 public:
 	Interpolator(); // fn_802DCF50
 	virtual double Eval(float) = 0;
-	virtual void Reset(const DataArray*) = 0;
+	virtual void Reset(const DataArray *) = 0;
 	virtual ~Interpolator(); // generic dtor
 };
 

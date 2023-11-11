@@ -10,7 +10,6 @@ File::File()
 	sOpenCount[0]++;
 }
 
-
 // fn_802E738C
 File::~File()
 {
@@ -31,7 +30,7 @@ int File::V_Unk15(int *a)
 	return 1;
 }
 
-extern "C" char* FileMakePath(char*, char*, char*);
+extern "C" char *FileMakePath(char *, char *, char *);
 extern int lbl_80902234;
 extern char *lbl_808517C0; // "."
 
@@ -39,7 +38,7 @@ extern char *lbl_808517C0; // "."
 ArkFile::ArkFile(const char *c, int a)
 	: unk18(0), unk1c(0), fpos(0), unk24(0), unk2c(1), fname(c)
 {
-	FileMakePath(".", (char*)c, nullptr);
+	FileMakePath(".", (char *)c, nullptr);
 	if (a & 4) {
 		unk24 = 1;
 	}

@@ -31,11 +31,11 @@ public:
 	Rand2 *unk08;
 
 	// taken from RB2
-	BinStream& operator<<(const char *);
-	BinStream& operator<<(const Symbol &);
-	BinStream& operator<<(const String &);
-	BinStream& operator>>(Symbol &);
-	BinStream& operator>>(String &);
+	BinStream &operator<<(const char *);
+	BinStream &operator<<(const Symbol &);
+	BinStream &operator<<(const String &);
+	BinStream &operator>>(Symbol &);
+	BinStream &operator>>(String &);
 
 	void WriteEndian(const void *, int);
 	void Write(const void *, int);
@@ -50,14 +50,14 @@ public:
 	void Seek(int, SeekType);
 
 	// not taken from RB2, found in the asm
-	BinStream& operator<<(unsigned int); // fn_800A7638
-	BinStream& operator>>(unsigned int&); // fn_800A77B4
-	BinStream& operator>>(unsigned char&); // fn_800A7730
-	BinStream& operator>>(bool&); // fn_800A7764
-	BinStream& operator<<(char); // fn_800A75FC
-	BinStream& operator<<(short); // fn_801CB744
-	BinStream& operator>>(short&); // fn_801CCA70
-	BinStream& operator<<(float); // fn_800B95C4
+	BinStream &operator<<(unsigned int); // fn_800A7638
+	BinStream &operator>>(unsigned int &); // fn_800A77B4
+	BinStream &operator>>(unsigned char &); // fn_800A7730
+	BinStream &operator>>(bool &); // fn_800A7764
+	BinStream &operator<<(char); // fn_800A75FC
+	BinStream &operator<<(short); // fn_801CB744
+	BinStream &operator>>(short &); // fn_801CCA70
+	BinStream &operator<<(float); // fn_800B95C4
 };
 
 #endif

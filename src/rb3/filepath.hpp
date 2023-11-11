@@ -10,7 +10,7 @@ public:
 	virtual ~FilePath(); // fn_8000EA28
 
 	void Set(const char *, const char *); // fn_8034C91C
-	FilePath* operator=(const FilePath&);
+	FilePath *operator=(const FilePath &);
 };
 
 #endif
