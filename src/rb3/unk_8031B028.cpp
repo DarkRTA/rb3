@@ -553,10 +553,23 @@ DataNode DataEval(DataArray *da)
 	return DataNode(*dn->Evaluate());
 }
 
+// fn_8031EB54
+float InverseLerp(float f1, float f2, float f3){
+	if(f2 != f1) return (f3 - f1) / (f2 - f1);
+	else return 1.0f;
+}
+
 // fn_8031EAA8
-extern DataNode DataReverseInterp(DataArray *);
+DataNode DataReverseInterp(DataArray* da){
+	float ext = InverseLerp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3));
+	return DataNode(Clamp(0.0f, 1.0f, ext));
+}
+
 // fn_8031EB78
-extern DataNode DataInterp(DataArray *);
+DataNode DataInterp(DataArray* da){
+	return DataNode(Lerp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3)));
+}
+
 // fn_8031EBFC
 extern DataNode DataInc(DataArray *);
 // fn_8031ECF8
@@ -647,9 +660,10 @@ extern char lbl_808E5860;
 // fn_8031FDC4
 DataNode DataStrElem(DataArray *da)
 {
-	Symbol s(&lbl_808E5860);
+	
 	int i = da->GetIntAtIndex(2);
 	const char *c = da->GetStrAtIndex(1);
+	Symbol s(&lbl_808E5860);
 	return DataNode(s);
 }
 

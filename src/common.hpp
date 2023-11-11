@@ -23,6 +23,8 @@ float Modulo(float, float);
 float FMod(float, float);
 float GetSqrtAsFloat(double);
 double Sqrt(double);
+float Lerp(float, float, float);
+float InverseLerp(float, float, float);
 
 // functions to swap endians of data
 void SwapData(const void*, void*, int);

@@ -51,3 +51,8 @@ float Clamp(float f1, float f2, float f3){
 float FMod(float f1, float f2){
 	return fmod(f1, f2);
 }
+
+// fn_800DED98
+float Lerp(float f1, float f2, float f3){
+	return (f3 * (f2 - f1)) + f1;
+}
