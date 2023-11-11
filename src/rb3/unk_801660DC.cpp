@@ -17,3 +17,8 @@ Message::Message(
 	unk4->GetNodeAtIndex(4)->operator=(dn3);
 	unk4->GetNodeAtIndex(5)->operator=(dn4);
 }
+
+// fn_80179984
+float GetSqrtAsFloat(double d){
+	return Sqrt(d);
+}

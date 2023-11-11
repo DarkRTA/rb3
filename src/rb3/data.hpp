@@ -12,7 +12,7 @@ union DataNodeValue {
 	float floatVal;
 	DataArray *dataArray;
 	int *object; // should be Object?
-	Symbol *symVal;
+	Symbol symVal;
 	char *strVal;
 };
 
@@ -55,9 +55,9 @@ public:
 	DataNode *Evaluate() const;
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	Symbol *Sym(const DataArray *) const; // fn_80322F54
-	Symbol *LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol *ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol Sym(const DataArray *) const; // fn_80322F54
+	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024
@@ -109,6 +109,7 @@ public:
 	float GetFloatAtIndex(int) const; // fn_800D7964
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
+	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 

@@ -155,8 +155,11 @@ DataNode DataDivide(DataArray *da)
 
 // fn_8031D3CC
 extern DataNode DataDivideEq(DataArray *);
+
 // fn_8031D450
-extern DataNode DataSqrt(DataArray *);
+DataNode DataSqrt(DataArray* da){
+	return DataNode(GetSqrtAsFloat(da->GetFloatAtIndex(1)));
+}
 
 // fn_8031D490
 DataNode DataMod(DataArray* da){
@@ -170,8 +173,13 @@ DataNode DataMod(DataArray* da){
 
 // fn_8031D56C
 extern DataNode DataDist(DataArray *);
+
 // fn_8031D664
-extern DataNode DataSymbol(DataArray *);
+DataNode DataSymbol(DataArray* da){
+	Symbol s = da->ForceSymAtIndex(1);
+	return DataNode(s);
+}
+
 // fn_8031D700
 extern DataNode DataInt(DataArray *);
 
