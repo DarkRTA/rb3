@@ -38,3 +38,9 @@ DataArray* DataArray::GetArrayAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->Array(this);
 }
+
+// fn_800B30B8
+DataNode::DataNode(float f){
+	value.floatVal = f;
+	type = kDataFloat;
+}

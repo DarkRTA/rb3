@@ -77,8 +77,14 @@ rb3/unk_800C9D04.cpp:
 rb3/netstream.cpp:
 	.text       start:0x800DB158 end:0x800DB160
 
+rb3/unk_800DB160.cpp:
+	.text       start:0x800DB160 end:0x800F6DE4
+
 rb3/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4
+
+rb3/unk_8011AED8.cpp:
+	.text       start:0x8011AED8 end:0x80159E30
 
 rb3/unk_801660DC.cpp:
 	.text       start:0x801660DC end:0x80184CA0
@@ -91,6 +97,13 @@ rb3/unk_8022BE84.cpp:
 
 rb3/unk_802A5E04.cpp:
 	.text       start:0x802A5E04 end:0x802AC67C
+
+rb3/interpolators.cpp:
+	.text       start:0x802DCEDC end:0x802DD9A4
+	.data       start:0x80851378 end:0x808514A8
+
+rb3/unk_802DCEDC.cpp:
+	.text       start:0x802DD9A4 end:0x802DDE24
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0

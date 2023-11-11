@@ -122,7 +122,7 @@ DataArray::~DataArray(){
     if(mNodeCount < 0) NodesFree(-mNodeCount, mNodes);
     else {
         for(int i = 0; i < mNodeCount; i++){
-            delete &mNodes[i];
+            mNodes[i].~DataNode();
         }
         NodesFree(mNodeCount * sizeof(DataNode), mNodes);
     }
