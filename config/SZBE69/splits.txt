@@ -95,6 +95,9 @@ rb3/unk_80188850.cpp:
 rb3/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8024729C
 
+rb3/unk_80252B98.cpp:
+	.text       start:0x80252B98 end:0x80266360
+
 rb3/unk_802A5E04.cpp:
 	.text       start:0x802A5E04 end:0x802AC67C
 

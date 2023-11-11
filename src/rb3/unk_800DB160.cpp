@@ -46,3 +46,8 @@ float Clamp(float f1, float f2, float f3){
     if(!(f3 < f1)) return f3;
     return f1;
 }
+
+// fn_800E6BE4
+float FMod(float f1, float f2){
+	return fmod(f1, f2);
+}

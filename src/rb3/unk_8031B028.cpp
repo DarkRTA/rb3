@@ -157,8 +157,17 @@ DataNode DataDivide(DataArray *da)
 extern DataNode DataDivideEq(DataArray *);
 // fn_8031D450
 extern DataNode DataSqrt(DataArray *);
+
 // fn_8031D490
-extern DataNode DataMod(DataArray *);
+DataNode DataMod(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+		return DataNode(Modulo(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+	}
+	else return DataNode(Modulo(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+}
+
 // fn_8031D56C
 extern DataNode DataDist(DataArray *);
 // fn_8031D664

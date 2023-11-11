@@ -18,6 +18,9 @@ bool SearchReplace(const char*, const char*, const char*, char*);
 int Round(float);
 float Clamp(float, float, float);
 int Clamp(int, int, int);
+int Modulo(int, int);
+float Modulo(float, float);
+float FMod(float, float);
 
 // functions to swap endians of data
 void SwapData(const void*, void*, int);
