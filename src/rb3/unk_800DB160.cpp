@@ -39,3 +39,10 @@ int Round(float f)
 		return (int)(f - (float)0.5);
 	}
 }
+
+// fn_800E2610
+float Clamp(float f1, float f2, float f3){
+	if(f3 > f2) return f2;
+    if(!(f3 < f1)) return f3;
+    return f1;
+}

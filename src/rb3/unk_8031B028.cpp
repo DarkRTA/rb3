@@ -119,7 +119,16 @@ DataNode DataMean(DataArray *da)
 }
 
 // fn_8031CFD0
-extern DataNode DataClamp(DataArray *);
+DataNode DataClamp(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	DataNode* dn3 = EvaluateNodeAtIndex(da, 3);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat || dn3->GetType() == kDataFloat){
+		return DataNode(Clamp(dn1->LiteralFloat(da), dn2->LiteralFloat(da), dn3->LiteralFloat(da)));
+	}
+	else return DataNode(Clamp(dn1->LiteralInt(da), dn2->LiteralInt(da), dn3->LiteralInt(da)));
+}
+
 // fn_8031D180
 extern DataNode DataClampEq(DataArray *);
 

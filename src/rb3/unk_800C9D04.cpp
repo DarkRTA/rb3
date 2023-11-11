@@ -36,3 +36,10 @@ float AbsThunk(double d)
 }
 
 #pragma dont_inline reset
+
+// fn_800D4728
+int Clamp(int i1, int i2, int i3){
+	if(i3 > i2) return i2;
+    if(!(i3 < i1)) return i3;
+    return i1;
+}
