@@ -61,10 +61,28 @@ DataNode DataASin(DataArray* da){
     else return DataNode(0.0f);
 }
 
+// fn_802E3290
+float ACosThunk(double d){
+    return ACosFloat(d);
+}
+
 // fn_802E3214
-extern DataNode DataACos(DataArray*);
+DataNode DataACos(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ACosThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
+
 // fn_802E3294
-extern DataNode DataATan(DataArray*);
+DataNode DataATan(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ATanThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
 
 // fn_802E3310
 void DataInitTrigFuncs(){

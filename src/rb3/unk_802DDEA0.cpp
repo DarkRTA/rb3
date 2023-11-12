@@ -5,3 +5,8 @@
 float ASinFloat(double d){
     return asin(d);
 }
+
+// fn_802DEEF8
+float ACosFloat(double d){
+    return acos(d);
+}

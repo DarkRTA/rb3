@@ -44,5 +44,7 @@ float CosThunk(double);
 float TanThunk(double);
 float ASinThunk(double);
 float ASinFloat(double);
+float ACosThunk(double);
+float ACosFloat(double);
 
 #endif
