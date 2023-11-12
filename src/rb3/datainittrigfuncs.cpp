@@ -1,0 +1,95 @@
+#include "data.hpp"
+#include "symbol.hpp"
+#include "common.hpp"
+#include "std/math.h"
+
+extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+
+// fn_802E30B0
+float DegreesToRadians(float deg){
+    return 0.017453292f * deg;
+}
+
+// fn_802E306C
+DataNode DataSin(DataArray* da){
+    return DataNode(SinThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+}
+
+// fn_802E30C0
+DataNode DataCos(DataArray* da){
+    return DataNode(CosThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+}
+
+// fn_802E314C
+float TanFloat(double d){
+    return tan(d);
+}
+
+#pragma dont_inline on
+// fn_802E3148
+float TanThunk(double d){
+    return TanFloat(d);
+}
+#pragma dont_inline reset
+
+// fn_802E3104
+DataNode DataTan(DataArray* da){
+    return DataNode(TanThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+}
+
+// fn_802E3200
+bool IsNan(float f){
+    return (f == f) ? false : true;
+}
+
+// fn_802E31EC
+float RadiansToDegrees(float rad){
+    return 57.295776f * rad;
+}
+
+// fn_802E31FC
+float ASinThunk(double d){
+    return ASinFloat(d);
+}
+
+// fn_802E3170
+DataNode DataASin(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ASinThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
+
+// fn_802E3290
+float ACosThunk(double d){
+    return ACosFloat(d);
+}
+
+// fn_802E3214
+DataNode DataACos(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ACosThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
+
+// fn_802E3294
+DataNode DataATan(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ATanThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
+
+// fn_802E3310
+void DataInitTrigFuncs(){
+    DataRegisterFunc(Symbol("sin"), DataSin);
+    DataRegisterFunc(Symbol("cos"), DataCos);
+    DataRegisterFunc(Symbol("tan"), DataTan);
+    DataRegisterFunc(Symbol("asin"), DataASin);
+    DataRegisterFunc(Symbol("acos"), DataACos);
+    DataRegisterFunc(Symbol("atan"), DataATan);
+}
