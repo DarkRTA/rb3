@@ -3,7 +3,7 @@
 #include "common.hpp"
 #include "std/math.h"
 
-extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 // fn_802E30B0
 float DegreesToRadians(float deg){

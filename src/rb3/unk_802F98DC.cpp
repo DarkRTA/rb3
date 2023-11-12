@@ -216,7 +216,7 @@ DataNode *EvaluateNodeAtIndex(DataArray *da, int i)
 // fn_802F9C78
 DataNode OnSynchProc(DataArray *da)
 {
-	return DataNode();
+	return DataNode("\0");
 }
 
 extern "C" void FileInit();
