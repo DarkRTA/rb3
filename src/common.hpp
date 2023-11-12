@@ -42,5 +42,7 @@ float PowFloat(double, double);
 float SinThunk(double);
 float CosThunk(double);
 float TanThunk(double);
+float ASinThunk(double);
+float ASinFloat(double);
 
 #endif

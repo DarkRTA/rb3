@@ -6,8 +6,8 @@
 extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 // fn_802E30B0
-float DegreesToRadians(float f){
-    return 0.017453292f * f;
+float DegreesToRadians(float deg){
+    return 0.017453292f * deg;
 }
 
 // fn_802E306C
@@ -37,8 +37,30 @@ DataNode DataTan(DataArray* da){
     return DataNode(TanThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
 }
 
+// fn_802E3200
+bool IsNan(float f){
+    return (f == f) ? false : true;
+}
+
+// fn_802E31EC
+float RadiansToDegrees(float rad){
+    return 57.295776f * rad;
+}
+
+// fn_802E31FC
+float ASinThunk(double d){
+    return ASinFloat(d);
+}
+
 // fn_802E3170
-extern DataNode DataASin(DataArray*);
+DataNode DataASin(DataArray* da){
+    float f = da->GetFloatAtIndex(1);
+    if(!IsNan(f)){
+        return DataNode(RadiansToDegrees(ASinThunk(f)));
+    }
+    else return DataNode(0.0f);
+}
+
 // fn_802E3214
 extern DataNode DataACos(DataArray*);
 // fn_802E3294
