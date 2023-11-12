@@ -241,6 +241,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_8011AED8.cpp"),
             Object(NonMatching, "rb3/unk_80252B98.cpp"),
             Object(NonMatching, "rb3/unk_802D4B74.cpp"),
+            Object(NonMatching, "rb3/unk_802FF088.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
             Object(NonMatching, "rb3/datainittrigfuncs.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
