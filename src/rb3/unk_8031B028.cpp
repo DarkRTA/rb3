@@ -172,7 +172,14 @@ DataNode DataMod(DataArray* da){
 }
 
 // fn_8031D56C
-extern DataNode DataDist(DataArray *);
+DataNode DataDist(DataArray* da){
+	float f6 = da->GetFloatAtIndex(6);
+	f6 = da->GetFloatAtIndex(3) - f6;
+	float f5 = da->GetFloatAtIndex(5);
+	f5 = da->GetFloatAtIndex(2) - f5;
+	float f4 = da->GetFloatAtIndex(4);
+	f4 = da->GetFloatAtIndex(1) - f4;
+}
 
 // fn_8031D664
 DataNode DataSymbol(DataArray* da){

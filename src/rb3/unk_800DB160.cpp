@@ -56,3 +56,15 @@ float FMod(float f1, float f2){
 float Lerp(float f1, float f2, float f3){
 	return (f3 * (f2 - f1)) + f1;
 }
+
+// fn_800E1E08
+float SinFloat(double d){
+	return sin(d);
+}
+
+#pragma dont_inline on
+// fn_800E1E04
+float SinThunk(double d){
+	return SinFloat(d);
+}
+#pragma dont_inline reset

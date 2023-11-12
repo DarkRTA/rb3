@@ -39,5 +39,8 @@ float AbsThunk(double);
 float PowThunk(double, double);
 float ATanThunk(double);
 float PowFloat(double, double);
+float SinThunk(double);
+float CosThunk(double);
+float TanThunk(double);
 
 #endif
