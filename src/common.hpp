@@ -25,6 +25,9 @@ float GetSqrtAsFloat(double);
 double Sqrt(double);
 float Lerp(float, float, float);
 float InverseLerp(float, float, float);
+float DegreesToRadians(float);
+float RadiansToDegrees(float);
+bool IsNan(float);
 
 // functions to swap endians of data
 void SwapData(const void*, void*, int);
@@ -42,6 +45,7 @@ float PowFloat(double, double);
 float SinThunk(double);
 float CosThunk(double);
 float TanThunk(double);
+float TanFloat(double);
 float ASinThunk(double);
 float ASinFloat(double);
 float ACosThunk(double);
