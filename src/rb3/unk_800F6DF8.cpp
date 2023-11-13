@@ -1,4 +1,5 @@
 #include "unknown.hpp"
+#include "common.hpp"
 #include "data.hpp"
 #include "symbol.hpp"
 
@@ -13,4 +14,20 @@ unsigned short SwapDataHalfWord(unsigned short s)
 Symbol DataArray::ForceSymAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->ForceSym(this);
+}
+
+// fn_80107B50
+int CountBits(int num){
+	int temp_r0;
+    int var_r3;
+    int var_r4;
+
+    var_r3 = num;
+    var_r4 = 0;
+    while (var_r3 != 0) {
+        temp_r0 = var_r3 & 1;
+        var_r3 = (int) ((unsigned int) var_r3 >> 1U);
+        var_r4 += temp_r0;
+    }
+    return var_r4;
 }

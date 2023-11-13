@@ -22,11 +22,11 @@ extern DataNode OnJoypadIsCalbertGuitar(DataArray*);
 extern "C" void fn_80301C4C();
 // fn_80301C4C
 void fn_80301C4C(){
-    DataRegisterFunc(Symbol("joypad_reset"), OnJoypadReset);
-    DataRegisterFunc(Symbol("joypad_vibrate"), OnJoypadVibrate);
-    DataRegisterFunc(Symbol("joypad_set_vibrate"), OnJoypadSetVibrate);
-    DataRegisterFunc(Symbol("joypad_controller_type_padnum"),OnJoypadControllerTypePadnum);
-    DataRegisterFunc(Symbol("joypad_is_connected_padnum"), OnJoypadIsConnectedPadnum);
-    DataRegisterFunc(Symbol("joypad_is_button_down"), OnJoypadIsButtonDown);
-    DataRegisterFunc(Symbol("joypad_is_calbert_guitar"), OnJoypadIsCalbertGuitar);
+    DataRegisterFunc("joypad_reset", OnJoypadReset);
+    DataRegisterFunc("joypad_vibrate", OnJoypadVibrate);
+    DataRegisterFunc("joypad_set_vibrate", OnJoypadSetVibrate);
+    DataRegisterFunc("joypad_controller_type_padnum", OnJoypadControllerTypePadnum);
+    DataRegisterFunc("joypad_is_connected_padnum", OnJoypadIsConnectedPadnum);
+    DataRegisterFunc("joypad_is_button_down", OnJoypadIsButtonDown);
+    DataRegisterFunc("joypad_is_calbert_guitar", OnJoypadIsCalbertGuitar);
 }

@@ -70,16 +70,23 @@ DataNode DataAbs(DataArray *da)
 // fn_8031CC5C
 DataNode DataAdd(DataArray *da)
 {
-	float sum_f = 0.0;
+	float sum_f = 0.0f;
 	int sum_int = 0;
-	for (int i = 1; i < da->GetNodeCount(); i++) {
-		DataNode *dn = EvaluateNodeAtIndex(da, i);
-		if (dn->GetType() == kDataInt) {
-			sum_int += dn->GetIntVal();
-		} else {
-			sum_f += dn->LiteralFloat(da);
-		}
-	}
+    int cnt = da->GetNodeCount();
+    int i;
+	for (i = 1; i < cnt; i++) {
+        DataNode *dn = EvaluateNodeAtIndex(da, i);
+        if (dn->GetType() != kDataInt) {
+            sum_f = sum_int + dn->LiteralFloat(da);
+            break;
+        }
+        sum_int += dn->GetIntVal();
+    }
+    if(i == cnt) return DataNode(sum_int);
+    for(i++; i < cnt; i++){
+        sum_f += da->GetFloatAtIndex(i);
+    }
+    return DataNode(sum_f);
 }
 
 // fn_8031CD70
@@ -378,7 +385,10 @@ DataNode DataLowestBit(DataArray *da)
 }
 
 // fn_8031C5E4
-extern DataNode DataCountBits(DataArray *);
+DataNode DataCountBits(DataArray* da){
+	return DataNode(CountBits(da->GetIntAtIndex(1)));
+}
+
 // fn_8031C628
 extern DataNode DataWhile(DataArray *);
 // fn_8031C904
@@ -626,9 +636,9 @@ DataNode DataBasename(DataArray *da)
 // fn_8031F808
 DataNode DataDirname(DataArray *da)
 {
-	String s(FileGetPath((char *)da->GetStrAtIndex(1), '\0'));
-	int i = s.find_last_of("/");
-	return DataNode(s[i]);
+	char* pFilepath = FileGetPath((char *)da->GetStrAtIndex(1), '\0');
+	int i = String(pFilepath).find_last_of("/");
+	return DataNode(&pFilepath[i == String::npos ? 0 : i + 1]);
 }
 
 // fn_8031F8A8
@@ -663,15 +673,13 @@ DataNode DataStrlen(DataArray *da)
 	return DataNode(len);
 }
 
-extern char lbl_808E5860;
+extern unsigned short lbl_808E5860;
 // fn_8031FDC4
 DataNode DataStrElem(DataArray *da)
 {
-	
-	int i = da->GetIntAtIndex(2);
-	const char *c = da->GetStrAtIndex(1);
-	Symbol s(&lbl_808E5860);
-	return DataNode(s);
+    unsigned short c = lbl_808E5860;
+    *(char*)&c = da->GetStrAtIndex(1)[da->GetIntAtIndex(2)];
+	return DataNode(Symbol((char*)&c));
 }
 
 extern "C" DataNode *fn_800E7878(DataArray *, int);

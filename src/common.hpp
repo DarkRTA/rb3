@@ -28,6 +28,7 @@ float InverseLerp(float, float, float);
 float DegreesToRadians(float);
 float RadiansToDegrees(float);
 bool IsNan(float);
+int CountBits(int);
 
 // functions to swap endians of data
 void SwapData(const void*, void*, int);
