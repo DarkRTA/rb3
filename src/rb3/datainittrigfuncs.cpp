@@ -86,10 +86,10 @@ DataNode DataATan(DataArray* da){
 
 // fn_802E3310
 void DataInitTrigFuncs(){
-    DataRegisterFunc(Symbol("sin"), DataSin);
-    DataRegisterFunc(Symbol("cos"), DataCos);
-    DataRegisterFunc(Symbol("tan"), DataTan);
-    DataRegisterFunc(Symbol("asin"), DataASin);
-    DataRegisterFunc(Symbol("acos"), DataACos);
-    DataRegisterFunc(Symbol("atan"), DataATan);
+    DataRegisterFunc("sin", DataSin);
+    DataRegisterFunc("cos", DataCos);
+    DataRegisterFunc("tan", DataTan);
+    DataRegisterFunc("asin", DataASin);
+    DataRegisterFunc("acos", DataACos);
+    DataRegisterFunc("atan", DataATan);
 }
