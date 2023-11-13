@@ -773,8 +773,16 @@ DataNode DataSort(DataArray *da)
 extern DataNode DataVar(DataArray *);
 // fn_8031B904
 extern DataNode DataSetVar(DataArray *);
+
 // fn_8031C710
-extern DataNode DataPackColor(DataArray *);
+DataNode DataPackColor(DataArray* da){
+    return DataNode(
+        ((int)(da->GetFloatAtIndex(3) * 255.0f) & 0xFF) << 0x10 | 
+        ((int)(da->GetFloatAtIndex(2) * 255.0f) & 0xFF) << 8  |
+        ((int)(da->GetFloatAtIndex(1) * 255.0f) & 0xFF)
+    );
+}
+
 // fn_8031C7C4
 extern DataNode DataUnpackColor(DataArray *);
 // fn_803200E8
