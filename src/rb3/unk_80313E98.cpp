@@ -333,6 +333,8 @@ bool DataArray::Contains(const DataNode &dn) const
 // fn_803161D4 - https://decomp.me/scratch/KWNxW
 // actually use this https://decomp.me/scratch/EhEOc
 
+// fn_80316258 - https://decomp.me/scratch/vREVD
+
 #pragma dont_inline on
 // fn_80317278
 BinStream &operator<<(BinStream &bs, const DataNode *dn)
@@ -415,4 +417,26 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i) {
         }
     }
     return da;
+}
+
+#pragma dont_inline on
+// fn_8031627C
+DataArray* DataArray::FindArray(Symbol s, bool b) const {
+	return FindArray(s.GetIntVal(), false);
+}
+
+// fn_803162BC
+DataArray* DataArray::FindArray(Symbol s1, Symbol s2) const {
+	return FindArray(s1, true)->FindArray(s2, true);
+}
+#pragma dont_inline reset
+
+// fn_80316300
+DataArray* DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
+	return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+}
+
+// fn_80316358
+DataArray* DataArray::FindArray(Symbol s, const char* c) const {
+	return FindArray(s, Symbol((char*)c));
 }

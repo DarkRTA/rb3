@@ -114,6 +114,12 @@ public:
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 
+	DataArray* FindArray(int, bool) const; // fn_80316258
+	DataArray* FindArray(Symbol, bool) const; // fn_8031627C
+	DataArray* FindArray(Symbol, Symbol) const; // fn_803162BC
+	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
+	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
+
 	DataNode *mNodes;
 	Symbol symbol;
 	short mNodeCount;
