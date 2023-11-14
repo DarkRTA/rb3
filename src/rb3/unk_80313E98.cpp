@@ -330,11 +330,6 @@ bool DataArray::Contains(const DataNode &dn) const
 	return false;
 }
 
-// fn_803161D4 - https://decomp.me/scratch/KWNxW
-// actually use this https://decomp.me/scratch/EhEOc
-
-// fn_80316258 - https://decomp.me/scratch/vREVD
-
 #pragma dont_inline on
 // fn_80317278
 BinStream &operator<<(BinStream &bs, const DataNode *dn)
@@ -419,6 +414,11 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i) {
     return da;
 }
 
+// fn_803161D4 - https://decomp.me/scratch/KWNxW
+// actually use this https://decomp.me/scratch/EhEOc
+
+// fn_80316258 - https://decomp.me/scratch/vREVD
+
 #pragma dont_inline on
 // fn_8031627C
 DataArray* DataArray::FindArray(Symbol s, bool b) const {
@@ -439,4 +439,24 @@ DataArray* DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
 // fn_80316358
 DataArray* DataArray::FindArray(Symbol s, const char* c) const {
 	return FindArray(s, Symbol((char*)c));
+}
+
+// fn_803163B8
+bool DataArray::FindData(Symbol s, const char*& c, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		c = arr->GetStrAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316414
+bool DataArray::FindData(Symbol s, Symbol& dest, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		dest = arr->GetSymAtIndex(1);
+		return true;
+	}
+	else return false;
 }

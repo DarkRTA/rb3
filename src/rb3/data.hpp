@@ -108,6 +108,7 @@ public:
 	DataNode *GetNodeAtIndex(int) const; // fn_8000DF50
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
+	Symbol GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	Symbol ForceSymAtIndex(int) const; // fn_80119134
@@ -119,6 +120,13 @@ public:
 	DataArray* FindArray(Symbol, Symbol) const; // fn_803162BC
 	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
 	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
+	
+	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
+	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
+	bool FindData(Symbol, String&, bool) const; // fn_8031647C
+	bool FindData(Symbol, int&, bool) const; // fn_803164D8
+	bool FindData(Symbol, float&, bool) const; // fn_80316534
+	bool FindData(Symbol, bool&, bool) const; // fn_80316590
 
 	DataNode *mNodes;
 	Symbol symbol;
