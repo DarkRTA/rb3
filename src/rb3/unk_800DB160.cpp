@@ -1,6 +1,7 @@
 #include "data.hpp"
 #include "common.hpp"
 #include "std/math.h"
+#include "vector3.hpp"
 
 // fn_800E25EC
 float Ceil(double d)
@@ -68,3 +69,23 @@ float SinThunk(double d){
 	return SinFloat(d);
 }
 #pragma dont_inline reset
+
+void Interp(const Vector3& v1, const Vector3& v2, float f, Vector3& dst){
+	if(f == 0.0f){
+		dst = v1;
+	}
+	else if(f == 1.0f){
+		dst = v2;
+	}
+    else {
+        dst.Set(Interp(v1.x, v2.x, f), Interp(v1.y, v2.y, f), Interp(v1.z, v2.z, f));
+    }
+}
+
+void Subtract(const Vector3& v1, const Vector3& v2, Vector3& dst){
+	dst.Set(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+}
+
+void Negate(const Vector3& v1, Vector3& dst){
+	dst.Set(-v1.x, -v1.y, -v1.z);
+}

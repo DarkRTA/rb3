@@ -51,3 +51,11 @@ Vector3::Vector3(float f1, float f2, float f3){
 	y = f2;
 	z = f3;
 }
+
+// fn_800D8AC8
+Vector3* Vector3::operator=(const Vector3& vec){
+	x = vec.x;
+	y = vec.y;
+	z = vec.z;
+	return this;
+}
