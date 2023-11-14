@@ -46,7 +46,7 @@ int Clamp(int i1, int i2, int i3){
 }
 
 // fn_800CB1A4
-Vector3::Vector3(float f1, float f2, float f3){
+void Vector3::Set(float f1, float f2, float f3){
 	x = f1;
 	y = f2;
 	z = f3;
@@ -58,4 +58,8 @@ Vector3* Vector3::operator=(const Vector3& vec){
 	y = vec.y;
 	z = vec.z;
 	return this;
+}
+
+void Scale(const Vector3& v1, const Vector3& v2, Vector3& dst){
+	dst.Set(v1.x * v2.x, v1.y * v2.y, v1.z * v2.z);
 }
