@@ -364,8 +364,6 @@ DataNode DataBitNot(DataArray *da)
 	return DataNode(~da->GetIntAtIndex(1));
 }
 
-extern "C" int fn_8031C5B8(int);
-
 // fn_8031C5B8
 int GetLowestBit(int i)
 {
@@ -584,7 +582,7 @@ DataNode DataReverseInterp(DataArray* da){
 
 // fn_8031EB78
 DataNode DataInterp(DataArray* da){
-	return DataNode(Lerp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3)));
+	return DataNode(Interp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3)));
 }
 
 // fn_8031EBFC

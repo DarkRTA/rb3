@@ -23,7 +23,7 @@ float Modulo(float, float);
 float FMod(float, float);
 float GetSqrtAsFloat(double);
 double Sqrt(double);
-float Lerp(float, float, float);
+float Interp(float, float, float);
 float InverseLerp(float, float, float);
 float DegreesToRadians(float);
 float RadiansToDegrees(float);
