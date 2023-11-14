@@ -460,3 +460,44 @@ bool DataArray::FindData(Symbol s, Symbol& dest, bool b) const {
 	}
 	else return false;
 }
+
+// fn_8031647C
+bool DataArray::FindData(Symbol s, String& str, bool b) const {
+	const char* c;
+	bool found = FindData(s, c, b);
+	if(found){
+		str = c;
+		return true;
+	}
+	else return false;
+}
+
+// fn_803164D8
+bool DataArray::FindData(Symbol s, int& i, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		i = arr->GetIntAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316534
+bool DataArray::FindData(Symbol s, float& f, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		f = arr->GetFloatAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316590
+bool DataArray::FindData(Symbol s, bool& dest, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		dest = arr->GetIntAtIndex(1);
+		return true;
+	}
+	else return false;
+}
