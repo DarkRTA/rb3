@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "data.hpp"
 #include "std/math.h"
+#include "vector3.hpp"
 
 // fn_800CF370
 int Minimum(int x, int y)
@@ -42,4 +43,11 @@ int Clamp(int i1, int i2, int i3){
 	if(i3 > i2) return i2;
     if(!(i3 < i1)) return i3;
     return i1;
+}
+
+// fn_800CB1A4
+Vector3::Vector3(float f1, float f2, float f3){
+	x = f1;
+	y = f2;
+	z = f3;
 }

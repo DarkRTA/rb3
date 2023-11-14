@@ -4,8 +4,9 @@
 #include "file_ops.hpp"
 #include "string.hpp"
 #include "std/string.h"
+#include "vector3.hpp"
 
-extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
@@ -180,12 +181,11 @@ DataNode DataMod(DataArray* da){
 
 // fn_8031D56C
 DataNode DataDist(DataArray* da){
-	float f6 = da->GetFloatAtIndex(6);
-	f6 = da->GetFloatAtIndex(3) - f6;
-	float f5 = da->GetFloatAtIndex(5);
-	f5 = da->GetFloatAtIndex(2) - f5;
-	float f4 = da->GetFloatAtIndex(4);
-	f4 = da->GetFloatAtIndex(1) - f4;
+	Vector3 vec(da->GetFloatAtIndex(1) - da->GetFloatAtIndex(4), 
+         da->GetFloatAtIndex(2) - da->GetFloatAtIndex(5), 
+         da->GetFloatAtIndex(3) - da->GetFloatAtIndex(6));
+    
+    return DataNode(GetSqrtAsFloat(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z));
 }
 
 // fn_8031D664

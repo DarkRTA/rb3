@@ -16,6 +16,6 @@ public:
 	void operator+=(const Vector3&);
 	void Zero();
 	bool operator==(const Vector3&) const;
-}
+};
 
 #endif
