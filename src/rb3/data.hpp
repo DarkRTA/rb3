@@ -100,6 +100,7 @@ public:
 	void Load(BinStream &);
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
+	DataArray* Clone(bool, bool, int); // fn_803169C4
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4

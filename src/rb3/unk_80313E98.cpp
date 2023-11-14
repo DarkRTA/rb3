@@ -331,6 +331,7 @@ bool DataArray::Contains(const DataNode &dn) const
 }
 
 // fn_803161D4 - https://decomp.me/scratch/KWNxW
+// actually use this https://decomp.me/scratch/EhEOc
 
 #pragma dont_inline on
 // fn_80317278
@@ -391,4 +392,27 @@ BinStream &operator<<(BinStream &bs, const DataArray *da)
 	} else
 		bs << (char)0;
 	return bs;
+}
+
+// fn_803169C4
+DataArray* DataArray::Clone(bool b1, bool b2, int i) {
+    DataArray* da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(mNodeCount + i);
+    for(int i = 0; i < mNodeCount; i++){
+        DataNode* evaluated;
+        if(b2){
+            DataNode* dn = &mNodes[i];
+            evaluated = dn->Evaluate();
+        }
+        else evaluated = &mNodes[i];
+        da->mNodes[i] = *evaluated;
+        if(b1){
+            if(da->mNodes[i].GetType() == 0x10){
+                DataArray* arr = da->mNodes[i].LiteralArray(0);
+                DataArray* cloned = arr->Clone(true, b2, 0);
+                da->mNodes[i] = DataNode(cloned, (DataType)0x10);
+                cloned->DecRefCount();
+            }
+        }
+    }
+    return da;
 }
