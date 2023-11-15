@@ -3,7 +3,7 @@
 #include "data.hpp"
 #include "std/math.h"
 #include "vector3.hpp"
-#include "matrix3.hpp"
+#include "hmx/matrix3.hpp"
 
 // fn_800CF370
 int Minimum(int x, int y)

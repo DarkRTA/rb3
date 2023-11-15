@@ -1,6 +1,6 @@
-#ifndef RB3_MATRIX3_HPP
-#define RB3_MATRIX3_HPP
-#include "vector3.hpp"
+#ifndef HMX_MATRIX3_HPP
+#define HMX_MATRIX3_HPP
+#include "rb3/vector3.hpp"
 
 namespace Hmx {
     class Matrix3 {
