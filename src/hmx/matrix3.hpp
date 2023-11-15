@@ -4,6 +4,7 @@
 
 namespace Hmx {
     class Matrix3 {
+    public:
         Vector3 row1;
         Vector3 row2;
         Vector3 row3;

@@ -3,6 +3,7 @@
 #include "std/math.h"
 #include "vector3.hpp"
 #include "triangle.hpp"
+#include "hmx/matrix3.hpp"
 
 // fn_800E25EC
 float Ceil(double d)
@@ -112,4 +113,10 @@ void Triangle::Set(const Vector3& v1, const Vector3& v2, const Vector3& v3) {
 // fn_800DEBE0
 void Scale(const Vector3& v1, float f, Vector3& dst){
 	dst.Set(v1.x * f, v1.y * f, v1.z * f);
+}
+
+void Scale(const Vector3& v, const Hmx::Matrix3& mtx, Hmx::Matrix3& dst){
+	Scale(mtx.row1, v.x, dst.row1);
+	Scale(mtx.row2, v.y, dst.row2);
+	Scale(mtx.row3, v.z, dst.row3);
 }
