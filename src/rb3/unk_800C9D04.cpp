@@ -78,3 +78,9 @@ void Hmx::Matrix3::Identity(){
     row2.Set(0.0f, 1.0f, 0.0f);
     row3.Set(0.0f, 0.0f, 1.0f);
 }
+
+void Scale(const Hmx::Matrix3& mtx, const Vector3& v, Hmx::Matrix3& dst){
+	Scale(mtx.row1, v, dst.row1);
+	Scale(mtx.row2, v, dst.row2);
+	Scale(mtx.row3, v, dst.row3);
+}

@@ -31,7 +31,7 @@ float Distance(const Vector3&, const Vector3&);
 
 void Scale(const Vector3&, float, Vector3&);
 void Scale(const Vector3&, const Vector3&, Vector3&);
-void Scale(const Vector3&, const Hmx::Matrix3&, Hmx::Matrix3&);
+void Scale(const Hmx::Matrix3&, const Vector3&, Hmx::Matrix3&);
 void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
 
 void RotateAboutZ(const Vector3&, float, Vector3&);
