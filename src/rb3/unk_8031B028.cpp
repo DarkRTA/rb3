@@ -4,8 +4,9 @@
 #include "file_ops.hpp"
 #include "string.hpp"
 #include "std/string.h"
+#include "vector3.hpp"
 
-extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
@@ -70,16 +71,23 @@ DataNode DataAbs(DataArray *da)
 // fn_8031CC5C
 DataNode DataAdd(DataArray *da)
 {
-	float sum_f = 0.0;
+	float sum_f = 0.0f;
 	int sum_int = 0;
-	for (int i = 1; i < da->GetNodeCount(); i++) {
-		DataNode *dn = EvaluateNodeAtIndex(da, i);
-		if (dn->GetType() == kDataInt) {
-			sum_int += dn->GetIntVal();
-		} else {
-			sum_f += dn->LiteralFloat(da);
-		}
-	}
+    int cnt = da->GetNodeCount();
+    int i;
+	for (i = 1; i < cnt; i++) {
+        DataNode *dn = EvaluateNodeAtIndex(da, i);
+        if (dn->GetType() != kDataInt) {
+            sum_f = sum_int + dn->LiteralFloat(da);
+            break;
+        }
+        sum_int += dn->GetIntVal();
+    }
+    if(i == cnt) return DataNode(sum_int);
+    for(i++; i < cnt; i++){
+        sum_f += da->GetFloatAtIndex(i);
+    }
+    return DataNode(sum_f);
 }
 
 // fn_8031CD70
@@ -119,7 +127,16 @@ DataNode DataMean(DataArray *da)
 }
 
 // fn_8031CFD0
-extern DataNode DataClamp(DataArray *);
+DataNode DataClamp(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	DataNode* dn3 = EvaluateNodeAtIndex(da, 3);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat || dn3->GetType() == kDataFloat){
+		return DataNode(Clamp(dn1->LiteralFloat(da), dn2->LiteralFloat(da), dn3->LiteralFloat(da)));
+	}
+	else return DataNode(Clamp(dn1->LiteralInt(da), dn2->LiteralInt(da), dn3->LiteralInt(da)));
+}
+
 // fn_8031D180
 extern DataNode DataClampEq(DataArray *);
 
@@ -146,14 +163,37 @@ DataNode DataDivide(DataArray *da)
 
 // fn_8031D3CC
 extern DataNode DataDivideEq(DataArray *);
+
 // fn_8031D450
-extern DataNode DataSqrt(DataArray *);
+DataNode DataSqrt(DataArray* da){
+	return DataNode(GetSqrtAsFloat(da->GetFloatAtIndex(1)));
+}
+
 // fn_8031D490
-extern DataNode DataMod(DataArray *);
+DataNode DataMod(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+		return DataNode(Modulo(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+	}
+	else return DataNode(Modulo(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+}
+
 // fn_8031D56C
-extern DataNode DataDist(DataArray *);
+DataNode DataDist(DataArray* da){
+	Vector3 vec(da->GetFloatAtIndex(1) - da->GetFloatAtIndex(4), 
+         da->GetFloatAtIndex(2) - da->GetFloatAtIndex(5), 
+         da->GetFloatAtIndex(3) - da->GetFloatAtIndex(6));
+    
+    return DataNode(GetSqrtAsFloat(vec.x*vec.x + vec.y*vec.y + vec.z*vec.z));
+}
+
 // fn_8031D664
-extern DataNode DataSymbol(DataArray *);
+DataNode DataSymbol(DataArray* da){
+	Symbol s = da->ForceSymAtIndex(1);
+	return DataNode(s);
+}
+
 // fn_8031D700
 extern DataNode DataInt(DataArray *);
 
@@ -324,8 +364,6 @@ DataNode DataBitNot(DataArray *da)
 	return DataNode(~da->GetIntAtIndex(1));
 }
 
-extern "C" int fn_8031C5B8(int);
-
 // fn_8031C5B8
 int GetLowestBit(int i)
 {
@@ -345,7 +383,10 @@ DataNode DataLowestBit(DataArray *da)
 }
 
 // fn_8031C5E4
-extern DataNode DataCountBits(DataArray *);
+DataNode DataCountBits(DataArray* da){
+	return DataNode(CountBits(da->GetIntAtIndex(1)));
+}
+
 // fn_8031C628
 extern DataNode DataWhile(DataArray *);
 // fn_8031C904
@@ -527,10 +568,23 @@ DataNode DataEval(DataArray *da)
 	return DataNode(*dn->Evaluate());
 }
 
+// fn_8031EB54
+float InverseLerp(float f1, float f2, float f3){
+	if(f2 != f1) return (f3 - f1) / (f2 - f1);
+	else return 1.0f;
+}
+
 // fn_8031EAA8
-extern DataNode DataReverseInterp(DataArray *);
+DataNode DataReverseInterp(DataArray* da){
+	float ext = InverseLerp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3));
+	return DataNode(Clamp(0.0f, 1.0f, ext));
+}
+
 // fn_8031EB78
-extern DataNode DataInterp(DataArray *);
+DataNode DataInterp(DataArray* da){
+	return DataNode(Interp(da->GetFloatAtIndex(1), da->GetFloatAtIndex(2), da->GetFloatAtIndex(3)));
+}
+
 // fn_8031EBFC
 extern DataNode DataInc(DataArray *);
 // fn_8031ECF8
@@ -580,9 +634,9 @@ DataNode DataBasename(DataArray *da)
 // fn_8031F808
 DataNode DataDirname(DataArray *da)
 {
-	String s(FileGetPath((char *)da->GetStrAtIndex(1), '\0'));
-	int i = s.find_last_of("/");
-	return DataNode(s[i]);
+	char* pFilepath = FileGetPath((char *)da->GetStrAtIndex(1), '\0');
+	int i = String(pFilepath).find_last_of("/");
+	return DataNode(&pFilepath[i == String::npos ? 0 : i + 1]);
 }
 
 // fn_8031F8A8
@@ -617,14 +671,13 @@ DataNode DataStrlen(DataArray *da)
 	return DataNode(len);
 }
 
-extern char lbl_808E5860;
+extern unsigned short lbl_808E5860;
 // fn_8031FDC4
 DataNode DataStrElem(DataArray *da)
 {
-	Symbol s(&lbl_808E5860);
-	int i = da->GetIntAtIndex(2);
-	const char *c = da->GetStrAtIndex(1);
-	return DataNode(s);
+    unsigned short c = lbl_808E5860;
+    *(char*)&c = da->GetStrAtIndex(1)[da->GetIntAtIndex(2)];
+	return DataNode(Symbol((char*)&c));
 }
 
 extern "C" DataNode *fn_800E7878(DataArray *, int);
@@ -718,8 +771,16 @@ DataNode DataSort(DataArray *da)
 extern DataNode DataVar(DataArray *);
 // fn_8031B904
 extern DataNode DataSetVar(DataArray *);
+
 // fn_8031C710
-extern DataNode DataPackColor(DataArray *);
+DataNode DataPackColor(DataArray* da){
+    return DataNode(
+        ((int)(da->GetFloatAtIndex(3) * 255.0f) & 0xFF) << 0x10 | 
+        ((int)(da->GetFloatAtIndex(2) * 255.0f) & 0xFF) << 8  |
+        ((int)(da->GetFloatAtIndex(1) * 255.0f) & 0xFF)
+    );
+}
+
 // fn_8031C7C4
 extern DataNode DataUnpackColor(DataArray *);
 // fn_803200E8
@@ -778,149 +839,149 @@ DataNode DataFilterNotify(DataArray *da)
 // fn_80320CDC
 void DataInitFuncs()
 {
-	DataRegisterFunc(Symbol("replace_object"), DataReplaceObject);
-	DataRegisterFunc(Symbol("next_name"), DataNextName);
-	DataRegisterFunc(Symbol("printf"), DataPrintf);
-	DataRegisterFunc(Symbol("sprintf"), DataSprintf);
-	DataRegisterFunc(Symbol("sprint"), DataSprint);
-	// DataRegisterFunc(Symbol("func"), DataFuncObj::New);
-	DataRegisterFunc(Symbol("elem"), DataGetElem);
-	DataRegisterFunc(Symbol("last_elem"), DataGetLastElem);
-	DataRegisterFunc(Symbol("foreach"), DataForEach);
-	DataRegisterFunc(Symbol("foreach_int"), DataForEachInt);
-	DataRegisterFunc(Symbol("min"), DataMin);
-	DataRegisterFunc(Symbol("max"), DataMax);
-	DataRegisterFunc(Symbol("abs"), DataAbs);
-	DataRegisterFunc(Symbol("+"), DataAdd);
-	DataRegisterFunc(Symbol("+="), DataAddEq);
-	DataRegisterFunc(Symbol("-"), DataSub);
-	DataRegisterFunc(Symbol("-="), DataSubEq);
-	DataRegisterFunc(Symbol("mean"), DataMean);
-	DataRegisterFunc(Symbol("clamp"), DataClamp);
-	DataRegisterFunc(Symbol("clamp_eq"), DataClampEq);
-	DataRegisterFunc(Symbol("*"), DataMultiply);
-	DataRegisterFunc(Symbol("*="), DataMultiplyEq);
-	DataRegisterFunc(Symbol("/"), DataDivide);
-	DataRegisterFunc(Symbol("/="), DataDivideEq);
-	DataRegisterFunc(Symbol("sqrt"), DataSqrt);
-	DataRegisterFunc(Symbol("mod"), DataMod);
-	DataRegisterFunc(Symbol("dist"), DataDist);
-	DataRegisterFunc(Symbol("symbol"), DataSymbol);
-	DataRegisterFunc(Symbol("int"), DataInt);
-	DataRegisterFunc(Symbol("char"), DataChar);
-	DataRegisterFunc(Symbol("round"), DataRound);
-	DataRegisterFunc(Symbol("floor"), DataFloor);
-	DataRegisterFunc(Symbol("ceil"), DataCeil);
-	DataRegisterFunc(Symbol("set"), DataSet);
-	DataRegisterFunc(Symbol("if_else"), DataIfElse);
-	DataRegisterFunc(Symbol("if"), DataIf);
-	DataRegisterFunc(Symbol("unless"), DataUnless);
-	DataRegisterFunc(Symbol("=="), DataEq);
-	DataRegisterFunc(Symbol("!="), DataNe);
-	DataRegisterFunc(Symbol("<="), DataLe);
-	DataRegisterFunc(Symbol("<"), DataLt);
-	DataRegisterFunc(Symbol(">="), DataGe);
-	DataRegisterFunc(Symbol(">"), DataGt);
-	DataRegisterFunc(Symbol("!"), DataNot);
-	DataRegisterFunc(Symbol("&&"), DataAnd);
-	DataRegisterFunc(Symbol("||"), DataOr);
-	DataRegisterFunc(Symbol("^^"), DataXor);
-	DataRegisterFunc(Symbol("&"), DataBitAnd);
-	DataRegisterFunc(Symbol("&="), DataAndEqual);
-	DataRegisterFunc(Symbol("mask_eq"), DataMaskEqual);
-	DataRegisterFunc(Symbol("|"), DataBitOr);
-	DataRegisterFunc(Symbol("|="), DataOrEqual);
-	DataRegisterFunc(Symbol("^"), DataBitXor);
-	DataRegisterFunc(Symbol("~"), DataBitNot);
-	DataRegisterFunc(Symbol("lowest_bit"), DataLowestBit);
-	DataRegisterFunc(Symbol("count_bits"), DataCountBits);
-	DataRegisterFunc(Symbol("while"), DataWhile);
-	DataRegisterFunc(Symbol("do"), DataDo);
-	DataRegisterFunc(Symbol("new"), DataNew);
-	DataRegisterFunc(Symbol("delete"), DataDelete);
-	DataRegisterFunc(Symbol("object"), DataObject);
-	DataRegisterFunc(Symbol("exists"), DataExists);
-	DataRegisterFunc(Symbol("localize"), DataLocalize);
-	DataRegisterFunc(Symbol("localize_separated_int"), DataLocalizeSeparatedInt);
-	DataRegisterFunc(Symbol("localize_float"), DataLocalizeFloat);
-	DataRegisterFunc(Symbol("startswith"), DataStartsWith);
-	DataRegisterFunc(Symbol("print"), DataPrint);
-	DataRegisterFunc(Symbol("time"), DataTime);
-	DataRegisterFunc(Symbol("random_int"), DataRandomInt);
-	DataRegisterFunc(Symbol("random_float"), DataRandomFloat);
-	DataRegisterFunc(Symbol("random_elem"), DataRandomElem);
-	DataRegisterFunc(Symbol("random"), DataRandom);
-	DataRegisterFunc(Symbol("random_seed"), DataRandomSeed);
-	DataRegisterFunc(Symbol("notify"), DataNotify);
-	DataRegisterFunc(Symbol("notify_beta"), DataNotifyBeta);
-	DataRegisterFunc(Symbol("fail"), DataFail);
-	DataRegisterFunc(Symbol("notify_once"), DataNotifyOnce);
-	DataRegisterFunc(Symbol("switch"), DataSwitch);
-	DataRegisterFunc(Symbol("cond"), DataCond);
-	DataRegisterFunc(Symbol("insert_elems"), DataInsertElems);
-	DataRegisterFunc(Symbol("insert_elem"), DataInsertElem);
-	DataRegisterFunc(Symbol("print_array"), DataPrintArray);
-	DataRegisterFunc(Symbol("size"), DataSize);
-	DataRegisterFunc(Symbol("remove_elem"), DataRemoveElem);
-	DataRegisterFunc(Symbol("resize"), DataResize);
-	DataRegisterFunc(Symbol("array"), DataNewArray);
-	DataRegisterFunc(Symbol("set_elem"), DataSetElem);
-	DataRegisterFunc(Symbol("eval"), DataEval);
-	DataRegisterFunc(Symbol("reverse_interp"), DataReverseInterp);
-	DataRegisterFunc(Symbol("interp"), DataInterp);
-	DataRegisterFunc(Symbol("++"), DataInc);
-	DataRegisterFunc(Symbol("--"), DataDec);
-	DataRegisterFunc(Symbol("run"), DataRun);
-	DataRegisterFunc(Symbol("read_file"), OnReadFile);
-	DataRegisterFunc(Symbol("write_file"), OnWriteFile);
-	DataRegisterFunc(Symbol("file_exists"), OnFileExists);
-	DataRegisterFunc(Symbol("file_read_only"), OnFileReadOnly);
-	DataRegisterFunc(Symbol("handle_type"), DataHandleType);
-	DataRegisterFunc(Symbol("handle_type_ret"), DataHandleTypeRet);
-	DataRegisterFunc(Symbol("handle"), DataHandle);
-	DataRegisterFunc(Symbol("handle_ret"), DataHandleRet);
-	DataRegisterFunc(Symbol("contains"), DataContains);
-	DataRegisterFunc(Symbol("export"), DataExport);
-	DataRegisterFunc(Symbol("exit"), DataExit);
-	DataRegisterFunc(Symbol("find"), DataFind);
-	DataRegisterFunc(Symbol("find_exists"), DataFindExists);
-	DataRegisterFunc(Symbol("find_elem"), DataFindElem);
-	DataRegisterFunc(Symbol("find_obj"), DataFindObj);
-	DataRegisterFunc(Symbol("basename"), DataBasename);
-	DataRegisterFunc(Symbol("dirname"), DataDirname);
-	DataRegisterFunc(Symbol("has_substr"), DataHasSubStr);
-	DataRegisterFunc(Symbol("has_any_substr"), DataHasAnySubStr);
-	DataRegisterFunc(Symbol("find_substr"), DataFindSubStr);
-	DataRegisterFunc(Symbol("strlen"), DataStrlen);
-	DataRegisterFunc(Symbol("str_elem"), DataStrElem);
-	DataRegisterFunc(Symbol("search_replace"), DataSearchReplace);
-	DataRegisterFunc(Symbol("substr"), DataSubStr);
-	DataRegisterFunc(Symbol("strcat"), DataStrCat);
-	DataRegisterFunc(Symbol("string_flags"), DataStringFlags);
-	DataRegisterFunc(Symbol("tolower"), DataStrToLower);
-	DataRegisterFunc(Symbol("toupper"), DataStrToUpper);
-	DataRegisterFunc(Symbol("strieq"), DataStrIEq);
-	DataRegisterFunc(Symbol("push_back"), DataPushBack);
-	DataRegisterFunc(Symbol("sort"), DataSort);
-	DataRegisterFunc(Symbol("var"), DataVar);
-	DataRegisterFunc(Symbol("set_var"), DataSetVar);
-	DataRegisterFunc(Symbol("pack_color"), DataPackColor);
-	DataRegisterFunc(Symbol("unpack_color"), DataUnpackColor);
-	DataRegisterFunc(Symbol("set_this"), OnSetThis);
-	DataRegisterFunc(Symbol("macro_elem"), DataMacroElem);
-	DataRegisterFunc(Symbol("merge_dirs"), DataMergeDirs);
-	DataRegisterFunc(Symbol("quote"), DataQuote);
-	DataRegisterFunc(Symbol("'"), DataQuote);
-	DataRegisterFunc(Symbol("quasiquote"), DataQuasiquote);
-	DataRegisterFunc(Symbol("`"), DataQuasiquote);
-	DataRegisterFunc(Symbol("unquote"), DataUnquote);
-	DataRegisterFunc(Symbol(","), DataUnquote);
-	DataRegisterFunc(Symbol("get_date_time"), DataGetDateTime);
-	DataRegisterFunc(Symbol("with"), DataWith);
-	DataRegisterFunc(Symbol("type"), DataGetType);
-	DataRegisterFunc(Symbol("object_list"), DataObjectList);
-	DataRegisterFunc(Symbol("file_list"), DataFileList);
-	DataRegisterFunc(Symbol("file_list_paths"), DataFileListPaths);
-	DataRegisterFunc(Symbol("disable_notify"), DataDisableNotify);
-	DataRegisterFunc(Symbol("filter_notify"), DataFilterNotify);
+	DataRegisterFunc("replace_object", DataReplaceObject);
+	DataRegisterFunc("next_name", DataNextName);
+	DataRegisterFunc("printf", DataPrintf);
+	DataRegisterFunc("sprintf", DataSprintf);
+	DataRegisterFunc("sprint", DataSprint);
+	// DataRegisterFunc("func", DataFuncObj::New);
+	DataRegisterFunc("elem", DataGetElem);
+	DataRegisterFunc("last_elem", DataGetLastElem);
+	DataRegisterFunc("foreach", DataForEach);
+	DataRegisterFunc("foreach_int", DataForEachInt);
+	DataRegisterFunc("min", DataMin);
+	DataRegisterFunc("max", DataMax);
+	DataRegisterFunc("abs", DataAbs);
+	DataRegisterFunc("+", DataAdd);
+	DataRegisterFunc("+=", DataAddEq);
+	DataRegisterFunc("-", DataSub);
+	DataRegisterFunc("-=", DataSubEq);
+	DataRegisterFunc("mean", DataMean);
+	DataRegisterFunc("clamp", DataClamp);
+	DataRegisterFunc("clamp_eq", DataClampEq);
+	DataRegisterFunc("*", DataMultiply);
+	DataRegisterFunc("*=", DataMultiplyEq);
+	DataRegisterFunc("/", DataDivide);
+	DataRegisterFunc("/=", DataDivideEq);
+	DataRegisterFunc("sqrt", DataSqrt);
+	DataRegisterFunc("mod", DataMod);
+	DataRegisterFunc("dist", DataDist);
+	DataRegisterFunc("symbol", DataSymbol);
+	DataRegisterFunc("int", DataInt);
+	DataRegisterFunc("char", DataChar);
+	DataRegisterFunc("round", DataRound);
+	DataRegisterFunc("floor", DataFloor);
+	DataRegisterFunc("ceil", DataCeil);
+	DataRegisterFunc("set", DataSet);
+	DataRegisterFunc("if_else", DataIfElse);
+	DataRegisterFunc("if", DataIf);
+	DataRegisterFunc("unless", DataUnless);
+	DataRegisterFunc("==", DataEq);
+	DataRegisterFunc("!=", DataNe);
+	DataRegisterFunc("<=", DataLe);
+	DataRegisterFunc("<", DataLt);
+	DataRegisterFunc(">=", DataGe);
+	DataRegisterFunc(">", DataGt);
+	DataRegisterFunc("!", DataNot);
+	DataRegisterFunc("&&", DataAnd);
+	DataRegisterFunc("||", DataOr);
+	DataRegisterFunc("^^", DataXor);
+	DataRegisterFunc("&", DataBitAnd);
+	DataRegisterFunc("&=", DataAndEqual);
+	DataRegisterFunc("mask_eq", DataMaskEqual);
+	DataRegisterFunc("|", DataBitOr);
+	DataRegisterFunc("|=", DataOrEqual);
+	DataRegisterFunc("^", DataBitXor);
+	DataRegisterFunc("~", DataBitNot);
+	DataRegisterFunc("lowest_bit", DataLowestBit);
+	DataRegisterFunc("count_bits", DataCountBits);
+	DataRegisterFunc("while", DataWhile);
+	DataRegisterFunc("do", DataDo);
+	DataRegisterFunc("new", DataNew);
+	DataRegisterFunc("delete", DataDelete);
+	DataRegisterFunc("object", DataObject);
+	DataRegisterFunc("exists", DataExists);
+	DataRegisterFunc("localize", DataLocalize);
+	DataRegisterFunc("localize_separated_int", DataLocalizeSeparatedInt);
+	DataRegisterFunc("localize_float", DataLocalizeFloat);
+	DataRegisterFunc("startswith", DataStartsWith);
+	DataRegisterFunc("print", DataPrint);
+	DataRegisterFunc("time", DataTime);
+	DataRegisterFunc("random_int", DataRandomInt);
+	DataRegisterFunc("random_float", DataRandomFloat);
+	DataRegisterFunc("random_elem", DataRandomElem);
+	DataRegisterFunc("random", DataRandom);
+	DataRegisterFunc("random_seed", DataRandomSeed);
+	DataRegisterFunc("notify", DataNotify);
+	DataRegisterFunc("notify_beta", DataNotifyBeta);
+	DataRegisterFunc("fail", DataFail);
+	DataRegisterFunc("notify_once", DataNotifyOnce);
+	DataRegisterFunc("switch", DataSwitch);
+	DataRegisterFunc("cond", DataCond);
+	DataRegisterFunc("insert_elems", DataInsertElems);
+	DataRegisterFunc("insert_elem", DataInsertElem);
+	DataRegisterFunc("print_array", DataPrintArray);
+	DataRegisterFunc("size", DataSize);
+	DataRegisterFunc("remove_elem", DataRemoveElem);
+	DataRegisterFunc("resize", DataResize);
+	DataRegisterFunc("array", DataNewArray);
+	DataRegisterFunc("set_elem", DataSetElem);
+	DataRegisterFunc("eval", DataEval);
+	DataRegisterFunc("reverse_interp", DataReverseInterp);
+	DataRegisterFunc("interp", DataInterp);
+	DataRegisterFunc("++", DataInc);
+	DataRegisterFunc("--", DataDec);
+	DataRegisterFunc("run", DataRun);
+	DataRegisterFunc("read_file", OnReadFile);
+	DataRegisterFunc("write_file", OnWriteFile);
+	DataRegisterFunc("file_exists", OnFileExists);
+	DataRegisterFunc("file_read_only", OnFileReadOnly);
+	DataRegisterFunc("handle_type", DataHandleType);
+	DataRegisterFunc("handle_type_ret", DataHandleTypeRet);
+	DataRegisterFunc("handle", DataHandle);
+	DataRegisterFunc("handle_ret", DataHandleRet);
+	DataRegisterFunc("contains", DataContains);
+	DataRegisterFunc("export", DataExport);
+	DataRegisterFunc("exit", DataExit);
+	DataRegisterFunc("find", DataFind);
+	DataRegisterFunc("find_exists", DataFindExists);
+	DataRegisterFunc("find_elem", DataFindElem);
+	DataRegisterFunc("find_obj", DataFindObj);
+	DataRegisterFunc("basename", DataBasename);
+	DataRegisterFunc("dirname", DataDirname);
+	DataRegisterFunc("has_substr", DataHasSubStr);
+	DataRegisterFunc("has_any_substr", DataHasAnySubStr);
+	DataRegisterFunc("find_substr", DataFindSubStr);
+	DataRegisterFunc("strlen", DataStrlen);
+	DataRegisterFunc("str_elem", DataStrElem);
+	DataRegisterFunc("search_replace", DataSearchReplace);
+	DataRegisterFunc("substr", DataSubStr);
+	DataRegisterFunc("strcat", DataStrCat);
+	DataRegisterFunc("string_flags", DataStringFlags);
+	DataRegisterFunc("tolower", DataStrToLower);
+	DataRegisterFunc("toupper", DataStrToUpper);
+	DataRegisterFunc("strieq", DataStrIEq);
+	DataRegisterFunc("push_back", DataPushBack);
+	DataRegisterFunc("sort", DataSort);
+	DataRegisterFunc("var", DataVar);
+	DataRegisterFunc("set_var", DataSetVar);
+	DataRegisterFunc("pack_color", DataPackColor);
+	DataRegisterFunc("unpack_color", DataUnpackColor);
+	DataRegisterFunc("set_this", OnSetThis);
+	DataRegisterFunc("macro_elem", DataMacroElem);
+	DataRegisterFunc("merge_dirs", DataMergeDirs);
+	DataRegisterFunc("quote", DataQuote);
+	DataRegisterFunc("'", DataQuote);
+	DataRegisterFunc("quasiquote", DataQuasiquote);
+	DataRegisterFunc("`", DataQuasiquote);
+	DataRegisterFunc("unquote", DataUnquote);
+	DataRegisterFunc(",", DataUnquote);
+	DataRegisterFunc("get_date_time", DataGetDateTime);
+	DataRegisterFunc("with", DataWith);
+	DataRegisterFunc("type", DataGetType);
+	DataRegisterFunc("object_list", DataObjectList);
+	DataRegisterFunc("file_list", DataFileList);
+	DataRegisterFunc("file_list_paths", DataFileListPaths);
+	DataRegisterFunc("disable_notify", DataDisableNotify);
+	DataRegisterFunc("filter_notify", DataFilterNotify);
 }

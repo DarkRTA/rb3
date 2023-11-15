@@ -9,6 +9,8 @@ public:
 	unsigned int len;
 	char *text;
 
+	static int npos;
+
 	String();
 	String(const char *);
 	String(Symbol); // fn_80361BC0

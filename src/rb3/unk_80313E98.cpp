@@ -330,8 +330,6 @@ bool DataArray::Contains(const DataNode &dn) const
 	return false;
 }
 
-// fn_803161D4 - https://decomp.me/scratch/KWNxW
-
 #pragma dont_inline on
 // fn_80317278
 BinStream &operator<<(BinStream &bs, const DataNode *dn)
@@ -391,4 +389,115 @@ BinStream &operator<<(BinStream &bs, const DataArray *da)
 	} else
 		bs << (char)0;
 	return bs;
+}
+
+// fn_803169C4
+DataArray* DataArray::Clone(bool b1, bool b2, int i) {
+    DataArray* da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(mNodeCount + i);
+    for(int i = 0; i < mNodeCount; i++){
+        DataNode* evaluated;
+        if(b2){
+            DataNode* dn = &mNodes[i];
+            evaluated = dn->Evaluate();
+        }
+        else evaluated = &mNodes[i];
+        da->mNodes[i] = *evaluated;
+        if(b1){
+            if(da->mNodes[i].GetType() == 0x10){
+                DataArray* arr = da->mNodes[i].LiteralArray(0);
+                DataArray* cloned = arr->Clone(true, b2, 0);
+                da->mNodes[i] = DataNode(cloned, (DataType)0x10);
+                cloned->DecRefCount();
+            }
+        }
+    }
+    return da;
+}
+
+// fn_803161D4 - https://decomp.me/scratch/KWNxW
+// actually use this https://decomp.me/scratch/EhEOc
+
+// fn_80316258 - https://decomp.me/scratch/vREVD
+
+#pragma dont_inline on
+// fn_8031627C
+DataArray* DataArray::FindArray(Symbol s, bool b) const {
+	return FindArray(s.GetIntVal(), false);
+}
+
+// fn_803162BC
+DataArray* DataArray::FindArray(Symbol s1, Symbol s2) const {
+	return FindArray(s1, true)->FindArray(s2, true);
+}
+#pragma dont_inline reset
+
+// fn_80316300
+DataArray* DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
+	return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+}
+
+// fn_80316358
+DataArray* DataArray::FindArray(Symbol s, const char* c) const {
+	return FindArray(s, Symbol((char*)c));
+}
+
+// fn_803163B8
+bool DataArray::FindData(Symbol s, const char*& c, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		c = arr->GetStrAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316414
+bool DataArray::FindData(Symbol s, Symbol& dest, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		dest = arr->GetSymAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_8031647C
+bool DataArray::FindData(Symbol s, String& str, bool b) const {
+	const char* c;
+	bool found = FindData(s, c, b);
+	if(found){
+		str = c;
+		return true;
+	}
+	else return false;
+}
+
+// fn_803164D8
+bool DataArray::FindData(Symbol s, int& i, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		i = arr->GetIntAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316534
+bool DataArray::FindData(Symbol s, float& f, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		f = arr->GetFloatAtIndex(1);
+		return true;
+	}
+	else return false;
+}
+
+// fn_80316590
+bool DataArray::FindData(Symbol s, bool& dest, bool b) const {
+	DataArray* arr = FindArray(s, b);
+	if(arr != nullptr){
+		dest = arr->GetIntAtIndex(1);
+		return true;
+	}
+	else return false;
 }
