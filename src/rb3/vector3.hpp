@@ -13,8 +13,8 @@ public:
 	void Set(float, float, float); // fn_800CB1A4 - same as as __ct__7Vector3Ffff?
 	Vector3* operator=(const Vector3&); // fn_800D8AC8
 	void operator*=(float);
-	void operator-=(const Vector3&);
-	void operator+=(const Vector3&);
+	Vector3* operator-=(const Vector3&);
+	Vector3* operator+=(const Vector3&);
 	void Zero();
 	bool operator==(const Vector3&) const;
 };
