@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include "vector3.hpp"
+#include "vector_ops.hpp"
 
 extern float fn_802D54E8(float);
 // fn_802D54A8
@@ -19,6 +20,6 @@ void Normalize(const Vector3& v, Vector3& dst){
         dst.Set(0.0f, 0.0f, 0.0f);
     }
     else {
-        
+
     }
 }

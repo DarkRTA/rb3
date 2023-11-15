@@ -1,5 +1,6 @@
 #include "hmx/matrix3.hpp"
 #include "vector3.hpp"
+#include "vector_ops.hpp"
 
 Vector3* Vector3::operator+=(const Vector3& v){
     x += v.x;
@@ -15,8 +16,8 @@ Vector3* Vector3::operator-=(const Vector3& v){
 
 // fn_802E2D8C
 void Normalize(const Hmx::Matrix3& src, Hmx::Matrix3& dst){
-    // Normalize(src.row2, dst.row2);
-    // Cross(dst.row2, src.row3, dst.row1);
-    // Normalize(dst.row1, dst.row1);
-    // Cross(dst.row1, dst.row2, dst.row3);
+    Normalize(src.row2, dst.row2);
+    Cross(dst.row2, src.row3, dst.row1);
+    Normalize(dst.row1, dst.row1);
+    Cross(dst.row1, dst.row2, dst.row3);
 }

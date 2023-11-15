@@ -4,6 +4,7 @@
 #include "std/math.h"
 #include "vector3.hpp"
 #include "hmx/matrix3.hpp"
+#include "vector_ops.hpp"
 
 // fn_800CF370
 int Minimum(int x, int y)
