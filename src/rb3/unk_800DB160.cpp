@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "std/math.h"
 #include "vector3.hpp"
+#include "triangle.hpp"
 
 // fn_800E25EC
 float Ceil(double d)
@@ -92,4 +93,23 @@ void Negate(const Vector3& v1, Vector3& dst){
 
 float Dot(const Vector3& v1, const Vector3& v2){
 	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+void Cross(const Vector3& v1, const Vector3& v2, Vector3& dst){
+	dst.Set(v1.y * v2.z - v1.z * v2.y,
+			v1.z * v2.x - v1.x * v2.z,
+			v1.x * v2.y - v1.y * v2.x);
+}
+
+// fn_800DEDA4
+void Triangle::Set(const Vector3& v1, const Vector3& v2, const Vector3& v3) {
+    vec1 = v1;
+    Subtract(v2, v1, vec2);
+    Subtract(v3, v1, vec3);
+    Cross(vec2, vec3, vec4);
+}
+
+// fn_800DEBE0
+void Scale(const Vector3& v1, float f, Vector3& dst){
+	dst.Set(v1.x * f, v1.y * f, v1.z * f);
 }
