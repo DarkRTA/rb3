@@ -136,7 +136,7 @@ void Multiply(const register Vector3& vec, const register Hmx::Matrix3& mtx, reg
     register float dstXY;
     register float dstZ;
 
-	typedef Hmx::Matrix3 Matrix3;
+	using Hmx::Matrix3;
 
     asm {
         // Load vec
