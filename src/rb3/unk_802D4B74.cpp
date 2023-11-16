@@ -23,3 +23,7 @@ void Normalize(const Vector3& v, Vector3& dst){
 
     }
 }
+
+float Length(const Vector3& v){
+    return 3.0f;
+}
