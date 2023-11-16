@@ -166,3 +166,15 @@ void Multiply(const register Vector3& vec, const register Hmx::Matrix3& mtx, reg
         psq_st    dstZ,  Vector3.z(dst), 1, 0
     }
 }
+
+#pragma dont_inline on
+// fn_800DEC08
+float ATan2Thunk(float f1, float f2){
+	return my_atan2f(f1, f2);
+}
+#pragma dont_inline reset
+
+// fn_800DEC0C
+float my_atan2f(float f1, float f2){
+	return atan2(f1, f2);
+}
