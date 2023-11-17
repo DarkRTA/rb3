@@ -51,3 +51,32 @@ void MakeEuler(const Hmx::Matrix3& mtx, Vector3& vec){
         vec.y = ATan2Thunk(-mtx.row1.z, mtx.row3.z);
     }
 }
+
+void MakeScale(const Hmx::Matrix3& mtx, Vector3& vec){
+    Vector3 bruh;
+    float f1 = Length(mtx.row3);
+    Cross(mtx.row1, mtx.row2, bruh);
+    float f2 = Dot(bruh, mtx.row3);
+    f1 = (f2 > 0.0f) ? f1 : -f1;
+    f2 = Length(mtx.row2);
+    float f3 = Length(mtx.row1);
+    vec.Set(f3, f2, f1);
+}
+
+extern void NOP(Hmx::Matrix3*);
+
+void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
+    Hmx::Matrix3 lol;
+    MakeScale(mtx, v2);
+    NOP(&lol);
+    if(v2.x != 0.0f){
+        Scale(mtx.row1, 1.0f / v2.x, lol.row1);
+    }
+    if(v2.y != 0.0f){
+        Scale(mtx.row2, 1.0f / v2.y, lol.row2);
+    }
+    if(v2.z != 0.0f){
+        Scale(mtx.row3, 1.0f / v2.z, lol.row3);
+    }
+    MakeEuler(lol, v1);
+}
