@@ -51,7 +51,7 @@ float ASinThunk(double);
 float ASinFloat(double);
 float ACosThunk(double);
 float ACosFloat(double);
-float ATan2Thunk(double);
+float ATan2Thunk(float, float);
 float my_atan2f(float, float);
 
 #endif
