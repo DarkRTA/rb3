@@ -54,5 +54,6 @@ float ACosThunk(double);
 float ACosFloat(double);
 float ATan2Thunk(float, float);
 float my_atan2f(float, float);
+float SqrtThunk(double);
 
 #endif

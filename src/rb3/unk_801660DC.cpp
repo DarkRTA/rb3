@@ -22,3 +22,10 @@ Message::Message(
 float GetSqrtAsFloat(double d){
 	return Sqrt(d);
 }
+
+#pragma dont_inline on
+// fn_80179980
+float SqrtThunk(double d){
+	return GetSqrtAsFloat(d);
+}
+#pragma dont_inline reset
