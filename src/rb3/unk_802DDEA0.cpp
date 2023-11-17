@@ -4,6 +4,9 @@
 #include "vector3.hpp"
 #include "vector_ops.hpp"
 #include "trigtable.hpp"
+#include "hmx/quat.hpp"
+#include "textstream.hpp"
+#include "vector2.hpp"
 
 #pragma dont_inline on
 // fn_802DE5B4
@@ -82,7 +85,37 @@ void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
     MakeEuler(lol, v1);
 }
 
+// fn_802DE8BC - https://decomp.me/scratch/uzSF7
+
 // fn_802DE4D4
 float Cosine(float f){
     return Sine(f + 1.5707964f);
+}
+
+void MakeRotMatrix(const Vector3& v1, const Vector3& v2, Hmx::Matrix3& mtx) {
+    mtx.row2 = v1;
+    Normalize(mtx.row2, mtx.row2);
+    Cross(mtx.row2, v2, mtx.row1);
+    Normalize(mtx.row1, mtx.row1);
+    Cross(mtx.row1, mtx.row2, mtx.row3);
+}
+
+TextStream& operator<<(TextStream& ts, const Hmx::Quat& q){
+    ts << "(x:" << q.x << " y:" << q.y << " z:" << q.z << " w:" << q.w << ")";
+    return ts;
+}
+
+TextStream& operator<<(TextStream& ts, const Vector3& vec){
+    ts << "(x:" << vec.x << " y:" << vec.y << " z:" << vec.z << ")";
+    return ts;
+}
+
+TextStream& operator<<(TextStream& ts, const Vector2& vec){
+    ts << "(x:" << vec.x << " y:" << vec.y << ")";
+    return ts;
+}
+
+TextStream& operator<<(TextStream& ts, const Hmx::Matrix3& mtx){
+    ts << "\n\t" << mtx.row1 << "\n\t" << mtx.row2 << "\n\t" << mtx.row3;
+    return ts;
 }
