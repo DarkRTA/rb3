@@ -1,6 +1,7 @@
 #include "hmx/matrix3.hpp"
 #include "vector3.hpp"
 #include "vector_ops.hpp"
+#include "common.hpp"
 
 Vector3* Vector3::operator+=(const Vector3& v){
     x += v.x;
@@ -22,9 +23,36 @@ void Normalize(const Hmx::Matrix3& src, Hmx::Matrix3& dst){
     Cross(dst.row1, dst.row2, dst.row3);
 }
 
-// fn_802E2E28 - initializes sine table - https://decomp.me/scratch/Se53p - 
-
 extern float gBigSinTable[];
+
+// fn_802E2E28
+void TrigTableInit(){
+    int i;
+    for(i = 0; i < 256; i++){
+        gBigSinTable[i * 2] = SinFloat(0.024543693f * i);
+        if(i != 0){
+            gBigSinTable[i * 2 - 1] = gBigSinTable[i * 2] - gBigSinTable[i * 2 - 2];
+        }
+    }
+    int tmp = (i - 1) * 2;
+    *(gBigSinTable + tmp + 1) = SinFloat(0.024543693f * i) - *(gBigSinTable + tmp);
+}
+
+// fn_802E2F90
+float Lookup(float arg8) {
+    int temp_r5 = (int) arg8;
+    int idx = (temp_r5 & 0xFF) * 2;
+    float* offset = &gBigSinTable[idx];
+    return ((arg8 - (float)temp_r5) * *(offset + 1)) + *offset;
+}
+
+// fn_802E2F38
+float Sine(float arg8) {
+    if(arg8 < 0.0f){
+        return -Lookup(-arg8 * 40.743664f);
+    }
+    else return Lookup(arg8 * 40.743664f);
+}
 
 // fn_802E2FE8
 float FastSin(float f){
@@ -33,3 +61,4 @@ float FastSin(float f){
     }
     else return gBigSinTable[((int)(40.743664f * f + 0.49998999f) & 0xFF) * 2];
 }
+
