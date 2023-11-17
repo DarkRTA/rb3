@@ -118,7 +118,11 @@ rb3/unk_802DDEA0.cpp:
 	.text       start:0x802DDEA0 end:0x802E0C40
 
 rb3/unk_802E0CA0.cpp:
-	.text       start:0x802E0CA0 end:0x802E306C
+	.text       start:0x802E0CA0 end:0x802E2E28
+
+rb3/trigtable.cpp:
+	.text       start:0x802E2E28 end:0x802E306C
+	.bss        start:0x80901900 end:0x80902100
 
 rb3/datainittrigfuncs.cpp:
 	.text       start:0x802E306C end:0x802E33CC

@@ -3,6 +3,7 @@
 #include "hmx/matrix3.hpp"
 #include "vector3.hpp"
 #include "vector_ops.hpp"
+#include "trigtable.hpp"
 
 #pragma dont_inline on
 // fn_802DE5B4
@@ -79,4 +80,9 @@ void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
         Scale(mtx.row3, 1.0f / v2.z, lol.row3);
     }
     MakeEuler(lol, v1);
+}
+
+// fn_802DE4D4
+float Cosine(float f){
+    return Sine(f + 1.5707964f);
 }

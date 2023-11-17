@@ -98,9 +98,9 @@ float Dot(const Vector3& v1, const Vector3& v2){
 }
 
 void Cross(const Vector3& v1, const Vector3& v2, Vector3& dst){
-	dst.Set(v1.y * v2.z - v1.z * v2.y,
-			v1.z * v2.x - v1.x * v2.z,
-			v1.x * v2.y - v1.y * v2.x);
+	dst.Set(v2.y * v1.x - v1.y * v2.x, 
+            v1.y * v2.z - v1.z * v2.y,
+			v1.z * v2.x - v1.x * v2.z);
 }
 
 // fn_800DEDA4
