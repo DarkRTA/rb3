@@ -7,6 +7,7 @@
 #include "hmx/quat.hpp"
 #include "textstream.hpp"
 #include "vector2.hpp"
+#include "transform.hpp"
 
 #pragma dont_inline on
 // fn_802DE5B4
@@ -117,5 +118,10 @@ TextStream& operator<<(TextStream& ts, const Vector2& vec){
 
 TextStream& operator<<(TextStream& ts, const Hmx::Matrix3& mtx){
     ts << "\n\t" << mtx.row1 << "\n\t" << mtx.row2 << "\n\t" << mtx.row3;
+    return ts;
+}
+
+TextStream& operator<<(TextStream& ts, const Transform& tf){
+    ts << tf.rot << "\n\t" << tf.trans;
     return ts;
 }
