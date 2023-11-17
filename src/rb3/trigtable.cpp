@@ -32,7 +32,8 @@ float Lookup(float arg8) {
     int temp_r5 = (int) arg8;
     int idx = (temp_r5 & 0xFF) * 2;
     float* offset = &gBigSinTable[idx];
-    return ((arg8 - (float)temp_r5) * *(offset + 1)) + *offset;
+    float res = arg8 - (float)temp_r5;
+    return (res * offset[1]) + offset[0];
 }
 
 // fn_802E2FE8
