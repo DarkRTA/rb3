@@ -21,3 +21,5 @@ void Normalize(const Hmx::Matrix3& src, Hmx::Matrix3& dst){
     Normalize(dst.row1, dst.row1);
     Cross(dst.row1, dst.row2, dst.row3);
 }
+
+// fn_802E2E28 - initializes sine table - https://decomp.me/scratch/Se53p - TrigTableInit__Fv
