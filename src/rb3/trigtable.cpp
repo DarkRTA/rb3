@@ -1,7 +1,7 @@
 #include "common.hpp"
 #include "trigtable.hpp"
 
-float gBigSinTable[0x800];
+float gBigSinTable[0x200];
 
 // fn_802E2E28
 void TrigTableInit(){
