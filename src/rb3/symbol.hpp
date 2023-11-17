@@ -14,6 +14,7 @@ public:
 	void PreInit(int, int);
 	void Init();
 	void Terminate();
+	int GetIntVal(); // https://decomp.me/scratch/sxK01
 };
 
 #endif

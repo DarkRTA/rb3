@@ -12,7 +12,7 @@ union DataNodeValue {
 	float floatVal;
 	DataArray *dataArray;
 	int *object; // should be Object?
-	Symbol *symVal;
+	Symbol symVal;
 	char *strVal;
 };
 
@@ -55,9 +55,9 @@ public:
 	DataNode *Evaluate() const;
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	Symbol *Sym(const DataArray *) const; // fn_80322F54
-	Symbol *LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol *ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol Sym(const DataArray *) const; // fn_80322F54
+	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024
@@ -100,6 +100,7 @@ public:
 	void Load(BinStream &);
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
+	DataArray* Clone(bool, bool, int); // fn_803169C4
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
@@ -107,10 +108,25 @@ public:
 	DataNode *GetNodeAtIndex(int) const; // fn_8000DF50
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
+	Symbol GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
+	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
+
+	DataArray* FindArray(int, bool) const; // fn_80316258
+	DataArray* FindArray(Symbol, bool) const; // fn_8031627C
+	DataArray* FindArray(Symbol, Symbol) const; // fn_803162BC
+	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
+	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
+	
+	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
+	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
+	bool FindData(Symbol, String&, bool) const; // fn_8031647C
+	bool FindData(Symbol, int&, bool) const; // fn_803164D8
+	bool FindData(Symbol, float&, bool) const; // fn_80316534
+	bool FindData(Symbol, bool&, bool) const; // fn_80316590
 
 	DataNode *mNodes;
 	Symbol symbol;

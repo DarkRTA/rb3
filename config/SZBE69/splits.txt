@@ -95,8 +95,14 @@ rb3/unk_80188850.cpp:
 rb3/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8024729C
 
+rb3/unk_80252B98.cpp:
+	.text       start:0x80252B98 end:0x80266360
+
 rb3/unk_802A5E04.cpp:
 	.text       start:0x802A5E04 end:0x802AC67C
+
+rb3/unk_802D4B74.cpp:
+	.text       start:0x802D4B74 end:0x802DCE58
 
 rb3/interpolators.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
@@ -112,7 +118,11 @@ rb3/unk_802DDEA0.cpp:
 	.text       start:0x802DDEA0 end:0x802E0C40
 
 rb3/unk_802E0CA0.cpp:
-	.text       start:0x802E0CA0 end:0x802E40D0
+	.text       start:0x802E0CA0 end:0x802E306C
+
+rb3/datainittrigfuncs.cpp:
+	.text       start:0x802E306C end:0x802E33CC
+	.data       start:0x80851600 end:0x80851620
 
 rb3/unk_802E434C.cpp:
 	.text       start:0x802E434C end:0x802E72CC
@@ -141,6 +151,9 @@ rb3/unk_802FA994.cpp:
 
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
+
+rb3/unk_802FF088.cpp:
+	.text       start:0x802FF088 end:0x80303E24
 
 rb3/rg_messages.cpp:
 	.text       start:0x80313E98 end:0x80314814
@@ -218,6 +231,9 @@ rb3/notetube.cpp:
 
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
+
+rb3/unk_805CE140.cpp:
+	.text       start:0x805CE140 end:0x805D9A20
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
