@@ -22,4 +22,14 @@ void Normalize(const Hmx::Matrix3& src, Hmx::Matrix3& dst){
     Cross(dst.row1, dst.row2, dst.row3);
 }
 
-// fn_802E2E28 - initializes sine table - https://decomp.me/scratch/Se53p - TrigTableInit__Fv
+// fn_802E2E28 - initializes sine table - https://decomp.me/scratch/Se53p - 
+
+extern float gBigSinTable[];
+
+// fn_802E2FE8
+float FastSin(float f){
+    if(f < 0.0f){
+        return -gBigSinTable[((int)(-40.743664f * f + 0.49998999f) & 0xFF) * 2];
+    }
+    else return gBigSinTable[((int)(40.743664f * f + 0.49998999f) & 0xFF) * 2];
+}
