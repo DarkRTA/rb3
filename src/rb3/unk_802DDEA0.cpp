@@ -8,6 +8,8 @@
 #include "textstream.hpp"
 #include "vector2.hpp"
 #include "transform.hpp"
+#include "binstream.hpp"
+#include "shortquat.hpp"
 
 #pragma dont_inline on
 // fn_802DE5B4
@@ -124,4 +126,25 @@ TextStream& operator<<(TextStream& ts, const Hmx::Matrix3& mtx){
 TextStream& operator<<(TextStream& ts, const Transform& tf){
     ts << tf.rot << "\n\t" << tf.trans;
     return ts;
+}
+
+void FastInvert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst){
+    float d1 = 1.0f / Dot(mtx.row1, mtx.row1);
+    float d2 = 1.0f / Dot(mtx.row2, mtx.row2);
+    float d3 = 1.0f / Dot(mtx.row3, mtx.row3);
+    dst.Set(mtx.row1.x * d1, mtx.row2.x * d2, mtx.row3.x * d3,
+        mtx.row1.y * d1, mtx.row2.y * d2, mtx.row3.y * d3,
+        mtx.row1.z * d1, mtx.row2.z * d2, mtx.row3.z * d3);
+}
+
+BinStream& operator<<(BinStream& bs, const Vector3& vec){
+    bs << vec.x << vec.y << vec.z;
+    return bs;
+}
+
+void ShortQuat::Set(const Hmx::Quat& q){
+    x = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.x + 0.5f));
+    y = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.y + 0.5f));
+    z = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.z + 0.5f));
+    w = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.w + 0.5f));
 }
