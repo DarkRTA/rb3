@@ -17,6 +17,7 @@ public:
 	Vector3* operator+=(const Vector3&);
 	void Zero();
 	bool operator==(const Vector3&) const;
+	bool operator!=(const Vector3&) const;
 };
 
 #endif

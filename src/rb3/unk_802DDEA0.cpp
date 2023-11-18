@@ -148,3 +148,22 @@ void ShortQuat::Set(const Hmx::Quat& q){
     z = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.z + 0.5f));
     w = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.w + 0.5f));
 }
+
+void ShortQuat::operator=(const ShortQuat& q){
+    x = q.x;
+    y = q.y;
+    z = q.z;
+    w = q.w;
+}
+
+bool Vector3::operator==(const Vector3& vec) const {
+    bool b = false;
+    if(x == vec.x && y == vec.y && z == vec.z) b = true;
+    return b;
+}
+
+bool Vector3::operator!=(const Vector3& vec) const {
+    bool b = false;
+    if(x != vec.x || y != vec.y || z != vec.z) b = true;
+    return b;
+}
