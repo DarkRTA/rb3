@@ -8,6 +8,8 @@ namespace Hmx {
         float y;
         float z;
         float w;
+
+        void Set(float, float, float, float);
     };
 }
 

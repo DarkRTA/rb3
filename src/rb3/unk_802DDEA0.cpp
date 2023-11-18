@@ -167,3 +167,32 @@ bool Vector3::operator!=(const Vector3& vec) const {
     if(x != vec.x || y != vec.y || z != vec.z) b = true;
     return b;
 }
+
+void ShortQuat::ToQuat(Hmx::Quat& q) const {
+    q.Set((float)(x * 0.000030518509f), (float)(y * 0.000030518509f), (float)(z * 0.000030518509f), (float)(w * 0.000030518509f));
+}
+
+void Normalize(const Hmx::Quat& q, Hmx::Quat& dst){
+    dst.x = 0.0000099999997f;
+}
+
+void IdentityInterp(const Hmx::Quat& q, float f, Hmx::Quat& dst) {
+    if(f == 0.0f){
+        dst = q;
+    }
+    else if(f == 1.0f){
+        dst.Set(0.0f, 0.0f, 0.0f, 1.0f);
+    }
+    else {
+        float f2 = 1.0f - f;
+        dst.x = q.x * f2;
+        dst.y = q.y * f2;
+        dst.z = q.z * f2;
+        float f1 = q.w;
+        if(f1 < 0.0f){
+            dst.w = f1 * f2 - f;
+        }
+        else dst.w = f1 * f2 + f;
+        Normalize(dst, dst);
+    }
+}
