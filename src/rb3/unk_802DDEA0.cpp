@@ -70,11 +70,27 @@ void MakeScale(const Hmx::Matrix3& mtx, Vector3& vec){
     vec.Set(f3, f2, f1);
 }
 
-#pragma dont_inline on
-void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&){
+void MakeRotMatrix(const Hmx::Quat& q, Hmx::Matrix3& mtx){
+    float f9 = 1.0f;
+    float f1 = q.y;
+    float f2 = q.z;
+    float f3 = q.w;
+    float f4 = q.x * 2.0f;
+    float f5 = 2.0f * f1;
+    float f6 = 2.0f * f2 * f2;
+    float f7 = 2.0f * f2 * f3;
+    float f8 = q.x * f4;
 
+    mtx.row1.x = (1.0f - f5 * f1) - f6;
+    mtx.row1.y = f4 * f1 + f7;
+    mtx.row1.z = f4 * f2 - f5 * f3;
+    mtx.row2.x = f4 * f1 - f7;
+    mtx.row2.y = f9 - f6 - f8;
+    mtx.row2.z = f5 * f2 + f4 * f3;
+    mtx.row3.x = f4 * f2 + f5 * f3;
+    mtx.row3.y = f5 * f2 - f4 * f3;
+    mtx.row3.z = f9 - f8 - (f5 * f1);
 }
-#pragma dont_inline reset
 
 extern void NOP(Hmx::Matrix3*);
 
