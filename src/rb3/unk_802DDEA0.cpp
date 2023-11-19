@@ -506,3 +506,13 @@ void MakeRotQuat(const Vector3& v1, const Vector3& v2, Hmx::Quat& dst) {
         dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
     }
 }
+
+void MakeRotQuatUnitX(const Vector3& vec, Hmx::Quat& dst) {
+    float sq = SqrtThunk(0.5f * vec.x + 0.5f);
+    if(sq > 1.0E-7f){
+        dst.Set(0.0f, vec.z * (0.5f / sq), -vec.y * (0.5f / sq), sq);
+    }
+    else {
+        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
+    }
+}
