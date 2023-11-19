@@ -14,6 +14,7 @@ namespace Hmx {
         void Set(const Vector3&, float);
         void Set(const Vector3&);
         void Set(const Hmx::Matrix3&);
+        void operator=(const Hmx::Quat&);
     };
 }
 

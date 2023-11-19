@@ -70,6 +70,12 @@ void MakeScale(const Hmx::Matrix3& mtx, Vector3& vec){
     vec.Set(f3, f2, f1);
 }
 
+#pragma dont_inline on
+void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&){
+
+}
+#pragma dont_inline reset
+
 extern void NOP(Hmx::Matrix3*);
 
 void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
@@ -88,7 +94,12 @@ void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
     MakeEuler(lol, v1);
 }
 
-// fn_802DE8BC - https://decomp.me/scratch/uzSF7
+void MakeEuler(const Hmx::Quat& q, Vector3& vec){
+    Hmx::Matrix3 lmao;
+    NOP(&lmao);
+    MakeRotMatrix(q, lmao);
+    MakeEuler(lmao, vec);
+}
 
 #pragma dont_inline on
 // fn_802DE4D4
@@ -385,9 +396,11 @@ void Multiply(const register Transform& t1, const register Transform& t2, regist
     }
 }
 
+#pragma dont_inline on
 Hmx::Quat::Quat(const Hmx::Matrix3& mtx){
     Set(mtx);
 }
+#pragma dont_inline reset
 
 void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
     float f1 = mtx.row1.x;
@@ -419,4 +432,8 @@ void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
         z = mtx.row1.z + mtx.row3.x;
     }
     Normalize(*this, *this);
+}
+
+void ShortQuat::Set(const Hmx::Matrix3& mtx){
+    Set(Hmx::Quat(mtx));
 }
