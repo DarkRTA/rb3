@@ -288,3 +288,135 @@ void Hmx::Quat::Set(const Vector3& vec) {
     f2 = Cosine(stack.z);
     Set(f2 * x - f1 * y, f2 * y + f1 * x, f2 * z + f1 * w, f2 * w - f1 * z);
 }
+
+void Multiply(const register Transform& t1, const register Transform& t2, register Transform& dst) {
+    register float row1XY;
+    register float row1Z;
+    register float row2XY;
+    register float row2Z;
+    register float row3XY;
+    register float row3Z;
+    register float transXY;
+    register float transZ;
+
+    asm {
+        // Load t1
+        psq_l       row1XY,  Transform.rot.row1.x(t1), 0, 0
+        psq_l       row1Z,   Transform.rot.row1.z(t1), 1, 0
+        psq_l       row2XY,  Transform.rot.row2.x(t1), 0, 0
+        psq_l       row2Z,   Transform.rot.row2.z(t1), 1, 0
+        psq_l       row3XY,  Transform.rot.row3.x(t1), 0, 0
+        psq_l       row3Z,   Transform.rot.row3.z(t1), 1, 0
+        psq_l       transXY, Transform.trans.x(t1), 0, 0
+        psq_l       transZ,  Transform.trans.z(t1), 1, 0
+
+        ps_merge00  f0, row1XY, row2XY
+        ps_merge00  f1, row3XY, transXY
+
+        ps_merge11  f2, row1XY, row2XY
+        ps_merge11  f3, row3XY, transXY
+
+        ps_merge00  f4, row1Z,  row2Z
+        ps_merge00  f5, row3Z,  transZ
+
+        ps_sub      f10, f10, f10
+        ps_merge01  f26, f10, transZ
+
+        // Load t2
+        psq_l       row1XY,  Transform.rot.row1.x(t2), 0, 0
+        psq_l       row1Z,   Transform.rot.row1.z(t2), 1, 0
+        psq_l       row2XY,  Transform.rot.row2.x(t2), 0, 0
+        psq_l       row2Z,   Transform.rot.row2.z(t2), 1, 0
+        psq_l       row3XY,  Transform.rot.row3.x(t2), 0, 0
+        psq_l       transXY, Transform.trans.x(t2), 0, 0 // Must be swapped in order to match
+        psq_l       row3Z,   Transform.rot.row3.z(t2), 1, 0
+        psq_l       transZ,  Transform.trans.z(t2), 1, 0
+
+        ps_merge00  f6, row1XY, row2XY
+        ps_merge11  row1XY, row1XY, row2XY
+        ps_merge00  row1Z, row1Z, row2Z
+
+        ps_muls0    f10, f1, f6
+        ps_muls0    f12, f1, row1XY
+        ps_muls0    row2Z, f0, row1XY
+
+        ps_muls0    f31, f1, row1Z
+        ps_muls0    f13, f0, row1Z
+        ps_madds1   f10, f3, f6, f10
+
+        ps_muls0    row2XY,  f0, f6
+        ps_madds1   row2XY,  f2, f6, row2XY
+        ps_merge00  f0,  row3XY, transXY
+        ps_merge11  f1,  row3XY, transXY
+        ps_merge00  f6,  row3Z, transZ
+
+        ps_madds1   f12, f3, row1XY, f12
+        ps_madds0   f10, f5, f0, f10
+        ps_madds0   f12, f5, f1, f12
+        ps_madds1   f31, f3, row1Z, f31
+        ps_madds1   f13, f2, row1Z, f13
+    
+        ps_madds0   row2XY,  f4, f0, row2XY
+        ps_madds1   row2Z, f2, row1XY, row2Z
+        ps_madds0   row2Z, f4, f1, row2Z
+        ps_merge00  row1XY,  row2XY, row2Z
+        ps_merge11  row2XY,  row2XY, row2Z
+
+        ps_madds0   f31, f5, f6, f31
+        ps_madd     f31, f26, f6, f31
+        ps_madds0   f13, f4, f6, f13
+        ps_merge11  row2Z, f13, f13
+        ps_merge11  transZ, f31, f31
+
+        ps_madd     f10, f26, f0, f10
+        ps_madd     f12, f26, f1, f12
+        ps_merge00  row3XY, f10, f12
+        ps_merge11  transXY, f10, f12
+
+        // Store result
+        psq_st      row1XY, Transform.rot.row1.x(dst), 0, 0
+        psq_st      f13, Transform.rot.row1.z(dst), 1, 0
+        psq_st      row2XY, Transform.rot.row2.x(dst), 0, 0
+        psq_st      row2Z, Transform.rot.row2.z(dst), 1, 0
+        psq_st      row3XY, Transform.rot.row3.x(dst), 0, 0
+        psq_st      f31, Transform.rot.row3.z(dst), 1, 0
+        psq_st      transXY, Transform.trans.x(dst), 0, 0
+        psq_st      transZ, Transform.trans.z(dst), 1, 0
+    }
+}
+
+Hmx::Quat::Quat(const Hmx::Matrix3& mtx){
+    Set(mtx);
+}
+
+void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
+    float f1 = mtx.row1.x;
+    float f2 = mtx.row2.y;
+    float f3 = mtx.row3.z;
+    float diag = f1 + f2 + f3;
+    if(diag > 0.0f){
+        w = diag + 1.0f;
+        x = mtx.row2.z - mtx.row3.y;
+        y = mtx.row3.x - mtx.row1.z;
+        z = mtx.row1.y - mtx.row2.x;
+    }
+    else if((f3 > f1) && (f3 > f2)){
+        z = f3 - f1 - f2 + 1.0f;
+        w = mtx.row1.y - mtx.row2.x;
+        x = mtx.row3.x + mtx.row1.z;
+        y = mtx.row3.y + mtx.row2.z;
+    }
+    else if(f2 > f1){
+        y = f2 - f3 - f1 + 1.0f;
+        w = mtx.row3.x - mtx.row1.z;
+        z = mtx.row2.z + mtx.row3.y;
+        x = mtx.row2.x + mtx.row1.y;
+    }
+    else {
+        x = f1 - f2 - f3 + 1.0f;
+        w = mtx.row2.z - mtx.row3.y;
+        y = mtx.row1.y + mtx.row2.x;
+        z = mtx.row1.z + mtx.row3.x;
+    }
+    Normalize(*this, *this);
+}

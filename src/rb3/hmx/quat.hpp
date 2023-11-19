@@ -9,10 +9,11 @@ namespace Hmx {
         float y;
         float z;
         float w;
-
+        Quat(const Hmx::Matrix3&);
         void Set(float, float, float, float);
         void Set(const Vector3&, float);
         void Set(const Vector3&);
+        void Set(const Hmx::Matrix3&);
     };
 }
 
