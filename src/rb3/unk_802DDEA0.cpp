@@ -453,3 +453,36 @@ void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
 void ShortQuat::Set(const Hmx::Matrix3& mtx){
     Set(Hmx::Quat(mtx));
 }
+
+void Invert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst) {
+    float big_num = 
+        mtx.row1.z * mtx.row2.x * mtx.row3.y -
+        mtx.row3.x * mtx.row2.y +
+        mtx.row1.x * mtx.row2.y * mtx.row3.z -
+        mtx.row3.y * mtx.row2.z -
+        mtx.row1.y * mtx.row2.x * mtx.row3.z -
+        mtx.row3.x * mtx.row2.z;
+    float f10 = 0.0f;
+    if(big_num != 0.0f) f10 = 1.0f / big_num;
+
+    float f1 = mtx.row1.x;
+    float f2 = mtx.row1.y;
+    float f3 = mtx.row1.z;
+    float f4 = mtx.row2.x;
+    float f5 = mtx.row2.y;
+    float f6 = mtx.row2.z;
+    float f7 = mtx.row3.x;
+    float f8 = mtx.row3.y;
+    float f9 = mtx.row3.z;
+    dst.Set(
+        f10 * (f5 * f9 - f6 * f8),
+        f10 * -(f2 * f9 - f8 * f3),
+        f10 * (f2 * f6 - f5 * f3),
+        f10 * -(f4 * f9 - f6 * f7),
+        f10 * (f1 * f9 - f7 * f3),
+        f10 * -(f1 * f6 - f4 * f3),
+        f10 * (f4 * f8 - f7 * f5),
+        f10 * -(f1 * f8 - f7 * f2),
+        dst.row1.x
+    );
+}
