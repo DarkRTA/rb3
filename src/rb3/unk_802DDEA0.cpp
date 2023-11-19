@@ -175,73 +175,59 @@ void ShortQuat::ToQuat(Hmx::Quat& q) const {
 }
 
 void Normalize(const register Hmx::Quat& quat, register Hmx::Quat& dst){
-    // float squareSum = quat.x * quat.x + quat.z * quat.z + quat.x * quat.x + quat.w * quat.w;
-    // float magnitude = 1.0f / sqrt(squareSum);
-    // magnitude = -(magnitude * magnitude * squareSum - 3.0f) * magnitude * 0.5f;
-    // if(0.0 < squareSum - 0.0000099999997f) magnitude = 0.0f;
-    // dst.x = quat.x * magnitude;
-    // dst.y = quat.y * magnitude;
-    // dst.z = quat.z * magnitude;
-    // dst.w = quat.w * magnitude;
-
     using Hmx::Quat;
 
-    register float quatXY; // f0
-    register float quatZW; // f1
+    register float quatXY;
+    register float quatZW;
 
-    register float quatXYsq; // f2
-    register float quatZWsq; // f3
+    register float quatXYsq;
+    register float quatZWsq;
 
-    register double magnitude; // also f2
-    register double magHalf; // also f2
-    register double scratch2; // also f2
+    register float magnitude;
+    register float magHalf;
+    register float magSquare;
+    register float magNewton;
 
-    register float squareSum;
-    register float cutoff = 0.00001f; // f5
+    register float squares;
+    register float cutoff = 0.00001f;
     register float zero;
-    register float half = 0.5f; // f7
-    register float three = 3.0f; // f8
+    register float half = 0.5f;
+    register float three = 3.0f;
 
     register float factor;
 
     asm {
-        // xSq = quat.x * quat.x
-        // ySq = quat.y * quat.y
-        // zSq = quat.z * quat.z
-        // wSq = quat.w * quat.w
+        // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
         psq_l    quatXY, 0(r3), 0, 0
         psq_l    quatZW, 8(r3), 0, 0
         ps_mul   quatXYsq, quatXY, quatXY
         ps_mul   quatZWsq, quatZW, quatZW
-
-        // xSq + ySq + zSq + wSq
-        ps_sum0  squareSum, quatXYsq, quatZWsq, quatXYsq
+        ps_sum0  squares, quatXYsq, quatZWsq, quatXYsq
         ps_sum1  quatZWsq, quatZWsq, quatXYsq, quatZWsq
-        ps_sum0  squareSum, squareSum, quatXYsq, quatZWsq
+        ps_sum0  squares, squares, quatXYsq, quatZWsq
 
-        // 1 / sqrt(squareSum)
-        frsqrte  magnitude, squareSum
+        // 1 / sqrt(squares)
+        frsqrte  magnitude, squares
 
-        // Calculate 0
-        ps_sub   zero, cutoff, cutoff
-
-        ps_sub   cutoff, squareSum, cutoff
-
-        fmul     scratch2, magnitude, magnitude
+        // Newton's method
+        // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
+        // Tried to make this match as C code, but decided not to bother lol
+        fmul     magSquare, magnitude, magnitude
         fmul     magHalf, magnitude, half
-        fnmsub   scratch2, scratch2, squareSum, three
-        fmul     magnitude, scratch2, magHalf
-    }
+        fnmsub   magNewton, magSquare, squares, three
+        fmul     magnitude, magNewton, magHalf
 
-    // magnitude = -(magnitude * magnitude * squareSum - three) * magnitude * half;
-
-    asm {
-        // if(squareSum - 0.00001f > 0.0f) magnitude = 0.0f;
+        // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
+        ps_sub   zero, cutoff, cutoff
+        ps_sub   cutoff, squares, cutoff
         ps_sel   magnitude, cutoff, magnitude, zero
 
+        // dst.x = quat.x * magnitude;
+        // dst.y = quat.y * magnitude;
+        // dst.z = quat.z * magnitude;
+        // dst.w = quat.w * magnitude;
         ps_muls0 quatXY, quatXY, magnitude
         ps_muls0 quatZW, quatZW, magnitude
-    
         psq_st   quatXY, Quat.x(dst), 0, 0
         psq_st   quatZW, Quat.z(dst), 0, 0
     }
