@@ -90,10 +90,12 @@ void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
 
 // fn_802DE8BC - https://decomp.me/scratch/uzSF7
 
+#pragma dont_inline on
 // fn_802DE4D4
 float Cosine(float f){
     return Sine(f + 1.5707964f);
 }
+#pragma dont_inline reset
 
 void MakeRotMatrix(const Vector3& v1, const Vector3& v2, Hmx::Matrix3& mtx) {
     mtx.row2 = v1;
@@ -195,4 +197,39 @@ void IdentityInterp(const Hmx::Quat& q, float f, Hmx::Quat& dst) {
         else dst.w = f1 * f2 + f;
         Normalize(dst, dst);
     }
+}
+
+#pragma dont_inline on
+BinStream& operator>>(BinStream& bs, Vector3& vec){
+    bs >> vec.x >> vec.y >> vec.z;
+    return bs;
+}
+#pragma dont_inline reset
+
+BinStream& operator>>(BinStream& bs, Hmx::Matrix3& mtx){
+    bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
+    return bs;
+}
+
+void Hmx::Quat::Set(const Vector3& vec, float f) {
+    float mult = 0.5f * f;
+    float f1 = Sine(mult);
+    float f2 = Cosine(mult);
+    w = f2;
+    x = vec.x * f1;
+    y = vec.y * f1;
+    z = vec.z * f1;
+}
+
+void Hmx::Quat::Set(const Vector3& vec) {
+    Vector3 stack;
+    Scale(vec, 0.5f, stack);
+    float f1 = Sine(stack.x);
+    float f2 = Cosine(stack.x);
+    float f3 = Sine(stack.y);
+    float f4 = Cosine(stack.y);
+    Set(f1 * f4, f2 * f3, f1 * f3, f2 * f4);
+    f1 = Sine(stack.z);
+    f2 = Cosine(stack.z);
+    Set(f2 * x - f1 * y, f2 * y + f1 * x, f2 * z + f1 * w, f2 * w - f1 * z);
 }

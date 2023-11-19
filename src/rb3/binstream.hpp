@@ -52,6 +52,7 @@ public:
 	// not taken from RB2, found in the asm
 	BinStream &operator<<(unsigned int); // fn_800A7638
 	BinStream &operator>>(unsigned int &); // fn_800A77B4
+	BinStream& operator>>(float&); // fn_800A77B4 also, because code merging
 	BinStream &operator>>(unsigned char &); // fn_800A7730
 	BinStream &operator>>(bool &); // fn_800A7764
 	BinStream &operator<<(char); // fn_800A75FC
