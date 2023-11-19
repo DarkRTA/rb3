@@ -486,3 +486,23 @@ void Invert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst) {
         dst.row1.x
     );
 }
+
+void MakeRotQuat(const Vector3& v1, const Vector3& v2, Hmx::Quat& dst) {
+    Vector3 vec;
+    Cross(v1, v2, vec);
+    float len2 = LengthSquared(v2);
+    float len1 = LengthSquared(v1);
+    float sq = SqrtThunk(len1 * len2);
+    float dot = Dot(v1, v2);
+    float sq2 = SqrtThunk(0.5f + ((0.5f * dot) / sq));
+    if(sq2 > 1.0E-7f){
+        float f1 = 0.5f / (sq * sq2);
+        dst.x = vec.x * f1;
+        dst.y = vec.y * f1;
+        dst.z = vec.z * f1;
+        dst.w = sq2;
+    }
+    else {
+        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
+    }
+}
