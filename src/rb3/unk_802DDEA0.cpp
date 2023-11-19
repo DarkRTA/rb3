@@ -516,3 +516,7 @@ void MakeRotQuatUnitX(const Vector3& vec, Hmx::Quat& dst) {
         dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
     }
 }
+
+float operator*(const Hmx::Quat& q1, const Hmx::Quat& q2){
+    return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+}
