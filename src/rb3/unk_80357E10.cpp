@@ -4,6 +4,9 @@
 #include "std/string.h"
 #include "tempomap.hpp"
 #include "multitempotempomap.hpp"
+#include "data.hpp"
+#include "symbol.hpp"
+#include "common.hpp"
 
 #pragma dont_inline on
 // fn_8035824C
@@ -125,4 +128,20 @@ int MultiTempoTempoMap::V_Unk13(int a, int *b)
 // fn_803589E8
 void MultiTempoTempoMap::V_Unk14()
 {
+}
+
+extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern bool OptionBool(const char*, bool);
+
+DataNode DataOptionBool(DataArray* da){
+	return DataNode(OptionBool(da->GetStrAtIndex(1), false));
+}
+
+extern DataNode DataOptionStr(DataArray*);
+extern DataNode DataOptionSym(DataArray*);
+
+void OptionInit(){
+	DataRegisterFunc("option_bool", DataOptionBool);
+	DataRegisterFunc("option_str", DataOptionStr);
+	DataRegisterFunc("option_sym", DataOptionSym);
 }
