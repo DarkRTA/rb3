@@ -15,7 +15,9 @@ void Rand::Seed(int seed){
     for(int i = 0; i < 0x100; i++){
         int j = seed * 0x41C64E6D + 0x3039;
         seed = j * 0x41C64E6D + 0x3039;
-        unk_arr[i] = (seed & 0x7FFF0000U);
+        unk_arr[i] = 
+            ((j >> 16) & 0xFFFF) |
+            ((seed & 0x7FFF0000) & 0xFFFF0000);
     }
     unk00 = 0;
     unk04 = 0x67;
