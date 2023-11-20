@@ -6,6 +6,7 @@ public:
 	Rand(int); // fn_802DD9A4
 	void Seed(int); // fn_802DDA04
 	int Int();
+	float Float();
 
 	unsigned int unk00;
 	unsigned int unk04;

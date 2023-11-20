@@ -33,3 +33,7 @@ int Rand::Int(){
     if(0xF9 <= ++unk04) unk04 = 0;
     return u3 ^ u1;
 }
+
+float Rand::Float(){
+    return ((Int() & 0xFFFF) / 65536.0f);
+}
