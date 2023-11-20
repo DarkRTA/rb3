@@ -12,3 +12,9 @@ Symbol DataArray::GetSymAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->Sym(this);
 }
+
+extern char* gNullStr;
+// fn_800103CC
+bool Symbol::IsNull(){
+	return m_string == gNullStr;
+}
