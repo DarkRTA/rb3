@@ -34,6 +34,53 @@ int Rand::Int(){
     return u3 ^ u1;
 }
 
+#pragma dont_inline on
 float Rand::Float(){
     return ((Int() & 0xFFFF) / 65536.0f);
+}
+#pragma dont_inline reset
+
+Rand::Rand(int i){
+    unk00 = 0;
+    unk04 = 0;
+    unsigned int* addr = &unk04;
+    for(int cnt = 0; cnt < 0x80; cnt++){
+        *++addr = 0;
+        *++addr = 0;
+    }
+    unk40c = 0;
+    Seed(i);
+}
+
+int Rand::Int(int i1, int i2){
+    return i1 + Int() % (i2 - i1);
+}
+
+#pragma dont_inline on
+float Rand::Float(float f1, float f2){
+    return ((f2 - f1) * Float() + f1);
+}
+#pragma dont_inline reset
+
+float Rand::Gaussian(){
+    float f2, f3, f4, f5;
+
+    if(unk40c){
+        unk40c = false;
+        return unk408;
+    }
+    else {
+        do {
+            do {
+                f2 = Float(-1.0f, 1.0f);
+                f3 = Float(-1.0f, 1.0f);
+                f5 = f2 * f2 + f3 * f3;
+            } while(f5 >= 1.0f);
+        } while(0 == f5);
+        f4 = LogThunk(f5);
+        f5 = SqrtThunk((-2.0f * f4) / f5);
+        unk408 = f2 * f5;
+        unk40c = true;
+        return f3 * f5;
+    }
 }
