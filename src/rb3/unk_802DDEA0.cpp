@@ -554,3 +554,31 @@ void Interp(const Hmx::Matrix3& m1, const Hmx::Matrix3& m2, float f, Hmx::Matrix
     InterpThunk(q1, q2, f, q);
     MakeRotMatrix(q, dst);
 }
+
+void FastInterp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst) {
+    if(f == 0.0f) dst = q1;
+    else if(f == 1.0f) dst = q2;
+    else {
+        if((q1 * q2) < 0.0f){
+            float q1x = q1.x;
+            dst.x =  -(f * (q2.x + q1x) - q1x);
+            float q1y = q1.y;
+            dst.y = -(f * (q2.y + q1y) - q1y);
+            float q1z = q1.z;
+            dst.z = -(f * (q2.z + q1z) - q1z);
+            float q1w = q1.w;
+            dst.w = -(f * (q2.w + q1w) - q1w);
+        }
+        else {
+            float q1x = q1.x;
+            dst.x =  (f * (q2.x - q1x) + q1x);
+            float q1y = q1.y;
+            dst.y = (f * (q2.y - q1y) + q1y);
+            float q1z = q1.z;
+            dst.z = (f * (q2.z - q1z) + q1z);
+            float q1w = q1.w;
+            dst.w = (f * (q2.w - q1w) + q1w);
+        }
+        Normalize(dst, dst);
+    }
+}
