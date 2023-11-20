@@ -6,6 +6,7 @@
 #include "textstream.hpp"
 
 class DataArray; // forward declaration
+class DataNode; // also a forward declaration
 
 union DataNodeValue {
 	int intVal;
@@ -14,6 +15,7 @@ union DataNodeValue {
 	int *object; // should be Object?
 	Symbol symVal;
 	char *strVal;
+	DataNode* varVal;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
@@ -64,6 +66,7 @@ public:
 	float LiteralFloat(const DataArray *) const; // fn_8032307C
 	DataArray *Array(const DataArray *) const; // fn_8032313C
 	DataArray *LiteralArray(const DataArray *) const; // fn_80323160
+	DataNode* Var(const DataArray*) const; // fn_80323170
 	bool operator==(const DataNode &) const; // fn_80323360
 	bool operator!=(const DataNode &) const; // fn_80323508
 	bool NotNull() const; // fn_80323530
@@ -111,6 +114,7 @@ public:
 	Symbol GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
+	DataNode* GetVarAtIndex(int) const; // fn_800E7878
 	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0

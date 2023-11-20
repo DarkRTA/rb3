@@ -178,3 +178,9 @@ float ATan2Thunk(float f1, float f2){
 float my_atan2f(float f1, float f2){
 	return atan2(f1, f2);
 }
+
+// fn_800E7878
+DataNode* DataArray::GetVarAtIndex(int i) const {
+    DataNode* dn = GetNodeAtIndex(i);
+    return dn->Var(this);
+}

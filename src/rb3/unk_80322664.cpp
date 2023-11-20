@@ -192,6 +192,11 @@ DataNode::DataNode(const DataNode &dn)
 		value.dataArray->IncRefCount();
 }
 
+// fn_80323170
+DataNode* DataNode::Var(const DataArray*) const {
+	return value.varVal;
+}
+
 // fn_8032364C
 void DataNode::Print(TextStream &ts, bool b) const
 {
