@@ -17,7 +17,7 @@ void Rand::Seed(int seed){
         seed = j * 0x41C64E6D + 0x3039;
         unk_arr[i] = 
             ((j >> 16) & 0xFFFF) |
-            ((seed & 0x7FFF0000) & 0xFFFF0000);
+            (seed & 0x7FFF0000);
     }
     unk00 = 0;
     unk04 = 0x67;
@@ -54,9 +54,11 @@ Rand::Rand(int i){
     Seed(i);
 }
 
+#pragma dont_inline on
 int Rand::Int(int i1, int i2){
     return i1 + Int() % (i2 - i1);
 }
+#pragma dont_inline reset
 
 #pragma dont_inline on
 float Rand::Float(float f1, float f2){
@@ -85,4 +87,24 @@ float Rand::Gaussian(){
         unk40c = true;
         return f3 * f5;
     }
+}
+
+void RandomInt(){
+    MainThread();
+    gRand.Int();
+}
+
+void RandomInt(int i1, int i2){
+    MainThread();
+    gRand.Int(i1, i2);
+}
+
+void RandomFloat(){
+    MainThread();
+    gRand.Float();
+}
+
+void RandomFloat(float f1, float f2){
+    MainThread();
+    gRand.Float(f1, f2);
 }
