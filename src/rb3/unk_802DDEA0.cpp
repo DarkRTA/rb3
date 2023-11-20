@@ -520,3 +520,37 @@ void MakeRotQuatUnitX(const Vector3& vec, Hmx::Quat& dst) {
 float operator*(const Hmx::Quat& q1, const Hmx::Quat& q2){
     return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
 }
+
+void Interp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst) {
+    if(f == 0.0f) dst = q1;
+    else if(f == 1.0f) dst = q2;
+    else {
+        if((q1 * q2) < 0.0f){
+            dst.x = -(f * (q1.x + q2.x) - q1.x);
+            dst.y = -(f * (q1.y + q2.y) - q1.y);
+            dst.z = -(f * (q1.z + q2.z) - q1.z);
+            dst.w = -(f * (q1.w + q2.w) - q1.w);
+        }
+        else {
+            dst.x = -(f * (q1.x - q2.x) - q1.x);
+            dst.y = -(f * (q1.y - q2.y) - q1.y);
+            dst.z = -(f * (q1.z - q2.z) - q1.z);
+            dst.w = -(f * (q1.w - q2.w) - q1.w);
+        }
+        Normalize(dst, dst);
+    }
+}
+
+#pragma dont_inline on
+void InterpThunk(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst){
+    Interp(q1, q2, f, dst);
+}
+#pragma dont_inline reset
+
+void Interp(const Hmx::Matrix3& m1, const Hmx::Matrix3& m2, float f, Hmx::Matrix3& dst) {
+    Hmx::Quat q1(m1);
+    Hmx::Quat q2(m2);
+    Hmx::Quat q;
+    InterpThunk(q1, q2, f, q);
+    MakeRotMatrix(q, dst);
+}
