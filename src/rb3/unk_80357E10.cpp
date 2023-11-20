@@ -147,8 +147,6 @@ DataNode DataOptionStr(DataArray* da){
 	else return DataNode(0);
 }
 
-extern bool fn_800103CC(Symbol*);
-
 DataNode DataOptionSym(DataArray* da){
 	char* str = OptionStr(da->GetStrAtIndex(1), nullptr);
 	Symbol s(str);
