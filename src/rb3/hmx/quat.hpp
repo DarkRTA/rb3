@@ -11,6 +11,7 @@ namespace Hmx {
         float w;
         Quat() {}
         Quat(const Hmx::Matrix3&);
+        Quat(const Vector3&);
         Quat(const Vector3&, float);
         void Set(float, float, float, float);
         void Set(const Vector3&, float);
