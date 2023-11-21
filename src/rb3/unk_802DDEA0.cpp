@@ -613,4 +613,8 @@ void ShortTransform::operator=(const Transform& tf){
 Hmx::Quat::Quat(const Vector3& vec, float f){
     Set(vec, f);
 }
+
+void ShortQuat::SetThunk(const Hmx::Quat& q){
+    Set(q);
+}
 #pragma dont_inline reset

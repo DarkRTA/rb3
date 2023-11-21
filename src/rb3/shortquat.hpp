@@ -6,6 +6,7 @@
 class ShortQuat {
 public:
     short x, y, z, w;
+	void SetThunk(const Hmx::Quat&);
     void Set(const Hmx::Quat&);
 	void Set(const Hmx::Matrix3&);
 	void operator=(const ShortQuat&);
