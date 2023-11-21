@@ -253,7 +253,8 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(Matching, "rb3/netstream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
-            Object(Matching, "rb3/rand2.cpp")
+            Object(Matching, "rb3/rand2.cpp"),
+            Object(NonMatching, "rb3/notetube.cpp")
         ],
     },
     {
