@@ -44,6 +44,7 @@ float PowThunk(double, double);
 float ATanThunk(double);
 float PowFloat(double, double);
 float SinThunk(double);
+float SinFloat(double);
 float CosThunk(double);
 float TanThunk(double);
 float TanFloat(double);
@@ -51,5 +52,9 @@ float ASinThunk(double);
 float ASinFloat(double);
 float ACosThunk(double);
 float ACosFloat(double);
+float ATan2Thunk(float, float);
+float my_atan2f(float, float);
+float SqrtThunk(double);
+float LogThunk(double);
 
 #endif

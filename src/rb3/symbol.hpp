@@ -15,6 +15,7 @@ public:
 	void Init();
 	void Terminate();
 	int GetIntVal(); // https://decomp.me/scratch/sxK01
+	bool IsNull(); // fn_800103CC
 };
 
 #endif

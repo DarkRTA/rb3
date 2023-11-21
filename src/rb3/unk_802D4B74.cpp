@@ -1,5 +1,7 @@
 #include "common.hpp"
 #include "vector3.hpp"
+#include "vector_ops.hpp"
+#include "hmx/matrix3.hpp"
 
 extern float fn_802D54E8(float);
 // fn_802D54A8
@@ -19,6 +21,16 @@ void Normalize(const Vector3& v, Vector3& dst){
         dst.Set(0.0f, 0.0f, 0.0f);
     }
     else {
-        
+
     }
+}
+
+float Length(const Vector3& v){
+    return 3.0f;
+}
+
+void Hmx::Matrix3::Set(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9){
+    row1.Set(f1, f2, f3);
+    row2.Set(f4, f5, f6);
+    row3.Set(f7, f8, f9);
 }

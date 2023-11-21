@@ -4,6 +4,9 @@
 #include "std/string.h"
 #include "tempomap.hpp"
 #include "multitempotempomap.hpp"
+#include "data.hpp"
+#include "symbol.hpp"
+#include "common.hpp"
 
 #pragma dont_inline on
 // fn_8035824C
@@ -126,3 +129,4 @@ int MultiTempoTempoMap::V_Unk13(int a, int *b)
 void MultiTempoTempoMap::V_Unk14()
 {
 }
+
