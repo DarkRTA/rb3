@@ -245,7 +245,6 @@ config.libs = [
             Object(NonMatching, "rb3/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
-            Object(Matching, "rb3/random.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(NonMatching, "rb3/string.cpp"),

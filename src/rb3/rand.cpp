@@ -1,5 +1,11 @@
 #include "rand.hpp"
+#include "random.hpp"
 #include "common.hpp"
+
+extern unsigned int gMainThreadID;
+extern "C" unsigned int OSGetCurrentThread();
+
+Rand gRand(0x29A);
 
 Rand::Rand(int i) : unk00(0), unk04(0), unk_arr(), unk40c(0) {
     Seed(i);
@@ -61,4 +67,34 @@ float Rand::Gaussian(){
         unk40c = true;
         return f3 * f5;
     }
+}
+
+void SeedRand(int seed){
+    gRand.Seed(seed);
+}
+
+void RandomInt(){
+    MainThread();
+    gRand.Int();
+}
+
+bool MainThread(){
+    bool ret = true;
+    if((gMainThreadID != 0) && (gMainThreadID != OSGetCurrentThread())) ret = false;
+    return ret;
+}
+
+void RandomInt(int i1, int i2){
+    MainThread();
+    gRand.Int(i1, i2);
+}
+
+void RandomFloat(){
+    MainThread();
+    gRand.Float();
+}
+
+void RandomFloat(float f1, float f2){
+    MainThread();
+    gRand.Float(f1, f2);
 }
