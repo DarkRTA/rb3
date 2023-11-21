@@ -108,8 +108,11 @@ rb3/interpolators.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
 	.data       start:0x80851378 end:0x808514A8
 
-rb3/unk_802DCEDC.cpp:
-	.text       start:0x802DD9A4 end:0x802DDE24
+rb3/rand.cpp:
+	.text       start:0x802DD9A4 end:0x802DDCCC
+
+rb3/random.cpp:
+	.text       start:0x802DDCCC end:0x802DDE24
 
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
