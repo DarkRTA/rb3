@@ -5,12 +5,6 @@ extern unsigned int gMainThreadID;
 extern "C" unsigned int OSGetCurrentThread();
 extern Rand gRand;
 
-bool MainThread(){
-    bool ret = true;
-    if((gMainThreadID != 0) && (gMainThreadID != OSGetCurrentThread())) ret = false;
-    return ret;
-}
-
 void SeedRand(int seed){
     gRand.Seed(seed);
 }
@@ -18,6 +12,12 @@ void SeedRand(int seed){
 void RandomInt(){
     MainThread();
     gRand.Int();
+}
+
+bool MainThread(){
+    bool ret = true;
+    if((gMainThreadID != 0) && (gMainThreadID != OSGetCurrentThread())) ret = false;
+    return ret;
 }
 
 void RandomInt(int i1, int i2){
