@@ -10,6 +10,7 @@
 #include "transform.hpp"
 #include "binstream.hpp"
 #include "shortquat.hpp"
+#include "shorttransform.hpp"
 
 #pragma dont_inline on
 // fn_802DE5B4
@@ -450,9 +451,11 @@ void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
     Normalize(*this, *this);
 }
 
+#pragma dont_inline on
 void ShortQuat::Set(const Hmx::Matrix3& mtx){
     Set(Hmx::Quat(mtx));
 }
+#pragma dont_inline reset
 
 void Invert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst) {
     float big_num = 
@@ -582,3 +585,36 @@ void FastInterp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& ds
         Normalize(dst, dst);
     }
 }
+
+// fn_802DE1D8
+ShortTransform::ShortTransform(){
+    rot.z = 0;
+    rot.y = 0;
+    rot.x = 0;
+    rot.w = 0x7FFF;
+    trans.z = 0.0f;
+    trans.y = 0.0f;
+    trans.x = 0.0f;
+}
+
+// fn_802DE0D0
+void ShortTransform::operator=(const ShortTransform& st){
+    rot = st.rot;
+    trans = st.trans;
+}
+
+// fn_802DDF9C
+void ShortTransform::operator=(const Transform& tf){
+    rot.Set(tf.rot);
+    trans = tf.trans;
+}
+
+#pragma dont_inline on
+Hmx::Quat::Quat(const Vector3& vec, float f){
+    Set(vec, f);
+}
+
+void ShortQuat::SetThunk(const Hmx::Quat& q){
+    Set(q);
+}
+#pragma dont_inline reset

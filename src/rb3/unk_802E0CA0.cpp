@@ -3,6 +3,7 @@
 #include "vector_ops.hpp"
 #include "common.hpp"
 #include "trigtable.hpp"
+#include "hmx/quat.hpp"
 
 Vector3* Vector3::operator+=(const Vector3& v){
     x += v.x;
@@ -23,3 +24,9 @@ void Normalize(const Hmx::Matrix3& src, Hmx::Matrix3& dst){
     Normalize(dst.row1, dst.row1);
     Cross(dst.row1, dst.row2, dst.row3);
 }
+
+#pragma dont_inline on
+Hmx::Quat::Quat(const Vector3& vec){
+    Set(vec);
+}
+#pragma dont_inline reset
