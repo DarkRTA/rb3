@@ -608,3 +608,9 @@ void ShortTransform::operator=(const Transform& tf){
     rot.Set(tf.rot);
     trans = tf.trans;
 }
+
+#pragma dont_inline on
+Hmx::Quat::Quat(const Vector3& vec, float f){
+    Set(vec, f);
+}
+#pragma dont_inline reset
