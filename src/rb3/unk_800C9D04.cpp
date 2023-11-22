@@ -84,3 +84,8 @@ void Scale(const Hmx::Matrix3& mtx, const Vector3& v, Hmx::Matrix3& dst){
 	Scale(mtx.row2, v, dst.row2);
 	Scale(mtx.row3, v, dst.row3);
 }
+
+// fn_800D3290
+int Maximum(int i1, int i2){
+	return (i1 < i2) ? i2 : i1;
+}

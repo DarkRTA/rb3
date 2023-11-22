@@ -189,3 +189,8 @@ DataNode* DataArray::GetVarAtIndex(int i) const {
 float Minimum(float f1, float f2){
     return (f2 < f1) ? f2 : f1;
 }
+
+// fn_800E1A30
+float Maximum(float f1, float f2){
+    return (f1 < f2) ? f2 : f1;
+}
