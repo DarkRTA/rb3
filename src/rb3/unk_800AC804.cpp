@@ -6,6 +6,7 @@
 #include "jsonconverter.hpp"
 #include "data.hpp"
 #include "joinresultmsg.hpp"
+#include "hmx/object.hpp"
 
 // fn_800AFE60
 // probably inline
@@ -46,4 +47,10 @@ DataNode::DataNode(float f)
 {
 	value.floatVal = f;
 	type = kDataFloat;
+}
+
+// fn_800AFF98
+DataNode::DataNode(Hmx::Object* obj){
+	value.objVal = obj;
+	type = kDataObject;
 }

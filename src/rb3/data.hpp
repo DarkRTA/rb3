@@ -4,6 +4,7 @@
 #include "string.hpp"
 #include "binstream.hpp"
 #include "textstream.hpp"
+#include "hmx/object.hpp"
 
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
@@ -12,8 +13,8 @@ union DataNodeValue {
 	int intVal;
 	float floatVal;
 	DataArray *dataArray;
-	int *object; // should be Object?
-	Symbol symVal;
+	Hmx::Object* objVal;
+	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
 };
@@ -23,8 +24,8 @@ enum DataType { /* differs from serialized, for... some reason; i trusted ghidra
 	kDataFloat = 1,
 	kDataVariable = 2,
 	kDataSymbol = 3,
-	kDataFunc = 4,
-	kDataObject = 5,
+	kDataObject = 4,
+	kDataFunc = 5,
 	kDataInt = 6,
 	kDataIfdef = 7,
 	kDataElse = 8,
@@ -48,6 +49,7 @@ public:
 	DataNode(int); // fn_8000E128
 	DataNode(float); // fn_800B30B8
 	DataNode(const DataNode &); // fn_80323178
+	DataNode(Hmx::Object*); // fn_800AFF98
 	DataNode(const char *); // fn_803231CC
 	DataNode(const String &); // fn_8032324C
 	DataNode(Symbol); // fn_8000E114
@@ -57,9 +59,9 @@ public:
 	DataNode *Evaluate() const;
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	Symbol Sym(const DataArray *) const; // fn_80322F54
-	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol* Sym(const DataArray *) const; // fn_80322F54
+	Symbol* LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol* ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024

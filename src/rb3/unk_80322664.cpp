@@ -43,27 +43,27 @@ int DataNode::LiteralInt(const DataArray *da) const
 }
 
 // fn_80322F54
-Symbol DataNode::Sym(const DataArray *da) const
+Symbol* DataNode::Sym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
 	return n->value.symVal;
 }
 
 // fn_80322F78
-Symbol DataNode::LiteralSym(const DataArray *da) const
+Symbol* DataNode::LiteralSym(const DataArray *da) const
 {
 	return value.symVal;
 }
 
 // fn_80322F80
-Symbol DataNode::ForceSym(const DataArray *da) const
+Symbol* DataNode::ForceSym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	if (n->type == kDataObject) {
+	if (n->type == kDataFunc) {
 		return n->value.symVal;
 	}
-	Symbol s(n->value.symVal.m_string);
-	return s;
+	Symbol s(n->value.symVal->m_string);
+	return &s;
 }
 
 // fn_80322FC8
