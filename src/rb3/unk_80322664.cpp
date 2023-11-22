@@ -70,7 +70,7 @@ Symbol* DataNode::ForceSym(const DataArray *da) const
 const char *DataNode::Str(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	if (n->type == kDataObject)
+	if (n->type == kDataFunc)
 		return n->value.strVal;
 	else
 		return n->value.dataArray->mNodes->value.strVal;
@@ -79,7 +79,7 @@ const char *DataNode::Str(const DataArray *da) const
 // fn_80323004
 const char *DataNode::LiteralStr(const DataArray *da) const
 {
-	if (type == kDataObject)
+	if (type == kDataFunc)
 		return value.strVal;
 	else
 		return value.dataArray->mNodes->value.strVal;
@@ -190,6 +190,13 @@ DataNode::DataNode(const DataNode &dn)
 	type = dn.type;
 	if (type & 0x10)
 		value.dataArray->IncRefCount();
+}
+
+DataNode::DataNode(const DataArrayPtr& ptr){
+	DataArray* arr = ptr.arr;
+	value.dataArray = arr;
+	arr->IncRefCount();
+	type = kDataArray;
 }
 
 // fn_80323170

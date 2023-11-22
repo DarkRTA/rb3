@@ -8,6 +8,7 @@
 
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
+class DataArrayPtr; // yet another forward declaration
 
 union DataNodeValue {
 	int intVal;
@@ -52,6 +53,7 @@ public:
 	DataNode(Hmx::Object*); // fn_800AFF98
 	DataNode(const char *); // fn_803231CC
 	DataNode(const String &); // fn_8032324C
+	DataNode(const DataArrayPtr&);
 	DataNode(Symbol); // fn_8000E114
 	DataNode(const void *, int);
 	DataNode(DataArray *, DataType); // fn_80323318
@@ -141,6 +143,11 @@ public:
 	short mRefCount;
 	short mLine;
 	short mUnknown;
+};
+
+class DataArrayPtr {
+public:
+	DataArray* arr;
 };
 
 #endif
