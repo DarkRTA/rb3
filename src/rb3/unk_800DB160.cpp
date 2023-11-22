@@ -184,3 +184,8 @@ DataNode* DataArray::GetVarAtIndex(int i) const {
     DataNode* dn = GetNodeAtIndex(i);
     return dn->Var(this);
 }
+
+// fn_800DB3F0
+float Minimum(float f1, float f2){
+    return (f2 < f1) ? f2 : f1;
+}

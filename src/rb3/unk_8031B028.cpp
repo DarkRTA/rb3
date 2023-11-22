@@ -52,8 +52,17 @@ DataNode DataGetLastElem(DataArray *da)
 extern DataNode DataForEach(DataArray *);
 // fn_8031DB20
 extern DataNode DataForEachInt(DataArray *);
+
 // fn_8031CA14
-extern DataNode DataMin(DataArray *);
+DataNode DataMin(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+		return DataNode(Minimum(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+	}
+	else return DataNode(Minimum(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+}
+
 // fn_8031CAF0
 extern DataNode DataMax(DataArray *);
 
