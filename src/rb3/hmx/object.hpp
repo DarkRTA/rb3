@@ -16,17 +16,19 @@ namespace Hmx {
 		virtual void SetType(); // fn_800102A0
 		virtual void Handle(); // fn_80336C94
 		virtual bool SyncProperty(); // fn_80337B7C
-		virtual void Save(); // fn_803366A0
-		virtual void Copy(); // fn_80336788
-		virtual void Load(); // fn_803369F4
+		virtual void Save();
+		virtual void Copy();
+		virtual void Load();
 		virtual void Print(); // links to fn_8076F540, which returns void
 		virtual void Export(); // links to fn_8076F540, which returns void
+		virtual void V_Unk14(); // links to fn_8076F540, which returns void
+		virtual void V_Unk15(); // links to fn_8076F540, which returns void
 		virtual void SetTypeDef();
-		virtual void SetName();
-		virtual void DataDir(); // fn_80335A2C
-		virtual void PreLoad();
-		virtual void PostLoad();
-		virtual void FindPathName();
+		virtual void SetName(); // fn_80335904
+		virtual void DataDir(); // fn_803351D0
+		virtual void PreLoad(); // fn_800AB8B4
+		virtual void PostLoad(); // links to fn_8076F540, which returns void
+		virtual void FindPathName(); // fn_80336A84
 	};
 }
 
