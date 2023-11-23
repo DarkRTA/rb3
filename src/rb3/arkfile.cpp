@@ -1,5 +1,6 @@
 #include "file.hpp"
 #include "arkfile.hpp"
+#include "archive.hpp"
 
 int File::sOpenCount[4];
 
@@ -33,13 +34,13 @@ int File::V_Unk15(int *a)
 extern "C" char *FileMakePath(char *, char *, char *);
 extern int lbl_80902234;
 extern char *lbl_808517C0; // "."
+extern Archive* TheArchive;
 
 // fn_802E72CC
 ArkFile::ArkFile(const char *c, int a)
 	: unk18(0), unk1c(0), fpos(0), unk24(0), unk2c(1), fname(c)
 {
-	FileMakePath(".", (char *)c, nullptr);
-	if (a & 4) {
+	if(!TheArchive->GetFileInfo(FileMakePath(".", (char *)c, nullptr), unk4, unk8, size, size_uncompressed) || (a & 4)){
 		unk24 = 1;
 	}
 }
@@ -148,7 +149,7 @@ extern void fn_802EB6E4(int *, int, int, int);
 // fn_802E77E4
 int ArkFile::V_Unk16(int *a)
 {
-	fn_802EB6E4(a, unk4, unkc + fpos, unkc + fpos);
+	// fn_802EB6E4(a, unk4, unkc + fpos, unkc + fpos);
 }
 
 // fn_802E7768
