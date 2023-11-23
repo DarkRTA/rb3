@@ -1,6 +1,8 @@
 #include "file.hpp"
+#include "file_ops.hpp"
 #include "arkfile.hpp"
 #include "archive.hpp"
+#include "blockmgr.hpp"
 
 int File::sOpenCount[4];
 
@@ -31,9 +33,6 @@ int File::V_Unk15(int *a)
 	return 1;
 }
 
-extern "C" char *FileMakePath(char *, char *, char *);
-extern int lbl_80902234;
-extern char *lbl_808517C0; // "."
 extern Archive* TheArchive;
 
 // fn_802E72CC
@@ -45,16 +44,14 @@ ArkFile::ArkFile(const char *c, int a)
 	}
 }
 
-extern int *lbl_80902278;
-extern void fn_802E9888();
+extern BlockMgr TheBlockMgr;
 
 // fn_802E73FC
 ArkFile::~ArkFile()
 {
 	if (unk18 > 0) {
-		fn_802E9888();
+		TheBlockMgr.KillBlockRequests(this);
 	}
-	fn_800E1114();
 }
 
 // fn_802E748C
@@ -138,8 +135,7 @@ extern void fn_802EA488(int *); // this is BlockMgr::Poll()
 // fn_802E7790
 int ArkFile::ReadDone(int &a)
 {
-	fn_802EA488(
-		lbl_80902278); // lbl_80902278 is a BlockMgr* named "TheBlockMgr"
+	TheBlockMgr.Poll();
 	a = unk1c;
 	return (unk18 == 0);
 }
