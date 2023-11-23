@@ -147,6 +147,9 @@ rb3/asyncfilecnt.cpp:
 rb3/asyncfilewii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
+rb3/unk_802E9040.cpp:
+	.text       start:0x802E9040 end:0x802EAC5C
+
 rb3/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
 

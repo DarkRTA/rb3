@@ -12,7 +12,7 @@ public:
 	char* unk14;
 	ArkFile* unk18;
 
-	AsyncTask(ArkFile*, void*, int, int, int, int);
+	AsyncTask(ArkFile*, void*, int, int, int, int, const char*);
 	bool FillData();
 };
 
