@@ -635,8 +635,24 @@ extern DataNode DataExit(DataArray *);
 extern DataNode DataFind(DataArray *);
 // fn_8031F4F0
 extern DataNode DataFindExists(DataArray *);
+
 // fn_8031BBD0
-extern DataNode DataFindElem(DataArray *);
+DataNode DataFindElem(DataArray* da){
+	DataArray* arr = da->GetArrayAtIndex(1);
+	arr->IncRefCount();
+	DataNode* dn = EvaluateNodeAtIndex(da, 2);
+	for(int i = 0; i < arr->GetNodeCount(); i++){
+		if(!(arr->GetNodeAtIndex(i)->operator==(*dn))) continue;
+		if(da->GetNodeCount() > 3){
+			da->GetVarAtIndex(3)->operator=(DataNode(i));
+		}
+		arr->DecRefCount();
+		return DataNode(1);
+	}
+	arr->DecRefCount();
+	return DataNode(0);
+}
+
 // fn_8031F690
 extern DataNode DataFindObj(DataArray *);
 
