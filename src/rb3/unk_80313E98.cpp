@@ -501,3 +501,5 @@ bool DataArray::FindData(Symbol s, bool& dest, bool b) const {
 	}
 	else return false;
 }
+
+// fn_80316258

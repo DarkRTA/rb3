@@ -135,6 +135,8 @@ rb3/unk_802E434C.cpp:
 
 rb3/arkfile.cpp:
 	.text       start:0x802E72CC end:0x802E7828
+	.data       start:0x808516F0 end:0x808517C8
+	.bss        start:0x80906C88 end:0x80906C98
 
 rb3/asyncfile.cpp:
 	.text       start:0x802E7828 end:0x802E8680
@@ -144,6 +146,9 @@ rb3/asyncfilecnt.cpp:
 
 rb3/asyncfilewii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
+
+rb3/unk_802E9040.cpp:
+	.text       start:0x802E9040 end:0x802EAC5C
 
 rb3/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
@@ -201,6 +206,9 @@ rb3/unk_8034C91C.cpp:
 
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
+
+rb3/unk_80350BA0.cpp:
+	.text       start:0x80350BA0 end:0x803549C0
 
 rb3/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190

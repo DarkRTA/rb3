@@ -4,18 +4,21 @@
 #include "string.hpp"
 #include "binstream.hpp"
 #include "textstream.hpp"
+#include "hmx/object.hpp"
 
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
+class DataArrayPtr; // yet another forward declaration
 
 union DataNodeValue {
 	int intVal;
 	float floatVal;
 	DataArray *dataArray;
-	int *object; // should be Object?
-	Symbol symVal;
+	Hmx::Object* objVal;
+	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
+	DataArray* command;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
@@ -23,8 +26,8 @@ enum DataType { /* differs from serialized, for... some reason; i trusted ghidra
 	kDataFloat = 1,
 	kDataVariable = 2,
 	kDataSymbol = 3,
-	kDataFunc = 4,
-	kDataObject = 5,
+	kDataObject = 4,
+	kDataFunc = 5,
 	kDataInt = 6,
 	kDataIfdef = 7,
 	kDataElse = 8,
@@ -48,8 +51,10 @@ public:
 	DataNode(int); // fn_8000E128
 	DataNode(float); // fn_800B30B8
 	DataNode(const DataNode &); // fn_80323178
+	DataNode(Hmx::Object*); // fn_800AFF98
 	DataNode(const char *); // fn_803231CC
 	DataNode(const String &); // fn_8032324C
+	DataNode(const DataArrayPtr&);
 	DataNode(Symbol); // fn_8000E114
 	DataNode(const void *, int);
 	DataNode(DataArray *, DataType); // fn_80323318
@@ -57,9 +62,9 @@ public:
 	DataNode *Evaluate() const;
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	Symbol Sym(const DataArray *) const; // fn_80322F54
-	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol* Sym(const DataArray *) const; // fn_80322F54
+	Symbol* LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol* ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024
@@ -115,6 +120,7 @@ public:
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878
+	DataType GetTypeAtIndex(int) const; // fn_80117BAC
 	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
@@ -138,6 +144,11 @@ public:
 	short mRefCount;
 	short mLine;
 	short mUnknown;
+};
+
+class DataArrayPtr {
+public:
+	DataArray* arr;
 };
 
 #endif

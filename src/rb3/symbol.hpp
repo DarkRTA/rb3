@@ -5,7 +5,7 @@ class Symbol {
 public:
 	char *m_string;
 	Symbol(); // ctor pulled from RB2 - fn_800A7C40
-	Symbol(char *); //ctor pulled from gdrb
+	Symbol(const char*); //ctor pulled from gdrb
 
 	// methods found in RB2
 	bool operator!=(const char *);

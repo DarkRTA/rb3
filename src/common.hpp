@@ -14,6 +14,9 @@ DataNode* EvaluateNodeAtIndex(DataArray*, int);
 // misc functions
 int Minimum(int, int);
 unsigned int Minimum(unsigned int, unsigned int);
+float Minimum(float, float);
+int Maximum(int, int);
+float Maximum(float, float);
 bool SearchReplace(const char*, const char*, const char*, char*);
 int Round(float);
 float Clamp(float, float, float);

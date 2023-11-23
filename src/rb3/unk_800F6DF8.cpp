@@ -31,3 +31,9 @@ int CountBits(int num){
     }
     return var_r4;
 }
+
+// fn_80117BAC
+DataType DataArray::GetTypeAtIndex(int i) const {
+    DataNode* dn = GetNodeAtIndex(i);
+    return dn->GetType();
+}

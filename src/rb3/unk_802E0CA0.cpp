@@ -30,3 +30,10 @@ Hmx::Quat::Quat(const Vector3& vec){
     Set(vec);
 }
 #pragma dont_inline reset
+
+extern "C" void* memset(void*, int, unsigned int);
+
+// fn_802E1A90
+void* MemSetZero(void* v, unsigned int ui){
+    return memset(v, 0, ui);
+}

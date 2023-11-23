@@ -52,10 +52,26 @@ DataNode DataGetLastElem(DataArray *da)
 extern DataNode DataForEach(DataArray *);
 // fn_8031DB20
 extern DataNode DataForEachInt(DataArray *);
+
 // fn_8031CA14
-extern DataNode DataMin(DataArray *);
+DataNode DataMin(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+		return DataNode(Minimum(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+	}
+	else return DataNode(Minimum(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+}
+
 // fn_8031CAF0
-extern DataNode DataMax(DataArray *);
+DataNode DataMax(DataArray* da){
+	DataNode* dn1 = EvaluateNodeAtIndex(da, 1);
+	DataNode* dn2 = EvaluateNodeAtIndex(da, 2);
+	if(dn1->GetType() == kDataFloat || dn2->GetType() == kDataFloat){
+		return DataNode(Maximum(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+	}
+	else return DataNode(Maximum(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+}
 
 // fn_8031CBCC
 DataNode DataAbs(DataArray *da)
@@ -619,8 +635,24 @@ extern DataNode DataExit(DataArray *);
 extern DataNode DataFind(DataArray *);
 // fn_8031F4F0
 extern DataNode DataFindExists(DataArray *);
+
 // fn_8031BBD0
-extern DataNode DataFindElem(DataArray *);
+DataNode DataFindElem(DataArray* da){
+	DataArray* arr = da->GetArrayAtIndex(1);
+	arr->IncRefCount();
+	DataNode* dn = EvaluateNodeAtIndex(da, 2);
+	for(int i = 0; i < arr->GetNodeCount(); i++){
+		if(!(arr->GetNodeAtIndex(i)->operator==(*dn))) continue;
+		if(da->GetNodeCount() > 3){
+			da->GetVarAtIndex(3)->operator=(DataNode(i));
+		}
+		arr->DecRefCount();
+		return DataNode(1);
+	}
+	arr->DecRefCount();
+	return DataNode(0);
+}
+
 // fn_8031F690
 extern DataNode DataFindObj(DataArray *);
 
