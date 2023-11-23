@@ -3,6 +3,7 @@
 #include "arkfile.hpp"
 #include "archive.hpp"
 #include "blockmgr.hpp"
+#include "asynctask.hpp"
 
 int File::sOpenCount[4];
 
@@ -129,8 +130,6 @@ unsigned int ArkFile::UncompressedSize()
 {
 	return size_uncompressed;
 }
-
-extern void fn_802EA488(int *); // this is BlockMgr::Poll()
 
 // fn_802E7790
 int ArkFile::ReadDone(int &a)
