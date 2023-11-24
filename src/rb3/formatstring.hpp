@@ -1,5 +1,6 @@
 #ifndef RB3_FORMATSTRING_HPP
 #define RB3_FORMATSTRING_HPP
+#include "string.hpp"
 
 class FormatString {
 public:
@@ -16,6 +17,7 @@ public:
 	void UpdateType();
 	char* Str();
 	FormatString& operator<<(unsigned int);
+	FormatString& operator<<(const String&);
 };
 
 #endif
