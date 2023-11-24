@@ -10,6 +10,7 @@ public:
 	char* unk80c;
     int formatType; // 0 = integer, 1 = string, 2 = float, 3 = unknown
 
+	FormatString();
 	FormatString(const char*);
 	void InitArray(const char*, bool);
 	void UpdateType();

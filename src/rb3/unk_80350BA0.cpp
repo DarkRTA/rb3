@@ -5,6 +5,12 @@
 
 extern char* NextBuf();
 
+FormatString::FormatString(){
+    unk4 = NextBuf();
+    unk8 = 0x800;
+    unk80c = 0;
+}
+
 FormatString::FormatString(const char* str){
     unk4 = NextBuf();
     unk8 = 0x800;
