@@ -11,13 +11,16 @@ inline void* operator new (unsigned long size, void* p) { return p; }
 // evaluate a DataNode at a particular index
 DataNode* EvaluateNodeAtIndex(DataArray*, int);
 
+// string operations
+bool SearchReplace(const char*, const char*, const char*, char*);
+bool StrNCopy(char*, const char*, int);
+
 // misc functions
 int Minimum(int, int);
 unsigned int Minimum(unsigned int, unsigned int);
 float Minimum(float, float);
 int Maximum(int, int);
 float Maximum(float, float);
-bool SearchReplace(const char*, const char*, const char*, char*);
 int Round(float);
 float Clamp(float, float, float);
 int Clamp(int, int, int);
