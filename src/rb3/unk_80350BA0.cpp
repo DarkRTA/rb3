@@ -100,6 +100,36 @@ FormatString& FormatString::operator<<(const DataNode& dn){
     return *this;
 }
 
+FormatString& FormatString::operator<<(float f){
+    char tmp_char = *unk80c;
+    *unk80c = '\0';
+    int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, f);
+    *unk80c = tmp_char;
+    unk8 -= snp;
+    UpdateType();
+    return *this;
+}
+
+FormatString& FormatString::operator<<(const char* cc){
+    char tmp_char = *unk80c;
+    *unk80c = '\0';
+    int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, cc);
+    *unk80c = tmp_char;
+    unk8 -= snp;
+    UpdateType();
+    return *this;
+}
+
+FormatString& FormatString::operator<<(Symbol sym){
+    char tmp_char = *unk80c;
+    *unk80c = '\0';
+    int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, sym.m_string);
+    *unk80c = tmp_char;
+    unk8 -= snp;
+    UpdateType();
+    return *this;
+}
+
 char* FormatString::Str(){
     if(*format != '\0'){
         strcpy(unk4 + 0x800 - unk8, (const char*)format);

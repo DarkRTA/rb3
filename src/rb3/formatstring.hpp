@@ -20,6 +20,9 @@ public:
 	FormatString& operator<<(unsigned int);
 	FormatString& operator<<(const String&);
 	FormatString& operator<<(const DataNode&);
+	FormatString& operator<<(float);
+	FormatString& operator<<(const char*);
+	FormatString& operator<<(Symbol);
 };
 
 #endif
