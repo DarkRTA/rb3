@@ -4,7 +4,7 @@
 class FormatString {
 public:
 	char* format;
-	int unk4;
+	char* unk4;
 	int unk8;
 	char unk_arr[0x800];
 	char* unk80c;

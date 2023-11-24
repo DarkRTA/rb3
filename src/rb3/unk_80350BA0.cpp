@@ -3,7 +3,7 @@
 #include "std/string.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 
-extern int NextBuf();
+extern char* NextBuf();
 
 FormatString::FormatString(const char* str){
     unk4 = NextBuf();
@@ -56,7 +56,7 @@ void FormatString::UpdateType(){
 FormatString& FormatString::operator<<(unsigned int ui){
     char tmp_char = *unk80c;
     *unk80c = '\0';
-    int snp = snprintf(&unk_arr[unk4 + 0x800 - unk8], unk8, format, ui);
+    int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, ui);
     *unk80c = tmp_char;
     unk8 -= snp;
     UpdateType();
