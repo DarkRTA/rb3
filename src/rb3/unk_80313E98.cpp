@@ -455,7 +455,7 @@ bool DataArray::FindData(Symbol s, const char*& c, bool b) const {
 bool DataArray::FindData(Symbol s, Symbol& dest, bool b) const {
 	DataArray* arr = FindArray(s, b);
 	if(arr != nullptr){
-		dest = arr->GetSymAtIndex(1);
+		dest = *(arr->GetSymAtIndex(1));
 		return true;
 	}
 	else return false;
