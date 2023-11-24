@@ -1,6 +1,7 @@
 #ifndef RB3_FORMATSTRING_HPP
 #define RB3_FORMATSTRING_HPP
 #include "string.hpp"
+#include "data.hpp"
 
 class FormatString {
 public:
@@ -18,6 +19,7 @@ public:
 	char* Str();
 	FormatString& operator<<(unsigned int);
 	FormatString& operator<<(const String&);
+	FormatString& operator<<(const DataNode&);
 };
 
 #endif

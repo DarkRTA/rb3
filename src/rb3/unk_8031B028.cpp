@@ -5,6 +5,7 @@
 #include "string.hpp"
 #include "std/string.h"
 #include "vector3.hpp"
+#include "formatstring.hpp"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
@@ -14,8 +15,15 @@ extern DataNode DataReplaceObject(DataArray *);
 extern DataNode DataNextName(DataArray *);
 // fn_8031B6C0
 extern DataNode DataPrintf(DataArray *);
+
 // fn_8031B62C
-extern DataNode DataSprintf(DataArray *);
+DataNode DataSprintf(DataArray* da){
+	FormatString fs(da->GetStrAtIndex(1));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		fs << *EvaluateNodeAtIndex(da, i);
+	}
+	return DataNode(fs.Str());
+}
 
 // fn_8031B7DC
 DataNode DataSprint(DataArray *da)

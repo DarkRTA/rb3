@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "std/string.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "data.hpp"
 
 extern char* NextBuf();
 
@@ -73,6 +74,26 @@ FormatString& FormatString::operator<<(const String& str){
     char tmp_char = *unk80c;
     *unk80c = '\0';
     int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, str.c_str());
+    *unk80c = tmp_char;
+    unk8 -= snp;
+    UpdateType();
+    return *this;
+}
+
+FormatString& FormatString::operator<<(const DataNode& dn){
+    char tmp_char = *unk80c;
+    *unk80c = '\0';
+    int snp;
+    if(formatType == 0){
+        snp = snprintf(unk4 + 0x800 - unk8, unk8, format, dn.LiteralInt(nullptr));
+    }
+    else if(formatType == 2){
+        snp = snprintf(unk4 + 0x800 - unk8, unk8, format, dn.LiteralFloat(nullptr));
+    }
+    else if(formatType == 1){
+        snp = snprintf(unk4 + 0x800 - unk8, unk8, format, dn.LiteralStr(nullptr));
+    }
+    else snp = 0;
     *unk80c = tmp_char;
     unk8 -= snp;
     UpdateType();
