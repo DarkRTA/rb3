@@ -69,6 +69,16 @@ FormatString& FormatString::operator<<(unsigned int ui){
     return *this;
 }
 
+FormatString& FormatString::operator<<(const String& str){
+    char tmp_char = *unk80c;
+    *unk80c = '\0';
+    int snp = snprintf(unk4 + 0x800 - unk8, unk8, format, str.c_str());
+    *unk80c = tmp_char;
+    unk8 -= snp;
+    UpdateType();
+    return *this;
+}
+
 char* FormatString::Str(){
     if(*format != '\0'){
         strcpy(unk4 + 0x800 - unk8, (const char*)format);
