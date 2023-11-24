@@ -13,6 +13,7 @@ public:
 	FormatString(const char*);
 	void InitArray(const char*, bool);
 	void UpdateType();
+	char* Str();
 	FormatString& operator<<(unsigned int);
 };
 

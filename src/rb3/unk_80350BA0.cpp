@@ -62,3 +62,10 @@ FormatString& FormatString::operator<<(unsigned int ui){
     UpdateType();
     return *this;
 }
+
+char* FormatString::Str(){
+    if(*format != '\0'){
+        strcpy(unk4 + 0x800 - unk8, (const char*)format);
+    }
+    return unk4;
+}
