@@ -11,7 +11,7 @@ unsigned short SwapDataHalfWord(unsigned short s)
 }
 
 // fn_80119134
-Symbol DataArray::ForceSymAtIndex(int i) const {
+Symbol* DataArray::ForceSymAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->ForceSym(this);
 }

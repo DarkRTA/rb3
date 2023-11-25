@@ -225,8 +225,7 @@ DataNode DataDist(DataArray* da){
 
 // fn_8031D664
 DataNode DataSymbol(DataArray* da){
-	Symbol s = da->ForceSymAtIndex(1);
-	return DataNode(s);
+	return DataNode(*(da->ForceSymAtIndex(1)));
 }
 
 // fn_8031D700
@@ -434,12 +433,31 @@ extern DataNode DataDelete(DataArray *);
 extern DataNode DataObject(DataArray *);
 // fn_8031DE08
 extern DataNode DataExists(DataArray *);
+
+extern char* Localize(Symbol, bool*);
+extern char* gNullStr;
 // fn_8031DEB8
-extern DataNode DataLocalize(DataArray *);
+DataNode DataLocalize(DataArray* da){
+	Symbol* sym = da->ForceSymAtIndex(1);
+	char* loc = Localize(*sym, false);
+	char* ret = gNullStr;
+	if(loc != nullptr){
+		ret = loc;
+	}
+	return DataNode(ret);
+}
+
+extern char* LocalizeSeparatedInt(int);
 // fn_8031DF18
-extern DataNode DataLocalizeSeparatedInt(DataArray *);
+DataNode DataLocalizeSeparatedInt(DataArray* da){
+	return DataNode(LocalizeSeparatedInt(da->GetIntAtIndex(1)));
+}
+
+extern char* LocalizeFloat(const char*, float);
 // fn_8031DF5C
-extern DataNode DataLocalizeFloat(DataArray *);
+DataNode DataLocalizeFloat(DataArray* da){
+	return DataNode(LocalizeFloat(da->GetStrAtIndex(1), da->GetFloatAtIndex(2)));
+}
 
 // fn_8031DFC8
 DataNode DataStartsWith(DataArray *da)
