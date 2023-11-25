@@ -4,6 +4,7 @@
 #include "file_ops.hpp"
 #include "string.hpp"
 #include "std/string.h"
+#include "std/stdlib.h"
 #include "vector3.hpp"
 #include "formatstring.hpp"
 #include "debug.hpp"
@@ -229,7 +230,16 @@ DataNode DataSymbol(DataArray* da){
 }
 
 // fn_8031D700
-extern DataNode DataInt(DataArray *);
+DataNode DataInt(DataArray* da){
+	DataNode* dn = EvaluateNodeAtIndex(da, 1);
+	if(dn->GetType() == kDataSymbol){
+		return DataNode(atoi(dn->GetDataNodeVal().strVal));
+	}
+	else if(dn->GetType() == kDataObject || dn->GetType() == kDataInt){
+		return DataNode(dn->GetDataNodeVal().intVal);
+	}
+	else return DataNode((int)(dn->LiteralFloat(da)));
+}
 
 extern char lbl_808E4478[2];
 // fn_8031D6A8
@@ -839,8 +849,16 @@ DataNode DataSort(DataArray *da)
 
 // fn_8031C6C4
 extern DataNode DataVar(DataArray *);
+
+extern DataNode* DataVariable(Symbol);
 // fn_8031B904
-extern DataNode DataSetVar(DataArray *);
+DataNode DataSetVar(DataArray* da){
+	DataNode ret = *EvaluateNodeAtIndex(da, 2);
+	DataNode* dn = DataVariable(da->ForceSymAtIndex(1));
+	dn->operator=(ret);
+	return ret;
+}
+
 
 // fn_8031C710
 DataNode DataPackColor(DataArray* da){
