@@ -125,7 +125,8 @@ bool DataNode::operator==(const DataNode &dn) const
 			return strcmp(value.strVal, dn.value.strVal) == 0;
 		} else
 			return (value.intVal == dn.value.intVal);
-	} else if ((type == kDataFunc) || (dn.type == kDataFunc)) {
+	} else if ((type == kDataObject) || (dn.type == kDataObject)) {
+
 	} else if ((type == kDataString) || (dn.type == kDataString)) {
 		return strcmp(LiteralStr(nullptr), dn.LiteralStr(nullptr)) == 0;
 	} else if ((type == kDataFloat) || (dn.type == kDataFloat)) {
@@ -152,7 +153,7 @@ bool DataNode::NotNull() const
 {
 	DataNode *n = Evaluate();
 	DataType t = n->GetType();
-	if (t == kDataObject) {
+	if (t == kDataSymbol) {
 		return n->value.strVal[0] != 0;
 	} else if (t == kDataString) {
 		return (n->value.dataArray->GetNodeCount() < -1);
@@ -266,6 +267,7 @@ void DataNode::Print(TextStream &ts, bool b) const
 		else ts << value.strVal;
 		break;
 	case kDataGlob:
+		ts << "<glob " << -value.dataArray->GetNodeCount() << ">";
 		break;
 	case kDataDefine:
 		ts << "\n#define " << value.strVal << "\n";
@@ -285,5 +287,28 @@ void DataNode::Print(TextStream &ts, bool b) const
 	case kDataUndef:
 		ts << "\n#undef " << value.strVal << "\n";
 		break;
+	}
+}
+
+void DataNode::Save(BinStream& bs) {
+	if(type == kDataUnhandled) type = kDataInt;
+	else if(type == kDataInt) type = kDataUnhandled;
+	bs << (unsigned int)type;
+	switch(type){
+		case 0: case 6: case 8: case 9: case 0x24:
+			bs << (unsigned int) value.intVal;
+			break;
+		case 1: bs << value.floatVal; break;
+		case 2: bs << DataVarName(this); break;
+		case 3: // bs << DataFuncName(), returns a Symbol*
+			break;
+		case 4: // object
+			break;
+		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
+			bs << value.strVal; break;
+		case 0x10: case 0x11: case 0x13:
+			value.dataArray->Save(bs); break;
+		case 0x12: case 0x14:
+			value.dataArray->SaveGlob(bs, true); break;
 	}
 }
