@@ -765,14 +765,13 @@ extern "C" DataNode *fn_800E7878(DataArray *, int);
 // fn_8031FED0
 DataNode DataSearchReplace(DataArray *da)
 {
-	char *str;
+	char str[0x800];
 	bool changed = SearchReplace(
 		da->GetStrAtIndex(1),
 		da->GetStrAtIndex(2),
 		da->GetStrAtIndex(3),
 		str);
-	DataNode dn(str);
-	DataNode *asdf = fn_800E7878(da, 4);
+	da->GetVarAtIndex(4)->operator=(DataNode(str));
 	return DataNode(changed);
 }
 
