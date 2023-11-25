@@ -73,9 +73,9 @@ void SeedRand(int seed){
     gRand.Seed(seed);
 }
 
-void RandomInt(){
+int RandomInt(){
     MainThread();
-    gRand.Int();
+    return gRand.Int();
 }
 
 bool MainThread(){
@@ -84,17 +84,17 @@ bool MainThread(){
     return ret;
 }
 
-void RandomInt(int i1, int i2){
+int RandomInt(int i1, int i2){
     MainThread();
-    gRand.Int(i1, i2);
+    return gRand.Int(i1, i2);
 }
 
-void RandomFloat(){
+float RandomFloat(){
     MainThread();
-    gRand.Float();
+    return gRand.Float();
 }
 
-void RandomFloat(float f1, float f2){
+float RandomFloat(float f1, float f2){
     MainThread();
-    gRand.Float(f1, f2);
+    return gRand.Float(f1, f2);
 }
