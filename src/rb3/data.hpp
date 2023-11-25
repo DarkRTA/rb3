@@ -18,7 +18,6 @@ union DataNodeValue {
 	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
-	DataArray* command;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
