@@ -197,6 +197,9 @@ rb3/unk_803242cc.cpp:
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
+rb3/unk_8032443C.cpp:
+	.text       start:0x8032443C end:0x80324A80
+
 rb3/bink.cpp:
 	.text       start:0x80341E10 end:0x80342ACC
 
