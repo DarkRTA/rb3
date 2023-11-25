@@ -59,6 +59,7 @@ public:
 	DataNode(DataArray *, DataType); // fn_80323318
 	~DataNode(); // fn_8000DFE4
 	DataNode *Evaluate() const;
+	DataNode* AddToBuffer();
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
 	Symbol* Sym(const DataArray *) const; // fn_80322F54
@@ -108,6 +109,8 @@ public:
 	void SaveGlob(BinStream &, bool) const; // fn_80317B18
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
 	DataArray* Clone(bool, bool, int); // fn_803169C4
+
+	DataNode Execute();
 
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4

@@ -2,6 +2,7 @@
 #include "string.hpp"
 #include "std/string.h"
 #include "common.hpp"
+#include "hmx/object.hpp"
 
 extern DataArray *fn_8035CF9C(int, int, int);
 
@@ -311,3 +312,31 @@ void DataNode::Print(TextStream &ts, bool b) const
 // 			value.dataArray->SaveGlob(bs, true); break;
 // 	}
 // }
+
+extern int gEvalIndex;
+extern DataNode gEvalNode[];
+
+DataNode* DataNode::AddToBuffer(){
+	int i;
+	gEvalNode[gEvalIndex] = *this;
+	i = gEvalIndex;
+	gEvalIndex = gEvalIndex + 1 & 7;
+	return &gEvalNode[i];
+}
+
+extern Hmx::Object* gDataThis;
+
+DataNode* DataNode::Evaluate() const {
+    if(type == kDataCommand){
+        DataNode lol = value.dataArray->Execute();
+		return lol.AddToBuffer();
+    }
+    else if(type == kDataVariable){
+        return value.varVal;
+    }
+    else if(type == kDataProperty){
+		DataNode* dn = gDataThis->Property(value.dataArray, true);
+		return dn->AddToBuffer();
+    }
+    else return (DataNode*)this;
+}
