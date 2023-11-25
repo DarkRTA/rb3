@@ -63,7 +63,7 @@ public:
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
 	Symbol* Sym(const DataArray *) const; // fn_80322F54
 	Symbol* LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol* ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024
@@ -120,7 +120,7 @@ public:
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878
 	DataType GetTypeAtIndex(int) const; // fn_80117BAC
-	Symbol* ForceSymAtIndex(int) const; // fn_80119134
+	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 

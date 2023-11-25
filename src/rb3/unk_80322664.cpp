@@ -56,14 +56,13 @@ Symbol* DataNode::LiteralSym(const DataArray *da) const
 }
 
 // fn_80322F80
-Symbol* DataNode::ForceSym(const DataArray *da) const
+Symbol DataNode::ForceSym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
 	if (n->type == kDataSymbol) {
-		return n->value.symVal;
+		return *(n->value.symVal);
 	}
-	Symbol s(n->value.symVal->m_string);
-	return &s;
+	return Symbol(n->value.symVal->m_string);
 }
 
 // fn_80322FC8
@@ -79,7 +78,7 @@ const char *DataNode::Str(const DataArray *da) const
 // fn_80323004
 const char *DataNode::LiteralStr(const DataArray *da) const
 {
-	if (type == kDataFunc)
+	if (type == kDataSymbol)
 		return value.strVal;
 	else
 		return value.dataArray->mNodes->value.strVal;

@@ -225,7 +225,7 @@ DataNode DataDist(DataArray* da){
 
 // fn_8031D664
 DataNode DataSymbol(DataArray* da){
-	return DataNode(*(da->ForceSymAtIndex(1)));
+	return DataNode((da->ForceSymAtIndex(1)));
 }
 
 // fn_8031D700
@@ -438,8 +438,8 @@ extern char* Localize(Symbol, bool*);
 extern char* gNullStr;
 // fn_8031DEB8
 DataNode DataLocalize(DataArray* da){
-	Symbol* sym = da->ForceSymAtIndex(1);
-	char* loc = Localize(*sym, false);
+	// Symbol sym = da->ForceSymAtIndex(1);
+	char* loc = Localize(da->ForceSymAtIndex(1), false);
 	char* ret = gNullStr;
 	if(loc != nullptr){
 		ret = loc;
