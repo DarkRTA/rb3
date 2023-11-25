@@ -169,6 +169,9 @@ rb3/unk_802FB548.cpp:
 rb3/unk_802FF088.cpp:
 	.text       start:0x802FF088 end:0x80303E24
 
+rb3/unk_8030F4F0.cpp:
+	.text       start:0x8030F4F0 end:0x80311394
+
 rb3/rg_messages.cpp:
 	.text       start:0x80313E98 end:0x80314814
 	.data       start:0x808546F0 end:0x80854A08
