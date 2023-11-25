@@ -159,7 +159,16 @@ DataNode DataSub(DataArray *da)
 }
 
 // fn_8031D0FC
-extern DataNode DataSubEq(DataArray *);
+DataNode DataSubEq(DataArray* da){
+	DataNode ret = DataSub(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031CF24
 DataNode DataMean(DataArray *da)
@@ -184,7 +193,16 @@ DataNode DataClamp(DataArray* da){
 }
 
 // fn_8031D180
-extern DataNode DataClampEq(DataArray *);
+DataNode DataClampEq(DataArray* da){
+	DataNode ret = DataClamp(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D204
 DataNode DataMultiply(DataArray *da)
@@ -199,7 +217,16 @@ DataNode DataMultiply(DataArray *da)
 }
 
 // fn_8031D2DC
-extern DataNode DataMultiplyEq(DataArray *);
+DataNode DataMultiplyEq(DataArray* da){
+	DataNode ret = DataMultiply(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D360
 DataNode DataDivide(DataArray *da)
@@ -208,7 +235,16 @@ DataNode DataDivide(DataArray *da)
 }
 
 // fn_8031D3CC
-extern DataNode DataDivideEq(DataArray *);
+DataNode DataDivideEq(DataArray* da){
+	DataNode ret = DataDivide(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D450
 DataNode DataSqrt(DataArray* da){
