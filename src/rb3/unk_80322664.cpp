@@ -204,44 +204,39 @@ DataNode* DataNode::Var(const DataArray*) const {
 	return value.varVal;
 }
 
+extern char* DataVarName(const DataNode*);
+
 // fn_8032364C
 void DataNode::Print(TextStream &ts, bool b) const
 {
 	switch (type) {
 	case kDataUnhandled:
-		ts << value.intVal;
+		ts << "kDataUnhandled";
 		break;
 	case kDataFloat:
 		ts << value.floatVal;
 		break;
 	case kDataVariable:
-		// DataVarName__FPC8DataNode gets called here
-		ts << "$";
+		ts << "$" << DataVarName(this);
 		break;
-	case kDataSymbol:
+	case kDataFunc:
 		// DataFuncName__FPFP9DataArray_8DataNode gets called here
 		// ts << (Symbol)0xE8;
 		break;
-	case kDataFunc:
-		if (value.dataArray == nullptr) {
-			ts << "<null>";
-		}
-		break;
 	case kDataObject:
+		ts << value.objVal;
+		break;
+	case kDataSymbol:
 		if (!b) {
-			ts << "'";
-			ts << value.strVal;
-			ts << "'";
+			ts << "'" << value.strVal << "'";
 		} else
 			ts << value.strVal;
 		break;
 	case kDataInt:
-		ts << "invalid";
+		ts << value.intVal;
 		break;
 	case kDataIfdef:
-		ts << "\n#ifdef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#ifdef " << value.strVal << "\n";
 		break;
 	case kDataElse:
 		ts << "\n#else\n";
@@ -252,38 +247,43 @@ void DataNode::Print(TextStream &ts, bool b) const
 	case kDataArray:
 	case kDataCommand:
 	case kDataProperty:
+		value.dataArray->Print(ts, type, b);
 		break;
 	case kDataString:
+		if(!b){
+			ts << '"';
+			char* tok = strtok(value.strVal, "\"");
+			while(tok != nullptr){
+				ts << tok;
+				tok = strtok(nullptr, "\"");
+				if(tok != nullptr){
+					ts << "\\q";
+					tok[-1] = '\"';
+				}
+			}
+			ts << '"';
+		}
+		else ts << value.strVal;
 		break;
 	case kDataGlob:
 		break;
 	case kDataDefine:
-		ts << "\n#define ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#define " << value.strVal << "\n";
 		break;
 	case kDataInclude:
-		ts << "\n#include ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#include " << value.strVal << "\n";
 		break;
 	case kDataMerge:
-		ts << "\n#merge ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#merge " << value.strVal << "\n";
 		break;
 	case kDataIfndef:
-		ts << "\n#ifndef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#ifndef " << value.strVal << "\n";
 		break;
 	case kDataAutorun:
 		ts << "\n#autorun\n";
 		break;
 	case kDataUndef:
-		ts << "\n#undef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#undef " << value.strVal << "\n";
 		break;
 	}
 }
