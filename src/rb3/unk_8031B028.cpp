@@ -7,6 +7,7 @@
 #include "vector3.hpp"
 #include "formatstring.hpp"
 #include "debug.hpp"
+#include "random.hpp"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 extern Debug TheDebug;
@@ -463,15 +464,12 @@ DataNode DataPrint(DataArray* da){
 // fn_8031E06C
 extern DataNode DataTime(DataArray *);
 
-extern int RandomInt(int, int);
 // fn_8031E170
 DataNode DataRandomInt(DataArray *da)
 {
 	return DataNode(RandomInt(da->GetIntAtIndex(1), da->GetIntAtIndex(2)));
 }
 
-extern float RandomFloat();
-extern float RandomFloat(float, float);
 // fn_8031E1D4
 DataNode DataRandomFloat(DataArray *da)
 {
@@ -501,7 +499,6 @@ DataNode DataRandom(DataArray *da)
 	return DataNode(*dn);
 }
 
-extern void SeedRand(int);
 // fn_8031E32C
 DataNode DataRandomSeed(DataArray *da)
 {
