@@ -12,6 +12,7 @@
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 extern Debug TheDebug;
+extern Hmx::Object* gDataThis;
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
@@ -127,7 +128,16 @@ DataNode DataAdd(DataArray *da)
 }
 
 // fn_8031CD70
-extern DataNode DataAddEq(DataArray *);
+DataNode DataAddEq(DataArray* da){
+	DataNode ret = DataAdd(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031CDF4
 DataNode DataSub(DataArray *da)

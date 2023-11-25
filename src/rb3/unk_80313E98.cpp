@@ -502,4 +502,24 @@ bool DataArray::FindData(Symbol s, bool& dest, bool b) const {
 	else return false;
 }
 
+#pragma dont_inline on
 // fn_80316258
+DataNodeValue DataArray::GetDataNodeValueAtIndex(int i) const {
+	DataNode* dn = GetNodeAtIndex(i);
+	return dn->value;
+}
+#pragma dont_inline reset
+
+// fn_803161D4
+DataArray* DataArray::FindArray(int i, bool b) const {
+	DataNode* dn_end = &mNodes[mNodeCount];
+	for(DataNode* dn = mNodes; dn < dn_end; dn++){
+		if(dn->GetType() == kDataArray){
+			DataArray* arr = dn->value.dataArray;
+			if(arr->GetDataNodeValueAtIndex(0).intVal == i){
+				return arr;
+			}
+		}
+	}
+	return nullptr;
+}

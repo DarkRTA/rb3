@@ -36,6 +36,7 @@ namespace Hmx {
 		virtual void FindPathName(); // fn_80336A84
 
 		DataNode* Property(DataArray*, bool);
+		void SetProperty(DataArray*, const DataNode&);
 	};
 }
 
