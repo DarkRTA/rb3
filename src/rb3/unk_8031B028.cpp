@@ -786,7 +786,15 @@ DataNode DataSubStr(DataArray *da)
 }
 
 // fn_8031FAD0
-extern DataNode DataStrCat(DataArray *);
+DataNode DataStrCat(DataArray* da){
+	DataNode* dn = da->GetVarAtIndex(1);
+	String str(dn->Str(nullptr));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		str += da->GetStrAtIndex(i);
+	}
+	*dn = DataNode(str.c_str());
+	return DataNode(dn->Str(nullptr));
+}
 
 // fn_8031FBAC
 DataNode DataStringFlags(DataArray *da)
