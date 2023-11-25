@@ -83,7 +83,7 @@ public:
 	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
 		const DataNode &); // same asm as Symbol::operator=(const Symbol&)
-	int GetIntVal() const; // fn_80018808
+	DataNodeValue GetDataNodeVal() const; // fn_80018808
 
 	DataNodeValue value;
 	DataType type;

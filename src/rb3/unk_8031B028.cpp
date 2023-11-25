@@ -116,7 +116,7 @@ DataNode DataAdd(DataArray *da)
             sum_f = sum_int + dn->LiteralFloat(da);
             break;
         }
-        sum_int += dn->GetIntVal();
+		sum_int += dn->GetDataNodeVal().intVal;
     }
     if(i == cnt) return DataNode(sum_int);
     for(i++; i < cnt; i++){
@@ -296,7 +296,7 @@ DataNode DataEq(DataArray *da)
 DataNode DataNe(DataArray *da)
 {
 	DataNode dn = DataEq(da);
-	return DataNode(dn.GetIntVal() == 0);
+	return DataNode(dn.GetDataNodeVal().intVal == 0);
 }
 
 // fn_8031BD1C
