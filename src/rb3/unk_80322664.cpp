@@ -72,7 +72,7 @@ const char *DataNode::Str(const DataArray *da) const
 	if (n->type == kDataSymbol)
 		return n->value.strVal;
 	else
-		return n->value.dataArray->mNodes->value.strVal;
+		return n->value.symVal->m_string;
 }
 
 // fn_80323004
@@ -81,7 +81,7 @@ const char *DataNode::LiteralStr(const DataArray *da) const
 	if (type == kDataSymbol)
 		return value.strVal;
 	else
-		return value.dataArray->mNodes->value.strVal;
+		return value.symVal->m_string;
 }
 
 // fn_80323024
@@ -289,25 +289,25 @@ void DataNode::Print(TextStream &ts, bool b) const
 	}
 }
 
-void DataNode::Save(BinStream& bs) {
-	if(type == kDataUnhandled) type = kDataInt;
-	else if(type == kDataInt) type = kDataUnhandled;
-	bs << (unsigned int)type;
-	switch(type){
-		case 0: case 6: case 8: case 9: case 0x24:
-			bs << (unsigned int) value.intVal;
-			break;
-		case 1: bs << value.floatVal; break;
-		case 2: bs << DataVarName(this); break;
-		case 3: // bs << DataFuncName(), returns a Symbol*
-			break;
-		case 4: // object
-			break;
-		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
-			bs << value.strVal; break;
-		case 0x10: case 0x11: case 0x13:
-			value.dataArray->Save(bs); break;
-		case 0x12: case 0x14:
-			value.dataArray->SaveGlob(bs, true); break;
-	}
-}
+// void DataNode::Save(BinStream& bs) {
+// 	if(type == kDataUnhandled) type = kDataInt;
+// 	else if(type == kDataInt) type = kDataUnhandled;
+// 	bs << (unsigned int)type;
+// 	switch(type){
+// 		case 0: case 6: case 8: case 9: case 0x24:
+// 			bs << (unsigned int) value.intVal;
+// 			break;
+// 		case 1: bs << value.floatVal; break;
+// 		case 2: bs << DataVarName(this); break;
+// 		case 3: // bs << DataFuncName(), returns a Symbol*
+// 			break;
+// 		case 4: // object
+// 			break;
+// 		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
+// 			bs << value.strVal; break;
+// 		case 0x10: case 0x11: case 0x13:
+// 			value.dataArray->Save(bs); break;
+// 		case 0x12: case 0x14:
+// 			value.dataArray->SaveGlob(bs, true); break;
+// 	}
+// }
