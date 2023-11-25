@@ -6,15 +6,25 @@
 #include "std/string.h"
 #include "vector3.hpp"
 #include "formatstring.hpp"
+#include "debug.hpp"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern Debug TheDebug;
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
 // fn_8032056C
 extern DataNode DataNextName(DataArray *);
+
 // fn_8031B6C0
-extern DataNode DataPrintf(DataArray *);
+DataNode DataPrintf(DataArray* da){
+	FormatString fs(da->GetStrAtIndex(1));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		fs << *EvaluateNodeAtIndex(da, i);
+	}
+	TheDebug << fs.Str();
+	return DataNode(0);
+}
 
 // fn_8031B62C
 DataNode DataSprintf(DataArray* da){
@@ -442,7 +452,14 @@ DataNode DataStartsWith(DataArray *da)
 }
 
 // fn_8031B764
-extern DataNode DataPrint(DataArray *);
+DataNode DataPrint(DataArray* da){
+	for(int i = 1; i < da->GetNodeCount(); i++){
+		DataNode* dn = EvaluateNodeAtIndex(da, i);
+		dn->Print(TheDebug, true);
+	}
+	return DataNode(0);
+}
+
 // fn_8031E06C
 extern DataNode DataTime(DataArray *);
 
@@ -541,12 +558,10 @@ DataNode DataInsertElem(DataArray *da)
 }
 
 // fn_8031E6F0
-extern TextStream *TheDebug;
-extern DataNode DataPrintArray(DataArray *);
 DataNode DataPrintArray(DataArray *da)
 {
 	DataArray *a = da->GetArrayAtIndex(1);
-	a->Print(*TheDebug, (DataType)0x10, false);
+	a->Print(TheDebug, (DataType)0x10, false);
 	return DataNode(0);
 }
 
