@@ -3,10 +3,19 @@
 #include "std/string.h"
 #include "std/stdlib.h"
 #include "common.hpp"
+#include "hmx/object.hpp"
 
 extern char *lbl_8091A47C;
 extern int lbl_8091A480;
 extern "C" char *fn_80315C3C(int);
+
+const char* UnusedStackTraceFxn(){
+	return "\n\nData Stack Trace";
+}
+
+const char* UnusedStackFrameFxn(){
+	return "\n   ... %d omitted stack frames";
+}
 
 #pragma dont_inline on
 // fn_80315C3C
@@ -82,7 +91,7 @@ void DataArray::Print(TextStream &ts, DataType ty, bool b) const
 	if ((dn != dn_end) && !b) {
 		ts << begin;
 		lol = mNodes;
-		if (lol->GetType() == kDataObject) {
+		if (lol->GetType() == kDataSymbol) {
 			lol->Print(ts, b);
 			lol++;
 		}
@@ -153,10 +162,24 @@ int NodeCmp(const void *a, const void *b)
 			return -1;
 		return (d1 != d2);
 	case kDataString:
+	case kDataSymbol:
+		return stricmp(da->Str(nullptr), db->Str(nullptr));
+	case kDataArray:
+		return NodeCmp(da->Array(nullptr)->GetNodeAtIndex(0), db->Array(nullptr)->GetNodeAtIndex(0));
 	case kDataObject:
-		const char *s1 = da->Str(nullptr);
-		const char *s2 = db->Str(nullptr);
-		return stricmp(s1, s2);
+		Hmx::Object* obj = da->GetObj(nullptr);
+		char* c1;
+		char* c2;
+		if(obj != nullptr){
+			c1 = (char*)(da->GetObj(nullptr)->Name());
+		}
+		else c1 = '\0';
+		obj = db->GetObj(nullptr);
+		if(obj != nullptr){
+			c2 = (char*)(db->GetObj(nullptr)->Name());
+		}
+		else c2 = '\0';
+		return stricmp(c1, c2);
 	default:
 		return 0;
 	}

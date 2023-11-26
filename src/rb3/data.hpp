@@ -72,6 +72,7 @@ public:
 	DataArray *Array(const DataArray *) const; // fn_8032313C
 	DataArray *LiteralArray(const DataArray *) const; // fn_80323160
 	DataNode* Var(const DataArray*) const; // fn_80323170
+	Hmx::Object* GetObj(const DataArray*) const;
 	bool operator==(const DataNode &) const; // fn_80323360
 	bool operator!=(const DataNode &) const; // fn_80323508
 	bool NotNull() const; // fn_80323530

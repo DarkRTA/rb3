@@ -436,16 +436,14 @@ DataNode DataBitAnd(DataArray *da)
 DataNode DataAndEqual(DataArray* da){
 	if(da->GetTypeAtIndex(1) == kDataProperty){
 		DataArray* arr = da->GetDataNodeValueAtIndex(1).dataArray;
-		int res = gDataThis->Property(arr, true)->Int(nullptr) & da->GetIntAtIndex(2);
+		int res = gDataThis->Property(arr, true)->Int(0) & da->GetIntAtIndex(2);
 		gDataThis->SetProperty(arr, DataNode(res));
 		return DataNode(res);
 	}
 	else {
 		DataNode* dn_var = da->GetVarAtIndex(1);
-		int res = dn_var->Int(nullptr) & da->GetIntAtIndex(2);
-		DataNode res_node(res);
-		dn_var->operator=(res_node);
-		return DataNode(res_node);
+		int res = dn_var->Int(0) & da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
 	}
 }
 

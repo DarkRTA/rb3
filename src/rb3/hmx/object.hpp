@@ -11,6 +11,9 @@ namespace Hmx {
 	class Object : ObjRef {
 	public:
 		// TypeProps props;
+		int props; // filler for now
+		int unk8;
+		const char* name;
 
 		Object(); // fn_8033560c
 		virtual ~Object(); // fn_803356ec
@@ -38,6 +41,7 @@ namespace Hmx {
 		DataNode* Property(DataArray*, bool);
 		void SetProperty(DataArray*, const DataNode&);
 		int PropertySize(DataArray*);
+		const char* Name();
 	};
 }
 
