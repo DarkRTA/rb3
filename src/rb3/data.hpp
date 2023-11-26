@@ -126,6 +126,7 @@ public:
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878
 	DataType GetTypeAtIndex(int) const; // fn_80117BAC
+	DataArray* GetCommandAtIndex(int) const;
 	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0

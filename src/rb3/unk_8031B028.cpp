@@ -339,7 +339,16 @@ DataNode DataIfElse(DataArray *da)
 }
 
 // fn_8031B9F0
-extern DataNode DataIf(DataArray *);
+DataNode DataIf(DataArray* da){
+    if(da->GetNodeAtIndex(1)->NotNull()){
+        for(int i = 2; i < da->GetNodeCount(); i++){
+            da->GetCommandAtIndex(i)->Execute();
+        }
+        return DataNode(0);
+    }
+    else return DataNode(0);
+}
+
 // fn_8031BA98
 extern DataNode DataUnless(DataArray *);
 
@@ -873,7 +882,7 @@ DataNode DataStringFlags(DataArray *da)
 	DataArray *a = da->GetArrayAtIndex(2);
 	String s('\0');
 	for (int j = 0; j < a->GetNodeCount(); j++) {
-		DataArray* macro_arr = DataGetMacro(Symbol((char *)a->GetStrAtIndex(j)));
+		DataArray* macro_arr = DataGetMacro(Symbol(a->GetStrAtIndex(j)));
 		if(macro_arr != nullptr){
 			macro_arr->GetNodeCount();
 			if((i & macro_arr->GetIntAtIndex(0)) != 0){
