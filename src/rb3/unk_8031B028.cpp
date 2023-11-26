@@ -1045,8 +1045,11 @@ DataNode DataUnquote(DataArray *da)
 
 // fn_8032088C
 extern DataNode DataGetDateTime(DataArray *);
+
 // fn_8032008C
-extern DataNode DataWith(DataArray *);
+DataNode DataWith(DataArray* da){
+	return da->ExecuteScript(2, da->GetObjAtIndex(1), nullptr, 1);
+}
 
 // fn_80320048
 DataNode DataGetType(DataArray *da)
