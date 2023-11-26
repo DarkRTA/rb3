@@ -122,11 +122,23 @@ bool DataNode::operator==(const DataNode &dn) const
 {
 	if (type == dn.type) {
 		if (type == kDataString) {
-			return strcmp(value.strVal, dn.value.strVal) == 0;
+			return strcmp(value.symVal->m_string, dn.value.symVal->m_string) == 0;
 		} else
 			return (value.intVal == dn.value.intVal);
 	} else if ((type == kDataObject) || (dn.type == kDataObject)) {
-
+		char* obj1;
+		char* obj2;
+		if(type == kDataObject){
+			if(value.objVal == nullptr) obj1 = '\0';
+			else obj1 = (char*)value.objVal->Name();
+			obj2 = (char*)dn.LiteralStr(nullptr);
+		}
+		else {
+			obj1 = (char*)LiteralStr(nullptr);
+			if(dn.value.objVal == nullptr) obj2 = '\0';
+			else obj2 = (char*)dn.value.objVal->Name();
+		}
+		return strcmp(obj1, obj2) == 0;
 	} else if ((type == kDataString) || (dn.type == kDataString)) {
 		return strcmp(LiteralStr(nullptr), dn.LiteralStr(nullptr)) == 0;
 	} else if ((type == kDataFloat) || (dn.type == kDataFloat)) {
