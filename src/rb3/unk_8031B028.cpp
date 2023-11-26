@@ -349,12 +349,20 @@ DataNode DataIf(DataArray* da){
     else return DataNode(0);
 }
 
-// fn_8031BA98
-extern DataNode DataUnless(DataArray *);
-
 bool DataNodeIsNull(DataNode *dn)
 {
 	return (!dn->NotNull());
+}
+
+// fn_8031BA98
+DataNode DataUnless(DataArray* da){
+	if(DataNodeIsNull(da->GetNodeAtIndex(1))){
+		for(int i = 2; i < da->GetNodeCount(); i++){
+            da->GetCommandAtIndex(i)->Execute();
+        }
+        return DataNode(0);
+	}
+	else return DataNode(0);
 }
 
 // fn_8031BB68
@@ -507,7 +515,15 @@ DataNode DataCountBits(DataArray* da){
 }
 
 // fn_8031C628
-extern DataNode DataWhile(DataArray *);
+DataNode DataWhile(DataArray* da){
+	while(da->GetNodeAtIndex(1)->NotNull()){
+		for(int i = 2; i < da->GetNodeCount(); i++){
+			da->GetCommandAtIndex(i)->Execute();
+		}
+	}
+	return DataNode(0);
+}
+
 // fn_8031C904
 extern DataNode DataDo(DataArray *);
 // fn_8031D8EC
@@ -966,7 +982,14 @@ DataNode DataPackColor(DataArray* da){
 }
 
 // fn_8031C7C4
-extern DataNode DataUnpackColor(DataArray *);
+DataNode DataUnpackColor(DataArray* da){
+	int packed = da->GetIntAtIndex(1);
+	*da->GetVarAtIndex(2) = DataNode((float)(packed & 0xFF) / 255.0f);
+	*da->GetVarAtIndex(3) = DataNode((float)(packed >> 8 & 0xFF) / 255.0f);
+	*da->GetVarAtIndex(4) = DataNode((float)(packed >> 0x10 & 0xFF) / 255.0f);
+	return DataNode(0);
+}
+
 // fn_803200E8
 extern DataNode OnSetThis(DataArray *);
 // fn_80320150
