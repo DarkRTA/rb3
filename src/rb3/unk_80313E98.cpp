@@ -512,8 +512,9 @@ DataNodeValue DataArray::GetDataNodeValueAtIndex(int i) const {
 
 // fn_803161D4
 DataArray* DataArray::FindArray(int i, bool b) const {
+    DataNode* dn;
 	DataNode* dn_end = &mNodes[mNodeCount];
-	for(DataNode* dn = mNodes; dn < dn_end; dn++){
+	for(dn = mNodes; dn < dn_end; dn++){
 		if(dn->GetType() == kDataArray){
 			DataArray* arr = dn->value.dataArray;
 			if(arr->GetDataNodeValueAtIndex(0).intVal == i){

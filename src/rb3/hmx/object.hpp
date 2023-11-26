@@ -37,6 +37,7 @@ namespace Hmx {
 
 		DataNode* Property(DataArray*, bool);
 		void SetProperty(DataArray*, const DataNode&);
+		int PropertySize(DataArray*);
 	};
 }
 

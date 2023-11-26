@@ -317,7 +317,15 @@ DataNode DataCeil(DataArray *da)
 }
 
 // fn_8031B86C
-extern DataNode DataSet(DataArray *);
+DataNode DataSet(DataArray* da){
+	DataNode* dn = EvaluateNodeAtIndex(da, 2);
+	DataNode ret(*dn);
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+	}
+	else da->GetVarAtIndex(1)->operator=(ret);
+	return ret;
+}
 
 // fn_8031B970
 DataNode DataIfElse(DataArray *da)
@@ -425,7 +433,22 @@ DataNode DataBitAnd(DataArray *da)
 }
 
 // fn_8031C108
-extern DataNode DataAndEqual(DataArray *);
+DataNode DataAndEqual(DataArray* da){
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		DataArray* arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property(arr, true)->Int(nullptr) & da->GetIntAtIndex(2);
+		gDataThis->SetProperty(arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(nullptr) & da->GetIntAtIndex(2);
+		DataNode res_node(res);
+		dn_var->operator=(res_node);
+		return DataNode(res_node);
+	}
+}
+
 // fn_8031C224
 extern DataNode DataMaskEqual(DataArray *);
 
@@ -466,7 +489,6 @@ int GetLowestBit(int i)
 }
 
 // fn_8031C574
-extern DataNode DataLowestBit(DataArray *);
 DataNode DataLowestBit(DataArray *da)
 {
 	return DataNode(GetLowestBit(da->GetIntAtIndex(1)));
@@ -637,7 +659,12 @@ DataNode DataPrintArray(DataArray *da)
 }
 
 // fn_8031E744
-extern DataNode DataSize(DataArray *);
+DataNode DataSize(DataArray* da){
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		return DataNode(gDataThis->PropertySize(da->GetDataNodeValueAtIndex(1).dataArray));
+	}
+	else return DataNode(da->GetArrayAtIndex(1)->GetNodeCount());
+}
 
 // fn_8031E7D4
 DataNode DataRemoveElem(DataArray *da)
