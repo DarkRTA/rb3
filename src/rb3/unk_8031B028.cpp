@@ -514,7 +514,6 @@ extern char* Localize(Symbol, bool*);
 extern char* gNullStr;
 // fn_8031DEB8
 DataNode DataLocalize(DataArray* da){
-	// Symbol sym = da->ForceSymAtIndex(1);
 	char* loc = Localize(da->ForceSymAtIndex(1), false);
 	char* ret = gNullStr;
 	if(loc != nullptr){
@@ -866,6 +865,7 @@ DataNode DataStrCat(DataArray* da){
 	return DataNode(dn->Str(nullptr));
 }
 
+extern DataArray* DataGetMacro(Symbol);
 // fn_8031FBAC
 DataNode DataStringFlags(DataArray *da)
 {
@@ -873,7 +873,16 @@ DataNode DataStringFlags(DataArray *da)
 	DataArray *a = da->GetArrayAtIndex(2);
 	String s('\0');
 	for (int j = 0; j < a->GetNodeCount(); j++) {
-		Symbol sym((char *)a->GetStrAtIndex(j));
+		DataArray* macro_arr = DataGetMacro(Symbol((char *)a->GetStrAtIndex(j)));
+		if(macro_arr != nullptr){
+			macro_arr->GetNodeCount();
+			if((i & macro_arr->GetIntAtIndex(0)) != 0){
+				if(s != '\0'){
+					s += "|";
+				}
+				s += a->GetStrAtIndex(j);
+			}
+		}
 	}
 	return DataNode(s);
 }

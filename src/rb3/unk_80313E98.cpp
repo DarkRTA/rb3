@@ -256,8 +256,6 @@ void DataArray::Insert(int count, const DataNode &dn)
 	mNodeCount = newNodeCount;
 }
 
-extern "C" void fn_80315E1C(DataArray *, int, DataArray *);
-
 // fn_80315E1C
 void DataArray::InsertNodes(int count, const DataArray *da)
 {
@@ -436,11 +434,6 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i) {
     }
     return da;
 }
-
-// fn_803161D4 - https://decomp.me/scratch/KWNxW
-// actually use this https://decomp.me/scratch/EhEOc
-
-// fn_80316258 - https://decomp.me/scratch/vREVD
 
 #pragma dont_inline on
 // fn_8031627C
