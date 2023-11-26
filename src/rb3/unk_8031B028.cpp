@@ -70,9 +70,40 @@ DataNode DataGetLastElem(DataArray *da)
 }
 
 // fn_8031DA1C
-extern DataNode DataForEach(DataArray *);
+DataNode DataForEach(DataArray* da){
+	DataArray* arr = da->GetArrayAtIndex(2);
+	arr->IncRefCount();
+	DataNode* var = da->GetVarAtIndex(1);
+	DataNode lol(*var);
+	for(int i = 0; i < arr->GetNodeCount(); i++){
+		*var = *EvaluateNodeAtIndex(arr, i);
+		for(int j = 3; j < da->GetNodeCount(); j++){
+			da->GetCommandAtIndex(j)->Execute();
+		}
+	}
+	*var = lol;
+	arr->DecRefCount();
+	return DataNode(0);
+}
+
 // fn_8031DB20
-extern DataNode DataForEachInt(DataArray *);
+DataNode DataForEachInt(DataArray* da){
+	DataNode* var = da->GetVarAtIndex(1);
+	int i2 = da->GetIntAtIndex(2);
+	int i3 = da->GetIntAtIndex(3);
+	int r31 = -1;
+	if(i2 > i3) r31 = 1;
+	DataNode idk(*var);
+	while(i2 != i3){
+		*var = DataNode(i2);
+		for(int cnt = 4; cnt < da->GetNodeCount(); cnt++){
+			da->GetCommandAtIndex(cnt)->Execute();
+		}
+		i2 = var->GetDataNodeVal().intVal + r31;
+	}
+	*var = idk;
+	return DataNode(0);
+}
 
 // fn_8031CA14
 DataNode DataMin(DataArray* da){
