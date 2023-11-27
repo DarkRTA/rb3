@@ -134,6 +134,7 @@ public:
 
 	int GetLine(); // fn_801FBAFC
 	char* GetSymbol(); // same asm as DataNode::GetType
+	DataNode RunCommandsFromIndex(int); // fn_80317C7C
 
 	DataArray* FindArray(int, bool) const; // fn_803161D4
 	DataArray* FindArray(Symbol, bool) const; // fn_8031627C

@@ -540,3 +540,12 @@ DataArray* DataArray::FindArray(int i, bool b) const {
 	}
 	return nullptr;
 }
+
+// fn_80317C7C
+DataNode DataArray::RunCommandsFromIndex(int i) {
+    while(i < mNodeCount - 1){
+        GetCommandAtIndex(i)->Execute();
+        i++;
+    }
+    return DataNode(*EvaluateNodeAtIndex(this, i));
+}
