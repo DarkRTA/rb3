@@ -217,6 +217,22 @@ DataNode* DataNode::Var(const DataArray*) const {
 	return value.varVal;
 }
 
+// fn_803239E8
+bool HasSpace(const char* str){
+	while(*str != '\0'){
+        if(*str++ == ' ') return true;
+    }
+    return false;
+}
+
+TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
+	if(obj != nullptr){
+		ts << obj->Name();
+	}
+	else ts << "<null>";
+	return ts;
+}
+
 extern char* DataVarName(const DataNode*);
 
 // fn_8032364C
@@ -240,7 +256,7 @@ void DataNode::Print(TextStream &ts, bool b) const
 		ts << value.objVal;
 		break;
 	case kDataSymbol:
-		if (!b) {
+		if (!HasSpace(value.strVal)) {
 			ts << "'" << value.strVal << "'";
 		} else
 			ts << value.strVal;
