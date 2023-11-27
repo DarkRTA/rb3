@@ -8,11 +8,13 @@ extern void JoypadSetVibrate(int, bool);
 extern int JoypadVibrate(int);
 extern Symbol JoypadControllerTypePadNum(int);
 extern int JoypadIsConnectedPadNum(int);
+extern void JoypadReset();
 
 namespace {
     // fn_80301540
     DataNode DataJoypadReset(DataArray* da){
-
+        JoypadReset();
+        return DataNode(0);
     }
 
     // fn_80301000
