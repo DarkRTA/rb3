@@ -56,7 +56,7 @@ Message::Message(Symbol s, const DataNode &dn1, const DataNode &dn2)
 // fn_8000E114
 DataNode::DataNode(Symbol s)
 {
-	type = kDataFunc; // looks like it's func now ieee
+	type = kDataSymbol;
 	value.strVal = s.m_string;
 }
 

@@ -1,11 +1,19 @@
 #ifndef HMX_OBJECT_HPP
 #define HMX_OBJECT_HPP
 #include "rb3/objref.hpp"
+#include "rb3/data.hpp"
+
+// forward declarations
+class DataArray;
+class DataNode;
 
 namespace Hmx {
 	class Object : ObjRef {
 	public:
 		// TypeProps props;
+		int props; // filler for now
+		int unk8;
+		const char* name;
 
 		Object(); // fn_8033560c
 		virtual ~Object(); // fn_803356ec
@@ -29,6 +37,11 @@ namespace Hmx {
 		virtual void PreLoad(); // fn_800AB8B4
 		virtual void PostLoad(); // links to fn_8076F540, which returns void
 		virtual void FindPathName(); // fn_80336A84
+
+		DataNode* Property(DataArray*, bool);
+		void SetProperty(DataArray*, const DataNode&);
+		int PropertySize(DataArray*);
+		const char* Name() const;
 	};
 }
 

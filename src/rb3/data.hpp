@@ -18,16 +18,15 @@ union DataNodeValue {
 	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
-	DataArray* command;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
 	kDataUnhandled = 0,
 	kDataFloat = 1,
 	kDataVariable = 2,
-	kDataSymbol = 3,
+	kDataFunc = 3,
 	kDataObject = 4,
-	kDataFunc = 5,
+	kDataSymbol = 5, 
 	kDataInt = 6,
 	kDataIfdef = 7,
 	kDataElse = 8,
@@ -60,11 +59,12 @@ public:
 	DataNode(DataArray *, DataType); // fn_80323318
 	~DataNode(); // fn_8000DFE4
 	DataNode *Evaluate() const;
+	DataNode* AddToBuffer();
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
 	Symbol* Sym(const DataArray *) const; // fn_80322F54
 	Symbol* LiteralSym(const DataArray *) const; // fn_80322F78
-	Symbol* ForceSym(const DataArray *) const; // fn_80322F80
+	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
 	float Float(const DataArray *) const; // fn_80323024
@@ -72,6 +72,7 @@ public:
 	DataArray *Array(const DataArray *) const; // fn_8032313C
 	DataArray *LiteralArray(const DataArray *) const; // fn_80323160
 	DataNode* Var(const DataArray*) const; // fn_80323170
+	Hmx::Object* GetObj(const DataArray*) const;
 	bool operator==(const DataNode &) const; // fn_80323360
 	bool operator!=(const DataNode &) const; // fn_80323508
 	bool NotNull() const; // fn_80323530
@@ -83,7 +84,7 @@ public:
 	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
 		const DataNode &); // same asm as Symbol::operator=(const Symbol&)
-	int GetIntVal() const; // fn_80018808
+	DataNodeValue GetDataNodeVal() const; // fn_80018808
 
 	DataNodeValue value;
 	DataType type;
@@ -110,22 +111,32 @@ public:
 	void LoadGlob(BinStream &, bool); // fn_80317B9C
 	DataArray* Clone(bool, bool, int); // fn_803169C4
 
+	DataNode Execute();
+	DataNode ExecuteScript(int, Hmx::Object*, const DataArray*, int);
+
 	void IncRefCount(); // fn_800AE758
 	void DecRefCount(); // fn_8000DFC4
 	int GetNodeCount() const; // fn_8000FDA0
 	DataNode *GetNodeAtIndex(int) const; // fn_8000DF50
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
-	Symbol GetSymAtIndex(int) const; // fn_80010140
+	DataNodeValue GetDataNodeValueAtIndex(int) const; // fn_80316258
+	Symbol* GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878
 	DataType GetTypeAtIndex(int) const; // fn_80117BAC
+	DataArray* GetCommandAtIndex(int) const;
+	Hmx::Object* GetObjAtIndex(int) const;
 	Symbol ForceSymAtIndex(int) const; // fn_80119134
 	void Print(TextStream &, DataType, bool) const; // fn_80315A70
 	void SetFileLine(Symbol, int); // fn_80316CB0
 
-	DataArray* FindArray(int, bool) const; // fn_80316258
+	int GetLine(); // fn_801FBAFC
+	char* GetSymbol(); // same asm as DataNode::GetType
+	DataNode RunCommandsFromIndex(int); // fn_80317C7C
+
+	DataArray* FindArray(int, bool) const; // fn_803161D4
 	DataArray* FindArray(Symbol, bool) const; // fn_8031627C
 	DataArray* FindArray(Symbol, Symbol) const; // fn_803162BC
 	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300

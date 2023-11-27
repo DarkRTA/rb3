@@ -2,6 +2,7 @@
 #include "string.hpp"
 #include "std/string.h"
 #include "common.hpp"
+#include "hmx/object.hpp"
 
 extern DataArray *fn_8035CF9C(int, int, int);
 
@@ -56,33 +57,32 @@ Symbol* DataNode::LiteralSym(const DataArray *da) const
 }
 
 // fn_80322F80
-Symbol* DataNode::ForceSym(const DataArray *da) const
+Symbol DataNode::ForceSym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	if (n->type == kDataFunc) {
-		return n->value.symVal;
+	if (n->type == kDataSymbol) {
+		return *(n->value.symVal);
 	}
-	Symbol s(n->value.symVal->m_string);
-	return &s;
+	return Symbol(n->value.symVal->m_string);
 }
 
 // fn_80322FC8
 const char *DataNode::Str(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	if (n->type == kDataFunc)
+	if (n->type == kDataSymbol)
 		return n->value.strVal;
 	else
-		return n->value.dataArray->mNodes->value.strVal;
+		return n->value.symVal->m_string;
 }
 
 // fn_80323004
 const char *DataNode::LiteralStr(const DataArray *da) const
 {
-	if (type == kDataFunc)
+	if (type == kDataSymbol)
 		return value.strVal;
 	else
-		return value.dataArray->mNodes->value.strVal;
+		return value.symVal->m_string;
 }
 
 // fn_80323024
@@ -122,10 +122,23 @@ bool DataNode::operator==(const DataNode &dn) const
 {
 	if (type == dn.type) {
 		if (type == kDataString) {
-			return strcmp(value.strVal, dn.value.strVal) == 0;
+			return strcmp(value.symVal->m_string, dn.value.symVal->m_string) == 0;
 		} else
 			return (value.intVal == dn.value.intVal);
-	} else if ((type == kDataFunc) || (dn.type == kDataFunc)) {
+	} else if ((type == kDataObject) || (dn.type == kDataObject)) {
+		char* obj1;
+		char* obj2;
+		if(type == kDataObject){
+			if(value.objVal == nullptr) obj1 = '\0';
+			else obj1 = (char*)value.objVal->Name();
+			obj2 = (char*)dn.LiteralStr(nullptr);
+		}
+		else {
+			obj1 = (char*)LiteralStr(nullptr);
+			if(dn.value.objVal == nullptr) obj2 = '\0';
+			else obj2 = (char*)dn.value.objVal->Name();
+		}
+		return strcmp(obj1, obj2) == 0;
 	} else if ((type == kDataString) || (dn.type == kDataString)) {
 		return strcmp(LiteralStr(nullptr), dn.LiteralStr(nullptr)) == 0;
 	} else if ((type == kDataFloat) || (dn.type == kDataFloat)) {
@@ -152,7 +165,7 @@ bool DataNode::NotNull() const
 {
 	DataNode *n = Evaluate();
 	DataType t = n->GetType();
-	if (t == kDataObject) {
+	if (t == kDataSymbol) {
 		return n->value.strVal[0] != 0;
 	} else if (t == kDataString) {
 		return (n->value.dataArray->GetNodeCount() < -1);
@@ -204,44 +217,55 @@ DataNode* DataNode::Var(const DataArray*) const {
 	return value.varVal;
 }
 
+// fn_803239E8
+bool HasSpace(const char* str){
+	while(*str != '\0'){
+        if(*str++ == ' ') return true;
+    }
+    return false;
+}
+
+TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
+	if(obj != nullptr){
+		ts << obj->Name();
+	}
+	else ts << "<null>";
+	return ts;
+}
+
+extern char* DataVarName(const DataNode*);
+
 // fn_8032364C
 void DataNode::Print(TextStream &ts, bool b) const
 {
 	switch (type) {
 	case kDataUnhandled:
-		ts << value.intVal;
+		ts << "kDataUnhandled";
 		break;
 	case kDataFloat:
 		ts << value.floatVal;
 		break;
 	case kDataVariable:
-		// DataVarName__FPC8DataNode gets called here
-		ts << "$";
+		ts << "$" << DataVarName(this);
 		break;
-	case kDataSymbol:
+	case kDataFunc:
 		// DataFuncName__FPFP9DataArray_8DataNode gets called here
 		// ts << (Symbol)0xE8;
 		break;
-	case kDataFunc:
-		if (value.dataArray == nullptr) {
-			ts << "<null>";
-		}
-		break;
 	case kDataObject:
-		if (!b) {
-			ts << "'";
-			ts << value.strVal;
-			ts << "'";
+		ts << value.objVal;
+		break;
+	case kDataSymbol:
+		if (!HasSpace(value.strVal)) {
+			ts << "'" << value.strVal << "'";
 		} else
 			ts << value.strVal;
 		break;
 	case kDataInt:
-		ts << "invalid";
+		ts << value.intVal;
 		break;
 	case kDataIfdef:
-		ts << "\n#ifdef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#ifdef " << value.strVal << "\n";
 		break;
 	case kDataElse:
 		ts << "\n#else\n";
@@ -252,38 +276,95 @@ void DataNode::Print(TextStream &ts, bool b) const
 	case kDataArray:
 	case kDataCommand:
 	case kDataProperty:
+		value.dataArray->Print(ts, type, b);
 		break;
 	case kDataString:
+		if(!b){
+			ts << '"';
+			char* tok = strtok(value.strVal, "\"");
+			while(tok != nullptr){
+				ts << tok;
+				tok = strtok(nullptr, "\"");
+				if(tok != nullptr){
+					ts << "\\q";
+					tok[-1] = '\"';
+				}
+			}
+			ts << '"';
+		}
+		else ts << value.strVal;
 		break;
 	case kDataGlob:
+		ts << "<glob " << -value.dataArray->GetNodeCount() << ">";
 		break;
 	case kDataDefine:
-		ts << "\n#define ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#define " << value.strVal << "\n";
 		break;
 	case kDataInclude:
-		ts << "\n#include ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#include " << value.strVal << "\n";
 		break;
 	case kDataMerge:
-		ts << "\n#merge ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#merge " << value.strVal << "\n";
 		break;
 	case kDataIfndef:
-		ts << "\n#ifndef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#ifndef " << value.strVal << "\n";
 		break;
 	case kDataAutorun:
 		ts << "\n#autorun\n";
 		break;
 	case kDataUndef:
-		ts << "\n#undef ";
-		ts << value.strVal;
-		ts << "\n";
+		ts << "\n#undef " << value.strVal << "\n";
 		break;
 	}
+}
+
+// void DataNode::Save(BinStream& bs) {
+// 	if(type == kDataUnhandled) type = kDataInt;
+// 	else if(type == kDataInt) type = kDataUnhandled;
+// 	bs << (unsigned int)type;
+// 	switch(type){
+// 		case 0: case 6: case 8: case 9: case 0x24:
+// 			bs << (unsigned int) value.intVal;
+// 			break;
+// 		case 1: bs << value.floatVal; break;
+// 		case 2: bs << DataVarName(this); break;
+// 		case 3: // bs << DataFuncName(), returns a Symbol*
+// 			break;
+// 		case 4: // object
+// 			break;
+// 		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
+// 			bs << value.strVal; break;
+// 		case 0x10: case 0x11: case 0x13:
+// 			value.dataArray->Save(bs); break;
+// 		case 0x12: case 0x14:
+// 			value.dataArray->SaveGlob(bs, true); break;
+// 	}
+// }
+
+extern int gEvalIndex;
+extern DataNode gEvalNode[];
+
+DataNode* DataNode::AddToBuffer(){
+	int i;
+	gEvalNode[gEvalIndex] = *this;
+	i = gEvalIndex;
+	gEvalIndex = gEvalIndex + 1 & 7;
+	return &gEvalNode[i];
+}
+
+extern Hmx::Object* gDataThis;
+
+DataNode* DataNode::Evaluate() const {
+    if(type == kDataCommand){
+        DataNode lol = value.dataArray->Execute();
+		return lol.AddToBuffer();
+    }
+    else if(type == kDataVariable){
+        return value.varVal;
+    }
+    else if(type == kDataProperty){
+		DataNode* dn = gDataThis->Property(value.dataArray, true);
+		return dn->AddToBuffer();
+    }
+    else return (DataNode*)this;
 }

@@ -3,10 +3,19 @@
 #include "std/string.h"
 #include "std/stdlib.h"
 #include "common.hpp"
+#include "hmx/object.hpp"
 
 extern char *lbl_8091A47C;
 extern int lbl_8091A480;
 extern "C" char *fn_80315C3C(int);
+
+const char* UnusedStackTraceFxn(){
+	return "\n\nData Stack Trace";
+}
+
+const char* UnusedStackFrameFxn(){
+	return "\n   ... %d omitted stack frames";
+}
 
 #pragma dont_inline on
 // fn_80315C3C
@@ -82,7 +91,7 @@ void DataArray::Print(TextStream &ts, DataType ty, bool b) const
 	if ((dn != dn_end) && !b) {
 		ts << begin;
 		lol = mNodes;
-		if (lol->GetType() == kDataObject) {
+		if (lol->GetType() == kDataSymbol) {
 			lol->Print(ts, b);
 			lol++;
 		}
@@ -153,10 +162,24 @@ int NodeCmp(const void *a, const void *b)
 			return -1;
 		return (d1 != d2);
 	case kDataString:
+	case kDataSymbol:
+		return stricmp(da->Str(nullptr), db->Str(nullptr));
+	case kDataArray:
+		return NodeCmp(da->Array(nullptr)->GetNodeAtIndex(0), db->Array(nullptr)->GetNodeAtIndex(0));
 	case kDataObject:
-		const char *s1 = da->Str(nullptr);
-		const char *s2 = db->Str(nullptr);
-		return stricmp(s1, s2);
+		Hmx::Object* obj = da->GetObj(nullptr);
+		char* c1;
+		char* c2;
+		if(obj != nullptr){
+			c1 = (char*)(da->GetObj(nullptr)->Name());
+		}
+		else c1 = '\0';
+		obj = db->GetObj(nullptr);
+		if(obj != nullptr){
+			c2 = (char*)(db->GetObj(nullptr)->Name());
+		}
+		else c2 = '\0';
+		return stricmp(c1, c2);
 	default:
 		return 0;
 	}
@@ -232,8 +255,6 @@ void DataArray::Insert(int count, const DataNode &dn)
 	NodesFree(mNodeCount * sizeof(DataNode), oldNodes);
 	mNodeCount = newNodeCount;
 }
-
-extern "C" void fn_80315E1C(DataArray *, int, DataArray *);
 
 // fn_80315E1C
 void DataArray::InsertNodes(int count, const DataArray *da)
@@ -414,11 +435,6 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i) {
     return da;
 }
 
-// fn_803161D4 - https://decomp.me/scratch/KWNxW
-// actually use this https://decomp.me/scratch/EhEOc
-
-// fn_80316258 - https://decomp.me/scratch/vREVD
-
 #pragma dont_inline on
 // fn_8031627C
 DataArray* DataArray::FindArray(Symbol s, bool b) const {
@@ -455,7 +471,7 @@ bool DataArray::FindData(Symbol s, const char*& c, bool b) const {
 bool DataArray::FindData(Symbol s, Symbol& dest, bool b) const {
 	DataArray* arr = FindArray(s, b);
 	if(arr != nullptr){
-		dest = arr->GetSymAtIndex(1);
+		dest = *(arr->GetSymAtIndex(1));
 		return true;
 	}
 	else return false;
@@ -502,4 +518,34 @@ bool DataArray::FindData(Symbol s, bool& dest, bool b) const {
 	else return false;
 }
 
+#pragma dont_inline on
 // fn_80316258
+DataNodeValue DataArray::GetDataNodeValueAtIndex(int i) const {
+	DataNode* dn = GetNodeAtIndex(i);
+	return dn->value;
+}
+#pragma dont_inline reset
+
+// fn_803161D4
+DataArray* DataArray::FindArray(int i, bool b) const {
+    DataNode* dn;
+	DataNode* dn_end = &mNodes[mNodeCount];
+	for(dn = mNodes; dn < dn_end; dn++){
+		if(dn->GetType() == kDataArray){
+			DataArray* arr = dn->value.dataArray;
+			if(arr->GetDataNodeValueAtIndex(0).intVal == i){
+				return arr;
+			}
+		}
+	}
+	return nullptr;
+}
+
+// fn_80317C7C
+DataNode DataArray::RunCommandsFromIndex(int i) {
+    while(i < mNodeCount - 1){
+        GetCommandAtIndex(i)->Execute();
+        i++;
+    }
+    return DataNode(*EvaluateNodeAtIndex(this, i));
+}

@@ -21,6 +21,7 @@ extern "C" {
 
 void qsort(void *base, size_t nitems, size_t size, int (*compar)(const void *, const void*));
 void *realloc(void *ptr, size_t size);
+int atoi (const char * str);
 
 #ifdef __cplusplus
 };

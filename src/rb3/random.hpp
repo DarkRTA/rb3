@@ -3,9 +3,9 @@
 
 bool MainThread();
 void SeedRand(int);
-void RandomInt();
-void RandomInt(int, int);
-void RandomFloat();
-void RandomFloat(float, float);
+int RandomInt();
+int RandomInt(int, int);
+float RandomFloat();
+float RandomFloat(float, float);
 
 #endif

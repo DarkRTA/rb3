@@ -4,18 +4,39 @@
 #include "file_ops.hpp"
 #include "string.hpp"
 #include "std/string.h"
+#include "std/stdlib.h"
 #include "vector3.hpp"
+#include "formatstring.hpp"
+#include "debug.hpp"
+#include "random.hpp"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern Debug TheDebug;
+extern Hmx::Object* gDataThis;
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
 // fn_8032056C
 extern DataNode DataNextName(DataArray *);
+
 // fn_8031B6C0
-extern DataNode DataPrintf(DataArray *);
+DataNode DataPrintf(DataArray* da){
+	FormatString fs(da->GetStrAtIndex(1));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		fs << *EvaluateNodeAtIndex(da, i);
+	}
+	TheDebug << fs.Str();
+	return DataNode(0);
+}
+
 // fn_8031B62C
-extern DataNode DataSprintf(DataArray *);
+DataNode DataSprintf(DataArray* da){
+	FormatString fs(da->GetStrAtIndex(1));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		fs << *EvaluateNodeAtIndex(da, i);
+	}
+	return DataNode(fs.Str());
+}
 
 // fn_8031B7DC
 DataNode DataSprint(DataArray *da)
@@ -49,9 +70,40 @@ DataNode DataGetLastElem(DataArray *da)
 }
 
 // fn_8031DA1C
-extern DataNode DataForEach(DataArray *);
+DataNode DataForEach(DataArray* da){
+	DataArray* arr = da->GetArrayAtIndex(2);
+	arr->IncRefCount();
+	DataNode* var = da->GetVarAtIndex(1);
+	DataNode lol(*var);
+	for(int i = 0; i < arr->GetNodeCount(); i++){
+		*var = *EvaluateNodeAtIndex(arr, i);
+		for(int j = 3; j < da->GetNodeCount(); j++){
+			da->GetCommandAtIndex(j)->Execute();
+		}
+	}
+	*var = lol;
+	arr->DecRefCount();
+	return DataNode(0);
+}
+
 // fn_8031DB20
-extern DataNode DataForEachInt(DataArray *);
+DataNode DataForEachInt(DataArray* da){
+	DataNode* var = da->GetVarAtIndex(1);
+	int i2 = da->GetIntAtIndex(2);
+	int i3 = da->GetIntAtIndex(3);
+	int r31 = -1;
+	if(i2 > i3) r31 = 1;
+	DataNode idk(*var);
+	while(i2 != i3){
+		*var = DataNode(i2);
+		for(int cnt = 4; cnt < da->GetNodeCount(); cnt++){
+			da->GetCommandAtIndex(cnt)->Execute();
+		}
+		i2 = var->GetDataNodeVal().intVal + r31;
+	}
+	*var = idk;
+	return DataNode(0);
+}
 
 // fn_8031CA14
 DataNode DataMin(DataArray* da){
@@ -97,7 +149,7 @@ DataNode DataAdd(DataArray *da)
             sum_f = sum_int + dn->LiteralFloat(da);
             break;
         }
-        sum_int += dn->GetIntVal();
+		sum_int += dn->GetDataNodeVal().intVal;
     }
     if(i == cnt) return DataNode(sum_int);
     for(i++; i < cnt; i++){
@@ -107,7 +159,16 @@ DataNode DataAdd(DataArray *da)
 }
 
 // fn_8031CD70
-extern DataNode DataAddEq(DataArray *);
+DataNode DataAddEq(DataArray* da){
+	DataNode ret = DataAdd(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031CDF4
 DataNode DataSub(DataArray *da)
@@ -129,7 +190,16 @@ DataNode DataSub(DataArray *da)
 }
 
 // fn_8031D0FC
-extern DataNode DataSubEq(DataArray *);
+DataNode DataSubEq(DataArray* da){
+	DataNode ret = DataSub(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031CF24
 DataNode DataMean(DataArray *da)
@@ -154,7 +224,16 @@ DataNode DataClamp(DataArray* da){
 }
 
 // fn_8031D180
-extern DataNode DataClampEq(DataArray *);
+DataNode DataClampEq(DataArray* da){
+	DataNode ret = DataClamp(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D204
 DataNode DataMultiply(DataArray *da)
@@ -169,7 +248,16 @@ DataNode DataMultiply(DataArray *da)
 }
 
 // fn_8031D2DC
-extern DataNode DataMultiplyEq(DataArray *);
+DataNode DataMultiplyEq(DataArray* da){
+	DataNode ret = DataMultiply(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D360
 DataNode DataDivide(DataArray *da)
@@ -178,7 +266,16 @@ DataNode DataDivide(DataArray *da)
 }
 
 // fn_8031D3CC
-extern DataNode DataDivideEq(DataArray *);
+DataNode DataDivideEq(DataArray* da){
+	DataNode ret = DataDivide(da);
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+    }
+    else {
+        da->GetVarAtIndex(1)->operator=(ret);
+    }
+    return ret;
+}
 
 // fn_8031D450
 DataNode DataSqrt(DataArray* da){
@@ -206,12 +303,20 @@ DataNode DataDist(DataArray* da){
 
 // fn_8031D664
 DataNode DataSymbol(DataArray* da){
-	Symbol s = da->ForceSymAtIndex(1);
-	return DataNode(s);
+	return DataNode((da->ForceSymAtIndex(1)));
 }
 
 // fn_8031D700
-extern DataNode DataInt(DataArray *);
+DataNode DataInt(DataArray* da){
+	DataNode* dn = EvaluateNodeAtIndex(da, 1);
+	if(dn->GetType() == kDataSymbol){
+		return DataNode(atoi(dn->GetDataNodeVal().strVal));
+	}
+	else if(dn->GetType() == kDataObject || dn->GetType() == kDataInt){
+		return DataNode(dn->GetDataNodeVal().intVal);
+	}
+	else return DataNode((int)(dn->LiteralFloat(da)));
+}
 
 extern char lbl_808E4478[2];
 // fn_8031D6A8
@@ -243,7 +348,15 @@ DataNode DataCeil(DataArray *da)
 }
 
 // fn_8031B86C
-extern DataNode DataSet(DataArray *);
+DataNode DataSet(DataArray* da){
+	DataNode* dn = EvaluateNodeAtIndex(da, 2);
+	DataNode ret(*dn);
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		gDataThis->SetProperty(da->GetDataNodeValueAtIndex(1).dataArray, ret);
+	}
+	else da->GetVarAtIndex(1)->operator=(ret);
+	return ret;
+}
 
 // fn_8031B970
 DataNode DataIfElse(DataArray *da)
@@ -257,13 +370,30 @@ DataNode DataIfElse(DataArray *da)
 }
 
 // fn_8031B9F0
-extern DataNode DataIf(DataArray *);
-// fn_8031BA98
-extern DataNode DataUnless(DataArray *);
+DataNode DataIf(DataArray* da){
+    if(da->GetNodeAtIndex(1)->NotNull()){
+        for(int i = 2; i < da->GetNodeCount(); i++){
+            da->GetCommandAtIndex(i)->Execute();
+        }
+        return DataNode(0);
+    }
+    else return DataNode(0);
+}
 
 bool DataNodeIsNull(DataNode *dn)
 {
 	return (!dn->NotNull());
+}
+
+// fn_8031BA98
+DataNode DataUnless(DataArray* da){
+	if(DataNodeIsNull(da->GetNodeAtIndex(1))){
+		for(int i = 2; i < da->GetNodeCount(); i++){
+            da->GetCommandAtIndex(i)->Execute();
+        }
+        return DataNode(0);
+	}
+	else return DataNode(0);
 }
 
 // fn_8031BB68
@@ -278,7 +408,7 @@ DataNode DataEq(DataArray *da)
 DataNode DataNe(DataArray *da)
 {
 	DataNode dn = DataEq(da);
-	return DataNode(dn.GetIntVal() == 0);
+	return DataNode(dn.GetDataNodeVal().intVal == 0);
 }
 
 // fn_8031BD1C
@@ -351,7 +481,20 @@ DataNode DataBitAnd(DataArray *da)
 }
 
 // fn_8031C108
-extern DataNode DataAndEqual(DataArray *);
+DataNode DataAndEqual(DataArray* da){
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		DataArray* arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property(arr, true)->Int(0) & da->GetIntAtIndex(2);
+		gDataThis->SetProperty(arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(0) & da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
+	}
+}
+
 // fn_8031C224
 extern DataNode DataMaskEqual(DataArray *);
 
@@ -392,7 +535,6 @@ int GetLowestBit(int i)
 }
 
 // fn_8031C574
-extern DataNode DataLowestBit(DataArray *);
 DataNode DataLowestBit(DataArray *da)
 {
 	return DataNode(GetLowestBit(da->GetIntAtIndex(1)));
@@ -404,7 +546,15 @@ DataNode DataCountBits(DataArray* da){
 }
 
 // fn_8031C628
-extern DataNode DataWhile(DataArray *);
+DataNode DataWhile(DataArray* da){
+	while(da->GetNodeAtIndex(1)->NotNull()){
+		for(int i = 2; i < da->GetNodeCount(); i++){
+			da->GetCommandAtIndex(i)->Execute();
+		}
+	}
+	return DataNode(0);
+}
+
 // fn_8031C904
 extern DataNode DataDo(DataArray *);
 // fn_8031D8EC
@@ -415,12 +565,30 @@ extern DataNode DataDelete(DataArray *);
 extern DataNode DataObject(DataArray *);
 // fn_8031DE08
 extern DataNode DataExists(DataArray *);
+
+extern char* Localize(Symbol, bool*);
+extern char* gNullStr;
 // fn_8031DEB8
-extern DataNode DataLocalize(DataArray *);
+DataNode DataLocalize(DataArray* da){
+	char* loc = Localize(da->ForceSymAtIndex(1), false);
+	char* ret = gNullStr;
+	if(loc != nullptr){
+		ret = loc;
+	}
+	return DataNode(ret);
+}
+
+extern char* LocalizeSeparatedInt(int);
 // fn_8031DF18
-extern DataNode DataLocalizeSeparatedInt(DataArray *);
+DataNode DataLocalizeSeparatedInt(DataArray* da){
+	return DataNode(LocalizeSeparatedInt(da->GetIntAtIndex(1)));
+}
+
+extern char* LocalizeFloat(const char*, float);
 // fn_8031DF5C
-extern DataNode DataLocalizeFloat(DataArray *);
+DataNode DataLocalizeFloat(DataArray* da){
+	return DataNode(LocalizeFloat(da->GetStrAtIndex(1), da->GetFloatAtIndex(2)));
+}
 
 // fn_8031DFC8
 DataNode DataStartsWith(DataArray *da)
@@ -434,19 +602,23 @@ DataNode DataStartsWith(DataArray *da)
 }
 
 // fn_8031B764
-extern DataNode DataPrint(DataArray *);
+DataNode DataPrint(DataArray* da){
+	for(int i = 1; i < da->GetNodeCount(); i++){
+		DataNode* dn = EvaluateNodeAtIndex(da, i);
+		dn->Print(TheDebug, true);
+	}
+	return DataNode(0);
+}
+
 // fn_8031E06C
 extern DataNode DataTime(DataArray *);
 
-extern int RandomInt(int, int);
 // fn_8031E170
 DataNode DataRandomInt(DataArray *da)
 {
 	return DataNode(RandomInt(da->GetIntAtIndex(1), da->GetIntAtIndex(2)));
 }
 
-extern float RandomFloat();
-extern float RandomFloat(float, float);
 // fn_8031E1D4
 DataNode DataRandomFloat(DataArray *da)
 {
@@ -476,7 +648,6 @@ DataNode DataRandom(DataArray *da)
 	return DataNode(*dn);
 }
 
-extern void SeedRand(int);
 // fn_8031E32C
 DataNode DataRandomSeed(DataArray *da)
 {
@@ -533,17 +704,20 @@ DataNode DataInsertElem(DataArray *da)
 }
 
 // fn_8031E6F0
-extern TextStream *TheDebug;
-extern DataNode DataPrintArray(DataArray *);
 DataNode DataPrintArray(DataArray *da)
 {
 	DataArray *a = da->GetArrayAtIndex(1);
-	a->Print(*TheDebug, (DataType)0x10, false);
+	a->Print(TheDebug, (DataType)0x10, false);
 	return DataNode(0);
 }
 
 // fn_8031E744
-extern DataNode DataSize(DataArray *);
+DataNode DataSize(DataArray* da){
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+		return DataNode(gDataThis->PropertySize(da->GetDataNodeValueAtIndex(1).dataArray));
+	}
+	else return DataNode(da->GetArrayAtIndex(1)->GetNodeCount());
+}
 
 // fn_8031E7D4
 DataNode DataRemoveElem(DataArray *da)
@@ -717,14 +891,13 @@ extern "C" DataNode *fn_800E7878(DataArray *, int);
 // fn_8031FED0
 DataNode DataSearchReplace(DataArray *da)
 {
-	char *str;
+	char str[0x800];
 	bool changed = SearchReplace(
 		da->GetStrAtIndex(1),
 		da->GetStrAtIndex(2),
 		da->GetStrAtIndex(3),
 		str);
-	DataNode dn(str);
-	DataNode *asdf = fn_800E7878(da, 4);
+	da->GetVarAtIndex(4)->operator=(DataNode(str));
 	return DataNode(changed);
 }
 
@@ -738,8 +911,17 @@ DataNode DataSubStr(DataArray *da)
 }
 
 // fn_8031FAD0
-extern DataNode DataStrCat(DataArray *);
+DataNode DataStrCat(DataArray* da){
+	DataNode* dn = da->GetVarAtIndex(1);
+	String str(dn->Str(nullptr));
+	for(int i = 2; i < da->GetNodeCount(); i++){
+		str += da->GetStrAtIndex(i);
+	}
+	*dn = DataNode(str.c_str());
+	return DataNode(dn->Str(nullptr));
+}
 
+extern DataArray* DataGetMacro(Symbol);
 // fn_8031FBAC
 DataNode DataStringFlags(DataArray *da)
 {
@@ -747,7 +929,16 @@ DataNode DataStringFlags(DataArray *da)
 	DataArray *a = da->GetArrayAtIndex(2);
 	String s('\0');
 	for (int j = 0; j < a->GetNodeCount(); j++) {
-		Symbol sym((char *)a->GetStrAtIndex(j));
+		DataArray* macro_arr = DataGetMacro(Symbol(a->GetStrAtIndex(j)));
+		if(macro_arr != nullptr){
+			macro_arr->GetNodeCount();
+			if((i & macro_arr->GetIntAtIndex(0)) != 0){
+				if(s != '\0'){
+					s += "|";
+				}
+				s += a->GetStrAtIndex(j);
+			}
+		}
 	}
 	return DataNode(s);
 }
@@ -801,8 +992,16 @@ DataNode DataSort(DataArray *da)
 
 // fn_8031C6C4
 extern DataNode DataVar(DataArray *);
+
+extern DataNode* DataVariable(Symbol);
 // fn_8031B904
-extern DataNode DataSetVar(DataArray *);
+DataNode DataSetVar(DataArray* da){
+	DataNode ret = *EvaluateNodeAtIndex(da, 2);
+	DataNode* dn = DataVariable(da->ForceSymAtIndex(1));
+	dn->operator=(ret);
+	return ret;
+}
+
 
 // fn_8031C710
 DataNode DataPackColor(DataArray* da){
@@ -814,7 +1013,14 @@ DataNode DataPackColor(DataArray* da){
 }
 
 // fn_8031C7C4
-extern DataNode DataUnpackColor(DataArray *);
+DataNode DataUnpackColor(DataArray* da){
+	int packed = da->GetIntAtIndex(1);
+	*da->GetVarAtIndex(2) = DataNode((float)(packed & 0xFF) / 255.0f);
+	*da->GetVarAtIndex(3) = DataNode((float)(packed >> 8 & 0xFF) / 255.0f);
+	*da->GetVarAtIndex(4) = DataNode((float)(packed >> 0x10 & 0xFF) / 255.0f);
+	return DataNode(0);
+}
+
 // fn_803200E8
 extern DataNode OnSetThis(DataArray *);
 // fn_80320150
@@ -839,8 +1045,11 @@ DataNode DataUnquote(DataArray *da)
 
 // fn_8032088C
 extern DataNode DataGetDateTime(DataArray *);
+
 // fn_8032008C
-extern DataNode DataWith(DataArray *);
+DataNode DataWith(DataArray* da){
+	return da->ExecuteScript(2, da->GetObjAtIndex(1), nullptr, 1);
+}
 
 // fn_80320048
 DataNode DataGetType(DataArray *da)

@@ -150,6 +150,9 @@ rb3/asyncfilewii.cpp:
 rb3/unk_802E9040.cpp:
 	.text       start:0x802E9040 end:0x802EAC5C
 
+rb3/unk_802F844C.cpp:
+	.text       start:0x802F844C end:0x802F9860
+
 rb3/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
 
@@ -163,8 +166,11 @@ rb3/unk_802FA994.cpp:
 rb3/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
-rb3/unk_802FF088.cpp:
+rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
+
+rb3/unk_8030F4F0.cpp:
+	.text       start:0x8030F4F0 end:0x80311394
 
 rb3/rg_messages.cpp:
 	.text       start:0x80313E98 end:0x80314814
@@ -177,6 +183,7 @@ rb3/key_messages.cpp:
 
 rb3/unk_80313E98.cpp:
 	.text       start:0x80315A70 end:0x80318588
+	.data       start:0x80854D04 end:0x80854D48
 
 rb3/unk_8031B028.cpp:
 	.text       start:0x8031B028 end:0x80322600
@@ -190,6 +197,9 @@ rb3/unk_803242cc.cpp:
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
+
+rb3/unk_8032443C.cpp:
+	.text       start:0x8032443C end:0x80324A80
 
 rb3/bink.cpp:
 	.text       start:0x80341E10 end:0x80342ACC

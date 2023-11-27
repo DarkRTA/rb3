@@ -4,6 +4,8 @@
 #include "memstream.hpp"
 #include "message.hpp"
 #include "common.hpp"
+#include "formatstring.hpp"
+#include "makestring.hpp"
 
 // fn_800B95C4
 BinStream &BinStream::operator<<(float f)
@@ -38,10 +40,7 @@ extern char *fn_800BAA2C(char *, String, unsigned int);
 // fn_800BA9BC
 void SyncObjMsg::Print(TextStream &ts) const
 {
-	ts << fn_800BAA2C(
-		lbl_8082C43C + 0x82,
-		tag,
-		dirty_mask); // "SyncObj tag = %s, dirtyMask = %x\n"
+	ts << MakeString<String, unsigned int>("SyncObj tag = %s, dirtyMask = %x\n", tag, dirty_mask);
 }
 
 // fn_800BB518
