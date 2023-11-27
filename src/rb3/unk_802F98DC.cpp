@@ -4,6 +4,7 @@
 #include "data.hpp"
 #include "common.hpp"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "file.hpp"
 
 // fn_802FA190
 void FileQualifiedFilename(String &s, const char *c)
@@ -194,10 +195,11 @@ DataNode OnFileAbsolutePath(DataArray *da)
 	return DataNode(FileMakePath(str1, str2, '\0'));
 }
 
+extern "C" const char* FileRelativePath(const char*, const char*);
 // fn_802F9B3C
 DataNode OnFileRelativePath(DataArray *da)
 {
-	return DataNode();
+	return DataNode(FileRelativePath(da->GetStrAtIndex(1), da->GetStrAtIndex(2)));
 }
 
 // fn_802F9BA0
@@ -213,9 +215,11 @@ DataNode *EvaluateNodeAtIndex(DataArray *da, int i)
 	return dn->Evaluate();
 }
 
+extern void SynchProcNOP(const char*);
 // fn_802F9C78
 DataNode OnSynchProc(DataArray *da)
 {
+	SynchProcNOP("calling synchproc on non-pc platform");
 	return DataNode("\0");
 }
 
@@ -223,6 +227,8 @@ extern "C" void FileInit();
 extern "C" void fn_801F0530(char *);
 extern "C" void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 extern "C" char *OptionStr(const char *, const char *);
+extern File* gOpenCaptureFile;
+extern File* NewFile(const char*, int);
 
 // fn_802F9CC4
 void FileInit()
@@ -232,18 +238,19 @@ void FileInit()
 	char *path = FileMakePath(gExecRoot, "../../system/run", '\0');
 	strcpy(gSystemRoot, path);
 	fn_801F0530(gRoot);
-	DataRegisterFunc(Symbol("file_root"), OnFileRoot);
-	DataRegisterFunc(Symbol("file_exec_root"), OnFileExecRoot);
-	DataRegisterFunc(Symbol("file_get_drive"), OnFileGetDrive);
-	DataRegisterFunc(Symbol("file_get_path"), OnFileGetPath);
-	DataRegisterFunc(Symbol("file_get_base"), OnFileGetBase);
-	DataRegisterFunc(Symbol("file_get_ext"), OnFileGetExt);
-	DataRegisterFunc(Symbol("file_match"), OnFileMatch);
-	DataRegisterFunc(Symbol("file_absolute_path"), OnFileAbsolutePath);
-	DataRegisterFunc(Symbol("file_relative_path"), OnFileRelativePath);
-	DataRegisterFunc(Symbol("with_file_root"), OnWithFileRoot);
-	DataRegisterFunc(Symbol("synch_proc"), OnSynchProc);
+	DataRegisterFunc("file_root", OnFileRoot);
+	DataRegisterFunc("file_exec_root", OnFileExecRoot);
+	DataRegisterFunc("file_get_drive", OnFileGetDrive);
+	DataRegisterFunc("file_get_path", OnFileGetPath);
+	DataRegisterFunc("file_get_base", OnFileGetBase);
+	DataRegisterFunc("file_get_ext", OnFileGetExt);
+	DataRegisterFunc("file_match", OnFileMatch);
+	DataRegisterFunc("file_absolute_path", OnFileAbsolutePath);
+	DataRegisterFunc("file_relative_path", OnFileRelativePath);
+	DataRegisterFunc("with_file_root", OnWithFileRoot);
+	DataRegisterFunc("synch_proc", OnSynchProc);
 	char *str = OptionStr("file_order", '\0');
 	if (str != nullptr && (*str != '\0')) {
+		gOpenCaptureFile = NewFile(str, 0xA04);
 	}
 }
