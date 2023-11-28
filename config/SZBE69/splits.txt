@@ -260,6 +260,9 @@ rb3/unk_8037AD40.cpp:
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
+rb3/unk_80421240.cpp:
+	.text       start:0x80421240 end:0x8046EDCC
+
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 

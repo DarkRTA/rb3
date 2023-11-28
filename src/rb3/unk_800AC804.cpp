@@ -7,6 +7,7 @@
 #include "data.hpp"
 #include "joinresultmsg.hpp"
 #include "hmx/object.hpp"
+#include "makestring.hpp"
 
 // fn_800AFE60
 // probably inline
@@ -53,4 +54,10 @@ DataNode::DataNode(float f)
 DataNode::DataNode(Hmx::Object* obj){
 	value.objVal = obj;
 	type = kDataObject;
+}
+
+// fn_800B441C
+const char* MakeString(const char* c){
+	FormatString fs(c);
+	return fs.Str();
 }
