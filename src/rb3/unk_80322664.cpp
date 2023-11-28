@@ -61,7 +61,7 @@ Symbol DataNode::ForceSym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
 	if (n->type == kDataSymbol) {
-		return *(n->value.symVal);
+		return n->value.strVal;
 	}
 	return Symbol(n->value.symVal->m_string);
 }
@@ -154,7 +154,7 @@ bool DataNode::operator!=(const DataNode &dn) const
 }
 
 #pragma dont_inline on
-DataType DataNode::GetType()
+DataType DataNode::GetType() const
 {
 	return type;
 }
