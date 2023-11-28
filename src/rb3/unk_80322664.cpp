@@ -44,16 +44,16 @@ int DataNode::LiteralInt(const DataArray *da) const
 }
 
 // fn_80322F54
-Symbol* DataNode::Sym(const DataArray *da) const
+const char* DataNode::Sym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	return n->value.symVal;
+	return n->value.strVal;
 }
 
 // fn_80322F78
-Symbol* DataNode::LiteralSym(const DataArray *da) const
+const char* DataNode::LiteralSym(const DataArray *da) const
 {
-	return value.symVal;
+	return value.strVal;
 }
 
 // fn_80322F80
