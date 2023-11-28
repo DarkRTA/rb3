@@ -217,6 +217,11 @@ DataNode* DataNode::Var(const DataArray*) const {
 	return value.varVal;
 }
 
+// fn_803230C0
+DataFunc* DataNode::Func(const DataArray*) const {
+	return value.funcVal;
+}
+
 // fn_803239E8
 bool HasSpace(const char* str){
 	while(*str != '\0'){

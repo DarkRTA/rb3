@@ -10,6 +10,8 @@ class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
 
+typedef DataNode DataFunc(DataArray *);
+
 union DataNodeValue {
 	int intVal;
 	float floatVal;
@@ -18,6 +20,7 @@ union DataNodeValue {
 	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
+    DataFunc* funcVal;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
@@ -73,6 +76,7 @@ public:
 	DataArray *LiteralArray(const DataArray *) const; // fn_80323160
 	DataNode* Var(const DataArray*) const; // fn_80323170
 	Hmx::Object* GetObj(const DataArray*) const;
+	DataFunc* Func(const DataArray*) const; // fn_803230C0
 	bool operator==(const DataNode &) const; // fn_80323360
 	bool operator!=(const DataNode &) const; // fn_80323508
 	bool NotNull() const; // fn_80323530
