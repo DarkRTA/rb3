@@ -85,7 +85,7 @@ public:
 	void Save(BinStream &) const; // fn_80323A18
 	void Load(BinStream &); // fn_80323B64
 
-	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
+	DataType GetType() const; // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
 		const DataNode &); // same asm as Symbol::operator=(const Symbol&)
 	DataNodeValue GetDataNodeVal() const; // fn_80018808
