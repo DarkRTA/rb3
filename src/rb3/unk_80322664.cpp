@@ -239,6 +239,7 @@ TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
 }
 
 extern char* DataVarName(const DataNode*);
+extern Symbol DataFuncName(DataFunc*);
 
 // fn_8032364C
 void DataNode::Print(TextStream &ts, bool b) const
@@ -247,46 +248,14 @@ void DataNode::Print(TextStream &ts, bool b) const
 	case kDataUnhandled:
 		ts << "kDataUnhandled";
 		break;
-	case kDataFloat:
-		ts << value.floatVal;
-		break;
-	case kDataVariable:
-		ts << "$" << DataVarName(this);
-		break;
-	case kDataFunc:
-		// DataFuncName__FPFP9DataArray_8DataNode gets called here
-		// ts << (Symbol)0xE8;
-		break;
-	case kDataObject:
-		ts << value.objVal;
-		break;
-	case kDataSymbol:
-		if (!HasSpace(value.strVal)) {
-			ts << "'" << value.strVal << "'";
-		} else
-			ts << value.strVal;
-		break;
-	case kDataInt:
+    case kDataInt:
 		ts << value.intVal;
 		break;
-	case kDataIfdef:
-		ts << "\n#ifdef " << value.strVal << "\n";
-		break;
-	case kDataElse:
-		ts << "\n#else\n";
-		break;
-	case kDataEndif:
-		ts << "\n#endif\n";
-		break;
-	case kDataArray:
-	case kDataCommand:
-	case kDataProperty:
-		value.dataArray->Print(ts, type, b);
-		break;
-	case kDataString:
-		if(!b){
-			ts << '"';
-			char* tok = strtok(value.strVal, "\"");
+    case kDataString:
+        if(b) ts << value.symVal->m_string;
+        else {
+            ts << "\"";
+			char* tok = strtok(value.symVal->m_string, "\"");
 			while(tok != nullptr){
 				ts << tok;
 				tok = strtok(nullptr, "\"");
@@ -295,15 +264,53 @@ void DataNode::Print(TextStream &ts, bool b) const
 					tok[-1] = '\"';
 				}
 			}
-			ts << '"';
-		}
-		else ts << value.strVal;
+			ts << "\"";
+        }
 		break;
-	case kDataGlob:
+    case kDataSymbol:
+        if(!HasSpace(value.strVal)) ts << value.strVal;
+        else ts << "'" << value.strVal << "'";
+		break;
+    case kDataGlob:
 		ts << "<glob " << -value.dataArray->GetNodeCount() << ">";
 		break;
-	case kDataDefine:
+	case kDataFloat:
+		ts << value.floatVal;
+		break;
+    case kDataArray:
+	case kDataCommand:
+	case kDataProperty:
+		value.dataArray->Print(ts, type, b);
+		break;	
+    case kDataObject:
+		ts << value.objVal;
+		break;
+	case kDataVariable:
+		ts << '$' << DataVarName(value.varVal);
+		break;
+	case kDataFunc:
+		ts << DataFuncName(value.funcVal);
+		break;
+    case kDataDefine:
 		ts << "\n#define " << value.strVal << "\n";
+		break;
+    case kDataUndef:
+		ts << "\n#undef " << value.strVal << "\n";
+		break;
+	case kDataIfdef:
+		ts << "\n#ifdef " << value.strVal << "\n";
+		break;
+    case kDataIfndef:
+		ts << "\n#ifndef " << value.strVal << "\n";
+		break;
+	case kDataAutorun:
+		ts << "\n#autorun\n";
+		break;
+	case kDataElse:
+		ts << "\n#else\n";
+		break;
+	case kDataEndif:
+		ts << "\n#endif\n";
 		break;
 	case kDataInclude:
 		ts << "\n#include " << value.strVal << "\n";
@@ -311,40 +318,34 @@ void DataNode::Print(TextStream &ts, bool b) const
 	case kDataMerge:
 		ts << "\n#merge " << value.strVal << "\n";
 		break;
-	case kDataIfndef:
-		ts << "\n#ifndef " << value.strVal << "\n";
-		break;
-	case kDataAutorun:
-		ts << "\n#autorun\n";
-		break;
-	case kDataUndef:
-		ts << "\n#undef " << value.strVal << "\n";
-		break;
 	}
 }
 
-// void DataNode::Save(BinStream& bs) {
-// 	if(type == kDataUnhandled) type = kDataInt;
-// 	else if(type == kDataInt) type = kDataUnhandled;
-// 	bs << (unsigned int)type;
-// 	switch(type){
-// 		case 0: case 6: case 8: case 9: case 0x24:
-// 			bs << (unsigned int) value.intVal;
-// 			break;
-// 		case 1: bs << value.floatVal; break;
-// 		case 2: bs << DataVarName(this); break;
-// 		case 3: // bs << DataFuncName(), returns a Symbol*
-// 			break;
-// 		case 4: // object
-// 			break;
-// 		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
-// 			bs << value.strVal; break;
-// 		case 0x10: case 0x11: case 0x13:
-// 			value.dataArray->Save(bs); break;
-// 		case 0x12: case 0x14:
-// 			value.dataArray->SaveGlob(bs, true); break;
-// 	}
-// }
+void DataNode::Save(BinStream& bs) const {
+	int theType;
+	if(type == kDataUnhandled) theType = kDataInt;
+	else if(type == kDataInt) theType = kDataUnhandled;
+	bs << (unsigned int)theType;
+	switch(type){
+		case 0: case 6: case 8: case 9: case 0x24:
+			bs << (unsigned int) value.intVal;
+			break;
+		case 1: bs << value.floatVal; break;
+		case 2: bs << DataVarName(this); break;
+		case 3:
+			bs << DataFuncName(value.funcVal);
+			break;
+		case 4: 
+			bs << value.objVal->Name();
+			break;
+		case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
+			bs << value.strVal; break;
+		case 0x10: case 0x11: case 0x13:
+			value.dataArray->Save(bs); break;
+		case 0x12: case 0x14:
+			value.dataArray->SaveGlob(bs, true); break;
+	}
+}
 
 extern int gEvalIndex;
 extern DataNode gEvalNode[];
