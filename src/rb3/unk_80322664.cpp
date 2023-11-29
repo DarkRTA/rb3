@@ -44,16 +44,16 @@ int DataNode::LiteralInt(const DataArray *da) const
 }
 
 // fn_80322F54
-Symbol* DataNode::Sym(const DataArray *da) const
+const char* DataNode::Sym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
-	return n->value.symVal;
+	return n->value.strVal;
 }
 
 // fn_80322F78
-Symbol* DataNode::LiteralSym(const DataArray *da) const
+const char* DataNode::LiteralSym(const DataArray *da) const
 {
-	return value.symVal;
+	return value.strVal;
 }
 
 // fn_80322F80
@@ -61,7 +61,7 @@ Symbol DataNode::ForceSym(const DataArray *da) const
 {
 	DataNode *n = Evaluate();
 	if (n->type == kDataSymbol) {
-		return *(n->value.symVal);
+		return n->value.strVal;
 	}
 	return Symbol(n->value.symVal->m_string);
 }
@@ -154,7 +154,7 @@ bool DataNode::operator!=(const DataNode &dn) const
 }
 
 #pragma dont_inline on
-DataType DataNode::GetType()
+DataType DataNode::GetType() const
 {
 	return type;
 }
@@ -215,6 +215,11 @@ DataNode::DataNode(const DataArrayPtr& ptr){
 // fn_80323170
 DataNode* DataNode::Var(const DataArray*) const {
 	return value.varVal;
+}
+
+// fn_803230C0
+DataFunc* DataNode::Func(const DataArray*) const {
+	return value.funcVal;
 }
 
 // fn_803239E8

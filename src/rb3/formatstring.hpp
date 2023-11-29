@@ -18,6 +18,7 @@ public:
 	void UpdateType();
 	char* Str();
 	FormatString& operator<<(unsigned int);
+	FormatString& operator<<(int);
 	FormatString& operator<<(const String&);
 	FormatString& operator<<(const DataNode&);
 	FormatString& operator<<(float);

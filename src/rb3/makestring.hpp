@@ -2,6 +2,8 @@
 #define RB3_MAKESTRING_HPP
 #include "formatstring.hpp"
 
+const char* MakeString(const char*);
+
 template <class T>
 const char* MakeString(const char* c, T t){
 	FormatString fs(c);

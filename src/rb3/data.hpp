@@ -10,6 +10,8 @@ class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
 
+typedef DataNode DataFunc(DataArray *);
+
 union DataNodeValue {
 	int intVal;
 	float floatVal;
@@ -18,6 +20,7 @@ union DataNodeValue {
 	Symbol* symVal;
 	char *strVal;
 	DataNode* varVal;
+    DataFunc* funcVal;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that i probably should've, just FYI */
@@ -62,8 +65,8 @@ public:
 	DataNode* AddToBuffer();
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	Symbol* Sym(const DataArray *) const; // fn_80322F54
-	Symbol* LiteralSym(const DataArray *) const; // fn_80322F78
+	const char* Sym(const DataArray *) const; // fn_80322F54
+	const char* LiteralSym(const DataArray *) const; // fn_80322F78
 	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
@@ -73,6 +76,7 @@ public:
 	DataArray *LiteralArray(const DataArray *) const; // fn_80323160
 	DataNode* Var(const DataArray*) const; // fn_80323170
 	Hmx::Object* GetObj(const DataArray*) const;
+	DataFunc* Func(const DataArray*) const; // fn_803230C0
 	bool operator==(const DataNode &) const; // fn_80323360
 	bool operator!=(const DataNode &) const; // fn_80323508
 	bool NotNull() const; // fn_80323530
@@ -81,7 +85,7 @@ public:
 	void Save(BinStream &) const; // fn_80323A18
 	void Load(BinStream &); // fn_80323B64
 
-	DataType GetType(); // same asm as JsonObject::GetJsonObjectStruct()
+	DataType GetType() const; // same asm as JsonObject::GetJsonObjectStruct()
 	void AssignValue(
 		const DataNode &); // same asm as Symbol::operator=(const Symbol&)
 	DataNodeValue GetDataNodeVal() const; // fn_80018808
@@ -121,7 +125,7 @@ public:
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
 	DataNodeValue GetDataNodeValueAtIndex(int) const; // fn_80316258
-	Symbol* GetSymAtIndex(int) const; // fn_80010140
+	const char* GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878

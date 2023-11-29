@@ -10,7 +10,7 @@
 #include "debug.hpp"
 #include "random.hpp"
 
-extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
+extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
 extern Hmx::Object* gDataThis;
 
