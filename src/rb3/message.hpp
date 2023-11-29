@@ -13,6 +13,7 @@ public:
 	Message(
 		Symbol, const DataNode &, const DataNode &, const DataNode &,
 		const DataNode &); // fn_80177AD4
+	Message(Symbol, const DataNode&); // fn_8001008C
 	Message(Symbol); // fn_8000FFE0
 	Message(DataArray *); // fn_800AE714
 	virtual ~Message(); // fn_8000DF60

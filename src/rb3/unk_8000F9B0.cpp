@@ -30,3 +30,12 @@ Message::Message(Symbol s)
 
 	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
 }
+
+// fn_8001008C
+Message::Message(Symbol s, const DataNode& dn){
+	DataArray* da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(3);
+	unk4 = da;
+
+	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
+	unk4->GetNodeAtIndex(2)->operator=(dn);
+}
