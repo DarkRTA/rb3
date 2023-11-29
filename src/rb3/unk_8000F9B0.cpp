@@ -39,3 +39,8 @@ Message::Message(Symbol s, const DataNode& dn){
 	unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
 	unk4->GetNodeAtIndex(2)->operator=(dn);
 }
+
+// fn_8000FCA4
+bool Symbol::operator==(const Symbol& sym){
+	return m_string == sym.m_string;
+}
