@@ -929,7 +929,7 @@ DataNode DataStringFlags(DataArray *da)
 	DataArray *a = da->GetArrayAtIndex(2);
 	String s('\0');
 	for (int j = 0; j < a->GetNodeCount(); j++) {
-		DataArray* macro_arr = DataGetMacro(Symbol(a->GetStrAtIndex(j)));
+		DataArray* macro_arr = DataGetMacro(a->GetStrAtIndex(j));
 		if(macro_arr != nullptr){
 			macro_arr->GetNodeCount();
 			if((i & macro_arr->GetIntAtIndex(0)) != 0){
