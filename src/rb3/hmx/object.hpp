@@ -2,6 +2,7 @@
 #define HMX_OBJECT_HPP
 #include "rb3/objref.hpp"
 #include "rb3/data.hpp"
+#include "rb3/typeprops.hpp"
 
 // forward declarations
 class DataArray;
@@ -10,9 +11,7 @@ class DataNode;
 namespace Hmx {
 	class Object : ObjRef {
 	public:
-		// TypeProps props;
-		int props; // filler for now
-		int unk8;
+		TypeProps props;
 		const char* name;
 
 		Object(); // fn_8033560c
