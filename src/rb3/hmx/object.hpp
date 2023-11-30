@@ -10,9 +10,7 @@ class DataNode;
 namespace Hmx {
 	class Object : ObjRef {
 	public:
-		// TypeProps props;
-		int props; // filler for now
-		int unk8;
+		TypeProps props;
 		const char* name;
 
 		Object(); // fn_8033560c
