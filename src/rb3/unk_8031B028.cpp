@@ -10,6 +10,7 @@
 #include "debug.hpp"
 #include "random.hpp"
 #include "mergefilter.hpp"
+#include "datamergefilter.hpp"
 
 extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
