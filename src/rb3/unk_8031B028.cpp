@@ -9,6 +9,7 @@
 #include "formatstring.hpp"
 #include "debug.hpp"
 #include "random.hpp"
+#include "mergefilter.hpp"
 
 extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
@@ -1075,6 +1076,12 @@ DataNode DataDisableNotify(DataArray *da)
 DataNode DataFilterNotify(DataArray *da)
 {
 	return DataNode(0);
+}
+
+// fn_80320458
+MergeFilter::MergeFilter(DataNode* dn, int asdf){
+	node = dn;
+	i = asdf;
 }
 
 // fn_80320CDC
