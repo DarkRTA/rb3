@@ -15,6 +15,8 @@
 extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
 extern Hmx::Object* gDataThis;
+extern void DataPushVar(DataNode* dn);
+extern void DataPopVar();
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
@@ -484,10 +486,11 @@ DataNode DataBitAnd(DataArray *da)
 
 // fn_8031C108
 DataNode DataAndEqual(DataArray* da){
+	void* arr;
 	if(da->GetTypeAtIndex(1) == kDataProperty){
-		DataArray* arr = da->GetDataNodeValueAtIndex(1).dataArray;
-		int res = gDataThis->Property(arr, true)->Int(0) & da->GetIntAtIndex(2);
-		gDataThis->SetProperty(arr, DataNode(res));
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) & da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
 		return DataNode(res);
 	}
 	else {
@@ -558,7 +561,30 @@ DataNode DataWhile(DataArray* da){
 }
 
 // fn_8031C904
-extern DataNode DataDo(DataArray *);
+DataNode DataDo(DataArray* da){
+    int cnt;
+    int nodeCnt = da->GetNodeCount();
+    for(cnt = 1; da->GetTypeAtIndex(cnt) == kDataArray; cnt++){
+        void* arr;
+        DataNode* node;
+        arr =  da->GetDataNodeValueAtIndex(cnt).dataArray;
+        node = ((DataArray *)arr)->GetVarAtIndex(0);
+        DataPushVar(node);
+        if(((DataArray *)arr)->GetNodeCount() == 2){
+            *node = *EvaluateNodeAtIndex((DataArray *)arr, 1);
+        }
+    }
+    int delCnt = cnt - 1;
+    for(; cnt < nodeCnt - 1; cnt++){
+        da->GetCommandAtIndex(cnt)->Execute();
+    }
+    DataNode ret(*EvaluateNodeAtIndex(da, cnt));
+    while(delCnt-- != 0){
+        DataPopVar();
+    }
+    return ret;
+}
+
 // fn_8031D8EC
 extern DataNode DataNew(DataArray *);
 // fn_8031D890
