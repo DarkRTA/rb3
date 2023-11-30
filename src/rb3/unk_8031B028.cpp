@@ -683,8 +683,23 @@ DataNode DataNotifyOnce(DataArray *da)
 
 // fn_8031E470
 extern DataNode DataSwitch(DataArray *);
+
 // fn_8031E390
-extern DataNode DataCond(DataArray *);
+DataNode DataCond(DataArray* da){
+	for(int i = 1; i < da->GetNodeCount(); i++){
+		DataNode* node = da->GetNodeAtIndex(i);
+		if(node->GetType() == kDataArray){
+			DataArray* arr = node->GetDataNodeVal().dataArray;
+			if(arr->GetNodeAtIndex(0)->NotNull()){
+				return arr->ExecuteScript(1, gDataThis, nullptr, 1);
+			}
+		}
+		else {
+			return da->ExecuteScript(i, gDataThis, nullptr, 1);
+		}
+	}
+	return DataNode(0);
+}
 
 // fn_8031E5FC
 DataNode DataInsertElems(DataArray *da)
