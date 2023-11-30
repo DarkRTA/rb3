@@ -323,34 +323,34 @@ void DataNode::Print(TextStream &ts, bool b) const
 
 void DataNode::Save(BinStream& bs) const {
 	int theType = type;
-
     switch (theType) {
-        case 0:
-            theType = 6;
+        case kDataUnhandled:
+            theType = kDataInt;
             break;
-        case 6:
-            theType = 0;
+        case kDataInt:
+            theType = kDataUnhandled;
             break;
-    }
-    
-	bs << (unsigned int) theType;
+    }    
+	bs << (unsigned int)theType;
 	switch(theType){
-        case 5: case 7: case 0x20: case 0x21: case 0x22: case 0x23: case 0x25:
+        case kDataSymbol: case kDataIfdef: case kDataDefine: 
+        case kDataInclude: case kDataMerge: case kDataIfndef: case kDataUndef:
 			bs << value.strVal; break;
-        case 1: bs << value.floatVal; break;
-        case 0x12: case 0x14:
+        case kDataFloat: bs << value.floatVal; break;
+        case kDataString: case kDataGlob:
 			value.dataArray->SaveGlob(bs, (type - 0x12) == 0); break;
-        case 0x10: case 0x11: case 0x13:
+        case kDataArray: case kDataCommand: case kDataProperty:
 			value.dataArray->Save(bs); break;
-        case 4: 
+        case kDataObject: 
             if(value.objVal != nullptr) bs << value.objVal->Name();
             else bs << "\0";
 			break;
-		case 2: bs << DataVarName(value.varVal); break;
-		case 3:
+		case kDataVariable: bs << DataVarName(value.varVal); break;
+		case kDataFunc:
 			bs << DataFuncName(value.funcVal);
 			break;
-		case 0: case 6: case 8: case 9: case 0x24:
+		case kDataUnhandled: case kDataInt: 
+        case kDataElse: case kDataEndif: case kDataAutorun:
 			bs << (unsigned int) value.intVal;
 			break;
 	}
