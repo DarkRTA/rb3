@@ -8,6 +8,7 @@ public:
 	Symbol(const char*); //ctor pulled from gdrb
 
 	// methods found in RB2
+	bool operator==(const Symbol&); // fn_8000FCA4
 	bool operator!=(const char *);
 	Symbol *operator=(const Symbol &);
 	char *Str() const;

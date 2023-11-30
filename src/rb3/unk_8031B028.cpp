@@ -9,6 +9,8 @@
 #include "formatstring.hpp"
 #include "debug.hpp"
 #include "random.hpp"
+#include "mergefilter.hpp"
+#include "datamergefilter.hpp"
 
 extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
@@ -929,7 +931,7 @@ DataNode DataStringFlags(DataArray *da)
 	DataArray *a = da->GetArrayAtIndex(2);
 	String s('\0');
 	for (int j = 0; j < a->GetNodeCount(); j++) {
-		DataArray* macro_arr = DataGetMacro(Symbol(a->GetStrAtIndex(j)));
+		DataArray* macro_arr = DataGetMacro(a->GetStrAtIndex(j));
 		if(macro_arr != nullptr){
 			macro_arr->GetNodeCount();
 			if((i & macro_arr->GetIntAtIndex(0)) != 0){
@@ -1075,6 +1077,12 @@ DataNode DataDisableNotify(DataArray *da)
 DataNode DataFilterNotify(DataArray *da)
 {
 	return DataNode(0);
+}
+
+// fn_80320458
+MergeFilter::MergeFilter(DataNode* dn, int asdf){
+	node = dn;
+	i = asdf;
 }
 
 // fn_80320CDC
