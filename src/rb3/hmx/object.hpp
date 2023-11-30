@@ -2,6 +2,7 @@
 #define HMX_OBJECT_HPP
 #include "rb3/objref.hpp"
 #include "rb3/data.hpp"
+#include "rb3/typeprops.hpp"
 
 // forward declarations
 class DataArray;

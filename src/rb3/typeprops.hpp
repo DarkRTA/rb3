@@ -5,6 +5,7 @@
 #include "data.hpp"
 
 namespace Hmx { class Object; }
+class DataArray;
 
 class TypeProps {
 public:
