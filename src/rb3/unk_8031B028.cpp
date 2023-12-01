@@ -768,9 +768,9 @@ DataNode DataCond(DataArray* da){
 	for(int i = 1; i < da->GetNodeCount(); i++){
 		DataNode* node = da->GetNodeAtIndex(i);
 		if(node->GetType() == kDataArray){
-			DataArray* arr = node->GetDataNodeVal().dataArray;
-			if(arr->GetNodeAtIndex(0)->NotNull()){
-				return arr->ExecuteScript(1, gDataThis, nullptr, 1);
+			void* arr = node->GetDataNodeVal().dataArray;
+			if(((DataArray*)arr)->GetNodeAtIndex(0)->NotNull()){
+				return ((DataArray*)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
 			}
 		}
 		else {
@@ -1327,4 +1327,23 @@ void DataInitFuncs()
 	DataRegisterFunc("file_list_paths", DataFileListPaths);
 	DataRegisterFunc("disable_notify", DataDisableNotify);
 	DataRegisterFunc("filter_notify", DataFilterNotify);
+	char c[8];
+	memset(&c, 0, sizeof(c));
+    c[0] = 'O';
+    c[1] = '6';
+    c[2] = '4';
+	DataRegisterFunc(c, DataWhile);
+    c[2] = '5';
+	DataRegisterFunc(c, DataSize);
+    c[2] = '6';
+	DataRegisterFunc(c, DataSwitch);
+    c[2] = '7';
+	DataRegisterFunc(c, DataGetElem);
+    c[2] = '8';
+	DataRegisterFunc(c, DataDo);
+    c[2] = '9';
+	DataRegisterFunc(c, DataSet);
+    c[1] = '7';
+    c[2] = '0';
+	DataRegisterFunc(c, DataInc);
 }
