@@ -501,7 +501,20 @@ DataNode DataAndEqual(DataArray* da){
 }
 
 // fn_8031C224
-extern DataNode DataMaskEqual(DataArray *);
+DataNode DataMaskEqual(DataArray* da){
+	void* arr;
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(0) & ~da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
+	}
+}
 
 // fn_8031C45C
 DataNode DataBitOr(DataArray *da)
@@ -514,7 +527,20 @@ DataNode DataBitOr(DataArray *da)
 }
 
 // fn_8031C340
-extern DataNode DataOrEqual(DataArray *);
+DataNode DataOrEqual(DataArray* da){
+	void* arr;
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) | da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(0) | da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
+	}
+}
 
 // fn_8031C4D8
 DataNode DataBitXor(DataArray *da)
@@ -707,8 +733,35 @@ DataNode DataNotifyOnce(DataArray *da)
 	return DataNode(0);
 }
 
+// fn_8031E564
+bool DNArrayNodeEquals(DataNode* dn1, DataNode* dn2){
+    if(dn1->GetType() == kDataArray){
+        void* arr = dn1->value.dataArray;
+        for(int i = 0; i < ((DataArray*)arr)->GetNodeCount(); i++){
+            if(*(((DataArray*)arr)->GetNodeAtIndex(i)) == *dn2){
+                return true;
+            }
+        }
+        return false;
+    }
+    else return *dn1 == *dn2;
+}
+
 // fn_8031E470
-extern DataNode DataSwitch(DataArray *);
+DataNode DataSwitch(DataArray* da){
+    DataNode* eval = EvaluateNodeAtIndex(da, 1);
+    for(int i = 2; i < da->GetNodeCount(); i++){
+        DataNode* node = da->GetNodeAtIndex(i);
+        if(node->GetType() == kDataArray){
+            void* arr = node->GetDataNodeVal().dataArray;
+            if(DNArrayNodeEquals(((DataArray*)arr)->GetNodeAtIndex(0), eval)){
+                return ((DataArray*)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
+            }
+        }
+        else return da->ExecuteScript(i, gDataThis, nullptr, 1);
+    }
+    return DataNode(0);
+}
 
 // fn_8031E390
 DataNode DataCond(DataArray* da){
