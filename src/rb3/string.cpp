@@ -160,8 +160,6 @@ int String::find_last_of(char charg) const
 	return -1;
 }
 
-static const size_t npos = -1;
-
 // similar to std::string::find_last_of
 int String::find_last_of(const char *str) const
 {
@@ -171,7 +169,7 @@ int String::find_last_of(const char *str) const
 	int a = -1;
 	for (char *tmp = (char *)str; *tmp != '\0'; tmp++) {
 		int lastIndex = find_last_of(*tmp);
-		if ((lastIndex != npos) && (lastIndex > a)) {
+		if ((lastIndex != (size_t)-1) && (lastIndex > a)) {
 			a = lastIndex;
 		}
 	}
@@ -347,7 +345,7 @@ int String::rfind(const char *str) const
 		rv = -1;
 		for (char *p4 = (char *)str; *p4 != '\0'; p4++) {
 			int x = find_last_of(*p4);
-			if (x == npos)
+			if (x == (size_t)-1)
 				return -1;
 			if (rv == -1) {
 				rv = x;
@@ -460,7 +458,7 @@ void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem)
 	var_r31 = 0;
 	var_r30 = find_first_of(buf, 0);
 
-	while (var_r30 != npos) {
+	while (var_r30 != (size_t)-1) {
 		if (var_r30 > var_r31) {
 			String sp14 = substr(var_r31, var_r30 - var_r31);
 			fn_801CEDFC(mem, &sp14);
