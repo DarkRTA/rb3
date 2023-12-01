@@ -270,6 +270,9 @@ rb3/unk_8050FA30.cpp:
 rb3/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D9A20
 
+rb3/unk_80660D18.cpp:
+	.text       start:0x80660D18 end:0x80671D38
+
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
 
