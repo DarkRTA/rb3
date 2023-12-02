@@ -4,6 +4,7 @@
 #include "std/string.h"
 #include "symbol.hpp"
 #include "common.hpp"
+#include "random.hpp"
 
 const char *BinStream::Name() const
 {
@@ -89,12 +90,10 @@ void BinStream::EnableReadEncryption()
 	unk08 = new Rand2(a);
 }
 
-extern "C" unsigned int fn_802DDCDC();
-
 // fn_80342DE4
 void BinStream::EnableWriteEncryption(int i)
 {
-	unsigned int a = fn_802DDCDC();
+	unsigned int a = RandomInt();
 	*this << a;
 	unk08 = new Rand2(a);
 }
