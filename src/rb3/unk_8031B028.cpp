@@ -15,6 +15,8 @@
 extern void DataRegisterFunc(Symbol, DataFunc*);
 extern Debug TheDebug;
 extern Hmx::Object* gDataThis;
+extern void DataPushVar(DataNode* dn);
+extern void DataPopVar();
 
 // fn_80320470
 extern DataNode DataReplaceObject(DataArray *);
@@ -484,10 +486,11 @@ DataNode DataBitAnd(DataArray *da)
 
 // fn_8031C108
 DataNode DataAndEqual(DataArray* da){
+	void* arr;
 	if(da->GetTypeAtIndex(1) == kDataProperty){
-		DataArray* arr = da->GetDataNodeValueAtIndex(1).dataArray;
-		int res = gDataThis->Property(arr, true)->Int(0) & da->GetIntAtIndex(2);
-		gDataThis->SetProperty(arr, DataNode(res));
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) & da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
 		return DataNode(res);
 	}
 	else {
@@ -498,7 +501,20 @@ DataNode DataAndEqual(DataArray* da){
 }
 
 // fn_8031C224
-extern DataNode DataMaskEqual(DataArray *);
+DataNode DataMaskEqual(DataArray* da){
+	void* arr;
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(0) & ~da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
+	}
+}
 
 // fn_8031C45C
 DataNode DataBitOr(DataArray *da)
@@ -511,7 +527,20 @@ DataNode DataBitOr(DataArray *da)
 }
 
 // fn_8031C340
-extern DataNode DataOrEqual(DataArray *);
+DataNode DataOrEqual(DataArray* da){
+	void* arr;
+	if(da->GetTypeAtIndex(1) == kDataProperty){
+        arr = da->GetDataNodeValueAtIndex(1).dataArray;
+		int res = gDataThis->Property((DataArray *)arr, true)->Int(0) | da->GetIntAtIndex(2);
+		gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+		return DataNode(res);
+	}
+	else {
+		DataNode* dn_var = da->GetVarAtIndex(1);
+		int res = dn_var->Int(0) | da->GetIntAtIndex(2);
+		return *(*dn_var = DataNode(res));
+	}
+}
 
 // fn_8031C4D8
 DataNode DataBitXor(DataArray *da)
@@ -558,7 +587,30 @@ DataNode DataWhile(DataArray* da){
 }
 
 // fn_8031C904
-extern DataNode DataDo(DataArray *);
+DataNode DataDo(DataArray* da){
+    int cnt;
+    int nodeCnt = da->GetNodeCount();
+    for(cnt = 1; da->GetTypeAtIndex(cnt) == kDataArray; cnt++){
+        void* arr;
+        DataNode* node;
+        arr =  da->GetDataNodeValueAtIndex(cnt).dataArray;
+        node = ((DataArray *)arr)->GetVarAtIndex(0);
+        DataPushVar(node);
+        if(((DataArray *)arr)->GetNodeCount() == 2){
+            *node = *EvaluateNodeAtIndex((DataArray *)arr, 1);
+        }
+    }
+    int delCnt = cnt - 1;
+    for(; cnt < nodeCnt - 1; cnt++){
+        da->GetCommandAtIndex(cnt)->Execute();
+    }
+    DataNode ret(*EvaluateNodeAtIndex(da, cnt));
+    while(delCnt-- != 0){
+        DataPopVar();
+    }
+    return ret;
+}
+
 // fn_8031D8EC
 extern DataNode DataNew(DataArray *);
 // fn_8031D890
@@ -681,10 +733,52 @@ DataNode DataNotifyOnce(DataArray *da)
 	return DataNode(0);
 }
 
+// fn_8031E564
+bool DNArrayNodeEquals(DataNode* dn1, DataNode* dn2){
+    if(dn1->GetType() == kDataArray){
+        void* arr = dn1->value.dataArray;
+        for(int i = 0; i < ((DataArray*)arr)->GetNodeCount(); i++){
+            if(*(((DataArray*)arr)->GetNodeAtIndex(i)) == *dn2){
+                return true;
+            }
+        }
+        return false;
+    }
+    else return *dn1 == *dn2;
+}
+
 // fn_8031E470
-extern DataNode DataSwitch(DataArray *);
+DataNode DataSwitch(DataArray* da){
+    DataNode* eval = EvaluateNodeAtIndex(da, 1);
+    for(int i = 2; i < da->GetNodeCount(); i++){
+        DataNode* node = da->GetNodeAtIndex(i);
+        if(node->GetType() == kDataArray){
+            void* arr = node->GetDataNodeVal().dataArray;
+            if(DNArrayNodeEquals(((DataArray*)arr)->GetNodeAtIndex(0), eval)){
+                return ((DataArray*)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
+            }
+        }
+        else return da->ExecuteScript(i, gDataThis, nullptr, 1);
+    }
+    return DataNode(0);
+}
+
 // fn_8031E390
-extern DataNode DataCond(DataArray *);
+DataNode DataCond(DataArray* da){
+	for(int i = 1; i < da->GetNodeCount(); i++){
+		DataNode* node = da->GetNodeAtIndex(i);
+		if(node->GetType() == kDataArray){
+			void* arr = node->GetDataNodeVal().dataArray;
+			if(((DataArray*)arr)->GetNodeAtIndex(0)->NotNull()){
+				return ((DataArray*)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
+			}
+		}
+		else {
+			return da->ExecuteScript(i, gDataThis, nullptr, 1);
+		}
+	}
+	return DataNode(0);
+}
 
 // fn_8031E5FC
 DataNode DataInsertElems(DataArray *da)
@@ -1233,4 +1327,23 @@ void DataInitFuncs()
 	DataRegisterFunc("file_list_paths", DataFileListPaths);
 	DataRegisterFunc("disable_notify", DataDisableNotify);
 	DataRegisterFunc("filter_notify", DataFilterNotify);
+	char c[8];
+	memset(&c, 0, sizeof(c));
+    c[0] = 'O';
+    c[1] = '6';
+    c[2] = '4';
+	DataRegisterFunc(c, DataWhile);
+    c[2] = '5';
+	DataRegisterFunc(c, DataSize);
+    c[2] = '6';
+	DataRegisterFunc(c, DataSwitch);
+    c[2] = '7';
+	DataRegisterFunc(c, DataGetElem);
+    c[2] = '8';
+	DataRegisterFunc(c, DataDo);
+    c[2] = '9';
+	DataRegisterFunc(c, DataSet);
+    c[1] = '7';
+    c[2] = '0';
+	DataRegisterFunc(c, DataInc);
 }
