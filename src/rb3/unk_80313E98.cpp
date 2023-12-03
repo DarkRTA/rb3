@@ -555,3 +555,40 @@ DataNode::DataNode(DataFunc* func){
 	value.funcVal = func;
 	type = kDataFunc;
 }
+
+extern void DataPushVar(DataNode* dn);
+extern void DataPopVar();
+extern Hmx::Object* DataSetThis(Hmx::Object*);
+
+DataNode DataArray::ExecuteScript(int i, Hmx::Object* obj, const DataArray* da, int j){
+    int arrCnt;
+    int nodeCnt = mNodeCount;
+    
+    arrCnt=0;
+    if(i < nodeCnt - 1){
+        if(mNodes[i].GetType() == kDataArray){
+            void* arr = mNodes[i].GetDataNodeVal().dataArray;
+            arrCnt = ((DataArray*)arr)->GetNodeCount();
+            for(int cnt = 0; cnt < arrCnt; cnt++){
+                DataNode* var = ((DataArray*)arr)->GetVarAtIndex(cnt);
+                DataPushVar(var);
+                DataNode* eval = EvaluateNodeAtIndex((DataArray*)da, cnt + j);
+                *var = *eval;
+            }
+            i++;
+        }
+    }
+    DataNode ret = DataNode();
+    if(i >=nodeCnt){
+        ret = DataNode(0);
+    }
+    else {
+        Hmx::Object* setThis = DataSetThis(obj);
+        ret = RunCommandsFromIndex(i);
+        DataSetThis(setThis);
+    }
+    while(arrCnt-- != 0){
+        DataPopVar();
+    }
+    return ret;
+}
