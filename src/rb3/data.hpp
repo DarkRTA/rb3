@@ -61,6 +61,7 @@ public:
 	DataNode(const void *, int);
 	DataNode(DataArray *, DataType); // fn_80323318
 	DataNode(DataType, DataNodeValue); // fn_800AB8A8
+	DataNode(DataFunc*); // fn_803170FC
 	~DataNode(); // fn_8000DFE4
 	DataNode *Evaluate() const;
 	DataNode* AddToBuffer();

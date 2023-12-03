@@ -549,3 +549,9 @@ DataNode DataArray::RunCommandsFromIndex(int i) {
     }
     return DataNode(*EvaluateNodeAtIndex(this, i));
 }
+
+// fn_803170FC
+DataNode::DataNode(DataFunc* func){
+	value.funcVal = func;
+	type = kDataFunc;
+}
