@@ -67,8 +67,8 @@ public:
 	DataNode* AddToBuffer();
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	const char* Sym(const DataArray *) const; // fn_80322F54
-	const char* LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol Sym(const DataArray *) const; // fn_80322F54
+	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
 	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
