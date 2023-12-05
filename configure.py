@@ -215,6 +215,7 @@ config.libs = [
             Object(NonMatching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/unk_800135F0.cpp"),
             Object(NonMatching, "rb3/unk_80017898.cpp"),
+            Object(NonMatching, "rb3/unk_80027694.cpp"),
             Object(NonMatching, "rb3/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unk_800A673C.cpp"),
             Object(NonMatching, "rb3/unk_800AC804.cpp"),

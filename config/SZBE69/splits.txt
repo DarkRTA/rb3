@@ -31,6 +31,9 @@ rb3/unk_800135F0.cpp:
 rb3/unk_80017898.cpp:
 	.text       start:0x80017898 end:0x80018210
 
+rb3/unk_80027694.cpp:
+	.text       start:0x80027694 end:0x8002FA4C
+
 quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
