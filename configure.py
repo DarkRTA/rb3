@@ -281,6 +281,10 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            Object(NonMatching, "quazal/unk_800135F0.cpp"),
+            Object(NonMatching, "quazal/unk_80017898.cpp"),
+            Object(NonMatching, "quazal/unk_80027694.cpp"),
+            Object(NonMatching, "quazal/unk_80018278.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },

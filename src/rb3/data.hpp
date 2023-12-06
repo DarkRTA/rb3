@@ -61,13 +61,14 @@ public:
 	DataNode(const void *, int);
 	DataNode(DataArray *, DataType); // fn_80323318
 	DataNode(DataType, DataNodeValue); // fn_800AB8A8
+	DataNode(DataFunc*); // fn_803170FC
 	~DataNode(); // fn_8000DFE4
 	DataNode *Evaluate() const;
 	DataNode* AddToBuffer();
 	int Int(const DataArray *) const; // fn_80322F28
 	int LiteralInt(const DataArray *) const; // fn_80322F4C
-	const char* Sym(const DataArray *) const; // fn_80322F54
-	const char* LiteralSym(const DataArray *) const; // fn_80322F78
+	Symbol Sym(const DataArray *) const; // fn_80322F54
+	Symbol LiteralSym(const DataArray *) const; // fn_80322F78
 	Symbol ForceSym(const DataArray *) const; // fn_80322F80
 	const char *Str(const DataArray *) const; // fn_80322FC8
 	const char *LiteralStr(const DataArray *) const; // fn_80323004
@@ -126,7 +127,7 @@ public:
 	int GetIntAtIndex(int) const; // fn_800A8410
 	float GetFloatAtIndex(int) const; // fn_800D7964
 	DataNodeValue GetDataNodeValueAtIndex(int) const; // fn_80316258
-	const char* GetSymAtIndex(int) const; // fn_80010140
+	Symbol GetSymAtIndex(int) const; // fn_80010140
 	const char *GetStrAtIndex(int) const; // fn_8000ECC0
 	DataArray *GetArrayAtIndex(int) const; // fn_800B27F0
 	DataNode* GetVarAtIndex(int) const; // fn_800E7878
