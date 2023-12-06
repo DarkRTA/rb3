@@ -282,6 +282,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(NonMatching, "quazal/unk_80012610.cpp"),
+            Object(NonMatching, "quazal/unk_80012A38.cpp"),
             Object(NonMatching, "quazal/unk_800135F0.cpp"),
             Object(NonMatching, "quazal/unk_80017898.cpp"),
             Object(NonMatching, "quazal/unk_80027694.cpp"),
