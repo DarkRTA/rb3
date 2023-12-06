@@ -213,9 +213,6 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80322664.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(NonMatching, "rb3/binstream.cpp"),
-            Object(NonMatching, "rb3/unk_800135F0.cpp"),
-            Object(NonMatching, "rb3/unk_80017898.cpp"),
-            Object(NonMatching, "rb3/unk_80027694.cpp"),
             Object(NonMatching, "rb3/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unk_800A673C.cpp"),
             Object(NonMatching, "rb3/unk_800AC804.cpp"),
@@ -284,6 +281,10 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            Object(NonMatching, "quazal/unk_800135F0.cpp"),
+            Object(NonMatching, "quazal/unk_80017898.cpp"),
+            Object(NonMatching, "quazal/unk_80027694.cpp"),
+            Object(NonMatching, "quazal/unk_80018278.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },
