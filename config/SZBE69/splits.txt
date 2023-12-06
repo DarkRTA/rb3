@@ -25,13 +25,16 @@ rb3/main.cpp:
 rb3/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x800125A8
 
-rb3/unk_800135F0.cpp:
+quazal/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
 
-rb3/unk_80017898.cpp:
+quazal/unk_80017898.cpp:
 	.text       start:0x80017898 end:0x80018210
 
-rb3/unk_80027694.cpp:
+quazal/unk_80018278.cpp:
+	.text       start:0x80018278 end:0x800193E4
+
+quazal/unk_80027694.cpp:
 	.text       start:0x80027694 end:0x8002FA4C
 
 quazal/unk_800A515C.cpp:
