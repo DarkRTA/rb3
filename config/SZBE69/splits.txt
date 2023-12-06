@@ -37,6 +37,12 @@ quazal/unk_800135F0.cpp:
 quazal/unk_80016BCC.cpp:
 	.text       start:0x80016BCC end:0x80016D24
 
+quazal/unk_80016D94.cpp:
+	.text       start:0x80016D94 end:0x800172FC
+
+quazal/unk_80017344.cpp:
+	.text       start:0x80017344 end:0x8001784C
+
 quazal/unk_80017898.cpp:
 	.text       start:0x80017898 end:0x80018210
 
