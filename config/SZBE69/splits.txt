@@ -45,6 +45,7 @@ quazal/unk_80017344.cpp:
 
 quazal/qresult.cpp:
 	.text       start:0x80017898 end:0x80017964
+	.data       start:0x80818558 end:0x80818588
 
 quazal/rootobject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
