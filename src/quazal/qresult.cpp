@@ -38,9 +38,9 @@ Quazal::qResult* Quazal::qResult::operator=(const Quazal::qResult& res){
     return this;
 }
 
-void Quazal::qResult::Trace(unsigned int) const {
-
-}
+#pragma force_active on
+void Quazal::qResult::Trace(unsigned int) const { }
+#pragma force_active reset
 
 const char* UnusedQResultReturnCodeFxn(){
     return "ReturnCode ";
