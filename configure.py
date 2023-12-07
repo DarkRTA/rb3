@@ -281,7 +281,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "quazal/qresult.cpp"),
+            Object(Matching, "quazal/qresult.cpp"),
             Object(NonMatching, "quazal/randomnumbergenerator.cpp"),
             Object(NonMatching, "quazal/refcountedobject.cpp"),
             Object(NonMatching, "quazal/rootobject.cpp"),

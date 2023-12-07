@@ -4,7 +4,7 @@
 namespace Quazal {
     class qResult {
     public:
-        unsigned int i1;
+        int i1;
         char* c;
         int i2;
 

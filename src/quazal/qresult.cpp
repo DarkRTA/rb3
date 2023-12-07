@@ -17,11 +17,11 @@ bool Quazal::qResult::Equals(const int& i) const {
 }
 
 bool Quazal::qResult::Equals(const bool& b) const {
-    return ((i1 >> 0x1F ^ 1) == b);
+    return ((i1 >= 0) == b);
 }
 
 Quazal::qResult::operator bool() const {
-    return (i1 >> 0x1F ^ 1);
+    return (i1 >= 0);
 }
 
 Quazal::qResult* Quazal::qResult::operator=(const int& i){
