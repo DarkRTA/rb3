@@ -286,6 +286,8 @@ config.libs = [
             Object(NonMatching, "quazal/refcountedobject.cpp"),
             Object(NonMatching, "quazal/rootobject.cpp"),
             Object(NonMatching, "quazal/unk_8004D6C4.cpp"),
+            Object(NonMatching, "quazal/unk_80022EFC.cpp"),
+            Object(NonMatching, "quazal/unk_8002FAA0.cpp"),
             Object(NonMatching, "quazal/unk_80054054.cpp"),
             Object(NonMatching, "quazal/unk_80012610.cpp"),
             Object(NonMatching, "quazal/unk_80012A38.cpp"),
