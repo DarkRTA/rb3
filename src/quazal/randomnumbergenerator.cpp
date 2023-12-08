@@ -19,10 +19,12 @@ void Quazal::RandomNumberGenerator::SetRandomNumberSeed(unsigned int ui){
     }
 }
 
+#pragma dont_inline on
 unsigned int Quazal::RandomNumberGenerator::GetRandomNumber(unsigned int ui){
 
 }
+#pragma dont_inline reset
 
 float Quazal::RandomNumberGenerator::GetRealRandomNumber(float f){
-
+    return (GetRandomNumber(0x10000) / 65536.0f * f);
 }
