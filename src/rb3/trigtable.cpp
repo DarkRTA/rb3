@@ -16,8 +16,10 @@ void TrigTableInit(){
     *(gBigSinTable + tmp + 1) = SinFloat(0.024543693f * i) - *(gBigSinTable + tmp);
 }
 
+#pragma force_active on
 // fn_802E2F34
 void TrigTableNOP(){ }
+#pragma force_active reset
 
 // fn_802E2F38
 float Sine(float arg8) {

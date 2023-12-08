@@ -25,17 +25,79 @@ rb3/main.cpp:
 rb3/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x800125A8
 
+quazal/unk_80012610.cpp:
+	.text       start:0x80012610 end:0x800127E4
+
+quazal/datetime.cpp:
+	.text       start:0x800127E4 end:0x800129F4
+
+quazal/unk_80012A38.cpp:
+	.text       start:0x80012A38 end:0x800134E0
+
 quazal/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
 
+quazal/unk_80015298.cpp:
+	.text       start:0x80015298 end:0x80016B80
+
+quazal/platform.cpp:
+	.text       start:0x80016BCC end:0x80016D24
+
+quazal/unk_80016D94.cpp:
+	.text       start:0x80016D94 end:0x800172FC
+
+quazal/unk_80017344.cpp:
+	.text       start:0x80017344 end:0x80017448
+
+quazal/randomnumbergenerator.cpp:
+	.text       start:0x80017448 end:0x800176FC
+
+quazal/refcountedobject.cpp:
+	.text       start:0x800176FC end:0x8001784C
+
+quazal/qresult.cpp:
+	.text       start:0x80017898 end:0x80017964
+	.data       start:0x80818558 end:0x80818588
+
+quazal/rootobject.cpp:
+	.text       start:0x80017964 end:0x80017AFC
+
 quazal/unk_80017898.cpp:
-	.text       start:0x80017898 end:0x80018210
+	.text       start:0x80017AFC end:0x80018210
 
 quazal/unk_80018278.cpp:
+	.text       start:0x80018278 end:0x80018968
+
+quazal/unk_80018968.cpp:
 	.text       start:0x80018968 end:0x800193E4
+
+quazal/unk_80019E18.cpp:
+	.text       start:0x80019E18 end:0x8001AD5C
+
+quazal/unk_8001ADA4.cpp:
+	.text       start:0x8001ADA4 end:0x8001D12C
+
+quazal/unk_8001F9B0.cpp:
+	.text       start:0x8001F9B0 end:0x800211B0
+
+quazal/unk_80022EFC.cpp:
+	.text       start:0x80022EFC end:0x8002764C
 
 quazal/unk_80027694.cpp:
 	.text       start:0x80027694 end:0x8002FA4C
+
+quazal/unk_8002FAA0.cpp:
+	.text       start:0x8002FAA0 end:0x80034BCC
+
+quazal/stream.cpp:
+	.text       start:0x80038924 end:0x80038978
+	.data       start:0x8081ADD0 end:0x8081ADE8
+
+quazal/unk_8004D6C4.cpp:
+	.text       start:0x8004D6C4 end:0x80053E74
+
+quazal/unk_80054054.cpp:
+	.text       start:0x80054054 end:0x80058220
 
 quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368

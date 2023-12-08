@@ -10,7 +10,7 @@ int DataArray::GetNodeCount() const
 }
 
 // fn_80010140
-const char* DataArray::GetSymAtIndex(int i) const {
+Symbol DataArray::GetSymAtIndex(int i) const {
 	DataNode* dn = GetNodeAtIndex(i);
 	return dn->Sym(this);
 }
