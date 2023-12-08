@@ -6,6 +6,7 @@
 namespace Quazal {
     class Platform : RootObject {
     public:
+        static Platform* _Instance;
         static RandomNumberGenerator s_oRNG;
 
         Platform();
