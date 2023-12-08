@@ -6,8 +6,7 @@ namespace Quazal {
     public:
         unsigned int unk_arr[0x270];
         unsigned int unk_9c0;
-        unsigned int unk_9c4;
-        unsigned int unk_9c8;
+        unsigned int unk_arr2[2];
 
         RandomNumberGenerator();
         ~RandomNumberGenerator();

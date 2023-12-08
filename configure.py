@@ -282,7 +282,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "quazal/qresult.cpp"),
-            Object(NonMatching, "quazal/randomnumbergenerator.cpp"),
+            Object(Matching, "quazal/randomnumbergenerator.cpp"),
             Object(NonMatching, "quazal/refcountedobject.cpp"),
             Object(NonMatching, "quazal/rootobject.cpp"),
             Object(NonMatching, "quazal/unk_8004D6C4.cpp"),
