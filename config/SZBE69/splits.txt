@@ -26,7 +26,10 @@ rb3/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x800125A8
 
 quazal/unk_80012610.cpp:
-	.text       start:0x80012610 end:0x800129F4
+	.text       start:0x80012610 end:0x800127E4
+
+quazal/datetime.cpp:
+	.text       start:0x800127E4 end:0x800129F4
 
 quazal/unk_80012A38.cpp:
 	.text       start:0x80012A38 end:0x800134E0
