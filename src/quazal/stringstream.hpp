@@ -7,7 +7,8 @@ namespace Quazal {
     public:
         StringStream();
         ~StringStream();
-        void FreeBuffer(char*);
+        void FreeBuffer();
+        void ResizeBuffer(unsigned int);
 
         char* unk0;
         int unk4;

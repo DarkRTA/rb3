@@ -1,5 +1,6 @@
 #include "stringstream.hpp"
 #include "specialarray.hpp"
+#include "std/string.h"
 
 Quazal::StringStream::StringStream(){
     unk0 = &unk_arr[0];
@@ -12,11 +13,18 @@ Quazal::StringStream::StringStream(){
 }
 
 Quazal::StringStream::~StringStream(){
-    FreeBuffer(unk0);
+    FreeBuffer();
 }
 
-void Quazal::StringStream::FreeBuffer(char* c){
+void Quazal::StringStream::FreeBuffer(){
     if(unk0 != &unk_arr[0]){
-        SpecialDeleteArray<char>(c);
+        SpecialDeleteArray<char>(unk0);
     }
+}
+
+void Quazal::StringStream::ResizeBuffer(unsigned int ui){
+    char* ptr = unk0;
+    // char* ptr2 = ptr - unk8;
+    unk0 = SpecialNewArray<char>(ui, "StringStream.cpp", 0x6B);
+    // memcpy(unk0, ptr);
 }
