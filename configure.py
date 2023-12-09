@@ -327,14 +327,14 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "zlib/adler32.c"),
-            Object(NonMatching, "zlib/crc32.c"),
+            Object(Matching, "zlib/adler32.c"),
+            Object(Matching, "zlib/crc32.c"),
             Object(NonMatching, "zlib/deflate.c"),
             Object(NonMatching, "zlib/trees.c"),
             Object(NonMatching, "zlib/zutil.c"),
-            Object(NonMatching, "zlib/inflate.c"),
+            Object(Matching, "zlib/inflate.c"),
             Object(NonMatching, "zlib/inftrees.c"),
-            Object(NonMatching, "zlib/inffast.c")
+            Object(Matching, "zlib/inffast.c")
         ]
     },
     # anything below this line does not need to be decompiled

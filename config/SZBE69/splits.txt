@@ -337,6 +337,7 @@ zlib/adler32.c:
 
 zlib/crc32.c:
 	.text       start:0x8037ED1C end:0x8037EE64
+	.rodata     start:0x807F1E00 end:0x807F2200
 
 zlib/deflate.c:
 	.text       start:0x8037EE64 end:0x80380B78
@@ -349,12 +350,15 @@ zlib/zutil.c:
 
 zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248
+	.rodata     start:0x807F2CE0 end:0x807F3588
+	.data       start:0x80874750 end:0x80874978
 
 zlib/inftrees.c:
 	.text       start:0x80384248 end:0x803846EC
 
 zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
+	.data       start:0x80874978 end:0x808749C8
 
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
