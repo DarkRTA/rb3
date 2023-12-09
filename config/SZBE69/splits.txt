@@ -330,7 +330,40 @@ rb3/textstream.cpp:
 	.data       start:0x80874520 end:0x80874550
 
 rb3/unk_8037AD40.cpp:
-	.text       start:0x8037AD40 end:0x80392960
+	.text       start:0x8037AD40 end:0x8037EB94
+
+zlib/adler32.c:
+	.text       start:0x8037EB94 end:0x8037ED1C
+
+zlib/crc32.c:
+	.text       start:0x8037ED1C end:0x8037EE64
+	.rodata     start:0x807F1E00 end:0x807F2200
+
+zlib/deflate.c:
+	.text       start:0x8037EE64 end:0x80380B78
+	.rodata     start:0x807F2200 end:0x807F2280
+
+zlib/trees.c:
+	.text       start:0x80380B78 end:0x80382960
+	.rodata     start:0x807F2280 end:0x807F2CB8
+	.data       start:0x80874690 end:0x808746D0
+
+zlib/zutil.c:
+	.text       start:0x80382960 end:0x80382998
+	.rodata     start:0x807F2CB8 end:0x807F2CE0
+	.data       start:0x808746D0 end:0x80874750
+
+zlib/inflate.c:
+	.text       start:0x80382998 end:0x80384248
+	.rodata     start:0x807F2CE0 end:0x807F3588
+	.data       start:0x80874750 end:0x80874978
+
+zlib/inftrees.c:
+	.text       start:0x80384248 end:0x803846EC
+
+zlib/inffast.c:
+	.text       start:0x803846EC end:0x80384BA8
+	.data       start:0x80874978 end:0x808749C8
 
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
