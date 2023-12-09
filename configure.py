@@ -333,7 +333,8 @@ config.libs = [
             Object(NonMatching, "zlib/trees.c"),
             Object(NonMatching, "zlib/zutil.c"),
             Object(NonMatching, "zlib/inflate.c"),
-            Object(NonMatching, "zlib/inftrees.c")
+            Object(NonMatching, "zlib/inftrees.c"),
+            Object(NonMatching, "zlib/inffast.c")
         ]
     },
     # anything below this line does not need to be decompiled

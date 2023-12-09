@@ -351,7 +351,10 @@ zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248
 
 zlib/inftrees.c:
-	.text       start:0x80384248 end:0x80392960
+	.text       start:0x80384248 end:0x803846EC
+
+zlib/inffast.c:
+	.text       start:0x803846EC end:0x80384BA8
 
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
