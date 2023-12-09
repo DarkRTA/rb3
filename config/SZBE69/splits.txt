@@ -135,7 +135,7 @@ json-c/json_object.c:
 
 json-c/json_tokener.c:
 	.text       start:0x800C7714 end:0x800C92AC
-	.data       start:0x8082E248 end:0x8082E460
+	.data       start:0x8082E248 end:0x8082E5B0
 
 json-c/linkhash.c:
 	.text       start:0x800C92AC end:0x800C999C
