@@ -345,6 +345,8 @@ zlib/deflate.c:
 
 zlib/trees.c:
 	.text       start:0x80380B78 end:0x80382960
+	.rodata     start:0x807F2280 end:0x807F2CB8
+	.data       start:0x80874690 end:0x808746D0
 
 zlib/zutil.c:
 	.text       start:0x80382960 end:0x80382998

@@ -330,7 +330,7 @@ config.libs = [
             Object(Matching, "zlib/adler32.c"),
             Object(Matching, "zlib/crc32.c"),
             Object(Matching, "zlib/deflate.c"),
-            Object(NonMatching, "zlib/trees.c"),
+            Object(Matching, "zlib/trees.c"),
             Object(Matching, "zlib/zutil.c"),
             Object(Matching, "zlib/inflate.c"),
             Object(NonMatching, "zlib/inftrees.c"),
