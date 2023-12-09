@@ -335,8 +335,20 @@ rb3/unk_8037AD40.cpp:
 zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
 
+zlib/crc32.c:
+	.text       start:0x8037ED1C end:0x8037EE64
+
 zlib/deflate.c:
-	.text       start:0x8037ED1C end:0x80392960
+	.text       start:0x8037EE64 end:0x80380B78
+
+zlib/trees.c:
+	.text       start:0x80380B78 end:0x80382960
+
+zlib/zutil.c:
+	.text       start:0x80382960 end:0x80382998
+
+zlib/inflate.c:
+	.text       start:0x80382998 end:0x80392960
 
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
