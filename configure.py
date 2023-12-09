@@ -321,6 +321,22 @@ config.libs = [
             Object(Matching, "json-c/printbuf.c")
         ]
     },
+    {
+        "lib": "zlib",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(Matching, "zlib/adler32.c"),
+            Object(Matching, "zlib/crc32.c"),
+            Object(Matching, "zlib/deflate.c"),
+            Object(Matching, "zlib/trees.c"),
+            Object(Matching, "zlib/zutil.c"),
+            Object(Matching, "zlib/inflate.c"),
+            Object(NonMatching, "zlib/inftrees.c"),
+            Object(Matching, "zlib/inffast.c")
+        ]
+    },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
     {
