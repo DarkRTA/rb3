@@ -163,6 +163,12 @@ cflags_rb3 = [
     "-RTTI on",
 ]
 
+cflags_zlib = [
+    *cflags_base,
+    *cflags_rb3,
+    "-pool on"
+]
+
 
 # Metrowerks library flags
 cflags_runtime = [
@@ -324,7 +330,7 @@ config.libs = [
     {
         "lib": "zlib",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": cflags_zlib,
         "host": False,
         "objects": [
             Object(Matching, "zlib/adler32.c"),
@@ -333,8 +339,16 @@ config.libs = [
             Object(Matching, "zlib/trees.c"),
             Object(Matching, "zlib/zutil.c"),
             Object(Matching, "zlib/inflate.c"),
-            Object(NonMatching, "zlib/inftrees.c"),
             Object(Matching, "zlib/inffast.c")
+        ]
+    },
+    {
+        "lib": "zlib",
+        "mw_version": "Wii/1.0",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(Matching, "zlib/inftrees.c")
         ]
     },
     # anything below this line does not need to be decompiled
