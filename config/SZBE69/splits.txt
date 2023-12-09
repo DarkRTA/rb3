@@ -341,12 +341,15 @@ zlib/crc32.c:
 
 zlib/deflate.c:
 	.text       start:0x8037EE64 end:0x80380B78
+	.rodata     start:0x807F2200 end:0x807F2280
 
 zlib/trees.c:
 	.text       start:0x80380B78 end:0x80382960
 
 zlib/zutil.c:
 	.text       start:0x80382960 end:0x80382998
+	.rodata     start:0x807F2CB8 end:0x807F2CE0
+	.data       start:0x808746D0 end:0x80874750
 
 zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248

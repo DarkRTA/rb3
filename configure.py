@@ -329,9 +329,9 @@ config.libs = [
         "objects": [
             Object(Matching, "zlib/adler32.c"),
             Object(Matching, "zlib/crc32.c"),
-            Object(NonMatching, "zlib/deflate.c"),
+            Object(Matching, "zlib/deflate.c"),
             Object(NonMatching, "zlib/trees.c"),
-            Object(NonMatching, "zlib/zutil.c"),
+            Object(Matching, "zlib/zutil.c"),
             Object(Matching, "zlib/inflate.c"),
             Object(NonMatching, "zlib/inftrees.c"),
             Object(Matching, "zlib/inffast.c")
