@@ -7,6 +7,8 @@
 namespace Quazal {
     class MemoryManager : RootObject {
     public:
+        static int s_uiHeaderSize;
+
         MemoryManager(char*);
         virtual ~MemoryManager();
         virtual void BeginProtection();

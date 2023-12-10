@@ -14,3 +14,8 @@ Quazal::MemoryManager::MemoryManager(char* c){
 }
 
 Quazal::MemoryManager::~MemoryManager(){ }
+
+int Quazal::MemoryManager::GetHeaderSize(){
+    if(s_uiHeaderSize == 0) s_uiHeaderSize = 4;
+    return s_uiHeaderSize;
+}
