@@ -293,6 +293,7 @@ config.libs = [
             Object(NonMatching, "quazal/rootobject.cpp"),
             Object(NonMatching, "quazal/unk_8004D6C4.cpp"),
             Object(Matching, "quazal/stream.cpp"),
+            Object(NonMatching, "quazal/unk_80011714.cpp"),
             Object(NonMatching, "quazal/datetime.cpp"),
             Object(NonMatching, "quazal/unk_8001F9B0.cpp"),
             Object(NonMatching, "quazal/unk_80015298.cpp"),
