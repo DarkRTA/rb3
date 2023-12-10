@@ -4,6 +4,7 @@
 namespace Quazal {
     class Time {
     public:
+        void GetTime();
         operator unsigned long long();
     };
 }
