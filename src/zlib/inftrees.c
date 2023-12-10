@@ -7,6 +7,7 @@
 #include "inftrees.h"
 
 #define MAXBITS 15
+#pragma pool_data on
 
 const char inflate_copyright[] =
    " inflate 1.2.1 Copyright 1995-2003 Mark Adler ";
