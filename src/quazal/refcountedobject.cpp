@@ -16,12 +16,12 @@ Quazal::RefCountedObject* Quazal::RefCountedObject::AcquireRef(){
 }
 
 void Quazal::RefCountedObject::ReleaseRef(){
+    bool b = false;
     ScopedCS scope(s_oCS);
-    unsigned short cnt = ref_count;
-    if(cnt != 1) ref_count = cnt - 1;
-    scope.~ScopedCS();
-    if(cnt != 0)
-        delete this;
+    if(ref_count == 1) b = true;
+    else ref_count--;
+    // scope.~ScopedCS();
+    if(b) delete this;
 }
 
 unsigned short Quazal::RefCountedObject::GetRefCount() const {
