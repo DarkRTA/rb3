@@ -1,6 +1,8 @@
 #ifndef QUAZAL_MEMORYMANAGER_HPP
 #define QUAZAL_MEMORYMANAGER_HPP
 #include "rootobject.hpp"
+#include "watermark.hpp"
+#include "mutexprimitive.hpp"
 
 namespace Quazal {
     class MemoryManager : RootObject {
@@ -13,7 +15,9 @@ namespace Quazal {
         int GetHeaderSize();
         
         char* unk4;
-        int unk8, unkc, unk10, unk14, unk18;
+        int unk8, unkc, unk10;
+        WaterMark* unk14;
+        MutexPrimitive* unk18;
     };
 }
 
