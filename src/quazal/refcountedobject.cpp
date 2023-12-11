@@ -17,10 +17,11 @@ Quazal::RefCountedObject* Quazal::RefCountedObject::AcquireRef(){
 
 void Quazal::RefCountedObject::ReleaseRef(){
     bool b = false;
-    ScopedCS scope(s_oCS);
-    if(ref_count == 1) b = true;
-    else ref_count--;
-    // scope.~ScopedCS();
+    {
+        ScopedCS scope(s_oCS);
+        if(ref_count == 1) b = true;
+        else ref_count--;
+    }
     if(b) delete this;
 }
 
