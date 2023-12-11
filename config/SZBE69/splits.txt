@@ -82,6 +82,9 @@ quazal/unk_80019E18.cpp:
 quazal/unk_8001ADA4.cpp:
 	.text       start:0x8001ADA4 end:0x8001D12C
 
+quazal/unk_8001D138.cpp:
+	.text       start:0x8001D138 end:0x8001F660
+
 quazal/unk_8001F9B0.cpp:
 	.text       start:0x8001F9B0 end:0x800211B0
 
