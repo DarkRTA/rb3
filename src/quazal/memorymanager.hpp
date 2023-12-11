@@ -17,7 +17,7 @@ namespace Quazal {
         virtual ~MemoryManager();
         virtual void BeginProtection();
         virtual void EndProtection();
-        MemoryManager* GetDefaultMemoryManager();
+        static MemoryManager* GetDefaultMemoryManager();
 
         void* Allocate(unsigned long, const char*, unsigned int, _InstructionType);
         void Free(void*, _InstructionType);
