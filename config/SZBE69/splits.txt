@@ -70,7 +70,7 @@ quazal/rootobject.cpp:
 quazal/unk_80017898.cpp:
 	.text       start:0x80017AFC end:0x80018210
 
-quazal/unk_80018278.cpp:
+quazal/string.cpp:
 	.text       start:0x80018278 end:0x80018968
 
 quazal/unk_80018968.cpp:
