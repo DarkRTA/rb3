@@ -20,7 +20,7 @@ namespace Quazal {
         static MemoryManager* GetDefaultMemoryManager();
 
         void* Allocate(unsigned long, const char*, unsigned int, _InstructionType);
-        void Free(void*, _InstructionType);
+        static void Free(MemoryManager*, void*, _InstructionType);
 
         int GetHeaderSize();
         
