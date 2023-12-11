@@ -45,6 +45,7 @@ quazal/unk_80015298.cpp:
 
 quazal/platform.cpp:
 	.text       start:0x80016BCC end:0x80016D24
+	.data       start:0x8081813C end:0x80818150
 
 quazal/profilingunit.cpp:
 	.text       start:0x80016D94 end:0x800172FC
