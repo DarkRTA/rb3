@@ -322,7 +322,7 @@ config.libs = [
         "objects": [
             Object(Matching, "json-c/arraylist.c"),
             Object(Matching, "json-c/json_object.c"),
-            Object(NonMatching, "json-c/json_tokener.c"),
+            Object(NonMatching, "json-c/json_tokener.c"), # Matches but doesn't link
             Object(Matching, "json-c/linkhash.c"),
             Object(Matching, "json-c/printbuf.c")
         ]
