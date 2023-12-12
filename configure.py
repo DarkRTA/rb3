@@ -270,6 +270,7 @@ config.libs = [
             Object(Matching, "rb3/rand2.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
             Object(NonMatching, "rb3/unk_802FF088.cpp"),
+            Object(NonMatching, "rb3/unk_806C0A74.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
