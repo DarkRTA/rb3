@@ -379,7 +379,7 @@ config.libs = [
             Object(NonMatching, "vorbis/floor0.c"),
             Object(NonMatching, "vorbis/floor1.c"),
             Object(Matching, "vorbis/info.c"),
-            Object(NonMatching, "vorbis/lsp.c"),
+            Object(Matching, "vorbis/lsp.c"),
             Object(NonMatching, "vorbis/mapping0.c"),
             Object(NonMatching, "vorbis/mdct.c")
         ],

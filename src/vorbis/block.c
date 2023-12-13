@@ -31,7 +31,7 @@
 #include "registry.h"
 #include "misc.h"
 
-static int ilog2(unsigned int v){
+static int ilog2_block(unsigned int v){
   int ret=0;
   if(v)--v;
   while(v){
@@ -179,7 +179,7 @@ static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
   b=v->backend_state=_ogg_calloc(1,sizeof(*b));
 
   v->vi=vi;
-  b->modebits=ilog2(ci->modes);
+  b->modebits=ilog2_block(ci->modes);
 
   b->transform[0]=_ogg_calloc(VI_TRANSFORMB,sizeof(*b->transform[0]));
   b->transform[1]=_ogg_calloc(VI_TRANSFORMB,sizeof(*b->transform[1]));
@@ -192,8 +192,8 @@ static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
   mdct_init(b->transform[1][0],ci->blocksizes[1]>>hs);
 
   /* Vorbis I uses only window type 0 */
-  b->window[0]=ilog2(ci->blocksizes[0])-6;
-  b->window[1]=ilog2(ci->blocksizes[1])-6;
+  b->window[0]=ilog2_block(ci->blocksizes[0])-6;
+  b->window[1]=ilog2_block(ci->blocksizes[1])-6;
 
   if(encp){ /* encode/decode differ here */
 

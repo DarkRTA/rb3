@@ -45,7 +45,7 @@ static void mapping0_free_info(vorbis_info_mapping *i){
   }
 }
 
-static int ilog(unsigned int v){
+static int ilog_mapping0(unsigned int v){
   int ret=0;
   if(v)--v;
   while(v){
@@ -78,8 +78,8 @@ static void mapping0_pack(vorbis_info *vi,vorbis_info_mapping *vm,
     oggpack_write(opb,info->coupling_steps-1,8);
     
     for(i=0;i<info->coupling_steps;i++){
-      oggpack_write(opb,info->coupling_mag[i],ilog(vi->channels));
-      oggpack_write(opb,info->coupling_ang[i],ilog(vi->channels));
+      oggpack_write(opb,info->coupling_mag[i],ilog_mapping0(vi->channels));
+      oggpack_write(opb,info->coupling_ang[i],ilog_mapping0(vi->channels));
     }
   }else
     oggpack_write(opb,0,1);
@@ -114,8 +114,8 @@ static vorbis_info_mapping *mapping0_unpack(vorbis_info *vi,oggpack_buffer *opb)
     info->coupling_steps=oggpack_read(opb,8)+1;
 
     for(i=0;i<info->coupling_steps;i++){
-      int testM=info->coupling_mag[i]=oggpack_read(opb,ilog(vi->channels));
-      int testA=info->coupling_ang[i]=oggpack_read(opb,ilog(vi->channels));
+      int testM=info->coupling_mag[i]=oggpack_read(opb,ilog_mapping0(vi->channels));
+      int testA=info->coupling_ang[i]=oggpack_read(opb,ilog_mapping0(vi->channels));
 
       if(testM<0 || 
 	 testA<0 || 
