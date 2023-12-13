@@ -381,7 +381,9 @@ config.libs = [
             Object(Matching, "vorbis/info.c"),
             Object(Matching, "vorbis/lsp.c"),
             Object(NonMatching, "vorbis/mapping0.c"),
-            Object(NonMatching, "vorbis/mdct.c")
+            Object(NonMatching, "vorbis/mdct.c"),
+            Object(NonMatching, "vorbis/psy.c"),
+            Object(NonMatching, "vorbis/res0.c")
         ],
     },
     # anything below this line does not need to be decompiled

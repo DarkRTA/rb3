@@ -428,7 +428,13 @@ vorbis/mapping0.c:
 	.text       start:0x806C896C end:0x806CA094
 
 vorbis/mdct.c:
-	.text       start:0x806CA094 end:0x806D1B60
+	.text       start:0x806CA094 end:0x806CB4D0
+
+vorbis/psy.c:
+	.text       start:0x806CB4D0 end:0x806CE3C0
+
+vorbis/res0.c:
+	.text       start:0x806CE3C0 end:0x806D1B60
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
