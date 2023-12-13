@@ -268,6 +268,10 @@ static vorbis_look_floor *floor1_look(vorbis_dsp_state *vd,
   return(look);
 }
 
+inline int abs(int i){
+  return __abs(i);
+}
+
 static int render_point(int x0,int x1,int y0,int y1,int x){
   y0&=0x7fff; /* mask off flag */
   y1&=0x7fff;
