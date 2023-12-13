@@ -401,14 +401,26 @@ vorbis/block.c:
 	.text       start:0x806C2B6C end:0x806C3C94
 
 vorbis/codebook.c:
-	.text       start:0x806C3C94 end:0x806C6ED4
+	.text       start:0x806C3C94 end:0x806C4724
+
+vorbis/envelope.c:
+	.text       start:0x806C4724 end:0x806C47A8
+
+vorbis/floor0.c:
+	.text       start:0x806C47A8 end:0x806C504C
+
+vorbis/floor1.c:
+	.text       start:0x806C504C end:0x806C6ED4
 
 libogg/src/framing.c:
 	.text       start:0x806C6ED4 end:0x806C7B44
 	.data       start:0x808A1A20 end:0x808A1E28
 
 vorbis/info.c:
-	.text       start:0x806C7B44 end:0x806D1B60
+	.text       start:0x806C7B44 end:0x806C85A4
+
+vorbis/lookup.c:
+	.text       start:0x806C85A4 end:0x806D1B60
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
