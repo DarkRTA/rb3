@@ -449,6 +449,9 @@ vorbis/smallft.c:
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
 
+vorbis/window.c:
+	.text       start:0x806D1BC4 end:0x806D1F30
+
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
 

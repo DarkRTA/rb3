@@ -386,7 +386,8 @@ config.libs = [
             Object(NonMatching, "vorbis/psy.c"),
             Object(NonMatching, "vorbis/res0.c"),
             Object(NonMatching, "vorbis/sharedbook.c"),
-            Object(Matching, "vorbis/smallft.c")
+            Object(Matching, "vorbis/smallft.c"),
+            Object(NonMatching, "vorbis/window.c")
         ],
     },
     # anything below this line does not need to be decompiled
