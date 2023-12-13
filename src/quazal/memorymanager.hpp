@@ -9,10 +9,17 @@ namespace Quazal {
     public:
         static int s_uiHeaderSize;
 
+        enum _InstructionType {
+            _InstType0, _InstType1, _InstType2, _InstType3, _InstType4
+        };
+
         MemoryManager(char*);
         virtual ~MemoryManager();
         virtual void BeginProtection();
         virtual void EndProtection();
+        static MemoryManager* GetDefaultMemoryManager();
+        static void* Allocate(MemoryManager*, unsigned long, const char*, unsigned int, _InstructionType);
+        static void Free(MemoryManager*, void*, _InstructionType);
 
         int GetHeaderSize();
         

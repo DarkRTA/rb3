@@ -23,7 +23,10 @@ rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
 rb3/unk_8000F9B0.cpp:
-	.text       start:0x8000F9B0 end:0x800125A8
+	.text       start:0x8000F9B0 end:0x80011714
+
+quazal/unk_80011714.cpp:
+	.text       start:0x80011714 end:0x800125A8
 
 quazal/unk_80012610.cpp:
 	.text       start:0x80012610 end:0x800127E4
@@ -42,6 +45,7 @@ quazal/unk_80015298.cpp:
 
 quazal/platform.cpp:
 	.text       start:0x80016BCC end:0x80016D24
+	.data       start:0x8081813C end:0x80818150
 
 quazal/profilingunit.cpp:
 	.text       start:0x80016D94 end:0x800172FC
@@ -54,6 +58,7 @@ quazal/randomnumbergenerator.cpp:
 
 quazal/refcountedobject.cpp:
 	.text       start:0x800176FC end:0x8001784C
+	.data       start:0x80818510 end:0x80818558
 
 quazal/qresult.cpp:
 	.text       start:0x80017898 end:0x80017964
@@ -65,7 +70,7 @@ quazal/rootobject.cpp:
 quazal/unk_80017898.cpp:
 	.text       start:0x80017AFC end:0x80018210
 
-quazal/unk_80018278.cpp:
+quazal/string.cpp:
 	.text       start:0x80018278 end:0x80018968
 
 quazal/unk_80018968.cpp:
@@ -76,6 +81,9 @@ quazal/unk_80019E18.cpp:
 
 quazal/unk_8001ADA4.cpp:
 	.text       start:0x8001ADA4 end:0x8001D12C
+
+quazal/unk_8001D138.cpp:
+	.text       start:0x8001D138 end:0x8001F660
 
 quazal/unk_8001F9B0.cpp:
 	.text       start:0x8001F9B0 end:0x800211B0
@@ -381,6 +389,12 @@ rb3/unk_805CE140.cpp:
 
 rb3/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80671D38
+
+rb3/unk_80697FC8.cpp:
+	.text       start:0x80697FC8 end:0x806A8C14
+
+rb3/unk_806C0A74.cpp:
+	.text       start:0x806C0A74 end:0x806E3FA8
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
