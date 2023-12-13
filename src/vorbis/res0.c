@@ -62,6 +62,15 @@ typedef struct {
 
 } vorbis_look_residue0;
 
+inline double fabs(double x)
+{
+   return __fabs(x) ;
+}
+
+inline void *alloca(size_t size){
+  return __alloca(size);
+}
+
 void res0_free_info(vorbis_info_residue *i){
   vorbis_info_residue0 *info=(vorbis_info_residue0 *)i;
   if(info){

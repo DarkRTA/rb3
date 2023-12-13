@@ -46,6 +46,11 @@
 #include "os.h"
 #include "misc.h"
 
+inline double fabs(double x)
+{
+   return __fabs(x) ;
+}
+
 inline void *alloca(size_t size){
   return __alloca(size);
 }
