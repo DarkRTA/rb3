@@ -154,6 +154,7 @@ void OggFree(void*);
 #else
 
 #  include <ogg/config_types.h>
+void *alloca(size_t size); // idk where else to put this
 
 #endif
 

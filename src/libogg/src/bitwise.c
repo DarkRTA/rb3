@@ -244,7 +244,7 @@ void oggpackB_reset(oggpack_buffer *b){
 }
 
 void oggpack_writeclear(oggpack_buffer *b){
-  if(b->buffer)_ogg_free(b->buffer);
+  _ogg_free(b->buffer);
   memset(b,0,sizeof(*b));
 }
 

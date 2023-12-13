@@ -394,7 +394,10 @@ rb3/unk_80697FC8.cpp:
 	.text       start:0x80697FC8 end:0x806A8C14
 
 libogg/src/bitwise.c:
-	.text       start:0x806C0A74 end:0x806D1B60
+	.text       start:0x806C0A74 end:0x806C2B6C
+
+vorbis/block.c:
+	.text       start:0x806C2B6C end:0x806D1B60
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4

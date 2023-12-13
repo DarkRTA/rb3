@@ -366,6 +366,15 @@ config.libs = [
             Object(NonMatching, "libogg/src/bitwise.c")
         ],
     },
+    {
+        "lib": "vorbis",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "vorbis/block.c")
+        ],
+    },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
     {
