@@ -397,7 +397,16 @@ libogg/src/bitwise.c:
 	.text       start:0x806C2714 end:0x806C2B6C
 
 vorbis/block.c:
-	.text       start:0x806C2B6C end:0x806D1B60
+	.text       start:0x806C2B6C end:0x806C3C94
+
+vorbis/envelope.c:
+	.text       start:0x806C3C94 end:0x806C6ED4
+
+libogg/src/framing.c:
+	.text       start:0x806C6ED4 end:0x806C7B44
+
+vorbis/bitrate.c:
+	.text       start:0x806C7B44 end:0x806D1B60
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4

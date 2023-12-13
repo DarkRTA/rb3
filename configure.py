@@ -363,7 +363,8 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "libogg/src/bitwise.c")
+            Object(NonMatching, "libogg/src/bitwise.c"),
+            Object(NonMatching, "libogg/src/framing.c")
         ],
     },
     {
@@ -372,7 +373,9 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "vorbis/block.c")
+            Object(NonMatching, "vorbis/block.c"),
+            Object(NonMatching, "vorbis/envelope.c"),
+            Object(NonMatching, "vorbis/bitrate.c")
         ],
     },
     # anything below this line does not need to be decompiled
