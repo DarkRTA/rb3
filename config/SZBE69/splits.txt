@@ -418,6 +418,7 @@ libogg/src/framing.c:
 
 vorbis/info.c:
 	.text       start:0x806C7B44 end:0x806C85A4
+	.data       start:0x808A1E28 end:0x808A1E38
 
 vorbis/lsp.c:
 	.text       start:0x806C85A4 end:0x806C896C

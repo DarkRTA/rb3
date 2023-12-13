@@ -375,10 +375,10 @@ config.libs = [
         "objects": [
             Object(Matching, "vorbis/block.c"),
             Object(NonMatching, "vorbis/codebook.c"),
-            Object(NonMatching, "vorbis/envelope.c"),
+            Object(Matching, "vorbis/envelope.c"),
             Object(NonMatching, "vorbis/floor0.c"),
             Object(NonMatching, "vorbis/floor1.c"),
-            Object(NonMatching, "vorbis/info.c"),
+            Object(Matching, "vorbis/info.c"),
             Object(NonMatching, "vorbis/lsp.c"),
             Object(NonMatching, "vorbis/mapping0.c"),
             Object(NonMatching, "vorbis/mdct.c")
