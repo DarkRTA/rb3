@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: psychoacoustics not including preecho
- last mod: $Id: psy.c,v 1.81 2002/10/21 07:00:11 xiphmont Exp $
+ last mod: $Id: psy.c,v 1.74 2002/07/13 10:18:33 giles Exp $
 
  ********************************************************************/
 
@@ -265,7 +265,7 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
 
 void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
 		  vorbis_info_psy_global *gi,int n,long rate){
-  long i,j,lo=-99,hi=1;
+  long i,j,lo=-99,hi=0;
   long maxoc;
   memset(p,0,sizeof(*p));
 
@@ -303,10 +303,10 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
     for(;lo+vi->noisewindowlomin<i && 
 	  toBARK(rate/(2*n)*lo)<(bark-vi->noisewindowlo);lo++);
     
-    for(;hi<=n && (hi<i+vi->noisewindowhimin ||
+    for(;hi<n && (hi<i+vi->noisewindowhimin ||
 	  toBARK(rate/(2*n)*hi)<(bark+vi->noisewindowhi));hi++);
     
-    p->bark[i]=((lo-1)<<16)+(hi-1);
+    p->bark[i]=(lo<<16)+hi;
 
   }
 
@@ -536,57 +536,45 @@ static void bark_noise_hybridmp(int n,const long *b,
                                 const float offset,
                                 const int fixed){
   
-  float *N=alloca(n*sizeof(*N));
-  float *X=alloca(n*sizeof(*N));
-  float *XX=alloca(n*sizeof(*N));
-  float *Y=alloca(n*sizeof(*N));
-  float *XY=alloca(n*sizeof(*N));
+  float *N=alloca((n+1)*sizeof(*N));
+  float *X=alloca((n+1)*sizeof(*N));
+  float *XX=alloca((n+1)*sizeof(*N));
+  float *Y=alloca((n+1)*sizeof(*N));
+  float *XY=alloca((n+1)*sizeof(*N));
 
   float tN, tX, tXX, tY, tXY;
+  float fi;
   int i;
 
   int lo, hi;
   float R, A, B, D;
-  float w, x, y;
-
+  
   tN = tX = tXX = tY = tXY = 0.f;
-
-  y = f[0] + offset;
-  if (y < 1.f) y = 1.f;
-
-  w = y * y * .5;
+  for (i = 0, fi = 0.f; i < n; i++, fi += 1.f) {
+    float w, x, y;
     
-  tN += w;
-  tX += w;
-  tY += w * y;
-
-  N[0] = tN;
-  X[0] = tX;
-  XX[0] = tXX;
-  Y[0] = tY;
-  XY[0] = tXY;
-
-  for (i = 1, x = 1.f; i < n; i++, x += 1.f) {
-    
+    x = fi;
     y = f[i] + offset;
     if (y < 1.f) y = 1.f;
-
     w = y * y;
-    
-    tN += w;
-    tX += w * x;
-    tXX += w * x * x;
-    tY += w * y;
-    tXY += w * x * y;
-
     N[i] = tN;
     X[i] = tX;
     XX[i] = tXX;
     Y[i] = tY;
     XY[i] = tXY;
+    tN += w;
+    tX += w * x;
+    tXX += w * x * x;
+    tY += w * y;
+    tXY += w * x * y;
   }
+  N[i] = tN;
+  X[i] = tX;
+  XX[i] = tXX;
+  Y[i] = tY;
+  XY[i] = tXY;
   
-  for (i = 0, x = 0.f;; i++, x += 1.f) {
+  for (i = 0, fi = 0.f;; i++, fi += 1.f) {
     
     lo = b[i] >> 16;
     if( lo>=0 ) break;
@@ -601,18 +589,17 @@ static void bark_noise_hybridmp(int n,const long *b,
     A = tY * tXX - tX * tXY;
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
-    R = (A + x * B) / D;
+    R = (A + fi * B) / D;
     if (R < 0.f)
       R = 0.f;
     
     noise[i] = R - offset;
   }
   
-  for ( ;; i++, x += 1.f) {
+  for ( ; hi < n; i++, fi += 1.f) {
     
     lo = b[i] >> 16;
     hi = b[i] & 0xffff;
-    if(hi>=n)break;
     
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -623,14 +610,14 @@ static void bark_noise_hybridmp(int n,const long *b,
     A = tY * tXX - tX * tXY;
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
-    R = (A + x * B) / D;
+    R = (A + fi * B) / D;
     if (R < 0.f) R = 0.f;
     
     noise[i] = R - offset;
   }
-  for ( ; i < n; i++, x += 1.f) {
+  for ( ; i < n; i++, fi += 1.f) {
     
-    R = (A + x * B) / D;
+    R = (A + fi * B) / D;
     if (R < 0.f) R = 0.f;
     
     noise[i] = R - offset;
@@ -638,11 +625,10 @@ static void bark_noise_hybridmp(int n,const long *b,
   
   if (fixed <= 0) return;
   
-  for (i = 0, x = 0.f;; i++, x += 1.f) {
+  for (i = 0, fi = 0.f; i < (fixed + 1) / 2; i++, fi += 1.f) {
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if(lo>=0)break;
-
+    
     tN = N[hi] + N[-lo];
     tX = X[hi] - X[-lo];
     tXX = XX[hi] + XX[-lo];
@@ -653,15 +639,14 @@ static void bark_noise_hybridmp(int n,const long *b,
     A = tY * tXX - tX * tXY;
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
-    R = (A + x * B) / D;
+    R = (A + fi * B) / D;
 
-    if (R - offset < noise[i]) noise[i] = R - offset;
+    if (R > 0.f && R - offset < noise[i]) noise[i] = R - offset;
   }
-  for ( ;; i++, x += 1.f) {
+  for ( ; hi < n; i++, fi += 1.f) {
     
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if(hi>=n)break;
     
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -672,13 +657,13 @@ static void bark_noise_hybridmp(int n,const long *b,
     A = tY * tXX - tX * tXY;
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
-    R = (A + x * B) / D;
+    R = (A + fi * B) / D;
     
-    if (R - offset < noise[i]) noise[i] = R - offset;
+    if (R > 0.f && R - offset < noise[i]) noise[i] = R - offset;
   }
-  for ( ; i < n; i++, x += 1.f) {
-    R = (A + x * B) / D;
-    if (R - offset < noise[i]) noise[i] = R - offset;
+  for ( ; i < n; i++, fi += 1.f) {
+    R = (A + fi * B) / D;
+    if (R > 0.f && R - offset < noise[i]) noise[i] = R - offset;
   }
 }
 
@@ -795,14 +780,14 @@ void _vp_noisemask(vorbis_look_psy *p,
     }
     
     if(seq&1)
-      _analysis_output("median2R",seq/2,work,n,1,0,0);
+      _analysis_output("medianR",seq/2,work,n,1,0,0);
     else
-      _analysis_output("median2L",seq/2,work,n,1,0,0);
+      _analysis_output("medianL",seq/2,work,n,1,0,0);
     
     if(seq&1)
-      _analysis_output("envelope2R",seq/2,work2,n,1,0,0);
+      _analysis_output("envelopeR",seq/2,work2,n,1,0,0);
     else
-      _analysis_output("envelope2L",seq/2,work2,n,1,0,0);
+      _analysis_output("enveloperL",seq/2,work2,n,1,0,0);
     seq++;
   }
 #endif
@@ -810,7 +795,6 @@ void _vp_noisemask(vorbis_look_psy *p,
   for(i=0;i<n;i++){
     int dB=logmask[i]+.5;
     if(dB>=NOISE_COMPAND_LEVELS)dB=NOISE_COMPAND_LEVELS-1;
-    if(dB<0)dB=0;
     logmask[i]= work[i]+p->vi->noisecompand[dB];
   }
 
@@ -966,9 +950,8 @@ float **_vp_quantize_couple_memo(vorbis_block *vb,
 
 /* this is for per-channel noise normalization */
 static int apsort(const void *a, const void *b){
-  float f1=fabs(**(float**)a);
-  float f2=fabs(**(float**)b);
-  return (f1<f2)-(f1>f2);
+  if(fabs(**(float **)a)>fabs(**(float **)b))return -1;
+  return 1;
 }
 
 int **_vp_quantize_couple_sort(vorbis_block *vb,

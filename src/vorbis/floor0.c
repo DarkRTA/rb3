@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: floor backend 0 implementation
- last mod: $Id: floor0.c,v 1.55 2003/09/05 23:17:49 giles Exp $
+ last mod: $Id: floor0.c,v 1.53 2002/07/17 21:34:31 xiphmont Exp $
 
  ********************************************************************/
 
@@ -39,6 +39,8 @@ typedef struct {
   int  n[2];
 
   vorbis_info_floor0 *vi;
+  lpc_lookup lpclook;
+  float *lsp_look;
 
   long bits;
   long frames;
@@ -66,6 +68,8 @@ static void floor0_free_look(vorbis_look_floor *i){
 
       _ogg_free(look->linearmap);
     }
+    if(look->lsp_look)_ogg_free(look->lsp_look);
+    lpc_clear(&look->lpclook);
     memset(look,0,sizeof(*look));
     _ogg_free(look);
   }
@@ -143,13 +147,21 @@ static void floor0_map_lazy_init(vorbis_block      *vb,
 
 static vorbis_look_floor *floor0_look(vorbis_dsp_state *vd,
 				      vorbis_info_floor *i){
+  int j;
   vorbis_info_floor0 *info=(vorbis_info_floor0 *)i;
   vorbis_look_floor0 *look=_ogg_calloc(1,sizeof(*look));
   look->m=info->order;
   look->ln=info->barkmap;
   look->vi=info;
 
+  if(vd->analysisp)
+    lpc_init(&look->lpclook,look->ln,look->m);
+
   look->linearmap=_ogg_calloc(2,sizeof(*look->linearmap));
+
+  look->lsp_look=_ogg_malloc(look->ln*sizeof(*look->lsp_look));
+  for(j=0;j<look->ln;j++)
+    look->lsp_look[j]=2*cos(M_PI/look->ln*j);
 
   return look;
 }

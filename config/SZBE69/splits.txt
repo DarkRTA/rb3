@@ -419,8 +419,14 @@ libogg/src/framing.c:
 vorbis/info.c:
 	.text       start:0x806C7B44 end:0x806C85A4
 
-vorbis/lookup.c:
-	.text       start:0x806C85A4 end:0x806D1B60
+vorbis/lsp.c:
+	.text       start:0x806C85A4 end:0x806C896C
+
+vorbis/mapping0.c:
+	.text       start:0x806C896C end:0x806CA094
+
+vorbis/mdct.c:
+	.text       start:0x806CA094 end:0x806D1B60
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4

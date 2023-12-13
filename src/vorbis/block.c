@@ -5,13 +5,13 @@
  * GOVERNED BY A BSD-STYLE SOURCE LICENSE INCLUDED WITH THIS SOURCE *
  * IN 'COPYING'. PLEASE READ THESE TERMS BEFORE DISTRIBUTING.       *
  *                                                                  *
- * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2003             *
+ * THE OggVorbis SOURCE CODE IS (C) COPYRIGHT 1994-2002             *
  * by the XIPHOPHORUS Company http://www.xiph.org/                  *
  *                                                                  *
  ********************************************************************
 
  function: PCM data vector blocking, windowing and dis/reassembly
- last mod: $Id: block.c,v 1.75 2003/09/02 04:39:26 xiphmont Exp $
+ last mod: $Id: block.c,v 1.67 2002/07/11 06:40:48 xiphmont Exp $
 
  Handle windowing, overlap-add, etc of the PCM vectors.  This is made
  more amusing by Vorbis' current two allowed block sizes.
@@ -167,11 +167,7 @@ int vorbis_block_clear(vorbis_block *vb){
 static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
   int i;
   codec_setup_info *ci=vi->codec_setup;
-  private_state *b=NULL;
-  int hs;
-
-  if(ci==NULL) return 1;
-  hs=ci->halfrate_flag; 
+  backend_lookup_state *b=NULL;
 
   memset(v,0,sizeof(*v));
   b=v->backend_state=_ogg_calloc(1,sizeof(*b));
@@ -186,12 +182,12 @@ static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
 
   b->transform[0][0]=_ogg_calloc(1,sizeof(mdct_lookup));
   b->transform[1][0]=_ogg_calloc(1,sizeof(mdct_lookup));
-  mdct_init(b->transform[0][0],ci->blocksizes[0]>>hs);
-  mdct_init(b->transform[1][0],ci->blocksizes[1]>>hs);
+  mdct_init(b->transform[0][0],ci->blocksizes[0]);
+  mdct_init(b->transform[1][0],ci->blocksizes[1]);
 
   /* Vorbis I uses only window type 0 */
-  b->window[0]=ilog2(ci->blocksizes[0])-6;
-  b->window[1]=ilog2(ci->blocksizes[1])-6;
+  b->window[0]=_vorbis_window(0,ci->blocksizes[0]/2);
+  b->window[1]=_vorbis_window(0,ci->blocksizes[1]/2);
 
   if(encp){ /* encode/decode differ here */
 
@@ -262,14 +258,14 @@ static int _vds_shared_init(vorbis_dsp_state *v,vorbis_info *vi,int encp){
     b->residue[i]=_residue_P[ci->residue_type[i]]->
       look(v,ci->residue_param[i]);    
 
-  return 0;
+  return(0);
 }
 
 /* arbitrary settings and spec-mandated numbers get filled in here */
 int vorbis_analysis_init(vorbis_dsp_state *v,vorbis_info *vi){
-  private_state *b=NULL;
+  backend_lookup_state *b=NULL;
 
-  if(_vds_shared_init(v,vi,1))return 1;
+  _vds_shared_init(v,vi,1);
   b=v->backend_state;
   b->psy_g_look=_vp_global_look(vi);
 
@@ -287,9 +283,13 @@ void vorbis_dsp_clear(vorbis_dsp_state *v){
   if(v){
     vorbis_info *vi=v->vi;
     codec_setup_info *ci=(vi?vi->codec_setup:NULL);
-    private_state *b=v->backend_state;
+    backend_lookup_state *b=v->backend_state;
 
     if(b){
+      if(b->window[0])
+	_ogg_free(b->window[0]);
+      if(b->window[1])
+	_ogg_free(b->window[1]);
 	
       if(b->ve){
 	_ve_envelope_clear(b->ve);
@@ -355,7 +355,7 @@ void vorbis_dsp_clear(vorbis_dsp_state *v){
 float **vorbis_analysis_buffer(vorbis_dsp_state *v, int vals){
   int i;
   vorbis_info *vi=v->vi;
-  private_state *b=v->backend_state;
+  backend_lookup_state *b=v->backend_state;
 
   /* free header, header1, header2 */
   if(b->header)_ogg_free(b->header);b->header=NULL;
@@ -415,6 +415,7 @@ static void _preextrapolate_helper(vorbis_dsp_state *v){
 int vorbis_analysis_wrote(vorbis_dsp_state *v, int vals){
   vorbis_info *vi=v->vi;
   codec_setup_info *ci=vi->codec_setup;
+  /*backend_lookup_state *b=v->backend_state;*/
 
   if(vals<=0){
     int order=32;
@@ -480,8 +481,9 @@ int vorbis_analysis_blockout(vorbis_dsp_state *v,vorbis_block *vb){
   int i;
   vorbis_info *vi=v->vi;
   codec_setup_info *ci=vi->codec_setup;
-  private_state *b=v->backend_state;
+  backend_lookup_state *b=v->backend_state;
   vorbis_look_psy_global *g=b->psy_g_look;
+  vorbis_info_psy_global *gi=&ci->psy_g_param;
   long beginW=v->centerW-ci->blocksizes[v->W]/2,centerNext;
   vorbis_block_internal *vbi=(vorbis_block_internal *)vb->internal;
 
@@ -637,34 +639,14 @@ int vorbis_analysis_blockout(vorbis_dsp_state *v,vorbis_block *vb){
   return(1);
 }
 
-int vorbis_synthesis_restart(vorbis_dsp_state *v){
-  vorbis_info *vi=v->vi;
-  codec_setup_info *ci;
-  int hs;
+int vorbis_synthesis_init(vorbis_dsp_state *v,vorbis_info *vi){
+  _vds_shared_init(v,vi,0);
 
-  if(!v->backend_state)return -1;
-  if(!vi)return -1;
-  ci=vi->codec_setup;
-  if(!ci)return -1;
-  hs=ci->halfrate_flag; 
-
-  v->centerW=ci->blocksizes[1]>>(hs+1);
-  v->pcm_current=v->centerW>>hs;
-  
   v->pcm_returned=-1;
   v->granulepos=-1;
   v->sequence=-1;
-  v->eofflag=0;
-  ((private_state *)(v->backend_state))->sample_count=-1;
 
   return(0);
-}
-
-int vorbis_synthesis_init(vorbis_dsp_state *v,vorbis_info *vi){
-  if(_vds_shared_init(v,vi,0)) return 1;
-  vorbis_synthesis_restart(v);
-
-  return 0;
 }
 
 /* Unlike in analysis, the window is only partially applied for each
@@ -674,8 +656,6 @@ int vorbis_synthesis_init(vorbis_dsp_state *v,vorbis_info *vi){
 int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
   vorbis_info *vi=v->vi;
   codec_setup_info *ci=vi->codec_setup;
-  private_state *b=v->backend_state;
-  int hs=ci->halfrate_flag; 
   int i,j;
 
   if(!vb)return(OV_EINVAL);
@@ -685,20 +665,16 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
   v->W=vb->W;
   v->nW=-1;
   
-  if((v->sequence==-1)||
-     (v->sequence+1 != vb->sequence)){
-    v->granulepos=-1; /* out of sequence; lose count */
-    b->sample_count=-1;
-  }
-
+  if(v->sequence+1 != vb->sequence)v->granulepos=-1; /* out of sequence;
+							lose count */
   v->sequence=vb->sequence;
   
-  if(vb->pcm){  /* no pcm to process if vorbis_synthesis_trackonly 
+  if(vb->pcm){  /* not pcm to process if vorbis_synthesis_trackonly 
 		   was called on block */
-    int n=ci->blocksizes[v->W]>>(hs+1);
-    int n0=ci->blocksizes[0]>>(hs+1);
-    int n1=ci->blocksizes[1]>>(hs+1);
-
+    int n=ci->blocksizes[v->W]/2;
+    int n0=ci->blocksizes[0]/2;
+    int n1=ci->blocksizes[1]/2;
+    
     int thisCenter;
     int prevCenter;
     
@@ -711,49 +687,47 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
       thisCenter=n1;
       prevCenter=0;
     }else{
-      thisCenter=0;
-      prevCenter=n1;
+	thisCenter=0;
+	prevCenter=n1;
     }
     
     /* v->pcm is now used like a two-stage double buffer.  We don't want
        to have to constantly shift *or* adjust memory usage.  Don't
        accept a new block until the old is shifted out */
     
+    /* overlap/add PCM */
+    
     for(j=0;j<vi->channels;j++){
       /* the overlap/add section */
       if(v->lW){
 	if(v->W){
 	  /* large/large */
-	  float *w=_vorbis_window_get(b->window[1]-hs);
 	  float *pcm=v->pcm[j]+prevCenter;
 	  float *p=vb->pcm[j];
 	  for(i=0;i<n1;i++)
-	    pcm[i]=pcm[i]*w[n1-i-1] + p[i]*w[i];
+	    pcm[i]+=p[i];
 	}else{
 	  /* large/small */
-	  float *w=_vorbis_window_get(b->window[0]-hs);
 	  float *pcm=v->pcm[j]+prevCenter+n1/2-n0/2;
 	  float *p=vb->pcm[j];
 	  for(i=0;i<n0;i++)
-	    pcm[i]=pcm[i]*w[n0-i-1] +p[i]*w[i];
+	    pcm[i]+=p[i];
 	}
       }else{
 	if(v->W){
 	  /* small/large */
-	  float *w=_vorbis_window_get(b->window[0]-hs);
 	  float *pcm=v->pcm[j]+prevCenter;
 	  float *p=vb->pcm[j]+n1/2-n0/2;
 	  for(i=0;i<n0;i++)
-	    pcm[i]=pcm[i]*w[n0-i-1] +p[i]*w[i];
+	    pcm[i]+=p[i];
 	  for(;i<n1/2+n0/2;i++)
 	    pcm[i]=p[i];
 	}else{
 	  /* small/small */
-	  float *w=_vorbis_window_get(b->window[0]-hs);
 	  float *pcm=v->pcm[j]+prevCenter;
 	  float *p=vb->pcm[j];
 	  for(i=0;i<n0;i++)
-	    pcm[i]=pcm[i]*w[n0-i-1] +p[i]*w[i];
+	    pcm[i]+=p[i];
 	}
       }
       
@@ -781,8 +755,8 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
     }else{
       v->pcm_returned=prevCenter;
       v->pcm_current=prevCenter+
-	((ci->blocksizes[v->lW]/4+
-	ci->blocksizes[v->W]/4)>>hs);
+	ci->blocksizes[v->lW]/4+
+	ci->blocksizes[v->W]/4;
     }
     
   }
@@ -797,39 +771,10 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
      we don't have a starting point to judge where the last frame
      is.  For this reason, vorbisfile will always try to make sure
      it reads the last two marked pages in proper sequence */
-
-  if(b->sample_count==-1){
-    b->sample_count=0;
-  }else{
-    b->sample_count+=ci->blocksizes[v->lW]/4+ci->blocksizes[v->W]/4;
-  }
   
   if(v->granulepos==-1){
     if(vb->granulepos!=-1){ /* only set if we have a position to set to */
-
       v->granulepos=vb->granulepos;
-
-      /* is this a short page? */
-      if(b->sample_count>v->granulepos){
-	/* corner case; if this is both the first and last audio page,
-	   then spec says the end is cut, not beginning */
-	if(vb->eofflag){
-	  /* trim the end */
-	  /* no preceeding granulepos; assume we started at zero (we'd
-	     have to in a short single-page stream) */
-	  /* granulepos could be -1 due to a seek, but that would result
-	     in a long count, not short count */
-	  
-	  v->pcm_current-=(b->sample_count-v->granulepos)>>hs;
-	}else{
-	  /* trim the beginning */
-	  v->pcm_returned+=(b->sample_count-v->granulepos)>>hs;
-	  if(v->pcm_returned>v->pcm_current)
-	    v->pcm_returned=v->pcm_current;
-	}
-
-      }
-
     }
   }else{
     v->granulepos+=ci->blocksizes[v->lW]/4+ci->blocksizes[v->W]/4;
@@ -837,13 +782,21 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
       
       if(v->granulepos>vb->granulepos){
 	long extra=v->granulepos-vb->granulepos;
-
-	if(extra)
-	  if(vb->eofflag){
-	    /* partial last frame.  Strip the extra samples off */
-	    v->pcm_current-=extra>>hs;
-	  } /* else {Shouldn't happen *unless* the bitstream is out of
-	       spec.  Either way, believe the bitstream } */
+	
+	if(vb->eofflag){
+	  /* partial last frame.  Strip the extra samples off */
+	  v->pcm_current-=extra;
+	}else if(vb->sequence == 1){
+	  /* ^^^ argh, this can be 1 from seeking! */
+	  
+	  
+	  /* partial first frame.  Discard extra leading samples */
+	  v->pcm_returned+=extra;
+	  if(v->pcm_returned>v->pcm_current)
+	    v->pcm_returned=v->pcm_current;
+	  
+	} /* else {Shouldn't happen *unless* the bitstream is out of
+	     spec.  Either way, believe the bitstream } */
       } /* else {Shouldn't happen *unless* the bitstream is out of
 	   spec.  Either way, believe the bitstream } */
       v->granulepos=vb->granulepos;
@@ -860,7 +813,6 @@ int vorbis_synthesis_blockin(vorbis_dsp_state *v,vorbis_block *vb){
 /* pcm==NULL indicates we just want the pending samples, no more */
 int vorbis_synthesis_pcmout(vorbis_dsp_state *v,float ***pcm){
   vorbis_info *vi=v->vi;
-
   if(v->pcm_returned>-1 && v->pcm_returned<v->pcm_current){
     if(pcm){
       int i;
@@ -879,93 +831,3 @@ int vorbis_synthesis_read(vorbis_dsp_state *v,int n){
   return(0);
 }
 
-/* intended for use with a specific vorbisfile feature; we want access
-   to the [usually synthetic/postextrapolated] buffer and lapping at
-   the end of a decode cycle, specifically, a half-short-block worth.
-   This funtion works like pcmout above, except it will also expose
-   this implicit buffer data not normally decoded. */
-int vorbis_synthesis_lapout(vorbis_dsp_state *v,float ***pcm){
-  vorbis_info *vi=v->vi;
-  codec_setup_info *ci=vi->codec_setup;
-  int hs=ci->halfrate_flag; 
-  
-  int n=ci->blocksizes[v->W]>>(hs+1);
-  int n0=ci->blocksizes[0]>>(hs+1);
-  int n1=ci->blocksizes[1]>>(hs+1);
-  int i,j;
-
-  if(v->pcm_returned<0)return 0;
-
-  /* our returned data ends at pcm_returned; because the synthesis pcm
-     buffer is a two-fragment ring, that means our data block may be
-     fragmented by buffering, wrapping or a short block not filling
-     out a buffer.  To simplify things, we unfragment if it's at all
-     possibly needed. Otherwise, we'd need to call lapout more than
-     once as well as hold additional dsp state.  Opt for
-     simplicity. */
-
-  /* centerW was advanced by blockin; it would be the center of the
-     *next* block */
-  if(v->centerW==n1){
-    /* the data buffer wraps; swap the halves */
-    /* slow, sure, small */
-    for(j=0;j<vi->channels;j++){
-      float *p=v->pcm[j];
-      for(i=0;i<n1;i++){
-	float temp=p[i];
-	p[i]=p[i+n1];
-	p[i+n1]=temp;
-      }
-    }
-
-    v->pcm_current-=n1;
-    v->pcm_returned-=n1;
-    v->centerW=0;
-  }
-  
-  /* solidify buffer into contiguous space */
-  if((v->lW^v->W)==1){
-    /* long/short or short/long */
-    for(j=0;j<vi->channels;j++){
-      float *s=v->pcm[j];
-      float *d=v->pcm[j]+(n1-n0)/2;
-      for(i=(n1+n0)/2-1;i>=0;--i)
-	d[i]=s[i];
-    }
-    v->pcm_returned+=(n1-n0)/2;
-    v->pcm_current+=(n1-n0)/2;
-  }else{
-    if(v->lW==0){
-      /* short/short */
-      for(j=0;j<vi->channels;j++){
-	float *s=v->pcm[j];
-	float *d=v->pcm[j]+n1-n0;
-	for(i=n0-1;i>=0;--i)
-	  d[i]=s[i];
-      }
-      v->pcm_returned+=n1-n0;
-      v->pcm_current+=n1-n0;
-    }
-  }
-    
-  if(pcm){
-    int i;
-    for(i=0;i<vi->channels;i++)
-      v->pcmret[i]=v->pcm[i]+v->pcm_returned;
-    *pcm=v->pcmret;
-  }
-
-  return(n1+n-v->pcm_returned);
-
-}
-
-float *vorbis_window(vorbis_dsp_state *v,int W){
-  vorbis_info *vi=v->vi;
-  codec_setup_info *ci=vi->codec_setup;
-  int hs=ci->halfrate_flag; 
-  private_state *b=v->backend_state;
-
-  if(b->window[W]-1<0)return NULL;
-  return _vorbis_window_get(b->window[W]-hs);
-}
-	
