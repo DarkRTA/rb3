@@ -147,7 +147,7 @@ void res0_free_look(vorbis_look_residue *i){
   }
 }
 
-static int ilog(unsigned int v){
+static int ilog_res0(unsigned int v){
   int ret=0;
   while(v){
     ret++;
@@ -156,7 +156,7 @@ static int ilog(unsigned int v){
   return(ret);
 }
 
-static int icount(unsigned int v){
+static int icount_res0(unsigned int v){
   int ret=0;
   while(v){
     ret+=v&1;
@@ -181,14 +181,14 @@ void res0_pack(vorbis_info_residue *vr,oggpack_buffer *opb){
      bitmask of one indicates this partition class has bits to write
      this pass */
   for(j=0;j<info->partitions;j++){
-    if(ilog(info->secondstages[j])>3){
+    if(ilog_res0(info->secondstages[j])>3){
       /* yes, this is a minor hack due to not thinking ahead */
       oggpack_write(opb,info->secondstages[j],3); 
       oggpack_write(opb,1,1);
       oggpack_write(opb,info->secondstages[j]>>3,5); 
     }else
       oggpack_write(opb,info->secondstages[j],4); /* trailing zero */
-    acc+=icount(info->secondstages[j]);
+    acc+=icount_res0(info->secondstages[j]);
   }
   for(j=0;j<acc;j++)
     oggpack_write(opb,info->booklist[j],8);
@@ -213,7 +213,7 @@ vorbis_info_residue *res0_unpack(vorbis_info *vi,oggpack_buffer *opb){
       cascade|=(oggpack_read(opb,5)<<3);
     info->secondstages[j]=cascade;
 
-    acc+=icount(cascade);
+    acc+=icount_res0(cascade);
   }
   for(j=0;j<acc;j++)
     info->booklist[j]=oggpack_read(opb,8);
@@ -247,7 +247,7 @@ vorbis_look_residue *res0_look(vorbis_dsp_state *vd,
   look->partbooks=_ogg_calloc(look->parts,sizeof(*look->partbooks));
 
   for(j=0;j<look->parts;j++){
-    int stages=ilog(info->secondstages[j]);
+    int stages=ilog_res0(info->secondstages[j]);
     if(stages){
       if(stages>maxstage)maxstage=stages;
       look->partbooks[j]=_ogg_calloc(stages,sizeof(*look->partbooks[j]));
