@@ -298,7 +298,7 @@ int vorbis_book_encodev(codebook *book,int best,float *a,oggpack_buffer *b){
    be.  The first-stage decode table catches most words so that
    bitreverse is not in the main execution path. */
 
-static ogg_uint32_t bitreverse(ogg_uint32_t x){
+static ogg_uint32_t bitreverse_codebook(ogg_uint32_t x){
   x=    ((x>>16)&0x0000ffff) | ((x<<16)&0xffff0000);
   x=    ((x>> 8)&0x00ff00ff) | ((x<< 8)&0xff00ff00);
   x=    ((x>> 4)&0x0f0f0f0f) | ((x<< 4)&0xf0f0f0f0);
@@ -333,7 +333,7 @@ STIN long decode_packed_entry_number(codebook *book, oggpack_buffer *b){
 
   /* bisect search for the codeword in the ordered list */
   {
-    ogg_uint32_t testword=bitreverse((ogg_uint32_t)lok);
+    ogg_uint32_t testword=bitreverse_codebook((ogg_uint32_t)lok);
 
     while(hi-lo>1){
       long p=(hi-lo)>>1;

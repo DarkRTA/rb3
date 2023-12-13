@@ -373,6 +373,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            Object(Matching, "vorbis/bitrate.c"),
             Object(Matching, "vorbis/block.c"),
             Object(NonMatching, "vorbis/codebook.c"),
             Object(Matching, "vorbis/envelope.c"),
