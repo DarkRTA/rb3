@@ -363,8 +363,8 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "libogg/src/bitwise.c"),
-            Object(NonMatching, "libogg/src/framing.c")
+            Object(Matching, "libogg/src/bitwise.c"),
+            Object(Matching, "libogg/src/framing.c")
         ],
     },
     {
