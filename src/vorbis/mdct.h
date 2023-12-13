@@ -61,6 +61,8 @@ typedef struct {
   int       *bitrev;
 
   DATA_TYPE scale;
+
+  int unknown_hmx_var;
 } mdct_lookup;
 
 extern void mdct_init(mdct_lookup *lookup,int n);

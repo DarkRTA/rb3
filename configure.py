@@ -373,7 +373,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "vorbis/block.c"),
+            Object(Matching, "vorbis/block.c"),
             Object(NonMatching, "vorbis/codebook.c"),
             Object(NonMatching, "vorbis/envelope.c"),
             Object(NonMatching, "vorbis/floor0.c"),

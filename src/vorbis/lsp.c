@@ -11,13 +11,14 @@
  ********************************************************************
 
   function: LSP (also called LSF) conversion routines
-  last mod: $Id: lsp.c,v 1.22 2002/07/17 21:28:37 xiphmont Exp $
+  last mod: $Id: lsp.c,v 1.24 2002/10/16 07:44:21 xiphmont Exp $
 
   The LSP generation code is taken (with minimal modification and a
   few bugfixes) from "On the Computation of the LSP Frequencies" by
-  Joseph Rothweiler <rothwlr@altavista.net>, available at:
-  
-  http://www2.xtdl.com/~rothwlr/lsfpaper/lsfpage.html 
+  Joseph Rothweiler (see http://www.rothweiler.us for contact info).
+  The paper is available at:
+
+  http://www.myown1.com/joe/lsf
 
  ********************************************************************/
 
@@ -294,10 +295,7 @@ static void cheby(float *g, int ord) {
 }
 
 static int comp(const void *a,const void *b){
-  if(*(float *)a<*(float *)b)
-    return(1);
-  else
-    return(-1);
+  return (*(float *)a<*(float *)b)-(*(float *)a>*(float *)b);
 }
 
 /* Newton-Raphson-Maehly actually functioned as a decent root finder,

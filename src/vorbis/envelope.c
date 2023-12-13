@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: PCM data envelope analysis 
- last mod: $Id: envelope.c,v 1.52 2002/07/13 10:18:33 giles Exp $
+ last mod: $Id: envelope.c,v 1.54 2003/09/05 23:17:49 giles Exp $
 
  ********************************************************************/
 
@@ -218,7 +218,7 @@ long _ve_envelope_search(vorbis_dsp_state *v){
   vorbis_info *vi=v->vi;
   codec_setup_info *ci=vi->codec_setup;
   vorbis_info_psy_global *gi=&ci->psy_g_param;
-  envelope_lookup *ve=((backend_lookup_state *)(v->backend_state))->ve;
+  envelope_lookup *ve=((private_state *)(v->backend_state))->ve;
   long i,j;
 
   int first=ve->current/ve->searchstep;
@@ -329,7 +329,7 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 }
 
 int _ve_envelope_mark(vorbis_dsp_state *v){
-  envelope_lookup *ve=((backend_lookup_state *)(v->backend_state))->ve;
+  envelope_lookup *ve=((private_state *)(v->backend_state))->ve;
   vorbis_info *vi=v->vi;
   codec_setup_info *ci=vi->codec_setup;
   long centerW=v->centerW;
@@ -358,7 +358,6 @@ void _ve_envelope_shift(envelope_lookup *e,long shift){
   int smallsize=e->current/e->searchstep+VE_POST; /* adjust for placing marks
 						     ahead of ve->current */
   int smallshift=shift/e->searchstep;
-  int i;
 
   memmove(e->mark,e->mark+smallshift,(smallsize-smallshift)*sizeof(*e->mark));
   

@@ -11,7 +11,7 @@
  ********************************************************************
 
  function: libvorbis codec headers
- last mod: $Id: codec_internal.h,v 1.15 2002/06/28 22:19:35 xiphmont Exp $
+ last mod: $Id: codec_internal.h,v 1.17 2003/08/18 05:34:01 xiphmont Exp $
 
  ********************************************************************/
 
@@ -55,10 +55,10 @@ typedef void vorbis_info_mapping;
 #include "psy.h"
 #include "bitrate.h"
 
-typedef struct backend_lookup_state {
+typedef struct private_state {
   /* local lookup storage */
   envelope_lookup        *ve; /* envelope lookup */    
-  float                  *window[2];
+  int                     window[2];
   vorbis_look_transform **transform[2];    /* block, type */
   drft_lookup             fft_look[2];
 
@@ -78,7 +78,8 @@ typedef struct backend_lookup_state {
 
   bitrate_manager_state bms;
 
-} backend_lookup_state;
+  ogg_int64_t sample_count;
+} private_state;
 
 /* codec_setup_info contains all the setup information specific to the
    specific compression/decompression mode in progress (eg,
@@ -123,7 +124,7 @@ typedef struct codec_setup_info {
   highlevel_encode_setup hi; /* used only by vorbisenc.c.  It's a
                                 highly redundant structure, but
                                 improves clarity of program flow. */
-  
+  int         halfrate_flag; /* painless downsample for decode */  
 } codec_setup_info;
 
 extern vorbis_look_psy_global *_vp_global_look(vorbis_info *vi);
