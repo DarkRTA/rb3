@@ -270,6 +270,8 @@ config.libs = [
             Object(Matching, "rb3/rand2.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
             Object(NonMatching, "rb3/unk_802FF088.cpp"),
+            Object(NonMatching, "rb3/unk_806C0A74.cpp"),
+            Object(NonMatching, "rb3/unk_80697FC8.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
@@ -293,6 +295,7 @@ config.libs = [
             Object(NonMatching, "quazal/rootobject.cpp"),
             Object(NonMatching, "quazal/unk_8004D6C4.cpp"),
             Object(Matching, "quazal/stream.cpp"),
+            Object(NonMatching, "quazal/unk_80011714.cpp"),
             Object(NonMatching, "quazal/datetime.cpp"),
             Object(NonMatching, "quazal/unk_8001F9B0.cpp"),
             Object(NonMatching, "quazal/unk_80015298.cpp"),
@@ -308,7 +311,8 @@ config.libs = [
             Object(NonMatching, "quazal/unk_80017344.cpp"),
             Object(NonMatching, "quazal/unk_80017898.cpp"),
             Object(NonMatching, "quazal/unk_80027694.cpp"),
-            Object(NonMatching, "quazal/unk_80018278.cpp"),
+            Object(NonMatching, "quazal/string.cpp"),
+            Object(NonMatching, "quazal/unk_8001D138.cpp"),
             Object(NonMatching, "quazal/unk_80018968.cpp"),
             Object(NonMatching, "quazal/unk_80019E18.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")

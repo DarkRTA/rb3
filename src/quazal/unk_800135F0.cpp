@@ -19,3 +19,7 @@ int Quazal::MemoryManager::GetHeaderSize(){
     if(s_uiHeaderSize == 0) s_uiHeaderSize = 4;
     return s_uiHeaderSize;
 }
+
+Quazal::MemoryManager* Quazal::MemoryManager::GetDefaultMemoryManager(){
+    return 0;
+}
