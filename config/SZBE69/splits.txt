@@ -444,6 +444,7 @@ vorbis/sharedbook.c:
 
 vorbis/smallft.c:
 	.text       start:0x806D07C4 end:0x806D1B60
+	.data       start:0x808A82E0 end:0x808A8300
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
