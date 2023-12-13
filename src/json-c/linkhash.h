@@ -8,7 +8,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
- 
+
 #ifndef _linkhash_h_
 #define _linkhash_h_
 
@@ -24,27 +24,27 @@ extern "C" {
 /**
  * sentinel pointer value for empty slots
  */
-#define LH_EMPTY (void*)-1
+#define LH_EMPTY (void *)-1
 
 /**
  * sentinel pointer value for freed slots
  */
-#define LH_FREED (void*)-2
+#define LH_FREED (void *)-2
 
 struct lh_entry;
 
 /**
  * callback function prototypes
  */
-typedef void (lh_entry_free_fn) (struct lh_entry *e);
+typedef void(lh_entry_free_fn)(struct lh_entry *e);
 /**
  * callback function prototypes
  */
-typedef unsigned long (lh_hash_fn) (const void *k);
+typedef unsigned long(lh_hash_fn)(const void *k);
 /**
  * callback function prototypes
  */
-typedef int (lh_equal_fn) (const void *k1, const void *k2);
+typedef int(lh_equal_fn)(const void *k1, const void *k2);
 
 /**
  * An entry in the hash table
@@ -67,7 +67,6 @@ struct lh_entry {
 	 */
 	struct lh_entry *prev;
 };
-
 
 /**
  * The hash table structure.
@@ -132,7 +131,6 @@ struct lh_table {
 	lh_equal_fn *equal_fn;
 };
 
-
 /**
  * Pre-defined hash and equality functions
  */
@@ -142,20 +140,17 @@ extern int lh_ptr_equal(const void *k1, const void *k2);
 extern unsigned long lh_char_hash(const void *k);
 extern int lh_char_equal(const void *k1, const void *k2);
 
-
 /**
  * Convenience list iterator.
  */
-#define lh_foreach(table, entry) \
-for(entry = table->head; entry; entry = entry->next)
+#define lh_foreach(table, entry)                                               \
+	for (entry = table->head; entry; entry = entry->next)
 
 /**
  * lh_foreach_safe allows calling of deletion routine while iterating.
  */
-#define lh_foreach_safe(table, entry, tmp) \
-for(entry = table->head; entry && ((tmp = entry->next) || 1); entry = tmp)
-
-
+#define lh_foreach_safe(table, entry, tmp)                                     \
+	for (entry = table->head; entry && ((tmp = entry->next) || 1); entry = tmp)
 
 /**
  * Create a new linkhash table.
@@ -174,10 +169,9 @@ for(entry = table->head; entry && ((tmp = entry->next) || 1); entry = tmp)
  * and C strings respectively.
  * @return a pointer onto the linkhash table.
  */
-extern struct lh_table* lh_table_new(int size, const char *name,
-				     lh_entry_free_fn *free_fn,
-				     lh_hash_fn *hash_fn,
-				     lh_equal_fn *equal_fn);
+extern struct lh_table *lh_table_new(
+	int size, const char *name, lh_entry_free_fn *free_fn, lh_hash_fn *hash_fn,
+	lh_equal_fn *equal_fn);
 
 /**
  * Convenience function to create a new linkhash
@@ -187,9 +181,8 @@ extern struct lh_table* lh_table_new(int size, const char *name,
  * @param free_fn callback function used to free memory for entries.
  * @return a pointer onto the linkhash table.
  */
-extern struct lh_table* lh_kchar_table_new(int size, const char *name,
-					   lh_entry_free_fn *free_fn);
-
+extern struct lh_table *
+lh_kchar_table_new(int size, const char *name, lh_entry_free_fn *free_fn);
 
 /**
  * Convenience function to create a new linkhash
@@ -199,9 +192,8 @@ extern struct lh_table* lh_kchar_table_new(int size, const char *name,
  * @param free_fn callback function used to free memory for entries.
  * @return a pointer onto the linkhash table.
  */
-extern struct lh_table* lh_kptr_table_new(int size, const char *name,
-					  lh_entry_free_fn *free_fn);
-
+extern struct lh_table *
+lh_kptr_table_new(int size, const char *name, lh_entry_free_fn *free_fn);
 
 /**
  * Free a linkhash table.
@@ -211,7 +203,6 @@ extern struct lh_table* lh_kptr_table_new(int size, const char *name,
  */
 extern void lh_table_free(struct lh_table *t);
 
-
 /**
  * Insert a record into the table.
  * @param t the table to insert into.
@@ -220,14 +211,14 @@ extern void lh_table_free(struct lh_table *t);
  */
 extern int lh_table_insert(struct lh_table *t, void *k, const void *v);
 
-
 /**
  * Lookup a record into the table.
  * @param t the table to lookup
  * @param k a pointer to the key to lookup
  * @return a pointer to the record structure of the value or NULL if it does not exist.
  */
-extern struct lh_entry* lh_table_lookup_entry(struct lh_table *t, const void *k);
+extern struct lh_entry *
+lh_table_lookup_entry(struct lh_table *t, const void *k);
 
 /**
  * Lookup a record into the table
@@ -235,8 +226,7 @@ extern struct lh_entry* lh_table_lookup_entry(struct lh_table *t, const void *k)
  * @param k a pointer to the key to lookup
  * @return a pointer to the found value or NULL if it does not exist.
  */
-extern const void* lh_table_lookup(struct lh_table *t, const void *k);
-
+extern const void *lh_table_lookup(struct lh_table *t, const void *k);
 
 /**
  * Delete a record from the table.
@@ -249,7 +239,6 @@ extern const void* lh_table_lookup(struct lh_table *t, const void *k);
  */
 extern int lh_table_delete_entry(struct lh_table *t, struct lh_entry *e);
 
-
 /**
  * Delete a record from the table.
  * If a callback free function is provided then it is called for the
@@ -260,7 +249,6 @@ extern int lh_table_delete_entry(struct lh_table *t, struct lh_entry *e);
  * @return -1 if it was not found.
  */
 extern int lh_table_delete(struct lh_table *t, const void *k);
-
 
 void lh_abort(const char *msg, ...);
 void lh_table_resize(struct lh_table *t, int new_size);
