@@ -46,6 +46,10 @@
 #include "os.h"
 #include "misc.h"
 
+inline void *alloca(size_t size){
+  return __alloca(size);
+}
+
 /* build lookups for trig functions; also pre-figure scaling and
    some window function algebra. */
 
