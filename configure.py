@@ -266,7 +266,7 @@ config.libs = [
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
-            Object(Matching, "rb3/netstream.cpp"),
+            Object(NonMatching, "rb3/netstream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/rand2.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
@@ -275,7 +275,8 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80697FC8.cpp"),
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/unk_8067F5A0.cpp"),
-            Object(NonMatching, "rb3/hmx/object.cpp")
+            Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/wiinetworksocket.cpp")
         ],
     },
     {
