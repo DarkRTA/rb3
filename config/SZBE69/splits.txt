@@ -400,7 +400,7 @@ libogg/src/bitwise.c:
 vorbis/block.c:
 	.text       start:0x806C2B6C end:0x806C3C94
 
-vorbis/envelope.c:
+vorbis/codebook.c:
 	.text       start:0x806C3C94 end:0x806C6ED4
 
 libogg/src/framing.c:

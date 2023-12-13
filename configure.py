@@ -374,7 +374,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(NonMatching, "vorbis/block.c"),
-            Object(NonMatching, "vorbis/envelope.c"),
+            Object(NonMatching, "vorbis/codebook.c"),
             Object(NonMatching, "vorbis/info.c")
         ],
     },
