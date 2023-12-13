@@ -29,10 +29,10 @@ extern void mc_info(const char *msg, ...);
 #define MC_SET_DEBUG(x) mc_set_debug(x)
 #define MC_GET_DEBUG() mc_get_debug()
 #define MC_SET_SYSLOG(x) mc_set_syslog(x)
-#define MC_ABORT(x, ...) mc_abort(x, ##__VA_ARGS__)
-#define MC_DEBUG(x, ...) mc_debug(x, ##__VA_ARGS__)
-#define MC_ERROR(x, ...) mc_error(x, ##__VA_ARGS__)
-#define MC_INFO(x, ...) mc_info(x, ##__VA_ARGS__)
+#define MC_ABORT(x, ...) mc_abort(x, __VA_ARGS__)
+#define MC_DEBUG(x, ...) mc_debug(x, __VA_ARGS__)
+#define MC_ERROR(x, ...) mc_error(x, __VA_ARGS__)
+#define MC_INFO(x, ...) mc_info(x, __VA_ARGS__)
 #else
 #define MC_SET_DEBUG(x)                                                        \
 	if (0)                                                                     \
@@ -43,16 +43,16 @@ extern void mc_info(const char *msg, ...);
 	mc_set_syslog(x)
 #define MC_ABORT(x, ...)                                                       \
 	if (0)                                                                     \
-	mc_abort(x, ##__VA_ARGS__)
+	mc_abort(x, __VA_ARGS__)
 #define MC_DEBUG(x, ...)                                                       \
 	if (0)                                                                     \
-	mc_debug(x, ##__VA_ARGS__)
+	mc_debug(x, __VA_ARGS__)
 #define MC_ERROR(x, ...)                                                       \
 	if (0)                                                                     \
-	mc_error(x, ##__VA_ARGS__)
+	mc_error(x, __VA_ARGS__)
 #define MC_INFO(x, ...)                                                        \
 	if (0)                                                                     \
-	mc_info(x, ##__VA_ARGS__)
+	mc_info(x, __VA_ARGS__)
 #endif
 
 #ifdef __cplusplus
