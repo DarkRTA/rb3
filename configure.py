@@ -375,7 +375,7 @@ config.libs = [
         "objects": [
             Object(NonMatching, "vorbis/block.c"),
             Object(NonMatching, "vorbis/envelope.c"),
-            Object(NonMatching, "vorbis/bitrate.c")
+            Object(NonMatching, "vorbis/info.c")
         ],
     },
     # anything below this line does not need to be decompiled
