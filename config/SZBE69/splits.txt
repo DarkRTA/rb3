@@ -393,8 +393,11 @@ rb3/unk_80660D18.cpp:
 rb3/unk_80697FC8.cpp:
 	.text       start:0x80697FC8 end:0x806A8C14
 
-rb3/unk_806C0A74.cpp:
-	.text       start:0x806C0A74 end:0x806E3FA8
+libogg/src/bitwise.c:
+	.text       start:0x806C0A74 end:0x806D1B60
+
+rb3/ogg_mem.cpp:
+	.text       start:0x806D1B60 end:0x806D1BC4
 
 MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
