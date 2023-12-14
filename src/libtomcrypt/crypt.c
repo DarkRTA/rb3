@@ -1,8 +1,6 @@
 #include "mycrypt.h"
 #include <signal.h>
 
-char* crypt_error;
-
 struct _cipher_descriptor cipher_descriptor[32] = {
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
@@ -36,6 +34,8 @@ struct _cipher_descriptor cipher_descriptor[32] = {
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL } };
+
+char* crypt_error;
 
 struct _hash_descriptor hash_descriptor[32] = {
 { NULL, 0, 0, 0, NULL, NULL, NULL, NULL },
@@ -104,15 +104,6 @@ struct _prng_descriptor prng_descriptor[32] = {
 { NULL, NULL, NULL, NULL, NULL },
 { NULL, NULL, NULL, NULL, NULL },
 { NULL, NULL, NULL, NULL, NULL } };
-
-// char* cipher_errors[6] = {
-//    "No spot in cipher descriptor table.",
-//    "Cipher not previously registered.",
-//    "No spot in hash descriptor table.",
-//    "Hash not previously registered.",
-//    "No spot in prng descriptor table.",
-//    "prng not previously registered."
-// };
 
 int find_cipher(const char *name)
 {
@@ -459,7 +450,7 @@ const char *crypt_build_settings =
     "   CBC\n"
 #endif
 #if defined(CTR)
-    "   CTR\n"
+    "   M_CTR\n"
 #endif
 
     "\nPRNG:\n"

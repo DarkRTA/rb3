@@ -366,7 +366,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(NonMatching, "libtomcrypt/aes.c"),
-            Object(NonMatching, "libtomcrypt/crypt.c"),
+            Object(Matching, "libtomcrypt/crypt.c"),
             Object(NonMatching, "libtomcrypt/ctr.c")
         ],
     },
