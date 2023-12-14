@@ -30,10 +30,6 @@ inline double fabs(double x)
    return __fabs(x) ;
 }
 
-inline void *alloca(size_t size){
-  return __alloca(size);
-}
-
 /**** pack/unpack helpers ******************************************/
 int _ilog(unsigned int v){
   int ret=0;

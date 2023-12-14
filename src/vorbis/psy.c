@@ -41,10 +41,6 @@ inline double fabs(double x)
    return __fabs(x) ;
 }
 
-inline void *alloca(size_t size){
-  return __alloca(size);
-}
-
 vorbis_look_psy_global *_vp_global_look(vorbis_info *vi){
   codec_setup_info *ci=vi->codec_setup;
   vorbis_info_psy_global *gi=&ci->psy_g_param;

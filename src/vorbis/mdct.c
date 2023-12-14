@@ -51,10 +51,6 @@ inline double fabs(double x)
    return __fabs(x) ;
 }
 
-inline void *alloca(size_t size){
-  return __alloca(size);
-}
-
 /* build lookups for trig functions; also pre-figure scaling and
    some window function algebra. */
 
