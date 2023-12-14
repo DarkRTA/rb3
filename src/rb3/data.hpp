@@ -6,7 +6,6 @@
 #include "textstream.hpp"
 #include "hmx/object.hpp"
 
-namespace Hmx {class Object;}
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
@@ -30,7 +29,7 @@ enum DataType { /* differs from serialized, for... some reason; i trusted ghidra
 	kDataVariable = 2,
 	kDataFunc = 3,
 	kDataObject = 4,
-	kDataSymbol = 5,
+	kDataSymbol = 5, 
 	kDataInt = 6,
 	kDataIfdef = 7,
 	kDataElse = 8,
@@ -148,7 +147,7 @@ public:
 	DataArray* FindArray(Symbol, Symbol) const; // fn_803162BC
 	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
 	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
-
+	
 	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
 	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
 	bool FindData(Symbol, String&, bool) const; // fn_8031647C
