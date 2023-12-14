@@ -13,8 +13,8 @@ extern "C" {
 #endif
 
 /* version */
-#define CRYPT   0x0075
-#define SCRYPT  "0.75"
+#define CRYPT   0x0070
+#define SCRYPT  "0.70"
 
 /* max size of either a cipher/hash block or symmetric key [largest of the two] */
 #define MAXBLOCKSIZE           128
@@ -66,7 +66,7 @@ enum {
 
 #include <mycrypt_argchk.h>
 
-char* crypt_error;
+extern char* crypt_error;
 
 
 #ifdef __cplusplus

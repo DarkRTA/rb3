@@ -362,7 +362,7 @@ config.libs = [
     {
         "lib": "libtomcrypt",
         "mw_version": "Wii/1.0",
-        "cflags": cflags_rb3,
+        "cflags": cflags_zlib,
         "host": False,
         "objects": [
             Object(NonMatching, "libtomcrypt/aes.c"),

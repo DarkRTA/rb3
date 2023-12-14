@@ -7,28 +7,22 @@
 #ifndef MYCRYPT_CFG_H
 #define MYCRYPT_CFG_H
 
-// #define BLOWFISH
-// #define RC2
-// #define RC5
-// #define RC6
-// #define SERPENT
-// #define SAFERP
-// #define SAFER
+// "LibTomCrypt 0.70\n\n
+// Endianess: neutral\n
+#define ENDIAN_NEUTRAL
+// Clean stack: disabled\n
+// Ciphers built-in:\n   Rijndael\n\n
 #define RIJNDAEL
-// #define XTEA
-// #define TWOFISH
-// #define DES
-// #define CAST5
-
-#define CTR
-
-#define SHA512
-#define SHA256
-#define SHA1
-#define MD5
+// Hashes built-in:\n   MD4\n\n
 #define MD4
-#define MD2
-#define TIGER
+// Block Chaining Modes:\n   M_CTR\n\n
+#define CTR
+// PRNG:\n\n
+// PK Algs:\n\n
+// Compiler:\n\n
+// Various others:  HMAC  SMALL_PRIME_TAB \n\n\n\n"
+#define HMAC
+#define SMALL_PRIME_TAB
 
 /* you can change how memory allocation works ... */
 extern void *XMALLOC(size_t n);
