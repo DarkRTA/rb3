@@ -134,6 +134,7 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
     "-i src/PowerPC_EABI_Support/MetroTRK",
+    "-i src/libogg/include",
     "-i src/RVL_SDK",
     "-i src/std",
     "-i src",
@@ -272,6 +273,8 @@ config.libs = [
             Object(NonMatching, "rb3/unk_802FF088.cpp"),
             Object(NonMatching, "rb3/unk_806C0A74.cpp"),
             Object(NonMatching, "rb3/unk_80697FC8.cpp"),
+            Object(NonMatching, "rb3/ogg_mem.cpp"),
+            Object(NonMatching, "rb3/unk_8067F5A0.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
@@ -354,6 +357,39 @@ config.libs = [
         "objects": [
             Object(Matching, "zlib/inftrees.c")
         ]
+    },
+    {
+        "lib": "libogg",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(Matching, "libogg/src/bitwise.c"),
+            Object(Matching, "libogg/src/framing.c")
+        ],
+    },
+    {
+        "lib": "vorbis",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(Matching, "vorbis/bitrate.c"),
+            Object(Matching, "vorbis/block.c"),
+            Object(NonMatching, "vorbis/codebook.c"),
+            Object(Matching, "vorbis/envelope.c"),
+            Object(NonMatching, "vorbis/floor0.c"),
+            Object(NonMatching, "vorbis/floor1.c"),
+            Object(Matching, "vorbis/info.c"),
+            Object(Matching, "vorbis/lsp.c"),
+            Object(NonMatching, "vorbis/mapping0.c"),
+            Object(NonMatching, "vorbis/mdct.c"),
+            Object(NonMatching, "vorbis/psy.c"),
+            Object(NonMatching, "vorbis/res0.c"),
+            Object(NonMatching, "vorbis/sharedbook.c"),
+            Object(Matching, "vorbis/smallft.c"),
+            Object(NonMatching, "vorbis/window.c")
+        ],
     },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
