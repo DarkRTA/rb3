@@ -134,6 +134,7 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
     "-i src/PowerPC_EABI_Support/MetroTRK",
+    # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
     "-i src/libogg/include",
     "-i src/RVL_SDK",
     "-i src/std",
@@ -357,6 +358,17 @@ config.libs = [
         "objects": [
             Object(Matching, "zlib/inftrees.c")
         ]
+    },
+    {
+        "lib": "libtomcrypt",
+        "mw_version": "Wii/1.0",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "libtomcrypt/aes.c"),
+            Object(Matching, "libtomcrypt/crypt.c"),
+            Object(NonMatching, "libtomcrypt/ctr.c")
+        ],
     },
     {
         "lib": "libogg",
