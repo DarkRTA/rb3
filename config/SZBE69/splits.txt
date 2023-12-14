@@ -397,7 +397,13 @@ rb3/unk_80697FC8.cpp:
 	.text       start:0x80697FC8 end:0x8069C3FC
 
 libtomcrypt/aes.c:
-	.text       start:0x8069C3FC end:0x806A8C14
+	.text       start:0x8069C3FC end:0x8069EA54
+
+libtomcrypt/crypt.c:
+	.text       start:0x8069EA54 end:0x8069EB64
+
+libtomcrypt/ctr.c:
+	.text       start:0x8069EB64 end:0x8069EF40
 
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714

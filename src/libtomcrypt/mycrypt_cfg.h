@@ -7,18 +7,20 @@
 #ifndef MYCRYPT_CFG_H
 #define MYCRYPT_CFG_H
 
-#define BLOWFISH
-#define RC2
-#define RC5
-#define RC6
-#define SERPENT
-#define SAFERP
-#define SAFER
+// #define BLOWFISH
+// #define RC2
+// #define RC5
+// #define RC6
+// #define SERPENT
+// #define SAFERP
+// #define SAFER
 #define RIJNDAEL
-#define XTEA
-#define TWOFISH
-#define DES
-#define CAST5
+// #define XTEA
+// #define TWOFISH
+// #define DES
+// #define CAST5
+
+#define CTR
 
 #define SHA512
 #define SHA256

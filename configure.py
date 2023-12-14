@@ -365,7 +365,9 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "libtomcrypt/aes.c")
+            Object(NonMatching, "libtomcrypt/aes.c"),
+            Object(NonMatching, "libtomcrypt/crypt.c"),
+            Object(NonMatching, "libtomcrypt/ctr.c")
         ],
     },
     {
