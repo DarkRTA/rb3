@@ -13,11 +13,13 @@ int ctr_start(int cipher, const unsigned char *count, const unsigned char *key, 
 
    /* bad param? */
    if ((errno = cipher_is_valid(cipher)) != CRYPT_OK) {
+      errno = 1;
       return errno;
    }
 
    /* setup cipher */
    if ((errno = cipher_descriptor[cipher].setup(key, keylen, num_rounds, &ctr->key)) != CRYPT_OK) {
+      errno = 1;
       return errno;
    }
 
