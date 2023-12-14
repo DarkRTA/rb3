@@ -66,6 +66,8 @@ enum {
 
 #include <mycrypt_argchk.h>
 
+char* crypt_error;
+
 
 #ifdef __cplusplus
    }

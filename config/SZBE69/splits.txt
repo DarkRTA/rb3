@@ -398,6 +398,8 @@ rb3/unk_80697FC8.cpp:
 
 libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
+	.rodata     start:0x807F4BE8 end:0x807F8CC8
+	.data       start:0x8089F260 end:0x8089F3A8
 
 libtomcrypt/crypt.c:
 	.text       start:0x8069EA54 end:0x8069EB64
