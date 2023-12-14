@@ -25,6 +25,12 @@ extern "C"
 
 #include <ogg/ogg.h>
 
+/* inline compiler intrinsics go here */
+
+inline void *alloca(size_t size){
+  return __alloca(size);
+}
+
 typedef struct vorbis_info{
   int version;
   int channels;
