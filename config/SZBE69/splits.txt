@@ -411,12 +411,14 @@ libtomcrypt/ctr.c:
 
 speex/libspeex/bits.c:
 	.text       start:0x8069EF40 end:0x8069F458
+	.data       start:0x8089F5E8 end:0x8089F738
 
 speex/libspeex/cb_search.c:
 	.text       start:0x8069F458 end:0x806A0660
 
 speex/libspeex/filters.c:
 	.text       start:0x806A0660 end:0x806A12F4
+	.rodata     start:0x807F9B88 end:0x807F9C58
 
 speex/libspeex/lpc.c:
 	.text       start:0x806A12F4 end:0x806A1488

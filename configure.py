@@ -378,18 +378,18 @@ config.libs = [
         "cflags": cflags_zlib,
         "host": False,
         "objects": [
-            Object(NonMatching, "speex/libspeex/bits.c"),
-            Object(NonMatching, "speex/libspeex/cb_search.c"),
+            Object(Matching, "speex/libspeex/bits.c"),
+            Object(Matching, "speex/libspeex/cb_search.c"),
             Object(NonMatching, "speex/libspeex/filters.c"),
-            Object(NonMatching, "speex/libspeex/lpc.c"),
-            Object(NonMatching, "speex/libspeex/lsp.c"),
+            Object(Matching, "speex/libspeex/lpc.c"),
+            Object(Matching, "speex/libspeex/lsp.c"),
             Object(NonMatching, "speex/libspeex/ltp.c"),
             Object(NonMatching, "speex/libspeex/nb_celp.c"),
             Object(NonMatching, "speex/libspeex/quant_lsp.c"),
             Object(NonMatching, "speex/libspeex/speex.c"),
-            Object(NonMatching, "speex/libspeex/speex_callbacks.c"),
+            Object(Matching, "speex/libspeex/speex_callbacks.c"),
             Object(NonMatching, "speex/libspeex/vbr.c"),
-            Object(NonMatching, "speex/libspeex/vq.c")
+            Object(Matching, "speex/libspeex/vq.c")
         ]
     },
     {
