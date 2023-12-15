@@ -378,7 +378,11 @@ config.libs = [
         "cflags": cflags_zlib,
         "host": False,
         "objects": [
-            Object(NonMatching, "speex/libspeex/bits.c")
+            Object(NonMatching, "speex/libspeex/bits.c"),
+            Object(NonMatching, "speex/libspeex/cb_search.c"),
+            Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(NonMatching, "speex/libspeex/lsp.c"),
+            Object(NonMatching, "speex/libspeex/ltp.c")
         ]
     },
     {

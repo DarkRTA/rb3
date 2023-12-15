@@ -43,7 +43,7 @@
 #define SPEEX_VERSION "speex-1.2beta3"  /**< Speex version string. */
 #endif
 
-#define FIXED_POINT
+#define FLOATING_POINT
 #define EXPORT
 
 /* A couple test to catch stupid option combinations */

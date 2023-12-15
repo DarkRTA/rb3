@@ -410,7 +410,19 @@ libtomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
 
 speex/libspeex/bits.c:
-	.text       start:0x8069EF40 end:0x806A8C14
+	.text       start:0x8069EF40 end:0x8069F458
+
+speex/libspeex/cb_search.c:
+	.text       start:0x8069F458 end:0x806A0660
+
+speex/libspeex/filters.c:
+	.text       start:0x806A0660 end:0x806A12F4
+
+speex/libspeex/lsp.c:
+	.text       start:0x806A12F4 end:0x806A1C28
+
+speex/libspeex/ltp.c:
+	.text       start:0x806A1C28 end:0x806A8C14
 
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714

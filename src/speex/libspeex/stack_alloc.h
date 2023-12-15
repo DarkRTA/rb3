@@ -94,9 +94,9 @@
 
 #else
 
-#define ALIGN(stack, size) ((stack) += ((size) - (long)(stack)) & ((size) - 1))
+#define SPEEX_ALIGN(stack, size) ((stack) += ((size) - (long)(stack)) & ((size) - 1))
 
-#define PUSH(stack, size, type) (ALIGN((stack),sizeof(type)),(stack)+=((size)*sizeof(type)),(type*)((stack)-((size)*sizeof(type))))
+#define PUSH(stack, size, type) (SPEEX_ALIGN((stack),sizeof(type)),(stack)+=((size)*sizeof(type)),(type*)((stack)-((size)*sizeof(type))))
 
 #endif
 
