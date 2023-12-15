@@ -381,8 +381,10 @@ config.libs = [
             Object(NonMatching, "speex/libspeex/bits.c"),
             Object(NonMatching, "speex/libspeex/cb_search.c"),
             Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(NonMatching, "speex/libspeex/lpc.c"),
             Object(NonMatching, "speex/libspeex/lsp.c"),
-            Object(NonMatching, "speex/libspeex/ltp.c")
+            Object(NonMatching, "speex/libspeex/ltp.c"),
+            Object(NonMatching, "speex/libspeex/nb_celp.c")
         ]
     },
     {

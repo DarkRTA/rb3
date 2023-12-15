@@ -418,11 +418,17 @@ speex/libspeex/cb_search.c:
 speex/libspeex/filters.c:
 	.text       start:0x806A0660 end:0x806A12F4
 
+speex/libspeex/lpc.c:
+	.text       start:0x806A12F4 end:0x806A1488
+
 speex/libspeex/lsp.c:
-	.text       start:0x806A12F4 end:0x806A1C28
+	.text       start:0x806A1488 end:0x806A1C28
 
 speex/libspeex/ltp.c:
-	.text       start:0x806A1C28 end:0x806A8C14
+	.text       start:0x806A1C28 end:0x806A30BC
+
+speex/libspeex/nb_celp.c:
+	.text       start:0x806A30BC end:0x806A8C14
 
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714
