@@ -428,7 +428,22 @@ speex/libspeex/ltp.c:
 	.text       start:0x806A1C28 end:0x806A30BC
 
 speex/libspeex/nb_celp.c:
-	.text       start:0x806A30BC end:0x806A8C14
+	.text       start:0x806A30BC end:0x806A6CC0
+
+speex/libspeex/quant_lsp.c:
+	.text       start:0x806A6CC0 end:0x806A7884
+
+speex/libspeex/speex.c:
+	.text       start:0x806A7884 end:0x806A79AC
+
+speex/libspeex/speex_callbacks.c:
+	.text       start:0x806A79AC end:0x806A7AC8
+
+speex/libspeex/vbr.c:
+	.text       start:0x806A7AC8 end:0x806A82E8
+
+speex/libspeex/vq.c:
+	.text       start:0x806A82E8 end:0x806A8550
 
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714

@@ -384,7 +384,12 @@ config.libs = [
             Object(NonMatching, "speex/libspeex/lpc.c"),
             Object(NonMatching, "speex/libspeex/lsp.c"),
             Object(NonMatching, "speex/libspeex/ltp.c"),
-            Object(NonMatching, "speex/libspeex/nb_celp.c")
+            Object(NonMatching, "speex/libspeex/nb_celp.c"),
+            Object(NonMatching, "speex/libspeex/quant_lsp.c"),
+            Object(NonMatching, "speex/libspeex/speex.c"),
+            Object(NonMatching, "speex/libspeex/speex_callbacks.c"),
+            Object(NonMatching, "speex/libspeex/vbr.c"),
+            Object(NonMatching, "speex/libspeex/vq.c")
         ]
     },
     {
