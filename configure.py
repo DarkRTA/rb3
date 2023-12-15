@@ -136,6 +136,7 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MetroTRK",
     # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
     "-i src/libogg/include",
+    "-i src/speex/include",
     "-i src/RVL_SDK",
     "-i src/std",
     "-i src",
@@ -276,6 +277,7 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80697FC8.cpp"),
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/unk_8067F5A0.cpp"),
+            Object(NonMatching, "rb3/unk_8069EF40.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
@@ -369,6 +371,15 @@ config.libs = [
             Object(Matching, "libtomcrypt/crypt.c"),
             Object(NonMatching, "libtomcrypt/ctr.c")
         ],
+    },
+    {
+        "lib": "speex",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "speex/libspeex/bits.c")
+        ]
     },
     {
         "lib": "libogg",

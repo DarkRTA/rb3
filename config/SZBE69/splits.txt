@@ -409,6 +409,9 @@ libtomcrypt/crypt.c:
 libtomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
 
+speex/libspeex/bits.c:
+	.text       start:0x8069EF40 end:0x806A8C14
+
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714
 
