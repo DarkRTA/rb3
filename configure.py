@@ -279,6 +279,7 @@ config.libs = [
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/unk_8067F5A0.cpp"),
             Object(NonMatching, "rb3/unk_8069EF40.cpp"),
+            Object(NonMatching, "rb3/unk_80581A9C.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
@@ -324,6 +325,7 @@ config.libs = [
             Object(NonMatching, "quazal/unk_80019E18.cpp"),
             Object(NonMatching, "quazal/unk_8007BF84.cpp"),
             Object(NonMatching, "quazal/unk_8007B998.cpp"),
+            Object(NonMatching, "quazal/unk_8007CADC.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },
