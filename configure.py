@@ -326,6 +326,7 @@ config.libs = [
             Object(NonMatching, "quazal/unk_8007BF84.cpp"),
             Object(NonMatching, "quazal/unk_8007B998.cpp"),
             Object(NonMatching, "quazal/unk_800A3E64.cpp"),
+            Object(NonMatching, "quazal/unk_8004AE2C.cpp"),
             Object(NonMatching, "quazal/unk_8007CADC.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],

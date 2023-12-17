@@ -101,6 +101,9 @@ quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
+quazal/unk_8004AE2C.cpp:
+	.text       start:0x8004AE2C end:0x8004D594
+
 quazal/unk_8004D6C4.cpp:
 	.text       start:0x8004D6C4 end:0x80053E74
 
