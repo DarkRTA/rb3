@@ -101,11 +101,26 @@ quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
+quazal/unk_8004AE2C.cpp:
+	.text       start:0x8004AE2C end:0x8004D594
+
 quazal/unk_8004D6C4.cpp:
 	.text       start:0x8004D6C4 end:0x80053E74
 
 quazal/unk_80054054.cpp:
 	.text       start:0x80054054 end:0x80058220
+
+quazal/unk_8007B998.cpp:
+	.text       start:0x8007B998 end:0x8007BF3C
+
+quazal/unk_8007BF84.cpp:
+	.text       start:0x8007BF84 end:0x8007CA94
+
+quazal/unk_8007CADC.cpp:
+	.text       start:0x8007CADC end:0x8007E034
+
+quazal/unk_800A3E64.cpp:
+	.text       start:0x800A3E64 end:0x800A5110
 
 quazal/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
@@ -384,6 +399,9 @@ rb3/unk_80421240.cpp:
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 
+rb3/unk_80581A9C.cpp:
+	.text       start:0x80581A9C end:0x8059FAD8
+
 rb3/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D9A20
 
@@ -408,6 +426,44 @@ libtomcrypt/crypt.c:
 
 libtomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
+
+speex/libspeex/bits.c:
+	.text       start:0x8069EF40 end:0x8069F458
+	.data       start:0x8089F5E8 end:0x8089F738
+
+speex/libspeex/cb_search.c:
+	.text       start:0x8069F458 end:0x806A0660
+
+speex/libspeex/filters.c:
+	.text       start:0x806A0660 end:0x806A12F4
+	.rodata     start:0x807F9B88 end:0x807F9C58
+
+speex/libspeex/lpc.c:
+	.text       start:0x806A12F4 end:0x806A1488
+
+speex/libspeex/lsp.c:
+	.text       start:0x806A1488 end:0x806A1C28
+
+speex/libspeex/ltp.c:
+	.text       start:0x806A1C28 end:0x806A30BC
+
+speex/libspeex/nb_celp.c:
+	.text       start:0x806A30BC end:0x806A6CC0
+
+speex/libspeex/quant_lsp.c:
+	.text       start:0x806A6CC0 end:0x806A7884
+
+speex/libspeex/speex.c:
+	.text       start:0x806A7884 end:0x806A79AC
+
+speex/libspeex/speex_callbacks.c:
+	.text       start:0x806A79AC end:0x806A7AC8
+
+speex/libspeex/vbr.c:
+	.text       start:0x806A7AC8 end:0x806A82E8
+
+speex/libspeex/vq.c:
+	.text       start:0x806A82E8 end:0x806A8550
 
 vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714

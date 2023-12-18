@@ -136,6 +136,8 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MetroTRK",
     # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
     "-i src/libogg/include",
+    "-i src/speex/include",
+    "-i src/speex",
     "-i src/RVL_SDK",
     "-i src/std",
     "-i src",
@@ -276,6 +278,8 @@ config.libs = [
             Object(NonMatching, "rb3/unk_80697FC8.cpp"),
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/unk_8067F5A0.cpp"),
+            Object(NonMatching, "rb3/unk_8069EF40.cpp"),
+            Object(NonMatching, "rb3/unk_80581A9C.cpp"),
             Object(NonMatching, "rb3/hmx/object.cpp")
         ],
     },
@@ -319,6 +323,11 @@ config.libs = [
             Object(NonMatching, "quazal/unk_8001D138.cpp"),
             Object(NonMatching, "quazal/unk_80018968.cpp"),
             Object(NonMatching, "quazal/unk_80019E18.cpp"),
+            Object(NonMatching, "quazal/unk_8007BF84.cpp"),
+            Object(NonMatching, "quazal/unk_8007B998.cpp"),
+            Object(NonMatching, "quazal/unk_800A3E64.cpp"),
+            Object(NonMatching, "quazal/unk_8004AE2C.cpp"),
+            Object(NonMatching, "quazal/unk_8007CADC.cpp"),
             Object(NonMatching, "quazal/unk_800A515C.cpp")
         ],
     },
@@ -369,6 +378,26 @@ config.libs = [
             Object(Matching, "libtomcrypt/crypt.c"),
             Object(NonMatching, "libtomcrypt/ctr.c")
         ],
+    },
+    {
+        "lib": "speex",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(Matching, "speex/libspeex/bits.c"),
+            Object(Matching, "speex/libspeex/cb_search.c"),
+            Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(Matching, "speex/libspeex/lpc.c"),
+            Object(Matching, "speex/libspeex/lsp.c"),
+            Object(Matching, "speex/libspeex/ltp.c"),
+            Object(NonMatching, "speex/libspeex/nb_celp.c"),
+            Object(NonMatching, "speex/libspeex/quant_lsp.c"),
+            Object(NonMatching, "speex/libspeex/speex.c"),
+            Object(Matching, "speex/libspeex/speex_callbacks.c"),
+            Object(NonMatching, "speex/libspeex/vbr.c"),
+            Object(Matching, "speex/libspeex/vq.c")
+        ]
     },
     {
         "lib": "libogg",
