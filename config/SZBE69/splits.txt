@@ -276,6 +276,9 @@ rb3/unk_803085C0.cpp:
 rb3/wiinetworksocket.cpp:
 	.text       start:0x80308CC0 end:0x80308DB4
 
+rb3/unk_80308DB4.cpp:
+	.text       start:0x80308DB4 end:0x8030A448
+
 rb3/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
