@@ -267,6 +267,9 @@ rb3/unk_802FB548.cpp:
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
 
+rb3/wiinetworksocket.cpp:
+	.text       start:0x80308CC0 end:0x80308DB4
+
 rb3/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
