@@ -146,6 +146,9 @@ rb3/unk_800AC804.cpp:
 rb3/unk_800B4630.cpp:
 	.text       start:0x800B4630 end:0x800BC50C
 
+rb3/unk_800BC590.cpp:
+	.text       start:0x800BC590 end:0x800BF14C
+
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
