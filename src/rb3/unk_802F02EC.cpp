@@ -5,7 +5,7 @@ StorageChangedMsg::StorageChangedMsg(DataArray* da) : Message(da) {
 
 }
 
-Symbol GetStorageChangedMsgSymbol(){
+Symbol StorageChangedMsg::Type(){
     static Symbol t("storage_changed");
     return t;
 }

@@ -1,6 +1,6 @@
 #include "storagechangedmsg.hpp"
 #include "symbol.hpp"
 
-StorageChangedMsg::StorageChangedMsg() : Message(GetStorageChangedMsgSymbol()) {
+StorageChangedMsg::StorageChangedMsg() : Message(Type()) {
 
 }
