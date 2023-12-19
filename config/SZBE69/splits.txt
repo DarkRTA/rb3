@@ -267,6 +267,9 @@ rb3/unk_802FB548.cpp:
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
 
+rb3/unk_80307310.cpp:
+	.text       start:0x80307310 end:0x80308578
+
 rb3/unk_803085C0.cpp:
 	.text       start:0x803085C0 end:0x80308CC0
 
