@@ -146,6 +146,9 @@ rb3/unk_800AC804.cpp:
 rb3/unk_800B4630.cpp:
 	.text       start:0x800B4630 end:0x800BC50C
 
+rb3/unk_800BC590.cpp:
+	.text       start:0x800BC590 end:0x800BF14C
+
 rb3/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
@@ -189,6 +192,9 @@ rb3/unk_801660DC.cpp:
 
 rb3/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
+
+rb3/unk_801FCC20.cpp:
+	.text       start:0x801FCC20 end:0x8022BE70
 
 rb3/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8024729C
@@ -248,6 +254,9 @@ rb3/asyncfilewii.cpp:
 rb3/unk_802E9040.cpp:
 	.text       start:0x802E9040 end:0x802EAC5C
 
+rb3/unk_802F02EC.cpp:
+	.text       start:0x802F02EC end:0x802F83C0
+
 rb3/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F9860
 
@@ -266,6 +275,21 @@ rb3/unk_802FB548.cpp:
 
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
+
+rb3/unk_80307310.cpp:
+	.text       start:0x80307310 end:0x80308578
+
+rb3/unk_803085C0.cpp:
+	.text       start:0x803085C0 end:0x80308CC0
+
+rb3/wiinetworksocket.cpp:
+	.text       start:0x80308CC0 end:0x80308DB4
+
+rb3/unk_80308DB4.cpp:
+	.text       start:0x80308DB4 end:0x8030A448
+
+rb3/unk_8030A494.cpp:
+	.text       start:0x8030A494 end:0x8030DBF8
 
 rb3/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
@@ -395,6 +419,9 @@ rb3/notetube.cpp:
 
 rb3/unk_80421240.cpp:
 	.text       start:0x80421240 end:0x8046EDCC
+
+rb3/unk_80472568.cpp:
+	.text       start:0x80472568 end:0x80492488
 
 rb3/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
