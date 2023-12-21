@@ -93,6 +93,6 @@ int Maximum(int i1, int i2){
 }
 
 // fn_800D792C
-float DataArray::FindArrayAndGetFloat(Symbol s) const {
+float DataArray::FindFloat(Symbol s) const {
 	return FindArray(s, true)->GetFloatAtIndex(1);
 }

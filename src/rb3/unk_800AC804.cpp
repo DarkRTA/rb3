@@ -63,6 +63,6 @@ const char* MakeString(const char* c){
 }
 
 // fn_800AE0BC
-int DataArray::FindArrayAndGetInt(Symbol s) const {
+int DataArray::FindInt(Symbol s) const {
 	return FindArray(s, true)->GetIntAtIndex(1);
 }

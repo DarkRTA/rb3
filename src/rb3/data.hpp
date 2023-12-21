@@ -148,8 +148,8 @@ public:
 	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
 	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
 
-	int FindArrayAndGetInt(Symbol) const; // fn_800AE0BC
-	float FindArrayAndGetFloat(Symbol) const; // fn_800D792C
+	int FindInt(Symbol) const; // fn_800AE0BC
+	float FindFloat(Symbol) const; // fn_800D792C
 	
 	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
 	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
