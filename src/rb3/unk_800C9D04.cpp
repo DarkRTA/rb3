@@ -12,12 +12,14 @@ int Minimum(int x, int y)
 	return (y < x) ? y : x;
 }
 
+#pragma dont_inline on
 // fn_800D7964
 float DataArray::GetFloatAtIndex(int i) const
 {
 	DataNode *dn = GetNodeAtIndex(i);
 	return dn->Float(this);
 }
+#pragma dont_inline reset
 
 // fn_800D81D4
 double FAbs(double d)
@@ -88,4 +90,9 @@ void Scale(const Hmx::Matrix3& mtx, const Vector3& v, Hmx::Matrix3& dst){
 // fn_800D3290
 int Maximum(int i1, int i2){
 	return (i1 < i2) ? i2 : i1;
+}
+
+// fn_800D792C
+float DataArray::FindArrayAndGetFloat(Symbol s) const {
+	return FindArray(s, true)->GetFloatAtIndex(1);
 }
