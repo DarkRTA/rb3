@@ -61,3 +61,8 @@ const char* MakeString(const char* c){
 	FormatString fs(c);
 	return fs.Str();
 }
+
+// fn_800AE0BC
+int DataArray::FindInt(Symbol s) const {
+	return FindArray(s, true)->GetIntAtIndex(1);
+}
