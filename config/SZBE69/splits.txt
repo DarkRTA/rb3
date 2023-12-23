@@ -406,8 +406,7 @@ rb3/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D71C0
 
 rb3/Rnd/rnddrawable.cpp:
-	.text       start:0x805D71C0 end:0x805D7354
-	.data       start:0x808955A8 end:0x808955C8
+	.text       start:0x805D7304 end:0x805D7354
 
 rb3/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80671D38

@@ -2,7 +2,7 @@
 #define RB3_RND_TRANSFORMABLE_HPP
 #include "rndhighlightable.hpp"
 #include "rb3/hmx/object.hpp"
-#include "data.hpp"
+#include "rb3/data.hpp"
 
 class RndTransformable : RndHighlightable {
 	RndTransformable();
@@ -10,7 +10,7 @@ class RndTransformable : RndHighlightable {
 
 	virtual Symbol ClassName();
 	virtual void SetType(Symbol*);
-	virtual void Handle(int*, DataArray*, int);
+	virtual DataNode Handle(DataArray*, int);
 	virtual int SyncProperty(DataNode*, DataArray*, int, int);
 	virtual void Save(BinStream&);
 	virtual void Copy(BinStream&);
@@ -19,7 +19,7 @@ class RndTransformable : RndHighlightable {
 	virtual void Highlight();
 	virtual void Print();
 	virtual void UpdatedWorldXfm(); // links to fn_8076F540_stub, which returns void
-	
+
 	Symbol StaticClassName();
 };
 

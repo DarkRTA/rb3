@@ -1,14 +1,14 @@
 #include "rnddrawable.hpp"
 #include "rb3/data.hpp"
 
-extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
+/*extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
 extern DataArray* gSystemConfig;
 extern char* PathName(Hmx::Object const *);
 extern DataArray* lbl_808F0548;
 
 void RndDrawable::SetType(Symbol* sym) {
-/*ghidra
- *   Symbol SVar1;
+ghidra
+Symbol SVar1;
   Symbol SVar2;
   int iVar3;
   RndDrawable *pRVar4;
@@ -45,7 +45,7 @@ void RndDrawable::SetType(Symbol* sym) {
     (**(code **)(***(int ***)this + 0x44))(**(int ***)this,0); // SetTypeDef
   }
   return;
-  */
+
 
 	Symbol local_20 = StaticClassName();
 	Symbol SVar1("types");
@@ -59,7 +59,7 @@ void RndDrawable::SetType(Symbol* sym) {
 			SetTypeDef(NULL);
 		} else SetTypeDef(intermediate);
 	} else SetTypeDef(NULL);
-}
+}*/
 #pragma dont_inline on
 Symbol RndDrawable::StaticClassName() {
 	static Symbol lbl_808F054C("Draw");
