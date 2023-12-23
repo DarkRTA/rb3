@@ -71,8 +71,8 @@ namespace Hmx {
 		} else if (dst->getDa() != NULL || getDa() != NULL) {
 			dst->ClassName();
 			ClassName();
-			fn_8000FFC8(dst);
-			fn_8000FFC8(this);
+			dst->Name();
+			Name();
 			dst->Type();
 		}
 	}

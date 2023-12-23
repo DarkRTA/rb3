@@ -30,7 +30,7 @@ namespace Hmx {
 		virtual void Export(); // links to fn_8076F540, which returns void
 		virtual void V_Unk14(); // links to fn_8076F540, which returns void
 		virtual void V_Unk15(); // links to fn_8076F540, which returns void
-		virtual void SetTypeDef();
+		virtual void SetTypeDef(DataArray*);
 		virtual void SetName(); // fn_80335904
 		virtual void DataDir(); // fn_803351D0
 		virtual void PreLoad(); // fn_800AB8B4
