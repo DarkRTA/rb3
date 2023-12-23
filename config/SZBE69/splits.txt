@@ -13,7 +13,7 @@ Sections:
 	.sbss2      type:bss
 	.bss        type:bss
 
-rb3/unk_8000D980.cpp:
+rb3/unknown/800/unk_8000D980.cpp:
 	.text       start:0x8000D980 end:0x8000F364
 
 rb3/app.cpp:
@@ -22,25 +22,25 @@ rb3/app.cpp:
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
-rb3/unk_8000F9B0.cpp:
+rb3/unknown/800/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x80011714
 
-quazal/unk_80011714.cpp:
+quazal/unknown/8001/unk_80011714.cpp:
 	.text       start:0x80011714 end:0x800125A8
 
-quazal/unk_80012610.cpp:
+quazal/unknown/8001/unk_80012610.cpp:
 	.text       start:0x80012610 end:0x800127E4
 
 quazal/datetime.cpp:
 	.text       start:0x800127E4 end:0x800129F4
 
-quazal/unk_80012A38.cpp:
+quazal/unknown/8001/unk_80012A38.cpp:
 	.text       start:0x80012A38 end:0x800134E0
 
-quazal/unk_800135F0.cpp:
+quazal/unknown/8001/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
 
-quazal/unk_80015298.cpp:
+quazal/unknown/8001/unk_80015298.cpp:
 	.text       start:0x80015298 end:0x80016B80
 
 quazal/platform.cpp:
@@ -50,7 +50,7 @@ quazal/platform.cpp:
 quazal/profilingunit.cpp:
 	.text       start:0x80016D94 end:0x800172FC
 
-quazal/unk_80017344.cpp:
+quazal/unknown/8001/unk_80017344.cpp:
 	.text       start:0x80017344 end:0x80017448
 
 quazal/randomnumbergenerator.cpp:
@@ -67,62 +67,62 @@ quazal/qresult.cpp:
 quazal/rootobject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
 
-quazal/unk_80017898.cpp:
+quazal/unknown/8001/unk_80017898.cpp:
 	.text       start:0x80017AFC end:0x80018210
 
 quazal/string.cpp:
 	.text       start:0x80018278 end:0x80018968
 
-quazal/unk_80018968.cpp:
+quazal/unknown/8001/unk_80018968.cpp:
 	.text       start:0x80018968 end:0x800193E4
 
-quazal/unk_80019E18.cpp:
+quazal/unknown/8001/unk_80019E18.cpp:
 	.text       start:0x80019E18 end:0x8001AD5C
 
-quazal/unk_8001ADA4.cpp:
+quazal/unknown/8001/unk_8001ADA4.cpp:
 	.text       start:0x8001ADA4 end:0x8001D12C
 
-quazal/unk_8001D138.cpp:
+quazal/unknown/8001/unk_8001D138.cpp:
 	.text       start:0x8001D138 end:0x8001F660
 
-quazal/unk_8001F9B0.cpp:
+quazal/unknown/8001/unk_8001F9B0.cpp:
 	.text       start:0x8001F9B0 end:0x800211B0
 
-quazal/unk_80022EFC.cpp:
+quazal/unknown/8002/unk_80022EFC.cpp:
 	.text       start:0x80022EFC end:0x8002764C
 
-quazal/unk_80027694.cpp:
+quazal/unknown/8002/unk_80027694.cpp:
 	.text       start:0x80027694 end:0x8002FA4C
 
-quazal/unk_8002FAA0.cpp:
+quazal/unknown/8002/unk_8002FAA0.cpp:
 	.text       start:0x8002FAA0 end:0x80034BCC
 
 quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
-quazal/unk_8004AE2C.cpp:
+quazal/unknown/8004/unk_8004AE2C.cpp:
 	.text       start:0x8004AE2C end:0x8004D594
 
-quazal/unk_8004D6C4.cpp:
+quazal/unknown/8004/unk_8004D6C4.cpp:
 	.text       start:0x8004D6C4 end:0x80053E74
 
-quazal/unk_80054054.cpp:
+quazal/unknown/8005/unk_80054054.cpp:
 	.text       start:0x80054054 end:0x80058220
 
-quazal/unk_8007B998.cpp:
+quazal/unknown/8007/unk_8007B998.cpp:
 	.text       start:0x8007B998 end:0x8007BF3C
 
-quazal/unk_8007BF84.cpp:
+quazal/unknown/8007/unk_8007BF84.cpp:
 	.text       start:0x8007BF84 end:0x8007CA94
 
-quazal/unk_8007CADC.cpp:
+quazal/unknown/8007/unk_8007CADC.cpp:
 	.text       start:0x8007CADC end:0x8007E034
 
-quazal/unk_800A3E64.cpp:
+quazal/unknown/800A/unk_800A3E64.cpp:
 	.text       start:0x800A3E64 end:0x800A5110
 
-quazal/unk_800A515C.cpp:
+quazal/unknown/800A/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
@@ -130,26 +130,26 @@ rb3/jsonobjects.cpp:
 	.text       start:0x800A6360 end:0x800A673C
 	.data       start:0x8082A960 end:0x8082AA40
 
-rb3/unk_800A673C.cpp:
+rb3/unknown/800/unk_800A673C.cpp:
 	.text       start:0x800A673C end:0x800AAD98
 
-rb3/unk_800AAE1C.cpp:
+rb3/unknown/800/unk_800AAE1C.cpp:
 	.text       start:0x800AAE1C end:0x800AB8C4
 
-rb3/unk_800AB914.cpp:
+rb3/unknown/800/unk_800AB914.cpp:
 	.text       start:0x800AB914 end:0x800AB960
 	.data       start:0x8082ADF0 end:0x8082AE04
 
-rb3/unk_800AC804.cpp:
+rb3/unknown/800/unk_800AC804.cpp:
 	.text       start:0x800AC804 end:0x800B45D0
 
-rb3/unk_800B4630.cpp:
+rb3/unknown/800/unk_800B4630.cpp:
 	.text       start:0x800B4630 end:0x800BC50C
 
-rb3/unk_800BC590.cpp:
+rb3/unknown/800/unk_800BC590.cpp:
 	.text       start:0x800BC590 end:0x800BF14C
 
-rb3/unk_800BF1A8.cpp:
+rb3/unknown/800/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
 json-c/arraylist.c:
@@ -172,40 +172,40 @@ json-c/printbuf.c:
 	.text       start:0x800C999C end:0x800C9D04
 	.sbss       start:0x808E3E98 end:0x808E3EA0
 
-rb3/unk_800C9D04.cpp:
+rb3/unknown/800/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800DB158
 
 rb3/netstream.cpp:
 	.text       start:0x800DB158 end:0x800DB160
 
-rb3/unk_800DB160.cpp:
+rb3/unknown/800/unk_800DB160.cpp:
 	.text       start:0x800DB160 end:0x800F6DE4
 
-rb3/unk_800F6DF8.cpp:
+rb3/unknown/800/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x8011AEC4
 
-rb3/unk_8011AED8.cpp:
+rb3/unknown/801/unk_8011AED8.cpp:
 	.text       start:0x8011AED8 end:0x80159E30
 
-rb3/unk_801660DC.cpp:
+rb3/unknown/801/unk_801660DC.cpp:
 	.text       start:0x801660DC end:0x80184CA0
 
-rb3/unk_80188850.cpp:
+rb3/unknown/801/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
 
-rb3/unk_801FCC20.cpp:
+rb3/unknown/801/unk_801FCC20.cpp:
 	.text       start:0x801FCC20 end:0x8022BE70
 
-rb3/unk_8022BE84.cpp:
+rb3/unknown/802/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8024729C
 
-rb3/unk_80252B98.cpp:
+rb3/unknown/802/unk_80252B98.cpp:
 	.text       start:0x80252B98 end:0x80266360
 
-rb3/unk_802A5E04.cpp:
+rb3/unknown/802/unk_802A5E04.cpp:
 	.text       start:0x802A5E04 end:0x802AC67C
 
-rb3/unk_802D4B74.cpp:
+rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
 rb3/interpolators.cpp:
@@ -220,10 +220,10 @@ rb3/rand.cpp:
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
-rb3/unk_802DDEA0.cpp:
+rb3/unknown/802/unk_802DDEA0.cpp:
 	.text       start:0x802DDEA0 end:0x802E0C40
 
-rb3/unk_802E0CA0.cpp:
+rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E0CA0 end:0x802E2E28
 
 rb3/trigtable.cpp:
@@ -234,7 +234,7 @@ rb3/datainittrigfuncs.cpp:
 	.text       start:0x802E306C end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
 
-rb3/unk_802E434C.cpp:
+rb3/unknown/802/unk_802E434C.cpp:
 	.text       start:0x802E434C end:0x802E72CC
 
 rb3/arkfile.cpp:
@@ -251,47 +251,47 @@ rb3/asyncfilecnt.cpp:
 rb3/asyncfilewii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
-rb3/unk_802E9040.cpp:
+rb3/unknown/802/unk_802E9040.cpp:
 	.text       start:0x802E9040 end:0x802EAC5C
 
-rb3/unk_802F02EC.cpp:
+rb3/unknown/802/unk_802F02EC.cpp:
 	.text       start:0x802F02EC end:0x802F83C0
 
-rb3/unk_802F844C.cpp:
+rb3/unknown/802/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F9860
 
-rb3/unk_802F98DC.cpp:
+rb3/unknown/802/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
 
 rb3/file_ops.cpp:
 	.text       start:0x802FA848 end:0x802FAB40
 	.bss        start:0x809071C8 end:0x809075C8
 
-rb3/unk_802FA994.cpp:
+rb3/unknown/802/unk_802FA994.cpp:
 	.text       start:0x802FAB40 end:0x802FB4AC
 
-rb3/unk_802FB548.cpp:
+rb3/unknown/802/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
 
-rb3/unk_80307310.cpp:
+rb3/unknown/803/unk_80307310.cpp:
 	.text       start:0x80307310 end:0x80308578
 
-rb3/unk_803085C0.cpp:
+rb3/unknown/803/unk_803085C0.cpp:
 	.text       start:0x803085C0 end:0x80308CC0
 
 rb3/wiinetworksocket.cpp:
 	.text       start:0x80308CC0 end:0x80308DB4
 
-rb3/unk_80308DB4.cpp:
+rb3/unknown/803/unk_80308DB4.cpp:
 	.text       start:0x80308DB4 end:0x8030A448
 
-rb3/unk_8030A494.cpp:
+rb3/unknown/803/unk_8030A494.cpp:
 	.text       start:0x8030A494 end:0x8030DBF8
 
-rb3/unk_8030F4F0.cpp:
+rb3/unknown/803/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
 rb3/rg_messages.cpp:
@@ -303,34 +303,34 @@ rb3/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
 	.data       start:0x80854A08 end:0x80854D00
 
-rb3/unk_80313E98.cpp:
+rb3/unknown/803/unk_80313E98.cpp:
 	.text       start:0x80315A70 end:0x80318588
 	.data       start:0x80854D04 end:0x80854D48
 
-rb3/unk_803185F0.cpp:
+rb3/unknown/803/unk_803185F0.cpp:
 	.text       start:0x803185F0 end:0x8031AF88
 
-rb3/unk_8031B028.cpp:
+rb3/unknown/803/unk_8031B028.cpp:
 	.text       start:0x8031B028 end:0x80322600
 	.data       start:0x80854FA8 end:0x80855448
 
-rb3/unk_80322664.cpp:
+rb3/unknown/803/unk_80322664.cpp:
 	.text       start:0x80322664 end:0x803240F0
 	.data       start:0x80855448 end:0x80855698
 
-rb3/unk_803242cc.cpp:
+rb3/unknown/803/unk_803242CC.cpp:
 	.text       start:0x803242CC end:0x8032443C
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/unk_8032443C.cpp:
+rb3/unknown/803/unk_8032443C.cpp:
 	.text       start:0x8032443C end:0x80324A80
 
-rb3/unk_80330DF4.cpp:
+rb3/unknown/803/unk_80330DF4.cpp:
 	.text       start:0x80330DF4 end:0x80338284
 
-rb3/unk_8033C8F0.cpp:
+rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
 
 rb3/bink.cpp:
@@ -340,22 +340,22 @@ rb3/binstream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
 
-rb3/unk_803431F4.cpp:
+rb3/unknown/803/unk_803431F4.cpp:
 	.text       start:0x803431F4 end:0x8034A7DC
 
-rb3/unk_8034C91C.cpp:
+rb3/unknown/803/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C988
 
-rb3/unk_8034C9F8.cpp:
+rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0
 
-rb3/unk_80354A30.cpp:
+rb3/unknown/803/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
 
-rb3/unk_80357E10.cpp:
+rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x8035C6AC
 
 rb3/optioninit.cpp:
@@ -366,10 +366,10 @@ rb3/string.cpp:
 	.text       start:0x80361B10 end:0x80362A50
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/unk_80362A50.cpp:
+rb3/unknown/803/unk_80362A50.cpp:
 	.text       start:0x80362A50 end:0x80365214
 
-rb3/unk_8037A3D8.cpp:
+rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A488
 
 rb3/simpletempomap.cpp:
@@ -383,7 +383,7 @@ rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874520 end:0x80874550
 
-rb3/unk_8037AD40.cpp:
+rb3/unknown/803/unk_8037AD40.cpp:
 	.text       start:0x8037AD40 end:0x8037EB94
 
 zlib/adler32.c:
@@ -423,31 +423,31 @@ zlib/inffast.c:
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
-rb3/unk_80421240.cpp:
+rb3/unknown/804/unk_80421240.cpp:
 	.text       start:0x80421240 end:0x8046EDCC
 
-rb3/unk_80472568.cpp:
+rb3/unknown/804/unk_80472568.cpp:
 	.text       start:0x80472568 end:0x80492488
 
-rb3/unk_8050FA30.cpp:
+rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 
-rb3/unk_80581A9C.cpp:
+rb3/unknown/805/unk_80581A9C.cpp:
 	.text       start:0x80581A9C end:0x8059FAD8
 
-rb3/unk_805CE140.cpp:
+rb3/unknown/805/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D71C0
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D7304 end:0x805D7354
 
-rb3/unk_80660D18.cpp:
+rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80671D38
 
-rb3/unk_8067F5A0.cpp:
+rb3/unknown/806/unk_8067F5A0.cpp:
 	.text       start:0x8067F5A0 end:0x80683350
 
-rb3/unk_80697FC8.cpp:
+rb3/unknown/806/unk_80697FC8.cpp:
 	.text       start:0x80697FC8 end:0x8069C3FC
 
 libtomcrypt/aes.c:
