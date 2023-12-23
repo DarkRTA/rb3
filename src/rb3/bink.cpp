@@ -14,7 +14,7 @@
 unsigned int ReverseByte(unsigned int *ui, unsigned int lol)
 {
 	// loads byte ui in reverse endian order
-	asm { lwbrx r3, r4, r3 }
+	ASM_BLOCK( lwbrx r3, r4, r3 )
 }
 #pragma dont_inline reset
 

@@ -224,7 +224,7 @@ void Normalize(const register Hmx::Quat& quat, register Hmx::Quat& dst){
 
     register float factor;
 
-    asm {
+    ASM_BLOCK(
         // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
         psq_l    quatXY, 0(r3), 0, 0
         psq_l    quatZW, 8(r3), 0, 0
@@ -258,7 +258,7 @@ void Normalize(const register Hmx::Quat& quat, register Hmx::Quat& dst){
         ps_muls0 quatZW, quatZW, magnitude
         psq_st   quatXY, Quat.x(dst), 0, 0
         psq_st   quatZW, Quat.z(dst), 0, 0
-    }
+    )
 }
 
 void IdentityInterp(const Hmx::Quat& q, float f, Hmx::Quat& dst) {
@@ -327,7 +327,7 @@ void Multiply(const register Transform& t1, const register Transform& t2, regist
     register float transXY;
     register float transZ;
 
-    asm {
+    ASM_BLOCK(
         // Load t1
         psq_l       row1XY,  Transform.rot.row1.x(t1), 0, 0
         psq_l       row1Z,   Transform.rot.row1.z(t1), 1, 0
@@ -410,7 +410,7 @@ void Multiply(const register Transform& t1, const register Transform& t2, regist
         psq_st      f31, Transform.rot.row3.z(dst), 1, 0
         psq_st      transXY, Transform.trans.x(dst), 0, 0
         psq_st      transZ, Transform.trans.z(dst), 1, 0
-    }
+    )
 }
 
 #pragma dont_inline on

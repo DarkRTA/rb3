@@ -138,7 +138,7 @@ void Multiply(const register Vector3& vec, const register Hmx::Matrix3& mtx, reg
 
 	using Hmx::Matrix3;
 
-    asm {
+    ASM_BLOCK(
         // Load vec
         psq_l     vecXY, Vector3.x(vec), 0, 0
         psq_l     vecYZ, Vector3.y(vec), 0, 0
@@ -164,7 +164,7 @@ void Multiply(const register Vector3& vec, const register Hmx::Matrix3& mtx, reg
         // Store dst
         psq_st    dstXY, Vector3.x(dst), 0, 0
         psq_st    dstZ,  Vector3.z(dst), 1, 0
-    }
+    )
 }
 
 #pragma dont_inline on
