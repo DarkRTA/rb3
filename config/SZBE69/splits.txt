@@ -436,7 +436,10 @@ rb3/unk_80581A9C.cpp:
 	.text       start:0x80581A9C end:0x8059FAD8
 
 rb3/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D9A20
+	.text       start:0x805CE140 end:0x805D71C0
+
+rb3/Rnd/rnddrawable.cpp:
+	.text       start:0x805D7304 end:0x805D7354
 
 rb3/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80671D38

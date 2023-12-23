@@ -9,6 +9,7 @@
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
+namespace Hmx {class Object;}; // take a wild guess what this is
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -29,7 +30,7 @@ enum DataType { /* differs from serialized, for... some reason; i trusted ghidra
 	kDataVariable = 2,
 	kDataFunc = 3,
 	kDataObject = 4,
-	kDataSymbol = 5, 
+	kDataSymbol = 5,
 	kDataInt = 6,
 	kDataIfdef = 7,
 	kDataElse = 8,
@@ -150,7 +151,7 @@ public:
 
 	int FindInt(Symbol) const; // fn_800AE0BC
 	float FindFloat(Symbol) const; // fn_800D792C
-	
+  
 	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
 	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
 	bool FindData(Symbol, String&, bool) const; // fn_8031647C
