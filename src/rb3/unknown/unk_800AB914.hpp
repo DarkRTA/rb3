@@ -1,5 +1,5 @@
-#ifndef WII_UNK_800AB914_HPP
-#define WII_UNK_800AB914_HPP
+#ifndef UNKNOWN_UNK_800AB914_HPP
+#define UNKNOWN_UNK_800AB914_HPP
 
 // static fxn linked to these: fn_800AB960
 namespace DiscErrorMgrWii {

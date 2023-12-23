@@ -1,5 +1,5 @@
-#ifndef RB3_RND_DRAWABLE_HPP
-#define RB3_RND_DRAWABLE_HPP
+#ifndef RND_RNDDRAWABLE_HPP
+#define RND_RNDDRAWABLE_HPP
 #include "rndhighlightable.hpp"
 #include "rb3/symbol.hpp"
 #include "rb3/hmx/quat.hpp"
@@ -17,4 +17,4 @@ class RndDrawable : public RndHighlightable {
     float mDrawOrder;
 };
 
-#endif // RB3_RND_DRAWABLE_HPP
+#endif

@@ -1,5 +1,5 @@
-#ifndef RB3_RND_TRANSFORMABLE_HPP
-#define RB3_RND_TRANSFORMABLE_HPP
+#ifndef RND_RNDTRANSFORMABLE_HPP
+#define RND_RNDTRANSFORMABLE_HPP
 #include "rndhighlightable.hpp"
 #include "rb3/hmx/object.hpp"
 #include "rb3/data.hpp"

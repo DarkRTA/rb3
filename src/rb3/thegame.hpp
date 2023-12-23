@@ -1,5 +1,5 @@
-#ifndef THEGAME_HPP
-#define THEGAME_HPP
+#ifndef RB3_THEGAME_HPP
+#define RB3_THEGAME_HPP
 #include <types.h>
 
 class Game {

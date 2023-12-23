@@ -1,5 +1,5 @@
-#ifndef RB3_MATCHMAKINGSETTINGS_H
-#define RB3_MATCHMAKINGSETTINGS_H
+#ifndef RB3_MATCHMAKINGSETTINGS_HPP
+#define RB3_MATCHMAKINGSETTINGS_HPP
 #include "symbol.hpp"
 #include "binstream.hpp"
 

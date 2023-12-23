@@ -14,10 +14,15 @@
   "files.autoSave": "onFocusChange",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-  "C/C++ Include Guard.Macro Type": "Filename",
-  "C/C++ Include Guard.Prefix": "_",
+  "C/C++ Include Guard.Macro Type": "Filepath",
+  "C/C++ Include Guard.Prefix": "",
   "C/C++ Include Guard.Suffix": "",
-  "C/C++ Include Guard.Comment Style": "Line",
+  "C/C++ Include Guard.Comment Style": "None",
+  "C/C++ Include Guard.Path Depth": 1,
+  "C/C++ Include Guard.Path Skip": 1,
+  "C/C++ Include Guard.Auto Include Guard Insertion For New File": true,
+  "C/C++ Include Guard.Insert Blank Line": true,
+  "C/C++ Include Guard.Remove Extension": false,
   "C/C++ Include Guard.Subfolder Prefixes": [
     {
       "folderPath": "include/dolphin",
