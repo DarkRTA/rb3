@@ -44,11 +44,4 @@ typedef volatile f64 vf64;
 #endif
 #define FALSE 0
 
-#ifndef __MWERKS__
-#define __declspec(x)
-#define asm
-#endif
-
-#define DECL_WEAK __declspec(weak)
-
 #endif
