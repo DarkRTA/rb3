@@ -18,7 +18,7 @@ typedef struct ExiChannelControl {
     u32 imm;       // at 0x10
 } ExiChannelControl;
 
-volatile ExiChannelControl EXI_CHAN_CTRL[EXI_MAX_CHAN] : 0xCD006800;
+volatile ExiChannelControl EXI_CHAN_CTRL[EXI_MAX_CHAN] AT_ADDRESS(0xCD006800);
 
 // CSR - Control Status Register
 #define EXI_CSR_EXIINTMASK (1 << 0)

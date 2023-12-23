@@ -52,4 +52,10 @@
 #define __declspec(x)
 #endif
 
+#ifdef __MWERKS__
+#define AT_ADDRESS(x) : (x)
+#else
+#define AT_ADDRESS(x)
+#endif
+
 #endif

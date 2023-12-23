@@ -28,20 +28,20 @@ typedef struct OSExecParams;
 // Can be accessed directly or with OSAddress functions.
 #define OS_DEF_GLOBAL_VAR(type, name, addr)                                    \
     /* Memory-mapped value for direct access */                                \
-    type OS_##name : (addr);                                                   \
+    type OS_##name AT_ADDRESS(addr);                                           \
     __DEF_ADDR_OFFSETS(name, addr)
 
 // Define a global array in *CACHED* MEM1.
 // Can be accessed directly or with OSAddress functions.
 #define OS_DEF_GLOBAL_ARR(type, name, arr, addr)                               \
     /* Memory-mapped value for direct access */                                \
-    type OS_##name arr : (addr);                                               \
+    type OS_##name arr AT_ADDRESS(addr);                                       \
     __DEF_ADDR_OFFSETS(name, addr)
 
 // Define an global variable in the hardware-register range.
 #define OS_DEF_HW_REG(type, name, addr)                                        \
     /* Memory-mapped value for direct access */                                \
-    type OS_##name : (addr);
+    type OS_##name AT_ADDRESS(addr);
 
 typedef struct OSBootInfo_s {
 	DVDDiskID DVDDiskID;  // at 0x0
@@ -148,7 +148,7 @@ OS_DEF_GLOBAL_ARR(u8, SC_PRDINFO, [0x100],               0x80003800);
 /**
  * PI hardware globals
  */
-volatile u32 PI_HW_REGS[] : 0xCC003000;
+volatile u32 PI_HW_REGS[] AT_ADDRESS(0xCC003000);
 typedef enum {
     PI_INTSR,    //!< 0xCC003000
     PI_INTMR,    //!< 0xCC003004
@@ -202,7 +202,7 @@ typedef enum {
  * MI Hardware Registers
  * https://www.gc-forever.com/yagcd/chap5.html#sec5.5
  */
-volatile u16 MI_HW_REGS[] : 0xCC004000;
+volatile u16 MI_HW_REGS[] AT_ADDRESS(0xCC004000);
 typedef enum {
     MI_PAGE_MEM0_H, //!< 0xCC004000
     MI_PAGE_MEM0_L, //!< 0xCC004002
