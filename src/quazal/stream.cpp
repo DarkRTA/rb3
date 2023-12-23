@@ -1,7 +1,8 @@
 #include "stream.hpp"
 
-Quazal::Stream::Stream(Quazal::Stream::Type ty){
+Quazal::Stream::Stream(Quazal::Stream::Type ty) {
     sType = ty;
 }
 
-Quazal::Stream::~Stream(){ }
+Quazal::Stream::~Stream() {
+}

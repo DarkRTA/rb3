@@ -6,12 +6,12 @@
 
 class ShortTransform {
 public:
-	ShortQuat rot;
-	Vector3 trans;
+    ShortQuat rot;
+    Vector3 trans;
 
-	ShortTransform(); // fn_802DE1D8
-	void operator=(const ShortTransform&); // fn_802DE0D0
-	void operator=(const Transform&); // fn_802DDF9C
+    ShortTransform(); // fn_802DE1D8
+    void operator=(const ShortTransform &); // fn_802DE0D0
+    void operator=(const Transform &); // fn_802DDF9C
 };
 
 #endif

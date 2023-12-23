@@ -10,23 +10,29 @@ namespace Quazal {
         static int s_uiHeaderSize;
 
         enum _InstructionType {
-            _InstType0, _InstType1, _InstType2, _InstType3, _InstType4
+            _InstType0,
+            _InstType1,
+            _InstType2,
+            _InstType3,
+            _InstType4
         };
 
-        MemoryManager(char*);
+        MemoryManager(char *);
         virtual ~MemoryManager();
         virtual void BeginProtection();
         virtual void EndProtection();
-        static MemoryManager* GetDefaultMemoryManager();
-        static void* Allocate(MemoryManager*, unsigned long, const char*, unsigned int, _InstructionType);
-        static void Free(MemoryManager*, void*, _InstructionType);
+        static MemoryManager *GetDefaultMemoryManager();
+        static void *Allocate(
+            MemoryManager *, unsigned long, const char *, unsigned int, _InstructionType
+        );
+        static void Free(MemoryManager *, void *, _InstructionType);
 
         int GetHeaderSize();
-        
-        char* unk4;
+
+        char *unk4;
         int unk8, unkc, unk10;
-        WaterMark* unk14;
-        MutexPrimitive* unk18;
+        WaterMark *unk14;
+        MutexPrimitive *unk18;
     };
 }
 

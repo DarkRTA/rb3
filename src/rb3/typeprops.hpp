@@ -4,15 +4,17 @@
 #include "types.h"
 #include "data.hpp"
 
-namespace Hmx { class Object; }
+namespace Hmx {
+    class Object;
+}
 class DataArray;
 
 class TypeProps {
 public:
-	DataArray* data;
+    DataArray *data;
 
-	void Save(BinStream&, Hmx::Object*);
-	void Load(BinStream&, u16, Hmx::Object*);
+    void Save(BinStream &, Hmx::Object *);
+    void Load(BinStream &, u16, Hmx::Object *);
 };
 
 #endif

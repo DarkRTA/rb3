@@ -2,7 +2,7 @@
 #include "watermark.hpp"
 #include "mutexprimitive.hpp"
 
-Quazal::MemoryManager::MemoryManager(char* c){
+Quazal::MemoryManager::MemoryManager(char *c) {
     unk4 = c;
     unk8 = 0;
     unkc = 0;
@@ -13,13 +13,15 @@ Quazal::MemoryManager::MemoryManager(char* c){
     unk14 = new ("MemoryManager.cpp", 0x80) WaterMark(c, true, 60000);
 }
 
-Quazal::MemoryManager::~MemoryManager(){ }
+Quazal::MemoryManager::~MemoryManager() {
+}
 
-int Quazal::MemoryManager::GetHeaderSize(){
-    if(s_uiHeaderSize == 0) s_uiHeaderSize = 4;
+int Quazal::MemoryManager::GetHeaderSize() {
+    if (s_uiHeaderSize == 0)
+        s_uiHeaderSize = 4;
     return s_uiHeaderSize;
 }
 
-Quazal::MemoryManager* Quazal::MemoryManager::GetDefaultMemoryManager(){
+Quazal::MemoryManager *Quazal::MemoryManager::GetDefaultMemoryManager() {
     return 0;
 }

@@ -1,14 +1,14 @@
 #include "datetime.hpp"
 
-Quazal::DateTime::DateTime(){
+Quazal::DateTime::DateTime() {
     num = 0;
 }
 
-Quazal::DateTime::DateTime(const Quazal::DateTime& dt){
+Quazal::DateTime::DateTime(const Quazal::DateTime &dt) {
     num = dt.num;
 }
 
-Quazal::DateTime* Quazal::DateTime::operator=(const Quazal::DateTime& dt){
+Quazal::DateTime *Quazal::DateTime::operator=(const Quazal::DateTime &dt) {
     num = dt.num;
 }
 

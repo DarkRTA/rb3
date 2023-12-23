@@ -10,7 +10,7 @@ namespace Quazal {
 
         RefCountedObject();
         virtual ~RefCountedObject();
-        virtual RefCountedObject* AcquireRef();
+        virtual RefCountedObject *AcquireRef();
         virtual void ReleaseRef();
         unsigned short GetRefCount() const;
 

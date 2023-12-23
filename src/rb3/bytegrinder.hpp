@@ -3,7 +3,7 @@
 
 class ByteGrinder {
 public:
-	ByteGrinder();
+    ByteGrinder();
     virtual ~ByteGrinder(); // generic dtor
 };
 

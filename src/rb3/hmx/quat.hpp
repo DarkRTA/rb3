@@ -10,15 +10,16 @@ namespace Hmx {
         float y;
         float z;
         float w;
-        Quat() {}
-        Quat(const Hmx::Matrix3&);
-        Quat(const Vector3&);
-        Quat(const Vector3&, float);
+        Quat() {
+        }
+        Quat(const Hmx::Matrix3 &);
+        Quat(const Vector3 &);
+        Quat(const Vector3 &, float);
         void Set(float, float, float, float);
-        void Set(const Vector3&, float);
-        void Set(const Vector3&);
-        void Set(const Hmx::Matrix3&);
-        void operator=(const Hmx::Quat&);
+        void Set(const Vector3 &, float);
+        void Set(const Vector3 &);
+        void Set(const Hmx::Matrix3 &);
+        void operator=(const Hmx::Quat &);
     };
 }
 

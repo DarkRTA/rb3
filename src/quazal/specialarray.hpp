@@ -3,14 +3,10 @@
 
 namespace Quazal {
 
-    template <class T>
-    char* SpecialNewArray(unsigned int, char*, unsigned int){
-
+    template <class T> char *SpecialNewArray(unsigned int, char *, unsigned int) {
     }
 
-    template <class T>
-    void SpecialDeleteArray(char*){
-
+    template <class T> void SpecialDeleteArray(char *) {
     }
 
 }

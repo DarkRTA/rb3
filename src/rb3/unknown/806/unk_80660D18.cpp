@@ -1,9 +1,9 @@
 #include "bytegrinder.hpp"
 #include "data.hpp"
 
-extern DataNode* fn_800AB8A8(DataNode*, DataType, DataNodeValue);
+extern DataNode *fn_800AB8A8(DataNode *, DataType, DataNodeValue);
 
-DataNode hashTo5Bits(DataArray* da){
+DataNode hashTo5Bits(DataArray *da) {
     static int hashMapping[0x100];
 
     int i = da->GetIntAtIndex(1) & 0xFF;
@@ -13,9 +13,9 @@ DataNode hashTo5Bits(DataArray* da){
 
     int a = cnt ^ 2;
     unsigned int b = (a >> 1) - (a & cnt);
-    if(b >> 0x1F != 0){
+    if (b >> 0x1F != 0) {
         i = da->GetIntAtIndex(1);
-        for(int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++){
+        for (int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++) {
             hashMapping[idx] = (i >> 3) & 0x1F;
             i = (i * 0x19660D) + 0x3C6EF35F;
         }

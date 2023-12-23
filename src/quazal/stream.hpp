@@ -6,7 +6,9 @@ namespace Quazal {
     class Stream : RootObject {
     public:
         enum Type {
-            StreamType0, StreamType1, StreamType2
+            StreamType0,
+            StreamType1,
+            StreamType2
         };
 
         Stream(Type);

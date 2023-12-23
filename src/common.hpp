@@ -7,14 +7,16 @@
 #include "rb3/data.hpp"
 
 // placement new
-inline void* operator new (unsigned long size, void* p) { return p; }
+inline void *operator new(unsigned long size, void *p) {
+    return p;
+}
 
 // evaluate a DataNode at a particular index
-DataNode* EvaluateNodeAtIndex(DataArray*, int);
+DataNode *EvaluateNodeAtIndex(DataArray *, int);
 
 // string operations
-bool SearchReplace(const char*, const char*, const char*, char*);
-bool StrNCopy(char*, const char*, int);
+bool SearchReplace(const char *, const char *, const char *, char *);
+bool StrNCopy(char *, const char *, int);
 
 // misc functions
 int Minimum(int, int);
@@ -38,7 +40,7 @@ bool IsNan(float);
 int CountBits(int);
 
 // functions to swap endians of data
-void SwapData(const void*, void*, int);
+void SwapData(const void *, void *, int);
 unsigned short SwapDataHalfWord(unsigned short);
 unsigned int SwapDataWord(int);
 long long SwapDataDoubleWord(long long);

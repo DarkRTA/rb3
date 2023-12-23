@@ -4,7 +4,7 @@
 
 class VarStack {
 public:
-	DataNode* ptr;
+    DataNode *ptr;
     DataNode node;
 };
 

@@ -4,6 +4,5 @@
 #include "simpletempomap.hpp"
 
 // fn_8037A410
-SimpleTempoMap::~SimpleTempoMap()
-{
+SimpleTempoMap::~SimpleTempoMap() {
 }

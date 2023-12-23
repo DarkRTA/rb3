@@ -6,11 +6,11 @@
 
 class ContentInstalledMsg : Message {
 public:
-	ContentInstalledMsg(DataArray*);
-	ContentInstalledMsg();
-	virtual ~ContentInstalledMsg(); // fn_800A7FF4
+    ContentInstalledMsg(DataArray *);
+    ContentInstalledMsg();
+    virtual ~ContentInstalledMsg(); // fn_800A7FF4
 
-	Symbol Type();
+    Symbol Type();
 };
 
 #endif

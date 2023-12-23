@@ -5,8 +5,8 @@
 
 class JoinResultMsg : Message {
 public:
-	JoinResultMsg(DataArray *); // fn_800AE6D8
-	virtual ~JoinResultMsg(); // fn_800A7FF4
+    JoinResultMsg(DataArray *); // fn_800AE6D8
+    virtual ~JoinResultMsg(); // fn_800A7FF4
 };
 
 #endif

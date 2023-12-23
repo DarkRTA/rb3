@@ -5,8 +5,8 @@
 
 class Transform {
 public:
-	Hmx::Matrix3 rot;
-	Vector3 trans;
+    Hmx::Matrix3 rot;
+    Vector3 trans;
 };
 
 #endif

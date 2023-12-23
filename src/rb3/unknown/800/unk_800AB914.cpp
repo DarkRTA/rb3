@@ -4,14 +4,12 @@
 // ------------------------------------
 // fn_800AB914
 // ------------------------------------
-DiscErrorMgrWii::WiiDiscErrorSessionTerminatior::WiiDiscErrorSessionTerminatior()
-{
+DiscErrorMgrWii::WiiDiscErrorSessionTerminatior::WiiDiscErrorSessionTerminatior() {
 }
 
 // ------------------------------------
 // fn_800AB950
 // ------------------------------------
 
-DiscErrorMgrWii::Callback::Callback()
-{
+DiscErrorMgrWii::Callback::Callback() {
 }

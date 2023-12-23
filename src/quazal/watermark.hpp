@@ -5,7 +5,7 @@
 namespace Quazal {
     class WaterMark : RootObject {
     public:
-        WaterMark(const char*, bool, unsigned int);
+        WaterMark(const char *, bool, unsigned int);
         ~WaterMark();
     };
 }

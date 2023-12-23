@@ -47,25 +47,25 @@ Symbol SVar1;
   return;
 
 
-	Symbol local_20 = StaticClassName();
-	Symbol SVar1("types");
-	Symbol SVar2("objects");
-	lbl_808F0548 = SystemConfig(SVar2, local_20, SVar1);
-	if (!sym->IsNull()) {
-		DataArray* intermediate = lbl_808F0548->FindArray(*sym, false);
-		if (intermediate) {
-			PathName(this);
-			ClassName();
-			SetTypeDef(NULL);
-		} else SetTypeDef(intermediate);
-	} else SetTypeDef(NULL);
+    Symbol local_20 = StaticClassName();
+    Symbol SVar1("types");
+    Symbol SVar2("objects");
+    lbl_808F0548 = SystemConfig(SVar2, local_20, SVar1);
+    if (!sym->IsNull()) {
+        DataArray* intermediate = lbl_808F0548->FindArray(*sym, false);
+        if (intermediate) {
+            PathName(this);
+            ClassName();
+            SetTypeDef(NULL);
+        } else SetTypeDef(intermediate);
+    } else SetTypeDef(NULL);
 }*/
 #pragma dont_inline on
 Symbol RndDrawable::StaticClassName() {
-	static Symbol lbl_808F054C("Draw");
-	return lbl_808F054C;
+    static Symbol lbl_808F054C("Draw");
+    return lbl_808F054C;
 }
 Symbol RndDrawable::ClassName() const {
-	return StaticClassName();
+    return StaticClassName();
 }
 #pragma dont_inline reset

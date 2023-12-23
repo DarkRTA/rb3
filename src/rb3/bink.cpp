@@ -11,25 +11,22 @@
 #include "cacheidwii.hpp"
 
 #pragma dont_inline on
-unsigned int ReverseByte(unsigned int *ui, unsigned int lol)
-{
-	// loads byte ui in reverse endian order
-	ASM_BLOCK( lwbrx r3, r4, r3 )
+unsigned int ReverseByte(unsigned int *ui, unsigned int lol) {
+    // loads byte ui in reverse endian order
+    ASM_BLOCK(lwbrx r3, r4, r3)
 }
 #pragma dont_inline reset
 
 // fn_80341EDC
-void intelendian(void *v, unsigned int ui)
-{
-	unsigned int u2;
-	unsigned int *uv = (unsigned int *)v;
+void intelendian(void *v, unsigned int ui) {
+    unsigned int u2;
+    unsigned int *uv = (unsigned int *)v;
 
-	u2 = ui + 3 >> 2U;
-	while (!(u2-- == 0))
-		*uv++ = ReverseByte(uv, 0);
+    u2 = ui + 3 >> 2U;
+    while (!(u2-- == 0))
+        *uv++ = ReverseByte(uv, 0);
 }
 
 // fn_803422B4
-long long SwapDataDoubleWord(long long lol)
-{
+long long SwapDataDoubleWord(long long lol) {
 }

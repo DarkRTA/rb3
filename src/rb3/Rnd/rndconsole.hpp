@@ -4,10 +4,9 @@
 
 class RndConsole : Hmx::Object {
 public:
-	RndConsole();
-	virtual ~RndConsole(); // fn_805D1728
-	virtual void Handle(); // fn_805D17CC
+    RndConsole();
+    virtual ~RndConsole(); // fn_805D1728
+    virtual void Handle(); // fn_805D17CC
 };
 
 #endif
-

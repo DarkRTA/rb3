@@ -10,9 +10,9 @@ namespace Quazal {
         void FreeBuffer();
         void ResizeBuffer(unsigned int);
 
-        char* unk0;
+        char *unk0;
         int unk4;
-        char* unk8;
+        char *unk8;
         char unk_arr[0x100];
         char unk10c;
         char unk10d;

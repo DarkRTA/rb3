@@ -12,47 +12,45 @@ extern void JoypadReset();
 
 namespace {
     // fn_80301540
-    DataNode DataJoypadReset(DataArray* da){
+    DataNode DataJoypadReset(DataArray *da) {
         JoypadReset();
         return DataNode(0);
     }
 
     // fn_80301000
-    DataNode OnJoypadVibrate(DataArray* da){
+    DataNode OnJoypadVibrate(DataArray *da) {
         return DataNode(JoypadVibrate(da->GetIntAtIndex(1)));
     }
 
     // fn_80300F98
-    DataNode OnJoypadSetVibrate(DataArray* da){
+    DataNode OnJoypadSetVibrate(DataArray *da) {
         JoypadSetVibrate(da->GetIntAtIndex(1), (da->GetIntAtIndex(2) != 0));
         return DataNode(1);
     }
 
     // fn_80301044
-    DataNode OnJoypadControllerTypePadNum(DataArray* da){
+    DataNode OnJoypadControllerTypePadNum(DataArray *da) {
         return DataNode(JoypadControllerTypePadNum(da->GetIntAtIndex(1)));
     }
 
     // fn_8030108C
-    DataNode OnJoypadIsConnectedPadNum(DataArray* da){
+    DataNode OnJoypadIsConnectedPadNum(DataArray *da) {
         return DataNode(JoypadIsConnectedPadNum(da->GetIntAtIndex(1)));
     }
 
     // fn_803010D0
-    DataNode OnJoypadIsButtonDownPadNum(DataArray*){
-
+    DataNode OnJoypadIsButtonDownPadNum(DataArray *) {
     }
 
     // fn_8030114C
-    DataNode OnJoypadIsCalbertGuitar(DataArray*){
-
+    DataNode OnJoypadIsCalbertGuitar(DataArray *) {
     }
 }
 
 extern "C" void JoypadInitCommon();
 
 // fn_80301C4C
-void JoypadInitCommon(){
+void JoypadInitCommon() {
     DataRegisterFunc("joypad_reset", DataJoypadReset);
     DataRegisterFunc("joypad_vibrate", OnJoypadVibrate);
     DataRegisterFunc("joypad_set_vibrate", OnJoypadSetVibrate);

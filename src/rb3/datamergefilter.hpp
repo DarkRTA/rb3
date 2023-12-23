@@ -5,11 +5,11 @@
 
 class DataMergeFilter : public MergeFilter {
 public:
-	DataMergeFilter(DataNode*, int); // fn_80320314
-	virtual ~DataMergeFilter(); // fn_803201F4
-	virtual DataNode* GetDataNode(); // fn_8032215C
+    DataMergeFilter(DataNode *, int); // fn_80320314
+    virtual ~DataMergeFilter(); // fn_803201F4
+    virtual DataNode *GetDataNode(); // fn_8032215C
 
-	int filler;
+    int filler;
 };
 
 #endif

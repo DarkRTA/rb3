@@ -4,15 +4,13 @@
 // ------------------------------------
 // fn_800A515C
 // ------------------------------------
-Quazal::ProductSpecifics::ProductSpecifics()
-{
+Quazal::ProductSpecifics::ProductSpecifics() {
 }
 
 // ------------------------------------
 // fn_800A516C
 // ------------------------------------
-Quazal::ProductSpecifics::~ProductSpecifics()
-{
+Quazal::ProductSpecifics::~ProductSpecifics() {
 }
 
 // // ------------------------------------
@@ -65,44 +63,39 @@ Quazal::ProductSpecifics::~ProductSpecifics()
 // ------------------------------------
 // fn_800A5278
 // ------------------------------------
-Quazal::NetZSpecifics::NetZSpecifics()
-{
+Quazal::NetZSpecifics::NetZSpecifics() {
 }
 
 // ------------------------------------
 // fn_800A52B4
 // ------------------------------------
-Quazal::NetZSpecifics::~NetZSpecifics()
-{
+Quazal::NetZSpecifics::~NetZSpecifics() {
 }
 
 // ------------------------------------
 // fn_800A530C
 // ------------------------------------
-int Quazal::NetZSpecifics::fn_800A530C()
-{
-	return 1;
+int Quazal::NetZSpecifics::fn_800A530C() {
+    return 1;
 }
 
 // ------------------------------------
 // fn_800A5314
 // ------------------------------------
-void Quazal::NetZSpecifics::fn_800A5314()
-{
-	fn_80083734(); // fn_80051350(&lbl_808F357C)
-	fn_8007DFD0(); // fn_80051350(&lbl_808F33B4)
-	// fn_80051350 decomp: https://decomp.me/scratch/EAChy
+void Quazal::NetZSpecifics::fn_800A5314() {
+    fn_80083734(); // fn_80051350(&lbl_808F357C)
+    fn_8007DFD0(); // fn_80051350(&lbl_808F33B4)
+    // fn_80051350 decomp: https://decomp.me/scratch/EAChy
 }
 
 // ------------------------------------
 // fn_800A5338
 // ------------------------------------
-void Quazal::NetZSpecifics::fn_800A5338()
-{
-	fn_80083174();
-	lbl_808E2DA0 = 0;
-	fn_8007E3C0();
-	fn_80084160();
+void Quazal::NetZSpecifics::fn_800A5338() {
+    fn_80083174();
+    lbl_808E2DA0 = 0;
+    fn_8007E3C0();
+    fn_80084160();
 }
 
 Quazal::unk_53B0 lbl_53B0();

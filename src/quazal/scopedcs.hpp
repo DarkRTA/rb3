@@ -6,7 +6,7 @@
 namespace Quazal {
     class ScopedCS : RootObject {
     public:
-        ScopedCS(CriticalSection&);
+        ScopedCS(CriticalSection &);
         ~ScopedCS();
     };
 }

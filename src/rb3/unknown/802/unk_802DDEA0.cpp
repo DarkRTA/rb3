@@ -14,53 +14,54 @@
 
 #pragma dont_inline on
 // fn_802DE5B4
-float ASinFloat(double d){
+float ASinFloat(double d) {
     return asin(d);
 }
 #pragma dont_inline reset
 
 // fn_802DEEF8
-float ACosFloat(double d){
+float ACosFloat(double d) {
     return acos(d);
 }
 
 // fn_802DE7D8
-float GetXAngle(const Hmx::Matrix3& mtx){
+float GetXAngle(const Hmx::Matrix3 &mtx) {
     return my_atan2f(mtx.row2.z, mtx.row2.y);
 }
 
 // fn_802DE7E4
-float GetYAngle(const Hmx::Matrix3& mtx){
+float GetYAngle(const Hmx::Matrix3 &mtx) {
     return my_atan2f(-mtx.row1.z, mtx.row3.z);
 }
 
 // fn_802DE7F4
-float GetZAngle(const Hmx::Matrix3& mtx){
+float GetZAngle(const Hmx::Matrix3 &mtx) {
     return -my_atan2f(mtx.row2.x, mtx.row2.y);
 }
 
-void MakeVertical(Hmx::Matrix3& mtx){
+void MakeVertical(Hmx::Matrix3 &mtx) {
     mtx.row3.Set(0.0f, 0.0f, 1.0f);
     mtx.row2.z = 0.0f;
     Normalize(mtx.row2, mtx.row2);
     Cross(mtx.row2, mtx.row3, mtx.row1);
 }
 
-void MakeEuler(const Hmx::Matrix3& mtx, Vector3& vec){
-    if(AbsThunk(mtx.row2.z) > 0.99999988f){
-        if(mtx.row2.z > 0.0f) vec.x = 1.5707964f;
-        else vec.x = -1.5707964f;
+void MakeEuler(const Hmx::Matrix3 &mtx, Vector3 &vec) {
+    if (AbsThunk(mtx.row2.z) > 0.99999988f) {
+        if (mtx.row2.z > 0.0f)
+            vec.x = 1.5707964f;
+        else
+            vec.x = -1.5707964f;
         vec.z = ATan2Thunk(mtx.row1.y, mtx.row1.x);
         vec.y = 0.0f;
-    }
-    else {
+    } else {
         vec.z = ATan2Thunk(-mtx.row2.x, mtx.row2.y);
         vec.x = ASinFloat(mtx.row2.z);
         vec.y = ATan2Thunk(-mtx.row1.z, mtx.row3.z);
     }
 }
 
-void MakeScale(const Hmx::Matrix3& mtx, Vector3& vec){
+void MakeScale(const Hmx::Matrix3 &mtx, Vector3 &vec) {
     Vector3 bruh;
     float f1 = Length(mtx.row3);
     Cross(mtx.row1, mtx.row2, bruh);
@@ -71,7 +72,7 @@ void MakeScale(const Hmx::Matrix3& mtx, Vector3& vec){
     vec.Set(f3, f2, f1);
 }
 
-void MakeRotMatrix(const Hmx::Quat& q, Hmx::Matrix3& mtx){
+void MakeRotMatrix(const Hmx::Quat &q, Hmx::Matrix3 &mtx) {
     float f9 = 1.0f;
     float f1 = q.y;
     float f2 = q.z;
@@ -93,25 +94,25 @@ void MakeRotMatrix(const Hmx::Quat& q, Hmx::Matrix3& mtx){
     mtx.row3.z = f9 - f8 - (f5 * f1);
 }
 
-extern void NOP(Hmx::Matrix3*);
+extern void NOP(Hmx::Matrix3 *);
 
-void MakeEulerScale(const Hmx::Matrix3& mtx, Vector3& v1, Vector3& v2){
+void MakeEulerScale(const Hmx::Matrix3 &mtx, Vector3 &v1, Vector3 &v2) {
     Hmx::Matrix3 lol;
     MakeScale(mtx, v2);
     NOP(&lol);
-    if(v2.x != 0.0f){
+    if (v2.x != 0.0f) {
         Scale(mtx.row1, 1.0f / v2.x, lol.row1);
     }
-    if(v2.y != 0.0f){
+    if (v2.y != 0.0f) {
         Scale(mtx.row2, 1.0f / v2.y, lol.row2);
     }
-    if(v2.z != 0.0f){
+    if (v2.z != 0.0f) {
         Scale(mtx.row3, 1.0f / v2.z, lol.row3);
     }
     MakeEuler(lol, v1);
 }
 
-void MakeEuler(const Hmx::Quat& q, Vector3& vec){
+void MakeEuler(const Hmx::Quat &q, Vector3 &vec) {
     Hmx::Matrix3 lmao;
     NOP(&lmao);
     MakeRotMatrix(q, lmao);
@@ -120,12 +121,12 @@ void MakeEuler(const Hmx::Quat& q, Vector3& vec){
 
 #pragma dont_inline on
 // fn_802DE4D4
-float Cosine(float f){
+float Cosine(float f) {
     return Sine(f + 1.5707964f);
 }
 #pragma dont_inline reset
 
-void MakeRotMatrix(const Vector3& v1, const Vector3& v2, Hmx::Matrix3& mtx) {
+void MakeRotMatrix(const Vector3 &v1, const Vector3 &v2, Hmx::Matrix3 &mtx) {
     mtx.row2 = v1;
     Normalize(mtx.row2, mtx.row2);
     Cross(mtx.row2, v2, mtx.row1);
@@ -133,76 +134,91 @@ void MakeRotMatrix(const Vector3& v1, const Vector3& v2, Hmx::Matrix3& mtx) {
     Cross(mtx.row1, mtx.row2, mtx.row3);
 }
 
-TextStream& operator<<(TextStream& ts, const Hmx::Quat& q){
+TextStream &operator<<(TextStream &ts, const Hmx::Quat &q) {
     ts << "(x:" << q.x << " y:" << q.y << " z:" << q.z << " w:" << q.w << ")";
     return ts;
 }
 
-TextStream& operator<<(TextStream& ts, const Vector3& vec){
+TextStream &operator<<(TextStream &ts, const Vector3 &vec) {
     ts << "(x:" << vec.x << " y:" << vec.y << " z:" << vec.z << ")";
     return ts;
 }
 
-TextStream& operator<<(TextStream& ts, const Vector2& vec){
+TextStream &operator<<(TextStream &ts, const Vector2 &vec) {
     ts << "(x:" << vec.x << " y:" << vec.y << ")";
     return ts;
 }
 
-TextStream& operator<<(TextStream& ts, const Hmx::Matrix3& mtx){
+TextStream &operator<<(TextStream &ts, const Hmx::Matrix3 &mtx) {
     ts << "\n\t" << mtx.row1 << "\n\t" << mtx.row2 << "\n\t" << mtx.row3;
     return ts;
 }
 
-TextStream& operator<<(TextStream& ts, const Transform& tf){
+TextStream &operator<<(TextStream &ts, const Transform &tf) {
     ts << tf.rot << "\n\t" << tf.trans;
     return ts;
 }
 
-void FastInvert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst){
+void FastInvert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
     float d1 = 1.0f / Dot(mtx.row1, mtx.row1);
     float d2 = 1.0f / Dot(mtx.row2, mtx.row2);
     float d3 = 1.0f / Dot(mtx.row3, mtx.row3);
-    dst.Set(mtx.row1.x * d1, mtx.row2.x * d2, mtx.row3.x * d3,
-        mtx.row1.y * d1, mtx.row2.y * d2, mtx.row3.y * d3,
-        mtx.row1.z * d1, mtx.row2.z * d2, mtx.row3.z * d3);
+    dst.Set(
+        mtx.row1.x * d1,
+        mtx.row2.x * d2,
+        mtx.row3.x * d3,
+        mtx.row1.y * d1,
+        mtx.row2.y * d2,
+        mtx.row3.y * d3,
+        mtx.row1.z * d1,
+        mtx.row2.z * d2,
+        mtx.row3.z * d3
+    );
 }
 
-BinStream& operator<<(BinStream& bs, const Vector3& vec){
+BinStream &operator<<(BinStream &bs, const Vector3 &vec) {
     bs << vec.x << vec.y << vec.z;
     return bs;
 }
 
-void ShortQuat::Set(const Hmx::Quat& q){
+void ShortQuat::Set(const Hmx::Quat &q) {
     x = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.x + 0.5f));
     y = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.y + 0.5f));
     z = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.z + 0.5f));
     w = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.w + 0.5f));
 }
 
-void ShortQuat::operator=(const ShortQuat& q){
+void ShortQuat::operator=(const ShortQuat &q) {
     x = q.x;
     y = q.y;
     z = q.z;
     w = q.w;
 }
 
-bool Vector3::operator==(const Vector3& vec) const {
+bool Vector3::operator==(const Vector3 &vec) const {
     bool b = false;
-    if(x == vec.x && y == vec.y && z == vec.z) b = true;
+    if (x == vec.x && y == vec.y && z == vec.z)
+        b = true;
     return b;
 }
 
-bool Vector3::operator!=(const Vector3& vec) const {
+bool Vector3::operator!=(const Vector3 &vec) const {
     bool b = false;
-    if(x != vec.x || y != vec.y || z != vec.z) b = true;
+    if (x != vec.x || y != vec.y || z != vec.z)
+        b = true;
     return b;
 }
 
-void ShortQuat::ToQuat(Hmx::Quat& q) const {
-    q.Set((float)(x * 0.000030518509f), (float)(y * 0.000030518509f), (float)(z * 0.000030518509f), (float)(w * 0.000030518509f));
+void ShortQuat::ToQuat(Hmx::Quat &q) const {
+    q.Set(
+        (float)(x * 0.000030518509f),
+        (float)(y * 0.000030518509f),
+        (float)(z * 0.000030518509f),
+        (float)(w * 0.000030518509f)
+    );
 }
 
-void Normalize(const register Hmx::Quat& quat, register Hmx::Quat& dst){
+void Normalize(const register Hmx::Quat &quat, register Hmx::Quat &dst) {
     using Hmx::Quat;
 
     register float quatXY;
@@ -226,75 +242,105 @@ void Normalize(const register Hmx::Quat& quat, register Hmx::Quat& dst){
 
     ASM_BLOCK(
         // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
-        psq_l    quatXY, 0(r3), 0, 0
-        psq_l    quatZW, 8(r3), 0, 0
-        ps_mul   quatXYsq, quatXY, quatXY
-        ps_mul   quatZWsq, quatZW, quatZW
-        ps_sum0  squares, quatXYsq, quatZWsq, quatXYsq
-        ps_sum1  quatZWsq, quatZWsq, quatXYsq, quatZWsq
-        ps_sum0  squares, squares, quatXYsq, quatZWsq
+        psq_l quatXY,
+        0(r3),
+        0,
+        0 psq_l quatZW,
+        8(r3),
+        0,
+        0 ps_mul quatXYsq,
+        quatXY,
+        quatXY ps_mul quatZWsq,
+        quatZW,
+        quatZW ps_sum0 squares,
+        quatXYsq,
+        quatZWsq,
+        quatXYsq ps_sum1 quatZWsq,
+        quatZWsq,
+        quatXYsq,
+        quatZWsq ps_sum0 squares,
+        squares,
+        quatXYsq,
+        quatZWsq
 
-        // 1 / sqrt(squares)
-        frsqrte  magnitude, squares
+            // 1 / sqrt(squares)
+            frsqrte magnitude,
+        squares
 
-        // Newton's method
-        // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
-        // Tried to make this match as C code, but decided not to bother lol
-        fmul     magSquare, magnitude, magnitude
-        fmul     magHalf, magnitude, half
-        fnmsub   magNewton, magSquare, squares, three
-        fmul     magnitude, magNewton, magHalf
+            // Newton's method
+            // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
+            // Tried to make this match as C code, but decided not to bother lol
+            fmul magSquare,
+        magnitude,
+        magnitude fmul magHalf,
+        magnitude,
+        half fnmsub magNewton,
+        magSquare,
+        squares,
+        three fmul magnitude,
+        magNewton,
+        magHalf
 
-        // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
-        ps_sub   zero, cutoff, cutoff
-        ps_sub   cutoff, squares, cutoff
-        ps_sel   magnitude, cutoff, magnitude, zero
+            // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
+            ps_sub zero,
+        cutoff,
+        cutoff ps_sub cutoff,
+        squares,
+        cutoff ps_sel magnitude,
+        cutoff,
+        magnitude,
+        zero
 
-        // dst.x = quat.x * magnitude;
-        // dst.y = quat.y * magnitude;
-        // dst.z = quat.z * magnitude;
-        // dst.w = quat.w * magnitude;
-        ps_muls0 quatXY, quatXY, magnitude
-        ps_muls0 quatZW, quatZW, magnitude
-        psq_st   quatXY, Quat.x(dst), 0, 0
-        psq_st   quatZW, Quat.z(dst), 0, 0
+            // dst.x = quat.x * magnitude;
+            // dst.y = quat.y * magnitude;
+            // dst.z = quat.z * magnitude;
+            // dst.w = quat.w * magnitude;
+            ps_muls0 quatXY,
+        quatXY,
+        magnitude ps_muls0 quatZW,
+        quatZW,
+        magnitude psq_st quatXY,
+        Quat.x(dst),
+        0,
+        0 psq_st quatZW,
+        Quat.z(dst),
+        0,
+        0
     )
 }
 
-void IdentityInterp(const Hmx::Quat& q, float f, Hmx::Quat& dst) {
-    if(f == 0.0f){
+void IdentityInterp(const Hmx::Quat &q, float f, Hmx::Quat &dst) {
+    if (f == 0.0f) {
         dst = q;
-    }
-    else if(f == 1.0f){
+    } else if (f == 1.0f) {
         dst.Set(0.0f, 0.0f, 0.0f, 1.0f);
-    }
-    else {
+    } else {
         float f2 = 1.0f - f;
         dst.x = q.x * f2;
         dst.y = q.y * f2;
         dst.z = q.z * f2;
         float f1 = q.w;
-        if(f1 < 0.0f){
+        if (f1 < 0.0f) {
             dst.w = f1 * f2 - f;
-        }
-        else dst.w = f1 * f2 + f;
+        } else
+            dst.w = f1 * f2 + f;
         Normalize(dst, dst);
     }
 }
 
 #pragma dont_inline on
-BinStream& operator>>(BinStream& bs, Vector3& vec){
+BinStream &operator>>(BinStream &bs, Vector3 &vec) {
     bs >> vec.x >> vec.y >> vec.z;
     return bs;
 }
 #pragma dont_inline reset
 
-BinStream& operator>>(BinStream& bs, Hmx::Matrix3& mtx){
+BinStream &operator>>(BinStream &bs, Hmx::Matrix3 &mtx) {
     bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
     return bs;
 }
 
-void Hmx::Quat::Set(const Vector3& vec, float f) {
+void Hmx::Quat::Set(const Vector3 &vec, float f) {
     float mult = 0.5f * f;
     float f1 = Sine(mult);
     float f2 = Cosine(mult);
@@ -304,7 +350,7 @@ void Hmx::Quat::Set(const Vector3& vec, float f) {
     z = vec.z * f1;
 }
 
-void Hmx::Quat::Set(const Vector3& vec) {
+void Hmx::Quat::Set(const Vector3 &vec) {
     Vector3 stack;
     Scale(vec, 0.5f, stack);
     float f1 = Sine(stack.x);
@@ -317,7 +363,9 @@ void Hmx::Quat::Set(const Vector3& vec) {
     Set(f2 * x - f1 * y, f2 * y + f1 * x, f2 * z + f1 * w, f2 * w - f1 * z);
 }
 
-void Multiply(const register Transform& t1, const register Transform& t2, register Transform& dst) {
+void Multiply(
+    const register Transform &t1, const register Transform &t2, register Transform &dst
+) {
     register float row1XY;
     register float row1Z;
     register float row2XY;
@@ -329,120 +377,237 @@ void Multiply(const register Transform& t1, const register Transform& t2, regist
 
     ASM_BLOCK(
         // Load t1
-        psq_l       row1XY,  Transform.rot.row1.x(t1), 0, 0
-        psq_l       row1Z,   Transform.rot.row1.z(t1), 1, 0
-        psq_l       row2XY,  Transform.rot.row2.x(t1), 0, 0
-        psq_l       row2Z,   Transform.rot.row2.z(t1), 1, 0
-        psq_l       row3XY,  Transform.rot.row3.x(t1), 0, 0
-        psq_l       row3Z,   Transform.rot.row3.z(t1), 1, 0
-        psq_l       transXY, Transform.trans.x(t1), 0, 0
-        psq_l       transZ,  Transform.trans.z(t1), 1, 0
+        psq_l row1XY,
+        Transform.rot.row1.x(t1),
+        0,
+        0 psq_l row1Z,
+        Transform.rot.row1.z(t1),
+        1,
+        0 psq_l row2XY,
+        Transform.rot.row2.x(t1),
+        0,
+        0 psq_l row2Z,
+        Transform.rot.row2.z(t1),
+        1,
+        0 psq_l row3XY,
+        Transform.rot.row3.x(t1),
+        0,
+        0 psq_l row3Z,
+        Transform.rot.row3.z(t1),
+        1,
+        0 psq_l transXY,
+        Transform.trans.x(t1),
+        0,
+        0 psq_l transZ,
+        Transform.trans.z(t1),
+        1,
+        0
 
-        ps_merge00  f0, row1XY, row2XY
-        ps_merge00  f1, row3XY, transXY
+        ps_merge00 f0,
+        row1XY,
+        row2XY ps_merge00 f1,
+        row3XY,
+        transXY
 
-        ps_merge11  f2, row1XY, row2XY
-        ps_merge11  f3, row3XY, transXY
+            ps_merge11 f2,
+        row1XY,
+        row2XY ps_merge11 f3,
+        row3XY,
+        transXY
 
-        ps_merge00  f4, row1Z,  row2Z
-        ps_merge00  f5, row3Z,  transZ
+            ps_merge00 f4,
+        row1Z,
+        row2Z ps_merge00 f5,
+        row3Z,
+        transZ
 
-        ps_sub      f10, f10, f10
-        ps_merge01  f26, f10, transZ
+            ps_sub f10,
+        f10,
+        f10 ps_merge01 f26,
+        f10,
+        transZ
 
-        // Load t2
-        psq_l       row1XY,  Transform.rot.row1.x(t2), 0, 0
-        psq_l       row1Z,   Transform.rot.row1.z(t2), 1, 0
-        psq_l       row2XY,  Transform.rot.row2.x(t2), 0, 0
-        psq_l       row2Z,   Transform.rot.row2.z(t2), 1, 0
-        psq_l       row3XY,  Transform.rot.row3.x(t2), 0, 0
-        psq_l       transXY, Transform.trans.x(t2), 0, 0 // Must be swapped in order to match
-        psq_l       row3Z,   Transform.rot.row3.z(t2), 1, 0
-        psq_l       transZ,  Transform.trans.z(t2), 1, 0
+            // Load t2
+            psq_l row1XY,
+        Transform.rot.row1.x(t2),
+        0,
+        0 psq_l row1Z,
+        Transform.rot.row1.z(t2),
+        1,
+        0 psq_l row2XY,
+        Transform.rot.row2.x(t2),
+        0,
+        0 psq_l row2Z,
+        Transform.rot.row2.z(t2),
+        1,
+        0 psq_l row3XY,
+        Transform.rot.row3.x(t2),
+        0,
+        0 psq_l transXY,
+        Transform.trans.x(t2),
+        0,
+        0 // Must be swapped in order to match
+        psq_l row3Z,
+        Transform.rot.row3.z(t2),
+        1,
+        0 psq_l transZ,
+        Transform.trans.z(t2),
+        1,
+        0
 
-        ps_merge00  f6, row1XY, row2XY
-        ps_merge11  row1XY, row1XY, row2XY
-        ps_merge00  row1Z, row1Z, row2Z
+        ps_merge00 f6,
+        row1XY,
+        row2XY ps_merge11 row1XY,
+        row1XY,
+        row2XY ps_merge00 row1Z,
+        row1Z,
+        row2Z
 
-        ps_muls0    f10, f1, f6
-        ps_muls0    f12, f1, row1XY
-        ps_muls0    row2Z, f0, row1XY
+            ps_muls0 f10,
+        f1,
+        f6 ps_muls0 f12,
+        f1,
+        row1XY ps_muls0 row2Z,
+        f0,
+        row1XY
 
-        ps_muls0    f31, f1, row1Z
-        ps_muls0    f13, f0, row1Z
-        ps_madds1   f10, f3, f6, f10
+            ps_muls0 f31,
+        f1,
+        row1Z ps_muls0 f13,
+        f0,
+        row1Z ps_madds1 f10,
+        f3,
+        f6,
+        f10
 
-        ps_muls0    row2XY,  f0, f6
-        ps_madds1   row2XY,  f2, f6, row2XY
-        ps_merge00  f0,  row3XY, transXY
-        ps_merge11  f1,  row3XY, transXY
-        ps_merge00  f6,  row3Z, transZ
+            ps_muls0 row2XY,
+        f0,
+        f6 ps_madds1 row2XY,
+        f2,
+        f6,
+        row2XY ps_merge00 f0,
+        row3XY,
+        transXY ps_merge11 f1,
+        row3XY,
+        transXY ps_merge00 f6,
+        row3Z,
+        transZ
 
-        ps_madds1   f12, f3, row1XY, f12
-        ps_madds0   f10, f5, f0, f10
-        ps_madds0   f12, f5, f1, f12
-        ps_madds1   f31, f3, row1Z, f31
-        ps_madds1   f13, f2, row1Z, f13
-    
-        ps_madds0   row2XY,  f4, f0, row2XY
-        ps_madds1   row2Z, f2, row1XY, row2Z
-        ps_madds0   row2Z, f4, f1, row2Z
-        ps_merge00  row1XY,  row2XY, row2Z
-        ps_merge11  row2XY,  row2XY, row2Z
+            ps_madds1 f12,
+        f3,
+        row1XY,
+        f12 ps_madds0 f10,
+        f5,
+        f0,
+        f10 ps_madds0 f12,
+        f5,
+        f1,
+        f12 ps_madds1 f31,
+        f3,
+        row1Z,
+        f31 ps_madds1 f13,
+        f2,
+        row1Z,
+        f13
 
-        ps_madds0   f31, f5, f6, f31
-        ps_madd     f31, f26, f6, f31
-        ps_madds0   f13, f4, f6, f13
-        ps_merge11  row2Z, f13, f13
-        ps_merge11  transZ, f31, f31
+            ps_madds0 row2XY,
+        f4,
+        f0,
+        row2XY ps_madds1 row2Z,
+        f2,
+        row1XY,
+        row2Z ps_madds0 row2Z,
+        f4,
+        f1,
+        row2Z ps_merge00 row1XY,
+        row2XY,
+        row2Z ps_merge11 row2XY,
+        row2XY,
+        row2Z
 
-        ps_madd     f10, f26, f0, f10
-        ps_madd     f12, f26, f1, f12
-        ps_merge00  row3XY, f10, f12
-        ps_merge11  transXY, f10, f12
+            ps_madds0 f31,
+        f5,
+        f6,
+        f31 ps_madd f31,
+        f26,
+        f6,
+        f31 ps_madds0 f13,
+        f4,
+        f6,
+        f13 ps_merge11 row2Z,
+        f13,
+        f13 ps_merge11 transZ,
+        f31,
+        f31
 
-        // Store result
-        psq_st      row1XY, Transform.rot.row1.x(dst), 0, 0
-        psq_st      f13, Transform.rot.row1.z(dst), 1, 0
-        psq_st      row2XY, Transform.rot.row2.x(dst), 0, 0
-        psq_st      row2Z, Transform.rot.row2.z(dst), 1, 0
-        psq_st      row3XY, Transform.rot.row3.x(dst), 0, 0
-        psq_st      f31, Transform.rot.row3.z(dst), 1, 0
-        psq_st      transXY, Transform.trans.x(dst), 0, 0
-        psq_st      transZ, Transform.trans.z(dst), 1, 0
+            ps_madd f10,
+        f26,
+        f0,
+        f10 ps_madd f12,
+        f26,
+        f1,
+        f12 ps_merge00 row3XY,
+        f10,
+        f12 ps_merge11 transXY,
+        f10,
+        f12
+
+            // Store result
+            psq_st row1XY,
+        Transform.rot.row1.x(dst),
+        0,
+        0 psq_st f13,
+        Transform.rot.row1.z(dst),
+        1,
+        0 psq_st row2XY,
+        Transform.rot.row2.x(dst),
+        0,
+        0 psq_st row2Z,
+        Transform.rot.row2.z(dst),
+        1,
+        0 psq_st row3XY,
+        Transform.rot.row3.x(dst),
+        0,
+        0 psq_st f31,
+        Transform.rot.row3.z(dst),
+        1,
+        0 psq_st transXY,
+        Transform.trans.x(dst),
+        0,
+        0 psq_st transZ,
+        Transform.trans.z(dst),
+        1,
+        0
     )
 }
 
 #pragma dont_inline on
-Hmx::Quat::Quat(const Hmx::Matrix3& mtx){
+Hmx::Quat::Quat(const Hmx::Matrix3 &mtx) {
     Set(mtx);
 }
 #pragma dont_inline reset
 
-void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
+void Hmx::Quat::Set(const Hmx::Matrix3 &mtx) {
     float f1 = mtx.row1.x;
     float f2 = mtx.row2.y;
     float f3 = mtx.row3.z;
     float diag = f1 + f2 + f3;
-    if(diag > 0.0f){
+    if (diag > 0.0f) {
         w = diag + 1.0f;
         x = mtx.row2.z - mtx.row3.y;
         y = mtx.row3.x - mtx.row1.z;
         z = mtx.row1.y - mtx.row2.x;
-    }
-    else if((f3 > f1) && (f3 > f2)){
+    } else if ((f3 > f1) && (f3 > f2)) {
         z = f3 - f1 - f2 + 1.0f;
         w = mtx.row1.y - mtx.row2.x;
         x = mtx.row3.x + mtx.row1.z;
         y = mtx.row3.y + mtx.row2.z;
-    }
-    else if(f2 > f1){
+    } else if (f2 > f1) {
         y = f2 - f3 - f1 + 1.0f;
         w = mtx.row3.x - mtx.row1.z;
         z = mtx.row2.z + mtx.row3.y;
         x = mtx.row2.x + mtx.row1.y;
-    }
-    else {
+    } else {
         x = f1 - f2 - f3 + 1.0f;
         w = mtx.row2.z - mtx.row3.y;
         y = mtx.row1.y + mtx.row2.x;
@@ -452,21 +617,18 @@ void Hmx::Quat::Set(const Hmx::Matrix3& mtx) {
 }
 
 #pragma dont_inline on
-void ShortQuat::Set(const Hmx::Matrix3& mtx){
+void ShortQuat::Set(const Hmx::Matrix3 &mtx) {
     Set(Hmx::Quat(mtx));
 }
 #pragma dont_inline reset
 
-void Invert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst) {
-    float big_num = 
-        mtx.row1.z * mtx.row2.x * mtx.row3.y -
-        mtx.row3.x * mtx.row2.y +
-        mtx.row1.x * mtx.row2.y * mtx.row3.z -
-        mtx.row3.y * mtx.row2.z -
-        mtx.row1.y * mtx.row2.x * mtx.row3.z -
-        mtx.row3.x * mtx.row2.z;
+void Invert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
+    float big_num = mtx.row1.z * mtx.row2.x * mtx.row3.y - mtx.row3.x * mtx.row2.y
+        + mtx.row1.x * mtx.row2.y * mtx.row3.z - mtx.row3.y * mtx.row2.z
+        - mtx.row1.y * mtx.row2.x * mtx.row3.z - mtx.row3.x * mtx.row2.z;
     float f10 = 0.0f;
-    if(big_num != 0.0f) f10 = 1.0f / big_num;
+    if (big_num != 0.0f)
+        f10 = 1.0f / big_num;
 
     float f1 = mtx.row1.x;
     float f2 = mtx.row1.y;
@@ -490,7 +652,7 @@ void Invert(const Hmx::Matrix3& mtx, Hmx::Matrix3& dst) {
     );
 }
 
-void MakeRotQuat(const Vector3& v1, const Vector3& v2, Hmx::Quat& dst) {
+void MakeRotQuat(const Vector3 &v1, const Vector3 &v2, Hmx::Quat &dst) {
     Vector3 vec;
     Cross(v1, v2, vec);
     float len2 = LengthSquared(v2);
@@ -498,43 +660,42 @@ void MakeRotQuat(const Vector3& v1, const Vector3& v2, Hmx::Quat& dst) {
     float sq = SqrtThunk(len1 * len2);
     float dot = Dot(v1, v2);
     float sq2 = SqrtThunk(0.5f + ((0.5f * dot) / sq));
-    if(sq2 > 1.0E-7f){
+    if (sq2 > 1.0E-7f) {
         float f1 = 0.5f / (sq * sq2);
         dst.x = vec.x * f1;
         dst.y = vec.y * f1;
         dst.z = vec.z * f1;
         dst.w = sq2;
-    }
-    else {
+    } else {
         dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
     }
 }
 
-void MakeRotQuatUnitX(const Vector3& vec, Hmx::Quat& dst) {
+void MakeRotQuatUnitX(const Vector3 &vec, Hmx::Quat &dst) {
     float sq = SqrtThunk(0.5f * vec.x + 0.5f);
-    if(sq > 1.0E-7f){
+    if (sq > 1.0E-7f) {
         dst.Set(0.0f, vec.z * (0.5f / sq), -vec.y * (0.5f / sq), sq);
-    }
-    else {
+    } else {
         dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
     }
 }
 
-float operator*(const Hmx::Quat& q1, const Hmx::Quat& q2){
+float operator*(const Hmx::Quat &q1, const Hmx::Quat &q2) {
     return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
 }
 
-void Interp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst) {
-    if(f == 0.0f) dst = q1;
-    else if(f == 1.0f) dst = q2;
+void Interp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
+    if (f == 0.0f)
+        dst = q1;
+    else if (f == 1.0f)
+        dst = q2;
     else {
-        if((q1 * q2) < 0.0f){
+        if ((q1 * q2) < 0.0f) {
             dst.x = -(f * (q1.x + q2.x) - q1.x);
             dst.y = -(f * (q1.y + q2.y) - q1.y);
             dst.z = -(f * (q1.z + q2.z) - q1.z);
             dst.w = -(f * (q1.w + q2.w) - q1.w);
-        }
-        else {
+        } else {
             dst.x = -(f * (q1.x - q2.x) - q1.x);
             dst.y = -(f * (q1.y - q2.y) - q1.y);
             dst.z = -(f * (q1.z - q2.z) - q1.z);
@@ -545,12 +706,12 @@ void Interp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst) {
 }
 
 #pragma dont_inline on
-void InterpThunk(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst){
+void InterpThunk(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
     Interp(q1, q2, f, dst);
 }
 #pragma dont_inline reset
 
-void Interp(const Hmx::Matrix3& m1, const Hmx::Matrix3& m2, float f, Hmx::Matrix3& dst) {
+void Interp(const Hmx::Matrix3 &m1, const Hmx::Matrix3 &m2, float f, Hmx::Matrix3 &dst) {
     Hmx::Quat q1(m1);
     Hmx::Quat q2(m2);
     Hmx::Quat q;
@@ -558,23 +719,24 @@ void Interp(const Hmx::Matrix3& m1, const Hmx::Matrix3& m2, float f, Hmx::Matrix
     MakeRotMatrix(q, dst);
 }
 
-void FastInterp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& dst) {
-    if(f == 0.0f) dst = q1;
-    else if(f == 1.0f) dst = q2;
+void FastInterp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
+    if (f == 0.0f)
+        dst = q1;
+    else if (f == 1.0f)
+        dst = q2;
     else {
-        if((q1 * q2) < 0.0f){
+        if ((q1 * q2) < 0.0f) {
             float q1x = q1.x;
-            dst.x =  -(f * (q2.x + q1x) - q1x);
+            dst.x = -(f * (q2.x + q1x) - q1x);
             float q1y = q1.y;
             dst.y = -(f * (q2.y + q1y) - q1y);
             float q1z = q1.z;
             dst.z = -(f * (q2.z + q1z) - q1z);
             float q1w = q1.w;
             dst.w = -(f * (q2.w + q1w) - q1w);
-        }
-        else {
+        } else {
             float q1x = q1.x;
-            dst.x =  (f * (q2.x - q1x) + q1x);
+            dst.x = (f * (q2.x - q1x) + q1x);
             float q1y = q1.y;
             dst.y = (f * (q2.y - q1y) + q1y);
             float q1z = q1.z;
@@ -587,7 +749,7 @@ void FastInterp(const Hmx::Quat& q1, const Hmx::Quat& q2, float f, Hmx::Quat& ds
 }
 
 // fn_802DE1D8
-ShortTransform::ShortTransform(){
+ShortTransform::ShortTransform() {
     rot.z = 0;
     rot.y = 0;
     rot.x = 0;
@@ -598,23 +760,23 @@ ShortTransform::ShortTransform(){
 }
 
 // fn_802DE0D0
-void ShortTransform::operator=(const ShortTransform& st){
+void ShortTransform::operator=(const ShortTransform &st) {
     rot = st.rot;
     trans = st.trans;
 }
 
 // fn_802DDF9C
-void ShortTransform::operator=(const Transform& tf){
+void ShortTransform::operator=(const Transform &tf) {
     rot.Set(tf.rot);
     trans = tf.trans;
 }
 
 #pragma dont_inline on
-Hmx::Quat::Quat(const Vector3& vec, float f){
+Hmx::Quat::Quat(const Vector3 &vec, float f) {
     Set(vec, f);
 }
 
-void ShortQuat::SetThunk(const Hmx::Quat& q){
+void ShortQuat::SetThunk(const Hmx::Quat &q) {
     Set(q);
 }
 #pragma dont_inline reset

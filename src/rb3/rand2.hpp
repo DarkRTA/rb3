@@ -3,9 +3,9 @@
 
 class Rand2 {
 public:
-	Rand2(int);
-	int Int();
-	int num;
+    Rand2(int);
+    int Int();
+    int num;
 };
 
 #endif
