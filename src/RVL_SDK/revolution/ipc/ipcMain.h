@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-u32 IPC_HW_REGS[] : 0xCD000000;
+u32 IPC_HW_REGS[] AT_ADDRESS(0xCD000000);
 
 static inline u32 ACRReadReg(u32 reg) {
     return *(u32*)((char*)IPC_HW_REGS + (reg & ~0x3));

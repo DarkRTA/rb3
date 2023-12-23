@@ -16,11 +16,6 @@
 
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
-#define ALIGN(x) __attribute__((aligned(x)))
-#define DECL_SECTION(x) __declspec(section x)
-#define DECL_WEAK __declspec(weak)
-#define DONT_INLINE __attribute__((never_inline))
-
 // Codewarrior tricks for matching decomp
 // (Functions are given prototypes for -requireprotos)
 #ifdef __MWERKS__
@@ -46,10 +41,22 @@
 #endif
 
 // For VSCode
-#ifdef __INTELLISENSE__
-#define asm
-#define __attribute__(x)
+#ifdef __MWERKS__
+#define AT_ADDRESS(x) : (x)
+#define ASM_DECL asm
+#define ASM_BLOCK(...) asm { __VA_ARGS__ }
+#else
+#define AT_ADDRESS(x)
+#define ASM_DECL
+#define ASM_BLOCK(...)
 #define __declspec(x)
+#define __attribute__(x)
 #endif
+
+#define ALIGN(x) __attribute__((aligned(x)))
+#define DONT_INLINE __attribute__((never_inline))
+
+#define DECL_SECTION(x) __declspec(section x)
+#define DECL_WEAK __declspec(weak)
 
 #endif
