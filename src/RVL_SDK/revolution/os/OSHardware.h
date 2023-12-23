@@ -33,9 +33,9 @@ typedef struct OSExecParams;
 
 // Define a global array in *CACHED* MEM1.
 // Can be accessed directly or with OSAddress functions.
-#define OS_DEF_GLOBAL_ARR(type, name, arr, addr)                               \
+#define OS_DEF_GLOBAL_ARR(type, name, size, addr)                              \
     /* Memory-mapped value for direct access */                                \
-    type OS_##name arr AT_ADDRESS(addr);                                       \
+    type OS_##name [ size ] AT_ADDRESS(addr);                                  \
     __DEF_ADDR_OFFSETS(name, addr)
 
 // Define an global variable in the hardware-register range.
@@ -82,7 +82,7 @@ typedef struct OSBI2 {
  */
 OS_DEF_GLOBAL_VAR(OSBootInfo, BOOT_INFO,                   0x80000000);
 OS_DEF_GLOBAL_VAR(OSDebugInterface, DEBUG_INTERFACE,       0x80000040);
-OS_DEF_GLOBAL_ARR(u8, DB_INTEGRATOR_HOOK, [0x24],          0x80000060);
+OS_DEF_GLOBAL_ARR(u8, DB_INTEGRATOR_HOOK, 0x24,            0x80000060);
 OS_DEF_GLOBAL_VAR(struct OSContext*, CURRENT_CONTEXT_PHYS, 0x800000C0);
 OS_DEF_GLOBAL_VAR(u32, PREV_INTR_MASK,                     0x800000C4);
 OS_DEF_GLOBAL_VAR(u32, CURRENT_INTR_MASK,                  0x800000C8);
@@ -102,9 +102,9 @@ OS_DEF_GLOBAL_VAR(u32, CPU_CLOCK_SPEED,                    0x800000FC);
 /**
  * 0x80003000 - 0x80003F00
  */
-OS_DEF_GLOBAL_ARR(void*, EXCEPTION_TABLE, [15],          0x80003000);
+OS_DEF_GLOBAL_ARR(void*, EXCEPTION_TABLE, 15,            0x80003000);
 OS_DEF_GLOBAL_VAR(void*, INTR_HANDLER_TABLE,             0x80003040);
-OS_DEF_GLOBAL_ARR(volatile s32, EXI_800030C0, [],        0x800030C0);
+OS_DEF_GLOBAL_ARR(volatile s32, EXI_800030C0, 0,         0x800030C0);
 OS_DEF_GLOBAL_VAR(void*, FIRST_REL,                      0x800030C8);
 OS_DEF_GLOBAL_VAR(void*, LAST_REL,                       0x800030CC);
 OS_DEF_GLOBAL_VAR(void*, REL_NAME_TABLE,                 0x800030D0);
@@ -143,7 +143,7 @@ OS_DEF_GLOBAL_VAR(u32, NAND_TITLE_LAUNCH_CODE,           0x8000318C);
 OS_DEF_GLOBAL_VAR(u32, NAND_TITLE_RETURN_CODE,           0x80003190);
 OS_DEF_GLOBAL_VAR(u32, CURRENT_APP_NAME_1,               0x80003194);
 OS_DEF_GLOBAL_VAR(u8, DEVICE_CHECK_CODE,                 0x8000319C);
-OS_DEF_GLOBAL_ARR(u8, SC_PRDINFO, [0x100],               0x80003800);
+OS_DEF_GLOBAL_ARR(u8, SC_PRDINFO, 0x100,                 0x80003800);
 
 /**
  * PI hardware globals
