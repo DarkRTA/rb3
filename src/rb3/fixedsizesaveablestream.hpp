@@ -1,5 +1,5 @@
-#ifndef RB3_FIXEDSIZESAVABLESTREAM_HPP
-#define RB3_FIXEDSIZESAVABLESTREAM_HPP
+#ifndef RB3_FIXEDSIZESAVEABLESTREAM_HPP
+#define RB3_FIXEDSIZESAVEABLESTREAM_HPP
 #include "bufstream.hpp"
 
 class FixedSizeSaveableStream : BufStream {

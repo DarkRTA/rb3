@@ -1,5 +1,5 @@
-#ifndef RB3_SYMBOL_H
-#define RB3_SYMBOL_H
+#ifndef RB3_SYMBOL_HPP
+#define RB3_SYMBOL_HPP
 
 class Symbol {
 public:

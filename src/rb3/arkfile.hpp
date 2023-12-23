@@ -1,5 +1,5 @@
-#ifndef _ARKFILE_HPP
-#define _ARKFILE_HPP
+#ifndef RB3_ARKFILE_HPP
+#define RB3_ARKFILE_HPP
 #include <types.h>
 #include "file.hpp"
 #include "string.hpp"
