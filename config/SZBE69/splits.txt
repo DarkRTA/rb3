@@ -349,8 +349,8 @@ rb3/unk_8034C91C.cpp:
 rb3/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
-rb3/unk_80350BA0.cpp:
-	.text       start:0x80350BA0 end:0x803549C0
+rb3/formatstring.cpp:
+	.text       start:0x803513E0 end:0x80351AD0
 
 rb3/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
