@@ -149,6 +149,9 @@ public:
 	DataArray* FindArray(Symbol, Symbol, Symbol) const; // fn_80316300
 	DataArray* FindArray(Symbol, const char*) const; // fn_80316358
 
+	int FindInt(Symbol) const; // fn_800AE0BC
+	float FindFloat(Symbol) const; // fn_800D792C
+  
 	bool FindData(Symbol, const char*&, bool) const; // fn_803163B8
 	bool FindData(Symbol, Symbol&, bool) const; // fn_80316414
 	bool FindData(Symbol, String&, bool) const; // fn_8031647C
