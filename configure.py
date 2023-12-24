@@ -437,7 +437,9 @@ config.libs = [
         "objects": [
             Object(NonMatching, "bt/stack/l2cap/l2c_utils.c"),
             Object(NonMatching, "bt/stack/l2cap/l2c_main.c"),
-            Object(NonMatching, "bt/stack/l2cap/l2c_link.c")
+            Object(NonMatching, "bt/stack/l2cap/l2c_link.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_csm.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_api.c")
         ]
     },
     # anything below this line does not need to be decompiled
