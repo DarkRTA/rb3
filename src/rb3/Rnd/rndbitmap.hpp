@@ -22,20 +22,24 @@ typedef enum {
 class RndBitmap {
     RndBitmap();
     ~RndBitmap();
+    void Create(const RndBitmap&, int, int, void*);
+    void Create(u16, u16, u16, u8, BitmapEncoding, void*, void*, void*);
+    void AllocateBuffer();
+    void Reset();
 
     u32 PaletteBytes() const;
     u32 PixelBytes() const;
 
-    u16 unk0; // 0x0
-    u16 w; // 0x2
-    u16 h; // 0x4
+    u16 w; // 0x0
+    u16 h; // 0x2
+    u16 bytesperline; // 0x4
     u8 bpp; // 0x6
     u8 pad; // 0x7
     BitmapEncoding enc; // 0x8
-    size_t size; // guess
-    void *paletteData;
-    void *data; // size: width * height * (bpp/8 (compiler might do >> 3))
-    RndBitmap *nextMipmap;
+    void *imageData; // 0xc
+    void *paletteData; // 0x10
+    void *allData; // 0x14
+    RndBitmap *nextMipmap; // 0x18
 };
 
 #endif // RND_RNDBITMAP_HPP

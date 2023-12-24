@@ -4,8 +4,10 @@
 #include "rb3/hmx/object.hpp"
 #include "rb3/data.hpp"
 #include "rb3/binstream.hpp"
+#include "types.h"
 
 class RndTex : Hmx::Object {
+    typedef u32 Type;
     RndTex();
     virtual ~RndTex();
     virtual Symbol ClassName() const;
@@ -14,7 +16,7 @@ class RndTex : Hmx::Object {
     virtual bool SyncProperty(DataNode &, DataArray *, int, uint) // uint should be
                                                                   // PropOp; TODO figure
                                                                   // out PropOp
-        virtual void Save(BinStream &);
+    virtual void Save(BinStream &);
     virtual void Copy(Hmx::Object *, int);
     virtual void Load(BinStream &);
     virtual void Print();
