@@ -414,6 +414,7 @@ vorbis/block.c:
 
 vorbis/codebook.c:
 	.text       start:0x806C3C94 end:0x806C4724
+	.data       start:0x808A15B8 end:0x808A15E0
 
 vorbis/envelope.c:
 	.text       start:0x806C4724 end:0x806C47A8
