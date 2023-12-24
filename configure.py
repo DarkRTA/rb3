@@ -147,6 +147,7 @@ cflags_base = [
     "-i src/speex",
     "-i src/RVL_SDK",
     "-i src/std",
+    "-i src/rb3",
     "-i src",
     "-nodefaults",
     "-proc gekko",
