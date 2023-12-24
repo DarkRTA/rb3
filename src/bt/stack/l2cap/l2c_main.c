@@ -382,22 +382,6 @@ static void process_l2cap_cmd (tL2C_LCB *p_lcb, UINT8 *p, UINT16 pkt_len)
                     l2c_csm_execute (p_ccb, L2CEVT_LP_DISCONNECT_IND, NULL);
                 }
             }
-
-            /* SonyEricsson Info request Bug workaround (Continue connection) */
-            else if (rej_reason == L2CAP_CMD_REJ_NOT_UNDERSTOOD && p_lcb->w4_info_rsp)
-            {
-                btu_stop_timer (&p_lcb->info_timer_entry);
-
-                p_lcb->w4_info_rsp = FALSE;
-                ci.status = HCI_SUCCESS;
-                memcpy (ci.bd_addr, p_lcb->remote_bd_addr, sizeof(BD_ADDR));
-
-                /* For all channels, send the event through their FSMs */
-                for (p_ccb = p_lcb->ccb_queue.p_first_ccb; p_ccb; p_ccb = p_ccb->p_next_ccb)
-                {
-                    l2c_csm_execute (p_ccb, L2CEVT_L2CAP_INFO_RSP, &ci);
-                }
-            }
             break;
 
         case L2CAP_CMD_CONN_REQ:

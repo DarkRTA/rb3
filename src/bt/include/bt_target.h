@@ -35,7 +35,10 @@
 
 
 #ifdef BUILDCFG
+
+// macros i've added here
 #define HAS_NO_BDROID_BUILDCFG
+#define MAX_L2CAP_CLIENTS 8
 
 #if !defined(HAS_BDROID_BUILDCFG) && !defined(HAS_NO_BDROID_BUILDCFG)
 #error "An Android.mk file did not include bdroid_CFLAGS and possibly not bdorid_C_INCLUDES"

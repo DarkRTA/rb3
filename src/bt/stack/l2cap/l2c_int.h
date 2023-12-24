@@ -387,9 +387,11 @@ typedef struct t_l2c_linkcb
 
     tL2C_CCB_Q          ccb_queue;                  /* Queue of CCBs on this LCB        */
 
+    BD_ADDR             remote_bd_addr;             /* The BD address of the remote     */
+
     tL2C_CCB            *p_pending_ccb;             /* ccb of waiting channel during link disconnect */
     TIMER_LIST_ENT      info_timer_entry;           /* Timer entry for info resp timeout evt */
-    BD_ADDR             remote_bd_addr;             /* The BD address of the remote     */
+    
 
     UINT8               link_role;                  /* Master or slave                  */
     UINT8               id;
@@ -462,24 +464,24 @@ typedef struct t_l2c_linkcb
 typedef struct
 {
     UINT8           l2cap_trace_level;
+    UINT8           desire_role;                    /* desire to be master/slave when accepting a connection */   
     UINT16          controller_xmit_window;         /* Total ACL window for all links   */
+    UINT16          num_lm_acl_bufs;                /* # of ACL buffers on controller   */
+
+    tL2C_LCB        lcb_pool[MAX_L2CAP_LINKS];      /* Link Control Block pool          */
 
     UINT16          round_robin_quota;              /* Round-robin link quota           */
     UINT16          round_robin_unacked;            /* Round-robin unacked              */
+
     BOOLEAN         check_round_robin;              /* Do a round robin check           */
 
     BOOLEAN         is_cong_cback_context;
 
-    tL2C_LCB        lcb_pool[MAX_L2CAP_LINKS];      /* Link Control Block pool          */
-    tL2C_CCB        ccb_pool[MAX_L2CAP_CHANNELS];   /* Channel Control Block pool       */
-    tL2C_RCB        rcb_pool[MAX_L2CAP_CLIENTS];    /* Registration info pool           */
-
     tL2C_CCB        *p_free_ccb_first;              /* Pointer to first free CCB        */
     tL2C_CCB        *p_free_ccb_last;               /* Pointer to last  free CCB        */
 
-    UINT8           desire_role;                    /* desire to be master/slave when accepting a connection */
     BOOLEAN         disallow_switch;                /* FALSE, to allow switch at create conn */
-    UINT16          num_lm_acl_bufs;                /* # of ACL buffers on controller   */
+    
     UINT16          idle_timeout;                   /* Idle timeout                     */
 
     BUFFER_Q        rcv_hold_q;                     /* Recv pending queue               */
@@ -487,6 +489,9 @@ typedef struct
 
     tL2C_LCB        *p_cur_hcit_lcb;                /* Current HCI Transport buffer     */
     UINT16          num_links_active;               /* Number of links active           */
+
+    tL2C_RCB        rcb_pool[MAX_L2CAP_CLIENTS];    /* Registration info pool           */
+    tL2C_CCB        ccb_pool[MAX_L2CAP_CHANNELS];   /* Channel Control Block pool       */
 
 #if (L2CAP_NON_FLUSHABLE_PB_INCLUDED == TRUE)
     UINT16          non_flushable_pbf;              /* L2CAP_PKT_START_NON_FLUSHABLE if controller supports */

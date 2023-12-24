@@ -182,7 +182,7 @@ cflags_zlib = [
 cflags_bt = [
     *cflags_base,
     *cflags_rb3,
-    "-str reuse"
+    "-str reuse, nopool"
 ]
 
 

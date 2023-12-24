@@ -258,7 +258,7 @@ BT_HDR *l2cu_build_header (tL2C_LCB *p_lcb, UINT16 len, UINT8 cmd, UINT8 id)
 
     if (!p_buf)
     {
-        L2CAP_TRACE_ERROR0 ("l2cu_build_header - no buffer");
+        // L2CAP_TRACE_ERROR0 ("l2cu_build_header - no buffer");
         return (NULL);
     }
 
@@ -2969,9 +2969,6 @@ tL2C_CCB *l2cu_find_ccb_by_cid (tL2C_LCB *p_lcb, UINT16 local_cid)
     {
         /* find the associated CCB by "index" */
         local_cid -= L2CAP_BASE_APPL_CID;
-
-        if (local_cid >= MAX_L2CAP_CHANNELS)
-            return NULL;
 
         p_ccb = l2cb.ccb_pool + local_cid;
 
