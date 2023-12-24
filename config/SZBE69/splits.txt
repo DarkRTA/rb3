@@ -478,8 +478,14 @@ Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x807F0064 end:0x807F0068 rename:.dtors$15
 	.sdata      start:0x808E32A0 end:0x808E32A8
 
+bt/stack/hid/hidh_api.c:
+	.text       start:0x80706530 end:0x80720094
+
+bt/stack/hid/hidh_conn.c:
+	.text       start:0x80720094 end:0x807220D4
+
 bt/stack/l2cap/l2c_api.c:
-	.text       start:0x80706530 end:0x80722CA0
+	.text       start:0x807220D4 end:0x80722CA0
 
 bt/stack/l2cap/l2c_csm.c:
 	.text       start:0x80722CA0 end:0x8072417C
