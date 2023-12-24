@@ -138,6 +138,7 @@ cflags_base = [
     "-i src/bt/gki/common",
     "-i src/bt/bta/include",
     "-i src/bt/utils/include",
+    "-i src/bt/stack/l2cap",
     "-i src/bt/stack/btm",
     "-i src/bt/include",
     "-i src/bt/stack/include",
@@ -442,7 +443,9 @@ config.libs = [
             Object(NonMatching, "bt/stack/l2cap/l2c_api.c"),
             Object(NonMatching, "bt/stack/hid/hidh_conn.c"),
             Object(NonMatching, "bt/stack/hid/hidh_api.c"),
-            Object(NonMatching, "bt/stack/hcic/hcicmds.c")
+            Object(NonMatching, "bt/stack/hcic/hcicmds.c"),
+            Object(NonMatching, "bt/stack/btu/btu_hcif.c"),
+            Object(NonMatching, "bt/stack/rfcomm/port_api.c")
         ]
     },
     # anything below this line does not need to be decompiled

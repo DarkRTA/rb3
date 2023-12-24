@@ -478,8 +478,11 @@ Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x807F0064 end:0x807F0068 rename:.dtors$15
 	.sdata      start:0x808E32A0 end:0x808E32A8
 
+bt/stack/btu/btu_hcif.c:
+	.text       start:0x80706530 end:0x8071C68C
+
 bt/stack/hcic/hcicmds.c:
-	.text       start:0x80706530 end:0x8071EDA8
+	.text       start:0x8071C68C end:0x8071EDA8
 
 bt/stack/hid/hidh_api.c:
 	.text       start:0x8071EDA8 end:0x80720094
@@ -500,4 +503,7 @@ bt/stack/l2cap/l2c_main.c:
 	.text       start:0x80725308 end:0x80726338
 
 bt/stack/l2cap/l2c_utils.c:
-	.text       start:0x80726338 end:0x8072A538
+	.text       start:0x80726338 end:0x807281FC
+
+bt/stack/rfcomm/port_api.c:
+	.text       start:0x807281FC end:0x8072A538
