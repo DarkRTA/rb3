@@ -48,7 +48,6 @@ tBTM_CB  btm_cb;
 *******************************************************************************/
 void btm_init (void)
 {
-    UINT8 i;
     /* All fields are cleared; nonzero fields are reinitialized in appropriate function */
     memset(&btm_cb, 0, sizeof(tBTM_CB));
 
@@ -57,9 +56,6 @@ void btm_init (void)
 #else
     btm_cb.trace_level = BT_TRACE_LEVEL_NONE;    /* No traces */
 #endif
-    for (i = 0; i < BTM_ROLE_DEVICE_NUM; i++) {
-        btm_cb.previous_connected_role[i] = BTM_ROLE_UNDEFINED;
-    }
     /* Initialize BTM component structures */
     btm_inq_db_init();                  /* Inquiry Database and Structures */
     btm_acl_init();                     /* ACL Database and Structures */

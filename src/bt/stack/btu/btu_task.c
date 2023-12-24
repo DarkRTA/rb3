@@ -166,39 +166,11 @@ BTU_API UINT32 btu_task (UINT32 param)
     UINT8            i;
     UINT16           mask;
     BOOLEAN          handled;
-    UNUSED(param);
 
 #if (defined(HCISU_H4_INCLUDED) && HCISU_H4_INCLUDED == TRUE)
     /* wait an event that HCISU is ready */
-    BT_TRACE_0(TRACE_LAYER_BTU, TRACE_TYPE_API,
-                "btu_task pending for preload complete event");
-
-    for (;;)
-    {
-        event = GKI_wait (0xFFFF, 0);
-        if (event & EVENT_MASK(GKI_SHUTDOWN_EVT))
-        {
-            /* indicates BT ENABLE abort */
-            BT_TRACE_0(TRACE_LAYER_BTU, TRACE_TYPE_WARNING,
-                        "btu_task start abort!");
-            return (0);
-        }
-        else if (event & BT_EVT_PRELOAD_CMPL)
-        {
-            break;
-        }
-        else
-        {
-            BT_TRACE_1(TRACE_LAYER_BTU, TRACE_TYPE_WARNING,
-                "btu_task ignore evt %04x while pending for preload complete",
-                event);
-        }
-    }
-
-    BT_TRACE_0(TRACE_LAYER_BTU, TRACE_TYPE_API,
-                "btu_task received preload complete event");
+    GKI_wait(0xFFFF, 0);
 #endif
-
     /* Initialize the mandatory core stack control blocks
        (BTU, BTM, L2CAP, and SDP)
      */
@@ -330,14 +302,6 @@ BTU_API UINT32 btu_task (UINT32 param)
                         GKI_freebuf (p_msg);
                         break;
 
-                    case BT_EVT_TO_STOP_TIMER:
-                        if (btu_cb.timer_queue.p_first == NULL)
-                        {
-                            GKI_stop_timer(TIMER_0);
-                        }
-                        GKI_freebuf (p_msg);
-                        break;
-
 #if defined(QUICK_TIMER_TICKS_PER_SEC) && (QUICK_TIMER_TICKS_PER_SEC > 0)
                     case BT_EVT_TO_START_QUICK_TIMER :
                         GKI_start_timer (TIMER_2, QUICK_TIMER_TICKS, TRUE);
@@ -400,9 +364,6 @@ BTU_API UINT32 btu_task (UINT32 param)
                     case BTU_TTYPE_L2CAP_HOLD:
                     case BTU_TTYPE_L2CAP_INFO:
                     case BTU_TTYPE_L2CAP_FCR_ACK:
-#if (BLE_INCLUDED == TRUE)
-                    case BTU_TTYPE_L2CAP_END_CONN_UPD:
-#endif
 
                         l2c_process_timeout (p_tle);
                         break;
@@ -476,9 +437,11 @@ BTU_API UINT32 btu_task (UINT32 param)
                     case BTU_TTYPE_BLE_INQUIRY:
                     case BTU_TTYPE_BLE_GAP_LIM_DISC:
                     case BTU_TTYPE_BLE_RANDOM_ADDR:
-                    case BTU_TTYPE_BLE_GAP_FAST_ADV:
-                    case BTU_TTYPE_BLE_OBSERVE:
                         btm_ble_timeout(p_tle);
+                        break;
+
+                    case BTU_TTYPE_BLE_SCAN_PARAM_IDLE:
+                        btm_ble_scan_param_idle();
                         break;
 
                     case BTU_TTYPE_ATT_WAIT_FOR_RSP:
@@ -586,7 +549,6 @@ BTU_API UINT32 btu_task (UINT32 param)
 void btu_start_timer (TIMER_LIST_ENT *p_tle, UINT16 type, UINT32 timeout)
 {
     BT_HDR *p_msg;
-    GKI_disable();
     /* if timer list is currently empty, start periodic GKI timer */
     if (btu_cb.timer_queue.p_first == NULL)
     {
@@ -613,7 +575,6 @@ void btu_start_timer (TIMER_LIST_ENT *p_tle, UINT16 type, UINT32 timeout)
     p_tle->ticks = timeout;         /* Save the number of seconds for the timer */
 
     GKI_add_to_timer_list (&btu_cb.timer_queue, p_tle);
-    GKI_enable();
 }
 
 /*******************************************************************************
@@ -641,29 +602,14 @@ UINT32 btu_remaining_time (TIMER_LIST_ENT *p_tle)
 *******************************************************************************/
 void btu_stop_timer (TIMER_LIST_ENT *p_tle)
 {
-    BT_HDR *p_msg;
-    GKI_disable();
     GKI_remove_from_timer_list (&btu_cb.timer_queue, p_tle);
 
-    /* if timer is stopped on other than BTU task */
-    if (GKI_get_taskid() != BTU_TASK)
+    /* if timer list is empty stop periodic GKI timer */
+    if (btu_cb.timer_queue.p_first == NULL)
     {
-        /* post event to stop timer in BTU task */
-        if ((p_msg = (BT_HDR *)GKI_getbuf(BT_HDR_SIZE)) != NULL)
-        {
-            p_msg->event = BT_EVT_TO_STOP_TIMER;
-            GKI_send_msg (BTU_TASK, TASK_MBOX_0, p_msg);
-        }
+        GKI_stop_timer(TIMER_0);
     }
-    else
-    {
-        /* if timer list is empty stop periodic GKI timer */
-        if (btu_cb.timer_queue.p_first == NULL)
-        {
-            GKI_stop_timer(TIMER_0);
-        }
-    }
-    GKI_enable();
+
 }
 
 #if defined(QUICK_TIMER_TICKS_PER_SEC) && (QUICK_TIMER_TICKS_PER_SEC > 0)
@@ -684,7 +630,6 @@ void btu_start_quick_timer (TIMER_LIST_ENT *p_tle, UINT16 type, UINT32 timeout)
 {
     BT_HDR *p_msg;
 
-    GKI_disable();
     /* if timer list is currently empty, start periodic GKI timer */
     if (btu_cb.quick_timer_queue.p_first == NULL)
     {
@@ -708,7 +653,6 @@ void btu_start_quick_timer (TIMER_LIST_ENT *p_tle, UINT16 type, UINT32 timeout)
     p_tle->ticks = timeout; /* Save the number of ticks for the timer */
 
     GKI_add_to_timer_list (&btu_cb.quick_timer_queue, p_tle);
-    GKI_enable();
 }
 
 
@@ -723,7 +667,6 @@ void btu_start_quick_timer (TIMER_LIST_ENT *p_tle, UINT16 type, UINT32 timeout)
 *******************************************************************************/
 void btu_stop_quick_timer (TIMER_LIST_ENT *p_tle)
 {
-    GKI_disable();
     GKI_remove_from_timer_list (&btu_cb.quick_timer_queue, p_tle);
 
     /* if timer list is empty stop periodic GKI timer */
@@ -731,7 +674,6 @@ void btu_stop_quick_timer (TIMER_LIST_ENT *p_tle)
     {
         GKI_stop_timer(TIMER_2);
     }
-    GKI_enable();
 }
 
 /*******************************************************************************

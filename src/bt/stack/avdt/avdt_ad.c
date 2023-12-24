@@ -25,7 +25,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avdt_api.h"
 #include "avdtc_api.h"
 #include "avdt_int.h"
@@ -323,7 +322,6 @@ void avdt_ad_tc_close_ind(tAVDT_TC_TBL *p_tbl, UINT16 reason)
     tAVDT_CCB   *p_ccb;
     tAVDT_SCB   *p_scb;
     tAVDT_SCB_TC_CLOSE  close;
-    UNUSED(reason);
 
     close.old_tc_state = p_tbl->state;
     /* clear avdt_ad_tc_tbl entry */

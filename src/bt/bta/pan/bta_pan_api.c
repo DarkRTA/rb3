@@ -25,6 +25,8 @@
 
 #include "bt_target.h"
 
+#if defined(BTA_PAN_INCLUDED) && (BTA_PAN_INCLUDED == TRUE)
+
 #include "bta_api.h"
 #include "bta_sys.h"
 #include "pan_api.h"
@@ -33,9 +35,6 @@
 #include "bta_pan_int.h"
 #include "bd.h"
 #include <string.h>
-#include "bt_utils.h"
-
-#if defined(BTA_PAN_INCLUDED) && (BTA_PAN_INCLUDED == TRUE)
 
 static const tBTA_SYS_REG bta_pan_reg =
 {
@@ -212,36 +211,4 @@ BTA_API void BTA_PanClose(UINT16 handle)
         bta_sys_sendmsg(p_buf);
     }
 }
-#else
-
-void BTA_PanEnable(tBTA_PAN_CBACK p_cback)
-{
-    UNUSED(p_cback);
-}
-
-void BTA_PanDisable(void)
-{
-}
-
-void BTA_PanSetRole(tBTA_PAN_ROLE role, tBTA_PAN_ROLE_INFO *p_user_info, tBTA_PAN_ROLE_INFO *p_gn_info,
-                    tBTA_PAN_ROLE_INFO *p_nap_info)
-{
-    UNUSED(role);
-    UNUSED(p_user_info);
-    UNUSED(p_gn_info);
-    UNUSED(p_nap_info);
-}
-
-void BTA_PanOpen(BD_ADDR bd_addr, tBTA_PAN_ROLE local_role, tBTA_PAN_ROLE peer_role)
-{
-    UNUSED(bd_addr);
-    UNUSED(local_role);
-    UNUSED(peer_role);
-}
-
-void BTA_PanClose(UINT16 handle)
-{
-    UNUSED(handle);
-}
-
 #endif /* BTA_PAN_INCLUDED */

@@ -41,7 +41,6 @@
 
 #include "bnep_api.h"
 #include "bnep_int.h"
-#include "bt_utils.h"
 
 
 /********************************************************************************/
@@ -121,7 +120,6 @@ tBNEP_RESULT bnep_register_with_l2cap (void)
 static void bnep_connect_ind (BD_ADDR  bd_addr, UINT16 l2cap_cid, UINT16 psm, UINT8 l2cap_id)
 {
     tBNEP_CONN    *p_bcb = bnepu_find_bcb_by_bd_addr (bd_addr);
-    UNUSED(psm);
 
     /* If we are not acting as server, or already have a connection, or have */
     /* no more resources to handle the connection, reject the connection.    */

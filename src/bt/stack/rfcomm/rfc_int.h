@@ -315,7 +315,7 @@ tRFC_MCB  *rfc_find_lcid_mcb (UINT16 lcid);
 extern void      rfc_save_lcid_mcb (tRFC_MCB *p_rfc_mcb, UINT16 lcid);
 extern void      rfc_check_mcb_active (tRFC_MCB *p_mcb);
 extern void      rfc_port_closed (tPORT *p_port);
-extern void      rfc_sec_check_complete (BD_ADDR bd_addr, tBT_TRANSPORT transport,void *p_ref_data, UINT8 res);
+extern void      rfc_sec_check_complete (BD_ADDR bd_addr, void *p_ref_data, UINT8 res);
 extern void      rfc_inc_credit (tPORT *p_port, UINT8 credit);
 extern void      rfc_dec_credit (tPORT *p_port);
 extern void      rfc_check_send_cmd(tRFC_MCB *p_mcb, BT_HDR *p_buf);

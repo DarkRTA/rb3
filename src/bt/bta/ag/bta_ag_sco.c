@@ -31,7 +31,6 @@
 #include "bta_ag_int.h"
 #include "btm_api.h"
 #include "gki.h"
-#include "utl.h"
 
 #ifndef BTA_AG_SCO_DEBUG
 #define BTA_AG_SCO_DEBUG FALSE
@@ -1278,7 +1277,6 @@ BOOLEAN bta_ag_sco_is_opening(tBTA_AG_SCB *p_scb)
 *******************************************************************************/
 void bta_ag_sco_listen(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
     bta_ag_sco_event(p_scb, BTA_AG_SCO_LISTEN_E);
 }
 
@@ -1295,7 +1293,6 @@ void bta_ag_sco_listen(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 void bta_ag_sco_open(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
     UINT8 event;
-    UNUSED(p_data);
 
     /* if another scb using sco, this is a transfer */
     if (bta_ag_cb.sco.p_curr_scb != NULL && bta_ag_cb.sco.p_curr_scb != p_scb)
@@ -1323,8 +1320,6 @@ void bta_ag_sco_open(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 *******************************************************************************/
 void bta_ag_sco_close(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
-
     /* if scb is in use */
 #if (BTM_WBS_INCLUDED == TRUE )
     /* sco_idx is not allocated in SCO_CODEC_ST, we still need to move to listening state. */
@@ -1376,8 +1371,6 @@ void bta_ag_sco_codec_nego(tBTA_AG_SCB *p_scb, BOOLEAN result)
 *******************************************************************************/
 void bta_ag_sco_shutdown(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
-
     bta_ag_sco_event(p_scb, BTA_AG_SCO_SHUTDOWN_E);
 }
 
@@ -1393,8 +1386,6 @@ void bta_ag_sco_shutdown(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 *******************************************************************************/
 void bta_ag_sco_conn_open(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
-
     bta_ag_sco_event(p_scb, BTA_AG_SCO_CONN_OPEN_E);
 
     bta_sys_sco_open(BTA_ID_AG, p_scb->app_id, p_scb->peer_addr);
@@ -1425,7 +1416,6 @@ void bta_ag_sco_conn_open(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 void bta_ag_sco_conn_close(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
     UINT16 handle = bta_ag_scb_to_idx(p_scb);
-    UNUSED(p_data);
 
     /* clear current scb */
     bta_ag_cb.sco.p_curr_scb = NULL;
@@ -1570,9 +1560,6 @@ void bta_ag_sco_conn_rsp(tBTA_AG_SCB *p_scb, tBTM_ESCO_CONN_REQ_EVT_DATA *p_data
 *******************************************************************************/
 void bta_ag_ci_sco_data(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_scb);
-    UNUSED(p_data);
-
 #if (BTM_SCO_HCI_INCLUDED == TRUE )
     bta_ag_sco_event(p_scb, BTA_AG_SCO_CI_DATA_E);
 #endif

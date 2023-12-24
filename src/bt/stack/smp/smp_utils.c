@@ -26,7 +26,6 @@
 #if SMP_INCLUDED == TRUE
 
 #include "bt_types.h"
-#include "bt_utils.h"
 #include <string.h>
 #include <ctype.h>
 #include "hcidefs.h"
@@ -152,7 +151,6 @@ void smp_rsp_timeout(TIMER_LIST_ENT *p_tle)
 {
     tSMP_CB   *p_cb = &smp_cb;
     UINT8 failure = SMP_RSP_TIMEOUT;
-    UNUSED(p_tle);
 
     SMP_TRACE_EVENT1("smp_rsp_timeout state:%d", p_cb->state);
 
@@ -209,8 +207,6 @@ static BT_HDR * smp_build_confirm_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_confirm_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_CONFIRM_CMD_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -236,8 +232,6 @@ static BT_HDR * smp_build_rand_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_rand_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_INIT_CMD_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -263,8 +257,6 @@ static BT_HDR * smp_build_encrypt_info_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_encrypt_info_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_ENC_INFO_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -290,8 +282,6 @@ static BT_HDR * smp_build_master_id_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_master_id_cmd ");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_MASTER_ID_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -319,9 +309,6 @@ static BT_HDR * smp_build_identity_info_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
     BT_OCTET16  irk;
-    UNUSED(cmd_code);
-    UNUSED(p_cb);
-
     SMP_TRACE_EVENT0("smp_build_identity_info_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_ID_INFO_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -349,19 +336,18 @@ static BT_HDR * smp_build_id_addr_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    BD_ADDR     static_addr;
-    UNUSED(cmd_code);
-    UNUSED(p_cb);
-
+    BT_OCTET16  irk;
     SMP_TRACE_EVENT0("smp_build_id_addr_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_ID_ADDR_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
         p = (UINT8 *)(p_buf + 1) + L2CAP_MIN_OFFSET;
 
+        BTM_GetDeviceIDRoot(irk);
+
         UINT8_TO_STREAM (p, SMP_OPCODE_ID_ADDR);
         UINT8_TO_STREAM (p, 0);     /* TODO: update with local address type */
-        BTM_GetLocalDeviceAddr(static_addr);
-        BDADDR_TO_STREAM (p, static_addr);
+        BTM_ReadConnectionAddr(p_cb->local_bda);
+        BDADDR_TO_STREAM (p, p_cb->local_bda);
 
         p_buf->offset = L2CAP_MIN_OFFSET;
         p_buf->len = SMP_ID_ADDR_SIZE;
@@ -381,8 +367,7 @@ static BT_HDR * smp_build_signing_info_cmd(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
+    //BT_OCTET16  srk; remove
     SMP_TRACE_EVENT0("smp_build_signing_info_cmd");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_SIGN_INFO_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -408,8 +393,6 @@ static BT_HDR * smp_build_pairing_fail(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_pairing_fail");
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_PAIR_FAIL_SIZE + L2CAP_MIN_OFFSET)) != NULL)
     {
@@ -435,8 +418,6 @@ static BT_HDR * smp_build_security_request(UINT8 cmd_code, tSMP_CB *p_cb)
 {
     BT_HDR      *p_buf = NULL ;
     UINT8       *p;
-    UNUSED(cmd_code);
-
     SMP_TRACE_EVENT0("smp_build_security_request");
 
     if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + 2 + L2CAP_MIN_OFFSET)) != NULL)
@@ -621,35 +602,6 @@ void smp_proc_pairing_cmpl(tSMP_CB *p_cb)
     smp_reset_control_value(p_cb);
 }
 
-/*******************************************************************************
-**
-** Function         smp_reject_unexp_pair_req
-**
-** Description      send pairing failure to an unexpected pairing request during
-**                  an active pairing process.
-**
-** Returns          void
-**
-*******************************************************************************/
-void smp_reject_unexp_pair_req(BD_ADDR bd_addr)
-{
-    BT_HDR *p_buf;
-    UINT8   *p;
-
-    if ((p_buf = (BT_HDR *)GKI_getbuf(sizeof(BT_HDR) + SMP_PAIR_FAIL_SIZE + L2CAP_MIN_OFFSET)) != NULL)
-    {
-        p = (UINT8 *)(p_buf + 1) + L2CAP_MIN_OFFSET;
-
-        UINT8_TO_STREAM (p, SMP_OPCODE_PAIRING_FAILED);
-        UINT8_TO_STREAM (p, SMP_PAIR_NOT_SUPPORT);
-
-        p_buf->offset = L2CAP_MIN_OFFSET;
-        p_buf->len = SMP_PAIR_FAIL_SIZE;
-
-        smp_send_msg_to_L2CAP(bd_addr, p_buf);
-    }
-}
-
 #if SMP_CONFORMANCE_TESTING == TRUE
 /*******************************************************************************
 **
@@ -714,20 +666,6 @@ void smp_remove_fixed_channel_disable (BOOLEAN disable)
 {
     SMP_TRACE_DEBUG1("smp_remove_fixed_channel_disable disable =%d", disable);
     smp_cb.remove_fixed_channel_disable = disable;
-}
-/*******************************************************************************
-**
-** Function         smp_skip_compare_check
-**
-** Description      This function is called to skip the compare value check
-**
-** Returns          void
-**
-*******************************************************************************/
-void smp_skip_compare_check(BOOLEAN enable)
-{
-    SMP_TRACE_DEBUG1("smp_skip_compare_check enable=%d", enable);
-    smp_cb.skip_test_compare_check = enable;
 }
 
 #endif

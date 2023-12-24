@@ -22,11 +22,9 @@
 #include <hardware/bluetooth.h>
 #include <hardware/bt_hf.h>
 #include <utils/Log.h>
-#include <sys/time.h>
 
 #include "data_types.h"
 #include "bt_types.h"
-#include "bt_utils.h"
 
 /*******************************************************************************
 **  Constants & Macros
@@ -57,14 +55,12 @@ const char* dump_property_type(bt_property_type_t type);
 const char* dump_hf_audio_state(UINT16 event);
 const char* dump_adapter_scan_mode(bt_scan_mode_t mode);
 const char* dump_thread_evt(bt_cb_thread_evt evt);
+
 const char* dump_av_conn_state(UINT16 event);
 const char* dump_av_audio_state(UINT16 event);
-const char* dump_rc_event(UINT8 event);
-const char* dump_rc_notification_event_id(UINT8 event_id);
-const char* dump_rc_pdu(UINT8 pdu);
 
 int str2bd(char *str, bt_bdaddr_t *addr);
-char *bd2str(const bt_bdaddr_t *addr, bdstr_t *bdstr);
+char *bd2str(bt_bdaddr_t *addr, bdstr_t *bdstr);
 
 UINT32 devclass2uint(DEV_CLASS dev_class);
 void uint2devclass(UINT32 dev, DEV_CLASS dev_class);

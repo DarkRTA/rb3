@@ -26,7 +26,6 @@
 #include "a2d_api.h"
 #include "a2d_sbc.h"
 #include "bta_av_sbc.h"
-#include "utl.h"
 
 typedef int (tBTA_AV_SBC_ACT)(void *p_src, void *p_dst,
                                UINT32 src_samples, UINT32 dst_samples,
@@ -426,7 +425,6 @@ UINT8 bta_av_sbc_cfg_for_cap(UINT8 *p_peer, tA2D_SBC_CIE *p_cap, tA2D_SBC_CIE *p
 {
     UINT8           status = A2D_SUCCESS;
     tA2D_SBC_CIE    peer_cie;
-    UNUSED(p_cap);
 
     /* parse peer capabilities */
     if ((status = A2D_ParsSbcInfo(&peer_cie, p_peer, TRUE)) != 0)

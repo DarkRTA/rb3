@@ -223,10 +223,6 @@ UINT16 L2CA_ConnectReq (UINT16 psm, BD_ADDR p_bd_addr)
 **                  connection establishment gets started. The callback function
 **                  will be invoked when connection establishes or fails.
 **
-**  Parameters:       PSM: L2CAP PSM for the connection
-**                    BD address of the peer
-**                   Enhaced retransmission mode configurations
-
 ** Returns          the CID of the connection, or 0 if it failed to start
 **
 *******************************************************************************/
@@ -236,12 +232,10 @@ UINT16 L2CA_ErtmConnectReq (UINT16 psm, BD_ADDR p_bd_addr, tL2CAP_ERTM_INFO *p_e
     tL2C_CCB        *p_ccb;
     tL2C_RCB        *p_rcb;
 
-    L2CAP_TRACE_API6 ("L2CA_ErtmConnectReq()  PSM: 0x%04x  BDA: %08x%04x  p_ertm_info"
-                      ": 0x%08x allowed:0x%x preferred:%d", psm,
+    L2CAP_TRACE_API6 ("L2CA_ErtmConnectReq()  PSM: 0x%04x  BDA: %08x%04x  p_ertm_info: 0x%08x allowed:0x%x preferred:%d", psm,
                       (p_bd_addr[0]<<24)+(p_bd_addr[1]<<16)+(p_bd_addr[2]<<8)+p_bd_addr[3],
                       (p_bd_addr[4]<<8)+p_bd_addr[5], p_ertm_info,
-                      (p_ertm_info) ? p_ertm_info->allowed_modes : 0,
-                      (p_ertm_info) ? p_ertm_info->preferred_mode : 0);
+                      (p_ertm_info) ? p_ertm_info->allowed_modes : 0, (p_ertm_info) ? p_ertm_info->preferred_mode : 0);
 
     /* Fail if we have not established communications with the controller */
     if (!BTM_IsDeviceUp())
@@ -257,16 +251,13 @@ UINT16 L2CA_ErtmConnectReq (UINT16 psm, BD_ADDR p_bd_addr, tL2CAP_ERTM_INFO *p_e
     }
 
     /* First, see if we already have a link to the remote */
-    /* assume all ERTM l2cap connection is going over BR/EDR for now */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr)) == NULL)
     {
         /* No link. Get an LCB and start link establishment */
-        if ( ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE, BT_TRANSPORT_BR_EDR)) == NULL)
-             /* currently use BR/EDR for ERTM mode l2cap connection */
-         ||  (l2cu_create_conn(p_lcb, BT_TRANSPORT_BR_EDR) == FALSE) )
+        if ( ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE)) == NULL)
+         ||  (l2cu_create_conn(p_lcb) == FALSE) )
         {
-            L2CAP_TRACE_WARNING2 ("L2CAP - conn not started for PSM: 0x%04x  p_lcb: 0x%08x",
-                                psm, p_lcb);
+            L2CAP_TRACE_WARNING2 ("L2CAP - conn not started for PSM: 0x%04x  p_lcb: 0x%08x", psm, p_lcb);
             return (0);
         }
     }
@@ -298,8 +289,7 @@ UINT16 L2CA_ErtmConnectReq (UINT16 psm, BD_ADDR p_bd_addr, tL2CAP_ERTM_INFO *p_e
         if (p_ccb->ertm_info.user_tx_pool_id == L2CAP_DEFAULT_ERM_POOL_ID)
             p_ccb->ertm_info.user_tx_pool_id = HCI_ACL_POOL_ID;
 
-        p_ccb->max_rx_mtu = GKI_get_pool_bufsize (p_ertm_info->user_rx_pool_id) -
-            (L2CAP_MIN_OFFSET + L2CAP_SDU_LEN_OFFSET + L2CAP_FCS_LEN);
+        p_ccb->max_rx_mtu = GKI_get_pool_bufsize (p_ertm_info->user_rx_pool_id) - (L2CAP_MIN_OFFSET + L2CAP_SDU_LEN_OFFSET + L2CAP_FCS_LEN);
     }
 
     /* If link is up, start the L2CAP connection */
@@ -322,8 +312,7 @@ UINT16 L2CA_ErtmConnectReq (UINT16 psm, BD_ADDR p_bd_addr, tL2CAP_ERTM_INFO *p_e
         p_lcb->p_pending_ccb = p_ccb;
     }
 
-    L2CAP_TRACE_API2 ("L2CAP - L2CA_conn_req(psm: 0x%04x) returned CID: 0x%04x",
-        psm, p_ccb->local_cid);
+    L2CAP_TRACE_API2 ("L2CAP - L2CA_conn_req(psm: 0x%04x) returned CID: 0x%04x", psm, p_ccb->local_cid);
 
     /* Return the local CID as our handle */
     return (p_ccb->local_cid);
@@ -341,8 +330,7 @@ UINT16 L2CA_ErtmConnectReq (UINT16 psm, BD_ADDR p_bd_addr, tL2CAP_ERTM_INFO *p_e
 ** Returns          TRUE for success, FALSE for failure
 **
 *******************************************************************************/
-BOOLEAN L2CA_ConnectRsp (BD_ADDR p_bd_addr, UINT8 id, UINT16 lcid,
-                              UINT16 result, UINT16 status)
+BOOLEAN L2CA_ConnectRsp (BD_ADDR p_bd_addr, UINT8 id, UINT16 lcid, UINT16 result, UINT16 status)
 {
     return L2CA_ErtmConnectRsp (p_bd_addr, id, lcid, result, status, NULL);
 }
@@ -365,14 +353,13 @@ BOOLEAN L2CA_ErtmConnectRsp (BD_ADDR p_bd_addr, UINT8 id, UINT16 lcid, UINT16 re
     tL2C_LCB        *p_lcb;
     tL2C_CCB        *p_ccb;
 
-    L2CAP_TRACE_API6 ("L2CA_ErtmConnectRsp()  CID: 0x%04x  Result: %d  Status: %d  BDA: %08x%04x"
-                       " p_ertm_info:0x%08x",
+    L2CAP_TRACE_API6 ("L2CA_ErtmConnectRsp()  CID: 0x%04x  Result: %d  Status: %d  BDA: %08x%04x  p_ertm_info:0x%08x",
                       lcid, result, status,
                       (p_bd_addr[0]<<24)+(p_bd_addr[1]<<16)+(p_bd_addr[2]<<8)+p_bd_addr[3],
                       (p_bd_addr[4]<<8)+p_bd_addr[5], p_ertm_info);
 
     /* First, find the link control block */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr)) == NULL)
     {
         /* No link. Get an LCB and start link establishment */
         L2CAP_TRACE_WARNING0 ("L2CAP - no LCB for L2CA_conn_rsp");
@@ -607,15 +594,15 @@ BOOLEAN  L2CA_Ping (BD_ADDR p_bd_addr, tL2CA_ECHO_RSP_CB *p_callback)
         return (FALSE);
 
     /* First, see if we already have a link to the remote */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr)) == NULL)
     {
         /* No link. Get an LCB and start link establishment */
-        if ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE, BT_TRANSPORT_BR_EDR)) == NULL)
+        if ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE)) == NULL)
         {
             L2CAP_TRACE_WARNING0 ("L2CAP - no LCB for L2CA_ping");
             return (FALSE);
         }
-        if (l2cu_create_conn(p_lcb, BT_TRANSPORT_BR_EDR) == FALSE)
+        if (l2cu_create_conn(p_lcb) == FALSE)
         {
             return (FALSE);
         }
@@ -683,7 +670,7 @@ BOOLEAN  L2CA_Echo (BD_ADDR p_bd_addr, BT_HDR *p_data, tL2CA_ECHO_DATA_CB *p_cal
     }
 
     /* We assume the upper layer will call this function only when the link is established. */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (p_bd_addr)) == NULL)
     {
         L2CAP_TRACE_ERROR0 ("L2CA_Echo ERROR : link not established");
         return FALSE;
@@ -780,7 +767,7 @@ BOOLEAN L2CA_SetIdleTimeoutByBdAddr(BD_ADDR bd_addr, UINT16 timeout)
 
     if (memcmp (BT_BD_ANY, bd_addr, BD_ADDR_LEN))
     {
-        p_lcb = l2cu_find_lcb_by_bd_addr( bd_addr, BT_TRANSPORT_BR_EDR);
+        p_lcb = l2cu_find_lcb_by_bd_addr( bd_addr );
         if ((p_lcb) && (p_lcb->in_use) && (p_lcb->link_state == LST_CONNECTED))
             p_lcb->idle_timeout = timeout;
         else
@@ -893,7 +880,7 @@ UINT16 L2CA_LocalLoopbackReq (UINT16 psm, UINT16 handle, BD_ADDR p_bd_addr)
         return (0);
     }
 
-    if ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_allocate_lcb (p_bd_addr, FALSE)) == NULL)
     {
         L2CAP_TRACE_WARNING0 ("L2CAP - no LCB for L2CA_conn_req");
         return (0);
@@ -1142,7 +1129,7 @@ BOOLEAN L2CA_SetFlushTimeout (BD_ADDR bd_addr, UINT16 flush_tout)
 
     if (memcmp (BT_BD_ANY, bd_addr, BD_ADDR_LEN))
     {
-        p_lcb = l2cu_find_lcb_by_bd_addr (bd_addr, BT_TRANSPORT_BR_EDR);
+        p_lcb = l2cu_find_lcb_by_bd_addr (bd_addr);
 
         if ((p_lcb) && (p_lcb->in_use) && (p_lcb->link_state == LST_CONNECTED))
         {
@@ -1208,7 +1195,7 @@ BOOLEAN L2CA_GetPeerFeatures (BD_ADDR bd_addr, UINT32 *p_ext_feat, UINT8 *p_chnl
     tL2C_LCB        *p_lcb;
 
     /* We must already have a link to the remote */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (bd_addr, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (bd_addr)) == NULL)
     {
         L2CAP_TRACE_WARNING2 ("L2CA_GetPeerFeatures() No BDA: %08x%04x",
                               (bd_addr[0]<<24)+(bd_addr[1]<<16)+(bd_addr[2]<<8)+bd_addr[3],
@@ -1320,8 +1307,9 @@ BOOLEAN  L2CA_RegisterFixedChannel (UINT16 fixed_cid, tL2CAP_FIXED_CHNL_REG *p_f
 BOOLEAN L2CA_ConnectFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
 {
     tL2C_LCB        *p_lcb;
-    tBT_TRANSPORT   transport = BT_TRANSPORT_BR_EDR;
+#if BLE_INCLUDED == TRUE
     UINT16          reason;
+#endif
 
     L2CAP_TRACE_API3  ("L2CA_ConnectFixedChnl()  CID: 0x%04x  BDA: %08x%04x", fixed_cid,
                     (rem_bda[0]<<24)+(rem_bda[1]<<16)+(rem_bda[2]<<8)+rem_bda[3], (rem_bda[4]<<8)+rem_bda[5]);
@@ -1341,58 +1329,39 @@ BOOLEAN L2CA_ConnectFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
         return (FALSE);
     }
 
-#if BLE_INCLUDED == TRUE
-    if (fixed_cid >= L2CAP_ATT_CID && fixed_cid <= L2CAP_SMP_CID)
-        transport = BT_TRANSPORT_LE;
-#endif
-
     /* If we already have a link to the remote, check if it supports that CID */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, transport)) != NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) != NULL)
     {
         if (!(p_lcb->peer_chnl_mask[0] & (1 << fixed_cid)))
         {
-            L2CAP_TRACE_EVENT3  ("L2CA_ConnectFixedChnl() CID:0x%04x  BDA: %08x%04x not supported",
-                fixed_cid,(rem_bda[0]<<24)+(rem_bda[1]<<16)+(rem_bda[2]<<8)+rem_bda[3],
-                (rem_bda[4]<<8)+rem_bda[5]);
+            L2CAP_TRACE_EVENT3  ("L2CA_ConnectFixedChnl()  CID: 0x%04x  BDA: %08x%04x not supported", fixed_cid,
+                                (rem_bda[0]<<24)+(rem_bda[1]<<16)+(rem_bda[2]<<8)+rem_bda[3], (rem_bda[4]<<8)+rem_bda[5]);
             return (FALSE);
         }
         /* Get a CCB and link the lcb to it */
-        if (!l2cu_initialize_fixed_ccb (p_lcb, fixed_cid,
-            &l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].fixed_chnl_opts))
+        if (!l2cu_initialize_fixed_ccb (p_lcb, fixed_cid, &l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].fixed_chnl_opts))
         {
             L2CAP_TRACE_WARNING1 ("L2CA_ConnectFixedChnl(0x%04x) - LCB but no CCB", fixed_cid);
             return (FALSE);
         }
-
-        /* racing with disconnecting, queue the connection request */
-        if (p_lcb->link_state == LST_DISCONNECTING)
-        {
-            L2CAP_TRACE_DEBUG0 ("L2CAP API - link disconnecting: RETRY LATER");
-            /* Save ccb so it can be started after disconnect is finished */
-            p_lcb->p_pending_ccb = p_lcb->p_fixed_ccbs[fixed_cid - L2CAP_FIRST_FIXED_CHNL];
-            return (TRUE);
-        }
-
 #if BLE_INCLUDED == TRUE
-        (*l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedConn_Cb)
-        (p_lcb->remote_bd_addr, TRUE, 0, p_lcb->transport);
+        reason = (p_lcb->is_ble_link) ? 1: 0;
+        (*l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedConn_Cb)(p_lcb->remote_bd_addr, TRUE, reason);
 #else
-        (*l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedConn_Cb)
-        (p_lcb->remote_bd_addr, TRUE, 0, BT_TRANSPORT_BR_EDR);
+        (*l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedConn_Cb)(p_lcb->remote_bd_addr, TRUE, 0);
 #endif
         return (TRUE);
     }
 
     /* No link. Get an LCB and start link establishment */
-    if ((p_lcb = l2cu_allocate_lcb (rem_bda, FALSE, transport)) == NULL)
+    if ((p_lcb = l2cu_allocate_lcb (rem_bda, FALSE)) == NULL)
     {
         L2CAP_TRACE_WARNING1 ("L2CA_ConnectFixedChnl(0x%04x) - no LCB", fixed_cid);
         return (FALSE);
     }
 
     /* Get a CCB and link the lcb to it */
-    if (!l2cu_initialize_fixed_ccb (p_lcb, fixed_cid,
-        &l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].fixed_chnl_opts))
+    if (!l2cu_initialize_fixed_ccb (p_lcb, fixed_cid, &l2cb.fixed_reg[fixed_cid - L2CAP_FIRST_FIXED_CHNL].fixed_chnl_opts))
     {
         p_lcb->disc_reason = L2CAP_CONN_NO_RESOURCES;
         L2CAP_TRACE_WARNING1 ("L2CA_ConnectFixedChnl(0x%04x) - no CCB", fixed_cid);
@@ -1400,7 +1369,7 @@ BOOLEAN L2CA_ConnectFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
         return (FALSE);
     }
 
-    return (l2cu_create_conn(p_lcb, transport));
+    return (l2cu_create_conn(p_lcb));
 }
 
 /*******************************************************************************
@@ -1420,15 +1389,9 @@ BOOLEAN L2CA_ConnectFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
 UINT16 L2CA_SendFixedChnlData (UINT16 fixed_cid, BD_ADDR rem_bda, BT_HDR *p_buf)
 {
     tL2C_LCB        *p_lcb;
-    tBT_TRANSPORT   transport = BT_TRANSPORT_BR_EDR;
 
     L2CAP_TRACE_API3 ("L2CA_SendFixedChnlData()  CID: 0x%04x  BDA: %08x%04x", fixed_cid,
                      (rem_bda[0]<<24)+(rem_bda[1]<<16)+(rem_bda[2]<<8)+rem_bda[3], (rem_bda[4]<<8)+rem_bda[5]);
-
-#if BLE_INCLUDED == TRUE
-    if (fixed_cid >= L2CAP_ATT_CID && fixed_cid <= L2CAP_SMP_CID)
-        transport = BT_TRANSPORT_LE;
-#endif
 
     /* Check CID is valid and registered */
     if ( (fixed_cid < L2CAP_FIRST_FIXED_CHNL) || (fixed_cid > L2CAP_LAST_FIXED_CHNL)
@@ -1446,9 +1409,7 @@ UINT16 L2CA_SendFixedChnlData (UINT16 fixed_cid, BD_ADDR rem_bda, BT_HDR *p_buf)
     }
 
     /* We need to have a link up */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, transport)) == NULL ||
-        /* if link is disconnecting, also report data sending failure */
-        p_lcb->link_state == LST_DISCONNECTING)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
     {
         L2CAP_TRACE_WARNING1 ("L2CA_SendFixedChnlData(0x%04x) - no LCB", fixed_cid);
         return (L2CAP_DW_FAILED);
@@ -1502,7 +1463,6 @@ BOOLEAN L2CA_RemoveFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
 {
     tL2C_LCB    *p_lcb;
     tL2C_CCB    *p_ccb;
-    tBT_TRANSPORT   transport = BT_TRANSPORT_BR_EDR;
 
     /* Check CID is valid and registered */
     if ( (fixed_cid < L2CAP_FIRST_FIXED_CHNL) || (fixed_cid > L2CAP_LAST_FIXED_CHNL)
@@ -1512,14 +1472,8 @@ BOOLEAN L2CA_RemoveFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
         return (FALSE);
     }
 
-#if BLE_INCLUDED == TRUE
-    if (fixed_cid >= L2CAP_ATT_CID && fixed_cid <= L2CAP_SMP_CID)
-        transport = BT_TRANSPORT_LE;
-#endif
-
     /* Is a fixed channel connected to the remote BDA ?*/
-    p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, transport);
-
+    p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda);
     if ( ((p_lcb) == NULL) || (!p_lcb->p_fixed_ccbs[fixed_cid - L2CAP_FIRST_FIXED_CHNL]) )
     {
         L2CAP_TRACE_WARNING3 ("L2CA_RemoveFixedChnl()  CID: 0x%04x  BDA: %08x%04x not connected", fixed_cid,
@@ -1535,19 +1489,6 @@ BOOLEAN L2CA_RemoveFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
 
     p_lcb->p_fixed_ccbs[fixed_cid - L2CAP_FIRST_FIXED_CHNL] = NULL;
     p_lcb->disc_reason = HCI_ERR_CONN_CAUSE_LOCAL_HOST;
-
-#if BLE_INCLUDED == TRUE
-    /* retain the link for a few more seconds after SMP pairing is done, since Android
-    platformalways do service discovery after pairing complete. This way would avoid
-    the link down (pairing is complete) and an immediate reconnection for service
-    discovery. Some devices do not do auto advertising when link is dropped, thus fail
-    the second connection and service discovery.
-    BEFORE :if ((fixed_cid == L2CAP_ATT_CID || fixed_cid == L2CAP_SMP_CID)
-                       && !p_lcb->ccb_queue.p_first_ccb)*/
-    if ((fixed_cid == L2CAP_ATT_CID ) && !p_lcb->ccb_queue.p_first_ccb)
-        p_lcb->idle_timeout = 0;
-#endif
-
     l2cu_release_ccb (p_ccb);
 
     return (TRUE);
@@ -1573,15 +1514,9 @@ BOOLEAN L2CA_RemoveFixedChnl (UINT16 fixed_cid, BD_ADDR rem_bda)
 BOOLEAN L2CA_SetFixedChannelTout (BD_ADDR rem_bda, UINT16 fixed_cid, UINT16 idle_tout)
 {
     tL2C_LCB        *p_lcb;
-    tBT_TRANSPORT   transport = BT_TRANSPORT_BR_EDR;
-
-#if BLE_INCLUDED == TRUE
-    if (fixed_cid >= L2CAP_ATT_CID && fixed_cid <= L2CAP_SMP_CID)
-        transport = BT_TRANSPORT_LE;
-#endif
 
     /* Is a fixed channel connected to the remote BDA ?*/
-    p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, transport);
+    p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda);
     if ( ((p_lcb) == NULL) || (!p_lcb->p_fixed_ccbs[fixed_cid - L2CAP_FIRST_FIXED_CHNL]) )
     {
         L2CAP_TRACE_WARNING3 ("L2CA_SetFixedChannelTout()  CID: 0x%04x  BDA: %08x%04x not connected", fixed_cid,
@@ -1673,7 +1608,7 @@ BOOLEAN L2CA_RegForNoCPEvt(tL2CA_NOCP_CB *p_cb, BD_ADDR p_bda)
     tL2C_LCB        *p_lcb;
 
     /* Find the link that is associated with this remote bdaddr */
-    p_lcb = l2cu_find_lcb_by_bd_addr (p_bda, BT_TRANSPORT_BR_EDR);
+    p_lcb = l2cu_find_lcb_by_bd_addr (p_bda);
 
     /* If no link for this handle, nothing to do. */
     if (!p_lcb)

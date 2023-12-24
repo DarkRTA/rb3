@@ -27,7 +27,6 @@
 #include <stdio.h>
 
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "gki.h"
 #include "l2cdefs.h"
 #include "hcidefs.h"
@@ -245,8 +244,6 @@ BOOLEAN SDP_ServiceSearchAttributeRequest2 (UINT8 *p_bd_addr, tSDP_DISCOVERY_DB 
 #if SDP_CLIENT_ENABLED == TRUE
 void SDP_SetIdleTimeout (BD_ADDR addr, UINT16 timeout)
 {
-    UNUSED(addr);
-    UNUSED(timeout);
 }
 #endif
 
@@ -354,22 +351,12 @@ BOOLEAN SDP_FindServiceUUIDInRec(tSDP_DISC_REC *p_rec, tBT_UUID * p_uuid)
             {
                 if (SDP_DISC_ATTR_TYPE(p_sattr->attr_len_type) == UUID_DESC_TYPE)
                 {
-                    if (SDP_DISC_ATTR_LEN(p_sattr->attr_len_type) == LEN_UUID_16)
+                    /* only support 16 bits UUID for now */
+                    if (SDP_DISC_ATTR_LEN(p_sattr->attr_len_type) == 2)
                     {
-                        p_uuid->len = LEN_UUID_16;
+                        p_uuid->len = 2;
                         p_uuid->uu.uuid16 = p_sattr->attr_value.v.u16;
                     }
-                    else if (SDP_DISC_ATTR_LEN(p_sattr->attr_len_type) == LEN_UUID_128)
-                    {
-                        p_uuid->len = LEN_UUID_128;
-                        memcpy(p_uuid->uu.uuid128, p_sattr->attr_value.v.array, LEN_UUID_128);
-                    }
-                    else if (SDP_DISC_ATTR_LEN(p_sattr->attr_len_type) == LEN_UUID_32)
-                    {
-                        p_uuid->len = LEN_UUID_32;
-                        p_uuid->uu.uuid32 = p_sattr->attr_value.v.u32;
-                    }
-
                     return(TRUE);
                 }
 
@@ -463,7 +450,7 @@ BOOLEAN SDP_FindServiceUUIDInRec_128bit(tSDP_DISC_REC *p_rec, tBT_UUID * p_uuid)
                 && (SDP_DISC_ATTR_LEN(p_attr->attr_len_type) == 16))
             {
                 p_uuid->len = 16;
-                memcpy(p_uuid->uu.uuid128, p_attr->attr_value.v.array, MAX_UUID_SIZE);
+                memcpy(p_uuid->uu.uuid128, p_sattr->attr_value.v.array, MAX_UUID_SIZE);
                 return(TRUE);
             }
         }
@@ -513,12 +500,12 @@ tSDP_DISC_REC *SDP_FindServiceInDb (tSDP_DISCOVERY_DB *p_db, UINT16 service_uuid
 
                     if ((SDP_DISC_ATTR_TYPE(p_sattr->attr_len_type) == UUID_DESC_TYPE)
                      && (SDP_DISC_ATTR_LEN(p_sattr->attr_len_type) == 2) ) {
-                        SDP_TRACE_DEBUG2("SDP_FindServiceInDb - p_sattr value = 0x%x serviceuuid = 0x%x\r\n", p_sattr->attr_value.v.u16, service_uuid);
+                        printf("SDP_FindServiceInDb - p_sattr value = 0x%x serviceuuid = 0x%x\r\n", p_sattr->attr_value.v.u16, service_uuid);
                         if(service_uuid == UUID_SERVCLASS_HDP_PROFILE)
                         {
-                            if( (p_sattr->attr_value.v.u16==UUID_SERVCLASS_HDP_SOURCE) || ( p_sattr->attr_value.v.u16==UUID_SERVCLASS_HDP_SINK))
+                            if( (p_sattr->attr_value.v.u16==UUID_SERVCLASS_HDP_SOURCE) || ( p_sattr->attr_value.v.u16==UUID_SERVCLASS_HDP_SOURCE))
                             {
-                                SDP_TRACE_DEBUG0("SDP_FindServiceInDb found HDP source or sink\n" );
+                                printf("SDP_FindServiceInDb found HDP source or sink\n" );
                                 return (p_rec);
                             }
                         }
@@ -560,6 +547,12 @@ tSDP_DISC_REC *SDP_FindServiceInDb (tSDP_DISCOVERY_DB *p_db, UINT16 service_uuid
             }
             else if (p_attr->attr_id == ATTR_ID_SERVICE_ID)
             {
+                if ((SDP_DISC_ATTR_TYPE(p_attr->attr_len_type) == UUID_DESC_TYPE)
+                    && (SDP_DISC_ATTR_LEN(p_attr->attr_len_type) == 2))
+                {
+                    printf("SDP_FindServiceInDb - p_attr value = 0x%x serviceuuid= 0x%x \r\n", p_attr->attr_value.v.u16, service_uuid);
+                }
+
                 if ((SDP_DISC_ATTR_TYPE(p_attr->attr_len_type) == UUID_DESC_TYPE)
                     && (SDP_DISC_ATTR_LEN(p_attr->attr_len_type) == 2)
                     /* find a specific UUID or anyone */
@@ -686,14 +679,14 @@ tSDP_DISC_REC *SDP_FindServiceUUIDInDb (tSDP_DISCOVERY_DB *p_db, tBT_UUID *p_uui
                     if (SDP_DISC_ATTR_TYPE(p_sattr->attr_len_type) == UUID_DESC_TYPE)
                     {
 
-                        SDP_TRACE_DEBUG1("uuid len=%d ", p_uuid->len);
+                        printf("uuid len=%d ", p_uuid->len);
                         if (p_uuid->len == 2)
                         {
-                            SDP_TRACE_DEBUG1("uuid=0x%x \n", p_uuid->uu.uuid16);
+                            printf("uuid=0x%x \n", p_uuid->uu.uuid16);
                         }
                         else
                         {
-                            SDP_TRACE_DEBUG0("\n");
+                            printf("\n");
                         }
 
                         if (sdpu_compare_uuid_with_attr (p_uuid, p_sattr))
@@ -992,34 +985,6 @@ UINT8 SDP_GetNumDiRecords( tSDP_DISCOVERY_DB *p_db )
 
 /*******************************************************************************
 **
-** Function         SDP_AttrStringCopy
-**
-** Description      This function copy given attribute to specified buffer as a string
-**
-** Returns          none
-**
-*******************************************************************************/
-static void SDP_AttrStringCopy(char *dst, tSDP_DISC_ATTR *p_attr, UINT16 dst_size)
-{
-    if ( dst == NULL ) return;
-    if ( p_attr )
-    {
-        UINT16 len = SDP_DISC_ATTR_LEN(p_attr->attr_len_type);
-        if ( len > dst_size - 1 )
-        {
-            len = dst_size - 1;
-        }
-        memcpy(dst, (char *)p_attr->attr_value.v.array, len);
-        dst[len] = '\0';
-    }
-    else
-    {
-        dst[0] = '\0';
-    }
-}
-
-/*******************************************************************************
-**
 ** Function         SDP_GetDiRecord
 **
 ** Description      This function retrieves a remote device's DI record from
@@ -1059,16 +1024,27 @@ UINT16 SDP_GetDiRecord( UINT8 get_record_index, tSDP_DI_GET_RECORD *p_device_inf
 
         /* ClientExecutableURL is optional */
         p_curr_attr = SDP_FindAttributeInRec( p_curr_record, ATTR_ID_CLIENT_EXE_URL );
-        SDP_AttrStringCopy( p_device_info->rec.client_executable_url, p_curr_attr,
-                            SDP_MAX_ATTR_LEN );
+        if ( p_curr_attr )
+            BCM_STRNCPY_S( p_device_info->rec.client_executable_url, sizeof(p_device_info->rec.client_executable_url),
+                           (char *)p_curr_attr->attr_value.v.array, SDP_MAX_ATTR_LEN );
+        else
+            p_device_info->rec.client_executable_url[0] = '\0';
 
         /* Service Description is optional */
         p_curr_attr = SDP_FindAttributeInRec( p_curr_record, ATTR_ID_SERVICE_DESCRIPTION );
-        SDP_AttrStringCopy( p_device_info->rec.service_description, p_curr_attr, SDP_MAX_ATTR_LEN );
+        if ( p_curr_attr )
+            BCM_STRNCPY_S( p_device_info->rec.service_description, sizeof(p_device_info->rec.service_description),
+                           (char *)p_curr_attr->attr_value.v.array, SDP_MAX_ATTR_LEN );
+        else
+            p_device_info->rec.service_description[0] = '\0';
 
         /* DocumentationURL is optional */
         p_curr_attr = SDP_FindAttributeInRec( p_curr_record, ATTR_ID_DOCUMENTATION_URL );
-        SDP_AttrStringCopy( p_device_info->rec.documentation_url, p_curr_attr, SDP_MAX_ATTR_LEN );
+        if ( p_curr_attr )
+            BCM_STRNCPY_S( p_device_info->rec.documentation_url, sizeof(p_device_info->rec.documentation_url),
+                           (char *)p_curr_attr->attr_value.v.array, SDP_MAX_ATTR_LEN );
+        else
+            p_device_info->rec.documentation_url[0] = '\0';
 
         p_curr_attr = SDP_FindAttributeInRec( p_curr_record, ATTR_ID_SPECIFICATION_ID );
         if ( p_curr_attr )

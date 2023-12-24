@@ -436,10 +436,10 @@ void bta_av_ssm_execute(tBTA_AV_SCB *p_scb, UINT16 event, tBTA_AV_DATA *p_data)
     }
 
 #if (defined(BTA_AV_DEBUG) && BTA_AV_DEBUG == TRUE)
-    APPL_TRACE_VERBOSE5("AV Sevent(0x%x)=0x%x(%s) state=%d(%s)",
+    APPL_TRACE_EVENT5("AV Sevent(0x%x)=0x%x(%s) state=%d(%s)",
         p_scb->hndl, event, bta_av_evt_code(event), p_scb->state, bta_av_sst_code(p_scb->state));
 #else
-    APPL_TRACE_VERBOSE2("AV Sevent=0x%x state=%d", event, p_scb->state);
+    APPL_TRACE_EVENT2("AV Sevent=0x%x state=%d", event, p_scb->state);
 #endif
 
     /* look up the state table for the current state */

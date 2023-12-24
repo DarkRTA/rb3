@@ -179,6 +179,12 @@ cflags_zlib = [
     "-pool on"
 ]
 
+cflags_bt = [
+    *cflags_base,
+    *cflags_rb3,
+    "-str reuse"
+]
+
 
 # Metrowerks library flags
 cflags_runtime = [
@@ -424,12 +430,14 @@ config.libs = [
         ],
     },
     {
-        "lib": "l2cap",
+        "lib": "bt",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": cflags_bt,
         "host": False,
         "objects": [
-            Object(NonMatching, "bt/stack/l2cap/l2c_utils.c")
+            Object(NonMatching, "bt/stack/l2cap/l2c_utils.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_main.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_link.c")
         ]
     },
     # anything below this line does not need to be decompiled

@@ -23,7 +23,7 @@
 
 #include "sdp_api.h"
 #include "bta_hl_int.h"
-#include "utl.h"
+
 
 /*******************************************************************************
 **
@@ -157,206 +157,6 @@ BOOLEAN bta_hl_add_sup_feature_list (UINT32 handle, UINT16 num_elem,
     }
     return result;
 }
-
-/*****************************************************************************
-**
-**  Function:    bta_hl_sdp_update
-**
-**  Purpose:     Register an HDP application with SDP
-**
-**  Parameters:
-**
-**  Returns:     void
-**
-*****************************************************************************/
-tBTA_HL_STATUS bta_hl_sdp_update (UINT8 app_id)
-{
-    UINT16                          svc_class_id_list[BTA_HL_NUM_SVC_ELEMS];
-    tSDP_PROTOCOL_ELEM              proto_elem_list[BTA_HL_NUM_PROTO_ELEMS];
-    tSDP_PROTO_LIST_ELEM            add_proto_list;
-    tBTA_HL_SUP_FEATURE_LIST_ELEM   sup_feature_list;
-    UINT16                          browse_list[] = {UUID_SERVCLASS_PUBLIC_BROWSE_GROUP};
-    UINT8                           i,j, cnt,mdep_id, mdep_role;
-    UINT8                           data_exchange_spec = BTA_HL_SDP_IEEE_11073_20601;
-    UINT8                           mcap_sup_proc = BTA_HL_MCAP_SUP_PROC_MASK;
-    UINT16                          profile_uuid = UUID_SERVCLASS_HDP_PROFILE;
-    UINT16                          version = BTA_HL_VERSION_01_00;
-    UINT8                           num_services=1;
-    tBTA_HL_APP_CB                  *p_cb = BTA_HL_GET_APP_CB_PTR(0);
-    BOOLEAN                         result = TRUE;
-    tBTA_HL_STATUS                  status = BTA_HL_STATUS_OK;
-    UNUSED(app_id);
-
-    if ((p_cb->sup_feature.app_role_mask == BTA_HL_MDEP_ROLE_MASK_SOURCE) &&
-        (!p_cb->sup_feature.advertize_source_sdp))
-    {
-        return BTA_HL_STATUS_OK;
-    }
-
-    num_services=1;
-    svc_class_id_list[0]= UUID_SERVCLASS_HDP_SOURCE;
-    if (p_cb->sup_feature.app_role_mask == BTA_HL_MDEP_ROLE_MASK_SINK)
-    {
-        svc_class_id_list[0]= UUID_SERVCLASS_HDP_SINK;
-    }
-    else
-    {
-        if (p_cb->sup_feature.app_role_mask != BTA_HL_MDEP_ROLE_MASK_SOURCE)
-        {
-            /* dual role */
-            num_services=2;
-            svc_class_id_list[1]= UUID_SERVCLASS_HDP_SINK;
-        }
-    }
-    result &= SDP_AddServiceClassIdList(p_cb->sdp_handle, num_services, svc_class_id_list);
-
-    if (result)
-    {
-        /* add the protocol element sequence */
-        proto_elem_list[0].protocol_uuid = UUID_PROTOCOL_L2CAP;
-        proto_elem_list[0].num_params = 1;
-        proto_elem_list[0].params[0] = p_cb->ctrl_psm;
-        proto_elem_list[1].protocol_uuid = UUID_PROTOCOL_MCAP_CTRL;
-        proto_elem_list[1].num_params = 1;
-        proto_elem_list[1].params[0] = version;
-        result &= SDP_AddProtocolList(p_cb->sdp_handle, BTA_HL_NUM_PROTO_ELEMS, proto_elem_list);
-
-        result &= SDP_AddProfileDescriptorList(p_cb->sdp_handle, profile_uuid, version);
-    }
-
-    if (result)
-    {
-        add_proto_list.num_elems = BTA_HL_NUM_ADD_PROTO_ELEMS;
-        add_proto_list.list_elem[0].protocol_uuid = UUID_PROTOCOL_L2CAP;
-        add_proto_list.list_elem[0].num_params = 1;
-        add_proto_list.list_elem[0].params[0] = p_cb->data_psm;
-        add_proto_list.list_elem[1].protocol_uuid = UUID_PROTOCOL_MCAP_DATA;
-        add_proto_list.list_elem[1].num_params = 0;
-        result &= SDP_AddAdditionProtoLists(p_cb->sdp_handle, BTA_HL_NUM_ADD_PROTO_LISTS,
-                                            (tSDP_PROTO_LIST_ELEM *)&add_proto_list);
-    }
-
-    if (result)
-    {
-        if (p_cb->srv_name[0] )
-        {
-            result &= SDP_AddAttribute(p_cb->sdp_handle,
-                                       (UINT16)ATTR_ID_SERVICE_NAME,
-                                       (UINT8)TEXT_STR_DESC_TYPE,
-                                       (UINT32)(strlen(p_cb->srv_name) + 1),
-                                       (UINT8 *)p_cb->srv_name);
-        } /* end of setting optional service name */
-    }
-
-    if (result)
-    {
-        if (p_cb->srv_desp[0] )
-        {
-            result &= SDP_AddAttribute(p_cb->sdp_handle,
-                                       (UINT16)ATTR_ID_SERVICE_DESCRIPTION,
-                                       (UINT8)TEXT_STR_DESC_TYPE,
-                                       (UINT32)(strlen(p_cb->srv_desp) + 1),
-                                       (UINT8 *)p_cb->srv_desp);
-
-        } /* end of setting optional service description */
-
-    }
-
-    if (result)
-    {
-        if (p_cb->provider_name[0] )
-        {
-            result &= SDP_AddAttribute(p_cb->sdp_handle,
-                                       (UINT16)ATTR_ID_PROVIDER_NAME,
-                                       (UINT8)TEXT_STR_DESC_TYPE,
-                                       (UINT32)(strlen(p_cb->provider_name) + 1),
-                                       (UINT8 *)p_cb->provider_name);
-        } /* end of setting optional provider name */
-    }
-
-    /* add supported feture list */
-
-    if (result)
-    {
-        cnt=0;
-        for (i=1; i< BTA_HL_NUM_MDEPS; i++)
-        {
-            if (p_cb->sup_feature.mdep[i].mdep_id)
-            {
-                mdep_id = (UINT8)p_cb->sup_feature.mdep[i].mdep_id;
-                mdep_role = (UINT8)p_cb->sup_feature.mdep[i].mdep_cfg.mdep_role;
-
-                APPL_TRACE_DEBUG1("num_of_mdep_data_types %d ", p_cb->sup_feature.mdep[i].mdep_cfg.num_of_mdep_data_types);
-                for (j=0; j<p_cb->sup_feature.mdep[i].mdep_cfg.num_of_mdep_data_types; j++)
-                {
-                    sup_feature_list.list_elem[cnt].mdep_id = mdep_id;
-                    sup_feature_list.list_elem[cnt].mdep_role = mdep_role;
-                    sup_feature_list.list_elem[cnt].data_type = p_cb->sup_feature.mdep[i].mdep_cfg.data_cfg[j].data_type;
-                    if (p_cb->sup_feature.mdep[i].mdep_cfg.data_cfg[j].desp[0] != '\0')
-                    {
-                        sup_feature_list.list_elem[cnt].p_mdep_desp = p_cb->sup_feature.mdep[i].mdep_cfg.data_cfg[j].desp;
-                    }
-                    else
-                    {
-                        sup_feature_list.list_elem[cnt].p_mdep_desp = NULL;
-                    }
-
-                    cnt++;
-                    if (cnt==BTA_HL_NUM_SUP_FEATURE_ELEMS)
-                    {
-                        result = FALSE;
-                        break;
-                    }
-                }
-            }
-        }
-        sup_feature_list.num_elems = cnt;
-        result &=   bta_hl_add_sup_feature_list (p_cb->sdp_handle,
-                                                 sup_feature_list.num_elems,
-                                                 sup_feature_list.list_elem);
-    }
-    if (result)
-    {
-        result &= SDP_AddAttribute(p_cb->sdp_handle, ATTR_ID_HDP_DATA_EXCH_SPEC, UINT_DESC_TYPE,
-                                   (UINT32)1, (UINT8*)&data_exchange_spec);
-    }
-
-    if (result)
-    {
-
-        result &= SDP_AddAttribute(p_cb->sdp_handle, ATTR_ID_HDP_MCAP_SUP_PROC, UINT_DESC_TYPE,
-                                   (UINT32)1, (UINT8*)&mcap_sup_proc);
-    }
-
-    if (result)
-    {
-        result &= SDP_AddUuidSequence(p_cb->sdp_handle, ATTR_ID_BROWSE_GROUP_LIST, 1, browse_list);
-    }
-
-    if (result)
-    {
-        for(i=0; i < num_services; i++)
-        {
-            bta_sys_add_uuid(svc_class_id_list[i]);
-            APPL_TRACE_DEBUG2("dbg bta_sys_add_uuid i=%d uuid=0x%x", i, svc_class_id_list[i]); //todo
-        }
-    }
-    else
-    {
-        if (p_cb->sdp_handle)
-        {
-            SDP_DeleteRecord(p_cb->sdp_handle);
-            p_cb->sdp_handle = 0;
-        }
-        status = BTA_HL_STATUS_SDP_FAIL;
-    }
-#if BTA_HL_DEBUG == TRUE
-    APPL_TRACE_DEBUG1("bta_hl_sdp_update status=%s", bta_hl_status_code(status));
-#endif
-    return status;
-}
-
-
 /*****************************************************************************
 **
 **  Function:    bta_hl_sdp_register
@@ -510,7 +310,7 @@ tBTA_HL_STATUS bta_hl_sdp_register (UINT8 app_idx)
                 }
 
                 cnt++;
-                if (cnt==BTA_HL_NUM_SUP_FEATURE_ELEMS)
+                if (cnt>BTA_HL_NUM_SUP_FEATURE_ELEMS)
                 {
                     result = FALSE;
                     break;

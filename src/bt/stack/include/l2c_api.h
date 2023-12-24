@@ -123,6 +123,16 @@ typedef UINT8 tL2CAP_CHNL_DATA_RATE;
 #define L2C_INVALID_PSM(psm)    (((psm) & 0x0101) != 0x0001)
 #define L2C_IS_VALID_PSM(psm)   (((psm) & 0x0101) == 0x0001)
 
+#if (BLE_INCLUDED == TRUE)
+#define L2CAP_LE_INT_MIN            0x0006
+#define L2CAP_LE_INT_MAX            0x0C80
+#define L2CAP_LE_LATENCY_MAX        500
+#define L2CAP_LE_TIMEOUT_MIN        0x000a
+#define L2CAP_LE_TIMEOUT_MAX        0x0C80
+#define L2CAP_LE_TIMEOUT_DEFAULT    0x07D0
+#endif
+
+
 /*****************************************************************************
 **  Type Definitions
 *****************************************************************************/
@@ -647,7 +657,7 @@ L2C_API extern BOOLEAN L2CA_FlowControl (UINT16 cid, BOOLEAN data_enabled);
 ** Returns          TRUE if valid Channel, else FALSE
 **
 *******************************************************************************/
-L2C_API extern BOOLEAN L2CA_SendTestSFrame (UINT16 cid, UINT8 sup_type,
+L2C_API extern BOOLEAN L2CA_SendTestSFrame (UINT16 cid, BOOLEAN rr_or_rej,
                                             UINT8 back_track);
 
 /*******************************************************************************
@@ -919,9 +929,8 @@ L2C_API extern BOOLEAN L2CA_UCDSetTxPriority ( BD_ADDR rem_bda, tL2CAP_CHNL_PRIO
 **      BD Address of remote
 **      TRUE if channel is connected, FALSE if disconnected
 **      Reason for connection failure
-**      transport : physical transport, BR/EDR or LE
 */
-typedef void (tL2CA_FIXED_CHNL_CB) (BD_ADDR, BOOLEAN, UINT16, tBT_TRANSPORT);
+typedef void (tL2CA_FIXED_CHNL_CB) (BD_ADDR, BOOLEAN, UINT16);
 
 /* Signalling data received. Parameters are
 **      BD Address of remote
@@ -1129,8 +1138,7 @@ L2C_API extern BOOLEAN L2CA_CancelBleConnectReq (BD_ADDR rem_bda);
 **  Return value:   TRUE if update started
 **
 *******************************************************************************/
-L2C_API extern BOOLEAN L2CA_UpdateBleConnParams (BD_ADDR rem_bdRa, UINT16 min_int,
-                                                          UINT16 max_int, UINT16 latency, UINT16 timeout);
+L2C_API extern BOOLEAN L2CA_UpdateBleConnParams (BD_ADDR rem_bdRa, UINT16 min_int, UINT16 max_int, UINT16 latency, UINT16 timeout);
 
 /*******************************************************************************
 **
@@ -1163,13 +1171,10 @@ L2C_API extern UINT8 L2CA_GetBleConnRole (BD_ADDR bd_addr);
 **
 ** Description      This function returns the disconnect reason code.
 **
-**  Parameters:     BD Address of remote
-**                         Physical transport for the L2CAP connection (BR/EDR or LE)
-**
 ** Returns          disconnect reason
 **
 *******************************************************************************/
-L2C_API extern UINT16 L2CA_GetDisconnectReason (BD_ADDR remote_bda, tBT_TRANSPORT transport);
+L2C_API extern UINT16 L2CA_GetDisconnectReason (BD_ADDR remote_bda);
 
 #endif /* (BLE_INCLUDED == TRUE) */
 

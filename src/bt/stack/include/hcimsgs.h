@@ -1241,7 +1241,6 @@ HCI_API extern void btsnd_hcie_ext_inquiry_result(void *buffer, UINT8 num_resp, 
 #define HCIC_PARAM_SIZE_BLE_READ_REMOTE_FEAT    2
 #define HCIC_PARAM_SIZE_BLE_ENCRYPT             32
 #define HCIC_PARAM_SIZE_BLE_RAND                0
-#define HCIC_PARAM_SIZE_WRITE_LE_HOST_SUPPORTED	2
 
 #define HCIC_BLE_RAND_DI_SIZE                   8
 #define HCIC_BLE_ENCRYT_KEY_SIZE                16
@@ -1252,6 +1251,8 @@ HCI_API extern void btsnd_hcie_ext_inquiry_result(void *buffer, UINT8 num_resp, 
 #define HCIC_PARAM_SIZE_BLE_WRITE_ADV_DATA      31
 
 /* ULP HCI command */
+HCI_API extern BOOLEAN btsnd_hcic_ble_reset(void);
+
 HCI_API extern BOOLEAN btsnd_hcic_ble_set_evt_mask (BT_EVENT_MASK event_mask);
 
 HCI_API extern BOOLEAN btsnd_hcic_ble_read_buffer_size (void);
@@ -1265,7 +1266,7 @@ HCI_API extern BOOLEAN btsnd_hcic_ble_set_random_addr (BD_ADDR random_addr);
 HCI_API extern BOOLEAN btsnd_hcic_ble_write_adv_params (UINT16 adv_int_min, UINT16 adv_int_max,
                                        UINT8 adv_type, UINT8 addr_type_own,
                                        UINT8 addr_type_dir, BD_ADDR direct_bda,
-                                       UINT8 channel_map, UINT8 scan_filter_policy);
+                                       UINT8 channel_map, UINT8 adv_filter_policy);
 
 HCI_API extern BOOLEAN btsnd_hcic_ble_read_adv_chnl_tx_power (void);
 
@@ -1318,29 +1319,6 @@ HCI_API extern BOOLEAN btsnd_hcic_ble_ltk_req_reply (UINT16 handle, UINT8 ltk[HC
 HCI_API extern BOOLEAN btsnd_hcic_ble_ltk_req_neg_reply (UINT16 handle);
 
 HCI_API extern BOOLEAN btsnd_hcic_ble_read_supported_states (void);
-
-HCI_API extern BOOLEAN btsnd_hcic_ble_write_host_supported (UINT8 le_host_spt, UINT8 simul_le_host_spt);
-
-HCI_API extern BOOLEAN btsnd_hcic_ble_read_host_supported (void);
-
-HCI_API extern BOOLEAN btsnd_hcic_ble_receiver_test(UINT8 rx_freq);
-
-HCI_API extern BOOLEAN btsnd_hcic_ble_transmitter_test(UINT8 tx_freq, UINT8 test_data_len,
-                                                           UINT8 payload);
-HCI_API extern BOOLEAN btsnd_hcic_ble_test_end(void);
-
-#if (defined BLE_LLT_INCLUDED) && (BLE_LLT_INCLUDED == TRUE)
-
-#define HCIC_PARAM_SIZE_BLE_RC_PARAM_REQ_REPLY           14
-HCI_API extern BOOLEAN btsnd_hcic_ble_rc_param_req_reply(UINT16 handle,
-                                                        UINT16 conn_int_min, UINT16 conn_int_max,
-                                                        UINT16 conn_latency, UINT16 conn_timeout,
-                                                        UINT16 min_ce_len, UINT16 max_ce_len);
-
-#define HCIC_PARAM_SIZE_BLE_RC_PARAM_REQ_NEG_REPLY       3
-HCI_API extern BOOLEAN btsnd_hcic_ble_rc_param_req_neg_reply(UINT16 handle, UINT8 reason);
-
-#endif /* BLE_LLT_INCLUDED */
 
 
 #endif /* BLE_INCLUDED */

@@ -24,7 +24,6 @@
  ******************************************************************************/
 
 #include "bt_target.h"
-#include "bt_utils.h"
 
 #include "gatt_api.h"
 #include "gatt_int.h"
@@ -41,8 +40,7 @@
 #endif
 
 static void gatt_profile_request_cback (UINT16 conn_id, UINT32 trans_id, UINT8 op_code, tGATTS_DATA *p_data);
-static void gatt_profile_connect_cback (tGATT_IF gatt_if, BD_ADDR bda, UINT16 conn_id,
-                                         BOOLEAN connected, tGATT_DISCONN_REASON reason, tBT_TRANSPORT transport);
+static void gatt_profile_connect_cback (tGATT_IF gatt_if, BD_ADDR bda, UINT16 conn_id, BOOLEAN connected, tGATT_DISCONN_REASON reason);
 
 static tGATT_CBACK gatt_profile_cback =
 {
@@ -50,8 +48,7 @@ static tGATT_CBACK gatt_profile_cback =
     NULL,
     NULL,
     NULL,
-    gatt_profile_request_cback,
-    NULL
+    gatt_profile_request_cback
 } ;
 
 /*******************************************************************************
@@ -88,15 +85,14 @@ UINT16 gatt_profile_find_conn_id_by_bd_addr(BD_ADDR bda)
 ** Returns          Pointer to the found link conenction control block.
 **
 *******************************************************************************/
-static tGATT_PROFILE_CLCB *gatt_profile_find_clcb_by_bd_addr(BD_ADDR bda, tBT_TRANSPORT transport)
+tGATT_PROFILE_CLCB *gatt_profile_find_clcb_by_bd_addr(BD_ADDR bda)
 {
     UINT8 i_clcb;
     tGATT_PROFILE_CLCB    *p_clcb = NULL;
 
     for (i_clcb = 0, p_clcb= gatt_cb.profile_clcb; i_clcb < GATT_MAX_APPS; i_clcb++, p_clcb++)
     {
-        if (p_clcb->in_use && p_clcb->transport == transport &&
-            p_clcb->connected && !memcmp(p_clcb->bda, bda, BD_ADDR_LEN))
+        if (p_clcb->in_use && p_clcb->connected && !memcmp(p_clcb->bda, bda, BD_ADDR_LEN))
         {
             return p_clcb;
         }
@@ -114,7 +110,7 @@ static tGATT_PROFILE_CLCB *gatt_profile_find_clcb_by_bd_addr(BD_ADDR bda, tBT_TR
 ** Returns           NULL if not found. Otherwise pointer to the connection link block.
 **
 *******************************************************************************/
-tGATT_PROFILE_CLCB *gatt_profile_clcb_alloc (UINT16 conn_id, BD_ADDR bda, tBT_TRANSPORT tranport)
+tGATT_PROFILE_CLCB *gatt_profile_clcb_alloc (UINT16 conn_id, BD_ADDR bda)
 {
     UINT8                   i_clcb = 0;
     tGATT_PROFILE_CLCB      *p_clcb = NULL;
@@ -126,7 +122,6 @@ tGATT_PROFILE_CLCB *gatt_profile_clcb_alloc (UINT16 conn_id, BD_ADDR bda, tBT_TR
             p_clcb->in_use      = TRUE;
             p_clcb->conn_id     = conn_id;
             p_clcb->connected   = TRUE;
-            p_clcb->transport   = tranport;
             memcpy (p_clcb->bda, bda, BD_ADDR_LEN);
             break;
         }
@@ -188,7 +183,7 @@ static void gatt_profile_request_cback (UINT16 conn_id, UINT32 trans_id, tGATTS_
             break;
 
         case GATTS_REQ_TYPE_WRITE_EXEC:
-        case GATT_CMD_WRITE:
+            //case GATT_CMD_WRITE:
             ignore = TRUE;
             GATT_TRACE_EVENT0("Ignore GATT_REQ_EXEC_WRITE/WRITE_CMD" );
             break;
@@ -218,18 +213,15 @@ static void gatt_profile_request_cback (UINT16 conn_id, UINT32 trans_id, tGATTS_
 **
 *******************************************************************************/
 static void gatt_profile_connect_cback (tGATT_IF gatt_if, BD_ADDR bda, UINT16 conn_id,
-                                        BOOLEAN connected, tGATT_DISCONN_REASON reason,
-                                        tBT_TRANSPORT transport)
+                                        BOOLEAN connected, tGATT_DISCONN_REASON reason)
 {
-    UNUSED(gatt_if);
-
     GATT_TRACE_EVENT5 ("gatt_profile_connect_cback: from %08x%04x connected:%d conn_id=%d reason = 0x%04x",
                        (bda[0]<<24)+(bda[1]<<16)+(bda[2]<<8)+bda[3],
                        (bda[4]<<8)+bda[5], connected, conn_id, reason);
 
     if (connected)
     {
-        if (gatt_profile_clcb_alloc(conn_id, bda, transport) == NULL)
+        if (gatt_profile_clcb_alloc(conn_id, bda) == NULL)
         {
             GATT_TRACE_ERROR0 ("gatt_profile_connect_cback: no_resource");
             return;
@@ -277,7 +269,7 @@ void gatt_profile_db_init (void)
 
     /* start service
     */
-    status = GATTS_StartService (gatt_cb.gatt_if, service_handle, GATTP_TRANSPORT_SUPPORTED );
+    status = GATTS_StartService (gatt_cb.gatt_if, service_handle, GATT_TRANSPORT_LE_BR_EDR);
 
     GATT_TRACE_DEBUG2 ("gatt_profile_db_init:  gatt_if=%d   start status%d",
                        gatt_cb.gatt_if,  status);

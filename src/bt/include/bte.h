@@ -100,11 +100,8 @@ extern int (*p_bte_hci_send)(UINT16 port, BT_HDR *p_msg);
 /* Protocol trace mask */
 extern UINT32 bte_proto_trace_mask;
 
-/* BTE version string */
+/* Version string */
 extern const UINT8 bte_version_string[];
-
-/* BTIF version string */
-extern const UINT8 btif_version_string[];
 
 typedef struct tBAUD_REG_tag {
     UINT8 DHBR;

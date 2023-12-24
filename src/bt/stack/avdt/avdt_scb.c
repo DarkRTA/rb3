@@ -26,7 +26,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avdt_api.h"
 #include "avdtc_api.h"
 #include "avdt_int.h"
@@ -370,7 +369,7 @@ const UINT8 avdt_scb_st_open[][AVDT_SCB_NUM_COLS] = {
 /* MSG_GETCONFIG_RSP_EVT */ {AVDT_SCB_HDL_GETCONFIG_RSP,    AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
 /* MSG_OPEN_RSP_EVT */      {AVDT_SCB_IGNORE,               AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
 /* MSG_START_RSP_EVT */     {AVDT_SCB_HDL_START_RSP,        AVDT_SCB_IGNORE,            AVDT_SCB_STREAM_ST},
-/* MSG_SUSPEND_RSP_EVT */   {AVDT_SCB_HDL_SUSPEND_RSP,      AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
+/* MSG_SUSPEND_RSP_EVT */   {AVDT_SCB_IGNORE,               AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
 /* MSG_CLOSE_RSP_EVT */     {AVDT_SCB_IGNORE,               AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
 /* MSG_ABORT_RSP_EVT */     {AVDT_SCB_IGNORE,               AVDT_SCB_IGNORE,            AVDT_SCB_IDLE_ST},
 /* MSG_RECONFIG_RSP_EVT */  {AVDT_SCB_HDL_RECONFIG_RSP,     AVDT_SCB_IGNORE,            AVDT_SCB_OPEN_ST},
@@ -540,10 +539,10 @@ void avdt_scb_event(tAVDT_SCB *p_scb, UINT8 event, tAVDT_SCB_EVT *p_data)
     state_table = avdt_scb_st_tbl[p_scb->state];
 
     /* set next state */
-    if (p_scb->state != state_table[event][AVDT_SCB_NEXT_STATE]) {
+    if (p_scb->state != state_table[event][AVDT_SCB_NEXT_STATE])
         BTTRC_AVDT_SCB_STATE(state_table[event][AVDT_SCB_NEXT_STATE]);
-        p_scb->state = state_table[event][AVDT_SCB_NEXT_STATE];
-    }
+    p_scb->state = state_table[event][AVDT_SCB_NEXT_STATE];
+
 
     /* execute action functions */
     for (i = 0; i < AVDT_SCB_ACTIONS; i++)
@@ -648,7 +647,6 @@ void avdt_scb_dealloc(tAVDT_SCB *p_scb, tAVDT_SCB_EVT *p_data)
 #if AVDT_MULTIPLEXING == TRUE
     void *p_buf;
 #endif
-    UNUSED(p_data);
 
     AVDT_TRACE_DEBUG1("avdt_scb_dealloc hdl=%d", avdt_scb_to_hdl(p_scb));
     btu_stop_timer(&p_scb->timer_entry);

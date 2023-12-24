@@ -56,14 +56,6 @@ enum
     BTA_PAN_API_OPEN_EVT
 };
 
-/* state machine states */
-enum
-{
-    BTA_PAN_IDLE_ST,
-    BTA_PAN_OPEN_ST,
-    BTA_PAN_CLOSING_ST
-};
-
 
 
 

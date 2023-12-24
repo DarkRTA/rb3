@@ -343,7 +343,7 @@ BOOLEAN L2CA_UcdDiscover ( UINT16 psm, BD_ADDR rem_bda, UINT8 info_type )
 
     /* First, see if we already have a link to the remote */
     /* then find the channel control block for UCD. */
-    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
       ||((p_ccb = l2cu_find_ccb_by_cid (p_lcb, L2CAP_CONNECTIONLESS_CID)) == NULL))
     {
         if ( l2c_ucd_connect (rem_bda) == FALSE )
@@ -411,7 +411,7 @@ UINT16 L2CA_UcdDataWrite (UINT16 psm, BD_ADDR rem_bda, BT_HDR *p_buf, UINT16 fla
 
     /* First, see if we already have a link to the remote */
     /*  then find the channel control block for UCD */
-    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
       ||((p_ccb = l2cu_find_ccb_by_cid (p_lcb, L2CAP_CONNECTIONLESS_CID)) == NULL))
     {
         if ( l2c_ucd_connect (rem_bda) == FALSE )
@@ -421,7 +421,7 @@ UINT16 L2CA_UcdDataWrite (UINT16 psm, BD_ADDR rem_bda, BT_HDR *p_buf, UINT16 fla
         }
 
         /* If we still don't have lcb and ccb after connect attempt, then can't proceed */
-        if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+        if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
             || ((p_ccb = l2cu_find_ccb_by_cid (p_lcb, L2CAP_CONNECTIONLESS_CID)) == NULL))
         {
             GKI_freebuf (p_buf);
@@ -490,7 +490,7 @@ BOOLEAN L2CA_UcdSetIdleTimeout ( BD_ADDR rem_bda, UINT16 timeout )
 
     /* First, see if we already have a link to the remote */
     /* then find the channel control block. */
-    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+    if (((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
       ||((p_ccb = l2cu_find_ccb_by_cid (p_lcb, L2CAP_CONNECTIONLESS_CID)) == NULL))
     {
         L2CAP_TRACE_WARNING0 ("L2CAP - no UCD channel");
@@ -521,7 +521,7 @@ BOOLEAN L2CA_UCDSetTxPriority ( BD_ADDR rem_bda, tL2CAP_CHNL_PRIORITY priority )
                       (rem_bda[0]<<24)+(rem_bda[1]<<16)+(rem_bda[2]<<8)+rem_bda[3],
                       (rem_bda[4]<<8)+rem_bda[5]);
 
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
     {
         L2CAP_TRACE_WARNING0 ("L2CAP - no LCB for L2CA_UCDSetTxPriority");
         return (FALSE);
@@ -569,11 +569,11 @@ static BOOLEAN l2c_ucd_connect ( BD_ADDR rem_bda )
     }
 
     /* First, see if we already have a link to the remote */
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda, BT_TRANSPORT_BR_EDR)) == NULL)
+    if ((p_lcb = l2cu_find_lcb_by_bd_addr (rem_bda)) == NULL)
     {
         /* No link. Get an LCB and start link establishment */
-        if ( ((p_lcb = l2cu_allocate_lcb (rem_bda, FALSE, BT_TRANSPORT_BR_EDR)) == NULL)
-         ||  (l2cu_create_conn(p_lcb, BT_TRANSPORT_BR_EDR) == FALSE) )
+        if ( ((p_lcb = l2cu_allocate_lcb (rem_bda, FALSE)) == NULL)
+         ||  (l2cu_create_conn(p_lcb) == FALSE) )
         {
             L2CAP_TRACE_WARNING0 ("L2CAP - conn not started l2c_ucd_connect");
             return (FALSE);

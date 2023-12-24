@@ -34,7 +34,7 @@
 
 
 
-static void smp_connect_cback (BD_ADDR bd_addr, BOOLEAN connected, UINT16 reason, tBT_TRANSPORT transport);
+static void smp_connect_cback (BD_ADDR bd_addr, BOOLEAN connected, UINT16 reason);
 static void smp_data_ind (BD_ADDR bd_addr, BT_HDR *p_buf);
 
 /*******************************************************************************
@@ -73,19 +73,12 @@ void smp_l2cap_if_init (void)
 **                      connected (conn = TRUE)/disconnected (conn = FALSE).
 **
 *******************************************************************************/
-static void smp_connect_cback (BD_ADDR bd_addr, BOOLEAN connected, UINT16 reason,
-                                    tBT_TRANSPORT transport)
+static void smp_connect_cback (BD_ADDR bd_addr, BOOLEAN connected, UINT16 reason)
 {
     tSMP_CB   *p_cb = &smp_cb;
     tSMP_INT_DATA   int_data;
 
     SMP_TRACE_EVENT0 ("SMDBG l2c smp_connect_cback ");
-
-    if (transport == BT_TRANSPORT_BR_EDR)
-    {
-        SMP_TRACE_ERROR0 ("smp_connect_cback : Wrong transport");
-        return;
-    }
 
     if (memcmp(bd_addr, p_cb->pairing_bda, BD_ADDR_LEN) == 0)
     {
@@ -106,6 +99,8 @@ static void smp_connect_cback (BD_ADDR bd_addr, BOOLEAN connected, UINT16 reason
                 p_cb->loc_auth_req = p_cb->peer_auth_req = SMP_DEFAULT_AUTH_REQ;
                 p_cb->cb_evt = SMP_IO_CAP_REQ_EVT;
                 smp_sm_event(p_cb, SMP_L2CAP_CONN_EVT, NULL);
+
+                BTM_ReadConnectionAddr(p_cb->local_bda);
             }
         }
         else
@@ -139,13 +134,6 @@ static void smp_data_ind (BD_ADDR bd_addr, BT_HDR *p_buf)
 
     STREAM_TO_UINT8(cmd, p);
 
-    /* sanity check */
-    if ((SMP_OPCODE_MAX <= cmd) || (cmd == 0))
-    {
-        SMP_TRACE_WARNING1( "Ignore received command with RESERVED code 0x%02x", cmd);
-        GKI_freebuf (p_buf);
-        return;
-    }
 
     /* reject the pairing request if there is an on-going SMP pairing */
     if (SMP_OPCODE_PAIRING_REQ == cmd || SMP_OPCODE_SEC_REQ == cmd)
@@ -157,21 +145,14 @@ static void smp_data_ind (BD_ADDR bd_addr, BT_HDR *p_buf)
         }
         else if (memcmp(&bd_addr[0], p_cb->pairing_bda, BD_ADDR_LEN))
         {
-            GKI_freebuf (p_buf);
-            smp_reject_unexp_pair_req(bd_addr);
-            return;
+            p_cb->failure = SMP_PAIR_NOT_SUPPORT;
+            smp_send_cmd(SMP_OPCODE_PAIRING_FAILED, p_cb);
         }
-        /* else, out of state pairing request/security request received, passed into SM */
     }
 
     if (memcmp(&bd_addr[0], p_cb->pairing_bda, BD_ADDR_LEN) == 0)
     {
-        if (p_cb->state != SMP_ST_RELEASE_DELAY)
-        {
-            btu_stop_timer (&p_cb->rsp_timer_ent);
-        }
-        p_cb->rcvd_cmd_code = cmd;
-        p_cb->rcvd_cmd_len = (UINT8) p_buf->len;
+        btu_stop_timer (&p_cb->rsp_timer_ent);
         smp_sm_event(p_cb, cmd, p);
     }
 

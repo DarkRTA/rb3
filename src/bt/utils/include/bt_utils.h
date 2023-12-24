@@ -28,7 +28,6 @@ typedef enum {
     TASK_HIGH_GKI_TIMER,
     TASK_HIGH_BTU,
     TASK_HIGH_HCI_WORKER,
-    TASK_HIGH_USERIAL_READ,
     TASK_HIGH_MAX
 } tHIGH_PRIORITY_TASK;
 
@@ -39,6 +38,5 @@ typedef enum {
 void bt_utils_init();
 void bt_utils_cleanup();
 void raise_priority_a2dp(tHIGH_PRIORITY_TASK high_task);
-void adjust_priority_a2dp(int start);
-#define UNUSED(x) (void)(x)
+
 #endif /* BT_UTILS_H */

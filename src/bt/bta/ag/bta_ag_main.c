@@ -28,7 +28,6 @@
 #include "bta_ag_co.h"
 #include "bta_ag_int.h"
 #include "bd.h"
-#include "utl.h"
 
 /*****************************************************************************
 ** Constants and types
@@ -587,8 +586,6 @@ void bta_ag_collision_cback (tBTA_SYS_CONN_STATUS status, UINT8 id,
 {
     UINT16  handle;
     tBTA_AG_SCB *p_scb;
-    UNUSED(status);
-    UNUSED(app_id);
 
     /* Check if we have opening scb for the peer device. */
     handle = bta_ag_idx_by_bdaddr (peer_addr);
@@ -753,7 +750,6 @@ static void bta_ag_api_register(tBTA_AG_DATA *p_data)
     /* allocate an scb */
     if ((p_scb = bta_ag_scb_alloc()) != NULL)
     {
-        APPL_TRACE_DEBUG1("bta_ag_api_register: p_scb 0x%08x ", p_scb);
         bta_ag_sm_execute(p_scb, p_data->hdr.event, p_data);
     }
     else
@@ -782,7 +778,6 @@ static void bta_ag_api_result(tBTA_AG_DATA *p_data)
     {
         if ((p_scb = bta_ag_scb_by_idx(p_data->hdr.layer_specific)) != NULL)
         {
-            APPL_TRACE_DEBUG1("bta_ag_api_result: p_scb 0x%08x ", p_scb);
             bta_ag_sm_execute(p_scb, BTA_AG_API_RESULT_EVT, p_data);
         }
     }
@@ -790,9 +785,8 @@ static void bta_ag_api_result(tBTA_AG_DATA *p_data)
     {
         for (i = 0, p_scb = &bta_ag_cb.scb[0]; i < BTA_AG_NUM_SCB; i++, p_scb++)
         {
-            if (p_scb->in_use && p_scb->svc_conn)
+            if (p_scb->in_use)
             {
-                APPL_TRACE_DEBUG1("bta_ag_api_result p_scb 0x%08x ", p_scb);
                 bta_ag_sm_execute(p_scb, BTA_AG_API_RESULT_EVT, p_data);
             }
         }
@@ -882,7 +876,6 @@ BOOLEAN bta_ag_hdl_event(BT_HDR *p_msg)
 {
     tBTA_AG_SCB *p_scb;
 
-    APPL_TRACE_DEBUG1("bta_ag_hdl_event: Event 0x%04x ", p_msg->event);
     switch (p_msg->event)
     {
         /* handle enable event */
@@ -909,7 +902,6 @@ BOOLEAN bta_ag_hdl_event(BT_HDR *p_msg)
         default:
             if ((p_scb = bta_ag_scb_by_idx(p_msg->layer_specific)) != NULL)
             {
-                APPL_TRACE_DEBUG1("bta_ag_hdl_event: p_scb 0x%08x ", p_scb);
                 bta_ag_sm_execute(p_scb, p_msg->event, (tBTA_AG_DATA *) p_msg);
             }
             break;

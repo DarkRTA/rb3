@@ -33,7 +33,6 @@
 #include "btm_api.h"
 #include "btm_int.h"
 #include "hcidefs.h"
-#include "bt_utils.h"
 
 #if BTM_SCO_INCLUDED == TRUE
 
@@ -94,11 +93,7 @@ void btm_sco_flush_sco_data(UINT16 sco_inx)
                 GKI_freebuf (p_buf);
         }
     }
-#else
-    UNUSED(sco_inx);
 #endif
-#else
-    UNUSED(sco_inx);
 #endif
 }
 /*******************************************************************************
@@ -313,6 +308,8 @@ void  btm_route_sco_data(BT_HDR *p_msg)
 #endif
 }
 
+
+
 /*******************************************************************************
 **
 ** Function         BTM_WriteScoData
@@ -387,8 +384,6 @@ tBTM_STATUS BTM_WriteScoData (UINT16 sco_inx, BT_HDR *p_buf)
     return (status);
 
 #else
-    UNUSED(sco_inx);
-    UNUSED(p_buf);
     return (BTM_NO_RESOURCES);
 #endif
 }
@@ -434,14 +429,14 @@ static tBTM_STATUS btm_send_connect_request(UINT16 acl_handle,
         if ((xx = btm_handle_to_acl_index(acl_handle)) < MAX_L2CAP_LINKS)
         {
             p_acl = &btm_cb.acl_db[xx];
-            if (!HCI_EDR_ESCO_2MPS_SUPPORTED(p_acl->peer_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
+            if (!HCI_EDR_ESCO_2MPS_SUPPORTED(p_acl->features))
             {
 
                 BTM_TRACE_WARNING0("BTM Remote does not support 2-EDR eSCO");
                 temp_pkt_types |= (HCI_ESCO_PKT_TYPES_MASK_NO_2_EV3 |
                                    HCI_ESCO_PKT_TYPES_MASK_NO_2_EV5);
             }
-            if (!HCI_EDR_ESCO_3MPS_SUPPORTED(p_acl->peer_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
+            if (!HCI_EDR_ESCO_3MPS_SUPPORTED(p_acl->features))
             {
 
                 BTM_TRACE_WARNING0("BTM Remote does not support 3-EDR eSCO");
@@ -582,7 +577,7 @@ tBTM_STATUS BTM_CreateSco (BD_ADDR remote_bda, BOOLEAN is_orig, UINT16 pkt_types
     /* If originating, ensure that there is an ACL connection to the BD Address */
     if (is_orig)
     {
-        if ((!remote_bda) || ((acl_handle = BTM_GetHCIConnHandle (remote_bda, BT_TRANSPORT_BR_EDR)) == 0xFFFF))
+        if ((!remote_bda) || ((acl_handle = BTM_GetHCIConnHandle (remote_bda)) == 0xFFFF))
             return (BTM_UNKNOWN_ADDR);
     }
 
@@ -624,7 +619,10 @@ tBTM_STATUS BTM_CreateSco (BD_ADDR remote_bda, BOOLEAN is_orig, UINT16 pkt_types
                     {
                         if (md == BTM_PM_MD_PARK || md == BTM_PM_MD_SNIFF)
                         {
-                            memset( (void*)&pm, 0, sizeof(pm));
+/* Coverity: FALSE-POSITIVE error from Coverity tool. Please do NOT remove following comment. */
+/* coverity[uninit_use_in_call] False-positive: setting the mode to BTM_PM_MD_ACTIVE only uses settings.mode
+                                the other data members of tBTM_PM_PWR_MD are ignored
+*/
                             pm.mode = BTM_PM_MD_ACTIVE;
                             BTM_SetPowerMode(BTM_PM_SET_ONLY_ID, remote_bda, &pm);
                             p->state = SCO_ST_PEND_UNPARK;
@@ -682,7 +680,7 @@ tBTM_STATUS BTM_CreateSco (BD_ADDR remote_bda, BOOLEAN is_orig, UINT16 pkt_types
                 {
                     /* If role change is in progress, do not proceed with SCO setup
                      * Wait till role change is complete */
-                    p_acl = btm_bda_to_acl(remote_bda, BT_TRANSPORT_BR_EDR);
+                    p_acl = btm_bda_to_acl(remote_bda);
                     if (p_acl && p_acl->switch_role_state != BTM_ACL_SWKEY_STATE_IDLE)
                     {
                         BTM_TRACE_API1("Role Change is in progress for ACL handle 0x%04x",acl_handle);
@@ -740,7 +738,7 @@ void btm_sco_chk_pend_unpark (UINT8 hci_status, UINT16 hci_handle)
     for (xx = 0; xx < BTM_MAX_SCO_LINKS; xx++, p++)
     {
         if ((p->state == SCO_ST_PEND_UNPARK) &&
-            ((acl_handle = BTM_GetHCIConnHandle (p->esco.data.bd_addr, BT_TRANSPORT_BR_EDR)) == hci_handle))
+            ((acl_handle = BTM_GetHCIConnHandle (p->esco.data.bd_addr)) == hci_handle))
 
         {
             BTM_TRACE_API3("btm_sco_chk_pend_unpark -> (e)SCO Link for ACL handle 0x%04x, Desired Type %d, hci_status 0x%02x",
@@ -774,7 +772,7 @@ void btm_sco_chk_pend_rolechange (UINT16 hci_handle)
     for (xx = 0; xx < BTM_MAX_SCO_LINKS; xx++, p++)
     {
         if ((p->state == SCO_ST_PEND_ROLECHANGE) &&
-            ((acl_handle = BTM_GetHCIConnHandle (p->esco.data.bd_addr, BT_TRANSPORT_BR_EDR)) == hci_handle))
+            ((acl_handle = BTM_GetHCIConnHandle (p->esco.data.bd_addr)) == hci_handle))
 
         {
             BTM_TRACE_API1("btm_sco_chk_pend_rolechange -> (e)SCO Link for ACL handle 0x%04x", acl_handle);
@@ -1449,8 +1447,6 @@ tBTM_STATUS BTM_RegForEScoEvts (UINT16 sco_inx, tBTM_ESCO_CBACK *p_esco_cback)
 tBTM_STATUS BTM_ReadEScoLinkParms (UINT16 sco_inx, tBTM_ESCO_DATA *p_parms)
 {
 #if (BTM_MAX_SCO_LINKS>0)
-    UINT8 index;
-
     BTM_TRACE_API1("BTM_ReadEScoLinkParms -> sco_inx 0x%04x", sco_inx);
 
     if (sco_inx < BTM_MAX_SCO_LINKS &&
@@ -1459,23 +1455,8 @@ tBTM_STATUS BTM_ReadEScoLinkParms (UINT16 sco_inx, tBTM_ESCO_DATA *p_parms)
         *p_parms = btm_cb.sco_cb.sco_db[sco_inx].esco.data;
         return (BTM_SUCCESS);
     }
-
-    if (sco_inx == BTM_FIRST_ACTIVE_SCO_INDEX)
-    {
-        for (index = 0; index < BTM_MAX_SCO_LINKS; index++)
-        {
-            if (btm_cb.sco_cb.sco_db[index].state >= SCO_ST_CONNECTED)
-            {
-                BTM_TRACE_API1("BTM_ReadEScoLinkParms the first active SCO index is %d",index);
-                *p_parms = btm_cb.sco_cb.sco_db[index].esco.data;
-                return (BTM_SUCCESS);
-            }
-        }
-    }
-
 #endif
 
-    BTM_TRACE_API0("BTM_ReadEScoLinkParms cannot find the SCO index!");
     memset(p_parms, 0, sizeof(tBTM_ESCO_DATA));
     return (BTM_WRONG_MODE);
 }

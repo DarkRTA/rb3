@@ -79,10 +79,7 @@ typedef struct
     int tap_fd;
     int enabled;
     int open_count;
-    int flow; // 1: outbound data flow on; 0: outbound data flow off
     btpan_conn_t conns[MAX_PAN_CONNS];
-    int congest_packet_size;
-    unsigned char congest_packet[1600]; //max ethernet packet size
 } btpan_cb_t;
 
 
@@ -94,7 +91,6 @@ extern btpan_cb_t btpan_cb;
 btpan_conn_t *btpan_new_conn(int handle, const BD_ADDR addr, int local_role, int peer_role);
 btpan_conn_t *btpan_find_conn_addr(const BD_ADDR addr);
 btpan_conn_t *btpan_find_conn_handle(UINT16 handle);
-void btpan_set_flow_control(BOOLEAN enable);
 int btpan_get_connected_count(void);
 int btpan_tap_open(void);
 void create_tap_read_thread(int tap_fd);

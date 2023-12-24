@@ -25,7 +25,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avct_api.h"
 #include "avct_int.h"
 #include "l2c_api.h"
@@ -106,7 +105,6 @@ void avct_l2c_connect_ind_cback(BD_ADDR bd_addr, UINT16 lcid, UINT16 psm, UINT8 
     tAVCT_LCB       *p_lcb;
     UINT16          result = L2CAP_CONN_OK;
     tL2CAP_CFG_INFO cfg;
-    UNUSED(psm);
 
     /* do we already have a channel for this peer? */
     if ((p_lcb = avct_lcb_by_bd(bd_addr)) == NULL)

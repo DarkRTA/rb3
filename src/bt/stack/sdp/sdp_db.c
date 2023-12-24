@@ -300,7 +300,7 @@ UINT32 SDP_CreateRecord (void)
         p_db->record[p_db->num_records].record_handle = handle;
 
         p_db->num_records++;
-        SDP_TRACE_DEBUG1("SDP_CreateRecord ok, num_records:%d", p_db->num_records);
+
         /* Add the first attribute (the handle) automatically */
         UINT32_TO_BE_FIELD (buf, handle);
         SDP_AddAttribute (handle, ATTR_ID_SERVICE_RECORD_HDL, UINT_DESC_TYPE,
@@ -308,7 +308,6 @@ UINT32 SDP_CreateRecord (void)
 
         return (p_db->record[p_db->num_records - 1].record_handle);
     }
-    else SDP_TRACE_ERROR1("SDP_CreateRecord fail, exceed maximum records:%d", SDP_MAX_RECORDS);
 #endif
         return (0);
 }
@@ -363,7 +362,6 @@ BOOLEAN SDP_DeleteRecord (UINT32 handle)
 
                 sdp_cb.server_db.num_records--;
 
-                SDP_TRACE_DEBUG1("SDP_DeleteRecord ok, num_records:%d", sdp_cb.server_db.num_records);
                 /* if we're deleting the primary DI record, clear the */
                 /* value in the control block */
                 if( sdp_cb.server_db.di_primary_handle == handle )
@@ -538,18 +536,11 @@ BOOLEAN SDP_AddSequence (UINT32 handle,  UINT16 attr_id, UINT16 num_elem,
 {
 #if SDP_SERVER_ENABLED == TRUE
     UINT16          xx;
-    UINT8           *p_buff;
+    UINT8           buff[SDP_MAX_ATTR_LEN * 2];
     UINT8           *p;
     UINT8           *p_head;
-    BOOLEAN         result;
 
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN * 2)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddSequence cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff;
-
+    p = buff;
     /* First, build the sequence */
     for (xx = 0; xx < num_elem; xx++)
     {
@@ -579,15 +570,14 @@ BOOLEAN SDP_AddSequence (UINT32 handle,  UINT16 attr_id, UINT16 num_elem,
 
         ARRAY_TO_BE_STREAM (p, p_val[xx], len[xx]);
 
-        if (p - p_buff > SDP_MAX_ATTR_LEN)
+        if (p - buff > SDP_MAX_ATTR_LEN)
         {
             /* go back to before we add this element */
             p = p_head;
-            if(p_head == p_buff)
+            if(p_head == buff)
             {
                 /* the first element exceed the max length */
                 SDP_TRACE_ERROR0 ("SDP_AddSequence - too long(attribute is not added)!!");
-                GKI_freebuf(p_buff);
                 return FALSE;
             }
             else
@@ -595,9 +585,9 @@ BOOLEAN SDP_AddSequence (UINT32 handle,  UINT16 attr_id, UINT16 num_elem,
             break;
         }
     }
-    result = SDP_AddAttribute (handle, attr_id, DATA_ELE_SEQ_DESC_TYPE,(UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
+
+    return (SDP_AddAttribute (handle, attr_id, DATA_ELE_SEQ_DESC_TYPE,
+            (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -621,17 +611,9 @@ BOOLEAN SDP_AddUuidSequence (UINT32 handle,  UINT16 attr_id, UINT16 num_uuids,
 {
 #if SDP_SERVER_ENABLED == TRUE
     UINT16          xx;
-    UINT8           *p_buff;
-    UINT8           *p;
+    UINT8           buff[SDP_MAX_ATTR_LEN * 2];
+    UINT8           *p = buff;
     INT32           max_len = SDP_MAX_ATTR_LEN -3;
-    BOOLEAN         result;
-
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN * 2)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddUuidSequence cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff;
 
     /* First, build the sequence */
     for (xx = 0; xx < num_uuids ; xx++, p_uuids++)
@@ -639,16 +621,15 @@ BOOLEAN SDP_AddUuidSequence (UINT32 handle,  UINT16 attr_id, UINT16 num_uuids,
         UINT8_TO_BE_STREAM  (p, (UUID_DESC_TYPE << 3) | SIZE_TWO_BYTES);
         UINT16_TO_BE_STREAM (p, *p_uuids);
 
-        if((p - p_buff) > max_len)
+        if((p - buff) > max_len)
         {
             SDP_TRACE_WARNING2 ("SDP_AddUuidSequence - too long, add %d uuids of %d", xx, num_uuids);
             break;
         }
     }
 
-    result = SDP_AddAttribute (handle, attr_id, DATA_ELE_SEQ_DESC_TYPE,(UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
+    return (SDP_AddAttribute (handle, attr_id, DATA_ELE_SEQ_DESC_TYPE,
+            (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -670,20 +651,13 @@ BOOLEAN SDP_AddProtocolList (UINT32 handle, UINT16 num_elem,
                              tSDP_PROTOCOL_ELEM *p_elem_list)
 {
 #if SDP_SERVER_ENABLED == TRUE
-    UINT8           *p_buff;
-    int             offset;
-    BOOLEAN         result;
+    UINT8           buff[SDP_MAX_ATTR_LEN * 2];
+    int offset;
 
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN * 2)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddProtocolList cannot get a buffer!");
-        return (FALSE);
-    }
+    offset = sdp_compose_proto_list(buff, num_elem, p_elem_list);
 
-    offset = sdp_compose_proto_list(p_buff, num_elem, p_elem_list);
-    result = SDP_AddAttribute (handle, ATTR_ID_PROTOCOL_DESC_LIST,DATA_ELE_SEQ_DESC_TYPE, (UINT32) offset, p_buff);
-    GKI_freebuf(p_buff);
-    return result;
+    return (SDP_AddAttribute (handle, ATTR_ID_PROTOCOL_DESC_LIST,
+            DATA_ELE_SEQ_DESC_TYPE, (UINT32) offset, buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -707,18 +681,10 @@ BOOLEAN SDP_AddAdditionProtoLists (UINT32 handle, UINT16 num_elem,
 {
 #if SDP_SERVER_ENABLED == TRUE
     UINT16          xx;
-    UINT8           *p_buff;
-    UINT8           *p;
-    UINT8           *p_len;
-    int             offset;
-    BOOLEAN         result;
-
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN * 2)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddAdditionProtoLists cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff;
+    UINT8           buff[SDP_MAX_ATTR_LEN * 2];
+    UINT8           *p = buff;
+    UINT8            *p_len;
+    int offset;
 
     /* for each ProtocolDescriptorList */
     for (xx = 0; xx < num_elem; xx++, p_proto_list++)
@@ -732,11 +698,9 @@ BOOLEAN SDP_AddAdditionProtoLists (UINT32 handle, UINT16 num_elem,
 
         *p_len  = (UINT8)(p - p_len - 1);
     }
-    result = SDP_AddAttribute (handle, ATTR_ID_ADDITION_PROTO_DESC_LISTS,DATA_ELE_SEQ_DESC_TYPE,
-	                           (UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
 
+    return (SDP_AddAttribute (handle, ATTR_ID_ADDITION_PROTO_DESC_LISTS,
+            DATA_ELE_SEQ_DESC_TYPE, (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -758,16 +722,8 @@ BOOLEAN SDP_AddProfileDescriptorList (UINT32 handle, UINT16 profile_uuid,
                                       UINT16 version)
 {
 #if SDP_SERVER_ENABLED == TRUE
-    UINT8           *p_buff;
-    UINT8           *p;
-     BOOLEAN        result;
-
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddProfileDescriptorList cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff+2;
+    UINT8           buff[SDP_MAX_ATTR_LEN];
+    UINT8           *p = &buff[2];
 
     /* First, build the profile descriptor list. This consists of a data element sequence. */
     /* The sequence consists of profile's UUID and version number  */
@@ -778,13 +734,11 @@ BOOLEAN SDP_AddProfileDescriptorList (UINT32 handle, UINT16 profile_uuid,
     UINT16_TO_BE_STREAM (p, version);
 
     /* Add in type and length fields */
-    *p_buff = (UINT8) ((DATA_ELE_SEQ_DESC_TYPE << 3) | SIZE_IN_NEXT_BYTE);
-    *(p_buff+1) = (UINT8) (p - (p_buff+2));
+    buff[0] = (UINT8) ((DATA_ELE_SEQ_DESC_TYPE << 3) | SIZE_IN_NEXT_BYTE);
+    buff[1] = (UINT8) (p - &buff[2]);
 
-    result = SDP_AddAttribute (handle, ATTR_ID_BT_PROFILE_DESC_LIST,DATA_ELE_SEQ_DESC_TYPE, (UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
-
+    return (SDP_AddAttribute (handle, ATTR_ID_BT_PROFILE_DESC_LIST,
+            DATA_ELE_SEQ_DESC_TYPE, (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -807,16 +761,8 @@ BOOLEAN SDP_AddLanguageBaseAttrIDList (UINT32 handle, UINT16 lang,
                                        UINT16 char_enc, UINT16 base_id)
 {
 #if SDP_SERVER_ENABLED == TRUE
-    UINT8           *p_buff;
-    UINT8           *p;
-    BOOLEAN         result;
-
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddLanguageBaseAttrIDList cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff;
+    UINT8           buff[SDP_MAX_ATTR_LEN];
+    UINT8           *p = buff;
 
     /* First, build the language base descriptor list. This consists of a data */
     /* element sequence. The sequence consists of 9 bytes (3 UINt16 fields)    */
@@ -829,10 +775,8 @@ BOOLEAN SDP_AddLanguageBaseAttrIDList (UINT32 handle, UINT16 lang,
     UINT8_TO_BE_STREAM  (p, (UINT_DESC_TYPE << 3) | SIZE_TWO_BYTES);
     UINT16_TO_BE_STREAM (p, base_id);
 
-    result = SDP_AddAttribute (handle, ATTR_ID_LANGUAGE_BASE_ATTR_ID_LIST,DATA_ELE_SEQ_DESC_TYPE,
-	                           (UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
+    return (SDP_AddAttribute (handle, ATTR_ID_LANGUAGE_BASE_ATTR_ID_LIST,
+            DATA_ELE_SEQ_DESC_TYPE, (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif
@@ -856,16 +800,8 @@ BOOLEAN SDP_AddServiceClassIdList (UINT32 handle, UINT16 num_services,
 {
 #if SDP_SERVER_ENABLED == TRUE
     UINT16          xx;
-    UINT8           *p_buff;
-    UINT8           *p;
-    BOOLEAN         result;
-
-    if ((p_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN * 2)) == NULL)
-    {
-        SDP_TRACE_ERROR0("SDP_AddServiceClassIdList cannot get a buffer!");
-        return (FALSE);
-    }
-    p = p_buff;
+    UINT8           buff[SDP_MAX_ATTR_LEN * 2];
+    UINT8           *p = buff;
 
     for (xx = 0; xx < num_services; xx++, p_service_uuids++)
     {
@@ -873,10 +809,8 @@ BOOLEAN SDP_AddServiceClassIdList (UINT32 handle, UINT16 num_services,
         UINT16_TO_BE_STREAM (p, *p_service_uuids);
     }
 
-    result = SDP_AddAttribute (handle, ATTR_ID_SERVICE_CLASS_ID_LIST,DATA_ELE_SEQ_DESC_TYPE,
-	                           (UINT32) (p - p_buff), p_buff);
-    GKI_freebuf(p_buff);
-    return result;
+    return (SDP_AddAttribute (handle, ATTR_ID_SERVICE_CLASS_ID_LIST,
+            DATA_ELE_SEQ_DESC_TYPE, (UINT32) (p - buff), buff));
 #else   /* SDP_SERVER_ENABLED == FALSE */
     return (FALSE);
 #endif

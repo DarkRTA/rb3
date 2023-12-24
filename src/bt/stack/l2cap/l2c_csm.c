@@ -892,17 +892,14 @@ static void l2c_csm_config (tL2C_CCB *p_ccb, UINT16 event, void *p_data)
     case L2CEVT_L2CAP_DATA:                        /* Peer data packet rcvd    */
         L2CAP_TRACE_API1 ("L2CAP - Calling DataInd_Cb(), CID: 0x%04x", p_ccb->local_cid);
 #if (L2CAP_NUM_FIXED_CHNLS > 0)
-        if (p_ccb->local_cid >= L2CAP_FIRST_FIXED_CHNL &&
-                p_ccb->local_cid <= L2CAP_LAST_FIXED_CHNL)
+        if (p_ccb->local_cid < L2CAP_BASE_APPL_CID)
         {
-            if (p_ccb->local_cid < L2CAP_BASE_APPL_CID)
-            {
-                if (l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)
-                    (*l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)(p_ccb->p_lcb->remote_bd_addr,(BT_HDR *)p_data);
-                else
-                    GKI_freebuf (p_data);
+            if (l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)
+                (*l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)(p_ccb->p_lcb->remote_bd_addr,(BT_HDR *)p_data);
+            else
+                GKI_freebuf (p_data);
+
             break;
-            }
         }
 #endif
         (*p_ccb->p_rcb->api.pL2CA_DataInd_Cb)(p_ccb->local_cid, (BT_HDR *)p_data);

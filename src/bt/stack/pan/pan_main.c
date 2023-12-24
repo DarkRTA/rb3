@@ -26,7 +26,6 @@
 #include <string.h>
 #include "gki.h"
 #include "bt_types.h"
-#include "bt_utils.h"
 #include "bnep_api.h"
 #include "pan_api.h"
 #include "pan_int.h"
@@ -334,7 +333,6 @@ void pan_connect_state_cb (UINT16 handle, BD_ADDR rem_bda, tBNEP_RESULT result, 
 {
     tPAN_CONN       *pcb;
     UINT8            peer_role;
-    UNUSED(rem_bda);
 
     PAN_TRACE_EVENT2 ("pan_connect_state_cb - for handle %d, result %d", handle, result);
     pcb = pan_get_pcb_by_handle (handle);

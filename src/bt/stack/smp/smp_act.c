@@ -17,7 +17,6 @@
  ******************************************************************************/
 
 #include "bt_target.h"
-#include "bt_utils.h"
 
 #if SMP_INCLUDED == TRUE
 
@@ -26,7 +25,6 @@
     #include "l2c_api.h"
     #include "smp_int.h"
 
-#define MAX_KEY_DISTRIBUTION_TYPES   3
 
 const UINT8 smp_association_table[2][SMP_IO_CAP_MAX][SMP_IO_CAP_MAX] =
 {
@@ -38,7 +36,7 @@ const UINT8 smp_association_table[2][SMP_IO_CAP_MAX][SMP_IO_CAP_MAX] =
         {SMP_MODEL_KEY_NOTIF, SMP_MODEL_KEY_NOTIF,  SMP_MODEL_PASSKEY,   SMP_MODEL_ENC_ONLY,    SMP_MODEL_KEY_NOTIF}}, /* keyboard display */
     /* responder */
     {{SMP_MODEL_ENC_ONLY, SMP_MODEL_ENC_ONLY,   SMP_MODEL_KEY_NOTIF, SMP_MODEL_ENC_ONLY,    SMP_MODEL_KEY_NOTIF}, /* Display Only */
-        {SMP_MODEL_ENC_ONLY,  SMP_MODEL_ENC_ONLY,   SMP_MODEL_KEY_NOTIF,   SMP_MODEL_ENC_ONLY,    SMP_MODEL_KEY_NOTIF}, /* SMP_CAP_IO = 1 */
+        {SMP_MODEL_ENC_ONLY,  SMP_MODEL_ENC_ONLY,   SMP_MODEL_PASSKEY,   SMP_MODEL_ENC_ONLY,    SMP_MODEL_KEY_NOTIF}, /* SMP_CAP_IO = 1 */
         {SMP_MODEL_PASSKEY,   SMP_MODEL_PASSKEY,    SMP_MODEL_PASSKEY,   SMP_MODEL_ENC_ONLY,    SMP_MODEL_PASSKEY}, /* keyboard only */
         {SMP_MODEL_ENC_ONLY,  SMP_MODEL_ENC_ONLY,   SMP_MODEL_ENC_ONLY,  SMP_MODEL_ENC_ONLY,    SMP_MODEL_ENC_ONLY},/* No Input No Output */
         {SMP_MODEL_PASSKEY,   SMP_MODEL_PASSKEY,    SMP_MODEL_KEY_NOTIF, SMP_MODEL_ENC_ONLY,    SMP_MODEL_PASSKEY}} /* keyboard display */
@@ -85,8 +83,6 @@ void smp_send_app_cback(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
     tSMP_EVT_DATA   cb_data;
     tSMP_STATUS callback_rc;
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG1 ("smp_send_app_cback p_cb->cb_evt=%d", p_cb->cb_evt );
     if (p_cb->p_callback && p_cb->cb_evt != 0)
     {
@@ -109,13 +105,6 @@ void smp_send_app_cback(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
         {
             p_cb->loc_auth_req   = cb_data.io_req.auth_req;
             p_cb->loc_io_caps    = cb_data.io_req.io_cap;
-
-#if (defined(BLE_PERIPHERAL_DISPLAYONLY) && (BLE_PERIPHERAL_DISPLAYONLY == TRUE))
-            if (p_cb->role == HCI_ROLE_SLAVE)
-            {
-                p_cb->loc_io_caps    = SMP_IO_CAP_OUT;
-            }
-#endif
             p_cb->loc_oob_flag   = cb_data.io_req.oob_data;
             p_cb->loc_enc_size   = cb_data.io_req.max_key_size;
             p_cb->loc_i_key      = cb_data.io_req.init_keys;
@@ -158,21 +147,7 @@ void smp_send_pair_fail(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 void smp_send_pair_req(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
     tBTM_SEC_DEV_REC *p_dev_rec = btm_find_dev (p_cb->pairing_bda);
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_pair_req  ");
-
-#if BLE_INCLUDED == TRUE
-    /* Disable L2CAP connection parameter updates while bonding since
-       some peripherals are not able to revert to fast connection parameters
-       during the start of service discovery. Connection paramter updates
-       get enabled again once service discovery completes. */
-    if (L2CA_EnableUpdateBleConnParams(p_cb->pairing_bda, FALSE) == FALSE)
-    {
-        SMP_TRACE_ERROR0 ("smp pair failed...!");
-        return;
-    }
-#endif
 
     /* erase all keys when master sends pairing req*/
     if (p_dev_rec)
@@ -187,8 +162,6 @@ void smp_send_pair_req(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_send_pair_rsp(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_pair_rsp  ");
 
     p_cb->loc_i_key &= p_cb->peer_i_key;
@@ -206,8 +179,6 @@ void smp_send_pair_rsp(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_send_confirm(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_confirm  ");
     smp_send_cmd(SMP_OPCODE_CONFIRM, p_cb);
 }
@@ -217,8 +188,6 @@ void smp_send_confirm(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_send_init(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_init  ");
 
 #if SMP_CONFORMANCE_TESTING == TRUE
@@ -238,7 +207,6 @@ void smp_send_init(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 void smp_send_enc_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
     tBTM_LE_LENC_KEYS   le_key;
-    UNUSED(p_data);
 
     SMP_TRACE_DEBUG1 ("smp_send_enc_info  p_cb->loc_enc_size = %d", p_cb->loc_enc_size);
     smp_update_key_mask (p_cb, SMP_SEC_KEY_TYPE_ENC, FALSE);
@@ -262,8 +230,6 @@ void smp_send_enc_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_send_id_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_id_info  ");
     smp_update_key_mask (p_cb, SMP_SEC_KEY_TYPE_ID, FALSE);
 
@@ -281,8 +247,6 @@ void smp_send_id_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 void smp_send_csrk_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
     tBTM_LE_KEY_VALUE   key;
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_send_csrk_info ");
     smp_update_key_mask (p_cb, SMP_SEC_KEY_TYPE_CSRK, FALSE);
 
@@ -513,6 +477,8 @@ void smp_proc_id_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 
     SMP_TRACE_DEBUG0 ("smp_proc_id_info ");
     STREAM_TO_ARRAY (p_cb->tk, p, BT_OCTET16_LEN);   /* reuse TK for IRK */
+    /* store the ID key from peer device */
+    btm_sec_save_le_key(p_cb->pairing_bda, BTM_LE_KEY_PID, (tBTM_LE_KEY_VALUE *)&p_cb->tk, TRUE);
 
     smp_key_distribution(p_cb, NULL);
 }
@@ -523,17 +489,14 @@ void smp_proc_id_info(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 void smp_proc_id_addr(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
     UINT8   *p = (UINT8 *)p_data;
-    tBTM_LE_PID_KEYS    pid_key;
+    BD_ADDR    mac_bda;
 
     SMP_TRACE_DEBUG0 ("smp_proc_id_addr  ");
     smp_update_key_mask (p_cb, SMP_SEC_KEY_TYPE_ID, TRUE);
 
-    STREAM_TO_UINT8(pid_key.addr_type, p);
-    STREAM_TO_BDADDR(pid_key.static_addr, p);
-    memcpy(pid_key.irk, p_cb->tk, BT_OCTET16_LEN);
+    STREAM_TO_BDADDR(mac_bda, p);
 
-    /* store the ID key from peer device */
-    btm_sec_save_le_key(p_cb->pairing_bda, BTM_LE_KEY_PID, (tBTM_LE_KEY_VALUE *)&pid_key, TRUE);
+    /* TODO, update MAC address */
 
     smp_key_distribution(p_cb, NULL);
 }
@@ -566,11 +529,7 @@ void smp_proc_compare(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
     UINT8   reason;
 
     SMP_TRACE_DEBUG0 ("smp_proc_compare  ");
-    if (
-#if SMP_CONFORMANCE_TESTING == TRUE
-        p_cb->skip_test_compare_check ||
-#endif
-        !memcmp(p_cb->rconfirm, p_data->key.p_data, BT_OCTET16_LEN))
+    if (!memcmp(p_cb->rconfirm, p_data->key.p_data, BT_OCTET16_LEN))
     {
         /* compare the max encryption key size, and save the smaller one for the link */
         if ( p_cb->peer_enc_size < p_cb->loc_enc_size)
@@ -622,7 +581,7 @@ void smp_proc_sl_key(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_start_enc(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    tBTM_STATUS cmd;
+    BOOLEAN cmd;
     UINT8 reason = SMP_ENC_FAIL;
 
     SMP_TRACE_DEBUG0 ("smp_start_enc ");
@@ -631,7 +590,7 @@ void smp_start_enc(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
     else
         cmd = btm_ble_start_encrypt(p_cb->pairing_bda, FALSE, NULL);
 
-    if (cmd != BTM_CMD_STARTED && cmd != BTM_BUSY)
+    if (!cmd)
         smp_sm_event(p_cb, SMP_AUTH_CMPL_EVT, &reason);
 
 }
@@ -642,10 +601,8 @@ void smp_start_enc(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_proc_discard(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_proc_discard ");
-    smp_reset_control_value(p_cb);
+    smp_cb_cleanup(p_cb);
 }
 /*******************************************************************************
 ** Function     smp_proc_release_delay
@@ -653,8 +610,6 @@ void smp_proc_discard(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_proc_release_delay(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_proc_release_delay ");
     btu_stop_timer (&p_cb->rsp_timer_ent);
     btu_start_timer (&p_cb->rsp_timer_ent, BTU_TTYPE_SMP_PAIRING_CMD,
@@ -667,8 +622,6 @@ void smp_proc_release_delay(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_proc_release_delay_tout(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_proc_release_delay_tout ");
     btu_stop_timer (&p_cb->rsp_timer_ent);
     smp_proc_pairing_cmpl(p_cb);
@@ -735,7 +688,7 @@ void smp_key_pick_key(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
     UINT8   i = 0;
 
     SMP_TRACE_DEBUG1 ("smp_key_pick_key key_to_dist=0x%x", key_to_dist);
-    while (i < MAX_KEY_DISTRIBUTION_TYPES)
+    while (i < 3)
     {
         SMP_TRACE_DEBUG2("key to send = %02x, i = %d",  key_to_dist, i);
 
@@ -783,8 +736,7 @@ void smp_decide_asso_model(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
     tSMP_ASSO_MODEL model = SMP_MODEL_MAX;
     UINT8 int_evt = 0;
     tSMP_KEY key;
-    tSMP_INT_DATA   *p = NULL;
-    UNUSED(p_data);
+    tSMP_INT_DATA   *p;
 
     SMP_TRACE_DEBUG3 ("smp_decide_asso_model p_cb->peer_io_caps = %d p_cb->loc_io_caps = %d \
                        p_cb->peer_auth_req = %02x",
@@ -882,8 +834,6 @@ void smp_decide_asso_model(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_proc_io_rsp(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_proc_io_rsp ");
     if (p_cb->flags & SMP_PAIR_FLAGS_WE_STARTED_DD)
     {
@@ -905,7 +855,6 @@ void smp_pairing_cmpl(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 
     SMP_TRACE_DEBUG0 ("smp_pairing_cmpl ");
 
-    (void)L2CA_EnableUpdateBleConnParams(p_cb->pairing_bda, TRUE);
     if ((p_cb->status == SMP_SUCCESS) ||
         (p_cb->status <= SMP_REPEATED_ATTEMPTS && p_cb->status != SMP_SUCCESS))
     {
@@ -925,41 +874,17 @@ void smp_pairing_cmpl(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 *******************************************************************************/
 void smp_pair_terminate(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
-
     SMP_TRACE_DEBUG0 ("smp_pair_terminate ");
-
-    p_cb->status = SMP_CONN_TOUT;
-
-    smp_proc_pairing_cmpl(p_cb);
-}
-
-/*******************************************************************************
-** Function         smp_delay_terminate
-** Description      This function is called when connection dropped when smp delay
-**                  timer is still active.
-*******************************************************************************/
-void smp_delay_terminate(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
-{
-    SMP_TRACE_DEBUG0 ("smp_delay_terminate ");
-
-    btu_stop_timer (&p_cb->rsp_timer_ent);
-
-    /* if remote user terminate connection, keep the previous status */
-    /* this is to avoid reporting reverse status to uplayer */
-    if (p_data->reason != HCI_ERR_PEER_USER)
-        p_cb->status = SMP_CONN_TOUT;
-
+    p_cb->status = SMP_PAIR_FAIL_UNKNOWN;
     smp_proc_pairing_cmpl(p_cb);
 }
 /*******************************************************************************
 ** Function         smp_idle_terminate
-** Description      This function called in idle state to determine to send authentication
+** Description      This function calledin idle state to determine to send authentication
 **                  complete or not.
 *******************************************************************************/
 void smp_idle_terminate(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
 {
-    UNUSED(p_data);
     if (p_cb->flags & SMP_PAIR_FLAGS_WE_STARTED_DD)
     {
         SMP_TRACE_DEBUG0("Pairing terminated at IDLE state.");
@@ -967,18 +892,6 @@ void smp_idle_terminate(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
         smp_proc_pairing_cmpl(p_cb);
     }
 }
-
-/*******************************************************************************
-** Function     smp_fast_conn_param
-** Description  apply default connection parameter for pairing process
-*******************************************************************************/
-void smp_fast_conn_param(tSMP_CB *p_cb, tSMP_INT_DATA *p_data)
-{
-    /* disable connection parameter update */
-    (void)L2CA_EnableUpdateBleConnParams(p_cb->pairing_bda, FALSE);
-}
-
-
 /*******************************************************************************
 **
 ** Function         smp_link_encrypted

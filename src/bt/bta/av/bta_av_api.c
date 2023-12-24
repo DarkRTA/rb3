@@ -544,8 +544,6 @@ void BTA_AvMetaRsp(UINT8 rc_handle, UINT8 label, tBTA_AV_CODE rsp_code,
         p_buf->label = label;
 
         bta_sys_sendmsg(p_buf);
-    } else if (p_pkt) {
-        GKI_freebuf(p_pkt);
     }
 }
 

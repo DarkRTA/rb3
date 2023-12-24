@@ -262,20 +262,10 @@
 #define UUID_SERVCLASS_CURRENT_TIME             0x1805      /* Link Loss Alert */
 #define UUID_SERVCLASS_DST_CHG                  0x1806      /* DST Time change */
 #define UUID_SERVCLASS_REF_TIME_UPD             0x1807      /* reference time update */
-#define UUID_SERVCLASS_THERMOMETER              0x1809      /* Thermometer UUID */
 #define UUID_SERVCLASS_DEVICE_INFO              0x180A      /* device info service */
 #define UUID_SERVCLASS_NWA                      0x180B      /* Network availability */
-#define UUID_SERVCLASS_HEART_RATE               0x180D      /* Heart Rate service */
-#define UUID_SERVCLASS_PHALERT                  0x180E      /* phone alert service */
-#define UUID_SERVCLASS_BATTERY                  0x180F     /* battery service */
-#define UUID_SERVCLASS_BPM                      0x1810      /*  blood pressure service */
-#define UUID_SERVCLASS_ALERT_NOTIFICATION       0x1811      /* alert notification service */
-#define UUID_SERVCLASS_LE_HID                   0x1812     /*  HID over LE */
-#define UUID_SERVCLASS_SCAN_PARAM               0x1813      /* Scan Parameter service */
-#define UUID_SERVCLASS_GLUCOSE                  0x1808      /* Glucose Meter Service */
-#define UUID_SERVCLASS_RSC                      0x1814      /* RUNNERS SPEED AND CADENCE SERVICE      */
-#define UUID_SERVCLASS_CSC                      0x1816      /* Cycling SPEED AND CADENCE SERVICE      */
-
+#define UUID_SERVCLASS_PHALERT                  0x180C      /* phone alert service */
+#define UUID_SERVCLASS_GLUCOSE                  0xC000      /* Glucose Meter Service */
 #define UUID_SERVCLASS_TEST_SERVER              0x9000      /* Test Group UUID */
 
 #if (BTM_WBS_INCLUDED == TRUE )

@@ -37,7 +37,6 @@
 
 #define LOG_TAG "BTIF_CORE"
 #include "btif_api.h"
-#include "bt_utils.h"
 #include "bta_api.h"
 #include "gki.h"
 #include "btu.h"
@@ -50,7 +49,6 @@
 #include "btif_pan.h"
 #include "btif_profile_queue.h"
 #include "btif_config.h"
-#include "bta_vendor_api.h"
 /************************************************************************************
 **  Constants & Macros
 ************************************************************************************/
@@ -132,7 +130,7 @@ extern void bte_load_did_conf(const char *p_path);
 
 /** TODO: Move these to _common.h */
 void bte_main_boot_entry(void);
-void bte_main_enable();
+void bte_main_enable(uint8_t *local_addr);
 void bte_main_disable(void);
 void bte_main_shutdown(void);
 #if (defined(HCILP_INCLUDED) && HCILP_INCLUDED == TRUE)
@@ -143,7 +141,6 @@ void btif_dm_execute_service_request(UINT16 event, char *p_param);
 #ifdef BTIF_DM_OOB_TEST
 void btif_dm_load_local_oob(void);
 #endif
-void bte_main_config_hci_logging(BOOLEAN enable, BOOLEAN bt_disabled);
 
 /************************************************************************************
 **  Functions
@@ -276,7 +273,6 @@ static void btif_task(UINT32 params)
 {
     UINT16   event;
     BT_HDR   *p_msg;
-    UNUSED(params);
 
     BTIF_TRACE_DEBUG0("btif task starting");
 
@@ -294,27 +290,7 @@ static void btif_task(UINT32 params)
         if (event == BT_EVT_TRIGGER_STACK_INIT)
         {
             BTIF_TRACE_DEBUG0("btif_task: received trigger stack init event");
-            #if (BLE_INCLUDED == TRUE)
-            btif_dm_load_ble_local_keys();
-            #endif
             BTA_EnableBluetooth(bte_dm_evt);
-        }
-
-        /*
-         * Failed to initialize controller hardware, reset state and bring
-         * down all threads
-         */
-        if (event == BT_EVT_HARDWARE_INIT_FAIL)
-        {
-            BTIF_TRACE_DEBUG0("btif_task: hardware init failed");
-            bte_main_disable();
-            btif_queue_release();
-            GKI_task_self_cleanup(BTIF_TASK);
-            bte_main_shutdown();
-            btif_dut_mode = 0;
-            btif_core_state = BTIF_CORE_STATE_DISABLED;
-            HAL_CBACK(bt_hal_cbacks,adapter_state_changed_cb,BT_STATE_OFF);
-            break;
         }
 
         if (event & EVENT_MASK(GKI_SHUTDOWN_EVT))
@@ -537,7 +513,7 @@ bt_status_t btif_enable_bluetooth(void)
     btif_core_state = BTIF_CORE_STATE_ENABLING;
 
     /* Create the GKI tasks and run them */
-    bte_main_enable();
+    bte_main_enable(btif_local_bd_addr.address);
 
     return BT_STATUS_SUCCESS;
 }
@@ -608,9 +584,6 @@ void btif_enable_bluetooth_evt(tBTA_STATUS status, BD_ADDR local_bd)
     /* callback to HAL */
     if (status == BTA_SUCCESS)
     {
-#if (BLE_INCLUDED == TRUE && BLE_ANDROID_CONTROLLER_SCAN_FILTER == TRUE)
-        BTA_BrcmInit();
-#endif
         /* initialize a2dp service */
         btif_av_init();
 
@@ -743,14 +716,6 @@ bt_status_t btif_shutdown_bluetooth(void)
 {
     BTIF_TRACE_DEBUG1("%s", __FUNCTION__);
 
-    if (btif_core_state == BTIF_CORE_STATE_DISABLING)
-    {
-        BTIF_TRACE_WARNING0("shutdown during disabling");
-        /* shutdown called before disabling is done */
-        btif_shutdown_pending = 1;
-        return BT_STATUS_NOT_READY;
-    }
-
     if (btif_is_enabled())
     {
         BTIF_TRACE_WARNING0("shutdown while still enabled, initiate disable");
@@ -763,23 +728,11 @@ bt_status_t btif_shutdown_bluetooth(void)
 
     btif_shutdown_pending = 0;
 
-    if (btif_core_state == BTIF_CORE_STATE_ENABLING)
-    {
-        // Java layer abort BT ENABLING, could be due to ENABLE TIMEOUT
-        // Direct call from cleanup()@bluetooth.c
-        // bring down HCI/Vendor lib
-        bte_main_disable();
-        btif_core_state = BTIF_CORE_STATE_DISABLED;
-        HAL_CBACK(bt_hal_cbacks, adapter_state_changed_cb, BT_STATE_OFF);
-    }
-
     GKI_destroy_task(BTIF_TASK);
     btif_queue_release();
     bte_main_shutdown();
 
     btif_dut_mode = 0;
-
-    bt_utils_cleanup();
 
     BTIF_TRACE_DEBUG1("%s done", __FUNCTION__);
 
@@ -826,7 +779,6 @@ static bt_status_t btif_disassociate_evt(void)
 *******************************************************************************/
 static void btif_dut_mode_cback( tBTM_VSC_CMPL *p )
 {
-    UNUSED(p);
     /* For now nothing to be done. */
 }
 
@@ -878,7 +830,6 @@ bt_status_t btif_dut_mode_send(uint16_t opcode, uint8_t *buf, uint8_t len)
     BTM_VendorSpecificCommand(opcode, len, buf, btif_dut_mode_cback);
     return BT_STATUS_SUCCESS;
 }
-
 /*****************************************************************************
 **
 **   btif api adapter property functions
@@ -1434,7 +1385,7 @@ bt_status_t btif_enable_service(tBTA_SERVICE_ID service_id)
 
     btif_enabled_services |= (1 << service_id);
 
-    BTIF_TRACE_DEBUG2("%s: current services:0x%x", __FUNCTION__, btif_enabled_services);
+    BTIF_TRACE_ERROR2("%s: current services:0x%x", __FUNCTION__, btif_enabled_services);
 
     if (btif_is_enabled())
     {
@@ -1467,7 +1418,7 @@ bt_status_t btif_disable_service(tBTA_SERVICE_ID service_id)
 
     btif_enabled_services &=  (tBTA_SERVICE_MASK)(~(1<<service_id));
 
-    BTIF_TRACE_DEBUG2("%s: Current Services:0x%x", __FUNCTION__, btif_enabled_services);
+    BTIF_TRACE_ERROR2("%s: Current Services:0x%x", __FUNCTION__, btif_enabled_services);
 
     if (btif_is_enabled())
     {
@@ -1476,21 +1427,5 @@ bt_status_t btif_disable_service(tBTA_SERVICE_ID service_id)
                               (char*)p_id, sizeof(tBTA_SERVICE_ID), NULL);
     }
 
-    return BT_STATUS_SUCCESS;
-}
-
-/*******************************************************************************
-**
-** Function         btif_config_hci_snoop_log
-**
-** Description      enable or disable HCI snoop log
-**
-** Returns          bt_status_t
-**
-*******************************************************************************/
-bt_status_t btif_config_hci_snoop_log(uint8_t enable)
-{
-    bte_main_config_hci_logging(enable != 0,
-             btif_core_state == BTIF_CORE_STATE_DISABLED);
     return BT_STATUS_SUCCESS;
 }

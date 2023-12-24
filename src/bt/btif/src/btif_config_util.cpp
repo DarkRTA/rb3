@@ -56,41 +56,6 @@ extern "C" {
 #define BLUEDROID_VALUE_TYPE "Type"
 #define BLUEDROID_TAG_REMOTE_DEVICE "Remote Devices"
 
-#define HID_SUB_CLASS      "020208"
-#define HID_COUNTRY_CODE      "020308"
-#define HID_VIRTUAL_CABLE      "020428"
-#define HID_RECON_INNITIATE      "020528"
-#define HID_REP_DSC_1      "020636"
-#define HID_REP_DSC_2      "020635"
-#define HID_SDP_DISABLE      "020828"
-#define HID_BAT_POWER      "020928"
-#define HID_REM_WAKE      "020A28"
-#define HID_SUP_TIME      "020C09"
-#define HID_NORM_CONN      "020D28"
-#define HID_SSR_MAX_LAT      "020F09"
-#define HID_SSR_MIN_TIM      "021009"
-#define HID_VENDOR_ID      "020109"
-#define HID_PRODUCT_ID      "020209"
-#define HID_PRODUCT_VERSION      "020309"
-#define HID_APP_ID_MOUSE      1
-#define HID_APP_ID_KYB      2
-#define HID_PAIRED_DEV_PRIORITY      100
-#define HID_SSR_PARAM_INVALID    0xffff
-#define HID_RPT_DSCR_HDR_LEN_1    10
-#define HID_RPT_DSCR_HDR_LEN_2    7
-
-/* Hid Atribute Mask */
-#define HID_ATTR_MASK_VIRTUAL_CABLE        0x0001
-#define HID_ATTR_MASK_NORMALLY_CONNECTABLE 0x0002
-#define HID_ATTR_MASK_RECONN_INIT          0x0004
-#define HID_ATTR_MASK_SDP_DISABLE          0x0008
-#define HID_ATTR_MASK_BATTERY_POWER        0x0010
-#define HID_ATTR_MASK_REMOTE_WAKE          0x0020
-#define HID_ATTR_MASK_SUP_TOUT_AVLBL       0x0040
-#define HID_ATTR_MASK_SSR_MAX_LATENCY      0x0080
-#define HID_ATTR_MASK_SSR_MIN_TOUT         0x0100
-#define HID_ATTR_MASK_SEC_REQUIRED         0x8000
-
 using namespace tinyxml2;
 struct enum_user_data
 {
@@ -426,9 +391,9 @@ static int read_file_line(const char* map, int start_pos, int size, int* line_si
     int i;
     for(i = start_pos; i < size; i++)
     {
+         ++*line_size;
         if(map[i] == '\r' || map[i] == '\n')
             break;
-         ++*line_size;
     }
     //debug("out, ret:%d, start pos:%d, size:%d, line_size:%d", i, start_pos, size, *line_size);
     return i + 1;
@@ -505,8 +470,6 @@ static int load_bluez_cfg_value(const char* adapter_path, const char* file_name)
     {
         error("open_file_map fail, fd:%d, path:%s, size:%d", fd, path, size);
         //debug("out");
-        if (fd >= 0)
-            close(fd);
         return FALSE;
     }
     //get local bt device name from bluez config
@@ -558,200 +521,6 @@ static inline void upcase_addr(const char* laddr, char* uaddr, int size)
                         laddr[i] - ('a' - 'A') : laddr[i];
     uaddr[i] = 0;
 }
-
-static int parse_hid_attribute(const char *str, int line_size, int len)
-{
-    if (len == 0 || line_size == 0 || str == NULL || (len%2))
-        return 0;
-
-    char hex_string[len + 1], hex_bytes[len/2];
-    memcpy(hex_string, str - 1, len);
-    hex_string[len] = 0;
-    hex2bytes(hex_string, len, hex_bytes);
-    if (len == 2)
-        return hex_bytes[0];
-    else if (len == 4)
-        return hex_bytes[0] << 8 | hex_bytes[1];
-    else return 0;
-}
-
-static int parse_bluez_hid_sdp_records(const char* adapter_path, const char* bd_addr)
-{
-    //debug("in");
-    char addr[32];
-    char pattern_to_search[50];
-    upcase_addr(bd_addr, addr, sizeof(addr));
-
-    const char* map = NULL;
-    int size = 0;
-    int ret = FALSE;
-    char path[256];
-    snprintf(path, sizeof(path), "%s/%s", adapter_path, BLUEZ_SDP);
-    int fd = open_file_map(path, &map, &size);
-    //debug("in, path:%s, addr:%s, fd:%d, size:%d", path, addr, fd, size);
-    if(fd < 0 || size == 0)
-    {
-        error("open_file_map fail, fd:%d, path:%s, size:%d", fd, path, size);
-        //debug("out");
-        return FALSE;
-    }
-    int line_size = 0;
-    snprintf(pattern_to_search, sizeof(pattern_to_search), "%s#00010000", addr);
-    const char *value_line = find_value_line(map, size, pattern_to_search, &line_size);
-    int dev_sub_class = 0;
-    int app_id = 0;
-    int countrycode = 0;
-    int product = 0;
-    int vendor = 0;
-    int product_ver = 0;
-    int attr_mask = 0;
-    int ssr_max_lat = 0;
-    int ssr_min_timeout = 0;
-    int rep_desc_len = 0;
-    if(value_line && line_size)
-    {
-        char hid_sdp[line_size + 2];
-        memcpy(hid_sdp, value_line - 1, line_size);
-        hid_sdp[line_size + 1] = 0;
-        //debug("addr:%s, hid_sdp:%s", bd_addr, hid_sdp);
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_SUB_CLASS, &line_size);
-        dev_sub_class = parse_hid_attribute(value_line, line_size, 2);
-        if(dev_sub_class)
-        {
-            if ((dev_sub_class & 0x80) == 0x80)
-                app_id = HID_APP_ID_MOUSE;
-            else
-                app_id = HID_APP_ID_KYB;
-            //debug("dev_sub_class:%d", dev_sub_class);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_COUNTRY_CODE, &line_size);
-        countrycode = parse_hid_attribute(value_line, line_size, 2);
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_VIRTUAL_CABLE, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_VIRTUAL_CABLE;
-            //debug("attr_mask after Virtual Unplug:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_RECON_INNITIATE, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_RECONN_INIT;
-            //debug("attr_mask after Reconnect Initiate:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_REP_DSC_1, &line_size);
-        if(value_line && line_size)
-        {
-            char rep_desc[line_size + 1], rd[line_size/2 + 1];
-            char rep_dsc_len[5], rd_len[2];
-            memcpy(rep_dsc_len, value_line - 1, 4);
-            rep_dsc_len[4] = 0;
-            hex2bytes(rep_dsc_len, 4, rd_len);
-            rep_desc_len = (rd_len[0] << 8 | rd_len[1]) - (HID_RPT_DSCR_HDR_LEN_1 - 2);
-            //debug("rep_desc_len:%d", rep_desc_len);
-            memcpy(rep_desc, value_line - 1 + (HID_RPT_DSCR_HDR_LEN_1 * 2), rep_desc_len * 2);
-            rep_desc[rep_desc_len * 2] = 0;
-            hex2bytes(rep_desc, rep_desc_len* 2, rd);
-            if (rep_desc_len)
-            {
-                //debug("rep_desc:%s", rep_desc);
-                btif_config_set("Remote", bd_addr, "HidDescriptor", rd, rep_desc_len,
-                        BTIF_CFG_TYPE_BIN);
-            }
-        }
-        else
-        {
-            value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_REP_DSC_2, &line_size);
-            if(value_line && line_size)
-            {
-                char rep_dsc_len[3], rd_len[1];
-                memcpy(rep_dsc_len, value_line - 1, 2);
-                rep_dsc_len[2] = 0;
-                hex2bytes(rep_dsc_len, 2, rd_len);
-                rep_desc_len = rd_len[0] - (HID_RPT_DSCR_HDR_LEN_2 - 1);
-                //debug("rep_desc_len:%d", rep_desc_len);
-                char rep_desc[(rep_desc_len * 2) + 1], rd[rep_desc_len + 1];
-                memcpy(rep_desc, value_line - 1 + (HID_RPT_DSCR_HDR_LEN_2 * 2), rep_desc_len * 2);
-                rep_desc[rep_desc_len * 2] = 0;
-                hex2bytes(rep_desc, rep_desc_len * 2, rd);
-                if (rep_desc_len)
-                {
-                    //debug("rep_desc:%s", rep_desc);
-                    btif_config_set("Remote", bd_addr, "HidDescriptor", rd, rep_desc_len,
-                            BTIF_CFG_TYPE_BIN);
-                }
-            }
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_SDP_DISABLE, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_SDP_DISABLE;
-            //debug("attr_mask after SDP Disable:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_BAT_POWER, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_BATTERY_POWER;
-            //debug("attr_mask after Battery Powered:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_REM_WAKE, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_REMOTE_WAKE;
-            //debug("attr_mask after Remote Wake:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_NORM_CONN, &line_size);
-        if(parse_hid_attribute(value_line, line_size, 2))
-        {
-            attr_mask |= HID_ATTR_MASK_NORMALLY_CONNECTABLE;
-            //debug("attr_mask after Normally Conenctable:%04x", attr_mask);
-        }
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_SUP_TIME, &line_size);
-        if(value_line && line_size)
-            attr_mask |= HID_ATTR_MASK_SUP_TOUT_AVLBL;
-        //debug("attr_mask after Supervision Timeout:%04x", attr_mask);
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_SSR_MAX_LAT, &line_size);
-        ssr_max_lat = parse_hid_attribute(value_line, line_size, 4);
-        if(!ssr_max_lat)
-            ssr_max_lat = HID_SSR_PARAM_INVALID;
-        value_line = find_value_line(hid_sdp, strlen(hid_sdp), HID_SSR_MIN_TIM, &line_size);
-        ssr_min_timeout = parse_hid_attribute(value_line, line_size, 4);
-        if(!ssr_min_timeout)
-            ssr_min_timeout = HID_SSR_PARAM_INVALID;
-        snprintf(pattern_to_search, sizeof(pattern_to_search), "%s#00010001", addr);
-        value_line = find_value_line(map, size, pattern_to_search, &line_size);
-        if(value_line && line_size)
-        {
-            char did_sdp[line_size + 2];
-            memcpy(did_sdp, value_line - 1, line_size + 1);
-            did_sdp[line_size + 1] = 0;
-            //debug("addr:%s, did_sdp:%s", bd_addr, did_sdp);
-            value_line = find_value_line(did_sdp, strlen(did_sdp), HID_VENDOR_ID, &line_size);
-            vendor = parse_hid_attribute(value_line, line_size, 4);
-            value_line = find_value_line(did_sdp, strlen(did_sdp), HID_PRODUCT_ID, &line_size);
-            product = parse_hid_attribute(value_line, line_size, 4);
-            value_line = find_value_line(did_sdp, strlen(did_sdp), HID_PRODUCT_VERSION, &line_size);
-            product_ver = parse_hid_attribute(value_line, line_size, 4);
-         }
-    }
-    btif_config_set_int("Remote", bd_addr, "HidAttrMask", attr_mask);
-    btif_config_set_int("Remote", bd_addr, "HidSubClass", dev_sub_class);
-    btif_config_set_int("Remote", bd_addr, "HidAppId", app_id);
-    btif_config_set_int("Remote", bd_addr, "HidVendorId", vendor);
-    btif_config_set_int("Remote", bd_addr, "HidProductId", product);
-    btif_config_set_int("Remote", bd_addr, "HidVersion", product_ver);
-    btif_config_set_int("Remote", bd_addr, "HidCountryCode", countrycode);
-    btif_config_set_int("Remote", bd_addr, "HidSSRMinTimeout", ssr_min_timeout);
-    btif_config_set_int("Remote", bd_addr, "HidSSRMaxLatency", ssr_max_lat);
-    //debug("HidSubClass: %02x, app_id = %d, vendor = %04x, product = %04x, product_ver = %04x"
-    //    "countrycode = %02x, ssr_min_timeout = %04x, ssr_max_lat = %04x",
-    //    HidSubClass, app_id, vendor, product, product_ver, countrycode, ssr_min_timeout,
-    //    ssr_max_lat);
-    close_file_map(fd, map, size);
-    ret = TRUE;
-    //debug("out, ret:%d", ret);
-    return ret;
-}
-
 static int load_bluez_dev_value(const char* adapter_path, const char* bd_addr,
                                 const char* file_name, const char* cfg_value_name, int type)
 {
@@ -770,8 +539,6 @@ static int load_bluez_dev_value(const char* adapter_path, const char* bd_addr,
     {
         error("open_file_map fail, fd:%d, path:%s, size:%d", fd, path, size);
         //debug("out");
-        if (fd >= 0)
-            close(fd);
         return FALSE;
     }
     int line_size = 0;
@@ -787,15 +554,15 @@ static int load_bluez_dev_value(const char* adapter_path, const char* bd_addr,
         else if(type == BTIF_CFG_TYPE_INT)
         {
             int v = strtol(line, NULL, 16);
-            //parse sdp record in case remote device is hid
+            //filter out unspported devices by its class
             if(strcmp(file_name, BLUEZ_CLASSES) == 0)
             {
                 switch((v & 0x1f00) >> 8)
                 {
                     case 0x5: //hid device
-                        info("parsing sdp for hid device %s", bd_addr);
-                        parse_bluez_hid_sdp_records(adapter_path, bd_addr);
-                        break;
+                        error("skip paired hid devices");
+                        close_file_map(fd, map, size);
+                        return FALSE;
                 }
             }
             btif_config_set_int("Remote", bd_addr, cfg_value_name, v);
@@ -830,8 +597,6 @@ int load_bluez_linkkeys(const char* adapter_path)
     {
         error("open_file_map fail, fd:%d, path:%s, size:%d", fd, path, size);
         //debug("out");
-        if (fd >= 0)
-            close(fd);
         return FALSE;
     }
     int pos = 0;

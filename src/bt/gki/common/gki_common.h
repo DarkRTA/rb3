@@ -43,8 +43,6 @@
 #define GKI_ERROR_BUF_SIZE_TOOBIG       0xFFF7
 #define GKI_ERROR_BUF_SIZE_ZERO         0xFFF6
 #define GKI_ERROR_ADDR_NOT_IN_BUF       0xFFF5
-#define GKI_ERROR_OUT_OF_BUFFERS        0xFFF4
-#define GKI_ERROR_GETPOOLBUF_BAD_QID    0xFFF3
 
 
 /********************************************************************

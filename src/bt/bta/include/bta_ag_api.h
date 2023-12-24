@@ -275,19 +275,11 @@ typedef struct
     tBTA_AG_STATUS      status;
 } tBTA_AG_OPEN;
 
-/* data associated with BTA_AG_CLOSE_EVT */
-typedef struct
-{
-    tBTA_AG_HDR         hdr;
-    BD_ADDR             bd_addr;
-} tBTA_AG_CLOSE;
-
 /* data associated with BTA_AG_CONN_EVT */
 typedef struct
 {
     tBTA_AG_HDR         hdr;
     tBTA_AG_PEER_FEAT   peer_feat;
-    BD_ADDR             bd_addr;
     tBTA_AG_PEER_CODEC  peer_codec;
 } tBTA_AG_CONN;
 
@@ -295,7 +287,6 @@ typedef struct
 typedef struct
 {
     tBTA_AG_HDR         hdr;
-    BD_ADDR             bd_addr;
     char                str[BTA_AG_AT_MAX_LEN+1];
     UINT16              num;
     UINT8               idx;    /* call number used by CLCC and CHLD */
@@ -307,7 +298,6 @@ typedef union
     tBTA_AG_HDR         hdr;
     tBTA_AG_REGISTER    reg;
     tBTA_AG_OPEN        open;
-    tBTA_AG_CLOSE       close;
     tBTA_AG_CONN        conn;
     tBTA_AG_VAL         val;
 } tBTA_AG;

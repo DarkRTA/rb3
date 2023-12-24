@@ -260,16 +260,6 @@ RFC_API extern int RFCOMM_RemoveServer (UINT16 handle);
 RFC_API extern int PORT_SetEventCallback (UINT16 port_handle,
                                           tPORT_CALLBACK *p_port_cb);
 
-/*******************************************************************************
-**
-** Function         PORT_ClearKeepHandleFlag
-**
-** Description      This function is called to clear the keep handle flag
-**                  which will cause not to keep the port handle open when closed
-** Parameters:      handle     - Handle returned in the RFCOMM_CreateConnection
-**
-*******************************************************************************/
-int PORT_ClearKeepHandleFlag (UINT16 port_handle);
 
 /*******************************************************************************
 **

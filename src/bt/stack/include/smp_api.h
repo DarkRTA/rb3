@@ -61,7 +61,6 @@ typedef UINT8   tSMP_EVT;
 #define SMP_RSP_TIMEOUT             0x11
 #define SMP_DIV_NOT_AVAIL           0x12
 #define SMP_FAIL                    0x13 /* unspecified failed reason */
-#define SMP_CONN_TOUT               0x14 /* unspecified failed reason */
 #define SMP_SUCCESS                 0
 
 typedef UINT8 tSMP_STATUS;
@@ -134,9 +133,9 @@ typedef struct
 
 typedef struct
 {
-    tSMP_STATUS     reason;
-    tSMP_SEC_LEVEL  sec_level;
-    BOOLEAN         is_pair_cancel;
+    UINT8       reason;
+    UINT8       sec_level;
+    BOOLEAN     is_pair_cancel;
 } tSMP_CMPL;
 
 typedef union

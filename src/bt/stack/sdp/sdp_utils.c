@@ -884,7 +884,7 @@ UINT16 sdpu_get_attrib_seq_len(tSDP_RECORD *p_rec, tSDP_ATTR_SEQ *attr_seq)
     UINT16 len1 = 0;
     UINT16 xx;
     BOOLEAN is_range = FALSE;
-    UINT16 start_id=0, end_id=0;
+    UINT16 start_id, end_id;
 
     for (xx = 0; xx < attr_seq->num_attr; xx++)
     {
@@ -999,29 +999,21 @@ UINT16 sdpu_get_attrib_entry_len(tSDP_ATTRIBUTE *p_attr)
 *******************************************************************************/
 UINT8 *sdpu_build_partial_attrib_entry (UINT8 *p_out, tSDP_ATTRIBUTE *p_attr, UINT16 len, UINT16 *offset)
 {
-    UINT8   *p_attr_buff;
-    UINT8   *p_tmp_attr;
+    UINT8   tmp_attr[MAX_ATTR_LEN];
+    UINT8   *p_tmp_attr = &tmp_attr[0];
     size_t  len_to_copy;
     UINT16  attr_len;
-
-    if ((p_attr_buff = (UINT8 *) GKI_getbuf(sizeof(UINT8) * SDP_MAX_ATTR_LEN )) == NULL)
-    {
-        SDP_TRACE_ERROR0("sdpu_build_partial_attrib_entry cannot get a buffer!");
-        return NULL;
-    }
-    p_tmp_attr = p_attr_buff;
 
     sdpu_build_attrib_entry(p_tmp_attr, p_attr);
     attr_len = sdpu_get_attrib_entry_len(p_attr);
 
     len_to_copy = ((attr_len - *offset) < len) ? (attr_len - *offset): len;
 
-    memcpy(p_out, &p_attr_buff[*offset], len_to_copy);
+    memcpy(p_out, &tmp_attr[*offset], len_to_copy);
 
     p_out = &p_out[len_to_copy];
     *offset += len_to_copy;
 
-    GKI_freebuf(p_attr_buff);
     return p_out;
 }
 

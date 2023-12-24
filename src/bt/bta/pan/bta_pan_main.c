@@ -34,7 +34,6 @@
 #include "bta_pan_api.h"
 #include "bta_pan_int.h"
 #include "bd.h"
-#include "utl.h"
 
 /*****************************************************************************
 ** Constants and types
@@ -83,6 +82,14 @@ const tBTA_PAN_ACTION bta_pan_action[] =
 #define BTA_PAN_NEXT_STATE           1       /* position of next state */
 #define BTA_PAN_NUM_COLS             2       /* number of columns in state tables */
 
+
+/* state machine states */
+enum
+{
+    BTA_PAN_IDLE_ST,
+    BTA_PAN_OPEN_ST,
+    BTA_PAN_CLOSING_ST
+};
 
 
 /* state table for listen state */
@@ -258,8 +265,6 @@ static void bta_pan_api_enable(tBTA_PAN_DATA *p_data)
 *******************************************************************************/
 static void bta_pan_api_disable(tBTA_PAN_DATA *p_data)
 {
-    UNUSED(p_data);
-
     bta_pan_disable();
 }
 

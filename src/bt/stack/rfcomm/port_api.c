@@ -84,6 +84,8 @@ int RFCOMM_CreateConnection (UINT16 uuid, UINT8 scn, BOOLEAN is_server,
     tRFC_MCB   *p_mcb = port_find_mcb (bd_addr);
     UINT16     rfcomm_mtu;
 
+    RFCOMM_TRACE_API3 ("RFCOMM_CreateConnection() called SCN: %d is_server:%d mtu:%d",
+                       scn, is_server, mtu);
     RFCOMM_TRACE_API6 ("RFCOMM_CreateConnection()  BDA: %02x-%02x-%02x-%02x-%02x-%02x",
                        bd_addr[0], bd_addr[1], bd_addr[2], bd_addr[3], bd_addr[4], bd_addr[5]);
 
@@ -102,8 +104,6 @@ int RFCOMM_CreateConnection (UINT16 uuid, UINT8 scn, BOOLEAN is_server,
         dlci = (scn << 1) + 1;
     else
         dlci = (scn << 1);
-    RFCOMM_TRACE_API5("RFCOMM_CreateConnection(): scn:%d, dlci:%d, is_server:%d mtu:%d, p_mcb:%p",
-                       scn, dlci, is_server, mtu, p_mcb);
 
     /* For the server side always allocate a new port.  On the client side */
     /* do not allow the same (dlci, bd_addr) to be opened twice by application */
@@ -123,8 +123,6 @@ int RFCOMM_CreateConnection (UINT16 uuid, UINT8 scn, BOOLEAN is_server,
         RFCOMM_TRACE_WARNING0 ("RFCOMM_CreateConnection - no resources");
         return (PORT_NO_RESOURCES);
     }
-   RFCOMM_TRACE_API6("RFCOMM_CreateConnection(): scn:%d, dlci:%d, is_server:%d mtu:%d, p_mcb:%p, p_port:%p",
-                       scn, dlci, is_server, mtu, p_mcb, p_port);
 
     p_port->default_signal_state = (PORT_DTRDSR_ON | PORT_CTSRTS_ON | PORT_DCD_ON);
 
@@ -311,30 +309,7 @@ int PORT_SetEventCallback (UINT16 port_handle, tPORT_CALLBACK *p_port_cb)
 
     return (PORT_SUCCESS);
 }
-/*******************************************************************************
-**
-** Function         PORT_ClearKeepHandleFlag
-**
-** Description      This function is called to clear the keep handle flag
-**                  which will cause not to keep the port handle open when closed
-** Parameters:      handle     - Handle returned in the RFCOMM_CreateConnection
-**
-*******************************************************************************/
 
-int PORT_ClearKeepHandleFlag (UINT16 port_handle)
-{
-    tPORT  *p_port;
-
-    /* Check if handle is valid to avoid crashing */
-    if ((port_handle == 0) || (port_handle > MAX_RFC_PORTS))
-    {
-        return (PORT_BAD_HANDLE);
-    }
-
-    p_port = &rfc_cb.port.port[port_handle - 1];
-    p_port->keep_port_handle = 0;
-    return (PORT_SUCCESS);
-}
 
 /*******************************************************************************
 **
@@ -813,85 +788,6 @@ int PORT_FlowControl (UINT16 handle, BOOLEAN enable)
         if (!p_port->rx.user_fc)
         {
             port_flow_control_peer(p_port, TRUE, 0);
-        }
-    }
-    else
-    {
-        old_fc = p_port->local_ctrl.fc;
-
-        /* FC is set if user is set or peer is set */
-        p_port->local_ctrl.fc = (p_port->rx.user_fc | p_port->rx.peer_fc);
-
-        if (p_port->local_ctrl.fc != old_fc)
-            port_start_control (p_port);
-    }
-
-    /* Need to take care of the case when we could not deliver events */
-    /* to the application because we were flow controlled */
-    if (enable && (p_port->rx.queue_size != 0))
-    {
-        events = PORT_EV_RXCHAR;
-        if (p_port->rx_flag_ev_pending)
-        {
-            p_port->rx_flag_ev_pending = FALSE;
-            events |= PORT_EV_RXFLAG;
-        }
-
-        events &= p_port->ev_mask;
-        if (p_port->p_callback && events)
-        {
-            p_port->p_callback (events, p_port->inx);
-        }
-    }
-    return (PORT_SUCCESS);
-}
-/*******************************************************************************
-**
-** Function         PORT_FlowControl_MaxCredit
-**
-** Description      This function directs a specified connection to pass
-**                  flow control message to the peer device.  Enable flag passed
-**                  shows if port can accept more data. It also sends max credit
-**                  when data flow enabled
-**
-** Parameters:      handle     - Handle returned in the RFCOMM_CreateConnection
-**                  enable     - enables data flow
-**
-*******************************************************************************/
-
-int PORT_FlowControl_MaxCredit (UINT16 handle, BOOLEAN enable)
-{
-    tPORT      *p_port;
-    BOOLEAN    old_fc;
-    UINT32     events;
-
-    RFCOMM_TRACE_API2 ("PORT_FlowControl() handle:%d enable: %d", handle, enable);
-
-    /* Check if handle is valid to avoid crashing */
-    if ((handle == 0) || (handle > MAX_RFC_PORTS))
-    {
-        return (PORT_BAD_HANDLE);
-    }
-
-    p_port = &rfc_cb.port.port[handle - 1];
-
-    if (!p_port->in_use || (p_port->state == PORT_STATE_CLOSED))
-    {
-        return (PORT_NOT_OPENED);
-    }
-
-    if (!p_port->rfc.p_mcb)
-    {
-        return (PORT_NOT_OPENED);
-    }
-
-    p_port->rx.user_fc = !enable;
-
-    if (p_port->rfc.p_mcb->flow == PORT_FC_CREDIT)
-    {
-        if (!p_port->rx.user_fc)
-        {
-            port_flow_control_peer(p_port, TRUE, p_port->credit_rx);
         }
     }
     else
@@ -1516,8 +1412,6 @@ int PORT_WriteDataCO (UINT16 handle, int* p_len)
         RFCOMM_TRACE_ERROR1("p_data_co_callback DATA_CO_CALLBACK_TYPE_INCOMING_SIZE failed, available:%d", available);
         return (PORT_UNKNOWN_ERROR);
     }
-    if(available == 0)
-        return PORT_SUCCESS;
     /* Length for each buffer is the smaller of GKI buffer, peer MTU, or max_len */
     length = RFCOMM_DATA_POOL_BUF_SIZE -
             (UINT16)(sizeof(BT_HDR) + L2CAP_MIN_OFFSET + RFCOMM_DATA_OVERHEAD);
@@ -1536,7 +1430,6 @@ int PORT_WriteDataCO (UINT16 handle, int* p_len)
 
         {
             error("p_data_co_callback DATA_CO_CALLBACK_TYPE_OUTGOING failed, available:%d", available);
-            PORT_SCHEDULE_UNLOCK;
             return (PORT_UNKNOWN_ERROR);
         }
         //memcpy ((UINT8 *)(p_buf + 1) + p_buf->offset + p_buf->len, p_data, max_len);

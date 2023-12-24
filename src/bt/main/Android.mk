@@ -37,11 +37,6 @@ LOCAL_SRC_FILES += \
     ../btif/src/btif_sock_sdp.c \
     ../btif/src/btif_sock_util.c \
     ../btif/src/btif_pan.c \
-    ../btif/src/btif_gatt.c \
-    ../btif/src/btif_gatt_client.c \
-    ../btif/src/btif_gatt_server.c \
-    ../btif/src/btif_gatt_util.c \
-    ../btif/src/btif_gatt_test.c \
     ../btif/src/btif_config.c \
     ../btif/src/btif_config_util.cpp \
     ../btif/src/btif_profile_queue.c
@@ -55,9 +50,7 @@ LOCAL_SRC_FILES+= \
     ../btif/co/bta_av_co.c \
     ../btif/co/bta_hh_co.c \
     ../btif/co/bta_hl_co.c \
-    ../btif/co/bta_pan_co.c \
-    ../btif/co/bta_gattc_co.c \
-    ../btif/co/bta_gatts_co.c \
+    ../btif/co/bta_pan_co.c
 
 # sbc encoder
 LOCAL_SRC_FILES+= \
@@ -92,15 +85,14 @@ LOCAL_C_INCLUDES+= . \
 	$(LOCAL_PATH)/../btif/include \
 	$(LOCAL_PATH)/../btif/co \
 	$(LOCAL_PATH)/../hci/include\
-	$(LOCAL_PATH)/../vnd/include \
+	$(LOCAL_PATH)/../brcm/include \
 	$(LOCAL_PATH)/../embdrv/sbc/encoder/include \
 	$(LOCAL_PATH)/../audio_a2dp_hw \
 	$(LOCAL_PATH)/../utils/include \
 	$(bdroid_C_INCLUDES) \
 	external/tinyxml2
 
-LOCAL_CFLAGS += -DBUILDCFG $(bdroid_CFLAGS) -Werror -Wno-error=maybe-uninitialized -Wno-error=uninitialized -Wno-error=unused-parameter
-LOCAL_CONLYFLAGS := -std=c99
+LOCAL_CFLAGS += -DBUILDCFG $(bdroid_CFLAGS) -Werror -Wno-error=maybe-uninitialized -Wno-error=uninitialized
 
 ifeq ($(TARGET_PRODUCT), full_crespo)
      LOCAL_CFLAGS += -DTARGET_CRESPO
@@ -121,7 +113,6 @@ endif
 
 LOCAL_SHARED_LIBRARIES := \
     libcutils \
-    liblog \
     libpower \
     libbt-hci \
     libbt-utils
@@ -130,7 +121,7 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_STATIC_LIBRARIES := libbt-brcm_gki libbt-brcm_bta libbt-brcm_stack libtinyxml2
 
 LOCAL_MODULE := bluetooth.default
-LOCAL_MODULE_RELATIVE_PATH := hw
+LOCAL_MODULE_PATH := $(TARGET_OUT_SHARED_LIBRARIES)/hw
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE_CLASS := SHARED_LIBRARIES
 LOCAL_REQUIRED_MODULES := libbt-hci libbt-vendor bt_stack.conf bt_did.conf auto_pair_devlist.conf

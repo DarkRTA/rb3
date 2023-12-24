@@ -356,7 +356,7 @@ over HCI data and intentionally kept out of order */
 
 /* The size of the buffers in pool 7 */
 #ifndef GKI_BUF7_SIZE
-#define GKI_BUF7_SIZE               (10240 + 24)
+#define GKI_BUF7_SIZE               9472
 #endif
 
 /* The number of buffers in buffer pool 7. */

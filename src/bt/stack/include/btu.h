@@ -152,16 +152,7 @@ typedef void (*tBTU_EVENT_CALLBACK)(BT_HDR *p_hdr);
 #define BTU_TTYPE_BLE_RANDOM_ADDR                   103
 #define BTU_TTYPE_ATT_WAIT_FOR_APP_RSP              104
 #define BTU_TTYPE_ATT_WAIT_FOR_IND_ACK              105
-
-#define BTU_TTYPE_L2CAP_END_CONN_UPD                106
-
-#define BTU_TTYPE_BLE_GAP_FAST_ADV                  107
-#define BTU_TTYPE_BLE_OBSERVE                       108
-
-
-#define BTU_TTYPE_UCD_TO                            109
-
-
+#define BTU_TTYPE_BLE_SCAN_PARAM_IDLE               106
 
 /* Define the BTU_TASK APPL events
 */

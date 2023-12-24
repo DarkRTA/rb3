@@ -24,7 +24,6 @@
  ******************************************************************************/
 #include <string.h>
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "gki.h"
 #include "btm_api.h"
 #include "mca_api.h"
@@ -48,8 +47,6 @@
 void mca_ccb_rsp_tout(tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 {
    tMCA_CTRL   evt_data;
-   UNUSED(p_data);
-
    mca_ccb_report_event(p_ccb, MCA_RSP_TOUT_IND_EVT, &evt_data);
 }
 
@@ -79,8 +76,6 @@ void mca_ccb_report_event(tMCA_CCB *p_ccb, UINT8 event, tMCA_CTRL *p_data)
 *******************************************************************************/
 void mca_ccb_free_msg(tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 {
-    UNUSED(p_ccb);
-
     GKI_freebuf (p_data);
 }
 
@@ -215,8 +210,6 @@ void mca_ccb_snd_rsp(tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 *******************************************************************************/
 void mca_ccb_do_disconn (tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 {
-    UNUSED(p_data);
-
     mca_dcb_close_by_mdl_id (p_ccb, MCA_ALL_MDL_ID);
     L2CA_DisconnectReq(p_ccb->lcid);
 }
@@ -580,8 +573,6 @@ void mca_ccb_ll_open (tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 *******************************************************************************/
 void mca_ccb_dl_open (tMCA_CCB *p_ccb, tMCA_CCB_EVT *p_data)
 {
-    UNUSED(p_data);
-
     mca_free_buf ((void **)&p_ccb->p_tx_req);
     mca_free_buf ((void **)&p_ccb->p_rx_msg);
     p_ccb->status = MCA_CCB_STAT_NORM;

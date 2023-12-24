@@ -45,9 +45,7 @@
 #include "btif_dm.h"
 #include "btif_util.h"
 #include "bta_ag_api.h"
-#include "bta_av_api.h"
 #include "bta_hh_api.h"
-#include "avrc_defs.h"
 
 
 
@@ -85,31 +83,29 @@ int str2bd(char *str, bt_bdaddr_t *addr)
 {
     int32_t i = 0;
     for (i = 0; i < 6; i++) {
-       addr->address[i] = (uint8_t)strtoul(str, &str, 16);
+       addr->address[i] = (uint8_t) strtoul(str, (char **)&str, 16);
        str++;
     }
     return 0;
 }
 
-char *bd2str(const bt_bdaddr_t *bdaddr, bdstr_t *bdstr)
+char *bd2str(bt_bdaddr_t *bdaddr, bdstr_t *bdstr)
 {
-    const uint8_t *addr = bdaddr->address;
+    char *addr = (char *) bdaddr->address;
 
-    sprintf(*bdstr, "%02x:%02x:%02x:%02x:%02x:%02x",
-             addr[0], addr[1], addr[2],
-             addr[3], addr[4], addr[5]);
-    return *bdstr;
+    sprintf((char*)bdstr, "%02x:%02x:%02x:%02x:%02x:%02x",
+                       (int)addr[0],(int)addr[1],(int)addr[2],
+                       (int)addr[3],(int)addr[4],(int)addr[5]);
+    return (char *)bdstr;
 }
 
 UINT32 devclass2uint(DEV_CLASS dev_class)
 {
     UINT32 cod = 0;
 
-    if(dev_class != NULL)
-    {
-        /* if COD is 0, irrespective of the device type set it to Unclassified device */
-        cod = (dev_class[2]) | (dev_class[1] << 8) | (dev_class[0] << 16);
-    }
+    /* if COD is 0, irrespective of the device type set it to Unclassified device */
+    cod = (dev_class[2]) | (dev_class[1] << 8) | (dev_class[0] << 16);
+
     return cod;
 }
 void uint2devclass(UINT32 cod, DEV_CLASS dev_class)
@@ -462,62 +458,5 @@ const char* dump_bt_status(bt_status_t status)
     }
 }
 
-const char *dump_rc_event(UINT8 event)
-{
-   switch(event) {
-        CASE_RETURN_STR(BTA_AV_RC_OPEN_EVT)
-        CASE_RETURN_STR(BTA_AV_RC_CLOSE_EVT)
-        CASE_RETURN_STR(BTA_AV_REMOTE_CMD_EVT)
-        CASE_RETURN_STR(BTA_AV_REMOTE_RSP_EVT)
-        CASE_RETURN_STR(BTA_AV_VENDOR_CMD_EVT)
-        CASE_RETURN_STR(BTA_AV_VENDOR_RSP_EVT)
-        CASE_RETURN_STR(BTA_AV_META_MSG_EVT)
-        CASE_RETURN_STR(BTA_AV_RC_FEAT_EVT)
-        default:
-            return "UNKNOWN_EVENT";
-   }
-}
-
-const char * dump_rc_notification_event_id(UINT8 event_id)
-{
-    switch(event_id)
-    {
-        CASE_RETURN_STR(AVRC_EVT_PLAY_STATUS_CHANGE)
-        CASE_RETURN_STR(AVRC_EVT_TRACK_CHANGE)
-        CASE_RETURN_STR(AVRC_EVT_TRACK_REACHED_END)
-        CASE_RETURN_STR(AVRC_EVT_TRACK_REACHED_START)
-        CASE_RETURN_STR(AVRC_EVT_PLAY_POS_CHANGED)
-        CASE_RETURN_STR(AVRC_EVT_BATTERY_STATUS_CHANGE)
-        CASE_RETURN_STR(AVRC_EVT_SYSTEM_STATUS_CHANGE)
-        CASE_RETURN_STR(AVRC_EVT_APP_SETTING_CHANGE)
-        CASE_RETURN_STR(AVRC_EVT_VOLUME_CHANGE)
-
-        default:
-            return "Unhandled Event ID";
-    }
-}
-
-const char*  dump_rc_pdu(UINT8 pdu)
-{
-    switch(pdu)
-    {
-        CASE_RETURN_STR(AVRC_PDU_LIST_PLAYER_APP_ATTR)
-        CASE_RETURN_STR(AVRC_PDU_LIST_PLAYER_APP_VALUES)
-        CASE_RETURN_STR(AVRC_PDU_GET_CUR_PLAYER_APP_VALUE)
-        CASE_RETURN_STR(AVRC_PDU_SET_PLAYER_APP_VALUE)
-        CASE_RETURN_STR(AVRC_PDU_GET_PLAYER_APP_ATTR_TEXT)
-        CASE_RETURN_STR(AVRC_PDU_GET_PLAYER_APP_VALUE_TEXT)
-        CASE_RETURN_STR(AVRC_PDU_INFORM_DISPLAY_CHARSET)
-        CASE_RETURN_STR(AVRC_PDU_INFORM_BATTERY_STAT_OF_CT)
-        CASE_RETURN_STR(AVRC_PDU_GET_ELEMENT_ATTR)
-        CASE_RETURN_STR(AVRC_PDU_GET_PLAY_STATUS)
-        CASE_RETURN_STR(AVRC_PDU_REGISTER_NOTIFICATION)
-        CASE_RETURN_STR(AVRC_PDU_REQUEST_CONTINUATION_RSP)
-        CASE_RETURN_STR(AVRC_PDU_ABORT_CONTINUATION_RSP)
-        CASE_RETURN_STR(AVRC_PDU_SET_ABSOLUTE_VOLUME)
-        default:
-            return "Unknown PDU";
-    }
-}
 
 

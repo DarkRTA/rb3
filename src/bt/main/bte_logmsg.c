@@ -91,7 +91,6 @@
 
 #if (BLE_INCLUDED==TRUE)
 #include "gatt_api.h"
-#include "smp_api.h"
 #endif
 
     /* LayerIDs for BTA, currently everything maps onto appl_trace_level */
@@ -283,6 +282,7 @@ ScrLog(UINT32 trace_set_mask, const char *fmt_str, ...)
     int trace_layer = TRACE_GET_LAYER(trace_set_mask);
     if (trace_layer >= TRACE_LAYER_MAX_NUM)
         trace_layer = 0;
+
 	gettimeofday(&tv, &tz);
 	time(&t);
 	tm = localtime(&t);
@@ -309,14 +309,6 @@ BT_API UINT8 BTAPP_SetTraceLevel( UINT8 new_level )
         appl_trace_level = new_level;
 
     return (appl_trace_level);
-}
-
-BT_API UINT8 BTIF_SetTraceLevel( UINT8 new_level )
-{
-    if (new_level != 0xFF)
-        btif_trace_level = new_level;
-
-    return (btif_trace_level);
 }
 
 BTU_API UINT8 BTU_SetTraceLevel( UINT8 new_level )
@@ -467,6 +459,8 @@ tBTTRC_FUNC_MAP bttrc_set_level_map[] = {
     {BTTRC_ID_STK_SDP, BTTRC_ID_STK_SDP, SDP_SetTraceLevel, "TRC_SDP", DEFAULT_CONF_TRACE_LEVEL},
 #if (BLE_INCLUDED==TRUE)
     {BTTRC_ID_STK_GATT, BTTRC_ID_STK_GATT, GATT_SetTraceLevel, "TRC_GATT", DEFAULT_CONF_TRACE_LEVEL},
+#endif
+#if (BLE_INCLUDED==TRUE)
     {BTTRC_ID_STK_SMP, BTTRC_ID_STK_SMP, SMP_SetTraceLevel, "TRC_SMP", DEFAULT_CONF_TRACE_LEVEL},
 #endif
 
@@ -475,10 +469,6 @@ tBTTRC_FUNC_MAP bttrc_set_level_map[] = {
      * BTL_GLOBAL_PROP_TRC_FLAG serves as flag in conf.
      */
     {BTTRC_ID_BTA_ACC, BTTRC_ID_BTAPP, BTAPP_SetTraceLevel, BTL_GLOBAL_PROP_TRC_FLAG, DEFAULT_CONF_TRACE_LEVEL},
-#endif
-
-#if (BT_TRACE_BTIF == TRUE)
-    {BTTRC_ID_BTA_ACC, BTTRC_ID_BTAPP, BTIF_SetTraceLevel, "TRC_BTIF", DEFAULT_CONF_TRACE_LEVEL},
 #endif
 
     {0, 0, NULL, NULL, DEFAULT_CONF_TRACE_LEVEL}

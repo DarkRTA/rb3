@@ -31,7 +31,6 @@
 #include "sdp_api.h"
 #include "btm_api.h"
 #include "gki.h"
-#include "utl.h"
 
 /* Number of protocol elements in protocol element list. */
 #define BTA_AG_NUM_PROTO_ELEMS      2
@@ -257,7 +256,6 @@ void bta_ag_del_records(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
     tBTA_SERVICE_MASK   services;
     tBTA_SERVICE_MASK   others = 0;
     int                 i;
-    UNUSED(p_data);
 
     /* get services of all other registered servers */
     for (i = 0; i < BTA_AG_NUM_IDX; i++, p++)
@@ -494,8 +492,6 @@ void bta_ag_do_disc(tBTA_AG_SCB *p_scb, tBTA_SERVICE_MASK service)
 *******************************************************************************/
 void bta_ag_free_db(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
-
     if (p_scb->p_disc_db != NULL)
     {
         GKI_freebuf(p_scb->p_disc_db);

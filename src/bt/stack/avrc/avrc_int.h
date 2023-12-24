@@ -96,31 +96,10 @@
 **  Type definitions
 *****************************************************************************/
 
-#if (AVRC_METADATA_INCLUDED == TRUE)
-/* type for Metadata fragmentation control block */
-typedef struct
-{
-    BT_HDR              *p_fmsg;        /* the fragmented message */
-    UINT8               frag_pdu;       /* the PDU ID for fragmentation */
-    BOOLEAN             frag_enabled;   /* fragmentation flag */
-} tAVRC_FRAG_CB;
-
-/* type for Metadata re-assembly control block */
-typedef struct
-{
-    BT_HDR              *p_rmsg;        /* the received message */
-    UINT16              rasm_offset;    /* re-assembly flag, the offset of the start fragment */
-    UINT8               rasm_pdu;       /* the PDU ID for re-assembly */
-} tAVRC_RASM_CB;
-#endif
 
 typedef struct
 {
     tAVRC_CONN_CB       ccb[AVCT_NUM_CONN];
-#if (AVRC_METADATA_INCLUDED == TRUE)
-    tAVRC_FRAG_CB       fcb[AVCT_NUM_CONN];
-    tAVRC_RASM_CB       rcb[AVCT_NUM_CONN];
-#endif
     tAVRC_FIND_CBACK    *p_cback;       /* pointer to application callback */
     tSDP_DISCOVERY_DB   *p_db;          /* pointer to discovery database */
     UINT16              service_uuid;   /* service UUID to search */

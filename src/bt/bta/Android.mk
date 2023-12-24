@@ -1,3 +1,5 @@
+ifneq ($(TARGET_SIMULATOR),true)
+
 LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -6,7 +8,7 @@ ifeq ($(BOARD_HAVE_BLUETOOTH_BCM),true)
 LOCAL_CFLAGS += \
 	-DBOARD_HAVE_BLUETOOTH_BCM
 endif
-LOCAL_CFLAGS += -DBUILDCFG $(bdroid_CFLAGS) -std=c99
+LOCAL_CFLAGS += -DBUILDCFG $(bdroid_CFLAGS)
 
 LOCAL_PRELINK_MODULE:=false
 LOCAL_SRC_FILES:= \
@@ -40,7 +42,6 @@ LOCAL_SRC_FILES:= \
     ./hh/bta_hh_cfg.c \
     ./hh/bta_hh_act.c \
     ./hh/bta_hh_api.c \
-    ./hh/bta_hh_le.c \
     ./hh/bta_hh_utils.c \
     ./hh/bta_hh_main.c \
     ./pb/bta_pbs_cfg.c \
@@ -75,8 +76,7 @@ LOCAL_SRC_FILES:= \
     ./jv/bta_jv_act.c \
     ./jv/bta_jv_cfg.c \
     ./jv/bta_jv_main.c \
-    ./jv/bta_jv_api.c \
-    ../vnd/ble/bta_vendor.c
+    ./jv/bta_jv_api.c
 
 LOCAL_MODULE := libbt-brcm_bta
 LOCAL_MODULE_CLASS := STATIC_LIBRARIES
@@ -87,7 +87,6 @@ LOCAL_C_INCLUDES+= . \
                    $(LOCAL_PATH)/include \
                    $(LOCAL_PATH)/sys \
                    $(LOCAL_PATH)/dm \
-                   $(LOCAL_PATH)/hh \
                    $(LOCAL_PATH)/../gki/common \
                    $(LOCAL_PATH)/../gki/ulinux \
                    $(LOCAL_PATH)/../include \
@@ -96,9 +95,10 @@ LOCAL_C_INCLUDES+= . \
                    $(LOCAL_PATH)/../hcis \
                    $(LOCAL_PATH)/../hcis/patchram \
                    $(LOCAL_PATH)/../udrv/include \
-                   $(LOCAL_PATH)/../vnd/include \
-                   $(LOCAL_PATH)/../utils/include \
+                   $(LOCAL_PATH)/../brcm/include \
                    $(bdroid_C_INCLUDES) \
 
 
 include $(BUILD_STATIC_LIBRARY)
+
+endif  # TARGET_SIMULATOR != true

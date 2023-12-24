@@ -35,7 +35,6 @@
 
 #include "bt_target.h"
 #include "bta_api.h"
-#include "bt_utils.h"
 
 /******************************************************************************
 **  Externs
@@ -131,7 +130,6 @@ static tKEY_VALUE_PAIRS did_conf_pairs[CONF_DID_MAX] = {
 
 int device_name_cfg(char *p_conf_name, char *p_conf_value)
 {
-    UNUSED(p_conf_name);
     strcpy((char *)local_device_default_name, p_conf_value);
     return 0;
 }
@@ -140,7 +138,6 @@ int device_class_cfg(char *p_conf_name, char *p_conf_value)
 {
     char *p_token;
     unsigned int x;
-    UNUSED(p_conf_name);
 
     p_token = strtok(p_conf_value, CONF_COD_DELIMITERS);
     sscanf(p_token, "%x", &x);
@@ -157,7 +154,6 @@ int device_class_cfg(char *p_conf_name, char *p_conf_value)
 
 int logging_cfg_onoff(char *p_conf_name, char *p_conf_value)
 {
-    UNUSED(p_conf_name);
     if (strcmp(p_conf_value, "true") == 0)
         hci_logging_enabled = TRUE;
     else
@@ -167,14 +163,12 @@ int logging_cfg_onoff(char *p_conf_name, char *p_conf_value)
 
 int logging_set_filepath(char *p_conf_name, char *p_conf_value)
 {
-    UNUSED(p_conf_name);
     strcpy(hci_logfile, p_conf_value);
     return 0;
 }
 
 int trace_cfg_onoff(char *p_conf_name, char *p_conf_value)
 {
-    UNUSED(p_conf_name);
     trace_conf_enabled = (strcmp(p_conf_value, "true") == 0) ? TRUE : FALSE;
     return 0;
 }

@@ -35,8 +35,6 @@
 #include <hardware/bt_hh.h>
 #include <hardware/bt_hl.h>
 #include <hardware/bt_pan.h>
-#include <hardware/bt_gatt.h>
-#include <hardware/bt_rc.h>
 
 #define LOG_NDDEBUG 0
 #define LOG_TAG "bluedroid"
@@ -82,12 +80,6 @@ extern bthh_interface_t *btif_hh_get_interface();
 extern bthl_interface_t *btif_hl_get_interface();
 /*pan*/
 extern btpan_interface_t *btif_pan_get_interface();
-#if BLE_INCLUDED == TRUE
-/* gatt */
-extern btgatt_interface_t *btif_gatt_get_interface();
-#endif
-/* avrc */
-extern btrc_interface_t *btif_rc_get_interface();
 
 /************************************************************************************
 **  Functions
@@ -157,6 +149,7 @@ static void cleanup( void )
         return;
 
     btif_shutdown_bluetooth();
+    bt_utils_cleanup();
 
     /* hal callbacks reset upon shutdown complete callback */
 
@@ -326,15 +319,6 @@ static const void* get_profile_interface (const char *profile_id)
 
     if (is_profile(profile_id, BT_PROFILE_HEALTH_ID))
         return btif_hl_get_interface();
-
-#if ( BTA_GATT_INCLUDED == TRUE &&BLE_INCLUDED == TRUE)
-    if (is_profile(profile_id, BT_PROFILE_GATT_ID))
-        return btif_gatt_get_interface();
-#endif
-
-    if (is_profile(profile_id, BT_PROFILE_AV_RC_ID))
-        return btif_rc_get_interface();
-
     return NULL;
 }
 
@@ -359,33 +343,8 @@ int dut_mode_send(uint16_t opcode, uint8_t* buf, uint8_t len)
 
     return btif_dut_mode_send(opcode, buf, len);
 }
-
-#if BLE_INCLUDED == TRUE
-int le_test_mode(uint16_t opcode, uint8_t* buf, uint8_t len)
-{
-    ALOGI("le_test_mode");
-
-    /* sanity check */
-    if (interface_ready() == FALSE)
-        return BT_STATUS_NOT_READY;
-
-    return btif_le_test_mode(opcode, buf, len);
-}
-#endif
-
-int config_hci_snoop_log(uint8_t enable)
-{
-    ALOGI("config_hci_snoop_log");
-
-    /* sanity check */
-    if (interface_ready() == FALSE)
-        return BT_STATUS_NOT_READY;
-
-    return btif_config_hci_snoop_log(enable);
-}
-
 static const bt_interface_t bluetoothInterface = {
-    sizeof(bluetoothInterface),
+    sizeof(bt_interface_t),
     init,
     enable,
     disable,
@@ -407,13 +366,7 @@ static const bt_interface_t bluetoothInterface = {
     ssp_reply,
     get_profile_interface,
     dut_mode_configure,
-    dut_mode_send,
-#if BLE_INCLUDED == TRUE
-    le_test_mode,
-#else
-    NULL,
-#endif
-    config_hci_snoop_log
+    dut_mode_send
 };
 
 const bt_interface_t* bluetooth__get_bluetooth_interface ()
@@ -425,16 +378,13 @@ const bt_interface_t* bluetooth__get_bluetooth_interface ()
 
 static int close_bluetooth_stack(struct hw_device_t* device)
 {
-    UNUSED(device);
     cleanup();
     return 0;
 }
 
 static int open_bluetooth_stack (const struct hw_module_t* module, char const* name,
-                                 struct hw_device_t** abstraction)
+struct hw_device_t** abstraction)
 {
-    UNUSED(name);
-
     bluetooth_device_t *stack = malloc(sizeof(bluetooth_device_t) );
     memset(stack, 0, sizeof(bluetooth_device_t) );
     stack->common.tag = HARDWARE_DEVICE_TAG;

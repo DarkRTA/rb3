@@ -97,6 +97,8 @@ static int                  shutdown_timer = 0;
 **  Local type definitions
 ******************************************************************************/
 
+#define pthread_cond_timedwait_monotonic pthread_cond_timedwait
+
 typedef struct
 {
     UINT8 task_id;          /* GKI task id */
@@ -245,8 +247,6 @@ UINT8 GKI_create_task (TASKPTR task_entry, UINT8 task_id, INT8 *taskname, UINT16
     struct sched_param param;
     int policy, ret = 0;
     pthread_attr_t attr1;
-    UNUSED(stack);
-    UNUSED(stacksize);
 
     GKI_TRACE( "GKI_create_task %x %d %s %x %d", (int)task_entry, (int)task_id,
             (char*) taskname, (int) stack, (int)stacksize);
@@ -264,12 +264,8 @@ UINT8 GKI_create_task (TASKPTR task_entry, UINT8 task_id, INT8 *taskname, UINT16
     gki_cb.com.OSWaitEvt[task_id]   = 0;
 
     /* Initialize mutex and condition variable objects for events and timeouts */
-    pthread_condattr_t cond_attr;
-    pthread_condattr_init(&cond_attr);
-    pthread_condattr_setclock(&cond_attr, CLOCK_MONOTONIC);
-
     pthread_mutex_init(&gki_cb.os.thread_evt_mutex[task_id], NULL);
-    pthread_cond_init (&gki_cb.os.thread_evt_cond[task_id], &cond_attr);
+    pthread_cond_init (&gki_cb.os.thread_evt_cond[task_id], NULL);
     pthread_mutex_init(&gki_cb.os.thread_timeout_mutex[task_id], NULL);
     pthread_cond_init (&gki_cb.os.thread_timeout_cond[task_id], NULL);
 
@@ -315,10 +311,8 @@ UINT8 GKI_create_task (TASKPTR task_entry, UINT8 task_id, INT8 *taskname, UINT16
          {
              /* check if define in gki_int.h is correct for this compile environment! */
              policy = GKI_LINUX_BASE_POLICY;
-#if (GKI_LINUX_BASE_POLICY != GKI_SCHED_NORMAL)
+#if (GKI_LINUX_BASE_POLICY!=GKI_SCHED_NORMAL)
              param.sched_priority = GKI_LINUX_BASE_PRIORITY - task_id - 2;
-#else
-             param.sched_priority = 0;
 #endif
          }
          pthread_setschedparam(gki_cb.os.thread_id[task_id], policy, &param);
@@ -621,7 +615,6 @@ void* timer_thread(void *arg)
     int restart;
     tGKI_OS         *p_os = &gki_cb.os;
     int  *p_run_cond = &p_os->no_timer_suspend;
-    (void)arg;
 
     /* Indicate that tick is just starting */
     restart = 1;
@@ -788,12 +781,11 @@ void GKI_freeze()
 **
 *******************************************************************************/
 
-void GKI_run (void * p_task_id)
+void GKI_run (void *p_task_id)
 {
     struct timespec delay;
     int err;
     volatile int * p_run_cond = &gki_cb.os.no_timer_suspend;
-    UNUSED(p_task_id);
 
 #ifndef GKI_NO_TICK_STOP
     /* adjust btld scheduling scheme now */
@@ -946,8 +938,9 @@ UINT16 GKI_wait (UINT16 flag, UINT32 timeout)
             }
             abstime.tv_sec += sec;
 
-            pthread_cond_timedwait(&gki_cb.os.thread_evt_cond[rtask],
+            pthread_cond_timedwait_monotonic(&gki_cb.os.thread_evt_cond[rtask],
                     &gki_cb.os.thread_evt_mutex[rtask], &abstime);
+
         }
         else
         {
@@ -1409,8 +1402,8 @@ void GKI_os_free (void *p_mem)
 *******************************************************************************/
 UINT8 GKI_suspend_task (UINT8 task_id)
 {
-    UNUSED(task_id);
     GKI_TRACE("GKI_suspend_task %d - NOT implemented", task_id);
+
 
     GKI_TRACE("GKI_suspend_task %d done", task_id);
 
@@ -1435,8 +1428,8 @@ UINT8 GKI_suspend_task (UINT8 task_id)
 *******************************************************************************/
 UINT8 GKI_resume_task (UINT8 task_id)
 {
-    UNUSED(task_id);
     GKI_TRACE("GKI_resume_task %d - NOT implemented", task_id);
+
 
     GKI_TRACE("GKI_resume_task %d done", task_id);
 

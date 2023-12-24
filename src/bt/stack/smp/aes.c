@@ -510,7 +510,7 @@ return_type aes_set_key( const unsigned char key[], length_type keylen, aes_cont
         keylen = 24;
         break;
     case 32:
-    /*    case 256:           length in bits (256 = 8*32) */ 
+    case 256:
         keylen = 32;
         break;
     default:

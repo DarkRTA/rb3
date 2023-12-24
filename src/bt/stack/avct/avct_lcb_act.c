@@ -25,7 +25,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avct_api.h"
 #include "avct_int.h"
 #include "gki.h"
@@ -171,7 +170,6 @@ static BT_HDR *avct_lcb_msg_asmbl(tAVCT_LCB *p_lcb, BT_HDR *p_buf)
 void avct_lcb_chnl_open(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
     UINT16 result = AVCT_RESULT_FAIL;
-    UNUSED(p_data);
 
     BTM_SetOutService(p_lcb->peer_addr, BTM_SEC_SERVICE_AVCTP, 0);
     /* call l2cap connect req */
@@ -195,8 +193,6 @@ void avct_lcb_chnl_open(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 *******************************************************************************/
 void avct_lcb_unbind_disc(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
-    UNUSED(p_lcb);
-
     avct_ccb_dealloc(p_data->p_ccb, AVCT_DISCONNECT_CFM_EVT, 0, NULL);
 }
 
@@ -294,7 +290,6 @@ void avct_lcb_close_ind(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
     tAVCT_CCB           *p_ccb = &avct_cb.ccb[0];
     int                 i;
-    UNUSED(p_data);
 
     for (i = 0; i < AVCT_NUM_CONN; i++, p_ccb++)
     {
@@ -421,8 +416,6 @@ void avct_lcb_chk_disc(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 *******************************************************************************/
 void avct_lcb_chnl_disc(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
-    UNUSED(p_data);
-
     L2CA_DisconnectReq(p_lcb->ch_lcid);
 }
 
@@ -439,8 +432,6 @@ void avct_lcb_chnl_disc(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 *******************************************************************************/
 void avct_lcb_bind_fail(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
-    UNUSED(p_lcb);
-
     avct_ccb_dealloc(p_data->p_ccb, AVCT_CONNECT_CFM_EVT, AVCT_RESULT_FAIL, NULL);
 }
 
@@ -497,8 +488,6 @@ void avct_lcb_cong_ind(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 *******************************************************************************/
 void avct_lcb_discard_msg(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
-    UNUSED(p_lcb);
-
     AVCT_TRACE_WARNING0("Dropping msg");
 
     GKI_freebuf(p_data->ul_msg.p_buf);
@@ -634,8 +623,6 @@ void avct_lcb_send_msg(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 *******************************************************************************/
 void avct_lcb_free_msg_ind(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
 {
-    UNUSED(p_lcb);
-
     if (p_data)
         GKI_freebuf(p_data->p_buf);
     return;

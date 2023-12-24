@@ -392,7 +392,6 @@ void bta_av_conn_cback(UINT8 handle, BD_ADDR bd_addr, UINT8 event, tAVDT_CTRL *p
     tBTA_AV_STR_MSG     *p_msg;
     UINT16  evt = 0;
     tBTA_AV_SCB *p_scb = NULL;
-    UNUSED(handle);
 
 #if( defined BTA_AR_INCLUDED ) && (BTA_AR_INCLUDED == TRUE)
     if (event == BTA_AR_AVDT_CONN_EVT ||
@@ -451,9 +450,6 @@ void bta_av_conn_cback(UINT8 handle, BD_ADDR bd_addr, UINT8 event, tAVDT_CTRL *p
 static void bta_av_a2dp_report_cback(UINT8 handle, AVDT_REPORT_TYPE type,
                                     tAVDT_REPORT_DATA *p_data)
 {
-    UNUSED(handle);
-    UNUSED(type);
-    UNUSED(p_data);
     /* Do not need to handle report data for now.
      * This empty function is here for conformance reasons. */
 }
@@ -719,9 +715,9 @@ static void bta_av_ci_data(tBTA_AV_DATA *p_data)
 **
 *******************************************************************************/
 #if (AVDT_REPORTING == TRUE)
+
 static void bta_av_rpc_conn(tBTA_AV_DATA *p_data)
 {
-    UNUSED(p_data);
 }
 #endif
 
@@ -836,7 +832,6 @@ static void bta_av_sys_rs_cback (tBTA_SYS_CONN_STATUS status,UINT8 id, UINT8 app
     tBTA_AV_ROLE_RES  *p_buf;
     UINT8       cur_role;
     UINT8       peer_idx = 0;
-    UNUSED(status);
 
     APPL_TRACE_DEBUG1("bta_av_sys_rs_cback: %d", bta_av_cb.rs_idx);
     for(i=0; i<BTA_AV_NUM_STRS; i++)
@@ -912,8 +907,6 @@ static void bta_av_sco_chg_cback(tBTA_SYS_CONN_STATUS status, UINT8 id, UINT8
     tBTA_AV_SCB *p_scb;
     int     i;
     tBTA_AV_API_STOP stop;
-    UNUSED(app_id);
-    UNUSED(peer_addr);
 
     APPL_TRACE_DEBUG2("bta_av_sco_chg_cback:%d status:%d", id, status);
     if(id)
@@ -1056,7 +1049,6 @@ UINT16 bta_av_chk_mtu(tBTA_AV_SCB *p_scb, UINT16 mtu)
     tBTA_AV_SCB *p_scbi;
     int i;
     UINT8   mask;
-    UNUSED(mtu);
 
     /* TODO_MV mess with the mtu according to the number of EDR/non-EDR headsets */
     if(p_scb->chnl == BTA_AV_CHNL_AUDIO)
@@ -1199,9 +1191,9 @@ BOOLEAN bta_av_hdl_event(BT_HDR *p_msg)
     if(event >= first_event)
     {
 #if (defined(BTA_AV_DEBUG) && BTA_AV_DEBUG == TRUE)
-        APPL_TRACE_VERBOSE2("AV nsm event=0x%x(%s)", event, bta_av_evt_code(event));
+        APPL_TRACE_EVENT2("AV nsm event=0x%x(%s)", event, bta_av_evt_code(event));
 #else
-        APPL_TRACE_VERBOSE1("AV nsm event=0x%x", event);
+        APPL_TRACE_EVENT1("AV nsm event=0x%x", event);
 #endif
         /* non state machine events */
         (*bta_av_nsm_act[event - BTA_AV_FIRST_NSM_EVT]) ((tBTA_AV_DATA *) p_msg);
@@ -1209,16 +1201,16 @@ BOOLEAN bta_av_hdl_event(BT_HDR *p_msg)
     else if (event >= BTA_AV_FIRST_SM_EVT && event <= BTA_AV_LAST_SM_EVT)
     {
 #if (defined(BTA_AV_DEBUG) && BTA_AV_DEBUG == TRUE)
-        APPL_TRACE_VERBOSE2("AV sm event=0x%x(%s)", event, bta_av_evt_code(event));
+        APPL_TRACE_EVENT2("AV sm event=0x%x(%s)", event, bta_av_evt_code(event));
 #else
-        APPL_TRACE_VERBOSE1("AV sm event=0x%x", event);
+        APPL_TRACE_EVENT1("AV sm event=0x%x", event);
 #endif
         /* state machine events */
         bta_av_sm_execute(&bta_av_cb, p_msg->event, (tBTA_AV_DATA *) p_msg);
     }
     else
     {
-        APPL_TRACE_VERBOSE1("handle=0x%x", p_msg->layer_specific);
+        APPL_TRACE_EVENT1("handle=0x%x", p_msg->layer_specific);
         /* stream state machine events */
         bta_av_ssm_execute( bta_av_hndl_to_scb(p_msg->layer_specific),
                                 p_msg->event, (tBTA_AV_DATA *) p_msg);

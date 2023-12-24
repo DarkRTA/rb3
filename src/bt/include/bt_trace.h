@@ -4668,28 +4668,6 @@ extern UINT8 btif_trace_level;
                                                         (m), (UINT32)(p1), (UINT32)(p2), (UINT32)(p3), (UINT32)(p4), (UINT32)(p5));}
 #define APPL_TRACE_DEBUG6(m,p1,p2,p3,p4,p5,p6)  {if (appl_trace_level >= BT_TRACE_LEVEL_DEBUG) LogMsg_6(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, \
                                                         (m), (UINT32)(p1), (UINT32)(p2), (UINT32)(p3), (UINT32)(p4), (UINT32)(p5), (UINT32)(p6));}
-
-#define APPL_TRACE_VERBOSE0(m)                    {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_0(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m));}
-#define APPL_TRACE_VERBOSE1(m,p1)                 {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_1(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1));}
-#define APPL_TRACE_VERBOSE2(m,p1,p2)              {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_2(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1), (UINT32)(p2));}
-#define APPL_TRACE_VERBOSE3(m,p1,p2,p3)           {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_3(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1), (UINT32)(p2), (UINT32)(p3));}
-#define APPL_TRACE_VERBOSE4(m,p1,p2,p3,p4)        {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_4(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1), (UINT32)(p2), (UINT32)(p3), (UINT32)(p4));}
-#define APPL_TRACE_VERBOSE5(m,p1,p2,p3,p4,p5)     {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_5(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1), (UINT32)(p2), (UINT32)(p3), (UINT32)(p4), (UINT32)(p5));}
-#define APPL_TRACE_VERBOSE6(m,p1,p2,p3,p4,p5,p6)  {if (appl_trace_level >= BT_TRACE_LEVEL_VERBOSE)\
-    LogMsg_6(TRACE_CTRL_GENERAL | TRACE_LAYER_NONE | TRACE_ORG_APPL | TRACE_TYPE_DEBUG, (m), \
-    (UINT32)(p1), (UINT32)(p2), (UINT32)(p3), (UINT32)(p4), (UINT32)(p5), (UINT32)(p6));}
-
 #else
 /* define traces for Application */
 
@@ -4732,14 +4710,6 @@ extern UINT8 btif_trace_level;
 #define APPL_TRACE_DEBUG4(m,p1,p2,p3,p4)
 #define APPL_TRACE_DEBUG5(m,p1,p2,p3,p4,p5)
 #define APPL_TRACE_DEBUG6(m,p1,p2,p3,p4,p5,p6)
-
-#define APPL_TRACE_VERBOSE0(m)
-#define APPL_TRACE_VERBOSE1(m,p1)
-#define APPL_TRACE_VERBOSE2(m,p1,p2)
-#define APPL_TRACE_VERBOSE3(m,p1,p2,p3)
-#define APPL_TRACE_VERBOSE4(m,p1,p2,p3,p4)
-#define APPL_TRACE_VERBOSE5(m,p1,p2,p3,p4,p5)
-#define APPL_TRACE_VERBOSE6(m,p1,p2,p3,p4,p5,p6)
 
 #endif
 
@@ -4802,38 +4772,7 @@ extern UINT8 btif_trace_level;
 #define DRV_TRACE_DEBUG5(m,p1,p2,p3,p4,p5)     APPL_TRACE_DEBUG5(m,p1,p2,p3,p4,p5)
 #define DRV_TRACE_DEBUG6(m,p1,p2,p3,p4,p5,p6)  APPL_TRACE_DEBUG6(m,p1,p2,p3,p4,p5,p6)
 
-/* Simplified Trace Helper Macro
-*/
-#if (BT_USE_TRACES == TRUE)
-#define bdld(fmt, ...) \
-    do{\
-        if((MY_LOG_LEVEL) >= BT_TRACE_LEVEL_DEBUG) \
-            LogMsg((MY_LOG_LAYER) | TRACE_TYPE_DEBUG, "%s(L%d): " fmt, __FUNCTION__, __LINE__,  ## __VA_ARGS__); \
-    }while(0)
 
-#define bdlw(fmt, ...) \
-    do{\
-        if((MY_LOG_LEVEL) >= BT_TRACE_LEVEL_DEBUG) \
-            LogMsg((MY_LOG_LAYER) | TRACE_TYPE_WARNING, "%s(L%d): " fmt, __FUNCTION__, __LINE__,  ## __VA_ARGS__); \
-    }while(0)
-
-#define bdle(fmt, ...) \
-    do{\
-        if((MY_LOG_LEVEL) >= BT_TRACE_LEVEL_DEBUG) \
-            LogMsg((MY_LOG_LAYER) | TRACE_TYPE_ERROR, "%s(L%d): " fmt, __FUNCTION__, __LINE__,  ## __VA_ARGS__); \
-    }while(0)
-
-#define bdla(assert_if) \
-    do{\
-        if(((MY_LOG_LEVEL) >= BT_TRACE_LEVEL_ERROR) && !(assert_if)) \
-            LogMsg((MY_LOG_LAYER) | TRACE_TYPE_ERROR, "%s(L%d): assert failed: " #assert_if, __FUNCTION__, __LINE__); \
-    }while(0)
-#else
-#define bdld(fmt, ...)  ((void)0) /*Empty statement as placeholder*/
-#define bdlw(fmt, ...)  ((void)0)
-#define bdle(fmt, ...)  ((void)0)
-#define bdla(assert_if) ((void)0)
-#endif
 #endif /* BT_TRACE_H */
 
 

@@ -30,7 +30,6 @@
 #include "bta_fs_co.h"
 #include "bta_fs_ci.h"
 #include <inttypes.h>
-#include "bt_utils.h"
 
 #ifndef AID_SYSTEM
 #define AID_SYSTEM        1000
@@ -249,12 +248,12 @@ int bta_fs_convert_bta_oflags(int bta_oflags)
  *******************************************************************************/
 static int btapp_fs_check_space( const char *p_path, const UINT32 size, const UINT8 app_id )
 {
+
     unsigned long long max_space;
     struct statfs fs_buffer;
     int err = 0;
     char *p_dir;
     char *p_end;
-    UNUSED(app_id);
 
     if(size==BTA_FS_LEN_UNKNOWN)
         return 0;
@@ -456,7 +455,6 @@ void bta_fs_co_read(int fd, UINT8 *p_buf, UINT16 nbytes, UINT16 evt, UINT8 ssn, 
     tBTA_FS_CO_STATUS  status = BTA_FS_CO_OK;
     INT32   num_read;
     int     err;
-    UNUSED(ssn);
 
     if ((num_read = read (fd, p_buf, nbytes)) < 0)
     {
@@ -502,8 +500,6 @@ void bta_fs_co_write(int fd, const UINT8 *p_buf, UINT16 nbytes, UINT16 evt,
     tBTA_FS_CO_STATUS  status = BTA_FS_CO_OK;
     INT32   num_written;
     int     err=0;
-    UNUSED(ssn);
-    UNUSED(app_id);
 
     if ((num_written = write (fd, p_buf, nbytes)) < 0)
     {
@@ -532,7 +528,6 @@ void bta_fs_co_write(int fd, const UINT8 *p_buf, UINT16 nbytes, UINT16 evt,
 *******************************************************************************/
 void bta_fs_co_seek (int fd, INT32 offset, INT16 origin, UINT8 app_id)
 {
-    UNUSED(app_id);
     lseek(fd, offset, origin);
 }
 
@@ -564,7 +559,6 @@ tBTA_FS_CO_STATUS bta_fs_co_access(const char *p_path, int mode, BOOLEAN *p_is_d
     int os_mode = 0;
     tBTA_FS_CO_STATUS status = BTA_FS_CO_OK;
     struct stat buffer;
-    UNUSED(app_id);
 
     #if (TRUE==BTA_FS_DEBUG)
     LOGI("***********CHECKING ACCESS TO = %s", p_path);
@@ -782,7 +776,6 @@ tBTA_FS_CO_STATUS bta_fs_co_unlink(const char *p_path, UINT8 app_id)
     tBTA_FS_CO_STATUS status = BTA_FS_CO_OK;
     char *dirName, *tmp=NULL;
     struct stat buffer;
-    UNUSED(app_id);
 
     if(! p_path)
         return BTA_FS_CO_FAIL;
@@ -863,7 +856,6 @@ void bta_fs_co_getdirentry(const char *p_path, BOOLEAN first_item,
     struct dirent *dirent;
     struct stat buf;
     char fullname[500];
-    UNUSED(app_id);
 
     BTIF_TRACE_DEBUG0("Entered bta_fs_co_getdirentry");
 
@@ -986,9 +978,6 @@ void bta_fs_co_getdirentry(const char *p_path, BOOLEAN first_item,
 *******************************************************************************/
 void bta_fs_co_setdir(const char *p_path, UINT8 app_id)
 {
-    UNUSED(p_path);
-    UNUSED(app_id);
-
     BTIF_TRACE_DEBUG2("Entered %s. New path: %s", __FUNCTION__, p_path);
 }
 
@@ -1017,9 +1006,6 @@ void bta_fs_co_setdir(const char *p_path, UINT8 app_id)
 *******************************************************************************/
 void bta_fs_co_resume(UINT16 evt, UINT8 app_id)
 {
-    UNUSED(evt);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_resume - NOT implemented");
 }
 
@@ -1045,11 +1031,6 @@ void bta_fs_co_resume(UINT16 evt, UINT8 app_id)
 *******************************************************************************/
 void bta_fs_co_set_perms(const char *p_src_path,  UINT8 *p_perms, UINT16 evt, UINT8 app_id)
 {
-    UNUSED(p_src_path);
-    UNUSED(p_perms);
-    UNUSED(evt);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_set_perms - NOT implemented");
 }
 
@@ -1076,12 +1057,6 @@ void bta_fs_co_set_perms(const char *p_src_path,  UINT8 *p_perms, UINT16 evt, UI
 *******************************************************************************/
 void bta_fs_co_rename(const char *p_src_path, const char *p_dest_path, UINT8 *p_perms, UINT16 evt, UINT8 app_id)
 {
-    UNUSED(p_src_path);
-    UNUSED(p_dest_path);
-    UNUSED(p_perms);
-    UNUSED(evt);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_rename - NOT implemented");
 }
 
@@ -1110,12 +1085,6 @@ void bta_fs_co_rename(const char *p_src_path, const char *p_dest_path, UINT8 *p_
 *******************************************************************************/
 void bta_fs_co_copy(const char *p_src_path, const char *p_dest_path, UINT8 *p_perms, UINT16 evt, UINT8 app_id)
 {
-    UNUSED(p_src_path);
-    UNUSED(p_dest_path);
-    UNUSED(p_perms);
-    UNUSED(evt);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_copy - NOT implemented");
 }
 
@@ -1137,10 +1106,6 @@ void bta_fs_co_copy(const char *p_src_path, const char *p_dest_path, UINT8 *p_pe
 *******************************************************************************/
 void bta_fs_co_resume_op(UINT32 offset, UINT16 evt, UINT8 app_id)
 {
-    UNUSED(offset);
-    UNUSED(evt);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_resume_op - NOT implemented");
 }
 
@@ -1164,14 +1129,6 @@ void bta_fs_co_resume_op(UINT32 offset, UINT16 evt, UINT8 app_id)
 void bta_fs_co_session_info(BD_ADDR bd_addr, UINT8 *p_sess_info, UINT8 ssn,
                                            tBTA_FS_CO_SESS_ST new_st, char *p_path, UINT8 *p_info, UINT8 app_id)
 {
-    UNUSED(bd_addr);
-    UNUSED(p_sess_info);
-    UNUSED(ssn);
-    UNUSED(new_st);
-    UNUSED(p_path);
-    UNUSED(p_info);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_session_info - NOT implemented");
 }
 
@@ -1197,14 +1154,6 @@ void bta_fs_co_session_info(BD_ADDR bd_addr, UINT8 *p_sess_info, UINT8 ssn,
 void bta_fs_co_suspend(BD_ADDR bd_addr, UINT8 *p_sess_info, UINT8 ssn,
                                       UINT32 *p_timeout, UINT32 *p_offset, UINT8 info, UINT8 app_id)
 {
-    UNUSED(bd_addr);
-    UNUSED(p_sess_info);
-    UNUSED(ssn);
-    UNUSED(p_timeout);
-    UNUSED(p_offset);
-    UNUSED(info);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_suspend - NOT implemented");
 }
 
@@ -1227,10 +1176,6 @@ void bta_fs_co_suspend(BD_ADDR bd_addr, UINT8 *p_sess_info, UINT8 ssn,
 *******************************************************************************/
 void bta_fs_co_sess_ssn(int fd, UINT8 ssn, UINT8 app_id)
 {
-    UNUSED(fd);
-    UNUSED(ssn);
-    UNUSED(app_id);
-
     BTIF_TRACE_WARNING0("[CO] bta_fs_co_suspend - NOT implemented");
 }
 

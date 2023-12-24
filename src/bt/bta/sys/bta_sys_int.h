@@ -78,9 +78,6 @@ typedef struct
 #if (BTM_SSR_INCLUDED == TRUE)
     tBTA_SYS_SSR_CFG_CBACK      *p_ssr_cb;
 #endif
-    /* VS event handler */
-    tBTA_SYS_VS_EVT_HDLR   *p_vs_evt_hdlr;
-
 } tBTA_SYS_CB;
 
 

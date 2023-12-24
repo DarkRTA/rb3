@@ -41,29 +41,16 @@ HAL REQUEST SUCCESS
 
 Enabling Test Mode (Bluetooth must be enabled for this command to work)
 ======================================================================
->dut_mode_configure 1
-BT DUT MODE CONFIGURE
+>enable_test_mode
+ENABLE BT TEST MODE
 HAL REQUEST SUCCESS
 >
 
 Disabling Test Mode
 ===================
->dut_mode_configure 0
-BT DUT MODE CONFIGURE
+>disable_test_mode
+DISABLE BT TEST MODE
 HAL REQUEST SUCCESS
->
-
-Running BLE Test commands (Bluetooth must be enabled)
-=====================================================
-NOTE: Unlike BR/EDR, there is no explicit DUT mode to run these BLE tests.
-
-> le_test_mode 1 <rx_freq>
-
-> le_test_mode 2 <tx_freq> <test_data_len> <payload_pattern>
-
-> le_test_mode 3 <no_args>
-Please refer to the BT Core spec pages-1099 to 1102 for possible values for
-the above parameters. These values need to be provided in Decimal format.
 
 Exit the test application
 =========================
@@ -81,8 +68,6 @@ help lists all available console commands
 quit
 enable :: enables bluetooth
 disable :: disables bluetooth
-dut_mode_configure :: DUT mode - 1 to enter,0 to exit
-le_test_mode :: LE Test Mode - RxTest - 1 <rx_freq>,
-	                           TxTest - 2 <tx_freq> <test_data_len> <payload_pattern>,
-	                           End Test - 3 <no_args>
+enable_test_mode :: enters bluedroid test mode
+disable_test_mode :: exits bluedroid test mode
 

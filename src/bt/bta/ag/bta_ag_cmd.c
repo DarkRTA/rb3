@@ -21,10 +21,7 @@
  *  This file contains functions for processing AT commands and results.
  *
  ******************************************************************************/
-#include "bt_target.h"
-#include "bt_types.h"
-#include "gki.h"
-#include "bd.h"
+
 #include "bta_api.h"
 #include "bta_sys.h"
 #include "bta_ag_api.h"
@@ -40,7 +37,7 @@
 *****************************************************************************/
 
 /* ring timeout */
-#define BTA_AG_RING_TOUT        5000
+#define BTA_AG_RING_TOUT        10000
 
 #define BTA_AG_CMD_MAX_VAL      32767  /* Maximum value is signed 16-bit value */
 
@@ -634,7 +631,6 @@ static UINT8 bta_ag_parse_chld(tBTA_AG_SCB *p_scb, char *p_s)
 {
     UINT8   retval = 0;
     INT16   idx = -1;
-    UNUSED(p_scb);
 
     if (p_s[1] != 0)
     {
@@ -870,7 +866,6 @@ void bta_ag_at_hfp_cback(tBTA_AG_SCB *p_scb, UINT16 cmd, UINT8 arg_type,
     val.hdr.handle = bta_ag_scb_to_idx(p_scb);
     val.hdr.app_id = p_scb->app_id;
     val.num = int_arg;
-    bdcpy(val.bd_addr, p_scb->peer_addr);
     BCM_STRNCPY_S(val.str, sizeof(val.str), p_arg, BTA_AG_AT_MAX_LEN);
     val.str[BTA_AG_AT_MAX_LEN] = 0;
 
@@ -1251,7 +1246,6 @@ void bta_ag_at_hfp_cback(tBTA_AG_SCB *p_scb, UINT16 cmd, UINT8 arg_type,
 #endif
 
         default:
-            bta_ag_send_error(p_scb, BTA_AG_ERR_OP_NOT_SUPPORTED);
             break;
     }
 
@@ -1752,9 +1746,6 @@ void bta_ag_setcodec(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
     {
         APPL_TRACE_ERROR1("bta_ag_setcodec error: unsupported codec type %d", codec_type);
     }
-#else
-    UNUSED(p_scb);
-    UNUSED(p_data);
 #endif
 }
 
@@ -1809,8 +1800,6 @@ void bta_ag_send_bcs(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 *******************************************************************************/
 void bta_ag_send_ring(tBTA_AG_SCB *p_scb, tBTA_AG_DATA *p_data)
 {
-    UNUSED(p_data);
-
 #if defined(BTA_AG_MULTI_RESULT_INCLUDED) && (BTA_AG_MULTI_RESULT_INCLUDED == TRUE)
     tBTA_AG_MULTI_RESULT_CB m_res_cb;
 

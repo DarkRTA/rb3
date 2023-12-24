@@ -9,11 +9,9 @@ LOCAL_SRC_FILES := \
         src/btsnoop.c \
         src/utils.c
 
-LOCAL_CFLAGS := -Wno-unused-parameter
-
 ifeq ($(BLUETOOTH_HCI_USE_MCT),true)
 
-LOCAL_CFLAGS += -DHCI_USE_MCT
+LOCAL_CFLAGS := -DHCI_USE_MCT
 
 LOCAL_SRC_FILES += \
         src/hci_mct.c \
@@ -27,15 +25,12 @@ LOCAL_SRC_FILES += \
 
 endif
 
-LOCAL_CFLAGS += -std=c99
-
 LOCAL_C_INCLUDES += \
         $(LOCAL_PATH)/include \
         $(LOCAL_PATH)/../utils/include
 
 LOCAL_SHARED_LIBRARIES := \
         libcutils \
-        liblog \
         libdl \
         libbt-utils
 

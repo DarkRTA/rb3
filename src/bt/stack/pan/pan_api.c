@@ -34,7 +34,6 @@
 #include "l2c_api.h"
 #include "hcidefs.h"
 #include "btm_api.h"
-#include "bta_sys.h"
 
 
 /*******************************************************************************
@@ -466,7 +465,7 @@ tPAN_RESULT PAN_Disconnect (UINT16 handle)
     }
 
     result = BNEP_Disconnect (pcb->handle);
-    if (pcb->con_state != PAN_STATE_IDLE)
+    if (pcb->con_state == PAN_STATE_CONNECTED)
         pan_cb.num_conns--;
 
     if (pan_cb.pan_bridge_req_cb && pcb->src_uuid == UUID_SERVCLASS_NAP)

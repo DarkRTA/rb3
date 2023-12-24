@@ -883,70 +883,6 @@ UINT16 AVDT_SecurityRsp(UINT8 handle, UINT8 label, UINT8 error_code,
 
 /*******************************************************************************
 **
-** Function         AVDT_WriteReqOpt
-**
-** Description      Send a media packet to the peer device.  The stream must
-**                  be started before this function is called.  Also, this
-**                  function can only be called if the stream is a SRC.
-**
-**                  When AVDTP has sent the media packet and is ready for the
-**                  next packet, an AVDT_WRITE_CFM_EVT is sent to the
-**                  application via the control callback.  The application must
-**                  wait for the AVDT_WRITE_CFM_EVT before it makes the next
-**                  call to AVDT_WriteReq().  If the applications calls
-**                  AVDT_WriteReq() before it receives the event the packet
-**                  will not be sent.  The application may make its first call
-**                  to AVDT_WriteReq() after it receives an AVDT_START_CFM_EVT
-**                  or AVDT_START_IND_EVT.
-**
-**                  The application passes the packet using the BT_HDR structure.
-**                  This structure is described in section 2.1.  The offset
-**                  field must be equal to or greater than AVDT_MEDIA_OFFSET
-**                  (if NO_RTP is specified, L2CAP_MIN_OFFSET can be used).
-**                  This allows enough space in the buffer for the L2CAP and
-**                  AVDTP headers.
-**
-**                  The memory pointed to by p_pkt must be a GKI buffer
-**                  allocated by the application.  This buffer will be freed
-**                  by the protocol stack; the application must not free
-**                  this buffer.
-**
-**                  The opt parameter allows passing specific options like:
-**                  - NO_RTP : do not add the RTP header to buffer
-**
-** Returns          AVDT_SUCCESS if successful, otherwise error.
-**
-*******************************************************************************/
-UINT16 AVDT_WriteReqOpt(UINT8 handle, BT_HDR *p_pkt, UINT32 time_stamp, UINT8 m_pt, tAVDT_DATA_OPT_MASK opt)
-{
-    tAVDT_SCB       *p_scb;
-    tAVDT_SCB_EVT   evt;
-    UINT16          result = AVDT_SUCCESS;
-
-    BTTRC_AVDT_API0(AVDT_TRACE_API_WRITE_REQ);
-
-    /* map handle to scb */
-    if ((p_scb = avdt_scb_by_hdl(handle)) == NULL)
-    {
-        result = AVDT_BAD_HANDLE;
-    }
-    else
-    {
-        evt.apiwrite.p_buf = p_pkt;
-        evt.apiwrite.time_stamp = time_stamp;
-        evt.apiwrite.m_pt = m_pt;
-        evt.apiwrite.opt = opt;
-#if AVDT_MULTIPLEXING == TRUE
-        GKI_init_q (&evt.apiwrite.frag_q);
-#endif
-        avdt_scb_event(p_scb, AVDT_SCB_API_WRITE_REQ_EVT, &evt);
-    }
-
-    return result;
-}
-
-/*******************************************************************************
-**
 ** Function         AVDT_WriteReq
 **
 ** Description      Send a media packet to the peer device.  The stream must
@@ -980,7 +916,29 @@ UINT16 AVDT_WriteReqOpt(UINT8 handle, BT_HDR *p_pkt, UINT32 time_stamp, UINT8 m_
 *******************************************************************************/
 UINT16 AVDT_WriteReq(UINT8 handle, BT_HDR *p_pkt, UINT32 time_stamp, UINT8 m_pt)
 {
-    return AVDT_WriteReqOpt(handle, p_pkt, time_stamp, m_pt, AVDT_DATA_OPT_NONE);
+    tAVDT_SCB       *p_scb;
+    tAVDT_SCB_EVT   evt;
+    UINT16          result = AVDT_SUCCESS;
+
+    BTTRC_AVDT_API0(AVDT_TRACE_API_WRITE_REQ);
+
+    /* map handle to scb */
+    if ((p_scb = avdt_scb_by_hdl(handle)) == NULL)
+    {
+        result = AVDT_BAD_HANDLE;
+    }
+    else
+    {
+        evt.apiwrite.p_buf = p_pkt;
+        evt.apiwrite.time_stamp = time_stamp;
+        evt.apiwrite.m_pt = m_pt;
+#if AVDT_MULTIPLEXING == TRUE
+        GKI_init_q (&evt.apiwrite.frag_q);
+#endif
+        avdt_scb_event(p_scb, AVDT_SCB_API_WRITE_REQ_EVT, &evt);
+    }
+
+    return result;
 }
 
 /*******************************************************************************
@@ -1290,7 +1248,7 @@ UINT16 AVDT_SendReport(UINT8 handle, AVDT_REPORT_TYPE type,
     tAVDT_TC_TBL    *p_tbl;
     UINT8           *p, *plen, *pm1, *p_end;
 #if AVDT_MULTIPLEXING == TRUE
-    UINT8           *p_al=NULL, u;
+    UINT8           *p_al, u;
 #endif
     UINT32  ssrc;
     UINT16  len;

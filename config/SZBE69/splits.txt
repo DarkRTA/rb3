@@ -478,5 +478,11 @@ Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x807F0064 end:0x807F0068 rename:.dtors$15
 	.sdata      start:0x808E32A0 end:0x808E32A8
 
+bt/stack/l2cap/l2c_link.c:
+	.text       start:0x80706530 end:0x8072574C
+
+bt/stack/l2cap/l2c_main.c:
+	.text       start:0x8072574C end:0x807261BC
+
 bt/stack/l2cap/l2c_utils.c:
 	.text       start:0x807261BC end:0x8072A538

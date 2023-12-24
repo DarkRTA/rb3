@@ -27,7 +27,6 @@
 #include <stdio.h>
 
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "gki.h"
 #include "l2cdefs.h"
 #include "hcidefs.h"
@@ -171,7 +170,6 @@ UINT16 sdp_set_max_attr_list_size (UINT16 max_size)
 *******************************************************************************/
 static void sdp_connect_ind (BD_ADDR  bd_addr, UINT16 l2cap_cid, UINT16 psm, UINT8 l2cap_id)
 {
-    UNUSED(psm);
 #if SDP_SERVER_ENABLED == TRUE
     tCONN_CB    *p_ccb;
 
@@ -673,7 +671,6 @@ void sdp_disconnect (tCONN_CB*p_ccb, UINT16 reason)
 static void sdp_disconnect_cfm (UINT16 l2cap_cid, UINT16 result)
 {
     tCONN_CB    *p_ccb;
-    UNUSED(result);
 
     /* Find CCB based on CID */
     if ((p_ccb = sdpu_find_ccb_by_cid (l2cap_cid)) == NULL)

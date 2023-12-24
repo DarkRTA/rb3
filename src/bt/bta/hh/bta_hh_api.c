@@ -33,7 +33,6 @@
 #include "bta_hh_api.h"
 #include "bta_hh_int.h"
 #include "l2c_api.h"
-#include "utl.h"
 
 /*****************************************************************************
 **  Constants
@@ -58,7 +57,7 @@ static const tBTA_SYS_REG bta_hh_reg =
 ** Returns          void
 **
 *******************************************************************************/
-void BTA_HhEnable(tBTA_SEC sec_mask, tBTA_HH_CBACK *p_cback)
+void BTA_HhEnable(tBTA_SEC sec_mask, BOOLEAN ucd_enabled, tBTA_HH_CBACK *p_cback)
 {
     tBTA_HH_API_ENABLE *p_buf;
 
@@ -292,29 +291,12 @@ void BTA_HhSendCtrl(UINT8 dev_handle, tBTA_HH_TRANS_CTRL_TYPE c_type)
 **
 ** Description      This function send DATA transaction to HID device.
 **
-** Parameter        dev_handle: device handle
-**                  dev_bda: remote device address
-**                  p_data: data to be sent in the DATA transaction; or
-**                          the data to be write into the Output Report of a LE HID
-**                          device. The report is identified the report ID which is
-**                          the value of the byte (UINT8 *)(p_buf + 1) + p_buf->offset.
-**                          p_data->layer_specific needs to be set to the report type,
-**                          it can be OUTPUT report, or FEATURE report.
-**
 ** Returns          void
 **
 *******************************************************************************/
 void BTA_HhSendData(UINT8 dev_handle, BD_ADDR dev_bda, BT_HDR  *p_data)
 {
-    UNUSED(dev_bda);
-#if (defined BTA_HH_LE_INCLUDED && BTA_HH_LE_INCLUDED == TRUE)
-    if (p_data->layer_specific != BTA_HH_RPTT_OUTPUT)
-    {
-        APPL_TRACE_ERROR0("ERROR! Wrong report type! Write Command only valid for output report!");
-        return;
-    }
-#endif
-    bta_hh_snd_write_dev(dev_handle, HID_TRANS_DATA, (UINT8)p_data->layer_specific, 0, 0, p_data);
+    bta_hh_snd_write_dev(dev_handle, HID_TRANS_DATA, BTA_HH_RPTT_OUTPUT, 0, 0, p_data);
 }
 
 /*******************************************************************************
@@ -415,37 +397,7 @@ void BTA_HhRemoveDev(UINT8 dev_handle )
         bta_sys_sendmsg(p_buf);
     }
 }
-#if BTA_HH_LE_INCLUDED == TRUE
 
-/*******************************************************************************
-**
-** Function         BTA_HhUpdateLeScanParam
-**
-** Description      Update the scan paramteters if connected to a LE hid device as
-**                  report host.
-**
-** Returns          void
-**
-*******************************************************************************/
-void BTA_HhUpdateLeScanParam(UINT8 dev_handle, UINT16 scan_int, UINT16 scan_win)
-{
-    tBTA_HH_SCPP_UPDATE    *p_buf;
-
-    p_buf = (tBTA_HH_SCPP_UPDATE *)GKI_getbuf((UINT16)sizeof(tBTA_HH_SCPP_UPDATE));
-
-    if (p_buf != NULL)
-    {
-        memset(p_buf, 0, sizeof(tBTA_HH_SCPP_UPDATE));
-
-        p_buf->hdr.event            = BTA_HH_API_SCPP_UPDATE_EVT;
-        p_buf->hdr.layer_specific   = (UINT16) dev_handle;
-        p_buf->scan_int             =  scan_int;
-        p_buf->scan_win             =  scan_win;
-
-        bta_sys_sendmsg(p_buf);
-    }
-}
-#endif
 /*******************************************************************************/
 /*                          Utility Function                                   */
 /*******************************************************************************/

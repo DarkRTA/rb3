@@ -55,7 +55,6 @@
 
 #include "bt_hci_bdroid.h"
 #include "utils.h"
-#include "bt_utils.h"
 
 #ifndef BTSNOOP_DBG
 #define BTSNOOP_DBG FALSE
@@ -66,11 +65,6 @@
 #else
 #define SNOOPDBG(param, ...) {}
 #endif
-
-#define HCIT_TYPE_COMMAND   1
-#define HCIT_TYPE_ACL_DATA  2
-#define HCIT_TYPE_SCO_DATA  3
-#define HCIT_TYPE_EVENT     4
 
 /* file descriptor of the BT snoop file (by default, -1 means disabled) */
 int hci_btsnoop_fd = -1;
@@ -122,7 +116,6 @@ do {                                                                            
 /* EPOCH in microseconds since 01/01/0000 : 0x00dcddb3.0f2f8000 */
 #define BTSNOOP_EPOCH_HI 0x00dcddb3U
 #define BTSNOOP_EPOCH_LO 0x0f2f8000U
-
 
 /*******************************************************************************
  **
@@ -259,46 +252,6 @@ static int btsnoop_log_close(void)
 }
 
 /*******************************************************************************
- ** Function          btsnoop_write
- **
- ** Description       Function used to write the actual data to the log
- **
- ** Returns           none
-*******************************************************************************/
-
-void btsnoop_write(uint8_t *p, uint32_t flags, const uint8_t *ptype, uint32_t len)
-{
-    uint32_t value, value_hi;
-    struct timeval tv;
-    struct iovec io[3];
-    uint32_t header[6];
-
-    /* store the length in both original and included fields */
-    header[0] = l_to_be(len + 1);
-    header[1] = header[0];
-    /* flags: data can be sent or received */
-    header[2] = l_to_be(flags);
-    /* drops: none */
-    header[3] = 0;
-    /* time */
-    gettimeofday(&tv, NULL);
-    tv_to_btsnoop_ts(&header[5], &header[4], &tv);
-    header[4] = l_to_be(header[4]);
-    header[5] = l_to_be(header[5]);
-
-    io[0].iov_base = header;
-    io[0].iov_len = sizeof(header);
-
-    io[1].iov_base = (void*)ptype;
-    io[1].iov_len = 1;
-
-    io[2].iov_base = p;
-    io[2].iov_len = len;
-
-    (void) writev(hci_btsnoop_fd, io, 3);
-}
-
-/*******************************************************************************
  **
  ** Function         btsnoop_hci_cmd
  **
@@ -308,13 +261,41 @@ void btsnoop_write(uint8_t *p, uint32_t flags, const uint8_t *ptype, uint32_t le
 *******************************************************************************/
 void btsnoop_hci_cmd(uint8_t *p)
 {
-    const uint8_t cmd = HCIT_TYPE_COMMAND;
-    int plen;
     SNOOPDBG("btsnoop_hci_cmd: fd = %d", hci_btsnoop_fd);
-    plen = (int) p[2] + 3;
-    btsnoop_write(p, 2, &cmd, plen);
-}
 
+    if (hci_btsnoop_fd != -1)
+    {
+        uint32_t value, value_hi;
+        struct timeval tv;
+
+        /* since these display functions are called from different contexts */
+        utils_lock();
+
+        /* store the length in both original and included fields */
+        value = l_to_be(p[2] + 4);
+        write(hci_btsnoop_fd, &value, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* flags: command sent from the host */
+        value = l_to_be(2);
+        write(hci_btsnoop_fd, &value, 4);
+        /* drops: none */
+        value = 0;
+        write(hci_btsnoop_fd, &value, 4);
+        /* time */
+        gettimeofday(&tv, NULL);
+        tv_to_btsnoop_ts(&value, &value_hi, &tv);
+        value_hi = l_to_be(value_hi);
+        value = l_to_be(value);
+        write(hci_btsnoop_fd, &value_hi, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* data */
+        write(hci_btsnoop_fd, "\x1", 1);
+        write(hci_btsnoop_fd, p, p[2] + 3);
+
+        /* since these display functions are called from different contexts */
+        utils_unlock();
+    }
+}
 
 /*******************************************************************************
  **
@@ -326,12 +307,40 @@ void btsnoop_hci_cmd(uint8_t *p)
 *******************************************************************************/
 void btsnoop_hci_evt(uint8_t *p)
 {
-    const uint8_t evt = HCIT_TYPE_EVENT;
-    int plen;
     SNOOPDBG("btsnoop_hci_evt: fd = %d", hci_btsnoop_fd);
-    plen = (int) p[1] + 2;
 
-    btsnoop_write(p, 3, &evt, plen);
+    if (hci_btsnoop_fd != -1)
+    {
+        uint32_t value, value_hi;
+        struct timeval tv;
+
+        /* since these display functions are called from different contexts */
+        utils_lock();
+
+        /* store the length in both original and included fields */
+        value = l_to_be(p[1] + 3);
+        write(hci_btsnoop_fd, &value, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* flags: event received in the host */
+        value = l_to_be(3);
+        write(hci_btsnoop_fd, &value, 4);
+        /* drops: none */
+        value = 0;
+        write(hci_btsnoop_fd, &value, 4);
+        /* time */
+        gettimeofday(&tv, NULL);
+        tv_to_btsnoop_ts(&value, &value_hi, &tv);
+        value_hi = l_to_be(value_hi);
+        value = l_to_be(value);
+        write(hci_btsnoop_fd, &value_hi, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* data */
+        write(hci_btsnoop_fd, "\x4", 1);
+        write(hci_btsnoop_fd, p, p[1] + 2);
+
+        /* since these display functions are called from different contexts */
+        utils_unlock();
+    }
 }
 
 /*******************************************************************************
@@ -344,12 +353,40 @@ void btsnoop_hci_evt(uint8_t *p)
 *******************************************************************************/
 void btsnoop_sco_data(uint8_t *p, uint8_t is_rcvd)
 {
-    const uint8_t sco = HCIT_TYPE_SCO_DATA;
-    int plen;
     SNOOPDBG("btsnoop_sco_data: fd = %d", hci_btsnoop_fd);
-    plen = (int) p[2] + 3;
 
-    btsnoop_write(p, is_rcvd, &sco, plen);
+    if (hci_btsnoop_fd != -1)
+    {
+        uint32_t value, value_hi;
+        struct timeval tv;
+
+        /* since these display functions are called from different contexts */
+        utils_lock();
+
+        /* store the length in both original and included fields */
+        value = l_to_be(p[2] + 4);
+        write(hci_btsnoop_fd, &value, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* flags: data can be sent or received */
+        value = l_to_be(is_rcvd?1:0);
+        write(hci_btsnoop_fd, &value, 4);
+        /* drops: none */
+        value = 0;
+        write(hci_btsnoop_fd, &value, 4);
+        /* time */
+        gettimeofday(&tv, NULL);
+        tv_to_btsnoop_ts(&value, &value_hi, &tv);
+        value_hi = l_to_be(value_hi);
+        value = l_to_be(value);
+        write(hci_btsnoop_fd, &value_hi, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* data */
+        write(hci_btsnoop_fd, "\x3", 1);
+        write(hci_btsnoop_fd, p, p[2] + 3);
+
+        /* since these display functions are called from different contexts */
+        utils_unlock();
+    }
 }
 
 /*******************************************************************************
@@ -362,15 +399,41 @@ void btsnoop_sco_data(uint8_t *p, uint8_t is_rcvd)
 *******************************************************************************/
 void btsnoop_acl_data(uint8_t *p, uint8_t is_rcvd)
 {
-    const uint8_t acl = HCIT_TYPE_ACL_DATA;
-    int plen;
-
     SNOOPDBG("btsnoop_acl_data: fd = %d", hci_btsnoop_fd);
+    if (hci_btsnoop_fd != -1)
+    {
+        uint32_t value, value_hi;
+        struct timeval tv;
 
-    plen = (((int) p[3]) << 8) + ((int) p[2]) +4;
+        /* since these display functions are called from different contexts */
+        utils_lock();
 
-    btsnoop_write(p, is_rcvd, &acl, plen);
+        /* store the length in both original and included fields */
+        value = l_to_be((p[3]<<8) + p[2] + 5);
+        write(hci_btsnoop_fd, &value, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* flags: data can be sent or received */
+        value = l_to_be(is_rcvd?1:0);
+        write(hci_btsnoop_fd, &value, 4);
+        /* drops: none */
+        value = 0;
+        write(hci_btsnoop_fd, &value, 4);
+        /* time */
+        gettimeofday(&tv, NULL);
+        tv_to_btsnoop_ts(&value, &value_hi, &tv);
+        value_hi = l_to_be(value_hi);
+        value = l_to_be(value);
+        write(hci_btsnoop_fd, &value_hi, 4);
+        write(hci_btsnoop_fd, &value, 4);
+        /* data */
+        write(hci_btsnoop_fd, "\x2", 1);
+        write(hci_btsnoop_fd, p, (p[3]<<8) + p[2] + 4);
+
+        /* since these display functions are called from different contexts */
+        utils_unlock();
+    }
 }
+
 
 /********************************************************************************
  ** API allow external realtime parsing of output using e.g hcidump
@@ -479,7 +542,6 @@ static void ext_parser_detached(void)
 
 static void interruptFn (int sig)
 {
-    UNUSED(sig);
     ALOGD("interruptFn");
     pthread_exit(0);
 }
@@ -491,7 +553,6 @@ static void ext_parser_thread(void* param)
     sigset_t sigSet;
     sigemptyset (&sigSet);
     sigaddset (&sigSet, sig);
-    UNUSED(param);
 
     ALOGD("ext_parser_thread");
 
@@ -557,6 +618,11 @@ void btsnoop_cleanup (void)
 #endif
 }
 
+
+#define HCIT_TYPE_COMMAND   1
+#define HCIT_TYPE_ACL_DATA  2
+#define HCIT_TYPE_SCO_DATA  3
+#define HCIT_TYPE_EVENT     4
 
 void btsnoop_capture(HC_BT_HDR *p_buf, uint8_t is_rcvd)
 {

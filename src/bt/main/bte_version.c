@@ -18,6 +18,5 @@
 
 #include "bt_types.h"
 
-const UINT8 bte_version_string[] = "BCM1200_PI_10.3.20.52";
-const UINT8 btif_version_string[] = "BDROID-PLUS-420-10_00.10";
+const UINT8 bte_version_string[] = "BCM1200_PI_10.3.20.33";
 

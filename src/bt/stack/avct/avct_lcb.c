@@ -26,7 +26,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avct_api.h"
 #include "avct_int.h"
 #include "gki.h"
@@ -352,7 +351,6 @@ void avct_lcb_dealloc(tAVCT_LCB *p_lcb, tAVCT_LCB_EVT *p_data)
     tAVCT_CCB   *p_ccb = &avct_cb.ccb[0];
     BOOLEAN     found = FALSE;
     int         i;
-    UNUSED(p_data);
 
     AVCT_TRACE_DEBUG1("avct_lcb_dealloc %d", p_lcb->allocated);
 

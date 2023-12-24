@@ -53,7 +53,6 @@ BOOLEAN bta_hl_set_ctrl_psm_for_dch(UINT8 app_idx, UINT8 mcl_idx,
 {
     tBTA_HL_MCL_CB *p_mcb  = BTA_HL_GET_MCL_CB_PTR(app_idx, mcl_idx);
     BOOLEAN success = TRUE, update_ctrl_psm = FALSE;
-    UNUSED(mdl_idx);
 
     if (p_mcb->sdp.num_recs)
     {
@@ -521,7 +520,7 @@ BOOLEAN bta_hl_find_cch_cb_indexes(tBTA_HL_DATA *p_msg,
 {
     BOOLEAN found = FALSE;
     tBTA_HL_MCL_CB      *p_mcb;
-    UINT8               app_idx = 0, mcl_idx = 0;
+    UINT8               app_idx, mcl_idx;
 
     switch (p_msg->hdr.event)
     {
@@ -568,7 +567,7 @@ BOOLEAN bta_hl_find_cch_cb_indexes(tBTA_HL_DATA *p_msg,
             if (found)
             {
                 p_mcb = BTA_HL_GET_MCL_CB_PTR(app_idx, mcl_idx);
-                if ((p_mcb->cch_oper != BTA_HL_CCH_OP_LOCAL_CLOSE) && (p_mcb->cch_oper != BTA_HL_CCH_OP_LOCAL_OPEN) )
+                if (p_mcb->cch_oper != BTA_HL_CCH_OP_LOCAL_CLOSE)
                 {
                     p_mcb->cch_oper = BTA_HL_CCH_OP_REMOTE_CLOSE;
                 }
@@ -585,7 +584,7 @@ BOOLEAN bta_hl_find_cch_cb_indexes(tBTA_HL_DATA *p_msg,
             if (found)
             {
                 p_mcb = BTA_HL_GET_MCL_CB_PTR(app_idx, mcl_idx);
-                if ((p_mcb->cch_oper != BTA_HL_CCH_OP_REMOTE_CLOSE) && (p_mcb->cch_oper != BTA_HL_CCH_OP_LOCAL_OPEN))
+                if (p_mcb->cch_oper != BTA_HL_CCH_OP_REMOTE_CLOSE)
                 {
                     p_mcb->cch_oper = BTA_HL_CCH_OP_LOCAL_CLOSE;
                 }
@@ -630,7 +629,7 @@ BOOLEAN bta_hl_find_dch_cb_indexes(tBTA_HL_DATA *p_msg,
 {
     BOOLEAN         found = FALSE;
     tBTA_HL_MCL_CB  *p_mcb;
-    UINT8           app_idx = 0, mcl_idx = 0, mdl_idx = 0;
+    UINT8           app_idx, mcl_idx, mdl_idx;
 
     switch (p_msg->hdr.event)
     {
@@ -1125,7 +1124,7 @@ BOOLEAN bta_hl_find_mcl_idx_using_handle( tBTA_HL_MCL_HANDLE mcl_handle,
 {
     tBTA_HL_APP_CB  *p_acb;
     BOOLEAN         found=FALSE;
-    UINT8 i = 0,j = 0;
+    UINT8 i,j;
 
     for (i=0; i<BTA_HL_NUM_APPS; i++)
     {
@@ -1354,7 +1353,7 @@ BOOLEAN  bta_hl_find_non_active_mdl_cfg(UINT8 app_idx, UINT8 start_mdl_cfg_idx,
 **
 ** Function      bta_hl_find_mdl_cfg_idx
 **
-** Description  This function finds an available MDL configuration index
+** Description  This function finds an available MDL configiration index
 **
 ** Returns      BOOLEAN - TRUE found
 **                        FALSE not found
@@ -1368,7 +1367,7 @@ BOOLEAN  bta_hl_find_avail_mdl_cfg_idx(UINT8 app_idx, UINT8 mcl_idx,
     BOOLEAN             found=FALSE;
     UINT8               first_mdl_cfg_idx, second_mdl_cfg_idx, older_mdl_cfg_idx;
     BOOLEAN             done;
-    UNUSED(mcl_idx);
+
 
     for (i=0; i< BTA_HL_NUM_MDL_CFGS; i++)
     {
@@ -1465,9 +1464,6 @@ BOOLEAN  bta_hl_find_mdl_cfg_idx(UINT8 app_idx, UINT8 mcl_idx,
     for (i=0; i< BTA_HL_NUM_MDL_CFGS; i++)
     {
         p_mdl = BTA_HL_GET_MDL_CFG_PTR(app_idx, i);
-        if(p_mdl->active)
-            APPL_TRACE_DEBUG2("bta_hl_find_mdl_cfg_idx: mdl_id =%d, p_mdl->mdl_id=%d",mdl_id,
-                              p_mdl->mdl_id);
         if (p_mdl->active &&
             (!memcmp (p_mcb->bd_addr, p_mdl->peer_bd_addr, BD_ADDR_LEN))&&
             (p_mdl->mdl_id == mdl_id))
@@ -1600,7 +1596,7 @@ void bta_hl_sort_cfg_time_idx(UINT8 app_idx, UINT8 *a, UINT8 n)
 **                        FALSE not found
 **
 *******************************************************************************/
-void  bta_hl_compact_mdl_cfg_time(UINT8 app_idx, UINT8 mdep_id)
+void  bta_hl_compact_mdl_cfg_time(UINT8 app_idx)
 {
     tBTA_HL_APP_CB      *p_acb = BTA_HL_GET_APP_CB_PTR(app_idx);
     tBTA_HL_MDL_CFG     *p_mdl;
@@ -1633,7 +1629,7 @@ void  bta_hl_compact_mdl_cfg_time(UINT8 app_idx, UINT8 mdep_id)
         {
             p_mdl = BTA_HL_GET_MDL_CFG_PTR(app_idx, s_arr[i]);
             p_mdl->time = time_min + i;
-            bta_hl_co_save_mdl(mdep_id, s_arr[i], p_mdl);
+            bta_hl_co_save_mdl(p_acb->app_id, s_arr[i], p_mdl);
         }
     }
 
@@ -1714,7 +1710,7 @@ BOOLEAN  bta_hl_delete_mdl_cfg(UINT8 app_idx, BD_ADDR bd_addr,
             {
                 if (p_mdl->mdl_id == mdl_id)
                 {
-                    bta_hl_co_delete_mdl(p_mdl->local_mdep_id, i);
+                    bta_hl_co_delete_mdl(app_id, i);
                     memset(p_mdl, 0, sizeof(tBTA_HL_MDL_CFG));
                     success = TRUE;
                     break;
@@ -1722,7 +1718,7 @@ BOOLEAN  bta_hl_delete_mdl_cfg(UINT8 app_idx, BD_ADDR bd_addr,
             }
             else
             {
-                bta_hl_co_delete_mdl(p_mdl->local_mdep_id, i);
+                bta_hl_co_delete_mdl(app_id, i);
                 memset(p_mdl, 0, sizeof(tBTA_HL_MDL_CFG));
                 success = TRUE;
             }
@@ -1880,7 +1876,7 @@ BOOLEAN bta_hl_validate_peer_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx,
     BOOLEAN peer_found =FALSE;
     UINT8 i;
 
-    APPL_TRACE_DEBUG2("bta_hl_validate_peer_cfg sdp_idx=%d app_idx %d", sdp_idx, app_idx);
+    APPL_TRACE_DEBUG1("bta_hl_validate_peer_cfg sdp_idx=%d", sdp_idx);
 
 
     if (p_dcb->local_mdep_id == BTA_HL_ECHO_TEST_MDEP_ID)
@@ -1891,9 +1887,6 @@ BOOLEAN bta_hl_validate_peer_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx,
     p_rec = &p_mcb->sdp.sdp_rec[sdp_idx];
     for (i=0; i< p_rec->num_mdeps; i++)
     {
-        APPL_TRACE_DEBUG2("mdep_id %d peer_mdep_id %d",p_rec->mdep_cfg[i].mdep_id , peer_mdep_id);
-        APPL_TRACE_DEBUG2("mdep_role %d peer_mdep_role %d",p_rec->mdep_cfg[i].mdep_role,
-                          peer_mdep_role)
         if ( (p_rec->mdep_cfg[i].mdep_id == peer_mdep_id) &&
              (p_rec->mdep_cfg[i].mdep_role == peer_mdep_role))
         {
@@ -1903,6 +1896,7 @@ BOOLEAN bta_hl_validate_peer_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx,
         }
     }
 
+
 #if BTA_HL_DEBUG == TRUE
     if (!peer_found)
     {
@@ -1911,6 +1905,7 @@ BOOLEAN bta_hl_validate_peer_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx,
 #endif
     return peer_found;
 }
+
 
 /*******************************************************************************
 **
@@ -1964,10 +1959,10 @@ BOOLEAN bta_hl_validate_reconnect_params(UINT8 app_idx, UINT8 mcl_idx,
     BOOLEAN local_mdep_id_found =FALSE;
     BOOLEAN mdl_cfg_found =FALSE;
     BOOLEAN            status=FALSE;
-    UINT8 i, in_use_mdl_idx = 0;
+    UINT8 i, in_use_mdl_idx;
 
 #if BTA_HL_DEBUG == TRUE
-    APPL_TRACE_DEBUG2("bta_hl_validate_reconnect_params  mdl_id=%d app_idx=%d", p_reconnect->mdl_id, app_idx);
+    APPL_TRACE_DEBUG1("bta_hl_validate_reconnect_params  mdl_id=%d", p_reconnect->mdl_id);
 #endif
     if (bta_hl_find_mdl_cfg_idx(app_idx, mcl_idx, p_reconnect->mdl_id, &mdl_cfg_idx))
     {
@@ -2175,167 +2170,6 @@ BOOLEAN bta_hl_find_avail_app_idx(UINT8 *p_idx)
 
 /*******************************************************************************
 **
-** Function      bta_hl_app_update
-**
-** Description  This function registers an HDP application MCAP and DP
-**
-** Returns      tBTA_HL_STATUS -registration status
-**
-*******************************************************************************/
-tBTA_HL_STATUS bta_hl_app_update(UINT8 app_id, BOOLEAN is_register)
-{
-    tBTA_HL_STATUS  status = BTA_HL_STATUS_OK;
-    tBTA_HL_APP_CB  *p_acb = BTA_HL_GET_APP_CB_PTR(0);
-    tMCA_CS         mca_cs;
-    UINT8           i, mdep_idx, num_of_mdeps;
-    UINT8           mdep_counter = 0;
-
-
-#if BTA_HL_DEBUG == TRUE
-    APPL_TRACE_DEBUG1("bta_hl_app_update app_id=%d", app_id);
-#endif
-
-    if (is_register)
-    {
-        if ((status == BTA_HL_STATUS_OK) &&
-        bta_hl_co_get_num_of_mdep(app_id, &num_of_mdeps))
-        {
-            for (i=0; i < num_of_mdeps; i++)
-            {
-                mca_cs.type = MCA_TDEP_DATA;
-                mca_cs.max_mdl = BTA_HL_NUM_MDLS_PER_MDEP;
-                mca_cs.p_data_cback = bta_hl_mcap_data_cback;
-                /* Find the first available mdep index, and create a MDL Endpoint */
-                // make a function later if needed
-                for (mdep_idx = 1; mdep_idx < BTA_HL_NUM_MDEPS; mdep_idx++)
-                {
-                    if ( p_acb->sup_feature.mdep[mdep_idx].mdep_id == 0)
-                    {
-                        break; /* We found an available index */
-                    }
-                    else
-                    {
-                        mdep_counter++;
-                    }
-                }
-                /* If no available MDEPs, return error */
-                if (mdep_idx == BTA_HL_NUM_MDEPS)
-                {
-                    APPL_TRACE_ERROR0("bta_hl_app_update: Out of MDEP IDs");
-                    status = BTA_HL_STATUS_MCAP_REG_FAIL;
-                    break;
-                }
-                if (MCA_CreateDep((tMCA_HANDLE)p_acb->app_handle,
-                              &(p_acb->sup_feature.mdep[mdep_idx].mdep_id), &mca_cs) == MCA_SUCCESS)
-                {
-                    if (bta_hl_co_get_mdep_config(app_id,
-                                                  mdep_idx,
-                                                  mdep_counter,
-                                                  p_acb->sup_feature.mdep[mdep_idx].mdep_id,
-                                                  &p_acb->sup_feature.mdep[mdep_idx].mdep_cfg))
-                    {
-                        p_acb->sup_feature.mdep[mdep_idx].ori_app_id = app_id;
-                        APPL_TRACE_DEBUG4("mdep idx %d id %d ori_app_id %d num data type %d",mdep_idx,
-                               p_acb->sup_feature.mdep[mdep_idx].mdep_id,
-                               p_acb->sup_feature.mdep[mdep_idx].ori_app_id,
-                               p_acb->sup_feature.mdep[mdep_idx].mdep_cfg.num_of_mdep_data_types);
-                        if (p_acb->sup_feature.mdep[mdep_idx].mdep_cfg.mdep_role ==
-                            BTA_HL_MDEP_ROLE_SOURCE)
-                        {
-                            p_acb->sup_feature.app_role_mask |= BTA_HL_MDEP_ROLE_MASK_SOURCE;
-                        }
-                        else if (p_acb->sup_feature.mdep[mdep_idx].mdep_cfg.mdep_role ==
-                                 BTA_HL_MDEP_ROLE_SINK)
-                        {
-                            p_acb->sup_feature.app_role_mask |= BTA_HL_MDEP_ROLE_MASK_SINK;
-                        }
-                        else
-                        {
-                            APPL_TRACE_ERROR1("bta_hl_app_registration: Invalid Role %d",
-                                            p_acb->sup_feature.mdep[mdep_idx].mdep_cfg.mdep_role);
-                            status = BTA_HL_STATUS_MDEP_CO_FAIL;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        APPL_TRACE_ERROR0("bta_hl_app_registration: Cfg callout failed");
-                        status = BTA_HL_STATUS_MDEP_CO_FAIL;
-                        break;
-                    }
-                }
-                else
-                {
-                    APPL_TRACE_ERROR0("bta_hl_app_registration: MCA_CreateDep failed");
-                    status = BTA_HL_STATUS_MCAP_REG_FAIL;
-                    break;
-                }
-
-            }
-            p_acb->sup_feature.num_of_mdeps += num_of_mdeps;
-            APPL_TRACE_DEBUG1("num_of_mdeps %d", p_acb->sup_feature.num_of_mdeps);
-
-            if ((status == BTA_HL_STATUS_OK) &&
-                (p_acb->sup_feature.app_role_mask == BTA_HL_MDEP_ROLE_MASK_SOURCE))
-            {
-                p_acb->sup_feature.advertize_source_sdp =
-                bta_hl_co_advrtise_source_sdp(app_id);
-            }
-
-            if ((status == BTA_HL_STATUS_OK)&&
-                (!bta_hl_co_get_echo_config(app_id, &p_acb->sup_feature.echo_cfg)))
-            {
-                status = BTA_HL_STATUS_ECHO_CO_FAIL;
-            }
-
-            if ((status == BTA_HL_STATUS_OK)&&
-                (!bta_hl_co_load_mdl_config(app_id, BTA_HL_NUM_MDL_CFGS, &p_acb->mdl_cfg[0])))
-            {
-                status = BTA_HL_STATUS_MDL_CFG_CO_FAIL;
-            }
-        }
-        else
-        {
-            status = BTA_HL_STATUS_MDEP_CO_FAIL;
-        }
-    }
-    else
-    {
-        for (i=1; i<BTA_HL_NUM_MDEPS; i++)
-        {
-            if (p_acb->sup_feature.mdep[i].ori_app_id == app_id)
-            {
-                APPL_TRACE_DEBUG1("Found index %", i);
-
-
-                if (MCA_DeleteDep((tMCA_HANDLE)p_acb->app_handle,
-                                  (p_acb->sup_feature.mdep[i].mdep_id)) != MCA_SUCCESS)
-                {
-                    APPL_TRACE_ERROR0("Error deregistering");
-                    status = BTA_HL_STATUS_MCAP_REG_FAIL;
-                    return status;
-                }
-                memset(&p_acb->sup_feature.mdep[i], 0, sizeof(tBTA_HL_MDEP));
-            }
-        }
-
-
-    }
-
-    if (status == BTA_HL_STATUS_OK)
-    {
-        /* Register/Update MDEP(s) in SDP Record */
-        status = bta_hl_sdp_update(app_id);
-    }
-    /* else do cleanup */
-
-
-    return status;
-}
-
-
-/*******************************************************************************
-**
 ** Function      bta_hl_app_registration
 **
 ** Description  This function registers an HDP application MCAP and DP
@@ -2350,7 +2184,7 @@ tBTA_HL_STATUS bta_hl_app_registration(UINT8 app_idx)
     tMCA_REG        reg;
     tMCA_CS         mca_cs;
     UINT8           i, num_of_mdeps;
-    UINT8           mdep_counter = 0;
+
 
 #if BTA_HL_DEBUG == TRUE
     APPL_TRACE_DEBUG1("bta_hl_app_registration app_idx=%d", app_idx);
@@ -2400,7 +2234,7 @@ tBTA_HL_STATUS bta_hl_app_registration(UINT8 app_idx)
                                   &(p_acb->sup_feature.mdep[i].mdep_id), &mca_cs) == MCA_SUCCESS)
                 {
                     if (bta_hl_co_get_mdep_config(p_acb->app_id,
-                                                  i,mdep_counter,
+                                                  i,
                                                   p_acb->sup_feature.mdep[i].mdep_id,
                                                   &p_acb->sup_feature.mdep[i].mdep_cfg))
                     {
@@ -2417,9 +2251,6 @@ tBTA_HL_STATUS bta_hl_app_registration(UINT8 app_idx)
                             status = BTA_HL_STATUS_MDEP_CO_FAIL;
                             break;
                         }
-                        p_acb->sup_feature.mdep[i].ori_app_id = p_acb->app_id;
-                        APPL_TRACE_DEBUG2("index %d ori_app_id %d", i,
-                                          p_acb->sup_feature.mdep[i].ori_app_id);
                     }
                     else
                     {
@@ -2527,7 +2358,7 @@ void bta_hl_save_mdl_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx )
     tBTA_HL_MDL_CFG mdl_cfg;
     tBTA_HL_MDEP *p_mdep_cfg;
     tBTA_HL_L2CAP_CFG_INFO l2cap_cfg;
-    UINT8 time_val = 0;
+    UINT8 time_val;
     mdl_id = p_dcb->mdl_id;
     if (!bta_hl_find_mdl_cfg_idx(app_idx, mcl_idx, mdl_id, &mdl_cfg_idx))
     {
@@ -2543,7 +2374,7 @@ void bta_hl_save_mdl_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx )
         bta_hl_get_l2cap_cfg(p_dcb->mdl_handle, &l2cap_cfg);
         if (!bta_hl_get_cur_time(app_idx, &time_val ))
         {
-            bta_hl_compact_mdl_cfg_time(app_idx,p_dcb->local_mdep_id);
+            bta_hl_compact_mdl_cfg_time(app_idx);
             bta_hl_get_cur_time(app_idx, &time_val);
         }
         mdl_cfg.active = TRUE;
@@ -2558,7 +2389,7 @@ void bta_hl_save_mdl_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx )
         p_mdep_cfg = &p_acb->sup_feature.mdep[p_dcb->local_mdep_cfg_idx];
         mdl_cfg.local_mdep_role= p_mdep_cfg->mdep_cfg.mdep_role;
         memcpy(&p_acb->mdl_cfg[mdl_cfg_idx], &mdl_cfg, sizeof(tBTA_HL_MDL_CFG));
-        bta_hl_co_save_mdl(mdl_cfg.local_mdep_id, mdl_cfg_idx, &mdl_cfg);
+        bta_hl_co_save_mdl(p_acb->app_id, mdl_cfg_idx, &mdl_cfg);
     }
 
 #if BTA_HL_DEBUG == TRUE
@@ -2750,14 +2581,12 @@ BOOLEAN bta_hl_validate_chan_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx)
     tBTA_HL_APP_CB *p_acb  = BTA_HL_GET_APP_CB_PTR(app_idx);
     tBTA_HL_MDL_CB *p_dcb  = BTA_HL_GET_MDL_CB_PTR(app_idx, mcl_idx, mdl_idx);
     BOOLEAN success = FALSE;
-    UINT8 mdl_cfg_idx = 0;
+    UINT8 mdl_cfg_idx;
     tBTA_HL_L2CAP_CFG_INFO l2cap_cfg;
-    BOOLEAN get_l2cap_result, get_mdl_result;
 
-    get_l2cap_result = bta_hl_get_l2cap_cfg(p_dcb->mdl_handle, &l2cap_cfg);
-    get_mdl_result = bta_hl_find_mdl_cfg_idx(app_idx, mcl_idx, p_dcb->mdl_id, &mdl_cfg_idx);
 
-    if (get_l2cap_result && get_mdl_result)
+    if (bta_hl_get_l2cap_cfg(p_dcb->mdl_handle, &l2cap_cfg) &&
+        bta_hl_find_mdl_cfg_idx(app_idx, mcl_idx, p_dcb->mdl_id, &mdl_cfg_idx))
     {
         if ((p_acb->mdl_cfg[mdl_cfg_idx].mtu <= l2cap_cfg.mtu) &&
             (p_acb->mdl_cfg[mdl_cfg_idx].fcs == l2cap_cfg.fcs) &&
@@ -2803,7 +2632,7 @@ BOOLEAN  bta_hl_is_cong_on(UINT8 app_id, BD_ADDR bd_addr, tBTA_HL_MDL_ID mdl_id)
 
 {
     tBTA_HL_MDL_CB      *p_dcb;
-    UINT8   app_idx = 0, mcl_idx, mdl_idx;
+    UINT8   app_idx, mcl_idx, mdl_idx;
     BOOLEAN cong_status = TRUE;
 
     if (bta_hl_find_app_idx(app_id, &app_idx))
@@ -2937,10 +2766,7 @@ void bta_hl_check_deregistration(UINT8 app_idx, tBTA_HL_DATA *p_data )
             p_mcb  = BTA_HL_GET_MCL_CB_PTR(app_idx, mcl_idx);
             if (p_mcb->cch_oper != BTA_HL_CCH_OP_LOCAL_CLOSE)
             {
-                if (p_mcb->cch_state == BTA_HL_CCH_OPENING_ST)
-                    p_mcb->force_close_local_cch_opening = TRUE;
                 p_mcb->cch_oper = BTA_HL_CCH_OP_LOCAL_CLOSE;
-                APPL_TRACE_DEBUG1("p_mcb->force_close_local_cch_opening=%d", p_mcb->force_close_local_cch_opening  );
                 bta_hl_check_cch_close(app_idx,mcl_idx,p_data, TRUE);
             }
         }
@@ -2948,7 +2774,6 @@ void bta_hl_check_deregistration(UINT8 app_idx, tBTA_HL_DATA *p_data )
         {
             /* all cchs are closed */
             evt_data.dereg_cfm.app_handle = p_acb->app_handle;
-            evt_data.dereg_cfm.app_id = p_data->api_dereg.app_id;
             evt_data.dereg_cfm.status = BTA_HL_STATUS_OK;
             p_acb->p_cback(BTA_HL_DEREGISTER_CFM_EVT, (tBTA_HL *) &evt_data );
             bta_hl_clean_app(app_idx);
@@ -3130,18 +2955,16 @@ void  bta_hl_build_rcv_data_ind(tBTA_HL *p_evt_data,
 **
 *******************************************************************************/
 void  bta_hl_build_cch_open_cfm(tBTA_HL *p_evt_data,
-                                UINT8 app_id,
                                 tBTA_HL_APP_HANDLE app_handle,
                                 tBTA_HL_MCL_HANDLE mcl_handle,
                                 BD_ADDR bd_addr,
                                 tBTA_HL_STATUS status )
 {
-    p_evt_data->cch_open_cfm.app_id = app_id;
+
     p_evt_data->cch_open_cfm.app_handle = app_handle;
     p_evt_data->cch_open_cfm.mcl_handle = mcl_handle;
     bdcpy(p_evt_data->cch_open_cfm.bd_addr, bd_addr);
     p_evt_data->cch_open_cfm.status = status;
-    APPL_TRACE_DEBUG1("bta_hl_build_cch_open_cfm: status=%d",status);
 }
 
 /*******************************************************************************
@@ -3245,16 +3068,12 @@ void  bta_hl_build_dch_open_cfm(tBTA_HL *p_evt_data,
 **
 *******************************************************************************/
 void  bta_hl_build_sdp_query_cfm(tBTA_HL *p_evt_data,
-                                 UINT8 app_id,
                                  tBTA_HL_APP_HANDLE app_handle,
                                  BD_ADDR bd_addr,
                                  tBTA_HL_SDP *p_sdp,
                                  tBTA_HL_STATUS status)
 
 {
-    APPL_TRACE_DEBUG2("bta_hl_build_sdp_query_cfm: app_id = %d, app_handle=%d",
-                        app_id,app_handle);
-    p_evt_data->sdp_query_cfm.app_id = app_id;
     p_evt_data->sdp_query_cfm.app_handle = app_handle;
     bdcpy(p_evt_data->sdp_query_cfm.bd_addr, bd_addr);
     p_evt_data->sdp_query_cfm.p_sdp = p_sdp;
@@ -3432,8 +3251,6 @@ char *bta_hl_evt_code(tBTA_HL_INT_EVT evt_code)
             return "BTA_HL_API_ENABLE_EVT";
         case BTA_HL_API_DISABLE_EVT:
             return "BTA_HL_API_DISABLE_EVT";
-        case BTA_HL_API_UPDATE_EVT:
-             return "BTA_HL_API_UPDATE_EVT";
         case BTA_HL_API_REGISTER_EVT:
             return "BTA_HL_API_REGISTER_EVT";
         case BTA_HL_API_DEREGISTER_EVT:

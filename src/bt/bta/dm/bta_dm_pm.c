@@ -42,14 +42,9 @@ static BOOLEAN bta_dm_pm_sniff(tBTA_DM_PEER_DEVICE *p_peer_dev, UINT8 index);
 static BOOLEAN bta_dm_pm_is_sco_active ();
 static void bta_dm_pm_hid_check(BOOLEAN bScoActive);
 static void bta_dm_pm_set_sniff_policy(tBTA_DM_PEER_DEVICE *p_dev, BOOLEAN bDisable);
-
 #if (BTM_SSR_INCLUDED == TRUE)
-#if (defined BTA_HH_INCLUDED && BTA_HH_INCLUDED == TRUE)
-#include "../hh/bta_hh_int.h"
-/* BTA_DM_PM_SSR1 will be dedicated for HH SSR setting entry, no other profile can use it */
-#define BTA_DM_PM_SSR_HH      BTA_DM_PM_SSR1
-#endif
 static void bta_dm_pm_ssr(BD_ADDR peer_addr);
+static void bta_dm_ssr_cfg_cback(UINT8 id, UINT8 app_id, UINT16 max_lat, UINT16 min_rmt_to);
 #endif
 
 tBTA_DM_CONNECTED_SRVCS bta_dm_conn_srvcs;
@@ -75,6 +70,9 @@ void bta_dm_init_pm(void)
     {
         bta_sys_pm_register((tBTA_SYS_CONN_CBACK*)bta_dm_pm_cback);
 
+#if (BTM_SSR_INCLUDED == TRUE)
+        bta_sys_ssr_cfg_register((tBTA_SYS_SSR_CFG_CBACK*)bta_dm_ssr_cfg_cback);
+#endif
         BTM_PmRegister((BTM_PM_REG_SET | BTM_PM_REG_NOTIF), &bta_dm_cb.pm_id,
                        bta_dm_pm_btm_cback);
     }
@@ -167,16 +165,13 @@ static void bta_dm_pm_cback(tBTA_SYS_CONN_STATUS status, UINT8 id, UINT8 app_id,
     btm_status = BTM_ReadLocalVersion (&vers);
     p_dev = bta_dm_find_peer_device(peer_addr);
 
-    /* Disable/Enable sniff policy on the SCO link if sco Up/Down. Will be removed in 2.2*/
-    if ((p_dev) &&
+	/* Disable/Enable sniff policy on the SCO link if sco Up/Down. Will be removed in 2.2*/
+    if ((btm_status == BTM_SUCCESS) &&
+        (vers.manufacturer == LMP_COMPID_BROADCOM) &&
+        (vers.hci_version < HCI_PROTO_VERSION_2_0) &&
         ((status == BTA_SYS_SCO_OPEN) || (status == BTA_SYS_SCO_CLOSE)) )
-    {
-        if ((btm_status == BTM_SUCCESS) &&
-            (vers.manufacturer ==  LMP_COMPID_BROADCOM) &&
-            (vers.hci_version < HCI_PROTO_VERSION_2_0))
         {
-            bta_dm_pm_set_sniff_policy(p_dev, (status == BTA_SYS_SCO_OPEN));
-        }
+        bta_dm_pm_set_sniff_policy(p_dev, (status == BTA_SYS_SCO_OPEN));
     }
 
     /* find if there is an power mode entry for the service */
@@ -277,11 +272,7 @@ static void bta_dm_pm_cback(tBTA_SYS_CONN_STATUS status, UINT8 id, UINT8 app_id,
     }
 
 #if (BTM_SSR_INCLUDED == TRUE)
-    if(p_bta_dm_ssr_spec[index].max_lat
-#if (defined BTA_HH_INCLUDED && BTA_HH_INCLUDED == TRUE)
-       || index == BTA_DM_PM_SSR_HH
-#endif
-       )
+    if(p_bta_dm_ssr_spec[index].max_lat)
     {
         bta_dm_pm_ssr(peer_addr);
     }
@@ -568,6 +559,7 @@ static BOOLEAN bta_dm_pm_sniff(tBTA_DM_PEER_DEVICE *p_peer_dev, UINT8 index)
     return TRUE;
 
 }
+
 /*******************************************************************************
 **
 ** Function         bta_dm_pm_ssr
@@ -607,14 +599,6 @@ static void bta_dm_pm_ssr(BD_ADDR peer_addr)
             p_spec_cur = &p_bta_dm_ssr_spec[p_bta_dm_pm_spec[p_bta_dm_pm_cfg[j].spec_idx].ssr];
             p_spec = &p_bta_dm_ssr_spec[ssr];
 
-#if (defined BTA_HH_INCLUDED && BTA_HH_INCLUDED == TRUE)
-            /* HH has the per connection SSR preference, already read the SSR params from BTA HH */
-            if (p_bta_dm_pm_spec[p_bta_dm_pm_cfg[j].spec_idx].ssr == BTA_DM_PM_SSR_HH)
-            {
-                if (bta_hh_read_ssr_param(peer_addr, &p_spec_cur->max_lat, &p_spec_cur->min_rmt_to) == BTA_HH_ERR)
-                    continue;
-            }
-#endif
             if (p_spec_cur->max_lat < p_spec->max_lat ||
                 (ssr == BTA_DM_PM_SSR0 && p_bta_dm_pm_spec[p_bta_dm_pm_cfg[j].spec_idx].ssr != BTA_DM_PM_SSR0))
             {
@@ -633,6 +617,44 @@ static void bta_dm_pm_ssr(BD_ADDR peer_addr)
             p_spec->min_rmt_to, p_spec->min_loc_to);
     }
 }
+/*******************************************************************************
+**
+** Function         bta_dm_ssr_cfg_cback
+**
+** Description      Conn change callback from sys for low power management
+**
+**
+** Returns          void
+**
+*******************************************************************************/
+static void bta_dm_ssr_cfg_cback(UINT8 id, UINT8 app_id,
+                                 UINT16 max_lat, UINT16 min_rmt_to)
+{
+    tBTA_DM_SSR_SPEC *p_spec;
+    UINT8   i, index;
+    /* find if there is an power mode entry for the service */
+    for(i=1; i<=p_bta_dm_pm_cfg[0].app_id; i++)
+    {
+
+        if((p_bta_dm_pm_cfg[i].id == id)
+            && ((p_bta_dm_pm_cfg[i].app_id == BTA_ALL_APP_ID ) || (p_bta_dm_pm_cfg[i].app_id == app_id )))
+            break;
+
+    }
+    /* if no entries are there for the app_id and subystem in p_bta_dm_pm_spec*/
+    if(i> p_bta_dm_pm_cfg[0].app_id)
+        return;
+
+    index = p_bta_dm_pm_spec[p_bta_dm_pm_cfg[i].spec_idx].ssr;
+
+    APPL_TRACE_DEBUG2("SSR parameter changed to: max_latency: %d min_tout: %d", max_lat, min_rmt_to);
+
+    p_spec = &p_bta_dm_ssr_spec[index];
+    p_spec->max_lat = max_lat;
+    p_spec->min_rmt_to = min_rmt_to;
+}
+
+
 #endif
 /*******************************************************************************
 **

@@ -80,10 +80,10 @@ typedef enum {
  *      Typecasting conversion: (int (*)[]) param.
  *  [return]
  *      Numbers of opened file descriptors.
- *      Valid number:
- *          1 - CMD/EVT/ACL-In/ACL-Out via the same fd (e.g. UART)
- *          2 - CMD/EVT on one fd, and ACL-In/ACL-Out on the other fd
- *          4 - CMD, EVT, ACL-In, ACL-Out are on their individual fd
+     *      Valid number:
+     *          1 - CMD/EVT/ACL-In/ACL-Out via the same fd (e.g. UART)
+     *          2 - CMD/EVT on one fd, and ACL-In/ACL-Out on the other fd
+     *          4 - CMD, EVT, ACL-In, ACL-Out are on their individual fd
  *  [callback]
  *      None.
  */
@@ -141,20 +141,6 @@ typedef enum {
  *      None.
  */
     BT_VND_OP_LPM_WAKE_SET_STATE,
-
-/*  [operation]
- *      The epilog call to the vendor module so that it can perform any
- *      vendor-specific processes (e.g. send a HCI_RESET to BT Controller)
- *      before the caller calls for cleanup().
- *  [input param]
- *      None.
- *  [return]
- *      0 - default, don't care.
- *  [callback]
- *      Must call epilog_cb to notify the stack of the completion of vendor
- *      specific epilog process once it has been done.
- */
-    BT_VND_OP_EPILOG,
 } bt_vendor_opcode_t;
 
 /** Power on/off control states */
@@ -294,9 +280,6 @@ typedef struct {
 
     /* hci command packet transmit request */
     cmd_xmit_cb xmit_cb;
-
-    /* notifies caller completion of epilog process */
-    cfg_result_cb epilog_cb;
 } bt_vendor_callbacks_t;
 
 /*

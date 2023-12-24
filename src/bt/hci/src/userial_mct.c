@@ -36,7 +36,6 @@
 #include "userial.h"
 #include "utils.h"
 #include "bt_vendor_lib.h"
-#include "bt_utils.h"
 
 /******************************************************************************
 **  Constants & Macros
@@ -148,8 +147,6 @@ static void *userial_read_thread(void *arg)
 
     rx_flow_on = TRUE;
     userial_running = 1;
-
-    raise_priority_a2dp(TASK_HIGH_USERIAL_READ);
 
     while (userial_running)
     {
@@ -321,12 +318,10 @@ uint8_t userial_open(uint8_t port)
     if(pthread_getschedparam(userial_cb.read_thread, &policy, &param)==0)
     {
         policy = BTHC_LINUX_BASE_POLICY;
-#if (BTHC_LINUX_BASE_POLICY != SCHED_NORMAL)
+#if (BTHC_LINUX_BASE_POLICY!=SCHED_NORMAL)
         param.sched_priority = BTHC_USERIAL_READ_THREAD_PRIORITY;
-#else
-        param.sched_priority = 0;
 #endif
-        result = pthread_setschedparam(userial_cb.read_thread, policy, &param);
+        result=pthread_setschedparam(userial_cb.read_thread,policy,&param);
         if (result != 0)
         {
             ALOGW("userial_open: pthread_setschedparam failed (%s)", \

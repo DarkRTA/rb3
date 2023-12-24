@@ -21,19 +21,15 @@
 #include "bta_api.h"
 #include "hidh_api.h"
 
-#if (defined BTA_HH_LE_INCLUDED && BTA_HH_LE_INCLUDED == TRUE)
-#include "gatt_api.h"
-#endif
-
 /*****************************************************************************
 **  Constants and Type Definitions
 *****************************************************************************/
 #ifndef BTA_HH_DEBUG
-#define BTA_HH_DEBUG    TRUE
+#define BTA_HH_DEBUG    FALSE
 #endif
 
 #ifndef BTA_HH_SSR_MAX_LATENCY_DEF
-#define BTA_HH_SSR_MAX_LATENCY_DEF  800 /* 500 ms*/
+#define BTA_HH_SSR_MAX_LATENCY_DEF  1600
 #endif
 
 #ifndef BTA_HH_SSR_MIN_TOUT_DEF
@@ -51,39 +47,19 @@
 #define BTA_HH_SET_PROTO_EVT    7       /* BTA_HhSetProtoMode callback */
 #define BTA_HH_GET_IDLE_EVT     8       /* BTA_HhGetIdle comes callback */
 #define BTA_HH_SET_IDLE_EVT     9       /* BTA_HhSetIdle finish callback */
-#define BTA_HH_GET_DSCP_EVT     10      /* Get report descriptor */
+#define BTA_HH_GET_DSCP_EVT     10      /* Get report descripotor */
 #define BTA_HH_ADD_DEV_EVT      11      /* Add Device callback */
 #define BTA_HH_RMV_DEV_EVT      12      /* remove device finished */
 #define BTA_HH_VC_UNPLUG_EVT    13      /* virtually unplugged */
-#define BTA_HH_DATA_EVT         15
-#define BTA_HH_API_ERR_EVT      16      /* API error is caught */
-#define BTA_HH_UPDATE_SCPP_EVT  17       /* update scan paramter complete */
+#define BTA_HH_UPDATE_UCD_EVT   14
+#define BTA_HH_API_ERR_EVT      15      /* API error is caught */
 
 typedef UINT16 tBTA_HH_EVT;
-
-/* application ID(none-zero) for each type of device */
-#define BTA_HH_APP_ID_MI            1
-#define BTA_HH_APP_ID_KB            2
-#define BTA_HH_APP_ID_RMC           3
-#define BTA_HH_APP_ID_3DSG          4
-#define BTA_HH_APP_ID_JOY           5
-#define BTA_HH_APP_ID_GPAD          6
-#define BTA_HH_APP_ID_LE            0xff
 
 /* defined the minimum offset */
 #define BTA_HH_MIN_OFFSET       L2CAP_MIN_OFFSET+1
 
-/* HID_HOST_MAX_DEVICES can not exceed 15 for th design of BTA HH */
-#define BTA_HH_IDX_INVALID      0xff
 #define BTA_HH_MAX_KNOWN        HID_HOST_MAX_DEVICES
-
-#if (defined BTA_HH_LE_INCLUDED && BTA_HH_LE_INCLUDED == TRUE)
-/* GATT_MAX_PHY_CHANNEL can not exceed 14 for the design of BTA HH */
-#define BTA_HH_LE_MAX_KNOWN     GATT_MAX_PHY_CHANNEL
-#define BTA_HH_MAX_DEVICE        (HID_HOST_MAX_DEVICES + GATT_MAX_PHY_CHANNEL)
-#else
-#define BTA_HH_MAX_DEVICE       HID_HOST_MAX_DEVICES
-#endif
 /* invalid device handle */
 #define BTA_HH_INVALID_HANDLE   0xff
 
@@ -126,14 +102,12 @@ enum
     BTA_HH_ERR_SDP,             /* SDP error */
     BTA_HH_ERR_PROTO,           /* SET_Protocol error,
                                     only used in BTA_HH_OPEN_EVT callback */
-
     BTA_HH_ERR_DB_FULL,         /* device database full error, used in
                                    BTA_HH_OPEN_EVT/BTA_HH_ADD_DEV_EVT */
     BTA_HH_ERR_TOD_UNSPT,       /* type of device not supported */
     BTA_HH_ERR_NO_RES,          /* out of system resources */
     BTA_HH_ERR_AUTH_FAILED,     /* authentication fail */
-    BTA_HH_ERR_HDL,
-    BTA_HH_ERR_SEC
+    BTA_HH_ERR_HDL
 };
 typedef UINT8 tBTA_HH_STATUS;
 
@@ -147,6 +121,7 @@ typedef UINT8 tBTA_HH_STATUS;
 #define BTA_HH_SUP_TOUT_AVLBL          HID_SUP_TOUT_AVLBL
 #define BTA_HH_SEC_REQUIRED             HID_SEC_REQUIRED
 typedef UINT16 tBTA_HH_ATTR_MASK;
+
 
 /* supported type of device and corresponding application ID */
 typedef struct
@@ -187,8 +162,6 @@ typedef UINT8 tBTA_HH_TRANS_CTRL_TYPE;
 
 typedef tHID_DEV_DSCP_INFO tBTA_HH_DEV_DESCR;
 
-#define BTA_HH_SSR_PARAM_INVALID       HID_SSR_PARAM_INVALID
-
 /* id DI is not existing in remote device, vendor_id in tBTA_HH_DEV_DSCP_INFO will be set to 0xffff */
 #define BTA_HH_VENDOR_ID_INVALID       0xffff
 
@@ -199,15 +172,9 @@ typedef struct
     UINT16              vendor_id;      /* vendor ID */
     UINT16              product_id;     /* product ID */
     UINT16              version;        /* version */
-    UINT16              ssr_max_latency;    /* SSR max latency, BTA_HH_SSR_PARAM_INVALID if unknown */
-    UINT16              ssr_min_tout;       /* SSR min timeout, BTA_HH_SSR_PARAM_INVALID if unknown */
+    UINT16              ssr_max_latency;    /* SSR max latency */
+    UINT16              ssr_min_tout;       /* SSR min timeout */
     UINT8               ctry_code;      /*Country Code.*/
-#if (defined BTA_HH_LE_INCLUDED && BTA_HH_LE_INCLUDED == TRUE)
-#define BTA_HH_LE_REMOTE_WAKE       0x01
-#define BTA_HH_LE_NORMAL_CONN       0x02
-
-    UINT8               flag;
-#endif
     tBTA_HH_DEV_DESCR   descriptor;
 }tBTA_HH_DEV_DSCP_INFO;
 
@@ -217,11 +184,6 @@ typedef struct
     BD_ADDR         bda;                /* HID device bd address    */
     tBTA_HH_STATUS  status;             /* operation status         */
     UINT8           handle;             /* device handle            */
-#if (defined BTA_HH_LE_INCLUDED && BTA_HH_LE_INCLUDED == TRUE)
-    BOOLEAN         le_hid;             /* is LE devices? */
-    BOOLEAN         scps_supported;     /* scan parameter service supported */
-#endif
-
 } tBTA_HH_CONN;
 
 typedef tBTA_HH_CONN tBTA_HH_DEV_INFO;
@@ -297,8 +259,7 @@ typedef union
     tBTA_HH_CBDATA          dev_status;         /* BTA_HH_CLOSE_EVT,
                                                    BTA_HH_SET_PROTO_EVT
                                                    BTA_HH_SET_RPT_EVT
-                                                   BTA_HH_SET_IDLE_EVT
-                                                   BTA_HH_UPDATE_SCPP_EVT */
+                                                   BTA_HH_SET_IDLE_EVT  */
 
     tBTA_HH_STATUS          status;             /* BTA_HH_ENABLE_EVT */
     tBTA_HH_DEV_DSCP_INFO   dscp_info;          /* BTA_HH_GET_DSCP_EVT */
@@ -330,7 +291,7 @@ extern "C"
 ** Returns          void
 **
 *******************************************************************************/
-BTA_API extern void BTA_HhEnable(tBTA_SEC sec_mask, tBTA_HH_CBACK *p_cback);
+BTA_API extern void BTA_HhEnable(tBTA_SEC sec_mask, BOOLEAN ucd_enabled, tBTA_HH_CBACK *p_cback);
 
 /*******************************************************************************
 **
@@ -414,28 +375,6 @@ BTA_API extern void BTA_HhGetReport(UINT8 dev_handle, tBTA_HH_RPT_TYPE r_type,
                                     UINT8 rpt_id, UINT16 buf_size);
 /*******************************************************************************
 **
-** Function         BTA_HhSetIdle
-**
-** Description      send SET_IDLE to device.
-**
-** Returns          void
-**
-*******************************************************************************/
-BTA_API extern void BTA_HhSetIdle(UINT8 dev_handle, UINT16 idle_rate);
-
-/*******************************************************************************
-**
-** Function         BTA_HhGetIdle
-**
-** Description      Send a GET_IDLE to HID device.
-**
-** Returns          void
-**
-*******************************************************************************/
-BTA_API extern void BTA_HhGetIdle(UINT8 dev_handle);
-
-/*******************************************************************************
-**
 ** Function         BTA_HhSendCtrl
 **
 ** Description      Send HID_CONTROL request to a HID device.
@@ -492,6 +431,7 @@ BTA_API extern void BTA_HhSendData(UINT8 dev_handle, BD_ADDR dev_bda, BT_HDR  *p
 BTA_API extern void BTA_HhGetDscpInfo(UINT8 dev_handle);
 
 /*******************************************************************************
+**
 ** Function         BTA_HhAddDev
 **
 ** Description      Add a virtually cabled device into HID-Host device list
@@ -515,7 +455,6 @@ BTA_API extern void BTA_HhAddDev(BD_ADDR bda, tBTA_HH_ATTR_MASK attr_mask,
 **
 *******************************************************************************/
 BTA_API extern void BTA_HhRemoveDev(UINT8 dev_handle );
-
 /*******************************************************************************
 **
 **              Parsing Utility Functions
@@ -532,24 +471,6 @@ BTA_API extern void BTA_HhRemoveDev(UINT8 dev_handle );
 *******************************************************************************/
 BTA_API extern void BTA_HhParseBootRpt(tBTA_HH_BOOT_RPT *p_data, UINT8 *p_report,
                                        UINT16 report_len);
-
-#if BTA_HH_LE_INCLUDED == TRUE
-/*******************************************************************************
-**
-** Function         BTA_HhUpdateLeScanParam
-**
-** Description      Update the scan paramteters if connected to a LE hid device as
-**                  report host.
-**
-** Returns          void
-**
-*******************************************************************************/
-BTA_API extern void BTA_HhUpdateLeScanParam(UINT8 dev_handle, UINT16 scan_int, UINT16 scan_win);
-#endif
-/* test commands */
-BTA_API extern void bta_hh_le_hid_read_rpt_clt_cfg(BD_ADDR bd_addr, UINT8 rpt_id);
-
-
 
 #ifdef __cplusplus
 }

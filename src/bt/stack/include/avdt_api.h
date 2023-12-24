@@ -407,13 +407,6 @@ typedef struct {
     UINT16              nsc_mask;       /* Nonsupported protocol command messages */
 } tAVDT_CS;
 
-/* AVDT data option mask is used in the write request */
-#define AVDT_DATA_OPT_NONE      0x00         /* No option still add RTP header */
-#define AVDT_DATA_OPT_NO_RTP   (0x01 << 0)   /* Skip adding RTP header */
-
-typedef UINT8 tAVDT_DATA_OPT_MASK;
-
-
 
 /*****************************************************************************
 **  External Function Declarations
@@ -765,44 +758,6 @@ AVDT_API extern UINT16 AVDT_SecurityRsp(UINT8 handle, UINT8 label, UINT8 error_c
 *******************************************************************************/
 AVDT_API extern UINT16 AVDT_WriteReq(UINT8 handle, BT_HDR *p_pkt, UINT32 time_stamp,
                                      UINT8 m_pt);
-/*******************************************************************************
-**
-** Function         AVDT_WriteReqOpt
-**
-** Description      Send a media packet to the peer device.  The stream must
-**                  be started before this function is called.  Also, this
-**                  function can only be called if the stream is a SRC
-**
-**                  When AVDTP has sent the media packet and is ready for the
-**                  next packet, an AVDT_WRITE_CFM_EVT is sent to the
-**                  application via the control callback.  The application must
-**                  wait for the AVDT_WRITE_CFM_EVT before it makes the next
-**                  call to AVDT_WriteReq().  If the applications calls
-**                  AVDT_WriteReq() before it receives the event the packet
-**                  will not be sent.  The application may make its first call
-**                  to AVDT_WriteReq() after it receives an AVDT_START_CFM_EVT
-**                  or AVDT_START_IND_EVT.
-**
-**                  The application passes the packet using the BT_HDR structure
-**                  This structure is described in section 2.1.  The offset
-**                  field must be equal to or greater than AVDT_MEDIA_OFFSET
-**                  (if NO_RTP is specified, L2CAP_MIN_OFFSET can be used)
-**                  This allows enough space in the buffer for the L2CAP and
-**                  AVDTP headers.
-**
-**                  The memory pointed to by p_pkt must be a GKI buffer
-**                  allocated by the application.  This buffer will be freed
-**                  by the protocol stack; the application must not free
-**                  this buffer.
-**
-**                  The opt parameter allows passing specific options like:
-**                  - NO_RTP : do not add the RTP header to buffer
-**
-** Returns          AVDT_SUCCESS if successful, otherwise error.
-**
-*******************************************************************************/
-AVDT_API extern UINT16 AVDT_WriteReqOpt(UINT8 handle, BT_HDR *p_pkt, UINT32 time_stamp,
-                                     UINT8 m_pt, tAVDT_DATA_OPT_MASK opt);
 
 /*******************************************************************************
 **

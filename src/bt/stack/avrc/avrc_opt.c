@@ -18,7 +18,7 @@
 
 /******************************************************************************
  *
- *  Interface to AVRCP optional commands
+ *  nterface to AVRCP optional commands
  *
  ******************************************************************************/
 #include <string.h>
@@ -53,13 +53,8 @@ static BT_HDR  * avrc_vendor_msg(tAVRC_MSG_VENDOR *p_msg)
 
     WC_ASSERT(p_msg != NULL);
 
-#if AVRC_METADATA_INCLUDED == TRUE
-    WC_ASSERT(AVRC_META_CMD_POOL_SIZE > (AVRC_MIN_CMD_LEN+p_msg->vendor_len));
-    if ((p_cmd = (BT_HDR *) GKI_getpoolbuf(AVRC_META_CMD_POOL_ID)) != NULL)
-#else
     WC_ASSERT(AVRC_CMD_POOL_SIZE > (AVRC_MIN_CMD_LEN+p_msg->vendor_len));
     if ((p_cmd = (BT_HDR *) GKI_getpoolbuf(AVRC_CMD_POOL_ID)) != NULL)
-#endif
     {
         p_cmd->offset   = AVCT_MSG_OFFSET;
         p_data          = (UINT8 *)(p_cmd + 1) + p_cmd->offset;

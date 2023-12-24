@@ -19,8 +19,7 @@
 #ifndef BTIF_DM_H
 #define BTIF_DM_H
 
-#include "bta_api.h"
-/************************************************************************************
+/*******************************************************************************
 **  Functions
 ********************************************************************************/
 
@@ -46,75 +45,5 @@ void btif_dm_proc_loc_oob(BOOLEAN valid, BT_OCTET16 c, BT_OCTET16 r);
 BOOLEAN btif_dm_proc_rmt_oob(BD_ADDR bd_addr,  BT_OCTET16 p_c, BT_OCTET16 p_r);
 #endif /* BTIF_DM_OOB_TEST */
 #endif /* BTM_OOB_INCLUDED */
-#if (BLE_INCLUDED == TRUE)
-
-typedef struct
-{
-    UINT8       ltk[BT_OCTET16_LEN];
-    UINT8       rand[BT_OCTET8_LEN];
-    UINT16      ediv;
-    UINT8       sec_level;
-    UINT8       key_size;
-}btif_dm_ble_penc_keys_t;
-
-typedef struct
-{
-    UINT32          counter;
-    UINT8           csrk[BT_OCTET16_LEN];
-    UINT8           sec_level;
-}btif_dm_ble_pcsrk_keys_t;
-
-typedef struct
-{
-    UINT16      div;
-    UINT8       key_size;
-    UINT8       sec_level;
-}btif_dm_ble_lenc_keys_t;
-
-typedef struct
-{
-    UINT32          counter;
-    UINT16          div;
-    UINT8           sec_level;
-
-}btif_dm_ble_lcsrk_keys_t;
-
-typedef struct
-{
-    BOOLEAN                   is_penc_key_rcvd;
-    btif_dm_ble_penc_keys_t   penc_key;       /* received peer encryption key */
-    BOOLEAN                   is_pcsrk_key_rcvd;
-    btif_dm_ble_pcsrk_keys_t  pcsrk_key;       /* received peer device SRK */
-    BOOLEAN                   is_pid_key_rcvd;
-    UINT8                     pid_key[BT_OCTET16_LEN];        /* peer device ID key */
-    BOOLEAN                   is_lenc_key_rcvd;
-    btif_dm_ble_lenc_keys_t   lenc_key;       /* local encryption reproduction keys LTK = = d1(ER,DIV,0)*/
-    BOOLEAN                   is_lcsrk_key_rcvd;
-    btif_dm_ble_lcsrk_keys_t  lcsrk_key;      /* local device CSRK = d1(ER,DIV,1)*/
-} btif_dm_ble_cb_t;
-
-#define BTIF_DM_LE_KEY_PENC        BTA_LE_KEY_PENC
-#define BTIF_DM_LE_KEY_PID         BTA_LE_KEY_PID
-#define BTIF_DM_LE_KEY_PCSRK       BTA_LE_KEY_PCSRK
-#define BTIF_DM_LE_KEY_LENC        BTA_LE_KEY_LENC
-#define BTIF_DM_LE_KEY_LID         BTA_LE_KEY_LID
-#define BTIF_DM_LE_KEY_LCSRK       BTA_LE_KEY_LCSRK
-
-#define BTIF_DM_LE_LOCAL_KEY_IR       (1<<0)
-#define BTIF_DM_LE_LOCAL_KEY_IRK      (1<<1)
-#define BTIF_DM_LE_LOCAL_KEY_DHK      (1<<2)
-#define BTIF_DM_LE_LOCAL_KEY_ER       (1<<3)
-
-void btif_dm_load_ble_local_keys(void);
-void btif_dm_get_ble_local_keys(tBTA_DM_BLE_LOCAL_KEY_MASK *p_key_mask, BT_OCTET16 er,
-                                   tBTA_BLE_LOCAL_ID_KEYS *p_id_keys);
-void btif_dm_save_ble_bonding_keys(void);
-void btif_dm_remove_ble_bonding_keys(void);
-void btif_dm_ble_sec_req_evt(tBTA_DM_BLE_SEC_REQ *p_ble_req);
-
-void btif_dm_update_ble_remote_properties( BD_ADDR bd_addr, BD_NAME bd_name,
-                                           tBT_DEVICE_TYPE dev_type);
-
-#endif /* BLE_INCLUDED */
 
 #endif

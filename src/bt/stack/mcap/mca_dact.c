@@ -23,7 +23,6 @@
  *
  ******************************************************************************/
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "gki.h"
 #include "mca_api.h"
 #include "mca_int.h"
@@ -100,8 +99,6 @@ void mca_dcb_cong (tMCA_DCB *p_dcb, tMCA_DCB_EVT *p_data)
 *******************************************************************************/
 void mca_dcb_free_data (tMCA_DCB *p_dcb, tMCA_DCB_EVT *p_data)
 {
-    UNUSED(p_dcb);
-
     GKI_freebuf (p_data);
 }
 
@@ -117,8 +114,6 @@ void mca_dcb_free_data (tMCA_DCB *p_dcb, tMCA_DCB_EVT *p_data)
 void mca_dcb_do_disconn (tMCA_DCB *p_dcb, tMCA_DCB_EVT *p_data)
 {
     tMCA_CLOSE  close;
-    UNUSED(p_data);
-
     if ((p_dcb->lcid == 0) || (L2CA_DisconnectReq(p_dcb->lcid) == FALSE))
     {
         close.param  = MCA_INT;

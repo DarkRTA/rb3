@@ -31,7 +31,6 @@
 #include "port_api.h"
 #include "port_int.h"
 #include "rfc_int.h"
-#include "bt_utils.h"
 
 /********************************************************************************/
 /*              L O C A L    F U N C T I O N     P R O T O T Y P E S            */
@@ -796,8 +795,6 @@ void rfc_process_rls (tRFC_MCB *p_mcb, BOOLEAN is_command, MX_FRAME *p_frame)
 *******************************************************************************/
 void rfc_process_nsc (tRFC_MCB *p_mcb, MX_FRAME *p_frame)
 {
-    UNUSED(p_mcb);
-    UNUSED(p_frame);
 }
 
 
@@ -811,8 +808,6 @@ void rfc_process_nsc (tRFC_MCB *p_mcb, MX_FRAME *p_frame)
 *******************************************************************************/
 void rfc_process_test_rsp (tRFC_MCB *p_mcb, BT_HDR *p_buf)
 {
-    UNUSED(p_mcb);
-
     GKI_freebuf (p_buf);
 }
 

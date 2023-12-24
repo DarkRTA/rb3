@@ -31,7 +31,7 @@
 #include "l2c_api.h"
 #include "port_int.h"
 #include "rfc_int.h"
-#include "bt_utils.h"
+
 
 #if RFC_DYNAMIC_MEMORY == FALSE
 tRFC_CB rfc_cb;
@@ -82,7 +82,6 @@ void RFCOMM_StartRsp (tRFC_MCB *p_mcb, UINT16 result)
 void RFCOMM_DlcEstablishReq (tRFC_MCB *p_mcb, UINT8 dlci, UINT16 mtu)
 {
     tPORT *p_port = port_find_mcb_dlci_port (p_mcb, dlci);
-    UNUSED(mtu);
 
     if (p_mcb->state != RFC_MX_STATE_CONNECTED)
     {
@@ -105,7 +104,6 @@ void RFCOMM_DlcEstablishReq (tRFC_MCB *p_mcb, UINT8 dlci, UINT16 mtu)
 void RFCOMM_DlcEstablishRsp (tRFC_MCB *p_mcb, UINT8 dlci, UINT16 mtu, UINT16 result)
 {
     tPORT *p_port = port_find_mcb_dlci_port (p_mcb, dlci);
-    UNUSED(mtu);
 
     if ((p_mcb->state != RFC_MX_STATE_CONNECTED) && (result == RFCOMM_SUCCESS))
     {

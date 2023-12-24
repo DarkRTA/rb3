@@ -47,7 +47,6 @@
 #define BTA_AV_FAIL_STREAM      3       /* stream connection failed */
 #define BTA_AV_FAIL_RESOURCES   4       /* no resources */
 #define BTA_AV_FAIL_ROLE        5       /* failed due to role management related issues */
-#define BTA_AV_FAIL_GET_CAP     6       /* get capability failed due to no SEP availale on the peer  */
 
 typedef UINT8 tBTA_AV_STATUS;
 
@@ -493,8 +492,6 @@ typedef struct
     const UINT8 *p_meta_evt_ids;/* the the metadata Get Capabilities response for event id */
     const tBTA_AV_ACT *p_act_tbl;/* the action function table for VDP stream */
     tBTA_AV_REG       *p_reg;   /* action function to register VDP */
-    char              avrc_controller_name[BTA_SERVICE_NAME_LEN]; /* Default AVRCP controller name */
-    char              avrc_target_name[BTA_SERVICE_NAME_LEN];     /* Default AVRCP target name*/
 } tBTA_AV_CFG;
 
 #ifdef __cplusplus

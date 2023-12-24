@@ -105,6 +105,231 @@ typedef struct t_uipc_log_msg
 } tUIPC_LOG_MSG;
 #define UIPC_LOG_MSGLEN       (IPC_LOG_MSG_LEN + 4)
 
+/********************************
+
+    H5 Sync Message
+
+********************************/
+
+/* op_code */
+#define SLIP_SYNC_TO_LITE_REQ        0
+#define SLIP_SYNC_TO_LITE_RESP       1
+#define SLIP_SYNC_TO_FULL_REQ        2
+#define SLIP_SYNC_TO_FULL_RESP       3
+#define SLIP_SYNC_NOTIFY             4
+
+/* status */
+#define SLIP_SYNC_SUCCESS            0
+#define SLIP_SYNC_FAILURE            1
+
+typedef struct
+{
+    UINT8       op_code;
+    UINT8       status;
+    UINT16      acl_pkt_size;
+    UINT8       state;
+    UINT8       lp_state;           /* Low Power state */
+    UINT8       next_seqno;         /* next send seq */
+    UINT8       ack;                /* next ack seq, expected seq from peer */
+    UINT8       sent_ack;           /* last sent ack */
+    UINT8       sliding_window_size;/* window size */
+    BOOLEAN     oof_flow_control;   /* Out of Frame SW Flow Control */
+    BOOLEAN     data_integrity_type;/* Level of Data Integrity Check */
+    UINT8       rx_state;           /* rx state for incoming packet processing */
+} tSLIP_SYNC_INFO;
+
+/********************************
+
+    L2CAP Sync Message
+
+********************************/
+
+/* op_code */
+#define L2C_SYNC_TO_LITE_REQ        0
+#define L2C_SYNC_TO_LITE_RESP       1
+#define L2C_REMOVE_TO_LITE_REQ      2
+#define L2C_REMOVE_TO_LITE_RESP     3
+#define L2C_FLUSH_TO_FULL_IND       4
+
+/* status */
+#define L2C_SYNC_SUCCESS            0
+#define L2C_SYNC_FAILURE            1
+
+typedef struct t_l2c_stream_info
+{
+    UINT16  local_cid;          /* Local CID                        */
+    UINT16  remote_cid;         /* Remote CID                       */
+    UINT16  out_mtu;            /* Max MTU we will send             */
+    UINT16  handle;             /* The handle used with LM          */
+    UINT16  link_xmit_quota;    /* Num outstanding pkts allowed     */
+    BOOLEAN is_flushable;       /* TRUE if flushable channel        */
+} tL2C_STREAM_INFO;
+
+typedef struct t_l2c_sync_to_lite_req
+{
+    UINT8   op_code;                       /* L2C_SYNC_TO_LITE_REQ */
+    UINT16  light_xmit_quota;              /* Total quota for light stack    */
+    UINT16  acl_data_size;                 /* Max ACL data size across HCI transport    */
+    UINT16  non_flushable_pbf;             /* L2CAP_PKT_START_NON_FLUSHABLE if controller supports */
+                                           /* Otherwise, L2CAP_PKT_START */
+    UINT8   multi_av_data_cong_start;      /* Multi-AV queue size to start congestion */
+    UINT8   multi_av_data_cong_end;        /* Multi-AV queue size to end congestion */
+    UINT8   multi_av_data_cong_discard;    /* Multi-AV queue size to discard */
+    UINT8   num_stream;
+    tL2C_STREAM_INFO stream[BTM_SYNC_INFO_NUM_STR];
+} tL2C_SYNC_TO_LITE_REQ;
+
+typedef struct t_l2c_sync_to_lite_resp_stream
+{
+    UINT16  lcid;
+    UINT8   status;
+} tL2C_SYNC_TO_LITE_RESP_STREAM;
+
+typedef struct t_l2c_sync_to_lite_resp
+{
+    UINT8   op_code;                       /* L2C_SYNC_TO_LITE_RESP */
+    UINT16  light_xmit_unacked;            /* unacked packet more than quota in light stack    */
+    UINT8   num_stream;
+    tL2C_SYNC_TO_LITE_RESP_STREAM stream[BTM_SYNC_INFO_NUM_STR];
+} tL2C_SYNC_TO_LITE_RESP;
+
+typedef struct t_l2c_remove_to_lite_req
+{
+    UINT8   op_code;                       /* L2C_REMOVE_TO_LITE_REQ */
+    UINT16  light_xmit_quota;              /* Total quota for light stack    */
+    UINT8   num_stream;
+    UINT16  lcid[BTM_SYNC_INFO_NUM_STR];
+} tL2C_REMOVE_TO_LITE_REQ;
+
+typedef tL2C_SYNC_TO_LITE_RESP  tL2C_REMOVE_TO_LITE_RESP;
+typedef tL2C_REMOVE_TO_LITE_REQ tL2C_FLUSH_TO_FULL_IND;
+
+typedef union t_l2c_sync_msg
+{
+    UINT8                       op_code;
+    tL2C_SYNC_TO_LITE_REQ       sync_req;
+    tL2C_SYNC_TO_LITE_RESP      sync_resp;
+    tL2C_REMOVE_TO_LITE_REQ     remove_req;
+    tL2C_REMOVE_TO_LITE_RESP    remove_resp;
+    tL2C_FLUSH_TO_FULL_IND      flush_ind;
+} tL2C_SYNC_MSG;
+
+/********************************
+
+    AVDTP Sync Message
+
+********************************/
+
+/* op_code */
+#define AVDT_SYNC_TO_LITE_REQ        0
+#define AVDT_SYNC_TO_LITE_RESP       1
+#define AVDT_RESYNC_TO_LITE_REQ      2
+#define AVDT_RESYNC_TO_LITE_RESP     3
+#define AVDT_SYNC_TO_FULL_REQ        4
+#define AVDT_SYNC_TO_FULL_RESP       5
+#define AVDT_REMOVE_TO_LITE_REQ      6
+#define AVDT_REMOVE_TO_LITE_RESP     7
+#define AVDT_SYNC_TO_BTC_LITE_REQ    8
+#define AVDT_SYNC_TO_BTC_LITE_RESP   9
+
+/* status */
+#define AVDT_SYNC_SUCCESS            0
+#define AVDT_SYNC_FAILURE            1
+
+typedef struct
+{
+    UINT16  lcid;
+    UINT32  ssrc;
+} tAVDT_SYNC_TO_BTC_LITE_REQ_STREAM;
+
+typedef struct
+{
+    UINT8   opcode;                     /* AVDT_SYNC_TO_BTC_LITE_REQ */
+    UINT8   num_stream;
+    tAVDT_SYNC_TO_BTC_LITE_REQ_STREAM  stream[BTM_SYNC_INFO_NUM_STR];
+} tAVDT_SYNC_TO_BTC_LITE_REQ;
+
+typedef struct
+{
+    UINT8   opcode;                     /* AVDT_SYNC_TO_BTC_LITE_RESP */
+    UINT8   status;
+} tAVDT_SYNC_TO_BTC_LITE_RESP;
+
+typedef struct t_avdt_scb_sync_info
+{
+    UINT8   handle;         /* SCB handle */
+    BD_ADDR peer_addr;      /* BD address of peer */
+    UINT16  local_cid;      /* Local CID                        */
+    UINT16  peer_mtu;       /* L2CAP mtu of the peer device */
+    UINT8   mux_tsid_media; /* TSID for media transport session */
+    UINT16  media_seq;      /* media packet sequence number */
+} tAVDT_SCB_SYNC_INFO;
+
+typedef struct t_avdt_sync_info
+{
+    UINT8   op_code;
+    UINT8   status;
+
+    tAVDT_SCB_SYNC_INFO scb_info[BTM_SYNC_INFO_NUM_STR];
+
+} tAVDT_SYNC_INFO;
+
+typedef union t_avdt_sync_msg
+{
+    UINT8                       op_code;
+    tAVDT_SYNC_INFO             sync_info;
+    tAVDT_SYNC_TO_BTC_LITE_REQ  btc_sync_req;
+    tAVDT_SYNC_TO_BTC_LITE_RESP btc_sync_resp;
+} tAVDT_SYNC_MSG;
+
+/********************************
+
+    BTA AV Sync Message
+
+********************************/
+
+/* op_code for MM light stack */
+#define BTA_AV_SYNC_TO_LITE_REQ             0
+#define BTA_AV_SYNC_TO_LITE_RESP            1
+#define BTA_AV_STR_START_TO_LITE_REQ        2
+#define BTA_AV_STR_START_TO_LITE_RESP       3
+#define BTA_AV_STR_STOP_TO_LITE_REQ         4
+#define BTA_AV_STR_STOP_TO_LITE_RESP        5
+#define BTA_AV_STR_CLEANUP_TO_LITE_REQ      6
+#define BTA_AV_STR_CLEANUP_TO_LITE_RESP     7
+#define BTA_AV_STR_SUSPEND_TO_LITE_REQ      8
+#define BTA_AV_STR_SUSPEND_TO_LITE_RESP     9
+#define BTA_AV_SYNC_ERROR_RESP              10
+
+/* op_code for BTC light stack */
+#define A2DP_START_REQ                      11
+#define A2DP_START_RESP                     12
+#define A2DP_STOP_REQ                       13
+#define A2DP_STOP_RESP                      14
+#define A2DP_CLEANUP_REQ                    15
+#define A2DP_CLEANUP_RESP                   16
+#define A2DP_SUSPEND_REQ                    17
+#define A2DP_SUSPEND_RESP                   18
+
+#define A2DP_JITTER_DONE_IND                41  /* For BTSNK */
+
+#define AUDIO_CODEC_CONFIG_REQ              19
+#define AUDIO_CODEC_CONFIG_RESP             20
+#define AUDIO_CODEC_SET_BITRATE_REQ         21
+#define AUDIO_CODEC_FLUSH_REQ               22
+#define AUDIO_ROUTE_CONFIG_REQ              23
+#define AUDIO_ROUTE_CONFIG_RESP             24
+#define AUDIO_MIX_CONFIG_REQ                25
+#define AUDIO_MIX_CONFIG_RESP               26
+#define AUDIO_BURST_FRAMES_IND              27
+#define AUDIO_BURST_END_IND                 28
+#define AUDIO_EQ_MODE_CONFIG_REQ            29
+#define AUDIO_SCALE_CONFIG_REQ              30
+
+/* For TIVO, only applicable for I2S -> DAC */
+#define AUDIO_SUB_ROUTE_REQ                 51
+#define AUDIO_SUB_ROUTE_RESP                52
+
 typedef struct
 {
     UINT8   opcode;     /* A2DP_START_REQ */
@@ -564,5 +789,96 @@ typedef struct
     tMIX_SCALE_CONFIG   mix_scale;
 } tAUDIO_SCALE_CONFIG_REQ;
 
-#endif /* UIPC_MSG_H */
+typedef UINT8 tBTA_AV_DUAL_STACK_EVT;
 
+typedef struct
+{
+    UINT8               avdt_handle;    /* AVDTP handle */
+    UINT8               chnl;           /* the channel: audio/video */
+    UINT8               codec_type;     /* codec type */
+    BOOLEAN             cong;           /* TRUE if AVDTP congested */
+    UINT8               hdi;            /* the index to SCB[] */
+    UINT8               hndl;           /* the handle: ((hdi + 1)|chnl) */
+    UINT8               l2c_bufs;       /* the number of buffers queued to L2CAP */
+    UINT16              l2c_cid;        /* L2CAP channel ID */
+    BD_ADDR             peer_addr;      /* peer BD address */
+}tBTA_AV_SYNC_INFO;
+
+typedef struct
+{
+    tBTA_AV_DUAL_STACK_EVT  event;
+    tBTA_AV_SYNC_INFO       sync_info;
+    UINT16                  curr_mtu;                 /* common mtu shared by all active streams */
+    UINT8                   multi_av_supported;       /* Whether multi-av is supported */
+}tBTA_AV_SYNC_INFO_REQ; /* SYNC_TO_LITE_REQ */
+
+/* Dual stack stream events */
+typedef struct
+{
+    tBTA_AV_DUAL_STACK_EVT          event;
+    UINT8                           scb_idx;
+}tBTA_AV_SCB_EVT;
+
+/* data type for the Audio Codec Information*/
+typedef struct
+{
+    UINT16  bit_rate;                   /* SBC encoder bit rate in kbps */
+    UINT16  bit_rate_busy;              /* SBC encoder bit rate in kbps */
+    UINT16  bit_rate_swampd;            /* SBC encoder bit rate in kbps */
+    UINT8   busy_level;                 /* Busy level indicating the bit-rate to be used */
+    UINT8   codec_info[AVDT_CODEC_SIZE];
+    UINT8   codec_type;                 /* Codec type */
+} tBTA_AV_AUDIO_CODEC_SYNC_INFO;
+
+/* Dual stack stream events */
+typedef struct
+{
+    tBTA_AV_DUAL_STACK_EVT          event;
+    UINT8                           scb_idx;
+    UINT8                           audio_open_cnt;
+    tBTA_AV_AUDIO_CODEC_SYNC_INFO   p_codec_cfg;
+    UINT8                           start_stop_flag;
+}tBTA_AV_SCB_REQ;
+
+typedef struct
+{
+    tBTA_AV_DUAL_STACK_EVT          event;
+    UINT8                           scb_idx;
+    UINT8                           audio_open_cnt;
+    UINT16                          curr_mtu;           /* common mtu shared by all active streams */
+}tBTA_AV_SCB_CLEANUP_REQ;
+
+/* Add request/response structures if needed ...
+typedef struct
+{
+    event;
+    data;
+}tBTA_AV_SYNC_*_REQ/RESP;
+*/
+
+typedef union
+{
+    /* MM light stack */
+    tBTA_AV_DUAL_STACK_EVT          event;
+    tBTA_AV_SYNC_INFO_REQ           sync_info_req;
+    tBTA_AV_SCB_EVT                 scb_evt;
+    tBTA_AV_SCB_REQ                 scb_req;
+    tBTA_AV_SCB_CLEANUP_REQ         scb_cleanup_req;
+
+    /* BTC light stack */
+    UINT8                           opcode;
+    tA2DP_START_REQ                 btc_start_req;
+    tA2DP_STOP_REQ                  btc_stop_req;
+    tA2DP_CLEANUP_REQ               btc_cleanup_req;
+    tA2DP_SUSPEND_REQ               btc_suspend_req;
+
+    tAUDIO_CODEC_CONFIG_REQ         codec_config_req;
+    tAUDIO_CODEC_SET_BITRATE_REQ    codec_bitrate_req;
+    tAUDIO_CODEC_FLUSH_REQ          codec_flush_req;
+    tAUDIO_ROUTE_CONFIG_REQ         route_config_req;
+    tAUDIO_MIX_CONFIG_REQ           mix_config_req;
+    tAUDIO_EQ_MODE_CONFIG_REQ       eq_mode_req;
+    tAUDIO_SCALE_CONFIG_REQ         scale_config_req;
+}tBTA_DUAL_STACK_MSG;
+
+#endif /* UIPC_MSG_H */

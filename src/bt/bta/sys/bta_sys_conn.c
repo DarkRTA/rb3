@@ -26,7 +26,7 @@
 #include "bta_sys.h"
 #include "bta_sys_int.h"
 #include "gki.h"
-#include "utl.h"
+
 
 /*******************************************************************************
 **
@@ -349,8 +349,6 @@ void bta_sys_sco_close(UINT8 id, UINT8 app_id, BD_ADDR peer_addr)
 *******************************************************************************/
 void bta_sys_sco_use(UINT8 id, UINT8 app_id, BD_ADDR peer_addr)
 {
-    UNUSED(id);
-
     /* AV streaming need to be suspended before SCO is connected. */
     if(bta_sys_cb.p_sco_cb)
     {
@@ -372,7 +370,6 @@ void bta_sys_sco_use(UINT8 id, UINT8 app_id, BD_ADDR peer_addr)
 void bta_sys_sco_unuse(UINT8 id, UINT8 app_id, BD_ADDR peer_addr)
 {
     UINT8 num_sco_links;
-    UNUSED(id);
 
     if((bta_sys_cb.p_sco_cb))
     {
@@ -577,21 +574,4 @@ void bta_sys_remove_uuid(UINT16 uuid16)
     }
 }
 #endif
-
-/*******************************************************************************
-**
-** Function         bta_sys_vs_hdl
-**
-** Description      Called by BTA subsystems to execute a VS event handler function
-**
-** Returns          void
-**
-*******************************************************************************/
-BOOLEAN bta_sys_vs_hdl(UINT16 evt, void *p)
-{
-    if (bta_sys_cb.p_vs_evt_hdlr)
-        return (*bta_sys_cb.p_vs_evt_hdlr)(evt, p);
-
-    return FALSE;
-}
 

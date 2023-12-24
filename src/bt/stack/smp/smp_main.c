@@ -113,9 +113,6 @@ enum
     SMP_PROC_DISCARD,
     SMP_PROC_REL_DELAY,
     SMP_PROC_REL_DELAY_TOUT,
-    SMP_DELAY_TERMINATE,
-    SMP_IDLE_TERMINATE,
-    SMP_FAST_CONN_PARAM,
     SMP_SM_NO_ACTION
 };
 
@@ -157,9 +154,6 @@ static const tSMP_ACT smp_sm_action[] =
     smp_proc_discard,
     smp_proc_release_delay,
     smp_proc_release_delay_tout,
-    smp_delay_terminate,
-    smp_idle_terminate,
-    smp_fast_conn_param
 };
 /************ SMP Master FSM State/Event Indirection Table **************/
 static const UINT8 smp_ma_entry_map[][SMP_ST_MAX] =
@@ -180,7 +174,7 @@ static const UINT8 smp_ma_entry_map[][SMP_ST_MAX] =
 /* KEY_READY          */{ 0,    3,     0,      3,     1,   0,    2,   1,    6,     0   },
 /* ENC_CMPL           */{ 0,    0,     0,      0,     0,   0,    0,   2,    0,     0   },
 /* L2C_CONN           */{ 1,    0,     0,      0,     0,   0,    0,   0,    0,     0   },
-/* L2C_DISC           */{ 3,	0x83,  0,      0x83,  0x83,0x83, 0x83,0x83, 0x83,  3   },
+/* L2C_DISC           */{ 0,    0x83,  0,      0x83,  0x83,0x83, 0x83,0x83, 0x83,  2   },
 /* IO_RSP             */{ 0,    2,     0,      0,     0,   0,    0,   0,    0,     0   },
 /* SEC_GRANT          */{ 0,    1,     0,      0,     0,   0,    0,   0,    0,     0   },
 /* TK_REQ             */{ 0,    0,     0,      2,     0,   0,    0,   0,    0,     0   },
@@ -202,16 +196,15 @@ static const UINT8 smp_all_table[][SMP_SM_NUM_COLS] = {
 static const UINT8 smp_ma_idle_table[][SMP_SM_NUM_COLS] = {
 /* Event       Action                   Next State */
 /* L2C_CONN */      {SMP_SEND_APP_CBACK,     SMP_SM_NO_ACTION,   SMP_ST_WAIT_APP_RSP},
-/* SEC_REQ  */      {SMP_PROC_SEC_REQ,       SMP_SEND_APP_CBACK, SMP_ST_WAIT_APP_RSP},
-/* L2C_DISC  */     {SMP_IDLE_TERMINATE,     SMP_SM_NO_ACTION,      SMP_ST_IDLE}
+/* SEC_REQ  */      {SMP_PROC_SEC_REQ,       SMP_SEND_APP_CBACK, SMP_ST_WAIT_APP_RSP}
 };
 
 static const UINT8 smp_ma_wait_app_rsp_table[][SMP_SM_NUM_COLS] = {
 /* Event       			                                 Action          Next State */
 /* SEC_GRANT            */ { SMP_PROC_SEC_GRANT,   SMP_SEND_APP_CBACK, SMP_ST_WAIT_APP_RSP},
-/* IO_RSP               */ { SMP_SEND_PAIR_REQ,    SMP_FAST_CONN_PARAM,   SMP_ST_PAIR_REQ_RSP},
+/* IO_RSP               */ { SMP_SEND_PAIR_REQ,    SMP_SM_NO_ACTION,   SMP_ST_PAIR_REQ_RSP},
 /* KEY_READY            */ { SMP_GENERATE_CONFIRM, SMP_SM_NO_ACTION,   SMP_ST_WAIT_CONFIRM},/* TK ready */
-/* ENC_REQ              */ { SMP_START_ENC,        SMP_FAST_CONN_PARAM,   SMP_ST_ENC_PENDING},/* start enc mode setup */
+/* ENC_REQ              */ { SMP_START_ENC,        SMP_SM_NO_ACTION,   SMP_ST_ENC_PENDING},/* start enc mode setup */
 /* DISCARD_SEC_REQ      */ { SMP_PROC_DISCARD,     SMP_SM_NO_ACTION,   SMP_ST_IDLE}
 };
 
@@ -257,8 +250,7 @@ static const UINT8 smp_ma_bond_pending_table[][SMP_SM_NUM_COLS] = {
 static const UINT8 smp_ma_rel_delay_table[][SMP_SM_NUM_COLS] = {
 /* Event       Action                   Next State */
 /* RELEASE_DELAY*/       {SMP_PROC_REL_DELAY,      SMP_SM_NO_ACTION,      SMP_ST_RELEASE_DELAY},
-/* RELEASE_DELAY_TOUT*/  {SMP_PROC_REL_DELAY_TOUT, SMP_SM_NO_ACTION,      SMP_ST_IDLE},
-/* L2C_DISC*/            {SMP_DELAY_TERMINATE,     SMP_SM_NO_ACTION,     SMP_ST_IDLE}
+/* RELEASE_DELAY_TOUT*/  {SMP_PROC_REL_DELAY_TOUT, SMP_SM_NO_ACTION,      SMP_ST_IDLE}
 };
 
 
@@ -453,7 +445,7 @@ void smp_sm_event(tSMP_CB *p_cb, tSMP_EVENT event, void *p_data)
     /* lookup entry /w event & curr_state */
     /* If entry is ignore, return.
      * Otherwise, get state table (according to curr_state or all_state) */
-    if ((event < SMP_MAX_EVT) && ( (entry = entry_table[event - 1][curr_state]) != SMP_SM_IGNORE ))
+    if ( (entry = entry_table[event - 1][curr_state]) != SMP_SM_IGNORE )
     {
         if (entry & SMP_ALL_TBL_MASK)
         {

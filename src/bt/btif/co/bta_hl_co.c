@@ -42,7 +42,7 @@
 #include "bta_hl_co.h"
 #include "bta_hl_ci.h"
 #include "btif_hl.h"
-#include "btif_util.h"
+
 
 
 /*****************************************************************************
@@ -124,7 +124,6 @@ BOOLEAN bta_hl_co_advrtise_source_sdp(UINT8 app_id)
 **
 ** Parameters      app_id - HDP application ID
 **                 mdep_idx - the mdep index
-**                  mdep_counter - number of mdeps
 **                 mdep_id  - the assigned MDEP ID for the specified medp_idx
 **                 p_mdl_cfg (output) - pointer to the MDEP configuration
 **
@@ -133,7 +132,6 @@ BOOLEAN bta_hl_co_advrtise_source_sdp(UINT8 app_id)
 *******************************************************************************/
 BOOLEAN bta_hl_co_get_mdep_config(UINT8  app_id,
                                   UINT8 mdep_idx,
-                                  UINT8 mdep_counter,
                                   tBTA_HL_MDEP_ID mdep_id,
                                   tBTA_HL_MDEP_CFG *p_mdep_cfg)
 {
@@ -141,12 +139,12 @@ BOOLEAN bta_hl_co_get_mdep_config(UINT8  app_id,
     UINT8       app_idx;
     BOOLEAN     success = FALSE;
 
-    BTIF_TRACE_DEBUG5("%s app_id=%d mdep_idx=%d mdep_id=%d mdep_counter=%d",
-                      __FUNCTION__, app_id,mdep_idx,mdep_id,mdep_counter);
+    BTIF_TRACE_DEBUG4("%s app_id=%d mdep_idx=%d mdep_id=%d",
+                      __FUNCTION__, app_id,mdep_idx,mdep_id );
 
     if (btif_hl_find_app_idx(app_id, &app_idx))
     {
-        idx = mdep_idx -mdep_counter-1;
+        idx = mdep_idx -1;
         p_btif_hl_cb->acb[app_idx].sup_feature.mdep[idx].mdep_id = mdep_id;
         memcpy(p_mdep_cfg,
                &p_btif_hl_cb->acb[app_idx].sup_feature.mdep[idx].mdep_cfg,
@@ -216,16 +214,17 @@ BOOLEAN bta_hl_co_get_echo_config(UINT8  app_id,
 ** Returns        void
 **
 *******************************************************************************/
-void bta_hl_co_save_mdl(UINT8 mdep_id, UINT8 item_idx, tBTA_HL_MDL_CFG *p_mdl_cfg )
+void bta_hl_co_save_mdl(UINT8 app_id, UINT8 item_idx, tBTA_HL_MDL_CFG *p_mdl_cfg )
 {
 
-    BTIF_TRACE_DEBUG6("%s mdep_id =%d, item_idx=%d active=%d mdl_id=%d time=%d",
-                      __FUNCTION__, mdep_id, item_idx,
+    BTIF_TRACE_DEBUG6("%s app_id=%d, item_idx=%d active=%d mdl_id=%d time=%d",
+                      __FUNCTION__, app_id, item_idx,
                       p_mdl_cfg->active,
                       p_mdl_cfg->mdl_id,
                       p_mdl_cfg->time);
 
-    btif_hl_save_mdl_cfg(mdep_id, item_idx, p_mdl_cfg);
+
+    btif_hl_save_mdl_cfg(app_id, item_idx, p_mdl_cfg);
 
 }
 
@@ -242,13 +241,13 @@ void bta_hl_co_save_mdl(UINT8 mdep_id, UINT8 item_idx, tBTA_HL_MDL_CFG *p_mdl_cf
 ** Returns          void
 **
 *******************************************************************************/
-void bta_hl_co_delete_mdl(UINT8 mdep_id, UINT8 item_idx)
+void bta_hl_co_delete_mdl(UINT8 app_id, UINT8 item_idx)
 {
 
 
-    BTIF_TRACE_DEBUG3("%s mdep_id=%d, item_idx=%d", __FUNCTION__, mdep_id, item_idx);
+    BTIF_TRACE_DEBUG3("%s app_id=%d, item_idx=%d", __FUNCTION__, app_id, item_idx);
 
-    btif_hl_delete_mdl_cfg(mdep_id, item_idx);
+    btif_hl_delete_mdl_cfg(app_id, item_idx);
 
 
 }
@@ -427,9 +426,6 @@ void bta_hl_co_get_echo_data (UINT8 app_id, tBTA_HL_MCL_HANDLE mcl_handle,
                               UINT16 buf_size, UINT8 *p_buf,  UINT16 evt)
 {
     tBTA_HL_STATUS status = BTA_HL_STATUS_FAIL;
-    UNUSED(app_id);
-    UNUSED(buf_size);
-    UNUSED(p_buf);
 
     BTIF_TRACE_ERROR1("%s not supported",__FUNCTION__);
     bta_hl_ci_get_echo_data(mcl_handle,  status, evt);
@@ -456,9 +452,6 @@ void bta_hl_co_put_echo_data (UINT8 app_id, tBTA_HL_MCL_HANDLE mcl_handle,
                               UINT16 data_size, UINT8 *p_data, UINT16 evt)
 {
     tBTA_HL_STATUS status = BTA_HL_STATUS_FAIL;
-    UNUSED(app_id);
-    UNUSED(data_size);
-    UNUSED(p_data);
 
     BTIF_TRACE_ERROR1("%s not supported",__FUNCTION__);
     bta_hl_ci_put_echo_data(mcl_handle,  status, evt);

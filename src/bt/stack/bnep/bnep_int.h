@@ -234,12 +234,9 @@ extern void        bnep_send_conn_req (tBNEP_CONN *p_bcb);
 extern void        bnep_send_conn_responce (tBNEP_CONN *p_bcb, UINT16 resp_code);
 extern void        bnep_process_setup_conn_req (tBNEP_CONN *p_bcb, UINT8 *p_setup, UINT8 len);
 extern void        bnep_process_setup_conn_responce (tBNEP_CONN *p_bcb, UINT8 *p_setup);
-extern UINT8       *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *len,
-                                                        BOOLEAN is_ext);
-extern void        bnep_sec_check_complete (BD_ADDR bd_addr, tBT_TRANSPORT trasnport,
-                                                    void *p_ref_data, UINT8 result);
-extern tBNEP_RESULT bnep_is_packet_allowed (tBNEP_CONN *p_bcb, BD_ADDR p_dest_addr, UINT16 protocol,
-                                                    BOOLEAN fw_ext_present, UINT8 *p_data);
+extern UINT8       *bnep_process_control_packet (tBNEP_CONN *p_bcb, UINT8 *p, UINT16 *len, BOOLEAN is_ext);
+extern void        bnep_sec_check_complete (BD_ADDR bd_addr, void *p_ref_data, UINT8 result);
+extern tBNEP_RESULT bnep_is_packet_allowed (tBNEP_CONN *p_bcb, BD_ADDR p_dest_addr, UINT16 protocol, BOOLEAN fw_ext_present, UINT8 *p_data);
 extern UINT32      bnep_get_uuid32 (tBT_UUID *src_uuid);
 extern void        bnep_dump_status (void);
 

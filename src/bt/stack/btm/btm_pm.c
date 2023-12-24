@@ -40,7 +40,7 @@
 #include "btm_int.h"
 #include "l2c_int.h"
 #include "hcidefs.h"
-#include "bt_utils.h"
+
 
 #if BTM_PWR_MGR_INCLUDED == TRUE
 
@@ -369,6 +369,8 @@ void btm_pm_reset(void)
         cb = btm_cb.pm_reg_db[btm_cb.pm_pend_id].cback;
     }
 
+    /* no command pending */
+    btm_cb.pm_pend_link = MAX_L2CAP_LINKS;
 
     /* clear the register record */
     for(xx=0; xx<BTM_MAX_PM_RECORDS; xx++)
@@ -376,11 +378,8 @@ void btm_pm_reset(void)
         btm_cb.pm_reg_db[xx].mask = BTM_PM_REC_NOT_USED;
     }
 
-    if(cb != NULL && btm_cb.pm_pend_link < MAX_L2CAP_LINKS)
+    if(cb != NULL)
         (*cb)(btm_cb.acl_db[btm_cb.pm_pend_link].remote_addr, BTM_PM_STS_ERROR, BTM_DEV_RESET, 0);
-
-    /* no command pending */
-    btm_cb.pm_pend_link = MAX_L2CAP_LINKS;
 }
 
 /*******************************************************************************
@@ -420,11 +419,7 @@ static int btm_pm_find_acl_ind(BD_ADDR remote_bda)
 
     for (xx = 0; xx < MAX_L2CAP_LINKS; xx++, p++)
     {
-        if ((p->in_use) && (!memcmp (p->remote_addr, remote_bda, BD_ADDR_LEN))
-#if (BLE_INCLUDED == TRUE)
-            && p->transport == BT_TRANSPORT_BR_EDR
-#endif
-            )
+        if ((p->in_use) && (!memcmp (p->remote_addr, remote_bda, BD_ADDR_LEN)))
         {
 #if BTM_PM_DEBUG == TRUE
             BTM_TRACE_DEBUG2( "btm_pm_find_acl_ind ind:%d, st:%d", xx, btm_cb.pm_mode_db[xx].state);
@@ -852,17 +847,15 @@ void btm_pm_proc_mode_change (UINT8 hci_status, UINT16 hci_handle, UINT8 mode, U
     BTM_TRACE_DEBUG2( "btm_pm_proc_mode_change new state:0x%x (old:0x%x)", p_cb->state, old_state);
 #endif
 
-    if ((p_lcb = l2cu_find_lcb_by_bd_addr(p->remote_addr, BT_TRANSPORT_BR_EDR)) != NULL)
+    if ((p_cb->state == HCI_MODE_ACTIVE) &&
+        ((p_lcb = l2cu_find_lcb_by_bd_addr (p->remote_addr)) != NULL))
     {
-        if ((p_cb->state == BTM_PM_ST_ACTIVE) || (p_cb->state == BTM_PM_ST_SNIFF))
-        {
-            /* There might be any pending packets due to SNIFF or PENDING state */
-            /* Trigger L2C to start transmission of the pending packets. */
-            BTM_TRACE_DEBUG0("btm mode change to active; check l2c_link for outgoing packets");
-            l2c_link_check_send_pkts(p_lcb, NULL, NULL);
+        /* There might be any pending packets due to SNIFF or PENDING state */
+        /* Trigger L2C to start transmission of the pending packets.        */
+        BTM_TRACE_DEBUG0 ("btm mode change to active; check l2c_link for outgoing packets");
+        l2c_link_check_send_pkts (p_lcb, NULL, NULL);
 
         //btu_stop_timer (&p_lcb->timer_entry);
-        }
     }
 
     /* notify registered parties */
@@ -929,7 +922,6 @@ void btm_pm_proc_ssr_evt (UINT8 *p, UINT16 evt_len)
     tBTM_PM_MCB *p_cb;
     tACL_CONN   *p_acl=NULL;
     UINT16      use_ssr = TRUE;
-    UNUSED(evt_len);
 
     STREAM_TO_UINT8 (status, p);
 
@@ -961,9 +953,7 @@ void btm_pm_proc_ssr_evt (UINT8 *p, UINT16 evt_len)
         }
     }
 }
-
 #endif
-
 #else /* BTM_PWR_MGR_INCLUDED == TRUE */
 
 /*******************************************************************************
@@ -992,7 +982,6 @@ tBTM_STATUS BTM_ReadPowerMode (BD_ADDR remote_bda, tBTM_PM_MODE *p_mode)
 
 #endif
 
-
 /*******************************************************************************
 **
 ** Function         BTM_IsPowerManagerOn
@@ -1007,5 +996,3 @@ BOOLEAN BTM_IsPowerManagerOn (void)
 {
     return BTM_PWR_MGR_INCLUDED;
 }
-
-

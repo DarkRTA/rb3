@@ -1486,12 +1486,8 @@ static BOOLEAN do_sar_reassembly (tL2C_CCB *p_ccb, BT_HDR *p_buf, UINT16 ctrl_wo
     else if (p_buf != NULL)
     {
 #if (L2CAP_NUM_FIXED_CHNLS > 0)
-        if (p_ccb->local_cid < L2CAP_BASE_APPL_CID &&
-            (p_ccb->local_cid >= L2CAP_FIRST_FIXED_CHNL && p_ccb->local_cid <= L2CAP_LAST_FIXED_CHNL))
-        {
-            if (l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)
-                (*l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)(p_ccb->p_lcb->remote_bd_addr, p_buf);
-        }
+        if (p_ccb->local_cid < L2CAP_BASE_APPL_CID)
+            (*l2cb.fixed_reg[p_ccb->local_cid - L2CAP_FIRST_FIXED_CHNL].pL2CA_FixedData_Cb)(p_ccb->p_lcb->remote_bd_addr, p_buf);
         else
 #endif
             l2c_csm_execute (p_ccb, L2CEVT_L2CAP_DATA, p_buf);
@@ -1626,7 +1622,7 @@ BT_HDR *l2c_fcr_get_next_xmit_sdu_seg (tL2C_CCB *p_ccb, UINT16 max_packet_length
     BOOLEAN     first_seg    = FALSE,       /* The segment is the first part of data  */
                 mid_seg      = FALSE,       /* The segment is the middle part of data */
                 last_seg     = FALSE;       /* The segment is the last part of data   */
-    UINT16      sdu_len = 0;
+    UINT16      sdu_len;
     BT_HDR      *p_buf, *p_xmit;
     UINT8       *p;
     UINT16      max_pdu = p_ccb->tx_mps /* Needed? - L2CAP_MAX_HEADER_FCS*/;
@@ -2246,7 +2242,7 @@ UINT8 l2c_fcr_process_peer_cfg_req(tL2C_CCB *p_ccb, tL2CAP_CFG_INFO *p_cfg)
                 p_ccb->out_cfg_fcr_present = TRUE;
             }
 
-            if (p_cfg->fcr.mode == L2CAP_FCR_ERTM_MODE || p_cfg->fcr.mode == L2CAP_FCR_STREAM_MODE)
+            if (p_cfg->fcr.mode == L2CAP_FCR_ERTM_MODE)
             {
                 /* Always respond with FCR ERTM parameters */
                 p_ccb->out_cfg_fcr_present = TRUE;

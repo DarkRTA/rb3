@@ -44,7 +44,6 @@
 #if( defined BTA_AR_INCLUDED ) && (BTA_AR_INCLUDED == TRUE)
 #include "bta_ar_api.h"
 #endif
-#include "utl.h"
 
 /* protocol timer update period, in milliseconds */
 #ifndef BTA_SYS_TIMER_PERIOD
@@ -58,8 +57,8 @@ tBTA_SYS_CB bta_sys_cb;
 
 /* trace level */
 /* TODO Bluedroid - Hard-coded trace levels -  Needs to be configurable */
-UINT8 appl_trace_level = BT_TRACE_LEVEL_WARNING; //APPL_INITIAL_TRACE_LEVEL;
-UINT8 btif_trace_level = BT_TRACE_LEVEL_WARNING;
+UINT8 appl_trace_level = BT_TRACE_LEVEL_DEBUG; //APPL_INITIAL_TRACE_LEVEL;
+UINT8 btif_trace_level = BT_TRACE_LEVEL_DEBUG;
 
 static const tBTA_SYS_REG bta_sys_hw_reg =
 {
@@ -296,8 +295,8 @@ void bta_sys_hw_btm_cback( tBTM_DEV_STATUS status )
 *******************************************************************************/
 void bta_sys_hw_error(tBTA_SYS_HW_MSG *p_sys_hw_msg)
 {
+
     UINT8 module_index;
-    UNUSED(p_sys_hw_msg);
 
     APPL_TRACE_DEBUG1("%s", __FUNCTION__);
 
@@ -456,7 +455,7 @@ void bta_sys_hw_evt_disabled(tBTA_SYS_HW_MSG *p_sys_hw_msg)
 **
 ** Function         bta_sys_hw_event_stack_enabled
 **
-** Description     we receive this event once the SW side is ready ( stack, FW download,... ),
+** Description     we receive this event from once the SW side is ready ( stack, FW download,... ),
 **                       i.e. we can really start using the device. So notify the app.
 **
 ** Returns          success or failure
@@ -465,7 +464,6 @@ void bta_sys_hw_evt_disabled(tBTA_SYS_HW_MSG *p_sys_hw_msg)
 void bta_sys_hw_evt_stack_enabled(tBTA_SYS_HW_MSG *p_sys_hw_msg)
 {
     UINT8 hw_module_index;
-    UNUSED(p_sys_hw_msg);
 
     APPL_TRACE_DEBUG0(" bta_sys_hw_evt_stack_enabled!notify the callers");
 

@@ -1364,16 +1364,12 @@ BOOLEAN btsnd_hcic_change_name (BD_NAME name)
         return (FALSE);
 
     pp = (UINT8 *)(p + 1);
-    memset(pp, 0, HCIC_PREAMBLE_SIZE + HCIC_PARAM_SIZE_CHANGE_NAME);
 
     p->len    = HCIC_PREAMBLE_SIZE + HCIC_PARAM_SIZE_CHANGE_NAME;
     p->offset = 0;
 
     UINT16_TO_STREAM (pp, HCI_CHANGE_LOCAL_NAME);
     UINT8_TO_STREAM  (pp, HCIC_PARAM_SIZE_CHANGE_NAME);
-
-    if (len > HCIC_PARAM_SIZE_CHANGE_NAME)
-        len = HCIC_PARAM_SIZE_CHANGE_NAME;
 
     ARRAY_TO_STREAM (pp, name, len);
 

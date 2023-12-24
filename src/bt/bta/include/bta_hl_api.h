@@ -39,11 +39,11 @@
 #endif
 
 #ifndef BTA_HL_NUM_APPS
-#define BTA_HL_NUM_APPS                 12
+#define BTA_HL_NUM_APPS                 3
 #endif
 
 #ifndef BTA_HL_NUM_MDEPS
-#define BTA_HL_NUM_MDEPS                13
+#define BTA_HL_NUM_MDEPS                5
 #endif
 
 #ifndef BTA_HL_NUM_MCLS
@@ -74,11 +74,11 @@
 #endif
 
 #ifndef BTA_HL_NUM_SDP_RECS
-#define BTA_HL_NUM_SDP_RECS             5
+#define BTA_HL_NUM_SDP_RECS             3
 #endif
 
 #ifndef BTA_HL_NUM_SDP_MDEPS
-#define BTA_HL_NUM_SDP_MDEPS            12
+#define BTA_HL_NUM_SDP_MDEPS            10
 #endif
 
 #ifndef BTA_HL_NUM_SVC_ELEMS
@@ -137,7 +137,6 @@
 #define BTA_HL_STATUS_NO_MDL_ID_FOUND       25
 #define BTA_HL_STATUS_DCH_BUSY              26  /* DCH is congested*/
 #define BTA_HL_STATUS_INVALID_CTRL_PSM      27
-#define BTA_HL_STATUS_DUPLICATE_CCH_OPEN    28
 
 typedef UINT8 tBTA_HL_STATUS;
 typedef tMCA_HANDLE tBTA_HL_APP_HANDLE;
@@ -247,7 +246,6 @@ typedef struct
 {
     tBTA_HL_MDEP_ID         mdep_id;  /* MDEP ID 0x01-0x7F */
     tBTA_HL_MDEP_CFG        mdep_cfg;
-    UINT8                   ori_app_id;
 } tBTA_HL_MDEP;
 
 typedef struct
@@ -281,7 +279,7 @@ typedef struct
 
 
 /* Maximum number of supported feature list items (list_elem in tSDP_SUP_FEATURE_ELEM) */
-#define BTA_HL_NUM_SUP_FEATURE_ELEMS     13
+#define BTA_HL_NUM_SUP_FEATURE_ELEMS     10
 #define BTA_HL_SUP_FEATURE_SDP_BUF_SIZE  512
 /* This structure is used to add supported feature lists and find supported feature elements */
 typedef struct
@@ -443,7 +441,6 @@ typedef struct
 typedef struct
 {
     tBTA_HL_STATUS          status;        /* start status */
-    UINT8                   app_id;
     tBTA_HL_APP_HANDLE      app_handle;
 } tBTA_HL_DEREGISTER_CFM;
 
@@ -479,7 +476,6 @@ typedef struct
 typedef struct
 {
     tBTA_HL_STATUS          status;             /* connection status */
-    UINT8                   app_id;
     tBTA_HL_MCL_HANDLE      mcl_handle;
     tBTA_HL_APP_HANDLE      app_handle;
     BD_ADDR                 bd_addr;            /* address of peer device */
@@ -493,8 +489,6 @@ typedef struct
     tBTA_HL_MDL_ID          mdl_id;             /* MCAP data link ID for this
                                                    data channel conenction    */
     tBTA_HL_DCH_CFG         cfg;                /* dch cfg requested by the peer device */
-    BD_ADDR                 bd_addr; /* address of peer device */
-
 } tBTA_HL_DCH_CREATE_IND;
 
 typedef struct
@@ -585,7 +579,6 @@ typedef struct
 typedef struct
 {
     tBTA_HL_STATUS          status;
-    UINT8                   app_id;
     tBTA_HL_APP_HANDLE      app_handle;
     BD_ADDR                 bd_addr;
     tBTA_HL_SDP             *p_sdp;
@@ -661,25 +654,6 @@ extern "C"
 **
 *******************************************************************************/
     BTA_API extern void BTA_HlDisable(void);
-
-/*******************************************************************************
-**
-** Function         BTA_HlUpdate
-**
-** Description      Register an HDP application
-**
-** Parameters       app_id        - Application ID
-**                  p_reg_param   - non-platform related parameters for the
-**                                  HDP application
-**                  p_cback       - HL event callback fucntion
-**
-** Returns          void
-**
-*******************************************************************************/
-    BTA_API extern void BTA_HlUpdate(UINT8  app_id,
-                    tBTA_HL_REG_PARAM *p_reg_param, BOOLEAN is_register,
-                    tBTA_HL_CBACK *p_cback);
-
 /*******************************************************************************
 **
 ** Function         BTA_HlRegister
@@ -710,7 +684,7 @@ extern "C"
 ** Returns         void
 **
 *******************************************************************************/
-    BTA_API extern void BTA_HlDeregister(UINT8 app_id,tBTA_HL_APP_HANDLE app_handle);
+    BTA_API extern void BTA_HlDeregister(tBTA_HL_APP_HANDLE app_handle);
 
 /*******************************************************************************
 **
@@ -730,7 +704,7 @@ extern "C"
 **                  Note: If the control PSM value is zero then the first HDP
 **                        instance is used for the control channel setup
 *******************************************************************************/
-    BTA_API extern void BTA_HlCchOpen(UINT8 app_id, tBTA_HL_APP_HANDLE app_handle,
+    BTA_API extern void BTA_HlCchOpen(tBTA_HL_APP_HANDLE app_handle,
                                       tBTA_HL_CCH_OPEN_PARAM *p_open_param);
 
 /*******************************************************************************
@@ -858,14 +832,13 @@ extern "C"
 **
 ** Description      SDP query request for the specified BD address
 **
-** Parameters       app_id
-                        app_handle      - application handle
+** Parameters       app_handle      - application handle
 **                  bd_addr         - BD address
 **
 ** Returns          void
 **
 *******************************************************************************/
-    BTA_API extern  void BTA_HlSdpQuery(UINT8  app_id,tBTA_HL_APP_HANDLE app_handle,
+    BTA_API extern  void BTA_HlSdpQuery(tBTA_HL_APP_HANDLE app_handle,
                                         BD_ADDR bd_addr);
 
 /*******************************************************************************

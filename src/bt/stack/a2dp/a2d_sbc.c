@@ -24,13 +24,12 @@
  ******************************************************************************/
 
 #include "bt_target.h"
+
+#if (A2D_SBC_INCLUDED == TRUE)
 #include <string.h>
 #include "a2d_api.h"
 #include "a2d_int.h"
 #include "a2d_sbc.h"
-#include "bt_utils.h"
-
-#if (A2D_SBC_INCLUDED == TRUE)
 
 /*************************************************************************************************
  * SBC descramble code
@@ -398,58 +397,5 @@ void A2D_ParsSbcMplHdr(UINT8 *p_src, BOOLEAN *p_frag, BOOLEAN *p_start, BOOLEAN 
         *p_num  = (*p_src & A2D_SBC_HDR_NUM_MSK);
     }
 }
-
-#else /* A2D_SBC_INCLUDED == TRUE */
-
-void A2D_SbcChkFrInit(UINT8 *p_pkt)
-{
-    UNUSED(p_pkt);
-}
-
-void A2D_SbcDescramble(UINT8 *p_pkt, UINT16 len)
-{
-    UNUSED(p_pkt);
-    UNUSED(len);
-}
-
-tA2D_STATUS A2D_BldSbcInfo(UINT8 media_type, tA2D_SBC_CIE *p_ie,
-                           UINT8 *p_result)
-{
-    UNUSED(media_type);
-    UNUSED(p_ie);
-    UNUSED(p_result);
-    return A2D_FAIL;
-}
-
-tA2D_STATUS A2D_ParsSbcInfo(tA2D_SBC_CIE *p_ie, UINT8 *p_info,
-                            BOOLEAN for_caps)
-{
-    UNUSED(p_ie);
-    UNUSED(p_info);
-    UNUSED(for_caps);
-    return A2D_FAIL;
-}
-
-void A2D_BldSbcMplHdr(UINT8 *p_dst, BOOLEAN frag, BOOLEAN start,
-                      BOOLEAN last, UINT8 num)
-{
-    UNUSED(p_dst);
-    UNUSED(frag);
-    UNUSED(start);
-    UNUSED(last);
-    UNUSED(num);
-}
-
-void A2D_ParsSbcMplHdr(UINT8 *p_src, BOOLEAN *p_frag,
-                       BOOLEAN *p_start, BOOLEAN *p_last,
-                       UINT8 *p_num)
-{
-    UNUSED(p_src);
-    UNUSED(p_frag);
-    UNUSED(p_start);
-    UNUSED(p_last);
-    UNUSED(p_num);
-}
-
 
 #endif /* A2D_SBC_INCLUDED == TRUE */

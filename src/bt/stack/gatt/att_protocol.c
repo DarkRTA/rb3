@@ -162,7 +162,7 @@ BT_HDR *attp_build_browse_cmd(UINT8 op_code, UINT16 s_hdl, UINT16 e_hdl, tBT_UUI
 ** Returns          pointer to the command buffer.
 **
 *******************************************************************************/
-BT_HDR *attp_build_read_by_type_value_cmd (UINT16 payload_size, tGATT_FIND_TYPE_VALUE *p_value_type)
+BT_HDR *attp_build_read_handles_cmd (UINT16 payload_size, tGATT_FIND_TYPE_VALUE *p_value_type)
 {
     BT_HDR      *p_buf = NULL;
     UINT8       *p;
@@ -390,13 +390,13 @@ BT_HDR *attp_build_sr_msg(tGATT_TCB *p_tcb, UINT8 op_code, tGATT_SR_MSG *p_msg)
     switch (op_code)
     {
     case GATT_RSP_READ_BLOB:
-    case GATT_RSP_PREPARE_WRITE:
-        GATT_TRACE_EVENT2 ("ATT_RSP_READ_BLOB/GATT_RSP_PREPARE_WRITE: len = %d offset = %d",
-                    p_msg->attr_value.len, p_msg->attr_value.offset);
+        GATT_TRACE_EVENT2 ("ATT_RSP_READ_BLOB: len = %d offset = %d", p_msg->attr_value.len, p_msg->attr_value.offset);
         offset = p_msg->attr_value.offset;
-/* Coverity: [FALSE-POSITIVE error] intended fall through */
-/* Missing break statement between cases in switch statement */
-        /* fall through */
+
+    case GATT_RSP_PREPARE_WRITE:
+        if (offset == 0)
+            offset = p_msg->attr_value.offset;
+
     case GATT_RSP_READ_BY_TYPE:
     case GATT_RSP_READ:
     case GATT_HANDLE_VALUE_NOTIF:
@@ -495,7 +495,7 @@ UINT8 attp_cl_send_cmd(tGATT_TCB *p_tcb, UINT16 clcb_idx, UINT8 cmd_code, BT_HDR
                 /* do not enq cmd if handle value confirmation or set request */
                 if (cmd_code != GATT_HANDLE_VALUE_CONF && cmd_code != GATT_CMD_WRITE)
                 {
-                    gatt_start_rsp_timer (clcb_idx);
+                    gatt_start_rsp_timer (p_tcb);
                     gatt_cmd_enq(p_tcb, clcb_idx, FALSE, cmd_code, NULL);
                 }
             }
@@ -503,10 +503,7 @@ UINT8 attp_cl_send_cmd(tGATT_TCB *p_tcb, UINT16 clcb_idx, UINT8 cmd_code, BT_HDR
                 att_ret = GATT_INTERNAL_ERROR;
         }
         else
-        {
-            att_ret = GATT_CMD_STARTED;
             gatt_cmd_enq(p_tcb, clcb_idx, TRUE, cmd_code, p_cmd);
-        }
     }
     else
         att_ret = GATT_ILLEGAL_PARAMETER;
@@ -606,7 +603,7 @@ tGATT_STATUS attp_send_cl_msg (tGATT_TCB *p_tcb, UINT16 clcb_idx, UINT8 op_code,
             break;
 
         case GATT_REQ_FIND_TYPE_VALUE:
-            p_cmd = attp_build_read_by_type_value_cmd(p_tcb->payload_size, &p_msg->find_type_value);
+            p_cmd = attp_build_read_handles_cmd(p_tcb->payload_size, &p_msg->find_type_value);
             break;
 
         case GATT_REQ_READ_MULTI:

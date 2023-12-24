@@ -97,34 +97,33 @@
 #define BT_EVT_TO_OBX_SR_L2C_MSG    0x3500
 
 /* ftp events */
-#define BT_EVT_TO_FTP_SRVR_CMDS     0x3600
-#define BT_EVT_TO_FTP_CLNT_CMDS     0x3700
+#define BT_EVT_TO_FTP_SRVR_CMDS     0x3800
+#define BT_EVT_TO_FTP_CLNT_CMDS     0x3900
 
-#define BT_EVT_TO_BTU_SAP           0x3800       /* SIM Access Profile events */
+#define BT_EVT_TO_BTU_SAP           0x3a00       /* SIM Access Profile events */
 
 /* opp events */
-#define BT_EVT_TO_OPP_SRVR_CMDS     0x3900
-#define BT_EVT_TO_OPP_CLNT_CMDS     0x3a00
+#define BT_EVT_TO_OPP_SRVR_CMDS     0x3b00
+#define BT_EVT_TO_OPP_CLNT_CMDS     0x3c00
 
 /* gap events */
-#define BT_EVT_TO_GAP_MSG           0x3b00
+#define BT_EVT_TO_GAP_MSG           0x3d00
 
 /* start timer */
-#define BT_EVT_TO_START_TIMER       0x3c00
-
-/* stop timer */
-#define BT_EVT_TO_STOP_TIMER        0x3d00
+#define BT_EVT_TO_START_TIMER       0x3e00
 
 /* start quick timer */
-#define BT_EVT_TO_START_QUICK_TIMER 0x3e00
+#define BT_EVT_TO_START_QUICK_TIMER 0x3f00
 
 
 /* for NFC                          */
                                                 /************************************/
 #define BT_EVT_TO_NFC_NCI           0x4000      /* NCI Command, Notification or Data*/
 #define BT_EVT_TO_NFC_INIT          0x4100      /* Initialization message */
-#define BT_EVT_TO_NCI_LP            0x4200      /* Low power */
-#define BT_EVT_TO_NFC_ERR           0x4300      /* Error notification to NFC Task */
+#define BT_EVT_TO_LLCP_ECHO         0x4200      /* LLCP Echo Service */
+#define BT_EVT_TO_LLCP_SOCKET       0x4300      /* LLCP over TCP/IP */
+#define BT_EVT_TO_NCI_LP            0x4400      /* Low power */
+#define BT_EVT_TO_NFC_ERR           0x4500      /* Error notification to NFC Task */
 
 #define BT_EVT_TO_NFCCSIM_NCI       0x4a00      /* events to NFCC simulation (NCI packets) */
 
@@ -191,9 +190,7 @@
 #define BT_EVT_CONTEXT_SWITCH_EVT  (0x0001 | BT_EVT_BTIF)
 
 #define BT_EVT_TRIGGER_STACK_INIT   EVENT_MASK(APPL_EVT_0)
-#define BT_EVT_HARDWARE_INIT_FAIL   EVENT_MASK(APPL_EVT_1)
 
-#define BT_EVT_PRELOAD_CMPL         EVENT_MASK(APPL_EVT_6)
 
 /* Define the header of each buffer used in the Bluetooth stack.
 */
@@ -333,7 +330,7 @@ typedef UINT8 EXT_INQ_RESP[EXT_INQ_RESP_LEN];/* Extended Inquiry Response */
 typedef UINT8 *EXT_INQ_RESP_PTR;             /* Pointer to Extended Inquiry Response */
 
 #define BD_NAME_LEN     248
-typedef UINT8 BD_NAME[BD_NAME_LEN + 1];         /* Device name */
+typedef UINT8 BD_NAME[BD_NAME_LEN];         /* Device name */
 typedef UINT8 *BD_NAME_PTR;                 /* Pointer to Device name */
 
 #define BD_FEATURES_LEN 8
@@ -497,10 +494,6 @@ typedef struct
 #define BLE_ADDR_TYPE_MASK      (BLE_ADDR_RANDOM | BLE_ADDR_PUBLIC)
 typedef UINT8 tBLE_ADDR_TYPE;
 
-#define BT_TRANSPORT_BR_EDR    1
-#define BT_TRANSPORT_LE        2
-typedef UINT8 tBT_TRANSPORT;
-
 #define BLE_ADDR_IS_STATIC(x)   ((x[0] & 0xC0) == 0xC0)
 
 typedef struct
@@ -587,13 +580,13 @@ typedef UINT8 tBT_DEVICE_TYPE;
 #define TRACE_LAYER_SMP             0x00260000
 #define TRACE_LAYER_NFC             0x00270000
 #define TRACE_LAYER_NCI             0x00280000
-#define TRACE_LAYER_LLCP            0x00290000
-#define TRACE_LAYER_NDEF            0x002a0000
-#define TRACE_LAYER_RW              0x002b0000
-#define TRACE_LAYER_CE              0x002c0000
-#define TRACE_LAYER_P2P             0x002d0000
+#define TRACE_LAYER_IDEP            0x00290000
+#define TRACE_LAYER_NDEP            0x002a0000
+#define TRACE_LAYER_LLCP            0x002b0000
+#define TRACE_LAYER_RW              0x002c0000
+#define TRACE_LAYER_CE              0x002d0000
 #define TRACE_LAYER_SNEP            0x002e0000
-#define TRACE_LAYER_CHO             0x002f0000
+#define TRACE_LAYER_NDEF            0x002f0000
 #define TRACE_LAYER_NFA             0x00300000
 
 #define TRACE_LAYER_MAX_NUM         0x0031
@@ -674,13 +667,11 @@ typedef UINT8 tBT_DEVICE_TYPE;
 #define SCR_PROTO_TRACE_ATT         0x00001000
 #define SCR_PROTO_TRACE_SMP         0x00002000
 #define SCR_PROTO_TRACE_NCI         0x00004000
-#define SCR_PROTO_TRACE_LLCP        0x00008000
-#define SCR_PROTO_TRACE_NDEF        0x00010000
-#define SCR_PROTO_TRACE_RW          0x00020000
-#define SCR_PROTO_TRACE_CE          0x00040000
-#define SCR_PROTO_TRACE_SNEP        0x00080000
-#define SCR_PROTO_TRACE_CHO         0x00100000
-#define SCR_PROTO_TRACE_ALL         0x001fffff
+#define SCR_PROTO_TRACE_DEP         0x00008000
+#define SCR_PROTO_TRACE_LLCP        0x00010000
+#define SCR_PROTO_TRACE_NDEF        0x00020000
+#define SCR_PROTO_TRACE_TAGS        0x00040000
+#define SCR_PROTO_TRACE_ALL         0x0007ffff
 #define SCR_PROTO_TRACE_HCI_LOGGING_VSE 0x0800 /* Brcm vs event for logmsg and protocol traces */
 
 #define MAX_SCRIPT_TYPE             5

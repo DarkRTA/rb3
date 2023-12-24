@@ -188,7 +188,6 @@ enum
     /* these events are handled outside the state machine */
     BTA_HL_API_ENABLE_EVT,
     BTA_HL_API_DISABLE_EVT,
-    BTA_HL_API_UPDATE_EVT,
     BTA_HL_API_REGISTER_EVT,
     BTA_HL_API_DEREGISTER_EVT,
     BTA_HL_API_CCH_OPEN_EVT,
@@ -242,20 +241,6 @@ typedef struct
 {
     BT_HDR              hdr;
     UINT8               app_id;
-    BOOLEAN             is_register;        /* Update HL application due to register or deregister */
-    tBTA_HL_CBACK       *p_cback;           /* pointer to application callback function */
-    tBTA_HL_DEVICE_TYPE dev_type;           /* sink, source or dual roles */
-    tBTA_SEC            sec_mask;           /* security mask for accepting conenction*/
-    char                srv_name[BTA_SERVICE_NAME_LEN +1];        /* service name to be used in the SDP; null terminated*/
-    char                srv_desp[BTA_SERVICE_DESP_LEN +1];        /* service description to be used in the SDP; null terminated */
-    char                provider_name[BTA_PROVIDER_NAME_LEN +1];   /* provide name to be used in the SDP; null terminated */
-
-} tBTA_HL_API_UPDATE;
-
-typedef struct
-{
-    BT_HDR              hdr;
-    UINT8               app_id;
     tBTA_HL_CBACK       *p_cback;        /* pointer to application callback function */
     tBTA_HL_DEVICE_TYPE dev_type;           /* sink, source or dual roles */
     tBTA_SEC            sec_mask;           /* security mask for accepting conenction*/
@@ -267,15 +252,12 @@ typedef struct
 typedef struct
 {
     BT_HDR                  hdr;
-    UINT8                   app_id;
-    tBTA_HL_CBACK           *p_cback;        /* pointer to application callback function */
     tBTA_HL_APP_HANDLE      app_handle;
 } tBTA_HL_API_DEREGISTER;
 
 typedef struct
 {
     BT_HDR                  hdr;
-    UINT8                   app_id;
     tBTA_HL_APP_HANDLE      app_handle;
     UINT16                  ctrl_psm;
     BD_ADDR                 bd_addr;        /* Address of peer device */
@@ -390,7 +372,6 @@ typedef struct
 {
     BT_HDR                  hdr;
     tBTA_HL_APP_HANDLE      app_handle;
-    UINT8                   app_id;
     BD_ADDR                 bd_addr;        /* Address of peer device */
 } tBTA_HL_API_SDP_QUERY;
 
@@ -423,7 +404,6 @@ typedef union
 {
     BT_HDR                      hdr;
     tBTA_HL_API_ENABLE          api_enable; /* data for BTA_MSE_API_ENABLE_EVT */
-    tBTA_HL_API_UPDATE          api_update;
     tBTA_HL_API_REGISTER        api_reg;
     tBTA_HL_API_DEREGISTER      api_dereg;
     tBTA_HL_API_CCH_OPEN        api_cch_open;
@@ -505,14 +485,12 @@ typedef struct
     UINT8                   sdp_mdl_idx;
     tBTA_HL_SDP             sdp;
     UINT8                   cch_oper;
-    UINT8                   force_close_local_cch_opening;
     BOOLEAN                 intentional_close;
     BOOLEAN                 rsp_tout;
     UINT8                   timer_oper;
     BOOLEAN                 echo_test;
     UINT8                   echo_mdl_idx;
     UINT8                   cch_close_dch_oper;
-    UINT8                   app_id;
 }tBTA_HL_MCL_CB;
 
 typedef struct
@@ -610,7 +588,7 @@ extern "C"
     /* sdp */
     extern BOOLEAN bta_hl_fill_sup_feature_list( const tSDP_DISC_ATTR  *p_attr,
                                                  tBTA_HL_SUP_FEATURE_LIST_ELEM *p_list);
-    extern tBTA_HL_STATUS bta_hl_sdp_update (UINT8 app_id);
+
     extern tBTA_HL_STATUS bta_hl_sdp_register (UINT8 app_idx);
     extern tSDP_DISC_REC *bta_hl_find_sink_or_src_srv_class_in_db (const tSDP_DISCOVERY_DB *p_db,
                                                                    const tSDP_DISC_REC *p_start_rec);
@@ -689,7 +667,6 @@ extern "C"
     extern void bta_hl_cch_mca_close(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
     extern void bta_hl_cch_close_cmpl(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
     extern void bta_hl_cch_mca_disconnect(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
-    extern void bta_hl_cch_mca_disc_open(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
     extern void bta_hl_cch_mca_rsp_tout(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
     extern void bta_hl_cch_mca_connect(UINT8 app_idx, UINT8 mcl_idx,  tBTA_HL_DATA *p_data);
 
@@ -760,7 +737,7 @@ extern "C"
                                             tBTA_HL_MDL_ID mdl_id, UINT8 *p_mdl_cfg_idx);
     extern BOOLEAN  bta_hl_get_cur_time(UINT8 app_idx, UINT8 *p_cur_time);
     extern void bta_hl_sort_cfg_time_idx(UINT8 app_idx, UINT8 *a, UINT8 n);
-    extern void  bta_hl_compact_mdl_cfg_time(UINT8 app_idx, UINT8 mdep_id);
+    extern void  bta_hl_compact_mdl_cfg_time(UINT8 app_idx);
     extern BOOLEAN  bta_hl_is_mdl_exsit_in_mcl(UINT8 app_idx, BD_ADDR bd_addr,
                                                tBTA_HL_MDL_ID mdl_id);
     extern BOOLEAN  bta_hl_delete_mdl_cfg(UINT8 app_idx, BD_ADDR bd_addr,
@@ -787,7 +764,6 @@ extern "C"
                                              UINT8 *p_mdl_idx);
     extern BOOLEAN bta_hl_is_a_duplicate_id(UINT8 app_id);
     extern BOOLEAN bta_hl_find_avail_app_idx(UINT8 *p_idx);
-    extern tBTA_HL_STATUS bta_hl_app_update(UINT8 app_id, BOOLEAN is_register);
     extern tBTA_HL_STATUS bta_hl_app_registration(UINT8 app_idx);
     extern void bta_hl_discard_data(UINT16 event, tBTA_HL_DATA *p_data);
     extern void bta_hl_save_mdl_cfg(UINT8 app_idx, UINT8 mcl_idx, UINT8 mdl_idx );
@@ -827,7 +803,6 @@ extern "C"
                                            tBTA_HL_MCL_HANDLE mcl_handle,
                                            tBTA_HL_MDL_HANDLE mdl_handle);
     extern void  bta_hl_build_cch_open_cfm(tBTA_HL *p_evt_data,
-                                            UINT8 app_id,
                                            tBTA_HL_APP_HANDLE app_handle,
                                            tBTA_HL_MCL_HANDLE mcl_handle,
                                            BD_ADDR bd_addr,
@@ -866,7 +841,6 @@ extern "C"
                                             tBTA_HL_MCL_HANDLE mcl_handle,
                                             tBTA_HL_STATUS status );
     extern void  bta_hl_build_sdp_query_cfm(tBTA_HL *p_evt_data,
-                                            UINT8 app_id,
                                             tBTA_HL_APP_HANDLE app_handle,
                                             BD_ADDR bd_addr,
                                             tBTA_HL_SDP *p_sdp,

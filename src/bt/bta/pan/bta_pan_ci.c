@@ -24,6 +24,8 @@
 
 #include "bt_target.h"
 
+#if defined(BTA_PAN_INCLUDED) && (BTA_PAN_INCLUDED == TRUE)
+
 #include <string.h>
 
 #include "gki.h"
@@ -33,9 +35,7 @@
 #include "bta_pan_api.h"
 #include "bta_pan_ci.h"
 #include "bta_pan_int.h"
-#include "bt_utils.h"
 
-#if defined(BTA_PAN_INCLUDED) && (BTA_PAN_INCLUDED == TRUE)
 
 /*******************************************************************************
 **
@@ -255,62 +255,6 @@ void bta_pan_ci_set_pfilters(UINT16 handle, UINT16 num_filters, UINT16 *p_start_
 
     PAN_SetProtocolFilters(handle, num_filters, p_start_array, p_end_array );
 
-}
-#else
-
-void bta_pan_ci_tx_ready(UINT16 handle)
-{
-    UNUSED(handle);
-}
-
-void bta_pan_ci_rx_ready(UINT16 handle)
-{
-    UNUSED(handle);
-}
-
-void bta_pan_ci_tx_flow(UINT16 handle, BOOLEAN enable)
-{
-    UNUSED(handle);
-    UNUSED(enable);
-}
-
-void bta_pan_ci_rx_writebuf(UINT16 handle, BD_ADDR src, BD_ADDR dst, UINT16 protocol, BT_HDR *p_buf, BOOLEAN ext)
-{
-    UNUSED(handle);
-    UNUSED(src);
-    UNUSED(dst);
-    UNUSED(protocol);
-    UNUSED(p_buf);
-    UNUSED(ext);
-}
-
-BT_HDR * bta_pan_ci_readbuf(UINT16 handle, BD_ADDR src, BD_ADDR dst, UINT16 *p_protocol,
-                            BOOLEAN* p_ext, BOOLEAN* p_forward)
-{
-    UNUSED(handle);
-    UNUSED(src);
-    UNUSED(dst);
-    UNUSED(p_protocol);
-    UNUSED(p_ext);
-    UNUSED(p_forward);
-    return NULL;
-}
-
-void bta_pan_ci_set_pfilters(UINT16 handle, UINT16 num_filters, UINT16 *p_start_array, UINT16 *p_end_array)
-{
-    UNUSED(handle);
-    UNUSED(num_filters);
-    UNUSED(p_start_array);
-    UNUSED(p_end_array);
-}
-
-void bta_pan_ci_set_mfilters(UINT16 handle, UINT16 num_mcast_filters, UINT8 *p_start_array,
-                             UINT8 *p_end_array)
-{
-    UNUSED(handle);
-    UNUSED(num_mcast_filters);
-    UNUSED(p_start_array);
-    UNUSED(p_end_array);
 }
 
 #endif /* BTA_PAN_API */

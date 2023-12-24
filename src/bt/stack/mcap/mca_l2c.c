@@ -24,17 +24,25 @@
 #include <string.h>
 
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "btm_api.h"
 #include "btm_int.h"
 #include "mca_api.h"
 #include "mca_defs.h"
 #include "mca_int.h"
 
+/* callback function declarations */
+void mca_l2c_cconn_ind_cback(BD_ADDR bd_addr, UINT16 lcid, UINT16 psm, UINT8 id);
+void mca_l2c_dconn_ind_cback(BD_ADDR bd_addr, UINT16 lcid, UINT16 psm, UINT8 id);
+void mca_l2c_connect_cfm_cback(UINT16 lcid, UINT16 result);
+void mca_l2c_config_cfm_cback(UINT16 lcid, tL2CAP_CFG_INFO *p_cfg);
+void mca_l2c_config_ind_cback(UINT16 lcid, tL2CAP_CFG_INFO *p_cfg);
+void mca_l2c_disconnect_ind_cback(UINT16 lcid, BOOLEAN ack_needed);
+void mca_l2c_disconnect_cfm_cback(UINT16 lcid, UINT16 result);
+void mca_l2c_congestion_ind_cback(UINT16 lcid, BOOLEAN is_congested);
+void mca_l2c_data_ind_cback(UINT16 lcid, BT_HDR *p_buf);
 
 /* L2CAP callback function structure */
-const tL2CAP_APPL_INFO mca_l2c_int_appl =
-{
+const tL2CAP_APPL_INFO mca_l2c_int_appl = {
     NULL,
     mca_l2c_connect_cfm_cback,
     NULL,
@@ -44,13 +52,11 @@ const tL2CAP_APPL_INFO mca_l2c_int_appl =
     mca_l2c_disconnect_cfm_cback,
     NULL,
     mca_l2c_data_ind_cback,
-    mca_l2c_congestion_ind_cback,
-	NULL
+    mca_l2c_congestion_ind_cback
 };
 
 /* Control channel eL2CAP default options */
-const tL2CAP_FCR_OPTS mca_l2c_fcr_opts_def =
-{
+const tL2CAP_FCR_OPTS mca_l2c_fcr_opts_def = {
     L2CAP_FCR_ERTM_MODE,            /* Mandatory for MCAP */
     MCA_FCR_OPT_TX_WINDOW_SIZE,     /* Tx window size */
     MCA_FCR_OPT_MAX_TX_B4_DISCNT,   /* Maximum transmissions before disconnecting */
@@ -70,13 +76,11 @@ const tL2CAP_FCR_OPTS mca_l2c_fcr_opts_def =
 ** Returns          void
 **
 *******************************************************************************/
-static void mca_sec_check_complete_term (BD_ADDR bd_addr, tBT_TRANSPORT transport, void *p_ref_data, UINT8 res)
+static void mca_sec_check_complete_term (BD_ADDR bd_addr, void *p_ref_data, UINT8 res)
 {
     tMCA_TC_TBL     *p_tbl = (tMCA_TC_TBL *)p_ref_data;
     tL2CAP_CFG_INFO cfg;
     tL2CAP_ERTM_INFO ertm_info;
-
-    UNUSED(transport);
 
     MCA_TRACE_DEBUG1("mca_sec_check_complete_term res: %d", res);
 
@@ -117,12 +121,10 @@ static void mca_sec_check_complete_term (BD_ADDR bd_addr, tBT_TRANSPORT transpor
 ** Returns          void
 **
 *******************************************************************************/
-static void mca_sec_check_complete_orig (BD_ADDR bd_addr, tBT_TRANSPORT transport, void *p_ref_data, UINT8 res)
+static void mca_sec_check_complete_orig (BD_ADDR bd_addr, void *p_ref_data, UINT8 res)
 {
     tMCA_TC_TBL     *p_tbl = (tMCA_TC_TBL *)p_ref_data;
     tL2CAP_CFG_INFO cfg;
-    UNUSED(bd_addr);
-    UNUSED(transport);
 
     MCA_TRACE_DEBUG1("mca_sec_check_complete_orig res: %d", res);
 

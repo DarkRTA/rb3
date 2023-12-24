@@ -31,7 +31,6 @@
 #include <time.h>
 #include "bt_hci_bdroid.h"
 #include "bt_vendor_lib.h"
-#include "bt_utils.h"
 
 /******************************************************************************
 **  Constants & Macros
@@ -110,7 +109,6 @@ static bt_lpm_cb_t bt_lpm_cb;
 *******************************************************************************/
 static void lpm_idle_timeout(union sigval arg)
 {
-    UNUSED(arg);
     BTLPMDBG("..lpm_idle_timeout..");
 
     if ((bt_lpm_cb.state == LPM_ENABLED) && \

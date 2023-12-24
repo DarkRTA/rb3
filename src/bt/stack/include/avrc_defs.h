@@ -842,7 +842,9 @@ typedef union
                                               (a <= AVRC_EVT_APP_SETTING_CHANGE)) ? TRUE : FALSE)
 
 #define AVRC_IS_VALID_ATTRIBUTE(a)          (((((a > 0) && a <= AVRC_PLAYER_SETTING_SCAN)) || \
-					      (a >= AVRC_PLAYER_SETTING_LOW_MENU_EXT)) ? TRUE : FALSE)
+                                               ((a >= AVRC_PLAYER_SETTING_LOW_MENU_EXT) && \
+                                                (a <= AVRC_PLAYER_SETTING_HIGH_MENU_EXT))) ? TRUE : FALSE)
+
 
 #define AVRC_IS_VALID_MEDIA_ATTRIBUTE(a)    ((a >= AVRC_MEDIA_ATTR_ID_TITLE) && \
                                              (a <= AVRC_MEDIA_ATTR_ID_PLAYING_TIME) ? TRUE : FALSE)

@@ -19,9 +19,9 @@
 #ifndef BT_TARGET_H
 #define BT_TARGET_H
 
-// #ifndef BUILDCFG
-// #define BUILDCFG
-// #endif
+#ifndef BUILDCFG
+#define BUILDCFG
+#endif
 #include "data_types.h"
 
 
@@ -35,6 +35,7 @@
 
 
 #ifdef BUILDCFG
+#define HAS_NO_BDROID_BUILDCFG
 
 #if !defined(HAS_BDROID_BUILDCFG) && !defined(HAS_NO_BDROID_BUILDCFG)
 #error "An Android.mk file did not include bdroid_CFLAGS and possibly not bdorid_C_INCLUDES"
@@ -53,7 +54,7 @@
 #include "dyn_mem.h"    /* defines static and/or dynamic memory for components */
 
 
-//------------------Added from bdroid_buildcfg.h---------------------
+//------------------Added from Bluedroid buildcfg.h---------------------
 #ifndef UNV_INCLUDED
 #define UNV_INCLUDED FALSE
 #endif
@@ -102,8 +103,20 @@
 #define SMP_HOST_ENCRYPT_INCLUDED FALSE
 #endif
 
+#ifndef SAP_INCLUDED
+#define SAP_INCLUDED FALSE
+#endif
+
 #ifndef SBC_NO_PCM_CPY_OPTION
 #define SBC_NO_PCM_CPY_OPTION FALSE
+#endif
+
+#ifndef SBC_IPAQ_OPT
+#define SBC_IPAQ_OPT FALSE
+#endif
+
+#ifndef SBC_IS_64_MULT_IN_QUANTIZER
+#define SBC_IS_64_MULT_IN_QUANTIZER FALSE
 #endif
 
 #ifndef BTA_INCLUDED
@@ -112,6 +125,34 @@
 
 #ifndef BTA_AG_INCLUDED
 #define BTA_AG_INCLUDED  TRUE
+#endif
+
+#ifndef BTA_CT_INCLUDED
+#define BTA_CT_INCLUDED  FALSE
+#endif
+
+#ifndef BTA_CG_INCLUDED
+#define BTA_CG_INCLUDED  FALSE
+#endif
+
+#ifndef BTA_DG_INCLUDED
+#define BTA_DG_INCLUDED  FALSE
+#endif
+
+#ifndef BTA_FT_INCLUDED
+#define BTA_FT_INCLUDED FALSE
+#endif
+
+#ifndef BTA_OP_INCLUDED
+#define BTA_OP_INCLUDED FALSE
+#endif
+
+#ifndef BTA_PR_INCLUDED
+#define BTA_PR_INCLUDED FALSE
+#endif
+
+#ifndef BTA_SS_INCLUDED
+#define BTA_SS_INCLUDED FALSE
 #endif
 
 #ifndef BTA_DM_INCLUDED
@@ -139,16 +180,20 @@
 #define BTA_FS_INCLUDED TRUE
 #endif
 
+#ifndef BTA_AC_INCLUDED
+#define BTA_AC_INCLUDED FALSE
+#endif
+
+#ifndef BTA_HD_INCLUDED
+#define BTA_HD_INCLUDED FALSE
+#endif
+
 #ifndef BTA_HH_INCLUDED
 #define BTA_HH_INCLUDED TRUE
 #endif
 
 #ifndef BTA_HH_ROLE
 #define BTA_HH_ROLE BTA_MASTER_ROLE_PREF
-#endif
-
-#ifndef BTA_HH_LE_INCLUDED
-#define BTA_HH_LE_INCLUDED TRUE
 #endif
 
 #ifndef BTA_AR_INCLUDED
@@ -159,8 +204,72 @@
 #define BTA_AV_INCLUDED TRUE
 #endif
 
+#ifndef BTA_AV_VDP_INCLUDED
+#define BTA_AV_VDP_INCLUDED FALSE
+#endif
+
+#ifndef BTA_AVK_INCLUDED
+#define BTA_AVK_INCLUDED FALSE
+#endif
+
+#ifndef BTA_PBS_INCLUDED
+#define BTA_PBS_INCLUDED FALSE
+#endif
+
+#ifndef BTA_PBC_INCLUDED
+#define BTA_PBC_INCLUDED FALSE
+#endif
+
+#ifndef BTA_FM_INCLUDED
+#define BTA_FM_INCLUDED FALSE
+#endif
+
+#ifndef BTA_FM_DEBUG
+#define BTA_FM_DEBUG FALSE
+#endif
+
+#ifndef BTA_FMTX_INCLUDED
+#define BTA_FMTX_INCLUDED FALSE
+#endif
+
+#ifndef BTA_FMTX_DEBUG
+#define BTA_FMTX_DEBUG FALSE
+#endif
+
+#ifndef BTA_FMTX_FMRX_SWITCH_WORKAROUND
+#define BTA_FMTX_FMRX_SWITCH_WORKAROUND FALSE
+#endif
+
+#ifndef BTA_FMTX_US_FCC_RULES
+#define BTA_FMTX_US_FCC_RULES FALSE
+#endif
+
+#ifndef BTA_HS_INCLUDED
+#define BTA_HS_INCLUDED FALSE
+#endif
+
+#ifndef BTA_MSE_INCLUDED
+#define BTA_MSE_INCLUDED FALSE
+#endif
+
+#ifndef BTA_MCE_INCLUDED
+#define BTA_MCE_INCLUDED FALSE
+#endif
+
+#ifndef BTA_PLAYBACK_INCLUDED
+#define BTA_PLAYBACK_INCLUDED FALSE
+#endif
+
+#ifndef BTA_SSR_INCLUDED
+#define BTA_SSR_INCLUDED FALSE
+#endif
+
+#ifndef BTA_JV_INCLUDED
+#define BTA_JV_INCLUDED FALSE
+#endif
+
 #ifndef BTA_GATT_INCLUDED
-#define BTA_GATT_INCLUDED TRUE
+#define BTA_GATT_INCLUDED FALSE
 #endif
 
 #ifndef BTA_DISABLE_DELAY
@@ -231,6 +340,10 @@
 #define BTA_AG_SCO_PKT_TYPES  (BTM_SCO_LINK_ONLY_MASK | BTM_SCO_PKT_TYPES_MASK_EV3 |  BTM_SCO_PKT_TYPES_MASK_NO_3_EV3 | BTM_SCO_PKT_TYPES_MASK_NO_2_EV5 | BTM_SCO_PKT_TYPES_MASK_NO_3_EV5)
 #endif
 
+#ifndef BTA_AV_MAX_A2DP_MTU
+#define BTA_AV_MAX_A2DP_MTU  668
+#endif
+
 #ifndef BTA_AV_RET_TOUT
 #define BTA_AV_RET_TOUT 15
 #endif
@@ -245,16 +358,6 @@
 
 #ifndef AVDT_CONNECT_CP_ONLY
 #define AVDT_CONNECT_CP_ONLY  FALSE
-#endif
-
-/* This feature is used to eanble interleaved scan*/
-#ifndef BTA_HOST_INTERLEAVE_SEARCH
-#define BTA_HOST_INTERLEAVE_SEARCH FALSE
-#endif
-
-/* This feature is used to skip query of ble read remote features*/
-#ifndef BTA_SKIP_BLE_READ_REMOTE_FEAT
-#define BTA_SKIP_BLE_READ_REMOTE_FEAT FALSE
 #endif
 
 #ifndef BT_TRACE_PROTOCOL
@@ -297,6 +400,10 @@
 #define BTA_DM_SDP_DB_SIZE  8000
 #endif
 
+#ifndef FTS_REJECT_INVALID_OBEX_SET_PATH_REQ
+#define FTS_REJECT_INVALID_OBEX_SET_PATH_REQ FALSE
+#endif
+
 #ifndef HL_INCLUDED
 #define HL_INCLUDED  TRUE
 #endif
@@ -312,10 +419,11 @@
 #ifndef BTIF_DM_OOB_TEST
 #define BTIF_DM_OOB_TEST  TRUE
 #endif
+//------------------End added from Bluedroid buildcfg.h---------------------
 
-//------------------End added from bdroid_buildcfg.h---------------------
 
 
+/* #define BYPASS_AVDATATRACE */
 
 /******************************************************************************
 **
@@ -451,15 +559,14 @@
 #define L2CAP_FCR_RX_POOL_ID        HCI_ACL_POOL_ID
 #endif
 
-/* Number of ACL buffers to assign to LE
-   if the HCI buffer pool is shared with BR/EDR */
-#ifndef L2C_DEF_NUM_BLE_BUF_SHARED
-#define L2C_DEF_NUM_BLE_BUF_SHARED      1
-#endif
-
 /* Used by BTM when it sends HCI commands to the controller. */
 #ifndef BTM_CMD_POOL_ID
 #define BTM_CMD_POOL_ID             GKI_POOL_ID_2
+#endif
+
+/* Sends TCS messages. */
+#ifndef TCS_MSG_POOL_ID
+#define TCS_MSG_POOL_ID             GKI_POOL_ID_2
 #endif
 
 #ifndef OBX_CMD_POOL_SIZE
@@ -479,6 +586,11 @@
 #define CTP_SDP_DB_POOL_ID          GKI_POOL_ID_3
 #endif
 
+/* Used for CTP data exchange feature. */
+#ifndef CTP_DATA_EXCHG_POOL_ID
+#define CTP_DATA_EXCHG_POOL_ID      GKI_POOL_ID_2
+#endif
+
 /* Used to send data to L2CAP. */
 #ifndef GAP_DATA_POOL_ID
 #define GAP_DATA_POOL_ID            GKI_POOL_ID_3
@@ -492,6 +604,24 @@
 #ifndef SPP_DB_SIZE
 #define SPP_DB_SIZE                 GKI_BUF3_SIZE
 #endif
+
+/* HCRP protocol and internal commands. */
+#ifndef HCRP_CMD_POOL_ID
+#define HCRP_CMD_POOL_ID            GKI_POOL_ID_2
+#endif
+
+#ifndef HCRP_CMD_POOL_SIZE
+#define HCRP_CMD_POOL_SIZE          GKI_BUF2_SIZE
+#endif
+
+#ifndef BIP_EVT_POOL_SIZE
+#define BIP_EVT_POOL_SIZE           GKI_BUF3_SIZE
+#endif
+
+#ifndef BIP_DB_SIZE
+#define BIP_DB_SIZE                 GKI_BUF3_SIZE
+#endif
+
 
 /* BNEP data and protocol messages. */
 #ifndef BNEP_POOL_ID
@@ -920,7 +1050,7 @@ and USER_HW_DISABLE_API macros */
 
 /* The number of SCO links. */
 #ifndef BTM_MAX_SCO_LINKS
-#define BTM_MAX_SCO_LINKS           3
+#define BTM_MAX_SCO_LINKS           2
 #endif
 
 /* The preferred type of SCO links (2-eSCO, 0-SCO). */
@@ -954,9 +1084,12 @@ and USER_HW_DISABLE_API macros */
 #define BTM_MAX_LOC_BD_NAME_LEN     248
 #endif
 
-/* Fixed Default String. When this is defined as null string, the device's
- * product model name is used as the default local name.
- */
+/* TRUE if default string is used, FALSE if device name is set in the application */
+#ifndef BTM_USE_DEF_LOCAL_NAME
+#define BTM_USE_DEF_LOCAL_NAME      TRUE
+#endif
+
+/* Fixed Default String (Ignored if BTM_USE_DEF_LOCAL_NAME is FALSE) */
 #ifndef BTM_DEF_LOCAL_NAME
 #define BTM_DEF_LOCAL_NAME      ""
 #endif
@@ -1024,6 +1157,16 @@ and USER_HW_DISABLE_API macros */
 #define BTM_MAX_VSE_CALLBACKS           3
 #endif
 
+/* Number of streams for dual stack */
+#ifndef BTM_SYNC_INFO_NUM_STR
+#define BTM_SYNC_INFO_NUM_STR           2
+#endif
+
+/* Number of streams for dual stack in BT Controller */
+#ifndef BTM_SYNC_INFO_NUM_STR_BTC
+#define BTM_SYNC_INFO_NUM_STR_BTC       2
+#endif
+
 /******************************************
 **    Lisbon Features
 *******************************************/
@@ -1084,11 +1227,6 @@ and USER_HW_DISABLE_API macros */
 #define BTM_BLE_CONFORMANCE_TESTING           FALSE
 #endif
 
-/* Maximum number of consecutive HCI commands  that can time out
-* before  it gets treated as H/w error*/
-#ifndef BTM_MAX_HCI_CMD_TOUT_BEFORE_RESTART
-#define BTM_MAX_HCI_CMD_TOUT_BEFORE_RESTART 2
-#endif
 
 /******************************************************************************
 **
@@ -1111,7 +1249,7 @@ and USER_HW_DISABLE_API macros */
 
 /* The maximum number of simultaneous channels that L2CAP can support. */
 #ifndef MAX_L2CAP_CHANNELS
-#define MAX_L2CAP_CHANNELS          16
+#define MAX_L2CAP_CHANNELS          10
 #endif
 
 /* The maximum number of simultaneous applications that can register with L2CAP. */
@@ -1176,7 +1314,7 @@ and USER_HW_DISABLE_API macros */
 
 /* Minimum number of ACL credit for high priority link */
 #ifndef L2CAP_HIGH_PRI_MIN_XMIT_QUOTA
-#define L2CAP_HIGH_PRI_MIN_XMIT_QUOTA       5
+#define L2CAP_HIGH_PRI_MIN_XMIT_QUOTA       4
 #endif
 
 /* used for monitoring HCI ACL credit management */
@@ -1284,20 +1422,11 @@ and USER_HW_DISABLE_API macros */
 ******************************************************************************/
 
 #ifndef BLE_INCLUDED
-#define BLE_INCLUDED            TRUE
+#define BLE_INCLUDED            FALSE
 #endif
-
-#ifndef BLE_ANDROID_CONTROLLER_SCAN_FILTER
-#define BLE_ANDROID_CONTROLLER_SCAN_FILTER            TRUE
-#endif
-
 
 #ifndef LOCAL_BLE_CONTROLLER_ID
 #define LOCAL_BLE_CONTROLLER_ID         (1)
-#endif
-
-#ifndef BLE_PRIVACY_SPT
-#define BLE_PRIVACY_SPT      TRUE
 #endif
 
 /******************************************************************************
@@ -1305,64 +1434,20 @@ and USER_HW_DISABLE_API macros */
 ** ATT/GATT Protocol/Profile Settings
 **
 ******************************************************************************/
-#ifndef BTA_GATT_INCLUDED
-#if BLE_INCLUDED == TRUE
-#define BTA_GATT_INCLUDED TRUE
-#else
-#define BTA_GATT_INCLUDED FALSE
-#endif
-#endif
-
-#if BTA_GATT_INCLUDED == TRUE && BLE_INCLUDED == FALSE
-#error "can't have GATT without BLE"
-#endif
-
-#ifndef BLE_LLT_INCLUDED
-#define BLE_LLT_INCLUDED    TRUE
-#endif
-#ifndef BTM_DUMO_ADDR_CENTRAL_ENABLED
-#define BTM_DUMO_ADDR_CENTRAL_ENABLED    FALSE
-#endif
 #ifndef ATT_INCLUDED
-#define ATT_INCLUDED         TRUE
+#define ATT_INCLUDED         FALSE
 #endif
 
 #ifndef ATT_DEBUG
-#define ATT_DEBUG           TRUE
+#define ATT_DEBUG           FALSE
 #endif
 
 #ifndef GATT_SERVER_ENABLED
-#define GATT_SERVER_ENABLED          TRUE
+#define GATT_SERVER_ENABLED          FALSE
 #endif
 
 #ifndef GATT_CLIENT_ENABLED
-#define GATT_CLIENT_ENABLED          TRUE
-#endif
-
-#ifndef BLE_PERIPHERAL_MODE_SUPPORT
-#define BLE_PERIPHERAL_MODE_SUPPORT  TRUE
-#endif
-
-#ifndef BLE_PERIPHERAL_DISPLAYONLY
-#define BLE_PERIPHERAL_DISPLAYONLY   FALSE
-#endif
-
-#ifndef BLE_PERIPHERAL_ADV_NAME
-#define BLE_PERIPHERAL_ADV_NAME      FALSE
-#endif
-
-#ifndef BLE_DELAY_REQUEST_ENC
-/* This flag is to work around IPHONE problem, We need to wait for iPhone ready
-   before send encryption request to iPhone */
-#define BLE_DELAY_REQUEST_ENC        FALSE
-#endif
-
-#ifndef GAP_TRANSPORT_SUPPORTED
-#define GAP_TRANSPORT_SUPPORTED      GATT_TRANSPORT_LE_BR_EDR
-#endif
-
-#ifndef GATTP_TRANSPORT_SUPPORTED
-#define GATTP_TRANSPORT_SUPPORTED    GATT_TRANSPORT_LE_BR_EDR
+#define GATT_CLIENT_ENABLED          FALSE
 #endif
 
 #ifndef GATT_MAX_SR_PROFILES
@@ -1378,7 +1463,7 @@ and USER_HW_DISABLE_API macros */
 #endif
 
 #ifndef GATT_MAX_PHY_CHANNEL
-#define GATT_MAX_PHY_CHANNEL        7
+#define GATT_MAX_PHY_CHANNEL        4
 #endif
 
 /* Used for conformance testing ONLY */
@@ -1398,19 +1483,11 @@ and USER_HW_DISABLE_API macros */
 **
 ******************************************************************************/
 #ifndef SMP_INCLUDED
-#if BLE_INCLUDED == TRUE
-#define SMP_INCLUDED         TRUE
-#else
 #define SMP_INCLUDED         FALSE
-#endif
-#endif
-
-#if SMP_INCLUDED == TRUE && BLE_INCLUDED == FALSE
-#error "can't have SMP without BLE"
 #endif
 
 #ifndef SMP_DEBUG
-#define SMP_DEBUG            TRUE
+#define SMP_DEBUG            FALSE
 #endif
 
 #ifndef SMP_DEFAULT_AUTH_REQ
@@ -1506,7 +1583,7 @@ and USER_HW_DISABLE_API macros */
 
 /* The MTU size for the L2CAP configuration. */
 #ifndef SDP_MTU_SIZE
-#define SDP_MTU_SIZE                672
+#define SDP_MTU_SIZE                256
 #endif
 
 /* The flush timeout for the L2CAP configuration. */
@@ -2116,7 +2193,7 @@ Range: Minimum 12000 (12 secs) on BR/EDR when supporting PBF.
 ******************************************************************************/
 
 #ifndef GAP_INCLUDED
-#define GAP_INCLUDED                TRUE
+#define GAP_INCLUDED                FALSE
 #endif
 
 /* This is set to enable use of GAP L2CAP connections. */
@@ -3428,14 +3505,6 @@ Range: Minimum 12000 (12 secs) when supporting PBF.
 #define AVRC_INCLUDED               TRUE
 #endif
 
-#ifndef AVRC_METADATA_INCLUDED
-#define AVRC_METADATA_INCLUDED      TRUE
-#endif
-
-#ifndef AVRC_ADV_CTRL_INCLUDED
-#define AVRC_ADV_CTRL_INCLUDED      TRUE
-#endif
-
 /******************************************************************************
 **
 ** MCAP
@@ -3457,7 +3526,7 @@ Range: Minimum 12000 (12 secs) when supporting PBF.
 
 /* The maximum number of registered MCAP instances. */
 #ifndef MCA_NUM_REGS
-#define MCA_NUM_REGS    12
+#define MCA_NUM_REGS    3
 #endif
 
 /* The maximum number of control channels (to difference devices) per registered MCAP instances. */
@@ -3467,7 +3536,7 @@ Range: Minimum 12000 (12 secs) when supporting PBF.
 
 /* The maximum number of MDEP (including HDP echo) per registered MCAP instances. */
 #ifndef MCA_NUM_DEPS
-#define MCA_NUM_DEPS    13
+#define MCA_NUM_DEPS    3
 #endif
 
 /* The maximum number of MDL link per control channel. */
@@ -3684,6 +3753,9 @@ The maximum number of payload octets that the local device can receive in a sing
 #define L2CAP_FEATURE_RSP_ID     173
 
 
+#define L2CAP_ENHANCED_FEATURES   0
+
+
 /******************************************************************************
 **
 ** BTA
@@ -3713,9 +3785,6 @@ The maximum number of payload octets that the local device can receive in a sing
 #define BTA_AG_CIND_INFO "(\"call\",(0,1)),(\"callsetup\",(0-3)),(\"service\",(0-1)),(\"signal\",(0-5)),(\"roam\",(0,1)),(\"battchg\",(0-5)),(\"callheld\",(0-2))"
 #endif
 
-#ifndef BTA_DM_AVOID_A2DP_ROLESWITCH_ON_INQUIRY
-#define BTA_DM_AVOID_A2DP_ROLESWITCH_ON_INQUIRY TRUE
-#endif
 
 /******************************************************************************
 **

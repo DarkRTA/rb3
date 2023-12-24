@@ -44,7 +44,7 @@ extern "C" {
 #define BLUEZ_TYPES "types"
 #define BLUEZ_CONFIG "config"
 #define BLUEZ_ALIASES "aliases"
-#define BLUEZ_SDP "sdp"
+
 
 /*******************************************************************************
 **  Functions

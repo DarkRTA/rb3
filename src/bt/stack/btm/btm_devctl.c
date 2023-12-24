@@ -29,7 +29,6 @@
 #include <stddef.h>
 
 #include "bt_types.h"
-#include "bt_utils.h"
 #include "hcimsgs.h"
 #include "btu.h"
 #include "btm_int.h"
@@ -37,6 +36,11 @@
 
 #if BLE_INCLUDED == TRUE
 #include "gatt_int.h"
+
+#if GAP_INCLUDED == TRUE
+#include "gap_api.h"
+#include "gattdefs.h"
+#endif
 
 #endif /* BLE_INCLUDED */
 
@@ -108,24 +112,16 @@ response message */
 #define BTM_SCO_HOST_BUF_SIZE       0xff
 #endif
 
+#ifndef BTM_GPS_UIPC_CH_NB
+#define BTM_GPS_UIPC_CH_NB UIPC_CH_ID_1
+#endif
+
 /********************************************************************************/
 /*              L O C A L    F U N C T I O N     P R O T O T Y P E S            */
 /********************************************************************************/
 static void btm_dev_reset (void);
 static void btm_after_reset_hold_complete (void);
 static void btm_continue_reset (void);
-
-static void btm_get_local_ext_features (UINT8 page_number);
-static void btm_decode_ext_features_page (UINT8 page_number, const BD_FEATURES p_features);
-static void btm_read_all_lmp_features_complete (UINT8 max_page_number);
-static void btm_set_lmp_features_host_may_support (UINT8 max_page_number);
-static void btm_get_local_features (void);
-static void btm_issue_host_support_for_lmp_features (void);
-static void btm_read_local_supported_cmds (UINT8 local_controller_id);
-
-#if BLE_INCLUDED == TRUE
-static void btm_read_ble_local_supported_features (void);
-#endif
 
 /*******************************************************************************
 **
@@ -145,6 +141,9 @@ void btm_dev_init (void)
     /* Initialize nonzero defaults */
 #if (BTM_MAX_LOC_BD_NAME_LEN > 0)
     memset(btm_cb.cfg.bd_name, 0, sizeof(tBTM_LOC_BD_NAME));
+#if (BTM_USE_DEF_LOCAL_NAME == TRUE)
+    BCM_STRNCPY_S(btm_cb.cfg.bd_name, sizeof(btm_cb.cfg.bd_name), BTM_DEF_LOCAL_NAME, BTM_MAX_LOC_BD_NAME_LEN);
+#endif
 #endif
 
     btm_cb.devcb.reset_timer.param  = (TIMER_PARAM_TYPE)TT_DEV_RESET;
@@ -324,9 +323,9 @@ tBTM_STATUS BTM_SetAfhChannels (UINT8 first, UINT8 last)
                        btm_cb.last_disabled_channel);
 
     /* Make sure the local device supports the feature before sending */
-    if ((!HCI_LMP_AFH_CAP_MASTR_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]))   &&
-        (!HCI_LMP_AFH_CLASS_SLAVE_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0])) &&
-        (!HCI_LMP_AFH_CLASS_MASTR_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0])))
+    if ((!HCI_LMP_AFH_CAP_MASTR_SUPPORTED(btm_cb.devcb.local_features))   &&
+        (!HCI_LMP_AFH_CLASS_SLAVE_SUPPORTED(btm_cb.devcb.local_features)) &&
+        (!HCI_LMP_AFH_CLASS_MASTR_SUPPORTED(btm_cb.devcb.local_features)))
         return (BTM_MODE_UNSUPPORTED);
 
     if (!BTM_IsDeviceUp())
@@ -358,7 +357,7 @@ tBTM_STATUS BTM_SetAfhChannels (UINT8 first, UINT8 last)
 tBTM_STATUS BTM_SetAfhChannelAssessment (BOOLEAN enable_or_disable)
 {
     /* whatever app wants if device is not 1.2 scan type should be STANDARD */
-    if (!HCI_LMP_AFH_CAP_SLAVE_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
+    if (!HCI_LMP_AFH_CAP_SLAVE_SUPPORTED(btm_cb.devcb.local_features))
      return (BTM_MODE_UNSUPPORTED);
 
     if (!btsnd_hcic_write_afh_channel_assessment_mode (enable_or_disable))
@@ -464,44 +463,6 @@ void btm_get_ble_buffer_size(void)
     /* Send a Read Buffer Size message to the Host Controller. */
     btsnd_hcic_ble_read_buffer_size ();
 }
-
-/*******************************************************************************
-**
-** Function         btm_read_ble_local_supported_features
-**
-** Description      Local function called to send a read BLE local supported
-**                  features command
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_read_ble_local_supported_features(void)
-{
-    BTM_TRACE_DEBUG0("btm_read_ble_local_supported_features ");
-    btu_start_timer (&btm_cb.devcb.reset_timer, BTU_TTYPE_BTM_DEV_CTL, BTM_DEV_REPLY_TIMEOUT);
-
-    /* Send a Read Local Supported Features message to the Host Controller. */
-    btsnd_hcic_ble_read_local_spt_feat ();
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_ble_local_supported_states
-**
-** Description      Local function called to send a read BLE local supported
-**                  features command
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_read_ble_local_supported_states(void)
-{
-    BTM_TRACE_DEBUG0("btm_read_ble_local_supported_states ");
-    btu_start_timer (&btm_cb.devcb.reset_timer, BTU_TTYPE_BTM_DEV_CTL, BTM_DEV_REPLY_TIMEOUT);
-
-    /* Send a Read Local Supported states message to the Host Controller. */
-    btsnd_hcic_ble_read_supported_states ();
-}
 #endif
 /*******************************************************************************
 **
@@ -529,24 +490,6 @@ void btm_get_local_version (void)
 
 /*******************************************************************************
 **
-** Function         btm_read_local_supported_cmds
-**
-** Description      Local function called to send a read local supported commands
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_read_local_supported_cmds (UINT8 local_controller_id)
-{
-    BTM_TRACE_DEBUG0("Start reading local supported commands");
-
-    btu_start_timer (&btm_cb.devcb.reset_timer, BTU_TTYPE_BTM_DEV_CTL, BTM_DEV_REPLY_TIMEOUT);
-
-    btsnd_hcic_read_local_supported_cmds(local_controller_id);
-}
-
-/*******************************************************************************
-**
 ** Function         btm_get_local_features
 **
 ** Description      Local function called to send a read local features
@@ -554,37 +497,11 @@ static void btm_read_local_supported_cmds (UINT8 local_controller_id)
 ** Returns          void
 **
 *******************************************************************************/
-static void btm_get_local_features (void)
-{
-    /* If this BT controller supports Read Extended Feature */
-    if (btm_cb.devcb.local_version.hci_version >= HCI_PROTO_VERSION_2_0)
-    {
-        btm_get_local_ext_features(HCI_EXT_FEATURES_PAGE_0);
-    }
-    /* else, if this is a very old BT controller */
-    else
+void btm_get_local_features (void)
 {
     btu_start_timer (&btm_cb.devcb.reset_timer, BTU_TTYPE_BTM_DEV_CTL, BTM_DEV_REPLY_TIMEOUT);
 
-        /* Just read the basic features (legacy HCI command) */
     btsnd_hcic_read_local_features ();
-}
-}
-
-/*******************************************************************************
-**
-** Function         btm_get_local_ext_features
-**
-** Description      Local function called to send a read local extended features
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_get_local_ext_features (UINT8 page_number)
-{
-    btu_start_timer (&btm_cb.devcb.reset_timer, BTU_TTYPE_BTM_DEV_CTL, BTM_DEV_REPLY_TIMEOUT);
-
-    btsnd_hcic_read_local_ext_features(page_number);
 }
 
 /*******************************************************************************
@@ -634,6 +551,11 @@ void btm_reset_complete (void)
 
     BTM_TRACE_EVENT0 ("btm_reset_complete");
 
+#ifdef BRCM_VS
+    btm_vs_reset_complete();
+#endif
+
+
     /* Handle if btm initiated the reset */
     if (btm_cb.devcb.state == BTM_DEV_STATE_WAIT_RESET_CMPLT)
     {
@@ -665,11 +587,11 @@ void btm_reset_complete (void)
 #endif
 
 #if (BLE_INCLUDED == TRUE)
-     btm_cb.ble_ctr_cb.conn_state = BLE_CONN_IDLE;
-     btm_cb.ble_ctr_cb.bg_dev_num = 0;
+     btm_cb.ble_ctr_cb.bg_conn_state = BLE_BG_CONN_IDLE;
+     btm_cb.ble_ctr_cb.bg_conn_dev_num = 0;
      btm_cb.ble_ctr_cb.bg_conn_type = BTM_BLE_CONN_NONE;
      btm_cb.ble_ctr_cb.p_select_cback = NULL;
-     memset(&btm_cb.ble_ctr_cb.bg_dev_list, 0, (sizeof(tBTM_LE_BG_CONN_DEV)*BTM_BLE_MAX_BG_CONN_DEV_NUM));
+     memset(&btm_cb.ble_ctr_cb.bg_conn_dev_list, 0, (sizeof(BD_ADDR)*BTM_BLE_MAX_BG_CONN_DEV_NUM));
      gatt_reset_bgdev_list();
 #endif
     }
@@ -705,6 +627,8 @@ void btm_continue_reset (void)
 
 #if (BTM_MAX_LOC_BD_NAME_LEN > 0) && (BTM_SET_DEV_NAME_UPON_RESET == TRUE)
     BTM_SetLocalDeviceName(btm_cb.cfg.bd_name);
+#elif BTM_USE_DEF_LOCAL_NAME == TRUE
+    BTM_SetLocalDeviceName(BTM_DEF_LOCAL_NAME);
 #endif
 
     BTM_SetPinType (btm_cb.cfg.pin_type, btm_cb.cfg.pin_code, btm_cb.cfg.pin_code_len);
@@ -737,7 +661,7 @@ void btm_after_reset_hold_complete (void)
 **
 ** Description      This function is called when command complete for
 **                  get HCI buffer size is received.  Start timer and send
-**                  read local features request
+**                  read local featues request
 **
 ** Returns          void
 **
@@ -749,7 +673,6 @@ void btm_read_hci_buf_size_complete (UINT8 *p, UINT16 evt_len)
     UINT16      lm_num_acl_bufs;
     UINT16      lm_num_sco_bufs;
     UINT16      acl_buf_size;
-    UNUSED(evt_len);
 
     STREAM_TO_UINT8  (status, p);
     if (status == HCI_SUCCESS)
@@ -802,7 +725,7 @@ void btm_read_hci_buf_size_complete (UINT8 *p, UINT16 evt_len)
 **
 ** Description      This function is called when command complete for
 **                  get HCI buffer size is received.  Start timer and send
-**                  read local supported features request
+**                  read local featues request
 **
 ** Returns          void
 **
@@ -811,87 +734,18 @@ void btm_read_ble_buf_size_complete (UINT8 *p, UINT16 evt_len)
 {
     UINT8       status;
     UINT16      lm_num_le_bufs;
-    UNUSED(evt_len);
 
-    BTM_TRACE_DEBUG0("btm_read_ble_buf_size_complete ");
+     BTM_TRACE_DEBUG0("btm_read_ble_buf_size_complete ");
     STREAM_TO_UINT8  (status, p);
     if (status == HCI_SUCCESS)
     {
         STREAM_TO_UINT16 (btu_cb.hcit_ble_acl_data_size, p);
         STREAM_TO_UINT8 (lm_num_le_bufs,   p);
 
-        if (btu_cb.hcit_ble_acl_data_size == 0)
-            btu_cb.hcit_ble_acl_data_size = btu_cb.hcit_acl_data_size;
-
         btu_cb.hcit_ble_acl_pkt_size = btu_cb.hcit_ble_acl_data_size + HCI_DATA_PREAMBLE_SIZE;
 
         l2c_link_processs_ble_num_bufs (lm_num_le_bufs);
     }
-    btm_read_ble_local_supported_states();
-}
-/*******************************************************************************
-**
-** Function         btm_read_ble_local_supported_states_complete
-**
-** Description      This function is called when command complete for
-**                  Read LE Local Supported states complete is received.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_read_ble_local_supported_states_complete (UINT8 *p, UINT16 evt_len)
-{
-    UINT8       status;
-
-    UNUSED(evt_len);
-    BTM_TRACE_DEBUG0("btm_read_ble_local_supported_states_complete ");
-
-    btu_stop_timer (&btm_cb.devcb.reset_timer);
-
-    STREAM_TO_UINT8  (status, p);
-    if (status == HCI_SUCCESS)
-    {
-        STREAM_TO_ARRAY(&btm_cb.devcb.le_supported_states, p, BTM_LE_SUPPORT_STATE_SIZE);
-    }
-    else
-    {
-        BTM_TRACE_WARNING1 ("btm_read_ble_local_supported_features_complete status = %d", status);
-    }
-
-    btm_read_ble_local_supported_features();
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_ble_local_supported_features_complete
-**
-** Description      This function is called when command complete for
-**                  Read LE Local Supported Features is received.  Start timer and send
-**                  read LMP local features request
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_read_ble_local_supported_features_complete (UINT8 *p, UINT16 evt_len)
-{
-    UINT8       status;
-    UNUSED(evt_len);
-
-    BTM_TRACE_DEBUG0("btm_read_ble_local_supported_features_complete ");
-
-    btu_stop_timer (&btm_cb.devcb.reset_timer);
-
-    STREAM_TO_UINT8  (status, p);
-    if (status == HCI_SUCCESS)
-    {
-        STREAM_TO_ARRAY(&btm_cb.devcb.local_le_features, p, HCI_FEATURE_BYTES_PER_PAGE);
-    }
-    else
-    {
-        BTM_TRACE_WARNING1 ("btm_read_ble_local_supported_features_complete status = %d", status);
-    }
-
-    btsnd_hcic_ble_set_evt_mask((UINT8 *)HCI_BLE_EVENT_MASK_DEF);
 
 #if BTM_INTERNAL_BB == TRUE
     {
@@ -899,9 +753,12 @@ void btm_read_ble_local_supported_features_complete (UINT8 *p, UINT16 evt_len)
         btm_read_local_features_complete( buf, 9 );
     }
 #else
-
+#ifdef BRCM_VS
+    btm_brcm_feat_init();
+#else
     /* get local feature if BRCM specific feature is not included  */
-    btm_reset_ctrlr_complete();
+    btm_get_local_features ();
+#endif
 #endif
 
 }
@@ -915,9 +772,8 @@ void btm_read_ble_local_supported_features_complete (UINT8 *p, UINT16 evt_len)
 void btm_read_white_list_size_complete(UINT8 *p, UINT16 evt_len)
 {
     UINT8       status;
-    UNUSED(evt_len);
 
-    BTM_TRACE_DEBUG0("btm_read_white_list_size_complete ");
+     BTM_TRACE_DEBUG0("btm_read_white_list_size_complete ");
     STREAM_TO_UINT8  (status, p);
 
     if (status == HCI_SUCCESS)
@@ -925,8 +781,6 @@ void btm_read_white_list_size_complete(UINT8 *p, UINT16 evt_len)
         STREAM_TO_UINT8(btm_cb.ble_ctr_cb.max_filter_entries, p);
         btm_cb.ble_ctr_cb.num_empty_filter = btm_cb.ble_ctr_cb.max_filter_entries;
     }
-    /* write LE host support and simultatunous LE supported */
-    btsnd_hcic_ble_write_host_supported(BTM_BLE_HOST_SUPPORT, BTM_BLE_SIMULTANEOUS_HOST);
 
     btm_get_ble_buffer_size();
 }
@@ -946,7 +800,6 @@ void btm_read_local_version_complete (UINT8 *p, UINT16 evt_len)
 {
     tBTM_VERSION_INFO   *p_vi = &btm_cb.devcb.local_version;
     UINT8                status;
-    UNUSED(evt_len);
 
 #ifdef BTA_PRM_CHECK_FW_VER
     if(BTA_PRM_CHECK_FW_VER(p))
@@ -964,45 +817,72 @@ void btm_read_local_version_complete (UINT8 *p, UINT16 evt_len)
         STREAM_TO_UINT16 (p_vi->lmp_subversion, p);
     }
 
-    if (p_vi->hci_version >= HCI_PROTO_VERSION_1_2)
+#if BLE_INCLUDED == TRUE
     {
-        btm_read_local_supported_cmds(LOCAL_BR_EDR_CONTROLLER_ID);
+        btm_read_ble_wl_size();
     }
-    else
+#elif BTM_INTERNAL_BB == TRUE
     {
-        btm_get_local_features ();
+        UINT8 buf[9] = BTM_INTERNAL_LOCAL_FEA;
+        btm_read_local_features_complete( buf, 9 );
     }
+#else
+#ifdef BRCM_VS
+    btm_brcm_feat_init();
+#else
+    /* get local feature if BRCM specific feature is not included  */
+    btm_get_local_features ();
+#endif
+#endif
 }
+
 
 /*******************************************************************************
 **
-** Function         btm_decode_ext_features_page
+** Function         btm_read_local_features_complete
 **
-** Description      This function is decodes a features page.
+** Description      This function is called when local features read is complete.
+**                  This is the last step of the startup sequence.
 **
 ** Returns          void
 **
 *******************************************************************************/
-static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_features)
+void btm_read_local_features_complete (UINT8 *p, UINT16 evt_len)
 {
+    tBTM_DEVCB     *p_devcb = &btm_cb.devcb;
+    tBTM_CMPL_CB   *p_cb = p_devcb->p_reset_cmpl_cb;
+    UINT8           status;
+    UINT16          xx;
     UINT8 last;
     UINT8 first;
 
-    BTM_TRACE_DEBUG1 ("btm_decode_ext_features_page page: %d", page_number);
-    switch (page_number)
-    {
-    /* Extended (Legacy) Page 0 */
-    case HCI_EXT_FEATURES_PAGE_0:
+    btu_stop_timer (&btm_cb.devcb.reset_timer);
+    /* If there was a callback address for reset complete, call it */
+    p_devcb->p_reset_cmpl_cb = NULL;
 
-        /* Create ACL supported packet types mask */
+    STREAM_TO_UINT8  (status, p);
+    if (status == HCI_SUCCESS)
+    {
+        /* stop guard timer to avoid accidental timeout */
+        btu_stop_timer(&p_devcb->reset_timer);
+
+        p_devcb->state = BTM_DEV_STATE_READY;
+
+        /* Extract features and create "btm_acl_pkt_types_supported" flag
+        */
+        for (xx = 0; xx < HCI_NUM_FEATURE_BYTES; xx++)
+            STREAM_TO_UINT8 (p_devcb->local_features[xx], p);
+
+        /* Create ACL supported packet types mask
+        */
         btm_cb.btm_acl_pkt_types_supported = (BTM_ACL_PKT_TYPES_MASK_DH1 +
                                               BTM_ACL_PKT_TYPES_MASK_DM1);
 
-        if (HCI_3_SLOT_PACKETS_SUPPORTED(p_features))
+        if (HCI_3_SLOT_PACKETS_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_DH3 +
                                                    BTM_ACL_PKT_TYPES_MASK_DM3);
 
-        if (HCI_5_SLOT_PACKETS_SUPPORTED(p_features))
+        if (HCI_5_SLOT_PACKETS_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_DH5 +
                                                    BTM_ACL_PKT_TYPES_MASK_DM5);
 
@@ -1010,15 +890,16 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
            Set them only for later versions of controller */
         if (btm_cb.devcb.local_version.hci_version >= HCI_PROTO_VERSION_2_0)
         {
+
             /* Add in EDR related ACL types */
-            if (!HCI_EDR_ACL_2MPS_SUPPORTED(p_features))
+            if (!HCI_EDR_ACL_2MPS_SUPPORTED(p_devcb->local_features))
             {
                 btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_NO_2_DH1 +
                                                        BTM_ACL_PKT_TYPES_MASK_NO_2_DH3 +
                                                        BTM_ACL_PKT_TYPES_MASK_NO_2_DH5);
             }
 
-            if (!HCI_EDR_ACL_3MPS_SUPPORTED(p_features))
+            if (!HCI_EDR_ACL_3MPS_SUPPORTED(p_devcb->local_features))
             {
                 btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_NO_3_DH1 +
                                                        BTM_ACL_PKT_TYPES_MASK_NO_3_DH3 +
@@ -1026,14 +907,14 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
             }
 
             /* Check to see if 3 and 5 slot packets are available */
-            if (HCI_EDR_ACL_2MPS_SUPPORTED(p_features) ||
-                HCI_EDR_ACL_3MPS_SUPPORTED(p_features))
+            if (HCI_EDR_ACL_2MPS_SUPPORTED(p_devcb->local_features) ||
+                HCI_EDR_ACL_3MPS_SUPPORTED(p_devcb->local_features))
             {
-                if (!HCI_3_SLOT_EDR_ACL_SUPPORTED(p_features))
+                if (!HCI_3_SLOT_EDR_ACL_SUPPORTED(p_devcb->local_features))
                     btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_NO_2_DH3 +
                                                            BTM_ACL_PKT_TYPES_MASK_NO_3_DH3);
 
-                if (!HCI_5_SLOT_EDR_ACL_SUPPORTED(p_features))
+                if (!HCI_5_SLOT_EDR_ACL_SUPPORTED(p_devcb->local_features))
                     btm_cb.btm_acl_pkt_types_supported |= (BTM_ACL_PKT_TYPES_MASK_NO_2_DH5 +
                                                            BTM_ACL_PKT_TYPES_MASK_NO_3_DH5);
             }
@@ -1042,29 +923,30 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
         BTM_TRACE_DEBUG1("Local supported ACL packet types: 0x%04x",
                          btm_cb.btm_acl_pkt_types_supported);
 
-        /* Create (e)SCO supported packet types mask */
+        /* Create (e)SCO supported packet types mask
+        */
         btm_cb.btm_sco_pkt_types_supported = 0;
 #if BTM_SCO_INCLUDED == TRUE
         btm_cb.sco_cb.esco_supported = FALSE;
 #endif
-        if (HCI_SCO_LINK_SUPPORTED(p_features))
+        if (HCI_SCO_LINK_SUPPORTED(p_devcb->local_features))
         {
             btm_cb.btm_sco_pkt_types_supported = BTM_SCO_PKT_TYPES_MASK_HV1;
 
-            if (HCI_HV2_PACKETS_SUPPORTED(p_features))
+            if (HCI_HV2_PACKETS_SUPPORTED(p_devcb->local_features))
                 btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_HV2;
 
-            if (HCI_HV3_PACKETS_SUPPORTED(p_features))
+            if (HCI_HV3_PACKETS_SUPPORTED(p_devcb->local_features))
                 btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_HV3;
         }
 
-        if (HCI_ESCO_EV3_SUPPORTED(p_features))
+        if (HCI_ESCO_EV3_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_EV3;
 
-        if (HCI_ESCO_EV4_SUPPORTED(p_features))
+        if (HCI_ESCO_EV4_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_EV4;
 
-        if (HCI_ESCO_EV5_SUPPORTED(p_features))
+        if (HCI_ESCO_EV5_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_EV5;
 #if BTM_SCO_INCLUDED == TRUE
         if (btm_cb.btm_sco_pkt_types_supported & BTM_ESCO_LINK_ONLY_MASK)
@@ -1072,9 +954,9 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
             btm_cb.sco_cb.esco_supported = TRUE;
 
             /* Add in EDR related eSCO types */
-            if (HCI_EDR_ESCO_2MPS_SUPPORTED(p_features))
+            if (HCI_EDR_ESCO_2MPS_SUPPORTED(p_devcb->local_features))
             {
-                if (!HCI_3_SLOT_EDR_ESCO_SUPPORTED(p_features))
+                if (!HCI_3_SLOT_EDR_ESCO_SUPPORTED(p_devcb->local_features))
                     btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_NO_2_EV5;
             }
             else
@@ -1083,9 +965,9 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
                                                        BTM_SCO_PKT_TYPES_MASK_NO_2_EV5);
             }
 
-            if (HCI_EDR_ESCO_3MPS_SUPPORTED(p_features))
+            if (HCI_EDR_ESCO_3MPS_SUPPORTED(p_devcb->local_features))
             {
-                if (!HCI_3_SLOT_EDR_ESCO_SUPPORTED(p_features))
+                if (!HCI_3_SLOT_EDR_ESCO_SUPPORTED(p_devcb->local_features))
                     btm_cb.btm_sco_pkt_types_supported |= BTM_SCO_PKT_TYPES_MASK_NO_3_EV5;
             }
             else
@@ -1099,42 +981,54 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
         BTM_TRACE_DEBUG1("Local supported SCO packet types: 0x%04x",
                          btm_cb.btm_sco_pkt_types_supported);
 
-        /* Create Default Policy Settings */
-        if (HCI_SWITCH_SUPPORTED(p_features))
+        /* Create Default Policy Settings
+        */
+        if (HCI_SWITCH_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_def_link_policy |= HCI_ENABLE_MASTER_SLAVE_SWITCH;
         else
             btm_cb.btm_def_link_policy &= ~HCI_ENABLE_MASTER_SLAVE_SWITCH;
 
-        if (HCI_HOLD_MODE_SUPPORTED(p_features))
+        if (HCI_HOLD_MODE_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_def_link_policy |= HCI_ENABLE_HOLD_MODE;
         else
             btm_cb.btm_def_link_policy &= ~HCI_ENABLE_HOLD_MODE;
 
-        if (HCI_SNIFF_MODE_SUPPORTED(p_features))
+        if (HCI_SNIFF_MODE_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_def_link_policy |= HCI_ENABLE_SNIFF_MODE;
         else
             btm_cb.btm_def_link_policy &= ~HCI_ENABLE_SNIFF_MODE;
 
-        if (HCI_PARK_MODE_SUPPORTED(p_features))
+        if (HCI_PARK_MODE_SUPPORTED(p_devcb->local_features))
             btm_cb.btm_def_link_policy |= HCI_ENABLE_PARK_MODE;
         else
             btm_cb.btm_def_link_policy &= ~HCI_ENABLE_PARK_MODE;
 
         btm_sec_dev_reset ();
-#if ((BTM_EIR_SERVER_INCLUDED == TRUE)||(BTM_EIR_CLIENT_INCLUDED == TRUE))
-        if (HCI_LMP_INQ_RSSI_SUPPORTED(p_features))
+
+        /* If 802.11 present might have to disable some channels */
+        if (btm_cb.last_disabled_channel != 0xff)
         {
-            if (HCI_EXT_INQ_RSP_SUPPORTED(p_features))
+            last  = btm_cb.last_disabled_channel;
+            first = btm_cb.first_disabled_channel;
+            btm_cb.last_disabled_channel  = 0xff;
+            btm_cb.first_disabled_channel = 0xff;
+            BTM_SetAfhChannels(first, last);
+        }
+
+#if ((BTM_EIR_SERVER_INCLUDED == TRUE)||(BTM_EIR_CLIENT_INCLUDED == TRUE))
+        if (HCI_LMP_INQ_RSSI_SUPPORTED(p_devcb->local_features))
+        {
+            if (HCI_EXT_INQ_RSP_SUPPORTED(p_devcb->local_features))
                 BTM_SetInquiryMode (BTM_INQ_RESULT_EXTENDED);
             else
                 BTM_SetInquiryMode (BTM_INQ_RESULT_WITH_RSSI);
         }
 #else
-        if (HCI_LMP_INQ_RSSI_SUPPORTED(p_features))
+        if (HCI_LMP_INQ_RSSI_SUPPORTED(p_devcb->local_features))
             BTM_SetInquiryMode (BTM_INQ_RESULT_WITH_RSSI);
 #endif
 #if L2CAP_NON_FLUSHABLE_PB_INCLUDED == TRUE
-        if( HCI_NON_FLUSHABLE_PB_SUPPORTED(p_features))
+        if( HCI_NON_FLUSHABLE_PB_SUPPORTED(p_devcb->local_features))
             l2cu_set_non_flushable_pbf(TRUE);
         else
             l2cu_set_non_flushable_pbf(FALSE);
@@ -1142,438 +1036,17 @@ static void btm_decode_ext_features_page (UINT8 page_number, const UINT8 *p_feat
         BTM_SetPageScanType (BTM_DEFAULT_SCAN_TYPE);
         BTM_SetInquiryScanType (BTM_DEFAULT_SCAN_TYPE);
 
-        break;
+        /* If anyone wants device status notifications, give him one */
+        btm_report_device_status (BTM_DEV_STATUS_UP);
 
-    /* Extended Page 1 */
-    case HCI_EXT_FEATURES_PAGE_1:
-        /* Nothing to do for page 1 */
-        break;
-
-    /* Extended Page 2 */
-    case HCI_EXT_FEATURES_PAGE_2:
-        /* Nothing to do for page 2 */
-        break;
-
-    default:
-        BTM_TRACE_ERROR1("btm_decode_ext_features_page page=%d unknown", page_number);
-        break;
-    }
-}
-
-/*******************************************************************************
-**
-** Function         btm_reset_ctrlr_complete
-**
-** Description      This is the last step of BR/EDR controller startup sequence.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_reset_ctrlr_complete ()
-{
-    tBTM_DEVCB     *p_devcb = &btm_cb.devcb;
-    tBTM_CMPL_CB   *p_cb = p_devcb->p_reset_cmpl_cb;
-    BOOLEAN         found = FALSE;
-    UINT8           i, j, max_page_number;
-
-    btu_stop_timer (&btm_cb.devcb.reset_timer);
-
-    /* find the highest feature page number which contains non-zero bits */
-    for (i = HCI_EXT_FEATURES_PAGE_MAX; ; i--)
-    {
-        for (j = 0; j < HCI_FEATURE_BYTES_PER_PAGE; j++)
-        {
-            if (p_devcb->local_lmp_features[i][j] != 0)
-            {
-                found = TRUE;
-                break;
-            }
-        }
-        if (found || !i)
-        {
-             break;
-        }
-    }
-
-    if (!found)
-        BTM_TRACE_WARNING0 ("btm_reset_ctrlr_complete: NONE of local controller features is set");
-
-    max_page_number = i;
-
-    BTM_TRACE_DEBUG1 ("btm_reset_ctrlr_complete: max_page_number: %d", max_page_number);
-
-    /*
-    * Set State to Ready (needs to be done before btm_decode_ext_features_page
-    * to allow it to send some HCI configuration commands)
-    */
-    p_devcb->state = BTM_DEV_STATE_READY;
-
-    /* For every received/saved feature page */
-    for (i = 0; i <= max_page_number; i++)
-    {
-        /* Decode the saved Feature Page */
-        btm_decode_ext_features_page(i, p_devcb->local_lmp_features[i]);
-    }
-
-    /* If there was a callback address for reset complete, reset it */
-    p_devcb->p_reset_cmpl_cb = NULL;
-
-    /* If anyone wants device status notifications, give him one */
-    btm_report_device_status(BTM_DEV_STATUS_UP);
-
-    /* Reset sequence is complete. If this was an application originated */
-    /* reset, tell him its done.                                         */
-    if (p_cb)
-        (*p_cb)((void *) NULL);
-}
-
-/*******************************************************************************
-**
-** Function         btm_issue_host_support_for_lmp_features
-**
-** Description      This function:
-**                  - issues commands to set host supported LMP features (one at
-**                    a time);
-**                  - after this is done it issues command to re-read LMP features
-**                    page 1;
-**                  - after this is done it calls the last step of BR/EDR
-**                    controller startup sequence.
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_issue_host_support_for_lmp_features (void)
-{
-    BTM_TRACE_DEBUG1("btm_issue_host_support_for_lmp_features lmp_features_host_may_support: 0x%02x", btm_cb.devcb.lmp_features_host_may_support);
-
-    if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_SSP)
-    {
-        btsnd_hcic_write_simple_pairing_mode(HCI_SP_MODE_ENABLED);
-        return;
-    }
-
-#if (BLE_INCLUDED == TRUE)
-    if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_LE)
-    {
-        if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_SIMULT_BR_LE)
-        {
-            /* At the moment the host can't work simultaneously with BR/EDR and LE */
-            btsnd_hcic_ble_write_host_supported(BTM_BLE_HOST_SUPPORT, 0);
-        }
-        else
-        {
-            btsnd_hcic_ble_write_host_supported(BTM_BLE_HOST_SUPPORT, 0);
-        }
-        return;
-    }
+#ifdef BRCM_VS
+    btm_brcm_arc_init();
 #endif
 
-    if (btm_cb.devcb.lmp_features_host_may_support & BTM_RE_READ_1ST_PAGE)
-    {
-        btm_get_local_ext_features(HCI_EXT_FEATURES_PAGE_1);
-        return;
-    }
-
-    if (!btm_cb.devcb.lmp_features_host_may_support)
-    {
-#if BLE_INCLUDED == TRUE
-        if (HCI_LE_HOST_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_1]))
-        {
-            btm_read_ble_wl_size();
-        }
-        else
-#elif BTM_INTERNAL_BB == TRUE
-        {
-            UINT8 buf[9] = BTM_INTERNAL_LOCAL_FEA;
-            btm_read_local_features_complete( buf, 9 );
-        }
-#endif
-        {
-            btm_reset_ctrlr_complete();
-        }
-        return;
-    }
-
-    BTM_TRACE_ERROR2("%s lmp_features_host_may_support: 0x%02x. This is unexpected.",__FUNCTION__,
-                      btm_cb.devcb.lmp_features_host_may_support);
-}
-
-/*******************************************************************************
-**
-** Function         btm_set_lmp_features_host_may_support
-**
-** Description      This function is called after all LMP features provided by
-**                  controller are read. It sets the mask that indicates LMP
-**                  features the host may support based on LMP features supported
-**                  by controller.
-**                  Example:
-**                  Host may set SSP (host support) bit only if SSP (controller
-**                  support) bit is set by controller.
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_set_lmp_features_host_may_support (UINT8 max_page_number)
-{
-    btm_cb.devcb.lmp_features_host_may_support = 0;
-
-    /* LMP page 0 is always read */
-    if (HCI_SIMPLE_PAIRING_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
-    {
-        /* host may support SSP */
-        btm_cb.devcb.lmp_features_host_may_support |= BTM_HOST_MAY_SUPP_SSP;
-    }
-
-#if (BLE_INCLUDED == TRUE)
-    if (HCI_LE_SPT_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
-    {
-        /* host may support LE */
-        btm_cb.devcb.lmp_features_host_may_support |= BTM_HOST_MAY_SUPP_LE;
-
-        if (HCI_SIMUL_LE_BREDR_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]))
-        {
-            /* host may support BR/EDR and LE simultaneously */
-            btm_cb.devcb.lmp_features_host_may_support |= BTM_HOST_MAY_SUPP_SIMULT_BR_LE;
-        }
-    }
-#endif
-
-    if (max_page_number >= HCI_EXT_FEATURES_PAGE_1)
-    {
-        /* nothing yet for HCI_EXT_FEATURES_PAGE_1 */
-    }
-
-    if (max_page_number >= HCI_EXT_FEATURES_PAGE_1)
-    {
-        /* nothing yet for HCI_EXT_FEATURES_PAGE_2 */
-    }
-
-    if (btm_cb.devcb.lmp_features_host_may_support)
-        btm_cb.devcb.lmp_features_host_may_support |= BTM_RE_READ_1ST_PAGE;
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_all_lmp_features_complete
-**
-** Description      This function is called after all LMP features provided by
-**                  controller are read.
-**                  It works with controller supported LMP features which host
-**                  may support too.
-**
-** Returns          void
-**
-*******************************************************************************/
-static void btm_read_all_lmp_features_complete (UINT8 max_page_number)
-{
-    btm_set_lmp_features_host_may_support(max_page_number);
-
-    btm_issue_host_support_for_lmp_features();
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_local_features_complete
-**
-** Description      This function is called when local supported features read
-**                  is complete.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_read_local_features_complete (UINT8 *p, UINT16 evt_len)
-{
-    tBTM_DEVCB     *p_devcb = &btm_cb.devcb;
-    UINT8           status;
-    UNUSED(evt_len);
-
-    btu_stop_timer (&p_devcb->reset_timer);
-
-    STREAM_TO_UINT8  (status, p);
-    if (status == HCI_SUCCESS)
-    {
-        /* Save the Feature Page 0 */
-        STREAM_TO_ARRAY(p_devcb->local_lmp_features[0],
-                p, HCI_FEATURE_BYTES_PER_PAGE);
-
-        if ((HCI_LMP_EXTENDED_SUPPORTED(p_devcb->local_lmp_features[HCI_EXT_FEATURES_PAGE_0])) &&
-            (HCI_READ_LOCAL_EXT_FEATURES_SUPPORTED(p_devcb->supported_cmds)))
-        {
-            /* if local controller has extended features and supports
-            **HCI_Read_Local_Extended_Features command,
-            ** then start reading these feature starting with extended features page 1 */
-            BTM_TRACE_DEBUG0 ("Start reading local extended features");
-            btm_get_local_ext_features(HCI_EXT_FEATURES_PAGE_1);
-        }
-        else
-        {
-            btm_read_all_lmp_features_complete (HCI_EXT_FEATURES_PAGE_0);
-        }
-    }
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_local_ext_features_complete
-**
-** Description      This function is called when read local extended features
-**                  command complete message is received from the HCI.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_read_local_ext_features_complete (UINT8 *p, UINT16 evt_len)
-{
-    tBTM_DEVCB     *p_devcb = &btm_cb.devcb;
-    tBTM_CMPL_CB   *p_cb = p_devcb->p_reset_cmpl_cb;
-    UINT8           status;
-    UINT8           page_number;
-    UINT8           page_number_max;
-    UNUSED(evt_len);
-
-    btu_stop_timer (&btm_cb.devcb.reset_timer);
-
-    STREAM_TO_UINT8 (status, p);
-
-    if (status != HCI_SUCCESS)
-    {
-        BTM_TRACE_WARNING1("btm_read_local_ext_features_complete status = 0x%02X", status);
-        btm_read_all_lmp_features_complete (HCI_EXT_FEATURES_PAGE_0);
-        return;
-    }
-
-    /* Extract Page number */
-    STREAM_TO_UINT8  (page_number, p);
-
-    /* Extract Page number Max */
-    STREAM_TO_UINT8  (page_number_max, p);
-
-    if (page_number > HCI_EXT_FEATURES_PAGE_MAX)
-    {
-        BTM_TRACE_ERROR1("btm_read_local_ext_features_complete page=%d unknown",
-                page_number);
-        return;
-    }
-
-    /* Save the extended features Page received */
-    STREAM_TO_ARRAY(btm_cb.devcb.local_lmp_features[page_number],
-            p, HCI_FEATURE_BYTES_PER_PAGE);
-
-    /* If this is re-read of the 1-st extended page after host supported LMP features are set */
-    if ((page_number == HCI_EXT_FEATURES_PAGE_1) &&
-        (btm_cb.devcb.lmp_features_host_may_support == BTM_RE_READ_1ST_PAGE))
-    {
-        btm_cb.devcb.lmp_features_host_may_support &= ~BTM_RE_READ_1ST_PAGE;
-        btm_issue_host_support_for_lmp_features();
-        return;
-    }
-
-    /* If this is the last page supported by the local BT controller OR */
-    /* if this is the last page supported by the Host */
-    if ((page_number == page_number_max) ||
-        (page_number == HCI_EXT_FEATURES_PAGE_MAX))
-    {
-        BTM_TRACE_DEBUG1("BTM reached last extended features page (%d)", page_number);
-        btm_read_all_lmp_features_complete(page_number);
-    }
-    /* Else (another page must be read) */
-    else
-    {
-        /* Read the next features page */
-        page_number++;
-        BTM_TRACE_DEBUG1("BTM reads next extended features page (%d)", page_number);
-        btm_get_local_ext_features(page_number);
-    }
-}
-
-/*******************************************************************************
-**
-** Function         btm_read_local_supported_cmds_complete
-**
-** Description      This function is called when local supported commands read
-**                  is complete.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_read_local_supported_cmds_complete (UINT8 *p)
-{
-    tBTM_DEVCB     *p_devcb = &btm_cb.devcb;
-    UINT8           status;
-
-    btu_stop_timer (&(p_devcb->reset_timer));
-
-    STREAM_TO_UINT8  (status, p);
-    BTM_TRACE_DEBUG1("btm_read_local_supported_cmds_complete status (0x%02x)", status);
-
-    if (status == HCI_SUCCESS)
-    {
-        /* Save the supported commands bit mask */
-        STREAM_TO_ARRAY(p_devcb->supported_cmds, p, HCI_NUM_SUPP_COMMANDS_BYTES);
-    }
-
-    btm_get_local_features();
-}
-
-/*******************************************************************************
-**
-** Function         btm_write_simple_paring_mode_complete
-**
-** Description      This function is called when the command complete message
-**                  is received from the HCI for the write simple pairing mode
-**                  command.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_write_simple_paring_mode_complete (UINT8 *p)
-{
-    UINT8   status;
-
-    STREAM_TO_UINT8 (status, p);
-
-    if (status != HCI_SUCCESS)
-    {
-        BTM_TRACE_WARNING1("btm_write_simple_paring_mode_complete status: 0x%02x", status);
-    }
-
-    if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_SSP)
-    {
-        btm_cb.devcb.lmp_features_host_may_support &= ~BTM_HOST_MAY_SUPP_SSP;
-        btm_issue_host_support_for_lmp_features();
-    }
-}
-
-/*******************************************************************************
-**
-** Function         btm_write_le_host_supported_complete
-**
-** Description      This function is called when the command complete message
-**                  is received from the HCI for the write LE host supported
-**                  command.
-**
-** Returns          void
-**
-*******************************************************************************/
-void btm_write_le_host_supported_complete (UINT8 *p)
-{
-    UINT8   status;
-
-    STREAM_TO_UINT8 (status, p);
-
-    if (status != HCI_SUCCESS)
-    {
-        BTM_TRACE_WARNING1("btm_write_le_host_supported_complete status: 0x%02x", status);
-    }
-
-    if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_LE)
-    {
-        btm_cb.devcb.lmp_features_host_may_support &= ~BTM_HOST_MAY_SUPP_LE;
-        if (btm_cb.devcb.lmp_features_host_may_support & BTM_HOST_MAY_SUPP_SIMULT_BR_LE)
-        {
-            btm_cb.devcb.lmp_features_host_may_support &= ~BTM_HOST_MAY_SUPP_SIMULT_BR_LE;
-        }
-        btm_issue_host_support_for_lmp_features();
+        /* Reset sequence is complete. If this was an application originated */
+        /* reset, tell him its done.                                         */
+        if (p_cb)
+            (*p_cb)((void *) NULL);
     }
 }
 
@@ -1594,9 +1067,9 @@ UINT8 btm_get_voice_coding_support( void )
 {
     UINT8 code = 0;
 
-    if( HCI_LMP_CVSD_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]) ) code |= 0x01 ;
-    if( HCI_LMP_A_LAW_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]) ) code |= 0x02 ;
-    if( HCI_LMP_U_LAW_SUPPORTED(btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]) )  code |= 0x04 ;
+    if( HCI_LMP_CVSD_SUPPORTED(btm_cb.devcb.local_features) ) code |= 0x01 ;
+    if( HCI_LMP_A_LAW_SUPPORTED(btm_cb.devcb.local_features) ) code |= 0x02 ;
+    if( HCI_LMP_U_LAW_SUPPORTED(btm_cb.devcb.local_features) )  code |= 0x04 ;
 
     return code ;
 }
@@ -1613,6 +1086,9 @@ UINT8 btm_get_voice_coding_support( void )
 tBTM_STATUS BTM_SetLocalDeviceName (char *p_name)
 {
     UINT8    *p;
+#if BLE_INCLUDED == TRUE && GAP_INCLUDED == TRUE
+    tGAP_BLE_ATTR_VALUE     attr_value;
+#endif
 
     if (!p_name || !p_name[0] || (strlen ((char *)p_name) > BD_NAME_LEN))
         return (BTM_ILLEGAL_VALUE);
@@ -1631,6 +1107,11 @@ tBTM_STATUS BTM_SetLocalDeviceName (char *p_name)
     }
 #else
     p = (UINT8 *)p_name;
+#endif
+
+#if BLE_INCLUDED == TRUE && GAP_INCLUDED == TRUE
+    attr_value.p_dev_name = (UINT8 *)p_name;
+    GAP_BleAttrDBUpdate(GATT_UUID_GAP_DEVICE_NAME, &attr_value);
 #endif
 
     if (btsnd_hcic_change_name(p))
@@ -1705,7 +1186,6 @@ void btm_read_local_name_complete (UINT8 *p, UINT16 evt_len)
 {
     tBTM_CMPL_CB   *p_cb = btm_cb.devcb.p_rln_cmpl_cb;
     UINT8           status;
-    UNUSED(evt_len);
 
     btu_stop_timer (&btm_cb.devcb.rln_timer);
 
@@ -1770,7 +1250,6 @@ tBTM_STATUS BTM_ReadLocalDeviceAddr (tBTM_CMPL_CB *p_cb)
 void btm_read_local_addr_complete (UINT8 *p, UINT16 evt_len)
 {
     UINT8           status;
-    UNUSED(evt_len);
 
     STREAM_TO_UINT8  (status, p);
 
@@ -1857,27 +1336,7 @@ UINT8 *BTM_ReadDeviceClass (void)
 *******************************************************************************/
 UINT8 *BTM_ReadLocalFeatures (void)
 {
-    return (btm_cb.devcb.local_lmp_features[HCI_EXT_FEATURES_PAGE_0]);
-}
-
-/*******************************************************************************
-**
-** Function         BTM_ReadLocalExtendedFeatures
-**
-** Description      This function is called to read the local extended features
-**
-** Returns          pointer to the local extended features mask or NULL if bad
-**                  page
-**
-*******************************************************************************/
-UINT8 *BTM_ReadLocalExtendedFeatures (UINT8 page_number)
-{
-    if (page_number <= HCI_EXT_FEATURES_PAGE_MAX)
-        return (btm_cb.devcb.local_lmp_features[page_number]);
-
-    BTM_TRACE_ERROR1("Warning: BTM_ReadLocalExtendedFeatures page %d unknown",
-            page_number);
-    return NULL;
+    return (btm_cb.devcb.local_features);
 }
 
 /*******************************************************************************

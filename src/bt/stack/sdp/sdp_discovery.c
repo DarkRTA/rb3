@@ -45,9 +45,9 @@
 /*              L O C A L    F U N C T I O N     P R O T O T Y P E S            */
 /********************************************************************************/
 #if SDP_CLIENT_ENABLED == TRUE
-static void          process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply);
-static void          process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply);
-static void          process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply);
+static void          process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len);
+static void          process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len);
+static void          process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len);
 static UINT8         *save_attr_seq (tCONN_CB *p_ccb, UINT8 *p, UINT8 *p_msg_end);
 static tSDP_DISC_REC *add_record (tSDP_DISCOVERY_DB *p_db, BD_ADDR p_bda);
 static UINT8         *add_attr (UINT8 *p, tSDP_DISCOVERY_DB *p_db, tSDP_DISC_REC *p_rec,
@@ -215,7 +215,7 @@ void sdp_disc_connected (tCONN_CB *p_ccb)
     {
         p_ccb->disc_state = SDP_DISC_WAIT_SEARCH_ATTR;
 
-        process_service_search_attr_rsp (p_ccb, NULL);
+        process_service_search_attr_rsp (p_ccb, NULL, 0);
     }
     else
     {
@@ -278,7 +278,7 @@ void sdp_disc_server_rsp (tCONN_CB *p_ccb, BT_HDR *p_msg)
     case SDP_PDU_SERVICE_SEARCH_RSP:
         if (p_ccb->disc_state == SDP_DISC_WAIT_HANDLES)
         {
-            process_service_search_rsp (p_ccb, p);
+            process_service_search_rsp (p_ccb, p, p_msg->len);
             invalid_pdu = FALSE;
         }
         break;
@@ -286,7 +286,7 @@ void sdp_disc_server_rsp (tCONN_CB *p_ccb, BT_HDR *p_msg)
     case SDP_PDU_SERVICE_ATTR_RSP:
         if (p_ccb->disc_state == SDP_DISC_WAIT_ATTR)
         {
-            process_service_attr_rsp (p_ccb, p);
+            process_service_attr_rsp (p_ccb, p, p_msg->len);
             invalid_pdu = FALSE;
         }
         break;
@@ -294,7 +294,7 @@ void sdp_disc_server_rsp (tCONN_CB *p_ccb, BT_HDR *p_msg)
     case SDP_PDU_SERVICE_SEARCH_ATTR_RSP:
         if (p_ccb->disc_state == SDP_DISC_WAIT_SEARCH_ATTR)
         {
-            process_service_search_attr_rsp (p_ccb, p);
+            process_service_search_attr_rsp (p_ccb, p, p_msg->len);
             invalid_pdu = FALSE;
         }
         break;
@@ -317,7 +317,7 @@ void sdp_disc_server_rsp (tCONN_CB *p_ccb, BT_HDR *p_msg)
 ** Returns          void
 **
 *******************************************************************************/
-static void process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
+static void process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len)
 {
     UINT16      xx;
     UINT16      total, cur_handles, orig;
@@ -363,7 +363,7 @@ static void process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
         p_ccb->disc_state = SDP_DISC_WAIT_ATTR;
 
         /* Kick off the first attribute request */
-        process_service_attr_rsp (p_ccb, NULL);
+        process_service_attr_rsp (p_ccb, NULL, 0);
     }
 }
 
@@ -378,7 +378,7 @@ static void process_service_search_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
 **
 *******************************************************************************/
 #if (SDP_RAW_DATA_INCLUDED == TRUE)
-static void sdp_copy_raw_data (tCONN_CB *p_ccb, BOOLEAN offset)
+static void sdp_copy_raw_data (tCONN_CB *p_ccb, UINT16 len, BOOLEAN offset)
 {
     unsigned int    cpy_len;
     UINT32          list_len;
@@ -433,15 +433,15 @@ static void sdp_copy_raw_data (tCONN_CB *p_ccb, BOOLEAN offset)
 ** Returns          void
 **
 *******************************************************************************/
-static void process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
+static void process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len)
 {
     UINT8           *p_start, *p_param_len;
     UINT16          param_len, list_byte_count;
     BOOLEAN         cont_request_needed = FALSE;
 
 #if (SDP_DEBUG_RAW == TRUE)
-    SDP_TRACE_WARNING2("process_service_attr_rsp raw inc:%d",
-        SDP_RAW_DATA_INCLUDED);
+    SDP_TRACE_WARNING2("process_service_attr_rsp len:%d raw inc:%d",
+        len, SDP_RAW_DATA_INCLUDED);
 #endif
     /* If p_reply is NULL, we were called after the records handles were read */
     if (p_reply)
@@ -502,7 +502,7 @@ static void process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
 
 #if (SDP_RAW_DATA_INCLUDED == TRUE)
             SDP_TRACE_WARNING0("process_service_attr_rsp");
-            sdp_copy_raw_data (p_ccb, FALSE);
+            sdp_copy_raw_data (p_ccb, len, FALSE);
 #endif
 
             /* Save the response in the database. Stop on any error */
@@ -591,7 +591,7 @@ static void process_service_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
 ** Returns          void
 **
 *******************************************************************************/
-static void process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
+static void process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply, UINT16 len)
 {
     UINT8           *p, *p_start, *p_end, *p_param_len;
     UINT8           type;
@@ -600,7 +600,7 @@ static void process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
     BOOLEAN         cont_request_needed = FALSE;
 
 #if (SDP_DEBUG_RAW == TRUE)
-    SDP_TRACE_WARNING1("process_service_search_attr_rsp");
+    SDP_TRACE_WARNING1("process_service_search_attr_rsp len:%d", len);
 #endif
     /* If p_reply is NULL, we were called for the initial read */
     if (p_reply)
@@ -734,7 +734,7 @@ static void process_service_search_attr_rsp (tCONN_CB *p_ccb, UINT8 *p_reply)
 
 #if (SDP_RAW_DATA_INCLUDED == TRUE)
     SDP_TRACE_WARNING0("process_service_search_attr_rsp");
-    sdp_copy_raw_data (p_ccb, TRUE);
+    sdp_copy_raw_data (p_ccb, len, TRUE);
 #endif
 
     p = &p_ccb->rsp_list[0];

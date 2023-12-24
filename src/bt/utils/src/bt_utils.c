@@ -50,8 +50,6 @@ static pthread_once_t g_DoSchedulingGroupOnce[TASK_HIGH_MAX];
 static BOOLEAN g_DoSchedulingGroup[TASK_HIGH_MAX];
 static pthread_mutex_t         gIdxLock;
 static int g_TaskIdx;
-static int g_TaskIDs[TASK_HIGH_MAX];
-#define INVALID_TASK_ID  (-1)
 
 /*****************************************************************************
 **
@@ -69,7 +67,6 @@ void bt_utils_init() {
     for(i = 0; i < TASK_HIGH_MAX; i++) {
         g_DoSchedulingGroupOnce[i] = PTHREAD_ONCE_INIT;
         g_DoSchedulingGroup[i] = TRUE;
-        g_TaskIDs[i] = INVALID_TASK_ID;
     }
     pthread_mutexattr_init(&lock_attr);
     pthread_mutex_init(&gIdxLock, &lock_attr);
@@ -129,7 +126,6 @@ void raise_priority_a2dp(tHIGH_PRIORITY_TASK high_task) {
         // set_sched_policy does not support tid == 0
         rc = set_sched_policy(tid, SP_FOREGROUND);
     }
-    g_TaskIDs[high_task] = tid;
     pthread_mutex_unlock(&gIdxLock);
 
     if (rc) {
@@ -141,31 +137,3 @@ void raise_priority_a2dp(tHIGH_PRIORITY_TASK high_task) {
     }
 }
 
-/*****************************************************************************
-**
-** Function        adjust_priority_a2dp
-**
-** Description     increase the a2dp consumer task priority temporarily when start
-**                 audio playing, to avoid overflow the audio packet queue, restore
-**                 the a2dp consumer task priority when stop audio playing.
-**
-** Returns         void
-**
-*******************************************************************************/
-void adjust_priority_a2dp(int start) {
-    int priority = start ? ANDROID_PRIORITY_URGENT_AUDIO : ANDROID_PRIORITY_AUDIO;
-    int tid;
-    int i;
-
-    for (i = TASK_HIGH_GKI_TIMER; i < TASK_HIGH_MAX; i++)
-    {
-        tid = g_TaskIDs[i];
-        if (tid != INVALID_TASK_ID)
-        {
-            if (setpriority(PRIO_PROCESS, tid, priority) < 0)
-            {
-                ALOGW("failed to change priority tid: %d to %d", tid, priority);
-            }
-        }
-    }
-}

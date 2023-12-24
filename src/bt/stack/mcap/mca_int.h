@@ -322,18 +322,9 @@ extern void mca_process_timeout(TIMER_LIST_ENT *p_tle);
 extern void mca_stop_timer(tMCA_CCB *p_ccb);
 
 /* l2c functions */
-extern UINT16 mca_l2c_open_req(BD_ADDR bd_addr, UINT16 PSM, const tMCA_CHNL_CFG *p_chnl_cfg);
-
-/* callback function declarations */
 extern void mca_l2c_cconn_ind_cback(BD_ADDR bd_addr, UINT16 lcid, UINT16 psm, UINT8 id);
 extern void mca_l2c_dconn_ind_cback(BD_ADDR bd_addr, UINT16 lcid, UINT16 psm, UINT8 id);
-extern void mca_l2c_connect_cfm_cback(UINT16 lcid, UINT16 result);
-extern void mca_l2c_config_cfm_cback(UINT16 lcid, tL2CAP_CFG_INFO *p_cfg);
-extern void mca_l2c_config_ind_cback(UINT16 lcid, tL2CAP_CFG_INFO *p_cfg);
-extern void mca_l2c_disconnect_ind_cback(UINT16 lcid, BOOLEAN ack_needed);
-extern void mca_l2c_disconnect_cfm_cback(UINT16 lcid, UINT16 result);
-extern void mca_l2c_congestion_ind_cback(UINT16 lcid, BOOLEAN is_congested);
-extern void mca_l2c_data_ind_cback(UINT16 lcid, BT_HDR *p_buf);
+extern UINT16 mca_l2c_open_req(BD_ADDR bd_addr, UINT16 PSM, const tMCA_CHNL_CFG *p_chnl_cfg);
 
 /*****************************************************************************
 ** global data

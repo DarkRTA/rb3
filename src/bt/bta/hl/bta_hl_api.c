@@ -98,80 +98,6 @@ void BTA_HlDisable(void)
 
 /*******************************************************************************
 **
-** Function         BTA_HlUpdate
-**
-** Description      Register an HDP application
-**
-** Parameters       app_id        - Application ID
-**                  p_reg_param   - non-platform related parameters for the
-**                                  HDP application
-**                  p_cback       - HL event callback fucntion
-**
-** Returns          void
-**
-*******************************************************************************/
-void BTA_HlUpdate(UINT8  app_id,
-                    tBTA_HL_REG_PARAM *p_reg_param, BOOLEAN is_register,
-                    tBTA_HL_CBACK *p_cback)
-{
-    tBTA_HL_API_UPDATE *p_buf;
-
-    APPL_TRACE_DEBUG0("BTA_HlUpdate");
-    if (is_register)
-    {
-
-        if ((p_buf = (tBTA_HL_API_UPDATE *)GKI_getbuf((UINT16)sizeof(tBTA_HL_API_UPDATE))) != NULL)
-        {
-            p_buf->hdr.event    = BTA_HL_API_UPDATE_EVT;
-            p_buf->app_id       = app_id;
-            p_buf->sec_mask     = (p_reg_param->sec_mask | BTA_SEC_AUTHENTICATE | BTA_SEC_ENCRYPT);
-            p_buf->p_cback = p_cback;
-            p_buf->is_register = is_register;
-            if (p_reg_param->p_srv_name)
-            {
-                BCM_STRNCPY_S(p_buf->srv_name, sizeof(p_buf->srv_name),
-                              p_reg_param->p_srv_name, BTA_SERVICE_NAME_LEN);
-                p_buf->srv_name[BTA_SERVICE_NAME_LEN] = '\0';
-            }
-            else
-                p_buf->srv_name[0]= '\0';
-
-            if (p_reg_param->p_srv_desp)
-            {
-                BCM_STRNCPY_S(p_buf->srv_desp, sizeof(p_buf->srv_desp),
-                              p_reg_param->p_srv_desp, BTA_SERVICE_DESP_LEN);
-                p_buf->srv_desp[BTA_SERVICE_DESP_LEN]= '\0';
-            }
-            else
-                p_buf->srv_desp[0]= '\0';
-
-            if (p_reg_param->p_provider_name)
-            {
-                BCM_STRNCPY_S(p_buf->provider_name, sizeof(p_buf->provider_name),
-                              p_reg_param->p_provider_name, BTA_PROVIDER_NAME_LEN);
-                p_buf->provider_name[BTA_PROVIDER_NAME_LEN]= '\0';
-            }
-            else
-                p_buf->provider_name[0]= '\0';
-
-            bta_sys_sendmsg(p_buf);
-        }
-    }
-    else
-    {
-        if ((p_buf = (tBTA_HL_API_UPDATE *)GKI_getbuf((UINT16)sizeof(tBTA_HL_API_UPDATE))) != NULL)
-        {
-            p_buf->hdr.event    = BTA_HL_API_UPDATE_EVT;
-            p_buf->app_id       = app_id;
-            p_buf->is_register = is_register;
-            bta_sys_sendmsg(p_buf);
-        }
-
-    }
-}
-
-/*******************************************************************************
-**
 ** Function         BTA_HlRegister
 **
 ** Description      Register an HDP application
@@ -238,14 +164,13 @@ void BTA_HlRegister(UINT8  app_id,
 ** Returns           void
 **
 *******************************************************************************/
-void BTA_HlDeregister(UINT8 app_id,tBTA_HL_APP_HANDLE app_handle)
+void BTA_HlDeregister(tBTA_HL_APP_HANDLE app_handle)
 {
     tBTA_HL_API_DEREGISTER  *p_buf;
 
     if ((p_buf = (tBTA_HL_API_DEREGISTER *)GKI_getbuf((UINT16)(sizeof(tBTA_HL_API_DEREGISTER)))) != NULL)
     {
         p_buf->hdr.event   = BTA_HL_API_DEREGISTER_EVT;
-        p_buf->app_id      = app_id;
         p_buf->app_handle  = app_handle;
         bta_sys_sendmsg(p_buf);
     }
@@ -266,7 +191,7 @@ void BTA_HlDeregister(UINT8 app_id,tBTA_HL_APP_HANDLE app_handle)
 **                  multiple HDP instances. Also, if the control PSM value is zero
 **                  then the first HDP instance is used for the control channel setup
 *******************************************************************************/
-void BTA_HlCchOpen(UINT8 app_id, tBTA_HL_APP_HANDLE app_handle,
+void BTA_HlCchOpen(tBTA_HL_APP_HANDLE app_handle,
                    tBTA_HL_CCH_OPEN_PARAM *p_open_param)
 {
     tBTA_HL_API_CCH_OPEN *p_buf;
@@ -274,7 +199,6 @@ void BTA_HlCchOpen(UINT8 app_id, tBTA_HL_APP_HANDLE app_handle,
     if ((p_buf = (tBTA_HL_API_CCH_OPEN *)GKI_getbuf((UINT16)(sizeof(tBTA_HL_API_CCH_OPEN)))) != NULL)
     {
         p_buf->hdr.event        = BTA_HL_API_CCH_OPEN_EVT;
-        p_buf->app_id           = app_id;
         p_buf->app_handle       = app_handle;
         p_buf->sec_mask = (p_open_param->sec_mask | BTA_SEC_AUTHENTICATE | BTA_SEC_ENCRYPT);
         bdcpy(p_buf->bd_addr, p_open_param->bd_addr);
@@ -510,7 +434,7 @@ void BTA_HlDchEchoTest( tBTA_HL_MCL_HANDLE  mcl_handle,
 ** Returns          void
 **
 *******************************************************************************/
-void BTA_HlSdpQuery(UINT8  app_id,tBTA_HL_APP_HANDLE app_handle,
+void BTA_HlSdpQuery(tBTA_HL_APP_HANDLE app_handle,
                     BD_ADDR bd_addr)
 {
     tBTA_HL_API_SDP_QUERY *p_buf;
@@ -518,7 +442,6 @@ void BTA_HlSdpQuery(UINT8  app_id,tBTA_HL_APP_HANDLE app_handle,
     if ((p_buf = (tBTA_HL_API_SDP_QUERY *)GKI_getbuf((UINT16)(sizeof(tBTA_HL_API_SDP_QUERY)))) != NULL)
     {
         p_buf->hdr.event        = BTA_HL_API_SDP_QUERY_EVT;
-        p_buf->app_id           = app_id;
         p_buf->app_handle       = app_handle;
         bdcpy(p_buf->bd_addr, bd_addr);
         bta_sys_sendmsg(p_buf);

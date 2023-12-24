@@ -31,7 +31,6 @@
 #include "port_int.h"
 #include "l2c_api.h"
 #include "rfc_int.h"
-#include "bt_utils.h"
 
 #define L2CAP_SUCCESS   0
 #define L2CAP_ERROR     1
@@ -309,8 +308,6 @@ void rfc_mx_sm_state_configure (tRFC_MCB *p_mcb, UINT16 event, void *p_data)
 *******************************************************************************/
 void rfc_mx_sm_sabme_wait_ua (tRFC_MCB *p_mcb, UINT16 event, void *p_data)
 {
-    UNUSED(p_data);
-
     RFCOMM_TRACE_EVENT1 ("rfc_mx_sm_sabme_wait_ua - evt:%d", event);
     switch (event)
     {
@@ -439,8 +436,6 @@ void rfc_mx_sm_state_wait_sabme (tRFC_MCB *p_mcb, UINT16 event, void *p_data)
 *******************************************************************************/
 void rfc_mx_sm_state_connected (tRFC_MCB *p_mcb, UINT16 event, void *p_data)
 {
-    UNUSED(p_data);
-
     RFCOMM_TRACE_EVENT1 ("rfc_mx_sm_state_connected - evt:%d", event);
 
     switch (event)
@@ -619,9 +614,7 @@ static void rfc_mx_conf_cnf (tRFC_MCB *p_mcb, tL2CAP_CFG_INFO *p_cfg)
         else
         {
             p_mcb->state = RFC_MX_STATE_WAIT_SABME;
-            rfc_timer_start (p_mcb, RFCOMM_CONN_TIMEOUT); /* - increased from T2=20 to CONN=120
-                                                to allow the user more than 10 sec to type in the
-                                                pin which can be e.g. 16 digits */
+            rfc_timer_start (p_mcb, RFC_T2_TIMEOUT);
         }
     }
 }
@@ -664,9 +657,7 @@ static void rfc_mx_conf_ind (tRFC_MCB *p_mcb, tL2CAP_CFG_INFO *p_cfg)
         else
         {
             p_mcb->state = RFC_MX_STATE_WAIT_SABME;
-            rfc_timer_start (p_mcb, RFCOMM_CONN_TIMEOUT); /* - increased from T2=20 to CONN=120
-                                                to allow the user more than 10 sec to type in the
-                                                pin which can be e.g. 16 digits */
+            rfc_timer_start (p_mcb, RFC_T2_TIMEOUT);
         }
     }
 }

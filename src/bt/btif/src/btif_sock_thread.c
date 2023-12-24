@@ -232,7 +232,7 @@ int btsock_thread_create(btsock_signaled_cb callback, btsock_cmd_cb cmd_callback
     if(h >= 0)
     {
         init_poll(h);
-        if((ts[h].thread_id = create_thread(sock_poll_thread, (void*)(uintptr_t)h)) != -1)
+        if((ts[h].thread_id = create_thread(sock_poll_thread, (void*)h)) != -1)
         {
             APPL_TRACE_DEBUG2("h:%d, thread id:%d", h, ts[h].thread_id);
             ts[h].callback = callback;
@@ -556,7 +556,7 @@ static void *sock_poll_thread(void *arg)
 {
     struct pollfd pfds[MAX_POLL];
     memset(pfds, 0, sizeof(pfds));
-    int h = (intptr_t)arg;
+    int h = (int)arg;
     for(;;)
     {
         prepare_poll_fds(h, pfds);

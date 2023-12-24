@@ -37,7 +37,6 @@
 #define BTA_JV_FAILURE             1            /* Generic failure. */
 #define BTA_JV_BUSY                2            /* Temporarily can not handle this request. */
 #define BTA_JV_NO_DATA             3            /* no data. */
-#define BTA_JV_NO_RESOURCE         4            /* No more set pm control block */
 
 typedef UINT8 tBTA_JV_STATUS;
 #define BTA_JV_INTERNAL_ERR        (-1) /* internal error. */
@@ -59,7 +58,7 @@ typedef UINT8 tBTA_JV_STATUS;
 
 /* */
 #ifndef BTA_JV_MAX_RFC_SR_SESSION
-#define BTA_JV_MAX_RFC_SR_SESSION   MAX_BD_CONNECTIONS
+#define BTA_JV_MAX_RFC_SR_SESSION   3
 #endif
 
 /* BTA_JV_MAX_RFC_SR_SESSION can not be bigger than MAX_BD_CONNECTIONS */
@@ -104,34 +103,7 @@ typedef UINT32 tBTA_JV_ROLE;
 #define BTA_JV_SERVICE_TELEPHONY        BTM_COD_SERVICE_TELEPHONY       /* 0x4000 */
 #define BTA_JV_SERVICE_INFORMATION      BTM_COD_SERVICE_INFORMATION     /* 0x8000 */
 
-/* JV ID type */
-#define BTA_JV_PM_ID_1             1    /* PM example profile 1 */
-#define BTA_JV_PM_ID_2             2    /* PM example profile 2 */
-#define BTA_JV_PM_ID_CLEAR         0    /* Special JV ID used to clear PM profile */
-#define BTA_JV_PM_ALL              0xFF /* Generic match all id, see bta_dm_cfg.c */
-typedef UINT8 tBTA_JV_PM_ID;
 
-#define BTA_JV_PM_HANDLE_CLEAR     0xFF /* Special JV ID used to clear PM profile  */
-
-/* define maximum number of registered PM entities. should be in sync with bta pm! */
-#ifndef BTA_JV_PM_MAX_NUM
-#define BTA_JV_PM_MAX_NUM 5
-#endif
-
-/* JV pm connection states */
-enum
-{
-    BTA_JV_CONN_OPEN = 0,   /* Connection opened state */
-    BTA_JV_CONN_CLOSE,      /* Connection closed state */
-    BTA_JV_APP_OPEN,        /* JV Application opened state */
-    BTA_JV_APP_CLOSE,       /* JV Application closed state */
-    BTA_JV_SCO_OPEN,        /* SCO connection opened state */
-    BTA_JV_SCO_CLOSE,       /* SCO connection opened state */
-    BTA_JV_CONN_IDLE,       /* Connection idle state */
-    BTA_JV_CONN_BUSY,       /* Connection busy state */
-    BTA_JV_MAX_CONN_STATE   /* Max number of connection state */
-};
-typedef UINT8 tBTA_JV_CONN_STATE;
 
 /* Java I/F callback events */
 /* events received by tBTA_JV_DM_CBACK */
@@ -391,21 +363,6 @@ typedef struct
     int             len;        /* The length of the data written. */
     BOOLEAN         cong;       /* congestion status */
 } tBTA_JV_RFCOMM_WRITE;
-
-/* data associated with BTA_JV_API_SET_PM_PROFILE_EVT */
-typedef struct
-{
-    tBTA_JV_STATUS  status;     /* Status of the operation */
-    UINT32          handle;     /* Connection handle */
-    tBTA_JV_PM_ID   app_id;      /* JV app ID */
-} tBTA_JV_SET_PM_PROFILE;
-
-/* data associated with BTA_JV_API_NOTIFY_PM_STATE_CHANGE_EVT */
-typedef struct
-{
-    UINT32          handle;     /* Connection handle */
-    tBTA_JV_CONN_STATE  state;  /* JV connection stata */
-} tBTA_JV_NOTIFY_PM_STATE_CHANGE;
 
 
 /* union of data associated with JV callback */
@@ -1068,7 +1025,7 @@ BTA_API extern tBTA_JV_STATUS BTA_JvRfcommConnect(tBTA_SEC sec_mask,
 **                  BTA_JV_FAILURE, otherwise.
 **
 *******************************************************************************/
-BTA_API extern tBTA_JV_STATUS BTA_JvRfcommClose(UINT32 handle, void* user_data);
+BTA_API extern tBTA_JV_STATUS BTA_JvRfcommClose(UINT32 handle);
 
 /*******************************************************************************
 **
@@ -1100,7 +1057,7 @@ BTA_API extern tBTA_JV_STATUS BTA_JvRfcommStartServer(tBTA_SEC sec_mask,
 **                  BTA_JV_FAILURE, otherwise.
 **
 *******************************************************************************/
-BTA_API extern tBTA_JV_STATUS BTA_JvRfcommStopServer(UINT32 handle, void* user_data);
+BTA_API extern tBTA_JV_STATUS BTA_JvRfcommStopServer(UINT32 handle);
 
 /*******************************************************************************
 **
@@ -1144,27 +1101,6 @@ BTA_API extern tBTA_JV_STATUS BTA_JvRfcommReady(UINT32 handle, UINT32 *p_data_si
 *******************************************************************************/
 BTA_API extern tBTA_JV_STATUS BTA_JvRfcommWrite(UINT32 handle, UINT32 req_id);
 
-/*******************************************************************************
- **
- ** Function    BTA_JVSetPmProfile
- **
- ** Description This function set or free power mode profile for different JV application
- **
- ** Parameters:  handle,  JV handle from RFCOMM or L2CAP
- **              app_id:  app specific pm ID, can be BTA_JV_PM_ALL, see bta_dm_cfg.c for details
- **              BTA_JV_PM_ID_CLEAR: removes pm management on the handle. init_st is ignored and
- **              BTA_JV_CONN_CLOSE is called implicitely
- **              init_st:  state after calling this API. typically it should be BTA_JV_CONN_OPEN
- **
- ** Returns      BTA_JV_SUCCESS, if the request is being processed.
- **              BTA_JV_FAILURE, otherwise.
- **
- ** NOTE:        BTA_JV_PM_ID_CLEAR: In general no need to be called as jv pm calls automatically
- **              BTA_JV_CONN_CLOSE to remove in case of connection close!
- **
- *******************************************************************************/
-BTA_API extern tBTA_JV_STATUS BTA_JvSetPmProfile(UINT32 handle, tBTA_JV_PM_ID app_id,
-                                                 tBTA_JV_CONN_STATE init_st);
 
 /*******************************************************************************
 **

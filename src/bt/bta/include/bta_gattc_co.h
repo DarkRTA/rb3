@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- *  Copyright (C) 2009-2013 Broadcom Corporation
+ *  Copyright (C) 2010-2012 Broadcom Corporation
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -96,20 +96,6 @@ BTA_API extern void bta_gattc_co_cache_save(BD_ADDR server_bda, UINT16 evt,
 *******************************************************************************/
 BTA_API extern void bta_gattc_co_cache_load(BD_ADDR server_bda, UINT16 evt,
                                             UINT16 start_index, UINT16 conn_id);
-
-/*******************************************************************************
-**
-** Function         bta_gattc_co_cache_reset
-**
-** Description      This callout function is executed by GATTC to reset cache in
-**                  application
-**
-** Parameter        server_bda: server bd address of this cache belongs to
-**
-** Returns          void.
-**
-*******************************************************************************/
-BTA_API extern void bta_gattc_co_cache_reset(BD_ADDR server_bda);
 
 #endif /* BTA_GATT_CO_H */
 

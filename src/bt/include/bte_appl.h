@@ -70,12 +70,25 @@
 #define BTE_APPL_CONTACTS_DB_PATH       256
 
 typedef struct {
-#if ((BLE_INCLUDED == TRUE) && (SMP_INCLUDED == TRUE))
-    UINT8   ble_auth_req;
-    UINT8   ble_io_cap;
-    UINT8   ble_init_key;
-    UINT8   ble_resp_key;
-    UINT8   ble_max_key_size;
+    char    patchram_path[BTE_APPL_PATCHRAM_PATH_MAXLEN+1];
+    UINT32  patchram_addr;
+    UINT32  reconfig_baud;
+    UINT32  clock_rate;             /* clock rate (for uart baud calculation) */
+    BD_ADDR local_addr;             /* local bd addr */
+    BD_ADDR rem_addr;
+    UINT8   lpm_enabled;
+    UINT8   bt_wake_polarity;
+    UINT8   host_wake_polarity;
+    BOOLEAN ag_enable_3way_conf;
+    UINT16  ag_voice_settings;
+    UINT8   ag_vsc_pcm_config[5];
+    UINT8   ag_vsc_sco_pcm[5];
+    /*tBTM_CMPL_CB*/ tBTM_DEV_STATUS_CB *p_reset_cplt_cb;  /* Current reset_cplt_cb */
+    char    contacts_db[BTE_APPL_CONTACTS_DB_PATH+1];
+    UINT32  bta_module_state[BTAPP_NUM_ID_BLOCKS]; /* state of enabled bta modules */
+#if (BTAPP_AHF_API_SUPPORT==TRUE)
+    UINT8   afh_first;
+    UINT8   afh_last;
 #endif
 } tBTE_APPL_CFG;
 

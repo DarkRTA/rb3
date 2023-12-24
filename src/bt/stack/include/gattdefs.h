@@ -72,9 +72,9 @@
 #define GATT_UUID_NW_TRIGGER            0x2A1A      /* Network availability trigger */
 
 /* phone alert */
-#define GATT_UUID_ALERT_STATUS          0x2A40    /* alert status */
-#define GATT_UUID_RINGER_CP             0x2A42    /* ringer control point */
-#define GATT_UUID_RINGER_SETTING        0x2A41    /* ringer setting */
+#define GATT_UUID_ALERT_STATUS          0x2A40     /* alert status */
+#define GATT_UUID_RINGER_CP             0x2A42     /* ringer control point */
+#define GATT_UUID_RINGER_SETTING        0x2A41     /* ringer setting */
 
 /* Glucose Service */
 #define GATT_UUID_GM_MEASUREMENT        0x2A18
@@ -105,21 +105,5 @@
 
 /* Battery Service char */
 #define GATT_UUID_BATTERY_LEVEL         0x2A19
-
-#define GATT_UUID_SC_CONTROL_POINT      0x2A55
-#define GATT_UUID_SENSOR_LOCATION       0x2A5D
-
-/* RUNNERS SPEED AND CADENCE SERVICE      */
-#define GATT_UUID_RSC_MEASUREMENT       0x2A53
-#define GATT_UUID_RSC_FEATURE           0x2A54
-
-/* CYCLING SPEED AND CADENCE SERVICE      */
-#define GATT_UUID_CSC_MEASUREMENT       0x2A5B
-#define GATT_UUID_CSC_FEATURE           0x2A5C
-
-
-/* Scan Parameter charatceristics */
-#define GATT_UUID_SCAN_INT_WINDOW       0x2A4F
-#define GATT_UUID_SCAN_REFRESH          0x2A31
 
 #endif

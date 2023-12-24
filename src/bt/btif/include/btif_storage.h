@@ -30,7 +30,6 @@
 #define BTIF_STORAGE_FILL_PROPERTY(p_prop, t, l, p_v) \
          (p_prop)->type = t;(p_prop)->len = l; (p_prop)->val = (p_v);
 
-#define  BTIF_STORAGE_MAX_ALLOWED_REMOTE_DEVICE 512
 
 /*******************************************************************************
 **  Functions
@@ -106,7 +105,7 @@ bt_status_t btif_storage_set_remote_device_property(bt_bdaddr_t *remote_bd_addr,
 **                  BT_STATUS_FAIL otherwise
 **
 *******************************************************************************/
-bt_status_t btif_storage_add_remote_device(bt_bdaddr_t *remote_bd_addr,
+bt_status_t btif_storage_add_remote_device(bt_bdaddr_t *remote_bdaddr,
                                            uint32_t num_properties,
                                            bt_property_t *properties);
 
@@ -232,20 +231,19 @@ bt_status_t btif_storage_write_hl_mdl_data(UINT8 app_idx, char *value, int value
 **                  BT_STATUS_FAIL otherwise
 **
 *******************************************************************************/
-
 bt_status_t btif_storage_add_hid_device_info(bt_bdaddr_t *remote_bd_addr,
                                                     UINT16 attr_mask, UINT8 sub_class,
                                                     UINT8 app_id, UINT16 vendor_id,
                                                     UINT16 product_id, UINT16 version,
-                                                    UINT8 ctry_code, UINT16 ssr_max_latency,
-                                                    UINT16 ssr_min_tout, UINT16 dl_len, UINT8 *dsc_list);
+                                                    UINT8 ctry_code, UINT16 dl_len,
+                                                    UINT8 *dsc_list);
 
 /*******************************************************************************
 **
 ** Function         btif_storage_load_bonded_hid_info
 **
-** Description      BTIF storage API - Loads hid info for all the bonded devices from NVRAM
-**                  and adds those devices  to the BTA_HH.
+** Description      BTIF storage API - Loads hid info for all the bonded devices
+**                  from NVRAM and adds those devices  to the BTA_HH.
 **
 ** Returns          BT_STATUS_SUCCESS if successful, BT_STATUS_FAIL otherwise
 **
@@ -286,8 +284,7 @@ bt_status_t btif_storage_load_autopair_device_list();
 **                  FALSE otherwise
 **
 *******************************************************************************/
-
-BOOLEAN  btif_storage_is_device_autopair_blacklisted(bt_bdaddr_t *remote_bd_addr);
+BOOLEAN  btif_storage_is_device_autopair_blacklisted(bt_bdaddr_t *remote_dev_addr);
 
 /*******************************************************************************
 **
@@ -299,8 +296,7 @@ BOOLEAN  btif_storage_is_device_autopair_blacklisted(bt_bdaddr_t *remote_bd_addr
 **                  BT_STATUS_FAIL otherwise
 **
 *******************************************************************************/
-
-bt_status_t btif_storage_add_device_to_autopair_blacklist(bt_bdaddr_t *remote_bd_addr);
+bt_status_t btif_storage_add_device_to_autopair_blacklist(bt_bdaddr_t *remote_dev_addr);
 
 /*******************************************************************************
 **
@@ -312,75 +308,6 @@ bt_status_t btif_storage_add_device_to_autopair_blacklist(bt_bdaddr_t *remote_bd
 **                  FALSE otherwise
 **
 *******************************************************************************/
-BOOLEAN btif_storage_is_fixed_pin_zeros_keyboard(bt_bdaddr_t *remote_bd_addr);
-
-#if (BLE_INCLUDED == TRUE)
-bt_status_t btif_storage_add_ble_bonding_key( bt_bdaddr_t *remote_bd_addr,
-                                              char *key,
-                                              uint8_t key_type,
-                                              uint8_t key_length);
-bt_status_t btif_storage_get_ble_bonding_key(bt_bdaddr_t *remote_bd_addr,
-                                             UINT8 key_type,
-                                             char *key_value,
-                                             int key_length);
-
-bt_status_t btif_storage_add_ble_local_key(char *key,
-                                           uint8_t key_type,
-                                           uint8_t key_length);
-bt_status_t btif_storage_remove_ble_bonding_keys(bt_bdaddr_t *remote_bd_addr);
-bt_status_t btif_storage_remove_ble_local_keys(void);
-bt_status_t btif_storage_get_ble_local_key(UINT8 key_type,
-                                           char *key_value,
-                                           int key_len);
-
-bt_status_t btif_storage_get_remote_addr_type(bt_bdaddr_t *remote_bd_addr,
-                                              int *addr_type);
-
-bt_status_t btif_storage_set_remote_addr_type(bt_bdaddr_t *remote_bd_addr,
-                                              UINT8 addr_type);
-
-#endif
-/*******************************************************************************
-**
-** Function         btif_storage_get_remote_version
-**
-** Description      Fetch remote version info on cached remote device
-**
-** Returns          BT_STATUS_SUCCESS if found
-**                  BT_STATUS_FAIL otherwise
-**
-*******************************************************************************/
-
-bt_status_t btif_storage_get_remote_version(const bt_bdaddr_t *remote_bd_addr,
-                                  bt_remote_version_t *p_ver);
-
-/*******************************************************************************
-**
-** Function         btif_storage_set_dmt_support_type
-**
-** Description      Sets DMT support status for a remote device
-**
-** Returns          BT_STATUS_SUCCESS if config update is successful
-**                  BT_STATUS_FAIL otherwise
-**
-*******************************************************************************/
-
-bt_status_t btif_storage_set_dmt_support_type(const bt_bdaddr_t *remote_bd_addr,
-                                                   BOOLEAN dmt_supported);
-
-
-
-/*******************************************************************************
-**
-** Function         btif_storage_is_dmt_supported_device
-**
-** Description      checks if a device supports Dual mode topology
-**
-** Returns         TRUE if remote supports DMT else FALSE
-**
-*******************************************************************************/
-
-BOOLEAN btif_storage_is_dmt_supported_device(const bt_bdaddr_t *remote_bd_addr);
-
+BOOLEAN btif_storage_is_fixed_pin_zeros_keyboard(bt_bdaddr_t *remote_dev_addr);
 
 #endif /* BTIF_STORAGE_H */

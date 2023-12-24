@@ -26,7 +26,6 @@
 #include <string.h>
 #include "data_types.h"
 #include "bt_target.h"
-#include "bt_utils.h"
 #include "avdt_api.h"
 #include "avdtc_api.h"
 #include "avdt_int.h"
@@ -310,10 +309,9 @@ void avdt_ccb_event(tAVDT_CCB *p_ccb, UINT8 event, tAVDT_CCB_EVT *p_data)
     state_table = avdt_ccb_st_tbl[p_ccb->state];
 
     /* set next state */
-    if (p_ccb->state != state_table[event][AVDT_CCB_NEXT_STATE]) {
+    if (p_ccb->state != state_table[event][AVDT_CCB_NEXT_STATE])
         BTTRC_AVDT_CCB_STATE(state_table[event][AVDT_CCB_NEXT_STATE]);
-        p_ccb->state = state_table[event][AVDT_CCB_NEXT_STATE];
-    }
+    p_ccb->state = state_table[event][AVDT_CCB_NEXT_STATE];
 
     /* execute action functions */
     for (i = 0; i < AVDT_CCB_ACTIONS; i++)
@@ -416,8 +414,6 @@ tAVDT_CCB *avdt_ccb_alloc(BD_ADDR bd_addr)
 *******************************************************************************/
 void avdt_ccb_dealloc(tAVDT_CCB *p_ccb, tAVDT_CCB_EVT *p_data)
 {
-    UNUSED(p_data);
-
     AVDT_TRACE_DEBUG1("avdt_ccb_dealloc %d", avdt_ccb_to_idx(p_ccb));
     btu_stop_timer(&p_ccb->timer_entry);
     memset(p_ccb, 0, sizeof(tAVDT_CCB));

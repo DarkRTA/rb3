@@ -33,14 +33,12 @@
 #include "bt_hci_bdroid.h"
 #include "hci.h"
 #include "userial.h"
-#include "bt_utils.h"
 
 /******************************************************************************
 **  Externs
 ******************************************************************************/
 
 extern tHCI_IF *p_hci_if;
-extern uint8_t fwcfg_acked;
 void lpm_vnd_cback(uint8_t vnd_result);
 
 /******************************************************************************
@@ -69,8 +67,6 @@ static void fwcfg_cb(bt_vendor_op_result_t result)
     bt_hc_postload_result_t status = (result == BT_VND_OP_RESULT_SUCCESS) ? \
                                      BT_HC_PRELOAD_SUCCESS : BT_HC_PRELOAD_FAIL;
 
-    fwcfg_acked = TRUE;
-
     if (bt_hc_cbacks)
         bt_hc_cbacks->preload_cb(NULL, status);
 }
@@ -88,7 +84,6 @@ static void fwcfg_cb(bt_vendor_op_result_t result)
 ******************************************************************************/
 static void scocfg_cb(bt_vendor_op_result_t result)
 {
-    UNUSED(result);
     /* Continue rest of postload process*/
     p_hci_if->get_acl_max_len();
 }
@@ -167,23 +162,6 @@ static uint8_t xmit_cb(uint16_t opcode, void *p_buf, tINT_CMD_CBACK p_cback)
     return p_hci_if->send_int_cmd(opcode, (HC_BT_HDR *)p_buf, p_cback);
 }
 
-/******************************************************************************
-**
-** Function         epilog_cb
-**
-** Description      HOST/CONTROLLER VENDOR LIB CALLBACK API - This function is
-**                  called back from the libbt-vendor to indicate the result of
-**                  previous epilog call.
-**
-** Returns          None
-**
-******************************************************************************/
-static void epilog_cb(bt_vendor_op_result_t result)
-{
-    UNUSED(result);
-    bthc_signal_event(HC_EVENT_EXIT);
-}
-
 /*****************************************************************************
 **   The libbt-vendor Callback Functions Table
 *****************************************************************************/
@@ -194,8 +172,7 @@ static const bt_vendor_callbacks_t vnd_callbacks = {
     lpm_vnd_cb,
     alloc,
     dealloc,
-    xmit_cb,
-    epilog_cb
+    xmit_cb
 };
 
 /******************************************************************************

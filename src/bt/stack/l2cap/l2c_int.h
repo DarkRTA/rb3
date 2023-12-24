@@ -52,8 +52,6 @@
 #define L2CAP_WAIT_UNPARK_TOUT       2            /* 2 seconds */
 #define L2CAP_LINK_INFO_RESP_TOUT    2            /* 2  seconds */
 #define L2CAP_BLE_LINK_CONNECT_TOUT  30           /* 30 seconds */
-#define L2CAP_BLE_CONN_PARAM_UPD_TOUT   30           /* 30 seconds */
-#define L2CAP_BLE_ENB_CONN_PARAM_TOUT   1           /* 1 seconds */
 
 /* quick timer uses millisecond unit */
 #define L2CAP_DEFAULT_RETRANS_TOUT   2000         /* 2000 milliseconds */
@@ -395,7 +393,6 @@ typedef struct t_l2c_linkcb
 
     UINT8               link_role;                  /* Master or slave                  */
     UINT8               id;
-    UINT8               cur_echo_id;                /* Current id value for echo request */
     tL2CA_ECHO_RSP_CB   *p_echo_rsp_cb;             /* Echo response callback           */
     UINT16              idle_timeout;               /* Idle timeout                     */
     BOOLEAN             is_bonding;                 /* True - link active only for bonding */
@@ -434,17 +431,16 @@ typedef struct t_l2c_linkcb
     UINT16              disc_reason;
 #endif
 
-    tBT_TRANSPORT       transport;
 #if (BLE_INCLUDED == TRUE)
+    BOOLEAN             is_ble_link;
     tBLE_ADDR_TYPE      ble_addr_type;
-    TIMER_LIST_ENT      conn_param_enb;         /* Timer entry for enabling connection parameter update */
 
 #define UPD_ENABLED     0  /* If peer requests update, we will change params */
 #define UPD_DISABLED    1  /* application requested not to update */
-#define UPD_ENB_TOUT    2  /* while updates are disabled, peer requested new parameters */
-#define UPD_ST_MASK     0x0f
-#define UPD_REQUEST     0x10  /* remote device set preferred conn param */
-    UINT8               conn_update_mask;
+#define UPD_PENDING     2  /* while updates are disabled, peer requested new parameters */
+#define UPD_UPDATED     3  /* peer updated connection parameters */
+    UINT8               upd_disabled;
+
     UINT16              min_interval; /* parameters as requested by peripheral */
     UINT16              max_interval;
     UINT16              latency;
@@ -582,10 +578,10 @@ extern void     l2c_process_held_packets (BOOLEAN timed_out);
 /* Functions provided by l2c_utils.c
 ************************************
 */
-extern tL2C_LCB *l2cu_allocate_lcb (BD_ADDR p_bd_addr, BOOLEAN is_bonding, tBT_TRANSPORT transport);
+extern tL2C_LCB *l2cu_allocate_lcb (BD_ADDR p_bd_addr, BOOLEAN is_bonding);
 extern BOOLEAN  l2cu_start_post_bond_timer (UINT16 handle);
 extern void     l2cu_release_lcb (tL2C_LCB *p_lcb);
-extern tL2C_LCB *l2cu_find_lcb_by_bd_addr (BD_ADDR p_bd_addr, tBT_TRANSPORT transport);
+extern tL2C_LCB *l2cu_find_lcb_by_bd_addr (BD_ADDR p_bd_addr);
 extern tL2C_LCB *l2cu_find_lcb_by_handle (UINT16 handle);
 extern void     l2cu_update_lcb_4_bonding (BD_ADDR p_bd_addr, BOOLEAN is_bonding);
 
@@ -601,7 +597,6 @@ extern void     l2cu_release_ccb (tL2C_CCB *p_ccb);
 extern tL2C_CCB *l2cu_find_ccb_by_cid (tL2C_LCB *p_lcb, UINT16 local_cid);
 extern tL2C_CCB *l2cu_find_ccb_by_remote_cid (tL2C_LCB *p_lcb, UINT16 remote_cid);
 extern void     l2cu_adj_id (tL2C_LCB *p_lcb, UINT8 adj_mask);
-extern BOOLEAN  l2c_is_cmd_rejected (UINT8 cmd_code, UINT8 id, tL2C_LCB *p_lcb);
 
 extern void     l2cu_send_peer_cmd_reject (tL2C_LCB *p_lcb, UINT16 reason,
                                            UINT8 rem_id,UINT16 p1, UINT16 p2);
@@ -681,7 +676,7 @@ extern void     l2cu_device_reset (void);
 extern tL2C_LCB *l2cu_find_lcb_by_state (tL2C_LINK_STATE state);
 extern BOOLEAN  l2cu_lcb_disconnecting (void);
 
-extern BOOLEAN l2cu_create_conn (tL2C_LCB *p_lcb, tBT_TRANSPORT transport);
+extern BOOLEAN l2cu_create_conn (tL2C_LCB *p_lcb);
 extern BOOLEAN l2cu_create_conn_after_switch (tL2C_LCB *p_lcb);
 extern BT_HDR *l2cu_get_next_buffer_to_send (tL2C_LCB *p_lcb);
 extern void    l2cu_resubmit_pending_sec_req (BD_ADDR p_bda);
@@ -704,7 +699,7 @@ extern void     l2c_link_process_num_completed_blocks (UINT8 controller_id, UINT
 extern void     l2c_link_processs_num_bufs (UINT16 num_lm_acl_bufs);
 extern UINT8    l2c_link_pkts_rcvd (UINT16 *num_pkts, UINT16 *handles);
 extern void     l2c_link_role_changed (BD_ADDR bd_addr, UINT8 new_role, UINT8 hci_status);
-extern void     l2c_link_sec_comp (BD_ADDR p_bda, tBT_TRANSPORT trasnport, void *p_ref_data, UINT8 status);
+extern void     l2c_link_sec_comp (BD_ADDR p_bda, void *p_ref_data, UINT8 status);
 extern void     l2c_link_segments_xmitted (BT_HDR *p_msg);
 extern void     l2c_pin_code_request (BD_ADDR bd_addr);
 extern void     l2c_link_adjust_chnl_allocation (void);
@@ -766,14 +761,8 @@ extern BOOLEAN l2cble_create_conn (tL2C_LCB *p_lcb);
 extern void l2cble_process_sig_cmd (tL2C_LCB *p_lcb, UINT8 *p, UINT16 pkt_len);
 extern void l2cble_conn_comp (UINT16 handle, UINT8 role, BD_ADDR bda, tBLE_ADDR_TYPE type,
                               UINT16 conn_interval, UINT16 conn_latency, UINT16 conn_timeout);
-extern BOOLEAN l2cble_init_direct_conn (tL2C_LCB *p_lcb);
-extern void l2c_enable_conn_param_timeout(tL2C_LCB * p_lcb);
-#if (defined BLE_LLT_INCLUDED) && (BLE_LLT_INCLUDED == TRUE)
-extern void l2cble_process_rc_param_request_evt(UINT16 handle, UINT16 int_min, UINT16 int_max,
-                                                        UINT16 latency, UINT16 timeout);
+
 #endif
-#endif
-extern void l2cu_process_fixed_disc_cback (tL2C_LCB *p_lcb);
 
 #ifdef __cplusplus
 }

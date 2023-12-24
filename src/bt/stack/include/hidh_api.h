@@ -42,7 +42,6 @@ enum {
 #define HID_SSR_MIN_TOUT         0x0100
 
 #define HID_SEC_REQUIRED         0x8000
-#define HID_ATTR_MASK_IGNORE     0
 
 
 /*****************************************************************************
@@ -77,7 +76,6 @@ enum
     HID_HDEV_EVT_VC_UNPLUG
 };
 typedef void (tHID_HOST_DEV_CALLBACK) (UINT8 dev_handle,
-                                       BD_ADDR addr,
                                        UINT8 event, /* Event from HID-DEVICE. */
                                        UINT32 data, /* Integer data corresponding to the event.*/
                                        BT_HDR *p_buf ); /* Pointer data corresponding to the event. */
@@ -204,18 +202,6 @@ HID_API extern void HID_HostInit(void);
 ** Returns         tHID_STATUS
 *******************************************************************************/
 HID_API extern tHID_STATUS HID_HostSetSecurityLevel( char serv_name[], UINT8 sec_lvl );
-
-/*******************************************************************************
-**
-** Function         hid_known_hid_device
-**
-** Description      This function checks if this device is  of type HID Device
-**
-** Returns          TRUE if device exists else FALSE
-**
-*******************************************************************************/
-BOOLEAN hid_known_hid_device (BD_ADDR bd_addr);
-
 
 /*******************************************************************************
 **

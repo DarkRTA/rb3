@@ -22,16 +22,9 @@
 #include "bta_sys.h"
 #include "bta_dm_co.h"
 #include "bta_dm_ci.h"
-#include "bt_utils.h"
 #if (BTM_OOB_INCLUDED == TRUE)
 #include "btif_dm.h"
 #endif
-#if (defined BLE_INCLUDED && BLE_INCLUDED == TRUE)
-#include "bte_appl.h"
-
-tBTE_APPL_CFG bte_appl_cfg = { 0x5, 0x4, 0x7, 0x7, 0x10 };
-#endif
-
 /*******************************************************************************
 **
 ** Function         bta_dm_co_get_compress_memory
@@ -47,9 +40,6 @@ tBTE_APPL_CFG bte_appl_cfg = { 0x5, 0x4, 0x7, 0x7, 0x10 };
 *******************************************************************************/
 BOOLEAN bta_dm_co_get_compress_memory(tBTA_SYS_ID id, UINT8 **memory_p, UINT32 *memory_size)
 {
-    UNUSED(id);
-    UNUSED(memory_p);
-    UNUSED(memory_size);
     return TRUE;
 }
 
@@ -71,7 +61,6 @@ BOOLEAN bta_dm_co_get_compress_memory(tBTA_SYS_ID id, UINT8 **memory_p, UINT32 *
 void bta_dm_co_io_req(BD_ADDR bd_addr, tBTA_IO_CAP *p_io_cap, tBTA_OOB_DATA *p_oob_data,
                       tBTA_AUTH_REQ *p_auth_req, BOOLEAN is_orig)
 {
-    UNUSED(bd_addr);
 #if (BTM_OOB_INCLUDED == TRUE)
     btif_dm_set_oob_for_io_req(p_oob_data);
 #endif
@@ -99,10 +88,6 @@ void bta_dm_co_io_req(BD_ADDR bd_addr, tBTA_IO_CAP *p_io_cap, tBTA_OOB_DATA *p_o
 void bta_dm_co_io_rsp(BD_ADDR bd_addr, tBTA_IO_CAP io_cap,
                       tBTA_OOB_DATA oob_data, tBTA_AUTH_REQ auth_req)
 {
-    UNUSED(bd_addr);
-    UNUSED(io_cap);
-    UNUSED(oob_data);
-    UNUSED(auth_req);
 }
 
 /*******************************************************************************
@@ -120,8 +105,6 @@ void bta_dm_co_io_rsp(BD_ADDR bd_addr, tBTA_IO_CAP io_cap,
 *******************************************************************************/
 void  bta_dm_co_lk_upgrade(BD_ADDR bd_addr, BOOLEAN *p_upgrade )
 {
-    UNUSED(bd_addr);
-    UNUSED(p_upgrade);
 }
 
 #if (BTM_OOB_INCLUDED == TRUE)
@@ -345,7 +328,6 @@ void bta_dm_co_le_io_key_req(BD_ADDR bd_addr, UINT8 *p_max_key_size,
                              tBTA_LE_KEY_TYPE *p_init_key,
                              tBTA_LE_KEY_TYPE  *p_resp_key )
 {
-    UNUSED(bd_addr);
     BTIF_TRACE_ERROR0("##################################");
     BTIF_TRACE_ERROR0("bta_dm_co_le_io_key_req: only setting max size to 16");
     BTIF_TRACE_ERROR0("##################################");
@@ -370,10 +352,9 @@ void bta_dm_co_le_io_key_req(BD_ADDR bd_addr, UINT8 *p_max_key_size,
 void bta_dm_co_ble_load_local_keys(tBTA_DM_BLE_LOCAL_KEY_MASK *p_key_mask, BT_OCTET16 er,
                                    tBTA_BLE_LOCAL_ID_KEYS *p_id_keys)
 {
-    BTIF_TRACE_DEBUG0("##################################");
-    BTIF_TRACE_DEBUG0("bta_dm_co_ble_load_local_keys:  Load local keys if any are persisted");
-    BTIF_TRACE_DEBUG0("##################################");
-    btif_dm_get_ble_local_keys( p_key_mask, er, p_id_keys);
+    BTIF_TRACE_ERROR0("##################################");
+    BTIF_TRACE_ERROR0("bta_dm_co_ble_load_local_keys: TBD Load local keys if any are persisted");
+    BTIF_TRACE_ERROR0("##################################");
 }
 
 /*******************************************************************************
@@ -401,16 +382,19 @@ void bta_dm_co_ble_io_req(BD_ADDR bd_addr,  tBTA_IO_CAP *p_io_cap,
                           tBTA_LE_KEY_TYPE *p_init_key,
                           tBTA_LE_KEY_TYPE  *p_resp_key )
 {
-    UNUSED(bd_addr);
     /* if OOB is not supported, this call-out function does not need to do anything
      * otherwise, look for the OOB data associated with the address and set *p_oob_data accordingly
      * If the answer can not be obtained right away,
      * set *p_oob_data to BTA_OOB_UNKNOWN and call bta_dm_ci_io_req() when the answer is available */
 
-    *p_oob_data = FALSE;
-
     /* *p_auth_req by default is FALSE for devices with NoInputNoOutput; TRUE for other devices. */
+    BTIF_TRACE_ERROR2("bta_dm_co_ble_io_req. p_auth_req=%d ble_authereq=%d", *p_auth_req, bte_appl_cfg.ble_auth_req);
+    BTIF_TRACE_ERROR2("bta_dm_co_ble_io_req. p_io_cap=%d ble_io_cap=%d", *p_io_cap, bte_appl_cfg.ble_io_cap);
+    BTIF_TRACE_ERROR2("bta_dm_co_ble_io_req. p_init_key=%d ble_init_key=%d", *p_init_key, bte_appl_cfg.ble_init_key);
+    BTIF_TRACE_ERROR2("bta_dm_co_ble_io_req. p_resp_key=%d ble_resp_key=%d", *p_resp_key, bte_appl_cfg.ble_resp_key );
+    BTIF_TRACE_ERROR2("bta_dm_co_ble_io_req. p_max_key_size=%d ble_max_key_size=%d", *p_max_key_size, bte_appl_cfg.ble_max_key_size );
 
+    *p_oob_data = FALSE;
     if (bte_appl_cfg.ble_auth_req)
         *p_auth_req = bte_appl_cfg.ble_auth_req | (bte_appl_cfg.ble_auth_req & 0x04) | ((*p_auth_req) & 0x04);
 
@@ -423,8 +407,9 @@ void bta_dm_co_ble_io_req(BD_ADDR bd_addr,  tBTA_IO_CAP *p_io_cap,
     if (bte_appl_cfg.ble_resp_key<=7)
         *p_resp_key = bte_appl_cfg.ble_resp_key;
 
-    if (bte_appl_cfg.ble_max_key_size > 7 && bte_appl_cfg.ble_max_key_size <= 16)
+    if (bte_appl_cfg.ble_max_key_size<=16)
         *p_max_key_size = bte_appl_cfg.ble_max_key_size;
+
 }
 
 

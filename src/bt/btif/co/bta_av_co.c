@@ -35,7 +35,6 @@
 #include "btif_media.h"
 #include "sbc_encoder.h"
 #include "btif_av_co.h"
-#include "btif_util.h"
 
 
 /*****************************************************************************
@@ -517,8 +516,6 @@ BTA_API void bta_av_co_audio_setconfig(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_ty
     UINT8 status = A2D_SUCCESS;
     UINT8 category = A2D_SUCCESS;
     BOOLEAN recfg_needed = FALSE;
-    UNUSED(seid);
-    UNUSED(addr);
 
     FUNC_TRACE();
 
@@ -648,7 +645,6 @@ BTA_API void bta_av_co_audio_open(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type, U
         UINT16 mtu)
 {
     tBTA_AV_CO_PEER *p_peer;
-    UNUSED(p_codec_info);
 
     FUNC_TRACE();
 
@@ -682,8 +678,6 @@ BTA_API void bta_av_co_audio_close(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type, 
 
 {
     tBTA_AV_CO_PEER *p_peer;
-    UNUSED(codec_type);
-    UNUSED(mtu);
 
     FUNC_TRACE();
 
@@ -719,11 +713,6 @@ BTA_API void bta_av_co_audio_close(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type, 
 BTA_API void bta_av_co_audio_start(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type,
         UINT8 *p_codec_info, BOOLEAN *p_no_rtp_hdr)
 {
-    UNUSED(hndl);
-    UNUSED(codec_type);
-    UNUSED(p_codec_info);
-    UNUSED(p_no_rtp_hdr);
-
     FUNC_TRACE();
 
     APPL_TRACE_DEBUG0("bta_av_co_audio_start");
@@ -743,9 +732,6 @@ BTA_API void bta_av_co_audio_start(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type,
  *******************************************************************************/
 BTA_API extern void bta_av_co_audio_stop(tBTA_AV_HNDL hndl, tBTA_AV_CODEC codec_type)
 {
-    UNUSED(hndl);
-    UNUSED(codec_type);
-
     FUNC_TRACE();
 
     APPL_TRACE_DEBUG0("bta_av_co_audio_stop");
@@ -765,8 +751,6 @@ BTA_API void * bta_av_co_audio_src_data_path(tBTA_AV_CODEC codec_type, UINT32 *p
         UINT32 *p_timestamp)
 {
     BT_HDR *p_buf;
-    UNUSED(p_len);
-
     FUNC_TRACE();
 
     p_buf = btif_media_aa_readbuf();

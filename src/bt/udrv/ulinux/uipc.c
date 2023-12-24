@@ -50,7 +50,6 @@
 
 #include <cutils/sockets.h>
 #include "audio_a2dp_hw.h"
-#include "bt_utils.h"
 
 /*****************************************************************************
 **  Constants & Macros
@@ -66,8 +65,6 @@
 
 #define UIPC_LOCK() /*BTIF_TRACE_EVENT1(" %s lock", __FUNCTION__);*/ pthread_mutex_lock(&uipc_main.mutex);
 #define UIPC_UNLOCK() /*BTIF_TRACE_EVENT1("%s unlock", __FUNCTION__);*/ pthread_mutex_unlock(&uipc_main.mutex);
-
-#define SAFE_FD_ISSET(fd, set) (((fd) == -1) ? FALSE : FD_ISSET((fd), (set)))
 
 /*****************************************************************************
 **  Local type definitions
@@ -195,7 +192,6 @@ static inline int create_server_socket(const char* name)
     if(socket_local_server_bind(s, name, ANDROID_SOCKET_NAMESPACE_ABSTRACT) < 0)
     {
         BTIF_TRACE_EVENT1("socket failed to create (%s)", strerror(errno));
-        close(s);
         return -1;
     }
 
@@ -215,7 +211,7 @@ static int accept_server_socket(int sfd)
     struct sockaddr_un remote;
     struct pollfd pfd;
     int fd;
-    socklen_t len = sizeof(struct sockaddr_un);
+    int len = sizeof(struct sockaddr_un);
 
     BTIF_TRACE_EVENT1("accept fd %d", sfd);
 
@@ -322,7 +318,7 @@ static int uipc_check_fd_locked(tUIPC_CH_ID ch_id)
 
     //BTIF_TRACE_EVENT2("CHECK SRVFD %d (ch %d)", uipc_main.ch[ch_id].srvfd, ch_id);
 
-    if (SAFE_FD_ISSET(uipc_main.ch[ch_id].srvfd, &uipc_main.read_set))
+    if (FD_ISSET(uipc_main.ch[ch_id].srvfd, &uipc_main.read_set))
     {
         BTIF_TRACE_EVENT1("INCOMING CONNECTION ON CH %d", ch_id);
 
@@ -351,7 +347,7 @@ static int uipc_check_fd_locked(tUIPC_CH_ID ch_id)
 
     //BTIF_TRACE_EVENT2("CHECK FD %d (ch %d)", uipc_main.ch[ch_id].fd, ch_id);
 
-    if (SAFE_FD_ISSET(uipc_main.ch[ch_id].fd, &uipc_main.read_set))
+    if (FD_ISSET(uipc_main.ch[ch_id].fd, &uipc_main.read_set))
     {
         //BTIF_TRACE_EVENT1("INCOMING DATA ON CH %d", ch_id);
 
@@ -363,7 +359,7 @@ static int uipc_check_fd_locked(tUIPC_CH_ID ch_id)
 
 static void uipc_check_interrupt_locked(void)
 {
-    if (SAFE_FD_ISSET(uipc_main.signal_fds[0], &uipc_main.read_set))
+    if (FD_ISSET(uipc_main.signal_fds[0], &uipc_main.read_set))
     {
         char sig_recv = 0;
         //BTIF_TRACE_EVENT0("UIPC INTERRUPT");
@@ -431,7 +427,7 @@ static void uipc_flush_ch_locked(tUIPC_CH_ID ch_id)
         ret = poll(&pfd, 1, 1);
         BTIF_TRACE_EVENT3("uipc_flush_ch_locked polling : fd %d, rxev %x, ret %d", pfd.fd, pfd.revents, ret);
 
-        if (pfd.revents & (POLLERR|POLLHUP))
+        if (pfd.revents | (POLLERR|POLLHUP))
             return;
 
         if (ret <= 0)
@@ -519,7 +515,6 @@ static void uipc_read_task(void *arg)
 {
     int ch_id;
     int result;
-    UNUSED(arg);
 
     prctl(PR_SET_NAME, (unsigned long)"uipc-main", 0, 0, 0);
 
@@ -610,8 +605,6 @@ void uipc_stop_main_server_thread(void)
 
 UDRV_API void UIPC_Init(void *p_data)
 {
-    UNUSED(p_data);
-
     BTIF_TRACE_DEBUG0("UIPC_Init");
 
     memset(&uipc_main, 0, sizeof(tUIPC_MAIN));
@@ -706,8 +699,6 @@ UDRV_API void UIPC_Close(tUIPC_CH_ID ch_id)
  *******************************************************************************/
 UDRV_API BOOLEAN UIPC_SendBuf(tUIPC_CH_ID ch_id, BT_HDR *p_msg)
 {
-    UNUSED(p_msg);
-
     BTIF_TRACE_DEBUG1("UIPC_SendBuf : ch_id %d NOT IMPLEMENTED", ch_id);
 
     UIPC_LOCK();
@@ -732,7 +723,6 @@ UDRV_API BOOLEAN UIPC_Send(tUIPC_CH_ID ch_id, UINT16 msg_evt, UINT8 *p_buf,
         UINT16 msglen)
 {
     int n;
-    UNUSED(msg_evt);
 
     BTIF_TRACE_DEBUG2("UIPC_Send : ch_id:%d %d bytes", ch_id, msglen);
 
@@ -759,8 +749,6 @@ UDRV_API BOOLEAN UIPC_Send(tUIPC_CH_ID ch_id, UINT16 msg_evt, UINT8 *p_buf,
  *******************************************************************************/
 UDRV_API void UIPC_ReadBuf(tUIPC_CH_ID ch_id, BT_HDR *p_msg)
 {
-    UNUSED(p_msg);
-
     BTIF_TRACE_DEBUG1("UIPC_ReadBuf : ch_id:%d NOT IMPLEMENTED", ch_id);
 
     UIPC_LOCK();
@@ -783,7 +771,6 @@ UDRV_API UINT32 UIPC_Read(tUIPC_CH_ID ch_id, UINT16 *p_msg_evt, UINT8 *p_buf, UI
     int n_read = 0;
     int fd = uipc_main.ch[ch_id].fd;
     struct pollfd pfd;
-    UNUSED(p_msg_evt);
 
     if (ch_id >= UIPC_CH_NUM)
     {
@@ -810,7 +797,7 @@ UDRV_API UINT32 UIPC_Read(tUIPC_CH_ID ch_id, UINT16 *p_msg_evt, UINT8 *p_buf, UI
         if (poll(&pfd, 1, uipc_main.ch[ch_id].read_poll_tmo_ms) == 0)
         {
             BTIF_TRACE_EVENT1("poll timeout (%d ms)", uipc_main.ch[ch_id].read_poll_tmo_ms);
-            break;
+            return 0;
         }
 
         //BTIF_TRACE_EVENT1("poll revents %x", pfd.revents);
@@ -824,7 +811,7 @@ UDRV_API UINT32 UIPC_Read(tUIPC_CH_ID ch_id, UINT16 *p_msg_evt, UINT8 *p_buf, UI
             return 0;
         }
 
-        n = recv(fd, p_buf+n_read, len-n_read, 0);
+        n = recv(fd, p_buf, len, 0);
 
         //BTIF_TRACE_EVENT1("read %d bytes", n);
 
@@ -891,7 +878,7 @@ UDRV_API extern BOOLEAN UIPC_Ioctl(tUIPC_CH_ID ch_id, UINT32 request, void *para
             break;
 
         case UIPC_SET_READ_POLL_TMO:
-            uipc_main.ch[ch_id].read_poll_tmo_ms = (intptr_t)param;
+            uipc_main.ch[ch_id].read_poll_tmo_ms = (int)param;
             BTIF_TRACE_EVENT2("UIPC_SET_READ_POLL_TMO : CH %d, TMO %d ms", ch_id, uipc_main.ch[ch_id].read_poll_tmo_ms );
             break;
 

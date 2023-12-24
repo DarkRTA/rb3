@@ -75,7 +75,6 @@ BTA_API extern BOOLEAN bta_hl_co_advrtise_source_sdp(UINT8 app_id);
 **
 ** Parameters      app_id - HDP application ID
 **                 mdep_idx - the mdep index
-**                  mdep_counter - mdep_counter
 **                 mdep_id  - the assigned MDEP ID for the specified medp_idx
 **                 p_mdl_cfg (output) - pointer to the MDEP configuration
 **
@@ -84,7 +83,6 @@ BTA_API extern BOOLEAN bta_hl_co_advrtise_source_sdp(UINT8 app_id);
 *******************************************************************************/
 BTA_API extern BOOLEAN bta_hl_co_get_mdep_config(UINT8 app_id,
                                                  UINT8 mdep_idx,
-                                                 UINT8 mdep_counter,
                                                  tBTA_HL_MDEP_ID mdep_id,
                                                  tBTA_HL_MDEP_CFG *p_mdep_cfg);
 
