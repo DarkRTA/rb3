@@ -441,7 +441,8 @@ config.libs = [
             Object(NonMatching, "bt/stack/l2cap/l2c_csm.c"),
             Object(NonMatching, "bt/stack/l2cap/l2c_api.c"),
             Object(NonMatching, "bt/stack/hid/hidh_conn.c"),
-            Object(NonMatching, "bt/stack/hid/hidh_api.c")
+            Object(NonMatching, "bt/stack/hid/hidh_api.c"),
+            Object(NonMatching, "bt/stack/hcic/hcicmds.c")
         ]
     },
     # anything below this line does not need to be decompiled
