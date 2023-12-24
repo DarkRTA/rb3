@@ -135,6 +135,12 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
     "-i src/PowerPC_EABI_Support/MetroTRK",
     # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
+    "-i src/bt/gki/common",
+    "-i src/bt/bta/include",
+    "-i src/bt/utils/include",
+    "-i src/bt/stack/btm",
+    "-i src/bt/include",
+    "-i src/bt/stack/include",
     "-i src/libogg/include",
     "-i src/speex/include",
     "-i src/speex",
@@ -416,6 +422,15 @@ config.libs = [
             Object(Matching, "vorbis/smallft.c"),
             Object(NonMatching, "vorbis/window.c")
         ],
+    },
+    {
+        "lib": "l2cap",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "bt/stack/l2cap/l2c_utils.c")
+        ]
     },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though
