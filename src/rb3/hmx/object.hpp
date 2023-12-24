@@ -41,6 +41,8 @@ namespace Hmx {
         void SetProperty(DataArray *, const DataNode &);
         int PropertySize(DataArray *);
         const char *Name() const;
+        DataNode OnGetArray(const DataArray*);
+        void InsertProperty(DataArray*, const DataNode&);
     };
 }
 
