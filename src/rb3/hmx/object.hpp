@@ -45,6 +45,7 @@ namespace Hmx {
         const char *Name() const;
         DataNode OnGetArray(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
+        void RemoveProperty(DataArray*);
         void AddRef(ObjRef*);
         void Release(ObjRef*);
         DataNode HandleProperty(DataArray*, DataArray*, bool);

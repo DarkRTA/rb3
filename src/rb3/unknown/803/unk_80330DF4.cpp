@@ -78,3 +78,18 @@ DataNode Hmx::Object::HandleProperty(DataArray* a1, DataArray* a2, bool b){
     } 
     return DataNode(0);
 }
+
+void Hmx::Object::RemoveProperty(DataArray* da){
+    static DataNode n;
+    if(!SyncProperty(n, da, 0, (PropOp)8)){
+        da->GetNodeCount();
+        props.RemoveArrayValue(da->GetSymAtIndex(0), da->GetIntAtIndex(1), arr, this);
+    }
+}
+
+void Hmx::Object::InsertProperty(DataArray* da, const DataNode& dn){
+    if(!SyncProperty((DataNode&)dn, da, 0, (PropOp)4)){
+        da->GetNodeCount();
+        props.InsertArrayValue(da->GetSymAtIndex(0), da->GetIntAtIndex(1), dn, arr, this);
+    }
+}
