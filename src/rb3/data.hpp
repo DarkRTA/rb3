@@ -172,6 +172,10 @@ public:
 class DataArrayPtr {
 public:
     DataArray *arr;
+
+    DataArrayPtr(const DataNode&);
+    ~DataArrayPtr();
+    DataNode *GetNodeAtIndex(int) const; // fn_80134490
 };
 
 #endif

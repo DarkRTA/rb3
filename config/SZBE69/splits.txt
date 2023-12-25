@@ -249,6 +249,9 @@ rb3/unknown/803/unk_8032443C.cpp:
 rb3/unknown/803/unk_80330DF4.cpp:
 	.text       start:0x80330DF4 end:0x80338284
 
+rb3/unknown/803/unk_8033C8F0.cpp:
+	.text       start:0x8033C8F0 end:0x80340E40
+
 rb3/bink.cpp:
 	.text       start:0x80341E10 end:0x80342ACC
 
