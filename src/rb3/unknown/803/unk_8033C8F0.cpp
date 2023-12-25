@@ -76,3 +76,28 @@ void TypeProps::ClearAll(ObjRef* ref){
         data = 0;
     }
 }
+
+int TypeProps::Size() const {
+    if(data != nullptr) return data->GetNodeCount() / 2;
+    else return 0;
+}
+
+void TypeProps::Replace(Hmx::Object* obj1, Hmx::Object* obj2, ObjRef* ref){
+    if(data != nullptr){
+        for(int cnt = data->GetNodeCount() - 1; cnt > 0; cnt -= 2){
+            DataNode* node = data->GetNodeAtIndex(cnt);
+            if(node->GetType() == kDataObject){
+                ReplaceObject(*node, obj1, obj2, ref);
+            }
+            else if(node->GetType() == kDataArray){
+                DataArray* innerArr = node->value.dataArray;
+                for(int cnt2 = innerArr->GetNodeCount() - 1; cnt2 >= 0; cnt2--){
+                    DataNode* innerNode = innerArr->GetNodeAtIndex(cnt2);
+                    if(innerNode->GetType() == kDataObject){
+                        ReplaceObject(*innerNode, obj1, obj2, ref);
+                    }
+                }
+            }
+        }
+    }
+}

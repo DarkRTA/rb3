@@ -29,6 +29,9 @@ public:
     DataArray* GetArray(Symbol, DataArray*, ObjRef*);
     void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
     void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
+    void Replace(Hmx::Object*, Hmx::Object*, ObjRef*);
+    int Size() const;
+    void Assign(const TypeProps&, ObjRef*);
 };
 
 #endif
