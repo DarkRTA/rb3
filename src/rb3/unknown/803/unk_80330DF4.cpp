@@ -61,7 +61,20 @@ extern char* PathName(const Hmx::Object*);
 DataNode* Hmx::Object::Property(DataArray* da, bool b){
     static DataNode n;
     if(SyncProperty(n, da, 0, (PropOp)1)) return &n;
-    else {
-        return nullptr;
+    Symbol asdf = da->GetSymAtIndex(0);
+    DataNode* kv = props.KeyValue(asdf, false);
+    return nullptr;
+}
+
+DataNode Hmx::Object::HandleProperty(DataArray* a1, DataArray* a2, bool b){
+    static DataNode n(a2, kDataArray);
+    if(SyncProperty(n, a1, 0, (PropOp)0x20)){
+        return DataNode(n);
     }
+    if(b){
+        if(a1 != nullptr) a1->GetSymAtIndex(0);
+        else Symbol("<none>");
+        PathName(this);
+    } 
+    return DataNode(0);
 }

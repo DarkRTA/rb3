@@ -47,6 +47,7 @@ namespace Hmx {
         void InsertProperty(DataArray*, const DataNode&);
         void AddRef(ObjRef*);
         void Release(ObjRef*);
+        DataNode HandleProperty(DataArray*, DataArray*, bool);
     };
 }
 
