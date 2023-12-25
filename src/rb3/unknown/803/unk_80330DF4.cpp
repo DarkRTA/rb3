@@ -93,3 +93,20 @@ void Hmx::Object::InsertProperty(DataArray* da, const DataNode& dn){
         props.InsertArrayValue(da->GetSymAtIndex(0), da->GetIntAtIndex(1), dn, arr, this);
     }
 }
+
+int Hmx::Object::PropertySize(DataArray* da){
+    static DataNode n;
+    if(SyncProperty(n, da, 0, (PropOp)0x10)){
+        return n.Int(nullptr);
+    }
+    else {
+        da->GetNodeCount();
+        Symbol asdf = da->GetSymAtIndex(0);
+        DataNode* kv = props.KeyValue(asdf, false);
+        if(kv != &n){
+            if(arr != nullptr){
+                arr->FindArray(asdf, true);
+            }
+        }
+    }
+}

@@ -145,3 +145,11 @@ void TypeProps::AddRefObjects(ObjRef* ref){
         }
     }
 }
+
+void TypeProps::Assign(const TypeProps& tp, ObjRef* ref){
+    ClearAll(ref);
+    if(tp.data != nullptr){
+        data = tp.data->Clone(true, false, 0);
+    }
+    AddRefObjects(ref);
+}
