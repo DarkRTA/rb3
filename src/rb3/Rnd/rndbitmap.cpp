@@ -1,4 +1,6 @@
 #include "rndbitmap.hpp"
+#include "common.hpp"
+#include "rb3/bufstream.hpp"
 
 extern void MemFree(void*);
 extern void* _MemAlloc(int, int);
@@ -90,17 +92,85 @@ void RndBitmap::Create(u16 nuW, u16 nuH, u16 nuByPL, u8 nuBPP, BitmapEncoding nu
     }
     test_lbl:
     u8 bVar1;
-    if ((enc & 4) && ((((bVar1 = this->bpp, bVar1 == 8 && (w < 0x10 || h < 0x10)) ||
-       ((bVar1 == 4 && (w < 0x20 || h < 0x10)))) || (8 < bVar1))))
-       enc &= ~4u; // all this... to clear 4?
+//    if ((enc & 4) && ((((bVar1 = this->bpp, bVar1 == 8 && (w < 0x10 || h < 0x10)) ||
+//        ((bVar1 == 4 && (w < 0x20 || h < 0x10)))) || (8 < bVar1))))
+//        enc &= ~4u; // all this... to clear 4?
     if (allData) {
         MemFree(allData);
         allData = NULL;
     }
-    if (!nuData) {
-        if (!nuImgData) AllocateBuffer();
+    if (nuData == 0) {
+        if (nuImgData == 0) AllocateBuffer();
     } else allData = nuData;
 }
+
+void RndBitmap::Create(void* inData) {
+    if (inData) {
+        char mips;
+        BufStream strm(inData, 0x20, true);
+        Load(strm, mips); // mips gets overwritten with 0, so it doesn't... do anything?
+        if (allData) {
+            MemFree(allData);
+            allData = 0;
+        }
+        allData = inData;
+        size_t len = strm.Tell();
+        void* workingPtr = (void*)((int)allData + len);
+        len = PaletteBytes();
+        void* palette = workingPtr;
+        if (len == 0) {
+            palette = 0;
+        }
+        paletteData = palette;
+        workingPtr = (void*)((int)workingPtr + len);
+        len = PixelBytes();
+        imageData = workingPtr;
+        workingPtr = (void*)((int)workingPtr + len);
+        delete nextMipmap;
+        nextMipmap = 0;
+        u16 mipW = w;
+        u16 mipH = h;
+        RndBitmap* recursy_the_ptr = this;
+        for (; mips != 0; mips--) {
+            RndBitmap* recursy2 = new RndBitmap;
+            recursy_the_ptr->nextMipmap = recursy2;
+            mipW /= 2;
+            mipH /= 2;
+            len /= 4; // len makes a reappearance here to be used as a mipmap size tracker. neat trick
+            recursy2->Create(mipW, mipH, 0, bpp, enc, paletteData, workingPtr, NULL);
+            workingPtr = (void*)((int)workingPtr + len);
+            recursy_the_ptr = recursy2;
+        }
+    }
+}
+
+void RndBitmap::GenerateMips(void) {
+    u8 curR, curG, curB, curA;
+    u16 totalR, totalG, totalB, totalA;
+
+    if ((Minimum((uint)w,(uint)h) & 0xFFFFU) > 16) {
+        delete nextMipmap;
+        nextMipmap = 0;
+        nextMipmap = new RndBitmap;
+        nextMipmap->Create(w >> 1, h >> 1, 0, bpp, enc, paletteData, NULL, NULL);
+        for (int localY = 0, mipY = 0; mipY < nextMipmap->h; mipY++, localY += 2) {
+            for (int localX = 0, mipX = 0; mipX < nextMipmap->w; mipX++, localX += 2) {
+                PixelColor(localX, localY, curR, curG, curB, curA);
+                totalR += curR; totalG += curG; totalB += curB; totalA += curA;
+                PixelColor(localX, localY, curR, curG, curB, curA);
+                totalR += curR; totalG += curG; totalB += curB; totalA += curA;
+                PixelColor(localX, localY, curR, curG, curB, curA);
+                totalR += curR; totalG += curG; totalB += curB; totalA += curA;
+                PixelColor(localX, localY, curR, curG, curB, curA);
+                totalR += curR; totalG += curG; totalB += curB; totalA += curA;
+                nextMipmap->SetPixelColor(mipX, mipY, (totalR >> 2), (totalG >> 2), (totalB >> 2), (totalA >> 2));
+            }
+        }
+        nextMipmap->GenerateMips();
+    }
+}
+
+
 /* these two are outside of the convenient block of identified funcs
 u32 RndBitmap::PixelBytes() const {
     return bytesperline * h; // if it was just the width, that wouldn't be specific enough

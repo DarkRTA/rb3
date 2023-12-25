@@ -3,7 +3,7 @@
 #include "binstream.hpp"
 #include "string.hpp"
 
-class BufStream : BinStream {
+class BufStream : public BinStream {
 public:
     BufStream(void *, int, bool);
     virtual ~BufStream(); // fn_80343270

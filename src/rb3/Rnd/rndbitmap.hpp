@@ -2,6 +2,7 @@
 #define RND_RNDBITMAP_HPP
 
 #include "types.h"
+#include "rb3/binstream.hpp"
 
 typedef enum {
     /*
@@ -23,16 +24,20 @@ class RndBitmap {
 public:
     RndBitmap();
     ~RndBitmap();
+    void Load(BinStream&, char&);
     void Create(const RndBitmap&, u8, BitmapEncoding, void*);
     void Create(u16, u16, u16, u8, BitmapEncoding, void*, void*, void*);
+    void Create(void*);
     void AllocateBuffer();
     void Reset();
     void Blt(const RndBitmap&, int, int, int, int, int, int);
+    void GenerateMips();
 
     u32 PaletteBytes() const;
     u32 NumPaletteColors() const;
     u32 PixelBytes() const;
     u32 PaletteOffset(int) const; // ????
+    u32 PixelOffset(int, int, bool&) const;
 
     u16 Width() const;
     u16 Height() const;
@@ -41,6 +46,10 @@ public:
 
     void PaletteColor(int, u8&, u8&, u8&, u8&) const;
     void SetPaletteColor(int, u8, u8, u8, u8);
+    u8 PixelIndex(int, int) const;
+    u8 SetPixelIndex(int, int, u8);
+    void PixelColor(int, int, u8&, u8&, u8&, u8&) const;
+    void SetPixelColor(int, int, u8, u8, u8, u8);
 
     u16 w; // 0x0
     u16 h; // 0x2
