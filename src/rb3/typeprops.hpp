@@ -4,6 +4,7 @@
 #include "types.h"
 #include "data.hpp"
 #include "symbol.hpp"
+#include "hmx/object.hpp"
 
 // forward declarations
 class DataNode;

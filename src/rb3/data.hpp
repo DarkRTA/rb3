@@ -175,7 +175,7 @@ public:
 
     DataArrayPtr(const DataNode&);
     ~DataArrayPtr();
-    DataNode *GetNodeAtIndex(int) const; // fn_80134490
+    DataNode *GetNodeAtIndex(int) const; // fn_80134490 
 };
 
 #endif

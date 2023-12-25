@@ -1,13 +1,15 @@
 #ifndef HMX_OBJECT_HPP
 #define HMX_OBJECT_HPP
-#include "rb3/objref.hpp"
-#include "rb3/data.hpp"
-#include "rb3/typeprops.hpp"
+#include "objref.hpp"
+#include "data.hpp"
+#include "typeprops.hpp"
 
 // forward declarations
 class DataArray;
 class DataNode;
 class TypeProps;
+
+enum PropOp { i, d, k, l, m, a, o };
 
 namespace Hmx {
     class Object : public ObjRef {
@@ -15,7 +17,7 @@ namespace Hmx {
         TypeProps props;
         DataArray* arr;
         const char *name;
-        int unk10;
+        int unk10; // appears to be an ObjectDir
         int unk14; // this is an std::vector<const char*>
 
         Object(); // fn_8033560c
@@ -26,7 +28,7 @@ namespace Hmx {
         virtual void ClassName(); // fn_800103C8
         virtual void SetType(); // fn_800102A0
         virtual void Handle(); // fn_80336C94
-        virtual bool SyncProperty(); // fn_80337B7C
+        virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
         virtual void Save();
         virtual void Copy();
         virtual void Load();
@@ -42,6 +44,7 @@ namespace Hmx {
         virtual void FindPathName(); // fn_80336A84
 
         DataNode *Property(DataArray *, bool);
+        DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
         int PropertySize(DataArray *);
         const char *Name() const;
