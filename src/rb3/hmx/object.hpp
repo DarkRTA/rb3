@@ -4,11 +4,6 @@
 #include "data.hpp"
 #include "typeprops.hpp"
 
-// forward declarations
-class DataArray;
-class DataNode;
-class TypeProps;
-
 enum PropOp { i, d, k, l, m, a, o };
 
 namespace Hmx {
@@ -37,7 +32,7 @@ namespace Hmx {
         virtual void V_Unk14(); // links to fn_8076F540, which returns void
         virtual void V_Unk15(); // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);
-        virtual void SetName(); // fn_80335904
+        virtual void SetName(const char*, int); // fn_80335904, that second param should be an ObjectDir* instead of int
         virtual void DataDir(); // fn_803351D0
         virtual void PreLoad(); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void

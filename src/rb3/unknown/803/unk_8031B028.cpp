@@ -12,6 +12,7 @@
 #include "mergefilter.hpp"
 #include "datamergefilter.hpp"
 #include "hmx/object.hpp"
+#include "datafuncobj.hpp"
 
 extern void DataRegisterFunc(Symbol, DataFunc *);
 extern Debug TheDebug;
@@ -55,6 +56,13 @@ DataNode DataSprint(DataArray *da) {
 
 // fn_8031B504
 // extern DataNode DataFuncObj::New(DataArray*);
+
+// fn_8031B5AC
+DataFuncObj::DataFuncObj(DataArray* da){
+    arr = da;
+    da->IncRefCount();
+    // SetName(da->GetStrAtIndex(1), sMainDir)
+}
 
 // fn_8031DC40
 DataNode DataGetElem(DataArray *da) {
@@ -585,8 +593,14 @@ DataNode DataDo(DataArray *da) {
 
 // fn_8031D8EC
 extern DataNode DataNew(DataArray *);
+
 // fn_8031D890
-extern DataNode DataDelete(DataArray *);
+DataNode DataDelete(DataArray* da){
+    Hmx::Object* obj = da->GetObjAtIndex(1);
+    delete obj;
+    return DataNode(0);
+}
+
 // fn_8031DD0C
 extern DataNode DataObject(DataArray *);
 // fn_8031DE08

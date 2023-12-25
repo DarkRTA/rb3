@@ -2,16 +2,13 @@
 #define RB3_TYPEPROPS_HPP
 #include "binstream.hpp"
 #include "types.h"
-#include "data.hpp"
 #include "symbol.hpp"
 #include "hmx/object.hpp"
 
 // forward declarations
 class DataNode;
-namespace Hmx {
-    class Object;
-}
 class DataArray;
+class Hmx::Object;
 
 class TypeProps {
 public:
