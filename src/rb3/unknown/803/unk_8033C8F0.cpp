@@ -4,7 +4,7 @@
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
     DataNode* kv = KeyValue(s, false);
     DataArray* ret;
-    if(kv != nullptr){
+    if(kv == nullptr){
         DataArray* yuh = da->FindArray(s, true)->GetArrayAtIndex(1)->Clone(true, false, 0);
         {
         const DataNode turnt(yuh, kDataArray);
@@ -58,6 +58,15 @@ void TypeProps::InsertArrayValue(Symbol s, int i, const DataNode& node, DataArra
             obj->AddRef(ref);
         }
     }
+}
+
+void TypeProps::ReplaceObject(DataNode& dn, Hmx::Object* obj1, Hmx::Object* obj2, ObjRef* ref){
+    Hmx::Object* obj_loc = dn.value.objVal;
+    if(obj_loc == obj1){
+        obj_loc->Release(ref);
+        dn = DataNode(obj2);
+        if(obj2 != nullptr) obj2->AddRef(ref);
+    } 
 }
 
 void TypeProps::ClearAll(ObjRef* ref){

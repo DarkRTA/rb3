@@ -28,6 +28,7 @@ public:
     DataNode* KeyValue(Symbol, bool);
     DataArray* GetArray(Symbol, DataArray*, ObjRef*);
     void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
+    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
 };
 
 #endif
