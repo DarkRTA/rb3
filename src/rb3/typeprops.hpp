@@ -22,6 +22,7 @@ public:
 
     void ClearAll(ObjRef*);
     void ReleaseObjects(ObjRef*);
+    void AddRefObjects(ObjRef*);
     void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
     void SetArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
     void RemoveArrayValue(Symbol, int, DataArray*, ObjRef*);

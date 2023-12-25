@@ -101,3 +101,47 @@ void TypeProps::Replace(Hmx::Object* obj1, Hmx::Object* obj2, ObjRef* ref){
         }
     }
 }
+
+void TypeProps::ReleaseObjects(ObjRef* ref){
+    if(data != nullptr){
+        for(int cnt = data->GetNodeCount() - 1; cnt > 0; cnt -= 2){
+            DataNode* node = data->GetNodeAtIndex(cnt);
+            if(node->GetType() == kDataObject){
+                Hmx::Object* obj = node->value.objVal;
+                if(obj != nullptr) obj->Release(ref);
+            }
+            else if(node->GetType() == kDataArray){
+                DataArray* innerArr = node->value.dataArray;
+                for(int cnt2 = innerArr->GetNodeCount() - 1; cnt2 >= 0; cnt2--){
+                    DataNode* innerNode = innerArr->GetNodeAtIndex(cnt2);
+                    if(innerNode->GetType() == kDataObject){
+                        Hmx::Object* obj = innerNode->value.objVal;
+                        if(obj != nullptr) obj->Release(ref);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void TypeProps::AddRefObjects(ObjRef* ref){
+    if(data != nullptr){
+        for(int cnt = data->GetNodeCount() - 1; cnt > 0; cnt -= 2){
+            DataNode* node = data->GetNodeAtIndex(cnt);
+            if(node->GetType() == kDataObject){
+                Hmx::Object* obj = node->value.objVal;
+                if(obj != nullptr) obj->AddRef(ref);
+            }
+            else if(node->GetType() == kDataArray){
+                DataArray* innerArr = node->value.dataArray;
+                for(int cnt2 = innerArr->GetNodeCount() - 1; cnt2 >= 0; cnt2--){
+                    DataNode* innerNode = innerArr->GetNodeAtIndex(cnt2);
+                    if(innerNode->GetType() == kDataObject){
+                        Hmx::Object* obj = innerNode->value.objVal;
+                        if(obj != nullptr) obj->AddRef(ref);
+                    }
+                }
+            }
+        }
+    }
+}
