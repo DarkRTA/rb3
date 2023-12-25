@@ -20,15 +20,27 @@ typedef enum {
 } BitmapEncoding;
 
 class RndBitmap {
+public:
     RndBitmap();
     ~RndBitmap();
-    void Create(const RndBitmap&, int, int, void*);
+    void Create(const RndBitmap&, u8, BitmapEncoding, void*);
     void Create(u16, u16, u16, u8, BitmapEncoding, void*, void*, void*);
     void AllocateBuffer();
     void Reset();
+    void Blt(const RndBitmap&, int, int, int, int, int, int);
 
     u32 PaletteBytes() const;
+    u32 NumPaletteColors() const;
     u32 PixelBytes() const;
+    u32 PaletteOffset(int) const; // ????
+
+    u16 Width() const;
+    u16 Height() const;
+    void* Palette() const; // merged with MemStream::Tell :despair:
+    RndBitmap* nextMip() const;
+
+    void PaletteColor(int, u8&, u8&, u8&, u8&) const;
+    void SetPaletteColor(int, u8, u8, u8, u8);
 
     u16 w; // 0x0
     u16 h; // 0x2
