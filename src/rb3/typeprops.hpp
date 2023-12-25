@@ -20,10 +20,14 @@ public:
     void Save(BinStream &, Hmx::Object *);
     void Load(BinStream &, u16, Hmx::Object *);
 
-    void ClearAll();
-    void ReleaseObjects();
-    void RemoveArrayValue(Symbol, int, DataArray*);
+    void ClearAll(ObjRef*);
+    void ReleaseObjects(ObjRef*);
+    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void RemoveArrayValue(Symbol, int, DataArray*, ObjRef*);
     DataNode* KeyValue(Symbol, bool);
+    DataArray* GetArray(Symbol, DataArray*, ObjRef*);
+    void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
 };
 
 #endif

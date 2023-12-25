@@ -22,7 +22,7 @@ void Hmx::Object::SetTypeDef(DataArray* da){
             arr->DecRefCount();
             arr = 0;
         }
-        props.ClearAll();
+        props.ClearAll(this);
         arr = da;
         if(da != nullptr) da->IncRefCount();
     }
