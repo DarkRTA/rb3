@@ -45,8 +45,10 @@ namespace Hmx {
         TypeProps props;
         DataArray* arr;
         const char *name;
-        int unk10; // appears to be an ObjectDir
+        ObjectDir* dir;
         int unk14; // this is an std::vector<const char*>
+
+        enum CopyType { f, a, r, t, s };
 
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
@@ -57,17 +59,17 @@ namespace Hmx {
         virtual void SetType(Symbol); // fn_800102A0
         virtual DataNode Handle(DataArray*, bool); // fn_80336C94
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
-        virtual void Save();
-        virtual void Copy();
-        virtual void Load();
+        virtual void Save(BinStream&);
+        virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+        virtual void Load(BinStream&);
         virtual void Print(); // links to fn_8076F540, which returns void
         virtual void Export(); // links to fn_8076F540, which returns void
         virtual void V_Unk14(); // links to fn_8076F540, which returns void
         virtual void V_Unk15(); // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);
-        virtual void SetName(const char*, ObjectDir*); // fn_80335904, that second param should be an ObjectDir* instead of int
+        virtual void SetName(const char*, ObjectDir*); // fn_80335904
         virtual void DataDir(); // fn_803351D0
-        virtual void PreLoad(); // fn_800AB8B4
+        virtual void PreLoad(BinStream&); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void
         virtual void FindPathName(); // fn_80336A84
 

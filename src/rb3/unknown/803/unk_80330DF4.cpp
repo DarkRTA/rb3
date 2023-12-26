@@ -33,7 +33,7 @@ extern const char* gNullStr;
 Hmx::Object::Object(){
     arr = 0;
     name = gNullStr;
-    unk10 = 0;
+    dir = 0;
 }
 
 DataNode* Hmx::Object::Property(Symbol s, bool b){
