@@ -1,8 +1,6 @@
 #include "bytegrinder.hpp"
 #include "data.hpp"
 
-extern DataNode *fn_800AB8A8(DataNode *, DataType, DataNodeValue);
-
 DataNode hashTo5Bits(DataArray *da) {
     static int hashMapping[0x100];
 
@@ -23,19 +21,3 @@ DataNode hashTo5Bits(DataArray *da) {
 
     return DataNode(kDataInt, (void*)hashValue);
 }
-
-//   if ((int)(((int)(uVar3 ^ 2) >> 1) - ((uVar3 ^ 2) & uVar3)) < 0) {
-//     uVar2 = DataArray::GetIntAtIndex(this,1);
-//     iVar4 = 0;
-//     iVar5 = 0x100;
-//     do {
-//       *(uint *)((int)&lbl_809900F0 + iVar4) = uVar2 >> 3 & 0x1f;
-//       iVar4 = iVar4 + 4;
-//       uVar2 = uVar2 * 0x19660d + 0x3c6ef35f;
-//       iVar5 = iVar5 + -1;
-//     } while (iVar5 != 0);
-//     fn_800AB8A8(uVar1,6,0);
-//   }
-//   else {
-//     fn_800AB8A8(uVar1,6,(&lbl_809900F0)[uVar2 & 0xff]);
-//   }

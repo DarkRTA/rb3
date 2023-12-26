@@ -46,7 +46,7 @@ namespace Hmx {
         DataArray* arr;
         const char *name;
         ObjectDir* dir;
-        int unk14; // this is an std::vector<const char*>
+        char unk14[8]; // this is an std::vector<const char*>, 8 bytes long (4 + 2 + 2)
 
         enum CopyType { f, a, r, t, s };
 
