@@ -3,6 +3,7 @@
 #include "objref.hpp"
 #include "data.hpp"
 #include "typeprops.hpp"
+// #include "objectdir.hpp"
 
 enum PropOp { i, d, k, l, m, a, o };
 
@@ -20,8 +21,8 @@ namespace Hmx {
         virtual void RefOwner(); // links to fn_8076F540, which returns void
         virtual void Replace(); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
-        virtual void ClassName(); // fn_800103C8
-        virtual void SetType(); // fn_800102A0
+        virtual Symbol ClassName() const; // fn_800103C8
+        virtual void SetType(Symbol); // fn_800102A0
         virtual void Handle(); // fn_80336C94
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
         virtual void Save();
@@ -38,6 +39,8 @@ namespace Hmx {
         virtual void PostLoad(); // links to fn_8076F540, which returns void
         virtual void FindPathName(); // fn_80336A84
 
+        static Symbol StaticClassName();
+
         DataNode *Property(DataArray *, bool);
         DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
@@ -49,6 +52,7 @@ namespace Hmx {
         void AddRef(ObjRef*);
         void Release(ObjRef*);
         DataNode HandleProperty(DataArray*, DataArray*, bool);
+        static Hmx::Object* NewObject(Symbol);
     };
 }
 

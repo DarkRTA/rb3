@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "symbol.hpp"
 #include "message.hpp"
+#include "hmx/object.hpp"
 
 // fn_8000FDA0
 int DataArray::GetNodeCount() const {
@@ -41,4 +42,17 @@ Message::Message(Symbol s, const DataNode &dn) {
 // fn_8000FCA4
 bool Symbol::operator==(const Symbol &sym) {
     return m_string == sym.m_string;
+}
+
+Symbol Hmx::Object::ClassName() const {
+    return StaticClassName();
+}
+
+Symbol Hmx::Object::StaticClassName() {
+    static Symbol name("Object");
+    return name;
+}
+
+const char* Hmx::Object::Name() const {
+    return name;
 }

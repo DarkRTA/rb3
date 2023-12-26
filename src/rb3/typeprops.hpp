@@ -8,7 +8,7 @@
 // forward declarations
 class DataNode;
 class DataArray;
-class Hmx::Object;
+namespace Hmx { class Object; }
 
 class TypeProps {
 public:

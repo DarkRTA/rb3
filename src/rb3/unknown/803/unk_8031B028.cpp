@@ -592,7 +592,15 @@ DataNode DataDo(DataArray *da) {
 }
 
 // fn_8031D8EC
-extern DataNode DataNew(DataArray *);
+DataNode DataNew(DataArray* da){
+    Hmx::Object* obj = Hmx::Object::NewObject(da->GetSymAtIndex(1));
+    if(da->GetNodeCount() > 2){
+        if(da->GetTypeAtIndex(2) == kDataArray){
+            obj->SetTypeDef(da);
+        }
+    }
+    return DataNode(obj);
+}
 
 // fn_8031D890
 DataNode DataDelete(DataArray* da){
