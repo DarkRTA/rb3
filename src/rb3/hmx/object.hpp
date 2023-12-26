@@ -2,10 +2,42 @@
 #define HMX_OBJECT_HPP
 #include "objref.hpp"
 #include "data.hpp"
-#include "typeprops.hpp"
-// #include "objectdir.hpp"
+#include "binstream.hpp"
+#include "types.h"
+#include "symbol.hpp"
+
+// forward declarations
+class DataNode;
+class DataArray;
+class ObjectDir;
+namespace Hmx { class Object; }
 
 enum PropOp { i, d, k, l, m, a, o };
+
+class TypeProps {
+public:
+    DataArray *data;
+
+    TypeProps();
+    ~TypeProps();
+
+    void Save(BinStream &, Hmx::Object *);
+    void Load(BinStream &, u16, Hmx::Object *);
+
+    void ClearAll(ObjRef*);
+    void ReleaseObjects(ObjRef*);
+    void AddRefObjects(ObjRef*);
+    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void RemoveArrayValue(Symbol, int, DataArray*, ObjRef*);
+    DataNode* KeyValue(Symbol, bool);
+    DataArray* GetArray(Symbol, DataArray*, ObjRef*);
+    void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
+    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
+    void Replace(Hmx::Object*, Hmx::Object*, ObjRef*);
+    int Size() const;
+    void Assign(const TypeProps&, ObjRef*);
+};
 
 namespace Hmx {
     class Object : public ObjRef {
@@ -33,7 +65,7 @@ namespace Hmx {
         virtual void V_Unk14(); // links to fn_8076F540, which returns void
         virtual void V_Unk15(); // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);
-        virtual void SetName(const char*, int); // fn_80335904, that second param should be an ObjectDir* instead of int
+        virtual void SetName(const char*, ObjectDir*); // fn_80335904, that second param should be an ObjectDir* instead of int
         virtual void DataDir(); // fn_803351D0
         virtual void PreLoad(); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void
@@ -55,5 +87,10 @@ namespace Hmx {
         static Hmx::Object* NewObject(Symbol);
     };
 }
+
+class ObjectDir : ObjRef, Hmx::Object {
+public:
+    ObjectDir(int);
+};
 
 #endif
