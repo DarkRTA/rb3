@@ -7,13 +7,11 @@ DataNode hashTo5Bits(DataArray *da) {
     static int hashMapping[0x100];
 
     int i = da->GetIntAtIndex(1) & 0xFF;
-    int cnt = da->GetNodeCount();
+    bool hasEnoughElements = da->GetNodeCount() > 2;
 
     int hashValue = hashMapping[i];
-
-    int a = cnt ^ 2;
-    unsigned int b = (a >> 1) - (a & cnt);
-    if (b >> 0x1F != 0) {
+    
+    if (hasEnoughElements) {
         i = da->GetIntAtIndex(1);
         for (int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++) {
             hashMapping[idx] = (i >> 3) & 0x1F;
