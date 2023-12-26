@@ -228,8 +228,10 @@ config.libs = [
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
 
-            Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
+
+            Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),

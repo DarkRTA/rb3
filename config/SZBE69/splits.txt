@@ -348,6 +348,9 @@ rb3/unknown/804/unk_80421240.cpp:
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 
+rb3/Rnd/rndbitmap.cpp:
+	.text       start:0x805CA0FC end:0x805CAC4C
+
 rb3/unknown/805/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D71C0
 
