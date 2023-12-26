@@ -2,6 +2,7 @@
 #include "common.hpp"
 #include "symbol.hpp"
 #include "message.hpp"
+#include "hmx/object.hpp"
 
 // fn_8000FDA0
 int DataArray::GetNodeCount() const {
@@ -15,10 +16,12 @@ Symbol DataArray::GetSymAtIndex(int i) const {
 }
 
 extern char *gNullStr;
+#pragma dont_inline on
 // fn_800103CC
 bool Symbol::IsNull() {
     return m_string == gNullStr;
 }
+#pragma dont_inline reset
 
 extern DataArray *fn_8035CF9C(int, int, int);
 // fn_8000E048
@@ -41,4 +44,38 @@ Message::Message(Symbol s, const DataNode &dn) {
 // fn_8000FCA4
 bool Symbol::operator==(const Symbol &sym) {
     return m_string == sym.m_string;
+}
+
+Symbol Hmx::Object::ClassName() const {
+    return StaticClassName();
+}
+
+Symbol Hmx::Object::StaticClassName() {
+    static Symbol name("Object");
+    return name;
+}
+
+const char* Hmx::Object::Name() const {
+    return name;
+}
+
+extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
+extern char* PathName(const Hmx::Object*);
+
+void Hmx::Object::SetType(Symbol s){
+    static DataArray* types = SystemConfig(StaticClassName(), "types", "objects");
+    if(s.IsNull()){
+        SetTypeDef(nullptr);
+    }
+    else {
+        DataArray* found = types->FindArray(s, false);
+        if(found){
+            SetTypeDef(found);
+        }
+        else {
+            PathName(this);
+            ClassName();
+            SetTypeDef(nullptr);
+        }
+    }
 }

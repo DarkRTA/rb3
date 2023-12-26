@@ -1,69 +1,98 @@
 #ifndef HMX_OBJECT_HPP
 #define HMX_OBJECT_HPP
-#include "rb3/objref.hpp"
-#include "rb3/data.hpp"
-#include "rb3/typeprops.hpp"
+#include "objref.hpp"
+#include "data.hpp"
+#include "binstream.hpp"
+#include "types.h"
+#include "symbol.hpp"
 
 // forward declarations
-class DataArray;
 class DataNode;
+class DataArray;
+class ObjectDir;
+namespace Hmx { class Object; }
+
+enum PropOp { i, d, k, l, m, a, o };
+
+class TypeProps {
+public:
+    DataArray *data;
+
+    TypeProps();
+    ~TypeProps();
+
+    void Save(BinStream &, Hmx::Object *);
+    void Load(BinStream &, u16, Hmx::Object *);
+
+    void ClearAll(ObjRef*);
+    void ReleaseObjects(ObjRef*);
+    void AddRefObjects(ObjRef*);
+    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
+    void RemoveArrayValue(Symbol, int, DataArray*, ObjRef*);
+    DataNode* KeyValue(Symbol, bool);
+    DataArray* GetArray(Symbol, DataArray*, ObjRef*);
+    void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
+    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
+    void Replace(Hmx::Object*, Hmx::Object*, ObjRef*);
+    int Size() const;
+    void Assign(const TypeProps&, ObjRef*);
+};
 
 namespace Hmx {
-    class Object : ObjRef {
+    class Object : public ObjRef {
     public:
         TypeProps props;
+        DataArray* arr;
         const char *name;
+        ObjectDir* dir;
+        int unk14; // this is an std::vector<const char*>
+
+        enum CopyType { f, a, r, t, s };
 
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
         virtual void RefOwner(); // links to fn_8076F540, which returns void
-        virtual void Replace(); // fn_80336C88
+        virtual void Replace(Hmx::Object*, Hmx::Object*); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
-        virtual void ClassName(); // fn_800103C8
-        virtual void SetType(); // fn_800102A0
-        virtual void Handle(); // fn_80336C94
-        virtual bool SyncProperty(); // fn_80337B7C
-        virtual void Save();
-        virtual void Copy();
-        virtual void Load();
+        virtual Symbol ClassName() const; // fn_800103C8
+        virtual void SetType(Symbol); // fn_800102A0
+        virtual DataNode Handle(DataArray*, bool); // fn_80336C94
+        virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
+        virtual void Save(BinStream&);
+        virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+        virtual void Load(BinStream&);
         virtual void Print(); // links to fn_8076F540, which returns void
         virtual void Export(); // links to fn_8076F540, which returns void
         virtual void V_Unk14(); // links to fn_8076F540, which returns void
         virtual void V_Unk15(); // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);
-        virtual void SetName(); // fn_80335904
+        virtual void SetName(const char*, ObjectDir*); // fn_80335904
         virtual void DataDir(); // fn_803351D0
-        virtual void PreLoad(); // fn_800AB8B4
+        virtual void PreLoad(BinStream&); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void
         virtual void FindPathName(); // fn_80336A84
 
+        static Symbol StaticClassName();
+
         DataNode *Property(DataArray *, bool);
+        DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
         int PropertySize(DataArray *);
         const char *Name() const;
+        DataNode OnGetArray(const DataArray*);
+        void InsertProperty(DataArray*, const DataNode&);
+        void RemoveProperty(DataArray*);
+        void AddRef(ObjRef*);
+        void Release(ObjRef*);
+        DataNode HandleProperty(DataArray*, DataArray*, bool);
+        static Hmx::Object* NewObject(Symbol);
     };
 }
 
-#endif
+class ObjectDir : ObjRef, Hmx::Object {
+public:
+    ObjectDir(int);
+};
 
-// 80856128 80 33 56 ec     addr       fn_803356EC
-// 8085612c 80 76 f5 40     addr       fn_8076F540_stub
-// 80856130 80 33 6c 88     addr       fn_80336C88
-// 80856134 80 77 ba a0     addr       fn_8077BAA0
-// 80856138 80 01 03 c8     addr       fn_800103C8
-// 8085613c 80 01 02 a0     addr       fn_800102A0
-// 80856140 80 33 6c 94     addr       fn_80336C94
-// 80856144 80 33 7b 7c     addr       fn_80337B7C
-// 80856148 80 33 66 a0     addr       fn_803366A0
-// 8085614c 80 33 67 88     addr       fn_80336788
-// 80856150 80 33 69 f4     addr       fn_803369F4
-// 80856154 80 76 f5 40     addr       fn_8076F540_stub
-// 80856158 80 76 f5 40     addr       fn_8076F540_stub
-// 8085615c 80 76 f5 40     addr       fn_8076F540_stub
-// 80856160 80 76 f5 40     addr       fn_8076F540_stub
-// 80856164 80 33 5a 2c     addr       fn_80335A2C
-// 80856168 80 33 59 04     addr       fn_80335904
-// 8085616c 80 33 51 d0     addr       fn_803351D0
-// 80856170 80 0a b8 b4     addr       fn_800AB8B4
-// 80856174 80 76 f5 40     addr       fn_8076F540_stub
-// 80856178 80 33 6a 84     addr       fn_80336A84
+#endif

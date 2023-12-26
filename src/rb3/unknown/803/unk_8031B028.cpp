@@ -11,6 +11,8 @@
 #include "random.hpp"
 #include "mergefilter.hpp"
 #include "datamergefilter.hpp"
+#include "hmx/object.hpp"
+#include "datafuncobj.hpp"
 
 extern void DataRegisterFunc(Symbol, DataFunc *);
 extern Debug TheDebug;
@@ -54,6 +56,13 @@ DataNode DataSprint(DataArray *da) {
 
 // fn_8031B504
 // extern DataNode DataFuncObj::New(DataArray*);
+
+// fn_8031B5AC
+DataFuncObj::DataFuncObj(DataArray* da){
+    arr = da;
+    da->IncRefCount();
+    // SetName(da->GetStrAtIndex(1), sMainDir)
+}
 
 // fn_8031DC40
 DataNode DataGetElem(DataArray *da) {
@@ -583,9 +592,23 @@ DataNode DataDo(DataArray *da) {
 }
 
 // fn_8031D8EC
-extern DataNode DataNew(DataArray *);
+DataNode DataNew(DataArray* da){
+    Hmx::Object* obj = Hmx::Object::NewObject(da->GetSymAtIndex(1));
+    if(da->GetNodeCount() > 2){
+        if(da->GetTypeAtIndex(2) == kDataArray){
+            obj->SetTypeDef(da);
+        }
+    }
+    return DataNode(obj);
+}
+
 // fn_8031D890
-extern DataNode DataDelete(DataArray *);
+DataNode DataDelete(DataArray* da){
+    Hmx::Object* obj = da->GetObjAtIndex(1);
+    delete obj;
+    return DataNode(0);
+}
+
 // fn_8031DD0C
 extern DataNode DataObject(DataArray *);
 // fn_8031DE08
@@ -829,14 +852,60 @@ DataNode DataInterp(DataArray *da) {
 }
 
 // fn_8031EBFC
-extern DataNode DataInc(DataArray *);
+DataNode DataInc(DataArray* da){
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        void* arr = da->GetDataNodeValueAtIndex(1).dataArray;
+        DataNode* prop = gDataThis->Property((DataArray*)arr, true);
+        int i = prop->Int(nullptr) + 1;
+        {
+        DataNode inc(i);
+        gDataThis->SetProperty((DataArray*)arr, inc);
+        }
+        return DataNode(i);
+    }
+    else {
+        DataNode* var = da->GetVarAtIndex(1);
+        int i = var->Int(nullptr);
+        DataNode inc(i + 1);
+        return DataNode(*(var->operator=(inc)));
+    }
+}
+
 // fn_8031ECF8
-extern DataNode DataDec(DataArray *);
+DataNode DataDec(DataArray* da){
+    if(da->GetTypeAtIndex(1) == kDataProperty){
+        void* arr = da->GetDataNodeValueAtIndex(1).dataArray;
+        DataNode* prop = gDataThis->Property((DataArray*)arr, true);
+        int i = prop->Int(nullptr) - 1;
+        {
+        DataNode inc(i);
+        gDataThis->SetProperty((DataArray*)arr, inc);
+        }
+        return DataNode(i);
+    }
+    else {
+        DataNode* var = da->GetVarAtIndex(1);
+        int i = var->Int(nullptr);
+        DataNode inc(i - 1);
+        return DataNode(*(var->operator=(inc)));
+    }
+}
+
+
 // fn_8031F1D0
 extern DataNode DataRun(DataArray *);
 
+extern DataArray* DataReadFile(const char*, bool);
 // fn_8031F27C
-extern DataNode OnReadFile(DataArray *);
+DataNode OnReadFile(DataArray* da){
+    DataArray* res = DataReadFile(da->GetStrAtIndex(1), true);
+    if(res == nullptr) return DataNode(0);
+    else {
+        DataNode node(res, kDataArray);
+        res->DecRefCount();
+        return DataNode(node);
+    }
+}
 
 // fn_8031F30C
 extern DataNode OnWriteFile(DataArray *);
@@ -1025,10 +1094,13 @@ DataNode DataSort(DataArray *da) {
     return DataNode(0);
 }
 
-// fn_8031C6C4
-extern DataNode DataVar(DataArray *);
-
 extern DataNode *DataVariable(Symbol);
+
+// fn_8031C6C4
+DataNode DataVar(DataArray *da){
+    return DataNode(DataVariable(da->ForceSymAtIndex(1)));
+}
+
 // fn_8031B904
 DataNode DataSetVar(DataArray *da) {
     DataNode ret = *EvaluateNodeAtIndex(da, 2);

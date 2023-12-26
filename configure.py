@@ -135,11 +135,19 @@ cflags_base = [
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
     "-i src/PowerPC_EABI_Support/MetroTRK",
     # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
+    "-i src/bt/gki/common",
+    "-i src/bt/bta/include",
+    "-i src/bt/utils/include",
+    "-i src/bt/stack/l2cap",
+    "-i src/bt/stack/btm",
+    "-i src/bt/include",
+    "-i src/bt/stack/include",
     "-i src/libogg/include",
     "-i src/speex/include",
     "-i src/speex",
     "-i src/RVL_SDK",
     "-i src/std",
+    "-i src/rb3",
     "-i src",
     "-nodefaults",
     "-proc gekko",
@@ -171,6 +179,12 @@ cflags_zlib = [
     *cflags_base,
     *cflags_rb3,
     "-pool on"
+]
+
+cflags_bt = [
+    *cflags_base,
+    *cflags_rb3,
+    "-str reuse, nopool"
 ]
 
 
@@ -270,6 +284,8 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/803/unk_80322664.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_803242CC.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8032443C.cpp"),
+            Object(NonMatching, "rb3/unknown/803/unk_80330DF4.cpp"),
+            Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C91C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C9F8.cpp"),
@@ -418,6 +434,24 @@ config.libs = [
             Object(Matching, "vorbis/smallft.c"),
             Object(NonMatching, "vorbis/window.c")
         ],
+    },
+    {
+        "lib": "bt",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_bt,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "bt/stack/l2cap/l2c_utils.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_main.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_link.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_csm.c"),
+            Object(NonMatching, "bt/stack/l2cap/l2c_api.c"),
+            Object(NonMatching, "bt/stack/hid/hidh_conn.c"),
+            Object(NonMatching, "bt/stack/hid/hidh_api.c"),
+            Object(NonMatching, "bt/stack/hcic/hcicmds.c"),
+            Object(NonMatching, "bt/stack/btu/btu_hcif.c"),
+            Object(NonMatching, "bt/stack/rfcomm/port_api.c")
+        ]
     },
     # anything below this line does not need to be decompiled
     # you can attempt to match these if you want though

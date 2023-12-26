@@ -63,6 +63,7 @@ public:
     DataNode(const DataArrayPtr &);
     DataNode(Symbol); // fn_8000E114
     DataNode(const void *, int);
+    DataNode(DataNode*); // fn_803194B8
     DataNode(DataArray *, DataType); // fn_80323318
     DataNode(DataType, DataNodeValue); // fn_800AB8A8
     DataNode(DataFunc *); // fn_803170FC
@@ -172,6 +173,10 @@ public:
 class DataArrayPtr {
 public:
     DataArray *arr;
+
+    DataArrayPtr(const DataNode&);
+    ~DataArrayPtr();
+    DataNode *GetNodeAtIndex(int) const; // fn_80134490 
 };
 
 #endif

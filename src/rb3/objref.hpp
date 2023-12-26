@@ -2,6 +2,7 @@
 #define RB3_OBJREF_HPP
 
 class ObjRef {
+public:
     ObjRef();
     virtual ~ObjRef(); // fn_8000DD10
     virtual void RefOwner() = 0;
