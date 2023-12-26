@@ -2,7 +2,7 @@
 #include "data.hpp"
 #include "common.hpp"
 
-DataNode Hmx::Object::OnGetArray(const DataArray* da){
+DataNode Hmx::Object::OnAppendToArray(const DataArray* da){
     DataArray* arr = da->GetArrayAtIndex(2);
     int size = PropertySize(arr);
     DataArray* cloned = arr->Clone(true, false, 1);

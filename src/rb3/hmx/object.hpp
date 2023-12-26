@@ -80,7 +80,7 @@ namespace Hmx {
         void SetProperty(DataArray *, const DataNode &);
         int PropertySize(DataArray *);
         const char *Name() const;
-        DataNode OnGetArray(const DataArray*);
+        DataNode OnAppendToArray(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
         void AddRef(ObjRef*);
