@@ -10,7 +10,7 @@ DataNode hashTo5Bits(DataArray *da) {
     bool hasEnoughElements = da->GetNodeCount() > 2;
 
     int hashValue = hashMapping[i];
-    
+
     if (hasEnoughElements) {
         i = da->GetIntAtIndex(1);
         for (int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++) {
@@ -18,12 +18,10 @@ DataNode hashTo5Bits(DataArray *da) {
             i = (i * 0x19660D) + 0x3C6EF35F;
         }
 
-        DataNodeValue value = { 0 };
-        return DataNode(kDataInt, value);
+        return DataNode(kDataInt, 0);
     }
 
-    DataNodeValue value = { hashValue };
-    return DataNode(kDataInt, value);
+    return DataNode(kDataInt, (void*)hashValue);
 }
 
 //   if ((int)(((int)(uVar3 ^ 2) >> 1) - ((uVar3 ^ 2) & uVar3)) < 0) {

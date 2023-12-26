@@ -3,6 +3,7 @@
 #include "syncusermsg.hpp"
 #include "syncallmsg.hpp"
 #include "string.hpp"
+#include "data.hpp"
 
 #pragma dont_inline on
 // fn_800AAE9C
@@ -36,4 +37,9 @@ void SyncAllMsg::NewNetMessage() {
 
 // fn_800AAF80
 SyncAllMsg::SyncAllMsg() {
+}
+
+DataNode::DataNode(DataType ty, void* v){
+    type = ty;
+    value.miscVal = v;
 }

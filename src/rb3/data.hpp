@@ -24,6 +24,7 @@ union DataNodeValue {
     char *strVal;
     DataNode *varVal;
     DataFunc *funcVal;
+    void* miscVal;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that
@@ -62,10 +63,10 @@ public:
     DataNode(const String &); // fn_8032324C
     DataNode(const DataArrayPtr &);
     DataNode(Symbol); // fn_8000E114
-    DataNode(const void *, int);
+    DataNode(const void *, int); // RB2 says this is the glob ctor
     DataNode(DataNode*); // fn_803194B8
     DataNode(DataArray *, DataType); // fn_80323318
-    DataNode(DataType, DataNodeValue); // fn_800AB8A8
+    DataNode(DataType, void*); // fn_800AB8A8
     DataNode(DataFunc *); // fn_803170FC
     ~DataNode(); // fn_8000DFE4
     DataNode *Evaluate() const;
