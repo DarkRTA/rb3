@@ -19,11 +19,11 @@ namespace Hmx {
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
         virtual void RefOwner(); // links to fn_8076F540, which returns void
-        virtual void Replace(); // fn_80336C88
+        virtual void Replace(Hmx::Object*, Hmx::Object*); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
         virtual Symbol ClassName() const; // fn_800103C8
         virtual void SetType(Symbol); // fn_800102A0
-        virtual void Handle(); // fn_80336C94
+        virtual DataNode Handle(DataArray*, bool); // fn_80336C94
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
         virtual void Save();
         virtual void Copy();

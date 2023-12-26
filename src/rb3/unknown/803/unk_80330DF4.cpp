@@ -110,3 +110,7 @@ int Hmx::Object::PropertySize(DataArray* da){
         }
     }
 }
+
+void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
+    props.Replace(obj1, obj2, this);
+}
