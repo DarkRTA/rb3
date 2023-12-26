@@ -16,10 +16,12 @@ Symbol DataArray::GetSymAtIndex(int i) const {
 }
 
 extern char *gNullStr;
+#pragma dont_inline on
 // fn_800103CC
 bool Symbol::IsNull() {
     return m_string == gNullStr;
 }
+#pragma dont_inline reset
 
 extern DataArray *fn_8035CF9C(int, int, int);
 // fn_8000E048
@@ -55,4 +57,25 @@ Symbol Hmx::Object::StaticClassName() {
 
 const char* Hmx::Object::Name() const {
     return name;
+}
+
+extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
+extern char* PathName(const Hmx::Object*);
+
+void Hmx::Object::SetType(Symbol s){
+    static DataArray* types = SystemConfig(StaticClassName(), "types", "objects");
+    if(s.IsNull()){
+        SetTypeDef(nullptr);
+    }
+    else {
+        DataArray* found = types->FindArray(s, false);
+        if(found){
+            SetTypeDef(found);
+        }
+        else {
+            PathName(this);
+            ClassName();
+            SetTypeDef(nullptr);
+        }
+    }
 }
