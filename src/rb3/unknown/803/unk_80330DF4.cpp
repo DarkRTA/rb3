@@ -124,13 +124,17 @@ int Hmx::Object::PropertySize(DataArray* da){
     }
     else {
         da->GetNodeCount();
-        Symbol asdf = da->GetSymAtIndex(0);
+        Symbol asdf = asdf;
+        asdf = da->GetSymAtIndex(0);
         DataNode* kv = props.KeyValue(asdf, false);
-        if(kv != &n){
+        if(kv == nullptr){
             if(arr != nullptr){
-                arr->FindArray(asdf, true);
+                kv = EvaluateNodeAtIndex(arr->FindArray(asdf, true), 1);
             }
+            else PathName(this);
         }
+        kv->GetType();
+        return kv->value.dataArray->GetNodeCount();
     }
 }
 
@@ -143,6 +147,22 @@ void Hmx::Object::SetProperty(Symbol s, const DataNode& dn){
     *(d.GetNodeAtIndex(0)) = DataNode(s);
     SetProperty(d.arr, dn);
 }
+
+void Hmx::Object::SetProperty(DataArray* da, const DataNode& dn){
+    if(!SyncProperty((DataNode&)dn, da, 0, (PropOp)2)){
+        Symbol asdf = asdf;
+        asdf = da->GetSymAtIndex(0);
+        if(da->GetNodeCount() == 1){
+            props.SetKeyValue(asdf, dn, true, this);
+        }
+        else {
+            da->GetNodeCount();
+            props.SetArrayValue(asdf, da->GetIntAtIndex(1), dn, arr, this);
+        }
+    }
+}
+
+
 
 extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
 extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
