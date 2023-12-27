@@ -114,3 +114,9 @@ int Hmx::Object::PropertySize(DataArray* da){
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     props.Replace(obj1, obj2, this);
 }
+
+void Hmx::Object::SetProperty(Symbol s, const DataNode& dn){
+    static DataArrayPtr d(DataNode(1));
+    *(d.GetNodeAtIndex(0)) = DataNode(s);
+    SetProperty(d.arr, dn);
+}

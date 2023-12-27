@@ -78,6 +78,7 @@ namespace Hmx {
         DataNode *Property(DataArray *, bool);
         DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
+        void SetProperty(Symbol, const DataNode&);
         int PropertySize(DataArray *);
         const char *Name() const;
         DataNode OnAppendToArray(const DataArray*);
