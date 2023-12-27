@@ -172,6 +172,20 @@ void Hmx::Object::ClearProperties(DataArray* da){
     cloned->DecRefCount();
 }
 
+DataNode Hmx::Object::HandleType(DataArray* da){
+    Symbol asdf = da->GetSymAtIndex(1);
+    bool butt = false;
+    DataArray* found;
+    if(arr != nullptr){
+        found = arr->FindArray(asdf, false);
+        if(found != nullptr) butt = true;
+    }
+    if(butt){
+        return found->ExecuteScript(1, this, (const DataArray*)da, 2);
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
+
 extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
 extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
 extern bool IsASubclass(Symbol, Symbol);
