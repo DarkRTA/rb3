@@ -85,6 +85,7 @@ namespace Hmx {
         DataNode OnAppendToArray(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
+        void ClearProperties(DataArray*);
         void AddRef(ObjRef*);
         void Release(ObjRef*);
         DataNode HandleProperty(DataArray*, DataArray*, bool);

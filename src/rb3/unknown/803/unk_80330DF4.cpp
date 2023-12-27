@@ -162,7 +162,15 @@ void Hmx::Object::SetProperty(DataArray* da, const DataNode& dn){
     }
 }
 
-
+void Hmx::Object::ClearProperties(DataArray* da){
+    int size = PropertySize(da);
+    DataArray* cloned = da->Clone(true, false, 1);
+    while(size-- != 0){
+        *(cloned->GetNodeAtIndex(cloned->GetNodeCount() - 1)) = DataNode(size);
+        RemoveProperty(cloned);
+    }
+    cloned->DecRefCount();
+}
 
 extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
 extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
