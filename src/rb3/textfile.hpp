@@ -6,7 +6,7 @@
 
 class TextFile : public Hmx::Object, TextStream {
 public:
-    int unk20;
+    int unk20; // likely a ptr to some class
 
     TextFile();
     virtual ~TextFile();

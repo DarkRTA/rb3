@@ -1,6 +1,7 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
 #include "textfile.hpp"
+#include "formatstring.hpp"
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
     DataNode* kv = KeyValue(s, false);
@@ -165,12 +166,29 @@ TextFile::~TextFile(){
     }
 }
 
+void TextFile::SetName(const char* c, ObjectDir* dir){
+    Hmx::Object::SetName(c, dir);
+    delete this;
+    unk20 = 0;
+}
+
 DataNode TextFile::OnPrint(DataArray* da){
     if(unk20 != 0){
         for(int i = 2; i < da->GetNodeCount(); i++){
             DataNode* eval = EvaluateNodeAtIndex(da, i);
             eval->Print(*this, true);
         }
+    }
+    return DataNode(0);
+}
+
+DataNode TextFile::OnPrintf(DataArray* da){
+    if(unk20 != 0){
+        FormatString fs(da->GetStrAtIndex(2));
+        for(int i = 3; i < da->GetNodeCount(); i++){
+            fs << *EvaluateNodeAtIndex(da, i);
+        }
+        Print(fs.Str());
     }
     return DataNode(0);
 }
