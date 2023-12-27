@@ -246,6 +246,9 @@ rb3/unknown/803/unk_803242CC.cpp:
 rb3/unknown/803/unk_8032443C.cpp:
 	.text       start:0x8032443C end:0x80324A80
 
+rb3/unknown/803/unk_80324AFC.cpp:
+	.text       start:0x80324AFC end:0x8032D90C
+
 rb3/unknown/803/unk_80330DF4.cpp:
 	.text       start:0x80330DF4 end:0x80338284
 

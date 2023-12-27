@@ -75,6 +75,7 @@ namespace Hmx {
 
         static Symbol StaticClassName();
         Symbol Type() const;
+        static Hmx::Object* NewObject();
 
         DataNode *Property(DataArray *, bool);
         DataNode* Property(Symbol, bool);
