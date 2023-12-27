@@ -100,10 +100,10 @@ namespace Hmx {
     };
 }
 
-class ObjectDir : public ObjRef, Hmx::Object {
+class ObjectDir : public Hmx::Object, ObjRef {
 public:
-    Hmx::Object* innerObj;
-    ObjectDir(int);
+    // Hmx::Object* innerObj;
+    ObjectDir();
 };
 
 #endif
