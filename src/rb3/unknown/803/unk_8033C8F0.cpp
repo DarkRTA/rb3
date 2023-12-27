@@ -221,3 +221,21 @@ DataNode TextFile::Handle(DataArray* da, bool b){
     if(b) PathName(this);
     return DataNode(kDataUnhandled, 0);
 }
+
+extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
+
+void TextFile::SetType(Symbol s){
+    static DataArray* types = SystemConfig(StaticClassName(), "types", "objects");
+    if(s.IsNull()) SetTypeDef(nullptr);
+    else {
+        DataArray* found = types->FindArray(s, false);
+        if(found != nullptr){
+            SetTypeDef(found);
+        }
+        else {
+            PathName(this);
+            ClassName();
+            SetTypeDef(nullptr);
+        }
+    }
+}
