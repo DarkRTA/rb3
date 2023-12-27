@@ -1,7 +1,16 @@
 #include "textfile.hpp"
 
+TextFile* TextFile::NewObject(){
+    return new TextFile();
+}
+
 TextFile::TextFile(){
     unk20 = 0;
+}
+
+Symbol TextFile::StaticClassName(){
+    static Symbol name("File");
+    return name;
 }
 
 // #include "unk_803242cc.hpp"
@@ -32,18 +41,3 @@ TextFile::TextFile(){
 // // {
 // // 	return new TextFile();
 // // }
-
-// // NONMATCHING: parent struct needs work
-// TextFile::TextFile() {
-//     /*
-//     fn_8033560C();
-//     fn_8037A67C(arg0 + 0x1C);
-//     */
-//     // arg0->unk1C = (void *) (&lbl_80856610 + 0x5C);
-//     unk20 = 0;
-// }
-
-// Symbol TextFile::StaticClassName() {
-//     static Symbol name = Symbol(sFile);
-//     return name;
-// }
