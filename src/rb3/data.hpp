@@ -6,12 +6,14 @@
 #include "textstream.hpp"
 #include "hmx/object.hpp"
 
+// forward declarations
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
 namespace Hmx {
     class Object;
 }; // take a wild guess what this is
+class ObjectDir;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -139,6 +141,7 @@ public:
     DataType GetTypeAtIndex(int) const; // fn_80117BAC
     DataArray *GetCommandAtIndex(int) const;
     Hmx::Object *GetObjAtIndex(int) const;
+    ObjectDir* GetObjAsObjectDirAtIndex(int) const;
     Symbol ForceSymAtIndex(int) const; // fn_80119134
     void Print(TextStream &, DataType, bool) const; // fn_80315A70
     void SetFileLine(Symbol, int); // fn_80316CB0

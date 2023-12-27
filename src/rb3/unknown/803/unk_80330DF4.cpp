@@ -30,11 +30,7 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 
 extern const char* gNullStr;
 
-Hmx::Object::Object(){
-    arr = 0;
-    name = gNullStr;
-    dir = 0;
-}
+Hmx::Object::Object() : arr(0), name(gNullStr), dir(0) { }
 
 DataNode* Hmx::Object::Property(Symbol s, bool b){
     static DataArrayPtr d(DataNode(1));
@@ -51,7 +47,8 @@ bool Hmx::Object::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
         return true;
     }
     else {
-        Symbol asdf = da->GetSymAtIndex(i);
+        Symbol b = b;
+        b = da->GetSymAtIndex(i);
         return false;
     }
 }
@@ -120,3 +117,14 @@ void Hmx::Object::SetProperty(Symbol s, const DataNode& dn){
     *(d.GetNodeAtIndex(0)) = DataNode(s);
     SetProperty(d.arr, dn);
 }
+
+extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
+extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
+extern bool IsASubclass(Symbol, Symbol);
+extern "C" char* fn_80336C64(Hmx::Object*);
+extern char* PathName(const Hmx::Object*);
+
+// see scratch: https://decomp.me/scratch/9abtP
+// DataNode Hmx::Object::Handle(DataArray* da, bool b){
+
+// }
