@@ -54,12 +54,38 @@ bool Hmx::Object::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
 }
 
 extern char* PathName(const Hmx::Object*);
+extern void PropertyNOP(const char*, char*, String&);
 
 DataNode* Hmx::Object::Property(DataArray* da, bool b){
     static DataNode n;
     if(SyncProperty(n, da, 0, (PropOp)1)) return &n;
-    Symbol asdf = da->GetSymAtIndex(0);
+    Symbol asdf = asdf;
+    asdf = da->GetSymAtIndex(0);
     DataNode* kv = props.KeyValue(asdf, false);
+    if(kv == nullptr){
+        if(arr != nullptr){
+            DataArray* found = arr->FindArray(asdf, b);
+            if(found != nullptr){
+                kv = EvaluateNodeAtIndex(found, 1);
+            }
+        }
+    }
+    if(kv != nullptr){
+        int cnt = da->GetNodeCount();
+        if(cnt == 1) return kv;
+        else if(cnt == 2){
+            if(kv->GetType() == kDataArray){
+                DataArray* ret = kv->value.dataArray;
+                return ret->GetNodeAtIndex(da->GetIntAtIndex(1));
+            }
+        }
+        else if(b){
+            String str;
+            str << (const DataArray*)da;
+            String str2(str);
+            PropertyNOP("%s: property %s not found", PathName(this), str2);
+        }
+    }    
     return nullptr;
 }
 
