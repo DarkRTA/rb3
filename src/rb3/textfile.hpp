@@ -17,7 +17,11 @@ public:
     virtual void Print(const char *); // fn_8033C990
 
     static Symbol StaticClassName();
-    TextFile* NewObject();
+    static TextFile* NewObject();
+
+    DataNode OnPrint(DataArray*);
+    DataNode OnPrintf(DataArray*);
+    DataNode OnReflect(DataArray*);
 };
 
 #endif

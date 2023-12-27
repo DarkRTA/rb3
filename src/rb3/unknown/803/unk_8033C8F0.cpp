@@ -1,5 +1,6 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
+#include "textfile.hpp"
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
     DataNode* kv = KeyValue(s, false);
@@ -152,4 +153,24 @@ void TypeProps::Assign(const TypeProps& tp, ObjRef* ref){
         data = tp.data->Clone(true, false, 0);
     }
     AddRefObjects(ref);
+}
+
+Symbol TextFile::ClassName() const {
+    return StaticClassName();
+}
+
+TextFile::~TextFile(){
+    if(unk20 != 0){
+        delete this;
+    }
+}
+
+DataNode TextFile::OnPrint(DataArray* da){
+    if(unk20 != 0){
+        for(int i = 2; i < da->GetNodeCount(); i++){
+            DataNode* eval = EvaluateNodeAtIndex(da, i);
+            eval->Print(*this, true);
+        }
+    }
+    return DataNode(0);
 }

@@ -183,4 +183,7 @@ public:
     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
 };
 
+// evaluate a DataNode at a particular index
+DataNode *EvaluateNodeAtIndex(DataArray *, int);
+
 #endif

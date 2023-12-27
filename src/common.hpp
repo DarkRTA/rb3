@@ -11,9 +11,6 @@ inline void *operator new(unsigned long size, void *p) {
     return p;
 }
 
-// evaluate a DataNode at a particular index
-DataNode *EvaluateNodeAtIndex(DataArray *, int);
-
 // string operations
 bool SearchReplace(const char *, const char *, const char *, char *);
 bool StrNCopy(char *, const char *, int);

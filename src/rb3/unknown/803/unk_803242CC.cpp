@@ -35,9 +35,3 @@ Symbol TextFile::StaticClassName(){
 // extern "C" void fn_80324338() {
 //     fn_80335354(TextFile::StaticClassName(), (void *(*)())fn_8032436C);
 // }
-
-// // NONMATCHING: struct size
-// // extern "C" TextFile *fn_8032436C(void)
-// // {
-// // 	return new TextFile();
-// // }
