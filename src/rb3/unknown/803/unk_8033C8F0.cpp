@@ -2,6 +2,7 @@
 #include "data.hpp"
 #include "textfile.hpp"
 #include "formatstring.hpp"
+#include "debug.hpp"
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
     DataNode* kv = KeyValue(s, false);
@@ -191,4 +192,32 @@ DataNode TextFile::OnPrintf(DataArray* da){
         Print(fs.Str());
     }
     return DataNode(0);
+}
+
+extern Symbol SymPrint, SymReflect;
+extern char* PathName(const Hmx::Object*);
+
+DataNode TextFile::Handle(DataArray* da, bool b){
+    Symbol match = match;
+    match = da->GetSymAtIndex(1);
+    if(match == SymPrint){
+        DataNode print = OnPrint(da);
+        if(print.GetType() != kDataUnhandled) return DataNode(print);
+    }
+    static Symbol SymPrintf("printf");
+    if(match == SymPrintf){
+        DataNode node_printf = OnPrintf(da);
+        if(node_printf.GetType() != kDataUnhandled) return DataNode(node_printf);
+    }
+    if(match == SymReflect){
+        DataNode ref = OnReflect(da);
+        if(ref.GetType() != kDataUnhandled) return DataNode(ref);
+    }
+    // if no match, fall to here
+    {
+    DataNode base = Hmx::Object::Handle(da, false);
+    if(base.GetType() != kDataUnhandled) return DataNode(base);
+    }
+    if(b) PathName(this);
+    return DataNode(kDataUnhandled, 0);
 }
