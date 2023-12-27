@@ -71,7 +71,7 @@ namespace Hmx {
         virtual void DataDir(); // fn_803351D0
         virtual void PreLoad(BinStream&); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void
-        virtual void FindPathName(); // fn_80336A84
+        virtual char* FindPathName(); // fn_80336A84
 
         static Symbol StaticClassName();
         Symbol Type() const;
