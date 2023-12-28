@@ -3,15 +3,24 @@
 #include "objref.hpp"
 #include "hmx/object.hpp"
 
-template <class T> class ObjOwnerPtr : public ObjRef {
+template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
-    ObjOwnerPtr();
-    virtual ~ObjOwnerPtr();
-    virtual void RefOwner(); // returns the Hmx::Object* obj down there
+
+    ObjOwnerPtr(Hmx::Object* o, T1* item){
+        owner = o;
+        obj = item;
+        if(item != nullptr) item->AddRef(o);
+    }
+
+    virtual ~ObjOwnerPtr(){
+        if(obj != nullptr) obj->Release(owner);
+    }
+
+    virtual void RefOwner(); // returns the Hmx::Object* owner down there
     virtual void Replace(Hmx::Object*, Hmx::Object*); // links to fn_8076F540, which returns void
 
-    Hmx::Object* obj;
-    T* item;
+    Hmx::Object* owner;
+    T1* obj;
 };
 
 #endif

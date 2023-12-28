@@ -1,6 +1,7 @@
 #ifndef RB3_FXSEND_HPP
 #define RB3_FXSEND_HPP
 #include "hmx/object.hpp"
+#include "objownerptr.hpp"
 
 class FxSend : public Hmx::Object {
 public:
@@ -15,7 +16,12 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    
+    ObjOwnerPtr<FxSend, ObjectDir> ptr;
+    int unk28;
+    char unk2c;
+    float unk30, unk34, unk38, unk3c;
+    char unk40, unk41;
+    int unk44;
 };
 
 #endif
