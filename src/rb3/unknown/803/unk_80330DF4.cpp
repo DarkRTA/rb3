@@ -1,6 +1,7 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
 #include "common.hpp"
+#include "msgsource.hpp"
 
 DataNode Hmx::Object::OnAppendToArray(const DataArray* da){
     DataArray* arr = da->GetArrayAtIndex(2);
@@ -196,3 +197,7 @@ extern char* PathName(const Hmx::Object*);
 // DataNode Hmx::Object::Handle(DataArray* da, bool b){
 
 // }
+
+MsgSource::MsgSource(){
+    
+}
