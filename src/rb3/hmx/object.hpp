@@ -52,7 +52,7 @@ namespace Hmx {
 
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
-        virtual void RefOwner(); // links to fn_8076F540, which returns void
+        virtual Hmx::Object* RefOwner(); // links to fn_8076F540, which returns void
         virtual void Replace(Hmx::Object*, Hmx::Object*); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
         virtual Symbol ClassName() const; // fn_800103C8

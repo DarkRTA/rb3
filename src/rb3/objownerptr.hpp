@@ -16,8 +16,27 @@ public:
         if(obj != nullptr) obj->Release(owner);
     }
 
-    virtual void RefOwner(); // returns the Hmx::Object* owner down there
+    virtual Hmx::Object* RefOwner(){ return owner; } // returns the Hmx::Object* owner down there
     virtual void Replace(Hmx::Object*, Hmx::Object*); // links to fn_8076F540, which returns void
+
+    // #pragma dont_inline on
+    // void operator=(const ObjOwnerPtr<T1, T2>& const_owner_ptr){
+    //     operator=(const_owner_ptr.obj);
+    // }
+    // #pragma dont_inline reset
+
+    // void operator=(T1* smelly){
+    //     Hmx::Object* theObj = obj;
+    //     if(smelly != theObj){
+    //         if(theObj != nullptr){
+    //             theObj->Release(owner);
+    //         }
+    //         obj = smelly;
+    //         if(smelly != nullptr){
+    //             smelly->AddRef(owner);
+    //         }
+    //     }
+    // }
 
     Hmx::Object* owner;
     T1* obj;
