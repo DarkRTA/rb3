@@ -5,6 +5,10 @@ FxSend::FxSend() : ptr(this, nullptr), unk28(0), unk2c(0), unk30(-96.0f),
     
 }
 
+FxSend::~FxSend(){
+    
+}
+
 void FxSend::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     Hmx::Object::Copy(o, ty);
     const FxSend* new_o = dynamic_cast<const FxSend*>(o);

@@ -16,6 +16,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    static Symbol StaticClassName();
+
     ObjOwnerPtr<FxSend, ObjectDir> ptr;
     int unk28;
     char unk2c;
