@@ -1,8 +1,9 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
 #include "common.hpp"
+#include "msgsource.hpp"
 
-DataNode Hmx::Object::OnGetArray(const DataArray* da){
+DataNode Hmx::Object::OnAppendToArray(const DataArray* da){
     DataArray* arr = da->GetArrayAtIndex(2);
     int size = PropertySize(arr);
     DataArray* cloned = arr->Clone(true, false, 1);
@@ -30,11 +31,7 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 
 extern const char* gNullStr;
 
-Hmx::Object::Object(){
-    arr = 0;
-    name = gNullStr;
-    dir = 0;
-}
+Hmx::Object::Object() : arr(0), name(gNullStr), dir(0) { }
 
 DataNode* Hmx::Object::Property(Symbol s, bool b){
     static DataArrayPtr d(DataNode(1));
@@ -51,18 +48,45 @@ bool Hmx::Object::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
         return true;
     }
     else {
-        Symbol asdf = da->GetSymAtIndex(i);
+        Symbol b = b;
+        b = da->GetSymAtIndex(i);
         return false;
     }
 }
 
 extern char* PathName(const Hmx::Object*);
+extern void PropertyNOP(const char*, char*, String&);
 
 DataNode* Hmx::Object::Property(DataArray* da, bool b){
     static DataNode n;
     if(SyncProperty(n, da, 0, (PropOp)1)) return &n;
-    Symbol asdf = da->GetSymAtIndex(0);
+    Symbol asdf = asdf;
+    asdf = da->GetSymAtIndex(0);
     DataNode* kv = props.KeyValue(asdf, false);
+    if(kv == nullptr){
+        if(arr != nullptr){
+            DataArray* found = arr->FindArray(asdf, b);
+            if(found != nullptr){
+                kv = EvaluateNodeAtIndex(found, 1);
+            }
+        }
+    }
+    if(kv != nullptr){
+        int cnt = da->GetNodeCount();
+        if(cnt == 1) return kv;
+        else if(cnt == 2){
+            if(kv->GetType() == kDataArray){
+                DataArray* ret = kv->value.dataArray;
+                return ret->GetNodeAtIndex(da->GetIntAtIndex(1));
+            }
+        }
+        else if(b){
+            String str;
+            str << (const DataArray*)da;
+            String str2(str);
+            PropertyNOP("%s: property %s not found", PathName(this), str2);
+        }
+    }    
     return nullptr;
 }
 
@@ -101,16 +125,79 @@ int Hmx::Object::PropertySize(DataArray* da){
     }
     else {
         da->GetNodeCount();
-        Symbol asdf = da->GetSymAtIndex(0);
+        Symbol asdf = asdf;
+        asdf = da->GetSymAtIndex(0);
         DataNode* kv = props.KeyValue(asdf, false);
-        if(kv != &n){
+        if(kv == nullptr){
             if(arr != nullptr){
-                arr->FindArray(asdf, true);
+                kv = EvaluateNodeAtIndex(arr->FindArray(asdf, true), 1);
             }
+            else PathName(this);
         }
+        kv->GetType();
+        return kv->value.dataArray->GetNodeCount();
     }
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     props.Replace(obj1, obj2, this);
+}
+
+void Hmx::Object::SetProperty(Symbol s, const DataNode& dn){
+    static DataArrayPtr d(DataNode(1));
+    *(d.GetNodeAtIndex(0)) = DataNode(s);
+    SetProperty(d.arr, dn);
+}
+
+void Hmx::Object::SetProperty(DataArray* da, const DataNode& dn){
+    if(!SyncProperty((DataNode&)dn, da, 0, (PropOp)2)){
+        Symbol asdf = asdf;
+        asdf = da->GetSymAtIndex(0);
+        if(da->GetNodeCount() == 1){
+            props.SetKeyValue(asdf, dn, true, this);
+        }
+        else {
+            da->GetNodeCount();
+            props.SetArrayValue(asdf, da->GetIntAtIndex(1), dn, arr, this);
+        }
+    }
+}
+
+void Hmx::Object::ClearProperties(DataArray* da){
+    int size = PropertySize(da);
+    DataArray* cloned = da->Clone(true, false, 1);
+    while(size-- != 0){
+        *(cloned->GetNodeAtIndex(cloned->GetNodeCount() - 1)) = DataNode(size);
+        RemoveProperty(cloned);
+    }
+    cloned->DecRefCount();
+}
+
+DataNode Hmx::Object::HandleType(DataArray* da){
+    Symbol asdf = da->GetSymAtIndex(1);
+    bool butt = false;
+    DataArray* found;
+    if(arr != nullptr){
+        found = arr->FindArray(asdf, false);
+        if(found != nullptr) butt = true;
+    }
+    if(butt){
+        return found->ExecuteScript(1, this, (const DataArray*)da, 2);
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
+
+extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
+extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
+extern bool IsASubclass(Symbol, Symbol);
+extern "C" char* fn_80336C64(Hmx::Object*);
+extern char* PathName(const Hmx::Object*);
+
+// see scratch: https://decomp.me/scratch/9abtP
+// DataNode Hmx::Object::Handle(DataArray* da, bool b){
+
+// }
+
+MsgSource::MsgSource(){
+    
 }

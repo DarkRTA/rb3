@@ -46,13 +46,13 @@ namespace Hmx {
         DataArray* arr;
         const char *name;
         ObjectDir* dir;
-        int unk14; // this is an std::vector<const char*>
+        char unk14[8]; // this is an std::vector<const char*>, 8 bytes long (4 + 2 + 2)
 
         enum CopyType { f, a, r, t, s };
 
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
-        virtual void RefOwner(); // links to fn_8076F540, which returns void
+        virtual Hmx::Object* RefOwner(); // links to fn_8076F540, which returns void
         virtual void Replace(Hmx::Object*, Hmx::Object*); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
         virtual Symbol ClassName() const; // fn_800103C8
@@ -71,28 +71,39 @@ namespace Hmx {
         virtual void DataDir(); // fn_803351D0
         virtual void PreLoad(BinStream&); // fn_800AB8B4
         virtual void PostLoad(); // links to fn_8076F540, which returns void
-        virtual void FindPathName(); // fn_80336A84
+        virtual char* FindPathName(); // fn_80336A84
 
         static Symbol StaticClassName();
+        Symbol Type() const;
+        static Hmx::Object* NewObject();
 
         DataNode *Property(DataArray *, bool);
         DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
+        void SetProperty(Symbol, const DataNode &);
         int PropertySize(DataArray *);
         const char *Name() const;
-        DataNode OnGetArray(const DataArray*);
+        DataNode OnAppendToArray(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
+        void ClearProperties(DataArray*);
         void AddRef(ObjRef*);
         void Release(ObjRef*);
         DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Hmx::Object* NewObject(Symbol);
+
+        DataNode OnGet(const DataArray*);
+        DataNode OnSet(const DataArray*);
+        DataNode OnIterateRefs(const DataArray*);
+        ObjectDir* GetObjectDir();
+        DataNode HandleType(DataArray*);
     };
 }
 
-class ObjectDir : ObjRef, Hmx::Object {
+class ObjectDir : public virtual Hmx::Object {
 public:
-    ObjectDir(int);
+    // Hmx::Object* innerObj;
+    ObjectDir();
 };
 
 #endif

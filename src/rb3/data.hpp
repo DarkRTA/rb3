@@ -6,12 +6,14 @@
 #include "textstream.hpp"
 #include "hmx/object.hpp"
 
+// forward declarations
 class DataArray; // forward declaration
 class DataNode; // also a forward declaration
 class DataArrayPtr; // yet another forward declaration
 namespace Hmx {
     class Object;
 }; // take a wild guess what this is
+class ObjectDir;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -24,6 +26,7 @@ union DataNodeValue {
     char *strVal;
     DataNode *varVal;
     DataFunc *funcVal;
+    void* miscVal;
 };
 
 enum DataType { /* differs from serialized, for... some reason; i trusted ghidra more that
@@ -62,10 +65,10 @@ public:
     DataNode(const String &); // fn_8032324C
     DataNode(const DataArrayPtr &);
     DataNode(Symbol); // fn_8000E114
-    DataNode(const void *, int);
+    DataNode(const void *, int); // RB2 says this is the glob ctor
     DataNode(DataNode*); // fn_803194B8
     DataNode(DataArray *, DataType); // fn_80323318
-    DataNode(DataType, DataNodeValue); // fn_800AB8A8
+    DataNode(DataType, void*); // fn_800AB8A8
     DataNode(DataFunc *); // fn_803170FC
     ~DataNode(); // fn_8000DFE4
     DataNode *Evaluate() const;
@@ -138,6 +141,7 @@ public:
     DataType GetTypeAtIndex(int) const; // fn_80117BAC
     DataArray *GetCommandAtIndex(int) const;
     Hmx::Object *GetObjAtIndex(int) const;
+    ObjectDir* GetObjAsObjectDirAtIndex(int) const;
     Symbol ForceSymAtIndex(int) const; // fn_80119134
     void Print(TextStream &, DataType, bool) const; // fn_80315A70
     void SetFileLine(Symbol, int); // fn_80316CB0
@@ -178,5 +182,8 @@ public:
     ~DataArrayPtr();
     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
 };
+
+// evaluate a DataNode at a particular index
+DataNode *EvaluateNodeAtIndex(DataArray *, int);
 
 #endif

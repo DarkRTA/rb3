@@ -39,20 +39,20 @@ int DataNode::LiteralInt(const DataArray *da) const {
 
 // fn_80322F54
 Symbol DataNode::Sym(const DataArray *da) const {
-    // DataNode *n = Evaluate();
-    // return n->value.strVal;
+    DataNode *n = Evaluate();
+    return (Symbol&)(n->value.miscVal);
 }
 
 // fn_80322F78
 Symbol DataNode::LiteralSym(const DataArray *da) const {
-    // return value.strVal;
+    return (Symbol&)(value.miscVal);
 }
 
 // fn_80322F80
 Symbol DataNode::ForceSym(const DataArray *da) const {
     DataNode *n = Evaluate();
     if (n->type == kDataSymbol) {
-        return n->value.strVal;
+        return (Symbol&)(n->value.miscVal);
     }
     return Symbol(n->value.symVal->m_string);
 }
