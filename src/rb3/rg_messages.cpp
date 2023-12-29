@@ -54,8 +54,8 @@ RGPitchBendMsg::RGPitchBendMsg(int i1, int i2)
 
 // fn_80314278
 Symbol RGPitchBendMsg::Type() {
-    static Symbol lbl_8091A264("rg_pitch_bend");
-    return lbl_8091A264;
+    static Symbol t("rg_pitch_bend");
+    return t;
 }
 
 // fn_803142C4
