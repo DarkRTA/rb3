@@ -226,6 +226,9 @@ rb3/wiinetworksocket.cpp:
 rb3/unknown/803/unk_8030A494.cpp:
 	.text       start:0x8030A494 end:0x8030DBF8
 
+rb3/unknown/803/unk_8031144C.cpp:
+	.text       start:0x8031144C end:0x80312A78
+
 rb3/rg_messages.cpp:
 	.text       start:0x80313E98 end:0x80314814
 	.data       start:0x808546F0 end:0x80854A08
