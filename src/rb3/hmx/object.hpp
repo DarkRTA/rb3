@@ -104,6 +104,8 @@ class ObjectDir : public virtual Hmx::Object {
 public:
     // Hmx::Object* innerObj;
     ObjectDir();
+
+    static ObjectDir* sMainDir;
 };
 
 #endif

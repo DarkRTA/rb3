@@ -142,6 +142,16 @@ rb3/unknown/802/unk_8022BE84.cpp:
 rb3/unknown/802/unk_80252B98.cpp:
 	.text       start:0x80252B98 end:0x80266360
 
+rb3/unknown/802/unk_802663BC.cpp:
+	.text       start:0x802663BC end:0x802956CC
+
+rb3/trainingmgr.cpp:
+	.text       start:0x802956CC end:0x802960B0
+	.data       start:0x8084CAC8 end:0x8084CB60
+
+rb3/unknown/802/unk_802960B0.cpp:
+	.text       start:0x802960B0 end:0x8029A6F4
+
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
