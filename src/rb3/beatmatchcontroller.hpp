@@ -8,6 +8,8 @@ class BeatMatchController : public Hmx::Object {
 public:
     BeatMatchController(User*, const DataArray*, bool);
     virtual ~BeatMatchController();
+    virtual int ButtonToSlot(int btn) const; // btn should be a JoypadButton
+    virtual int SlotToButton(int slot) const; // should return a JoypadButton
 
     User* user;
     int forceMercury;
