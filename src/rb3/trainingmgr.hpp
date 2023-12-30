@@ -7,6 +7,12 @@ public:
     TrainingMgr();
     virtual ~TrainingMgr();
     virtual DataNode Handle(DataArray*, bool);
+
+    static TrainingMgr* NewObject();
+    void SetMinimumDifficulty(int);
+    void SetReturnInfo(Symbol, Symbol);
+    void SetCurrentLesson(int);
+    void ClearCurrentLesson();
     
     int user; // user, the type is LocalBandUser*
     int minDiff; // minimum difficulty

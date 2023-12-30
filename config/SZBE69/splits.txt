@@ -281,6 +281,9 @@ rb3/unknown/803/unk_8034C91C.cpp:
 rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
+rb3/hxguid.cpp:
+	.text       start:0x8034DAAC end:0x8034DE08
+
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0
 
