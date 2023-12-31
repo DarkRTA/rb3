@@ -1,5 +1,6 @@
 #include "user.hpp"
 #include "common.hpp"
+#include "localuser.hpp"
 
 User::User() : id(new OnlineID()), guid(), unk30(-1) {
     guid.Generate();
@@ -53,3 +54,13 @@ bool User::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
     }
     return ret;
 }
+
+LocalUser::LocalUser(){
+    idk = 0;
+}
+
+bool LocalUser::IsLocal() const { return true; }
+void LocalUser::GetLocalUser(){}
+void LocalUser::GetLocalUser() const { }
+User* LocalUser::GetRemoteUser() { return nullptr; }
+User* LocalUser::GetRemoteUser() const { return nullptr; }

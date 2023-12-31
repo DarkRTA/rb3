@@ -2,7 +2,7 @@
 #define RB3_LOCALUSER_HPP
 #include "user.hpp"
 
-class LocalUser : public User {
+class LocalUser : public virtual User {
 public:
     LocalUser();
     virtual ~LocalUser();
@@ -13,6 +13,8 @@ public:
     virtual User* GetRemoteUser();
     virtual User* GetRemoteUser() const;
     virtual char* UserName() const;
+
+    char idk;
 };
 
 #endif
