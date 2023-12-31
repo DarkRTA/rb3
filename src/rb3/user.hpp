@@ -19,6 +19,8 @@ public:
     virtual User* GetRemoteUser() const = 0;
     virtual char* UserName() const = 0;
 
+    bool ComesBefore(const User*);
+
     OnlineID* id;
     UserGuid guid;
     int unk30;

@@ -9,4 +9,47 @@ void User::Reset(){
     unk30 = -1;
 }
 
-// User::Handle work: https://decomp.me/scratch/Qk51z
+#pragma dont_inline on
+bool User::ComesBefore(const User* u){
+    return guid < u->guid;
+}
+#pragma dont_inline reset
+
+extern Symbol SymComesBefore, SymGetPlayerName, SymIsLocal, SymReset;
+extern char* PathName(const Hmx::Object*);
+
+DataNode User::Handle(DataArray* da, bool b){
+    Symbol toMatch = toMatch;
+    toMatch = da->GetSymAtIndex(1);
+    if(toMatch == SymIsLocal){
+        return DataNode(IsLocal());
+    }
+    if(toMatch == SymGetPlayerName){
+        return DataNode(UserName());
+    }
+    if(toMatch == SymReset){
+        Reset();
+        return DataNode(0);
+    }
+    if(toMatch == SymComesBefore){
+        return DataNode(ComesBefore(GetUserAtIndex(da, 2)));
+    }
+    {
+    DataNode node = Hmx::Object::Handle(da, false);
+    if(node.GetType() != kDataUnhandled) return DataNode(node);
+    }
+    if(b) PathName(this);
+    return DataNode(kDataUnhandled, 0);
+}
+
+bool User::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
+    int cnt = da->GetNodeCount();
+    bool ret;
+    if(i == cnt) ret = true;
+    else {
+        Symbol lol = lol;
+        lol = da->GetSymAtIndex(cnt);
+        ret = false;
+    }
+    return ret;
+}
