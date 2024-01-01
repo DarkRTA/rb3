@@ -106,6 +106,8 @@ public:
     ObjectDir();
 
     static ObjectDir* sMainDir;
+
+    Hmx::Object* FindObject(const char*, bool);
 };
 
 ObjectDir* GetObjectDir(DataNode*, DataArray*);

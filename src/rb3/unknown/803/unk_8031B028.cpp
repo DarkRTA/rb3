@@ -944,14 +944,35 @@ extern DataNode OnFileExists(DataArray *);
 extern DataNode OnFileReadOnly(DataArray *);
 // fn_8031EDF4
 extern DataNode DataHandleType(DataArray *);
+
 // fn_8031EEC8
-extern DataNode DataHandleTypeRet(DataArray *);
+DataNode DataHandleTypeRet(DataArray* da){
+    DataArray* arr = da->GetArrayAtIndex(1);
+    DataNode* eval = EvaluateNodeAtIndex(arr, 0);
+    Hmx::Object* obj;
+    if(eval->GetType() == kDataObject){
+        obj = eval->GetDataNodeVal().objVal;
+    }
+    else {
+        obj = gDataDir->FindObject(eval->LiteralStr(da), true);
+    }
+    return obj->HandleType(arr);
+}
+
 // fn_8031F02C
 extern DataNode DataHandle(DataArray *);
 // fn_8031F128
 extern DataNode DataHandleRet(DataArray *);
+
 // fn_8031F448
-extern DataNode DataContains(DataArray *);
+DataNode DataContains(DataArray* da){
+    DataArray* arr = da->GetArrayAtIndex(1);
+    if(!arr->Contains(DataNode(EvaluateNodeAtIndex(da, 2)->GetDataNodeVal().intVal))){
+        return DataNode(kDataUnhandled, 0);
+    }
+    else return DataNode(1);
+}
+
 // fn_8031EF60
 extern DataNode DataExport(DataArray *);
 // fn_8031F400

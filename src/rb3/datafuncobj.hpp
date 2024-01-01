@@ -9,6 +9,8 @@ public:
     DataFuncObj(DataArray*);
     virtual ~DataFuncObj();
     virtual DataNode Handle(DataArray*, bool);
+
+    void PoolFree();
 };
 
 #endif
