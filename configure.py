@@ -305,6 +305,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8050FA30.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_80567E84.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
