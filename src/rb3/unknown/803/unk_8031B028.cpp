@@ -17,6 +17,7 @@
 extern void DataRegisterFunc(Symbol, DataFunc *);
 extern Debug TheDebug;
 extern Hmx::Object *gDataThis;
+extern ObjectDir* gDataDir;
 extern void DataPushVar(DataNode *dn);
 extern void DataPopVar();
 
@@ -61,7 +62,7 @@ DataNode DataSprint(DataArray *da) {
 DataFuncObj::DataFuncObj(DataArray* da){
     arr = da;
     da->IncRefCount();
-    // SetName(da->GetStrAtIndex(1), sMainDir)
+    SetName(da->GetStrAtIndex(1), ObjectDir::sMainDir);
 }
 
 // fn_8031DC40
@@ -598,6 +599,18 @@ DataNode DataNew(DataArray* da){
         if(da->GetTypeAtIndex(2) == kDataArray){
             obj->SetTypeDef(da);
         }
+        else {
+            obj->SetName(da->GetStrAtIndex(2), gDataDir);
+            if(da->GetNodeCount() > 3){
+                if(da->GetTypeAtIndex(3) == kDataArray){
+                    obj->SetTypeDef(da);
+                }
+                else {
+                    obj->SetType(da->GetSymAtIndex(3));
+                }
+            }
+            
+        }
     }
     return DataNode(obj);
 }
@@ -809,8 +822,24 @@ DataNode DataResize(DataArray *da) {
     return DataNode(0);
 }
 
+extern void DataNewArrayNOP(const char*, char*, int);
+
 // fn_8031E8A0
-extern DataNode DataNewArray(DataArray *);
+DataNode DataNewArray(DataArray* da){
+    DataNode* eval = EvaluateNodeAtIndex(da, 1);
+    DataArrayPtr ptr;
+    if(eval->GetType() == kDataInt){
+        ptr.GetArray()->Resize(eval->LiteralInt(nullptr));
+    }
+    else if(eval->GetType() == kDataArray){
+        ptr = eval->LiteralArray(nullptr)->Clone(true, true, 0);
+    }
+    else {
+        int line = da->GetLine();
+        DataNewArrayNOP("DataNewArray wrong argument for %s %d", da->GetSymbol(), line);
+    }
+    return DataNode(ptr);
+}
 
 // fn_8031E9A0
 DataNode DataSetElem(DataArray *da) {
@@ -1350,4 +1379,12 @@ void DataInitFuncs() {
     c[1] = '7';
     c[2] = '0';
     DataRegisterFunc(c, DataInc);
+}
+
+DataFuncObj::~DataFuncObj(){
+    arr->DecRefCount();
+}
+
+DataNode DataFuncObj::Handle(DataArray* da, bool b){
+    return arr->ExecuteScript(2, gDataThis, da, 1);
 }

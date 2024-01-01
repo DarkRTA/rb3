@@ -108,4 +108,7 @@ public:
     static ObjectDir* sMainDir;
 };
 
+ObjectDir* GetObjectDir(DataNode*, DataArray*);
+ObjectDir* GetObjectDirAtIndex(DataArray*, int);
+
 #endif
