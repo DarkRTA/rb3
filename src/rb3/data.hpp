@@ -13,7 +13,6 @@ class DataArrayPtr; // yet another forward declaration
 namespace Hmx {
     class Object;
 }; // take a wild guess what this is
-class ObjectDir;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -141,7 +140,6 @@ public:
     DataType GetTypeAtIndex(int) const; // fn_80117BAC
     DataArray *GetCommandAtIndex(int) const;
     Hmx::Object *GetObjAtIndex(int) const;
-    ObjectDir* GetObjAsObjectDirAtIndex(int) const;
     Symbol ForceSymAtIndex(int) const; // fn_80119134
     void Print(TextStream &, DataType, bool) const; // fn_80315A70
     void SetFileLine(Symbol, int); // fn_80316CB0
@@ -178,9 +176,12 @@ class DataArrayPtr {
 public:
     DataArray *arr;
 
+    DataArrayPtr();
     DataArrayPtr(const DataNode&);
     ~DataArrayPtr();
     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
+    DataArray* GetArray();
+    DataArrayPtr* operator=(DataArray*);
 };
 
 // evaluate a DataNode at a particular index

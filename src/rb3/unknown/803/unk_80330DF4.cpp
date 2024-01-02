@@ -199,5 +199,5 @@ extern char* PathName(const Hmx::Object*);
 // }
 
 MsgSource::MsgSource(){
-    
+    unk18 = 0;
 }

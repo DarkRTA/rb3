@@ -249,6 +249,8 @@ config.libs = [
             Object(NonMatching, "rb3/rg_messages.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
+            Object(NonMatching, "rb3/trainingmgr.cpp"),
+            Object(NonMatching, "rb3/hxguid.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -277,6 +279,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802F98DC.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802FA994.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802FB548.cpp"),
+            Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80313E98.cpp"),
@@ -295,11 +298,14 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/803/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8037A3D8.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8037AD40.cpp"),
+            Object(NonMatching, "rb3/unknown/803/unk_8031144C.cpp"),
 
             Object(NonMatching, "rb3/unknown/804/unk_80421240.cpp"),
 
             Object(NonMatching, "rb3/unknown/805/unk_8050FA30.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_80567E84.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")

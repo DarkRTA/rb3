@@ -8,6 +8,7 @@
 #include "joinresultmsg.hpp"
 #include "hmx/object.hpp"
 #include "makestring.hpp"
+#include "user.hpp"
 
 // fn_800AFE60
 // probably inline
@@ -59,4 +60,12 @@ const char *MakeString(const char *c) {
 // fn_800AE0BC
 int DataArray::FindInt(Symbol s) const {
     return FindArray(s, true)->GetIntAtIndex(1);
+}
+
+User* GetUserAtIndex(DataArray* da, int idx){
+    return GetUser(da->GetNodeAtIndex(idx), da);
+}
+
+User* GetUser(DataNode* node, DataArray* arr){
+    return dynamic_cast<User*>(node->GetObj(arr));
 }

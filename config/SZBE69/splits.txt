@@ -142,6 +142,16 @@ rb3/unknown/802/unk_8022BE84.cpp:
 rb3/unknown/802/unk_80252B98.cpp:
 	.text       start:0x80252B98 end:0x80266360
 
+rb3/unknown/802/unk_802663BC.cpp:
+	.text       start:0x802663BC end:0x802956CC
+
+rb3/trainingmgr.cpp:
+	.text       start:0x802956CC end:0x802960B0
+	.data       start:0x8084CAC8 end:0x8084CB60
+
+rb3/unknown/802/unk_802960B0.cpp:
+	.text       start:0x802960B0 end:0x8029A6F4
+
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
@@ -216,6 +226,9 @@ rb3/wiinetworksocket.cpp:
 rb3/unknown/803/unk_8030A494.cpp:
 	.text       start:0x8030A494 end:0x8030DBF8
 
+rb3/unknown/803/unk_8031144C.cpp:
+	.text       start:0x8031144C end:0x80312A78
+
 rb3/rg_messages.cpp:
 	.text       start:0x80313E98 end:0x80314814
 	.data       start:0x808546F0 end:0x80854A08
@@ -270,6 +283,9 @@ rb3/unknown/803/unk_8034C91C.cpp:
 
 rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
+
+rb3/hxguid.cpp:
+	.text       start:0x8034DAAC end:0x8034DE08
 
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0
@@ -350,6 +366,12 @@ rb3/unknown/804/unk_80421240.cpp:
 
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
+
+rb3/unknown/805/unk_8052A44C.cpp:
+	.text       start:0x8052A44C end:0x80531474
+
+rb3/unknown/805/unk_80567E84.cpp:
+	.text       start:0x80567E84 end:0x80581A8C
 
 rb3/Rnd/rndbitmap.cpp:
 	.text       start:0x805CA0FC end:0x805CAC4C
