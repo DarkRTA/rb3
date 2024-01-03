@@ -1,11 +1,6 @@
 #ifndef RB3_JSONCONVERTER_HPP
 #define RB3_JSONCONVERTER_HPP
-#include "jsonarray.hpp"
-#include "jsonstring.hpp"
-#include "jsonint.hpp"
-#include "jsondouble.hpp"
-#include "jsonobject.hpp"
-#include "string.hpp"
+#include "jsonobjects.hpp"
 
 class Dummy {
 public:

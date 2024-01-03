@@ -6,7 +6,7 @@
 #include "symbol.hpp"
 #include "message.hpp"
 #include "matchmakingsettings.hpp"
-#include "jsonobject.hpp"
+#include "jsonobjects.hpp"
 #include "data.hpp"
 
 #pragma dont_inline on

@@ -1,8 +1,4 @@
-#include "jsonobject.hpp"
-#include "jsonarray.hpp"
-#include "jsonstring.hpp"
-#include "jsonint.hpp"
-#include "jsondouble.hpp"
+#include "jsonobjects.hpp"
 
 #pragma dont_inline on
 // fn_800A6360
