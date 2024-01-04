@@ -130,6 +130,7 @@ config.ldflags = [
 ]
 
 cflags_base = [
+    "-i src/stlport/stlport",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
