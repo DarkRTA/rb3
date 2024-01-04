@@ -36,6 +36,9 @@
 #ifndef __stl_config__system_h
 #define __stl_config__system_h
 
+// Decomp hack so we can directly specify things
+#if 0
+
 #if defined (__sun)
 #  include <stl/config/_solaris.h>
 #  if defined (__GNUC__)
@@ -175,5 +178,11 @@
  * Edit <config/stl_mycomp.h> to set STLport up for your compiler. */
 #  include <stl/config/stl_mycomp.h>
 #endif
+
+#endif
+
+// Deliberately use manual settings
+#include <stl/config/_revolution.h>
+#include <stl/config/_mwcceppc.h>
 
 #endif /* __stl_config__system_h */

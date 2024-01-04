@@ -16,6 +16,8 @@ src              - source for iostreams implementation and other parts
 Modifications:
 - Auxillary files such as the makefiles and tests have been removed
   to greatly reduce file count (~680 -> 379).
+- Custom configuration files have been added for the compiler/platform
+  being used, along with other config modifications.
 
 GETTING STLPORT
 
