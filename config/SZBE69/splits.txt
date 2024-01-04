@@ -72,7 +72,7 @@ quazal/unknown/800A/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
-rb3/jsonobjects.cpp:
+rb3/jsonconverter.cpp:
 	.text       start:0x800A6360 end:0x800A673C
 	.data       start:0x8082A960 end:0x8082AA40
 
