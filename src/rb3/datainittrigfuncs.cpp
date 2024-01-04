@@ -1,7 +1,7 @@
 #include "data.hpp"
 #include "symbol.hpp"
 #include "common.hpp"
-#include "std/math.h"
+#include "math.h"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 

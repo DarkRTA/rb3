@@ -1,6 +1,6 @@
 #include "data.hpp"
 #include "common.hpp"
-#include "std/math.h"
+#include "math.h"
 #include "vector3.hpp"
 #include "triangle.hpp"
 #include "hmx/matrix3.hpp"

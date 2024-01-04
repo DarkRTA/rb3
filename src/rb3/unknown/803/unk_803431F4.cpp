@@ -2,7 +2,7 @@
 #include "textstream.hpp"
 #include "binstream.hpp"
 #include "unknown.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "symbol.hpp"
 #include "bufstream.hpp"
 #include "bufstreamnand.hpp"

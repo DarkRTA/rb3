@@ -1,5 +1,5 @@
 #include "file_ops.hpp"
-#include "std/string.h"
+#include "string.h"
 
 char lbl_809071C8[0x100];
 

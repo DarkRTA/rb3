@@ -2,7 +2,7 @@
 #include "symbol.hpp"
 #include "data.hpp"
 #include "common.hpp"
-#include "std/math.h"
+#include "math.h"
 
 extern DataArray *fn_8035CF9C(int, int, int);
 

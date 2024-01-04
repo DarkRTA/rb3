@@ -1,7 +1,7 @@
 #include "string.hpp"
 #include "textstream.hpp"
 #include "unknown.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "common.hpp"
 
 // fn_80362A50

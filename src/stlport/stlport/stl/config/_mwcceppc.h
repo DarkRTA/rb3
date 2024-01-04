@@ -40,4 +40,4 @@
 // (__MWERKS__ == 0x4301)
 
 // Manual include path
-# define _STLP_NATIVE_INCLUDE_PATH std
+# define _STLP_NATIVE_INCLUDE_PATH std_native

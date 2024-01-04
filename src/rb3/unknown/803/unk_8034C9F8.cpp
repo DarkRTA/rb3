@@ -3,7 +3,7 @@
 #include "filestream.hpp"
 #include "binstream.hpp"
 #include "unknown.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "file.hpp"
 
 extern File *NewFile(const char *, int);

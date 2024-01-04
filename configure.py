@@ -147,7 +147,7 @@ cflags_base = [
     "-i src/speex/include",
     "-i src/speex",
     "-i src/RVL_SDK",
-    "-i src/std",
+    "-i src/std_native",
     "-i src/rb3",
     "-i src",
     "-nodefaults",

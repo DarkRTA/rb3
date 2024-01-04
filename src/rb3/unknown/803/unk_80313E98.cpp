@@ -1,7 +1,7 @@
 #include "data.hpp"
 #include "symbol.hpp"
-#include "std/string.h"
-#include "std/stdlib.h"
+#include "string.h"
+#include "stdlib.h"
 #include "common.hpp"
 #include "hmx/object.hpp"
 

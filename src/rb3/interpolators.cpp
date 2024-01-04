@@ -5,7 +5,7 @@
 #include "expinterpolator.hpp"
 #include "invexpinterpolator.hpp"
 #include "ataninterpolator.hpp"
-#include "std/math.h"
+#include "math.h"
 
 #pragma dont_inline on
 // fn_802DCF50
