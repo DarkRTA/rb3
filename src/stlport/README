@@ -18,6 +18,8 @@ Modifications:
   to greatly reduce file count (~680 -> 379).
 - Custom configuration files have been added for the compiler/platform
   being used, along with other config modifications.
+- Redefinitions of stdin/stdout/stderr in stdio.h have been disabled,
+  as they caused build errors in .c files.
 
 GETTING STLPORT
 

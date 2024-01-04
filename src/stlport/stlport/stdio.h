@@ -35,20 +35,21 @@ struct _exception;
 #      define _STRUCT_FILE
 #    endif
 
-#    if (defined (__MWERKS__) && !defined (N_PLAT_NLM))  || defined (__BORLANDC__)
-#      undef stdin
-#      undef stdout
-#      undef stderr
-#      if defined (__MWERKS__)
-#      define stdin   (&_STLP_VENDOR_CSTD::__files[0])
-#      define stdout  (&_STLP_VENDOR_CSTD::__files[1])
-#      define stderr  (&_STLP_VENDOR_CSTD::__files[2])
-#      elif defined (__BORLANDC__)
-#        define stdin   (&_STLP_VENDOR_CSTD::_streams[0])
-#        define stdout  (&_STLP_VENDOR_CSTD::_streams[1])
-#        define stderr  (&_STLP_VENDOR_CSTD::_streams[2])
-#      endif
-#    endif
+// This makes the build fail in speex, and just seems unnecessary in general
+// #    if (defined (__MWERKS__) && !defined (N_PLAT_NLM))  || defined (__BORLANDC__)
+// #      undef stdin
+// #      undef stdout
+// #      undef stderr
+// #      if defined (__MWERKS__)
+// #      define stdin   (&_STLP_VENDOR_CSTD::__files[0])
+// #      define stdout  (&_STLP_VENDOR_CSTD::__files[1])
+// #      define stderr  (&_STLP_VENDOR_CSTD::__files[2])
+// #      elif defined (__BORLANDC__)
+// #        define stdin   (&_STLP_VENDOR_CSTD::_streams[0])
+// #        define stdout  (&_STLP_VENDOR_CSTD::_streams[1])
+// #        define stderr  (&_STLP_VENDOR_CSTD::_streams[2])
+// #      endif
+// #    endif
 
 #  if (_STLP_OUTERMOST_HEADER_ID == 0x264)
 #    if !defined (_STLP_DONT_POP_HEADER_ID)
