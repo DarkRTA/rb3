@@ -218,7 +218,7 @@ config.libs = [
         "objects": [
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
-            Object(Matching, "rb3/jsonobjects.cpp"),
+            Object(Matching, "rb3/jsonconverter.cpp"),
             Object(Matching, "rb3/main.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
             Object(Matching, "rb3/rand.cpp"),
