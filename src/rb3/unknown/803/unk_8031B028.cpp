@@ -1229,8 +1229,8 @@ DataNode DataFilterNotify(DataArray *da) {
 }
 
 // fn_80320458
-MergeFilter::MergeFilter(DataNode *dn, int asdf) {
-    node = dn;
+MergeFilter::MergeFilter(int one, int asdf) {
+    filter = one;
     i = asdf;
 }
 

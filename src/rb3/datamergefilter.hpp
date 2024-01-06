@@ -2,14 +2,19 @@
 #define RB3_DATAMERGEFILTER_HPP
 #include "data.hpp"
 #include "mergefilter.hpp"
+#include "hmx/object.hpp"
 
 class DataMergeFilter : public MergeFilter {
 public:
     DataMergeFilter(DataNode *, int); // fn_80320314
     virtual ~DataMergeFilter(); // fn_803201F4
-    virtual DataNode *GetDataNode(); // fn_8032215C
+    virtual int Filter(Hmx::Object*, Hmx::Object*); // fn_8032215C
 
-    int filler;
+    DataType nodeType;
+    DataFunc* filterFunc;
+    Hmx::Object* filterObj;
+    int filterInt;
+
 };
 
 #endif
