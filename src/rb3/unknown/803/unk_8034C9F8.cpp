@@ -41,9 +41,7 @@ FileStream::FileStream(File *f, bool b) : BinStream(b) {
 // dtor
 FileStream::~FileStream() {
     if (!fname.empty()) {
-        if (file != 0) {
-            Flush();
-        }
+        delete file;
     }
     DeleteChecksum();
     // fn_800E1114
