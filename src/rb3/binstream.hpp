@@ -6,10 +6,19 @@
 
 class BinStream {
 public:
+
+    /** The three seek types for BinStream::Seek
+     *
+     * The three seek types used by BinStream::Seek. Presumably,
+     * they are "start from beginning", "start from current
+     * position", and "start from end".
+     *
+     * @see Seek()
+     */
     enum SeekType {
-        SeekMode0,
-        SeekMode1,
-        SeekMode2
+        SeekMode0, /**< SeekMode0 (probably SEEK_SET)*/
+        SeekMode1, /**< SeekMode1 (probably SEEK_CUR)*/
+        SeekMode2  /**< SeekMode2 (probably SEEK_END)*/
     };
 
     BinStream(bool);
@@ -30,10 +39,11 @@ public:
     virtual void SeekImpl(
         int,
         SeekType
-    ) = 0; // the second int should actually be of type BinStream::SeekType
-
+    ) = 0;
+    /** Endianness flags, denotes whether to swap from native. (guess) */
     bool unk04;
-    Rand2 *unk08;
+    /** PRNG source, used for encryption */
+    Rand2 *mCrypto;
 
     // taken from RB2
     BinStream &operator<<(const char *);
@@ -45,14 +55,46 @@ public:
     void WriteEndian(const void *, int);
     void Write(const void *, int);
 
-    void ReadString(char *, int);
-    void ReadEndian(void *, int);
-    void Read(void *, int);
+    /** Reads a `len` length string to `out`.
+     * Reads a standard C string of length `len` into `out` from
+     * the open file.
+     *
+     * @param [out] out The pointer to read the string into.
+     * @param [in] len The length of text to read.
+     */
+    void ReadString(char * out, int len);
 
+    /** Reads `len` bytes of data, backwards, into `out`.
+     * Reads a length of data specified by `len` from the open file
+     * into `out`, using the reverse endianness.
+     * (PPC == BE, therefore reverse == LE)
+     *
+     * @param [out] out The pointer to read data into.
+     * @param [in] len The length of data to read.
+     */
+    void ReadEndian(void * out, int len);
+
+    /** Reads `len` bytes of data into `out`.
+     * Reads a length of data specified by `len` from the open file
+     * into `out`, using the native endianness (PPC == BE).
+     *
+     * @param [out] out The pointer to read data into.
+     * @param [in] len The length of data to read.
+     */
+    void Read(void * out, int len);
+
+    /** Enables read encryption for e.g. archives.
+     * Enables read encryption, used for things such as archives.
+     */
     void EnableReadEncryption();
-    void EnableWriteEncryption(int);
+
+    /** Enables write encryption using `key` as the PRNG seed.
+     * @param [in] key Key to use. */
+    void EnableWriteEncryption(int key);
     void DisableEncryption();
-    void Seek(int, SeekType);
+
+    /** Seeks to `offset` using `mode`. */
+    void Seek(int offset, SeekType mode);
 
     // not taken from RB2, found in the asm
     BinStream &operator<<(unsigned int); // fn_800A7638

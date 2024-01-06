@@ -60,11 +60,11 @@ u32 RndBitmap::NumPaletteColors() const {
 
 void RndBitmap::AllocateBuffer() {
     u32 palSize;
-    if (!paletteData) {
+    if (paletteData == 0) {
         palSize = PaletteBytes();
     } else palSize = 0;
     u32 imgSize = PixelBytes();
-    if (palSize + imgSize) {
+    if (palSize + imgSize != 0) {
         allData = _MemAlloc(imgSize+palSize, 0x20);
     }
     if (palSize) paletteData = allData;

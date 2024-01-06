@@ -13,7 +13,13 @@ public:
 
     WiiNetworkSocket(bool);
     virtual ~WiiNetworkSocket(); // 0x80308cc0
-    bool Connect(u32, u16); // 0x80308d34
+
+    /** Connects to `addr` on port `port`.
+     * @param addr The IPv4 address to attempt to connect to.
+     * @param port The port to connect to the address with.
+     * @return Whether it succeeded or not, 1 == success
+     */
+    bool Connect(u32 addr, u16 port); // 0x80308d34
     bool Fail(); // 0x80308e84
     bool Disconnect(); // 0x80308e34
     bool Bind(u16); // 0x80308e8c
