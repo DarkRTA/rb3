@@ -41,9 +41,7 @@ FileStream::FileStream(File *f, bool b) : BinStream(b) {
 // dtor
 FileStream::~FileStream() {
     if (!fname.empty()) {
-        if (file != 0) {
-            Flush();
-        }
+        delete file;
     }
     DeleteChecksum();
     // fn_800E1114
@@ -69,10 +67,20 @@ bool FileStream::Fail() {
     return failed;
 }
 
+void FileStream::ReadImpl(void *v, int i){
+    if(file->Read(v, i) != i){
+        failed = true;
+    }
+}
+
 // fn_8034CC50
 void FileStream::WriteImpl(const void *v, int i) {
+    if(file->Write(v, i) != i){
+        failed = true;
+    }
 }
 
 // fn_8034CCBC
 void FileStream::SeekImpl(int i, SeekType s) {
+
 }
