@@ -3,6 +3,7 @@
 #include "types.h"
 #include "revolution/rvl/so.h"
 
+/** Generic socket class, used to keep platform-dependent code minimal*/
 class NetworkSocket {
 public:
     NetworkSocket();

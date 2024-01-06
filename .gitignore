@@ -10,6 +10,9 @@ build/
 build.ninja
 objdiff.json
 
+# Doxygen output
+doxygen/
+
 # Excluded tools
 tools/mwcc_compiler/*
 
