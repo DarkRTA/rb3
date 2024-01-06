@@ -1,0 +1,4 @@
+#ifndef MSL_CPP_CFLOAT_H
+#define MSL_CPP_CFLOAT_H
+#include <float.h>
+#endif

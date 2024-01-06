@@ -3,29 +3,37 @@
 #include <math.h>
 
 namespace std {
-using ::acos;
-using ::asin;
-using ::atan;
-using ::atan2;
-using ::ceil;
-using ::copysign;
-using ::cos;
-using ::cosf;
-using ::fabsf;
-using ::floor;
-using ::fmod;
-using ::frexp;
-using ::ldexp;
-using ::modf;
-using ::nan;
-using ::pow;
-using ::scalbn;
-using ::sin;
-using ::sinf;
-using ::sqrt;
-using ::sqrtf;
-using ::tan;
-using ::tanf;
-} // namespace std
+    using ::double_t;
+    using ::float_t;
+
+    using ::fabs;
+    using ::fmod;
+
+    using ::exp;
+    using ::log;
+    using ::log10;
+
+    using ::pow;
+    using ::sqrt;
+
+    using ::sin;
+    using ::cos;
+    using ::tan;
+    using ::asin;
+    using ::acos;
+    using ::atan;
+    using ::atan2;
+
+    using ::sinh;
+    using ::cosh;
+    using ::tanh;
+
+    using ::ceil;
+    using ::floor;
+
+    using ::frexp;
+    using ::ldexp;
+    using ::modf;
+}
 
 #endif

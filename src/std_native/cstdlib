@@ -3,12 +3,47 @@
 #include <stdlib.h>
 
 namespace std {
-using ::abs;
-using ::atof;
-using ::mbstowcs;
-using ::mbtowc;
-using ::rand;
-using ::wcstombs;
-} // namespace std
+    using ::div_t;
+    using ::ldiv_t;
+    using ::lldiv_t;
+    using ::size_t;
+
+    using ::calloc;
+    using ::free;
+    using ::malloc;
+    using ::realloc;
+
+    using ::abort;
+    using ::atexit;
+    using ::exit;
+    using ::getenv;
+    using ::system;
+
+    using ::atof;
+    using ::atoi;
+    using ::atol;
+    using ::strtod;
+    using ::strtof;
+    using ::strtol;
+    using ::strtold;
+    using ::strtoul;
+
+    using ::abs;
+    using ::div;
+    using ::labs;
+    using ::ldiv;
+
+    using ::mblen;
+    using ::mbstowcs;
+    using ::mbtowc;
+    using ::wcstombs;
+    using ::wctomb;
+
+    using ::rand;
+    using ::srand;
+
+    using ::bsearch;
+    using ::qsort;
+}
 
 #endif

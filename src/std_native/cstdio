@@ -3,17 +3,56 @@
 #include <stdio.h>
 
 namespace std {
-using ::fclose;
-using ::fflush;
-using ::FILE;
-using ::ftell;
-using ::fwide;
-using ::snprintf;
-using ::sprintf;
-using ::sscanf;
-using ::vprintf;
-using ::vsnprintf;
-using ::vsprintf;
-} // namespace std
+    using ::FILE;
+    using ::fpos_t;
+    using ::size_t;
+
+    using ::remove;
+    using ::rename;
+    using ::tmpfile;
+    using ::tmpnam;
+
+    using ::fopen;
+    using ::freopen;
+    using ::fclose;
+    using ::fflush;
+    using ::setbuf;
+    using ::setvbuf;
+
+    using ::fread;
+    using ::fwrite;
+    using ::fgetpos;
+    using ::fseek;
+    using ::fsetpos;
+    using ::ftell;
+    using ::rewind;
+
+    using ::fgetc;
+    using ::fgets;
+    using ::fputc;
+    using ::fputs;
+    using ::getc;
+    using ::getchar;
+    using ::gets;
+    using ::putc;
+    using ::putchar;
+    using ::puts;
+    using ::ungetc;
+
+    using ::fprintf;
+    using ::fscanf;
+    using ::printf;
+    using ::scanf;
+    using ::sprintf;
+    using ::sscanf;
+    using ::vfprintf;
+    using ::vprintf;
+    using ::vsprintf;
+
+    using ::clearerr;
+    using ::feof;
+    using ::ferror;
+    using ::perror;
+}
 
 #endif

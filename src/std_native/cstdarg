@@ -3,7 +3,7 @@
 #include <stdarg.h>
 
 namespace std {
-using ::va_list;
-} // namespace std
+    using ::va_list;
+}
 
 #endif

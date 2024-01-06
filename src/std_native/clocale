@@ -3,7 +3,10 @@
 #include <locale.h>
 
 namespace std {
-using ::lconv;
-} // namespace std
+    using ::lconv;
+
+    using ::localeconv;
+    using ::setlocale;
+}
 
 #endif

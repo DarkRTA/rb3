@@ -39,5 +39,12 @@
 // Remaining version checks omitted since they aren't relevant to this project
 // (__MWERKS__ == 0x4301)
 
+// 'long double' is supported (at least syntactically), but <cmath> doesn't have overloads for them
+#define _STLP_NO_LONG_DOUBLE 1
+
+// No -l or -f prefix versions of math.h functions
+#define _STLP_NO_VENDOR_MATH_L 1
+#define _STLP_NO_VENDOR_MATH_F 1
+
 // Manual include path
 # define _STLP_NATIVE_INCLUDE_PATH std_native

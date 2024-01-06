@@ -1,0 +1,23 @@
+#ifndef MSL_CPP_CTIME_H
+#define MSL_CPP_CTIME_H
+#include <time.h>
+
+namespace std {
+    using ::clock_t;
+    using ::size_t;
+    using ::time_t;
+    using ::tm;
+
+    using ::clock;
+    using ::difftime;
+    using ::time;
+
+    using ::asctime;
+    using ::ctime;
+    using ::gmtime;
+    using ::localtime;
+    using ::mktime;
+    using ::strftime;
+}
+
+#endif
