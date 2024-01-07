@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-
+// clang-format off: don't move ternary results to their own lines
 static inline int iswalnum(wint_t c) {
     return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_alnum);
 }
@@ -46,16 +46,16 @@ static inline int iswpunct(wint_t c) {
     return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_punct);
 }
 
-static inline int iswspace(wint_t c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_space); 
+static inline int iswspace(wint_t c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_space);
 }
 
-static inline int iswupper(wint_t c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_upper); 
+static inline int iswupper(wint_t c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_upper);
 }
 
-static inline int iswxdigit(wint_t c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_xdigit); 
+static inline int iswxdigit(wint_t c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->wctype_map_ptr[c] & wctype_xdigit);
 }
 
 static inline wint_t towlower(wint_t c) {
@@ -65,6 +65,12 @@ static inline wint_t towlower(wint_t c) {
 static inline wint_t towupper(wint_t c) {
     return (c < 0 || c >= 256) ? c : (int)(&_current_locale)->ctype_cmpt_ptr->wupper_map_ptr[c];
 }
+// clang-format on
+
+int iswctype(wint_t c);
+wint_t towctrans(wint_t c, wctrans_t desc);
+wctrans_t wctrans(const char *name);
+wctype_t wctype(const char *name);
 
 #ifdef __cplusplus
 }

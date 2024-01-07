@@ -1,6 +1,11 @@
 #ifndef _MSL_COMMON_FILE_STRUC_H
 #define _MSL_COMMON_FILE_STRUC_H
+
 #include "types.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef unsigned long __file_handle;
 typedef unsigned long fpos_t;
@@ -111,5 +116,9 @@ typedef struct _FILE FILE;
 #define _STATIC_FILES 4
 
 extern FILE __files[];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

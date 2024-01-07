@@ -4,7 +4,7 @@
 #include "types.h"
 #ifdef __cplusplus
 extern "C" {
-#endif // ifdef __cplusplus
+#endif
 
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/alloc.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/arith.h"
@@ -17,14 +17,27 @@ extern "C" {
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1
-#endif // ifndef EXIT_SUCCESS
+#endif
 
-void qsort(void *base, size_t nitems, size_t size, int (*compar)(const void *, const void*));
-void *realloc(void *ptr, size_t size);
-int atoi (const char * str);
+void qsort(void *ptr, size_t count, size_t size, int (*comp)(const void *, const void *));
+void *bsearch(
+    const void *key,
+    const void *ptr,
+    size_t count,
+    size_t size,
+    int (*comp)(const void *, const void *)
+);
+
+int system(const char *command);
+char *getenv(const char *name);
+
+int atexit(void (*func)(void));
+void exit(int);
+void abort(void);
+void _Exit(int exit_code);
 
 #ifdef __cplusplus
-};
-#endif // ifdef __cplusplus
+}
+#endif
 
 #endif

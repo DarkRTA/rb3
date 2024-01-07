@@ -1,29 +1,25 @@
 #ifndef MSL_PRINTF_H
 #define MSL_PRINTF_H
+
 #include <stdarg.h>
 #include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//printf
-//printf_s
-int fprintf(FILE*, const char* format, ...);
-//fprintf_s
-int vprintf(const char*, va_list);
-//vprintf_s
-//vfprintf
-//vfprintf_s
-int vsnprintf(char*, size_t, const char*, va_list);
-//vsnprintf_s
-int vsprintf(char*, const char*, va_list);
-//vsprintf_s
-int snprintf(char*, size_t, const char*, ...);
-//snprintf_s
-int sprintf(char*, const char*, ...);
-//sprintf_s
+int printf(const char *restrict format, ...);
+int fprintf(FILE *restrict stream, const char *restrict format, ...);
+int sprintf(char *restrict buffer, const char *restrict format, ...);
+int snprintf(char *restrict buffer, size_t bufsz, const char *restrict format, ...);
+
+int vprintf(const char *restrict format, va_list vlist);
+int vfprintf(FILE *restrict stream, const char *restrict format, va_list vlist);
+int vsprintf(char *restrict buffer, const char *restrict format, va_list vlist);
+int vsnprintf(char *restrict buffer, size_t bufsz, const char *restrict format, va_list vlist);
 
 #ifdef __cplusplus
 }
 #endif
+
 #endif

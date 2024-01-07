@@ -15,4 +15,5 @@ typedef unsigned char bool;
 #ifdef __cplusplus
 }
 #endif
+
 #endif

@@ -1,18 +1,19 @@
 #ifndef _STDDEF_H
 #define _STDDEF_H
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef NULL
 #define NULL 0
-#endif // NULL
+#endif
 
 #ifndef nullptr
-#define nullptr 0
-#endif // nullptr
+#define nullptr NULL
+#endif
 
-#define offsetof(ST, M) ((size_t) & (((ST*)0)->M))
+#define offsetof(ST, M) ((size_t) & (((ST *)0)->M))
 
 typedef signed long intptr_t;
 typedef unsigned long uintptr_t;
@@ -31,4 +32,5 @@ typedef void (*funcptr_t)(void);
 #ifdef __cplusplus
 }
 #endif
+
 #endif

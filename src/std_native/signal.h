@@ -7,10 +7,23 @@
 extern "C" {
 #endif
 
-extern void exit(int);
+// TODO
+// #define SIGABRT
+// #define SIGFPE
+// #define SIGILL
+// #define SIGINT
+// #define SIGSEGV
+// #define SIGTERM
 
-typedef void (*sig_func)(int sig);
+// typedef ... sig_atomic_t;
 
+typedef void sig_func(int sig);
+
+// #define SIG_DFL
+// #define SIG_IGN
+// #define SIG_ERR
+
+sig_func* signal(int sig, sig_func* handler);
 int raise(int sig);
 
 #ifdef __cplusplus

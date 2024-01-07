@@ -9,6 +9,7 @@
 extern "C" {
 #endif
 
+// clang-format off: don't move ternary results to their own lines
 inline int isalnum(int c) {
     return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_alnum);
 }
@@ -45,16 +46,16 @@ inline int ispunct(int c) {
     return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_punct);
 }
 
-inline int isspace(int c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_space); 
+inline int isspace(int c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_space);
 }
 
-inline int isupper(int c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_upper); 
+inline int isupper(int c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_upper);
 }
 
-inline int isxdigit(int c) { 
-    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_xdigit); 
+inline int isxdigit(int c) {
+    return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_xdigit);
 }
 
 inline int tolower(int c) {
@@ -64,8 +65,10 @@ inline int tolower(int c) {
 inline int toupper(int c) {
     return (c < 0 || c >= 256) ? c : (int)(&_current_locale)->ctype_cmpt_ptr->upper_map_ptr[c];
 }
+// clang-format on
 
 #ifdef __cplusplus
 }
 #endif
+
 #endif

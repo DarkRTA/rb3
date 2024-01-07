@@ -3,14 +3,35 @@
 
 #include "types.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
-	int quot; /* quotient */
-	int rem;  /* remainder */
+    int quot;
+    int rem;
 } div_t;
 
+typedef struct {
+    long quot;
+    long rem;
+} ldiv_t;
 
-int abs(int __x);
-long labs(long __x);
-div_t div(s32 __numer, s32 __denom);
+typedef struct {
+    long long quot;
+    long long rem;
+} lldiv_t;
+
+int abs(int n);
+long labs(long n);
+long long llabs(long long n);
+
+div_t div(int x, int y);
+ldiv_t ldiv(long x, long y);
+lldiv_t lldiv(long long x, long long y);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

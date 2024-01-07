@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif // ifdef __cplusplus
+#endif
 
 extern int __double_max[];
 extern int __extended_min[];
@@ -22,7 +22,6 @@ extern int __float_epsilon[];
 #define FLT_EPSILON 0x1.000000P-23F
 #define FLT_MIN 0x1.000000P-126F
 
-
 #define DBL_MANT_DIG 53
 #define DBL_DIG 15
 #define DBL_MIN_EXP (-1021)
@@ -33,7 +32,6 @@ extern int __float_epsilon[];
 #define DBL_MAX 0x1.fffffffffffffP1023
 #define DBL_EPSILON 0x1.0000000000000P-52
 #define DBL_MIN 0x1.0000000000000P-1022
-
 
 #define LDBL_MANT_DIG 53
 #define LDBL_DIG 15
@@ -47,7 +45,7 @@ extern int __float_epsilon[];
 #define LDBL_MIN 0x1.0000000000000P-1022L
 
 #ifdef __cplusplus
-};
-#endif // ifdef __cplusplus
+}
+#endif
 
 #endif
