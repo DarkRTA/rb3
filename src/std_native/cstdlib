@@ -32,6 +32,8 @@ namespace std {
     using ::div;
     using ::labs;
     using ::ldiv;
+    using ::llabs;
+    using ::lldiv;
 
     using ::mblen;
     using ::mbstowcs;

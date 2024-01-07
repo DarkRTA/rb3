@@ -69,7 +69,7 @@ int __fpclassifyd(double);
 #define _DECL_MATHR(name, ret)                                                           \
     ret name##f(float x);                                                                \
     ret name(double x);                                                                  \
-    ret double name##l(long double x)
+    ret name##l(long double x)
 
 #define _DECL_MATH2(name)                                                                \
     float name##f(float x, float y);                                                     \
@@ -145,7 +145,7 @@ _DECL_MATHR(llround, long long);
 _DECL_MATH(nearbyint);
 _DECL_MATH(rint);
 _DECL_MATHR(lrint, long);
-_DECL_MATHR(lrint, long long);
+_DECL_MATHR(llrint, long long);
 
 _DECL_MATH2C(frexp, int *exp);
 _DECL_MATH2C(ldexp, int exp);

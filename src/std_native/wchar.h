@@ -2,6 +2,7 @@
 #define _WCHAR_H
 
 #include "types.h"
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +20,7 @@ extern "C" {
 
 // #define WEOF
 
-size_t wcsftime(wchar_t *str, size_t count, const wchar_t *format, tm *time);
+size_t wcsftime(wchar_t *str, size_t count, const wchar_t *format, struct tm *time);
 
 #ifdef __cplusplus
 }

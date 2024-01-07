@@ -12,19 +12,19 @@ namespace std {
     using ::tmpfile;
     using ::tmpnam;
 
-    using ::fopen;
-    using ::freopen;
     using ::fclose;
     using ::fflush;
+    using ::fopen;
+    using ::freopen;
     using ::setbuf;
     using ::setvbuf;
 
-    using ::fread;
-    using ::fwrite;
     using ::fgetpos;
+    using ::fread;
     using ::fseek;
     using ::fsetpos;
     using ::ftell;
+    using ::fwrite;
     using ::rewind;
 
     using ::fgetc;
@@ -40,14 +40,22 @@ namespace std {
     using ::ungetc;
 
     using ::fprintf;
-    using ::fscanf;
     using ::printf;
-    using ::scanf;
+    using ::snprintf;
     using ::sprintf;
-    using ::sscanf;
+
     using ::vfprintf;
     using ::vprintf;
+    using ::vsnprintf;
     using ::vsprintf;
+
+    using ::fscanf;
+    using ::scanf;
+    using ::sscanf;
+
+    using ::vfscanf;
+    using ::vscanf;
+    using ::vsscanf;
 
     using ::clearerr;
     using ::feof;
