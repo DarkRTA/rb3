@@ -6,7 +6,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif // ifdef __cplusplus
+#endif
 
 #define wctype_alpha 0x0001
 #define wctype_blank 0x0002
@@ -22,12 +22,15 @@ extern "C" {
 
 #define wctype_alnum (wctype_alpha | wctype_digit)
 
+typedef wchar_t wctrans_t;
+typedef wchar_t wctype_t;
+
 extern const unsigned short __wctype_mapC[256];
 extern const wchar_t __wlower_mapC[256];
 extern const wchar_t __wupper_mapC[256];
 
 #ifdef __cplusplus
-};
-#endif // ifdef __cplusplus
+}
+#endif
 
 #endif

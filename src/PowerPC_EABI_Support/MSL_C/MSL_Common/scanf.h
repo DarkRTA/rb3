@@ -1,18 +1,24 @@
 #ifndef MSL_SCANF_H
 #define MSL_SCANF_H
 
+#include "types.h"
 #include <stdarg.h>
+#include <stdio.h>
 
-//fscanf
-//fscanf_s
-//vscanf
-//scanf
-//scanf_s
-//vfscanf
-//vfscanf_s
-int vsscanf(const char*, const char*, va_list);
-//vsscanf_s
-int sscanf(const char*, const char*, ...);
-//sscanf_s
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int scanf(const char *RESTRICT format, ...);
+int fscanf(FILE *RESTRICT stream, const char *RESTRICT format, ...);
+int sscanf(const char *RESTRICT buffer, const char *RESTRICT format, ...);
+
+int vscanf(const char *RESTRICT format, va_list vlist);
+int vfscanf(FILE *RESTRICT stream, const char *RESTRICT format, va_list vlist);
+int vsscanf(const char *RESTRICT buffer, const char *RESTRICT format, va_list vlist);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

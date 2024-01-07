@@ -1,0 +1,12 @@
+#ifndef MSL_CPP_CSIGNAL_H
+#define MSL_CPP_CSIGNAL_H
+#include <signal.h>
+
+namespace std {
+    using ::sig_atomic_t;
+
+    using ::raise;
+    using ::signal;
+}
+
+#endif

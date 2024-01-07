@@ -3,8 +3,8 @@
 #include "common.hpp"
 #include "file_ops.hpp"
 #include "string.hpp"
-#include "std/string.h"
-#include "std/stdlib.h"
+#include "string.h"
+#include "stdlib.h"
 #include "vector3.hpp"
 #include "formatstring.hpp"
 #include "debug.hpp"
@@ -609,7 +609,6 @@ DataNode DataNew(DataArray* da){
                     obj->SetType(da->GetSymAtIndex(3));
                 }
             }
-            
         }
     }
     return DataNode(obj);

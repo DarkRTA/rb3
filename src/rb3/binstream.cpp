@@ -1,7 +1,7 @@
 #include "string.hpp"
 #include "textstream.hpp"
 #include "binstream.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "symbol.hpp"
 #include "common.hpp"
 #include "random.hpp"

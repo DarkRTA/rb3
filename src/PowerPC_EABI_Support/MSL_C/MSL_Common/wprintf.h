@@ -5,19 +5,22 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-//wprintf
-//wprintf_s
-//fwprintf
-//fwprintf_s
-//vwprintf
-//vwprintf_s
-//vfwprintf
-//vfwprintf_s
-int swprintf(wchar_t*, size_t, const wchar_t*, ...);
-//swprintf_s
-//snwprintf_s
-int vswprintf(wchar_t*, size_t, const wchar_t*, va_list);
-//vswprintf_s
-//vsnwprintf_s
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+int wprintf(const wchar_t *RESTRICT format, ...);
+int fwprintf(FILE *RESTRICT stream, const wchar_t *RESTRICT format, ...);
+int swprintf(wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t *RESTRICT format, ...);
+
+int vwprintf(const wchar_t *RESTRICT format, va_list vlist);
+int vfwprintf(FILE *RESTRICT stream, const wchar_t *RESTRICT format, va_list vlist);
+int vswprintf(
+    wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t *RESTRICT format, va_list vlist
+);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

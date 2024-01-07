@@ -1,6 +1,6 @@
 #include "formatstring.hpp"
 #include "common.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 #include "data.hpp"
 

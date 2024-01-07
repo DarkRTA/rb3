@@ -1,0 +1,46 @@
+#ifndef _NEW
+#define _NEW
+
+#include <exception>
+
+namespace std {
+    class bad_alloc : public exception {
+    public:
+        virtual ~bad_alloc() {
+        }
+        virtual const char *what() const {
+            return "bad_alloc";
+        }
+    };
+
+    struct nothrow_t {
+        explicit nothrow_t() {
+        }
+    };
+    extern const nothrow_t nothrow;
+
+    typedef void (*new_handler)();
+    new_handler set_new_handler(new_handler new_p) throw();
+}
+
+void *operator new(std::size_t size);
+inline void *operator new(std::size_t size, void *ptr) throw() {
+    return ptr;
+}
+void *operator new(std::size_t size, const std::nothrow_t &) throw();
+
+void operator delete(void *ptr) throw();
+void operator delete(void *ptr, void *place) throw();
+void operator delete(void *ptr, std::size_t size) throw();
+void operator delete(void *ptr, const std::nothrow_t &) throw();
+
+void *operator new[](std::size_t size);
+void *operator new[](std::size_t size, void *ptr) throw();
+void *operator new[](std::size_t size, const std::nothrow_t &) throw();
+
+void operator delete[](void *ptr) throw();
+void operator delete[](void *ptr, void *place) throw();
+void operator delete[](void *ptr, std::size_t size) throw();
+void operator delete[](void *ptr, const std::nothrow_t &) throw();
+
+#endif

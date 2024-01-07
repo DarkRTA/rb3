@@ -1,6 +1,6 @@
 #include "file.hpp"
 #include "asyncfilecnt.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "string.hpp"
 
 extern char fn_802FB54C(const char *, int);

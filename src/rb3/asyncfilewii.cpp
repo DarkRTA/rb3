@@ -1,7 +1,7 @@
 #include "string.hpp"
 #include "textstream.hpp"
 #include "unknown.hpp"
-#include "std/string.h"
+#include "string.h"
 #include "file.hpp"
 #include "asyncfile.hpp"
 #include "asyncfilewii.hpp"

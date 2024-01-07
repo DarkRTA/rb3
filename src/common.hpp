@@ -6,11 +6,6 @@
 #include "rb3/textfile.hpp"
 #include "rb3/data.hpp"
 
-// placement new
-inline void *operator new(unsigned long size, void *p) {
-    return p;
-}
-
 // string operations
 bool SearchReplace(const char *, const char *, const char *, char *);
 bool StrNCopy(char *, const char *, int);

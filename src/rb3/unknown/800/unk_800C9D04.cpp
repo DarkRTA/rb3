@@ -1,7 +1,7 @@
 #include "jsonconverter.hpp"
 #include "common.hpp"
 #include "data.hpp"
-#include "std/math.h"
+#include "math.h"
 #include "vector3.hpp"
 #include "hmx/matrix3.hpp"
 #include "vector_ops.hpp"
