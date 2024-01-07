@@ -1,3 +1,0 @@
-[submodule "src/tainted"]
-	path = src/tainted
-	url = https://git.thev0id.io/tainted-repos/rb3_taint.git
