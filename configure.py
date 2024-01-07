@@ -168,6 +168,7 @@ cflags_base = [
     "-func_align 4",
     "-gccinc",
 ];
+
 cflags_rb3 = [
     *cflags_base,
     "-sdata 2",
@@ -176,22 +177,25 @@ cflags_rb3 = [
     "-RTTI on",
 ]
 
-cflags_zlib = [
-    *cflags_base,
+cflags_c = [
     *cflags_rb3,
+    "-lang=c99"
+]
+
+cflags_zlib = [
+    *cflags_c,
     "-pool on"
 ]
 
 cflags_bt = [
-    *cflags_base,
-    *cflags_rb3,
+    *cflags_c,
     "-str reuse, nopool"
 ]
 
 
 # Metrowerks library flags
 cflags_runtime = [
-    *cflags_base,
+    *cflags_c,
     "-use_lmw_stmw on",
     "-str reuse,pool,readonly",
     "-common off",
@@ -346,7 +350,7 @@ config.libs = [
     {
         "lib": "json-c",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": cflags_c,
         "host": False,
         "objects": [
             Object(Matching, "json-c/arraylist.c"),
@@ -414,7 +418,7 @@ config.libs = [
     {
         "lib": "libogg",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": cflags_c,
         "host": False,
         "objects": [
             Object(Matching, "libogg/src/bitwise.c"),
@@ -424,7 +428,7 @@ config.libs = [
     {
         "lib": "vorbis",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": cflags_c,
         "host": False,
         "objects": [
             Object(Matching, "vorbis/bitrate.c"),

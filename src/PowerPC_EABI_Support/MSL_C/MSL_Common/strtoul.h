@@ -1,6 +1,8 @@
 #ifndef MSL_STRTOUL_H
 #define MSL_STRTOUL_H
 
+#include "types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,10 +30,10 @@ int atoi(const char *str);
 long atol(const char *str);
 long long atoll(const char *str);
 
-long strtol(const char *restrict str, char **restrict str_end, int base);
-long long strtoll(const char *restrict str, char **restrict str_end, int base);
-unsigned long strtoul(const char *restrict str, char **restrict str_end, int base);
-unsigned long long strtoull(const char *restrict str, char **restrict str_end, int base);
+long strtol(const char *RESTRICT str, char **RESTRICT str_end, int base);
+long long strtoll(const char *RESTRICT str, char **RESTRICT str_end, int base);
+unsigned long strtoul(const char *RESTRICT str, char **RESTRICT str_end, int base);
+unsigned long long strtoull(const char *RESTRICT str, char **RESTRICT str_end, int base);
 
 #ifdef __cplusplus
 }

@@ -49,10 +49,10 @@ clock_t clock(void);
 char *ctime(const time_t *timer);
 char *asctime(const struct tm *time_ptr);
 size_t strftime(
-    char *restrict str,
+    char *RESTRICT str,
     size_t count,
-    const char *restrict format,
-    const struct tm *restrict tp
+    const char *RESTRICT format,
+    const struct tm *RESTRICT tp
 );
 
 time_t mktime(struct tm *arg);

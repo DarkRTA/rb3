@@ -1,6 +1,7 @@
 #ifndef _INTTYPES_H
 #define _INTTYPES_H
 
+#include "types.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -184,11 +185,11 @@ typedef struct {
 intmax_t imaxabs(intmax_t n);
 imaxdiv_t imaxdiv(intmax_t x, intmax_t y);
 
-intmax_t strtoimax(const char *restrict nptr, char **restrict endptr, int base);
-uintmax_t strtoumax(const char *restrict nptr, char **restrict endptr, int base);
+intmax_t strtoimax(const char *RESTRICT nptr, char **RESTRICT endptr, int base);
+uintmax_t strtoumax(const char *RESTRICT nptr, char **RESTRICT endptr, int base);
 
-intmax_t wcstoimax(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
-uintmax_t wcstoumax(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
+intmax_t wcstoimax(const wchar_t *RESTRICT nptr, wchar_t **RESTRICT endptr, int base);
+uintmax_t wcstoumax(const wchar_t *RESTRICT nptr, wchar_t **RESTRICT endptr, int base);
 
 #ifdef __cplusplus
 }

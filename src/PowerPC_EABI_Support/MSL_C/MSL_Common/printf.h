@@ -1,6 +1,7 @@
 #ifndef MSL_PRINTF_H
 #define MSL_PRINTF_H
 
+#include "types.h"
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -8,15 +9,15 @@
 extern "C" {
 #endif
 
-int printf(const char *restrict format, ...);
-int fprintf(FILE *restrict stream, const char *restrict format, ...);
-int sprintf(char *restrict buffer, const char *restrict format, ...);
-int snprintf(char *restrict buffer, size_t bufsz, const char *restrict format, ...);
+int printf(const char *RESTRICT format, ...);
+int fprintf(FILE *RESTRICT stream, const char *RESTRICT format, ...);
+int sprintf(char *RESTRICT buffer, const char *RESTRICT format, ...);
+int snprintf(char *RESTRICT buffer, size_t bufsz, const char *RESTRICT format, ...);
 
-int vprintf(const char *restrict format, va_list vlist);
-int vfprintf(FILE *restrict stream, const char *restrict format, va_list vlist);
-int vsprintf(char *restrict buffer, const char *restrict format, va_list vlist);
-int vsnprintf(char *restrict buffer, size_t bufsz, const char *restrict format, va_list vlist);
+int vprintf(const char *RESTRICT format, va_list vlist);
+int vfprintf(FILE *RESTRICT stream, const char *RESTRICT format, va_list vlist);
+int vsprintf(char *RESTRICT buffer, const char *RESTRICT format, va_list vlist);
+int vsnprintf(char *RESTRICT buffer, size_t bufsz, const char *RESTRICT format, va_list vlist);
 
 #ifdef __cplusplus
 }

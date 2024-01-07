@@ -18,8 +18,8 @@ int fwide(FILE *stream, int mode);
 
 wint_t fgetwc(FILE *stream);
 wint_t fputwc(wchar_t ch, FILE *stream);
-wchar_t *fgetws(wchar_t *restrict str, int count, FILE *restrict stream);
-int fputws(const wchar_t *restrict str, FILE *restrict stream);
+wchar_t *fgetws(wchar_t *RESTRICT str, int count, FILE *RESTRICT stream);
+int fputws(const wchar_t *RESTRICT str, FILE *RESTRICT stream);
 
 #ifdef __cplusplus
 }

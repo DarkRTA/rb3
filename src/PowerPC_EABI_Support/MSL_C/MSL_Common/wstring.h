@@ -9,11 +9,11 @@ extern "C" {
 
 size_t wcslen(const wchar_t *str);
 
-wchar_t *wcscpy(wchar_t *restrict dest, const wchar_t *restrict src);
-wchar_t *wcsncpy(wchar_t *restrict dest, const wchar_t *restrict src, size_t count);
-wchar_t *wcscat(wchar_t *restrict dest, const wchar_t *restrict src);
-wchar_t *wcsncat(wchar_t *restrict dest, const wchar_t *restrict src, size_t count);
-size_t wcsxfrm(wchar_t *restrict dest, const wchar_t *restrict src, size_t count);
+wchar_t *wcscpy(wchar_t *RESTRICT dest, const wchar_t *RESTRICT src);
+wchar_t *wcsncpy(wchar_t *RESTRICT dest, const wchar_t *RESTRICT src, size_t count);
+wchar_t *wcscat(wchar_t *RESTRICT dest, const wchar_t *RESTRICT src);
+wchar_t *wcsncat(wchar_t *RESTRICT dest, const wchar_t *RESTRICT src, size_t count);
+size_t wcsxfrm(wchar_t *RESTRICT dest, const wchar_t *RESTRICT src, size_t count);
 
 int wcscmp(const wchar_t *lhs, const wchar_t *rhs);
 int wcsncmp(const wchar_t *lhs, const wchar_t *rhs, size_t count);
@@ -26,7 +26,7 @@ size_t wcscspn(const wchar_t *dest, const wchar_t *src);
 wchar_t *wcspbrk(const wchar_t *dest, const wchar_t *str);
 wchar_t *wcsstr(const wchar_t *dest, const wchar_t *src);
 wchar_t *
-wcstok(wchar_t *restrict str, const wchar_t *restrict delim, wchar_t **restrict ptr);
+wcstok(wchar_t *RESTRICT str, const wchar_t *RESTRICT delim, wchar_t **RESTRICT ptr);
 
 #ifdef __cplusplus
 }

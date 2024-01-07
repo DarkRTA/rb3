@@ -9,14 +9,14 @@
 extern "C" {
 #endif
 
-int wprintf(const wchar_t *restrict format, ...);
-int fwprintf(FILE *restrict stream, const wchar_t *restrict format, ...);
-int swprintf(wchar_t *restrict buffer, size_t bufsz, const wchar_t *restrict format, ...);
+int wprintf(const wchar_t *RESTRICT format, ...);
+int fwprintf(FILE *RESTRICT stream, const wchar_t *RESTRICT format, ...);
+int swprintf(wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t *RESTRICT format, ...);
 
-int vwprintf(const wchar_t *restrict format, va_list vlist);
-int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list vlist);
+int vwprintf(const wchar_t *RESTRICT format, va_list vlist);
+int vfwprintf(FILE *RESTRICT stream, const wchar_t *RESTRICT format, va_list vlist);
 int vswprintf(
-    wchar_t *restrict buffer, size_t bufsz, const wchar_t *restrict format, va_list vlist
+    wchar_t *RESTRICT buffer, size_t bufsz, const wchar_t *RESTRICT format, va_list vlist
 );
 
 #ifdef __cplusplus

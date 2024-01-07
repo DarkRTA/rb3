@@ -16,7 +16,7 @@ int _fseek(FILE *stream, u32 offset, int whence);
 int ftell(FILE *stream);
 int _ftell(FILE *stream);
 
-int fgetpos(FILE *restrict stream, fpos_t *restrict pos);
+int fgetpos(FILE *RESTRICT stream, fpos_t *RESTRICT pos);
 int fsetpos(FILE *stream, const fpos_t *pos);
 void rewind(FILE *stream);
 

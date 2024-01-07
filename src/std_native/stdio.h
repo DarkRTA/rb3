@@ -31,13 +31,13 @@ int puts(const char *str);
 int getchar(void);
 int putchar(int ch);
 
-void setbuf(FILE *restrict stream, char *restrict buffer);
-int setvbuf(FILE *restrict stream, char *restrict buffer, int mode, size_t size);
+void setbuf(FILE *RESTRICT stream, char *RESTRICT buffer);
+int setvbuf(FILE *RESTRICT stream, char *RESTRICT buffer, int mode, size_t size);
 
 int fgetc(FILE *stream);
 int fputc(int ch, FILE *stream);
-char *fgets(char *restrict str, int count, FILE *restrict stream);
-int fputs(const char *restrict str, FILE *restrict stream);
+char *fgets(char *RESTRICT str, int count, FILE *RESTRICT stream);
+int fputs(const char *RESTRICT str, FILE *RESTRICT stream);
 
 void clearerr(FILE *stream);
 int feof(FILE *stream);
