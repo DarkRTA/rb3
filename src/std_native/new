@@ -3,6 +3,15 @@
 
 #include <exception>
 
+// Not sure where these should go, leaving here for now
+enum PoolType {
+    MainPool,
+    FastPool
+};
+
+extern void *_MemOrPoolAllocSTL(size_t size, PoolType pool);
+extern void _MemOrPoolFreeSTL(size_t size, PoolType pool, void *ptr);
+
 namespace std {
     class bad_alloc : public exception {
     public:
