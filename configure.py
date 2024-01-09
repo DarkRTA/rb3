@@ -129,7 +129,7 @@ config.ldflags = [
     "-code_merging all",
 ]
 
-cflags_base = [
+cflags_includes = [
     "-i src/stlport/stlport",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common",
     "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
@@ -150,6 +150,10 @@ cflags_base = [
     "-i src/std_native",
     "-i src/rb3",
     "-i src",
+]
+
+cflags_base = [
+    *cflags_includes,
     "-nodefaults",
     "-proc gekko",
     "-align powerpc",
@@ -490,12 +494,16 @@ config.libs = [
     },
 ]
 
-if args.mode == "configure":
-    # Write build.ninja and objdiff.json
-    generate_build(config)
-elif args.mode == "progress":
-    # Print progress and write progress.json
-    config.progress_each_module = args.verbose
-    calculate_progress(config)
-else:
-    sys.exit("Unknown mode: " + args.mode)
+def main():
+    if args.mode == "configure":
+        # Write build.ninja and objdiff.json
+        generate_build(config)
+    elif args.mode == "progress":
+        # Print progress and write progress.json
+        config.progress_each_module = args.verbose
+        calculate_progress(config)
+    else:
+        sys.exit("Unknown mode: " + args.mode)
+
+if __name__ == "__main__":
+    main()

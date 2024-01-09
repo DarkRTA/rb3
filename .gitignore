@@ -16,6 +16,12 @@ doxygen/
 # Excluded tools
 tools/mwcc_compiler/*
 
+# Generated context files
+ctx.c
+ctx.cpp
+ctx.h
+ctx.hpp
+
 # Original game files
 orig/*
 !orig/SZBE69.sha1
