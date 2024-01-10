@@ -64,33 +64,33 @@ BinStream &BinStream::operator>>(String &s) {
 
 // fn_80342D18
 // BinStream's ctor
-BinStream::BinStream(bool b) : unk04(b), unk08(0) {
+BinStream::BinStream(bool b) : unk04(b), mCrypto(0) {
 }
 
 // fn_80342D34
 // BinStream's dtor
 BinStream::~BinStream() {
-    delete unk08;
+    delete mCrypto;
 }
 
 // fn_80342D98
 void BinStream::EnableReadEncryption() {
     unsigned int a;
     *this >> a;
-    unk08 = new Rand2(a);
+    mCrypto = new Rand2(a);
 }
 
 // fn_80342DE4
 void BinStream::EnableWriteEncryption(int i) {
     unsigned int a = RandomInt();
     *this << a;
-    unk08 = new Rand2(a);
+    mCrypto = new Rand2(a);
 }
 
 // fn_80342E44
 void BinStream::DisableEncryption() {
-    delete unk08;
-    unk08 = 0;
+    delete mCrypto;
+    mCrypto = 0;
 }
 
 void BinStream::Read(void *v, int i) {
@@ -104,10 +104,10 @@ void BinStream::Read(void *v, int i) {
         return;
     }
     ReadImpl(var_r30, i);
-    if (unk08 != nullptr) {
+    if (mCrypto != nullptr) {
         temp_r31 = var_r30 + i;
         while (var_r30 < temp_r31) {
-            *var_r30++ ^= unk08->Int();
+            *var_r30++ ^= mCrypto->Int();
         }
     }
 }
@@ -118,14 +118,14 @@ void BinStream::Write(const void *v, int i) {
         Name();
         return;
     }
-    if (unk08 == nullptr) {
+    if (mCrypto == nullptr) {
         WriteImpl((void *)v, i);
         return;
     }
     while (i > 0) {
         int temp_r29 = Minimum(0x200, i);
         for (int j = 0; j < temp_r29; j++) {
-            unsigned char x = (unsigned char)unk08->Int();
+            unsigned char x = (unsigned char)mCrypto->Int();
             sp8[j] = x ^ ((const char *)v)[j];
         }
         WriteImpl(&sp8, temp_r29);
