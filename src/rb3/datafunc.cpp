@@ -13,6 +13,13 @@
 #include "datamergefilter.hpp"
 #include "hmx/object.hpp"
 #include "datafuncobj.hpp"
+#include <map>
+
+std::map<Symbol, DataFunc*> gDataFuncs;
+
+// void DataRegisterFunc(Symbol s, DataFunc* func){
+//     gDataFuncs[s] = func;
+// }
 
 extern void DataRegisterFunc(Symbol, DataFunc *);
 extern Debug TheDebug;
@@ -1399,6 +1406,10 @@ void DataInitFuncs() {
     c[1] = '7';
     c[2] = '0';
     DataRegisterFunc(c, DataInc);
+}
+
+void DataTermFuncs(){
+    gDataFuncs.clear();
 }
 
 DataFuncObj::~DataFuncObj(){

@@ -162,7 +162,6 @@ cflags_base = [
     "-Cpp_exceptions off",
     # "-W all",
     "-O4,s",
-    "-inline auto",
     '-pragma "cats off"',
     '-pragma "warn_notinlined off"',
     "-maxerrors 1",
@@ -179,11 +178,16 @@ cflags_rb3 = [
     "-sdata2 2",
     "-pragma \"merge_float_consts on\"",
     "-RTTI on",
+    "-inline off",
 ]
 
 cflags_c = [
-    *cflags_rb3,
-    "-lang=c99"
+    *cflags_base,
+    "-lang=c99",
+    "-sdata 2",
+    "-sdata2 2",
+    "-pragma \"merge_float_consts on\"",
+    "-inline auto",
 ]
 
 cflags_zlib = [
@@ -261,6 +265,10 @@ config.libs = [
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
 
+            Object(NonMatching, "rb3/dataarray.cpp"),
+            Object(NonMatching, "rb3/datafunc.cpp"),
+            Object(NonMatching, "rb3/datanode.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),
@@ -291,9 +299,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_80313E98.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_8031B028.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_80322664.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_803242CC.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8032443C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80330DF4.cpp"),

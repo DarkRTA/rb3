@@ -1,6 +1,7 @@
 #ifndef RB3_MSGSOURCE_HPP
 #define RB3_MSGSOURCE_HPP
 #include "hmx/object.hpp"
+#include <list>
 
 class MsgSource : public virtual Hmx::Object {
 public:
@@ -17,8 +18,8 @@ public:
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
 
-    char list1[8];
-    char list2[8];
+    std::list<int> list1;
+    std::list<int> list2;
     int unk18;
 };
 
