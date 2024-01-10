@@ -4,6 +4,7 @@
 #include "stdlib.h"
 #include "common.hpp"
 #include "hmx/object.hpp"
+#include <new>
 
 extern char *lbl_8091A47C;
 extern int lbl_8091A480;
