@@ -268,6 +268,10 @@ config.libs = [
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
             Object(NonMatching, "rb3/datanode.cpp"),
+            Object(NonMatching, "rb3/datautil.cpp"),
+
+            Object(NonMatching, "rb3/textfile.cpp"),
+            Object(NonMatching, "rb3/bytegrinder.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -299,8 +303,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_803242CC.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_8032443C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80330DF4.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80324AFC.cpp"),
@@ -322,6 +324,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
+            
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
         ],
     },
