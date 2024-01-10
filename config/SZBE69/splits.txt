@@ -265,7 +265,11 @@ rb3/unknown/803/unk_80324AFC.cpp:
 	.text       start:0x80324B4C end:0x8032D90C
 
 rb3/unknown/803/unk_80330DF4.cpp:
-	.text       start:0x80330DF4 end:0x80338284
+	.text       start:0x80330DF4 end:0x803351D0
+
+rb3/hmx/object.cpp:
+	.text       start:0x803351D0 end:0x80338300
+	.ctors      start:0x807EFF20 end:0x807EFF24
 
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
