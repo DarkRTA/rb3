@@ -2,6 +2,7 @@
 #define RB3_TEXTSTREAM_HPP
 #include "symbol.hpp"
 
+/** A stream of text. */
 class TextStream {
 public:
     TextStream();
@@ -20,7 +21,11 @@ public:
     TextStream &operator<<(const char *); // fn_8037A940
     TextStream &operator<<(Symbol); // fn_8037A97C
     TextStream &operator<<(bool); // fn_8037A9BC
-    void Space(int); // fn_8037AA10
+
+    /** Writes a space to the text stream a set number of times.
+     * @param [in] i: The number of times to write a space.
+    */
+    void Space(int i); // fn_8037AA10
 };
 
 #endif
