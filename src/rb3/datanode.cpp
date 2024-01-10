@@ -3,6 +3,10 @@
 #include "string.h"
 #include "hmx/object.hpp"
 #include <new>
+#include <map>
+
+std::map<Symbol, DataNode> gDataVars;
+DataNode gEvalNode[8];
 
 extern void* _PoolAlloc(int, int, int);
 

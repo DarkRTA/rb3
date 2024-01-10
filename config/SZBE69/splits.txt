@@ -239,7 +239,8 @@ rb3/key_messages.cpp:
 	.data       start:0x80854A08 end:0x80854D00
 
 rb3/dataarray.cpp:
-	.text       start:0x80315A70 end:0x80318588
+	.text       start:0x80315A70 end:0x803185F0
+	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
 rb3/datafunc.cpp:
@@ -248,7 +249,8 @@ rb3/datafunc.cpp:
 	.data       start:0x80854FA8 end:0x80855448
 
 rb3/datanode.cpp:
-	.text       start:0x80322958 end:0x803240F0
+	.text       start:0x80322958 end:0x80324278
+	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 
 rb3/textfile.cpp:

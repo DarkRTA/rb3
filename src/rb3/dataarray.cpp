@@ -5,6 +5,10 @@
 #include "common.hpp"
 #include "hmx/object.hpp"
 #include <new>
+#include <list>
+
+std::list<bool> gConditional;
+Symbol gFile;
 
 extern char *lbl_8091A47C;
 extern int lbl_8091A480;
