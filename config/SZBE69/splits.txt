@@ -238,32 +238,40 @@ rb3/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
 	.data       start:0x80854A08 end:0x80854D00
 
-rb3/unknown/803/unk_80313E98.cpp:
-	.text       start:0x80315A70 end:0x80318588
+rb3/dataarray.cpp:
+	.text       start:0x80315A70 end:0x803185F0
+	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
-rb3/unknown/803/unk_8031B028.cpp:
-	.text       start:0x8031B028 end:0x80322600
+rb3/datafunc.cpp:
+	.text       start:0x8031B028 end:0x80322958
+	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 
-rb3/unknown/803/unk_80322664.cpp:
-	.text       start:0x80322664 end:0x803240F0
+rb3/datanode.cpp:
+	.text       start:0x80322958 end:0x80324278
+	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 
-rb3/unknown/803/unk_803242CC.cpp:
+rb3/textfile.cpp:
 	.text       start:0x803242CC end:0x8032443C
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/unknown/803/unk_8032443C.cpp:
-	.text       start:0x8032443C end:0x80324A80
+rb3/datautil.cpp:
+	.text       start:0x8032443C end:0x80324B4C
+	.ctors      start:0x807EFF14 end:0x807EFF18
 
 rb3/unknown/803/unk_80324AFC.cpp:
-	.text       start:0x80324AFC end:0x8032D90C
+	.text       start:0x80324B4C end:0x8032D90C
 
 rb3/unknown/803/unk_80330DF4.cpp:
-	.text       start:0x80330DF4 end:0x80338284
+	.text       start:0x80330DF4 end:0x803351D0
+
+rb3/hmx/object.cpp:
+	.text       start:0x803351D0 end:0x80338300
+	.ctors      start:0x807EFF20 end:0x807EFF24
 
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
@@ -383,7 +391,13 @@ rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D7304 end:0x805D7354
 
 rb3/unknown/806/unk_80660D18.cpp:
-	.text       start:0x80660D18 end:0x80671D38
+	.text       start:0x80660D18 end:0x8066B6B8
+
+rb3/bytegrinder.cpp:
+	.text       start:0x8066B6B8 end:0x8066E3FC
+
+rb3/unknown/806/unk_8066E3FC.cpp:
+	.text       start:0x8066E3FC end:0x80671D38
 
 rb3/unknown/806/unk_80671DCC.cpp:
 	.text       start:0x80671DCC end:0x8067BA7C

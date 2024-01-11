@@ -40,6 +40,7 @@ public:
 };
 
 namespace Hmx {
+    /** An Object used in the game. Most of Rock Band 3's objects derive from this class. */
     class Object : public ObjRef {
     public:
         TypeProps props;
