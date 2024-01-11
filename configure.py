@@ -277,6 +277,8 @@ config.libs = [
 
             Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/bytegrinder.cpp"),
+            Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
+            Object(NonMatching, "rb3/uistats.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
 
