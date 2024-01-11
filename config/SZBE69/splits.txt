@@ -149,8 +149,11 @@ rb3/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
 	.data       start:0x8084CAC8 end:0x8084CB60
 
+rb3/trainingpanel.cpp:
+	.text       start:0x802960B0 end:0x80296BB4
+
 rb3/unknown/802/unk_802960B0.cpp:
-	.text       start:0x802960B0 end:0x8029A6F4
+	.text       start:0x80296BB4 end:0x8029A6F4
 
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58

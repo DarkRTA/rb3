@@ -268,6 +268,7 @@ config.libs = [
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
+            Object(NonMatching, "rb3/trainingpanel.cpp"),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
