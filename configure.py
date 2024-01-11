@@ -152,8 +152,13 @@ cflags_includes = [
     "-i src",
 ]
 
+cflags_defines = [
+    "-d NDEBUG",
+]
+
 cflags_base = [
     *cflags_includes,
+    *cflags_defines,
     "-nodefaults",
     "-proc gekko",
     "-align powerpc",

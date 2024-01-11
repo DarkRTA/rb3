@@ -11,7 +11,7 @@ from pcpp import CmdPreprocessor
 from contextlib import redirect_stdout
 
 # Note: requires being in the same directory as configure.py
-from configure import cflags_includes
+from configure import cflags_includes, cflags_defines
 
 #region Regex Patterns
 at_address_pattern = re.compile(r"(?:.*?)(?:[a-zA-Z_$][\w$]*\s*\*?\s[a-zA-Z_$][\w$]*)\s*((?:AT_ADDRESS|:)(?:\s*\(?\s*)(0x[0-9a-fA-F]+|[a-zA-Z_$][\w$]*)\)?);")
@@ -23,6 +23,18 @@ binary_literal_pattern = re.compile(r"\b(0b[01]+)\b")
 default_defines: dict[str, str] = {
     "__MWERKS__" : "0x4302",
 }
+
+# Bring in defines from configure.py so we don't have to duplicate them here
+for flag in cflags_defines:
+    parts = flag.strip("-d").lstrip().split("=")
+    partCount = len(parts)
+
+    symbol = parts[0]
+    value = "1"
+    if partCount > 1:
+        value = parts[1]
+
+    default_defines[symbol] = value
 
 src_dir = "src"
 include_dir = "include"
