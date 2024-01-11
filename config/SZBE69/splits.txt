@@ -392,7 +392,13 @@ rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x80531474
 
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x80567E84 end:0x80581A8C
+	.text       start:0x80567E84 end:0x805732E0
+
+rb3/uipanel.cpp:
+	.text       start:0x805732E0 end:0x8057464C
+
+rb3/unknown/805/unk_8057464C.cpp:
+	.text       start:0x8057464C end:0x80581A8C
 
 rb3/Rnd/rndbitmap.cpp:
 	.text       start:0x805CA0FC end:0x805CAC4C
