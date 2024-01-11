@@ -479,6 +479,35 @@ _STLP_EXPORT_TEMPLATE_CLASS allocator<void*>;
 #  endif
 #endif
 
+// Custom allocator type present in RB3.
+// Allocates from either the heap or a pool depending on the allocation size.
+template <class _Tp> class StlNodeAlloc {
+public:
+  typedef _Tp value_type;
+  typedef size_t size_type;
+
+#if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
+  template <class _Tp1> struct rebind {
+    typedef StlNodeAlloc<_Tp1> other;
+  };
+#endif
+
+  // No constructors it seems, only a destructor
+  // StlNodeAlloc() _STLP_NOTHROW {}
+  // StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
+  ~StlNodeAlloc() _STLP_NOTHROW {}
+
+  value_type *allocate(const size_type count) {
+    return reinterpret_cast<value_type *>(
+      _MemOrPoolAllocSTL(count * sizeof(value_type), FastPool)
+    );
+  }
+
+  void deallocate(value_type *ptr, const size_type count) {
+    _MemOrPoolFreeSTL(count * sizeof(value_type), FastPool, ptr);
+  }
+};
+
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Tp>
@@ -662,4 +691,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

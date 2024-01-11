@@ -20,6 +20,7 @@ Modifications:
   being used, along with other config modifications.
 - Redefinitions of stdin/stdout/stderr in stdio.h have been disabled,
   as they caused build errors in .c files.
+- A new StlNodeAlloc allocator has been added to match the binary.
 
 GETTING STLPORT
 

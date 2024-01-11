@@ -298,6 +298,9 @@ rb3/hxguid.cpp:
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0
 
+std_native/src/new.cpp:
+	.text       start:0x80354830 end:0x803548E8
+
 rb3/unknown/803/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
 
