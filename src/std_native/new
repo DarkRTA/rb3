@@ -1,6 +1,7 @@
 #ifndef _NEW
 #define _NEW
 
+#include <cstddef>
 #include <exception>
 
 // Not sure where these should go, leaving here for now
@@ -9,8 +10,17 @@ enum PoolType {
     FastPool
 };
 
-extern void *_MemOrPoolAllocSTL(size_t size, PoolType pool);
-extern void _MemOrPoolFreeSTL(size_t size, PoolType pool, void *ptr);
+extern void *_MemAlloc(int size, int);
+extern void MemFree(void *ptr);
+
+extern void *_PoolAlloc(int size, int, PoolType pool);
+extern void _PoolFree(int size, PoolType pool, void *ptr);
+
+extern void *MemOrPoolAlloc(int size, PoolType pool);
+extern void MemOrPoolFree(int size, PoolType pool, void *ptr);
+
+extern void *_MemOrPoolAllocSTL(int size, PoolType pool);
+extern void _MemOrPoolFreeSTL(int size, PoolType pool, void *ptr);
 
 namespace std {
     class bad_alloc : public exception {
@@ -33,23 +43,23 @@ namespace std {
 }
 
 void *operator new(std::size_t size);
-inline void *operator new(std::size_t size, void *ptr) throw() {
-    return ptr;
-}
-void *operator new(std::size_t size, const std::nothrow_t &) throw();
-
-void operator delete(void *ptr) throw();
-void operator delete(void *ptr, void *place) throw();
-void operator delete(void *ptr, std::size_t size) throw();
-void operator delete(void *ptr, const std::nothrow_t &) throw();
-
 void *operator new[](std::size_t size);
-void *operator new[](std::size_t size, void *ptr) throw();
-void *operator new[](std::size_t size, const std::nothrow_t &) throw();
-
+void operator delete(void *ptr) throw();
 void operator delete[](void *ptr) throw();
-void operator delete[](void *ptr, void *place) throw();
-void operator delete[](void *ptr, std::size_t size) throw();
-void operator delete[](void *ptr, const std::nothrow_t &) throw();
+
+// Placement new/delete
+inline void *operator new(std::size_t size, void *place) throw() {
+    return place;
+}
+
+inline void *operator new[](std::size_t size, void *place) throw() {
+    return place;
+}
+
+inline void operator delete(void *ptr, void *place) throw() {
+}
+
+inline void operator delete[](void *ptr, void *place) throw() {
+}
 
 #endif

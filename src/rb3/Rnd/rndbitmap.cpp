@@ -2,9 +2,6 @@
 #include "common.hpp"
 #include "rb3/bufstream.hpp"
 
-extern void MemFree(void*);
-extern void* _MemAlloc(int, int);
-
 /* oops! these are weak!
 RndBitmap::RndBitmap() {
     allData = NULL;
@@ -184,4 +181,3 @@ u32 RndBitmap::PaletteBytes() const {
     }
     return 0;
 }*/
-

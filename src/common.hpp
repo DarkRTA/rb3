@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 #include "types.h"
+#include <new>
+
 #include <libspeex/math_approx.h>
 #include "rb3/symbol.hpp"
 #include "rb3/textfile.hpp"

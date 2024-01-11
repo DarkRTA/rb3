@@ -220,6 +220,10 @@ config.linker_version = "Wii/1.3"
 Matching = True
 NonMatching = False
 
+# For objects that are affected by code merging and such
+# Periodically try setting this to True to see if anything's started matching
+LinkIssues = False
+
 config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
@@ -326,7 +330,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
-            
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
         ],
     },
@@ -501,6 +504,16 @@ config.libs = [
             Object(Matching, "Runtime/global_destructor_chain.c"),
             Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
         ],
+    },
+    {
+        "lib": "std_native",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_runtime,
+        "host": False,
+        "objects": [
+            # Code merging: new <-> new[], delete <-> delete[] are getting merged into each other
+            Object(LinkIssues, "std_native/src/new.cpp"),
+        ]
     },
 ]
 
