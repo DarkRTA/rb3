@@ -47,6 +47,22 @@ default_include_directories: list[str] = [flag.strip("-i").lstrip() for flag in 
 default_output_filename = "ctx.c"
 #endregion
 
+#region ContextPreprocessor
+class ContextPreprocessor(CmdPreprocessor):
+    def __init__(self, argv):
+        super(ContextPreprocessor, self).__init__(argv)
+
+    def on_include_not_found(self, is_malformed, is_system_include, curdir, includepath):
+        # Fixup for files that use <> for relative includes,
+        # since pcpp doesn't seem to handle those
+        if not is_malformed and os.path.exists(os.path.join(curdir, includepath)):
+            # Need to return the directory to search in, not the path to the file,
+            # otherwise it gets stuck in an infinite loop
+            return curdir
+
+        return super(ContextPreprocessor, self).on_include_not_found(is_malformed, is_system_include, curdir, includepath)
+#endregion
+
 #region Attribute Stripping
 def strip_attributes(text_to_strip: str)->str:
     if not text_to_strip:
@@ -157,7 +173,7 @@ def main():
         # pcpp preprocessor to show its full list of arguments
         parser.print_help()
         preprocessor_arguments.append("--help")
-        CmdPreprocessor(preprocessor_arguments)
+        ContextPreprocessor(preprocessor_arguments)
         return
 
     # Append in the default include directories
@@ -205,7 +221,7 @@ def main():
     with StringIO() as file_string_writer:
         with redirect_stdout(file_string_writer):
             # Parse the target file:
-            CmdPreprocessor(preprocessor_arguments)
+            ContextPreprocessor(preprocessor_arguments)
 
             # Check if empty
             string_writer_position = file_string_writer.tell()
