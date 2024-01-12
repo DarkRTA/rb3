@@ -39,6 +39,20 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "decompctx (current file)",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "decompctx.py",
+        "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }
