@@ -115,6 +115,9 @@ struct __locale {
 extern struct __locale _current_locale;
 extern struct lconv __lconv;
 
+char* setlocale(int category, const char *locale);
+struct lconv *localeconv();
+
 #ifdef __cplusplus
 }
 #endif

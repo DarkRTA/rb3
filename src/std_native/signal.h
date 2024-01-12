@@ -15,15 +15,15 @@ extern "C" {
 // #define SIGSEGV
 // #define SIGTERM
 
-// typedef ... sig_atomic_t;
+typedef int sig_atomic_t;
 
-typedef void sig_func(int sig);
+typedef void (*sig_func)(int sig);
 
 // #define SIG_DFL
 // #define SIG_IGN
 // #define SIG_ERR
 
-sig_func* signal(int sig, sig_func* handler);
+sig_func signal(int sig, sig_func handler);
 int raise(int sig);
 
 #ifdef __cplusplus
