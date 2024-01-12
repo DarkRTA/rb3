@@ -11,6 +11,12 @@ extern int __extended_max[];
 extern int __float_max[];
 extern int __float_epsilon[];
 
+#define FLT_RADIX 2
+// #define FLT_ROUNDS
+// #define FLT_EVAL_METHOD
+
+#define DECIMAL_DIG 17
+
 #define FLT_MANT_DIG 24
 #define FLT_DIG 6
 #define FLT_MIN_EXP (-125)
