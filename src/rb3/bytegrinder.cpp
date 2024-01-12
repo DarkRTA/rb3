@@ -170,3 +170,25 @@ int ByteGrinder::pickOneOf32B(bool b, long l){
     arr->DecRefCount();
     return i;
 }
+
+DataNode getRandomLong(DataArray* da){
+    static int seed;
+    bool enough = da->GetNodeCount() > 1;
+    if(enough){
+        seed = seed * 0x19660D + 0x3C6EF35F;
+    }
+    return DataNode(kDataInt, (void*)seed);
+}
+
+DataNode magicNumberGenerator(DataArray* da){
+    int magic = 0x5c5c5c5c;
+    if(da->GetIntAtIndex(2) == 2){
+        magic = 0x36363636;
+    }
+    void* v = (void*)((da->GetIntAtIndex(1) ^ magic) * 0x19660d + 0x3c6ef35f);
+    if(da->GetIntAtIndex(2) == 1){
+        v = (void*)((int)v * 0x19660d + 0x3c6ef35f);
+    }
+    return DataNode(kDataInt, v);
+
+}
