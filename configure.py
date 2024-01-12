@@ -284,6 +284,19 @@ config.libs = [
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
 
+            Object(NonMatching, "rb3/fx/fxsend.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendflanger.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendreverb.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddelay.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddistortion.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendcompress.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendeq.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendmetereffect.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),

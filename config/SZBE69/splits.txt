@@ -421,8 +421,44 @@ rb3/bytegrinder.cpp:
 rb3/unknown/806/unk_8066E3FC.cpp:
 	.text       start:0x8066E3FC end:0x80671D38
 
+rb3/fx/fxsend.cpp:
+	.text       start:0x80671DCC end:0x80672F38
+
+rb3/fx/fxsendchorus.cpp:
+	.text       start:0x80672F38 end:0x806737E4
+
+rb3/fx/fxsendflanger.cpp:
+	.text       start:0x806737E4 end:0x806740BC
+
+rb3/fx/fxsendreverb.cpp:
+	.text       start:0x806740BC end:0x8067491C
+
+rb3/fx/fxsenddelay.cpp:
+	.text       start:0x8067491C end:0x80675094
+
+rb3/fx/fxsenddistortion.cpp:
+	.text       start:0x80675094 end:0x80675550
+
+rb3/fx/fxsendcompress.cpp:
+	.text       start:0x80675550 end:0x80675E50
+
+rb3/fx/fxsendeq.cpp:
+	.text       start:0x80675E50 end:0x80676820
+
+rb3/fx/fxsendmetereffect.cpp:
+	.text       start:0x80676820 end:0x80676E50
+
+rb3/fx/fxsendpitchshift.cpp:
+	.text       start:0x80676E50 end:0x80677300
+
+rb3/fx/fxsendsynapse.cpp:
+	.text       start:0x80677300 end:0x80677C48
+
+rb3/fx/fxsendwah.cpp:
+	.text       start:0x80677C48 end:0x806786F0
+
 rb3/unknown/806/unk_80671DCC.cpp:
-	.text       start:0x80671DCC end:0x8067BA7C
+	.text       start:0x806786F0 end:0x8067BA7C
 
 libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
