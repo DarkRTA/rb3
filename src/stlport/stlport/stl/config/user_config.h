@@ -36,9 +36,7 @@
  * If you want iostreams, you have to compile library in ../build/lib
  * and supply resulting library at link time.
  */
-/*
 #define _STLP_NO_IOSTREAMS 1
-*/
 
 /*
  * Set _STLP_DEBUG to turn the "Debug Mode" on.

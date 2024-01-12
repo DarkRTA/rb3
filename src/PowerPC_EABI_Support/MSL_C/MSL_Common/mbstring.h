@@ -1,14 +1,12 @@
 #ifndef MSL_MBSTRING_H
 #define MSL_MBSTRING_H
 
-#include "types.h"
+#include "macros.h"
+#include "PowerPC_EABI_Support/MSL_C/MSL_Common/wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// TODO
-// struct mbstate_t;
 
 int __mbtowc_noconv(wchar_t *, const char *, size_t);
 int __wctomb_noconv(char *, wchar_t);

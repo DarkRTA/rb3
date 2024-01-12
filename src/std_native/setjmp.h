@@ -6,9 +6,9 @@ extern "C" {
 #endif
 
 // TODO
-// struct jmp_buf;
-// #define setjmp(env)
-// void longjmp(jmp_buf env, int status);
+struct jmp_buf;
+#define setjmp(env)
+void longjmp(struct jmp_buf env, int status);
 
 #ifdef __cplusplus
 }

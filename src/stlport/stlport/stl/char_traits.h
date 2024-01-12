@@ -65,7 +65,7 @@ typedef _STLP_LONG_LONG streamoff;
 #  else
 typedef ptrdiff_t streamoff;
 #  endif
-#else // __unix
+#elif defined (__unix)
 #  ifdef _STLP_USE_DEFAULT_FILE_OFFSET
 typedef off_t streamoff;
 #  elif defined(_LARGEFILE_SOURCE) || defined(_LARGEFILE64_SOURCE) /* || defined(__USE_FILE_OFFSET64) */ \
@@ -74,7 +74,9 @@ typedef off64_t streamoff;
 #  else
 typedef off_t streamoff;
 #  endif
-#endif /* ___unix */
+#else
+typedef long streamoff;
+#endif
 
 #if defined (_STLP_WIN32)
 typedef streamoff streamsize;

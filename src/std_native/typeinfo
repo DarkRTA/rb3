@@ -8,13 +8,16 @@ namespace std {
     class type_info {
     public:
         virtual ~type_info();
-        bool operator==(const type_info &rhs) const noexcept;
-        bool before(const type_info &rhs) const noexcept;
-        size_t hash_code() const noexcept;
-        const char *name() const noexcept;
+        bool operator==(const type_info &rhs) const throw();
+        bool before(const type_info &rhs) const throw();
+        size_t hash_code() const throw();
+        const char *name() const throw();
 
-        type_info(const type_info &) = delete;
-        type_info &operator=(const type_info &) = delete;
+    private:
+        // These constructors are normally deleted, but our C++ version
+        // doesn't support that, so they're privated as a workaround
+        type_info(const type_info &);
+        type_info &operator=(const type_info &);
     };
 
     class bad_cast : public exception {

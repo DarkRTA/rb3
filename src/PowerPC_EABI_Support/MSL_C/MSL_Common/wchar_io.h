@@ -1,8 +1,9 @@
 #ifndef _WCHAR_IO_H
 #define _WCHAR_IO_H
 
-#include "types.h"
 #include <stdio.h>
+#include "macros.h"
+#include "PowerPC_EABI_Support/MSL_C/MSL_Common/wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {

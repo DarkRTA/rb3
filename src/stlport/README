@@ -21,6 +21,10 @@ Modifications:
 - Redefinitions of stdin/stdout/stderr in stdio.h have been disabled,
   as they caused build errors in .c files.
 - A new StlNodeAlloc allocator has been added to match the binary.
+- <iosfwd>'s streamoff definition no longer assumes Unix for the final
+  catch-all case, opting for a long instead of off_t.
+- Old-style STL headers have been removed, as we have no use for them.
+- Fixed "illegal 'friend' declaration" warning in <rope>.
 
 GETTING STLPORT
 

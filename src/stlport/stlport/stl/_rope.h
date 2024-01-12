@@ -825,7 +825,7 @@ private:
   }
 
 public:
-  _Rope_iterator_base(const _Self& __x) : 
+  _Rope_iterator_base(const _Self& __x) :
       _M_current_pos(__x._M_current_pos),
       _M_root(__x._M_root),
       _M_leaf_pos( __x._M_leaf_pos ),
@@ -1257,7 +1257,7 @@ protected:
   // The result has refcount 0.
   typedef _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
 #if !defined (__GNUC__) || (__GNUC__ < 3)
-  friend _Concat_fn;
+  friend struct _Concat_fn;
 #else
   friend struct _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc>;
 #endif
