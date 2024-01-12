@@ -1,6 +1,7 @@
 #include "bytegrinder.hpp"
 #include "data.hpp"
 #include "string.h"
+#include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 
 namespace {
     int GetEncMethod(int ver){
@@ -110,4 +111,62 @@ DataNode getRandomSequence32B(DataArray* da){
         }
         return DataNode(kDataInt, (void*)idx);
     }
+}
+
+DataNode op0(DataArray* da){
+    int i1 = da->GetIntAtIndex(1);
+    int i2 = da->GetIntAtIndex(2);
+    return DataNode(kDataInt, (void*)((i2 ^ i1) & 0xFF));
+}
+
+DataNode op1(DataArray* da){
+    int i1 = da->GetIntAtIndex(1);
+    int i2 = da->GetIntAtIndex(2);
+    return DataNode(kDataInt, (void*)((i2 & 0xFF) + (i1 & 0xFF) & 0xFF));
+}
+
+DataNode op2(DataArray* da){
+    int i1 = da->GetIntAtIndex(1);
+    int i2 = da->GetIntAtIndex(2);
+    return DataNode(kDataInt, (void*)((i2 ^ 0xFF | (i2 ^ 0xFF) << 8) >> (i1 & 7) & 0xFF));
+}
+
+DataNode op3(DataArray* da){
+    int i1 = da->GetIntAtIndex(1);
+    int i2 = da->GetIntAtIndex(2);
+    return DataNode(kDataInt, (void*)((i2 ^ 0xFF | (i2 ^ 0xFF) << 8) >> (i1 != 0) & 0xFF));
+}
+
+extern DataArray* DataReadString(const char*);
+
+int ByteGrinder::pickOneOf32A(bool b, long l){
+    DataArray* arr;
+    char buf[256];
+    if(b){
+        sprintf(buf, "{xa %d}");
+        arr = DataReadString(buf);
+    }
+    else {
+        arr = DataReadString("{xa}");
+    }
+    DataNode* node = EvaluateNodeAtIndex(arr, 0);
+    int i = node->Int(nullptr);
+    arr->DecRefCount();
+    return i;
+}
+
+int ByteGrinder::pickOneOf32B(bool b, long l){
+    DataArray* arr;
+    char buf[256];
+    if(b){
+        sprintf(buf, "{ya %d}");
+        arr = DataReadString(buf);
+    }
+    else {
+        arr = DataReadString("{ya}");
+    }
+    DataNode* node = EvaluateNodeAtIndex(arr, 0);
+    int i = node->Int(nullptr);
+    arr->DecRefCount();
+    return i;
 }

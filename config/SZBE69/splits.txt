@@ -417,6 +417,7 @@ rb3/unknown/806/unk_80660D18.cpp:
 
 rb3/bytegrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
+	.data       start:0x8089BBE0 end:0x8089BCE0
 
 rb3/unknown/806/unk_8066E3FC.cpp:
 	.text       start:0x8066E3FC end:0x80671D38
