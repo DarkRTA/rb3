@@ -24,6 +24,46 @@ default_defines: dict[str, str] = {
     "__MWERKS__" : "0x4302",
 }
 
+passthrough_defines: list[str] = [
+    # C/C++-dependent
+    "__cplusplus",
+    "__STDC__",
+    "__STDC_VERSION__",
+
+    # __option
+    "__option",
+    "little_endian",
+    "wchar_type",
+    "exceptions",
+    "longlong",
+
+    # __declspec
+    "__declspec",
+    "section",
+    "dllexport",
+    "dllimport",
+    "noreturn",
+    "weak",
+
+    # __attribute__
+    "__attribute__",
+    "aligned",
+    "packed",
+    "unused",
+    "weak",
+    "never_inline",
+    "format",
+    "constructor",
+    "destructor",
+
+    # STLport
+    # Namespaces are excluded when __cplusplus is undefined, but because we
+    # pass it through, pcpp never executes the define for _STLP_HAS_NO_NAMESPACES
+    "_STLP_HAS_NO_NAMESPACES",
+    "_STLP_USE_NAMESPACES",
+    "_STLP_NO_NAMESPACES",
+]
+
 # Bring in defines from configure.py so we don't have to duplicate them here
 for flag in cflags_defines:
     parts = flag.strip("-d").lstrip().split("=")
@@ -61,6 +101,21 @@ class ContextPreprocessor(CmdPreprocessor):
             return curdir
 
         return super(ContextPreprocessor, self).on_include_not_found(is_malformed, is_system_include, curdir, includepath)
+
+    def on_unknown_macro_in_expr(self, ident):
+        if ident in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_in_expr(ident)
+
+    def on_unknown_macro_in_defined_expr(self, tok):
+        if tok.value in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_in_defined_expr(tok)
+
+    def on_unknown_macro_function_in_expr(self, ident):
+        if ident in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
 #endregion
 
 #region Attribute Stripping
