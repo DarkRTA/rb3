@@ -11,7 +11,7 @@ from pcpp import CmdPreprocessor
 from contextlib import redirect_stdout
 
 # Note: requires being in the same directory as configure.py
-from configure import cflags_includes
+from configure import cflags_includes, cflags_defines
 
 #region Regex Patterns
 at_address_pattern = re.compile(r"(?:.*?)(?:[a-zA-Z_$][\w$]*\s*\*?\s[a-zA-Z_$][\w$]*)\s*((?:AT_ADDRESS|:)(?:\s*\(?\s*)(0x[0-9a-fA-F]+|[a-zA-Z_$][\w$]*)\)?);")
@@ -20,9 +20,69 @@ binary_literal_pattern = re.compile(r"\b(0b[01]+)\b")
 #endregion
 
 #region Defaults
+default_arguments: list[str] = [
+    # Strip out left-over whitespace
+    "--compress",
+
+    # Put a newline before each line directive
+    "--line-directive", "\n#line"
+]
+
 default_defines: dict[str, str] = {
     "__MWERKS__" : "0x4302",
 }
+
+passthrough_defines: list[str] = [
+    # C/C++-dependent
+    "__cplusplus",
+    "__STDC__",
+    "__STDC_VERSION__",
+
+    # __option
+    "__option",
+    "little_endian",
+    "wchar_type",
+    "exceptions",
+    "longlong",
+
+    # __declspec
+    "__declspec",
+    "section",
+    "dllexport",
+    "dllimport",
+    "noreturn",
+    "weak",
+
+    # __attribute__
+    "__attribute__",
+    "aligned",
+    "packed",
+    "unused",
+    "weak",
+    "never_inline",
+    "format",
+    "constructor",
+    "destructor",
+
+    # STLport
+    # Namespaces are excluded when __cplusplus is undefined, but because we
+    # pass it through, pcpp never executes the define for _STLP_HAS_NO_NAMESPACES
+    "_STLP_HAS_NO_NAMESPACES",
+    "_STLP_USE_NAMESPACES",
+    "_STLP_NO_NAMESPACES",
+]
+
+# Bring in defines from configure.py so we don't have to duplicate them here
+for flag in cflags_defines:
+    parts = flag.strip("-d").lstrip().split("=")
+    partCount = len(parts)
+
+    symbol = parts[0]
+    value = "1"
+    if partCount > 1:
+        value = parts[1]
+
+    default_defines[symbol] = value
 
 src_dir = "src"
 include_dir = "include"
@@ -33,6 +93,37 @@ root_dir = script_dir # os.path.abspath(os.path.join(script_dir, "..")) # We're 
 default_include_directories: list[str] = [flag.strip("-i").lstrip() for flag in cflags_includes]
 
 default_output_filename = "ctx.c"
+#endregion
+
+#region ContextPreprocessor
+class ContextPreprocessor(CmdPreprocessor):
+    def __init__(self, argv):
+        super(ContextPreprocessor, self).__init__(argv)
+
+    def on_include_not_found(self, is_malformed, is_system_include, curdir, includepath):
+        # Fixup for files that use <> for relative includes,
+        # since pcpp doesn't seem to handle those
+        if not is_malformed and os.path.exists(os.path.join(curdir, includepath)):
+            # Need to return the directory to search in, not the path to the file,
+            # otherwise it gets stuck in an infinite loop
+            return curdir
+
+        return super(ContextPreprocessor, self).on_include_not_found(is_malformed, is_system_include, curdir, includepath)
+
+    def on_unknown_macro_in_expr(self, ident):
+        if ident in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_in_expr(ident)
+
+    def on_unknown_macro_in_defined_expr(self, tok):
+        if tok.value in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_in_defined_expr(tok)
+
+    def on_unknown_macro_function_in_expr(self, ident):
+        if ident in passthrough_defines:
+            return None
+        return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
 #endregion
 
 #region Attribute Stripping
@@ -145,7 +236,7 @@ def main():
         # pcpp preprocessor to show its full list of arguments
         parser.print_help()
         preprocessor_arguments.append("--help")
-        CmdPreprocessor(preprocessor_arguments)
+        ContextPreprocessor(preprocessor_arguments)
         return
 
     # Append in the default include directories
@@ -175,6 +266,9 @@ def main():
     for define in include_defines:
         preprocessor_arguments.extend(("-D", define))
 
+    # Add other default arguments
+    preprocessor_arguments.extend(default_arguments)
+
     # Add unknown arguments and pass them to pcpp
     pass_through_args = parsed_args[1]
     preprocessor_arguments.extend(pass_through_args)
@@ -193,7 +287,7 @@ def main():
     with StringIO() as file_string_writer:
         with redirect_stdout(file_string_writer):
             # Parse the target file:
-            CmdPreprocessor(preprocessor_arguments)
+            ContextPreprocessor(preprocessor_arguments)
 
             # Check if empty
             string_writer_position = file_string_writer.tell()
