@@ -9,6 +9,7 @@ public:
     virtual ~ByteGrinder(); // generic dtor
     int pickOneOf32A(bool, long);
     int pickOneOf32B(bool, long);
+    void GrindArray(long, long, unsigned char*, int, long);
 };
 
 #endif

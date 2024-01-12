@@ -2,6 +2,7 @@
 #include "data.hpp"
 #include "string.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "string.hpp"
 
 namespace {
     int GetEncMethod(int ver){
@@ -190,5 +191,74 @@ DataNode magicNumberGenerator(DataArray* da){
         v = (void*)((int)v * 0x19660d + 0x3c6ef35f);
     }
     return DataNode(kDataInt, v);
+}
+
+void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3){
+    char buf1[268];
+    char buf_loop1_1[16];
+    char buf_loop1_2[256];
+    char buf_loop2_1[16];
+    char buf_loop2_2[256];
+    char buf3[32];
+    
+    sprintf(buf1, "{ma %d 2}", l1);
+    DataArray* arr = DataReadString(buf1);
+    EvaluateNodeAtIndex(arr, 0)->Int(nullptr);
+    arr->DecRefCount();
+
+    sprintf(buf1, "{za %d 2}", l2);
+    arr = DataReadString(buf1);
+    EvaluateNodeAtIndex(arr, 0)->Int(nullptr);
+    arr->DecRefCount();
+
+    String str;
+    int enc_method = GetEncMethod(l3);
+    str = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{ma{O67 $bar $ix}}";
+    if(enc_method != 0){
+        str = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{za{O67 $bar $ix}}";
+    }
+    
+    pickOneOf32B(true, l2);
+    for(int cnt = 0; cnt < 0x20; cnt++){
+        sprintf(buf_loop1_1, "O%d", pickOneOf32B(false, 0));
+        sprintf(buf_loop1_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", cnt, buf_loop1_1);
+        str += buf_loop1_2;
+    }
+
+    if(enc_method != 0){
+        pickOneOf32B(true, l1);
+        for(enc_method = 0x20; enc_method < 0x40; enc_method++){
+            sprintf(buf_loop2_1, "O%d", pickOneOf32B(false, 0) + 0x20);
+            sprintf(buf_loop2_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", enc_method, buf_loop2_1);
+            str += buf_loop2_2;
+        }
+    }
+
+    str += "}{O70 $ix}}}$foo";
+    arr = DataReadString(str.c_str());
+    unsigned char* uc1 = uc;
+    for(int cnt = 0; cnt < i; cnt++){
+        {
+        String inner_str("");
+        snprintf(buf3, 0x20, "%d", *uc1);
+        inner_str += buf3;
+        inner_str += " (";
+        unsigned char* uc2 = uc;
+        for(int cnt2 = 0; cnt2 < 0x10; cnt2++){
+            snprintf(buf3, 0x20, "%d", *uc2++);
+            inner_str += buf3;
+            inner_str += " ";
+        }
+        inner_str += ")";
+        DataArray* arr_inner = DataReadString(inner_str.c_str());
+        {
+        DataNode exec = arr->ExecuteScript(0, nullptr, arr_inner, 0);
+        *uc1 = exec.Int(nullptr);
+        }
+        arr_inner->DecRefCount();
+        }
+        uc1++;
+    }
+    arr->DecRefCount();
 
 }
