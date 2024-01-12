@@ -1,5 +1,6 @@
 #include "data.hpp"
 #include "binstream.hpp"
+#include "rnd/rndhighlightable.hpp"
 
 // fn_801C7058
 DataNode::DataNode() {
@@ -17,4 +18,8 @@ BinStream &BinStream::operator<<(short s) {
 BinStream &BinStream::operator>>(short &s) {
     ReadEndian(&s, 2);
     return *this;
+}
+
+RndHighlightable::RndHighlightable(){
+    
 }

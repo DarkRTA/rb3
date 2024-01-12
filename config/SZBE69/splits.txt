@@ -149,8 +149,18 @@ rb3/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
 	.data       start:0x8084CAC8 end:0x8084CB60
 
+rb3/trainingpanel.cpp:
+	.text       start:0x802960B0 end:0x80296BB4
+
+rb3/ugcpurchasepanel.cpp:
+	.text       start:0x80296BB4 end:0x80297868
+
 rb3/unknown/802/unk_802960B0.cpp:
-	.text       start:0x802960B0 end:0x8029A6F4
+	.text       start:0x80297868 end:0x8029948C
+
+rb3/uistats.cpp:
+	.text       start:0x8029948C end:0x8029A744
+	.ctors      start:0x807EFE7C end:0x807EFE80
 
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
@@ -382,16 +392,25 @@ rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x80531474
 
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x80567E84 end:0x80581A8C
+	.text       start:0x80567E84 end:0x805732E0
+
+rb3/uipanel.cpp:
+	.text       start:0x805732E0 end:0x8057464C
+
+rb3/unknown/805/unk_8057464C.cpp:
+	.text       start:0x8057464C end:0x80581A8C
 
 rb3/Rnd/rndbitmap.cpp:
 	.text       start:0x805CA0FC end:0x805CAC4C
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D71C0
+	.text       start:0x805CE140 end:0x805D5E48
+
+rb3/dofproc.cpp:
+	.text       start:0x805D5E48 end:0x805D6130
 
 rb3/Rnd/rnddrawable.cpp:
-	.text       start:0x805D7304 end:0x805D7354
+	.text       start:0x805D6130 end:0x805D7408
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x8066B6B8
@@ -402,8 +421,44 @@ rb3/bytegrinder.cpp:
 rb3/unknown/806/unk_8066E3FC.cpp:
 	.text       start:0x8066E3FC end:0x80671D38
 
+rb3/fx/fxsend.cpp:
+	.text       start:0x80671DCC end:0x80672F38
+
+rb3/fx/fxsendchorus.cpp:
+	.text       start:0x80672F38 end:0x806737E4
+
+rb3/fx/fxsendflanger.cpp:
+	.text       start:0x806737E4 end:0x806740BC
+
+rb3/fx/fxsendreverb.cpp:
+	.text       start:0x806740BC end:0x8067491C
+
+rb3/fx/fxsenddelay.cpp:
+	.text       start:0x8067491C end:0x80675094
+
+rb3/fx/fxsenddistortion.cpp:
+	.text       start:0x80675094 end:0x80675550
+
+rb3/fx/fxsendcompress.cpp:
+	.text       start:0x80675550 end:0x80675E50
+
+rb3/fx/fxsendeq.cpp:
+	.text       start:0x80675E50 end:0x80676820
+
+rb3/fx/fxsendmetereffect.cpp:
+	.text       start:0x80676820 end:0x80676E50
+
+rb3/fx/fxsendpitchshift.cpp:
+	.text       start:0x80676E50 end:0x80677300
+
+rb3/fx/fxsendsynapse.cpp:
+	.text       start:0x80677300 end:0x80677C48
+
+rb3/fx/fxsendwah.cpp:
+	.text       start:0x80677C48 end:0x806786F0
+
 rb3/unknown/806/unk_80671DCC.cpp:
-	.text       start:0x80671DCC end:0x8067BA7C
+	.text       start:0x806786F0 end:0x8067BA7C
 
 libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54

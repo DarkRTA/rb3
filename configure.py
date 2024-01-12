@@ -250,6 +250,7 @@ config.libs = [
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
 
+            Object(NonMatching, "rb3/dofproc.cpp"),
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
 
@@ -273,6 +274,7 @@ config.libs = [
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
+            Object(NonMatching, "rb3/trainingpanel.cpp"),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
@@ -281,8 +283,24 @@ config.libs = [
 
             Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/bytegrinder.cpp"),
+            Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
+            Object(NonMatching, "rb3/uistats.cpp"),
+            Object(NonMatching, "rb3/uipanel.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
+
+            Object(NonMatching, "rb3/fx/fxsend.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendflanger.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendreverb.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddelay.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddistortion.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendcompress.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendeq.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendmetereffect.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -332,6 +350,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8050FA30.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_80567E84.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),

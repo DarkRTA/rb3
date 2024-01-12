@@ -1,6 +1,20 @@
 #include "bytegrinder.hpp"
 #include "data.hpp"
 
+namespace {
+    int GetEncMethod(int i){
+        int ret = 0;
+        if(i - 0xc > 1){
+            switch(i){
+                case 0xe: ret = 1; break;
+                case 0xf: ret = 2; break;
+                case 0x10: ret = 3; break;
+            }
+        }
+        return ret;
+    }
+}
+
 DataNode hashTo5Bits(DataArray *da) {
     static int hashMapping[0x100];
 
