@@ -20,6 +20,14 @@ binary_literal_pattern = re.compile(r"\b(0b[01]+)\b")
 #endregion
 
 #region Defaults
+default_arguments: list[str] = [
+    # Strip out left-over whitespace
+    "--compress",
+
+    # Put a newline before each line directive
+    "--line-directive", "\n#line"
+]
+
 default_defines: dict[str, str] = {
     "__MWERKS__" : "0x4302",
 }
@@ -257,6 +265,9 @@ def main():
     # Add the defines to the arguments
     for define in include_defines:
         preprocessor_arguments.extend(("-D", define))
+
+    # Add other default arguments
+    preprocessor_arguments.extend(default_arguments)
 
     # Add unknown arguments and pass them to pcpp
     pass_through_args = parsed_args[1]
