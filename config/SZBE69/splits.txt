@@ -404,7 +404,13 @@ rb3/Rnd/rndbitmap.cpp:
 	.text       start:0x805CA0FC end:0x805CAC4C
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D7408
+	.text       start:0x805CE140 end:0x805D5E48
+
+rb3/dofproc.cpp:
+	.text       start:0x805D5E48 end:0x805D6130
+
+rb3/Rnd/rnddrawable.cpp:
+	.text       start:0x805D6130 end:0x805D7408
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x8066B6B8
