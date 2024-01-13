@@ -130,13 +130,17 @@ DataNode op1(DataArray* da){
 DataNode op2(DataArray* da){
     int i1 = da->GetIntAtIndex(1);
     int i2 = da->GetIntAtIndex(2);
-    return DataNode(kDataInt, (void*)((i2 ^ 0xFF | (i2 ^ 0xFF) << 8) >> (i1 & 7) & 0xFF));
+    unsigned int ret = (i2 & 0xFF) | ((i2 << 8) & 0xFF00);
+    ret >>= (i1 & 7) & 0xFF;
+    return DataNode(kDataInt, (void*)(unsigned char)ret);
 }
 
 DataNode op3(DataArray* da){
     int i1 = da->GetIntAtIndex(1);
     int i2 = da->GetIntAtIndex(2);
-    return DataNode(kDataInt, (void*)((i2 ^ 0xFF | (i2 ^ 0xFF) << 8) >> (i1 != 0) & 0xFF));
+    unsigned int ret = (i2 & 0xFF) | ((i2 & 0xFF) << 8);
+    ret >>= (i1 == 0);
+    return DataNode(kDataInt, (void*)(unsigned char)ret);
 }
 
 extern DataArray* DataReadString(const char*);

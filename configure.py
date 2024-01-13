@@ -238,6 +238,8 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            Object(Matching, "rb3/stubs/stubvoid.cpp"),
+            Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
@@ -301,9 +303,6 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
             Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
-
-            Object(Matching, "rb3/stubs/stubvoid.cpp"),
-            Object(Matching, "rb3/stubs/stubzero.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
