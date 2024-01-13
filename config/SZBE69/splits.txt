@@ -619,3 +619,6 @@ bt/stack/l2cap/l2c_utils.c:
 
 bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
+
+rb3/stubs/stubvoid.cpp:
+	.text       start:0x8076F540 end:0x8076F550

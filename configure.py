@@ -302,6 +302,8 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
 
+            Object(Matching, "rb3/stubs/stubvoid.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),

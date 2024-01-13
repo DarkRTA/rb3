@@ -3,6 +3,7 @@
 #include "string.h"
 #include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
 #include "string.hpp"
+#include <vector>
 
 namespace {
     int GetEncMethod(int ver){
@@ -191,6 +192,11 @@ DataNode magicNumberGenerator(DataArray* da){
         v = (void*)((int)v * 0x19660d + 0x3c6ef35f);
     }
     return DataNode(kDataInt, v);
+}
+
+void ByteGrinder::Init(){
+    char buf[32];
+    sprintf(buf, "O%d");
 }
 
 void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3){
