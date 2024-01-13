@@ -249,23 +249,23 @@ void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3
     unsigned char* uc1 = uc;
     for(int cnt = 0; cnt < i; cnt++){
         {
-        String inner_str("");
-        snprintf(buf3, 0x20, "%d", *uc1);
-        inner_str += buf3;
-        inner_str += " (";
-        unsigned char* uc2 = uc;
-        for(int cnt2 = 0; cnt2 < 0x10; cnt2++){
-            snprintf(buf3, 0x20, "%d", *uc2++);
+            String inner_str("");
+            snprintf(buf3, 0x20, "%d", *uc1);
             inner_str += buf3;
-            inner_str += " ";
-        }
-        inner_str += ")";
-        DataArray* arr_inner = DataReadString(inner_str.c_str());
-        {
-        DataNode exec = arr->ExecuteScript(0, nullptr, arr_inner, 0);
-        *uc1 = exec.Int(nullptr);
-        }
-        arr_inner->DecRefCount();
+            inner_str += " (";
+            unsigned char* uc2 = uc;
+            for(int cnt2 = 0; cnt2 < 0x10; cnt2++){
+                snprintf(buf3, 0x20, "%d", *uc2++);
+                inner_str += buf3;
+                inner_str += " ";
+            }
+            inner_str += ")";
+            DataArray* arr_inner = DataReadString(inner_str.c_str());
+            {
+                DataNode exec = arr->ExecuteScript(0, nullptr, arr_inner, 0);
+                *uc1 = exec.Int(nullptr);
+            }
+            arr_inner->DecRefCount();
         }
         uc1++;
     }
