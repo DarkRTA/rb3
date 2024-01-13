@@ -622,3 +622,6 @@ bt/stack/rfcomm/port_api.c:
 
 rb3/stubs/stubvoid.cpp:
 	.text       start:0x8076F540 end:0x8076F550
+
+rb3/stubs/stubzero.cpp:
+	.text       start:0x8077BAA0 end:0x8077BAB0
