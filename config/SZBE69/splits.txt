@@ -408,6 +408,7 @@ rb3/unknown/805/unk_805CE140.cpp:
 
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
+	.data       start:0x80895410 end:0x808954B8
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
@@ -418,6 +419,7 @@ rb3/unknown/806/unk_80660D18.cpp:
 
 rb3/bytegrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
+	.data       start:0x8089BBE0 end:0x8089BCE0
 
 rb3/unknown/806/unk_8066E3FC.cpp:
 	.text       start:0x8066E3FC end:0x80671D38
@@ -618,3 +620,9 @@ bt/stack/l2cap/l2c_utils.c:
 
 bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
+
+rb3/stubs/stubvoid.cpp:
+	.text       start:0x8076F540 end:0x8076F550
+
+rb3/stubs/stubzero.cpp:
+	.text       start:0x8077BAA0 end:0x8077BAB0

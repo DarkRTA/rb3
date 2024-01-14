@@ -239,6 +239,8 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            Object(Matching, "rb3/stubs/stubvoid.cpp"),
+            Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
