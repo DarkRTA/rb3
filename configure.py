@@ -115,7 +115,7 @@ if not is_windows():
 
 # Tool versions
 config.compilers_tag = "1"
-config.dtk_tag = "v0.7.1"
+config.dtk_tag = "v0.7.2"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.3"
 
@@ -126,7 +126,7 @@ config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
-    "-code_merging all",
+    "-code_merging safe",
     "-code_merging aggressive",
 ]
 
@@ -208,7 +208,7 @@ cflags_zlib = [
 
 cflags_bt = [
     *cflags_c,
-    "-str reuse, nopool"
+    "-str reuse,nopool"
 ]
 
 
@@ -244,8 +244,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(Matching, "rb3/stubs/stubvoid.cpp"),
-            # Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
@@ -371,15 +369,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-        ],
-    },
-    {
-        "lib": "sdk",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_sdk,
-        "host": False,
-        "objects": [
-            Object(Matching, "sdk/stubzero.cpp")
         ],
     },
     {

@@ -620,8 +620,8 @@ bt/stack/l2cap/l2c_utils.c:
 bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-rb3/stubs/stubvoid.cpp:
-	.text       start:0x8076F540 end:0x8076F550
+Dolphin/pad/pad.c:
+	.text       start:0x8076F4E0 end:0x8076F540
 
-sdk/stubzero.cpp:
-	.text       start:0x8077BAA0 end:0x8077BAB0
+Dolphin/rso/RSOLink.c:
+	.text       start:0x8076F540 end:0x807713F0
