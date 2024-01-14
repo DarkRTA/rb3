@@ -16,3 +16,4 @@ write_asm: true
 common_start: null
 symbols_known: false
 fill_gaps: true
+auto_force_active: false

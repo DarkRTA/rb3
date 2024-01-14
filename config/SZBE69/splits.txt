@@ -340,7 +340,7 @@ rb3/textfilestream.cpp:
 
 rb3/textstream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
-	.data       start:0x80874520 end:0x80874550
+	.data       start:0x80874510 end:0x80874550
 
 rb3/unknown/803/unk_8037AD40.cpp:
 	.text       start:0x8037AD40 end:0x8037EB94
