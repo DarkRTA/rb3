@@ -168,7 +168,6 @@ cflags_includes = [
     "-i src/std_native",
     "-i src/rb3",
     "-i src",
-    f"-i build/{config.version}/include",
 ]
 
 cflags_defines = [
@@ -437,7 +436,7 @@ config.libs = [
             Object(Matching, "zlib/trees.c"),
             Object(Matching, "zlib/zutil.c"),
             Object(Matching, "zlib/inflate.c"),
-            Object(NonMatching, "zlib/inftrees.c"),
+            Object(Matching, "zlib/inftrees.c", mw_version="Wii/1.0a"),
             Object(Matching, "zlib/inffast.c"),
         ]
     },
