@@ -115,7 +115,7 @@ if not is_windows():
 
 # Tool versions
 config.compilers_tag = "1"
-config.dtk_tag = "v0.5.5"
+config.dtk_tag = "v0.7.2"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.3"
 
@@ -126,7 +126,7 @@ config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
-    "-code_merging all",
+    "-code_merging safe",
     "-code_merging aggressive",
 ]
 
@@ -196,6 +196,11 @@ cflags_c = [
     "-inline auto",
 ]
 
+cflags_sdk = [
+    *cflags_base,
+    "-func_align 16"
+]
+
 cflags_zlib = [
     *cflags_c,
     "-pool on"
@@ -203,7 +208,7 @@ cflags_zlib = [
 
 cflags_bt = [
     *cflags_c,
-    "-str reuse, nopool"
+    "-str reuse,nopool"
 ]
 
 
@@ -239,8 +244,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(Matching, "rb3/stubs/stubvoid.cpp"),
-            Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
@@ -263,7 +266,7 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
-            Object(NonMatching, "rb3/binstream.cpp"),
+            Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/bink.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
