@@ -3,22 +3,17 @@ SZBE69
 
 A decompilation of SZBE69.
 
-This repository builds the following DOLs:
-
-```
-189b001188a2f8ab769e72364440022407fe09d2  build/SZBE69/main.dol 
-```
-
-<!-- If you'd like to contribute, see [CONTRIBUTING.md](CONTRIBUTING.md). -->
+This repository does **not** contain any game assets or assembly whatsoever. An existing copy of the game is required.
 
 Dependencies
 ============
 
 Windows:
 --------
-- Install [ninja](https://github.com/ninja-build/ninja/releases) and add it to `%PATH%`.
 - Install [Python](https://www.python.org/downloads/) and add it to `%PATH%`.
   - Also available from the [Windows Store](https://apps.microsoft.com/store/detail/python-311/9NRWMJP3717K).
+- Download [ninja](https://github.com/ninja-build/ninja/releases) and add it to `%PATH%`.
+  - Quick install via pip: `pip install ninja`
 - (Optional) Run `Add-Exclusion.ps1` (Right click -> "Run with PowerShell") to avoid degraded performance from Windows Defender scans.
 
 macOS:
@@ -32,23 +27,24 @@ macOS:
   brew install --cask --no-quarantine gcenx/wine/wine-crossover
   ```
 
+After OS upgrades, if macOS complains about `Wine Crossover.app` being unverified, you can unquarantine it using:
+```sh
+sudo xattr -rd com.apple.quarantine '/Applications/Wine Crossover.app'
+```
+
 Linux:
 ------
 - Install [ninja](https://github.com/ninja-build/ninja/wiki/Pre-built-Ninja-packages).
-- Install wine from your package manager.
-  - Faster alternative: [WiBo](https://github.com/decompals/WiBo), a minimal 32-bit Windows binary wrapper.  
-    Ensure the binary is in `PATH`.
+- For non-x86(_64) platforms: Install wine from your package manager.
+  - For x86(_64), [wibo](https://github.com/decompals/wibo), a minimal 32-bit Windows binary wrapper, will be automatically downloaded and used.
 
 Building
 ========
 
-- Checkout the repository:
+- Clone the repository:
   ```
   git clone https://github.com/DarkRTA/rb3.git
   ```
-- Download [GC_WII_COMPILERS.zip](https://cdn.discordapp.com/attachments/727918646525165659/1129759991696457728/GC_WII_COMPILERS.zip)
-- Extract the _contents_ of the zip file to `tools/mwcc_compiler`.
-  - Resulting structure should be (for example) `tools/mwcc_compiler/GC/1.3.2/mwcceppc.exe`
 - Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.  
 ![](assets/dolphin-extract.png)
 - Configure:
@@ -59,3 +55,14 @@ Building
   ```
   ninja
   ```
+
+Diffing
+=======
+
+Once the initial build succeeds, an `objdiff.json` should exist in the project root.
+
+Download the latest release from [encounter/objdiff](https://github.com/encounter/objdiff). Under project settings, set `Project directory`. The configuration should be loaded automatically.
+
+Select an object from the left sidebar to begin diffing. Changes to the project will rebuild automatically: changes to source files, headers, `configure.py`, `splits.txt` or `symbols.txt`.
+
+![](assets/objdiff.png)

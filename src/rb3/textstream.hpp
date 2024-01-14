@@ -6,7 +6,7 @@
 class TextStream {
 public:
     TextStream();
-    virtual ~TextStream(); // fn_8000DD10 - generic dtor fn
+    virtual ~TextStream(){} // fn_8000DD10 - generic dtor fn
     virtual void Print(const char *) = 0;
 
     TextStream &operator<<(char); // fn_8037A68C

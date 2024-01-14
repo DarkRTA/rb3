@@ -30,7 +30,10 @@ VERSIONS = [
     "SZBE69",  # 0
 ]
 
-versions_str = VERSIONS[0]
+if len(VERSIONS) > 1:
+    versions_str = ", ".join(VERSIONS[:-1]) + f" or {VERSIONS[-1]}"
+else:
+    versions_str = VERSIONS[0]
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -51,6 +54,12 @@ parser.add_argument(
     type=Path,
     default=Path("build"),
     help="base build directory (default: build)",
+)
+parser.add_argument(
+    "--binutils",
+    dest="binutils",
+    type=Path,
+    help="path to binutils (optional)",
 )
 parser.add_argument(
     "--compilers",
@@ -106,6 +115,7 @@ version_num = VERSIONS.index(config.version)
 # Apply arguments
 config.build_dir = args.build_dir
 config.build_dtk_path = args.build_dtk
+config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.debug = args.debug
 config.generate_map = args.map
@@ -114,21 +124,28 @@ if not is_windows():
     config.wrapper = args.wrapper
 
 # Tool versions
-config.compilers_tag = "1"
-config.dtk_tag = "v0.5.5"
+config.binutils_tag = "2.41-1"
+config.compilers_tag = "20231018"
+config.dtk_tag = "v0.7.2"
 config.sjiswrap_tag = "v1.1.1"
-config.wibo_tag = "0.6.3"
+config.wibo_tag = "0.6.11"
 
 # Project
 config.config_path = Path("config") / config.version / "config.yml"
-config.check_sha_path = Path("orig") / f"{config.version}.sha1"
+config.check_sha_path = Path("config") / config.version / "build.sha1"
+config.asflags = [
+    "-mgekko",
+    "--strip-local-absolute",
+    f"-I build/{config.version}/include",
+]
 config.ldflags = [
     "-fp hardware",
     "-nodefaults",
     "-listclosure",
-    "-code_merging all",
-    "-code_merging aggressive",
+    "-code_merging safe,aggressive",
 ]
+config.shift_jis = False
+config.progress_all = False
 
 cflags_includes = [
     "-i src/stlport/stlport",
@@ -196,6 +213,11 @@ cflags_c = [
     "-inline auto",
 ]
 
+cflags_sdk = [
+    *cflags_base,
+    "-func_align 16"
+]
+
 cflags_zlib = [
     *cflags_c,
     "-pool on"
@@ -203,7 +225,7 @@ cflags_zlib = [
 
 cflags_bt = [
     *cflags_c,
-    "-str reuse, nopool"
+    "-str reuse,nopool"
 ]
 
 
@@ -239,8 +261,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(Matching, "rb3/stubs/stubvoid.cpp"),
-            Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
@@ -263,7 +283,7 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
-            Object(NonMatching, "rb3/binstream.cpp"),
+            Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/bink.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
@@ -413,19 +433,11 @@ config.libs = [
             Object(Matching, "zlib/adler32.c"),
             Object(Matching, "zlib/crc32.c"),
             Object(Matching, "zlib/deflate.c"),
-            Object(Matching, "zlib/inflate.c"),
-            Object(Matching, "zlib/inffast.c"),
             Object(Matching, "zlib/trees.c"),
-            Object(Matching, "zlib/zutil.c")
-        ]
-    },
-    {
-        "lib": "zlib",
-        "mw_version": "Wii/1.0",
-        "cflags": cflags_zlib,
-        "host": False,
-        "objects": [
-            Object(Matching, "zlib/inftrees.c")
+            Object(Matching, "zlib/zutil.c"),
+            Object(Matching, "zlib/inflate.c"),
+            Object(Matching, "zlib/inftrees.c", mw_version="Wii/1.0a"),
+            Object(Matching, "zlib/inffast.c"),
         ]
     },
     {

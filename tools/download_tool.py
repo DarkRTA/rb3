@@ -16,11 +16,28 @@ import os
 import platform
 import shutil
 import stat
-import sys
 import urllib.request
 import zipfile
 
 from pathlib import Path
+
+
+def binutils_url(tag):
+    uname = platform.uname()
+    system = uname.system.lower()
+    arch = uname.machine.lower()
+    if system == "darwin":
+        system = "macos"
+        arch = "universal"
+    elif arch == "amd64":
+        arch = "x86_64"
+
+    repo = "https://github.com/encounter/gc-wii-binutils"
+    return f"{repo}/releases/download/{tag}/{system}-{arch}.zip"
+
+
+def compilers_url(tag):
+    return f"https://files.decomp.dev/compilers_{tag}.zip"
 
 
 def dtk_url(tag):
@@ -49,18 +66,12 @@ def wibo_url(tag):
     return f"{repo}/releases/download/{tag}/wibo"
 
 
-def compilers_url(tag):
-    if tag == "1":
-        return "https://cdn.discordapp.com/attachments/727918646525165659/1129759991696457728/GC_WII_COMPILERS.zip"
-    else:
-        sys.exit("Unknown compilers tag %s" % tag)
-
-
 TOOLS = {
+    "binutils": binutils_url,
+    "compilers": compilers_url,
     "dtk": dtk_url,
     "sjiswrap": sjiswrap_url,
     "wibo": wibo_url,
-    "compilers": compilers_url,
 }
 
 
@@ -81,7 +92,11 @@ def main():
             data = io.BytesIO(response.read())
             with zipfile.ZipFile(data) as f:
                 f.extractall(output)
-            output.touch(mode=0o755)
+            # Make all files executable
+            for root, _, files in os.walk(output):
+                for name in files:
+                    os.chmod(os.path.join(root, name), 0o755)
+            output.touch(mode=0o755)  # Update dir modtime
         else:
             with open(output, "wb") as f:
                 shutil.copyfileobj(response, f)
