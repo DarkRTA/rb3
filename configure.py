@@ -127,6 +127,7 @@ config.ldflags = [
     "-nodefaults",
     "-listclosure",
     "-code_merging all",
+    "-code_merging aggressive",
 ]
 
 cflags_includes = [
