@@ -196,6 +196,11 @@ cflags_c = [
     "-inline auto",
 ]
 
+cflags_sdk = [
+    *cflags_base,
+    "-func_align 16"
+]
+
 cflags_zlib = [
     *cflags_c,
     "-pool on"
@@ -240,7 +245,7 @@ config.libs = [
         "host": False,
         "objects": [
             Object(Matching, "rb3/stubs/stubvoid.cpp"),
-            Object(Matching, "rb3/stubs/stubzero.cpp"),
+            # Object(Matching, "rb3/stubs/stubzero.cpp"),
             Object(Matching, "rb3/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonconverter.cpp"),
@@ -263,7 +268,7 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
-            Object(NonMatching, "rb3/binstream.cpp"),
+            Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/bink.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
@@ -366,6 +371,15 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+        ],
+    },
+    {
+        "lib": "sdk",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_sdk,
+        "host": False,
+        "objects": [
+            Object(Matching, "sdk/stubzero.cpp")
         ],
     },
     {
