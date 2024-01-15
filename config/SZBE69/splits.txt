@@ -327,7 +327,9 @@ rb3/datautil.cpp:
 
 flex/yy.c:
 	.text       start:0x80324B4C end:0x8032553C
+	.rodata     start:0x807F0D60 end:0x807F1D90
 	.data       start:0x808556C0 end:0x808558C8
+	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
 rb3/unknown/803/unk_80324AFC.cpp:
