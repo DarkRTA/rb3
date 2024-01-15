@@ -45,6 +45,7 @@ float CeilThunk(double);
 float AbsThunk(double);
 float PowThunk(double, double);
 float ATanThunk(double);
+float ATanFloat(double);
 float PowFloat(double, double);
 float SinThunk(double);
 float SinFloat(double);
