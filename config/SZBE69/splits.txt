@@ -558,6 +558,7 @@ speex/libspeex/quant_lsp.c:
 
 speex/libspeex/speex.c:
 	.text       start:0x806A7884 end:0x806A79AC
+	.data       start:0x8089FC60 end:0x8089FCB8
 
 speex/libspeex/speex_callbacks.c:
 	.text       start:0x806A79AC end:0x806A7AC8

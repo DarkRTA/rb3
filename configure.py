@@ -486,7 +486,7 @@ config.libs = [
             Object(Matching, "speex/libspeex/ltp.c"),
             Object(NonMatching, "speex/libspeex/nb_celp.c"),
             Object(Matching, "speex/libspeex/quant_lsp.c"),
-            Object(NonMatching, "speex/libspeex/speex.c"),
+            Object(Matching, "speex/libspeex/speex.c"),
             Object(Matching, "speex/libspeex/speex_callbacks.c"),
             Object(NonMatching, "speex/libspeex/vbr.c"),
             Object(Matching, "speex/libspeex/vq.c")
