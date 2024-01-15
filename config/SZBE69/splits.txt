@@ -239,14 +239,66 @@ rb3/unknown/803/unk_8030A494.cpp:
 rb3/unknown/803/unk_8031144C.cpp:
 	.text       start:0x8031144C end:0x80312A78
 
-rb3/rg_messages.cpp:
-	.text       start:0x80313E98 end:0x80314814
-	.data       start:0x808546F0 end:0x80854A08
-	.bss        start:0x8091A254 end:0x8091A290
+rb3/messages/stringstrummedmsg.cpp:
+	.text       start:0x80313E98 end:0x80313FB0
 
-rb3/key_messages.cpp:
-	.text       start:0x80315298 end:0x80315A70
-	.data       start:0x80854A08 end:0x80854D00
+rb3/messages/stringstoppedmsg.cpp:
+	.text       start:0x80313FB0 end:0x80313FFC
+
+rb3/messages/rg/rgaccelerometermsg.cpp:
+	.text       start:0x80313FFC end:0x80314114
+
+rb3/messages/rg/rgconnectedaccessoriesmsg.cpp:
+	.text       start:0x80314114 end:0x803141EC
+
+rb3/messages/rg/rgpitchbendmsg.cpp:
+	.text       start:0x803141EC end:0x803142C4
+
+rb3/messages/rg/rgmutingmsg.cpp:
+	.text       start:0x803142C4 end:0x8031439C
+
+rb3/messages/rg/rgstompboxmsg.cpp:
+	.text       start:0x8031439C end:0x80314474
+
+rb3/messages/rg/rgprogramchangemsg.cpp:
+	.text       start:0x80314474 end:0x8031454C
+
+rb3/messages/rg/rgswingmsg.cpp:
+	.text       start:0x8031454C end:0x80314624
+
+rb3/messages/rg/rgfretbuttondownmsg.cpp:
+	.text       start:0x80314624 end:0x8031471C
+
+rb3/messages/rg/rgfretbuttonupmsg.cpp:
+	.text       start:0x8031471C end:0x80314814
+
+rb3/messages/keys/keyboardkeyreleasedmsg.cpp:
+	.text       start:0x80315298 end:0x80315370
+	.data       start:0x80854CE4 end:0x80854D00
+
+rb3/messages/keys/keyboardmodmsg.cpp:
+	.text       start:0x80315370 end:0x80315448
+
+rb3/messages/keys/keyboardexpressionpedalmsg.cpp:
+	.text       start:0x80315448 end:0x80315520
+
+rb3/messages/keys/keyboardconnectedaccessories.cpp:
+	.text       start:0x80315520 end:0x803155F8
+
+rb3/messages/keys/keyboardsustainmsg.cpp:
+	.text       start:0x803155F8 end:0x803156D0
+
+rb3/messages/keys/keyboardstompbox.cpp:
+	.text       start:0x803156D0 end:0x803157A8
+
+rb3/messages/keys/keysaccelerometermsg.cpp:
+	.text       start:0x803157A8 end:0x803158C0
+
+rb3/messages/keys/keyboardlowhandplacementmsg.cpp:
+	.text       start:0x803158C0 end:0x80315998
+
+rb3/messages/keys/keyboardhighhandplacementmsg.cpp:
+	.text       start:0x80315998 end:0x80315A70
 
 rb3/dataarray.cpp:
 	.text       start:0x80315A70 end:0x803185F0

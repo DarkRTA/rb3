@@ -8,17 +8,17 @@
 #include "math.h"
 
 #pragma dont_inline on
+// fn_802DCEDC
+LinearInterpolator::LinearInterpolator(float f1, float f2, float f3, float f4) {
+    Reset(f1, f2, f3, f4);
+}
+
 // fn_802DCF50
 Interpolator::Interpolator() {
 }
 
 // fn_802DCF60
 LinearInterpolator::LinearInterpolator() {
-}
-
-// fn_802DCEDC
-LinearInterpolator::LinearInterpolator(float f1, float f2, float f3, float f4) {
-    Reset(f1, f2, f3, f4);
 }
 #pragma dont_inline reset
 
@@ -44,11 +44,6 @@ void LinearInterpolator::Reset(const DataArray *da) {
         da->GetFloatAtIndex(3),
         da->GetFloatAtIndex(4)
     );
-}
-
-// fn_802DD994
-double LinearInterpolator::Eval(float f) {
-    return unk14 * f + unk18;
 }
 
 // fn_802DD0F0
@@ -152,18 +147,6 @@ ATanInterpolator::ATanInterpolator(float f1, float f2, float f3, float f4, float
 ATanInterpolator::ATanInterpolator() {
 }
 
-#pragma dont_inline on
-// fn_802DD82C
-float ATanFloat(double d) {
-    return atan(d);
-}
-
-// fn_802DD828
-float ATanThunk(double d) {
-    return ATanFloat(d);
-}
-#pragma dont_inline reset
-
 // fn_802DD738
 void ATanInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     float f31 = -f5;
@@ -177,6 +160,18 @@ void ATanInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     unk34 = 0.5f * (f2 - f1) + f1;
     unk38 = f5;
 }
+
+#pragma dont_inline on
+// fn_802DD828
+float ATanThunk(double d) {
+    return ATanFloat(d);
+}
+
+// fn_802DD82C
+float ATanFloat(double d) {
+    return atan(d);
+}
+#pragma dont_inline reset
 
 // fn_802DD850
 void ATanInterpolator::Reset(const DataArray *da) {
@@ -199,4 +194,9 @@ double ATanInterpolator::Eval(float f) {
     float ret = ATanThunk(unk14.Eval(f));
     ret *= unk30;
     return ret + unk34;
+}
+
+// fn_802DD994
+double LinearInterpolator::Eval(float f) {
+    return unk14 * f + unk18;
 }

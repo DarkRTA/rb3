@@ -3,13 +3,13 @@
 #include "interpolator.hpp"
 #include "data.hpp"
 
-class LinearInterpolator : Interpolator {
+class LinearInterpolator : public Interpolator {
 public:
     LinearInterpolator(float, float, float, float); // fn_802DCEDC
     LinearInterpolator(); // fn_802DCF60
     virtual double Eval(float); // fn_802DD994
     virtual void Reset(const DataArray *); // fn_802DD05C
-    virtual ~LinearInterpolator(); // fn_800E0DEC
+    virtual ~LinearInterpolator(){} // fn_800E0DEC
 
     void Reset(float, float, float, float); // fn_802DCF9C
 
