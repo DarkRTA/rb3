@@ -480,7 +480,7 @@ config.libs = [
         "objects": [
             Object(Matching, "speex/libspeex/bits.c"),
             Object(Matching, "speex/libspeex/cb_search.c"),
-            Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(Matching, "speex/libspeex/filters.c"),
             Object(Matching, "speex/libspeex/lpc.c"),
             Object(Matching, "speex/libspeex/lsp.c"),
             Object(Matching, "speex/libspeex/ltp.c"),

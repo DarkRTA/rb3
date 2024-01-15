@@ -305,7 +305,7 @@ spx_word16_t compute_rms(const spx_sig_t *x, int len)
    {
       sum += x[i]*x[i];
    }
-   return sqrt(.1+sum/len);
+   return spx_sqrt(.1+sum/len);
 }
 spx_word16_t compute_rms16(const spx_word16_t *x, int len)
 {
