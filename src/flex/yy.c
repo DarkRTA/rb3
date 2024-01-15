@@ -638,34 +638,34 @@ case 1:
 YY_RULE_SETUP
 #line 11 "x.y"
 {
-            printf( "An integer: %s (%d)\n", yytext,
-                    atoi( yytext ) );
+            // printf( "An integer: %s (%d)\n", yytext,
+            //         atoi( yytext ) );
             }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 16 "x.y"
 {
-            printf( "A float: %s (%g)\n", yytext,
-                    atof( yytext ) );
+            // printf( "A float: %s (%g)\n", yytext,
+            //         atof( yytext ) );
             }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 21 "x.y"
 {
-            printf( "A keyword: %s\n", yytext );
+            // printf( "A keyword: %s\n", yytext );
             }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 25 "x.y"
-printf( "An identifier: %s\n", yytext );
+// printf( "An identifier: %s\n", yytext );
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 27 "x.y"
-printf( "An operator: %s\n", yytext );
+// printf( "An operator: %s\n", yytext );
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -680,7 +680,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 33 "x.y"
-printf( "Unrecognized character: %s\n", yytext );
+// printf( "Unrecognized character: %s\n", yytext );
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -924,8 +924,8 @@ static int yy_get_next_buffer()
 			num_to_read = YY_READ_BUF_SIZE;
 
 		/* Read in more data. */
-		YY_INPUT( (&yy_current_buffer->yy_ch_buf[number_to_move]),
-			yy_n_chars, num_to_read );
+		// YY_INPUT( (&yy_current_buffer->yy_ch_buf[number_to_move]),
+		// 	yy_n_chars, num_to_read );
 
 		yy_current_buffer->yy_n_chars = yy_n_chars;
 		}
