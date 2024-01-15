@@ -10,11 +10,11 @@ void User::Reset(){
     unk30 = -1;
 }
 
-#pragma dont_inline on
+
 bool User::ComesBefore(const User* u){
     return guid < u->guid;
 }
-#pragma dont_inline reset
+
 
 extern Symbol SymComesBefore, SymGetPlayerName, SymIsLocal, SymReset;
 extern char* PathName(const Hmx::Object*);

@@ -60,7 +60,7 @@ Symbol SVar1;
         } else SetTypeDef(intermediate);
     } else SetTypeDef(NULL);
 }*/
-#pragma dont_inline on
+
 Symbol RndDrawable::StaticClassName() {
     static Symbol lbl_808F054C("Draw");
     return lbl_808F054C;
@@ -68,4 +68,4 @@ Symbol RndDrawable::StaticClassName() {
 Symbol RndDrawable::ClassName() const {
     return StaticClassName();
 }
-#pragma dont_inline reset
+

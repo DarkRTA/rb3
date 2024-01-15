@@ -25,11 +25,11 @@ void Normalize(const Hmx::Matrix3 &src, Hmx::Matrix3 &dst) {
     Cross(dst.row1, dst.row2, dst.row3);
 }
 
-#pragma dont_inline on
+
 Hmx::Quat::Quat(const Vector3 &vec) {
     Set(vec);
 }
-#pragma dont_inline reset
+
 
 extern "C" void *memset(void *, int, unsigned int);
 

@@ -22,7 +22,7 @@ const char *UnusedStackFrameFxn() {
     return "\n   ... %d omitted stack frames";
 }
 
-#pragma dont_inline on
+
 // fn_80315C3C
 char *fn_80315C3C(int i) {
     lbl_8091A480 += 1;
@@ -60,7 +60,7 @@ void NodesFree(int i, DataNode *dn) {
     fn_80315C7C(dn);
     MemOrPoolFree(i, 1, dn);
 }
-#pragma dont_inline reset
+
 
 extern int gIndent;
 
@@ -339,13 +339,13 @@ bool DataArray::Contains(const DataNode &dn) const {
     return false;
 }
 
-#pragma dont_inline on
+
 // fn_80317278
 BinStream &operator<<(BinStream &bs, const DataNode *dn) {
     dn->Save(bs);
     return bs;
 }
-#pragma dont_inline reset
+
 
 // fn_803171F8
 void DataArray::Save(BinStream &bs) const {
@@ -417,7 +417,7 @@ DataArray *DataArray::Clone(bool b1, bool b2, int i) {
     return da;
 }
 
-#pragma dont_inline on
+
 // fn_8031627C
 DataArray *DataArray::FindArray(Symbol s, bool b) const {
     return FindArray(s.GetIntVal(), false);
@@ -427,7 +427,7 @@ DataArray *DataArray::FindArray(Symbol s, bool b) const {
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
     return FindArray(s1, true)->FindArray(s2, true);
 }
-#pragma dont_inline reset
+
 
 // fn_80316300
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
@@ -500,13 +500,13 @@ bool DataArray::FindData(Symbol s, bool &dest, bool b) const {
         return false;
 }
 
-#pragma dont_inline on
+
 // fn_80316258
 DataNodeValue DataArray::GetDataNodeValueAtIndex(int i) const {
     DataNode *dn = GetNodeAtIndex(i);
     return dn->value;
 }
-#pragma dont_inline reset
+
 
 // fn_803161D4
 DataArray *DataArray::FindArray(int i, bool b) const {

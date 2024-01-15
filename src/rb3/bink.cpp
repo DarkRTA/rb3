@@ -10,12 +10,12 @@
 #include "cacheid.hpp"
 #include "cacheidwii.hpp"
 
-#pragma dont_inline on
+
 unsigned int ReverseByte(unsigned int *ui, unsigned int lol) {
     // loads byte ui in reverse endian order
     ASM_BLOCK(lwbrx r3, r4, r3)
 }
-#pragma dont_inline reset
+
 
 // fn_80341EDC
 void intelendian(void *v, unsigned int ui) {

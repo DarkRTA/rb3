@@ -143,11 +143,11 @@ bool DataNode::operator!=(const DataNode &dn) const {
     return !(*this == dn);
 }
 
-#pragma dont_inline on
+
 DataType DataNode::GetType() const {
     return type;
 }
-#pragma dont_inline reset
+
 
 // fn_80323530
 bool DataNode::NotNull() const {
@@ -163,11 +163,11 @@ bool DataNode::NotNull() const {
         return (n->value.dataArray != 0);
 }
 
-#pragma dont_inline on
+
 void DataNode::AssignValue(const DataNode &dn) {
     value = dn.value;
 }
-#pragma dont_inline reset
+
 
 // fn_803235D4
 DataNode *DataNode::operator=(const DataNode &dn) {

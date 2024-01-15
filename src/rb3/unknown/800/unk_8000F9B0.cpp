@@ -16,12 +16,12 @@ Symbol DataArray::GetSymAtIndex(int i) const {
 }
 
 extern char *gNullStr;
-#pragma dont_inline on
+
 // fn_800103CC
 bool Symbol::IsNull() {
     return m_string == gNullStr;
 }
-#pragma dont_inline reset
+
 
 extern DataArray *fn_8035CF9C(int, int, int);
 // fn_8000E048

@@ -27,21 +27,21 @@ float GetSqrtAsFloat(double d) {
     return Sqrt(d);
 }
 
-#pragma dont_inline on
+
 // fn_80179980
 float SqrtThunk(double d) {
     return GetSqrtAsFloat(d);
 }
-#pragma dont_inline reset
+
 
 // fn_8017952C
 float LogFloat(double d) {
     return log(d);
 }
 
-#pragma dont_inline on
+
 // fn_80179528
 float LogThunk(double d) {
     return LogFloat(d);
 }
-#pragma dont_inline reset
+

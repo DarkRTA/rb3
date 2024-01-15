@@ -25,12 +25,12 @@ DataNode DataTan(DataArray *da) {
     return DataNode(TanThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
 }
 
-#pragma dont_inline on
+
 // fn_802E3148
 float TanThunk(double d) {
     return TanFloat(d);
 }
-#pragma dont_inline reset
+
 
 // fn_802E314C
 float TanFloat(double d) {

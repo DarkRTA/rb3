@@ -1,11 +1,11 @@
 #include "jsonconverter.hpp"
 
-#pragma dont_inline on
+
 // fn_800A6360
 JsonObject::JsonObject() {
     json_object_struct = 0;
 }
-#pragma dont_inline reset
+
 
 // fn_800A6378
 JsonObject::~JsonObject() {

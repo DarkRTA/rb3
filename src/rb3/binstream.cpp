@@ -35,7 +35,7 @@ BinStream &BinStream::operator<<(const String &str) {
     return *this;
 }
 
-#pragma dont_inline on
+
 // fn_80342C00
 void BinStream::ReadString(char *c, int i) {
     unsigned int a;
@@ -43,7 +43,7 @@ void BinStream::ReadString(char *c, int i) {
     Read(c, a);
     c[a] = 0;
 }
-#pragma dont_inline reset
+
 
 // fn_80342C58
 BinStream &BinStream::operator>>(Symbol &s) {

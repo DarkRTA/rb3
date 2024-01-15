@@ -7,7 +7,7 @@
 #include "ataninterpolator.hpp"
 #include "math.h"
 
-#pragma dont_inline on
+
 // fn_802DCEDC
 LinearInterpolator::LinearInterpolator(float f1, float f2, float f3, float f4) {
     Reset(f1, f2, f3, f4);
@@ -20,7 +20,7 @@ Interpolator::Interpolator() {
 // fn_802DCF60
 LinearInterpolator::LinearInterpolator() {
 }
-#pragma dont_inline reset
+
 
 // fn_802DCF9C
 void LinearInterpolator::Reset(float f1, float f2, float f3, float f4) {
@@ -88,12 +88,12 @@ double ExpInterpolator::Eval(float f) {
     return pow_res * unk18 + unk4;
 }
 
-#pragma dont_inline on
+
 // fn_802DD378
 float PowThunk(double d1, double d2) {
     return PowFloat(d1, d2);
 }
-#pragma dont_inline reset
+
 
 // fn_802DD37C
 InvExpInterpolator::InvExpInterpolator(float f1, float f2, float f3, float f4, float f5) {
@@ -161,7 +161,7 @@ void ATanInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     unk38 = f5;
 }
 
-#pragma dont_inline on
+
 // fn_802DD828
 float ATanThunk(double d) {
     return ATanFloat(d);
@@ -171,7 +171,7 @@ float ATanThunk(double d) {
 float ATanFloat(double d) {
     return atan(d);
 }
-#pragma dont_inline reset
+
 
 // fn_802DD850
 void ATanInterpolator::Reset(const DataArray *da) {
