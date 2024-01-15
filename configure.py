@@ -508,7 +508,7 @@ config.libs = [
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(NonMatching, "flex/flex.c")
+            Object(NonMatching, "flex/yy.c")
         ],
     },
     {
