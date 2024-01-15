@@ -16,7 +16,7 @@ extern "C" {
 // Unorganized things which have yet to be RE'd
 
 // TODO
-// #define EOF
+#define EOF -1
 // #define FOPEN_MAX
 // #define FILENAME_MAX
 // #define BUFSIZ

@@ -325,8 +325,15 @@ rb3/datautil.cpp:
 	.text       start:0x8032443C end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 
+flex/yy.c:
+	.text       start:0x80324B4C end:0x8032553C
+	.rodata     start:0x807F0D60 end:0x807F1D90
+	.data       start:0x808556C0 end:0x808558C8
+	.sbss       start:0x808E4488 end:0x808E4490
+	.bss        start:0x8091ABA8 end:0x8091ABD8
+
 rb3/unknown/803/unk_80324AFC.cpp:
-	.text       start:0x80324B4C end:0x8032D90C
+	.text       start:0x8032553C end:0x8032D90C
 
 rb3/unknown/803/unk_80330DF4.cpp:
 	.text       start:0x80330DF4 end:0x803351D0
@@ -460,7 +467,7 @@ rb3/unknown/805/unk_805CE140.cpp:
 
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
-	.data       start:0x80895410 end:0x808954B8
+	.data       start:0x80895410 end:0x808954D0
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
@@ -549,12 +556,14 @@ speex/libspeex/ltp.c:
 
 speex/libspeex/nb_celp.c:
 	.text       start:0x806A30BC end:0x806A6CC0
+	.data       start:0x8089F748 end:0x8089FC60
 
 speex/libspeex/quant_lsp.c:
 	.text       start:0x806A6CC0 end:0x806A7884
 
 speex/libspeex/speex.c:
 	.text       start:0x806A7884 end:0x806A79AC
+	.data       start:0x8089FC60 end:0x8089FCB8
 
 speex/libspeex/speex_callbacks.c:
 	.text       start:0x806A79AC end:0x806A7AC8

@@ -480,13 +480,13 @@ config.libs = [
         "objects": [
             Object(Matching, "speex/libspeex/bits.c"),
             Object(Matching, "speex/libspeex/cb_search.c"),
-            Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(Matching, "speex/libspeex/filters.c"),
             Object(Matching, "speex/libspeex/lpc.c"),
             Object(Matching, "speex/libspeex/lsp.c"),
             Object(Matching, "speex/libspeex/ltp.c"),
             Object(NonMatching, "speex/libspeex/nb_celp.c"),
             Object(Matching, "speex/libspeex/quant_lsp.c"),
-            Object(NonMatching, "speex/libspeex/speex.c"),
+            Object(Matching, "speex/libspeex/speex.c"),
             Object(Matching, "speex/libspeex/speex_callbacks.c"),
             Object(NonMatching, "speex/libspeex/vbr.c"),
             Object(Matching, "speex/libspeex/vq.c")
@@ -500,6 +500,15 @@ config.libs = [
         "objects": [
             Object(Matching, "libogg/src/bitwise.c"),
             Object(Matching, "libogg/src/framing.c")
+        ],
+    },
+    {
+        "lib": "flex",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_c,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "flex/yy.c")
         ],
     },
     {
