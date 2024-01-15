@@ -571,7 +571,6 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            # Code merging: new <-> new[], delete <-> delete[] are getting merged into each other
             Object(Matching, "std_native/src/new.cpp"),
         ]
     },
