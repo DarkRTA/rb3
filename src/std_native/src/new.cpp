@@ -1,5 +1,6 @@
 #include <new>
 
+#pragma force_active on
 // fn_80354830
 void *operator new(std::size_t size) {
     return _MemAlloc(size, 0);
@@ -19,6 +20,7 @@ void *operator new[](std::size_t size) {
 void operator delete[](void *ptr) throw() {
     MemFree(ptr);
 }
+#pragma force_active off
 
 #define POOL_MAX 0x80
 #define POOL_MAX_STL 0x100

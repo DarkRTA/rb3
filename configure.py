@@ -551,7 +551,7 @@ config.libs = [
         "host": False,
         "objects": [
             # Code merging: new <-> new[], delete <-> delete[] are getting merged into each other
-            Object(LinkIssues, "std_native/src/new.cpp"),
+            Object(Matching, "std_native/src/new.cpp"),
         ]
     },
 ]
