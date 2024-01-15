@@ -503,6 +503,15 @@ config.libs = [
         ],
     },
     {
+        "lib": "yylex",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_c,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "yylex/yylex.c")
+        ],
+    },
+    {
         "lib": "vorbis",
         "mw_version": "Wii/1.3",
         "cflags": cflags_c,
