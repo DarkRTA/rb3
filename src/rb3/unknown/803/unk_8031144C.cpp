@@ -20,8 +20,7 @@ extern Symbol SymComesBefore, SymGetPlayerName, SymIsLocal, SymReset;
 extern char* PathName(const Hmx::Object*);
 
 DataNode User::Handle(DataArray* da, bool b){
-    Symbol toMatch = toMatch;
-    toMatch = da->GetSymAtIndex(1);
+    Symbol toMatch = da->GetSymAtIndex(1);
     if(toMatch == SymIsLocal){
         return DataNode(IsLocal());
     }
@@ -48,8 +47,7 @@ bool User::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
     bool ret;
     if(i == cnt) ret = true;
     else {
-        Symbol lol = lol;
-        lol = da->GetSymAtIndex(cnt);
+        Symbol lol = da->GetSymAtIndex(cnt);
         ret = false;
     }
     return ret;
