@@ -3,66 +3,66 @@
 #include "message.hpp"
 #include "symbol.hpp"
 
-class RGAccelerometerMsg : Message {
+class RGAccelerometerMsg : public Message {
 public:
     RGAccelerometerMsg(int, int, int, int); // fn_80313FFC
-    virtual ~RGAccelerometerMsg(); // fn_800A7FF4
+    virtual ~RGAccelerometerMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGConnectedAccessoriesMsg : Message {
+class RGConnectedAccessoriesMsg : public Message {
 public:
     RGConnectedAccessoriesMsg(int, int); // fn_80314114
-    virtual ~RGConnectedAccessoriesMsg(); // fn_800A7FF4
+    virtual ~RGConnectedAccessoriesMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGFretButtonDownMsg : Message {
+class RGFretButtonDownMsg : public Message {
 public:
     RGFretButtonDownMsg(int, int, int); // fn_80314624
-    virtual ~RGFretButtonDownMsg(); // fn_800A7FF4
+    virtual ~RGFretButtonDownMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGFretButtonUpMsg : Message {
+class RGFretButtonUpMsg : public Message {
 public:
     RGFretButtonUpMsg(int, int, int); // fn_8031471C
-    virtual ~RGFretButtonUpMsg(); // fn_800A7FF4
+    virtual ~RGFretButtonUpMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGMutingMsg : Message {
+class RGMutingMsg : public Message {
 public:
     RGMutingMsg(int, int); // fn_803142C4
-    virtual ~RGMutingMsg(); // fn_800A7FF4
+    virtual ~RGMutingMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGPitchBendMsg : Message {
+class RGPitchBendMsg : public Message {
 public:
     RGPitchBendMsg(int, int); // fn_803141EC
-    virtual ~RGPitchBendMsg(); // fn_800A7FF4
+    virtual ~RGPitchBendMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGProgramChangeMsg : Message {
+class RGProgramChangeMsg : public Message {
 public:
     RGProgramChangeMsg(int, int); // fn_80314474
-    virtual ~RGProgramChangeMsg(); // fn_800A7FF4
+    virtual ~RGProgramChangeMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGStompBoxMsg : Message {
+class RGStompBoxMsg : public Message {
 public:
     RGStompBoxMsg(int, int); // fn_8031439C
-    virtual ~RGStompBoxMsg(); // fn_800A7FF4
+    virtual ~RGStompBoxMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
-class RGSwingMsg : Message {
+class RGSwingMsg : public Message {
 public:
     RGSwingMsg(int, int); // fn_8031454C
-    virtual ~RGSwingMsg(); // fn_800A7FF4
+    virtual ~RGSwingMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 

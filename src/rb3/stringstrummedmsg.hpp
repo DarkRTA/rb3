@@ -3,10 +3,10 @@
 #include "symbol.hpp"
 #include "message.hpp"
 
-class StringStrummedMsg : Message {
+class StringStrummedMsg : public Message {
 public:
     StringStrummedMsg(int, int, int, int); // fn_80313E98
-    virtual ~StringStrummedMsg(); // fn_800A7FF4
+    virtual ~StringStrummedMsg(){} // fn_800A7FF4
     static Symbol Type();
 };
 
