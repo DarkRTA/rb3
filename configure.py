@@ -291,7 +291,6 @@ config.libs = [
             Object(NonMatching, "rb3/netstream.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
             Object(NonMatching, "rb3/ogg_mem.cpp"),
-            Object(NonMatching, "rb3/rg_messages.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/trainingmgr.cpp"),
@@ -323,6 +322,19 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
             Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
+
+            Object(NonMatching, "rb3/messages/stringstrummedmsg.cpp"),
+            Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
+
+            Object(NonMatching, "rb3/messages/rg/rgaccelerometermsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgconnectedaccessoriesmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgpitchbendmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgmutingmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgstompboxmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgprogramchangemsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgswingmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgfretbuttondownmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgfretbuttonupmsg.cpp"),
 
             Object(NonMatching, "rb3/messages/keys/keyboardkeyreleasedmsg.cpp"),
             Object(NonMatching, "rb3/messages/keys/keyboardmodmsg.cpp"),
