@@ -503,12 +503,12 @@ config.libs = [
         ],
     },
     {
-        "lib": "yylex",
+        "lib": "flex",
         "mw_version": "Wii/1.3",
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(NonMatching, "yylex/yylex.c")
+            Object(NonMatching, "flex/flex.c")
         ],
     },
     {

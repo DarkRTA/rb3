@@ -325,7 +325,7 @@ rb3/datautil.cpp:
 	.text       start:0x8032443C end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 
-yylex/yylex.c:
+flex/flex.c:
 	.text       start:0x80324B4C end:0x8032553C
 
 rb3/unknown/803/unk_80324AFC.cpp:
