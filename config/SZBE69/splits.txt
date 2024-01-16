@@ -345,8 +345,12 @@ rb3/hmx/object.cpp:
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
 
+rb3/beatmap.cpp:
+	.text       start:0x80340ED8 end:0x80341E68
+	.ctors      start:0x807EFF2C end:0x807EFF30
+
 rb3/bink.cpp:
-	.text       start:0x80341E10 end:0x80342ACC
+	.text       start:0x80341E68 end:0x80342ACC
 
 rb3/binstream.cpp:
 	.text       start:0x80342ACC end:0x803431F4

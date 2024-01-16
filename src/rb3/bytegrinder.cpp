@@ -191,7 +191,8 @@ DataNode magicNumberGenerator(DataArray* da){
     if(da->GetIntAtIndex(2) == 2){
         magic = 0x36363636;
     }
-    void* v = (void*)((da->GetIntAtIndex(1) ^ magic) * 0x19660d + 0x3c6ef35f);
+    int idx = da->GetIntAtIndex(1);
+    void* v = (void*)((idx ^ magic) * 0x19660d + 0x3c6ef35f);
     if(da->GetIntAtIndex(2) == 1){
         v = (void*)((int)v * 0x19660d + 0x3c6ef35f);
     }
@@ -203,12 +204,12 @@ void ByteGrinder::Init(){
     sprintf(buf, "O%d");
 }
 
-void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3){
+void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int len, long l3){
     char buf1[268];
     char buf_loop1_1[16];
+    char buf_loop2_2[256];
     char buf_loop1_2[256];
     char buf_loop2_1[16];
-    char buf_loop2_2[256];
     char buf3[32];
     
     sprintf(buf1, "{ma %d 2}", l1);
@@ -229,33 +230,32 @@ void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3
     }
     
     pickOneOf32B(true, l2);
-    for(int cnt = 0; cnt < 0x20; cnt++){
+    for(int i = 0; i < 0x20; i++){
         sprintf(buf_loop1_1, "O%d", pickOneOf32B(false, 0));
-        sprintf(buf_loop1_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", cnt, buf_loop1_1);
+        sprintf(buf_loop1_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i, buf_loop1_1);
         str += buf_loop1_2;
     }
 
     if(enc_method != 0){
         pickOneOf32B(true, l1);
-        for(enc_method = 0x20; enc_method < 0x40; enc_method++){
+        for(int i = 0x20; i < 0x40; i++){
             sprintf(buf_loop2_1, "O%d", pickOneOf32B(false, 0) + 0x20);
-            sprintf(buf_loop2_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", enc_method, buf_loop2_1);
+            sprintf(buf_loop2_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i , buf_loop2_1);
             str += buf_loop2_2;
         }
     }
 
     str += "}{O70 $ix}}}$foo";
     arr = DataReadString(str.c_str());
-    unsigned char* uc1 = uc;
-    for(int cnt = 0; cnt < i; cnt++){
+    for(int i = 0; i < len; i++){
         {
+            unsigned char c = uc[i];
             String inner_str("");
-            snprintf(buf3, 0x20, "%d", *uc1);
+            snprintf(buf3, sizeof(buf3), "%d", c);
             inner_str += buf3;
             inner_str += " (";
-            unsigned char* uc2 = uc;
-            for(int cnt2 = 0; cnt2 < 0x10; cnt2++){
-                snprintf(buf3, 0x20, "%d", *uc2++);
+            for(int j = 0; j < 0x10; j++){
+                snprintf(buf3, sizeof(buf3), "%d", uc[j]);
                 inner_str += buf3;
                 inner_str += " ";
             }
@@ -263,11 +263,10 @@ void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int i, long l3
             DataArray* arr_inner = DataReadString(inner_str.c_str());
             {
                 DataNode exec = arr->ExecuteScript(0, nullptr, arr_inner, 0);
-                *uc1 = exec.Int(nullptr);
+                uc[i] = exec.Int(nullptr);
             }
             arr_inner->DecRefCount();
         }
-        uc1++;
     }
     arr->DecRefCount();
 
