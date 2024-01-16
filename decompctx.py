@@ -113,6 +113,7 @@ class ContextArguments:
         parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true", default=True)
         parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
         parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
+        parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
 
         # For the output path, we either want to be explicit or relative, but not both
         output_target_group = parser.add_mutually_exclusive_group()
@@ -132,6 +133,7 @@ class ContextArguments:
         self.strip_at_address = known_args.strip_at_address or known_args.ghidra or known_args.m2c
         self.strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
         self.convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
+        self.preserve_macros = known_args.preserve_code_macros and not known_args.m2c and not known_args.ghidra
 
         if known_args.help or not known_args.c_file:
             # Since this script acts as a wrapper for the main pcpp script
@@ -177,6 +179,10 @@ class ContextArguments:
         for define in include_defines:
             self.preprocessor_arguments.extend(("-D", define))
 
+        # Preserve macros in code if desired
+        if self.preserve_macros:
+            self.preprocessor_arguments.append("--passthru-defines")
+
         # Add other default arguments
         self.preprocessor_arguments.extend(default_arguments)
 
@@ -192,6 +198,7 @@ class ContextArguments:
 class ContextPreprocessor(CmdPreprocessor):
     def __init__(self, args: ContextArguments):
         self.context_args = args
+        self.in_directive = False
         super(ContextPreprocessor, self).__init__(args.preprocessor_arguments)
 
     def on_include_not_found(self, is_malformed, is_system_include, curdir, includepath):
@@ -218,6 +225,30 @@ class ContextPreprocessor(CmdPreprocessor):
         if ident in passthrough_defines:
             return None
         return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
+
+    def expand_macros(self, tokens, expanding_from=[]):
+        # Always expand if we're not preserving macros
+        if not self.context_args.preserve_macros:
+            return super(ContextPreprocessor, self).expand_macros(tokens, expanding_from)
+
+        # Don't expand outside of directives
+        if not self.in_directive:
+            return tokens
+
+        # Expand first before exiting the directive, since this is called recursively
+        ret = super(ContextPreprocessor, self).expand_macros(tokens, expanding_from)
+        self.in_directive = False
+        return ret
+
+    def evalexpr(self, tokens):
+        # Inside an #if or #elif directive
+        self.in_directive = True
+        return super(ContextPreprocessor, self).evalexpr(tokens)
+
+    def include(self, tokens, original_line):
+        # Inside an #include directive
+        self.in_directive = True
+        return super(ContextPreprocessor, self).include(tokens, original_line)
 #endregion
 
 #region Attribute Stripping
