@@ -16,7 +16,7 @@ def demangle(sym):
     try:
         # TODO: port the demangler to python as calling cwdemangle is SLOW
         demangler_output = subprocess.check_output(['cwdemangle', name])
-        return SymbolUtilities.replaceInvalidChars(str(demangler_output), False)
+        return SymbolUtilities.replaceInvalidChars(str(demangler_output).split("(")[0], False)
     except:
         return sym
 
