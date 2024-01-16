@@ -337,11 +337,13 @@ static yyconst int yy_ec[256] =
         1,    1,    1,    1,    1,	  1
     } ;
 
-static yyconst int yy_meta[27] =
-    {   0,
-        1,    1,    2,    1,    1,    1,    1,    1,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    1,    1
+static yyconst int yy_meta[47] =
+    {   
+		0,	1,	2,	3,	2,	1,	1,	1,	1,	2,    
+		2,	4,	1,	1,	1,	1,	1,	1,	1,	1,    
+		1,	1,	1,	2,	2,	1,	1,	1,	1,	1,
+		1,	1,	1,	1,	1,	1,	1,	1,	1,	1,
+		1,	1,	1,	1,	1 ,	2,	2
     } ;
 
 static yyconst short int yy_base[47] =
@@ -1025,11 +1027,11 @@ yy_state_type yy_current_state;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 45 )
+		if ( yy_current_state >= 123 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 44);
+	yy_is_jam = (yy_current_state == 122);
 
 	return yy_is_jam ? 0 : yy_current_state;
 	}
