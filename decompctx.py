@@ -95,10 +95,104 @@ default_include_directories: list[str] = [flag.strip("-i").lstrip() for flag in 
 default_output_filename = "ctx.c"
 #endregion
 
+#region ContextArguments
+class ContextArguments:
+    def __init__(self):
+        self.preprocessor_arguments: list[str] = ['pcpp']
+        self.output_path: str = ''
+
+        self.strip_attributes: bool = False
+        self.strip_at_address: bool = False
+        self.convert_binary_literals: bool = False
+
+        # Write initial parser
+        parser = argparse.ArgumentParser(prog="Decomp Context", description="Wrapper around pcpp that can create a context file which can be used for decompilation", add_help=False)
+        parser.add_argument("c_file", nargs="?", help="File from which to create context")
+        parser.add_argument("-h", "-help", "--help", dest="help", action="store_true")
+        parser.add_argument('-D', dest = 'defines', metavar = 'macro[=val]', nargs = 1, action = 'append', help = 'Predefine name as a macro [with value]')
+        parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true", default=True)
+        parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
+        parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
+
+        # For the output path, we either want to be explicit or relative, but not both
+        output_target_group = parser.add_mutually_exclusive_group()
+        output_target_group.add_argument("-o", dest="output_path", help="Explicit path to output the context file to", action="store")
+        output_target_group.add_argument("-r", "--relative", dest="relative", help="Generate context relative to the source file", action="store_true")
+
+        # When targeting a specific platform we want to only do one thing or another
+        platform_target_group = parser.add_mutually_exclusive_group()
+        platform_target_group.add_argument("--m2c", dest="m2c", help="Generates an m2c-friendly file", action="store_true")
+        platform_target_group.add_argument("--ghidra", dest="ghidra", help="Generates an Ghidra-friendly file", action="store_true")
+
+        # Parse the arguments
+        parsed_args = parser.parse_known_args()
+        known_args = parsed_args[0]
+
+        # Check if we need to do further conversions after the file is preprocessed
+        self.strip_at_address = known_args.strip_at_address or known_args.ghidra or known_args.m2c
+        self.strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
+        self.convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
+
+        if known_args.help or not known_args.c_file:
+            # Since this script acts as a wrapper for the main pcpp script
+            # we want to manually display the help and pass it through to the
+            # pcpp preprocessor to show its full list of arguments
+            parser.print_help()
+            self.preprocessor_arguments.append("--help")
+            CmdPreprocessor(self.preprocessor_arguments)
+            exit(0)
+
+        # Determine output path
+        if known_args.output_path:
+            self.output_path = known_args.output_path
+        elif known_args.relative:
+            self.output_path = f"{known_args.c_file}.ctx"
+        else:
+            self.output_path = os.path.join(os.getcwd(), default_output_filename)
+
+        # Append in the default include directories
+        include_directories: list[str] = []
+        include_directories.extend(default_include_directories)
+
+        for include_directory in include_directories:
+            self.preprocessor_arguments.extend(("-I", include_directory))
+
+        # Check if we have any passed in defines
+        include_defines = []
+        known_defines: list[str] = []
+        if known_args.defines:
+            argument_defines = [x[0] for x in known_args.defines]
+            for define in argument_defines:
+                include_defines.append(define)
+                known_defines.append(define.split("=")[0])
+
+        # Add in the default defines unless explicitly passed in as arguments
+        for default_define, default_define_value in default_defines.items():
+            if default_define in known_defines:
+                continue
+            define_str: str = default_define + "=" + default_define_value
+            include_defines.append(define_str)
+
+        # Add the defines to the arguments
+        for define in include_defines:
+            self.preprocessor_arguments.extend(("-D", define))
+
+        # Add other default arguments
+        self.preprocessor_arguments.extend(default_arguments)
+
+        # Add unknown arguments and pass them to pcpp
+        pass_through_args = parsed_args[1]
+        self.preprocessor_arguments.extend(pass_through_args)
+
+        # Add the file we want to read
+        self.preprocessor_arguments.append(known_args.c_file)
+#endregion
+
 #region ContextPreprocessor
 class ContextPreprocessor(CmdPreprocessor):
-    def __init__(self, argv):
-        super(ContextPreprocessor, self).__init__(argv)
+    def __init__(self, args: ContextArguments):
+        self.context_args = args
+        super(ContextPreprocessor, self).__init__(args.preprocessor_arguments)
 
     def on_include_not_found(self, is_malformed, is_system_include, curdir, includepath):
         # Fixup for files that use <> for relative includes,
@@ -206,106 +300,23 @@ def strip_binary_literals(text_to_strip: str) -> str:
 
 #region Main
 def main():
-    # Write initial parser
-    parser = argparse.ArgumentParser(prog="Decomp Context", description="Wrapper around pcpp that can create a context file which can be used for decompilation", add_help=False)
-    parser.add_argument("c_file", nargs="?", help="File from which to create context")
-    parser.add_argument("-h", "-help", "--help", dest="help", action="store_true")
-    parser.add_argument('-D', dest = 'defines', metavar = 'macro[=val]', nargs = 1, action = 'append', help = 'Predefine name as a macro [with value]')
-    parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true", default=True)
-    parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
-    parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
-
-    # For the output path, we either want to be explicit or relative, but not both
-    output_target_group = parser.add_mutually_exclusive_group()
-    output_target_group.add_argument("-o", dest="output_path", help="Explicit path to output the context file to", action="store")
-    output_target_group.add_argument("-r", "--relative", dest="relative", help="Generate context relative to the source file", action="store_true")
-
-    # When targeting a specific platform we want to only do one thing or another
-    platform_target_group = parser.add_mutually_exclusive_group()
-    platform_target_group.add_argument("--m2c", dest="m2c", help="Generates an m2c-friendly file", action="store_true")
-    platform_target_group.add_argument("--ghidra", dest="ghidra", help="Generates an Ghidra-friendly file", action="store_true")
-
-    # Parse the known arguments
-    parsed_args = parser.parse_known_args()
-    known_args = parsed_args[0]
-
-    preprocessor_arguments = ['pcpp']
-    if known_args.help or not known_args.c_file:
-        # Since this script acts as a wrapper for the main pcpp script
-        # we want to manually display the help and pass it through to the
-        # pcpp preprocessor to show its full list of arguments
-        parser.print_help()
-        preprocessor_arguments.append("--help")
-        ContextPreprocessor(preprocessor_arguments)
-        return
-
-    # Append in the default include directories
-    include_directories: list[str] = []
-    include_directories.extend(default_include_directories)
-
-    for include_directory in include_directories:
-        preprocessor_arguments.extend(("-I", include_directory))
-
-    # Check if we have any passed in defines
-    include_defines = []
-    known_defines: list[str] = []
-    if known_args.defines:
-        argument_defines = [x[0] for x in known_args.defines]
-        for define in argument_defines:
-            include_defines.append(define)
-            known_defines.append(define.split("=")[0])
-
-    # Add in the default defines unless explicitly passed in as arguments
-    for default_define, default_define_value in default_defines.items():
-        if default_define in known_defines:
-            continue
-        define_str: str = default_define + "=" + default_define_value
-        include_defines.append(define_str)
-
-    # Add the defines to the arguments
-    for define in include_defines:
-        preprocessor_arguments.extend(("-D", define))
-
-    # Add other default arguments
-    preprocessor_arguments.extend(default_arguments)
-
-    # Add unknown arguments and pass them to pcpp
-    pass_through_args = parsed_args[1]
-    preprocessor_arguments.extend(pass_through_args)
-
-    # Add the file we want to read
-    c_file = known_args.c_file
-    preprocessor_arguments.append(known_args.c_file)
-
-    # Check if we need to do further conversions after the file is preprocessed
-    should_strip_at_address = known_args.strip_at_address or known_args.ghidra or known_args.m2c
-    should_strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
-    should_convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
+    args = ContextArguments()
 
     # Create the temp string writer to pass to the preprocessor since we still want to modify
     # the contents for project-specific conditions
     with StringIO() as file_string_writer:
         with redirect_stdout(file_string_writer):
             # Parse the target file:
-            ContextPreprocessor(preprocessor_arguments)
+            ContextPreprocessor(args)
 
             # Check if empty
             string_writer_position = file_string_writer.tell()
             if string_writer_position == 0:
                 return
 
-            # Write to file
-            target_file_name = None
-            if known_args.output_path:
-                target_file_name = known_args.output_path
-            elif known_args.relative:
-                target_file_name = f"{c_file}.ctx"
-            else:
-                target_file_name = os.path.join(os.getcwd(), default_output_filename)
-
-            with open(target_file_name, "w", encoding="utf-8", newline="\n") as f:
+            with open(args.output_path, "w", encoding="utf-8", newline="\n") as f:
                 # Do we need to sanitize this further?
-                if not should_strip_attributes and not should_strip_at_address and not should_convert_binary_literals:
+                if not args.strip_attributes and not args.strip_at_address and not args.convert_binary_literals:
                     f.write(file_string_writer.getvalue())
                     return
 
@@ -316,13 +327,13 @@ def main():
                     if not line_to_write:
                         break
 
-                    if should_strip_attributes:
+                    if args.strip_attributes:
                         line_to_write = strip_attributes(line_to_write)
 
-                    if should_strip_at_address:
+                    if args.strip_at_address:
                         line_to_write = strip_at_address(line_to_write)
 
-                    if should_convert_binary_literals:
+                    if args.convert_binary_literals:
                         line_to_write = strip_binary_literals(line_to_write)
 
                     f.writelines(line_to_write)
