@@ -8,6 +8,7 @@ import re
 import argparse
 from io import StringIO
 from pcpp import CmdPreprocessor
+from pcpp.evaluator import Value
 from contextlib import redirect_stdout
 
 # Note: requires being in the same directory as configure.py
@@ -222,8 +223,17 @@ class ContextPreprocessor(CmdPreprocessor):
         return super(ContextPreprocessor, self).on_unknown_macro_in_defined_expr(tok)
 
     def on_unknown_macro_function_in_expr(self, ident):
-        if ident in passthrough_defines:
+        def warn_if_arg_expanded(tokens):
+            assert isinstance(tokens, Value), "Unrecognized token type"
+            if tokens.exception is None and tokens.value() == 0:
+                self.on_error(self.source, -1, "Unhandled argument to %s built-in macro (real line number below)" % ident)
+
+            # This return value causes an assert, which will be caught and
+            # results in a log with the correct line number for the above error
             return None
+
+        if ident in passthrough_defines:
+            return warn_if_arg_expanded
         return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
 
     def expand_macros(self, tokens, expanding_from=[]):
