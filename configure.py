@@ -543,8 +543,8 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "sdk/MSL_C/text_1.c"),
-            Object(Matching, "sdk/MSL_C/sdata_1.c"),
+            Object(Matching, "MSL_C/text_1.c"),
+            Object(Matching, "MSL_C/sdata_1.c"),
         ]
     },
     {
