@@ -38,11 +38,9 @@
 
 // For VSCode
 #ifdef __MWERKS__
-#define AT_ADDRESS(x) : (x)
 #define ASM_DECL asm
 #define ASM_BLOCK asm
 #else
-#define AT_ADDRESS(x)
 #define ASM_DECL
 #define ASM_BLOCK(...)
 #define __declspec(x)
