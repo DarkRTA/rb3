@@ -1,7 +1,7 @@
-SZBE69
+Rock Band 3
 =============
 
-A decompilation of SZBE69.
+A decompilation of Rock Band 3 (USA).
 
 This repository does **not** contain any game assets or assembly whatsoever. An existing copy of the game is required.
 
@@ -45,7 +45,7 @@ Building
   ```
   git clone https://github.com/DarkRTA/rb3.git
   ```
-- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.  
+- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.
 ![](assets/dolphin-extract.png)
 - Configure:
   ```
