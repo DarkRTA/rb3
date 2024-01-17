@@ -383,6 +383,13 @@ std_native/src/new.cpp:
 rb3/unknown/803/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
 
+rb3/symbols/messageset1.cpp:
+	.text       start:0x80355190 end:0x80355E18
+	.ctors      start:0x807EFF5C end:0x807EFF60
+	.data       start:0x808572C8 end:0x808577C8
+	.sbss       start:0x808E4528 end:0x808E4530
+	.bss        start:0x8097CE08 end:0x8097D570
+
 rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x8035C6AC
 
