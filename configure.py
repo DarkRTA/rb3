@@ -543,8 +543,8 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "MSL_C/text_1.c"),
-            Object(Matching, "MSL_C/sdata_1.c"),
+            Object(Matching, "sdk/MSL_C/text_1.c"),
+            Object(Matching, "sdk/MSL_C/sdata_1.c"),
         ]
     },
     {
@@ -553,8 +553,8 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "Runtime/global_destructor_chain.c"),
-            Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
+            Object(Matching, "sdk/Runtime/global_destructor_chain.c"),
+            Object(Matching, "sdk/Runtime/__init_cpp_exceptions.cpp"),
         ],
     },
     {
@@ -563,7 +563,7 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "std_native/src/new.cpp"),
+            Object(Matching, "sdk/MSL_C++/src/new.cpp"),
         ]
     },
 ]
