@@ -275,10 +275,10 @@ config.libs = [
             Object(NonMatching, "rb3/datetime.cpp"),
 
             Object(Matching, "rb3/stringtablelocks.cpp"),
-            Object(Matching, "rb3/symbolset1.cpp"),
-            Object(Matching, "rb3/symbolset2.cpp"),
-            Object(Matching, "rb3/symbolset3.cpp"),
-            Object(Matching, "rb3/symbolset4.cpp"),
+            Object(Matching, "rb3/symbols/symbolset1.cpp"),
+            Object(Matching, "rb3/symbols/symbolset2.cpp"),
+            Object(Matching, "rb3/symbols/symbolset3.cpp"),
+            Object(Matching, "rb3/symbols/symbolset4.cpp"),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
