@@ -383,6 +383,34 @@ std_native/src/new.cpp:
 rb3/unknown/803/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
 
+rb3/symbols/messageset1.cpp:
+	.text       start:0x80355190 end:0x80355E18
+	.ctors      start:0x807EFF5C end:0x807EFF60
+	.data       start:0x808572C8 end:0x808577C8
+	.sbss       start:0x808E4528 end:0x808E4530
+	.bss        start:0x8097CE08 end:0x8097D570
+
+rb3/symbols/messageset2.cpp:
+	.text       start:0x80355E18 end:0x80356848
+	.ctors      start:0x807EFF60 end:0x807EFF64
+	.data       start:0x808577C8 end:0x80857C68
+	.sbss       start:0x808E4530 end:0x808E4538
+	.bss        start:0x8097D570 end:0x8097DB70
+
+rb3/symbols/messageset3.cpp:
+	.text       start:0x80356848 end:0x803572F0
+	.ctors      start:0x807EFF64 end:0x807EFF68
+	.data       start:0x80857C68 end:0x80858080
+	.sbss       start:0x808E4538 end:0x808E4540
+	.bss        start:0x8097DB70 end:0x8097E1B8
+
+rb3/symbols/messageset4.cpp:
+	.text       start:0x803572F0 end:0x80357E10
+	.ctors      start:0x807EFF68 end:0x807EFF6C
+	.data       start:0x80858080 end:0x80858470
+	.sbss       start:0x808E4540 end:0x808E4548
+	.bss        start:0x8097E1B8 end:0x8097E848
+
 rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x8035C6AC
 
@@ -400,28 +428,28 @@ rb3/unknown/803/unk_80362A50.cpp:
 rb3/stringtablelocks.cpp:
 	.text       start:0x803651B0 end:0x80365214
 
-rb3/symbolset1.cpp:
+rb3/symbols/symbolset1.cpp:
 	.text       start:0x80365214 end:0x8036B5A0
 	.ctors      start:0x807EFF6C end:0x807EFF70
 	.data       start:0x80858D28 end:0x80861278
 	.sbss       start:0x808E4568 end:0x808E4570
 	.bss        start:0x8097E948 end:0x809809F8
 
-rb3/symbolset2.cpp:
+rb3/symbols/symbolset2.cpp:
 	.text       start:0x8036B5A0 end:0x803704DC
 	.ctors      start:0x807EFF70 end:0x807EFF74
 	.data       start:0x80861278 end:0x80867580
 	.sbss       start:0x808E4570 end:0x808E4578
 	.bss        start:0x809809F8 end:0x80982448
 
-rb3/symbolset3.cpp:
+rb3/symbols/symbolset3.cpp:
 	.text       start:0x803704DC end:0x8037546C
 	.ctors      start:0x807EFF74 end:0x807EFF78
 	.data       start:0x80867580 end:0x8086DE50
 	.sbss       start:0x808E4578 end:0x808E4580
 	.bss        start:0x80982448 end:0x80983EB8
 
-rb3/symbolset4.cpp:
+rb3/symbols/symbolset4.cpp:
 	.text       start:0x8037546C end:0x8037A3D8
 	.ctors      start:0x807EFF78 end:0x807EFF7C
 	.data       start:0x8086DE50 end:0x80874468
