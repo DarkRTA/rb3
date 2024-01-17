@@ -33,6 +33,13 @@ default_defines: dict[str, str] = {
     "__MWERKS__" : "0x4302",
 }
 
+mwcc_options: dict[str, bool] = {
+    "little_endian" : False,
+    "wchar_type" : True,
+    "exceptions" : False,
+    "longlong" : True,
+}
+
 passthrough_defines: list[str] = [
     # C/C++-dependent
     "__cplusplus",
@@ -41,10 +48,7 @@ passthrough_defines: list[str] = [
 
     # __option
     "__option",
-    "little_endian",
-    "wchar_type",
-    "exceptions",
-    "longlong",
+    *mwcc_options.keys(),
 
     # __declspec
     "__declspec",
@@ -105,6 +109,7 @@ class ContextArguments:
         self.strip_attributes: bool = False
         self.strip_at_address: bool = False
         self.convert_binary_literals: bool = False
+        self.eval_mwcc_options: bool = False
 
         # Write initial parser
         parser = argparse.ArgumentParser(prog="Decomp Context", description="Wrapper around pcpp that can create a context file which can be used for decompilation", add_help=False)
@@ -115,6 +120,7 @@ class ContextArguments:
         parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
         parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
         parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
+        parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true", default=False)
 
         # For the output path, we either want to be explicit or relative, but not both
         output_target_group = parser.add_mutually_exclusive_group()
@@ -135,6 +141,7 @@ class ContextArguments:
         self.strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
         self.convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
         self.preserve_macros = known_args.preserve_code_macros and not known_args.m2c and not known_args.ghidra
+        self.eval_mwcc_options = known_args.eval_mwcc_options or known_args.ghidra or known_args.m2c
 
         if known_args.help or not known_args.c_file:
             # Since this script acts as a wrapper for the main pcpp script
@@ -213,6 +220,9 @@ class ContextPreprocessor(CmdPreprocessor):
         return super(ContextPreprocessor, self).on_include_not_found(is_malformed, is_system_include, curdir, includepath)
 
     def on_unknown_macro_in_expr(self, ident):
+        if self.context_args.eval_mwcc_options and ident in mwcc_options:
+            return 1 if mwcc_options[ident] else 0
+
         if ident in passthrough_defines:
             return None
         return super(ContextPreprocessor, self).on_unknown_macro_in_expr(ident)
@@ -223,6 +233,12 @@ class ContextPreprocessor(CmdPreprocessor):
         return super(ContextPreprocessor, self).on_unknown_macro_in_defined_expr(tok)
 
     def on_unknown_macro_function_in_expr(self, ident):
+        def mwcc_option(tokens):
+            assert isinstance(tokens, Value), "Unrecognized token type"
+            if tokens.exception is not None:
+                return None
+            return tokens.value()
+
         def warn_if_arg_expanded(tokens):
             assert isinstance(tokens, Value), "Unrecognized token type"
             if tokens.exception is None and tokens.value() == 0:
@@ -232,7 +248,9 @@ class ContextPreprocessor(CmdPreprocessor):
             # results in a log with the correct line number for the above error
             return None
 
-        if ident in passthrough_defines:
+        if self.context_args.eval_mwcc_options and ident == "__option":
+            return mwcc_option
+        elif ident in passthrough_defines:
             return warn_if_arg_expanded
         return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
 
