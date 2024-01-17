@@ -3,5 +3,6 @@
 
 #include "symbolset1.hpp"
 #include "symbolset2.hpp"
+#include "symbolset3.hpp"
 
 #endif
