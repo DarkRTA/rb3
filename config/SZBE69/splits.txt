@@ -404,6 +404,13 @@ rb3/symbols/messageset3.cpp:
 	.sbss       start:0x808E4538 end:0x808E4540
 	.bss        start:0x8097DB70 end:0x8097E1B8
 
+rb3/symbols/messageset4.cpp:
+	.text       start:0x803572F0 end:0x80357E10
+	.ctors      start:0x807EFF68 end:0x807EFF6C
+	.data       start:0x80858080 end:0x80858470
+	.sbss       start:0x808E4540 end:0x808E4548
+	.bss        start:0x8097E1B8 end:0x8097E848
+
 rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x8035C6AC
 

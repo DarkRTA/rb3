@@ -282,6 +282,7 @@ config.libs = [
             Object(NonMatching, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
             Object(NonMatching, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
             Object(NonMatching, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
+            Object(NonMatching, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),

@@ -1,0 +1,75 @@
+#ifndef RB3_MESSAGESET4_HPP
+#define RB3_MESSAGESET4_HPP
+#include "message.hpp"
+
+extern Message MsgSendUpdateCrowd;
+extern Message MsgSendUpdateEnergy;
+extern Message MsgSendUpdateScore;
+extern Message MsgSendVocalPhraseOver;
+extern Message MsgSetMessageState;
+extern Message MsgSetProviders;
+extern Message MsgSetWaitState;
+extern Message MsgSetupMidiParsers;
+extern Message MsgShotOver;
+extern Message MsgShotStarted;
+extern Message MsgShow;
+extern Message MsgShowCharacter;
+extern Message MsgShowHighFrets;
+extern Message MsgShowHighFretsLefty;
+extern Message MsgShowInvitationNotification;
+extern Message MsgShowList;
+extern Message MsgShowLockedDialog;
+extern Message MsgShowLowFrets;
+extern Message MsgShowLowFretsLefty;
+extern Message MsgShowMessage;
+extern Message MsgShowPhysicalWriteIcon;
+extern Message MsgShowSetlistSaveDialog;
+extern Message MsgShowsExtendedMicArrows;
+extern Message MsgSongSettingsFlow;
+extern Message MsgStart;
+extern Message MsgStartAnim;
+extern Message MsgStartShot;
+extern Message MsgStartSolo;
+extern Message MsgStopShot;
+extern Message MsgSuccess;
+extern Message MsgSwing;
+extern Message MsgSwingathopo;
+extern Message MsgSyncDir;
+extern Message MsgSyncObjects;
+extern Message MsgSyncPlayMode;
+extern Message MsgTalk;
+extern Message MsgTalkStop;
+extern Message MsgTambourineHit;
+extern Message MsgTambourineMiss;
+extern Message MsgTambourineNote;
+extern Message MsgTrigger;
+extern Message MsgUiEnter;
+extern Message MsgUiExit;
+extern Message MsgUnload;
+extern Message MsgUnselected;
+extern Message MsgUpdateAll;
+extern Message MsgUpdateCharPreview;
+extern Message MsgUpdateDetails;
+extern Message MsgUpdateFindingHelp;
+extern Message MsgUpdateGems;
+extern Message MsgUpdateLoadingStatus;
+extern Message MsgUpdateOutfitList;
+extern Message MsgUpdateRange;
+extern Message MsgUpdateView;
+extern Message MsgValidate;
+extern Message MsgView;
+extern Message MsgVignetteOutro;
+extern Message MsgWantOutroDuck;
+extern Message MsgWhammyEnd;
+extern Message MsgWhammyStart;
+extern Message MsgWipePp;
+extern Message MsgWorldPause;
+extern Message MsgWorldUnpause;
+extern Message MsgPreventsDropOut;
+extern Message MsgRefreshPremiumAssetsList;
+extern Message MsgPreviewSelectedAsset;
+extern Message MsgTokenOffersReady;
+extern Message MsgIsRunning;
+extern Message MsgSongDataMounted;
+
+#endif
