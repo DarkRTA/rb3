@@ -296,6 +296,14 @@ config.libs = [
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
             Object(NonMatching, "rb3/trainingpanel.cpp"),
+            Object(NonMatching, "rb3/beatmap.cpp"),
+            Object(NonMatching, "rb3/datetime.cpp"),
+
+            Object(Matching, "rb3/stringtablelocks.cpp"),
+            Object(Matching, "rb3/symbolset1.cpp"),
+            Object(Matching, "rb3/symbolset2.cpp"),
+            Object(NonMatching, "rb3/symbolset3.cpp"),
+            Object(Matching, "rb3/symbolset4.cpp"),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),

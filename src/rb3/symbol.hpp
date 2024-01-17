@@ -12,7 +12,7 @@ public:
     bool operator!=(const char *);
     Symbol *operator=(const Symbol &);
     char *Str() const;
-    void PreInit(int, int);
+    static void PreInit(int, int);
     void Init();
     void Terminate();
     int GetIntVal(); // https://decomp.me/scratch/sxK01

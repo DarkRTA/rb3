@@ -212,7 +212,13 @@ rb3/unknown/802/unk_802F02EC.cpp:
 	.text       start:0x802F02EC end:0x802F83C0
 
 rb3/unknown/802/unk_802F844C.cpp:
-	.text       start:0x802F844C end:0x802F9860
+	.text       start:0x802F844C end:0x802F8818
+
+rb3/datetime.cpp:
+	.text       start:0x802F8818 end:0x802F906C
+
+rb3/debug.cpp:
+	.text       start:0x802F906C end:0x802F9860
 
 rb3/unknown/802/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
@@ -345,8 +351,12 @@ rb3/hmx/object.cpp:
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
 
+rb3/beatmap.cpp:
+	.text       start:0x80340ED8 end:0x80341E68
+	.ctors      start:0x807EFF2C end:0x807EFF30
+
 rb3/bink.cpp:
-	.text       start:0x80341E10 end:0x80342ACC
+	.text       start:0x80341E68 end:0x80342ACC
 
 rb3/binstream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
@@ -385,7 +395,38 @@ rb3/string.cpp:
 	.data       start:0x80858C90 end:0x80858CA0
 
 rb3/unknown/803/unk_80362A50.cpp:
-	.text       start:0x80362A50 end:0x80365214
+	.text       start:0x80362A50 end:0x803651B0
+
+rb3/stringtablelocks.cpp:
+	.text       start:0x803651B0 end:0x80365214
+
+rb3/symbolset1.cpp:
+	.text       start:0x80365214 end:0x8036B5A0
+	.ctors      start:0x807EFF6C end:0x807EFF70
+	.data       start:0x80858D28 end:0x80861278
+	.sbss       start:0x808E4568 end:0x808E4570
+	.bss        start:0x8097E948 end:0x809809F8
+
+rb3/symbolset2.cpp:
+	.text       start:0x8036B5A0 end:0x803704DC
+	.ctors      start:0x807EFF70 end:0x807EFF74
+	.data       start:0x80861278 end:0x80867580
+	.sbss       start:0x808E4570 end:0x808E4578
+	.bss        start:0x809809F8 end:0x80982448
+
+rb3/symbolset3.cpp:
+	.text       start:0x803704DC end:0x8037546C
+	.ctors      start:0x807EFF74 end:0x807EFF78
+	.data       start:0x80867580 end:0x8086DE50
+	.sbss       start:0x808E4578 end:0x808E4580
+	.bss        start:0x80982448 end:0x80983EB8
+
+rb3/symbolset4.cpp:
+	.text       start:0x8037546C end:0x8037A3D8
+	.ctors      start:0x807EFF78 end:0x807EFF7C
+	.data       start:0x8086DE50 end:0x80874468
+	.sbss       start:0x808E4580 end:0x808E4588
+	.bss        start:0x80983EB8 end:0x80985918
 
 rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A488
