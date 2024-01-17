@@ -5,17 +5,17 @@
 
 import re
 from ghidra.program.model.symbol.SourceType import *
+from ghidra.program.model.symbol import SymbolUtilities
 import string
 import subprocess
 
 def demangle(sym):
     try:
         # TODO: port the demangler to python as calling cwdemangle is SLOW
-        demangler_output = subprocess.check_output(['cwdemangle', name])
+        demangler_output = subprocess.check_output(['cwdemangle', sym])
         return SymbolUtilities.replaceInvalidChars(str(demangler_output).split("(")[0], False)
     except:
         return sym
-
 
 f = askFile("Symbols File", "OK")
 
@@ -36,7 +36,7 @@ for l in file(f.absolutePath):
     address = toAddr(addr_matches.group(0))
     name = tokens[0]
     demangled_name = demangle(name)
-    print("Created label {} at address {}".format(name, address))
+    print("Created label {} at address {}".format(demangled_name, address))
 
     sym = getSymbolAt(address)
 
