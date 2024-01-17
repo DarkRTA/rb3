@@ -4,5 +4,6 @@
 #include "symbolset1.hpp"
 #include "symbolset2.hpp"
 #include "symbolset3.hpp"
+#include "symbolset4.hpp"
 
 #endif
