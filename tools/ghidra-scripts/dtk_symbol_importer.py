@@ -5,12 +5,8 @@
 
 import re
 from ghidra.program.model.symbol.SourceType import *
-from ghidra.program.model.symbol import SymbolUtilities;
 import string
 import subprocess
-
-functionManager = currentProgram.getFunctionManager()
-symutils = SymbolUtilities();
 
 def demangle(sym):
     try:
@@ -23,6 +19,14 @@ def demangle(sym):
 
 f = askFile("Symbols File", "OK")
 
+# cleanup existing syms
+for sym in currentProgram.getSymbolTable().getSymbolIterator():
+    if sym.getSource() == USER_DEFINED:
+        continue
+    if sym.isPrimary():
+        continue
+    sym.delete()
+
 for l in file(f.absolutePath):
     tokens = l.split(" ")
     addr_matches = re.search(r'0x........', tokens[2])
@@ -31,8 +35,14 @@ for l in file(f.absolutePath):
 
     address = toAddr(addr_matches.group(0))
     name = tokens[0]
-    #demangled_name = demangle(name)
-
+    demangled_name = demangle(name)
     print("Created label {} at address {}".format(name, address))
-    createLabel(address, name, False, IMPORTED)
-    #createLabel(address, demangled_name, True, ANALYSIS)
+
+    sym = getSymbolAt(address)
+
+    if sym == None:
+        createLabel(address, name, False, IMPORTED)
+        createLabel(address, demangled_name, True, ANALYSIS)
+    else:
+        createLabel(address, name, False, IMPORTED)
+        createLabel(address, demangled_name, sym.getSource() != USER_DEFINED, ANALYSIS)
