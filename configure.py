@@ -277,7 +277,7 @@ config.libs = [
             Object(Matching, "rb3/stringtablelocks.cpp"),
             Object(Matching, "rb3/symbolset1.cpp"),
             Object(Matching, "rb3/symbolset2.cpp"),
-            Object(NonMatching, "rb3/symbolset3.cpp"),
+            Object(Matching, "rb3/symbolset3.cpp"),
             Object(Matching, "rb3/symbolset4.cpp"),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
