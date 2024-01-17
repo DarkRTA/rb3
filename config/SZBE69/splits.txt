@@ -414,6 +414,13 @@ rb3/symbolset2.cpp:
 	.sbss       start:0x808E4570 end:0x808E4578
 	.bss        start:0x809809F8 end:0x80982448
 
+rb3/symbolset3.cpp:
+	.text       start:0x803704DC end:0x8037546C
+	.ctors      start:0x807EFF74 end:0x807EFF78
+	.data       start:0x80867580 end:0x8086DE50
+	.sbss       start:0x808E4578 end:0x808E4580
+	.bss        start:0x80982448 end:0x80983EB8
+
 rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A488
 
