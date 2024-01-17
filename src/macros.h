@@ -40,7 +40,7 @@
 #ifdef __MWERKS__
 #define AT_ADDRESS(x) : (x)
 #define ASM_DECL asm
-#define ASM_BLOCK(...) asm { __VA_ARGS__ }
+#define ASM_BLOCK asm
 #else
 #define AT_ADDRESS(x)
 #define ASM_DECL
