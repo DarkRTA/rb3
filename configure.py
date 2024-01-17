@@ -299,6 +299,9 @@ config.libs = [
             Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
 
+            Object(Matching, "rb3/stringtablelocks.cpp"),
+            Object(Matching, "rb3/symbolset1.cpp"),
+
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
             Object(NonMatching, "rb3/datanode.cpp"),
