@@ -2,6 +2,7 @@
 #define RVL_SDK_OS_HARDWARE_H
 #include "revolution/os/OSAddress.h"
 #include "revolution/os/OSThread.h"
+#include "revolution/os/OSUtils.h"
 #include "revolution/dvd/dvdidutils.h"
 #include "types.h"
 #ifdef __cplusplus
@@ -104,7 +105,7 @@ OS_DEF_GLOBAL_VAR(u32, CPU_CLOCK_SPEED,                    0x800000FC);
  */
 OS_DEF_GLOBAL_ARR(void*, EXCEPTION_TABLE, 15,            0x80003000);
 OS_DEF_GLOBAL_VAR(void*, INTR_HANDLER_TABLE,             0x80003040);
-OS_DEF_GLOBAL_ARR(volatile s32, EXI_800030C0, 0,         0x800030C0);
+OS_DEF_GLOBAL_ARR(volatile s32, EXI_800030C0, 1,         0x800030C0);
 OS_DEF_GLOBAL_VAR(void*, FIRST_REL,                      0x800030C8);
 OS_DEF_GLOBAL_VAR(void*, LAST_REL,                       0x800030CC);
 OS_DEF_GLOBAL_VAR(void*, REL_NAME_TABLE,                 0x800030D0);
