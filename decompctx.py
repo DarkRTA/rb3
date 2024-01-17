@@ -11,8 +11,8 @@ from pcpp import CmdPreprocessor
 from pcpp.evaluator import Value
 from contextlib import redirect_stdout
 
-# Note: requires being in the same directory as configure.py
-from configure import cflags_includes, cflags_defines
+# Note: requires being in the same directory as cflags_common.py
+from cflags_common import cflags_includes, cflags_defines
 
 #region Regex Patterns
 at_address_pattern = re.compile(r"(?:.*?)(?:[a-zA-Z_$][\w$]*\s*\*?\s[a-zA-Z_$][\w$]*)\s*((?:AT_ADDRESS|:)(?:\s*\(?\s*)(0x[0-9a-fA-F]+|[a-zA-Z_$][\w$]*)\)?);")
