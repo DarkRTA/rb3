@@ -261,7 +261,10 @@ config.libs = [
             Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/bink.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
-            Object(NonMatching, "rb3/interpolators.cpp"),
+
+            # These functions match 100%, but won't link because the dtors aren't being merged properly
+            Object(LinkIssues, "rb3/interpolators.cpp"),
+
             Object(NonMatching, "rb3/joypad.cpp"),
             Object(NonMatching, "rb3/netstream.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
@@ -279,10 +282,12 @@ config.libs = [
             Object(Matching, "rb3/symbols/symbolset2.cpp"),
             Object(Matching, "rb3/symbols/symbolset3.cpp"),
             Object(Matching, "rb3/symbols/symbolset4.cpp"),
-            Object(NonMatching, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
-            Object(NonMatching, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
-            Object(NonMatching, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
-            Object(NonMatching, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
+
+            # These sinits match 100%, but won't link due to issues where the .bss labels don't pad properly
+            Object(LinkIssues, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
