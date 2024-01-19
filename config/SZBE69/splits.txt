@@ -19,6 +19,9 @@ rb3/unknown/800/unk_8000D980.cpp:
 rb3/app.cpp:
 	.text       start:0x8000F364 end:0x8000F804
 
+sdk/MSL_C/sdata_1.c:
+	.sdata      start:0x808E3270 end:0x808E3280
+
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
@@ -531,6 +534,9 @@ rb3/unknown/805/unk_8057464C.cpp:
 rb3/Rnd/rndbitmap.cpp:
 	.text       start:0x805CA0FC end:0x805CAC4C
 
+rb3/Rnd/rndcam.cpp:
+	.text       start:0x805CCF80 end:0x805CD410
+
 rb3/unknown/805/unk_805CE140.cpp:
 	.text       start:0x805CE140 end:0x805D5E48
 
@@ -704,17 +710,14 @@ rb3/ogg_mem.cpp:
 vorbis/window.c:
 	.text       start:0x806D1BC4 end:0x806D1F30
 
-MSL_C/text_1.c:
+sdk/MSL_C/text_1.c:
 	.text       start:0x806E7DDC end:0x806F55AC
 
-Runtime/global_destructor_chain.c:
+sdk/Runtime/global_destructor_chain.c:
 	.text       start:0x806F5690 end:0x806F56F0
 	.sbss       start:0x808E4F00 end:0x808E4F08
 
-MSL_C/sdata_1.c:
-	.sdata      start:0x808E3270 end:0x808E3280
-
-Runtime/__init_cpp_exceptions.cpp:
+sdk/Runtime/__init_cpp_exceptions.cpp:
 	.text       start:0x806F6A68 end:0x806F6AD8
 	.ctors      start:0x807EFD20 end:0x807EFD24 rename:.ctors$10
 	.dtors      start:0x807F0060 end:0x807F0064 rename:.dtors$10

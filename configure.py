@@ -250,6 +250,7 @@ config.libs = [
 
             Object(NonMatching, "rb3/dofproc.cpp"),
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndcam.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
@@ -260,6 +261,7 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
             Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/bink.cpp"),
+            Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
             Object(NonMatching, "rb3/joypad.cpp"),
@@ -351,6 +353,7 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/802/unk_8022BE84.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_80252B98.cpp"),
+            Object(NonMatching, "rb3/unknown/802/unk_802960B0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802D4B74.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802E0CA0.cpp"),
@@ -381,9 +384,11 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8050FA30.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_80567E84.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_8057464C.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
+            Object(NonMatching, "rb3/unknown/806/unk_8066E3FC.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
         ],
@@ -547,8 +552,8 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "MSL_C/text_1.c"),
-            Object(Matching, "MSL_C/sdata_1.c"),
+            Object(Matching, "sdk/MSL_C/text_1.c"),
+            Object(Matching, "sdk/MSL_C/sdata_1.c"),
         ]
     },
     {
