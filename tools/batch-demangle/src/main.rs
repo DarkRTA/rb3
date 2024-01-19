@@ -12,11 +12,11 @@ fn main() {
     let f = read_to_string(args.input).unwrap();
 
     for line in f.lines() {
-        let parts = line.split(" ").collect::<Vec<_>>();
-        let sym = parts[0];
-
-        let addr_idx = parts[2].find("0x").unwrap();
-        let addr = &parts[2][addr_idx..addr_idx + 10];
+        // Symbol info: symbol = section:0x<address>; // type:<type> [flags...]
+        let (sym, remaining) = line.split_once(" = ").unwrap();
+        let (_section, remaining) = remaining.split_once(':').unwrap();
+        let (addr, _remaining) = remaining.split_once("; // ").unwrap();
+        // let flags = remaining.split(' ').collect::<Vec<_>>();
 
         match demangle(sym, &DemangleOptions {
             omit_empty_parameters: false
