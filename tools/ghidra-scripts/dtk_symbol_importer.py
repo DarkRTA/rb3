@@ -21,17 +21,15 @@ for sym in currentProgram.getSymbolTable().getSymbolIterator():
 
 for l in demangler_output.splitlines():
     tokens = l.split("|||")
-    lbl = tokens[0]
-    name = SymbolUtilities.replaceInvalidChars(str(tokens[1]).split("(")[0], False)
+    address = toAddr(tokens[0])
+    lbl = tokens[1]
+    name = tokens[2] if len(tokens) > 2 else lbl
 
-    if name == "@@@@@":
-        name = lbl
+    name = SymbolUtilities.replaceInvalidChars(str(name).split("(")[0], False)
 
-    address = toAddr(tokens[2])
-    print("Created label {} at address {}".format(name, address))
+    print("Creating label {} at address {}".format(name, address))
 
     sym = getSymbolAt(address)
-
     if sym == None:
         createLabel(address, lbl, False, IMPORTED)
         createLabel(address, name, True, ANALYSIS)
