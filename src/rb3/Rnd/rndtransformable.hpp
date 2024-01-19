@@ -4,7 +4,8 @@
 #include "rb3/hmx/object.hpp"
 #include "rb3/data.hpp"
 
-class RndTransformable : RndHighlightable {
+class RndTransformable : public RndHighlightable {
+public:
     RndTransformable();
     virtual ~RndTransformable();
 

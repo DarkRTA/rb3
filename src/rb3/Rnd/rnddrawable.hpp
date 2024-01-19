@@ -10,6 +10,8 @@ class RndDrawable : public RndHighlightable {
     virtual Symbol ClassName() const;
     virtual void SetType(Symbol *);
 
+    virtual void Save(BinStream&);
+
     static Symbol StaticClassName();
 
     bool mShowing;

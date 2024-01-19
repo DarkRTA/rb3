@@ -58,7 +58,7 @@ public:
     u16 Height() const;
 
     /** Getter for `paletteData`. \note This function was code-merged with MemStream::Tell() */
-    void* Palette() const;
+    void* Palette() const {return paletteData;}
 
     /** Getter for `nextMipmap`. */
     RndBitmap* nextMip() const;
