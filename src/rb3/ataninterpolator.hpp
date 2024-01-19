@@ -4,13 +4,13 @@
 #include "interpolator.hpp"
 #include "data.hpp"
 
-class ATanInterpolator : Interpolator {
+class ATanInterpolator : public Interpolator {
 public:
     ATanInterpolator(float, float, float, float, float); // fn_802DD61C
     ATanInterpolator(); // fn_802DD6F4
     virtual double Eval(float); // fn_802DD944
     virtual void Reset(const DataArray *); // fn_802DD850
-    virtual ~ATanInterpolator(); // fn_800E0D84
+    virtual ~ATanInterpolator(){} // fn_800E0D84
 
     void Reset(float, float, float, float, float); // fn_802DD738
 

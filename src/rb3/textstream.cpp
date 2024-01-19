@@ -1,6 +1,6 @@
 #include "textstream.hpp"
 #include "unknown.hpp"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "sdk/MSL_C/MSL_Common/printf.h"
 
 // fn_8037A67C
 TextStream::TextStream() {

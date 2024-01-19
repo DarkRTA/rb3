@@ -212,7 +212,13 @@ rb3/unknown/802/unk_802F02EC.cpp:
 	.text       start:0x802F02EC end:0x802F83C0
 
 rb3/unknown/802/unk_802F844C.cpp:
-	.text       start:0x802F844C end:0x802F9860
+	.text       start:0x802F844C end:0x802F8818
+
+rb3/datetime.cpp:
+	.text       start:0x802F8818 end:0x802F906C
+
+rb3/debug.cpp:
+	.text       start:0x802F906C end:0x802F9860
 
 rb3/unknown/802/unk_802F98DC.cpp:
 	.text       start:0x802F98DC end:0x802FA848
@@ -239,14 +245,66 @@ rb3/unknown/803/unk_8030A494.cpp:
 rb3/unknown/803/unk_8031144C.cpp:
 	.text       start:0x8031144C end:0x80312A78
 
-rb3/rg_messages.cpp:
-	.text       start:0x80313E98 end:0x80314814
-	.data       start:0x808546F0 end:0x80854A08
-	.bss        start:0x8091A254 end:0x8091A290
+rb3/messages/stringstrummedmsg.cpp:
+	.text       start:0x80313E98 end:0x80313FB0
 
-rb3/key_messages.cpp:
-	.text       start:0x80315298 end:0x80315A70
-	.data       start:0x80854A08 end:0x80854D00
+rb3/messages/stringstoppedmsg.cpp:
+	.text       start:0x80313FB0 end:0x80313FFC
+
+rb3/messages/rg/rgaccelerometermsg.cpp:
+	.text       start:0x80313FFC end:0x80314114
+
+rb3/messages/rg/rgconnectedaccessoriesmsg.cpp:
+	.text       start:0x80314114 end:0x803141EC
+
+rb3/messages/rg/rgpitchbendmsg.cpp:
+	.text       start:0x803141EC end:0x803142C4
+
+rb3/messages/rg/rgmutingmsg.cpp:
+	.text       start:0x803142C4 end:0x8031439C
+
+rb3/messages/rg/rgstompboxmsg.cpp:
+	.text       start:0x8031439C end:0x80314474
+
+rb3/messages/rg/rgprogramchangemsg.cpp:
+	.text       start:0x80314474 end:0x8031454C
+
+rb3/messages/rg/rgswingmsg.cpp:
+	.text       start:0x8031454C end:0x80314624
+
+rb3/messages/rg/rgfretbuttondownmsg.cpp:
+	.text       start:0x80314624 end:0x8031471C
+
+rb3/messages/rg/rgfretbuttonupmsg.cpp:
+	.text       start:0x8031471C end:0x80314814
+
+rb3/messages/keys/keyboardkeyreleasedmsg.cpp:
+	.text       start:0x80315298 end:0x80315370
+	.data       start:0x80854CE4 end:0x80854D00
+
+rb3/messages/keys/keyboardmodmsg.cpp:
+	.text       start:0x80315370 end:0x80315448
+
+rb3/messages/keys/keyboardexpressionpedalmsg.cpp:
+	.text       start:0x80315448 end:0x80315520
+
+rb3/messages/keys/keyboardconnectedaccessories.cpp:
+	.text       start:0x80315520 end:0x803155F8
+
+rb3/messages/keys/keyboardsustainmsg.cpp:
+	.text       start:0x803155F8 end:0x803156D0
+
+rb3/messages/keys/keyboardstompbox.cpp:
+	.text       start:0x803156D0 end:0x803157A8
+
+rb3/messages/keys/keysaccelerometermsg.cpp:
+	.text       start:0x803157A8 end:0x803158C0
+
+rb3/messages/keys/keyboardlowhandplacementmsg.cpp:
+	.text       start:0x803158C0 end:0x80315998
+
+rb3/messages/keys/keyboardhighhandplacementmsg.cpp:
+	.text       start:0x80315998 end:0x80315A70
 
 rb3/dataarray.cpp:
 	.text       start:0x80315A70 end:0x803185F0
@@ -273,8 +331,15 @@ rb3/datautil.cpp:
 	.text       start:0x8032443C end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 
+flex/yy.c:
+	.text       start:0x80324B4C end:0x8032553C
+	.rodata     start:0x807F0D60 end:0x807F1D90
+	.data       start:0x808556C0 end:0x808558C8
+	.sbss       start:0x808E4488 end:0x808E4490
+	.bss        start:0x8091ABA8 end:0x8091ABD8
+
 rb3/unknown/803/unk_80324AFC.cpp:
-	.text       start:0x80324B4C end:0x8032D90C
+	.text       start:0x8032553C end:0x8032D90C
 
 rb3/unknown/803/unk_80330DF4.cpp:
 	.text       start:0x80330DF4 end:0x803351D0
@@ -286,8 +351,12 @@ rb3/hmx/object.cpp:
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033C8F0 end:0x80340E40
 
+rb3/beatmap.cpp:
+	.text       start:0x80340ED8 end:0x80341E68
+	.ctors      start:0x807EFF2C end:0x807EFF30
+
 rb3/bink.cpp:
-	.text       start:0x80341E10 end:0x80342ACC
+	.text       start:0x80341E68 end:0x80342ACC
 
 rb3/binstream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
@@ -314,6 +383,34 @@ std_native/src/new.cpp:
 rb3/unknown/803/unk_80354A30.cpp:
 	.text       start:0x80354A30 end:0x80355190
 
+rb3/symbols/messageset1.cpp:
+	.text       start:0x80355190 end:0x80355E18
+	.ctors      start:0x807EFF5C end:0x807EFF60
+	.data       start:0x808572C8 end:0x808577C8
+	.sbss       start:0x808E4528 end:0x808E4530
+	.bss        start:0x8097CE08 end:0x8097D570
+
+rb3/symbols/messageset2.cpp:
+	.text       start:0x80355E18 end:0x80356848
+	.ctors      start:0x807EFF60 end:0x807EFF64
+	.data       start:0x808577C8 end:0x80857C68
+	.sbss       start:0x808E4530 end:0x808E4538
+	.bss        start:0x8097D570 end:0x8097DB70
+
+rb3/symbols/messageset3.cpp:
+	.text       start:0x80356848 end:0x803572F0
+	.ctors      start:0x807EFF64 end:0x807EFF68
+	.data       start:0x80857C68 end:0x80858080
+	.sbss       start:0x808E4538 end:0x808E4540
+	.bss        start:0x8097DB70 end:0x8097E1B8
+
+rb3/symbols/messageset4.cpp:
+	.text       start:0x803572F0 end:0x80357E10
+	.ctors      start:0x807EFF68 end:0x807EFF6C
+	.data       start:0x80858080 end:0x80858470
+	.sbss       start:0x808E4540 end:0x808E4548
+	.bss        start:0x8097E1B8 end:0x8097E848
+
 rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x80357E10 end:0x8035C6AC
 
@@ -326,7 +423,38 @@ rb3/string.cpp:
 	.data       start:0x80858C90 end:0x80858CA0
 
 rb3/unknown/803/unk_80362A50.cpp:
-	.text       start:0x80362A50 end:0x80365214
+	.text       start:0x80362A50 end:0x803651B0
+
+rb3/stringtablelocks.cpp:
+	.text       start:0x803651B0 end:0x80365214
+
+rb3/symbols/symbolset1.cpp:
+	.text       start:0x80365214 end:0x8036B5A0
+	.ctors      start:0x807EFF6C end:0x807EFF70
+	.data       start:0x80858D28 end:0x80861278
+	.sbss       start:0x808E4568 end:0x808E4570
+	.bss        start:0x8097E948 end:0x809809F8
+
+rb3/symbols/symbolset2.cpp:
+	.text       start:0x8036B5A0 end:0x803704DC
+	.ctors      start:0x807EFF70 end:0x807EFF74
+	.data       start:0x80861278 end:0x80867580
+	.sbss       start:0x808E4570 end:0x808E4578
+	.bss        start:0x809809F8 end:0x80982448
+
+rb3/symbols/symbolset3.cpp:
+	.text       start:0x803704DC end:0x8037546C
+	.ctors      start:0x807EFF74 end:0x807EFF78
+	.data       start:0x80867580 end:0x8086DE50
+	.sbss       start:0x808E4578 end:0x808E4580
+	.bss        start:0x80982448 end:0x80983EB8
+
+rb3/symbols/symbolset4.cpp:
+	.text       start:0x8037546C end:0x8037A3D8
+	.ctors      start:0x807EFF78 end:0x807EFF7C
+	.data       start:0x8086DE50 end:0x80874468
+	.sbss       start:0x808E4580 end:0x808E4588
+	.bss        start:0x80983EB8 end:0x80985918
 
 rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A488
@@ -408,7 +536,7 @@ rb3/unknown/805/unk_805CE140.cpp:
 
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
-	.data       start:0x80895410 end:0x808954B8
+	.data       start:0x80895410 end:0x808954D0
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
@@ -498,12 +626,14 @@ speex/libspeex/ltp.c:
 
 speex/libspeex/nb_celp.c:
 	.text       start:0x806A30BC end:0x806A6CC0
+	.data       start:0x8089F748 end:0x8089FC60
 
 speex/libspeex/quant_lsp.c:
 	.text       start:0x806A6CC0 end:0x806A7884
 
 speex/libspeex/speex.c:
 	.text       start:0x806A7884 end:0x806A79AC
+	.data       start:0x8089FC60 end:0x8089FCB8
 
 speex/libspeex/speex_callbacks.c:
 	.text       start:0x806A79AC end:0x806A7AC8

@@ -21,7 +21,7 @@ void Rand::Seed(int seed) {
     unk04 = 0x67;
 }
 
-#pragma dont_inline on
+
 int Rand::Int(int i1, int i2) {
     return i1 + Int() % (i2 - i1);
 }
@@ -33,7 +33,7 @@ float Rand::Float(float f1, float f2) {
 float Rand::Float() {
     return ((Int() & 0xFFFF) / 65536.0f);
 }
-#pragma dont_inline reset
+
 
 int Rand::Int() {
     unsigned int u3 = unk_arr[unk00];

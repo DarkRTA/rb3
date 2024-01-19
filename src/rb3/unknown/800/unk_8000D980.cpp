@@ -9,13 +9,13 @@
 #include "jsonconverter.hpp"
 #include "data.hpp"
 
-#pragma dont_inline on
+
 // fn_8000DB9C
 // this could possibly be an inlining from a header file
 const char *String::c_str() const {
     return text;
 }
-#pragma dont_inline reset
+
 
 // fn_8000DD10
 // generic dtor function
@@ -30,12 +30,12 @@ DataNode::~DataNode() {
 extern DataArray *fn_8035CF9C(int, int, int);
 extern "C" DataNode *fn_8000DF50(DataArray *, int);
 
-#pragma dont_inline on
+
 // fn_8000DF50
 DataNode *DataArray::GetNodeAtIndex(int i) const {
     return &mNodes[i];
 }
-#pragma dont_inline reset
+
 
 // fn_8000E048
 Message::Message(Symbol s, const DataNode &dn1, const DataNode &dn2) {

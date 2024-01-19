@@ -15,7 +15,7 @@ extern bool fn_8000FCA4(Symbol *, Symbol *);
 extern u16 lbl_808E44AA, lbl_808E44AC;
 
 namespace Hmx {
-#pragma dont_inline on
+
     void Object::SaveType(BinStream &bin) {
         bin << fn_802623AC(0, 2);
         bin << Type();
@@ -53,7 +53,7 @@ namespace Hmx {
             }
         }
     }
-#pragma dont_inline reset
+
     void Object::Save(BinStream &bin) {
         SaveType(bin);
         SaveRest(bin);

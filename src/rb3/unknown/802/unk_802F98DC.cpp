@@ -3,7 +3,7 @@
 #include "file_ops.hpp"
 #include "data.hpp"
 #include "common.hpp"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "sdk/MSL_C/MSL_Common/printf.h"
 #include "file.hpp"
 
 // fn_802FA190

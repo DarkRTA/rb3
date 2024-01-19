@@ -19,11 +19,11 @@ public:
     virtual Hmx::Object* RefOwner(){ return owner; } // returns the Hmx::Object* owner down there
     virtual void Replace(Hmx::Object*, Hmx::Object*); // links to fn_8076F540, which returns void
 
-    // #pragma dont_inline on
+
     // void operator=(const ObjOwnerPtr<T1, T2>& const_owner_ptr){
     //     operator=(const_owner_ptr.obj);
     // }
-    // #pragma dont_inline reset
+
 
     // void operator=(T1* smelly){
     //     Hmx::Object* theObj = obj;

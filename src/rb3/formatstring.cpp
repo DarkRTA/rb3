@@ -1,7 +1,7 @@
 #include "formatstring.hpp"
 #include "common.hpp"
 #include "string.h"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "sdk/MSL_C/MSL_Common/printf.h"
 #include "data.hpp"
 
 extern char *NextBuf();

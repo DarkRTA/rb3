@@ -11,20 +11,20 @@ int Minimum(int x, int y) {
     return (y < x) ? y : x;
 }
 
-#pragma dont_inline on
+
 // fn_800D7964
 float DataArray::GetFloatAtIndex(int i) const {
     DataNode *dn = GetNodeAtIndex(i);
     return dn->Float(this);
 }
-#pragma dont_inline reset
+
 
 // fn_800D81D4
 double FAbs(double d) {
     return __fabs(d);
 }
 
-#pragma dont_inline on
+
 // fn_800D81B0
 float FAbsFloat(double d) {
     return FAbs(d);
@@ -35,7 +35,7 @@ float AbsThunk(double d) {
     return FAbsFloat(d);
 }
 
-#pragma dont_inline reset
+
 
 // fn_800D4728
 int Clamp(int i1, int i2, int i3) {
@@ -46,14 +46,14 @@ int Clamp(int i1, int i2, int i3) {
     return i1;
 }
 
-#pragma dont_inline on
+
 // fn_800CB1A4
 void Vector3::Set(float f1, float f2, float f3) {
     x = f1;
     y = f2;
     z = f3;
 }
-#pragma dont_inline reset
+
 
 // fn_800D8AC8
 Vector3 *Vector3::operator=(const Vector3 &vec) {

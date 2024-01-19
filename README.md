@@ -1,7 +1,13 @@
-SZBE69
+Rock Band 3 [![Build Status]][actions] [![Code Progress]][progress] [![Data Progress]][progress]
 =============
 
-A decompilation of SZBE69.
+[Build Status]: https://github.com/DarkRTA/rb3/actions/workflows/build.yml/badge.svg
+[actions]: https://github.com/DarkRTA/rb3/actions/workflows/build.yml
+[Code Progress]: https://img.shields.io/endpoint?label=Code&url=https%3A%2F%2Fprogress.decomp.club%2Fdata%2Frb3%2FSZBE69%2Fdol%2F%3Fmode%3Dshield%26measure%3Dcode
+[Data Progress]: https://img.shields.io/endpoint?label=Data&url=https%3A%2F%2Fprogress.decomp.club%2Fdata%2Frb3%2FSZBE69%2Fdol%2F%3Fmode%3Dshield%26measure%3Ddata
+[progress]: https://hmxmilohax.github.io/RB3DX-Site/decomp.html
+
+A decompilation of Rock Band 3 (USA).
 
 This repository does **not** contain any game assets or assembly whatsoever. An existing copy of the game is required.
 
@@ -45,7 +51,7 @@ Building
   ```
   git clone https://github.com/DarkRTA/rb3.git
   ```
-- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.  
+- Using [Dolphin Emulator](https://dolphin-emu.org/), extract your game to `orig/SZBE69`.
 ![](assets/dolphin-extract.png)
 - Configure:
   ```

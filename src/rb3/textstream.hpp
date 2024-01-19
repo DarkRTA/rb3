@@ -2,6 +2,8 @@
 #define RB3_TEXTSTREAM_HPP
 #include "symbol.hpp"
 
+class DataArray;
+
 /** A stream of text. */
 class TextStream {
 public:
@@ -21,6 +23,7 @@ public:
     TextStream &operator<<(const char *); // fn_8037A940
     TextStream &operator<<(Symbol); // fn_8037A97C
     TextStream &operator<<(bool); // fn_8037A9BC
+    TextStream &operator<<(const DataArray *); // fn_8037A9BC
 
     /** Writes a space to the text stream a set number of times.
      * @param [in] i: The number of times to write a space.

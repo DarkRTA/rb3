@@ -47,4 +47,4 @@
 #define _STLP_NO_VENDOR_MATH_F 1
 
 // Manual include path
-# define _STLP_NATIVE_INCLUDE_PATH std_native
+# define _STLP_NATIVE_INCLUDE_PATH sdk/MSL_C++

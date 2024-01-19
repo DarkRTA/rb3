@@ -8,11 +8,11 @@
 #include "symbol.hpp"
 #include "common.hpp"
 
-#pragma dont_inline on
+
 // fn_8035824C
 TempoMap::TempoMap() {
 }
-#pragma dont_inline reset
+
 
 extern void fn_803581AC(int *);
 

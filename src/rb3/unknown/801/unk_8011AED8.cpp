@@ -11,9 +11,9 @@ float CosFloat(double d) {
     return cos(d);
 }
 
-#pragma dont_inline on
+
 // fn_801301CC
 float CosThunk(double d) {
     return CosFloat(d);
 }
-#pragma dont_inline reset
+

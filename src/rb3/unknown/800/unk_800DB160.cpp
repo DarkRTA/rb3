@@ -11,24 +11,24 @@ float Ceil(double d) {
     return ceil(d);
 }
 
-#pragma dont_inline on
+
 // fn_800E25E8
 float CeilThunk(double d) {
     return Ceil(d);
 }
-#pragma dont_inline reset
+
 
 // fn_800DC764
 float Floor(double d) {
     return floor(d);
 }
 
-#pragma dont_inline on
+
 // fn_800DC760
 float FloorThunk(double d) {
     return Floor(d);
 }
-#pragma dont_inline reset
+
 
 // fn_800DC1B0
 int Round(float f) {
@@ -63,12 +63,12 @@ float SinFloat(double d) {
     return sin(d);
 }
 
-#pragma dont_inline on
+
 // fn_800E1E04
 float SinThunk(double d) {
     return SinFloat(d);
 }
-#pragma dont_inline reset
+
 
 void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) {
     if (f == 0.0f) {
@@ -202,12 +202,12 @@ void Multiply(
     )
 }
 
-#pragma dont_inline on
+
 // fn_800DEC08
 float ATan2Thunk(float f1, float f2) {
     return my_atan2f(f1, f2);
 }
-#pragma dont_inline reset
+
 
 // fn_800DEC0C
 float my_atan2f(float f1, float f2) {

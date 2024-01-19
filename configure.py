@@ -24,6 +24,8 @@ from tools.project import (
     is_windows,
 )
 
+from cflags_common import cflags_includes, cflags_defines
+
 # Game versions
 DEFAULT_VERSION = 0
 VERSIONS = [
@@ -147,33 +149,6 @@ config.ldflags = [
 config.shift_jis = False
 config.progress_all = False
 
-cflags_includes = [
-    "-i src/stlport/stlport",
-    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common",
-    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded",
-    "-i src/PowerPC_EABI_Support/MSL_C/MSL_Common_Embedded/Math",
-    "-i src/PowerPC_EABI_Support/MetroTRK",
-    # "-i src/tainted/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/Include",
-    "-i src/bt/gki/common",
-    "-i src/bt/bta/include",
-    "-i src/bt/utils/include",
-    "-i src/bt/stack/l2cap",
-    "-i src/bt/stack/btm",
-    "-i src/bt/include",
-    "-i src/bt/stack/include",
-    "-i src/libogg/include",
-    "-i src/speex/include",
-    "-i src/speex",
-    "-i src/RVL_SDK",
-    "-i src/std_native",
-    "-i src/rb3",
-    "-i src",
-]
-
-cflags_defines = [
-    "-d NDEBUG",
-]
-
 cflags_base = [
     *cflags_includes,
     *cflags_defines,
@@ -288,16 +263,26 @@ config.libs = [
             Object(NonMatching, "rb3/formatstring.cpp"),
             Object(NonMatching, "rb3/interpolators.cpp"),
             Object(NonMatching, "rb3/joypad.cpp"),
-            Object(NonMatching, "rb3/key_messages.cpp"),
             Object(NonMatching, "rb3/netstream.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
             Object(NonMatching, "rb3/ogg_mem.cpp"),
-            Object(NonMatching, "rb3/rg_messages.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
             Object(NonMatching, "rb3/trainingpanel.cpp"),
+            Object(NonMatching, "rb3/beatmap.cpp"),
+            Object(NonMatching, "rb3/datetime.cpp"),
+
+            Object(Matching, "rb3/stringtablelocks.cpp"),
+            Object(Matching, "rb3/symbols/symbolset1.cpp"),
+            Object(Matching, "rb3/symbols/symbolset2.cpp"),
+            Object(Matching, "rb3/symbols/symbolset3.cpp"),
+            Object(Matching, "rb3/symbols/symbolset4.cpp"),
+            Object(NonMatching, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
+            Object(NonMatching, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
+            Object(NonMatching, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
+            Object(NonMatching, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
 
             Object(NonMatching, "rb3/dataarray.cpp"),
             Object(NonMatching, "rb3/datafunc.cpp"),
@@ -324,6 +309,29 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
             Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
+
+            Object(NonMatching, "rb3/messages/stringstrummedmsg.cpp"),
+            Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
+
+            Object(NonMatching, "rb3/messages/rg/rgaccelerometermsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgconnectedaccessoriesmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgpitchbendmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgmutingmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgstompboxmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgprogramchangemsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgswingmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgfretbuttondownmsg.cpp"),
+            Object(NonMatching, "rb3/messages/rg/rgfretbuttonupmsg.cpp"),
+
+            Object(NonMatching, "rb3/messages/keys/keyboardkeyreleasedmsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardmodmsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardexpressionpedalmsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardconnectedaccessories.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardsustainmsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardstompbox.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keysaccelerometermsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardlowhandplacementmsg.cpp"),
+            Object(NonMatching, "rb3/messages/keys/keyboardhighhandplacementmsg.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -459,13 +467,13 @@ config.libs = [
         "objects": [
             Object(Matching, "speex/libspeex/bits.c"),
             Object(Matching, "speex/libspeex/cb_search.c"),
-            Object(NonMatching, "speex/libspeex/filters.c"),
+            Object(Matching, "speex/libspeex/filters.c"),
             Object(Matching, "speex/libspeex/lpc.c"),
             Object(Matching, "speex/libspeex/lsp.c"),
             Object(Matching, "speex/libspeex/ltp.c"),
             Object(NonMatching, "speex/libspeex/nb_celp.c"),
-            Object(NonMatching, "speex/libspeex/quant_lsp.c"),
-            Object(NonMatching, "speex/libspeex/speex.c"),
+            Object(Matching, "speex/libspeex/quant_lsp.c"),
+            Object(Matching, "speex/libspeex/speex.c"),
             Object(Matching, "speex/libspeex/speex_callbacks.c"),
             Object(NonMatching, "speex/libspeex/vbr.c"),
             Object(Matching, "speex/libspeex/vq.c")
@@ -479,6 +487,15 @@ config.libs = [
         "objects": [
             Object(Matching, "libogg/src/bitwise.c"),
             Object(Matching, "libogg/src/framing.c")
+        ],
+    },
+    {
+        "lib": "flex",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_c,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "flex/yy.c")
         ],
     },
     {
@@ -540,8 +557,8 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            Object(Matching, "Runtime/global_destructor_chain.c"),
-            Object(Matching, "Runtime/__init_cpp_exceptions.cpp"),
+            Object(Matching, "sdk/Runtime/global_destructor_chain.c"),
+            Object(Matching, "sdk/Runtime/__init_cpp_exceptions.cpp"),
         ],
     },
     {
@@ -550,22 +567,17 @@ config.libs = [
         "cflags": cflags_runtime,
         "host": False,
         "objects": [
-            # Code merging: new <-> new[], delete <-> delete[] are getting merged into each other
-            Object(LinkIssues, "std_native/src/new.cpp"),
+            Object(Matching, "sdk/MSL_C++/src/new.cpp"),
         ]
     },
 ]
 
-def main():
-    if args.mode == "configure":
-        # Write build.ninja and objdiff.json
-        generate_build(config)
-    elif args.mode == "progress":
-        # Print progress and write progress.json
-        config.progress_each_module = args.verbose
-        calculate_progress(config)
-    else:
-        sys.exit("Unknown mode: " + args.mode)
-
-if __name__ == "__main__":
-    main()
+if args.mode == "configure":
+    # Write build.ninja and objdiff.json
+    generate_build(config)
+elif args.mode == "progress":
+    # Print progress and write progress.json
+    config.progress_each_module = args.verbose
+    calculate_progress(config)
+else:
+    sys.exit("Unknown mode: " + args.mode)

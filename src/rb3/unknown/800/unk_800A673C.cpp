@@ -25,11 +25,11 @@ unsigned int String::length() const {
 }
 
 // fn_800A6BD0
-#pragma dont_inline on
+
 unsigned short UnknownJsonConverterMember::GetUnk4() {
     return unk4;
 }
-#pragma dont_inline reset
+
 
 extern "C" UnknownJsonConverterMember *fn_800A6A38(UnknownJsonConverterMember *, Dummy *);
 
@@ -200,12 +200,12 @@ void fn_800A6EA8(JsonConverter *jc, JsonObject *obj) {
 
 extern "C" void fn_800A6F1C(UnknownJsonConverterMember *, JsonObject **);
 
-#pragma dont_inline on
+
 // fn_800A6A24
 JsonObject **UnknownJsonConverterMember::fn_800A6A24() {
     return &unk0[unk4];
 }
-#pragma dont_inline reset
+
 
 // fn_800A6EF4
 void fn_800A6EF4(UnknownJsonConverterMember *mem, JsonObject *obj) {
@@ -281,13 +281,13 @@ int BufStream::Tell() {
     return fpos;
 }
 
-#pragma dont_inline on
+
 // fn_800A7730
 BinStream &BinStream::operator>>(unsigned char &c) {
     Read(&c, 1);
     return *this;
 }
-#pragma dont_inline reset
+
 
 // fn_800A7764
 BinStream &BinStream::operator>>(bool &b) {

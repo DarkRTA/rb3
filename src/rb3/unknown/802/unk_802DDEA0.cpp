@@ -12,12 +12,12 @@
 #include "shortquat.hpp"
 #include "shorttransform.hpp"
 
-#pragma dont_inline on
+
 // fn_802DE5B4
 float ASinFloat(double d) {
     return asin(d);
 }
-#pragma dont_inline reset
+
 
 // fn_802DEEF8
 float ACosFloat(double d) {
@@ -119,12 +119,12 @@ void MakeEuler(const Hmx::Quat &q, Vector3 &vec) {
     MakeEuler(lmao, vec);
 }
 
-#pragma dont_inline on
+
 // fn_802DE4D4
 float Cosine(float f) {
     return Sine(f + 1.5707964f);
 }
-#pragma dont_inline reset
+
 
 void MakeRotMatrix(const Vector3 &v1, const Vector3 &v2, Hmx::Matrix3 &mtx) {
     mtx.row2 = v1;
@@ -328,12 +328,12 @@ void IdentityInterp(const Hmx::Quat &q, float f, Hmx::Quat &dst) {
     }
 }
 
-#pragma dont_inline on
+
 BinStream &operator>>(BinStream &bs, Vector3 &vec) {
     bs >> vec.x >> vec.y >> vec.z;
     return bs;
 }
-#pragma dont_inline reset
+
 
 BinStream &operator>>(BinStream &bs, Hmx::Matrix3 &mtx) {
     bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
@@ -581,11 +581,11 @@ void Multiply(
     )
 }
 
-#pragma dont_inline on
+
 Hmx::Quat::Quat(const Hmx::Matrix3 &mtx) {
     Set(mtx);
 }
-#pragma dont_inline reset
+
 
 void Hmx::Quat::Set(const Hmx::Matrix3 &mtx) {
     float f1 = mtx.row1.x;
@@ -616,11 +616,11 @@ void Hmx::Quat::Set(const Hmx::Matrix3 &mtx) {
     Normalize(*this, *this);
 }
 
-#pragma dont_inline on
+
 void ShortQuat::Set(const Hmx::Matrix3 &mtx) {
     Set(Hmx::Quat(mtx));
 }
-#pragma dont_inline reset
+
 
 void Invert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
     float big_num = mtx.row1.z * mtx.row2.x * mtx.row3.y - mtx.row3.x * mtx.row2.y
@@ -705,11 +705,11 @@ void Interp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
     }
 }
 
-#pragma dont_inline on
+
 void InterpThunk(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
     Interp(q1, q2, f, dst);
 }
-#pragma dont_inline reset
+
 
 void Interp(const Hmx::Matrix3 &m1, const Hmx::Matrix3 &m2, float f, Hmx::Matrix3 &dst) {
     Hmx::Quat q1(m1);
@@ -771,7 +771,7 @@ void ShortTransform::operator=(const Transform &tf) {
     trans = tf.trans;
 }
 
-#pragma dont_inline on
+
 Hmx::Quat::Quat(const Vector3 &vec, float f) {
     Set(vec, f);
 }
@@ -779,4 +779,4 @@ Hmx::Quat::Quat(const Vector3 &vec, float f) {
 void ShortQuat::SetThunk(const Hmx::Quat &q) {
     Set(q);
 }
-#pragma dont_inline reset
+

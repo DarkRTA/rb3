@@ -5,11 +5,11 @@
 #include "string.hpp"
 #include "data.hpp"
 
-#pragma dont_inline on
+
 // fn_800AAE9C
 NetMessage::NetMessage() {
 }
-#pragma dont_inline reset
+
 
 // fn_800AAE1C
 void SyncObjMsg::NewNetMessage() {

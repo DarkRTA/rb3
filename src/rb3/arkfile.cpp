@@ -7,7 +7,7 @@
 
 int File::sOpenCount[4];
 
-#pragma dont_inline on
+
 // fn_802E73DC
 File::File() {
     sOpenCount[0]++;
@@ -17,7 +17,7 @@ File::File() {
 File::~File() {
     sOpenCount[0]--;
 }
-#pragma dont_inline reset
+
 
 // fn_802E780C
 String File::Filename() {

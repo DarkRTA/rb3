@@ -2,7 +2,7 @@
 #include "filestream.hpp"
 #include "textstream.hpp"
 #include "unknown.hpp"
-#include "PowerPC_EABI_Support/MSL_C/MSL_Common/printf.h"
+#include "sdk/MSL_C/MSL_Common/printf.h"
 #include "simpletempomap.hpp"
 
 // fn_8037A58C - TextFileStream ctor

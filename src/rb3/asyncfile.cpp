@@ -238,12 +238,12 @@ int AsyncFile::V_Unk15(int *a) {
     return V_Unk21();
 }
 
-#pragma dont_inline on
+
 // fn_802E85D0
 unsigned int Minimum(unsigned int a, unsigned int b) {
     return (b < a) ? b : a;
 }
-#pragma dont_inline reset
+
 
 // FillBuffer
 void AsyncFile::FillBuffer() {
