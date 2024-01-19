@@ -60,8 +60,7 @@ extern void PropertyNOP(const char*, char*, String&);
 DataNode* Hmx::Object::Property(DataArray* da, bool b){
     static DataNode n;
     if(SyncProperty(n, da, 0, (PropOp)1)) return &n;
-    Symbol asdf = asdf;
-    asdf = da->GetSymAtIndex(0);
+    Symbol asdf = da->GetSymAtIndex(0);
     DataNode* kv = props.KeyValue(asdf, false);
     if(kv == nullptr){
         if(arr != nullptr){
@@ -82,11 +81,11 @@ DataNode* Hmx::Object::Property(DataArray* da, bool b){
         }
         else if(b){
             String str;
-            str << (const DataArray*)da;
+            str << da;
             String str2(str);
             PropertyNOP("%s: property %s not found", PathName(this), str2);
         }
-    }    
+    }
     return nullptr;
 }
 
@@ -99,7 +98,7 @@ DataNode Hmx::Object::HandleProperty(DataArray* a1, DataArray* a2, bool b){
         if(a1 != nullptr) a1->GetSymAtIndex(0);
         else Symbol("<none>");
         PathName(this);
-    } 
+    }
     return DataNode(0);
 }
 
@@ -125,8 +124,7 @@ int Hmx::Object::PropertySize(DataArray* da){
     }
     else {
         da->GetNodeCount();
-        Symbol asdf = asdf;
-        asdf = da->GetSymAtIndex(0);
+        Symbol asdf = da->GetSymAtIndex(0);
         DataNode* kv = props.KeyValue(asdf, false);
         if(kv == nullptr){
             if(arr != nullptr){
