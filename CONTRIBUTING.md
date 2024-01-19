@@ -21,7 +21,7 @@ symbols.txt into your local Ghidra project in `tools`.
 ## Text Editors
 
 For newcomers to these types of projects, we recommend [VSCode](https://code.visualstudio.com/)/[VSCodium](https://vscodium.com/) with
-Microsoft's C++ plugin . However, you may use any text editor you prefer as
+Microsoft's C++ plugin. However, you may use any text editor you prefer as
 long as you have a good way of running `clang-format`.
 
 ## Guidelines
@@ -46,4 +46,4 @@ just try and follow what surrounding code does.
 
 ## Further questions
 
-If you have any further questions, feel free to join the [MiloHax Discord](https://discord.gg/xrba4CjdNC), as well as the [DOL Decomp Discord](https://discord.gg/hKx3FJJgrV). Both servers have incredibly talented people who are more than willing to help you with whatever you need.
+If you have any further questions, feel free to join the [GC/Wii Decompilation Discord](https://discord.gg/hKx3FJJgrV).
