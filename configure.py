@@ -412,21 +412,21 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "quazal/datetime.cpp"),
-            Object(NonMatching, "quazal/platform.cpp"),
-            Object(NonMatching, "quazal/profilingunit.cpp"),
-            Object(Matching, "quazal/qresult.cpp"),
-            Object(Matching, "quazal/randomnumbergenerator.cpp"),
-            Object(NonMatching, "quazal/refcountedobject.cpp"),
-            Object(NonMatching, "quazal/rootobject.cpp"),
-            Object(Matching, "quazal/stream.cpp"),
-            Object(NonMatching, "quazal/string.cpp"),
+            Object(NonMatching, "libs/quazal/datetime.cpp"),
+            Object(NonMatching, "libs/quazal/platform.cpp"),
+            Object(NonMatching, "libs/quazal/profilingunit.cpp"),
+            Object(Matching, "libs/quazal/qresult.cpp"),
+            Object(Matching, "libs/quazal/randomnumbergenerator.cpp"),
+            Object(NonMatching, "libs/quazal/refcountedobject.cpp"),
+            Object(NonMatching, "libs/quazal/rootobject.cpp"),
+            Object(Matching, "libs/quazal/stream.cpp"),
+            Object(NonMatching, "libs/quazal/string.cpp"),
 
-            Object(NonMatching, "quazal/unknown/8001/unk_800135F0.cpp"),
-            Object(NonMatching, "quazal/unknown/8001/unk_80018968.cpp"),
-            Object(NonMatching, "quazal/unknown/8007/unk_8007BF84.cpp"),
-            Object(NonMatching, "quazal/unknown/8007/unk_8007B998.cpp"),
-            Object(NonMatching, "quazal/unknown/800A/unk_800A515C.cpp"),
+            Object(NonMatching, "libs/quazal/unknown/8001/unk_800135F0.cpp"),
+            Object(NonMatching, "libs/quazal/unknown/8001/unk_80018968.cpp"),
+            Object(NonMatching, "libs/quazal/unknown/8007/unk_8007BF84.cpp"),
+            Object(NonMatching, "libs/quazal/unknown/8007/unk_8007B998.cpp"),
+            Object(NonMatching, "libs/quazal/unknown/800A/unk_800A515C.cpp"),
         ],
     },
     {
@@ -435,11 +435,11 @@ config.libs = [
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(Matching, "json-c/arraylist.c"),
-            Object(Matching, "json-c/json_object.c"),
-            Object(Matching, "json-c/json_tokener.c"),
-            Object(Matching, "json-c/linkhash.c"),
-            Object(Matching, "json-c/printbuf.c")
+            Object(Matching, "libs/json-c/arraylist.c"),
+            Object(Matching, "libs/json-c/json_object.c"),
+            Object(Matching, "libs/json-c/json_tokener.c"),
+            Object(Matching, "libs/json-c/linkhash.c"),
+            Object(Matching, "libs/json-c/printbuf.c")
         ]
     },
     {
@@ -448,14 +448,14 @@ config.libs = [
         "cflags": cflags_zlib,
         "host": False,
         "objects": [
-            Object(Matching, "zlib/adler32.c"),
-            Object(Matching, "zlib/crc32.c"),
-            Object(Matching, "zlib/deflate.c"),
-            Object(Matching, "zlib/trees.c"),
-            Object(Matching, "zlib/zutil.c"),
-            Object(Matching, "zlib/inflate.c"),
-            Object(Matching, "zlib/inftrees.c", mw_version="Wii/1.0a"),
-            Object(Matching, "zlib/inffast.c"),
+            Object(Matching, "libs/zlib/adler32.c"),
+            Object(Matching, "libs/zlib/crc32.c"),
+            Object(Matching, "libs/zlib/deflate.c"),
+            Object(Matching, "libs/zlib/trees.c"),
+            Object(Matching, "libs/zlib/zutil.c"),
+            Object(Matching, "libs/zlib/inflate.c"),
+            Object(Matching, "libs/zlib/inftrees.c", mw_version="Wii/1.0a"),
+            Object(Matching, "libs/zlib/inffast.c"),
         ]
     },
     {
@@ -464,9 +464,9 @@ config.libs = [
         "cflags": cflags_zlib,
         "host": False,
         "objects": [
-            Object(NonMatching, "libtomcrypt/aes.c"),
-            Object(Matching, "libtomcrypt/crypt.c"),
-            Object(NonMatching, "libtomcrypt/ctr.c")
+            Object(NonMatching, "libs/libtomcrypt/aes.c"),
+            Object(Matching, "libs/libtomcrypt/crypt.c"),
+            Object(NonMatching, "libs/libtomcrypt/ctr.c")
         ],
     },
     {
@@ -475,18 +475,18 @@ config.libs = [
         "cflags": cflags_zlib,
         "host": False,
         "objects": [
-            Object(Matching, "speex/libspeex/bits.c"),
-            Object(Matching, "speex/libspeex/cb_search.c"),
-            Object(Matching, "speex/libspeex/filters.c"),
-            Object(Matching, "speex/libspeex/lpc.c"),
-            Object(Matching, "speex/libspeex/lsp.c"),
-            Object(Matching, "speex/libspeex/ltp.c"),
-            Object(NonMatching, "speex/libspeex/nb_celp.c"),
-            Object(Matching, "speex/libspeex/quant_lsp.c"),
-            Object(Matching, "speex/libspeex/speex.c"),
-            Object(Matching, "speex/libspeex/speex_callbacks.c"),
-            Object(NonMatching, "speex/libspeex/vbr.c"),
-            Object(Matching, "speex/libspeex/vq.c")
+            Object(Matching, "libs/speex/libspeex/bits.c"),
+            Object(Matching, "libs/speex/libspeex/cb_search.c"),
+            Object(Matching, "libs/speex/libspeex/filters.c"),
+            Object(Matching, "libs/speex/libspeex/lpc.c"),
+            Object(Matching, "libs/speex/libspeex/lsp.c"),
+            Object(Matching, "libs/speex/libspeex/ltp.c"),
+            Object(NonMatching, "libs/speex/libspeex/nb_celp.c"),
+            Object(Matching, "libs/speex/libspeex/quant_lsp.c"),
+            Object(Matching, "libs/speex/libspeex/speex.c"),
+            Object(Matching, "libs/speex/libspeex/speex_callbacks.c"),
+            Object(NonMatching, "libs/speex/libspeex/vbr.c"),
+            Object(Matching, "libs/speex/libspeex/vq.c")
         ]
     },
     {
@@ -495,17 +495,19 @@ config.libs = [
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(Matching, "libogg/src/bitwise.c"),
-            Object(Matching, "libogg/src/framing.c")
+            Object(Matching, "libs/libogg/src/bitwise.c"),
+            Object(Matching, "libs/libogg/src/framing.c")
         ],
     },
+    # TODO: this object is actually part of RB3's dta parser
+    # should move this to rb3 itself
     {
         "lib": "flex",
         "mw_version": "Wii/1.3",
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(NonMatching, "flex/yy.c")
+            Object(NonMatching, "rb3/yy.c")
         ],
     },
     {
@@ -514,21 +516,21 @@ config.libs = [
         "cflags": cflags_c,
         "host": False,
         "objects": [
-            Object(Matching, "vorbis/bitrate.c"),
-            Object(Matching, "vorbis/block.c"),
-            Object(NonMatching, "vorbis/codebook.c"),
-            Object(Matching, "vorbis/envelope.c"),
-            Object(NonMatching, "vorbis/floor0.c"),
-            Object(NonMatching, "vorbis/floor1.c"),
-            Object(Matching, "vorbis/info.c"),
-            Object(Matching, "vorbis/lsp.c"),
-            Object(NonMatching, "vorbis/mapping0.c"),
-            Object(NonMatching, "vorbis/mdct.c"),
-            Object(NonMatching, "vorbis/psy.c"),
-            Object(NonMatching, "vorbis/res0.c"),
-            Object(NonMatching, "vorbis/sharedbook.c"),
-            Object(Matching, "vorbis/smallft.c"),
-            Object(NonMatching, "vorbis/window.c")
+            Object(Matching, "libs/vorbis/bitrate.c"),
+            Object(Matching, "libs/vorbis/block.c"),
+            Object(NonMatching, "libs/vorbis/codebook.c"),
+            Object(Matching, "libs/vorbis/envelope.c"),
+            Object(NonMatching, "libs/vorbis/floor0.c"),
+            Object(NonMatching, "libs/vorbis/floor1.c"),
+            Object(Matching, "libs/vorbis/info.c"),
+            Object(Matching, "libs/vorbis/lsp.c"),
+            Object(NonMatching, "libs/vorbis/mapping0.c"),
+            Object(NonMatching, "libs/vorbis/mdct.c"),
+            Object(NonMatching, "libs/vorbis/psy.c"),
+            Object(NonMatching, "libs/vorbis/res0.c"),
+            Object(NonMatching, "libs/vorbis/sharedbook.c"),
+            Object(Matching, "libs/vorbis/smallft.c"),
+            Object(NonMatching, "libs/vorbis/window.c")
         ],
     },
     {
@@ -537,16 +539,16 @@ config.libs = [
         "cflags": cflags_bt,
         "host": False,
         "objects": [
-            Object(NonMatching, "bt/stack/l2cap/l2c_utils.c"),
-            Object(NonMatching, "bt/stack/l2cap/l2c_main.c"),
-            Object(NonMatching, "bt/stack/l2cap/l2c_link.c"),
-            Object(NonMatching, "bt/stack/l2cap/l2c_csm.c"),
-            Object(NonMatching, "bt/stack/l2cap/l2c_api.c"),
-            Object(NonMatching, "bt/stack/hid/hidh_conn.c"),
-            Object(NonMatching, "bt/stack/hid/hidh_api.c"),
-            Object(NonMatching, "bt/stack/hcic/hcicmds.c"),
-            Object(NonMatching, "bt/stack/btu/btu_hcif.c"),
-            Object(NonMatching, "bt/stack/rfcomm/port_api.c")
+            Object(NonMatching, "libs/bt/stack/l2cap/l2c_utils.c"),
+            Object(NonMatching, "libs/bt/stack/l2cap/l2c_main.c"),
+            Object(NonMatching, "libs/bt/stack/l2cap/l2c_link.c"),
+            Object(NonMatching, "libs/bt/stack/l2cap/l2c_csm.c"),
+            Object(NonMatching, "libs/bt/stack/l2cap/l2c_api.c"),
+            Object(NonMatching, "libs/bt/stack/hid/hidh_conn.c"),
+            Object(NonMatching, "libs/bt/stack/hid/hidh_api.c"),
+            Object(NonMatching, "libs/bt/stack/hcic/hcicmds.c"),
+            Object(NonMatching, "libs/bt/stack/btu/btu_hcif.c"),
+            Object(NonMatching, "libs/bt/stack/rfcomm/port_api.c")
         ]
     },
     # anything below this line does not need to be decompiled

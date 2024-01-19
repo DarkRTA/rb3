@@ -28,50 +28,50 @@ rb3/main.cpp:
 rb3/unknown/800/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x80011714
 
-quazal/datetime.cpp:
+libs/quazal/datetime.cpp:
 	.text       start:0x800127E4 end:0x800129F4
 
-quazal/unknown/8001/unk_800135F0.cpp:
+libs/quazal/unknown/8001/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
 
-quazal/platform.cpp:
+libs/quazal/platform.cpp:
 	.text       start:0x80016BCC end:0x80016D24
 	.data       start:0x8081813C end:0x80818150
 
-quazal/profilingunit.cpp:
+libs/quazal/profilingunit.cpp:
 	.text       start:0x80016D94 end:0x800172FC
 
-quazal/randomnumbergenerator.cpp:
+libs/quazal/randomnumbergenerator.cpp:
 	.text       start:0x80017448 end:0x800176FC
 
-quazal/refcountedobject.cpp:
+libs/quazal/refcountedobject.cpp:
 	.text       start:0x800176FC end:0x8001784C
 	.data       start:0x80818510 end:0x80818558
 
-quazal/qresult.cpp:
+libs/quazal/qresult.cpp:
 	.text       start:0x80017898 end:0x80017964
 	.data       start:0x80818558 end:0x80818588
 
-quazal/rootobject.cpp:
+libs/quazal/rootobject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
 
-quazal/string.cpp:
+libs/quazal/string.cpp:
 	.text       start:0x80018278 end:0x80018968
 
-quazal/unknown/8001/unk_80018968.cpp:
+libs/quazal/unknown/8001/unk_80018968.cpp:
 	.text       start:0x80018968 end:0x800193E4
 
-quazal/stream.cpp:
+libs/quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
-quazal/unknown/8007/unk_8007B998.cpp:
+libs/quazal/unknown/8007/unk_8007B998.cpp:
 	.text       start:0x8007B998 end:0x8007BF3C
 
-quazal/unknown/8007/unk_8007BF84.cpp:
+libs/quazal/unknown/8007/unk_8007BF84.cpp:
 	.text       start:0x8007BF84 end:0x8007CA94
 
-quazal/unknown/800A/unk_800A515C.cpp:
+libs/quazal/unknown/800A/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
@@ -98,23 +98,23 @@ rb3/unknown/800/unk_800B4630.cpp:
 rb3/unknown/800/unk_800BF1A8.cpp:
 	.text       start:0x800BF1A8 end:0x800C239C
 
-json-c/arraylist.c:
+libs/json-c/arraylist.c:
 	.text       start:0x800C68E0 end:0x800C6B4C
 
-json-c/json_object.c:
+libs/json-c/json_object.c:
 	.text       start:0x800C6B4C end:0x800C7714
 	.data       start:0x8082E1D0 end:0x8082E248
 
-json-c/json_tokener.c:
+libs/json-c/json_tokener.c:
 	.text       start:0x800C7714 end:0x800C92AC
 	.data       start:0x8082E248 end:0x8082E5B0
 
-json-c/linkhash.c:
+libs/json-c/linkhash.c:
 	.text       start:0x800C92AC end:0x800C999C
 	.rodata     start:0x807F00C0 end:0x807F00C8
 	.data       start:0x8082E5B0 end:0x8082E5D0
 
-json-c/printbuf.c:
+libs/json-c/printbuf.c:
 	.text       start:0x800C999C end:0x800C9D04
 	.sbss       start:0x808E3E98 end:0x808E3EA0
 
@@ -334,7 +334,7 @@ rb3/datautil.cpp:
 	.text       start:0x8032443C end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 
-flex/yy.c:
+rb3/yy.c:
 	.text       start:0x80324B4C end:0x8032553C
 	.rodata     start:0x807F0D60 end:0x807F1D90
 	.data       start:0x808556C0 end:0x808558C8
@@ -380,7 +380,7 @@ rb3/hxguid.cpp:
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0
 
-std_native/src/new.cpp:
+sdk/MSL_C++/src/new.cpp:
 	.text       start:0x80354830 end:0x803548E8
 
 rb3/unknown/803/unk_80354A30.cpp:
@@ -476,37 +476,37 @@ rb3/textstream.cpp:
 rb3/unknown/803/unk_8037AD40.cpp:
 	.text       start:0x8037AD40 end:0x8037EB94
 
-zlib/adler32.c:
+libs/zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
 
-zlib/crc32.c:
+libs/zlib/crc32.c:
 	.text       start:0x8037ED1C end:0x8037EE64
 	.rodata     start:0x807F1E00 end:0x807F2200
 
-zlib/deflate.c:
+libs/zlib/deflate.c:
 	.text       start:0x8037EE64 end:0x80380B78
 	.rodata     start:0x807F2200 end:0x807F2280
 
-zlib/trees.c:
+libs/zlib/trees.c:
 	.text       start:0x80380B78 end:0x80382960
 	.rodata     start:0x807F2280 end:0x807F2CB8
 	.data       start:0x80874690 end:0x808746D0
 
-zlib/zutil.c:
+libs/zlib/zutil.c:
 	.text       start:0x80382960 end:0x80382998
 	.rodata     start:0x807F2CB8 end:0x807F2CE0
 	.data       start:0x808746D0 end:0x80874750
 
-zlib/inflate.c:
+libs/zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248
 	.rodata     start:0x807F2CE0 end:0x807F3588
 	.data       start:0x80874750 end:0x80874978
 
-zlib/inftrees.c:
+libs/zlib/inftrees.c:
 	.text       start:0x80384248 end:0x803846EC
 	.rodata     start:0x807F3588 end:0x807F36B8
 
-zlib/inffast.c:
+libs/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
 
@@ -597,117 +597,117 @@ rb3/fx/fxsendwah.cpp:
 rb3/unknown/806/unk_80671DCC.cpp:
 	.text       start:0x806786F0 end:0x8067BA7C
 
-libtomcrypt/aes.c:
+libs/libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
 	.rodata     start:0x807F4BE8 end:0x807F8CC8
 	.data       start:0x8089F260 end:0x8089F3A8
 
-libtomcrypt/crypt.c:
+libs/libtomcrypt/crypt.c:
 	.text       start:0x8069EA54 end:0x8069EB64
 	.data       start:0x8089F3A8 end:0x8089F5E8
 	.bss        start:0x80991198 end:0x80991720
 
-libtomcrypt/ctr.c:
+libs/libtomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
 
-speex/libspeex/bits.c:
+libs/speex/libspeex/bits.c:
 	.text       start:0x8069EF40 end:0x8069F458
 	.data       start:0x8089F5E8 end:0x8089F738
 
-speex/libspeex/cb_search.c:
+libs/speex/libspeex/cb_search.c:
 	.text       start:0x8069F458 end:0x806A0660
 
-speex/libspeex/filters.c:
+libs/speex/libspeex/filters.c:
 	.text       start:0x806A0660 end:0x806A12F4
 	.rodata     start:0x807F9B88 end:0x807F9C58
 
-speex/libspeex/lpc.c:
+libs/speex/libspeex/lpc.c:
 	.text       start:0x806A12F4 end:0x806A1488
 
-speex/libspeex/lsp.c:
+libs/speex/libspeex/lsp.c:
 	.text       start:0x806A1488 end:0x806A1C28
 
-speex/libspeex/ltp.c:
+libs/speex/libspeex/ltp.c:
 	.text       start:0x806A1C28 end:0x806A30BC
 
-speex/libspeex/nb_celp.c:
+libs/speex/libspeex/nb_celp.c:
 	.text       start:0x806A30BC end:0x806A6CC0
 	.data       start:0x8089F748 end:0x8089FC60
 
-speex/libspeex/quant_lsp.c:
+libs/speex/libspeex/quant_lsp.c:
 	.text       start:0x806A6CC0 end:0x806A7884
 
-speex/libspeex/speex.c:
+libs/speex/libspeex/speex.c:
 	.text       start:0x806A7884 end:0x806A79AC
 	.data       start:0x8089FC60 end:0x8089FCB8
 
-speex/libspeex/speex_callbacks.c:
+libs/speex/libspeex/speex_callbacks.c:
 	.text       start:0x806A79AC end:0x806A7AC8
 
-speex/libspeex/vbr.c:
+libs/speex/libspeex/vbr.c:
 	.text       start:0x806A7AC8 end:0x806A82E8
 
-speex/libspeex/vq.c:
+libs/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
-vorbis/bitrate.c:
+libs/vorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714
 
-libogg/src/bitwise.c:
+libs/libogg/src/bitwise.c:
 	.text       start:0x806C2714 end:0x806C2B6C
 	.data       start:0x808A1530 end:0x808A15B8
 
-vorbis/block.c:
+libs/vorbis/block.c:
 	.text       start:0x806C2B6C end:0x806C3C94
 
-vorbis/codebook.c:
+libs/vorbis/codebook.c:
 	.text       start:0x806C3C94 end:0x806C4724
 	.data       start:0x808A15B8 end:0x808A15E0
 
-vorbis/envelope.c:
+libs/vorbis/envelope.c:
 	.text       start:0x806C4724 end:0x806C47A8
 
-vorbis/floor0.c:
+libs/vorbis/floor0.c:
 	.text       start:0x806C47A8 end:0x806C504C
 
-vorbis/floor1.c:
+libs/vorbis/floor1.c:
 	.text       start:0x806C504C end:0x806C6ED4
 
-libogg/src/framing.c:
+libs/libogg/src/framing.c:
 	.text       start:0x806C6ED4 end:0x806C7B44
 	.data       start:0x808A1A20 end:0x808A1E28
 
-vorbis/info.c:
+libs/vorbis/info.c:
 	.text       start:0x806C7B44 end:0x806C85A4
 	.data       start:0x808A1E28 end:0x808A1E38
 
-vorbis/lsp.c:
+libs/vorbis/lsp.c:
 	.text       start:0x806C85A4 end:0x806C896C
 	.data       start:0x808A1E38 end:0x808A22D0
 
-vorbis/mapping0.c:
+libs/vorbis/mapping0.c:
 	.text       start:0x806C896C end:0x806CA094
 
-vorbis/mdct.c:
+libs/vorbis/mdct.c:
 	.text       start:0x806CA094 end:0x806CB4D0
 
-vorbis/psy.c:
+libs/vorbis/psy.c:
 	.text       start:0x806CB4D0 end:0x806CE3C0
 
-vorbis/res0.c:
+libs/vorbis/res0.c:
 	.text       start:0x806CE3C0 end:0x806CFA70
 
-vorbis/sharedbook.c:
+libs/vorbis/sharedbook.c:
 	.text       start:0x806CFA70 end:0x806D07C4
 
-vorbis/smallft.c:
+libs/vorbis/smallft.c:
 	.text       start:0x806D07C4 end:0x806D1B60
 	.data       start:0x808A82E0 end:0x808A8300
 
 rb3/ogg_mem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
 
-vorbis/window.c:
+libs/vorbis/window.c:
 	.text       start:0x806D1BC4 end:0x806D1F30
 
 sdk/MSL_C/text_1.c:
@@ -724,38 +724,38 @@ sdk/Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x807F0064 end:0x807F0068 rename:.dtors$15
 	.sdata      start:0x808E32A0 end:0x808E32A8
 
-bt/stack/btu/btu_hcif.c:
+libs/bt/stack/btu/btu_hcif.c:
 	.text       start:0x80706530 end:0x8071C68C
 
-bt/stack/hcic/hcicmds.c:
+libs/bt/stack/hcic/hcicmds.c:
 	.text       start:0x8071C68C end:0x8071EDA8
 
-bt/stack/hid/hidh_api.c:
+libs/bt/stack/hid/hidh_api.c:
 	.text       start:0x8071EDA8 end:0x80720094
 
-bt/stack/hid/hidh_conn.c:
+libs/bt/stack/hid/hidh_conn.c:
 	.text       start:0x80720094 end:0x807220D4
 
-bt/stack/l2cap/l2c_api.c:
+libs/bt/stack/l2cap/l2c_api.c:
 	.text       start:0x807220D4 end:0x80722CA0
 
-bt/stack/l2cap/l2c_csm.c:
+libs/bt/stack/l2cap/l2c_csm.c:
 	.text       start:0x80722CA0 end:0x8072417C
 
-bt/stack/l2cap/l2c_link.c:
+libs/bt/stack/l2cap/l2c_link.c:
 	.text       start:0x8072417C end:0x80725308
 
-bt/stack/l2cap/l2c_main.c:
+libs/bt/stack/l2cap/l2c_main.c:
 	.text       start:0x80725308 end:0x80726338
 
-bt/stack/l2cap/l2c_utils.c:
+libs/bt/stack/l2cap/l2c_utils.c:
 	.text       start:0x80726338 end:0x807281FC
 
-bt/stack/rfcomm/port_api.c:
+libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-Dolphin/pad/pad.c:
+sdk/Dolphin/pad/pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540
 
-Dolphin/rso/RSOLink.c:
+sdk/Dolphin/rso/RSOLink.c:
 	.text       start:0x8076F540 end:0x807713F0
