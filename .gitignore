@@ -36,3 +36,6 @@ ignore/
 ignored/
 *.ignore.*
 *.ignored.*
+
+# rust target folders
+tools/*/target/

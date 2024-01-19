@@ -9,17 +9,9 @@ from ghidra.program.model.symbol import SymbolUtilities
 import string
 import subprocess
 
-def demangle(sym):
-    try:
-        # TODO: port the demangler to python as calling cwdemangle is SLOW
-        demangler_output = subprocess.check_output(['cwdemangle', sym])
-        return SymbolUtilities.replaceInvalidChars(str(demangler_output).split("(")[0], False)
-    except:
-        return sym
-
 f = askFile("Symbols File", "OK")
+demangler_output = subprocess.check_output(['rb3-batch-demangle', f.absolutePath])
 
-# cleanup existing syms
 for sym in currentProgram.getSymbolTable().getSymbolIterator():
     if sym.getSource() == USER_DEFINED:
         continue
@@ -27,22 +19,22 @@ for sym in currentProgram.getSymbolTable().getSymbolIterator():
         continue
     sym.delete()
 
-for l in file(f.absolutePath):
-    tokens = l.split(" ")
-    addr_matches = re.search(r'0x........', tokens[2])
-    if addr_matches == None:
-        raise Exception("invalid symbols file")
+for l in demangler_output.splitlines():
+    tokens = l.split("|||")
+    lbl = tokens[0]
+    name = SymbolUtilities.replaceInvalidChars(str(tokens[1]).split("(")[0], False)
 
-    address = toAddr(addr_matches.group(0))
-    name = tokens[0]
-    demangled_name = demangle(name)
-    print("Created label {} at address {}".format(demangled_name, address))
+    if name == "@@@@@":
+        name = lbl
+
+    address = toAddr(tokens[2])
+    print("Created label {} at address {}".format(name, address))
 
     sym = getSymbolAt(address)
 
     if sym == None:
-        createLabel(address, name, False, IMPORTED)
-        createLabel(address, demangled_name, True, ANALYSIS)
+        createLabel(address, lbl, False, IMPORTED)
+        createLabel(address, name, True, ANALYSIS)
     else:
-        createLabel(address, name, False, IMPORTED)
-        createLabel(address, demangled_name, sym.getSource() != USER_DEFINED, ANALYSIS)
+        createLabel(address, lbl, False, IMPORTED)
+        createLabel(address, name, sym.getSource() != USER_DEFINED, ANALYSIS)
