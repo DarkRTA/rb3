@@ -1,6 +1,10 @@
 use clap::Parser;
 use cwdemangle::*;
 use std::fs::read_to_string;
+use std::collections::hash_set::HashSet;
+
+#[macro_use]
+extern crate lazy_static;
 
 #[derive(Parser)]
 struct Args {
@@ -65,6 +69,21 @@ fn split_return<'a>(prolog: &'a str) -> (&'a str, &'a str) {
     }
 }
 
+lazy_static! {
+    static ref NON_TEMPLATE_NAMES: HashSet<&'static str> = HashSet::from_iter([
+        "operator<",
+        "operator>",
+        "operator<<",
+        "operator>>",
+        "operator>>=",
+        "operator<<=",
+        "operator<=",
+        "operator>=",
+        "operator->*",
+        "operator->",
+    ]);
+}
+
 fn split_namespace(prolog: &str) -> (String, String) {
     const PATTERN: &str = "::";
 
@@ -74,6 +93,12 @@ fn split_namespace(prolog: &str) -> (String, String) {
     let mut template_depth = 0;
     let mut template_buffer = String::new();
     for split in prolog.split(PATTERN) {
+        // Ensure special names that contain <> but aren't templates are added as-is
+        if NON_TEMPLATE_NAMES.contains(split) {
+            namespaces.push(split.to_string());
+            continue;
+        }
+
         template_depth += split.matches('<').count();
 
         if template_depth > 0 {
@@ -91,6 +116,8 @@ fn split_namespace(prolog: &str) -> (String, String) {
             namespaces.push(split.to_string());
         }
     }
+
+    assert!(template_buffer.is_empty());
 
     // Split off name, and re-join namespaces with a padded separator to make later splitting easier
     let name = namespaces.pop().unwrap();
