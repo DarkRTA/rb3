@@ -12,7 +12,8 @@ import subprocess
 f = askFile("Symbols File", "OK")
 demangler_output = subprocess.check_output(['rb3-batch-demangle', f.absolutePath])
 
-for sym in currentProgram.getSymbolTable().getSymbolIterator():
+symbolTable = currentProgram.getSymbolTable()
+for sym in symbolTable.getSymbolIterator():
     if sym.getSource() == USER_DEFINED:
         continue
     if sym.isPrimary():
@@ -21,18 +22,35 @@ for sym in currentProgram.getSymbolTable().getSymbolIterator():
 
 for l in demangler_output.splitlines():
     tokens = l.split("|||")
+
     address = toAddr(tokens[0])
-    lbl = tokens[1]
-    name = tokens[2] if len(tokens) > 2 else lbl
+    lbl = str(tokens[1])
+    if len(tokens) > 3:
+        demangled = str(tokens[2])
+        namespaces = str(tokens[3]).split(" :: ")
+        name = str(tokens[4])
+    else:
+        demangled = None
+        namespaces = None
+        name = lbl
 
-    name = SymbolUtilities.replaceInvalidChars(str(name).split("(")[0], False)
+    name = SymbolUtilities.replaceInvalidChars(name, True)
 
-    print("Creating label {} at address {}".format(name, address))
+    print("Creating label {} in namespace {} at address {}".format(name, "::".join(namespaces), address))
+
+    if namespaces is not None:
+        parent_namespace = None
+        for namespace_lbl in namespaces:
+            namespace_lbl = SymbolUtilities.replaceInvalidChars(namespace_lbl, True)
+            namespace = createNamespace(parent_namespace, namespace_lbl)
+            parent_namespace = namespace
+    else:
+        namespace = None
 
     sym = getSymbolAt(address)
     if sym == None:
-        createLabel(address, lbl, False, IMPORTED)
-        createLabel(address, name, True, ANALYSIS)
+        createLabel(address, lbl, namespace, False, IMPORTED)
+        createLabel(address, name, namespace, True, ANALYSIS)
     else:
-        createLabel(address, lbl, False, IMPORTED)
-        createLabel(address, name, sym.getSource() != USER_DEFINED, ANALYSIS)
+        createLabel(address, lbl, namespace, False, IMPORTED)
+        createLabel(address, name, namespace, sym.getSource() != USER_DEFINED, ANALYSIS)
