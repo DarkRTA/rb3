@@ -31,7 +31,7 @@ fn main() {
                     println!("{addr}|||{sym}|||{demangled}|||{namespace}|||{name}");
                 } else {
                     // Function: [return-type] [namespace::]name([parameter_types]) [cv-qualifier]
-                    let (prolog, _remaining) = demangled.split_once('(').unwrap();
+                    let (prolog, _parameters, _epilog) = split_function(demangled.as_str());
 
                     let (_return_type, qualified_name) = split_return(prolog);
                     let (namespace, name) = split_namespace(qualified_name);
@@ -43,6 +43,33 @@ fn main() {
                 println!("{addr}|||{sym}");
             }
         };
+    }
+}
+
+fn split_function<'a>(demangled_fn: &'a str) -> (&'a str, &'a str, &'a str) {
+    // Search from the end by depth, to handle function pointer types correctly
+    let mut parentheses_depth = 0;
+    for (index, value) in demangled_fn.rmatch_indices(&['(', ')']) {
+        parentheses_depth += match value {
+            // We're searching in reverse, so closing parentheses increase our depth
+            "(" => -1,
+            ")" => 1,
+            _ => 0
+        };
+
+        if parentheses_depth == 0 {
+            let parameter_start = index;
+            let parameter_end = demangled_fn.rfind(')').unwrap();
+            let (prolog, remaining) = demangled_fn.split_at(parameter_start);
+            let (parameters, epilog) = remaining.split_at(parameter_end - parameter_start + 1);
+            return (prolog, parameters, epilog);
+        }
+    }
+
+    if !demangled_fn.contains('(') {
+        panic!("Non-function symbol {demangled_fn} passed to split_function!");
+    } else {
+        unreachable!("This branch indicates mismatched parentheses, which would be a demangler bug");
     }
 }
 
