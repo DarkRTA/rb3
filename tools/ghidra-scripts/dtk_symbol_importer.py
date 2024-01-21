@@ -3,23 +3,24 @@
 #@category Import
 #@menupath Tools.Import From dtk Symbols File
 
-import re
-from ghidra.program.model.symbol.SourceType import *
-from ghidra.program.model.symbol import SymbolUtilities
-import string
 import subprocess
 
+from ghidra.program.model.symbol import *
+
+# Read/demangle symbols file
 f = askFile("Symbols File", "OK")
 demangler_output = subprocess.check_output(['rb3-batch-demangle', f.absolutePath])
 
+# Delete non-primary/user existing symbols, as we'll be replacing them
 symbolTable = currentProgram.getSymbolTable()
 for sym in symbolTable.getSymbolIterator():
-    if sym.getSource() == USER_DEFINED:
+    if sym.getSource() == SourceType.USER_DEFINED:
         continue
     if sym.isPrimary():
         continue
     sym.delete()
 
+# Apply demangled symbols to the program
 for l in demangler_output.splitlines():
     tokens = l.split("|||")
 
@@ -41,6 +42,7 @@ for l in demangler_output.splitlines():
     name = SymbolUtilities.replaceInvalidChars(name, True)
 
     if namespaces != "":
+        # Recursively create each namespace, Ghidra doesn't handle this for us
         namespaces = namespaces.split(" :: ")
         parent_namespace = None
         for namespace_lbl in namespaces:
@@ -52,8 +54,8 @@ for l in demangler_output.splitlines():
 
     sym = getSymbolAt(address)
     if sym == None:
-        createLabel(address, lbl, namespace, False, IMPORTED)
-        createLabel(address, name, namespace, True, ANALYSIS)
+        createLabel(address, lbl, namespace, False, SourceType.IMPORTED)
+        createLabel(address, name, namespace, True, SourceType.ANALYSIS)
     else:
-        createLabel(address, lbl, namespace, False, IMPORTED)
-        createLabel(address, name, namespace, sym.getSource() != USER_DEFINED, ANALYSIS)
+        createLabel(address, lbl, namespace, False, SourceType.IMPORTED)
+        createLabel(address, name, namespace, sym.getSource() != SourceType.USER_DEFINED, SourceType.ANALYSIS)
