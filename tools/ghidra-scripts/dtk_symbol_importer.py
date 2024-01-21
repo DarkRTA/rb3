@@ -55,12 +55,10 @@ for l in demangler_output.splitlines():
         namespace = None
 
     sym = getSymbolAt(address)
-    if sym == None:
-        createLabel(address, lbl, namespace, False, SourceType.IMPORTED)
-        createLabel(address, name, namespace, True, SourceType.ANALYSIS)
-    else:
-        createLabel(address, lbl, namespace, False, SourceType.IMPORTED)
-        createLabel(address, name, namespace, sym.getSource() != SourceType.USER_DEFINED, SourceType.ANALYSIS)
+    primary = True if sym is None else sym.getSource() != SourceType.USER_DEFINED
+
+    createLabel(address, lbl, False, SourceType.IMPORTED)
+    createLabel(address, name, namespace, primary, SourceType.ANALYSIS)
 
 # Fix up class namespaces
 class_symbols = ["__vt", "__vtable", "__RTTI", "__superclasses", "__classname"]
