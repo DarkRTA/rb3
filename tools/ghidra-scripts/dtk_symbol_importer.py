@@ -27,18 +27,21 @@ for l in demangler_output.splitlines():
     lbl = str(tokens[1])
     if len(tokens) > 3:
         demangled = str(tokens[2])
-        namespaces = str(tokens[3]).split(" :: ")
+        namespaces = str(tokens[3])
         name = str(tokens[4])
+
+        print("Creating label {} in namespace {} at address {}".format(name, namespaces.replace(" :: ", "::"), address))
     else:
         demangled = None
-        namespaces = None
+        namespaces = ""
         name = lbl
+
+        print("Creating label {} in global namespace at address {}".format(name, address))
 
     name = SymbolUtilities.replaceInvalidChars(name, True)
 
-    print("Creating label {} in namespace {} at address {}".format(name, "::".join(namespaces), address))
-
-    if namespaces is not None:
+    if namespaces != "":
+        namespaces = namespaces.split(" :: ")
         parent_namespace = None
         for namespace_lbl in namespaces:
             namespace_lbl = SymbolUtilities.replaceInvalidChars(namespace_lbl, True)
