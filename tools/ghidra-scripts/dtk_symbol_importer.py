@@ -29,8 +29,8 @@ for l in demangler_output.splitlines():
     lbl = str(tokens[1])
     if len(tokens) > 3:
         demangled = str(tokens[2])
-        namespaces = str(tokens[3])
-        name = str(tokens[4])
+        namespaces = str(tokens[3]).replace(", ", ",") # Remove spaces in template parameters
+        name = str(tokens[4]).replace(", ", ",")       # to match built-in demangler
 
         print("Creating label {} in namespace {} at address {}".format(name, namespaces.replace(" :: ", "::"), address))
     else:
