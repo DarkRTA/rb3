@@ -21,6 +21,7 @@ for sym in symbolTable.getSymbolIterator():
     sym.delete()
 
 # Apply demangled symbols to the program
+created_namespaces = []
 for l in demangler_output.splitlines():
     tokens = l.split("|||")
 
@@ -48,6 +49,7 @@ for l in demangler_output.splitlines():
         for namespace_lbl in namespaces:
             namespace_lbl = SymbolUtilities.replaceInvalidChars(namespace_lbl, True)
             namespace = createNamespace(parent_namespace, namespace_lbl)
+            created_namespaces.append(namespace)
             parent_namespace = namespace
     else:
         namespace = None
@@ -59,3 +61,18 @@ for l in demangler_output.splitlines():
     else:
         createLabel(address, lbl, namespace, False, SourceType.IMPORTED)
         createLabel(address, name, namespace, sym.getSource() != SourceType.USER_DEFINED, SourceType.ANALYSIS)
+
+# Fix up class namespaces
+class_symbols = ["__vt", "__vtable", "__RTTI", "__superclasses", "__classname"]
+for namespace in created_namespaces:
+    if namespace.getSymbol().getSymbolType() == SymbolType.CLASS:
+        continue
+
+    constructor_name = namespace.getName().split("<")[0]
+    destructor_name = "~" + constructor_name
+    for sym in symbolTable.getSymbols(namespace):
+        sym_name = sym.getName()
+        if sym_name in class_symbols or sym_name == constructor_name or sym_name == destructor_name:
+            print("Converting namespace {} to class".format(namespace.getName()))
+            symbolTable.convertNamespaceToClass(namespace)
+            break
