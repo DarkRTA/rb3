@@ -2,7 +2,7 @@
 #define RB3_STRING_HPP
 #include "textstream.hpp"
 #include "symbol.hpp"
-#include "jsonconverter.hpp"
+#include "jsonobjects.hpp"
 
 /** An object representing a sequence of characters. */
 class String : public TextStream {

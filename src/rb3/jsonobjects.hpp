@@ -1,5 +1,5 @@
-#ifndef RB3_JSONCONVERTER_HPP
-#define RB3_JSONCONVERTER_HPP
+#ifndef RB3_JSONOBJECTS_HPP
+#define RB3_JSONOBJECTS_HPP
 #include "json-c/json.h"
 
 // this class is 0x8 big! according to fn_800A6D68
