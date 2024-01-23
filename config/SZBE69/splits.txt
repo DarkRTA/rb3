@@ -121,9 +121,6 @@ libs/json-c/printbuf.c:
 rb3/unknown/800/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800DB158
 
-rb3/netstream.cpp:
-	.text       start:0x800DB158 end:0x800DB160
-
 rb3/unknown/800/unk_800DB160.cpp:
 	.text       start:0x800DB160 end:0x800F6DE4
 
@@ -282,6 +279,9 @@ rb3/unknown/802/unk_802FB548.cpp:
 
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
+
+rb3/netstream.cpp:
+	.text       start:0x80308638 end:0x80308ACC
 
 rb3/wiinetworksocket.cpp:
 	.text       start:0x80308CC0 end:0x80308DB4
@@ -561,7 +561,19 @@ rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
 rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80421240 end:0x8046EDCC
+	.text       start:0x80421240 end:0x80449EC8
+
+rb3/crowdaudio.cpp:
+	.text       start:0x80449EC8 end:0x8044C194
+
+rb3/unisonicon.cpp:
+	.text       start:0x8044EFF4 end:0x8044FAF4
+
+rb3/songsectioncontroller.cpp:
+	.text       start:0x8044FAF4 end:0x8045593C
+
+rb3/overshelldir.cpp:
+	.text       start:0x8045593C end:0x804567C8
 
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
@@ -585,7 +597,10 @@ rb3/Rnd/rndcam.cpp:
 	.text       start:0x805CCF80 end:0x805CD410
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D5E48
+	.text       start:0x805CE140 end:0x805D22A8
+
+rb3/Rnd/rnddir.cpp:
+	.text       start:0x805D22A8 end:0x805D5E48
 
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130

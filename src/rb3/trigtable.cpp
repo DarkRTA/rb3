@@ -18,7 +18,7 @@ void TrigTableInit() {
 
 #pragma force_active on
 // fn_802E2F34
-void TrigTableNOP() {
+void TrigTableTerminate() {
 }
 #pragma force_active reset
 

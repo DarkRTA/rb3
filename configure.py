@@ -252,6 +252,7 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
             Object(NonMatching, "rb3/Rnd/rndcam.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
+            Object(NonMatching, "rb3/Rnd/rnddir.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
@@ -356,6 +357,10 @@ config.libs = [
             Object(NonMatching, "rb3/dirunloader.cpp"),
             Object(NonMatching, "rb3/fadepanel.cpp"),
             Object(NonMatching, "rb3/freestylepanel.cpp"),
+            Object(NonMatching, "rb3/songsectioncontroller.cpp"),
+            Object(NonMatching, "rb3/unisonicon.cpp"),
+            Object(NonMatching, "rb3/crowdaudio.cpp"),
+            Object(NonMatching, "rb3/overshelldir.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
