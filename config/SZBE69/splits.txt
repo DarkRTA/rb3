@@ -136,6 +136,12 @@ rb3/bandusermgr.cpp:
 rb3/chordbookpanel.cpp:
 	.text       start:0x80101808 end:0x8010417C
 
+rb3/fadepanel.cpp:
+	.text       start:0x80108E3C end:0x801096AC
+
+rb3/freestylepanel.cpp:
+	.text       start:0x8010C65C end:0x8010D754
+
 rb3/gamemicmanager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50

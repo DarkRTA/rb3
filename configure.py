@@ -354,6 +354,8 @@ config.libs = [
             Object(NonMatching, "rb3/contentdeletepanel.cpp"),
             Object(NonMatching, "rb3/msgsource.cpp"),
             Object(NonMatching, "rb3/dirunloader.cpp"),
+            Object(NonMatching, "rb3/fadepanel.cpp"),
+            Object(NonMatching, "rb3/freestylepanel.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
