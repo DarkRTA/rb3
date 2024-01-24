@@ -621,6 +621,96 @@ rb3/Rnd/rndenviron.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
 	.ctors      start:0x807EFFE4 end:0x807EFFE8
 
+rb3/Rnd/rndflare.cpp:
+	.text       start:0x805E5A84 end:0x805E70D4
+
+rb3/Rnd/rndfont.cpp:
+	.text       start:0x805E70D4 end:0x805EC3E8
+
+rb3/Rnd/rndgenerator.cpp:
+	.text       start:0x805EC3E8 end:0x805EF00C
+
+rb3/Rnd/rndgroup.cpp:
+	.text       start:0x805EFA68 end:0x805F1B2C
+
+rb3/Rnd/rndlight.cpp:
+	.text       start:0x805F5224 end:0x805F68BC
+
+rb3/Rnd/rndlightanim.cpp:
+	.text       start:0x805F68BC end:0x805F7990
+
+rb3/Rnd/rndmesh.cpp:
+	.text       start:0x805FCEC8 end:0x80606C98
+	.ctors      start:0x807EFFF0 end:0x807EFFF4
+
+rb3/Rnd/rndmeshanim.cpp:
+	.text       start:0x80606C98 end:0x8060DD84
+
+rb3/Rnd/rndmotionblur.cpp:
+	.text       start:0x80613A80 end:0x806143BC
+
+rb3/Rnd/rndmovie.cpp:
+	.text       start:0x806143BC end:0x80614E30
+
+rb3/Rnd/rndmultimesh.cpp:
+	.text       start:0x80614E30 end:0x8061740C
+	.ctors      start:0x807EFFF4 end:0x807EFFF8
+
+rb3/Rnd/rndmultimeshproxy.cpp:
+	.text       start:0x8061740C end:0x806179C4
+
+rb3/Rnd/rndoverlay.cpp:
+	.text       start:0x806179C4 end:0x80618780
+	.ctors      start:0x807EFFF8 end:0x807EFFFC
+
+rb3/Rnd/rndparticlesys.cpp:
+	.text       start:0x80618780 end:0x80620524
+	.ctors      start:0x807EFFFC end:0x807F0000
+
+rb3/Rnd/rndparticlesysanim.cpp:
+	.text       start:0x80620524 end:0x80621C44
+
+rb3/Rnd/rndpartlauncher.cpp:
+	.text       start:0x80621C44 end:0x806236B0
+
+rb3/Rnd/rnd.cpp:
+	.text       start:0x80637BD0 end:0x8063DD48
+
+rb3/Rnd/rndscreenmask.cpp:
+	.text       start:0x8063DD48 end:0x8063E82C
+
+rb3/Rnd/rndtex.cpp:
+	.text       start:0x8063F6C4 end:0x806412A8
+
+rb3/Rnd/rndtexblendcontroller.cpp:
+	.text       start:0x806412A8 end:0x80641BB8
+
+rb3/Rnd/rndtexblender.cpp:
+	.text       start:0x80641BB8 end:0x80642F64
+
+rb3/Rnd/rndtexrenderer.cpp:
+	.text       start:0x80642F64 end:0x80644F3C
+
+rb3/Rnd/rndtext.cpp:
+	.text       start:0x80644F3C end:0x8064D808
+	.ctors      start:0x807F0010 end:0x807F0014
+
+rb3/Rnd/rndtransformable.cpp:
+	.text       start:0x8064D808 end:0x806513DC
+	.ctors      start:0x807F0014 end:0x807F0018
+
+rb3/Rnd/rndtransproxy.cpp:
+	.text       start:0x806513DC end:0x80651D08
+
+rb3/Rnd/rndcubetex.cpp:
+	.text       start:0x8065C18C end:0x8065D8E4
+
+rb3/Rnd/rndfur.cpp:
+	.text       start:0x8065D8E4 end:0x8065DD84
+
+rb3/Rnd/rndambientocclusion.cpp:
+	.text       start:0x8065DD84 end:0x8065E1A4
+
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x8066B6B8
 
