@@ -590,8 +590,14 @@ rb3/uipanel.cpp:
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x8057464C end:0x80581A8C
 
+rb3/Rnd/rndanimatable.cpp:
+	.text       start:0x805C6814 end:0x805C8850
+
+rb3/Rnd/rndanimfilter.cpp:
+	.text       start:0x805C8850 end:0x805C9A68
+
 rb3/Rnd/rndbitmap.cpp:
-	.text       start:0x805CA0FC end:0x805CAC4C
+	.text       start:0x805C9A68 end:0x805CAC4C
 
 rb3/Rnd/rndcam.cpp:
 	.text       start:0x805CCF80 end:0x805CD410

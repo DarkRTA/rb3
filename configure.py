@@ -249,6 +249,8 @@ config.libs = [
             Object(Matching, "rb3/trigtable.cpp"),
 
             Object(NonMatching, "rb3/dofproc.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndanimfilter.cpp"),
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
             Object(NonMatching, "rb3/Rnd/rndcam.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
