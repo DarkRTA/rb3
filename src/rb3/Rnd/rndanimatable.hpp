@@ -27,6 +27,11 @@ public:
 
     static Symbol StaticClassName();
 
+    DataNode OnAnimate(DataArray*);
+    void StopAnimation();
+    bool IsAnimating();
+    DataNode OnConvertFrames(DataArray*);
+
     float frame;
     int rate;
 };
