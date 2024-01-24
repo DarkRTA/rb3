@@ -711,6 +711,7 @@ rb3/Rnd/rndfur.cpp:
 
 rb3/Rnd/rndambientocclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
+	.data       start:0x8089ACF8 end:0x8089AD98
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x8066B6B8
