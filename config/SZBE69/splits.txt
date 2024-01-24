@@ -75,7 +75,7 @@ libs/quazal/unknown/800A/unk_800A515C.cpp:
 	.text       start:0x800A515C end:0x800A5368
 	.data       start:0x8082A5C0 end:0x8082A678
 
-rb3/jsonconverter.cpp:
+rb3/jsonobjects.cpp:
 	.text       start:0x800A6360 end:0x800A673C
 	.data       start:0x8082A960 end:0x8082AA40
 
@@ -121,17 +121,36 @@ libs/json-c/printbuf.c:
 rb3/unknown/800/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800DB158
 
-rb3/netstream.cpp:
-	.text       start:0x800DB158 end:0x800DB160
-
 rb3/unknown/800/unk_800DB160.cpp:
 	.text       start:0x800DB160 end:0x800F6DE4
 
 rb3/unknown/800/unk_800F6DF8.cpp:
-	.text       start:0x800F6DF8 end:0x8011AEC4
+	.text       start:0x800F6DF8 end:0x800FF880
+
+rb3/bandusermgr.cpp:
+	.text       start:0x800FF880 end:0x80101808
+
+rb3/chordbookpanel.cpp:
+	.text       start:0x80101808 end:0x8010417C
+
+rb3/fadepanel.cpp:
+	.text       start:0x80108E3C end:0x801096AC
+
+rb3/freestylepanel.cpp:
+	.text       start:0x8010C65C end:0x8010D754
+
+rb3/gamemicmanager.cpp:
+	.text       start:0x80119E40 end:0x8011AF08
+	.ctors      start:0x807EFE4C end:0x807EFE50
+
+rb3/gamemode.cpp:
+	.text       start:0x8011AF08 end:0x8011BA2C
+
+rb3/gamepanel.cpp:
+	.text       start:0x8011BA2C end:0x8011DD8C
 
 rb3/unknown/801/unk_8011AED8.cpp:
-	.text       start:0x8011AED8 end:0x80159E30
+	.text       start:0x8011DD8C end:0x80159E30
 
 rb3/unknown/801/unk_801660DC.cpp:
 	.text       start:0x801660DC end:0x80184CA0
@@ -139,8 +158,30 @@ rb3/unknown/801/unk_801660DC.cpp:
 rb3/unknown/801/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
 
+rb3/campaignsonginfopanel.cpp:
+	.text       start:0x801E35FC end:0x801E46B0
+
+rb3/charactercreatorpanel.cpp:
+	.text       start:0x801EBCA8 end:0x801F02A8
+
+rb3/choosecolorpanel.cpp:
+	.text       start:0x801F4EB0 end:0x801F62F4
+
+rb3/closetmgr.cpp:
+	.text       start:0x801F62F4 end:0x801F8A84
+
+rb3/closetpanel.cpp:
+	.text       start:0x801F8A84 end:0x801F9774
+
+rb3/contentdeletepanel.cpp:
+	.text       start:0x801F9774 end:0x801FA240
+
 rb3/unknown/802/unk_8022BE84.cpp:
-	.text       start:0x8022BE84 end:0x8024729C
+	.text       start:0x8022BE84 end:0x8023FCAC
+
+rb3/overshellpanel.cpp:
+	.text       start:0x8023FCAC end:0x802473C0
+	.ctors      start:0x807EFE70 end:0x807EFE74
 
 rb3/unknown/802/unk_80252B98.cpp:
 	.text       start:0x80252B98 end:0x80266360
@@ -238,6 +279,9 @@ rb3/unknown/802/unk_802FB548.cpp:
 
 rb3/joypad.cpp:
 	.text       start:0x802FF088 end:0x80303E24
+
+rb3/netstream.cpp:
+	.text       start:0x80308638 end:0x80308ACC
 
 rb3/wiinetworksocket.cpp:
 	.text       start:0x80308CC0 end:0x80308DB4
@@ -344,8 +388,11 @@ rb3/yy.c:
 rb3/unknown/803/unk_80324AFC.cpp:
 	.text       start:0x8032553C end:0x8032D90C
 
-rb3/unknown/803/unk_80330DF4.cpp:
-	.text       start:0x80330DF4 end:0x803351D0
+rb3/dirunloader.cpp:
+	.text       start:0x8033106C end:0x80331D40
+
+rb3/msgsource.cpp:
+	.text       start:0x80331D40 end:0x803351D0
 
 rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
@@ -514,7 +561,19 @@ rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
 rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80421240 end:0x8046EDCC
+	.text       start:0x80421240 end:0x80449EC8
+
+rb3/crowdaudio.cpp:
+	.text       start:0x80449EC8 end:0x8044C194
+
+rb3/unisonicon.cpp:
+	.text       start:0x8044EFF4 end:0x8044FAF4
+
+rb3/songsectioncontroller.cpp:
+	.text       start:0x8044FAF4 end:0x8045593C
+
+rb3/overshelldir.cpp:
+	.text       start:0x8045593C end:0x804567C8
 
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
@@ -538,7 +597,10 @@ rb3/Rnd/rndcam.cpp:
 	.text       start:0x805CCF80 end:0x805CD410
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D5E48
+	.text       start:0x805CE140 end:0x805D22A8
+
+rb3/Rnd/rnddir.cpp:
+	.text       start:0x805D22A8 end:0x805D5E48
 
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
