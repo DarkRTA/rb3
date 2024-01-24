@@ -617,6 +617,10 @@ rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
 	.data       start:0x808955A8 end:0x808955B0
 
+rb3/Rnd/rndenviron.cpp:
+	.text       start:0x805D7408 end:0x805D9A64
+	.ctors      start:0x807EFFE4 end:0x807EFFE8
+
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x8066B6B8
 

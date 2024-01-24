@@ -255,6 +255,7 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndcam.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddrawable.cpp"),
             Object(NonMatching, "rb3/Rnd/rnddir.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndenviron.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
