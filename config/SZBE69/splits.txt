@@ -705,6 +705,7 @@ rb3/Rnd/rndtransproxy.cpp:
 
 rb3/Rnd/rndcubetex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4
+	.data       start:0x8089ABC8 end:0x8089AC68
 
 rb3/Rnd/rndfur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
