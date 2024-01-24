@@ -32,6 +32,11 @@ public:
     bool IsAnimating();
     DataNode OnConvertFrames(DataArray*);
 
+    static int Unit(int);
+    int Units() const;
+    float FramesPerUnit();
+    bool ConvertFrames(float&);
+
     float frame;
     int rate;
 };

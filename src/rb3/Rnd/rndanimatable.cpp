@@ -1,6 +1,26 @@
 #include "rndanimatable.hpp"
 #include "symbols.hpp"
 
+int gRateUnits[5] = {0, 1, 2, 1, 3};
+float gRateFpu[5] = {30.0f, 480.0f, 30.0f, 1.0f, 30.0f};
+
+int RndAnimatable::Unit(int myRate){
+    return gRateUnits[myRate];
+}
+
+int RndAnimatable::Units() const {
+    return gRateUnits[rate];
+}
+
+float RndAnimatable::FramesPerUnit(){
+    return gRateFpu[rate];
+}
+
+bool RndAnimatable::ConvertFrames(float& f){
+    f /= FramesPerUnit();
+    return (Units() != 1);
+}
+
 RndAnimatable::RndAnimatable(){
     frame = 0.0f;
     rate = 0;
