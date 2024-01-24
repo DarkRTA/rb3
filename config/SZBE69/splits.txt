@@ -707,6 +707,7 @@ rb3/Rnd/rndcubetex.cpp:
 
 rb3/Rnd/rndfur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
+	.data       start:0x8089AC68 end:0x8089ACF8
 
 rb3/Rnd/rndambientocclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
