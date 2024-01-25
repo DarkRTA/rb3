@@ -34,14 +34,14 @@ public:
     void CheckUnload();
 
     int unk8; // some class with virtual methods
-    int unkc;
-    String str; // focus?
+    int unkc; // probably another class with virtual methods
+    String focus;
     int unk1c;
     bool unk20;
-    bool unk21;
-    bool unk22;
-    bool unk23; // force exit?
-    int unk24;
+    bool paused; // paused?
+    bool showing; // showing
+    bool forceExit; // force exit?
+    int refCount; // reference count?
     FilePath fpath;
     int unk34;
 };
