@@ -1,5 +1,9 @@
 #include "rndanimfilter.hpp"
 
-RndAnimFilter::RndAnimFilter() : ptr(this, 0), unk1c(0.0f), unk20(0.0f), unk24(0.0f), unk28(1.0f), unk2c(0.0f), unk30(0.0f), unk34(0.0f), unk38(0.0f), unk3c(0) {
+RndAnimFilter::RndAnimFilter() : animPtr(this, nullptr), period(0.0f), start(0.0f), end(0.0f), scale(1.0f), offset(0.0f), snap(0.0f), jitter(0.0f), unk38(0.0f), type(0) {
 
+}
+
+RndAnimFilter::~RndAnimFilter(){
+    
 }
