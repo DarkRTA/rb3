@@ -22,13 +22,21 @@ public:
     }
 
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
-        
+        if (unk8 == o1) {
+            *this = dynamic_cast<T1*>(o2);
+        }
     }
 
-    virtual int IsDirPtr(); // StubZero
+    virtual int IsDirPtr(){
+        return 0; // StubZero
+    }
 
-    ObjPtr* operator=(T1* t){
-        return this;
+    void operator=(T1* t){
+        if(unk8 != t){
+            if(unk8 != 0) unk8->Release(this);
+            unk8 = t;
+            if(t != 0) t->AddRef(this);
+        }
     }
 
     Hmx::Object* owner;
