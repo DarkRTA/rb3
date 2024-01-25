@@ -615,7 +615,7 @@ rb3/dofproc.cpp:
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
-	.data       start:0x808955A8 end:0x808955B0
+	.data       start:0x808954D8 end:0x808955C8
 
 rb3/Rnd/rndenviron.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
