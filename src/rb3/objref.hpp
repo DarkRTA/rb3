@@ -9,7 +9,7 @@ public:
     virtual ~ObjRef(); // fn_8000DD10
     virtual Hmx::Object* RefOwner() = 0;
     virtual void Replace(Hmx::Object*, Hmx::Object*) = 0;
-    virtual int IsDirPtr(); // links to fn_8077BAA0, which returns 0
+    virtual int IsDirPtr(){ return 0; } // links to fn_8077BAA0, which returns 0
 };
 
 #endif

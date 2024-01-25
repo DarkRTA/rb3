@@ -53,7 +53,7 @@ namespace Hmx {
 
         Object(); // fn_8033560c
         virtual ~Object(); // fn_803356ec
-        virtual Hmx::Object* RefOwner(); // links to fn_8076F540, which returns void
+        virtual Hmx::Object* RefOwner(){} // links to fn_8076F540, which returns void
         virtual void Replace(Hmx::Object*, Hmx::Object*); // fn_80336C88
         // ObjRef::IsDirPtr // links to fn_8077BAA0, which returns 0
         virtual Symbol ClassName() const; // fn_800103C8
@@ -63,15 +63,15 @@ namespace Hmx {
         virtual void Save(BinStream&);
         virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
         virtual void Load(BinStream&);
-        virtual void Print(); // links to fn_8076F540, which returns void
-        virtual void Export(); // links to fn_8076F540, which returns void
-        virtual void V_Unk14(); // links to fn_8076F540, which returns void
-        virtual void V_Unk15(); // links to fn_8076F540, which returns void
+        virtual void Print(){} // links to fn_8076F540, which returns void
+        virtual void Export(){} // links to fn_8076F540, which returns void
+        virtual void V_Unk14(){} // links to fn_8076F540, which returns void
+        virtual void V_Unk15(){} // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);
         virtual void SetName(const char*, ObjectDir*); // fn_80335904
         virtual void DataDir(); // fn_803351D0
         virtual void PreLoad(BinStream&); // fn_800AB8B4
-        virtual void PostLoad(BinStream&); // links to fn_8076F540, which returns void
+        virtual void PostLoad(BinStream&){} // links to fn_8076F540, which returns void
         virtual char* FindPathName(); // fn_80336A84
 
         static Symbol StaticClassName();

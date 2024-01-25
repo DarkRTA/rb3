@@ -1,5 +1,7 @@
 #include "dofproc.hpp"
 
+DOFProc* TheDOFProc;
+
 DOFProc::DOFProc(){
 
 }
@@ -8,9 +10,26 @@ DOFProc::~DOFProc(){
     
 }
 
+void DOFProc::Init(){
+    if(TheDOFProc == 0) TheDOFProc = NewDOFProc();
+}
+
+DOFProc* DOFProc::NewDOFProc(){
+    return dynamic_cast<DOFProc*>(Hmx::Object::NewObject(StaticClassName()));
+}
+
 Symbol DOFProc::StaticClassName(){
     static Symbol name("DOFProc");
     return name;
+}
+
+void DOFProc::Terminate(){
+    delete TheDOFProc;
+    TheDOFProc = 0;
+}
+
+DOFProc* DOFProc::Params(){
+    return TheDOFProc;
 }
 
 Symbol DOFProc::ClassName() const {
@@ -21,7 +40,7 @@ extern DataArray* SystemConfig(Symbol, Symbol, Symbol);
 extern char* PathName(const Hmx::Object*);
 
 void DOFProc::SetType(Symbol s){
-    static DataArray* types = SystemConfig(StaticClassName(), "types", "objects");
+    static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
     if(s.IsNull()){
         SetTypeDef(nullptr);
     }
