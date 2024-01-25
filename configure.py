@@ -286,7 +286,7 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndset.cpp"),
             Object(NonMatching, "rb3/Rnd/rndambientocclusion.cpp"),
 
-            Object(NonMatching, "rb3/shaderoptions.cpp"),
+            Object(Matching, "rb3/shaderoptions.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
