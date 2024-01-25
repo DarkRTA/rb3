@@ -48,8 +48,7 @@ bool Hmx::Object::SyncProperty(DataNode& dn, DataArray* da, int i, PropOp op){
         return true;
     }
     else {
-        Symbol b = b;
-        b = da->GetSymAtIndex(i);
+        Symbol b = da->GetSymAtIndex(i);
         return false;
     }
 }
