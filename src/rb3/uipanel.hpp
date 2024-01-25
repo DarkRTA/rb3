@@ -7,22 +7,44 @@
 class UIPanel : public virtual Hmx::Object {
 public:
     UIPanel();
-    virtual ~UIPanel();
     virtual Symbol ClassName() const;
     virtual void SetType(Symbol);
     virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual ~UIPanel();
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray *);
     virtual void DataDir();
 
-    int unk8;
-    int unkc;
-    String str;
+    virtual void Draw();
+    virtual void Enter();
+    virtual int Entering();
+    virtual void Exit();
+    virtual int Exiting();
+    virtual bool Unloading();
+    virtual void Poll();
+    virtual void SetPaused(bool);
+    virtual void FocusIn(); // StubVoid
+    virtual void FocusOut(); // StubVoid
+    virtual void Load();
+    virtual void Unload();
+    virtual bool IsLoaded();
+    virtual void UnknownUIPanelMethod(); // fn_80573920
+    virtual void FinishLoad();
+
+    void CheckLoad();
+    void CheckUnload();
+
+    int panel; // should be a PanelDir*
+    int unkc; // probably another class with virtual methods
+    String focus;
     int unk1c;
-    char unk20, unk21, unk22, unk23;
-    int unk24;
+    bool loaded;
+    bool paused;
+    bool showing;
+    bool forceExit;
+    int refCount;
     FilePath fpath;
+    int unk34;
 };
 
 #endif

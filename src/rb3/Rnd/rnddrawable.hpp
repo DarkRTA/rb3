@@ -1,21 +1,23 @@
 #ifndef RND_RNDDRAWABLE_HPP
 #define RND_RNDDRAWABLE_HPP
 #include "rndhighlightable.hpp"
-#include "rb3/symbol.hpp"
-#include "rb3/hmx/quat.hpp"
+#include "sphere.hpp"
 
-class RndDrawable : public RndHighlightable {
+class RndDrawable : public virtual RndHighlightable {
     RndDrawable();
-    virtual ~RndDrawable();
     virtual Symbol ClassName() const;
-    virtual void SetType(Symbol *);
-
+    virtual void SetType(Symbol);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+    virtual ~RndDrawable();
 
     static Symbol StaticClassName();
 
     bool mShowing;
-    Hmx::Quat mBoundSphere;
+    Sphere mBoundSphere;
     float mDrawOrder;
 };
 

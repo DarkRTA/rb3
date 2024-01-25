@@ -10,6 +10,10 @@ public:
     virtual void SetType(Symbol);
 
     static Symbol StaticClassName();
+    static DOFProc* Params();
+    static void Terminate();
+    static DOFProc* NewDOFProc();
+    static void Init();
 };
 
 #endif

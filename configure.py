@@ -248,7 +248,9 @@ config.libs = [
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
 
-            Object(NonMatching, "rb3/dofproc.cpp"),
+            # These functions match 100%, but won't link because the .data isn't being allocated correctly (the vtable/RTTI are off)
+            Object(LinkIssues, "rb3/dofproc.cpp", extra_cflags=["-str nopool"]),
+
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
             Object(NonMatching, "rb3/Rnd/rndanimfilter.cpp"),
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
@@ -283,7 +285,10 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndtransproxy.cpp"),
             Object(NonMatching, "rb3/Rnd/rndcubetex.cpp"),
             Object(NonMatching, "rb3/Rnd/rndfur.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndset.cpp"),
             Object(NonMatching, "rb3/Rnd/rndambientocclusion.cpp"),
+
+            Object(Matching, "rb3/shaderoptions.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
@@ -393,6 +398,8 @@ config.libs = [
             Object(NonMatching, "rb3/crowdaudio.cpp"),
             Object(NonMatching, "rb3/overshelldir.cpp"),
 
+            Object(NonMatching, "rb3/objectdir.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),
@@ -425,7 +432,6 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_80324AFC.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C91C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C9F8.cpp"),

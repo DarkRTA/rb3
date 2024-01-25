@@ -385,8 +385,9 @@ rb3/yy.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-rb3/unknown/803/unk_80324AFC.cpp:
-	.text       start:0x8032553C end:0x8032D90C
+rb3/objectdir.cpp:
+	.text       start:0x8032553C end:0x8032DA70
+	.ctors      start:0x807EFF18 end:0x807EFF1C
 
 rb3/dirunloader.cpp:
 	.text       start:0x8033106C end:0x80331D40
@@ -586,6 +587,7 @@ rb3/unknown/805/unk_80567E84.cpp:
 
 rb3/uipanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
+	.data       start:0x80892058 end:0x80892130
 
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x8057464C end:0x80581A8C
@@ -612,10 +614,11 @@ rb3/Rnd/rnddir.cpp:
 rb3/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
 	.data       start:0x80895410 end:0x808954D0
+	.bss        start:0x809891B8 end:0x809891C0
 
 rb3/Rnd/rnddrawable.cpp:
 	.text       start:0x805D6130 end:0x805D7408
-	.data       start:0x808955A8 end:0x808955B0
+	.data       start:0x808954D8 end:0x808955C8
 
 rb3/Rnd/rndenviron.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
@@ -678,6 +681,15 @@ rb3/Rnd/rnd.cpp:
 
 rb3/Rnd/rndscreenmask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
+
+rb3/Rnd/rndset.cpp:
+	.text       start:0x8063E82C end:0x8063F1B0
+
+rb3/shaderoptions.cpp:
+	.text       start:0x8063F1B0 end:0x8063F464
+	.ctors      start:0x807F000C end:0x807F0010
+	.data       start:0x80899360 end:0x80899860
+	.bss        start:0x8098D4F8 end:0x8098D560
 
 rb3/Rnd/rndtex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
