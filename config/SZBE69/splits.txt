@@ -681,6 +681,13 @@ rb3/Rnd/rnd.cpp:
 rb3/Rnd/rndscreenmask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
 
+rb3/Rnd/rndset.cpp:
+	.text       start:0x8063E82C end:0x8063F1B0
+
+rb3/shaderoptions.cpp:
+	.text       start:0x8063F1B0 end:0x8063F464
+	.ctors      start:0x807F000C end:0x807F0010
+
 rb3/Rnd/rndtex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
 	.data       start:0x80899860 end:0x80899B30

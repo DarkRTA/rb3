@@ -283,7 +283,10 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndtransproxy.cpp"),
             Object(NonMatching, "rb3/Rnd/rndcubetex.cpp"),
             Object(NonMatching, "rb3/Rnd/rndfur.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndset.cpp"),
             Object(NonMatching, "rb3/Rnd/rndambientocclusion.cpp"),
+
+            Object(NonMatching, "rb3/shaderoptions.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
