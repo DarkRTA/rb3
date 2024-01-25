@@ -385,8 +385,9 @@ rb3/yy.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-rb3/unknown/803/unk_80324AFC.cpp:
-	.text       start:0x8032553C end:0x8032D90C
+rb3/objectdir.cpp:
+	.text       start:0x8032553C end:0x8032DA70
+	.ctors      start:0x807EFF18 end:0x807EFF1C
 
 rb3/dirunloader.cpp:
 	.text       start:0x8033106C end:0x80331D40

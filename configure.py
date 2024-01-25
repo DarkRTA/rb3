@@ -393,6 +393,8 @@ config.libs = [
             Object(NonMatching, "rb3/crowdaudio.cpp"),
             Object(NonMatching, "rb3/overshelldir.cpp"),
 
+            Object(NonMatching, "rb3/objectdir.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),
@@ -425,7 +427,6 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_80324AFC.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C91C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C9F8.cpp"),

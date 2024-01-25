@@ -101,17 +101,6 @@ namespace Hmx {
     };
 }
 
-class ObjectDir : public virtual Hmx::Object {
-public:
-    // Hmx::Object* innerObj;
-    ObjectDir();
 
-    static ObjectDir* sMainDir;
-
-    Hmx::Object* FindObject(const char*, bool);
-};
-
-ObjectDir* GetObjectDir(DataNode*, DataArray*);
-ObjectDir* GetObjectDirAtIndex(DataArray*, int);
 
 #endif
