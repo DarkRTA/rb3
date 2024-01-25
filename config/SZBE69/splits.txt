@@ -586,6 +586,7 @@ rb3/unknown/805/unk_80567E84.cpp:
 
 rb3/uipanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
+	.data       start:0x80892058 end:0x80892130
 
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x8057464C end:0x80581A8C

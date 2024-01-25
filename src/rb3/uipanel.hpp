@@ -31,17 +31,18 @@ public:
     virtual void UnknownUIPanelMethod(); // fn_80573920
     virtual void FinishLoad();
 
+    void CheckLoad();
     void CheckUnload();
 
-    int unk8; // some class with virtual methods
+    int panel; // should be a PanelDir*
     int unkc; // probably another class with virtual methods
     String focus;
     int unk1c;
-    bool unk20;
-    bool paused; // paused?
-    bool showing; // showing
-    bool forceExit; // force exit?
-    int refCount; // reference count?
+    bool loaded;
+    bool paused;
+    bool showing;
+    bool forceExit;
+    int refCount;
     FilePath fpath;
     int unk34;
 };
