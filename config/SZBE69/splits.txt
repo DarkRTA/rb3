@@ -293,6 +293,9 @@ rb3/system.cpp:
 	.text       start:0x8030DC60 end:0x8030F4F0
 	.ctors      start:0x807EFEF4 end:0x807EFEF8
 
+rb3/unknown/803/unk_8030F4F0.cpp:
+	.text       start:0x8030F4F0 end:0x80311394
+
 rb3/unknown/803/unk_8031144C.cpp:
 	.text       start:0x8031144C end:0x80312A78
 
