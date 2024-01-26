@@ -1,6 +1,8 @@
 #include "system.hpp"
 #include "symbols.hpp"
 
+extern int StubOne();
+
 extern DataArray* gSystemConfig;
 extern char* gNullStr;
 
@@ -9,6 +11,15 @@ Symbol gSystemLanguage;
 
 DataNode OnSystemLanguage(DataArray* da){
     return DataNode(gSystemLanguage);
+}
+
+DataNode OnSystemExec(DataArray* da){
+    da->GetStrAtIndex(1);
+    return DataNode(SystemExec());
+}
+
+DataNode OnUsingCD(DataArray* da){
+    return DataNode(StubOne());
 }
 
 DataNode OnSupportedLanguages(DataArray* da){
@@ -77,9 +88,7 @@ Symbol SystemLanguage(){
 
 DataArray* SupportedLanguages(bool b){
     static Symbol sys("system");
-    Symbol toSearch = b ? SymCheatSupported : SymSupported;
-    DataArray* cfg = SystemConfig(sys, toSearch, SymLanguage);
-    return cfg->GetArrayAtIndex(1);
+    return SystemConfig(sys, SymLanguage, b ? SymCheatSupported : SymSupported)->GetArrayAtIndex(1);
 }
 
 bool IsSupportedLanguage(Symbol s, bool b){
@@ -88,4 +97,8 @@ bool IsSupportedLanguage(Symbol s, bool b){
         if(languages->GetSymAtIndex(i) == s) return true;
     }
     return false;
+}
+
+int SystemExec(){
+    return -1;
 }
