@@ -1,6 +1,7 @@
 #include "data.hpp"
 #include "hmx/object.hpp"
 #include "varstack.hpp"
+#include "datautil.hpp"
 
 void DataMergeTags(DataArray *da, DataArray *db) {
     if (da == 0 || db == 0 || db == da) {
@@ -8,7 +9,7 @@ void DataMergeTags(DataArray *da, DataArray *db) {
     } else
         for (int i = 0; i < db->GetNodeCount(); i++) {
             DataNode *dn_b = db->GetNodeAtIndex(i);
-            if (dn_b->GetType() == 0x10) {
+            if (dn_b->GetType() == kDataArray) {
                 DataArray *inner_arr = dn_b->value.dataArray;
                 if (inner_arr->GetNodeCount() != 0) {
                     DataArray *found = da->FindArray(
@@ -31,7 +32,7 @@ void DataReplaceTags(DataArray *da, DataArray *db) {
     }
     for (int i = 0; i < da->GetNodeCount(); i++) {
         DataNode *dn_a = da->GetNodeAtIndex(i);
-        if (dn_a->GetType() == 0x10) {
+        if (dn_a->GetType() == kDataArray) {
             DataArray *inner_arr = dn_a->value.dataArray;
             if (inner_arr->GetNodeCount() != 0) {
                 DataArray *found =

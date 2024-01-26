@@ -3,8 +3,11 @@
 #include "system.hpp"
 #include "data.hpp"
 #include "symbols.hpp"
+#include "messages.hpp"
 #include "platformmgr.hpp"
 #include "messages/modechangedmsg.hpp"
+#include "hmx/object.hpp"
+#include "datautil.hpp"
 
 GameMode* TheGameMode;
 
@@ -39,6 +42,15 @@ DataNode GameMode::OnSetMode(const DataArray* da){
     da->GetNodeCount();
     SetMode(da->GetSymAtIndex(2));
     return DataNode(0);
+}
+
+void GameMode::SetMode(Symbol mode){
+    if(curMode = mode) return;
+    else {
+        DataArray* cfg = SystemConfig("modes");
+        Hmx::Object::HandleType(MsgExit.GetArray());
+        curMode = mode;
+    }
 }
 
 ModeChangedMsg::ModeChangedMsg() : Message(Type()) {
