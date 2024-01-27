@@ -10,6 +10,7 @@
 #include "datautil.hpp"
 
 GameMode* TheGameMode;
+extern PlatformMgr ThePlatformMgr;
 
 void GameModeInit(){
     TheGameMode = new GameMode();
@@ -45,11 +46,44 @@ DataNode GameMode::OnSetMode(const DataArray* da){
 }
 
 void GameMode::SetMode(Symbol mode){
-    if(curMode = mode) return;
+    if(curMode == mode) return;
     else {
         DataArray* cfg = SystemConfig("modes");
         Hmx::Object::HandleType(MsgExit.GetArray());
         curMode = mode;
+        DataArray* cloned = cfg->FindArray(curMode, true)->Clone(true, false, 0);
+        DataArray* parentFound = cloned->FindArray(SymParentOnly, false);
+        if(parentFound != 0){
+            cloned->FindArray(SymParentOnly, true)->GetIntAtIndex(1);
+        }
+        Symbol iter = curMode;
+        while(cfg->FindArray(iter, true)->FindArray(SymParentMode, false) != 0){
+            iter = cfg->FindArray(iter, true)->FindArray(SymParentMode, true)->GetSymAtIndex(1);
+            DataMergeTags(parentFound, cfg->FindArray(iter, true));
+        }
+        DataMergeTags(parentFound, cfg->FindArray("defaults", true));
+        SetTypeDef(parentFound);
+        parentFound->DecRefCount();
+        Hmx::Object::HandleType(MsgEnter.GetArray());
+        ThePlatformMgr.SetUnkCE55(Property("online_play_required", true)->Int(0));
+        unk20 = Property("enable_overdrive", true)->Int(0);
+        unk2c = InMode("h2h");
+        unk30 = InMode("practice");
+        unk34 = Property("can_lose", true)->Int(0);
+        unk3c = Property("crowd_reacts", true)->Int(0);
+        unk40 = Property("is_solo", true)->Int(0);
+        unk44 = Property("disable_guitar_fx", true)->Int(0);
+        unk48 = InMode("drum_trainer");
+        unk50 = Property("enable_streak", true)->Int(0);
+        unk58 = InMode("tutorial");
+        unk5c = Property("load_chars", true)->Int(0);
+        unk60 = Property("show_stars", true)->Int(0);
+        unk64 = Property("has_song_sections", true)->Int(0);
+        unk68 = Property("enable_whammy", true)->Int(0);
+        unk6c = Property("end_with_song", true)->Int(0);
+        unk70 = InMode("story");
+        static ModeChangedMsg msg;
+        MsgSource::Handle(msg.GetArray(), false);
     }
 }
 

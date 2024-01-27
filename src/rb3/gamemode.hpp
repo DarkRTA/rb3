@@ -14,6 +14,7 @@ public:
     DataNode OnSetMode(const DataArray*);
 
     Symbol curMode;
+    int unk20, unk24, unk28, unk2c, unk30, unk34, unk38, unk3c, unk40, unk44, unk48, unk4c, unk50, unk54, unk58, unk5c, unk60, unk64, unk68, unk6c, unk70;
 };
 
 void GameModeInit();
