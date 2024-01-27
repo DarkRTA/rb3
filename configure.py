@@ -412,6 +412,7 @@ config.libs = [
             Object(NonMatching, "rb3/midiparser.cpp"),
             Object(NonMatching, "rb3/uilist.cpp"),
             Object(NonMatching, "rb3/uilistwidget.cpp"),
+            Object(NonMatching, "rb3/uipicture.cpp"),
 
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),
