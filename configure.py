@@ -404,6 +404,16 @@ config.libs = [
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),
 
+            Object(NonMatching, "rb3/micinputarrow.cpp"),
+            Object(NonMatching, "rb3/minileaderboarddisplay.cpp"),
+            Object(NonMatching, "rb3/streakmeter.cpp"),
+            Object(NonMatching, "rb3/overdrivemeter.cpp"),
+            Object(NonMatching, "rb3/gemtrackdir.cpp"),
+
+            Object(NonMatching, "rb3/tasks.cpp"),
+            Object(NonMatching, "rb3/textfile2.cpp"),
+            Object(NonMatching, "rb3/typeprops.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),

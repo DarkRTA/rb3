@@ -63,6 +63,18 @@ void TypeProps::InsertArrayValue(Symbol s, int i, const DataNode& node, DataArra
     }
 }
 
+DataNode* TypeProps::KeyValue(Symbol s, bool b){
+    if(data != nullptr){
+        for(int i = data->GetNodeCount() - 2; i >= 0; i-=2){
+            const char* sym_str = s.Str();
+            if(data->GetDataNodeValueAtIndex(i).strVal == sym_str){
+                return data->GetNodeAtIndex(i + 1);
+            }
+        }
+    }
+    return nullptr;
+}
+
 void TypeProps::ReplaceObject(DataNode& dn, Hmx::Object* obj1, Hmx::Object* obj2, ObjRef* ref){
     Hmx::Object* obj_loc = dn.value.objVal;
     if(obj_loc == obj1){

@@ -407,8 +407,18 @@ rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
+rb3/tasks.cpp:
+	.text       start:0x803395AC end:0x8033C93C
+	.ctors      start:0x807EFF24 end:0x807EFF28
+
+rb3/textfile2.cpp:
+	.text       start:0x8033C93C end:0x8033D038
+
+rb3/typeprops.cpp:
+	.text       start:0x8033D038 end:0x8033DE38
+
 rb3/unknown/803/unk_8033C8F0.cpp:
-	.text       start:0x8033C8F0 end:0x80340E40
+	.text       start:0x8033DE38 end:0x80340E40
 
 rb3/beatmap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
@@ -569,8 +579,24 @@ libs/zlib/inffast.c:
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
+rb3/micinputarrow.cpp:
+	.text       start:0x80420108 end:0x804213CC
+	.ctors      start:0x807EFF98 end:0x807EFF9C
+
+rb3/minileaderboarddisplay.cpp:
+	.text       start:0x804213CC end:0x80421CA4
+
+rb3/streakmeter.cpp:
+	.text       start:0x80421CA4 end:0x804260A4
+
+rb3/overdrivemeter.cpp:
+	.text       start:0x804260A4 end:0x80426FDC
+
+rb3/gemtrackdir.cpp:
+	.text       start:0x80426FDC end:0x80430F2C
+
 rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80421240 end:0x80449EC8
+	.text       start:0x80430F2C end:0x80449EC8
 
 rb3/crowdaudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
