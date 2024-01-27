@@ -35,7 +35,7 @@ public:
     void CheckUnload();
 
     int panel; // should be a PanelDir*
-    int unkc; // probably another class with virtual methods
+    int unkc; // should be a DirLoader*
     String focus;
     int unk1c;
     bool loaded;

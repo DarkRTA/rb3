@@ -64,7 +64,7 @@ namespace Hmx {
         virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
         virtual void Load(BinStream&);
         virtual void Print(){} // links to fn_8076F540, which returns void
-        virtual void Export(){} // links to fn_8076F540, which returns void
+        virtual void Export(DataArray*, bool){} // links to fn_8076F540, which returns void
         virtual void V_Unk14(){} // links to fn_8076F540, which returns void
         virtual void V_Unk15(){} // links to fn_8076F540, which returns void
         virtual void SetTypeDef(DataArray *);

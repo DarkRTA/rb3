@@ -145,6 +145,7 @@ rb3/gamemicmanager.cpp:
 
 rb3/gamemode.cpp:
 	.text       start:0x8011AF08 end:0x8011BA2C
+	.data       start:0x80833390 end:0x80833570
 
 rb3/gamepanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
@@ -288,6 +289,13 @@ rb3/wiinetworksocket.cpp:
 
 rb3/unknown/803/unk_8030A494.cpp:
 	.text       start:0x8030A494 end:0x8030DBF8
+
+rb3/system.cpp:
+	.text       start:0x8030DC60 end:0x8030F4F0
+	.ctors      start:0x807EFEF4 end:0x807EFEF8
+
+rb3/unknown/803/unk_8030F4F0.cpp:
+	.text       start:0x8030F4F0 end:0x80311394
 
 rb3/unknown/803/unk_8031144C.cpp:
 	.text       start:0x8031144C end:0x80312A78

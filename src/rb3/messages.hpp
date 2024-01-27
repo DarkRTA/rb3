@@ -1,5 +1,5 @@
-#ifndef RB3_SYMBOLS_HPP
-#define RB3_SYMBOLS_HPP
+#ifndef RB3_MESSAGES_HPP
+#define RB3_MESSAGES_HPP
 
 #include "symbols/messageset1.hpp"
 #include "symbols/messageset2.hpp"

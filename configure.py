@@ -381,7 +381,10 @@ config.libs = [
             Object(NonMatching, "rb3/chordbookpanel.cpp"),
             Object(NonMatching, "rb3/bandusermgr.cpp"),
             Object(NonMatching, "rb3/gamemicmanager.cpp"),
-            Object(NonMatching, "rb3/gamemode.cpp"),
+
+            # should link, but having issues with the string base in ModeChangedMsg::Type
+            Object(LinkIssues, "rb3/gamemode.cpp"),
+
             Object(NonMatching, "rb3/gamepanel.cpp"),
             Object(NonMatching, "rb3/charactercreatorpanel.cpp"),
             Object(NonMatching, "rb3/campaignsonginfopanel.cpp"),
@@ -399,6 +402,7 @@ config.libs = [
             Object(NonMatching, "rb3/overshelldir.cpp"),
 
             Object(NonMatching, "rb3/objectdir.cpp"),
+            Object(NonMatching, "rb3/system.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -441,6 +445,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/803/unk_8037A3D8.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8037AD40.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8031144C.cpp"),
+            Object(NonMatching, "rb3/unknown/803/unk_8030F4F0.cpp"),
 
             Object(NonMatching, "rb3/unknown/804/unk_80421240.cpp"),
 
