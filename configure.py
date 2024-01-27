@@ -409,6 +409,9 @@ config.libs = [
             Object(NonMatching, "rb3/parentalcontrolpanel.cpp"),
             Object(NonMatching, "rb3/passivemessagespanel.cpp"),
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
+            Object(NonMatching, "rb3/midiparser.cpp"),
+            Object(NonMatching, "rb3/uilist.cpp"),
+            Object(NonMatching, "rb3/uilistwidget.cpp"),
 
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),

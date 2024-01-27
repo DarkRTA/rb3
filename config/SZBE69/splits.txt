@@ -639,10 +639,21 @@ rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 
 rb3/unknown/805/unk_8052A44C.cpp:
-	.text       start:0x8052A44C end:0x80531474
+	.text       start:0x8052A44C end:0x8052D22C
+
+rb3/midiparser.cpp:
+	.text       start:0x8052D22C end:0x80531574
+	.ctors      start:0x807EFFBC end:0x807EFFC0
+
+rb3/uilist.cpp:
+	.text       start:0x805618F0 end:0x80568048
+	.ctors      start:0x807EFFC8 end:0x807EFFCC
 
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x80567E84 end:0x805732E0
+	.text       start:0x80568048 end:0x805715CC
+
+rb3/uilistwidget.cpp:
+	.text       start:0x805715CC end:0x805732E0
 
 rb3/uipanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
