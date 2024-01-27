@@ -381,7 +381,10 @@ config.libs = [
             Object(NonMatching, "rb3/chordbookpanel.cpp"),
             Object(NonMatching, "rb3/bandusermgr.cpp"),
             Object(NonMatching, "rb3/gamemicmanager.cpp"),
-            Object(NonMatching, "rb3/gamemode.cpp"),
+
+            # should link, but having issues with the string base in ModeChangedMsg::Type
+            Object(LinkIssues, "rb3/gamemode.cpp"),
+
             Object(NonMatching, "rb3/gamepanel.cpp"),
             Object(NonMatching, "rb3/charactercreatorpanel.cpp"),
             Object(NonMatching, "rb3/campaignsonginfopanel.cpp"),

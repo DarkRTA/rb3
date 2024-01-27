@@ -52,18 +52,17 @@ void GameMode::SetMode(Symbol mode){
         Hmx::Object::HandleType(MsgExit.GetArray());
         curMode = mode;
         DataArray* cloned = cfg->FindArray(curMode, true)->Clone(true, false, 0);
-        DataArray* parentFound = cloned->FindArray(SymParentOnly, false);
-        if(parentFound != 0){
+        if(cloned->FindArray(SymParentOnly, false) != 0){
             cloned->FindArray(SymParentOnly, true)->GetIntAtIndex(1);
         }
         Symbol iter = curMode;
         while(cfg->FindArray(iter, true)->FindArray(SymParentMode, false) != 0){
             iter = cfg->FindArray(iter, true)->FindArray(SymParentMode, true)->GetSymAtIndex(1);
-            DataMergeTags(parentFound, cfg->FindArray(iter, true));
+            DataMergeTags(cloned, cfg->FindArray(iter, true));
         }
-        DataMergeTags(parentFound, cfg->FindArray("defaults", true));
-        SetTypeDef(parentFound);
-        parentFound->DecRefCount();
+        DataMergeTags(cloned, cfg->FindArray("defaults", true));
+        SetTypeDef(cloned);
+        cloned->DecRefCount();
         Hmx::Object::HandleType(MsgEnter.GetArray());
         ThePlatformMgr.SetUnkCE55(Property("online_play_required", true)->Int(0));
         unk20 = Property("enable_overdrive", true)->Int(0);
