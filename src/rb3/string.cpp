@@ -3,7 +3,7 @@
 #include "unknown.hpp"
 #include "string.h"
 #include "symbol.hpp"
-#include "jsonconverter.hpp"
+#include "jsonobjects.hpp"
 
 extern char lbl_808E4560; // RB2 marks this as "gEmpty"
 
