@@ -180,6 +180,15 @@ rb3/closetpanel.cpp:
 rb3/contentdeletepanel.cpp:
 	.text       start:0x801F9774 end:0x801FA240
 
+rb3/criticaluserlistener.cpp:
+	.text       start:0x801FCC20 end:0x801FD254
+
+rb3/currentoutfitprovider.cpp:
+	.text       start:0x801FD254 end:0x801FD6B0
+
+rb3/unknown/801/unk_801FCC20.cpp:
+	.text       start:0x801FD6B0 end:0x8022BE70
+
 rb3/unknown/802/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8023FCAC
 

@@ -428,6 +428,9 @@ config.libs = [
             Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/typeprops.cpp"),
 
+            Object(NonMatching, "rb3/criticaluserlistener.cpp"),
+            Object(NonMatching, "rb3/currentoutfitprovider.cpp"),
+
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),
@@ -443,6 +446,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/801/unk_8011AED8.cpp"),
             Object(NonMatching, "rb3/unknown/801/unk_801660DC.cpp"),
             Object(NonMatching, "rb3/unknown/801/unk_80188850.cpp"),
+            Object(NonMatching, "rb3/unknown/801/unk_801FCC20.cpp"),
 
             Object(NonMatching, "rb3/unknown/802/unk_8022BE84.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_80252B98.cpp"),
