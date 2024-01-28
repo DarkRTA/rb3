@@ -398,15 +398,12 @@ rb3/datanode.cpp:
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 
-rb3/textfile.cpp:
-	.text       start:0x803242CC end:0x8032443C
+rb3/datautil.cpp:
+	.text       start:0x803242CC end:0x80324B4C
+	.ctors      start:0x807EFF14 end:0x807EFF18
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
-
-rb3/datautil.cpp:
-	.text       start:0x8032443C end:0x80324B4C
-	.ctors      start:0x807EFF14 end:0x807EFF18
 
 rb3/yy.c:
 	.text       start:0x80324B4C end:0x8032553C
@@ -433,7 +430,7 @@ rb3/tasks.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
 
-rb3/textfile2.cpp:
+rb3/textfile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 
 rb3/typeprops.cpp:

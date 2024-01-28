@@ -335,7 +335,6 @@ config.libs = [
             Object(NonMatching, "rb3/datanode.cpp"),
             Object(NonMatching, "rb3/datautil.cpp"),
 
-            Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/bytegrinder.cpp"),
             Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
             Object(NonMatching, "rb3/uistats.cpp"),
@@ -426,7 +425,7 @@ config.libs = [
             Object(NonMatching, "rb3/gemtrackdir.cpp"),
 
             Object(NonMatching, "rb3/tasks.cpp"),
-            Object(NonMatching, "rb3/textfile2.cpp"),
+            Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/typeprops.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
