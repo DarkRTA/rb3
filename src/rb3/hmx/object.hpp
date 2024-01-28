@@ -104,6 +104,8 @@ namespace Hmx {
         DataNode OnIterateRefs(const DataArray*);
         ObjectDir* GetObjectDir();
         DataNode HandleType(DataArray*);
+
+        DataNode OnGetArray(const DataArray*, Symbol);
     };
 }
 
