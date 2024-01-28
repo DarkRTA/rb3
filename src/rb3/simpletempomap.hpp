@@ -4,13 +4,14 @@
 
 class SimpleTempoMap : public TempoMap {
 public:
-    SimpleTempoMap(float); // fn_8037A49C
+    SimpleTempoMap(float f){ ms_per_tick = f / 480.0f; } // fn_8037A49C
     virtual ~SimpleTempoMap(){} // fn_8037A410
-    virtual double TickToTime(float) const; // fn_8037A4FC
-    virtual double TimeToTick(float) const; // fn_8037A508
-    virtual float GetTempo(int) const; // fn_8037A514
-    virtual int GetTempoUSecs(int i); // fn_8037A548
-    virtual double GetTempoBPM(int) const; // fn_8037A528
+    virtual double TickToTime(float f) const { return f * ms_per_tick; } // fn_8037A4FC
+    virtual double TimeToTick(float f) const { return f / ms_per_tick; } // fn_8037A508
+    virtual float GetTempo(int) const { return 480.0f * ms_per_tick; } // fn_8037A514
+    virtual double GetTempoBPM(int) const { return 60000.0f / (480.0f * ms_per_tick); } // fn_8037A528
+    virtual int GetTempoUSecs(int i) { return GetTempo(i) * 1000.0f; } // fn_8037A548
+    
     virtual int GetNumTempoChangePoints() const { return 1; } // fn_8000F90C, returns 1 -
                                                  // GetNumTempoChangePoints
     virtual int GetTempoChangePoint(int) const { return 0; } // links to fn_8077BAA0, which returns 0 -

@@ -248,7 +248,7 @@ config.libs = [
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
 
-            Object(Matching, "rb3/stubone.c"),
+            Object(Matching, "rb3/stubone.cpp"),
 
             # These functions match 100%, but won't link because the .data isn't being allocated correctly (the vtable/RTTI are off)
             Object(LinkIssues, "rb3/dofproc.cpp", extra_cflags=["-str nopool"]),
