@@ -14,9 +14,15 @@ namespace Hmx { class Object; }
 
 enum PropOp { i, d, k, l, m, a, o };
 
+/** A dictionary representing the different properties an Object can have. */
 class TypeProps {
 public:
-    DataArray *data;
+    /** The DataArray structure representing the property dictionary.
+        Rather than an std::map or a dictionary from a language like Python,
+        the dictionary is laid out in one continuous DataArray, in the style of:
+        (key1 value1 key2 value2 key3 value3).
+        Each key is a Symbol type, while each value is a DataNode type. */
+    DataArray *data; // TODO: rename this to dataDict, dtaDict, or any verbose member name tbh
 
     TypeProps();
     ~TypeProps();
