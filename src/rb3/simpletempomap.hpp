@@ -2,7 +2,7 @@
 #define RB3_SIMPLETEMPOMAP_HPP
 #include "tempomap.hpp"
 
-class SimpleTempoMap : TempoMap {
+class SimpleTempoMap : public TempoMap {
 public:
     SimpleTempoMap(float); // fn_8037A49C
     virtual ~SimpleTempoMap(); // fn_8037A410

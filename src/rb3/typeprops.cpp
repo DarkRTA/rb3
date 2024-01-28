@@ -64,8 +64,8 @@ void TypeProps::SetKeyValue(Symbol s, const DataNode& node, bool b, ObjRef* ref)
         Hmx::Object* obj = node.value.objVal;
         if(obj != 0) obj->AddRef(ref);
     }
-    if(data == 0){
-        data = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2); // dw about this, i couldn't get the placement new thing working on decomp.me
+    if(data == nullptr){
+        data = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2);
         data->GetNodeAtIndex(0)->operator=(s);
         data->GetNodeAtIndex(1)->operator=(node);
     }
@@ -73,7 +73,8 @@ void TypeProps::SetKeyValue(Symbol s, const DataNode& node, bool b, ObjRef* ref)
         int nodeCnt = data->GetNodeCount();
 
         for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
-            if(s.Str() == data->GetDataNodeValueAtIndex(cnt).strVal){
+            const char* sym_str = s.Str();
+            if(data->GetDataNodeValueAtIndex(cnt).strVal == sym_str){
                 DataNode* obj = data->GetNodeAtIndex(cnt + 1);
                 if(obj->GetType() == kDataObject){
                     Hmx::Object* objVal = obj->value.objVal;

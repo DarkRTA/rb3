@@ -1,4 +1,20 @@
 #include "simpletempomap.hpp"
+#include "tempomap.hpp"
+
+TempoMap* TheTempoMap;
+SimpleTempoMap gDefaultTempoMap(1000.0f);
+
+SimpleTempoMap::~SimpleTempoMap(){
+
+}
+
+void SetTheTempoMap(TempoMap* tmap){
+    TheTempoMap = tmap;
+}
+
+void ResetTheTempoMap(){
+    TheTempoMap = &gDefaultTempoMap;
+}
 
 // fn_8037A49C
 SimpleTempoMap::SimpleTempoMap(float f) {
