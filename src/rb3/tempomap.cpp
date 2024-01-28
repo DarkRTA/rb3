@@ -4,10 +4,6 @@
 TempoMap* TheTempoMap;
 SimpleTempoMap gDefaultTempoMap(1000.0f);
 
-SimpleTempoMap::~SimpleTempoMap(){
-
-}
-
 void SetTheTempoMap(TempoMap* tmap){
     TheTempoMap = tmap;
 }
