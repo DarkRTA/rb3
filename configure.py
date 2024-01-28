@@ -243,7 +243,7 @@ config.libs = [
             Object(Matching, "rb3/optioninit.cpp"),
             Object(Matching, "rb3/rand.cpp"),
             Object(Matching, "rb3/rand2.cpp"),
-            Object(NonMatching, "rb3/tempomap.cpp"),
+            Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),

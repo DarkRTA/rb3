@@ -1,7 +1,7 @@
 #include "simpletempomap.hpp"
 #include "tempomap.hpp"
 
-TempoMap* TheTempoMap;
+TempoMap* TheTempoMap = 0;
 SimpleTempoMap gDefaultTempoMap(1000.0f);
 
 void SetTheTempoMap(TempoMap* tmap){

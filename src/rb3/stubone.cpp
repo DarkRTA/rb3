@@ -1,3 +1,3 @@
-int StubOne(){
+__declspec(weak) int StubOne(){
     return 1;
 }
