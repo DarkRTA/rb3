@@ -59,36 +59,34 @@ void TypeProps::InsertArrayValue(Symbol s, int i, const DataNode& node, DataArra
     }
 }
 
-extern void* _PoolAlloc(int, int, int);
-
 void TypeProps::SetKeyValue(Symbol s, const DataNode& node, bool b, ObjRef* ref){
     if(b && node.GetType() == kDataObject){
         Hmx::Object* obj = node.value.objVal;
-        if(obj != nullptr) obj->AddRef(ref);
+        if(obj != 0) obj->AddRef(ref);
     }
-    if(data == nullptr){
-        data = new (_PoolAlloc(0x10, 0x10, 1)) DataArray(2);
+    if(data == 0){
+        data = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2); // dw about this, i couldn't get the placement new thing working on decomp.me
         data->GetNodeAtIndex(0)->operator=(s);
         data->GetNodeAtIndex(1)->operator=(node);
     }
     else {
         int nodeCnt = data->GetNodeCount();
-        int cnt = nodeCnt - 2;
 
-        while(data->GetDataNodeValueAtIndex(cnt).strVal != s.Str()){
-            if(cnt < 0){
-                data->Resize(nodeCnt + 2);
-                data->GetNodeAtIndex(nodeCnt)->operator=(DataNode(s));
-                data->GetNodeAtIndex(nodeCnt + 1)->operator=(node);
+        for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
+            if(s.Str() == data->GetDataNodeValueAtIndex(cnt).strVal){
+                DataNode* obj = data->GetNodeAtIndex(cnt + 1);
+                if(obj->GetType() == kDataObject){
+                    Hmx::Object* objVal = obj->value.objVal;
+                    if(objVal != 0) objVal->Release(ref);
+                }
+                *obj = node;
+                return;
             }
-            cnt -= 2;
         }
         
-        DataNode* obj = data->GetNodeAtIndex(cnt - 1);
-        if(obj->GetType() == kDataObject && obj != 0){
-            obj->value.objVal->Release(ref);
-        }
-        *obj = node;
+        data->Resize(nodeCnt + 2);
+        data->GetNodeAtIndex(nodeCnt)->operator=(DataNode(s));
+        data->GetNodeAtIndex(nodeCnt + 1)->operator=(node);
     }
 }
 
