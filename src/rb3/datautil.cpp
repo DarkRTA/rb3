@@ -2,6 +2,7 @@
 #include "hmx/object.hpp"
 #include "varstack.hpp"
 #include "datautil.hpp"
+#include "textfile.hpp"
 
 void DataMergeTags(DataArray *da, DataArray *db) {
     if (da == 0 || db == 0 || db == da) {

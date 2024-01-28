@@ -243,10 +243,12 @@ config.libs = [
             Object(Matching, "rb3/optioninit.cpp"),
             Object(Matching, "rb3/rand.cpp"),
             Object(Matching, "rb3/rand2.cpp"),
-            Object(Matching, "rb3/simpletempomap.cpp"),
+            Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
+
+            Object(Matching, "rb3/stubone.cpp"),
 
             # These functions match 100%, but won't link because the .data isn't being allocated correctly (the vtable/RTTI are off)
             Object(LinkIssues, "rb3/dofproc.cpp", extra_cflags=["-str nopool"]),
@@ -333,7 +335,6 @@ config.libs = [
             Object(NonMatching, "rb3/datanode.cpp"),
             Object(NonMatching, "rb3/datautil.cpp"),
 
-            Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/bytegrinder.cpp"),
             Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
             Object(NonMatching, "rb3/uistats.cpp"),
@@ -398,11 +399,34 @@ config.libs = [
             Object(NonMatching, "rb3/freestylepanel.cpp"),
             Object(NonMatching, "rb3/songsectioncontroller.cpp"),
             Object(NonMatching, "rb3/unisonicon.cpp"),
+            Object(NonMatching, "rb3/crowdmetericon.cpp"),
             Object(NonMatching, "rb3/crowdaudio.cpp"),
             Object(NonMatching, "rb3/overshelldir.cpp"),
+            Object(NonMatching, "rb3/profilemgr.cpp"),
+            Object(NonMatching, "rb3/retryaudiopanel.cpp"),
+            Object(NonMatching, "rb3/saveloadstatuspanel.cpp"),
+            Object(NonMatching, "rb3/selectdifficultypanel.cpp"),
+            Object(NonMatching, "rb3/uievent.cpp"),
+            Object(NonMatching, "rb3/parentalcontrolpanel.cpp"),
+            Object(NonMatching, "rb3/passivemessagespanel.cpp"),
+            Object(NonMatching, "rb3/trackpaneldir.cpp"),
+            Object(NonMatching, "rb3/midiparser.cpp"),
+            Object(NonMatching, "rb3/uilist.cpp"),
+            Object(NonMatching, "rb3/uilistwidget.cpp"),
+            Object(NonMatching, "rb3/uipicture.cpp"),
 
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),
+
+            Object(NonMatching, "rb3/micinputarrow.cpp"),
+            Object(NonMatching, "rb3/minileaderboarddisplay.cpp"),
+            Object(NonMatching, "rb3/streakmeter.cpp"),
+            Object(NonMatching, "rb3/overdrivemeter.cpp"),
+            Object(NonMatching, "rb3/gemtrackdir.cpp"),
+
+            Object(NonMatching, "rb3/tasks.cpp"),
+            Object(NonMatching, "rb3/textfile.cpp"),
+            Object(NonMatching, "rb3/typeprops.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -422,7 +446,6 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/802/unk_8022BE84.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_80252B98.cpp"),
-            Object(NonMatching, "rb3/unknown/802/unk_802960B0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802D4B74.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802E0CA0.cpp"),

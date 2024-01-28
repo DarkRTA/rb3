@@ -184,13 +184,104 @@ DataNode Hmx::Object::HandleType(DataArray* da){
     else return DataNode(kDataUnhandled, 0);
 }
 
-extern "C" DataNode fn_80335D50(Hmx::Object*, DataArray*, Symbol);
-extern "C" void fn_8033634C(Hmx::Object*, DataArray*);
 extern bool IsASubclass(Symbol, Symbol);
-extern "C" char* fn_80336C64(Hmx::Object*);
 extern char* PathName(const Hmx::Object*);
 
 // see scratch: https://decomp.me/scratch/9abtP
-// DataNode Hmx::Object::Handle(DataArray* da, bool b){
+DataNode Hmx::Object::Handle(DataArray* da, bool b){
+    Symbol sym = da->GetSymAtIndex(1);
+    static Symbol SymGet("get");
+    if(sym == SymGet){
+        DataNode got = OnGet(da);
+        if(got.GetType() != kDataUnhandled) return DataNode(got);
+    }
+    static Symbol SymGetArray("get_array");
+    if(sym == SymGetArray){
+        return OnGetArray(da, da->GetSymAtIndex(2));
+    }
+    static Symbol SymSize("size");
+    if(sym == SymSize){
+        return DataNode(PropertySize(da->GetArrayAtIndex(2)));
+    }
+    static Symbol SymSet("set");
+    if(sym == SymSet){
+        DataNode set = OnSet(da);
+        if(set.GetType() != kDataUnhandled) return DataNode(set);
+    }
+    static Symbol SymInsert("insert");
+    if(sym == SymInsert){
+        InsertProperty(da->GetArrayAtIndex(2), *EvaluateNodeAtIndex(da, 3));
+        return DataNode(0);
+    }
+    static Symbol SymRemove("remove");
+    if(sym == SymRemove){
+        RemoveProperty(da->GetArrayAtIndex(2));
+        return DataNode(0);
+    }
+    static Symbol SymClear("clear");
+    if(sym == SymClear){
+        ClearProperties(da->GetArrayAtIndex(2));
+        return DataNode(0);
+    }
+    static Symbol SymAppend("append");
+    if(sym == SymAppend){
+        DataNode app = OnAppendToArray(da);
+        if(app.GetType() != kDataUnhandled) return DataNode(app);
+    }
+    static Symbol SymHas("has");
+    if(sym == SymHas){
+        return DataNode(Property(da->GetArrayAtIndex(2), false) != 0);
+    }
+    static Symbol SymPropHandle("prop_handle");
+    if(sym == SymPropHandle){
+        return HandleProperty(da, da->GetArrayAtIndex(2), true);
+    }
+    static Symbol SymCopy("copy");
+    if(sym == SymCopy){
+        Copy(da->GetObjAtIndex(2), (CopyType)da->GetIntAtIndex(3));
+        return DataNode(0);
+    }
+    static Symbol SymReplace("replace");
+    if(sym == SymReplace){
+        Replace(da->GetObjAtIndex(2), da->GetObjAtIndex(3));
+        return DataNode(0);
+    }
+    static Symbol SymClassName("class_name");
+    if(sym == SymClassName){
+        return DataNode(ClassName());
+    }
+    static Symbol SymName("name");
+    if(sym == SymName){
+        return DataNode(name);
+    }
+    static Symbol SymIterateRefs("iterate_refs");
+    if(sym == SymIterateRefs){
+        DataNode refs = OnIterateRefs(da);
+        if(refs.GetType() != kDataUnhandled) return DataNode(refs);
+    }
+    static Symbol SymDir("dir");
+    if(sym == SymDir){
 
-// }
+    }
+    static Symbol SymSetName("set_name");
+    if(sym == SymSetName){
+
+    }
+    static Symbol SymSetType("set_type");
+    if(sym == SymSetType){
+        SetType(da->GetSymAtIndex(2));
+        return DataNode(0);
+    }
+    static Symbol SymIsA("is_a");
+    if(sym == SymIsA){
+        return DataNode(IsASubclass(ClassName(), da->GetSymAtIndex(2)));
+    }
+    static Symbol SymGetType("get_type");
+    if(sym == SymGetType){
+        return DataNode(Type());
+    }
+    static Symbol SymGetHeap("get_heap");
+    if(sym == SymGetHeap){
+        
+    }
+}

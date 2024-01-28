@@ -22,6 +22,9 @@ rb3/app.cpp:
 sdk/MSL_C/sdata_1.c:
 	.sdata      start:0x808E3270 end:0x808E3280
 
+rb3/stubone.cpp:
+	.text       start:0x8000F90C end:0x8000F914
+
 rb3/main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
@@ -185,10 +188,29 @@ rb3/overshellpanel.cpp:
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
 rb3/unknown/802/unk_80252B98.cpp:
-	.text       start:0x80252B98 end:0x80266360
+	.text       start:0x80252B98 end:0x80253774
+
+rb3/parentalcontrolpanel.cpp:
+	.text       start:0x80253774 end:0x80253A14
+
+rb3/passivemessagespanel.cpp:
+	.text       start:0x80253A14 end:0x80254530
+
+rb3/profilemgr.cpp:
+	.text       start:0x80260B90 end:0x80266448
+	.ctors      start:0x807EFE78 end:0x807EFE7C
+
+rb3/retryaudiopanel.cpp:
+	.text       start:0x80266448 end:0x802669E4
+
+rb3/saveloadstatuspanel.cpp:
+	.text       start:0x8026D7B0 end:0x8026DEFC
+
+rb3/selectdifficultypanel.cpp:
+	.text       start:0x8026DEFC end:0x8026F090
 
 rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x802663BC end:0x802956CC
+	.text       start:0x8026F090 end:0x802956CC
 
 rb3/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
@@ -200,7 +222,7 @@ rb3/trainingpanel.cpp:
 rb3/ugcpurchasepanel.cpp:
 	.text       start:0x80296BB4 end:0x80297868
 
-rb3/unknown/802/unk_802960B0.cpp:
+rb3/uievent.cpp:
 	.text       start:0x80297868 end:0x8029948C
 
 rb3/uistats.cpp:
@@ -376,15 +398,12 @@ rb3/datanode.cpp:
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 
-rb3/textfile.cpp:
-	.text       start:0x803242CC end:0x8032443C
+rb3/datautil.cpp:
+	.text       start:0x803242CC end:0x80324B4C
+	.ctors      start:0x807EFF14 end:0x807EFF18
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
-
-rb3/datautil.cpp:
-	.text       start:0x8032443C end:0x80324B4C
-	.ctors      start:0x807EFF14 end:0x807EFF18
 
 rb3/yy.c:
 	.text       start:0x80324B4C end:0x8032553C
@@ -407,8 +426,18 @@ rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
+rb3/tasks.cpp:
+	.text       start:0x803395AC end:0x8033C93C
+	.ctors      start:0x807EFF24 end:0x807EFF28
+
+rb3/textfile.cpp:
+	.text       start:0x8033C93C end:0x8033D038
+
+rb3/typeprops.cpp:
+	.text       start:0x8033D038 end:0x8033DE38
+
 rb3/unknown/803/unk_8033C8F0.cpp:
-	.text       start:0x8033C8F0 end:0x80340E40
+	.text       start:0x8033DE38 end:0x80340E40
 
 rb3/beatmap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
@@ -516,10 +545,13 @@ rb3/symbols/symbolset4.cpp:
 	.bss        start:0x80983EB8 end:0x80985918
 
 rb3/unknown/803/unk_8037A3D8.cpp:
-	.text       start:0x8037A3D8 end:0x8037A488
+	.text       start:0x8037A3D8 end:0x8037A410
 
-rb3/simpletempomap.cpp:
-	.text       start:0x8037A49C end:0x8037A58C
+rb3/tempomap.cpp:
+	.text       start:0x8037A410 end:0x8037A58C
+	.ctors      start:0x807EFF7C end:0x807EFF80
+	.data       start:0x80874468 end:0x808744D8
+	.bss        start:0x80985918 end:0x80985920
 
 rb3/textfilestream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
@@ -569,8 +601,30 @@ libs/zlib/inffast.c:
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
+rb3/micinputarrow.cpp:
+	.text       start:0x80420108 end:0x804213CC
+	.ctors      start:0x807EFF98 end:0x807EFF9C
+
+rb3/minileaderboarddisplay.cpp:
+	.text       start:0x804213CC end:0x80421CA4
+
+rb3/streakmeter.cpp:
+	.text       start:0x80421CA4 end:0x804260A4
+
+rb3/overdrivemeter.cpp:
+	.text       start:0x804260A4 end:0x80426FDC
+
+rb3/gemtrackdir.cpp:
+	.text       start:0x80426FDC end:0x80430F2C
+
 rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80421240 end:0x80449EC8
+	.text       start:0x80430F2C end:0x804431F4
+
+rb3/trackpaneldir.cpp:
+	.text       start:0x804431F4 end:0x80448CD0
+
+rb3/crowdmetericon.cpp:
+	.text       start:0x80448CD0 end:0x80449EC8
 
 rb3/crowdaudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
@@ -588,17 +642,31 @@ rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x80522990
 
 rb3/unknown/805/unk_8052A44C.cpp:
-	.text       start:0x8052A44C end:0x80531474
+	.text       start:0x8052A44C end:0x8052D22C
+
+rb3/midiparser.cpp:
+	.text       start:0x8052D22C end:0x80531574
+	.ctors      start:0x807EFFBC end:0x807EFFC0
+
+rb3/uilist.cpp:
+	.text       start:0x805618F0 end:0x80568048
+	.ctors      start:0x807EFFC8 end:0x807EFFCC
 
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x80567E84 end:0x805732E0
+	.text       start:0x80568048 end:0x805715CC
+
+rb3/uilistwidget.cpp:
+	.text       start:0x805715CC end:0x805732E0
 
 rb3/uipanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
 
+rb3/uipicture.cpp:
+	.text       start:0x8057464C end:0x80575698
+
 rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x8057464C end:0x80581A8C
+	.text       start:0x80575698 end:0x80581A8C
 
 rb3/Rnd/rndanimatable.cpp:
 	.text       start:0x805C6814 end:0x805C8850
