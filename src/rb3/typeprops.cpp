@@ -1,16 +1,14 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
 #include "formatstring.hpp"
+#include <new>
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
     DataNode* kv = KeyValue(s, false);
     DataArray* ret;
     if(kv == nullptr){
         DataArray* yuh = da->FindArray(s, true)->GetArrayAtIndex(1)->Clone(true, false, 0);
-        {
-        const DataNode turnt(yuh, kDataArray);
-        SetKeyValue(s, turnt, true, ref);
-        }
+        SetKeyValue(s, DataNode(yuh, kDataArray), true, ref);
         yuh->DecRefCount();
         ret = yuh;
     }
@@ -58,6 +56,39 @@ void TypeProps::InsertArrayValue(Symbol s, int i, const DataNode& node, DataArra
         if(obj != nullptr){
             obj->AddRef(ref);
         }
+    }
+}
+
+extern void* _PoolAlloc(int, int, int);
+
+void TypeProps::SetKeyValue(Symbol s, const DataNode& node, bool b, ObjRef* ref){
+    if(b && node.GetType() == kDataObject){
+        Hmx::Object* obj = node.value.objVal;
+        if(obj != nullptr) obj->AddRef(ref);
+    }
+    if(data == nullptr){
+        data = new (_PoolAlloc(0x10, 0x10, 1)) DataArray(2);
+        data->GetNodeAtIndex(0)->operator=(s);
+        data->GetNodeAtIndex(1)->operator=(node);
+    }
+    else {
+        int nodeCnt = data->GetNodeCount();
+        int cnt = nodeCnt - 2;
+
+        while(data->GetDataNodeValueAtIndex(cnt).strVal != s.Str()){
+            if(cnt < 0){
+                data->Resize(nodeCnt + 2);
+                data->GetNodeAtIndex(nodeCnt)->operator=(DataNode(s));
+                data->GetNodeAtIndex(nodeCnt + 1)->operator=(node);
+            }
+            cnt -= 2;
+        }
+        
+        DataNode* obj = data->GetNodeAtIndex(cnt - 1);
+        if(obj->GetType() == kDataObject && obj != 0){
+            obj->value.objVal->Release(ref);
+        }
+        *obj = node;
     }
 }
 
