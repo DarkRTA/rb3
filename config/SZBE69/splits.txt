@@ -186,8 +186,29 @@ rb3/criticaluserlistener.cpp:
 rb3/currentoutfitprovider.cpp:
 	.text       start:0x801FD254 end:0x801FD6B0
 
+rb3/customizepanel.cpp:
+	.text       start:0x801FD6B0 end:0x80201BA0
+
+rb3/cymbalselectionprovider.cpp:
+	.text       start:0x80201BA0 end:0x80201E24
+
+rb3/editsetlistpanel.cpp:
+	.text       start:0x80201E24 end:0x80203F40
+
+rb3/eventdialogpanel.cpp:
+	.text       start:0x80203F40 end:0x802047A8
+
+rb3/eyebrowsprovider.cpp:
+	.text       start:0x802047A8 end:0x80204A0C
+
+rb3/facehairprovider.cpp:
+	.text       start:0x80204A0C end:0x80204D00
+
+rb3/facetypeprovider.cpp:
+	.text       start:0x80204D00 end:0x80204EE0
+
 rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x801FD6B0 end:0x8022BE70
+	.text       start:0x80204EE0 end:0x8022BE70
 
 rb3/unknown/802/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8023FCAC

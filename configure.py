@@ -430,6 +430,13 @@ config.libs = [
 
             Object(NonMatching, "rb3/criticaluserlistener.cpp"),
             Object(NonMatching, "rb3/currentoutfitprovider.cpp"),
+            Object(NonMatching, "rb3/customizepanel.cpp"),
+            Object(NonMatching, "rb3/cymbalselectionprovider.cpp"),
+            Object(NonMatching, "rb3/editsetlistpanel.cpp"),
+            Object(NonMatching, "rb3/eventdialogpanel.cpp"),
+            Object(NonMatching, "rb3/eyebrowsprovider.cpp"),
+            Object(NonMatching, "rb3/facehairprovider.cpp"),
+            Object(NonMatching, "rb3/facetypeprovider.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
