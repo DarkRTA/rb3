@@ -374,7 +374,7 @@ config.libs = [
             Object(NonMatching, "rb3/bandusermgr.cpp"),
             Object(NonMatching, "rb3/gamemicmanager.cpp"),
 
-            # should link, but having issues with the string base in ModeChangedMsg::Type
+            # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
 
             Object(NonMatching, "rb3/gamepanel.cpp"),
