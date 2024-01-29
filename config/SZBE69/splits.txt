@@ -422,32 +422,8 @@ rb3/messages/stringstrummedmsg.cpp:
 rb3/messages/stringstoppedmsg.cpp:
 	.text       start:0x80313FB0 end:0x80313FFC
 
-rb3/messages/rg/rgaccelerometermsg.cpp:
-	.text       start:0x80313FFC end:0x80314114
-
-rb3/messages/rg/rgconnectedaccessoriesmsg.cpp:
-	.text       start:0x80314114 end:0x803141EC
-
-rb3/messages/rg/rgpitchbendmsg.cpp:
-	.text       start:0x803141EC end:0x803142C4
-
-rb3/messages/rg/rgmutingmsg.cpp:
-	.text       start:0x803142C4 end:0x8031439C
-
-rb3/messages/rg/rgstompboxmsg.cpp:
-	.text       start:0x8031439C end:0x80314474
-
-rb3/messages/rg/rgprogramchangemsg.cpp:
-	.text       start:0x80314474 end:0x8031454C
-
-rb3/messages/rg/rgswingmsg.cpp:
-	.text       start:0x8031454C end:0x80314624
-
-rb3/messages/rg/rgfretbuttondownmsg.cpp:
-	.text       start:0x80314624 end:0x8031471C
-
-rb3/messages/rg/rgfretbuttonupmsg.cpp:
-	.text       start:0x8031471C end:0x80314814
+rb3/messages/rg/rg_messages.cpp:
+	.text       start:0x80313FFC end:0x80314814
 
 rb3/messages/keys/keyboardkeyreleasedmsg.cpp:
 	.text       start:0x80315298 end:0x80315370

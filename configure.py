@@ -368,15 +368,7 @@ config.libs = [
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
             Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
 
-            Object(Matching, "rb3/messages/rg/rgaccelerometermsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgconnectedaccessoriesmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgpitchbendmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgmutingmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgstompboxmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgprogramchangemsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgswingmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgfretbuttondownmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rgfretbuttonupmsg.cpp"),
+            Object(Matching, "rb3/messages/rg/rg_messages.cpp"),
 
             Object(NonMatching, "rb3/messages/keys/keyboardkeyreleasedmsg.cpp"),
             Object(NonMatching, "rb3/messages/keys/keyboardmodmsg.cpp"),
