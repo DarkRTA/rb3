@@ -5,7 +5,7 @@ class Sphere {
 public:
     Sphere();
     void Zero();
-    float unk0, unk4, unk8, unkc;
+    float x, y, z, radius;
 };
 
 #endif
