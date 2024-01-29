@@ -528,7 +528,7 @@ rb3/beatmap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
 	.ctors      start:0x807EFF2C end:0x807EFF30
 
-rb3/bink.cpp:
+rb3/binkintegration.cpp:
 	.text       start:0x80341E68 end:0x80342ACC
 
 rb3/binstream.cpp:
@@ -545,7 +545,14 @@ rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
 rb3/hxguid.cpp:
-	.text       start:0x8034DAAC end:0x8034DE08
+	.text       start:0x8034DAAC end:0x8034DE50
+	.ctors      start:0x807EFF4C end:0x807EFF50
+
+rb3/intpacker.cpp:
+	.text       start:0x8034DE50 end:0x8034DFC8
+
+rb3/unknown/803/unk_8034DE50.cpp:
+	.text       start:0x8034DFC8 end:0x8034FFA4
 
 rb3/formatstring.cpp:
 	.text       start:0x803513E0 end:0x80351AD0

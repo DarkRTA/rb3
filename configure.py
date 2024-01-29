@@ -299,7 +299,7 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
             Object(Matching, "rb3/binstream.cpp"),
-            Object(NonMatching, "rb3/bink.cpp"),
+            Object(NonMatching, "rb3/binkintegration.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
 
@@ -462,6 +462,7 @@ config.libs = [
             Object(NonMatching, "rb3/emitter.cpp"),
             Object(NonMatching, "rb3/metamusic.cpp"),
             Object(NonMatching, "rb3/propsync.cpp"),
+            Object(NonMatching, "rb3/intpacker.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -505,6 +506,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/803/unk_8037AD40.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8031144C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8030F4F0.cpp"),
+            Object(NonMatching, "rb3/unknown/803/unk_8034DE50.cpp"),
 
             Object(NonMatching, "rb3/unknown/804/unk_80421240.cpp"),
 
