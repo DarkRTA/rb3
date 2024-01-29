@@ -302,8 +302,11 @@ config.libs = [
             Object(Matching, "rb3/binstream.cpp"),
             Object(NonMatching, "rb3/binkintegration.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
-            Object(NonMatching, "rb3/formatstring.cpp"),
+            Object(NonMatching, "rb3/makestring.cpp"),
             Object(NonMatching, "rb3/multitempotempomap.cpp"),
+            Object(NonMatching, "rb3/logfile.cpp"),
+            Object(NonMatching, "rb3/localeordinal.cpp"),
+            Object(NonMatching, "rb3/locale.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
@@ -463,7 +466,6 @@ config.libs = [
             Object(NonMatching, "rb3/vocalplayer.cpp"),
             Object(NonMatching, "rb3/binkclip.cpp"),
             Object(NonMatching, "rb3/binkreader.cpp"),
-            Object(NonMatching, "rb3/ps2adsr.cpp"),
             Object(NonMatching, "rb3/adsr.cpp"),
             Object(NonMatching, "rb3/faders.cpp"),
             Object(NonMatching, "rb3/emitter.cpp"),

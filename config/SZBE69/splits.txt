@@ -573,8 +573,18 @@ rb3/intpacker.cpp:
 rb3/unknown/803/unk_8034DE50.cpp:
 	.text       start:0x8034DFC8 end:0x8034FFA4
 
-rb3/formatstring.cpp:
-	.text       start:0x803513E0 end:0x80351AD0
+rb3/locale.cpp:
+	.text       start:0x803500BC end:0x80350BF4
+	.ctors      start:0x807EFF54 end:0x807EFF58
+
+rb3/localeordinal.cpp:
+	.text       start:0x80350BF4 end:0x80350F60
+
+rb3/logfile.cpp:
+	.text       start:0x80350F60 end:0x803511B0
+
+rb3/makestring.cpp:
+	.text       start:0x803511B0 end:0x80351AD0
 
 sdk/MSL_C++/src/new.cpp:
 	.text       start:0x80354830 end:0x803548E8
@@ -926,11 +936,8 @@ rb3/Rnd/rndambientocclusion.cpp:
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18
 
-rb3/ps2adsr.cpp:
-	.text       start:0x80668D18 end:0x80669134
-
 rb3/adsr.cpp:
-	.text       start:0x80669134 end:0x80669340
+	.text       start:0x80668D18 end:0x80669340
 
 rb3/binkclip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C
