@@ -236,29 +236,65 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
-            Object(Matching, "rb3/file_ops.cpp"),
-            Object(Matching, "rb3/jsonobjects.cpp"),
-            Object(Matching, "rb3/main.cpp"),
-            Object(Matching, "rb3/optioninit.cpp"),
-            Object(Matching, "rb3/rand.cpp"),
-            Object(Matching, "rb3/rand2.cpp"),
-            Object(Matching, "rb3/tempomap.cpp"),
-            Object(Matching, "rb3/textfilestream.cpp"),
-            Object(Matching, "rb3/textstream.cpp"),
-            Object(Matching, "rb3/trigtable.cpp"),
-            Object(Matching, "rb3/intpacker.cpp"),
-            Object(Matching, "rb3/stubs/stubone.cpp"),
-            Object(Matching, "rb3/stubs/stubonef.cpp"),
-            Object(Matching, "rb3/stubs/stubzerof.cpp"),
-
             # data folder
+            Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
             Object(NonMatching, "rb3/data/dataarray.cpp"),
             Object(NonMatching, "rb3/data/datafile.cpp"),
             Object(NonMatching, "rb3/data/datafunc.cpp"),
             Object(NonMatching, "rb3/data/datanode.cpp"),
             Object(NonMatching, "rb3/data/datautil.cpp"),
             Object(NonMatching, "rb3/data/dataflex.c"),
+
+            # fx folder
+            Object(NonMatching, "rb3/fx/fxsend.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendflanger.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendreverb.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddelay.cpp"),
+            Object(NonMatching, "rb3/fx/fxsenddistortion.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendcompress.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendeq.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendmetereffect.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
+            Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
+
+            # HMX folder
+            Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/hmx/objutil.cpp"),
+
+            # messages folder
+            Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
+            Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
+            Object(Matching, "rb3/messages/rg_messages.cpp"),
+            Object(Matching, "rb3/messages/key_messages.cpp"),
+
+            # panels folder
+            Object(NonMatching, "rb3/panels/trainingpanel.cpp"),
+            Object(NonMatching, "rb3/panels/ugcpurchasepanel.cpp"),
+            Object(NonMatching, "rb3/panels/overshellpanel.cpp"),
+            Object(NonMatching, "rb3/panels/chordbookpanel.cpp"),
+            Object(NonMatching, "rb3/panels/gamepanel.cpp"),
+            Object(NonMatching, "rb3/panels/charactercreatorpanel.cpp"),
+            Object(NonMatching, "rb3/panels/campaignsonginfopanel.cpp"),
+            Object(NonMatching, "rb3/panels/choosecolorpanel.cpp"),
+            Object(NonMatching, "rb3/panels/retryaudiopanel.cpp"),
+            Object(NonMatching, "rb3/panels/saveloadstatuspanel.cpp"),
+            Object(NonMatching, "rb3/panels/selectdifficultypanel.cpp"),
+            Object(NonMatching, "rb3/panels/parentalcontrolpanel.cpp"),
+            Object(NonMatching, "rb3/panels/passivemessagespanel.cpp"),
+            Object(NonMatching, "rb3/panels/closetpanel.cpp"),
+            Object(NonMatching, "rb3/panels/contentdeletepanel.cpp"),
+            Object(NonMatching, "rb3/panels/fadepanel.cpp"),
+            Object(NonMatching, "rb3/panels/freestylepanel.cpp"),
+            Object(NonMatching, "rb3/panels/editsetlistpanel.cpp"),
+            Object(NonMatching, "rb3/panels/eventdialogpanel.cpp"),
+            Object(NonMatching, "rb3/panels/customizepanel.cpp"),
+            Object(NonMatching, "rb3/panels/gametimepanel.cpp"),
+            Object(NonMatching, "rb3/panels/interstitialpanel.cpp"),
+            Object(NonMatching, "rb3/panels/joininvitepanel.cpp"),
+            Object(NonMatching, "rb3/panels/metapanel.cpp"),
+            Object(NonMatching, "rb3/panels/trainerpanel.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -301,7 +337,30 @@ config.libs = [
             Object(Matching, "rb3/Rnd/dofproc.cpp"),
             Object(Matching, "rb3/Rnd/shaderoptions.cpp"),
 
-            Object(NonMatching, "rb3/hmx/object.cpp"),
+            # stubs folder
+            Object(Matching, "rb3/stubs/stubone.cpp"),
+            Object(Matching, "rb3/stubs/stubonef.cpp"),
+            Object(Matching, "rb3/stubs/stubzerof.cpp"),
+
+            # symbols folder (for all those chonky global symbol and message sets)
+            Object(Matching, "rb3/symbols/symbolset1.cpp"),
+            Object(Matching, "rb3/symbols/symbolset2.cpp"),
+            Object(Matching, "rb3/symbols/symbolset3.cpp"),
+            Object(Matching, "rb3/symbols/symbolset4.cpp"),
+            # These sinits match 100%, but won't link due to issues where the .bss labels don't pad properly
+            Object(LinkIssues, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
+            Object(LinkIssues, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
+
+            # ui folder
+            Object(NonMatching, "rb3/ui/uievent.cpp"),
+            Object(NonMatching, "rb3/ui/uistats.cpp"),
+            Object(NonMatching, "rb3/ui/uipanel.cpp"),
+            Object(NonMatching, "rb3/ui/uilist.cpp"),
+            Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
+            Object(NonMatching, "rb3/ui/uipicture.cpp"),
+
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
@@ -334,88 +393,57 @@ config.libs = [
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/trainingmgr.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
-            Object(NonMatching, "rb3/trainingpanel.cpp"),
+            
             Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
 
             Object(Matching, "rb3/stringtablelocks.cpp"),
-            Object(Matching, "rb3/symbols/symbolset1.cpp"),
-            Object(Matching, "rb3/symbols/symbolset2.cpp"),
-            Object(Matching, "rb3/symbols/symbolset3.cpp"),
-            Object(Matching, "rb3/symbols/symbolset4.cpp"),
-
-            # These sinits match 100%, but won't link due to issues where the .bss labels don't pad properly
-            Object(LinkIssues, "rb3/symbols/messageset1.cpp", extra_cflags=["-O4,p"]),
-            Object(LinkIssues, "rb3/symbols/messageset2.cpp", extra_cflags=["-O4,p"]),
-            Object(LinkIssues, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
-            Object(LinkIssues, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
+            
 
             Object(NonMatching, "rb3/bytegrinder.cpp"),
-            Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
-            Object(NonMatching, "rb3/ui/uistats.cpp"),
-            Object(NonMatching, "rb3/ui/uipanel.cpp"),
+            
+            
             Object(NonMatching, "rb3/bufstream.cpp"),
             Object(NonMatching, "rb3/bufstreamnand.cpp"),
             Object(NonMatching, "rb3/stringtable.cpp"),
             Object(NonMatching, "rb3/symbol.cpp"),
 
-            Object(NonMatching, "rb3/hmx/object.cpp"),
-            Object(NonMatching, "rb3/hmx/objutil.cpp"),
-
-            Object(NonMatching, "rb3/fx/fxsend.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendflanger.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendreverb.cpp"),
-            Object(NonMatching, "rb3/fx/fxsenddelay.cpp"),
-            Object(NonMatching, "rb3/fx/fxsenddistortion.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendcompress.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendeq.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendmetereffect.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
-
-            Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
-            Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
-            Object(Matching, "rb3/messages/rg_messages.cpp"),
-            Object(Matching, "rb3/messages/key_messages.cpp"),
-
-            Object(NonMatching, "rb3/overshellpanel.cpp"),
-            Object(NonMatching, "rb3/chordbookpanel.cpp"),
+            
             Object(NonMatching, "rb3/bandusermgr.cpp"),
             Object(NonMatching, "rb3/gamemicmanager.cpp"),
+
+            # loose matching files
+            Object(Matching, "rb3/file_ops.cpp"),
+            Object(Matching, "rb3/jsonobjects.cpp"),
+            Object(Matching, "rb3/main.cpp"),
+            Object(Matching, "rb3/optioninit.cpp"),
+            Object(Matching, "rb3/rand.cpp"),
+            Object(Matching, "rb3/rand2.cpp"),
+            Object(Matching, "rb3/tempomap.cpp"),
+            Object(Matching, "rb3/textfilestream.cpp"),
+            Object(Matching, "rb3/textstream.cpp"),
+            Object(Matching, "rb3/trigtable.cpp"),
+            Object(Matching, "rb3/intpacker.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
 
-            Object(NonMatching, "rb3/gamepanel.cpp"),
-            Object(NonMatching, "rb3/charactercreatorpanel.cpp"),
-            Object(NonMatching, "rb3/campaignsonginfopanel.cpp"),
-            Object(NonMatching, "rb3/choosecolorpanel.cpp"),
+            
             Object(NonMatching, "rb3/closetmgr.cpp"),
-            Object(NonMatching, "rb3/closetpanel.cpp"),
-            Object(NonMatching, "rb3/contentdeletepanel.cpp"),
+            
             Object(NonMatching, "rb3/msgsource.cpp"),
             Object(NonMatching, "rb3/dirunloader.cpp"),
-            Object(NonMatching, "rb3/fadepanel.cpp"),
-            Object(NonMatching, "rb3/freestylepanel.cpp"),
+            
             Object(NonMatching, "rb3/songsectioncontroller.cpp"),
             Object(NonMatching, "rb3/unisonicon.cpp"),
             Object(NonMatching, "rb3/crowdmetericon.cpp"),
             Object(NonMatching, "rb3/crowdaudio.cpp"),
             Object(NonMatching, "rb3/overshelldir.cpp"),
             Object(NonMatching, "rb3/profilemgr.cpp"),
-            Object(NonMatching, "rb3/retryaudiopanel.cpp"),
-            Object(NonMatching, "rb3/saveloadstatuspanel.cpp"),
-            Object(NonMatching, "rb3/selectdifficultypanel.cpp"),
-            Object(NonMatching, "rb3/uievent.cpp"),
-            Object(NonMatching, "rb3/parentalcontrolpanel.cpp"),
-            Object(NonMatching, "rb3/passivemessagespanel.cpp"),
+            
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
             Object(NonMatching, "rb3/midiparser.cpp"),
-            Object(NonMatching, "rb3/ui/uilist.cpp"),
-            Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
-            Object(NonMatching, "rb3/ui/uipicture.cpp"),
+            
 
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),
@@ -432,29 +460,26 @@ config.libs = [
 
             Object(NonMatching, "rb3/criticaluserlistener.cpp"),
             Object(NonMatching, "rb3/currentoutfitprovider.cpp"),
-            Object(NonMatching, "rb3/customizepanel.cpp"),
+            
             Object(NonMatching, "rb3/cymbalselectionprovider.cpp"),
-            Object(NonMatching, "rb3/editsetlistpanel.cpp"),
-            Object(NonMatching, "rb3/eventdialogpanel.cpp"),
+            
             Object(NonMatching, "rb3/eyebrowsprovider.cpp"),
             Object(NonMatching, "rb3/facehairprovider.cpp"),
             Object(NonMatching, "rb3/facetypeprovider.cpp"),
             Object(NonMatching, "rb3/gameplayoptions.cpp"),
-            Object(NonMatching, "rb3/gametimepanel.cpp"),
+            
             Object(NonMatching, "rb3/setlistscoresprovider.cpp"),
             Object(NonMatching, "rb3/inputmgr.cpp"),
             Object(NonMatching, "rb3/instarank.cpp"),
             Object(NonMatching, "rb3/instrumentfinishprovider.cpp"),
             Object(NonMatching, "rb3/interstitialmgr.cpp"),
-            Object(NonMatching, "rb3/interstitialpanel.cpp"),
-            Object(NonMatching, "rb3/joininvitepanel.cpp"),
+            
             Object(NonMatching, "rb3/leaderboard.cpp"),
             Object(NonMatching, "rb3/leaderboardshortcutprovider.cpp"),
             Object(NonMatching, "rb3/lessonmgr.cpp"),
             Object(NonMatching, "rb3/lessonprovider.cpp"),
-            Object(NonMatching, "rb3/metapanel.cpp"),
             Object(NonMatching, "rb3/tambourinemanager.cpp"),
-            Object(NonMatching, "rb3/trainerpanel.cpp"),
+            
             Object(NonMatching, "rb3/vocalplayer.cpp"),
             Object(NonMatching, "rb3/binkclip.cpp"),
             Object(NonMatching, "rb3/binkreader.cpp"),
@@ -468,6 +493,7 @@ config.libs = [
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
 
+            # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_800A673C.cpp"),
