@@ -386,6 +386,9 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
             Object(NonMatching, "rb3/ui/uipicture.cpp"),
 
+            # world folder
+            Object(Matching, "rb3/world/trigtable.cpp"),
+
             # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
@@ -436,7 +439,7 @@ config.libs = [
             Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
-            Object(Matching, "rb3/trigtable.cpp"),
+            
             Object(Matching, "rb3/intpacker.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods

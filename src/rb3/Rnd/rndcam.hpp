@@ -2,7 +2,7 @@
 #define RND_RNDCAM_HPP
 #include <rb3/hmx/object.hpp>
 #include <rb3/hmx/quat.hpp>
-#include <rb3/vector2.hpp>
+#include <vector2.hpp>
 #include <rb3/binstream.hpp>
 #include "rndtransformable.hpp"
 
