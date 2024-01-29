@@ -8,6 +8,7 @@ public:
     virtual ~TrainingMgr();
     virtual DataNode Handle(DataArray*, bool);
 
+    static void Init();
     static TrainingMgr* NewObject();
     void SetMinimumDifficulty(int);
     void SetReturnInfo(Symbol, Symbol);
@@ -20,5 +21,7 @@ public:
     Symbol quitToken; // quit token
     int curLesson; // current lesson
 };
+
+TrainingMgr* GetTheTrainingMgr();
 
 #endif
