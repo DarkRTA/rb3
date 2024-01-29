@@ -387,7 +387,7 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uipicture.cpp"),
 
             # world folder
-            Object(Matching, "rb3/world/trigtable.cpp"),
+            Object(Matching, "rb3/world/trig.cpp"),
             Object(NonMatching, "rb3/world/rot.cpp"),
 
             # miscellaneous loose files

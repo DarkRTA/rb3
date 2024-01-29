@@ -5,7 +5,7 @@
 #include "hmx/matrix3.hpp"
 #include "vector3.hpp"
 #include "vector_ops.hpp"
-#include "trigtable.hpp"
+#include "trig.hpp"
 #include "hmx/quat.hpp"
 #include "textstream.hpp"
 #include "vector2.hpp"

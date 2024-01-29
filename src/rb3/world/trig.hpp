@@ -1,5 +1,5 @@
-#ifndef RB3_TRIGTABLE_HPP
-#define RB3_TRIGTABLE_HPP
+#ifndef RB3_TRIG_HPP
+#define RB3_TRIG_HPP
 
 void TrigTableInit(); // fn_802E2E28
 float Lookup(float); // fn_802E2F90

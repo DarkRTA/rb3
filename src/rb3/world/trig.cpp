@@ -1,5 +1,5 @@
 #include "common.hpp"
-#include "trigtable.hpp"
+#include "trig.hpp"
 
 float gBigSinTable[0x200];
 

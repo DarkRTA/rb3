@@ -356,7 +356,7 @@ rb3/radix.cpp:
 rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E1C18 end:0x802E2E28
 
-rb3/world/trigtable.cpp:
+rb3/world/trig.cpp:
 	.text       start:0x802E2E28 end:0x802E306C
 	.bss        start:0x80901900 end:0x80902100
 
