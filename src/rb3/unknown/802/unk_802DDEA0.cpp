@@ -242,70 +242,38 @@ void Normalize(const register Hmx::Quat &quat, register Hmx::Quat &dst) {
 
     ASM_BLOCK(
         // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
-        psq_l quatXY,
-        0(r3),
-        0,
-        0 psq_l quatZW,
-        8(r3),
-        0,
-        0 ps_mul quatXYsq,
-        quatXY,
-        quatXY ps_mul quatZWsq,
-        quatZW,
-        quatZW ps_sum0 squares,
-        quatXYsq,
-        quatZWsq,
-        quatXYsq ps_sum1 quatZWsq,
-        quatZWsq,
-        quatXYsq,
-        quatZWsq ps_sum0 squares,
-        squares,
-        quatXYsq,
-        quatZWsq
+        psq_l    quatXY, 0(r3), 0, 0
+        psq_l    quatZW, 8(r3), 0, 0
+        ps_mul   quatXYsq, quatXY, quatXY
+        ps_mul   quatZWsq, quatZW, quatZW
+        ps_sum0  squares, quatXYsq, quatZWsq, quatXYsq
+        ps_sum1  quatZWsq, quatZWsq, quatXYsq, quatZWsq
+        ps_sum0  squares, squares, quatXYsq, quatZWsq
 
-            // 1 / sqrt(squares)
-            frsqrte magnitude,
-        squares
+        // 1 / sqrt(squares)
+        frsqrte  magnitude, squares
 
-            // Newton's method
-            // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
-            // Tried to make this match as C code, but decided not to bother lol
-            fmul magSquare,
-        magnitude,
-        magnitude fmul magHalf,
-        magnitude,
-        half fnmsub magNewton,
-        magSquare,
-        squares,
-        three fmul magnitude,
-        magNewton,
-        magHalf
+        // Newton's method
+        // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
+        // Tried to make this match as C code, couldn't get it to work correctly
+        fmul     magSquare, magnitude, magnitude
+        fmul     magHalf, magnitude, half
+        fnmsub   magNewton, magSquare, squares, three
+        fmul     magnitude, magNewton, magHalf
 
-            // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
-            ps_sub zero,
-        cutoff,
-        cutoff ps_sub cutoff,
-        squares,
-        cutoff ps_sel magnitude,
-        cutoff,
-        magnitude,
-        zero
+        // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
+        ps_sub   zero, cutoff, cutoff
+        ps_sub   cutoff, squares, cutoff
+        ps_sel   magnitude, cutoff, magnitude, zero
 
-            // dst.x = quat.x * magnitude;
-            // dst.y = quat.y * magnitude;
-            // dst.z = quat.z * magnitude;
-            // dst.w = quat.w * magnitude;
-            ps_muls0 quatXY,
-        quatXY,
-        magnitude ps_muls0 quatZW,
-        quatZW,
-        magnitude psq_st quatXY,
-        Quat.x(dst),
-        0,
-        0 psq_st quatZW,
-        Quat.z(dst),
-        0,
-        0
+        // dst.x = quat.x * magnitude;
+        // dst.y = quat.y * magnitude;
+        // dst.z = quat.z * magnitude;
+        // dst.w = quat.w * magnitude;
+        ps_muls0 quatXY, quatXY, magnitude
+        ps_muls0 quatZW, quatZW, magnitude
+        psq_st   quatXY, Quat.x(dst), 0, 0
+        psq_st   quatZW, Quat.z(dst), 0, 0
     )
 }
 
@@ -377,207 +345,102 @@ void Multiply(
 
     ASM_BLOCK(
         // Load t1
-        psq_l row1XY,
-        Transform.rot.row1.x(t1),
-        0,
-        0 psq_l row1Z,
-        Transform.rot.row1.z(t1),
-        1,
-        0 psq_l row2XY,
-        Transform.rot.row2.x(t1),
-        0,
-        0 psq_l row2Z,
-        Transform.rot.row2.z(t1),
-        1,
-        0 psq_l row3XY,
-        Transform.rot.row3.x(t1),
-        0,
-        0 psq_l row3Z,
-        Transform.rot.row3.z(t1),
-        1,
-        0 psq_l transXY,
-        Transform.trans.x(t1),
-        0,
-        0 psq_l transZ,
-        Transform.trans.z(t1),
-        1,
-        0
+        psq_l       row1XY,  Transform.rot.row1.x(t1), 0, 0
+        psq_l       row1Z,   Transform.rot.row1.z(t1), 1, 0
+        psq_l       row2XY,  Transform.rot.row2.x(t1), 0, 0
+        psq_l       row2Z,   Transform.rot.row2.z(t1), 1, 0
+        psq_l       row3XY,  Transform.rot.row3.x(t1), 0, 0
+        psq_l       row3Z,   Transform.rot.row3.z(t1), 1, 0
+        psq_l       transXY, Transform.trans.x(t1), 0, 0
+        psq_l       transZ,  Transform.trans.z(t1), 1, 0
 
-        ps_merge00 f0,
-        row1XY,
-        row2XY ps_merge00 f1,
-        row3XY,
-        transXY
+        // Merge X components together
+        ps_merge00  f0, row1XY, row2XY
+        ps_merge00  f1, row3XY, transXY
 
-            ps_merge11 f2,
-        row1XY,
-        row2XY ps_merge11 f3,
-        row3XY,
-        transXY
+        // Merge Y components together
+        ps_merge11  f2, row1XY, row2XY
+        ps_merge11  f3, row3XY, transXY
 
-            ps_merge00 f4,
-        row1Z,
-        row2Z ps_merge00 f5,
-        row3Z,
-        transZ
+        // Merge Z components together
+        ps_merge00  f4, row1Z,  row2Z
+        ps_merge00  f5, row3Z,  transZ
 
-            ps_sub f10,
-        f10,
-        f10 ps_merge01 f26,
-        f10,
-        transZ
+        ps_sub      f10, f10, f10
+        ps_merge01  f26, f10, transZ
 
-            // Load t2
-            psq_l row1XY,
-        Transform.rot.row1.x(t2),
-        0,
-        0 psq_l row1Z,
-        Transform.rot.row1.z(t2),
-        1,
-        0 psq_l row2XY,
-        Transform.rot.row2.x(t2),
-        0,
-        0 psq_l row2Z,
-        Transform.rot.row2.z(t2),
-        1,
-        0 psq_l row3XY,
-        Transform.rot.row3.x(t2),
-        0,
-        0 psq_l transXY,
-        Transform.trans.x(t2),
-        0,
-        0 // Must be swapped in order to match
-        psq_l row3Z,
-        Transform.rot.row3.z(t2),
-        1,
-        0 psq_l transZ,
-        Transform.trans.z(t2),
-        1,
-        0
+        // Load t2
+        psq_l       row1XY,  Transform.rot.row1.x(t2), 0, 0
+        psq_l       row1Z,   Transform.rot.row1.z(t2), 1, 0
+        psq_l       row2XY,  Transform.rot.row2.x(t2), 0, 0
+        psq_l       row2Z,   Transform.rot.row2.z(t2), 1, 0
+        psq_l       row3XY,  Transform.rot.row3.x(t2), 0, 0
+        psq_l       transXY, Transform.trans.x(t2), 0, 0 // Must be swapped in order to match
+        psq_l       row3Z,   Transform.rot.row3.z(t2), 1, 0
+        psq_l       transZ,  Transform.trans.z(t2), 1, 0
 
-        ps_merge00 f6,
-        row1XY,
-        row2XY ps_merge11 row1XY,
-        row1XY,
-        row2XY ps_merge00 row1Z,
-        row1Z,
-        row2Z
+        // After this point it becomes pretty entangled, done my best to comment what I can
 
-            ps_muls0 f10,
-        f1,
-        f6 ps_muls0 f12,
-        f1,
-        row1XY ps_muls0 row2Z,
-        f0,
-        row1XY
+        ps_merge00  f6, row1XY, row2XY // f6 = (t2.row1.x, t2.row2.x)
+        ps_muls0    f10, f1, f6        // f10 = (t1.row3.x * t2.row)
+        ps_madds1   f10, f3, f6, f10
 
-            ps_muls0 f31,
-        f1,
-        row1Z ps_muls0 f13,
-        f0,
-        row1Z ps_madds1 f10,
-        f3,
-        f6,
-        f10
+        // row1XY = (t2.row1.y, t2.row2.y)
+        ps_merge11  row1XY, row1XY, row2XY
+        ps_muls0    f12, f1, row1XY
+        ps_madds1   f12, f3, row1XY, f12
 
-            ps_muls0 row2XY,
-        f0,
-        f6 ps_madds1 row2XY,
-        f2,
-        f6,
-        row2XY ps_merge00 f0,
-        row3XY,
-        transXY ps_merge11 f1,
-        row3XY,
-        transXY ps_merge00 f6,
-        row3Z,
-        transZ
+        // row1XY = (t2.row1.z, t2.row2.z)
+        ps_merge00  row1Z, row1Z, row2Z
 
-            ps_madds1 f12,
-        f3,
-        row1XY,
-        f12 ps_madds0 f10,
-        f5,
-        f0,
-        f10 ps_madds0 f12,
-        f5,
-        f1,
-        f12 ps_madds1 f31,
-        f3,
-        row1Z,
-        f31 ps_madds1 f13,
-        f2,
-        row1Z,
-        f13
+        ps_muls0    row2Z, f0, row1XY
 
-            ps_madds0 row2XY,
-        f4,
-        f0,
-        row2XY ps_madds1 row2Z,
-        f2,
-        row1XY,
-        row2Z ps_madds0 row2Z,
-        f4,
-        f1,
-        row2Z ps_merge00 row1XY,
-        row2XY,
-        row2Z ps_merge11 row2XY,
-        row2XY,
-        row2Z
+        ps_muls0    f31, f1, row1Z
+        ps_muls0    f13, f0, row1Z
 
-            ps_madds0 f31,
-        f5,
-        f6,
-        f31 ps_madd f31,
-        f26,
-        f6,
-        f31 ps_madds0 f13,
-        f4,
-        f6,
-        f13 ps_merge11 row2Z,
-        f13,
-        f13 ps_merge11 transZ,
-        f31,
-        f31
+        ps_muls0    row2XY,  f0, f6
 
-            ps_madd f10,
-        f26,
-        f0,
-        f10 ps_madd f12,
-        f26,
-        f1,
-        f12 ps_merge00 row3XY,
-        f10,
-        f12 ps_merge11 transXY,
-        f10,
-        f12
+        // f0 = (row3.x, trans.x)
+        ps_merge00  f0, row3XY, transXY
+        ps_madds1   row2XY, f2, f6, row2XY
+        ps_madds0   row2XY, f4, f0, row2XY
 
-            // Store result
-            psq_st row1XY,
-        Transform.rot.row1.x(dst),
-        0,
-        0 psq_st f13,
-        Transform.rot.row1.z(dst),
-        1,
-        0 psq_st row2XY,
-        Transform.rot.row2.x(dst),
-        0,
-        0 psq_st row2Z,
-        Transform.rot.row2.z(dst),
-        1,
-        0 psq_st row3XY,
-        Transform.rot.row3.x(dst),
-        0,
-        0 psq_st f31,
-        Transform.rot.row3.z(dst),
-        1,
-        0 psq_st transXY,
-        Transform.trans.x(dst),
-        0,
-        0 psq_st transZ,
-        Transform.trans.z(dst),
-        1,
-        0
+        ps_madds0   f10, f5, f0, f10
+        ps_madd     f10, f26, f0, f10
+
+        // f1 = (row3.y, trans.y)
+        ps_merge11  f1, row3XY, transXY
+        ps_madds1   row2Z, f2, row1XY, row2Z
+        ps_madds0   row2Z, f4, f1, row2Z
+
+        ps_madds0   f12, f5, f1, f12
+        ps_madd     f12, f26, f1, f12
+
+        // f6 = (row3.z, trans.z)
+        ps_merge00  f6, row3Z, transZ
+        ps_madds1   f31, f3, row1Z, f31
+        ps_madds0   f31, f5, f6, f31
+        ps_madd     f31, f26, f6, f31
+
+        ps_madds1   f13, f2, row1Z, f13
+        ps_madds0   f13, f4, f6, f13
+
+        ps_merge00  row1XY, row2XY, row2Z
+        ps_merge11  row2XY, row2XY, row2Z
+        ps_merge11  row2Z, f13, f13
+        ps_merge11  transZ, f31, f31
+        ps_merge00  row3XY, f10, f12
+        ps_merge11  transXY, f10, f12
+
+        // Store result
+        psq_st      row1XY, Transform.rot.row1.x(dst), 0, 0
+        psq_st      f13, Transform.rot.row1.z(dst), 1, 0
+        psq_st      row2XY, Transform.rot.row2.x(dst), 0, 0
+        psq_st      row2Z, Transform.rot.row2.z(dst), 1, 0
+        psq_st      row3XY, Transform.rot.row3.x(dst), 0, 0
+        psq_st      f31, Transform.rot.row3.z(dst), 1, 0
+        psq_st      transXY, Transform.trans.x(dst), 0, 0
+        psq_st      transZ, Transform.trans.z(dst), 1, 0
     )
 }
 
@@ -779,4 +642,3 @@ Hmx::Quat::Quat(const Vector3 &vec, float f) {
 void ShortQuat::SetThunk(const Hmx::Quat &q) {
     Set(q);
 }
-
