@@ -207,8 +207,32 @@ rb3/facehairprovider.cpp:
 rb3/facetypeprovider.cpp:
 	.text       start:0x80204D00 end:0x80204EE0
 
+rb3/gameplayoptions.cpp:
+	.text       start:0x80204EE0 end:0x8020535C
+
+rb3/gametimepanel.cpp:
+	.text       start:0x8020535C end:0x80205844
+
+rb3/setlistscoresprovider.cpp:
+	.text       start:0x80205844 end:0x80206DF4
+
+rb3/inputmgr.cpp:
+	.text       start:0x80206DF4 end:0x80208454
+
+rb3/instarank.cpp:
+	.text       start:0x80208454 end:0x80208EE0
+
+rb3/instrumentfinishprovider.cpp:
+	.text       start:0x80208EE0 end:0x80209130
+
+rb3/interstitialmgr.cpp:
+	.text       start:0x80209130 end:0x8020B914
+
+rb3/interstitialpanel.cpp:
+	.text       start:0x8020B914 end:0x8020C428
+
 rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x80204EE0 end:0x8022BE70
+	.text       start:0x8020C428 end:0x8022BE70
 
 rb3/unknown/802/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8023FCAC
