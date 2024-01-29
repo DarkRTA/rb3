@@ -453,6 +453,9 @@ config.libs = [
             Object(NonMatching, "rb3/metapanel.cpp"),
             Object(NonMatching, "rb3/tambourinemanager.cpp"),
             Object(NonMatching, "rb3/trainerpanel.cpp"),
+            Object(NonMatching, "rb3/vocalplayer.cpp"),
+            Object(NonMatching, "rb3/binkclip.cpp"),
+            Object(NonMatching, "rb3/binkreader.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),

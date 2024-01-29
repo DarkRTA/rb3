@@ -163,7 +163,11 @@ rb3/trainerpanel.cpp:
 	.text       start:0x80172878 end:0x80176170
 
 rb3/unknown/801/unk_801660DC.cpp:
-	.text       start:0x80176170 end:0x80184CA0
+	.text       start:0x80176170 end:0x8017C088
+
+rb3/vocalplayer.cpp:
+	.text       start:0x8017C088 end:0x80184D60
+	.ctors      start:0x807EFE58 end:0x807EFE5C
 
 rb3/unknown/801/unk_80188850.cpp:
 	.text       start:0x80188850 end:0x801D6A5C
@@ -882,7 +886,13 @@ rb3/Rnd/rndambientocclusion.cpp:
 	.data       start:0x8089ACF8 end:0x8089AD98
 
 rb3/unknown/806/unk_80660D18.cpp:
-	.text       start:0x80660D18 end:0x8066B6B8
+	.text       start:0x80660D18 end:0x80669340
+
+rb3/binkclip.cpp:
+	.text       start:0x80669340 end:0x8066AD9C
+
+rb3/binkreader.cpp:
+	.text       start:0x8066AD9C end:0x8066B6B8
 
 rb3/bytegrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
