@@ -1,6 +1,5 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
-#include "formatstring.hpp"
 #include <new>
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
