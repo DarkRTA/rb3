@@ -445,6 +445,9 @@ config.libs = [
             Object(NonMatching, "rb3/instrumentfinishprovider.cpp"),
             Object(NonMatching, "rb3/interstitialmgr.cpp"),
             Object(NonMatching, "rb3/interstitialpanel.cpp"),
+            Object(NonMatching, "rb3/joininvitepanel.cpp"),
+            Object(NonMatching, "rb3/leaderboard.cpp"),
+            Object(NonMatching, "rb3/leaderboardshortcutprovider.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),

@@ -231,8 +231,17 @@ rb3/interstitialmgr.cpp:
 rb3/interstitialpanel.cpp:
 	.text       start:0x8020B914 end:0x8020C428
 
+rb3/joininvitepanel.cpp:
+	.text       start:0x8020C428 end:0x8020D31C
+
+rb3/leaderboard.cpp:
+	.text       start:0x8020D31C end:0x8020F174
+
+rb3/leaderboardshortcutprovider.cpp:
+	.text       start:0x8020F174 end:0x8020F858
+
 rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x8020C428 end:0x8022BE70
+	.text       start:0x8020F858 end:0x8022BE70
 
 rb3/unknown/802/unk_8022BE84.cpp:
 	.text       start:0x8022BE84 end:0x8023FCAC
