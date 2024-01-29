@@ -452,7 +452,7 @@ config.libs = [
             Object(NonMatching, "rb3/emitter.cpp"),
             Object(NonMatching, "rb3/metamusic.cpp"),
             Object(NonMatching, "rb3/propsync.cpp"),
-            Object(NonMatching, "rb3/intpacker.cpp"),
+            Object(Matching, "rb3/intpacker.cpp"),
             Object(NonMatching, "rb3/users.cpp"),
             Object(NonMatching, "rb3/usermgr.cpp"),
             Object(NonMatching, "rb3/synchronizationevent.cpp"),

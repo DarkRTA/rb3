@@ -45,7 +45,7 @@ int IntPacker::ExtractS(unsigned int ui){
 unsigned int IntPacker::ExtractU(unsigned int ui){
     unsigned int ret = 0;
     for(unsigned int cnt = 0; cnt < ui; cnt++){
-        ret |= unk0[pos >> 3] >> ((pos & 7) & 1U) << cnt;
+        ret |= ((unk0[pos >> 3] >> (pos & 7)) & 1) << cnt;
         pos++;
     }
     return ret;
