@@ -422,10 +422,10 @@ rb3/messages/stringstrummedmsg.cpp:
 rb3/messages/stringstoppedmsg.cpp:
 	.text       start:0x80313FB0 end:0x80313FFC
 
-rb3/messages/rg/rg_messages.cpp:
+rb3/messages/rg_messages.cpp:
 	.text       start:0x80313FFC end:0x80314814
 
-rb3/messages/keys/key_messages.cpp:
+rb3/messages/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
 rb3/dataarray.cpp:

@@ -367,8 +367,8 @@ config.libs = [
 
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
             Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
-            Object(Matching, "rb3/messages/rg/rg_messages.cpp"),
-            Object(Matching, "rb3/messages/keys/key_messages.cpp"),
+            Object(Matching, "rb3/messages/rg_messages.cpp"),
+            Object(Matching, "rb3/messages/key_messages.cpp"),
 
             Object(NonMatching, "rb3/overshellpanel.cpp"),
             Object(NonMatching, "rb3/chordbookpanel.cpp"),
