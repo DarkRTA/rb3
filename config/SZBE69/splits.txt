@@ -886,7 +886,13 @@ rb3/Rnd/rndambientocclusion.cpp:
 	.data       start:0x8089ACF8 end:0x8089AD98
 
 rb3/unknown/806/unk_80660D18.cpp:
-	.text       start:0x80660D18 end:0x80669340
+	.text       start:0x80660D18 end:0x80668D18
+
+rb3/ps2adsr.cpp:
+	.text       start:0x80668D18 end:0x80669134
+
+rb3/adsr.cpp:
+	.text       start:0x80669134 end:0x80669340
 
 rb3/binkclip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C
@@ -898,8 +904,12 @@ rb3/bytegrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
 	.data       start:0x8089BBE0 end:0x8089BCE0
 
-rb3/unknown/806/unk_8066E3FC.cpp:
-	.text       start:0x8066E3FC end:0x80671D38
+rb3/emitter.cpp:
+	.text       start:0x8066E3FC end:0x8066F6C0
+
+rb3/faders.cpp:
+	.text       start:0x8066F6C0 end:0x80671DCC
+	.ctors      start:0x807F0024 end:0x807F0028
 
 rb3/fx/fxsend.cpp:
 	.text       start:0x80671DCC end:0x80672F38

@@ -456,6 +456,10 @@ config.libs = [
             Object(NonMatching, "rb3/vocalplayer.cpp"),
             Object(NonMatching, "rb3/binkclip.cpp"),
             Object(NonMatching, "rb3/binkreader.cpp"),
+            Object(NonMatching, "rb3/ps2adsr.cpp"),
+            Object(NonMatching, "rb3/adsr.cpp"),
+            Object(NonMatching, "rb3/faders.cpp"),
+            Object(NonMatching, "rb3/emitter.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -509,7 +513,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
 
-            Object(NonMatching, "rb3/unknown/806/unk_8066E3FC.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
         ],
