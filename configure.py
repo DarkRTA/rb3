@@ -367,18 +367,8 @@ config.libs = [
 
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
             Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
-
             Object(Matching, "rb3/messages/rg/rg_messages.cpp"),
-
-            Object(NonMatching, "rb3/messages/keys/keyboardkeyreleasedmsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardmodmsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardexpressionpedalmsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardconnectedaccessories.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardsustainmsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardstompbox.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keysaccelerometermsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardlowhandplacementmsg.cpp"),
-            Object(NonMatching, "rb3/messages/keys/keyboardhighhandplacementmsg.cpp"),
+            Object(Matching, "rb3/messages/keys/key_messages.cpp"),
 
             Object(NonMatching, "rb3/overshellpanel.cpp"),
             Object(NonMatching, "rb3/chordbookpanel.cpp"),

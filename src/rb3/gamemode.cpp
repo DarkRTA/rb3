@@ -90,11 +90,6 @@ ModeChangedMsg::ModeChangedMsg() : Message(Type()) {
     
 }
 
-Symbol ModeChangedMsg::Type(){
-    static Symbol t("mode_changed");
-    return t;
-}
-
 void PlatformMgr::SetUnkCE55(bool b){
     unkCE55 = b;
 }
