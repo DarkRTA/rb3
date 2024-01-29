@@ -312,7 +312,7 @@ config.libs = [
             Object(NonMatching, "rb3/filechecksum.cpp"),
             Object(NonMatching, "rb3/customarray.cpp"),
             Object(NonMatching, "rb3/decibels.cpp"),
-            Object(NonMatching, "rb3/primes.cpp"),
+            Object(Matching, "rb3/primes.cpp"),
             Object(NonMatching, "rb3/radix.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly

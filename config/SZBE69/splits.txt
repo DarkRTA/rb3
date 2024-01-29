@@ -351,6 +351,7 @@ rb3/decibels.cpp:
 
 rb3/primes.cpp:
 	.text       start:0x802E15E0 end:0x802E1614
+	.data       start:0x808514C0 end:0x808515B8
 
 rb3/radix.cpp:
 	.text       start:0x802E1614 end:0x802E1C18
