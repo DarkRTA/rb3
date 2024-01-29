@@ -262,6 +262,8 @@ config.libs = [
             # HMX folder
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
+            Object(NonMatching, "rb3/hmx/typeprops.cpp"),
+            Object(NonMatching, "rb3/hmx/propsync.cpp"),
 
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),
@@ -439,7 +441,7 @@ config.libs = [
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
-            
+
             Object(NonMatching, "rb3/msgsource.cpp"),
             Object(NonMatching, "rb3/dirunloader.cpp"),
             Object(NonMatching, "rb3/songsectioncontroller.cpp"),
@@ -458,7 +460,6 @@ config.libs = [
             Object(NonMatching, "rb3/gemtrackdir.cpp"),
             Object(NonMatching, "rb3/tasks.cpp"),
             Object(NonMatching, "rb3/textfile.cpp"),
-            Object(NonMatching, "rb3/typeprops.cpp"),
             Object(NonMatching, "rb3/criticaluserlistener.cpp"),
             Object(NonMatching, "rb3/gameplayoptions.cpp"),
             Object(NonMatching, "rb3/instarank.cpp"),
@@ -470,7 +471,6 @@ config.libs = [
             Object(NonMatching, "rb3/faders.cpp"),
             Object(NonMatching, "rb3/emitter.cpp"),
             Object(NonMatching, "rb3/metamusic.cpp"),
-            Object(NonMatching, "rb3/propsync.cpp"),
             Object(NonMatching, "rb3/users.cpp"),
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),

@@ -502,7 +502,7 @@ rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
-rb3/propsync.cpp:
+rb3/hmx/propsync.cpp:
 	.text       start:0x80338890 end:0x803395AC
 
 rb3/tasks.cpp:
@@ -512,7 +512,7 @@ rb3/tasks.cpp:
 rb3/textfile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 
-rb3/typeprops.cpp:
+rb3/hmx/typeprops.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
 rb3/hmx/objutil.cpp:
