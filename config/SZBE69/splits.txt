@@ -477,7 +477,7 @@ rb3/datautil.cpp:
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/yy.c:
+rb3/dataflex.c:
 	.text       start:0x80324B4C end:0x8032553C
 	.rodata     start:0x807F0D60 end:0x807F1D90
 	.data       start:0x808556C0 end:0x808558C8
@@ -800,7 +800,7 @@ rb3/Rnd/rndconsole.cpp:
 rb3/Rnd/rnddir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
 
-rb3/dofproc.cpp:
+rb3/Rnd/dofproc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
 	.data       start:0x80895410 end:0x808954B8
 	.bss        start:0x809891B8 end:0x809891C0
@@ -874,7 +874,7 @@ rb3/Rnd/rndscreenmask.cpp:
 rb3/Rnd/rndset.cpp:
 	.text       start:0x8063E82C end:0x8063F1B0
 
-rb3/shaderoptions.cpp:
+rb3/Rnd/shaderoptions.cpp:
 	.text       start:0x8063F1B0 end:0x8063F464
 	.ctors      start:0x807F000C end:0x807F0010
 	.data       start:0x80899360 end:0x80899860

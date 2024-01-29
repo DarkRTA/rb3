@@ -251,7 +251,6 @@ config.libs = [
             Object(Matching, "rb3/stubs/stubone.cpp"),
             Object(Matching, "rb3/stubs/stubonef.cpp"),
             Object(Matching, "rb3/stubs/stubzerof.cpp"),
-            Object(Matching, "rb3/dofproc.cpp"),
 
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
             Object(NonMatching, "rb3/Rnd/rndanimfilter.cpp"),
@@ -290,8 +289,8 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndset.cpp"),
             Object(NonMatching, "rb3/Rnd/rndambientocclusion.cpp"),
             Object(NonMatching, "rb3/Rnd/rndconsole.cpp"),
-
-            Object(Matching, "rb3/shaderoptions.cpp"),
+            Object(Matching, "rb3/Rnd/dofproc.cpp"),
+            Object(Matching, "rb3/Rnd/shaderoptions.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/app.cpp"),
@@ -346,6 +345,7 @@ config.libs = [
             Object(NonMatching, "rb3/datafunc.cpp"),
             Object(NonMatching, "rb3/datanode.cpp"),
             Object(NonMatching, "rb3/datautil.cpp"),
+            Object(NonMatching, "rb3/dataflex.c"),
 
             Object(NonMatching, "rb3/bytegrinder.cpp"),
             Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
@@ -619,17 +619,6 @@ config.libs = [
         "objects": [
             Object(Matching, "libs/libogg/src/bitwise.c"),
             Object(Matching, "libs/libogg/src/framing.c")
-        ],
-    },
-    # TODO: this object is actually part of RB3's dta parser
-    # should move this to rb3 itself
-    {
-        "lib": "flex",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_c,
-        "host": False,
-        "objects": [
-            Object(NonMatching, "rb3/yy.c")
         ],
     },
     {
