@@ -289,6 +289,7 @@ config.libs = [
             Object(NonMatching, "rb3/Rnd/rndfur.cpp"),
             Object(NonMatching, "rb3/Rnd/rndset.cpp"),
             Object(NonMatching, "rb3/Rnd/rndambientocclusion.cpp"),
+            Object(NonMatching, "rb3/Rnd/rndconsole.cpp"),
 
             Object(Matching, "rb3/shaderoptions.cpp"),
 
@@ -302,6 +303,7 @@ config.libs = [
             Object(NonMatching, "rb3/binkintegration.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/formatstring.cpp"),
+            Object(NonMatching, "rb3/multitempotempomap.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
@@ -339,8 +341,13 @@ config.libs = [
             Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
             Object(NonMatching, "rb3/uistats.cpp"),
             Object(NonMatching, "rb3/uipanel.cpp"),
+            Object(NonMatching, "rb3/bufstream.cpp"),
+            Object(NonMatching, "rb3/bufstreamnand.cpp"),
+            Object(NonMatching, "rb3/stringtable.cpp"),
+            Object(NonMatching, "rb3/symbol.cpp"),
 
             Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/hmx/objutil.cpp"),
 
             Object(NonMatching, "rb3/fx/fxsend.cpp"),
             Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
@@ -463,6 +470,10 @@ config.libs = [
             Object(NonMatching, "rb3/metamusic.cpp"),
             Object(NonMatching, "rb3/propsync.cpp"),
             Object(NonMatching, "rb3/intpacker.cpp"),
+            Object(NonMatching, "rb3/users.cpp"),
+            Object(NonMatching, "rb3/usermgr.cpp"),
+            Object(NonMatching, "rb3/synchronizationevent.cpp"),
+            Object(NonMatching, "rb3/virtualkeyboard.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
@@ -501,10 +512,8 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/803/unk_8034C9F8.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80354A30.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80357E10.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_80362A50.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8037A3D8.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8037AD40.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_8031144C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8030F4F0.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034DE50.cpp"),
 

@@ -401,8 +401,18 @@ rb3/system.cpp:
 rb3/unknown/803/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
-rb3/unknown/803/unk_8031144C.cpp:
-	.text       start:0x8031144C end:0x80312A78
+rb3/users.cpp:
+	.text       start:0x80311700 end:0x803120A0
+
+rb3/usermgr.cpp:
+	.text       start:0x803120A0 end:0x803123EC
+
+rb3/synchronizationevent.cpp:
+	.text       start:0x803123EC end:0x80312524
+
+rb3/virtualkeyboard.cpp:
+	.text       start:0x80312524 end:0x80312AC0
+	.ctors      start:0x807EFEFC end:0x807EFF00
 
 rb3/messages/stringstrummedmsg.cpp:
 	.text       start:0x80313E98 end:0x80313FB0
@@ -521,8 +531,11 @@ rb3/textfile.cpp:
 rb3/typeprops.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
+rb3/hmx/objutil.cpp:
+	.text       start:0x8033DE38 end:0x8033FF44
+
 rb3/unknown/803/unk_8033C8F0.cpp:
-	.text       start:0x8033DE38 end:0x80340E40
+	.text       start:0x8033FF44 end:0x80340E40
 
 rb3/beatmap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
@@ -535,8 +548,14 @@ rb3/binstream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
 
+rb3/bufstream.cpp:
+	.text       start:0x803431F4 end:0x80343728
+
+rb3/bufstreamnand.cpp:
+	.text       start:0x80343728 end:0x80344240
+
 rb3/unknown/803/unk_803431F4.cpp:
-	.text       start:0x803431F4 end:0x8034A7DC
+	.text       start:0x80344240 end:0x8034A7DC
 
 rb3/unknown/803/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C988
@@ -591,19 +610,25 @@ rb3/symbols/messageset4.cpp:
 	.sbss       start:0x808E4540 end:0x808E4548
 	.bss        start:0x8097E1B8 end:0x8097E848
 
+rb3/multitempotempomap.cpp:
+	.text       start:0x80357E10 end:0x8035928C
+
 rb3/unknown/803/unk_80357E10.cpp:
-	.text       start:0x80357E10 end:0x8035C6AC
+	.text       start:0x8035928C end:0x8035C6AC
 
 rb3/optioninit.cpp:
 	.text       start:0x8035C6AC end:0x8035C8B4
 	.data       start:0x80858800 end:0x80858828
 
 rb3/string.cpp:
-	.text       start:0x80361B10 end:0x80362A50
+	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/unknown/803/unk_80362A50.cpp:
-	.text       start:0x80362A50 end:0x803651B0
+rb3/stringtable.cpp:
+	.text       start:0x80362B4C end:0x80363F60
+
+rb3/symbol.cpp:
+	.text       start:0x80363F60 end:0x803651B0
 
 rb3/stringtablelocks.cpp:
 	.text       start:0x803651B0 end:0x80365214
@@ -774,7 +799,10 @@ rb3/Rnd/rndcam.cpp:
 	.text       start:0x805CCF80 end:0x805CD410
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805D22A8
+	.text       start:0x805CE140 end:0x805CFD34
+
+rb3/Rnd/rndconsole.cpp:
+	.text       start:0x805CFD34 end:0x805D22A8
 
 rb3/Rnd/rnddir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
