@@ -68,6 +68,9 @@ libs/quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
+rb3/stubzerof.cpp:
+	.text       start:0x8005C7AC end:0x8005C7B8
+
 libs/quazal/unknown/8007/unk_8007B998.cpp:
 	.text       start:0x8007B998 end:0x8007BF3C
 
