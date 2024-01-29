@@ -247,11 +247,9 @@ config.libs = [
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
             Object(Matching, "rb3/trigtable.cpp"),
-            Object(Matching, "rb3/stubone.cpp"),
-            Object(Matching, "rb3/stubonef.cpp"),
-            Object(Matching, "rb3/stubzerof.cpp"),
-
-            # These functions match 100%, but won't link because the .data isn't being allocated correctly (the vtable/RTTI are off)
+            Object(Matching, "rb3/stubs/stubone.cpp"),
+            Object(Matching, "rb3/stubs/stubonef.cpp"),
+            Object(Matching, "rb3/stubs/stubzerof.cpp"),
             Object(Matching, "rb3/dofproc.cpp"),
 
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),

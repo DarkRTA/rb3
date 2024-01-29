@@ -22,7 +22,7 @@ rb3/app.cpp:
 sdk/MSL_C/sdata_1.c:
 	.sdata      start:0x808E3270 end:0x808E3280
 
-rb3/stubone.cpp:
+rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914
 
 rb3/main.cpp:
@@ -68,7 +68,7 @@ libs/quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
-rb3/stubzerof.cpp:
+rb3/stubs/stubzerof.cpp:
 	.text       start:0x8005C7AC end:0x8005C7B8
 
 libs/quazal/unknown/8007/unk_8007B998.cpp:
@@ -752,7 +752,7 @@ rb3/uipicture.cpp:
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x80575698 end:0x80581A8C
 
-rb3/stubonef.cpp:
+rb3/stubs/stubonef.cpp:
 	.text       start:0x8059FF1C end:0x8059FF28
 
 rb3/Rnd/rndanimatable.cpp:
