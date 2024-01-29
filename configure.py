@@ -236,7 +236,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(Matching, "rb3/datainittrigfuncs.cpp"),
+            Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
@@ -253,12 +253,12 @@ config.libs = [
             Object(Matching, "rb3/stubs/stubzerof.cpp"),
 
             # data folder
-            Object(NonMatching, "rb3/dataarray.cpp"),
-            Object(NonMatching, "rb3/datafile.cpp"),
-            Object(NonMatching, "rb3/datafunc.cpp"),
-            Object(NonMatching, "rb3/datanode.cpp"),
-            Object(NonMatching, "rb3/datautil.cpp"),
-            Object(NonMatching, "rb3/dataflex.c"),
+            Object(NonMatching, "rb3/data/dataarray.cpp"),
+            Object(NonMatching, "rb3/data/datafile.cpp"),
+            Object(NonMatching, "rb3/data/datafunc.cpp"),
+            Object(NonMatching, "rb3/data/datanode.cpp"),
+            Object(NonMatching, "rb3/data/datautil.cpp"),
+            Object(NonMatching, "rb3/data/dataflex.c"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),

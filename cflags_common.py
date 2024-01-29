@@ -18,6 +18,7 @@ cflags_includes = [
     "-i src/sdk/RVL_SDK",
     "-i src/sdk/MSL_C++",
     "-i src/rb3",
+    "-i src/rb3/data",
     "-i src/libs",
     "-i src",
 ]
