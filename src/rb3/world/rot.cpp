@@ -1,3 +1,5 @@
+#include "rot.hpp"
+
 #include "common.hpp"
 #include "math.h"
 #include "hmx/matrix3.hpp"

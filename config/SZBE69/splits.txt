@@ -330,10 +330,7 @@ rb3/rand.cpp:
 rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
-rb3/unknown/802/unk_802DDEA0.cpp:
-	.text       start:0x802DDEA0 end:0x802DE3D0
-
-rb3/rot.cpp:
+rb3/world/rot.cpp:
 	.text       start:0x802DE3D0 end:0x802DFE60
 
 rb3/adjacencies.cpp:

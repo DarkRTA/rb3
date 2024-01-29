@@ -388,6 +388,7 @@ config.libs = [
 
             # world folder
             Object(Matching, "rb3/world/trigtable.cpp"),
+            Object(NonMatching, "rb3/world/rot.cpp"),
 
             # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
@@ -403,7 +404,7 @@ config.libs = [
             Object(NonMatching, "rb3/logfile.cpp"),
             Object(NonMatching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
-            Object(NonMatching, "rb3/rot.cpp"),
+            
             Object(NonMatching, "rb3/adjacencies.cpp"),
             Object(NonMatching, "rb3/filechecksum.cpp"),
             Object(NonMatching, "rb3/customarray.cpp"),
@@ -429,7 +430,6 @@ config.libs = [
             Object(NonMatching, "rb3/bufstreamnand.cpp"),
             Object(NonMatching, "rb3/stringtable.cpp"),
             Object(NonMatching, "rb3/symbol.cpp"),
-
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
@@ -499,7 +499,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_8022BE84.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_80252B98.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802D4B74.cpp"),
-            Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802E0CA0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802E9040.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802F02EC.cpp"),
