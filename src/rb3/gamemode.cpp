@@ -86,14 +86,6 @@ void GameMode::SetMode(Symbol mode){
     }
 }
 
-ModeChangedMsg::ModeChangedMsg() : Message(Type()) {
-    
-}
-
-void PlatformMgr::SetUnkCE55(bool b){
-    unkCE55 = b;
-}
-
 extern char* PathName(const Hmx::Object*);
 
 DataNode GameMode::Handle(DataArray* da, bool b){

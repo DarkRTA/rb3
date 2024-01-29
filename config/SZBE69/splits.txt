@@ -149,6 +149,7 @@ rb3/gamemicmanager.cpp:
 rb3/gamemode.cpp:
 	.text       start:0x8011AF08 end:0x8011BA2C
 	.data       start:0x80833390 end:0x80833570
+	.bss        start:0x808F97D0 end:0x808F97D4
 
 rb3/gamepanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C

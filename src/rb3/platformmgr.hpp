@@ -8,7 +8,7 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~PlatformMgr();
     
-    void SetUnkCE55(bool);
+    void SetUnkCE55(bool b){ unkCE55 = b; }
 
     bool unknowns[0xCE39];
     bool unkCE55;
