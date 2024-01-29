@@ -8,10 +8,6 @@
 #include "rb3/textfile.hpp"
 #include "rb3/data.hpp"
 
-// string operations
-bool SearchReplace(const char *, const char *, const char *, char *);
-bool StrNCopy(char *, const char *, int);
-
 // misc functions
 int Minimum(int, int);
 unsigned int Minimum(unsigned int, unsigned int);

@@ -307,6 +307,13 @@ config.libs = [
             Object(NonMatching, "rb3/logfile.cpp"),
             Object(NonMatching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
+            Object(NonMatching, "rb3/rot.cpp"),
+            Object(NonMatching, "rb3/adjacencies.cpp"),
+            Object(NonMatching, "rb3/filechecksum.cpp"),
+            Object(NonMatching, "rb3/customarray.cpp"),
+            Object(NonMatching, "rb3/decibels.cpp"),
+            Object(NonMatching, "rb3/primes.cpp"),
+            Object(NonMatching, "rb3/radix.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),

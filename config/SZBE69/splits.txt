@@ -331,10 +331,32 @@ rb3/rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
 rb3/unknown/802/unk_802DDEA0.cpp:
-	.text       start:0x802DDEA0 end:0x802E0C40
+	.text       start:0x802DDEA0 end:0x802DE3D0
+
+rb3/rot.cpp:
+	.text       start:0x802DE3D0 end:0x802DFE60
+
+rb3/adjacencies.cpp:
+	.text       start:0x802DFE60 end:0x802E067C
+
+rb3/filechecksum.cpp:
+	.text       start:0x802E067C end:0x802E0F44
+	.ctors      start:0x807EFEA8 end:0x807EFEAC
+
+rb3/customarray.cpp:
+	.text       start:0x802E0F44 end:0x802E1540
+
+rb3/decibels.cpp:
+	.text       start:0x802E1540 end:0x802E15E0
+
+rb3/primes.cpp:
+	.text       start:0x802E15E0 end:0x802E1614
+
+rb3/radix.cpp:
+	.text       start:0x802E1614 end:0x802E1C18
 
 rb3/unknown/802/unk_802E0CA0.cpp:
-	.text       start:0x802E0CA0 end:0x802E2E28
+	.text       start:0x802E1C18 end:0x802E2E28
 
 rb3/trigtable.cpp:
 	.text       start:0x802E2E28 end:0x802E306C

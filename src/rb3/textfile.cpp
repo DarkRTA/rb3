@@ -1,5 +1,5 @@
 #include "textfile.hpp"
-#include "formatstring.hpp"
+#include "makestring.hpp"
 
 Symbol TextFile::ClassName() const {
     return StaticClassName();
@@ -42,8 +42,7 @@ extern Symbol SymPrint, SymReflect;
 extern char* PathName(const Hmx::Object*);
 
 DataNode TextFile::Handle(DataArray* da, bool b){
-    Symbol match = match;
-    match = da->GetSymAtIndex(1);
+    Symbol match = da->GetSymAtIndex(1);
     if(match == SymPrint){
         DataNode print = OnPrint(da);
         if(print.GetType() != kDataUnhandled) return DataNode(print);

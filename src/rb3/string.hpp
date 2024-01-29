@@ -201,4 +201,7 @@ public:
     // fn_8000DAC4
 };
 
+bool SearchReplace(const char *, const char *, const char *, char *);
+bool StrNCopy(char *, const char *, int);
+
 #endif

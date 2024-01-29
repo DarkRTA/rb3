@@ -8,6 +8,17 @@ bool PropSync(String& str, DataNode& node, DataArray* da, int i, PropOp op){
     return true;
 }
 
+bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op){
+    da->GetNodeCount();
+    if(op == (PropOp)1) node = DataNode((int)color.Pack());
+    else color.Unpack(node.Int(0));
+    return true;
+}
+
+bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* da, int i, PropOp op){
+
+}
+
 bool PropSync(Sphere& sphere, DataNode& node, DataArray* da, int i, PropOp op){
     int cnt = da->GetNodeCount();
     if(i == cnt) return true;
@@ -65,35 +76,21 @@ bool PropSync(Vector3& vec, DataNode& node, DataArray* da, int i, PropOp op){
     return true;
 }
 
-// undefined4
-// PropSync(Vector2 *param_1,DataNode *param_2,DataArray *param_3,int param_4,PropOp param_5)
-
-// {
-//   int iVar1;
-//   undefined4 uVar2;
-//   undefined4 local_28;
-//   Symbol aSStack_24 [16];
-  
-//   iVar1 = DataArray::GetNodeCount(param_3);
-//   if (param_4 == iVar1) {
-//     uVar2 = 1;
-//   }
-//   else {
-//     local_28 = DataArray::GetSymAtIndex(param_3,param_4);
-//     Symbol::operator=(aSStack_24,(Symbol *)&local_28);
-//     iVar1 = Symbol::operator==(aSStack_24,(Symbol *)&SymX);
-//     if (iVar1 == 0) {
-//       iVar1 = Symbol::operator==(aSStack_24,(Symbol *)&SymY);
-//       if (iVar1 == 0) {
-//         uVar2 = 0;
-//       }
-//       else {
-//         uVar2 = PropSync((float *)(param_1 + 4),param_2,param_3,param_4 + 1,param_5);
-//       }
-//     }
-//     else {
-//       uVar2 = PropSync((float *)param_1,param_2,param_3,param_4 + 1,param_5);
-//     }
-//   }
-//   return uVar2;
-// }
+bool PropSync(Transform& tf, DataNode& node, DataArray* da, int i, PropOp op){
+    int cnt = da->GetNodeCount();
+    if(i == cnt) return true;
+    else {
+        Symbol sym = da->GetSymAtIndex(i);
+        if(sym == SymX){
+            return PropSync(tf.trans.x, node, da, i + 1, op);
+        }
+        if(sym == SymY){
+            return PropSync(tf.trans.y, node, da, i + 1, op);
+        }
+        if(sym == SymZ){
+            return PropSync(tf.trans.z, node, da, i + 1, op);
+        }
+        else return PropSync(tf.rot, node, da, i, op);
+    }
+    return true;
+}
