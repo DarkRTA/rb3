@@ -252,6 +252,15 @@ config.libs = [
             Object(Matching, "rb3/stubs/stubonef.cpp"),
             Object(Matching, "rb3/stubs/stubzerof.cpp"),
 
+            # data folder
+            Object(NonMatching, "rb3/dataarray.cpp"),
+            Object(NonMatching, "rb3/datafile.cpp"),
+            Object(NonMatching, "rb3/datafunc.cpp"),
+            Object(NonMatching, "rb3/datanode.cpp"),
+            Object(NonMatching, "rb3/datautil.cpp"),
+            Object(NonMatching, "rb3/dataflex.c"),
+
+            # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
             Object(NonMatching, "rb3/Rnd/rndanimfilter.cpp"),
             Object(NonMatching, "rb3/Rnd/rndbitmap.cpp"),
@@ -341,16 +350,10 @@ config.libs = [
             Object(LinkIssues, "rb3/symbols/messageset3.cpp", extra_cflags=["-O4,p"]),
             Object(LinkIssues, "rb3/symbols/messageset4.cpp", extra_cflags=["-O4,p"]),
 
-            Object(NonMatching, "rb3/dataarray.cpp"),
-            Object(NonMatching, "rb3/datafunc.cpp"),
-            Object(NonMatching, "rb3/datanode.cpp"),
-            Object(NonMatching, "rb3/datautil.cpp"),
-            Object(NonMatching, "rb3/dataflex.c"),
-
             Object(NonMatching, "rb3/bytegrinder.cpp"),
             Object(NonMatching, "rb3/ugcpurchasepanel.cpp"),
-            Object(NonMatching, "rb3/uistats.cpp"),
-            Object(NonMatching, "rb3/uipanel.cpp"),
+            Object(NonMatching, "rb3/ui/uistats.cpp"),
+            Object(NonMatching, "rb3/ui/uipanel.cpp"),
             Object(NonMatching, "rb3/bufstream.cpp"),
             Object(NonMatching, "rb3/bufstreamnand.cpp"),
             Object(NonMatching, "rb3/stringtable.cpp"),
@@ -410,9 +413,9 @@ config.libs = [
             Object(NonMatching, "rb3/passivemessagespanel.cpp"),
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
             Object(NonMatching, "rb3/midiparser.cpp"),
-            Object(NonMatching, "rb3/uilist.cpp"),
-            Object(NonMatching, "rb3/uilistwidget.cpp"),
-            Object(NonMatching, "rb3/uipicture.cpp"),
+            Object(NonMatching, "rb3/ui/uilist.cpp"),
+            Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
+            Object(NonMatching, "rb3/ui/uipicture.cpp"),
 
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),

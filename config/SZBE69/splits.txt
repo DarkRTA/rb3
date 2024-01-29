@@ -308,10 +308,10 @@ rb3/trainingpanel.cpp:
 rb3/ugcpurchasepanel.cpp:
 	.text       start:0x80296BB4 end:0x80297868
 
-rb3/uievent.cpp:
+rb3/ui/uievent.cpp:
 	.text       start:0x80297868 end:0x8029948C
 
-rb3/uistats.cpp:
+rb3/ui/uistats.cpp:
 	.text       start:0x8029948C end:0x8029A744
 	.ctors      start:0x807EFE7C end:0x807EFE80
 
@@ -460,8 +460,12 @@ rb3/dataarray.cpp:
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
+rb3/datafile.cpp:
+	.text       start:0x803185F0 end:0x8031B2B8
+	.ctors      start:0x807EFF08 end:0x807EFF0C
+
 rb3/datafunc.cpp:
-	.text       start:0x8031B028 end:0x80322958
+	.text       start:0x8031B2B8 end:0x80322958
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 
@@ -755,21 +759,21 @@ rb3/midiparser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
-rb3/uilist.cpp:
+rb3/ui/uilist.cpp:
 	.text       start:0x805618F0 end:0x80568048
 	.ctors      start:0x807EFFC8 end:0x807EFFCC
 
 rb3/unknown/805/unk_80567E84.cpp:
 	.text       start:0x80568048 end:0x805715CC
 
-rb3/uilistwidget.cpp:
+rb3/ui/uilistwidget.cpp:
 	.text       start:0x805715CC end:0x805732E0
 
-rb3/uipanel.cpp:
+rb3/ui/uipanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
 
-rb3/uipicture.cpp:
+rb3/ui/uipicture.cpp:
 	.text       start:0x8057464C end:0x80575698
 
 rb3/unknown/805/unk_8057464C.cpp:
