@@ -263,6 +263,18 @@ config.libs = [
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
 
+            # managers folder
+            Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),
+            Object(NonMatching, "rb3/mgrs/gamemicmanager.cpp"),
+            Object(NonMatching, "rb3/mgrs/trainingmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/bandusermgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/closetmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/profilemgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/inputmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/interstitialmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/lessonmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/usermgr.cpp"),
+
             # messages folder
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
             Object(NonMatching, "rb3/messages/stringstoppedmsg.cpp"),
@@ -295,6 +307,17 @@ config.libs = [
             Object(NonMatching, "rb3/panels/joininvitepanel.cpp"),
             Object(NonMatching, "rb3/panels/metapanel.cpp"),
             Object(NonMatching, "rb3/panels/trainerpanel.cpp"),
+
+            # providers folder
+            Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
+            Object(NonMatching, "rb3/providers/cymbalselectionprovider.cpp"),
+            Object(NonMatching, "rb3/providers/eyebrowsprovider.cpp"),
+            Object(NonMatching, "rb3/providers/facehairprovider.cpp"),
+            Object(NonMatching, "rb3/providers/facetypeprovider.cpp"),
+            Object(NonMatching, "rb3/providers/setlistscoresprovider.cpp"),
+            Object(NonMatching, "rb3/providers/leaderboardshortcutprovider.cpp"),
+            Object(NonMatching, "rb3/providers/instrumentfinishprovider.cpp"),
+            Object(NonMatching, "rb3/providers/lessonprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -361,6 +384,7 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
             Object(NonMatching, "rb3/ui/uipicture.cpp"),
 
+            # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
@@ -391,28 +415,16 @@ config.libs = [
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
-            Object(NonMatching, "rb3/trainingmgr.cpp"),
-            Object(NonMatching, "rb3/hxguid.cpp"),
-            
+            Object(NonMatching, "rb3/hxguid.cpp"),            
             Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
-
             Object(Matching, "rb3/stringtablelocks.cpp"),
-            
-
             Object(NonMatching, "rb3/bytegrinder.cpp"),
-            
-            
             Object(NonMatching, "rb3/bufstream.cpp"),
             Object(NonMatching, "rb3/bufstreamnand.cpp"),
             Object(NonMatching, "rb3/stringtable.cpp"),
             Object(NonMatching, "rb3/symbol.cpp"),
 
-            
-            Object(NonMatching, "rb3/bandusermgr.cpp"),
-            Object(NonMatching, "rb3/gamemicmanager.cpp"),
-
-            # loose matching files
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
@@ -427,59 +439,30 @@ config.libs = [
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
-
-            
-            Object(NonMatching, "rb3/closetmgr.cpp"),
             
             Object(NonMatching, "rb3/msgsource.cpp"),
             Object(NonMatching, "rb3/dirunloader.cpp"),
-            
             Object(NonMatching, "rb3/songsectioncontroller.cpp"),
             Object(NonMatching, "rb3/unisonicon.cpp"),
             Object(NonMatching, "rb3/crowdmetericon.cpp"),
             Object(NonMatching, "rb3/crowdaudio.cpp"),
-            Object(NonMatching, "rb3/overshelldir.cpp"),
-            Object(NonMatching, "rb3/profilemgr.cpp"),
-            
+            Object(NonMatching, "rb3/overshelldir.cpp"),            
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
             Object(NonMatching, "rb3/midiparser.cpp"),
-            
-
             Object(NonMatching, "rb3/objectdir.cpp"),
             Object(NonMatching, "rb3/system.cpp"),
-
             Object(NonMatching, "rb3/micinputarrow.cpp"),
             Object(NonMatching, "rb3/minileaderboarddisplay.cpp"),
             Object(NonMatching, "rb3/streakmeter.cpp"),
             Object(NonMatching, "rb3/overdrivemeter.cpp"),
             Object(NonMatching, "rb3/gemtrackdir.cpp"),
-
             Object(NonMatching, "rb3/tasks.cpp"),
             Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/typeprops.cpp"),
-
             Object(NonMatching, "rb3/criticaluserlistener.cpp"),
-            Object(NonMatching, "rb3/currentoutfitprovider.cpp"),
-            
-            Object(NonMatching, "rb3/cymbalselectionprovider.cpp"),
-            
-            Object(NonMatching, "rb3/eyebrowsprovider.cpp"),
-            Object(NonMatching, "rb3/facehairprovider.cpp"),
-            Object(NonMatching, "rb3/facetypeprovider.cpp"),
             Object(NonMatching, "rb3/gameplayoptions.cpp"),
-            
-            Object(NonMatching, "rb3/setlistscoresprovider.cpp"),
-            Object(NonMatching, "rb3/inputmgr.cpp"),
             Object(NonMatching, "rb3/instarank.cpp"),
-            Object(NonMatching, "rb3/instrumentfinishprovider.cpp"),
-            Object(NonMatching, "rb3/interstitialmgr.cpp"),
-            
             Object(NonMatching, "rb3/leaderboard.cpp"),
-            Object(NonMatching, "rb3/leaderboardshortcutprovider.cpp"),
-            Object(NonMatching, "rb3/lessonmgr.cpp"),
-            Object(NonMatching, "rb3/lessonprovider.cpp"),
-            Object(NonMatching, "rb3/tambourinemanager.cpp"),
-            
             Object(NonMatching, "rb3/vocalplayer.cpp"),
             Object(NonMatching, "rb3/binkclip.cpp"),
             Object(NonMatching, "rb3/binkreader.cpp"),
@@ -489,7 +472,6 @@ config.libs = [
             Object(NonMatching, "rb3/metamusic.cpp"),
             Object(NonMatching, "rb3/propsync.cpp"),
             Object(NonMatching, "rb3/users.cpp"),
-            Object(NonMatching, "rb3/usermgr.cpp"),
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
 

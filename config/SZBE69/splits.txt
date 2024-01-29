@@ -133,7 +133,7 @@ rb3/unknown/800/unk_800DB160.cpp:
 rb3/unknown/800/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x800FF880
 
-rb3/bandusermgr.cpp:
+rb3/mgrs/bandusermgr.cpp:
 	.text       start:0x800FF880 end:0x80101808
 
 rb3/panels/chordbookpanel.cpp:
@@ -145,7 +145,7 @@ rb3/panels/fadepanel.cpp:
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
-rb3/gamemicmanager.cpp:
+rb3/mgrs/gamemicmanager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50
 
@@ -160,7 +160,7 @@ rb3/panels/gamepanel.cpp:
 rb3/unknown/801/unk_8011AED8.cpp:
 	.text       start:0x8011DD8C end:0x80159E30
 
-rb3/tambourinemanager.cpp:
+rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
 
 rb3/panels/trainerpanel.cpp:
@@ -185,7 +185,7 @@ rb3/panels/charactercreatorpanel.cpp:
 rb3/panels/choosecolorpanel.cpp:
 	.text       start:0x801F4EB0 end:0x801F62F4
 
-rb3/closetmgr.cpp:
+rb3/mgrs/closetmgr.cpp:
 	.text       start:0x801F62F4 end:0x801F8A84
 
 rb3/panels/closetpanel.cpp:
@@ -197,13 +197,13 @@ rb3/panels/contentdeletepanel.cpp:
 rb3/criticaluserlistener.cpp:
 	.text       start:0x801FCC20 end:0x801FD254
 
-rb3/currentoutfitprovider.cpp:
+rb3/providers/currentoutfitprovider.cpp:
 	.text       start:0x801FD254 end:0x801FD6B0
 
 rb3/panels/customizepanel.cpp:
 	.text       start:0x801FD6B0 end:0x80201BA0
 
-rb3/cymbalselectionprovider.cpp:
+rb3/providers/cymbalselectionprovider.cpp:
 	.text       start:0x80201BA0 end:0x80201E24
 
 rb3/panels/editsetlistpanel.cpp:
@@ -212,13 +212,13 @@ rb3/panels/editsetlistpanel.cpp:
 rb3/panels/eventdialogpanel.cpp:
 	.text       start:0x80203F40 end:0x802047A8
 
-rb3/eyebrowsprovider.cpp:
+rb3/providers/eyebrowsprovider.cpp:
 	.text       start:0x802047A8 end:0x80204A0C
 
-rb3/facehairprovider.cpp:
+rb3/providers/facehairprovider.cpp:
 	.text       start:0x80204A0C end:0x80204D00
 
-rb3/facetypeprovider.cpp:
+rb3/providers/facetypeprovider.cpp:
 	.text       start:0x80204D00 end:0x80204EE0
 
 rb3/gameplayoptions.cpp:
@@ -227,19 +227,19 @@ rb3/gameplayoptions.cpp:
 rb3/panels/gametimepanel.cpp:
 	.text       start:0x8020535C end:0x80205844
 
-rb3/setlistscoresprovider.cpp:
+rb3/providers/setlistscoresprovider.cpp:
 	.text       start:0x80205844 end:0x80206DF4
 
-rb3/inputmgr.cpp:
+rb3/mgrs/inputmgr.cpp:
 	.text       start:0x80206DF4 end:0x80208454
 
 rb3/instarank.cpp:
 	.text       start:0x80208454 end:0x80208EE0
 
-rb3/instrumentfinishprovider.cpp:
+rb3/providers/instrumentfinishprovider.cpp:
 	.text       start:0x80208EE0 end:0x80209130
 
-rb3/interstitialmgr.cpp:
+rb3/mgrs/interstitialmgr.cpp:
 	.text       start:0x80209130 end:0x8020B914
 
 rb3/panels/interstitialpanel.cpp:
@@ -251,13 +251,13 @@ rb3/panels/joininvitepanel.cpp:
 rb3/leaderboard.cpp:
 	.text       start:0x8020D31C end:0x8020F174
 
-rb3/leaderboardshortcutprovider.cpp:
+rb3/providers/leaderboardshortcutprovider.cpp:
 	.text       start:0x8020F174 end:0x8020F858
 
-rb3/lessonmgr.cpp:
+rb3/mgrs/lessonmgr.cpp:
 	.text       start:0x8020F858 end:0x802110E4
 
-rb3/lessonprovider.cpp:
+rb3/providers/lessonprovider.cpp:
 	.text       start:0x802110E4 end:0x80212164
 
 rb3/unknown/801/unk_801FCC20.cpp:
@@ -282,7 +282,7 @@ rb3/panels/parentalcontrolpanel.cpp:
 rb3/panels/passivemessagespanel.cpp:
 	.text       start:0x80253A14 end:0x80254530
 
-rb3/profilemgr.cpp:
+rb3/mgrs/profilemgr.cpp:
 	.text       start:0x80260B90 end:0x80266448
 	.ctors      start:0x807EFE78 end:0x807EFE7C
 
@@ -298,7 +298,7 @@ rb3/panels/selectdifficultypanel.cpp:
 rb3/unknown/802/unk_802663BC.cpp:
 	.text       start:0x8026F090 end:0x802956CC
 
-rb3/trainingmgr.cpp:
+rb3/mgrs/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
 	.data       start:0x8084CAC8 end:0x8084CB60
 
@@ -432,7 +432,7 @@ rb3/unknown/803/unk_8030F4F0.cpp:
 rb3/users.cpp:
 	.text       start:0x80311700 end:0x803120A0
 
-rb3/usermgr.cpp:
+rb3/mgrs/usermgr.cpp:
 	.text       start:0x803120A0 end:0x803123EC
 
 rb3/synchronizationevent.cpp:
