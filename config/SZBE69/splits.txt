@@ -508,6 +508,9 @@ rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
+rb3/propsync.cpp:
+	.text       start:0x80338890 end:0x803395AC
+
 rb3/tasks.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
@@ -947,8 +950,11 @@ rb3/fx/fxsendsynapse.cpp:
 rb3/fx/fxsendwah.cpp:
 	.text       start:0x80677C48 end:0x806786F0
 
+rb3/metamusic.cpp:
+	.text       start:0x806786F0 end:0x80679F0C
+
 rb3/unknown/806/unk_80671DCC.cpp:
-	.text       start:0x806786F0 end:0x8067BA7C
+	.text       start:0x80679F0C end:0x8067BA7C
 
 libs/libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54

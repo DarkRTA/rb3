@@ -460,6 +460,8 @@ config.libs = [
             Object(NonMatching, "rb3/adsr.cpp"),
             Object(NonMatching, "rb3/faders.cpp"),
             Object(NonMatching, "rb3/emitter.cpp"),
+            Object(NonMatching, "rb3/metamusic.cpp"),
+            Object(NonMatching, "rb3/propsync.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
