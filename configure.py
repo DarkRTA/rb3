@@ -448,6 +448,11 @@ config.libs = [
             Object(NonMatching, "rb3/joininvitepanel.cpp"),
             Object(NonMatching, "rb3/leaderboard.cpp"),
             Object(NonMatching, "rb3/leaderboardshortcutprovider.cpp"),
+            Object(NonMatching, "rb3/lessonmgr.cpp"),
+            Object(NonMatching, "rb3/lessonprovider.cpp"),
+            Object(NonMatching, "rb3/metapanel.cpp"),
+            Object(NonMatching, "rb3/tambourinemanager.cpp"),
+            Object(NonMatching, "rb3/trainerpanel.cpp"),
 
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
             Object(NonMatching, "rb3/unknown/800/unk_8000F9B0.cpp"),
