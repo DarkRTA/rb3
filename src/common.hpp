@@ -6,11 +6,6 @@
 #include <libspeex/math_approx.h>
 #include "rb3/symbol.hpp"
 #include "rb3/textfile.hpp"
-#include "rb3/data.hpp"
-
-// string operations
-bool SearchReplace(const char *, const char *, const char *, char *);
-bool StrNCopy(char *, const char *, int);
 
 // misc functions
 int Minimum(int, int);

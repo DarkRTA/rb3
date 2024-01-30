@@ -2,7 +2,7 @@
 #include "vector3.hpp"
 #include "vector_ops.hpp"
 #include "common.hpp"
-#include "trigtable.hpp"
+#include "trig.hpp"
 #include "hmx/quat.hpp"
 
 Vector3 *Vector3::operator+=(const Vector3 &v) {

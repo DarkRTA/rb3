@@ -6,8 +6,8 @@
 class GameMode : public MsgSource {
 public:
     GameMode();
-    virtual DataNode Handle(DataArray*, bool);
     virtual ~GameMode();
+    virtual DataNode Handle(DataArray*, bool);
 
     void SetMode(Symbol);
     bool InMode(Symbol);

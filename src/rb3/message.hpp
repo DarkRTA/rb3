@@ -18,7 +18,7 @@ public:
     virtual ~Message(); // fn_8000DF60
 
     DataArray *unk4;
-    DataArray* GetArray();
+    DataArray* GetArray(){ return unk4; }
 };
 
 #endif

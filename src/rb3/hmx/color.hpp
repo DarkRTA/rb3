@@ -12,11 +12,14 @@ namespace Hmx {
         Color() {};
         Color(int);
         void operator=(const Color &);
-        unsigned int Pack() const;
         void Unpack(int);
         bool operator==(const Color &) const;
         bool operator!=(const Color &) const;
         void Set(float, float, float, float);
+
+        unsigned int Pack() const {
+            return ((int)(blue * 255.0f) & 0xFFU) | ((int)(green * 255.0f) & 0xFFU) << 8 | ((int)(red * 255.0f) & 0xFFU) << 0x10;
+        }
     };
 }
 
