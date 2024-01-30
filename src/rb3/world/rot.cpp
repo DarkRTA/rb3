@@ -4,9 +4,6 @@
 #include "math.h"
 #include "vector_ops.hpp"
 #include "trig.hpp"
-#include "textstream.hpp"
-#include "vector2.hpp"
-#include "transform.hpp"
 #include "binstream.hpp"
 #include "shortquat.hpp"
 #include "shorttransform.hpp"
@@ -156,9 +153,148 @@ float GetZAngle(const Hmx::Matrix3 &mtx) {
     return -my_atan2f(mtx.row2.x, mtx.row2.y);
 }
 
+Hmx::Quat::Quat(const Vector3 &vec, float f) {
+    Set(vec, f);
+}
+
+void Hmx::Quat::Set(const Vector3 &vec) {
+    Vector3 stack;
+    Scale(vec, 0.5f, stack);
+    float f1 = Sine(stack.x);
+    float f2 = Cosine(stack.x);
+    float f3 = Sine(stack.y);
+    float f4 = Cosine(stack.y);
+    Set(f1 * f4, f2 * f3, f1 * f3, f2 * f4);
+    f1 = Sine(stack.z);
+    f2 = Cosine(stack.z);
+    Set(f2 * x - f1 * y, f2 * y + f1 * x, f2 * z + f1 * w, f2 * w - f1 * z);
+}
+
+void Hmx::Quat::Set(const Hmx::Matrix3 &mtx) {
+    float f1 = mtx.row1.x;
+    float f2 = mtx.row2.y;
+    float f3 = mtx.row3.z;
+    float diag = f1 + f2 + f3;
+    if (diag > 0.0f) {
+        w = diag + 1.0f;
+        x = mtx.row2.z - mtx.row3.y;
+        y = mtx.row3.x - mtx.row1.z;
+        z = mtx.row1.y - mtx.row2.x;
+    } else if ((f3 > f1) && (f3 > f2)) {
+        z = f3 - f1 - f2 + 1.0f;
+        w = mtx.row1.y - mtx.row2.x;
+        x = mtx.row3.x + mtx.row1.z;
+        y = mtx.row3.y + mtx.row2.z;
+    } else if (f2 > f1) {
+        y = f2 - f3 - f1 + 1.0f;
+        w = mtx.row3.x - mtx.row1.z;
+        z = mtx.row2.z + mtx.row3.y;
+        x = mtx.row2.x + mtx.row1.y;
+    } else {
+        x = f1 - f2 - f3 + 1.0f;
+        w = mtx.row2.z - mtx.row3.y;
+        y = mtx.row1.y + mtx.row2.x;
+        z = mtx.row1.z + mtx.row3.x;
+    }
+    Normalize(*this, *this);
+}
+
+void FastInterp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
+    if (f == 0.0f)
+        dst = q1;
+    else if (f == 1.0f)
+        dst = q2;
+    else {
+        if ((q1 * q2) < 0.0f) {
+            float q1x = q1.x;
+            dst.x = -(f * (q2.x + q1x) - q1x);
+            float q1y = q1.y;
+            dst.y = -(f * (q2.y + q1y) - q1y);
+            float q1z = q1.z;
+            dst.z = -(f * (q2.z + q1z) - q1z);
+            float q1w = q1.w;
+            dst.w = -(f * (q2.w + q1w) - q1w);
+        } else {
+            float q1x = q1.x;
+            dst.x = (f * (q2.x - q1x) + q1x);
+            float q1y = q1.y;
+            dst.y = (f * (q2.y - q1y) + q1y);
+            float q1z = q1.z;
+            dst.z = (f * (q2.z - q1z) + q1z);
+            float q1w = q1.w;
+            dst.w = (f * (q2.w - q1w) + q1w);
+        }
+        Normalize(dst, dst);
+    }
+}
+
+float operator*(const Hmx::Quat &q1, const Hmx::Quat &q2) {
+    return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+}
+
+void IdentityInterp(const Hmx::Quat &q, float f, Hmx::Quat &dst) {
+    if (f == 0.0f) {
+        dst = q;
+    } else if (f == 1.0f) {
+        dst.Set(0.0f, 0.0f, 0.0f, 1.0f);
+    } else {
+        float f2 = 1.0f - f;
+        dst.x = q.x * f2;
+        dst.y = q.y * f2;
+        dst.z = q.z * f2;
+        float f1 = q.w;
+        if (f1 < 0.0f) {
+            dst.w = f1 * f2 - f;
+        } else
+            dst.w = f1 * f2 + f;
+        Normalize(dst, dst);
+    }
+}
+
+void InterpThunk(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
+    Interp(q1, q2, f, dst);
+}
+
+void Interp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
+    if (f == 0.0f)
+        dst = q1;
+    else if (f == 1.0f)
+        dst = q2;
+    else {
+        if ((q1 * q2) < 0.0f) {
+            dst.x = -(f * (q1.x + q2.x) - q1.x);
+            dst.y = -(f * (q1.y + q2.y) - q1.y);
+            dst.z = -(f * (q1.z + q2.z) - q1.z);
+            dst.w = -(f * (q1.w + q2.w) - q1.w);
+        } else {
+            dst.x = -(f * (q1.x - q2.x) - q1.x);
+            dst.y = -(f * (q1.y - q2.y) - q1.y);
+            dst.z = -(f * (q1.z - q2.z) - q1.z);
+            dst.w = -(f * (q1.w - q2.w) - q1.w);
+        }
+        Normalize(dst, dst);
+    }
+}
+
+void Interp(const Hmx::Matrix3 &m1, const Hmx::Matrix3 &m2, float f, Hmx::Matrix3 &dst) {
+    Hmx::Quat q1(m1);
+    Hmx::Quat q2(m2);
+    Hmx::Quat q;
+    InterpThunk(q1, q2, f, q);
+    MakeRotMatrix(q, dst);
+}
+
 // fn_802DEEF8
 float ACosFloat(double d) {
     return acos(d);
+}
+
+void MakeRotMatrix(const Vector3 &v1, const Vector3 &v2, Hmx::Matrix3 &mtx) {
+    mtx.row2 = v1;
+    Normalize(mtx.row2, mtx.row2);
+    Cross(mtx.row2, v2, mtx.row1);
+    Normalize(mtx.row1, mtx.row1);
+    Cross(mtx.row1, mtx.row2, mtx.row3);
 }
 
 void MakeRotMatrix(const Hmx::Quat &q, Hmx::Matrix3 &mtx) {
@@ -190,13 +326,32 @@ void MakeEuler(const Hmx::Quat &q, Vector3 &vec) {
     MakeEuler(lmao, vec);
 }
 
+void MakeRotQuat(const Vector3 &v1, const Vector3 &v2, Hmx::Quat &dst) {
+    Vector3 vec;
+    Cross(v1, v2, vec);
+    float len2 = LengthSquared(v2);
+    float len1 = LengthSquared(v1);
+    float sq = SqrtThunk(len1 * len2);
+    float dot = Dot(v1, v2);
+    float sq2 = SqrtThunk(0.5f + ((0.5f * dot) / sq));
+    if (sq2 > 1.0E-7f) {
+        float f1 = 0.5f / (sq * sq2);
+        dst.x = vec.x * f1;
+        dst.y = vec.y * f1;
+        dst.z = vec.z * f1;
+        dst.w = sq2;
+    } else {
+        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
+    }
+}
 
-void MakeRotMatrix(const Vector3 &v1, const Vector3 &v2, Hmx::Matrix3 &mtx) {
-    mtx.row2 = v1;
-    Normalize(mtx.row2, mtx.row2);
-    Cross(mtx.row2, v2, mtx.row1);
-    Normalize(mtx.row1, mtx.row1);
-    Cross(mtx.row1, mtx.row2, mtx.row3);
+void MakeRotQuatUnitX(const Vector3 &vec, Hmx::Quat &dst) {
+    float sq = SqrtThunk(0.5f * vec.x + 0.5f);
+    if (sq > 1.0E-7f) {
+        dst.Set(0.0f, vec.z * (0.5f / sq), -vec.y * (0.5f / sq), sq);
+    } else {
+        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
+    }
 }
 
 TextStream &operator<<(TextStream &ts, const Hmx::Quat &q) {
@@ -222,109 +377,6 @@ TextStream &operator<<(TextStream &ts, const Hmx::Matrix3 &mtx) {
 TextStream &operator<<(TextStream &ts, const Transform &tf) {
     ts << tf.rot << "\n\t" << tf.trans;
     return ts;
-}
-
-void FastInvert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
-    float d1 = 1.0f / Dot(mtx.row1, mtx.row1);
-    float d2 = 1.0f / Dot(mtx.row2, mtx.row2);
-    float d3 = 1.0f / Dot(mtx.row3, mtx.row3);
-    dst.Set(
-        mtx.row1.x * d1,
-        mtx.row2.x * d2,
-        mtx.row3.x * d3,
-        mtx.row1.y * d1,
-        mtx.row2.y * d2,
-        mtx.row3.y * d3,
-        mtx.row1.z * d1,
-        mtx.row2.z * d2,
-        mtx.row3.z * d3
-    );
-}
-
-BinStream &operator<<(BinStream &bs, const Vector3 &vec) {
-    bs << vec.x << vec.y << vec.z;
-    return bs;
-}
-
-void ShortQuat::Set(const Hmx::Quat &q) {
-    x = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.x + 0.5f));
-    y = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.y + 0.5f));
-    z = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.z + 0.5f));
-    w = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.w + 0.5f));
-}
-
-void ShortQuat::operator=(const ShortQuat &q) {
-    x = q.x;
-    y = q.y;
-    z = q.z;
-    w = q.w;
-}
-
-bool Vector3::operator==(const Vector3 &vec) const {
-    bool b = false;
-    if (x == vec.x && y == vec.y && z == vec.z)
-        b = true;
-    return b;
-}
-
-bool Vector3::operator!=(const Vector3 &vec) const {
-    bool b = false;
-    if (x != vec.x || y != vec.y || z != vec.z)
-        b = true;
-    return b;
-}
-
-void ShortQuat::ToQuat(Hmx::Quat &q) const {
-    q.Set(
-        (float)(x * 0.000030518509f),
-        (float)(y * 0.000030518509f),
-        (float)(z * 0.000030518509f),
-        (float)(w * 0.000030518509f)
-    );
-}
-
-void IdentityInterp(const Hmx::Quat &q, float f, Hmx::Quat &dst) {
-    if (f == 0.0f) {
-        dst = q;
-    } else if (f == 1.0f) {
-        dst.Set(0.0f, 0.0f, 0.0f, 1.0f);
-    } else {
-        float f2 = 1.0f - f;
-        dst.x = q.x * f2;
-        dst.y = q.y * f2;
-        dst.z = q.z * f2;
-        float f1 = q.w;
-        if (f1 < 0.0f) {
-            dst.w = f1 * f2 - f;
-        } else
-            dst.w = f1 * f2 + f;
-        Normalize(dst, dst);
-    }
-}
-
-
-BinStream &operator>>(BinStream &bs, Vector3 &vec) {
-    bs >> vec.x >> vec.y >> vec.z;
-    return bs;
-}
-
-
-BinStream &operator>>(BinStream &bs, Hmx::Matrix3 &mtx) {
-    bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
-    return bs;
-}
-
-void Hmx::Quat::Set(const Vector3 &vec) {
-    Vector3 stack;
-    Scale(vec, 0.5f, stack);
-    float f1 = Sine(stack.x);
-    float f2 = Cosine(stack.x);
-    float f3 = Sine(stack.y);
-    float f4 = Cosine(stack.y);
-    Set(f1 * f4, f2 * f3, f1 * f3, f2 * f4);
-    f1 = Sine(stack.z);
-    f2 = Cosine(stack.z);
-    Set(f2 * x - f1 * y, f2 * y + f1 * x, f2 * z + f1 * w, f2 * w - f1 * z);
 }
 
 void Multiply(
@@ -440,46 +492,22 @@ void Multiply(
     )
 }
 
-
-Hmx::Quat::Quat(const Hmx::Matrix3 &mtx) {
-    Set(mtx);
+void FastInvert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
+    float d1 = 1.0f / Dot(mtx.row1, mtx.row1);
+    float d2 = 1.0f / Dot(mtx.row2, mtx.row2);
+    float d3 = 1.0f / Dot(mtx.row3, mtx.row3);
+    dst.Set(
+        mtx.row1.x * d1,
+        mtx.row2.x * d2,
+        mtx.row3.x * d3,
+        mtx.row1.y * d1,
+        mtx.row2.y * d2,
+        mtx.row3.y * d3,
+        mtx.row1.z * d1,
+        mtx.row2.z * d2,
+        mtx.row3.z * d3
+    );
 }
-
-
-void Hmx::Quat::Set(const Hmx::Matrix3 &mtx) {
-    float f1 = mtx.row1.x;
-    float f2 = mtx.row2.y;
-    float f3 = mtx.row3.z;
-    float diag = f1 + f2 + f3;
-    if (diag > 0.0f) {
-        w = diag + 1.0f;
-        x = mtx.row2.z - mtx.row3.y;
-        y = mtx.row3.x - mtx.row1.z;
-        z = mtx.row1.y - mtx.row2.x;
-    } else if ((f3 > f1) && (f3 > f2)) {
-        z = f3 - f1 - f2 + 1.0f;
-        w = mtx.row1.y - mtx.row2.x;
-        x = mtx.row3.x + mtx.row1.z;
-        y = mtx.row3.y + mtx.row2.z;
-    } else if (f2 > f1) {
-        y = f2 - f3 - f1 + 1.0f;
-        w = mtx.row3.x - mtx.row1.z;
-        z = mtx.row2.z + mtx.row3.y;
-        x = mtx.row2.x + mtx.row1.y;
-    } else {
-        x = f1 - f2 - f3 + 1.0f;
-        w = mtx.row2.z - mtx.row3.y;
-        y = mtx.row1.y + mtx.row2.x;
-        z = mtx.row1.z + mtx.row3.x;
-    }
-    Normalize(*this, *this);
-}
-
-
-void ShortQuat::Set(const Hmx::Matrix3 &mtx) {
-    Set(Hmx::Quat(mtx));
-}
-
 
 void Invert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
     float big_num = mtx.row1.z * mtx.row2.x * mtx.row3.y - mtx.row3.x * mtx.row2.y
@@ -511,100 +539,70 @@ void Invert(const Hmx::Matrix3 &mtx, Hmx::Matrix3 &dst) {
     );
 }
 
-void MakeRotQuat(const Vector3 &v1, const Vector3 &v2, Hmx::Quat &dst) {
-    Vector3 vec;
-    Cross(v1, v2, vec);
-    float len2 = LengthSquared(v2);
-    float len1 = LengthSquared(v1);
-    float sq = SqrtThunk(len1 * len2);
-    float dot = Dot(v1, v2);
-    float sq2 = SqrtThunk(0.5f + ((0.5f * dot) / sq));
-    if (sq2 > 1.0E-7f) {
-        float f1 = 0.5f / (sq * sq2);
-        dst.x = vec.x * f1;
-        dst.y = vec.y * f1;
-        dst.z = vec.z * f1;
-        dst.w = sq2;
-    } else {
-        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
-    }
+// ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+BinStream &operator<<(BinStream &bs, const Vector3 &vec) {
+    bs << vec.x << vec.y << vec.z;
+    return bs;
 }
 
-void MakeRotQuatUnitX(const Vector3 &vec, Hmx::Quat &dst) {
-    float sq = SqrtThunk(0.5f * vec.x + 0.5f);
-    if (sq > 1.0E-7f) {
-        dst.Set(0.0f, vec.z * (0.5f / sq), -vec.y * (0.5f / sq), sq);
-    } else {
-        dst.Set(0.0f, 0.0f, 1.0f, 0.0f);
-    }
+void ShortQuat::Set(const Hmx::Quat &q) {
+    x = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.x + 0.5f));
+    y = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.y + 0.5f));
+    z = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.z + 0.5f));
+    w = FloorThunk(Clamp(-32767.0f, 32767.0f, 32767.0f * q.w + 0.5f));
 }
 
-float operator*(const Hmx::Quat &q1, const Hmx::Quat &q2) {
-    return q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
+void ShortQuat::operator=(const ShortQuat &q) {
+    x = q.x;
+    y = q.y;
+    z = q.z;
+    w = q.w;
 }
 
-void Interp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
-    if (f == 0.0f)
-        dst = q1;
-    else if (f == 1.0f)
-        dst = q2;
-    else {
-        if ((q1 * q2) < 0.0f) {
-            dst.x = -(f * (q1.x + q2.x) - q1.x);
-            dst.y = -(f * (q1.y + q2.y) - q1.y);
-            dst.z = -(f * (q1.z + q2.z) - q1.z);
-            dst.w = -(f * (q1.w + q2.w) - q1.w);
-        } else {
-            dst.x = -(f * (q1.x - q2.x) - q1.x);
-            dst.y = -(f * (q1.y - q2.y) - q1.y);
-            dst.z = -(f * (q1.z - q2.z) - q1.z);
-            dst.w = -(f * (q1.w - q2.w) - q1.w);
-        }
-        Normalize(dst, dst);
-    }
+bool Vector3::operator==(const Vector3 &vec) const {
+    bool b = false;
+    if (x == vec.x && y == vec.y && z == vec.z)
+        b = true;
+    return b;
+}
+
+bool Vector3::operator!=(const Vector3 &vec) const {
+    bool b = false;
+    if (x != vec.x || y != vec.y || z != vec.z)
+        b = true;
+    return b;
+}
+
+void ShortQuat::ToQuat(Hmx::Quat &q) const {
+    q.Set(
+        (float)(x * 0.000030518509f),
+        (float)(y * 0.000030518509f),
+        (float)(z * 0.000030518509f),
+        (float)(w * 0.000030518509f)
+    );
 }
 
 
-void InterpThunk(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
-    Interp(q1, q2, f, dst);
+BinStream &operator>>(BinStream &bs, Vector3 &vec) {
+    bs >> vec.x >> vec.y >> vec.z;
+    return bs;
 }
 
 
-void Interp(const Hmx::Matrix3 &m1, const Hmx::Matrix3 &m2, float f, Hmx::Matrix3 &dst) {
-    Hmx::Quat q1(m1);
-    Hmx::Quat q2(m2);
-    Hmx::Quat q;
-    InterpThunk(q1, q2, f, q);
-    MakeRotMatrix(q, dst);
+BinStream &operator>>(BinStream &bs, Hmx::Matrix3 &mtx) {
+    bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
+    return bs;
 }
 
-void FastInterp(const Hmx::Quat &q1, const Hmx::Quat &q2, float f, Hmx::Quat &dst) {
-    if (f == 0.0f)
-        dst = q1;
-    else if (f == 1.0f)
-        dst = q2;
-    else {
-        if ((q1 * q2) < 0.0f) {
-            float q1x = q1.x;
-            dst.x = -(f * (q2.x + q1x) - q1x);
-            float q1y = q1.y;
-            dst.y = -(f * (q2.y + q1y) - q1y);
-            float q1z = q1.z;
-            dst.z = -(f * (q2.z + q1z) - q1z);
-            float q1w = q1.w;
-            dst.w = -(f * (q2.w + q1w) - q1w);
-        } else {
-            float q1x = q1.x;
-            dst.x = (f * (q2.x - q1x) + q1x);
-            float q1y = q1.y;
-            dst.y = (f * (q2.y - q1y) + q1y);
-            float q1z = q1.z;
-            dst.z = (f * (q2.z - q1z) + q1z);
-            float q1w = q1.w;
-            dst.w = (f * (q2.w - q1w) + q1w);
-        }
-        Normalize(dst, dst);
-    }
+Hmx::Quat::Quat(const Hmx::Matrix3 &mtx) {
+    Set(mtx);
+}
+
+void ShortQuat::Set(const Hmx::Matrix3 &mtx) {
+    Set(Hmx::Quat(mtx));
 }
 
 // fn_802DE1D8
@@ -628,11 +626,6 @@ void ShortTransform::operator=(const ShortTransform &st) {
 void ShortTransform::operator=(const Transform &tf) {
     rot.Set(tf.rot);
     trans = tf.trans;
-}
-
-
-Hmx::Quat::Quat(const Vector3 &vec, float f) {
-    Set(vec, f);
 }
 
 void ShortQuat::SetThunk(const Hmx::Quat &q) {
