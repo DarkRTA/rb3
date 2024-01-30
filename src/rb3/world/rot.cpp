@@ -2,11 +2,8 @@
 
 #include "common.hpp"
 #include "math.h"
-#include "hmx/matrix3.hpp"
-#include "vector3.hpp"
 #include "vector_ops.hpp"
 #include "trig.hpp"
-#include "hmx/quat.hpp"
 #include "textstream.hpp"
 #include "vector2.hpp"
 #include "transform.hpp"
@@ -14,38 +11,78 @@
 #include "shortquat.hpp"
 #include "shorttransform.hpp"
 
+void Normalize(const register Hmx::Quat &quat, register Hmx::Quat &dst) {
+    using Hmx::Quat;
 
-// fn_802DE5B4
-float ASinFloat(double d) {
-    return asin(d);
+    register float quatXY;
+    register float quatZW;
+
+    register float quatXYsq;
+    register float quatZWsq;
+
+    register float magnitude;
+    register float magHalf;
+    register float magSquare;
+    register float magNewton;
+
+    register float squares;
+    register float cutoff = 0.00001f;
+    register float zero;
+    register float half = 0.5f;
+    register float three = 3.0f;
+
+    register float factor;
+
+    ASM_BLOCK(
+        // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
+        psq_l    quatXY, 0(r3), 0, 0
+        psq_l    quatZW, 8(r3), 0, 0
+        ps_mul   quatXYsq, quatXY, quatXY
+        ps_mul   quatZWsq, quatZW, quatZW
+        ps_sum0  squares, quatXYsq, quatZWsq, quatXYsq
+        ps_sum1  quatZWsq, quatZWsq, quatXYsq, quatZWsq
+        ps_sum0  squares, squares, quatXYsq, quatZWsq
+
+        // 1 / sqrt(squares)
+        frsqrte  magnitude, squares
+
+        // Newton's method
+        // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
+        // Tried to make this match as C code, couldn't get it to work correctly
+        fmul     magSquare, magnitude, magnitude
+        fmul     magHalf, magnitude, half
+        fnmsub   magNewton, magSquare, squares, three
+        fmul     magnitude, magNewton, magHalf
+
+        // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
+        ps_sub   zero, cutoff, cutoff
+        ps_sub   cutoff, squares, cutoff
+        ps_sel   magnitude, cutoff, magnitude, zero
+
+        // dst.x = quat.x * magnitude;
+        // dst.y = quat.y * magnitude;
+        // dst.z = quat.z * magnitude;
+        // dst.w = quat.w * magnitude;
+        ps_muls0 quatXY, quatXY, magnitude
+        ps_muls0 quatZW, quatZW, magnitude
+        psq_st   quatXY, Quat.x(dst), 0, 0
+        psq_st   quatZW, Quat.z(dst), 0, 0
+    )
 }
 
-
-// fn_802DEEF8
-float ACosFloat(double d) {
-    return acos(d);
+void Hmx::Quat::Set(const Vector3 &vec, float f) {
+    float mult = 0.5f * f;
+    float f1 = Sine(mult);
+    float f2 = Cosine(mult);
+    w = f2;
+    x = vec.x * f1;
+    y = vec.y * f1;
+    z = vec.z * f1;
 }
 
-// fn_802DE7D8
-float GetXAngle(const Hmx::Matrix3 &mtx) {
-    return my_atan2f(mtx.row2.z, mtx.row2.y);
-}
-
-// fn_802DE7E4
-float GetYAngle(const Hmx::Matrix3 &mtx) {
-    return my_atan2f(-mtx.row1.z, mtx.row3.z);
-}
-
-// fn_802DE7F4
-float GetZAngle(const Hmx::Matrix3 &mtx) {
-    return -my_atan2f(mtx.row2.x, mtx.row2.y);
-}
-
-void MakeVertical(Hmx::Matrix3 &mtx) {
-    mtx.row3.Set(0.0f, 0.0f, 1.0f);
-    mtx.row2.z = 0.0f;
-    Normalize(mtx.row2, mtx.row2);
-    Cross(mtx.row2, mtx.row3, mtx.row1);
+// fn_802DE4D4
+float Cosine(float f) {
+    return Sine(f + 1.5707964f);
 }
 
 void MakeEuler(const Hmx::Matrix3 &mtx, Vector3 &vec) {
@@ -63,6 +100,18 @@ void MakeEuler(const Hmx::Matrix3 &mtx, Vector3 &vec) {
     }
 }
 
+// fn_802DE5B4
+float ASinFloat(double d) {
+    return asin(d);
+}
+
+void MakeVertical(Hmx::Matrix3 &mtx) {
+    mtx.row3.Set(0.0f, 0.0f, 1.0f);
+    mtx.row2.z = 0.0f;
+    Normalize(mtx.row2, mtx.row2);
+    Cross(mtx.row2, mtx.row3, mtx.row1);
+}
+
 void MakeScale(const Hmx::Matrix3 &mtx, Vector3 &vec) {
     Vector3 bruh;
     float f1 = Length(mtx.row3);
@@ -72,6 +121,44 @@ void MakeScale(const Hmx::Matrix3 &mtx, Vector3 &vec) {
     f2 = Length(mtx.row2);
     float f3 = Length(mtx.row1);
     vec.Set(f3, f2, f1);
+}
+
+extern void NOP(Hmx::Matrix3 *);
+
+void MakeEulerScale(const Hmx::Matrix3 &mtx, Vector3 &v1, Vector3 &v2) {
+    Hmx::Matrix3 lol;
+    MakeScale(mtx, v2);
+    NOP(&lol);
+    if (v2.x != 0.0f) {
+        Scale(mtx.row1, 1.0f / v2.x, lol.row1);
+    }
+    if (v2.y != 0.0f) {
+        Scale(mtx.row2, 1.0f / v2.y, lol.row2);
+    }
+    if (v2.z != 0.0f) {
+        Scale(mtx.row3, 1.0f / v2.z, lol.row3);
+    }
+    MakeEuler(lol, v1);
+}
+
+// fn_802DE7D8
+float GetXAngle(const Hmx::Matrix3 &mtx) {
+    return my_atan2f(mtx.row2.z, mtx.row2.y);
+}
+
+// fn_802DE7E4
+float GetYAngle(const Hmx::Matrix3 &mtx) {
+    return my_atan2f(-mtx.row1.z, mtx.row3.z);
+}
+
+// fn_802DE7F4
+float GetZAngle(const Hmx::Matrix3 &mtx) {
+    return -my_atan2f(mtx.row2.x, mtx.row2.y);
+}
+
+// fn_802DEEF8
+float ACosFloat(double d) {
+    return acos(d);
 }
 
 void MakeRotMatrix(const Hmx::Quat &q, Hmx::Matrix3 &mtx) {
@@ -96,35 +183,11 @@ void MakeRotMatrix(const Hmx::Quat &q, Hmx::Matrix3 &mtx) {
     mtx.row3.z = f9 - f8 - (f5 * f1);
 }
 
-extern void NOP(Hmx::Matrix3 *);
-
-void MakeEulerScale(const Hmx::Matrix3 &mtx, Vector3 &v1, Vector3 &v2) {
-    Hmx::Matrix3 lol;
-    MakeScale(mtx, v2);
-    NOP(&lol);
-    if (v2.x != 0.0f) {
-        Scale(mtx.row1, 1.0f / v2.x, lol.row1);
-    }
-    if (v2.y != 0.0f) {
-        Scale(mtx.row2, 1.0f / v2.y, lol.row2);
-    }
-    if (v2.z != 0.0f) {
-        Scale(mtx.row3, 1.0f / v2.z, lol.row3);
-    }
-    MakeEuler(lol, v1);
-}
-
 void MakeEuler(const Hmx::Quat &q, Vector3 &vec) {
     Hmx::Matrix3 lmao;
     NOP(&lmao);
     MakeRotMatrix(q, lmao);
     MakeEuler(lmao, vec);
-}
-
-
-// fn_802DE4D4
-float Cosine(float f) {
-    return Sine(f + 1.5707964f);
 }
 
 
@@ -220,65 +283,6 @@ void ShortQuat::ToQuat(Hmx::Quat &q) const {
     );
 }
 
-void Normalize(const register Hmx::Quat &quat, register Hmx::Quat &dst) {
-    using Hmx::Quat;
-
-    register float quatXY;
-    register float quatZW;
-
-    register float quatXYsq;
-    register float quatZWsq;
-
-    register float magnitude;
-    register float magHalf;
-    register float magSquare;
-    register float magNewton;
-
-    register float squares;
-    register float cutoff = 0.00001f;
-    register float zero;
-    register float half = 0.5f;
-    register float three = 3.0f;
-
-    register float factor;
-
-    ASM_BLOCK(
-        // quat.x * quat.x + quat.y * quat.y + quat.z * quat.z + quat.w * quat.w;
-        psq_l    quatXY, 0(r3), 0, 0
-        psq_l    quatZW, 8(r3), 0, 0
-        ps_mul   quatXYsq, quatXY, quatXY
-        ps_mul   quatZWsq, quatZW, quatZW
-        ps_sum0  squares, quatXYsq, quatZWsq, quatXYsq
-        ps_sum1  quatZWsq, quatZWsq, quatXYsq, quatZWsq
-        ps_sum0  squares, squares, quatXYsq, quatZWsq
-
-        // 1 / sqrt(squares)
-        frsqrte  magnitude, squares
-
-        // Newton's method
-        // -(magnitude * magnitude * squares - 3.0f) * magnitude * 0.5f;
-        // Tried to make this match as C code, couldn't get it to work correctly
-        fmul     magSquare, magnitude, magnitude
-        fmul     magHalf, magnitude, half
-        fnmsub   magNewton, magSquare, squares, three
-        fmul     magnitude, magNewton, magHalf
-
-        // if (squares - 0.00001f <= 0.0f) magnitude = 0.0f;
-        ps_sub   zero, cutoff, cutoff
-        ps_sub   cutoff, squares, cutoff
-        ps_sel   magnitude, cutoff, magnitude, zero
-
-        // dst.x = quat.x * magnitude;
-        // dst.y = quat.y * magnitude;
-        // dst.z = quat.z * magnitude;
-        // dst.w = quat.w * magnitude;
-        ps_muls0 quatXY, quatXY, magnitude
-        ps_muls0 quatZW, quatZW, magnitude
-        psq_st   quatXY, Quat.x(dst), 0, 0
-        psq_st   quatZW, Quat.z(dst), 0, 0
-    )
-}
-
 void IdentityInterp(const Hmx::Quat &q, float f, Hmx::Quat &dst) {
     if (f == 0.0f) {
         dst = q;
@@ -308,16 +312,6 @@ BinStream &operator>>(BinStream &bs, Vector3 &vec) {
 BinStream &operator>>(BinStream &bs, Hmx::Matrix3 &mtx) {
     bs >> mtx.row1 >> mtx.row2 >> mtx.row3;
     return bs;
-}
-
-void Hmx::Quat::Set(const Vector3 &vec, float f) {
-    float mult = 0.5f * f;
-    float f1 = Sine(mult);
-    float f2 = Cosine(mult);
-    w = f2;
-    x = vec.x * f1;
-    y = vec.y * f1;
-    z = vec.z * f1;
 }
 
 void Hmx::Quat::Set(const Vector3 &vec) {
