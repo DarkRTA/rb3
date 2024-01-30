@@ -477,6 +477,8 @@ config.libs = [
             Object(NonMatching, "rb3/users.cpp"),
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
+            Object(NonMatching, "rb3/streamchecksum.cpp"),
+            Object(NonMatching, "rb3/utf8.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
@@ -507,6 +509,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802FA994.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802FB548.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
+            Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
