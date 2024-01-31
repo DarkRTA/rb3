@@ -403,7 +403,7 @@ config.libs = [
             Object(NonMatching, "rb3/makestring.cpp"),
             Object(NonMatching, "rb3/multitempotempomap.cpp"),
             Object(NonMatching, "rb3/logfile.cpp"),
-            Object(NonMatching, "rb3/localeordinal.cpp"),
+            Object(Matching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             
             Object(NonMatching, "rb3/adjacencies.cpp"),

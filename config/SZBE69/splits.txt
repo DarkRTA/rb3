@@ -569,6 +569,7 @@ rb3/locale.cpp:
 
 rb3/localeordinal.cpp:
 	.text       start:0x80350BF4 end:0x80350F60
+	.data       start:0x80857118 end:0x80857140
 
 rb3/logfile.cpp:
 	.text       start:0x80350F60 end:0x803511B0

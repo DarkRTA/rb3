@@ -3,6 +3,9 @@
 #include "symbol.hpp"
 #include "data.hpp"
 
+enum LocaleGender { GenMale, GenFemale };
+enum LocaleNumber { n1, n2, n3 };
+
 class Locale {
 public:
     Locale();
@@ -20,5 +23,6 @@ public:
 
 DataNode DataSetLocaleVerboseNotify(DataArray*);
 void SetLocaleVerboseNotify(bool);
+char* LocalizeSeparatedInt(int);
 
 #endif
