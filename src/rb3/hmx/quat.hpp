@@ -10,6 +10,8 @@ namespace Hmx {
         float y;
         float z;
         float w;
+
+        // TODO: get rid of these ctors, if there are any errors, use the Set methods
         Quat() {
         }
         Quat(const Hmx::Matrix3 &);

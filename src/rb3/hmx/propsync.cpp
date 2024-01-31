@@ -9,6 +9,13 @@ bool PropSync(String& str, DataNode& node, DataArray* da, int i, PropOp op){
     return true;
 }
 
+bool PropSync(FilePath& fp, DataNode& node, DataArray* da, int i, PropOp op){
+    da->GetNodeCount();
+    if(op == (PropOp)1) node = DataNode(fp.FilePathRelativeToRoot());
+    else fp.SetRoot(node.Str(0));
+    return true;
+}
+
 bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op){
     da->GetNodeCount();
     if(op == (PropOp)1) node = DataNode((int)color.Pack());
@@ -145,4 +152,52 @@ bool PropSync(Transform& tf, DataNode& node, DataArray* da, int i, PropOp op){
         else return PropSync(tf.rot, node, da, i, op);
     }
     return true;
+}
+
+bool PropSync(Hmx::Rect& rect, DataNode& node, DataArray* da, int i, PropOp op){
+    int cnt = da->GetNodeCount();
+    if(i == cnt) return true;
+    else {
+        Symbol sym = da->GetSymAtIndex(i);
+        if(sym == SymX){
+            return PropSync(rect.x, node, da, i + 1, op);
+        }
+        if(sym == SymY){
+            return PropSync(rect.y, node, da, i + 1, op);
+        }
+        if(sym == SymW){
+            return PropSync(rect.w, node, da, i + 1, op);
+        }
+        if(sym == SymH){
+            return PropSync(rect.h, node, da, i + 1, op);
+        }
+    }
+    return false;
+}
+
+bool PropSync(Box& box, DataNode& node, DataArray* da, int i, PropOp op){
+    int cnt = da->GetNodeCount();
+    if(i == cnt) return true;
+    else {
+        Symbol sym = da->GetSymAtIndex(i);
+        if(sym == SymMinX){
+            return PropSync(box.minX, node, da, i + 1, op);
+        }
+        if(sym == SymMaxX){
+            return PropSync(box.maxX, node, da, i + 1, op);
+        }
+        if(sym == SymMinY){
+            return PropSync(box.minY, node, da, i + 1, op);
+        }
+        if(sym == SymMaxY){
+            return PropSync(box.maxY, node, da, i + 1, op);
+        }
+        if(sym == SymMinZ){
+            return PropSync(box.minZ, node, da, i + 1, op);
+        }
+        if(sym == SymMaxZ){
+            return PropSync(box.maxZ, node, da, i + 1, op);
+        }
+    }
+    return false;
 }
