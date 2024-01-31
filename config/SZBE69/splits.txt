@@ -935,6 +935,7 @@ rb3/unknown/806/unk_80660D18.cpp:
 
 rb3/adsr.cpp:
 	.text       start:0x80668D18 end:0x80669340
+	.rodata     start:0x807F3F30 end:0x807F4AA8
 
 rb3/binkclip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C
