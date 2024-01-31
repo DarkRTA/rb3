@@ -6,13 +6,14 @@
 #include "string.h"
 #include "stdlib.h"
 #include "vector3.hpp"
-#include "formatstring.hpp"
+#include "makestring.hpp"
 #include "debug.hpp"
 #include "random.hpp"
 #include "mergefilter.hpp"
 #include "datamergefilter.hpp"
 #include "hmx/object.hpp"
 #include "datafuncobj.hpp"
+#include "objectdir.hpp"
 #include <map>
 
 std::map<Symbol, DataFunc*> gDataFuncs;
@@ -308,7 +309,8 @@ DataNode DataMod(DataArray *da) {
 
 // fn_8031D56C
 DataNode DataDist(DataArray *da) {
-    Vector3 vec(
+    Vector3 vec;
+    vec.Set(
         da->GetFloatAtIndex(1) - da->GetFloatAtIndex(4),
         da->GetFloatAtIndex(2) - da->GetFloatAtIndex(5),
         da->GetFloatAtIndex(3) - da->GetFloatAtIndex(6)
