@@ -260,7 +260,7 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
 
             # HMX folder
-            Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
             Object(NonMatching, "rb3/hmx/typeprops.cpp"),
             Object(NonMatching, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),

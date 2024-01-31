@@ -284,4 +284,17 @@ DataNode Hmx::Object::Handle(DataArray* da, bool b){
     if(sym == SymGetHeap){
         
     }
+    // if none of those symbols matched, we fall back here
+    bool stank = false;
+    if(arr != 0){
+        DataArray* found = arr->FindArray(sym, false);
+        if(found != 0) stank = true;
+        if(stank){
+            DataNode ran = found->ExecuteScript(1, this, da, 2);
+            if(ran.GetType() != kDataUnhandled) return ran;
+        }
+        if(b) PathName(this);
+    }
+    
+    return DataNode(kDataUnhandled, 0);
 }
