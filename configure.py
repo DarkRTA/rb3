@@ -263,7 +263,7 @@ config.libs = [
             Object(NonMatching, "rb3/hmx/object.cpp"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
             Object(NonMatching, "rb3/hmx/typeprops.cpp"),
-            Object(NonMatching, "rb3/hmx/propsync.cpp"),
+            Object(NonMatching, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),
 
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),

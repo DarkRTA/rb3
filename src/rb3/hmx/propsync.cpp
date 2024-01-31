@@ -1,5 +1,6 @@
 #include "propsync.hpp"
 #include "symbols.hpp"
+#include "rot.hpp"
 
 bool PropSync(String& str, DataNode& node, DataArray* da, int i, PropOp op){
     da->GetNodeCount();
@@ -15,51 +16,59 @@ bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op
     return true;
 }
 
-extern void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);
 extern void Scale(const Vector3&, float, Vector3&);
+extern void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
 
 bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* da, int i, PropOp op){
-    Vector3 vec1;
-    Vector3 vec2;
-
     da->GetNodeCount();
     Symbol sym = da->GetSymAtIndex(i);
+    Vector3 rotation, scale;
+    bool result = false;
+
     static Symbol SymPitch("pitch");
     if(sym == SymPitch){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row1, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(rotation.x, node, da, i + 1, op);
     }
     static Symbol SymRoll("roll");
     if(sym == SymRoll){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row2, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(rotation.y, node, da, i + 1, op);
     }
     static Symbol SymYaw("yaw");
     if(sym == SymYaw){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row3, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(rotation.z, node, da, i + 1, op);
     }
     static Symbol SymXScale("x_scale");
     if(sym == SymXScale){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row1, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(scale.x, node, da, i + 1, op);
     }
     static Symbol SymYScale("y_scale");
     if(sym == SymYScale){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row2, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(scale.y, node, da, i + 1, op);
     }
     static Symbol SymZScale("z_scale");
     if(sym == SymZScale){
-        MakeEulerScale(mtx, vec1, vec2);
-        Scale(vec1, 57.295776f, vec2);
-        return PropSync(mtx.row3, node, da, i, op);
+        MakeEulerScale(mtx, rotation, scale);
+        Scale(rotation, 57.295776f, rotation);
+        result = PropSync(scale.z, node, da, i + 1, op);
     }
+
+    if (result && op != 1) {
+        Scale(rotation, 0.0174532923847f, rotation);
+        MakeRotMatrix(rotation, mtx, true);
+        Scale(scale, mtx, mtx);
+    }
+
+    return result;
 }
 
 bool PropSync(Sphere& sphere, DataNode& node, DataArray* da, int i, PropOp op){

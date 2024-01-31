@@ -7,9 +7,9 @@ public:
     float y;
     float z;
 
-    Vector3() {};
-    Vector3(float, float, float);
-    Vector3(const Vector3 &);
+    // Vector3() {};
+    // Vector3(float, float, float);
+    // Vector3(const Vector3 &);
     void Set(float, float, float); // fn_800CB1A4 - same as as __ct__7Vector3Ffff?
     Vector3 *operator=(const Vector3 &); // fn_800D8AC8
     void operator*=(float);

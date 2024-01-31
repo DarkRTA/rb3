@@ -8,8 +8,8 @@ namespace Hmx {
         Vector3 row1;
         Vector3 row2;
         Vector3 row3;
-        Matrix3() {};
-        Matrix3(const Matrix3 &);
+        // Matrix3() {};
+        // Matrix3(const Matrix3 &);
         void Set(const Vector3 &, const Vector3 &, const Vector3 &);
         void Set(float, float, float, float, float, float, float, float, float);
         void Identity();

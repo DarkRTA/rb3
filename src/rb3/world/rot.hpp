@@ -21,6 +21,7 @@ void IdentityInterp(const Hmx::Quat&, float, Hmx::Quat&);
 void InterpThunk(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Interp(const Hmx::Matrix3 &, const Hmx::Matrix3 &, float, Hmx::Matrix3 &);
+void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
 void MakeRotMatrix(const Vector3 &, const Vector3 &, Hmx::Matrix3 &);
 void MakeRotMatrix(const Hmx::Quat &, Hmx::Matrix3 &);
 void MakeEuler(const Hmx::Quat &, Vector3 &);
