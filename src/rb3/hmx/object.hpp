@@ -106,6 +106,7 @@ namespace Hmx {
         DataNode HandleType(DataArray*);
 
         DataNode OnGetArray(const DataArray*, Symbol);
+        char* GetHeap();
     };
 }
 
