@@ -263,7 +263,8 @@ config.libs = [
             Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
             Object(NonMatching, "rb3/hmx/typeprops.cpp"),
-            Object(NonMatching, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),
+            # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
+            Object(LinkIssues, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),
 
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),

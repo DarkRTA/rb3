@@ -23,6 +23,11 @@ bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op
     return true;
 }
 
+extern "C" int fn_80338AA8(int*);
+int fn_80338AA8(int* i){
+    return *i | 0xFF000000;
+}
+
 extern void Scale(const Vector3&, float, Vector3&);
 extern void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
 
