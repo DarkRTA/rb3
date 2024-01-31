@@ -16,7 +16,7 @@
 #include "objectdir.hpp"
 #include <map>
 
-std::map<Symbol, DataFunc*> gDataFuncs;
+// std::map<Symbol, DataFunc*> gDataFuncs;
 
 // void DataRegisterFunc(Symbol s, DataFunc* func){
 //     gDataFuncs[s] = func;
@@ -1410,9 +1410,9 @@ void DataInitFuncs() {
     DataRegisterFunc(c, DataInc);
 }
 
-void DataTermFuncs(){
-    gDataFuncs.clear();
-}
+// void DataTermFuncs(){
+//     gDataFuncs.clear();
+// }
 
 DataFuncObj::~DataFuncObj(){
     arr->DecRefCount();
