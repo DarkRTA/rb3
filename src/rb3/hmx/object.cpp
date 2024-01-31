@@ -282,7 +282,7 @@ DataNode Hmx::Object::Handle(DataArray* da, bool b){
     }
     static Symbol SymGetHeap("get_heap");
     if(sym == SymGetHeap){
-        
+        return DataNode(GetHeap());
     }
     // if none of those symbols matched, we fall back here
     bool stank = false;
@@ -291,7 +291,7 @@ DataNode Hmx::Object::Handle(DataArray* da, bool b){
         if(found != 0) stank = true;
         if(stank){
             DataNode ran = found->ExecuteScript(1, this, da, 2);
-            if(ran.GetType() != kDataUnhandled) return ran;
+            if(ran.GetType() != kDataUnhandled) return DataNode(ran);
         }
         if(b) PathName(this);
     }

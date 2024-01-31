@@ -53,7 +53,7 @@ namespace Hmx {
         DataArray* arr;
         const char *name;
         ObjectDir* dir;
-        char unk14[8]; // this is an std::vector<const char*>, 8 bytes long (4 + 2 + 2)
+        char unk14[8]; // this is an std::vector<ObjRef*>, 8 bytes long (4 + 2 + 2). why ObjRef*? see AddRef
 
         enum CopyType { f, a, r, t, s };
 
