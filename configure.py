@@ -480,6 +480,7 @@ config.libs = [
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
             Object(NonMatching, "rb3/streamchecksum.cpp"),
             Object(NonMatching, "rb3/utf8.cpp"),
+            Object(NonMatching, "rb3/locale.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
