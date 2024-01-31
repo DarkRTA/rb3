@@ -24,8 +24,11 @@ const float gReleaseRateExp[32] = {
     1752.0f, 3504.0f, 7008.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f
 };
 
-const float gLinInc[512] = { 1 };
+// TODO: fill these out going off the elf
+const float gLinInc[128] = { 1 };
+const float gLinDec[128] = { 1 };
 const float gExpInc[248] = { 1 };
+const float gExpDec[86] = { 1 };
 
 Ps2ADSR::Ps2ADSR() : ADmask(0x8F1F), SRmask(0x3C7) {
     
@@ -84,4 +87,8 @@ int Ps2ADSR::NearestAttackRate(float f) const {
     }
     else table = gExpInc;
     return FindNearestInTable(table, 0x80, f);
+}
+
+int Ps2ADSR::NearestDecayRate(float f) const {
+    return FindNearestInTable(gDecayRate, 0x10, f);
 }

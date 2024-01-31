@@ -26,6 +26,7 @@ public:
     ReleaseMode GetReleaseMode() const;
 
     int NearestAttackRate(float) const;
+    int NearestDecayRate(float) const;
 
     unsigned short ADmask;
     unsigned short SRmask;
