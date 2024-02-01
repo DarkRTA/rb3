@@ -312,6 +312,7 @@ config.libs = [
             Object(NonMatching, "rb3/panels/metapanel.cpp"),
             Object(NonMatching, "rb3/panels/trainerpanel.cpp"),
             Object(NonMatching, "rb3/panels/heldbuttonpanel.cpp"),
+            Object(NonMatching, "rb3/panels/preloadpanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -484,6 +485,7 @@ config.libs = [
             Object(NonMatching, "rb3/streamchecksum.cpp"),
             Object(NonMatching, "rb3/utf8.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
+            Object(NonMatching, "rb3/profile.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),

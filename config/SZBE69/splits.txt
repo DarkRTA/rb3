@@ -780,8 +780,14 @@ rb3/fixedsizesaveablestream.cpp:
 rb3/panels/heldbuttonpanel.cpp:
 	.text       start:0x8050FEF4 end:0x80510944
 
+rb3/panels/preloadpanel.cpp:
+	.text       start:0x805133E4 end:0x805143A0
+
+rb3/profile.cpp:
+	.text       start:0x805143A0 end:0x805147A4
+
 rb3/unknown/805/unk_80510944.cpp:
-	.text       start:0x80510944 end:0x80522990
+	.text       start:0x805147A4 end:0x80522990
 
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C
