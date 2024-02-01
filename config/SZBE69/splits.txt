@@ -507,6 +507,9 @@ rb3/hmx/object.cpp:
 
 rb3/hmx/propsync.cpp:
 	.text       start:0x80338890 end:0x803395AC
+	.data       start:0x80856250 end:0x80856278
+	.sbss       start:0x808E44C8 end:0x808E44D0
+	.bss        start:0x8091B8A8 end:0x8091B8C8
 
 rb3/tasks.cpp:
 	.text       start:0x803395AC end:0x8033C93C
@@ -566,6 +569,7 @@ rb3/locale.cpp:
 
 rb3/localeordinal.cpp:
 	.text       start:0x80350BF4 end:0x80350F60
+	.data       start:0x80857118 end:0x80857140
 
 rb3/logfile.cpp:
 	.text       start:0x80350F60 end:0x803511B0
@@ -931,6 +935,7 @@ rb3/unknown/806/unk_80660D18.cpp:
 
 rb3/adsr.cpp:
 	.text       start:0x80668D18 end:0x80669340
+	.rodata     start:0x807F3F30 end:0x807F4AA8
 
 rb3/binkclip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C

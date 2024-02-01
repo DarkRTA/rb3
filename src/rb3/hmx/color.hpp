@@ -18,7 +18,7 @@ namespace Hmx {
         void Set(float, float, float, float);
 
         unsigned int Pack() const {
-            return ((int)(blue * 255.0f) & 0xFFU) | ((int)(green * 255.0f) & 0xFFU) << 8 | ((int)(red * 255.0f) & 0xFFU) << 0x10;
+            return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }
     };
 }

@@ -11,6 +11,8 @@ public:
 
     void Set(const char *, const char *); // fn_8034C91C
     FilePath *operator=(const FilePath &);
+    char* FilePathRelativeToRoot();
+    void SetRoot(const char*);
 };
 
 #endif

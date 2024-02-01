@@ -20,3 +20,8 @@ const char* SafeName(Hmx::Object* obj){
     if(obj != nullptr) return obj->Name();
     else return "NULL";
 }
+
+bool IsASubclass(Symbol s1, Symbol s2){
+    if((s2 == "Object") || (s1 == s2)) return true;
+    else return RecurseSuperClassesSearch(s1, s2);
+}

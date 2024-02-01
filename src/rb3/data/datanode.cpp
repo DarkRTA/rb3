@@ -144,11 +144,6 @@ bool DataNode::operator!=(const DataNode &dn) const {
 }
 
 
-DataType DataNode::GetType() const {
-    return type;
-}
-
-
 // fn_80323530
 bool DataNode::NotNull() const {
     DataNode *n = Evaluate();

@@ -23,13 +23,15 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
-#include <unistd.h>
+// #include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
 
 /* The "const" storage-class-modifier is valid. */
 #define YY_USE_CONST
+
+extern "C" int DataInput(void*, int);
 
 #else	/* ! __cplusplus */
 
@@ -1059,8 +1061,8 @@ static int yy_get_next_buffer()
 		/* Read in more data. */
 		// YY_INPUT( (&yy_current_buffer->yy_ch_buf[number_to_move]),
 		// 	yy_n_chars, num_to_read );
-
-		yy_current_buffer->yy_n_chars = yy_n_chars;
+		
+		yy_current_buffer->yy_n_chars = yy_n_chars = (DataInput(&yy_current_buffer->yy_ch_buf[number_to_move], 1) != 0) ;
 		}
 
 	if ( yy_n_chars == 0 )

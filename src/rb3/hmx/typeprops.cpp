@@ -1,5 +1,6 @@
 #include "hmx/object.hpp"
 #include "data.hpp"
+#include "symbols.hpp"
 #include <new>
 
 DataArray* TypeProps::GetArray(Symbol s, DataArray* da, ObjRef* ref){
@@ -100,6 +101,21 @@ DataNode* TypeProps::KeyValue(Symbol s, bool b){
         }
     }
     return nullptr;
+}
+
+extern "C" void fn_8033D514(DataArray*, bool&, bool&);
+void fn_8033D514(DataArray* arr, bool& b1, bool& b2){
+    if(arr != 0){
+        for(int i = 2; i < arr->GetNodeCount(); i++){
+            if(arr->GetSymAtIndex(i) == SymProxySave){
+                b1 = true;
+            }
+            else if(arr->GetSymAtIndex(i) == SymNoSave){
+                b2 = true;
+            }
+            else arr->GetSymAtIndex(i);
+        }
+    }
 }
 
 void TypeProps::ReplaceObject(DataNode& dn, Hmx::Object* obj1, Hmx::Object* obj2, ObjRef* ref){

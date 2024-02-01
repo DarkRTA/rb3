@@ -260,10 +260,11 @@ config.libs = [
             Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
 
             # HMX folder
-            Object(NonMatching, "rb3/hmx/object.cpp"),
+            Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
             Object(NonMatching, "rb3/hmx/typeprops.cpp"),
-            Object(NonMatching, "rb3/hmx/propsync.cpp"),
+            # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
+            Object(LinkIssues, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),
 
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),
@@ -402,7 +403,7 @@ config.libs = [
             Object(NonMatching, "rb3/makestring.cpp"),
             Object(NonMatching, "rb3/multitempotempomap.cpp"),
             Object(NonMatching, "rb3/logfile.cpp"),
-            Object(NonMatching, "rb3/localeordinal.cpp"),
+            Object(Matching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             
             Object(NonMatching, "rb3/adjacencies.cpp"),
@@ -479,6 +480,7 @@ config.libs = [
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
             Object(NonMatching, "rb3/streamchecksum.cpp"),
             Object(NonMatching, "rb3/utf8.cpp"),
+            Object(NonMatching, "rb3/locale.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
