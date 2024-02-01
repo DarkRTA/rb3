@@ -267,7 +267,13 @@ rb3/panels/metapanel.cpp:
 	.text       start:0x8021F840 end:0x8022376C
 
 rb3/unknown/802/unk_8022BE84.cpp:
-	.text       start:0x8022BE84 end:0x8023FCAC
+	.text       start:0x8022BE84 end:0x8022BF20
+
+rb3/mgrs/modifiermgr.cpp:
+	.text       start:0x8022BF20 end:0x8022CD04
+
+rb3/unknown/802/unk_8022CD04.cpp:
+	.text       start:0x8022CD04 end:0x8023FCAC
 
 rb3/panels/overshellpanel.cpp:
 	.text       start:0x8023FCAC end:0x802473C0
@@ -760,7 +766,22 @@ rb3/overshelldir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
 rb3/unknown/805/unk_8050FA30.cpp:
-	.text       start:0x8050472C end:0x80522990
+	.text       start:0x8050472C end:0x8050EA88
+
+rb3/panels/dejitterpanel.cpp:
+	.text       start:0x8050EA88 end:0x8050EF80
+
+rb3/fixedsizesaveable.cpp:
+	.text       start:0x8050EF80 end:0x8050FA30
+
+rb3/fixedsizesaveablestream.cpp:
+	.text       start:0x8050FA30 end:0x8050FEF4
+
+rb3/panels/heldbuttonpanel.cpp:
+	.text       start:0x8050FEF4 end:0x80510944
+
+rb3/unknown/805/unk_80510944.cpp:
+	.text       start:0x80510944 end:0x80522990
 
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C

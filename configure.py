@@ -277,6 +277,7 @@ config.libs = [
             Object(NonMatching, "rb3/mgrs/interstitialmgr.cpp"),
             Object(NonMatching, "rb3/mgrs/lessonmgr.cpp"),
             Object(NonMatching, "rb3/mgrs/usermgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/modifiermgr.cpp"),
 
             # messages folder
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
@@ -310,6 +311,7 @@ config.libs = [
             Object(NonMatching, "rb3/panels/joininvitepanel.cpp"),
             Object(NonMatching, "rb3/panels/metapanel.cpp"),
             Object(NonMatching, "rb3/panels/trainerpanel.cpp"),
+            Object(NonMatching, "rb3/panels/heldbuttonpanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -405,7 +407,8 @@ config.libs = [
             Object(NonMatching, "rb3/logfile.cpp"),
             Object(Matching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
-            
+            Object(NonMatching, "rb3/fixedsizesaveable.cpp"),
+            Object(NonMatching, "rb3/fixedsizesaveablestream.cpp"),
             Object(NonMatching, "rb3/adjacencies.cpp"),
             Object(NonMatching, "rb3/filechecksum.cpp"),
             Object(NonMatching, "rb3/customarray.cpp"),
@@ -512,6 +515,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802FB548.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
+            Object(NonMatching, "rb3/unknown/802/unk_8022CD04.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
@@ -533,6 +537,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/805/unk_8057464C.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_805CE140.cpp"),
             Object(NonMatching, "rb3/unknown/805/unk_8052A44C.cpp"),
+            Object(NonMatching, "rb3/unknown/805/unk_80510944.cpp"),
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
