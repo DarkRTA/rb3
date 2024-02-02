@@ -279,6 +279,8 @@ config.libs = [
             Object(NonMatching, "rb3/mgrs/usermgr.cpp"),
             Object(NonMatching, "rb3/mgrs/modifiermgr.cpp"),
             Object(NonMatching, "rb3/mgrs/sessionmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/songstatusmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/bandsongmgr.cpp"),
 
             # messages folder
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
@@ -322,6 +324,7 @@ config.libs = [
             Object(NonMatching, "rb3/panels/storemenupanel.cpp"),
             Object(NonMatching, "rb3/panels/storemainpanel.cpp"),
             Object(NonMatching, "rb3/panels/storeinfopanel.cpp"),
+            Object(NonMatching, "rb3/panels/bandpreloadpanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -338,6 +341,7 @@ config.libs = [
             Object(NonMatching, "rb3/providers/storeofferprovider.cpp"),
             Object(NonMatching, "rb3/providers/storemenuprovider.cpp"),
             Object(NonMatching, "rb3/providers/standinprovider.cpp"),
+            Object(NonMatching, "rb3/providers/outfitprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -433,6 +437,9 @@ config.libs = [
             Object(NonMatching, "rb3/musiclibrary.cpp"),
             Object(NonMatching, "rb3/dynamictex.cpp"),
             Object(NonMatching, "rb3/storesongsortnode.cpp"),
+            Object(NonMatching, "rb3/bandprofile.cpp"),
+            Object(NonMatching, "rb3/bandstoreoffer.cpp"),
+            Object(NonMatching, "rb3/bandnetgamedata.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
@@ -504,6 +511,7 @@ config.libs = [
             Object(NonMatching, "rb3/locale.cpp"),
             Object(NonMatching, "rb3/profile.cpp"),
             Object(NonMatching, "rb3/metaperformer.cpp"),
+            Object(NonMatching, "rb3/bandui.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
@@ -535,6 +543,7 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/802/unk_802663BC.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802DDEA0.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_8022CD04.cpp"),
+            Object(NonMatching, "rb3/unknown/802/unk_8028974C.cpp"),
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),

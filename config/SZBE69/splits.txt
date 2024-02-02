@@ -174,7 +174,33 @@ rb3/vocalplayer.cpp:
 	.ctors      start:0x807EFE58 end:0x807EFE5C
 
 rb3/unknown/801/unk_80188850.cpp:
-	.text       start:0x80188850 end:0x801D6A5C
+	.text       start:0x80188850 end:0x801C14AC
+
+rb3/bandnetgamedata.cpp:
+	.text       start:0x801C14AC end:0x801C2718
+
+rb3/panels/bandpreloadpanel.cpp:
+	.text       start:0x801C2718 end:0x801C2EA4
+
+rb3/bandprofile.cpp:
+	.text       start:0x801C2EA4 end:0x801C8588
+
+rb3/mgrs/bandsongmgr.cpp:
+	.text       start:0x801CDCC8 end:0x801D6B94
+	.ctors      start:0x807EFE60 end:0x807EFE64
+
+rb3/bandstoreoffer.cpp:
+	.text       start:0x801D6B94 end:0x801D6F44
+
+rb3/bandstorepanel.cpp:
+	.text       start:0x801D6F44 end:0x801D939C
+
+rb3/bandstoreuipanel.cpp:
+	.text       start:0x801D939C end:0x801D97B0
+
+rb3/bandui.cpp:
+	.text       start:0x801D97B0 end:0x801DDA64
+	.ctors      start:0x807EFE64 end:0x807EFE68
 
 rb3/panels/campaignsonginfopanel.cpp:
 	.text       start:0x801E35FC end:0x801E46B0
@@ -280,10 +306,13 @@ rb3/musiclibrary.cpp:
 	.text       start:0x8022D874 end:0x80235F10
 
 rb3/unknown/802/unk_8022CD04.cpp:
-	.text       start:0x80235F10 end:0x8023FCAC
+	.text       start:0x80235F10 end:0x8023F918
+
+rb3/providers/outfitprovider.cpp:
+	.text       start:0x8023F918 end:0x8023FAF4
 
 rb3/panels/overshellpanel.cpp:
-	.text       start:0x8023FCAC end:0x802473C0
+	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
 rb3/unknown/802/unk_80252B98.cpp:
@@ -318,7 +347,13 @@ rb3/panels/setlistmergepanel.cpp:
 	.text       start:0x8027238C end:0x80274308
 
 rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x80274308 end:0x8028BC68
+	.text       start:0x80274308 end:0x802873C4
+
+rb3/mgrs/songstatusmgr.cpp:
+	.text       start:0x802873C4 end:0x8028974C
+
+rb3/unknown/802/unk_8028974C.cpp:
+	.text       start:0x8028974C end:0x8028BC68
 
 rb3/providers/standinprovider.cpp:
 	.text       start:0x8028BC68 end:0x8028BE14
