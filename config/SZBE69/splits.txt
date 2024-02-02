@@ -287,7 +287,28 @@ rb3/providers/lessonprovider.cpp:
 	.text       start:0x802110E4 end:0x80212164
 
 rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x80212164 end:0x8021F840
+	.text       start:0x80212164 end:0x80215C24
+
+rb3/mgrs/bandmachinemgr.cpp:
+	.text       start:0x80215C24 end:0x80217538
+
+rb3/providers/makeupprovider.cpp:
+	.text       start:0x80217538 end:0x802179E4
+
+rb3/providers/mainhubmessageprovider.cpp:
+	.text       start:0x802179E4 end:0x8021822C
+
+rb3/panels/mainhubpanel.cpp:
+	.text       start:0x8021822C end:0x8021B9B0
+
+rb3/panels/managebandpanel.cpp:
+	.text       start:0x8021B9B0 end:0x8021D310
+
+rb3/matchmaker.cpp:
+	.text       start:0x8021D310 end:0x8021DD80
+
+rb3/bandmatchmaker.cpp:
+	.text       start:0x8021DD80 end:0x8021F218
 
 rb3/panels/metapanel.cpp:
 	.text       start:0x8021F840 end:0x8022376C

@@ -280,6 +280,7 @@ config.libs = [
             Object(NonMatching, "rb3/mgrs/modifiermgr.cpp"),
             Object(NonMatching, "rb3/mgrs/sessionmgr.cpp"),
             Object(NonMatching, "rb3/mgrs/songstatusmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/bandmachinemgr.cpp"),
             Object(NonMatching, "rb3/mgrs/bandsongmgr.cpp"),
 
             # messages folder
@@ -325,6 +326,8 @@ config.libs = [
             Object(NonMatching, "rb3/panels/storemainpanel.cpp"),
             Object(NonMatching, "rb3/panels/storeinfopanel.cpp"),
             Object(NonMatching, "rb3/panels/bandpreloadpanel.cpp"),
+            Object(NonMatching, "rb3/panels/managebandpanel.cpp"),
+            Object(NonMatching, "rb3/panels/mainhubpanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -342,6 +345,8 @@ config.libs = [
             Object(NonMatching, "rb3/providers/storemenuprovider.cpp"),
             Object(NonMatching, "rb3/providers/standinprovider.cpp"),
             Object(NonMatching, "rb3/providers/outfitprovider.cpp"),
+            Object(NonMatching, "rb3/providers/makeupprovider.cpp"),
+            Object(NonMatching, "rb3/providers/mainhubmessageprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -512,6 +517,8 @@ config.libs = [
             Object(NonMatching, "rb3/profile.cpp"),
             Object(NonMatching, "rb3/metaperformer.cpp"),
             Object(NonMatching, "rb3/bandui.cpp"),
+            Object(NonMatching, "rb3/bandmatchmaker.cpp"),
+            Object(NonMatching, "rb3/matchmaker.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
