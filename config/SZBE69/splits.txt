@@ -202,6 +202,12 @@ rb3/bandui.cpp:
 	.text       start:0x801D97B0 end:0x801DDA64
 	.ctors      start:0x807EFE64 end:0x807EFE68
 
+rb3/campaign.cpp:
+	.text       start:0x801DDA64 end:0x801E30D8
+
+rb3/playercampaigngoalleaderboard.cpp:
+	.text       start:0x801E30D8 end:0x801E35FC
+
 rb3/panels/campaignsonginfopanel.cpp:
 	.text       start:0x801E35FC end:0x801E46B0
 
@@ -504,6 +510,12 @@ rb3/world/trig.cpp:
 rb3/data/datainittrigfuncs.cpp:
 	.text       start:0x802E306C end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
+
+rb3/appchild.cpp:
+	.text       start:0x802E44FC end:0x802E4984
+
+rb3/archive.cpp:
+	.text       start:0x802E4984 end:0x802E72CC
 
 rb3/arkfile.cpp:
 	.text       start:0x802E72CC end:0x802E7828

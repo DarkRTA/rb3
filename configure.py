@@ -452,6 +452,10 @@ config.libs = [
             Object(NonMatching, "rb3/bandnetgamedata.cpp"),
             Object(NonMatching, "rb3/campaignlevel.cpp"),
             Object(NonMatching, "rb3/campaigngoalsleaderboard.cpp"),
+            Object(NonMatching, "rb3/campaign.cpp"),
+            Object(NonMatching, "rb3/playercampaigngoalleaderboard.cpp"),
+            Object(NonMatching, "rb3/appchild.cpp"),
+            Object(NonMatching, "rb3/archive.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
