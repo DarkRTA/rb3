@@ -278,6 +278,7 @@ config.libs = [
             Object(NonMatching, "rb3/mgrs/lessonmgr.cpp"),
             Object(NonMatching, "rb3/mgrs/usermgr.cpp"),
             Object(NonMatching, "rb3/mgrs/modifiermgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/sessionmgr.cpp"),
 
             # messages folder
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
@@ -313,6 +314,14 @@ config.libs = [
             Object(NonMatching, "rb3/panels/trainerpanel.cpp"),
             Object(NonMatching, "rb3/panels/heldbuttonpanel.cpp"),
             Object(NonMatching, "rb3/panels/preloadpanel.cpp"),
+            Object(NonMatching, "rb3/panels/multiselectlistpanel.cpp"),
+            Object(NonMatching, "rb3/panels/tokenredemptionpanel.cpp"),
+            Object(NonMatching, "rb3/panels/texloadpanel.cpp"),
+            Object(NonMatching, "rb3/panels/setlistmergepanel.cpp"),
+            Object(NonMatching, "rb3/panels/storerootpanel.cpp"),
+            Object(NonMatching, "rb3/panels/storemenupanel.cpp"),
+            Object(NonMatching, "rb3/panels/storemainpanel.cpp"),
+            Object(NonMatching, "rb3/panels/storeinfopanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -324,6 +333,11 @@ config.libs = [
             Object(NonMatching, "rb3/providers/leaderboardshortcutprovider.cpp"),
             Object(NonMatching, "rb3/providers/instrumentfinishprovider.cpp"),
             Object(NonMatching, "rb3/providers/lessonprovider.cpp"),
+            Object(NonMatching, "rb3/providers/sessionusersprovider.cpp"),
+            Object(NonMatching, "rb3/providers/trainerprovider.cpp"),
+            Object(NonMatching, "rb3/providers/storeofferprovider.cpp"),
+            Object(NonMatching, "rb3/providers/storemenuprovider.cpp"),
+            Object(NonMatching, "rb3/providers/standinprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -416,6 +430,9 @@ config.libs = [
             Object(NonMatching, "rb3/decibels.cpp"),
             Object(Matching, "rb3/primes.cpp"),
             Object(NonMatching, "rb3/radix.cpp"),
+            Object(NonMatching, "rb3/musiclibrary.cpp"),
+            Object(NonMatching, "rb3/dynamictex.cpp"),
+            Object(NonMatching, "rb3/storesongsortnode.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
@@ -486,6 +503,7 @@ config.libs = [
             Object(NonMatching, "rb3/utf8.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             Object(NonMatching, "rb3/profile.cpp"),
+            Object(NonMatching, "rb3/metaperformer.cpp"),
 
             # unknowns
             Object(NonMatching, "rb3/unknown/800/unk_8000D980.cpp"),
@@ -505,7 +523,6 @@ config.libs = [
             Object(NonMatching, "rb3/unknown/801/unk_80188850.cpp"),
             Object(NonMatching, "rb3/unknown/801/unk_801FCC20.cpp"),
 
-            Object(NonMatching, "rb3/unknown/802/unk_8022BE84.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_80252B98.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802D4B74.cpp"),
             Object(NonMatching, "rb3/unknown/802/unk_802E0CA0.cpp"),

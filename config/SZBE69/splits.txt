@@ -266,14 +266,21 @@ rb3/unknown/801/unk_801FCC20.cpp:
 rb3/panels/metapanel.cpp:
 	.text       start:0x8021F840 end:0x8022376C
 
-rb3/unknown/802/unk_8022BE84.cpp:
-	.text       start:0x8022BE84 end:0x8022BF20
+rb3/metaperformer.cpp:
+	.text       start:0x80224488 end:0x8022BF20
+	.ctors      start:0x807EFE6C end:0x807EFE70
 
 rb3/mgrs/modifiermgr.cpp:
 	.text       start:0x8022BF20 end:0x8022CD04
 
+rb3/panels/multiselectlistpanel.cpp:
+	.text       start:0x8022CD04 end:0x8022D874
+
+rb3/musiclibrary.cpp:
+	.text       start:0x8022D874 end:0x80235F10
+
 rb3/unknown/802/unk_8022CD04.cpp:
-	.text       start:0x8022CD04 end:0x8023FCAC
+	.text       start:0x80235F10 end:0x8023FCAC
 
 rb3/panels/overshellpanel.cpp:
 	.text       start:0x8023FCAC end:0x802473C0
@@ -301,8 +308,53 @@ rb3/panels/saveloadstatuspanel.cpp:
 rb3/panels/selectdifficultypanel.cpp:
 	.text       start:0x8026DEFC end:0x8026F090
 
+rb3/mgrs/sessionmgr.cpp:
+	.text       start:0x8026F090 end:0x80271B5C
+
+rb3/providers/sessionusersprovider.cpp:
+	.text       start:0x80271B5C end:0x8027238C
+
+rb3/panels/setlistmergepanel.cpp:
+	.text       start:0x8027238C end:0x80274308
+
 rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x8026F090 end:0x802956CC
+	.text       start:0x80274308 end:0x8028BC68
+
+rb3/providers/standinprovider.cpp:
+	.text       start:0x8028BC68 end:0x8028BE14
+
+rb3/panels/storeinfopanel.cpp:
+	.text       start:0x8028BE14 end:0x8028D7F0
+
+rb3/panels/storemainpanel.cpp:
+	.text       start:0x8028D7F0 end:0x8028F244
+
+rb3/panels/storemenupanel.cpp:
+	.text       start:0x8028F244 end:0x8028FECC
+
+rb3/providers/storemenuprovider.cpp:
+	.text       start:0x8028FECC end:0x80290618
+
+rb3/providers/storeofferprovider.cpp:
+	.text       start:0x80290618 end:0x802923F0
+
+rb3/panels/storerootpanel.cpp:
+	.text       start:0x802923F0 end:0x80292750
+
+rb3/storesongsortnode.cpp:
+	.text       start:0x80292750 end:0x802929D0
+
+rb3/dynamictex.cpp:
+	.text       start:0x802929D0 end:0x80292CA0
+
+rb3/panels/texloadpanel.cpp:
+	.text       start:0x80292CA0 end:0x80293878
+
+rb3/panels/tokenredemptionpanel.cpp:
+	.text       start:0x80293878 end:0x80295408
+
+rb3/providers/trainerprovider.cpp:
+	.text       start:0x80295408 end:0x802956CC
 
 rb3/mgrs/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
