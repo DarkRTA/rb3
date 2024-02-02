@@ -328,6 +328,10 @@ config.libs = [
             Object(NonMatching, "rb3/panels/bandpreloadpanel.cpp"),
             Object(NonMatching, "rb3/panels/managebandpanel.cpp"),
             Object(NonMatching, "rb3/panels/mainhubpanel.cpp"),
+            Object(NonMatching, "rb3/panels/calibrationpanel.cpp"),
+            Object(NonMatching, "rb3/panels/calibrationwelcomepanel.cpp"),
+            Object(NonMatching, "rb3/panels/campaigncareerleaderboardpanel.cpp"),
+            Object(NonMatching, "rb3/panels/campaigngoalsleaderboardchoicepanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -347,6 +351,7 @@ config.libs = [
             Object(NonMatching, "rb3/providers/outfitprovider.cpp"),
             Object(NonMatching, "rb3/providers/makeupprovider.cpp"),
             Object(NonMatching, "rb3/providers/mainhubmessageprovider.cpp"),
+            Object(NonMatching, "rb3/providers/calibrationmodesprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -445,6 +450,8 @@ config.libs = [
             Object(NonMatching, "rb3/bandprofile.cpp"),
             Object(NonMatching, "rb3/bandstoreoffer.cpp"),
             Object(NonMatching, "rb3/bandnetgamedata.cpp"),
+            Object(NonMatching, "rb3/campaignlevel.cpp"),
+            Object(NonMatching, "rb3/campaigngoalsleaderboard.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),

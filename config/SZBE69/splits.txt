@@ -205,6 +205,27 @@ rb3/bandui.cpp:
 rb3/panels/campaignsonginfopanel.cpp:
 	.text       start:0x801E35FC end:0x801E46B0
 
+rb3/panels/calibrationpanel.cpp:
+	.text       start:0x801E46B0 end:0x801E76EC
+
+rb3/providers/calibrationmodesprovider.cpp:
+	.text       start:0x801E76EC end:0x801E7C0C
+
+rb3/panels/calibrationwelcomepanel.cpp:
+	.text       start:0x801E7C0C end:0x801E8498
+
+rb3/campaignlevel.cpp:
+	.text       start:0x801E8498 end:0x801E8744
+
+rb3/campaigngoalsleaderboard.cpp:
+	.text       start:0x801E8744 end:0x801E953C
+
+rb3/panels/campaigncareerleaderboardpanel.cpp:
+	.text       start:0x801E953C end:0x801EA178
+
+rb3/panels/campaigngoalsleaderboardchoicepanel.cpp:
+	.text       start:0x801EA178 end:0x801EBCA8
+
 rb3/panels/charactercreatorpanel.cpp:
 	.text       start:0x801EBCA8 end:0x801F02A8
 
