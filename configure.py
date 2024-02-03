@@ -456,6 +456,8 @@ config.libs = [
             Object(NonMatching, "rb3/playercampaigngoalleaderboard.cpp"),
             Object(NonMatching, "rb3/appchild.cpp"),
             Object(NonMatching, "rb3/archive.cpp"),
+            Object(NonMatching, "rb3/wiicommercemgr.cpp"),
+            Object(NonMatching, "rb3/chordshapegenerator.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),

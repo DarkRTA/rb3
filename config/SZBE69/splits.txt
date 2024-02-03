@@ -534,8 +534,12 @@ rb3/asyncfilewii.cpp:
 rb3/unknown/802/unk_802E9040.cpp:
 	.text       start:0x802E9040 end:0x802EAC5C
 
+rb3/wiicommercemgr.cpp:
+	.text       start:0x802EC338 end:0x802F0378
+	.ctors      start:0x807EFEC0 end:0x807EFEC4
+
 rb3/unknown/802/unk_802F02EC.cpp:
-	.text       start:0x802F02EC end:0x802F83C0
+	.text       start:0x802F0378 end:0x802F83C0
 
 rb3/unknown/802/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F8818
@@ -865,6 +869,10 @@ libs/zlib/inftrees.c:
 libs/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
+
+rb3/chordshapegenerator.cpp:
+	.text       start:0x803EEDD4 end:0x803F4E74
+	.ctors      start:0x807EFF90 end:0x807EFF94
 
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
