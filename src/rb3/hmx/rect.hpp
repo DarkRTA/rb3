@@ -4,7 +4,7 @@
 namespace Hmx {
     class Rect {
     public:
-        float x, y, w, h;
+        float x1, y1, x2, y2;
     };
 }
 
