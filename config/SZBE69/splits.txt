@@ -1049,7 +1049,7 @@ libs/speex/libspeex/vbr.c:
 libs/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
-rb3/Rnd/wii/WiiRnd.cpp:
+rb3/Rnd/wii/wiirnd.cpp:
 	.text       start:0x806B8438 end:0x806BDD84
 	.ctors      start:0x807F0040 end:0x807F0044
 	.sbss       start:0x808E4E70 end:0x808E4E74
