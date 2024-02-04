@@ -379,6 +379,9 @@ rb3/mgrs/profilemgr.cpp:
 rb3/panels/retryaudiopanel.cpp:
 	.text       start:0x80266448 end:0x802669E4
 
+rb3/mgrs/saveloadmanager.cpp:
+	.text       start:0x80267794 end:0x8026D7B0
+
 rb3/panels/saveloadstatuspanel.cpp:
 	.text       start:0x8026D7B0 end:0x8026DEFC
 
@@ -455,6 +458,9 @@ rb3/ui/uievent.cpp:
 rb3/ui/uistats.cpp:
 	.text       start:0x8029948C end:0x8029A744
 	.ctors      start:0x807EFE7C end:0x807EFE80
+
+rb3/panels/voiceoverpanel.cpp:
+	.text       start:0x8029E738 end:0x8029F41C
 
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58

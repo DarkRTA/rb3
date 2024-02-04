@@ -282,6 +282,7 @@ config.libs = [
             Object(NonMatching, "rb3/mgrs/songstatusmgr.cpp"),
             Object(NonMatching, "rb3/mgrs/bandmachinemgr.cpp"),
             Object(NonMatching, "rb3/mgrs/bandsongmgr.cpp"),
+            Object(NonMatching, "rb3/mgrs/saveloadmanager.cpp"),
 
             # messages folder
             Object(Matching, "rb3/messages/stringstrummedmsg.cpp"),
@@ -332,6 +333,7 @@ config.libs = [
             Object(NonMatching, "rb3/panels/calibrationwelcomepanel.cpp"),
             Object(NonMatching, "rb3/panels/campaigncareerleaderboardpanel.cpp"),
             Object(NonMatching, "rb3/panels/campaigngoalsleaderboardchoicepanel.cpp"),
+            Object(NonMatching, "rb3/panels/voiceoverpanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
