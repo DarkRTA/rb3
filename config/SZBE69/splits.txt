@@ -145,6 +145,9 @@ rb3/panels/fadepanel.cpp:
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
+rb3/game.cpp:
+	.text       start:0x80110030 end:0x80116E14
+
 rb3/mgrs/gamemicmanager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50
@@ -158,7 +161,19 @@ rb3/panels/gamepanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
 
 rb3/unknown/801/unk_8011AED8.cpp:
-	.text       start:0x8011DD8C end:0x80159E30
+	.text       start:0x8011DD8C end:0x80141EE8
+
+rb3/performer.cpp:
+	.text       start:0x80141EE8 end:0x801444A4
+
+rb3/player.cpp:
+	.text       start:0x801444A4 end:0x80149978
+
+rb3/panels/practicepanel.cpp:
+	.text       start:0x80149978 end:0x8014BAA0
+
+rb3/providers/practicesectionprovider.cpp:
+	.text       start:0x8014BAA0 end:0x8014CF80
 
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
@@ -976,6 +991,12 @@ rb3/ui/uipicture.cpp:
 
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x80575698 end:0x80581A8C
+
+rb3/worldcrowd.cpp:
+	.text       start:0x8058D868 end:0x80597134
+
+rb3/colorpalette.cpp:
+	.text       start:0x80597134 end:0x80598310
 
 rb3/stubs/stubonef.cpp:
 	.text       start:0x8059FF1C end:0x8059FF28

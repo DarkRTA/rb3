@@ -338,6 +338,7 @@ config.libs = [
             Object(NonMatching, "rb3/panels/bandstorepanel.cpp"),
             Object(NonMatching, "rb3/panels/bandstoreuipanel.cpp"),
             Object(NonMatching, "rb3/panels/storepanel.cpp"),
+            Object(NonMatching, "rb3/panels/practicepanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
@@ -358,6 +359,7 @@ config.libs = [
             Object(NonMatching, "rb3/providers/makeupprovider.cpp"),
             Object(NonMatching, "rb3/providers/mainhubmessageprovider.cpp"),
             Object(NonMatching, "rb3/providers/calibrationmodesprovider.cpp"),
+            Object(NonMatching, "rb3/providers/practicesectionprovider.cpp"),
 
             # Rnd folder
             Object(NonMatching, "rb3/Rnd/rndanimatable.cpp"),
@@ -464,6 +466,11 @@ config.libs = [
             Object(NonMatching, "rb3/archive.cpp"),
             Object(NonMatching, "rb3/wiicommercemgr.cpp"),
             Object(NonMatching, "rb3/chordshapegenerator.cpp"),
+            Object(NonMatching, "rb3/colorpalette.cpp"),
+            Object(NonMatching, "rb3/worldcrowd.cpp"),
+            Object(NonMatching, "rb3/player.cpp"),
+            Object(NonMatching, "rb3/performer.cpp"),
+            Object(NonMatching, "rb3/game.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
