@@ -192,10 +192,10 @@ rb3/mgrs/bandsongmgr.cpp:
 rb3/bandstoreoffer.cpp:
 	.text       start:0x801D6B94 end:0x801D6F44
 
-rb3/bandstorepanel.cpp:
+rb3/panels/bandstorepanel.cpp:
 	.text       start:0x801D6F44 end:0x801D939C
 
-rb3/bandstoreuipanel.cpp:
+rb3/panels/bandstoreuipanel.cpp:
 	.text       start:0x801D939C end:0x801D97B0
 
 rb3/bandui.cpp:
@@ -942,7 +942,13 @@ rb3/profile.cpp:
 	.text       start:0x805143A0 end:0x805147A4
 
 rb3/unknown/805/unk_80510944.cpp:
-	.text       start:0x805147A4 end:0x80522990
+	.text       start:0x805147A4 end:0x805188D0
+
+rb3/panels/storeartloaderpanel.cpp:
+	.text       start:0x805188D0 end:0x80519AB8
+
+rb3/panels/storepanel.cpp:
+	.text       start:0x80525830 end:0x8052901C
 
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C

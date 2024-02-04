@@ -334,6 +334,10 @@ config.libs = [
             Object(NonMatching, "rb3/panels/campaigncareerleaderboardpanel.cpp"),
             Object(NonMatching, "rb3/panels/campaigngoalsleaderboardchoicepanel.cpp"),
             Object(NonMatching, "rb3/panels/voiceoverpanel.cpp"),
+            Object(NonMatching, "rb3/panels/storeartloaderpanel.cpp"),
+            Object(NonMatching, "rb3/panels/bandstorepanel.cpp"),
+            Object(NonMatching, "rb3/panels/bandstoreuipanel.cpp"),
+            Object(NonMatching, "rb3/panels/storepanel.cpp"),
 
             # providers folder
             Object(NonMatching, "rb3/providers/currentoutfitprovider.cpp"),
