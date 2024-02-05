@@ -402,6 +402,9 @@ config.libs = [
             Object(Matching, "rb3/Rnd/dofproc.cpp"),
             Object(Matching, "rb3/Rnd/shaderoptions.cpp"),
 
+            # Wii-specific Rnd stuff
+            Object(NonMatching, "rb3/Rnd/wii/wiirnd.cpp"),
+
             # stubs folder
             Object(Matching, "rb3/stubs/stubone.cpp"),
             Object(Matching, "rb3/stubs/stubonef.cpp"),
@@ -482,7 +485,7 @@ config.libs = [
             Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
-            Object(NonMatching, "rb3/hxguid.cpp"),            
+            Object(NonMatching, "rb3/hxguid.cpp"),
             Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
             Object(Matching, "rb3/stringtablelocks.cpp"),
@@ -500,7 +503,7 @@ config.libs = [
             Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
-            
+
             Object(Matching, "rb3/intpacker.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
@@ -512,7 +515,7 @@ config.libs = [
             Object(NonMatching, "rb3/unisonicon.cpp"),
             Object(NonMatching, "rb3/crowdmetericon.cpp"),
             Object(NonMatching, "rb3/crowdaudio.cpp"),
-            Object(NonMatching, "rb3/overshelldir.cpp"),            
+            Object(NonMatching, "rb3/overshelldir.cpp"),
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
             Object(NonMatching, "rb3/midiparser.cpp"),
             Object(NonMatching, "rb3/objectdir.cpp"),
