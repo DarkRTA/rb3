@@ -145,6 +145,9 @@ rb3/panels/fadepanel.cpp:
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
+rb3/game.cpp:
+	.text       start:0x80110030 end:0x80116E14
+
 rb3/mgrs/gamemicmanager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50
@@ -158,7 +161,19 @@ rb3/panels/gamepanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
 
 rb3/unknown/801/unk_8011AED8.cpp:
-	.text       start:0x8011DD8C end:0x80159E30
+	.text       start:0x8011DD8C end:0x80141EE8
+
+rb3/performer.cpp:
+	.text       start:0x80141EE8 end:0x801444A4
+
+rb3/player.cpp:
+	.text       start:0x801444A4 end:0x80149978
+
+rb3/panels/practicepanel.cpp:
+	.text       start:0x80149978 end:0x8014BAA0
+
+rb3/providers/practicesectionprovider.cpp:
+	.text       start:0x8014BAA0 end:0x8014CF80
 
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
@@ -174,10 +189,63 @@ rb3/vocalplayer.cpp:
 	.ctors      start:0x807EFE58 end:0x807EFE5C
 
 rb3/unknown/801/unk_80188850.cpp:
-	.text       start:0x80188850 end:0x801D6A5C
+	.text       start:0x80188850 end:0x801C14AC
+
+rb3/bandnetgamedata.cpp:
+	.text       start:0x801C14AC end:0x801C2718
+
+rb3/panels/bandpreloadpanel.cpp:
+	.text       start:0x801C2718 end:0x801C2EA4
+
+rb3/bandprofile.cpp:
+	.text       start:0x801C2EA4 end:0x801C8588
+
+rb3/mgrs/bandsongmgr.cpp:
+	.text       start:0x801CDCC8 end:0x801D6B94
+	.ctors      start:0x807EFE60 end:0x807EFE64
+
+rb3/bandstoreoffer.cpp:
+	.text       start:0x801D6B94 end:0x801D6F44
+
+rb3/panels/bandstorepanel.cpp:
+	.text       start:0x801D6F44 end:0x801D939C
+
+rb3/panels/bandstoreuipanel.cpp:
+	.text       start:0x801D939C end:0x801D97B0
+
+rb3/bandui.cpp:
+	.text       start:0x801D97B0 end:0x801DDA64
+	.ctors      start:0x807EFE64 end:0x807EFE68
+
+rb3/campaign.cpp:
+	.text       start:0x801DDA64 end:0x801E30D8
+
+rb3/playercampaigngoalleaderboard.cpp:
+	.text       start:0x801E30D8 end:0x801E35FC
 
 rb3/panels/campaignsonginfopanel.cpp:
 	.text       start:0x801E35FC end:0x801E46B0
+
+rb3/panels/calibrationpanel.cpp:
+	.text       start:0x801E46B0 end:0x801E76EC
+
+rb3/providers/calibrationmodesprovider.cpp:
+	.text       start:0x801E76EC end:0x801E7C0C
+
+rb3/panels/calibrationwelcomepanel.cpp:
+	.text       start:0x801E7C0C end:0x801E8498
+
+rb3/campaignlevel.cpp:
+	.text       start:0x801E8498 end:0x801E8744
+
+rb3/campaigngoalsleaderboard.cpp:
+	.text       start:0x801E8744 end:0x801E953C
+
+rb3/panels/campaigncareerleaderboardpanel.cpp:
+	.text       start:0x801E953C end:0x801EA178
+
+rb3/panels/campaigngoalsleaderboardchoicepanel.cpp:
+	.text       start:0x801EA178 end:0x801EBCA8
 
 rb3/panels/charactercreatorpanel.cpp:
 	.text       start:0x801EBCA8 end:0x801F02A8
@@ -261,16 +329,53 @@ rb3/providers/lessonprovider.cpp:
 	.text       start:0x802110E4 end:0x80212164
 
 rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x80212164 end:0x8021F840
+	.text       start:0x80212164 end:0x80215C24
+
+rb3/mgrs/bandmachinemgr.cpp:
+	.text       start:0x80215C24 end:0x80217538
+
+rb3/providers/makeupprovider.cpp:
+	.text       start:0x80217538 end:0x802179E4
+
+rb3/providers/mainhubmessageprovider.cpp:
+	.text       start:0x802179E4 end:0x8021822C
+
+rb3/panels/mainhubpanel.cpp:
+	.text       start:0x8021822C end:0x8021B9B0
+
+rb3/panels/managebandpanel.cpp:
+	.text       start:0x8021B9B0 end:0x8021D310
+
+rb3/matchmaker.cpp:
+	.text       start:0x8021D310 end:0x8021DD80
+
+rb3/bandmatchmaker.cpp:
+	.text       start:0x8021DD80 end:0x8021F218
 
 rb3/panels/metapanel.cpp:
 	.text       start:0x8021F840 end:0x8022376C
 
-rb3/unknown/802/unk_8022BE84.cpp:
-	.text       start:0x8022BE84 end:0x8023FCAC
+rb3/metaperformer.cpp:
+	.text       start:0x80224488 end:0x8022BF20
+	.ctors      start:0x807EFE6C end:0x807EFE70
+
+rb3/mgrs/modifiermgr.cpp:
+	.text       start:0x8022BF20 end:0x8022CD04
+
+rb3/panels/multiselectlistpanel.cpp:
+	.text       start:0x8022CD04 end:0x8022D874
+
+rb3/musiclibrary.cpp:
+	.text       start:0x8022D874 end:0x80235F10
+
+rb3/unknown/802/unk_8022CD04.cpp:
+	.text       start:0x80235F10 end:0x8023F918
+
+rb3/providers/outfitprovider.cpp:
+	.text       start:0x8023F918 end:0x8023FAF4
 
 rb3/panels/overshellpanel.cpp:
-	.text       start:0x8023FCAC end:0x802473C0
+	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
 rb3/unknown/802/unk_80252B98.cpp:
@@ -289,14 +394,68 @@ rb3/mgrs/profilemgr.cpp:
 rb3/panels/retryaudiopanel.cpp:
 	.text       start:0x80266448 end:0x802669E4
 
+rb3/mgrs/saveloadmanager.cpp:
+	.text       start:0x80267794 end:0x8026D7B0
+
 rb3/panels/saveloadstatuspanel.cpp:
 	.text       start:0x8026D7B0 end:0x8026DEFC
 
 rb3/panels/selectdifficultypanel.cpp:
 	.text       start:0x8026DEFC end:0x8026F090
 
+rb3/mgrs/sessionmgr.cpp:
+	.text       start:0x8026F090 end:0x80271B5C
+
+rb3/providers/sessionusersprovider.cpp:
+	.text       start:0x80271B5C end:0x8027238C
+
+rb3/panels/setlistmergepanel.cpp:
+	.text       start:0x8027238C end:0x80274308
+
 rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x8026F090 end:0x802956CC
+	.text       start:0x80274308 end:0x802873C4
+
+rb3/mgrs/songstatusmgr.cpp:
+	.text       start:0x802873C4 end:0x8028974C
+
+rb3/unknown/802/unk_8028974C.cpp:
+	.text       start:0x8028974C end:0x8028BC68
+
+rb3/providers/standinprovider.cpp:
+	.text       start:0x8028BC68 end:0x8028BE14
+
+rb3/panels/storeinfopanel.cpp:
+	.text       start:0x8028BE14 end:0x8028D7F0
+
+rb3/panels/storemainpanel.cpp:
+	.text       start:0x8028D7F0 end:0x8028F244
+
+rb3/panels/storemenupanel.cpp:
+	.text       start:0x8028F244 end:0x8028FECC
+
+rb3/providers/storemenuprovider.cpp:
+	.text       start:0x8028FECC end:0x80290618
+
+rb3/providers/storeofferprovider.cpp:
+	.text       start:0x80290618 end:0x802923F0
+
+rb3/panels/storerootpanel.cpp:
+	.text       start:0x802923F0 end:0x80292750
+
+rb3/storesongsortnode.cpp:
+	.text       start:0x80292750 end:0x802929D0
+
+rb3/dynamictex.cpp:
+	.text       start:0x802929D0 end:0x80292CA0
+
+rb3/panels/texloadpanel.cpp:
+	.text       start:0x80292CA0 end:0x80293878
+
+rb3/panels/tokenredemptionpanel.cpp:
+	.text       start:0x80293878 end:0x80295408
+
+rb3/providers/trainerprovider.cpp:
+	.text       start:0x80295408 end:0x802956CC
 
 rb3/mgrs/trainingmgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
@@ -314,6 +473,9 @@ rb3/ui/uievent.cpp:
 rb3/ui/uistats.cpp:
 	.text       start:0x8029948C end:0x8029A744
 	.ctors      start:0x807EFE7C end:0x807EFE80
+
+rb3/panels/voiceoverpanel.cpp:
+	.text       start:0x8029E738 end:0x8029F41C
 
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
@@ -370,6 +532,12 @@ rb3/data/datainittrigfuncs.cpp:
 	.text       start:0x802E306C end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
 
+rb3/appchild.cpp:
+	.text       start:0x802E44FC end:0x802E4984
+
+rb3/archive.cpp:
+	.text       start:0x802E4984 end:0x802E72CC
+
 rb3/arkfile.cpp:
 	.text       start:0x802E72CC end:0x802E7828
 	.data       start:0x808516F0 end:0x808517C8
@@ -387,8 +555,12 @@ rb3/asyncfilewii.cpp:
 rb3/unknown/802/unk_802E9040.cpp:
 	.text       start:0x802E9040 end:0x802EAC5C
 
+rb3/wiicommercemgr.cpp:
+	.text       start:0x802EC338 end:0x802F0378
+	.ctors      start:0x807EFEC0 end:0x807EFEC4
+
 rb3/unknown/802/unk_802F02EC.cpp:
-	.text       start:0x802F02EC end:0x802F83C0
+	.text       start:0x802F0378 end:0x802F83C0
 
 rb3/unknown/802/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F8818
@@ -719,6 +891,10 @@ libs/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
 
+rb3/chordshapegenerator.cpp:
+	.text       start:0x803EEDD4 end:0x803F4E74
+	.ctors      start:0x807EFF90 end:0x807EFF94
+
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
@@ -760,7 +936,37 @@ rb3/overshelldir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
 rb3/unknown/805/unk_8050FA30.cpp:
-	.text       start:0x8050472C end:0x80522990
+	.text       start:0x8050472C end:0x8050EA88
+
+rb3/panels/dejitterpanel.cpp:
+	.text       start:0x8050EA88 end:0x8050EF80
+
+rb3/fixedsizesaveable.cpp:
+	.text       start:0x8050EF80 end:0x8050FA30
+
+rb3/fixedsizesaveablestream.cpp:
+	.text       start:0x8050FA30 end:0x8050FEF4
+
+rb3/panels/heldbuttonpanel.cpp:
+	.text       start:0x8050FEF4 end:0x80510944
+
+rb3/panels/preloadpanel.cpp:
+	.text       start:0x805133E4 end:0x805143A0
+
+rb3/profile.cpp:
+	.text       start:0x805143A0 end:0x805147A4
+
+rb3/unknown/805/unk_80510944.cpp:
+	.text       start:0x805147A4 end:0x805188D0
+
+rb3/panels/storeartloaderpanel.cpp:
+	.text       start:0x805188D0 end:0x80519AB8
+
+rb3/storeoffer.cpp:
+	.text       start:0x80519D10 end:0x8051CBE4
+
+rb3/panels/storepanel.cpp:
+	.text       start:0x80525830 end:0x8052901C
 
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C
@@ -788,6 +994,12 @@ rb3/ui/uipicture.cpp:
 
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x80575698 end:0x80581A8C
+
+rb3/worldcrowd.cpp:
+	.text       start:0x8058D868 end:0x80597134
+
+rb3/colorpalette.cpp:
+	.text       start:0x80597134 end:0x80598310
 
 rb3/stubs/stubonef.cpp:
 	.text       start:0x8059FF1C end:0x8059FF28
