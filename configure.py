@@ -471,6 +471,7 @@ config.libs = [
             Object(NonMatching, "rb3/player.cpp"),
             Object(NonMatching, "rb3/performer.cpp"),
             Object(NonMatching, "rb3/game.cpp"),
+            Object(NonMatching, "rb3/storeoffer.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
