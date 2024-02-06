@@ -975,12 +975,63 @@ rb3/midiparser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
+rb3/labelnumberticker.cpp:
+	.text       start:0x80549150 end:0x8054A190
+
+rb3/labelshrinkwrapper.cpp:
+	.text       start:0x8054A190 end:0x8054AE78
+
+rb3/paneldir.cpp:
+	.text       start:0x8054AE78 end:0x8054DBBC
+
+rb3/screenshot.cpp:
+	.text       start:0x8054DBBC end:0x8054E330
+
+rb3/ui/uimanager.cpp:
+	.text       start:0x8054EB14 end:0x80552668
+
+rb3/ui/uibutton.cpp:
+	.text       start:0x80552668 end:0x80552E80
+
+rb3/ui/uicolor.cpp:
+	.text       start:0x80552E80 end:0x80553260
+
+rb3/ui/uicomponent.cpp:
+	.text       start:0x80553260 end:0x80555FFC
+
+rb3/ui/uilabel.cpp:
+	.text       start:0x80555FFC end:0x8055A388
+
+rb3/ui/uifontimporter.cpp:
+	.text       start:0x8055A388 end:0x8055F3A8
+
+rb3/ui/uilabeldir.cpp:
+	.text       start:0x8055FE3C end:0x805618F0
+
 rb3/ui/uilist.cpp:
 	.text       start:0x805618F0 end:0x80568048
 	.ctors      start:0x807EFFC8 end:0x807EFFCC
 
+rb3/ui/uilistarrow.cpp:
+	.text       start:0x80568048 end:0x80568824
+
+rb3/ui/uilistcustom.cpp:
+	.text       start:0x80568824 end:0x805690A0
+
+rb3/ui/uilistdir.cpp:
+	.text       start:0x805690A0 end:0x8056C9AC
+
+rb3/ui/uilisthighlight.cpp:
+	.text       start:0x8056C9AC end:0x8056CEEC
+
+rb3/ui/uilistlabel.cpp:
+	.text       start:0x8056CEEC end:0x8056D844
+
+rb3/ui/uilistmesh.cpp:
+	.text       start:0x8056D844 end:0x8056E024
+
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x80568048 end:0x805715CC
+	.text       start:0x8056E024 end:0x805715CC
 
 rb3/ui/uilistwidget.cpp:
 	.text       start:0x805715CC end:0x805732E0

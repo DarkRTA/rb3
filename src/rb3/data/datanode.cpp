@@ -5,7 +5,7 @@
 #include <new>
 #include <map>
 
-std::map<Symbol, DataNode> gDataVars;
+// std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 
 extern void* _PoolAlloc(int, int, int);

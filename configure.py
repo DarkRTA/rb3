@@ -428,6 +428,18 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uilist.cpp"),
             Object(NonMatching, "rb3/ui/uilistwidget.cpp"),
             Object(NonMatching, "rb3/ui/uipicture.cpp"),
+            Object(NonMatching, "rb3/ui/uimanager.cpp"),
+            Object(NonMatching, "rb3/ui/uibutton.cpp"),
+            Object(NonMatching, "rb3/ui/uicomponent.cpp"),
+            Object(NonMatching, "rb3/ui/uilabel.cpp"),
+            Object(NonMatching, "rb3/ui/uifontimporter.cpp"),
+            Object(NonMatching, "rb3/ui/uilabeldir.cpp"),
+            Object(NonMatching, "rb3/ui/uilistarrow.cpp"),
+            Object(NonMatching, "rb3/ui/uilistcustom.cpp"),
+            Object(NonMatching, "rb3/ui/uilistdir.cpp"),
+            Object(NonMatching, "rb3/ui/uilisthighlight.cpp"),
+            Object(NonMatching, "rb3/ui/uilistlabel.cpp"),
+            Object(NonMatching, "rb3/ui/uilistmesh.cpp"),
 
             # world folder
             Object(Matching, "rb3/world/trig.cpp"),
@@ -475,6 +487,10 @@ config.libs = [
             Object(NonMatching, "rb3/performer.cpp"),
             Object(NonMatching, "rb3/game.cpp"),
             Object(NonMatching, "rb3/storeoffer.cpp"),
+            Object(NonMatching, "rb3/labelnumberticker.cpp"),
+            Object(NonMatching, "rb3/labelshrinkwrapper.cpp"),
+            Object(NonMatching, "rb3/paneldir.cpp"),
+            Object(NonMatching, "rb3/screenshot.cpp"),
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "rb3/interpolators.cpp"),
