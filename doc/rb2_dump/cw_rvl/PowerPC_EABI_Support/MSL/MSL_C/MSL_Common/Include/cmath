@@ -1,0 +1,10 @@
+/*
+    Compile unit: C:\cw_rvl\PowerPC_EABI_Support\MSL\MSL_C\MSL_Common\include\cmath
+    Producer: MW EABI PPC C-Compiler
+    Language: C++
+    Code range: 0x80378034 -> 0x80378058
+*/
+// Range: 0x80378034 -> 0x80378058
+float acos() {}
+
+
