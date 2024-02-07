@@ -42,7 +42,7 @@ public:
     char* mNote;
     const char* mName;
     ObjectDir* mDir;
-    vector<ObjRef*> mRefs; // thank you stlport, very cool
+    std::vector<ObjRef*> mRefs; // thank you stlport, very cool
 
     // o7 farts, you will be missed
     enum CopyType {
