@@ -1,7 +1,7 @@
 #ifndef RB3_SYSTEM_HPP
 #define RB3_SYSTEM_HPP
 #include "symbol.hpp"
-#include "data.hpp"
+#include "Data.h"
 
 DataNode OnSystemLanguage(DataArray*);
 DataNode OnSystemExec(DataArray*);

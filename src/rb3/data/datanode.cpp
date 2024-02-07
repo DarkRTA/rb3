@@ -1,4 +1,4 @@
-#include "data.hpp"
+#include "Data.h"
 #include "string.hpp"
 #include "string.h"
 #include "hmx/object.hpp"
@@ -165,7 +165,7 @@ void DataNode::AssignValue(const DataNode &dn) {
 
 
 // fn_803235D4
-DataNode *DataNode::operator=(const DataNode &dn) {
+DataNode& DataNode::operator=(const DataNode &dn) {
     if (type & 0x10) {
         value.dataArray->DecRefCount();
     }
@@ -174,7 +174,7 @@ DataNode *DataNode::operator=(const DataNode &dn) {
     if (type & 0x10) {
         value.dataArray->IncRefCount();
     }
-    return this;
+    return *this;
 }
 
 // fn_80323178

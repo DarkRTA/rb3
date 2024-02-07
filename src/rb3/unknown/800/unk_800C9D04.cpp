@@ -1,5 +1,4 @@
 #include "common.hpp"
-#include "data.hpp"
 #include "math.h"
 #include "vector3.hpp"
 #include "hmx/matrix3.hpp"
@@ -9,13 +8,6 @@
 // fn_800CF370
 int Minimum(int x, int y) {
     return (y < x) ? y : x;
-}
-
-
-// fn_800D7964
-float DataArray::GetFloatAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Float(this);
 }
 
 
@@ -89,9 +81,4 @@ void Scale(const Hmx::Matrix3 &mtx, const Vector3 &v, Hmx::Matrix3 &dst) {
 // fn_800D3290
 int Maximum(int i1, int i2) {
     return (i1 < i2) ? i2 : i1;
-}
-
-// fn_800D792C
-float DataArray::FindFloat(Symbol s) const {
-    return FindArray(s, true)->GetFloatAtIndex(1);
 }

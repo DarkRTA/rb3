@@ -28,39 +28,12 @@ Message::Message(DataArray *da) {
     unk4->IncRefCount();
 }
 
-// fn_800AE758
-void DataArray::IncRefCount() {
-    mRefCount++;
-}
-
-// fn_800B27F0
-DataArray *DataArray::GetArrayAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Array(this);
-}
-
-// fn_800B30B8
-DataNode::DataNode(float f) {
-    value.floatVal = f;
-    type = kDataFloat;
-}
-
-// fn_800AFF98
-DataNode::DataNode(Hmx::Object *obj) {
-    value.objVal = obj;
-    type = kDataObject;
-}
-
 // fn_800B441C
 const char *MakeString(const char *c) {
     FormatString fs(c);
     return fs.Str();
 }
 
-// fn_800AE0BC
-int DataArray::FindInt(Symbol s) const {
-    return FindArray(s, true)->GetIntAtIndex(1);
-}
 
 User* GetUserAtIndex(DataArray* da, int idx){
     return GetUser(da->GetNodeAtIndex(idx), da);

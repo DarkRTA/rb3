@@ -1,17 +1,9 @@
 #ifndef OBJ_DATA_H
 #define OBJ_DATA_H
-
-// remove these once you #include the appropriate files
-class Symbol; 
-class String;
-class TextStream;
-class BinStream;
-class Vector2;
-class Vector3;
-class Plane;
-namespace Hmx {
-    class Color;
-}
+#include "symbol.hpp"
+#include "string.hpp"
+#include "textstream.hpp"
+#include "binstream.hpp"
 
 // forward declarations
 class DataNode;
@@ -20,6 +12,7 @@ class DataArrayPtr;
 namespace Hmx {
     class Object;
 }
+class Symbol;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -58,10 +51,10 @@ enum DataType {
 };
 
 class DataNode {
-public:
+private:
     DataNodeValue mValue;
     DataType mType;
-
+public:
     DataNode(){
         mValue.integer = 0;
         mType = kDataInt;
@@ -72,22 +65,49 @@ public:
         mType = kDataInt;
     }
 
-    DataNode(Symbol);
-    DataNode(Hmx::Object*);
-    DataNode(DataType, int);
-    DataNode(float);
+    DataNode(Symbol s){
+        mType = kDataSymbol;
+        mValue.symbol = s.m_string;
+    }
+
+    DataNode(Hmx::Object* obj){
+        mValue.object = obj;
+        mType = kDataObject;
+    }
+
+    DataNode(DataType ty, int i){
+        mValue.integer = i;
+        mType = ty;
+    }
+
+    DataNode(float f){
+        mValue.real = f;
+        mType = kDataFloat;
+    }
+
     DataNode(const DataNode&);
     DataNode(const char* string);
     DataNode(const String& string);
     DataNode(const void* glob, int size);
     DataNode(const DataArrayPtr&);
     DataNode(DataArray* array, DataType type);
-    DataNode(DataNode*);
-    DataNode(DataFunc *);
 
-    ~DataNode(){
-
+    DataNode(DataNode* var){
+        mValue.var = var;
+        mType = kDataVar;
     }
+
+    DataNode(DataFunc* func){
+        mValue.func = func;
+        mType = kDataFunc;
+    }
+
+    ~DataNode();
+
+    // this is weak and should be defined here, but for some reason says DataArray is "incomplete"
+    // ~DataNode(){
+    //     if((mType & 0x10) != 0) mValue.array->Release();
+    // }
 
     DataType Type(){ return mType; }
     bool CompatibleType();
@@ -98,8 +118,8 @@ public:
     Symbol Sym(const DataArray* a);
     Symbol LiteralSym(const DataArray* a) const;
     Symbol ForceSym(const DataArray* a);
-    char* Str(const DataArray* a);
-    char* LiteralStr(const DataArray* a) const;
+    const char* Str(const DataArray* a);
+    const char* LiteralStr(const DataArray* a) const;
     void* Glob(int* size, const DataArray* a);
     float Float(const DataArray* a);
     float LiteralFloat(const DataArray* a) const;
@@ -109,11 +129,15 @@ public:
     DataArray* LiteralArray(const DataArray* a) const;
     DataArray* Command(const DataArray* a);
     DataNode* Var(const DataArray* a);
+    // for retrieving a Hmx::Object derivative from a DataNode
+    template <class T> T* Obj(const DataArray* a) const {
+        return dynamic_cast<T*>(GetObj(a));
+    }
 
     bool operator==(const DataNode& n) const;
     bool operator!=(const DataNode& n) const;
     bool NotNull() const;
-    DataNode& operator=(const DataNode& n) const;
+    DataNode& operator=(const DataNode& n);
 
     void Print(TextStream& s) const;
     void Save(BinStream& d) const;
@@ -121,31 +145,40 @@ public:
 };
 
 class DataArray {
-public:
+private:
     DataNode* mNodes;
     Symbol mFile;
     short mSize;
     short mRefs;
     short mLine;
     short mDeprecated;
+public:
     static DataFunc* sDefaultHandler;
 
-    int Size(){ return mSize; }
+    int Size() const { return mSize; }
+    int Line(){ return mLine; }
 
-    Symbol Sym(int) const;
-    // T* Obj<T>(int) const;
-    int Int(int) const;
-    float Float(int) const;
-    Symbol ForceSym(int) const;
-    DataArray* Array(int) const;
-    char* Str(int) const;
+    DataType Type(int i) const { return Node(i).Type(); }
+    int Int(int i) const { return Node(i).Int(this); }
+    Symbol Sym(int i) const { return Node(i).Sym(this); }
+    Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
+    Symbol ForceSym(int i) const { return Node(i).ForceSym(this); }
+    const char* Str(int i) const { return Node(i).Str(this); }
+    float Float(int i) const { return Node(i).Float(this); }
+    Hmx::Object* GetObj(int i) const { return Node(i).GetObj(this); }
+    DataArray* Array(int i) const { return Node(i).Array(this); }
+    DataArray* Command(int i) const { return Node(i).Command(this); }
+    DataNode* Var(int i) const { return Node(i).Var(this); }
+    template <class T> T* Obj(int i) const {
+        return Node(i).Obj<T>(this);
+    }
 
-    void AddRef();
-    void Release();
+    void AddRef(){ mRefs++; }
+    void Release(){ if (--mRefs == 0) delete this; }
     // void* operator new(unsigned long); make the param size_t?
 
-    DataNode& Node(int);
-    DataNode& Node(int) const;
+    DataNode& Node(int i) { return mNodes[i]; }
+    DataNode& Node(int i) const { return mNodes[i]; }
 
     void Print(TextStream& s, DataType type, bool compact) const;
     void Insert(int index, const DataNode& node);
@@ -168,15 +201,15 @@ public:
     bool FindData(Symbol tag, int & ret, bool fail) const;
     bool FindData(Symbol tag, float & ret, bool fail) const;
     bool FindData(Symbol tag, bool & ret, bool fail) const;
-    bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
-    bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
-    bool FindData(Symbol tag, Plane & ret, bool fail) const;
-    bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
+    // bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
+    // bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
+    // bool FindData(Symbol tag, Plane & ret, bool fail) const;
+    // bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
 
-    int FindInt(Symbol) const;
-    float FindFloat(Symbol) const;
-    Symbol FindSym(Symbol) const;
-    char* FindStr(Symbol) const;
+    int FindInt(Symbol tag) const { return FindArray(tag, true)->Int(1); }
+    float FindFloat(Symbol tag) const { return FindArray(tag, true)->Float(1); }
+    Symbol FindSym(Symbol tag) const { return FindArray(tag, true)->Sym(1); }
+    const char* FindStr(Symbol tag) const { return FindArray(tag, true)->Str(1); }
 
     DataArray* Clone(bool deep, bool eval, int);
 
@@ -192,7 +225,9 @@ public:
     void SaveGlob(BinStream& d, bool str) const;
     void LoadGlob(BinStream& d, bool str);
     DataNode ExecuteScript(int firstCmd, Hmx::Object* _this, const DataArray* _args, int firstArg);
-    DataNode& Evaluate(int) const;
+    DataNode& Evaluate(int i) const {
+        return Node(i).Evaluate();
+    }
     
 };
 

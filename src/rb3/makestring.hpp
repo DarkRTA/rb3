@@ -1,7 +1,7 @@
 #ifndef RB3_MAKESTRING_HPP
 #define RB3_MAKESTRING_HPP
 #include "string.hpp"
-#include "data.hpp"
+#include "Data.h"
 
 class FormatString {
 public:
