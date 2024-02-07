@@ -51,12 +51,10 @@ enum DataType {
 };
 
 class DataNode {
-private:
+public:
     DataNodeValue mValue;
     DataType mType;
 
-    DataNode& AddToBuffer();
-public:
     DataNode(){
         mValue.integer = 0;
         mType = kDataInt;
@@ -114,6 +112,7 @@ public:
     DataType Type(){ return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
+    DataNode& AddToBuffer();
 
     int Int(const DataArray* a) const;
     int LiteralInt(const DataArray* a) const;
@@ -147,14 +146,13 @@ public:
 };
 
 class DataArray {
-private:
+public:
     DataNode* mNodes;
     Symbol mFile;
     short mSize;
     short mRefs;
     short mLine;
     short mDeprecated;
-public:
     static DataFunc* sDefaultHandler;
 
     int Size() const { return mSize; }
@@ -238,7 +236,7 @@ BinStream& operator>>(BinStream&, DataArray*&);
 BinStream& operator<<(BinStream&, const DataArray*);
 
 class DataArrayPtr {
-public: // HMX made this variable private
+public:
     DataArray* mData;
 };
 

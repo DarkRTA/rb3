@@ -1,6 +1,6 @@
-#ifndef RB3_DATAUTIL_HPP
-#define RB3_DATAUTIL_HPP
-#include "data.hpp"
+#ifndef OBJ_DATAUTL_H
+#define OBJ_DATAUTL_H
+#include "Data.h"
 
 void DataMergeTags(DataArray*, DataArray*);
 void DataReplaceTags(DataArray*, DataArray*);

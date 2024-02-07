@@ -650,7 +650,7 @@ system/obj/DataNode.cpp:
 	.data       start:0x80855448 end:0x80855698
 	.bss        start:0x8091A598 end:0x8091A608
 
-rb3/data/datautil.cpp:
+system/obj/DataUtl.cpp:
 	.text       start:0x803242CC end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 	.data       start:0x8085569C end:0x808556C0
