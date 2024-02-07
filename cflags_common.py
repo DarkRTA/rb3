@@ -17,6 +17,8 @@ cflags_includes = [
     "-i src/libs/speex",
     "-i src/sdk/RVL_SDK",
     "-i src/sdk/MSL_C++",
+    "-i src/system",
+    "-i src/system/obj",
     "-i src/rb3",
     "-i src/rb3/data",
     "-i src/rb3/mgrs",

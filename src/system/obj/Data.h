@@ -54,6 +54,8 @@ class DataNode {
 private:
     DataNodeValue mValue;
     DataType mType;
+
+    DataNode& AddToBuffer();
 public:
     DataNode(){
         mValue.integer = 0;
@@ -113,22 +115,22 @@ public:
     bool CompatibleType();
     DataNode& Evaluate() const;
 
-    int Int(const DataArray* a);
+    int Int(const DataArray* a) const;
     int LiteralInt(const DataArray* a) const;
-    Symbol Sym(const DataArray* a);
+    Symbol Sym(const DataArray* a) const;
     Symbol LiteralSym(const DataArray* a) const;
-    Symbol ForceSym(const DataArray* a);
-    const char* Str(const DataArray* a);
+    Symbol ForceSym(const DataArray* a) const;
+    const char* Str(const DataArray* a) const;
     const char* LiteralStr(const DataArray* a) const;
-    void* Glob(int* size, const DataArray* a);
-    float Float(const DataArray* a);
+    void* Glob(int* size, const DataArray* a) const;
+    float Float(const DataArray* a) const;
     float LiteralFloat(const DataArray* a) const;
     DataFunc* Func(const DataArray* a) const;
-    Hmx::Object* GetObj(const DataArray* a);
-    DataArray* Array(const DataArray* a);
+    Hmx::Object* GetObj(const DataArray* a) const;
+    DataArray* Array(const DataArray* a) const;
     DataArray* LiteralArray(const DataArray* a) const;
-    DataArray* Command(const DataArray* a);
-    DataNode* Var(const DataArray* a);
+    DataArray* Command(const DataArray* a) const;
+    DataNode* Var(const DataArray* a) const;
     // for retrieving a Hmx::Object derivative from a DataNode
     template <class T> T* Obj(const DataArray* a) const {
         return dynamic_cast<T*>(GetObj(a));
@@ -236,7 +238,7 @@ BinStream& operator>>(BinStream&, DataArray*&);
 BinStream& operator<<(BinStream&, const DataArray*);
 
 class DataArrayPtr {
-public:
+public: // HMX made this variable private
     DataArray* mData;
 };
 

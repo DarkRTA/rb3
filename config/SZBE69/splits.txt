@@ -644,10 +644,11 @@ rb3/data/datafunc.cpp:
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 
-rb3/data/datanode.cpp:
+system/obj/DataNode.cpp:
 	.text       start:0x80322958 end:0x80324278
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
+	.bss        start:0x8091A598 end:0x8091A608
 
 rb3/data/datautil.cpp:
 	.text       start:0x803242CC end:0x80324B4C

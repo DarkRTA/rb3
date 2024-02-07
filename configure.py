@@ -241,7 +241,7 @@ config.libs = [
             Object(NonMatching, "rb3/data/dataarray.cpp"),
             Object(NonMatching, "rb3/data/datafile.cpp"),
             Object(NonMatching, "rb3/data/datafunc.cpp"),
-            Object(NonMatching, "rb3/data/datanode.cpp"),
+            
             Object(NonMatching, "rb3/data/datautil.cpp"),
             Object(NonMatching, "rb3/data/dataflex.c"),
 
@@ -622,6 +622,15 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/806/unk_80660D18.cpp"),
             Object(NonMatching, "rb3/unknown/806/unk_80671DCC.cpp")
+        ],
+    },
+    {
+        "lib": "system",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "system/obj/DataNode.cpp")
         ],
     },
     {
