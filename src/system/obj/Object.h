@@ -44,6 +44,7 @@ public:
     ObjectDir* mDir;
     vector<ObjRef*> mRefs; // thank you stlport, very cool
 
+    // o7 farts, you will be missed
     enum CopyType {
         kCopyDeep = 0,
         kCopyShallow = 1,
