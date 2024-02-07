@@ -657,7 +657,7 @@ rb3/data/datautil.cpp:
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/data/dataflex.c:
+system/obj/DataFlex.c:
 	.text       start:0x80324B4C end:0x8032553C
 	.rodata     start:0x807F0D60 end:0x807F1D90
 	.data       start:0x808556C0 end:0x808558C8
