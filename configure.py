@@ -485,10 +485,6 @@ config.libs = [
             Object(NonMatching, "rb3/labelshrinkwrapper.cpp"),
             Object(NonMatching, "rb3/paneldir.cpp"),
             Object(NonMatching, "rb3/screenshot.cpp"),
-
-            # These functions match 100%, but won't link because the dtors aren't being merged properly
-            Object(LinkIssues, "rb3/interpolators.cpp"),
-
             Object(NonMatching, "rb3/joypad.cpp"),
             Object(NonMatching, "rb3/netstream.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
@@ -630,6 +626,9 @@ config.libs = [
             Object(NonMatching, "system/obj/DataFile.cpp"),
             Object(NonMatching, "system/obj/DataArray.cpp"),
             Object(NonMatching, "system/obj/DataFunc.cpp"),
+
+            # These functions match 100%, but won't link because the dtors aren't being merged properly
+            Object(LinkIssues, "system/math/Interp.cpp"),
         ],
     },
     {

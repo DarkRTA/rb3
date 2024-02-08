@@ -480,7 +480,7 @@ rb3/panels/voiceoverpanel.cpp:
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
-rb3/interpolators.cpp:
+system/math/Interp.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
 	.data       start:0x80851378 end:0x808514A8
 

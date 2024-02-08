@@ -1,6 +1,5 @@
 #ifndef RB3_MERGEFILTER_HPP
 #define RB3_MERGEFILTER_HPP
-#include "data.hpp"
 #include "hmx/object.hpp"
 
 class MergeFilter {
