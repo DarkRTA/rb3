@@ -736,7 +736,7 @@ system/utl/IntPacker.cpp:
 rb3/unknown/803/unk_8034DE50.cpp:
 	.text       start:0x8034DFC8 end:0x8034FFA4
 
-rb3/locale.cpp:
+system/utl/Locale.cpp:
 	.text       start:0x803500BC end:0x80350BF4
 	.ctors      start:0x807EFF54 end:0x807EFF58
 

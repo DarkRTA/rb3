@@ -1,10 +1,16 @@
-#ifndef RB3_LOCALE_HPP
-#define RB3_LOCALE_HPP
+#ifndef UTL_LOCALE_H
+#define UTL_LOCALE_H
 #include "Symbol.h"
 #include "Data.h"
 
-enum LocaleGender { GenMale, GenFemale };
-enum LocaleNumber { n1, n2, n3 };
+enum LocaleGender {
+    LocaleGenderMasculine = 0,
+    LocaleGenderFeminine = 1,
+};
+enum LocaleNumber {
+    LocaleSingular = 0,
+    LocalePlural = 1,
+};
 
 class Locale {
 public:

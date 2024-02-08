@@ -1,4 +1,4 @@
-#include "locale.hpp"
+#include "Locale.h"
 
 Locale TheLocale;
 

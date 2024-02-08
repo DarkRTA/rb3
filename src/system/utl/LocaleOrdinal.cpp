@@ -1,5 +1,5 @@
 #include "LocaleOrdinal.h"
-#include "locale.hpp"
+#include "Locale.h"
 #include "Symbol.h"
 #include "symbols.hpp"
 #include "MakeString.h"
@@ -30,7 +30,7 @@ const char* LocalizeOrdinal(int i, LocaleGender gender, LocaleNumber number, boo
         else if(lang == SymFre){
             if(super) strcat(buf, "<sup>");
             if(!strcmp(buf, "1")){
-                if(gender == GenMale) strcat(buf, "er");
+                if(gender == LocaleGenderMasculine) strcat(buf, "er");
                 else strcat(buf, "re");
             }
             else strcat(buf, "e");
