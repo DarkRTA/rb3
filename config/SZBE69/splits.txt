@@ -525,12 +525,9 @@ rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E1FE8 end:0x802E2E28
 
 system/math/Trig.cpp:
-	.text       start:0x802E2E28 end:0x802E306C
-	.bss        start:0x80901900 end:0x80902100
-
-rb3/data/datainittrigfuncs.cpp:
-	.text       start:0x802E306C end:0x802E33CC
+	.text       start:0x802E2E28 end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
+	.bss        start:0x80901900 end:0x80902100
 
 rb3/appchild.cpp:
 	.text       start:0x802E44FC end:0x802E4984

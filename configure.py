@@ -236,9 +236,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            # data folder
-            Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
-
             # HMX folder
             Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
