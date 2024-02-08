@@ -1,4 +1,4 @@
-#include "adsr.hpp"
+#include "ADSR.h"
 
 const float gDecayRate[16] = {
     0.00007f, 0.00018f, 0.00039f, 0.00081f, 0.0016f, 0.0033f, 0.00669999989f, 0.013f,
@@ -30,59 +30,59 @@ const float gLinDec[128] = { 1 };
 const float gExpInc[248] = { 1 };
 const float gExpDec[86] = { 1 };
 
-Ps2ADSR::Ps2ADSR() : ADmask(0x8F1F), SRmask(0x3C7) {
+Ps2ADSR::Ps2ADSR() : mReg1(0x8F1F), mReg2(0x3C7) {
     
 }
 
 void Ps2ADSR::SetAttackMode(AttackMode mode){
-    ADmask = (ADmask & 0xFFFF7FFF) | (mode << 0xF);
+    mReg1 = (mReg1 & 0xFFFF7FFF) | (mode << 0xF);
 }
 
 void Ps2ADSR::SetAttackRate(unsigned int ui){
-    ADmask = (ADmask & 0xFFFF80FF) | (ui << 8);
+    mReg1 = (mReg1 & 0xFFFF80FF) | (ui << 8);
 }
 
 void Ps2ADSR::SetDecayRate(unsigned int ui){
-    ADmask = (ADmask & 0xFFFFFF0F) | (ui << 4);
+    mReg1 = (mReg1 & 0xFFFFFF0F) | (ui << 4);
 }
 
 void Ps2ADSR::SetSustainMode(SustainMode mode){
-    SRmask = (SRmask & 0xFFFF1FFF) | (mode << 0xD);
+    mReg2 = (mReg2 & 0xFFFF1FFF) | (mode << 0xD);
 }
 
 void Ps2ADSR::SetSustainRate(unsigned int ui){
-    SRmask = (SRmask & 0xFFFFE03F) | (ui << 6);
+    mReg2 = (mReg2 & 0xFFFFE03F) | (ui << 6);
 }
 
 void Ps2ADSR::SetSustainLevel(unsigned int ui){
-    ADmask = (ADmask & 0xFFFFFFF0) | ui;
+    mReg1 = (mReg1 & 0xFFFFFFF0) | ui;
 }
 
 void Ps2ADSR::SetReleaseMode(ReleaseMode mode){
-    SRmask = (SRmask & 0xFFFFFFDF) | (mode << 5);
+    mReg2 = (mReg2 & 0xFFFFFFDF) | (mode << 5);
 }
 
 void Ps2ADSR::SetReleaseRate(unsigned int ui){
-    SRmask = (SRmask & 0xFFFFFFE0) | ui;
+    mReg2 = (mReg2 & 0xFFFFFFE0) | ui;
 }
 
 Ps2ADSR::AttackMode Ps2ADSR::GetAttackMode() const {
-    return (AttackMode)((ADmask >> 0xF) & 1);
+    return (AttackMode)((mReg1 >> 0xF) & 1);
 }
 
 Ps2ADSR::SustainMode Ps2ADSR::GetSustainMode() const {
-    return (SustainMode)((SRmask >> 0xD) & 7);
+    return (SustainMode)((mReg2 >> 0xD) & 7);
 }
 
 Ps2ADSR::ReleaseMode Ps2ADSR::GetReleaseMode() const {
-    return (ReleaseMode)((SRmask >> 5) & 1);
+    return (ReleaseMode)((mReg2 >> 5) & 1);
 }
 
 int FindNearestInTable(const float*, int, float);
 
 int Ps2ADSR::NearestAttackRate(float f) const {
     const float* table;
-    if(GetAttackMode() == LINEAR_INC){
+    if(GetAttackMode() == kAttackLinear){
         table = gLinInc;
     }
     else table = gExpInc;

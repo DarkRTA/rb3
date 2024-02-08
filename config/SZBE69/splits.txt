@@ -1197,7 +1197,7 @@ rb3/Rnd/rndambientocclusion.cpp:
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18
 
-rb3/adsr.cpp:
+system/synth/ADSR.cpp:
 	.text       start:0x80668D18 end:0x80669340
 	.rodata     start:0x807F3F30 end:0x807F4AA8
 

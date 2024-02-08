@@ -525,7 +525,6 @@ config.libs = [
             Object(NonMatching, "rb3/vocalplayer.cpp"),
             Object(NonMatching, "rb3/binkclip.cpp"),
             Object(NonMatching, "rb3/binkreader.cpp"),
-            Object(NonMatching, "rb3/adsr.cpp"),
             Object(NonMatching, "rb3/faders.cpp"),
             Object(NonMatching, "rb3/emitter.cpp"),
             Object(NonMatching, "rb3/metamusic.cpp"),
@@ -615,6 +614,7 @@ config.libs = [
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
 
+            Object(NonMatching, "system/synth/ADSR.cpp"),
             Object(NonMatching, "system/synth/ByteGrinder.cpp"),
             Object(NonMatching, "system/synth/FxSend.cpp"),
             Object(NonMatching, "system/synth/FxSendChorus.cpp"),
