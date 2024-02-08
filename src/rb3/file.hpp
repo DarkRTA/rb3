@@ -1,6 +1,6 @@
 #ifndef RB3_FILE_HPP
 #define RB3_FILE_HPP
-#include "string.hpp"
+#include "Str.h"
 
 class File {
 public:

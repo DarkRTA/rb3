@@ -1,5 +1,5 @@
-#ifndef RB3_STRING_HPP
-#define RB3_STRING_HPP
+#ifndef UTL_STR_H
+#define UTL_STR_H
 #include "TextStream.h"
 #include "Symbol.h"
 

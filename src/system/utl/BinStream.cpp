@@ -1,4 +1,4 @@
-#include "string.hpp"
+#include "Str.h"
 #include "TextStream.h"
 #include "BinStream.h"
 #include "string.h"

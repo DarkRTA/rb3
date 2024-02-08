@@ -1,8 +1,7 @@
-#include "string.hpp"
-#include "textstream.hpp"
+#include "Str.h"
 #include "unknown.hpp"
 #include "string.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "jsonobjects.hpp"
 
 extern char gEmpty;

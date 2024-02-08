@@ -1,6 +1,6 @@
 #ifndef UTL_MAKESTRING_H
 #define UTL_MAKESTRING_H
-#include "string.hpp"
+#include "Str.h"
 #include "Data.h"
 
 class FormatString {

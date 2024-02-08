@@ -794,7 +794,7 @@ rb3/optioninit.cpp:
 	.text       start:0x8035C6AC end:0x8035C8B4
 	.data       start:0x80858800 end:0x80858828
 
-rb3/string.cpp:
+system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
