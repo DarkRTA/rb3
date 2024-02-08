@@ -1218,40 +1218,40 @@ rb3/faders.cpp:
 	.text       start:0x8066F6C0 end:0x80671DCC
 	.ctors      start:0x807F0024 end:0x807F0028
 
-rb3/fx/fxsend.cpp:
+system/synth/FxSend.cpp:
 	.text       start:0x80671DCC end:0x80672F38
 
-rb3/fx/fxsendchorus.cpp:
+system/synth/FxSendChorus.cpp:
 	.text       start:0x80672F38 end:0x806737E4
 
-rb3/fx/fxsendflanger.cpp:
+system/synth/FxSendFlanger.cpp:
 	.text       start:0x806737E4 end:0x806740BC
 
-rb3/fx/fxsendreverb.cpp:
+system/synth/FxSendReverb.cpp:
 	.text       start:0x806740BC end:0x8067491C
 
-rb3/fx/fxsenddelay.cpp:
+system/synth/FxSendDelay.cpp:
 	.text       start:0x8067491C end:0x80675094
 
-rb3/fx/fxsenddistortion.cpp:
+system/synth/FxSendDistortion.cpp:
 	.text       start:0x80675094 end:0x80675550
 
-rb3/fx/fxsendcompress.cpp:
+system/synth/FxSendCompress.cpp:
 	.text       start:0x80675550 end:0x80675E50
 
-rb3/fx/fxsendeq.cpp:
+system/synth/FxSendEQ.cpp:
 	.text       start:0x80675E50 end:0x80676820
 
-rb3/fx/fxsendmetereffect.cpp:
+system/synth/FxSendMeterEffect.cpp:
 	.text       start:0x80676820 end:0x80676E50
 
-rb3/fx/fxsendpitchshift.cpp:
+system/synth/FxSendPitchShift.cpp:
 	.text       start:0x80676E50 end:0x80677300
 
-rb3/fx/fxsendsynapse.cpp:
+system/synth/FxSendSynapse.cpp:
 	.text       start:0x80677300 end:0x80677C48
 
-rb3/fx/fxsendwah.cpp:
+system/synth/FxSendWah.cpp:
 	.text       start:0x80677C48 end:0x806786F0
 
 rb3/metamusic.cpp:

@@ -20,6 +20,7 @@ cflags_includes = [
     "-i src/system",
     "-i src/system/obj",
     "-i src/system/math",
+    "-i src/system/synth",
     "-i src/rb3",
     "-i src/rb3/data",
     "-i src/rb3/mgrs",

@@ -239,20 +239,6 @@ config.libs = [
             # data folder
             Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
 
-            # fx folder
-            Object(NonMatching, "rb3/fx/fxsend.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendchorus.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendflanger.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendreverb.cpp"),
-            Object(NonMatching, "rb3/fx/fxsenddelay.cpp"),
-            Object(NonMatching, "rb3/fx/fxsenddistortion.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendcompress.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendeq.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendmetereffect.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendpitchshift.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendsynapse.cpp"),
-            Object(NonMatching, "rb3/fx/fxsendwah.cpp"),
-
             # HMX folder
             Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "rb3/hmx/objutil.cpp"),
@@ -629,6 +615,19 @@ config.libs = [
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
+
+            Object(NonMatching, "system/synth/FxSend.cpp"),
+            Object(NonMatching, "system/synth/FxSendChorus.cpp"),
+            Object(NonMatching, "system/synth/FxSendFlanger.cpp"),
+            Object(NonMatching, "system/synth/FxSendReverb.cpp"),
+            Object(NonMatching, "system/synth/FxSendDelay.cpp"),
+            Object(NonMatching, "system/synth/FxSendDistortion.cpp"),
+            Object(NonMatching, "system/synth/FxSendCompress.cpp"),
+            Object(NonMatching, "system/synth/FxSendEQ.cpp"),
+            Object(NonMatching, "system/synth/FxSendMeterEffect.cpp"),
+            Object(NonMatching, "system/synth/FxSendPitchShift.cpp"),
+            Object(NonMatching, "system/synth/FxSendSynapse.cpp"),
+            Object(NonMatching, "system/synth/FxSendWah.cpp"),
         ],
     },
     {
