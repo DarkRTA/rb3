@@ -704,7 +704,7 @@ rb3/beatmap.cpp:
 rb3/binkintegration.cpp:
 	.text       start:0x80341E68 end:0x80342ACC
 
-rb3/binstream.cpp:
+system/utl/BinStream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
 
@@ -744,7 +744,7 @@ system/utl/LocaleOrdinal.cpp:
 rb3/logfile.cpp:
 	.text       start:0x80350F60 end:0x803511B0
 
-rb3/makestring.cpp:
+system/utl/MakeString.cpp:
 	.text       start:0x803511B0 end:0x80351AD0
 
 sdk/MSL_C++/src/new.cpp:

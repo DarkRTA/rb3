@@ -3,7 +3,7 @@
 #include <rb3/hmx/object.hpp>
 #include <rb3/hmx/quat.hpp>
 #include <vector2.hpp>
-#include <rb3/binstream.hpp>
+#include "BinStream.h"
 #include "rndtransformable.hpp"
 
 

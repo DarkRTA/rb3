@@ -2,7 +2,7 @@
 #include "locale.hpp"
 #include "symbol.hpp"
 #include "symbols.hpp"
-#include "makestring.hpp"
+#include "MakeString.h"
 #include "System.h"
 #include "utf8.hpp"
 #include <string.h>

@@ -1,7 +1,7 @@
 #ifndef HMX_OBJECT_HPP
 #define HMX_OBJECT_HPP
 #include "objref.hpp"
-#include "binstream.hpp"
+#include "BinStream.h"
 #include "types.h"
 #include "symbol.hpp"
 #include "Data.h"

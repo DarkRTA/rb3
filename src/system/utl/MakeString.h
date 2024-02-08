@@ -1,5 +1,5 @@
-#ifndef RB3_MAKESTRING_HPP
-#define RB3_MAKESTRING_HPP
+#ifndef UTL_MAKESTRING_H
+#define UTL_MAKESTRING_H
 #include "string.hpp"
 #include "Data.h"
 
@@ -48,3 +48,19 @@ const char *MakeString(const char *c, T1 t1, T2 t2, T3 t3) {
 }
 
 #endif
+
+// enum Type {
+//     kInt = 0,
+//     kStr = 1,
+//     kFloat = 2,
+//     kNone = 3,
+// };
+// class FormatString {
+//     // total size: 0x814
+//     char * mBuf; // offset 0x0, size 0x4
+//     int mBufSize; // offset 0x4, size 0x4
+//     char mFmtBuf[2048]; // offset 0x8, size 0x800
+//     char * mFmt; // offset 0x808, size 0x4
+//     char * mFmtEnd; // offset 0x80C, size 0x4
+//     enum Type mType; // offset 0x810, size 0x4
+// };

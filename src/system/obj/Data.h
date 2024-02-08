@@ -3,7 +3,7 @@
 #include "symbol.hpp"
 #include "string.hpp"
 #include "textstream.hpp"
-#include "binstream.hpp"
+#include "BinStream.h"
 
 // forward declarations
 class DataNode;

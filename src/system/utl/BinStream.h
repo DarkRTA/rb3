@@ -1,5 +1,5 @@
-#ifndef RB3_BINSTREAM_HPP
-#define RB3_BINSTREAM_HPP
+#ifndef UTL_BINSTREAM_H
+#define UTL_BINSTREAM_H
 #include "symbol.hpp"
 #include "string.hpp"
 #include "Rand2.h"

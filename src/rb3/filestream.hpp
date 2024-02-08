@@ -1,6 +1,6 @@
 #ifndef RB3_FILESTREAM_HPP
 #define RB3_FILESTREAM_HPP
-#include "binstream.hpp"
+#include "BinStream.h"
 #include "string.hpp"
 #include "file.hpp"
 #include "streamchecksum.hpp"

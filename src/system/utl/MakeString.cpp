@@ -1,8 +1,8 @@
-#include "makestring.hpp"
+#include "MakeString.h"
 #include "common.hpp"
 #include "string.h"
 #include "sdk/MSL_C/MSL_Common/printf.h"
-#include "data.hpp"
+#include "Data.h"
 
 extern char *NextBuf();
 

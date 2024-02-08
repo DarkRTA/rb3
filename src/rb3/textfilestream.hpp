@@ -2,7 +2,7 @@
 #define RB3_TEXTFILESTREAM_HPP
 #include "textstream.hpp"
 #include "filestream.hpp"
-#include "binstream.hpp"
+#include "BinStream.h"
 
 class TextFileStream : TextStream {
 public:
