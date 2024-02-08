@@ -423,7 +423,6 @@ config.libs = [
 
             # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
-            Object(NonMatching, "rb3/arkfile.cpp"),
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
@@ -604,9 +603,10 @@ config.libs = [
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
             Object(Matching, "system/math/Trig.cpp"),
+            
+            Object(NonMatching, "system/os/ArkFile.cpp"),
 
-            Object(NonMatching, "system/oggvorbis/VorbisMem.cpp"),
-
+            Object(NonMatching, "system/synth/oggvorbis/VorbisMem.cpp"),
             Object(NonMatching, "system/synth/ADSR.cpp"),
             Object(NonMatching, "system/synth/BinkClip.cpp"),
             Object(NonMatching, "system/synth/BinkReader.cpp"),

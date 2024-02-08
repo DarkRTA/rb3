@@ -1,10 +1,10 @@
-#ifndef RB3_ARKFILE_HPP
-#define RB3_ARKFILE_HPP
+#ifndef OS_ARKFILE_H
+#define OS_ARKFILE_H
 #include <types.h>
 #include "file.hpp"
 #include "string.hpp"
 
-class ArkFile : File {
+class ArkFile : public File {
 public:
     ArkFile(const char *, int);
     virtual ~ArkFile(); // fn_802E73FC
@@ -27,20 +27,19 @@ public:
 
     virtual void _Open() = 0;
 
-    void fn_800E1114();
     bool fn_802E4F2C();
     void TaskDone(int);
 
-    int unk4;
-    unsigned long long unk8;
-    int size; // 0x10
-    int size_uncompressed; // 0x14
-    s32 unk18;
-    s32 unk1c;
-    u32 fpos;
-    s32 unk24;
-    s32 unk28;
-    s8 unk2c;
-    String fname;
+    int mArkfileNum;
+    unsigned long long mByteStart;
+    int mSize; // 0x10
+    int mUCSize; // 0x14
+    s32 mNumOutstandingTasks;
+    s32 mBytesRead;
+    s32 mTell;
+    s32 mFail;
+    f32 mReadStartTime;
+    s8 mReadAhead;
+    String mFilename;
 };
 #endif

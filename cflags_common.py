@@ -19,6 +19,7 @@ cflags_includes = [
     "-i src/sdk/MSL_C++",
     "-i src/system",
     "-i src/system/obj",
+    "-i src/system/os",
     "-i src/system/math",
     "-i src/system/synth",
     "-i src/rb3",

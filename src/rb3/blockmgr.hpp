@@ -1,6 +1,6 @@
 #ifndef RB3_BLOCKMGR_HPP
 #define RB3_BLOCKMGR_HPP
-#include "arkfile.hpp"
+#include "ArkFile.h"
 
 class BlockMgr {
 public:
