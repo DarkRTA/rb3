@@ -1201,17 +1201,17 @@ system/synth/ADSR.cpp:
 	.text       start:0x80668D18 end:0x80669340
 	.rodata     start:0x807F3F30 end:0x807F4AA8
 
-rb3/binkclip.cpp:
+system/synth/BinkClip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C
 
-rb3/binkreader.cpp:
+system/synth/BinkReader.cpp:
 	.text       start:0x8066AD9C end:0x8066B6B8
 
 system/synth/ByteGrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
 	.data       start:0x8089BBE0 end:0x8089BCE0
 
-rb3/emitter.cpp:
+system/synth/Emitter.cpp:
 	.text       start:0x8066E3FC end:0x8066F6C0
 
 rb3/faders.cpp:
