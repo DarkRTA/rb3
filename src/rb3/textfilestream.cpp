@@ -1,6 +1,5 @@
 #include "textfilestream.hpp"
 #include "filestream.hpp"
-#include "textstream.hpp"
 #include "unknown.hpp"
 #include "sdk/MSL_C/MSL_Common/printf.h"
 

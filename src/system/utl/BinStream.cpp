@@ -1,5 +1,5 @@
 #include "string.hpp"
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "BinStream.h"
 #include "string.h"
 #include "symbol.hpp"

@@ -1,8 +1,7 @@
 #ifndef RB3_STRING_HPP
 #define RB3_STRING_HPP
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "symbol.hpp"
-#include "jsonobjects.hpp"
 
 /** An object representing a sequence of characters. */
 class String : public TextStream {
@@ -119,7 +118,7 @@ public:
     bool contains(const char * str) const; // fn_80362530
 
     // TODO: figure out what this does
-    void fn_80362560(char *, UnknownJsonConverterMember *); // fn_80362560
+    // void fn_80362560(char *, UnknownJsonConverterMember *); // fn_80362560
 
     /** Creates a new String, where the character sequence is this String's character sequence beginning at a particular index.
      * @param [out] out The new String.

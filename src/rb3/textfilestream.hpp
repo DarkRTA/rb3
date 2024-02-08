@@ -1,6 +1,6 @@
 #ifndef RB3_TEXTFILESTREAM_HPP
 #define RB3_TEXTFILESTREAM_HPP
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "filestream.hpp"
 #include "BinStream.h"
 

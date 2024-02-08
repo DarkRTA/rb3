@@ -1,7 +1,7 @@
 #ifndef RB3_TEXTFILE_HPP
 #define RB3_TEXTFILE_HPP
 #include "symbol.hpp"
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "hmx/object.hpp"
 
 class TextFile : public Hmx::Object, TextStream {

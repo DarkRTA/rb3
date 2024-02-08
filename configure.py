@@ -426,7 +426,6 @@ config.libs = [
             Object(NonMatching, "rb3/asyncfile.cpp"),
             Object(NonMatching, "rb3/asyncfilecnt.cpp"),
             Object(NonMatching, "rb3/asyncfilewii.cpp"),
-            Object(NonMatching, "rb3/binkintegration.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/logfile.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
@@ -478,7 +477,6 @@ config.libs = [
             Object(Matching, "rb3/main.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
-            Object(Matching, "rb3/textstream.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
@@ -621,12 +619,14 @@ config.libs = [
             Object(NonMatching, "system/synth/FxSendWah.cpp"),
             Object(NonMatching, "system/synth/MetaMusic.cpp"),
 
+            Object(NonMatching, "system/utl/BinkIntegration.cpp"),
             Object(Matching, "system/utl/BinStream.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/LocaleOrdinal.cpp"),
             Object(NonMatching, "system/utl/MakeString.cpp"),
             Object(NonMatching, "system/utl/MultiTempoTempoMap.cpp"),
             Object(Matching, "system/utl/TempoMap.cpp"),
+            Object(Matching, "system/utl/TextStream.cpp"),
         ],
     },
     {

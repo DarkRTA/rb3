@@ -1,5 +1,5 @@
-#ifndef RB3_TEXTSTREAM_HPP
-#define RB3_TEXTSTREAM_HPP
+#ifndef UTL_TEXTSTREAM_H
+#define UTL_TEXTSTREAM_H
 #include "symbol.hpp"
 
 class DataArray;

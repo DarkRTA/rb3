@@ -2,7 +2,7 @@
 #define OBJ_DATA_H
 #include "symbol.hpp"
 #include "string.hpp"
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "BinStream.h"
 
 // forward declarations
