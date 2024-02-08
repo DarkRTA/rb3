@@ -1,5 +1,5 @@
-#ifndef RB3_SYSTEM_HPP
-#define RB3_SYSTEM_HPP
+#ifndef OS_SYSTEM_H
+#define OS_SYSTEM_H
 #include "symbol.hpp"
 #include "Data.h"
 

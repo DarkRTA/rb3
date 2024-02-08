@@ -3,7 +3,7 @@
 #include "symbol.hpp"
 #include "symbols.hpp"
 #include "makestring.hpp"
-#include "system.hpp"
+#include "System.h"
 #include "utf8.hpp"
 #include <string.h>
 

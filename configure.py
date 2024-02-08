@@ -504,7 +504,6 @@ config.libs = [
             Object(NonMatching, "rb3/trackpaneldir.cpp"),
             Object(NonMatching, "rb3/midiparser.cpp"),
             Object(NonMatching, "rb3/objectdir.cpp"),
-            Object(NonMatching, "rb3/system.cpp"),
             Object(NonMatching, "rb3/micinputarrow.cpp"),
             Object(NonMatching, "rb3/minileaderboarddisplay.cpp"),
             Object(NonMatching, "rb3/streakmeter.cpp"),
@@ -605,6 +604,7 @@ config.libs = [
             Object(Matching, "system/math/Trig.cpp"),
             
             Object(NonMatching, "system/os/ArkFile.cpp"),
+            Object(NonMatching, "system/os/System.cpp"),
 
             Object(NonMatching, "system/synth/oggvorbis/VorbisMem.cpp"),
             Object(NonMatching, "system/synth/ADSR.cpp"),
