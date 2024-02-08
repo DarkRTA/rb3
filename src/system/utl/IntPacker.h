@@ -1,5 +1,5 @@
-#ifndef RB3_INTPACKER_HPP
-#define RB3_INTPACKER_HPP
+#ifndef UTL_INTPACKER_H
+#define UTL_INTPACKER_H
 
 class IntPacker {
 public:

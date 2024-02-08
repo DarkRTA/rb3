@@ -508,10 +508,10 @@ rb3/filechecksum.cpp:
 rb3/customarray.cpp:
 	.text       start:0x802E0F44 end:0x802E1540
 
-rb3/decibels.cpp:
+system/math/Decibels.cpp:
 	.text       start:0x802E1540 end:0x802E15E0
 
-rb3/primes.cpp:
+system/math/Primes.cpp:
 	.text       start:0x802E15E0 end:0x802E1614
 	.data       start:0x808514C0 end:0x808515B8
 
@@ -727,7 +727,7 @@ rb3/hxguid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50
 	.ctors      start:0x807EFF4C end:0x807EFF50
 
-rb3/intpacker.cpp:
+system/utl/IntPacker.cpp:
 	.text       start:0x8034DE50 end:0x8034DFC8
 
 rb3/unknown/803/unk_8034DE50.cpp:
@@ -737,7 +737,7 @@ rb3/locale.cpp:
 	.text       start:0x803500BC end:0x80350BF4
 	.ctors      start:0x807EFF54 end:0x807EFF58
 
-rb3/localeordinal.cpp:
+system/utl/LocaleOrdinal.cpp:
 	.text       start:0x80350BF4 end:0x80350F60
 	.data       start:0x80857118 end:0x80857140
 

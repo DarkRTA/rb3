@@ -1,4 +1,4 @@
-#include "intpacker.hpp"
+#include "IntPacker.h"
 #include "string.h"
 
 IntPacker::IntPacker(void* v, unsigned int ui){

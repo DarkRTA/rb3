@@ -1,4 +1,4 @@
-#include "primes.hpp"
+#include "Primes.h"
 
 int NextHashPrime(int i){
     static int primes[62] = {  

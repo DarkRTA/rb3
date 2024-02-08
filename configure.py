@@ -432,15 +432,12 @@ config.libs = [
             Object(NonMatching, "rb3/makestring.cpp"),
             Object(NonMatching, "rb3/multitempotempomap.cpp"),
             Object(NonMatching, "rb3/logfile.cpp"),
-            Object(Matching, "rb3/localeordinal.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             Object(NonMatching, "rb3/fixedsizesaveable.cpp"),
             Object(NonMatching, "rb3/fixedsizesaveablestream.cpp"),
             Object(NonMatching, "rb3/adjacencies.cpp"),
             Object(NonMatching, "rb3/filechecksum.cpp"),
             Object(NonMatching, "rb3/customarray.cpp"),
-            Object(NonMatching, "rb3/decibels.cpp"),
-            Object(Matching, "rb3/primes.cpp"),
             Object(NonMatching, "rb3/radix.cpp"),
             Object(NonMatching, "rb3/musiclibrary.cpp"),
             Object(NonMatching, "rb3/dynamictex.cpp"),
@@ -486,8 +483,6 @@ config.libs = [
             Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
-
-            Object(Matching, "rb3/intpacker.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
@@ -597,8 +592,11 @@ config.libs = [
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/DataUtl.cpp"),
 
+            Object(NonMatching, "system/math/Decibels.cpp"),
+
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
+            Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
             Object(Matching, "system/math/Trig.cpp"),
@@ -626,6 +624,9 @@ config.libs = [
             Object(NonMatching, "system/synth/FxSendSynapse.cpp"),
             Object(NonMatching, "system/synth/FxSendWah.cpp"),
             Object(NonMatching, "system/synth/MetaMusic.cpp"),
+
+            Object(Matching, "system/utl/IntPacker.cpp"),
+            Object(Matching, "system/utl/LocaleOrdinal.cpp"),
         ],
     },
     {
