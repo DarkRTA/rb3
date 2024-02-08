@@ -1207,7 +1207,7 @@ rb3/binkclip.cpp:
 rb3/binkreader.cpp:
 	.text       start:0x8066AD9C end:0x8066B6B8
 
-rb3/bytegrinder.cpp:
+system/synth/ByteGrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
 	.data       start:0x8089BBE0 end:0x8089BCE0
 

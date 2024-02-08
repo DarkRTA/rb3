@@ -481,7 +481,6 @@ config.libs = [
             Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
             Object(Matching, "rb3/stringtablelocks.cpp"),
-            Object(NonMatching, "rb3/bytegrinder.cpp"),
             Object(NonMatching, "rb3/bufstream.cpp"),
             Object(NonMatching, "rb3/bufstreamnand.cpp"),
             Object(NonMatching, "rb3/stringtable.cpp"),
@@ -616,6 +615,7 @@ config.libs = [
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
 
+            Object(NonMatching, "system/synth/ByteGrinder.cpp"),
             Object(NonMatching, "system/synth/FxSend.cpp"),
             Object(NonMatching, "system/synth/FxSendChorus.cpp"),
             Object(NonMatching, "system/synth/FxSendFlanger.cpp"),
