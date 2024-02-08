@@ -238,9 +238,6 @@ config.libs = [
         "objects": [
             # data folder
             Object(Matching, "rb3/data/datainittrigfuncs.cpp"),
-            Object(NonMatching, "rb3/data/dataarray.cpp"),
-            Object(NonMatching, "rb3/data/datafile.cpp"),
-            Object(NonMatching, "rb3/data/datafunc.cpp"),
 
             # fx folder
             Object(NonMatching, "rb3/fx/fxsend.cpp"),
@@ -630,6 +627,9 @@ config.libs = [
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataUtl.cpp"),
+            Object(NonMatching, "system/obj/DataFile.cpp"),
+            Object(NonMatching, "system/obj/DataArray.cpp"),
+            Object(NonMatching, "system/obj/DataFunc.cpp"),
         ],
     },
     {

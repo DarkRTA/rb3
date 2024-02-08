@@ -630,16 +630,16 @@ rb3/messages/rg_messages.cpp:
 rb3/messages/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
-rb3/data/dataarray.cpp:
+system/obj/DataArray.cpp:
 	.text       start:0x80315A70 end:0x803185F0
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
-rb3/data/datafile.cpp:
+system/obj/DataFile.cpp:
 	.text       start:0x803185F0 end:0x8031B2B8
 	.ctors      start:0x807EFF08 end:0x807EFF0C
 
-rb3/data/datafunc.cpp:
+system/obj/DataFunc.cpp:
 	.text       start:0x8031B2B8 end:0x80322958
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448

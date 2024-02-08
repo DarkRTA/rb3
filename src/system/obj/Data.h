@@ -140,7 +140,7 @@ public:
     bool NotNull() const;
     DataNode& operator=(const DataNode& n);
 
-    void Print(TextStream& s) const;
+    void Print(TextStream& s, bool) const;
     void Save(BinStream& d) const;
     void Load(BinStream& d) const;
 };
