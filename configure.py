@@ -483,8 +483,6 @@ config.libs = [
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
-            Object(Matching, "rb3/rand.cpp"),
-            Object(Matching, "rb3/rand2.cpp"),
             Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
@@ -601,6 +599,8 @@ config.libs = [
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
+            Object(Matching, "system/math/Rand.cpp"),
+            Object(Matching, "system/math/Rand2.cpp"),
             Object(Matching, "system/math/Trig.cpp"),
             
             Object(NonMatching, "system/os/ArkFile.cpp"),

@@ -1,5 +1,5 @@
-#ifndef RB3_RANDOM_HPP
-#define RB3_RANDOM_HPP
+#ifndef MATH_RANDOM_H
+#define MATH_RANDOM_H
 
 bool MainThread();
 void SeedRand(int);

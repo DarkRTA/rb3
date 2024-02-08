@@ -4,7 +4,7 @@
 #include "string.h"
 #include "symbol.hpp"
 #include "common.hpp"
-#include "random.hpp"
+#include "Random.h"
 
 const char *BinStream::Name() const {
     return "<unnamed>";

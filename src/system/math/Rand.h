@@ -1,5 +1,5 @@
-#ifndef RB3_RAND_HPP
-#define RB3_RAND_HPP
+#ifndef MATH_RAND_H
+#define MATH_RAND_H
 
 class Rand {
 public:

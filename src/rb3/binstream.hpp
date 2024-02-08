@@ -2,7 +2,7 @@
 #define RB3_BINSTREAM_HPP
 #include "symbol.hpp"
 #include "string.hpp"
-#include "rand2.hpp"
+#include "Rand2.h"
 
 class BinStream {
 public:

@@ -1,5 +1,5 @@
-#include "rand.hpp"
-#include "random.hpp"
+#include "Rand.h"
+#include "Random.h"
 #include "common.hpp"
 
 extern unsigned int gMainThreadID;
