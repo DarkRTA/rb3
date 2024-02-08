@@ -1,5 +1,5 @@
-#include "textfile.hpp"
-#include "makestring.hpp"
+#include "TextFile.h"
+#include "MakeString.h"
 
 Symbol TextFile::ClassName() const {
     return StaticClassName();

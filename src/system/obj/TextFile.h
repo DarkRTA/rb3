@@ -1,5 +1,5 @@
-#ifndef RB3_TEXTFILE_HPP
-#define RB3_TEXTFILE_HPP
+#ifndef OBJ_TEXTFILE_H
+#define OBJ_TEXTFILE_H
 #include "symbol.hpp"
 #include "TextStream.h"
 #include "hmx/object.hpp"

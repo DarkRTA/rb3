@@ -464,8 +464,6 @@ config.libs = [
             Object(NonMatching, "rb3/notetube.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
-            Object(NonMatching, "rb3/hxguid.cpp"),
-            Object(NonMatching, "rb3/beatmap.cpp"),
             Object(NonMatching, "rb3/datetime.cpp"),
             Object(Matching, "rb3/stringtablelocks.cpp"),
             Object(NonMatching, "rb3/bufstream.cpp"),
@@ -476,7 +474,6 @@ config.libs = [
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
-            Object(Matching, "rb3/textfilestream.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
@@ -497,7 +494,6 @@ config.libs = [
             Object(NonMatching, "rb3/overdrivemeter.cpp"),
             Object(NonMatching, "rb3/gemtrackdir.cpp"),
             Object(NonMatching, "rb3/tasks.cpp"),
-            Object(NonMatching, "rb3/textfile.cpp"),
             Object(NonMatching, "rb3/criticaluserlistener.cpp"),
             Object(NonMatching, "rb3/gameplayoptions.cpp"),
             Object(NonMatching, "rb3/instarank.cpp"),
@@ -507,7 +503,6 @@ config.libs = [
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
             Object(NonMatching, "rb3/streamchecksum.cpp"),
-            Object(NonMatching, "rb3/utf8.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             Object(NonMatching, "rb3/profile.cpp"),
             Object(NonMatching, "rb3/metaperformer.cpp"),
@@ -578,22 +573,22 @@ config.libs = [
         "mw_version": "Wii/1.3",
         "cflags": cflags_rb3,
         "host": False,
-        "objects": [
-            Object(NonMatching, "system/obj/DataArray.cpp"),
-            Object(NonMatching, "system/obj/DataFile.cpp"),
-            Object(NonMatching, "system/obj/DataFlex.c"),
-            Object(NonMatching, "system/obj/DataFunc.cpp"),
-            Object(NonMatching, "system/obj/DataNode.cpp"),
-            Object(NonMatching, "system/obj/DataUtl.cpp"),
-
+        "objects": [       
             Object(NonMatching, "system/math/Decibels.cpp"),
-
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
             Object(Matching, "system/math/Trig.cpp"),
+
+            Object(NonMatching, "system/obj/DataArray.cpp"),
+            Object(NonMatching, "system/obj/DataFile.cpp"),
+            Object(NonMatching, "system/obj/DataFlex.c"),
+            Object(NonMatching, "system/obj/DataFunc.cpp"),
+            Object(NonMatching, "system/obj/DataNode.cpp"),
+            Object(NonMatching, "system/obj/DataUtl.cpp"),
+            Object(NonMatching, "system/obj/TextFile.cpp"),
             
             Object(NonMatching, "system/os/ArkFile.cpp"),
             Object(NonMatching, "system/os/System.cpp"),
@@ -619,14 +614,19 @@ config.libs = [
             Object(NonMatching, "system/synth/FxSendWah.cpp"),
             Object(NonMatching, "system/synth/MetaMusic.cpp"),
 
+            Object(NonMatching, "system/utl/BeatMap.cpp"),
             Object(NonMatching, "system/utl/BinkIntegration.cpp"),
             Object(Matching, "system/utl/BinStream.cpp"),
+            Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
+            Object(NonMatching, "system/utl/HxGuid.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/LocaleOrdinal.cpp"),
             Object(NonMatching, "system/utl/MakeString.cpp"),
             Object(NonMatching, "system/utl/MultiTempoTempoMap.cpp"),
             Object(Matching, "system/utl/TempoMap.cpp"),
+            Object(Matching, "system/utl/TextFileStream.cpp"),
             Object(Matching, "system/utl/TextStream.cpp"),
+            Object(NonMatching, "system/utl/UTF8.cpp"),
         ],
     },
     {

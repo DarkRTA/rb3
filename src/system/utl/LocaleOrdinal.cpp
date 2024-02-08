@@ -4,7 +4,7 @@
 #include "symbols.hpp"
 #include "MakeString.h"
 #include "System.h"
-#include "utf8.hpp"
+#include "UTF8.h"
 #include <string.h>
 
 const char* LocalizeOrdinal(int i, LocaleGender gender, LocaleNumber number, bool super){

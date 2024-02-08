@@ -1,5 +1,5 @@
-#ifndef RB3_HXGUID_HPP
-#define RB3_HXGUID_HPP
+#ifndef UTL_HXGUID_H
+#define UTL_HXGUID_H
 
 class HxGuid {
 public:

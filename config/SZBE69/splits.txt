@@ -685,7 +685,7 @@ rb3/tasks.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
 
-rb3/textfile.cpp:
+system/obj/TextFile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 
 rb3/hmx/typeprops.cpp:
@@ -697,7 +697,7 @@ rb3/hmx/objutil.cpp:
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033FF44 end:0x80340E40
 
-rb3/beatmap.cpp:
+system/utl/BeatMap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
 	.ctors      start:0x807EFF2C end:0x807EFF30
 
@@ -718,12 +718,15 @@ rb3/unknown/803/unk_803431F4.cpp:
 	.text       start:0x80344240 end:0x8034A7DC
 
 rb3/unknown/803/unk_8034C91C.cpp:
-	.text       start:0x8034C444 end:0x8034C988
+	.text       start:0x8034C444 end:0x8034C664
+
+system/utl/EncryptXTEA.cpp:
+	.text       start:0x8034C664 end:0x8034C7D4
 
 rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
-rb3/hxguid.cpp:
+system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50
 	.ctors      start:0x807EFF4C end:0x807EFF50
 
@@ -841,7 +844,7 @@ system/utl/TempoMap.cpp:
 	.data       start:0x80874468 end:0x808744D8
 	.bss        start:0x80985918 end:0x80985920
 
-rb3/textfilestream.cpp:
+system/utl/TextFileStream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
 	.sdata2     start:0x808E5870 end:0x808E5878
 
@@ -849,7 +852,7 @@ system/utl/TextStream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
 
-rb3/utf8.cpp:
+system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
 
 rb3/unknown/803/unk_8037AD40.cpp:

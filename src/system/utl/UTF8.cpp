@@ -1,6 +1,7 @@
 #include "string.hpp"
 #include "unknown.hpp"
 #include "string.h"
+#include "UTF8.h"
 
 extern char lbl_80874588[]; //"*"
 

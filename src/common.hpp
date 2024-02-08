@@ -5,7 +5,7 @@
 
 #include <libspeex/math_approx.h>
 #include "rb3/symbol.hpp"
-#include "rb3/textfile.hpp"
+#include "TextFile.h"
 
 // misc functions
 int Minimum(int, int);

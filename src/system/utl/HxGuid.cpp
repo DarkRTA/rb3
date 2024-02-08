@@ -1,4 +1,4 @@
-#include "hxguid.hpp"
+#include "HxGuid.h"
 
 HxGuid::HxGuid(){
     Clear();

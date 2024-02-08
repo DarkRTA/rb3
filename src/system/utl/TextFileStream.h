@@ -1,5 +1,5 @@
-#ifndef RB3_TEXTFILESTREAM_HPP
-#define RB3_TEXTFILESTREAM_HPP
+#ifndef UTL_TEXTFILESTREAM_H
+#define UTL_TEXTFILESTREAM_H
 #include "TextStream.h"
 #include "filestream.hpp"
 #include "BinStream.h"
