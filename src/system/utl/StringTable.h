@@ -1,5 +1,5 @@
-#ifndef RB3_STRINGTABLE_HPP
-#define RB3_STRINGTABLE_HPP
+#ifndef UTL_STRINGTABLE_H
+#define UTL_STRINGTABLE_H
 
 class StringTable {
 public:

@@ -1,7 +1,7 @@
-#ifndef RB3_BUFSTREAM_HPP
-#define RB3_BUFSTREAM_HPP
-#include "binstream.hpp"
-#include "string.hpp"
+#ifndef UTL_BUFSTREAM_H
+#define UTL_BUFSTREAM_H
+#include "BinStream.h"
+#include "Str.h"
 
 class BufStream : public BinStream {
 public:

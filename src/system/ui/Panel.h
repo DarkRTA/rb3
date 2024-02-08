@@ -1,7 +1,7 @@
-#ifndef RB3_UIPANEL_HPP
-#define RB3_UIPANEL_HPP
+#ifndef UI_PANEL_H
+#define UI_PANEL_H
 #include "hmx/object.hpp"
-#include "string.hpp"
+#include "String.h"
 #include "filepath.hpp"
 
 class UIPanel : public virtual Hmx::Object {

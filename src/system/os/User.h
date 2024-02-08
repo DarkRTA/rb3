@@ -1,5 +1,5 @@
-#ifndef RB3_USER_HPP
-#define RB3_USER_HPP
+#ifndef OS_USER_H
+#define OS_USER_H
 #include "hmx/object.hpp"
 #include "hxguid.hpp"
 #include "onlineid.hpp"
@@ -26,7 +26,17 @@ public:
     int unk30;
 };
 
-User* GetUser(DataNode*, DataArray*);
-User* GetUserAtIndex(DataArray*, int);
-
 #endif
+
+
+// class User : public Object {
+//     // total size: 0x48
+// protected:
+//     class String mUserName; // offset 0x28, size 0xC
+// private:
+//     int mUserNum; // offset 0x34, size 0x4
+//     unsigned int mMachineID; // offset 0x38, size 0x4
+//     unsigned char mReady; // offset 0x3C, size 0x1
+//     class OnlineID * mOnlineID; // offset 0x40, size 0x4
+//     unsigned char mHasOnlineID; // offset 0x44, size 0x1
+// };

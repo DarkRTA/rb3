@@ -601,7 +601,7 @@ system/os/System.cpp:
 rb3/unknown/803/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
-rb3/users.cpp:
+system/os/User.cpp:
 	.text       start:0x80311700 end:0x803120A0
 
 rb3/mgrs/usermgr.cpp:
@@ -708,10 +708,10 @@ system/utl/BinStream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
 
-rb3/bufstream.cpp:
+system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
 
-rb3/bufstreamnand.cpp:
+system/utl/BufStreamNAND.cpp:
 	.text       start:0x80343728 end:0x80344240
 
 rb3/unknown/803/unk_803431F4.cpp:
@@ -744,7 +744,7 @@ system/utl/LocaleOrdinal.cpp:
 	.text       start:0x80350BF4 end:0x80350F60
 	.data       start:0x80857118 end:0x80857140
 
-rb3/logfile.cpp:
+system/utl/LogFile.cpp:
 	.text       start:0x80350F60 end:0x803511B0
 
 system/utl/MakeString.cpp:
@@ -798,7 +798,7 @@ system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/stringtable.cpp:
+system/utl/StringTable.cpp:
 	.text       start:0x80362B4C end:0x80363F60
 
 system/utl/Symbol.cpp:
@@ -1037,7 +1037,7 @@ rb3/unknown/805/unk_80567E84.cpp:
 rb3/ui/uilistwidget.cpp:
 	.text       start:0x805715CC end:0x805732E0
 
-rb3/ui/uipanel.cpp:
+system/ui/Panel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
 

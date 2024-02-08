@@ -1,5 +1,5 @@
-#ifndef RB3_BUFSTREAMNAND_HPP
-#define RB3_BUFSTREAMNAND_HPP
+#ifndef UTL_BUFSTREAMNAND_H
+#define UTL_BUFSTREAMNAND_H
 #include "fixedsizesaveablestream.hpp"
 
 class BufStreamNAND : FixedSizeSaveableStream {
