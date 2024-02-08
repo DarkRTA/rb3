@@ -66,15 +66,15 @@ void Ps2ADSR::SetReleaseRate(unsigned int ui){
     mReg2 = (mReg2 & 0xFFFFFFE0) | ui;
 }
 
-Ps2ADSR::AttackMode Ps2ADSR::GetAttackMode() const {
+AttackMode Ps2ADSR::GetAttackMode() const {
     return (AttackMode)((mReg1 >> 0xF) & 1);
 }
 
-Ps2ADSR::SustainMode Ps2ADSR::GetSustainMode() const {
+SustainMode Ps2ADSR::GetSustainMode() const {
     return (SustainMode)((mReg2 >> 0xD) & 7);
 }
 
-Ps2ADSR::ReleaseMode Ps2ADSR::GetReleaseMode() const {
+ReleaseMode Ps2ADSR::GetReleaseMode() const {
     return (ReleaseMode)((mReg2 >> 5) & 1);
 }
 
