@@ -474,7 +474,6 @@ config.libs = [
             Object(NonMatching, "rb3/joypad.cpp"),
             Object(NonMatching, "rb3/netstream.cpp"),
             Object(NonMatching, "rb3/notetube.cpp"),
-            Object(NonMatching, "rb3/ogg_mem.cpp"),
             Object(NonMatching, "rb3/string.cpp"),
             Object(NonMatching, "rb3/wiinetworksocket.cpp"),
             Object(NonMatching, "rb3/hxguid.cpp"),
@@ -523,7 +522,6 @@ config.libs = [
             Object(NonMatching, "rb3/instarank.cpp"),
             Object(NonMatching, "rb3/leaderboard.cpp"),
             Object(NonMatching, "rb3/vocalplayer.cpp"),
-            Object(NonMatching, "rb3/metamusic.cpp"),
             Object(NonMatching, "rb3/users.cpp"),
             Object(NonMatching, "rb3/synchronizationevent.cpp"),
             Object(NonMatching, "rb3/virtualkeyboard.cpp"),
@@ -610,6 +608,8 @@ config.libs = [
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
 
+            Object(NonMatching, "system/oggvorbis/VorbisMem.cpp"),
+
             Object(NonMatching, "system/synth/ADSR.cpp"),
             Object(NonMatching, "system/synth/BinkClip.cpp"),
             Object(NonMatching, "system/synth/BinkReader.cpp"),
@@ -628,6 +628,7 @@ config.libs = [
             Object(NonMatching, "system/synth/FxSendPitchShift.cpp"),
             Object(NonMatching, "system/synth/FxSendSynapse.cpp"),
             Object(NonMatching, "system/synth/FxSendWah.cpp"),
+            Object(NonMatching, "system/synth/MetaMusic.cpp"),
         ],
     },
     {

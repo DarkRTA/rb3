@@ -1214,7 +1214,7 @@ system/synth/ByteGrinder.cpp:
 system/synth/Emitter.cpp:
 	.text       start:0x8066E3FC end:0x8066F6C0
 
-rb3/faders.cpp:
+system/synth/Faders.cpp:
 	.text       start:0x8066F6C0 end:0x80671DCC
 	.ctors      start:0x807F0024 end:0x807F0028
 
@@ -1254,7 +1254,7 @@ system/synth/FxSendSynapse.cpp:
 system/synth/FxSendWah.cpp:
 	.text       start:0x80677C48 end:0x806786F0
 
-rb3/metamusic.cpp:
+system/synth/MetaMusic.cpp:
 	.text       start:0x806786F0 end:0x80679F0C
 
 rb3/unknown/806/unk_80671DCC.cpp:
@@ -1372,7 +1372,7 @@ libs/vorbis/smallft.c:
 	.text       start:0x806D07C4 end:0x806D1B60
 	.data       start:0x808A82E0 end:0x808A8300
 
-rb3/ogg_mem.cpp:
+system/oggvorbis/VorbisMem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
 
 libs/vorbis/window.c:
