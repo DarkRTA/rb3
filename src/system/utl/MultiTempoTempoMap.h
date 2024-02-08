@@ -1,9 +1,9 @@
-#ifndef RB3_MULTITEMPOTEMPOMAP_HPP
-#define RB3_MULTITEMPOTEMPOMAP_HPP
-#include "tempomap.hpp"
+#ifndef UTL_MULTITEMPOTEMPOMAP_H
+#define UTL_MULTITEMPOTEMPOMAP_H
+#include "TempoMap.h"
 #include "string.hpp"
 
-class MultiTempoTempoMap : TempoMap {
+class MultiTempoTempoMap : public TempoMap {
 public:
     MultiTempoTempoMap();
     virtual ~MultiTempoTempoMap(); // fn_80358FA8

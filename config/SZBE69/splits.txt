@@ -781,7 +781,7 @@ rb3/symbols/messageset4.cpp:
 	.sbss       start:0x808E4540 end:0x808E4548
 	.bss        start:0x8097E1B8 end:0x8097E848
 
-rb3/multitempotempomap.cpp:
+system/utl/MultiTempoTempoMap.cpp:
 	.text       start:0x80357E10 end:0x8035928C
 
 rb3/unknown/803/unk_80357E10.cpp:
@@ -835,7 +835,7 @@ rb3/symbols/symbolset4.cpp:
 rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A410
 
-rb3/tempomap.cpp:
+system/utl/TempoMap.cpp:
 	.text       start:0x8037A410 end:0x8037A58C
 	.ctors      start:0x807EFF7C end:0x807EFF80
 	.data       start:0x80874468 end:0x808744D8

@@ -3,7 +3,6 @@
 #include "textstream.hpp"
 #include "unknown.hpp"
 #include "sdk/MSL_C/MSL_Common/printf.h"
-#include "simpletempomap.hpp"
 
 // fn_8037A58C - TextFileStream ctor
 TextFileStream::TextFileStream(const char *c, bool b)

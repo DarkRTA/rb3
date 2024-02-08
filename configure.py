@@ -430,7 +430,6 @@ config.libs = [
             Object(NonMatching, "rb3/binkintegration.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/makestring.cpp"),
-            Object(NonMatching, "rb3/multitempotempomap.cpp"),
             Object(NonMatching, "rb3/logfile.cpp"),
             Object(NonMatching, "rb3/locale.cpp"),
             Object(NonMatching, "rb3/fixedsizesaveable.cpp"),
@@ -480,7 +479,6 @@ config.libs = [
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
             Object(Matching, "rb3/optioninit.cpp"),
-            Object(Matching, "rb3/tempomap.cpp"),
             Object(Matching, "rb3/textfilestream.cpp"),
             Object(Matching, "rb3/textstream.cpp"),
 
@@ -627,6 +625,8 @@ config.libs = [
 
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/LocaleOrdinal.cpp"),
+            Object(NonMatching, "system/utl/MultiTempoTempoMap.cpp"),
+            Object(Matching, "system/utl/TempoMap.cpp"),
         ],
     },
     {

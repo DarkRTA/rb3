@@ -1,5 +1,5 @@
-#ifndef RB3_TEMPOMAP_HPP
-#define RB3_TEMPOMAP_HPP
+#ifndef UTL_TEMPOMAP_H
+#define UTL_TEMPOMAP_H
 
 class TempoMap {
 public:

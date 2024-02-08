@@ -1,6 +1,6 @@
-#ifndef RB3_SIMPLETEMPOMAP_HPP
-#define RB3_SIMPLETEMPOMAP_HPP
-#include "tempomap.hpp"
+#ifndef UTL_SIMPLETEMPOMAP_H
+#define UTL_SIMPLETEMPOMAP_H
+#include "TempoMap.h"
 
 class SimpleTempoMap : public TempoMap {
 public:
