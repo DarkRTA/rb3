@@ -1,7 +1,7 @@
 #ifndef RB3_RG_MESSAGES_HPP
 #define RB3_RG_MESSAGES_HPP
 #include "message.hpp"
-#include "symbol.hpp"
+#include "Symbol.h"
 
 class RGAccelerometerMsg : public Message {
 public:

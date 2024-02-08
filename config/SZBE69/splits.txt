@@ -801,7 +801,7 @@ rb3/string.cpp:
 rb3/stringtable.cpp:
 	.text       start:0x80362B4C end:0x80363F60
 
-rb3/symbol.cpp:
+system/utl/Symbol.cpp:
 	.text       start:0x80363F60 end:0x803651B0
 
 rb3/stringtablelocks.cpp:

@@ -3,7 +3,7 @@
 #include "objref.hpp"
 #include "BinStream.h"
 #include "types.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "Data.h"
 
 // forward declarations

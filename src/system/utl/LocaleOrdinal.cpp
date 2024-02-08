@@ -1,6 +1,6 @@
 #include "LocaleOrdinal.h"
 #include "locale.hpp"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "symbols.hpp"
 #include "MakeString.h"
 #include "System.h"

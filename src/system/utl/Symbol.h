@@ -1,5 +1,5 @@
-#ifndef RB3_SYMBOL_HPP
-#define RB3_SYMBOL_HPP
+#ifndef UTL_SYMBOL_H
+#define UTL_SYMBOL_H
 
 #define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(&str)
 

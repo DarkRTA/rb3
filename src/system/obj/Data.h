@@ -1,6 +1,6 @@
 #ifndef OBJ_DATA_H
 #define OBJ_DATA_H
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "string.hpp"
 #include "TextStream.h"
 #include "BinStream.h"

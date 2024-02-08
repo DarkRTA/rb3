@@ -1,5 +1,5 @@
 #include "Trig.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "common.hpp"
 #include "math.h"
 

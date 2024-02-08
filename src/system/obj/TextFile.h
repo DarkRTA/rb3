@@ -1,6 +1,6 @@
 #ifndef OBJ_TEXTFILE_H
 #define OBJ_TEXTFILE_H
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "TextStream.h"
 #include "hmx/object.hpp"
 

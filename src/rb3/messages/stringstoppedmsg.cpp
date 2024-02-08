@@ -1,5 +1,5 @@
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "stringstoppedmsg.hpp"
 
 // fn_80313FB0

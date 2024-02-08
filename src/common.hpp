@@ -4,7 +4,7 @@
 #include <new>
 
 #include <libspeex/math_approx.h>
-#include "rb3/symbol.hpp"
+#include "Symbol.h"
 #include "TextFile.h"
 
 // misc functions

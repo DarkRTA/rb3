@@ -1,6 +1,6 @@
 #ifndef RB3_MODECHANGEDMSG_HPP
 #define RB3_MODECHANGEDMSG_HPP
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "message.hpp"
 
 class ModeChangedMsg : public Message {

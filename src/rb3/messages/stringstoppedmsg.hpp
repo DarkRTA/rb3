@@ -1,6 +1,6 @@
 #ifndef RB3_STRINGSTOPPEDMSG_HPP
 #define RB3_STRINGSTOPPEDMSG_HPP
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "message.hpp"
 
 class StringStoppedMsg : public Message {

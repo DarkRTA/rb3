@@ -1,6 +1,6 @@
 #ifndef UTL_TEXTSTREAM_H
 #define UTL_TEXTSTREAM_H
-#include "symbol.hpp"
+#include "Symbol.h"
 
 class DataArray;
 

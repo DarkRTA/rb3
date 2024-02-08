@@ -1,7 +1,7 @@
 #ifndef RB3_MESSAGE_HPP
 #define RB3_MESSAGE_HPP
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 
 class Message {
 public:

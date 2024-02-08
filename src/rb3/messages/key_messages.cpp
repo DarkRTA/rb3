@@ -1,5 +1,5 @@
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "key_messages.hpp"
 
 // fn_80315298

@@ -1,6 +1,6 @@
 #ifndef RB3_SYMBOLSET1_HPP
 #define RB3_SYMBOLSET1_HPP
-#include "symbol.hpp"
+#include "Symbol.h"
 
 extern Symbol SymSetFeedbackState;
 extern Symbol SymSetFileMerger;

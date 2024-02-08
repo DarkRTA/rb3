@@ -1,7 +1,7 @@
 #ifndef RB3_STRING_HPP
 #define RB3_STRING_HPP
 #include "TextStream.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 
 /** An object representing a sequence of characters. */
 class String : public TextStream {

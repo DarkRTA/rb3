@@ -1,6 +1,6 @@
 #ifndef UTL_BINSTREAM_H
 #define UTL_BINSTREAM_H
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "string.hpp"
 #include "Rand2.h"
 

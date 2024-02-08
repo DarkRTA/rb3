@@ -1,6 +1,6 @@
 #ifndef OS_SYSTEM_H
 #define OS_SYSTEM_H
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "Data.h"
 
 DataNode OnSystemLanguage(DataArray*);

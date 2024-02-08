@@ -1,7 +1,7 @@
 #ifndef UNKNOWN_HPP
 #define UNKNOWN_HPP
 #include "types.h"
-#include "rb3/symbol.hpp"
+#include "Symbol.h"
 #include "TextFile.h"
 extern int fn_80324278;
 extern int lbl_808556A4;

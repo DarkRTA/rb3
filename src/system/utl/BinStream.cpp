@@ -2,7 +2,7 @@
 #include "TextStream.h"
 #include "BinStream.h"
 #include "string.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "common.hpp"
 #include "Random.h"
 
