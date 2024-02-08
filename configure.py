@@ -422,7 +422,6 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uilistmesh.cpp"),
 
             # world folder
-            Object(Matching, "rb3/world/trig.cpp"),
             Object(NonMatching, "rb3/world/rot.cpp"),
 
             # miscellaneous loose files
@@ -607,6 +606,7 @@ config.libs = [
 
             # These functions match 100%, but won't link because the dtors aren't being merged properly
             Object(LinkIssues, "system/math/Interp.cpp"),
+            Object(Matching, "system/math/Trig.cpp"),
 
             Object(NonMatching, "system/oggvorbis/VorbisMem.cpp"),
 

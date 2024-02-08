@@ -1,5 +1,5 @@
-#ifndef RB3_TRIG_HPP
-#define RB3_TRIG_HPP
+#ifndef MATH_TRIG_H
+#define MATH_TRIG_H
 
 void TrigTableInit(); // fn_802E2E28
 void TrigTableTerminate();
