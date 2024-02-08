@@ -1,7 +1,7 @@
 #ifndef RB3_LOCALE_HPP
 #define RB3_LOCALE_HPP
 #include "symbol.hpp"
-#include "data.hpp"
+#include "Data.h"
 
 enum LocaleGender { GenMale, GenFemale };
 enum LocaleNumber { n1, n2, n3 };

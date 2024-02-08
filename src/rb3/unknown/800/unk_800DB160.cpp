@@ -1,4 +1,3 @@
-#include "data.hpp"
 #include "common.hpp"
 #include "math.h"
 #include "vector3.hpp"
@@ -174,12 +173,6 @@ float ATan2Thunk(float f1, float f2) {
 // fn_800DEC0C
 float my_atan2f(float f1, float f2) {
     return atan2(f1, f2);
-}
-
-// fn_800E7878
-DataNode *DataArray::GetVarAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Var(this);
 }
 
 // fn_800DB3F0

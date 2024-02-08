@@ -1,19 +1,7 @@
-#include "data.hpp"
 #include "common.hpp"
 #include "symbol.hpp"
 #include "message.hpp"
 #include "hmx/object.hpp"
-
-// fn_8000FDA0
-int DataArray::GetNodeCount() const {
-    return mNodeCount;
-}
-
-// fn_80010140
-Symbol DataArray::GetSymAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Sym(this);
-}
 
 extern char *gNullStr;
 
@@ -21,7 +9,6 @@ extern char *gNullStr;
 bool Symbol::IsNull() {
     return m_string == gNullStr;
 }
-
 
 extern DataArray *fn_8035CF9C(int, int, int);
 // fn_8000E048

@@ -644,19 +644,20 @@ rb3/data/datafunc.cpp:
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 
-rb3/data/datanode.cpp:
+system/obj/DataNode.cpp:
 	.text       start:0x80322958 end:0x80324278
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
+	.bss        start:0x8091A598 end:0x8091A608
 
-rb3/data/datautil.cpp:
+system/obj/DataUtl.cpp:
 	.text       start:0x803242CC end:0x80324B4C
 	.ctors      start:0x807EFF14 end:0x807EFF18
 	.data       start:0x8085569C end:0x808556C0
 	.sbss       start:0x808E4480 end:0x808E4488
 	.bss        start:0x8091AB98 end:0x8091AB9C
 
-rb3/data/dataflex.c:
+system/obj/DataFlex.c:
 	.text       start:0x80324B4C end:0x8032553C
 	.rodata     start:0x807F0D60 end:0x807F1D90
 	.data       start:0x808556C0 end:0x808558C8

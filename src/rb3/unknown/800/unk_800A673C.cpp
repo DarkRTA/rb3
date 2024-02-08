@@ -9,13 +9,6 @@
 #include "symbol.hpp"
 #include "memstream.hpp"
 #include "json-c/printbuf.h"
-#include "data.hpp"
-
-// fn_800A8410
-int DataArray::GetIntAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Int(this);
-}
 
 // fn_800A6E18
 // probably inline

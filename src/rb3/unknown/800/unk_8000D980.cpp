@@ -7,7 +7,6 @@
 #include "message.hpp"
 #include "matchmakingsettings.hpp"
 #include "jsonobjects.hpp"
-#include "data.hpp"
 
 
 // fn_8000DB9C
@@ -16,26 +15,11 @@ const char *String::c_str() const {
     return text;
 }
 
-
 // fn_8000DD10
 // generic dtor function
 
-// fn_8000DFE4
-DataNode::~DataNode() {
-    if ((type & 0x10) != 0) {
-        value.dataArray->DecRefCount();
-    }
-}
-
 extern DataArray *fn_8035CF9C(int, int, int);
 extern "C" DataNode *fn_8000DF50(DataArray *, int);
-
-
-// fn_8000DF50
-DataNode *DataArray::GetNodeAtIndex(int i) const {
-    return &mNodes[i];
-}
-
 
 // fn_8000E048
 Message::Message(Symbol s, const DataNode &dn1, const DataNode &dn2) {
@@ -47,18 +31,6 @@ Message::Message(Symbol s, const DataNode &dn1, const DataNode &dn2) {
     unk4->GetNodeAtIndex(1)->operator=(DataNode(s));
     unk4->GetNodeAtIndex(2)->operator=(dn1);
     unk4->GetNodeAtIndex(3)->operator=(dn2);
-}
-
-// fn_8000E114
-DataNode::DataNode(Symbol s) {
-    type = kDataSymbol;
-    value.strVal = s.m_string;
-}
-
-// fn_8000E128
-DataNode::DataNode(int i) {
-    value.intVal = i;
-    type = kDataInt;
 }
 
 // fn_8000EC00
@@ -74,12 +46,6 @@ FilePath::FilePath(const char *str) {
 
 // fn_8000EA28
 FilePath::~FilePath() {
-}
-
-// fn_8000ECC0
-const char *DataArray::GetStrAtIndex(int i) const {
-    DataNode *dn = GetNodeAtIndex(i);
-    return dn->Str(this);
 }
 
 // fn_8000ED3C
@@ -105,12 +71,6 @@ bool String::empty() const {
 // fn_8000DF60
 Message::~Message() {
     unk4->DecRefCount();
-}
-
-// fn_800DFC4
-void DataArray::DecRefCount() {
-    if (--mRefCount == 0)
-        delete this;
 }
 
 // // fn_8000DF3C

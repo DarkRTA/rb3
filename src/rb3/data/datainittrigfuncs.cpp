@@ -1,4 +1,4 @@
-#include "data.hpp"
+#include "Data.h"
 #include "symbol.hpp"
 #include "common.hpp"
 #include "math.h"
@@ -7,7 +7,7 @@ extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 // fn_802E306C
 DataNode DataSin(DataArray *da) {
-    return DataNode(SinThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+    return DataNode(SinThunk(DegreesToRadians(da->Float(1))));
 }
 
 // fn_802E30B0
@@ -17,12 +17,12 @@ float DegreesToRadians(float deg) {
 
 // fn_802E30C0
 DataNode DataCos(DataArray *da) {
-    return DataNode(CosThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+    return DataNode(CosThunk(DegreesToRadians(da->Float(1))));
 }
 
 // fn_802E3104
 DataNode DataTan(DataArray *da) {
-    return DataNode(TanThunk(DegreesToRadians(da->GetFloatAtIndex(1))));
+    return DataNode(TanThunk(DegreesToRadians(da->Float(1))));
 }
 
 
@@ -39,7 +39,7 @@ float TanFloat(double d) {
 
 // fn_802E3170
 DataNode DataASin(DataArray *da) {
-    float f = da->GetFloatAtIndex(1);
+    float f = da->Float(1);
     if (!IsNan(f)) {
         return DataNode(RadiansToDegrees(ASinThunk(f)));
     } else
@@ -63,7 +63,7 @@ bool IsNan(float f) {
 
 // fn_802E3214
 DataNode DataACos(DataArray *da) {
-    float f = da->GetFloatAtIndex(1);
+    float f = da->Float(1);
     if (!IsNan(f)) {
         return DataNode(RadiansToDegrees(ACosThunk(f)));
     } else
@@ -77,7 +77,7 @@ float ACosThunk(double d) {
 
 // fn_802E3294
 DataNode DataATan(DataArray *da) {
-    float f = da->GetFloatAtIndex(1);
+    float f = da->Float(1);
     if (!IsNan(f)) {
         return DataNode(RadiansToDegrees(ATanThunk(f)));
     } else

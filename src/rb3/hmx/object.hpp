@@ -1,10 +1,10 @@
 #ifndef HMX_OBJECT_HPP
 #define HMX_OBJECT_HPP
 #include "objref.hpp"
-#include "data.hpp"
 #include "binstream.hpp"
 #include "types.h"
 #include "symbol.hpp"
+#include "Data.h"
 
 // forward declarations
 class DataNode;

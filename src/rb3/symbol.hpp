@@ -1,6 +1,8 @@
 #ifndef RB3_SYMBOL_HPP
 #define RB3_SYMBOL_HPP
 
+#define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(&str)
+
 class Symbol {
 public:
     char *m_string;
