@@ -2,7 +2,7 @@
 #define OBJ_DIR_H
 #include "Object.h"
 #include "StringTable.h"
-#include "filepath.hpp"
+#include "FilePath.h"
 
 enum ViewportId {
     kPerspective = 0,

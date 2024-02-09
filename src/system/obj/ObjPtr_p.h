@@ -5,31 +5,22 @@
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
 
-    ObjPtr(Hmx::Object* obj, T1* cls){
-        mOwner = obj;
-        mPtr = cls;
-        if(cls != 0){
-            cls->AddRef(this);
-        }
+    ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
+        if(cls != 0) cls->AddRef(this);
     }
 
     virtual ~ObjPtr(){
         if(mPtr != 0) mPtr->Release(this);
     }
 
-    virtual Hmx::Object* RefOwner(){ 
-        return mOwner; 
-    }
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
-        if (mPtr == o1) {
+        if (mPtr == o1)
             *this = dynamic_cast<T1*>(o2);
-        }
     }
 
-    virtual bool IsDirPtr(){
-        return 0; // StubZero
-    }
+    virtual bool IsDirPtr(){ return 0; } // StubZero
 
     void operator=(T1* t){
         if(mPtr != t){
@@ -46,27 +37,17 @@ public:
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
 
-    ObjOwnerPtr(Hmx::Object* o, T1* item){
-        mOwner = o;
-        mPtr = item;
-        if(item != nullptr) item->AddRef(o);
+    ObjOwnerPtr(Hmx::Object* obj, T1* cls): mOwner(obj), mPtr(cls) {
+        if(cls != nullptr) cls->AddRef(obj);
     }
 
     virtual ~ObjOwnerPtr(){
         if(mPtr != nullptr) mPtr->Release(mOwner);
     }
 
-    virtual Hmx::Object* RefOwner(){ 
-        return mOwner; 
-    }
-
-    virtual void Replace(Hmx::Object*, Hmx::Object*){
-        
-    } // StubVoid
-
-    virtual bool IsDirPtr(){
-        return 0; // StubZero
-    }
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
+    virtual void Replace(Hmx::Object*, Hmx::Object*){ } // StubVoid
+    virtual bool IsDirPtr(){ return 0; } // StubZero
 
     Hmx::Object* mOwner;
     T1* mPtr;
