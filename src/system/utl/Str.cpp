@@ -2,7 +2,6 @@
 #include "unknown.hpp"
 #include "string.h"
 #include "Symbol.h"
-#include "jsonobjects.hpp"
 
 extern char gEmpty;
 
@@ -400,29 +399,29 @@ String *String::replace(unsigned int start, String *str) {
     return replace(start, 0, str->c_str());
 }
 
-extern void fn_801CEDFC(UnknownJsonConverterMember *, String *);
+// extern void fn_801CEDFC(UnknownJsonConverterMember *, String *);
 
-void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem) {
-    mem->fn_800AFE60();
-    int var_r31, var_r30;
+// void String::fn_80362560(char *buf, UnknownJsonConverterMember *mem) {
+//     mem->fn_800AFE60();
+//     int var_r31, var_r30;
 
-    var_r31 = 0;
-    var_r30 = find_first_of(buf, 0);
+//     var_r31 = 0;
+//     var_r30 = find_first_of(buf, 0);
 
-    while (var_r30 != (size_t)-1) {
-        if (var_r30 > var_r31) {
-            String sp14 = substr(var_r31, var_r30 - var_r31);
-            fn_801CEDFC(mem, &sp14);
-        }
-        var_r31 = var_r30 + 1;
-        var_r30 = find_first_of(buf, var_r31);
-    }
-    if (var_r31 < length()) {
-        String sp14 = substr(var_r31, length() - var_r31);
-        fn_801CEDFC(mem, &sp14);
-    }
-    mem->GetUnk4();
-}
+//     while (var_r30 != (size_t)-1) {
+//         if (var_r30 > var_r31) {
+//             String sp14 = substr(var_r31, var_r30 - var_r31);
+//             fn_801CEDFC(mem, &sp14);
+//         }
+//         var_r31 = var_r30 + 1;
+//         var_r30 = find_first_of(buf, var_r31);
+//     }
+//     if (var_r31 < length()) {
+//         String sp14 = substr(var_r31, length() - var_r31);
+//         fn_801CEDFC(mem, &sp14);
+//     }
+//     mem->GetUnk4();
+// }
 
 // inserts the char c into this->text at index idx, cnt times
 String *String::insert(int idx, unsigned int cnt, char c) {

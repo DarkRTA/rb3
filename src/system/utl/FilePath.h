@@ -1,8 +1,8 @@
-#ifndef RB3_FILEPATH_HPP
-#define RB3_FILEPATH_HPP
-#include "string.hpp"
+#ifndef UTL_FILEPATH_H
+#define UTL_FILEPATH_H
+#include "Str.h"
 
-class FilePath : String {
+class FilePath : public String {
 public:
     FilePath(const String &); // fn_8000EC00
     FilePath(const char *); // fn_8000EC5C

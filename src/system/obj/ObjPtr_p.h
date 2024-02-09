@@ -43,4 +43,33 @@ public:
     T1* mPtr;
 };
 
+template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
+public:
+
+    ObjOwnerPtr(Hmx::Object* o, T1* item){
+        mOwner = o;
+        mPtr = item;
+        if(item != nullptr) item->AddRef(o);
+    }
+
+    virtual ~ObjOwnerPtr(){
+        if(mPtr != nullptr) mPtr->Release(mOwner);
+    }
+
+    virtual Hmx::Object* RefOwner(){ 
+        return mOwner; 
+    }
+
+    virtual void Replace(Hmx::Object*, Hmx::Object*){
+        
+    } // StubVoid
+
+    virtual bool IsDirPtr(){
+        return 0; // StubZero
+    }
+
+    Hmx::Object* mOwner;
+    T1* mPtr;
+};
+
 #endif
