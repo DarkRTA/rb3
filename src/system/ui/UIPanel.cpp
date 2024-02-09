@@ -1,4 +1,4 @@
-#include "ui/Panel.h"
+#include "UIPanel.h"
 #include "messages.hpp"
 
 extern int lbl_80988298; // wonder if this lbl represents total panel count, and unk34 of a UIPanel is its unique panel id?

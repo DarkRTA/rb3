@@ -1,6 +1,6 @@
-#ifndef UI_PANEL_H
-#define UI_PANEL_H
-#include "hmx/object.hpp"
+#ifndef UI_UIPANEL_H
+#define UI_UIPANEL_H
+#include "Object.h"
 #include "String.h"
 #include "filepath.hpp"
 
