@@ -7,6 +7,7 @@ public:
         void* Addy;
         unsigned long Size;
         unsigned long Max;
+        CustomBlock() : Addy(0) { }
         ~CustomBlock(){
             delete [] Addy;
             Addy = 0;
@@ -15,6 +16,7 @@ public:
     struct CustomCell {
         CustomCell* NextCustomCell;
         CustomBlock Item;
+        CustomCell(){ NextCustomCell = 0; }
         ~CustomCell(){ }
     };
 
