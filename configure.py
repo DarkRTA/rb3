@@ -238,10 +238,6 @@ config.libs = [
         "objects": [
             # HMX folder
             Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
-            Object(NonMatching, "rb3/hmx/objutil.cpp"),
-            Object(NonMatching, "rb3/hmx/typeprops.cpp"),
-            # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
-            Object(LinkIssues, "rb3/hmx/propsync.cpp", mw_version="Wii/1.0a"),
 
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),
@@ -579,7 +575,11 @@ config.libs = [
             Object(NonMatching, "system/obj/DataFunc.cpp"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/DataUtl.cpp"),
+            # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
+            Object(LinkIssues, "system/obj/PropSync.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "system/obj/TextFile.cpp"),
+            Object(NonMatching, "system/obj/TypeProps.cpp"),
+            Object(NonMatching, "system/obj/Utl.cpp"),
             
             Object(NonMatching, "system/os/ArkFile.cpp"),
             Object(NonMatching, "system/os/System.cpp"),

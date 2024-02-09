@@ -1,5 +1,5 @@
-#ifndef HMX_OBJUTIL_HPP
-#define HMX_OBJUTIL_HPP
+#ifndef OBJ_UTL_H
+#define OBJ_UTL_H
 #include "hmx/object.hpp"
 #include "Symbol.h"
 

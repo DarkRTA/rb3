@@ -1,5 +1,5 @@
-#include "hmx/objutil.hpp"
-#include "system.hpp"
+#include "obj/Utl.h"
+#include "System.h"
 
 void InitObject(Hmx::Object* obj){
     static DataArray* objects = SystemConfig("objects");

@@ -1,5 +1,5 @@
-#ifndef RB3_PROPSYNC_HPP
-#define RB3_PROPSYNC_HPP
+#ifndef OBJ_PROPSYNC_H
+#define OBJ_PROPSYNC_H
 #include "hmx/object.hpp"
 #include "vector2.hpp"
 #include "vector3.hpp"
@@ -10,7 +10,7 @@
 #include "filepath.hpp"
 #include "hmx/rect.hpp"
 #include "box.hpp"
-#include "symbol.hpp"
+#include "Symbol.h"
 
 bool PropSync(String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);

@@ -1,12 +1,10 @@
 #ifndef OBJ_OBJECT_H
 #define OBJ_OBJECT_H
 #include "Data.h"
-
-// remove these once you #include the appropriate files
-class Symbol; 
-class String;
-class TextStream;
-class BinStream;
+#include "Symbol.h"
+#include "Str.h"
+#include "TextStream.h"
+#include "BinStream.h"
 
 // forward declarations
 class TypeProps;
@@ -42,7 +40,7 @@ public:
     char* mNote;
     const char* mName;
     ObjectDir* mDir;
-    std::vector<ObjRef*> mRefs; // thank you stlport, very cool
+    char mRefs[8]; // actually a vector<ObjRef*> - thank you stlport, very cool
 
     // o7 farts, you will be missed
     enum CopyType {

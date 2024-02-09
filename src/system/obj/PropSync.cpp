@@ -1,4 +1,4 @@
-#include "propsync.hpp"
+#include "PropSync.h"
 #include "symbols.hpp"
 #include "rot.hpp"
 

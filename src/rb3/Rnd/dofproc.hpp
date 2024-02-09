@@ -2,7 +2,7 @@
 #define RB3_DOFPROC_HPP
 #include "hmx/object.hpp"
 #include "System.h"
-#include "hmx/objutil.hpp"
+#include "obj/Utl.h"
 #include "Rnd/rndcam.hpp"
 #include "hmx/color.hpp"
 

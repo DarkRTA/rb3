@@ -675,7 +675,7 @@ rb3/hmx/object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
-rb3/hmx/propsync.cpp:
+system/obj/PropSync.cpp:
 	.text       start:0x80338890 end:0x803395AC
 	.data       start:0x80856250 end:0x80856278
 	.sbss       start:0x808E44C8 end:0x808E44D0
@@ -688,10 +688,10 @@ rb3/tasks.cpp:
 system/obj/TextFile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 
-rb3/hmx/typeprops.cpp:
+system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
-rb3/hmx/objutil.cpp:
+system/obj/Utl.cpp:
 	.text       start:0x8033DE38 end:0x8033FF44
 
 rb3/unknown/803/unk_8033C8F0.cpp:
