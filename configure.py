@@ -526,6 +526,7 @@ config.libs = [
             Object(NonMatching, "system/math/strips/Adjacency.cpp"),
             Object(NonMatching, "system/math/strips/CustomArray.cpp"),
             Object(NonMatching, "system/math/strips/RevisitedRadix.cpp"),
+            Object(NonMatching, "system/math/strips/Striper.cpp"),
             Object(NonMatching, "system/math/Decibels.cpp"),
             Object(NonMatching, "system/math/FileChecksum.cpp"),
             # These functions match 100%, but won't link because the dtors aren't being merged properly

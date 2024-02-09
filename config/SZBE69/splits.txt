@@ -521,8 +521,11 @@ system/math/strips/RevisitedRadix.cpp:
 system/math/StreamChecksum.cpp:
 	.text       start:0x802E1AC8 end:0x802E1FE8
 
+system/math/strips/Striper.cpp:
+	.text       start:0x802E1FE8 end:0x802E2D24
+
 rb3/unknown/802/unk_802E0CA0.cpp:
-	.text       start:0x802E1FE8 end:0x802E2E28
+	.text       start:0x802E2D24 end:0x802E2E28
 
 system/math/Trig.cpp:
 	.text       start:0x802E2E28 end:0x802E33CC
