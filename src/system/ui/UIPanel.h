@@ -2,7 +2,7 @@
 #define UI_UIPANEL_H
 #include "Object.h"
 #include "String.h"
-#include "filepath.hpp"
+#include "FilePath.h"
 
 class UIPanel : public virtual Hmx::Object {
 public:
@@ -13,7 +13,7 @@ public:
     virtual ~UIPanel();
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray *);
-    virtual void DataDir();
+    virtual ObjectDir* DataDir();
 
     virtual void Draw();
     virtual void Enter();

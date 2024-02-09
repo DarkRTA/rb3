@@ -7,8 +7,8 @@ class ByteGrinder {
 public:
     ByteGrinder();
     virtual ~ByteGrinder(){} // generic dtor
-    int pickOneOf32A(bool, long);
-    int pickOneOf32B(bool, long);
+    unsigned long pickOneOf32A(bool, long);
+    unsigned long pickOneOf32B(bool, long);
     void GrindArray(long, long, unsigned char*, int, long);
     void Init();
 };
