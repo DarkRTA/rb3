@@ -1,11 +1,13 @@
-#ifndef RB3_ROT_HPP
-#define RB3_ROT_HPP
+#ifndef MATH_ROT_H
+#define MATH_ROT_H
 #include "hmx/quat.hpp"
 #include "hmx/matrix3.hpp"
 #include "vector3.hpp"
-#include "textstream.hpp"
+#include "TextStream.h"
 #include "vector2.hpp"
 #include "transform.hpp"
+
+// TODO: the quat class header and weak methods go in here according to RB2
 
 void Normalize(const register Hmx::Quat&, register Hmx::Quat&);
 void MakeEuler(const Hmx::Matrix3&, Vector3&);

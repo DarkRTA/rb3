@@ -495,7 +495,7 @@ system/math/Rand2.cpp:
 rb3/unknown/802/unk_802DDEA0.cpp:
 	.text       start:0x802DDEA0 end:0x802DE3D0
 
-rb3/world/rot.cpp:
+system/math/Rot.cpp:
 	.text       start:0x802DE3D0 end:0x802DFE60
 
 rb3/adjacencies.cpp:

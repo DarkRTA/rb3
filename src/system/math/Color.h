@@ -1,5 +1,5 @@
-#ifndef HMX_COLOR_HPP
-#define HMX_COLOR_HPP
+#ifndef MATH_COLOR_H
+#define MATH_COLOR_H
 
 namespace Hmx {
     class Color {
@@ -8,7 +8,7 @@ namespace Hmx {
         float green;
         float blue;
         float alpha;
-
+        // all weak
         Color() {};
         Color(int);
         void operator=(const Color &);

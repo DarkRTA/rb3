@@ -4,7 +4,7 @@
 #include "System.h"
 #include "obj/Utl.h"
 #include "Rnd/rndcam.hpp"
-#include "hmx/color.hpp"
+#include "Color.h"
 
 class DOFProc : public Hmx::Object {
 public:

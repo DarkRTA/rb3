@@ -395,9 +395,6 @@ config.libs = [
             Object(NonMatching, "rb3/ui/uievent.cpp"),
             Object(NonMatching, "rb3/ui/uistats.cpp"),
 
-            # world folder
-            Object(NonMatching, "rb3/world/rot.cpp"),
-
             # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
@@ -542,6 +539,7 @@ config.libs = [
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
+            Object(NonMatching, "system/math/Rot.cpp"),
             Object(Matching, "system/math/Trig.cpp"),
 
             Object(NonMatching, "system/obj/DataArray.cpp"),
