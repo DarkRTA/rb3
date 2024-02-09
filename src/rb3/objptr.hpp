@@ -1,6 +1,6 @@
 #ifndef RB3_OBJPTR_HPP
 #define RB3_OBJPTR_HPP
-#include "hmx/object.hpp"
+#include "Object.h"
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
@@ -27,7 +27,7 @@ public:
         }
     }
 
-    virtual int IsDirPtr(){
+    virtual bool IsDirPtr(){
         return 0; // StubZero
     }
 

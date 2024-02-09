@@ -671,7 +671,7 @@ rb3/dirunloader.cpp:
 rb3/msgsource.cpp:
 	.text       start:0x80331D40 end:0x803351D0
 
-rb3/hmx/object.cpp:
+system/obj/Object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 

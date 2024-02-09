@@ -1,6 +1,6 @@
 #ifndef OBJ_UTL_H
 #define OBJ_UTL_H
-#include "hmx/object.hpp"
+#include "Object.h"
 #include "Symbol.h"
 
 void InitObject(Hmx::Object*);

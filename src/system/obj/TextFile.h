@@ -2,7 +2,7 @@
 #define OBJ_TEXTFILE_H
 #include "Symbol.h"
 #include "TextStream.h"
-#include "hmx/object.hpp"
+#include "Object.h"
 
 class TextFile : public Hmx::Object, TextStream {
 public:

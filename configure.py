@@ -236,9 +236,6 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            # HMX folder
-            Object(NonMatching, "rb3/hmx/object.cpp", mw_version="Wii/1.0a"),
-
             # managers folder
             Object(NonMatching, "rb3/mgrs/tambourinemanager.cpp"),
             Object(NonMatching, "rb3/mgrs/gamemicmanager.cpp"),
@@ -570,6 +567,7 @@ config.libs = [
             Object(NonMatching, "system/obj/DataFunc.cpp"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/DataUtl.cpp"),
+            Object(NonMatching, "system/obj/Object.cpp", mw_version="Wii/1.0a"),
             # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
             Object(LinkIssues, "system/obj/PropSync.cpp", mw_version="Wii/1.0a"),
             Object(NonMatching, "system/obj/TextFile.cpp"),

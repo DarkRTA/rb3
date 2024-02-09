@@ -1,6 +1,6 @@
 #ifndef RB3_DOFPROC_HPP
 #define RB3_DOFPROC_HPP
-#include "hmx/object.hpp"
+#include "Object.h"
 #include "System.h"
 #include "obj/Utl.h"
 #include "Rnd/rndcam.hpp"
@@ -14,7 +14,7 @@ public:
     virtual void SetType(Symbol s){
         static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
         if(s.IsNull()){
-            SetTypeDef(nullptr);
+            SetTypeDef(0);
         }
         else {
             DataArray* found = types->FindArray(s, false);
@@ -24,7 +24,7 @@ public:
             else {
                 PathName(this);
                 ClassName();
-                SetTypeDef(nullptr);
+                SetTypeDef(0);
             }
         }
     }
