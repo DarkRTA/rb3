@@ -480,76 +480,73 @@ rb3/panels/voiceoverpanel.cpp:
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
-rb3/interpolators.cpp:
+system/math/Interp.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
 	.data       start:0x80851378 end:0x808514A8
 
-rb3/rand.cpp:
+system/math/Rand.cpp:
 	.text       start:0x802DD9A4 end:0x802DDE34
 	.ctors      start:0x807EFEA4 end:0x807EFEA8
 	.bss        start:0x809014D8 end:0x809018E8
 
-rb3/rand2.cpp:
+system/math/Rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
 rb3/unknown/802/unk_802DDEA0.cpp:
 	.text       start:0x802DDEA0 end:0x802DE3D0
 
-rb3/world/rot.cpp:
+system/math/Rot.cpp:
 	.text       start:0x802DE3D0 end:0x802DFE60
 
-rb3/adjacencies.cpp:
+system/math/strips/Adjacency.cpp:
 	.text       start:0x802DFE60 end:0x802E067C
 
-rb3/filechecksum.cpp:
+system/math/FileChecksum.cpp:
 	.text       start:0x802E067C end:0x802E0F44
 	.ctors      start:0x807EFEA8 end:0x807EFEAC
 
-rb3/customarray.cpp:
+system/math/strips/CustomArray.cpp:
 	.text       start:0x802E0F44 end:0x802E1540
 
-rb3/decibels.cpp:
+system/math/Decibels.cpp:
 	.text       start:0x802E1540 end:0x802E15E0
 
-rb3/primes.cpp:
+system/math/Primes.cpp:
 	.text       start:0x802E15E0 end:0x802E1614
 	.data       start:0x808514C0 end:0x808515B8
 
-rb3/radix.cpp:
+system/math/strips/RevisitedRadix.cpp:
 	.text       start:0x802E1614 end:0x802E1C18
 
-rb3/streamchecksum.cpp:
+system/math/StreamChecksum.cpp:
 	.text       start:0x802E1C18 end:0x802E1FE8
 
 rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E1FE8 end:0x802E2E28
 
-rb3/world/trig.cpp:
-	.text       start:0x802E2E28 end:0x802E306C
+system/math/Trig.cpp:
+	.text       start:0x802E2E28 end:0x802E33CC
+	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
 
-rb3/data/datainittrigfuncs.cpp:
-	.text       start:0x802E306C end:0x802E33CC
-	.data       start:0x80851600 end:0x80851620
-
-rb3/appchild.cpp:
+system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
 
-rb3/archive.cpp:
+system/os/Archive.cpp:
 	.text       start:0x802E4984 end:0x802E72CC
 
-rb3/arkfile.cpp:
+system/os/ArkFile.cpp:
 	.text       start:0x802E72CC end:0x802E7828
 	.data       start:0x808516F0 end:0x808517C8
 	.bss        start:0x80906C88 end:0x80906C98
 
-rb3/asyncfile.cpp:
+system/os/AsyncFile.cpp:
 	.text       start:0x802E7828 end:0x802E8680
 
-rb3/asyncfilecnt.cpp:
+system/os/AsyncFileCNT.cpp:
 	.text       start:0x802E8680 end:0x802E8B7C
 
-rb3/asyncfilewii.cpp:
+system/os/AsyncFile_Wii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
 rb3/unknown/802/unk_802E9040.cpp:
@@ -565,10 +562,10 @@ rb3/unknown/802/unk_802F02EC.cpp:
 rb3/unknown/802/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F8818
 
-rb3/datetime.cpp:
+system/os/DateTime.cpp:
 	.text       start:0x802F8818 end:0x802F906C
 
-rb3/debug.cpp:
+system/os/Debug.cpp:
 	.text       start:0x802F906C end:0x802F9860
 
 rb3/unknown/802/unk_802F98DC.cpp:
@@ -584,7 +581,7 @@ rb3/unknown/802/unk_802FA994.cpp:
 rb3/unknown/802/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
-rb3/joypad.cpp:
+system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
@@ -597,14 +594,14 @@ rb3/wiinetworksocket.cpp:
 rb3/unknown/803/unk_8030A494.cpp:
 	.text       start:0x8030A494 end:0x8030DBF8
 
-rb3/system.cpp:
+system/os/System.cpp:
 	.text       start:0x8030DC60 end:0x8030F4F0
 	.ctors      start:0x807EFEF4 end:0x807EFEF8
 
 rb3/unknown/803/unk_8030F4F0.cpp:
 	.text       start:0x8030F4F0 end:0x80311394
 
-rb3/users.cpp:
+system/os/User.cpp:
 	.text       start:0x80311700 end:0x803120A0
 
 rb3/mgrs/usermgr.cpp:
@@ -630,16 +627,16 @@ rb3/messages/rg_messages.cpp:
 rb3/messages/key_messages.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
-rb3/data/dataarray.cpp:
+system/obj/DataArray.cpp:
 	.text       start:0x80315A70 end:0x803185F0
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
-rb3/data/datafile.cpp:
+system/obj/DataFile.cpp:
 	.text       start:0x803185F0 end:0x8031B2B8
 	.ctors      start:0x807EFF08 end:0x807EFF0C
 
-rb3/data/datafunc.cpp:
+system/obj/DataFunc.cpp:
 	.text       start:0x8031B2B8 end:0x80322958
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
@@ -674,11 +671,11 @@ rb3/dirunloader.cpp:
 rb3/msgsource.cpp:
 	.text       start:0x80331D40 end:0x803351D0
 
-rb3/hmx/object.cpp:
+system/obj/Object.cpp:
 	.text       start:0x803351D0 end:0x80338300
 	.ctors      start:0x807EFF20 end:0x807EFF24
 
-rb3/hmx/propsync.cpp:
+system/obj/PropSync.cpp:
 	.text       start:0x80338890 end:0x803395AC
 	.data       start:0x80856250 end:0x80856278
 	.sbss       start:0x808E44C8 end:0x808E44D0
@@ -688,66 +685,69 @@ rb3/tasks.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
 
-rb3/textfile.cpp:
+system/obj/TextFile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 
-rb3/hmx/typeprops.cpp:
+system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
-rb3/hmx/objutil.cpp:
+system/obj/Utl.cpp:
 	.text       start:0x8033DE38 end:0x8033FF44
 
 rb3/unknown/803/unk_8033C8F0.cpp:
 	.text       start:0x8033FF44 end:0x80340E40
 
-rb3/beatmap.cpp:
+system/utl/BeatMap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
 	.ctors      start:0x807EFF2C end:0x807EFF30
 
-rb3/binkintegration.cpp:
+system/utl/BinkIntegration.cpp:
 	.text       start:0x80341E68 end:0x80342ACC
 
-rb3/binstream.cpp:
+system/utl/BinStream.cpp:
 	.text       start:0x80342ACC end:0x803431F4
 	.data       start:0x80856788 end:0x808567C8
 
-rb3/bufstream.cpp:
+system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
 
-rb3/bufstreamnand.cpp:
+system/utl/BufStreamNAND.cpp:
 	.text       start:0x80343728 end:0x80344240
 
 rb3/unknown/803/unk_803431F4.cpp:
 	.text       start:0x80344240 end:0x8034A7DC
 
 rb3/unknown/803/unk_8034C91C.cpp:
-	.text       start:0x8034C444 end:0x8034C988
+	.text       start:0x8034C444 end:0x8034C664
+
+system/utl/EncryptXTEA.cpp:
+	.text       start:0x8034C664 end:0x8034C7D4
 
 rb3/unknown/803/unk_8034C9F8.cpp:
 	.text       start:0x8034C9F8 end:0x8034D068
 
-rb3/hxguid.cpp:
+system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50
 	.ctors      start:0x807EFF4C end:0x807EFF50
 
-rb3/intpacker.cpp:
+system/utl/IntPacker.cpp:
 	.text       start:0x8034DE50 end:0x8034DFC8
 
 rb3/unknown/803/unk_8034DE50.cpp:
 	.text       start:0x8034DFC8 end:0x8034FFA4
 
-rb3/locale.cpp:
+system/utl/Locale.cpp:
 	.text       start:0x803500BC end:0x80350BF4
 	.ctors      start:0x807EFF54 end:0x807EFF58
 
-rb3/localeordinal.cpp:
+system/utl/LocaleOrdinal.cpp:
 	.text       start:0x80350BF4 end:0x80350F60
 	.data       start:0x80857118 end:0x80857140
 
-rb3/logfile.cpp:
+system/utl/LogFile.cpp:
 	.text       start:0x80350F60 end:0x803511B0
 
-rb3/makestring.cpp:
+system/utl/MakeString.cpp:
 	.text       start:0x803511B0 end:0x80351AD0
 
 sdk/MSL_C++/src/new.cpp:
@@ -784,7 +784,7 @@ rb3/symbols/messageset4.cpp:
 	.sbss       start:0x808E4540 end:0x808E4548
 	.bss        start:0x8097E1B8 end:0x8097E848
 
-rb3/multitempotempomap.cpp:
+system/utl/MultiTempoTempoMap.cpp:
 	.text       start:0x80357E10 end:0x8035928C
 
 rb3/unknown/803/unk_80357E10.cpp:
@@ -794,14 +794,14 @@ rb3/optioninit.cpp:
 	.text       start:0x8035C6AC end:0x8035C8B4
 	.data       start:0x80858800 end:0x80858828
 
-rb3/string.cpp:
+system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
-rb3/stringtable.cpp:
+system/utl/StringTable.cpp:
 	.text       start:0x80362B4C end:0x80363F60
 
-rb3/symbol.cpp:
+system/utl/Symbol.cpp:
 	.text       start:0x80363F60 end:0x803651B0
 
 rb3/stringtablelocks.cpp:
@@ -838,21 +838,21 @@ rb3/symbols/symbolset4.cpp:
 rb3/unknown/803/unk_8037A3D8.cpp:
 	.text       start:0x8037A3D8 end:0x8037A410
 
-rb3/tempomap.cpp:
+system/utl/TempoMap.cpp:
 	.text       start:0x8037A410 end:0x8037A58C
 	.ctors      start:0x807EFF7C end:0x807EFF80
 	.data       start:0x80874468 end:0x808744D8
 	.bss        start:0x80985918 end:0x80985920
 
-rb3/textfilestream.cpp:
+system/utl/TextFileStream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
 	.sdata2     start:0x808E5870 end:0x808E5878
 
-rb3/textstream.cpp:
+system/utl/TextStream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
 
-rb3/utf8.cpp:
+system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
 
 rb3/unknown/803/unk_8037AD40.cpp:
@@ -982,72 +982,72 @@ rb3/labelnumberticker.cpp:
 rb3/labelshrinkwrapper.cpp:
 	.text       start:0x8054A190 end:0x8054AE78
 
-rb3/paneldir.cpp:
+system/ui/PanelDir.cpp:
 	.text       start:0x8054AE78 end:0x8054DBBC
 
-rb3/screenshot.cpp:
+system/ui/Screenshot.cpp:
 	.text       start:0x8054DBBC end:0x8054E330
 
-rb3/ui/uimanager.cpp:
+system/ui/UI.cpp:
 	.text       start:0x8054EB14 end:0x80552668
 
-rb3/ui/uibutton.cpp:
+system/ui/UIButton.cpp:
 	.text       start:0x80552668 end:0x80552E80
 
-rb3/ui/uicolor.cpp:
+system/ui/UIColor.cpp:
 	.text       start:0x80552E80 end:0x80553260
 
-rb3/ui/uicomponent.cpp:
+system/ui/UIComponent.cpp:
 	.text       start:0x80553260 end:0x80555FFC
 
-rb3/ui/uilabel.cpp:
+system/ui/UILabel.cpp:
 	.text       start:0x80555FFC end:0x8055A388
 
-rb3/ui/uifontimporter.cpp:
+system/ui/UIFontImporter.cpp:
 	.text       start:0x8055A388 end:0x8055F3A8
 
-rb3/ui/uilabeldir.cpp:
+system/ui/UILabelDir.cpp:
 	.text       start:0x8055FE3C end:0x805618F0
 
-rb3/ui/uilist.cpp:
+system/ui/UIList.cpp:
 	.text       start:0x805618F0 end:0x80568048
 	.ctors      start:0x807EFFC8 end:0x807EFFCC
 
-rb3/ui/uilistarrow.cpp:
+system/ui/UIListArrow.cpp:
 	.text       start:0x80568048 end:0x80568824
 
-rb3/ui/uilistcustom.cpp:
+system/ui/UIListCustom.cpp:
 	.text       start:0x80568824 end:0x805690A0
 
-rb3/ui/uilistdir.cpp:
+system/ui/UIListDir.cpp:
 	.text       start:0x805690A0 end:0x8056C9AC
 
-rb3/ui/uilisthighlight.cpp:
+system/ui/UIListHighlight.cpp:
 	.text       start:0x8056C9AC end:0x8056CEEC
 
-rb3/ui/uilistlabel.cpp:
+system/ui/UIListLabel.cpp:
 	.text       start:0x8056CEEC end:0x8056D844
 
-rb3/ui/uilistmesh.cpp:
+system/ui/UIListMesh.cpp:
 	.text       start:0x8056D844 end:0x8056E024
 
 rb3/unknown/805/unk_80567E84.cpp:
 	.text       start:0x8056E024 end:0x805715CC
 
-rb3/ui/uilistwidget.cpp:
+system/ui/UIListWidget.cpp:
 	.text       start:0x805715CC end:0x805732E0
 
-rb3/ui/uipanel.cpp:
+system/ui/UIPanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
 
-rb3/ui/uipicture.cpp:
+system/ui/UIPicture.cpp:
 	.text       start:0x8057464C end:0x80575698
 
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x80575698 end:0x80581A8C
 
-rb3/worldcrowd.cpp:
+system/world/Crowd.cpp:
 	.text       start:0x8058D868 end:0x80597134
 
 rb3/colorpalette.cpp:
@@ -1197,64 +1197,64 @@ rb3/Rnd/rndambientocclusion.cpp:
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18
 
-rb3/adsr.cpp:
+system/synth/ADSR.cpp:
 	.text       start:0x80668D18 end:0x80669340
 	.rodata     start:0x807F3F30 end:0x807F4AA8
 
-rb3/binkclip.cpp:
+system/synth/BinkClip.cpp:
 	.text       start:0x80669340 end:0x8066AD9C
 
-rb3/binkreader.cpp:
+system/synth/BinkReader.cpp:
 	.text       start:0x8066AD9C end:0x8066B6B8
 
-rb3/bytegrinder.cpp:
+system/synth/ByteGrinder.cpp:
 	.text       start:0x8066B6B8 end:0x8066E3FC
 	.data       start:0x8089BBE0 end:0x8089BCE0
 
-rb3/emitter.cpp:
+system/synth/Emitter.cpp:
 	.text       start:0x8066E3FC end:0x8066F6C0
 
-rb3/faders.cpp:
+system/synth/Faders.cpp:
 	.text       start:0x8066F6C0 end:0x80671DCC
 	.ctors      start:0x807F0024 end:0x807F0028
 
-rb3/fx/fxsend.cpp:
+system/synth/FxSend.cpp:
 	.text       start:0x80671DCC end:0x80672F38
 
-rb3/fx/fxsendchorus.cpp:
+system/synth/FxSendChorus.cpp:
 	.text       start:0x80672F38 end:0x806737E4
 
-rb3/fx/fxsendflanger.cpp:
+system/synth/FxSendFlanger.cpp:
 	.text       start:0x806737E4 end:0x806740BC
 
-rb3/fx/fxsendreverb.cpp:
+system/synth/FxSendReverb.cpp:
 	.text       start:0x806740BC end:0x8067491C
 
-rb3/fx/fxsenddelay.cpp:
+system/synth/FxSendDelay.cpp:
 	.text       start:0x8067491C end:0x80675094
 
-rb3/fx/fxsenddistortion.cpp:
+system/synth/FxSendDistortion.cpp:
 	.text       start:0x80675094 end:0x80675550
 
-rb3/fx/fxsendcompress.cpp:
+system/synth/FxSendCompress.cpp:
 	.text       start:0x80675550 end:0x80675E50
 
-rb3/fx/fxsendeq.cpp:
+system/synth/FxSendEQ.cpp:
 	.text       start:0x80675E50 end:0x80676820
 
-rb3/fx/fxsendmetereffect.cpp:
+system/synth/FxSendMeterEffect.cpp:
 	.text       start:0x80676820 end:0x80676E50
 
-rb3/fx/fxsendpitchshift.cpp:
+system/synth/FxSendPitchShift.cpp:
 	.text       start:0x80676E50 end:0x80677300
 
-rb3/fx/fxsendsynapse.cpp:
+system/synth/FxSendSynapse.cpp:
 	.text       start:0x80677300 end:0x80677C48
 
-rb3/fx/fxsendwah.cpp:
+system/synth/FxSendWah.cpp:
 	.text       start:0x80677C48 end:0x806786F0
 
-rb3/metamusic.cpp:
+system/synth/MetaMusic.cpp:
 	.text       start:0x806786F0 end:0x80679F0C
 
 rb3/unknown/806/unk_80671DCC.cpp:
@@ -1372,7 +1372,7 @@ libs/vorbis/smallft.c:
 	.text       start:0x806D07C4 end:0x806D1B60
 	.data       start:0x808A82E0 end:0x808A8300
 
-rb3/ogg_mem.cpp:
+system/oggvorbis/VorbisMem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
 
 libs/vorbis/window.c:

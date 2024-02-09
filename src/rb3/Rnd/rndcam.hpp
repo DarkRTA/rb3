@@ -1,9 +1,9 @@
 #ifndef RND_RNDCAM_HPP
 #define RND_RNDCAM_HPP
-#include <rb3/hmx/object.hpp>
+#include "Object.h"
 #include <rb3/hmx/quat.hpp>
 #include <vector2.hpp>
-#include <rb3/binstream.hpp>
+#include "BinStream.h"
 #include "rndtransformable.hpp"
 
 

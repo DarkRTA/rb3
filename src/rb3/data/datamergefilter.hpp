@@ -1,6 +1,6 @@
 #ifndef RB3_DATAMERGEFILTER_HPP
 #define RB3_DATAMERGEFILTER_HPP
-#include "data.hpp"
+#include "Data.h"
 #include "mergefilter.hpp"
 #include "hmx/object.hpp"
 

@@ -1,6 +1,6 @@
 #include "stringtablelocks.hpp"
-#include "stringtable.hpp"
-#include "symbol.hpp"
+#include "StringTable.h"
+#include "Symbol.h"
 
 extern StringTable* gStringTable;
 extern bool StringTableLocked;

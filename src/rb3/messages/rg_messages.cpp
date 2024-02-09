@@ -1,5 +1,5 @@
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "rg_messages.hpp"
 
 // fn_80313FFC

@@ -1,5 +1,5 @@
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "stringstrummedmsg.hpp"
 
 // fn_80313E98

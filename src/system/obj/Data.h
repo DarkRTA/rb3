@@ -1,9 +1,9 @@
 #ifndef OBJ_DATA_H
 #define OBJ_DATA_H
-#include "symbol.hpp"
-#include "string.hpp"
-#include "textstream.hpp"
-#include "binstream.hpp"
+#include "Symbol.h"
+#include "Str.h"
+#include "TextStream.h"
+#include "BinStream.h"
 
 // forward declarations
 class DataNode;
@@ -109,6 +109,8 @@ public:
     //     if((mType & 0x10) != 0) mValue.array->Release();
     // }
 
+    DataNodeValue Union() const { return mValue; }
+
     DataType Type(){ return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
@@ -140,7 +142,7 @@ public:
     bool NotNull() const;
     DataNode& operator=(const DataNode& n);
 
-    void Print(TextStream& s) const;
+    void Print(TextStream& s, bool) const;
     void Save(BinStream& d) const;
     void Load(BinStream& d) const;
 };
@@ -157,6 +159,8 @@ public:
 
     int Size() const { return mSize; }
     int Line(){ return mLine; }
+
+    DataNodeValue Union(int i) const { return Node(i).Union(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }

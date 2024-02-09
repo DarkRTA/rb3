@@ -1,6 +1,6 @@
 #ifndef RB3_SYMBOLSET4_HPP
 #define RB3_SYMBOLSET4_HPP
-#include "symbol.hpp"
+#include "Symbol.h"
 
 extern Symbol SymMaxDisplay;
 extern Symbol SymMaxDisplayButtons;
