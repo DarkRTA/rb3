@@ -529,10 +529,10 @@ system/math/Trig.cpp:
 	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
 
-rb3/appchild.cpp:
+system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
 
-rb3/archive.cpp:
+system/os/Archive.cpp:
 	.text       start:0x802E4984 end:0x802E72CC
 
 system/os/ArkFile.cpp:
@@ -540,13 +540,13 @@ system/os/ArkFile.cpp:
 	.data       start:0x808516F0 end:0x808517C8
 	.bss        start:0x80906C88 end:0x80906C98
 
-rb3/asyncfile.cpp:
+system/os/AsyncFile.cpp:
 	.text       start:0x802E7828 end:0x802E8680
 
-rb3/asyncfilecnt.cpp:
+system/os/AsyncFileCNT.cpp:
 	.text       start:0x802E8680 end:0x802E8B7C
 
-rb3/asyncfilewii.cpp:
+system/os/AsyncFile_Wii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
 rb3/unknown/802/unk_802E9040.cpp:

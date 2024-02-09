@@ -418,9 +418,6 @@ config.libs = [
 
             # miscellaneous loose files
             Object(NonMatching, "rb3/app.cpp"),
-            Object(NonMatching, "rb3/asyncfile.cpp"),
-            Object(NonMatching, "rb3/asyncfilecnt.cpp"),
-            Object(NonMatching, "rb3/asyncfilewii.cpp"),
             Object(NonMatching, "rb3/debug.cpp"),
             Object(NonMatching, "rb3/fixedsizesaveable.cpp"),
             Object(NonMatching, "rb3/fixedsizesaveablestream.cpp"),
@@ -438,8 +435,6 @@ config.libs = [
             Object(NonMatching, "rb3/campaigngoalsleaderboard.cpp"),
             Object(NonMatching, "rb3/campaign.cpp"),
             Object(NonMatching, "rb3/playercampaigngoalleaderboard.cpp"),
-            Object(NonMatching, "rb3/appchild.cpp"),
-            Object(NonMatching, "rb3/archive.cpp"),
             Object(NonMatching, "rb3/wiicommercemgr.cpp"),
             Object(NonMatching, "rb3/chordshapegenerator.cpp"),
             Object(NonMatching, "rb3/colorpalette.cpp"),
@@ -581,7 +576,12 @@ config.libs = [
             Object(NonMatching, "system/obj/TypeProps.cpp"),
             Object(NonMatching, "system/obj/Utl.cpp"),
             
+            Object(NonMatching, "system/os/AppChild.cpp"),
+            Object(NonMatching, "system/os/Archive.cpp"),
             Object(NonMatching, "system/os/ArkFile.cpp"),
+            Object(NonMatching, "system/os/AsyncFile.cpp"),
+            Object(NonMatching, "system/os/AsyncFile_Wii.cpp"),
+            Object(NonMatching, "system/os/AsyncFileCNT.cpp"),
             Object(NonMatching, "system/os/System.cpp"),
             Object(NonMatching, "system/os/User.cpp"),
 

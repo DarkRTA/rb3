@@ -1,9 +1,9 @@
-#ifndef RB3_ASYNCFILE_HPP
-#define RB3_ASYNCFILE_HPP
+#ifndef OS_ASYNCFILE_H
+#define OS_ASYNCFILE_H
 #include "file.hpp"
-#include "string.hpp"
+#include "Str.h"
 
-class AsyncFile : File {
+class AsyncFile : public File {
 public:
     AsyncFile(const char *, int);
     virtual ~AsyncFile();
@@ -53,3 +53,22 @@ public:
 };
 
 #endif
+
+// static int gBufferSize; // size: 0x4, address: 0x80A477A0
+// class AsyncFile : public File {
+//     // total size: 0x3C
+// protected:
+//     int mHandle; // offset 0x4, size 0x4
+//     int mMode; // offset 0x8, size 0x4
+//     unsigned char mFail; // offset 0xC, size 0x1
+//     class String mFilename; // offset 0x10, size 0xC
+//     unsigned int mTell; // offset 0x1C, size 0x4
+//     int mOffset; // offset 0x20, size 0x4
+// private:
+//     unsigned int mSize; // offset 0x24, size 0x4
+//     int mUCSize; // offset 0x28, size 0x4
+//     char * mBuffer; // offset 0x2C, size 0x4
+//     char * mData; // offset 0x30, size 0x4
+//     int mBytesLeft; // offset 0x34, size 0x4
+//     int mBytesRead; // offset 0x38, size 0x4
+// };

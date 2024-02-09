@@ -1,10 +1,9 @@
-#ifndef RB3_ASYNCFILEWII_HPP
-#define RB3_ASYNCFILEWII_HPP
-#include "asyncfile.hpp"
-#include "file.hpp"
-#include "string.hpp"
+#ifndef OS_ASYNCFILEWII_H
+#define OS_ASYNCFILEWII_H
+#include "AsyncFile.h"
+#include "Str.h"
 
-class AsyncFileWii : AsyncFile {
+class AsyncFileWii : public AsyncFile {
 public:
     AsyncFileWii(const char *, int);
     virtual ~AsyncFileWii();

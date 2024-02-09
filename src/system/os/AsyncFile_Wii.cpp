@@ -1,11 +1,11 @@
-#include "string.hpp"
-#include "textstream.hpp"
+#include "Str.h"
+#include "TextStream.h"
 #include "unknown.hpp"
 #include "string.h"
 #include "file.hpp"
-#include "asyncfile.hpp"
-#include "asyncfilewii.hpp"
-#include "asyncfilecnt.hpp"
+#include "AsyncFile.h"
+#include "AsyncFileCNT.h"
+#include "AsyncFile_Wii.h"
 
 // fn_802E8B7C
 // AsyncFileWii's ctor

@@ -1,7 +1,7 @@
 #include "file.hpp"
-#include "asyncfile.hpp"
+#include "AsyncFile.h"
 #include "string.h"
-#include "string.hpp"
+#include "Str.h"
 #include "unknown.hpp"
 
 // fn_802E7B68
