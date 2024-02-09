@@ -1,8 +1,8 @@
-#ifndef RB3_FILESTREAM_HPP
-#define RB3_FILESTREAM_HPP
+#ifndef UTL_FILESTREAM_H
+#define UTL_FILESTREAM_H
 #include "BinStream.h"
 #include "Str.h"
-#include "file.hpp"
+#include "File.h"
 #include "streamchecksum.hpp"
 
 class FileStream : public BinStream {
@@ -37,3 +37,18 @@ public:
 };
 
 #endif
+
+// enum FileType {
+//     kRead = 0,
+//     kWrite = 1,
+//     kReadNoArk = 2,
+//     kAppend = 3,
+// };
+// class FileStream : public BinStream {
+//     // total size: 0x28
+//     class File * mFile; // offset 0xC, size 0x4
+//     class String mFilename; // offset 0x10, size 0xC
+//     unsigned char mFail; // offset 0x1C, size 0x1
+//     class StreamChecksum * mChecksum; // offset 0x20, size 0x4
+//     int mBytesChecksummed; // offset 0x24, size 0x4
+// };

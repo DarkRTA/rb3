@@ -1,8 +1,7 @@
 #ifndef OS_ARKFILE_H
 #define OS_ARKFILE_H
 #include <types.h>
-#include "file.hpp"
-#include "string.hpp"
+#include "File.h"
 
 class ArkFile : public File {
 public:

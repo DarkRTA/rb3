@@ -1,10 +1,10 @@
 #ifndef UTL_TEXTFILESTREAM_H
 #define UTL_TEXTFILESTREAM_H
 #include "TextStream.h"
-#include "filestream.hpp"
+#include "FileStream.h"
 #include "BinStream.h"
 
-class TextFileStream : TextStream {
+class TextFileStream : public TextStream {
 public:
     TextFileStream(const char *, bool);
     virtual ~TextFileStream(); // fn_8000F9D0

@@ -1,5 +1,5 @@
-#ifndef RB3_FILE_HPP
-#define RB3_FILE_HPP
+#ifndef OS_FILE_H
+#define OS_FILE_H
 #include "Str.h"
 
 class File {
