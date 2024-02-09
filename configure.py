@@ -524,7 +524,7 @@ config.libs = [
         "host": False,
         "objects": [       
             Object(NonMatching, "system/math/strips/Adjacency.cpp"),
-            Object(NonMatching, "system/math/strips/CustomArray.cpp"),
+            Object(Matching, "system/math/strips/CustomArray.cpp"),
             Object(NonMatching, "system/math/strips/RevisitedRadix.cpp"),
             Object(NonMatching, "system/math/strips/Striper.cpp"),
             Object(NonMatching, "system/math/Decibels.cpp"),
