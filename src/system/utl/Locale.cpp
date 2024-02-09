@@ -3,7 +3,7 @@
 Locale TheLocale;
 
 DataNode DataSetLocaleVerboseNotify(DataArray* da){
-    SetLocaleVerboseNotify(da->GetIntAtIndex(1) != 0);
+    SetLocaleVerboseNotify(da->Int(1) != 0);
     return DataNode(0);
 }
 

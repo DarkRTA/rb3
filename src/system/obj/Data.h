@@ -109,6 +109,8 @@ public:
     //     if((mType & 0x10) != 0) mValue.array->Release();
     // }
 
+    DataNodeValue Union() const { return mValue; }
+
     DataType Type(){ return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
@@ -157,6 +159,8 @@ public:
 
     int Size() const { return mSize; }
     int Line(){ return mLine; }
+
+    DataNodeValue Union(int i) const { return Node(i).Union(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
