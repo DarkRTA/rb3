@@ -498,14 +498,14 @@ rb3/unknown/802/unk_802DDEA0.cpp:
 system/math/Rot.cpp:
 	.text       start:0x802DE3D0 end:0x802DFE60
 
-rb3/adjacencies.cpp:
+system/math/strips/Adjacency.cpp:
 	.text       start:0x802DFE60 end:0x802E067C
 
-rb3/filechecksum.cpp:
+system/math/FileChecksum.cpp:
 	.text       start:0x802E067C end:0x802E0F44
 	.ctors      start:0x807EFEA8 end:0x807EFEAC
 
-rb3/customarray.cpp:
+system/math/strips/CustomArray.cpp:
 	.text       start:0x802E0F44 end:0x802E1540
 
 system/math/Decibels.cpp:
@@ -515,10 +515,10 @@ system/math/Primes.cpp:
 	.text       start:0x802E15E0 end:0x802E1614
 	.data       start:0x808514C0 end:0x808515B8
 
-rb3/radix.cpp:
+system/math/strips/RevisitedRadix.cpp:
 	.text       start:0x802E1614 end:0x802E1C18
 
-rb3/streamchecksum.cpp:
+system/math/StreamChecksum.cpp:
 	.text       start:0x802E1C18 end:0x802E1FE8
 
 rb3/unknown/802/unk_802E0CA0.cpp:
@@ -562,10 +562,10 @@ rb3/unknown/802/unk_802F02EC.cpp:
 rb3/unknown/802/unk_802F844C.cpp:
 	.text       start:0x802F844C end:0x802F8818
 
-rb3/datetime.cpp:
+system/os/DateTime.cpp:
 	.text       start:0x802F8818 end:0x802F906C
 
-rb3/debug.cpp:
+system/os/Debug.cpp:
 	.text       start:0x802F906C end:0x802F9860
 
 rb3/unknown/802/unk_802F98DC.cpp:
@@ -581,7 +581,7 @@ rb3/unknown/802/unk_802FA994.cpp:
 rb3/unknown/802/unk_802FB548.cpp:
 	.text       start:0x802FB548 end:0x802FDA80
 
-rb3/joypad.cpp:
+system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
@@ -1047,7 +1047,7 @@ system/ui/UIPicture.cpp:
 rb3/unknown/805/unk_8057464C.cpp:
 	.text       start:0x80575698 end:0x80581A8C
 
-rb3/worldcrowd.cpp:
+system/world/Crowd.cpp:
 	.text       start:0x8058D868 end:0x80597134
 
 rb3/colorpalette.cpp:

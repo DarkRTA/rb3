@@ -24,6 +24,7 @@ cflags_includes = [
     "-i src/system/synth",
     "-i src/system/ui",
     "-i src/system/utl",
+    "-i src/system/world",
     "-i src/rb3",
     "-i src/rb3/data",
     "-i src/rb3/mgrs",
