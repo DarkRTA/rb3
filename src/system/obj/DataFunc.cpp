@@ -15,6 +15,7 @@
 #include "datamergefilter.hpp"
 #include "DataFunc.h"
 #include <map>
+#include <new>
 
 // std::map<Symbol, DataFunc*> gDataFuncs;
 
@@ -31,7 +32,11 @@ extern void DataPopVar();
 extern DataNode *DataVariable(Symbol);
 
 // fn_8031B504
-// extern DataNode DataFuncObj::New(DataArray*);
+DataNode DataFuncObj::New(DataArray* da){
+    Hmx::Object* o = ObjectDir::sMainDir->Find<Hmx::Object>(da->Str(1), false);
+    if(o != 0) delete o;
+    return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(da));
+}
 
 // fn_8031B5AC
 DataFuncObj::DataFuncObj(DataArray* da){
@@ -284,62 +289,84 @@ DataNode DataBitNot(DataArray *da) {
     return DataNode(~da->Int(1));
 }
 
-// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+int GetLowestBit(int);
 
-// fn_80320470
-extern DataNode DataReplaceObject(DataArray *);
-// fn_8032056C
-extern DataNode DataNextName(DataArray *);
-
-// fn_8031DC40
-DataNode DataGetElem(DataArray *da) {
-    int i = da->Int(2);
-    DataArray *a = da->Array(1);
-    return DataNode(a->Node(i));
+// fn_8031C574
+DataNode DataLowestBit(DataArray *da) {
+    return DataNode(GetLowestBit(da->Int(1)));
 }
 
-// fn_8031DCA4
-DataNode DataGetLastElem(DataArray *da) {
-    DataArray *a = da->Array(1);
-    int b = a->Size();
-    return DataNode(a->Node(a->Size() - 1));
+// fn_8031C5B8
+int GetLowestBit(int i) {
+    if (i == 0)
+        return 0;
+    int j = 1;
+    while (!(j & i))
+        j *= 2;
+    return j;
 }
 
-// fn_8031DA1C
-DataNode DataForEach(DataArray *da) {
-    DataArray *arr = da->Array(2);
-    arr->AddRef();
-    DataNode *var = da->Var(1);
-    DataNode lol(*var);
-    for (int i = 0; i < arr->Size(); i++) {
-        *var = arr->Evaluate(i);
-        for (int j = 3; j < da->Size(); j++) {
-            da->Command(j)->Execute();
+// fn_8031C5E4
+DataNode DataCountBits(DataArray *da) {
+    return DataNode(CountBits(da->Int(1)));
+}
+
+// fn_8031C628
+DataNode DataWhile(DataArray *da) {
+    while (da->Node(1).NotNull()) {
+        for (int i = 2; i < da->Size(); i++) {
+            da->Command(i)->Execute();
         }
     }
-    *var = lol;
-    arr->Release();
     return DataNode(0);
 }
 
-// fn_8031DB20
-DataNode DataForEachInt(DataArray *da) {
-    DataNode *var = da->Var(1);
-    int i2 = da->Int(2);
-    int i3 = da->Int(3);
-    int r31 = -1;
-    if (i2 > i3)
-        r31 = 1;
-    DataNode idk(*var);
-    while (i2 != i3) {
-        *var = DataNode(i2);
-        for (int cnt = 4; cnt < da->Size(); cnt++) {
-            da->Command(cnt)->Execute();
-        }
-        i2 = var->Union().integer + r31;
-    }
-    *var = idk;
+// fn_8031C6C4
+DataNode DataVar(DataArray *da){
+    return DataNode(DataVariable(da->ForceSym(1)));
+}
+
+// fn_8031C710
+DataNode DataPackColor(DataArray *da) {
+    return DataNode(
+        ((int)(da->Float(3) * 255.0f) & 0xFF) << 0x10
+        | ((int)(da->Float(2) * 255.0f) & 0xFF) << 8
+        | ((int)(da->Float(1) * 255.0f) & 0xFF)
+    );
+}
+
+// fn_8031C7C4
+DataNode DataUnpackColor(DataArray *da) {
+    int packed = da->Int(1);
+    *da->Var(2) = DataNode((float)(packed & 0xFF) / 255.0f);
+    *da->Var(3) = DataNode((float)(packed >> 8 & 0xFF) / 255.0f);
+    *da->Var(4) = DataNode((float)(packed >> 0x10 & 0xFF) / 255.0f);
     return DataNode(0);
+}
+
+// fn_8031C904
+DataNode DataDo(DataArray *da) {
+    int cnt;
+    int nodeCnt = da->Size();
+    for (cnt = 1; da->Type(cnt) == kDataArray; cnt++) {
+        void *arr;
+        DataNode *node;
+        arr = da->Union(cnt).array;
+        node = ((DataArray *)arr)->Var(0);
+        DataPushVar(node);
+        if (((DataArray *)arr)->Size() == 2) {
+            *node = ((DataArray*)arr)->Evaluate(1);
+        }
+    }
+    int delCnt = cnt - 1;
+    for (; cnt < nodeCnt - 1; cnt++) {
+        da->Command(cnt)->Execute();
+    }
+    DataNode ret(da->Evaluate(cnt));
+    while (delCnt-- != 0) {
+        DataPopVar();
+    }
+    return ret;
 }
 
 // fn_8031CA14
@@ -423,17 +450,6 @@ DataNode DataSub(DataArray *da) {
     }
 }
 
-// fn_8031D0FC
-DataNode DataSubEq(DataArray *da) {
-    DataNode ret = DataSub(da);
-    if (da->Type(1) == kDataProperty) {
-        gDataThis->SetProperty(da->Union(1).array, ret);
-    } else {
-        da->Var(1)->operator=(ret);
-    }
-    return ret;
-}
-
 // fn_8031CF24
 DataNode DataMean(DataArray *da) {
     float sum = 0.0;
@@ -458,6 +474,17 @@ DataNode DataClamp(DataArray *da) {
         return DataNode(
             Clamp(dn1->LiteralInt(da), dn2->LiteralInt(da), dn3->LiteralInt(da))
         );
+}
+
+// fn_8031D0FC
+DataNode DataSubEq(DataArray *da) {
+    DataNode ret = DataSub(da);
+    if (da->Type(1) == kDataProperty) {
+        gDataThis->SetProperty(da->Union(1).array, ret);
+    } else {
+        da->Var(1)->operator=(ret);
+    }
+    return ret;
 }
 
 // fn_8031D180
@@ -541,6 +568,15 @@ DataNode DataSymbol(DataArray *da) {
     return DataNode((da->ForceSym(1)));
 }
 
+extern char lbl_808E4478[2];
+// fn_8031D6A8
+DataNode DataChar(DataArray *da) {
+    DataNode *dn = &da->Evaluate(1);
+    lbl_808E4478[0] = dn->Int(nullptr);
+    lbl_808E4478[1] = 0;
+    return DataNode(lbl_808E4478);
+}
+
 // fn_8031D700
 DataNode DataInt(DataArray *da) {
     DataNode *dn = &da->Evaluate(1);
@@ -550,15 +586,6 @@ DataNode DataInt(DataArray *da) {
         return DataNode(dn->Union().integer);
     } else
         return DataNode((int)(dn->LiteralFloat(da)));
-}
-
-extern char lbl_808E4478[2];
-// fn_8031D6A8
-DataNode DataChar(DataArray *da) {
-    DataNode *dn = &da->Evaluate(1);
-    lbl_808E4478[0] = dn->Int(nullptr);
-    lbl_808E4478[1] = 0;
-    return DataNode(lbl_808E4478);
 }
 
 // fn_8031D7C4
@@ -577,59 +604,11 @@ DataNode DataCeil(DataArray *da) {
     return DataNode(CeilThunk(da->Float(1)));
 }
 
-// fn_8031C5B8
-int GetLowestBit(int i) {
-    if (i == 0)
-        return 0;
-    int j = 1;
-    while (!(j & i))
-        j *= 2;
-    return j;
-}
-
-// fn_8031C574
-DataNode DataLowestBit(DataArray *da) {
-    return DataNode(GetLowestBit(da->Int(1)));
-}
-
-// fn_8031C5E4
-DataNode DataCountBits(DataArray *da) {
-    return DataNode(CountBits(da->Int(1)));
-}
-
-// fn_8031C628
-DataNode DataWhile(DataArray *da) {
-    while (da->Node(1).NotNull()) {
-        for (int i = 2; i < da->Size(); i++) {
-            da->Command(i)->Execute();
-        }
-    }
+// fn_8031D890
+DataNode DataDelete(DataArray* da){
+    Hmx::Object* obj = da->GetObj(1);
+    delete obj;
     return DataNode(0);
-}
-
-// fn_8031C904
-DataNode DataDo(DataArray *da) {
-    int cnt;
-    int nodeCnt = da->Size();
-    for (cnt = 1; da->Type(cnt) == kDataArray; cnt++) {
-        void *arr;
-        DataNode *node;
-        arr = da->Union(cnt).array;
-        node = ((DataArray *)arr)->Var(0);
-        DataPushVar(node);
-        if (((DataArray *)arr)->Size() == 2) {
-            *node = ((DataArray*)arr)->Evaluate(1);
-        }
-    }
-    int delCnt = cnt - 1;
-    for (; cnt < nodeCnt - 1; cnt++) {
-        da->Command(cnt)->Execute();
-    }
-    DataNode ret(da->Evaluate(cnt));
-    while (delCnt-- != 0) {
-        DataPopVar();
-    }
-    return ret;
 }
 
 // fn_8031D8EC
@@ -654,11 +633,55 @@ DataNode DataNew(DataArray* da){
     return DataNode(obj);
 }
 
-// fn_8031D890
-DataNode DataDelete(DataArray* da){
-    Hmx::Object* obj = da->GetObj(1);
-    delete obj;
+// fn_8031DA1C
+DataNode DataForEach(DataArray *da) {
+    DataArray *arr = da->Array(2);
+    arr->AddRef();
+    DataNode *var = da->Var(1);
+    DataNode lol(*var);
+    for (int i = 0; i < arr->Size(); i++) {
+        *var = arr->Evaluate(i);
+        for (int j = 3; j < da->Size(); j++) {
+            da->Command(j)->Execute();
+        }
+    }
+    *var = lol;
+    arr->Release();
     return DataNode(0);
+}
+
+// fn_8031DB20
+DataNode DataForEachInt(DataArray *da) {
+    DataNode *var = da->Var(1);
+    int i2 = da->Int(2);
+    int i3 = da->Int(3);
+    int r31 = -1;
+    if (i2 > i3)
+        r31 = 1;
+    DataNode idk(*var);
+    while (i2 != i3) {
+        *var = DataNode(i2);
+        for (int cnt = 4; cnt < da->Size(); cnt++) {
+            da->Command(cnt)->Execute();
+        }
+        i2 = var->Union().integer + r31;
+    }
+    *var = idk;
+    return DataNode(0);
+}
+
+// fn_8031DC40
+DataNode DataGetElem(DataArray *da) {
+    int i = da->Int(2);
+    DataArray *a = da->Array(1);
+    return DataNode(a->Node(i));
+}
+
+// fn_8031DCA4
+DataNode DataGetLastElem(DataArray *da) {
+    DataArray *a = da->Array(1);
+    int b = a->Size();
+    return DataNode(a->Node(a->Size() - 1));
 }
 
 // fn_8031DD0C
@@ -761,19 +784,23 @@ DataNode DataNotifyOnce(DataArray *da) {
     return DataNode(0);
 }
 
-// fn_8031E564
-bool DNArrayNodeEquals(DataNode *dn1, DataNode *dn2) {
-    if (dn1->Type() == kDataArray) {
-        void *arr = dn1->mValue.array;
-        for (int i = 0; i < ((DataArray *)arr)->Size(); i++) {
-            if ((((DataArray *)arr)->Node(i)) == *dn2) {
-                return true;
-            }
-        }
-        return false;
-    } else
-        return *dn1 == *dn2;
+// fn_8031E390
+DataNode DataCond(DataArray *da) {
+    // for (int i = 1; i < da->Size(); i++) {
+    //     DataNode *node = &da->Node(i);
+    //     if (node->Type() == kDataArray) {
+    //         void *arr = node->Union().array;
+    //         if (&((DataArray *)arr)->Node(0)->NotNull()) {
+    //             return ((DataArray *)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
+    //         }
+    //     } else {
+    //         return da->ExecuteScript(i, gDataThis, nullptr, 1);
+    //     }
+    // }
+    return DataNode(0);
 }
+
+bool DNArrayNodeEquals(DataNode*, DataNode*);
 
 // fn_8031E470
 DataNode DataSwitch(DataArray *da) {
@@ -791,20 +818,18 @@ DataNode DataSwitch(DataArray *da) {
     return DataNode(0);
 }
 
-// fn_8031E390
-DataNode DataCond(DataArray *da) {
-    // for (int i = 1; i < da->Size(); i++) {
-    //     DataNode *node = &da->Node(i);
-    //     if (node->Type() == kDataArray) {
-    //         void *arr = node->Union().array;
-    //         if (&((DataArray *)arr)->Node(0)->NotNull()) {
-    //             return ((DataArray *)arr)->ExecuteScript(1, gDataThis, nullptr, 1);
-    //         }
-    //     } else {
-    //         return da->ExecuteScript(i, gDataThis, nullptr, 1);
-    //     }
-    // }
-    return DataNode(0);
+// fn_8031E564
+bool DNArrayNodeEquals(DataNode *dn1, DataNode *dn2) {
+    if (dn1->Type() == kDataArray) {
+        void *arr = dn1->mValue.array;
+        for (int i = 0; i < ((DataArray *)arr)->Size(); i++) {
+            if ((((DataArray *)arr)->Node(i)) == *dn2) {
+                return true;
+            }
+        }
+        return false;
+    } else
+        return *dn1 == *dn2;
 }
 
 // fn_8031E5FC
@@ -883,10 +908,25 @@ DataNode DataSetElem(DataArray *da) {
     return DataNode(*dn2);
 }
 
+// fn_8031EA24
+DataNode DataQuote(DataArray *da) {
+    return DataNode(da->Node(1));
+}
+
 // fn_8031EA64
 DataNode DataEval(DataArray *da) {
     DataNode *dn = &da->Evaluate(1);
     return DataNode(dn->Evaluate());
+}
+
+float InverseLerp(float, float, float);
+
+// fn_8031EAA8
+DataNode DataReverseInterp(DataArray *da) {
+    float ext = InverseLerp(
+        da->Float(1), da->Float(2), da->Float(3)
+    );
+    return DataNode(Clamp(0.0f, 1.0f, ext));
 }
 
 // fn_8031EB54
@@ -895,14 +935,6 @@ float InverseLerp(float f1, float f2, float f3) {
         return (f3 - f1) / (f2 - f1);
     else
         return 1.0f;
-}
-
-// fn_8031EAA8
-DataNode DataReverseInterp(DataArray *da) {
-    float ext = InverseLerp(
-        da->Float(1), da->Float(2), da->Float(3)
-    );
-    return DataNode(Clamp(0.0f, 1.0f, ext));
 }
 
 // fn_8031EB78
@@ -952,7 +984,30 @@ DataNode DataDec(DataArray* da){
     }
 }
 
+// fn_8031EDF4
+extern DataNode DataHandleType(DataArray *);
 
+// fn_8031EEC8
+DataNode DataHandleTypeRet(DataArray* da){
+    DataArray* arr = da->Array(1);
+    DataNode* eval = &arr->Evaluate(0);
+    Hmx::Object* obj;
+    if(eval->Type() == kDataObject){
+        obj = eval->Union().object;
+    }
+    else {
+        obj = gDataDir->FindObject(eval->LiteralStr(da), true);
+    }
+    return obj->HandleType(arr);
+}
+
+// fn_8031EF60
+extern DataNode DataExport(DataArray *);
+
+// fn_8031F02C
+extern DataNode DataHandle(DataArray *);
+// fn_8031F128
+extern DataNode DataHandleRet(DataArray *);
 // fn_8031F1D0
 extern DataNode DataRun(DataArray *);
 
@@ -974,27 +1029,8 @@ extern DataNode OnWriteFile(DataArray *);
 extern DataNode OnFileExists(DataArray *);
 // fn_8031F3BC
 extern DataNode OnFileReadOnly(DataArray *);
-// fn_8031EDF4
-extern DataNode DataHandleType(DataArray *);
-
-// fn_8031EEC8
-DataNode DataHandleTypeRet(DataArray* da){
-    DataArray* arr = da->Array(1);
-    DataNode* eval = &arr->Evaluate(0);
-    Hmx::Object* obj;
-    if(eval->Type() == kDataObject){
-        obj = eval->Union().object;
-    }
-    else {
-        obj = gDataDir->FindObject(eval->LiteralStr(da), true);
-    }
-    return obj->HandleType(arr);
-}
-
-// fn_8031F02C
-extern DataNode DataHandle(DataArray *);
-// fn_8031F128
-extern DataNode DataHandleRet(DataArray *);
+// fn_8031F400
+extern DataNode DataExit(DataArray *);
 
 // fn_8031F448
 DataNode DataContains(DataArray* da){
@@ -1005,14 +1041,11 @@ DataNode DataContains(DataArray* da){
     else return DataNode(1);
 }
 
-// fn_8031EF60
-extern DataNode DataExport(DataArray *);
-// fn_8031F400
-extern DataNode DataExit(DataArray *);
-// fn_8031F5F8
-extern DataNode DataFind(DataArray *);
 // fn_8031F4F0
 extern DataNode DataFindExists(DataArray *);
+
+// fn_8031F5F8
+extern DataNode DataFind(DataArray *);
 
 // fn_8031F690
 extern DataNode DataFindObj(DataArray *);
@@ -1050,32 +1083,6 @@ DataNode DataHasAnySubStr(DataArray *da) {
 DataNode DataFindSubStr(DataArray *da) {
     String str(da->Str(1));
     return DataNode(str.find(da->Str(2)));
-}
-
-// fn_8031FD80
-DataNode DataStrlen(DataArray *da) {
-    int len = strlen(da->Str(1));
-    return DataNode(len);
-}
-
-extern unsigned short lbl_808E5860;
-// fn_8031FDC4
-DataNode DataStrElem(DataArray *da) {
-    unsigned short c = lbl_808E5860;
-    *(char *)&c = da->Str(1)[da->Int(2)];
-    return DataNode(Symbol((char *)&c));
-}
-
-extern "C" DataNode *fn_800E7878(DataArray *, int);
-
-// fn_8031FED0
-DataNode DataSearchReplace(DataArray *da) {
-    char str[0x800];
-    bool changed = SearchReplace(
-        da->Str(1), da->Str(2), da->Str(3), str
-    );
-    da->Var(4)->operator=(DataNode(str));
-    return DataNode(changed);
 }
 
 // fn_8031FA30
@@ -1132,14 +1139,40 @@ DataNode DataStrToUpper(DataArray *da) {
     return DataNode(str);
 }
 
+// fn_8031FD80
+DataNode DataStrlen(DataArray *da) {
+    int len = strlen(da->Str(1));
+    return DataNode(len);
+}
+
+extern unsigned short lbl_808E5860;
+// fn_8031FDC4
+DataNode DataStrElem(DataArray *da) {
+    unsigned short c = lbl_808E5860;
+    *(char *)&c = da->Str(1)[da->Int(2)];
+    return DataNode(Symbol((char *)&c));
+}
+
+bool StrICmpIsDifferent(const char*, const char*);
+
+// fn_8031FE44
+DataNode DataStrIEq(DataArray *da) {
+    return DataNode(StrICmpIsDifferent(da->Str(1), da->Str(2)));
+}
+
 // fn_8031FEA8
 bool StrICmpIsDifferent(const char *c, const char *d) {
     return !stricmp(c, d);
 }
 
-// fn_8031FE44
-DataNode DataStrIEq(DataArray *da) {
-    return DataNode(StrICmpIsDifferent(da->Str(1), da->Str(2)));
+// fn_8031FED0
+DataNode DataSearchReplace(DataArray *da) {
+    char str[0x800];
+    bool changed = SearchReplace(
+        da->Str(1), da->Str(2), da->Str(3), str
+    );
+    da->Var(4)->operator=(DataNode(str));
+    return DataNode(changed);
 }
 
 // fn_8031FF7C
@@ -1158,42 +1191,36 @@ DataNode DataSort(DataArray *da) {
     return DataNode(0);
 }
 
-// fn_8031C6C4
-DataNode DataVar(DataArray *da){
-    return DataNode(DataVariable(da->ForceSym(1)));
+// fn_80320048
+DataNode DataGetType(DataArray *da) {
+    DataNode *dn = &da->Evaluate(1);
+    return DataNode(dn->Type());
 }
 
-
-
-// fn_8031C710
-DataNode DataPackColor(DataArray *da) {
-    return DataNode(
-        ((int)(da->Float(3) * 255.0f) & 0xFF) << 0x10
-        | ((int)(da->Float(2) * 255.0f) & 0xFF) << 8
-        | ((int)(da->Float(1) * 255.0f) & 0xFF)
-    );
-}
-
-// fn_8031C7C4
-DataNode DataUnpackColor(DataArray *da) {
-    int packed = da->Int(1);
-    *da->Var(2) = DataNode((float)(packed & 0xFF) / 255.0f);
-    *da->Var(3) = DataNode((float)(packed >> 8 & 0xFF) / 255.0f);
-    *da->Var(4) = DataNode((float)(packed >> 0x10 & 0xFF) / 255.0f);
-    return DataNode(0);
+// fn_8032008C
+DataNode DataWith(DataArray *da) {
+    return da->ExecuteScript(2, da->GetObj(1), nullptr, 1);
 }
 
 // fn_803200E8
 extern DataNode OnSetThis(DataArray *);
+
 // fn_80320150
 extern DataNode DataMacroElem(DataArray *);
+
 // fn_8032024C
 extern DataNode DataMergeDirs(DataArray *);
 
-// fn_8031EA24
-DataNode DataQuote(DataArray *da) {
-    return DataNode(da->Node(1));
+// fn_80320458
+MergeFilter::MergeFilter(int one, int asdf) {
+    filter = one;
+    i = asdf;
 }
+
+// fn_80320470
+extern DataNode DataReplaceObject(DataArray *);
+// fn_8032056C
+extern DataNode DataNextName(DataArray *);
 
 // fn_8032080C
 extern DataNode DataQuasiquote(DataArray *);
@@ -1206,23 +1233,12 @@ DataNode DataUnquote(DataArray *da) {
 // fn_8032088C
 extern DataNode DataGetDateTime(DataArray *);
 
-// fn_8032008C
-DataNode DataWith(DataArray *da) {
-    return da->ExecuteScript(2, da->GetObj(1), nullptr, 1);
-}
-
-// fn_80320048
-DataNode DataType(DataArray *da) {
-    DataNode *dn = &da->Evaluate(1);
-    return DataNode(dn->Type());
-}
-
-// fn_80320C20
-extern DataNode DataObjectList(DataArray *);
 // fn_80320B34
 extern DataNode DataFileList(DataArray *);
 // fn_80320BD8
 extern DataNode DataFileListPaths(DataArray *);
+// fn_80320C20
+extern DataNode DataObjectList(DataArray *);
 
 // fn_80320CCC
 DataNode DataDisableNotify(DataArray *da) {
@@ -1234,12 +1250,6 @@ DataNode DataFilterNotify(DataArray *da) {
     return DataNode(0);
 }
 
-// fn_80320458
-MergeFilter::MergeFilter(int one, int asdf) {
-    filter = one;
-    i = asdf;
-}
-
 // fn_80320CDC
 void DataInitFuncs() {
     DataRegisterFunc("replace_object", DataReplaceObject);
@@ -1247,7 +1257,7 @@ void DataInitFuncs() {
     DataRegisterFunc("printf", DataPrintf);
     DataRegisterFunc("sprintf", DataSprintf);
     DataRegisterFunc("sprint", DataSprint);
-    // DataRegisterFunc("func", DataFuncObj::New);
+    DataRegisterFunc("func", DataFuncObj::New);
     DataRegisterFunc("elem", DataGetElem);
     DataRegisterFunc("last_elem", DataGetLastElem);
     DataRegisterFunc("foreach", DataForEach);
@@ -1381,7 +1391,7 @@ void DataInitFuncs() {
     DataRegisterFunc(",", DataUnquote);
     DataRegisterFunc("get_date_time", DataGetDateTime);
     DataRegisterFunc("with", DataWith);
-    DataRegisterFunc("type", DataType);
+    DataRegisterFunc("type", DataGetType);
     DataRegisterFunc("object_list", DataObjectList);
     DataRegisterFunc("file_list", DataFileList);
     DataRegisterFunc("file_list_paths", DataFileListPaths);
@@ -1412,10 +1422,10 @@ void DataInitFuncs() {
 //     gDataFuncs.clear();
 // }
 
-// DataFuncObj::~DataFuncObj(){
-//     arr->Release();
-// }
+DataFuncObj::~DataFuncObj(){
+    mFunc->Release();
+}
 
-// DataNode DataFuncObj::Handle(DataArray* da, bool b){
-//     return arr->ExecuteScript(2, gDataThis, da, 1);
-// }
+DataNode DataFuncObj::Handle(DataArray* da, bool b){
+    return mFunc->ExecuteScript(2, gDataThis, da, 1);
+}
