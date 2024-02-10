@@ -157,6 +157,7 @@ public:
     short mDeprecated;
     static DataFunc* sDefaultHandler;
 
+    const char* File() { return mFile.m_string; }
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
