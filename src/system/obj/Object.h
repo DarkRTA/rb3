@@ -29,11 +29,11 @@ public:
         Rather than an std::map or a dictionary from a language like Python,
         the dictionary is laid out in one continuous DataArray, in the style of:
         (key1 value1 key2 value2 key3 value3).
-        Each key is a Symbol type, while each value is a DataNode type. */
-    DataArray *data; // TODO: rename this to dataDict, dtaDict, or any verbose member name tbh
+        Each key is a DataNode of type Symbol, while each value is a DataNode of some other compatible node type (int/float/const char*). */
+    DataArray* mDataDict;
 
-    TypeProps();
-    ~TypeProps();
+    TypeProps(); // weak
+    ~TypeProps(); // weak
 
     void Save(BinStream &, Hmx::Object *);
     void Load(BinStream &, unsigned short, Hmx::Object *);
@@ -50,7 +50,7 @@ public:
     void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
     void Replace(Hmx::Object*, Hmx::Object*, ObjRef*);
     int Size() const;
-    void Assign(const TypeProps&, ObjRef*);
+    TypeProps& Assign(const TypeProps&, ObjRef*);
 };
 
 class ObjRef {

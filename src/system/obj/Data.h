@@ -111,7 +111,7 @@ public:
 
     DataNodeValue Union() const { return mValue; }
 
-    DataType Type(){ return mType; }
+    DataType Type() const { return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
     DataNode& AddToBuffer();
@@ -181,7 +181,7 @@ public:
     void Release(){ if (--mRefs == 0) delete this; }
     // void* operator new(unsigned long); make the param size_t?
 
-    DataNode& Node(int i) { return mNodes[i]; }
+    // DataNode& Node(int i) { return mNodes[i]; }
     DataNode& Node(int i) const { return mNodes[i]; }
 
     void Print(TextStream& s, DataType type, bool compact) const;
