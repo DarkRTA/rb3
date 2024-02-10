@@ -1,9 +1,9 @@
 #include "Data.h"
-#include "symbol.hpp"
+#include "Symbol.h"
 #include "string.h"
 #include "stdlib.h"
 #include "common.hpp"
-#include "hmx/object.hpp"
+#include "Object.h"
 #include <new>
 #include <list>
 
