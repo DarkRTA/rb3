@@ -64,7 +64,7 @@ BinStream &BinStream::operator>>(String &s) {
 
 // fn_80342D18
 // BinStream's ctor
-BinStream::BinStream(bool b) : unk04(b), mCrypto(0) {
+BinStream::BinStream(bool b) : mLittleEndian(b), mCrypto(0) {
 }
 
 // fn_80342D34
@@ -143,7 +143,7 @@ void BinStream::Seek(int i, SeekType s) {
 // fn_80343058
 void BinStream::ReadEndian(void *v, int i) {
     Read(v, i);
-    if (unk04 != 0) {
+    if (mLittleEndian != 0) {
         SwapData(v, v, i);
     }
 }
@@ -173,7 +173,7 @@ void SwapData(const void *v1, void *v2, int num_bytes) {
 
 void BinStream::WriteEndian(const void *v, int i) {
     char sp8;
-    if (unk04 != 0) {
+    if (mLittleEndian != 0) {
         SwapData((void *)v, &sp8, i);
         Write(&sp8, i);
     } else

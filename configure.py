@@ -611,6 +611,8 @@ config.libs = [
             Object(NonMatching, "system/utl/BufStream.cpp"),
             Object(NonMatching, "system/utl/BufStreamNAND.cpp"),
             Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
+            Object(NonMatching, "system/utl/FilePath.cpp"),
+            Object(NonMatching, "system/utl/FileStream.cpp"),
             Object(NonMatching, "system/utl/HxGuid.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(NonMatching, "system/utl/Locale.cpp"),

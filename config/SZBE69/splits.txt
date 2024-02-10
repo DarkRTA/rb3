@@ -728,8 +728,12 @@ rb3/unknown/803/unk_8034C91C.cpp:
 system/utl/EncryptXTEA.cpp:
 	.text       start:0x8034C664 end:0x8034C7D4
 
-rb3/unknown/803/unk_8034C9F8.cpp:
-	.text       start:0x8034C9F8 end:0x8034D068
+system/utl/FilePath.cpp:
+	.text       start:0x8034C7D4 end:0x8034C9F8
+	.ctors      start:0x807EFF3C end:0x807EFF40
+
+system/utl/FileStream.cpp:
+	.text       start:0x8034C9F8 end:0x8034CEC0
 
 system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50

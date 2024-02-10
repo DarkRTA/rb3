@@ -4,8 +4,8 @@
 #include "sdk/MSL_C/MSL_Common/printf.h"
 
 // fn_8037A58C - TextFileStream ctor
-TextFileStream::TextFileStream(const char *c, bool b)
-    : unk4(c, b ? FileStream::FileType3 : FileStream::FileType1, true) {
+TextFileStream::TextFileStream(const char *file, bool append)
+    : mFile(file, append ? FileStream::kAppend : FileStream::kWrite, true) {
 }
 
 static const char kCRLF[2] = { '\r', '\n' };
@@ -15,9 +15,9 @@ void TextFileStream::Print(const char *c) {
     char *p = (char *)c;
     while (*p != '\0') {
         if (*p == '\n' && p[1] != '\r')
-            unk4.Write(kCRLF, sizeof(kCRLF));
+            mFile.Write(kCRLF, sizeof(kCRLF));
         else
-            unk4.Write(p, 1);
+            mFile.Write(p, 1);
         p++;
     }
 }
