@@ -3,8 +3,10 @@
 #include "common.hpp"
 #include "msgsource.hpp"
 #include "Dir.h"
+#include "obj/Utl.h"
 
 extern const char* gNullStr;
+extern void PropertyNOP(const char*, char*, String&);
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != nullptr) return mDir;
@@ -24,9 +26,6 @@ void Hmx::Object::SetTypeDef(DataArray* da){
         if(da != nullptr) da->AddRef();
     }
 }
-
-extern char* PathName(const Hmx::Object*);
-extern void PropertyNOP(const char*, char*, String&);
 
 DataNode* Hmx::Object::Property(DataArray* prop, bool fail){
     static DataNode n;
@@ -50,12 +49,12 @@ DataNode* Hmx::Object::Property(DataArray* prop, bool fail){
                 return &ret->Node(prop->Int(1));
             }
         }
-        else if(fail){
-            String str;
-            str << prop;
-            String str2(str);
-            PropertyNOP("%s: property %s not found", PathName(this), str2);
-        }
+    }
+    if(fail){
+        String str;
+        str << prop;
+        String str2(str);
+        PropertyNOP("%s: property %s not found", PathName(this), str2);
     }
     return nullptr;
 }
@@ -146,9 +145,6 @@ void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
-
-extern bool IsASubclass(Symbol, Symbol);
-extern char* PathName(const Hmx::Object*);
 
 // see scratch: https://decomp.me/scratch/9abtP
 DataNode Hmx::Object::Handle(DataArray* da, bool b){
