@@ -69,7 +69,6 @@ namespace Hmx {
 
         // RB2 has the following members private
         DataArray* mTypeDef;
-        char* mNote;
         const char* mName;
         ObjectDir* mDir;
         char mRefs[8]; // actually a vector<ObjRef*> - thank you stlport, very cool
