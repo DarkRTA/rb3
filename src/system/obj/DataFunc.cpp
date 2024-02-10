@@ -13,7 +13,7 @@
 #include "Dir.h"
 #include "mergefilter.hpp"
 #include "datamergefilter.hpp"
-#include "datafuncobj.hpp"
+#include "DataFunc.h"
 #include <map>
 
 // std::map<Symbol, DataFunc*> gDataFuncs;
@@ -28,20 +28,16 @@ extern Hmx::Object *gDataThis;
 extern ObjectDir* gDataDir;
 extern void DataPushVar(DataNode *dn);
 extern void DataPopVar();
+extern DataNode *DataVariable(Symbol);
 
-// fn_80320470
-extern DataNode DataReplaceObject(DataArray *);
-// fn_8032056C
-extern DataNode DataNextName(DataArray *);
+// fn_8031B504
+// extern DataNode DataFuncObj::New(DataArray*);
 
-// fn_8031B6C0
-DataNode DataPrintf(DataArray *da) {
-    FormatString fs(da->Str(1));
-    for (int i = 2; i < da->Size(); i++) {
-        fs << da->Evaluate(i);
-    }
-    TheDebug << fs.Str();
-    return DataNode(0);
+// fn_8031B5AC
+DataFuncObj::DataFuncObj(DataArray* da){
+    mFunc = da;
+    da->AddRef();
+    SetName(da->Str(1), ObjectDir::sMainDir);
 }
 
 // fn_8031B62C
@@ -53,6 +49,24 @@ DataNode DataSprintf(DataArray *da) {
     return DataNode(fs.Str());
 }
 
+// fn_8031B6C0
+DataNode DataPrintf(DataArray *da) {
+    FormatString fs(da->Str(1));
+    for (int i = 2; i < da->Size(); i++) {
+        fs << da->Evaluate(i);
+    }
+    TheDebug << fs.Str();
+    return DataNode(0);
+}
+
+// fn_8031B764
+DataNode DataPrint(DataArray *da) {
+    for (int i = 1; i < da->Size(); i++) {
+        da->Evaluate(i).Print(TheDebug, true);
+    }
+    return DataNode(0);
+}
+
 // fn_8031B7DC
 DataNode DataSprint(DataArray *da) {
     String str;
@@ -62,15 +76,94 @@ DataNode DataSprint(DataArray *da) {
     return DataNode(str.c_str());
 }
 
-// fn_8031B504
-// extern DataNode DataFuncObj::New(DataArray*);
-
-// fn_8031B5AC
-DataFuncObj::DataFuncObj(DataArray* da){
-    arr = da;
-    da->AddRef();
-    SetName(da->Str(1), ObjectDir::sMainDir);
+// fn_8031B86C
+DataNode DataSet(DataArray *da) {
+    DataNode ret(da->Evaluate(2));
+    if (da->Type(1) == kDataProperty) {
+        gDataThis->SetProperty(da->Union(1).array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
 }
+
+// fn_8031B904
+DataNode DataSetVar(DataArray *da) {
+    DataNode ret = da->Evaluate(2);
+    *DataVariable(da->ForceSym(1)) = ret;
+    return ret;
+}
+
+// fn_8031B970
+DataNode DataIfElse(DataArray *da) {
+    if(da->Node(1).NotNull())
+        return DataNode(da->Evaluate(2));
+    else return DataNode(da->Evaluate(3));
+}
+
+// fn_8031B9F0
+DataNode DataIf(DataArray *da) {
+    if (da->Node(1).NotNull()) {
+        for (int i = 2; i < da->Size(); i++) {
+            da->Command(i)->Execute();
+        }
+        return DataNode(0);
+    } else
+        return DataNode(0);
+}
+
+bool DataNodeIsNull(DataNode*);
+
+// fn_8031BA98
+DataNode DataUnless(DataArray *da) {
+    if (DataNodeIsNull(&da->Node(1))) {
+        for (int i = 2; i < da->Size(); i++) {
+            da->Command(i)->Execute();
+        }
+        return DataNode(0);
+    } else
+        return DataNode(0);
+}
+
+bool DataNodeIsNull(DataNode *dn) {
+    return (!dn->NotNull());
+}
+
+// fn_8031BB68
+DataNode DataEq(DataArray *da) {
+    DataNode *dn1 = &da->Evaluate(1);
+    DataNode *dn2 = &da->Evaluate(2);
+    return DataNode(dn1->operator==(*dn2));
+}
+
+// fn_8031BBD0
+DataNode DataFindElem(DataArray *da) {
+    DataArray *arr = da->Array(1);
+    arr->AddRef();
+    DataNode *dn = &da->Evaluate(2);
+    for (int i = 0; i < arr->Size(); i++) {
+        if (!(arr->Node(i).operator==(*dn)))
+            continue;
+        if (da->Size() > 3) {
+            da->Var(3)->operator=(DataNode(i));
+        }
+        arr->Release();
+        return DataNode(1);
+    }
+    arr->Release();
+    return DataNode(0);
+}
+
+// fn_8031BCC8
+DataNode DataNe(DataArray *da) {
+    return DataNode(DataEq(da).Union().integer == 0);
+}
+
+// --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// fn_80320470
+extern DataNode DataReplaceObject(DataArray *);
+// fn_8032056C
+extern DataNode DataNextName(DataArray *);
 
 // fn_8031DC40
 DataNode DataGetElem(DataArray *da) {
@@ -358,66 +451,6 @@ DataNode DataCeil(DataArray *da) {
     return DataNode(CeilThunk(da->Float(1)));
 }
 
-// fn_8031B86C
-DataNode DataSet(DataArray *da) {
-    DataNode *dn = &da->Evaluate(2);
-    DataNode ret(*dn);
-    if (da->Type(1) == kDataProperty) {
-        gDataThis->SetProperty(da->Union(1).array, ret);
-    } else
-        da->Var(1)->operator=(ret);
-    return ret;
-}
-
-// fn_8031B970
-DataNode DataIfElse(DataArray *da) {
-    DataNode *dn = &da->Node(1);
-    if (dn->NotNull()) {
-        return DataNode(da->Evaluate(2));
-    } else {
-        return DataNode(da->Evaluate(3));
-    }
-}
-
-// fn_8031B9F0
-DataNode DataIf(DataArray *da) {
-    if (da->Node(1).NotNull()) {
-        for (int i = 2; i < da->Size(); i++) {
-            da->Command(i)->Execute();
-        }
-        return DataNode(0);
-    } else
-        return DataNode(0);
-}
-
-bool DataNodeIsNull(DataNode *dn) {
-    return (!dn->NotNull());
-}
-
-// fn_8031BA98
-DataNode DataUnless(DataArray *da) {
-    if (DataNodeIsNull(&da->Node(1))) {
-        for (int i = 2; i < da->Size(); i++) {
-            da->Command(i)->Execute();
-        }
-        return DataNode(0);
-    } else
-        return DataNode(0);
-}
-
-// fn_8031BB68
-DataNode DataEq(DataArray *da) {
-    DataNode *dn1 = &da->Evaluate(1);
-    DataNode *dn2 = &da->Evaluate(2);
-    return DataNode(dn1->operator==(*dn2));
-}
-
-// fn_8031BCC8
-DataNode DataNe(DataArray *da) {
-    DataNode dn = DataEq(da);
-    return DataNode(dn.Union().integer == 0);
-}
-
 // fn_8031BD1C
 DataNode DataLe(DataArray *da) {
     return DataNode(da->Float(1) <= da->Float(2));
@@ -667,14 +700,7 @@ DataNode DataStartsWith(DataArray *da) {
     return DataNode(!strncmp(da->Str(1), da->Str(2), i));
 }
 
-// fn_8031B764
-DataNode DataPrint(DataArray *da) {
-    for (int i = 1; i < da->Size(); i++) {
-        DataNode *dn = &da->Evaluate(i);
-        dn->Print(TheDebug, true);
-    }
-    return DataNode(0);
-}
+
 
 // fn_8031E06C
 extern DataNode DataTime(DataArray *);
@@ -988,24 +1014,6 @@ extern DataNode DataFind(DataArray *);
 // fn_8031F4F0
 extern DataNode DataFindExists(DataArray *);
 
-// fn_8031BBD0
-DataNode DataFindElem(DataArray *da) {
-    DataArray *arr = da->Array(1);
-    arr->AddRef();
-    DataNode *dn = &da->Evaluate(2);
-    for (int i = 0; i < arr->Size(); i++) {
-        if (!(arr->Node(i).operator==(*dn)))
-            continue;
-        if (da->Size() > 3) {
-            da->Var(3)->operator=(DataNode(i));
-        }
-        arr->Release();
-        return DataNode(1);
-    }
-    arr->Release();
-    return DataNode(0);
-}
-
 // fn_8031F690
 extern DataNode DataFindObj(DataArray *);
 
@@ -1150,20 +1158,12 @@ DataNode DataSort(DataArray *da) {
     return DataNode(0);
 }
 
-extern DataNode *DataVariable(Symbol);
-
 // fn_8031C6C4
 DataNode DataVar(DataArray *da){
     return DataNode(DataVariable(da->ForceSym(1)));
 }
 
-// fn_8031B904
-DataNode DataSetVar(DataArray *da) {
-    DataNode ret = da->Evaluate(2);
-    DataNode *dn = DataVariable(da->ForceSym(1));
-    dn->operator=(ret);
-    return ret;
-}
+
 
 // fn_8031C710
 DataNode DataPackColor(DataArray *da) {
@@ -1412,10 +1412,10 @@ void DataInitFuncs() {
 //     gDataFuncs.clear();
 // }
 
-DataFuncObj::~DataFuncObj(){
-    arr->Release();
-}
+// DataFuncObj::~DataFuncObj(){
+//     arr->Release();
+// }
 
-DataNode DataFuncObj::Handle(DataArray* da, bool b){
-    return arr->ExecuteScript(2, gDataThis, da, 1);
-}
+// DataNode DataFuncObj::Handle(DataArray* da, bool b){
+//     return arr->ExecuteScript(2, gDataThis, da, 1);
+// }
