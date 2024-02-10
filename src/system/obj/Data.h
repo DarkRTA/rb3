@@ -161,7 +161,7 @@ public:
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
-    DataNodeValue Union(int i) const { return Node(i).Union(); }
+    DataNodeValue Union(int i) const { return Node(i).mValue; }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
