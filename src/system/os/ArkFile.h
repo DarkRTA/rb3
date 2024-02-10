@@ -7,14 +7,14 @@ class ArkFile : public File {
 public:
     ArkFile(const char *, int);
     virtual ~ArkFile(); // fn_802E73FC
-    virtual String Filename(); // fn_802E7810
+    virtual String Filename(){ return mFilename; } // fn_802E7810 // weak
     virtual int Read(void *, int); // fn_802E748C
     virtual bool ReadAsync(void *, int); // fn_802E7500
     virtual int V_Unk5(void *, int); // links to fn_802E76D8, which returns 0
     virtual bool Write(const void *, int); // links to fn_8077BAA0, which returns 0
     virtual unsigned int Seek(int, int); // fn_802E76E0
-    virtual unsigned int Tell(); // fn_802E7728
-    virtual void Flush(); // fn_8076F540 - returns void
+    virtual int Tell(); // fn_802E7728
+    virtual void Flush(){} // fn_8076F540 - returns void // weak
     virtual bool Eof(); // fn_802E7730
 
     virtual bool Fail(); // fn_802E7748
@@ -26,7 +26,6 @@ public:
 
     virtual void _Open() = 0;
 
-    bool fn_802E4F2C();
     void TaskDone(int);
 
     int mArkfileNum;

@@ -1,9 +1,9 @@
-#include "file.hpp"
+#include "File.h"
 #include "file_ops.hpp"
 #include "ArkFile.h"
-#include "archive.hpp"
+#include "Archive.h"
 #include "blockmgr.hpp"
-#include "asynctask.hpp"
+#include "AsyncTask.h"
 
 int File::sOpenCount[4];
 
@@ -52,89 +52,104 @@ ArkFile::~ArkFile() {
     }
 }
 
-// // fn_802E748C
-// int ArkFile::Read(void *c, int a) {
-//     if (ReadAsync(c, a) == 0)
-//         return 0;
-//     int sp8 = -1;
-//     while (ReadDone(sp8) == 0)
-//         ;
-//     return sp8;
-// }
+// fn_802E748C
+int ArkFile::Read(void *c, int a) {
+    if (ReadAsync(c, a) == 0)
+        return 0;
+    int ret = -1;
+    while (ReadDone(ret) == 0)
+        ;
+    return ret;
+}
 
 // // fn_802E7500
 // bool ArkFile::ReadAsync(void *c, int a) {
 //     // this one's gross, i don't wanna do it
 // }
 
-// int ArkFile::V_Unk5(void *a, int b) {
-//     return 0;
+// // Range: 0x805A16EC -> 0x805A191C
+// unsigned char ArkFile::ReadAsync(class ArkFile * const this /* r29 */, void * iBuff /* r30 */, int iBytes /* r31 */) {
+//     // Local variables
+//     unsigned long long startByte; // r28
+//     int startBlock; // r1+0x10
+//     int numBlocks; // r1+0xC
+//     int blockSize; // r1+0x8
+//     int currBlock; // r26
+//     int lastBlock; // r25
+//     int startOffset; // r24
+//     int endOffset; // r23
+//     char * buff; // [invalid]
+//     unsigned char tryFill; // r22
+//     int endByte; // r4
+//     class AsyncTask task; // r1+0x18
+
+//     // References
+//     // -> class BlockMgr TheBlockMgr;
+//     // -> class Debug TheDebug;
+//     // -> const char * kAssertStr;
 // }
 
-// unsigned int ArkFile::Seek(int offset, int mode) {
-//     switch (mode) {
-//     case 0:
-//         fpos = offset;
-//         break;
-//     case 1:
-//         fpos += offset;
-//         break;
-//     case 2:
-//         fpos = size + offset;
-//         break;
-//     default:
-//         break;
-//     }
-//     return fpos;
-// }
+int ArkFile::V_Unk5(void *a, int b) {
+    return 0;
+}
 
-// unsigned int ArkFile::Tell() {
-//     return fpos;
-// }
+unsigned int ArkFile::Seek(int offset, int mode) {
+    switch (mode) {
+    case 0:
+        mTell = offset;
+        break;
+    case 1:
+        mTell += offset;
+        break;
+    case 2:
+        mTell = mSize + offset;
+        break;
+    default:
+        break;
+    }
+    return mTell;
+}
 
-// // void ArkFile::Flush(){ }
+int ArkFile::Tell() {
+    return mTell;
+}
 
-// bool ArkFile::Eof() {
-//     return (size - fpos) == 0;
-// }
+bool ArkFile::Eof() {
+    return (mSize - mTell) == 0;
+}
 
-// // fn_802E7810
-// String ArkFile::Filename() {
-//     return fname;
-// }
+// fn_802E7748
+bool ArkFile::Fail() {
+    return (mFail != 0);
+}
 
-// // fn_802E7748
-// bool ArkFile::Fail() {
-//     return (unk24 != 0);
-// }
+// fn_802E7758
+unsigned int ArkFile::Size() {
+    return mSize;
+}
 
-// // fn_802E7758
-// unsigned int ArkFile::Size() {
-//     return size;
-// }
+// fn_802E7760
+unsigned int ArkFile::UncompressedSize() {
+    return mUCSize;
+}
 
-// // fn_802E7760
-// unsigned int ArkFile::UncompressedSize() {
-//     return size_uncompressed;
-// }
+// fn_802E7768
+void ArkFile::TaskDone(int a) {
+    mNumOutstandingTasks--;
+    mBytesRead += a;
+    mTell += a;
+}
 
-// // fn_802E7790
-// int ArkFile::ReadDone(int &a) {
-//     TheBlockMgr.Poll();
-//     a = unk1c;
-//     return (unk18 == 0);
-// }
+// fn_802E7790
+int ArkFile::ReadDone(int &a) {
+    TheBlockMgr.Poll();
+    a = mBytesRead;
+    return (mNumOutstandingTasks == 0);
+}
 
 // extern void fn_802EB6E4(int *, int, int, int);
 
 // // fn_802E77E4
 // int ArkFile::V_Unk16(int *a) {
 //     // fn_802EB6E4(a, unk4, unkc + fpos, unkc + fpos);
-// }
-
-// // fn_802E7768
-// void ArkFile::TaskDone(int a) {
-//     unk18--;
-//     unk1c += a;
-//     fpos += a;
 // }

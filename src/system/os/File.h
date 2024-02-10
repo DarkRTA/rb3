@@ -12,7 +12,7 @@ public:
     virtual int V_Unk5(char *, int) = 0;
     virtual bool Write(const void *, int); // links to fn_8077BAA0, which returns 0
     virtual unsigned int Seek(int, int) = 0;
-    virtual unsigned int Tell() = 0;
+    virtual int Tell() = 0;
     virtual void Flush() = 0;
     virtual bool Eof() = 0;
     virtual bool Fail() = 0;
