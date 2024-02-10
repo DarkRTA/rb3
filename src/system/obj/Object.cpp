@@ -4,20 +4,14 @@
 #include "msgsource.hpp"
 #include "Dir.h"
 
+extern const char* gNullStr;
+
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != nullptr) return mDir;
     else return ObjectDir::sMainDir;
 }
 
-DataNode Hmx::Object::OnAppendToArray(const DataArray* da){
-    DataArray* arr = da->Array(2);
-    int size = PropertySize(arr);
-    DataArray* cloned = arr->Clone(true, false, 1);
-    cloned->Node(cloned->Size() - 1) = DataNode(size);
-    InsertProperty(cloned, da->Evaluate(3));
-    cloned->Release();
-    return DataNode(size);
-}
+Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
 
 void Hmx::Object::SetTypeDef(DataArray* da){
     if(mTypeDef != da){
@@ -28,26 +22,6 @@ void Hmx::Object::SetTypeDef(DataArray* da){
         mTypeProps.ClearAll(this);
         mTypeDef = da;
         if(da != nullptr) da->AddRef();
-    }
-}
-
-extern const char* gNullStr;
-
-Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
-
-DataNode* Hmx::Object::Property(Symbol prop, bool fail){
-    static DataArrayPtr d(DataNode(1));
-    d.Node(0) = DataNode(prop);
-    return Property(d.mData, fail);
-}
-
-bool Hmx::Object::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
-    if(_prop->Size() == _i){
-        return true;
-    }
-    else {
-        Symbol b = _prop->Sym(_i);
-        return false;
     }
 }
 
@@ -86,6 +60,12 @@ DataNode* Hmx::Object::Property(DataArray* prop, bool fail){
     return nullptr;
 }
 
+DataNode* Hmx::Object::Property(Symbol prop, bool fail){
+    static DataArrayPtr d(DataNode(1));
+    d.Node(0) = DataNode(prop);
+    return Property(d.mData, fail);
+}
+
 DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
     static DataNode n(a2, kDataArray);
     if(SyncProperty(n, prop, 0, kPropHandle)){
@@ -99,19 +79,23 @@ DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
     return DataNode(0);
 }
 
-void Hmx::Object::RemoveProperty(DataArray* prop){
-    static DataNode n;
-    if(!SyncProperty(n, prop, 0, kPropRemove)){
-        prop->Size();
-        mTypeProps.RemoveArrayValue(prop->Sym(0), prop->Int(1), mTypeDef, this);
+void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
+    if(!SyncProperty((DataNode&)val, prop, 0, kPropSet)){
+        Symbol name = prop->Sym(0);
+        if(prop->Size() == 1){
+            mTypeProps.SetKeyValue(name, val, true, this);
+        }
+        else {
+            prop->Size();
+            mTypeProps.SetArrayValue(name, prop->Int(1), val, mTypeDef, this);
+        }
     }
 }
 
-void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
-    if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
-        prop->Size();
-        mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
-    }
+void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
+    static DataArrayPtr d(DataNode(1));
+    d.Node(0) = DataNode(prop);
+    SetProperty(d.mData, val);
 }
 
 int Hmx::Object::PropertySize(DataArray* prop){
@@ -134,29 +118,6 @@ int Hmx::Object::PropertySize(DataArray* prop){
     }
 }
 
-void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
-    mTypeProps.Replace(obj1, obj2, this);
-}
-
-void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
-    static DataArrayPtr d(DataNode(1));
-    d.Node(0) = DataNode(prop);
-    SetProperty(d.mData, val);
-}
-
-void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
-    if(!SyncProperty((DataNode&)val, prop, 0, kPropSet)){
-        Symbol name = prop->Sym(0);
-        if(prop->Size() == 1){
-            mTypeProps.SetKeyValue(name, val, true, this);
-        }
-        else {
-            prop->Size();
-            mTypeProps.SetArrayValue(name, prop->Int(1), val, mTypeDef, this);
-        }
-    }
-}
-
 void Hmx::Object::ClearProperties(DataArray* propArr){
     int size = PropertySize(propArr);
     DataArray* cloned = propArr->Clone(true, false, 1);
@@ -167,18 +128,23 @@ void Hmx::Object::ClearProperties(DataArray* propArr){
     cloned->Release();
 }
 
-DataNode Hmx::Object::HandleType(DataArray* msg){
-    Symbol t = msg->Sym(1);
-    bool found = false;
-    DataArray* handler;
-    if(mTypeDef != nullptr){
-        handler = mTypeDef->FindArray(t, false);
-        if(handler != nullptr) found = true;
+void Hmx::Object::RemoveProperty(DataArray* prop){
+    static DataNode n;
+    if(!SyncProperty(n, prop, 0, kPropRemove)){
+        prop->Size();
+        mTypeProps.RemoveArrayValue(prop->Sym(0), prop->Int(1), mTypeDef, this);
     }
-    if(found){
-        return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
+}
+
+void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
+    if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
+        prop->Size();
+        mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
     }
-    else return DataNode(kDataUnhandled, 0);
+}
+
+void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
+    mTypeProps.Replace(obj1, obj2, this);
 }
 
 extern bool IsASubclass(Symbol, Symbol);
@@ -294,4 +260,38 @@ DataNode Hmx::Object::Handle(DataArray* da, bool b){
     }
     
     return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Hmx::Object::HandleType(DataArray* msg){
+    Symbol t = msg->Sym(1);
+    bool found = false;
+    DataArray* handler;
+    if(mTypeDef != nullptr){
+        handler = mTypeDef->FindArray(t, false);
+        if(handler != nullptr) found = true;
+    }
+    if(found){
+        return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Hmx::Object::OnAppendToArray(const DataArray* da){
+    DataArray* arr = da->Array(2);
+    int size = PropertySize(arr);
+    DataArray* cloned = arr->Clone(true, false, 1);
+    cloned->Node(cloned->Size() - 1) = DataNode(size);
+    InsertProperty(cloned, da->Evaluate(3));
+    cloned->Release();
+    return DataNode(size);
+}
+
+bool Hmx::Object::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
+    if(_prop->Size() == _i){
+        return true;
+    }
+    else {
+        Symbol b = _prop->Sym(_i);
+        return false;
+    }
 }
