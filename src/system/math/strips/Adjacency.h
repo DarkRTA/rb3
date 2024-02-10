@@ -11,7 +11,7 @@ class AdjTriangle {
 public:
     unsigned int VRef[3];
     unsigned int ATri[3];
-    bool FindEdge(unsigned int, unsigned int);
+    unsigned int FindEdge(unsigned int, unsigned int);
     unsigned int OppositeVertex(unsigned int, unsigned int);
 };
 
