@@ -158,6 +158,132 @@ DataNode DataNe(DataArray *da) {
     return DataNode(DataEq(da).Union().integer == 0);
 }
 
+// fn_8031BD1C
+DataNode DataLe(DataArray *da) {
+    return DataNode(da->Float(1) <= da->Float(2));
+}
+
+// fn_8031BD8C
+DataNode DataLt(DataArray *da) {
+    return DataNode(da->Float(1) < da->Float(2));
+}
+
+// fn_8031BDF8
+DataNode DataGe(DataArray *da) {
+    return DataNode(da->Float(1) >= da->Float(2));
+}
+
+// fn_8031BE68
+DataNode DataGt(DataArray *da) {
+    return DataNode(da->Float(1) > da->Float(2));
+}
+
+// fn_8031BED4
+DataNode DataNot(DataArray *da) {
+    return DataNode(DataNodeIsNull(&da->Node(1)));
+}
+
+// fn_8031BF18
+DataNode DataAnd(DataArray *da) {
+    for (int i = 1; i < da->Size(); i++) {
+        if (DataNodeIsNull(&da->Node(i))) {
+            return DataNode(0);
+        }
+    }
+    return DataNode(1);
+}
+
+// fn_8031BF9C
+DataNode DataOr(DataArray *da) {
+    for (int i = 1; i < da->Size(); i++) {
+        DataNode *dn = &da->Node(i);
+        if (dn->NotNull())
+            return DataNode(1);
+    }
+    return DataNode(0);
+}
+
+// fn_8031C020
+DataNode DataXor(DataArray *da) {
+    return DataNode(da->Node(1).NotNull() != da->Node(2).NotNull());
+}
+
+// fn_8031C08C
+DataNode DataBitAnd(DataArray *da) {
+    int res = da->Int(1);
+    for (int i = 2; i < da->Size(); i++) {
+        res &= da->Int(i);
+    }
+    return DataNode(res);
+}
+
+// fn_8031C108
+DataNode DataAndEqual(DataArray *da) {
+    void *arr;
+    if (da->Type(1) == kDataProperty) {
+        arr = da->Union(1).array;
+        int res =
+            gDataThis->Property((DataArray *)arr, true)->Int(0) & da->Int(2);
+        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+        return DataNode(res);
+    } else {
+        DataNode *dn_var = da->Var(1);
+        int res = dn_var->Int(0) & da->Int(2);
+        return (*dn_var = DataNode(res));
+    }
+}
+
+// fn_8031C224
+DataNode DataMaskEqual(DataArray *da) {
+    void *arr;
+    if (da->Type(1) == kDataProperty) {
+        arr = da->Union(1).array;
+        int res =
+            gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->Int(2);
+        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+        return DataNode(res);
+    } else {
+        DataNode *dn_var = da->Var(1);
+        int res = dn_var->Int(0) & ~da->Int(2);
+        return (*dn_var = DataNode(res));
+    }
+}
+
+// fn_8031C340
+DataNode DataOrEqual(DataArray *da) {
+    void *arr;
+    if (da->Type(1) == kDataProperty) {
+        arr = da->Union(1).array;
+        int res =
+            gDataThis->Property((DataArray *)arr, true)->Int(0) | da->Int(2);
+        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
+        return DataNode(res);
+    } else {
+        DataNode *dn_var = da->Var(1);
+        int res = dn_var->Int(0) | da->Int(2);
+        return (*dn_var = DataNode(res));
+    }
+}
+
+// fn_8031C45C
+DataNode DataBitOr(DataArray *da) {
+    int res = da->Int(1);
+    for (int i = 2; i < da->Size(); i++) {
+        res |= da->Int(i);
+    }
+    return DataNode(res);
+}
+
+// fn_8031C4D8
+DataNode DataBitXor(DataArray *da) {
+    return DataNode(da->Int(1) ^ da->Int(2));
+}
+
+// fn_8031C534
+DataNode DataBitNot(DataArray *da) {
+    return DataNode(~da->Int(1));
+}
+
 // --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // fn_80320470
@@ -449,132 +575,6 @@ DataNode DataFloor(DataArray *da) {
 // fn_8031D850
 DataNode DataCeil(DataArray *da) {
     return DataNode(CeilThunk(da->Float(1)));
-}
-
-// fn_8031BD1C
-DataNode DataLe(DataArray *da) {
-    return DataNode(da->Float(1) <= da->Float(2));
-}
-
-// fn_8031BD8C
-DataNode DataLt(DataArray *da) {
-    return DataNode(da->Float(1) < da->Float(2));
-}
-
-// fn_8031BDF8
-DataNode DataGe(DataArray *da) {
-    return DataNode(da->Float(1) >= da->Float(2));
-}
-
-// fn_8031BE68
-DataNode DataGt(DataArray *da) {
-    return DataNode(da->Float(1) > da->Float(2));
-}
-
-// fn_8031BED4
-DataNode DataNot(DataArray *da) {
-    return DataNode(DataNodeIsNull(&da->Node(1)));
-}
-
-// fn_8031BF18
-DataNode DataAnd(DataArray *da) {
-    for (int i = 1; i < da->Size(); i++) {
-        if (DataNodeIsNull(&da->Node(i))) {
-            return DataNode(0);
-        }
-    }
-    return DataNode(1);
-}
-
-// fn_8031BF9C
-DataNode DataOr(DataArray *da) {
-    for (int i = 1; i < da->Size(); i++) {
-        DataNode *dn = &da->Node(i);
-        if (dn->NotNull())
-            return DataNode(1);
-    }
-    return DataNode(0);
-}
-
-// fn_8031C020
-DataNode DataXor(DataArray *da) {
-    return DataNode(da->Node(1).NotNull() != da->Node(2).NotNull());
-}
-
-// fn_8031C08C
-DataNode DataBitAnd(DataArray *da) {
-    int res = da->Int(1);
-    for (int i = 2; i < da->Size(); i++) {
-        res &= da->Int(i);
-    }
-    return DataNode(res);
-}
-
-// fn_8031C108
-DataNode DataAndEqual(DataArray *da) {
-    void *arr;
-    if (da->Type(1) == kDataProperty) {
-        arr = da->Union(1).array;
-        int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) & da->Int(2);
-        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-        return DataNode(res);
-    } else {
-        DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) & da->Int(2);
-        return (*dn_var = DataNode(res));
-    }
-}
-
-// fn_8031C224
-DataNode DataMaskEqual(DataArray *da) {
-    void *arr;
-    if (da->Type(1) == kDataProperty) {
-        arr = da->Union(1).array;
-        int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->Int(2);
-        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-        return DataNode(res);
-    } else {
-        DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) & ~da->Int(2);
-        return (*dn_var = DataNode(res));
-    }
-}
-
-// fn_8031C45C
-DataNode DataBitOr(DataArray *da) {
-    int res = da->Int(1);
-    for (int i = 2; i < da->Size(); i++) {
-        res |= da->Int(i);
-    }
-    return DataNode(res);
-}
-
-// fn_8031C340
-DataNode DataOrEqual(DataArray *da) {
-    void *arr;
-    if (da->Type(1) == kDataProperty) {
-        arr = da->Union(1).array;
-        int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) | da->Int(2);
-        gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-        return DataNode(res);
-    } else {
-        DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) | da->Int(2);
-        return (*dn_var = DataNode(res));
-    }
-}
-
-// fn_8031C4D8
-DataNode DataBitXor(DataArray *da) {
-    return DataNode(da->Int(1) ^ da->Int(2));
-}
-
-// fn_8031C534
-DataNode DataBitNot(DataArray *da) {
-    return DataNode(~da->Int(1));
 }
 
 // fn_8031C5B8
