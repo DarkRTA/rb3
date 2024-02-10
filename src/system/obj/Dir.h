@@ -32,6 +32,9 @@ public:
 
     Hmx::Object* FindObject(const char*, bool);
     static Symbol StaticClassName();
+    template <class T> T* Find(const char*, bool) {
+        // return dynamic_cast<T*>(GetObj(a));
+    }
 
     char mHashTable[0x20]; // should be a KeylessHash<const char*, ObjectDir::Entry*>
     StringTable mStringTable;

@@ -2,7 +2,7 @@
 #include "Data.h"
 #include "string.h"
 #include "sdk/MSL_C/MSL_Common/printf.h"
-#include "string.hpp"
+#include "Str.h"
 #include <vector>
 
 namespace {
@@ -145,43 +145,43 @@ DataNode op3(DataArray* da){
 
 extern DataArray* DataReadString(const char*);
 
-int ByteGrinder::pickOneOf32A(bool b, long l){
-    DataArray* arr;
-    char buf[256];
+unsigned long ByteGrinder::pickOneOf32A(bool b, long l){
+    DataArray* a;
+    char script[256];
     if(b){
-        sprintf(buf, "{xa %d}");
-        arr = DataReadString(buf);
+        sprintf(script, "{xa %d}");
+        a = DataReadString(script);
     }
     else {
-        arr = DataReadString("{xa}");
+        a = DataReadString("{xa}");
     }
-    int i = arr->Evaluate(0).Int(nullptr);
-    arr->Release();
-    return i;
+    unsigned long result = a->Evaluate(0).Int(nullptr);
+    a->Release();
+    return result;
 }
 
-int ByteGrinder::pickOneOf32B(bool b, long l){
-    DataArray* arr;
-    char buf[256];
+unsigned long ByteGrinder::pickOneOf32B(bool b, long l){
+    DataArray* a;
+    char script[256];
     if(b){
-        sprintf(buf, "{ya %d}");
-        arr = DataReadString(buf);
+        sprintf(script, "{ya %d}");
+        a = DataReadString(script);
     }
     else {
-        arr = DataReadString("{ya}");
+        a = DataReadString("{ya}");
     }
-    int i = arr->Evaluate(0).Int(nullptr);
-    arr->Release();
-    return i;
+    unsigned long result = a->Evaluate(0).Int(nullptr);
+    a->Release();
+    return result;
 }
 
 DataNode getRandomLong(DataArray* da){
-    static int seed;
+    static unsigned long s_seed;
     bool enough = da->Size() > 1;
     if(enough){
-        seed = seed * 0x19660D + 0x3C6EF35F;
+        s_seed = s_seed * 0x19660D + 0x3C6EF35F;
     }
-    return DataNode(kDataInt, seed);
+    return DataNode(kDataInt, s_seed);
 }
 
 DataNode magicNumberGenerator(DataArray* da){
@@ -202,70 +202,65 @@ void ByteGrinder::Init(){
     sprintf(buf, "O%d");
 }
 
-void ByteGrinder::GrindArray(long l1, long l2, unsigned char* uc, int len, long l3){
-    char buf1[268];
-    char buf_loop1_1[16];
-    char buf_loop2_2[256];
-    char buf_loop1_2[256];
-    char buf_loop2_1[16];
-    char buf3[32];
+void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, long moggVersion){
+    char script[256];
+    DataArray* mainScriptArray;
     
-    sprintf(buf1, "{ma %d 2}", l1);
-    DataArray* arr = DataReadString(buf1);
-    arr->Evaluate(0).Int(nullptr);
-    arr->Release();
+    sprintf(script, "{ma %d 2}", seedA);
+    mainScriptArray = DataReadString(script);
+    mainScriptArray->Evaluate(0).Int(nullptr);
+    mainScriptArray->Release();
+    
+    sprintf(script, "{za %d 2}", seedB);
+    mainScriptArray = DataReadString(script);
+    mainScriptArray->Evaluate(0).Int(nullptr);
+    mainScriptArray->Release();
 
-    sprintf(buf1, "{za %d 2}", l2);
-    arr = DataReadString(buf1);
-    arr->Evaluate(0).Int(nullptr);
-    arr->Release();
-
-    String str;
-    int enc_method = GetEncMethod(l3);
-    str = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{ma{O67 $bar $ix}}";
-    if(enc_method != 0){
-        str = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{za{O67 $bar $ix}}";
+    String mainScript;
+    int encMethod = GetEncMethod(moggVersion);
+    mainScript = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{ma{O67 $bar $ix}}";
+    if(encMethod != 0){
+        mainScript = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{za{O67 $bar $ix}}";
     }
     
-    pickOneOf32B(true, l2);
+    pickOneOf32B(true, seedB);
     for(int i = 0; i < 0x20; i++){
-        sprintf(buf_loop1_1, "O%d", pickOneOf32B(false, 0));
-        sprintf(buf_loop1_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i, buf_loop1_1);
-        str += buf_loop1_2;
+        char block[256];
+        char callName[16];
+        sprintf(callName, "O%d", pickOneOf32B(false, 0));
+        sprintf(block, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i, callName);
+        mainScript += block;
     }
 
-    if(enc_method != 0){
-        pickOneOf32B(true, l1);
+    if(encMethod != 0){
+        pickOneOf32B(true, seedA);
         for(int i = 0x20; i < 0x40; i++){
-            sprintf(buf_loop2_1, "O%d", pickOneOf32B(false, 0) + 0x20);
-            sprintf(buf_loop2_2, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i , buf_loop2_1);
-            str += buf_loop2_2;
+            char block[256];
+            char callName[16];
+            sprintf(callName, "O%d", pickOneOf32B(false, 0) + 0x20);
+            sprintf(block, "(%d{O70 $ix}{O69 $foo{%s{O67 $bar $ix}$foo}})", i, callName);
+            mainScript += block;
         }
     }
 
-    str += "}{O70 $ix}}}$foo";
-    arr = DataReadString(str.c_str());
-    for(int i = 0; i < len; i++){
-        {
-            unsigned char c = uc[i];
-            String inner_str("");
-            snprintf(buf3, sizeof(buf3), "%d", c);
-            inner_str += buf3;
-            inner_str += " (";
-            for(int j = 0; j < 0x10; j++){
-                snprintf(buf3, sizeof(buf3), "%d", uc[j]);
-                inner_str += buf3;
-                inner_str += " ";
-            }
-            inner_str += ")";
-            DataArray* arr_inner = DataReadString(inner_str.c_str());
-            {
-                DataNode exec = arr->ExecuteScript(0, nullptr, arr_inner, 0);
-                uc[i] = exec.Int(nullptr);
-            }
-            arr_inner->Release();
+    mainScript += "}{O70 $ix}}}$foo";
+    mainScriptArray = DataReadString(mainScript.c_str());
+    for(int i = 0; i < arrayLen; i++){
+        char itoaBuffer[32];
+        unsigned char w = arrayToGrind[i];
+        String stringArgs("");
+        snprintf(itoaBuffer, sizeof(itoaBuffer), "%d", w);
+        stringArgs += itoaBuffer;
+        stringArgs += " (";
+        for(int j = 0; j < 0x10; j++){
+            snprintf(itoaBuffer, sizeof(itoaBuffer), "%d", arrayToGrind[j]);
+            stringArgs += itoaBuffer;
+            stringArgs += " ";
         }
+        stringArgs += ")";
+        DataArray* args = DataReadString(stringArgs.c_str());
+        arrayToGrind[i] = mainScriptArray->ExecuteScript(0, nullptr, args, 0).Int(nullptr);
+        args->Release();
     }
-    arr->Release();
-
+    mainScriptArray->Release();
 }

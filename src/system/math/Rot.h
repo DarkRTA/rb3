@@ -1,7 +1,7 @@
 #ifndef MATH_ROT_H
 #define MATH_ROT_H
 #include "hmx/quat.hpp"
-#include "hmx/matrix3.hpp"
+#include "Mtx.h"
 #include "vector3.hpp"
 #include "TextStream.h"
 #include "vector2.hpp"

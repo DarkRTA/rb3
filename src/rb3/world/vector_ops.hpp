@@ -1,7 +1,7 @@
 #ifndef RB3_VECTOR_OPS_HPP
 #define RB3_VECTOR_OPS_HPP
 #include "vector3.hpp"
-#include "hmx/matrix3.hpp"
+#include "Mtx.h"
 
 // taken from RB2 and GDRB
 void operator-(const Vector3 &, const Vector3 &);

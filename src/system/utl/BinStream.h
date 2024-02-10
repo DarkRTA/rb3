@@ -40,8 +40,8 @@ public:
         int,
         SeekType
     ) = 0;
-    /** Endianness flags, denotes whether to swap from native. (guess) */
-    bool unk04;
+    /** Endianness flags, denotes whether to swap from native. */
+    bool mLittleEndian;
     /** PRNG source, used for encryption */
     Rand2 *mCrypto;
 

@@ -111,7 +111,7 @@ public:
 
     DataNodeValue Union() const { return mValue; }
 
-    DataType Type(){ return mType; }
+    DataType Type() const { return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
     DataNode& AddToBuffer();
@@ -157,10 +157,11 @@ public:
     short mDeprecated;
     static DataFunc* sDefaultHandler;
 
+    const char* File() { return mFile.m_string; }
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
-    DataNodeValue Union(int i) const { return Node(i).Union(); }
+    DataNodeValue Union(int i) const { return Node(i).mValue; }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
@@ -181,7 +182,7 @@ public:
     void Release(){ if (--mRefs == 0) delete this; }
     // void* operator new(unsigned long); make the param size_t?
 
-    DataNode& Node(int i) { return mNodes[i]; }
+    // DataNode& Node(int i) { return mNodes[i]; }
     DataNode& Node(int i) const { return mNodes[i]; }
 
     void Print(TextStream& s, DataType type, bool compact) const;
@@ -242,6 +243,17 @@ BinStream& operator<<(BinStream&, const DataArray*);
 class DataArrayPtr {
 public:
     DataArray* mData;
+    
+    DataArrayPtr(const DataNode&);
+    ~DataArrayPtr();
+    DataNode& Node(int i) const;
 };
 
 #endif
+
+// DataArrayPtr();
+//     DataArrayPtr(const DataNode&);
+//     ~DataArrayPtr();
+//     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
+//     DataArray* GetArray();
+//     DataArrayPtr* operator=(DataArray*);

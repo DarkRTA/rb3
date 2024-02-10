@@ -516,13 +516,16 @@ system/math/Primes.cpp:
 	.data       start:0x808514C0 end:0x808515B8
 
 system/math/strips/RevisitedRadix.cpp:
-	.text       start:0x802E1614 end:0x802E1C18
+	.text       start:0x802E1614 end:0x802E1AC8
 
 system/math/StreamChecksum.cpp:
-	.text       start:0x802E1C18 end:0x802E1FE8
+	.text       start:0x802E1AC8 end:0x802E1FE8
+
+system/math/strips/Striper.cpp:
+	.text       start:0x802E1FE8 end:0x802E2D24
 
 rb3/unknown/802/unk_802E0CA0.cpp:
-	.text       start:0x802E1FE8 end:0x802E2E28
+	.text       start:0x802E2D24 end:0x802E2E28
 
 system/math/Trig.cpp:
 	.text       start:0x802E2E28 end:0x802E33CC
@@ -687,6 +690,8 @@ rb3/tasks.cpp:
 
 system/obj/TextFile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
+	.data       start:0x80856610 end:0x808566C8
+	.sdata2     start:0x808E5868 end:0x808E5870
 
 system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
@@ -723,8 +728,12 @@ rb3/unknown/803/unk_8034C91C.cpp:
 system/utl/EncryptXTEA.cpp:
 	.text       start:0x8034C664 end:0x8034C7D4
 
-rb3/unknown/803/unk_8034C9F8.cpp:
-	.text       start:0x8034C9F8 end:0x8034D068
+system/utl/FilePath.cpp:
+	.text       start:0x8034C7D4 end:0x8034C9F8
+	.ctors      start:0x807EFF3C end:0x807EFF40
+
+system/utl/FileStream.cpp:
+	.text       start:0x8034C9F8 end:0x8034CEC0
 
 system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50

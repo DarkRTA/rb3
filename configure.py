@@ -524,8 +524,9 @@ config.libs = [
         "host": False,
         "objects": [       
             Object(NonMatching, "system/math/strips/Adjacency.cpp"),
-            Object(NonMatching, "system/math/strips/CustomArray.cpp"),
+            Object(Matching, "system/math/strips/CustomArray.cpp"),
             Object(NonMatching, "system/math/strips/RevisitedRadix.cpp"),
+            Object(NonMatching, "system/math/strips/Striper.cpp"),
             Object(NonMatching, "system/math/Decibels.cpp"),
             Object(NonMatching, "system/math/FileChecksum.cpp"),
             # These functions match 100%, but won't link because the dtors aren't being merged properly
@@ -546,7 +547,8 @@ config.libs = [
             Object(NonMatching, "system/obj/Object.cpp", mw_version="Wii/1.0a"),
             # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
             Object(LinkIssues, "system/obj/PropSync.cpp", mw_version="Wii/1.0a"),
-            Object(NonMatching, "system/obj/TextFile.cpp"),
+            # should match, but link issues due to...the superclasses just before the RTTI? idk
+            Object(LinkIssues, "system/obj/TextFile.cpp"),
             Object(NonMatching, "system/obj/TypeProps.cpp"),
             Object(NonMatching, "system/obj/Utl.cpp"),
             
@@ -609,6 +611,8 @@ config.libs = [
             Object(NonMatching, "system/utl/BufStream.cpp"),
             Object(NonMatching, "system/utl/BufStreamNAND.cpp"),
             Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
+            Object(NonMatching, "system/utl/FilePath.cpp"),
+            Object(NonMatching, "system/utl/FileStream.cpp"),
             Object(NonMatching, "system/utl/HxGuid.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(NonMatching, "system/utl/Locale.cpp"),

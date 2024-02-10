@@ -1,7 +1,7 @@
 #include "Data.h"
-#include "string.hpp"
+#include "Str.h"
+#include "Object.h"
 #include "string.h"
-#include "hmx/object.hpp"
 #include <new>
 #include <map>
 

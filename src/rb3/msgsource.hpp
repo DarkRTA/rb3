@@ -1,6 +1,6 @@
 #ifndef RB3_MSGSOURCE_HPP
 #define RB3_MSGSOURCE_HPP
-#include "hmx/object.hpp"
+#include "Object.h"
 #include <list>
 
 class MsgSource : public virtual Hmx::Object {
