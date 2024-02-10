@@ -547,7 +547,8 @@ config.libs = [
             Object(NonMatching, "system/obj/Object.cpp", mw_version="Wii/1.0a"),
             # should match, but link issues due to the weak symbols in the header, as well as the mystery function in the middle of the split
             Object(LinkIssues, "system/obj/PropSync.cpp", mw_version="Wii/1.0a"),
-            Object(NonMatching, "system/obj/TextFile.cpp"),
+            # should match, but link issues due to...the superclasses just before the RTTI? idk
+            Object(LinkIssues, "system/obj/TextFile.cpp"),
             Object(NonMatching, "system/obj/TypeProps.cpp"),
             Object(NonMatching, "system/obj/Utl.cpp"),
             
