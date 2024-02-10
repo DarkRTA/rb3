@@ -38,40 +38,48 @@ FileStream::~FileStream(){
     DeleteChecksum();
 }
 
-// // fn_8034CCA8
-// void FileStream::Flush() {
-//     file->Flush();
-// }
+void FileStream::ReadImpl(void* data, int bytes){
+    if(mFile->Read(data, bytes) != bytes) mFail = true;
+    else if(mChecksum != 0){
+        mChecksum->Update((const unsigned char*)data, bytes);
+        mBytesChecksummed += bytes;
+    }
+}
 
-// // fn_8034CD30
-// int FileStream::Tell() {
-//     return file->Tell();
-// }
+void FileStream::WriteImpl(const void* data, int bytes){
+    if(mFile->V_Unk5((char*)data, bytes) != bytes) mFail = true;
+}
 
-// // fn_8034CD44
-// bool FileStream::Eof() {
-//     return (file->Eof() != false);
-// }
+void FileStream::Flush(){
+    mFile->Flush();
+}
 
-// // fn_8034CD7C
-// bool FileStream::Fail() {
-//     return failed;
-// }
+void FileStream::SeekImpl(int offset, SeekType t){
+    int d[3] = { 0, 1, 2 };
+    int res = mFile->Seek(offset, d[t]);
+    if(res < 0) mFail = true;
+}
 
-// void FileStream::ReadImpl(void *v, int i){
-//     if(file->Read(v, i) != i){
-//         failed = true;
-//     }
-// }
+int FileStream::Tell(){
+    return mFile->Tell();
+}
 
-// // fn_8034CC50
-// void FileStream::WriteImpl(const void *v, int i) {
-//     if(file->Write(v, i) != i){
-//         failed = true;
-//     }
-// }
+bool FileStream::Eof(){
+    return mFile->Eof() != false;
+}
 
-// // fn_8034CCBC
-// void FileStream::SeekImpl(int i, SeekType s) {
+bool FileStream::Fail(){
+    return mFail;
+}
 
-// }
+void FileStream::DeleteChecksum(){
+    delete mChecksum;
+    mChecksum = 0;
+    mBytesChecksummed = 0;
+}
+
+void FileStream::StartChecksum(){
+    DeleteChecksum();
+    mChecksum = new StreamChecksum();
+    if(!mChecksum->Begin(Name(), false)) DeleteChecksum();
+}
