@@ -1,23 +1,23 @@
 #include "PropSync.h"
 #include "symbols.hpp"
-#include "rot.hpp"
+#include "Rot.h"
 
 bool PropSync(String& str, DataNode& node, DataArray* da, int i, PropOp op){
-    da->GetNodeCount();
+    da->Size();
     if(op == (PropOp)1) node = DataNode(str.c_str());
     else str = node.Str(0);
     return true;
 }
 
 bool PropSync(FilePath& fp, DataNode& node, DataArray* da, int i, PropOp op){
-    da->GetNodeCount();
+    da->Size();
     if(op == (PropOp)1) node = DataNode(fp.FilePathRelativeToRoot());
     else fp.SetRoot(node.Str(0));
     return true;
 }
 
 bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op){
-    da->GetNodeCount();
+    da->Size();
     if(op == (PropOp)1) node = DataNode((int)color.Pack());
     else color.Unpack(node.Int(0));
     return true;
@@ -32,8 +32,8 @@ extern void Scale(const Vector3&, float, Vector3&);
 extern void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
 
 bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* da, int i, PropOp op){
-    da->GetNodeCount();
-    Symbol sym = da->GetSymAtIndex(i);
+    da->Size();
+    Symbol sym = da->Sym(i);
     Vector3 rotation, scale;
     bool result = false;
 
@@ -84,10 +84,10 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* da, int i, PropOp op
 }
 
 bool PropSync(Sphere& sphere, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymX){
             return PropSync(sphere.x, node, da, i + 1, op);
         }
@@ -106,10 +106,10 @@ bool PropSync(Sphere& sphere, DataNode& node, DataArray* da, int i, PropOp op){
 }
 
 bool PropSync(Vector2& vec, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymX){
             return PropSync(vec.x, node, da, i + 1, op);
         }
@@ -122,10 +122,10 @@ bool PropSync(Vector2& vec, DataNode& node, DataArray* da, int i, PropOp op){
 }
 
 bool PropSync(Vector3& vec, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymX){
             return PropSync(vec.x, node, da, i + 1, op);
         }
@@ -141,10 +141,10 @@ bool PropSync(Vector3& vec, DataNode& node, DataArray* da, int i, PropOp op){
 }
 
 bool PropSync(Transform& tf, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymX){
             return PropSync(tf.trans.x, node, da, i + 1, op);
         }
@@ -160,31 +160,31 @@ bool PropSync(Transform& tf, DataNode& node, DataArray* da, int i, PropOp op){
 }
 
 bool PropSync(Hmx::Rect& rect, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymX){
-            return PropSync(rect.x, node, da, i + 1, op);
+            return PropSync(rect.x1, node, da, i + 1, op);
         }
         if(sym == SymY){
-            return PropSync(rect.y, node, da, i + 1, op);
+            return PropSync(rect.y1, node, da, i + 1, op);
         }
         if(sym == SymW){
-            return PropSync(rect.w, node, da, i + 1, op);
+            return PropSync(rect.x2, node, da, i + 1, op);
         }
         if(sym == SymH){
-            return PropSync(rect.h, node, da, i + 1, op);
+            return PropSync(rect.y2, node, da, i + 1, op);
         }
     }
     return false;
 }
 
 bool PropSync(Box& box, DataNode& node, DataArray* da, int i, PropOp op){
-    int cnt = da->GetNodeCount();
+    int cnt = da->Size();
     if(i == cnt) return true;
     else {
-        Symbol sym = da->GetSymAtIndex(i);
+        Symbol sym = da->Sym(i);
         if(sym == SymMinX){
             return PropSync(box.minX, node, da, i + 1, op);
         }

@@ -7,17 +7,17 @@ void InitObject(Hmx::Object* obj){
     obj->ClassName();
     DataArray* found1 = objects->FindArray(initSym, true);
     DataArray* found2 = found1->FindArray(initSym, false);
-    if(found2 != nullptr)
-        found2->ExecuteScript(1, obj, nullptr, 1);
+    if(found2 != 0)
+        found2->ExecuteScript(1, obj, 0, 1);
 }
 
 char* PathName(const Hmx::Object* obj){
-    if(obj != nullptr) ((Hmx::Object*)obj)->FindPathName();
+    if(obj != 0) ((Hmx::Object*)obj)->FindPathName();
     else return "NULL Object";
 }
 
 const char* SafeName(Hmx::Object* obj){
-    if(obj != nullptr) return obj->Name();
+    if(obj != 0) return obj->Name();
     else return "NULL";
 }
 

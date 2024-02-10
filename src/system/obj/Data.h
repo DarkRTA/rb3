@@ -242,6 +242,17 @@ BinStream& operator<<(BinStream&, const DataArray*);
 class DataArrayPtr {
 public:
     DataArray* mData;
+    
+    DataArrayPtr(const DataNode&);
+    ~DataArrayPtr();
+    DataNode& Node(int i) const;
 };
 
 #endif
+
+// DataArrayPtr();
+//     DataArrayPtr(const DataNode&);
+//     ~DataArrayPtr();
+//     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
+//     DataArray* GetArray();
+//     DataArrayPtr* operator=(DataArray*);

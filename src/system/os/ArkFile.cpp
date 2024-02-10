@@ -18,12 +18,6 @@ File::~File() {
     sOpenCount[0]--;
 }
 
-
-// fn_802E780C
-String File::Filename() {
-    return String();
-}
-
 // fn_802E7818
 int File::V_Unk15(int *a) {
     *a = 0;
