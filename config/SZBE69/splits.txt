@@ -731,8 +731,15 @@ system/utl/CacheMgr.cpp:
 system/utl/CacheMgr_Wii.cpp:
 	.text       start:0x803469AC end:0x80347488
 
-rb3/unknown/803/unk_803431F4.cpp:
-	.text       start:0x80347488 end:0x8034A7DC
+system/utl/Cheats.cpp:
+	.text       start:0x80347488 end:0x80349D74
+
+system/utl/Chunks.cpp:
+	.text       start:0x80349D74 end:0x8034A7DC
+
+system/utl/ChunkIDs.cpp:
+	.text       start:0x8034A7DC end:0x8034A900
+	.ctors      start:0x807EFF30 end:0x807EFF34
 
 rb3/unknown/803/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C664

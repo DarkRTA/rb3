@@ -492,7 +492,6 @@ config.libs = [
 
             Object(NonMatching, "rb3/unknown/803/unk_8030A494.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8033C8F0.cpp"),
-            Object(NonMatching, "rb3/unknown/803/unk_803431F4.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C91C.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_8034C9F8.cpp"),
             Object(NonMatching, "rb3/unknown/803/unk_80354A30.cpp"),
@@ -613,6 +612,9 @@ config.libs = [
             Object(NonMatching, "system/utl/Cache_Wii.cpp"),
             Object(NonMatching, "system/utl/CacheMgr.cpp"),
             Object(NonMatching, "system/utl/CacheMgr_Wii.cpp"),
+            Object(NonMatching, "system/utl/Cheats.cpp"),
+            Object(NonMatching, "system/utl/Chunks.cpp"),
+            Object(NonMatching, "system/utl/ChunkIDs.cpp"),
             Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
             Object(NonMatching, "system/utl/FilePath.cpp"),
             Object(NonMatching, "system/utl/FileStream.cpp"),
