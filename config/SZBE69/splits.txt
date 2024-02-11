@@ -729,7 +729,7 @@ system/utl/EncryptXTEA.cpp:
 	.text       start:0x8034C664 end:0x8034C7D4
 
 system/utl/FilePath.cpp:
-	.text       start:0x8034C7D4 end:0x8034C9F8
+	.text       start:0x8034C91C end:0x8034C9F8
 	.ctors      start:0x807EFF3C end:0x807EFF40
 
 system/utl/FileStream.cpp:
@@ -743,10 +743,14 @@ system/utl/IntPacker.cpp:
 	.text       start:0x8034DE50 end:0x8034DFC8
 
 rb3/unknown/803/unk_8034DE50.cpp:
-	.text       start:0x8034DFC8 end:0x8034FFA4
+	.text       start:0x8034DFC8 end:0x8034E7D4
+
+system/utl/Loader.cpp:
+	.text       start:0x8034E7D4 end:0x80350068
+	.ctors      start:0x807EFF50 end:0x807EFF54
 
 system/utl/Locale.cpp:
-	.text       start:0x803500BC end:0x80350BF4
+	.text       start:0x80350068 end:0x80350BF4
 	.ctors      start:0x807EFF54 end:0x807EFF58
 
 system/utl/LocaleOrdinal.cpp:
@@ -763,7 +767,10 @@ sdk/MSL_C++/src/new.cpp:
 	.text       start:0x80354830 end:0x803548E8
 
 rb3/unknown/803/unk_80354A30.cpp:
-	.text       start:0x80354A30 end:0x80355190
+	.text       start:0x80354A30 end:0x80354E6C
+
+system/utl/MemStream.cpp:
+	.text       start:0x80354E6C end:0x80355190
 
 rb3/symbols/messageset1.cpp:
 	.text       start:0x80355190 end:0x80355E18
@@ -799,9 +806,12 @@ system/utl/MultiTempoTempoMap.cpp:
 rb3/unknown/803/unk_80357E10.cpp:
 	.text       start:0x8035928C end:0x8035C6AC
 
-rb3/optioninit.cpp:
+system/utl/Option.cpp:
 	.text       start:0x8035C6AC end:0x8035C8B4
 	.data       start:0x80858800 end:0x80858828
+
+system/utl/OptionTheRestLol.cpp:
+	.text       start:0x8035C8B4 end:0x8035CA1C
 
 system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C

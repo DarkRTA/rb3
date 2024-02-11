@@ -3,6 +3,7 @@
 #include "Data.h"
 #include "Symbol.h"
 
+// every method in here is weak
 class Message {
 public:
     Message(); // fn_8000FFE0

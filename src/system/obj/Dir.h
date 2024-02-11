@@ -41,7 +41,7 @@ public:
     FilePath mProxyFile;
     bool mProxyOverride;
     bool mInline;
-    int mLoader;
+    int mLoader; // should be a DirLoader*
     char mSubDirs[0x8]; // should be a vector
     bool mIsSubDir;
     int unk58;

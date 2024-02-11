@@ -425,7 +425,6 @@ config.libs = [
             Object(Matching, "rb3/file_ops.cpp"),
             Object(Matching, "rb3/jsonobjects.cpp"),
             Object(Matching, "rb3/main.cpp"),
-            Object(Matching, "rb3/optioninit.cpp"),
 
             # should link, but having issues with the ordering of the autogenned inherited methods
             Object(LinkIssues, "rb3/gamemode.cpp"),
@@ -615,11 +614,16 @@ config.libs = [
             Object(NonMatching, "system/utl/FileStream.cpp"),
             Object(NonMatching, "system/utl/HxGuid.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
+            Object(NonMatching, "system/utl/Loader.cpp"),
             Object(NonMatching, "system/utl/Locale.cpp"),
             Object(Matching, "system/utl/LocaleOrdinal.cpp"),
             Object(NonMatching, "system/utl/LogFile.cpp"),
             Object(NonMatching, "system/utl/MakeString.cpp"),
+            Object(NonMatching, "system/utl/MemStream.cpp"),
             Object(NonMatching, "system/utl/MultiTempoTempoMap.cpp"),
+            Object(Matching, "system/utl/Option.cpp"),
+            # when this gets matched, merge it with Option.cpp - that's how HMX did it
+            Object(NonMatching, "system/utl/OptionTheRestLol.cpp"),
             Object(NonMatching, "system/utl/Str.cpp"),
             Object(NonMatching, "system/utl/StringTable.cpp"),
             Object(NonMatching, "system/utl/Symbol.cpp"),

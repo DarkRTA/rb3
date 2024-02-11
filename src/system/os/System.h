@@ -9,7 +9,12 @@ DataNode OnUsingCD(DataArray*);
 DataNode OnSupportedLanguages(DataArray*);
 
 enum Platform {
-    PLATFORM_NULL, PLATFORM_PS2, PLATFORM_XBOX, PLATFORM_PC, PLATFORM_PS3, PLATFORM_WII
+    kPlatformNone = 0,
+    kPlatformPS2 = 1,
+    kPlatformXBox = 2,
+    kPlatformPC = 3,
+    kPlatformPS3 = 4,
+    kPlatformWii = 5,
 };
 
 Symbol PlatformSymbol(Platform);

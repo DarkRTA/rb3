@@ -4,6 +4,12 @@
 #include "String.h"
 #include "FilePath.h"
 
+enum State {
+    kUnloaded = 0,
+    kUp = 1,
+    kDown = 2,
+};
+
 class UIPanel : public virtual Hmx::Object {
 public:
     UIPanel();
@@ -37,7 +43,7 @@ public:
     int panel; // should be a PanelDir*
     int unkc; // should be a DirLoader*
     String focus;
-    int unk1c;
+    State mState;
     bool loaded;
     bool paused;
     bool showing;
@@ -48,3 +54,26 @@ public:
 };
 
 #endif
+
+// enum State {
+//     kUnloaded = 0,
+//     kUp = 1,
+//     kDown = 2,
+// };
+// class UIPanel : public virtual Object {
+//     // total size: 0x5C
+// public:
+//     void * __vptr$; // offset 0x4, size 0x4
+// protected:
+//     unsigned char mHomeMenuAllowed; // offset 0x8, size 0x1
+//     class PanelDir * mDir; // offset 0xC, size 0x4
+//     class DirLoader * mLoader; // offset 0x10, size 0x4
+//     class String mFocusName; // offset 0x14, size 0xC
+// private:
+//     unsigned char mSharedDir; // offset 0x20, size 0x1
+//     enum State mState; // offset 0x24, size 0x4
+//     unsigned char mPaused; // offset 0x28, size 0x1
+//     unsigned char mShowing; // offset 0x29, size 0x1
+//     unsigned char mForceExit; // offset 0x2A, size 0x1
+//     int mLoadRefs; // offset 0x2C, size 0x4
+// };
