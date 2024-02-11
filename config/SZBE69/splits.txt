@@ -719,8 +719,20 @@ system/utl/BufStream.cpp:
 system/utl/BufStreamNAND.cpp:
 	.text       start:0x80343728 end:0x80344240
 
+system/utl/Cache.cpp:
+	.text       start:0x80344240 end:0x803442FC
+
+system/utl/Cache_Wii.cpp:
+	.text       start:0x803442FC end:0x80345CD0
+
+system/utl/CacheMgr.cpp:
+	.text       start:0x80345CD0 end:0x803469AC
+
+system/utl/CacheMgr_Wii.cpp:
+	.text       start:0x803469AC end:0x80347488
+
 rb3/unknown/803/unk_803431F4.cpp:
-	.text       start:0x80344240 end:0x8034A7DC
+	.text       start:0x80347488 end:0x8034A7DC
 
 rb3/unknown/803/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C664
