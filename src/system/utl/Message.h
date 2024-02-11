@@ -1,5 +1,5 @@
-#ifndef RB3_MESSAGE_HPP
-#define RB3_MESSAGE_HPP
+#ifndef UTL_MESSAGE_H
+#define UTL_MESSAGE_H
 #include "Data.h"
 #include "Symbol.h"
 
@@ -18,8 +18,8 @@ public:
     Message(DataArray *); // fn_800AE714
     virtual ~Message(); // fn_8000DF60
 
-    DataArray *unk4;
-    DataArray* GetArray(){ return unk4; }
+    DataArray* mData;
+    DataArray* GetArray(){ return mData; }
 };
 
 #endif
