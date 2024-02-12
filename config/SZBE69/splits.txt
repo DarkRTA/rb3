@@ -740,6 +740,8 @@ system/utl/Chunks.cpp:
 system/utl/ChunkIDs.cpp:
 	.text       start:0x8034A7DC end:0x8034A900
 	.ctors      start:0x807EFF30 end:0x807EFF34
+	.data       start:0x80856CC8 end:0x80856D18
+	.bss        start:0x8097BA98 end:0x8097BAD8
 
 rb3/unknown/803/unk_8034C91C.cpp:
 	.text       start:0x8034C444 end:0x8034C664

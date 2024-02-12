@@ -614,7 +614,7 @@ config.libs = [
             Object(NonMatching, "system/utl/CacheMgr_Wii.cpp"),
             Object(NonMatching, "system/utl/Cheats.cpp"),
             Object(NonMatching, "system/utl/Chunks.cpp"),
-            Object(NonMatching, "system/utl/ChunkIDs.cpp"),
+            Object(Matching, "system/utl/ChunkIDs.cpp"),
             Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
             Object(NonMatching, "system/utl/FilePath.cpp"),
             Object(NonMatching, "system/utl/FileStream.cpp"),
