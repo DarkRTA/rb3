@@ -2,7 +2,7 @@
 #define _WCHAR_TIME_H
 
 #include <time.h>
-#include "sdk/MSL_C/MSL_Common/wchar_def.h"
+#include "MSL_C/MSL_Common/wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {

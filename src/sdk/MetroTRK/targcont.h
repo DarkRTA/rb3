@@ -1,8 +1,8 @@
 #ifndef TRK_TARGCONT
 #define TRK_TARGCONT
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 
 #ifdef __cplusplus
 extern "C"{

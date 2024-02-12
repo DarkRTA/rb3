@@ -1,8 +1,8 @@
 #ifndef _TRK_MSLSUPP_H
 #define _TRK_MSLSUPP_H
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 #include <stdio.h>
 
 #ifdef __cplusplus

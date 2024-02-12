@@ -1,7 +1,7 @@
 #ifndef TRK_CIRCLE_BUFFER_H
 #define TRK_CIRCLE_BUFFER_H
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 
 typedef struct CircleBuffer {
     ui8* unk0;

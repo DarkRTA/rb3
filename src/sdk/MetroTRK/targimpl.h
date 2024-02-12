@@ -1,10 +1,10 @@
 #ifndef TRK_TARGIMPL
 #define TRK_TARGIMPL
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
-#include "sdk/MetroTRK/nubevent.h"
-#include "sdk/MetroTRK/msgbuf.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
+#include "MetroTRK/nubevent.h"
+#include "MetroTRK/msgbuf.h"
 
 #ifdef __cplusplus
 extern "C"{

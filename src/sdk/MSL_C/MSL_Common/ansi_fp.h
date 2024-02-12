@@ -4,7 +4,7 @@
 #include "types.h"
 #include <math.h>
 #include <float.h>
-#include "sdk/MSL_C/MSL_Common_Embedded/Math/fdlibm.h"
+#include "MSL_C/MSL_Common_Embedded/Math/fdlibm.h"
 
 #define SIGDIGLEN 36
 

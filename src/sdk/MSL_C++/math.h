@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#include "sdk/MSL_C/MSL_Common/math_api.h"
+#include "MSL_C/MSL_Common/math_api.h"
 
 extern int __float_nan[];
 extern int __float_huge[];

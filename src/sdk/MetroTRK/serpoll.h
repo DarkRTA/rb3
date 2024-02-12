@@ -1,8 +1,8 @@
 #ifndef TRK_SERPOLL
 #define TRK_SERPOLL
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 
 #ifdef __cplusplus
 extern "C"{

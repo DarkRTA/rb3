@@ -1,7 +1,7 @@
 #ifndef METROTRK_MAIN_TRK_H
 #define METROTRK_MAIN_TRK_H
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 
 #ifdef __cplusplus
 extern "C"{

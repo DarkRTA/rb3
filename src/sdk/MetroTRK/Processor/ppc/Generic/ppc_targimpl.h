@@ -1,10 +1,10 @@
 #ifndef METROTRK_PPC_TARGIMPL
 #define METROTRK_PPC_TARGIMPL
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
-#include "sdk/MetroTRK/Processor/ppc/Export/ppc_except.h"
-#include "sdk/MetroTRK/Processor/ppc/Export/ppc_reg.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
+#include "MetroTRK/Processor/ppc/Export/ppc_except.h"
+#include "MetroTRK/Processor/ppc/Export/ppc_reg.h"
 
 #ifdef __cplusplus
 extern "C"{

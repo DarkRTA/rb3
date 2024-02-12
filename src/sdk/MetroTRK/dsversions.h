@@ -1,7 +1,7 @@
 #ifndef METROTRK_DSVERSIONS
 #define METROTRK_DSVERSIONS
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 
 typedef struct DSVersions{
 	ui8 kernelMajor;

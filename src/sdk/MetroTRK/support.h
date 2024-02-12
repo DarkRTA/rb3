@@ -1,9 +1,9 @@
 #ifndef METROTRK_SUPPORT
 #define METROTRK_SUPPORT
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
-#include "sdk/MetroTRK/msgbuf.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
+#include "MetroTRK/msgbuf.h"
 
 #ifdef __cplusplus
 extern "C"{

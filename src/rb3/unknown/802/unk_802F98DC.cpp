@@ -3,7 +3,7 @@
 #include "file_ops.hpp"
 #include "data.hpp"
 #include "common.hpp"
-#include "sdk/MSL_C/MSL_Common/printf.h"
+#include "MSL_C/MSL_Common/printf.h"
 #include "file.hpp"
 
 // fn_802FA190

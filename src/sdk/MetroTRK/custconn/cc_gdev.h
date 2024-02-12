@@ -1,7 +1,7 @@
 #ifndef TRK_CC_GDEV_H
 #define TRK_CC_GDEV_H
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 #include "NdevExi2A/DebuggerDriver.h"
 
 //TODO: figure out what these values represent

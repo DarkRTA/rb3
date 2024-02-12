@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "sdk/MSL_C/MSL_Common/assert_api.h"
+#include "MSL_C/MSL_Common/assert_api.h"
 
 #ifdef NDEBUG
 #define assert(condition) ((void)0)

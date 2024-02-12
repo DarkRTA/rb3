@@ -1,8 +1,8 @@
 #ifndef TRK_MSGBUF
 #define TRK_MSGBUF
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 
 
 typedef int MessageBufferID;

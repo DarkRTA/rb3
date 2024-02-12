@@ -1,7 +1,7 @@
 #include "TextFileStream.h"
 #include "FileStream.h"
 #include "unknown.hpp"
-#include "sdk/MSL_C/MSL_Common/printf.h"
+#include "MSL_C/MSL_Common/printf.h"
 
 // fn_8037A58C - TextFileStream ctor
 TextFileStream::TextFileStream(const char *file, bool append)
