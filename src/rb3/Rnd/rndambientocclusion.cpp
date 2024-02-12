@@ -1,4 +1,4 @@
-#include "rndambientocclusion.hpp"
+#include "Rnd/rndambientocclusion.hpp"
 
 RndAmbientOcclusion::RndAmbientOcclusion(){
 

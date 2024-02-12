@@ -1,7 +1,7 @@
 #include "math/Mtx.h"
 
 #include "common.hpp"
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 #include "vector_ops.hpp"
 
 extern float fn_802D54E8(float);

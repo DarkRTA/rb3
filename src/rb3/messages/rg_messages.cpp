@@ -1,4 +1,4 @@
-#include "rg_messages.hpp"
+#include "messages/rg_messages.hpp"
 #include "obj/Data.h"
 
 // fn_80313FFC

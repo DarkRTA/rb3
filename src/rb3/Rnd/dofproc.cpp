@@ -1,4 +1,4 @@
-#include "dofproc.hpp"
+#include "Rnd/dofproc.hpp"
 
 DOFProc* TheDOFProc;
 

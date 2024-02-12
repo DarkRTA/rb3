@@ -1,4 +1,4 @@
-#include "rnddrawable.hpp"
+#include "Rnd/rnddrawable.hpp"
 #include "obj/Data.h"
 
 RndDrawable::RndDrawable() : mShowing(mShowing | 0x80), mBoundSphere(), mDrawOrder(0.0f) {

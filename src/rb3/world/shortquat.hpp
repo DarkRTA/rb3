@@ -1,7 +1,7 @@
 #ifndef RB3_SHORTQUAT_HPP
 #define RB3_SHORTQUAT_HPP
-#include "hmx/quat.hpp"
 #include "math/Mtx.h"
+#include "hmx/quat.hpp"
 
 class ShortQuat {
 public:

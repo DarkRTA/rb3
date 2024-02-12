@@ -10,8 +10,8 @@
 #include "box.hpp"
 #include "sphere.hpp"
 #include "transform.hpp"
-#include "vector2.hpp"
-#include "vector3.hpp"
+#include "world/vector2.hpp"
+#include "world/vector3.hpp"
 
 bool PropSync(String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);

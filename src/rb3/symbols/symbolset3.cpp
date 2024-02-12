@@ -1,4 +1,4 @@
-#include "symbolset3.hpp"
+#include "symbols/symbolset3.hpp"
 #include "stringtablelocks.hpp"
 
 StringTableLockBegin lock3;

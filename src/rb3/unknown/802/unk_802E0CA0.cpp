@@ -3,7 +3,7 @@
 
 #include "common.hpp"
 #include "hmx/quat.hpp"
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 #include "vector_ops.hpp"
 
 Vector3 *Vector3::operator+=(const Vector3 &v) {

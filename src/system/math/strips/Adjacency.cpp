@@ -1,4 +1,4 @@
-#include "Adjacency.h"
+#include "math/strips/Adjacency.h"
 
 Adjacencies::Adjacencies() : mNbEdges(0), mCurrentNbFaces(0), mEdges(0), mNbFaces(0), mFaces(0) {
 

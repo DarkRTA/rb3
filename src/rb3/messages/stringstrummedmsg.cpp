@@ -1,4 +1,4 @@
-#include "stringstrummedmsg.hpp"
+#include "messages/stringstrummedmsg.hpp"
 #include "obj/Data.h"
 
 // fn_80313E98

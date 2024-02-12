@@ -1,4 +1,4 @@
-#include "Trig.h"
+#include "math/Trig.h"
 
 #include <math.h>
 #include "utl/Symbol.h"

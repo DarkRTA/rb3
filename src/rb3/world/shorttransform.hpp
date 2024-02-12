@@ -1,8 +1,8 @@
 #ifndef RB3_SHORTTRANSFORM_HPP
 #define RB3_SHORTTRANSFORM_HPP
-#include "shortquat.hpp"
-#include "vector3.hpp"
-#include "transform.hpp"
+#include "world/shortquat.hpp"
+#include "world/transform.hpp"
+#include "world/vector3.hpp"
 
 class ShortTransform {
 public:

@@ -1,4 +1,4 @@
-#include "wiirnd.hpp"
+#include "Rnd/wii/wiirnd.hpp"
 
 #include "types.h"
 #include "revolution/GX.h"

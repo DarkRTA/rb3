@@ -18,7 +18,7 @@
 #include "datamergefilter.hpp"
 #include "file_ops.hpp"
 #include "mergefilter.hpp"
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 
 // std::map<Symbol, DataFunc*> gDataFuncs;
 

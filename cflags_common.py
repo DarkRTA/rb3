@@ -24,9 +24,6 @@ cflags_includes = [
     "-i src",
     "-i src/system",
     "-i src/rb3",
-    "-i src/rb3/data",
-    "-i src/rb3/mgrs",
-    "-i src/rb3/world",
 ]
 
 cflags_defines = [

@@ -1,6 +1,6 @@
 #ifndef RND_RNDDRAWABLE_HPP
 #define RND_RNDDRAWABLE_HPP
-#include "rndhighlightable.hpp"
+#include "Rnd/rndhighlightable.hpp"
 #include "sphere.hpp"
 
 class RndDrawable : public virtual RndHighlightable {

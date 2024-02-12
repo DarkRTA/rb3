@@ -4,8 +4,8 @@
 #include "utl/BinStream.h"
 
 #include "rb3/hmx/quat.hpp"
-#include "rndtransformable.hpp"
-#include "vector2.hpp"
+#include "Rnd/rndtransformable.hpp"
+#include "world/vector2.hpp"
 
 /** A camera.
  * Can define a target texture, what part of the screen to render to, etc. */

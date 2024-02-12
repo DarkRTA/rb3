@@ -1,4 +1,4 @@
-#include "Interp.h"
+#include "math/Interp.h"
 #include <math.h>
 #include "common.hpp"
 

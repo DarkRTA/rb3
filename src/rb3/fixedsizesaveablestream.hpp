@@ -1,6 +1,6 @@
 #ifndef RB3_FIXEDSIZESAVEABLESTREAM_HPP
 #define RB3_FIXEDSIZESAVEABLESTREAM_HPP
-#include "BufStream.h"
+#include "utl/BufStream.h"
 
 class FixedSizeSaveableStream : public BufStream {
 public:

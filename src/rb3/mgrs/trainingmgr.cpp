@@ -1,4 +1,4 @@
-#include "trainingmgr.hpp"
+#include "mgrs/trainingmgr.hpp"
 #include "obj/Dir.h"
 
 extern const char* gNullStr;

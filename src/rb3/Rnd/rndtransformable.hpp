@@ -1,7 +1,7 @@
 #ifndef RND_RNDTRANSFORMABLE_HPP
 #define RND_RNDTRANSFORMABLE_HPP
-#include "rndhighlightable.hpp"
 #include "obj/ObjPtr_p.h"
+#include "Rnd/rndhighlightable.hpp"
 
 class RndTransformable : public RndHighlightable {
 public:

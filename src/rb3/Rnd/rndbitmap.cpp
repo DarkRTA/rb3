@@ -1,4 +1,5 @@
-#include "rndbitmap.hpp"
+#include "Rnd/rndbitmap.hpp"
+
 #include "common.hpp"
 #include "utl/BufStream.h"
 

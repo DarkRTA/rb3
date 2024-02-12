@@ -1,4 +1,4 @@
-#include "rndanimatable.hpp"
+#include "Rnd/rndanimatable.hpp"
 #include "symbols.hpp"
 
 int gRateUnits[5] = {0, 1, 2, 1, 3};

@@ -1,4 +1,4 @@
-#include "messageset1.hpp"
+#include "symbols/messageset1.hpp"
 #include "utl/Symbol.h"
 #include "stringtablelocks.hpp"
 

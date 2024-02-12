@@ -1,11 +1,12 @@
 #ifndef MATH_ROT_H
 #define MATH_ROT_H
-#include "hmx/quat.hpp"
 #include "math/Mtx.h"
-#include "vector3.hpp"
 #include "utl/TextStream.h"
-#include "vector2.hpp"
-#include "transform.hpp"
+
+#include "hmx/quat.hpp"
+#include "world/vector3.hpp"
+#include "world/vector2.hpp"
+#include "world/transform.hpp"
 
 // TODO: the quat class header and weak methods go in here according to RB2
 

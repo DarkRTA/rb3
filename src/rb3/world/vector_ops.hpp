@@ -1,6 +1,6 @@
 #ifndef RB3_VECTOR_OPS_HPP
 #define RB3_VECTOR_OPS_HPP
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 #include "math/Mtx.h"
 
 // taken from RB2 and GDRB

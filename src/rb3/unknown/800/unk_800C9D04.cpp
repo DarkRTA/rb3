@@ -4,7 +4,7 @@
 #include "obj/ObjPtr_p.h"
 
 #include "common.hpp"
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 #include "vector_ops.hpp"
 
 // fn_800CF370

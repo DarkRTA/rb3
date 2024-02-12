@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "utl/Symbol.h"
-
 #include "unknown.hpp"
 
 extern char gEmpty;

@@ -4,7 +4,6 @@
 #include <string.h>
 
 #include "obj/Data.h"
-
 #include "common.hpp"
 
 extern char *NextBuf();

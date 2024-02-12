@@ -2,7 +2,7 @@
 #define RND_RNDANIMFILTER_HPP
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
-#include "rndanimatable.hpp"
+#include "Rnd/rndanimatable.hpp"
 
 class RndAnimFilter : public RndAnimatable {
 public:

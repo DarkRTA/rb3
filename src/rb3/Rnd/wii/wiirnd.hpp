@@ -3,8 +3,8 @@
 #include "math/Color.h"
 #include "math/Rect.h"
 
-//#include "rb3/Rnd/rnd.hpp"
-#include "rb3/world/vector3.hpp"
+//#include "Rnd/rnd.hpp"
+#include "world/vector3.hpp"
 
 class WiiRnd /*: Rnd*/ {
     WiiRnd();
