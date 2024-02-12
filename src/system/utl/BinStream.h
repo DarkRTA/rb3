@@ -21,6 +21,13 @@ public:
         SeekMode2  /**< SeekMode2 (probably SEEK_END)*/
     };
 
+    // per the RB2 dump:
+    // enum SeekType {
+    //     kSeekBegin = 0,
+    //     kSeekCur = 1,
+    //     kSeekEnd = 2,
+    // };
+
     BinStream(bool);
     virtual ~BinStream();
     virtual void Flush() = 0;
