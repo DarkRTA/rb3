@@ -1,4 +1,4 @@
-#include "rndtex.hpp"
+#include "Rnd/rndtex.hpp"
 
 RndTex::RndTex() : bitmap(), mipmapK(-8.0f), type(Regular), width(0), height(0), bpp(0x20), fpath(), unk58(0), forPS3(false), unk60(0) {
     

@@ -1,7 +1,7 @@
 #ifndef UTL_STR_H
 #define UTL_STR_H
-#include "TextStream.h"
-#include "Symbol.h"
+#include "utl/TextStream.h"
+#include "utl/Symbol.h"
 
 /** An object representing a sequence of characters. */
 class String : public TextStream {

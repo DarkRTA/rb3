@@ -1,6 +1,5 @@
-#include "Data.h"
-#include "Symbol.h"
-#include "key_messages.hpp"
+#include "messages/key_messages.hpp"
+#include "obj/Data.h"
 
 // fn_80315298
 KeyboardKeyReleasedMsg::KeyboardKeyReleasedMsg(int i1, int i2)

@@ -1,6 +1,6 @@
 #ifndef RB3_IDATACHUNK_HPP
 #define RB3_IDATACHUNK_HPP
-#include "BinStream.h"
+#include "utl/BinStream.h"
 
 class IDataChunk : BinStream {
 public:

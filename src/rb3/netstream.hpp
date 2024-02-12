@@ -1,7 +1,7 @@
 #ifndef RB3_NETSTREAM_HPP
 #define RB3_NETSTREAM_HPP
-#include "binstream.hpp"
 #include "types.h"
+#include "utl/BinStream.h"
 class NetStream : public BinStream {
 public:
     NetStream(); // not in the vtable? odd

@@ -1,8 +1,8 @@
 #ifndef RB3_SESSIONMSG_HPP
 #define RB3_SESSIONMSG_HPP
 #include "netmessage.hpp"
-#include "textstream.hpp"
-#include "binstream.hpp"
+#include "utl/BinStream.h"
+#include "utl/TextStream.h"
 
 class SessionMsg : NetMessage {
 public:

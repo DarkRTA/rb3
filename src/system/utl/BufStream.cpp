@@ -1,4 +1,4 @@
-#include "BufStream.h"
+#include "utl/BufStream.h"
 
 // fn_803431F4
 BufStream::BufStream(void * buffer, int size, bool lilEndian) : BinStream(lilEndian), mChecksum(0), mBytesChecksummed() {

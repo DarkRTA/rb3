@@ -1,7 +1,9 @@
-#include "file.hpp"
 #include "AsyncFileCNT.h"
-#include "string.h"
-#include "Str.h"
+
+#include <string.h>
+
+#include "os/File.h"
+#include "utl/Str.h"
 
 extern char fn_802FB54C(const char *, int);
 

@@ -1,8 +1,9 @@
 #ifndef UNKNOWN_HPP
 #define UNKNOWN_HPP
 #include "types.h"
-#include "Symbol.h"
-#include "TextFile.h"
+#include "obj/TextFile.h"
+#include "utl/Symbol.h"
+
 extern int fn_80324278;
 extern int lbl_808556A4;
 extern char lbl_808E3060;

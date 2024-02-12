@@ -1,8 +1,8 @@
 #ifndef METROTRK_DISPATCH
 #define METROTRK_DISPATCH
 
-#include "sdk/MetroTRK/trk.h"
-#include "sdk/MetroTRK/msgbuf.h"
+#include "MetroTRK/trk.h"
+#include "MetroTRK/msgbuf.h"
 
 #ifdef __cplusplus
 extern "C"{

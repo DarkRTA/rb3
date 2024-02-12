@@ -1,6 +1,7 @@
 #ifndef RB3_KEY_MESSAGES_HPP
 #define RB3_KEY_MESSAGES_HPP
-#include "Message.h"
+#include "utl/Message.h"
+#include "utl/Symbol.h"
 
 class KeysAccelerometerMsg : public Message {
 public:

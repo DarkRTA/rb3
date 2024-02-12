@@ -1,10 +1,11 @@
-#include "Rot.h"
+#include "math/Rot.h"
+
+#include <math.h>
+#include "math/Trig.h"
+#include "utl/BinStream.h"
 
 #include "common.hpp"
-#include "math.h"
 #include "vector_ops.hpp"
-#include "Trig.h"
-#include "BinStream.h"
 #include "shortquat.hpp"
 #include "shorttransform.hpp"
 

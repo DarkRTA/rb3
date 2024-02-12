@@ -1,8 +1,9 @@
-#include "Data.h"
-#include "Object.h"
+#include "obj/DataUtl.h"
+
+#include "obj/Data.h"
+#include "obj/Object.h"
+#include "obj/TextFile.h"
 #include "varstack.hpp"
-#include "DataUtl.h"
-#include "TextFile.h"
 
 void DataMergeTags(DataArray *dest, DataArray *src) {
     if(dest == 0 || src == 0 || dest == src) return;

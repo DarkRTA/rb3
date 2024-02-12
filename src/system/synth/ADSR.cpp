@@ -1,4 +1,4 @@
-#include "ADSR.h"
+#include "synth/ADSR.h"
 
 const float gDecayRate[16] = {
     0.00007f, 0.00018f, 0.00039f, 0.00081f, 0.0016f, 0.0033f, 0.00669999989f, 0.013f,

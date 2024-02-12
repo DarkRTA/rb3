@@ -1,8 +1,8 @@
 #ifndef RND_RNDANIMFILTER_HPP
 #define RND_RNDANIMFILTER_HPP
-#include "hmx/object.hpp"
-#include "rndanimatable.hpp"
-#include "objptr.hpp"
+#include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
+#include "Rnd/rndanimatable.hpp"
 
 class RndAnimFilter : public RndAnimatable {
 public:

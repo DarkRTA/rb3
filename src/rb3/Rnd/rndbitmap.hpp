@@ -2,7 +2,7 @@
 #define RND_RNDBITMAP_HPP
 
 #include "types.h"
-#include "rb3/binstream.hpp"
+#include "utl/BinStream.h"
 
 /** Bitmap used for textures, normals, etc.
  * A custom bitmap format derived from Microsoft's DirectDraw Surface.

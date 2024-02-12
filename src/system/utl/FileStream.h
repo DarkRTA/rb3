@@ -1,8 +1,8 @@
 #ifndef UTL_FILESTREAM_H
 #define UTL_FILESTREAM_H
-#include "BinStream.h"
-#include "Str.h"
-#include "File.h"
+#include "os/File.h"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
 #include "streamchecksum.hpp"
 
 class FileStream : public BinStream {

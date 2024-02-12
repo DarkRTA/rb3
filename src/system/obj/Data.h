@@ -1,9 +1,9 @@
 #ifndef OBJ_DATA_H
 #define OBJ_DATA_H
-#include "Symbol.h"
-#include "Str.h"
-#include "TextStream.h"
-#include "BinStream.h"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+#include "utl/TextStream.h"
 
 // forward declarations
 class DataNode;

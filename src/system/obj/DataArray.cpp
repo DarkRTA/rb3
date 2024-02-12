@@ -1,11 +1,14 @@
-#include "Data.h"
-#include "Symbol.h"
-#include "string.h"
-#include "stdlib.h"
-#include "common.hpp"
-#include "Object.h"
+#include "obj/Data.h"
+
+#include <stdlib.h>
+#include <string.h>
 #include <new>
 #include <list>
+
+#include "obj/Object.h"
+#include "utl/Symbol.h"
+
+#include "common.hpp"
 
 // std::list<bool> gConditional;
 Symbol gFile;

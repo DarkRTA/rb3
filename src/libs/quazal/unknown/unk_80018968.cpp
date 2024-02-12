@@ -1,6 +1,7 @@
+#include <string.h>
+
 #include "stringstream.hpp"
 #include "specialarray.hpp"
-#include "string.h"
 
 Quazal::StringStream::StringStream() {
     unk0 = &unk_arr[0];

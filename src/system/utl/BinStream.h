@@ -1,8 +1,8 @@
 #ifndef UTL_BINSTREAM_H
 #define UTL_BINSTREAM_H
-#include "Symbol.h"
-#include "Str.h"
-#include "Rand2.h"
+#include "math/Rand2.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
 
 class BinStream {
 public:

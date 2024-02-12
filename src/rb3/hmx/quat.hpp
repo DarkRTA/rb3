@@ -1,7 +1,7 @@
 #ifndef HMX_QUAT_HPP
 #define HMX_QUAT_HPP
-#include "vector3.hpp"
-#include "Mtx.h"
+#include "math/Mtx.h"
+#include "world/vector3.hpp"
 
 namespace Hmx {
     class Quat {

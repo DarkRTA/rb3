@@ -1,9 +1,10 @@
 #ifndef RND_WII_WIIRND_HPP
 #define RND_WII_WIIRND_HPP
-//#include "rb3/Rnd/rnd.hpp"
-#include "rb3/hmx/rect.hpp"
-#include "rb3/world/vector3.hpp"
-#include "rb3/hmx/color.hpp"
+#include "math/Color.h"
+#include "math/Rect.h"
+
+//#include "Rnd/rnd.hpp"
+#include "world/vector3.hpp"
 
 class WiiRnd /*: Rnd*/ {
     WiiRnd();

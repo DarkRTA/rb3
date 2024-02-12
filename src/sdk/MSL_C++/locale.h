@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include <stdlib.h>
-#include "sdk/MSL_C/MSL_Common/locale_api.h"
+#include "MSL_C/MSL_Common/locale_api.h"
 
 #ifdef __cplusplus
 extern "C" {

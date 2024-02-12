@@ -1,13 +1,14 @@
-#include "string.hpp"
-#include "textstream.hpp"
-#include "unknown.hpp"
-#include "string.h"
-#include "tempomap.hpp"
-#include "multitempotempomap.hpp"
-#include "data.hpp"
-#include "symbol.hpp"
-#include "common.hpp"
+#include <string.h>
 
+#include "obj/Data.h"
+#include "utl/MultiTempoTempoMap.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+#include "utl/TempoMap.h"
+#include "utl/TextStream.h"
+
+#include "common.hpp"
+#include "unknown.hpp"
 
 // fn_8035824C
 TempoMap::TempoMap() {

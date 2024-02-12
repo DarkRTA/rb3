@@ -1,5 +1,5 @@
-#include "SimpleTempoMap.h"
-#include "TempoMap.h"
+#include "utl/SimpleTempoMap.h"
+#include "utl/TempoMap.h"
 
 SimpleTempoMap gDefaultTempoMap(1000.0f);
 TempoMap* TheTempoMap = &gDefaultTempoMap;

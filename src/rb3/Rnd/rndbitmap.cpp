@@ -1,6 +1,7 @@
-#include "rndbitmap.hpp"
+#include "Rnd/rndbitmap.hpp"
+
 #include "common.hpp"
-#include "rb3/bufstream.hpp"
+#include "utl/BufStream.h"
 
 /* oops! these are weak!
 RndBitmap::RndBitmap() {

@@ -1,7 +1,7 @@
 #ifndef RB3_NETMESSAGE_HPP
 #define RB3_NETMESSAGE_HPP
-#include "textstream.hpp"
-#include "binstream.hpp"
+#include "utl/BinStream.h"
+#include "utl/TextStream.h"
 
 class NetMessage {
 public:

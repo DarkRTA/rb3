@@ -1,8 +1,8 @@
 #ifndef RND_RNDCUBETEX_HPP
 #define RND_RNDCUBETEX_HPP
-#include "hmx/object.hpp"
-#include "rndbitmap.hpp"
-#include "filepath.hpp"
+#include "obj/Object.h"
+#include "utl/FilePath.h"
+#include "Rnd/rndbitmap.hpp"
 
 class RndCubeTex : public Hmx::Object {
 public:

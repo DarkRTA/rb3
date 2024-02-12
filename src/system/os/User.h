@@ -1,7 +1,7 @@
 #ifndef OS_USER_H
 #define OS_USER_H
-#include "hmx/object.hpp"
-#include "hxguid.hpp"
+#include "obj/Object.h"
+#include "utl/HxGuid.h"
 #include "onlineid.hpp"
 
 class User : public Hmx::Object {

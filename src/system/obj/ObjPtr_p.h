@@ -1,6 +1,6 @@
 #ifndef OBJ_OBJPTR_H
 #define OBJ_OBJPTR_H
-#include "Object.h"
+#include "obj/Object.h"
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:

@@ -1,7 +1,7 @@
 #ifndef RB3_TRANSFORM_HPP
 #define RB3_TRANSFORM_HPP
-#include "Mtx.h"
-#include "vector3.hpp"
+#include "math/Mtx.h"
+#include "world/vector3.hpp"
 
 class Transform {
 public:

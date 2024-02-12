@@ -1,5 +1,5 @@
-#include "rnddrawable.hpp"
-#include "rb3/data.hpp"
+#include "Rnd/rnddrawable.hpp"
+#include "obj/Data.h"
 
 RndDrawable::RndDrawable() : mShowing(mShowing | 0x80), mBoundSphere(), mDrawOrder(0.0f) {
     mBoundSphere.Zero();
@@ -34,4 +34,3 @@ Symbol RndDrawable::StaticClassName() {
 Symbol RndDrawable::ClassName() const {
     return StaticClassName();
 }
-

@@ -1,6 +1,6 @@
 #ifndef RND_RNDCONSOLE_HPP
 #define RND_RNDCONSOLE_HPP
-#include "hmx/object.hpp"
+#include "obj/Object.h"
 
 class RndConsole : Hmx::Object {
 public:

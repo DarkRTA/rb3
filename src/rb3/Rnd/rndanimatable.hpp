@@ -1,6 +1,6 @@
 #ifndef RND_RNDANIMATABLE_HPP
 #define RND_RNDANIMATABLE_HPP
-#include "hmx/object.hpp"
+#include "obj/Object.h"
 
 class RndAnimatable : public virtual Hmx::Object {
 public:

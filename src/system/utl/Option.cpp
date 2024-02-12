@@ -1,5 +1,5 @@
-#include "Data.h"
-#include "Symbol.h"
+#include "obj/Data.h"
+#include "utl/Symbol.h"
 #include "common.hpp"
 
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));

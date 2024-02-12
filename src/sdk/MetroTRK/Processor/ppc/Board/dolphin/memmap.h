@@ -1,7 +1,7 @@
 #ifndef METROTRK_MEM_TRK_H
 #define METROTRK_MEM_TRK_H
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 
 typedef struct memRange{
 	ui8* start;

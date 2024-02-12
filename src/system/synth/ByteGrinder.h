@@ -1,7 +1,6 @@
 #ifndef SYNTH_BYTEGRINDER_H
 #define SYNTH_BYTEGRINDER_H
 
-
 /** Handles MOGG/BIK encryption, as it is unique from BinStream encryption. */
 class ByteGrinder {
 public:

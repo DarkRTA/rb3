@@ -1,6 +1,6 @@
 #ifndef RB3_FILECACHE_HPP
 #define RB3_FILECACHE_HPP
-#include "filepath.hpp"
+#include "utl/FilePath.h"
 
 class FileCache {
 public:

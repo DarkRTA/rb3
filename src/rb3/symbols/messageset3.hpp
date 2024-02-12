@@ -1,6 +1,6 @@
 #ifndef RB3_MESSAGESET3_HPP
 #define RB3_MESSAGESET3_HPP
-#include "message.hpp"
+#include "utl/Message.h"
 
 extern Message MsgOnNotOnline;
 extern Message MsgOnPreloadFailed;

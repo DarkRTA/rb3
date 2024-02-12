@@ -1,5 +1,5 @@
-#include "trainingmgr.hpp"
-#include "objectdir.hpp"
+#include "mgrs/trainingmgr.hpp"
+#include "obj/Dir.h"
 
 extern const char* gNullStr;
 TrainingMgr* TheTrainingMgr;

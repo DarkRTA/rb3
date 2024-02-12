@@ -1,7 +1,7 @@
 #ifndef RB3_CACHEIDWII_HPP
 #define RB3_CACHEIDWII_HPP
 #include "cacheid.hpp"
-#include "Str.h"
+#include "utl/Str.h"
 
 class CacheIDWii : CacheID {
 public:

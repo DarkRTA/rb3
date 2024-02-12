@@ -1,7 +1,7 @@
 #ifndef _TRK_TARGET_OPTIONS_H
 #define _TRK_TARGET_OPTIONS_H
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 
 #ifdef __cplusplus
 extern "C"{

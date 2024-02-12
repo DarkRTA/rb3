@@ -1,6 +1,6 @@
 #ifndef UTL_SIMPLETEMPOMAP_H
 #define UTL_SIMPLETEMPOMAP_H
-#include "TempoMap.h"
+#include "utl/TempoMap.h"
 
 class SimpleTempoMap : public TempoMap {
 public:

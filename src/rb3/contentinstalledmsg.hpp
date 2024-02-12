@@ -1,8 +1,8 @@
 #ifndef RB3_CONTENTINSTALLEDMSG_HPP
 #define RB3_CONTENTINSTALLEDMSG_HPP
-#include "message.hpp"
-#include "data.hpp"
-#include "symbol.hpp"
+#include "obj/Data.h"
+#include "utl/Message.h"
+#include "utl/Symbol.h"
 
 class ContentInstalledMsg : Message {
 public:

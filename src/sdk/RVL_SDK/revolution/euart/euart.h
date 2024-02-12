@@ -1,7 +1,7 @@
 #ifndef RVL_SDK_EUART_H
 #define RVL_SDK_EUART_H
 #include "types.h"
-#include "sdk/MSL_C/MSL_Common_Embedded/UART.h"
+#include "MSL_C/MSL_Common_Embedded/UART.h"
 
 typedef enum {
 	EUART_ERROR_NONE = 0,

@@ -1,7 +1,7 @@
 #ifndef UTL_BUFSTREAM_H
 #define UTL_BUFSTREAM_H
-#include "BinStream.h"
-#include "Str.h"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
 #include "streamchecksum.hpp"
 
 class BufStream : public BinStream {

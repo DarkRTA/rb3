@@ -1,7 +1,7 @@
 #ifndef RB3_FILECACHEFILE_HPP
 #define RB3_FILECACHEFILE_HPP
-#include "file.hpp"
-#include "string.hpp"
+#include "os/File.h"
+#include "utl/Str.h"
 
 class FileCacheFile : File {
 public:

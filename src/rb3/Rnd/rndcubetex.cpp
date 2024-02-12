@@ -1,4 +1,4 @@
-#include "rndcubetex.hpp"
+#include "Rnd/rndcubetex.hpp"
 
 RndCubeTex::RndCubeTex(){
 

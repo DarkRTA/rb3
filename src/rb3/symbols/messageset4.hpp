@@ -1,6 +1,6 @@
 #ifndef RB3_MESSAGESET4_HPP
 #define RB3_MESSAGESET4_HPP
-#include "message.hpp"
+#include "utl/Message.h"
 
 extern Message MsgSendUpdateCrowd;
 extern Message MsgSendUpdateEnergy;

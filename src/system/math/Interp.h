@@ -1,6 +1,6 @@
 #ifndef MATH_INTERP_H
 #define MATH_INTERP_H
-#include "Data.h"
+#include "obj/Data.h"
 
 class Interpolator {
 public:

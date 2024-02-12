@@ -1,7 +1,7 @@
 #ifndef RB3_JOINRESULTMSG_HPP
 #define RB3_JOINRESULTMSG_HPP
-#include "message.hpp"
-#include "data.hpp"
+#include "obj/Data.h"
+#include "utl/Message.h"
 
 class JoinResultMsg : Message {
 public:

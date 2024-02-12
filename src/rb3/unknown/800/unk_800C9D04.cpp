@@ -1,9 +1,11 @@
+#include <math.h>
+
+#include "math/Mtx.h"
+#include "obj/ObjPtr_p.h"
+
 #include "common.hpp"
-#include "math.h"
-#include "vector3.hpp"
-#include "hmx/matrix3.hpp"
+#include "world/vector3.hpp"
 #include "vector_ops.hpp"
-#include "objptr.hpp"
 
 // fn_800CF370
 int Minimum(int x, int y) {

@@ -1,8 +1,8 @@
 #ifndef RB3_SONGMETADATA_HPP
 #define RB3_SONGMETADATA_HPP
-#include "hmx/object.hpp"
-#include "symbol.hpp"
-#include "data.hpp"
+#include "obj/Data.h"
+#include "obj/Object.h"
+#include "utl/Symbol.h"
 
 class SongMetadata : public Hmx::Object {
 public:

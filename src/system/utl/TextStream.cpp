@@ -1,6 +1,7 @@
-#include "TextStream.h"
+#include "utl/TextStream.h"
+
+#include <stdio.h>
 #include "unknown.hpp"
-#include "sdk/MSL_C/MSL_Common/printf.h"
 
 // fn_8037A67C
 TextStream::TextStream() {

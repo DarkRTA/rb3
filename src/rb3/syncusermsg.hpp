@@ -1,9 +1,9 @@
 #ifndef RB3_SYNCUSERMSG_HPP
 #define RB3_SYNCUSERMSG_HPP
-#include "netmessage.hpp"
-#include "binstream.hpp"
-#include "string.hpp"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
 #include "memstream.hpp"
+#include "netmessage.hpp"
 
 // this class is 0x14 big! according to NewNetMessage()
 class SyncUserMsg : NetMessage {

@@ -1,8 +1,8 @@
 #ifndef METROTRK_PPC_REG
 #define METROTRK_PPC_REG
 
-#include "sdk/MetroTRK/dstypes.h"
-#include "sdk/MetroTRK/trk.h"
+#include "MetroTRK/dstypes.h"
+#include "MetroTRK/trk.h"
 
 typedef struct Default_PPC{
 	ui32 GPR[32];

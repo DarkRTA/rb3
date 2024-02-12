@@ -1,7 +1,7 @@
 #ifndef SYNTH_FXSEND_H
 #define SYNTH_FXSEND_H
-#include "hmx/object.hpp"
-#include "objownerptr.hpp"
+#include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
 
 class FxSend : public Hmx::Object {
 public:

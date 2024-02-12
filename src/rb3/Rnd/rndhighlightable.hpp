@@ -1,6 +1,6 @@
 #ifndef RND_RNDHIGHLIGHTABLE_HPP
 #define RND_RNDHIGHLIGHTABLE_HPP
-#include "Object.h"
+#include "obj/Object.h"
 
 class RndHighlightable : public virtual Hmx::Object {
 public:

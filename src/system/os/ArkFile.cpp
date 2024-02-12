@@ -1,9 +1,10 @@
-#include "File.h"
-#include "file_ops.hpp"
-#include "ArkFile.h"
-#include "Archive.h"
+#include "os/ArkFile.h"
+
+#include "os/Archive.h"
+#include "os/AsyncTask.h"
+
 #include "blockmgr.hpp"
-#include "AsyncTask.h"
+#include "file_ops.hpp"
 
 int File::sOpenCount[4];
 

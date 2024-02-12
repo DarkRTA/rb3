@@ -1,6 +1,5 @@
-#include "Data.h"
-#include "Symbol.h"
-#include "rg_messages.hpp"
+#include "messages/rg_messages.hpp"
+#include "obj/Data.h"
 
 // fn_80313FFC
 RGAccelerometerMsg::RGAccelerometerMsg(int i1, int i2, int i3, int i4)

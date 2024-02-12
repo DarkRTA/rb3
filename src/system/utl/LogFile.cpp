@@ -1,4 +1,4 @@
-#include "LogFile.h"
+#include "utl/LogFile.h"
 
 LogFile::LogFile(const char* file_pattern) : mFilePattern(file_pattern), mSerialNumber(0), mDirty(0), mFile(0), mActive(0){
 

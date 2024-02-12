@@ -1,10 +1,10 @@
+#include "obj/Data.h"
+#include "utl/Str.h"
+
 #include "netmessage.hpp"
+#include "syncallmsg.hpp"
 #include "syncobjmsg.hpp"
 #include "syncusermsg.hpp"
-#include "syncallmsg.hpp"
-#include "string.hpp"
-#include "data.hpp"
-
 
 // fn_800AAE9C
 NetMessage::NetMessage() {

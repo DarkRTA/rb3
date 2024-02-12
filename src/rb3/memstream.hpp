@@ -1,8 +1,8 @@
 #ifndef RB3_MEMSTREAM_HPP
 #define RB3_MEMSTREAM_HPP
-#include "binstream.hpp"
-#include "string.hpp"
-#include "file.hpp"
+#include "os/File.h"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
 #include "streamchecksum.hpp"
 
 class MemStream : BinStream {

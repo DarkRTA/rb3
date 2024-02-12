@@ -1,8 +1,8 @@
 #ifndef UTL_TEXTFILESTREAM_H
 #define UTL_TEXTFILESTREAM_H
-#include "TextStream.h"
-#include "FileStream.h"
-#include "BinStream.h"
+#include "utl/BinStream.h"
+#include "utl/FileStream.h"
+#include "utl/TextStream.h"
 
 class TextFileStream : public TextStream {
 public:

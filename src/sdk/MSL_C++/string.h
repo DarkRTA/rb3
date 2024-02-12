@@ -7,8 +7,8 @@
 extern "C" {
 #endif
 
-#include "sdk/MSL_C/MSL_Common/string_api.h"
-#include "sdk/MSL_C/MSL_Common/extras.h"
+#include "MSL_C/MSL_Common/string_api.h"
+#include "MSL_C/MSL_Common/extras.h"
 
 char *strcpy(char *RESTRICT dest, const char *RESTRICT src);
 char *strncpy(char *RESTRICT dest, const char *RESTRICT src, size_t count);

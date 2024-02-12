@@ -1,10 +1,10 @@
 #ifndef RB3_DOFPROC_HPP
 #define RB3_DOFPROC_HPP
-#include "Object.h"
-#include "System.h"
+#include "math/Color.h"
+#include "obj/Object.h"
 #include "obj/Utl.h"
+#include "os/System.h"
 #include "Rnd/rndcam.hpp"
-#include "Color.h"
 
 class DOFProc : public Hmx::Object {
 public:

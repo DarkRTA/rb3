@@ -1,6 +1,6 @@
 #ifndef RB3_TRIANGLE_HPP
 #define RB3_TRIANGLE_HPP
-#include "vector3.hpp"
+#include "world/vector3.hpp"
 
 class Triangle {
 public:

@@ -1,6 +1,7 @@
 #ifndef OBJ_DATAFUNC_H
 #define OBJ_DATAFUNC_H
-#include "Object.h"
+#include "obj/Data.h"
+#include "obj/Object.h"
 
 class DataFuncObj : public Hmx::Object {
 public:

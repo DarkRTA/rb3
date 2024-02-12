@@ -3,8 +3,34 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/src/",
-                "${workspaceFolder}/src/**"
+                // Recursive paths are deliberately not used to
+                // make it easier to spot improper includes
+
+                // Top-level
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/libs",
+                "${workspaceFolder}/src/rb3",
+                "${workspaceFolder}/src/sdk",
+                "${workspaceFolder}/src/system",
+
+                // SDK
+                "${workspaceFolder}/src/sdk/RVL_SDK",
+                // Note: MSL_C++ comes before STLport here,
+                // since it's generally more relevant to view/edit
+                "${workspaceFolder}/src/sdk/MSL_C++",
+
+                // Libraries
+                "${workspaceFolder}/src/libs/stlport/stlport",
+                "${workspaceFolder}/src/libs/bt/gki/common",
+                "${workspaceFolder}/src/libs/bt/bta/include",
+                "${workspaceFolder}/src/libs/bt/utils/include",
+                "${workspaceFolder}/src/libs/bt/stack/l2cap",
+                "${workspaceFolder}/src/libs/bt/stack/btm",
+                "${workspaceFolder}/src/libs/bt/include",
+                "${workspaceFolder}/src/libs/bt/stack/include",
+                "${workspaceFolder}/src/libs/libogg/include",
+                "${workspaceFolder}/src/libs/speex/include",
+                "${workspaceFolder}/src/libs/speex"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",
@@ -13,8 +39,8 @@
             "configurationProvider": "ms-vscode.makefile-tools",
             "browse": {
                 "path": [
-                    "${workspaceFolder}/src/",
-                    "${workspaceFolder}/src/**"
+                    // Paths here are recursive by default
+                    "${workspaceFolder}/src"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },

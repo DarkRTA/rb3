@@ -1,7 +1,7 @@
 #ifndef UTL_MULTITEMPOTEMPOMAP_H
 #define UTL_MULTITEMPOTEMPOMAP_H
-#include "TempoMap.h"
-#include "string.hpp"
+#include "utl/Str.h"
+#include "utl/TempoMap.h"
 
 class MultiTempoTempoMap : public TempoMap {
 public:

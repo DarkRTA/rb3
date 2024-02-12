@@ -1,6 +1,6 @@
 #ifndef RB3_TRAININGMGR_HPP
 #define RB3_TRAININGMGR_HPP
-#include "hmx/object.hpp"
+#include "obj/Object.h"
 
 class TrainingMgr : public Hmx::Object {
 public:

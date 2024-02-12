@@ -1,11 +1,11 @@
 #ifndef OBJ_TEXTFILE_H
 #define OBJ_TEXTFILE_H
-#include "Symbol.h"
-#include "TextStream.h"
-#include "Object.h"
-#include "File.h"
-#include "System.h"
+#include "utl/Symbol.h"
+#include "utl/TextStream.h"
+#include "obj/Object.h"
 #include "obj/Utl.h"
+#include "os/File.h"
+#include "os/System.h"
 
 class TextFile : public Hmx::Object, TextStream {
 public:

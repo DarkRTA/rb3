@@ -1,4 +1,4 @@
-#include "RevisitedRadix.h"
+#include "math/strips/RevisitedRadix.h"
 
 RadixSorter::RadixSorter(){
     mIndices = 0;

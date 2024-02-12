@@ -1,4 +1,4 @@
-#include "Rand2.h"
+#include "math/Rand2.h"
 
 // fn_802DDE34
 Rand2::Rand2(int i) {

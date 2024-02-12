@@ -1,7 +1,6 @@
 #ifndef RB3_OBJDIRPTR_HPP
 #define RB3_OBJDIRPTR_HPP
-#include "objref.hpp"
-#include "hmx/object.hpp"
+#include "obj/Object.h"
 
 template <class T> class ObjDirPtr : public ObjRef {
 public:

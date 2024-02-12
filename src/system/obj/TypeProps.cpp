@@ -1,7 +1,9 @@
-#include "Object.h"
-#include "Data.h"
-#include "symbols.hpp"
+#include "obj/Object.h"
+
 #include <new>
+
+#include "obj/Data.h"
+#include "symbols.hpp"
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, ObjRef* ref){
     DataNode* kv = KeyValue(prop, false);

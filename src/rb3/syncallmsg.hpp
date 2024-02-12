@@ -1,9 +1,9 @@
 #ifndef RB3_SYNCALLMSG_HPP
 #define RB3_SYNCALLMSG_HPP
-#include "netmessage.hpp"
-#include "binstream.hpp"
-#include "string.hpp"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
 #include "memstream.hpp"
+#include "netmessage.hpp"
 
 class SyncAllMsg : NetMessage {
 public:

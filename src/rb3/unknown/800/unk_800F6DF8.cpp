@@ -1,7 +1,8 @@
+#include "obj/Data.h"
+#include "utl/Symbol.h"
+
 #include "unknown.hpp"
 #include "common.hpp"
-#include "data.hpp"
-#include "symbol.hpp"
 
 // fn_80119C38
 unsigned short SwapDataHalfWord(unsigned short s) {

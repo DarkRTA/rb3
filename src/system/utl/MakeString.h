@@ -1,7 +1,7 @@
 #ifndef UTL_MAKESTRING_H
 #define UTL_MAKESTRING_H
-#include "Str.h"
-#include "Data.h"
+#include "obj/Data.h"
+#include "utl/Str.h"
 
 class FormatString {
 public:

@@ -1,13 +1,15 @@
 #include "gamemode.hpp"
-#include "objectdir.hpp"
-#include "system.hpp"
-#include "data.hpp"
-#include "symbols.hpp"
+
+#include "obj/Data.h"
+#include "obj/DataUtl.h"
+#include "obj/Dir.h"
+#include "obj/Object.h"
+#include "os/System.h"
+
+#include "messages/modechangedmsg.hpp"
 #include "messages.hpp"
 #include "platformmgr.hpp"
-#include "messages/modechangedmsg.hpp"
-#include "hmx/object.hpp"
-#include "datautil.hpp"
+#include "symbols.hpp"
 
 GameMode* TheGameMode;
 extern PlatformMgr ThePlatformMgr;

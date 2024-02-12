@@ -1,5 +1,6 @@
-#include "rndcam.hpp"
-#include "rnddrawable.hpp"
+#include "Rnd/rndcam.hpp"
+#include "Rnd/rnddrawable.hpp"
+
 extern "C" void fn_805D66F8(BinStream&);
 extern "C" float fn_806598A0(float, float);
 

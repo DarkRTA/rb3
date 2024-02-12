@@ -1,6 +1,6 @@
 #ifndef RB3_USERMGR_HPP
 #define RB3_USERMGR_HPP
-#include "user.hpp"
+#include "os/User.h"
 
 class UserMgr : public User {
 public:

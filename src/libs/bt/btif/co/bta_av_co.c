@@ -23,7 +23,8 @@
  *
  ******************************************************************************/
 
-#include "string.h"
+#include <string.h>
+
 #include "a2d_api.h"
 #include "a2d_sbc.h"
 #include "bta_sys.h"
@@ -1500,5 +1501,3 @@ BOOLEAN bta_av_co_get_remote_bitpool_pref(UINT8 *min, UINT8 *max)
 
     return TRUE;
 }
-
-

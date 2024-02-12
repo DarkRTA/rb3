@@ -1,12 +1,13 @@
 #ifndef UTL_LOCALE_H
 #define UTL_LOCALE_H
-#include "Symbol.h"
-#include "Data.h"
+#include "obj/Data.h"
+#include "utl/Symbol.h"
 
 enum LocaleGender {
     LocaleGenderMasculine = 0,
     LocaleGenderFeminine = 1,
 };
+
 enum LocaleNumber {
     LocaleSingular = 0,
     LocalePlural = 1,

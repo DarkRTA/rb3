@@ -1,9 +1,9 @@
 #ifndef _TRK_DOLPHIN_TRK_GLUE_H
 #define _TRK_DOLPHIN_TRK_GLUE_H
 
-#include "sdk/MetroTRK/dstypes.h"
+#include "MetroTRK/dstypes.h"
 #include "revolution/OS.h"
-#include "sdk/MSL_C/MSL_Common_Embedded/UART.h"
+#include "MSL_C/MSL_Common_Embedded/UART.h"
 
 typedef enum{
     HARDWARE_GDEV = 0,
