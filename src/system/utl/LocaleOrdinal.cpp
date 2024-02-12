@@ -1,11 +1,14 @@
-#include "LocaleOrdinal.h"
-#include "Locale.h"
-#include "Symbol.h"
-#include "symbols.hpp"
-#include "MakeString.h"
-#include "System.h"
-#include "UTF8.h"
+#include "utl/LocaleOrdinal.h"
+
 #include <string.h>
+
+#include "os/System.h"
+#include "utl/Locale.h"
+#include "utl/MakeString.h"
+#include "utl/Symbol.h"
+#include "utl/UTF8.h"
+
+#include "symbols.hpp"
 
 const char* LocalizeOrdinal(int i, LocaleGender gender, LocaleNumber number, bool super){
     char buf[254];

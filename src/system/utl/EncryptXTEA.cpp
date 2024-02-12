@@ -1,5 +1,6 @@
-#include "EncryptXTEA.h"
-#include "string.h"
+#include "utl/EncryptXTEA.h"
+
+#include <string.h>
 
 XTEABlockEncrypter::XTEABlockEncrypter(){
     mNonce[0] = 0;

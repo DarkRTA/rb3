@@ -1,5 +1,5 @@
-#include <ogg/os_types.h>
 #include <string.h>
+#include <ogg/os_types.h>
 
 extern void *MemAllocTemp(int, int);
 

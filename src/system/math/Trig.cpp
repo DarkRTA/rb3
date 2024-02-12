@@ -1,7 +1,8 @@
 #include "Trig.h"
-#include "Symbol.h"
+
+#include <math.h>
+#include "utl/Symbol.h"
 #include "common.hpp"
-#include "math.h"
 
 float gBigSinTable[0x200];
 

@@ -1,6 +1,6 @@
+#include "messageset3.hpp"
+#include "utl/Symbol.h"
 #include "stringtablelocks.hpp"
-#include "symbol.hpp"
-#include "message.hpp"
 
 StringTableLockBegin msglock3;
 

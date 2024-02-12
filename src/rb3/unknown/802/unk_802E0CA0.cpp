@@ -1,9 +1,10 @@
-#include "hmx/matrix3.hpp"
+#include "math/Mtx.h"
+#include "math/Trig.h"
+
+#include "common.hpp"
+#include "hmx/quat.hpp"
 #include "vector3.hpp"
 #include "vector_ops.hpp"
-#include "common.hpp"
-#include "trig.hpp"
-#include "hmx/quat.hpp"
 
 Vector3 *Vector3::operator+=(const Vector3 &v) {
     x += v.x;

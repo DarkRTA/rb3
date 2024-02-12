@@ -1,6 +1,6 @@
 #ifndef RB3_DEBUG_HPP
 #define RB3_DEBUG_HPP
-#include "textstream.hpp"
+#include "utl/TextStream.h"
 
 
 /** Implements most debugging features, such as printing to the console's text output and handling error checking & failure */

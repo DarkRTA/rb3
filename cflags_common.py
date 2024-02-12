@@ -23,13 +23,6 @@ cflags_includes = [
     # Project source
     "-i src",
     "-i src/system",
-    "-i src/system/obj",
-    "-i src/system/os",
-    "-i src/system/math",
-    "-i src/system/synth",
-    "-i src/system/ui",
-    "-i src/system/utl",
-    "-i src/system/world",
     "-i src/rb3",
     "-i src/rb3/data",
     "-i src/rb3/mgrs",

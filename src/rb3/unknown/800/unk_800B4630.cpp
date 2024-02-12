@@ -1,11 +1,11 @@
-#include "syncobjmsg.hpp"
-#include "binstream.hpp"
-#include "string.hpp"
-#include "memstream.hpp"
-#include "message.hpp"
+#include "utl/BinStream.h"
+#include "utl/MakeString.h"
+#include "utl/Message.h"
+#include "utl/Str.h"
+
 #include "common.hpp"
-#include "formatstring.hpp"
-#include "makestring.hpp"
+#include "memstream.hpp"
+#include "syncobjmsg.hpp"
 
 // fn_800B95C4
 BinStream &BinStream::operator<<(float f) {

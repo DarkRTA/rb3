@@ -2,10 +2,10 @@
 #define COMMON_HPP
 #include "types.h"
 #include <new>
-
 #include <libspeex/math_approx.h>
-#include "Symbol.h"
-#include "TextFile.h"
+
+#include "obj/TextFile.h"
+#include "utl/Symbol.h"
 
 // misc functions
 int Minimum(int, int);

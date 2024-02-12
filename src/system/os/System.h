@@ -1,7 +1,7 @@
 #ifndef OS_SYSTEM_H
 #define OS_SYSTEM_H
-#include "Symbol.h"
-#include "Data.h"
+#include "obj/Data.h"
+#include "utl/Symbol.h"
 
 DataNode OnSystemLanguage(DataArray*);
 DataNode OnSystemExec(DataArray*);

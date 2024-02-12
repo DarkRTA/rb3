@@ -1,6 +1,6 @@
 #ifndef RB3_DATAFUNCOBJ_HPP
 #define RB3_DATAFUNCOBJ_HPP
-#include "Object.h"
+#include "obj/Object.h"
 
 class DataFuncObj : public Hmx::Object {
 public:

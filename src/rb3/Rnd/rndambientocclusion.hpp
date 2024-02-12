@@ -1,6 +1,6 @@
 #ifndef RND_RNDAMBIENTOCCLUSION_HPP
 #define RND_RNDAMBIENTOCCLUSION_HPP
-#include "hmx/object.hpp"
+#include "obj/Object.h"
 
 class RndAmbientOcclusion : public Hmx::Object {
 public:

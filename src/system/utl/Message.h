@@ -1,8 +1,9 @@
 #ifndef UTL_MESSAGE_H
 #define UTL_MESSAGE_H
-#include "Data.h"
-#include "Symbol.h"
 #include <new>
+
+#include "obj/Data.h"
+#include "utl/Symbol.h"
 
 // every method in here is weak
 class Message {

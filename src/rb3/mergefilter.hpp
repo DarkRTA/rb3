@@ -1,6 +1,6 @@
 #ifndef RB3_MERGEFILTER_HPP
 #define RB3_MERGEFILTER_HPP
-#include "Object.h"
+#include "obj/Object.h"
 
 enum Action {
     kMerge = 0,

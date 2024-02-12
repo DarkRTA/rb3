@@ -1,6 +1,7 @@
+#include "utl/Symbol.h"
+
 #include "storagechangedmsg.hpp"
 #include "contentinstalledmsg.hpp"
-#include "symbol.hpp"
 
 ContentInstalledMsg::ContentInstalledMsg(DataArray *da) : Message(da) {
 }

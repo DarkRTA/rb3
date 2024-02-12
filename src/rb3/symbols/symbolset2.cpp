@@ -1,5 +1,5 @@
+#include "symbolset2.hpp"
 #include "stringtablelocks.hpp"
-#include "Symbol.h"
 
 StringTableLockBegin lock2;
 

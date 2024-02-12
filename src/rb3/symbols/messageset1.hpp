@@ -1,6 +1,6 @@
 #ifndef RB3_MESSAGESET1_HPP
 #define RB3_MESSAGESET1_HPP
-#include "message.hpp"
+#include "utl/Message.h"
 
 extern Message MsgAllowsHiding;
 extern Message MsgAllowsInputToShell;

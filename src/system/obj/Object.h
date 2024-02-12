@@ -1,10 +1,10 @@
 #ifndef OBJ_OBJECT_H
 #define OBJ_OBJECT_H
-#include "Data.h"
-#include "Symbol.h"
-#include "Str.h"
-#include "TextStream.h"
-#include "BinStream.h"
+#include "obj/Data.h"
+#include "utl/BinStream.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+#include "utl/TextStream.h"
 
 // forward declarations
 class ObjRef;

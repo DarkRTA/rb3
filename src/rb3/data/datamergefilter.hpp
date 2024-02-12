@@ -1,8 +1,8 @@
 #ifndef RB3_DATAMERGEFILTER_HPP
 #define RB3_DATAMERGEFILTER_HPP
-#include "Data.h"
+#include "obj/Data.h"
+#include "obj/Object.h"
 #include "mergefilter.hpp"
-#include "Object.h"
 
 class DataMergeFilter : public MergeFilter {
 public:

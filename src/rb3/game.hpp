@@ -1,6 +1,6 @@
 #ifndef RB3_THEGAME_HPP
 #define RB3_THEGAME_HPP
-#include <types.h>
+#include "types.h"
 
 class Game {
 public:

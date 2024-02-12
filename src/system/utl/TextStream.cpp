@@ -1,6 +1,7 @@
-#include "TextStream.h"
-#include "unknown.hpp"
+#include "utl/TextStream.h"
+
 #include <stdio.h>
+#include "unknown.hpp"
 
 // fn_8037A67C
 TextStream::TextStream() {

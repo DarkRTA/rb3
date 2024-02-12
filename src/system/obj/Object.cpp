@@ -1,9 +1,11 @@
-#include "Object.h"
-#include "Data.h"
+#include "obj/Object.h"
+
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "obj/Utl.h"
+
 #include "common.hpp"
 #include "msgsource.hpp"
-#include "Dir.h"
-#include "obj/Utl.h"
 
 extern const char* gNullStr;
 extern void PropertyNOP(const char*, char*, String&);

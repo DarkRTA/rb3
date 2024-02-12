@@ -1,8 +1,8 @@
 #ifndef RB3_BEATMATCHCONTROLLER_HPP
 #define RB3_BEATMATCHCONTROLLER_HPP
-#include "hmx/object.hpp"
-#include "data.hpp"
-#include "user.hpp"
+#include "obj/Data.h"
+#include "obj/Object.h"
+#include "os/User.h"
 
 class BeatMatchController : public Hmx::Object {
 public:

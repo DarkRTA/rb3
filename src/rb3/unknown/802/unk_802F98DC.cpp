@@ -1,10 +1,12 @@
-#include "string.h"
-#include "string.hpp"
-#include "file_ops.hpp"
-#include "data.hpp"
-#include "common.hpp"
 #include <stdio.h>
-#include "file.hpp"
+#include <string.h>
+
+#include "obj/Data.h"
+#include "os/File.h"
+#include "utl/Str.h"
+
+#include "common.hpp"
+#include "file_ops.hpp"
 
 // fn_802FA190
 void FileQualifiedFilename(String &s, const char *c) {

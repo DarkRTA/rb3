@@ -1,14 +1,16 @@
-#include "string.hpp"
-#include "textstream.hpp"
-#include "unknown.hpp"
-#include "string.h"
-#include "jsonobjects.hpp"
-#include "binstream.hpp"
-#include "bufstream.hpp"
-#include "matchmakingsettings.hpp"
-#include "symbol.hpp"
-#include "memstream.hpp"
+#include <string.h>
 #include "json-c/printbuf.h"
+
+#include "utl/BinStream.h"
+#include "utl/BufStream.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+#include "utl/TextStream.h"
+
+#include "unknown.hpp"
+#include "jsonobjects.hpp"
+#include "matchmakingsettings.hpp"
+#include "memstream.hpp"
 
 // fn_800A6E18
 // probably inline

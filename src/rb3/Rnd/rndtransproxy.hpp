@@ -1,8 +1,8 @@
 #ifndef RND_RNDTRANSPROXY_HPP
 #define RND_RNDTRANSPROXY_HPP
 #include "rndtransformable.hpp"
-#include "objptr.hpp"
-#include "symbol.hpp"
+#include "obj/ObjPtr_p.h"
+#include "utl/Symbol.h"
 
 class RndTransProxy : public virtual RndTransformable {
 public:

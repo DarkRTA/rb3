@@ -1,9 +1,11 @@
-#include "TextFile.h"
-#include "MakeString.h"
-#include "System.h"
+#include "obj/TextFile.h"
+
 #include "obj/Utl.h"
+#include "os/Debug.h"
+#include "os/System.h"
+#include "utl/MakeString.h"
+
 #include "symbols.hpp"
-#include "Debug.h"
 
 void TextFile::SetName(const char* c, ObjectDir* dir){
     Hmx::Object::SetName(c, dir);

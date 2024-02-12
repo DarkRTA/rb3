@@ -1,11 +1,11 @@
 #ifndef RND_RNDCAM_HPP
 #define RND_RNDCAM_HPP
-#include "Object.h"
-#include <rb3/hmx/quat.hpp>
-#include <vector2.hpp>
-#include "BinStream.h"
-#include "rndtransformable.hpp"
+#include "obj/Object.h"
+#include "utl/BinStream.h"
 
+#include "rb3/hmx/quat.hpp"
+#include "rndtransformable.hpp"
+#include "vector2.hpp"
 
 /** A camera.
  * Can define a target texture, what part of the screen to render to, etc. */

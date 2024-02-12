@@ -1,7 +1,7 @@
 #ifndef UTL_LOADER_H
 #define UTL_LOADER_H
-#include "FilePath.h"
-#include "System.h"
+#include "os/System.h"
+#include "utl/FilePath.h"
 
 enum LoaderPos {
     kLoadFront = 0,

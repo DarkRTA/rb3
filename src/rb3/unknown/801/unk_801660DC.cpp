@@ -1,8 +1,10 @@
-#include "message.hpp"
-#include "symbol.hpp"
-#include "data.hpp"
+#include <math.h>
+
+#include "obj/Data.h"
+#include "utl/Message.h"
+#include "utl/Symbol.h"
+
 #include "common.hpp"
-#include "math.h"
 
 extern DataArray *fn_8035CF9C(int, int, int);
 
@@ -44,4 +46,3 @@ float LogFloat(double d) {
 float LogThunk(double d) {
     return LogFloat(d);
 }
-

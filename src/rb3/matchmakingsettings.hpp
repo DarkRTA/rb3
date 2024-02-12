@@ -1,7 +1,7 @@
 #ifndef RB3_MATCHMAKINGSETTINGS_HPP
 #define RB3_MATCHMAKINGSETTINGS_HPP
-#include "symbol.hpp"
-#include "binstream.hpp"
+#include "utl/BinStream.h"
+#include "utl/Symbol.h"
 
 class MatchmakingSettings {
 public:

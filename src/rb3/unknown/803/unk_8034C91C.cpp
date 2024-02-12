@@ -1,5 +1,5 @@
-#include "filepath.hpp"
-#include "string.hpp"
+#include "utl/FilePath.h"
+#include "utl/Str.h"
 #include "unknown.hpp"
 
 extern char lbl_80856E78[];

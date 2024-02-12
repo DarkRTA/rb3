@@ -1,5 +1,6 @@
-#include "data.hpp"
-#include "binstream.hpp"
+#include "obj/Data.h"
+#include "utl/BinStream.h"
+
 #include "rnd/rndhighlightable.hpp"
 
 // fn_801C7058

@@ -1,5 +1,5 @@
-#include "data.hpp"
-#include "makestring.hpp"
+#include "obj/Data.h"
+#include "utl/MakeString.h"
 #include "beatmatchcontroller.hpp"
 
 extern char *DataVarName(const DataNode *);

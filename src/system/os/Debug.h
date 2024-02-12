@@ -1,7 +1,7 @@
 #ifndef OS_DEBUG_H
 #define OS_DEBUG_H
-#include "TextStream.h"
-#include "TextFileStream.h"
+#include "utl/TextFileStream.h"
+#include "utl/TextStream.h"
 
 class Debug : public TextStream {
 public:

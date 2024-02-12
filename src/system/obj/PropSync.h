@@ -1,16 +1,17 @@
 #ifndef OBJ_PROPSYNC_H
 #define OBJ_PROPSYNC_H
-#include "Object.h"
-#include "vector2.hpp"
-#include "vector3.hpp"
+#include "math/Color.h"
+#include "math/Mtx.h"
+#include "math/Rect.h"
+#include "obj/Object.h"
+#include "utl/FilePath.h"
+#include "utl/Symbol.h"
+
+#include "box.hpp"
 #include "sphere.hpp"
 #include "transform.hpp"
-#include "Mtx.h"
-#include "Color.h"
-#include "FilePath.h"
-#include "Rect.h"
-#include "box.hpp"
-#include "Symbol.h"
+#include "vector2.hpp"
+#include "vector3.hpp"
 
 bool PropSync(String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);

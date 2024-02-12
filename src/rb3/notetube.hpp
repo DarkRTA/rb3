@@ -1,7 +1,7 @@
 #ifndef RB3_NOTETUBE_HPP
 #define RB3_NOTETUBE_HPP
-#include "hmx/object.hpp"
 #include "types.h"
+#include "obj/Object.h"
 
 class NoteTube : Hmx::Object { // 0x64
     NoteTube();

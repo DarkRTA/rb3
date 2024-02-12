@@ -1,10 +1,13 @@
-#include "Str.h"
-#include "TextStream.h"
-#include "BinStream.h"
-#include "string.h"
-#include "Symbol.h"
+#include "utl/BinStream.h"
+
+#include <string.h>
+
+#include "math/Random.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+#include "utl/TextStream.h"
+
 #include "common.hpp"
-#include "Random.h"
 
 const char *BinStream::Name() const {
     return "<unnamed>";

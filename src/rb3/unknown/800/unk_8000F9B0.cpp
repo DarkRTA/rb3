@@ -1,7 +1,8 @@
+#include "obj/Object.h"
+#include "utl/Message.h"
+#include "utl/Symbol.h"
+
 #include "common.hpp"
-#include "symbol.hpp"
-#include "message.hpp"
-#include "hmx/object.hpp"
 
 extern char *gNullStr;
 

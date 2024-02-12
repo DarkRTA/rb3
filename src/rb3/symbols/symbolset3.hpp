@@ -1,6 +1,6 @@
 #ifndef RB3_SYMBOLSET3_HPP
 #define RB3_SYMBOLSET3_HPP
-#include "Symbol.h"
+#include "utl/Symbol.h"
 
 extern Symbol SymForceNextPlayIndex;
 extern Symbol SymForcePoll;

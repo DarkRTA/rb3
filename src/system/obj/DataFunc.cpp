@@ -1,21 +1,24 @@
-#include "Data.h"
-#include "Symbol.h"
-#include "common.hpp"
-#include "file_ops.hpp"
-#include "Str.h"
-#include "string.h"
-#include "stdlib.h"
-#include "vector3.hpp"
-#include "MakeString.h"
-#include "Debug.h"
-#include "Random.h"
-#include "Object.h"
-#include "Dir.h"
-#include "mergefilter.hpp"
-#include "datamergefilter.hpp"
-#include "DataFunc.h"
-#include <map>
+#include "obj/DataFunc.h"
+
+#include <stdlib.h>
+#include <string.h>
 #include <new>
+#include <map>
+
+#include "math/Random.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "utl/MakeString.h"
+#include "utl/Str.h"
+#include "utl/Symbol.h"
+
+#include "common.hpp"
+#include "datamergefilter.hpp"
+#include "file_ops.hpp"
+#include "mergefilter.hpp"
+#include "vector3.hpp"
 
 // std::map<Symbol, DataFunc*> gDataFuncs;
 

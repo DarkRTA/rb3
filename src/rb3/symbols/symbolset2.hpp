@@ -1,6 +1,6 @@
 #ifndef RB3_SYMBOLSET2_HPP
 #define RB3_SYMBOLSET2_HPP
-#include "Symbol.h"
+#include "utl/Symbol.h"
 
 extern Symbol SymArena;
 extern Symbol SymAlphabetize;

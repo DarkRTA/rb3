@@ -1,5 +1,5 @@
+#include "utl/Symbol.h"
 #include "shaderoptions.hpp"
-#include "Symbol.h"
 
 Symbol sShaderTypes[26];
 

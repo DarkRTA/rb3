@@ -1,7 +1,7 @@
 #ifndef RB3_STRINGSTRUMMEDMSG_HPP
 #define RB3_STRINGSTRUMMEDMSG_HPP
-#include "Symbol.h"
-#include "Message.h"
+#include "utl/Message.h"
+#include "utl/Symbol.h"
 
 class StringStrummedMsg : public Message {
 public:

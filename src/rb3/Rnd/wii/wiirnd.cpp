@@ -1,8 +1,11 @@
 #include "wiirnd.hpp"
-#include "rb3/hmx/rect.hpp"
+
+#include "types.h"
 #include "revolution/GX.h"
 #include "revolution/OS.h"
-#include "types.h"
+
+#include "math/Rect.h"
+
 bool FakeGXinBegin, FakeGXIntMode;
 
 WiiRnd::WiiRnd() {

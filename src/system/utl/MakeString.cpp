@@ -1,8 +1,11 @@
-#include "MakeString.h"
-#include "common.hpp"
-#include "string.h"
+#include "utl/MakeString.h"
+
 #include <stdio.h>
-#include "Data.h"
+#include <string.h>
+
+#include "obj/Data.h"
+
+#include "common.hpp"
 
 extern char *NextBuf();
 

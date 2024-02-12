@@ -1,9 +1,11 @@
-#include "Data.h"
-#include "Str.h"
-#include "Object.h"
-#include "string.h"
+#include "obj/Data.h"
+
+#include <string.h>
 #include <new>
 #include <map>
+
+#include "obj/Object.h"
+#include "utl/Str.h"
 
 // std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];

@@ -1,6 +1,6 @@
 #ifndef RB3_MESSAGESET2_HPP
 #define RB3_MESSAGESET2_HPP
-#include "message.hpp"
+#include "utl/Message.h"
 
 extern Message MsgGetSongSelectScreen;
 extern Message MsgGotoCreateDialog;

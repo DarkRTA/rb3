@@ -1,7 +1,9 @@
-#include "string.hpp"
-#include "filestream.hpp"
+#include <string.h>
+
+#include "utl/FileStream.h"
+#include "utl/Str.h"
+
 #include "unknown.hpp"
-#include "string.h"
 
 // fn_800C20FC
 // probably inlined

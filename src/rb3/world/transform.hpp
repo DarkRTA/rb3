@@ -1,6 +1,6 @@
 #ifndef RB3_TRANSFORM_HPP
 #define RB3_TRANSFORM_HPP
-#include "Mtx.h"
+#include "math/Mtx.h"
 #include "vector3.hpp"
 
 class Transform {

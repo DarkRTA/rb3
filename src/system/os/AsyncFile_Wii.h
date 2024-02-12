@@ -1,7 +1,7 @@
 #ifndef OS_ASYNCFILEWII_H
 #define OS_ASYNCFILEWII_H
-#include "AsyncFile.h"
-#include "Str.h"
+#include "os/AsyncFile.h"
+#include "utl/Str.h"
 
 class AsyncFileWii : public AsyncFile {
 public:

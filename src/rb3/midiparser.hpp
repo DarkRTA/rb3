@@ -1,7 +1,7 @@
 #ifndef RB3_MIDIPARSER_HPP
 #define RB3_MIDIPARSER_HPP
+#include "obj/Object.h"
 #include "msgsource.hpp"
-#include "hmx/object.hpp"
 
 class MidiParser : public MsgSource, public virtual Hmx::Object {
 public:

@@ -1,7 +1,7 @@
 #ifndef UTL_CHUNKS_H
 #define UTL_CHUNKS_H
-#include "ChunkIDs.h"
-#include "BinStream.h"
+#include "utl/BinStream.h"
+#include "utl/ChunkIDs.h"
 
 class ChunkHeader {
 public:

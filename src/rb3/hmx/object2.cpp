@@ -1,6 +1,7 @@
-#include "object.hpp"
+#include "obj/Object.h"
+
 #include "types.h"
-#include "rb3/symbol.hpp"
+#include "utl/Symbol.h"
 
 extern uint fn_802623AC(u32, u32);
 extern uint fn_80262684(u32);

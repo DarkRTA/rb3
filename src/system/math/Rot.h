@@ -1,9 +1,9 @@
 #ifndef MATH_ROT_H
 #define MATH_ROT_H
 #include "hmx/quat.hpp"
-#include "Mtx.h"
+#include "math/Mtx.h"
 #include "vector3.hpp"
-#include "TextStream.h"
+#include "utl/TextStream.h"
 #include "vector2.hpp"
 #include "transform.hpp"
 

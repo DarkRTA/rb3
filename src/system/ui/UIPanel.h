@@ -1,8 +1,8 @@
 #ifndef UI_UIPANEL_H
 #define UI_UIPANEL_H
-#include "Object.h"
-#include "String.h"
-#include "FilePath.h"
+#include "obj/Object.h"
+#include "utl/FilePath.h"
+#include "utl/Str.h"
 
 enum State {
     kUnloaded = 0,

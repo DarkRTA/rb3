@@ -1,12 +1,13 @@
-#include "rot.hpp"
+#include <math.h>
+
+#include "math/Rot.h"
+#include "math/Trig.h"
+#include "utl/BinStream.h"
 
 #include "common.hpp"
-#include "math.h"
-#include "vector_ops.hpp"
-#include "trig.hpp"
-#include "binstream.hpp"
 #include "shortquat.hpp"
 #include "shorttransform.hpp"
+#include "vector_ops.hpp"
 
 BinStream &operator<<(BinStream &bs, const Vector3 &vec) {
     bs << vec.x << vec.y << vec.z;

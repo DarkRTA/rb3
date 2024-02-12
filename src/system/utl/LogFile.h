@@ -1,7 +1,7 @@
 #ifndef UTL_LOGFILE_H
 #define UTL_LOGFILE_H
-#include "TextStream.h"
-#include "TextFileStream.h"
+#include "utl/TextFileStream.h"
+#include "utl/TextStream.h"
 
 class LogFile : public TextStream {
 public:

@@ -1,7 +1,7 @@
 #ifndef OS_ASYNCFILE_H
 #define OS_ASYNCFILE_H
-#include "file.hpp"
-#include "Str.h"
+#include "os/File.h"
+#include "utl/Str.h"
 
 class AsyncFile : public File {
 public:

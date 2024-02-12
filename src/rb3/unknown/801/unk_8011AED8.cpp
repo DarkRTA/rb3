@@ -1,5 +1,5 @@
+#include <math.h>
 #include "common.hpp"
-#include "math.h"
 
 // fn_8015506C
 float PowFloat(double d1, double d2) {
@@ -16,4 +16,3 @@ float CosFloat(double d) {
 float CosThunk(double d) {
     return CosFloat(d);
 }
-

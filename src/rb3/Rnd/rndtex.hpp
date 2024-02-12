@@ -1,8 +1,8 @@
 #ifndef RND_RNDTEX_HPP
 #define RND_RNDTEX_HPP
-#include "hmx/object.hpp"
+#include "obj/Object.h"
+#include "utl/FilePath.h"
 #include "rndbitmap.hpp"
-#include "filepath.hpp"
 
 class RndTex : public Hmx::Object {
 public:

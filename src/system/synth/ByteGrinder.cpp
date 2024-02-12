@@ -1,9 +1,11 @@
-#include "ByteGrinder.h"
-#include "Data.h"
-#include "string.h"
+#include "synth/ByteGrinder.h"
+
+#include <string.h>
 #include <stdio.h>
-#include "Str.h"
 #include <vector>
+
+#include "obj/Data.h"
+#include "utl/Str.h"
 
 namespace {
     int GetEncMethod(int ver){

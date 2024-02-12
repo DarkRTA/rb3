@@ -1,7 +1,7 @@
 #ifndef OS_ASYNCFILECNT_H
 #define OS_ASYNCFILECNT_H
-#include "AsyncFile.h"
-#include "Str.h"
+#include "os/AsyncFile.h"
+#include "utl/Str.h"
 
 class AsyncFileCNT : public AsyncFile {
 public:

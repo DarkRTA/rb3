@@ -1,7 +1,7 @@
 #ifndef OBJ_UTL_H
 #define OBJ_UTL_H
-#include "Object.h"
-#include "Symbol.h"
+#include "obj/Object.h"
+#include "utl/Symbol.h"
 
 void InitObject(Hmx::Object*);
 char* PathName(const Hmx::Object*);

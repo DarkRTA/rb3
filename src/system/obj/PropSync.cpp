@@ -1,6 +1,7 @@
-#include "PropSync.h"
+#include "obj/PropSync.h"
+
+#include "math/Rot.h"
 #include "symbols.hpp"
-#include "Rot.h"
 
 bool PropSync(String& str, DataNode& node, DataArray* da, int i, PropOp op){
     da->Size();

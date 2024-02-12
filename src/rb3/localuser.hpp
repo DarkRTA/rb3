@@ -1,6 +1,6 @@
 #ifndef RB3_LOCALUSER_HPP
 #define RB3_LOCALUSER_HPP
-#include "user.hpp"
+#include "os/User.h"
 
 class LocalUser : public virtual User {
 public:

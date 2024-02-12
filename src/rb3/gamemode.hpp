@@ -1,7 +1,7 @@
 #ifndef RB3_GAMEMODE_HPP
 #define RB3_GAMEMODE_HPP
+#include "utl/Symbol.h"
 #include "msgsource.hpp"
-#include "symbol.hpp"
 
 class GameMode : public MsgSource {
 public:
