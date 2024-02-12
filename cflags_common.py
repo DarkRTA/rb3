@@ -6,10 +6,6 @@ cflags_includes = [
     "-i src/sdk",
     "-i src/sdk/RVL_SDK",
     # "-i src/sdk/MSL_C++", # Handled by STLport
-    "-i src/sdk/MSL_C/MSL_Common",
-    "-i src/sdk/MSL_C/MSL_Common_Embedded",
-    "-i src/sdk/MSL_C/MSL_Common_Embedded/Math",
-    "-i src/sdk/MetroTRK",
 
     # Libraries
     "-i src/libs",

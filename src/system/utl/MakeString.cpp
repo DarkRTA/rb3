@@ -1,7 +1,7 @@
 #include "MakeString.h"
 #include "common.hpp"
 #include "string.h"
-#include "MSL_C/MSL_Common/printf.h"
+#include <stdio.h>
 #include "Data.h"
 
 extern char *NextBuf();

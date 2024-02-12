@@ -1,6 +1,6 @@
 #include "TextStream.h"
 #include "unknown.hpp"
-#include "MSL_C/MSL_Common/printf.h"
+#include <stdio.h>
 
 // fn_8037A67C
 TextStream::TextStream() {
