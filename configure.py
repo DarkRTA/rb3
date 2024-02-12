@@ -616,7 +616,7 @@ config.libs = [
             Object(NonMatching, "system/utl/Chunks.cpp"),
             Object(Matching, "system/utl/ChunkIDs.cpp"),
             Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
-            Object(NonMatching, "system/utl/FilePath.cpp"),
+            Object(Matching, "system/utl/FilePath.cpp"),
             Object(NonMatching, "system/utl/FileStream.cpp"),
             Object(NonMatching, "system/utl/HxGuid.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),

@@ -7,7 +7,7 @@ extern "C" char *FileGetDrive(char *);
 extern "C" char *FileGetBase(char *, char *);
 extern "C" char *FileGetExt(char *);
 extern "C" char *FileGetName(char *);
-extern "C" char *FileMakePath(char *, char *, char *);
+extern "C" char *FileMakePath(const char *, const char *, char *);
 extern "C" bool FileMatch(const char *, const char *);
 
 #endif
