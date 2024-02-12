@@ -2,7 +2,7 @@
 #define UTL_BUFSTREAMNAND_H
 #include "fixedsizesaveablestream.hpp"
 
-class BufStreamNAND : FixedSizeSaveableStream {
+class BufStreamNAND : public FixedSizeSaveableStream {
 public:
     BufStreamNAND(void *, int, int, char *, bool);
     virtual ~BufStreamNAND(); // fn_803437A8
@@ -24,3 +24,20 @@ public:
 };
 
 #endif
+
+// class BufStreamNAND : public BinStream {
+//     // total size: 0x100
+//     char * mBuffer; // offset 0xC, size 0x4
+//     unsigned char mFail; // offset 0x10, size 0x1
+//     int mTell; // offset 0x14, size 0x4
+//     int mSize; // offset 0x18, size 0x4
+//     int mRunningTell; // offset 0x1C, size 0x4
+//     int mChunkSize; // offset 0x20, size 0x4
+//     unsigned char mTellReset; // offset 0x24, size 0x1
+//     unsigned char mFileOpen; // offset 0x25, size 0x1
+//     char mFilePath[64]; // offset 0x26, size 0x40
+//     enum MCResult mResult; // offset 0x68, size 0x4
+//     struct NANDFileInfo mFileInfo; // offset 0x6C, size 0x8C
+//     class StreamChecksum * mChecksum; // offset 0xF8, size 0x4
+//     int mBytesChecksummed; // offset 0xFC, size 0x4
+// };

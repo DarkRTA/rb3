@@ -1,8 +1,8 @@
 #ifndef RB3_FIXEDSIZESAVEABLESTREAM_HPP
 #define RB3_FIXEDSIZESAVEABLESTREAM_HPP
-#include "bufstream.hpp"
+#include "BufStream.h"
 
-class FixedSizeSaveableStream : BufStream {
+class FixedSizeSaveableStream : public BufStream {
 public:
     FixedSizeSaveableStream(void *, int, bool); // fn_8050FA30, vtable lbl_8088BE40
     virtual ~FixedSizeSaveableStream(); // fn_8050FA88

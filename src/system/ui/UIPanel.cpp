@@ -4,7 +4,7 @@
 extern int lbl_80988298; // wonder if this lbl represents total panel count, and unk34 of a UIPanel is its unique panel id?
 
 UIPanel::UIPanel() : 
-    panel(0), unkc(0), focus(), unk1c(0), loaded(0), paused(false), showing(true), forceExit(false), refCount(0), fpath() {
+    panel(0), unkc(0), focus(), mState(kUnloaded), loaded(0), paused(false), showing(true), forceExit(false), refCount(0), fpath() {
         unk34 = lbl_80988298++;
 }
 
@@ -15,7 +15,7 @@ void UIPanel::CheckLoad(){
 
 void UIPanel::CheckUnload(){
     if(refCount >= 1){
-        if(unk1c == 2){
+        if(mState == kDown){
             DataNode handled = Handle(MsgExitComplete.GetArray(), false);
         }
         if(--refCount == 0){
@@ -25,14 +25,14 @@ void UIPanel::CheckUnload(){
 }
 
 bool UIPanel::IsLoaded(){
-    if(unk1c != 0) return true;
+    if(mState != kUnloaded) return true;
 }
 
 void UIPanel::FinishLoad(){
     {
     DataNode handled = HandleType(MsgFinishLoad.GetArray());
     }
-    unk1c = 2;
+    mState = kDown;
 }
 
 UIPanel::~UIPanel(){
