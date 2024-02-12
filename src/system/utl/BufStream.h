@@ -33,3 +33,13 @@ public:
 };
 
 #endif
+
+// class BufStream : public BinStream {
+//     // total size: 0x24
+//     char * mBuffer; // offset 0xC, size 0x4
+//     unsigned char mFail; // offset 0x10, size 0x1
+//     int mTell; // offset 0x14, size 0x4
+//     int mSize; // offset 0x18, size 0x4
+//     class StreamChecksum * mChecksum; // offset 0x1C, size 0x4
+//     int mBytesChecksummed; // offset 0x20, size 0x4
+// };
