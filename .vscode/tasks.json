@@ -4,6 +4,30 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "configure SZBE69",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "configure.py",
+        "--version",
+        "SZBE69"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
+      "label": "configure SZBE69_B8",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "configure.py",
+        "--version",
+        "SZBE69_B8"
+      ],
+      "problemMatcher": [],
+      "group": "none"
+    },
+    {
       "label": "ninja",
       "type": "shell",
       "command": "ninja",
