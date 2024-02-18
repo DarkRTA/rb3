@@ -3612,91 +3612,91 @@ lib.a/hproj/band3_wii/band3/src/net_band/wii_release/RBBinaryDataDDL_Wii.o:
 lib.a/hproj/band3_wii/band3/src/net_band/wii_release/RBBinaryBufferDDL_Wii.o:
 	.text       start:0x803F6840 end:0x803F6980
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Sqrt_Wii.o:
+src/system/math/Sqrt_Wii.cpp:
 	.text       start:0x803F6980 end:0x803F69C0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/SHA1.o:
+src/system/math/SHA1.cpp:
 	.text       start:0x803F69C0 end:0x803F86A0
 	.data       start:0x80BAF900 end:0x80BAF930
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Sort.o:
+src/system/math/Sort.cpp:
 	.text       start:0x803F86A0 end:0x803F86E0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Geo.o:
+src/system/math/Geo.cpp:
 	.text       start:0x803F86E0 end:0x803FDCB0
 	.rodata     start:0x80B354D8 end:0x80B354E8
 	.data       start:0x80BAF930 end:0x80BAFBA0
 	.bss        start:0x80C920E8 end:0x80C920F0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Color.o:
+src/system/math/Color.cpp:
 	.text       start:0x803FDCB0 end:0x803FE050
 	.ctors      start:0x80B349A4 end:0x80B349A8
 	.rodata     start:0x80B354E8 end:0x80B354F0
 	.data       start:0x80BAFBA0 end:0x80BAFC28
 	.bss        start:0x80C920F0 end:0x80C92120
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Interp.o:
+src/system/math/Interp.cpp:
 	.text       start:0x803FE050 end:0x803FEA70
 	.rodata     start:0x80B354F0 end:0x80B354F8
 	.data       start:0x80BAFC28 end:0x80BAFDE8
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rand.o:
+src/system/math/Rand.cpp:
 	.text       start:0x803FEA70 end:0x803FF170
 	.ctors      start:0x80B349A8 end:0x80B349AC
 	.data       start:0x80BAFDE8 end:0x80BAFE10
 	.bss        start:0x80C92120 end:0x80C92530
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rand2.o:
+src/system/math/Rand2.cpp:
 	.text       start:0x803FF170 end:0x803FF210
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rot.o:
+src/system/math/Rot.cpp:
 	.text       start:0x803FF210 end:0x80401770
 	.rodata     start:0x80B354F8 end:0x80B35510
 	.data       start:0x80BAFE10 end:0x80BAFE38
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Adjacency.o:
+src/system/math/Adjacency.cpp:
 	.text       start:0x80401770 end:0x80401FD0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/FileChecksum.o:
+src/system/math/FileChecksum.cpp:
 	.text       start:0x80401FD0 end:0x804025C0
 	.ctors      start:0x80B349AC end:0x80B349B0
 	.data       start:0x80BAFE38 end:0x80BAFE78
 	.bss        start:0x80C92530 end:0x80C92548
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/CustomArray.o:
+src/system/math/CustomArray.cpp:
 	.text       start:0x804025C0 end:0x80402B50
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Decibels.o:
+src/system/math/Decibels.cpp:
 	.text       start:0x80402B50 end:0x80402C60
 	.rodata     start:0x80B35510 end:0x80B35518
 	.data       start:0x80BAFE78 end:0x80BAFE98
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Primes.o:
+src/system/math/Primes.cpp:
 	.text       start:0x80402C60 end:0x80402CB0
 	.data       start:0x80BAFE98 end:0x80BAFF90
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/RevisitedRadix.o:
+src/system/math/RevisitedRadix.cpp:
 	.text       start:0x80402CB0 end:0x804036F0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/StreamChecksum.o:
+src/system/math/StreamChecksum.cpp:
 	.text       start:0x804036F0 end:0x80403BD0
 	.data       start:0x80BAFF90 end:0x80BB00A0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Striper.o:
+src/system/math/Striper.cpp:
 	.text       start:0x80403BD0 end:0x80405030
 	.data       start:0x80BB00A0 end:0x80BB0100
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Trig.o:
+src/system/math/Trig.cpp:
 	.text       start:0x80405030 end:0x80405690
 	.rodata     start:0x80B35518 end:0x80B35530
 	.data       start:0x80BB0100 end:0x80BB0120
 	.bss        start:0x80C92548 end:0x80C92D48
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Key.o:
+src/system/math/Key.cpp:
 	.text       start:0x80405690 end:0x804063A0
 	.data       start:0x80BB0120 end:0x80BB0168
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/vec.o:
+src/system/math/vec.cpp:
 	.text       start:0x804063A0 end:0x80406460
 	.ctors      start:0x80B349B0 end:0x80B349B4
 	.bss        start:0x80C92D48 end:0x80C92DC8
