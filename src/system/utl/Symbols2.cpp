@@ -1,4 +1,5 @@
 #include "Symbols.h"
+#include "Symbols2.h"
 #include "utl/Symbol.h"
 
 static BeginLiteralSymbols gBeginLiteralSymbols;
