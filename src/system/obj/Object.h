@@ -30,7 +30,7 @@ public:
         the dictionary is laid out in one continuous DataArray, in the style of:
         (key1 value1 key2 value2 key3 value3).
         Each key is a DataNode of type Symbol, while each value is a DataNode of some other compatible node type (int/float/const char*). */
-    DataArray* mDataDict;
+    DataArray* mMap;
 
     TypeProps(); // weak
     ~TypeProps(); // weak
