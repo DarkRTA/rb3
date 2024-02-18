@@ -20,10 +20,3 @@ public:
 };
 
 #endif
-
-class IntPacker {
-    // total size: 0xC
-    unsigned char * mBuffer; // offset 0x0, size 0x4
-    unsigned int mPos; // offset 0x4, size 0x4
-    unsigned int mSize; // offset 0x8, size 0x4
-};

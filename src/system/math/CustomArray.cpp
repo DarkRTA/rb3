@@ -1,4 +1,4 @@
-#include "math/strips/CustomArray.h"
+#include "math/CustomArray.h"
 #include <string.h>
 
 CustomArray::CustomArray(unsigned long startsize, void* inputbuffer) : mCollapsed(0), mAddresses(0), mNbPushedAddies(0), mNbAllocatedAddies(0), mBitCount(0), mBitMask(0) {
