@@ -27,9 +27,10 @@ from tools.project import (
 from cflags_common import cflags_includes, cflags_defines
 
 # Game versions
-DEFAULT_VERSION = 0
+DEFAULT_VERSION = 1
 VERSIONS = [
-    "SZBE69_B8",  # 0
+    "SZBE69",    # 0
+    "SZBE69_B8", # 1
 ]
 
 if len(VERSIONS) > 1:
