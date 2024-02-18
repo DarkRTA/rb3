@@ -46,6 +46,9 @@ passthrough_defines: list[str] = [
     "__STDC__",
     "__STDC_VERSION__",
 
+    # Debug defines
+    "NDEBUG",
+
     # __option
     "__option",
     *mwcc_options.keys(),

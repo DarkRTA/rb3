@@ -27,9 +27,10 @@ from tools.project import (
 from cflags_common import cflags_includes, cflags_defines
 
 # Game versions
-DEFAULT_VERSION = 0
+DEFAULT_VERSION = 1
 VERSIONS = [
-    "SZBE69_B8",  # 0
+    "SZBE69",    # 0
+    "SZBE69_B8", # 1
 ]
 
 if len(VERSIONS) > 1:
@@ -148,6 +149,15 @@ config.ldflags = [
 config.shift_jis = False
 config.progress_all = False
 
+# Metrowerks library flags
+cflags_runtime = [
+    "-use_lmw_stmw on",
+    "-str reuse,pool,readonly",
+    "-common off",
+    "-inline auto",
+]
+
+# Base flags for all other compile units
 cflags_base = [
     *cflags_includes,
     *cflags_defines,
@@ -166,7 +176,15 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse,pool",
     "-gccinc",
-];
+]
+
+# Debug flags
+if config.debug:
+    cflags_base.append("-sym dwarf-2,full")
+    cflags_runtime.append("-sym dwarf-2,full")
+else:
+    cflags_base.append("-d NDEBUG")
+    cflags_runtime.append("-d NDEBUG")
 
 cflags_rb3 = [
     *cflags_base,
@@ -182,19 +200,6 @@ cflags_sdk = [
     "-func_align 16"
 ]
 
-# Metrowerks library flags
-cflags_runtime = [
-    "-use_lmw_stmw on",
-    "-str reuse,pool,readonly",
-    "-common off",
-]
-
-# Debug flags
-if config.debug:
-    cflags_rb3.extend(["-sym dwarf-2,full"])
-    cflags_runtime.extend(["-sym dwarf-2,full"])
-
-cflags_runtime.append("-inline auto")
 config.linker_version = "Wii/1.3"
 
 Matching = True

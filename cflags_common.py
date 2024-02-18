@@ -15,5 +15,4 @@ cflags_includes = [
 ]
 
 cflags_defines = [
-    "-d NDEBUG",
 ]
