@@ -148,6 +148,15 @@ config.ldflags = [
 config.shift_jis = False
 config.progress_all = False
 
+# Metrowerks library flags
+cflags_runtime = [
+    "-use_lmw_stmw on",
+    "-str reuse,pool,readonly",
+    "-common off",
+    "-inline auto",
+]
+
+# Base flags for all other compile units
 cflags_base = [
     *cflags_includes,
     *cflags_defines,
@@ -171,8 +180,10 @@ cflags_base = [
 # Debug flags
 if config.debug:
     cflags_base.append("-sym dwarf-2,full")
+    cflags_runtime.append("-sym dwarf-2,full")
 else:
     cflags_base.append("-d NDEBUG")
+    cflags_runtime.append("-d NDEBUG")
 
 cflags_rb3 = [
     *cflags_base,
@@ -188,20 +199,6 @@ cflags_sdk = [
     "-func_align 16"
 ]
 
-# Metrowerks library flags
-cflags_runtime = [
-    "-use_lmw_stmw on",
-    "-str reuse,pool,readonly",
-    "-common off",
-]
-
-# Debug flags
-if config.debug:
-    cflags_runtime.append("-sym dwarf-2,full")
-else:
-    cflags_runtime.append("-d NDEBUG")
-
-cflags_runtime.append("-inline auto")
 config.linker_version = "Wii/1.3"
 
 Matching = True
