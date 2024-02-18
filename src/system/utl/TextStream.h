@@ -2,8 +2,6 @@
 #define UTL_TEXTSTREAM_H
 #include "utl/Symbol.h"
 
-// class DataArray;
-
 /** A stream of text. */
 class TextStream {
 public:
