@@ -13,6 +13,3 @@ cflags_includes = [
     "-i src/system",
     "-i src/rb3",
 ]
-
-cflags_defines = [
-]
