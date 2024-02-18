@@ -967,7 +967,7 @@ extern Symbol synth;
 extern Symbol SynthSample;
 extern Symbol system_ms;
 extern Symbol system_user_blocks_free;
-extern Symbol t_sym;
+extern Symbol t;
 extern Symbol table;
 extern Symbol tablelin;
 extern Symbol take_portrait;
