@@ -225,6 +225,7 @@ config.libs = [
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
 
+            Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
 
             Object(NonMatching, "system/utl/IntPacker.cpp"),

@@ -12,9 +12,9 @@ public:
     // methods found in RB2
     bool operator==(const Symbol &); // fn_8000FCA4
     bool operator!=(const char *);
-    Symbol *operator=(const Symbol & s){
-        mStr = s.mStr;
-    }
+    // Symbol *operator=(const Symbol & s){
+    //     mStr = s.mStr;
+    // }
     char *Str() const;
     static void PreInit(int, int);
     void Init();

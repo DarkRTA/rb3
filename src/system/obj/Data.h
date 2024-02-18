@@ -112,7 +112,7 @@ public:
     DataNodeValue Union() const { return mValue; }
 
     DataType Type() const { return mType; }
-    bool CompatibleType();
+    bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
 
     int Int(const DataArray* a) const;

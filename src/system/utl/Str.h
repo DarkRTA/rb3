@@ -8,14 +8,16 @@ public:
     unsigned int mCap;
     const char* mStr;
 
+    virtual ~String();
+    virtual void Print(const char *);
+
     String();
     String(const char *);
     String(Symbol);
     String(const String &);
     String(unsigned int, char);
 
-    virtual ~String();
-    virtual void Print(const char *);
+    const char* c_str();
 };
 
 #endif
