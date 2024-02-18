@@ -963,7 +963,7 @@ Symbol synth("synth");
 Symbol SynthSample("SynthSample");
 Symbol system_ms("system_ms");
 Symbol system_user_blocks_free("system_user_blocks_free");
-Symbol t_sym("t");
+Symbol t("t");
 Symbol table("table");
 Symbol tablelin("tablelin");
 Symbol take_portrait("take_portrait");
