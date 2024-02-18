@@ -114,7 +114,6 @@ public:
     DataType Type() const { return mType; }
     bool CompatibleType();
     DataNode& Evaluate() const;
-    DataNode& AddToBuffer();
 
     int Int(const DataArray* a) const;
     int LiteralInt(const DataArray* a) const;
