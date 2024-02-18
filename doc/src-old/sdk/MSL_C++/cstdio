@@ -1,0 +1,66 @@
+#ifndef MSL_CPP_CSTDIO_H
+#define MSL_CPP_CSTDIO_H
+#include <stdio.h>
+
+namespace std {
+    using ::FILE;
+    using ::fpos_t;
+    using ::size_t;
+
+    using ::remove;
+    using ::rename;
+    using ::tmpfile;
+    using ::tmpnam;
+
+    using ::fclose;
+    using ::fflush;
+    using ::fopen;
+    using ::freopen;
+    using ::setbuf;
+    using ::setvbuf;
+
+    using ::fgetpos;
+    using ::fread;
+    using ::fseek;
+    using ::fsetpos;
+    using ::ftell;
+    using ::fwrite;
+    using ::rewind;
+
+    using ::fgetc;
+    using ::fgets;
+    using ::fputc;
+    using ::fputs;
+    using ::getc;
+    using ::getchar;
+    using ::gets;
+    using ::putc;
+    using ::putchar;
+    using ::puts;
+    using ::ungetc;
+
+    using ::fprintf;
+    using ::printf;
+    using ::snprintf;
+    using ::sprintf;
+
+    using ::vfprintf;
+    using ::vprintf;
+    using ::vsnprintf;
+    using ::vsprintf;
+
+    using ::fscanf;
+    using ::scanf;
+    using ::sscanf;
+
+    using ::vfscanf;
+    using ::vscanf;
+    using ::vsscanf;
+
+    using ::clearerr;
+    using ::feof;
+    using ::ferror;
+    using ::perror;
+}
+
+#endif

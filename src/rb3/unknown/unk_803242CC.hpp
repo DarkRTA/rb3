@@ -1,4 +1,0 @@
-#ifndef UNKNOWN_UNK_803242CC_HPP
-#define UNKNOWN_UNK_803242CC_HPP
-void fn_803242CC(void);
-#endif

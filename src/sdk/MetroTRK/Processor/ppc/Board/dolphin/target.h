@@ -1,8 +1,0 @@
-#ifndef METROTRK_DOLPHIN_TARGET
-#define METROTRK_DOLPHIN_TARGET
-
-#define CPU_SPEED
-#define TRK_BAUD_RATE
-#define DS_TARGET_NAME
-
-#endif

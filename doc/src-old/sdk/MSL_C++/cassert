@@ -1,0 +1,4 @@
+#ifndef MSL_CPP_CASSERT_H
+#define MSL_CPP_CASSERT_H
+#include <assert.h>
+#endif

@@ -1,0 +1,30 @@
+#ifndef MSL_CPP_CWTYPE_H
+#define MSL_CPP_CWTYPE_H
+#include <wctype.h>
+
+namespace std {
+    using ::wctrans_t;
+    using ::wctype_t;
+    using ::wint_t;
+
+    using ::iswalnum;
+    using ::iswalpha;
+    using ::iswcntrl;
+    using ::iswctype;
+    using ::iswdigit;
+    using ::iswgraph;
+    using ::iswlower;
+    using ::iswprint;
+    using ::iswpunct;
+    using ::iswspace;
+    using ::iswupper;
+    using ::iswxdigit;
+    using ::wctype;
+
+    using ::towctrans;
+    using ::towlower;
+    using ::towupper;
+    using ::wctrans;
+}
+
+#endif

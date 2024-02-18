@@ -1,0 +1,6 @@
+object: orig/SZBE69_B8/sys/main.dol
+symbols: config/SZBE69_B8/symbols.txt
+splits: config/SZBE69_B8/splits.txt
+selfile: orig/SZBE69_B8/files/band_r_wii.sel
+mw_comment_version: 14
+quick_analysis: true
