@@ -209,6 +209,25 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
+            
+        ],
+    },
+    {
+        "lib": "system",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_rb3,
+        "host": False,
+        "objects": [
+            Object(NonMatching, "src/system/math/CustomArray.cpp"),
+            Object(Matching, "src/system/math/Interp.cpp"),
+            Object(Matching, "src/system/math/Primes.cpp"),
+            Object(Matching, "src/system/math/Rand2.cpp"),
+
+            Object(NonMatching, "system/utl/IntPacker.cpp"),
+            Object(NonMatching, "system/utl/Symbols.cpp"),
+            Object(NonMatching, "system/utl/Symbols2.cpp"),
+            Object(NonMatching, "system/utl/Symbols3.cpp"),
+            Object(NonMatching, "system/utl/Symbols4.cpp"),
         ],
     },
 ]
