@@ -1,6 +1,5 @@
 #include "math/Interp.h"
 #include <math.h>
-#include "common.hpp"
 
 // fn_802DCEDC
 LinearInterpolator::LinearInterpolator(float y0, float y1, float x0, float x1) {

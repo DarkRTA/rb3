@@ -935,7 +935,9 @@ static Symbol hide_off("hide_off");
 static Symbol hide_on("hide_on");
 static Symbol hide_peak_arrow("hide_peak_arrow");
 static Symbol hide_progress("hide_progress");
-static Symbol hide_save_icon("hide_save_icon");
+
+// static Symbol hide_save_icon("hide_save_icon");
+
 static Symbol hide_score("hide_score");
 static Symbol hide_tape("hide_tape");
 static Symbol hides("hides");
