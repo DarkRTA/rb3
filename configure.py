@@ -182,9 +182,6 @@ cflags_base = [
 if config.debug:
     cflags_base.append("-sym dwarf-2,full")
     cflags_runtime.append("-sym dwarf-2,full")
-else:
-    cflags_base.append("-d NDEBUG")
-    cflags_runtime.append("-d NDEBUG")
 
 cflags_rb3 = [
     *cflags_base,
