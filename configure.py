@@ -230,6 +230,7 @@ config.libs = [
             Object(Matching, "system/utl/Symbols2.cpp"),
             Object(Matching, "system/utl/Symbols3.cpp"),
             Object(Matching, "system/utl/Symbols4.cpp"),
+            Object(NonMatching, "system/utl/TextStream.cpp"),
         ],
     },
 ]
