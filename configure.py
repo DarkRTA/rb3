@@ -166,7 +166,13 @@ cflags_base = [
     "-fp_contract on",
     "-str reuse,pool",
     "-gccinc",
-];
+]
+
+# Debug flags
+if config.debug:
+    cflags_base.append("-sym dwarf-2,full")
+else:
+    cflags_base.append("-d NDEBUG")
 
 cflags_rb3 = [
     *cflags_base,
@@ -191,8 +197,9 @@ cflags_runtime = [
 
 # Debug flags
 if config.debug:
-    cflags_rb3.extend(["-sym dwarf-2,full"])
-    cflags_runtime.extend(["-sym dwarf-2,full"])
+    cflags_runtime.append("-sym dwarf-2,full")
+else:
+    cflags_runtime.append("-d NDEBUG")
 
 cflags_runtime.append("-inline auto")
 config.linker_version = "Wii/1.3"
