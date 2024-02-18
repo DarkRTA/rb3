@@ -189,7 +189,7 @@ cflags_rb3 = [
     "-sdata2 2",
     "-pragma \"merge_float_consts on\"",
     "-RTTI on",
-    "-inline off",
+    "-inline noauto",
 ]
 
 cflags_sdk = [
