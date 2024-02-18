@@ -9,7 +9,6 @@
 // forward declarations
 class DataNode;
 class DataArray;
-class ObjRef;
 class ObjectDir;
 namespace Hmx {
     class Object;
