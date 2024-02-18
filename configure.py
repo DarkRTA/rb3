@@ -227,7 +227,7 @@ config.libs = [
 
             Object(NonMatching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/Symbols.cpp"),
-            Object(NonMatching, "system/utl/Symbols2.cpp"),
+            Object(Matching, "system/utl/Symbols2.cpp"),
             Object(NonMatching, "system/utl/Symbols3.cpp"),
             Object(NonMatching, "system/utl/Symbols4.cpp"),
         ],
