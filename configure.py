@@ -214,7 +214,7 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            
+
         ],
     },
     {
@@ -223,10 +223,10 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "src/system/math/CustomArray.cpp"),
-            Object(Matching, "src/system/math/Interp.cpp"),
-            Object(Matching, "src/system/math/Primes.cpp"),
-            Object(Matching, "src/system/math/Rand2.cpp"),
+            Object(NonMatching, "system/math/CustomArray.cpp"),
+            Object(NonMatching, "system/math/Interp.cpp"),
+            Object(Matching, "system/math/Primes.cpp"),
+            Object(Matching, "system/math/Rand2.cpp"),
 
             Object(NonMatching, "system/utl/IntPacker.cpp"),
             Object(NonMatching, "system/utl/Symbols.cpp"),
