@@ -7,7 +7,8 @@
 #include "utl/TextStream.h"
 
 // forward declarations
-class ObjRef;
+class DataNode;
+class DataArray;
 class ObjectDir;
 namespace Hmx {
     class Object;
@@ -50,7 +51,7 @@ public:
     void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, Hmx::Object*);
     void Replace(Hmx::Object*, Hmx::Object*, Hmx::Object*);
     int Size() const;
-    TypeProps& Assign(const TypeProps&, Hmx::Object*);
+    TypeProps& Copy(const TypeProps&, Hmx::Object*); 
 };
 
 class ObjRef {
@@ -92,10 +93,10 @@ namespace Hmx {
         virtual void Save(BinStream&);
         virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
         virtual void Load(BinStream&);
+        virtual void PreSave(BinStream&){}
+        virtual void PostSave(BinStream&){}
         virtual void Print(){}
         virtual void Export(DataArray*, bool){}
-        virtual void V_Unk14(){}
-        virtual void V_Unk15(){}
         virtual void SetTypeDef(DataArray *);
         virtual void SetName(const char*, ObjectDir*);
         virtual ObjectDir* DataDir();
@@ -129,7 +130,7 @@ namespace Hmx {
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);
-        ObjectDir* GetObjectDir();
+        ObjectDir* Dir() const;
         DataNode HandleType(DataArray*);
 
         DataNode OnGetArray(const DataArray*, Symbol);

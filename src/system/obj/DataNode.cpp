@@ -5,9 +5,7 @@
 // #include <string.h>
 // #include <new>
 // #include <map>
-
 // #include "obj/Object.h"
-// #include "utl/Str.h"
 
 // // std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
@@ -15,6 +13,22 @@ int gEvalIndex;
 
 extern Hmx::Object *gDataThis;
 extern Debug TheDebug;
+
+bool DataNode::CompatibleType(DataType ty) const {
+    DataType thisType = mType;
+    if(thisType == ty) return true;
+    else if(thisType == kDataInt){
+        return ty == kDataFloat;
+    }
+    else if(thisType != kDataSymbol){
+        if(thisType != kDataString){
+            return false;
+        }
+        return ty == kDataObject;
+    }
+    else if((ty != kDataString) && (ty != kDataObject)) return false;
+    else return true;
+}
 
 DataNode& UseQueue(const DataNode& node){
     int i;
@@ -33,115 +47,141 @@ DataNode& DataNode::Evaluate() const {
         return *mValue.var;
     }
     else if(mType == kDataProperty){
-        // DataNode* n = gDataThis->Property(mValue.array, true);
-        // return UseQueue(*n);
+        DataNode* n = gDataThis->Property(mValue.array, true);
+        return UseQueue(*n);
     }
     else return (DataNode&)*this;
 }
 
 int DataNode::Int(const DataArray* a) const {
     DataNode& n = Evaluate();
-    if(n.Type() != kDataInt){
+    if(n.mType != kDataInt){
         String s;
-        Print(s, true);
-        if(a == 0){
-            TheDebug.Fail(MakeString<String>("Data %s is not Int", String(s)));
-        }
+        n.Print(s, true);
+        if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+        else TheDebug.Fail(MakeString<String>("Data %s is not Int", String(s)));
     }
     return n.mValue.integer;
 }
 
-// undefined4 __thiscall DataNode::Int(DataNode *this,DataArray *param_1)
+int DataNode::LiteralInt(const DataArray* a) const {
+    if(mType != kDataInt){
+        String s;
+        Print(s, true);
+        if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+        else TheDebug.Fail(MakeString<String>("Data %s is not Int", String(s)));
+    }
+    return mValue.integer;
+}
 
-// {
-//   undefined4 *this_00;
-//   char *pcVar1;
-//   String aSStack_28 [12];
-//   String aSStack_1c [8];
-//   char *local_14;
-  
-//   this_00 = (undefined4 *)Evaluate(this);
-//   if (this_00[1] != 6) {
-//     String::String(aSStack_1c);
-//     Print((DataNode *)this_00,(TextStream *)aSStack_1c,true);
-//     if (param_1 == (DataArray *)0x0) {
-//       String::String(aSStack_28,(String *)aSStack_1c);
-//       pcVar1 = ::MakeString(s_Data_%s_is_not_Int_80bb841c,(String)((char)&stack0xffffffd0 + '\b') );
-//       Debug::Fail((Debug *)TheDebug,pcVar1);
-//       String::~String(aSStack_28);
-//     }
-//     else {
-//       pcVar1 = ::MakeString(s_Data_%s_is_not_Int_(file_%s,_lin_80bb83f6,local_14,
-//                             *(char **)(param_1 + 4),(int)*(short *)(param_1 + 0xc));
-//       Debug::Fail((Debug *)TheDebug,pcVar1);
-//     }
-//     String::~String(aSStack_1c);
-//   }
-//   return *this_00;
-// }
+Symbol DataNode::Sym(const DataArray* a) const {
+    DataNode& n = Evaluate();
+    if(n.mType != kDataSymbol){
+        String s;
+        n.Print(s, true);
+        if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+        else TheDebug.Fail(MakeString<String>("Data %s is not Symbol", String(s)));
+    }
+    return STR_TO_SYM(n.mValue.symbol);
+}
 
-// // fn_80322F28
-// int DataNode::Int(const DataArray *da) const {
-//     return Evaluate().mValue.integer;
-// }
+Symbol DataNode::LiteralSym(const DataArray* a) const {
+    if(mType != kDataSymbol){
+        String s;
+        Print(s, true);
+        if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+        else TheDebug.Fail(MakeString<String>("Data %s is not Symbol", String(s)));
+    }
+    return STR_TO_SYM((char*)mValue.symbol);
+}
 
-// // fn_80322F4C
-// int DataNode::LiteralInt(const DataArray *da) const {
-//     return mValue.integer;
-// }
+Symbol DataNode::ForceSym(const DataArray* a) const {
+    DataNode& n = Evaluate();
+    if(n.mType == kDataSymbol){
+        return STR_TO_SYM(n.mValue.symbol);
+    }
+    else {
+        if(n.mType != kDataString){
+            String s;
+            n.Print(s, true);
+            if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+            else TheDebug.Fail(MakeString<String>("Data %s is not String", String(s)));
+        }
+        return Symbol(n.mValue.var->mValue.symbol);
+    }
+}
 
-// // fn_80322F54
-// Symbol DataNode::Sym(const DataArray *da) const {
-//     return STR_TO_SYM(Evaluate().mValue.symbol);
-// }
+const char* DataNode::Str(const DataArray* a) const {
+    DataNode& n = Evaluate();
+    if(n.mType == kDataSymbol){
+        return n.mValue.symbol;
+    }
+    else {
+        if(n.mType != kDataString){
+            String s;
+            n.Print(s, true);
+            if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+            else TheDebug.Fail(MakeString<String>("Data %s is not String", String(s)));
+        }
+        return n.mValue.var->mValue.symbol;
+    }
+}
 
-// // fn_80322F78
-// Symbol DataNode::LiteralSym(const DataArray *da) const {
-//     return STR_TO_SYM((char*)mValue.symbol);
-// }
+const char* DataNode::LiteralStr(const DataArray* a) const {
+    if(mType == kDataSymbol){
+        return mValue.symbol;
+    }
+    else {
+        if(mType != kDataString){
+            String s;
+            Print(s, true);
+            if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+            else TheDebug.Fail(MakeString<String>("Data %s is not String", String(s)));
+        }
+        return mValue.var->mValue.symbol;
+    }
+}
 
-// // fn_80322F80
-// Symbol DataNode::ForceSym(const DataArray* da) const {
-//     DataNode& eval = Evaluate();
-//     if(eval.mType == kDataSymbol){
-//         return STR_TO_SYM(eval.mValue.symbol);
-//     }
-//     else return Symbol(eval.mValue.var->mValue.symbol);
-// }
+float DataNode::Float(const DataArray* a) const {
+    DataNode& n = Evaluate();
+    if(n.mType == kDataInt){
+        return n.mValue.integer;
+    }
+    else {
+        if(n.mType != kDataFloat){
+            String s;
+            n.Print(s, true);
+            if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+            else TheDebug.Fail(MakeString<String>("Data %s is not Float", String(s)));
+        }
+        return n.mValue.real;
+    }
+}
 
-// // fn_80322FC8
-// const char *DataNode::Str(const DataArray *da) const {
-//     DataNode& eval = Evaluate();
-//     if(eval.mType == kDataSymbol){
-//         return eval.mValue.symbol;
-//     }
-//     else return eval.mValue.var->mValue.symbol;
-// }
+float DataNode::LiteralFloat(const DataArray* a) const {
+    if(mType == kDataInt){
+        return mValue.integer;
+    }
+    else {
+        if(mType != kDataFloat){
+            String s;
+            Print(s, true);
+            if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+            else TheDebug.Fail(MakeString<String>("Data %s is not Float", String(s)));
+        }
+        return mValue.real;
+    }
+}
 
-// // fn_80323004
-// const char *DataNode::LiteralStr(const DataArray *da) const {
-//     if(mType == kDataSymbol){
-//         return mValue.symbol;
-//     }
-//     else return mValue.var->mValue.symbol;
-// }
-
-// // fn_80323024
-// float DataNode::Float(const DataArray *da) const {
-//     DataNode& eval = Evaluate();
-//     if(eval.mType == kDataInt) return eval.mValue.integer;
-//     else return eval.mValue.real;
-// }
-
-// // fn_8032307C
-// float DataNode::LiteralFloat(const DataArray *da) const {
-//     if(mType == kDataInt) return mValue.integer;
-//     else return mValue.real;
-// }
-
-// DataFunc* DataNode::Func(const DataArray* da) const {
-//     return mValue.func;
-// }
+DataFunc* DataNode::Func(const DataArray* a) const {
+    if(mType != kDataFunc){
+        String s;
+        Print(s, true);
+        if(a) TheDebug.Fail(MakeString<const char*, const char*, int>("Data %s is not Func (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine));
+        else TheDebug.Fail(MakeString<String>("Data %s is not Func", String(s)));
+    }
+    return mValue.func;
+}
 
 // Hmx::Object* DataNode::GetObj(const DataArray* da) const {
 

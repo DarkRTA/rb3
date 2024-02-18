@@ -189,7 +189,7 @@ cflags_rb3 = [
     "-sdata2 2",
     "-pragma \"merge_float_consts on\"",
     "-RTTI on",
-    "-inline off",
+    "-inline noauto",
 ]
 
 cflags_sdk = [
@@ -225,7 +225,10 @@ config.libs = [
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
 
+            Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
+            Object(NonMatching, "system/obj/Object.cpp"),
+            Object(NonMatching, "system/obj/TypeProps.cpp"),
 
             Object(NonMatching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/Symbols.cpp"),
