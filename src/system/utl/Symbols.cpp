@@ -1,4 +1,4 @@
-#include "Symbols.h"
+#include "utl/Symbols.h"
 #include "utl/StringTable.h"
 #include "utl/Symbol.h"
 
@@ -548,7 +548,9 @@ static Symbol show_purchase_ui_for_offer("show_purchase_ui_for_offer");
 static Symbol show_range("show_range");
 static Symbol show_register_wiiprofile("show_register_wiiprofile");
 static Symbol show_safe_area("show_safe_area");
-static Symbol show_save_icon("show_save_icon");
+
+// static Symbol show_save_icon("show_save_icon"); // goes unused in bank 8, but appears in retail? weird
+
 static Symbol show_saveloadmgr_autosave_confirm("show_saveloadmgr_autosave_confirm");
 static Symbol show_saveloadmgr_not_idle("show_saveloadmgr_not_idle");
 static Symbol show_saveloadmgr_not_meta("show_saveloadmgr_not_meta");

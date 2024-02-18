@@ -48,7 +48,9 @@ static Symbol mc_auto_load_not_owner("mc_auto_load_not_owner");
 static Symbol mc_auto_load_obsolete_version("mc_auto_load_obsolete_version");
 static Symbol mc_auto_load_obsolete_version_fmt("mc_auto_load_obsolete_version_fmt");
 static Symbol mc_autosave_disabled("mc_autosave_disabled");
-static Symbol mc_autosave_disabled_done("mc_autosave_disabled_done");
+
+// static Symbol mc_autosave_disabled_done("mc_autosave_disabled_done");
+
 static Symbol mc_button_cancel("mc_button_cancel");
 static Symbol mc_button_choose_device("mc_button_choose_device");
 static Symbol mc_button_continue("mc_button_continue");
