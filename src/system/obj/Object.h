@@ -38,19 +38,19 @@ public:
     void Save(BinStream &, Hmx::Object *);
     void Load(BinStream &, unsigned short, Hmx::Object *);
 
-    void ClearAll(ObjRef*);
-    void ReleaseObjects(ObjRef*);
-    void AddRefObjects(ObjRef*);
-    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
-    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, ObjRef*);
-    void RemoveArrayValue(Symbol, int, DataArray*, ObjRef*);
+    void ClearAll(Hmx::Object*);
+    void ReleaseObjects(Hmx::Object*);
+    void AddRefObjects(Hmx::Object*);
+    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
+    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
+    void RemoveArrayValue(Symbol, int, DataArray*, Hmx::Object*);
     DataNode* KeyValue(Symbol, bool);
-    DataArray* GetArray(Symbol, DataArray*, ObjRef*);
-    void SetKeyValue(Symbol, const DataNode&, bool, ObjRef*);
-    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, ObjRef*);
-    void Replace(Hmx::Object*, Hmx::Object*, ObjRef*);
+    DataArray* GetArray(Symbol, DataArray*, Hmx::Object*);
+    void SetKeyValue(Symbol, const DataNode&, bool, Hmx::Object*);
+    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, Hmx::Object*);
+    void Replace(Hmx::Object*, Hmx::Object*, Hmx::Object*);
     int Size() const;
-    TypeProps& Assign(const TypeProps&, ObjRef*);
+    TypeProps& Assign(const TypeProps&, Hmx::Object*);
 };
 
 class ObjRef {

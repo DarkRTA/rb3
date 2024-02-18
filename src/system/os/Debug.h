@@ -10,6 +10,9 @@ public:
     bool mNoModal;
     int mTry;
 
+    virtual ~Debug();
+    virtual void Print(const char*);
+
     void Notify(const char* msg);
     void Fail(const char* msg);
 };
