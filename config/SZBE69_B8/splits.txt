@@ -3612,135 +3612,135 @@ lib.a/hproj/band3_wii/band3/src/net_band/wii_release/RBBinaryDataDDL_Wii.o:
 lib.a/hproj/band3_wii/band3/src/net_band/wii_release/RBBinaryBufferDDL_Wii.o:
 	.text       start:0x803F6840 end:0x803F6980
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Sqrt_Wii.o:
+src/system/math/Sqrt_Wii.cpp:
 	.text       start:0x803F6980 end:0x803F69C0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/SHA1.o:
+src/system/math/SHA1.cpp:
 	.text       start:0x803F69C0 end:0x803F86A0
 	.data       start:0x80BAF900 end:0x80BAF930
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Sort.o:
+src/system/math/Sort.cpp:
 	.text       start:0x803F86A0 end:0x803F86E0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Geo.o:
+src/system/math/Geo.cpp:
 	.text       start:0x803F86E0 end:0x803FDCB0
 	.rodata     start:0x80B354D8 end:0x80B354E8
 	.data       start:0x80BAF930 end:0x80BAFBA0
 	.bss        start:0x80C920E8 end:0x80C920F0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Color.o:
+src/system/math/Color.cpp:
 	.text       start:0x803FDCB0 end:0x803FE050
 	.ctors      start:0x80B349A4 end:0x80B349A8
 	.rodata     start:0x80B354E8 end:0x80B354F0
 	.data       start:0x80BAFBA0 end:0x80BAFC28
 	.bss        start:0x80C920F0 end:0x80C92120
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Interp.o:
+src/system/math/Interp.cpp:
 	.text       start:0x803FE050 end:0x803FEA70
 	.rodata     start:0x80B354F0 end:0x80B354F8
 	.data       start:0x80BAFC28 end:0x80BAFDE8
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rand.o:
+src/system/math/Rand.cpp:
 	.text       start:0x803FEA70 end:0x803FF170
 	.ctors      start:0x80B349A8 end:0x80B349AC
 	.data       start:0x80BAFDE8 end:0x80BAFE10
 	.bss        start:0x80C92120 end:0x80C92530
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rand2.o:
+src/system/math/Rand2.cpp:
 	.text       start:0x803FF170 end:0x803FF210
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Rot.o:
+src/system/math/Rot.cpp:
 	.text       start:0x803FF210 end:0x80401770
 	.rodata     start:0x80B354F8 end:0x80B35510
 	.data       start:0x80BAFE10 end:0x80BAFE38
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Adjacency.o:
+src/system/math/Adjacency.cpp:
 	.text       start:0x80401770 end:0x80401FD0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/FileChecksum.o:
+src/system/math/FileChecksum.cpp:
 	.text       start:0x80401FD0 end:0x804025C0
 	.ctors      start:0x80B349AC end:0x80B349B0
 	.data       start:0x80BAFE38 end:0x80BAFE78
 	.bss        start:0x80C92530 end:0x80C92548
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/CustomArray.o:
+src/system/math/CustomArray.cpp:
 	.text       start:0x804025C0 end:0x80402B50
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Decibels.o:
+src/system/math/Decibels.cpp:
 	.text       start:0x80402B50 end:0x80402C60
 	.rodata     start:0x80B35510 end:0x80B35518
 	.data       start:0x80BAFE78 end:0x80BAFE98
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Primes.o:
+src/system/math/Primes.cpp:
 	.text       start:0x80402C60 end:0x80402CB0
 	.data       start:0x80BAFE98 end:0x80BAFF90
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/RevisitedRadix.o:
+src/system/math/RevisitedRadix.cpp:
 	.text       start:0x80402CB0 end:0x804036F0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/StreamChecksum.o:
+src/system/math/StreamChecksum.cpp:
 	.text       start:0x804036F0 end:0x80403BD0
 	.data       start:0x80BAFF90 end:0x80BB00A0
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Striper.o:
+src/system/math/Striper.cpp:
 	.text       start:0x80403BD0 end:0x80405030
 	.data       start:0x80BB00A0 end:0x80BB0100
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Trig.o:
+src/system/math/Trig.cpp:
 	.text       start:0x80405030 end:0x80405690
 	.rodata     start:0x80B35518 end:0x80B35530
 	.data       start:0x80BB0100 end:0x80BB0120
 	.bss        start:0x80C92548 end:0x80C92D48
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/Key.o:
+src/system/math/Key.cpp:
 	.text       start:0x80405690 end:0x804063A0
 	.data       start:0x80BB0120 end:0x80BB0168
 
-lib.a/hproj/band3_wii/system/src/math/wii_release/vec.o:
+src/system/math/vec.cpp:
 	.text       start:0x804063A0 end:0x80406460
 	.ctors      start:0x80B349B0 end:0x80B349B4
 	.bss        start:0x80C92D48 end:0x80C92DC8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AppChild.o:
+src/system/os/AppChild.cpp:
 	.text       start:0x80406460 end:0x804069A0
 	.data       start:0x80BB0168 end:0x80BB01E0
 	.bss        start:0x80C92DC8 end:0x80C92DD0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Archive.o:
+src/system/os/Archive.cpp:
 	.text       start:0x804069A0 end:0x80409FE0
 	.rodata     start:0x80B35530 end:0x80B35538
 	.data       start:0x80BB01E0 end:0x80BB0628
 	.sbss       start:0x80C7A178 end:0x80C7A180
 	.bss        start:0x80C92DD0 end:0x80C92DD8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ArkFile.o:
+src/system/os/ArkFile.cpp:
 	.text       start:0x80409FE0 end:0x8040A7D0
 	.data       start:0x80BB0628 end:0x80BB0758
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AsyncFile.o:
+src/system/os/AsyncFile.cpp:
 	.text       start:0x8040A7D0 end:0x8040B8E0
 	.data       start:0x80BB0758 end:0x80BB08F8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AsyncFileCNT.o:
+src/system/os/AsyncFileCNT.cpp:
 	.text       start:0x8040B8E0 end:0x8040C010
 	.data       start:0x80BB08F8 end:0x80BB0AC8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AsyncFile_Wii.o:
+src/system/os/AsyncFile_Wii.cpp:
 	.text       start:0x8040C010 end:0x8040C6F0
 	.ctors      start:0x80B349B4 end:0x80B349B8
 	.data       start:0x80BB0AC8 end:0x80BB0BD8
 	.sdata      start:0x80C78D98 end:0x80C78DA0
 	.bss        start:0x80C92DD8 end:0x80C92E08
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AsyncFileHolmes.o:
+src/system/os/AsyncFileHolmes.cpp:
 	.text       start:0x8040C6F0 end:0x8040C9D0
 	.data       start:0x80BB0BD8 end:0x80BB0CA0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/AsyncTask.o:
+src/system/os/AsyncTask.cpp:
 	.text       start:0x8040C9D0 end:0x8040CB10
 	.data       start:0x80BB0CA0 end:0x80BB0CB8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/BlockMgr.o:
+src/system/os/BlockMgr.cpp:
 	.text       start:0x8040CB10 end:0x8040E040
 	.ctors      start:0x80B349B8 end:0x80B349BC
 	.rodata     start:0x80B35538 end:0x80B35548
@@ -3748,13 +3748,13 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/BlockMgr.o:
 	.sbss       start:0x80C7A180 end:0x80C7A188
 	.bss        start:0x80C92E08 end:0x80C92EA8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/CDReader.o:
+src/system/os/CDReader.cpp:
 	.text       start:0x8040E040 end:0x8040F990
 	.ctors      start:0x80B349BC end:0x80B349C0
 	.data       start:0x80BB0E10 end:0x80BB0E80
 	.bss        start:0x80C92EA8 end:0x80C92ED8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/CommerceMgr_Wii.o:
+src/system/os/CommerceMgr_Wii.cpp:
 	.text       start:0x8040F990 end:0x804151E0
 	.ctors      start:0x80B349C0 end:0x80B349C4
 	.rodata     start:0x80B35548 end:0x80B35550
@@ -3763,12 +3763,12 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/CommerceMgr_Wii.o:
 	.sbss       start:0x80C7A188 end:0x80C7A190
 	.bss        start:0x80C92ED8 end:0x80C971E0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ContentMgr.o:
+src/system/os/ContentMgr.cpp:
 	.text       start:0x804151E0 end:0x80417570
 	.data       start:0x80BB18F8 end:0x80BB1BE8
 	.sdata      start:0x80C78DA8 end:0x80C78DB0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ContentMgr_Wii.o:
+src/system/os/ContentMgr_Wii.cpp:
 	.text       start:0x80417570 end:0x8041D840
 	.ctors      start:0x80B349C4 end:0x80B349C8
 	.rodata     start:0x80B35550 end:0x80B35578
@@ -3777,16 +3777,16 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/ContentMgr_Wii.o:
 	.sbss       start:0x80C7A190 end:0x80C7A198
 	.bss        start:0x80C971E0 end:0x80C97398
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/CritSec.o:
+src/system/os/CritSec.cpp:
 	.text       start:0x8041D840 end:0x8041D980
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/DateTime.o:
+src/system/os/DateTime.cpp:
 	.text       start:0x8041D980 end:0x8041E320
 	.data       start:0x80BB26D8 end:0x80BB2838
 	.sbss       start:0x80C7A198 end:0x80C7A1A0
 	.bss        start:0x80C97398 end:0x80C973C8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Debug.o:
+src/system/os/Debug.cpp:
 	.text       start:0x8041E320 end:0x8041FA20
 	.ctors      start:0x80B349C8 end:0x80B349CC
 	.rodata     start:0x80B35578 end:0x80B35588
@@ -3794,31 +3794,31 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/Debug.o:
 	.sbss       start:0x80C7A1A0 end:0x80C7A1A8
 	.bss        start:0x80C973C8 end:0x80C97688
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/File.o:
+src/system/os/File.cpp:
 	.text       start:0x8041FA20 end:0x80422560
 	.ctors      start:0x80B349CC end:0x80B349D0
 	.data       start:0x80BB2AD0 end:0x80BB2ED0
 	.sbss       start:0x80C7A1A8 end:0x80C7A1B0
 	.bss        start:0x80C97688 end:0x80C980D0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/File_Wii.o:
+src/system/os/File_Wii.cpp:
 	.text       start:0x80422560 end:0x80422890
 	.data       start:0x80BB2ED0 end:0x80BB2F18
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/FileCache.o:
+src/system/os/FileCache.cpp:
 	.text       start:0x80422890 end:0x80424C30
 	.ctors      start:0x80B349D0 end:0x80B349D4
 	.rodata     start:0x80B35588 end:0x80B35590
 	.data       start:0x80BB2F18 end:0x80BB3078
 	.bss        start:0x80C980D0 end:0x80C980E8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/HDCache.o:
+src/system/os/HDCache.cpp:
 	.text       start:0x80424C30 end:0x80426810
 	.ctors      start:0x80B349D4 end:0x80B349D8
 	.data       start:0x80BB3078 end:0x80BB32D8
 	.bss        start:0x80C980E8 end:0x80C98160
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/HolmesClient.o:
+src/system/os/HolmesClient.cpp:
 	.text       start:0x80426810 end:0x8042A7E0
 	.ctors      start:0x80B349D8 end:0x80B349DC
 	.rodata     start:0x80B35590 end:0x80B355A8
@@ -3827,25 +3827,25 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/HolmesClient.o:
 	.sbss       start:0x80C7A1B0 end:0x80C7A1B8
 	.bss        start:0x80C98160 end:0x80C98AE8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/HolmesKeyboard.o:
+src/system/os/HolmesKeyboard.cpp:
 	.text       start:0x8042A7E0 end:0x8042AFE0
 	.data       start:0x80BB38E8 end:0x80BB39B8
 	.sbss       start:0x80C7A1B8 end:0x80C7A1C0
 	.bss        start:0x80C98AE8 end:0x80C98AF0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/HomeMenu_Wii.o:
+src/system/os/HomeMenu_Wii.cpp:
 	.text       start:0x8042AFE0 end:0x8042CB00
 	.rodata     start:0x80B355A8 end:0x80B355D0
 	.data       start:0x80BB39B8 end:0x80BB3D78
 	.sbss       start:0x80C7A1C0 end:0x80C7A1C8
 	.bss        start:0x80C98AF0 end:0x80C9C7B0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/DiscErrorMgr_Wii.o:
+src/system/os/DiscErrorMgr_Wii.cpp:
 	.text       start:0x8042CB00 end:0x8042D2C0
 	.data       start:0x80BB3D78 end:0x80BB3E10
 	.sbss       start:0x80C7A1C8 end:0x80C7A1D0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Joypad.o:
+src/system/os/Joypad.cpp:
 	.text       start:0x8042D2C0 end:0x804309F0
 	.ctors      start:0x80B349DC end:0x80B349E0
 	.rodata     start:0x80B355D0 end:0x80B355F0
@@ -3854,7 +3854,7 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/Joypad.o:
 	.sbss       start:0x80C7A1D0 end:0x80C7A1E8
 	.bss        start:0x80C9C7B0 end:0x80C9CA90
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Joypad_Wii.o:
+src/system/os/Joypad_Wii.cpp:
 	.text       start:0x804309F0 end:0x80432D10
 	.ctors      start:0x80B349E0 end:0x80B349E4
 	.rodata     start:0x80B355F0 end:0x80B35930
@@ -3863,65 +3863,65 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/Joypad_Wii.o:
 	.sbss       start:0x80C7A1E8 end:0x80C7A1F0
 	.bss        start:0x80C9CA90 end:0x80C9CB10
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/JoypadClient.o:
+src/system/os/JoypadClient.cpp:
 	.text       start:0x80432D10 end:0x80434420
 	.ctors      start:0x80B349E4 end:0x80B349E8
 	.data       start:0x80BB42D0 end:0x80BB4510
 	.sbss       start:0x80C7A1F0 end:0x80C7A1F8
 	.bss        start:0x80C9CB10 end:0x80C9CB28
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/JoypadMsgs.o:
+src/system/os/JoypadMsgs.cpp:
 	.text       start:0x80434420 end:0x80434B60
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Keyboard.o:
+src/system/os/Keyboard.cpp:
 	.text       start:0x80434B60 end:0x804352E0
 	.ctors      start:0x80B349E8 end:0x80B349EC
 	.data       start:0x80BB4510 end:0x80BB45B0
 	.sbss       start:0x80C7A1F8 end:0x80C7A200
 	.bss        start:0x80C9CB28 end:0x80C9CB48
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Keyboard_Wii.o:
+src/system/os/Keyboard_Wii.cpp:
 	.text       start:0x804352E0 end:0x804355C0
 	.data       start:0x80BB45B0 end:0x80BB4660
 	.bss        start:0x80C9CB48 end:0x80C9D808
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/MapFile_Wii.o:
+src/system/os/MapFile_Wii.cpp:
 	.text       start:0x804355C0 end:0x804380B0
 	.data       start:0x80BB4660 end:0x80BB47F8
 	.bss        start:0x80C9D808 end:0x80C9DC08
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Memcard.o:
+src/system/os/Memcard.cpp:
 	.text       start:0x804380B0 end:0x804384B0
 	.data       start:0x80BB47F8 end:0x80BB48B8
 	.sdata      start:0x80C78DD0 end:0x80C78DD8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Memcard_Wii.o:
+src/system/os/Memcard_Wii.cpp:
 	.text       start:0x804384B0 end:0x80439540
 	.ctors      start:0x80B349EC end:0x80B349F0
 	.data       start:0x80BB48B8 end:0x80BB5048
 	.bss        start:0x80C9DC08 end:0x80C9DC40
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/NetStream.o:
+src/system/os/NetStream.cpp:
 	.text       start:0x80439540 end:0x80439D00
 	.data       start:0x80BB5048 end:0x80BB50D8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/NetworkSocket_Wii.o:
+src/system/os/NetworkSocket_Wii.cpp:
 	.text       start:0x80439D00 end:0x8043A710
 	.data       start:0x80BB50D8 end:0x80BB5300
 	.sbss       start:0x80C7A200 end:0x80C7A208
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/OnlineID.o:
+src/system/os/OnlineID.cpp:
 	.text       start:0x8043A710 end:0x8043A900
 	.data       start:0x80BB5300 end:0x80BB5328
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/PlatformMgr.o:
+src/system/os/PlatformMgr.cpp:
 	.text       start:0x8043A900 end:0x8043C2D0
 	.ctors      start:0x80B349F0 end:0x80B349F4
 	.data       start:0x80BB5328 end:0x80BB54E0
 	.sbss       start:0x80C7A208 end:0x80C7A210
 	.bss        start:0x80C9DC40 end:0x80CAAB18
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/PlatformMgr_Wii.o:
+src/system/os/PlatformMgr_Wii.cpp:
 	.text       start:0x8043C2D0 end:0x80441480
 	.ctors      start:0x80B349F4 end:0x80B349F8
 	.rodata     start:0x80B35930 end:0x80B35948
@@ -3929,17 +3929,17 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/PlatformMgr_Wii.o:
 	.sbss       start:0x80C7A210 end:0x80C7A220
 	.bss        start:0x80CAAB18 end:0x80CAAD20
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ProfilePicture.o:
+src/system/os/ProfilePicture.cpp:
 	.text       start:0x80441480 end:0x80441810
 	.data       start:0x80BB5C50 end:0x80BB5CD8
 	.sbss       start:0x80C7A220 end:0x80C7A228
 	.bss        start:0x80CAAD20 end:0x80CAAD28
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ProfilePicture_Wii.o:
+src/system/os/ProfilePicture_Wii.cpp:
 	.text       start:0x80441810 end:0x80441A00
 	.data       start:0x80BB5CD8 end:0x80BB5D30
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/System.o:
+src/system/os/System.cpp:
 	.text       start:0x80441A00 end:0x80443B30
 	.ctors      start:0x80B349F8 end:0x80B349FC
 	.data       start:0x80BB5D30 end:0x80BB6158
@@ -3947,17 +3947,17 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/System.o:
 	.sbss       start:0x80C7A228 end:0x80C7A238
 	.bss        start:0x80CAAD28 end:0x80CAAFD0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/System_Wii.o:
+src/system/os/System_Wii.cpp:
 	.text       start:0x80443B30 end:0x80443DF0
 	.data       start:0x80BB6158 end:0x80BB6180
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/ThreadCall_Wii.o:
+src/system/os/ThreadCall_Wii.cpp:
 	.text       start:0x80443DF0 end:0x804442E0
 	.data       start:0x80BB6180 end:0x80BB61E0
 	.sbss       start:0x80C7A238 end:0x80C7A240
 	.bss        start:0x80CAAFD0 end:0x80CAB3E8
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/Timer.o:
+src/system/os/Timer.cpp:
 	.text       start:0x804442E0 end:0x80446050
 	.ctors      start:0x80B349FC end:0x80B34A00
 	.rodata     start:0x80B35948 end:0x80B35960
@@ -3965,59 +3965,59 @@ lib.a/hproj/band3_wii/system/src/os/wii_release/Timer.o:
 	.sbss       start:0x80C7A240 end:0x80C7A248
 	.bss        start:0x80CAB3E8 end:0x80CAB478
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/User.o:
+src/system/os/User.cpp:
 	.text       start:0x80446050 end:0x80447470
 	.data       start:0x80BB63E0 end:0x80BB6618
 	.sbss       start:0x80C7A248 end:0x80C7A250
 	.bss        start:0x80CAB478 end:0x80CAB480
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/UserMgr.o:
+src/system/os/UserMgr.cpp:
 	.text       start:0x80447470 end:0x80447B40
 	.data       start:0x80BB6618 end:0x80BB66D0
 	.bss        start:0x80CAB480 end:0x80CAB488
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/SynchronizationEvent.o:
+src/system/os/SynchronizationEvent.cpp:
 	.text       start:0x80447B40 end:0x80447D00
 	.data       start:0x80BB66D0 end:0x80BB6730
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/VirtualKeyboard.o:
+src/system/os/VirtualKeyboard.cpp:
 	.text       start:0x80447D00 end:0x80448730
 	.ctors      start:0x80B34A00 end:0x80B34A04
 	.data       start:0x80BB6730 end:0x80BB6808
 	.bss        start:0x80CAB488 end:0x80CAB4E0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/VirtualKeyboard_Wii.o:
+src/system/os/VirtualKeyboard_Wii.cpp:
 	.text       start:0x80448730 end:0x80449100
 	.data       start:0x80BB6808 end:0x80BB68D8
 	.sbss       start:0x80C7A250 end:0x80C7A258
 	.bss        start:0x80CAB4E0 end:0x80CAB500
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/UsbMidiGuitar.o:
+src/system/os/UsbMidiGuitar.cpp:
 	.text       start:0x80449100 end:0x8044A430
 	.ctors      start:0x80B34A04 end:0x80B34A08
 	.data       start:0x80BB68D8 end:0x80BB6930
 	.sbss       start:0x80C7A258 end:0x80C7A260
 	.bss        start:0x80CAB500 end:0x80CAB5B0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/UsbMidiGuitarMsgs.o:
+src/system/os/UsbMidiGuitarMsgs.cpp:
 	.text       start:0x8044A430 end:0x8044B580
 	.data       start:0x80BB6930 end:0x80BB6C48
 	.sbss       start:0x80C7A260 end:0x80C7A270
 	.bss        start:0x80CAB5B0 end:0x80CAB5E0
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/UsbMidiKeyboard.o:
+src/system/os/UsbMidiKeyboard.cpp:
 	.text       start:0x8044B580 end:0x8044C670
 	.data       start:0x80BB6C48 end:0x80BB6D08
 	.sbss       start:0x80C7A270 end:0x80C7A278
 	.bss        start:0x80CAB5E0 end:0x80CAB610
 
-lib.a/hproj/band3_wii/system/src/os/wii_release/UsbMidiKeyboardMsgs.o:
+src/system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x8044C670 end:0x8044D650
 	.data       start:0x80BB6D08 end:0x80BB7000
 	.sbss       start:0x80C7A278 end:0x80C7A288
 	.bss        start:0x80CAB610 end:0x80CAB638
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataArray.o:
+src/system/obj/DataArray.cpp:
 	.text       start:0x8044D650 end:0x80451160
 	.ctors      start:0x80B34A08 end:0x80B34A0C
 	.rodata     start:0x80B35960 end:0x80B35970
@@ -4025,7 +4025,7 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/DataArray.o:
 	.sbss       start:0x80C7A288 end:0x80C7A290
 	.bss        start:0x80CAB638 end:0x80CAB808
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataFile.o:
+src/system/obj/DataFile.cpp:
 	.text       start:0x80451160 end:0x804544B0
 	.ctors      start:0x80B34A0C end:0x80B34A10
 	.rodata     start:0x80B35970 end:0x80B35978
@@ -4033,7 +4033,7 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/DataFile.o:
 	.sbss       start:0x80C7A290 end:0x80C7A298
 	.bss        start:0x80CAB808 end:0x80CAB880
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataFunc.o:
+src/system/obj/DataFunc.cpp:
 	.text       start:0x804544B0 end:0x8045DCF0
 	.ctors      start:0x80B34A10 end:0x80B34A14
 	.data       start:0x80BB7A30 end:0x80BB8208
@@ -4042,13 +4042,13 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/DataFunc.o:
 	.sdata2     start:0x80C7B920 end:0x80C7B928
 	.bss        start:0x80CAB880 end:0x80CAB900
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataNode.o:
+src/system/obj/DataNode.cpp:
 	.text       start:0x8045DCF0 end:0x80460190
 	.ctors      start:0x80B34A14 end:0x80B34A18
 	.data       start:0x80BB8208 end:0x80BB8780
 	.bss        start:0x80CAB900 end:0x80CABA00
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataUtl.o:
+src/system/obj/DataUtl.cpp:
 	.text       start:0x80460190 end:0x80460E30
 	.ctors      start:0x80B34A18 end:0x80B34A1C
 	.data       start:0x80BB8780 end:0x80BB8828
@@ -4056,14 +4056,14 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/DataUtl.o:
 	.sbss       start:0x80C7A2A0 end:0x80C7A2A8
 	.bss        start:0x80CABA00 end:0x80CABEF8
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DataFlex.o:
+src/system/obj/DataFlex.c:
 	.text       start:0x80460E30 end:0x80461BA0
 	.rodata     start:0x80B35978 end:0x80B369A8
 	.data       start:0x80BB8828 end:0x80BB8A10
 	.sbss       start:0x80C7A2A8 end:0x80C7A2B0
 	.bss        start:0x80CABEF8 end:0x80CABF28
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/Dir.o:
+src/system/obj/Dir.cpp:
 	.text       start:0x80461BA0 end:0x8046E980
 	.ctors      start:0x80B34A1C end:0x80B34A20
 	.data       start:0x80BB8A10 end:0x80BB9208
@@ -4071,7 +4071,7 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/Dir.o:
 	.sbss       start:0x80C7A2B0 end:0x80C7A2C0
 	.bss        start:0x80CABF28 end:0x80CAC598
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DirLoader.o:
+src/system/obj/DirLoader.cpp:
 	.text       start:0x8046E980 end:0x804723C0
 	.ctors      start:0x80B34A20 end:0x80B34A24
 	.data       start:0x80BB9208 end:0x80BB97F0
@@ -4079,22 +4079,22 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/DirLoader.o:
 	.sbss       start:0x80C7A2C0 end:0x80C7A2C8
 	.bss        start:0x80CAC598 end:0x80CACA20
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/DirUnloader.o:
+src/system/obj/DirUnloader.cpp:
 	.text       start:0x804723C0 end:0x80473050
 	.data       start:0x80BB97F0 end:0x80BB9940
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/MessageTimer.o:
+src/system/obj/MessageTimer.cpp:
 	.text       start:0x80473050 end:0x80474E80
 	.ctors      start:0x80B34A24 end:0x80B34A28
 	.data       start:0x80BB9940 end:0x80BB9A28
 	.sbss       start:0x80C7A2C8 end:0x80C7A2D0
 	.bss        start:0x80CACA20 end:0x80CACA38
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/Msg.o:
+src/system/obj/Msg.cpp:
 	.text       start:0x80474E80 end:0x80477710
 	.data       start:0x80BB9A28 end:0x80BB9B88
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/Object.o:
+src/system/obj/Object.cpp:
 	.text       start:0x80477710 end:0x8047B7A0
 	.ctors      start:0x80B34A28 end:0x80B34A2C
 	.data       start:0x80BB9B88 end:0x80BB9E98
@@ -4102,87 +4102,87 @@ lib.a/hproj/band3_wii/system/src/obj/wii_release/Object.o:
 	.sbss       start:0x80C7A2D0 end:0x80C7A2F8
 	.bss        start:0x80CACA38 end:0x80CACB70
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/PropSync.o:
+src/system/obj/PropSync.cpp:
 	.text       start:0x8047B7A0 end:0x8047D950
 	.data       start:0x80BB9E98 end:0x80BB9F50
 	.sbss       start:0x80C7A2F8 end:0x80C7A300
 	.bss        start:0x80CACB70 end:0x80CACB88
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/Task.o:
+src/system/obj/Task.cpp:
 	.text       start:0x8047D950 end:0x80481990
 	.ctors      start:0x80B34A2C end:0x80B34A30
 	.data       start:0x80BB9F50 end:0x80BBA308
 	.sbss       start:0x80C7A300 end:0x80C7A308
 	.bss        start:0x80CACB88 end:0x80CACC28
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/TextFile.o:
+src/system/obj/TextFile.cpp:
 	.text       start:0x80481990 end:0x80482700
 	.data       start:0x80BBA308 end:0x80BBA418
 	.sbss       start:0x80C7A308 end:0x80C7A310
 	.sdata2     start:0x80C7B928 end:0x80C7B930
 	.bss        start:0x80CACC28 end:0x80CACC30
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/TypeProps.o:
+src/system/obj/TypeProps.cpp:
 	.text       start:0x80482700 end:0x80483A90
 	.data       start:0x80BBA418 end:0x80BBA4F0
 
-lib.a/hproj/band3_wii/system/src/obj/wii_release/Utl.o:
+src/system/obj/Utl.cpp:
 	.text       start:0x80483A90 end:0x80487140
 	.ctors      start:0x80B34A30 end:0x80B34A34
 	.data       start:0x80BBA4F0 end:0x80BBA638
 	.sbss       start:0x80C7A310 end:0x80C7A318
 	.bss        start:0x80CACC30 end:0x80D0CC88
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/BeatMap.o:
+src/system/utl/BeatMap.cpp:
 	.text       start:0x80487140 end:0x804879C0
 	.ctors      start:0x80B34A34 end:0x80B34A38
 	.data       start:0x80BBA638 end:0x80BBA678
 	.bss        start:0x80D0CC88 end:0x80D0CCA0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/BinkIntegration.o:
+src/system/utl/BinkIntegration.cpp:
 	.text       start:0x804879C0 end:0x80488A60
 	.rodata     start:0x80B369A8 end:0x80B369B0
 	.data       start:0x80BBA678 end:0x80BBA6C8
 	.sbss       start:0x80C7A318 end:0x80C7A320
 	.bss        start:0x80D0CCA0 end:0x80D0CCA8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/BinStream.o:
+src/system/utl/BinStream.cpp:
 	.text       start:0x80488A60 end:0x804897A0
 	.data       start:0x80BBA6C8 end:0x80BBA7E8
 	.sdata      start:0x80C78E08 end:0x80C78E10
 	.sbss       start:0x80C7A320 end:0x80C7A328
 	.bss        start:0x80D0CCA8 end:0x80D0CDC0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/BufStream.o:
+src/system/utl/BufStream.cpp:
 	.text       start:0x804897A0 end:0x80489CA0
 	.data       start:0x80BBA7E8 end:0x80BBA870
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/BufStreamNAND.o:
+src/system/utl/BufStreamNAND.cpp:
 	.text       start:0x80489CA0 end:0x8048AAB0
 	.data       start:0x80BBA870 end:0x80BBAA70
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Cache.o:
+src/system/utl/Cache.cpp:
 	.text       start:0x8048AAB0 end:0x8048ABD0
 	.data       start:0x80BBAA70 end:0x80BBAB00
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Cache_Wii.o:
+src/system/utl/Cache_Wii.cpp:
 	.text       start:0x8048ABD0 end:0x8048CA20
 	.data       start:0x80BBAB00 end:0x80BBAE60
 	.sbss       start:0x80C7A328 end:0x80C7A330
 	.bss        start:0x80D0CDC0 end:0x80D0CE00
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/CacheMgr.o:
+src/system/utl/CacheMgr.cpp:
 	.text       start:0x8048CA20 end:0x8048D320
 	.data       start:0x80BBAE60 end:0x80BBB020
 	.bss        start:0x80D0CE00 end:0x80D0CE08
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/CacheMgr_Wii.o:
+src/system/utl/CacheMgr_Wii.cpp:
 	.text       start:0x8048D320 end:0x8048E380
 	.data       start:0x80BBB020 end:0x80BBB218
 	.sbss       start:0x80C7A330 end:0x80C7A338
 	.bss        start:0x80D0CE08 end:0x80D0CE30
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Cheats.o:
+src/system/utl/Cheats.cpp:
 	.text       start:0x8048E380 end:0x80491A20
 	.rodata     start:0x80B369B0 end:0x80B369C0
 	.data       start:0x80BBB218 end:0x80BBB808
@@ -4190,58 +4190,58 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/Cheats.o:
 	.sbss       start:0x80C7A338 end:0x80C7A340
 	.bss        start:0x80D0CE30 end:0x80D0CE48
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Chunks.o:
+src/system/utl/Chunks.cpp:
 	.text       start:0x80491A20 end:0x804926D0
 	.data       start:0x80BBB808 end:0x80BBB948
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/ChunkIDs.o:
+src/system/utl/ChunkIDs.cpp:
 	.text       start:0x804926D0 end:0x80492800
 	.ctors      start:0x80B34A38 end:0x80B34A3C
 	.data       start:0x80BBB948 end:0x80BBB998
 	.bss        start:0x80D0CE48 end:0x80D0CE88
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/ChunkStream.o:
+src/system/utl/ChunkStream.cpp:
 	.text       start:0x80492800 end:0x80494110
 	.ctors      start:0x80B34A3C end:0x80B34A40
 	.data       start:0x80BBB998 end:0x80BBBD20
 	.bss        start:0x80D0CE88 end:0x80D0CEA0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Compress.o:
+src/system/utl/Compress.cpp:
 	.text       start:0x80494110 end:0x80494400
 	.data       start:0x80BBBD20 end:0x80BBBE60
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/DataPointMgr.o:
+src/system/utl/DataPointMgr.cpp:
 	.text       start:0x80494400 end:0x804947C0
 	.ctors      start:0x80B34A40 end:0x80B34A44
 	.bss        start:0x80D0CEA0 end:0x80D0CEA8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/DeJitter.o:
+src/system/utl/DeJitter.cpp:
 	.text       start:0x804947C0 end:0x80494B20
 	.rodata     start:0x80B369C0 end:0x80B369C8
 	.data       start:0x80BBBE60 end:0x80BBBE90
 	.sbss       start:0x80C7A340 end:0x80C7A348
 	.bss        start:0x80D0CEA8 end:0x80D0CEB0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/EncryptXTEA.o:
+src/system/utl/EncryptXTEA.cpp:
 	.text       start:0x80494B20 end:0x80494D50
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/FakeSongMgr.o:
+src/system/utl/FakeSongMgr.cpp:
 	.text       start:0x80494D50 end:0x80494EB0
 	.data       start:0x80BBBE90 end:0x80BBBF48
 	.bss        start:0x80D0CEB0 end:0x80D0CEB8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/FilePath.o:
+src/system/utl/FilePath.cpp:
 	.text       start:0x80494EB0 end:0x80494FD0
 	.ctors      start:0x80B34A44 end:0x80B34A48
 	.data       start:0x80BBBF48 end:0x80BBBF50
 	.bss        start:0x80D0CEB8 end:0x80D0CEE8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/FileStream.o:
+src/system/utl/FileStream.cpp:
 	.text       start:0x80494FD0 end:0x80495720
 	.rodata     start:0x80B369C8 end:0x80B369D8
 	.data       start:0x80BBBF50 end:0x80BBBFE0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/GlitchFinder.o:
+src/system/utl/GlitchFinder.cpp:
 	.text       start:0x80495720 end:0x80497060
 	.ctors      start:0x80B34A48 end:0x80B34A4C
 	.rodata     start:0x80B369D8 end:0x80B369E0
@@ -4249,12 +4249,12 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/GlitchFinder.o:
 	.sbss       start:0x80C7A348 end:0x80C7A350
 	.bss        start:0x80D0CEE8 end:0x80D0D260
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/HangBlock_Wii.o:
+src/system/utl/HangBlock_Wii.cpp:
 	.text       start:0x80497060 end:0x804970C0
 	.ctors      start:0x80B34A4C end:0x80B34A50
 	.bss        start:0x80D0D260 end:0x80D0D2D0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/HttpWii.o:
+src/system/utl/HttpWii.cpp:
 	.text       start:0x804970C0 end:0x80497D00
 	.ctors      start:0x80B34A50 end:0x80B34A54
 	.rodata     start:0x80B369E0 end:0x80B36A28
@@ -4262,22 +4262,22 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/HttpWii.o:
 	.sbss       start:0x80C7A350 end:0x80C7A358
 	.bss        start:0x80D0D2D0 end:0x80D0D530
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/HxGuid.o:
+src/system/utl/HxGuid.cpp:
 	.text       start:0x80497D00 end:0x80498210
 	.ctors      start:0x80B34A54 end:0x80B34A58
 	.data       start:0x80BBC410 end:0x80BBC4A0
 	.bss        start:0x80D0D530 end:0x80D0D558
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/IntPacker.o:
+src/system/utl/IntPacker.cpp:
 	.text       start:0x80498210 end:0x80498920
 	.data       start:0x80BBC4A0 end:0x80BBC500
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/JobMgr.o:
+src/system/utl/JobMgr.cpp:
 	.text       start:0x80498920 end:0x80498E30
 	.data       start:0x80BBC500 end:0x80BBC540
 	.bss        start:0x80D0D558 end:0x80D0D560
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Loader.o:
+src/system/utl/Loader.cpp:
 	.text       start:0x80498E30 end:0x8049AC30
 	.ctors      start:0x80B34A58 end:0x80B34A5C
 	.data       start:0x80BBC540 end:0x80BBC828
@@ -4285,7 +4285,7 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/Loader.o:
 	.sbss       start:0x80C7A358 end:0x80C7A360
 	.bss        start:0x80D0D560 end:0x80D0D610
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Locale.o:
+src/system/utl/Locale.cpp:
 	.text       start:0x8049AC30 end:0x8049C1E0
 	.ctors      start:0x80B34A5C end:0x80B34A60
 	.rodata     start:0x80B36A28 end:0x80B36A30
@@ -4293,37 +4293,37 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/Locale.o:
 	.sbss       start:0x80C7A360 end:0x80C7A368
 	.bss        start:0x80D0D610 end:0x80D0D7E8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/LocaleOrdinal.o:
+src/system/utl/LocaleOrdinal.cpp:
 	.text       start:0x8049C1E0 end:0x8049C530
 	.data       start:0x80BBCA80 end:0x80BBCAD8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/LogFile.o:
+src/system/utl/LogFile.cpp:
 	.text       start:0x8049C530 end:0x8049C7A0
 	.data       start:0x80BBCAD8 end:0x80BBCB08
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MakeString.o:
+src/system/utl/MakeString.cpp:
 	.text       start:0x8049C7A0 end:0x8049DC20
 	.data       start:0x80BBCB08 end:0x80BBCD18
 	.bss        start:0x80D0D7E8 end:0x80D0D828
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Magnu.o:
+src/system/utl/Magnu.cpp:
 	.text       start:0x8049DC20 end:0x8049DEA0
 	.data       start:0x80BBCD18 end:0x80BBCE00
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MBT.o:
+src/system/utl/MBT.cpp:
 	.text       start:0x8049DEA0 end:0x8049E0C0
 	.rodata     start:0x80B36A30 end:0x80B36A48
 	.data       start:0x80BBCE00 end:0x80BBCE28
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MeasureMap.o:
+src/system/utl/MeasureMap.cpp:
 	.text       start:0x8049E0C0 end:0x8049E8B0
 	.rodata     start:0x80B36A48 end:0x80B36A58
 	.data       start:0x80BBCE28 end:0x80BBCEF0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MemcardBufStream.o:
+src/system/utl/MemcardBufStream.cpp:
 	.text       start:0x8049E8B0 end:0x8049E8D0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MemMgr.o:
+src/system/utl/MemMgr.cpp:
 	.text       start:0x8049E8D0 end:0x804A21D0
 	.ctors      start:0x80B34A60 end:0x80B34A64
 	.data       start:0x80BBCEF0 end:0x80BBD630
@@ -4331,205 +4331,205 @@ lib.a/hproj/band3_wii/system/src/utl/wii_release/MemMgr.o:
 	.sbss       start:0x80C7A368 end:0x80C7A370
 	.bss        start:0x80D0D828 end:0x80D0E0E8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Mem_Wii.o:
+src/system/utl/Mem_Wii.cpp:
 	.text       start:0x804A21D0 end:0x804A25A0
 	.data       start:0x80BBD630 end:0x80BBD6E8
 	.sbss       start:0x80C7A370 end:0x80C7A378
 	.bss        start:0x80D0E0E8 end:0x80D0E0F0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MemPoint.o:
+src/system/utl/MemPoint.cpp:
 	.text       start:0x804A25A0 end:0x804A2790
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MemTracker.o:
+src/system/utl/MemTracker.cpp:
 	.text       start:0x804A2790 end:0x804A2810
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MemStream.o:
+src/system/utl/MemStream.cpp:
 	.text       start:0x804A2810 end:0x804A2C60
 	.data       start:0x80BBD6E8 end:0x80BBD750
 	.sdata      start:0x80C78E28 end:0x80C78E30
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Messages.o:
+src/system/utl/Messages.cpp:
 	.text       start:0x804A2C60 end:0x804A5FD0
 	.ctors      start:0x80B34A64 end:0x80B34A68
 	.data       start:0x80BBD750 end:0x80BBDC50
 	.sbss       start:0x80C7A378 end:0x80C7A380
 	.bss        start:0x80D0E0F0 end:0x80D0E840
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Messages2.o:
+src/system/utl/Messages2.cpp:
 	.text       start:0x804A5FD0 end:0x804A8960
 	.ctors      start:0x80B34A68 end:0x80B34A6C
 	.data       start:0x80BBDC50 end:0x80BBE0F0
 	.sbss       start:0x80C7A380 end:0x80C7A388
 	.bss        start:0x80D0E840 end:0x80D0EE28
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Messages3.o:
+src/system/utl/Messages3.cpp:
 	.text       start:0x804A8960 end:0x804AB4F0
 	.ctors      start:0x80B34A6C end:0x80B34A70
 	.data       start:0x80BBE0F0 end:0x80BBE508
 	.sbss       start:0x80C7A388 end:0x80C7A390
 	.bss        start:0x80D0EE28 end:0x80D0F458
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Messages4.o:
+src/system/utl/Messages4.cpp:
 	.text       start:0x804AB4F0 end:0x804AE270
 	.ctors      start:0x80B34A70 end:0x80B34A74
 	.data       start:0x80BBE508 end:0x80BBE8F8
 	.sbss       start:0x80C7A390 end:0x80C7A398
 	.bss        start:0x80D0F458 end:0x80D0FAD0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/MultiTempoTempoMap.o:
+src/system/utl/MultiTempoTempoMap.cpp:
 	.text       start:0x804AE270 end:0x804AF270
 	.rodata     start:0x80B36A58 end:0x80B36A60
 	.data       start:0x80BBE8F8 end:0x80BBEA58
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/NetLoader.o:
+src/system/utl/NetLoader.cpp:
 	.text       start:0x804AF270 end:0x804AFB70
 	.rodata     start:0x80B36A60 end:0x80B36A68
 	.data       start:0x80BBEA58 end:0x80BBEB48
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/NetLoader_Wii.o:
+src/system/utl/NetLoader_Wii.cpp:
 	.text       start:0x804AFB70 end:0x804B01A0
 	.data       start:0x80BBEB48 end:0x80BBEC08
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/NetCacheLoader.o:
+src/system/utl/NetCacheLoader.cpp:
 	.text       start:0x804B01A0 end:0x804B0A60
 	.data       start:0x80BBEC08 end:0x80BBED18
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/NetCacheMgr.o:
+src/system/utl/NetCacheMgr.cpp:
 	.text       start:0x804B0A60 end:0x804B2CD0
 	.data       start:0x80BBED18 end:0x80BBF120
 	.bss        start:0x80D0FAD0 end:0x80D0FAD8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Option.o:
+src/system/utl/Option.cpp:
 	.text       start:0x804B2CD0 end:0x804B3210
 	.data       start:0x80BBF120 end:0x80BBF198
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/PoolAlloc.o:
+src/system/utl/PoolAlloc.cpp:
 	.text       start:0x804B3210 end:0x804B3E40
 	.data       start:0x80BBF198 end:0x80BBF480
 	.sbss       start:0x80C7A398 end:0x80C7A3A0
 	.bss        start:0x80D0FAD8 end:0x80D0FAE8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Profiler.o:
+src/system/utl/Profiler.cpp:
 	.text       start:0x804B3E40 end:0x804B4140
 	.data       start:0x80BBF480 end:0x80BBF4A8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Rso_Utl.o:
+src/system/utl/Rso_Utl.cpp:
 	.text       start:0x804B4140 end:0x804B4E90
 	.data       start:0x80BBF4A8 end:0x80BBF6F0
 	.sdata      start:0x80C78E30 end:0x80C78E38
 	.sbss       start:0x80C7A3A0 end:0x80C7A3A8
 	.bss        start:0x80D0FAE8 end:0x80D0FB48
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Song.o:
+src/system/utl/Song.cpp:
 	.text       start:0x804B4E90 end:0x804B9320
 	.data       start:0x80BBF6F0 end:0x80BBF980
 	.sbss       start:0x80C7A3A8 end:0x80C7A3B0
 	.bss        start:0x80D0FB48 end:0x80D0FB60
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/SongInfoAudioType.o:
+src/system/utl/SongInfoAudioType.cpp:
 	.text       start:0x804B9320 end:0x804B9400
 	.data       start:0x80BBF980 end:0x80BBF9C0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/SongInfoCopy.o:
+src/system/utl/SongInfoCopy.cpp:
 	.text       start:0x804B9400 end:0x804BA6E0
 	.data       start:0x80BBF9C0 end:0x80BBFB40
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Spew.o:
+src/system/utl/Spew.cpp:
 	.text       start:0x804BA6E0 end:0x804BA700
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Str.o:
+src/system/utl/Str.cpp:
 	.text       start:0x804BA700 end:0x804BBFB0
 	.rodata     start:0x80B36A68 end:0x80B36A70
 	.data       start:0x80BBFB40 end:0x80BBFC00
 	.sbss       start:0x80C7A3B0 end:0x80C7A3B8
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/StringTable.o:
+src/system/utl/StringTable.cpp:
 	.text       start:0x804BBFB0 end:0x804BC940
 	.data       start:0x80BBFC00 end:0x80BBFCA0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/SuperFormatString.o:
+src/system/utl/SuperFormatString.cpp:
 	.text       start:0x804BC940 end:0x804BD160
 	.data       start:0x80BBFCA0 end:0x80BBFE10
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Symbol.o:
+src/system/utl/Symbol.cpp:
 	.text       start:0x804BD160 end:0x804BE990
 	.rodata     start:0x80B36A70 end:0x80B36A78
 	.data       start:0x80BBFE10 end:0x80BBFFD0
 	.sdata      start:0x80C78E38 end:0x80C78E40
 	.bss        start:0x80D0FB60 end:0x80D0FB78
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Symbols.o:
+src/system/utl/Symbols.cpp:
 	.text       start:0x804BE990 end:0x804C4D80
 	.ctors      start:0x80B34A74 end:0x80B34A78
 	.data       start:0x80BBFFD0 end:0x80BC8510
 	.sbss       start:0x80C7A3B8 end:0x80C7A3C0
 	.bss        start:0x80D0FB78 end:0x80D11C28
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Symbols2.o:
+src/system/utl/Symbols2.cpp:
 	.text       start:0x804C4D80 end:0x804C9CC0
 	.ctors      start:0x80B34A78 end:0x80B34A7C
 	.data       start:0x80BC8510 end:0x80BCE818
 	.sbss       start:0x80C7A3C0 end:0x80C7A3C8
 	.bss        start:0x80D11C28 end:0x80D13678
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Symbols3.o:
+src/system/utl/Symbols3.cpp:
 	.text       start:0x804C9CC0 end:0x804CEC50
 	.ctors      start:0x80B34A7C end:0x80B34A80
 	.data       start:0x80BCE818 end:0x80BD50D8
 	.sbss       start:0x80C7A3C8 end:0x80C7A3D0
 	.bss        start:0x80D13678 end:0x80D150E0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Symbols4.o:
+src/system/utl/Symbols4.cpp:
 	.text       start:0x804CEC50 end:0x804D3BB0
 	.ctors      start:0x80B34A80 end:0x80B34A84
 	.data       start:0x80BD50D8 end:0x80BDB6D8
 	.sbss       start:0x80C7A3D0 end:0x80C7A3D8
 	.bss        start:0x80D150E0 end:0x80D16B40
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/SysTest.o:
+src/system/utl/SysTest.cpp:
 	.text       start:0x804D3BB0 end:0x804D3E00
 	.data       start:0x80BDB6D8 end:0x80BDB758
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/TempoMap.o:
+src/system/utl/TempoMap.cpp:
 	.text       start:0x804D3E00 end:0x804D3FC0
 	.ctors      start:0x80B34A84 end:0x80B34A88
 	.rodata     start:0x80B36A78 end:0x80B36A80
 	.data       start:0x80BDB758 end:0x80BDB7C8
 	.bss        start:0x80D16B40 end:0x80D16B48
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/TextFileStream.o:
+src/system/utl/TextFileStream.cpp:
 	.text       start:0x804D3FC0 end:0x804D40D0
 	.data       start:0x80BDB7C8 end:0x80BDB800
 	.sdata2     start:0x80C7B930 end:0x80C7B938
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/TextStream.o:
+src/system/utl/TextStream.cpp:
 	.text       start:0x804D40D0 end:0x804D4780
 	.data       start:0x80BDB800 end:0x80BDB9D0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/TimeConversion.o:
+src/system/utl/TimeConversion.cpp:
 	.text       start:0x804D4780 end:0x804D4BE0
 	.data       start:0x80BDB9D0 end:0x80BDBA08
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/UserGuid.o:
+src/system/utl/UserGuid.cpp:
 	.text       start:0x804D4BE0 end:0x804D4BF0
 	.ctors      start:0x80B34A88 end:0x80B34A8C
 	.bss        start:0x80D16B48 end:0x80D16B58
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/UTF8.o:
+src/system/utl/UTF8.cpp:
 	.text       start:0x804D4BF0 end:0x804D6220
 	.data       start:0x80BDBA08 end:0x80BDBB80
 	.sdata      start:0x80C78E40 end:0x80C78E48
 	.sbss       start:0x80C7A3D8 end:0x80C7A3E0
 	.bss        start:0x80D16B58 end:0x80D16B70
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/VarTimer.o:
+src/system/utl/VarTimer.cpp:
 	.text       start:0x804D6220 end:0x804D6520
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/Wav.o:
+src/system/utl/Wav.cpp:
 	.text       start:0x804D6520 end:0x804D6740
 	.data       start:0x80BDBB80 end:0x80BDBBC0
 
-lib.a/hproj/band3_wii/system/src/utl/wii_release/WaveFile.o:
+src/system/utl/WaveFile.cpp:
 	.text       start:0x804D6740 end:0x804D82F0
 	.data       start:0x80BDBBC0 end:0x80BDBD68
 
