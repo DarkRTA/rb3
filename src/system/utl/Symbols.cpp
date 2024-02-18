@@ -2,6 +2,9 @@
 #include "utl/StringTable.h"
 #include "utl/Symbol.h"
 
+extern StringTable* gStringTable;
+extern bool gLiteralSymbolStaticInitialization;
+
 static BeginLiteralSymbols gBeginLiteralSymbols;
 Symbol set_feedback_state("set_feedback_state");
 Symbol set_file_merger("set_file_merger");
@@ -960,7 +963,7 @@ Symbol synth("synth");
 Symbol SynthSample("SynthSample");
 Symbol system_ms("system_ms");
 Symbol system_user_blocks_free("system_user_blocks_free");
-Symbol t("t");
+Symbol t_sym("t");
 Symbol table("table");
 Symbol tablelin("tablelin");
 Symbol take_portrait("take_portrait");
@@ -2098,3 +2101,14 @@ Symbol font("font");
 Symbol object("object");
 Symbol text("text");
 static EndLiteralSymbols gEndLiteralSymbols;
+
+BeginLiteralSymbols::BeginLiteralSymbols(){
+    if(gStringTable == 0){
+        Symbol::PreInit(0x81700, 0x13c00);
+    }
+    gLiteralSymbolStaticInitialization = true;
+}
+
+EndLiteralSymbols::EndLiteralSymbols(){
+    gLiteralSymbolStaticInitialization = false;
+}
