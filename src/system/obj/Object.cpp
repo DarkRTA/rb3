@@ -7,24 +7,26 @@
 extern const char* gNullStr;
 // extern void PropertyNOP(const char*, char*, String&);
 
-// ObjectDir* Hmx::Object::DataDir(){
-//     if(mDir != nullptr) return mDir;
-//     else return ObjectDir::sMainDir;
-// }
+ObjectDir* Hmx::Object::Dir() const { return mDir; }
+
+ObjectDir* Hmx::Object::DataDir(){
+    if(mDir != 0) return mDir;
+    else return ObjectDir::sMainDir;
+}
 
 Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
 
-// void Hmx::Object::SetTypeDef(DataArray* da){
-//     if(mTypeDef != da){
-//         if(mTypeDef != nullptr){
-//             mTypeDef->Release();
-//             mTypeDef = 0;
-//         }
-//         mTypeProps.ClearAll(this);
-//         mTypeDef = da;
-//         if(da != nullptr) da->AddRef();
-//     }
-// }
+void Hmx::Object::SetTypeDef(DataArray* da){
+    if(mTypeDef != da){
+        if(mTypeDef != 0){
+            mTypeDef->Release();
+            mTypeDef = 0;
+        }
+        mTypeProps.ClearAll(this);
+        mTypeDef = da;
+        if(da != 0) da->AddRef();
+    }
+}
 
 // DataNode* Hmx::Object::Property(DataArray* prop, bool fail){
 //     static DataNode n;

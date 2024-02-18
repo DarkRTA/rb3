@@ -130,7 +130,7 @@ namespace Hmx {
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);
-        ObjectDir* GetObjectDir();
+        ObjectDir* Dir() const;
         DataNode HandleType(DataArray*);
 
         DataNode OnGetArray(const DataArray*, Symbol);
