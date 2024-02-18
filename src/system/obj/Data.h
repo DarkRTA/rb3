@@ -67,7 +67,7 @@ public:
 
     DataNode(Symbol s){
         mType = kDataSymbol;
-        mValue.symbol = s.m_string;
+        mValue.symbol = s.mStr;
     }
 
     DataNode(Hmx::Object* obj){
@@ -157,7 +157,7 @@ public:
     short mDeprecated;
     static DataFunc* sDefaultHandler;
 
-    const char* File() { return mFile.m_string; }
+    const char* File() { return mFile.mStr; }
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
