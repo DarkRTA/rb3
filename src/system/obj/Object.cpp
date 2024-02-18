@@ -4,7 +4,7 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 
-// extern const char* gNullStr;
+extern const char* gNullStr;
 // extern void PropertyNOP(const char*, char*, String&);
 
 // ObjectDir* Hmx::Object::DataDir(){
@@ -12,7 +12,7 @@
 //     else return ObjectDir::sMainDir;
 // }
 
-// Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
+Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
 
 // void Hmx::Object::SetTypeDef(DataArray* da){
 //     if(mTypeDef != da){

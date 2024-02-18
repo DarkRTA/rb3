@@ -4,6 +4,7 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
+#include "obj/Object.h"
 
 // forward declarations
 class DataNode;

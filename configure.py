@@ -227,6 +227,7 @@ config.libs = [
 
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
+            Object(NonMatching, "system/obj/Object.cpp"),
             Object(NonMatching, "system/obj/TypeProps.cpp"),
 
             Object(NonMatching, "system/utl/IntPacker.cpp"),

@@ -47,8 +47,8 @@ DataNode& DataNode::Evaluate() const {
         return *mValue.var;
     }
     else if(mType == kDataProperty){
-        // DataNode* n = gDataThis->Property(mValue.array, true);
-        // return UseQueue(*n);
+        DataNode* n = gDataThis->Property(mValue.array, true);
+        return UseQueue(*n);
     }
     else return (DataNode&)*this;
 }
