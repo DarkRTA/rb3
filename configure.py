@@ -199,6 +199,7 @@ config.libs = [
             Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s"]),
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
+            Object(Matching, "system/math/Vec.cpp"),
 
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
