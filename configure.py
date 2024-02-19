@@ -195,8 +195,8 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "system/math/CustomArray.cpp"),
-            Object(NonMatching, "system/math/Interp.cpp"),
+            Object(Matching, "system/math/CustomArray.cpp"),
+            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s"]),
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
 

@@ -3696,7 +3696,7 @@ system/math/Key.cpp:
 	.text       start:0x80405690 end:0x804063A0
 	.data       start:0x80BB0120 end:0x80BB0168
 
-system/math/vec.cpp:
+system/math/Vec.cpp:
 	.text       start:0x804063A0 end:0x80406460
 	.ctors      start:0x80B349B0 end:0x80B349B4
 	.bss        start:0x80C92D48 end:0x80C92DC8
