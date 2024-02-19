@@ -14,6 +14,7 @@
 
 import sys
 import argparse
+import json
 
 from pathlib import Path
 from tools.project import (
@@ -24,7 +25,7 @@ from tools.project import (
     is_windows,
 )
 
-from cflags_common import cflags_includes, cflags_defines
+from cflags_common import cflags_includes
 
 # Game versions
 DEFAULT_VERSION = 1
@@ -134,70 +135,44 @@ config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
 # Project
-config.config_path = Path("config") / config.version / "config.yml"
-config.check_sha_path = Path("config") / config.version / "build.sha1"
+config_dir = Path("config") / config.version
+flags_path = config_dir / "flags.json"
+config.config_path = config_dir / "config.yml"
+config.check_sha_path = config_dir / "build.sha1"
+
+flags = json.load(open(flags_path, "r", encoding="utf-8"))
+
 config.asflags = [
     "-mgekko",
     "--strip-local-absolute",
     f"-I build/{config.version}/include",
 ]
-config.ldflags = [
-    "-fp hardware",
-    "-nodefaults",
-    "-listclosure",
-]
-config.shift_jis = False
-config.progress_all = False
+config.ldflags = flags["ldflags"]
 
-# Metrowerks library flags
-cflags_runtime = [
-    "-use_lmw_stmw on",
-    "-str reuse,pool,readonly",
-    "-common off",
-    "-inline auto",
-]
+cflags_runtime: list[str] = [] # Metrowerks library flags
+cflags_base: list[str] = [] # Base flags for all other compile units
+cflags_rb3: list[str] = []
+cflags_sdk: list[str] = []
 
-# Base flags for all other compile units
-cflags_base = [
-    *cflags_includes,
-    *cflags_defines,
-    "-nodefaults",
-    "-proc gekko",
-    "-align powerpc",
-    "-enum int",
-    "-fp hardware",
-    "-Cpp_exceptions off",
-    # "-W all",
-    "-O4,p",
-    '-pragma "cats off"',
-    '-pragma "warn_notinlined off"',
-    "-maxerrors 1",
-    "-nosyspath",
-    "-fp_contract on",
-    "-str reuse,pool",
-    "-gccinc",
-]
+cflags = flags["cflags"]
+cflags_runtime.extend(cflags["runtime"])
+cflags_base.extend(cflags_includes)
+cflags_base.extend(cflags["base"])
 
 # Debug flags
 if config.debug:
     cflags_base.append("-sym dwarf-2,full")
     cflags_runtime.append("-sym dwarf-2,full")
 
-cflags_rb3 = [
-    *cflags_base,
-    "-sdata 2",
-    "-sdata2 2",
-    "-pragma \"merge_float_consts on\"",
-    "-RTTI on",
-    "-inline noauto",
-]
-
-cflags_sdk = [
-    *cflags_base,
-    "-func_align 16"
-]
+cflags_rb3.extend(cflags_base)
+cflags_rb3.extend(cflags["rb3"])
+cflags_sdk.extend(cflags_base)
+cflags_sdk.extend(cflags["sdk"])
 
 config.linker_version = "Wii/1.3"
+
+config.shift_jis = False
+config.progress_all = False
 
 Matching = True
 NonMatching = False

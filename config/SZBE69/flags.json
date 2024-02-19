@@ -1,0 +1,44 @@
+{
+    "ldflags": [
+        "-fp hardware",
+        "-nodefaults",
+        "-listclosure",
+        "-code_merging safe,aggressive"
+    ],
+    "cflags": {
+        "runtime": [
+            "-use_lmw_stmw on",
+            "-str reuse,pool,readonly",
+            "-common off",
+            "-inline auto"
+        ],
+        "base": [
+            "-nodefaults",
+            "-proc gekko",
+            "-align powerpc",
+            "-enum int",
+            "-fp hardware",
+            "-Cpp_exceptions off",
+            "-O4,s",
+            "-pragma \"cats off\"",
+            "-pragma \"warn_notinlined off\"",
+            "-maxerrors 1",
+            "-nosyspath",
+            "-fp_contract on",
+            "-str reuse,pool",
+            "-func_align 4",
+            "-gccinc",
+            "-d NDEBUG"
+        ],
+        "rb3": [
+            "-sdata 2",
+            "-sdata2 2",
+            "-pragma \"merge_float_consts on\"",
+            "-RTTI on",
+            "-inline off"
+        ],
+        "sdk": [
+            "-func_align 16"
+        ]
+    }
+}
