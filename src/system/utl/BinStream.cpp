@@ -11,7 +11,7 @@ const char *BinStream::Name() const {
 }
 
 BinStream& BinStream::operator<<(const char* str){
-    if(str == 0) KASSERTSTR_FAIL(0x23, "str");
+    DBG_ASSERT(str != 0, 0x23, "str");
     int size = strlen(str);
     WriteEndian(&size, 4);
     Write(str, size);

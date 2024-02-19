@@ -22,7 +22,7 @@ public:
 extern Debug TheDebug;
 extern const char* kAssertStr;
 
-#define KASSERTSTR_FAIL(line, msg) TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, __FILE__, line, msg))
+#define ASSERT(cond, line) if(!(cond)) TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, __FILE__, line, #cond))
 
 #endif
 

@@ -18,6 +18,7 @@ void IntPacker::AddBool(bool b){
     Add(b, 1);
 }
 
+// TODO: add ASSERT macros here such that the asm isn't changed
 void IntPacker::AddS(int num, unsigned int bits){
     int max = 1 << bits - 1;
     bool b = ((-max <= num) && (num < max));
@@ -27,6 +28,7 @@ void IntPacker::AddS(int num, unsigned int bits){
     Add(num, bits);
 }
 
+// TODO: add ASSERT macros here such that the asm isn't changed
 void IntPacker::AddU(unsigned int num, unsigned int bits){
     if(num >= (unsigned int)(1 << bits)){
         TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "IntPacker.cpp", 0x28, "num < uint(1 << bits)"));
@@ -39,9 +41,7 @@ void IntPacker::Add(unsigned int num, unsigned int bits){
         mBuffer[mPos >> 3] |= ((num >> u) & 1) << (mPos & 7);
         mPos++;
     }
-    if(mPos > mSize * 8){
-        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "IntPacker.cpp", 0x36, "mPos <= mSize*8"));
-    }
+    ASSERT(mPos <= mSize*8, 0x36);
 }
 
 bool IntPacker::ExtractBool(){
@@ -65,9 +65,7 @@ unsigned int IntPacker::ExtractU(unsigned int ui){
         ret |= ((mBuffer[mPos >> 3] >> (mPos & 7)) & 1) << cnt;
         mPos++;
     }
-    if(mPos > mSize * 8){
-        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "IntPacker.cpp", 0x58, "mPos <= mSize*8"));
-    }
+    ASSERT(mPos <= mSize*8, 0x58);
     return ret;
 }
 

@@ -1,93 +1,84 @@
 #include "utl/TextStream.h"
 #include "os/Debug.h"
 #include <stdio.h>
+#define SNPRINTF snprintf
 
 TextStream::TextStream() {
 
 }
 
-TextStream &TextStream::operator<<(char c) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%c", c);
-    if(res < 0) KASSERTSTR_FAIL(0x20, "SNPRINTF(buf, sizeof(buf), \"%c\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(char i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%c", i) >= 0, 0x20);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(short sh) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%hd", sh);
-    if(res < 0) KASSERTSTR_FAIL(0x25, "SNPRINTF(buf, sizeof(buf), \"%hd\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(short i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%hd", i) >= 0, 0x25);
+    Print(buf);
     return *this;
 }
 
 TextStream &TextStream::operator<<(int i) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%d", i);
-    if(res < 0) KASSERTSTR_FAIL(0x2A, "SNPRINTF(buf, sizeof(buf), \"%d\", i) >= 0");
-    Print(stack);
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%d", i) >= 0, 0x2A);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(long l) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%ld", l);
-    if(res < 0) KASSERTSTR_FAIL(0x2F, "SNPRINTF(buf, sizeof(buf), \"%ld\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(long i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%ld", i) >= 0, 0x2F);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(unsigned char uc) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%u", uc);
-    if(res < 0) KASSERTSTR_FAIL(0x34, "SNPRINTF(buf, sizeof(buf), \"%u\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned char i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%u", i) >= 0, 0x34);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(unsigned short us) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%hu", us);
-    if(res < 0) KASSERTSTR_FAIL(0x39, "SNPRINTF(buf, sizeof(buf), \"%hu\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned short i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%hu", i) >= 0, 0x39);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(unsigned int ui) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%u", ui);
-    if(res < 0) KASSERTSTR_FAIL(0x3E, "SNPRINTF(buf, sizeof(buf), \"%u\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned int i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%u", i) >= 0, 0x3E);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(unsigned long ul) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%lu", ul);
-    if(res < 0) KASSERTSTR_FAIL(0x43, "SNPRINTF(buf, sizeof(buf), \"%lu\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned long i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%lu", i) >= 0, 0x43);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(float f) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%.2f", f);
-    if(res < 0) KASSERTSTR_FAIL(0x48, "SNPRINTF(buf, sizeof(buf), \"%.2f\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(float i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%.2f", i) >= 0, 0x48);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(double d) {
-    char stack[1024];
-    int res = snprintf(stack, 0x400, "%.4f", d);
-    if(res < 0) KASSERTSTR_FAIL(0x48, "SNPRINTF(buf, sizeof(buf), \"%.4f\", i) >= 0");
-    Print(stack);
+TextStream &TextStream::operator<<(double i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%.4f", i) >= 0, 0x4D);
+    Print(buf);
     return *this;
 }
 
 TextStream &TextStream::operator<<(const char *c) {
-    if(c == 0) KASSERTSTR_FAIL(0x52, "c");
+    ASSERT(c, 0x52);
     Print(c);
     return *this;
 }
