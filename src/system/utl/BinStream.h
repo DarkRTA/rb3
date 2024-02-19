@@ -27,8 +27,8 @@ public:
     virtual bool Eof() = 0;
     virtual bool Fail() = 0;
     virtual const char* Name() const;
-    virtual int Cached(); // weak
-    virtual int GetPlatform(); // weak
+    virtual int Cached(){ return 0; }
+    virtual int GetPlatform(){ return 0; }
     virtual void ReadImpl(void*, int) = 0;
     virtual void WriteImpl(const void*, int) = 0;
     virtual void SeekImpl(int, SeekType) = 0;
