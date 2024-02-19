@@ -36,6 +36,16 @@
         ],
         "sdk": [
             "-func_align 16"
+        ],
+        "c": [
+            "-lang=c99",
+            "-sdata 2",
+            "-sdata2 2",
+            "-pragma \"merge_float_consts on\"",
+            "-inline auto"
+        ],
+        "zlib": [
+            "-pool on"
         ]
     }
 }

@@ -1,100 +1,99 @@
 #include "utl/TextStream.h"
+#include "os/Debug.h"
 #include <stdio.h>
+#define SNPRINTF snprintf
 
-// fn_8037A67C
 TextStream::TextStream() {
+
 }
 
-// fn_8037A68C
-TextStream &TextStream::operator<<(char c) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%c", c);
-    Print(stack);
+TextStream &TextStream::operator<<(char i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%c", i) >= 0, 0x20);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(short sh) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%hd", sh);
-    Print(stack);
+TextStream &TextStream::operator<<(short i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%hd", i) >= 0, 0x25);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A6EC
 TextStream &TextStream::operator<<(int i) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%d", i);
-    Print(stack);
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%d", i) >= 0, 0x2A);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A750
-TextStream &TextStream::operator<<(long l) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%ld", l);
-    Print(stack);
+TextStream &TextStream::operator<<(long i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%ld", i) >= 0, 0x2F);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A7B4
-TextStream &TextStream::operator<<(unsigned int ui) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%u", ui);
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned char i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%u", i) >= 0, 0x34);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A818
-TextStream &TextStream::operator<<(unsigned short us) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%hu", us);
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned short i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%hu", i) >= 0, 0x39);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A87C
-TextStream &TextStream::operator<<(unsigned long ul) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%lu", ul);
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned int i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%u", i) >= 0, 0x3E);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A8E0
-TextStream &TextStream::operator<<(float f) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%.2f", f);
-    Print(stack);
+TextStream &TextStream::operator<<(unsigned long i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%lu", i) >= 0, 0x43);
+    Print(buf);
     return *this;
 }
 
-TextStream &TextStream::operator<<(double d) {
-    char stack[1024];
-    snprintf(stack, 0x400, "%.4f", d);
-    Print(stack);
+TextStream &TextStream::operator<<(float i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%.2f", i) >= 0, 0x48);
+    Print(buf);
     return *this;
 }
 
-// fn_8037A940
+TextStream &TextStream::operator<<(double i) {
+    char buf[1024];
+    ASSERT(SNPRINTF(buf, sizeof(buf), "%.4f", i) >= 0, 0x4D);
+    Print(buf);
+    return *this;
+}
+
 TextStream &TextStream::operator<<(const char *c) {
+    ASSERT(c, 0x52);
     Print(c);
     return *this;
 }
 
-// fn_8037A97C
 TextStream &TextStream::operator<<(Symbol s) {
-    Print(s.m_string);
+    Print(s.mStr);
     return *this;
 }
 
-// fn_8037A9BC
 TextStream &TextStream::operator<<(bool b) {
     const char *str = b ? "true" : "false";
     Print(str);
     return *this;
 }
 
-// fn_8037AA10
 void TextStream::Space(int i) {
     while (i != 0) {
         Print(" ");

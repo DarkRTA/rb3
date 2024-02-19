@@ -3696,7 +3696,7 @@ system/math/Key.cpp:
 	.text       start:0x80405690 end:0x804063A0
 	.data       start:0x80BB0120 end:0x80BB0168
 
-system/math/vec.cpp:
+system/math/Vec.cpp:
 	.text       start:0x804063A0 end:0x80406460
 	.ctors      start:0x80B349B0 end:0x80B349B4
 	.bss        start:0x80C92D48 end:0x80C92DC8
@@ -4533,41 +4533,38 @@ system/utl/WaveFile.cpp:
 	.text       start:0x804D6740 end:0x804D82F0
 	.data       start:0x80BDBBC0 end:0x80BDBD68
 
-system/zlib/adler32.cpp:
+system/zlib/adler32.c:
 	.text       start:0x804D82F0 end:0x804D8490
 
-system/zlib/compress.cpp:
-	.text       start:0x804D8490 end:0x804D8490
-
-system/zlib/crc32.cpp:
+system/zlib/crc32.c:
 	.text       start:0x804D8490 end:0x804D85E0
 	.rodata     start:0x80B36A80 end:0x80B36E80
 
-system/zlib/deflate.cpp:
+system/zlib/deflate.c:
 	.text       start:0x804D85E0 end:0x804DA890
 	.rodata     start:0x80B36E80 end:0x80B36EF8
 
-system/zlib/trees.cpp:
+system/zlib/trees.c:
 	.text       start:0x804DA890 end:0x804DCD80
 	.rodata     start:0x80B36EF8 end:0x80B37930
 	.data       start:0x80BDBD68 end:0x80BDBDA8
 
-system/zlib/zutil.cpp:
+system/zlib/zutil.c:
 	.text       start:0x804DCD80 end:0x804DCDC0
 	.rodata     start:0x80B37930 end:0x80B37958
 	.data       start:0x80BDBDA8 end:0x80BDBE28
 	.sdata      start:0x80C78E48 end:0x80C78E50
 
-system/zlib/inflate.cpp:
+system/zlib/inflate.c:
 	.text       start:0x804DCDC0 end:0x804DE810
 	.rodata     start:0x80B37958 end:0x80B38200
 	.data       start:0x80BDBE28 end:0x80BDC050
 
-system/zlib/inftrees.cpp:
+system/zlib/inftrees.c:
 	.text       start:0x804DE810 end:0x804DEF70
 	.rodata     start:0x80B38200 end:0x80B38300
 
-system/zlib/inffast.cpp:
+system/zlib/inffast.c:
 	.text       start:0x804DEF70 end:0x804DF4C0
 	.data       start:0x80BDC050 end:0x80BDC0A0
 

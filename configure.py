@@ -161,6 +161,8 @@ cflags_runtime: list[str] = [] # Metrowerks library flags
 cflags_base: list[str] = [] # Base flags for all other compile units
 cflags_rb3: list[str] = []
 cflags_sdk: list[str] = []
+cflags_c: list[str] = []
+cflags_zlib: list[str] = []
 
 cflags = flags["cflags"]
 cflags_runtime.extend(cflags["runtime"])
@@ -176,6 +178,10 @@ cflags_rb3.extend(cflags_base)
 cflags_rb3.extend(cflags["rb3"])
 cflags_sdk.extend(cflags_base)
 cflags_sdk.extend(cflags["sdk"])
+cflags_c.extend(cflags_base)
+cflags_c.extend(cflags["c"])
+cflags_zlib.extend(cflags_c)
+cflags_zlib.extend(cflags["zlib"])
 
 config.linker_version = "Wii/1.3"
 
@@ -204,23 +210,49 @@ config.libs = [
         "cflags": cflags_rb3,
         "host": False,
         "objects": [
-            Object(NonMatching, "system/math/CustomArray.cpp"),
-            Object(NonMatching, "system/math/Interp.cpp"),
+            Object(NonMatching, "system/math/Color.cpp"),
+            Object(Matching, "system/math/CustomArray.cpp"),
+            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s"]),
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
+            Object(NonMatching, "system/math/Sort.cpp"),
+            Object(NonMatching, "system/math/Trig.cpp"),
+            Object(Matching, "system/math/Vec.cpp"),
 
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
-            Object(NonMatching, "system/obj/Object.cpp"),
-            Object(NonMatching, "system/obj/TypeProps.cpp"),
+            Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
+            Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
 
-            Object(NonMatching, "system/utl/IntPacker.cpp"),
+            Object(NonMatching, "system/utl/BinStream.cpp"),
+            Object(Matching, "system/utl/ChunkIDs.cpp"),
+            Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
+            Object(Matching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/Symbols.cpp"),
             Object(Matching, "system/utl/Symbols2.cpp"),
             Object(Matching, "system/utl/Symbols3.cpp"),
             Object(Matching, "system/utl/Symbols4.cpp"),
-            Object(NonMatching, "system/utl/TextStream.cpp"),
+            Object(NonMatching, "system/utl/SysTest.cpp"),
+            Object(Matching, "system/utl/TempoMap.cpp"),
+            Object(Matching, "system/utl/TextFileStream.cpp"),
+            Object(Matching, "system/utl/TextStream.cpp"),
         ],
+    },
+    {
+        "lib": "zlib",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(Matching, "system/zlib/adler32.c"),
+            Object(Matching, "system/zlib/crc32.c"),
+            Object(NonMatching, "system/zlib/deflate.c"),
+            Object(NonMatching, "system/zlib/trees.c"),
+            Object(NonMatching, "system/zlib/zutil.c"),
+            Object(Matching, "system/zlib/inflate.c"),
+            Object(Matching, "system/zlib/inftrees.c"),
+            Object(Matching, "system/zlib/inffast.c"),
+        ]
     },
 ]
 

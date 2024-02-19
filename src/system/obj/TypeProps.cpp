@@ -1,30 +1,22 @@
 #include "obj/Object.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
-#include "utl/Str.h"
-#include "utl/MakeString.h"
 // #include <new>
 // #include "symbols.hpp"
-extern Debug TheDebug;
-extern const char* kAssertStr;
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
-    DataNode* kv = KeyValue(prop, false);
+    DataNode* n = KeyValue(prop, false);
     DataArray* ret;
-    if(kv == 0){
-        if(typeDef == 0){
-            TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TypeProps.cpp", 0x16, "typeDef"));
-        }
+    if(n == 0){
+        ASSERT(typeDef, 0x16);
         DataArray* yuh = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
         SetKeyValue(prop, DataNode(yuh, kDataArray), true, ref);
         yuh->Release();
         ret = yuh;
     }
     else {
-        if(kv->Type() != kDataArray){
-            TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TypeProps.cpp", 0x1D, "n->Type() == kDataArray"));
-        }
-        ret = kv->mValue.array;
+        ASSERT(n->Type() == kDataArray, 0x1D);
+        ret = n->mValue.array;
     }
     return ret;
 }
@@ -155,10 +147,10 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
 //     }
 // }
 
-// int TypeProps::Size() const {
-//     if(mDataDict != nullptr) return mDataDict->Size() / 2;
-//     else return 0;
-// }
+int TypeProps::Size() const {
+    if(mMap != 0) return mMap->Size() / 2;
+    else return 0;
+}
 
 // void TypeProps::ReleaseObjects(ObjRef* ref){
 //     if(mDataDict != nullptr){
@@ -205,13 +197,26 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
 //     }
 // }
 
-// TypeProps& TypeProps::Assign(const TypeProps& prop, ObjRef* ref){
-//     ClearAll(ref);
-//     if(prop.mDataDict != nullptr){
-//         mDataDict = prop.mDataDict->Clone(true, false, 0);
-//     }
-//     AddRefObjects(ref);
-// }
+TypeProps& TypeProps::Copy(const TypeProps& prop, Hmx::Object* ref){
+    ClearAll(ref);
+    if(prop.mMap != 0){
+        mMap = prop.mMap->Clone(true, false, 0);
+    }
+    AddRefObjects(ref);
+}
+
+#pragma dont_inline on
+// return type might be a Symbol? not sure
+DataNode* TypeProps::Key(int i) const {
+    ASSERT(mMap, 0x1CC);
+    return &mMap->Node(i * 2);
+}
+
+DataNode& TypeProps::Value(int i) const {
+    ASSERT(mMap, 0x1D2);
+    return mMap->Node(i * 2 + 1);
+}
+#pragma dont_inline reset
 
 // void TypeProps::ClearAll(ObjRef* ref){
 //     ReleaseObjects(ref);

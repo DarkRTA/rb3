@@ -1,6 +1,8 @@
 #ifndef OS_DEBUG_H
 #define OS_DEBUG_H
 #include "utl/TextStream.h"
+#include "utl/Str.h"
+#include "utl/MakeString.h"
 
 class Debug : public TextStream {
 public:
@@ -16,6 +18,12 @@ public:
     void Notify(const char* msg);
     void Fail(const char* msg);
 };
+
+extern Debug TheDebug;
+extern const char* kAssertStr;
+
+#define ASSERT(cond, line) if(!(cond)) TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, __FILE__, line, #cond))
+#define FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
 
 #endif
 
