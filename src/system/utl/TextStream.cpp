@@ -1,100 +1,135 @@
 #include "utl/TextStream.h"
+#include "os/Debug.h"
+#include "utl/Str.h"
+#include "utl/MakeString.h"
 #include <stdio.h>
 
-// fn_8037A67C
+extern Debug TheDebug;
+extern const char* kAssertStr;
+
 TextStream::TextStream() {
+
 }
 
-// fn_8037A68C
 TextStream &TextStream::operator<<(char c) {
     char stack[1024];
-    snprintf(stack, 0x400, "%c", c);
+    int res = snprintf(stack, 0x400, "%c", c);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x20, "SNPRINTF(buf, sizeof(buf), \"%c\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
 TextStream &TextStream::operator<<(short sh) {
     char stack[1024];
-    snprintf(stack, 0x400, "%hd", sh);
+    int res = snprintf(stack, 0x400, "%hd", sh);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x25, "SNPRINTF(buf, sizeof(buf), \"%hd\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A6EC
 TextStream &TextStream::operator<<(int i) {
     char stack[1024];
-    snprintf(stack, 0x400, "%d", i);
+    int res = snprintf(stack, 0x400, "%d", i);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x2A, "SNPRINTF(buf, sizeof(buf), \"%d\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A750
 TextStream &TextStream::operator<<(long l) {
     char stack[1024];
-    snprintf(stack, 0x400, "%ld", l);
+    int res = snprintf(stack, 0x400, "%ld", l);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x2F, "SNPRINTF(buf, sizeof(buf), \"%ld\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A7B4
-TextStream &TextStream::operator<<(unsigned int ui) {
+TextStream &TextStream::operator<<(unsigned char uc) {
     char stack[1024];
-    snprintf(stack, 0x400, "%u", ui);
+    int res = snprintf(stack, 0x400, "%u", uc);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x34, "SNPRINTF(buf, sizeof(buf), \"%u\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A818
 TextStream &TextStream::operator<<(unsigned short us) {
     char stack[1024];
-    snprintf(stack, 0x400, "%hu", us);
+    int res = snprintf(stack, 0x400, "%hu", us);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x39, "SNPRINTF(buf, sizeof(buf), \"%hu\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A87C
+TextStream &TextStream::operator<<(unsigned int ui) {
+    char stack[1024];
+    int res = snprintf(stack, 0x400, "%u", ui);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x3E, "SNPRINTF(buf, sizeof(buf), \"%u\", i) >= 0"));
+    }
+    Print(stack);
+    return *this;
+}
+
 TextStream &TextStream::operator<<(unsigned long ul) {
     char stack[1024];
-    snprintf(stack, 0x400, "%lu", ul);
+    int res = snprintf(stack, 0x400, "%lu", ul);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x43, "SNPRINTF(buf, sizeof(buf), \"%lu\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A8E0
 TextStream &TextStream::operator<<(float f) {
     char stack[1024];
-    snprintf(stack, 0x400, "%.2f", f);
+    int res = snprintf(stack, 0x400, "%.2f", f);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x48, "SNPRINTF(buf, sizeof(buf), \"%.2f\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
 TextStream &TextStream::operator<<(double d) {
     char stack[1024];
-    snprintf(stack, 0x400, "%.4f", d);
+    int res = snprintf(stack, 0x400, "%.4f", d);
+    if(res < 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x48, "SNPRINTF(buf, sizeof(buf), \"%.4f\", i) >= 0"));
+    }
     Print(stack);
     return *this;
 }
 
-// fn_8037A940
 TextStream &TextStream::operator<<(const char *c) {
+    if(c == 0){
+        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "TextStream.cpp", 0x52, "c"));
+    }
     Print(c);
     return *this;
 }
 
-// fn_8037A97C
 TextStream &TextStream::operator<<(Symbol s) {
-    Print(s.m_string);
+    Print(s.mStr);
     return *this;
 }
 
-// fn_8037A9BC
 TextStream &TextStream::operator<<(bool b) {
     const char *str = b ? "true" : "false";
     Print(str);
     return *this;
 }
 
-// fn_8037AA10
 void TextStream::Space(int i) {
     while (i != 0) {
         Print(" ");

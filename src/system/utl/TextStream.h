@@ -13,6 +13,7 @@ public:
     TextStream &operator<<(short);
     TextStream &operator<<(int);
     TextStream &operator<<(long);
+    TextStream &operator<<(unsigned char);
     TextStream &operator<<(unsigned int);
     TextStream &operator<<(unsigned short);
     TextStream &operator<<(unsigned long);
