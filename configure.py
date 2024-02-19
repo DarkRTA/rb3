@@ -157,31 +157,43 @@ config.asflags = [
 ]
 config.ldflags = flags["ldflags"]
 
-cflags_runtime: list[str] = [] # Metrowerks library flags
-cflags_base: list[str] = [] # Base flags for all other compile units
-cflags_rb3: list[str] = []
-cflags_sdk: list[str] = []
-cflags_c: list[str] = []
-cflags_zlib: list[str] = []
+# Compile flags
+cflags: dict[str, dict] = flags["cflags"]
 
-cflags = flags["cflags"]
-cflags_runtime.extend(cflags["runtime"])
-cflags_base.extend(cflags_includes)
-cflags_base.extend(cflags["base"])
+def get_flags(name) -> list[str]:
+    return cflags[name]["flags"]
+def add_flags(name, flags: list[str]):
+    cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
+
+def get_flags_base(name) -> str:
+    return cflags[name]["base"]
+
+def are_flags_inherited(name) -> bool:
+    return "inherited" in cflags[name]
+def set_flags_inherited(name):
+    cflags[name]["inherited"] = True
 
 # Debug flags
 if config.debug:
-    cflags_base.append("-sym dwarf-2,full")
-    cflags_runtime.append("-sym dwarf-2,full")
+    get_flags("base").append("-sym dwarf-2,full")
+    get_flags("runtime").append("-sym dwarf-2,full")
 
-cflags_rb3.extend(cflags_base)
-cflags_rb3.extend(cflags["rb3"])
-cflags_sdk.extend(cflags_base)
-cflags_sdk.extend(cflags["sdk"])
-cflags_c.extend(cflags_base)
-cflags_c.extend(cflags["c"])
-cflags_zlib.extend(cflags_c)
-cflags_zlib.extend(cflags["zlib"])
+# Apply cflag inheritance
+def apply_base_flags(key: str):
+    if are_flags_inherited(key):
+        return
+
+    base = get_flags_base(key)
+    if base is None:
+        add_flags(key, cflags_includes)
+    else:
+        apply_base_flags(base)
+        add_flags(key, get_flags(base))
+
+    set_flags_inherited(key)
+
+for key in cflags.keys():
+    apply_base_flags(key)
 
 config.linker_version = "Wii/1.3"
 
@@ -198,7 +210,7 @@ config.libs = [
     {
         "lib": "band3",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": get_flags("rb3"),
         "host": False,
         "objects": [
 
@@ -207,7 +219,7 @@ config.libs = [
     {
         "lib": "system",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
+        "cflags": get_flags("rb3"),
         "host": False,
         "objects": [
             Object(NonMatching, "system/math/Color.cpp"),
@@ -248,7 +260,7 @@ config.libs = [
     {
         "lib": "zlib",
         "mw_version": "Wii/1.3",
-        "cflags": cflags_zlib,
+        "cflags": get_flags("zlib"),
         "host": False,
         "objects": [
             Object(Matching, "system/zlib/adler32.c"),
