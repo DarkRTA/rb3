@@ -216,6 +216,7 @@ config.libs = [
             Object(Matching, "system/utl/Symbols4.cpp"),
             Object(NonMatching, "system/utl/SysTest.cpp"),
             Object(Matching, "system/utl/TempoMap.cpp"),
+            Object(Matching, "system/utl/TextFileStream.cpp"),
             Object(Matching, "system/utl/TextStream.cpp"),
         ],
     },
