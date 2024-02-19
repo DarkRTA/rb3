@@ -209,6 +209,8 @@ config.libs = [
             Object(NonMatching, "system/obj/Object.cpp"),
             Object(NonMatching, "system/obj/TypeProps.cpp"),
 
+            Object(Matching, "system/utl/ChunkIDs.cpp"),
+            Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
             Object(Matching, "system/utl/IntPacker.cpp"),
             Object(Matching, "system/utl/Symbols.cpp"),
             Object(Matching, "system/utl/Symbols2.cpp"),

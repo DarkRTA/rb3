@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 namespace {
-    static const char kCRLF[2] = { '\r', '\n' };
+    const char kCRLF[2] = { '\r', '\n' };
 }
 
 TextFileStream::TextFileStream(const char *file, bool append)
