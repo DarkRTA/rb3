@@ -1,0 +1,79 @@
+#ifndef MSL_CPP_CWCHAR_H
+#define MSL_CPP_CWCHAR_H
+#include <wchar.h>
+
+namespace std {
+    using ::mbstate_t;
+    using ::wint_t;
+    using ::size_t;
+    using ::tm;
+
+    using ::wcscat;
+    using ::wcscpy;
+    using ::wcsncat;
+    using ::wcsncpy;
+    using ::wcsxfrm;
+
+    using ::wcschr;
+    using ::wcscmp;
+    using ::wcscoll;
+    using ::wcscspn;
+    using ::wcslen;
+    using ::wcsncmp;
+    using ::wcspbrk;
+    using ::wcsrchr;
+    using ::wcsspn;
+    using ::wcsstr;
+    using ::wcstok;
+
+    using ::wmemchr;
+    using ::wmemcmp;
+    using ::wmemcpy;
+    using ::wmemmove;
+    using ::wmemset;
+
+    using ::btowc;
+    using ::mbrlen;
+    using ::mbrtowc;
+    using ::mbsinit;
+    using ::mbsrtowcs;
+    using ::wcrtomb;
+    using ::wcsrtombs;
+    using ::wctob;
+
+    using ::fgetwc;
+    using ::fgetws;
+    using ::fputwc;
+    using ::fputws;
+    using ::getwc;
+    using ::getwchar;
+    using ::putwc;
+    using ::putwchar;
+    using ::ungetwc;
+
+    using ::fwide;
+
+    using ::fwprintf;
+    using ::fwscanf;
+    using ::swprintf;
+    using ::swscanf;
+    using ::vfwprintf;
+    using ::vfwscanf;
+    using ::vswprintf;
+    using ::vswscanf;
+    using ::vwprintf;
+    using ::vwscanf;
+    using ::wprintf;
+    using ::wscanf;
+
+    using ::wcsftime;
+    using ::wcstod;
+    using ::wcstof;
+    using ::wcstol;
+    using ::wcstold;
+    using ::wcstoll;
+    using ::wcstoul;
+    using ::wcstoull;
+}
+
+#endif
