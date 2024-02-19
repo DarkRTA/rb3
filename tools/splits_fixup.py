@@ -8,6 +8,9 @@ from pathlib import *
 # Finds .o/.obj files and splits off the file extension
 obj_regex = re.compile(r"(.*)\.ob?j?")
 
+# Replaces any variation of `/src/` with just `/`
+src_regex = re.compile(r"[\\\/][Ss][Rr][Cc][\\\/]")
+
 # Determines if an object is within an archive,
 # and splits the archive name from the rest of the path
 archive_regex = re.compile(r"(.*?)\.a[\\\/](.*)")
@@ -86,7 +89,7 @@ with open(splits_path, "r") as symbols_file:
 new_symbols_text: list[str] = []
 previous_match_end = 0
 for obj_match in obj_regex.finditer(symbols_text):
-    obj_path = obj_match.group(1).replace("src/", "").replace("Src/", "")
+    obj_path = src_regex.sub("/", obj_match.group(1))
     path_range = range(obj_match.start(), obj_match.end())
 
     # Check if the object is contained in an archive
@@ -114,25 +117,25 @@ for obj_match in obj_regex.finditer(symbols_text):
         elif lib_name == "TRK_Hollywood_Revolution":
             obj_path = f"sdk/PowerPC_EABI_Support/MetroTRK/" + lib_path.removeprefix("Data/wiiProj/metrotrk/metrotrk/") + ".c"
         elif lib_name in sdk_c_names:
-            obj_path = f"sdk/{lib_name}/{lib_path}.c"
+            obj_path = f"sdk/{lib_name}/src/{lib_path}.c"
         elif lib_name in sdk_cpp_names:
-            obj_path = f"sdk/{lib_name}/{lib_path}.cpp"
+            obj_path = f"sdk/{lib_name}/src/{lib_path}.cpp"
         else:
             # RVL SDK and related libs, check as lowercase
             lib_name_lower = lib_name.lower()
             if lib_name_lower in rvl_names:
-                obj_path = f"sdk/RVL_SDK/{lib_name}/{lib_path}.c"
+                obj_path = f"sdk/RVL_SDK/src/{lib_name}/{lib_path}.c"
             elif lib_name_lower in revo_ex_names:
-                obj_path = f"sdk/RevoEX/{lib_name}/{lib_path}.c"
+                obj_path = f"sdk/RevoEX/src/{lib_name}/{lib_path}.c"
             elif lib_name_lower in dwc_names:
-                obj_path = f"sdk/DWC/{lib_name}/{lib_path}.c"
+                obj_path = f"sdk/DWC/src/{lib_name}/{lib_path}.c"
             # For documentation purposes; not necessary for us
             # elif lib_name_lower == "rfl":
-            #   obj_path = f"sdk/RVLFaceLib/{lib_path}.c"
+            #   obj_path = f"sdk/RVLFaceLib/src/{lib_path}.c"
 
             # Undetermined source, place into lib/ directory
             else:
-                obj_path = f"lib/{lib_name}/{lib_path}.c"
+                obj_path = f"lib/{lib_name}/src/{lib_path}.c"
 
     # Modify splits to use the determined path
     new_symbols_text.append(symbols_text[previous_match_end:obj_match.start()])
