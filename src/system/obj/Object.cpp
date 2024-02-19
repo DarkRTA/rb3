@@ -1,11 +1,10 @@
 #include "obj/Object.h"
-
+#include "os/Debug.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 
 extern const char* gNullStr;
-// extern void PropertyNOP(const char*, char*, String&);
 
 ObjectDir* Hmx::Object::Dir() const { return mDir; }
 
@@ -118,23 +117,23 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 //     }
 // }
 
-// void Hmx::Object::ClearProperties(DataArray* propArr){
-//     int size = PropertySize(propArr);
-//     DataArray* cloned = propArr->Clone(true, false, 1);
-//     while(size-- != 0){
-//         cloned->Node(cloned->Size() - 1) = DataNode(size);
-//         RemoveProperty(cloned);
-//     }
-//     cloned->Release();
-// }
+void Hmx::Object::PropertyClear(DataArray* propArr){
+    int size = PropertySize(propArr);
+    DataArray* cloned = propArr->Clone(true, false, 1);
+    while(size-- != 0){
+        cloned->Node(cloned->Size() - 1) = DataNode(size);
+        RemoveProperty(cloned);
+    }
+    cloned->Release();
+}
 
-// void Hmx::Object::RemoveProperty(DataArray* prop){
-//     static DataNode n;
-//     if(!SyncProperty(n, prop, 0, kPropRemove)){
-//         prop->Size();
-//         mTypeProps.RemoveArrayValue(prop->Sym(0), prop->Int(1), mTypeDef, this);
-//     }
-// }
+void Hmx::Object::RemoveProperty(DataArray* prop){
+    static DataNode n;
+    if(!SyncProperty(n, prop, 0, kPropRemove)){
+        ASSERT(prop->Size() == 2, 0x1BB);
+        mTypeProps.RemoveArrayValue(prop->Sym(0), prop->Int(1), mTypeDef, this);
+    }
+}
 
 // void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
 //     if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
@@ -143,9 +142,9 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 //     }
 // }
 
-// void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
-//     mTypeProps.Replace(obj1, obj2, this);
-// }
+void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
+    mTypeProps.Replace(obj1, obj2, this);
+}
 
 // // see scratch: https://decomp.me/scratch/9abtP
 // DataNode Hmx::Object::Handle(DataArray* da, bool b){
@@ -283,12 +282,12 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 //     return DataNode(size);
 // }
 
-// bool Hmx::Object::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
-//     if(_prop->Size() == _i){
-//         return true;
-//     }
-//     else {
-//         Symbol b = _prop->Sym(_i);
-//         return false;
-//     }
-// }
+bool Hmx::Object::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
+    if(_prop->Size() == _i){
+        return true;
+    }
+    else {
+        Symbol b = _prop->Sym(_i);
+        return false;
+    }
+}

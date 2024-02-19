@@ -212,8 +212,8 @@ config.libs = [
 
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
-            Object(NonMatching, "system/obj/Object.cpp"),
-            Object(NonMatching, "system/obj/TypeProps.cpp"),
+            Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
+            Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
 
             Object(NonMatching, "system/utl/BinStream.cpp"),
             Object(Matching, "system/utl/ChunkIDs.cpp"),
@@ -241,7 +241,7 @@ config.libs = [
             Object(NonMatching, "system/zlib/trees.c"),
             Object(NonMatching, "system/zlib/zutil.c"),
             Object(Matching, "system/zlib/inflate.c"),
-            Object(NonMatching, "system/zlib/inftrees.c", mw_version="Wii/1.0a"),
+            Object(Matching, "system/zlib/inftrees.c"),
             Object(Matching, "system/zlib/inffast.c"),
         ]
     },
