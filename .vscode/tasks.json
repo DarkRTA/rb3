@@ -77,6 +77,19 @@
       },
       "problemMatcher": [],
       "group": "none"
+    },
+    {
+      "label": "Python (current file)",
+      "type": "shell",
+      "command": "python",
+      "args": [
+        "${relativeFile}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": "none"
     }
   ]
 }
