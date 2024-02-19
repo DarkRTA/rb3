@@ -33,7 +33,7 @@ public:
         Each key is a DataNode of type Symbol, while each value is a DataNode of some other compatible node type (int/float/const char*). */
     DataArray* mMap;
 
-    TypeProps(); // weak
+    TypeProps() : mMap(0) {} // weak
     ~TypeProps(); // weak
 
     void Save(BinStream &, Hmx::Object *);
@@ -56,7 +56,7 @@ public:
 
 class ObjRef {
 public:
-    ObjRef();
+    ObjRef(){}
     virtual ~ObjRef();
     virtual Hmx::Object* RefOwner() = 0;
     virtual void Replace(Hmx::Object*, Hmx::Object*) = 0;
