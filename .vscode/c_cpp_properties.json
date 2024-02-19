@@ -9,7 +9,7 @@
                 // Top-level
                 "${workspaceFolder}/src",
                 "${workspaceFolder}/src/libs",
-                "${workspaceFolder}/src/rb3",
+                "${workspaceFolder}/src/band3",
                 "${workspaceFolder}/src/sdk",
                 "${workspaceFolder}/src/system",
 
@@ -17,20 +17,11 @@
                 "${workspaceFolder}/src/sdk/RVL_SDK",
                 // Note: MSL_C++ comes before STLport here,
                 // since it's generally more relevant to view/edit
-                "${workspaceFolder}/src/sdk/MSL_C++",
+                "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C",
+                "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C++",
 
                 // Libraries
-                "${workspaceFolder}/src/libs/stlport/stlport",
-                "${workspaceFolder}/src/libs/bt/gki/common",
-                "${workspaceFolder}/src/libs/bt/bta/include",
-                "${workspaceFolder}/src/libs/bt/utils/include",
-                "${workspaceFolder}/src/libs/bt/stack/l2cap",
-                "${workspaceFolder}/src/libs/bt/stack/btm",
-                "${workspaceFolder}/src/libs/bt/include",
-                "${workspaceFolder}/src/libs/bt/stack/include",
-                "${workspaceFolder}/src/libs/libogg/include",
-                "${workspaceFolder}/src/libs/speex/include",
-                "${workspaceFolder}/src/libs/speex"
+                "${workspaceFolder}/src/system/stlport"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",

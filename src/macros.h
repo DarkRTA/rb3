@@ -54,10 +54,4 @@
 #define DECL_SECTION(x) __declspec(section x)
 #define DECL_WEAK __declspec(weak)
 
-#if !defined(__cplusplus) && __STDC_VERSION__ >= 199901L
-#define RESTRICT restrict
-#else
-#define RESTRICT
-#endif
-
 #endif

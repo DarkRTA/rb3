@@ -1,0 +1,42 @@
+#ifndef _TYPEINFO
+#define _TYPEINFO
+
+#include <exception>
+
+namespace std {
+
+    class type_info {
+    public:
+        virtual ~type_info();
+        bool operator==(const type_info &rhs) const throw();
+        bool before(const type_info &rhs) const throw();
+        size_t hash_code() const throw();
+        const char *name() const throw();
+
+    private:
+        // These constructors are normally deleted, but our C++ version
+        // doesn't support that, so they're privated as a workaround
+        type_info(const type_info &);
+        type_info &operator=(const type_info &);
+    };
+
+    class bad_cast : public exception {
+    public:
+        virtual ~bad_cast() {
+        }
+        virtual const char *what() const {
+            return "bad_cast";
+        }
+    };
+
+    class bad_typeid : public exception {
+    public:
+        virtual ~bad_typeid() {
+        }
+        virtual const char *what() const {
+            return "bad_typeid";
+        }
+    };
+}
+
+#endif

@@ -1,0 +1,4 @@
+#ifndef MSL_CPP_CISO646_H
+#define MSL_CPP_CISO646_H
+#include <iso646.h>
+#endif
