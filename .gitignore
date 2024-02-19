@@ -31,6 +31,9 @@ orig/*
 # or else this file will always be ignored
 !*.gitkeep
 
+# To-be-RE'd source files generated from splits.txt
+src_todo/
+
 # General-purpose ignore
 ignore/
 ignored/
