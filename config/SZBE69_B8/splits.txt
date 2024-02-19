@@ -4536,9 +4536,6 @@ system/utl/WaveFile.cpp:
 system/zlib/adler32.c:
 	.text       start:0x804D82F0 end:0x804D8490
 
-system/zlib/compress.c:
-	.text       start:0x804D8490 end:0x804D8490
-
 system/zlib/crc32.c:
 	.text       start:0x804D8490 end:0x804D85E0
 	.rodata     start:0x80B36A80 end:0x80B36E80

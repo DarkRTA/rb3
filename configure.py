@@ -153,6 +153,8 @@ cflags_runtime: list[str] = [] # Metrowerks library flags
 cflags_base: list[str] = [] # Base flags for all other compile units
 cflags_rb3: list[str] = []
 cflags_sdk: list[str] = []
+cflags_c: list[str] = []
+cflags_zlib: list[str] = []
 
 cflags = flags["cflags"]
 cflags_runtime.extend(cflags["runtime"])
@@ -168,6 +170,10 @@ cflags_rb3.extend(cflags_base)
 cflags_rb3.extend(cflags["rb3"])
 cflags_sdk.extend(cflags_base)
 cflags_sdk.extend(cflags["sdk"])
+cflags_c.extend(cflags_base)
+cflags_c.extend(cflags["c"])
+cflags_zlib.extend(cflags_c)
+cflags_zlib.extend(cflags["zlib"])
 
 config.linker_version = "Wii/1.3"
 
@@ -222,6 +228,22 @@ config.libs = [
             Object(Matching, "system/utl/TextFileStream.cpp"),
             Object(Matching, "system/utl/TextStream.cpp"),
         ],
+    },
+    {
+        "lib": "zlib",
+        "mw_version": "Wii/1.3",
+        "cflags": cflags_zlib,
+        "host": False,
+        "objects": [
+            Object(Matching, "system/zlib/adler32.c"),
+            Object(Matching, "system/zlib/crc32.c"),
+            Object(NonMatching, "system/zlib/deflate.c"),
+            Object(NonMatching, "system/zlib/trees.c"),
+            Object(NonMatching, "system/zlib/zutil.c"),
+            Object(Matching, "system/zlib/inflate.c"),
+            Object(NonMatching, "system/zlib/inftrees.c", mw_version="Wii/1.0a"),
+            Object(Matching, "system/zlib/inffast.c"),
+        ]
     },
 ]
 
