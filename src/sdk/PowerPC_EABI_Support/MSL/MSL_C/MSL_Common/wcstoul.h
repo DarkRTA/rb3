@@ -1,5 +1,9 @@
-#ifndef MSL_WCSTOUL_H
-#define MSL_WCSTOUL_H
+#ifndef _MSL_WCSTOUL_H
+#define _MSL_WCSTOUL_H
+
+#include "restrict_def.h"
+#include "wchar_def.h"
+#include "wint_def.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -7,7 +11,7 @@ extern "C" {
 
 unsigned long
 __wcstoul(int, int, wint_t (*wReadProc)(void *, wint_t, int), void *, int *, int *, int *);
-//__wcstoull
+/* __wcstoull */
 
 long wcstol(const wchar_t *RESTRICT str, wchar_t **RESTRICT str_end, int base);
 long long wcstoll(const wchar_t *RESTRICT str, wchar_t **RESTRICT str_end, int base);

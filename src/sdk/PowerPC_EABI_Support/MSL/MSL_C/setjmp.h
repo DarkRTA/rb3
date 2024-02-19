@@ -5,8 +5,7 @@
 extern "C" {
 #endif
 
-// TODO
-struct jmp_buf;
+struct jmp_buf; /* TODO */
 #define setjmp(env)
 void longjmp(struct jmp_buf env, int status);
 

@@ -1,5 +1,5 @@
-#ifndef _MSL_COMMON_ARITH_H
-#define _MSL_COMMON_ARITH_H
+#ifndef _MSL_ARITH_H
+#define _MSL_ARITH_H
 
 #ifdef __cplusplus
 extern "C" {

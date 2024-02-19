@@ -1,6 +1,8 @@
 #ifndef _MSL_STRING_API_H
 #define _MSL_STRING_API_H
 
+#include "size_def.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

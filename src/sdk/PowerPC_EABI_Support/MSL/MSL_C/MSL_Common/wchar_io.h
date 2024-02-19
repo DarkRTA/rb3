@@ -1,9 +1,10 @@
-#ifndef _WCHAR_IO_H
-#define _WCHAR_IO_H
+#ifndef _MSL_WCHAR_IO_H
+#define _MSL_WCHAR_IO_H
 
-#include <stdio.h>
-#include "macros.h"
+#include "file_def.h"
+#include "restrict_def.h"
 #include "wchar_def.h"
+#include "wint_def.h"
 
 #ifdef __cplusplus
 extern "C" {

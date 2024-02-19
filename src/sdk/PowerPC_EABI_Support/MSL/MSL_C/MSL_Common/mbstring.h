@@ -1,7 +1,8 @@
-#ifndef MSL_MBSTRING_H
-#define MSL_MBSTRING_H
+#ifndef _MSL_MBSTRING_H
+#define _MSL_MBSTRING_H
 
-#include "macros.h"
+#include "restrict_def.h"
+#include "size_def.h"
 #include "wchar_def.h"
 
 #ifdef __cplusplus

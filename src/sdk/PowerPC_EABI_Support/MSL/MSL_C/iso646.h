@@ -2,7 +2,10 @@
 #define _ISO646_H
 
 #ifndef __cplusplus
-// clang-format off: keep definitions aligned
+
+/* clang-format off */
+/* Keep definitions aligned */
+
 #define and     &&
 #define and_eq  &=
 #define bitand  &
@@ -14,7 +17,9 @@
 #define or_eq   |=
 #define xor     ^
 #define xor_eq  ^=
-// clang-format on
+
+/* clang-format on */
+
 #endif
 
 #endif

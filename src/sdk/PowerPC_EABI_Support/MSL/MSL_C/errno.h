@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-// clang-format off: leave numbers aligned
+/* clang-format off */
+/* Leave numbers aligned */
 #define ENOERR        0
 #define EPERM         1
 #define ENOENT        2
@@ -50,7 +51,7 @@ extern "C" {
 #define ENOLCK        77
 #define EILSEQ        88
 #define EUNKNOWN      99
-// clang-format on
+/* clang-format on */
 
 extern int errno;
 

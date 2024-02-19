@@ -1,8 +1,9 @@
-#ifndef MSL_SCANF_H
-#define MSL_SCANF_H
+#ifndef _MSL_SCANF_H
+#define _MSL_SCANF_H
 
-#include <stdarg.h>
-#include <stdio.h>
+#include "file_def.h"
+#include "restrict_def.h"
+#include "va_list_def.h"
 
 #ifdef __cplusplus
 extern "C" {

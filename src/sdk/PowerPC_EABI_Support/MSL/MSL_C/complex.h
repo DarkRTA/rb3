@@ -8,10 +8,11 @@ extern "C" {
 #define imaginary _Imaginary
 #define complex _Complex
 
-// TODO
-// #define _Imaginary_I
-// #define _Complex_I
-// #define I
+/* TODO
+#define _Imaginary_I
+#define _Complex_I
+#define I
+*/
 
 #define _COMPLEX_FN(name)                                                            \
     double complex name(double complex z);                                           \

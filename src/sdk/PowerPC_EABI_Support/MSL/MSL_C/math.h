@@ -1,11 +1,11 @@
 #ifndef _MATH_H
 #define _MATH_H
 
+#include "MSL_Common/math_api.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "MSL_Common/math_api.h"
 
 extern int __float_nan[];
 extern int __float_huge[];
@@ -14,8 +14,10 @@ extern int __double_huge[];
 #define INFINITY (*(float *)__float_huge)
 #define NAN (*(float *)__float_nan)
 #define HUGE_VAL (*(double *)__double_huge)
-// #define HUGE_VALF
-// #define HUGE_VALL
+/*
+#define HUGE_VALF
+#define HUGE_VALL
+*/
 
 #define FP_NAN 1
 #define FP_INFINITE 2
@@ -28,31 +30,37 @@ int __fpclassifyf(float);
 int __signbitd(double);
 int __fpclassifyd(double);
 
-// clang-format off
+/* clang-format off */
 #define fpclassify(x) ((sizeof(x) == sizeof(float)) ? __fpclassifyf((float)(x)) : __fpclassifyd((double)(x)))
 #define signbit(x) ((sizeof(x) == sizeof(float)) ? __signbitf((float)(x)) : __signbitd((double)(x)))
-// clang-format on
+/* clang-format on */
 
 #define isfinite(x) ((fpclassify(x) > FP_INFINITE))
-// #define isinf(x)
+/* #define isinf(x) */
 #define isnan(x) (fpclassify(x) == FP_NAN)
 #define isnormal(x) (fpclassify(x) == FP_NORMAL)
-// #define isgreater(x, y)
-// #define isgreaterequal(x, y)
-// #define isless(x, y)
-// #define islessequal(x, y)
-// #define islessgreater(x, y)
-// #define isunordered(x, y)
+
+/*
+#define isgreater(x, y)
+#define isgreaterequal(x, y)
+#define isless(x, y)
+#define islessequal(x, y)
+#define islessgreater(x, y)
+#define isunordered(x, y)
+*/
 
 #define MATH_ERRNO 1
 #define MATH_ERREXCEPT 2
-// #define math_errhandling
 
-// #define FP_FAST_FMA
-// #define FP_FAST_FMAF
-// #define FP_FAST_FMAL
-// #define FP_ILOGB0
-// #define FP_ILOGBNAN
+/*
+#define math_errhandling
+
+#define FP_FAST_FMA
+#define FP_FAST_FMAF
+#define FP_FAST_FMAL
+#define FP_ILOGB0
+#define FP_ILOGBNAN
+*/
 
 #define _DECL_MATH(name)                                                                 \
     float name##f(float x);                                                              \

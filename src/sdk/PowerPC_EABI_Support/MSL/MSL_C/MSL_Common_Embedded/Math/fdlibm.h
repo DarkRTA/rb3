@@ -1,5 +1,5 @@
-#ifndef _FDLIBM_H
-#define _FDLIBM_H
+#ifndef MSL_MATH_FDLIBM_H
+#define MSL_MATH_FDLIBM_H
 
 /* @(#)fdlibm.h 1.5 04/04/22 */
 /*
@@ -14,12 +14,12 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif // ifdef __cplusplus
+#endif
 
-//#ifdef __STDC__
+/* #ifdef __STDC__ */
 #include <math.h>
 #include <errno.h>
-//#endif
+/* #endif */
 
 #if __option(little_endian)
 #define __HIp(x) *(1 + (int*)x)
@@ -29,12 +29,15 @@ extern "C" {
 #define __LOp(x) *(1 + (int*)x)
 #endif
 
-// TODO: should __STDC__ actually be defined?
-// #ifdef __STDC__
+/* TODO: should __STDC__ actually be defined?
+#ifdef __STDC__
+*/
 #define __P(p) p
-// #else
-// #define __P(p) ()
-// #endif
+/*
+#else
+#define __P(p) ()
+#endif
+*/
 
 /*
  * ANSI/POSIX
@@ -217,6 +220,6 @@ extern int __kernel_rem_pio2 __P((double*, double*, int, int, int, const int*));
 
 #ifdef __cplusplus
 };
-#endif // ifdef __cplusplus
+#endif
 
 #endif

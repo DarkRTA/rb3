@@ -12,8 +12,10 @@ extern int __float_max[];
 extern int __float_epsilon[];
 
 #define FLT_RADIX 2
-// #define FLT_ROUNDS
-// #define FLT_EVAL_METHOD
+/*
+#define FLT_ROUNDS
+#define FLT_EVAL_METHOD
+*/
 
 #define DECIMAL_DIG 17
 

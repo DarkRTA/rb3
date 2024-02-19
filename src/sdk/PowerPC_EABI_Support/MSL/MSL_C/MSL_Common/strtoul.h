@@ -1,6 +1,7 @@
-#ifndef MSL_STRTOUL_H
-#define MSL_STRTOUL_H
+#ifndef _MSL_STRTOUL_H
+#define _MSL_STRTOUL_H
 
+#include "restrict_def.h"
 
 #ifdef __cplusplus
 extern "C" {

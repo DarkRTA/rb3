@@ -1,8 +1,9 @@
-#ifndef MSL_PRINTF_H
-#define MSL_PRINTF_H
+#ifndef _MSL_PRINTF_H
+#define _MSL_PRINTF_H
 
-#include <stdarg.h>
-#include <stdio.h>
+#include "file_def.h"
+#include "restrict_def.h"
+#include "va_list_def.h"
 
 #ifdef __cplusplus
 extern "C" {

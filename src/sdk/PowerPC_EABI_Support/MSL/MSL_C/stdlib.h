@@ -1,10 +1,6 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "MSL_Common/alloc.h"
 #include "MSL_Common/arith.h"
 #include "MSL_Common/mbstring.h"
@@ -12,7 +8,11 @@ extern "C" {
 #include "MSL_Common/strtold.h"
 #include "MSL_Common/strtoul.h"
 
-// For functions that return 0 on a success and -1 on failure
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* For functions that return 0 on a success and -1 on failure */
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE -1

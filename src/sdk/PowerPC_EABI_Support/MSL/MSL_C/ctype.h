@@ -1,14 +1,15 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#include <locale.h>
+#include "MSL_Common/locale_def.h"
 #include "MSL_Common/ctype_api.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// clang-format off: don't move ternary results to their own lines
+/* clang-format off */
+/* Don't move ternary results to their own lines */
 inline int isalnum(int c) {
     return (c < 0 || c >= 256) ? 0 : (int)(_current_locale.ctype_cmpt_ptr->ctype_map_ptr[c] & ctype_alnum);
 }
@@ -64,7 +65,7 @@ inline int tolower(int c) {
 inline int toupper(int c) {
     return (c < 0 || c >= 256) ? c : (int)(&_current_locale)->ctype_cmpt_ptr->upper_map_ptr[c];
 }
-// clang-format on
+/* clang-format on */
 
 #ifdef __cplusplus
 }

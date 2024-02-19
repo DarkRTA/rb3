@@ -5,8 +5,9 @@
 extern "C" {
 #endif
 
-// TODO
-// #define RAND_MAX
+/* TODO
+#define RAND_MAX
+*/
 
 int rand();
 void srand(unsigned int seed);

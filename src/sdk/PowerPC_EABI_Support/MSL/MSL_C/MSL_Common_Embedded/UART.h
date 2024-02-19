@@ -1,5 +1,5 @@
-#ifndef _UART_H
-#define _UART_H
+#ifndef _MSL_UART_H
+#define _MSL_UART_H
 
 typedef int UARTError;
 

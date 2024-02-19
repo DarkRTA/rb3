@@ -1,26 +1,27 @@
 #ifndef _STDIO_H
 #define _STDIO_H
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "MSL_Common/stdio_api.h"
 #include "MSL_Common/FILE_POS.h"
 #include "MSL_Common/file_io.h"
 #include "MSL_Common/printf.h"
 #include "MSL_Common/scanf.h"
 
-// Unorganized things which have yet to be RE'd
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-// TODO
+/* Unorganized things which have yet to be RE'd */
+
 #define EOF -1
-// #define FOPEN_MAX
-// #define FILENAME_MAX
-// #define BUFSIZ
-// #define TMP_MAX
-// #define L_tmpnam
+
+/* TODO
+#define FOPEN_MAX
+#define FILENAME_MAX
+#define BUFSIZ
+#define TMP_MAX
+#define L_tmpnam
+*/
 
 int getc(FILE *stream);
 char *gets(char *str);

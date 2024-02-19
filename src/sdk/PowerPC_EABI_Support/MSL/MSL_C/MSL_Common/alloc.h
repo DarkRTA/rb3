@@ -1,7 +1,7 @@
 #ifndef _MSL_ALLOC_H
 #define _MSL_ALLOC_H
 
-#include <stddef.h>
+#include "size_def.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,13 +1,14 @@
 #ifndef _INTTYPES_H
 #define _INTTYPES_H
 
-#include <stdint.h>
+#include "MSL_Common/restrict_def.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// clang-format off: keep definitions aligned
+/* clang-format off */
+/* Keep definitions aligned */
 
 #define PRId8        "hhd"
 #define PRId16       "hd"
@@ -174,7 +175,7 @@ extern "C" {
 #define SCNxMAX      SCNx64
 #define SCNxPTR      SCNx32
 
-// clang-format on
+/* clang-format on */
 
 typedef struct {
     intmax_t quot;

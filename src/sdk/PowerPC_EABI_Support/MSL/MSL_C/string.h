@@ -1,13 +1,13 @@
 #ifndef _STRING_H
 #define _STRING_H
 
+#include "MSL_Common/restrict_def.h"
+#include "MSL_Common/string_api.h"
+#include "MSL_Common/extras.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "MSL_Common/string_api.h"
-#include "MSL_Common/extras.h"
 
 char *strcpy(char *RESTRICT dest, const char *RESTRICT src);
 char *strncpy(char *RESTRICT dest, const char *RESTRICT src, size_t count);

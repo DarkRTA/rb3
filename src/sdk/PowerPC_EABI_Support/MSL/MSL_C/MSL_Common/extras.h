@@ -1,5 +1,7 @@
-#ifndef _EXTRAS_H
-#define _EXTRAS_H
+#ifndef _MSL_EXTRAS_H
+#define _MSL_EXTRAS_H
+
+#include "size_def.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,8 @@
-#ifndef _WCHAR_TIME_H
-#define _WCHAR_TIME_H
+#ifndef _MSL_WCHAR_TIME_H
+#define _MSL_WCHAR_TIME_H
 
-#include <time.h>
+#include "size_def.h"
+#include "time_def.h"
 #include "wchar_def.h"
 
 #ifdef __cplusplus

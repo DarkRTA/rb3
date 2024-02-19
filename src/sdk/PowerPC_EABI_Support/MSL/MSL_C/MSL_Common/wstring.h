@@ -1,5 +1,9 @@
-#ifndef MSL_WSTRING_H
-#define MSL_WSTRING_H
+#ifndef _MSL_WSTRING_H
+#define _MSL_WSTRING_H
+
+#include "restrict_def.h"
+#include "size_def.h"
+#include "wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-// ...This one's probably not worth our time currently lol
+/* ...This one's probably not worth our time currently lol */
 
 #ifdef __cplusplus
 }
