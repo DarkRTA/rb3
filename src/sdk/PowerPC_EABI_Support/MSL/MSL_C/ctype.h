@@ -1,7 +1,6 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#include "types.h"
 #include <locale.h>
 #include "MSL_Common/ctype_api.h"
 

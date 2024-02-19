@@ -1,7 +1,6 @@
 #ifndef _INTTYPES_H
 #define _INTTYPES_H
 
-#include "types.h"
 #include <stdint.h>
 
 #ifdef __cplusplus

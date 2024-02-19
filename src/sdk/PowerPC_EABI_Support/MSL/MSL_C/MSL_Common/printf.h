@@ -1,7 +1,6 @@
 #ifndef MSL_PRINTF_H
 #define MSL_PRINTF_H
 
-#include "types.h"
 #include <stdarg.h>
 #include <stdio.h>
 

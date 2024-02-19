@@ -1,9 +1,6 @@
 #ifndef _MSL_CTYPE_API_H
 #define _MSL_CTYPE_API_H
 
-#include "types.h"
-
-
 #ifdef __cplusplus
 extern "C" {
 #endif // ifdef __cplusplus

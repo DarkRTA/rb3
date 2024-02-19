@@ -1,7 +1,6 @@
 #ifndef _WCTYPE_H
 #define _WCTYPE_H
 
-#include "types.h"
 #include <locale.h>
 #include "MSL_Common/wctype_api.h"
 

@@ -1,7 +1,6 @@
 #ifndef _TIME_H
 #define _TIME_H
 
-#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {

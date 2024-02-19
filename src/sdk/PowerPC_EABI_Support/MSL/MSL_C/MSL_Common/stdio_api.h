@@ -1,7 +1,6 @@
 #ifndef STDIO_API_H
 #define STDIO_API_H
 
-#include "types.h"
 #include "file_struc.h"
 #include <wchar.h>
 

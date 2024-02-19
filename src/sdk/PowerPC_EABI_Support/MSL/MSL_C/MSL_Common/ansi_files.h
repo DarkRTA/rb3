@@ -1,7 +1,6 @@
 #ifndef _MSL_ANSI_FILES_H
 #define _MSL_ANSI_FILES_H
 
-#include "types.h"
 #include <stdio.h>
 
 #ifdef __cplusplus
@@ -18,7 +17,7 @@ static console_buff	stdout_buff;
 static console_buff	stderr_buff;
 
 void __close_all();
-u32 __flush_all();
+unsigned int __flush_all();
 
 #ifdef __cplusplus
 };

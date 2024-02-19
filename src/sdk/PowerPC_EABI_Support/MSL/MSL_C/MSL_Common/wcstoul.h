@@ -1,8 +1,6 @@
 #ifndef MSL_WCSTOUL_H
 #define MSL_WCSTOUL_H
 
-#include "types.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif

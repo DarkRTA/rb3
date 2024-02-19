@@ -1,7 +1,6 @@
 #ifndef MSL_WPRINTF_H
 #define MSL_WPRINTF_H
 
-#include "types.h"
 #include <stdarg.h>
 #include <stdio.h>
 

@@ -1,7 +1,7 @@
 #ifndef _MSL_WCTYPE_API_H
 #define _MSL_WCTYPE_API_H
 
-#include "types.h"
+#include "wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {

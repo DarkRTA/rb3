@@ -1,7 +1,6 @@
 #ifndef MSL_WSCANF_H
 #define MSL_WSCANF_H
 
-#include "types.h"
 #include <stdarg.h>
 #include <stdio.h>
 

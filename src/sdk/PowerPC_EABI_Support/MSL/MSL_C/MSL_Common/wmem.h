@@ -1,7 +1,7 @@
 #ifndef MSL_WMEM_H
 #define MSL_WMEM_H
 
-#include "types.h"
+#include "wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {
