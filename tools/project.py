@@ -49,6 +49,7 @@ class ProjectConfig:
         self.sjiswrap_path = None  # If None, download
 
         # Project config
+        self.non_matching = False
         self.build_rels = True  # Build REL files
         self.check_sha_path = None  # Path to version.sha1
         self.config_path = None  # Path to config.yml
@@ -824,12 +825,22 @@ def generate_build_ninja(config, build_config):
             command=f"{dtk} shasum {quiet} -c $in -o $out",
             description="CHECK $in",
         )
-        n.build(
-            outputs=path(ok_path),
-            rule="check",
-            inputs=path(config.check_sha_path),
-            implicit=path([dtk, *map(lambda step: step.output(), link_steps)]),
-        )
+
+        if config.non_matching:
+            n.build(
+                outputs=path(ok_path),
+                rule="phony",
+                inputs=path(config.check_sha_path),
+                implicit=path([dtk, *map(lambda step: step.output(), link_steps)]),
+            )
+        else:
+            n.build(
+                outputs=path(ok_path),
+                rule="check",
+                inputs=path(config.check_sha_path),
+                implicit=path([dtk, *map(lambda step: step.output(), link_steps)]),
+            )
+
         n.newline()
 
         ###

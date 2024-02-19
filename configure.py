@@ -108,6 +108,12 @@ parser.add_argument(
     action="store_true",
     help="print verbose output",
 )
+parser.add_argument(
+    "--non-matching",
+    dest="non_matching",
+    action="store_true",
+    help="builds equivalent (but not matching) files",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
@@ -123,6 +129,8 @@ config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.debug = args.debug
 config.generate_map = args.map
+config.non_matching = args.non_matching
+
 config.sjiswrap_path = args.sjiswrap
 if not is_windows():
     config.wrapper = args.wrapper
@@ -175,6 +183,7 @@ config.shift_jis = False
 config.progress_all = False
 
 Matching = True
+Equivalent = config.non_matching
 NonMatching = False
 
 config.warn_missing_config = True
