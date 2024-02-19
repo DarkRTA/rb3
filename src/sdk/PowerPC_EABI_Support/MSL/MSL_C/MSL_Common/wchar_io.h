@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include "macros.h"
-#include "MSL_C/MSL_Common/wchar_def.h"
+#include "wchar_def.h"
 
 #ifdef __cplusplus
 extern "C" {

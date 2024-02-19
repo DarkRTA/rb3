@@ -2,7 +2,7 @@
 #define STDIO_API_H
 
 #include "types.h"
-#include "MSL_C/MSL_Common/file_struc.h"
+#include "file_struc.h"
 #include <wchar.h>
 
 #ifdef __cplusplus

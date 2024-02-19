@@ -1,6 +1,6 @@
 cflags_includes = [
     # STLport requires that it comes first in the include path list
-    "-i src/libs/stlport/stlport",
+    "-i src/system/stlport",
 
     "-i src/sdk",
     "-i src/sdk/RVL_SDK",

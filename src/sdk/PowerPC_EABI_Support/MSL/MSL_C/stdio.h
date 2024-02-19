@@ -7,11 +7,11 @@
 extern "C" {
 #endif
 
-#include "MSL_C/MSL_Common/stdio_api.h"
-#include "MSL_C/MSL_Common/FILE_POS.h"
-#include "MSL_C/MSL_Common/file_io.h"
-#include "MSL_C/MSL_Common/printf.h"
-#include "MSL_C/MSL_Common/scanf.h"
+#include "MSL_Common/stdio_api.h"
+#include "MSL_Common/FILE_POS.h"
+#include "MSL_Common/file_io.h"
+#include "MSL_Common/printf.h"
+#include "MSL_Common/scanf.h"
 
 // Unorganized things which have yet to be RE'd
 
