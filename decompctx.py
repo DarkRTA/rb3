@@ -12,7 +12,7 @@ from pcpp.evaluator import Value
 from contextlib import redirect_stdout
 
 # Note: requires being in the same directory as cflags_common.py
-from cflags_common import cflags_includes, cflags_defines
+from cflags_common import cflags_includes
 
 #region Regex Patterns
 at_address_pattern = re.compile(r"(?:.*?)(?:[a-zA-Z_$][\w$]*\s*\*?\s[a-zA-Z_$][\w$]*)\s*((?:AT_ADDRESS|:)(?:\s*\(?\s*)(0x[0-9a-fA-F]+|[a-zA-Z_$][\w$]*)\)?);")
@@ -79,18 +79,6 @@ passthrough_defines: list[str] = [
     "_STLP_USE_NAMESPACES",
     "_STLP_NO_NAMESPACES",
 ]
-
-# Bring in defines from configure.py so we don't have to duplicate them here
-for flag in cflags_defines:
-    parts = flag.strip("-d").lstrip().split("=")
-    partCount = len(parts)
-
-    symbol = parts[0]
-    value = "1"
-    if partCount > 1:
-        value = parts[1]
-
-    default_defines[symbol] = value
 
 src_dir = "src"
 include_dir = "include"
