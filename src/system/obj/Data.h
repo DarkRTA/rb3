@@ -66,6 +66,11 @@ public:
         mType = kDataInt;
     }
 
+    DataNode(long l){
+        mValue.integer = l;
+        mType = kDataInt;
+    }
+
     DataNode(Symbol s){
         mType = kDataSymbol;
         mValue.symbol = s.mStr;
@@ -111,8 +116,6 @@ public:
     //     if((mType & 0x10) != 0) mValue.array->Release();
     // }
 
-    DataNodeValue Union() const { return mValue; }
-
     DataType Type() const { return mType; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
@@ -141,6 +144,9 @@ public:
     bool operator==(const DataNode& n) const;
     bool operator!=(const DataNode& n) const;
     bool NotNull() const;
+    bool operator!(void) const {
+        return !NotNull();
+    }
     DataNode& operator=(const DataNode& n);
 
     void Print(TextStream& s, bool) const;
@@ -162,9 +168,7 @@ public:
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
-    DataNodeValue Union(int i) const { return Node(i).mValue; }
-
-    DataType Type(int i) const { return Node(i).Type(); }
+    DataType Type(int i) const { return Node(i).Type(); } // never saw this getting used in RB3 bank 8's symbols.txt - this could possibly not exist?
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
@@ -183,8 +187,9 @@ public:
     void Release(){ if (--mRefs == 0) delete this; }
     // void* operator new(unsigned long); make the param size_t?
 
-    // DataNode& Node(int i) { return mNodes[i]; }
-    DataNode& Node(int i) const { return mNodes[i]; }
+    // these two are actually strong symbols
+    DataNode& Node(int i);
+    DataNode& Node(int i) const;
 
     void Print(TextStream& s, DataType type, bool compact) const;
     void Insert(int index, const DataNode& node);

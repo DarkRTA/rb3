@@ -3,10 +3,12 @@
 
 #define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(&str)
 
+extern const char* gNullStr;
+
 class Symbol {
 public:
     const char *mStr;
-    Symbol(); // ctor pulled from RB2 - fn_800A7C40
+    Symbol() : mStr(gNullStr) { }
     Symbol(const char *); // ctor pulled from gdrb
 
     // methods found in RB2

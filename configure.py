@@ -219,6 +219,7 @@ config.libs = [
             Object(NonMatching, "system/math/Trig.cpp", extra_cflags=["-inline level=1"]),
             Object(Matching, "system/math/Vec.cpp"),
 
+            Object(NonMatching, "system/obj/DataArray.cpp", extra_cflags=["-inline level=1"]),
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
