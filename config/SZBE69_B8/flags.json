@@ -26,10 +26,15 @@
         "runtime": {
             "base": "base",
             "flags": [
+                "-sdata 2",
+                "-sdata2 2",
                 "-str reuse,pool,readonly",
+                "-pragma \"merge_float_consts on\"",
+
                 "-use_lmw_stmw on",
                 "-common off",
 
+                "-lang=c99",
                 "-O4,p",
                 "-inline auto"
             ]
@@ -40,7 +45,7 @@
                 "-func_align 16"
             ]
         },
-        "rb3": {
+        "band3": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -56,6 +61,65 @@
 
                 "-O4,p",
                 "-inline noauto"
+            ]
+        },
+        "system": {
+            "base": "rb3",
+            "flags": []
+        },
+        "network": {
+            "base": "rb3",
+            "flags": []
+        },
+        "json_c": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
+            ]
+        },
+        "zlib": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-pool on",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
+            ]
+        },
+        "libtomcrypt": {
+            "base": "zlib",
+            "flags": []
+        },
+        "speex": {
+            "base": "zlib",
+            "flags": []
+        },
+        "libogg": {
+            "base": "zlib",
+            "flags": []
+        },
+        "vorbis": {
+            "base": "zlib",
+            "flags": []
+        },
+        "bt": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-str reuse,pool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
             ]
         }
     }

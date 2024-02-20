@@ -209,7 +209,7 @@ config.libs = [
     {
         "lib": "band3",
         "mw_version": "Wii/1.3",
-        "cflags": get_flags("rb3"),
+        "cflags": get_flags("band3"),
         "host": False,
         "objects": [
 
@@ -218,7 +218,7 @@ config.libs = [
     {
         "lib": "system",
         "mw_version": "Wii/1.3",
-        "cflags": get_flags("rb3"),
+        "cflags": get_flags("system"),
         "host": False,
         "objects": [
             Object(NonMatching, "system/math/Color.cpp"),
