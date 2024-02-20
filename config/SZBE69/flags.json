@@ -6,34 +6,39 @@
         "-code_merging safe,aggressive"
     ],
     "cflags": {
-        "runtime": {
-            "base": null,
-            "flags": [
-                "-use_lmw_stmw on",
-                "-str reuse,pool,readonly",
-                "-common off",
-                "-inline auto"
-            ]
-        },
         "base": {
             "base": null,
             "flags": [
                 "-nodefaults",
+                "-nosyspath",
+                "-gccinc",
+
+                "-maxerrors 1",
+
                 "-proc gekko",
                 "-align powerpc",
                 "-enum int",
                 "-fp hardware",
-                "-Cpp_exceptions off",
-                "-O4,s",
+
                 "-pragma \"cats off\"",
-                "-pragma \"warn_notinlined off\"",
-                "-maxerrors 1",
-                "-nosyspath",
-                "-fp_contract on",
-                "-str reuse,pool",
-                "-func_align 4",
-                "-gccinc",
-                "-d NDEBUG"
+                "-pragma \"warn_notinlined off\""
+            ]
+        },
+        "runtime": {
+            "base": "base",
+            "flags": [
+                "-str reuse,pool,readonly",
+                "-use_lmw_stmw on",
+                "-common off",
+
+                "-O4,p",
+                "-inline auto"
+            ]
+        },
+        "rvl_sdk": {
+            "base": "base",
+            "flags": [
+                "-func_align 16"
             ]
         },
         "rb3": {
@@ -41,15 +46,19 @@
             "flags": [
                 "-sdata 2",
                 "-sdata2 2",
+                "-str reuse,pool",
+                "-func_align 4",
+
+                "-fp_contract on",
                 "-pragma \"merge_float_consts on\"",
+
                 "-RTTI on",
-                "-inline off"
-            ]
-        },
-        "sdk": {
-            "base": "base",
-            "flags": [
-                "-func_align 16"
+                "-Cpp_exceptions off",
+
+                "-O4,s",
+                "-inline off",
+
+                "-d NDEBUG"
             ]
         }
     }

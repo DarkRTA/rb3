@@ -176,7 +176,6 @@ def set_flags_inherited(name):
 # Debug flags
 if config.debug:
     get_flags("base").append("-sym dwarf-2,full")
-    get_flags("runtime").append("-sym dwarf-2,full")
 
 # Apply cflag inheritance
 def apply_base_flags(key: str):
