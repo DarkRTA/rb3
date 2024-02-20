@@ -1,9 +1,7 @@
 #include "utl/Str.h"
 #include "os/Debug.h"
+#include "utl/MemMgr.h"
 #include "system/milo_types.h"
-
-extern void* _MemOrPoolAlloc(int, int);
-extern void _MemOrPoolFree(int, int, void*);
 
 char gEmpty = 0;
 const char* fname = "Str.cpp";
@@ -28,12 +26,12 @@ String::String(const String& str) : mCap(0), mStr(&gEmpty) {
 void String::reserve(unsigned int arg) {
     void *dest;
     if (arg > mCap) {
-        dest = (void *)_MemOrPoolAlloc(arg + 1, 1);
+        dest = (void *)_MemOrPoolAlloc(arg + 1, FastPool);
         memcpy(dest, mStr, mCap + 1);
         *((char *)dest + arg) = 0;
 
         if (mCap != 0) {
-            _MemOrPoolFree(mCap + 1, 1, (void*)mStr);
+            _MemOrPoolFree(mCap + 1, FastPool, (void*)mStr);
         }
 
         mCap = arg;
@@ -49,7 +47,7 @@ String::String(unsigned int arg, char charg) : mCap(0), mStr(&gEmpty) {
 
 String::~String(){
     if(mCap != 0)
-        _MemOrPoolFree(mCap + 1, 1, (void*)mStr);
+        _MemOrPoolFree(mCap + 1, FastPool, (void*)mStr);
 }
 
 void String::Print(const char* c){
