@@ -13,7 +13,6 @@ class DataArrayPtr;
 namespace Hmx {
     class Object;
 }
-class Symbol;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -66,6 +65,11 @@ public:
         mType = kDataInt;
     }
 
+    DataNode(long l){
+        mValue.integer = l;
+        mType = kDataInt;
+    }
+
     DataNode(Symbol s){
         mType = kDataSymbol;
         mValue.symbol = s.mStr;
@@ -103,15 +107,11 @@ public:
         mType = kDataFunc;
     }
 
-    ~DataNode();
-
     // TODO: implement this function without the compiler getting angry
     // this is weak and should be defined here, but for some reason says DataArray is "incomplete"
     // ~DataNode(){
-    //     if((mType & 0x10) != 0) mValue.array->Release();
+    //     if((mType & kDataArray) != 0) mValue.array->Release();
     // }
-
-    DataNodeValue Union() const { return mValue; }
 
     DataType Type() const { return mType; }
     bool CompatibleType(DataType) const;
@@ -141,6 +141,9 @@ public:
     bool operator==(const DataNode& n) const;
     bool operator!=(const DataNode& n) const;
     bool NotNull() const;
+    bool operator!(void) const {
+        return !NotNull();
+    }
     DataNode& operator=(const DataNode& n);
 
     void Print(TextStream& s, bool) const;
@@ -162,9 +165,6 @@ public:
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
-    DataNodeValue Union(int i) const { return Node(i).mValue; }
-
-    DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
@@ -183,8 +183,9 @@ public:
     void Release(){ if (--mRefs == 0) delete this; }
     // void* operator new(unsigned long); make the param size_t?
 
-    // DataNode& Node(int i) { return mNodes[i]; }
-    DataNode& Node(int i) const { return mNodes[i]; }
+    // these two are actually strong symbols
+    DataNode& Node(int i);
+    DataNode& Node(int i) const;
 
     void Print(TextStream& s, DataType type, bool compact) const;
     void Insert(int index, const DataNode& node);
@@ -198,7 +199,6 @@ public:
     DataArray* FindArray(Symbol tag, bool fail) const;
     DataArray* FindArray(Symbol s1, Symbol s2) const;
     DataArray* FindArray(Symbol s1, Symbol s2, Symbol s3) const;
-    DataArray* FindArray(Symbol s1, Symbol s2, Symbol s3, Symbol s4) const;
     DataArray* FindArray(Symbol, const char*) const;
 
     bool FindData(Symbol tag, const char *& ret, bool fail) const;

@@ -5,6 +5,8 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
+// #include "os/System.h"
+// #include "obj/Utl.h"
 
 // forward declarations
 class DataNode;
@@ -68,9 +70,7 @@ public:
 namespace Hmx {
     class Object : public ObjRef {
     public:
-        TypeProps mTypeProps; // RB2 has this protected
-
-        // RB2 has the following members private
+        TypeProps mTypeProps;
         DataArray* mTypeDef;
         const char* mName;
         ObjectDir* mDir;
@@ -88,8 +88,24 @@ namespace Hmx {
         virtual ~Object();
         virtual Hmx::Object* RefOwner(){}
         virtual void Replace(Hmx::Object*, Hmx::Object*);
-        virtual Symbol ClassName() const;
-        virtual void SetType(Symbol);
+        virtual Symbol ClassName() const {
+            return StaticClassName();
+        }
+        virtual void SetType(Symbol s){
+            // static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
+            // if(s.IsNull()) SetTypeDef(0);
+            // else {
+            //     DataArray* found = types->FindArray(s, false);
+            //     if(found != 0){
+            //         SetTypeDef(found);
+            //     }
+            //     else {
+            //         PathName(this);
+            //         ClassName();
+            //         SetTypeDef(0);
+            //     }
+            // }
+        }
         virtual DataNode Handle(DataArray*, bool);
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
         virtual void Save(BinStream&);
@@ -106,12 +122,19 @@ namespace Hmx {
         virtual void PostLoad(BinStream&){}
         virtual char* FindPathName();
 
-        const char* Name();
+        const char* Name() const { return mName; }
         // T* New<T>();
         // vector& Refs();
 
-        static Symbol StaticClassName();
-        Symbol Type() const;
+        static Symbol StaticClassName(){
+            static Symbol name("Object");
+            return name;
+        }
+
+        Symbol Type() const {
+            // if(mTypeDef != 0) return mTypeDef->Sym(0);
+            // else return gNullStr;
+        }
         static Object* NewObject();
 
         DataNode *Property(DataArray *, bool);
@@ -119,7 +142,6 @@ namespace Hmx {
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
         int PropertySize(DataArray *);
-        const char *Name() const;
         DataNode OnAppendToArray(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);

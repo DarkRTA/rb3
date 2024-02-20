@@ -59,9 +59,7 @@ public:
      */
     void EnableReadEncryption();
 
-    /** Enables write encryption using `key` as the PRNG seed.
-     * @param [in] key Key to use. */
-    void EnableWriteEncryption(int key);
+    void EnableWriteEncryption();
 
     void DisableEncryption();
 
@@ -91,7 +89,26 @@ public:
 
     void WriteEndian(const void *, int);
 
+    BinStream& operator<<(int i){
+        WriteEndian(&i, 4);
+        return *this;
+    }
+    BinStream& operator<<(float f){
+        WriteEndian(&f, 4);
+        return *this;
+    }
+
+    BinStream& operator>>(int& i){
+        ReadEndian(&i, 4);
+        return *this;
+    }
+    BinStream& operator>>(float& f){
+        ReadEndian(&f, 4);
+        return *this;
+    }
+  
     inline BinStream& operator>>(unsigned char& out) {Read(&out, 1);}
+  
 };
 
 #endif
