@@ -6,39 +6,124 @@
         "-code_merging safe,aggressive"
     ],
     "cflags": {
-        "runtime": [
-            "-use_lmw_stmw on",
-            "-str reuse,pool,readonly",
-            "-common off",
-            "-inline auto"
-        ],
-        "base": [
-            "-nodefaults",
-            "-proc gekko",
-            "-align powerpc",
-            "-enum int",
-            "-fp hardware",
-            "-Cpp_exceptions off",
-            "-O4,s",
-            "-pragma \"cats off\"",
-            "-pragma \"warn_notinlined off\"",
-            "-maxerrors 1",
-            "-nosyspath",
-            "-fp_contract on",
-            "-str reuse,pool",
-            "-func_align 4",
-            "-gccinc",
-            "-d NDEBUG"
-        ],
-        "rb3": [
-            "-sdata 2",
-            "-sdata2 2",
-            "-pragma \"merge_float_consts on\"",
-            "-RTTI on",
-            "-inline off"
-        ],
-        "sdk": [
-            "-func_align 16"
-        ]
+        "base": {
+            "base": null,
+            "flags": [
+                "-nodefaults",
+                "-nosyspath",
+                "-gccinc",
+
+                "-maxerrors 1",
+
+                "-proc gekko",
+                "-align powerpc",
+                "-enum int",
+                "-fp hardware",
+
+                "-pragma \"cats off\"",
+                "-pragma \"warn_notinlined off\"",
+
+                "-d NDEBUG"
+            ]
+        },
+        "runtime": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-str reuse,pool,readonly",
+                "-pragma \"merge_float_consts on\"",
+
+                "-use_lmw_stmw on",
+                "-common off",
+
+                "-lang=c99",
+                "-O4,p",
+                "-inline auto"
+            ]
+        },
+        "rvl_sdk": {
+            "base": "base",
+            "flags": [
+                "-func_align 16"
+            ]
+        },
+        "band3": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-str reuse,pool",
+                "-func_align 4",
+
+                "-fp_contract on",
+                "-pragma \"merge_float_consts on\"",
+
+                "-RTTI on",
+                "-Cpp_exceptions off",
+
+                "-O4,s",
+                "-inline off"
+            ]
+        },
+        "system": {
+            "base": "band3",
+            "flags": []
+        },
+        "network": {
+            "base": "band3",
+            "flags": []
+        },
+        "json_c": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
+            ]
+        },
+        "zlib": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-pool on",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
+            ]
+        },
+        "libtomcrypt": {
+            "base": "zlib",
+            "flags": []
+        },
+        "speex": {
+            "base": "zlib",
+            "flags": []
+        },
+        "libogg": {
+            "base": "zlib",
+            "flags": []
+        },
+        "vorbis": {
+            "base": "zlib",
+            "flags": []
+        },
+        "bt": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-str reuse,pool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-inline auto"
+            ]
+        }
     }
 }

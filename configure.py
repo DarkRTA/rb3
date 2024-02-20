@@ -145,9 +145,15 @@ config.wibo_tag = "0.6.11"
 # Project
 config_dir = Path("config") / config.version
 flags_path = config_dir / "flags.json"
+objects_path = config_dir / "objects.json"
 config.config_path = config_dir / "config.yml"
 config.check_sha_path = config_dir / "build.sha1"
+config.reconfig_deps = [
+    flags_path,
+    objects_path,
+]
 
+# Build flags
 flags = json.load(open(flags_path, "r", encoding="utf-8"))
 
 config.asflags = [
@@ -157,108 +163,104 @@ config.asflags = [
 ]
 config.ldflags = flags["ldflags"]
 
-cflags_runtime: list[str] = [] # Metrowerks library flags
-cflags_base: list[str] = [] # Base flags for all other compile units
-cflags_rb3: list[str] = []
-cflags_sdk: list[str] = []
-cflags_c: list[str] = []
-cflags_zlib: list[str] = []
+cflags: dict[str, dict] = flags["cflags"]
 
-cflags = flags["cflags"]
-cflags_runtime.extend(cflags["runtime"])
-cflags_base.extend(cflags_includes)
-cflags_base.extend(cflags["base"])
+def get_flags(name: str) -> list[str]:
+    return cflags[name]["flags"]
+def add_flags(name: str, flags: list[str]):
+    cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
+
+def get_flags_base(name: str) -> str:
+    return cflags[name]["base"]
+
+def are_flags_inherited(name: str) -> bool:
+    return "inherited" in cflags[name]
+def set_flags_inherited(name: str):
+    cflags[name]["inherited"] = True
 
 # Debug flags
 if config.debug:
-    cflags_base.append("-sym dwarf-2,full")
-    cflags_runtime.append("-sym dwarf-2,full")
+    get_flags("base").append("-sym dwarf-2,full")
 
-cflags_rb3.extend(cflags_base)
-cflags_rb3.extend(cflags["rb3"])
-cflags_sdk.extend(cflags_base)
-cflags_sdk.extend(cflags["sdk"])
-cflags_c.extend(cflags_base)
-cflags_c.extend(cflags["c"])
-cflags_zlib.extend(cflags_c)
-cflags_zlib.extend(cflags["zlib"])
+# Apply cflag inheritance
+def apply_base_flags(key: str):
+    if are_flags_inherited(key):
+        return
+
+    base = get_flags_base(key)
+    if base is None:
+        add_flags(key, cflags_includes)
+    else:
+        apply_base_flags(base)
+        add_flags(key, get_flags(base))
+
+    set_flags_inherited(key)
+
+for key in cflags.keys():
+    apply_base_flags(key)
 
 config.linker_version = "Wii/1.3"
 
 config.shift_jis = False
 config.progress_all = False
 
+# Object files
 Matching = True
 Equivalent = config.non_matching
 NonMatching = False
 
-config.warn_missing_config = True
+config.warn_missing_config = False
 config.warn_missing_source = False
-config.libs = [
-    {
-        "lib": "band3",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
-        "host": False,
-        "objects": [
 
-        ],
-    },
-    {
-        "lib": "system",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_rb3,
-        "host": False,
-        "objects": [
-            Object(NonMatching, "system/math/Color.cpp"),
-            Object(Matching, "system/math/CustomArray.cpp"),
-            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s", "-inline level=1"]),
-            Object(Matching, "system/math/Primes.cpp"),
-            Object(Matching, "system/math/Rand2.cpp"),
-            Object(NonMatching, "system/math/Sort.cpp"),
-            Object(NonMatching, "system/math/Trig.cpp", extra_cflags=["-inline level=1"]),
-            Object(Matching, "system/math/Vec.cpp"),
+def get_object_completed(status: str) -> bool:
+    if status == "Matching":
+        return Matching
+    elif status == "NonMatching":
+        return NonMatching
+    elif status == "Equivalent":
+        return Equivalent
+    elif status == "LinkIssues":
+        return NonMatching
 
-            Object(NonMatching, "system/obj/DataArray.cpp", extra_cflags=["-inline level=1"]),
-            Object(NonMatching, "system/obj/DataFlex.c"),
-            Object(NonMatching, "system/obj/DataNode.cpp"),
-            Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
-            Object(NonMatching, "system/obj/TextFile.cpp"),
-            Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
+    assert False, f"Invalid object status {status}"
 
-            Object(NonMatching, "system/utl/BinStream.cpp"),
-            Object(Matching, "system/utl/ChunkIDs.cpp"),
-            Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
-            Object(Matching, "system/utl/IntPacker.cpp"),
-            Object(Matching, "system/utl/Spew.cpp"),
-            Object(NonMatching, "system/utl/Str.cpp"),
-            Object(Matching, "system/utl/Symbols.cpp"),
-            Object(Matching, "system/utl/Symbols2.cpp"),
-            Object(Matching, "system/utl/Symbols3.cpp"),
-            Object(Matching, "system/utl/Symbols4.cpp"),
-            Object(Matching, "system/utl/SysTest.cpp", extra_cflags=["-inline level=1"]),
-            Object(Matching, "system/utl/TempoMap.cpp"),
-            Object(Matching, "system/utl/TextFileStream.cpp"),
-            Object(Matching, "system/utl/TextStream.cpp"),
-        ],
-    },
-    {
-        "lib": "zlib",
-        "mw_version": "Wii/1.3",
-        "cflags": cflags_zlib,
+libs: list[dict] = []
+objects: dict[str, dict] = json.load(open(objects_path, "r", encoding="utf-8"))
+for (lib, lib_config) in objects.items():
+    lib_mw_version: str = lib_config["mw_version"]
+
+    config_cflags: str | list[str] = lib_config["cflags"]
+    lib_cflags = get_flags(config_cflags) if type(config_cflags) is str else config_cflags
+
+    lib_objects: list[Object] = []
+    config_objects: dict[str, str | dict] = lib_config["objects"]
+    if len(config_objects) < 1:
+        continue
+
+    for (path, obj_config) in config_objects.items():
+        if type(obj_config) is str:
+            completed = get_object_completed(obj_config)
+            lib_objects.append(Object(completed, path))
+        else:
+            completed = get_object_completed(obj_config["status"])
+
+            if "cflags" in obj_config:
+                object_cflags = obj_config["cflags"]
+                if type(object_cflags) is str:
+                    obj_config["cflags"] = get_flags(object_cflags)
+
+            lib_objects.append(Object(completed, path, options=obj_config))
+        pass
+
+    libs.append({
+        "lib": lib,
+        "mw_version": lib_mw_version,
+        "cflags": lib_cflags,
         "host": False,
-        "objects": [
-            Object(Matching, "system/zlib/adler32.c"),
-            Object(Matching, "system/zlib/crc32.c"),
-            Object(NonMatching, "system/zlib/deflate.c"),
-            Object(NonMatching, "system/zlib/trees.c"),
-            Object(NonMatching, "system/zlib/zutil.c"),
-            Object(Matching, "system/zlib/inflate.c"),
-            Object(Matching, "system/zlib/inftrees.c"),
-            Object(Matching, "system/zlib/inffast.c"),
-        ]
-    },
-]
+        "objects": lib_objects,
+    })
+
+config.libs = libs
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json
