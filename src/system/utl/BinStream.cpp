@@ -51,13 +51,13 @@ BinStream &BinStream::operator>>(Symbol &s) {
     return *this;
 }
 
-// BinStream &BinStream::operator>>(String &s) {
-//     unsigned int a;
-//     *this >> a;
-//     s.resize(a);
-//     Read((char *)s.c_str(), a);
-//     return *this;
-// }
+BinStream &BinStream::operator>>(String &s) {
+    int a;
+    *this >> a;
+    s.resize(a);
+    Read((char *)s.c_str(), a);
+    return *this;
+}
 
 BinStream::BinStream(bool b) : mLittleEndian(b), mCrypto(0) {
 }
@@ -73,18 +73,18 @@ void BinStream::EnableReadEncryption() {
     mCrypto = new Rand2(a);
 }
 
-// // fn_80342DE4
-// void BinStream::EnableWriteEncryption(int i) {
-//     unsigned int a = RandomInt();
-//     *this << a;
-//     mCrypto = new Rand2(a);
-// }
+void BinStream::EnableWriteEncryption() {
+    ASSERT(!mCrypto, 0x89);
+    int a = RandomInt();
+    *this << a;
+    mCrypto = new Rand2(a);
+}
 
-// // fn_80342E44
-// void BinStream::DisableEncryption() {
-//     delete mCrypto;
-//     mCrypto = 0;
-// }
+void BinStream::DisableEncryption() {
+    ASSERT(mCrypto, 0x9D);
+    delete mCrypto;
+    mCrypto = 0;
+}
 
 // void BinStream::Read(void *v, int i) {
 //     void *temp_r31;

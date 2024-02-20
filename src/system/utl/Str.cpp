@@ -134,3 +134,39 @@ char& String::rindex(int i) {
     ASSERT(i < 0 && uint(-i) <= mCap, 0xC2);
     return mStr[mCap + i];
 }
+
+bool String::operator!=(const char *str) const {
+    if (str == 0)
+        return true;
+    else
+        return strcmp(str, mStr);
+}
+
+bool String::operator!=(const String &str) const {
+    return strcmp(str.mStr, mStr);
+}
+
+bool String::operator==(const char *str) const {
+    if (str == 0)
+        return false;
+    else
+        return strcmp(str, mStr) == 0;
+}
+
+bool String::operator==(const String &str) const {
+    return strcmp(str.mStr, mStr) == 0;
+}
+
+bool String::operator<(const String &str) const {
+    return (strcmp(mStr, str.mStr) < 0);
+}
+
+void String::resize(unsigned int arg) {
+    reserve(arg);
+    mStr[arg] = 0;
+}
+
+// unsigned int find(char, unsigned int) const;
+// unsigned int find(char) const;
+// unsigned int find(const char*) const;
+// unsigned int find(const char*, unsigned int) const;

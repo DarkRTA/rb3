@@ -59,9 +59,7 @@ public:
      */
     void EnableReadEncryption();
 
-    /** Enables write encryption using `key` as the PRNG seed.
-     * @param [in] key Key to use. */
-    void EnableWriteEncryption(int key);
+    void EnableWriteEncryption();
 
     void DisableEncryption();
     
