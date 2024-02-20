@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DTK Object File Config",
+  "description": "Object files to build in a DTK project.",
+  "type": "object",
+  "additionalProperties": {
+    "type": "object",
+    "properties": {
+      "mw_version": { "$ref": "#/$defs/mw_version" },
+      "cflags": { "$ref": "#/$defs/cflags" },
+      "objects": {
+        "description": "The objects to be built.",
+        "type": "object",
+        "additionalProperties": {
+          "oneOf": [
+            { "$ref": "#/$defs/status" },
+            {
+              "type": "object",
+              "properties": {
+                "status": { "$ref": "#/$defs/status" },
+                "mw_version": { "$ref": "#/$defs/mw_version" },
+                "asflags": { "$ref": "#/$defs/asflags" },
+                "cflags": { "$ref": "#/$defs/cflags" },
+                "extra_asflags": { "$ref": "#/$defs/extra_asflags" },
+                "extra_cflags": { "$ref": "#/$defs/extra_cflags" },
+                "comment": { "$ref": "#/$defs/comment" }
+              },
+              "additionalProperties": false
+            }
+          ]
+        }
+      }
+    },
+    "additionalProperties": false
+  },
+  "$defs": {
+    "asflags": {
+      "description": "Flags to pass to the assembler.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "cflags": {
+      "description": "Flags to pass to the compiler.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      ]
+    },
+    "extra_asflags": {
+      "description": "Additional flags to pass to the assembler.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "extra_cflags": {
+      "description": "Additional flags to pass to the compiler.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "mw_version": {
+      "description": "The version of MWCC to use.",
+      "type": "string"
+    },
+    "comment": {
+      "description": "Any comments about the object.",
+      "$comment": "This property exists to work around Python's JSON parser not supporting comments.",
+      "type": "string"
+    },
+    "status": {
+      "description": "The match status of the object.",
+      "type": "string",
+      "oneOf": [
+        {
+          "description": "This object is fully matching.",
+          "const": "Matching"
+        },
+        {
+          "description": "This object is not matching.",
+          "const": "NonMatching"
+        },
+        {
+          "description": "This object is not matching, but is functionally equivalent.",
+          "const": "Equivalent"
+        },
+        {
+          "description": "This object is matching, but does not link correctly.",
+          "const": "LinkIssues"
+        }
+      ]
+    }
+  }
+}
