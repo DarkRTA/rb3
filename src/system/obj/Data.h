@@ -168,7 +168,6 @@ public:
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
-    DataType Type(int i) const { return Node(i).Type(); } // never saw this getting used in RB3 bank 8's symbols.txt - this could possibly not exist?
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
@@ -203,7 +202,6 @@ public:
     DataArray* FindArray(Symbol tag, bool fail) const;
     DataArray* FindArray(Symbol s1, Symbol s2) const;
     DataArray* FindArray(Symbol s1, Symbol s2, Symbol s3) const;
-    DataArray* FindArray(Symbol s1, Symbol s2, Symbol s3, Symbol s4) const;
     DataArray* FindArray(Symbol, const char*) const;
 
     bool FindData(Symbol tag, const char *& ret, bool fail) const;

@@ -130,11 +130,9 @@ void* NodesAlloc(int i){
 //     return (v >= lbl_8091A478) && (v < &lbl_8091A478[(int)lbl_8091A484]);
 // }
 
-
-// void NodesFree(int i, DataNode *dn) {
-//     fn_80315C7C(dn);
-//     MemOrPoolFree(i, FastPool, dn);
-// }
+void NodesFree(int i, DataNode* n){
+    _MemOrPoolFree(i, FastPool, n);
+}
 
 // // fn_80315CFC
 // void DataArray::Insert(int count, const DataNode &dn) {
@@ -241,113 +239,103 @@ void* NodesAlloc(int i){
 //     }
 // }
 
-// // fn_80316190
-// bool DataArray::Contains(const DataNode &dn) const {
-//     int searchType = dn.mValue.integer;
-//     for (int lol = mSize - 1; lol >= 0; lol--) {
-//         if (mNodes[lol].mValue.integer == searchType) {
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+bool DataArray::Contains(const DataNode &dn) const {
+    int searchType = dn.mValue.integer;
+    for (int lol = mSize - 1; lol >= 0; lol--) {
+        if (mNodes[lol].mValue.integer == searchType) {
+            return true;
+        }
+    }
+    return false;
+}
 
-// // fn_803161D4
-// DataArray *DataArray::FindArray(int tag, bool fail) const {
-//     DataNode *dn;
-//     DataNode *dn_end = &mNodes[mSize];
-//     for (dn = mNodes; dn < dn_end; dn++) {
-//         if (dn->Type() == kDataArray) {
-//             DataArray *arr = dn->mValue.array;
-//             if (arr->Union(0).integer == tag) {
-//                 return arr;
-//             }
-//         }
-//     }
-//     return nullptr;
-// }
+DataArray* DataArray::FindArray(int tag, bool fail) const {
+    DataNode* dn;
+    DataNode* dn_end = &mNodes[mSize];
+    for(dn = mNodes; dn < dn_end; dn++){
+        if(dn->Type() == kDataArray){
+            const DataArray* arr = dn->mValue.array;
+            if(arr->Node(0).mValue.integer == tag){
+                return (DataArray*)arr;
+            }
+        }
+    }
+    if(fail) FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
+    return 0;
+}
 
-// // fn_8031627C
-// DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
-//     return FindArray(tag.GetIntVal(), false);
-// }
+DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
+    DataArray* found = FindArray((int)tag.mStr, false);
+    if(found == 0 && fail) FAIL("Couldn't find %s in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
+    return found;
+}
 
-// // fn_803162BC
-// DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
-//     return FindArray(s1, true)->FindArray(s2, true);
-// }
+DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
+    return FindArray(s1, true)->FindArray(s2, true);
+}
 
+DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
+    return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+}
 
-// // fn_80316300
-// DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
-//     return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
-// }
+DataArray *DataArray::FindArray(Symbol s, const char *c) const {
+    return FindArray(s, Symbol(c));
+}
 
-// // fn_80316358
-// DataArray *DataArray::FindArray(Symbol s, const char *c) const {
-//     return FindArray(s, Symbol((char *)c));
-// }
+bool DataArray::FindData(Symbol s, const char *&ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != 0) {
+        ret = arr->Str(1);
+        return true;
+    } else
+        return false;
+}
 
-// // fn_803163B8
-// bool DataArray::FindData(Symbol s, const char *&ret, bool b) const {
-//     DataArray *arr = FindArray(s, b);
-//     if (arr != nullptr) {
-//         ret = arr->Str(1);
-//         return true;
-//     } else
-//         return false;
-// }
+bool DataArray::FindData(Symbol s, Symbol &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret = (arr->Sym(1));
+        return true;
+    } else
+        return false;
+}
 
-// // fn_80316414
-// bool DataArray::FindData(Symbol s, Symbol &ret, bool b) const {
-//     DataArray *arr = FindArray(s, b);
-//     if (arr != nullptr) {
-//         ret = (arr->Sym(1));
-//         return true;
-//     } else
-//         return false;
-// }
+bool DataArray::FindData(Symbol s, String &ret, bool b) const {
+    const char *c;
+    bool found = FindData(s, c, b);
+    if (found) {
+        ret = c;
+        return true;
+    } else
+        return false;
+}
 
-// // fn_8031647C
-// bool DataArray::FindData(Symbol s, String &ret, bool b) const {
-//     const char *c;
-//     bool found = FindData(s, c, b);
-//     if (found) {
-//         ret = c;
-//         return true;
-//     } else
-//         return false;
-// }
+bool DataArray::FindData(Symbol s, int &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret = arr->Int(1);
+        return true;
+    } else
+        return false;
+}
 
-// // fn_803164D8
-// bool DataArray::FindData(Symbol s, int &ret, bool b) const {
-//     DataArray *arr = FindArray(s, b);
-//     if (arr != nullptr) {
-//         ret = arr->Int(1);
-//         return true;
-//     } else
-//         return false;
-// }
+bool DataArray::FindData(Symbol s, float &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret = arr->Float(1);
+        return true;
+    } else
+        return false;
+}
 
-// // fn_80316534
-// bool DataArray::FindData(Symbol s, float &ret, bool b) const {
-//     DataArray *arr = FindArray(s, b);
-//     if (arr != nullptr) {
-//         ret = arr->Float(1);
-//         return true;
-//     } else
-//         return false;
-// }
-
-// // fn_80316590
-// bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
-//     DataArray *arr = FindArray(s, b);
-//     if (arr != nullptr) {
-//         ret = arr->Int(1);
-//         return true;
-//     } else
-//         return false;
-// }
+bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret = arr->Int(1);
+        return true;
+    } else
+        return false;
+}
 
 // // // fn_803169C4
 // // DataArray *DataArray::Clone(bool b1, bool b2, int i) {

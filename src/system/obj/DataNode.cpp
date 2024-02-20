@@ -230,6 +230,12 @@ DataNode* DataNode::Var(const DataArray* a) const {
     return mValue.var;
 }
 
+DataNode::DataNode(const DataNode& node){
+    mValue = node.mValue;
+    mType = node.mType;
+    if(mType & kDataArray) mValue.array->AddRef();
+}
+
 // extern void* _PoolAlloc(int, int, int);
 
 // // fn_803231CC
@@ -245,12 +251,12 @@ DataNode* DataNode::Var(const DataArray* a) const {
 //     mType = kDataString;
 // }
 
-// DataNode::DataNode(const DataArrayPtr &ptr) {
-//     DataArray* arr = ptr.mData;
-//     mValue.array = arr;
-//     arr->AddRef();
-//     mType = kDataArray;
-// }
+DataNode::DataNode(const DataArrayPtr& ptr){
+    DataArray* arr = ptr.mData;
+    mValue.array = arr;
+    arr->AddRef();
+    mType = kDataArray;
+}
 
 DataNode::DataNode(DataArray *array, DataType type) {
     ASSERT(array, 0x155);
@@ -310,19 +316,14 @@ bool DataNode::NotNull() const {
 }
 
 DataNode& DataNode::operator=(const DataNode& node){
-    if(mType & kDataArray) mValue.array->Release();
-    mValue = node.mValue;
-    mType = node.mType;
-    if(mType & kDataArray) mValue.array->AddRef();
+    if(this != &node){
+        if(mType & kDataArray) mValue.array->Release();
+        mValue = node.mValue;
+        mType = node.mType;
+        if(mType & kDataArray) mValue.array->AddRef();
+    }
+    return *this;
 }
-
-// // // fn_80323178
-// // DataNode::DataNode(const DataNode &dn) {
-// //     AssignValue(dn);
-// //     type = dn.type;
-// //     if (type & 0x10)
-// //         value.dataArray->IncRefCount();
-// // }
 
 // // // fn_803239E8
 // // bool HasSpace(const char *str) {
