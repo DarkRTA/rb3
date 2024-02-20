@@ -67,11 +67,11 @@
             ]
         },
         "system": {
-            "base": "rb3",
+            "base": "band3",
             "flags": []
         },
         "network": {
-            "base": "rb3",
+            "base": "band3",
             "flags": []
         },
         "json_c": {
