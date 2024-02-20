@@ -13,7 +13,6 @@ class DataArrayPtr;
 namespace Hmx {
     class Object;
 }
-class Symbol;
 
 typedef DataNode DataFunc(DataArray *);
 
@@ -108,12 +107,10 @@ public:
         mType = kDataFunc;
     }
 
-    ~DataNode();
-
     // TODO: implement this function without the compiler getting angry
     // this is weak and should be defined here, but for some reason says DataArray is "incomplete"
     // ~DataNode(){
-    //     if((mType & 0x10) != 0) mValue.array->Release();
+    //     if((mType & kDataArray) != 0) mValue.array->Release();
     // }
 
     DataType Type() const { return mType; }
