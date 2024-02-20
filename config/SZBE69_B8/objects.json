@@ -1,0 +1,64 @@
+{
+    "band3": {
+        "mw_version": "Wii/1.3",
+        "cflags": "band3",
+        "objects": {}
+    },
+    "system": {
+        "mw_version": "Wii/1.3",
+        "cflags": "system",
+        "objects": {
+            "system/math/Color.cpp": "NonMatching",
+            "system/math/CustomArray.cpp": "Matching",
+            "system/math/Interp.cpp": { "status": "NonMatching", "extra_cflags": [ "-O4,s", "-inline level=1" ] },
+            "system/math/Primes.cpp": "Matching",
+            "system/math/Rand2.cpp": "Matching",
+            "system/math/Sort.cpp": "NonMatching",
+            "system/math/Trig.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
+            "system/math/Vec.cpp": "Matching",
+
+            "system/meta/Achievements.cpp": "NonMatching",
+            "system/meta/MemcardAction.cpp": "Matching",
+
+            "system/midi/MidiVarLen.cpp": "NonMatching",
+
+            "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
+            "system/obj/DataFlex.c": "NonMatching",
+            "system/obj/DataNode.cpp": "NonMatching",
+            "system/obj/Object.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
+            "system/obj/TextFile.cpp": "NonMatching",
+            "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
+
+            "system/ui/UIResource.cpp": "NonMatching",
+
+            "system/utl/BinStream.cpp": "NonMatching",
+            "system/utl/ChunkIDs.cpp": "Matching",
+            "system/utl/EncryptXTEA.cpp": "NonMatching",
+            "system/utl/IntPacker.cpp": "Matching",
+            "system/utl/Spew.cpp": "Matching",
+            "system/utl/Str.cpp": "NonMatching",
+            "system/utl/Symbols.cpp": "Matching",
+            "system/utl/Symbols2.cpp": "Matching",
+            "system/utl/Symbols3.cpp": "Matching",
+            "system/utl/Symbols4.cpp": "Matching",
+            "system/utl/SysTest.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ] },
+            "system/utl/TempoMap.cpp": "Matching",
+            "system/utl/TextFileStream.cpp": "Matching",
+            "system/utl/TextStream.cpp": "Matching"
+        }
+    },
+    "zlib": {
+        "mw_version": "Wii/1.3",
+        "cflags": "zlib",
+        "objects": {
+            "system/zlib/adler32.c": "Matching",
+            "system/zlib/crc32.c": "Matching",
+            "system/zlib/deflate.c": "NonMatching",
+            "system/zlib/trees.c": "NonMatching",
+            "system/zlib/zutil.c": "NonMatching",
+            "system/zlib/inflate.c": "Matching",
+            "system/zlib/inftrees.c": "Matching",
+            "system/zlib/inffast.c": "Matching"
+        }
+    }
+}
