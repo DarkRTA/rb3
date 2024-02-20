@@ -103,5 +103,13 @@
   "C/C++ Include Guard.Auto Update Path Blocklist": [
     "include/zlib"
   ],
-  "search.useIgnoreFiles": false
+  "search.useIgnoreFiles": false,
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "config/**/flags.json"
+      ],
+      "url": "./doc/flags_schema.json"
+    }
+  ]
 }
