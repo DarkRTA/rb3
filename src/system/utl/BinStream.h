@@ -53,7 +53,7 @@ public:
 
     BinStream &operator>>(Symbol &);
     BinStream &operator>>(String &);
-    
+
     /** Enables read encryption for e.g. archives.
      * Enables read encryption, used for things such as archives.
      */
@@ -64,7 +64,7 @@ public:
     void EnableWriteEncryption(int key);
 
     void DisableEncryption();
-    
+
     /** Reads `len` bytes of data into `out`.
      * Reads a length of data specified by `len` from the open file
      * into `out`, using the native endianness (PPC == BE).
@@ -75,10 +75,10 @@ public:
     void Read(void * out, int len);
 
     void Write(const void *, int);
-    
+
     /** Seeks to `offset` using `mode`. */
     void Seek(int offset, SeekType mode);
-    
+
     /** Reads `len` bytes of data, backwards, into `out`.
      * Reads a length of data specified by `len` from the open file
      * into `out`, using the reverse endianness.
@@ -90,6 +90,8 @@ public:
     void ReadEndian(void * out, int len);
 
     void WriteEndian(const void *, int);
+
+    inline BinStream& operator>>(unsigned char& out) {Read(&out, 1);}
 };
 
 #endif

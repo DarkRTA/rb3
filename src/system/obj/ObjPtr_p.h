@@ -20,7 +20,7 @@ public:
             *this = dynamic_cast<T1*>(o2);
     }
 
-    virtual bool IsDirPtr(){ return 0; } // StubZero
+    virtual bool IsDirPtr(){ return 0; }
 
     void operator=(T1* t){
         if(mPtr != t){
@@ -46,8 +46,8 @@ public:
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*){ } // StubVoid
-    virtual bool IsDirPtr(){ return 0; } // StubZero
+    virtual void Replace(Hmx::Object*, Hmx::Object*){ }
+    virtual bool IsDirPtr(){ return 0; }
 
     Hmx::Object* mOwner;
     T1* mPtr;

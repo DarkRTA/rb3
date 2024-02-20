@@ -219,10 +219,17 @@ config.libs = [
             Object(NonMatching, "system/math/Trig.cpp"),
             Object(Matching, "system/math/Vec.cpp"),
 
+            Object(NonMatching, "system/meta/Achievements.cpp"),
+            Object(Matching, "system/meta/MemcardAction.cpp"),
+
+            Object(NonMatching, "system/midi/MidiVarLen.cpp"),
+
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
             Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
+
+            Object(NonMatching, "system/ui/UIResource.cpp"),
 
             Object(NonMatching, "system/utl/BinStream.cpp"),
             Object(Matching, "system/utl/ChunkIDs.cpp"),
