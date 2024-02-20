@@ -59,6 +59,7 @@ class ProjectConfig:
         self.ldflags = None  # Linker flags
         self.libs = None  # List of libraries
         self.linker_version = None  # mwld version
+        self.reconfig_deps = []  # Additional re-configuration dependency files
         self.version = None  # Version name
         self.warn_missing_config = False  # Warn on missing unit configuration
         self.warn_missing_source = False  # Warn on missing source file
@@ -941,6 +942,7 @@ def generate_build_ninja(config, build_config):
                 configure_script,
                 python_lib,
                 Path(python_lib_dir) / "ninja_syntax.py",
+                *config.reconfig_deps
             ]
         ),
     )

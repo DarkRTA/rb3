@@ -144,11 +144,17 @@ config.wibo_tag = "0.6.11"
 
 # Project
 config_dir = Path("config") / config.version
+flags_path = config_dir / "flags.json"
+objects_path = config_dir / "objects.json"
 config.config_path = config_dir / "config.yml"
 config.check_sha_path = config_dir / "build.sha1"
+config.reconfig_deps = [
+    flags_path,
+    objects_path,
+]
 
 # Build flags
-flags = json.load(open(config_dir / "flags.json", "r", encoding="utf-8"))
+flags = json.load(open(flags_path, "r", encoding="utf-8"))
 
 config.asflags = [
     "-mgekko",
@@ -219,7 +225,7 @@ def get_object_completed(status: str) -> bool:
     assert False, f"Invalid object status {status}"
 
 libs: list[dict] = []
-objects: dict[str, dict] = json.load(open(config_dir / "objects.json", "r", encoding="utf-8"))
+objects: dict[str, dict] = json.load(open(objects_path, "r", encoding="utf-8"))
 for (lib, lib_config) in objects.items():
     lib_mw_version: str = lib_config["mw_version"]
 
