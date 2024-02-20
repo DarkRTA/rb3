@@ -212,11 +212,11 @@ config.libs = [
         "objects": [
             Object(NonMatching, "system/math/Color.cpp"),
             Object(Matching, "system/math/CustomArray.cpp"),
-            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s"]),
+            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s", "-inline level=1"]),
             Object(Matching, "system/math/Primes.cpp"),
             Object(Matching, "system/math/Rand2.cpp"),
             Object(NonMatching, "system/math/Sort.cpp"),
-            Object(NonMatching, "system/math/Trig.cpp"),
+            Object(NonMatching, "system/math/Trig.cpp", extra_cflags=["-inline level=1"]),
             Object(Matching, "system/math/Vec.cpp"),
 
             Object(NonMatching, "system/obj/DataFlex.c"),
@@ -232,7 +232,7 @@ config.libs = [
             Object(Matching, "system/utl/Symbols2.cpp"),
             Object(Matching, "system/utl/Symbols3.cpp"),
             Object(Matching, "system/utl/Symbols4.cpp"),
-            Object(NonMatching, "system/utl/SysTest.cpp"),
+            Object(Matching, "system/utl/SysTest.cpp", extra_cflags=["-inline level=1"]),
             Object(Matching, "system/utl/TempoMap.cpp"),
             Object(Matching, "system/utl/TextFileStream.cpp"),
             Object(Matching, "system/utl/TextStream.cpp"),

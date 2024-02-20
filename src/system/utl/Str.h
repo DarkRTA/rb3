@@ -2,6 +2,7 @@
 #define UTL_STR_H
 #include "utl/TextStream.h"
 #include "utl/Symbol.h"
+#include <string.h>
 
 class String : public TextStream {
 public:
@@ -17,7 +18,9 @@ public:
     String(const String &);
     String(unsigned int, char);
 
-    const char* c_str();
+    unsigned int length() const { return strlen(mStr); }
+    const char* c_str() const { return mStr; }
+    bool empty() const { return mStr != 0; }
 };
 
 #endif

@@ -88,7 +88,9 @@ namespace Hmx {
         virtual ~Object();
         virtual Hmx::Object* RefOwner(){}
         virtual void Replace(Hmx::Object*, Hmx::Object*);
-        virtual Symbol ClassName() const;
+        virtual Symbol ClassName() const {
+            return StaticClassName();
+        }
         virtual void SetType(Symbol);
         virtual DataNode Handle(DataArray*, bool);
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
@@ -110,7 +112,11 @@ namespace Hmx {
         // T* New<T>();
         // vector& Refs();
 
-        static Symbol StaticClassName();
+        static Symbol StaticClassName(){
+            static Symbol name("Object");
+            return name;
+        }
+        
         Symbol Type() const;
         static Object* NewObject();
 
