@@ -222,6 +222,7 @@ config.libs = [
             Object(NonMatching, "system/obj/DataFlex.c"),
             Object(NonMatching, "system/obj/DataNode.cpp"),
             Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
+            Object(NonMatching, "system/obj/TextFile.cpp"),
             Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
 
             Object(NonMatching, "system/utl/BinStream.cpp"),

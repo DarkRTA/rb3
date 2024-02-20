@@ -1,10 +1,6 @@
 #ifndef UTL_MEMMGR_H
 #define UTL_MEMMGR_H
-
-enum PoolType {
-    MainPool,
-    FastPool
-};
+#include "utl/PoolAlloc.h"
 
 void* operator new(unsigned long);
 void operator delete(void*);

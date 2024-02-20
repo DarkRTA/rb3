@@ -5,6 +5,8 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
+// #include "os/System.h"
+// #include "obj/Utl.h"
 
 // forward declarations
 class DataNode;
@@ -68,9 +70,7 @@ public:
 namespace Hmx {
     class Object : public ObjRef {
     public:
-        TypeProps mTypeProps; // RB2 has this protected
-
-        // RB2 has the following members private
+        TypeProps mTypeProps;
         DataArray* mTypeDef;
         const char* mName;
         ObjectDir* mDir;
@@ -91,7 +91,21 @@ namespace Hmx {
         virtual Symbol ClassName() const {
             return StaticClassName();
         }
-        virtual void SetType(Symbol);
+        virtual void SetType(Symbol s){
+            // static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
+            // if(s.IsNull()) SetTypeDef(0);
+            // else {
+            //     DataArray* found = types->FindArray(s, false);
+            //     if(found != 0){
+            //         SetTypeDef(found);
+            //     }
+            //     else {
+            //         PathName(this);
+            //         ClassName();
+            //         SetTypeDef(0);
+            //     }
+            // }
+        }
         virtual DataNode Handle(DataArray*, bool);
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
         virtual void Save(BinStream&);
@@ -116,8 +130,11 @@ namespace Hmx {
             static Symbol name("Object");
             return name;
         }
-        
-        Symbol Type() const;
+
+        Symbol Type() const {
+            // if(mTypeDef != 0) return mTypeDef->Sym(0);
+            // else return gNullStr;
+        }
         static Object* NewObject();
 
         DataNode *Property(DataArray *, bool);

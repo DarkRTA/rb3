@@ -4,8 +4,6 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 
-extern const char* gNullStr;
-
 ObjectDir* Hmx::Object::Dir() const { return mDir; }
 
 ObjectDir* Hmx::Object::DataDir(){
@@ -65,31 +63,29 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 //     return Property(d.mData, fail);
 // }
 
-// DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
-//     static DataNode n(a2, kDataArray);
-//     if(SyncProperty(n, prop, 0, kPropHandle)){
-//         return DataNode(n);
-//     }
-//     if(fail){
-//         if(prop != nullptr) prop->Sym(0);
-//         else Symbol("<none>");
-//         PathName(this);
-//     }
-//     return DataNode(0);
-// }
+DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
+    static DataNode n(a2, kDataArray);
+    if(SyncProperty(n, prop, 0, kPropHandle)){
+        return DataNode(n);
+    }
+    if(fail){
+        FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "none");
+    }
+    return DataNode(0);
+}
 
-// void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
-//     if(!SyncProperty((DataNode&)val, prop, 0, kPropSet)){
-//         Symbol name = prop->Sym(0);
-//         if(prop->Size() == 1){
-//             mTypeProps.SetKeyValue(name, val, true, this);
-//         }
-//         else {
-//             prop->Size();
-//             mTypeProps.SetArrayValue(name, prop->Int(1), val, mTypeDef, this);
-//         }
-//     }
-// }
+void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
+    if(!SyncProperty((DataNode&)val, prop, 0, kPropSet)){
+        Symbol name = prop->Sym(0);
+        if(prop->Size() == 1){
+            mTypeProps.SetKeyValue(name, val, true, this);
+        }
+        else {
+            ASSERT(prop->Size() == 2, 0x17D);
+            mTypeProps.SetArrayValue(name, prop->Int(1), val, mTypeDef, this);
+        }
+    }
+}
 
 // void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
 //     static DataArrayPtr d(DataNode(1));
@@ -135,12 +131,12 @@ void Hmx::Object::RemoveProperty(DataArray* prop){
     }
 }
 
-// void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
-//     if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
-//         prop->Size();
-//         mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
-//     }
-// }
+void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
+    if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
+        ASSERT(prop->Size() == 2, 0x1C5);
+        mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
+    }
+}
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);

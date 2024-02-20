@@ -29,9 +29,9 @@ public:
             }
         }
     }
-    virtual DataNode Handle(DataArray*, bool); // fn_8033CA48
-    virtual void SetName(const char*, ObjectDir*); // fn_8033C93C
-    virtual void Print(const char *); // fn_8033C990
+    virtual DataNode Handle(DataArray*, bool);
+    virtual void SetName(const char*, ObjectDir*);
+    virtual void Print(const char *);
 
     static Symbol StaticClassName(){
         static Symbol name("File");
