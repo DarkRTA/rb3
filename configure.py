@@ -144,11 +144,11 @@ config.wibo_tag = "0.6.11"
 
 # Project
 config_dir = Path("config") / config.version
-flags_path = config_dir / "flags.json"
 config.config_path = config_dir / "config.yml"
 config.check_sha_path = config_dir / "build.sha1"
 
-flags = json.load(open(flags_path, "r", encoding="utf-8"))
+# Build flags
+flags = json.load(open(config_dir / "flags.json", "r", encoding="utf-8"))
 
 config.asflags = [
     "-mgekko",
@@ -157,20 +157,19 @@ config.asflags = [
 ]
 config.ldflags = flags["ldflags"]
 
-# Compile flags
 cflags: dict[str, dict] = flags["cflags"]
 
-def get_flags(name) -> list[str]:
+def get_flags(name: str) -> list[str]:
     return cflags[name]["flags"]
-def add_flags(name, flags: list[str]):
+def add_flags(name: str, flags: list[str]):
     cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
 
-def get_flags_base(name) -> str:
+def get_flags_base(name: str) -> str:
     return cflags[name]["base"]
 
-def are_flags_inherited(name) -> bool:
+def are_flags_inherited(name: str) -> bool:
     return "inherited" in cflags[name]
-def set_flags_inherited(name):
+def set_flags_inherited(name: str):
     cflags[name]["inherited"] = True
 
 # Debug flags
@@ -199,80 +198,63 @@ config.linker_version = "Wii/1.3"
 config.shift_jis = False
 config.progress_all = False
 
+# Object files
 Matching = True
 Equivalent = config.non_matching
 NonMatching = False
 
 config.warn_missing_config = True
 config.warn_missing_source = False
-config.libs = [
-    {
-        "lib": "band3",
-        "mw_version": "Wii/1.3",
-        "cflags": get_flags("band3"),
+
+def get_object_completed(status: str) -> bool:
+    if status == "Matching":
+        return Matching
+    elif status == "NonMatching":
+        return NonMatching
+    elif status == "Equivalent":
+        return Equivalent
+    elif status == "LinkIssues":
+        return NonMatching
+
+    assert False, f"Invalid object status {status}"
+
+libs: list[dict] = []
+objects: dict[str, dict] = json.load(open(config_dir / "objects.json", "r", encoding="utf-8"))
+for (lib, lib_config) in objects.items():
+    lib_mw_version: str = lib_config["mw_version"]
+
+    config_cflags: str | list[str] = lib_config["cflags"]
+    lib_cflags = get_flags(config_cflags) if type(config_cflags) is str else config_cflags
+
+    lib_objects: list[Object] = []
+    config_objects: dict[str, str | dict] = lib_config["objects"]
+    if len(config_objects) < 1:
+        continue
+
+    for (path, obj_config) in config_objects.items():
+        if type(obj_config) is str:
+            completed = get_object_completed(obj_config)
+            lib_objects.append(Object(completed, path))
+        else:
+            completed = get_object_completed(obj_config["status"])
+
+            if "cflags" in obj_config:
+                object_cflags = obj_config["cflags"]
+                if type(object_cflags) is str:
+                    obj_config["cflags"] = get_flags(object_cflags)
+
+            lib_objects.append(Object(completed, path, options=obj_config))
+        pass
+
+    libs.append({
+        "lib": lib,
+        "mw_version": lib_mw_version,
+        "cflags": lib_cflags,
         "host": False,
-        "objects": [
+        "objects": lib_objects,
+    })
 
-        ],
-    },
-    {
-        "lib": "system",
-        "mw_version": "Wii/1.3",
-        "cflags": get_flags("system"),
-        "host": False,
-        "objects": [
-            Object(NonMatching, "system/math/Color.cpp"),
-            Object(Matching, "system/math/CustomArray.cpp"),
-            Object(NonMatching, "system/math/Interp.cpp", extra_cflags=["-O4,s"]),
-            Object(Matching, "system/math/Primes.cpp"),
-            Object(Matching, "system/math/Rand2.cpp"),
-            Object(NonMatching, "system/math/Sort.cpp"),
-            Object(NonMatching, "system/math/Trig.cpp"),
-            Object(Matching, "system/math/Vec.cpp"),
-
-            Object(NonMatching, "system/meta/Achievements.cpp"),
-            Object(Matching, "system/meta/MemcardAction.cpp"),
-
-            Object(NonMatching, "system/midi/MidiVarLen.cpp"),
-
-            Object(NonMatching, "system/obj/DataFlex.c"),
-            Object(NonMatching, "system/obj/DataNode.cpp"),
-            Object(NonMatching, "system/obj/Object.cpp", extra_cflags=["-inline level=1"]),
-            Object(NonMatching, "system/obj/TypeProps.cpp", extra_cflags=["-inline level=1"]), # -inline level=1
-
-            Object(NonMatching, "system/ui/UIResource.cpp"),
-
-            Object(NonMatching, "system/utl/BinStream.cpp"),
-            Object(Matching, "system/utl/ChunkIDs.cpp"),
-            Object(NonMatching, "system/utl/EncryptXTEA.cpp"),
-            Object(Matching, "system/utl/IntPacker.cpp"),
-            Object(Matching, "system/utl/Symbols.cpp"),
-            Object(Matching, "system/utl/Symbols2.cpp"),
-            Object(Matching, "system/utl/Symbols3.cpp"),
-            Object(Matching, "system/utl/Symbols4.cpp"),
-            Object(NonMatching, "system/utl/SysTest.cpp"),
-            Object(Matching, "system/utl/TempoMap.cpp"),
-            Object(Matching, "system/utl/TextFileStream.cpp"),
-            Object(Matching, "system/utl/TextStream.cpp"),
-        ],
-    },
-    {
-        "lib": "zlib",
-        "mw_version": "Wii/1.3",
-        "cflags": get_flags("zlib"),
-        "host": False,
-        "objects": [
-            Object(Matching, "system/zlib/adler32.c"),
-            Object(Matching, "system/zlib/crc32.c"),
-            Object(NonMatching, "system/zlib/deflate.c"),
-            Object(NonMatching, "system/zlib/trees.c"),
-            Object(NonMatching, "system/zlib/zutil.c"),
-            Object(Matching, "system/zlib/inflate.c"),
-            Object(Matching, "system/zlib/inftrees.c"),
-            Object(Matching, "system/zlib/inffast.c"),
-        ]
-    },
-]
+config.libs = libs
 
 if args.mode == "configure":
     # Write build.ninja and objdiff.json

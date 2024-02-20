@@ -110,6 +110,12 @@
         "config/**/flags.json"
       ],
       "url": "./doc/flags_schema.json"
+    },
+    {
+      "fileMatch": [
+        "config/**/objects.json"
+      ],
+      "url": "./doc/objects_schema.json"
     }
   ]
 }
