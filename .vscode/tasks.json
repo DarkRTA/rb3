@@ -33,8 +33,18 @@
       "command": "ninja",
       "group": {
         "kind": "build",
-        "isDefault": false
-      }
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "ninja diff",
+      "type": "shell",
+      "command": "ninja",
+      "args": [
+        "diff"
+      ],
+      "problemMatcher": []
     },
     {
       "label": "all_source",
@@ -59,10 +69,7 @@
       "problemMatcher": {
         "base": "$gcc"
       },
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      }
+      "group": "build"
     },
     {
       "label": "decompctx (current file)",
