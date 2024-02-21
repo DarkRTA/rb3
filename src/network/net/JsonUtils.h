@@ -2,16 +2,22 @@
 #define NET_JSONUTILS_H
 
 #include "json-c/json.h"
+#include "system/utl/Str.h"
+#include <vector>
 
 class JsonObject {
 public:
     JsonObject();
     virtual ~JsonObject();
 
-    json_object *json_object_struct;
-    json_object *GetJsonObjectStruct();
-    const char *GetString();
-    enum json_type Type();
+    json_object *GetObject() { return mObject; }
+    const char *GetObjectAsString() const;
+    enum json_type GetType() const;
+
+    friend class JsonConverter;
+
+protected:
+    json_object *mObject;
 };
 
 class JsonArray : public JsonObject {
@@ -19,8 +25,8 @@ public:
     JsonArray();
     virtual ~JsonArray();
 
-    void Append(JsonObject *);
-    int Length();
+    void AddMember(JsonObject *);
+    int GetSize() const;
 };
 
 class JsonString : public JsonObject {
@@ -28,7 +34,7 @@ public:
     JsonString(const char *);
     virtual ~JsonString();
 
-    const char *GetString();
+    const char *GetValue() const;
 };
 
 class JsonInt : public JsonObject {
@@ -36,7 +42,7 @@ public:
     JsonInt(int);
     virtual ~JsonInt();
 
-    int GetInt();
+    int GetValue() const;
 };
 
 class JsonDouble : public JsonObject {
@@ -44,27 +50,7 @@ public:
     JsonDouble(double);
     virtual ~JsonDouble();
 
-    double GetDouble();
-};
-
-class Dummy {
-public:
-    ~Dummy();
-    int lol;
-};
-
-class UnknownJsonConverterMember {
-public:
-    JsonObject **unk0;
-    unsigned short unk4;
-    unsigned short unk6;
-
-    ~UnknownJsonConverterMember();
-    bool fn_800AFE60();
-    unsigned short GetUnk4();
-    JsonObject **fn_800A6A24();
-    void fn_800A6FA4(unsigned short);
-
+    double GetValue() const;
 };
 
 class JsonConverter : public JsonArray {
@@ -72,12 +58,16 @@ public:
     JsonConverter();
     virtual ~JsonConverter();
 
-    UnknownJsonConverterMember mem;
+    std::vector<JsonObject *> objects;
 
-    JsonArray *ToJsonArray();
-    JsonString *ToJsonString(const char *);
-    JsonInt *ToJsonInt(int);
-    JsonDouble *ToJsonDouble(double);
+    JsonArray *NewArray();
+    JsonString *NewString(const char *value);
+    JsonInt *NewInt(int value);
+    JsonDouble *NewDouble(double value);
+
+    JsonObject *LoadFromString(const String &str);
+    JsonObject *GetElement(JsonArray *array, int index);
+    void PushObject(JsonObject *obj);
 };
 
 #endif

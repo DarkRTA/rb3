@@ -1,94 +1,137 @@
 #include "JsonUtils.h"
+#include "json-c/printbuf.h"
+#include "system/os/Debug.h"
 
-
-// fn_800A6360
 JsonObject::JsonObject() {
-    json_object_struct = 0;
+    mObject = nullptr;
 }
 
-
-// fn_800A6378
 JsonObject::~JsonObject() {
-    json_object_put(json_object_struct);
+    json_object_put(mObject);
 }
 
-// fn_800A63DC
-const char *JsonObject::GetString() {
-    return json_object_get_string(json_object_struct);
+const char *JsonObject::GetObjectAsString() const {
+    return json_object_get_string(mObject);
 }
 
-// fn_800A63E4
-enum json_type JsonObject::Type() {
-    return json_object_get_type(json_object_struct);
+enum json_type JsonObject::GetType() const {
+    return json_object_get_type(mObject);
 }
 
-// fn_800A63EC
 JsonArray::JsonArray() {
-    json_object_struct = json_object_new_array();
+    mObject = json_object_new_array();
 }
 
-// fn_800A6430
 JsonArray::~JsonArray() {
-    for (int len = json_object_array_length(json_object_struct) - 1; len >= 0; len--) {
-        json_object_put(json_object_array_get_idx(json_object_struct, len));
+    for (int len = json_object_array_length(mObject) - 1; len >= 0; len--) {
+        json_object_put(json_object_array_get_idx(mObject, len));
     }
 }
 
-// fn_800A64C4
-void JsonArray::Append(JsonObject *obj) {
-    json_object_get(obj->GetJsonObjectStruct());
-    json_object_array_add(json_object_struct, obj->GetJsonObjectStruct());
+void JsonArray::AddMember(JsonObject *obj) {
+    json_object_get(obj->GetObject());
+    json_object_array_add(mObject, obj->GetObject());
 }
 
-// fn_800A6518
-int JsonArray::Length() {
-    return json_object_array_length(json_object_struct);
+// TODO: This is getting eliminated due to the inline,
+// but it needs to be inline for JsonConverter::GetElement()
+inline int JsonArray::GetSize() const {
+    return json_object_array_length(mObject);
 }
 
-// fn_800A6520
 JsonString::JsonString(const char *s) {
-    json_object_struct = json_object_new_string(s);
+    mObject = json_object_new_string(s);
 }
 
-// fn_800A6574
 JsonString::~JsonString() {
 }
 
-#pragma force_active on
-// fn_800A65CC
-const char *JsonString::GetString() {
-    return json_object_get_string(json_object_struct);
+const char *JsonString::GetValue() const {
+    return json_object_get_string(mObject);
 }
-#pragma force_active reset
 
-// fn_800A65D4
 JsonInt::JsonInt(int i) {
-    json_object_struct = json_object_new_int(i);
+    mObject = json_object_new_int(i);
 }
 
-#pragma force_active on
-// fn_800A6628
 JsonInt::~JsonInt() {
 }
-#pragma force_active reset
 
-// fn_800A6680
-int JsonInt::GetInt() {
-    return json_object_get_int(json_object_struct);
+int JsonInt::GetValue() const {
+    return json_object_get_int(mObject);
 }
 
-// fn_800A6688
 JsonDouble::JsonDouble(double d) {
-    json_object_struct = json_object_new_double(d);
+    mObject = json_object_new_double(d);
 }
 
-#pragma force_active on
-// fn_800A66DC
 JsonDouble::~JsonDouble() {
 }
-#pragma force_active reset
 
-// fn_800A6734
-double JsonDouble::GetDouble() {
-    return json_object_get_double(json_object_struct);
+double JsonDouble::GetValue() const {
+    return json_object_get_double(mObject);
+}
+
+JsonConverter::JsonConverter() {
+}
+
+JsonConverter::~JsonConverter() {
+    if (objects.size() != 0) {
+        int count = objects.size() - 1;
+        while (count >= 0) {
+            JsonObject *o = objects.at(count);
+            delete o;
+            count--;
+        }
+    }
+}
+
+JsonArray *JsonConverter::NewArray() {
+    JsonArray *jArray = new JsonArray();
+    PushObject(jArray);
+    return jArray;
+}
+
+JsonString *JsonConverter::NewString(const char *c) {
+    JsonString *jStr = new JsonString(c);
+    PushObject(jStr);
+    return jStr;
+}
+
+JsonInt *JsonConverter::NewInt(int i) {
+    JsonInt *jInt = new JsonInt(i);
+    PushObject(jInt);
+    return jInt;
+}
+
+JsonDouble *JsonConverter::NewDouble(double d) {
+    JsonDouble *jDouble = new JsonDouble(d);
+    PushObject(jDouble);
+    return jDouble;
+}
+
+JsonObject *JsonConverter::LoadFromString(const String &str) {
+    JsonObject *obj = new JsonObject();
+    printbuf *pb = printbuf_new();
+    if (pb == 0)
+        return nullptr;
+
+    printbuf_memappend(pb, str.c_str(), str.length());
+    obj->mObject = json_tokener_parse(pb->buf);
+    printbuf_free(pb);
+    PushObject(obj);
+    return obj;
+}
+
+JsonObject *JsonConverter::GetElement(JsonArray *inArray, int inIdx) {
+    MILO_ASSERT(0 <= inIdx && inIdx <= inArray->GetSize(), 187);
+    JsonObject *obj = new JsonObject();
+    obj->mObject = json_object_array_get_idx(inArray->GetObject(), inIdx);
+    PushObject(obj);
+    return obj;
+}
+
+void JsonConverter::PushObject(JsonObject *obj) {
+    json_object_get(obj->GetObject());
+    objects.push_back(obj);
 }
