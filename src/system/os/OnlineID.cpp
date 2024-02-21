@@ -9,7 +9,7 @@ void OnlineID::SetPrincipalID(int id){
 }
 
 int OnlineID::GetPrincipalID() const {
-    ASSERT(mValid, 0x61);
+    MILO_ASSERT(mValid, 0x61);
     return mPrincipalID;
 }
 
@@ -24,7 +24,7 @@ bool OnlineID::operator==(const OnlineID& oid) const {
 }
 
 BinStream& operator<<(BinStream& bs, const OnlineID& ssm){
-    ASSERT(ssm.mValid, 0xBE);
+    MILO_ASSERT(ssm.mValid, 0xBE);
     bs << ssm.mPrincipalID;
     return bs;
 }
