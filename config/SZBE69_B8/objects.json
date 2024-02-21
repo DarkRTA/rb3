@@ -33,6 +33,7 @@
             "system/os/OnlineID.cpp": "Matching",
 
             "system/rndobj/ColorXfm.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
             "system/ui/UIResource.cpp": "NonMatching",
