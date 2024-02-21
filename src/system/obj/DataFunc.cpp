@@ -27,7 +27,6 @@
 // }
 
 extern void DataRegisterFunc(Symbol, DataFunc *);
-extern Debug TheDebug;
 extern Hmx::Object *gDataThis;
 extern ObjectDir* gDataDir;
 extern void DataPushVar(DataNode *dn);
