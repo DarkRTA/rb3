@@ -30,6 +30,7 @@
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
+            "system/os/Debug.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
 
             "system/rndobj/ColorXfm.cpp": "NonMatching",

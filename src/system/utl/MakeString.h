@@ -25,6 +25,8 @@ public:
     char *Str();
     FormatString &operator<<(unsigned int);
     FormatString &operator<<(int);
+    FormatString &operator<<(unsigned long);
+    FormatString &operator<<(long);
     FormatString &operator<<(const String &);
     FormatString &operator<<(const DataNode &);
     FormatString &operator<<(float);

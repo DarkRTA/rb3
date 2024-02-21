@@ -46,6 +46,15 @@
 #  include <stl/_uninitialized.h>
 #endif
 
+#ifdef _STLP_DEBUG
+// From system/os/Debug.cpp
+// Declared here since it's not relevant anywhere else
+void std_vec_range_assert(size_t value, size_t max, const char *func);
+#  define _STLP_VEC_RANGE_ASSERT(value, max) std_vec_range_assert(value, max, __FUNCTION__)
+#else
+#  define _STLP_VEC_RANGE_ASSERT(value, max) (void)0
+#endif
+
 _STLP_BEGIN_NAMESPACE
 
 // The vector base class serves one purpose, its constructor and
