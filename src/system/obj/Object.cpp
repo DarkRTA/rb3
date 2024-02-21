@@ -4,8 +4,6 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 
-ObjectDir* Hmx::Object::Dir() const { return mDir; }
-
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
     else return ObjectDir::sMainDir;

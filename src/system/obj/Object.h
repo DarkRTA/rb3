@@ -137,6 +137,8 @@ namespace Hmx {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
             else return gNullStr;
         }
+        ObjectDir* Dir() const { return mDir; }
+
         static Object* NewObject();
 
         DataNode *Property(DataArray *, bool);
@@ -156,7 +158,6 @@ namespace Hmx {
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);
-        ObjectDir* Dir() const;
         DataNode HandleType(DataArray*);
 
         DataNode OnGetArray(const DataArray*, Symbol);
