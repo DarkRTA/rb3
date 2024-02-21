@@ -18,6 +18,9 @@ public:
     int mCount;
     int mLastCount;
 
+    static float sLowCycles2Ms;
+    static float sHighCycles2Ms;
+
     Timer();
     Timer(DataArray*);
     void Restart();

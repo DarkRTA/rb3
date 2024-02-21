@@ -3,6 +3,7 @@
 #include "utl/PoolAlloc.h"
 #include "obj/Data.h"
 #include "utl/Symbol.h"
+#include <new>
 
 // every method in here is weak
 class Message {
