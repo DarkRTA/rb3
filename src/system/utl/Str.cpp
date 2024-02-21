@@ -120,17 +120,17 @@ String& String::operator=(const String& str){
 }
 
 char& String::operator[](unsigned int i){
-    ASSERT(i < mCap, 0xB6);
+    MILO_ASSERT(i < mCap, 0xB6);
     return mStr[i];
 }
 
 char String::rindex(int i) const {
-    ASSERT(i < 0 && uint(-i) <= mCap, 0xBC);
+    MILO_ASSERT(i < 0 && uint(-i) <= mCap, 0xBC);
     return mStr[mCap + i];
 }
 
 char& String::rindex(int i) {
-    ASSERT(i < 0 && uint(-i) <= mCap, 0xC2);
+    MILO_ASSERT(i < 0 && uint(-i) <= mCap, 0xC2);
     return mStr[mCap + i];
 }
 
@@ -166,7 +166,7 @@ void String::resize(unsigned int arg) {
 }
 
 unsigned int String::find(char c, unsigned int pos) const {
-    ASSERT(pos <= mCap, 0xF3);
+    MILO_ASSERT(pos <= mCap, 0xF3);
     char* p = &mStr[pos];
     while((*p != '\0') && (*p != c)) p++;
     if(*p != '\0') return p - mStr;
@@ -182,7 +182,7 @@ unsigned int String::find(const char* c) const {
 }
 
 unsigned int String::find(const char* str, unsigned int pos) const {
-    ASSERT(pos <= mCap, 0x10A);
+    MILO_ASSERT(pos <= mCap, 0x10A);
     char* found = strstr(&mStr[pos], str);
     if(found != 0) return found - mStr;
     else return -1;
@@ -192,7 +192,7 @@ unsigned int String::find_first_of(const char* str, unsigned int pos) const {
     char *p1;
     char *p2;
     if(str == 0) return -1;
-    ASSERT(pos <= mCap, 0x115);
+    MILO_ASSERT(pos <= mCap, 0x115);
     for(p1 = &mStr[pos]; *p1 != '\0'; p1++){
         for(p2 = (char*)str; *p2 != '\0'; p2++){
             if(*p1 == *p2) return p1 - mStr;
@@ -241,17 +241,17 @@ bool String::contains(const char *str) const {
 // split goes here
 
 String String::substr(unsigned int pos) const {
-    ASSERT(pos <= mCap, 0x183);
+    MILO_ASSERT(pos <= mCap, 0x183);
     return String(&mStr[pos]);
 }
 
 String String::substr(unsigned int pos, unsigned int len) const {
-    ASSERT(pos <= mCap, 0x189);
+    MILO_ASSERT(pos <= mCap, 0x189);
     char buf[512];
     if (pos + len >= mCap) {
         return String(&mStr[pos]);
     } else {
-        ASSERT(len < 512, 0x192);
+        MILO_ASSERT(len < 512, 0x192);
         strncpy(buf, &mStr[pos], len);
         buf[len] = '\0';
         return String(buf);
@@ -265,7 +265,7 @@ String String::substr(unsigned int pos, unsigned int len) const {
 // {
 //   char cVar1;
 //   char *pcVar2;
-  
+
 //   for (pcVar2 = *(char **)(this + 8); cVar1 = *pcVar2, cVar1 != '\0'; pcVar2 = pcVar2 + 1) {
 //     if ((uint)(int)cVar1 < 0x100) {
 //       cVar1 = *(char *)(*(int *)(_current_locale._56_4_ + 0x10) + (int)cVar1);
@@ -307,7 +307,7 @@ String& String::replace(unsigned int pos, unsigned int n, const char *buffer) {
     char *tmp = 0;
     char c;
 
-    ASSERT(pos <= mCap, 0x1C2);
+    MILO_ASSERT(pos <= mCap, 0x1C2);
 
     end = pos + n;
     if (end > mCap) {
@@ -353,7 +353,7 @@ String& String::erase(unsigned int start, unsigned int len){
 
 // inserts the char c into this->text at index pos, cnt times
 String& String::insert(unsigned int pos, unsigned int cnt, char c){
-    ASSERT(pos <= mCap, 0x1FC);
+    MILO_ASSERT(pos <= mCap, 0x1FC);
     String sp8;
     char *temp_r0;
     char *var_r4;
@@ -415,7 +415,7 @@ bool StrNCopy(char *dest, const char *src, int n) {
     char *var_r3;
     char *var_r4;
 
-    ASSERT(n, 0x278);
+    MILO_ASSERT(n, 0x278);
 
     var_r3 = dest;
     var_r4 = (char *)src;

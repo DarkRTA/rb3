@@ -69,7 +69,7 @@ DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
         return DataNode(n);
     }
     if(fail){
-        FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "none");
+        MILO_FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "none");
     }
     return DataNode(0);
 }
@@ -81,7 +81,7 @@ void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
             mTypeProps.SetKeyValue(name, val, true, this);
         }
         else {
-            ASSERT(prop->Size() == 2, 0x17D);
+            MILO_ASSERT(prop->Size() == 2, 0x17D);
             mTypeProps.SetArrayValue(name, prop->Int(1), val, mTypeDef, this);
         }
     }
@@ -126,14 +126,14 @@ void Hmx::Object::PropertyClear(DataArray* propArr){
 void Hmx::Object::RemoveProperty(DataArray* prop){
     static DataNode n;
     if(!SyncProperty(n, prop, 0, kPropRemove)){
-        ASSERT(prop->Size() == 2, 0x1BB);
+        MILO_ASSERT(prop->Size() == 2, 0x1BB);
         mTypeProps.RemoveArrayValue(prop->Sym(0), prop->Int(1), mTypeDef, this);
     }
 }
 
 void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
     if(!SyncProperty((DataNode&)val, prop, 0, kPropInsert)){
-        ASSERT(prop->Size() == 2, 0x1C5);
+        MILO_ASSERT(prop->Size() == 2, 0x1C5);
         mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
     }
 }
@@ -250,7 +250,7 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
 //         }
 //         if(b) PathName(this);
 //     }
-    
+
 //     return DataNode(kDataUnhandled, 0);
 // }
 

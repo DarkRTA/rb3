@@ -22,8 +22,8 @@ public:
 extern Debug TheDebug;
 extern const char* kAssertStr;
 
-#define ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))
-#define FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
+#define MILO_ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))
+#define MILO_FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
 
 #endif
 

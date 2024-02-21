@@ -13,7 +13,7 @@ const char *BinStream::Name() const {
 }
 
 BinStream& BinStream::operator<<(const char* str){
-    ASSERT(str, 0x23);
+    MILO_ASSERT(str, 0x23);
     int size = strlen(str);
     *this << size;
     Write(str, size);
@@ -23,7 +23,7 @@ BinStream& BinStream::operator<<(const char* str){
 BinStream &BinStream::operator<<(const Symbol &s) {
     const char *str = s.mStr;
     int len = strlen(str);
-    ASSERT(len < BIN_STREAM_BUF_SIZE, 0x2F);
+    MILO_ASSERT(len < BIN_STREAM_BUF_SIZE, 0x2F);
     *this << len;
     Write(str, len);
     return *this;
@@ -39,7 +39,7 @@ BinStream &BinStream::operator<<(const String &str) {
 void BinStream::ReadString(char *c, int i) {
     int a;
     *this >> a;
-    if((unsigned int)a >= i) FAIL("String chars %d > %d", (unsigned int)(a + 1), i);
+    if((unsigned int)a >= i) MILO_FAIL("String chars %d > %d", (unsigned int)(a + 1), i);
     Read(c, a);
     c[a] = 0;
 }
@@ -67,21 +67,21 @@ BinStream::~BinStream() {
 }
 
 void BinStream::EnableReadEncryption() {
-    ASSERT(!mCrypto, 0x81);
+    MILO_ASSERT(!mCrypto, 0x81);
     int a;
     *this >> a;
     mCrypto = new Rand2(a);
 }
 
 void BinStream::EnableWriteEncryption() {
-    ASSERT(!mCrypto, 0x89);
+    MILO_ASSERT(!mCrypto, 0x89);
     int a = RandomInt();
     *this << a;
     mCrypto = new Rand2(a);
 }
 
 void BinStream::DisableEncryption() {
-    ASSERT(mCrypto, 0x9D);
+    MILO_ASSERT(mCrypto, 0x9D);
     delete mCrypto;
     mCrypto = 0;
 }

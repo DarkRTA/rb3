@@ -18,12 +18,12 @@ void IntPacker::AddBool(bool b){
 
 void IntPacker::AddS(int num, unsigned int bits){
     int max = 1 << bits - 1;
-    ASSERT(( -max) <= ( num) && ( num) < ( max), 0x21);
+    MILO_ASSERT(( -max) <= ( num) && ( num) < ( max), 0x21);
     Add(num, bits);
 }
 
 void IntPacker::AddU(unsigned int num, unsigned int bits){
-    ASSERT(num < uint(1 << bits), 0x28);
+    MILO_ASSERT(num < uint(1 << bits), 0x28);
     Add(num, bits);
 }
 
@@ -32,7 +32,7 @@ void IntPacker::Add(unsigned int num, unsigned int bits){
         mBuffer[mPos >> 3] |= ((num >> u) & 1) << (mPos & 7);
         mPos++;
     }
-    ASSERT(mPos <= mSize*8, 0x36);
+    MILO_ASSERT(mPos <= mSize*8, 0x36);
 }
 
 bool IntPacker::ExtractBool(){
@@ -56,7 +56,7 @@ unsigned int IntPacker::ExtractU(unsigned int ui){
         ret |= ((mBuffer[mPos >> 3] >> (mPos & 7)) & 1) << cnt;
         mPos++;
     }
-    ASSERT(mPos <= mSize*8, 0x58);
+    MILO_ASSERT(mPos <= mSize*8, 0x58);
     return ret;
 }
 
