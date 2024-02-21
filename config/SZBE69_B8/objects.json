@@ -36,6 +36,7 @@
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
+            "system/ui/UIColor.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
