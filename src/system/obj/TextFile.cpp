@@ -69,8 +69,6 @@ DataNode TextFile::OnPrintf(DataArray* array){
     return DataNode(0);
 }
 
-// extern Debug TheDebug;
-
 // DataNode TextFile::OnReflect(DataArray* array){
 //     if(mFile != 0){
 //         TextStream* idk = TheDebug.SetReflect(this);

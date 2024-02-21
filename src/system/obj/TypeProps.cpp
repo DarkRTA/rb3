@@ -9,14 +9,14 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
     DataNode* n = KeyValue(prop, false);
     DataArray* ret;
     if(n == 0){
-        ASSERT(typeDef, 0x16);
+        MILO_ASSERT(typeDef, 0x16);
         DataArray* yuh = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
         SetKeyValue(prop, DataNode(yuh, kDataArray), true, ref);
         yuh->Release();
         ret = yuh;
     }
     else {
-        ASSERT(n->Type() == kDataArray, 0x1D);
+        MILO_ASSERT(n->Type() == kDataArray, 0x1D);
         ret = n->mValue.array;
     }
     return ret;
@@ -204,12 +204,12 @@ TypeProps& TypeProps::Copy(const TypeProps& prop, Hmx::Object* ref){
 
 // return type might be a Symbol? not sure
 DataNode* TypeProps::Key(int i) const {
-    ASSERT(mMap, 0x1CC);
+    MILO_ASSERT(mMap, 0x1CC);
     return &mMap->Node(i * 2);
 }
 
 DataNode& TypeProps::Value(int i) const {
-    ASSERT(mMap, 0x1D2);
+    MILO_ASSERT(mMap, 0x1D2);
     return mMap->Node(i * 2 + 1);
 }
 

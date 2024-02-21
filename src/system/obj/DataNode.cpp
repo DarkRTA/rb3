@@ -17,7 +17,6 @@ int gEvalIndex;
 extern const char* kNotObjectMsg;
 extern ObjectDir* gDataDir;
 extern Hmx::Object *gDataThis;
-extern Debug TheDebug;
 
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;
@@ -52,7 +51,7 @@ DataNode& DataNode::Evaluate() const {
         return *mValue.var;
     }
     else if(mType == kDataProperty){
-        ASSERT(gDataThis, 0x78);
+        MILO_ASSERT(gDataThis, 0x78);
         DataNode* n = gDataThis->Property(mValue.array, true);
         return UseQueue(*n);
     }
@@ -64,8 +63,8 @@ int DataNode::Int(const DataArray* a) const {
     if(n.mType != kDataInt){
         String s;
         n.Print(s, true);
-        if(a) FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Int", String(s));
+        if(a) MILO_FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Int", String(s));
     }
     return n.mValue.integer;
 }
@@ -74,8 +73,8 @@ int DataNode::LiteralInt(const DataArray* a) const {
     if(mType != kDataInt){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Int", String(s));
+        if(a) MILO_FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Int", String(s));
     }
     return mValue.integer;
 }
@@ -85,8 +84,8 @@ Symbol DataNode::Sym(const DataArray* a) const {
     if(n.mType != kDataSymbol){
         String s;
         n.Print(s, true);
-        if(a) FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Symbol", String(s));
+        if(a) MILO_FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Symbol", String(s));
     }
     return STR_TO_SYM(n.mValue.symbol);
 }
@@ -95,8 +94,8 @@ Symbol DataNode::LiteralSym(const DataArray* a) const {
     if(mType != kDataSymbol){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Symbol", String(s));
+        if(a) MILO_FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Symbol", String(s));
     }
     return STR_TO_SYM((char*)mValue.symbol);
 }
@@ -110,8 +109,8 @@ Symbol DataNode::ForceSym(const DataArray* a) const {
         if(n.mType != kDataString){
             String s;
             n.Print(s, true);
-            if(a) FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-            else FAIL("Data %s is not String", String(s));
+            if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+            else MILO_FAIL("Data %s is not String", String(s));
         }
         return Symbol(n.mValue.var->mValue.symbol);
     }
@@ -126,8 +125,8 @@ const char* DataNode::Str(const DataArray* a) const {
         if(n.mType != kDataString){
             String s;
             n.Print(s, true);
-            if(a) FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-            else FAIL("Data %s is not String", String(s));
+            if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+            else MILO_FAIL("Data %s is not String", String(s));
         }
         return n.mValue.var->mValue.symbol;
     }
@@ -141,8 +140,8 @@ const char* DataNode::LiteralStr(const DataArray* a) const {
         if(mType != kDataString){
             String s;
             Print(s, true);
-            if(a) FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-            else FAIL("Data %s is not String", String(s));
+            if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+            else MILO_FAIL("Data %s is not String", String(s));
         }
         return mValue.var->mValue.symbol;
     }
@@ -157,8 +156,8 @@ float DataNode::Float(const DataArray* a) const {
         if(n.mType != kDataFloat){
             String s;
             n.Print(s, true);
-            if(a) FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-            else FAIL("Data %s is not Float", String(s));
+            if(a) MILO_FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+            else MILO_FAIL("Data %s is not Float", String(s));
         }
         return n.mValue.real;
     }
@@ -172,8 +171,8 @@ float DataNode::LiteralFloat(const DataArray* a) const {
         if(mType != kDataFloat){
             String s;
             Print(s, true);
-            if(a) FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-            else FAIL("Data %s is not Float", String(s));
+            if(a) MILO_FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+            else MILO_FAIL("Data %s is not Float", String(s));
         }
         return mValue.real;
     }
@@ -183,8 +182,8 @@ DataFunc* DataNode::Func(const DataArray* a) const {
     if(mType != kDataFunc){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Func (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Func", String(s));
+        if(a) MILO_FAIL("Data %s is not Func (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Func", String(s));
     }
     return mValue.func;
 }
@@ -214,8 +213,8 @@ DataArray* DataNode::Array(const DataArray* a) const {
     if(n.mType != kDataArray){
         String s;
         n.Print(s, true);
-        if(a) FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Array", String(s));
+        if(a) MILO_FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Array", String(s));
     }
     return n.mValue.array;
 }
@@ -224,8 +223,8 @@ DataArray* DataNode::LiteralArray(const DataArray* a) const {
     if(mType != kDataArray){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Array", String(s));
+        if(a) MILO_FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Array", String(s));
     }
     return mValue.array;
 }
@@ -234,8 +233,8 @@ DataArray* DataNode::Command(const DataArray* a) const {
     if(mType != kDataCommand){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Command (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Command", String(s));
+        if(a) MILO_FAIL("Data %s is not Command (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Command", String(s));
     }
     return mValue.array;
 }
@@ -244,8 +243,8 @@ DataNode* DataNode::Var(const DataArray* a) const {
     if(mType != kDataVar){
         String s;
         Print(s, true);
-        if(a) FAIL("Data %s is not Var (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
-        else FAIL("Data %s is not Var", String(s));
+        if(a) MILO_FAIL("Data %s is not Var (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
+        else MILO_FAIL("Data %s is not Var", String(s));
     }
     return mValue.var;
 }
@@ -274,10 +273,10 @@ DataNode::DataNode(const DataArrayPtr& ptr){
 }
 
 DataNode::DataNode(DataArray *array, DataType type) {
-    ASSERT(array, 0x155);
+    MILO_ASSERT(array, 0x155);
     mValue.array = array;
     mValue.array->AddRef();
-    ASSERT(type & kDataArray, 0x158);
+    MILO_ASSERT(type & kDataArray, 0x158);
     mType = type;
 }
 

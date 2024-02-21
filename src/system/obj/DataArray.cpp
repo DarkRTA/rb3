@@ -38,14 +38,14 @@ extern int gIndent;
 DataNode& DataArray::Node(int i) const {
     bool allgood = false;
     if(i >= 0 && i < mSize) allgood = true;
-    if(!allgood) FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
+    if(!allgood) MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
     return mNodes[i];
 }
 
 DataNode& DataArray::Node(int i) {
     bool allgood = false;
     if(i >= 0 && i < mSize) allgood = true;
-    if(!allgood) FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
+    if(!allgood) MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
     return mNodes[i];
 }
 
@@ -53,7 +53,7 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
     DataNode *lol;
     DataNode *dn = mNodes;
     DataNode *dn_end = &mNodes[mSize];
-    ASSERT(type & kDataArray, 0xA6);
+    MILO_ASSERT(type & kDataArray, 0xA6);
     char begin = '\0';
     char end = '\0';
     if (type == kDataArray) {
@@ -66,7 +66,7 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
         begin = '[';
         end = ']';
     }
-    else FAIL("Unrecognized array type %d", type);
+    else MILO_FAIL("Unrecognized array type %d", type);
 
     while (dn < dn_end) {
         if (dn->Type() & 0x10)
@@ -104,11 +104,11 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
 }
 
 void* NodesLinearAlloc(int i){
-    ASSERT(gLinearNodesMemSize > 0, 0x108);
+    MILO_ASSERT(gLinearNodesMemSize > 0, 0x108);
     void* oldpos = gLinearNodesMemPos;
     (char*)gLinearNodesMemPos += i;
     gNumLinearAllocs++;
-    // ASSERT((gLinearNodesMemPos - &gLinearNodesMem[0]) <= gLinearNodesMemSize, 1);
+    // MILO_ASSERT((gLinearNodesMemPos - &gLinearNodesMem[0]) <= gLinearNodesMemSize, 1);
     return oldpos;
 }
 
@@ -260,13 +260,13 @@ DataArray* DataArray::FindArray(int tag, bool fail) const {
             }
         }
     }
-    if(fail) FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
+    if(fail) MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
     return 0;
 }
 
 DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
     DataArray* found = FindArray((int)tag.mStr, false);
-    if(found == 0 && fail) FAIL("Couldn't find %s in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
+    if(found == 0 && fail) MILO_FAIL("Couldn't find %s in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
     return found;
 }
 

@@ -22,9 +22,9 @@ public:
 extern Debug TheDebug;
 extern const char* kAssertStr;
 
-#define ASSERT(cond, line) if(!(cond)) TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, __FILE__, line, #cond))
-#define FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
-#define WARN(msg, ...) TheDebug.Notify(MakeString(msg, __VA_ARGS__))
+#define MILO_ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))
+#define MILO_FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
+#define MILO_WARN(msg, ...) TheDebug.Notify(MakeString(msg, __VA_ARGS__))
 
 #endif
 
