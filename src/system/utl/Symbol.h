@@ -17,7 +17,7 @@ public:
     // Symbol *operator=(const Symbol & s){
     //     mStr = s.mStr;
     // }
-    char *Str() const;
+    const char *Str() const { return mStr; }
     static void PreInit(int, int);
     void Init();
     void Terminate();

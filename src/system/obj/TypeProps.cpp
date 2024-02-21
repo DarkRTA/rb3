@@ -21,45 +21,45 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
     return ret;
 }
 
-// void TypeProps::SetArrayValue(Symbol prop, int i, const DataNode& val, DataArray* da, ObjRef* ref){
-//     DataNode* node = &(GetArray(prop, da, ref)->Node(i));
-//     if(node->Type() == kDataObject){
-//         Hmx::Object* obj = node->mValue.object;
-//         if(obj != nullptr){
-//             obj->Release(ref);
-//         }
-//     }
-//     *node = val;
-//     if(node->Type() == kDataObject){
-//         Hmx::Object* obj = node->mValue.object;
-//         if(obj != nullptr){
-//             obj->AddRef(ref);
-//         }
-//     }
-// }
+void TypeProps::SetArrayValue(Symbol prop, int i, const DataNode& val, DataArray* da, Hmx::Object* ref){
+    DataNode* node = &(GetArray(prop, da, ref)->Node(i));
+    if(node->Type() == kDataObject){
+        Hmx::Object* obj = node->mValue.object;
+        if(obj != 0){
+            obj->Release(ref);
+        }
+    }
+    *node = val;
+    if(node->Type() == kDataObject){
+        Hmx::Object* obj = node->mValue.object;
+        if(obj != 0){
+            obj->AddRef(ref);
+        }
+    }
+}
 
-// void TypeProps::RemoveArrayValue(Symbol prop, int i, DataArray* da, ObjRef* ref){
-//     DataArray* arr = GetArray(prop, da, ref);
-//     DataNode* node = &(arr->Node(i));
-//     if(node->Type() == kDataObject){
-//         Hmx::Object* obj = node->mValue.object;
-//         if(obj != nullptr){
-//             obj->Release(ref);
-//         }
-//     }
-//     arr->Remove(i);
-// }
+void TypeProps::RemoveArrayValue(Symbol prop, int i, DataArray* da, Hmx::Object* ref){
+    DataArray* arr = GetArray(prop, da, ref);
+    DataNode* node = &(arr->Node(i));
+    if(node->Type() == kDataObject){
+        Hmx::Object* obj = node->mValue.object;
+        if(obj != 0){
+            obj->Release(ref);
+        }
+    }
+    arr->Remove(i);
+}
 
-// void TypeProps::InsertArrayValue(Symbol prop, int i, const DataNode& val, DataArray* arr, ObjRef* ref){
-//     DataArray* asdf = GetArray(prop, arr, ref);
-//     asdf->Insert(i, val);
-//     if(val.Type() == kDataObject){
-//         Hmx::Object* obj = val.mValue.object;
-//         if(obj != nullptr){
-//             obj->AddRef(ref);
-//         }
-//     }
-// }
+void TypeProps::InsertArrayValue(Symbol prop, int i, const DataNode& val, DataArray* arr, Hmx::Object* ref){
+    DataArray* asdf = GetArray(prop, arr, ref);
+    asdf->Insert(i, val);
+    if(val.Type() == kDataObject){
+        Hmx::Object* obj = val.mValue.object;
+        if(obj != 0){
+            obj->AddRef(ref);
+        }
+    }
+}
 
 // void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, ObjRef* ref){
 //     if(b && value.Type() == kDataObject){
@@ -92,17 +92,17 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
 //     }
 // }
 
-// DataNode* TypeProps::KeyValue(Symbol key, bool fail){
-//     if(mDataDict != nullptr){
-//         for(int i = mDataDict->Size() - 2; i >= 0; i -= 2){
-//             const char* str = key.Str();
-//             if(mDataDict->Union(i).symbol == str){
-//                 return &mDataDict->Node(i + 1);
-//             }
-//         }
-//     }
-//     return nullptr;
-// }
+DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
+    if(mMap != 0){
+        for(int i = mMap->Size() - 2; i >= 0; i -= 2){
+            if(mMap->Sym(i).Str() == key.Str()){
+                return &mMap->Node(i + 1);
+            }
+        }
+    }
+    if(fail) FAIL("Key %s not found", key);
+    return 0;
+}
 
 // void GetSaveSymbolInfo(DataArray* arr, bool& b1, bool& b2){
 //     if(arr != 0){
@@ -118,14 +118,14 @@ DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref
 //     }
 // }
 
-// void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, ObjRef* ref){
-//     Hmx::Object* o = n.mValue.object;
-//     if(o == from){
-//         o->Release(ref);
-//         n = DataNode(to);
-//         if(to != nullptr) to->AddRef(ref);
-//     }
-// }
+void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
+    Hmx::Object* o = n.mValue.object;
+    if(o == from){
+        o->Release(ref);
+        n = DataNode(to);
+        if(to != 0) to->AddRef(ref);
+    }
+}
 
 // void TypeProps::Replace(Hmx::Object* from, Hmx::Object* to, ObjRef* ref){
 //     if(mDataDict != nullptr){
