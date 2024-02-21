@@ -3,6 +3,7 @@
 #include "os/Debug.h"
 #include "utl/Str.h"
 #include "utl/MakeString.h"
+#include "milo_types.h"
 
 extern Debug TheDebug;
 extern const char* kAssertStr;
@@ -18,21 +19,14 @@ void IntPacker::AddBool(bool b){
     Add(b, 1);
 }
 
-// TODO: add ASSERT macros here such that the asm isn't changed
 void IntPacker::AddS(int num, unsigned int bits){
     int max = 1 << bits - 1;
-    bool b = ((-max <= num) && (num < max));
-    if(!b){
-        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "IntPacker.cpp", 0x21, "( -max) <= ( num) && ( num) < ( max)"));
-    }
+    ASSERT(( -max) <= ( num) && ( num) < ( max), 0x21);
     Add(num, bits);
 }
 
-// TODO: add ASSERT macros here such that the asm isn't changed
 void IntPacker::AddU(unsigned int num, unsigned int bits){
-    if(num >= (unsigned int)(1 << bits)){
-        TheDebug.Fail(MakeString<const char*, int, const char*>(kAssertStr, "IntPacker.cpp", 0x28, "num < uint(1 << bits)"));
-    }
+    ASSERT(num < uint(1 << bits), 0x28);
     Add(num, bits);
 }
 
