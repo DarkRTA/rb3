@@ -41,7 +41,6 @@ DataNode& UseQueue(const DataNode& node){
     return gEvalNode[i];
 }
 
-// TODO: edit the Data.h header such that the weak DataNode dtor can be implemented without errors of an incomplete DataArray class
 DataNode& DataNode::Evaluate() const {
     if(mType == kDataCommand){
         DataNode lol = mValue.array->Execute();
