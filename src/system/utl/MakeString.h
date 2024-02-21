@@ -32,7 +32,10 @@ public:
     FormatString &operator<<(Symbol);
 };
 
-const char *MakeString(const char *);
+inline const char *MakeString(const char * c){
+    FormatString fs(c);
+    return fs.Str();
+}
 
 template <class T> const char *MakeString(const char *c, T t) {
     FormatString fs(c);

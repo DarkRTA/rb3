@@ -109,9 +109,7 @@ public:
 
     // TODO: implement this function without the compiler getting angry
     // this is weak and should be defined here, but for some reason says DataArray is "incomplete"
-    // ~DataNode(){
-    //     if((mType & kDataArray) != 0) mValue.array->Release();
-    // }
+    ~DataNode();
 
     DataType Type() const { return mType; }
     bool CompatibleType(DataType) const;
@@ -240,6 +238,10 @@ public:
 TextStream& operator<<(TextStream&, const DataArray*);
 BinStream& operator>>(BinStream&, DataArray*&);
 BinStream& operator<<(BinStream&, const DataArray*);
+
+inline DataNode::~DataNode(){
+    if((mType & kDataArray) != 0) mValue.array->Release();
+}
 
 class DataArrayPtr {
 public:
