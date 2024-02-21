@@ -5,9 +5,6 @@
 #include "utl/MakeString.h"
 #include "milo_types.h"
 
-extern Debug TheDebug;
-extern const char* kAssertStr;
-
 IntPacker::IntPacker(void* buf, unsigned int size){
     mBuffer = (unsigned char*)buf;
     mPos = 0;

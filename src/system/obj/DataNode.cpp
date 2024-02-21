@@ -12,7 +12,6 @@ DataNode gEvalNode[8];
 int gEvalIndex;
 
 extern Hmx::Object *gDataThis;
-extern Debug TheDebug;
 
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;
