@@ -36,11 +36,13 @@
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
+            "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
+            "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
