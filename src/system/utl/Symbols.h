@@ -1,6 +1,9 @@
 #ifndef UTL_SYMBOLS_H
 #define UTL_SYMBOLS_H
 #include "utl/Symbol.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 class BeginLiteralSymbols {
 public:

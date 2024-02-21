@@ -13,6 +13,7 @@ namespace Hmx {
         float blue;
         float alpha;
 
+        Color() : red(1.0f), green(1.0f), blue(1.0f), alpha(1.0f) {}
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
 

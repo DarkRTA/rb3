@@ -12,12 +12,14 @@ public:
     Symbol(const char *); // ctor pulled from gdrb
 
     // methods found in RB2
-    bool operator==(const Symbol &); // fn_8000FCA4
+    bool operator==(const Symbol & s){
+        return mStr == s.mStr;
+    }
     bool operator!=(const char *);
     // Symbol *operator=(const Symbol & s){
     //     mStr = s.mStr;
     // }
-    char *Str() const;
+    const char *Str() const { return mStr; }
     static void PreInit(int, int);
     void Init();
     void Terminate();

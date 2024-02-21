@@ -2,15 +2,20 @@
 #include "os/Debug.h"
 #include "utl/Str.h"
 #include "utl/MakeString.h"
+#include "obj/Object.h"
+#include "obj/Dir.h"
+#include <new>
+#include "utl/PoolAlloc.h"
 // #include <string.h>
 // #include <new>
 // #include <map>
-// #include "obj/Object.h"
 
 // // std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 int gEvalIndex;
 
+extern const char* kNotObjectMsg;
+extern ObjectDir* gDataDir;
 extern Hmx::Object *gDataThis;
 
 bool DataNode::CompatibleType(DataType ty) const {
@@ -37,7 +42,6 @@ DataNode& UseQueue(const DataNode& node){
     return gEvalNode[i];
 }
 
-// TODO: edit the Data.h header such that the weak DataNode dtor can be implemented without errors of an incomplete DataArray class
 DataNode& DataNode::Evaluate() const {
     if(mType == kDataCommand){
         DataNode lol = mValue.array->Execute();
@@ -184,9 +188,25 @@ DataFunc* DataNode::Func(const DataArray* a) const {
     return mValue.func;
 }
 
-// Hmx::Object* DataNode::GetObj(const DataArray* da) const {
-
-// }
+Hmx::Object* DataNode::GetObj(const DataArray* da) const {
+    DataNode& n = Evaluate();
+    if(n.Type() == kDataObject) return n.mValue.object;
+    else {
+        const char* str = n.LiteralStr(da);
+        Hmx::Object* ret = 0;
+        if(*str != '\0'){
+            ret = gDataDir->FindObject(str, true);
+            if(ret == 0){
+                const char* msg;
+                if(PathName(gDataDir) != 0) msg = PathName(gDataDir);
+                else msg = "**no file**";
+                TheDebug.Fail(MakeString(kNotObjectMsg, str, msg));
+            }
+            
+        }
+        return ret;
+    }
+}
 
 DataArray* DataNode::Array(const DataArray* a) const {
     DataNode& n = Evaluate();
@@ -235,20 +255,15 @@ DataNode::DataNode(const DataNode& node){
     if(mType & kDataArray) mValue.array->AddRef();
 }
 
-// extern void* _PoolAlloc(int, int, int);
+DataNode::DataNode(const char* c){
+    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(c, strlen(c) + 1);
+    mType = kDataString;
+}
 
-// // fn_803231CC
-// DataNode::DataNode(const char *c) {
-//     mValue.array = new (_PoolAlloc(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
-//     mType = kDataString;
-// }
-
-// // fn_8032324C
-// DataNode::DataNode(const String &s) {
-//     mValue.array =
-//         new (_PoolAlloc(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
-//     mType = kDataString;
-// }
+DataNode::DataNode(const String& s){
+    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(s.c_str(), s.length() + 1);
+    mType = kDataString;
+}
 
 DataNode::DataNode(const DataArrayPtr& ptr){
     DataArray* arr = ptr.mData;

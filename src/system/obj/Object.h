@@ -5,8 +5,8 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
-// #include "os/System.h"
-// #include "obj/Utl.h"
+#include "os/System.h"
+#include "obj/Utl.h"
 
 // forward declarations
 class DataNode;
@@ -36,11 +36,12 @@ public:
     DataArray* mMap;
 
     TypeProps() : mMap(0) {} // weak
-    ~TypeProps(); // weak
+    ~TypeProps(); // although weak, it actually does stuff
 
     void Save(BinStream &, Hmx::Object *);
-    void Load(BinStream &, unsigned short, Hmx::Object *);
+    void Load(BinStream &, bool, Hmx::Object *);
 
+    void ClearKeyValue(Symbol, Hmx::Object*);
     void ClearAll(Hmx::Object*);
     void ReleaseObjects(Hmx::Object*);
     void AddRefObjects(Hmx::Object*);
@@ -61,7 +62,7 @@ public:
 class ObjRef {
 public:
     ObjRef(){}
-    virtual ~ObjRef();
+    virtual ~ObjRef(){}
     virtual Hmx::Object* RefOwner() = 0;
     virtual void Replace(Hmx::Object*, Hmx::Object*) = 0;
     virtual bool IsDirPtr(){ return 0; }
@@ -92,19 +93,19 @@ namespace Hmx {
             return StaticClassName();
         }
         virtual void SetType(Symbol s){
-            // static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
-            // if(s.IsNull()) SetTypeDef(0);
-            // else {
-            //     DataArray* found = types->FindArray(s, false);
-            //     if(found != 0){
-            //         SetTypeDef(found);
-            //     }
-            //     else {
-            //         PathName(this);
-            //         ClassName();
-            //         SetTypeDef(0);
-            //     }
-            // }
+            static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
+            if(s.IsNull()) SetTypeDef(0);
+            else {
+                DataArray* found = types->FindArray(s, false);
+                if(found != 0){
+                    SetTypeDef(found);
+                }
+                else {
+                    PathName(this);
+                    ClassName();
+                    SetTypeDef(0);
+                }
+            }
         }
         virtual DataNode Handle(DataArray*, bool);
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
@@ -132,8 +133,8 @@ namespace Hmx {
         }
 
         Symbol Type() const {
-            // if(mTypeDef != 0) return mTypeDef->Sym(0);
-            // else return gNullStr;
+            if(mTypeDef != 0) return mTypeDef->Sym(0);
+            else return gNullStr;
         }
         static Object* NewObject();
 

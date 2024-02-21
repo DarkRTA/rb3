@@ -4,24 +4,6 @@
 #include <cstddef>
 #include <exception>
 
-// Not sure where these should go, leaving here for now
-enum PoolType {
-    MainPool,
-    FastPool
-};
-
-extern void *_MemAlloc(int size, int);
-extern void MemFree(void *ptr);
-
-extern void *_PoolAlloc(int size, int, PoolType pool);
-extern void _PoolFree(int size, PoolType pool, void *ptr);
-
-extern void *MemOrPoolAlloc(int size, PoolType pool);
-extern void MemOrPoolFree(int size, PoolType pool, void *ptr);
-
-extern void *_MemOrPoolAllocSTL(int size, PoolType pool);
-extern void _MemOrPoolFreeSTL(int size, PoolType pool, void *ptr);
-
 namespace std {
     class bad_alloc : public exception {
     public:
