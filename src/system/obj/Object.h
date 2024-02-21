@@ -141,12 +141,12 @@ namespace Hmx {
 
         static Object* NewObject();
 
-        DataNode *Property(DataArray *, bool);
+        DataNode *Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
         int PropertySize(DataArray *);
-        DataNode OnAppendToArray(const DataArray*);
+        DataNode OnPropertyAppend(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
         void PropertyClear(DataArray*);
@@ -159,8 +159,7 @@ namespace Hmx {
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);
         DataNode HandleType(DataArray*);
-
-        DataNode OnGetArray(const DataArray*, Symbol);
+        DataNode PropertyArray(Symbol);
         char* GetHeap();
 
     };

@@ -12,7 +12,7 @@ public:
     Symbol(const char *); // ctor pulled from gdrb
 
     // methods found in RB2
-    bool operator==(const Symbol & s){
+    bool operator==(const Symbol & s) const {
         return mStr == s.mStr;
     }
     bool operator!=(const char *);

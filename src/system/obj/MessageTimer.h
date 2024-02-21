@@ -12,7 +12,7 @@ public:
 
     MessageTimer(Hmx::Object*, Symbol);
     ~MessageTimer();
-    bool Active();
+    static bool Active();
 };
 
 #endif
