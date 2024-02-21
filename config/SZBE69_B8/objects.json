@@ -4,6 +4,25 @@
         "cflags": "band3",
         "objects": {}
     },
+    "network": {
+        "mw_version": "Wii/1.3",
+        "cflags": "network",
+        "objects": {
+            "network/net/JsonUtils.cpp": "NonMatching"
+        }
+    },
+    "network/net/json_c": {
+        "mw_version": "Wii/1.3",
+        "cflags": "json_c",
+        "objects": {
+            "network/net/json-c/arraylist.c": "Matching",
+            "network/net/json-c/debug.c": "NonMatching",
+            "network/net/json-c/json_object.c": "NonMatching",
+            "network/net/json-c/json_tokener.c": "NonMatching",
+            "network/net/json-c/linkhash.c": "Matching",
+            "network/net/json-c/printbuf.c": "Matching"
+        }
+    },
     "system": {
         "mw_version": "Wii/1.3",
         "cflags": "system",
