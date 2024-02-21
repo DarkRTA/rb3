@@ -2,6 +2,8 @@
 #define UTL_MESSAGES_H
 #include "obj/Msg.h"
 #include "utl/Symbols.h"
+#include "utl/Messages2.h"
+#include "utl/Messages3.h"
 
 #define LITERAL_MSG(name) Message name##_msg##(#name)
 
