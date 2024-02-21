@@ -492,8 +492,7 @@ public:
   };
 #endif
 
-  // No main constructor it seems, only a destructor
-  // StlNodeAlloc() _STLP_NOTHROW {}
+  StlNodeAlloc() _STLP_NOTHROW {}
   StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
   ~StlNodeAlloc() _STLP_NOTHROW {}
 
