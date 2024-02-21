@@ -3,7 +3,7 @@
 #include "obj/Data.h"
 #include "utl/Symbol.h"
 
-const char* gNullStr = "";
+extern const char* gNullStr;
 
 DataNode OnSystemLanguage(DataArray*);
 DataNode OnSystemExec(DataArray*);
