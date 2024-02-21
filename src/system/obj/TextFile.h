@@ -6,6 +6,7 @@
 #include "obj/Utl.h"
 #include "os/File.h"
 #include "os/System.h"
+#include "os/Debug.h"
 
 class TextFile : public Hmx::Object, TextStream {
 public:
@@ -13,30 +14,12 @@ public:
 
     TextFile(): mFile(0) {}
     virtual ~TextFile(){ delete mFile; }
-    virtual Symbol ClassName() const{ return StaticClassName(); }
-    virtual void SetType(Symbol s){
-        static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
-        if(s.IsNull()) SetTypeDef(0);
-        else {
-            DataArray* found = types->FindArray(s, false);
-            if(found != 0){
-                SetTypeDef(found);
-            }
-            else {
-                PathName(this);
-                ClassName();
-                SetTypeDef(0);
-            }
-        }
-    }
+    OBJ_CLASSNAME(File);
+    OBJ_SET_TYPE(TextFile);
     virtual DataNode Handle(DataArray*, bool);
     virtual void SetName(const char*, ObjectDir*);
     virtual void Print(const char *);
-
-    static Symbol StaticClassName(){
-        static Symbol name("File");
-        return name;
-    }
+    
     static TextFile* NewObject(){ return new TextFile(); }
     // static Init
 
