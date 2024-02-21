@@ -36,11 +36,12 @@ public:
     DataArray* mMap;
 
     TypeProps() : mMap(0) {} // weak
-    ~TypeProps(); // weak
+    // ~TypeProps(){}
 
     void Save(BinStream &, Hmx::Object *);
     void Load(BinStream &, unsigned short, Hmx::Object *);
 
+    void ClearKeyValue(Symbol, Hmx::Object*);
     void ClearAll(Hmx::Object*);
     void ReleaseObjects(Hmx::Object*);
     void AddRefObjects(Hmx::Object*);
