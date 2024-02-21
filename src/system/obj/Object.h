@@ -5,6 +5,8 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
+#include "os/System.h"
+#include "obj/Utl.h"
 
 // forward declarations
 class DataNode;
@@ -13,9 +15,6 @@ class ObjectDir;
 namespace Hmx {
     class Object;
 }
-
-#include "os/System.h"
-#include "obj/Utl.h"
 
 enum PropOp {
     kPropGet = 1,
@@ -37,10 +36,10 @@ public:
     DataArray* mMap;
 
     TypeProps() : mMap(0) {} // weak
-    // ~TypeProps(){}
+    ~TypeProps(); // although weak, it actually does stuff
 
     void Save(BinStream &, Hmx::Object *);
-    void Load(BinStream &, unsigned short, Hmx::Object *);
+    void Load(BinStream &, bool, Hmx::Object *);
 
     void ClearKeyValue(Symbol, Hmx::Object*);
     void ClearAll(Hmx::Object*);
@@ -63,7 +62,7 @@ public:
 class ObjRef {
 public:
     ObjRef(){}
-    virtual ~ObjRef();
+    virtual ~ObjRef(){}
     virtual Hmx::Object* RefOwner() = 0;
     virtual void Replace(Hmx::Object*, Hmx::Object*) = 0;
     virtual bool IsDirPtr(){ return 0; }

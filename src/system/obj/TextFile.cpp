@@ -11,18 +11,19 @@ void TextFile::SetName(const char* c, ObjectDir* dir){
     mFile = 0;
 }
 
-// void TextFile::Print(const char* str){
-//     char kCRLF[2] = { '\r', '\n' };
-//     char *p = (char *)str;
-//     while (*p != '\0') {
-//         if (*p == '\n' && p[1] != '\r'){
-//             mFile->V_Unk5(kCRLF, 2);
-//         }
-//         else mFile->V_Unk5(p, 1);
-//         mFile->Flush();
-//         p++;
-//     }
-// }
+void TextFile::Print(const char* str){
+    ASSERT(mFile, 0x2F);
+    char kCRLF[2] = { '\r', '\n' };
+    char *p = (char *)str;
+    while (*p != '\0') {
+        if (*p == '\n' && p[1] != '\r'){
+            mFile->Write(kCRLF, 2);
+        }
+        else mFile->Write(p, 1);
+        mFile->Flush();
+        p++;
+    }
+}
 
 // DataNode TextFile::Handle(DataArray* _msg, bool _warn){
 //     Symbol match = _msg->Sym(1);
@@ -48,25 +49,25 @@ void TextFile::SetName(const char* c, ObjectDir* dir){
 //     return DataNode(kDataUnhandled, 0);
 // }
 
-// DataNode TextFile::OnPrint(DataArray* array){
-//     if(mFile != 0){
-//         for(int i = 2; i < array->Size(); i++){
-//             array->Evaluate(i).Print(*this, true);
-//         }
-//     }
-//     return DataNode(0);
-// }
+DataNode TextFile::OnPrint(DataArray* array){
+    if(mFile != 0){
+        for(int i = 2; i < array->Size(); i++){
+            array->Evaluate(i).Print(*this, true);
+        }
+    }
+    return DataNode(0);
+}
 
-// DataNode TextFile::OnPrintf(DataArray* array){
-//     if(mFile != 0){
-//         FormatString fs(array->Str(2));
-//         for(int i = 3; i < array->Size(); i++){
-//             fs << array->Evaluate(i);
-//         }
-//         Print(fs.Str());
-//     }
-//     return DataNode(0);
-// }
+DataNode TextFile::OnPrintf(DataArray* array){
+    if(mFile != 0){
+        FormatString fs(array->Str(2));
+        for(int i = 3; i < array->Size(); i++){
+            fs << array->Evaluate(i);
+        }
+        Print(fs.Str());
+    }
+    return DataNode(0);
+}
 
 // extern Debug TheDebug;
 

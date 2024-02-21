@@ -2,15 +2,18 @@
 #include "os/Debug.h"
 #include "utl/Str.h"
 #include "utl/MakeString.h"
+#include "obj/Object.h"
+#include "obj/Dir.h"
 // #include <string.h>
 // #include <new>
 // #include <map>
-// #include "obj/Object.h"
 
 // // std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 int gEvalIndex;
 
+extern const char* kNotObjectMsg;
+extern ObjectDir* gDataDir;
 extern Hmx::Object *gDataThis;
 extern Debug TheDebug;
 
@@ -185,9 +188,25 @@ DataFunc* DataNode::Func(const DataArray* a) const {
     return mValue.func;
 }
 
-// Hmx::Object* DataNode::GetObj(const DataArray* da) const {
-
-// }
+Hmx::Object* DataNode::GetObj(const DataArray* da) const {
+    DataNode& n = Evaluate();
+    if(n.Type() == kDataObject) return n.mValue.object;
+    else {
+        const char* str = n.LiteralStr(da);
+        Hmx::Object* ret = 0;
+        if(*str != '\0'){
+            ret = gDataDir->FindObject(str, true);
+            if(ret == 0){
+                const char* msg;
+                if(PathName(gDataDir) != 0) msg = PathName(gDataDir);
+                else msg = "**no file**";
+                TheDebug.Fail(MakeString(kNotObjectMsg, str, msg));
+            }
+            
+        }
+        return ret;
+    }
+}
 
 DataArray* DataNode::Array(const DataArray* a) const {
     DataNode& n = Evaluate();
