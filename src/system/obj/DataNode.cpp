@@ -4,6 +4,8 @@
 #include "utl/MakeString.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
+#include <new>
+#include "utl/PoolAlloc.h"
 // #include <string.h>
 // #include <new>
 // #include <map>
@@ -254,20 +256,15 @@ DataNode::DataNode(const DataNode& node){
     if(mType & kDataArray) mValue.array->AddRef();
 }
 
-// extern void* _PoolAlloc(int, int, int);
+DataNode::DataNode(const char* c){
+    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(c, strlen(c) + 1);
+    mType = kDataString;
+}
 
-// // fn_803231CC
-// DataNode::DataNode(const char *c) {
-//     mValue.array = new (_PoolAlloc(0x10, 0x10, 1)) DataArray(c, strlen(c) + 1);
-//     mType = kDataString;
-// }
-
-// // fn_8032324C
-// DataNode::DataNode(const String &s) {
-//     mValue.array =
-//         new (_PoolAlloc(0x10, 0x10, 1)) DataArray(s.c_str(), s.length() + 1);
-//     mType = kDataString;
-// }
+DataNode::DataNode(const String& s){
+    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(s.c_str(), s.length() + 1);
+    mType = kDataString;
+}
 
 DataNode::DataNode(const DataArrayPtr& ptr){
     DataArray* arr = ptr.mData;
