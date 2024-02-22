@@ -44,6 +44,7 @@
 
             "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/obj/DataFlex.c": "NonMatching",
+            "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/Object.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/TextFile.cpp": "NonMatching",

@@ -16,8 +16,8 @@ extern const char* kNotObjectMsg;
 extern ObjectDir* gDataDir;
 extern Hmx::Object *gDataThis;
 
-DataNode& DataVariable(Symbol s){
-    return gDataVars[s];
+DataNode* DataVariable(Symbol s){
+    return &gDataVars[s];
 }
 
 bool DataVarExists(Symbol s){
