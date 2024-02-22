@@ -2,8 +2,6 @@
 #include "os/Debug.h"
 #include "milo_types.h"
 
-DOFProc* TheDOFProc;
-
 DOFProc::DOFProc(){
     
 }

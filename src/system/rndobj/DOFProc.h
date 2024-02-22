@@ -26,4 +26,6 @@ public:
     static DOFProc& Params();
 };
 
+DOFProc* TheDOFProc;
+
 #endif

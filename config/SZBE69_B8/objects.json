@@ -31,6 +31,8 @@
             "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
             "system/os/OnlineID.cpp": "Matching",
+            "system/os/UsbMidiGuitarMsgs.cpp": "NonMatching",
+            "system/os/UsbMidiKeyboardMsgs.cpp": "NonMatching",
 
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",

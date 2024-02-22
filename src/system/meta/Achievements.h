@@ -7,7 +7,7 @@ class LocalUser;
 
 class Achievements : public Hmx::Object {
 public:
-    int unk_1c;
+    int unk_1c; // if i had to guess, this would be a LocalUser*
     bool mAllowAchievements;
 
     Achievements();
