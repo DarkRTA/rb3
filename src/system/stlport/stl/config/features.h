@@ -83,10 +83,6 @@
 #endif
 
 /* ========================================================= */
-/* This file is used for compatibility; it accepts old-style config
-   switches */
-#include <stl/config/compat.h>
-
 /* Common configuration file for this particular installation. */
 #include <stl/config/host.h>
 

@@ -29,50 +29,15 @@
 #  define _STLP_HAS_NO_NAMESPACES
 # endif
 
-# if defined(__MINGW32__)
-#   define _STLP_NO_DRAND48
-# endif
-
 /* Modena C++ library  */
-#if defined (__MWERKS__) && __MWERKS__ <= 0x2303 || (defined (__KCC) && __KCC_VERSION < 3400)
+#if defined (__MWERKS__) && __MWERKS__ <= 0x2303
 # include <mcompile.h>
 # define _STLP_USE_MSIPL 1
-# if defined (__KCC) || (defined(__MSL_CPP__) && \
-       ( (__MSL_CPP__ >= 0x5000 && defined( _MSL_NO_MESSAGE_FACET )) || \
-   (__MSL_CPP__ < 0x5000 && defined( MSIPL_NL_TYPES )))  \
-   )
+# if defined(__MSL_CPP__) && \
+    ((__MSL_CPP__ >= 0x5000 && defined( _MSL_NO_MESSAGE_FACET )) || \
+    (__MSL_CPP__ < 0x5000 && defined( MSIPL_NL_TYPES )))
 #  define _STLP_NO_NATIVE_MESSAGE_FACET 1
 # endif
 #endif
 
-/* common switches for EDG front-end */
-# if defined (__EDG_SWITCHES)
-#   if !(defined(_TYPENAME) || defined (_TYPENAME_IS_KEYWORD))
-#     undef  _STLP_NEED_TYPENAME
-#     define _STLP_NEED_TYPENAME 1
-#   endif
-#   if !defined(_WCHAR_T_IS_KEYWORD)
-#     undef _STLP_NO_WCHAR_T
-#     define _STLP_NO_WCHAR_T 1
-#   endif
-#   ifndef _PARTIAL_SPECIALIZATION_OF_CLASS_TEMPLATES
-#     undef _STLP_NO_CLASS_PARTIAL_SPECIALIZATION
-#     define _STLP_NO_CLASS_PARTIAL_SPECIALIZATION 1
-#   endif
-#   ifndef _MEMBER_TEMPLATES
-#     undef _STLP_NO_MEMBER_TEMPLATES
-#     define _STLP_NO_MEMBER_TEMPLATES 1
-#     undef _STLP_NO_MEMBER_TEMPLATE_CLASSES
-#     define _STLP_NO_MEMBER_TEMPLATE_CLASSES 1
-#   endif
-#   if !defined(_MEMBER_TEMPLATE_KEYWORD)
-#     undef  _STLP_NO_MEMBER_TEMPLATE_KEYWORD
-#     define _STLP_NO_MEMBER_TEMPLATE_KEYWORD 1
-#   endif
-#   if !defined (__EXCEPTIONS) && ! defined (_EXCEPTIONS)
-#     undef  _STLP_HAS_NO_EXCEPTIONS
-#     define _STLP_HAS_NO_EXCEPTIONS
-#   endif
-#   undef __EDG_SWITCHES
-# endif /* EDG */
 #endif
