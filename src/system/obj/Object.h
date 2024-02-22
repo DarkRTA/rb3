@@ -7,6 +7,7 @@
 #include "utl/TextStream.h"
 #include "os/System.h"
 #include "obj/Utl.h"
+#include "os/Debug.h"
 
 // forward declarations
 class DataNode;
@@ -68,6 +69,27 @@ public:
     virtual bool IsDirPtr(){ return 0; }
 };
 
+#define OBJ_SET_TYPE(classname) \
+    virtual void SetType(Symbol classname){ \
+        static DataArray* types = SystemConfig("objects", StaticClassName(), "types"); \
+        if(classname.IsNull()) SetTypeDef(0); \
+        else { \
+            DataArray* found = types->FindArray(classname, false); \
+            if(found != 0) SetTypeDef(found); \
+            else { \
+                MILO_WARN("%s:%s couldn't find type %s", ClassName(), PathName(this), classname); \
+                SetTypeDef(0); \
+            } \
+        } \
+    }
+
+#define OBJ_CLASSNAME(classname) \
+    virtual Symbol ClassName() const { return StaticClassName(); } \
+    static Symbol StaticClassName(){ \
+        static Symbol name(#classname); \
+        return name; \
+    }
+
 namespace Hmx {
     class Object : public ObjRef {
     public:
@@ -89,24 +111,8 @@ namespace Hmx {
         virtual ~Object();
         virtual Hmx::Object* RefOwner(){}
         virtual void Replace(Hmx::Object*, Hmx::Object*);
-        virtual Symbol ClassName() const {
-            return StaticClassName();
-        }
-        virtual void SetType(Symbol s){
-            static DataArray* types = SystemConfig("objects", StaticClassName(), "types");
-            if(s.IsNull()) SetTypeDef(0);
-            else {
-                DataArray* found = types->FindArray(s, false);
-                if(found != 0){
-                    SetTypeDef(found);
-                }
-                else {
-                    PathName(this);
-                    ClassName();
-                    SetTypeDef(0);
-                }
-            }
-        }
+        OBJ_CLASSNAME(Object);
+        OBJ_SET_TYPE(Object);
         virtual DataNode Handle(DataArray*, bool);
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
         virtual void Save(BinStream&);
@@ -127,23 +133,20 @@ namespace Hmx {
         // T* New<T>();
         // vector& Refs();
 
-        static Symbol StaticClassName(){
-            static Symbol name("Object");
-            return name;
-        }
-
         Symbol Type() const {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
             else return gNullStr;
         }
+        ObjectDir* Dir() const { return mDir; }
+
         static Object* NewObject();
 
-        DataNode *Property(DataArray *, bool);
+        DataNode *Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool);
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
         int PropertySize(DataArray *);
-        DataNode OnAppendToArray(const DataArray*);
+        DataNode OnPropertyAppend(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
         void PropertyClear(DataArray*);
@@ -155,10 +158,8 @@ namespace Hmx {
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);
-        ObjectDir* Dir() const;
         DataNode HandleType(DataArray*);
-
-        DataNode OnGetArray(const DataArray*, Symbol);
+        DataNode PropertyArray(Symbol);
         char* GetHeap();
 
     };

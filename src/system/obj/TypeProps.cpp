@@ -101,7 +101,7 @@ DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
             }
         }
     }
-    if(fail) FAIL("Key %s not found", key);
+    if(fail) MILO_FAIL("Key %s not found", key);
     return 0;
 }
 
@@ -110,7 +110,7 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
         for(int i = 2; i < arr->Size(); i++){
             if(arr->Sym(i) == proxy_save) proxy = true;
             else if(arr->Sym(i) == no_save) none = true;
-            else WARN("Unknown type def attribute %s", arr->Sym(i));
+            else MILO_WARN("Unknown type def attribute %s", arr->Sym(i));
         }
     }
 }

@@ -9,9 +9,7 @@ void Achievements::Init() {
 void Achievements::Poll() {return;}
 
 void Achievements::Terminate() {
-    if (TheAchievements != 0) {
-        delete TheAchievements;
-    }
+    delete TheAchievements;
     TheAchievements = 0;
 }
 

@@ -3,6 +3,7 @@
 #include "utl/PoolAlloc.h"
 #include "obj/Data.h"
 #include "utl/Symbol.h"
+#include <new>
 
 // every method in here is weak
 class Message {
@@ -115,5 +116,19 @@ public:
     DataArray* mData;
     DataArray* GetArray(){ return mData; }
 };
+
+#define BEGIN_MESSAGE(classname, type, ...) \
+    class classname : public Message { \
+    public: \
+        classname(__VA_ARGS__); \
+        virtual ~classname(){} \
+        static Symbol Type(){ \
+            static Symbol t(#type); \
+            return t; \
+        } \
+
+        // custom methods, additional members go here
+
+#define END_MESSAGE }
 
 #endif

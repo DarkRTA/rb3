@@ -17,6 +17,14 @@ namespace Hmx {
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
 
+        Color& operator=(const Color& c){
+            red = c.red; green = c.green; blue = c.blue; alpha = c.alpha;
+        }
+
+        void Set(float f1, float f2, float f3, float f4){
+            red = f1; green = f2; blue = f3; alpha = f4;
+        }
+
         // all weak
         // Color() {};
         // Color(int);

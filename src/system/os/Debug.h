@@ -26,6 +26,11 @@ extern const char* kAssertStr;
 #define MILO_FAIL(msg, ...) TheDebug.Fail(MakeString(msg, __VA_ARGS__))
 #define MILO_WARN(msg, ...) TheDebug.Notify(MakeString(msg, __VA_ARGS__))
 
+class DebugNotifier {
+public:
+    DebugNotifier& operator<<(const char* c){ TheDebug.Notify(c); }
+};
+
 #endif
 
 // class Debug : public TextStream {

@@ -1,0 +1,69 @@
+#ifndef UTL_MESSAGES2_H
+#define UTL_MESSAGES2_H
+#include "utl/Messages.h"
+
+extern Message get_songselect_screen_msg;
+extern Message goto_create_dialog_msg;
+extern Message goto_customize_clothing_screen_msg;
+extern Message handle_acc_guitartutorial01_msg;
+extern Message handle_acc_guitartutorial02_msg;
+extern Message handle_acc_guitartutorial03_msg;
+extern Message handle_audio_finished_msg;
+extern Message handle_cant_launch_charactercreator_msg;
+extern Message handle_continue_msg;
+extern Message handle_goto_difficultyselect_msg;
+extern Message handle_goto_leaderboard_msg;
+extern Message handle_goto_leaderboard_hub_msg;
+extern Message handle_goto_musiclibrary_msg;
+extern Message handle_launch_calibration_msg;
+extern Message handle_launch_oneway_setlistbrowser_msg;
+extern Message handle_snap_state_category_msg;
+extern Message handle_snap_state_details_msg;
+extern Message handle_snap_state_goal_msg;
+extern Message handle_snap_state_group_msg;
+extern Message handle_state_category_to_goal_msg;
+extern Message handle_state_category_to_group_msg;
+extern Message handle_state_details_to_goal_msg;
+extern Message handle_state_goal_to_category_msg;
+extern Message handle_state_goal_to_details_msg;
+extern Message handle_state_group_to_category_msg;
+extern Message hide_msg;
+extern Message hide_character_msg;
+extern Message hide_invitation_notification_msg;
+extern Message hide_key_msg;
+extern Message hide_list_msg;
+extern Message hide_message_msg;
+extern Message hide_physical_write_icon_msg;
+extern Message highlighted_tex_msg;
+extern Message hopo_msg;
+extern Message icon_hide_msg;
+extern Message icon_show_msg;
+extern Message init_msg;
+extern Message intro_msg;
+extern Message intro_remote_msg;
+extern Message is_loaded_msg;
+extern Message is_message_hiding_msg;
+extern Message is_system_cheat_msg;
+extern Message kick_note_msg;
+extern Message lb_failure_msg;
+extern Message lb_in_progress_msg;
+extern Message leave_setlist_msg;
+extern Message list_targets_msg;
+extern Message load_msg;
+extern Message load_panels_msg;
+extern Message loop_msg;
+extern Message motd_msg;
+extern Message move_on_msg;
+extern Message move_on_quickplay_msg;
+extern Message movie_done_msg;
+extern Message net_sync_scroll_msg;
+extern Message new_provider_msg;
+extern Message no_recommendations_msg;
+extern Message on_cancel_msg;
+extern Message on_change_setlist_mode_msg;
+extern Message on_connection_lost_msg;
+extern Message on_extend_msg;
+extern Message on_loading_characters_msg;
+extern Message on_not_multiplayer_capable_msg;
+
+#endif

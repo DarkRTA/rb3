@@ -31,16 +31,26 @@
             "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
             "system/os/OnlineID.cpp": "Matching",
+            "system/os/UsbMidiGuitarMsgs.cpp": "NonMatching",
+            "system/os/UsbMidiKeyboardMsgs.cpp": "NonMatching",
 
             "system/rndobj/ColorXfm.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
+            "system/ui/UIColor.cpp": "NonMatching",
+            "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
+            "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",
+            "system/utl/Messages.cpp": "Matching",
+            "system/utl/Messages2.cpp": "Matching",
+            "system/utl/Messages3.cpp": "Matching",
+            "system/utl/Messages4.cpp": "Matching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": "NonMatching",
             "system/utl/Symbols.cpp": "Matching",

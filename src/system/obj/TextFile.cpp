@@ -12,7 +12,7 @@ void TextFile::SetName(const char* c, ObjectDir* dir){
 }
 
 void TextFile::Print(const char* str){
-    ASSERT(mFile, 0x2F);
+    MILO_ASSERT(mFile, 0x2F);
     char kCRLF[2] = { '\r', '\n' };
     char *p = (char *)str;
     while (*p != '\0') {
