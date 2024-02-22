@@ -70,6 +70,8 @@
 #  define __ALLOC __sgi_alloc
 #endif
 
+#include "utl/MemMgr.h"
+
 _STLP_BEGIN_NAMESPACE
 
 #if defined (_STLP_USE_RAW_SGI_ALLOCATORS)

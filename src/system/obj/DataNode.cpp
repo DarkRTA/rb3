@@ -8,9 +8,9 @@
 #include "utl/PoolAlloc.h"
 // #include <string.h>
 // #include <new>
-// #include <map>
+#include <map>
 
-// // std::map<Symbol, DataNode> gDataVars;
+std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 int gEvalIndex;
 

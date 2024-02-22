@@ -7,7 +7,7 @@
 #include "utl/Symbol.h"
 #include "os/Debug.h"
 
-// std::list<bool> gConditional;
+std::list<bool> gConditional;
 Symbol gFile;
 bool gNodesLinearAlloc;
 int gLinearNodesMemSize;
