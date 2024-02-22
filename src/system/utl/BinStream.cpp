@@ -13,8 +13,8 @@ namespace {
     bool AddToNotifies(const char* str, std::list<String>& list){
         if(list.size() > 0x10) return false;
         for(std::list<String>::iterator it = list.begin(); it != list.end(); it++){
-            bool idk = !strcmp(it->c_str(), str);
-            if(idk) return false;
+            bool strFound = !strcmp(it->c_str(), str);
+            if(strFound) return false;
         }
         list.push_back(str);
         return true;

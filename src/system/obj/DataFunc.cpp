@@ -19,8 +19,8 @@ namespace {
     bool AddToNotifies(const char* str, std::list<String>& list){
         if(list.size() > 0x10) return false;
         for(std::list<String>::iterator it = list.begin(); it != list.end(); it++){
-            bool idk = !strcmp(it->c_str(), str);
-            if(idk) return false;
+            bool strFound = !strcmp(it->c_str(), str);
+            if(strFound) return false;
         }
         list.push_back(str);
         return true;
@@ -187,89 +187,82 @@ static DataNode DataBitAnd(DataArray *array) {
     return DataNode(res);
 }
 
-// // fn_8031C108
-// DataNode DataAndEqual(DataArray *da) {
-//     void *arr;
-//     if (da->Type(1) == kDataProperty) {
-//         arr = da->Union(1).array;
-//         int res =
-//             gDataThis->Property((DataArray *)arr, true)->Int(0) & da->Int(2);
-//         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-//         return DataNode(res);
-//     } else {
-//         DataNode *dn_var = da->Var(1);
-//         int res = dn_var->Int(0) & da->Int(2);
-//         return (*dn_var = DataNode(res));
-//     }
-// }
+static DataNode DataAndEqual(DataArray* array){
+    MILO_ASSERT(array->Size() == 3, 0x13C);
+    if(array->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x141);
+        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        int res = gDataThis->Property(arr, true)->Int(0) & array->Int(2);
+        gDataThis->SetProperty(arr, DataNode(res));
+        return DataNode(res);
+    }
+    else {
+        DataNode* var = array->Var(1);
+        int res = var->Int(0) & array->Int(2);
+        return (*var = DataNode(res));
+    }
+}
 
-// // fn_8031C224
-// DataNode DataMaskEqual(DataArray *da) {
-//     void *arr;
-//     if (da->Type(1) == kDataProperty) {
-//         arr = da->Union(1).array;
-//         int res =
-//             gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->Int(2);
-//         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-//         return DataNode(res);
-//     } else {
-//         DataNode *dn_var = da->Var(1);
-//         int res = dn_var->Int(0) & ~da->Int(2);
-//         return (*dn_var = DataNode(res));
-//     }
-// }
+static DataNode DataMaskEqual(DataArray* array){
+    MILO_ASSERT(array->Size() == 3, 0x152);
+    if(array->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x157);
+        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        int res = gDataThis->Property(arr, true)->Int(0) & ~array->Int(2);
+        gDataThis->SetProperty(arr, DataNode(res));
+        return DataNode(res);
+    }
+    else {
+        DataNode* var = array->Var(1);
+        int res = var->Int(0) & ~array->Int(2);
+        return (*var = DataNode(res));
+    }
+}
 
-// // fn_8031C340
-// DataNode DataOrEqual(DataArray *da) {
-//     void *arr;
-//     if (da->Type(1) == kDataProperty) {
-//         arr = da->Union(1).array;
-//         int res =
-//             gDataThis->Property((DataArray *)arr, true)->Int(0) | da->Int(2);
-//         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
-//         return DataNode(res);
-//     } else {
-//         DataNode *dn_var = da->Var(1);
-//         int res = dn_var->Int(0) | da->Int(2);
-//         return (*dn_var = DataNode(res));
-//     }
-// }
+static DataNode DataOrEqual(DataArray* array){
+    MILO_ASSERT(array->Size() == 3, 0x169);
+    if(array->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x16E);
+        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        int res = gDataThis->Property(arr, true)->Int(0) | array->Int(2);
+        gDataThis->SetProperty(arr, DataNode(res));
+        return DataNode(res);
+    }
+    else {
+        DataNode* var = array->Var(1);
+        int res = var->Int(0) | array->Int(2);
+        return (*var = DataNode(res));
+    }
+}
 
-// // fn_8031C45C
-// DataNode DataBitOr(DataArray *da) {
-//     int res = da->Int(1);
-//     for (int i = 2; i < da->Size(); i++) {
-//         res |= da->Int(i);
-//     }
-//     return DataNode(res);
-// }
+static DataNode DataBitOr(DataArray* array){
+    MILO_ASSERT(array->Size() >= 3, 0x180);
+    int res = array->Int(1);
+    for(int i = 2; i < array->Size(); i++)
+        res |= array->Int(i);
+    return DataNode(res);
+}
 
-// // fn_8031C4D8
-// DataNode DataBitXor(DataArray *da) {
-//     return DataNode(da->Int(1) ^ da->Int(2));
-// }
+static DataNode DataBitXor(DataArray* da){
+    return DataNode(da->Int(1) ^ da->Int(2));
+}
 
-// // fn_8031C534
-// DataNode DataBitNot(DataArray *da) {
-//     return DataNode(~da->Int(1));
-// }
+static DataNode DataBitNot(DataArray* da){
+    return DataNode(~da->Int(1));
+}
 
-// int GetLowestBit(int);
-
-// // fn_8031C574
-// DataNode DataLowestBit(DataArray *da) {
-//     return DataNode(GetLowestBit(da->Int(1)));
-// }
-
-// // fn_8031C5B8
-// int GetLowestBit(int i) {
-//     if (i == 0)
-//         return 0;
-//     int j = 1;
-//     while (!(j & i))
-//         j *= 2;
-//     return j;
-// }
+static DataNode DataLowestBit(DataArray *da) {
+    int num = da->Int(1);
+    int res;
+    if(num == 0) res = 0;
+    else {
+        int j = 1;
+        while(!(j & num))
+            j *= 2;
+        res = j;
+    }
+    return DataNode(res);
+}
 
 // // fn_8031C5E4
 // DataNode DataCountBits(DataArray *da) {
@@ -290,3 +283,7 @@ static DataNode DataBitAnd(DataArray *array) {
 // DataNode DataVar(DataArray *da){
 //     return DataNode(DataVariable(da->ForceSym(1)));
 // }
+
+void DataTermFuncs(){
+    gDataFuncs.clear();
+}
