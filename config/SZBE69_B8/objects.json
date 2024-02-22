@@ -39,6 +39,7 @@
 
             "system/meta/Achievements.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
+            "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/MidiVarLen.cpp": "NonMatching",
 
@@ -57,6 +58,10 @@
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
+            "system/rndobj/Bitmap.cpp": "NonMatching",
+            "system/rndobj/Console.cpp": "NonMatching",
+
+            "system/synth/ADSR.cpp": "NonMatching",
 
             "system/ui/UIColor.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
@@ -64,6 +69,7 @@
 
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
+            "system/utl/Compress.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",

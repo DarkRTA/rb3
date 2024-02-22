@@ -228,6 +228,7 @@ void NodesFree(int i, DataNode* n){
 //     mSize = newCnt;
 // }
 
+<<<<<<< Updated upstream
 // // fn_80316150
 // void DataArray::Remove(const DataNode &dn) {
 //     int searchType = dn.mValue.integer;
@@ -238,6 +239,27 @@ void NodesFree(int i, DataNode* n){
 //         }
 //     }
 // }
+=======
+// fn_80315F74
+void DataArray::Resize(int i) {
+    DataNode *oldNodes = mNodes;
+    mNodes = NodesAlloc(i * sizeof(DataNode));
+    int min = MIN(mSize, i);
+    int cnt = 0;
+    for (cnt = 0; cnt < min; cnt++) {
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for (; cnt < i; cnt++) {
+        new (&mNodes[cnt]) DataNode();
+    }
+    for (cnt = 0; cnt < mSize; cnt++) {
+        oldNodes[cnt].~DataNode();
+    }
+    NodesFree(mSize * sizeof(DataNode), oldNodes);
+    mSize = i;
+    mDeprecated = 0;
+}
+>>>>>>> Stashed changes
 
 bool DataArray::Contains(const DataNode &dn) const {
     int searchType = dn.mValue.integer;
