@@ -492,8 +492,11 @@ public:
   };
 #endif
 
-  // No main constructor it seems, only a destructor
-  // StlNodeAlloc() _STLP_NOTHROW {}
+#if defined (_STLP_MEMBER_TEMPLATES)
+  template <class _Tp1> StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
+#endif
+
+  StlNodeAlloc() _STLP_NOTHROW {}
   StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
   ~StlNodeAlloc() _STLP_NOTHROW {}
 

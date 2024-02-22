@@ -55,7 +55,7 @@ _Slist_base<_Tp,_Alloc>::_M_erase_after(_Slist_node_base* __before_first,
 }
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define slist _STLP_PTR_IMPL_NAME(slist)
+#  define slist _STLP_PTR_IMPL_NAME(Slist)
 #elif defined (_STLP_DEBUG)
 #  define slist _STLP_NON_DBG_NAME(slist)
 #else

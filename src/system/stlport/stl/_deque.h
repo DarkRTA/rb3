@@ -387,7 +387,7 @@ protected:
 };
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define deque _STLP_PTR_IMPL_NAME(deque)
+#  define deque _STLP_PTR_IMPL_NAME(Deque)
 #elif defined (_STLP_DEBUG)
 #  define deque _STLP_NON_DBG_NAME(deque)
 #else
@@ -1094,4 +1094,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

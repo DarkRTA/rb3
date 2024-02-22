@@ -1963,26 +1963,26 @@ network/net/WiiMessenger.cpp:
 	.sbss       start:0x80C79C00 end:0x80C79C08
 	.bss        start:0x80C8E498 end:0x80C8E890
 
-network/net/arraylist.cpp:
+network/net/json-c/arraylist.c:
 	.text       start:0x801279E0 end:0x80127C50
 
-network/net/debug.cpp:
+network/net/json-c/debug.c:
 	.text       start:0x80127C50 end:0x80127C50
 
-network/net/json_object.cpp:
+network/net/json-c/json_object.c:
 	.text       start:0x80127C50 end:0x801289E0
 	.data       start:0x80B752D0 end:0x80B75350
 
-network/net/json_tokener.cpp:
+network/net/json-c/json_tokener.c:
 	.text       start:0x801289E0 end:0x8012A590
 	.data       start:0x80B75350 end:0x80B756E0
 
-network/net/linkhash.cpp:
+network/net/json-c/linkhash.c:
 	.text       start:0x8012A590 end:0x8012AD30
 	.rodata     start:0x80B34E48 end:0x80B34E50
 	.data       start:0x80B756E0 end:0x80B75700
 
-network/net/printbuf.cpp:
+network/net/json-c/printbuf.c:
 	.text       start:0x8012AD30 end:0x8012B140
 	.sbss       start:0x80C79C08 end:0x80C79C10
 
