@@ -103,9 +103,9 @@ protected:
 };
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define vector _STLP_PTR_IMPL_NAME(vector)
+#  define vector _STLP_PTR_IMPL_NAME(Vector)
 #elif defined (_STLP_DEBUG)
-#  define vector _STLP_NON_DBG_NAME(vector)
+#  define vector _STLP_NON_DBG_NAME(Vector)
 #else
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif

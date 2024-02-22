@@ -74,7 +74,7 @@ struct _DequeIteCast {
   }
 };
 
-#define DEQUE_IMPL _STLP_PTR_IMPL_NAME(deque)
+#define DEQUE_IMPL _STLP_PTR_IMPL_NAME(Deque)
 
 #if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
 _STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<size_t, void*,  allocator<void*> >;

@@ -484,7 +484,7 @@
 
 /* pointer specialization tool */
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define _STLP_PTR_IMPL_NAME(X) _Impl_##X
+#  define _STLP_PTR_IMPL_NAME(X) _##X##_impl
 #endif
 
 #if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)

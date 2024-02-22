@@ -185,7 +185,7 @@ public:
 };
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define slist _STLP_PTR_IMPL_NAME(slist)
+#  define slist _STLP_PTR_IMPL_NAME(Slist)
 #elif defined (_STLP_DEBUG)
 #  define slist _STLP_NON_DBG_NAME(slist)
 #else

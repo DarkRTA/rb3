@@ -84,7 +84,7 @@ void _Deque_base<_Tp,_Alloc>::_M_destroy_nodes(_Tp** __nstart,
 }
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-#  define deque _STLP_PTR_IMPL_NAME(deque)
+#  define deque _STLP_PTR_IMPL_NAME(Deque)
 #elif defined (_STLP_DEBUG)
 #  define deque _STLP_NON_DBG_NAME(deque)
 #else

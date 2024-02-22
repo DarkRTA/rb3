@@ -26,7 +26,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#define VECTOR_IMPL _STLP_PTR_IMPL_NAME(vector)
+#define VECTOR_IMPL _STLP_PTR_IMPL_NAME(Vector)
 
 #if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
 _STLP_EXPORT_TEMPLATE_CLASS _STLP_PRIV _Vector_base<void*,allocator<void*> >;
@@ -38,10 +38,10 @@ _STLP_EXPORT_TEMPLATE_CLASS _STLP_PRIV VECTOR_IMPL<void*, allocator<void*> >;
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Size = unsigned short, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
 class vector
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (vector)
-             : public __stlport_class<vector<_Tp, _Alloc> >
+             : public __stlport_class<vector<_Tp, _Size, _Alloc> >
 #endif
 {
   /* In the vector implementation iterators are pointer which give a number
@@ -52,8 +52,8 @@ class vector
    */
   typedef typename _STLP_PRIV _StorageType<_Tp>::_QualifiedType _StorageType;
   typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV VECTOR_IMPL<_StorageType, _StorageTypeAlloc> _Base;
-  typedef vector<_Tp, _Alloc> _Self;
+  typedef _STLP_PRIV VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
+  typedef vector<_Tp, _Size, _Alloc> _Self;
 
   typedef _STLP_PRIV _CastTraits<_StorageType, _Tp> cast_traits;
 
