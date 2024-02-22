@@ -156,6 +156,7 @@ public:
     short mRefs;
     short mLine;
     short mDeprecated;
+    static Symbol gFile;
     static DataFunc* sDefaultHandler;
 
     const char* File() { return mFile.mStr; }

@@ -39,6 +39,9 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Export(DataArray*, bool);
+
+    void ChainSource(MsgSource*, MsgSource*);
+    void AddSink(Hmx::Object*, Symbol, Symbol, SinkMode);
 };
 
 // every method in here is weak
