@@ -69,6 +69,7 @@
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/JobMgr.cpp": "NonMatching",
+            "system/utl/LogFile.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
             "system/utl/Messages3.cpp": "Matching",
