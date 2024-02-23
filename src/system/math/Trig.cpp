@@ -7,11 +7,12 @@ float gBigSinTable[0x200];
 extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 void TrigTableInit() {
+    float *temp_r30 = gBigSinTable;
     int i;
-    for (i = 0; i < 256; i++) {
-        gBigSinTable[i * 2] = sin_f(0.024543693f * i);
+    for (i = 0; i < 256; i++, temp_r30 += 2) {
+        *temp_r30 = sin_f(0.024543693f * i);
         if (i != 0) {
-            gBigSinTable[i * 2 - 1] = gBigSinTable[i * 2] - gBigSinTable[i * 2 - 2];
+            *(temp_r30-1) = *temp_r30 - *(temp_r30-2);
         }
     }
     int tmp = (i - 1) * 2;
@@ -22,18 +23,19 @@ void TrigTableTerminate() {
 }
 
 inline float Lookup(float arg8) {
-    int temp_r5 = (int)arg8;
+    float x = arg8 * 40.743664f;
+    int temp_r5 = (int)x;
     int idx = (temp_r5 & 0xFF) * 2;
     float *offset = &gBigSinTable[idx];
-    float res = arg8 - (float)temp_r5;
+    float res = x - (float)temp_r5;
     return (res * offset[1]) + offset[0];
 }
 
 float Sine(float arg8) {
     if (arg8 < 0.0f) {
-        return -Lookup(-arg8 * 40.743664f);
+        return -Lookup(-arg8);
     } else
-        return Lookup(arg8 * 40.743664f);
+        return Lookup(arg8);
 }
 
 float FastSin(float f) {

@@ -10,6 +10,7 @@ extern "C" float pow_f(double, double);
 extern "C" float sin_f(double);
 extern "C" float cos_f(double);
 extern "C" float tan_f(double);
+extern "C" float log10_f(double);
 
 inline float asin_f(double d){
     return asin(d);
@@ -41,6 +42,10 @@ inline float cos_f(double d){
 
 inline float tan_f(double d){
     return tan(d);
+}
+
+inline float log10_f(double d){
+    return log10(d);
 }
 
 #endif

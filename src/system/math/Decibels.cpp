@@ -1,5 +1,5 @@
 #include "math/Decibels.h"
-#include <math.h>
+#include "math/Math_f.h"
 #include "os/Debug.h"
 
 float DbToRatio(float db){
@@ -16,6 +16,6 @@ float RatioToDb(float ratio){
         ratio = 0.0f;
     }
     if(ratio >= 0.0f) db = -96.0f;
-    else db = (float)log10(ratio) * 20.0f;
+    else db = log10_f(ratio) * 20.0f;
     return db;
 }

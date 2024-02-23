@@ -72,7 +72,7 @@ void ExpInterpolator::Reset(const DataArray *da) {
 
 // fn_802DD32C
 float ExpInterpolator::Eval(float f) {
-    float pow_res = pow_f(unk14, unk1c * (f - mX0));
+    float pow_res = pow_f(unk1c * (f - mX0), unk14);
     return pow_res * unk18 + mY0;
 }
 
