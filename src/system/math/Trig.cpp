@@ -52,11 +52,11 @@ DataNode DataSin(DataArray *da) {
 }
 
 DataNode DataCos(DataArray *da) {
-    return DataNode((float)cos(DegreesToRadians(da->Float(1))));
+    return DataNode(cos_f(DegreesToRadians(da->Float(1))));
 }
 
 DataNode DataTan(DataArray *da) {
-    return DataNode((float)tan(DegreesToRadians(da->Float(1))));
+    return DataNode(tan_f(DegreesToRadians(da->Float(1))));
 }
 
 inline float RadiansToDegrees(float rad) {
@@ -70,13 +70,13 @@ inline bool IsNan(float f) {
 DataNode DataASin(DataArray *da) {
     float f = da->Float(1);
     if(IsNan(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees((float)asin(f)));
+    else return DataNode(RadiansToDegrees(asin_f(f)));
 }
 
 DataNode DataACos(DataArray *da) {
     float f = da->Float(1);
     if(IsNan(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees((float)acos(f)));
+    else return DataNode(RadiansToDegrees(acos_f(f)));
 }
 
 DataNode DataATan(DataArray *da) {

@@ -3,6 +3,10 @@
 #include "os/Debug.h"
 #include <stdlib.h>
 
+static const char* const unused1[] = {
+    "exp", "atan", "unknown interpolator type: %s\nat %d in %s"
+};
+
 LinearInterpolator::LinearInterpolator(float y0, float y1, float x0, float x1) {
     Reset(y0, y1, x0, x1);
 }
@@ -162,3 +166,7 @@ float ATanInterpolator::Eval(float f) {
     ret *= mScale;
     return ret + mOffset;
 }
+
+static const char* const unused2[] = {
+    "Interp.cpp", "source", "numEntries > 1", "mTable", "source->Size() > startAt", "mDeltas"
+};
