@@ -55,19 +55,8 @@ void ExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
 }
 
 // fn_802DD238
-void ExpInterpolator::Reset(const DataArray *da) {
-    float f5;
-    if (da->Size() > 5) {
-        f5 = da->Float(5);
-    } else
-        f5 = 2.0;
-    Reset(
-        da->Float(1),
-        da->Float(2),
-        da->Float(3),
-        da->Float(4),
-        f5
-    );
+void ExpInterpolator::Reset(const DataArray *data) {
+    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 2.0f);
 }
 
 // fn_802DD32C
@@ -99,18 +88,7 @@ void InvExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5)
 
 // fn_802DD4C4
 void InvExpInterpolator::Reset(const DataArray *data) {
-    float f5;
-    if (data->Size() > 5) {
-        f5 = data->Float(5);
-    } else
-        f5 = 2.0;
-    Reset(
-        data->Float(1),
-        data->Float(2),
-        data->Float(3),
-        data->Float(4),
-        f5
-    );
+    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 2.0f);
 }
 
 // fn_802DD5B8
@@ -146,18 +124,7 @@ void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float sever
 
 // fn_802DD850
 void ATanInterpolator::Reset(const DataArray *data) {
-    float f5;
-    if (data->Size() > 5) {
-        f5 = data->Float(5);
-    } else
-        f5 = 10.0f;
-    Reset(
-        data->Float(1),
-        data->Float(2),
-        data->Float(3),
-        data->Float(4),
-        f5
-    );
+    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 10.0f);
 }
 
 // fn_802DD944
