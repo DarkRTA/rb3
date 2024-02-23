@@ -23,7 +23,10 @@ public:
 
     Timer();
     Timer(DataArray*);
+    void Sleep(int);
+    void Reset();
     void Restart();
+    void SetLastMs(float);
 };
 
 #endif
