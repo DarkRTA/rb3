@@ -1,5 +1,5 @@
 #include "math/Trig.h"
-#include <math.h>
+#include "math/Math_f.h"
 #include "obj/Data.h"
 
 float gBigSinTable[0x200];
@@ -9,13 +9,13 @@ extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 void TrigTableInit() {
     int i;
     for (i = 0; i < 256; i++) {
-        gBigSinTable[i * 2] = sin(0.024543693f * i);
+        gBigSinTable[i * 2] = sin_f(0.024543693f * i);
         if (i != 0) {
             gBigSinTable[i * 2 - 1] = gBigSinTable[i * 2] - gBigSinTable[i * 2 - 2];
         }
     }
     int tmp = (i - 1) * 2;
-    *(gBigSinTable + tmp + 1) = sin(0.024543693f * i) - *(gBigSinTable + tmp);
+    *(gBigSinTable + tmp + 1) = sin_f(0.024543693f * i) - *(gBigSinTable + tmp);
 }
 
 void TrigTableTerminate() {
@@ -48,7 +48,7 @@ inline float DegreesToRadians(float deg) {
 }
 
 DataNode DataSin(DataArray *da) {
-    return DataNode((float)sin(DegreesToRadians(da->Float(1))));
+    return DataNode(sin_f(DegreesToRadians(da->Float(1))));
 }
 
 DataNode DataCos(DataArray *da) {
@@ -82,7 +82,7 @@ DataNode DataACos(DataArray *da) {
 DataNode DataATan(DataArray *da) {
     float f = da->Float(1);
     if(IsNan(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees((float)atan(f)));
+    else return DataNode(RadiansToDegrees(atan_f(f)));
 }
 
 void TrigInit() {

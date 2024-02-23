@@ -1,5 +1,5 @@
 #include "obj/DataFunc.h"
-#include "math/Random.h"
+#include "math/Rand.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
@@ -7,6 +7,7 @@
 #include "utl/MakeString.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
+#include "macros.h"
 #include <list>
 #include <map>
 
@@ -29,6 +30,7 @@ namespace {
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
     gDataFuncs[s] = func;
+    MILO_FAIL("Can't register different func %s", s);
 }
 
 static DataNode DataSprintf(DataArray *da) {
@@ -269,19 +271,46 @@ static DataNode DataLowestBit(DataArray *da) {
 //     return DataNode(CountBits(da->Int(1)));
 // }
 
-// // fn_8031C628
-// DataNode DataWhile(DataArray *da) {
-//     while (da->Node(1).NotNull()) {
-//         for (int i = 2; i < da->Size(); i++) {
-//             da->Command(i)->Execute();
-//         }
-//     }
-//     return DataNode(0);
+static DataNode DataWhile(DataArray* da){
+    while(da->Node(1).NotNull()){
+        for(int i = 2; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+    }
+    return DataNode(0);
+}
+
+static DataNode DataVar(DataArray* da){
+    return DataNode(DataVariable(da->ForceSym(1)));
+}
+
+static DataNode DataMin(DataArray* da){
+    DataNode& n1 = da->Evaluate(1);
+    DataNode& n2 = da->Evaluate(2);
+    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
+        return DataNode(MIN(n1.LiteralFloat(da), n2.LiteralFloat(da)));
+    }
+    else return DataNode(MIN(n1.LiteralInt(da), n2.LiteralInt(da)));
+}
+
+// // fn_8031CAF0
+// DataNode DataMax(DataArray *da) {
+//     DataNode *dn1 = &da->Evaluate(1);
+//     DataNode *dn2 = &da->Evaluate(2);
+//     if (dn1->Type() == kDataFloat || dn2->Type() == kDataFloat) {
+//         return DataNode(Maximum(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+//     } else
+//         return DataNode(Maximum(dn1->LiteralInt(da), dn2->LiteralInt(da)));
 // }
 
-// // fn_8031C6C4
-// DataNode DataVar(DataArray *da){
-//     return DataNode(DataVariable(da->ForceSym(1)));
+// // fn_8031CBCC
+// DataNode DataAbs(DataArray *da) {
+//     DataNode *dn = &da->Evaluate(1);
+//     float f = AbsThunk(dn->LiteralFloat(da));
+//     if (dn->Type() == kDataInt) {
+//         return DataNode((int)f);
+//     } else
+//         return DataNode(f);
 // }
 
 void DataTermFuncs(){

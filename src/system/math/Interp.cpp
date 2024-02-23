@@ -1,5 +1,6 @@
 #include "math/Interp.h"
-#include <math.h>
+#include "math/Math_f.h"
+#include "os/Debug.h"
 #include <stdlib.h>
 
 LinearInterpolator::LinearInterpolator(float y0, float y1, float x0, float x1) {
@@ -11,11 +12,11 @@ LinearInterpolator::LinearInterpolator() {
 
 void LinearInterpolator::Reset(float y0, float y1, float x0, float x1) {
     float run = x1 - x0;
-    mY0 = y0;
     mX0 = x0;
     mX1 = x1;
+    mY0 = y0;
     mY1 = y1;
-    if ((float)fabs(run) < 0.000001f)
+    if (fabs_f(run) < 0.000001f)
         mSlope = 0.0;
     else
         mSlope = (y1 - y0) / run;
@@ -37,11 +38,11 @@ ExpInterpolator::ExpInterpolator(float f1, float f2, float f3, float f4, float f
 
 void ExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     float f0 = f4 - f3;
-    mY0 = f1;
     mX0 = f3;
     mX1 = f4;
+    mY0 = f1;
     mY1 = f2;
-    if ((float)fabs(f0) < 0.000001f)
+    if (fabs_f(f0) < 0.000001f)
         unk1c = 1.0f;
     else
         unk1c = 1.0f / f0;
@@ -67,15 +68,9 @@ void ExpInterpolator::Reset(const DataArray *da) {
 
 // fn_802DD32C
 float ExpInterpolator::Eval(float f) {
-    float pow_res = pow(unk1c * (f - mX0), unk14);
+    float pow_res = pow_f(unk14, unk1c * (f - mX0));
     return pow_res * unk18 + mY0;
 }
-
-
-// // fn_802DD378
-// float PowThunk(double d1, double d2) {
-//     return PowFloat(d1, d2);
-// }
 
 
 // fn_802DD37C
@@ -86,11 +81,11 @@ InvExpInterpolator::InvExpInterpolator(float f1, float f2, float f3, float f4, f
 // fn_802DD3F8
 void InvExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     float f0 = f4 - f3;
-    mY0 = f1;
     mX0 = f3;
     mX1 = f4;
+    mY0 = f1;
     mY1 = f2;
-    if ((float)fabs(f0) < 0.000001f)
+    if (fabs_f(f0) < 0.000001f)
         unk1c = 1.0f;
     else
         unk1c = 1.0f / f0;
@@ -138,23 +133,12 @@ void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float sever
     mX1 = x1;
     mY0 = y0;
     mY1 = y1;
-    float ftan = atan(f31);
+    if(severity < 0.001f) MILO_FAIL("ATanInterpolator: severity (%f) too small.", severity);
+    float ftan = atan_f(f31);
     mScale = (y1 - y0) / (-ftan - ftan);
     mOffset = 0.5f * (y1 - y0) + y0;
     mSeverity = severity;
 }
-
-
-// // fn_802DD828
-// float ATanThunk(double d) {
-//     return ATanFloat(d);
-// }
-
-// // fn_802DD82C
-// float ATanFloat(double d) {
-//     return atan(d);
-// }
-
 
 // fn_802DD850
 void ATanInterpolator::Reset(const DataArray *data) {
@@ -174,7 +158,7 @@ void ATanInterpolator::Reset(const DataArray *data) {
 
 // fn_802DD944
 float ATanInterpolator::Eval(float f) {
-    float ret = atan(mXMapping.Eval(f));
+    float ret = atan_f(mXMapping.Eval(f));
     ret *= mScale;
     return ret + mOffset;
 }
