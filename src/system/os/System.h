@@ -5,10 +5,18 @@
 
 extern const char* gNullStr;
 
-DataNode OnSystemLanguage(DataArray*);
-DataNode OnSystemExec(DataArray*);
-DataNode OnUsingCD(DataArray*);
-DataNode OnSupportedLanguages(DataArray*);
+enum GfxMode {
+    kOldGfx = 0,
+    kNewGfx = 1,
+};
+
+void SetGfxMode(GfxMode);
+GfxMode GetGfxMode();
+
+static DataNode OnSystemLanguage(DataArray*);
+static DataNode OnSystemExec(DataArray*);
+static DataNode OnUsingCD(DataArray*);
+static DataNode OnSupportedLanguages(DataArray*);
 
 enum Platform {
     kPlatformNone = 0,
@@ -20,7 +28,11 @@ enum Platform {
 };
 
 Symbol PlatformSymbol(Platform);
+bool PlatformLittleEndian(Platform);
+Platform ConsolePlatform();
 
+void StripEditorData();
+bool UsingCD();
 void SetUsingCD(bool);
 DataArray* SystemConfig();
 DataArray* SystemConfig(Symbol);
