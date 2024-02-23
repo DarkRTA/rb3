@@ -6,8 +6,6 @@
 #include "obj/Dir.h"
 #include <new>
 #include "utl/PoolAlloc.h"
-// #include <string.h>
-// #include <new>
 #include <map>
 
 std::map<Symbol, DataNode> gDataVars;
@@ -17,6 +15,14 @@ int gEvalIndex;
 extern const char* kNotObjectMsg;
 extern ObjectDir* gDataDir;
 extern Hmx::Object *gDataThis;
+
+DataNode* DataVariable(Symbol s){
+    return &gDataVars[s];
+}
+
+bool DataVarExists(Symbol s){
+    return gDataVars.find(s) != gDataVars.end();
+}
 
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;

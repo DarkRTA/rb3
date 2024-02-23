@@ -11,6 +11,10 @@ public:
     Symbol() : mStr(gNullStr) { }
     Symbol(const char *); // ctor pulled from gdrb
 
+    bool operator<(const Symbol& s) const {
+        return mStr < s.mStr;
+    }
+
     // methods found in RB2
     bool operator==(const Symbol & s) const {
         return mStr == s.mStr;

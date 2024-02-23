@@ -5,8 +5,21 @@
 #include "utl/TextStream.h"
 #include "os/Debug.h"
 #include <string.h>
+#include <list>
 
 #define BIN_STREAM_BUF_SIZE 0x200U
+
+namespace {
+    bool AddToNotifies(const char* str, std::list<String>& list){
+        if(list.size() > 0x10) return false;
+        for(std::list<String>::iterator it = list.begin(); it != list.end(); it++){
+            bool strFound = !strcmp(it->c_str(), str);
+            if(strFound) return false;
+        }
+        list.push_back(str);
+        return true;
+    }
+}
 
 const char *BinStream::Name() const {
     return "<unnamed>";

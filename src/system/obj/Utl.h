@@ -10,4 +10,6 @@ const char* SafeName(Hmx::Object*);
 bool RecurseSuperClassesSearch(Symbol, Symbol);
 bool IsASubclass(Symbol, Symbol);
 
+// mergefilter classes go here
+
 #endif

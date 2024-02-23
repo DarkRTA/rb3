@@ -7,8 +7,8 @@
 #include "utl/Symbol.h"
 #include "os/Debug.h"
 
-std::list<bool> gConditional;
-Symbol gFile;
+std::list<bool> gDataArrayConditional;
+Symbol DataArray::gFile;
 bool gNodesLinearAlloc;
 int gLinearNodesMemSize;
 void* gLinearNodesMemPos;

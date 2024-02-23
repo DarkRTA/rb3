@@ -45,6 +45,7 @@
 
             "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/obj/DataFlex.c": "NonMatching",
+            "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/Object.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/TextFile.cpp": "NonMatching",
@@ -73,6 +74,8 @@
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",
+            "system/utl/JobMgr.cpp": "NonMatching",
+            "system/utl/LogFile.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
             "system/utl/Messages3.cpp": "Matching",

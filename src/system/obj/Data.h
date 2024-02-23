@@ -156,12 +156,14 @@ public:
     short mRefs;
     short mLine;
     short mDeprecated;
+    static Symbol gFile;
     static DataFunc* sDefaultHandler;
 
     const char* File() { return mFile.mStr; }
     int Size() const { return mSize; }
     int Line(){ return mLine; }
 
+    DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
@@ -241,6 +243,9 @@ BinStream& operator<<(BinStream&, const DataArray*);
 inline DataNode::~DataNode(){
     if((mType & kDataArray) != 0) mValue.array->Release();
 }
+
+DataNode* DataVariable(Symbol);
+bool DataVarExists(Symbol);
 
 class DataArrayPtr {
 public:
