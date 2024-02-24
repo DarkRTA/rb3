@@ -1,6 +1,7 @@
 #ifndef MATH_COLOR_H
 #define MATH_COLOR_H
 #include "utl/TextStream.h"
+#include "utl/BinStream.h"
 
 namespace Hmx {
     class Color {
@@ -42,5 +43,10 @@ namespace Hmx {
 
 void MakeHSL(const Hmx::Color&, float&, float&, float&);
 TextStream& operator<<(TextStream&, const Hmx::Color&);
+
+inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
+    bs >> color.red >> color.green >> color.blue >> color.alpha;
+    return bs;
+}
 
 #endif
