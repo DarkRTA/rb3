@@ -4,7 +4,7 @@ UIColor::UIColor() : mColor() {
     
 }
 
-Hmx::Color UIColor::GetColor() const {
+const Hmx::Color& UIColor::GetColor() const {
     return mColor;
 }
 

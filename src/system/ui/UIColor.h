@@ -17,7 +17,7 @@ public:
 
     Hmx::Color mColor;
 
-    Hmx::Color GetColor() const;
+    const Hmx::Color& GetColor() const;
     void SetColor(const Hmx::Color&);
 };
 
