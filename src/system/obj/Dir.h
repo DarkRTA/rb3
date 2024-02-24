@@ -54,6 +54,20 @@ public:
 
 };
 
+template <class T> class ObjDirPtr : public ObjRef {
+public:
+
+    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) {}
+    virtual ~ObjDirPtr(); // nightmare
+    virtual Hmx::Object* RefOwner(){ return 0; }
+    virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
+    virtual bool IsDirPtr(){ return true; }
+    void operator=(T*);
+
+    ObjectDir* mDir;
+    int* mLoader; // DirLoader*
+};
+
 #endif
 
 // class ObjectDir : public virtual Object {
@@ -76,21 +90,3 @@ public:
 //     class Object * mCurCam; // offset 0x78, size 0x4
 //     const char * mDestFileName; // offset 0x7C, size 0x4
 // };
-
-
-template <class T> class ObjDirPtr : public ObjRef {
-public:
-
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) {}
-
-    virtual ~ObjDirPtr(); // nightmare
-
-    virtual Hmx::Object* RefOwner(){ return 0; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
-    virtual bool IsDirPtr(){ return true; }
-
-    void operator=(T*);
-
-    ObjectDir* mDir;
-    int* mLoader; // DirLoader*
-};
