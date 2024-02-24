@@ -29,3 +29,11 @@ bool User::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
         return false;
     }
 }
+
+LocalUser::LocalUser() : idk(0) {
+
+}
+
+RemoteUser::RemoteUser() : str() {
+    
+}
