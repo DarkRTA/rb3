@@ -114,7 +114,7 @@ public:
     virtual ~Message(){ mData->Release(); }
 
     DataArray* mData;
-    DataArray* GetArray(){ return mData; }
+    DataArray* Data(){ return mData; }
 };
 
 #define BEGIN_MESSAGE(classname, type, ...) \
