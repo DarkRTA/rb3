@@ -99,7 +99,8 @@
             "system/utl/SysTest.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ] },
             "system/utl/TempoMap.cpp": "Matching",
             "system/utl/TextFileStream.cpp": "Matching",
-            "system/utl/TextStream.cpp": "Matching"
+            "system/utl/TextStream.cpp": "Matching",
+            "system/utl/UserGuid.cpp": "Matching"
         }
     },
     "zlib": {
