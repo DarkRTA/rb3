@@ -62,6 +62,21 @@ LocalUser::LocalUser() : idk(0) {
 
 }
 
+bool LocalUser::IsLocal() const { return true; }
+
+void LocalUser::GetLocalUser(){}
+void LocalUser::GetLocalUser() const {}
+
+User* LocalUser::GetRemoteUser(){
+    TheDebug.Fail(MakeString("Bad Conversion"));
+    return 0;
+}
+
+User* LocalUser::GetRemoteUser() const {
+    TheDebug.Fail(MakeString("Bad Conversion"));
+    return 0;
+}
+
 RemoteUser::RemoteUser() : str() {
     
 }
