@@ -1,5 +1,5 @@
 #include "utl/BinStream.h"
-#include "math/Random.h"
+#include "math/Rand.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"

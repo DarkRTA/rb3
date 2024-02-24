@@ -1,7 +1,11 @@
 #ifndef OBJ_UTL_H
 #define OBJ_UTL_H
-#include "obj/Object.h"
 #include "utl/Symbol.h"
+
+// forward declaration
+namespace Hmx {
+    class Object;
+}
 
 void InitObject(Hmx::Object*);
 const char* PathName(const Hmx::Object*);

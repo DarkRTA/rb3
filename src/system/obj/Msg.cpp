@@ -1,4 +1,4 @@
-#include "obj/Msg.h"
+#include "obj/MsgSource.h"
 
 void MsgSource::Sink::Export(DataArray* da){
     switch(mode){
