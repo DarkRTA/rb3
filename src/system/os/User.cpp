@@ -1,5 +1,7 @@
 #include "os/User.h"
 #include "os/Debug.h"
+#include "obj/MessageTimer.h"
+#include "utl/Symbols.h"
 
 User::User() : mOnlineID(new OnlineID()), mUserGuid(), unk30(-1) {
     mUserGuid.Generate();
@@ -18,6 +20,32 @@ void User::SyncSave(BinStream& bs, unsigned int ui) const {
     bs << unk30;
     bs << UserName();
     bs << *mOnlineID;
+}
+
+DataNode User::Handle(DataArray* _msg, bool _warn){
+    Symbol sym = _msg->Sym(1);
+    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
+    if(sym == is_local){
+        return DataNode(IsLocal());
+    }
+    if(sym == get_player_name){
+        return DataNode(UserName());
+    }
+    if(sym == reset){
+        Reset();
+        return DataNode(0);
+    }
+    if(sym == comes_before){
+
+    }
+    {
+        DataNode handled = Hmx::Object::Handle(_msg, false);
+        if(handled.Type() != kDataUnhandled){
+            return DataNode(handled);
+        }
+    }
+    if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, 0x47, PathName(this), sym);
+    return DataNode(kDataUnhandled, 0);
 }
 
 bool User::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
