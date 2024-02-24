@@ -36,7 +36,7 @@ DataNode User::Handle(DataArray* _msg, bool _warn){
         return DataNode(0);
     }
     if(sym == comes_before){
-
+        return DataNode(ComesBefore(_msg->Obj<User>(2)));
     }
     {
         DataNode handled = Hmx::Object::Handle(_msg, false);
