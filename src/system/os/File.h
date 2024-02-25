@@ -40,7 +40,7 @@ extern "C" const char* FileRelativePath(const char* root, const char* filepath);
 extern "C" const char* FileGetPath(const char*, char*);
 extern "C" const char* FileGetExt(const char* root);
 extern "C" const char* FileGetDrive(const char* file);
-extern "C" const char* FileGetBase(const char* file);
+extern "C" const char* FileGetBase(const char* file, char* base);
 extern "C" const char* FileGetName(const char* file);
 extern "C" int FileOpen(const char* iFilename, int iMode);
 extern "C" int FileClose(int iFd);

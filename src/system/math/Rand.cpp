@@ -5,12 +5,6 @@
 
 Rand gRand(0x29A);
 
-// unsigned int mRandIndex1;
-//     unsigned int mRandIndex2;
-//     unsigned int mRandTable[256];
-//     float mSpareGaussianValue;
-//     bool mSpareGaussianAvailable;
-
 Rand::Rand(int i) : mRandIndex1(0), mRandIndex2(0), mRandTable(), mSpareGaussianAvailable(0) {
     Seed(i);
 }

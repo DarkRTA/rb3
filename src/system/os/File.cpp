@@ -1,5 +1,7 @@
 #include "os/File.h"
 #include "obj/Data.h"
+#include "os/OSFuncs.h"
+#include "os/Debug.h"
 
 static char gRoot[256];
 static char gExecRoot[256];
@@ -31,6 +33,14 @@ static DataNode OnFileGetDrive(DataArray* da){
 
 static DataNode OnFileGetPath(DataArray* da){
     return DataNode(FileGetPath(da->Str(1), 0));
+}
+
+static DataNode OnFileGetBase(DataArray* da){
+    return DataNode(FileGetBase(da->Str(1), 0));
+}
+
+static DataNode OnFileGetExt(DataArray* da){
+    return DataNode(FileGetExt(da->Str(1)));
 }
 
 const char* FileGetPath(const char* arg1, char* arg2){
@@ -79,6 +89,22 @@ const char* FileGetDrive(const char* file){
     }
     else drive[0] = '\0';
     return drive;
+}
+
+const char* FileGetBase(const char* file, char* base){
+    static char my_path[256];
+    const char* dir;
+    char* ext;
+    if(base == 0 && !MainThread())
+        MILO_WARN("FileGetBase called from !MainThread with \"%s\"\n", file);
+    if(base == 0) base = my_path;
+    dir = strrchr(file, '/');
+    if((dir != 0) || (dir = strrchr(file, '\\'), (dir != 0)))
+        strcpy(base, dir + 1);
+    else strcpy(base, file);
+    ext = strrchr(base, '.');
+    if(ext != 0) *ext = 0;
+    return base;
 }
 
 const char* FileGetName(const char* file){
