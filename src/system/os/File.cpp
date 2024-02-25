@@ -43,6 +43,27 @@ static DataNode OnFileGetExt(DataArray* da){
     return DataNode(FileGetExt(da->Str(1)));
 }
 
+static DataNode OnFileMatch(DataArray* da){
+    return DataNode(FileMatch(da->Str(1), da->Str(2)));
+}
+
+static DataNode OnFileAbsolutePath(DataArray* da){
+    return DataNode(FileMakePath(da->Str(1), da->Str(2), 0));
+}
+
+static DataNode OnFileRelativePath(DataArray* da){
+    return DataNode(FileRelativePath(da->Str(1), da->Str(2)));
+}
+
+static DataNode OnSynchProc(DataArray* da){
+    TheDebug.Fail(MakeString("calling synchproc on non-pc platform"));
+    return DataNode("");
+}
+
+static DataNode OnToggleFakeFileErrors(DataArray* da){
+    return DataNode(0);
+}
+
 const char* FileGetPath(const char* arg1, char* arg2){
     static char static_path[256];
     char *p2;
@@ -115,4 +136,38 @@ const char* FileGetName(const char* file){
     }
     else strcpy(path, file);
     return path;
+}
+
+static bool FileMatchInternal(const char *arg0, const char *arg1, bool arg2) {
+    for (; *arg0 != 0; arg0++) {
+        if (FileMatch(arg0, arg1))
+            return true;
+        if (!arg2 && (*arg0 == '/' || *arg0 == '\\'))
+            return false;
+    }
+    return (*arg1 == *arg0);
+}
+
+bool FileMatch(const char *param1, const char *param2) {
+    if (param2 == 0)
+        return false;
+    while (*param2 != '\0') {
+        if (*param2 == '*')
+            return FileMatchInternal(param1, param2 + 1, 0);
+        if (*param2 == '&')
+            return FileMatchInternal(param1, param2 + 1, 1);
+        if (*param1 == '\0')
+            break;
+        if (*param2 == '?') {
+            if ((*param1 == '\\') || (*param1 == '/'))
+                return 0;
+        } else if ((*param2 == '/') || (*param2 == '\\')) {
+            if ((*param1 != '/') && (*param1 != '\\'))
+                return 0;
+        } else if (*param2 != *param1)
+            return 0;
+        param2++;
+        param1++;
+    }
+    return (*param2 - *param1) == 0;
 }

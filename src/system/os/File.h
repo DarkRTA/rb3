@@ -35,7 +35,7 @@ const char* FileExecRoot();
 const char* FileSystemRoot();
 
 extern "C" void FileNormalizePath();
-extern "C" const char* FileMakePath(const char* root, const char* file);
+extern "C" const char* FileMakePath(const char* root, const char* file, char*);
 extern "C" const char* FileRelativePath(const char* root, const char* filepath);
 extern "C" const char* FileGetPath(const char*, char*);
 extern "C" const char* FileGetExt(const char* root);
@@ -46,6 +46,6 @@ extern "C" int FileOpen(const char* iFilename, int iMode);
 extern "C" int FileClose(int iFd);
 extern "C" int FileWrite(int iFd, void* iBuff, unsigned int iLen);
 const char* FileLocalize(const char* iFilename, char* buffer);
-extern "C" bool FileMatch();
+extern "C" bool FileMatch(const char*, const char*);
 
 #endif
