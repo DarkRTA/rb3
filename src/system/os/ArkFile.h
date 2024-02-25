@@ -19,7 +19,7 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual void GetFileHandle(DVDFileInfo*&); // this int should actually be a DVDFileInfo* &
+    virtual void GetFileHandle(DVDFileInfo*&);
 
     void TaskDone(int);
 

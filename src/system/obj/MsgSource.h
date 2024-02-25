@@ -23,6 +23,10 @@ public:
         std::list<Sink> sinks;
     };
 
+    struct EventSinkElem : public Sink {
+        Symbol handler;
+    };
+
     std::list<Sink> mSinks;
     std::list<EventSink> mEventSinks;
     int mExporting;
@@ -38,6 +42,8 @@ public:
 
     void ChainSource(MsgSource*, MsgSource*);
     void AddSink(Hmx::Object*, Symbol, Symbol, SinkMode);
+    DataNode OnAddSink(DataArray*);
+    DataNode OnRemoveSink(DataArray*);
 };
 
 #endif

@@ -1,4 +1,5 @@
 #include "obj/MsgSource.h"
+#include "utl/Symbols.h"
 
 void MsgSource::Sink::Export(DataArray* da){
     switch(mode){
@@ -23,3 +24,10 @@ MsgSource::~MsgSource(){
     mEventSinks.clear();
     mSinks.clear();
 }
+
+BEGIN_HANDLERS(MsgSource);
+    HANDLE(add_sink, OnAddSink);
+    HANDLE(remove_sink, OnRemoveSink);
+    StaticClassName();
+    HANDLE_SUPERCLASS(Hmx::Object);
+END_HANDLERS;
