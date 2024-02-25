@@ -22,13 +22,13 @@ void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool b, 
     s.zfree = ZFree;
     if (b) windowBits = 15;
 
-    ASSERT(inflateInit2(&s, windowBits) == Z_OK, 106);
+    MILO_ASSERT(inflateInit2(&s, windowBits) == Z_OK, 106);
 
     int ret = inflate(&s, 4);
-    if (ret != 1) FAIL("Inflate error: %d in %s", ret, filename);
+    if (ret != 1) MILO_FAIL("Inflate error: %d in %s", ret, filename);
 
-    ASSERT(s.avail_in == 0, 109);
-    ASSERT(inflateEnd(&s) == Z_OK, 110);
+    MILO_ASSERT(s.avail_in == 0, 109);
+    MILO_ASSERT(inflateEnd(&s) == Z_OK, 110);
 
     out_len = s.total_out;
 }
@@ -42,10 +42,10 @@ void CompressMem(const void* in, int in_len, void* out, int& out_len, const char
     s.zalloc = ZAlloc;
     s.zfree = ZFree;
 
-    ASSERT(deflateInit2(&s, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY) == Z_OK, 142);
+    MILO_ASSERT(deflateInit2(&s, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY) == Z_OK, 142);
 
-    ASSERT(deflate(&s, Z_FINISH) == Z_STREAM_END, 144);
-    ASSERT(deflateEnd(&s) == Z_OK, 145);
+    MILO_ASSERT(deflate(&s, Z_FINISH) == Z_STREAM_END, 144);
+    MILO_ASSERT(deflateEnd(&s) == Z_OK, 145);
 
     out_len = s.total_out;
 }
