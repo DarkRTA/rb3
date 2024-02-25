@@ -15,6 +15,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    static unsigned short gRev;
+    static unsigned short gAltRev;
     Hmx::Color mColor;
 
     const Hmx::Color& GetColor() const;

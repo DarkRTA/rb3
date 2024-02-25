@@ -13,9 +13,11 @@ public:
     static bool sActive;
 
     MessageTimer(Hmx::Object* o, Symbol message) : mTimer(), mObject(o), mMessage(message) { mTimer.Restart(); }
-    ~MessageTimer(); // weak, presumably does some math with Timer's members and then calls AddTime
+    ~MessageTimer(){
+        AddTime(mObject, mMessage, mTimer.SplitMs());
+    }
     static bool Active(){ return sActive; }
-    void AddTime(Hmx::Object* o, Symbol msg, float ms);
+    static void AddTime(Hmx::Object* o, Symbol msg, float ms);
 };
 
 #endif

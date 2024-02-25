@@ -57,6 +57,8 @@
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "NonMatching",
             "system/os/Debug.cpp": "NonMatching",
+            "system/os/File.cpp": "NonMatching",
+            "system/os/File_Wii.cpp": "NonMatching",
             "system/os/Joypad.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/os/OnlineID.cpp": "Matching",
             "system/os/System.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
@@ -74,7 +76,7 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
 
-            "system/ui/UIColor.cpp": "NonMatching",
+            "system/ui/UIColor.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
@@ -85,11 +87,13 @@
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/JobMgr.cpp": "NonMatching",
+            "system/utl/LocaleOrdinal.cpp": "Matching",
             "system/utl/LogFile.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
             "system/utl/Messages3.cpp": "Matching",
             "system/utl/Messages4.cpp": "Matching",
+            "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": "NonMatching",
             "system/utl/Symbols.cpp": "Matching",
@@ -99,7 +103,9 @@
             "system/utl/SysTest.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ] },
             "system/utl/TempoMap.cpp": "Matching",
             "system/utl/TextFileStream.cpp": "Matching",
-            "system/utl/TextStream.cpp": "Matching"
+            "system/utl/TextStream.cpp": "Matching",
+            "system/utl/UserGuid.cpp": "Matching",
+            "system/utl/UTF8.cpp": "NonMatching"
         }
     },
     "zlib": {

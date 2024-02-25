@@ -21,7 +21,9 @@ public:
     virtual const char* UserName() const = 0;
 
     void SetUserGuid(const UserGuid&);
-    bool ComesBefore(const User*);
+    bool ComesBefore(const User* u){
+        return (mUserGuid < u->mUserGuid);
+    }
 
     OnlineID* mOnlineID;
     UserGuid mUserGuid;

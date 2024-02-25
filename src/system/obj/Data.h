@@ -80,8 +80,8 @@ public:
     }
 
     DataNode(DataType ty, int i){
-        mValue.integer = i;
         mType = ty;
+        mValue.integer = i;
     }
 
     DataNode(float f){

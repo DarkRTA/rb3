@@ -1,4 +1,10 @@
 #include "os/ArkFile.h"
+#include "os/Debug.h"
+
+bool ArkFile::Write(const void*, int){
+    TheDebug.Fail(MakeString("ERROR: Cannot write to a file in an archive!"));
+    return false;
+}
 
 int ArkFile::Seek(int offset, int mode) {
     switch (mode) {

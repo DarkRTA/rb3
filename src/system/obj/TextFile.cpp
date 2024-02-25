@@ -3,13 +3,15 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "utl/MakeString.h"
-// #include "symbols.hpp"
+#include "obj/MessageTimer.h"
+#include "utl/Symbols.h"
+// #include "obj/Dir.h"
 
-void TextFile::SetName(const char* c, ObjectDir* dir){
-    Hmx::Object::SetName(c, dir);
-    delete mFile;
-    mFile = 0;
-}
+// void TextFile::SetName(const char* c, ObjectDir* dir){
+//     Hmx::Object::SetName(c, dir);
+//     delete mFile;
+//     mFile = 0;
+// }
 
 void TextFile::Print(const char* str){
     MILO_ASSERT(mFile, 0x2F);
@@ -25,29 +27,17 @@ void TextFile::Print(const char* str){
     }
 }
 
-// DataNode TextFile::Handle(DataArray* _msg, bool _warn){
-//     Symbol match = _msg->Sym(1);
-//     if(match == SymPrint){
-//         DataNode print = OnPrint(_msg);
-//         if(print.Type() != kDataUnhandled) return DataNode(print);
-//     }
-//     static Symbol SymPrintf("printf");
-//     if(match == SymPrintf){
-//         DataNode node_printf = OnPrintf(_msg);
-//         if(node_printf.Type() != kDataUnhandled) return DataNode(node_printf);
-//     }
-//     if(match == SymReflect){
-//         DataNode ref = OnReflect(_msg);
-//         if(ref.Type() != kDataUnhandled) return DataNode(ref);
-//     }
-//     // if no match, fall to here
-//     {
-//     DataNode base = Hmx::Object::Handle(_msg, false);
-//     if(base.Type() != kDataUnhandled) return DataNode(base);
-//     }
-//     if(_warn) PathName(this);
-//     return DataNode(kDataUnhandled, 0);
-// }
+BEGIN_HANDLERS(TextFile);
+    HANDLE(print, OnPrint);
+    static Symbol _s("printf");
+    if(sym == _s){
+        DataNode node_printf = OnPrintf(_msg);
+        if(node_printf.Type() != kDataUnhandled) return DataNode(node_printf);
+    }
+    HANDLE(reflect, OnReflect);
+    HANDLE_SUPERCLASS(Hmx::Object);
+    HANDLE_CHECK(0x4D);
+END_HANDLERS;
 
 DataNode TextFile::OnPrint(DataArray* array){
     if(mFile != 0){
