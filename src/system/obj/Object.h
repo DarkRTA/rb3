@@ -171,13 +171,28 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     Symbol sym = _msg->Sym(1); \
     MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
 
+#define HANDLE(symbol, func) \
+    if(sym == symbol){ \
+        DataNode result = func(_msg); \
+        if(result.Type() != kDataUnhandled) return DataNode(result); \
+    }
+
+#define HANDLE_EXPR(symbol, expr) \
+    if (sym == symbol) return DataNode(expr);
+
+#define HANDLE_ACTION(symbol, expr) \
+    if(sym == symbol){ \
+        expr; \
+        return DataNode(0); \
+    }
+
 #define HANDLE_SUPERCLASS(parent) \
     { \
         DataNode baseResult = parent::Handle(_msg, false); \
         if (baseResult.Type() != kDataUnhandled) return baseResult; \
     }
 
-#define HANDLE_CHECK(line_num)                                        \
+#define HANDLE_CHECK(line_num) \
     if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, line_num, PathName(this), sym);
 
 #define END_HANDLERS \

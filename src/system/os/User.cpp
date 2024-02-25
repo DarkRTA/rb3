@@ -22,31 +22,14 @@ void User::SyncSave(BinStream& bs, unsigned int ui) const {
     bs << *mOnlineID;
 }
 
-DataNode User::Handle(DataArray* _msg, bool _warn){
-    Symbol sym = _msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
-    if(sym == is_local){
-        return DataNode(IsLocal());
-    }
-    if(sym == get_player_name){
-        return DataNode(UserName());
-    }
-    if(sym == reset){
-        Reset();
-        return DataNode(0);
-    }
-    if(sym == comes_before){
-        return DataNode(ComesBefore(_msg->Obj<User>(2)));
-    }
-    {
-        DataNode handled = Hmx::Object::Handle(_msg, false);
-        if(handled.Type() != kDataUnhandled){
-            return DataNode(handled);
-        }
-    }
-    if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, 0x47, PathName(this), sym);
-    return DataNode(kDataUnhandled, 0);
-}
+BEGIN_HANDLERS(User);
+    HANDLE_EXPR(is_local, IsLocal());
+    HANDLE_EXPR(get_player_name, UserName());
+    HANDLE_ACTION(reset, Reset());
+    HANDLE_EXPR(comes_before, ComesBefore(_msg->Obj<User>(2)));
+    HANDLE_SUPERCLASS(Hmx::Object);
+    HANDLE_CHECK(0x47);
+END_HANDLERS;
 
 bool User::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     if(_prop->Size() == _i){

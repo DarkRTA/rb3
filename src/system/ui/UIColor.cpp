@@ -1,6 +1,5 @@
 #include "ui/UIColor.h"
 #include "os/Debug.h"
-#include "obj/MessageTimer.h"
 #include "obj/PropSync.h"
 #include "utl/Symbols.h"
 
@@ -42,19 +41,10 @@ void UIColor::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     mColor = c->mColor;
 }
 
-DataNode UIColor::Handle(DataArray* _msg, bool _warn){
-    Symbol sym = _msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
-    {
-        DataNode handled = Hmx::Object::Handle(_msg, false);
-        if(handled.Type() != kDataUnhandled){
-            return DataNode(handled);
-        }
-    }
-    if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, 0x3A, PathName(this), sym);
-    return DataNode(kDataUnhandled, 0);
-    
-}
+BEGIN_HANDLERS(UIColor);
+    HANDLE_SUPERCLASS(Hmx::Object);
+    HANDLE_CHECK(0x3A);
+END_HANDLERS;
 
 bool UIColor::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     if(_i == _prop->Size()) return true;

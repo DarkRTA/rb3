@@ -27,31 +27,17 @@ void TextFile::Print(const char* str){
     }
 }
 
-DataNode TextFile::Handle(DataArray* _msg, bool _warn){
-    Symbol sym = _msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
-    if(sym == print){
-        DataNode printed = OnPrint(_msg);
-        if(printed.Type() != kDataUnhandled) return DataNode(printed);
-    }
-    static Symbol s("printf");
-    if(sym == s){
+BEGIN_HANDLERS(TextFile);
+    HANDLE(print, OnPrint);
+    static Symbol _s("printf");
+    if(sym == _s){
         DataNode node_printf = OnPrintf(_msg);
         if(node_printf.Type() != kDataUnhandled) return DataNode(node_printf);
     }
-    if(sym == reflect){
-        DataNode ref = OnReflect(_msg);
-        if(ref.Type() != kDataUnhandled) return DataNode(ref);
-    }
-    {
-        DataNode handled = Hmx::Object::Handle(_msg, false);
-        if(handled.Type() != kDataUnhandled){
-            return DataNode(handled);
-        }
-    }
-    if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, 0x3A, PathName(this), sym);
-    return DataNode(kDataUnhandled, 0);
-}
+    HANDLE(reflect, OnReflect);
+    HANDLE_SUPERCLASS(Hmx::Object);
+    HANDLE_CHECK(0x4D);
+END_HANDLERS;
 
 DataNode TextFile::OnPrint(DataArray* array){
     if(mFile != 0){
