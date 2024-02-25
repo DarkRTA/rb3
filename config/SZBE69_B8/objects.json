@@ -100,6 +100,7 @@
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": "NonMatching",
+            "system/utl/Symbol.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/utl/Symbols.cpp": "Matching",
             "system/utl/Symbols2.cpp": "Matching",
             "system/utl/Symbols3.cpp": "Matching",

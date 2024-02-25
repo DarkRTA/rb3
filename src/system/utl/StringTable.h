@@ -5,6 +5,9 @@ class StringTable {
 public:
     int list;
     int unknown;
+    
+    StringTable(int);
+    const char* Add(const char*);
 };
 
 #endif

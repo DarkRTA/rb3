@@ -12,6 +12,7 @@ struct Entry {
 };
 
 template <class T1, class T2> class KeylessHash {
+public:
     Entry* mEntries;
     int mSize;
     bool mOwnEntries;
@@ -21,7 +22,7 @@ template <class T1, class T2> class KeylessHash {
 
     KeylessHash(int, const T2&, const T2&, T2*);
     ~KeylessHash();
-    T1& Find(const T1&);
+    T1 Find(const T1&);
     int Insert(const T2&);
     void Resize(int, T2*);
     T2* FirstFrom(T2*);
