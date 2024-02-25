@@ -1,9 +1,7 @@
 #include "math/Rand.h"
 #include "os/Debug.h"
 #include <math.h>
-#include <revolution/os.h>
-
-extern OSThread* gMainThreadID;
+#include "os/OSFuncs.h"
 
 Rand gRand(0x29A);
 
@@ -72,13 +70,6 @@ float Rand::Gaussian() {
         mSpareGaussianAvailable = true;
         return f3 * f5;
     }
-}
-
-inline bool MainThread() {
-    bool ret = true;
-    if ((gMainThreadID != 0) && (gMainThreadID != OSGetCurrentThread()))
-        ret = false;
-    return ret;
 }
 
 void SeedRand(int seed) {

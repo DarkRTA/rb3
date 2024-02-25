@@ -1,6 +1,7 @@
 #ifndef OS_ARKFILE_H
 #define OS_ARKFILE_H
 #include "os/File.h"
+#include <revolution/DVD.h>
 
 class ArkFile : public File {
 public:
@@ -18,7 +19,7 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual void GetFileHandle(int*&); // this int should actually be a DVDFileInfo* &
+    virtual void GetFileHandle(DVDFileInfo*&); // this int should actually be a DVDFileInfo* &
 
     void TaskDone(int);
 

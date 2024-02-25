@@ -57,6 +57,7 @@
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "NonMatching",
             "system/os/Debug.cpp": "NonMatching",
+            "system/os/File.cpp": "NonMatching",
             "system/os/Joypad.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/os/OnlineID.cpp": "Matching",
             "system/os/System.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
