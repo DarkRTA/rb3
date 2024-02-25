@@ -1,5 +1,6 @@
 #ifndef UTL_HXGUID_H
 #define UTL_HXGUID_H
+#include "utl/BinStream.h"
 
 class HxGuid {
 public:
@@ -13,6 +14,9 @@ public:
 
     int mData[4];
 };
+
+BinStream& operator<<(BinStream&, const HxGuid&);
+BinStream& operator>>(BinStream&, HxGuid&);
 
 class UserGuid : public HxGuid {
 public:

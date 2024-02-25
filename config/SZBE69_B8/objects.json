@@ -86,6 +86,7 @@
             "system/utl/Compress.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
+            "system/utl/HxGuid.cpp": "NonMatching",
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/JobMgr.cpp": "NonMatching",
             "system/utl/LocaleOrdinal.cpp": "Matching",
