@@ -11,14 +11,14 @@ HxGuid::HxGuid(){
 
 void HxGuid::Generate(){
     Clear();
-    gGuidCrit.Enter();
+    if(&gGuidCrit != 0) gGuidCrit.Enter();
     mData[0] = RandomInt();
     mData[1] = RandomInt();
     mData[2] = RandomInt();
     mData[3] = RandomInt();
-    gGuidCrit.Exit();
+    if(&gGuidCrit != 0) gGuidCrit.Exit();
     if(IsNull()){
-        TheDebug.Notify(MakeString("Generated HxGuid is Null.  Will try again...\n"));
+        MILO_WARN("Generated HxGuid is Null.  Will try again...\n");
         Generate();
     }
 }
