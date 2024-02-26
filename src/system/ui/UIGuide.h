@@ -14,6 +14,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    static unsigned short gRev;
+    static unsigned short gAltRev;
+
     int mType;
     float mPos;
 };
