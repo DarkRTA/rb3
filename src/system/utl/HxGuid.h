@@ -1,5 +1,6 @@
 #ifndef UTL_HXGUID_H
 #define UTL_HXGUID_H
+#include "utl/BinStream.h"
 
 class HxGuid {
 public:
@@ -10,9 +11,15 @@ public:
     bool IsNull() const;
     bool operator==(const HxGuid&) const;
     bool operator<(const HxGuid&) const;
+    int Chunk32(int) const;
+    const char* ToString() const;
+    int SaveSize();
 
     int mData[4];
 };
+
+BinStream& operator<<(BinStream&, const HxGuid&);
+BinStream& operator>>(BinStream&, HxGuid&);
 
 class UserGuid : public HxGuid {
 public:

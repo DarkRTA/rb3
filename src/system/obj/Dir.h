@@ -64,7 +64,7 @@ public:
     virtual bool IsDirPtr(){ return true; }
     void operator=(T*);
 
-    ObjectDir* mDir;
+    T* mDir;
     int* mLoader; // DirLoader*
 };
 

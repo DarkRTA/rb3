@@ -6,7 +6,7 @@
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 
-bool PropSync(String&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Hmx::Color&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Hmx::Matrix3&, DataNode&, DataArray*, int, PropOp);

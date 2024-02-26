@@ -12,27 +12,38 @@ public:
         kFloat = 2,
         kNone = 3,
     };
-    char *mBuf;
+    char* mBuf;
+    char* mNextBuf;
     int mBufSize;
     char mFmtBuf[2048];
     char *mFmt;
-    char *mFmtEnd;
     Type mType;
+    char *mFmtEnd;
 
     FormatString();
     FormatString(const char *);
+    void InitializeWithFmt(const char*, bool);
     void UpdateType();
-    char *Str();
+    
+    FormatString &operator<<(void*);
     FormatString &operator<<(unsigned int);
-    FormatString &operator<<(int);
     FormatString &operator<<(unsigned long);
     FormatString &operator<<(long);
-    FormatString &operator<<(const String &);
+    FormatString &operator<<(unsigned long long);
+    FormatString &operator<<(int);
     FormatString &operator<<(const DataNode &);
-    FormatString &operator<<(float);
     FormatString &operator<<(const char *);
+    FormatString &operator<<(float);
+    FormatString &operator<<(double);
+    FormatString &operator<<(const String &);
     FormatString &operator<<(Symbol);
+
+    const char *Str();
 };
+
+void InitMakeString();
+bool MakeStringInitted();
+void TerminateMakeString();
 
 inline const char *MakeString(const char * c){
     FormatString fs(c);

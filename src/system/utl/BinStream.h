@@ -4,6 +4,18 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 
+#define BS_WRITE_TYPE(var) \
+    BinStream& operator<<(var x){ \
+        WriteEndian(&x, sizeof(var)); \
+        return *this; \
+    }
+
+#define BS_READ_TYPE(var) \
+    BinStream& operator>>(var& x){ \
+        ReadEndian(&x, sizeof(var)); \
+        return *this; \
+    }
+
 class BinStream {
 public:
     /** The three seek types for BinStream::Seek
@@ -89,25 +101,30 @@ public:
 
     void WriteEndian(const void *, int);
 
-    BinStream& operator<<(int i){
-        WriteEndian(&i, 4);
-        return *this;
-    }
-    BinStream& operator<<(float f){
-        WriteEndian(&f, 4);
+    BS_WRITE_TYPE(int);
+    BS_WRITE_TYPE(float);
+    
+    BinStream& operator<<(unsigned char uc){
+        Write(&uc, 1);
         return *this;
     }
 
-    BinStream& operator>>(int& i){
-        ReadEndian(&i, 4);
+    BS_READ_TYPE(int);
+    BS_READ_TYPE(float);
+    BS_READ_TYPE(unsigned int);
+    BS_READ_TYPE(unsigned short);
+    
+    BinStream& operator>>(unsigned char& out) {
+        Read(&out, 1);
         return *this;
     }
-    BinStream& operator>>(float& f){
-        ReadEndian(&f, 4);
+
+    BinStream& operator>>(bool& b){
+        unsigned char uc;
+        *this >> uc;
+        b = (uc != 0);
         return *this;
     }
-  
-    inline BinStream& operator>>(unsigned char& out) {Read(&out, 1);}
   
 };
 
