@@ -26,11 +26,12 @@ void LogFile::AdvanceFile(){
         mFile = 0;
         const char* str;
         while(true){
-            str = MakeString(mFilePattern.mStr, mSerialNumber);
-            if(FileGetStat(str, &stat) < 0) break;
-            mSerialNumber++;
+            str = MakeString(mFilePattern.c_str(), mSerialNumber);
+            if (FileGetStat(str, &stat) < 0) {
+                mFile = new TextFileStream(str, false);
+                mDirty = false;
+                return;
+            } else mSerialNumber++;
         }
-        mFile = new TextFileStream(str, false);
-        mDirty = false;
     }
 }
