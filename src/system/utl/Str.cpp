@@ -258,22 +258,19 @@ String String::substr(unsigned int pos, unsigned int len) const {
     }
 }
 
-// struct __locale _current_locale is referenced for ToUpper and ToLower - taken from <ctype.h> and <wctype.h>
+void String::ToLower(){
+    char *p;
+    for (p = mStr; *p != '\0'; p++) {
+        *p = tolower(*p);
+    }
+}
 
-// void __thiscall String::ToLower(String *this)
-
-// {
-//   char cVar1;
-//   char *pcVar2;
-
-//   for (pcVar2 = *(char **)(this + 8); cVar1 = *pcVar2, cVar1 != '\0'; pcVar2 = pcVar2 + 1) {
-//     if ((uint)(int)cVar1 < 0x100) {
-//       cVar1 = *(char *)(*(int *)(_current_locale._56_4_ + 0x10) + (int)cVar1);
-//     }
-//     *pcVar2 = cVar1;
-//   }
-//   return;
-// }
+void String::ToUpper(){
+    char *p;
+    for (p = mStr; *p != '\0'; p++) {
+        *p = toupper(*p);
+    }
+}
 
 void String::ReplaceAll(char old_char, char new_char) {
     char *p;
