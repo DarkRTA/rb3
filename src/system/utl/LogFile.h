@@ -12,10 +12,7 @@ public:
     bool mActive;
 
     LogFile(const char*);
-    virtual ~LogFile(){ 
-        delete mFile; 
-        mFile = 0;
-    }
+    virtual ~LogFile();
     virtual void Print(const char *);
 
     void Reset();
