@@ -56,7 +56,7 @@
 
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "NonMatching",
-            "system/os/CritSec.cpp": "NonMatching",
+            "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",
             "system/os/Debug.cpp": "NonMatching",
             "system/os/File.cpp": "NonMatching",

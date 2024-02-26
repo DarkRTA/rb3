@@ -1,5 +1,5 @@
 #include "os/CritSec.h"
-#include "utl/PoolAlloc.h"
+
 
 void CriticalSection::Abandon(){
     while(1 < mEntryCount) Exit();
@@ -12,7 +12,7 @@ CriticalSection::CriticalSection(){
 }
 
 CriticalSection::~CriticalSection(){
-    // _PoolFree(0x1C, FastPool, this);
+    
 }
 
 void CriticalSection::Enter(){
