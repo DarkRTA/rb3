@@ -91,7 +91,7 @@ public:
 
     DataNode(const DataNode&);
     DataNode(const char* string);
-    DataNode(const String& string);
+    DataNode(const class String& string);
     DataNode(const void* glob, int size);
     DataNode(const DataArrayPtr&);
     DataNode(DataArray* array, DataType type);
