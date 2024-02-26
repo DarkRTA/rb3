@@ -64,6 +64,7 @@
             "system/os/Joypad.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/os/JoypadMsgs.cpp": "Matching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
+            "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
             "system/os/System.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/os/Timer.cpp": "NonMatching",
