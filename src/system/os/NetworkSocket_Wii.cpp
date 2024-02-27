@@ -20,3 +20,20 @@ WiiNetworkSocket::WiiNetworkSocket(bool streaming) : mStreaming(streaming), mFai
         SOFcntl(mSocket, 4, ret | 4);
     }
 }
+
+WiiNetworkSocket::WiiNetworkSocket(int socket, bool streaming) : mSocket(socket), mStreaming(streaming), mFail(0) {
+    int ret = SOFcntl(mSocket, 3, 0);
+    SOFcntl(mSocket, 4, ret | 4);
+}
+
+WiiNetworkSocket::~WiiNetworkSocket(){
+    Disconnect();
+}
+
+int WiiNetworkSocket::Listen(){
+    return SOListen(mSocket, 5);
+}
+
+bool WiiNetworkSocket::SetNoDelay(bool b){
+    return SOSetSockOpt(mSocket, SOL_SOCKET, SO_IP_NUM, 0, 4) == 0;
+}

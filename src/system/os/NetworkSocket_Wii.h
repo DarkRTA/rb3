@@ -12,7 +12,7 @@ public:
     virtual void Disconnect() = 0;
     virtual void Bind(unsigned short) = 0;
     virtual int InqBoundPort(unsigned short&) const = 0;
-    virtual void Listen();
+    virtual int Listen() = 0;
     virtual NetworkSocket* Accept() = 0;
     virtual int GetRemoteIP(unsigned int&, unsigned short&) = 0;
     virtual bool CanSend() const = 0;
@@ -32,13 +32,14 @@ public:
 class WiiNetworkSocket : public NetworkSocket {
 public:
     WiiNetworkSocket(bool);
+    WiiNetworkSocket(int, bool);
     virtual ~WiiNetworkSocket();
     virtual bool Connect(unsigned int, unsigned short);
     virtual bool Fail() const;
     virtual void Disconnect();
     virtual void Bind(unsigned short);
     virtual int InqBoundPort(unsigned short&) const;
-    virtual void Listen();
+    virtual int Listen();
     virtual NetworkSocket* Accept();
     virtual int GetRemoteIP(unsigned int&, unsigned short&);
     virtual bool CanSend() const;
@@ -50,8 +51,9 @@ public:
     virtual int RecvFrom(void*, unsigned long, unsigned int&, unsigned short&);
     virtual bool SetNoDelay(bool);
 
-    void Init();
+    static void Init();
 
+    static bool sInit;
     so_fd_t mSocket;
     bool mStreaming;
     bool mFail;
