@@ -50,6 +50,7 @@
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
+            "system/obj/PropSync.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/Utl.cpp": "NonMatching",
