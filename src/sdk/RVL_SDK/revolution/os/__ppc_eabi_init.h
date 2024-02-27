@@ -23,7 +23,7 @@ extern u8 __ArenaHi[];
 
 void __init_cpp(void);
 void __fini_cpp(void);
-void exit(void);
+// void exit(void);
 
 #ifdef __cplusplus
 }
