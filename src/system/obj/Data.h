@@ -202,7 +202,7 @@ public:
 
     bool FindData(Symbol tag, const char *& ret, bool fail) const;
     bool FindData(Symbol tag, Symbol & ret, bool fail) const;
-    bool FindData(Symbol tag, String & ret, bool fail) const;
+    bool FindData(Symbol tag, class String & ret, bool fail) const;
     bool FindData(Symbol tag, int & ret, bool fail) const;
     bool FindData(Symbol tag, float & ret, bool fail) const;
     bool FindData(Symbol tag, bool & ret, bool fail) const;
