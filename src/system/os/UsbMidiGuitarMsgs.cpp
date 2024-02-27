@@ -1,5 +1,12 @@
 #include "os/UsbMidiGuitarMsgs.h"
 
+StringStrummedMsg::StringStrummedMsg(int i1, int i2, int i3, int i4)
+    : Message(
+        Type(), DataNode(i1), DataNode(i2), DataNode(i3), DataNode(i4)
+    ) {
+
+}
+
 RGAccelerometerMsg::RGAccelerometerMsg(int i1, int i2, int i3, int i4)
     : Message(
         Type(), DataNode(i1), DataNode(i2), DataNode(i3), DataNode(i4)
@@ -36,4 +43,11 @@ RGFretButtonDownMsg::RGFretButtonDownMsg(int i1, int i2, bool i3)
 
 RGFretButtonUpMsg::RGFretButtonUpMsg(int i1, int i2, bool i3)
     : Message(Type(), DataNode(i1), DataNode(i2), DataNode(i3)) {
+}
+
+StringStoppedMsg::StringStoppedMsg(int i1, int i2, int i3, int i4)
+    : Message(
+        Type(), DataNode(i1), DataNode(i2), DataNode(i3), DataNode(i4)
+    ) {
+
 }

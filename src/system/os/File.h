@@ -7,7 +7,10 @@ class File {
 public:
     File(){ sOpenCount[0]++; }
     virtual ~File(){ sOpenCount[0]--; }
-    virtual String Filename() const { return String(); }
+    virtual class String Filename() const { 
+        class String str;
+        return str;
+    }
     virtual int Read(void *, int) = 0;
     virtual bool ReadAsync(void *, int) = 0;
     virtual bool Write(const void *, int);
@@ -29,6 +32,8 @@ public:
 
     static int sOpenCount[4];
 };
+
+File* NewFile(const char*, int);
 
 const char* FileRoot();
 const char* FileExecRoot();

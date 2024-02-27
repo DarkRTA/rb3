@@ -18,6 +18,8 @@ public:
     String(const String &);
     String(unsigned int, char);
 
+    static unsigned int npos;
+
     unsigned int length() const { return strlen(mStr); }
     const char* c_str() const { return mStr; }
     bool empty() const { return mStr != 0; }

@@ -17,7 +17,7 @@ public:
     OBJ_CLASSNAME(File);
     OBJ_SET_TYPE(TextFile);
     virtual DataNode Handle(DataArray*, bool);
-    virtual void SetName(const char*, ObjectDir*);
+    virtual void SetName(const char*, class ObjectDir*);
     virtual void Print(const char *);
     
     static TextFile* NewObject(){ return new TextFile(); }

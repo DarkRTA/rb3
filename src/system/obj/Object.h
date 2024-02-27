@@ -97,7 +97,7 @@ namespace Hmx {
         TypeProps mTypeProps;
         DataArray* mTypeDef;
         const char* mName;
-        ObjectDir* mDir;
+        class ObjectDir* mDir;
         char mRefs[8]; // actually a vector<ObjRef*> - thank you stlport, very cool
 
         // o7 farts, you will be missed
@@ -124,8 +124,8 @@ namespace Hmx {
         virtual void Print(){}
         virtual void Export(DataArray*, bool){}
         virtual void SetTypeDef(DataArray *);
-        virtual void SetName(const char*, ObjectDir*);
-        virtual ObjectDir* DataDir();
+        virtual void SetName(const char*, class ObjectDir*);
+        virtual class ObjectDir* DataDir();
         virtual void PreLoad(BinStream&);
         virtual void PostLoad(BinStream&){}
         virtual char* FindPathName();
@@ -138,7 +138,7 @@ namespace Hmx {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
             else return gNullStr;
         }
-        ObjectDir* Dir() const { return mDir; }
+        class ObjectDir* Dir() const { return mDir; }
 
         static Object* NewObject();
 

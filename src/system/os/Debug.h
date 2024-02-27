@@ -3,6 +3,7 @@
 #include "utl/TextStream.h"
 #include "utl/Str.h"
 #include "utl/MakeString.h"
+#include "utl/TextFileStream.h"
 
 class Debug : public TextStream {
 public:
@@ -10,13 +11,22 @@ public:
     bool mExiting;
     bool mNoTry;
     bool mNoModal;
-    int mTry;
+    bool mTry;
+    TextFileStream* mLog;
+    bool mAlwaysFlush;
+    int filler;
+    TextStream* mReflect;
 
     virtual ~Debug();
     virtual void Print(const char*);
 
     void Notify(const char* msg);
     void Fail(const char* msg);
+    TextStream* SetReflect(TextStream* ts){
+        TextStream* ret = mReflect;
+        mReflect = ts;
+        return ret;
+    }
 };
 
 extern Debug TheDebug;

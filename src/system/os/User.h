@@ -65,7 +65,7 @@ public:
     virtual const char* UserName() const;
     virtual void SyncLoad(BinStream&, unsigned int);
 
-    String str;
+    class String str;
 };
 
 #endif

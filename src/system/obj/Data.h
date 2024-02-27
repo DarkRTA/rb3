@@ -91,7 +91,7 @@ public:
 
     DataNode(const DataNode&);
     DataNode(const char* string);
-    DataNode(const String& string);
+    DataNode(const class String& string);
     DataNode(const void* glob, int size);
     DataNode(const DataArrayPtr&);
     DataNode(DataArray* array, DataType type);
@@ -202,7 +202,7 @@ public:
 
     bool FindData(Symbol tag, const char *& ret, bool fail) const;
     bool FindData(Symbol tag, Symbol & ret, bool fail) const;
-    bool FindData(Symbol tag, String & ret, bool fail) const;
+    bool FindData(Symbol tag, class String & ret, bool fail) const;
     bool FindData(Symbol tag, int & ret, bool fail) const;
     bool FindData(Symbol tag, float & ret, bool fail) const;
     bool FindData(Symbol tag, bool & ret, bool fail) const;
