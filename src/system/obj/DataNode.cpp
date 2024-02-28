@@ -24,7 +24,12 @@ bool DataVarExists(Symbol s){
     return gDataVars.find(s) != gDataVars.end();
 }
 
-const char* DataVarName(const DataNode*){
+const char* DataVarName(const DataNode* node){
+    for(std::map<Symbol, DataNode>::iterator it = gDataVars.begin(); it != gDataVars.end(); it++ ){
+        if((&it->second) == node){
+            return it->first.Str();
+        }
+    }
     return "<null>";
 }
 
