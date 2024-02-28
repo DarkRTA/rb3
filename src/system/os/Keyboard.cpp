@@ -6,6 +6,11 @@
 class MsgSource* gSource;
 ObjPtr<Hmx::Object, ObjectDir> gObjOverride(0, 0);
 
+void KeyboardTerminateCommon(){
+    delete gSource;
+    gSource = 0;
+}
+
 void KeyboardSubscribe(Hmx::Object* o){
     if(gSource){
         gSource->AddSink(o, Symbol(), Symbol(), MsgSource::kHandle);

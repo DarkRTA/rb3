@@ -1,6 +1,6 @@
 #include "ui/UIColor.h"
 #include "os/Debug.h"
-#include "obj/PropSync.h"
+#include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 
 UIColor::UIColor() : mColor() {
