@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "utl/Str.h"
 #include "obj/Msg.h"
+#include "os/User.h"
 #include <list>
 
 class VirtualKeyboard : public Hmx::Object {
@@ -24,6 +25,7 @@ public:
     void PlatformPoll();
     void PlatformTerminate();
     DataNode OnShowKeyboardUI(const DataArray*);
+    DataNode ShowKeyboardUI(const LocalUser*, int, class String, class String, class String, int, int);
 };
 
 BEGIN_MESSAGE(VirtualKeyboardResultMsg, virtual_keyboard_result_msg, int, const char*);
