@@ -166,6 +166,12 @@ namespace Hmx {
     };
 }
 
+inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
+    if(obj) ts << obj->Name();
+    else ts << "<null>";
+    return ts;
+}
+
 #define BEGIN_HANDLERS(objType) \
 DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     Symbol sym = _msg->Sym(1); \

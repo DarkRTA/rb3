@@ -144,8 +144,9 @@ public:
     DataNode& operator=(const DataNode& n);
 
     void Print(TextStream& s, bool) const;
+    unsigned int PrintUnused(TextStream&, bool) const;
     void Save(BinStream& d) const;
-    void Load(BinStream& d) const;
+    void Load(BinStream& d);
 };
 
 class DataArray {
