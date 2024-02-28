@@ -30,8 +30,10 @@ namespace {
 }
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
+    if(gDataFuncs.empty())
+        MILO_FAIL("Can't register different func %s", s);
     gDataFuncs[s] = func;
-    MILO_FAIL("Can't register different func %s", s);
+    
 }
 
 static DataNode DataSprintf(DataArray *da) {
