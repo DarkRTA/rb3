@@ -56,6 +56,7 @@
             "system/obj/TypeProps.cpp":  { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/Utl.cpp": "NonMatching",
 
+            "system/os/AppChild.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
             "system/os/CritSec.cpp": "Matching",
