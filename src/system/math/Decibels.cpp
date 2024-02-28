@@ -1,5 +1,5 @@
 #include "math/Decibels.h"
-#include "math/Math_f.h"
+#include "math/MathFuncs.h"
 #include "os/Debug.h"
 
 float DbToRatio(float db){

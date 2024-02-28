@@ -1,5 +1,5 @@
-#ifndef MATH_MATHF_H
-#define MATH_MATHF_H
+#ifndef MATH_MATHFUNCS_H
+#define MATH_MATHFUNCS_H
 #include <math.h>
 
 extern "C" float asin_f(double);
