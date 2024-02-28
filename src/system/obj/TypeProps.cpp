@@ -213,23 +213,25 @@ DataNode& TypeProps::Value(int i) const {
 
 void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
     if(mMap != 0){
-        int cnt = mMap->Size();
-        do {
+        int cnt = mMap->Size() - 2;
+        while(cnt >= 0){
+            if((STR_TO_SYM(((const DataArray*)mMap)->Node(cnt).mValue.symbol) == key)){
+                DataNode& n = mMap->Node(cnt + 1);
+                if(n.Type() == kDataObject){
+                    Hmx::Object* obj = n.mValue.object;
+                    if(obj) obj->Release(ref);
+                }
+                mMap->Remove(cnt);
+                mMap->Remove(cnt);
+                if(mMap->Size() == 0 && mMap){
+                    mMap->Release();
+                    mMap = 0;
+                }
+                return;
+            }
             cnt -= 2;
-            if(cnt < 0) return;
-        } while(!(STR_TO_SYM(((const DataArray*)mMap)->Node(cnt).mValue.symbol) == key));
-        DataNode& n = mMap->Node(cnt - 1);
-        if(n.Type() == kDataObject){
-            Hmx::Object* obj = n.mValue.object;
-            if(obj) obj->Release(ref);
         }
-        mMap->Remove(cnt);
-        mMap->Remove(cnt);
-        if(mMap->Size() == 0 && mMap){
-            mMap->Release();
-            mMap = 0;
-        }
-    }
+    }    
 }
 
 void TypeProps::ClearAll(Hmx::Object* ref){
