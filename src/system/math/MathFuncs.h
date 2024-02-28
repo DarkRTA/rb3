@@ -12,6 +12,35 @@ extern "C" float cos_f(double);
 extern "C" float tan_f(double);
 extern "C" float log10_f(double);
 
+inline int CountBits(int num) {
+    int temp_r0;
+    int var_r3;
+    int var_r4;
+
+    var_r3 = num;
+    var_r4 = 0;
+    while (var_r3 != 0) {
+        temp_r0 = var_r3 & 1;
+        var_r3 = (int)((unsigned int)var_r3 >> 1U);
+        var_r4 += temp_r0;
+    }
+    return var_r4;
+}
+
+template<class T> inline T Minimum(T x, T y){
+    return (y < x) ? y : x;
+}
+
+template<class T> inline T Maximum(T x, T y){
+    return (x < y) ? y : x;
+}
+
+template<class T> inline T Clamp(T x, T y, T z){
+    if(z > y) return y;
+    if(!(z > x)) return z;
+    return x;
+}
+
 inline float asin_f(double d){
     return asin(d);
 }
