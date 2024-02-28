@@ -122,10 +122,6 @@ struct _Bit_iterator_base {
 
   _Bit_iterator_base() : _M_p(0), _M_offset(0) {}
   _Bit_iterator_base(unsigned int* __x, unsigned int __y) : _M_p(__x), _M_offset(__y) {}
-// see comment in doc/README.evc4 and doc/README.evc8
-#if defined(_MSC_VER) && _MSC_VER<=1401 && defined(MIPS) && defined(NDEBUG)
-  _Bit_iterator_base( const _Bit_iterator_base& __x) : _M_p(__x._M_p), _M_offset(__x._M_offset) {}
-#endif
   //  _Bit_iterator_base& operator = ( const _Bit_iterator_base& __x) { _M_p = __x._M_p ; _M_offset = __x._M_offset ; return *this; }
 
   void _M_advance (difference_type __i) {
@@ -315,7 +311,7 @@ protected:
 //  compiler support.  Otherwise, we define a class bit_vector which uses
 //  the default allocator.
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_NO_BOOL) && !defined (__SUNPRO_CC)
+#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_NO_BOOL)
 #  define _STLP_VECBOOL_TEMPLATE
 #  define __BVEC_TMPL_HEADER template <class _Alloc>
 #else
@@ -325,11 +321,7 @@ protected:
 #  else
 #    define __BVEC_TMPL_HEADER _STLP_TEMPLATE_NULL
 #  endif
-#  if !(defined(__MRC__)||(defined(__SC__)&&!defined(__DMC__)))      //*TY 12/17/2000 -
-#    define _Alloc _STLP_DEFAULT_ALLOCATOR(bool)
-#  else
-#    define _Alloc allocator<bool>
-#  endif
+#  define _Alloc _STLP_DEFAULT_ALLOCATOR(bool)
 #endif
 
 #if defined (_STLP_DEBUG)
@@ -807,7 +799,7 @@ public:
   void clear() { erase(begin(), end()); }
 };
 
-#if defined  (_STLP_NO_BOOL) || defined (__HP_aCC) // fixed soon (03/17/2000)
+#if defined  (_STLP_NO_BOOL)
 #  define _STLP_TEMPLATE_HEADER __BVEC_TMPL_HEADER
 #  define _STLP_TEMPLATE_CONTAINER __BVECTOR_QUALIFIED
 #  include <stl/_relops_cont.h>

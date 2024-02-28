@@ -24,10 +24,7 @@
 #  endif
 #endif
 
-/* evc3 doesn't have locale.h */
-#ifndef _STLP_WCE_EVC3
-#  include _STLP_NATIVE_C_HEADER(locale.h)
-#endif
+#include _STLP_NATIVE_C_HEADER(locale.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x242)
 #  if !defined (_STLP_DONT_POP_HEADER_ID)

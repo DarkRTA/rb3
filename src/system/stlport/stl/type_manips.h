@@ -1,7 +1,7 @@
 /*
  *
  * Copyright (c) 2003
- * François Dumont
+ * Franï¿½ois Dumont
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
@@ -106,14 +106,6 @@ struct __select { typedef _Tp1 _Ret; };
 template <class _Tp1, class _Tp2>
 struct __select<false, _Tp1, _Tp2> { typedef _Tp2 _Ret; };
 
-#  if defined (__BORLANDC__)
-template <class _CondT, class _Tp1, class _Tp2>
-struct __selectT { typedef _Tp1 _Ret; };
-
-template <class _Tp1, class _Tp2>
-struct __selectT<__false_type, _Tp1, _Tp2> { typedef _Tp2 _Ret; };
-#  endif
-
 #else /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #  if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
@@ -202,16 +194,6 @@ template <class _Tp>
 struct _UnVolatileType<volatile _Tp> { typedef _Tp _Type; };
 #    endif
 
-#    if defined(__BORLANDC__)
-template<class _Tp>
-struct _UnConstPtr { typedef _Tp _Type; };
-
-template<class _Tp>
-struct _UnConstPtr<_Tp*> { typedef _Tp _Type; };
-
-template<class _Tp>
-struct _UnConstPtr<const _Tp*> { typedef _Tp _Type; };
-#    endif
 #  endif
 
 template <class _Tp1, class _Tp2>
@@ -265,14 +247,8 @@ struct _IsConvertible {
  */
 template <class _Src, class _Dst>
 struct _IsCVConvertible {
-#if !defined (__BORLANDC__)
   typedef _ConversionHelper<_Src, _Dst> _H;
   enum { value = (sizeof(char) == sizeof(_H::_Test(false, _H::_MakeSource()))) };
-#else
-  enum { _Is1 = __type2bool<_IsConst<_Src>::_Ret>::_Ret };
-  enum { _Is2 = _IsConvertible<_UnConstPtr<_Src>::_Type, _UnConstPtr<_Dst>::_Type>::value };
-  enum { value = _Is1 ? 0 : _Is2 };
-#endif
   typedef typename __bool2type<value>::_Ret _Ret;
 };
 
@@ -291,14 +267,6 @@ struct _IsConst { typedef __false_type _Ret; };
 template <class _Tp>
 struct _IsConst <const _Tp> { typedef __true_type _Ret; };
 #endif
-
-#  if defined(__BORLANDC__)
-template<class _Tp>
-struct _IsConst <const _Tp*> { typedef __true_type _Ret; };
-
-template<class _Tp>
-struct _IsConst <const volatile _Tp*> { typedef __true_type _Ret; };
-#  endif
 
 _STLP_END_NAMESPACE
 

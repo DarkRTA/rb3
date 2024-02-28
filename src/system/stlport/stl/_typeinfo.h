@@ -31,40 +31,16 @@
 #    endif
 #  endif
 
-#  if (defined(_STLP_MSVC) && (_STLP_MSVC >= 1300)) || (defined(__INTEL_COMPILER) && (__INTEL_COMPILER >= 800))
-// In .NET, <typeinfo> actually includes <typeinfo.h>
-#    undef _STLP_OLDSTD_typeinfo
-#  endif
-
 // if <typeinfo.h> already included, do not import anything
 #  if defined(_STLP_USE_NAMESPACES) && !defined(_STLP_OLDSTD_typeinfo) && \
       (defined(_STLP_VENDOR_GLOBAL_EXCEPT_STD) || \
        defined(_STLP_USE_OWN_NAMESPACE) || defined (_STLP_DEBUG))
-#    if defined(_STLP_MSVC) && (_STLP_MSVC < 1300) && !defined(_STLP_WCE_NET)
-class bad_cast : public exception {};
-#    endif
 
 _STLP_BEGIN_NAMESPACE
-// VC 6 and eVC 4 have type_info in the global namespace
-#    if (defined(_STLP_MSVC) && (_STLP_MSVC < 1300)) || defined(_STLP_WCE_NET)
-using ::type_info;
-#    else
+
 using _STLP_VENDOR_EXCEPT_STD::type_info;
-#    endif
-
-#    if !(defined (__MRC__) || defined (__SC__) || defined (__DMC__))
 using _STLP_VENDOR_EXCEPT_STD::bad_typeid;
-#    endif
-
-//#if defined( __xlC__ ) && (__xlC__ < 0x500)
-//# include <exception>
-//struct bad_cast : exception {};
-//#endif
-#    if defined (_STLP_MSVC) && (_STLP_MSVC < 1300) && !defined (_STLP_WCE_NET)
-using ::bad_cast;
-#    else
 using _STLP_VENDOR_EXCEPT_STD::bad_cast;
-#    endif
 
 _STLP_END_NAMESPACE
 
@@ -77,9 +53,9 @@ _STLP_END_NAMESPACE
 #  endif
 
 _STLP_BEGIN_NAMESPACE
-#  if !defined (__DMC__)
+
 struct bad_cast : exception {};
-#  endif
+
 _STLP_END_NAMESPACE
 #endif
 

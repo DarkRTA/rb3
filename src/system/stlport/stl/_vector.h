@@ -734,10 +734,6 @@ template <class _Tp, class _Size, class _Alloc>
 struct __move_traits<vector<_Tp, _Size, _Alloc> > {
   typedef __stlp_movable implemented;
   typedef typename __move_traits<_Alloc>::complete complete;
-#if defined (__BORLANDC__) && (__BORLANDC__ < 0x560)
-  // disable incorrect "dependent type qualifier" error
-  typedef __false_type _Ret;
-#endif
 };
 
 #  if !defined (_STLP_DEBUG)

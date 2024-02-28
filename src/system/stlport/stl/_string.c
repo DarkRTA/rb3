@@ -34,9 +34,7 @@
 #  include <stl/_ctraits_fns.h>
 #endif
 
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-#  define basic_string _STLP_NO_MEM_T_NAME(str)
-#elif defined (_STLP_DEBUG)
+#if defined (_STLP_DEBUG)
 #  define basic_string _STLP_NON_DBG_NAME(str)
 #endif
 
@@ -669,10 +667,8 @@ _STLP_MOVE_TO_STD_NAMESPACE
  * exposed to STLport users so npos do not need external linkage.
  */
 #  if !defined (_STLP_STATIC_CONST_INIT_BUG)
-#    if !defined (__GNUC__) || (__GNUC__ != 2) || (__GNUC_MINOR__ != 96)
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
-#    endif
 #  endif
 #endif
 

@@ -139,11 +139,8 @@ public:
 
   _DBG_iter_base() : __owned_link(0)  {}
   _DBG_iter_base(const __owned_list* __c, const _Const_iterator& __it) :
-#if defined(__HP_aCC) && (__HP_aCC < 60000)
-  __owned_link(__c), _M_iterator(*__REINTERPRET_CAST(const _Nonconst_iterator *, &__it)) {}
-#else
     __owned_link(__c), _M_iterator(*(const _Nonconst_iterator*)&__it) {}
-#endif
+
   _Container* _Get_container_ptr() const {
     return (_Container*)__stl_debugger::_Get_container_ptr(this);
   }
@@ -415,9 +412,7 @@ protected:
 };
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  if defined (_STLP_NESTED_TYPE_PARAM_BUG) ||\
-     (defined (__SUNPRO_CC) && __SUNPRO_CC < 0x600) ||\
-     (defined (_STLP_MSVC) && (_STLP_MSVC < 1100))
+#  if defined (_STLP_NESTED_TYPE_PARAM_BUG)
 #    define _STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS 1
 #  endif
 

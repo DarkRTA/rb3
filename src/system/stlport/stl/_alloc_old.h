@@ -50,10 +50,7 @@ struct __allocator : public _Alloc {
   ~__allocator() _STLP_NOTHROW {}
 # endif
   pointer address(reference __x) const { return &__x; }
-
-# if !defined (__WATCOM_CPLUSPLUS__)
   const_pointer address(const_reference __x) const { return &__x; }
-# endif
 
   // __n is permitted to be 0.
   _Tp* allocate(size_type __n, const void* = 0) {

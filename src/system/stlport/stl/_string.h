@@ -47,16 +47,6 @@
 #  include <stl/_string_sum.h>
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
-#if defined (__MWERKS__) && ! defined (_STLP_USE_OWN_NAMESPACE)
-
-// MSL implementation classes expect to see the definition of streampos
-// when this header is included. We expect this to be fixed in later MSL
-// implementations
-#  if !defined( __MSL_CPP__ ) || __MSL_CPP__ < 0x4105
-#    include <stl/msl_string.h>
-#  endif
-#endif // __MWERKS__
-
 /*
  * Standard C++ string class.  This class has performance
  * characteristics very much like vector<>, meaning, for example, that
@@ -1322,13 +1312,6 @@ public:                        // Helper functions for compare.
 #  undef _STLP_STRING_SUM_BASE
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 };
-
-#if !defined (_STLP_STATIC_CONST_INIT_BUG)
-#  if defined (__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ == 96)
-template <class _CharT, class _Traits, class _Alloc>
-const size_t basic_string<_CharT, _Traits, _Alloc>::npos = ~(size_t) 0;
-#  endif
-#endif
 
 #if defined (_STLP_USE_TEMPLATE_EXPORT)
 _STLP_EXPORT_TEMPLATE_CLASS basic_string<char, char_traits<char>, allocator<char> >;

@@ -251,11 +251,7 @@ template <class _InputIter, class _Integer, class _CharT>
 _InputIter _STLP_CALL
 __do_get_integer(_InputIter& __in_ite, _InputIter& __end, ios_base& __str,
                  ios_base::iostate& __err, _Integer& __val, _CharT* __pc) {
-#if defined (__HP_aCC) && (__HP_aCC == 1)
-  bool _IsSigned = !((_Integer)(-1) > 0);
-#else
   typedef typename __bool2type<numeric_limits<_Integer>::is_signed>::_Ret _IsSigned;
-#endif
 
   const numpunct<_CharT>& __numpunct = *__STATIC_CAST(const numpunct<_CharT>*, __str._M_numpunct_facet());
   const string& __grouping = __str._M_grouping(); // cached copy
@@ -266,7 +262,6 @@ __do_get_integer(_InputIter& __in_ite, _InputIter& __end, ios_base& __str,
   bool __result;
 
   if (__in_ite == __end) {      // We may have already read a 0.  If so,
-
     if (__got > 0) {       // the result is 0 even if we're at eof.
       __val = 0;
       __result = true;
@@ -277,15 +272,7 @@ __do_get_integer(_InputIter& __in_ite, _InputIter& __end, ios_base& __str,
   else {
     const bool __negative = (__base_or_zero & 2) != 0;
     const int __base = __base_or_zero >> 2;
-
-#if defined (__HP_aCC) && (__HP_aCC == 1)
-    if (_IsSigned)
-      __result = __get_integer(__in_ite, __end, __base,  __val, __got, __negative, __numpunct.thousands_sep(), __grouping, __true_type() );
-    else
-      __result = __get_integer(__in_ite, __end, __base,  __val, __got, __negative, __numpunct.thousands_sep(), __grouping, __false_type() );
-#else
     __result = __get_integer(__in_ite, __end, __base,  __val, __got, __negative, __numpunct.thousands_sep(), __grouping, _IsSigned());
-# endif
   }
 
   __err = __STATIC_CAST(ios_base::iostate, __result ? ios_base::goodbit : ios_base::failbit);
@@ -435,35 +422,9 @@ _STLP_MOVE_TO_STD_NAMESPACE
 //
 
 #if ( _STLP_STATIC_TEMPLATE_DATA > 0 )
-#  if !defined (__BORLANDC__)
+
 template <class _CharT, class _InputIterator>
 locale::id num_get<_CharT, _InputIterator>::id;
-#  endif
-
-#  if (defined (__CYGWIN__) || defined (__MINGW32__)) && \
-       defined (_STLP_USE_DYNAMIC_LIB) && !defined (__BUILDING_STLPORT)
-/*
- * Under cygwin, when STLport is used as a shared library, the id needs
- * to be specified as imported otherwise they will be duplicated in the
- * calling executable.
- */
-template <>
-_STLP_DECLSPEC locale::id num_get<char, istreambuf_iterator<char, char_traits<char> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id num_get<char, const char*>::id;
-*/
-
-#    if !defined (STLP_NO_WCHAR_T)
-template <>
-_STLP_DECLSPEC locale::id num_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id num_get<wchar_t, const wchar_t*>::id;
-*/
-#    endif
-
-#  endif /* __CYGWIN__ && _STLP_USE_DYNAMIC_LIB */
 
 #else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
@@ -641,7 +602,7 @@ _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
                            ios_base::iostate& __err,
                            void*& __p) const {
-#if defined (_STLP_LONG_LONG) && !defined (__MRC__)    //*ty 12/07/2001 - MrCpp can not cast from long long to void*
+#if defined (_STLP_LONG_LONG)
   unsigned _STLP_LONG_LONG __val;
 #else
   unsigned long __val;

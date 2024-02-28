@@ -21,12 +21,10 @@
 #  include <stl/_prolog.h>
 #endif
 
-#if !defined(_STLP_WCE_EVC3) && !defined (N_PLAT_NLM) && !defined (__BORLANDC__)
-#  if defined (_STLP_USE_NEW_C_HEADERS)
-#    include _STLP_NATIVE_CPP_C_HEADER(ciso646)
-#  else
-#    include <iso646.h>
-#  endif /* _STLP_USE_NEW_C_HEADERS */
+#if defined (_STLP_USE_NEW_C_HEADERS)
+#  include _STLP_NATIVE_CPP_C_HEADER(ciso646)
+#else
+#  include <iso646.h>
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x107 )

@@ -54,11 +54,7 @@ iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_LIST >&)
 #endif
 
 template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
-class list :
-#if !defined (__DMC__)
-             private
-#endif
-                     _STLP_PRIV __construct_checker<_STLP_NON_DBG_LIST >
+class list : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_LIST >
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
            , public __stlport_class<list<_Tp, _Alloc> >
 #endif

@@ -28,13 +28,6 @@
 
 #if defined (_STLP_IMPORT_VENDOR_CSTD)
 
-#  if defined (__BORLANDC__) && defined (_STLP_USE_NEW_C_HEADERS)
-/* For Borland, even if stdjmp.h is included symbols won't be in global namespace
- * so we need to reach them in vendor namespace:
- */
-#    undef _STLP_NATIVE_SETJMP_H_INCLUDED
-#  endif
-
 _STLP_BEGIN_NAMESPACE
 #  if !defined (_STLP_NATIVE_SETJMP_H_INCLUDED)
 using _STLP_VENDOR_CSTD::jmp_buf;
@@ -44,18 +37,15 @@ using _STLP_VENDOR_CSTD::jmp_buf;
 using ::jmp_buf;
 #  endif
 #  if !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
-#    if !defined (setjmp)
-#      if !defined (__MSL__) || ((__MSL__ > 0x7001) && (__MSL__ < 0x8000))
-#        ifndef _STLP_NATIVE_SETJMP_H_INCLUDED
-using _STLP_VENDOR_CSTD::setjmp;
-#        else
-using ::setjmp;
-#        endif
-#      endif
-#    endif
 #    if !defined (_STLP_NATIVE_SETJMP_H_INCLUDED)
+#      if !defined (setjmp)
+using _STLP_VENDOR_CSTD::setjmp;
+#      endif
 using _STLP_VENDOR_CSTD::longjmp;
 #    else
+#      if !defined (setjmp)
+using ::setjmp;
+#      endif
 using ::longjmp;
 #    endif
 #  endif

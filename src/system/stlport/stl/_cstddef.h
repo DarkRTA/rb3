@@ -16,14 +16,6 @@
 #ifndef _STLP_INTERNAL_CSTDDEF
 #define _STLP_INTERNAL_CSTDDEF
 
-#  if (__GNUC__ >= 3) && defined (__CYGWIN__) // this total HACK is the only expedient way I could cygwin to work with GCC 3.0
-#    define __need_wint_t // mostly because wint_t didn't seem to get defined otherwise :(
-#    define __need_wchar_t
-#    define __need_size_t
-#    define __need_ptrdiff_t
-#    define __need_NULL
-#  endif
-
 #  if defined (_STLP_USE_NEW_C_HEADERS)
 #    include _STLP_NATIVE_CPP_C_HEADER(cstddef)
 #  else

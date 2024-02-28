@@ -46,10 +46,6 @@
 
 #if defined (_STLP_IMPORT_VENDOR_STD)
 #   include _STLP_NATIVE_HEADER(utility)
-#else
-#  if defined (_STLP_MSVC) && !defined (_STLP_INTERNAL_ITERATOR_H)
-#    include <stl/_iterator.h>
-#  endif
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x75)
@@ -62,4 +58,3 @@
 // Local Variables:
 // mode:C++
 // End:
-

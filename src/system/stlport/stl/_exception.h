@@ -56,11 +56,7 @@
 
 _STLP_BEGIN_NAMESPACE
 #    if !defined (_STLP_BROKEN_EXCEPTION_CLASS)
-#      if !defined (_STLP_USING_PLATFORM_SDK_COMPILER) || !defined (_WIN64)
 using _STLP_VENDOR_EXCEPT_STD::exception;
-#      else
-using ::exception;
-#      endif
 using _STLP_VENDOR_EXCEPT_STD::bad_exception;
 #    endif
 
@@ -95,12 +91,7 @@ using _STLP_VENDOR_EXCEPT_STD::bad_exception;
 #      endif
 // weird errors
 #        if !defined (_STLP_NO_UNEXPECTED_EXCEPT_SUPPORT)
-#          if defined (__ICL) && (__ICL >= 900) && (_STLP_MSVC_LIB < 1300)
-//See config/_intel.h for reason about this workaround
-using std::unexpected;
-#          else
 using _STLP_VENDOR_UNEXPECTED_STD::unexpected;
-#          endif
 using _STLP_VENDOR_UNEXPECTED_STD::unexpected_handler;
 using _STLP_VENDOR_UNEXPECTED_STD::set_unexpected;
 #        endif
@@ -115,27 +106,6 @@ using _STLP_VENDOR_UNCAUGHT_EXCEPTION_STD::uncaught_exception;
 _STLP_END_NAMESPACE
 #  endif /* _STLP_OWN_NAMESPACE */
 #else /* _STLP_NO_EXCEPTION_HEADER */
-
-/* fbp : absence of <exception> usually means that those
- * functions are not going to be called by compiler.
- * Still, define them for the user.
- * dums: Policy modification, if the function do not behave like the Standard
- *       defined it we do not grant it in the STLport namespace. We will have
- *       compile time error rather than runtime error.
- */
-#if 0
-/*
-typedef void (*unexpected_handler)();
-unexpected_handler set_unexpected(unexpected_handler f) _STLP_NOTHROW_INHERENTLY;
-void unexpected();
-
-typedef void (*terminate_handler)();
-terminate_handler set_terminate(terminate_handler f) _STLP_NOTHROW_INHERENTLY;
-void terminate();
-
-bool uncaught_exception(); // not implemented under mpw as of Jan/1999
-*/
-#endif
 
 #endif /* _STLP_NO_EXCEPTION_HEADER */
 

@@ -13,48 +13,29 @@
  *
  */
 
-/* Workaround for a "misbehaviour" when compiling resource scripts using
- * eMbedded Visual C++. The standard .rc file includes windows header files,
- * which in turn include string.h, which results in warnings and errors
- */
 #ifndef _STLP_STRING_H
 
-#if !defined (RC_INVOKED)
+#ifndef _STLP_OUTERMOST_HEADER_ID
+#  define _STLP_OUTERMOST_HEADER_ID 0x269
+#  include <stl/_prolog.h>
+#elif (_STLP_OUTERMOST_HEADER_ID == 0x269) && !defined (_STLP_DONT_POP_HEADER_ID)
+#  define _STLP_DONT_POP_HEADER_ID
+#  define _STLP_STRING_H
+#endif
 
-#  ifndef _STLP_OUTERMOST_HEADER_ID
-#    define _STLP_OUTERMOST_HEADER_ID 0x269
-#    include <stl/_prolog.h>
-#  elif (_STLP_OUTERMOST_HEADER_ID == 0x269) && !defined (_STLP_DONT_POP_HEADER_ID)
-#    define _STLP_DONT_POP_HEADER_ID
-#    define _STLP_STRING_H
-#  endif
+#if (_STLP_OUTERMOST_HEADER_ID != 0x269) || defined (_STLP_DONT_POP_HEADER_ID)
+#  include _STLP_NATIVE_C_HEADER(string.h)
+#else
+#  include _STLP_NATIVE_C_HEADER(string.h)
+#endif
 
-#  if defined(_STLP_WCE_EVC3)
-struct _exception;
-#  endif
-#  if (_STLP_OUTERMOST_HEADER_ID != 0x269) || defined (_STLP_DONT_POP_HEADER_ID)
-#    include _STLP_NATIVE_C_HEADER(string.h)
+#if (_STLP_OUTERMOST_HEADER_ID == 0x269)
+#  if !defined (_STLP_DONT_POP_HEADER_ID)
+#    include <stl/_epilog.h>
+#    undef _STLP_OUTERMOST_HEADER_ID
 #  else
-#    if defined (__BORLANDC__)
-#      include _STLP_NATIVE_CPP_C_HEADER(_str.h)
-#    else
-#      include _STLP_NATIVE_C_HEADER(string.h)
-#    endif
-
-#    if (_STLP_OUTERMOST_HEADER_ID == 0x269)
-#      if defined (__BORLANDC__) && defined (_STLP_IMPORT_VENDOR_CSTD)
-#        include <using/cstring>
-#      endif /* BORLAND */
-#    endif
+#    undef _STLP_DONT_POP_HEADER_ID
 #  endif
+#endif
 
-#  if (_STLP_OUTERMOST_HEADER_ID == 0x269)
-#    if !defined (_STLP_DONT_POP_HEADER_ID)
-#      include <stl/_epilog.h>
-#      undef _STLP_OUTERMOST_HEADER_ID
-#    else
-#      undef _STLP_DONT_POP_HEADER_ID
-#    endif
-#  endif
-#endif /* RC_INVOKED */
 #endif /* _STLP_STRING_H */

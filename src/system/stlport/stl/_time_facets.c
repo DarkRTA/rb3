@@ -36,51 +36,11 @@ _STLP_BEGIN_NAMESPACE
 // Declarations of static template members.
 #if (_STLP_STATIC_TEMPLATE_DATA > 0)
 
-#  if !defined (__BORLANDC__)
 template <class _CharT, class _InputIterator>
 locale::id time_get<_CharT, _InputIterator>::id;
 
 template <class _CharT, class _OutputIterator>
 locale::id time_put<_CharT, _OutputIterator>::id;
-#  endif
-
-#  if (defined (__CYGWIN__) || defined (__MINGW32__)) && \
-       defined (_STLP_USE_DYNAMIC_LIB) && !defined (__BUILDING_STLPORT)
-/*
- * Under cygwin, when STLport is used as a shared library, the id needs
- * to be specified as imported otherwise they will be duplicated in the
- * calling executable.
- */
-template <>
-_STLP_DECLSPEC locale::id time_get<char, istreambuf_iterator<char, char_traits<char> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id time_get<char, const char*>::id;
-*/
-
-template <>
-_STLP_DECLSPEC locale::id time_put<char, ostreambuf_iterator<char, char_traits<char> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id time_put<char, char*>::id;
-*/
-
-#    ifndef _STLP_NO_WCHAR_T
-template <>
-_STLP_DECLSPEC locale::id time_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id time_get<wchar_t, const wchar_t*>::id;
-*/
-
-template <>
-_STLP_DECLSPEC locale::id time_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id time_put<wchar_t, wchar_t*>::id;
-*/
-#    endif /* _STLP_NO_WCHAR_T */
-#  endif /* __CUGWIN__ && _STLP_USE_DYNAMIC_LIB */
 
 #else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 

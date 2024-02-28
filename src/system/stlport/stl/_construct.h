@@ -57,9 +57,6 @@ inline void __destroy_aux(_Tp*, const __true_type& /*_Trivial_destructor*/) {}
 
 template <class _Tp>
 inline void _Destroy(_Tp* __pointer) {
-#if defined (_STLP_MSVC) && (_STLP_MSVC <= 1010)
-  __pointer;
-#endif
   typedef typename __type_traits<_Tp>::has_trivial_destructor _Trivial_destructor;
   __destroy_aux(__pointer, _Trivial_destructor());
 #if defined (_STLP_DEBUG_UNINITIALIZED)

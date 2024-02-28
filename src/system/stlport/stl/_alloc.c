@@ -26,12 +26,6 @@
 #  include <stl/_alloc.h>
 #endif
 
-#if defined (__WATCOMC__)
-#  pragma warning 13 9
-#  pragma warning 367 9
-#  pragma warning 368 9
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 template <class _Alloc>

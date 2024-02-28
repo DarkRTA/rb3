@@ -48,11 +48,7 @@ template <class _Dummy>
 size_t _STLP_CALL
 _Stl_prime<_Dummy>::_S_max_nb_buckets() {
   const size_t _list[] = __PRIME_LIST_BODY;
-#  ifndef __MWERKS__
   return _list[(sizeof(_list)/sizeof(_list[0])) - 1];
-#  else
-  return _list[30/sizeof(size_t) - 1]; // stupid MWERKS!
-#  endif
 }
 
 template <class _Dummy>
@@ -60,12 +56,8 @@ size_t _STLP_CALL
 _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
   static const size_t _list[] = __PRIME_LIST_BODY;
   const size_t* __first = _list;
-#  ifndef __MWERKS__
   const size_t* __last =  _list + (sizeof(_list)/sizeof(_list[0]));
-#  else
-  const size_t* __last =  _list + (30/sizeof(size_t)); // stupid MWERKS
-#  endif
-  const size_t* pos = __lower_bound(__first, __last, __n, 
+  const size_t* pos = __lower_bound(__first, __last, __n,
                                     __less((size_t*)0), __less((size_t*)0), (ptrdiff_t*)0);
   return (pos == __last ? *(__last - 1) : *pos);
 }

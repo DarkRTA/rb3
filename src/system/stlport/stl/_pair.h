@@ -55,7 +55,7 @@ struct pair {
 #endif
   pair(const _T1& __a, const _T2& __b) : first(__a), second(__b) {}
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !(defined (_STLP_MSVC) && (_STLP_MSVC < 1200))
+#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _U1, class _U2>
   pair(const pair<_U1, _U2>& __p) : first(__p.first), second(__p.second) {}
 
@@ -160,11 +160,6 @@ struct __type_traits<pair<_T1, _T2> > {
   typedef typename _Land2<typename _T1Traits::has_trivial_destructor,
                           typename _T2Traits::has_trivial_destructor>::_Ret has_trivial_destructor;
   typedef __false_type is_POD_type;
-
-#if defined (__BORLANDC__) && (__BORLANDC__ < 0x560)
-  // disable incorrect "dependent type qualifier" error
-  typedef __false_type implemented;
-#endif
 };
 
 template <class _T1, class _T2>

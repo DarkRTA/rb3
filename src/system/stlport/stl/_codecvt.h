@@ -49,14 +49,6 @@ public:
   typedef _ExternT extern_type;
   typedef _StateT state_type;
 
-#if defined (_STLP_MSVC) && (_STLP_MSVC < 1300)
-  /* For the moment VC6 do not support this facet default implementation
-   * because of the static locale::id instance. When VC6 see this definition
-   * it goes crasy with locale::id static instances and all the has_facet tests
-   * unit tests are failing.
-   */
-};
-#else
   explicit codecvt(size_t __refs = 0) : locale::facet(__refs) {}
 
   result out(state_type&          __state,
@@ -152,13 +144,10 @@ private:
   codecvt<intern_type, extern_type, state_type>& operator = (const codecvt<intern_type, extern_type, state_type>&);
 };
 
-#  if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
-#    if (_STLP_STATIC_TEMPLATE_DATA > 0)
-#      if !defined (__BORLANDC__)
+#if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
+#  if (_STLP_STATIC_TEMPLATE_DATA > 0)
 template <class _InternT, class _ExternT, class _StateT>
 locale::id codecvt<_InternT, _ExternT, _StateT>::id;
-#      endif
-#    endif
 #  endif
 #endif
 
@@ -422,4 +411,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

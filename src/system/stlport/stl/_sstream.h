@@ -146,13 +146,6 @@ public:                         // Member functions
 
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
-
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
-  typedef basic_istringstream<_CharT, _Traits> _Self;
-  //explicitely defined as private to avoid warnings:
-  basic_istringstream(_Self const&);
-  _Self& operator = (_Self const&);
-#endif
 };
 
 
@@ -190,13 +183,6 @@ public:                         // Member functions.
 
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
-
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
-  typedef basic_ostringstream<_CharT, _Traits> _Self;
-  //explicitely defined as private to avoid warnings:
-  basic_ostringstream(_Self const&);
-  _Self& operator = (_Self const&);
-#endif
 };
 
 
@@ -235,13 +221,6 @@ public:                         // Member functions.
 
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
-
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
-  typedef basic_stringstream<_CharT, _Traits> _Self;
-  //explicitely defined as private to avoid warnings:
-  basic_stringstream(_Self const&);
-  _Self& operator = (_Self const&);
-#endif
 };
 
 

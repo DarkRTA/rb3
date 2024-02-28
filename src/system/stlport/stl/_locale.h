@@ -59,10 +59,6 @@ bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW;
 template <class _Facet>
 _Facet* _UseFacet(const locale& __loc, const _Facet* __facet);
 
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-#  define locale _STLP_NO_MEM_T_NAME(loc)
-#endif
-
 class _STLP_CLASS_DECLSPEC locale {
 public:
   // types:
@@ -85,12 +81,7 @@ public:
     void operator=(const facet&);
   };
 
-#if defined (__MVS__) || defined (__OS400__)
-  struct
-#else
-  class
-#endif
-  _STLP_CLASS_DECLSPEC id {
+  class _STLP_CLASS_DECLSPEC id {
     friend class locale;
     friend class _Locale_impl;
   public:
@@ -167,7 +158,7 @@ public:
   bool operator==(const locale&) const;
   bool operator!=(const locale&) const;
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || defined (_STLP_INLINE_MEMBER_TEMPLATES) || (defined(__MWERKS__) && __MWERKS__ <= 0x2301)
+#if !defined (_STLP_MEMBER_TEMPLATES) || defined (_STLP_INLINE_MEMBER_TEMPLATES)
   bool operator()(const string& __x, const string& __y) const;
 #  ifndef _STLP_NO_WCHAR_T
   bool operator()(const wstring& __x, const wstring& __y) const;
@@ -322,4 +313,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

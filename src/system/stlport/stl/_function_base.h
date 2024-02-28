@@ -76,12 +76,8 @@ struct less : public binary_function<_Tp,_Tp,bool>
 #if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct __type_traits<less<_Tp> > {
-#if !defined (__BORLANDC__)
   typedef typename _IsSTLportClass<less<_Tp> >::_Ret _STLportLess;
-#else
-  enum { _Is = _IsSTLportClass<less<_Tp> >::_Is };
-  typedef typename __bool2type<_Is>::_Ret _STLportLess;
-#endif
+
   typedef _STLportLess has_trivial_default_constructor;
   typedef _STLportLess has_trivial_copy_constructor;
   typedef _STLportLess has_trivial_assignment_operator;

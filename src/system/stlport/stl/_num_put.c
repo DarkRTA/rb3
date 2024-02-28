@@ -358,16 +358,8 @@ __write_integer_backward(char* __buf, ios_base::fmtflags __flags, _Integer __x) 
       //case ios_base::dec:
       default:
         {
-#if defined(__HP_aCC) && (__HP_aCC == 1)
-          bool _IsSigned = !((_Integer)-1 > 0);
-          if (_IsSigned)
-            __ptr = __write_decimal_backward(__ptr, __x, __flags, __true_type() );
-          else
-            __ptr = __write_decimal_backward(__ptr, __x, __flags, __false_type() );
-#else
           typedef typename __bool2type<numeric_limits<_Integer>::is_signed>::_Ret _IsSigned;
           __ptr = __write_decimal_backward(__ptr, __x, __flags, _IsSigned());
-#endif
         }
         break;
     }
@@ -399,35 +391,8 @@ _STLP_MOVE_TO_STD_NAMESPACE
 
 #if (_STLP_STATIC_TEMPLATE_DATA > 0)
 
-#  if !defined (__BORLANDC__)
 template <class _CharT, class _OutputIterator>
 locale::id num_put<_CharT, _OutputIterator>::id;
-#  endif
-
-#  if (defined (__CYGWIN__) || defined (__MINGW32__)) && \
-       defined (_STLP_USE_DYNAMIC_LIB) && !defined (__BUILDING_STLPORT)
-/*
- * Under cygwin, when STLport is used as a shared library, the id needs
- * to be specified as imported otherwise they will be duplicated in the
- * calling executable.
- */
-template <>
-_STLP_DECLSPEC locale::id num_put<char, ostreambuf_iterator<char, char_traits<char> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id num_put<char, char*>::id;
-*/
-
-#    if !defined (_STLP_NO_WCHAR_T)
-template <>
-_STLP_DECLSPEC locale::id num_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > >::id;
-/*
-template <>
-_STLP_DECLSPEC locale::id num_put<wchar_t, wchar_t*>::id;
-*/
-#    endif
-
-#  endif /* __CYGWIN__ && _STLP_USE_DYNAMIC_LIB */
 
 #else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
@@ -534,7 +499,7 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT /*__
   __f.setf(ios_base::showbase);
   __f.setf(ios_base::internal, ios_base::adjustfield);
   __f.width((sizeof(void*) * 2) + 2); // digits in pointer type plus '0x' prefix
-# if defined(_STLP_LONG_LONG) && !defined(__MRC__) //*ty 11/24/2001 - MrCpp can not cast from void* to long long
+# if defined(_STLP_LONG_LONG)
   _OutputIter result = this->do_put(__s, __f, __c_type.widen('0'), __REINTERPRET_CAST(unsigned _STLP_LONG_LONG,__val));
 # else
   _OutputIter result = this->do_put(__s, __f, __c_type.widen('0'), __REINTERPRET_CAST(unsigned long,__val));

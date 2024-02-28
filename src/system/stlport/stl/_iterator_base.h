@@ -86,11 +86,7 @@ struct iterator<output_iterator_tag, void, void, void, void> {
 #  if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 #    define _STLP_VALUE_TYPE(_It, _Tp)        (typename iterator_traits< _Tp >::value_type*)0
 #    define _STLP_DISTANCE_TYPE(_It, _Tp)     (typename iterator_traits< _Tp >::difference_type*)0
-#    if defined (__BORLANDC__) || defined (__SUNPRO_CC) || ( defined (__MWERKS__) && (__MWERKS__ <= 0x2303)) || ( defined (__sgi) && defined (_COMPILER_VERSION)) || defined (__DMC__)
-#      define _STLP_ITERATOR_CATEGORY(_It, _Tp) iterator_traits< _Tp >::iterator_category()
-#    else
-#      define _STLP_ITERATOR_CATEGORY(_It, _Tp) typename iterator_traits< _Tp >::iterator_category()
-#    endif
+#    define _STLP_ITERATOR_CATEGORY(_It, _Tp) typename iterator_traits< _Tp >::iterator_category()
 #    define _STLP_IS_REF_TYPE_REAL_REF(_It, _Tp) _IsRefType< typename iterator_traits< _Tp >::reference >::_Ret()
 #  else
 #    define _STLP_ITERATOR_CATEGORY(_It, _Tp)   __iterator_category(_It, _IsPtrType<_Tp>::_Ret())
@@ -136,17 +132,6 @@ struct iterator_traits<_Tp*> {
   typedef _Tp*                        pointer;
   typedef _Tp&                        reference;
 };
-
-#  if defined (__BORLANDC__)
-template <class _Tp>
-struct iterator_traits<_Tp* const> {
-  typedef random_access_iterator_tag  iterator_category;
-  typedef _Tp                         value_type;
-  typedef ptrdiff_t                   difference_type;
-  typedef const _Tp*                  pointer;
-  typedef const _Tp&                  reference;
-};
-#  endif
 
 #endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
@@ -474,15 +459,6 @@ struct __cnst_traits_aux : private _Traits {
 #  define __TRAITS_VALUE_TYPE(_Traits) _Traits::value_type
 #  endif
 */
-
-#if defined (_STLP_MSVC)
-// MSVC specific
-template <class _InputIterator, class _Dist>
-inline void  _STLP_CALL _Distance(_InputIterator __first,
-                                  _InputIterator __last, _Dist& __n) {
-  __distance(__first, __last, __n, _STLP_ITERATOR_CATEGORY(__first, _InputIterator));
-}
-#endif
 
 template <class _InputIter, class _Distance>
 _STLP_INLINE_LOOP void  _STLP_CALL

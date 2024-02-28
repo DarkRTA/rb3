@@ -73,11 +73,7 @@ public:
   typedef bidirectional_iterator_tag iterator_category;
   typedef _Tp                        value_type;
   typedef _Distance                  difference_type;
-# if defined (_STLP_MSVC50_COMPATIBILITY)
-  typedef _Pointer                   pointer;
-# else
   typedef _Tp*                       pointer;
-# endif
   typedef _Reference                 reference;
 
   reverse_bidirectional_iterator() {}
@@ -158,18 +154,8 @@ inline bool  _STLP_CALL operator!=(
 //  HP STL.  It does not use partial specialization.
 
 template <class _RandomAccessIterator,
-# if defined (__MSL__) && (__MSL__ >= 0x2405) \
-  || defined(__MRC__) || (defined(__SC__) && !defined(__DMC__))    //*ty 03/22/2001 - give the default to the secont param under MPW.
-                        // I believe giving the default will cause any harm even though the 2nd type parameter
-                        // still have to be provided for T* type iterators.
-  _STLP_DFL_TMPL_PARAM(_Tp,iterator_traits<_RandomAccessIterator>::value_type),
-# else
-  class _Tp,
-#endif
- _STLP_DFL_TMPL_PARAM(_Reference,_Tp&),
-# if defined (_STLP_MSVC50_COMPATIBILITY)
-        _STLP_DFL_TMPL_PARAM(_Pointer, _Tp*),
-# endif
+        class _Tp,
+        _STLP_DFL_TMPL_PARAM(_Reference,_Tp&),
         _STLP_DFL_TYPE_PARAM(_Distance,ptrdiff_t)>
 class reverse_iterator {
   typedef reverse_iterator<_RandomAccessIterator, _Tp, Reference__, _Distance>
@@ -180,11 +166,7 @@ public:
   typedef random_access_iterator_tag iterator_category;
   typedef _Tp                        value_type;
   typedef _Distance                  difference_type;
-# if defined (_STLP_MSVC50_COMPATIBILITY)
-  typedef _Pointer                   pointer;
-# else
   typedef _Tp*                       pointer;
-# endif
   typedef _Reference                 reference;
 
   reverse_iterator() {}

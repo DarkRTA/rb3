@@ -39,13 +39,7 @@ iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_STRING >&)
 #endif
 
 template <class _CharT, class _Traits, class _Alloc>
-class basic_string :
-#if !defined (__DMC__)
-                     private
-#else
-                     public
-#endif
-                             _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING >
+class basic_string : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING >
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (basic_string)
                    , public __stlport_class<basic_string<_CharT, _Traits, _Alloc> >
 #endif
@@ -127,7 +121,7 @@ public:
 #endif
   }
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || defined(__MRC__) || defined(__SC__)
+#if !defined (_STLP_MEMBER_TEMPLATES)
   basic_string(const _CharT* __f, const _CharT* __l,
                const allocator_type& __a = allocator_type())
     : _ConstructCheck(__f, __l),
@@ -843,13 +837,8 @@ _STLP_EXPORT_TEMPLATE_CLASS basic_string<wchar_t, char_traits<wchar_t>, allocato
 #undef _STLP_NON_DBG_STRING_NAME
 
 #if !defined (_STLP_STATIC_CONST_INIT_BUG)
-#  if defined (__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ == 96)
-template <class _CharT, class _Traits, class _Alloc>
-const size_t basic_string<_CharT, _Traits, _Alloc>::npos = ~(size_t) 0;
-#  else
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
-#  endif
 #endif
 
 #if defined (basic_string)

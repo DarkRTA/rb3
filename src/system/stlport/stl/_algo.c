@@ -56,10 +56,7 @@ _BidirectionalIter3 __merge_backward(_BidirectionalIter1 __first1,
                                      _Compare __comp);
 
 template <class _Tp>
-#if !(defined (__SUNPRO_CC) && (__SUNPRO_CC < 0x420 ))
-inline
-#endif
-const _Tp& __median(const _Tp& __a, const _Tp& __b, const _Tp& __c) {
+inline const _Tp& __median(const _Tp& __a, const _Tp& __b, const _Tp& __c) {
   if (__a < __b)
     if (__b < __c)
       return __b;
@@ -76,10 +73,7 @@ const _Tp& __median(const _Tp& __a, const _Tp& __b, const _Tp& __c) {
 }
 
 template <class _Tp, class _Compare>
-#if !(defined (__SUNPRO_CC) && (__SUNPRO_CC < 0x420 ))
-inline
-#endif
-const _Tp&
+inline const _Tp&
 __median(const _Tp& __a, const _Tp& __b, const _Tp& __c, _Compare __comp) {
   if (__comp(__a, __b)) {
     _STLP_VERBOSE_ASSERT(!__comp(__b, __a), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
