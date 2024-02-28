@@ -36,17 +36,17 @@ const char* DataVarName(const DataNode* node){
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;
     if(thisType == ty) return true;
-    else if(thisType == kDataInt){
-        return ty == kDataFloat;
-    }
-    else if(thisType != kDataSymbol){
-        if(thisType != kDataString){
+    switch (thisType) {
+        case kDataInt:
+            return ty == kDataFloat;
+        case kDataSymbol:
+            return ty == kDataString || ty == kDataObject;
+        case kDataString:
+            return ty == kDataObject;
+        default:
             return false;
-        }
-        return ty == kDataObject;
     }
-    else if((ty != kDataString) && (ty != kDataObject)) return false;
-    else return true;
+    return true;
 }
 
 DataNode& UseQueue(const DataNode& node){
@@ -511,10 +511,10 @@ void DataNode::Save(BinStream& d) const {
     }
 }
 
-static char buf[128];
 extern std::map<Symbol, DataFunc*> gDataFuncs;
 
 void DataNode::Load(BinStream& d){
+    static char buf[128];
     int theType;
     d >> theType;
     mType = (DataType)theType;
