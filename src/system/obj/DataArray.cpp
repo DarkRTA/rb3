@@ -14,6 +14,10 @@ int gLinearNodesMemSize;
 void* gLinearNodesMemPos;
 int gNumLinearAllocs;
 void * gLinearNodesMem;
+DataArray* gCallStack[100];
+DataArray** gCallStackPtr;
+int gPreExecuteLevel;
+int gIndent;
 
 bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     int len = strlen(cc);
@@ -25,15 +29,38 @@ bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     else return false;
 }
 
-const char *UnusedStackTraceFxn() {
-    return "\n\nData Stack Trace";
-}
+void DataAppendStackTrace(char* msg){
+    if(gCallStack > gCallStackPtr){
+        strcat(msg, "\n\nData Stack Trace");
+        bool msg_full = false;
+        int msg_len = strlen(msg);
+        char visualStudioFmt[14] = "\n   %s(%d):%s";
 
-const char *UnusedStackFrameFxn() {
-    return "\n   ... %d omitted stack frames";
+        DataArray** ptr = gCallStackPtr;
+        while(&gCallStack[gPreExecuteLevel + 3U] < ptr - 1){
+            DataArray* a = *ptr;
+            String s;
+            if(0 < a->Size()){
+                a->Node(0).Print(s, true);
+            }
+            if(!msg_full){
+                if(!strncat_tofit(msg, msg_len, MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()), 0x400)){
+                    TheDebug << MakeString("%s", msg);
+                    gCallStackPtr++;
+                    msg_full = true;
+                    strcat(msg, "\n   ... %d omitted stack frames");
+                }
+            }
+            if(msg_full){
+                TheDebug << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
+            }
+            *ptr = a;
+        }
+        if(msg_full){
+            TheDebug << MakeString("\n");
+        }
+    }
 }
-
-extern int gIndent;
 
 DataNode& DataArray::Node(int i) const {
     bool allgood = false;

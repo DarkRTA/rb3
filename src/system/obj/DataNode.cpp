@@ -24,6 +24,10 @@ bool DataVarExists(Symbol s){
     return gDataVars.find(s) != gDataVars.end();
 }
 
+const char* DataVarName(const DataNode*){
+    return "<null>";
+}
+
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;
     if(thisType == ty) return true;
