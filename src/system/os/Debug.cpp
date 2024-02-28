@@ -9,7 +9,7 @@ const char* s4 = "no_notify";
 const char* s5 = "Debug.cpp";
 const char* s6 = "MainThread()";
 const char* s7 = "TRY conditional not exited %d";
-const char* s8 = "\n\n-- Program ended --\n";
+const char* s8idk = "\n\n-- Program ended --\n";
 const char* s9 = "%s\n";
 const char* s10 = "THREAD-NOTIFY not called in MainThread: %s\n";
 const char* s11 = "NOTIFY: %s\n";
@@ -17,7 +17,7 @@ const char* s12 = "main";
 const char* s13 = "THREAD-FAIL: %s\n";
 const char* s14 = "FAIL-MSG: %s\n";
 const char* s15 = "APP FAILED\n";
-const char* s16 = "n/a";
+const char* s16idk = "n/a";
 const char* s17 = "version";
 const char* s18 = "<unknown>";
 const char* s19 = "\n\nConsoleName: %s   %s   Plat: %s   ";
@@ -33,7 +33,7 @@ const char* s28 = "cheatsMsg";
 const char* s29 = "FAIL: %s\n";
 const char* s30 = "APP EXITED, EXIT CODE %d\n";
 const char* s31 = "Debug::Print";
-const char* s32 = "Couldn't open log %s";
+const char* s32idk = "Couldn't open log %s";
 
 // Declared in stlport/_vector.h since it's not relevant anywhere else
 void std_vec_range_assert(size_t value, size_t max, const char *func) {

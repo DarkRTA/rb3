@@ -1,6 +1,13 @@
 #include "os/ArkFile.h"
 #include "os/Debug.h"
 
+int ArkFile::Read(void *c, int a) {
+    if(ReadAsync(c, a) == 0) return 0;
+    int ret = -1;
+    while(ReadDone(ret) == 0);
+    return ret;
+}
+
 bool ArkFile::Write(const void*, int){
     TheDebug.Fail(MakeString("ERROR: Cannot write to a file in an archive!"));
     return false;

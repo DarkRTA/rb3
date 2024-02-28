@@ -10,6 +10,7 @@ cflags_includes = [
 
     # Project source
     "-i src",
+    "-i src/network",
     "-i src/system",
     "-i src/rb3",
 ]

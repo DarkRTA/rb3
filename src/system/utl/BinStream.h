@@ -103,6 +103,7 @@ public:
 
     BS_WRITE_TYPE(int);
     BS_WRITE_TYPE(float);
+    BS_WRITE_TYPE(unsigned short);
     
     BinStream& operator<<(unsigned char uc){
         Write(&uc, 1);

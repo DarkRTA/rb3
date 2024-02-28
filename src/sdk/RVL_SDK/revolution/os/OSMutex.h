@@ -14,11 +14,18 @@ typedef struct OSMutex {
     struct OSMutex* prev; // at 0x14
 } OSMutex;
 
+struct OSCond {
+  OSThreadQueue queue;
+};
+
 void OSInitMutex(OSMutex* mutex);
 void OSLockMutex(OSMutex* mutex);
 void OSUnlockMutex(OSMutex* mutex);
 void __OSUnlockAllMutex(OSThread* thread);
 BOOL OSTryLockMutex(OSMutex* mutex);
+void OSInitCond(OSCond* cond);
+void OSWaitCond(OSCond* cond, OSMutex* mutex);
+void OSSignalCond(OSCond* cond);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 #include "math/Interp.h"
-#include "math/Math_f.h"
+#include "math/MathFuncs.h"
 #include "os/Debug.h"
 #include <stdlib.h>
 

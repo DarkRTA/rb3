@@ -12,6 +12,10 @@ ObjectDir* Hmx::Object::DataDir(){
 
 Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
 
+Hmx::Object::~Object(){
+    
+}
+
 void Hmx::Object::SetTypeDef(DataArray* da){
     if(mTypeDef != da){
         if(mTypeDef != 0){

@@ -1,5 +1,5 @@
 #include "math/Trig.h"
-#include "math/Math_f.h"
+#include "math/MathFuncs.h"
 #include "obj/Data.h"
 
 float gBigSinTable[0x200];

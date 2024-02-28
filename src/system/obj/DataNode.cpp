@@ -24,20 +24,29 @@ bool DataVarExists(Symbol s){
     return gDataVars.find(s) != gDataVars.end();
 }
 
+const char* DataVarName(const DataNode* node){
+    for(std::map<Symbol, DataNode>::iterator it = gDataVars.begin(); it != gDataVars.end(); it++ ){
+        if((&it->second) == node){
+            return it->first.Str();
+        }
+    }
+    return "<null>";
+}
+
 bool DataNode::CompatibleType(DataType ty) const {
     DataType thisType = mType;
     if(thisType == ty) return true;
-    else if(thisType == kDataInt){
-        return ty == kDataFloat;
-    }
-    else if(thisType != kDataSymbol){
-        if(thisType != kDataString){
+    switch (thisType) {
+        case kDataInt:
+            return ty == kDataFloat;
+        case kDataSymbol:
+            return ty == kDataString || ty == kDataObject;
+        case kDataString:
+            return ty == kDataObject;
+        default:
             return false;
-        }
-        return ty == kDataObject;
     }
-    else if((ty != kDataString) && (ty != kDataObject)) return false;
-    else return true;
+    return true;
 }
 
 DataNode& UseQueue(const DataNode& node){
@@ -153,6 +162,9 @@ const char* DataNode::LiteralStr(const DataArray* a) const {
     }
 }
 
+const char* globfile = "Data %s is not Glob (file %s, line %d)";
+const char* glob = "Data %s is not Glob";
+
 float DataNode::Float(const DataArray* a) const {
     DataNode& n = Evaluate();
     if(n.mType == kDataInt){
@@ -234,6 +246,9 @@ DataArray* DataNode::LiteralArray(const DataArray* a) const {
     }
     return mValue.array;
 }
+
+const char* propfile = "Data %s is not Property (file %s, line %d)";
+const char* prop = "Data %s is not Property";
 
 DataArray* DataNode::Command(const DataArray* a) const {
     if(mType != kDataCommand){
@@ -345,159 +360,230 @@ DataNode& DataNode::operator=(const DataNode& node){
     return *this;
 }
 
-// // // fn_803239E8
-// // bool HasSpace(const char *str) {
-// //     while (*str != '\0') {
-// //         if (*str++ == ' ')
-// //             return true;
-// //     }
-// //     return false;
-// // }
+inline bool HasSpace(const char *str) {
+    while (*str != '\0') {
+        if (*str++ == ' ')
+            return true;
+    }
+    return false;
+}
 
-// // TextStream &operator<<(TextStream &ts, const Hmx::Object *obj) {
-// //     if (obj != nullptr) {
-// //         ts << obj->Name();
-// //     } else
-// //         ts << "<null>";
-// //     return ts;
-// // }
+extern Symbol DataFuncName(DataFunc *);
 
-// // extern char *DataVarName(const DataNode *);
-// // extern Symbol DataFuncName(DataFunc *);
+void DataNode::Print(TextStream& ts, bool b) const {
+    switch(mType){
+        case kDataUnhandled:
+            ts << "kDataUnhandled";
+            break;
+        case kDataInt:
+            ts << mValue.integer;
+            break;
+        case kDataString:
+            if(b) ts << mValue.var->mValue.symbol;
+            else {
+                ts << "\"";
+                char* tok = strtok((char*)mValue.var->mValue.symbol, "\"");
+                while(tok){
+                    ts << tok;
+                    tok = strtok(0, "\"");
+                    if(tok){
+                        ts << "\\q";
+                        tok[-1] = '\"';
+                    }
+                }
+                ts << "\"";
+            }
+            break;
+        case kDataSymbol:
+            if(!HasSpace(mValue.symbol))
+                ts << mValue.symbol;
+            else ts << "'" << mValue.symbol << "'";
+            break;
+        case kDataGlob:
+            ts << "<glob " << -mValue.array->Size() << ">";
+            break;
+        case kDataFloat:
+            ts << mValue.real;
+            break;
+        case kDataArray:
+        case kDataCommand:
+        case kDataProperty:
+            mValue.array->Print(ts, mType, b);
+            break;
+        case kDataObject:
+            ts << mValue.object;
+            break;
+        case kDataVar:
+            ts << '$' << DataVarName(mValue.var);
+            break;
+        case kDataFunc:
+            ts << DataFuncName(mValue.func);
+            break;
+        case kDataDefine:
+            ts << "\n#define " << mValue.symbol << "\n";
+            break;
+        case kDataUndef:
+            ts << "\n#undef " << mValue.symbol << "\n";
+            break;
+        case kDataIfdef:
+            ts << "\n#ifdef " << mValue.symbol << "\n";
+            break;
+        case kDataIfndef:
+            ts << "\n#ifndef " << mValue.symbol << "\n";
+            break;
+        case kDataAutorun:
+            ts << "\n#autorun\n";
+            break;
+        case kDataElse:
+            ts << "\n#else\n";
+            break;
+        case kDataEndif:
+            ts << "\n#endif\n";
+            break;
+        case kDataInclude:
+            ts << "\n#include " << mValue.symbol << "\n";
+            break;
+        case kDataMerge:
+            ts << "\n#merge " << mValue.symbol << "\n";
+            break;
+    }
+}
 
-// // // fn_8032364C
-// // void DataNode::Print(TextStream &ts, bool b) const {
-// //     switch (type) {
-// //     case kDataUnhandled:
-// //         ts << "kDataUnhandled";
-// //         break;
-// //     case kDataInt:
-// //         ts << value.intVal;
-// //         break;
-// //     case kDataString:
-// //         if (b)
-// //             ts << value.symVal->m_string;
-// //         else {
-// //             ts << "\"";
-// //             char *tok = strtok(value.symVal->m_string, "\"");
-// //             while (tok != nullptr) {
-// //                 ts << tok;
-// //                 tok = strtok(nullptr, "\"");
-// //                 if (tok != nullptr) {
-// //                     ts << "\\q";
-// //                     tok[-1] = '\"';
-// //                 }
-// //             }
-// //             ts << "\"";
-// //         }
-// //         break;
-// //     case kDataSymbol:
-// //         if (!HasSpace(value.strVal))
-// //             ts << value.strVal;
-// //         else
-// //             ts << "'" << value.strVal << "'";
-// //         break;
-// //     case kDataGlob:
-// //         ts << "<glob " << -value.dataArray->GetNodeCount() << ">";
-// //         break;
-// //     case kDataFloat:
-// //         ts << value.floatVal;
-// //         break;
-// //     case kDataArray:
-// //     case kDataCommand:
-// //     case kDataProperty:
-// //         value.dataArray->Print(ts, type, b);
-// //         break;
-// //     case kDataObject:
-// //         ts << value.objVal;
-// //         break;
-// //     case kDataVariable:
-// //         ts << '$' << DataVarName(value.varVal);
-// //         break;
-// //     case kDataFunc:
-// //         ts << DataFuncName(value.funcVal);
-// //         break;
-// //     case kDataDefine:
-// //         ts << "\n#define " << value.strVal << "\n";
-// //         break;
-// //     case kDataUndef:
-// //         ts << "\n#undef " << value.strVal << "\n";
-// //         break;
-// //     case kDataIfdef:
-// //         ts << "\n#ifdef " << value.strVal << "\n";
-// //         break;
-// //     case kDataIfndef:
-// //         ts << "\n#ifndef " << value.strVal << "\n";
-// //         break;
-// //     case kDataAutorun:
-// //         ts << "\n#autorun\n";
-// //         break;
-// //     case kDataElse:
-// //         ts << "\n#else\n";
-// //         break;
-// //     case kDataEndif:
-// //         ts << "\n#endif\n";
-// //         break;
-// //     case kDataInclude:
-// //         ts << "\n#include " << value.strVal << "\n";
-// //         break;
-// //     case kDataMerge:
-// //         ts << "\n#merge " << value.strVal << "\n";
-// //         break;
-// //     }
-// // }
+unsigned int DataNode::PrintUnused(TextStream& ts, bool b) const {
+    MILO_WARN("Enable PRINT_UNUSED in Data.h to utilize DataNode::PrintUnused()");
+    return 0;
+}
 
-// // void DataNode::Save(BinStream &bs) const {
-// //     int theType = type;
-// //     switch (theType) {
-// //     case kDataUnhandled:
-// //         theType = kDataInt;
-// //         break;
-// //     case kDataInt:
-// //         theType = kDataUnhandled;
-// //         break;
-// //     }
-// //     bs << (unsigned int)theType;
-// //     switch (theType) {
-// //     case kDataSymbol:
-// //     case kDataIfdef:
-// //     case kDataDefine:
-// //     case kDataInclude:
-// //     case kDataMerge:
-// //     case kDataIfndef:
-// //     case kDataUndef:
-// //         bs << value.strVal;
-// //         break;
-// //     case kDataFloat:
-// //         bs << value.floatVal;
-// //         break;
-// //     case kDataString:
-// //     case kDataGlob:
-// //         value.dataArray->SaveGlob(bs, (type - 0x12) == 0);
-// //         break;
-// //     case kDataArray:
-// //     case kDataCommand:
-// //     case kDataProperty:
-// //         value.dataArray->Save(bs);
-// //         break;
-// //     case kDataObject:
-// //         if (value.objVal != nullptr)
-// //             bs << value.objVal->Name();
-// //         else
-// //             bs << "\0";
-// //         break;
-// //     case kDataVariable:
-// //         bs << DataVarName(value.varVal);
-// //         break;
-// //     case kDataFunc:
-// //         bs << DataFuncName(value.funcVal);
-// //         break;
-// //     case kDataUnhandled:
-// //     case kDataInt:
-// //     case kDataElse:
-// //     case kDataEndif:
-// //     case kDataAutorun:
-// //         bs << (unsigned int)value.intVal;
-// //         break;
-// //     }
-// // }
+void DataNode::Save(BinStream& d) const {
+    int theType = mType;
+    switch (theType) {
+        case kDataUnhandled:
+            theType = kDataInt;
+            break;
+        case kDataInt:
+            theType = kDataUnhandled;
+            break;
+    }
+    d << theType;
+    switch (theType) {
+        case kDataSymbol:
+        case kDataIfdef:
+        case kDataDefine:
+        case kDataInclude:
+        case kDataMerge:
+        case kDataIfndef:
+        case kDataUndef:
+            d << mValue.symbol;
+            break;
+        case kDataFloat:
+            d << mValue.real;
+            break;
+        case kDataString:
+        case kDataGlob:
+            mValue.array->SaveGlob(d, (mType - 0x12) == 0);
+            break;
+        case kDataArray:
+        case kDataCommand:
+        case kDataProperty:
+            mValue.array->Save(d);
+            break;
+        case kDataObject:
+            if(mValue.object)
+                d << mValue.object->Name();
+            else d << "\0";
+            break;
+        case kDataVar:
+            d << DataVarName(mValue.var);
+            break;
+        case kDataFunc:
+            d << DataFuncName(mValue.func);
+            break;
+        case kDataUnhandled:
+        case kDataInt:
+        case kDataElse:
+        case kDataEndif:
+        case kDataAutorun:
+            d << mValue.integer;
+            break;
+        default:
+            MILO_FAIL("Unrecognized node type: %x", mType);
+            break;
+    }
+}
+
+extern std::map<Symbol, DataFunc*> gDataFuncs;
+
+void DataNode::Load(BinStream& d){
+    static char buf[128];
+    int theType;
+    d >> theType;
+    mType = (DataType)theType;
+    switch(mType){
+        case kDataFunc:
+            Symbol sym3;
+            d >> sym3;
+            if(gDataFuncs.find(sym3) == gDataFuncs.end()){
+                MILO_FAIL("Couldn't bind %s", sym3);
+            }
+            mValue.func = gDataFuncs[sym3];
+            break;
+        case kDataSymbol:
+        case kDataIfdef:
+        case kDataDefine:
+        case kDataInclude:
+        case kDataMerge:
+        case kDataIfndef:
+        case kDataUndef:
+            Symbol sym2;
+            d >> sym2;
+            mValue.symbol = sym2.Str();
+            break;
+        case kDataFloat: 
+            d >> mValue.real;
+            break;
+        case kDataString:
+        case kDataGlob:
+            mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+            mValue.array->LoadGlob(d, (mType - 0x12) == 0);
+            break;
+        case kDataArray:
+        case kDataCommand:
+        case kDataProperty:
+            mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+            mValue.array->Load(d);
+            break;
+        case kDataObject:
+            d.ReadString(buf, 0x80);
+            mValue.object = gDataDir->FindObject(buf, true);
+            if(mValue.object == 0 && buf){
+                MILO_WARN("Couldn't find %s from %s", buf, gDataDir->Name());
+            }
+            break;
+        case kDataVar: 
+            Symbol sym;
+            d >> sym;
+            for(std::map<Symbol, DataNode>::iterator it = gDataVars.begin(); it != gDataVars.end(); it++ ){
+                if(it->first == sym){
+                    mValue.var = &it->second;
+                    break;
+                }
+            }
+            break;
+        case kDataUnhandled: 
+            mType = kDataInt;
+            d >> mValue.integer;
+            break;
+        case kDataInt:
+            mType = kDataUnhandled;
+            d >> mValue.integer;
+            break;
+        case kDataElse:
+        case kDataEndif:
+        case kDataAutorun:
+            d >> mValue.integer;
+            break;
+        default:
+            MILO_FAIL("Unrecognized node type: %x", mType);
+            break;
+    }
+}

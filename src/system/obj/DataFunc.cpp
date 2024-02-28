@@ -8,6 +8,7 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "macros.h"
+#include "math/MathFuncs.h"
 #include <list>
 #include <map>
 
@@ -29,8 +30,10 @@ namespace {
 }
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
+    if(gDataFuncs.empty())
+        MILO_FAIL("Can't register different func %s", s);
     gDataFuncs[s] = func;
-    MILO_FAIL("Can't register different func %s", s);
+    
 }
 
 static DataNode DataSprintf(DataArray *da) {
@@ -266,10 +269,9 @@ static DataNode DataLowestBit(DataArray *da) {
     return DataNode(res);
 }
 
-// // fn_8031C5E4
-// DataNode DataCountBits(DataArray *da) {
-//     return DataNode(CountBits(da->Int(1)));
-// }
+static DataNode DataCountBits(DataArray *da) {
+    return DataNode(CountBits(da->Int(1)));
+}
 
 static DataNode DataWhile(DataArray* da){
     while(da->Node(1).NotNull()){
@@ -284,34 +286,171 @@ static DataNode DataVar(DataArray* da){
     return DataNode(DataVariable(da->ForceSym(1)));
 }
 
+static DataNode DataPackColor(DataArray *da) {
+    return DataNode(
+        ((int)(da->Float(3) * 255.0f) & 0xFF) << 0x10
+        | ((int)(da->Float(2) * 255.0f) & 0xFF) << 8
+        | ((int)(da->Float(1) * 255.0f) & 0xFF)
+    );
+}
+
+static DataNode DataUnpackColor(DataArray *da) {
+    int packed = da->Int(1);
+    *da->Var(2) = DataNode((float)(packed & 0xFF) / 255.0f);
+    *da->Var(3) = DataNode((float)(packed >> 8 & 0xFF) / 255.0f);
+    *da->Var(4) = DataNode((float)(packed >> 0x10 & 0xFF) / 255.0f);
+    return DataNode(0);
+}
+
 static DataNode DataMin(DataArray* da){
     DataNode& n1 = da->Evaluate(1);
     DataNode& n2 = da->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
-        return DataNode(MIN(n1.LiteralFloat(da), n2.LiteralFloat(da)));
+        return DataNode(Minimum<float>(n1.LiteralFloat(da), n2.LiteralFloat(da)));
     }
-    else return DataNode(MIN(n1.LiteralInt(da), n2.LiteralInt(da)));
+    else {
+        return DataNode(Minimum<int>(n2.LiteralInt(da), n1.LiteralInt(da)));
+    }
 }
 
-// // fn_8031CAF0
-// DataNode DataMax(DataArray *da) {
-//     DataNode *dn1 = &da->Evaluate(1);
-//     DataNode *dn2 = &da->Evaluate(2);
-//     if (dn1->Type() == kDataFloat || dn2->Type() == kDataFloat) {
-//         return DataNode(Maximum(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
-//     } else
-//         return DataNode(Maximum(dn1->LiteralInt(da), dn2->LiteralInt(da)));
-// }
+static DataNode DataMax(DataArray* da){
+    DataNode& n1 = da->Evaluate(1);
+    DataNode& n2 = da->Evaluate(2);
+    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
+        return DataNode(Maximum<float>(n1.LiteralFloat(da), n2.LiteralFloat(da)));
+    }
+    else {
+        return DataNode(Maximum<int>(n2.LiteralInt(da), n1.LiteralInt(da)));
+    }
+}
 
-// // fn_8031CBCC
-// DataNode DataAbs(DataArray *da) {
-//     DataNode *dn = &da->Evaluate(1);
-//     float f = AbsThunk(dn->LiteralFloat(da));
-//     if (dn->Type() == kDataInt) {
-//         return DataNode((int)f);
-//     } else
-//         return DataNode(f);
-// }
+static DataNode DataAbs(DataArray* da){
+    DataNode& n = da->Evaluate(1);
+    float f = fabs_f(n.LiteralFloat(da));
+    if(n.Type() == kDataInt)
+        return DataNode((int)f);
+    else return DataNode(f);
+}
+
+static DataNode DataAdd(DataArray *da) {
+    float sum_f = 0.0f;
+    int sum_int = 0;
+    int cnt = da->Size();
+    int i;
+    for (i = 1; i < cnt; i++) {
+        DataNode& n = da->Evaluate(i);
+        if(n.Type() != kDataInt){
+            sum_f = sum_int + n.LiteralFloat(da);
+            break;
+        }
+        sum_int += n.mValue.integer;
+    }
+    if (i == cnt)
+        return DataNode(sum_int);
+    for (i++; i < cnt; i++) {
+        sum_f += da->Float(i);
+    }
+    return DataNode(sum_f);
+}
+
+static DataNode DataAddEq(DataArray* da){
+    DataNode ret = DataAdd(da);
+    if(da->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x223);
+        gDataThis->SetProperty(((const DataArray*)da)->Node(1).mValue.array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
+}
+
+static DataNode DataSub(DataArray *da) {
+    DataNode& dn = da->Evaluate(1);
+    if (da->Size() == 2) {
+        if (dn.Type() == kDataFloat) {
+            return DataNode(-dn.LiteralFloat(da));
+        } else
+            return DataNode(-dn.LiteralInt(da));
+    } else {
+        DataNode& dn2 = da->Evaluate(2);
+        if (dn.Type() == kDataFloat || dn2.Type() == kDataFloat) {
+            return DataNode(dn.LiteralFloat(da) - dn2.LiteralFloat(da));
+        } else {
+            return DataNode(dn.LiteralInt(da) - dn2.LiteralInt(da));
+        }
+    }
+}
+
+static DataNode DataMean(DataArray *da) {
+    float sum = 0.0;
+    int cnt = da->Size();
+    for (int i = 1; i < cnt; i++) {
+        sum += da->Float(i);
+    }
+    return DataNode(sum / (cnt - 1));
+}
+
+static DataNode DataClamp(DataArray *da) {
+    DataNode& dn1 = da->Evaluate(1);
+    DataNode& dn2 = da->Evaluate(2);
+    DataNode& dn3 = da->Evaluate(3);
+    if(dn1.Type() == kDataFloat || dn2.Type() == kDataFloat || dn3.Type() == kDataFloat){
+        return DataNode(Clamp<float>(dn1.LiteralFloat(da), dn2.LiteralFloat(da), dn3.LiteralFloat(da)));
+    }
+    else return DataNode(Clamp<int>(dn1.LiteralInt(da), dn2.LiteralInt(da), dn3.LiteralInt(da)));
+}
+
+static DataNode DataSubEq(DataArray* da){
+    DataNode ret = DataSub(da);
+    if(da->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x259);
+        gDataThis->SetProperty(((const DataArray*)da)->Node(1).mValue.array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
+}
+
+static DataNode DataClampEq(DataArray* da){
+    DataNode ret = DataClamp(da);
+    if(da->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x260);
+        gDataThis->SetProperty(((const DataArray*)da)->Node(1).mValue.array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
+}
+
+static DataNode DataMultiply(DataArray* da){
+    DataNode& dn1 = da->Evaluate(1);
+    DataNode& dn2 = da->Evaluate(2);
+    if(dn1.Type() == kDataFloat || dn2.Type() == kDataFloat){
+        return DataNode(dn1.LiteralFloat(da) * dn2.LiteralFloat(da));
+    }
+    else return DataNode(dn1.LiteralInt(da) * dn2.LiteralInt(da));
+}
+
+static DataNode DataMultiplyEq(DataArray* da){
+    DataNode ret = DataMultiply(da);
+    if(da->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x272);
+        gDataThis->SetProperty(((const DataArray*)da)->Node(1).mValue.array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
+}
+
+static DataNode DataDivide(DataArray* da){
+    return DataNode(da->Float(1) / da->Float(2));
+}
+
+static DataNode DataDivideEq(DataArray* da){
+    DataNode ret = DataDivide(da);
+    if(da->Type(1) == kDataProperty){
+        MILO_ASSERT(gDataThis, 0x27E);
+        gDataThis->SetProperty(((const DataArray*)da)->Node(1).mValue.array, ret);
+    }
+    else *da->Var(1) = ret;
+    return ret;
+}
 
 void DataTermFuncs(){
     gDataFuncs.clear();
