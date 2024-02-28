@@ -42,6 +42,7 @@ public:
 
     void ChainSource(MsgSource*, MsgSource*);
     void AddSink(Hmx::Object*, Symbol, Symbol, SinkMode);
+    void RemoveSink(Hmx::Object*, Symbol);
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
 };

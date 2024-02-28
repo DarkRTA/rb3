@@ -23,7 +23,7 @@ public:
     virtual bool IsDirPtr(){ return 0; }
 
     void operator=(T1* t){
-        if(mPtr != t){
+        if(t != mPtr){
             if(mPtr != 0) mPtr->Release(this);
             mPtr = t;
             if(t != 0) t->AddRef(this);
