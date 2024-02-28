@@ -12,6 +12,8 @@
 #  define _STLP_LONG_LONG  long long
 #endif
 
+#define _STLP_STATIC_ASSERT(expr) __static_assert(expr, #expr);
+
 #define _STLP_USE_UNIX_EMULATION_IO  1
 
 #define _STLP_USE_AUTO_PTR_CONVERSIONS  1
