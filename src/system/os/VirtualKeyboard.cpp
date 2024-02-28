@@ -16,12 +16,26 @@ void VirtualKeyboard::Init(){
     SetName("virtual_keyboard", ObjectDir::sMainDir);
 }
 
+void VirtualKeyboard::Poll(){
+    PlatformPoll();
+    if(mCallbackReady){
+        VirtualKeyboardResultMsg msg(mMsgOk, mCallbackMsg.c_str());
+        if(mPobjKeyboardCallback){
+            mPobjKeyboardCallback->Handle(msg.Data(), true);
+        }
+        mPobjKeyboardCallback = 0;
+        mCallbackMsg = gNullStr;
+        mMsgOk = false;
+        mCallbackReady = false;
+    }   
+}
+
 void VirtualKeyboard::Terminate(){
     PlatformTerminate();
 }
 
 void VirtualKeyboard::ClearKeyboardCallback(){
-    mCallbackMsg.erase();
+    mPobjKeyboardCallback = 0;
 }
 
 BEGIN_HANDLERS(VirtualKeyboard)

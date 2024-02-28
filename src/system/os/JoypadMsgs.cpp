@@ -6,7 +6,7 @@ ButtonDownMsg::ButtonDownMsg(LocalUser* user, JoypadButton butt, JoypadAction ac
 }
 
 LocalUser* ButtonDownMsg::GetUser() const {
-    return dynamic_cast<LocalUser*>(mData->GetObj(2));
+    return mData->Obj<LocalUser>(2);
 }
 
 ButtonUpMsg::ButtonUpMsg(LocalUser* user, JoypadButton butt, JoypadAction act, int i)
@@ -15,7 +15,7 @@ ButtonUpMsg::ButtonUpMsg(LocalUser* user, JoypadButton butt, JoypadAction act, i
 }
 
 LocalUser* ButtonUpMsg::GetUser() const {
-    return dynamic_cast<LocalUser*>(mData->GetObj(2));
+    return mData->Obj<LocalUser>(2);
 }
 
 JoypadConnectionMsg::JoypadConnectionMsg(LocalUser* user, bool b, int i)
@@ -24,5 +24,5 @@ JoypadConnectionMsg::JoypadConnectionMsg(LocalUser* user, bool b, int i)
 }
 
 LocalUser* JoypadConnectionMsg::GetUser() const {
-    return dynamic_cast<LocalUser*>(mData->GetObj(2));
+    return mData->Obj<LocalUser>(2);
 }
