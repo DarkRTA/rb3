@@ -75,7 +75,9 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
     else {
         int nodeCnt = mMap->Size();
         for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
-            if(STR_TO_SYM(((const DataArray*)mMap)->Node(cnt).mValue.symbol) == key){
+            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
                 if(n.Type() == kDataObject){
                     Hmx::Object* o = n.mValue.object;
@@ -95,7 +97,9 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     if(mMap != 0){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
-            if(STR_TO_SYM(((const DataArray*)mMap)->Node(i).mValue.symbol) == key){
+            int symstr = (int)((const DataArray*)mMap)->Node(i).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
                 return &mMap->Node(i + 1);
             }
         }
@@ -215,7 +219,9 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
     if(mMap != 0){
         int cnt = mMap->Size() - 2;
         while(cnt >= 0){
-            if((STR_TO_SYM(((const DataArray*)mMap)->Node(cnt).mValue.symbol) == key)){
+            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
                 if(n.Type() == kDataObject){
                     Hmx::Object* obj = n.mValue.object;
