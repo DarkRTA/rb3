@@ -54,7 +54,7 @@ void VirtualKeyboard::ClearKeyboardCallback(){
 
 BEGIN_HANDLERS(VirtualKeyboard)
     HANDLE(show_keyboard, OnShowKeyboardUI);
-    HANDLE_ACTION(clear_callback, ClearKeyboardCallback);
+    HANDLE_ACTION(clear_callback, ClearKeyboardCallback());
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x8B);
 END_HANDLERS;

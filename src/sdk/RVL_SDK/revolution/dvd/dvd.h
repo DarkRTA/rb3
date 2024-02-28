@@ -30,6 +30,7 @@ extern "C" {
 // Forward declarations
 typedef struct DVDDiskID;
 typedef struct DVDCommandBlock;
+typedef struct DVDFileInfo;
 
 typedef struct DVDDriveInfo {
     u16 revision;    // at 0x0
@@ -109,6 +110,8 @@ typedef struct DVDPartitionParams {
 } DVDPartitionParams;
 
 void DVDInit(void);
+BOOL DVDOpen(char* fileName, DVDFileInfo* fileInfo);
+BOOL DVDClose(DVDFileInfo* f);
 BOOL DVDInquiryAsync(DVDCommandBlock*, DVDDriveInfo*, DVDCBCallback);
 u32 __DVDGetCoverStatus(void);
 void __DVDPrepareReset(void);

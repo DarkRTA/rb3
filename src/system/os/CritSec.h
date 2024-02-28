@@ -15,7 +15,7 @@ public:
     void Abandon();
 
     void operator delete(void* v){
-        _PoolFree(0x1C, FastPool, v);
+        _PoolFree(sizeof(CriticalSection), FastPool, v);
     }
 };
 
