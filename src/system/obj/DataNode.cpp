@@ -522,6 +522,9 @@ void DataNode::Load(BinStream& d){
         case kDataFunc:
             Symbol sym3;
             d >> sym3;
+            if(gDataFuncs.find(sym3) == gDataFuncs.end()){
+                MILO_FAIL("Couldn't bind %s", sym3);
+            }
             mValue.func = gDataFuncs[sym3];
             break;
         case kDataSymbol:
@@ -550,6 +553,11 @@ void DataNode::Load(BinStream& d){
             mValue.array->Load(d);
             break;
         case kDataObject:
+            d.ReadString(buf, 0x80);
+            mValue.object = gDataDir->FindObject(buf, true);
+            if(mValue.object == 0 && buf){
+                MILO_WARN("Couldn't find %s from %s", buf, gDataDir->Name());
+            }
             break;
         case kDataVar: 
             Symbol sym;
