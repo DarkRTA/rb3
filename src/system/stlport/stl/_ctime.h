@@ -16,19 +16,13 @@
 #ifndef _STLP_INTERNAL_CTIME
 #define _STLP_INTERNAL_CTIME
 
-#  if defined (_STLP_USE_NEW_C_HEADERS)
-#    include _STLP_NATIVE_CPP_C_HEADER(ctime)
-#  else
-#    include _STLP_NATIVE_C_HEADER(time.h)
-#  endif
+#include _STLP_NATIVE_CPP_C_HEADER(ctime)
 
-#  if defined (_STLP_IMPORT_VENDOR_CSTD)
 _STLP_BEGIN_NAMESPACE
 using _STLP_VENDOR_CSTD::size_t;
 using _STLP_VENDOR_CSTD::clock_t;
 using _STLP_VENDOR_CSTD::time_t;
 using _STLP_VENDOR_CSTD::tm;
-#    if !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
 using _STLP_VENDOR_CSTD::clock;
 using _STLP_VENDOR_CSTD::asctime;
 using _STLP_VENDOR_CSTD::ctime;
@@ -39,8 +33,6 @@ using _STLP_VENDOR_CSTD::mktime;
 using _STLP_VENDOR_CSTD::localtime;
 using _STLP_VENDOR_CSTD::strftime;
 using _STLP_VENDOR_CSTD::time;
-#    endif /* _STLP_NO_CSTD_FUNCTION_IMPORTS */
 _STLP_END_NAMESPACE
-#  endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif /* _STLP_INTERNAL_CTIME */

@@ -20,11 +20,7 @@
 #   define _STLP_DONT_POP_HEADER_ID
 #endif
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(cassert)
-#else
-#  include <assert.h>
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(cassert)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x103 )
 #  if !defined (_STLP_DONT_POP_HEADER_ID)

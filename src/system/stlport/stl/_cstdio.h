@@ -16,19 +16,13 @@
 #ifndef _STLP_INTERNAL_CSTDIO
 #define _STLP_INTERNAL_CSTDIO
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(cstdio)
-#else
-#  include _STLP_NATIVE_C_HEADER(stdio.h)
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(cstdio)
 
-#if defined (_STLP_IMPORT_VENDOR_CSTD )
 _STLP_BEGIN_NAMESPACE
 using _STLP_VENDOR_CSTD::FILE;
 using _STLP_VENDOR_CSTD::fpos_t;
 using _STLP_VENDOR_CSTD::size_t;
 
-#  if !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
 using _STLP_VENDOR_CSTD::clearerr;
 using _STLP_VENDOR_CSTD::fclose;
 using _STLP_VENDOR_CSTD::feof;
@@ -73,8 +67,6 @@ using _STLP_VENDOR_CSTD::vfprintf;
 using _STLP_VENDOR_CSTD::vprintf;
 using _STLP_VENDOR_CSTD::vsprintf;
 using _STLP_VENDOR_CSTD::vsnprintf;
-#  endif /* _STLP_NO_CSTD_FUNCTION_IMPORTS */
 _STLP_END_NAMESPACE
-#endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif /* _STLP_INTERNAL_CSTDIO */

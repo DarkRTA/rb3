@@ -89,10 +89,8 @@ private:
   _StateT _M_st;
 };
 
-#if !defined (_STLP_NO_MBSTATE_T)
 typedef fpos<mbstate_t> streampos;
 typedef fpos<mbstate_t> wstreampos;
-#endif
 
 // Class __char_traits_base.
 template <class _CharT, class _IntT>
@@ -102,11 +100,7 @@ public:
   typedef _IntT int_type;
   typedef streamoff off_type;
   typedef streampos pos_type;
-#if defined (_STLP_NO_MBSTATE_T)
-  typedef char      state_type;
-#else
   typedef mbstate_t state_type;
-#endif
 
   static void _STLP_CALL assign(char_type& __c1, const char_type& __c2) { __c1 = __c2; }
   static bool _STLP_CALL eq(const char_type& __c1, const char_type& __c2)
@@ -183,10 +177,8 @@ public:
   typedef char char_type;
   typedef int int_type;
   typedef streamoff off_type;
-#if !defined (_STLP_NO_MBSTATE_T)
   typedef streampos pos_type;
   typedef mbstate_t state_type;
-#endif
 
   static char _STLP_CALL to_char_type(const int& __c)
   { return (char)(unsigned char)__c; }

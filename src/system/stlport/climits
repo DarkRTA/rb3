@@ -21,11 +21,7 @@
 #  include <stl/_prolog.h>
 #endif
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(climits)
-#else
-#    include <limits.h>
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(climits)
 
 #if (_STLP_OUTERMOST_HEADER_ID ==  0x108 )
 #  include <stl/_epilog.h>

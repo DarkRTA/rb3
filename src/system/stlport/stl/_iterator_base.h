@@ -34,12 +34,6 @@
 #  include <stl/_cstddef.h>
 #endif
 
-//# if defined  (_STLP_IMPORT_VENDOR_CSTD) && ! defined (_STLP_VENDOR_GLOBAL_CSTD)
-//_STLP_BEGIN_NAMESPACE
-//using namespace _STLP_VENDOR_CSTD;
-//_STLP_END_NAMESPACE
-//#endif /* _STLP_IMPORT_VENDOR_CSTD */
-
 #if !defined(_STLP_USE_OLD_HP_ITERATOR_QUERIES) && !defined(_STLP_CLASS_PARTIAL_SPECIALIZATION)
 #  ifndef _STLP_TYPE_TRAITS_H
 #    include <stl/type_traits.h>

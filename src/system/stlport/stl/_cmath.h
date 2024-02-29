@@ -16,17 +16,7 @@
 #ifndef _STLP_INTERNAL_CMATH
 #define _STLP_INTERNAL_CMATH
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  if defined (_STLP_HAS_NO_NAMESPACES) && !defined (exception)
-#    define exception __math_exception
-#  endif
-#  include _STLP_NATIVE_CPP_C_HEADER(cmath)
-#  if defined (_STLP_HAS_NO_NAMESPACES)
-#    undef exception
-#  endif
-#else
-#  include <math.h>
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(cmath)
 
 #define _STLP_CMATH_FUNC_NAMESPACE
 
@@ -211,19 +201,18 @@ _STLP_DEF_MATH_INLINE(tan, tan)
 _STLP_DEF_MATH_INLINE(tanh, tanh)
 _STLP_DEF_MATH_INLINE2(pow, pow)
 
-#    ifndef _STLP_NO_VENDOR_MATH_F
+#ifndef _STLP_NO_VENDOR_MATH_F
 inline float pow(float __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::powf(__x, __STATIC_CAST(float,__y)); }
-#    else
+#else
 inline float pow(float __x, int __y) { return __STATIC_CAST(float, _STLP_CMATH_FUNC_NAMESPACE::pow(__x, __STATIC_CAST(float,__y))); }
-#    endif
+#endif
 inline double pow(double __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::pow(__x, __STATIC_CAST(double,__y)); }
-#    if !defined (_STLP_NO_LONG_DOUBLE)
-#      if !defined(_STLP_NO_VENDOR_MATH_L)
+#if !defined (_STLP_NO_LONG_DOUBLE)
+#  if !defined(_STLP_NO_VENDOR_MATH_L)
 inline long double pow(long double __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::powl(__x, __STATIC_CAST(long double,__y)); }
-#      else
+#  else
 inline long double pow(long double __x, int __y) { return __STATIC_CAST(long double, _STLP_CMATH_FUNC_NAMESPACE::pow(__x, __STATIC_CAST(long double,__y))); }
-#      endif
-#    endif
+#  endif
 #endif
 
 #if defined (_STLP_RESTORE_FUNCTION_INTRINSIC)
@@ -243,7 +232,6 @@ inline long double pow(long double __x, int __y) { return __STATIC_CAST(long dou
 #  include <stl/_cstdlib.h>
 #endif
 
-#if defined (_STLP_IMPORT_VENDOR_CSTD) && !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
 _STLP_BEGIN_NAMESPACE
 using ::abs;
 using ::acos;

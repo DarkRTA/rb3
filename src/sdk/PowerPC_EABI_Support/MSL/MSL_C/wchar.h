@@ -4,6 +4,7 @@
 #include "MSL_Common/wchar_def.h"
 #include "MSL_Common/wchar_io.h"
 #include "MSL_Common/wchar_time.h"
+#include "MSL_Common/wchar_sizes.h"
 #include "MSL_Common/wcstoul.h"
 #include "MSL_Common/wint_def.h"
 #include "MSL_Common/wmem.h"

@@ -345,14 +345,6 @@
 #  define _STLP_VOLATILE
 #endif
 
-#if !defined (_STLP_USE_NEW_C_HEADERS) && !defined (_STLP_HAS_NO_NEW_C_HEADERS)
-#  define _STLP_USE_NEW_C_HEADERS
-#endif
-/* disable new-style headers if requested */
-#if defined (_STLP_NO_NEW_C_HEADERS)
-#  undef _STLP_USE_NEW_C_HEADERS
-#endif
-
 #if !defined (_STLP_STATIC_TEMPLATE_DATA)
 #  define _STLP_STATIC_TEMPLATE_DATA 1
 #endif
@@ -502,17 +494,6 @@
 #    undef   _STLP_MINIMUM_IMPORT_STD
 #  endif
 
-/* if using stlport:: namespace or if C library stuff is not in vendor's std::,
- * try importing 'em.
- * MSVC has ambiguity problem when we try to import C-style std:: stuff back into global namespace */
-#  if defined (_STLP_USE_NAMESPACES) && (defined(_STLP_USE_OWN_NAMESPACE) || defined (_STLP_VENDOR_GLOBAL_CSTD))
-#    define  _STLP_IMPORT_VENDOR_CSTD 1
-#  endif
-
-#  if defined (_STLP_NO_USING_FOR_GLOBAL_FUNCTIONS) && !defined (_STLP_DO_IMPORT_CSTD_FUNCTIONS)
-#    define _STLP_NO_CSTD_FUNCTION_IMPORTS
-#  endif
-
 #  define _STLP_USING_NAMESPACE(x) using namespace x ;
 
 namespace std { }
@@ -526,7 +507,7 @@ namespace __std_alias = std;
 #  endif
 
 /* tune things that come from C library */
-#  if  defined (_STLP_VENDOR_GLOBAL_CSTD) || !defined(_STLP_USE_NEW_C_HEADERS)
+#  if  defined (_STLP_VENDOR_GLOBAL_CSTD)
 /*  in old-style headers, C functions go to global scope. */
 #    define _STLP_VENDOR_CSTD
 #    define _STLP_USING_VENDOR_CSTD

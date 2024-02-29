@@ -16,40 +16,14 @@
 #ifndef _STLP_INTERNAL_CSETJMP
 #define _STLP_INTERNAL_CSETJMP
 
-// if the macro is on, the header is already there
-#if !defined (setjmp)
-#  if defined (_STLP_USE_NEW_C_HEADERS)
-#    include _STLP_NATIVE_CPP_C_HEADER(csetjmp)
-#  else
-#    define _STLP_NATIVE_SETJMP_H_INCLUDED
-#    include _STLP_NATIVE_C_HEADER(setjmp.h)
-#  endif
-#endif
-
-#if defined (_STLP_IMPORT_VENDOR_CSTD)
+#include _STLP_NATIVE_CPP_C_HEADER(csetjmp)
 
 _STLP_BEGIN_NAMESPACE
-#  if !defined (_STLP_NATIVE_SETJMP_H_INCLUDED)
 using _STLP_VENDOR_CSTD::jmp_buf;
-#  else
-// if setjmp.h was included first, this is in global namespace, not in
-// vendor's std.  - 2005-08-04, ptr
-using ::jmp_buf;
-#  endif
-#  if !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
-#    if !defined (_STLP_NATIVE_SETJMP_H_INCLUDED)
-#      if !defined (setjmp)
+#if !defined (setjmp)
 using _STLP_VENDOR_CSTD::setjmp;
-#      endif
+#endif
 using _STLP_VENDOR_CSTD::longjmp;
-#    else
-#      if !defined (setjmp)
-using ::setjmp;
-#      endif
-using ::longjmp;
-#    endif
-#  endif
 _STLP_END_NAMESPACE
-#endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif

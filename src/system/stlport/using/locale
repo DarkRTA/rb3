@@ -1,9 +1,7 @@
 #if !defined(_STLP_NO_IMPORT_LOCALE)
 
 // from <cwchar>
-#if !defined (_STLP_NO_MBSTATE_T)
 using _STLP_VENDOR_MB_NAMESPACE::mbstate_t;
-#endif
 
 // _lib.locale_, locale:
 using _STLP_NEW_IO_NAMESPACE::locale;
