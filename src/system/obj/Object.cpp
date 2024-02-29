@@ -17,7 +17,8 @@ void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
 }
 
 bool Hmx::Object::RegisteredFactory(Symbol s){
-    return sFactories.find(s) != sFactories.end();
+    const std::map<Symbol, ObjectFunc*>::iterator it = sFactories.find(s);
+    return it != sFactories.end();
 }
 
 Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
@@ -158,6 +159,11 @@ void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
         MILO_ASSERT(prop->Size() == 2, 0x1C5);
         mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
     }
+}
+
+void Hmx::Object::AddRef(ObjRef* ref){
+    if(ref->RefOwner())
+        mRefs.push_back(ref);
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){

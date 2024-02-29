@@ -21,7 +21,8 @@ DataNode* DataVariable(Symbol s){
 }
 
 bool DataVarExists(Symbol s){
-    return gDataVars.find(s) != gDataVars.end();
+    const std::map<Symbol, DataNode>::iterator it = gDataVars.find(s);
+    return it != gDataVars.end();
 }
 
 const char* DataVarName(const DataNode* node){
