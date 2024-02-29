@@ -301,18 +301,14 @@ class numeric_limits<unsigned long>
 
 #if defined (_STLP_LONG_LONG)
 
-#  ifndef LONGLONG_MAX
-#    error "Missing long long limits!"
-#  endif
-
 _STLP_TEMPLATE_NULL
 class numeric_limits<_STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LONGLONG_MIN, LONGLONG_MAX, -1, true>
+  : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LLONG_MIN, LLONG_MAX, -1, true>
 {};
 
 _STLP_TEMPLATE_NULL
 class numeric_limits<unsigned _STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULONGLONG_MAX, -1, true>
+  : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULLONG_MAX, -1, true>
 {};
 
 #endif /* _STLP_LONG_LONG */
