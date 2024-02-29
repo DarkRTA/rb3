@@ -20,10 +20,6 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-#if defined(_STLP_WCE_EVC3)
-struct _exception;
-#endif
-
 #include _STLP_NATIVE_C_HEADER(limits.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x201)

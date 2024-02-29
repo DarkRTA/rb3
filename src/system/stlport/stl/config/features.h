@@ -83,10 +83,6 @@
 #endif
 
 /* ========================================================= */
-/* This file is used for compatibility; it accepts old-style config
-   switches */
-#include <stl/config/compat.h>
-
 /* Common configuration file for this particular installation. */
 #include <stl/config/host.h>
 
@@ -485,13 +481,6 @@
 /* pointer specialization tool */
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
 #  define _STLP_PTR_IMPL_NAME(X) _##X##_impl
-#endif
-
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-#  define _STLP_NO_MEM_T_NAME(X) _NoMemT_##X
-#  if defined (_STLP_DEBUG)
-#    define _STLP_NON_DBG_NO_MEM_T_NAME(X) _NonDbg_NoMemT_##X
-#  endif
 #endif
 
 /* this always mean the C library is in global namespace */

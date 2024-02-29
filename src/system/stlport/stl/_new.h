@@ -21,23 +21,11 @@
 #  include <stl/_cstddef.h>
 #endif
 
-#if defined (__BORLANDC__) && (__BORLANDC__ < 0x580)
-// new.h uses ::malloc ;(
-#  include _STLP_NATIVE_CPP_C_HEADER(cstdlib)
-using _STLP_VENDOR_CSTD::malloc;
-#endif
-
 #if !defined (_STLP_NO_NEW_NEW_HEADER)
 #  if defined (_STLP_BROKEN_BAD_ALLOC_CLASS)
 #    define bad_alloc _STLP_NULLIFIED_BROKEN_BAD_ALLOC_CLASS
 #    define nothrow_t _STLP_NULLIFIED_BROKEN_BAD_NOTHROW_T_CLASS
 #    define nothrow _STLP_NULLIFIED_BROKEN_BAD_NOTHROW
-#  endif
-
-// eMbedded Visual C++ .NET unfortunately uses _INC_NEW for both <new.h> and <new>
-// we undefine the symbol to get the stuff in the SDK's <new>
-#  if defined (_STLP_WCE_NET) && defined (_INC_NEW)
-#    undef _INC_NEW
 #  endif
 
 #  if defined (new)
@@ -139,14 +127,8 @@ _STLP_END_NAMESPACE
 #  endif
 
 _STLP_BEGIN_NAMESPACE
-
-#  if ((defined (__IBMCPP__) || defined (__OS400__) || defined (__xlC__) || defined (qTidyHeap)) && defined (__DEBUG_ALLOC__))
-inline void* _STLP_CALL __stl_new(size_t __n)   { _STLP_CHECK_NULL_ALLOC(::operator _STLP_NEW(__n, __FILE__, __LINE__)); }
-inline void  _STLP_CALL __stl_delete(void* __p) { ::operator delete(__p, __FILE__, __LINE__); }
-#  else
 inline void* _STLP_CALL __stl_new(size_t __n)   { _STLP_CHECK_NULL_ALLOC(::operator _STLP_NEW(__n)); }
 inline void  _STLP_CALL __stl_delete(void* __p) { ::operator delete(__p); }
-#  endif
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_RTTI_BUG */

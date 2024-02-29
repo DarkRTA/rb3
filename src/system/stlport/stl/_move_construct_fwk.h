@@ -1,7 +1,7 @@
 /*
  *
  * Copyright (c) 2003
- * François Dumont
+ * Franï¿½ois Dumont
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
@@ -86,14 +86,8 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class _Tp>
 struct _MoveSourceTraits {
   typedef typename __move_traits<_Tp>::implemented _MvImpRet;
-#if defined (__BORLANDC__)
-  typedef typename __selectT<_MvImpRet,
-#else
   enum {_MvImp = __type2bool<_MvImpRet>::_Ret};
-  typedef typename __select<_MvImp,
-#endif
-                            __move_source<_Tp>,
-                            _Tp const&>::_Ret _Type;
+  typedef typename __select<_MvImp, __move_source<_Tp>, _Tp const&>::_Ret _Type;
 };
 
 //The helper function

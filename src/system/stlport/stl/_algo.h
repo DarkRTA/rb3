@@ -46,11 +46,6 @@
 #  include <stl/_function_base.h>
 #endif
 
-#if defined (__SUNPRO_CC) && !defined (_STLP_INTERNAL_CSTDIO)
-// remove() conflict
-#  include <stl/_cstdio.h>
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 // for_each.  Apply a function to every element of a range.
@@ -757,4 +752,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

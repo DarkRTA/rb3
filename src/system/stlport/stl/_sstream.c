@@ -435,25 +435,15 @@ void basic_stringbuf<_CharT, _Traits, _Alloc>::_M_append_buffer() const {
   if (this->pbase() == this->_M_Buf && this->pptr() != this->_M_Buf) {
     basic_stringbuf<_CharT, _Traits, _Alloc>* __this = __CONST_CAST(_Self*,this);
     __this->_M_str.append((const _CharT*)this->pbase(), (const _CharT*)this->pptr());
-#ifndef __MWERKS__
     __this->setp(__CONST_CAST(_CharT*,_M_Buf),
                  __CONST_CAST(_CharT*,_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
-#else // CodeWarrior treat const char * and const char [8] as different types
-    __this->setp((_CharT*)_M_Buf,
-                 (_CharT*)(_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
-#endif
   }
 
   // Have we run off the end of the string?
   else if (this->pptr() == this->epptr()) {
     basic_stringbuf<_CharT, _Traits, _Alloc>* __this = __CONST_CAST(_Self*,this);
-#ifndef __MWERKS__
     __this->setp(__CONST_CAST(_CharT*,_M_Buf),
                  __CONST_CAST(_CharT*,_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
-#else // CodeWarrior treat const char * and const char [8] as different types
-    __this->setp((_CharT*)_M_Buf,
-                 (_CharT*)(_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
-#endif
   }
 }
 

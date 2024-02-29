@@ -63,12 +63,7 @@ template <class charT> class ctype_byname {};
 _STLP_TEMPLATE_NULL
 class _STLP_CLASS_DECLSPEC ctype<char> : public locale::facet, public ctype_base {
 #ifndef _STLP_NO_WCHAR_T
-#  ifdef _STLP_MSVC
-    typedef ctype<wchar_t> _Wctype;
-    friend _Wctype;
-#  else
     friend class ctype<wchar_t>;
-#  endif
 #endif
   friend class _Locale_impl;
 public:
@@ -274,4 +269,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

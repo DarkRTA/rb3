@@ -58,15 +58,12 @@ getline(basic_istream<_CharT, _Traits>& __is,
         basic_string<_CharT,_Traits,_Alloc>& __s,
         _CharT __delim);
 
-#if !(defined (__BORLANDC__) && !defined (_STLP_USE_OWN_NAMESPACE))
-
 template <class _CharT, class _Traits, class _Alloc>
 inline basic_istream<_CharT, _Traits>& _STLP_CALL
 getline(basic_istream<_CharT, _Traits>& __is,
         basic_string<_CharT,_Traits,_Alloc>& __s) {
   return getline(__is, __s, __is.widen('\n'));
 }
-#endif
 
 _STLP_END_NAMESPACE
 

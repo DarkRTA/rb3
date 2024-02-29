@@ -143,11 +143,7 @@ inline bool _STLP_CALL operator>=(const reverse_iterator<_Iterator>& __x,
 #  endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
 template <class _Iterator>
-#  if defined (__SUNPRO_CC)
-inline ptrdiff_t _STLP_CALL
-#  else
 inline typename reverse_iterator<_Iterator>::difference_type _STLP_CALL
-#  endif
 operator-(const reverse_iterator<_Iterator>& __x,
           const reverse_iterator<_Iterator>& __y)
 { return __y.base() - __x.base(); }

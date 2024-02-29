@@ -60,12 +60,7 @@ template<class _CharT, class _Alloc>
 _Rope_iterator<_CharT, _Alloc>::_Rope_iterator(rope<_CharT,_Alloc>& __r, size_t __pos):
   _Rope_iterator_base<_CharT,_Alloc>(__r._M_tree_ptr._M_data, __pos),
   _M_root_rope(&__r) {
-#if !defined (__DMC__)
   _RopeRep::_S_ref(this->_M_root); if (!(__r.empty()))_S_setcache(*this);
-#else
-  _Rope_iterator_base<_CharT, _Alloc>* __x = this;
-  _RopeRep::_S_ref(this->_M_root); if (!(__r.empty()))_S_setcache(*__x);
-#endif
 }
 
 template<class _CharT, class _Alloc>
@@ -761,20 +756,12 @@ private:
 public:
   _Rope_insert_char_consumer(_Insert_ostream& __writer)
     : _M_o(__writer) {}
-#  if defined(__MRC__) || (defined(__SC__) && !defined(__DMC__))  //*TY 05/23/2000 - added support for mpw compiler's trigger function approach to generate vtable
-  ~_Rope_insert_char_consumer();    //*TY 05/23/2000 -
-#  else    //*TY 05/23/2000 -
   ~_Rope_insert_char_consumer() {}
-#  endif    //*TY 05/23/2000 -
+
   // Caller is presumed to own the ostream
   bool operator() (const _CharT* __leaf, size_t __n);
   // Returns true to continue traversal.
 };
-
-#  if defined (__MRC__) || (defined (__SC__) && !defined (__DMC__))    //*TY 05/23/2000 - added support for mpw compiler's trigger function approach to generate vtable
-template<class _CharT, class _Traits>
-_Rope_insert_char_consumer<_CharT, _Traits>::  ~_Rope_insert_char_consumer() {}
-#  endif    //*TY 05/23/2000 -
 
 template<class _CharT, class _Traits>
 bool _Rope_insert_char_consumer<_CharT, _Traits>::operator()
@@ -1325,10 +1312,8 @@ __DECLARE_INSTANCE(wchar_t, wrope::_S_empty_c_str[1], ={0});
 // # endif
 
 #if !defined (_STLP_STATIC_CONST_INIT_BUG)
-#  if !defined (__GNUC__) || (__GNUC__ != 2) || (__GNUC_MINOR__ != 96)
 template <class _CharT, class _Alloc>
 const size_t rope<_CharT, _Alloc>::npos;
-#  endif
 #endif
 
 template<class _CharT, class _Alloc>
@@ -1376,10 +1361,6 @@ const _CharT* rope<_CharT,_Alloc>::replace_with_c_str() {
 }
 
 // Algorithm specializations.  More should be added.
-
-#if (!defined (_STLP_MSVC) || (_STLP_MSVC >= 1310)) && \
-    (!defined (__DMC__) || defined (__PUT_STATIC_DATA_MEMBERS_HERE))
-// I couldn't get this to work with VC++
 template<class _CharT,class _Alloc>
 void _Rope_rotate(_Rope_iterator<_CharT,_Alloc> __first,
                   _Rope_iterator<_CharT,_Alloc> __middle,
@@ -1399,24 +1380,6 @@ void _Rope_rotate(_Rope_iterator<_CharT,_Alloc> __first,
   __r += __part2;
   __r += __suffix;
 }
-
-
-# if 0
-// Probably not useful for several reasons:
-// - for SGIs 7.1 compiler and probably some others,
-//   this forces lots of rope<wchar_t, ...> instantiations, creating a
-//   code bloat and compile time problem.  (Fixed in 7.2.)
-// - wchar_t is 4 bytes wide on most UNIX platforms, making it unattractive
-//   for unicode strings.  Unsigned short may be a better character
-//   type.
-inline void rotate(
-    _Rope_iterator<wchar_t,_STLP_DEFAULT_ALLOCATOR(char) > __first,
-                _Rope_iterator<wchar_t,_STLP_DEFAULT_ALLOCATOR(char) > __middle,
-                _Rope_iterator<wchar_t,_STLP_DEFAULT_ALLOCATOR(char) > __last) {
-    _Rope_rotate(__first, __middle, __last);
-}
-# endif
-#endif /* _STLP_MSVC */
 
 #   undef __RopeLeaf__
 #   undef __RopeRep__

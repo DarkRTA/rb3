@@ -41,7 +41,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 //  global non-inline functions
 //==========================================================
 // [ i1, i2)
-#if !defined (__DMC__)
 template <class _Iterator>
 inline bool  _STLP_CALL
 __in_range_aux(const _Iterator& __it, const _Iterator& __first,
@@ -49,14 +48,9 @@ __in_range_aux(const _Iterator& __it, const _Iterator& __first,
     return ( __it >= __first &&
              __it < __last);
 }
-#endif
 
 template <class _Iterator1, class _Iterator>
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1100)
-inline bool _STLP_CALL  __in_range_aux(_Iterator1 __it, const _Iterator& __first,
-#else
 inline bool _STLP_CALL  __in_range_aux(const _Iterator1& __it, const _Iterator& __first,
-#endif
                                        const _Iterator& __last, const forward_iterator_tag &) {
   _Iterator1 __i(__first);
   for (;  __i != __last && __i != __it; ++__i);
@@ -301,18 +295,6 @@ _STLP_STRING_LITERAL("Unknown problem") \
 #    if (_STLP_STATIC_TEMPLATE_DATA > 0)
 template <class _Dummy>
 const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX]  _STLP_MESSAGE_TABLE_BODY;
-
-#      if (defined (__CYGWIN__) || defined (__MINGW32__)) && \
-           defined (_STLP_USE_DYNAMIC_LIB) && !defined (__BUILDING_STLPORT)
-/*
- * Under cygwin, when STLport is used as a shared library, the id needs
- * to be specified as imported otherwise they will be duplicated in the
- * calling executable.
- */
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC const char* __stl_debug_engine<bool>::_Message_table[_StlMsg_MAX];
-#      endif
-
 #    else
 __DECLARE_INSTANCE(const char*, __stl_debug_engine<bool>::_Message_table[_StlMsg_MAX],
                    _STLP_MESSAGE_TABLE_BODY);
@@ -358,29 +340,12 @@ __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
   MultiByteToWideChar(GetACP(), 0, __format_str, -1, _lpw, _convert);
   wvsprintf(__buffer, _lpw, __args);
   _STLP_WINCE_TRACE(__buffer);
-#        elif defined (_STLP_WIN32) && (defined(_STLP_MSVC) || defined (__ICL))
-  char __buffer [4096];
-
-#          if !defined (_STLP_USE_SAFE_STRING_FUNCTIONS)
-  vsnprintf(__buffer, _STLP_ARRAY_SIZE(__buffer), __format_str, __args);
-#          else
-  vsnprintf_s(__buffer, _STLP_ARRAY_SIZE(__buffer), _TRUNCATE, __format_str, __args);
-#          endif
-
-  OutputDebugStringA(__buffer);
-
-#        elif defined (__amigaos__)
-  STLPORT_CSTD::vfprintf(stderr, __format_str, (char *)__args);
-#        else
   STLPORT_CSTD::vfprintf(stderr, __format_str, __args);
-#        endif
 #      else
   char __buffer[4096];
 
 #        if defined (_STLP_USE_SAFE_STRING_FUNCTIONS)
   vsnprintf_s(__buffer, _STLP_ARRAY_SIZE(__buffer), _TRUNCATE, __format_str, __args);
-#        elif defined (_STLP_WIN32) && (defined(_STLP_MSVC) || defined (__ICL))
-  vsnprintf(__buffer, _STLP_ARRAY_SIZE(__buffer), __format_str, __args);
 #        else
   vsprintf(__buffer, __format_str, __args);
 #        endif

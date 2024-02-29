@@ -80,12 +80,7 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Tp>
 inline void swap(_Tp& __a, _Tp& __b) {
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
-#  if !defined(__BORLANDC__)
   typedef typename _SwapImplemented<_Tp>::_Ret _Implemented;
-#  else
-  enum { _Is = _SwapImplemented<_Tp>::_Is };
-  typedef typename __bool2type<_Is>::_Ret _Implemented;
-#  endif
   _STLP_PRIV __swap_aux(__a, __b, _Implemented());
 #else
   _Tp __tmp = __a;
@@ -126,26 +121,10 @@ inline void iter_swap(_ForwardIter1 __i1, _ForwardIter2 __i2) {
 //--------------------------------------------------
 // min and max
 
-#if !defined (__BORLANDC__) || defined (_STLP_USE_OWN_NAMESPACE)
-#  if (defined (__BORLANDC__) && (__BORLANDC__ < 0x580)) && !defined (__STDC__)
-//In not ANSI mode Borland import min/max in global namespace which conflict
-//with STLport min/max when user does a 'using namespace std' in its code
-//(see test/unit/alg_test.cpp). To avoid this clash we simply import Borland min/max
-//in STLport namespace.
-using _STLP_VENDOR_STD::min;
-using _STLP_VENDOR_STD::max;
-#  else
 template <class _Tp>
 inline const _Tp& (min)(const _Tp& __a, const _Tp& __b) { return __b < __a ? __b : __a; }
 template <class _Tp>
 inline const _Tp& (max)(const _Tp& __a, const _Tp& __b) {  return  __a < __b ? __b : __a; }
-#  endif
-#endif
-
-# if defined (__BORLANDC__) && defined (_STLP_USE_OWN_NAMESPACE)
-inline unsigned long (min) (unsigned long __a, unsigned long __b) { return __b < __a ? __b : __a; }
-inline unsigned long (max) (unsigned long __a, unsigned long __b) {  return  __a < __b ? __b : __a; }
-# endif
 
 template <class _Tp, class _Compare>
 inline const _Tp& (min)(const _Tp& __a, const _Tp& __b, _Compare __comp) {
@@ -667,4 +646,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

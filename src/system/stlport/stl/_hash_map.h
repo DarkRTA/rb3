@@ -53,15 +53,9 @@ public:
   typedef _Key key_type;
   typedef _Tp data_type;
   typedef _Tp mapped_type;
-#if !defined (__DMC__)
+
   typedef pair<const key_type, data_type> value_type;
-#else
-  /* DMC goes too far in template instanciation and tries to fully instanciate
-   * slist<pair<const int, string> > for instance. The generation of assignment
-   * operator fails of course so we are force to use mutable key for this compiler.
-   */
-  typedef pair<key_type, data_type> value_type;
-#endif
+
 private:
   //Specific iterator traits creation
   typedef _STLP_PRIV _HashMapTraitsT<value_type> _HashMapTraits;
@@ -247,11 +241,9 @@ public:
   typedef _Key key_type;
   typedef _Tp data_type;
   typedef _Tp mapped_type;
-#if !defined (__DMC__)
+
   typedef pair<const key_type, data_type> value_type;
-#else
-  typedef pair<key_type, data_type> value_type;
-#endif
+
 private:
   //Specific iterator traits creation
   typedef _STLP_PRIV _HashMultimapTraitsT<value_type> _HashMultimapTraits;

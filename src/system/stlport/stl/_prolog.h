@@ -17,9 +17,3 @@
 #ifndef _STLP_FEATURES_H
 #  include <stl/config/features.h>
 #endif
-
-/* If the platform provides any specific prolog actions,
- * like #pragmas, do include platform-specific prolog file */
-#if defined (_STLP_HAS_SPECIFIC_PROLOG_EPILOG)
-#  include <stl/config/_prolog.h>
-#endif

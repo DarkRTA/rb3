@@ -52,11 +52,7 @@ public:
   typedef typename _Base::pointer pointer;
 #if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
   template <class _Tp1> struct rebind {
-#  if !defined (_STLP_MSVC) || (_STLP_MSVC >= 1300)
     typedef __iostring_allocator<_Tp1> other;
-#  else
-    typedef _STLP_PRIV __iostring_allocator<_Tp1> other;
-#  endif
   };
 #endif
 

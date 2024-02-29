@@ -53,12 +53,6 @@ template <class _CharT, class _Traits>
 class basic_ostream : virtual public basic_ios<_CharT, _Traits> {
   typedef basic_ostream<_CharT, _Traits> _Self;
 
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
-  //explicitely defined as private to avoid warnings:
-  basic_ostream(_Self const&);
-  _Self& operator = (_Self const&);
-#endif
-
 public:                         // Types
   typedef _CharT                     char_type;
   typedef typename _Traits::int_type int_type;
@@ -106,14 +100,7 @@ public:                         // Formatted output.
   _Self& operator<<(short __x);
   _Self& operator<<(unsigned short __x);
   _Self& operator<<(int __x);
-#if defined (_WIN64) || !defined (_STLP_MSVC) || (_STLP_MSVC < 1300)
   _Self& operator<<(unsigned int __x);
-#else
-/* We define this operator with size_t rather than unsigned int to avoid
- * 64 bits warning.
- */
-  _Self& operator<<(size_t __x);
-#endif
   _Self& operator<<(long __x);
   _Self& operator<<(unsigned long __x);
 #ifdef _STLP_LONG_LONG

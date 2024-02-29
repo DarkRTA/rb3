@@ -20,10 +20,7 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-/* evc3 and evc4 don't have signal.h */
-#ifndef _STLP_WCE
-#  include _STLP_NATIVE_C_HEADER(signal.h)
-#endif
+#include _STLP_NATIVE_C_HEADER(signal.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x257)
 #  if ! defined (_STLP_DONT_POP_HEADER_ID)

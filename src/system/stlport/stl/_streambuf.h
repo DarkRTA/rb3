@@ -75,16 +75,7 @@ public:                         // Destructor.
   virtual ~basic_streambuf();
 
 protected:                      // The default constructor.
-  basic_streambuf()
-#if defined (_STLP_MSVC) && (_STLP_MSVC < 1300) && defined (_STLP_USE_STATIC_LIB)
-    //We make it inline to avoid unresolved symbol.
-    : _M_gbegin(0), _M_gnext(0), _M_gend(0),
-      _M_pbegin(0), _M_pnext(0), _M_pend(0),
-      _M_locale()
-  {}
-#else
-  ;
-#endif
+  basic_streambuf();
 
 protected:                      // Protected interface to the get area.
   char_type* eback() const { return _M_gbegin; } // Beginning
@@ -267,17 +258,6 @@ public:                         // Locale-related functions.
 
 #if !defined (_STLP_NO_ANACHRONISMS)
   void stossc() { this->sbumpc(); }
-#endif
-#if defined (__MVS__) || defined (__OS400__)
-private: // Data members.
-
-  char_type* _M_gbegin; // Beginning of get area
-  char_type* _M_gnext; // Current position within the get area
-  char_type* _M_gend; // End of get area
-
-  char_type* _M_pbegin; // Beginning of put area
-  char_type* _M_pnext; // Current position within the put area
-  char_type* _M_pend; // End of put area
 #endif
 };
 

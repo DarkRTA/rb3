@@ -180,11 +180,7 @@ public:
   static void _STLP_CALL deallocate(void *, size_t);
 };
 
-#  if defined (__OS400__) || defined (_WIN64)
-enum {_ALIGN = 16, _ALIGN_SHIFT = 4, _MAX_BYTES = 256};
-#  else
 enum {_ALIGN = 8, _ALIGN_SHIFT = 3, _MAX_BYTES = 128};
-#  endif /* __OS400__ */
 
 #if !defined (_STLP_USE_NO_IOSTREAMS)
 // Default node allocator.
@@ -406,10 +402,6 @@ public:
   size_type max_size() const _STLP_NOTHROW  { return size_t(-1) / sizeof(value_type); }
   void construct(pointer __p, const_reference __val) { _STLP_STD::_Copy_Construct(__p, __val); }
   void destroy(pointer __p) { _STLP_STD::_Destroy(__p); }
-#if defined(__MRC__)||(defined(__SC__) && !defined(__DMC__))
-  template <class _T2> bool operator==(const allocator<_T2>&) const _STLP_NOTHROW { return true; }
-  template <class _T2> bool operator!=(const allocator<_T2>&) const _STLP_NOTHROW { return false; }
-#endif
 
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
   //This is just to make swap workaround for compiler without template function partial
@@ -460,16 +452,10 @@ public:
     typedef allocator<_Tp1> other;
   };
 #endif
-#if defined(__MRC__)||(defined(__SC__)&&!defined(__DMC__))  //*ty 03/24/2001 - MPW compilers get confused on these operator definitions
-  template <class _T2> bool operator==(const allocator<_T2>&) const _STLP_NOTHROW { return true; }
-  template <class _T2> bool operator!=(const allocator<_T2>&) const _STLP_NOTHROW { return false; }
-#endif
 };
 
-#if !(defined(__MRC__)||(defined(__SC__)&&!defined(__DMC__)))  //*ty 03/24/2001 - MPW compilers get confused on these operator definitions
 template <class _T1, class _T2> inline bool  _STLP_CALL operator==(const allocator<_T1>&, const allocator<_T2>&) _STLP_NOTHROW { return true; }
 template <class _T1, class _T2> inline bool  _STLP_CALL operator!=(const allocator<_T1>&, const allocator<_T2>&) _STLP_NOTHROW { return false; }
-#endif
 
 #if defined (_STLP_USE_TEMPLATE_EXPORT)
 _STLP_EXPORT_TEMPLATE_CLASS allocator<char>;
@@ -517,12 +503,8 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Tp>
 struct __alloc_type_traits {
-#if !defined (__BORLANDC__)
   typedef typename _IsSTLportClass<allocator<_Tp> >::_Ret _STLportAlloc;
-#else
-  enum { _Is = _IsSTLportClass<allocator<_Tp> >::_Is };
-  typedef typename __bool2type<_Is>::_Ret _STLportAlloc;
-#endif
+
   //The default allocator implementation which is recognize thanks to the
   //__stlport_class inheritance is a stateless object so:
   typedef _STLportAlloc has_trivial_default_constructor;
@@ -624,11 +606,7 @@ private:
 
 public:
   void _M_swap_alloc(_Self& __x) {
-#if !defined (__BORLANDC__)
     typedef typename _IsStateless<_MaybeReboundAlloc>::_Ret _StatelessAlloc;
-#else
-    typedef typename __bool2type<_IsStateless<_MaybeReboundAlloc>::_Is>::_Ret _StatelessAlloc;
-#endif
     _M_swap_alloc(__x, _StatelessAlloc());
   }
 
@@ -642,11 +620,7 @@ public:
   }
 
   _Tp* allocate(size_type __n, size_type& __allocated_n) {
-#if !defined (__BORLANDC__)
     typedef typename _IsSTLportClass<_MaybeReboundAlloc>::_Ret _STLportAlloc;
-#else
-    typedef typename __bool2type<_IsSTLportClass<_MaybeReboundAlloc>::_Is>::_Ret _STLportAlloc;
-#endif
     return allocate(__n, __allocated_n, _STLportAlloc());
   }
 

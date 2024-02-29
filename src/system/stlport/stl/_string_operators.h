@@ -20,22 +20,13 @@ _STLP_BEGIN_NAMESPACE
 
 #if !defined (_STLP_USE_TEMPLATE_EXPRESSION)
 
-#  if defined (__GNUC__) || defined (__MLCCPP__)
-#    define _STLP_INIT_AMBIGUITY 1
-#  endif
-
 template <class _CharT, class _Traits, class _Alloc>
 inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
-#  if defined (_STLP_INIT_AMBIGUITY)
-  // gcc counts this as a function
-  _Str __result  = _Str(_Reserve_t(), __s.size() + __y.size(), __s.get_allocator());
-#  else
   _Str __result(_Reserve_t(), __s.size() + __y.size(), __s.get_allocator());
-#  endif
   __result.append(__s);
   __result.append(__y);
   return __result;
@@ -49,11 +40,7 @@ operator+(const _CharT* __s,
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
   const size_t __n = _Traits::length(__s);
-#  if defined (_STLP_INIT_AMBIGUITY)
-  _Str __result = _Str(_Reserve_t(), __n + __y.size(), __y.get_allocator());
-#  else
   _Str __result(_Reserve_t(), __n + __y.size(), __y.get_allocator());
-#  endif
   __result.append(__s, __s + __n);
   __result.append(__y);
   return __result;
@@ -65,11 +52,7 @@ operator+(_CharT __c,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
-#  if defined (_STLP_INIT_AMBIGUITY)
-  _Str __result = _Str(_Reserve_t(), 1 + __y.size(), __y.get_allocator());
-#  else
   _Str __result(_Reserve_t(), 1 + __y.size(), __y.get_allocator());
-#  endif
   __result.push_back(__c);
   __result.append(__y);
   return __result;
@@ -83,11 +66,7 @@ operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
   const size_t __n = _Traits::length(__s);
-#  if defined (_STLP_INIT_AMBIGUITY)
-  _Str __result = _Str(_Reserve_t(), __x.size() + __n, __x.get_allocator());
-#  else
   _Str __result(_Reserve_t(), __x.size() + __n, __x.get_allocator());
-#  endif
   __result.append(__x);
   __result.append(__s, __s + __n);
   return __result;
@@ -99,17 +78,11 @@ operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT __c) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
-#  if defined (_STLP_INIT_AMBIGUITY)
-  _Str __result = _Str(_Reserve_t(), __x.size() + 1, __x.get_allocator());
-#  else
   _Str __result(_Reserve_t(), __x.size() + 1, __x.get_allocator());
-#  endif
   __result.append(__x);
   __result.push_back(__c);
   return __result;
 }
-
-#  undef _STLP_INIT_AMBIGUITY
 
 #else /* _STLP_USE_TEMPLATE_EXPRESSION */
 
@@ -599,4 +572,3 @@ operator>=(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_STRING_OPERATORS_H */
-

@@ -22,10 +22,6 @@
 #ifndef _STLP_INTERNAL_FSTREAM_H
 #define _STLP_INTERNAL_FSTREAM_H
 
-#if defined(__sgi) && !defined(__GNUC__) && !defined(_STANDARD_C_PLUS_PLUS)
-#  error This header file requires the -LANG:std option
-#endif
-
 #ifndef _STLP_INTERNAL_STREAMBUF
 #  include <stl/_streambuf.h>
 #endif
@@ -40,20 +36,7 @@
 
 #if !defined (_STLP_USE_UNIX_IO) && !defined(_STLP_USE_WIN32_IO) && \
     !defined (_STLP_USE_UNIX_EMULATION_IO) && !defined (_STLP_USE_STDIO_IO)
-
-#  if defined (_STLP_UNIX)  || defined (__CYGWIN__) || defined (__amigaos__) || defined (__EMX__)
-// open/close/read/write
-#    define _STLP_USE_UNIX_IO
-#  elif defined (_STLP_WIN32)
-// CreateFile/ReadFile/WriteFile
-#    define _STLP_USE_WIN32_IO
-#  elif defined (_STLP_WIN16) || defined (_STLP_MAC)
-// _open/_read/_write
-#    define _STLP_USE_UNIX_EMULATION_IO
-#  else
-// fopen/fread/fwrite
-#    define _STLP_USE_STDIO_IO
-#  endif /* _STLP_UNIX */
+#  error "Configure i/o !"
 #endif /* mode selection */
 
 #if defined (_STLP_USE_WIN32_IO)
@@ -719,13 +702,6 @@ public:                         // File and buffer operations.
 
 private:
   basic_filebuf<_CharT, _Traits> _M_buf;
-
-#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
-  typedef basic_fstream<_CharT, _Traits> _Self;
-  //explicitely defined as private to avoid warnings:
-  basic_fstream(_Self const&);
-  _Self& operator = (_Self const&);
-#endif
 };
 
 _STLP_END_NAMESPACE

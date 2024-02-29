@@ -180,12 +180,8 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Ch, class _InIt>
 class time_get_byname;
 
-#if defined (__GNUC__) && (__GNUC__ < 3)
 template <class _Ch, class _InIt>
 _Locale_name_hint* _Locale_time_extract_hint(time_get_byname<_Ch, _InIt>*);
-#else
-_Locale_name_hint* _Locale_time_extract_hint(time_get_byname<char, istreambuf_iterator<char, char_traits<char> > >*);
-#endif
 
 #if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
 template <class _Ch, class _InIt>
@@ -213,11 +209,7 @@ private:
   //explicitely defined as private to avoid warnings:
   time_get_byname(_Self const&);
   _Self& operator = (_Self const&);
-#if defined (__GNUC__) && (__GNUC__ < 3)
   friend _Locale_name_hint* _Locale_time_extract_hint<>(_Self*);
-#else
-  friend _Locale_name_hint* _Locale_time_extract_hint(time_get_byname<char, istreambuf_iterator<char, char_traits<char> > >*);
-#endif
 };
 
 // time_put facet

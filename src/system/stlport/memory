@@ -43,18 +43,7 @@
 #include <stl/_auto_ptr.h>
 
 #if defined (_STLP_IMPORT_VENDOR_STD)
-
-#  if defined (__MSL__)
-#    include _STLP_NATIVE_HEADER(limits)
-#  endif
-
 #  include _STLP_NATIVE_HEADER(memory)
-
-#  if defined (__MSL__) && (__MSL__ >= 0x2405   && __MSL__ < 0x5201) 
-/*  980401 vss  MSL 2.4  Pro 3 Release  */  
-#    include <new_mem.h>
-#  endif
-
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x46)
@@ -67,4 +56,3 @@
 // Local Variables:
 // mode:C++
 // End:
-

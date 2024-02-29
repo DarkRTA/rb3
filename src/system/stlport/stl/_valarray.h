@@ -1259,9 +1259,7 @@ public:
       : 0;
   }
 
-# ifndef __HP_aCC
 private:
-# endif
 
   size_t _M_start;
   _Valarray_size_t _M_lengths;

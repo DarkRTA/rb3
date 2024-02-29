@@ -68,10 +68,4 @@
 #  define _Rb_tree_node            _rbT__N
 #  define _Rb_tree_base_iterator   _rbT__It
 #  define _Rb_tree_base            _rbT__B
-
-#  if defined (__DMC__) && defined (_STLP_DEBUG)
-#    define _NonDbg_hashtable      _Nd_Ht
-#    define _DBG_iter              _d__It
-#  endif
 #endif
-

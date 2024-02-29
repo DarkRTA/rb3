@@ -209,12 +209,7 @@ public:
   //IEC 559 specify the floating point representation of
   //infinity, quiet and signaling Not a Number. Not supporting
   //it is consider as not being able to grant those values.
-#if (defined (_STLP_MSVC) && (_STLP_MSVC < 1300))
-  //MSVC 6 do not fully support IEC 599 but grant a good infinity value.
-  has_infinity      = true,
-#else
   has_infinity      = __IsIEC559,
-#endif
   has_quiet_NaN     = __IsIEC559,
   has_signaling_NaN = __IsIEC559,
 
@@ -284,11 +279,6 @@ class numeric_limits<unsigned short>
   : public _STLP_PRIV _Integer_limits<unsigned short, 0, USHRT_MAX, -1, true>
 {};
 
-#if defined (__xlC__) && (__xlC__ == 0x500)
-#  undef INT_MIN
-#  define INT_MIN -2147483648
-#endif
-
 _STLP_TEMPLATE_NULL
 class numeric_limits<int>
   : public _STLP_PRIV _Integer_limits<int, INT_MIN, INT_MAX, -1, true>
@@ -311,111 +301,15 @@ class numeric_limits<unsigned long>
 
 #if defined (_STLP_LONG_LONG)
 
-#  if defined (_STLP_MSVC) || defined (__BORLANDC__)
-#    define LONGLONG_MAX     0x7fffffffffffffffi64
-#    define LONGLONG_MIN     (-LONGLONG_MAX-1i64)
-#    define ULONGLONG_MAX    0xffffffffffffffffUi64
-#  else
-#    ifndef LONGLONG_MAX
-#      define LONGLONG_MAX   0x7fffffffffffffffLL
-#    endif
-#    ifndef LONGLONG_MIN
-#      define LONGLONG_MIN   (-LONGLONG_MAX-1LL)
-#    endif
-#    ifndef ULONGLONG_MAX
-#      define ULONGLONG_MAX  0xffffffffffffffffULL
-#    endif
-#  endif
-
-#  if !defined(__GNUC__) || (__GNUC__ == 2 && __GNUC_MINOR__ <= 96)
-
 _STLP_TEMPLATE_NULL
 class numeric_limits<_STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LONGLONG_MIN, LONGLONG_MAX, -1, true>
+  : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LLONG_MIN, LLONG_MAX, -1, true>
 {};
 
 _STLP_TEMPLATE_NULL
 class numeric_limits<unsigned _STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULONGLONG_MAX, -1, true>
+  : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULLONG_MAX, -1, true>
 {};
-#  else /* gcc 2.97 (after 2000-11-01), 2.98, 3.0 */
-/*
- newest gcc has new mangling scheme, that has problem
- with generating name [instantiated] of template specialization like
- _Integer_limits<_STLP_LONG_LONG, LONGLONG_MIN, LONGLONG_MAX, -1, true>
-                                  ~~~~~~~~~~~~  ~~~~~~~~~~~~
- Below is code that solve this problem.
-   - ptr
- */
-_STLP_TEMPLATE_NULL
-class numeric_limits<_STLP_LONG_LONG>
-  : public _STLP_PRIV _Numeric_limits_base<_STLP_LONG_LONG> {
-public:
-
-  static _STLP_LONG_LONG (_STLP_CALL min) () _STLP_NOTHROW { return LONGLONG_MIN; }
-  static _STLP_LONG_LONG (_STLP_CALL max) () _STLP_NOTHROW { return LONGLONG_MAX; }
-
-#    if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  enum {
-#    else
-  static const int
-#    endif
-  digits = ((int)((sizeof(_STLP_LONG_LONG) * (CHAR_BIT))) - 1),
-  digits10 = (digits * 301UL) / 1000,
-  radix = 2
-#    if ! defined (_STLP_STATIC_CONST_INIT_BUG)
-  ;
-  static const bool
-#    else
-  ,
-#    endif
-  is_specialized = true,
-  is_signed = true,
-  is_integer = true,
-  is_exact = true,
-  is_bounded = true,
-  is_modulo = true
-#    if defined (_STLP_STATIC_CONST_INIT_BUG)
-  }
-#    endif
-  ;
-};
-
-_STLP_TEMPLATE_NULL
-class numeric_limits<unsigned _STLP_LONG_LONG>
-  : public _STLP_PRIV _Numeric_limits_base<unsigned _STLP_LONG_LONG> {
-public:
-
-  static unsigned _STLP_LONG_LONG (_STLP_CALL min) () _STLP_NOTHROW { return 0ULL; }
-  static unsigned _STLP_LONG_LONG (_STLP_CALL max) () _STLP_NOTHROW { return ULONGLONG_MAX; }
-
-#    if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum {
-#    else
-  static const int
-#    endif
-  digits = ((int)((sizeof(unsigned _STLP_LONG_LONG) * (CHAR_BIT)))),
-  digits10 = (digits * 301UL) / 1000,
-  radix = 2
-#    if ! defined (_STLP_STATIC_CONST_INIT_BUG)
-  ;
-  static const bool
-#    else
-  ,
-#    endif
-  is_specialized = true,
-  is_signed = false,
-  is_integer = true,
-  is_exact = true,
-  is_bounded = true,
-  is_modulo = true
-#    if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  }
-#    endif
-  ;
-};
-
-#  endif /* __GNUC__ > 2000-11-01 */
 
 #endif /* _STLP_LONG_LONG */
 

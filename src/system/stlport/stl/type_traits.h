@@ -55,10 +55,6 @@ template <class T> inline void copy(T* source,T* destination,int n) {
 }
 */
 
-#ifdef __WATCOMC__
-#  include <stl/_cwchar.h>
-#endif
-
 #ifndef _STLP_TYPE_MANIPS_H
 #  include <stl/type_manips.h>
 #endif
@@ -377,12 +373,7 @@ template <class _Src, class _Dst>
 struct _TrivialCopy {
   typedef typename _TrivialNativeTypeCopy<_Src, _Dst>::_Ret _NativeRet;
 
-#if !defined (__BORLANDC__) || (__BORLANDC__ != 0x560)
   typedef typename __type_traits<_Src>::has_trivial_assignment_operator _Tr1;
-#else
-  typedef typename _UnConstPtr<_Src*>::_Type _Tp3;
-  typedef typename __type_traits<_Tp3>::has_trivial_assignment_operator _Tr1;
-#endif
   typedef typename _AreSameUnCVTypes<_Src, _Dst>::_Ret _Tr2;
   typedef typename _Land2<_Tr1, _Tr2>::_Ret _UserRet;
 
@@ -394,12 +385,7 @@ template <class _Src, class _Dst>
 struct _TrivialUCopy {
   typedef typename _TrivialNativeTypeCopy<_Src, _Dst>::_Ret _NativeRet;
 
-#if !defined (__BORLANDC__) || (__BORLANDC__ != 0x560)
   typedef typename __type_traits<_Src>::has_trivial_copy_constructor _Tr1;
-#else
-  typedef typename _UnConstPtr<_Src*>::_Type _Tp3;
-  typedef typename __type_traits<_Tp3>::has_trivial_copy_constructor _Tr1;
-#endif
   typedef typename _AreSameUnCVTypes<_Src, _Dst>::_Ret _Tr2;
   typedef typename _Land2<_Tr1, _Tr2>::_Ret _UserRet;
 
@@ -417,12 +403,7 @@ struct _DefaultZeroValue {
 
 template <class _Tp>
 struct _TrivialInit {
-#if !defined (__BORLANDC__) || (__BORLANDC__ != 0x560)
   typedef typename __type_traits<_Tp>::has_trivial_default_constructor _Tr1;
-#else
-  typedef typename _UnConstPtr<_Tp*>::_Type _Tp1;
-  typedef typename __type_traits<_Tp1>::has_trivial_copy_constructor _Tr1;
-#endif
   typedef typename _DefaultZeroValue<_Tp>::_Ret _Tr2;
   typedef typename _Not<_Tr2>::_Ret _Tr3;
   typedef typename _Land2<_Tr1, _Tr3>::_Ret _Ret;
@@ -525,18 +506,12 @@ struct __stlport_class
 template <class _Tp>
 struct _IsSTLportClass {
   typedef typename _IsConvertible<_Tp, __stlport_class<_Tp> >::_Ret _Ret;
-#if defined (__BORLANDC__)
-  enum { _Is = _IsConvertible<_Tp, __stlport_class<_Tp> >::value };
-#endif
 };
 
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 template <class _Tp>
 struct _SwapImplemented {
   typedef typename _IsSTLportClass<_Tp>::_Ret _Ret;
-#  if defined (__BORLANDC__)
-  enum { _Is = _IsSTLportClass<_Tp>::_Is };
-#  endif
 };
 #endif
 
@@ -557,15 +532,7 @@ struct _IsStateless {
 _STLP_END_NAMESPACE
 
 #ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
-#  if defined (__BORLANDC__) || \
-      defined (__SUNPRO_CC) ||  \
-     (defined (__MWERKS__) && (__MWERKS__ <= 0x2303)) || \
-     (defined (__sgi) && defined (_COMPILER_VERSION)) || \
-      defined (__DMC__)
-#    define _STLP_IS_POD_ITER(_It, _Tp) __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
-#  else
-#    define _STLP_IS_POD_ITER(_It, _Tp) typename __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
-#  endif
+#  define _STLP_IS_POD_ITER(_It, _Tp) typename __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
 #else
 #  define _STLP_IS_POD_ITER(_It, _Tp) _Is_POD( _STLP_VALUE_TYPE( _It, _Tp ) )._Answer()
 #endif

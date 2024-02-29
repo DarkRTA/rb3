@@ -25,8 +25,7 @@
 #    include <stl/_exception.h>
 #  endif
 
-#  if defined(_STLP_USE_EXCEPTIONS) || \
-    !(defined(_MIPS_SIM) && defined(_ABIO32) && (_MIPS_SIM == _ABIO32))
+#  if defined(_STLP_USE_EXCEPTIONS)
 
 #    ifndef _STLP_INTERNAL_CSTRING
 #      include <stl/_cstring.h>
@@ -41,21 +40,6 @@
 #    endif
 
 _STLP_BEGIN_NAMESPACE
-
-/* We disable the 4275 warning for
- *  - WinCE where there are only static version of the native C++ runtime.
- *  - The MSVC compilers when the STLport user wants to make an STLport dll linked to
- *    the static C++ native runtime. In this case the std::exception base class is no more
- *    exported from native dll but is used as a base class for the exported __Named_exception
- *    class.
- */
-#    if defined (_STLP_WCE_NET) || \
-        defined (_STLP_USE_DYNAMIC_LIB) && defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
-#      define _STLP_DO_WARNING_POP
-#      pragma warning (push)
-#      pragma warning (disable: 4275) // Non dll interface class 'exception' used as base
-                                      // for dll-interface class '__Named_exception'
-#    endif
 
 #    if !defined (_STLP_NO_EXCEPTION_HEADER)
 #      if !defined (_STLP_EXCEPTION_BASE) && !defined (_STLP_BROKEN_EXCEPTION_CLASS) && \

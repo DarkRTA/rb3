@@ -79,8 +79,6 @@
 
 #ifndef _STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE
 #  define _STLP_CREATE_ALLOCATOR(__atype,__a, _Tp) (_Alloc_traits<_Tp,__atype>::create_allocator(__a))
-#elif defined(__MRC__)||defined(__SC__)
-#  define _STLP_CREATE_ALLOCATOR(__atype,__a, _Tp) __stl_alloc_create<_Tp,__atype>(__a,(_Tp*)0)
 #else
 #  define _STLP_CREATE_ALLOCATOR(__atype,__a, _Tp) __stl_alloc_create(__a,(_Tp*)0)
 #endif
@@ -175,16 +173,11 @@ template<class _Sequence
 # if !(defined (_STLP_NON_TYPE_TMPL_PARAM_BUG) || \
        defined ( _STLP_NO_DEFAULT_NON_TYPE_PARAM ))
          , size_t _Buf_sz = 100
-#   if defined(__sgi) && !defined(__GNUC__)
-#   define __TYPEDEF_WORKAROUND
-         ,class _V = typename _Sequence::value_type
-#   endif /* __sgi */
 # endif /* _STLP_NON_TYPE_TMPL_PARAM_BUG */
          >
 // The 3rd parameter works around a common compiler bug.
 class sequence_buffer : public iterator <output_iterator_tag, void, void, void, void> {
 public:
-# ifndef __TYPEDEF_WORKAROUND
   typedef typename _Sequence::value_type value_type;
   typedef sequence_buffer<_Sequence
 # if !(defined (_STLP_NON_TYPE_TMPL_PARAM_BUG) || \
@@ -196,10 +189,6 @@ public:
   enum { _Buf_sz = 100};
 # endif /* _STLP_NON_TYPE_TMPL_PARAM_BUG */
   // # endif
-# else /* __TYPEDEF_WORKAROUND */
-  typedef _V value_type;
-  typedef sequence_buffer<_Sequence, _Buf_sz, _V> _Self;
-# endif /* __TYPEDEF_WORKAROUND */
 protected:
   _Sequence* _M_prefix;
   value_type _M_buffer[_Buf_sz];
@@ -377,23 +366,6 @@ public:
 
   typedef typename _Lor2<_IsChar, _IsWCharT>::_Ret _IsBasicCharType;
 
-#if 0
-  /* Please tell why this code is necessary if you uncomment it.
-   * Problem with it is that rope implementation expect that _S_rounded_up_size(n)
-   * returns a size > n in order to store the terminating null charater. When
-   * instanciation type is not a char or wchar_t this is not guaranty resulting in
-   * memory overrun.
-   */
-  static size_t _S_rounded_up_size_aux(size_t __n, __true_type const& /*_IsBasicCharType*/) {
-    // Allow slop for in-place expansion.
-    return (__n + _S_alloc_granularity) & ~(_S_alloc_granularity - 1);
-  }
-
-  static size_t _S_rounded_up_size_aux(size_t __n, __false_type const& /*_IsBasicCharType*/) {
-    // Allow slop for in-place expansion.
-    return (__n + _S_alloc_granularity - 1) & ~(_S_alloc_granularity - 1);
-  }
-#endif
   // fbp : moved from RopeLeaf
   static size_t _S_rounded_up_size(size_t __n)
   //{ return _S_rounded_up_size_aux(__n, _IsBasicCharType()); }
@@ -769,11 +741,7 @@ public:
   // Path_end contains the bottom section of the path from
   // the root to the current leaf.
   struct {
-#  if defined (__BORLANDC__) && (__BORLANDC__ < 0x560)
-    _RopeRep const*_M_data[4];
-#  else
     _RopeRep const*_M_data[_S_path_cache_len];
-#  endif
   } _M_path_end;
   // Last valid __pos in path_end;
   // _M_path_end[0] ... _M_path_end[_M_leaf_index-1]
@@ -792,11 +760,7 @@ public:
   // The cached path is generally assumed to be valid
   // only if the buffer is valid.
   struct {
-#  if defined (__BORLANDC__) && (__BORLANDC__ < 0x560)
-    _CharT _M_data[15];
-#  else
     _CharT _M_data[_S_iterator_buf_len];
-#  endif
   } _M_tmp_buf;
 
   // Set buffer contents given path cache.
@@ -896,11 +860,7 @@ public:
   }
   reference operator*() {
     if (0 == this->_M_buf_ptr)
-#if !defined (__DMC__)
       _S_setcache(*this);
-#else
-    { _Rope_iterator_base<_CharT, _Alloc>* __x = this; _S_setcache(*__x); }
-#endif
     return *(this->_M_buf_ptr);
   }
   _Self& operator++() {
@@ -1256,11 +1216,7 @@ protected:
   // This uses a nonstandard refcount convention.
   // The result has refcount 0.
   typedef _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
-#if !defined (__GNUC__) || (__GNUC__ < 3)
   friend struct _Concat_fn;
-#else
-  friend struct _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc>;
-#endif
 
 public:
   static size_t _S_char_ptr_len(const _CharT* __s) {
@@ -2042,13 +1998,6 @@ public:
 # endif
 }; //class rope
 
-#if !defined (_STLP_STATIC_CONST_INIT_BUG)
-#  if defined (__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ == 96)
-template <class _CharT, class _Alloc>
-const size_t rope<_CharT, _Alloc>::npos = ~(size_t) 0;
-#  endif
-#endif
-
 template <class _CharT, class _Alloc>
 inline _CharT
 _Rope_const_iterator< _CharT, _Alloc>::operator[](size_t __n)
@@ -2095,12 +2044,10 @@ inline ptrdiff_t operator-(const _Rope_const_iterator<_CharT,_Alloc>& __x,
                            const _Rope_const_iterator<_CharT,_Alloc>& __y)
 { return (ptrdiff_t)__x._M_current_pos - (ptrdiff_t)__y._M_current_pos; }
 
-#if !defined( __MWERKS__ ) || __MWERKS__ >= 0x2000  // dwa 8/21/97  - "ambiguous access to overloaded function" bug.
 template <class _CharT, class _Alloc>
 inline _Rope_const_iterator<_CharT,_Alloc>
 operator-(const _Rope_const_iterator<_CharT,_Alloc>& __x, ptrdiff_t __n)
 { return _Rope_const_iterator<_CharT,_Alloc>(__x._M_root, __x._M_current_pos - __n); }
-# endif
 
 template <class _CharT, class _Alloc>
 inline _Rope_const_iterator<_CharT,_Alloc>
@@ -2151,14 +2098,12 @@ inline ptrdiff_t operator-(const _Rope_iterator<_CharT,_Alloc>& __x,
                            const _Rope_iterator<_CharT,_Alloc>& __y)
 { return (ptrdiff_t)__x._M_current_pos - (ptrdiff_t)__y._M_current_pos; }
 
-#if !defined( __MWERKS__ ) || __MWERKS__ >= 0x2000  // dwa 8/21/97  - "ambiguous access to overloaded function" bug.
 template <class _CharT, class _Alloc>
 inline _Rope_iterator<_CharT,_Alloc>
 operator-(const _Rope_iterator<_CharT,_Alloc>& __x,
           ptrdiff_t __n) {
   return _Rope_iterator<_CharT,_Alloc>(__x._M_root_rope, __x._M_current_pos - __n);
 }
-# endif
 
 template <class _CharT, class _Alloc>
 inline _Rope_iterator<_CharT,_Alloc>
@@ -2327,12 +2272,7 @@ _STLP_TEMPLATE_NULL struct hash<wrope> {
 };
 #endif
 
-#if (!defined (_STLP_MSVC) || (_STLP_MSVC >= 1310))
-// I couldn't get this to work with VC++
 template<class _CharT,class _Alloc>
-#  if defined (__DMC__) && !defined (__PUT_STATIC_DATA_MEMBERS_HERE)
-extern
-#  endif
 void _Rope_rotate(_Rope_iterator<_CharT, _Alloc> __first,
                   _Rope_iterator<_CharT, _Alloc> __middle,
                   _Rope_iterator<_CharT, _Alloc> __last);
@@ -2341,7 +2281,6 @@ inline void rotate(_Rope_iterator<char, _STLP_DEFAULT_ALLOCATOR(char) > __first,
                    _Rope_iterator<char, _STLP_DEFAULT_ALLOCATOR(char) > __middle,
                    _Rope_iterator<char, _STLP_DEFAULT_ALLOCATOR(char) > __last)
 { _Rope_rotate(__first, __middle, __last); }
-#endif
 
 template <class _CharT, class _Alloc>
 inline _Rope_char_ref_proxy<_CharT, _Alloc>::operator _CharT () const {

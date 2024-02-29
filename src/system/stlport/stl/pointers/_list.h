@@ -28,7 +28,7 @@ _STLP_BEGIN_NAMESPACE
 
 #define LIST_IMPL _STLP_PTR_IMPL_NAME(List)
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
@@ -86,10 +86,7 @@ public:
   allocator_type get_allocator() const
   { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
 
-# if !(defined(__MRC__)||(defined(__SC__) && !defined(__DMC__)))
-  explicit
-# endif
-  list(const allocator_type& __a = allocator_type())
+  explicit list(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
 #if !defined(_STLP_DONT_SUP_DFLT_PARAM)

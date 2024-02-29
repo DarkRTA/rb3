@@ -731,9 +731,6 @@ operator^(const bitset<_Nb>& __x,
 
 _STLP_END_NAMESPACE
 
-#  if !(defined (_STLP_MSVC) && (_STLP_MSVC < 1300)) && \
-      !(defined(__SUNPRO_CC) && (__SUNPRO_CC < 0x500))
-
 #ifndef _STLP_INTERNAL_IOSFWD
 #  include <stl/_iosfwd.h>
 #endif
@@ -748,116 +745,6 @@ template <class _CharT, class _Traits, size_t _Nb>
 basic_ostream<_CharT, _Traits>& _STLP_CALL
 operator<<(basic_ostream<_CharT, _Traits>& __os, const bitset<_Nb>& __x);
 
-#  else
-
-#ifndef _STLP_STRING_IO_H
-#  include <stl/_string_io.h> //includes _istream.h and _ostream.h
-#endif
-
-_STLP_BEGIN_NAMESPACE
-
-template <size_t _Nb>
-istream&  _STLP_CALL
-operator>>(istream& __is, bitset<_Nb>& __x) {
-  typedef typename string::traits_type _Traits;
-  string __tmp;
-  __tmp.reserve(_Nb);
-
-  // Skip whitespace
-  typename istream::sentry __sentry(__is);
-  if (__sentry) {
-    streambuf* __buf = __is.rdbuf();
-    for (size_t __i = 0; __i < _Nb; ++__i) {
-      static typename _Traits::int_type __eof = _Traits::eof();
-
-      typename _Traits::int_type __c1 = __buf->sbumpc();
-      if (_Traits::eq_int_type(__c1, __eof)) {
-        __is.setstate(ios_base::eofbit);
-        break;
-      }
-      else {
-        typename _Traits::char_type __c2 = _Traits::to_char_type(__c1);
-        char __c  = __is.narrow(__c2, '*');
-
-        if (__c == '0' || __c == '1')
-          __tmp.push_back(__c);
-        else if (_Traits::eq_int_type(__buf->sputbackc(__c2), __eof)) {
-          __is.setstate(ios_base::failbit);
-          break;
-        }
-      }
-    }
-
-    if (__tmp.empty())
-      __is.setstate(ios_base::failbit);
-    else
-      __x._M_copy_from_string(__tmp, __STATIC_CAST(size_t,0), _Nb);
-  }
-
-  return __is;
-}
-
-template <size_t _Nb>
-ostream& _STLP_CALL
-operator<<(ostream& __os, const bitset<_Nb>& __x) {
-  string __tmp;
-  __x._M_copy_to_string(__tmp);
-  return __os << __tmp;
-}
-
-#    if !defined (_STLP_NO_WCHAR_T)
-
-template <size_t _Nb>
-wistream&  _STLP_CALL
-operator>>(wistream& __is, bitset<_Nb>& __x) {
-  typedef typename wstring::traits_type _Traits;
-  wstring __tmp;
-  __tmp.reserve(_Nb);
-
-  // Skip whitespace
-  typename wistream::sentry __sentry(__is);
-  if (__sentry) {
-    wstreambuf* __buf = __is.rdbuf();
-    for (size_t __i = 0; __i < _Nb; ++__i) {
-      static typename _Traits::int_type __eof = _Traits::eof();
-
-      typename _Traits::int_type __c1 = __buf->sbumpc();
-      if (_Traits::eq_int_type(__c1, __eof)) {
-        __is.setstate(ios_base::eofbit);
-        break;
-      }
-      else {
-        typename _Traits::char_type __c2 = _Traits::to_char_type(__c1);
-        char __c  = __is.narrow(__c2, '*');
-
-        if (__c == '0' || __c == '1')
-          __tmp.push_back(__c);
-        else if (_Traits::eq_int_type(__buf->sputbackc(__c2), __eof)) {
-          __is.setstate(ios_base::failbit);
-          break;
-        }
-      }
-    }
-
-    if (__tmp.empty())
-      __is.setstate(ios_base::failbit);
-    else
-      __x._M_copy_from_string(__tmp, __STATIC_CAST(size_t,0), _Nb);
-  }
-
-  return __is;
-}
-
-template <size_t _Nb>
-wostream& _STLP_CALL
-operator<<(wostream& __os, const bitset<_Nb>& __x) {
-  wstring __tmp;
-  __x._M_copy_to_string(__tmp);
-  return __os << __tmp;
-}
-
-#    endif /* _STLP_NO_WCHAR_T */
-#  endif
 #endif
 
 #endif /* _STLP_NON_TYPE_TMPL_PARAM_BUG */

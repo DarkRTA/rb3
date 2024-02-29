@@ -16,8 +16,6 @@
 #ifndef _STLP_INTERNAL_CTIME
 #define _STLP_INTERNAL_CTIME
 
-#if !defined (_STLP_WCE_EVC3)
-
 #  if defined (_STLP_USE_NEW_C_HEADERS)
 #    include _STLP_NATIVE_CPP_C_HEADER(ctime)
 #  else
@@ -36,9 +34,7 @@ using _STLP_VENDOR_CSTD::asctime;
 using _STLP_VENDOR_CSTD::ctime;
 using _STLP_VENDOR_CSTD::gmtime;
 
-#      if !defined (_WIN32_WCE) || (_WIN32_WCE < 0x500) // CE5 stopped supplying this
 using _STLP_VENDOR_CSTD::difftime;
-#      endif
 using _STLP_VENDOR_CSTD::mktime;
 using _STLP_VENDOR_CSTD::localtime;
 using _STLP_VENDOR_CSTD::strftime;
@@ -46,7 +42,5 @@ using _STLP_VENDOR_CSTD::time;
 #    endif /* _STLP_NO_CSTD_FUNCTION_IMPORTS */
 _STLP_END_NAMESPACE
 #  endif /* _STLP_IMPORT_VENDOR_CSTD */
-
-#endif
 
 #endif /* _STLP_INTERNAL_CTIME */

@@ -91,7 +91,7 @@ private:
     if (_M_have_c)
       return;
     int_type __c = _M_buf->sgetc();
-# if !defined (_STLP_NEED_MUTABLE) /* && ! defined (__SUNPRO_CC) */
+# if !defined (_STLP_NEED_MUTABLE)
     _M_c = traits_type::to_char_type(__c);
     _M_eof = traits_type::eq_int_type(__c, traits_type::eof());
     _M_have_c = true;
@@ -167,4 +167,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

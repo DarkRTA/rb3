@@ -20,8 +20,7 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-#if !defined (exception) && (!defined (__KCC) || (__KCC_VERSION < 4000)) && \
-    !(defined(__IBMCPP__) && (500 <= __IBMCPP__)) && !defined(_STLP_WCE_EVC3)
+#if !defined (exception)
 #  define _STLP_EXCEPTION_WAS_REDEFINED 1
 #  define exception __math_exception
 #endif
@@ -31,11 +30,6 @@
 #if defined (_STLP_EXCEPTION_WAS_REDEFINED)
 #  undef exception
 #  undef _STLP_EXCEPTION_WAS_REDEFINED
-#endif
-
-#ifdef _STLP_WCE_EVC3
-#  undef _exception
-#  define _exception exception
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x244)

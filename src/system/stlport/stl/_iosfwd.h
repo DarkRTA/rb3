@@ -1,10 +1,6 @@
 #ifndef _STLP_INTERNAL_IOSFWD
 #define _STLP_INTERNAL_IOSFWD
 
-#if defined (__sgi) && !defined (__GNUC__) && !defined (_STANDARD_C_PLUS_PLUS)
-#  error This header file requires the -LANG:std option
-#endif
-
 // This file provides forward declarations of the most important I/O
 // classes.  Note that almost all of those classes are class templates,
 // with default template arguments.  According to the C++ standard,
@@ -112,10 +108,8 @@ _STLP_TEMPLATE_NULL class collate<wchar_t>;
 _STLP_TEMPLATE_NULL class collate_byname<wchar_t>;
 #endif
 
-#if !(defined (__SUNPRO_CC) && __SUNPRO_CC < 0x500 )
 // Typedefs for ordinary (narrow-character) streams.
 //_STLP_TEMPLATE_NULL class basic_streambuf<char, char_traits<char> >;
-#endif
 
 typedef basic_istream<char, char_traits<char> >  istream;
 typedef basic_ostream<char, char_traits<char> >  ostream;

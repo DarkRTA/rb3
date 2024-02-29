@@ -43,11 +43,9 @@ public:
   typedef _Key key_type;
   typedef _Tp data_type;
   typedef _Tp mapped_type;
-#if !defined (__DMC__)
+
   typedef pair<const key_type, data_type> value_type;
-#else
-  typedef pair<key_type, data_type> value_type;
-#endif
+
 private:
   //Specific iterator traits creation
   typedef _STLP_PRIV _UnorderedMapTraitsT<value_type> _UnorderedMapTraits;
@@ -202,11 +200,9 @@ public:
   typedef _Key key_type;
   typedef _Tp data_type;
   typedef _Tp mapped_type;
-#if !defined (__DMC__)
+
   typedef pair<const key_type, data_type> value_type;
-#else
-  typedef pair<key_type, data_type> value_type;
-#endif
+
 private:
   //Specific iterator traits creation
   typedef _STLP_PRIV _UnorderedMultimapTraitsT<value_type> _UnorderedMultimapTraits;

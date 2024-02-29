@@ -16,8 +16,6 @@
 #ifndef _STLP_INTERNAL_CLOCALE
 #define _STLP_INTERNAL_CLOCALE
 
-#if !defined (_STLP_WCE_EVC3)
-
 #  if defined (_STLP_USE_NEW_C_HEADERS)
 #    include _STLP_NATIVE_CPP_C_HEADER(clocale)
 #  else
@@ -33,7 +31,5 @@ using _STLP_VENDOR_CSTD::setlocale;
 #    endif
 _STLP_END_NAMESPACE
 #  endif
-
-#endif /* !_STLP_WCE_EVC3 */
 
 #endif
