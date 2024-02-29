@@ -9,8 +9,10 @@
 #include "utl/Symbol.h"
 #include "macros.h"
 #include "math/MathFuncs.h"
+#include "obj/DataUtl.h"
 #include <list>
 #include <map>
+#include <stdlib.h>
 
 std::map<Symbol, DataFunc*> gDataFuncs;
 
@@ -308,6 +310,28 @@ static DataNode DataUnpackColor(DataArray *da) {
     return DataNode(0);
 }
 
+static DataNode DataDo(DataArray* da){
+    int cnt;
+    int nodeCnt = da->Size();
+    for(cnt = 1; da->Type(cnt) == kDataArray; cnt++){
+        DataArray* arr = da->Node(cnt).mValue.array;
+        DataNode* n = arr->Var(0);
+        DataPushVar(n);
+        if(arr->Size() == 2){
+            *n = arr->Evaluate(1);
+        }
+        else if(arr->Size() != 1){
+            MILO_FAIL("do var has more than one initializer");
+        }
+    }
+    int delCnt = cnt - 1;
+    for(; cnt < nodeCnt - 1; cnt++)
+        da->Command(cnt)->Execute();
+    DataNode ret(da->Evaluate(cnt));
+    while(delCnt-- != 0) DataPopVar();
+    return ret;
+}
+
 static DataNode DataMin(DataArray* da){
     DataNode& n1 = da->Evaluate(1);
     DataNode& n2 = da->Evaluate(2);
@@ -458,6 +482,62 @@ static DataNode DataDivideEq(DataArray* da){
     return ret;
 }
 
+static DataNode DataSqrt(DataArray* da){
+    return DataNode(sqrt(da->Float(1)));
+}
+
+// // fn_8031D490
+// DataNode DataMod(DataArray *da) {
+//     DataNode *dn1 = &da->Evaluate(1);
+//     DataNode *dn2 = &da->Evaluate(2);
+//     if (dn1->Type() == kDataFloat || dn2->Type() == kDataFloat) {
+//         return DataNode(Modulo(dn1->LiteralFloat(da), dn2->LiteralFloat(da)));
+//     } else
+//         return DataNode(Modulo(dn1->LiteralInt(da), dn2->LiteralInt(da)));
+// }
+
+// // fn_8031D56C
+// DataNode DataDist(DataArray *da) {
+//     Vector3 vec;
+//     vec.Set(
+//         da->Float(1) - da->Float(4),
+//         da->Float(2) - da->Float(5),
+//         da->Float(3) - da->Float(6)
+//     );
+
+//     return DataNode(GetSqrtAsFloat(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
+// }
+
+static DataNode DataSymbol(DataArray* da){
+    return DataNode(da->ForceSym(1));
+}
+
+static DataNode DataChar(DataArray* da){
+    static char newChar[2];
+    DataNode& n = da->Evaluate(1);
+    newChar[0] = n.Int(0);
+    newChar[1] = '\0';
+    return DataNode(newChar);
+}
+
+static DataNode DataInt(DataArray* da){
+    DataNode& n = da->Evaluate(1);
+    if(n.Type() == kDataSymbol)
+        return DataNode(atoi(n.mValue.symbol));
+    else if(n.Type() == kDataObject || n.Type() == kDataInt)
+        return DataNode(n.mValue.integer);
+    else return DataNode((int)n.LiteralFloat(da));
+}
+
 void DataTermFuncs(){
     gDataFuncs.clear();
+}
+
+Symbol DataFuncName(DataFunc* func){
+    for(std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.begin(); it != gDataFuncs.end(); it++ ){
+        if(it->second == func){
+            return it->first;
+        }
+    }
+    return Symbol("");
 }
