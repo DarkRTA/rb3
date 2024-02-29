@@ -215,13 +215,12 @@ void BinStream::Seek(int offset, SeekType type){
     SeekImpl(offset, type);
 }
 
-// // fn_80343058
-// void BinStream::ReadEndian(void *v, int i) {
-//     Read(v, i);
-//     if (mLittleEndian != 0) {
-//         SwapData(v, v, i);
-//     }
-// }
+void BinStream::ReadEndian(void* data, int bytes){
+    Read(data, bytes);
+    if(mLittleEndian){
+        // SwapData(data, data, bytes);
+    }
+}
 
 // // fn_80343114
 // void SwapData(const void *v1, void *v2, int num_bytes) {
@@ -246,11 +245,11 @@ void BinStream::Seek(int offset, SeekType type){
 //     }
 // }
 
-// void BinStream::WriteEndian(const void *v, int i) {
-//     char sp8;
-//     if (mLittleEndian != 0) {
-//         SwapData((void *)v, &sp8, i);
-//         Write(&sp8, i);
-//     } else
-//         Write(v, i);
-// }
+void BinStream::WriteEndian(const void* void_data, int bytes){
+    char buf[16];
+    if(mLittleEndian){
+        // SwapData((void*)void_data, buf, bytes);
+        Write(buf, bytes);
+    }
+    else Write(void_data, bytes);
+}
