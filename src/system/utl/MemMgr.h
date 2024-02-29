@@ -7,6 +7,9 @@ void operator delete(void*);
 void* operator new[](unsigned long);
 void operator delete[](void*);
 
+void* _MemAlloc(int, int);
+void _MemFree(void*);
+
 void* _MemOrPoolAlloc(int, PoolType);
 void _MemOrPoolFree(int, PoolType, void*);
 void* _MemOrPoolAllocSTL(int, PoolType);
