@@ -32,8 +32,13 @@ namespace {
 void DataRegisterFunc(Symbol s, DataFunc* func){
     if(gDataFuncs.empty())
         MILO_FAIL("Can't register different func %s", s);
-    gDataFuncs[s] = func;
-    
+    gDataFuncs[s] = func;   
+}
+
+DataNode DataFuncObj::New(DataArray* arr){
+    Hmx::Object* o = ObjectDir::sMainDir->FindObject(arr->Str(1), false);
+    if(o) delete o;
+    return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(arr));
 }
 
 static DataNode DataSprintf(DataArray *da) {
