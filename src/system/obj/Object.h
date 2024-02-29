@@ -40,7 +40,9 @@ public:
     DataArray* mMap;
 
     TypeProps() : mMap(0) {} // weak
-    ~TypeProps(); // although weak, it actually does stuff
+    ~TypeProps(){
+        MILO_ASSERT(!mMap, 0x3D);
+    }
 
     void Save(BinStream &, Hmx::Object *);
     void Load(BinStream &, bool, Hmx::Object *);
@@ -105,6 +107,7 @@ namespace Hmx {
         std::vector<ObjRef*> mRefs;
 
         static std::map<Symbol, ObjectFunc*> sFactories;
+        static Object* sDeleting;
 
         // o7 farts, you will be missed
         enum CopyType {
@@ -151,6 +154,7 @@ namespace Hmx {
         void RegisterFactory(Symbol, ObjectFunc*);
         bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
+        void RemoveFromDir();
 
         DataNode *Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool);

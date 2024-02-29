@@ -4,6 +4,7 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 #include "obj/MessageTimer.h"
+#include "os/OSFuncs.h"
 
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 
@@ -33,7 +34,11 @@ Hmx::Object& Hmx::Object::operator=(const Hmx::Object& obj){
 }
 
 Hmx::Object::~Object(){
-    
+    mTypeProps.ClearAll(this);
+    MILO_ASSERT(MainThread(), 0xA7);
+    if(mTypeDef) mTypeDef->Release();
+    mTypeDef = 0;
+    RemoveFromDir();
 }
 
 void Hmx::Object::SetTypeDef(DataArray* da){
