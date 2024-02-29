@@ -3654,7 +3654,7 @@ system/math/Rot.cpp:
 	.rodata     start:0x80B354F8 end:0x80B35510
 	.data       start:0x80BAFE10 end:0x80BAFE38
 
-system/math/Adjacency.cpp:
+system/math/strips/Adjacency.cpp:
 	.text       start:0x80401770 end:0x80401FD0
 
 system/math/FileChecksum.cpp:
@@ -3663,7 +3663,7 @@ system/math/FileChecksum.cpp:
 	.data       start:0x80BAFE38 end:0x80BAFE78
 	.bss        start:0x80C92530 end:0x80C92548
 
-system/math/CustomArray.cpp:
+system/math/strips/CustomArray.cpp:
 	.text       start:0x804025C0 end:0x80402B50
 
 system/math/Decibels.cpp:
@@ -3675,14 +3675,14 @@ system/math/Primes.cpp:
 	.text       start:0x80402C60 end:0x80402CB0
 	.data       start:0x80BAFE98 end:0x80BAFF90
 
-system/math/RevisitedRadix.cpp:
+system/math/strips/RevisitedRadix.cpp:
 	.text       start:0x80402CB0 end:0x804036F0
 
 system/math/StreamChecksum.cpp:
 	.text       start:0x804036F0 end:0x80403BD0
 	.data       start:0x80BAFF90 end:0x80BB00A0
 
-system/math/Striper.cpp:
+system/math/strips/Striper.cpp:
 	.text       start:0x80403BD0 end:0x80405030
 	.data       start:0x80BB00A0 end:0x80BB0100
 
