@@ -8,6 +8,13 @@ struct STRIPERRESULT {
     unsigned int* StripLengths;
     void* StripRuns;
     bool AskForWords;
+    STRIPERRESULT();
+    STRIPERRESULT(const STRIPERRESULT&);
+    ~STRIPERRESULT();
+    STRIPERRESULT& operator=(const STRIPERRESULT&);
+    void Copy(const STRIPERRESULT&);
+    void AllocLengthsAndRuns(int, int);
+    void FreeLengthsAndRuns();
 };
 
 struct STRIPERCREATE {
