@@ -28,7 +28,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
-            "system/math/strips/Adjacency.cpp": "NonMatching",
+            "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
             "system/math/strips/Striper.cpp": "NonMatching",

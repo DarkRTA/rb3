@@ -168,17 +168,17 @@ bool Adjacencies::CreateDatabase()
 		udword Face = FaceNb[Sorted[i]];		// Owner face
 		udword Ref0 = VRefs0[Sorted[i]];		// Vertex ref #1
 		udword Ref1 = VRefs1[Sorted[i]];		// Vertex ref #2
-		if(Ref0==LastRef0 && Ref1==LastRef1)
+		if(Ref0==LastRef0 && Ref1==LastRef1 && Count<2)
 		{
 			// Current edge is the same as last one
 			TmpBuffer[Count++] = Face;				// Store face number
-			if(Count==3)
-			{
-				RELEASEARRAY(VRefs1);
-				RELEASEARRAY(VRefs0);
-				RELEASEARRAY(FaceNb);
-				return false;				// Only works with manifold meshes (i.e. an edge is not shared by more than 2 triangles)
-			}
+			// if(Count==3)
+			// {
+			// 	RELEASEARRAY(VRefs1);
+			// 	RELEASEARRAY(VRefs0);
+			// 	RELEASEARRAY(FaceNb);
+			// 	return false;				// Only works with manifold meshes (i.e. an edge is not shared by more than 2 triangles)
+			// }
 		}
 		else
 		{
