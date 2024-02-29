@@ -3,6 +3,7 @@
 #include "math/Color.h"
 #include "math/Sphere.h"
 #include "math/Mtx.h"
+#include "math/Vec.h"
 #include "obj/Object.h"
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
@@ -13,8 +14,8 @@ bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Hmx::Color&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Hmx::Matrix3&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(class Sphere&, DataNode&, DataArray*, int, PropOp);
-// bool PropSync(Vector2&, DataNode&, DataArray*, int, PropOp);
-// bool PropSync(Vector3&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(Vector2&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(Vector3&, DataNode&, DataArray*, int, PropOp);
 // bool PropSync(Transform&, DataNode&, DataArray*, int, PropOp);
 // bool PropSync(Hmx::Rect&, DataNode&, DataArray*, int, PropOp);
 // bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);

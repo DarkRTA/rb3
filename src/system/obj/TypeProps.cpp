@@ -2,8 +2,11 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-// #include <new>
-// #include "symbols.hpp"
+#include "utl/PoolAlloc.h"
+#include "utl/Loader.h"
+#include <new>
+
+extern LoadMgr TheLoadMgr;
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
@@ -62,41 +65,44 @@ void TypeProps::InsertArrayValue(Symbol prop, int i, const DataNode& val, DataAr
     }
 }
 
-// void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, ObjRef* ref){
-//     if(b && value.Type() == kDataObject){
-//         Hmx::Object* o = value.mValue.object;
-//         if(o != nullptr) o->AddRef(ref);
-//     }
-//     if(mDataDict == nullptr){
-//         mDataDict = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2);
-//         mDataDict->Node(0) = key;
-//         mDataDict->Node(1) = value;
-//     }
-//     else {
-//         int nodeCnt = mDataDict->Size();
-//         for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
-//             const char* str = key.Str();
-//             if(mDataDict->Union(cnt).symbol == str){
-//                 DataNode* n = &mDataDict->Node(cnt + 1);
-//                 if(n->Type() == kDataObject){
-//                     Hmx::Object* o = n->mValue.object;
-//                     if(o != nullptr) o->Release(ref);
-//                 }
-//                 *n = value;
-//                 return;
-//             }
-//         }
+void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Object* ref){
+    if(b && value.Type() == kDataObject){
+        Hmx::Object* o = value.mValue.object;
+        if(o) o->AddRef(ref);
+    }
+    if(!mMap){
+        mMap = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2);
+        mMap->Node(0) = key;
+        mMap->Node(1) = value;
+    }
+    else {
+        int nodeCnt = mMap->Size();
+        for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
+            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
+                DataNode& n = mMap->Node(cnt + 1);
+                if(n.Type() == kDataObject){
+                    Hmx::Object* o = n.mValue.object;
+                    if(o) o->Release(ref);
+                }
+                n = value;
+                return;
+            }
+        }
 
-//         mDataDict->Resize(nodeCnt + 2);
-//         mDataDict->Node(nodeCnt) = DataNode(key);
-//         mDataDict->Node(nodeCnt + 1) = value;
-//     }
-// }
+        mMap->Resize(nodeCnt + 2);
+        mMap->Node(nodeCnt) = DataNode(key);
+        mMap->Node(nodeCnt + 1) = value;
+    }
+}
 
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     if(mMap != 0){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
-            if(mMap->Node(i).mValue.symbol == key.Str()){
+            int symstr = (int)((const DataArray*)mMap)->Node(i).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
                 return &mMap->Node(i + 1);
             }
         }
@@ -111,6 +117,33 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
             if(arr->Sym(i) == proxy_save) proxy = true;
             else if(arr->Sym(i) == no_save) none = true;
             else MILO_WARN("Unknown type def attribute %s", arr->Sym(i));
+        }
+    }
+}
+
+// https://decomp.me/scratch/igDEo
+void TypeProps::Save(BinStream& d, Hmx::Object* ref){
+    DataArray* arr = mMap;
+    DataArray* def = ref->mTypeDef;
+    if(arr && TheLoadMgr.mCacheMode && def->Size() != 0){
+        int i9 = 0;
+        while(arr){
+            while(true){
+                arr = mMap;
+                if(!mMap || mMap->Size() <= i9) break;
+                arr = def->FindArray(arr->Sym(i9), false);
+                if(!arr) break;
+                DataNode& n10 = arr->Node(1);
+                if(n10.Type() != kDataCommand){
+                    if(!arr->Node(1).CompatibleType(mMap->Node(i9 + 1).Type())){
+                        break;
+                    }
+                }
+                i9 += 2;
+            }
+            arr = mMap;
+            ClearKeyValue(arr->Sym(i9), ref);
+            arr = mMap;
         }
     }
 }
@@ -202,10 +235,9 @@ TypeProps& TypeProps::Copy(const TypeProps& prop, Hmx::Object* ref){
     AddRefObjects(ref);
 }
 
-// return type might be a Symbol? not sure
-DataNode* TypeProps::Key(int i) const {
+Symbol TypeProps::Key(int i) const {
     MILO_ASSERT(mMap, 0x1CC);
-    return &mMap->Node(i * 2);
+    return STR_TO_SYM(mMap->Node(i * 2).mValue.symbol);
 }
 
 DataNode& TypeProps::Value(int i) const {
@@ -215,52 +247,28 @@ DataNode& TypeProps::Value(int i) const {
 
 void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
     if(mMap != 0){
-        for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-
+        int cnt = mMap->Size() - 2;
+        while(cnt >= 0){
+            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int keystr = (int)key.Str();
+            if(symstr == keystr){
+                DataNode& n = mMap->Node(cnt + 1);
+                if(n.Type() == kDataObject){
+                    Hmx::Object* obj = n.mValue.object;
+                    if(obj) obj->Release(ref);
+                }
+                mMap->Remove(cnt);
+                mMap->Remove(cnt);
+                if(mMap->Size() == 0 && mMap){
+                    mMap->Release();
+                    mMap = 0;
+                }
+                return;
+            }
+            cnt -= 2;
         }
-    }
+    }    
 }
-
-// void __thiscall TypeProps::ClearKeyValue(TypeProps *this,Symbol param_1,Object *param_2)
-
-// {
-//   short sVar1;
-//   int iVar2;
-//   int *piVar3;
-//   Object **ppOVar4;
-//   DataArray *this_00;
-//   undefined3 in_register_00000010;
-//   int iVar5;
-  
-//   if (*(int *)this != 0) {
-//     iVar5 = (int)*(short *)(*(int *)this + 8);
-//     do {
-//       iVar2 = iVar5;
-//       iVar5 = iVar2 + -2;
-//       if (iVar5 < 0) {
-//         return;
-//       }
-//       piVar3 = (int *)DataArray::Node(*(DataArray **)this,iVar5);
-//     } while (*piVar3 != *(int *)CONCAT31(in_register_00000010,param_1));
-
-//     ppOVar4 = (Object **)DataArray::Node(*(DataArray **)this,iVar2 + -1);
-//     if ((ppOVar4[1] == (Object *)0x4) && (*ppOVar4 != (Object *)0x0)) {
-//       Hmx::Object::Release(*ppOVar4,(ObjRef *)param_2);
-//     }
-//     DataArray::Remove(*(DataArray **)this,iVar5);
-//     DataArray::Remove(*(DataArray **)this,iVar5);
-//     this_00 = *(DataArray **)this;
-//     if ((*(short *)(this_00 + 8) == 0) && (this_00 != (DataArray *)0x0)) {
-//       sVar1 = *(short *)(this_00 + 10);
-//       *(short *)(this_00 + 10) = sVar1 + -1;
-//       if ((short)(sVar1 + -1) == 0) {
-//         DataArray::~DataArray(this_00);
-//       }
-//       *(undefined4 *)this = 0;
-//     }
-//   }
-//   return;
-// }
 
 void TypeProps::ClearAll(Hmx::Object* ref){
     ReleaseObjects(ref);
