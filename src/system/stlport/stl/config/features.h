@@ -1029,16 +1029,6 @@ typedef int bool;
 #  undef _STLP_USE_DYNAMIC_LIB
 #endif
 
-#if  defined (_STLP_DLLEXPORT_NEEDS_PREDECLARATION) && defined (_STLP_USE_DECLSPEC)
-#  if ! defined (_STLP_USE_TEMPLATE_EXPORT)
-/* this setting turns on "extern template" extension use */
-#    define _STLP_USE_TEMPLATE_EXPORT
-#  endif
-#  if defined (_STLP_DESIGNATED_DLL) && ! defined (_STLP_NO_FORCE_INSTANTIATE)
-#    define _STLP_NO_FORCE_INSTANTIATE
-#  endif
-#endif
-
 #if defined (_STLP_DESIGNATED_DLL) /* This is a lib which will contain STLport exports */
 #  define  _STLP_EXPORT _STLP_EXPORT_TEMPLATE_KEYWORD
 #else

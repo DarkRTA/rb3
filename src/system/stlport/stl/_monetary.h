@@ -441,19 +441,6 @@ protected:
                            const string_type& __digits) const;
 };
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS money_get<char, istreambuf_iterator<char, char_traits<char> > >;
-_STLP_EXPORT_TEMPLATE_CLASS money_put<char, ostreambuf_iterator<char, char_traits<char> > >;
-//_STLP_EXPORT_TEMPLATE_CLASS money_get<char, const char* >;
-//_STLP_EXPORT_TEMPLATE_CLASS money_put<char, char* >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS money_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-_STLP_EXPORT_TEMPLATE_CLASS money_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS money_get<wchar_t, const wchar_t* >;
-// _STLP_EXPORT_TEMPLATE_CLASS money_put<wchar_t, wchar_t* >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 _STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
@@ -465,5 +452,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-
-

@@ -229,13 +229,6 @@ protected:
 
 #undef _STLP_SHORT_STRING_SZ
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _String_base<char, allocator<char> >;
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _String_base<wchar_t, allocator<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 _STLP_MOVE_TO_STD_NAMESPACE
 
 _STLP_END_NAMESPACE

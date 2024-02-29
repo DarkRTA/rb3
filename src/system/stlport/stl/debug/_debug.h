@@ -155,10 +155,6 @@ struct __stl_debug_engine {
 
 #undef _STLP_MESSAGE_NORETURN
 
-#  if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE struct _STLP_CLASS_DECLSPEC __stl_debug_engine<bool>;
-#  endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 typedef __stl_debug_engine<bool> __stl_debugger;
 
 _STLP_MOVE_TO_STD_NAMESPACE

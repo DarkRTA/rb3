@@ -207,16 +207,7 @@ public:
   { if (__n > (size_t)_MAX_BYTES) __stl_delete(__p); else _M_deallocate(__p, __n); }
 };
 
-#  if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS __debug_alloc<__node_alloc>;
-#  endif
-
 #endif /* _STLP_USE_NO_IOSTREAMS */
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS __debug_alloc<__new_alloc>;
-_STLP_EXPORT_TEMPLATE_CLASS __debug_alloc<__malloc_alloc>;
-#endif
 
 /* macro to convert the allocator for initialization
  * not using MEMBER_TEMPLATE_CLASSES as it should work given template constructor  */
@@ -457,16 +448,6 @@ public:
 template <class _T1, class _T2> inline bool  _STLP_CALL operator==(const allocator<_T1>&, const allocator<_T2>&) _STLP_NOTHROW { return true; }
 template <class _T1, class _T2> inline bool  _STLP_CALL operator!=(const allocator<_T1>&, const allocator<_T2>&) _STLP_NOTHROW { return false; }
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS allocator<char>;
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS allocator<wchar_t>;
-#  endif
-#  if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-_STLP_EXPORT_TEMPLATE_CLASS allocator<void*>;
-#  endif
-#endif
-
 // Custom allocator type present in RB3.
 // Allocates from either the heap or a pool depending on the allocation size.
 template <class _Tp> class StlNodeAlloc {
@@ -647,16 +628,6 @@ private:
   _Tp* allocate(size_type __n, size_type& __allocated_n, const __false_type& /*STLport allocator*/)
   { __allocated_n = __n; return allocate(__n); }
 };
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<char*, char, allocator<char> >;
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<wchar_t*, wchar_t, allocator<wchar_t> >;
-#  endif
-#  if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<void**, void*, allocator<void*> >;
-#  endif
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 _STLP_END_NAMESPACE

@@ -62,34 +62,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-//Export of the classes used to represent buckets in the hashtable implementation.
-#  if !defined (_STLP_USE_PTR_SPECIALIZATIONS)
-//If pointer specialization is enabled vector<_Slist_node_base*> will use the void*
-//storage type for which internal classes have already been exported.
-_STLP_EXPORT_TEMPLATE_CLASS allocator<_STLP_PRIV _Slist_node_base*>;
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<_Slist_node_base**, _Slist_node_base*,
-                                              allocator<_Slist_node_base*> >;
-_STLP_EXPORT_TEMPLATE_CLASS _Vector_base<_Slist_node_base*,
-                                         allocator<_Slist_node_base*> >;
-_STLP_MOVE_TO_STD_NAMESPACE
-#  endif
-
-#  if defined (_STLP_DEBUG)
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#    define _STLP_NON_DBG_VECTOR _STLP_NON_DBG_NAME(vector)
-_STLP_EXPORT_TEMPLATE_CLASS __construct_checker<_STLP_NON_DBG_VECTOR<_Slist_node_base*, allocator<_Slist_node_base*> > >;
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_NON_DBG_VECTOR<_Slist_node_base*, allocator<_Slist_node_base*> >;
-#    undef _STLP_NON_DBG_VECTOR
-_STLP_MOVE_TO_STD_NAMESPACE
-#  endif
-
-_STLP_EXPORT_TEMPLATE_CLASS vector<_STLP_PRIV _Slist_node_base*,
-                                   allocator<_STLP_PRIV _Slist_node_base*> >;
-#endif
-
 #if defined (_STLP_DEBUG)
 #  define hashtable _STLP_NON_DBG_NAME(hashtable)
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -195,10 +167,6 @@ public:
   //Returns the bucket size next to a required size
   static size_t _STLP_CALL _S_next_size(size_t);
 };
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Stl_prime<bool>;
-#endif
 
 typedef _Stl_prime<bool> _Stl_prime_type;
 

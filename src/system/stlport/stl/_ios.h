@@ -157,13 +157,6 @@ basic_ios<char, char_traits<char> >::widen(char __c) const
 }
 # endif /* _STLP_NO_METHOD_SPECIALIZATION */
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ios<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ios<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 _STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
@@ -175,4 +168,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

@@ -67,9 +67,6 @@ public:
                                     _Node_base* __first, _Node_base* __last);
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _List_global<bool>;
-#endif
 typedef _List_global<bool> _List_global_inst;
 
 template <class _Tp>

@@ -173,16 +173,6 @@ protected:
 
 };
 
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS num_get<char, istreambuf_iterator<char, char_traits<char> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS num_get<char, const char*>;
-#  if !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS num_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS num_get<wchar_t, const wchar_t*>;
-#  endif
-#endif
-
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION)
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -234,4 +224,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

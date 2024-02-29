@@ -127,10 +127,6 @@ public:
   static void       _STLP_CALL _Rotate_right(_Base_ptr __x, _Base_ptr& __root);
 };
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Rb_global<bool>;
-# endif
-
 typedef _Rb_global<bool> _Rb_global_inst;
 
 struct _Rb_tree_base_iterator {

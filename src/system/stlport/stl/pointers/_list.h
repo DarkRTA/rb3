@@ -28,25 +28,6 @@ _STLP_BEGIN_NAMESPACE
 
 #define LIST_IMPL _STLP_PTR_IMPL_NAME(List)
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-
-_STLP_EXPORT_TEMPLATE_CLASS _List_node<void*>;
-
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_EXPORT_TEMPLATE_CLASS allocator<_STLP_PRIV _List_node<void*> >;
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<_List_node_base, _List_node<void*>, allocator<_List_node<void*> > >;
-_STLP_EXPORT_TEMPLATE_CLASS _List_base<void*, allocator<void*> >;
-_STLP_EXPORT_TEMPLATE_CLASS LIST_IMPL<void*, allocator<void*> >;
-
-_STLP_MOVE_TO_STD_NAMESPACE
-#endif
-
 #if defined (_STLP_DEBUG)
 #  define list _STLP_NON_DBG_NAME(list)
 _STLP_MOVE_TO_PRIV_NAMESPACE

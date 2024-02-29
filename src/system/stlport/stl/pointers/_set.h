@@ -28,26 +28,6 @@ _STLP_BEGIN_NAMESPACE
 //Specific iterator traits creation
 _STLP_CREATE_ITERATOR_TRAITS(SetTraitsT, Const_traits)
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT template struct _STLP_CLASS_DECLSPEC less<void*>;
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-
-typedef _Rb_tree_node<void*> _Node;
-_STLP_EXPORT_TEMPLATE_CLASS _STLP_alloc_proxy<_Rb_tree_node_base, _Node,  allocator<_Node> >;
-_STLP_EXPORT_TEMPLATE_CLASS _Rb_tree_base<void*, allocator<void*> >;
-#  if defined (_STLP_DEBUG)
-_STLP_EXPORT_TEMPLATE_CLASS _DbgCompare<void*, less<void*> >;
-#    define _Rb_tree _STLP_NON_DBG_NAME(Rb_tree)
-_STLP_EXPORT_TEMPLATE_CLASS _Rb_tree<void*, _DbgCompare<void*, less<void*> >, void*, _Identity<void*>,
-                                     _SetTraitsT<void*>, allocator<void*> >;
-#    undef _Rb_tree
-#  endif
-_STLP_EXPORT_TEMPLATE_CLASS _Rb_tree<void*, less<void*>, void*, _Identity<void*>,
-                                     _SetTraitsT<void*>, allocator<void*> >;
-_STLP_MOVE_TO_STD_NAMESPACE
-#endif
-
 template <class _Key, _STLP_DFL_TMPL_PARAM(_Compare, less<_Key>),
                       _STLP_DEFAULT_ALLOCATOR_SELECT(_Key) >
 class set

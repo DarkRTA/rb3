@@ -341,13 +341,6 @@ public:
   }
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_filebuf<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_filebuf<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 // public:
 // helper class.
 template <class _CharT>
@@ -457,10 +450,6 @@ _STLP_TYPENAME_ON_RETURN_TYPE _Underflow<_CharT, _Traits>::int_type // _STLP_CAL
 
   return __this->_M_underflow_aux();
 }
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _Underflow<wchar_t, char_traits<wchar_t> >;
-#endif
 
 //----------------------------------------------------------------------
 // Class basic_ifstream<>
@@ -711,17 +700,6 @@ _STLP_END_NAMESPACE
 #endif
 
 _STLP_BEGIN_NAMESPACE
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ifstream<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ofstream<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_fstream<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ifstream<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ofstream<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_fstream<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_END_NAMESPACE
 

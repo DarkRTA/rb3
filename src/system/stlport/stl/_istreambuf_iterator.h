@@ -131,13 +131,6 @@ inline bool _STLP_CALL operator!=(const istreambuf_iterator<_CharT, _Traits>& __
 
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS istreambuf_iterator<char, char_traits<char> >;
-#  if defined (INSTANTIATE_WIDE_STREAMS)
-_STLP_EXPORT_TEMPLATE_CLASS istreambuf_iterator<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 # ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
 template <class _CharT, class _Traits>
 inline input_iterator_tag _STLP_CALL iterator_category(const istreambuf_iterator<_CharT, _Traits>&) { return input_iterator_tag(); }

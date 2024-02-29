@@ -79,13 +79,6 @@ template <class _CharT, class _Traits>
 inline ostreambuf_iterator<_CharT, _Traits>::ostreambuf_iterator(basic_ostream<_CharT, _Traits>& __o) _STLP_NOTHROW
   : _M_buf(_STLP_PRIV __get_ostreambuf(__o)), _M_ok(_M_buf != 0) {}
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS ostreambuf_iterator<char, char_traits<char> >;
-#  if defined (INSTANTIATE_WIDE_STREAMS)
-_STLP_EXPORT_TEMPLATE_CLASS ostreambuf_iterator<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _CharT, class _Traits>
 inline output_iterator_tag _STLP_CALL
@@ -99,4 +92,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

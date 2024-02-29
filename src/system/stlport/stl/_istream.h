@@ -39,11 +39,6 @@
                                 // to be used as function objects.
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-template <class _CharT, class _Traits>
-class _Isentry;
-#endif
-
 struct _No_Skip_WS {};        // Dummy class used by sentry.
 
 template <class _CharT, class _Traits>
@@ -167,20 +162,8 @@ private:                        // Number of characters extracted by the
   streamsize _M_gcount;         // most recent unformatted input function.
 
 public:
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-  // If we are using DLL specs, we have not to use inner classes
-  // end class declaration here
-  typedef _Isentry<_CharT, _Traits>      sentry;
-};
-#  define sentry _Isentry
-template <class _CharT, class _Traits>
-class _Isentry {
-  typedef _Isentry<_CharT, _Traits> _Self;
-# else
   class sentry {
     typedef sentry _Self;
-#endif
 
   private:
     const bool _M_ok;
@@ -210,21 +193,7 @@ class _Isentry {
     _Self& operator=(const _Self&) { return *this; }
   };
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-#  undef sentry
-# else
-  // close basic_istream class definition here
 };
-# endif
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Isentry<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_istream<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _Isentry<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_istream<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 // Non-member character and string extractor functions.
 template <class _CharT, class _Traits>
@@ -327,14 +296,6 @@ public:
   explicit basic_iostream(basic_streambuf<_CharT, _Traits>* __buf);
   virtual ~basic_iostream();
 };
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_iostream<char, char_traits<char> >;
-
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_iostream<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 template <class _CharT, class _Traits>
 basic_streambuf<_CharT, _Traits>* _STLP_CALL _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)

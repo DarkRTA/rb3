@@ -69,10 +69,6 @@ public:
   }
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Sl_global<bool>;
-#endif
-
 typedef _Sl_global<bool> _Sl_global_inst;
 
 _STLP_MOVE_TO_STD_NAMESPACE

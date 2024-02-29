@@ -34,11 +34,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-template <class _CharT, class _Traits>
-class _Osentry;
-#endif
-
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _CharT, class _Traits>
@@ -146,19 +141,8 @@ public:                         // Buffer positioning and manipulation.
     return *this;
   }
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-  // If we are using DLL specs, we have not to use inner classes
-  // end class declaration here
-  typedef _Osentry<_CharT, _Traits>  sentry;
-};
-#  define sentry _Osentry
-  template <class _CharT, class _Traits>
-  class _Osentry {
-    typedef _Osentry<_CharT, _Traits> _Self;
-#else
     class sentry {
       typedef sentry _Self;
-#endif
     private:
       basic_ostream<_CharT, _Traits>& _M_str;
       //      basic_streambuf<_CharT, _Traits>* _M_buf;
@@ -182,21 +166,8 @@ public:                         // Buffer positioning and manipulation.
       sentry(const _Self& __s) : _M_str(__s._M_str) {}
       _Self& operator=(const _Self&) { return *this; }
     };
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-#  undef sentry
-#else
-  // close basic_ostream class definition here
-};
-#endif
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ostream<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS _Osentry<char, char_traits<char> >;
-#  if !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ostream<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS _Osentry<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
+};
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 

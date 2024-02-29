@@ -333,10 +333,6 @@ public:
 #endif
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _LimG<bool>;
-#endif
-
 _STLP_MOVE_TO_STD_NAMESPACE
 
 _STLP_TEMPLATE_NULL

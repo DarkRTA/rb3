@@ -819,20 +819,6 @@ public:
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 };
 
-// This is a hook to instantiate STLport exports in a designated DLL
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_MOVE_TO_PRIV_NAMESPACE
-_STLP_EXPORT_TEMPLATE_CLASS __construct_checker<_STLP_NON_DBG_STRING_NAME <char, char_traits<char>, allocator<char> > >;
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_EXPORT_TEMPLATE_CLASS basic_string<char, char_traits<char>, allocator<char> >;
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_MOVE_TO_PRIV_NAMESPACE
-_STLP_EXPORT_TEMPLATE_CLASS __construct_checker<_STLP_NON_DBG_STRING_NAME <wchar_t, char_traits<wchar_t>, allocator<wchar_t> > >;
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_EXPORT_TEMPLATE_CLASS basic_string<wchar_t, char_traits<wchar_t>, allocator<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 #undef _STLP_NON_DBG_STRING
 #undef _STLP_NON_DBG_STRING_NAME
 
