@@ -31,10 +31,9 @@ void DataSetMacro(Symbol key, DataArray* macro){
 }
 
 DataArray* DataGetMacro(Symbol s){
-    for(std::map<Symbol, DataArray*>::iterator it = gMacroTable.begin(); it != gMacroTable.end(); it++){
-        if(it->first == s) return it->second;
-    }
-    return 0;
+    const std::map<Symbol, DataArray*>::iterator it = gMacroTable.find(s);
+    if(it == gMacroTable.end()) return 0;
+    else return it->second;
 }
 
 // void DataMergeTags(DataArray *dest, DataArray *src) {
@@ -80,6 +79,22 @@ DataArray* DataGetMacro(Symbol s){
 //         }
 //     }
 // }
+
+Hmx::Object* DataSetThis(Hmx::Object* o){
+    Hmx::Object* old;
+    ObjectDir* dir;
+    if(o != gDataThis){
+        if(o) dir = o->DataDir();
+        else dir = ObjectDir::sMainDir;
+        old = gDataThis;
+        gDataDir = dir;
+        gDataThis = o;
+        static DataNode* thisVar = DataVariable("this");
+        *thisVar = DataNode(o);
+        o = old;
+    }
+    return o;
+}
 
 Hmx::Object *DataThis() {
     return gDataThis;

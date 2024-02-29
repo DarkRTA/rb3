@@ -30,9 +30,10 @@ namespace {
 }
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
-    if(gDataFuncs.empty())
+    const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
+    if(it != gDataFuncs.end() && it->second != func)
         MILO_FAIL("Can't register different func %s", s);
-    gDataFuncs[s] = func;   
+    gDataFuncs[s] = func;
 }
 
 DataNode DataFuncObj::New(DataArray* arr){
