@@ -103,40 +103,36 @@ bool PropSync(class Sphere& sphere, DataNode& node, DataArray* prop, int i, Prop
     }
 }
 
-// bool PropSync(Vector2& vec, DataNode& node, DataArray* da, int i, PropOp op){
-//     int cnt = da->Size();
-//     if(i == cnt) return true;
-//     else {
-//         Symbol sym = da->Sym(i);
-//         if(sym == SymX){
-//             return PropSync(vec.x, node, da, i + 1, op);
-//         }
-//         if(sym == SymY){
-//             return PropSync(vec.y, node, da, i + 1, op);
-//         }
-//         else return false;
-//     }
-//     return true;
-// }
+bool PropSync(Vector2& vec, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(i == prop->Size()) return true;
+    else {
+        Symbol sym = prop->Sym(i);
+        if(sym == x){
+            return PropSync(vec.x, node, prop, i + 1, op);
+        }
+        if(sym == y){
+            return PropSync(vec.y, node, prop, i + 1, op);
+        }
+        return false;
+    }
+}
 
-// bool PropSync(Vector3& vec, DataNode& node, DataArray* da, int i, PropOp op){
-//     int cnt = da->Size();
-//     if(i == cnt) return true;
-//     else {
-//         Symbol sym = da->Sym(i);
-//         if(sym == SymX){
-//             return PropSync(vec.x, node, da, i + 1, op);
-//         }
-//         if(sym == SymY){
-//             return PropSync(vec.y, node, da, i + 1, op);
-//         }
-//         if(sym == SymZ){
-//             return PropSync(vec.z, node, da, i + 1, op);
-//         }
-//         else return false;
-//     }
-//     return true;
-// }
+bool PropSync(Vector3& vec, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(i == prop->Size()) return true;
+    else {
+        Symbol sym = prop->Sym(i);
+        if(sym == x){
+            return PropSync(vec.x, node, prop, i + 1, op);
+        }
+        if(sym == y){
+            return PropSync(vec.y, node, prop, i + 1, op);
+        }
+        if(sym == z){
+            return PropSync(vec.z, node, prop, i + 1, op);
+        }
+        return false;
+    }
+}
 
 // bool PropSync(Transform& tf, DataNode& node, DataArray* da, int i, PropOp op){
 //     int cnt = da->Size();
