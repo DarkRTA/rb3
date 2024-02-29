@@ -28,7 +28,7 @@ _STLP_BEGIN_NAMESPACE
 
 #define VECTOR_IMPL _STLP_PTR_IMPL_NAME(Vector)
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
 _STLP_EXPORT_TEMPLATE_CLASS _STLP_PRIV _Vector_base<void*,allocator<void*> >;
 _STLP_EXPORT_TEMPLATE_CLASS _STLP_PRIV VECTOR_IMPL<void*, allocator<void*> >;
 #endif

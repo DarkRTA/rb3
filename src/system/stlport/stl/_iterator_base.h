@@ -106,7 +106,7 @@ struct iterator_traits {
 };
 
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && ! defined (__SUNPRO_CC)
+#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 #  define _STLP_DIFFERENCE_TYPE(_Iterator) typename iterator_traits<_Iterator>::difference_type
 #else
 #  define _STLP_DIFFERENCE_TYPE(_Iterator) ptrdiff_t

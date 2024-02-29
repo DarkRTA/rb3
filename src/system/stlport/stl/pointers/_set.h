@@ -28,7 +28,7 @@ _STLP_BEGIN_NAMESPACE
 //Specific iterator traits creation
 _STLP_CREATE_ITERATOR_TRAITS(SetTraitsT, Const_traits)
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
 _STLP_EXPORT template struct _STLP_CLASS_DECLSPEC less<void*>;
 
 _STLP_MOVE_TO_PRIV_NAMESPACE

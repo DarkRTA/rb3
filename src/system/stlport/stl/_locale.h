@@ -114,7 +114,7 @@ public:
   explicit locale(const char *);
   locale(const locale&, const char*, category);
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Facet>
   locale(const locale& __loc, _Facet* __f) {
     if ( __f != 0 ) {
@@ -135,13 +135,9 @@ public:
   locale(const locale&, const locale&, category);
   const locale& operator=(const locale&) _STLP_NOTHROW;
 
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-  virtual
-#endif
-   ~locale() _STLP_NOTHROW;
+  ~locale() _STLP_NOTHROW;
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS) && \
-   !defined(_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS)
   template <class _Facet>
   locale combine(const locale& __loc) const {
     _Facet *__facet = 0;
@@ -163,7 +159,7 @@ public:
 #  ifndef _STLP_NO_WCHAR_T
   bool operator()(const wstring& __x, const wstring& __y) const;
 #  endif
-#elif !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#else
   template <class _CharT, class _Traits, class _Alloc>
   bool operator()(const basic_string<_CharT, _Traits, _Alloc>& __x,
                   const basic_string<_CharT, _Traits, _Alloc>& __y) const
@@ -191,78 +187,6 @@ protected:                        // Data members
   _Locale_impl* _M_impl;
   _Locale_impl* _M_get_impl() const { return _M_impl; }
 };
-
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-#  undef locale
-#  define _Locale _STLP_NO_MEM_T_NAME(loc)
-
-class locale : public _Locale {
-public:
-
-  // construct/copy/destroy:
-  locale() _STLP_NOTHROW {}
-  locale(const locale& __loc) _STLP_NOTHROW : _Locale(__loc) {}
-  explicit locale(const char *__str) : _Locale(__str) {}
-  locale(const locale& __loc, const char* __str, category __cat)
-    : _Locale(__loc, __str, __cat) {}
-
-  template <class _Facet>
-  locale(const locale& __loc, _Facet* __f) {
-    if ( __f != 0 ) {
-      this->_M_impl = _get_Locale_impl( _copy_Nameless_Locale_impl( __loc._M_impl ) );
-      this->_M_insert(__f, _Facet::id);
-    } else {
-      this->_M_impl = _get_Locale_impl( __loc._M_impl );
-    }
-  }
-
-private:
-  // those are for internal use
-  locale(_Locale_impl* __impl) : _Locale(__impl) {}
-  locale(const _Locale& __loc) : _Locale(__loc) {}
-
-public:
-
-  locale(const locale& __loc1, const locale& __loc2, category __cat)
-    : _Locale(__loc1, __loc2, __cat) {}
-
-  const locale& operator=(const locale& __loc) _STLP_NOTHROW {
-    _Locale::operator=(__loc);
-    return *this;
-  }
-
-  template <class _Facet>
-  locale combine(const locale& __loc) const {
-    _Facet *__facet = 0;
-    if (!_HasFacet(__loc, __facet))
-      _M_throw_runtime_error();
-
-    return locale(*this, _UseFacet(__loc, __facet));
-  }
-
-  // locale operations:
-  bool operator==(const locale& __loc) const { return _Locale::operator==(__loc); }
-  bool operator!=(const locale& __loc) const { return _Locale::operator!=(__loc); }
-
-  template <class _CharT, class _Traits, class _Alloc>
-  bool operator()(const basic_string<_CharT, _Traits, _Alloc>& __x,
-                  const basic_string<_CharT, _Traits, _Alloc>& __y) const
-  { return __locale_do_operator_call(*this, __x, __y); }
-
-  // global locale objects:
-  static locale _STLP_CALL global(const locale& __loc) {
-    return _Locale::global(__loc);
-  }
-  static const locale& _STLP_CALL classic() {
-    return __STATIC_CAST(const locale&, _Locale::classic());
-  }
-
-  // friends:
-  friend class _Locale_impl;
-  friend class ios_base;
-};
-
-#endif /* _STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND */
 
 //----------------------------------------------------------------------
 // locale globals

@@ -20,10 +20,7 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-/* evc3 doesn't have assert.h; macro assert() is defined in stl_evc.h */
-#ifndef _STLP_WCE_EVC3
-#  include _STLP_NATIVE_C_HEADER(assert.h)
-#endif
+#include _STLP_NATIVE_C_HEADER(assert.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x202)
 #  if ! defined (_STLP_DONT_POP_HEADER_ID)

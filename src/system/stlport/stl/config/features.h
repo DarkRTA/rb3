@@ -483,13 +483,6 @@
 #  define _STLP_PTR_IMPL_NAME(X) _##X##_impl
 #endif
 
-#if defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
-#  define _STLP_NO_MEM_T_NAME(X) _NoMemT_##X
-#  if defined (_STLP_DEBUG)
-#    define _STLP_NON_DBG_NO_MEM_T_NAME(X) _NonDbg_NoMemT_##X
-#  endif
-#endif
-
 /* this always mean the C library is in global namespace */
 #if defined (_STLP_HAS_NO_NEW_C_HEADERS) && !defined (_STLP_VENDOR_GLOBAL_CSTD)
 #  define _STLP_VENDOR_GLOBAL_CSTD 1

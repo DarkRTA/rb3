@@ -820,7 +820,7 @@ public:
 };
 
 // This is a hook to instantiate STLport exports in a designated DLL
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_USE_MSVC6_MEM_T_BUG_WORKAROUND)
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
 _STLP_MOVE_TO_PRIV_NAMESPACE
 _STLP_EXPORT_TEMPLATE_CLASS __construct_checker<_STLP_NON_DBG_STRING_NAME <char, char_traits<char>, allocator<char> > >;
 _STLP_MOVE_TO_STD_NAMESPACE
