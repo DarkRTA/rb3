@@ -3,6 +3,12 @@
 #include <stddef.h>
 #include "utl/PoolAlloc.h"
 
+class MemDoTempAllocations {
+public:
+    MemDoTempAllocations(bool, bool);
+    ~MemDoTempAllocations();
+};
+
 void* operator new(size_t) throw();
 void operator delete(void*) throw();
 void* operator new[](size_t) throw();
