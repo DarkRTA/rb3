@@ -59,4 +59,11 @@ public:
     DebugNotifier& operator<<(const char* c){ TheDebug.Notify(c); }
 };
 
+class DebugNotifyOncer {
+public:
+    std::list<class String> mNotifies;
+    DebugNotifyOncer(){}
+    ~DebugNotifyOncer();
+};
+
 #endif

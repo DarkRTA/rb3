@@ -99,23 +99,92 @@ void BinStream::DisableEncryption() {
     mCrypto = 0;
 }
 
-// void BinStream::Read(void *v, int i) {
-//     void *temp_r31;
-//     unsigned char *var_r30;
+void BinStream::Read(void* data, int bytes){
+    unsigned char* ptr = (unsigned char*)data;
+    unsigned char* end;
+    if(Fail()){
+        static DebugNotifyOncer _dw;
+        const char* str = MakeString("Stream error: Can't read from %s", Name());
+        if(AddToNotifies(str, _dw.mNotifies)){
+            TheDebug.Notify(str);
+        }
+        memset(data, 0, bytes);
+    }
+    else {
+        ReadImpl(data, bytes);
+        if(mCrypto){
+            end = ptr + bytes;
+            while(ptr < end){
+                *ptr++ ^= mCrypto->Int();
+            }
+        }
+    }
+}
 
-//     var_r30 = (unsigned char *)v;
-//     if (Fail() != 0) {
-//         Name();
-//         memset(var_r30, 0, i);
-//         return;
+void BinStream::Write(const void* void_data, int bytes){
+    const unsigned char* data;
+    char crypt[512];
+    int buf_size, i;
+    unsigned char c;
+    if(Fail()){
+        const char* str = MakeString("Stream error: Can't write to %s\n", Name());
+//     pcVar3 = (char *)(**(code **)((int)this->vtable + 0x1c))(this);
+//     pcVar3 = ::MakeString(s_Stream_error:_Can't_write_to_%s_80bba789,pcVar3);
+//     iVar2 = strcmp(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
+//     if (iVar2 != 0) {
+//       strcpy(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
+//       Debug::Print((Debug *)TheDebug,pcVar3);
 //     }
-//     ReadImpl(var_r30, i);
-//     if (mCrypto != nullptr) {
-//         temp_r31 = var_r30 + i;
-//         while (var_r30 < temp_r31) {
-//             *var_r30++ ^= mCrypto->Int();
+    }
+}
+
+// void __thiscall BinStream::Write(BinStream *this,void *param_1,int param_2)
+
+// {
+//   byte bVar1;
+//   int iVar2;
+//   char *pcVar3;
+//   byte bVar4;
+//   int iVar5;
+//   byte *pbVar6;
+//   byte *pbVar7;
+//   byte local_228 [524];
+  
+//   iVar2 = (**(code **)((int)this->vtable + 0x18))();
+//   if (iVar2 == 0) {
+//     if (this->mCrypto == (Rand2 *)0x0) {
+//       (**(code **)((int)this->vtable + 0x2c))(this,param_1,param_2);
+//     }
+//     else {
+//       for (; 0 < param_2; param_2 = param_2 + -0x200) {
+//         iVar2 = 0x200;
+//         if (param_2 < 0x200) {
+//           iVar2 = param_2;
 //         }
+//         pbVar6 = local_228;
+//         pbVar7 = (byte *)param_1;
+//         for (iVar5 = 0; iVar5 < iVar2; iVar5 = iVar5 + 1) {
+//           bVar4 = Rand2::Int(this->mCrypto);
+//           bVar1 = *pbVar7;
+//           pbVar7 = pbVar7 + 1;
+//           *pbVar6 = bVar4 ^ bVar1;
+//           pbVar6 = pbVar6 + 1;
+//         }
+//         (**(code **)((int)this->vtable + 0x2c))(this,local_228,iVar2);
+//         param_1 = (void *)((int)param_1 + 0x200);
+//       }
 //     }
+//   }
+//   else {
+//     pcVar3 = (char *)(**(code **)((int)this->vtable + 0x1c))(this);
+//     pcVar3 = ::MakeString(s_Stream_error:_Can't_write_to_%s_80bba789,pcVar3);
+//     iVar2 = strcmp(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
+//     if (iVar2 != 0) {
+//       strcpy(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
+//       Debug::Print((Debug *)TheDebug,pcVar3);
+//     }
+//   }
+//   return;
 // }
 
 // void BinStream::Write(const void *v, int i) {
@@ -140,11 +209,11 @@ void BinStream::DisableEncryption() {
 //     }
 // }
 
-// // fn_80343058 - Seek
-// void BinStream::Seek(int i, SeekType s) {
-//     Fail();
-//     SeekImpl(i, s);
-// }
+void BinStream::Seek(int offset, SeekType type){
+    MILO_ASSERT(!Fail(), 0xDF);
+    MILO_ASSERT(!mCrypto, 0xE2);
+    SeekImpl(offset, type);
+}
 
 // // fn_80343058
 // void BinStream::ReadEndian(void *v, int i) {
