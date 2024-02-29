@@ -3,6 +3,7 @@
 #include "utl/Str.h"
 #include "os/CritSec.h"
 #include "utl/PoolAlloc.h"
+#include "utl/MemMgr.h"
 #include <new>
 
 static CriticalSection* gLock;
@@ -15,45 +16,15 @@ static char* NextBuf(){
 void InitMakeString(){
     if(gLock == 0){
         gLock = new (_PoolAlloc(0x1C, 0x1C, FastPool)) CriticalSection();
+        gBuf = (char***)_MemAlloc(0x18, 0);
+        for(int i3 = 0, i5 = 0; i3 < 6; i3++, i5++){
+            gBuf[i5] = (char**)_MemAlloc(0x28, 0);
+            for(int i2 = 0, i4 = 0; i2 < 10; i2++, i4++){
+                gBuf[i5][i4] = (char*)_MemAlloc(0x800, 0);
+            }
+        }
     }
 }
-
-// void InitMakeString(void)
-
-// {
-//   CriticalSection *this;
-//   undefined4 uVar1;
-//   int iVar2;
-//   int iVar3;
-//   int iVar4;
-//   int iVar5;
-  
-//   if (gLock == (CriticalSection *)0x0) {
-//     this = (CriticalSection *)_PoolAlloc(0x1c,0x1c,1);
-//     if (this != (CriticalSection *)0x0) {
-//       this = (CriticalSection *)CriticalSection::CriticalSection(this);
-//     }
-//     gLock = this;
-//     gBuf = _MemAlloc(0x18,0);
-//     iVar3 = 0;
-//     iVar5 = 0;
-//     do {
-//       uVar1 = _MemAlloc(0x28,0);
-//       iVar2 = 0;
-//       iVar4 = 0;
-//       *(undefined4 *)(gBuf + iVar5) = uVar1;
-//       do {
-//         uVar1 = _MemAlloc(0x800,0);
-//         iVar2 = iVar2 + 1;
-//         *(undefined4 *)(*(int *)(iVar5 + gBuf) + iVar4) = uVar1;
-//         iVar4 = iVar4 + 4;
-//       } while (iVar2 < 10);
-//       iVar3 = iVar3 + 1;
-//       iVar5 = iVar5 + 4;
-//     } while (iVar3 < 6);
-//   }
-//   return;
-// }
 
 bool MakeStringInitted(){
     return gLock != 0;
