@@ -41,6 +41,14 @@
 				udword*					StripLengths;		// Lengths of the strips (NbStrips values)
 				void*					StripRuns;			// The strips in words or dwords, depends on AskForWords
 				bool					AskForWords;		// true => results are in words (else dwords)
+
+				STRIPERRESULT();
+				STRIPERRESULT(const STRIPERRESULT&);
+				~STRIPERRESULT();
+				STRIPERRESULT& operator=(const STRIPERRESULT&);
+				void Copy(const STRIPERRESULT&);
+				void AllocLengthsAndRuns(int, int);
+				void FreeLengthsAndRuns();
 	};
 
 	class Striper

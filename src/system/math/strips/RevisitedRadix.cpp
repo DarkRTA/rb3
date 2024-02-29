@@ -417,4 +417,3 @@ udword RadixSorter::GetUsedRam()
 	UsedRam += 2*mCurrentSize*sizeof(udword);	// 2 lists of indices
 	return UsedRam;
 }
-
