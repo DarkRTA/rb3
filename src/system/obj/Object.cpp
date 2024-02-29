@@ -5,12 +5,31 @@
 #include "obj/Utl.h"
 #include "obj/MessageTimer.h"
 
+std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
+
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
     else return ObjectDir::sMainDir;
 }
 
+void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
+    sFactories[s] = func;
+}
+
+bool Hmx::Object::RegisteredFactory(Symbol s){
+    return sFactories.find(s) != sFactories.end();
+}
+
 Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
+
+Hmx::Object& Hmx::Object::operator=(const Hmx::Object& obj){
+    mName = obj.mName;
+    mTypeDef = obj.mTypeDef;
+    mTypeProps.Copy(obj.mTypeProps, this);
+    mDir = obj.mDir;
+    mRefs = obj.mRefs;
+    return *this;
+}
 
 Hmx::Object::~Object(){
     

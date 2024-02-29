@@ -9,6 +9,8 @@
 #include "obj/Utl.h"
 #include "os/Debug.h"
 #include "obj/MessageTimer.h"
+#include <vector>
+#include <map>
 
 // forward declarations
 class DataNode;
@@ -91,6 +93,8 @@ public:
         return name; \
     }
 
+typedef Hmx::Object* ObjectFunc(void);
+
 namespace Hmx {
     class Object : public ObjRef {
     public:
@@ -98,7 +102,9 @@ namespace Hmx {
         DataArray* mTypeDef;
         const char* mName;
         class ObjectDir* mDir;
-        char mRefs[8]; // actually a vector<ObjRef*> - thank you stlport, very cool
+        std::vector<ObjRef*> mRefs;
+
+        static std::map<Symbol, ObjectFunc*> sFactories;
 
         // o7 farts, you will be missed
         enum CopyType {
@@ -141,6 +147,10 @@ namespace Hmx {
         class ObjectDir* Dir() const { return mDir; }
 
         static Object* NewObject();
+
+        void RegisterFactory(Symbol, ObjectFunc*);
+        bool RegisteredFactory(Symbol);
+        Object& operator=(const Object&);
 
         DataNode *Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool);
