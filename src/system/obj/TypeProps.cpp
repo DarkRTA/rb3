@@ -3,7 +3,10 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "utl/PoolAlloc.h"
+#include "utl/Loader.h"
 #include <new>
+
+extern LoadMgr TheLoadMgr;
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
@@ -114,6 +117,33 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
             if(arr->Sym(i) == proxy_save) proxy = true;
             else if(arr->Sym(i) == no_save) none = true;
             else MILO_WARN("Unknown type def attribute %s", arr->Sym(i));
+        }
+    }
+}
+
+// https://decomp.me/scratch/igDEo
+void TypeProps::Save(BinStream& d, Hmx::Object* ref){
+    DataArray* arr = mMap;
+    DataArray* def = ref->mTypeDef;
+    if(arr && TheLoadMgr.mCacheMode && def->Size() != 0){
+        int i9 = 0;
+        while(arr){
+            while(true){
+                arr = mMap;
+                if(!mMap || mMap->Size() <= i9) break;
+                arr = def->FindArray(arr->Sym(i9), false);
+                if(!arr) break;
+                DataNode& n10 = arr->Node(1);
+                if(n10.Type() != kDataCommand){
+                    if(!arr->Node(1).CompatibleType(mMap->Node(i9 + 1).Type())){
+                        break;
+                    }
+                }
+                i9 += 2;
+            }
+            arr = mMap;
+            ClearKeyValue(arr->Sym(i9), ref);
+            arr = mMap;
         }
     }
 }
