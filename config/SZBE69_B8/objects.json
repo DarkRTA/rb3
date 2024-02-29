@@ -108,6 +108,7 @@
             "system/utl/JobMgr.cpp": "NonMatching",
             "system/utl/LocaleOrdinal.cpp": "Matching",
             "system/utl/LogFile.cpp": "Matching",
+            "system/utl/Magnu.cpp": "NonMatching",
             "system/utl/MakeString.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",

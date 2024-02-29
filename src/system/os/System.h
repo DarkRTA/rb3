@@ -43,6 +43,6 @@ DataArray* SystemConfig(Symbol, Symbol, Symbol, Symbol, Symbol);
 Symbol SystemLanguage();
 DataArray* SupportedLanguages(bool);
 bool IsSupportedLanguage(Symbol, bool);
-int SystemExec();
+int SystemExec(const char*);
 
 #endif

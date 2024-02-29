@@ -14,4 +14,6 @@ public:
     static DataNode New(DataArray*);
 };
 
+void DataRegisterFunc(Symbol s, DataFunc* func);
+
 #endif
