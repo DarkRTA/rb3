@@ -10,7 +10,7 @@ char* why = "%s/gen/%s.%s_%s.z\0%s_%s.z";
 void* ZAlloc(void* i, unsigned int len, unsigned int ct) {return _MemAllocTemp(len*ct, 0);}
 void ZFree(void* a, void*b) {_MemFree(b);}
 
-void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool b, const char* filename) {
+void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool bits, const char* filename) {
     z_stream s;
     unsigned int windowBits = -15;
 
@@ -20,7 +20,7 @@ void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool b, 
     s.avail_out = out_len;
     s.zalloc = ZAlloc;
     s.zfree = ZFree;
-    if (b) windowBits = 15;
+    if (bits) windowBits = 15;
 
     MILO_ASSERT(inflateInit2(&s, windowBits) == Z_OK, 106);
 
