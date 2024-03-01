@@ -43,7 +43,7 @@
             "system/math/Trig.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/math/Vec.cpp": "Matching",
 
-            "system/meta/Achievements.cpp": "NonMatching",
+            "system/meta/Achievements.cpp": "Matching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
