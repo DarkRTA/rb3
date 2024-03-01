@@ -240,6 +240,18 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
+#define SYNC_PROP_ACTION(symbol, member, opmask, action) \
+        if(sym == symbol){ \
+            bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
+            if(!synced) return false; \
+            else { \
+                if(!(_op & (opmask))){ \
+                    action; \
+                } \
+                return true; \
+            } \
+        }
+
 #define END_PROPSYNCS \
         return false; \
     } \

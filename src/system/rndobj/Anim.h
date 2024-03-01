@@ -2,7 +2,16 @@
 #define RNDOBJ_ANIM_H
 #include "obj/Object.h"
 #include "obj/Task.h"
+#include "obj/ObjPtr_p.h"
 #include <list>
+
+enum TaskUnits {
+    kTaskSeconds = 0,
+    kTaskBeats = 1,
+    kTaskUISeconds = 2,
+    kTaskTutorialSeconds = 3,
+    kTaskNumUnits = 4,
+};
 
 class RndAnimatable : public virtual Hmx::Object {
 public:
@@ -38,7 +47,7 @@ public:
     bool IsAnimating();
     DataNode OnConvertFrames(DataArray*);
 
-    static int RateToTaskUnits(Rate);
+    static TaskUnits RateToTaskUnits(Rate);
     int Units() const;
     float FramesPerUnit();
     bool ConvertFrames(float&);
@@ -55,7 +64,17 @@ public:
     OBJ_CLASSNAME(AnimTask);
     virtual void Poll(float);
 
-    int filler;
+    ObjOwnerPtr<RndAnimatable, ObjectDir> mAnim;
+    ObjPtr<Hmx::Object, ObjectDir> mAnimTarget;
+    ObjPtr<AnimTask, ObjectDir> mBlendTask;
+    bool mBlending;
+    float mBlendTime;
+    float mBlendPeriod;
+    float mMin;
+    float mMax;
+    float mScale;
+    float mOffset;
+    bool mLoop;
 };
 
 #endif
