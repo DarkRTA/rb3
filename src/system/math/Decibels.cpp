@@ -5,7 +5,7 @@
 float DbToRatio(float db){
     float ratio;
     if(db <= -96.0f) ratio = 0.0f;
-    else ratio = pow(10.0, db / 20.0f);
+    else ratio = pow_f(10.0, db / 20.0f);
     return ratio;
 }
 
