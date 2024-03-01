@@ -4,7 +4,7 @@
 #include "utl/BinStream.h"
 
 class MidiVarLenNumber {
-    unsigned int mValue;
+    int mValue;
 
     MidiVarLenNumber(BinStream&);
     BinStream& Read(BinStream&);
