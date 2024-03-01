@@ -11,6 +11,7 @@ extern "C" float sin_f(double);
 extern "C" float cos_f(double);
 extern "C" float tan_f(double);
 extern "C" float log10_f(double);
+extern "C" float sqrt_f(double);
 
 inline int CountBits(int num) {
     int temp_r0;
@@ -39,6 +40,10 @@ template<class T> inline T Clamp(T x, T y, T z){
     if(z > y) return y;
     if(!(z > x)) return z;
     return x;
+}
+
+inline float sqrt_f(double d){
+    return sqrt(d);
 }
 
 inline float asin_f(double d){

@@ -21,7 +21,8 @@ DataNode* DataVariable(Symbol s){
 }
 
 bool DataVarExists(Symbol s){
-    return gDataVars.find(s) != gDataVars.end();
+    const std::map<Symbol, DataNode>::iterator it = gDataVars.find(s);
+    return it != gDataVars.end();
 }
 
 const char* DataVarName(const DataNode* node){
@@ -522,10 +523,11 @@ void DataNode::Load(BinStream& d){
         case kDataFunc:
             Symbol sym3;
             d >> sym3;
-            if(gDataFuncs.find(sym3) == gDataFuncs.end()){
+            const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym3);
+            if(it == gDataFuncs.end()){
                 MILO_FAIL("Couldn't bind %s", sym3);
             }
-            mValue.func = gDataFuncs[sym3];
+            mValue.func = it->second;
             break;
         case kDataSymbol:
         case kDataIfdef:

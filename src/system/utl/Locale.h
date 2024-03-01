@@ -1,6 +1,7 @@
 #ifndef UTL_LOCALE_H
 #define UTL_LOCALE_H
 #include "utl/Symbol.h"
+#include "obj/Data.h"
 
 enum LocaleGender {
     LocaleGenderMasculine = 0,
@@ -25,6 +26,8 @@ public:
     int unkc;
     Symbol unk10;
     int unk14;
+
+    void SetMagnuStrings(DataArray*);
 };
 
 void SetLocaleVerboseNotify(bool);

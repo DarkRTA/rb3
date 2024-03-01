@@ -1,4 +1,7 @@
-#include "Debug.h"
+#include "os/Debug.h"
+#include "os/OSFuncs.h"
+
+Debug TheDebug;
 
 // Temp strings needed for string pooling to match
 const char* s0 = "%s";
@@ -33,7 +36,71 @@ const char* s28 = "cheatsMsg";
 const char* s29 = "FAIL: %s\n";
 const char* s30 = "APP EXITED, EXIT CODE %d\n";
 const char* s31 = "Debug::Print";
-const char* s32idk = "Couldn't open log %s";
+
+void Debug::Poll(){
+    MILO_ASSERT(MainThread(), 0xC5);
+    if(mTry != 0){
+        int tmp = mTry;
+        mTry = 0;
+        MILO_FAIL("TRY conditional not exited %d", tmp);
+    }
+    if(mFailThreadMsg) Fail(mFailThreadMsg);
+}
+
+static void DebugModal(bool& fail, char* msg, bool wait){
+
+}
+
+void Debug::SetTry(bool b){
+    MILO_ASSERT(MainThread(), 0x117);
+    if(!mNoModal){
+        if(b){
+            mTry++;
+        }
+        else mTry--;
+    }
+}
+
+void Debug::SetDisabled(bool b){
+    mDisabled = b;
+}
+
+void Debug::Notify(const char* msg){
+    if(!mDisabled){
+        if(!MainThread())
+            TheDebug << MakeString("THREAD-NOTIFY not called in MainThread: %s\n", msg);
+        else TheDebug << MakeString("NOTIFY: %s\n", msg);
+    }
+}
+
+void Debug::RemoveExitCallback(ExitCallbackFunc* func){
+    if(!mNoTry) mExitCallbacks.remove(func);
+}
+
+void Debug::StartLog(const char* file, bool always_flush){
+    delete mLog;
+    mLog = 0;
+    mLog = new TextFileStream(file, false);
+    mAlwaysFlush = always_flush;
+    if(mLog->mFile.Fail()){
+        MILO_WARN("Couldn't open log %s", file);
+        delete mLog;
+        mLog = 0;
+    }
+}
+
+void Debug::StopLog(){
+    delete mLog;
+    mLog = 0;
+}
+
+Debug::Debug() : mDisabled(0), mExiting(0), mNoTry(0), mNoModal(0), unk8(0), mTry(0), mLog(0), mReflect(0), mModalCallback(DebugModal), mFailThreadMsg(0), mNotifyThreadMsg(0) {
+
+}
+
+Debug::~Debug(){
+    StopLog();
+}
 
 // Declared in stlport/_vector.h since it's not relevant anywhere else
 void std_vec_range_assert(size_t value, size_t max, const char *func) {
@@ -41,3 +108,5 @@ void std_vec_range_assert(size_t value, size_t max, const char *func) {
         MILO_FAIL("std::vector::%s: index range exceeded (0x%08x > 0x%08x)\n", func, value, (max / 4));
     }
 }
+
+const char* kAssertStr = "File: %s Line: %d Error: %s\n";

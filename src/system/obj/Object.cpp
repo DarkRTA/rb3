@@ -4,16 +4,41 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 #include "obj/MessageTimer.h"
+#include "os/OSFuncs.h"
+
+std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
     else return ObjectDir::sMainDir;
 }
 
+void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
+    sFactories[s] = func;
+}
+
+bool Hmx::Object::RegisteredFactory(Symbol s){
+    const std::map<Symbol, ObjectFunc*>::iterator it = sFactories.find(s);
+    return it != sFactories.end();
+}
+
 Hmx::Object::Object() : mTypeDef(0), mName(gNullStr), mDir(0) { }
 
+Hmx::Object& Hmx::Object::operator=(const Hmx::Object& obj){
+    mName = obj.mName;
+    mTypeDef = obj.mTypeDef;
+    mTypeProps.Copy(obj.mTypeProps, this);
+    mDir = obj.mDir;
+    mRefs = obj.mRefs;
+    return *this;
+}
+
 Hmx::Object::~Object(){
-    
+    mTypeProps.ClearAll(this);
+    MILO_ASSERT(MainThread(), 0xA7);
+    if(mTypeDef) mTypeDef->Release();
+    mTypeDef = 0;
+    RemoveFromDir();
 }
 
 void Hmx::Object::SetTypeDef(DataArray* da){
@@ -139,6 +164,11 @@ void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
         MILO_ASSERT(prop->Size() == 2, 0x1C5);
         mTypeProps.InsertArrayValue(prop->Sym(0), prop->Int(1), val, mTypeDef, this);
     }
+}
+
+void Hmx::Object::AddRef(ObjRef* ref){
+    if(ref->RefOwner())
+        mRefs.push_back(ref);
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){

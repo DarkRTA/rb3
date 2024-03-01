@@ -113,6 +113,7 @@ bool Striper::Init(STRIPERCREATE& create)
 
 	// Create adjacencies
 	{
+		MemDoTempAllocations tmp(true, false);
 		mAdj = new Adjacencies;
 		if(!mAdj)	return false;
 
@@ -129,7 +130,7 @@ bool Striper::Init(STRIPERCREATE& create)
 		mAskForWords		= create.AskForWords;
 		mOneSided			= create.OneSided;
 		mSGIAlgorithm		= create.SGIAlgorithm;
-		mConnectAllStrips	= create.ConnectAllStrips;
+		// mConnectAllStrips	= create.ConnectAllStrips;
 	}
 
 	return true;
@@ -145,6 +146,7 @@ bool Striper::Init(STRIPERCREATE& create)
 // Remark	:	-
 bool Striper::Compute(STRIPERRESULT& result)
 {
+	MemDoTempAllocations tmp(true, false);
 	// You must call Init() first
 	if(!mAdj)	return false;
 
@@ -335,8 +337,9 @@ udword Striper::ComputeBestStrip(udword face)
 	for(udword j=0;j<Longest;j++)
 	{
 		udword Ref = Strip[Best][j];
-		if(mAskForWords)	mStripRuns->Store((uword)Ref);	// Saves word reference
-		else				mStripRuns->Store(Ref);			// Saves dword reference
+		// if(mAskForWords)	
+		mStripRuns->Store((uword)Ref);	// Saves word reference
+		// else				mStripRuns->Store(Ref);			// Saves dword reference
 	}
 	mStripLengths->Store(Longest);
 
@@ -401,6 +404,7 @@ udword Striper::TrackStrip(udword face, udword oldest, udword middle, udword* st
 // Remark	:	-
 bool Striper::ConnectAllStrips(STRIPERRESULT& result)
 {
+	MemDoTempAllocations tmp(true, false);
 	mSingleStrip = new CustomArray;
 	if(!mSingleStrip) return false;
 

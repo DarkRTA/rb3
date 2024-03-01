@@ -3,57 +3,98 @@
 #include "utl/Str.h"
 #include "os/CritSec.h"
 #include "utl/PoolAlloc.h"
+#include "utl/MemMgr.h"
+#include <revolution/OS.h>
 #include <new>
+
+#define MAX_BUF_THREADS 6
 
 static CriticalSection* gLock;
 static char*** gBuf;
+static int gNum[1];
+static OSThread* gThreadIds[1];
+static int gCurThread;
+static int gNumThreads;
 
 static char* NextBuf(){
+    int tID;
+    int i2;
+    if(!gLock){
+        InitMakeString();
+        TheDebug << MakeString("MakeString before InitMakeString!\n");
+        MILO_FAIL("MakeString before InitMakeString!");
+    }
+    if(gLock){
+        gLock->Enter();
+    }
+    if(gNumThreads == 0){
+        *gThreadIds = OSGetCurrentThread();
+        gNumThreads = 1;
+        tID = gCurThread;
+    }
+    else {
+        OSThread* tptr = gThreadIds[0];
+        tID = gCurThread;
+        if(gThreadIds[gCurThread] != OSGetCurrentThread()){
+            tID = 0;
+            for(; tID < gNumThreads && tptr != OSGetCurrentThread(); tptr++) tID++;
+            if(tID == gNumThreads){
+                tID = 0;
+                if(0 < gNumThreads){
+                    if(8 < gNumThreads){
+                        bool b = false;
+                        if((-1 < gNumThreads) && (gNumThreads < 0x7FFFFFFF)){
+                            b = true;
+                        }
+                        unsigned int butt;
+                        if(b && (butt = gNumThreads - 1U >> 3, 0 < gNumThreads - 8)){
+                            while(butt != 0){
+                                tID += 8;
+                                butt -= 1;
+                            }
+                        }
+                    }
+                    i2 = gNumThreads - tID;
+                    if(tID < gNumThreads){
+                        do {
+                            tID++;
+                            i2--;
+                        } while(i2 != 0);
+                    }
+                }
+                if(tID == gNumThreads){
+                    MILO_ASSERT(gNumThreads < MAX_BUF_THREADS, 0x5F);
+                    gNumThreads++;
+                    gThreadIds[tID] = OSGetCurrentThread();
+                }
+            }
 
+        }
+    }
+    gCurThread = tID;
+    tID = gCurThread;
+    i2 = gNum[gCurThread] + 1;
+    char* c5 = gBuf[gCurThread][gNum[gCurThread]];
+    gNum[gCurThread] = i2;
+    if(i2 == 10){
+        gNum[tID] = 0;
+    }
+    if(gLock) gLock->Exit();
+    return c5;
 }
 
 void InitMakeString(){
     if(gLock == 0){
         gLock = new (_PoolAlloc(0x1C, 0x1C, FastPool)) CriticalSection();
+        gBuf = (char***)_MemAlloc(0x18, 0);
+        for(int i3 = 0, i5 = 0; i3 < 6; i3++, i5++){
+            gBuf[i5] = (char**)_MemAlloc(0x28, 0);
+            for(int i2 = 0, i4 = 0; i2 < 10; i2++, i4++){
+                gBuf[i5][i4] = (char*)_MemAlloc(0x800, 0);
+            }
+        }
     }
 }
-
-// void InitMakeString(void)
-
-// {
-//   CriticalSection *this;
-//   undefined4 uVar1;
-//   int iVar2;
-//   int iVar3;
-//   int iVar4;
-//   int iVar5;
-  
-//   if (gLock == (CriticalSection *)0x0) {
-//     this = (CriticalSection *)_PoolAlloc(0x1c,0x1c,1);
-//     if (this != (CriticalSection *)0x0) {
-//       this = (CriticalSection *)CriticalSection::CriticalSection(this);
-//     }
-//     gLock = this;
-//     gBuf = _MemAlloc(0x18,0);
-//     iVar3 = 0;
-//     iVar5 = 0;
-//     do {
-//       uVar1 = _MemAlloc(0x28,0);
-//       iVar2 = 0;
-//       iVar4 = 0;
-//       *(undefined4 *)(gBuf + iVar5) = uVar1;
-//       do {
-//         uVar1 = _MemAlloc(0x800,0);
-//         iVar2 = iVar2 + 1;
-//         *(undefined4 *)(*(int *)(iVar5 + gBuf) + iVar4) = uVar1;
-//         iVar4 = iVar4 + 4;
-//       } while (iVar2 < 10);
-//       iVar3 = iVar3 + 1;
-//       iVar5 = iVar5 + 4;
-//     } while (iVar3 < 6);
-//   }
-//   return;
-// }
 
 bool MakeStringInitted(){
     return gLock != 0;
