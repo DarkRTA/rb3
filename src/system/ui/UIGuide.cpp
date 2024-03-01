@@ -18,11 +18,13 @@ void UIGuide::Save(BinStream&){
 }
 
 void UIGuide::Load(BinStream& bs){
-    int rev;
+    unsigned int rev;
+    unsigned short huh;
     bs >> rev;
-    gRev = (unsigned int)rev;
-    gAltRev = (unsigned int)rev >> 0x10;
-    if((unsigned short)rev > 1){
+    huh = rev & 0xFFFF;
+    gRev = huh;
+    gAltRev = rev >> 0x10;
+    if(huh > 1){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)1);
     }
     if(gAltRev != 0){

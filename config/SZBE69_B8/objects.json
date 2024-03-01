@@ -95,7 +95,7 @@
             "system/synth/ADSR.cpp": "NonMatching",
 
             "system/ui/UIColor.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
-            "system/ui/UIGuide.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
+            "system/ui/UIGuide.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
