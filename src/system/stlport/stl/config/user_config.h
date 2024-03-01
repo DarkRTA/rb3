@@ -232,20 +232,6 @@
 */
 
 /*
- * Use minimum set of default arguments on template classes that have more
- * than one - for example map<>, set<>.
- * This has effect only if _STLP_LIMITED_DEFAULT_TEMPLATES is on.
- * If _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS is set, you'll be able to compile
- * set<T> with those compilers, but you'll have to use __set__<T, less<T>>
- *
- * Affects : map<>, multimap<>, set<>, multiset<>, hash_*<>,
- * queue<>, priority_queue<>, stack<>, istream_iterator<>
- */
-/*
-#define _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS 1
-*/
-
-/*
  * The agregation of strings using the + operator is an expensive operation
  * as it requires construction of temporary objects that need memory allocation
  * and deallocation. The problem can be even more important if you are adding

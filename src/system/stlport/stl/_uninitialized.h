@@ -66,18 +66,6 @@ inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
                            _OutputIter __result, const input_iterator_tag &, _Distance* __d)
 { return __ucopy(__first, __last, __result, __d); }
 
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIter, class _OutputIter, class _Distance>
-inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
-                           _OutputIter __result, const forward_iterator_tag &, _Distance* __d)
-{ return __ucopy(__first, __last, __result, __d); }
-
-template <class _InputIter, class _OutputIter, class _Distance>
-inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
-                           _OutputIter __result, const bidirectional_iterator_tag &, _Distance* __d)
-{ return __ucopy(__first, __last, __result, __d); }
-#endif
-
 template <class _RandomAccessIter, class _OutputIter, class _Distance>
 inline _OutputIter __ucopy(_RandomAccessIter __first, _RandomAccessIter __last,
                            _OutputIter __result, const random_access_iterator_tag &, _Distance*) {
@@ -171,22 +159,6 @@ __ucopy_n(_InputIter __first, _Size __count, _ForwardIter __result,
   _STLP_RET_AFTER_THROW((pair<_InputIter, _ForwardIter>(__first, __cur)))
 }
 
-#  if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIter, class _Size, class _ForwardIterator>
-inline pair<_InputIter, _ForwardIterator>
-__ucopy_n(_InputIter __first, _Size __count,
-                       _ForwardIterator __result,
-                       const forward_iterator_tag &)
-{ return __ucopy_n(__first, __count, __result, input_iterator_tag()); }
-
-template <class _InputIter, class _Size, class _ForwardIterator>
-inline pair<_InputIter, _ForwardIterator>
-__ucopy_n(_InputIter __first, _Size __count,
-                       _ForwardIterator __result,
-                       const bidirectional_iterator_tag &)
-{ return __ucopy_n(__first, __count, __result, input_iterator_tag()); }
-#  endif
-
 template <class _RandomAccessIter, class _Size, class _ForwardIter>
 inline pair<_RandomAccessIter, _ForwardIter>
 __ucopy_n(_RandomAccessIter __first, _Size __count, _ForwardIter __result,
@@ -228,18 +200,6 @@ template <class _ForwardIter, class _Tp, class _Distance>
 inline void __ufill(_ForwardIter __first, _ForwardIter __last,
                     const _Tp& __x, const input_iterator_tag &, _Distance* __d)
 { __ufill(__first, __last, __x, __d); }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _ForwardIter, class _Tp, class _Distance>
-inline void __ufill(_ForwardIter __first, _ForwardIter __last,
-                    const _Tp& __x, const forward_iterator_tag &, _Distance* __d)
-{ __ufill(__first, __last, __x, __d); }
-
-template <class _ForwardIter, class _Tp, class _Distance>
-inline void __ufill(_ForwardIter __first, _ForwardIter __last,
-                    const _Tp& __x, const bidirectional_iterator_tag &, _Distance* __d)
-{ __ufill(__first, __last, __x, __d); }
-#endif
 
 template <class _ForwardIter, class _Tp, class _Distance>
 inline void __ufill(_ForwardIter __first, _ForwardIter __last,
@@ -296,18 +256,6 @@ template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
                               const input_iterator_tag &)
 { return __ufill_n(__first, __n, __x); }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
-                              const forward_iterator_tag &)
-{ return __ufill_n(__first, __n, __x); }
-
-template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
-                              const bidirectional_iterator_tag &)
-{ return __ufill_n(__first, __n, __x); }
-#endif
 
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x) {

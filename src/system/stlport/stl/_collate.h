@@ -39,7 +39,7 @@ _STLP_BEGIN_NAMESPACE
 template <class _CharT> class collate {};
 template <class _CharT> class collate_byname {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC collate<char> : public locale::facet
 {
   friend class _Locale_impl;
@@ -78,7 +78,7 @@ private:
 
 # ifndef _STLP_NO_WCHAR_T
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC collate<wchar_t> : public locale::facet
 {
   friend class _Locale_impl;
@@ -117,7 +117,7 @@ private:
 
 # endif /* NO_WCHAR_T */
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC collate_byname<char>: public collate<char>
 {
 public:
@@ -139,7 +139,7 @@ private:
 
 # ifndef _STLP_NO_WCHAR_T
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC collate_byname<wchar_t>: public collate<wchar_t>
 {
 public:

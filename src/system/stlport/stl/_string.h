@@ -104,9 +104,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _CharT, class _Traits, class _Alloc>
 class basic_string : protected _STLP_PRIV _String_base<_CharT,_Alloc>
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (basic_string)
-                   , public __stlport_class<basic_string<_CharT, _Traits, _Alloc> >
-#endif
 {
 protected:                        // Protected members inherited from base.
   typedef _STLP_PRIV _String_base<_CharT,_Alloc> _Base;
@@ -258,39 +255,22 @@ public:                         // Constructor, destructor, assignment.
 
   // Check to see if _InputIterator is an integer type.  If so, then
   // it can't be an iterator.
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   basic_string(_InputIterator __f, _InputIterator __l,
-               const allocator_type & __a _STLP_ALLOCATOR_TYPE_DFL)
+               const allocator_type & __a = allocator_type())
     : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
     _M_initialize_dispatch(__f, __l, _Integral());
   }
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  basic_string(_InputIterator __f, _InputIterator __l)
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(allocator_type()) {
-    typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
-    _M_initialize_dispatch(__f, __l, _Integral());
-  }
-#  endif
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   basic_string(const _CharT* __f, const _CharT* __l,
-               const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL)
+               const allocator_type& __a = allocator_type())
     : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
     _STLP_FIX_LITERAL_BUG(__f)  _STLP_FIX_LITERAL_BUG(__l)
     _M_range_initialize(__f, __l);
   }
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  basic_string(const _CharT* __f, const _CharT* __l)
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(allocator_type()) {
-    _STLP_FIX_LITERAL_BUG(__f)  _STLP_FIX_LITERAL_BUG(__l)
-    _M_range_initialize(__f, __l);
-  }
-#  endif
-#endif /* _STLP_MEMBER_TEMPLATES */
+#endif
 
 private:
   template <class _InputIter>
@@ -505,7 +485,6 @@ public:                         // Append, operator+=, push_back.
   _Self& operator+=(const _CharT* __s) { _STLP_FIX_LITERAL_BUG(__s) return append(__s); }
   _Self& operator+=(_CharT __c) { push_back(__c); return *this; }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 private: // Helper functions for append.
   template <class _InputIter>
   _Self& _M_appendT(_InputIter __first, _InputIter __last,
@@ -574,14 +553,12 @@ public:
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
     return _M_append_dispatch(__first, __last, _Integral());
   }
-#endif
 
 protected:
   _Self& _M_append(const _CharT* __first, const _CharT* __last);
 
 public:
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& append(const _CharT* __first, const _CharT* __last) {
     _STLP_FIX_LITERAL_BUG(__first)_STLP_FIX_LITERAL_BUG(__last)
     return _M_append(__first, __last);
@@ -640,7 +617,6 @@ public:                         // Assign
 
   _Self& assign(size_type __n, _CharT __c);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 private:                        // Helper functions for assign.
   template <class _Integer>
   _Self& _M_assign_dispatch(_Integer __n, _Integer __x, const __true_type& /*_Integral*/)
@@ -669,15 +645,13 @@ public:
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
     return _M_assign_dispatch(__first, __last, _Integral());
   }
-#endif
 
 protected:
   _Self& _M_assign(const _CharT* __f, const _CharT* __l);
 
 public:
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& assign(const _CharT* __f, const _CharT* __l) {
     _STLP_FIX_LITERAL_BUG(__f) _STLP_FIX_LITERAL_BUG(__l)
     return _M_assign(__f, __l);
@@ -765,7 +739,6 @@ protected:  // Helper functions for insert.
     _Traits::move(__res, __f, __l - __f);
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _ForwardIter>
   void _M_insert_overflow(iterator __pos, _ForwardIter __first, _ForwardIter __last,
                           difference_type __n) {
@@ -887,13 +860,11 @@ protected:  // Helper functions for insert.
       _Traits::assign(*__result, *__first);
   }
 
-#    if !defined (_STLP_NO_METHOD_SPECIALIZATION)
   void _M_copyT(const _CharT* __f, const _CharT* __l, _CharT* __res) {
     _STLP_FIX_LITERAL_BUG(__f) _STLP_FIX_LITERAL_BUG(__l)
     _STLP_FIX_LITERAL_BUG(__res)
     _Traits::copy(__res, __f, __l - __f);
   }
-#    endif
 
 public:
   // Check to see if _InputIterator is an integer type.  If so, then
@@ -903,12 +874,10 @@ public:
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
     _M_insert_dispatch(__p, __first, __last, _Integral());
   }
-#endif
 
 public:
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   void insert(iterator __p, const _CharT* __f, const _CharT* __l) {
     _STLP_FIX_LITERAL_BUG(__f) _STLP_FIX_LITERAL_BUG(__l)
     _M_insert(__p, __f, __l, _M_inside(__f));
@@ -1027,7 +996,6 @@ protected:                        // Helper functions for replace.
                     const _CharT* __f, const _CharT* __l, bool __self_ref);
 
 public:
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Integer>
   _Self& _M_replace_dispatch(iterator __first, iterator __last,
                              _Integer __n, _Integer __x, const __true_type& /*IsIntegral*/) {
@@ -1102,10 +1070,7 @@ public:
     return _M_replace_dispatch(__first, __last, __f, __l,  _Integral());
   }
 
-#endif
-
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& replace(iterator __first, iterator __last,
                  const _CharT* __f, const _CharT* __l) {
     _STLP_FIX_LITERAL_BUG(__first)_STLP_FIX_LITERAL_BUG(__last)
@@ -1301,29 +1266,18 @@ _STLP_BEGIN_NAMESPACE
 // ------------------------------------------------------------
 // Non-member functions.
 // Swap.
-#if defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 template <class _CharT, class _Traits, class _Alloc>
 inline void _STLP_CALL
 swap(basic_string<_CharT,_Traits,_Alloc>& __x,
      basic_string<_CharT,_Traits,_Alloc>& __y)
 { __x.swap(__y); }
-#endif /* _STLP_FUNCTION_TMPL_PARTIAL_ORDER */
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _CharT, class _Traits, class _Alloc>
 struct __move_traits<basic_string<_CharT, _Traits, _Alloc> > {
   typedef __stlp_movable implemented;
   //Completness depends on the allocator:
   typedef typename __move_traits<_Alloc>::complete complete;
 };
-/*#else
- * There is no need to specialize for string and wstring in this case
- * as the default __move_traits will already tell that string is movable
- * but not complete. We cannot define it as complete as nothing guaranty
- * that the STLport user hasn't specialized std::allocator for char or
- * wchar_t.
- */
-#endif
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 

@@ -22,53 +22,53 @@ _STLP_BEGIN_NAMESPACE
 
 class ios_base;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_ios;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_streambuf;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_istream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_ostream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_iostream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM( _Traits , char_traits<_CharT>),
-          _STLP_DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
+template <class _CharT, class  _Traits = char_traits<_CharT>,
+          class _Allocator = allocator<_CharT> >
 class basic_stringbuf;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
-          _STLP_DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT>,
+          class _Allocator = allocator<_CharT> >
 class basic_istringstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
-          _STLP_DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT>,
+          class _Allocator = allocator<_CharT> >
 class basic_ostringstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
-          _STLP_DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT>,
+          class _Allocator = allocator<_CharT> >
 class basic_stringstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_filebuf;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_ifstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_ofstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class basic_fstream;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class istreambuf_iterator;
 
-template <class _CharT, _STLP_DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
+template <class _CharT, class _Traits = char_traits<_CharT> >
 class ostreambuf_iterator;
 
 typedef basic_ios<char, char_traits<char> >    ios;
@@ -79,37 +79,27 @@ typedef basic_ios<wchar_t, char_traits<wchar_t> > wios;
 
 // Forward declaration of class locale, and of the most important facets.
 class locale;
-#if defined (_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS)
-template <class _Facet>
-struct _Use_facet {
-  const locale& __loc;
-  _Use_facet(const locale& __p_loc) : __loc(__p_loc) {}
-  inline const _Facet& operator *() const;
-};
-#  define use_facet *_Use_facet
-#else
 template <class _Facet> inline const _Facet& use_facet(const locale&);
-#endif
 
 template <class _CharT> class ctype;
 template <class _CharT> class ctype_byname;
 template <class _CharT> class collate;
 template <class _CharT> class collate_byname;
 
-_STLP_TEMPLATE_NULL class ctype<char>;
-_STLP_TEMPLATE_NULL class ctype_byname<char>;
-_STLP_TEMPLATE_NULL class collate<char>;
-_STLP_TEMPLATE_NULL class collate_byname<char>;
+template<> class ctype<char>;
+template<> class ctype_byname<char>;
+template<> class collate<char>;
+template<> class collate_byname<char>;
 
 #if !defined (_STLP_NO_WCHAR_T)
-_STLP_TEMPLATE_NULL class ctype<wchar_t>;
-_STLP_TEMPLATE_NULL class ctype_byname<wchar_t>;
-_STLP_TEMPLATE_NULL class collate<wchar_t>;
-_STLP_TEMPLATE_NULL class collate_byname<wchar_t>;
+template<> class ctype<wchar_t>;
+template<> class ctype_byname<wchar_t>;
+template<> class collate<wchar_t>;
+template<> class collate_byname<wchar_t>;
 #endif
 
 // Typedefs for ordinary (narrow-character) streams.
-//_STLP_TEMPLATE_NULL class basic_streambuf<char, char_traits<char> >;
+//template<> class basic_streambuf<char, char_traits<char> >;
 
 typedef basic_istream<char, char_traits<char> >  istream;
 typedef basic_ostream<char, char_traits<char> >  ostream;

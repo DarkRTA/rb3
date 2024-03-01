@@ -101,7 +101,7 @@ struct _Ht_iterator {
   reference operator*() const {
     return *_M_ite;
   }
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     ++_M_ite;
@@ -125,7 +125,6 @@ struct _Ht_iterator {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _BaseIte, class _Traits>
 struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
@@ -134,7 +133,6 @@ struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
   typedef __true_type    has_trivial_destructor;
   typedef __false_type   is_POD_type;
 };
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _BaseIte, class _Traits>
@@ -416,7 +414,6 @@ public:
   pair<iterator, bool> insert_unique_noresize(const value_type& __obj);
   iterator insert_equal_noresize(const value_type& __obj);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void insert_unique(_InputIterator __f, _InputIterator __l)
   { insert_unique(__f, __l, _STLP_ITERATOR_CATEGORY(__f, _InputIterator)); }
@@ -456,36 +453,6 @@ public:
     for ( ; __n > 0; --__n, ++__f)
       insert_equal_noresize(*__f);
   }
-
-#else /* _STLP_MEMBER_TEMPLATES */
-  void insert_unique(const value_type* __f, const value_type* __l) {
-    size_type __n = __l - __f;
-    resize(_M_num_elements + __n);
-    for ( ; __n > 0; --__n, ++__f)
-      insert_unique_noresize(*__f);
-  }
-
-  void insert_equal(const value_type* __f, const value_type* __l) {
-    size_type __n = __l - __f;
-    resize(_M_num_elements + __n);
-    for ( ; __n > 0; --__n, ++__f)
-      insert_equal_noresize(*__f);
-  }
-
-  void insert_unique(const_iterator __f, const_iterator __l) {
-    size_type __n = distance(__f, __l);
-    resize(_M_num_elements + __n);
-    for ( ; __n > 0; --__n, ++__f)
-      insert_unique_noresize(*__f);
-  }
-
-  void insert_equal(const_iterator __f, const_iterator __l) {
-    size_type __n = distance(__f, __l);
-    resize(_M_num_elements + __n);
-    for ( ; __n > 0; --__n, ++__f)
-      insert_equal_noresize(*__f);
-  }
-#endif /*_STLP_MEMBER_TEMPLATES */
 
   //reference find_or_insert(const value_type& __obj);
 
@@ -630,7 +597,6 @@ _STLP_BEGIN_NAMESPACE
 #undef _STLP_TEMPLATE_CONTAINER
 #undef _STLP_TEMPLATE_HEADER
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Val, class _Key, class _HF, class _Traits, class _ExK, class _EqK, class _All>
 struct __move_traits<hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All> > {
   //Hashtables are movable:
@@ -639,7 +605,6 @@ struct __move_traits<hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All> > {
   //Completeness depends on many template parameters, for the moment we consider it not complete:
   typedef __false_type complete;
 };
-#endif
 
 _STLP_END_NAMESPACE
 

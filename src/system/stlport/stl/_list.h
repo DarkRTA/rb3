@@ -113,8 +113,7 @@ struct _List_iterator : public _List_iterator_base {
   _List_iterator(const iterator& __x) :  _List_iterator_base(__x._M_node) {}
 
   reference operator*() const { return __STATIC_CAST(_Node*, this->_M_node)->_M_data; }
-
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     this->_M_incr();
@@ -142,7 +141,6 @@ struct _List_iterator : public _List_iterator_base {
   }
 };
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Tp, class _Traits>
 struct __type_traits<_STLP_PRIV _List_iterator<_Tp, _Traits> > {
@@ -153,7 +151,6 @@ struct __type_traits<_STLP_PRIV _List_iterator<_Tp, _Traits> > {
   typedef __false_type   is_POD_type;
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -245,9 +242,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _Tp, class _Alloc>
 class list : public _STLP_PRIV _List_base<_Tp, _Alloc>
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (list)
-           , public __stlport_class<list<_Tp, _Alloc> >
-#endif
 {
   typedef _STLP_PRIV _List_base<_Tp, _Alloc> _Base;
   typedef list<_Tp, _Alloc> _Self;
@@ -311,39 +305,15 @@ public:
     : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
     { this->insert(begin(), __n, __val); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   // We don't need any dispatching tricks here, because insert does all of
   // that anyway.
   template <class _InputIterator>
   list(_InputIterator __first, _InputIterator __last,
-       const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL)
+       const allocator_type& __a = allocator_type())
     : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
   { _M_insert(begin(), __first, __last); }
 
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  list(_InputIterator __first, _InputIterator __last)
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(allocator_type())
-  { _M_insert(begin(), __first, __last); }
-#  endif
-#else /* _STLP_MEMBER_TEMPLATES */
-  list(const value_type* __first, const value_type* __last,
-       const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
-    { _M_insert(begin(), __first, __last); }
-  list(const_iterator __first, const_iterator __last,
-       const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
-    { _M_insert(begin(), __first, __last); }
-#endif /* _STLP_MEMBER_TEMPLATES */
-
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit list(const allocator_type& __a = allocator_type())
-#else
-  list()
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(allocator_type()) {}
-  list(const allocator_type& __a)
-#endif
     : _STLP_PRIV _List_base<_Tp, _Alloc>(__a) {}
 
   list(const _Self& __x) : _STLP_PRIV _List_base<_Tp, _Alloc>(__x.get_allocator())
@@ -421,7 +391,6 @@ public:
   }
 
 private:
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void _M_insert(iterator __pos, _InputIterator __first, _InputIterator __last) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
@@ -435,23 +404,14 @@ private:
     _M_fill_insert(__pos, __n, __x);
   }
   template <class _InputIter>
-  void _M_insert_dispatch(iterator __pos,
-                          _InputIter __first, _InputIter __last,
+  void _M_insert_dispatch(iterator __pos, _InputIter __first, _InputIter __last,
                           const __false_type& /*_IsIntegral*/) {
-#else /* _STLP_MEMBER_TEMPLATES */
-  void _M_insert(iterator __pos, const value_type* __first, const value_type* __last) {
-    for (; __first != __last; ++__first)
-      insert(__pos, *__first);
-  }
-  void _M_insert(iterator __pos, const_iterator __first, const_iterator __last) {
-#endif /* _STLP_MEMBER_TEMPLATES */
     //We use a temporary list to avoid the auto reference troubles (infinite loop)
     for (; __first != __last; ++__first)
       insert(__pos, *__first);
   }
 
 public:
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void insert(iterator __pos, _InputIterator __first, _InputIterator __last) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
@@ -466,16 +426,8 @@ private:
     _M_fill_insert(__pos, __n, __x);
   }
   template <class _InputIter>
-  void _M_splice_insert_dispatch(iterator __pos,
-                          _InputIter __first, _InputIter __last,
+  void _M_splice_insert_dispatch(iterator __pos, _InputIter __first, _InputIter __last,
                           const __false_type& /*_IsIntegral*/) {
-#else /* _STLP_MEMBER_TEMPLATES */
-  void insert(iterator __pos, const value_type* __first, const value_type* __last) {
-    _Self __tmp(__first, __last, this->get_allocator());
-    splice(__pos, __tmp);
-  }
-  void insert(iterator __pos, const_iterator __first, const_iterator __last) {
-#endif /* _STLP_MEMBER_TEMPLATES */
     //We use a temporary list to avoid the auto reference troubles (infinite loop)
     _Self __tmp(__first, __last, this->get_allocator());
     splice(__pos, __tmp);
@@ -543,7 +495,6 @@ public:
 
   void _M_fill_assign(size_type __n, const_reference __val);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void assign(_InputIterator __first, _InputIterator __last) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
@@ -559,19 +510,6 @@ public:
   template <class _InputIterator>
   void _M_assign_dispatch(_InputIterator __first2, _InputIterator __last2,
                           const __false_type& /*_IsIntegral*/) {
-#else
-  void assign(const value_type *__first2, const value_type *__last2) {
-    iterator __first1 = begin();
-    iterator __last1 = end();
-    for ( ; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2)
-      *__first1 = *__first2;
-    if (__first2 == __last2)
-      erase(__first1, __last1);
-    else
-      insert(__last1, __first2, __last2);
-  }
-  void assign(const_iterator __first2, const_iterator __last2) {
-#endif /* _STLP_MEMBER_TEMPLATES */
     iterator __first1 = begin();
     iterator __last1 = end();
     for ( ; __first1 != __last1 && __first2 != __last2; ++__first1, ++__first2)
@@ -647,7 +585,6 @@ public:
   void sort()
   { _STLP_PRIV _S_sort(*this, less<value_type>()); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Predicate>
   void remove_if(_Predicate __pred)
   { _STLP_PRIV _S_remove_if(*this, __pred); }
@@ -664,7 +601,6 @@ public:
   template <class _StrictWeakOrdering>
   void sort(_StrictWeakOrdering __comp)
   { _STLP_PRIV _S_sort(*this, __comp); }
-#endif /* _STLP_MEMBER_TEMPLATES */
 };
 
 #if defined (list)
@@ -712,13 +648,11 @@ operator==(const list<_Tp,_Alloc>& __x, const list<_Tp,_Alloc>& __y) {
 #undef _STLP_TEMPLATE_HEADER
 #undef _STLP_EQUAL_OPERATOR_SPECIALIZED
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp, class _Alloc>
 struct __move_traits<list<_Tp, _Alloc> > {
   typedef __stlp_movable implemented;
   typedef typename __move_traits<_Alloc>::complete complete;
 };
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 _STLP_END_NAMESPACE
 

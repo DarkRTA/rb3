@@ -41,14 +41,8 @@
 
 _STLP_BEGIN_NAMESPACE
 
-//----------------------------------------------------------------------
 // num_put facet
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _CharT, class _OutputIter>
-#else
 template <class _CharT, class _OutputIter = ostreambuf_iterator<_CharT, char_traits<_CharT> > >
-#endif
 class num_put: public locale::facet {
   friend class _Locale_impl;
 public:

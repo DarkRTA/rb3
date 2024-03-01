@@ -105,19 +105,15 @@ public:
   typedef const _Tp& const_reference;
   typedef _Tp        value_type;
 
-#ifdef _STLP_MEMBER_TEMPLATE_CLASSES
   template <class _NewType> struct rebind {
     typedef pthread_allocator<_NewType> other;
   };
-#endif
 
   pthread_allocator() _STLP_NOTHROW {}
   pthread_allocator(const pthread_allocator<_Tp>& a) _STLP_NOTHROW {}
 
-#if defined (_STLP_MEMBER_TEMPLATES) /* && defined (_STLP_FUNCTION_PARTIAL_ORDER) */
   template <class _OtherType> pthread_allocator(const pthread_allocator<_OtherType>&)
     _STLP_NOTHROW {}
-#endif
 
   ~pthread_allocator() _STLP_NOTHROW {}
 
@@ -187,7 +183,7 @@ protected:
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC pthread_allocator<void> {
 public:
   typedef size_t      size_type;
@@ -195,11 +191,10 @@ public:
   typedef void*       pointer;
   typedef const void* const_pointer;
   typedef void        value_type;
-#ifdef _STLP_MEMBER_TEMPLATE_CLASSES
+
   template <class _NewType> struct rebind {
     typedef pthread_allocator<_NewType> other;
   };
-#endif
 };
 
 template <class _T1, class _T2>
@@ -207,15 +202,11 @@ inline bool operator==(const pthread_allocator<_T1>&,
                        const pthread_allocator<_T2>& a2)
 { return true; }
 
-#ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
 template <class _T1, class _T2>
 inline bool operator!=(const pthread_allocator<_T1>&,
                        const pthread_allocator<_T2>&)
 { return false; }
-#endif
 
-
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 
 #  if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
 template <class _Tp>
@@ -226,22 +217,6 @@ struct _Alloc_traits<_Tp, _Pthread_alloc>
 template <class _Tp, class _Atype>
 struct _Alloc_traits<_Tp, pthread_allocator<_Atype> >
 { typedef pthread_allocator<_Tp> allocator_type; };
-
-#endif
-
-#if defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-
-template <class _Tp1, class _Tp2>
-inline pthread_allocator<_Tp2>&
-__stl_alloc_rebind(pthread_allocator<_Tp1>& __x, const _Tp2*)
-{ return (pthread_allocator<_Tp2>&)__x; }
-
-template <class _Tp1, class _Tp2>
-inline pthread_allocator<_Tp2>
-__stl_alloc_create(pthread_allocator<_Tp1>&, const _Tp2*)
-{ return pthread_allocator<_Tp2>(); }
-
-#endif
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
@@ -259,21 +234,8 @@ struct __pthread_alloc_type_traits {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct __type_traits<pthread_allocator<_Tp> > : _STLP_PRIV __pthread_alloc_type_traits<_Tp> {};
-#else
-_STLP_TEMPLATE_NULL
-struct __type_traits<pthread_allocator<char> > : _STLP_PRIV __pthread_alloc_type_traits<char> {};
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_TEMPLATE_NULL
-struct __type_traits<pthread_allocator<wchar_t> > : _STLP_PRIV __pthread_alloc_type_traits<wchar_t> {};
-#  endif
-#  if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-_STLP_TEMPLATE_NULL
-struct __type_traits<pthread_allocator<void*> > : _STLP_PRIV __pthread_alloc_type_traits<void*> {};
-#  endif
-#endif
 
 //
 // per_thread_allocator<> : this allocator always return memory to the same thread
@@ -293,21 +255,17 @@ public:
   typedef const _Tp& const_reference;
   typedef _Tp        value_type;
 
-#ifdef _STLP_MEMBER_TEMPLATE_CLASSES
   template <class _NewType> struct rebind {
     typedef per_thread_allocator<_NewType> other;
   };
-#endif
 
   per_thread_allocator() _STLP_NOTHROW {
     _M_state = _S_Alloc::_S_get_per_thread_state();
   }
   per_thread_allocator(const per_thread_allocator<_Tp>& __a) _STLP_NOTHROW : _M_state(__a._M_state){}
 
-#if defined (_STLP_MEMBER_TEMPLATES) /* && defined (_STLP_FUNCTION_PARTIAL_ORDER) */
   template <class _OtherType> per_thread_allocator(const per_thread_allocator<_OtherType>& __a)
     _STLP_NOTHROW : _M_state(__a._M_state) {}
-#endif
 
   ~per_thread_allocator() _STLP_NOTHROW {}
 
@@ -380,7 +338,7 @@ protected:
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC per_thread_allocator<void> {
 public:
   typedef size_t      size_type;
@@ -388,11 +346,10 @@ public:
   typedef void*       pointer;
   typedef const void* const_pointer;
   typedef void        value_type;
-#ifdef _STLP_MEMBER_TEMPLATE_CLASSES
+
   template <class _NewType> struct rebind {
     typedef per_thread_allocator<_NewType> other;
   };
-#endif
 };
 
 template <class _T1, class _T2>
@@ -400,35 +357,15 @@ inline bool operator==(const per_thread_allocator<_T1>& __a1,
                        const per_thread_allocator<_T2>& __a2)
 { return __a1._M_state == __a2._M_state; }
 
-#ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
 template <class _T1, class _T2>
 inline bool operator!=(const per_thread_allocator<_T1>& __a1,
                        const per_thread_allocator<_T2>& __a2)
 { return __a1._M_state != __a2._M_state; }
-#endif
 
-
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 
 template <class _Tp, class _Atype>
 struct _Alloc_traits<_Tp, per_thread_allocator<_Atype> >
 { typedef per_thread_allocator<_Tp> allocator_type; };
-
-#endif
-
-#if defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-
-template <class _Tp1, class _Tp2>
-inline per_thread_allocator<_Tp2>&
-__stl_alloc_rebind(per_thread_allocator<_Tp1>& __x, const _Tp2*)
-{ return (per_thread_allocator<_Tp2>&)__x; }
-
-template <class _Tp1, class _Tp2>
-inline per_thread_allocator<_Tp2>
-__stl_alloc_create(per_thread_allocator<_Tp1>&, const _Tp2*)
-{ return per_thread_allocator<_Tp2>(); }
-
-#endif /* _STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE */
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
@@ -446,21 +383,8 @@ struct __perthread_alloc_type_traits {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct __type_traits<per_thread_allocator<_Tp> > : _STLP_PRIV __perthread_alloc_type_traits<_Tp> {};
-#else
-_STLP_TEMPLATE_NULL
-struct __type_traits<per_thread_allocator<char> > : _STLP_PRIV __perthread_alloc_type_traits<char> {};
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_TEMPLATE_NULL
-struct __type_traits<per_thread_allocator<wchar_t> > : _STLP_PRIV __perthread_alloc_type_traits<wchar_t> {};
-#  endif
-#  if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-_STLP_TEMPLATE_NULL
-struct __type_traits<per_thread_allocator<void*> > : _STLP_PRIV __perthread_alloc_type_traits<void*> {};
-#  endif
-#endif
 
 
 _STLP_END_NAMESPACE

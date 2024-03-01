@@ -385,34 +385,9 @@ __do_put_integer(_OutputIter __s, ios_base& __f, _CharT __fill, _Integer __x) {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-//
 // num_put<>
-//
-
-#if (_STLP_STATIC_TEMPLATE_DATA > 0)
-
 template <class _CharT, class _OutputIterator>
 locale::id num_put<_CharT, _OutputIterator>::id;
-
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-//typedef num_put<char, char*> num_put_char;
-typedef num_put<char, ostreambuf_iterator<char, char_traits<char> > > num_put_char_2;
-
-//__DECLARE_INSTANCE(locale::id, num_put_char::id, );
-__DECLARE_INSTANCE(locale::id, num_put_char_2::id, );
-
-#  if !defined (_STLP_NO_WCHAR_T)
-
-//typedef num_put<wchar_t, wchar_t*> num_put_wchar_t;
-typedef num_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > > num_put_wchar_t_2;
-
-//__DECLARE_INSTANCE(locale::id, num_put_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, num_put_wchar_t_2::id, );
-
-#  endif
-
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
 // issue 118
 

@@ -170,7 +170,7 @@ class char_traits
 
 // Specialization for char.
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC char_traits<char>
   : public __char_traits_base<char, int> {
 public:
@@ -203,7 +203,7 @@ public:
 
 #if defined (_STLP_HAS_WCHAR_T)
 // Specialization for wchar_t.
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC char_traits<wchar_t>
   : public __char_traits_base<wchar_t, wint_t> {
 #  if !defined (_STLP_NO_NATIVE_WIDE_FUNCTIONS) && !defined (_STLP_WCHAR_HPACC_EXCLUDE)

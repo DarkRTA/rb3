@@ -139,11 +139,11 @@ public :
 
 // Forward declaration of two helper classes.
 template <class _Traits> class _Noconv_input;
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_input<char_traits<char> >;
 
 template <class _Traits> class _Noconv_output;
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_output< char_traits<char> >;
 
 // There is a specialized version of underflow, for basic_filebuf<char>,
@@ -152,7 +152,7 @@ class _Noconv_output< char_traits<char> >;
 template <class _CharT, class _Traits>
 class _Underflow;
 
-_STLP_TEMPLATE_NULL class _Underflow< char, char_traits<char> >;
+template<> class _Underflow< char, char_traits<char> >;
 
 template <class _CharT, class _Traits>
 class basic_filebuf : public basic_streambuf<_CharT, _Traits> {
@@ -364,7 +364,7 @@ public:
   { return false; }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC _Noconv_output< char_traits<char> > {
 public:
   static bool  _STLP_CALL
@@ -397,7 +397,7 @@ public:
   { return _Traits::eof(); }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_input<char_traits<char> > {
 public:
   static inline int _STLP_CALL
@@ -422,7 +422,7 @@ public:
 
 // Specialization of underflow: if the character type is char, maybe
 // we can use mmap instead of read.
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC _Underflow< char, char_traits<char> > {
 public:
   typedef char_traits<char>::int_type int_type;

@@ -114,7 +114,6 @@ public:
   explicit locale(const char *);
   locale(const locale&, const char*, category);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Facet>
   locale(const locale& __loc, _Facet* __f) {
     if ( __f != 0 ) {
@@ -124,7 +123,6 @@ public:
       this->_M_impl = _get_Locale_impl( __loc._M_impl );
     }
   }
-#endif // _STLP_MEMBER_TEMPLATES
 
 protected:
   // those are for internal use
@@ -137,7 +135,6 @@ public:
 
   ~locale() _STLP_NOTHROW;
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS)
   template <class _Facet>
   locale combine(const locale& __loc) const {
     _Facet *__facet = 0;
@@ -146,7 +143,6 @@ public:
 
     return locale(*this, _UseFacet(__loc, __facet));
   }
-#endif // _STLP_MEMBER_TEMPLATES && !_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
 
   // locale operations:
   string name() const;
@@ -154,17 +150,10 @@ public:
   bool operator==(const locale&) const;
   bool operator!=(const locale&) const;
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || defined (_STLP_INLINE_MEMBER_TEMPLATES)
-  bool operator()(const string& __x, const string& __y) const;
-#  ifndef _STLP_NO_WCHAR_T
-  bool operator()(const wstring& __x, const wstring& __y) const;
-#  endif
-#else
   template <class _CharT, class _Traits, class _Alloc>
   bool operator()(const basic_string<_CharT, _Traits, _Alloc>& __x,
                   const basic_string<_CharT, _Traits, _Alloc>& __y) const
   { return __locale_do_operator_call(*this, __x, __y); }
-#endif
 
   // global locale objects:
   static locale _STLP_CALL global(const locale&);
@@ -191,36 +180,15 @@ protected:                        // Data members
 //----------------------------------------------------------------------
 // locale globals
 
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-template <class _Facet>
-inline const _Facet&
-_Use_facet<_Facet>::operator *() const
-#else
-template <class _Facet> inline const _Facet& use_facet(const locale& __loc)
-#endif
-{
+template <class _Facet> inline const _Facet& use_facet(const locale& __loc) {
   _Facet *__facet = 0;
   return *_UseFacet(__loc, __facet);
 }
 
-
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-template <class _Facet>
-struct has_facet {
-  const locale& __loc;
-  has_facet(const locale& __p_loc) : __loc(__p_loc) {}
-  operator bool() const _STLP_NOTHROW
-#else
-template <class _Facet> inline bool has_facet(const locale& __loc) _STLP_NOTHROW
-#endif
-{
+template <class _Facet> inline bool has_facet(const locale& __loc) _STLP_NOTHROW {
   _Facet *__facet = 0;
   return _HasFacet(__loc, __facet);
 }
-
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-}; // close class definition
-#endif
 
 template <class _Facet>
 bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW

@@ -83,9 +83,9 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 #  define key_type            _Key
 #  define __reference__       _Val&
 
-#  define __iterator__        _Ht_iterator<_Val, _STLP_HEADER_TYPENAME _Traits::_NonConstTraits, \
+#  define __iterator__        _Ht_iterator<_Val, typename _Traits::_NonConstTraits, \
                                            _Key, _HF, _ExK, _EqK, _All>
-#  define __const_iterator__  _Ht_iterator<_Val, _STLP_HEADER_TYPENAME _Traits::_ConstTraits, \
+#  define __const_iterator__  _Ht_iterator<_Val, typename _Traits::_ConstTraits, \
                                            _Key, _HF, _ExK, _EqK, _All>
 #else
 #  define __size_type__       _STLP_TYPENAME_ON_RETURN_TYPE hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::size_type

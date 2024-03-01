@@ -348,13 +348,13 @@ struct constant_void_fun : public _STLP_PRIV _Constant_void_fun<_Result> {
     : _STLP_PRIV _Constant_void_fun<_Result>(__v) {}
 };
 
-template <class _Result, _STLP_DFL_TMPL_PARAM( _Argument , _Result) >
+template <class _Result, class _Argument = _Result >
 struct constant_unary_fun : public _STLP_PRIV _Constant_unary_fun<_Result, _Argument> {
   constant_unary_fun(const _Result& __v)
     : _STLP_PRIV _Constant_unary_fun<_Result, _Argument>(__v) {}
 };
 
-template <class _Result, _STLP_DFL_TMPL_PARAM( _Arg1 , _Result), _STLP_DFL_TMPL_PARAM( _Arg2 , _Arg1) >
+template <class _Result, class _Arg1 = _Result, class _Arg2 = _Arg1 >
 struct constant_binary_fun
   : public _STLP_PRIV _Constant_binary_fun<_Result, _Arg1, _Arg2> {
   constant_binary_fun(const _Result& __v)

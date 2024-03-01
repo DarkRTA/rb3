@@ -89,7 +89,7 @@ class _STLP_CLASS_DECLSPEC __malloc_alloc {
 public:
   // this one is needed for proper simple_alloc wrapping
   typedef char value_type;
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES) && defined (_STLP_USE_RAW_SGI_ALLOCATORS)
+#if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
   template <class _Tp1> struct rebind {
     typedef __allocator<_Tp1, __malloc_alloc> other;
   };
@@ -124,7 +124,7 @@ class _STLP_CLASS_DECLSPEC __new_alloc {
 public:
   // this one is needed for proper simple_alloc wrapping
   typedef char value_type;
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES) && defined (_STLP_USE_RAW_SGI_ALLOCATORS)
+#if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
   template <class _Tp1> struct rebind {
     typedef __allocator<_Tp1, __new_alloc > other;
   };
@@ -169,7 +169,7 @@ private:
       (size_t)((long)__extra_after % sizeof(value_type) > 0);
   }
 public:
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES) && defined (_STLP_USE_RAW_SGI_ALLOCATORS)
+#if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
   template <class _Tp1> struct rebind {
     typedef __allocator< _Tp1, __debug_alloc<_Alloc> > other;
   };
@@ -194,7 +194,7 @@ class _STLP_CLASS_DECLSPEC __node_alloc {
 public:
   // this one is needed for proper simple_alloc wrapping
   typedef char value_type;
-#  if defined (_STLP_MEMBER_TEMPLATE_CLASSES) && defined (_STLP_USE_RAW_SGI_ALLOCATORS)
+#  if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
   template <class _Tp1> struct rebind {
     typedef __allocator<_Tp1, __node_alloc> other;
   };
@@ -209,21 +209,8 @@ public:
 
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-/* macro to convert the allocator for initialization
- * not using MEMBER_TEMPLATE_CLASSES as it should work given template constructor  */
-#if defined (_STLP_MEMBER_TEMPLATES) || ! defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-/* if _STLP_NO_TEMPLATE_CONVERSIONS is set, the member template constructor is
- * not used implicitly to convert allocator parameter, so let us do it explicitly */
-#  if defined (_STLP_MEMBER_TEMPLATE_CLASSES) && defined (_STLP_NO_TEMPLATE_CONVERSIONS)
-#    define _STLP_CONVERT_ALLOCATOR(__a, _Tp) __stl_alloc_create(__a,(_Tp*)0)
-#  else
-#    define _STLP_CONVERT_ALLOCATOR(__a, _Tp) __a
-#  endif
-/* else convert, but only if partial specialization works, since else
- * Container::allocator_type won't be different */
-#else
-#  define _STLP_CONVERT_ALLOCATOR(__a, _Tp) __stl_alloc_create(__a,(_Tp*)0)
-#endif /* _STLP_MEMBER_TEMPLATES || !_STLP_CLASS_PARTIAL_SPECIALIZATION */
+/* macro to convert the allocator for initialization */
+#define _STLP_CONVERT_ALLOCATOR(__a, _Tp) __a
 
 // Another allocator adaptor: _Alloc_traits.  This serves two
 // purposes.  First, make it possible to write containers that can use
@@ -233,16 +220,10 @@ public:
 template <class _Tp, class _Allocator>
 struct _Alloc_traits {
   typedef _Allocator _Orig;
-#if !defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-  typedef typename _Allocator::_STLP_TEMPLATE rebind<_Tp> _Rebind_type;
+  typedef typename _Allocator::template rebind<_Tp> _Rebind_type;
   typedef typename _Rebind_type::other  allocator_type;
   static allocator_type create_allocator(const _Orig& __a)
   { return allocator_type(_STLP_CONVERT_ALLOCATOR(__a, _Tp)); }
-#else
-  // this is not actually true, used only to pass this type through
-  // to dynamic overload selection in _STLP_alloc_proxy methods
-  typedef _Allocator allocator_type;
-#endif /* !_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE */
 };
 
 #if defined (_STLP_USE_PERTHREAD_ALLOC)
@@ -346,15 +327,13 @@ public:
   typedef const _Tp& const_reference;
   typedef size_t     size_type;
   typedef ptrdiff_t  difference_type;
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
+
   template <class _Tp1> struct rebind {
     typedef allocator<_Tp1> other;
   };
-#endif
+
   allocator() _STLP_NOTHROW {}
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Tp1> allocator(const allocator<_Tp1>&) _STLP_NOTHROW {}
-#endif
   allocator(const allocator<_Tp>&) _STLP_NOTHROW {}
   allocator(__move_source<allocator<_Tp> > src) _STLP_NOTHROW {}
   ~allocator() _STLP_NOTHROW {}
@@ -394,12 +373,6 @@ public:
   void construct(pointer __p, const_reference __val) { _STLP_STD::_Copy_Construct(__p, __val); }
   void destroy(pointer __p) { _STLP_STD::_Destroy(__p); }
 
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
-  //This is just to make swap workaround for compiler without template function partial
-  //happy.
-  void swap(allocator<_Tp>&) {}
-#endif
-
 #if defined (_STLP_NO_EXTENSIONS)
   /* STLport extension giving rounded size of an allocated memory buffer
    * This method do not have to be part of a user defined allocator implementation
@@ -428,21 +401,18 @@ protected:
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC allocator<void> {
 public:
   typedef size_t      size_type;
   typedef ptrdiff_t   difference_type;
   typedef void*       pointer;
   typedef const void* const_pointer;
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
   typedef void        value_type;
-#endif
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
+
   template <class _Tp1> struct rebind {
     typedef allocator<_Tp1> other;
   };
-#endif
 };
 
 template <class _T1, class _T2> inline bool  _STLP_CALL operator==(const allocator<_T1>&, const allocator<_T2>&) _STLP_NOTHROW { return true; }
@@ -455,19 +425,15 @@ public:
   typedef _Tp value_type;
   typedef size_t size_type;
 
-#if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
   template <class _Tp1> struct rebind {
     typedef StlNodeAlloc<_Tp1> other;
   };
-#endif
-
-#if defined (_STLP_MEMBER_TEMPLATES)
-  template <class _Tp1> StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
-#endif
 
   StlNodeAlloc() _STLP_NOTHROW {}
   StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
   ~StlNodeAlloc() _STLP_NOTHROW {}
+  template <class _Tp1>
+  StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
 
   value_type *allocate(const size_type count) {
     return reinterpret_cast<value_type *>(
@@ -497,55 +463,19 @@ struct __alloc_type_traits {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct __type_traits<allocator<_Tp> > : _STLP_PRIV __alloc_type_traits<_Tp> {};
-#else
-_STLP_TEMPLATE_NULL
-struct __type_traits<allocator<char> > : _STLP_PRIV __alloc_type_traits<char> {};
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_TEMPLATE_NULL
-struct __type_traits<allocator<wchar_t> > : _STLP_PRIV __alloc_type_traits<wchar_t> {};
-#  endif
-#  if defined (_STLP_USE_PTR_SPECIALIZATIONS)
-_STLP_TEMPLATE_NULL
-struct __type_traits<allocator<void*> > : _STLP_PRIV __alloc_type_traits<void*> {};
-#  endif
-#endif
-
 
 #if !defined (_STLP_FORCE_ALLOCATORS)
 #  define _STLP_FORCE_ALLOCATORS(a,y)
 #endif
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_MEMBER_TEMPLATE_CLASSES)
-// The version for the default allocator, for rare occasion when we have partial spec w/o member template classes
-template <class _Tp, class _Tp1>
-struct _Alloc_traits<_Tp, allocator<_Tp1> > {
-  typedef allocator<_Tp1> _Orig;
-  typedef allocator<_Tp> allocator_type;
-  static allocator_type create_allocator(const allocator<_Tp1 >& __a)
-  { return allocator_type(_STLP_CONVERT_ALLOCATOR(__a, _Tp)); }
-};
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-
-#if !defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE) && defined (_STLP_MEMBER_TEMPLATES)
 template <class _Tp, class _Alloc>
 inline _STLP_TYPENAME_ON_RETURN_TYPE _Alloc_traits<_Tp, _Alloc>::allocator_type  _STLP_CALL
 __stl_alloc_create(const _Alloc& __a, const _Tp*) {
-  typedef typename _Alloc::_STLP_TEMPLATE rebind<_Tp>::other _Rebound_type;
+  typedef typename _Alloc::template rebind<_Tp>::other _Rebound_type;
   return _Rebound_type(__a);
 }
-#else
-// If custom allocators are being used without member template classes support :
-// user (on purpose) is forced to define rebind/get operations !!!
-template <class _Tp1, class _Tp2>
-inline allocator<_Tp2>& _STLP_CALL
-__stl_alloc_rebind(allocator<_Tp1>& __a, const _Tp2*) {  return (allocator<_Tp2>&)(__a); }
-template <class _Tp1, class _Tp2>
-inline allocator<_Tp2> _STLP_CALL
-__stl_alloc_create(const allocator<_Tp1>&, const _Tp2*) { return allocator<_Tp2>(); }
-#endif /* _STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE */
 
 #if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
 // move obsolete stuff out of the way
@@ -604,27 +534,12 @@ public:
     typedef typename _IsSTLportClass<_MaybeReboundAlloc>::_Ret _STLportAlloc;
     return allocate(__n, __allocated_n, _STLportAlloc());
   }
-
-  // Unified interface to perform allocate()/deallocate() with limited
-  // language support
-#if defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-  // else it is rebound already, and allocate() member is accessible
-  _Tp* allocate(size_type __n)
-  { return __stl_alloc_rebind(__STATIC_CAST(_Base&, *this), __STATIC_CAST(_Tp*, 0)).allocate(__n, 0); }
-  void deallocate(_Tp* __p, size_type __n)
-  { __stl_alloc_rebind(__STATIC_CAST(_Base&, *this), __STATIC_CAST(_Tp*, 0)).deallocate(__p, __n); }
-private:
-  _Tp* allocate(size_type __n, size_type& __allocated_n, const __true_type& /*STLport allocator*/)
-  { return __stl_alloc_rebind(__STATIC_CAST(_Base&, *this), __STATIC_CAST(_Tp*, 0)).allocate(__n, __allocated_n); }
-#else
-  //Expose Standard allocate overload (using expression do not work for some compilers (Borland))
   _Tp* allocate(size_type __n)
   { return _Base::allocate(__n); }
+
 private:
   _Tp* allocate(size_type __n, size_type& __allocated_n, const __true_type& /*STLport allocator*/)
   { return _Base::allocate(__n, __allocated_n); }
-#endif
-
   _Tp* allocate(size_type __n, size_type& __allocated_n, const __false_type& /*STLport allocator*/)
   { __allocated_n = __n; return allocate(__n); }
 };

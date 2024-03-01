@@ -49,9 +49,6 @@ inline random_access_iterator_tag iterator_category(const _STLP_PRIV _DBG_iter_b
 
 template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
 class deque : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_DEQUE >
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-            , public __stlport_class<deque<_Tp, _Alloc> >
-#endif
 {
   typedef deque<_Tp,_Alloc> _Self;
   typedef _STLP_NON_DBG_DEQUE _Base;
@@ -150,37 +147,13 @@ public:
 #endif
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   deque(_InputIterator __first, _InputIterator __last,
-        const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL)
+        const allocator_type& __a = allocator_type())
     : _ConstructCheck(__first, __last),
       _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last), __a),
       _M_iter_list(&_M_non_dbg_impl) {
     }
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  deque(_InputIterator __first, _InputIterator __last)
-    : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last)),
-      _M_iter_list(&_M_non_dbg_impl) {
-    }
-#  endif
-#else
-  deque(const value_type* __first, const value_type* __last,
-        const allocator_type& __a = allocator_type())
-    : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(__first, __last, __a),
-      _M_iter_list(&_M_non_dbg_impl) {
-    }
-
-  deque(const_iterator __first, const_iterator __last,
-        const allocator_type& __a = allocator_type())
-    : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(__first._M_iterator, __last._M_iterator, __a),
-      _M_iter_list(&_M_non_dbg_impl) {
-    }
-#endif
 
   _Self& operator=(const _Self& __x) {
     if (this != &__x) {
@@ -205,25 +178,12 @@ public:
     _M_non_dbg_impl.assign(__n, __val);
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void assign(_InputIterator __first, _InputIterator __last) {
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
     _Invalidate_all();
     _M_non_dbg_impl.assign(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
   }
-#else
-  void assign(const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
-    _Invalidate_all();
-    _M_non_dbg_impl.assign(__first._M_iterator, __last._M_iterator);
-  }
-  void assign(const value_type *__first, const value_type *__last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__first, __last))
-    _Invalidate_all();
-    _M_non_dbg_impl.assign(__first, __last);
-  }
-#endif
 
 public:                         // push_* and pop_*
 
@@ -297,7 +257,6 @@ public:                         // Insert
     _M_non_dbg_impl.insert(__pos._M_iterator, __n, __x);
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void insert(iterator __pos, _InputIterator __first, _InputIterator __last) {
     typedef typename _AreSameUnCVTypes<_InputIterator, iterator>::_Ret _IsNonConstIterator;
@@ -312,26 +271,6 @@ public:                         // Insert
     //dums: because of self insertion iterators must be invalidated after insertion.
     if (__first != __last) _Invalidate_all();
   }
-#else
-  void insert(iterator __pos,
-              const value_type* __first, const value_type* __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__first, __last))
-    _M_non_dbg_impl.insert(__pos._M_iterator, __first, __last);
-    //dums: because of self insertion iterators must be invalidated after insertion.
-    if (__first != __last) _Invalidate_all();
-  }
-  void insert(iterator __pos,
-              const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
-    //Sequence requirements 23.1.1 Table 67:
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_not_owner(&_M_iter_list, __first, __true_type()));
-    _M_non_dbg_impl.insert(__pos._M_iterator, __first._M_iterator, __last._M_iterator);
-    //dums: because of self insertion iterators must be invalidated after insertion.
-    if (__first != __last) _Invalidate_all();
-  }
-#endif
 
 #if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size, const value_type& __x = _Tp()) {

@@ -31,9 +31,7 @@
 #ifndef _STLP_INTERNAL_PAIR_H
 #define _STLP_INTERNAL_PAIR_H
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-#  include <stl/type_traits.h>
-#endif
+#include <stl/type_traits.h>
 
 #ifndef _STLP_MOVE_CONSTRUCT_FWK_H
 #  include <stl/_move_construct_fwk.h>
@@ -55,12 +53,10 @@ struct pair {
 #endif
   pair(const _T1& __a, const _T2& __b) : first(__a), second(__b) {}
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _U1, class _U2>
   pair(const pair<_U1, _U2>& __p) : first(__p.first), second(__p.second) {}
 
   pair(const pair<_T1,_T2>& __o) : first(__o.first), second(__o.second) {}
-#endif
 
   pair(__move_source<pair<_T1, _T2> > src) : first(_STLP_PRIV _AsMoveSource(src.get().first)),
                                              second(_STLP_PRIV _AsMoveSource(src.get().second))
@@ -97,7 +93,7 @@ inline bool _STLP_CALL operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2
 { return !(__x < __y); }
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
-#if defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
 template <class _T1, class _T2, int _Sz>
 inline pair<_T1, _T2 const*> make_pair(_T1 const& __x,
                                        _T2 const (&__y)[_Sz])
@@ -144,7 +140,6 @@ inline bool _STLP_CALL  operator>=(const _Tp& __x, const _Tp& __y)
 _STLP_END_RELOPS_NAMESPACE
 #endif
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 _STLP_BEGIN_NAMESPACE
 
 template <class _T1, class _T2>
@@ -167,7 +162,6 @@ struct __move_traits<pair<_T1, _T2> >
   : _STLP_PRIV __move_traits_help1<_T1, _T2> {};
 
 _STLP_END_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #endif /* _STLP_INTERNAL_PAIR_H */
 

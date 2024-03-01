@@ -309,9 +309,7 @@ _ForwardIter1 __find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-// find_end for bidirectional iterators.  Requires partial specialization.
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-
+// find_end for bidirectional iterators.
 #  ifndef _STLP_INTERNAL_ITERATOR_H
 _STLP_END_NAMESPACE
 #    include <stl/_iterator.h>
@@ -346,7 +344,6 @@ __find_end(_BidirectionalIter1 __first1, _BidirectionalIter1 __last1,
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 template <class _ForwardIter1, class _ForwardIter2,
           class _BinaryPredicate>
@@ -357,13 +354,8 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first2, __last2))
   return _STLP_PRIV __find_end(__first1, __last1, __first2, __last2,
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
                                _STLP_ITERATOR_CATEGORY(__first1, _ForwardIter1),
                                _STLP_ITERATOR_CATEGORY(__first2, _ForwardIter2),
-#else
-                               forward_iterator_tag(),
-                               forward_iterator_tag(),
-#endif
                                __comp);
 }
 

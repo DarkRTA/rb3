@@ -141,21 +141,19 @@ inline _CharT
 basic_ios<_CharT, _Traits>::widen(char __c) const
 { return __STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())->widen(__c); }
 
-# if !defined (_STLP_NO_METHOD_SPECIALIZATION)
-_STLP_TEMPLATE_NULL
+template<>
 inline char
 basic_ios<char, char_traits<char> >::narrow(char __c, char) const
 {
   return __c;
 }
 
-_STLP_TEMPLATE_NULL
+template<>
 inline char
 basic_ios<char, char_traits<char> >::widen(char __c) const
 {
   return __c;
 }
-# endif /* _STLP_NO_METHOD_SPECIALIZATION */
 
 _STLP_END_NAMESPACE
 

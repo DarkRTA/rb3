@@ -25,17 +25,10 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if !defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
 template <class _CharT,
           class _Traits = char_traits<_CharT>,
           class _Alloc = allocator<_CharT> >
 class basic_string;
-#else
-template <class _CharT,
-          class _Traits,
-          class _Alloc>
-class basic_string;
-#endif /* _STLP_LIMITED_DEFAULT_TEMPLATES */
 
 typedef basic_string<char, char_traits<char>, allocator<char> > string;
 

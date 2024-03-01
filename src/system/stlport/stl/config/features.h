@@ -119,35 +119,11 @@
 
 /* SGI terms */
 
-#if !defined (_STLP_NO_MEMBER_TEMPLATES) && !defined (_STLP_MEMBER_TEMPLATES)
-#  define _STLP_MEMBER_TEMPLATES 1
-#endif
-
-#if !defined (_STLP_NO_FRIEND_TEMPLATES) && !defined (_STLP_FRIEND_TEMPLATES)
-#  define _STLP_FRIEND_TEMPLATES 1
-#endif
-
-#if !defined (_STLP_NO_MEMBER_TEMPLATE_CLASSES) && !defined (_STLP_MEMBER_TEMPLATE_CLASSES)
-#  define _STLP_MEMBER_TEMPLATE_CLASSES 1
-#endif
-
-#if defined (_STLP_NO_MEMBER_TEMPLATE_CLASSES) && !defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-#  define _STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE 1
-#endif
-
-#if !defined (_STLP_NO_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-#  define _STLP_CLASS_PARTIAL_SPECIALIZATION 1
-#endif
-
-#if !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER) && !defined (_STLP_NO_FUNCTION_TMPL_PARTIAL_ORDER)
-#  define _STLP_FUNCTION_TMPL_PARTIAL_ORDER 1
-#endif
-
 #if !defined (_STLP_DONT_USE_SHORT_STRING_OPTIM) && !defined (_STLP_USE_SHORT_STRING_OPTIM)
 #  define _STLP_USE_SHORT_STRING_OPTIM 1
 #endif
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXTENSIONS) && \
+#if !defined (_STLP_NO_EXTENSIONS) && \
    !defined (_STLP_NO_CONTAINERS_EXTENSION) && !defined (_STLP_USE_CONTAINERS_EXTENSION)
 #  define _STLP_USE_CONTAINERS_EXTENSION
 #endif
@@ -156,11 +132,6 @@
 #  define _STLP_TEMPLATE_FOR_CONT_EXT template <class _KT>
 #else
 #  define _STLP_TEMPLATE_FOR_CONT_EXT
-#endif
-
-#if defined (_STLP_USE_PTR_SPECIALIZATIONS) && \
-    (defined (_STLP_NO_CLASS_PARTIAL_SPECIALIZATION) && defined (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS))
-#  error "Sorry but according the STLport settings your compiler can not support the pointer specialization feature."
 #endif
 
 #if defined (_STLP_NO_IOSTREAMS) && \
@@ -345,10 +316,6 @@
 #  define _STLP_VOLATILE
 #endif
 
-#if !defined (_STLP_STATIC_TEMPLATE_DATA)
-#  define _STLP_STATIC_TEMPLATE_DATA 1
-#endif
-
 #if defined (_STLP_BASE_TYPEDEF_BUG)
 #  undef  _STLP_BASE_TYPEDEF_OUTSIDE_BUG
 #  define _STLP_BASE_TYPEDEF_OUTSIDE_BUG 1
@@ -363,11 +330,6 @@
 #  define _STLP_FIX_LITERAL_BUG(__x) __x = __x;
 #else
 #  define _STLP_FIX_LITERAL_BUG(__x)
-#endif
-
-#if defined (_STLP_NON_TYPE_TMPL_PARAM_BUG)
-#  undef  _STLP_NO_DEFAULT_NON_TYPE_PARAM
-#  define _STLP_NO_DEFAULT_NON_TYPE_PARAM 1
 #endif
 
 #define _STLP_NEW new
@@ -411,25 +373,6 @@
 #  define _STLP_WEAK
 #endif
 
-/* default parameters as template types derived from arguments ( not always supported ) */
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-#  define _STLP_DFL_TMPL_PARAM( classname, defval ) class classname
-#else
-#  if !defined (_STLP_DEFAULT_TYPE_PARAM)
-#    define _STLP_DEFAULT_TYPE_PARAM 1
-#  endif
-#  define _STLP_DFL_TMPL_PARAM( classname, defval ) class classname = defval
-#endif
-
-/* default parameters as complete types */
-#if defined (_STLP_DEFAULT_TYPE_PARAM)
-#  define _STLP_DFL_TYPE_PARAM( classname, defval ) class classname = defval
-#  define _STLP_DFL_NON_TYPE_PARAM(type,name,val) type name = val
-#else
-#  define _STLP_DFL_TYPE_PARAM( classname, defval ) class classname
-#  define _STLP_DFL_NON_TYPE_PARAM(type,name,val) type name
-#endif
-
 /* SGI compatibility */
 
 #ifdef _STLP_NO_WCHAR_T
@@ -446,23 +389,15 @@
 
 #if !defined (_STLP_USE_RAW_SGI_ALLOCATORS)
 #  define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) _STLP_DFL_TMPL_PARAM(_Alloc, StlNodeAlloc< _Tp >)
+#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) class _Alloc = StlNodeAlloc< _Tp >
 #  define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
-#  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-#    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) class _Alloc
-#    define _STLP_USE_WRAPPER_FOR_ALLOC_PARAM 1
-#  else
-#    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) \
+#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) \
             class _Alloc = StlNodeAlloc< pair < _Key, _Tp > >
-#  endif
 #else
 #  define _STLP_DEFAULT_ALLOCATOR( _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) _STLP_DFL_TYPE_PARAM(_Alloc,__sgi_alloc)
+#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) class _Alloc = __sgi_alloc
 #  define _STLP_DEFAULT_PAIR_ALLOCATOR( _Key, _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) _STLP_DFL_TYPE_PARAM(_Alloc,__sgi_alloc)
-#  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES) && !defined (_STLP_DEFAULT_TYPE_PARAM)
-#    define _STLP_USE_WRAPPER_FOR_ALLOC_PARAM 1
-#  endif
+#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) class _Alloc = __sgi_alloc
 #endif
 
 /* debug mode tool */
@@ -663,12 +598,6 @@ namespace _STL = _STLP_STD_NAME;
 #define STLPORT_CSTD _STLP_VENDOR_CSTD
 #define STLPORT      _STLP_STD_NAME
 
-#if defined(_STLP_BOGUS_TEMPLATE_TYPE_MATCHING_BUG)
-#  define _STLP_SIMPLE_TYPE(T) _stl_trivial_proxy<T>
-#else
-#  define _STLP_SIMPLE_TYPE(T) T
-#endif
-
 #ifndef _STLP_RAND48
 #  define _STLP_NO_DRAND48
 #endif
@@ -695,18 +624,6 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_TYPENAME_ON_RETURN_TYPE
 #else
 #  define _STLP_TYPENAME_ON_RETURN_TYPE typename
-#endif
-
-#ifdef _STLP_NO_TYPENAME_IN_TEMPLATE_HEADER
-#  define _STLP_HEADER_TYPENAME
-#else
-#  define _STLP_HEADER_TYPENAME typename
-#endif
-
-#ifndef _STLP_NO_MEMBER_TEMPLATE_KEYWORD
-#  define _STLP_TEMPLATE template
-#else
-#  define _STLP_TEMPLATE
 #endif
 
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)
@@ -741,50 +658,6 @@ namespace _STL = _STLP_STD_NAME;
 
 #define _STLP_PRIVATE public
 
-#ifndef _STLP_NO_PARTIAL_SPECIALIZATION_SYNTAX
-#  define _STLP_TEMPLATE_NULL template<>
-#else
-#  define _STLP_TEMPLATE_NULL
-#endif
-
-#ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
-#  define _STLP_OPERATOR_TEMPLATE
-#else
-#  define _STLP_OPERATOR_TEMPLATE _STLP_TEMPLATE_NULL
-#endif
-
-#ifndef _STLP_CLASS_PARTIAL_SPECIALIZATION
-/* unless we have other compiler problem, try simulating partial spec here */
-#  if !defined (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS)
-#    define _STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS
-#  endif
-/* For your own iterators, please use inheritance from iterator<> instead of these obsolete queries. */
-#  if  (defined (_STLP_NESTED_TYPE_PARAM_BUG) || !defined (_STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS))
-#    if ! defined ( _STLP_USE_OLD_HP_ITERATOR_QUERIES )
-#      define _STLP_USE_OLD_HP_ITERATOR_QUERIES
-#    endif
-#  elif defined ( _STLP_NO_ANACHRONISMS )
-#    undef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-#  endif
-#endif
-
-#ifndef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-#  define _STLP_NULL_TMPL_ARGS <>
-# else
-#  define _STLP_NULL_TMPL_ARGS
-#endif
-
-#if !defined (_STLP_ALLOCATOR_TYPE_DFL)
-#  if defined (_STLP_DONT_SUP_DFLT_PARAM)
-#    define _STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS
-#  endif
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-#    define _STLP_ALLOCATOR_TYPE_DFL
-#  else
-#    define _STLP_ALLOCATOR_TYPE_DFL = allocator_type()
-#  endif
-#endif
-
 /* When the compiler do not correctly initialized the basic types value in default parameters we prefer
  * to avoid them to be able to correct this bug.
  */
@@ -796,44 +669,9 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_NO_ARROW_OPERATOR
 #endif
 
-#if !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-#  if !(defined (_STLP_NO_ARROW_OPERATOR)) && \
-       !defined (_STLP_NO_MSVC50_COMPATIBILITY) && !defined (_STLP_MSVC50_COMPATIBILITY)
-/* this one is needed for proper reverse_iterator<> operator ->() handling */
-#    define _STLP_MSVC50_COMPATIBILITY 1
-#  endif
-#endif
-
-#if defined ( _STLP_CLASS_PARTIAL_SPECIALIZATION )
-#  if (defined(__IBMCPP__) && (500 <= __IBMCPP__) && (__IBMCPP__ < 600) )
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-   typedef typename _STLP_STD :: reverse_iterator<const_iterator> const_reverse_iterator; \
-   typedef typename _STLP_STD :: reverse_iterator<iterator> reverse_iterator
-#  elif (defined (__sgi) && ! defined (__GNUC__)) || defined (__SUNPRO_CC) || defined (__xlC__)
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-   typedef _STLP_STD:: _STLP_TEMPLATE reverse_iterator<const_iterator> const_reverse_iterator; \
-   typedef _STLP_STD:: _STLP_TEMPLATE reverse_iterator<iterator> reverse_iterator
-#  else
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
+#define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
    typedef _STLP_STD::reverse_iterator<const_iterator> const_reverse_iterator; \
    typedef _STLP_STD::reverse_iterator<iterator> reverse_iterator
-#  endif
-#else /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-#  if defined (_STLP_MSVC50_COMPATIBILITY)
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-  typedef _STLP_STD::__reverse_iterator<const_iterator, value_type, const_reference, \
-    const_pointer, difference_type>  const_reverse_iterator; \
-  typedef _STLP_STD::__reverse_iterator<iterator, value_type, reference, pointer, difference_type> \
-    reverse_iterator
-#  else
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-  typedef _STLP_STD::__reverse_iterator<const_iterator, value_type, const_reference, \
-    difference_type>  const_reverse_iterator; \
-  typedef _STLP_STD::__reverse_iterator<iterator, value_type, \
-    reference, difference_type> \
-    reverse_iterator
-#  endif
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #define _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS \
         _STLP_DECLARE_REVERSE_ITERATORS(reverse_bidirectional_iterator)
@@ -1008,14 +846,6 @@ typedef int bool;
 #  define _STLP_IMPORT_DECLSPEC
 #endif
 
-/* a keyword used to instantiate export template */
-#ifndef _STLP_EXPORT_TEMPLATE_KEYWORD
-#  define _STLP_EXPORT_TEMPLATE_KEYWORD
-#endif
-#ifndef _STLP_IMPORT_TEMPLATE_KEYWORD
-#  define _STLP_IMPORT_TEMPLATE_KEYWORD
-#endif
-
 #ifdef _STLP_USE_NO_IOSTREAMS
 /*
  * If we do not use iostreams we do not use the export/import
@@ -1027,16 +857,6 @@ typedef int bool;
  * configuration leading to problem when do not link to the STLport lib.
  */
 #  undef _STLP_USE_DYNAMIC_LIB
-#endif
-
-#if defined (_STLP_DESIGNATED_DLL) /* This is a lib which will contain STLport exports */
-#  define  _STLP_EXPORT _STLP_EXPORT_TEMPLATE_KEYWORD
-#else
-#  define  _STLP_EXPORT _STLP_IMPORT_TEMPLATE_KEYWORD
-#endif
-
-#ifndef _STLP_EXPORT_TEMPLATE
-#  define  _STLP_EXPORT_TEMPLATE _STLP_EXPORT template
 #endif
 
 #if defined (_STLP_USE_DECLSPEC) /* using export/import technique */
@@ -1067,8 +887,6 @@ typedef int bool;
 #  define _STLP_CLASS_DECLSPEC
 
 #endif
-
-#define _STLP_EXPORT_TEMPLATE_CLASS _STLP_EXPORT template class _STLP_CLASS_DECLSPEC
 
 #if defined (_STLP_MSVC) || defined (__ICL)
 #  define _STLP_STATIC_MEMBER_DECLSPEC
@@ -1104,20 +922,8 @@ typedef int bool;
 #  define _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-#ifdef _STLP_PARTIAL_SPEC_NEEDS_TEMPLATE_ARGS
-#  define _STLP_PSPEC2(t1,t2) < t1,t2 >
-#  define _STLP_PSPEC3(t1,t2,t3) < t1,t2,t3 >
-#else
-#  define _STLP_PSPEC2(t1,t2)  /* nothing */
-#  define _STLP_PSPEC3(t1,t2,t3)  /* nothing */
-#endif
-
-/* Activation of the partial template workaround:
- */
-#if !defined(_STLP_DONT_USE_PARTIAL_SPEC_WRKD) &&\
-   (!defined(_STLP_CLASS_PARTIAL_SPECIALIZATION) || !defined(_STLP_FUNCTION_TMPL_PARTIAL_ORDER))
-#  define _STLP_USE_PARTIAL_SPEC_WORKAROUND
-#endif
+#define _STLP_PSPEC2(t1,t2)  /* nothing */
+#define _STLP_PSPEC3(t1,t2,t3)  /* nothing */
 
 #ifndef _STLP_USE_NO_IOSTREAMS
 #  define _STLP_NEW_IO_NAMESPACE _STLP_STD

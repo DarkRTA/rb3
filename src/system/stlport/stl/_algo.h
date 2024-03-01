@@ -479,10 +479,8 @@ struct __less_2 {
 template <class _T1, class _T2>
 __less_2<_T1,_T2> __less2(_T1*, _T2* ) { return __less_2<_T1, _T2>(); }
 
-#if defined (_STLP_FUNCTION_PARTIAL_ORDER)
 template <class _Tp>
 less<_Tp> __less2(_Tp*, _Tp* ) { return less<_Tp>(); }
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

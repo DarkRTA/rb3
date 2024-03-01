@@ -48,29 +48,11 @@
 
 _STLP_BEGIN_NAMESPACE
 
-# if ! defined ( _STLP_LIMITED_DEFAULT_TEMPLATES )
 template <class _Tp, class _Sequence = deque<_Tp> >
-# elif defined ( _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS )
-#  define _STLP_QUEUE_ARGS _Tp
-template <class _Tp>
-# else
-template <class _Tp, class _Sequence>
-# endif
 class queue
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-#  if defined (_STLP_QUEUE_ARGS)
-            : public __stlport_class<queue<_Tp> >
-#  else
-            : public __stlport_class<queue<_Tp, _Sequence> >
-#  endif
-#endif
 {
-# if defined ( _STLP_QUEUE_ARGS )
-  typedef deque<_Tp> _Sequence;
-  typedef queue<_Tp> _Self;
-# else
   typedef queue<_Tp, _Sequence> _Self;
-# endif
+
 public:
   typedef typename _Sequence::value_type      value_type;
   typedef typename _Sequence::size_type       size_type;
@@ -100,51 +82,26 @@ public:
   const _Sequence& _Get_s() const { return c; }
 };
 
-#ifndef _STLP_QUEUE_ARGS
-#  define _STLP_QUEUE_ARGS _Tp, _Sequence
-#  define _STLP_QUEUE_HEADER_ARGS class _Tp, class _Sequence
-#else
-#  define _STLP_QUEUE_HEADER_ARGS class _Tp
-#endif
-
-template < _STLP_QUEUE_HEADER_ARGS >
+template <class _Tp, class _Sequence>
 inline bool _STLP_CALL
-operator==(const queue<_STLP_QUEUE_ARGS >& __x, const queue<_STLP_QUEUE_ARGS >& __y) {
+operator==(const queue<_Tp, _Sequence>& __x, const queue<_Tp, _Sequence>& __y) {
   return __x._Get_s() == __y._Get_s();
 }
 
-template < _STLP_QUEUE_HEADER_ARGS >
+template <class _Tp, class _Sequence>
 inline bool _STLP_CALL
-operator<(const queue<_STLP_QUEUE_ARGS >& __x, const queue<_STLP_QUEUE_ARGS >& __y) {
+operator<(const queue<_Tp, _Sequence>& __x, const queue<_Tp, _Sequence>& __y) {
   return __x._Get_s() < __y._Get_s();
 }
 
-_STLP_RELOPS_OPERATORS( template < _STLP_QUEUE_HEADER_ARGS >, queue<_STLP_QUEUE_ARGS > )
+_STLP_RELOPS_OPERATORS( template <class _Tp, class _Sequence>, queue<_Tp, _Sequence> )
 
-# if !(defined ( _STLP_LIMITED_DEFAULT_TEMPLATES ) || defined ( _STLP_TEMPLATE_PARAM_SUBTYPE_BUG ))
 template <class _Tp, class _Sequence = vector<_Tp>,
-          class _Compare = less<_STLP_HEADER_TYPENAME _Sequence::value_type> >
-# elif defined ( _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS )
-template <class _Tp>
-# else
-template <class _Tp, class _Sequence, class _Compare>
-# endif
+          class _Compare = less<typename _Sequence::value_type> >
 class priority_queue
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-#  if defined (_STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS)
-            : public __stlport_class<priority_queue<_Tp> >
-#  else
-            : public __stlport_class<priority_queue<_Tp, _Sequence> >
-#  endif
-#endif
 {
-# ifdef _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS
-  typedef vector<_Tp> _Sequence;
-  typedef less< typename vector<_Tp>::value_type> _Compare;
-  typedef priority_queue<_Tp> _Self;
-# else
   typedef priority_queue<_Tp, _Sequence, _Compare> _Self;
-# endif
+
 public:
   typedef typename _Sequence::value_type      value_type;
   typedef typename _Sequence::size_type       size_type;
@@ -167,7 +124,6 @@ public:
     : c(_STLP_PRIV _AsMoveSource(src.get().c)),
       comp(_STLP_PRIV _AsMoveSource(src.get().comp)) {}
 
-#ifdef _STLP_MEMBER_TEMPLATES
   template <class _InputIterator>
   priority_queue(_InputIterator __first, _InputIterator __last)
     : c(__first, __last) { make_heap(c.begin(), c.end(), comp); }
@@ -186,24 +142,6 @@ public:
     c.insert(c.end(), __first, __last);
     make_heap(c.begin(), c.end(), comp);
   }
-
-#else /* _STLP_MEMBER_TEMPLATES */
-  priority_queue(const value_type* __first, const value_type* __last)
-    : c(__first, __last) { make_heap(c.begin(), c.end(), comp); }
-
-  priority_queue(const value_type* __first, const value_type* __last,
-                 const _Compare& __x)
-    : c(__first, __last), comp(__x)
-    { make_heap(c.begin(), c.end(), comp); }
-
-  priority_queue(const value_type* __first, const value_type* __last,
-                 const _Compare& __x, const _Sequence& __c)
-    : c(__c), comp(__x)
-  {
-    c.insert(c.end(), __first, __last);
-    make_heap(c.begin(), c.end(), comp);
-  }
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   bool empty() const { return c.empty(); }
   size_type size() const { return c.size(); }
@@ -224,7 +162,6 @@ public:
   }
 };
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp, class _Sequence>
 struct __move_traits<queue<_Tp, _Sequence> > :
   _STLP_PRIV __move_traits_aux<_Sequence>
@@ -234,12 +171,9 @@ template <class _Tp, class _Sequence, class _Compare>
 struct __move_traits<priority_queue<_Tp, _Sequence, _Compare> > :
   _STLP_PRIV __move_traits_aux2<_Sequence, _Compare>
 {};
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 _STLP_END_NAMESPACE
 
-#undef _STLP_QUEUE_ARGS
-#undef _STLP_QUEUE_HEADER_ARGS
 #undef comp
 
 #endif /* _STLP_INTERNAL_QUEUE_H */

@@ -130,11 +130,7 @@ public:
   typedef typename _Container::const_iterator  _Const_iterator;
   typedef _Container                     _Container_type;
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
   typedef typename iterator_traits<_Const_iterator>::iterator_category _Iterator_category;
-#else
-  typedef typename _Container::_Iterator_category  _Iterator_category;
-#endif
   typedef _Iterator_category iterator_category;
 
   _DBG_iter_base() : __owned_link(0)  {}
@@ -212,9 +208,7 @@ private:
 
 public:
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
   typedef typename _Base::iterator_category iterator_category;
-#endif
   typedef typename _Base::_Iterator_category  _Iterator_category;
 
 public:
@@ -244,8 +238,7 @@ public:
   }
 
   reference operator*() const;
-
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     this->__increment();
@@ -362,12 +355,10 @@ template <class _Iterator>
 inline _Iterator _Non_Dbg_iter(_Iterator __it)
 { return __it; }
 
-#if defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 template <class _Container, class _Traits>
 inline typename _DBG_iter<_Container, _Traits>::_Nonconst_iterator
 _Non_Dbg_iter(_DBG_iter<_Container, _Traits> __it)
 { return __it._M_iterator; }
-#endif
 
 /*
  * Helper classes to check iterator range or pointer validity
@@ -383,7 +374,6 @@ protected:
     _STLP_VERBOSE_ASSERT((__p != 0), _StlMsg_INVALID_ARGUMENT)
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIter>
   __construct_checker(const _InputIter& __f, const _InputIter& __l) {
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
@@ -397,9 +387,7 @@ protected:
   void _M_check_dispatch(const _InputIter& __f, const _InputIter& __l, const __false_type& /*IsIntegral*/) {
     _STLP_DEBUG_CHECK(__check_range(__f,__l))
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || !defined (_STLP_NO_METHOD_SPECIALIZATION)
   __construct_checker(const value_type* __f, const value_type* __l) {
     _STLP_DEBUG_CHECK(__check_ptr_range(__f,__l))
   }
@@ -408,7 +396,6 @@ protected:
   __construct_checker(const _IteType& __f, const _IteType& __l) {
     _STLP_DEBUG_CHECK(__check_range(__f,__l))
   }
-#endif
 };
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)

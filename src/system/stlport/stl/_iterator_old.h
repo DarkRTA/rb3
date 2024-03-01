@@ -50,12 +50,11 @@ iterator_category(const insert_iterator<_Container>&) { return output_iterator_t
 
 # endif
 
-template <class _BidirectionalIterator, class _Tp, _STLP_DFL_TMPL_PARAM(_Reference, _Tp& ),
-    _STLP_DFL_TYPE_PARAM(_Distance, ptrdiff_t)>
+template <class _BidirectionalIterator, class _Tp, class _Reference = _Tp&,
+    class _Distance = ptrdiff_t>
 class reverse_bidirectional_iterator {
   typedef reverse_bidirectional_iterator<_BidirectionalIterator, _Tp,
                                          _Reference, _Distance> _Self;
-  //  friend inline bool operator== _STLP_NULL_TMPL_ARGS (const _Self& x, const _Self& y);
 protected:
   _BidirectionalIterator current;
 public:
@@ -73,9 +72,8 @@ public:
     _BidirectionalIterator __tmp = current;
     return *(--__tmp);
   }
-# if !(defined _STLP_NO_ARROW_OPERATOR)
-  _STLP_DEFINE_ARROW_OPERATOR
-# endif
+  pointer operator->() const { return &(operator*()); }
+
   _Self& operator++() {
     --current;
     return *this;
@@ -136,182 +134,6 @@ inline bool  _STLP_CALL operator!=(
 }
 
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
-
-#if ! defined ( _STLP_CLASS_PARTIAL_SPECIALIZATION )
-
-// This is the old version of reverse_iterator, as found in the original
-//  HP STL.  It does not use partial specialization.
-
-template <class _RandomAccessIterator,
-        class _Tp,
-        _STLP_DFL_TMPL_PARAM(_Reference,_Tp&),
-        _STLP_DFL_TYPE_PARAM(_Distance,ptrdiff_t)>
-class reverse_iterator {
-  typedef reverse_iterator<_RandomAccessIterator, _Tp, _Reference, _Distance>
-          _Self;
-protected:
-  _RandomAccessIterator __current;
-public:
-  typedef random_access_iterator_tag iterator_category;
-  typedef _Tp                        value_type;
-  typedef _Distance                  difference_type;
-  typedef _Tp*                       pointer;
-  typedef _Reference                 reference;
-
-  reverse_iterator() {}
-  reverse_iterator(const _Self& __x) : __current(__x.base()) {}
-  explicit reverse_iterator(_RandomAccessIterator __x) : __current(__x) {}
-  _Self& operator=(const _Self& __x) {__current = __x.base(); return *this; }
-
-  _RandomAccessIterator base() const { return __current; }
-  _Reference operator*() const { return *(__current - (difference_type)1); }
-
-# if !(defined _STLP_NO_ARROW_OPERATOR)
-  _STLP_DEFINE_ARROW_OPERATOR
-# endif
-
-  _Self& operator++() {
-    --__current;
-    return *this;
-  }
-  _Self operator++(int) {
-    _Self __tmp = *this;
-    --__current;
-    return __tmp;
-  }
-  _Self& operator--() {
-    ++__current;
-    return *this;
-  }
-  _Self operator--(int) {
-    _Self __tmp = *this;
-    ++__current;
-    return __tmp;
-  }
-  _Self operator+(_Distance __n) const {
-    return _Self(__current - __n);
-  }
-  _Self& operator+=(_Distance __n) {
-    __current -= __n;
-    return *this;
-  }
-  _Self operator-(_Distance __n) const {
-    return _Self(__current + __n);
-  }
-  _Self& operator-=(_Distance __n) {
-    __current += __n;
-    return *this;
-  }
-  _Reference operator[](_Distance __n) const { return *(*this + __n); }
-};
-
-# ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline random_access_iterator_tag _STLP_CALL
-iterator_category(const reverse_iterator<_RandomAccessIterator, _Tp, _Reference, _Distance>&)
-{ return random_access_iterator_tag(); }
-template <class _RandomAccessIterator, class _Tp,
-  class _Reference, class _Distance>
-inline _Tp*  _STLP_CALL value_type(const reverse_iterator<_RandomAccessIterator, _Tp, _Reference, _Distance>&)
-{ return (_Tp*) 0; }
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline _Distance*  _STLP_CALL
-distance_type(const reverse_iterator<_RandomAccessIterator, _Tp, _Reference, _Distance>&)
-{ return (_Distance*) 0; }
-#endif
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool  _STLP_CALL
-operator==(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __x,
-           const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __y)
-{
-  return __x.base() == __y.base();
-}
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool _STLP_CALL
-operator<(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __x,
-          const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __y)
-{
-  return __y.base() < __x.base();
-}
-
-#ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool _STLP_CALL
-operator!=(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __x,
-           const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __y) {
-  return !(__x == __y);
-}
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool _STLP_CALL
-operator>(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __x,
-          const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __y) {
-  return __y < __x;
-}
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool _STLP_CALL
-operator<=(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __x,
-           const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __y) {
-  return !(__y < __x);
-}
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline bool _STLP_CALL
-operator>=(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __x,
-           const reverse_iterator<_RandomAccessIterator, _Tp,
-                                  _Reference, _Distance>& __y) {
-  return !(__x < __y);
-}
-
-#endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline _Distance  _STLP_CALL
-operator-(const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __x,
-          const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __y)
-{
-  return __y.base() - __x.base();
-}
-
-template <class _RandomAccessIterator, class _Tp,
-          class _Reference, class _Distance>
-inline reverse_iterator<_RandomAccessIterator, _Tp,
-                        _Reference, _Distance>  _STLP_CALL
-operator+(_Distance __n,
-          const reverse_iterator<_RandomAccessIterator, _Tp,
-                                 _Reference, _Distance>& __x)
-{
-  return reverse_iterator<_RandomAccessIterator, _Tp,
-                          _Reference, _Distance>(__x.base() - __n);
-}
-
-#endif /* ! defined ( _STLP_CLASS_PARTIAL_SPECIALIZATION ) */
 
 _STLP_END_NAMESPACE
 

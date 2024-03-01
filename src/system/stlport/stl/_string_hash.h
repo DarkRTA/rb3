@@ -40,31 +40,11 @@ __stl_string_hash(const basic_string<_CharT,_Traits,_Alloc>& __s) {
   return size_t(__h);
 }
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-
 template <class _CharT, class _Traits, class _Alloc>
 struct hash<basic_string<_CharT,_Traits,_Alloc> > {
   size_t operator()(const basic_string<_CharT,_Traits,_Alloc>& __s) const
     { return __stl_string_hash(__s); }
 };
-
-#else
-
-_STLP_TEMPLATE_NULL
-struct _STLP_CLASS_DECLSPEC hash<string> {
-  size_t operator()(const string& __s) const
-    { return __stl_string_hash(__s); }
-};
-
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_TEMPLATE_NULL
-struct _STLP_CLASS_DECLSPEC hash<wstring> {
-  size_t operator()(const wstring& __s) const
-    { return __stl_string_hash(__s); }
-};
-#  endif
-
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 _STLP_END_NAMESPACE
 

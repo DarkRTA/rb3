@@ -36,40 +36,11 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if (_STLP_STATIC_TEMPLATE_DATA > 0)
-
 template <class _CharT, class _InputIterator>
 locale::id money_get<_CharT, _InputIterator>::id;
 
 template <class _CharT, class _OutputIterator>
 locale::id money_put<_CharT, _OutputIterator>::id;
-
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-//typedef money_get<char, const char*> money_get_char;
-//typedef money_put<char, char*> money_put_char;
-typedef money_get<char, istreambuf_iterator<char, char_traits<char> > > money_get_char_2;
-typedef money_put<char, ostreambuf_iterator<char, char_traits<char> > > money_put_char_2;
-
-//__DECLARE_INSTANCE(locale::id, money_get_char::id, );
-//__DECLARE_INSTANCE(locale::id, money_put_char::id, );
-__DECLARE_INSTANCE(locale::id, money_get_char_2::id, );
-__DECLARE_INSTANCE(locale::id, money_put_char_2::id, );
-
-#  ifndef _STLP_NO_WCHAR_T
-
-//typedef money_get<wchar_t, const wchar_t*> money_get_wchar_t;
-//typedef money_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > > money_get_wchar_t_2;
-typedef money_put<wchar_t, wchar_t*> money_put_wchar_t;
-typedef money_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > > money_put_wchar_t_2;
-
-//__DECLARE_INSTANCE(locale::id, money_get_wchar_t::id, );
-//__DECLARE_INSTANCE(locale::id, money_put_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, money_get_wchar_t_2::id, );
-__DECLARE_INSTANCE(locale::id, money_put_wchar_t_2::id, );
-
-#  endif
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
 // money_get facets
 

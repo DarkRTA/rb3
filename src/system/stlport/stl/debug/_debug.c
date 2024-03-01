@@ -57,17 +57,6 @@ inline bool _STLP_CALL  __in_range_aux(const _Iterator1& __it, const _Iterator& 
   return (__i != __last);
 }
 
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _Iterator1, class _Iterator>
-inline bool  _STLP_CALL
-__in_range_aux(const _Iterator1& __it, const _Iterator& __first,
-               const _Iterator& __last, const bidirectional_iterator_tag &) {
-  _Iterator1 __i(__first);
-  for (;  __i != __last && __i != __it; ++__i);
-  return (__i != __last);
-}
-#endif
-
 template <class _Iterator>
 bool _STLP_CALL __check_range_aux(const _Iterator& __first, const _Iterator& __last,
                                   const __false_type& /*_IsIntegral*/) {
@@ -292,13 +281,8 @@ _STLP_STRING_LITERAL("Memory allocation function returned a wrongly align memory
 _STLP_STRING_LITERAL("Unknown problem") \
   }
 
-#    if (_STLP_STATIC_TEMPLATE_DATA > 0)
 template <class _Dummy>
 const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX]  _STLP_MESSAGE_TABLE_BODY;
-#    else
-__DECLARE_INSTANCE(const char*, __stl_debug_engine<bool>::_Message_table[_StlMsg_MAX],
-                   _STLP_MESSAGE_TABLE_BODY);
-#    endif
 
 #    undef _STLP_STRING_LITERAL
 #    undef _STLP_PERCENT_S
@@ -341,6 +325,7 @@ __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
   wvsprintf(__buffer, _lpw, __args);
   _STLP_WINCE_TRACE(__buffer);
   STLPORT_CSTD::vfprintf(stderr, __format_str, __args);
+#        endif
 #      else
   char __buffer[4096];
 

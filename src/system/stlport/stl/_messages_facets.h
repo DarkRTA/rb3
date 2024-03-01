@@ -51,7 +51,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 class _Messages;
 _STLP_MOVE_TO_STD_NAMESPACE
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC messages<char> : public locale::facet, public messages_base {
   friend class _Locale_impl;
 public:
@@ -91,7 +91,7 @@ private:
 
 #if !defined (_STLP_NO_WCHAR_T)
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC messages<wchar_t> : public locale::facet, public messages_base {
   friend class _Locale_impl;
 public:
@@ -133,7 +133,7 @@ private:
 
 template <class _CharT> class messages_byname {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC messages_byname<char> : public messages<char> {
 public:
   typedef messages_base::catalog catalog;
@@ -152,7 +152,7 @@ private:
 };
 
 #if !defined (_STLP_NO_WCHAR_T)
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC messages_byname<wchar_t> : public messages<wchar_t> {
 public:
   typedef messages_base::catalog catalog;
@@ -178,4 +178,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

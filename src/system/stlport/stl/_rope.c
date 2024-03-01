@@ -992,38 +992,25 @@ void rope<_CharT,_Alloc>::_S_dump(_RopeRep* __r, int __indent) {
 }
 #endif /* _STLP_DEBUG */
 
-# define __ROPE_TABLE_BODY  = { \
-/* 0 */1, /* 1 */2, /* 2 */3, /* 3 */5, /* 4 */8, /* 5 */13, /* 6 */21,         \
-/* 7 */34, /* 8 */55, /* 9 */89, /* 10 */144, /* 11 */233, /* 12 */377,         \
-/* 13 */610, /* 14 */987, /* 15 */1597, /* 16 */2584, /* 17 */4181,             \
-/* 18 */6765ul, /* 19 */10946ul, /* 20 */17711ul, /* 21 */28657ul, /* 22 */46368ul,   \
-/* 23 */75025ul, /* 24 */121393ul, /* 25 */196418ul, /* 26 */317811ul,                \
-/* 27 */514229ul, /* 28 */832040ul, /* 29 */1346269ul, /* 30 */2178309ul,             \
-/* 31 */3524578ul, /* 32 */5702887ul, /* 33 */9227465ul, /* 34 */14930352ul,          \
-/* 35 */24157817ul, /* 36 */39088169ul, /* 37 */63245986ul, /* 38 */102334155ul,      \
-/* 39 */165580141ul, /* 40 */267914296ul, /* 41 */433494437ul,                        \
-/* 42 */701408733ul, /* 43 */1134903170ul, /* 44 */1836311903ul,                      \
-/* 45 */2971215073ul }
-
-# if ( _STLP_STATIC_TEMPLATE_DATA > 0 )
 template <class _CharT, class _Alloc>
 const unsigned long
-rope<_CharT,_Alloc>::_S_min_len[__ROPE_DEPTH_SIZE] __ROPE_TABLE_BODY;
-# else
-__DECLARE_INSTANCE(const unsigned long,
-                   crope::_S_min_len[__ROPE_DEPTH_SIZE],
-                   __ROPE_TABLE_BODY);
-#  ifndef _STLP_NO_WCHAR_T
-__DECLARE_INSTANCE(const unsigned long,
-                   wrope::_S_min_len[__ROPE_DEPTH_SIZE],
-                   __ROPE_TABLE_BODY);
-#  endif
-# endif
+rope<_CharT,_Alloc>::_S_min_len[__ROPE_DEPTH_SIZE] = { \
+    // These are Fibonacci numbers < 2**32.
+    /* 0 */1, /* 1 */2, /* 2 */3, /* 3 */5, /* 4 */8, /* 5 */13, /* 6 */21,         \
+    /* 7 */34, /* 8 */55, /* 9 */89, /* 10 */144, /* 11 */233, /* 12 */377,         \
+    /* 13 */610, /* 14 */987, /* 15 */1597, /* 16 */2584, /* 17 */4181,             \
+    /* 18 */6765ul, /* 19 */10946ul, /* 20 */17711ul, /* 21 */28657ul, /* 22 */46368ul,   \
+    /* 23 */75025ul, /* 24 */121393ul, /* 25 */196418ul, /* 26 */317811ul,                \
+    /* 27 */514229ul, /* 28 */832040ul, /* 29 */1346269ul, /* 30 */2178309ul,             \
+    /* 31 */3524578ul, /* 32 */5702887ul, /* 33 */9227465ul, /* 34 */14930352ul,          \
+    /* 35 */24157817ul, /* 36 */39088169ul, /* 37 */63245986ul, /* 38 */102334155ul,      \
+    /* 39 */165580141ul, /* 40 */267914296ul, /* 41 */433494437ul,                        \
+    /* 42 */701408733ul, /* 43 */1134903170ul, /* 44 */1836311903ul,                      \
+    /* 45 */2971215073ul
+};
+
 # undef __ROPE_DEPTH_SIZE
 # undef __ROPE_MAX_DEPTH
-# undef __ROPE_TABLE_BODY
-
-// These are Fibonacci numbers < 2**32.
 
 template <class _CharT, class _Alloc>
 __RopeRep__* rope<_CharT,_Alloc>::_S_balance(_RopeRep* __r) {
@@ -1300,16 +1287,8 @@ _Rope_char_ref_proxy<_CharT, _Alloc>::operator& () const {
     return _Rope_char_ptr_proxy<_CharT, _Alloc>(*this);
 }
 
-# if ( _STLP_STATIC_TEMPLATE_DATA > 0 )
 template<class _CharT, class _Alloc>
 _CharT rope<_CharT,_Alloc>::_S_empty_c_str[1] = { _CharT() };
-# else
-__DECLARE_INSTANCE(char, crope::_S_empty_c_str[1], ={0});
-# ifdef _STLP_HAS_WCHAR_T
-__DECLARE_INSTANCE(wchar_t, wrope::_S_empty_c_str[1], ={0});
-# endif /* _STLP_HAS_WCHAR_T */
-# endif /* _STLP_STATIC_TEMPLATE_DATA */
-// # endif
 
 #if !defined (_STLP_STATIC_CONST_INIT_BUG)
 template <class _CharT, class _Alloc>

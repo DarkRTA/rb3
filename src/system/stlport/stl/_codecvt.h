@@ -145,16 +145,14 @@ private:
 };
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
-#  if (_STLP_STATIC_TEMPLATE_DATA > 0)
 template <class _InternT, class _ExternT, class _StateT>
 locale::id codecvt<_InternT, _ExternT, _StateT>::id;
-#  endif
 #endif
 
 template <class _InternT, class _ExternT, class _StateT>
 class codecvt_byname : public codecvt<_InternT, _ExternT, _StateT> {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC codecvt<char, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
@@ -246,7 +244,7 @@ private:
 
 # ifndef _STLP_NO_WCHAR_T
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC codecvt<wchar_t, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
@@ -342,7 +340,7 @@ private:
 
 # endif
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC codecvt_byname<char, char, mbstate_t>
   : public codecvt<char, char, mbstate_t> {
 public:
@@ -354,7 +352,7 @@ private:
 };
 
 # ifndef _STLP_NO_WCHAR_T
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC codecvt_byname<wchar_t, char, mbstate_t>
   : public codecvt<wchar_t, char, mbstate_t>
 {

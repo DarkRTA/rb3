@@ -88,10 +88,8 @@ public:                         // Unformatted output.
 public:                         // Formatted output.
   // Formatted output from a streambuf.
   _Self& operator<<(basic_streambuf<_CharT, _Traits>* __buf);
-# ifndef _STLP_NO_FUNCTION_TMPL_PARTIAL_ORDER
   // this is needed for compiling with option char = unsigned
   _Self& operator<<(unsigned char __x) { _M_put_char(__x); return *this; }
-# endif
   _Self& operator<<(short __x);
   _Self& operator<<(unsigned short __x);
   _Self& operator<<(int __x);
@@ -208,47 +206,6 @@ operator<<(basic_ostream<_CharT, _Traits>& __os, const _CharT* __s) {
   return __os;
 }
 
-#if defined (_STLP_NO_FUNCTION_TMPL_PARTIAL_ORDER)
-// some specializations
-
-inline basic_ostream<char, char_traits<char> >& _STLP_CALL
-operator<<(basic_ostream<char, char_traits<char> >& __os, char __c) {
-  __os._M_put_char(__c);
-  return __os;
-}
-
-inline basic_ostream<char, char_traits<char> >& _STLP_CALL
-operator<<(basic_ostream<char, char_traits<char> >& __os, signed char __c) {
-  __os._M_put_char(__c);
-  return __os;
-}
-
-inline basic_ostream<char, char_traits<char> >& _STLP_CALL
-operator<<(basic_ostream<char, char_traits<char> >& __os, unsigned char __c) {
-  __os._M_put_char(__c);
-  return __os;
-}
-
-inline basic_ostream<char, char_traits<char> >& _STLP_CALL
-operator<<(basic_ostream<char, char_traits<char> >& __os, const char* __s) {
-  __os._M_put_nowiden(__s);
-  return __os;
-}
-
-inline basic_ostream<char, char_traits<char> >& _STLP_CALL
-operator<<(basic_ostream<char, char_traits<char> >& __os, const signed char* __s) {
-  __os._M_put_nowiden(__REINTERPRET_CAST(const char*,__s));
-  return __os;
-}
-
-inline basic_ostream<char, char_traits<char> >&
-operator<<(basic_ostream<char, char_traits<char> >& __os, const unsigned char* __s) {
-  __os._M_put_nowiden(__REINTERPRET_CAST(const char*,__s));
-  return __os;
-}
-
-#else
-
 // also for compilers who might use that
 template <class _CharT, class _Traits>
 inline basic_ostream<_CharT, _Traits>& _STLP_CALL
@@ -305,7 +262,6 @@ operator<<(basic_ostream<char, _Traits>& __os, const unsigned char* __s) {
   __os._M_put_nowiden(__REINTERPRET_CAST(const char*,__s));
   return __os;
 }
-#endif /* _STLP_NO_FUNCTION_TMPL_PARTIAL_ORDER */
 
 //----------------------------------------------------------------------
 // basic_ostream manipulators.

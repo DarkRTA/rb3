@@ -46,15 +46,10 @@ public:
 };
 
 // moneypunct facets: forward declaration
-template <class _charT, _STLP_DFL_NON_TYPE_PARAM(bool, _International, false) > class moneypunct {};
+template <class _charT, bool _International = false> class moneypunct {};
 
 // money_get facets
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _CharT, class _InputIter>
-#else
 template <class _CharT, class _InputIter = istreambuf_iterator<_CharT, char_traits<_CharT> > >
-#endif
 class money_get : public locale::facet {
   friend class _Locale_impl;
 
@@ -88,7 +83,7 @@ protected:
 
 // moneypunct facets: definition of specializations
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct<char, true> : public locale::facet, public money_base {
 
 public:
@@ -134,7 +129,7 @@ protected:
   friend class _Locale_impl;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct<char, false> : public locale::facet, public money_base
 {
 public:
@@ -184,7 +179,7 @@ protected:
 
 # ifndef _STLP_NO_WCHAR_T
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct<wchar_t, true> : public locale::facet, public money_base
 {
   friend class _Locale_impl;
@@ -229,7 +224,7 @@ protected:
 };
 
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct<wchar_t, false> : public locale::facet, public money_base
 {
   friend class _Locale_impl;
@@ -275,9 +270,9 @@ protected:
 
 # endif
 
-template <class _charT, _STLP_DFL_NON_TYPE_PARAM(bool , _International , false) > class moneypunct_byname {};
+template <class _charT, bool _International = false> class moneypunct_byname {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct_byname<char, true> : public moneypunct<char, true> {
 public:
   typedef money_base::pattern   pattern;
@@ -307,7 +302,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct_byname<char, false> : public moneypunct<char, false>
 {
 public:
@@ -340,7 +335,7 @@ private:
 };
 
 #if !defined (_STLP_NO_WCHAR_T)
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct_byname<wchar_t, true> : public moneypunct<wchar_t, true>
 {
 public:
@@ -371,7 +366,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC moneypunct_byname<wchar_t, false> : public moneypunct<wchar_t, false>
 {
 public:
@@ -405,14 +400,8 @@ private:
 
 //===== methods ======
 
-
 // money_put facets
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _CharT, class _OutputIter>
-#else
 template <class _CharT, class _OutputIter = ostreambuf_iterator<_CharT, char_traits<_CharT> > >
-#endif
 class money_put : public locale::facet {
   friend class _Locale_impl;
 

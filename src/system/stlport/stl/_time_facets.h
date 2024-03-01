@@ -105,11 +105,7 @@ public:
   enum dateorder {no_order, dmy, mdy, ymd, ydm};
 };
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _InIt>
-#else
 template <class _Ch, class _InIt = istreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_get : public locale::facet, public time_base {
   friend class _Locale_impl;
 
@@ -183,11 +179,7 @@ class time_get_byname;
 template <class _Ch, class _InIt>
 _Locale_name_hint* _Locale_time_extract_hint(time_get_byname<_Ch, _InIt>*);
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _InIt>
-#else
 template <class _Ch, class _InIt = istreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_get_byname : public time_get<_Ch, _InIt> {
 public:
   typedef  time_base::dateorder dateorder;
@@ -241,11 +233,7 @@ _OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _OutIt>
-#else
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_put : public locale::facet, public time_base {
   friend class _Locale_impl;
 public:
@@ -277,11 +265,7 @@ protected:
   _STLP_PRIV _Time_Info _M_timeinfo;
 };
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _OutIt>
-#else
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_put_byname : public time_put<_Ch, _OutIt> {
   friend class _Locale_impl;
 public:

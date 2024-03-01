@@ -269,13 +269,8 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first2, __last2))
   return _STLP_PRIV __find_end(__first1, __last1, __first2, __last2,
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
                                _STLP_ITERATOR_CATEGORY(__first1, _ForwardIter1),
                                _STLP_ITERATOR_CATEGORY(__first2, _ForwardIter2),
-#else
-                               forward_iterator_tag(),
-                               forward_iterator_tag(),
-#endif
                                _STLP_PRIV __equal_to(_STLP_VALUE_TYPE(__first1, _ForwardIter1))
     );
 }
@@ -315,24 +310,6 @@ __unique_copy(_InputIter __first, _InputIter __last, _ForwardIter __result,
     if (!__binary_pred(*__result, *__first)) *++__result = *__first;
   return ++__result;
 }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIterator, class _BidirectionalIterator, class _BinaryPredicate>
-inline _BidirectionalIterator
-__unique_copy(_InputIterator __first, _InputIterator __last,
-              _BidirectionalIterator __result, _BinaryPredicate __binary_pred,
-              const bidirectional_iterator_tag &) {
-  return __unique_copy(__first, __last, __result, __binary_pred, forward_iterator_tag());
-}
-
-template <class _InputIterator, class _RandomAccessIterator, class _BinaryPredicate>
-inline _RandomAccessIterator
-__unique_copy(_InputIterator __first, _InputIterator __last,
-              _RandomAccessIterator __result, _BinaryPredicate __binary_pred,
-              const random_access_iterator_tag &) {
-  return __unique_copy(__first, __last, __result, __binary_pred, forward_iterator_tag());
-}
-#endif /* _STLP_NONTEMPL_BASE_MATCH_BUG */
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -701,17 +678,6 @@ _STLP_INLINE_LOOP _BidirectionalIter __partition(_BidirectionalIter __first,
   }
 }
 
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _BidirectionalIter, class _Predicate>
-inline
-_BidirectionalIter __partition(_BidirectionalIter __first,
-                               _BidirectionalIter __last,
-                               _Predicate __pred,
-                               const random_access_iterator_tag &) {
-  return __partition(__first, __last, __pred, bidirectional_iterator_tag());
-}
-#endif
-
 _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _ForwardIter, class _Predicate>
@@ -831,15 +797,6 @@ __stable_partition_aux(_BidirectIter __first, _BidirectIter __last, _Predicate _
                                     _STLP_VALUE_TYPE(__first, _BidirectIter),
                                     _STLP_DISTANCE_TYPE(__first, _BidirectIter), true);
 }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _BidirectIter, class _Predicate>
-_BidirectIter
-__stable_partition_aux(_BidirectIter __first, _BidirectIter __last, _Predicate __pred,
-                       const random_access_iterator_tag &) {
-  return __stable_partition_aux(__first, __last, __pred, bidirectional_iterator_tag());
-}
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

@@ -44,14 +44,12 @@ template <class _CharT> class numpunct {};
 template <class _CharT> class numpunct_byname {};
 template <class _Ch, class _InIt> class num_get;
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC numpunct<char> : public locale::facet
 {
   friend class _Locale_impl;
-
-#ifndef _STLP_NO_FRIEND_TEMPLATES
   template <class _Ch, class _InIt> friend class num_get;
-#endif
+
 public:
   typedef char               char_type;
   typedef string             string_type;
@@ -67,9 +65,7 @@ public:
 
   static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
 
-#ifndef _STLP_NO_FRIEND_TEMPLATES
 protected:
-#endif
   ~numpunct();
 
   string  _M_truename;
@@ -85,7 +81,7 @@ protected:
 
 # if ! defined (_STLP_NO_WCHAR_T)
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC numpunct<wchar_t> : public locale::facet
 {
   friend class _Locale_impl;
@@ -120,7 +116,7 @@ protected:
 
 # endif /* WCHAR_T */
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC numpunct_byname<char> : public numpunct<char> {
 public:
   typedef char                char_type;
@@ -147,7 +143,7 @@ private:
 };
 
 # ifndef _STLP_NO_WCHAR_T
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC numpunct_byname<wchar_t>: public numpunct<wchar_t> {
 public:
   typedef wchar_t               char_type;
@@ -181,4 +177,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

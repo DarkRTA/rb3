@@ -35,9 +35,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Tp, class _Size = unsigned short, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
 class vector
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (vector)
-             : public __stlport_class<vector<_Tp, _Size, _Alloc> >
-#endif
 {
   /* In the vector implementation iterators are pointer which give a number
    * of opportunities for optimization. To not break those optimizations
@@ -121,25 +118,11 @@ public:
   explicit vector(__move_source<_Self> src)
     : _M_impl(__move_source<_Base>(src.get()._M_impl)) {}
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   vector(_InputIterator __first, _InputIterator __last,
-         const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL )
+         const allocator_type& __a = allocator_type() )
   : _M_impl(__first, __last,
             _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  vector(_InputIterator __first, _InputIterator __last)
-    : _M_impl(__first, __last) {}
-#  endif
-
-#else
-  vector(const_iterator __first, const_iterator __last,
-         const allocator_type& __a = allocator_type())
-    : _M_impl(cast_traits::to_storage_type_cptr(__first), cast_traits::to_storage_type_cptr(__last),
-              _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   _Self& operator=(const _Self& __x) { _M_impl = __x._M_impl; return *this; }
 
@@ -147,16 +130,9 @@ public:
   void assign(size_type __n, const value_type& __val)
   { _M_impl.assign(__n, cast_traits::to_storage_type_cref(__val)); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void assign(_InputIterator __first, _InputIterator __last)
   { _M_impl.assign(__first, __last); }
-#else
-  void assign(const_iterator __first, const_iterator __last) {
-    _M_impl.assign(cast_traits::to_storage_type_cptr(__first),
-                   cast_traits::to_storage_type_cptr(__last));
-  }
-#endif /* _STLP_MEMBER_TEMPLATES */
 
 #if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
   void push_back(const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
@@ -181,16 +157,9 @@ public:
 
   void swap(_Self& __x) { _M_impl.swap(__x._M_impl); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   void insert(iterator __pos, _InputIterator __first, _InputIterator __last)
   { _M_impl.insert(cast_traits::to_storage_type_ptr(__pos), __first, __last); }
-#else
-  void insert(iterator __pos, const_iterator __first, const_iterator __last) {
-    _M_impl.insert(cast_traits::to_storage_type_ptr(__pos), cast_traits::to_storage_type_cptr(__first),
-                                                            cast_traits::to_storage_type_cptr(__last));
-  }
-#endif
 
   void insert (iterator __pos, size_type __n, const value_type& __x) {
     _M_impl.insert(cast_traits::to_storage_type_ptr(__pos), __n, cast_traits::to_storage_type_cref(__x));

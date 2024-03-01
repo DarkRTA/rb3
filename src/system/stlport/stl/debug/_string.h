@@ -40,9 +40,6 @@ iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_STRING >&)
 
 template <class _CharT, class _Traits, class _Alloc>
 class basic_string : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING >
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (basic_string)
-                   , public __stlport_class<basic_string<_CharT, _Traits, _Alloc> >
-#endif
 {
 protected:
   typedef _STLP_NON_DBG_STRING _Base;
@@ -121,32 +118,12 @@ public:
 #endif
   }
 
-#if !defined (_STLP_MEMBER_TEMPLATES)
-  basic_string(const _CharT* __f, const _CharT* __l,
-               const allocator_type& __a = allocator_type())
-    : _ConstructCheck(__f, __l),
-      _M_non_dbg_impl(__f, __l, __a), _M_iter_list(&_M_non_dbg_impl) {
-  }
-  basic_string(const_iterator __f, const_iterator __l,
-               const allocator_type & __a = allocator_type())
-    : _ConstructCheck(__f, __l),
-      _M_non_dbg_impl(__f._M_iterator, __l._M_iterator, __a), _M_iter_list(&_M_non_dbg_impl) {
-  }
-#else
   template <class _InputIterator>
   basic_string(_InputIterator __f, _InputIterator __l,
-               const allocator_type & __a _STLP_ALLOCATOR_TYPE_DFL)
+               const allocator_type & __a = allocator_type())
     : _ConstructCheck(__f, __l),
       _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l), __a),
       _M_iter_list(&_M_non_dbg_impl) {}
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  basic_string(_InputIterator __f, _InputIterator __l)
-    : _ConstructCheck(__f, __l),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l)),
-      _M_iter_list(&_M_non_dbg_impl) {}
-#  endif
-#endif
 
 private:
   // constructor from non-debug version for substr
@@ -231,7 +208,6 @@ public:
   }
   _Self& operator+=(_CharT __c) { return append(1, __c); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIter>
   _Self& append(_InputIter __first, _InputIter __last) {
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
@@ -240,10 +216,8 @@ public:
     _Compare_Capacity(__old_capacity);
     return *this;
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& append(const _CharT* __f, const _CharT* __l) {
     _STLP_FIX_LITERAL_BUG(__f) _STLP_FIX_LITERAL_BUG(__l)
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f, __l))
@@ -360,7 +334,6 @@ public:
     return *this;
   }
 
-#if defined(_STLP_MEMBER_TEMPLATES)
 private:
   template <class _Integer>
   void _M_assign_dispatch(_Integer __n, _Integer __x, const __true_type& /*_Integral*/) {
@@ -382,10 +355,8 @@ public:
     _M_assign_dispatch(__first, __last, _Integral());
     return *this;
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& assign(const _CharT* __f, const _CharT* __l) {
     _STLP_FIX_LITERAL_BUG(__f) _STLP_FIX_LITERAL_BUG(__l)
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f, __l))
@@ -454,7 +425,6 @@ public:
     _Compare_Capacity(__old_capacity);
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 private:
   template <class _RandomIter>
   void _M_insert_aux (iterator __p, _RandomIter __first, _RandomIter __last,
@@ -488,10 +458,8 @@ public:
     _M_insert_aux(__p, __first, __last, _IsIterator());
     _Compare_Capacity(__old_capacity);
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   void insert(iterator __p, const_iterator __f, const_iterator __l) {
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f,__l))
@@ -610,7 +578,6 @@ public:
     return *this;
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 private:
   template <class _RandomIter>
   void _M_replace_aux(iterator __first, iterator __last,
@@ -642,10 +609,8 @@ public:
     _Compare_Capacity(__old_capacity);
     return *this;
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || \
-    !defined (_STLP_NO_METHOD_SPECIALIZATION) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
   _Self& replace(iterator __first, iterator __last,
                  const_iterator __f, const_iterator __l) {
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))

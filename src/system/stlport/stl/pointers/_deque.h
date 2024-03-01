@@ -84,9 +84,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
 class deque
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (deque)
-            : public __stlport_class<deque<_Tp, _Alloc> >
-#endif
 {
   typedef typename _STLP_PRIV _StorageType<_Tp>::_Type _StorageType;
   typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
@@ -162,10 +159,9 @@ public:                         // Basic accessors
   explicit deque(size_type __n) : _M_impl(__n) {}
 #endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   deque(_InputIterator __first, _InputIterator __last,
-        const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL)
+        const allocator_type& __a = allocator_type())
 #if !defined (_STLP_USE_ITERATOR_WRAPPER)
   : _M_impl(__first, __last,
             _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
@@ -176,30 +172,6 @@ public:                         // Basic accessors
     insert(end(), __first, __last);
 #endif
   }
-
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  deque(_InputIterator __first, _InputIterator __last)
-#    if !defined (_STLP_USE_ITERATOR_WRAPPER)
-    : _M_impl(__first, __last) {}
-#    else
-  { insert(end(), __first, __last); }
-#    endif
-#  endif
-
-#else
-  deque(const_pointer __first, const_pointer __last,
-        const allocator_type& __a = allocator_type() )
-    : _M_impl(cast_traits::to_storage_type_cptr(__first),
-              cast_traits::to_storage_type_cptr(__last),
-              _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-
-  deque(const_iterator __first, const_iterator __last,
-        const allocator_type& __a = allocator_type() )
-    : _M_impl(ite_cast_traits::to_storage_type_cite(__first),
-              ite_cast_traits::to_storage_type_cite(__last),
-              _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   deque(__move_source<_Self> src)
     : _M_impl(__move_source<_Base>(src.get()._M_impl)) {}
@@ -212,7 +184,6 @@ public:                         // Basic accessors
     _M_impl.assign(__n, cast_traits::to_storage_type_cref(__val));
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
 private:
   template <class _Integer>
@@ -238,14 +209,6 @@ public:
     _M_impl.assign(__first, __last);
 #  endif
   }
-#else
-  void assign(const_pointer __first, const_pointer __last)
-  { _M_impl.assign(cast_traits::to_storage_type_cptr(__first),
-                   cast_traits::to_storage_type_cptr(__last)); }
-  void assign(const_iterator __first, const_iterator __last)
-  { _M_impl.assign(ite_cast_traits::to_storage_type_cite(__first),
-                   ite_cast_traits::to_storage_type_cite(__last)); }
-#endif /* _STLP_MEMBER_TEMPLATES */
 
 #if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
   void push_back(const value_type& __t = _STLP_DEFAULT_CONSTRUCTED(value_type))
@@ -284,7 +247,6 @@ public:
   void insert(iterator __pos, size_type __n, const value_type& __x)
   { _M_impl.insert(ite_cast_traits::to_storage_type_ite(__pos), __n, cast_traits::to_storage_type_cref(__x)); }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
 private:
   template <class _Integer>
@@ -315,22 +277,6 @@ public:
     _M_impl.insert(ite_cast_traits::to_storage_type_ite(__pos), __first, __last);
 #  endif
   }
-
-#else /* _STLP_MEMBER_TEMPLATES */
-  void insert(iterator __pos,
-              const_pointer __first, const_pointer __last) {
-    _M_impl.insert(ite_cast_traits::to_storage_type_ite(__pos),
-                   cast_traits::to_storage_type_cptr(__first),
-                   cast_traits::to_storage_type_cptr(__last));
-  }
-  void insert(iterator __pos,
-              const_iterator __first, const_iterator __last) {
-    _M_impl.insert(ite_cast_traits::to_storage_type_ite(__pos),
-                   ite_cast_traits::to_storage_type_cite(__first),
-                   ite_cast_traits::to_storage_type_cite(__last));
-  }
-
-#endif /* _STLP_MEMBER_TEMPLATES */
 
 #if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))

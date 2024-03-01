@@ -34,41 +34,11 @@ _STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
 // Declarations of static template members.
-#if (_STLP_STATIC_TEMPLATE_DATA > 0)
-
 template <class _CharT, class _InputIterator>
 locale::id time_get<_CharT, _InputIterator>::id;
 
 template <class _CharT, class _OutputIterator>
 locale::id time_put<_CharT, _OutputIterator>::id;
-
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-//typedef time_get<char, const char*> time_get_char;
-typedef time_get<char, istreambuf_iterator<char, char_traits<char> > > time_get_char_2;
-//typedef time_put<char, char*> time_put_char;
-typedef time_put<char, ostreambuf_iterator<char, char_traits<char> > > time_put_char_2;
-
-//__DECLARE_INSTANCE(locale::id, time_get_char::id, );
-__DECLARE_INSTANCE(locale::id, time_get_char_2::id, );
-//__DECLARE_INSTANCE(locale::id, time_put_char::id, );
-__DECLARE_INSTANCE(locale::id, time_put_char_2::id, );
-
-#  if !defined (_STLP_NO_WCHAR_T)
-
-//typedef time_get<wchar_t, const wchar_t*> time_get_wchar_t;
-typedef time_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > > time_get_wchar_t_2;
-//typedef time_put<wchar_t, wchar_t*> time_put_wchar_t;
-typedef time_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > > time_put_wchar_t_2;
-
-//__DECLARE_INSTANCE(locale::id, time_get_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, time_get_wchar_t_2::id, );
-//__DECLARE_INSTANCE(locale::id, time_put_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, time_put_wchar_t_2::id, );
-
-#  endif
-
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 

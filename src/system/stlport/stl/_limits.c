@@ -63,7 +63,7 @@ __declare_numeric_base_member(float_round_style, round_style, round_toward_zero)
 #  undef __declare_numeric_base_member
 
 #  define __declare_integer_limits_member(__type, __mem, _Init) \
-template <class _Int, _STLP_LIMITS_MIN_TYPE __imin, _STLP_LIMITS_MAX_TYPE __imax, int __idigits, bool __ismod> \
+template <class _Int, _Int __imin, _Int __imax, int __idigits, bool __ismod> \
   const __type _Integer_limits<_Int, __imin, __imax, __idigits, __ismod>:: __mem
 
 __declare_integer_limits_member(bool, is_specialized, true);
@@ -208,9 +208,6 @@ long double _STLP_CALL _LimG<__dummy>::get_LD_sNaN() {
 #  endif /* _STLP_NO_LONG_DOUBLE */
 
 #endif /* _STLP_EXPOSE_GLOBALS_IMPLEMENTATION */
-
-#undef _STLP_LIMITS_MIN_TYPE
-#undef _STLP_LIMITS_MAX_TYPE
 
 #undef _STLP_FLOAT_INF_REP
 #undef _STLP_FLOAT_QNAN_REP

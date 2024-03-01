@@ -116,23 +116,7 @@ public:
 
 // Base class for integers.
 
-#ifdef _STLP_LIMITED_DEFAULT_TEMPLATES
-#  ifdef _STLP_LONG_LONG
-#    define _STLP_LIMITS_MIN_TYPE _STLP_LONG_LONG
-#    define _STLP_LIMITS_MAX_TYPE unsigned _STLP_LONG_LONG
-#  else
-#    define _STLP_LIMITS_MIN_TYPE long
-#    define _STLP_LIMITS_MAX_TYPE unsigned long
-#  endif
-#else
-#  define _STLP_LIMITS_MIN_TYPE _Int
-#  define _STLP_LIMITS_MAX_TYPE _Int
-#endif /* _STLP_LIMITED_DEFAULT_TEMPLATES */
-
-template <class _Int,
-          _STLP_LIMITS_MIN_TYPE __imin,
-          _STLP_LIMITS_MAX_TYPE __imax,
-          int __idigits, bool __ismod>
+template <class _Int, _Int __imin, _Int __imax, int __idigits, bool __ismod>
 class _Integer_limits : public _Numeric_limits_base<_Int> {
 public:
 
@@ -237,76 +221,76 @@ class numeric_limits : public _STLP_PRIV _Numeric_limits_base<_Tp> {};
 // Specializations for all built-in integral types.
 
 #if !defined (_STLP_NO_BOOL)
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<bool>
   : public _STLP_PRIV _Integer_limits<bool, false, true, 1, false>
 {};
 #endif /* _STLP_NO_BOOL */
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<char>
   : public _STLP_PRIV _Integer_limits<char, CHAR_MIN, CHAR_MAX, -1, true>
 {};
 
 #if !defined (_STLP_NO_SIGNED_BUILTINS)
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<signed char>
   : public _STLP_PRIV _Integer_limits<signed char, SCHAR_MIN, SCHAR_MAX, -1, true>
 {};
 #endif
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<unsigned char>
   : public _STLP_PRIV _Integer_limits<unsigned char, 0, UCHAR_MAX, -1, true>
 {};
 
 #if !(defined (_STLP_NO_WCHAR_T) || defined (_STLP_WCHAR_T_IS_USHORT))
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<wchar_t>
   : public _STLP_PRIV _Integer_limits<wchar_t, WCHAR_MIN, WCHAR_MAX, -1, true>
 {};
 
 #endif
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<short>
   : public _STLP_PRIV _Integer_limits<short, SHRT_MIN, SHRT_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<unsigned short>
   : public _STLP_PRIV _Integer_limits<unsigned short, 0, USHRT_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<int>
   : public _STLP_PRIV _Integer_limits<int, INT_MIN, INT_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<unsigned int>
   : public _STLP_PRIV _Integer_limits<unsigned int, 0, UINT_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<long>
   : public _STLP_PRIV _Integer_limits<long, LONG_MIN, LONG_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<unsigned long>
   : public _STLP_PRIV _Integer_limits<unsigned long, 0, ULONG_MAX, -1, true>
 {};
 
 #if defined (_STLP_LONG_LONG)
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<_STLP_LONG_LONG>
   : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LLONG_MIN, LLONG_MAX, -1, true>
 {};
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<unsigned _STLP_LONG_LONG>
   : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULLONG_MAX, -1, true>
 {};
@@ -335,7 +319,7 @@ public:
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<float>
   : public _STLP_PRIV _Floating_limits<float,
                                         FLT_MANT_DIG,   // Binary digits of precision
@@ -361,7 +345,7 @@ public:
   static  float _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_sNaN(); }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<double>
   : public _STLP_PRIV _Floating_limits<double,
                                         DBL_MANT_DIG,   // Binary digits of precision
@@ -389,7 +373,7 @@ public:
 
 #if !defined (_STLP_NO_LONG_DOUBLE)
 
-_STLP_TEMPLATE_NULL
+template<>
 class numeric_limits<long double>
   : public _STLP_PRIV _Floating_limits<long double,
                                         LDBL_MANT_DIG,  // Binary digits of precision

@@ -23,67 +23,65 @@ _STLP_BEGIN_NAMESPACE
 struct __true_type {};
 struct __false_type {};
 
-#if defined (_STLP_USE_NAMESPACES)
 _STLP_MOVE_TO_PRIV_NAMESPACE
 using _STLP_STD::__true_type;
 using _STLP_STD::__false_type;
 _STLP_MOVE_TO_STD_NAMESPACE
-#endif
 
 //bool to type
 template <int _Is>
 struct __bool2type
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __bool2type<1> { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __bool2type<0> { typedef __false_type _Ret; };
 
 //type to bool
 template <class __bool_type>
 struct __type2bool { enum {_Ret = 1}; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __type2bool<__true_type> { enum {_Ret = 1}; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __type2bool<__false_type> { enum {_Ret = 0}; };
 
 //Negation
 template <class _BoolType>
 struct _Not { typedef __false_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Not<__false_type> { typedef __true_type _Ret; };
 
 // logical and of 2 predicated
 template <class _P1, class _P2>
 struct _Land2 { typedef __false_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Land2<__true_type, __true_type> { typedef __true_type _Ret; };
 
 // logical and of 3 predicated
 template <class _P1, class _P2, class _P3>
 struct _Land3 { typedef __false_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Land3<__true_type, __true_type, __true_type> { typedef __true_type _Ret; };
 
 //logical or of 2 predicated
 template <class _P1, class _P2>
 struct _Lor2 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Lor2<__false_type, __false_type> { typedef __false_type _Ret; };
 
 // logical or of 3 predicated
 template <class _P1, class _P2, class _P3>
 struct _Lor3 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Lor3<__false_type, __false_type, __false_type> { typedef __false_type _Ret; };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,67 +97,11 @@ struct _Lor3<__false_type, __false_type, __false_type> { typedef __false_type _R
 //classes the default behavior of the __select is to consider the condition as false and so return
 //the second template type!!
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <bool _Cond, class _Tp1, class _Tp2>
 struct __select { typedef _Tp1 _Ret; };
 
 template <class _Tp1, class _Tp2>
 struct __select<false, _Tp1, _Tp2> { typedef _Tp2 _Ret; };
-
-#else /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-
-#  if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
-template <int _Cond>
-struct __select_aux {
-  template <class _Tp1, class _Tp2>
-  struct _In {
-    typedef _Tp1 _Ret;
-  };
-};
-
-_STLP_TEMPLATE_NULL
-struct __select_aux<0> {
-  template <class _Tp1, class _Tp2>
-  struct _In {
-    typedef _Tp2 _Ret;
-  };
-};
-
-template <int _Cond, class _Tp1, class _Tp2>
-struct __select {
-  typedef typename __select_aux<_Cond>::_STLP_TEMPLATE _In<_Tp1, _Tp2>::_Ret _Ret;
-};
-#  else /* _STLP_MEMBER_TEMPLATE_CLASSES */
-//default behavior
-template <int _Cond, class _Tp1, class _Tp2>
-struct __select {
-  typedef _Tp2 _Ret;
-};
-#  endif /* _STLP_MEMBER_TEMPLATE_CLASSES */
-
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-
-#if defined (_STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS)
-// Boris : simulation technique is used here according to Adobe Open Source License Version 1.0.
-// Copyright 2000 Adobe Systems Incorporated and others. All rights reserved.
-// Authors: Mat Marcus and Jesse Jones
-// The original version of this source code may be found at
-// http://opensource.adobe.com.
-
-// These are the discriminating functions
-template <class _Tp>
-char _STLP_CALL _IsSameFun(bool, _Tp const volatile*, _Tp const volatile*); // no implementation is required
-char* _STLP_CALL _IsSameFun(bool, ...);       // no implementation is required
-
-template <class _Tp1, class _Tp2>
-struct _IsSame {
-  static _Tp1* __null_rep1();
-  static _Tp2* __null_rep2();
-  enum { _Ret = (sizeof(_IsSameFun(false,__null_rep1(), __null_rep2())) == sizeof(char)) };
-  typedef typename __bool2type<_Ret>::_Ret _RetT;
-};
-
-#else
 
 template <class _Tp1, class _Tp2>
 struct _IsSameAux {
@@ -179,22 +121,17 @@ struct _UnCVType {
   typedef typename _UnConstType<_UnVType>::_Type _Type;
 };
 
-#  if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct _IsSameAux<_Tp, _Tp> {
   typedef __true_type _RetT;
   enum { _Ret = 1 };
 };
 
-#    if !defined (_STLP_QUALIFIED_SPECIALIZATION_BUG)
 template <class _Tp>
 struct _UnConstType<const _Tp> { typedef _Tp _Type; };
 
 template <class _Tp>
 struct _UnVolatileType<volatile _Tp> { typedef _Tp _Type; };
-#    endif
-
-#  endif
 
 template <class _Tp1, class _Tp2>
 struct _IsSame {
@@ -205,7 +142,6 @@ struct _IsSame {
   enum { _Ret = _Aux::_Ret };
   typedef typename _Aux::_RetT _RetT;
 };
-#endif
 
 /*
  * The following struct will tell you if 2 types are the same, the limitations are:
@@ -220,11 +156,6 @@ struct _AreSameUnCVTypes {
   typedef typename _IsSame<_Tp1, _Tp2>::_RetT _Ret;
 };
 
-/* Rather than introducing a new macro for the following constrution we use
- * an existing one (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS) that
- * is used for a similar feature.
- */
-#if !defined (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS)
 template <class _Src, class _Dst>
 struct _ConversionHelper {
   static char _Test(bool, _Dst);
@@ -252,21 +183,11 @@ struct _IsCVConvertible {
   typedef typename __bool2type<value>::_Ret _Ret;
 };
 
-#else
-template <class _Src, class _Dst>
-struct _IsConvertible {
-  enum {value = 0};
-  typedef __false_type _Ret;
-};
-#endif
-
 template <class _Tp>
 struct _IsConst { typedef __false_type _Ret; };
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_QUALIFIED_SPECIALIZATION_BUG)
 template <class _Tp>
 struct _IsConst <const _Tp> { typedef __true_type _Ret; };
-#endif
 
 _STLP_END_NAMESPACE
 

@@ -60,7 +60,7 @@ template <class charT> class ctype_byname {};
 
 //ctype specializations
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC ctype<char> : public locale::facet, public ctype_base {
 #ifndef _STLP_NO_WCHAR_T
     friend class ctype<wchar_t>;
@@ -143,7 +143,7 @@ private:
   bool _M_delete;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC ctype_byname<char>: public ctype<char> {
 public:
   explicit ctype_byname(const char*, size_t = 0, _Locale_name_hint* __hint = 0);
@@ -167,7 +167,7 @@ private:
 };
 
 #  ifndef _STLP_NO_WCHAR_T
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC ctype<wchar_t> : public locale::facet, public ctype_base
 {
   friend class _Locale_impl;
@@ -232,7 +232,7 @@ protected:
                                    char, char*) const;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _STLP_CLASS_DECLSPEC ctype_byname<wchar_t>: public ctype<wchar_t> {
 public:
   explicit ctype_byname(const char* __name, size_t __refs = 0, _Locale_name_hint* __hint = 0);

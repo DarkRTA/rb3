@@ -421,30 +421,8 @@ _STLP_MOVE_TO_STD_NAMESPACE
 // num_get<>, num_put<>
 //
 
-#if ( _STLP_STATIC_TEMPLATE_DATA > 0 )
-
 template <class _CharT, class _InputIterator>
 locale::id num_get<_CharT, _InputIterator>::id;
-
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-//typedef num_get<char, const char*> num_get_char;
-typedef num_get<char, istreambuf_iterator<char, char_traits<char> > > num_get_char_2;
-
-//__DECLARE_INSTANCE(locale::id, num_get_char::id, );
-__DECLARE_INSTANCE(locale::id, num_get_char_2::id, );
-
-#  if !defined (_STLP_NO_WCHAR_T)
-
-//typedef num_get<wchar_t, const wchar_t*> num_get_wchar_t;
-typedef num_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > > num_get_wchar_t_2;
-
-//__DECLARE_INSTANCE(locale::id, num_get_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, num_get_wchar_t_2::id, );
-
-#  endif
-
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
 #if !defined (_STLP_NO_BOOL)
 template <class _CharT, class _InputIter>

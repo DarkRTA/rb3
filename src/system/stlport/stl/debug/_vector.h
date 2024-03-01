@@ -74,7 +74,7 @@ struct _Vector_const_traits {
   typedef _Vector_nonconst_traits<_Tp, _NcIt> _NonConstTraits;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Vector_nonconst_traits<bool, _Bit_iterator> {
   typedef _Bit_iterator::value_type value_type;
   typedef _Bit_iterator::reference reference;
@@ -83,7 +83,7 @@ struct _Vector_nonconst_traits<bool, _Bit_iterator> {
   typedef _Vector_nonconst_traits<bool, _Bit_iterator> _NonConstTraits;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct _Vector_const_traits<bool, _Bit_iterator> {
   typedef _Bit_const_iterator::value_type value_type;
   typedef _Bit_const_iterator::reference reference;
@@ -96,9 +96,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
 class vector : private _STLP_PRIV __construct_checker< _STLP_NON_DBG_VECTOR >
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-             , public __stlport_class<vector<_Tp, _Alloc> >
-#endif
 {
 private:
   typedef _STLP_NON_DBG_VECTOR _Base;
@@ -196,34 +193,12 @@ public:
 #endif
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIterator>
   vector(_InputIterator __first, _InputIterator __last,
-         const allocator_type& __a _STLP_ALLOCATOR_TYPE_DFL)
+         const allocator_type& __a = allocator_type())
     : _ConstructCheck(__first, __last),
       _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last), __a),
       _M_iter_list(&_M_non_dbg_impl) {}
-
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-  template <class _InputIterator>
-  vector(_InputIterator __first, _InputIterator __last)
-    : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last)),
-      _M_iter_list(&_M_non_dbg_impl) {}
-#  endif
-#else
-  vector(const _Tp* __first, const _Tp* __last,
-         const allocator_type& __a = allocator_type())
-    : _ConstructCheck(__first, __last), _M_non_dbg_impl(__first, __last, __a),
-    _M_iter_list(&_M_non_dbg_impl) {}
-
-  // mysterious VC++ bug ?
-  vector(const_iterator __first, const_iterator __last ,
-         const allocator_type& __a = allocator_type())
-    : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(__first._M_iterator, __last._M_iterator, __a),
-    _M_iter_list(&_M_non_dbg_impl) {}
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   _Self& operator=(const _Self& __x) {
     if (this != &__x) {
@@ -276,7 +251,6 @@ public:
   { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
 #endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   // Check whether it's an integral type.  If so, it's not an iterator.
   template <class _InputIterator>
   void insert(iterator __pos,
@@ -293,27 +267,6 @@ public:
                            _STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
     _Compare_Capacity(__old_capacity);
   }
-#else
-  void insert (iterator __pos,
-               const value_type *__first, const value_type *__last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__first,__last))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    size_type __old_capacity = capacity();
-    _M_non_dbg_impl.insert(__pos._M_iterator, __first, __last);
-    _Compare_Capacity(__old_capacity);
-  }
-
-  void insert(iterator __pos,
-              const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first,__last))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    //Sequence requirements 23.1.1 Table 67:
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_not_owner(&_M_iter_list, __first, __true_type()));
-    size_type __old_capacity = capacity();
-    _M_non_dbg_impl.insert(__pos._M_iterator, __first._M_iterator, __last._M_iterator);
-    _Compare_Capacity(__old_capacity);
-}
-#endif
 
   void insert (iterator __pos, size_type __n, const _Tp& __x){
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
@@ -356,7 +309,6 @@ public:
   void resize(size_type __new_size) { resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
 #endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
-#if defined (_STLP_MEMBER_TEMPLATES)
 private:
   template <class _Integer>
   void _M_assign_dispatch(_Integer __n, _Integer __val,
@@ -389,24 +341,6 @@ public:
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
     _M_assign_dispatch(__first, __last, _Integral());
   }
-#else
-private:
-  void _M_assign(const value_type *__first, const value_type *__last) {
-    size_type __len = distance(__first, __last);
-    _M_check_assign(__len);
-    _M_non_dbg_impl.assign(__first, __last);
-  }
-public:
-  void assign(const value_type *__first, const value_type *__last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__first,__last))
-    _M_assign(__first, __last);
-  }
-
-  void assign(const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first,__last))
-    _M_assign(__first._M_iterator, __last._M_iterator);
-  }
-#endif
 
 private:
   void _M_check_assign(size_type __n) {

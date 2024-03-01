@@ -32,23 +32,18 @@ struct __allocator : public _Alloc {
   typedef const _Tp& const_reference;
   typedef _Tp        value_type;
 
-# if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
   template <class _Tp1> struct rebind {
     typedef __allocator<_Tp1, _Alloc> other;
   };
-# endif
+
   __allocator() _STLP_NOTHROW {}
   __allocator(const _Alloc& ) _STLP_NOTHROW {}
   __allocator(const __allocator<_Tp, _Alloc>& __a) _STLP_NOTHROW
     : _Alloc(__a) {}
-# if defined (_STLP_MEMBER_TEMPLATES) && defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
   template <class _Tp1>
   __allocator(const __allocator<_Tp1, _Alloc>& __a) _STLP_NOTHROW
     : _Alloc(__a) {}
-# endif
-# ifdef _STLP_TRIVIAL_DESTRUCTOR_BUG
-  ~__allocator() _STLP_NOTHROW {}
-# endif
+
   pointer address(reference __x) const { return &__x; }
   const_pointer address(const_reference __x) const { return &__x; }
 
@@ -74,7 +69,6 @@ struct __allocator : public _Alloc {
   const __underlying_alloc& __get_underlying_alloc() const { return *this; }
 };
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
 template <class _Alloc>
 class __allocator<void, _Alloc> {
   typedef size_t      size_type;
@@ -82,13 +76,11 @@ class __allocator<void, _Alloc> {
   typedef void*       pointer;
   typedef const void* const_pointer;
   typedef void        value_type;
-#ifdef _STLP_MEMBER_TEMPLATE_CLASSES
+
   template <class _Tp1> struct rebind {
     typedef __allocator<_Tp1, _Alloc> other;
   };
-#endif
 };
-#endif
 
 template <class _Tp, class _Alloc>
 inline bool  _STLP_CALL operator==(const __allocator<_Tp, _Alloc>& __a1,
@@ -104,21 +96,18 @@ inline bool  _STLP_CALL operator!=(const __allocator<_Tp, _Alloc>& __a1,
 {
   return __a1.__get_underlying_alloc() != __a2.__get_underlying_alloc();
 }
-#endif /* _STLP_FUNCTION_TMPL_PARTIAL_ORDER */
+#endif
 
 
 // Comparison operators for all of the predifined SGI-style allocators.
 // This ensures that __allocator<malloc_alloc> (for example) will
 // work correctly.
 
-#ifndef _STLP_NON_TYPE_TMPL_PARAM_BUG
 inline bool  _STLP_CALL operator==(const __malloc_alloc&, const __malloc_alloc&)
 { return true; }
 
-#  ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
 inline bool  _STLP_CALL operator!=(const __malloc_alloc&, const __malloc_alloc&)
 { return false; }
-#  endif
 
 inline bool _STLP_CALL operator==(const __new_alloc&, const __new_alloc&) { return true; }
 
@@ -131,15 +120,10 @@ inline bool  _STLP_CALL operator==(const __node_alloc&,
                                    const __node_alloc&)
 { return true; }
 
-#    if defined( _STLP_FUNCTION_TMPL_PARTIAL_ORDER )
-
 inline bool  _STLP_CALL operator!=(const __node_alloc&,
                                    const __node_alloc&)
 { return false; }
-#    endif
 #  endif
-
-#endif /* _STLP_NON_TYPE_TMPL_PARAM_BUG */
 
 template <class _Alloc>
 inline bool  _STLP_CALL operator==(const __debug_alloc<_Alloc>&, const __debug_alloc<_Alloc>&) {  return true; }
@@ -147,8 +131,6 @@ inline bool  _STLP_CALL operator==(const __debug_alloc<_Alloc>&, const __debug_a
 template <class _Alloc>
 inline bool  _STLP_CALL operator!=(const __debug_alloc<_Alloc>&, const __debug_alloc<_Alloc>&) {  return false; }
 # endif
-
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 
 // Versions for the predefined SGI-style allocators.
 template <class _Tp>
@@ -176,47 +158,7 @@ struct _Alloc_traits<_Tp, __allocator<_Tp1, _Alloc > > {
   typedef __allocator<_Tp, _Alloc > allocator_type;
 };
 
-#endif
-
-#if defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-
 // Versions for the predefined SGI-style allocators.
-
-
-#  if defined (_STLP_NON_TYPE_TMPL_PARAM_BUG)
-
-typedef __malloc_alloc __malloc_alloc_dfl;
-
-template <class _Tp>
-inline __allocator<_Tp, __malloc_alloc_dfl >& _STLP_CALL
-__stl_alloc_rebind(__malloc_alloc_dfl& __a, const _Tp*) {
-  return (__allocator<_Tp, __malloc_alloc_dfl >&)__a;
-}
-
-#    if !defined (_STLP_USE_NO_IOSTREAMS)
-template <class _Tp>
-inline __allocator<_Tp, __node_alloc>& _STLP_CALL
-__stl_alloc_rebind(__node_alloc& __a, const _Tp*) {
-  return (__allocator<_Tp, __node_alloc>&)__a;
-}
-#    endif
-
-template <class _Tp>
-inline __allocator<_Tp, __malloc_alloc_dfl > _STLP_CALL
-__stl_alloc_create(const __malloc_alloc_dfl&, const _Tp*) {
-  return __allocator<_Tp, __malloc_alloc_dfl > ();
-}
-
-#    if !defined (_STLP_USE_NO_IOSTREAMS)
-template <class _Tp>
-inline __allocator<_Tp, __node_alloc> _STLP_CALL
-__stl_alloc_create(const __node_alloc&, const _Tp*) {
-  return __allocator<_Tp, __node_alloc>();
-}
-
-#    endif
-
-#  else
 
 template <class _Tp>
 inline __allocator<_Tp, __malloc_alloc>& _STLP_CALL
@@ -245,8 +187,6 @@ __stl_alloc_create(const __node_alloc&, const _Tp*) {
   return __allocator<_Tp, __node_alloc>();
 }
 #    endif
-
-#  endif
 
 template <class _Tp, class _Alloc>
 inline __allocator<_Tp, __debug_alloc<_Alloc> > _STLP_CALL
@@ -281,4 +221,3 @@ inline __allocator<_Tp2, _Alloc> _STLP_CALL
 __stl_alloc_create(const __allocator<_Tp1, _Alloc>&, const _Tp2*) {
   return __allocator<_Tp2, _Alloc>();
 }
-#endif

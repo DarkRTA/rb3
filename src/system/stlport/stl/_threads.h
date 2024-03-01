@@ -565,7 +565,7 @@ public:
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _Atomic_swap_struct<0> {
 public:
 #if defined (_STLP_THREADS) && \

@@ -162,8 +162,6 @@ _Base_bitset<_Nw>::_M_do_find_next(size_t __prev,
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if !defined (_STLP_NON_TYPE_TMPL_PARAM_BUG)
-
 #  if !defined (_STLP_USE_NO_IOSTREAMS)
 
 _STLP_END_NAMESPACE
@@ -224,8 +222,6 @@ operator<<(basic_ostream<_CharT, _Traits>& __os,
 }
 
 #  endif /* !_STLP_USE_NO_IOSTREAMS */
-
-#endif /* _STLP_NON_TYPE_TMPL_PARAM_BUG */
 
 _STLP_END_NAMESPACE
 

@@ -30,7 +30,7 @@
 #ifndef _STLP_INTERNAL_FUNCTION_BASE_H
 #define _STLP_INTERNAL_FUNCTION_BASE_H
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_TYPE_TRAITS_H)
+#if !defined (_STLP_TYPE_TRAITS_H)
 #  include <stl/type_traits.h>
 #endif
 
@@ -56,24 +56,15 @@ struct equal_to : public binary_function<_Tp, _Tp, bool> {
 
 template <class _Tp>
 struct less : public binary_function<_Tp,_Tp,bool>
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 /* less is the default template parameter for many STL containers, to fully use
  * the move constructor feature we need to know that the default less is just a
  * functor.
  */
               , public __stlport_class<less<_Tp> >
-#endif
 {
   bool operator()(const _Tp& __x, const _Tp& __y) const { return __x < __y; }
-
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-  //This is for a very special compiler config: partial template specialization
-  //but no template function partial ordering.
-  void swap(less<_Tp>&) {}
-#endif
 };
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp>
 struct __type_traits<less<_Tp> > {
   typedef typename _IsSTLportClass<less<_Tp> >::_Ret _STLportLess;
@@ -84,7 +75,6 @@ struct __type_traits<less<_Tp> > {
   typedef _STLportLess has_trivial_destructor;
   typedef _STLportLess is_POD_type;
 };
-#endif
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
@@ -148,17 +138,6 @@ struct _Project2nd : public binary_function<_Arg1, _Arg2, _Arg2> {
   _Arg2 operator()(const _Arg1&, const _Arg2& __y) const { return __y; }
 };
 
-#if defined (_STLP_MULTI_CONST_TEMPLATE_ARG_BUG)
-// fbp : sort of select1st just for maps
-template <class _Pair, class _Whatever>
-// JDJ (CW Pro1 doesn't like const when first_type is also const)
-struct __Select1st_hint : public unary_function<_Pair, _Whatever> {
-    const _Whatever& operator () (const _Pair& __x) const { return __x.first; }
-};
-#  define  _STLP_SELECT1ST(__x,__y) _STLP_PRIV __Select1st_hint< __x, __y >
-#else
-#  define  _STLP_SELECT1ST(__x, __y) _STLP_PRIV _Select1st< __x >
-#endif
 
 template <class _Tp>
 struct _Identity : public unary_function<_Tp,_Tp> {
