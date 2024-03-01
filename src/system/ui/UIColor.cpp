@@ -3,6 +3,9 @@
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 
+unsigned short UIColor::gRev = 0;
+unsigned short UIColor::gAltRev = 0;
+
 UIColor::UIColor() : mColor() {
     
 }
@@ -24,7 +27,7 @@ void UIColor::Load(BinStream& bs){
     bs >> rev;
     gRev = (unsigned int)rev;
     gAltRev = (unsigned int)rev >> 0x10;
-    if(rev & 0xFFFF != 0){
+    if((unsigned short)rev != 0){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)0);
     }
     if(gAltRev != 0){

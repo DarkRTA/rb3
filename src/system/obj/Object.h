@@ -151,7 +151,7 @@ namespace Hmx {
 
         static Object* NewObject();
 
-        void RegisterFactory(Symbol, ObjectFunc*);
+        static void RegisterFactory(Symbol, ObjectFunc*);
         bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
         void RemoveFromDir();
