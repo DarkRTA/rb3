@@ -520,27 +520,29 @@ void DataNode::Load(BinStream& d){
     d >> theType;
     mType = (DataType)theType;
     switch(mType){
-        case kDataFunc:
+        case kDataFunc: {
             Symbol sym3;
             d >> sym3;
             const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym3);
             if(it == gDataFuncs.end()){
-                MILO_FAIL("Couldn't bind %s", sym3);
+                TheDebug.Fail(MakeString("Couldn't bind %s", sym3));
             }
             mValue.func = it->second;
             break;
+        }
         case kDataSymbol:
         case kDataIfdef:
         case kDataDefine:
         case kDataInclude:
         case kDataMerge:
         case kDataIfndef:
-        case kDataUndef:
+        case kDataUndef: {
             Symbol sym2;
             d >> sym2;
             mValue.symbol = sym2.Str();
             break;
-        case kDataFloat: 
+        }
+        case kDataFloat:
             d >> mValue.real;
             break;
         case kDataString:
@@ -558,20 +560,16 @@ void DataNode::Load(BinStream& d){
             d.ReadString(buf, 0x80);
             mValue.object = gDataDir->FindObject(buf, true);
             if(mValue.object == 0 && buf){
-                MILO_WARN("Couldn't find %s from %s", buf, gDataDir->Name());
+                TheDebug.Notify(MakeString("Couldn't find %s from %s", buf, gDataDir->Name()));
             }
             break;
-        case kDataVar: 
+        case kDataVar: {
             Symbol sym;
             d >> sym;
-            for(std::map<Symbol, DataNode>::iterator it = gDataVars.begin(); it != gDataVars.end(); it++ ){
-                if(it->first == sym){
-                    mValue.var = &it->second;
-                    break;
-                }
-            }
+            mValue.var = &gDataVars[sym];
             break;
-        case kDataUnhandled: 
+        }
+        case kDataUnhandled:
             mType = kDataInt;
             d >> mValue.integer;
             break;
@@ -585,7 +583,7 @@ void DataNode::Load(BinStream& d){
             d >> mValue.integer;
             break;
         default:
-            MILO_FAIL("Unrecognized node type: %x", mType);
+            TheDebug.Fail(MakeString("Unrecognized node type: %x", mType));
             break;
     }
 }

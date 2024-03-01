@@ -1,5 +1,8 @@
 #include "ui/UIGuide.h"
 
+unsigned short UIGuide::gRev = 0;
+unsigned short UIGuide::gAltRev = 0;
+
 UIGuide::UIGuide() : mType(0), mPos(0.5f) {
     
 }
@@ -17,7 +20,7 @@ void UIGuide::Load(BinStream& bs){
     bs >> rev;
     gRev = (unsigned int)rev;
     gAltRev = (unsigned int)rev >> 0x10;
-    if(rev & 0xFFFF != 0){
+    if((unsigned short)rev > 1){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)1);
     }
     if(gAltRev != 0){
