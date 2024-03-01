@@ -142,7 +142,9 @@ namespace Hmx {
         const char* Name() const { return mName; }
 
         template <class T> static T* New(){
-            return dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+            T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+            if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
+            return obj;
         }
         
         std::vector<ObjRef*>& Refs(){ return mRefs; }

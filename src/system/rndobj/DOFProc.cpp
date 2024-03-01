@@ -11,12 +11,7 @@ DOFProc::~DOFProc(){
 }
 
 void DOFProc::Init(){
-    DOFProc* proc;
-    if(!TheDOFProc){
-        proc = Hmx::Object::New<DOFProc>();
-        if(!proc) MILO_FAIL("Couldn't instantiate class %s", StaticClassName());
-        TheDOFProc = proc;
-    }
+    if(!TheDOFProc) TheDOFProc = Hmx::Object::New<DOFProc>();
 }
 
 void DOFProc::Terminate(){
