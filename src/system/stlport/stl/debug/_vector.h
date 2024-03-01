@@ -34,16 +34,16 @@
 #  include <stl/debug/_iterator.h>
 #endif
 
-#define _STLP_NON_DBG_VECTOR _STLP_PRIV _STLP_NON_DBG_NAME(vector) <_Tp, _Alloc>
+#define _STLP_NON_DBG_VECTOR _STLP_PRIV _STLP_NON_DBG_NAME(vector) <_Tp, _Size, _Alloc>
 
 _STLP_BEGIN_NAMESPACE
 
 #if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Tp, class _Alloc>
+template <class _Tp, class _Size, class _Alloc>
 inline _Tp*
 value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_VECTOR >&)
 { return (_Tp*)0; }
-template <class _Tp, class _Alloc>
+template <class _Tp, class _Size, class _Alloc>
 inline random_access_iterator_tag
 iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_VECTOR >&)
 { return random_access_iterator_tag(); }
@@ -94,12 +94,12 @@ struct _Vector_const_traits<bool, _Bit_iterator> {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Size = unsigned short, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
 class vector : private _STLP_PRIV __construct_checker< _STLP_NON_DBG_VECTOR >
 {
 private:
   typedef _STLP_NON_DBG_VECTOR _Base;
-  typedef vector<_Tp, _Alloc> _Self;
+  typedef vector<_Tp, _Size, _Alloc> _Self;
   typedef _STLP_PRIV __construct_checker<_STLP_NON_DBG_VECTOR > _ConstructCheck;
   _Base _M_non_dbg_impl;
   _STLP_PRIV __owned_list _M_iter_list;
