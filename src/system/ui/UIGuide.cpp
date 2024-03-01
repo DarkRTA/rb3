@@ -41,19 +41,10 @@ void UIGuide::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     }
 }
 
-bool UIGuide::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
-    if(_i == _prop->Size()) return true;
-    else {
-        Symbol sym = _prop->Sym(_i);
-        if(sym == pos){
-            return PropSync(mPos, _val, _prop, _i + 1, _op);
-        }
-        if(sym == type){
-            return PropSync(mType, _val, _prop, _i + 1, _op);
-        }
-        else return false;
-    }
-}
+BEGIN_PROPSYNCS(UIGuide);
+    SYNC_PROP(pos, mPos);
+    SYNC_PROP(type, mType);
+END_PROPSYNCS;
 
 BEGIN_HANDLERS(UIGuide);
     HANDLE_SUPERCLASS(Hmx::Object);

@@ -192,6 +192,8 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
+// BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
+
 #define BEGIN_HANDLERS(objType) \
 DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     Symbol sym = _msg->Sym(1); \
@@ -224,5 +226,25 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
 #define END_HANDLERS \
     return DataNode(kDataUnhandled, 0); \
 }
+
+// END HANDLE MACROS -----------------------------------------------------------------------------------
+
+// BEGIN SYNCPROPERTY MACROS ---------------------------------------------------------------------------
+
+#define BEGIN_PROPSYNCS(objType) \
+bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){ \
+    if(_i == _prop->Size()) return true; \
+    else { \
+        Symbol sym = _prop->Sym(_i);
+        
+#define SYNC_PROP(symbol, member) \
+        if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
+
+#define END_PROPSYNCS \
+        return false; \
+    } \
+}
+
+// END SYNCPROPERTY MACROS -----------------------------------------------------------------------------
 
 #endif

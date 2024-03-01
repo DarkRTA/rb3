@@ -49,13 +49,6 @@ BEGIN_HANDLERS(UIColor);
     HANDLE_CHECK(0x3A);
 END_HANDLERS;
 
-bool UIColor::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
-    if(_i == _prop->Size()) return true;
-    else {
-        Symbol sym = _prop->Sym(_i);
-        if(sym == color){
-            return PropSync(mColor, _val, _prop, _i + 1, _op);
-        }
-        else return false;
-    }
-}
+BEGIN_PROPSYNCS(UIColor);
+    SYNC_PROP(color, mColor);
+END_PROPSYNCS;
