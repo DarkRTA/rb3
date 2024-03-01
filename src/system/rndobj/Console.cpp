@@ -88,13 +88,13 @@ void RndConsole::Step(int i) {
         mDebugging = 0;
         gPreExecuteFunc = *DataBreak;
 
-    } else FAIL_NOARGS("can't step unless debugging");
+    } else MILO_FAIL("can't step unless debugging");
 }
 
 
 void RndConsole::Continue() {
     if (mDebugging) mDebugging = 0;
-    else FAIL_NOARGS("Can't continue unless debugging");
+    else MILO_FAIL("Can't continue unless debugging");
 }
 
 extern void DataRegisterFunc(Symbol, DataFunc);
