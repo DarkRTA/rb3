@@ -20,17 +20,17 @@ bool PropSync(Vector3&, DataNode&, DataArray*, int, PropOp);
 // bool PropSync(Hmx::Rect&, DataNode&, DataArray*, int, PropOp);
 // bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);
 
-inline bool PropSync(int& iref, DataNode& node, DataArray* da, int i, PropOp op){
-    da->Size();
-    if(op == (PropOp)1) node = DataNode(iref);
-    else iref = node.Int(0);
-    return true;
-}
-
 inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x17);
     if(op == kPropGet) node = DataNode(f);
     else f = node.Float(0);
+    return true;
+}
+
+inline bool PropSync(int& iref, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x2C);
+    if(op == (PropOp)1) node = DataNode(iref);
+    else iref = node.Int(0);
     return true;
 }
 

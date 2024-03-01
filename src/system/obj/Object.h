@@ -140,8 +140,12 @@ namespace Hmx {
         virtual char* FindPathName();
 
         const char* Name() const { return mName; }
-        // T* New<T>();
-        // vector& Refs();
+
+        template <class T> static T* New(){
+            return dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+        }
+        
+        std::vector<ObjRef*>& Refs(){ return mRefs; }
 
         Symbol Type() const {
             if(mTypeDef != 0) return mTypeDef->Sym(0);

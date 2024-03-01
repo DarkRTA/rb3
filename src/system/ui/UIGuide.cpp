@@ -1,4 +1,6 @@
 #include "ui/UIGuide.h"
+#include "utl/Symbols.h"
+#include "obj/PropSync_p.h"
 
 unsigned short UIGuide::gRev = 0;
 unsigned short UIGuide::gAltRev = 0;
@@ -36,6 +38,20 @@ void UIGuide::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     if(c){
         mType = c->mType;
         mPos = c->mPos;
+    }
+}
+
+bool UIGuide::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
+    if(_i == _prop->Size()) return true;
+    else {
+        Symbol sym = _prop->Sym(_i);
+        if(sym == pos){
+            return PropSync(mPos, _val, _prop, _i + 1, _op);
+        }
+        if(sym == type){
+            return PropSync(mType, _val, _prop, _i + 1, _op);
+        }
+        else return false;
     }
 }
 
