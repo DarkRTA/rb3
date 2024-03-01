@@ -130,7 +130,8 @@
             "system/utl/TextFileStream.cpp": "Matching",
             "system/utl/TextStream.cpp": "Matching",
             "system/utl/UserGuid.cpp": "Matching",
-            "system/utl/UTF8.cpp": "NonMatching"
+            "system/utl/UTF8.cpp": "NonMatching",
+            "system/utl/VarTimer.cpp": "NonMatching"
         }
     },
     "zlib": {
