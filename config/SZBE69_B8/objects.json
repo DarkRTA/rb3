@@ -109,12 +109,12 @@
             "system/speex/libspeex/ltp.c": "NonMatching",
             "system/speex/libspeex/modes.c": "Matching",
             "system/speex/libspeex/nb_celp.c": "NonMatching",
-            "system/speex/libspeex/quant_lsp.c": "NonMatching",
-            "system/speex/libspeex/speex.c": "NonMatching",
-            "system/speex/libspeex/speex_callbacks.c": "NonMatching",
+            "system/speex/libspeex/quant_lsp.c": "Matching",
+            "system/speex/libspeex/speex.c": "Matching",
+            "system/speex/libspeex/speex_callbacks.c": "Matching",
             "system/speex/libspeex/vbr.c": "NonMatching",
-            "system/speex/libspeex/window.c": "NonMatching",
-            "system/speex/libspeex/vq.c": "NonMatching",
+            "system/speex/libspeex/window.c": "Matching",
+            "system/speex/libspeex/vq.c": "Matching",
 
             "system/synth/ADSR.cpp": "NonMatching",
 
