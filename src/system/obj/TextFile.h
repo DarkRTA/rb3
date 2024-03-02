@@ -19,6 +19,8 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual void SetName(const char*, class ObjectDir*);
     virtual void Print(const char *);
+
+    void GetAppendFile(const char*, const char*, int);
     
     static TextFile* NewObject(){ return new TextFile(); }
     // static Init

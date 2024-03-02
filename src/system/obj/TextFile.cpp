@@ -9,58 +9,30 @@
 
 extern bool UsingHolmes(int);
 
-// https://decomp.me/scratch/07yMl
+inline void TextFile::GetAppendFile(const char* c, const char* tok, int tokLen) {
+    const char* s = strstr(c, tok);
+    if(s){
+        char buf[0x100];
+        strcpy(buf, c);
+        char* ptr = &buf[s - c];
+        strncpy(ptr, ptr + tokLen, strlen(s) - (tokLen - 1));
+        mFile = NewFile(buf, 0x304);
+    }
+    else {
+        mFile = NewFile(c, 0xA04);
+    }
+}
+
 void TextFile::SetName(const char* c, class ObjectDir* dir){
     Hmx::Object::SetName(c, dir);
     delete mFile;
     mFile = 0;
-    if(c != 0 && *c != '\0' && UsingHolmes(4)){
-        char* s = strstr(c, "_append");
-        if(s){
-            char* buf;
-            strcpy(buf, c);
-            strncpy(s + (buf - c), s, strlen(s) - 6);
-            mFile = NewFile(buf, 0x304);
-        }
-        else mFile = NewFile(c, 0xA04);
+
+    bool holmes = UsingHolmes(4);
+    if(c != 0 && *c != '\0' && holmes){
+        GetAppendFile(c, "_append", sizeof("_append") - 1);
     }
 }
-
-// void __thiscall TextFile::SetName(TextFile *this,char *param_1,ObjectDir *param_2)
-
-// {
-//   int *piVar1;
-//   int iVar2;
-//   char *__s;
-//   size_t sVar3;
-//   undefined4 uVar4;
-//   char acStack_118 [7];
-//   char acStack_111 [261];
-  
-//   Hmx::Object::SetName((Object *)this,param_1,param_2);
-//   piVar1 = *(int **)(this + 0x20);
-//   if (piVar1 != (int *)0x0) {
-//     (**(code **)(*piVar1 + 8))(piVar1,1);
-//   }
-//   *(undefined4 *)(this + 0x20) = 0;
-//   iVar2 = UsingHolmes(4);
-//   if (((param_1 != (char *)0x0) && (*param_1 != '\0')) && (iVar2 != 0)) {
-//     __s = strstr(param_1,::@stringBase0);
-//     if (__s == (char *)0x0) {
-//       uVar4 = NewFile(param_1,0xa04);
-//       *(undefined4 *)(this + 0x20) = uVar4;
-//     }
-//     else {
-//       strcpy(acStack_118,param_1);
-//       sVar3 = strlen(__s);
-//       strncpy(__s + (int)(acStack_118 + -(int)param_1),__s + (int)(acStack_111 + -(int)param_1),
-//               sVar3 - 6);
-//       uVar4 = NewFile(acStack_118,0x304);
-//       *(undefined4 *)(this + 0x20) = uVar4;
-//     }
-//   }
-//   return;
-// }
 
 void TextFile::Print(const char* str){
     MILO_ASSERT(mFile, 0x2F);
