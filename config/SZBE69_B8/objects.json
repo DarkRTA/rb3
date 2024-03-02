@@ -1,8 +1,17 @@
 {
+    "main": {
+        "mw_version": "Wii/1.3",
+        "cflags": "band3",
+        "objects": {
+            "Main.cpp": "Matching"
+        }
+    },
     "band3": {
         "mw_version": "Wii/1.3",
         "cflags": "band3",
-        "objects": {}
+        "objects": {
+            "band3/game/FretHand.cpp": "NonMatching"
+        }
     },
     "network": {
         "mw_version": "Wii/1.3",
@@ -28,6 +37,8 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
+            "system/beatmatch/Output.cpp": "Matching",
+
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
@@ -142,10 +153,12 @@
             "system/utl/LogFile.cpp": "Matching",
             "system/utl/Magnu.cpp": "Matching",
             "system/utl/MakeString.cpp": "Matching",
+            "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
             "system/utl/Messages3.cpp": "Matching",
             "system/utl/Messages4.cpp": "Matching",
+            "system/utl/Profiler.cpp": "NonMatching",
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": "NonMatching",
