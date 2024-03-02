@@ -6914,17 +6914,17 @@ system/synth/WavReader.cpp:
 	.text       start:0x809C6680 end:0x809C6D00
 	.data       start:0x80C32F10 end:0x80C32FF0
 
-system/synth/aes.cpp:
+system/synth/tomcrypt/aes.c:
 	.text       start:0x809C6D00 end:0x809C96F0
 	.rodata     start:0x80B396C8 end:0x80B3D7A8
 	.data       start:0x80C32FF0 end:0x80C33138
 
-system/synth/crypt.cpp:
+system/synth/tomcrypt/crypt.c:
 	.text       start:0x809C96F0 end:0x809C9820
 	.data       start:0x80C33138 end:0x80C33298
 	.bss        start:0x80D20690 end:0x80D20C18
 
-system/synth/ctr.cpp:
+system/synth/tomcrypt/ctr.c:
 	.text       start:0x809C9820 end:0x809C9C20
 
 system/speex/bits.cpp:
