@@ -45,6 +45,7 @@
 
             "system/meta/Achievements.cpp": "Matching",
             "system/meta/MemcardAction.cpp": "Matching",
+            "system/meta/Sorting.cpp": "NonMatching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/MidiVarLen.cpp": "Matching",
