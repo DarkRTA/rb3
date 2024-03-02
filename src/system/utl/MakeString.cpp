@@ -260,12 +260,10 @@ FormatString& FormatString::operator<<(const DataNode& node){
 
 FormatString& FormatString::operator<<(const char* cc){
     if(mType != kStr) MILO_WARN("FormatString: '%s' doesn't start with kStr.  Format: '%s'", mFmt, mFmtBuf);
-    bool b = true;
-    if(cc >= mBuf && cc < mBuf + 2048) b = false;
-    if(!b) MILO_FAIL("FormatString: arg in buffer");
+    MILO_ASSERT_FMT(cc < mBuf || cc >= mBuf + sizeof(mFmtBuf), "FormatString: arg in buffer");
     char tmp = *mFmtEnd;
     *mFmtEnd = '\0';
-    int n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, cc);
+    int n = snprintf(mBuf + sizeof(mFmtBuf) - mBufSize, mBufSize, mFmt, cc);
     *mFmtEnd = tmp;
     MILO_ASSERT(n >= 0, 0x12A);
     mBufSize -= n;
