@@ -11,76 +11,57 @@
 
 static CriticalSection* gLock;
 static char*** gBuf;
-static int gNum[1];
-static OSThread* gThreadIds[1];
+static int gNum[MAX_BUF_THREADS];
+static OSThread* gThreadIds[MAX_BUF_THREADS];
 static int gCurThread;
 static int gNumThreads;
 
 static char* NextBuf(){
-    int tID;
-    int i2;
     if(!gLock){
         InitMakeString();
         TheDebug << MakeString("MakeString before InitMakeString!\n");
         MILO_FAIL("MakeString before InitMakeString!");
     }
-    if(gLock){
-        gLock->Enter();
-    }
+
+    CritSecTracker tracker(gLock);
+
+    int i2;
     if(gNumThreads == 0){
-        *gThreadIds = OSGetCurrentThread();
+        gThreadIds[0] = OSGetCurrentThread();
         gNumThreads = 1;
-        tID = gCurThread;
     }
     else {
-        OSThread* tptr = gThreadIds[0];
-        tID = gCurThread;
-        if(gThreadIds[gCurThread] != OSGetCurrentThread()){
-            tID = 0;
-            for(; tID < gNumThreads && tptr != OSGetCurrentThread(); tptr++) tID++;
-            if(tID == gNumThreads){
-                tID = 0;
-                if(0 < gNumThreads){
-                    if(8 < gNumThreads){
-                        bool b = false;
-                        if((-1 < gNumThreads) && (gNumThreads < 0x7FFFFFFF)){
-                            b = true;
-                        }
-                        unsigned int butt;
-                        if(b && (butt = gNumThreads - 1U >> 3, 0 < gNumThreads - 8)){
-                            while(butt != 0){
-                                tID += 8;
-                                butt -= 1;
-                            }
-                        }
-                    }
-                    i2 = gNumThreads - tID;
-                    if(tID < gNumThreads){
-                        do {
-                            tID++;
-                            i2--;
-                        } while(i2 != 0);
-                    }
-                }
-                if(tID == gNumThreads){
-                    MILO_ASSERT(gNumThreads < MAX_BUF_THREADS, 0x5F);
-                    gNumThreads++;
-                    gThreadIds[tID] = OSGetCurrentThread();
+        int tID;
+        OSThread* curThread = OSGetCurrentThread();
+        OSThread** tptr = &gThreadIds[0];
+        if(gThreadIds[gCurThread] != curThread){
+            for (tID = 0; tID < gNumThreads; tID++) {
+                if (gThreadIds[tID] == OSGetCurrentThread()) {
+                    break;
                 }
             }
 
+            if(tID == gNumThreads){
+                for (tID = 0; tID < gNumThreads; tID++) {
+                }
+
+                if(tID == gNumThreads){
+                    MILO_ASSERT(gNumThreads < MAX_BUF_THREADS, 0x5F);
+                    gThreadIds[tID] = OSGetCurrentThread();
+                    gNumThreads++;
+                }
+            }
+
+            gCurThread = tID;
         }
     }
-    gCurThread = tID;
-    tID = gCurThread;
-    i2 = gNum[gCurThread] + 1;
-    char* c5 = gBuf[gCurThread][gNum[gCurThread]];
-    gNum[gCurThread] = i2;
-    if(i2 == 10){
-        gNum[tID] = 0;
+
+    char* buf = gBuf[gCurThread][gNum[gCurThread]];
+    if(++gNum[gCurThread] == 10){
+        gNum[gCurThread] = 0;
     }
-    if(gLock) gLock->Exit();
-    return c5;
+
+    return buf;
 }
 
 void InitMakeString(){
