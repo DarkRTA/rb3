@@ -2,16 +2,16 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 
-int SymbolToAudioType(Symbol sym){
-    if(sym == drum) return 0;
-    else if(sym == guitar) return 1;
-    else if(sym == bass) return 2;
-    else if(sym == keys) return 4;
-    else if(sym == vocals) return 3;
-    else if(sym == multi) return 6;
+SongInfoAudioType SymbolToAudioType(Symbol sym){
+    if(sym == drum) return kAudioTypeDrum;
+    else if(sym == guitar) return kAudioTypeGuitar;
+    else if(sym == bass) return kAudioTypeBass;
+    else if(sym == keys) return kAudioTypeKeys;
+    else if(sym == vocals) return kAudioTypeVocals;
+    else if(sym == multi) return kAudioTypeMulti;
     else {
         MILO_FAIL("No instrument for %s\n", sym);
-        return 0;
+        return kAudioTypeDrum;
     }
 }
 
