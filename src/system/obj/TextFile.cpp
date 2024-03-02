@@ -9,6 +9,7 @@
 
 extern bool UsingHolmes(int);
 
+// https://decomp.me/scratch/07yMl
 void TextFile::SetName(const char* c, class ObjectDir* dir){
     Hmx::Object::SetName(c, dir);
     delete mFile;

@@ -93,7 +93,7 @@
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
             "system/speex/libspeex/bits.c": "NonMatching",
-            "system/speex/libspeex/cb_search.c": "NonMatching",
+            "system/speex/libspeex/cb_search.c": "Matching",
             "system/speex/libspeex/exc_10_16_table.c": "NonMatching",
             "system/speex/libspeex/exc_10_32_table.c": "NonMatching",
             "system/speex/libspeex/exc_20_32_table.c": "NonMatching",
