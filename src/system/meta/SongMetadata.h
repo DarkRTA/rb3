@@ -25,6 +25,8 @@ public:
     DataArraySongInfo* SongBlock() const;
     int NumVocalParts() const;
 
+    static int sSaveVer;
+
     short mVersion;
     Symbol mShortName;
     int mID;

@@ -2,6 +2,8 @@
 #include "utl/Symbols.h"
 #include "os/Debug.h"
 
+int SongMetadata::sSaveVer = 6;
+
 void SongMetadata::InitSongMetadata(){
     mID = 0;
     mIsOnDisc = false;
@@ -104,3 +106,15 @@ int SongMetadata::NumVocalParts() const {
     MILO_ASSERT(mSongInfo, 0x79);
     return mSongInfo->GetNumVocalParts();
 }
+
+void SongMetadata::Save(BinStream& d) {
+    d << sSaveVer << mVersion << mID << mIsOnDisc << mGameOrigin << mPreviewStartTime << mPreviewEndTime << mShortName << mSongVocalsBlock;
+    MILO_ASSERT(mSongInfo, 0x97);
+    d << *mSongInfo;
+}
+
+BEGIN_HANDLERS(SongMetadata);
+    HANDLE_EXPR(version, mVersion);
+    HANDLE_SUPERCLASS(Hmx::Object);
+    HANDLE_CHECK(0xFE);
+END_HANDLERS;

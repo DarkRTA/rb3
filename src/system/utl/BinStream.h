@@ -52,7 +52,7 @@ public:
 
     BinStream &operator<<(const char *);
     BinStream &operator<<(const Symbol &);
-    BinStream &operator<<(const String &);
+    BinStream &operator<<(const class String &);
 
     /** Reads a `len` length string to `out`.
      * Reads a standard C string of length `len` into `out` from
@@ -64,7 +64,7 @@ public:
     void ReadString(char * out, int len);
 
     BinStream &operator>>(Symbol &);
-    BinStream &operator>>(String &);
+    BinStream &operator>>(class String &);
 
     /** Enables read encryption for e.g. archives.
      * Enables read encryption, used for things such as archives.
@@ -104,6 +104,7 @@ public:
     BS_WRITE_TYPE(int);
     BS_WRITE_TYPE(float);
     BS_WRITE_TYPE(unsigned short);
+    BS_WRITE_TYPE(short);
     
     BinStream& operator<<(unsigned char uc){
         Write(&uc, 1);
@@ -114,6 +115,7 @@ public:
     BS_READ_TYPE(float);
     BS_READ_TYPE(unsigned int);
     BS_READ_TYPE(unsigned short);
+    BS_READ_TYPE(short);
     
     BinStream& operator>>(unsigned char& out) {
         Read(&out, 1);
