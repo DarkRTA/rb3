@@ -11,7 +11,7 @@ DOFProc::~DOFProc(){
 }
 
 void DOFProc::Init(){
-    TheDOFProc = dynamic_cast<DOFProc*>(Hmx::Object::NewObject(StaticClassName()));
+    if(!TheDOFProc) TheDOFProc = Hmx::Object::New<DOFProc>();
 }
 
 void DOFProc::Terminate(){

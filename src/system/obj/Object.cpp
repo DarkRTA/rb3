@@ -357,12 +357,5 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     return DataNode(size);
 }
 
-bool Hmx::Object::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
-    if(_prop->Size() == _i){
-        return true;
-    }
-    else {
-        Symbol b = _prop->Sym(_i);
-        return false;
-    }
-}
+BEGIN_PROPSYNCS(Hmx::Object);
+END_PROPSYNCS;

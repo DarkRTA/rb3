@@ -1,6 +1,10 @@
 #include "MidiVarLen.h"
 #include "os/Debug.h"
 
+const char* filename = "MidiVarLen.cpp";
+const char* assert_unused = "mValue<0x0fffffff";
+const char* len_unused = "len < 5";
+
 MidiVarLenNumber::MidiVarLenNumber(BinStream& b) {
     Read(b);
 }
@@ -11,8 +15,8 @@ BinStream& MidiVarLenNumber::Read(BinStream& b) {
     do {
         bVar3 = 0;
         b >> bVar3;
-        unsigned int test = mValue * 0x80 + (bVar3 & 0x7f);
-        mValue = test;
+        unsigned int value = mValue * 0x80;
+        mValue = value + (bVar3 & 0x7f);
         MILO_ASSERT(mValue < 0x0fffffff, 64);
     } while (bVar3 & 0x80);
     return b;

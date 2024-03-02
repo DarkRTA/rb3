@@ -19,4 +19,22 @@ public:
     }
 };
 
+class CritSecTracker {
+public:
+    CriticalSection* mCritSec;
+
+    CritSecTracker(CriticalSection* section) {
+        mCritSec = section;
+        if (section != 0) {
+            section->Enter();
+        }
+    }
+
+    ~CritSecTracker() {
+        if (mCritSec != 0) {
+            mCritSec->Exit();
+        }
+    }
+};
+
 #endif

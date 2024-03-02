@@ -51,6 +51,7 @@ extern Debug TheDebug;
 extern const char* kAssertStr;
 
 #define MILO_ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))
+#define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebug.Fail(MakeString(__VA_ARGS__)), 0))
 #define MILO_FAIL(...) TheDebug.Fail(MakeString(__VA_ARGS__))
 #define MILO_WARN(...) TheDebug.Notify(MakeString(__VA_ARGS__))
 

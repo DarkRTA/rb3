@@ -6914,99 +6914,99 @@ system/synth/WavReader.cpp:
 	.text       start:0x809C6680 end:0x809C6D00
 	.data       start:0x80C32F10 end:0x80C32FF0
 
-system/synth/aes.cpp:
+system/synth/tomcrypt/aes.c:
 	.text       start:0x809C6D00 end:0x809C96F0
 	.rodata     start:0x80B396C8 end:0x80B3D7A8
 	.data       start:0x80C32FF0 end:0x80C33138
 
-system/synth/crypt.cpp:
+system/synth/tomcrypt/crypt.c:
 	.text       start:0x809C96F0 end:0x809C9820
 	.data       start:0x80C33138 end:0x80C33298
 	.bss        start:0x80D20690 end:0x80D20C18
 
-system/synth/ctr.cpp:
+system/synth/tomcrypt/ctr.c:
 	.text       start:0x809C9820 end:0x809C9C20
 
-system/speex/bits.cpp:
+system/speex/libspeex/bits.c:
 	.text       start:0x809C9C20 end:0x809CA2F0
 	.data       start:0x80C33298 end:0x80C333E8
 
-system/speex/cb_search.cpp:
+system/speex/libspeex/cb_search.c:
 	.text       start:0x809CA2F0 end:0x809CD890
 	.rodata     start:0x80B3D7A8 end:0x80B3D7C8
 
-system/speex/exc_10_16_table.cpp:
+system/speex/libspeex/exc_10_16_table.c:
 	.rodata     start:0x80B3D7C8 end:0x80B3D868
 
-system/speex/exc_10_32_table.cpp:
+system/speex/libspeex/exc_10_32_table.c:
 	.rodata     start:0x80B3D868 end:0x80B3D9A8
 
-system/speex/exc_20_32_table.cpp:
+system/speex/libspeex/exc_20_32_table.c:
 	.rodata     start:0x80B3D9A8 end:0x80B3DC28
 
-system/speex/exc_5_256_table.cpp:
+system/speex/libspeex/exc_5_256_table.c:
 	.rodata     start:0x80B3DC28 end:0x80B3E128
 
-system/speex/exc_5_64_table.cpp:
+system/speex/libspeex/exc_5_64_table.c:
 	.rodata     start:0x80B3E128 end:0x80B3E268
 
-system/speex/exc_8_128_table.cpp:
+system/speex/libspeex/exc_8_128_table.c:
 	.rodata     start:0x80B3E268 end:0x80B3E668
 
-system/speex/filters.cpp:
+system/speex/libspeex/filters.c:
 	.text       start:0x809CD890 end:0x809D0170
 	.rodata     start:0x80B3E668 end:0x80B3E760
 
-system/speex/gain_table.cpp:
+system/speex/libspeex/gain_table.c:
 	.rodata     start:0x80B3E760 end:0x80B3E960
 
-system/speex/gain_table_lbr.cpp:
+system/speex/libspeex/gain_table_lbr.c:
 	.rodata     start:0x80B3E960 end:0x80B3E9E0
 
-system/speex/lpc.cpp:
+system/speex/libspeex/lpc.c:
 	.text       start:0x809D0170 end:0x809D0870
 	.rodata     start:0x80B3E9E0 end:0x80B3E9E8
 
-system/speex/lsp.cpp:
+system/speex/libspeex/lsp.c:
 	.text       start:0x809D0870 end:0x809D1A80
 	.rodata     start:0x80B3E9E8 end:0x80B3EA10
 
-system/speex/lsp_tables_nb.cpp:
+system/speex/libspeex/lsp_tables_nb.c:
 	.rodata     start:0x80B3EA10 end:0x80B3F190
 
-system/speex/ltp.cpp:
+system/speex/libspeex/ltp.c:
 	.text       start:0x809D1A80 end:0x809D49C0
 	.rodata     start:0x80B3F190 end:0x80B3F1B0
 
-system/speex/modes.cpp:
+system/speex/libspeex/modes.c:
 	.text       start:0x809D49C0 end:0x809D49C0
 	.rodata     start:0x80B3F1B0 end:0x80B3F4E0
 	.data       start:0x80C333E8 end:0x80C333F8
 
-system/speex/nb_celp.cpp:
+system/speex/libspeex/nb_celp.c:
 	.text       start:0x809D49C0 end:0x809D8B40
 	.rodata     start:0x80B3F4E0 end:0x80B3F6A8
 	.data       start:0x80C333F8 end:0x80C33910
 
-system/speex/quant_lsp.cpp:
+system/speex/libspeex/quant_lsp.c:
 	.text       start:0x809D8B40 end:0x809DB1B0
 	.rodata     start:0x80B3F6A8 end:0x80B3F6D0
 
-system/speex/speex.cpp:
+system/speex/libspeex/speex.c:
 	.text       start:0x809DB1B0 end:0x809DB2E0
 	.data       start:0x80C33910 end:0x80C33968
 
-system/speex/speex_callbacks.cpp:
+system/speex/libspeex/speex_callbacks.c:
 	.text       start:0x809DB2E0 end:0x809DB410
 
-system/speex/vbr.cpp:
+system/speex/libspeex/vbr.c:
 	.text       start:0x809DB410 end:0x809DBE50
 	.rodata     start:0x80B3F6D0 end:0x80B3F898
 
-system/speex/window.cpp:
+system/speex/libspeex/window.c:
 	.rodata     start:0x80B3F898 end:0x80B3FBE8
 
-system/speex/vq.cpp:
+system/speex/libspeex/vq.c:
 	.text       start:0x809DBE50 end:0x809DC270
 
 system/rndwii/Cam.cpp:

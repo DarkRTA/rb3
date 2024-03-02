@@ -106,8 +106,6 @@ public:
         mType = kDataFunc;
     }
 
-    // TODO: implement this function without the compiler getting angry
-    // this is weak and should be defined here, but for some reason says DataArray is "incomplete"
     ~DataNode();
 
     DataType Type() const { return mType; }

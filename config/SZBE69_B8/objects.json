@@ -50,15 +50,16 @@
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "NonMatching",
             "system/math/Rand2.cpp": "Matching",
-            "system/math/Sort.cpp": "NonMatching",
+            "system/math/Sort.cpp": "Matching",
             "system/math/Trig.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
             "system/meta/MemcardAction.cpp": "Matching",
+            "system/meta/Sorting.cpp": "NonMatching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
-            "system/midi/MidiVarLen.cpp": "NonMatching",
+            "system/midi/MidiVarLen.cpp": "Matching",
 
             "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/obj/DataFlex.c": "NonMatching",
@@ -95,6 +96,7 @@
             "system/os/User.cpp": "NonMatching",
             "system/os/VirtualKeyboard.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
+            "system/rndobj/Anim.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
@@ -102,10 +104,38 @@
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
 
+            "system/speex/libspeex/bits.c": "NonMatching",
+            "system/speex/libspeex/cb_search.c": "Matching",
+            "system/speex/libspeex/exc_10_16_table.c": "Matching",
+            "system/speex/libspeex/exc_10_32_table.c": "Matching",
+            "system/speex/libspeex/exc_20_32_table.c": "Matching",
+            "system/speex/libspeex/exc_5_256_table.c": "Matching",
+            "system/speex/libspeex/exc_5_64_table.c": "Matching",
+            "system/speex/libspeex/exc_8_128_table.c": "Matching",
+            "system/speex/libspeex/filters.c": "NonMatching",
+            "system/speex/libspeex/gain_table.c": "Matching",
+            "system/speex/libspeex/gain_table_lbr.c": "Matching",
+            "system/speex/libspeex/lpc.c": "Matching",
+            "system/speex/libspeex/lsp.c": "NonMatching",
+            "system/speex/libspeex/lsp_tables_nb.c": "Matching",
+            "system/speex/libspeex/ltp.c": "NonMatching",
+            "system/speex/libspeex/modes.c": "Matching",
+            "system/speex/libspeex/nb_celp.c": "NonMatching",
+            "system/speex/libspeex/quant_lsp.c": "Matching",
+            "system/speex/libspeex/speex.c": "Matching",
+            "system/speex/libspeex/speex_callbacks.c": "Matching",
+            "system/speex/libspeex/vbr.c": "NonMatching",
+            "system/speex/libspeex/window.c": "Matching",
+            "system/speex/libspeex/vq.c": "Matching",
+
             "system/synth/ADSR.cpp": "NonMatching",
 
-            "system/ui/UIColor.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
-            "system/ui/UIGuide.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
+            "system/synth/tomcrypt/aes.c": "NonMatching",
+            "system/synth/tomcrypt/crypt.c": "NonMatching",
+            "system/synth/tomcrypt/ctr.c": "NonMatching",
+
+            "system/ui/UIColor.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
+            "system/ui/UIGuide.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
 
@@ -121,8 +151,8 @@
             "system/utl/JobMgr.cpp": "NonMatching",
             "system/utl/LocaleOrdinal.cpp": "Matching",
             "system/utl/LogFile.cpp": "Matching",
-            "system/utl/Magnu.cpp": "NonMatching",
-            "system/utl/MakeString.cpp": "NonMatching",
+            "system/utl/Magnu.cpp": "Matching",
+            "system/utl/MakeString.cpp": "Matching",
             "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
@@ -142,7 +172,8 @@
             "system/utl/TextFileStream.cpp": "Matching",
             "system/utl/TextStream.cpp": "Matching",
             "system/utl/UserGuid.cpp": "Matching",
-            "system/utl/UTF8.cpp": "NonMatching"
+            "system/utl/UTF8.cpp": "NonMatching",
+            "system/utl/VarTimer.cpp": "NonMatching"
         }
     },
     "zlib": {

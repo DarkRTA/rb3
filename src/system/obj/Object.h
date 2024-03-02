@@ -140,8 +140,14 @@ namespace Hmx {
         virtual char* FindPathName();
 
         const char* Name() const { return mName; }
-        // T* New<T>();
-        // vector& Refs();
+
+        template <class T> static T* New(){
+            T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+            if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
+            return obj;
+        }
+        
+        std::vector<ObjRef*>& Refs(){ return mRefs; }
 
         Symbol Type() const {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
@@ -151,7 +157,7 @@ namespace Hmx {
 
         static Object* NewObject();
 
-        void RegisterFactory(Symbol, ObjectFunc*);
+        static void RegisterFactory(Symbol, ObjectFunc*);
         bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
         void RemoveFromDir();
@@ -186,6 +192,8 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
+// BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
+
 #define BEGIN_HANDLERS(objType) \
 DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     Symbol sym = _msg->Sym(1); \
@@ -218,5 +226,37 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
 #define END_HANDLERS \
     return DataNode(kDataUnhandled, 0); \
 }
+
+// END HANDLE MACROS -----------------------------------------------------------------------------------
+
+// BEGIN SYNCPROPERTY MACROS ---------------------------------------------------------------------------
+
+#define BEGIN_PROPSYNCS(objType) \
+bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){ \
+    if(_i == _prop->Size()) return true; \
+    else { \
+        Symbol sym = _prop->Sym(_i);
+        
+#define SYNC_PROP(symbol, member) \
+        if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
+
+#define SYNC_PROP_ACTION(symbol, member, opmask, action) \
+        if(sym == symbol){ \
+            bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
+            if(!synced) return false; \
+            else { \
+                if(!(_op & (opmask))){ \
+                    action; \
+                } \
+                return true; \
+            } \
+        }
+
+#define END_PROPSYNCS \
+        return false; \
+    } \
+}
+
+// END SYNCPROPERTY MACROS -----------------------------------------------------------------------------
 
 #endif
