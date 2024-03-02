@@ -12,13 +12,21 @@ public:
         kFloat = 2,
         kNone = 3,
     };
+
+    char* mFmt;
     char* mBuf;
-    char* mNextBuf;
     int mBufSize;
     char mFmtBuf[2048];
-    char *mFmt;
+    char* mFmtEnd;
     Type mType;
-    char *mFmtEnd;
+
+    // char* mBuf;
+    // char* mNextBuf;
+    // int mBufSize;
+    // char mFmtBuf[2048];
+    // char *mFmt;
+    // Type mType;
+    // char *mFmtEnd;
 
     FormatString();
     FormatString(const char *);
@@ -35,7 +43,7 @@ public:
     FormatString &operator<<(const char *);
     FormatString &operator<<(float);
     FormatString &operator<<(double);
-    FormatString &operator<<(const String &);
+    FormatString &operator<<(const class String &);
     FormatString &operator<<(Symbol);
 
     const char *Str();
