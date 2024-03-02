@@ -38,7 +38,7 @@ SongMetadata::SongMetadata(DataArray* arr1, DataArray* arr2, bool onDisc) : mSho
         }
     }
     if(member_exists) mID = existing_member_array->Int(1);
-    else MILO_FAIL("song data for song '%s' has no song_id", arr1->Sym(0));
+    else MILO_FAIL("song data for song '%s' has no song_id", arr1->Sym(0).Str());
 
     member_exists = true;
     existing_member_array = arr1->FindArray(game_origin, false);
@@ -120,23 +120,15 @@ SongMetadata::SongMetadata(DataArray* arr1, DataArray* arr2, bool onDisc) : mSho
 
     mShortName = arr1->Sym(0);
     existing_member_array = arr1->FindArray(song, false);
-    DataArray* song_array;
-    if(!arr2){
-        song_array = 0;
-    }
-    else song_array = arr2->FindArray(song, false);
+    DataArray* song_array = (arr2) ? arr2->FindArray(song, false) : 0;
 
-    if(!existing_member_array){
-        if(!song_array){
-            MILO_FAIL("song data for song '%s' has no 'song' block", arr1->Sym(0));
-        }
-        else {
-            mSongInfo = new DataArraySongInfo(song_array, 0, mShortName);
-        }
-    }
-    else {
+    if(existing_member_array){
         mSongInfo = new DataArraySongInfo(existing_member_array, song_array, mShortName);
     }
+    else if(song_array){
+        mSongInfo = new DataArraySongInfo(song_array, 0, mShortName);
+    }
+    else MILO_FAIL("song data for song '%s' has no 'song' block", arr1->Sym(0).Str());
 
 }
 
