@@ -43,13 +43,11 @@
 extern "C" {
 #endif // ifdef __cplusplus
 
-double Sqrt(double);
-
 #ifdef __cplusplus
 };
 #endif // ifdef __cplusplus
 
-#define spx_sqrt Sqrt
+#define spx_sqrt sqrt
 #define spx_acos acos
 #define spx_exp exp
 #define spx_cos_norm(x) (cos((.5f*M_PI)*(x)))
