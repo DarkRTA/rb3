@@ -52,7 +52,7 @@
             "system/math/Rand2.cpp": "Matching",
             "system/math/SHA1.cpp": "NonMatching",
             "system/math/Sort.cpp": "Matching",
-            "system/math/StreamChecksum.cpp": "NonMatching",
+            "system/math/StreamChecksum.cpp": "Matching",
             "system/math/Trig.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/math/Vec.cpp": "Matching",
 

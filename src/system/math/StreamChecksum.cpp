@@ -13,10 +13,13 @@ void StreamChecksum::Begin(){
 
 void StreamChecksum::Update(const unsigned char* data, unsigned int ui){
     if(ui != 0){
-        if(mState == 0) Begin();
-        else if(mState == 2){
-            MILO_FAIL("Attempted to update a StreamChecksum that has already been finalized.  After calling End (or GetHash), you need to call Begin to restart the checksum.");
-            Begin();
+        switch(mState){
+            case 0: Begin(); break;
+            case 2: 
+                MILO_FAIL("Attempted to update a StreamChecksum that has already been finalized.  After calling End (or GetHash), you need to call Begin to restart the checksum.");
+                Begin();
+                break;
+            default: break;
         }
         MILO_ASSERT(data, 0x3C);
         mSHA1.Update(data, ui);
@@ -24,10 +27,9 @@ void StreamChecksum::Update(const unsigned char* data, unsigned int ui){
 }
 
 void StreamChecksum::End(){
-    if(mState != 0 && mState != 2){
-        mSHA1.Final();
-        mState = 2;
-    }
+    if(mState == 0 || mState == 2) return;
+    mSHA1.Final();
+    mState = 2;
 }
 
 void StreamChecksum::GetHash(unsigned char* uc){
