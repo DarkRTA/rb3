@@ -326,19 +326,6 @@ struct _##Motif {                                               \
 };                                                              \
 _STLP_MOVE_TO_STD_NAMESPACE
 
-/*
-#  if defined (_STLP_BASE_TYPEDEF_BUG)
-// this workaround is needed for SunPro 4.0.1
-template <class _Traits>
-struct __cnst_traits_aux : private _Traits {
-  typedef typename _Traits::value_type value_type;
-};
-#  define __TRAITS_VALUE_TYPE(_Traits) __cnst_traits_aux<_Traits>::value_type
-#  else
-#  define __TRAITS_VALUE_TYPE(_Traits) _Traits::value_type
-#  endif
-*/
-
 template <class _InputIter, class _Distance>
 _STLP_INLINE_LOOP void  _STLP_CALL
 __advance(_InputIter& __i, _Distance __n, const input_iterator_tag &) {

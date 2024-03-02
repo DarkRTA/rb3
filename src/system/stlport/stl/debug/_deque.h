@@ -38,15 +38,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Tp, class _Alloc>
-inline _Tp* value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_DEQUE >&)
-{ return (_Tp*)0; }
-template <class _Tp, class _Alloc>
-inline random_access_iterator_tag iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_DEQUE >&)
-{ return random_access_iterator_tag(); }
-#endif
-
 template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
 class deque : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_DEQUE >
 {
@@ -125,17 +116,9 @@ public:
     _ConstructCheck(__x), _M_non_dbg_impl(__x._M_non_dbg_impl),
     _M_iter_list(&_M_non_dbg_impl) {}
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   explicit deque(size_type __n, const value_type& __x = _Tp(),
-#else
-  deque(size_type __n, param_type __x,
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
             const allocator_type& __a = allocator_type()) :
     _M_non_dbg_impl(__n, __x, __a), _M_iter_list(&_M_non_dbg_impl) {}
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  explicit deque(size_type __n) :
-    _M_non_dbg_impl(__n), _M_iter_list(&_M_non_dbg_impl) {}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   deque(__move_source<_Self> src)
     : _M_non_dbg_impl(__move_source<_Base>(src.get()._M_non_dbg_impl)),
@@ -187,37 +170,23 @@ public:
 
 public:                         // push_* and pop_*
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
+#if !defined (_STLP_NO_ANACHRONISMS)
   void push_back(const value_type& __t = _Tp()) {
 #else
   void push_back(const value_type& __t) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _Invalidate_all();
     _M_non_dbg_impl.push_back(__t);
   }
 
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_back() {
-    _Invalidate_all();
-    _M_non_dbg_impl.push_back();
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
-
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
+#if !defined (_STLP_NO_ANACHRONISMS)
   void push_front(const value_type& __t = _Tp()) {
 #else
   void push_front(const value_type& __t) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _Invalidate_all();
     _M_non_dbg_impl.push_front(__t);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_front() {
-    _Invalidate_all();
-    _M_non_dbg_impl.push_front();
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void pop_back() {
     _STLP_VERBOSE_ASSERT(!empty(), _StlMsg_EMPTY_CONTAINER)
@@ -233,23 +202,15 @@ public:                         // push_* and pop_*
 
 public:                         // Insert
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
+#if !defined (_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const value_type& __x = _Tp()) {
 #else
   iterator insert(iterator __pos, const value_type& __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
     _Invalidate_all();
     return iterator(&_M_iter_list, _M_non_dbg_impl.insert(__pos._M_iterator, __x));
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    _Invalidate_all();
-    return iterator(&_M_iter_list, _M_non_dbg_impl.insert(__pos._M_iterator));
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void insert(iterator __pos, size_type __n, const value_type& __x) {
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
@@ -272,11 +233,7 @@ public:                         // Insert
     if (__first != __last) _Invalidate_all();
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size, const value_type& __x = _Tp()) {
-#else
-  void resize(size_type __new_size, const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     if (__new_size != size()) {
       if ((__new_size > size()) || (__new_size < size() - 1))
         _Invalidate_all();
@@ -285,10 +242,6 @@ public:                         // Insert
     }
     _M_non_dbg_impl.resize(__new_size, __x);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type new_size) { resize(new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   // Erase
   iterator erase(iterator __pos) {

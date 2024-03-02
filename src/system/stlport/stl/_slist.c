@@ -31,10 +31,6 @@
 #  include <stl/_range_errors.h>
 #endif
 
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define size_type size_t
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -219,10 +215,6 @@ void _Slist_sort(slist<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
 _STLP_MOVE_TO_STD_NAMESPACE
 
 _STLP_END_NAMESPACE
-
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  undef size_type
-#endif
 
 #endif /*  _STLP_SLIST_C */
 

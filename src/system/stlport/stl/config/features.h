@@ -316,15 +316,6 @@
 #  define _STLP_VOLATILE
 #endif
 
-#if defined (_STLP_BASE_TYPEDEF_BUG)
-#  undef  _STLP_BASE_TYPEDEF_OUTSIDE_BUG
-#  define _STLP_BASE_TYPEDEF_OUTSIDE_BUG 1
-#endif
-
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG) || (defined (_STLP_MSVC) && (_STLP_MSVC < 1100))
-#  define _STLP_GLOBAL_NESTED_RETURN_TYPE_PARAM_BUG
-#endif
-
 /* SUNpro 4.2 inline string literal bug */
 #ifdef _STLP_INLINE_STRING_LITERAL_BUG
 #  define _STLP_FIX_LITERAL_BUG(__x) __x = __x;
@@ -616,16 +607,6 @@ namespace _STL = _STLP_STD_NAME;
 #  define __DYNAMIC_CAST(__x,__y) __C_CAST(__x, __y)
 #endif
 
-#if defined (_STLP_NEED_TYPENAME) && ! defined (typename)
-#  define typename
-#endif
-
-#if defined (_STLP_NEED_TYPENAME) || defined (_STLP_NO_TYPENAME_ON_RETURN_TYPE )
-#  define _STLP_TYPENAME_ON_RETURN_TYPE
-#else
-#  define _STLP_TYPENAME_ON_RETURN_TYPE typename
-#endif
-
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)
 #  define _STLP_KEY_TYPE_FOR_CONT_EXT(type)
 #  define _STLP_TEMPLATE_FOR_CONT_EXT template <class _KT>
@@ -657,13 +638,6 @@ namespace _STL = _STLP_STD_NAME;
 #endif
 
 #define _STLP_PRIVATE public
-
-/* When the compiler do not correctly initialized the basic types value in default parameters we prefer
- * to avoid them to be able to correct this bug.
- */
-#if defined (_STLP_DEF_CONST_DEF_PARAM_BUG)
-#  define _STLP_DONT_SUP_DFLT_PARAM 1
-#endif
 
 #if defined (__SGI_STL_NO_ARROW_OPERATOR) && ! defined (_STLP_NO_ARROW_OPERATOR)
 #  define _STLP_NO_ARROW_OPERATOR
@@ -953,7 +927,6 @@ _TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return
 #undef _STLP_YVALS_H
 #undef _STLP_LOOP_INLINE_PROBLEMS
 #undef _STLP_NEED_EXPLICIT
-#undef _STLP_NEED_TYPENAME
 #undef _STLP_NO_NEW_STYLE_CASTS
 #undef __AUTO_CONFIGURED
 

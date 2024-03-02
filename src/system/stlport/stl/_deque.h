@@ -464,37 +464,22 @@ public:                         // Basic accessors
   allocator_type get_allocator() const { return this->_M_map_size; }
 
 public:                         // Constructor, destructor.
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit deque(const allocator_type& __a = allocator_type())
-#else
-  deque()
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(allocator_type(), 0) {}
-  deque(const allocator_type& __a)
-#endif
     : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__a, 0) {}
 
   deque(const _Self& __x)
     : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__x.get_allocator(), __x.size())
   { _STLP_PRIV __ucopy(__x.begin(), __x.end(), this->_M_start); }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
 private:
-  void _M_initialize(size_type __n, const value_type& __val = _STLP_DEFAULT_CONSTRUCTED(_Tp))
+  void _M_initialize(size_type __n, const value_type& __val = _Tp())
   { _M_fill_initialize(__val, _TrivialInit()); }
+
 public:
   explicit deque(size_type __n)
     : _STLP_PRIV _Deque_base<_Tp, _Alloc>(allocator_type(), __n)
   { _M_initialize(__n); }
   deque(size_type __n, const value_type& __val, const allocator_type& __a = allocator_type())
-#else
-  explicit deque(size_type __n)
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(allocator_type(), __n)
-  { _M_fill_initialize(_STLP_DEFAULT_CONSTRUCTED(_Tp), _TrivialInit()); }
-  deque(size_type __n, const value_type& __val)
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(allocator_type(), __n)
-  { _M_fill_initialize(__val, __false_type()); }
-  deque(size_type __n, const value_type& __val, const allocator_type& __a)
-#endif
     : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__a, __n)
   { _M_fill_initialize(__val, __false_type()); }
 
@@ -606,11 +591,11 @@ private:                        // helper functions for assign()
 
 public:                         // push_* and pop_*
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_back(const value_type& __t = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
+#if !defined (_STLP_NO_ANACHRONISMS)
+  void push_back(const value_type& __t = _Tp()) {
 #else
   void push_back(const value_type& __t) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     if (this->_M_finish._M_cur != this->_M_finish._M_last - 1) {
       _Copy_Construct(this->_M_finish._M_cur, __t);
       ++this->_M_finish._M_cur;
@@ -618,11 +603,11 @@ public:                         // push_* and pop_*
     else
       _M_push_back_aux_v(__t);
   }
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_front(const value_type& __t = _STLP_DEFAULT_CONSTRUCTED(_Tp))   {
+#if !defined (_STLP_NO_ANACHRONISMS)
+  void push_front(const value_type& __t = _Tp())   {
 #else
   void push_front(const value_type& __t)   {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     if (this->_M_start._M_cur != this->_M_start._M_first) {
       _Copy_Construct(this->_M_start._M_cur - 1, __t);
       --this->_M_start._M_cur;
@@ -630,25 +615,6 @@ public:                         // push_* and pop_*
     else
       _M_push_front_aux_v(__t);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_back() {
-    if (this->_M_finish._M_cur != this->_M_finish._M_last - 1) {
-      _STLP_STD::_Construct(this->_M_finish._M_cur);
-      ++this->_M_finish._M_cur;
-    }
-    else
-      _M_push_back_aux();
-  }
-  void push_front() {
-    if (this->_M_start._M_cur != this->_M_start._M_first) {
-      _STLP_STD::_Construct(this->_M_start._M_cur - 1);
-      --this->_M_start._M_cur;
-    }
-    else
-      _M_push_front_aux();
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void pop_back() {
     if (this->_M_finish._M_cur != this->_M_finish._M_first) {
@@ -668,11 +634,11 @@ public:                         // push_* and pop_*
 
 public:                         // Insert
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
+#if !defined (_STLP_NO_ANACHRONISMS)
+  iterator insert(iterator __pos, const value_type& __x = _Tp()) {
 #else
   iterator insert(iterator __pos, const value_type& __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     if (__pos._M_cur == this->_M_start._M_cur) {
       push_front(__x);
       return this->_M_start;
@@ -687,11 +653,6 @@ public:                         // Insert
       return _M_fill_insert_aux(__pos, 1, __x, _Movable());
     }
   }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos)
-  { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void insert(iterator __pos, size_type __n, const value_type& __x)
   { _M_fill_insert(__pos, __n, __x); }
@@ -724,23 +685,14 @@ public:
   }
 
 public:
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size,
-              const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
-#else
-  void resize(size_type __new_size, const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+              const value_type& __x = _Tp()) {
     const size_type __len = size();
     if (__new_size < __len)
       erase(this->_M_start + __new_size, this->_M_finish);
     else
       insert(this->_M_finish, __new_size - __len, __x);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size)
-  { resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
 protected:
   iterator _M_erase(iterator __pos, const __true_type& /*_Movable*/);
@@ -803,10 +755,6 @@ protected:                        // Internal push_* and pop_*
 
   void _M_push_back_aux_v(const value_type&);
   void _M_push_front_aux_v(const value_type&);
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void _M_push_back_aux();
-  void _M_push_front_aux();
-#endif /*_STLP_DONT_SUP_DFLT_PARAM !_STLP_NO_ANACHRONISMS*/
   void _M_pop_back_aux();
   void _M_pop_front_aux();
 

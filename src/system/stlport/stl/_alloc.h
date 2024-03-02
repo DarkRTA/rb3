@@ -471,7 +471,7 @@ struct __type_traits<allocator<_Tp> > : _STLP_PRIV __alloc_type_traits<_Tp> {};
 #endif
 
 template <class _Tp, class _Alloc>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _Alloc_traits<_Tp, _Alloc>::allocator_type  _STLP_CALL
+inline typename _Alloc_traits<_Tp, _Alloc>::allocator_type  _STLP_CALL
 __stl_alloc_create(const _Alloc& __a, const _Tp*) {
   typedef typename _Alloc::template rebind<_Tp>::other _Rebound_type;
   return _Rebound_type(__a);

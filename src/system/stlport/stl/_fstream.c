@@ -28,18 +28,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-# if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-// no wchar_t is supported for this mode
-# define __BF_int_type__ int
-# define __BF_pos_type__ streampos
-# define __BF_off_type__ streamoff
-# else
-# define __BF_int_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_filebuf<_CharT, _Traits>::int_type
-# define __BF_pos_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_filebuf<_CharT, _Traits>::pos_type
-# define __BF_off_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_filebuf<_CharT, _Traits>::off_type
-# endif
-
-
 //----------------------------------------------------------------------
 // Public basic_filebuf<> member functions
 
@@ -53,8 +41,8 @@ basic_filebuf<_CharT, _Traits>::basic_filebuf()
     _M_int_buf(0), _M_int_buf_EOS(0),
     _M_ext_buf(0), _M_ext_buf_EOS(0),
     _M_ext_buf_converted(0), _M_ext_buf_end(0),
-    _M_state(_STLP_DEFAULT_CONSTRUCTED(_State_type)),
-    _M_end_state(_STLP_DEFAULT_CONSTRUCTED(_State_type)),
+    _M_state(_State_type()),
+    _M_end_state(_State_type()),
     _M_mmap_base(0), _M_mmap_len(0),
     _M_saved_eback(0), _M_saved_gptr(0), _M_saved_egptr(0),
     _M_codecvt(0),
@@ -71,7 +59,7 @@ basic_filebuf<_CharT, _Traits>::~basic_filebuf() {
 
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_filebuf<_CharT, _Traits>::int_type
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::underflow() {
   return _Underflow<_CharT, _Traits>::_M_doit(this);
 }
@@ -151,7 +139,7 @@ streamsize basic_filebuf<_CharT, _Traits>::showmanyc() {
 // The end of the putback buffer is always _M_pback_buf + _S_pback_buf_size,
 // but the beginning is usually not _M_pback_buf.
 template <class _CharT, class _Traits>
-__BF_int_type__
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::pbackfail(int_type __c) {
   const int_type __eof = traits_type::eof();
 
@@ -202,7 +190,7 @@ basic_filebuf<_CharT, _Traits>::pbackfail(int_type __c) {
 // about.  We see the internal buffer as [_M_int_buf, _M_int_buf_EOS), but
 // the base class only sees [_M_int_buf, _M_int_buf_EOS - 1).
 template <class _CharT, class _Traits>
-__BF_int_type__
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::overflow(int_type __c) {
   // Switch to output mode, if necessary.
   if (!_M_in_output_mode)
@@ -275,7 +263,7 @@ basic_filebuf<_CharT, _Traits>::setbuf(_CharT* __buf, streamsize __n) {
 }
 
 template <class _CharT, class _Traits>
-__BF_pos_type__
+typename basic_filebuf<_CharT, _Traits>::pos_type
 basic_filebuf<_CharT, _Traits>::seekoff(off_type __off,
                                         ios_base::seekdir __whence,
                                         ios_base::openmode /* dummy */) {
@@ -366,7 +354,7 @@ basic_filebuf<_CharT, _Traits>::seekoff(off_type __off,
 
 
 template <class _CharT, class _Traits>
-__BF_pos_type__
+typename basic_filebuf<_CharT, _Traits>::pos_type
 basic_filebuf<_CharT, _Traits>::seekpos(pos_type __pos,
                                         ios_base::openmode /* dummy */) {
   if (this->is_open()) {
@@ -467,7 +455,7 @@ bool basic_filebuf<_CharT, _Traits>::_M_switch_to_output_mode() {
 // seek.
 
 template <class _CharT, class _Traits>
-__BF_int_type__
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::_M_input_error() {
    this->_M_exit_input_mode();
   _M_in_output_mode = false;
@@ -477,7 +465,7 @@ basic_filebuf<_CharT, _Traits>::_M_input_error() {
 }
 
 template <class _CharT, class _Traits>
-__BF_int_type__
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::_M_underflow_aux() {
   // We have the state and file position from the end of the internal
   // buffer.  This round, they become the beginning of the internal buffer.
@@ -555,7 +543,7 @@ basic_filebuf<_CharT, _Traits>::_M_underflow_aux() {
 // returns eof.  Error mode is sticky; it is cleared only by close or
 // seek.
 template <class _CharT, class _Traits>
-__BF_int_type__
+typename basic_filebuf<_CharT, _Traits>::int_type
 basic_filebuf<_CharT, _Traits>::_M_output_error() {
   _M_in_output_mode = false;
   _M_in_input_mode = false;
@@ -733,10 +721,6 @@ void basic_filebuf<_CharT, _Traits>::_M_setup_codecvt(const locale& __loc, bool 
 }
 
 _STLP_END_NAMESPACE
-
-# undef __BF_int_type__
-# undef __BF_pos_type__
-# undef __BF_off_type__
 
 #endif /* _STLP_FSTREAM_C */
 

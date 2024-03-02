@@ -68,17 +68,9 @@ public:
   explicit slist(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit slist(size_type __n, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type),
-#else
-  slist(size_type __n, const value_type& __x,
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  explicit slist(size_type __n, const value_type& __x = value_type(),
         const allocator_type& __a =  allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__x), _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit slist(size_type __n) : _M_impl(__n) {}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   // We don't need any dispatching tricks here, because _M_insert_after_range
   // already does them.
@@ -147,16 +139,9 @@ public:
 public:
   reference front()             { return *begin(); }
   const_reference front() const { return *begin(); }
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  void push_front(const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
-#else
-  void push_front(const value_type& __x)
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
-  { _M_impl.push_front(cast_traits::to_storage_type_cref(__x)); }
 
-# if defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  void push_front() { _M_impl.push_front();}
-# endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+  void push_front(const value_type& __x = value_type())
+  { _M_impl.push_front(cast_traits::to_storage_type_cref(__x)); }
 
   void pop_front() { _M_impl.pop_front(); }
 
@@ -165,18 +150,9 @@ public:
   const_iterator previous(const_iterator __pos) const
   { return const_iterator(const_cast<_Node_base*>(_M_impl.previous(_BaseConstIte(__pos._M_node))._M_node)); }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert_after(iterator __pos, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
-#else
-  iterator insert_after(iterator __pos, const value_type& __x)
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  iterator insert_after(iterator __pos, const value_type& __x = value_type())
   { return iterator(_M_impl.insert_after(_BaseIte(__pos._M_node),
                                          cast_traits::to_storage_type_cref(__x))._M_node); }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert_after(iterator __pos)
-  { return iterator(_M_impl.insert_after(_BaseIte(__pos._M_node))._M_node);}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void insert_after(iterator __pos, size_type __n, const value_type& __x)
   { _M_impl.insert_after(_BaseIte(__pos._M_node), __n, cast_traits::to_storage_type_cref(__x)); }
@@ -212,18 +188,9 @@ public:
 #  endif
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert(iterator __pos, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
-#else
-  iterator insert(iterator __pos, const value_type& __x)
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  iterator insert(iterator __pos, const value_type& __x = value_type())
   { return iterator(_M_impl.insert(_BaseIte(__pos._M_node),
                                    cast_traits::to_storage_type_cref(__x))._M_node); }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert(iterator __pos)
-  { return iterator(_M_impl.insert(_BaseIte(__pos._M_node))._M_node); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void insert(iterator __pos, size_type __n, const value_type& __x)
   { _M_impl.insert(_BaseIte(__pos._M_node), __n, cast_traits::to_storage_type_cref(__x)); }
@@ -269,16 +236,8 @@ public:
   iterator erase(iterator __first, iterator __last)
   { return iterator(_M_impl.erase(_BaseIte(__first._M_node), _BaseIte(__last._M_node))._M_node); }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
-#else
-  void resize(size_type __new_size, const value_type& __x)
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  void resize(size_type __new_size, const value_type& __x = value_type())
   { _M_impl.resize(__new_size, cast_traits::to_storage_type_cref(__x));}
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size) { _M_impl.resize(__new_size); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void clear() { _M_impl.clear(); }
 

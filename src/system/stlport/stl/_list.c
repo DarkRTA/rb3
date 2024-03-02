@@ -75,10 +75,6 @@ void _List_base<_Tp,_Alloc>::clear() {
   _M_node._M_data._M_prev = &_M_node._M_data;
 }
 
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define size_type size_t
-#endif
-
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
 #  define list _STLP_PTR_IMPL_NAME(List)
 #elif defined (_STLP_DEBUG)

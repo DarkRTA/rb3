@@ -94,14 +94,8 @@ private:
 public:
   // allocation/deallocation
   map() : _M_t(_Compare(), allocator_type()) {}
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit map(const _Compare& __comp,
                const allocator_type& __a = allocator_type())
-#else
-  explicit map(const _Compare& __comp)
-    : _M_t(__comp, allocator_type()) {}
-  explicit map(const _Compare& __comp, const allocator_type& __a)
-#endif
     : _M_t(__comp, __a) {}
 
   template <class _InputIterator>
@@ -145,7 +139,7 @@ public:
     iterator __i = lower_bound(__k);
     // __i->first is greater than or equivalent to __k.
     if (__i == end() || key_comp()(__k, (*__i).first))
-      __i = insert(__i, value_type(__k, _STLP_DEFAULT_CONSTRUCTED(_Tp)));
+      __i = insert(__i, value_type(__k, _Tp()));
     return (*__i).second;
   }
   void swap(_Self& __x) { _M_t.swap(__x._M_t); }

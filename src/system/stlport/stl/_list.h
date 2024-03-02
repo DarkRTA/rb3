@@ -265,11 +265,7 @@ public:
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
 protected:
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   _Node_base* _M_create_node(const_reference __x = value_type()) {
-#else
-  _Node_base* _M_create_node(const_reference __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM*/
     _Node* __p = this->_M_node.allocate(1);
     _STLP_TRY {
       _Copy_Construct(&__p->_M_data, __x);
@@ -278,30 +274,9 @@ protected:
     return __p;
   }
 
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  _Node_base* _M_create_node() {
-    _Node* __p = this->_M_node.allocate(1);
-    _STLP_TRY {
-      _STLP_STD::_Construct(&__p->_M_data);
-    }
-    _STLP_UNWIND(this->_M_node.deallocate(__p, 1))
-    return __p;
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
-
 public:
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
-  explicit list(size_type __n, const_reference __val = _STLP_DEFAULT_CONSTRUCTED(value_type),
+  explicit list(size_type __n, const_reference __val = value_type(),
                 const allocator_type& __a = allocator_type())
-#else
-  explicit list(size_type __n)
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(allocator_type())
-    { this->insert(begin(), __n, _STLP_DEFAULT_CONSTRUCTED(value_type)); }
-  list(size_type __n, const_reference __val)
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(allocator_type())
-    { this->insert(begin(), __n, __val); }
-  list(size_type __n, const_reference __val, const allocator_type& __a)
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
     { this->insert(begin(), __n, __val); }
 
@@ -375,11 +350,11 @@ public:
     }
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
+#if !defined(_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const_reference __x = value_type()) {
 #else
   iterator insert(iterator __pos, const_reference __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _Node_base* __tmp = _M_create_node(__x);
     _Node_base* __n = __pos._M_node;
     _Node_base* __p = __n->_M_prev;
@@ -447,13 +422,6 @@ public:
   void push_front(const_reference __x) { insert(begin(), __x); }
   void push_back (const_reference __x) { insert(end(), __x); }
 
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos)
-  { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(value_type)); }
-  void push_front() {insert(begin());}
-  void push_back() {insert(end());}
-# endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
-
   iterator erase(iterator __pos) {
     _Node_base* __next_node = __pos._M_node->_M_next;
     _Node_base* __prev_node = __pos._M_node->_M_prev;
@@ -471,13 +439,7 @@ public:
     return __last;
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size, const_reference __x = value_type());
-#else
-  void resize(size_type __new_size, const_reference __x);
-  void resize(size_type __new_size)
-  { this->resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(value_type)); }
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM*/
 
   void pop_front() { erase(begin()); }
   void pop_back() {

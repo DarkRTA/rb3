@@ -87,7 +87,7 @@ struct _MoveSourceTraits {
 
 //The helper function
 template <class _Tp>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _MoveSourceTraits<_Tp>::_Type
+inline typename _MoveSourceTraits<_Tp>::_Type
 _AsMoveSource (_Tp &src) {
   typedef typename _MoveSourceTraits<_Tp>::_Type _SrcType;
   return _SrcType(src);

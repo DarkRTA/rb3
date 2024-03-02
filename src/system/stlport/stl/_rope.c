@@ -45,12 +45,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-# if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-# define __allocator__ _Alloc
-# else
-# define __allocator__ allocator_type
-# endif
-
 template<class _CharT, class _Alloc>
 _Rope_iterator<_CharT, _Alloc>::_Rope_iterator(rope<_CharT,_Alloc>* __r, size_t __pos)
   : _Rope_iterator_base<_CharT,_Alloc>(__r->_M_tree_ptr._M_data, __pos),
@@ -345,17 +339,6 @@ void _Rope_RopeRep<_CharT,_Alloc>::_M_free_tree() {
   }
 }
 
-# if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-#   define __RopeLeaf__ _Rope_RopeLeaf<_CharT,_Alloc>
-#   define __RopeRep__ _Rope_RopeRep<_CharT,_Alloc>
-#   define _RopeLeaf _Rope_RopeLeaf<_CharT,_Alloc>
-#   define _RopeRep _Rope_RopeRep<_CharT,_Alloc>
-#   define size_type size_t
-# else
-#   define __RopeLeaf__ _STLP_TYPENAME_ON_RETURN_TYPE rope<_CharT,_Alloc>::_RopeLeaf
-#   define __RopeRep__ _STLP_TYPENAME_ON_RETURN_TYPE rope<_CharT,_Alloc>::_RopeRep
-# endif
-
 template <class _CharT, class _Alloc>
 void rope<_CharT, _Alloc>::_M_throw_out_of_range() const {
   __stl_throw_out_of_range("rope");
@@ -364,7 +347,7 @@ void rope<_CharT, _Alloc>::_M_throw_out_of_range() const {
 // Concatenate a C string onto a leaf rope by copying the rope data.
 // Used for short ropes.
 template <class _CharT, class _Alloc>
-__RopeLeaf__*
+typename rope<_CharT,_Alloc>::_RopeLeaf*
 rope<_CharT,_Alloc>::_S_leaf_concat_char_iter (
   _RopeLeaf* __r, const _CharT* __iter, size_t __len) {
   size_t __old_len = __r->_M_size._M_data;
@@ -400,7 +383,7 @@ void _Terminate_RopeLeaf(_Rope_RopeLeaf<_CharT,_Alloc> *__r,
 
 // As above, but it's OK to clobber original if refcount is 1
 template <class _CharT, class _Alloc>
-__RopeLeaf__*
+typename rope<_CharT,_Alloc>::_RopeLeaf*
 rope<_CharT,_Alloc>::_S_destr_leaf_concat_char_iter (_RopeLeaf* __r, const _CharT* __iter, size_t __len) {
   //_STLP_ASSERT(__r->_M_ref_count >= 1)
   if ( /* __r->_M_ref_count > 1 */  __r->_M_incr() > 2 ) { // - ptr
@@ -430,7 +413,7 @@ rope<_CharT,_Alloc>::_S_destr_leaf_concat_char_iter (_RopeLeaf* __r, const _Char
 // Does not increment (nor decrement on exception) child reference counts.
 // Result has ref count 1.
 template <class _CharT, class _Alloc>
-__RopeRep__*
+typename rope<_CharT,_Alloc>::_RopeRep*
 rope<_CharT,_Alloc>::_S_tree_concat (_RopeRep* __left, _RopeRep* __right) {
   _RopeConcatenation* __result =
     _S_new_RopeConcatenation(__left, __right, __left->get_allocator());
@@ -461,7 +444,7 @@ rope<_CharT,_Alloc>::_S_tree_concat (_RopeRep* __left, _RopeRep* __right) {
 }
 
 template <class _CharT, class _Alloc>
-__RopeRep__*
+typename rope<_CharT,_Alloc>::_RopeRep*
 rope<_CharT,_Alloc>::_S_concat_char_iter (_RopeRep* __r,
                                           const _CharT*__s, size_t __slen) {
   _RopeRep* __result;
@@ -504,7 +487,7 @@ rope<_CharT,_Alloc>::_S_concat_char_iter (_RopeRep* __r,
 }
 
 template <class _CharT, class _Alloc>
-__RopeRep__*
+typename rope<_CharT,_Alloc>::_RopeRep*
 rope<_CharT,_Alloc>::_S_destr_concat_char_iter(
   _RopeRep* __r, const _CharT* __s, size_t __slen) {
   _RopeRep* __result;
@@ -564,7 +547,7 @@ rope<_CharT,_Alloc>::_S_destr_concat_char_iter(
 }
 
 template <class _CharT, class _Alloc>
-__RopeRep__*
+typename rope<_CharT,_Alloc>::_RopeRep*
 rope<_CharT,_Alloc>::_S_concat_rep(_RopeRep* __left, _RopeRep* __right) {
   if (0 == __left) {
     _S_ref(__right);
@@ -608,7 +591,7 @@ rope<_CharT,_Alloc>::_S_concat_rep(_RopeRep* __left, _RopeRep* __right) {
 }
 
 template <class _CharT, class _Alloc>
-__RopeRep__*
+typename rope<_CharT,_Alloc>::_RopeRep*
 rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
                                   size_t __start, size_t __endp1) {
   if (0 == __base) return 0;
@@ -983,7 +966,7 @@ void rope<_CharT,_Alloc>::_S_dump(_RopeRep* __r, int __indent) {
       bool __too_big = __r->_M_size._M_data > __prefix->_M_size._M_data;
 
       _S_flatten(__prefix, __buffer);
-      __buffer[__prefix->_M_size._M_data] = _STLP_DEFAULT_CONSTRUCTED(_CharT);
+      __buffer[__prefix->_M_size._M_data] = _CharT();
       printf("%s%s\n", (char*)__buffer, __too_big? "...\n" : "\n");
     } else {
       printf("\n");
@@ -1013,7 +996,8 @@ rope<_CharT,_Alloc>::_S_min_len[__ROPE_DEPTH_SIZE] = { \
 # undef __ROPE_MAX_DEPTH
 
 template <class _CharT, class _Alloc>
-__RopeRep__* rope<_CharT,_Alloc>::_S_balance(_RopeRep* __r) {
+typename rope<_CharT,_Alloc>::_RopeRep*
+rope<_CharT,_Alloc>::_S_balance(_RopeRep* __r) {
   _RopeRep* __forest[_RopeRep::_S_max_rope_depth + 1] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                                                          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                                                          0,0,0,0,0,0};
@@ -1299,7 +1283,7 @@ template<class _CharT, class _Alloc>
 const _CharT* rope<_CharT,_Alloc>::c_str() const {
   if (0 == _M_tree_ptr._M_data) {
     // Possibly redundant, but probably fast.
-    _S_empty_c_str[0] = _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    _S_empty_c_str[0] = _CharT();
     return _S_empty_c_str;
   }
   _CharT* __old_c_string = _M_tree_ptr._M_data->_M_c_string;
@@ -1323,7 +1307,7 @@ const _CharT* rope<_CharT,_Alloc>::c_str() const {
 template<class _CharT, class _Alloc>
 const _CharT* rope<_CharT,_Alloc>::replace_with_c_str() {
   if (0 == _M_tree_ptr._M_data) {
-    _S_empty_c_str[0] = _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    _S_empty_c_str[0] = _CharT();
     return _S_empty_c_str;
   }
   _CharT* __old_c_string = _M_tree_ptr._M_data->_M_c_string;
@@ -1359,12 +1343,6 @@ void _Rope_rotate(_Rope_iterator<_CharT,_Alloc> __first,
   __r += __part2;
   __r += __suffix;
 }
-
-#   undef __RopeLeaf__
-#   undef __RopeRep__
-#   undef __RopeLeaf
-#   undef __RopeRep
-#   undef size_type
 
 _STLP_END_NAMESPACE
 

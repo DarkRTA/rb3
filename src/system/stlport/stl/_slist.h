@@ -238,11 +238,7 @@ private:
   typedef _STLP_PRIV _Slist_node<_Tp> _Node;
   typedef _STLP_PRIV _Slist_node_base _Node_base;
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   _Node* _M_create_node(const value_type& __x = _Tp()) {
-#else
-  _Node* _M_create_node(const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     _Node* __node = this->_M_head.allocate(1);
     _STLP_TRY {
       _Copy_Construct(&__node->_M_data, __x);
@@ -252,43 +248,15 @@ private:
     return __node;
   }
 
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  _Node* _M_create_node() {
-    _Node* __node = this->_M_head.allocate(1);
-    _STLP_TRY {
-      _STLP_STD::_Construct(&__node->_M_data);
-      __node->_M_next = 0;
-    }
-    _STLP_UNWIND(this->_M_head.deallocate(__node, 1))
-    return __node;
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
-
 public:
 
   allocator_type get_allocator() const { return _Base::get_allocator(); }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit slist(const allocator_type& __a = allocator_type())
-#else
-  slist()
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(allocator_type()) {}
-  slist(const allocator_type& __a)
-#endif
     : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__a) {}
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
-  explicit slist(size_type __n, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp),
+  explicit slist(size_type __n, const value_type& __x = _Tp(),
                  const allocator_type& __a =  allocator_type())
-#else
-  explicit slist(size_type __n)
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(allocator_type())
-    { _M_insert_after_fill(&this->_M_head._M_data, __n, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-  slist(size_type __n, const value_type& __x)
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(allocator_type())
-    { _M_insert_after_fill(&this->_M_head._M_data, __n, __x); }
-  slist(size_type __n, const value_type& __x, const allocator_type& __a)
-#endif
     : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__a)
     { _M_insert_after_fill(&this->_M_head._M_data, __n, __x); }
 
@@ -387,17 +355,13 @@ public:
 public:
   reference front()             { return *begin(); }
   const_reference front() const { return *begin(); }
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
+#if !defined (_STLP_NO_ANACHRONISMS)
   void push_front(const value_type& __x = _Tp())   {
 #else
   void push_front(const value_type& __x)   {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _STLP_PRIV __slist_make_link(&this->_M_head._M_data, _M_create_node(__x));
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_front() { _STLP_PRIV __slist_make_link(&this->_M_head._M_data, _M_create_node());}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void pop_front() {
     _Node* __node = __STATIC_CAST(_Node*, this->_M_head._M_data._M_next);
@@ -416,19 +380,9 @@ public:
   }
 
 private:
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   _Node* _M_insert_after(_Node_base* __pos, const value_type& __x = _Tp()) {
-#else
-  _Node* _M_insert_after(_Node_base* __pos, const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     return __STATIC_CAST(_Node*, _STLP_PRIV __slist_make_link(__pos, _M_create_node(__x)));
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  _Node* _M_insert_after(_Node_base* __pos) {
-    return __STATIC_CAST(_Node*, _STLP_PRIV __slist_make_link(__pos, _M_create_node()));
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void _M_insert_after_fill(_Node_base* __pos,
                             size_type __n, const value_type& __x) {
@@ -509,19 +463,9 @@ private:
 
 public:
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   iterator insert_after(iterator __pos, const value_type& __x = _Tp()) {
-#else
-  iterator insert_after(iterator __pos, const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     return iterator(_M_insert_after(__pos._M_node, __x));
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert_after(iterator __pos) {
-    return insert_after(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp));
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void insert_after(iterator __pos, size_type __n, const value_type& __x) {
     _M_insert_after_fill(__pos._M_node, __n, __x);
@@ -534,21 +478,10 @@ public:
     _M_splice_after_range(__pos._M_node, __first, __last);
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   iterator insert(iterator __pos, const value_type& __x = _Tp()) {
-#else
-  iterator insert(iterator __pos, const value_type& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     return iterator(_M_insert_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
                     __x));
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert(iterator __pos) {
-    return iterator(_M_insert_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                    _STLP_DEFAULT_CONSTRUCTED(_Tp)));
-  }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void insert(iterator __pos, size_type __n, const value_type& __x) {
     _M_insert_after_fill(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node), __n, __x);
@@ -572,15 +505,7 @@ public:
   iterator erase(iterator __first, iterator __last)
   { return iterator(this->_M_erase_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __first._M_node), __last._M_node)); }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type new_size, const value_type& __x = _Tp());
-#else
-  void resize(size_type new_size, const value_type& __x);
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type new_size) { resize(new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void clear()
   { this->_M_erase_after(&this->_M_head._M_data, 0); }

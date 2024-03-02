@@ -89,7 +89,7 @@ public:
   }
 
   ~_Vector_base() {
-    if (_M_ptr._M_data != _STLP_DEFAULT_CONSTRUCTED(pointer))
+    if (_M_ptr._M_data != pointer())
       _M_ptr.deallocate(_M_ptr._M_data, _M_capacity);
   }
 
@@ -202,42 +202,23 @@ public:
   reference at(size_type __n) { _M_range_check(__n); return (*this)[__n]; }
   const_reference at(size_type __n) const { _M_range_check(__n); return (*this)[__n]; }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit vector(const allocator_type& __a = allocator_type())
-#else
-  vector()
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(allocator_type()) {}
-  vector(const allocator_type& __a)
-#endif
     : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__a) {}
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
 private:
   //We always call _M_initialize with only 1 parameter. Default parameter
   //is used to allow explicit instanciation of vector with types with no
   //default constructor.
-  void _M_initialize(size_type __n, const _Tp& __val = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
+  void _M_initialize(size_type __n, const _Tp& __val = _Tp()) {
     auto end = _STLP_PRIV __uninitialized_init(this->_M_ptr._M_data, __n, __val);
     this->_M_size = end - this->_M_ptr._M_data;
   }
+
 public:
   explicit vector(size_type __n)
     : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type())
   { _M_initialize(__n); }
   vector(size_type __n, const _Tp& __val, const allocator_type& __a = allocator_type())
-#else
-  explicit vector(size_type __n)
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type()) {
-    auto end = _STLP_PRIV __uninitialized_init(this->_M_ptr._M_data, __n, _STLP_DEFAULT_CONSTRUCTED(_Tp));
-    this->_M_size = end - this->_M_ptr._M_data;
-  }
-  vector(size_type __n, const _Tp& __val)
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type()) {
-    auto end = _STLP_PRIV __uninitialized_init(this->_M_ptr._M_data, __n, __val);
-    this->_M_size = end - this->_M_ptr._M_data;
-  }
-  vector(size_type __n, const _Tp& __val, const allocator_type& __a)
-#endif
     : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, __a) {
     auto end = _STLP_PRIV __uninitialized_fill_n(this->_M_ptr._M_data, __n, __val);
     this->_M_size = end - this->_M_ptr._M_data;
@@ -346,11 +327,11 @@ public:
     _M_assign_dispatch(__first, __last, _Integral());
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM) && !defined (_STLP_NO_ANACHRONISMS)
-  void push_back(const _Tp& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
+#if !defined (_STLP_NO_ANACHRONISMS)
+  void push_back(const _Tp& __x = _Tp()) {
 #else
   void push_back(const _Tp& __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     if (this->_M_size != this->_M_capacity) {
       _Copy_Construct(&back(), __x);
       ++this->_M_size;
@@ -359,16 +340,11 @@ public:
       _M_insert_overflow(&back(), __x, _TrivialCopy(), 1UL, true);
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos, const _Tp& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp));
+#if !defined(_STLP_NO_ANACHRONISMS)
+  iterator insert(iterator __pos, const _Tp& __x = _Tp());
 #else
   iterator insert(iterator __pos, const _Tp& __x);
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  void push_back() { push_back(_STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-  iterator insert(iterator __pos) { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
 
   void swap(_Self& __x) {
     this->_M_ptr.swap(__x._M_ptr);
@@ -559,20 +535,12 @@ public:
     return _M_erase(__first, __last, _Movable());
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size, const _Tp& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
-#else
-  void resize(size_type __new_size, const _Tp& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  void resize(size_type __new_size, const _Tp& __x = _Tp()) {
     if (__new_size < size())
       erase(begin() + __new_size, end());
     else
       insert(end(), __new_size - size(), __x);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size) { resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void clear() {
     erase(begin(), end());

@@ -141,7 +141,7 @@ public:
   _Tp& operator[](const _KT& __key) {
     iterator __it = _M_ht.find(__key);
     return (__it == _M_ht.end() ?
-      _M_ht._M_insert(value_type(__key, _STLP_DEFAULT_CONSTRUCTED(_Tp))).second :
+      _M_ht._M_insert(value_type(__key, _Tp())).second :
       (*__it).second );
   }
 

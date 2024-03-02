@@ -196,29 +196,6 @@ inline void _Destroy_Moved_Range(_ForwardIterator __first, _ForwardIterator __la
   __destroy_mv_srcs(__first, __last, _STLP_VALUE_TYPE(__first, _ForwardIterator));
 }
 
-#if defined (_STLP_DEF_CONST_DEF_PARAM_BUG)
-// Those adaptors are here to fix common compiler bug regarding builtins:
-// expressions like int k = int() should initialize k to 0
-template <class _Tp>
-inline _Tp __default_constructed_aux(_Tp*, const __false_type&) {
-  return _Tp();
-}
-template <class _Tp>
-inline _Tp __default_constructed_aux(_Tp*, const __true_type&) {
-  return _Tp(0);
-}
-
-template <class _Tp>
-inline _Tp __default_constructed(_Tp* __p) {
-  return __default_constructed_aux(__p, _HasDefaultZeroValue(__p)._Answer());
-}
-
-#  define _STLP_DEFAULT_CONSTRUCTED(_TTp) __default_constructed((_TTp*)0)
-#else
-#  define _STLP_DEFAULT_CONSTRUCTED(_TTp) _TTp()
-#endif /* _STLP_DEF_CONST_DEF_PARAM_BUG */
-
-
 #if !defined (_STLP_NO_ANACHRONISMS)
 // --------------------------------------------------
 // Old names from the HP STL.

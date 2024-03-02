@@ -73,21 +73,6 @@ private:
 
 #define _STLP_NON_DBG_TREE _STLP_PRIV _STLP_NON_DBG_NAME(Rb_tree) <_Key, _STLP_PRIV _DbgCompare<_Key, _Compare>, _Value, _KeyOfValue, _Traits, _Alloc>
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Key, class _Compare,
-          class _Value, class _KeyOfValue, class _Traits, class _Alloc >
-inline _Value*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_TREE >&)
-{ return (_Value*)0; }
-template <class _Key, class _Compare,
-          class _Value, class _KeyOfValue, class _Traits, class _Alloc >
-inline bidirectional_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_TREE >&)
-{ return bidirectional_iterator_tag(); }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif
-
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
           _STLP_DBG_ALLOCATOR_SELECT(_Value) >

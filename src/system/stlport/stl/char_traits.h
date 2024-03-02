@@ -41,7 +41,7 @@ _STLP_BEGIN_NAMESPACE
 
 template <class _Tp> class allocator;
 
-#define _STLP_NULL_CHAR_INIT(_ChT) _STLP_DEFAULT_CONSTRUCTED(_ChT)
+#define _STLP_NULL_CHAR_INIT(_ChT) _ChT()
 
 typedef long streamoff;
 typedef ptrdiff_t streamsize;
@@ -116,7 +116,7 @@ public:
   }
 
   static size_t _STLP_CALL length(const char_type* __s) {
-    const char_type _NullChar = _STLP_DEFAULT_CONSTRUCTED(char_type);
+    const char_type _NullChar = char_type();
     size_t __i(0);
     for (; !eq(__s[__i], _NullChar); ++__i) {}
     return __i;

@@ -277,7 +277,7 @@ endl(basic_ostream<_CharT, _Traits>& __os) {
 template <class _CharT, class _Traits>
 inline basic_ostream<_CharT, _Traits>& _STLP_CALL
 ends(basic_ostream<_CharT, _Traits>& __os) {
-  __os.put(_STLP_DEFAULT_CONSTRUCTED(_CharT));
+  __os.put(_CharT());
   return __os;
 }
 

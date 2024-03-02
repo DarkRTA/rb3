@@ -54,12 +54,6 @@ void _Vector_base<_Tp, _Size, _Alloc>::_M_throw_out_of_range() const {
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define __iterator__  _Tp*
-#else
-#  define __iterator__  _STLP_TYPENAME_ON_RETURN_TYPE vector<_Tp, _Size, _Alloc>::iterator
-#endif
-
 template <class _Tp, class _Size, class _Alloc>
 void vector<_Tp, _Size, _Alloc>::reserve(size_type __n) {
   if (capacity() < __n) {
@@ -214,14 +208,12 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_t __n, const _Tp& __val) {
 }
 
 template <class _Tp, class _Size, class _Alloc>
-__iterator__
+typename vector<_Tp, _Size, _Alloc>::iterator
 vector<_Tp, _Size, _Alloc>::insert(iterator __pos, const _Tp& __x) {
   size_type __n = __pos - begin();
   _M_fill_insert(__pos, 1, __x);
   return begin() + __n;
 }
-
-#undef __iterator__
 
 #if defined (vector)
 #  undef vector

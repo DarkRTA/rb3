@@ -82,16 +82,8 @@ private:
 public:
 
   // allocation/deallocation
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit set(const _Compare& __comp = _Compare(),
                const allocator_type& __a = allocator_type())
-#else
-  set()
-    : _M_t(_Compare(), allocator_type()) {}
-  explicit set(const _Compare& __comp)
-    : _M_t(__comp, allocator_type()) {}
-  set(const _Compare& __comp, const allocator_type& __a)
-#endif
     : _M_t(__comp, __a) {}
 
   template <class _InputIterator>
@@ -213,16 +205,8 @@ private:
   _STLP_KEY_TYPE_FOR_CONT_EXT(key_type)
 
 public:
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   explicit multiset(const _Compare& __comp = _Compare(),
                     const allocator_type& __a = allocator_type())
-#else
-  multiset()
-    : _M_t(_Compare(), allocator_type()) {}
-  explicit multiset(const _Compare& __comp)
-    : _M_t(__comp, allocator_type()) {}
-  multiset(const _Compare& __comp, const allocator_type& __a)
-#endif
     : _M_t(__comp, __a) {}
 
   template <class _InputIterator>

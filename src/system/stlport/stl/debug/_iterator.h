@@ -283,11 +283,7 @@ public:
 
 template <class _Container, class _Traits>
 inline
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-_STLP_TYPENAME_ON_RETURN_TYPE _Traits::reference
-#else
-_STLP_TYPENAME_ON_RETURN_TYPE _DBG_iter<_Container, _Traits>::reference
-#endif
+typename _DBG_iter<_Container, _Traits>::reference
 _DBG_iter<_Container, _Traits>::operator*() const {
   _STLP_DEBUG_CHECK(_Dereferenceable(*this))
   _STLP_DEBUG_CHECK(_Traits::_Check(*this))
@@ -399,31 +395,25 @@ protected:
 };
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#    define _STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS 1
-#  endif
-
 _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _Container>
 inline ptrdiff_t*
 distance_type(const _STLP_PRIV _DBG_iter_base<_Container>&) { return (ptrdiff_t*) 0; }
 
-#  if !defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
 template <class _Container>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _STLP_PRIV _DBG_iter_base<_Container>::value_type*
+inline typename _STLP_PRIV _DBG_iter_base<_Container>::value_type*
 value_type(const _STLP_PRIV _DBG_iter_base<_Container>&) {
   typedef typename _STLP_PRIV _DBG_iter_base<_Container>::value_type _Val;
   return (_Val*)0;
 }
 
 template <class _Container>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category
+inline typename _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category
 iterator_category(const _STLP_PRIV _DBG_iter_base<_Container>&) {
   typedef typename _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category _Category;
   return _Category();
 }
-#  endif
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 

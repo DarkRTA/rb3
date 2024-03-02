@@ -42,17 +42,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Tp, class _Alloc>
-inline _Tp*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_LIST >&)
-{ return (_Tp*)0; }
-template <class _Tp, class _Alloc>
-inline bidirectional_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_LIST >&)
-{ return bidirectional_iterator_tag(); }
-#endif
-
 template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
 class list : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_LIST >
 {
@@ -84,18 +73,9 @@ public:
   explicit list(const allocator_type& __a = allocator_type()) :
     _M_non_dbg_impl(__a), _M_iter_list(&_M_non_dbg_impl) {}
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   explicit list(size_type __n, const _Tp& __x = _Tp(),
-#else
-  list(size_type __n, const _Tp& __x,
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM*/
             const allocator_type& __a = allocator_type())
     : _M_non_dbg_impl(__n, __x, __a), _M_iter_list(&_M_non_dbg_impl) {}
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit list(size_type __n)
-    : _M_non_dbg_impl(__n), _M_iter_list(&_M_non_dbg_impl) {}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   list(__move_source<_Self> src)
     : _M_non_dbg_impl(__move_source<_Base>(src.get()._M_non_dbg_impl)),
@@ -170,18 +150,14 @@ public:
     _M_non_dbg_impl.swap(__x._M_non_dbg_impl);
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
+#if !defined(_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const _Tp& __x = _Tp()) {
 #else
   iterator insert(iterator __pos, const _Tp& __x) {
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
     return iterator(&_M_iter_list,_M_non_dbg_impl.insert(__pos._M_iterator, __x) );
   }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos) { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   template <class _InputIterator>
   void insert(iterator __pos, _InputIterator __first, _InputIterator __last) {
@@ -228,11 +204,7 @@ public:
     return iterator (&_M_iter_list, _M_non_dbg_impl.erase(__first._M_iterator, __last._M_iterator));
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   void resize(size_type __new_size, const _Tp& __x = _Tp()) {
-#else
-  void resize(size_type __new_size, const _Tp& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     _Base_iterator __i = _M_non_dbg_impl.begin();
     size_type __len = 0;
     for ( ; __i != _M_non_dbg_impl.end() && __len < __new_size; ++__i, ++__len);
@@ -242,10 +214,6 @@ public:
     else                          // __i == end()
       _M_non_dbg_impl.insert(_M_non_dbg_impl.end(), __new_size - __len, __x);
   }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size) { resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
 private:
   template <class _Integer>

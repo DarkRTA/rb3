@@ -98,19 +98,10 @@ public:
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit vector(size_type __n, const value_type& __val = _STLP_DEFAULT_CONSTRUCTED(value_type),
-#else
-  vector(size_type __n, const value_type& __val,
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
       _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit vector(size_type __n)
-    : _M_impl(__n, allocator_type() ) {}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   vector(const _Self& __x)
     : _M_impl(__x._M_impl) {}
@@ -134,26 +125,20 @@ public:
   void assign(_InputIterator __first, _InputIterator __last)
   { _M_impl.assign(__first, __last); }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  void push_back(const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
+#if !defined(_STLP_NO_ANACHRONISMS)
+  void push_back(const value_type& __x = value_type())
 #else
   void push_back(const value_type& __x)
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
   { _M_impl.push_back(cast_traits::to_storage_type_cref(__x)); }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
+#if !defined(_STLP_NO_ANACHRONISMS)
+  iterator insert(iterator __pos, const value_type& __x = value_type())
 #else
   iterator insert(iterator __pos, const value_type& __x)
-#endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
+#endif
   { return cast_traits::to_value_type_ptr(_M_impl.insert(cast_traits::to_storage_type_ptr(__pos),
                                                          cast_traits::to_storage_type_cref(__x))); }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
-  void push_back() { _M_impl.push_back(); }
-  iterator insert(iterator __pos)
-  { return _M_impl.insert(cast_traits::to_storage_type_ptr(__pos)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void swap(_Self& __x) { _M_impl.swap(__x._M_impl); }
 
@@ -173,16 +158,8 @@ public:
                                                         cast_traits::to_storage_type_ptr(__last)));
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size, const value_type& __x = _STLP_DEFAULT_CONSTRUCTED(value_type))
-#else
-  void resize(size_type __new_size, const value_type& __x)
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  void resize(size_type __new_size, const value_type& __x = value_type())
   { _M_impl.resize(__new_size, cast_traits::to_storage_type_cref(__x)); }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size) { _M_impl.resize(__new_size); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   void clear() { _M_impl.clear(); }
 

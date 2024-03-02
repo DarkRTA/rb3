@@ -130,7 +130,7 @@ basic_streambuf<_CharT, _Traits>::_M_xsputnc(_CharT __c, streamsize __n)
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::_M_snextc_aux()
 {
   int_type __eof = _Traits::eof();
@@ -143,19 +143,19 @@ basic_streambuf<_CharT, _Traits>::_M_snextc_aux()
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::pbackfail(int_type) {
  return _Traits::eof();
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::overflow(int_type) {
   return _Traits::eof();
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::uflow() {
     return ( _Traits::eq_int_type(this->underflow(),_Traits::eof()) ?
              _Traits::eof() :
@@ -163,7 +163,7 @@ basic_streambuf<_CharT, _Traits>::uflow() {
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::underflow()
 { return _Traits::eof(); }
 
@@ -181,12 +181,12 @@ int
 basic_streambuf<_CharT, _Traits>::sync() { return 0; }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::pos_type
+typename basic_streambuf<_CharT, _Traits>::pos_type
 basic_streambuf<_CharT, _Traits>::seekpos(pos_type, ios_base::openmode)
 { return pos_type(-1); }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::pos_type
+typename basic_streambuf<_CharT, _Traits>::pos_type
 basic_streambuf<_CharT, _Traits>::seekoff(off_type, ios_base::seekdir,
                                           ios_base::openmode)
 { return pos_type(-1); }

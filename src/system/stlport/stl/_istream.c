@@ -30,17 +30,6 @@
 #  include <stl/_num_get.h>
 #endif
 
-#if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-// no wchar_t is supported for this mode
-#  define __BIS_int_type__ int
-#  define __BIS_pos_type__ streampos
-#  define __BIS_off_type__ streamoff
-#else
-#  define __BIS_int_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::int_type
-#  define __BIS_pos_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::pos_type
-#  define __BIS_off_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::off_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
@@ -310,7 +299,7 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (void
 // Unformatted input
 
 template <class _CharT, class _Traits>
-__BIS_int_type__
+typename basic_istream<_CharT, _Traits>::int_type
 basic_istream<_CharT, _Traits>::peek() {
   typename _Traits::int_type __tmp = _Traits::eof();
 
@@ -333,7 +322,7 @@ basic_istream<_CharT, _Traits>::peek() {
 
 
 template <class _CharT, class _Traits>
-__BIS_int_type__
+typename basic_istream<_CharT, _Traits>::int_type
 basic_istream<_CharT, _Traits>::get() {
   typename _Traits::int_type __tmp = _Traits::eof();
   sentry __sentry(*this, _No_Skip_WS());
@@ -488,7 +477,7 @@ int basic_istream<_CharT, _Traits>::sync() {
 }
 
 template <class _CharT, class _Traits>
-__BIS_pos_type__
+typename basic_istream<_CharT, _Traits>::pos_type
 basic_istream<_CharT, _Traits>::tellg() {
   sentry __sentry(*this, _No_Skip_WS());
 
@@ -614,12 +603,12 @@ __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
   }
   _STLP_CATCH_ALL {
     __that->_M_handle_exception(ios_base::badbit);
-    *__s = _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    *__s = _CharT();
     return __n;
   }
 
   if (__append_null)
-    *__s =  _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    *__s =  _CharT();
   if (__status)
     __that->setstate(__status);    // This might throw.
   return __n;
@@ -698,7 +687,7 @@ __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, 
 
   if (__done) {
     if (__append_null)
-        *__s =  _STLP_DEFAULT_CONSTRUCTED(_CharT);
+        *__s =  _CharT();
     if (__status != 0)
       __that->setstate(__status);   // This might throw.
     return __n;
@@ -1416,10 +1405,6 @@ basic_iostream<_CharT, _Traits>::~basic_iostream()
 {}
 
 _STLP_END_NAMESPACE
-
-#undef __BIS_int_type__
-#undef __BIS_pos_type__
-#undef __BIS_off_type__
 
 #endif /* _STLP_ISTREAM_C */
 

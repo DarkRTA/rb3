@@ -39,17 +39,6 @@
 #  define _Rb_tree _STLP_NON_DBG_NAME(Rb_tree)
 #endif
 
-// fbp: these defines are for outline methods definitions.
-// needed for definitions to be portable. Should not be used in method bodies.
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define __iterator__  _Rb_tree_iterator<_Value, typename _Traits::_NonConstTraits>
-#  define __size_type__ size_t
-#  define iterator __iterator__
-#else
-#  define __iterator__  _STLP_TYPENAME_ON_RETURN_TYPE _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
-#  define __size_type__  _STLP_TYPENAME_ON_RETURN_TYPE _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::size_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -346,7 +335,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::operator=(
 // comparison as true)
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::_M_insert(_Rb_tree_node_base * __parent,
                                                                       const _Value& __val,
                                                                       _Rb_tree_node_base * __on_left,
@@ -383,7 +372,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::_M_insert(_Rb_tree_n
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(const _Value& __val) {
   _Base_ptr __y = &this->_M_header._M_data;
   _Base_ptr __x = _M_root();
@@ -401,7 +390,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(const _
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-pair<__iterator__, bool>
+pair<typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator, bool>
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(const _Value& __val) {
   _Base_ptr __y = &this->_M_header._M_data;
   _Base_ptr __x = _M_root();
@@ -428,7 +417,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(const 
 // efficiency.
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(iterator __position,
                                                                           const _Value& __val) {
   if (__position._M_node == this->_M_header._M_data._M_left) { // begin()
@@ -535,7 +524,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(iterat
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(iterator __position,
                                                                          const _Value& __val) {
   if (__position._M_node == this->_M_header._M_data._M_left) { // begin()
@@ -718,10 +707,9 @@ bool _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>::__rb_verify() co
 _STLP_MOVE_TO_STD_NAMESPACE
 _STLP_END_NAMESPACE
 
-#undef _Rb_tree
-#undef __iterator__
-#undef iterator
-#undef __size_type__
+#if defined (_Rb_tree)
+#  undef _Rb_tree
+#endif
 
 #endif /*  _STLP_TREE_C */
 

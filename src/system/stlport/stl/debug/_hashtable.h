@@ -72,20 +72,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 #define _STLP_NON_DBG_HT \
 _STLP_PRIV _STLP_NON_DBG_NAME(hashtable) <_Val, _Key, _HF, _Traits, _ExK, _STLP_PRIV _DbgEqual<_Key, _EqK>, _All>
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Val, class _Key, class _HF,
-          class _ExK, class _EqK, class _All>
-inline _Val*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_HT >&)
-{ return (_Val*)0; }
-
-template <class _Val, class _Key, class _HF,
-          class _ExK, class _EqK, class _All>
-inline forward_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_HT >&)
-{ return forward_iterator_tag(); }
-#endif
-
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
 class hashtable {

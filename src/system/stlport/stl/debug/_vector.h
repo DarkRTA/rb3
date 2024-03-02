@@ -38,17 +38,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Tp, class _Size, class _Alloc>
-inline _Tp*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_VECTOR >&)
-{ return (_Tp*)0; }
-template <class _Tp, class _Size, class _Alloc>
-inline random_access_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_VECTOR >&)
-{ return random_access_iterator_tag(); }
-#endif
-
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Tp, class _NcIt>
@@ -167,18 +156,9 @@ public:
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_non_dbg_impl(__a), _M_iter_list(&_M_non_dbg_impl)  {}
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   explicit vector(size_type __n, const _Tp& __x = _Tp(),
-#else
-  vector(size_type __n, const _Tp& __x,
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
          const allocator_type& __a = allocator_type())
     : _M_non_dbg_impl(__n, __x, __a), _M_iter_list(&_M_non_dbg_impl) {}
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  explicit vector(size_type __n)
-    : _M_non_dbg_impl(__n), _M_iter_list(&_M_non_dbg_impl) {}
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   vector(const _Self& __x)
     : _ConstructCheck(__x), _M_non_dbg_impl(__x._M_non_dbg_impl), _M_iter_list(&_M_non_dbg_impl) {}
@@ -236,20 +216,11 @@ public:
     _M_non_dbg_impl.swap(__x._M_non_dbg_impl);
   }
 
-#if !defined(_STLP_DONT_SUP_DFLT_PARAM)
   iterator insert(iterator __pos, const _Tp& __x = _Tp()) {
-#else
-  iterator insert(iterator __pos, const _Tp& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
     _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
     _Check_Overflow(1);
     return iterator(&_M_iter_list, _M_non_dbg_impl.insert(__pos._M_iterator, __x));
   }
-
-#if defined(_STLP_DONT_SUP_DFLT_PARAM)
-  iterator insert(iterator __pos)
-  { return insert(__pos, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   // Check whether it's an integral type.  If so, it's not an iterator.
   template <class _InputIterator>
@@ -291,11 +262,7 @@ public:
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__first._M_iterator, __last._M_iterator));
   }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size, const _Tp& __x = _STLP_DEFAULT_CONSTRUCTED(_Tp)) {
-#else
-  void resize(size_type __new_size, const _Tp& __x) {
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
+  void resize(size_type __new_size, const _Tp& __x = _Tp()) {
     if (__new_size > capacity()) {
       _Invalidate_all();
     }
@@ -304,10 +271,6 @@ public:
     }
     _M_non_dbg_impl.resize(__new_size, __x);
   }
-
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-  void resize(size_type __new_size) { resize(__new_size, _STLP_DEFAULT_CONSTRUCTED(_Tp)); }
-#endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
 private:
   template <class _Integer>

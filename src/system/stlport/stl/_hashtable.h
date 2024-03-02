@@ -137,11 +137,7 @@ struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _BaseIte, class _Traits>
 inline
-#  if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-_STLP_TYPENAME_ON_RETURN_TYPE _Traits::value_type *
-#  else
-_STLP_TYPENAME_ON_RETURN_TYPE _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>::value_type *
-#  endif
+typename _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>::value_type *
 value_type(const _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>&) {
   typedef typename _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>::value_type _Val;
   return (_Val*) 0;
@@ -257,32 +253,11 @@ public:
   typedef typename _Alloc_traits<_Val, _All>::allocator_type allocator_type;
   allocator_type get_allocator() const { return _M_elems.get_allocator(); }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   hashtable(size_type __n,
             const _HF&  __hf,
             const _EqK& __eql,
             const _ExK& __ext,
             const allocator_type& __a = allocator_type())
-#else
-  hashtable(size_type __n,
-            const _HF&  __hf,
-            const _EqK& __eql,
-            const _ExK& __ext)
-    : _M_hash(__hf),
-      _M_equals(__eql),
-      _M_get_key(__ext),
-      _M_elems(allocator_type()),
-      _M_buckets(_STLP_CONVERT_ALLOCATOR(__a, _BucketType*)),
-      _M_num_elements(0),
-      _M_max_load_factor(1.0f)
-  { _M_initialize_buckets(__n); }
-
-  hashtable(size_type __n,
-            const _HF&  __hf,
-            const _EqK& __eql,
-            const _ExK& __ext,
-            const allocator_type& __a)
-#endif
     : _M_hash(__hf),
       _M_equals(__eql),
       _M_get_key(__ext),
@@ -292,29 +267,10 @@ public:
       _M_max_load_factor(1.0f)
   { _M_initialize_buckets(__n); }
 
-#if !defined (_STLP_DONT_SUP_DFLT_PARAM)
   hashtable(size_type __n,
             const _HF&    __hf,
             const _EqK&   __eql,
             const allocator_type& __a = allocator_type())
-#else
-  hashtable(size_type __n,
-            const _HF&    __hf,
-            const _EqK&   __eql)
-    : _M_hash(__hf),
-      _M_equals(__eql),
-      _M_get_key(_ExK()),
-      _M_elems(allocator_type()),
-      _M_buckets(_STLP_CONVERT_ALLOCATOR(__a, _BucketType*)),
-      _M_num_elements(0),
-      _M_max_load_factor(1.0f)
-  { _M_initialize_buckets(__n); }
-
-  hashtable(size_type __n,
-            const _HF&    __hf,
-            const _EqK&   __eql,
-            const allocator_type& __a)
-#endif
     : _M_hash(__hf),
       _M_equals(__eql),
       _M_get_key(_ExK()),

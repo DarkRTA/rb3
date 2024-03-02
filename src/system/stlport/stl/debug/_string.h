@@ -27,17 +27,6 @@ _STLP_BEGIN_NAMESPACE
 #define _STLP_NON_DBG_STRING_NAME _STLP_NON_DBG_NAME(str)
 #define _STLP_NON_DBG_STRING _STLP_PRIV _STLP_NON_DBG_STRING_NAME <_CharT, _Traits, _Alloc>
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _CharT,class _Traits, class _Alloc>
-inline _CharT*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_STRING >&)
-{ return (_CharT*)0; }
-template <class _CharT, class _Traits, class _Alloc>
-inline random_access_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_STRING >&)
-{ return random_access_iterator_tag(); }
-#endif
-
 template <class _CharT, class _Traits, class _Alloc>
 class basic_string : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING >
 {
@@ -171,7 +160,7 @@ public:
       _Invalidate_iterators(begin() + __n, end());
     _M_non_dbg_impl.resize(__n, __c);
   }
-  void resize(size_type __n) { resize(__n, _STLP_DEFAULT_CONSTRUCTED(_CharT)); }
+  void resize(size_type __n) { resize(__n, _CharT()); }
   size_type capacity() const { return _M_non_dbg_impl.capacity(); }
 
   void reserve(size_type __s = 0) {

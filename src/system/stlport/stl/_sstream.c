@@ -23,15 +23,6 @@
 #  include <stl/_sstream.h>
 #endif
 
-#if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-// no wint_t is supported for this mode
-#  define __BSB_int_type__ int
-#  define __BSB_pos_type__ streampos
-#else
-#  define __BSB_int_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_stringbuf<_CharT, _Traits, _Alloc>::int_type
-#  define __BSB_pos_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_stringbuf<_CharT, _Traits, _Alloc>::pos_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
@@ -91,7 +82,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::_M_set_ptrs() {
 
 // Precondition: gptr() >= egptr().  Returns a character, if one is available.
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_int_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::int_type
 basic_stringbuf<_CharT, _Traits, _Alloc>::underflow() {
   return this->gptr() != this->egptr()
     ? _Traits::to_int_type(*this->gptr())
@@ -100,7 +91,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::underflow() {
 
 // Precondition: gptr() >= egptr().
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_int_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::int_type
 basic_stringbuf<_CharT, _Traits, _Alloc>::uflow() {
   if (this->gptr() != this->egptr()) {
     int_type __c = _Traits::to_int_type(*this->gptr());
@@ -112,7 +103,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::uflow() {
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_int_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::int_type
 basic_stringbuf<_CharT, _Traits, _Alloc>::pbackfail(int_type __c) {
   if (this->gptr() != this->eback()) {
     if (!_Traits::eq_int_type(__c, _Traits::eof())) {
@@ -138,7 +129,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::pbackfail(int_type __c) {
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_int_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::int_type
 basic_stringbuf<_CharT, _Traits, _Alloc>::overflow(int_type __c) {
   // fbp : reverse order of "ifs" to pass Dietmar's test.
   // Apparently, standard allows overflow with eof even for read-only streams.
@@ -328,7 +319,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::setbuf(_CharT*, streamsize __n) {
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_pos_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::pos_type
 basic_stringbuf<_CharT, _Traits, _Alloc>
   ::seekoff(off_type __off,
             ios_base::seekdir __dir,
@@ -386,7 +377,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__BSB_pos_type__
+typename basic_stringbuf<_CharT, _Traits, _Alloc>::pos_type
 basic_stringbuf<_CharT, _Traits, _Alloc>
   ::seekpos(pos_type __pos, ios_base::openmode __mode) {
   __mode &= _M_mode;
@@ -515,9 +506,6 @@ basic_stringstream<_CharT, _Traits, _Alloc>::~basic_stringstream()
 {}
 
 _STLP_END_NAMESPACE
-
-# undef __BSB_int_type__
-# undef __BSB_pos_type__
 
 #endif /* _STLP_SSTREAM_C */
 

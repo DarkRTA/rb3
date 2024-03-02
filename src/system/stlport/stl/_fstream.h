@@ -434,7 +434,7 @@ public:
 // in fstream.cxx.
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE _Underflow<_CharT, _Traits>::int_type // _STLP_CALL
+typename _Underflow<_CharT, _Traits>::int_type // _STLP_CALL
  _Underflow<_CharT, _Traits>::_M_doit(basic_filebuf<_CharT, _Traits>* __this) {
   if (!__this->_M_in_input_mode) {
     if (!__this->_M_switch_to_input_mode())
