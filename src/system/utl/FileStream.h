@@ -21,7 +21,7 @@ public:
     virtual int Tell();
     virtual bool Eof();
     virtual bool Fail();
-    virtual const char *Name() const; // weak
+    virtual const char *Name() const;
     virtual void ReadImpl(void *, int);
     virtual void WriteImpl(const void *, int);
     virtual void SeekImpl(int, SeekType);
@@ -33,7 +33,7 @@ public:
     File* mFile;
     class String mFilename;
     bool mFail;
-    StreamChecksum* mChecksum;
+    StreamChecksumValidator* mChecksumValidator;
     int mBytesChecksummed;
 };
 

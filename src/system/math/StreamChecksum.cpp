@@ -37,10 +37,10 @@ void StreamChecksum::GetHash(unsigned char* uc){
     mSHA1.m_digest.Copy(uc);
 }
 
-void StreamChecksumValidator::Begin(const char* file, bool b){
+bool StreamChecksumValidator::Begin(const char* file, bool b){
     MILO_ASSERT(file, 0x71);
     mFile = file;
-    SetFileChecksum(b);
+    return SetFileChecksum(b);
 }
 
 void StreamChecksumValidator::Update(const unsigned char* uc, unsigned int ui){
