@@ -111,6 +111,12 @@ public:
         return *this;
     }
 
+    BinStream& operator<<(bool b){
+        unsigned char uc = (b) ? 1 : 0;
+        Write(&uc, 1);
+        return *this;
+    }
+
     BS_READ_TYPE(int);
     BS_READ_TYPE(float);
     BS_READ_TYPE(unsigned int);
