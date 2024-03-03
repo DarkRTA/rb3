@@ -37,6 +37,7 @@ public:
     void RemoveExitCallback(ExitCallbackFunc*);
     void StartLog(const char*, bool);
     void StopLog();
+    void Exit(int, bool);
 
     void Notify(const char* msg);
     void Fail(const char* msg);

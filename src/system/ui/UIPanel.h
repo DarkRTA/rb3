@@ -42,6 +42,8 @@ public:
 
     void CheckLoad();
     void CheckUnload();
+    bool CheckIsLoaded();
+    void UnsetLoadedDir();
 
     PanelDir* mDir;
     DirLoader* mLoader;
