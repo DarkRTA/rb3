@@ -11,6 +11,8 @@ public:
     ChunkID(const char* str){
         memcpy(mStr, str, 4);
     }
+
+    const char* Str() const { return mStr; }
 };
 
 extern ChunkID kListChunkID;

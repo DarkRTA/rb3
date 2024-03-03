@@ -39,6 +39,8 @@ public:
     void Lock();
     void UnLock();
     const ChunkHeader* CurSubChunkHeader() const;
+    ChunkHeader* Next();
+    ChunkHeader* Next(ChunkID);
 };
 
 class IDataChunk : public BinStream {

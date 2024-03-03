@@ -1,6 +1,7 @@
 #include "utl/Chunks.h"
 #include "utl/ChunkIDs.h"
 #include "os/Debug.h"
+#include <string.h>
 
 IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0), 
     mLocked(0), mSubHeader(), mRecentlyReset(1) {
@@ -48,4 +49,48 @@ const ChunkHeader* IListChunk::CurSubChunkHeader() const {
     MILO_ASSERT(mRecentlyReset == false, 0x121);
     if(!mSubChunkValid) return 0;
     else return &mSubHeader;
+}
+
+ChunkHeader* IListChunk::Next(){
+    MILO_ASSERT(!mLocked, 0x133);
+    mRecentlyReset = false;
+    if(mSubChunkMarker >= mStartMarker){
+        mSubChunkValid = false;
+        return 0;
+    }
+    else {
+        int sublen = 8;
+        if(mSubHeader.IsList()) sublen = 12;
+//     local_18[0] = *(undefined4 *)(this + 0x18);
+//     uVar5 = *(int *)(this + 0x1c) + sublen;
+//     sublen = strncmp((char *)local_18,(char *)&kMidiTrackChunkID,4);
+//     uVar1 = countLeadingZeros(sublen);
+//     if (uVar1 >> 5 == 0) {
+//       uVar5 = uVar5 + (uVar5 & 1 ^ -((int)uVar5 >> 0x1f)) + ((int)uVar5 >> 0x1f);
+//     }
+//     pIVar3 = this + 0x18;
+//     *(uint *)(this + 0x28) = *(int *)(this + 0x28) + uVar5;
+        mSubChunkValid = true;
+        mBaseBinStream.Seek(mSubChunkMarker, BinStream::kSeekBegin);
+        mSubHeader.Read(mBaseBinStream);
+    }
+}
+
+ChunkHeader* IListChunk::Next(ChunkID id){
+    MILO_ASSERT(!mLocked, 0x155);
+    while(strncmp(id.Str(), mSubHeader.mID.Str(), 4) == 0){
+        ChunkHeader* next = Next();
+        if(!next) return 0;
+    }
+    return &mSubHeader;
+}
+
+void IListChunk::Lock(){
+    MILO_ASSERT(mLocked == false, 0x165);
+    mLocked = true;
+}
+
+void IListChunk::UnLock(){
+    MILO_ASSERT(mLocked == true, 0x16F);
+    mLocked = false;
 }
