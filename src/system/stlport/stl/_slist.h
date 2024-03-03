@@ -99,7 +99,7 @@ public:
   //copy constructor for iterator and constructor from iterator for const_iterator
   _Slist_iterator(const iterator& __x) : _Slist_iterator_base(__x._M_node) {}
 
-  reference operator*() const { return __STATIC_CAST(_Node*, this->_M_node)->_M_data; }
+  reference operator*() const { return static_cast<_Node*>(this->_M_node)->_M_data; }
   pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
@@ -134,7 +134,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Tp, class _Traits>
-inline _Tp* _STLP_CALL value_type(const _STLP_PRIV _Slist_iterator<_Tp, _Traits>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const _STLP_PRIV _Slist_iterator<_Tp, _Traits>&) { return static_cast<_Tp*>(0); }
 inline ptrdiff_t* _STLP_CALL distance_type(const _STLP_PRIV _Slist_iterator_base&) { return 0; }
 inline forward_iterator_tag _STLP_CALL iterator_category(const _STLP_PRIV _Slist_iterator_base&) { return forward_iterator_tag(); }
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -166,7 +166,7 @@ public:
 
 protected:
   _Slist_node_base* _M_erase_after(_Slist_node_base* __pos) {
-    _Node* __next = __STATIC_CAST(_Node*, __pos->_M_next);
+    _Node* __next = static_cast<_Node*>(__pos->_M_next);
     _Slist_node_base* __next_next = __next->_M_next;
     __pos->_M_next = __next_next;
     _STLP_STD::_Destroy(&__next->_M_data);
@@ -310,7 +310,7 @@ private:
     _Node_base* __prev = &this->_M_head._M_data;
     _Node_base* __node = this->_M_head._M_data._M_next;
     while (__node != 0 && __first != __last) {
-      __STATIC_CAST(_Node*, __node)->_M_data = *__first;
+      static_cast<_Node*>(__node)->_M_data = *__first;
       __prev = __node;
       __node = __node->_M_next;
       ++__first;
@@ -332,7 +332,7 @@ public:
   // obtain end().
   iterator before_begin() { return iterator(&this->_M_head._M_data); }
   const_iterator before_begin() const
-    { return const_iterator(__CONST_CAST(_Node_base*, &this->_M_head._M_data)); }
+    { return const_iterator(const_cast<_Node_base*>(&this->_M_head._M_data)); }
 
   iterator begin() { return iterator(this->_M_head._M_data._M_next); }
   const_iterator begin() const
@@ -364,7 +364,7 @@ public:
   }
 
   void pop_front() {
-    _Node* __node = __STATIC_CAST(_Node*, this->_M_head._M_data._M_next);
+    _Node* __node = static_cast<_Node*>(this->_M_head._M_data._M_next);
     this->_M_head._M_data._M_next = __node->_M_next;
     _STLP_STD::_Destroy(&__node->_M_data);
     this->_M_head.deallocate(__node, 1);
@@ -374,14 +374,14 @@ public:
     return iterator(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node));
   }
   const_iterator previous(const_iterator __pos) const {
-    return const_iterator(__CONST_CAST(_Node_base*,
+    return const_iterator(const_cast<_Node_base*>(
                                        _STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data,
                                                                                __pos._M_node)));
   }
 
 private:
   _Node* _M_insert_after(_Node_base* __pos, const value_type& __x = _Tp()) {
-    return __STATIC_CAST(_Node*, _STLP_PRIV __slist_make_link(__pos, _M_create_node(__x)));
+    return static_cast<_Node*>(_STLP_PRIV __slist_make_link(__pos, _M_create_node(__x)));
   }
 
   void _M_insert_after_fill(_Node_base* __pos,
@@ -535,7 +535,7 @@ public:
                                                  __prev._M_node, __prev._M_node->_M_next);
     }
     else {
-      this->insert_after(__pos, __STATIC_CAST(_Node*, __prev._M_node->_M_next)->_M_data);
+      this->insert_after(__pos, static_cast<_Node*>(__prev._M_node->_M_next)->_M_data);
       __x.erase_after(__prev);
     }
   }
@@ -612,7 +612,7 @@ public:
   void remove_if(_Predicate __pred) {
     _Node_base* __cur = &this->_M_head._M_data;
     while (__cur->_M_next) {
-      if (__pred(__STATIC_CAST(_Node*, __cur->_M_next)->_M_data))
+      if (__pred(static_cast<_Node*>(__cur->_M_next)->_M_data))
         this->_M_erase_after(__cur);
       else
         __cur = __cur->_M_next;

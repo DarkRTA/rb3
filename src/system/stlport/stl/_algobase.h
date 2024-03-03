@@ -332,12 +332,12 @@ inline void fill(unsigned char* __first, unsigned char* __last,
 inline void fill(signed char* __first, signed char* __last,
                  const signed char& __val) {
   signed char __tmp = __val;
-  memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);
+  memset(__first, static_cast<unsigned char>(__tmp), __last - __first);
 }
 
 inline void fill(char* __first, char* __last, const char& __val) {
   char __tmp = __val;
-  memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);
+  memset(__first, static_cast<unsigned char>(__tmp), __last - __first);
 }
 
 _STLP_MOVE_TO_PRIV_NAMESPACE

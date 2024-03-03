@@ -523,19 +523,6 @@ namespace _STL = _STLP_STD_NAME;
 #define STLPORT      _STLP_STD_NAME
 
 /* advanced keywords usage */
-#define __C_CAST(__x, __y) ((__x)(__y))
-#ifndef  _STLP_NO_NEW_STYLE_CASTS
-#  define __CONST_CAST(__x,__y) const_cast<__x>(__y)
-#  define __STATIC_CAST(__x,__y) static_cast<__x>(__y)
-#  define __REINTERPRET_CAST(__x,__y) reinterpret_cast<__x>(__y)
-#  define __DYNAMIC_CAST(__x,__y) dynamic_cast<__x>(__y)
-#else
-#  define __STATIC_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __CONST_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __REINTERPRET_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __DYNAMIC_CAST(__x,__y) __C_CAST(__x, __y)
-#endif
-
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)
 #  define _STLP_KEY_TYPE_FOR_CONT_EXT(type)
 #  define _STLP_TEMPLATE_FOR_CONT_EXT template <class _KT>

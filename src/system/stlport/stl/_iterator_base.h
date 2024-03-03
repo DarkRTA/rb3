@@ -122,28 +122,28 @@ inline typename iterator_traits<_Iter>::iterator_category __iterator_category(co
 template <class _Iter>
 inline typename iterator_traits<_Iter>::difference_type* __distance_type(const _Iter&) {
   typedef typename iterator_traits<_Iter>::difference_type _diff_type;
-  return __STATIC_CAST(_diff_type*,0);
+  return static_cast<_diff_type*>(0);
 }
 
 template <class _Iter>
 inline typename iterator_traits<_Iter>::value_type* __value_type(const _Iter&) {
   typedef typename iterator_traits<_Iter>::value_type _value_type;
-  return __STATIC_CAST(_value_type*,0);
+  return static_cast<_value_type*>(0);
 }
 
 #else /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
 template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
 inline _Category _STLP_CALL iterator_category(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return _Category(); }
 template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
-inline _Tp* _STLP_CALL value_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return static_cast<_Tp*>(0); }
 template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
-inline _Distance* _STLP_CALL distance_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return __STATIC_CAST(_Distance*, 0); }
+inline _Distance* _STLP_CALL distance_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return static_cast<_Distance*>(0); }
 template <class _Tp>
 inline random_access_iterator_tag _STLP_CALL iterator_category(const _Tp*) { return random_access_iterator_tag(); }
 template <class _Tp>
-inline _Tp* _STLP_CALL value_type(const _Tp*) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const _Tp*) { return static_cast<_Tp*>(0); }
 template <class _Tp>
-inline ptrdiff_t* _STLP_CALL distance_type(const _Tp*) { return __STATIC_CAST(ptrdiff_t*, 0); }
+inline ptrdiff_t* _STLP_CALL distance_type(const _Tp*) { return static_cast<ptrdiff_t*>(0); }
 #endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
 
 # if ! defined (_STLP_NO_ANACHRONISMS)
@@ -177,21 +177,21 @@ template <class _Tp, class _Distance>
 inline random_access_iterator_tag _STLP_CALL
 iterator_category(const random_access_iterator<_Tp, _Distance>&) { return random_access_iterator_tag(); }
 template <class _Tp, class _Distance>
-inline _Tp*  _STLP_CALL value_type(const input_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp*  _STLP_CALL value_type(const input_iterator<_Tp, _Distance>&) { return static_cast<_Tp*>(0); }
 template <class _Tp, class _Distance>
-inline _Tp* _STLP_CALL value_type(const forward_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const forward_iterator<_Tp, _Distance>&) { return static_cast<_Tp*>(0); }
 template <class _Tp, class _Distance>
-inline _Tp* _STLP_CALL value_type(const bidirectional_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const bidirectional_iterator<_Tp, _Distance>&) { return static_cast<_Tp*>(0); }
 template <class _Tp, class _Distance>
-inline _Tp* _STLP_CALL value_type(const random_access_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Tp*, 0); }
+inline _Tp* _STLP_CALL value_type(const random_access_iterator<_Tp, _Distance>&) { return static_cast<_Tp*>(0); }
 template <class _Tp, class _Distance>
-inline _Distance* _STLP_CALL distance_type(const input_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Distance*, 0); }
+inline _Distance* _STLP_CALL distance_type(const input_iterator<_Tp, _Distance>&) { return static_cast<_Distance*>(0); }
 template <class _Tp, class _Distance>
-inline _Distance* _STLP_CALL distance_type(const forward_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Distance*, 0); }
+inline _Distance* _STLP_CALL distance_type(const forward_iterator<_Tp, _Distance>&) { return static_cast<_Distance*>(0); }
 template <class _Tp, class _Distance>
-inline _Distance* _STLP_CALL distance_type(const bidirectional_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Distance*, 0);}
+inline _Distance* _STLP_CALL distance_type(const bidirectional_iterator<_Tp, _Distance>&) { return static_cast<_Distance*>(0);}
 template <class _Tp, class _Distance>
-inline _Distance* _STLP_CALL distance_type(const random_access_iterator<_Tp, _Distance>&) { return __STATIC_CAST(_Distance*, 0); }
+inline _Distance* _STLP_CALL distance_type(const random_access_iterator<_Tp, _Distance>&) { return static_cast<_Distance*>(0); }
 # endif /* BASE_MATCH */
 
 #endif /* _STLP_NO_ANACHRONISMS */

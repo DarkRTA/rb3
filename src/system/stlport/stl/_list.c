@@ -64,10 +64,10 @@ _List_global<_Dummy>::_Transfer(_List_node_base* __position,
 
 template <class _Tp, class _Alloc>
 void _List_base<_Tp,_Alloc>::clear() {
-  _Node* __cur = __STATIC_CAST(_Node*, _M_node._M_data._M_next);
+  _Node* __cur = static_cast<_Node*>(_M_node._M_data._M_next);
   while (__cur != &(_M_node._M_data)) {
     _Node* __tmp = __cur;
-    __cur = __STATIC_CAST(_Node*, __cur->_M_next);
+    __cur = static_cast<_Node*>(__cur->_M_next);
     _STLP_STD::_Destroy(&__tmp->_M_data);
     this->_M_node.deallocate(__tmp, 1);
   }

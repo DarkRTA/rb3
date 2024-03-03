@@ -199,8 +199,8 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (shor
   if ( this->fail() ) {
     return *this;
   }
-  short __tmp = __STATIC_CAST(short, __lval);
-  unsigned short __uval = __STATIC_CAST(unsigned short, __lval);
+  short __tmp = static_cast<short>(__lval);
+  unsigned short __uval = static_cast<unsigned short>(__lval);
   // check if we lose digits
   //    if ((__val != __lval) && ((unsigned short)__val != __lval))
   if ((__tmp != __lval) && ((long)__uval != __lval))
@@ -635,7 +635,7 @@ __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, 
       //is larger than ptrdiff_t one.
       _STLP_STATIC_ASSERT((sizeof(streamsize) > sizeof(ptrdiff_t)) ||
                           (sizeof(streamsize) == sizeof(ptrdiff_t)) && numeric_limits<ptrdiff_t>::is_signed)
-      ptrdiff_t __request = __STATIC_CAST(ptrdiff_t, (min) (__STATIC_CAST(streamsize, (numeric_limits<ptrdiff_t>::max)()), _Num - __n));
+      ptrdiff_t __request = static_cast<ptrdiff_t>((min) (static_cast<streamsize>((numeric_limits<ptrdiff_t>::max)()), _Num - __n));
 
       const _CharT* __p  = __scan_delim(__first, __last);
       ptrdiff_t __chunk = (min) (ptrdiff_t(__p - __first), __request);
@@ -852,11 +852,11 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT* __s) {
 
     streamsize __n = __buf->gptr() != __buf->egptr()
       ? _STLP_PRIV __read_buffered(this,  __buf, __nmax, __s,
-                                   _STLP_PRIV _Is_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
-                                   _STLP_PRIV _Scan_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                                   _STLP_PRIV _Is_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
+                                   _STLP_PRIV _Scan_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                                    false, true, false)
       : _STLP_PRIV __read_unbuffered(this,  __buf, __nmax, __s,
-                                     _STLP_PRIV _Is_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                                     _STLP_PRIV _Is_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                                      false, true, false);
     if (__n == 0)
       this->setstate(ios_base::failbit);
@@ -1024,7 +1024,7 @@ _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
       streamsize __m = __max_chars(_Num, __n);
 
       if (__avail >= __m) {       // We have more characters than we need.
-        const _CharT* __last = __buf->_M_gptr() + __STATIC_CAST(ptrdiff_t, __m);
+        const _CharT* __last = __buf->_M_gptr() + static_cast<ptrdiff_t>(__m);
         const _CharT* __p = __scan_delim(__buf->_M_gptr(), __last);
         ptrdiff_t __chunk = __p - __buf->_M_gptr();
         __n += __chunk;
@@ -1175,12 +1175,12 @@ void basic_istream<_CharT, _Traits>::_M_skip_whitespace(bool __set_failbit) {
     this->setstate(ios_base::badbit);
   else if (__buf->gptr() != __buf->egptr())
     _M_ignore_buffered(this,  __buf,
-                       _STLP_PRIV _Is_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
-                       _STLP_PRIV _Scan_for_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                       _STLP_PRIV _Is_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
+                       _STLP_PRIV _Scan_for_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                        false, __set_failbit);
   else
     _M_ignore_unbuffered(this,  __buf,
-                         _STLP_PRIV _Is_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                         _STLP_PRIV _Is_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                          false, __set_failbit);
 }
 

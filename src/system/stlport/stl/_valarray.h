@@ -77,7 +77,7 @@ struct _Valarray_base
 
   void _M_allocate(size_t __n) {
     if (__n != 0) {
-      _M_first = __STATIC_CAST(_Tp*, (malloc(__n * sizeof(_Tp))));
+      _M_first = static_cast<_Tp*>((malloc(__n * sizeof(_Tp))));
       _M_size  = __n;
 #if !defined(_STLP_NO_BAD_ALLOC) && defined(_STLP_USE_EXCEPTIONS)
       if (_M_first == 0) {

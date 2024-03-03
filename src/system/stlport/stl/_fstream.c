@@ -160,7 +160,7 @@ basic_filebuf<_CharT, _Traits>::pbackfail(int_type __c) {
   }
   else if (!traits_type::eq_int_type(__c, __eof)) {
     // Are we in the putback buffer already?
-    _CharT* __pback_end = _M_pback_buf + __STATIC_CAST(int,_S_pback_buf_size);
+    _CharT* __pback_end = _M_pback_buf + static_cast<int>(_S_pback_buf_size);
     if (_M_in_putback_mode) {
       // Do we have more room in the putback buffer?
       if (this->eback() != _M_pback_buf)
@@ -301,7 +301,7 @@ basic_filebuf<_CharT, _Traits>::seekoff(off_type __off,
         // but not set the current position.
 
         if (__iadj <= _M_ext_buf_end - _M_ext_buf) {
-          streamoff __eadj =  _M_base._M_get_offset(_M_ext_buf + __STATIC_CAST(ptrdiff_t, __iadj), _M_ext_buf_end);
+          streamoff __eadj =  _M_base._M_get_offset(_M_ext_buf + static_cast<ptrdiff_t>(__iadj), _M_ext_buf_end);
 
           return __off == 0 ? pos_type(_M_base._M_seek(0, ios_base::cur) - __eadj)
                             : _M_seek_return(_M_base._M_seek(__off - __eadj, ios_base::cur), _State_type());
@@ -607,9 +607,9 @@ bool basic_filebuf<_CharT, _Traits>::_M_allocate_buffers(_CharT* __buf, streamsi
     //We first check that the streamsize representation can't overflow a size_t one.
     //If it can, we check that __bufsize is not higher than the size_t max value.
     if ((sizeof(streamsize) > sizeof(size_t)) &&
-        (__bufsize > __STATIC_CAST(streamsize, (numeric_limits<size_t>::max)())))
+        (__bufsize > static_cast<streamsize>((numeric_limits<size_t>::max)())))
       return false;
-    _M_int_buf = __STATIC_CAST(_CharT*, malloc(__STATIC_CAST(size_t, __bufsize)));
+    _M_int_buf = static_cast<_CharT*>(malloc(static_cast<size_t>(__bufsize)));
     if (!_M_int_buf)
       return false;
     _M_int_buf_dynamic = true;
@@ -619,13 +619,13 @@ bool basic_filebuf<_CharT, _Traits>::_M_allocate_buffers(_CharT* __buf, streamsi
     _M_int_buf_dynamic = false;
   }
 
-  streamsize __ebufsiz = (max)(__n * __STATIC_CAST(streamsize, _M_width),
-                               __STATIC_CAST(streamsize, _M_codecvt->max_length()));
+  streamsize __ebufsiz = (max)(__n * static_cast<streamsize>(_M_width),
+                               static_cast<streamsize>(_M_codecvt->max_length()));
   _M_ext_buf = 0;
   if ((sizeof(streamsize) < sizeof(size_t)) ||
       ((sizeof(streamsize) == sizeof(size_t)) && numeric_limits<streamsize>::is_signed) ||
-      (__ebufsiz <= __STATIC_CAST(streamsize, (numeric_limits<size_t>::max)()))) {
-    _M_ext_buf = __STATIC_CAST(char*, malloc(__STATIC_CAST(size_t, __ebufsiz)));
+      (__ebufsiz <= static_cast<streamsize>((numeric_limits<size_t>::max)()))) {
+    _M_ext_buf = static_cast<char*>(malloc(static_cast<size_t>(__ebufsiz)));
   }
 
   if (!_M_ext_buf) {
@@ -633,8 +633,8 @@ bool basic_filebuf<_CharT, _Traits>::_M_allocate_buffers(_CharT* __buf, streamsi
     return false;
   }
 
-  _M_int_buf_EOS = _M_int_buf + __STATIC_CAST(ptrdiff_t, __n);
-  _M_ext_buf_EOS = _M_ext_buf + __STATIC_CAST(ptrdiff_t, __ebufsiz);
+  _M_int_buf_EOS = _M_int_buf + static_cast<ptrdiff_t>(__n);
+  _M_ext_buf_EOS = _M_ext_buf + static_cast<ptrdiff_t>(__ebufsiz);
   return true;
 }
 

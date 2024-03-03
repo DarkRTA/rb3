@@ -200,14 +200,14 @@ operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT& __c) {
 template <class _Traits>
 inline basic_istream<char, _Traits>& _STLP_CALL
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char& __c) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char&,__c));
+  __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
 template <class _Traits>
 inline basic_istream<char, _Traits>& _STLP_CALL
 operator>>(basic_istream<char, _Traits>& __in_str, signed char& __c) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char&,__c));
+  __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
@@ -221,14 +221,14 @@ operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT* __s) {
 template <class _Traits>
 inline basic_istream<char, _Traits>& _STLP_CALL
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char* __s) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char*,__s));
+  __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
 }
 
 template <class _Traits>
 inline basic_istream<char, _Traits>& _STLP_CALL
 operator>>(basic_istream<char, _Traits>& __in_str, signed char* __s) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char*,__s));
+  __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
 }
 

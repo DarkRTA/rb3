@@ -276,7 +276,7 @@ public:
   }
 
   _Self& operator=(_CharT __c)
-  { return assign(__STATIC_CAST(size_type,1), __c); }
+  { return assign(static_cast<size_type>(1), __c); }
 
 protected:
 
@@ -436,10 +436,10 @@ private: // Helper functions for append.
     if (__first != __last) {
       const size_type __old_size = this->size();
       difference_type __n = distance(__first, __last);
-      if (__STATIC_CAST(size_type,__n) > this->max_size() || __old_size > this->max_size() - __STATIC_CAST(size_type,__n))
+      if (static_cast<size_type>(__n) > this->max_size() || __old_size > this->max_size() - static_cast<size_type>(__n))
         this->_M_throw_length_error();
       if (__old_size + __n > this->capacity()) {
-        size_type __len = __old_size + (max)(__old_size, __STATIC_CAST(size_type,__n)) + 1;
+        size_type __len = __old_size + (max)(__old_size, static_cast<size_type>(__n)) + 1;
         pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
         pointer __new_finish = __new_start;
         _STLP_TRY {
@@ -521,7 +521,7 @@ public:
 public:
   void push_back(_CharT __c) {
     if (this->_M_Finish() + 1 == this->_M_end_of_storage._M_data)
-      reserve(size() + (max)(size(), __STATIC_CAST(size_type,1)));
+      reserve(size() + (max)(size(), static_cast<size_type>(1)));
     _M_construct_null(this->_M_Finish() + 1);
     _Traits::assign(*(this->_M_Finish()), __c);
     ++this->_M_finish;
@@ -679,7 +679,7 @@ protected:  // Helper functions for insert.
   void _M_insert_overflow(iterator __pos, _ForwardIter __first, _ForwardIter __last,
                           difference_type __n) {
     const size_type __old_size = this->size();
-    size_type __len = __old_size + (max)(__old_size, __STATIC_CAST(size_type,__n)) + 1;
+    size_type __len = __old_size + (max)(__old_size, static_cast<size_type>(__n)) + 1;
     pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
     pointer __new_finish = __new_start;
     _STLP_TRY {

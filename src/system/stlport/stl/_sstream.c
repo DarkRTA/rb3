@@ -61,7 +61,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::str(const basic_string<_CharT, _Traits
 template <class _CharT, class _Traits, class _Alloc>
 void
 basic_stringbuf<_CharT, _Traits, _Alloc>::_M_set_ptrs() {
-  _CharT* __data_ptr = __CONST_CAST(_CharT*,_M_str.data());
+  _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
   _CharT* __data_end = __data_ptr + _M_str.size();
   // The initial read position is the beginning of the string.
   if (_M_mode & ios_base::in) {
@@ -154,7 +154,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::overflow(int_type __c) {
           ptrdiff_t __offset = this->gptr() - this->eback();
           _M_str.push_back(_Traits::to_char_type(__c));
 
-          _CharT* __data_ptr = __CONST_CAST(_CharT*,_M_str.data());
+          _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
           size_t __data_size = _M_str.size();
 
           this->setg(__data_ptr, __data_ptr + __offset, __data_ptr+__data_size);
@@ -188,7 +188,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::xsputn(const char_type* __s,
     if (this->pbase() == _M_str.data() ) {
       ptrdiff_t __avail = _M_str.data() + _M_str.size() - this->pptr();
       if (__avail > __n) {
-        _Traits::copy(this->pptr(), __s, __STATIC_CAST(size_t, __n));
+        _Traits::copy(this->pptr(), __s, static_cast<size_t>(__n));
         this->pbump((int)__n);
         return __n;
       }
@@ -197,16 +197,16 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::xsputn(const char_type* __s,
         __nwritten += __avail;
         __n -= __avail;
         __s += __avail;
-        this->setp(_M_Buf, _M_Buf + __STATIC_CAST(int,_S_BufSiz));
+        this->setp(_M_Buf, _M_Buf + static_cast<int>(_S_BufSiz));
       }
     }
 
     // At this point we know we're appending.
     if (_M_mode & ios_base::in) {
       ptrdiff_t __get_offset = this->gptr() - this->eback();
-      _M_str.append(__s, __s + __STATIC_CAST(ptrdiff_t, __n));
+      _M_str.append(__s, __s + static_cast<ptrdiff_t>(__n));
 
-      _CharT* __data_ptr = __CONST_CAST(_CharT*, _M_str.data());
+      _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
       size_t __data_size = _M_str.size();
 
       this->setg(__data_ptr, __data_ptr + __get_offset, __data_ptr + __data_size);
@@ -215,7 +215,7 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::xsputn(const char_type* __s,
     }
     else {
       _M_append_buffer();
-      _M_str.append(__s, __s + __STATIC_CAST(ptrdiff_t, __n));
+      _M_str.append(__s, __s + static_cast<ptrdiff_t>(__n));
     }
 
     __nwritten += __n;
@@ -236,26 +236,26 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::_M_xsputnc(char_type __c,
     if (this->pbase() == _M_str.data()) {
       ptrdiff_t __avail = _M_str.data() + _M_str.size() - this->pptr();
       if (__avail > __n) {
-        _Traits::assign(this->pptr(), __STATIC_CAST(size_t, __n), __c);
-        this->pbump(__STATIC_CAST(int, __n));
+        _Traits::assign(this->pptr(), static_cast<size_t>(__n), __c);
+        this->pbump(static_cast<int>(__n));
         return __n;
       }
       else {
         _Traits::assign(this->pptr(), __avail, __c);
         __nwritten += __avail;
         __n -= __avail;
-        this->setp(_M_Buf, _M_Buf + __STATIC_CAST(int,_S_BufSiz));
+        this->setp(_M_Buf, _M_Buf + static_cast<int>(_S_BufSiz));
       }
     }
 
     // At this point we know we're appending.
-    size_t __app_size = sizeof(streamsize) > sizeof(size_t) ? __STATIC_CAST(size_t, (min)(__n, __STATIC_CAST(streamsize, _M_str.max_size())))
-                                                            : __STATIC_CAST(size_t, __n);
+    size_t __app_size = sizeof(streamsize) > sizeof(size_t) ? static_cast<size_t>((min)(__n, static_cast<streamsize>(_M_str.max_size())))
+                                                            : static_cast<size_t>(__n);
     if (this->_M_mode & ios_base::in) {
       ptrdiff_t __get_offset = this->gptr() - this->eback();
       _M_str.append(__app_size, __c);
 
-      _CharT* __data_ptr = __CONST_CAST(_CharT*,_M_str.data());
+      _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
       size_t __data_size = _M_str.size();
 
       this->setg(__data_ptr, __data_ptr + __get_offset, __data_ptr + __data_size);
@@ -299,10 +299,10 @@ basic_stringbuf<_CharT, _Traits, _Alloc>::setbuf(_CharT*, streamsize __n) {
     if ((_M_mode & ios_base::out) && !(_M_mode & ios_base::in))
       _M_append_buffer();
 
-    _M_str.reserve(sizeof(streamsize) > sizeof(size_t) ? __STATIC_CAST(size_t, (min)(__n, __STATIC_CAST(streamsize, _M_str.max_size())))
-                                                       : __STATIC_CAST(size_t, __n));
+    _M_str.reserve(sizeof(streamsize) > sizeof(size_t) ? static_cast<size_t>((min)(__n, static_cast<streamsize>(_M_str.max_size())))
+                                                       : static_cast<size_t>(__n));
 
-    _CharT* __data_ptr = __CONST_CAST(_CharT*, _M_str.data());
+    _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
     size_t __data_size = _M_str.size();
 
     if (__do_get_area) {
@@ -360,8 +360,8 @@ basic_stringbuf<_CharT, _Traits, _Alloc>
 
     if (__off < 0 || __off > __n)
       return pos_type(off_type(-1));
-    this->setg(this->eback(), this->eback() + __STATIC_CAST(ptrdiff_t, __off),
-                              this->eback() + __STATIC_CAST(ptrdiff_t, __n));
+    this->setg(this->eback(), this->eback() + static_cast<ptrdiff_t>(__off),
+                              this->eback() + static_cast<ptrdiff_t>(__n));
   }
 
   if (__omode) {
@@ -398,14 +398,14 @@ basic_stringbuf<_CharT, _Traits, _Alloc>
   if (__imode) {
     if (__n < 0 || __n > this->egptr() - this->eback())
       return pos_type(off_type(-1));
-    this->setg(this->eback(), this->eback() + __STATIC_CAST(ptrdiff_t, __n), this->egptr());
+    this->setg(this->eback(), this->eback() + static_cast<ptrdiff_t>(__n), this->egptr());
   }
 
   if (__omode) {
     if (__n < 0 || size_t(__n) > _M_str.size())
       return pos_type(off_type(-1));
 
-    _CharT* __data_ptr = __CONST_CAST(_CharT*,_M_str.data());
+    _CharT* __data_ptr = const_cast<_CharT*>(_M_str.data());
     size_t __data_size = _M_str.size();
 
     this->setp(__data_ptr, __data_ptr+__data_size);
@@ -424,17 +424,17 @@ template <class _CharT, class _Traits, class _Alloc>
 void basic_stringbuf<_CharT, _Traits, _Alloc>::_M_append_buffer() const {
   // Do we have a buffer to append?
   if (this->pbase() == this->_M_Buf && this->pptr() != this->_M_Buf) {
-    basic_stringbuf<_CharT, _Traits, _Alloc>* __this = __CONST_CAST(_Self*,this);
+    basic_stringbuf<_CharT, _Traits, _Alloc>* __this = const_cast<_Self*>(this);
     __this->_M_str.append((const _CharT*)this->pbase(), (const _CharT*)this->pptr());
-    __this->setp(__CONST_CAST(_CharT*,_M_Buf),
-                 __CONST_CAST(_CharT*,_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
+    __this->setp(const_cast<_CharT*>(_M_Buf),
+                 const_cast<_CharT*>(_M_Buf + static_cast<int>(_S_BufSiz)));
   }
 
   // Have we run off the end of the string?
   else if (this->pptr() == this->epptr()) {
-    basic_stringbuf<_CharT, _Traits, _Alloc>* __this = __CONST_CAST(_Self*,this);
-    __this->setp(__CONST_CAST(_CharT*,_M_Buf),
-                 __CONST_CAST(_CharT*,_M_Buf + __STATIC_CAST(int,_S_BufSiz)));
+    basic_stringbuf<_CharT, _Traits, _Alloc>* __this = const_cast<_Self*>(this);
+    __this->setp(const_cast<_CharT*>(_M_Buf),
+                 const_cast<_CharT*>(_M_Buf + static_cast<int>(_S_BufSiz)));
   }
 }
 

@@ -246,14 +246,14 @@ operator<<(basic_ostream<char, _Traits>& __os, const char* __s) {
 template <class _Traits>
 inline basic_ostream<char, _Traits>& _STLP_CALL
 operator<<(basic_ostream<char, _Traits>& __os, const signed char* __s) {
-  __os._M_put_nowiden(__REINTERPRET_CAST(const char*,__s));
+  __os._M_put_nowiden(reinterpret_cast<const char*>(__s));
   return __os;
 }
 
 template <class _Traits>
 inline basic_ostream<char, _Traits>&
 operator<<(basic_ostream<char, _Traits>& __os, const unsigned char* __s) {
-  __os._M_put_nowiden(__REINTERPRET_CAST(const char*,__s));
+  __os._M_put_nowiden(reinterpret_cast<const char*>(__s));
   return __os;
 }
 

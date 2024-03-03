@@ -647,7 +647,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>::_M_erase(_Rb_tree_nod
     _M_erase(_S_right(__x));
     _Base_ptr __y = _S_left(__x);
     _STLP_STD::_Destroy(&_S_value(__x));
-    this->_M_header.deallocate(__STATIC_CAST(_Link_type, __x),1);
+    this->_M_header.deallocate(static_cast<_Link_type>(__x),1);
     __x = __y;
   }
 }

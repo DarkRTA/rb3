@@ -36,18 +36,18 @@ template <class _Tp, size_t _Nb>
 struct _CArray {
   _CArray (const _Tp& __val) {
     for (size_t __i = 0; __i < _Nb; ++__i) {
-      _Copy_Construct(__REINTERPRET_CAST(_Tp*, _M_data + __i * sizeof(_Tp)), __val);
+      _Copy_Construct(reinterpret_cast<_Tp*>(_M_data + __i * sizeof(_Tp)), __val);
     }
   }
 
   ~_CArray() {
-    _Destroy_Range(__REINTERPRET_CAST(_Tp*, _M_data + 0),
-                   __REINTERPRET_CAST(_Tp*, _M_data + _Nb * sizeof(_Tp)));
+    _Destroy_Range(reinterpret_cast<_Tp*>(_M_data + 0),
+                   reinterpret_cast<_Tp*>(_M_data + _Nb * sizeof(_Tp)));
   }
 
   _Tp& operator [] (size_t __i) {
     _STLP_ASSERT(__i < _Nb)
-    return *__REINTERPRET_CAST(_Tp*, _M_data + __i * sizeof(_Tp));
+    return *reinterpret_cast<_Tp*>(_M_data + __i * sizeof(_Tp));
   }
 
 private:

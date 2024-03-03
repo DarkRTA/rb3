@@ -429,8 +429,8 @@ _OutputIter __money_do_put(_OutputIter __s, bool  __intl, ios_base&  __str,
       ++__length;
   }
 
-  const bool __need_fill = (((sizeof(streamsize) > sizeof(size_t)) && (__STATIC_CAST(streamsize, __length) < __width)) ||
-                            ((sizeof(streamsize) <= sizeof(size_t)) && (__length < __STATIC_CAST(size_t, __width))));
+  const bool __need_fill = (((sizeof(streamsize) > sizeof(size_t)) && (static_cast<streamsize>(__length) < __width)) ||
+                            ((sizeof(streamsize) <= sizeof(size_t)) && (__length < static_cast<size_t>(__width))));
   streamsize __fill_amt = __need_fill ? __width - __length : 0;
 
   ios_base::fmtflags __fill_pos = __str.flags() & ios_base::adjustfield;
@@ -500,7 +500,7 @@ money_put<_CharT, _OutputIter>
           char_type __fill, long double __units) const {
   _STLP_BASIC_IOSTRING(char_type) __digits;
   _STLP_PRIV __get_money_digits(__digits, __str, __units);
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, __STATIC_CAST(string_type*, 0));
+  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, static_cast<string_type*>(0));
 }
 
 template <class _CharT, class _OutputIter>
@@ -508,7 +508,7 @@ _OutputIter
 money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
           char_type __fill, const string_type& __digits) const {
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, true, __STATIC_CAST(string_type*, 0));
+  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, true, static_cast<string_type*>(0));
 }
 
 _STLP_END_NAMESPACE

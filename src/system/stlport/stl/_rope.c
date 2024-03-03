@@ -81,7 +81,7 @@ void _Rope_iterator_base<_CharT,_Alloc>::_S_setbuf(
   switch(__leaf->_M_tag) {
   case _RopeRep::_S_leaf:
     typedef _Rope_RopeLeaf<_CharT, _Alloc> _RopeLeaf;
-    __x._M_buf_start = __STATIC_CAST(const _RopeLeaf*, __leaf)->_M_data;
+    __x._M_buf_start = static_cast<const _RopeLeaf*>(__leaf)->_M_data;
     __x._M_buf_ptr = __x._M_buf_start + (__pos - __leaf_pos);
     __x._M_buf_end = __x._M_buf_start + __leaf->_M_size._M_data;
     break;
@@ -92,7 +92,7 @@ void _Rope_iterator_base<_CharT,_Alloc>::_S_setbuf(
       size_t __buf_start_pos = __leaf_pos;
       size_t __leaf_end = __leaf_pos + __leaf->_M_size._M_data;
       typedef _Rope_RopeFunction<_CharT, _Alloc> _RopeFunction;
-      char_producer<_CharT>* __fn = __STATIC_CAST(const _RopeFunction*, __leaf)->_M_fn;
+      char_producer<_CharT>* __fn = static_cast<const _RopeFunction*>(__leaf)->_M_fn;
 
       if (__buf_start_pos + __len <= __pos) {
         __buf_start_pos = __pos - __len/4;
@@ -155,7 +155,7 @@ void _Rope_iterator_base<_CharT,_Alloc>::_S_setcache(
       goto done;
     case _RopeRep::_S_concat:
       {
-        const _RopeConcat* __c = __STATIC_CAST(const _RopeConcat*, __curr_rope);
+        const _RopeConcat* __c = static_cast<const _RopeConcat*>(__curr_rope);
         _RopeRep* __left = __c->_M_left;
         size_t __left_len = __left->_M_size._M_data;
 
@@ -211,7 +211,7 @@ _Rope_iterator_base<_CharT,_Alloc>& __x) {
     if (!(__dirns & 1) /* Path turned left */)
       break;
     __current_node = __x._M_path_end._M_data[__current_index];
-    __c = __STATIC_CAST(const _RopeConcat*, __current_node);
+    __c = static_cast<const _RopeConcat*>(__current_node);
     // Otherwise we were in the right child.  Thus we should pop
     // the concatenation node.
     __node_start_pos -= __c->_M_left->_M_size._M_data;
@@ -223,7 +223,7 @@ _Rope_iterator_base<_CharT,_Alloc>& __x) {
     return;
   }
   __current_node = __x._M_path_end._M_data[__current_index];
-  __c = __STATIC_CAST(const _RopeConcat*, __current_node);
+  __c = static_cast<const _RopeConcat*>(__current_node);
   // current_node is a concatenation node.  We are positioned on the first
   // character in its right child.
   // node_start_pos is starting position of current_node.
@@ -240,7 +240,7 @@ _Rope_iterator_base<_CharT,_Alloc>& __x) {
       }
       --__current_index;
     }
-    __current_node = __STATIC_CAST(const _RopeConcat*, __current_node)->_M_left;
+    __current_node = static_cast<const _RopeConcat*>(__current_node)->_M_left;
     __x._M_path_end._M_data[__current_index] = __current_node;
     __dirns <<= 1;
     // node_start_pos is unchanged.
@@ -303,7 +303,7 @@ void _Rope_RopeRep<_CharT,_Alloc>::_M_free_tree() {
   case _S_leaf:
     {
       typedef _Rope_RopeLeaf<_CharT, _Alloc> _RopeLeaf;
-      _RopeLeaf* __l = __STATIC_CAST(_RopeLeaf*, this);
+      _RopeLeaf* __l = static_cast<_RopeLeaf*>(this);
       _STLP_STD::_Destroy(__l); // ->_Rope_RopeLeaf<_CharT,_Alloc>::~_Rope_RopeLeaf();
       _STLP_CREATE_ALLOCATOR(allocator_type,(const allocator_type&)_M_size,
                              _RopeLeaf).deallocate(__l, 1);
@@ -312,7 +312,7 @@ void _Rope_RopeRep<_CharT,_Alloc>::_M_free_tree() {
   case _S_concat:
     {
       typedef _Rope_RopeConcatenation<_CharT, _Alloc> _RopeConcatenation;
-      _RopeConcatenation* __c  = __STATIC_CAST(_RopeConcatenation*, this);
+      _RopeConcatenation* __c  = static_cast<_RopeConcatenation*>(this);
       _STLP_STD::_Destroy(__c);
       _STLP_CREATE_ALLOCATOR(allocator_type,(const allocator_type&)_M_size,
                              _RopeConcatenation).deallocate(__c, 1);
@@ -321,7 +321,7 @@ void _Rope_RopeRep<_CharT,_Alloc>::_M_free_tree() {
   case _S_function:
     {
       typedef _Rope_RopeFunction<_CharT, _Alloc> _RopeFunction;
-      _RopeFunction* __f = __STATIC_CAST(_RopeFunction*, this);
+      _RopeFunction* __f = static_cast<_RopeFunction*>(this);
       _STLP_STD::_Destroy(__f);
       _STLP_CREATE_ALLOCATOR(allocator_type, (const allocator_type&)_M_size,
                              _RopeFunction).deallocate(__f, 1);
@@ -330,7 +330,7 @@ void _Rope_RopeRep<_CharT,_Alloc>::_M_free_tree() {
   case _S_substringfn:
     {
       typedef _Rope_RopeSubstring<_CharT, _Alloc> _RopeSubstring;
-      _RopeSubstring* __rss = __STATIC_CAST(_RopeSubstring*, this);
+      _RopeSubstring* __rss = static_cast<_RopeSubstring*>(this);
       _STLP_STD::_Destroy(__rss);
       _STLP_CREATE_ALLOCATOR(allocator_type, (const allocator_type&)_M_size,
                              _RopeSubstring).deallocate(__rss, 1);
@@ -509,7 +509,7 @@ rope<_CharT,_Alloc>::_S_destr_concat_char_iter(
     return _S_destr_leaf_concat_char_iter((_RopeLeaf*)__r, __s, __slen);
   }
   if (_RopeRep::_S_concat == __r->_M_tag) {
-    _RopeLeaf* __right = __STATIC_CAST(_RopeLeaf*, __STATIC_CAST(_RopeConcatenation*, __r)->_M_right);
+    _RopeLeaf* __right = static_cast<_RopeLeaf*>(static_cast<_RopeConcatenation*>(__r)->_M_right);
     if (_RopeRep::_S_leaf == __right->_M_tag &&
         __right->_M_size._M_data + __slen <= _S_copy_max) {
       _RopeRep* __new_right = _S_destr_leaf_concat_char_iter(__right, __s, __slen);
@@ -524,7 +524,7 @@ rope<_CharT,_Alloc>::_S_destr_concat_char_iter(
       // _STLP_ASSERT(__r->_M_ref_count == 1)
       // __r->_M_ref_count = 2;    // One more than before.
       __r->_M_incr();
-      __STATIC_CAST(_RopeConcatenation*, __r)->_M_right = __new_right;
+      static_cast<_RopeConcatenation*>(__r)->_M_right = __new_right;
       // E.Musser : moved below
       //    __r->_M_size._M_data = __orig_size + __slen;
       if (0 != __r->_M_c_string) {
@@ -560,18 +560,18 @@ rope<_CharT,_Alloc>::_S_concat_rep(_RopeRep* __left, _RopeRep* __right) {
   if (_RopeRep::_S_leaf == __right->_M_tag) {
     if (_RopeRep::_S_leaf == __left->_M_tag) {
       if (__right->_M_size._M_data + __left->_M_size._M_data <= _S_copy_max) {
-        return _S_leaf_concat_char_iter(__STATIC_CAST(_RopeLeaf*, __left),
-                                        __STATIC_CAST(_RopeLeaf*, __right)->_M_data,
+        return _S_leaf_concat_char_iter(static_cast<_RopeLeaf*>(__left),
+                                        static_cast<_RopeLeaf*>(__right)->_M_data,
                                         __right->_M_size._M_data);
       }
     } else if (_RopeRep::_S_concat == __left->_M_tag &&
-               _RopeRep::_S_leaf == __STATIC_CAST(_RopeConcatenation*, __left)->_M_right->_M_tag) {
+               _RopeRep::_S_leaf == static_cast<_RopeConcatenation*>(__left)->_M_right->_M_tag) {
       _RopeLeaf* __leftright =
-        __STATIC_CAST(_RopeLeaf*, __STATIC_CAST(_RopeConcatenation*, __left)->_M_right);
+        static_cast<_RopeLeaf*>(static_cast<_RopeConcatenation*>(__left)->_M_right);
       if (__leftright->_M_size._M_data + __right->_M_size._M_data <= _S_copy_max) {
-        _RopeRep* __leftleft = __STATIC_CAST(_RopeConcatenation*, __left)->_M_left;
+        _RopeRep* __leftleft = static_cast<_RopeConcatenation*>(__left)->_M_left;
         _RopeRep* __rest = _S_leaf_concat_char_iter(__leftright,
-                                                    __STATIC_CAST(_RopeLeaf*, __right)->_M_data,
+                                                    static_cast<_RopeLeaf*>(__right)->_M_data,
                                                     __right->_M_size._M_data);
         __leftleft->_M_ref_nonnil();
         _STLP_TRY {
@@ -612,7 +612,7 @@ rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
   switch(__base->_M_tag) {
   case _RopeRep::_S_concat:
   {
-    _RopeConcatenation* __c = __STATIC_CAST(_RopeConcatenation*, __base);
+    _RopeConcatenation* __c = static_cast<_RopeConcatenation*>(__base);
     _RopeRep* __left = __c->_M_left;
     _RopeRep* __right = __c->_M_right;
     size_t __left_len = __left->_M_size._M_data;
@@ -632,7 +632,7 @@ rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
   }
   case _RopeRep::_S_leaf:
   {
-    _RopeLeaf* __l = __STATIC_CAST(_RopeLeaf*, __base);
+    _RopeLeaf* __l = static_cast<_RopeLeaf*>(__base);
     _RopeLeaf* __result;
     size_t __result_len;
     if (__start >= __adj_endp1) return 0;
@@ -647,7 +647,7 @@ rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
   case _RopeRep::_S_substringfn:
   // Avoid introducing multiple layers of substring nodes.
   {
-    _RopeSubstring* __old = __STATIC_CAST(_RopeSubstring*, __base);
+    _RopeSubstring* __old = static_cast<_RopeSubstring*>(__base);
     size_t __result_len;
     if (__start >= __adj_endp1) return 0;
     __result_len = __adj_endp1 - __start;
@@ -661,7 +661,7 @@ rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
   }
   case _RopeRep::_S_function:
   {
-    _RopeFunction* __f = __STATIC_CAST(_RopeFunction*, __base);
+    _RopeFunction* __f = static_cast<_RopeFunction*>(__base);
     if (__start >= __adj_endp1) return 0;
     size_t __result_len = __adj_endp1 - __start;
 
@@ -767,7 +767,7 @@ bool _S_apply_to_pieces(_CharConsumer& __c,
   switch(__r->_M_tag) {
   case _RopeRep::_S_concat:
   {
-    _RopeConcatenation* __conc = __STATIC_CAST(_RopeConcatenation*, __r);
+    _RopeConcatenation* __conc = static_cast<_RopeConcatenation*>(__r);
     _RopeRep* __left =  __conc->_M_left;
     size_t __left_len = __left->_M_size._M_data;
     if (__begin < __left_len) {
@@ -788,13 +788,13 @@ bool _S_apply_to_pieces(_CharConsumer& __c,
   return true;
   case _RopeRep::_S_leaf:
   {
-    _RopeLeaf* __l = __STATIC_CAST(_RopeLeaf*, __r);
+    _RopeLeaf* __l = static_cast<_RopeLeaf*>(__r);
     return __c(__l->_M_data + __begin, __end - __begin);
   }
   case _RopeRep::_S_function:
   case _RopeRep::_S_substringfn:
   {
-    _RopeFunction* __f = __STATIC_CAST(_RopeFunction*, __r);
+    _RopeFunction* __f = static_cast<_RopeFunction*>(__r);
     size_t __len = __end - __begin;
     bool __result;
     _CharT* __buffer = __r->get_allocator().allocate(__len);
@@ -828,8 +828,8 @@ basic_ostream<_CharT, _Traits>& _S_io_get(basic_ostream<_CharT, _Traits>& __o,
   size_t __rope_len = __r.size();
   _Rope_insert_char_consumer<_CharT, _Traits> __c(__o);
 
-  const bool __need_pad = (((sizeof(streamsize) > sizeof(size_t)) && (__STATIC_CAST(streamsize, __rope_len) < __w)) ||
-                           ((sizeof(streamsize) <= sizeof(size_t)) && (__rope_len < __STATIC_CAST(size_t, __w))));
+  const bool __need_pad = (((sizeof(streamsize) > sizeof(size_t)) && (static_cast<streamsize>(__rope_len) < __w)) ||
+                           ((sizeof(streamsize) <= sizeof(size_t)) && (__rope_len < static_cast<size_t>(__w))));
   streamsize __pad_len = __need_pad ? __w - __rope_len : 0;
 
   if (!__left && __pad_len > 0) {
@@ -893,7 +893,7 @@ rope<_CharT,_Alloc>::_S_flatten(_Rope_RopeRep<_CharT, _Alloc>* __r, _CharT* __bu
   switch(__r->_M_tag) {
   case _RopeRep::_S_concat:
   {
-    _RopeConcatenation* __c = __STATIC_CAST(_RopeConcatenation*, __r);
+    _RopeConcatenation* __c = static_cast<_RopeConcatenation*>(__r);
     _RopeRep* __left = __c->_M_left;
     _RopeRep* __right = __c->_M_right;
     _CharT* __rest = _S_flatten(__left, __buffer);
@@ -901,7 +901,7 @@ rope<_CharT,_Alloc>::_S_flatten(_Rope_RopeRep<_CharT, _Alloc>* __r, _CharT* __bu
   }
   case _RopeRep::_S_leaf:
   {
-    _RopeLeaf* __l = __STATIC_CAST(_RopeLeaf*, __r);
+    _RopeLeaf* __l = static_cast<_RopeLeaf*>(__r);
     return _STLP_PRIV __ucopy_n(__l->_M_data, __l->_M_size._M_data, __buffer).second;
   }
   case _RopeRep::_S_function:
@@ -909,7 +909,7 @@ rope<_CharT,_Alloc>::_S_flatten(_Rope_RopeRep<_CharT, _Alloc>* __r, _CharT* __bu
   // We dont yet do anything with substring nodes.
   // This needs to be fixed before ropefiles will work well.
   {
-    _RopeFunction* __f = __STATIC_CAST(_RopeFunction*, __r);
+    _RopeFunction* __f = static_cast<_RopeFunction*>(__r);
     (*(__f->_M_fn))(0, __f->_M_size._M_data, __buffer);
     return __buffer + __f->_M_size._M_data;
   }
@@ -929,7 +929,7 @@ void rope<_CharT,_Alloc>::_S_dump(_RopeRep* __r, int __indent) {
     printf("NULL\n"); return;
   }
   if (_RopeRep::_S_concat == __r->_M_tag) {
-    _RopeConcatenation* __c = __STATIC_CAST(_RopeConcatenation*, __r);
+    _RopeConcatenation* __c = static_cast<_RopeConcatenation*>(__r);
     _RopeRep* __left = __c->_M_left;
     _RopeRep* __right = __c->_M_right;
     printf("Concatenation %p (rc = %ld, depth = %d, len = %ld, %s balanced)\n",
@@ -1206,9 +1206,9 @@ rope<_CharT,_Alloc>::_S_compare (const _RopeRep* __left,
   __left_len = __left->_M_size._M_data;
   __right_len = __right->_M_size._M_data;
   if (_RopeRep::_S_leaf == __left->_M_tag) {
-    const _RopeLeaf* __l = __STATIC_CAST(const _RopeLeaf*, __left);
+    const _RopeLeaf* __l = static_cast<const _RopeLeaf*>(__left);
     if (_RopeRep::_S_leaf == __right->_M_tag) {
-      const _RopeLeaf* __r = __STATIC_CAST(const _RopeLeaf*, __right);
+      const _RopeLeaf* __r = static_cast<const _RopeLeaf*>(__right);
       return _STLP_PRIV __lexicographical_compare_3way(__l->_M_data, __l->_M_data + __left_len,
                                                        __r->_M_data, __r->_M_data + __right_len);
     }
@@ -1223,7 +1223,7 @@ rope<_CharT,_Alloc>::_S_compare (const _RopeRep* __left,
     const_iterator __lstart(__left, 0);
     const_iterator __lend(__left, __left_len);
     if (_RopeRep::_S_leaf == __right->_M_tag) {
-      const _RopeLeaf* __r = __STATIC_CAST(const _RopeLeaf*, __right);
+      const _RopeLeaf* __r = static_cast<const _RopeLeaf*>(__right);
       return _STLP_PRIV __lexicographical_compare_3way(__lstart, __lend,
                                                        __r->_M_data, __r->_M_data + __right_len);
     }
@@ -1290,7 +1290,7 @@ const _CharT* rope<_CharT,_Alloc>::c_str() const {
   _CharT* __result = _STLP_CREATE_ALLOCATOR(allocator_type,(const allocator_type&)_M_tree_ptr, _CharT).allocate(__s + 1);
   _S_flatten(_M_tree_ptr._M_data, __result);
   _S_construct_null(__result + __s);
-  __old_c_string = __STATIC_CAST(_CharT*, _Atomic_swap_ptr(__REINTERPRET_CAST(void* _STLP_VOLATILE*, &(_M_tree_ptr._M_data->_M_c_string)),
+  __old_c_string = static_cast<_CharT*>(_Atomic_swap_ptr(reinterpret_cast<void* _STLP_VOLATILE*>(&(_M_tree_ptr._M_data->_M_c_string)),
                                                            __result));
   if (0 != __old_c_string) {
     // It must have been added in the interim.  Hence it had to have been

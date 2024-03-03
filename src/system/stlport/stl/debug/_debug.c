@@ -101,12 +101,12 @@ void _STLP_CALL __invalidate_range(const __owned_list* __base,
                                    const _Iterator& __last) {
   typedef __owned_link _L_type;
   _STLP_ACQUIRE_LOCK(__base->_M_lock)
-  _L_type* __prev = __CONST_CAST(_L_type*, &__base->_M_node);
+  _L_type* __prev = const_cast<_L_type*>(&__base->_M_node);
   _L_type* __pos = __prev->_M_next;
 
   while (__pos != 0) {
-    if (!(&__first == __STATIC_CAST(_Iterator*, __pos) || &__last == __STATIC_CAST(_Iterator*, __pos)) &&
-        __in_range_aux(__STATIC_CAST(_Iterator*, __pos)->_M_iterator,
+    if (!(&__first == static_cast<_Iterator*>(__pos) || &__last == static_cast<_Iterator*>(__pos)) &&
+        __in_range_aux(static_cast<_Iterator*>(__pos)->_M_iterator,
                        __first._M_iterator, __last._M_iterator,
                        _STLP_ITERATOR_CATEGORY(__first, _Iterator))) {
       __pos->_M_owner = 0;
@@ -125,12 +125,12 @@ void _STLP_CALL __invalidate_iterator(const __owned_list* __base,
                                       const _Iterator& __it) {
   typedef __owned_link   _L_type;
   _STLP_ACQUIRE_LOCK(__base->_M_lock)
-  _L_type* __prev = __CONST_CAST(_L_type*, &__base->_M_node);
+  _L_type* __prev = const_cast<_L_type*>(&__base->_M_node);
   _L_type* __pos = __prev->_M_next;
   while (__pos != 0) {
     // this requires safe iterators to be derived from __owned_link
-    if ((__pos != __STATIC_CAST(const _L_type*, &__it)) &&
-        (__STATIC_CAST(_Iterator*, __pos)->_M_iterator == __it._M_iterator)) {
+    if ((__pos != static_cast<const _L_type*>(&__it)) &&
+        (static_cast<_Iterator*>(__pos)->_M_iterator == __it._M_iterator)) {
       __pos->_M_owner = 0;
       __prev->_M_next = __pos->_M_next;
     }
@@ -152,17 +152,17 @@ void _STLP_CALL  __change_range_owner(const _Iterator& __first,
   typedef __owned_link _L_type;
   // Check __stl_debug_engine<_Dummy>::_Swap_owners comments to see why there is no lock here
   //_STLP_ACQUIRE_LOCK(__base->_M_lock)
-  __owned_list *__base = __CONST_CAST(__owned_list*, __first._Owner());
+  __owned_list *__base = const_cast<__owned_list*>(__first._Owner());
   _L_type* __src_prev = &__base->_M_node;
   _L_type* __pos = __src_prev->_M_next;
-  _L_type* __dst_prev = __CONST_CAST(_L_type*, &__dst->_M_node);
+  _L_type* __dst_prev = const_cast<_L_type*>(&__dst->_M_node);
 
   while (__pos != 0) {
-    if (!(&__first == __STATIC_CAST(_Iterator*, __pos) || &__last == __STATIC_CAST(_Iterator*, __pos)) &&
-        __in_range_aux(__STATIC_CAST(_Iterator*, __pos)->_M_iterator,
+    if (!(&__first == static_cast<_Iterator*>(__pos) || &__last == static_cast<_Iterator*>(__pos)) &&
+        __in_range_aux(static_cast<_Iterator*>(__pos)->_M_iterator,
                        __first._M_iterator, __last._M_iterator,
                        _STLP_ITERATOR_CATEGORY(__first, _Iterator))) {
-      __pos->_M_owner = __CONST_CAST(__owned_list*, __dst);
+      __pos->_M_owner = const_cast<__owned_list*>(__dst);
       //remove __pos from __base:
       __src_prev->_M_next = __pos->_M_next;
       //add __pos to __dst:
@@ -186,16 +186,16 @@ void _STLP_CALL __change_ite_owner(const _Iterator& __it,
   typedef __owned_link _L_type;
   // Check __stl_debug_engine<_Dummy>::_Swap_owners comments to see why there is no lock here
   //_STLP_ACQUIRE_LOCK(__base->_M_lock)
-  __owned_list *__base = __CONST_CAST(__owned_list*, __it._Owner());
+  __owned_list *__base = const_cast<__owned_list*>(__it._Owner());
   _L_type* __prev = &__base->_M_node;
   _L_type* __pos = __prev->_M_next;
-  _L_type* __dst_prev = __CONST_CAST(_L_type*, &__dst->_M_node);
+  _L_type* __dst_prev = const_cast<_L_type*>(&__dst->_M_node);
 
   while (__pos != 0) {
     // this requires safe iterators to be derived from __owned_link
-    if ((__pos != __STATIC_CAST(const _L_type*, &__it)) &&
-        (__STATIC_CAST(_Iterator*, __pos)->_M_iterator == __it._M_iterator)) {
-      __pos->_M_owner = __CONST_CAST(__owned_list*, __dst);
+    if ((__pos != static_cast<const _L_type*>(&__it)) &&
+        (static_cast<_Iterator*>(__pos)->_M_iterator == __it._M_iterator)) {
+      __pos->_M_owner = const_cast<__owned_list*>(__dst);
       //remove __pos from __base:
       __prev->_M_next = __pos->_M_next;
       //add __pos to __dst:
@@ -529,7 +529,7 @@ void* _STLP_CALL
 __stl_debug_engine<_Dummy>::_Get_container_ptr(const __owned_link* __l) {
   const __owned_list* __owner    = __l->_Owner();
   _STLP_VERBOSE_RETURN_0(__owner != 0, _StlMsg_INVALID_ITERATOR)
-  void* __ret = __CONST_CAST(void*,__owner->_Owner());
+  void* __ret = const_cast<void*>(__owner->_Owner());
   _STLP_VERBOSE_RETURN_0(__ret !=0, _StlMsg_INVALID_CONTAINER)
   return __ret;
 }

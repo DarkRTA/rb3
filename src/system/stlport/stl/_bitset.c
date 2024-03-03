@@ -49,7 +49,7 @@ void _Base_bitset<_Nw>::_M_do_left_shift(size_t __shift) {
       _M_w[__wshift] = _M_w[0] << __offset;
     }
 
-    fill(_M_w + 0, _M_w + __wshift, __STATIC_CAST(_WordT,0));
+    fill(_M_w + 0, _M_w + __wshift, static_cast<_WordT>(0));
   }
 }
 
@@ -72,7 +72,7 @@ void _Base_bitset<_Nw>::_M_do_right_shift(size_t __shift) {
       _M_w[__limit] = _M_w[_Nw-1] >> __offset;
     }
 
-    fill(_M_w + __limit + 1, _M_w + _Nw, __STATIC_CAST(_WordT,0));
+    fill(_M_w + __limit + 1, _M_w + _Nw, static_cast<_WordT>(0));
   }
 }
 
@@ -88,11 +88,11 @@ template<size_t _Nw>
 size_t _Base_bitset<_Nw>::_M_do_find_first(size_t __not_found) const {
   for ( size_t __i = 0; __i < _Nw; __i++ ) {
     _WordT __thisword = _M_w[__i];
-    if ( __thisword != __STATIC_CAST(_WordT,0) ) {
+    if ( __thisword != static_cast<_WordT>(0) ) {
       // find byte within word
       for ( size_t __j = 0; __j < sizeof(_WordT); __j++ ) {
         unsigned char __this_byte
-          = __STATIC_CAST(unsigned char,(__thisword & (~(unsigned char)0)));
+          = static_cast<unsigned char>((__thisword & (~(unsigned char)0)));
         if ( __this_byte )
           return __i*__BITS_PER_WORD + __j*CHAR_BIT +
             _Bs_G::_S_first_one(__this_byte);
@@ -121,15 +121,15 @@ _Base_bitset<_Nw>::_M_do_find_next(size_t __prev,
   _WordT __thisword = _M_w[__i];
 
     // mask off bits below bound
-  __thisword &= (~__STATIC_CAST(_WordT,0)) << _S_whichbit(__prev);
+  __thisword &= (~static_cast<_WordT>(0)) << _S_whichbit(__prev);
 
-  if ( __thisword != __STATIC_CAST(_WordT,0) ) {
+  if ( __thisword != static_cast<_WordT>(0) ) {
     // find byte within word
     // get first byte into place
     __thisword >>= _S_whichbyte(__prev) * CHAR_BIT;
     for ( size_t __j = _S_whichbyte(__prev); __j < sizeof(_WordT); ++__j ) {
       unsigned char __this_byte
-        = __STATIC_CAST(unsigned char,(__thisword & (~(unsigned char)0)));
+        = static_cast<unsigned char>((__thisword & (~(unsigned char)0)));
       if ( __this_byte )
         return __i*__BITS_PER_WORD + __j*CHAR_BIT +
           _Bs_G::_S_first_one(__this_byte);
@@ -142,11 +142,11 @@ _Base_bitset<_Nw>::_M_do_find_next(size_t __prev,
   ++__i;
   for ( ; __i < _Nw; ++__i ) {
     /* _WordT */ __thisword = _M_w[__i];
-    if ( __thisword != __STATIC_CAST(_WordT,0) ) {
+    if ( __thisword != static_cast<_WordT>(0) ) {
       // find byte within word
       for ( size_t __j = 0; __j < sizeof(_WordT); ++__j ) {
         unsigned char __this_byte
-          = __STATIC_CAST(unsigned char,(__thisword & (~(unsigned char)0)));
+          = static_cast<unsigned char>((__thisword & (~(unsigned char)0)));
         if ( __this_byte )
           return __i*__BITS_PER_WORD + __j*CHAR_BIT +
             _Bs_G::_S_first_one(__this_byte);
@@ -206,7 +206,7 @@ operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x) {
     if (__tmp.empty())
       __is.setstate(ios_base::failbit);
     else
-      __x._M_copy_from_string(__tmp, __STATIC_CAST(size_t,0), _Nb);
+      __x._M_copy_from_string(__tmp, static_cast<size_t>(0), _Nb);
   }
 
   return __is;

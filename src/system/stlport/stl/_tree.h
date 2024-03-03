@@ -164,7 +164,7 @@ struct _Rb_tree_iterator : public _Rb_tree_base_iterator {
   _Rb_tree_iterator(const iterator& __it) : _Rb_tree_base_iterator(__it._M_node) {}
 
   reference operator*() const {
-    return __STATIC_CAST(_Link_type, _M_node)->_M_value_field;
+    return static_cast<_Link_type>(_M_node)->_M_value_field;
   }
   pointer operator->() const { return &(operator*()); }
 
@@ -342,7 +342,7 @@ protected:
   static _Base_ptr& _STLP_CALL _S_parent(_Base_ptr __x)
   { return __x->_M_parent; }
   static value_type& _STLP_CALL _S_value(_Base_ptr __x)
-  { return __STATIC_CAST(_Link_type, __x)->_M_value_field; }
+  { return static_cast<_Link_type>(__x)->_M_value_field; }
   static const _Key& _STLP_CALL _S_key(_Base_ptr __x)
   { return _KeyOfValue()(_S_value(__x));}
   static _Color_type& _STLP_CALL _S_color(_Base_ptr __x)
@@ -409,7 +409,7 @@ public:
   iterator begin() { return iterator(_M_leftmost()); }
   const_iterator begin() const { return const_iterator(_M_leftmost()); }
   iterator end() { return iterator(&this->_M_header._M_data); }
-  const_iterator end() const { return const_iterator(__CONST_CAST(_Base_ptr, &this->_M_header._M_data)); }
+  const_iterator end() const { return const_iterator(const_cast<_Base_ptr>(&this->_M_header._M_data)); }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const
@@ -464,7 +464,7 @@ public:
                                                           this->_M_header._M_data._M_left,
                                                           this->_M_header._M_data._M_right);
     _STLP_STD::_Destroy(&_S_value(__x));
-    this->_M_header.deallocate(__STATIC_CAST(_Link_type, __x), 1);
+    this->_M_header.deallocate(static_cast<_Link_type>(__x), 1);
     --_M_node_count;
   }
 
@@ -515,7 +515,7 @@ public:
 private:
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_find(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data);      // Last node which is not less than __k.
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data);      // Last node which is not less than __k.
     _Base_ptr __x = _M_root();      // Current node.
 
     while (__x != 0)
@@ -526,7 +526,7 @@ private:
 
     if (__y != &this->_M_header._M_data) {
       if (_M_key_compare(__k, _S_key(__y))) {
-        __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data);
+        __y = const_cast<_Base_ptr>(&this->_M_header._M_data);
       }
     }
     return __y;
@@ -534,7 +534,7 @@ private:
 
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_lower_bound(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data); /* Last node which is not less than __k. */
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data); /* Last node which is not less than __k. */
     _Base_ptr __x = _M_root(); /* Current node. */
 
     while (__x != 0)
@@ -548,7 +548,7 @@ private:
 
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_upper_bound(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data); /* Last node which is greater than __k. */
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data); /* Last node which is greater than __k. */
     _Base_ptr __x = _M_root(); /* Current node. */
 
     while (__x != 0)

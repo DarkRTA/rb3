@@ -126,7 +126,7 @@ struct _Base_bitset {
     return __pos % __BITS_PER_WORD;
   }
   static _WordT _STLP_CALL _S_maskbit( size_t __pos ) {
-    return __STATIC_CAST(_WordT,1) << _S_whichbit(__pos);
+    return static_cast<_WordT>(1) << _S_whichbit(__pos);
   }
 
   _WordT& _M_getword(size_t __pos)       { return _M_w[_S_whichword(__pos)]; }
@@ -165,7 +165,7 @@ struct _Base_bitset {
 
   void _M_do_set() {
     for ( size_t __i = 0; __i < _Nw; __i++ ) {
-      _M_w[__i] = ~__STATIC_CAST(_WordT,0);
+      _M_w[__i] = ~static_cast<_WordT>(0);
     }
   }
 
@@ -181,7 +181,7 @@ struct _Base_bitset {
 
   bool _M_is_any() const {
     for ( size_t __i = 0; __i < _Nw ; __i++ ) {
-      if ( _M_w[__i] != __STATIC_CAST(_WordT,0) )
+      if ( _M_w[__i] != static_cast<_WordT>(0) )
         return true;
     }
     return false;
@@ -226,7 +226,7 @@ struct _Base_bitset<1UL> {
     return __pos % __BITS_PER_WORD;
   }
   static _WordT _STLP_CALL _S_maskbit( size_t __pos ) {
-    return (__STATIC_CAST(_WordT,1)) << _S_whichbit(__pos);
+    return (static_cast<_WordT>(1)) << _S_whichbit(__pos);
   }
 
   _WordT& _M_getword(size_t)       { return _M_w; }
@@ -241,7 +241,7 @@ struct _Base_bitset<1UL> {
   void _M_do_left_shift(size_t __shift)     { _M_w <<= __shift; }
   void _M_do_right_shift(size_t __shift)    { _M_w >>= __shift; }
   void _M_do_flip()                       { _M_w = ~_M_w; }
-  void _M_do_set()                        { _M_w = ~__STATIC_CAST(_WordT,0); }
+  void _M_do_set()                        { _M_w = ~static_cast<_WordT>(0); }
   void _M_do_reset()                      { _M_w = 0; }
 
   bool _M_is_equal(const _Self& __x) const {
@@ -276,11 +276,11 @@ _Base_bitset<1UL>::_M_do_find_first(size_t __not_found) const {
   //  typedef unsigned long _WordT;
   _WordT __thisword = _M_w;
 
-  if ( __thisword != __STATIC_CAST(_WordT,0) ) {
+  if ( __thisword != static_cast<_WordT>(0) ) {
     // find byte within word
     for ( size_t __j = 0; __j < sizeof(_WordT); __j++ ) {
       unsigned char __this_byte
-        = __STATIC_CAST(unsigned char,(__thisword & (~(unsigned char)0)));
+        = static_cast<unsigned char>((__thisword & (~(unsigned char)0)));
       if ( __this_byte )
         return __j*CHAR_BIT + _Bs_G::_S_first_one(__this_byte);
 
@@ -305,15 +305,15 @@ _Base_bitset<1UL>::_M_do_find_next(size_t __prev,
   _WordT __thisword = _M_w;
 
   // mask off bits below bound
-  __thisword &= (~__STATIC_CAST(_WordT,0)) << _S_whichbit(__prev);
+  __thisword &= (~static_cast<_WordT>(0)) << _S_whichbit(__prev);
 
-  if ( __thisword != __STATIC_CAST(_WordT,0) ) {
+  if ( __thisword != static_cast<_WordT>(0) ) {
     // find byte within word
     // get first byte into place
     __thisword >>= _S_whichbyte(__prev) * CHAR_BIT;
     for ( size_t __j = _S_whichbyte(__prev); __j < sizeof(_WordT); __j++ ) {
       unsigned char __this_byte
-        = __STATIC_CAST(unsigned char,(__thisword & (~(unsigned char)0)));
+        = static_cast<unsigned char>((__thisword & (~(unsigned char)0)));
       if ( __this_byte )
         return __j*CHAR_BIT + _Bs_G::_S_first_one(__this_byte);
 
@@ -331,7 +331,7 @@ _Base_bitset<1UL>::_M_do_find_next(size_t __prev,
 
 template <size_t _Extrabits> struct _Sanitize {
   static void _STLP_CALL _M_do_sanitize(unsigned long& __val)
-  { __val &= ~((~__STATIC_CAST(unsigned long,0)) << _Extrabits); }
+  { __val &= ~((~static_cast<unsigned long>(0)) << _Extrabits); }
 };
 
 template<> struct _Sanitize<0UL> {
@@ -493,7 +493,7 @@ public:
   }
 
   bool _Unchecked_test(size_t __pos) const {
-    return (this->_M_getword(__pos) & this->_S_maskbit(__pos)) != __STATIC_CAST(_WordT,0);
+    return (this->_M_getword(__pos) & this->_S_maskbit(__pos)) != static_cast<_WordT>(0);
   }
 
   // Set, reset, and flip.

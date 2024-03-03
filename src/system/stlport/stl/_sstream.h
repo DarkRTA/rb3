@@ -132,7 +132,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
   void str(const _String& __s) { _M_buf.str(__s); }
@@ -168,7 +168,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); } // dwa 02/07/00 - BUG STOMPER DAVE
@@ -207,7 +207,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); }

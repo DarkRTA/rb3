@@ -511,7 +511,7 @@ public:                         // Constructors, destructor.
 
 public:                         // File and buffer operations.
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();
@@ -590,7 +590,7 @@ public:                         // Constructors, destructor.
 
 public:                         // File and buffer operations.
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();
@@ -671,7 +671,7 @@ public:                         // Constructors, destructor.
 public:                         // File and buffer operations.
 
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();

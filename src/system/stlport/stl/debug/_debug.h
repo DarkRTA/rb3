@@ -280,11 +280,11 @@ class _STLP_CLASS_DECLSPEC __owned_link {
 public:
   __owned_link() : _M_owner(0) {}
   __owned_link(const __owned_list* __c) : _M_owner(0), _M_next(0)
-  { __stl_debugger::_M_attach(__CONST_CAST(__owned_list*,__c), this); }
+  { __stl_debugger::_M_attach(const_cast<__owned_list*>(__c), this); }
   __owned_link(const __owned_link& __rhs): _M_owner(0)
-  { __stl_debugger::_M_attach(__CONST_CAST(__owned_list*,__rhs._M_owner), this); }
+  { __stl_debugger::_M_attach(const_cast<__owned_list*>(__rhs._M_owner), this); }
   __owned_link& operator=(const __owned_link& __rhs) {
-    __owned_list* __new_owner = __CONST_CAST(__owned_list*,__rhs._M_owner);
+    __owned_list* __new_owner = const_cast<__owned_list*>(__rhs._M_owner);
     __owned_list* __old_owner = _M_owner;
     if ( __old_owner != __new_owner ) {
       __stl_debugger::_M_detach(__old_owner, this);
@@ -299,7 +299,7 @@ public:
 
   const __owned_list* _Owner() const { return _M_owner; }
   __owned_list* _Owner() { return _M_owner; }
-  void _Set_owner(const __owned_list* __o) { _M_owner= __CONST_CAST(__owned_list*,__o); }
+  void _Set_owner(const __owned_list* __o) { _M_owner= const_cast<__owned_list*>(__o); }
   bool _Valid() const { return _M_owner != 0; }
   void _Invalidate() { _M_owner = 0; _M_next = 0; }
   void _Link_to_self() { _M_next = 0; }
@@ -317,7 +317,7 @@ class _STLP_CLASS_DECLSPEC __owned_list {
 public:
   __owned_list(void* __o) {
     //    fprintf(stderr, "__owned_list(): %p\n",(void*)this);
-    _M_node._M_owner = __REINTERPRET_CAST(__owned_list*,__o);
+    _M_node._M_owner = reinterpret_cast<__owned_list*>(__o);
     _M_node._M_next = 0;
   }
   ~__owned_list() {

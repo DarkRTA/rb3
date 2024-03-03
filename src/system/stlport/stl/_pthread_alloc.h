@@ -128,7 +128,7 @@ public:
     }
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(value_type*, _S_Alloc::allocate(__buf_size));
+      _Tp* __ret = reinterpret_cast<value_type*>(_S_Alloc::allocate(__buf_size));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);
@@ -169,7 +169,7 @@ protected:
     }
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(value_type*, _S_Alloc::allocate(__buf_size));
+      _Tp* __ret = reinterpret_cast<value_type*>(_S_Alloc::allocate(__buf_size));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);
@@ -280,7 +280,7 @@ public:
     }
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(_Tp*, _S_Alloc::allocate(__buf_size, _M_state));
+      _Tp* __ret = reinterpret_cast<_Tp*>(_S_Alloc::allocate(__buf_size, _M_state));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);
@@ -324,7 +324,7 @@ protected:
     }
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(value_type*, _S_Alloc::allocate(__buf_size, _M_state));
+      _Tp* __ret = reinterpret_cast<value_type*>(_S_Alloc::allocate(__buf_size, _M_state));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);

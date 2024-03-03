@@ -24,7 +24,7 @@ _STLP_BEGIN_NAMESPACE
 class __ptr_base {
 public:
   void* _M_p;
-  void  __set(const void* p) { _M_p = __CONST_CAST(void*,p); }
+  void  __set(const void* p) { _M_p = const_cast<void*>(p); }
   void  __set(void* p) { _M_p = p; }
 };
 
@@ -64,7 +64,7 @@ public:
   }
 
   _Tp* get() const _STLP_NOTHROW
-  { return __REINTERPRET_CAST(_Tp*,__CONST_CAST(void*,_M_p)); }
+  { return reinterpret_cast<_Tp*>(const_cast<void*>(_M_p)); }
 
 #if !defined (_STLP_NO_ARROW_OPERATOR)
   _Tp* operator->() const _STLP_NOTHROW {

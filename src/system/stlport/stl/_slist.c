@@ -41,7 +41,7 @@ _Slist_base<_Tp,_Alloc>::_M_erase_after(_Slist_node_base* __before_first,
                                         _Slist_node_base* __last_node) {
   _Slist_node_base* __cur = __before_first->_M_next;
   while (__cur != __last_node) {
-    _Node* __tmp = __STATIC_CAST(_Node*, __cur);
+    _Node* __tmp = static_cast<_Node*>(__cur);
     __cur = __cur->_M_next;
     _STLP_STD::_Destroy(&__tmp->_M_data);
     _M_head.deallocate(__tmp,1);
@@ -69,7 +69,7 @@ slist<_Tp,_Alloc>& slist<_Tp,_Alloc>::operator=(const slist<_Tp,_Alloc>& __x) {
     _Node_base* __n1 = this->_M_head._M_data._M_next;
     const _Node_base* __n2 = __x._M_head._M_data._M_next;
     while (__n1 && __n2) {
-      __STATIC_CAST(_Node*, __n1)->_M_data = __STATIC_CAST(const _Node*, __n2)->_M_data;
+      static_cast<_Node*>(__n1)->_M_data = static_cast<const _Node*>(__n2)->_M_data;
       __p1 = __n1;
       __n1 = __n1->_M_next;
       __n2 = __n2->_M_next;
@@ -77,7 +77,7 @@ slist<_Tp,_Alloc>& slist<_Tp,_Alloc>::operator=(const slist<_Tp,_Alloc>& __x) {
     if (__n2 == 0)
       this->_M_erase_after(__p1, 0);
     else
-      _M_insert_after_range(__p1, const_iterator(__CONST_CAST(_Node_base*, __n2)),
+      _M_insert_after_range(__p1, const_iterator(const_cast<_Node_base*>(__n2)),
                                   const_iterator(0));
   }
   return *this;
@@ -88,7 +88,7 @@ void slist<_Tp, _Alloc>::_M_fill_assign(size_type __n, const _Tp& __val) {
   _Node_base* __prev = &this->_M_head._M_data;
   _Node_base* __node = this->_M_head._M_data._M_next;
   for ( ; __node != 0 && __n > 0 ; --__n) {
-    __STATIC_CAST(_Node*, __node)->_M_data = __val;
+    static_cast<_Node*>(__node)->_M_data = __val;
     __prev = __node;
     __node = __node->_M_next;
   }
@@ -115,7 +115,7 @@ template <class _Tp, class _Alloc>
 void slist<_Tp,_Alloc>::remove(const _Tp& __val) {
   _Node_base* __cur = &this->_M_head._M_data;
   while (__cur && __cur->_M_next) {
-    if (__STATIC_CAST(_Node*, __cur->_M_next)->_M_data == __val)
+    if (static_cast<_Node*>(__cur->_M_next)->_M_data == __val)
       this->_M_erase_after(__cur);
     else
       __cur = __cur->_M_next;
@@ -132,7 +132,7 @@ void _Slist_unique(slist<_Tp, _Alloc>& __that, _BinaryPredicate __pred) {
   typename slist<_Tp, _Alloc>::iterator __ite(__that.begin());
   if (__ite != __that.end()) {
     while (__ite._M_node->_M_next) {
-      if (__pred(*__ite, __STATIC_CAST(_Node*, __ite._M_node->_M_next)->_M_data))
+      if (__pred(*__ite, static_cast<_Node*>(__ite._M_node->_M_next)->_M_data))
         __that.erase_after(__ite);
       else
         ++__ite;
@@ -148,8 +148,8 @@ void _Slist_merge(slist<_Tp, _Alloc>& __that, slist<_Tp, _Alloc>& __x,
   if (__that.get_allocator() == __x.get_allocator()) {
     typename slist<_Tp, _Alloc>::iterator __ite(__that.before_begin());
     while (__ite._M_node->_M_next && !__x.empty()) {
-      if (__comp(__x.front(), __STATIC_CAST(_Node*, __ite._M_node->_M_next)->_M_data)) {
-        _STLP_VERBOSE_ASSERT(!__comp(__STATIC_CAST(_Node*, __ite._M_node->_M_next)->_M_data, __x.front()),
+      if (__comp(__x.front(), static_cast<_Node*>(__ite._M_node->_M_next)->_M_data)) {
+        _STLP_VERBOSE_ASSERT(!__comp(static_cast<_Node*>(__ite._M_node->_M_next)->_M_data, __x.front()),
                              _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
         __that.splice_after(__ite, __x, __x.before_begin());
       }
@@ -162,8 +162,8 @@ void _Slist_merge(slist<_Tp, _Alloc>& __that, slist<_Tp, _Alloc>& __x,
   else {
     typename slist<_Tp, _Alloc>::iterator __i1(__that.before_begin()), __i2(__x.begin());
     while (__i1._M_node->_M_next && __i2._M_node) {
-      if (__comp(__STATIC_CAST(_Node*, __i1._M_node->_M_next)->_M_data, *__i2)) {
-        _STLP_VERBOSE_ASSERT(!__comp(*__i2, __STATIC_CAST(_Node*, __i1._M_node->_M_next)->_M_data),
+      if (__comp(static_cast<_Node*>(__i1._M_node->_M_next)->_M_data, *__i2)) {
+        _STLP_VERBOSE_ASSERT(!__comp(*__i2, static_cast<_Node*>(__i1._M_node->_M_next)->_M_data),
                              _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
         ++__i1;
       }

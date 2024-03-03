@@ -196,7 +196,7 @@ bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW
 
 template <class _Facet>
 _Facet* _UseFacet(const locale& __loc, const _Facet* __facet)
-{ return __STATIC_CAST(_Facet*, __loc._M_use_facet(_Facet::id)); }
+{ return static_cast<_Facet*>(__loc._M_use_facet(_Facet::id)); }
 
 _STLP_END_NAMESPACE
 

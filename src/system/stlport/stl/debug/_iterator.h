@@ -114,7 +114,7 @@ bool _Incrementable(const _Iterator& __it, ptrdiff_t __n, const random_access_it
   __container_type* __c = __it._Get_container_ptr();
   if (__c == 0) return false;
   ptrdiff_t __new_pos = (__it._M_iterator - __c->begin()) + __n;
-  return  (__new_pos >= 0) && (__STATIC_CAST(typename __container_type::size_type, __new_pos) <= __c->size());
+  return  (__new_pos >= 0) && (static_cast<typename __container_type::size_type>(__new_pos) <= __c->size());
 }
 
 

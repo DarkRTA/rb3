@@ -52,7 +52,7 @@ struct __allocator : public _Alloc {
     if (__n > max_size())
       __THROW_BAD_ALLOC;
     return __n != 0
-        ? __STATIC_CAST(_Tp*,__underlying_alloc::allocate(__n * sizeof(_Tp)))
+        ? static_cast<_Tp*>(__underlying_alloc::allocate(__n * sizeof(_Tp)))
         : 0;
   }
 

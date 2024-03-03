@@ -116,7 +116,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                  string::const_iterator __format, string::const_iterator __format_end,
                                  _Ch*, const _Time_Info& __table,
                                  const ios_base& __s, ios_base::iostate& __err, tm* __t) {
-  const ctype<_Ch>& __ct = *__STATIC_CAST(const ctype<_Ch>*, __s._M_ctype_facet());
+  const ctype<_Ch>& __ct = *static_cast<const ctype<_Ch>*>(__s._M_ctype_facet());
   while (__first != __last && __format != __format_end) {
     if (*__format == '%') {
       ++__format;
@@ -133,7 +133,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                        __ct);
           if (__pr == __table._M_dayname + 7)
             return __format;
-          __t->tm_wday = __STATIC_CAST(int, __pr - __table._M_dayname);
+          __t->tm_wday = static_cast<int>(__pr - __table._M_dayname);
           break;
         }
 
@@ -143,7 +143,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                        __ct);
           if (__pr == __table._M_dayname + 14)
             return __format;
-          __t->tm_wday = __STATIC_CAST(int, __pr - __table._M_dayname - 7);
+          __t->tm_wday = static_cast<int>(__pr - __table._M_dayname - 7);
           break;
         }
 
@@ -153,7 +153,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                        __ct);
           if (__pr == __table._M_monthname + 12)
             return __format;
-          __t->tm_mon = __STATIC_CAST(int, __pr - __table._M_monthname);
+          __t->tm_mon = static_cast<int>(__pr - __table._M_monthname);
           break;
         }
 
@@ -163,12 +163,12 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                        __ct);
           if (__pr == __table._M_monthname + 24)
             return __format;
-          __t->tm_mon = __STATIC_CAST(int, __pr - __table._M_monthname - 12);
+          __t->tm_mon = static_cast<int>(__pr - __table._M_monthname - 12);
           break;
         }
 
         case 'd': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_mday, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_mday, static_cast<_Ch*>(0));
           if (!__pr || __t->tm_mday < 1 || __t->tm_mday > 31) {
             __err |= ios_base::failbit;
             return __format;
@@ -177,21 +177,21 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
         }
 
         case 'H': case 'I': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_hour, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_hour, static_cast<_Ch*>(0));
           if (!__pr)
             return __format;
           break;
         }
 
         case 'j': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_yday, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_yday, static_cast<_Ch*>(0));
           if (!__pr)
             return __format;
           break;
         }
 
         case 'm': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_mon, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_mon, static_cast<_Ch*>(0));
           --__t->tm_mon;
           if (!__pr || __t->tm_mon < 0 || __t->tm_mon > 11) {
             __err |= ios_base::failbit;
@@ -201,7 +201,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
         }
 
         case 'M': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_min, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_min, static_cast<_Ch*>(0));
           if (!__pr)
             return __format;
           break;
@@ -221,21 +221,21 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
         }
 
         case 'S': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_sec, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_sec, static_cast<_Ch*>(0));
           if (!__pr)
             return __format;
           break;
         }
 
         case 'y': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_year, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_year, static_cast<_Ch*>(0));
           if (!__pr)
             return __format;
           break;
         }
 
         case 'Y': {
-          bool __pr = __get_decimal_integer(__first, __last, __t->tm_year, __STATIC_CAST(_Ch*, 0));
+          bool __pr = __get_decimal_integer(__first, __last, __t->tm_year, static_cast<_Ch*>(0));
           __t->tm_year -= 1900;
           if (!__pr)
             return __format;
@@ -262,7 +262,7 @@ __get_short_or_long_dayname(_InIt& __first, _InIt& __last, const ctype<_CharT>& 
                             const _Time_Info& __table, tm* __t) {
   const string* __pr =
     __match(__first, __last, __table._M_dayname + 0, __table._M_dayname + 14, __ct);
-  __t->tm_wday = __STATIC_CAST(int, (__pr - __table._M_dayname) % 7);
+  __t->tm_wday = static_cast<int>((__pr - __table._M_dayname) % 7);
   return __pr != __table._M_dayname + 14;
 }
 
@@ -272,7 +272,7 @@ __get_short_or_long_monthname(_InIt& __first, _InIt& __last, const ctype<_CharT>
                               const _Time_Info& __table, tm* __t) {
   const string* __pr =
     __match(__first, __last, __table._M_monthname + 0, __table._M_monthname + 24, __ct);
-  __t->tm_mon = __STATIC_CAST(int, (__pr - __table._M_monthname) % 12);
+  __t->tm_mon = static_cast<int>((__pr - __table._M_monthname) % 12);
   return __pr != __table._M_monthname + 24;
 }
 
@@ -280,7 +280,7 @@ template <class _OuIt>
 _OuIt _STLP_CALL
 __put_time(char * __first, char * __last, _OuIt __out_ite,
            const ios_base& __s, wchar_t) {
-    const ctype<wchar_t>& __ct = *__STATIC_CAST(const ctype<wchar_t>*, __s._M_ctype_facet());
+    const ctype<wchar_t>& __ct = *static_cast<const ctype<wchar_t>*>(__s._M_ctype_facet());
     wchar_t __wbuf[64];
     __ct.widen(__first, __last, __wbuf);
     ptrdiff_t __len = __last - __first;
@@ -302,7 +302,7 @@ time_get<_Ch, _InIt>::do_get_date(_InIt __s, _InIt  __end,
 
   string_iterator __result
     = _STLP_PRIV __get_formatted_time(__s, __end, __format, __format_end,
-                                      __STATIC_CAST(_Ch*, 0), _M_timeinfo,
+                                      static_cast<_Ch*>(0), _M_timeinfo,
                                       __str, __err, __t);
   if (__result == __format_end)
     __err = ios_base::goodbit;
@@ -325,7 +325,7 @@ time_get<_Ch, _InIt>::do_get_time(_InIt __s, _InIt  __end,
 
   string_iterator __result
     = _STLP_PRIV __get_formatted_time(__s, __end, __format, __format_end,
-                                      __STATIC_CAST(_Ch*, 0), _M_timeinfo,
+                                      static_cast<_Ch*>(0), _M_timeinfo,
                                       __str, __err, __t);
   __err = __result == __format_end ? ios_base::goodbit
                                    : ios_base::failbit;
@@ -344,7 +344,7 @@ time_get<_Ch, _InIt>::do_get_year(_InIt __s, _InIt  __end,
     return __s;
   }
 
-  bool __pr =  _STLP_PRIV __get_decimal_integer(__s, __end, __t->tm_year, __STATIC_CAST(_Ch*, 0));
+  bool __pr =  _STLP_PRIV __get_decimal_integer(__s, __end, __t->tm_year, static_cast<_Ch*>(0));
   __t->tm_year -= 1900;
   __err = __pr ? ios_base::goodbit : ios_base::failbit;
   if (__s == __end)
@@ -358,7 +358,7 @@ _InIt
 time_get<_Ch, _InIt>::do_get_weekday(_InIt __s, _InIt  __end,
                                      ios_base &__str, ios_base::iostate &__err,
                                      tm *__t) const {
-  const ctype<_Ch>& __ct = *__STATIC_CAST(const ctype<_Ch>*, __str._M_ctype_facet());
+  const ctype<_Ch>& __ct = *static_cast<const ctype<_Ch>*>(__str._M_ctype_facet());
   bool __result =
     _STLP_PRIV __get_short_or_long_dayname(__s, __end, __ct, _M_timeinfo, __t);
   if (__result)
@@ -376,7 +376,7 @@ _InIt
 time_get<_Ch, _InIt>::do_get_monthname(_InIt __s, _InIt  __end,
                                        ios_base &__str, ios_base::iostate &__err,
                                        tm *__t) const {
-  const ctype<_Ch>& __ct = *__STATIC_CAST(const ctype<_Ch>*, __str._M_ctype_facet());
+  const ctype<_Ch>& __ct = *static_cast<const ctype<_Ch>*>(__str._M_ctype_facet());
   bool __result =
     _STLP_PRIV __get_short_or_long_monthname(__s, __end, __ct, _M_timeinfo, __t);
   if (__result)
@@ -396,7 +396,7 @@ time_put<_Ch,_OutputIter>::put(_OutputIter __s, ios_base& __f, _Ch __fill,
                                const _Ch* __pat_end) const {
   //  locale __loc = __f.getloc();
   //  const ctype<_Ch>& _Ct = use_facet<ctype<_Ch> >(__loc);
-  const ctype<_Ch>& _Ct = *__STATIC_CAST(const ctype<_Ch>*, __f._M_ctype_facet());
+  const ctype<_Ch>& _Ct = *static_cast<const ctype<_Ch>*>(__f._M_ctype_facet());
   while (__pat != __pat_end) {
     char __c = _Ct.narrow(*__pat, 0);
     if (__c == '%') {

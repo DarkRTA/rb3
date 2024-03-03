@@ -107,7 +107,7 @@ typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_S_before_begin(const _ElemsCont& __elems, const _BucketVector& __buckets,
                     size_type &__n) {
-  _ElemsCont &__mutable_elems = __CONST_CAST(_ElemsCont&, __elems);
+  _ElemsCont &__mutable_elems = const_cast<_ElemsCont&>(__elems);
   typename _BucketVector::const_iterator __bpos(__buckets.begin() + __n);
 
   _ElemsIte __pos(*__bpos);
@@ -355,7 +355,7 @@ template <class _Val, class _Key, class _HF,
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_rehash(size_type __num_buckets) {
   _ElemsCont __tmp_elems(_M_elems.get_allocator());
-  _BucketVector __tmp(__num_buckets + 1, __STATIC_CAST(_BucketType*, 0), _M_buckets.get_allocator());
+  _BucketVector __tmp(__num_buckets + 1, static_cast<_BucketType*>(0), _M_buckets.get_allocator());
   _ElemsIte __cur, __last(_M_elems.end());
   while (!_M_elems.empty()) {
     __cur = _M_elems.begin();
@@ -399,7 +399,7 @@ template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::clear() {
   _M_elems.clear();
-  _M_buckets.assign(_M_buckets.size(), __STATIC_CAST(_BucketType*, 0));
+  _M_buckets.assign(_M_buckets.size(), static_cast<_BucketType*>(0));
   _M_num_elements = 0;
 }
 
@@ -424,7 +424,7 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
         break;
     }
   }
-  fill(__dst_b, __dst_end_b, __STATIC_CAST(_BucketType*, 0));
+  fill(__dst_b, __dst_end_b, static_cast<_BucketType*>(0));
   _M_num_elements = __ht._M_num_elements;
   _M_max_load_factor = __ht._M_max_load_factor;
 }

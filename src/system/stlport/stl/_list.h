@@ -112,7 +112,7 @@ struct _List_iterator : public _List_iterator_base {
   //copy constructor for iterator and constructor from iterator for const_iterator
   _List_iterator(const iterator& __x) :  _List_iterator_base(__x._M_node) {}
 
-  reference operator*() const { return __STATIC_CAST(_Node*, this->_M_node)->_M_data; }
+  reference operator*() const { return static_cast<_Node*>(this->_M_node)->_M_data; }
   pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
@@ -305,7 +305,7 @@ public:
   const_iterator begin() const          { return const_iterator(this->_M_node._M_data._M_next); }
 
   iterator end()                        { return iterator(&this->_M_node._M_data); }
-  const_iterator end() const            { return const_iterator(__CONST_CAST(_Node_base*, &this->_M_node._M_data)); }
+  const_iterator end() const            { return const_iterator(const_cast<_Node_base*>(&this->_M_node._M_data)); }
 
   reverse_iterator rbegin()             { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
@@ -425,7 +425,7 @@ public:
   iterator erase(iterator __pos) {
     _Node_base* __next_node = __pos._M_node->_M_next;
     _Node_base* __prev_node = __pos._M_node->_M_prev;
-    _Node* __n = __STATIC_CAST(_Node*, __pos._M_node);
+    _Node* __n = static_cast<_Node*>(__pos._M_node);
     __prev_node->_M_next = __next_node;
     __next_node->_M_prev = __prev_node;
     _STLP_STD::_Destroy(&__n->_M_data);

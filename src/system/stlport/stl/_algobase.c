@@ -140,12 +140,12 @@ _STLP_INLINE_LOOP _RandomAccessIter __find(_RandomAccessIter __first, _RandomAcc
 inline char*
 __find(char* __first, char* __last, char __val, const random_access_iterator_tag &) {
   void *res =  memchr(__first, __val, __last - __first);
-  return res != 0 ? __STATIC_CAST(char*, res) : __last;
+  return res != 0 ? static_cast<char*>(res) : __last;
 }
 inline const char*
 __find(const char* __first, const char* __last, char __val, const random_access_iterator_tag &) {
   const void *res =  memchr(__first, __val, __last - __first);
-  return res != 0 ? __STATIC_CAST(const char*, res) : __last;
+  return res != 0 ? static_cast<const char*>(res) : __last;
 }
 
 template <class _RandomAccessIter, class _Predicate>

@@ -144,7 +144,7 @@ public:
   }
 
   static int_type _STLP_CALL not_eof(const int_type& __c)
-  { return !eq_int_type(__c, eof()) ? __c : __STATIC_CAST(int_type, 0); }
+  { return !eq_int_type(__c, eof()) ? __c : static_cast<int_type>(0); }
 
   static char_type _STLP_CALL to_char_type(const int_type& __c)
   { return (char_type)__c; }

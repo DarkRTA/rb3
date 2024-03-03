@@ -213,28 +213,28 @@ template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(short __x) {
   _STLP_STATIC_ASSERT( sizeof(short) <= sizeof(long) )
   long __tmp = ((this->flags() & _Basic_ios::basefield) != ios_base::dec) ?
-                  __STATIC_CAST(long, __STATIC_CAST(unsigned short, __x)): __x;
+                  static_cast<long>(static_cast<unsigned short>(__x)): __x;
   return _STLP_PRIV __put_num(*this, __tmp);
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(unsigned short __x) {
   _STLP_STATIC_ASSERT( sizeof(unsigned short) <= sizeof(unsigned long) )
-  return _STLP_PRIV __put_num(*this, __STATIC_CAST(unsigned long,__x));
+  return _STLP_PRIV __put_num(*this, static_cast<unsigned long>(__x));
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(int __x) {
   _STLP_STATIC_ASSERT( sizeof(int) <= sizeof(long) )
   long __tmp = ((this->flags() & _Basic_ios::basefield) != ios_base::dec) ?
-                  __STATIC_CAST(long, __STATIC_CAST(unsigned int, __x)): __x;
+                  static_cast<long>(static_cast<unsigned int>(__x)): __x;
   return _STLP_PRIV __put_num(*this, __tmp);
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(unsigned int __x) {
   _STLP_STATIC_ASSERT( sizeof(unsigned int) <= sizeof(unsigned long) )
-  return _STLP_PRIV __put_num(*this,  __STATIC_CAST(unsigned long,__x));
+  return _STLP_PRIV __put_num(*this,  static_cast<unsigned long>(__x));
 }
 
 template <class _CharT, class _Traits>
@@ -255,7 +255,7 @@ basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<< (unsi
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(float __x)
-{ return _STLP_PRIV __put_num(*this,  __STATIC_CAST(double,__x)); }
+{ return _STLP_PRIV __put_num(*this,  static_cast<double>(__x)); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(double __x)

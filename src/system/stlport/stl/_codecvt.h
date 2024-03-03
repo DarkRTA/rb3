@@ -134,7 +134,7 @@ protected:
                         const extern_type* __from,
                         const extern_type* __end,
                         size_t __max) const
-  { return (int)(min) ( __STATIC_CAST(size_t, (__end - __from)), __max); }
+  { return (int)(min) ( static_cast<size_t>((__end - __from)), __max); }
 
   virtual int do_max_length() const _STLP_NOTHROW
   { return 1; }

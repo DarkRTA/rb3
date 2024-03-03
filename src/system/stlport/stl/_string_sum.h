@@ -399,7 +399,7 @@ struct __sum_storage_elem {
 
   size_t size() const { return 0; }
   _CharT const& operator[](size_t __n) const
-  { return __STATIC_CAST(_CharT*, 0)[__n]; }
+  { return static_cast<_CharT*>(0)[__n]; }
 
 private:
   mutable bool _M_init;

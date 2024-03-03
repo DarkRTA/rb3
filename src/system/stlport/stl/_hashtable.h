@@ -331,8 +331,8 @@ public:
   local_iterator begin(size_type __n) { return _ElemsIte(_M_buckets[__n]); }
   local_iterator end(size_type __n) { return _ElemsIte(_M_buckets[__n + 1]); }
 
-  const_iterator begin() const { return __CONST_CAST(_ElemsCont&, _M_elems).begin(); }
-  const_iterator end() const { return __CONST_CAST(_ElemsCont&, _M_elems).end(); }
+  const_iterator begin() const { return const_cast<_ElemsCont&>(_M_elems).begin(); }
+  const_iterator end() const { return const_cast<_ElemsCont&>(_M_elems).end(); }
   const_local_iterator begin(size_type __n) const { return _ElemsIte(_M_buckets[__n]); }
   const_local_iterator end(size_type __n) const { return _ElemsIte(_M_buckets[__n + 1]); }
 
@@ -422,7 +422,7 @@ private:
     if (__first != __last)
       return __first;
     else
-      return __CONST_CAST(_ElemsCont&, _M_elems).end();
+      return const_cast<_ElemsCont&>(_M_elems).end();
   }
 
 public:
@@ -510,7 +510,7 @@ private:
   void _M_initialize_buckets(size_type __n) {
     const size_type __n_buckets = _STLP_PRIV _Stl_prime_type::_S_next_size(__n) + 1;
     _M_buckets.reserve(__n_buckets);
-    _M_buckets.assign(__n_buckets, __STATIC_CAST(_BucketType*, 0));
+    _M_buckets.assign(__n_buckets, static_cast<_BucketType*>(0));
   }
 
   _STLP_TEMPLATE_FOR_CONT_EXT

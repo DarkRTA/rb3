@@ -134,12 +134,12 @@ private:                        // Data members
 template <class _CharT, class _Traits>
 inline char
 basic_ios<_CharT, _Traits>::narrow(_CharT __c, char __default) const
-{ return __STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())->narrow(__c, __default); }
+{ return static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())->narrow(__c, __default); }
 
 template <class _CharT, class _Traits>
 inline _CharT
 basic_ios<_CharT, _Traits>::widen(char __c) const
-{ return __STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())->widen(__c); }
+{ return static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())->widen(__c); }
 
 template<>
 inline char

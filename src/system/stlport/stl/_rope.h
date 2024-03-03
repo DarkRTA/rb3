@@ -506,7 +506,7 @@ public:
     case _RopeRep::_S_substringfn:
       {
         char_producer<_CharT>* __fn =
-          __STATIC_CAST(_RopeFunction*, _M_base)->_M_fn;
+          static_cast<_RopeFunction*>(_M_base)->_M_fn;
         _STLP_ASSERT(__start_pos + __req_len <= this->_M_size._M_data)
         _STLP_ASSERT(_M_start + this->_M_size._M_data <= _M_base->_M_size._M_data)
         (*__fn)(__start_pos + _M_start, __req_len, __buffer);
@@ -515,7 +515,7 @@ public:
     case _RopeRep::_S_leaf:
       {
         _CharT* __s =
-          __STATIC_CAST(_RopeLeaf*, _M_base)->_M_data;
+          static_cast<_RopeLeaf*>(_M_base)->_M_data;
         _STLP_PRIV __ucopy_n(__s + __start_pos + _M_start, __req_len, __buffer);
       }
       break;
@@ -777,7 +777,7 @@ public:
 
   // The one from the base class may not be directly visible.
   _Rope_const_iterator(const _RopeRep* __root, size_t __pos):
-    _Rope_iterator_base<_CharT,_Alloc>(__CONST_CAST(_RopeRep*,__root), __pos)
+    _Rope_iterator_base<_CharT,_Alloc>(const_cast<_RopeRep*>(__root), __pos)
     // Only nonconst iterators modify root ref count
   {}
 public:

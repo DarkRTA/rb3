@@ -60,7 +60,7 @@ inline void _Destroy(_Tp* __pointer) {
   typedef typename __type_traits<_Tp>::has_trivial_destructor _Trivial_destructor;
   __destroy_aux(__pointer, _Trivial_destructor());
 #if defined (_STLP_DEBUG_UNINITIALIZED)
-  memset(__REINTERPRET_CAST(char*, __pointer), _STLP_SHRED_BYTE, sizeof(_Tp));
+  memset(reinterpret_cast<char*>(__pointer), _STLP_SHRED_BYTE, sizeof(_Tp));
 #endif
 }
 

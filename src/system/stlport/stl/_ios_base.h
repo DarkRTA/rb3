@@ -175,7 +175,7 @@ public:                         // The C++ standard requires only that these
                                 // member functions be defined in basic_ios.
                                 // We define them in the non-template
                                 // base class to avoid code duplication.
-  operator void*() const { return !fail() ? (void*) __CONST_CAST(ios_base*,this) : (void*) 0; }
+  operator void*() const { return !fail() ? (void*) const_cast<ios_base*>(this) : (void*) 0; }
   bool operator!() const { return fail(); }
 
   iostate rdstate() const { return _M_iostate; }
@@ -365,4 +365,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

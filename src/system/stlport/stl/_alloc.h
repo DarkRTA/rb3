@@ -348,7 +348,7 @@ public:
     }
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(_Tp*, __sgi_alloc::allocate(__buf_size));
+      _Tp* __ret = reinterpret_cast<_Tp*>(__sgi_alloc::allocate(__buf_size));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);
@@ -389,7 +389,7 @@ protected:
 
     if (__n != 0) {
       size_type __buf_size = __n * sizeof(value_type);
-      _Tp* __ret = __REINTERPRET_CAST(_Tp*, __sgi_alloc::allocate(__buf_size));
+      _Tp* __ret = reinterpret_cast<_Tp*>(__sgi_alloc::allocate(__buf_size));
 #if defined (_STLP_DEBUG_UNINITIALIZED) && !defined (_STLP_DEBUG_ALLOC)
       if (__ret != 0) {
         memset((char*)__ret, _STLP_SHRED_BYTE, __buf_size);
