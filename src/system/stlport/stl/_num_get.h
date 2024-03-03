@@ -55,11 +55,9 @@ public:
 
   explicit num_get(size_t __refs = 0): locale::facet(__refs) {}
 
-#if !defined (_STLP_NO_BOOL)
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
                  ios_base::iostate& __err, bool& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
-#endif
 
 #if defined (_STLP_FIX_LIBRARY_ISSUES)
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
@@ -87,15 +85,13 @@ public:
                  ios_base::iostate& __err, unsigned long& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
 
-#if defined (_STLP_LONG_LONG)
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                 ios_base::iostate& __err, _STLP_LONG_LONG& __val) const
+                 ios_base::iostate& __err, long long& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
 
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                 ios_base::iostate& __err, unsigned _STLP_LONG_LONG& __val) const
+                 ios_base::iostate& __err, unsigned long long& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
-#endif /* _STLP_LONG_LONG */
 
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
                  ios_base::iostate& __err, float& __val) const
@@ -105,11 +101,9 @@ public:
                  ios_base::iostate& __err, double& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
                  ios_base::iostate& __err, long double& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
-# endif
 
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
                  ios_base::iostate& __err, void*& __val) const
@@ -124,11 +118,8 @@ protected:
   typedef ctype<_CharT>        _Ctype;
   typedef numpunct<_CharT>     _Numpunct;
 
-#if !defined (_STLP_NO_BOOL)
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, bool& __val) const;
-#endif
-
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, long& __val) const;
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
@@ -151,19 +142,15 @@ protected:
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, double& __val) const;
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
+                            ios_base::iostate& __err, long double& __val) const;
+
+  virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, void*& __p) const;
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                            ios_base::iostate& __err, long double& __val) const;
-#endif
-
-#if defined (_STLP_LONG_LONG)
+                            ios_base::iostate& __err, long long& __val) const;
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                            ios_base::iostate& __err, _STLP_LONG_LONG& __val) const;
-  virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                            ios_base::iostate& __err, unsigned _STLP_LONG_LONG& __val) const;
-#endif
+                            ios_base::iostate& __err, unsigned long long& __val) const;
 
 };
 
@@ -177,10 +164,8 @@ template <class _InputIter, class _Integer, class _CharT>
 bool _STLP_CALL
 __get_decimal_integer(_InputIter& __first, _InputIter& __last, _Integer& __val, _CharT*);
 
-#  if !defined (_STLP_NO_WCHAR_T)
 bool _STLP_DECLSPEC _STLP_CALL __get_fdigit(wchar_t&, const wchar_t*);
 bool _STLP_DECLSPEC _STLP_CALL __get_fdigit_or_sep(wchar_t&, wchar_t, const wchar_t*);
-#  endif
 
 inline void  _STLP_CALL
 _Initialize_get_float(const ctype<char>&,
@@ -193,15 +178,11 @@ _Initialize_get_float(const ctype<char>&,
   pow_E = 'E';
 }
 
-#  if !defined (_STLP_NO_WCHAR_T)
 void _STLP_DECLSPEC _STLP_CALL _Initialize_get_float(const ctype<wchar_t>&,
                                                      wchar_t&, wchar_t&, wchar_t&, wchar_t&, wchar_t*);
-#  endif
 void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, float&);
 void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, double&);
-#  if !defined (_STLP_NO_LONG_DOUBLE)
 void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, long double&);
-#  endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

@@ -76,8 +76,6 @@ private:
   collate<char>& operator =(const collate<char>&);
 };
 
-# ifndef _STLP_NO_WCHAR_T
-
 template<>
 class _STLP_CLASS_DECLSPEC collate<wchar_t> : public locale::facet
 {
@@ -115,8 +113,6 @@ private:
   collate<wchar_t>& operator = (const collate<wchar_t>&);
 };
 
-# endif /* NO_WCHAR_T */
-
 template<>
 class _STLP_CLASS_DECLSPEC collate_byname<char>: public collate<char>
 {
@@ -137,8 +133,6 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(collate_byname<char>*);
 };
 
-# ifndef _STLP_NO_WCHAR_T
-
 template<>
 class _STLP_CLASS_DECLSPEC collate_byname<wchar_t>: public collate<wchar_t>
 {
@@ -157,8 +151,6 @@ private:
   collate_byname(const collate_byname<wchar_t>&);
   collate_byname<wchar_t>& operator =(const collate_byname<wchar_t>&);
 };
-
-# endif /* NO_WCHAR_T */
 
 template <class _CharT, class _Traits, class _Alloc>
 bool

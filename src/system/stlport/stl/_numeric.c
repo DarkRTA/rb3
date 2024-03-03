@@ -72,7 +72,6 @@ __adjacent_difference(_InputIterator __first, _InputIterator __last,
 
 template <class _Tp, class _Integer, class _MonoidOperation>
 _Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
-  _STLP_MPWFIX_TRY
   if (__n == 0)
     return __identity_element(__opr);
   else {
@@ -81,7 +80,6 @@ _Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
       __x = __opr(__x, __x);
     }
     _Tp __result = __x;
-  _STLP_MPWFIX_TRY
     __n >>= 1;
     while (__n != 0) {
       __x = __opr(__x, __x);
@@ -90,9 +88,7 @@ _Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
       __n >>= 1;
     }
     return __result;
-  _STLP_MPWFIX_CATCH
   }
-  _STLP_MPWFIX_CATCH_ACTION(__x = _Tp())
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE

@@ -89,8 +89,6 @@ private:
   _STLP_PRIV _Messages* _M_impl;
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
-
 template<>
 class _STLP_CLASS_DECLSPEC messages<wchar_t> : public locale::facet, public messages_base {
   friend class _Locale_impl;
@@ -129,8 +127,6 @@ private:
   _STLP_PRIV _Messages* _M_impl;
 };
 
-#endif
-
 template <class _CharT> class messages_byname {};
 
 template<>
@@ -151,7 +147,6 @@ private:
   _Self& operator = (_Self const&);
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
 template<>
 class _STLP_CLASS_DECLSPEC messages_byname<wchar_t> : public messages<wchar_t> {
 public:
@@ -169,7 +164,6 @@ private:
   messages_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-#endif /* WCHAR_T */
 
 _STLP_END_NAMESPACE
 

@@ -96,19 +96,13 @@ public:                         // Formatted output.
   _Self& operator<<(unsigned int __x);
   _Self& operator<<(long __x);
   _Self& operator<<(unsigned long __x);
-#ifdef _STLP_LONG_LONG
-  _Self& operator<< (_STLP_LONG_LONG __x);
-  _Self& operator<< (unsigned _STLP_LONG_LONG __x);
-#endif
+  _Self& operator<<(long long __x);
+  _Self& operator<<(unsigned long long __x);
   _Self& operator<<(float __x);
   _Self& operator<<(double __x);
-# ifndef _STLP_NO_LONG_DOUBLE
   _Self& operator<<(long double __x);
-# endif
   _Self& operator<<(const void* __x);
-# ifndef _STLP_NO_BOOL
   _Self& operator<<(bool __x);
-# endif
 
 public:                         // Buffer positioning and manipulation.
   _Self& flush() {

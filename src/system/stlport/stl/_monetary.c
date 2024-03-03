@@ -288,7 +288,7 @@ template <class _CharT, class _InputIter>
 _InputIter
 money_get<_CharT, _InputIter>::do_get(_InputIter __s, _InputIter  __end, bool  __intl,
                                       ios_base&  __str, ios_base::iostate& __err,
-                                      _STLP_LONGEST_FLOAT_TYPE& __units) const {
+                                      long double& __units) const {
   string_type __buf;
   bool __is_positive = true;
   __s = _STLP_PRIV __money_do_get(__s, __end, __intl, __str, __err, __buf, __is_positive, (_CharT*)0);
@@ -497,7 +497,7 @@ template <class _CharT, class _OutputIter>
 _OutputIter
 money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
-          char_type __fill, _STLP_LONGEST_FLOAT_TYPE __units) const {
+          char_type __fill, long double __units) const {
   _STLP_BASIC_IOSTRING(char_type) __digits;
   _STLP_PRIV __get_money_digits(__digits, __str, __units);
   return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, __STATIC_CAST(string_type*, 0));

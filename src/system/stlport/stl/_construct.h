@@ -81,12 +81,12 @@ inline void _Destroy_Moved(_Tp* __pointer) {
 #if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
 template <class _T1>
 inline void _Construct_aux (_T1* __p, const __false_type&) {
-  _STLP_PLACEMENT_NEW (__p) _T1();
+  new (__p) _T1();
 }
 
 template <class _T1>
 inline void _Construct_aux (_T1* __p, const __true_type&) {
-  _STLP_PLACEMENT_NEW (__p) _T1(0);
+  new (__p) _T1(0);
 }
 #endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
 
@@ -98,7 +98,7 @@ inline void _Construct(_T1* __p) {
 #if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
   _Construct_aux (__p, _HasDefaultZeroValue(__p)._Answer() );
 #else
-  _STLP_PLACEMENT_NEW (__p) _T1();
+  new (__p) _T1();
 #endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
 }
 
@@ -107,7 +107,7 @@ inline void _Copy_Construct(_Tp* __p, const _Tp& __val) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_Tp));
 #endif
-  _STLP_PLACEMENT_NEW (__p) _Tp(__val);
+  new (__p) _Tp(__val);
 }
 
 template <class _T1, class _T2>
@@ -115,17 +115,17 @@ inline void _Param_Construct(_T1* __p, const _T2& __val) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_T1));
 #endif
-  _STLP_PLACEMENT_NEW (__p) _T1(__val);
+  new (__p) _T1(__val);
 }
 
 template <class _T1, class _T2>
 inline void _Move_Construct_Aux(_T1* __p, _T2& __val, const __false_type& /*_IsPOD*/) {
-  _STLP_PLACEMENT_NEW (__p) _T1(_STLP_PRIV _AsMoveSource(__val));
+  new (__p) _T1(_STLP_PRIV _AsMoveSource(__val));
 }
 
 template <class _T1, class _T2>
 inline void _Move_Construct_Aux(_T1* __p, _T2& __val, const __true_type& /*_IsPOD*/) {
-  _STLP_PLACEMENT_NEW (__p) _T1(__val);
+  new (__p) _T1(__val);
 }
 
 template <class _T1, class _T2>
@@ -179,10 +179,8 @@ inline void _Destroy_Range(_ForwardIterator __first, _ForwardIterator __last) {
 }
 
 inline void _Destroy_Range(char*, char*) {}
-#if defined (_STLP_HAS_WCHAR_T) // dwa 8/15/97
 inline void _Destroy_Range(wchar_t*, wchar_t*) {}
 inline void _Destroy_Range(const wchar_t*, const wchar_t*) {}
-#endif
 
 template <class _ForwardIterator, class _Tp>
 inline void

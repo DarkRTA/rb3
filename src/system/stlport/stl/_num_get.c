@@ -424,7 +424,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template <class _CharT, class _InputIterator>
 locale::id num_get<_CharT, _InputIterator>::id;
 
-#if !defined (_STLP_NO_BOOL)
 template <class _CharT, class _InputIter>
 _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end,
@@ -485,8 +484,6 @@ num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end,
     return __tmp;
   }
 }
-
-#endif /* _STLP_NO_BOOL */
 
 #if defined (_STLP_FIX_LIBRARY_ISSUES)
 template <class _CharT, class _InputIter>
@@ -559,7 +556,6 @@ num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_b
   return __in_ite;
 }
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
 template <class _CharT, class _InputIter>
 _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
@@ -573,30 +569,24 @@ num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_b
     __err |= ios_base::eofbit;
   return __in_ite;
 }
-#endif /* _STLP_NO_LONG_DOUBLE */
 
 template <class _CharT, class _InputIter>
 _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
                            ios_base::iostate& __err,
                            void*& __p) const {
-#if defined (_STLP_LONG_LONG)
-  unsigned _STLP_LONG_LONG __val;
-#else
-  unsigned long __val;
-#endif
+  unsigned long long __val;
     iter_type __tmp = _STLP_PRIV __do_get_integer(__in_ite, __end, __str, __err, __val, (_CharT*)0 );
     if (!(__err & ios_base::failbit))
       __p = __REINTERPRET_CAST(void*,__val);
     return __tmp;
   }
 
-#if defined (_STLP_LONG_LONG)
 template <class _CharT, class _InputIter>
 _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
                                     ios_base::iostate& __err,
-                                    _STLP_LONG_LONG& __val) const {
+                                    long long& __val) const {
   return _STLP_PRIV __do_get_integer(__in_ite, __end, __str, __err, __val, (_CharT*)0 );
 }
 
@@ -604,10 +594,9 @@ template <class _CharT, class _InputIter>
 _InputIter
 num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
                                     ios_base::iostate& __err,
-                                    unsigned _STLP_LONG_LONG& __val) const {
+                                    unsigned long long& __val) const {
   return _STLP_PRIV __do_get_integer(__in_ite, __end, __str, __err, __val, (_CharT*)0 );
 }
-#endif /* _STLP_LONG_LONG */
 
 _STLP_END_NAMESPACE
 

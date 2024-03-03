@@ -112,7 +112,7 @@ __match(_InIt& __first, _InIt& __last, const string *__name, const string *__nam
 // the correct overloading for the calls to __get_integer_nogroup.
 template <class _InIt1, class _Ch>
 string::const_iterator _STLP_CALL
-__get_formatted_time _STLP_WEAK (_InIt1 __first,  _InIt1 __last,
+__get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                  string::const_iterator __format, string::const_iterator __format_end,
                                  _Ch*, const _Time_Info& __table,
                                  const ios_base& __s, ios_base::iostate& __err, tm* __t) {
@@ -276,7 +276,6 @@ __get_short_or_long_monthname(_InIt& __first, _InIt& __last, const ctype<_CharT>
   return __pr != __table._M_monthname + 24;
 }
 
-#if !defined (_STLP_NO_WCHAR_T)
 template <class _OuIt>
 _OuIt _STLP_CALL
 __put_time(char * __first, char * __last, _OuIt __out_ite,
@@ -288,7 +287,6 @@ __put_time(char * __first, char * __last, _OuIt __out_ite,
     wchar_t * __eend = __wbuf + __len;
     return copy((wchar_t*)__wbuf, __eend, __out_ite);
 }
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

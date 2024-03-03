@@ -252,43 +252,41 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsi
   return *this;
 }
 
-#if defined (_STLP_LONG_LONG)
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (_STLP_LONG_LONG& __val) {
+basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (long long& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
 
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsigned _STLP_LONG_LONG& __val) {
+basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsigned long long& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (float& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (double& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#if !defined (_STLP_NO_LONG_DOUBLE)
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (long double& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
-#if !defined (_STLP_NO_BOOL)
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (bool& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
 
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (void*& __val) {

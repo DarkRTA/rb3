@@ -19,7 +19,7 @@
 #define _STLP_INTERNAL_ISTREAM
 
 // this block is included by _ostream.h, we include it here to lower #include level
-#if defined (_STLP_HAS_WCHAR_T) && !defined (_STLP_INTERNAL_CWCHAR)
+#if !defined (_STLP_INTERNAL_CWCHAR)
 #  include <stl/_cwchar.h>
 #endif
 
@@ -93,18 +93,12 @@ public:                         // Formatted input of numbers.
   _Self& operator>> (unsigned int& __val);
   _Self& operator>> (long& __val);
   _Self& operator>> (unsigned long& __val);
-#ifdef _STLP_LONG_LONG
-  _Self& operator>> (_STLP_LONG_LONG& __val);
-  _Self& operator>> (unsigned _STLP_LONG_LONG& __val);
-#endif
+  _Self& operator>> (long long& __val);
+  _Self& operator>> (unsigned long long& __val);
   _Self& operator>> (float& __val);
   _Self& operator>> (double& __val);
-# ifndef _STLP_NO_LONG_DOUBLE
   _Self& operator>> (long double& __val);
-# endif
-# ifndef _STLP_NO_BOOL
   _Self& operator>> (bool& __val);
-# endif
   _Self& operator>> (void*& __val);
 
 public:                         // Copying characters into a streambuf.

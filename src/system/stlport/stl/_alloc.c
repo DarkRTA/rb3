@@ -41,7 +41,7 @@ void * _STLP_CALL __debug_alloc<_Alloc>::allocate(size_t __n) {
   memset((char*)__result, __shred_byte, __real_n * sizeof(value_type));
   __result->__magic = __magic;
   __result->__type_size = sizeof(value_type);
-  __result->_M_size = (_STLP_UINT32_T)__n;
+  __result->_M_size = __n;
   return ((char*)__result) + (long)__extra_before;
 }
 

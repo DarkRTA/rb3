@@ -91,17 +91,9 @@ private:
     if (_M_have_c)
       return;
     int_type __c = _M_buf->sgetc();
-# if !defined (_STLP_NEED_MUTABLE)
     _M_c = traits_type::to_char_type(__c);
     _M_eof = traits_type::eq_int_type(__c, traits_type::eof());
     _M_have_c = true;
-# else
-    typedef istreambuf_iterator<_CharT,_Traits> _Self;
-    _Self* __that = __CONST_CAST(_Self*, this);
-    __that->_M_c = __STATIC_CAST(_CharT, traits_type::to_char_type(__c));
-    __that->_M_eof = traits_type::eq_int_type(__c, traits_type::eof());
-    __that->_M_have_c = true;
-# endif
   }
 
 private:

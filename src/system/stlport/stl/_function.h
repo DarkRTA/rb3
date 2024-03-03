@@ -343,25 +343,28 @@ constant2(const _Result& __val) {
 
 // subtractive_rng is an extension: it is not part of the standard.
 // Note: this code assumes that int is 32 bits.
-class subtractive_rng : public unary_function<_STLP_UINT32_T, _STLP_UINT32_T> {
+typedef unsigned int __rng_int;
+_STLP_STATIC_ASSERT(sizeof(__rng_int) == 4);
+
+class subtractive_rng : public unary_function<__rng_int, __rng_int> {
 private:
-  _STLP_UINT32_T _M_table[55];
-  _STLP_UINT32_T _M_index1;
-  _STLP_UINT32_T _M_index2;
+  __rng_int _M_table[55];
+  __rng_int _M_index1;
+  __rng_int _M_index2;
 public:
-  _STLP_UINT32_T operator()(_STLP_UINT32_T __limit) {
+  __rng_int operator()(__rng_int __limit) {
     _M_index1 = (_M_index1 + 1) % 55;
     _M_index2 = (_M_index2 + 1) % 55;
     _M_table[_M_index1] = _M_table[_M_index1] - _M_table[_M_index2];
     return _M_table[_M_index1] % __limit;
   }
 
-  void _M_initialize(_STLP_UINT32_T __seed) {
-    _STLP_UINT32_T __k = 1;
+  void _M_initialize(__rng_int __seed) {
+    __rng_int __k = 1;
     _M_table[54] = __seed;
-    _STLP_UINT32_T __i;
+    __rng_int __i;
     for (__i = 0; __i < 54; __i++) {
-        _STLP_UINT32_T __ii = (21 * (__i + 1) % 55) - 1;
+        __rng_int __ii = (21 * (__i + 1) % 55) - 1;
         _M_table[__ii] = __k;
         __k = __seed - __k;
         __seed = _M_table[__ii];

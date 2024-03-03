@@ -68,12 +68,10 @@ extern _STLP_DECLSPEC ostream cerr;
 extern _STLP_DECLSPEC ostream clog;
 # endif
 
-# ifndef _STLP_NO_WCHAR_T
 extern _STLP_DECLSPEC wistream wcin;
 extern _STLP_DECLSPEC wostream wcout;
 extern _STLP_DECLSPEC wostream wcerr;
 extern _STLP_DECLSPEC wostream wclog;
-# endif
 
 _STLP_END_NAMESPACE
 

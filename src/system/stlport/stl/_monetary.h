@@ -61,7 +61,7 @@ public:
   money_get(size_t __refs = 0) : locale::facet(__refs) {}
   iter_type get(iter_type __s, iter_type  __end, bool __intl,
                 ios_base&  __str, ios_base::iostate&  __err,
-                _STLP_LONGEST_FLOAT_TYPE& __units) const
+                long double& __units) const
     { return do_get(__s,  __end, __intl,  __str,  __err, __units); }
   iter_type get(iter_type __s, iter_type  __end, bool __intl,
                 ios_base&  __str, ios_base::iostate& __err,
@@ -74,7 +74,7 @@ protected:
   ~money_get() {}
   virtual iter_type do_get(iter_type __s, iter_type  __end, bool  __intl,
                            ios_base&  __str, ios_base::iostate& __err,
-                           _STLP_LONGEST_FLOAT_TYPE& __units) const;
+                           long double& __units) const;
   virtual iter_type do_get(iter_type __s, iter_type __end, bool __intl,
                            ios_base&  __str, ios_base::iostate& __err,
                            string_type& __digits) const;
@@ -176,9 +176,6 @@ protected:
   friend class _Locale_impl;
 };
 
-
-# ifndef _STLP_NO_WCHAR_T
-
 template<>
 class _STLP_CLASS_DECLSPEC moneypunct<wchar_t, true> : public locale::facet, public money_base
 {
@@ -268,8 +265,6 @@ protected:
   virtual pattern     do_neg_format()    const;
 };
 
-# endif
-
 template <class _charT, bool _International = false> class moneypunct_byname {};
 
 template<>
@@ -334,7 +329,6 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(moneypunct_byname<char, false>*);
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
 template<>
 class _STLP_CLASS_DECLSPEC moneypunct_byname<wchar_t, true> : public moneypunct<wchar_t, true>
 {
@@ -396,7 +390,6 @@ private:
   moneypunct_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-#endif
 
 //===== methods ======
 
@@ -412,7 +405,7 @@ public:
 
   money_put(size_t __refs = 0) : locale::facet(__refs) {}
   iter_type put(iter_type __s, bool __intl, ios_base& __str,
-                char_type  __fill, _STLP_LONGEST_FLOAT_TYPE __units) const
+                char_type  __fill, long double __units) const
     { return do_put(__s, __intl, __str, __fill, __units); }
   iter_type put(iter_type __s, bool __intl, ios_base& __str,
                 char_type  __fill,
@@ -424,7 +417,7 @@ public:
 protected:
   ~money_put() {}
   virtual iter_type do_put(iter_type __s, bool  __intl, ios_base&  __str,
-                           char_type __fill, _STLP_LONGEST_FLOAT_TYPE __units) const;
+                           char_type __fill, long double __units) const;
   virtual iter_type do_put(iter_type __s, bool  __intl, ios_base&  __str,
                            char_type __fill,
                            const string_type& __digits) const;

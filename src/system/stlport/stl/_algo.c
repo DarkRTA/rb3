@@ -484,11 +484,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Distance>
 inline _Distance __random_number(_Distance __n) {
-#ifdef _STLP_NO_DRAND48
   return rand() % __n;
-#else
-  return lrand48() % __n;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -758,7 +754,6 @@ inline _ForwardIter
 __stable_partition_aux_aux(_ForwardIter __first, _ForwardIter __last,
                            _Predicate __pred, _Tp*, _Distance*, bool __pred_of_before_last = false) {
   _Temporary_buffer<_ForwardIter, _Tp> __buf(__first, __last);
-  _STLP_MPWFIX_TRY    //*TY 06/01/2000 - they forget to call dtor for _Temporary_buffer if no try/catch block is present
   return (__buf.size() > 0) ?
     __stable_partition_adaptive(__first, __last, __pred,
                                 _Distance(__buf.requested_size()),
@@ -767,7 +762,6 @@ __stable_partition_aux_aux(_ForwardIter __first, _ForwardIter __last,
     __inplace_stable_partition(__first, __last, __pred,
                                _Distance(__buf.requested_size()),
                                false, __pred_of_before_last);
-  _STLP_MPWFIX_CATCH  //*TY 06/01/2000 - they forget to call dtor for _Temporary_buffer if no try/catch block is present
 }
 
 template <class _ForwardIter, class _Predicate>

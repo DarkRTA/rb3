@@ -72,10 +72,7 @@ template <class _CharT, class _Traits = char_traits<_CharT> >
 class ostreambuf_iterator;
 
 typedef basic_ios<char, char_traits<char> >    ios;
-
-#if !defined (_STLP_NO_WCHAR_T)
 typedef basic_ios<wchar_t, char_traits<wchar_t> > wios;
-#endif
 
 // Forward declaration of class locale, and of the most important facets.
 class locale;
@@ -91,12 +88,10 @@ template<> class ctype_byname<char>;
 template<> class collate<char>;
 template<> class collate_byname<char>;
 
-#if !defined (_STLP_NO_WCHAR_T)
 template<> class ctype<wchar_t>;
 template<> class ctype_byname<wchar_t>;
 template<> class collate<wchar_t>;
 template<> class collate_byname<wchar_t>;
-#endif
 
 // Typedefs for ordinary (narrow-character) streams.
 //template<> class basic_streambuf<char, char_traits<char> >;
@@ -116,7 +111,6 @@ typedef basic_ifstream<char, char_traits<char> > ifstream;
 typedef basic_ofstream<char, char_traits<char> > ofstream;
 typedef basic_fstream<char, char_traits<char> >  fstream;
 
-#if !defined (_STLP_NO_WCHAR_T)
 // Typedefs for wide-character streams.
 typedef basic_streambuf<wchar_t, char_traits<wchar_t> > wstreambuf;
 typedef basic_istream<wchar_t, char_traits<wchar_t> >   wistream;
@@ -132,7 +126,6 @@ typedef basic_filebuf<wchar_t, char_traits<wchar_t> >  wfilebuf;
 typedef basic_ifstream<wchar_t, char_traits<wchar_t> > wifstream;
 typedef basic_ofstream<wchar_t, char_traits<wchar_t> > wofstream;
 typedef basic_fstream<wchar_t, char_traits<wchar_t> >  wfstream;
-#endif
 
 _STLP_END_NAMESPACE
 

@@ -201,7 +201,6 @@ public:
   }
 };
 
-#if defined (_STLP_HAS_WCHAR_T)
 // Specialization for wchar_t.
 template<>
 class _STLP_CLASS_DECLSPEC char_traits<wchar_t>
@@ -227,7 +226,6 @@ public:
   { __c1 = __c2; }
 #  endif
 };
-#endif
 
 _STLP_END_NAMESPACE
 

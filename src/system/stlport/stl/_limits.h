@@ -32,7 +32,7 @@
 #  include <cfloat>
 #endif
 
-#if defined (_STLP_HAS_WCHAR_T) && !defined (_STLP_INTERNAL_CWCHAR)
+#if !defined (_STLP_INTERNAL_CWCHAR)
 #  include <stl/_cwchar.h>
 #endif
 
@@ -220,38 +220,30 @@ class numeric_limits : public _STLP_PRIV _Numeric_limits_base<_Tp> {};
 
 // Specializations for all built-in integral types.
 
-#if !defined (_STLP_NO_BOOL)
 template<>
 class numeric_limits<bool>
   : public _STLP_PRIV _Integer_limits<bool, false, true, 1, false>
 {};
-#endif /* _STLP_NO_BOOL */
 
 template<>
 class numeric_limits<char>
   : public _STLP_PRIV _Integer_limits<char, CHAR_MIN, CHAR_MAX, -1, true>
 {};
 
-#if !defined (_STLP_NO_SIGNED_BUILTINS)
 template<>
 class numeric_limits<signed char>
   : public _STLP_PRIV _Integer_limits<signed char, SCHAR_MIN, SCHAR_MAX, -1, true>
 {};
-#endif
 
 template<>
 class numeric_limits<unsigned char>
   : public _STLP_PRIV _Integer_limits<unsigned char, 0, UCHAR_MAX, -1, true>
 {};
 
-#if !(defined (_STLP_NO_WCHAR_T) || defined (_STLP_WCHAR_T_IS_USHORT))
-
 template<>
 class numeric_limits<wchar_t>
   : public _STLP_PRIV _Integer_limits<wchar_t, WCHAR_MIN, WCHAR_MAX, -1, true>
 {};
-
-#endif
 
 template<>
 class numeric_limits<short>
@@ -283,19 +275,15 @@ class numeric_limits<unsigned long>
   : public _STLP_PRIV _Integer_limits<unsigned long, 0, ULONG_MAX, -1, true>
 {};
 
-#if defined (_STLP_LONG_LONG)
-
 template<>
-class numeric_limits<_STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<_STLP_LONG_LONG, LLONG_MIN, LLONG_MAX, -1, true>
+class numeric_limits<long long>
+  : public _STLP_PRIV _Integer_limits<long long, LLONG_MIN, LLONG_MAX, -1, true>
 {};
 
 template<>
-class numeric_limits<unsigned _STLP_LONG_LONG>
-  : public _STLP_PRIV _Integer_limits<unsigned _STLP_LONG_LONG, 0, ULLONG_MAX, -1, true>
+class numeric_limits<unsigned long long>
+  : public _STLP_PRIV _Integer_limits<unsigned long long, 0, ULLONG_MAX, -1, true>
 {};
-
-#endif /* _STLP_LONG_LONG */
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
@@ -309,12 +297,9 @@ public:
   static double _STLP_CALL get_D_inf();
   static double _STLP_CALL get_D_qNaN();
   static double _STLP_CALL get_D_sNaN();
-
-#if !defined (_STLP_NO_LONG_DOUBLE)
   static long double _STLP_CALL get_LD_inf();
   static long double _STLP_CALL get_LD_qNaN();
   static long double _STLP_CALL get_LD_sNaN();
-#endif
 };
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -371,8 +356,6 @@ public:
   static  double _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_sNaN(); }
 };
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
-
 template<>
 class numeric_limits<long double>
   : public _STLP_PRIV _Floating_limits<long double,
@@ -394,8 +377,6 @@ public:
   static long double _STLP_CALL quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_qNaN(); }
   static long double _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_sNaN(); }
 };
-
-#endif
 
 // We write special values (Inf and NaN) as bit patterns and
 // cast the the appropriate floating-point types.

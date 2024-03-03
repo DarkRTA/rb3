@@ -127,7 +127,7 @@ _STLP_END_NAMESPACE
 #  endif
 
 _STLP_BEGIN_NAMESPACE
-inline void* _STLP_CALL __stl_new(size_t __n)   { _STLP_CHECK_NULL_ALLOC(::operator _STLP_NEW(__n)); }
+inline void* _STLP_CALL __stl_new(size_t __n)   { _STLP_CHECK_NULL_ALLOC(::operator new(__n)); }
 inline void  _STLP_CALL __stl_delete(void* __p) { ::operator delete(__p); }
 _STLP_END_NAMESPACE
 

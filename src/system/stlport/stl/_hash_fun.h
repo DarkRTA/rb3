@@ -74,11 +74,9 @@ template<> struct hash<char> {
 template<> struct hash<unsigned char> {
   size_t operator()(unsigned char __x) const { return __x; }
 };
-#if !defined (_STLP_NO_SIGNED_BUILTINS)
 template<> struct hash<signed char> {
-  size_t operator()(unsigned char __x) const { return __x; }
+  size_t operator()(signed char __x) const { return __x; }
 };
-#endif
 template<> struct hash<short> {
   size_t operator()(short __x) const { return __x; }
 };
@@ -99,14 +97,12 @@ template<> struct hash<unsigned long> {
   size_t operator()(unsigned long __x) const { return __x; }
 };
 
-#if defined (_STLP_LONG_LONG)
-template<> struct hash<_STLP_LONG_LONG> {
-  size_t operator()(_STLP_LONG_LONG x) const { return (size_t)x; }
+template<> struct hash<long long> {
+  size_t operator()(long long x) const { return (size_t)x; }
 };
-template<> struct hash<unsigned _STLP_LONG_LONG> {
-  size_t operator()(unsigned _STLP_LONG_LONG x) const { return (size_t)x; }
+template<> struct hash<unsigned long long> {
+  size_t operator()(unsigned long long x) const { return (size_t)x; }
 };
-#endif
 
 template<>
 struct hash<void *>

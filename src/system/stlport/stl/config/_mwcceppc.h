@@ -8,10 +8,6 @@
 // #include <mslGlobals.h>
 // #include <ansi_parms.h>
 
-#if __option(longlong)
-#  define _STLP_LONG_LONG  long long
-#endif
-
 #define _STLP_STATIC_ASSERT(expr) __static_assert(expr, #expr);
 
 #define _STLP_USE_UNIX_EMULATION_IO  1
@@ -28,10 +24,6 @@
 #  define _STLP_NO_IMPORT_LOCALE
 #endif
 
-#if !__option( wchar_type )
-#  define _STLP_WCHAR_T_IS_USHORT
-#endif
-
 //  *** Version-specific settings ***
 
 #if __MWERKS__ >= 0x2405
@@ -40,9 +32,6 @@
 
 // Remaining version checks omitted since they aren't relevant to this project
 // (__MWERKS__ == 0x4301)
-
-// 'long double' is supported (at least syntactically), but <cmath> doesn't have overloads for them
-#define _STLP_NO_LONG_DOUBLE 1
 
 // No -l or -f prefix versions of math.h functions
 #define _STLP_NO_VENDOR_MATH_L 1

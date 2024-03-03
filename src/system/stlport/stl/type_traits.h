@@ -75,26 +75,20 @@ _STLP_BEGIN_NAMESPACE
 template <class _Tp> struct _IsIntegral
 { typedef __false_type _Ret; };
 
-#  ifndef _STLP_NO_BOOL
 template<> struct _IsIntegral<bool>
 { typedef __true_type _Ret; };
-#  endif /* _STLP_NO_BOOL */
 
 template<> struct _IsIntegral<char>
 { typedef __true_type _Ret; };
 
-#  ifndef _STLP_NO_SIGNED_BUILTINS
 template<> struct _IsIntegral<signed char>
 { typedef __true_type _Ret; };
-#  endif
 
 template<> struct _IsIntegral<unsigned char>
 { typedef __true_type _Ret; };
 
-#  if defined ( _STLP_HAS_WCHAR_T ) && ! defined (_STLP_WCHAR_T_IS_USHORT)
 template<> struct _IsIntegral<wchar_t>
 { typedef __true_type _Ret; };
-#  endif /* _STLP_HAS_WCHAR_T */
 
 template<> struct _IsIntegral<short>
 { typedef __true_type _Ret; };
@@ -114,13 +108,11 @@ template<> struct _IsIntegral<long>
 template<> struct _IsIntegral<unsigned long>
 { typedef __true_type _Ret; };
 
-#  ifdef _STLP_LONG_LONG
-template<> struct _IsIntegral<_STLP_LONG_LONG>
+template<> struct _IsIntegral<long long>
 { typedef __true_type _Ret; };
 
-template<> struct _IsIntegral<unsigned _STLP_LONG_LONG>
+template<> struct _IsIntegral<unsigned long long>
 { typedef __true_type _Ret; };
-#  endif /* _STLP_LONG_LONG */
 
 template <class _Tp> struct _IsRational
 { typedef __false_type _Ret; };
@@ -131,10 +123,8 @@ template<> struct _IsRational<float>
 template<> struct _IsRational<double>
 { typedef __true_type _Ret; };
 
-#  if !defined ( _STLP_NO_LONG_DOUBLE )
 template<> struct _IsRational<long double>
 { typedef __true_type _Ret; };
-#  endif
 
 // Forward declarations.
 template <class _Tp> struct __type_traits;
@@ -217,17 +207,11 @@ template<> struct __type_traits< const Type > : __type_traits_aux<__true_type> {
 template<> struct __type_traits< volatile Type > : __type_traits_aux<__true_type> {}; \
 template<> struct __type_traits< const volatile Type > : __type_traits_aux<__true_type> {}
 
-#  ifndef _STLP_NO_BOOL
 _STLP_DEFINE_TYPE_TRAITS_FOR(bool);
-#  endif /* _STLP_NO_BOOL */
 _STLP_DEFINE_TYPE_TRAITS_FOR(char);
-#  ifndef _STLP_NO_SIGNED_BUILTINS
 _STLP_DEFINE_TYPE_TRAITS_FOR(signed char);
-#  endif
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned char);
-#  if defined ( _STLP_HAS_WCHAR_T ) && ! defined (_STLP_WCHAR_T_IS_USHORT)
 _STLP_DEFINE_TYPE_TRAITS_FOR(wchar_t);
-#  endif /* _STLP_HAS_WCHAR_T */
 
 _STLP_DEFINE_TYPE_TRAITS_FOR(short);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned short);
@@ -235,18 +219,12 @@ _STLP_DEFINE_TYPE_TRAITS_FOR(int);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned int);
 _STLP_DEFINE_TYPE_TRAITS_FOR(long);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned long);
-
-#  ifdef _STLP_LONG_LONG
-_STLP_DEFINE_TYPE_TRAITS_FOR(_STLP_LONG_LONG);
-_STLP_DEFINE_TYPE_TRAITS_FOR(unsigned _STLP_LONG_LONG);
-#  endif /* _STLP_LONG_LONG */
+_STLP_DEFINE_TYPE_TRAITS_FOR(long long);
+_STLP_DEFINE_TYPE_TRAITS_FOR(unsigned long long);
 
 _STLP_DEFINE_TYPE_TRAITS_FOR(float);
 _STLP_DEFINE_TYPE_TRAITS_FOR(double);
-
-#  if !defined ( _STLP_NO_LONG_DOUBLE )
 _STLP_DEFINE_TYPE_TRAITS_FOR(long double);
-#  endif
 
 template <class _ArePtrs, class _Src, class _Dst>
 struct _IsCVConvertibleIf

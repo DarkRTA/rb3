@@ -31,10 +31,7 @@ template <class _CharT,
 class basic_string;
 
 typedef basic_string<char, char_traits<char>, allocator<char> > string;
-
-#if defined (_STLP_HAS_WCHAR_T)
 typedef basic_string<wchar_t, char_traits<wchar_t>, allocator<wchar_t> > wstring;
-#endif
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 

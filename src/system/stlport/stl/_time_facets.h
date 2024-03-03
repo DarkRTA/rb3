@@ -225,11 +225,9 @@ inline _OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_it
                                    const ios_base& /* __loc */, char)
 { return copy(__first, __last, __out_ite); }
 
-#if !defined (_STLP_NO_WCHAR_T)
 template <class _OuIt>
 _OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
                             const ios_base& __s, wchar_t);
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

@@ -135,11 +135,9 @@ inline char*
 uninitialized_copy(const char* __first, const char* __last, char* __result)
 { return  (char*)_STLP_PRIV __ucopy_trivial(__first, __last, __result); }
 
-#  if defined (_STLP_HAS_WCHAR_T) // dwa 8/15/97
 inline wchar_t*
 uninitialized_copy(const wchar_t* __first, const wchar_t* __last, wchar_t* __result)
 { return  (wchar_t*)_STLP_PRIV __ucopy_trivial (__first, __last, __result); }
-#  endif
 
 // uninitialized_copy_n (not part of the C++ standard)
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -227,13 +225,13 @@ inline void uninitialized_fill(unsigned char* __first, unsigned char* __last,
   unsigned char __tmp = __val;
   memset(__first, __tmp, __last - __first);
 }
-#if !defined (_STLP_NO_SIGNED_BUILTINS)
+
 inline void uninitialized_fill(signed char* __first, signed char* __last,
                                const signed char& __val) {
   signed char __tmp = __val;
   memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);
 }
-#endif
+
 inline void uninitialized_fill(char* __first, char* __last, const char& __val) {
   char __tmp = __val;
   memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);

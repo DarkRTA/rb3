@@ -150,8 +150,10 @@ private:
   struct __alloc_header {
     size_t __magic: 16;
     size_t __type_size:16;
-    _STLP_UINT32_T _M_size;
+    unsigned int _M_size:32;
   }; // that is 8 bytes for sure
+  _STLP_STATIC_ASSERT(sizeof(__alloc_header) == 8);
+
   // Sunpro CC has bug on enums, so extra_before/after set explicitly
   enum { __pad = 8, __magic = 0xdeba, __deleted_magic = 0xdebd,
          __shred_byte = _STLP_SHRED_BYTE };

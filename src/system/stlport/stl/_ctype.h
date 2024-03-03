@@ -62,9 +62,7 @@ template <class charT> class ctype_byname {};
 
 template<>
 class _STLP_CLASS_DECLSPEC ctype<char> : public locale::facet, public ctype_base {
-#ifndef _STLP_NO_WCHAR_T
-    friend class ctype<wchar_t>;
-#endif
+  friend class ctype<wchar_t>;
   friend class _Locale_impl;
 public:
 
@@ -166,7 +164,6 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(ctype_byname<char>*);
 };
 
-#  ifndef _STLP_NO_WCHAR_T
 template<>
 class _STLP_CLASS_DECLSPEC ctype<wchar_t> : public locale::facet, public ctype_base
 {
@@ -259,8 +256,6 @@ private:
   ctype_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-
-#  endif /* WCHAR_T */
 
 _STLP_END_NAMESPACE
 

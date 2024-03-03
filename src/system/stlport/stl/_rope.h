@@ -333,11 +333,7 @@ public:
   { }
 
   typedef typename _AreSameUnCVTypes<_CharT, char>::_Ret _IsChar;
-# ifdef _STLP_HAS_WCHAR_T
   typedef typename _AreSameUnCVTypes<_CharT, wchar_t>::_Ret _IsWCharT;
-# else
-  typedef __false_type _IsWCharT;
-# endif
 
   typedef typename _Lor2<_IsChar, _IsWCharT>::_Ret _IsBasicCharType;
 
@@ -777,10 +773,9 @@ class _Rope_const_iterator : public _Rope_iterator_base<_CharT,_Alloc> {
   typedef _Rope_iterator_base<_CharT,_Alloc> _Base;
   //  protected:
 public:
-#   ifndef _STLP_HAS_NO_NAMESPACES
   typedef _Rope_RopeRep<_CharT,_Alloc> _RopeRep;
+
   // The one from the base class may not be directly visible.
-#   endif
   _Rope_const_iterator(const _RopeRep* __root, size_t __pos):
     _Rope_iterator_base<_CharT,_Alloc>(__CONST_CAST(_RopeRep*,__root), __pos)
     // Only nonconst iterators modify root ref count
@@ -1086,7 +1081,7 @@ protected:
     _RopeLeaf* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
                                                 _RopeLeaf).allocate(1);
     _STLP_TRY {
-      _STLP_PLACEMENT_NEW(__space) _RopeLeaf(__s, _p_size, __a);
+      new(__space) _RopeLeaf(__s, _p_size, __a);
     }
    _STLP_UNWIND(_STLP_CREATE_ALLOCATOR(allocator_type,__a,
                                        _RopeLeaf).deallocate(__space, 1))
@@ -1097,21 +1092,21 @@ protected:
                                                       allocator_type __a) {
    _RopeConcatenation* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
                                                         _RopeConcatenation).allocate(1);
-    return _STLP_PLACEMENT_NEW(__space) _RopeConcatenation(__left, __right, __a);
+    return new(__space) _RopeConcatenation(__left, __right, __a);
   }
 
   static _RopeFunction* _S_new_RopeFunction(char_producer<_CharT>* __f,
                                             size_t _p_size, bool __d, allocator_type __a) {
    _RopeFunction* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
                                                    _RopeFunction).allocate(1);
-    return _STLP_PLACEMENT_NEW(__space) _RopeFunction(__f, _p_size, __d, __a);
+    return new(__space) _RopeFunction(__f, _p_size, __d, __a);
   }
 
   static _RopeSubstring* _S_new_RopeSubstring(_Rope_RopeRep<_CharT,_Alloc>* __b, size_t __s,
                                               size_t __l, allocator_type __a) {
    _RopeSubstring* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
                                                     _RopeSubstring).allocate(1);
-    return _STLP_PLACEMENT_NEW(__space) _RopeSubstring(__b, __s, __l, __a);
+    return new(__space) _RopeSubstring(__b, __s, __l, __a);
   }
 
   static
@@ -1592,7 +1587,6 @@ protected:
     if (0 == __old) { _S_ref(__r); return __r; }
     _Self_destruct_ptr __left(_S_substring(__old, 0, __pos1));
     _Self_destruct_ptr __right(_S_substring(__old, __pos2, __old->_M_size._M_data));
-    _STLP_MPWFIX_TRY  //*TY 06/01/2000 -
     _RopeRep* __result;
 
     if (0 == __r) {
@@ -1603,7 +1597,6 @@ protected:
       __result = _S_concat_rep(__left_result, __right);
     }
     return __result;
-    _STLP_MPWFIX_CATCH  //*TY 06/01/2000 -
   }
 
 public:
@@ -2166,17 +2159,12 @@ basic_ostream<_CharT, _Traits>& operator<< (basic_ostream<_CharT, _Traits>& __o,
 #endif
 
 typedef rope<char, _STLP_DEFAULT_ALLOCATOR(char) > crope;
-#if defined (_STLP_HAS_WCHAR_T)
 typedef rope<wchar_t, _STLP_DEFAULT_ALLOCATOR(wchar_t) > wrope;
-#endif
 
 inline crope::reference __mutable_reference_at(crope& __c, size_t __i)
 { return __c.mutable_reference_at(__i); }
-
-#if defined (_STLP_HAS_WCHAR_T)
 inline wrope::reference __mutable_reference_at(wrope& __c, size_t __i)
 { return __c.mutable_reference_at(__i); }
-#endif
 
 template <class _CharT, class _Alloc>
 inline void swap(rope<_CharT,_Alloc>& __x, rope<_CharT,_Alloc>& __y)
@@ -2193,7 +2181,6 @@ template<> struct hash<crope> {
   }
 };
 
-#if defined (_STLP_HAS_WCHAR_T)  // dwa 8/21/97
 template<> struct hash<wrope> {
   size_t operator()(const wrope& __str) const {
     size_t _p_size = __str.size();
@@ -2202,7 +2189,6 @@ template<> struct hash<wrope> {
     return 13*__str[0] + 5*__str[_p_size - 1] + _p_size;
   }
 };
-#endif
 
 template<class _CharT,class _Alloc>
 void _Rope_rotate(_Rope_iterator<_CharT, _Alloc> __first,

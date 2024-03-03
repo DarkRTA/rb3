@@ -89,19 +89,14 @@ struct __basic_iostring : public basic_string<_CharT, char_traits<_CharT>, __ios
 };
 
 typedef __basic_iostring<char> __iostring;
-
-#  if !defined (_STLP_NO_WCHAR_T)
 typedef __basic_iostring<wchar_t> __iowstring;
-#  endif
 
 #  define _STLP_BASIC_IOSTRING(_CharT) _STLP_PRIV __basic_iostring<_CharT>
 
 #else
 
 typedef string __iostring;
-#  if !defined (_STLP_NO_WCHAR_T)
 typedef wstring __iowstring;
-#  endif
 
 #  define _STLP_BASIC_IOSTRING(_CharT) basic_string<_CharT, char_traits<_CharT>, allocator<_CharT> >
 

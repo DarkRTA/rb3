@@ -78,7 +78,6 @@ public:
   _Vector_base(size_t __n, const _Alloc& __a)
     : _M_ptr(__a, 0), _M_size(0), _M_capacity(__n) {
     _M_ptr._M_data = _M_ptr.allocate(__n, __n);
-    _STLP_MPWFIX_TRY _STLP_MPWFIX_CATCH
   }
 
   _Vector_base(__move_source<_Self> src)
@@ -613,7 +612,7 @@ _STLP_END_NAMESPACE
 //We define the bool specialization before the debug interfave
 //to benefit of the debug version of vector even for the bool
 //specialization.
-#if !defined (_STLP_NO_BOOL) || !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
 #  if !defined (_STLP_INTERNAL_BVECTOR_H)
 #    include <stl/_bvector.h>
 #  endif
@@ -625,7 +624,7 @@ _STLP_END_NAMESPACE
 
 _STLP_BEGIN_NAMESPACE
 
-#if !defined (_STLP_NO_BOOL) && !defined (_STLP_NO_EXTENSIONS)
+#if !defined (_STLP_NO_EXTENSIONS)
 // This typedef is non-standard.  It is provided for backward compatibility.
 typedef vector<bool, allocator<bool> > bit_vector;
 #endif

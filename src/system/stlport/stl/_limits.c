@@ -150,12 +150,10 @@ union _D_rep {
   double val;
 };
 
-#  ifndef _STLP_NO_LONG_DOUBLE
 union _LD_rep {
   unsigned short rep[8];
   long double val;
 };
-#  endif
 
 template <class __dummy>
 float _STLP_CALL _LimG<__dummy>::get_F_inf() {
@@ -189,7 +187,6 @@ double _STLP_CALL _LimG<__dummy>::get_D_sNaN() {
   return _D_sNaN.val;
 }
 
-#  if !defined (_STLP_NO_LONG_DOUBLE)
 template <class __dummy>
 long double _STLP_CALL _LimG<__dummy>::get_LD_inf() {
   _LD_rep _LD_inf = {_STLP_LDOUBLE_INF_REP};
@@ -205,7 +202,6 @@ long double _STLP_CALL _LimG<__dummy>::get_LD_sNaN() {
   _LD_rep _LD_sNaN = {_STLP_LDOUBLE_SNAN_REP};
   return _LD_sNaN.val;
 }
-#  endif /* _STLP_NO_LONG_DOUBLE */
 
 #endif /* _STLP_EXPOSE_GLOBALS_IMPLEMENTATION */
 

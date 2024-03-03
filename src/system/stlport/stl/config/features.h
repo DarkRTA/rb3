@@ -43,9 +43,6 @@
 
 /* Other macros defined by this file:
 
- * bool, true, and false, if _STLP_NO_BOOL is defined.
- * typename, as a null macro if it's not already a keyword.
- * explicit, as a null macro if it's not already a keyword.
  * namespace-related macros (_STLP_STD, _STLP_BEGIN_NAMESPACE, etc.)
  * exception-related macros (_STLP_TRY, _STLP_UNWIND, etc.)
  * _STLP_ASSERT, either as a test or as a null macro, depending on
@@ -163,9 +160,6 @@
  * final workaround tuning based on given flags
  * ========================================================== */
 
-#ifndef _STLP_UINT32_T
-#  define _STLP_UINT32_T unsigned long
-#endif
 #ifndef _STLP_ABORT
 #  define _STLP_ABORT() abort()
 #endif
@@ -194,30 +188,6 @@
 #elif defined (__WIN16) || defined (WIN16) || defined (_WIN16)
 #  define _STLP_WIN16
 #endif /* __unix */
-
-#if defined (_STLP_WIN16)
-#  define _STLP_LDOUBLE_80
-#elif defined(_STLP_WIN32)
-#  if defined (_STLP_MSVC) || defined (__ICL) || defined (__BORLANDC__) || defined (__CYGWIN__)
-#    define _STLP_LDOUBLE_64
-#  else
-#    define _STLP_LDOUBLE_96
-#  endif
-#elif defined (_STLP_UNIX)
-#  if defined (__CYGWIN__)
-#    define _STLP_LDOUBLE_96
-#  endif
-#endif
-
-#if !defined (_STLP_LDOUBLE_64) && !defined (_STLP_LDOUBLE_80) && !defined (_STLP_LDOUBLE_96) && !defined (_STLP_LDOUBLE_128)
-#  define _STLP_LDOUBLE_128
-#endif
-
-#if !defined (_STLP_NO_LONG_DOUBLE)
-#  define _STLP_LONGEST_FLOAT_TYPE long double
-#else
-#  define _STLP_LONGEST_FLOAT_TYPE double
-#endif
 
 /* Native headers access macros */
 #include <stl/config/_native_headers.h>
@@ -301,17 +271,6 @@
 
 #if defined (_STLP_THREADS)
 #  define _STLP_VOLATILE volatile
-/* windows.h _MUST be included before bool definition ;( */
-#  if defined (_STLP_WIN32THREADS) && defined (_STLP_NO_BOOL)
-#    undef  NOMINMAX
-#    define NOMINMAX
-#    ifdef _STLP_USE_MFC
-#      include <afx.h>
-#    else
-#      include <windows.h>
-#    endif
-#    define _STLP_WINDOWS_H_INCLUDED
-#  endif
 #else
 #  define _STLP_VOLATILE
 #endif
@@ -323,9 +282,6 @@
 #  define _STLP_FIX_LITERAL_BUG(__x)
 #endif
 
-#define _STLP_NEW new
-#define _STLP_PLACEMENT_NEW new
-
 #ifdef _STLP_DEBUG
 #  define _STLP_ASSERTIONS 1
 #endif
@@ -335,17 +291,6 @@
  * a compilation time error.
  */
 #  define _STLP_STATIC_ASSERT(expr) typedef char __static_assert[expr ? 1 : -1];
-#endif
-
-/* apple mpw exception handling bug */
-#ifndef _STLP_MPWFIX_TRY
-#  define _STLP_MPWFIX_TRY
-#endif
-#ifndef _STLP_MPWFIX_CATCH
-#  define _STLP_MPWFIX_CATCH
-#endif
-#ifndef _STLP_MPWFIX_CATCH_ACTION
-#  define _STLP_MPWFIX_CATCH_ACTION(action)
 #endif
 
 /* if _STLP_DEBUG or _STLP_ASSERTIONS are set, stl/debug/_debug.h defines those */
@@ -360,19 +305,7 @@
 #  define _STLP_DEBUG_DO(expr)
 #endif
 
-#if !defined (_STLP_WEAK)
-#  define _STLP_WEAK
-#endif
-
 /* SGI compatibility */
-
-#ifdef _STLP_NO_WCHAR_T
-#  ifndef _STLP_NO_NATIVE_WIDE_STREAMS
-#    define  _STLP_NO_NATIVE_WIDE_STREAMS 1
-#  endif
-#else
-#  define _STLP_HAS_WCHAR_T 1
-#endif
 
 #if !defined (_STLP_NO_AT_MEMBER_FUNCTION)
 #  define _STLP_CAN_THROW_RANGE_ERRORS 1
@@ -589,10 +522,6 @@ namespace _STL = _STLP_STD_NAME;
 #define STLPORT_CSTD _STLP_VENDOR_CSTD
 #define STLPORT      _STLP_STD_NAME
 
-#ifndef _STLP_RAND48
-#  define _STLP_NO_DRAND48
-#endif
-
 /* advanced keywords usage */
 #define __C_CAST(__x, __y) ((__x)(__y))
 #ifndef  _STLP_NO_NEW_STYLE_CASTS
@@ -615,29 +544,11 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_TEMPLATE_FOR_CONT_EXT
 #endif
 
-#if defined (_STLP_NEED_EXPLICIT) && !defined (explicit)
-#  define explicit
-#endif
-
-#if !defined (_STLP_NEED_MUTABLE)
-#  define _STLP_ASSIGN_MUTABLE(type,x,y) x = y
-#else
-#  define _STLP_ASSIGN_MUTABLE(type,x,y) __CONST_CAST(type,x)=y
-#  define mutable
-#endif
-
-#if defined (_STLP_NO_SIGNED_BUILTINS)
-/* old HP-UX doesn't understand "signed" keyword */
-#  define signed
-#endif
-
 #if defined (_STLP_LOOP_INLINE_PROBLEMS)
 #  define _STLP_INLINE_LOOP
 #else
 #  define _STLP_INLINE_LOOP inline
 #endif
-
-#define _STLP_PRIVATE public
 
 #if defined (__SGI_STL_NO_ARROW_OPERATOR) && ! defined (_STLP_NO_ARROW_OPERATOR)
 #  define _STLP_NO_ARROW_OPERATOR
@@ -772,31 +683,6 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_FUNCTION_THROWS
 #endif
 
-#if defined(_STLP_NO_BOOL)
-#  if (defined (__IBMCPP__) && (__IBMCPP__ < 400)) && ! defined (_AIX)
-#    include <isynonym.hpp>
-#    if defined (__OS400__)
-typedef int bool;
-#    elif !( defined (__xlC__) || defined (_AIX))
-typedef Boolean bool;
-#    endif
-#  else
-#    if defined(_STLP_YVALS_H)
-#      include <yvals.h>
-#    else
-#      if defined (_STLP_DONT_USE_BOOL_TYPEDEF)
-#        define bool int
-#      else
-typedef int bool;
-#      endif
-#      define true 1
-#      define false 0
-#    endif
-#  endif /* __IBMCPP__ */
-#else
-#  define _STLP_BOOL_KEYWORD 1
-#endif /* _STLP_NO_BOOL */
-
 #ifndef _STLP_MPW_EXTRA_CONST
 #  define _STLP_MPW_EXTRA_CONST
 #endif
@@ -901,7 +787,6 @@ typedef int bool;
 
 #ifndef _STLP_USE_NO_IOSTREAMS
 #  define _STLP_NEW_IO_NAMESPACE _STLP_STD
-#  define _STLP_NO_WIDE_STREAMS  _STLP_NO_WCHAR_T
 #endif
 
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
@@ -923,10 +808,7 @@ _TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return
 #define _STLP_ARRAY_AND_SIZE(A) A, sizeof(A) / sizeof(A[0])
 
 /* some cleanup */
-#undef _STLP_DONT_USE_BOOL_TYPEDEF
-#undef _STLP_YVALS_H
 #undef _STLP_LOOP_INLINE_PROBLEMS
-#undef _STLP_NEED_EXPLICIT
 #undef _STLP_NO_NEW_STYLE_CASTS
 #undef __AUTO_CONFIGURED
 

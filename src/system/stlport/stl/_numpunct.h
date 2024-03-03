@@ -79,8 +79,6 @@ protected:
   virtual string do_falsename()  const;
 };
 
-# if ! defined (_STLP_NO_WCHAR_T)
-
 template<>
 class _STLP_CLASS_DECLSPEC numpunct<wchar_t> : public locale::facet
 {
@@ -114,8 +112,6 @@ protected:
   virtual wstring do_falsename()  const;
 };
 
-# endif /* WCHAR_T */
-
 template<>
 class _STLP_CLASS_DECLSPEC numpunct_byname<char> : public numpunct<char> {
 public:
@@ -142,7 +138,6 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(numpunct_byname<char>*);
 };
 
-# ifndef _STLP_NO_WCHAR_T
 template<>
 class _STLP_CLASS_DECLSPEC numpunct_byname<wchar_t>: public numpunct<wchar_t> {
 public:
@@ -167,8 +162,6 @@ private:
   numpunct_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-
-# endif /* WCHAR_T */
 
 _STLP_END_NAMESPACE
 

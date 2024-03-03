@@ -242,8 +242,6 @@ private:
   codecvt<char, char, mbstate_t>& operator =(const codecvt<char, char, mbstate_t>&);
 };
 
-# ifndef _STLP_NO_WCHAR_T
-
 template<>
 class _STLP_CLASS_DECLSPEC codecvt<wchar_t, char, mbstate_t>
   : public locale::facet, public codecvt_base
@@ -338,8 +336,6 @@ private:
   codecvt<wchar_t, char, mbstate_t>& operator = (const codecvt<wchar_t, char, mbstate_t>&);
 };
 
-# endif
-
 template<>
 class _STLP_CLASS_DECLSPEC codecvt_byname<char, char, mbstate_t>
   : public codecvt<char, char, mbstate_t> {
@@ -351,7 +347,6 @@ private:
   codecvt_byname<char, char, mbstate_t>& operator =(const codecvt_byname<char, char, mbstate_t>&);
 };
 
-# ifndef _STLP_NO_WCHAR_T
 template<>
 class _STLP_CLASS_DECLSPEC codecvt_byname<wchar_t, char, mbstate_t>
   : public codecvt<wchar_t, char, mbstate_t>
@@ -399,8 +394,6 @@ private:
   codecvt_byname(const codecvt_byname<wchar_t, char, mbstate_t>&);
   codecvt_byname<wchar_t, char, mbstate_t>& operator =(const codecvt_byname<wchar_t, char, mbstate_t>&);
 };
-
-# endif
 
 _STLP_END_NAMESPACE
 

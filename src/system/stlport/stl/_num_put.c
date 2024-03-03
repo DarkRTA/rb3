@@ -67,7 +67,6 @@ __copy_float_and_fill(const _CharT* __first, const _CharT* __last,
   }
 }
 
-#if !defined (_STLP_NO_WCHAR_T)
 // Helper routine for wchar_t
 template <class _OutputIter>
 _OutputIter  _STLP_CALL
@@ -89,7 +88,6 @@ __put_float(__iostring &__str, _OutputIter __oi,
                                __CONST_CAST(wchar_t*, __wbuf.data()) + __wbuf.size(), __oi,
                                __f.flags(), __f.width(0), __fill, __ct.widen('+'), __ct.widen('-'));
 }
-#endif /* WCHAR_T */
 
 // Helper routine for char
 template <class _OutputIter>
@@ -127,21 +125,19 @@ __do_put_float(_OutputIter __s, ios_base& __f,
                      __group_pos, __f._M_grouping());
 }
 
-inline void __get_money_digits_aux (__iostring &__buf, ios_base &, _STLP_LONGEST_FLOAT_TYPE __x)
+inline void __get_money_digits_aux (__iostring &__buf, ios_base &, long double __x)
 { __get_floor_digits(__buf, __x); }
 
-#if !defined (_STLP_NO_WCHAR_T)
-inline void __get_money_digits_aux (__iowstring &__wbuf, ios_base &__f, _STLP_LONGEST_FLOAT_TYPE __x) {
+inline void __get_money_digits_aux (__iowstring &__wbuf, ios_base &__f, long double __x) {
   __iostring __buf;
   __get_floor_digits(__buf, __x);
 
   const ctype<wchar_t>& __ct = *__STATIC_CAST(const ctype<wchar_t>*, __f._M_ctype_facet());
   __convert_float_buffer(__buf, __wbuf, __ct, wchar_t(0), false);
 }
-#endif
 
 template <class _CharT>
-void _STLP_CALL __get_money_digits(_STLP_BASIC_IOSTRING(_CharT) &__buf, ios_base& __f, _STLP_LONGEST_FLOAT_TYPE __x)
+void _STLP_CALL __get_money_digits(_STLP_BASIC_IOSTRING(_CharT) &__buf, ios_base& __f, long double __x)
 { __get_money_digits_aux(__buf, __f, __x); }
 
 // _M_do_put_integer and its helper functions.
@@ -188,7 +184,6 @@ __copy_integer_and_fill(const _CharT* __buf, ptrdiff_t __len,
   }
 }
 
-#if !defined (_STLP_NO_WCHAR_T)
 // Helper function for wchar_t
 template <class _OutputIter>
 _OutputIter _STLP_CALL
@@ -231,7 +226,6 @@ __put_integer(char* __buf, char* __iend, _OutputIter __s,
   return __copy_integer_and_fill((wchar_t*)__wbuf, __len, __s,
                                  __flags, __f.width(0), __fill, __xplus, __xminus);
 }
-#endif
 
 // Helper function for char
 template <class _OutputIter>
@@ -270,13 +264,8 @@ __put_integer(char* __buf, char* __iend, _OutputIter __s,
   return __copy_integer_and_fill(__buf, __len, __s, __flags, __f.width(0), __fill, '+', '-');
 }
 
-#if defined (_STLP_LONG_LONG)
-typedef _STLP_LONG_LONG __max_int_t;
-typedef unsigned _STLP_LONG_LONG __umax_int_t;
-#else
-typedef long __max_int_t;
-typedef unsigned long __umax_int_t;
-#endif
+typedef long long __max_int_t;
+typedef unsigned long long __umax_int_t;
 
 _STLP_DECLSPEC const char* _STLP_CALL __hex_char_table_lo();
 _STLP_DECLSPEC const char* _STLP_CALL __hex_char_table_hi();
@@ -391,7 +380,6 @@ locale::id num_put<_CharT, _OutputIterator>::id;
 
 // issue 118
 
-#if !defined (_STLP_NO_BOOL)
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f,
@@ -419,8 +407,6 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f,
                                             (_CharT) 0, (_CharT) 0);
 }
 
-#endif
-
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
@@ -439,27 +425,23 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fi
                                      double __val) const
 { return _STLP_PRIV __do_put_float(__s, __f, __fill, __val); }
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      long double __val) const
 { return _STLP_PRIV __do_put_float(__s, __f, __fill, __val); }
-#endif
 
-#if defined (_STLP_LONG_LONG)
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
-                                     _STLP_LONG_LONG __val) const
+                                     long long __val) const
 { return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
-                                     unsigned _STLP_LONG_LONG __val) const
+                                     unsigned long long __val) const
 { return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
-#endif /* _STLP_LONG_LONG */
 
 
 // lib.facet.num.put.virtuals "12 For conversion from void* the specifier is %p."
@@ -474,11 +456,7 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT /*__
   __f.setf(ios_base::showbase);
   __f.setf(ios_base::internal, ios_base::adjustfield);
   __f.width((sizeof(void*) * 2) + 2); // digits in pointer type plus '0x' prefix
-# if defined(_STLP_LONG_LONG)
-  _OutputIter result = this->do_put(__s, __f, __c_type.widen('0'), __REINTERPRET_CAST(unsigned _STLP_LONG_LONG,__val));
-# else
-  _OutputIter result = this->do_put(__s, __f, __c_type.widen('0'), __REINTERPRET_CAST(unsigned long,__val));
-# endif
+  _OutputIter result = this->do_put(__s, __f, __c_type.widen('0'), __REINTERPRET_CAST(unsigned long long, __val));
   __f.flags(__save_flags);
   return result;
 }

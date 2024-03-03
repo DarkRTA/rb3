@@ -626,11 +626,9 @@ rope<_CharT,_Alloc>::_S_substring(_RopeRep* __base,
     }
     _Self_destruct_ptr __left_result(_S_substring(__left, __start, __left_len));
     _Self_destruct_ptr __right_result(_S_substring(__right, 0, __endp1 - __left_len));
-    _STLP_MPWFIX_TRY    //*TY 06/01/2000 - mpw forgets to call dtor on __left_result and __right_result without this try block
     __result = _S_concat_rep(__left_result, __right_result);
     // _STLP_ASSERT(1 == __result->_M_ref_count)
     return __result;
-    _STLP_MPWFIX_CATCH    //*TY 06/01/2000 -
   }
   case _RopeRep::_S_leaf:
   {
