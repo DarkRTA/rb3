@@ -2,6 +2,7 @@
 #define UTL_LOCALE_H
 #include "utl/Symbol.h"
 #include "obj/Data.h"
+#include "utl/StringTable.h"
 
 enum LocaleGender {
     LocaleGenderMasculine = 0,
@@ -15,33 +16,33 @@ enum LocaleNumber {
 
 class Locale {
 public:
-    Locale();
+    Locale() : mSize(0), mSymTable(0), mStrTable(0), mStringData(0), 
+        mUploadedFlags(0), mFile(), mNumFilesLoaded(0), mMagnuStrings(0) {}
     ~Locale();
 
     static bool sVerboseNotify;
+    static char* sIgnoreMissingText;
+    static void Init();
+    static void Terminate();
 
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkc;
-    Symbol unk10;
-    int unk14;
+    int mSize;
+    Symbol* mSymTable;
+    const char** mStrTable;
+    StringTable* mStringData;
+    Symbol mFile;
+    bool* mUploadedFlags;
+    int mNumFilesLoaded;
+    DataArray* mMagnuStrings;
 
     void SetMagnuStrings(DataArray*);
+    bool FindDataIndex(Symbol, int&, bool) const;
+    const char* Localize(Symbol, bool) const;
 };
 
 void SetLocaleVerboseNotify(bool);
-char* LocalizeSeparatedInt(int);
+
+const char* Localize(Symbol, bool*);
+const char* LocalizeSeparatedInt(int);
+const char* LocalizeFloat(const char*, float);
 
 #endif
-
-// class Locale {
-//     // total size: 0x18
-// protected:
-//     int mSize; // offset 0x0, size 0x4
-//     class Symbol * mSymTable; // offset 0x4, size 0x4
-//     const char * * mStrTable; // offset 0x8, size 0x4
-//     class StringTable * mStringData; // offset 0xC, size 0x4
-//     class Symbol mFile; // offset 0x10, size 0x4
-//     int mNumFilesLoaded; // offset 0x14, size 0x4
-// };
