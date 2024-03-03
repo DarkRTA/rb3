@@ -51,10 +51,10 @@ void StreamChecksumValidator::End(){
     mStreamChecksum.End();
 }
 
-void StreamChecksumValidator::Validate(){
+bool StreamChecksumValidator::Validate(){
     unsigned char buf[20] = { 0 };
     mStreamChecksum.GetHash(buf);
-    ValidateChecksum(buf);
+    return ValidateChecksum(buf);
 }
 
 void StreamChecksumValidator::HandleError(const char* c){

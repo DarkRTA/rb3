@@ -4,6 +4,7 @@
 #include "utl/BinStream.h"
 #include "utl/Str.h"
 #include "math/StreamChecksum.h"
+#include "utl/MemMgr.h"
 
 class FileStream : public BinStream {
 public:
@@ -28,7 +29,15 @@ public:
 
     void DeleteChecksum();
     void StartChecksum();
-    void ValidateChecksum();
+    bool ValidateChecksum();
+
+    int Size(){
+        return (mFile) ? mFile->Size() : 0;
+    }
+
+    void operator delete(void* v){
+        _MemFree(v);
+    }
 
     File* mFile;
     class String mFilename;

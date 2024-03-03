@@ -85,3 +85,16 @@ void FileStream::StartChecksum(){
 const char* FileStream::Name() const {
     return mFilename.c_str();
 }
+
+bool FileStream::ValidateChecksum(){
+    if(!mChecksumValidator) return false;
+    else {
+        mChecksumValidator->End();
+        MILO_ASSERT(mBytesChecksummed == Size(), 0x85);
+        bool ret = false;
+        if(mBytesChecksummed == Size() && mChecksumValidator->Validate()){
+            ret = true;
+        }
+        return ret;
+    }
+}

@@ -24,7 +24,7 @@ public:
     bool Begin(const char*, bool);
     void Update(const unsigned char*, unsigned int);
     void End();
-    void Validate();
+    bool Validate();
     void HandleError(const char*);
     bool SetFileChecksum(bool);
     bool ValidateChecksum(const unsigned char*);
