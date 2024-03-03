@@ -60,6 +60,7 @@
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
+            "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "NonMatching",
