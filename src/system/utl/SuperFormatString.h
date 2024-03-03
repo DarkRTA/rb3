@@ -3,11 +3,10 @@
 #include "utl/MakeString.h"
 #include "obj/Data.h"
 
-class SuperFormatString {
+class SuperFormatString : public FormatString {
 public:
     SuperFormatString(const char*, const DataArray*, bool);
-    const FormatString& RawFmt() const;
-    FormatString super_FormatString;
+    const char* RawFmt() const;
 };
 
 #endif

@@ -11,7 +11,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
     char param[8];
     char tempFmt[2048];
     char phInfo[64];
-    if(!da && !b) super_FormatString.InitializeWithFmt(cc, true);
+    if(!da && !b) InitializeWithFmt(cc, true);
     else {
         int i13 = 0;
         int phType = 0;
@@ -181,10 +181,10 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
             tempFmtPos += snprintf(tempFmtPos, paramPos - tempFmtPos, "{badfmt:%s", phInfo);
         }
         MILO_ASSERT(tempFmtPos - tempFmt < BUF_SIZE, 0xF0);
-        super_FormatString.InitializeWithFmt(tempFmt, b == 0);
+        InitializeWithFmt(tempFmt, b == 0);
     }
 }
 
-const FormatString& SuperFormatString::RawFmt() const {
-    return super_FormatString;
+const char* SuperFormatString::RawFmt() const {
+    return mFmt;
 }

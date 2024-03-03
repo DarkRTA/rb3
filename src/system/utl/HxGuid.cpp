@@ -11,12 +11,13 @@ HxGuid::HxGuid(){
 
 void HxGuid::Generate(){
     Clear();
-    if(&gGuidCrit != 0) gGuidCrit.Enter();
-    mData[0] = RandomInt();
-    mData[1] = RandomInt();
-    mData[2] = RandomInt();
-    mData[3] = RandomInt();
-    if(&gGuidCrit != 0) gGuidCrit.Exit();
+    {
+        CritSecTracker(*gGuidCrit);
+        mData[0] = RandomInt();
+        mData[1] = RandomInt();
+        mData[2] = RandomInt();
+        mData[3] = RandomInt();
+    }
     if(IsNull()){
         MILO_WARN("Generated HxGuid is Null.  Will try again...\n");
         Generate();
