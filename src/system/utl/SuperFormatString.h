@@ -6,7 +6,7 @@
 class SuperFormatString {
 public:
     SuperFormatString(const char*, const DataArray*, bool);
-    FormatString& RawFmt() const;
+    const FormatString& RawFmt() const;
     FormatString super_FormatString;
 };
 
