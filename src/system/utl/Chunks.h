@@ -3,6 +3,8 @@
 #include "utl/BinStream.h"
 #include "utl/ChunkIDs.h"
 
+#define kDataHeaderSize 8
+
 class ChunkHeader {
 public:
     ChunkID mID;
@@ -57,7 +59,7 @@ public:
     virtual ~IDataChunk();
     virtual void Flush(){}
     virtual int Tell();
-    virtual bool Eof();
+    virtual bool Eof(); // weak
     virtual bool Fail(); // weak
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int){}

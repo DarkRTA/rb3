@@ -3,6 +3,22 @@
 #include "os/Debug.h"
 #include <string.h>
 
+void ChunkHeader::Read(BinStream& bs){
+    bs.Read((void*)mID.Str(), 4);
+    bs >> mLength;
+    bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
+    if(!listCmp){
+        bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
+        if(riffCmp){
+            mIsList = false;
+            return;
+        }
+    }
+    bs.Read((void*)mID.Str(), 4);
+    mIsList = true;
+    MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
+}
+
 IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0), 
     mLocked(0), mSubHeader(), mRecentlyReset(1) {
     if(b){
