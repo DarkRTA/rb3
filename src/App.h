@@ -6,6 +6,10 @@ class App { public:
     ~App();
 
     void Run();
+    void RunWithoutDebugging();
+    void Draw();
+    void DrawRegular();
+    void CaptureHiRes();
 };
 
 #endif // HX_APP_H

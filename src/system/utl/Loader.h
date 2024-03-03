@@ -13,6 +13,9 @@ enum LoaderPos {
 
 class Loader {
 public:
+    Loader(const FilePath&, LoaderPos);
+    virtual ~Loader();
+
     LoaderPos mPos;
     FilePath mFile;
 };
@@ -33,6 +36,12 @@ public:
     // float mPeriod; // offset 0x18, size 0x4
     // class list mLoading; // offset 0x1C, size 0x8
     // class Timer mTimer; // offset 0x28, size 0x38
+};
+
+class FileLoader : Loader {
+public:
+    FileLoader(const FilePath&, const char*, LoaderPos, int, bool, bool, BinStream*);
+    virtual ~FileLoader();
 };
 
 #endif

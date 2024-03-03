@@ -5,6 +5,7 @@
 typedef unsigned char u8;
 
 class RndBitmap { // 0x1c
+public:
     enum AlphaFlag {
         kGrayscaleAlpha = 0,
         kGrayscaleWhite = 1,

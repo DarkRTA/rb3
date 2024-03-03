@@ -1,9 +1,19 @@
 #include "ui/UIPanel.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 
 UIPanel::UIPanel() : mDir(0), mLoader(0), mFocusName(), mState(kUnloaded), mLoaded(0), mPaused(0), mShowing(1), mForceExit(0), mLoadRefs(0), mFilePath(), mPanelId(sMaxPanelId++) {
     MILO_ASSERT(sMaxPanelId < 0x8000, 0x24);
+}
+
+class ObjectDir* UIPanel::DataDir() {
+    if (mDir) {
+        return NULL; // TODO crawl through the members and figure this bastard out
+    }
+    return Hmx::Object::DataDir();
 }
 
 void UIPanel::SetTypeDef(DataArray* data){
@@ -23,3 +33,17 @@ void UIPanel::CheckLoad(){
 UIPanel::~UIPanel(){
     Unload();
 }
+
+
+BEGIN_HANDLERS(UIPanel)
+HANDLE_EXPR(is_loaded, IsLoaded())
+HANDLE_EXPR(check_is_loaded, CheckIsLoaded())
+HANDLE_EXPR(is_unloaded, mState == kUnloaded)
+HANDLE_EXPR(is_referenced, mLoadRefs != 0)
+HANDLE_EXPR(is_up, mState == kUp)
+HANDLE_ACTION(set_paused, SetPaused(_msg->Int(2)))
+
+HANDLE_ACTION(unset_loaded_dir, UnsetLoadedDir())
+HANDLE_SUPERCLASS(Hmx::Object)
+HANDLE_CHECK(450)
+END_HANDLERS
