@@ -22,7 +22,7 @@ public:
 
     unsigned int length() const { return strlen(mStr); }
     const char* c_str() const { return mStr; }
-    bool empty() const { return mStr != 0; }
+    bool empty() const { return *mStr == '\0'; }
 
     void reserve(unsigned int);
 

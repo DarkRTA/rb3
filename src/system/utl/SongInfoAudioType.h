@@ -2,6 +2,16 @@
 #define UTL_SONGINFOAUDIOTYPE_H
 #include "utl/Symbol.h"
 
-int SymbolToAudioType(Symbol); // might more likely return an enum than an int
+enum SongInfoAudioType {
+    kAudioTypeDrum,
+    kAudioTypeGuitar,
+    kAudioTypeBass,
+    kAudioTypeVocals,
+    kAudioTypeKeys,
+    kAudioTypeUnknown,
+    kAudioTypeMulti
+};
+
+SongInfoAudioType SymbolToAudioType(Symbol);
 
 #endif
