@@ -14,23 +14,24 @@ public:
         kAppend = 3,
     };
 
-    FileStream(const char *, FileType, bool); // fn_8034C9F8
-    FileStream(File *, bool); // RB2 says this is FileStream(File*, bool)
-    virtual ~FileStream(); // fn_8034CB20
-    virtual void Flush(); // fn_8034CCA8
-    virtual int Tell(); // fn_8034CD30
-    virtual bool Eof(); // fn_8034CD44
-    virtual bool Fail(); // fn_8034CD7C
-    virtual const char *Name() const; // fn_800C20FC - weak
-    virtual void ReadImpl(void *, int); // fn_8034CBCC
-    virtual void WriteImpl(const void *, int); // fn_8034CC50
-    virtual void SeekImpl(int, SeekType); // fn_8034CCBC
+    FileStream(const char *, FileType, bool);
+    FileStream(File *, bool);
+    virtual ~FileStream();
+    virtual void Flush();
+    virtual int Tell();
+    virtual bool Eof();
+    virtual bool Fail();
+    virtual const char *Name() const; // weak
+    virtual void ReadImpl(void *, int);
+    virtual void WriteImpl(const void *, int);
+    virtual void SeekImpl(int, SeekType);
 
     void DeleteChecksum();
     void StartChecksum();
+    void ValidateChecksum();
 
     File* mFile;
-    String mFilename;
+    class String mFilename;
     bool mFail;
     StreamChecksum* mChecksum;
     int mBytesChecksummed;

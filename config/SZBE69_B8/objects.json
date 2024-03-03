@@ -148,6 +148,7 @@
             "system/utl/Compress.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
+            "system/utl/FileStream.cpp": "NonMatching",
             "system/utl/HangBlock_Wii.cpp": "Matching",
             "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/utl/IntPacker.cpp": "Matching",
