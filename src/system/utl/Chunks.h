@@ -9,6 +9,9 @@ public:
     int mLength;
     bool mIsList;
 
+    ChunkHeader() : mID(), mLength(0), mIsList(0) {}
+    ChunkHeader(BinStream& bs) : mID(), mLength(0), mIsList(0) { Read(bs); }
+    ChunkHeader(ChunkID id, int len, bool list) : mID(id), mLength(len), mIsList(list) {}
     void Read(BinStream&);
 };
 
@@ -28,6 +31,9 @@ public:
     IListChunk(BinStream&, bool);
     IListChunk(IListChunk&);
     ~IListChunk();
+    void Init();
+    void Reset();
+    IListChunk* CurSubChunkHeader() const;
 };
 
 class IDataChunk : public BinStream {
