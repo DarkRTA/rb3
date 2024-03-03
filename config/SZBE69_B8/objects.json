@@ -158,7 +158,7 @@
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/FileStream.cpp": "Matching",
             "system/utl/HangBlock_Wii.cpp": "Matching",
-            "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
+            "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ] },
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/JobMgr.cpp": "NonMatching",
             "system/utl/Locale.cpp": "NonMatching",
