@@ -10,9 +10,12 @@ public:
     bool mIsList;
 
     ChunkHeader() : mID(), mLength(0), mIsList(0) {}
+    ChunkHeader(const ChunkHeader& ch) : mID(ch.mID), mLength(ch.mLength), mIsList(ch.mIsList) {}
     ChunkHeader(BinStream& bs) : mID(), mLength(0), mIsList(0) { Read(bs); }
     ChunkHeader(ChunkID id, int len, bool list) : mID(id), mLength(len), mIsList(list) {}
     void Read(BinStream&);
+    int Length(){ return mLength; }
+    bool IsList(){ return mIsList; }
 };
 
 class IListChunk {
@@ -33,7 +36,9 @@ public:
     ~IListChunk();
     void Init();
     void Reset();
-    IListChunk* CurSubChunkHeader() const;
+    void Lock();
+    void UnLock();
+    const ChunkHeader* CurSubChunkHeader() const;
 };
 
 class IDataChunk : public BinStream {
