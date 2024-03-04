@@ -19,30 +19,30 @@
 #include _STLP_NATIVE_CPP_C_HEADER(cwctype)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::wctype_t;
-using _STLP_VENDOR_CSTD::wint_t;
+using _STLP_VENDOR_STD::wctype_t;
+using _STLP_VENDOR_STD::wint_t;
 
-using _STLP_VENDOR_CSTD::wctrans_t;
-using _STLP_VENDOR_CSTD::towctrans;
-using _STLP_VENDOR_CSTD::wctrans;
-using _STLP_VENDOR_CSTD::wctype;
-using _STLP_VENDOR_CSTD::iswctype;
+using _STLP_VENDOR_STD::wctrans_t;
+using _STLP_VENDOR_STD::towctrans;
+using _STLP_VENDOR_STD::wctrans;
+using _STLP_VENDOR_STD::wctype;
+using _STLP_VENDOR_STD::iswctype;
 
-using _STLP_VENDOR_CSTD::iswalnum;
-using _STLP_VENDOR_CSTD::iswalpha;
-using _STLP_VENDOR_CSTD::iswcntrl;
+using _STLP_VENDOR_STD::iswalnum;
+using _STLP_VENDOR_STD::iswalpha;
+using _STLP_VENDOR_STD::iswcntrl;
 
-using _STLP_VENDOR_CSTD::iswdigit;
-using _STLP_VENDOR_CSTD::iswgraph;
-using _STLP_VENDOR_CSTD::iswlower;
-using _STLP_VENDOR_CSTD::iswprint;
-using _STLP_VENDOR_CSTD::iswpunct;
-using _STLP_VENDOR_CSTD::iswspace;
-using _STLP_VENDOR_CSTD::iswupper;
-using _STLP_VENDOR_CSTD::iswxdigit;
+using _STLP_VENDOR_STD::iswdigit;
+using _STLP_VENDOR_STD::iswgraph;
+using _STLP_VENDOR_STD::iswlower;
+using _STLP_VENDOR_STD::iswprint;
+using _STLP_VENDOR_STD::iswpunct;
+using _STLP_VENDOR_STD::iswspace;
+using _STLP_VENDOR_STD::iswupper;
+using _STLP_VENDOR_STD::iswxdigit;
 
-using _STLP_VENDOR_CSTD::towlower;
-using _STLP_VENDOR_CSTD::towupper;
+using _STLP_VENDOR_STD::towlower;
+using _STLP_VENDOR_STD::towupper;
 _STLP_END_NAMESPACE
 
 

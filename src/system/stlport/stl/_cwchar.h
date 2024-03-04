@@ -19,84 +19,84 @@
 #include _STLP_NATIVE_CPP_C_HEADER(cwchar)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::wint_t;
+using _STLP_VENDOR_STD::wint_t;
 
-using _STLP_VENDOR_CSTD::size_t;
+using _STLP_VENDOR_STD::size_t;
 
-using _STLP_VENDOR_MB_NAMESPACE::mbstate_t;
+using _STLP_VENDOR_STD::mbstate_t;
 
-using _STLP_VENDOR_MB_NAMESPACE::btowc;
-using _STLP_VENDOR_MB_NAMESPACE::mbsinit;
-using _STLP_VENDOR_MB_NAMESPACE::mbrlen;
-using _STLP_VENDOR_MB_NAMESPACE::mbrtowc;
-using _STLP_VENDOR_MB_NAMESPACE::mbsrtowcs;
-using _STLP_VENDOR_MB_NAMESPACE::wcrtomb;
-using _STLP_VENDOR_MB_NAMESPACE::wcsrtombs;
+using _STLP_VENDOR_STD::btowc;
+using _STLP_VENDOR_STD::mbsinit;
+using _STLP_VENDOR_STD::mbrlen;
+using _STLP_VENDOR_STD::mbrtowc;
+using _STLP_VENDOR_STD::mbsrtowcs;
+using _STLP_VENDOR_STD::wcrtomb;
+using _STLP_VENDOR_STD::wcsrtombs;
 
-using _STLP_VENDOR_CSTD::fgetwc;
-using _STLP_VENDOR_CSTD::fgetws;
-using _STLP_VENDOR_CSTD::fputwc;
-using _STLP_VENDOR_CSTD::fputws;
+using _STLP_VENDOR_STD::fgetwc;
+using _STLP_VENDOR_STD::fgetws;
+using _STLP_VENDOR_STD::fputwc;
+using _STLP_VENDOR_STD::fputws;
 
-using _STLP_VENDOR_CSTD::fwide;
-using _STLP_VENDOR_CSTD::fwprintf;
-using _STLP_VENDOR_CSTD::fwscanf;
-using _STLP_VENDOR_CSTD::getwchar;
+using _STLP_VENDOR_STD::fwide;
+using _STLP_VENDOR_STD::fwprintf;
+using _STLP_VENDOR_STD::fwscanf;
+using _STLP_VENDOR_STD::getwchar;
 
-using _STLP_VENDOR_CSTD::getwc;
-using _STLP_VENDOR_CSTD::ungetwc;
-using _STLP_VENDOR_CSTD::putwc;
-using _STLP_VENDOR_CSTD::putwchar;
+using _STLP_VENDOR_STD::getwc;
+using _STLP_VENDOR_STD::ungetwc;
+using _STLP_VENDOR_STD::putwc;
+using _STLP_VENDOR_STD::putwchar;
 
-using _STLP_VENDOR_CSTD::swprintf;
-using _STLP_VENDOR_CSTD::vswprintf;
-using _STLP_VENDOR_CSTD::swscanf;
-using _STLP_VENDOR_CSTD::vfwprintf;
-using _STLP_VENDOR_CSTD::vwprintf;
+using _STLP_VENDOR_STD::swprintf;
+using _STLP_VENDOR_STD::vswprintf;
+using _STLP_VENDOR_STD::swscanf;
+using _STLP_VENDOR_STD::vfwprintf;
+using _STLP_VENDOR_STD::vwprintf;
 
-using _STLP_VENDOR_CSTD::wcsftime;
-using _STLP_VENDOR_CSTD::wcstok;
+using _STLP_VENDOR_STD::wcsftime;
+using _STLP_VENDOR_STD::wcstok;
 
-using _STLP_VENDOR_CSTD::wcscoll;
-using _STLP_VENDOR_CSTD::wcsxfrm;
-using _STLP_VENDOR_CSTD::wcscat;
-using _STLP_VENDOR_CSTD::wcsrchr;
-using _STLP_VENDOR_CSTD::wcscmp;
+using _STLP_VENDOR_STD::wcscoll;
+using _STLP_VENDOR_STD::wcsxfrm;
+using _STLP_VENDOR_STD::wcscat;
+using _STLP_VENDOR_STD::wcsrchr;
+using _STLP_VENDOR_STD::wcscmp;
 
-using _STLP_VENDOR_CSTD::wcscpy;
-using _STLP_VENDOR_CSTD::wcscspn;
+using _STLP_VENDOR_STD::wcscpy;
+using _STLP_VENDOR_STD::wcscspn;
 
-using _STLP_VENDOR_CSTD::wcslen;
-using _STLP_VENDOR_CSTD::wcsncat;
-using _STLP_VENDOR_CSTD::wcsncmp;
-using _STLP_VENDOR_CSTD::wcsncpy;
-using _STLP_VENDOR_CSTD::wcspbrk;
-using _STLP_VENDOR_CSTD::wcschr;
+using _STLP_VENDOR_STD::wcslen;
+using _STLP_VENDOR_STD::wcsncat;
+using _STLP_VENDOR_STD::wcsncmp;
+using _STLP_VENDOR_STD::wcsncpy;
+using _STLP_VENDOR_STD::wcspbrk;
+using _STLP_VENDOR_STD::wcschr;
 
-using _STLP_VENDOR_CSTD::wcsspn;
+using _STLP_VENDOR_STD::wcsspn;
 
-using _STLP_VENDOR_CSTD::wcstod;
-using _STLP_VENDOR_CSTD::wcstol;
+using _STLP_VENDOR_STD::wcstod;
+using _STLP_VENDOR_STD::wcstol;
 
-using _STLP_VENDOR_CSTD::wcsstr;
-using _STLP_VENDOR_CSTD::wmemchr;
+using _STLP_VENDOR_STD::wcsstr;
+using _STLP_VENDOR_STD::wmemchr;
 
-using _STLP_VENDOR_CSTD::wctob;
-using _STLP_VENDOR_CSTD::wmemcmp;
-using _STLP_VENDOR_CSTD::wmemmove;
-using _STLP_VENDOR_CSTD::wprintf;
-using _STLP_VENDOR_CSTD::wscanf;
+using _STLP_VENDOR_STD::wctob;
+using _STLP_VENDOR_STD::wmemcmp;
+using _STLP_VENDOR_STD::wmemmove;
+using _STLP_VENDOR_STD::wprintf;
+using _STLP_VENDOR_STD::wscanf;
 
-using _STLP_VENDOR_CSTD::wmemcpy;
-using _STLP_VENDOR_CSTD::wmemset;
+using _STLP_VENDOR_STD::wmemcpy;
+using _STLP_VENDOR_STD::wmemset;
 
-using _STLP_VENDOR_CSTD::wcslen;
-using _STLP_VENDOR_CSTD::wcscmp;
-using _STLP_VENDOR_CSTD::wcscpy;
-using _STLP_VENDOR_CSTD::wcsstr;
-using _STLP_VENDOR_CSTD::wcschr;
-using _STLP_VENDOR_CSTD::wcsrchr;
-using _STLP_VENDOR_CSTD::wcspbrk;
+using _STLP_VENDOR_STD::wcslen;
+using _STLP_VENDOR_STD::wcscmp;
+using _STLP_VENDOR_STD::wcscpy;
+using _STLP_VENDOR_STD::wcsstr;
+using _STLP_VENDOR_STD::wcschr;
+using _STLP_VENDOR_STD::wcsrchr;
+using _STLP_VENDOR_STD::wcspbrk;
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_CWCHAR */

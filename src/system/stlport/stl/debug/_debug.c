@@ -37,7 +37,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 //==========================================================
 // [ i1, i2)
 template <class _Iterator>
-inline bool 
+inline bool
 __in_range_aux(const _Iterator& __it, const _Iterator& __first,
                const _Iterator& __last, const random_access_iterator_tag &) {
     return ( __it >= __first &&
@@ -291,7 +291,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class _Dummy>
 void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
-  STLPORT_CSTD::va_list __args;
+  _STLP_VENDOR_STD::va_list __args;
   va_start( __args, __format_str );
 
 #      if defined (_STLP_DEBUG_MODE_THROWS)
@@ -376,7 +376,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 //==========================================================
 
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   _Stamp_all(__l, 0);
@@ -386,7 +386,7 @@ __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
 
 // boris : this is unasafe routine; should be used from within critical section only !
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
   // crucial
   if (__l->_M_node._M_owner) {
@@ -399,7 +399,7 @@ __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
 }
 
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Verify(const __owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   if (__l) {

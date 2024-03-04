@@ -19,20 +19,20 @@
 #include _STLP_NATIVE_CPP_C_HEADER(ctime)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::size_t;
-using _STLP_VENDOR_CSTD::clock_t;
-using _STLP_VENDOR_CSTD::time_t;
-using _STLP_VENDOR_CSTD::tm;
-using _STLP_VENDOR_CSTD::clock;
-using _STLP_VENDOR_CSTD::asctime;
-using _STLP_VENDOR_CSTD::ctime;
-using _STLP_VENDOR_CSTD::gmtime;
+using _STLP_VENDOR_STD::size_t;
+using _STLP_VENDOR_STD::clock_t;
+using _STLP_VENDOR_STD::time_t;
+using _STLP_VENDOR_STD::tm;
+using _STLP_VENDOR_STD::clock;
+using _STLP_VENDOR_STD::asctime;
+using _STLP_VENDOR_STD::ctime;
+using _STLP_VENDOR_STD::gmtime;
 
-using _STLP_VENDOR_CSTD::difftime;
-using _STLP_VENDOR_CSTD::mktime;
-using _STLP_VENDOR_CSTD::localtime;
-using _STLP_VENDOR_CSTD::strftime;
-using _STLP_VENDOR_CSTD::time;
+using _STLP_VENDOR_STD::difftime;
+using _STLP_VENDOR_STD::mktime;
+using _STLP_VENDOR_STD::localtime;
+using _STLP_VENDOR_STD::strftime;
+using _STLP_VENDOR_STD::time;
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_CTIME */

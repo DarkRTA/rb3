@@ -19,19 +19,19 @@
 #include _STLP_NATIVE_CPP_C_HEADER(cctype)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::isalnum;
-using _STLP_VENDOR_CSTD::isalpha;
-using _STLP_VENDOR_CSTD::iscntrl;
-using _STLP_VENDOR_CSTD::isdigit;
-using _STLP_VENDOR_CSTD::isgraph;
-using _STLP_VENDOR_CSTD::islower;
-using _STLP_VENDOR_CSTD::isprint;
-using _STLP_VENDOR_CSTD::ispunct;
-using _STLP_VENDOR_CSTD::isspace;
-using _STLP_VENDOR_CSTD::isupper;
-using _STLP_VENDOR_CSTD::isxdigit;
-using _STLP_VENDOR_CSTD::tolower;
-using _STLP_VENDOR_CSTD::toupper;
+using _STLP_VENDOR_STD::isalnum;
+using _STLP_VENDOR_STD::isalpha;
+using _STLP_VENDOR_STD::iscntrl;
+using _STLP_VENDOR_STD::isdigit;
+using _STLP_VENDOR_STD::isgraph;
+using _STLP_VENDOR_STD::islower;
+using _STLP_VENDOR_STD::isprint;
+using _STLP_VENDOR_STD::ispunct;
+using _STLP_VENDOR_STD::isspace;
+using _STLP_VENDOR_STD::isupper;
+using _STLP_VENDOR_STD::isxdigit;
+using _STLP_VENDOR_STD::tolower;
+using _STLP_VENDOR_STD::toupper;
 _STLP_END_NAMESPACE
 
 #endif

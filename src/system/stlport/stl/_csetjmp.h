@@ -19,11 +19,11 @@
 #include _STLP_NATIVE_CPP_C_HEADER(csetjmp)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::jmp_buf;
+using _STLP_VENDOR_STD::jmp_buf;
 #if !defined (setjmp)
-using _STLP_VENDOR_CSTD::setjmp;
+using _STLP_VENDOR_STD::setjmp;
 #endif
-using _STLP_VENDOR_CSTD::longjmp;
+using _STLP_VENDOR_STD::longjmp;
 _STLP_END_NAMESPACE
 
 #endif

@@ -38,9 +38,7 @@
 #  ifndef _STLP_INTERNAL_CTIME
 #    include <stl/_ctime.h>
 #  endif
-#  if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_VENDOR_GLOBAL_CSTD)
-using _STLP_VENDOR_CSTD::time_t;
-#  endif
+using _STLP_VENDOR_STD::time_t;
 #  include <sys/time.h>
 #endif
 
@@ -101,7 +99,7 @@ _STLP_mutex_spin<__inst>::_S_nsec_sleep(int __log_nsec) {
 }
 
 template <int __inst>
-void 
+void
 _STLP_mutex_spin<__inst>::_M_do_lock(volatile __stl_atomic_t* __lock) {
 #  if defined(_STLP_ATOMIC_EXCHANGE)
   if (_Atomic_swap(__lock, 1)) {

@@ -1,34 +1,34 @@
-using _STLP_NEW_IO_NAMESPACE::ios;
-using _STLP_NEW_IO_NAMESPACE::streamoff;
-using _STLP_NEW_IO_NAMESPACE::streamsize;
+using _STLP_VENDOR_STD::ios;
+using _STLP_VENDOR_STD::streamoff;
+using _STLP_VENDOR_STD::streamsize;
 
-using _STLP_NEW_IO_NAMESPACE::ios_base;
-using _STLP_NEW_IO_NAMESPACE::basic_ios;
+using _STLP_VENDOR_STD::ios_base;
+using _STLP_VENDOR_STD::basic_ios;
 
 // _lib.std.ios.manip_, manipulators:
-using _STLP_NEW_IO_NAMESPACE::boolalpha;
-using _STLP_NEW_IO_NAMESPACE::noboolalpha;
-using _STLP_NEW_IO_NAMESPACE::showbase;
-using _STLP_NEW_IO_NAMESPACE::noshowbase;
-using _STLP_NEW_IO_NAMESPACE::showpoint;
-using _STLP_NEW_IO_NAMESPACE::noshowpoint;
-using _STLP_NEW_IO_NAMESPACE::showpos;
-using _STLP_NEW_IO_NAMESPACE::noshowpos;
-using _STLP_NEW_IO_NAMESPACE::skipws;
-using _STLP_NEW_IO_NAMESPACE::noskipws;
-using _STLP_NEW_IO_NAMESPACE::uppercase;
-using _STLP_NEW_IO_NAMESPACE::nouppercase;
+using _STLP_VENDOR_STD::boolalpha;
+using _STLP_VENDOR_STD::noboolalpha;
+using _STLP_VENDOR_STD::showbase;
+using _STLP_VENDOR_STD::noshowbase;
+using _STLP_VENDOR_STD::showpoint;
+using _STLP_VENDOR_STD::noshowpoint;
+using _STLP_VENDOR_STD::showpos;
+using _STLP_VENDOR_STD::noshowpos;
+using _STLP_VENDOR_STD::skipws;
+using _STLP_VENDOR_STD::noskipws;
+using _STLP_VENDOR_STD::uppercase;
+using _STLP_VENDOR_STD::nouppercase;
 
 // _lib.adjustfield.manip_ adjustfield:
-using _STLP_NEW_IO_NAMESPACE::internal;
-using _STLP_NEW_IO_NAMESPACE::left;
-using _STLP_NEW_IO_NAMESPACE::right;
+using _STLP_VENDOR_STD::internal;
+using _STLP_VENDOR_STD::left;
+using _STLP_VENDOR_STD::right;
 
 // _lib.basefield.manip_ basefield:
-using _STLP_NEW_IO_NAMESPACE::dec;
-using _STLP_NEW_IO_NAMESPACE::hex;
-using _STLP_NEW_IO_NAMESPACE::oct;
+using _STLP_VENDOR_STD::dec;
+using _STLP_VENDOR_STD::hex;
+using _STLP_VENDOR_STD::oct;
 
 // _lib.floatfield.manip_ floatfield:
-using _STLP_NEW_IO_NAMESPACE::fixed;
-using _STLP_NEW_IO_NAMESPACE::scientific;
+using _STLP_VENDOR_STD::fixed;
+using _STLP_VENDOR_STD::scientific;

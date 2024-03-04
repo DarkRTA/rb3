@@ -19,56 +19,56 @@
 #  include _STLP_NATIVE_CPP_C_HEADER(cstdlib)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::div_t;
-using _STLP_VENDOR_CSTD::ldiv_t;
-using _STLP_VENDOR_CSTD::size_t;
+using _STLP_VENDOR_STD::div_t;
+using _STLP_VENDOR_STD::ldiv_t;
+using _STLP_VENDOR_STD::size_t;
 
-using _STLP_VENDOR_CSTD::abort;
-using _STLP_VENDOR_CSTD::getenv;
+using _STLP_VENDOR_STD::abort;
+using _STLP_VENDOR_STD::getenv;
 
-using _STLP_VENDOR_CSTD::mblen;
-using _STLP_VENDOR_CSTD::mbtowc;
+using _STLP_VENDOR_STD::mblen;
+using _STLP_VENDOR_STD::mbtowc;
 
-using _STLP_VENDOR_CSTD::system;
-using _STLP_VENDOR_CSTD::bsearch;
+using _STLP_VENDOR_STD::system;
+using _STLP_VENDOR_STD::bsearch;
 
-using _STLP_VENDOR_CSTD::atexit;
-using _STLP_VENDOR_CSTD::exit;
-using _STLP_VENDOR_CSTD::calloc;
-using _STLP_VENDOR_CSTD::free;
-using _STLP_VENDOR_CSTD::malloc;
-using _STLP_VENDOR_CSTD::realloc;
-using _STLP_VENDOR_CSTD::atof;
-using _STLP_VENDOR_CSTD::atoi;
-using _STLP_VENDOR_CSTD::atol;
+using _STLP_VENDOR_STD::atexit;
+using _STLP_VENDOR_STD::exit;
+using _STLP_VENDOR_STD::calloc;
+using _STLP_VENDOR_STD::free;
+using _STLP_VENDOR_STD::malloc;
+using _STLP_VENDOR_STD::realloc;
+using _STLP_VENDOR_STD::atof;
+using _STLP_VENDOR_STD::atoi;
+using _STLP_VENDOR_STD::atol;
 
-using _STLP_VENDOR_CSTD::mbstowcs;
+using _STLP_VENDOR_STD::mbstowcs;
 
-using _STLP_VENDOR_CSTD::strtod;
-using _STLP_VENDOR_CSTD::strtol;
-using _STLP_VENDOR_CSTD::strtoul;
+using _STLP_VENDOR_STD::strtod;
+using _STLP_VENDOR_STD::strtol;
+using _STLP_VENDOR_STD::strtoul;
 
-using _STLP_VENDOR_CSTD::wcstombs;
-using _STLP_VENDOR_CSTD::wctomb;
+using _STLP_VENDOR_STD::wcstombs;
+using _STLP_VENDOR_STD::wctomb;
 
-using _STLP_VENDOR_CSTD::qsort;
-using _STLP_VENDOR_CSTD::labs;
-using _STLP_VENDOR_CSTD::ldiv;
+using _STLP_VENDOR_STD::qsort;
+using _STLP_VENDOR_STD::labs;
+using _STLP_VENDOR_STD::ldiv;
 
-using _STLP_VENDOR_CSTD::llabs;
-using _STLP_VENDOR_CSTD::lldiv_t;
-using _STLP_VENDOR_CSTD::lldiv;
+using _STLP_VENDOR_STD::llabs;
+using _STLP_VENDOR_STD::lldiv_t;
+using _STLP_VENDOR_STD::lldiv;
 
-using _STLP_VENDOR_CSTD::rand;
-using _STLP_VENDOR_CSTD::srand;
+using _STLP_VENDOR_STD::rand;
+using _STLP_VENDOR_STD::srand;
 _STLP_END_NAMESPACE
 
-inline long abs(long __x) { return _STLP_VENDOR_CSTD::labs(__x); }
-inline _STLP_VENDOR_CSTD::ldiv_t div(long __x, long __y) { return _STLP_VENDOR_CSTD::ldiv(__x, __y); }
+inline long abs(long __x) { return _STLP_VENDOR_STD::labs(__x); }
+inline _STLP_VENDOR_STD::ldiv_t div(long __x, long __y) { return _STLP_VENDOR_STD::ldiv(__x, __y); }
 
 #  if !defined (_STLP_NO_VENDOR_STDLIB_L)
-inline long long abs(long long __x) { return _STLP_VENDOR_CSTD::llabs(__x); }
-inline lldiv_t div(long long __x, long long __y) { return _STLP_VENDOR_CSTD::lldiv(__x, __y); }
+inline long long abs(long long __x) { return _STLP_VENDOR_STD::llabs(__x); }
+inline lldiv_t div(long long __x, long long __y) { return _STLP_VENDOR_STD::lldiv(__x, __y); }
 #  else
 inline long long abs(long long __x) { return __x < 0 ? -__x : __x; }
 #  endif
@@ -84,8 +84,8 @@ inline long long abs(long long __x) { return __x < 0 ? -__x : __x; }
 #endif
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::abs;
-using _STLP_VENDOR_CSTD::div;
+using _STLP_VENDOR_STD::abs;
+using _STLP_VENDOR_STD::div;
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_CSTDLIB */

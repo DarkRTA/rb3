@@ -113,7 +113,6 @@ inline pair<_T1, _T2> make_pair(_T1 __x, _T2 __y)
 
 _STLP_END_NAMESPACE
 
-#if defined (_STLP_USE_NAMESPACES) || !defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
 _STLP_BEGIN_RELOPS_NAMESPACE
 
 template <class _Tp>
@@ -133,7 +132,6 @@ inline bool  operator>=(const _Tp& __x, const _Tp& __y)
 { return !(__x < __y); }
 
 _STLP_END_RELOPS_NAMESPACE
-#endif
 
 _STLP_BEGIN_NAMESPACE
 

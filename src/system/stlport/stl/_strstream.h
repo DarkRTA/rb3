@@ -32,13 +32,6 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#ifndef _STLP_USE_NAMESPACES
-#  define strstream _STLP_strstream
-#  define ostrstream _STLP_ostrstream
-#  define istrstream _STLP_istrstream
-#  define strstreambuf _STLP_strstreambuf
-#endif
-
 //----------------------------------------------------------------------
 // Class strstreambuf, a streambuf class that manages an array of char.
 // Note that this class is not a template.

@@ -18,7 +18,7 @@
 #include _STLP_NATIVE_CPP_C_HEADER(cstdarg)
 
 _STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::va_list;
+using _STLP_VENDOR_STD::va_list;
 _STLP_END_NAMESPACE
 
 #endif

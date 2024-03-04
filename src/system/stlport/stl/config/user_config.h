@@ -101,16 +101,15 @@
 */
 
 /*
- * If _STLP_USE_OWN_NAMESPACE is in effect, STLport by default will try
- * to rename std:: for the user to stlport::. If you do not want this feature,
- * please define the following switch and then use stlport::
+ * STLport by default will try to rename std:: for the user to stlport::.
+ * If you do not want this feature, please define the following switch and then use stlport::
  */
 /*
 #define _STLP_DONT_REDEFINE_STD 1
 */
 
 /*
- * _STLP_WHOLE_NATIVE_STD : only meaningful in _STLP_USE_OWN_NAMESPACE mode.
+ * _STLP_WHOLE_NATIVE_STD:
  * Normally, STLport only imports necessary components from native std:: namespace -
  * those not yet provided by STLport (<iostream>, <complex>, etc.)
  * and their dependencies (<string>, <stdexcept>).

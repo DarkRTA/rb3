@@ -91,14 +91,6 @@
 */
 
 /*
- * If namespases available, STLport use own namespace (and masquerade
- * it as std). Disable own namespace may cause undefined behaviour.
- */
-/*
-#define _STLP_NO_OWN_NAMESPACE  1
-*/
-
-/*
  * Uncomment _STLP_LEAKS_PEDANTIC to force deallocation of ALL allocated
  * memory chunks. Normally not required. But if you worry about quazi-leaks
  * (may be reported by some leaks detection tools), use
@@ -187,14 +179,6 @@
  * Uncomment that to disable exception handling code
  */
 #define _STLP_DONT_USE_EXCEPTIONS 1
-
-/*
- * _STLP_NO_NAMESPACES: if defined, don't put the library in namespace
- * stlport:: or std::, even if the compiler supports namespaces
- */
-/*
-#define _STLP_NO_NAMESPACES 1
-*/
 
 /*==========================================================
  * Compatibility section

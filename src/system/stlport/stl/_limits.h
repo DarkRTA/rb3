@@ -273,7 +273,7 @@ class numeric_limits<float>
 public:
   static float (min) () _STLP_NOTHROW { return FLT_MIN; }
   static float denorm_min() _STLP_NOTHROW { return FLT_MIN; }
-  static float (max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return FLT_MAX; }
+  static float (max) () _STLP_NOTHROW { return FLT_MAX; }
   static float epsilon() _STLP_NOTHROW { return FLT_EPSILON; }
   static float round_error() _STLP_NOTHROW { return 0.5f; } // Units: ulps.
   static  float infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_inf(); }
@@ -295,7 +295,7 @@ class numeric_limits<double>
 public:
   static double (min)() _STLP_NOTHROW { return DBL_MIN; }
   static double denorm_min() _STLP_NOTHROW { return DBL_MIN; }
-  static double (max)() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return DBL_MAX; }
+  static double (max)() _STLP_NOTHROW { return DBL_MAX; }
   static double epsilon() _STLP_NOTHROW { return DBL_EPSILON; }
   static double round_error() _STLP_NOTHROW { return 0.5; } // Units: ulps.
   static  double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_inf(); }
@@ -315,9 +315,9 @@ class numeric_limits<long double>
                                         false,          // do not conform to iec559
                                         round_to_nearest> {
 public:
-  static long double (min) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
-  static long double denorm_min() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
-  static long double (max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MAX; }
+  static long double (min) () _STLP_NOTHROW { return LDBL_MIN; }
+  static long double denorm_min() _STLP_NOTHROW { return LDBL_MIN; }
+  static long double (max) () _STLP_NOTHROW { return LDBL_MAX; }
   static long double epsilon() _STLP_NOTHROW { return LDBL_EPSILON; }
   static long double round_error() _STLP_NOTHROW { return 4; } // Units: ulps.
   static long double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_inf(); }

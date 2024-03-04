@@ -19,8 +19,6 @@
 #ifndef _STLP_INTERNAL_STDEXCEPT_BASE
 #define _STLP_INTERNAL_STDEXCEPT_BASE
 
-#if !defined (_STLP_USE_NATIVE_STDEXCEPT) || defined (_STLP_USE_OWN_NAMESPACE)
-
 #  ifndef _STLP_INTERNAL_EXCEPTION
 #    include <stl/_exception.h>
 #  endif
@@ -41,15 +39,9 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#    if !defined (_STLP_NO_EXCEPTION_HEADER)
-#      if !defined (_STLP_EXCEPTION_BASE) && \
-           defined (_STLP_USE_NAMESPACES) &&  defined (_STLP_USE_OWN_NAMESPACE)
-using _STLP_VENDOR_EXCEPT_STD::exception;
-#      endif
-#    endif
-#    define _STLP_EXCEPTION_BASE exception
+using _STLP_VENDOR_STD::exception;
 
-class __Named_exception : public _STLP_EXCEPTION_BASE {
+class __Named_exception : public exception {
 public:
   __Named_exception(const string& __str)
 #    ifndef _STLP_USE_NO_IOSTREAMS
@@ -80,7 +72,6 @@ private:
 
 _STLP_END_NAMESPACE
 
-#  endif /* Not o32, and no exceptions */
-#endif /* _STLP_STDEXCEPT_SEEN */
+#  endif /*No exceptions */
 
 #endif /* _STLP_INTERNAL_STDEXCEPT_BASE */
