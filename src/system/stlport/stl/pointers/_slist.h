@@ -58,7 +58,6 @@ public:
   typedef _STLP_PRIV _Slist_iterator<value_type, _Nonconst_traits<value_type> >  iterator;
   typedef _STLP_PRIV _Slist_iterator<value_type, _Const_traits<value_type> >     const_iterator;
 
-  _STLP_FORCE_ALLOCATORS(value_type, _Alloc)
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
 
 public:

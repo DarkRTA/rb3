@@ -231,56 +231,40 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-#    if !defined (_STLP_STRING_LITERAL)
-#      define _STLP_STRING_LITERAL(__x) __x
-#    endif
-
-#    if defined (_STLP_USE_WIDE_INTERFACE)
-// note: WinCE needs this to format single-byte strings in __stl_debug_engine::_Message
-#      define _STLP_PERCENT_S "%hs"
-#    else
-#      define _STLP_PERCENT_S "%s"
-#    endif /* _STLP_USE_WIDE_INTERFACE */
-
-#    define _STLP_MESSAGE_TABLE_BODY = { \
-_STLP_STRING_LITERAL("\n" _STLP_PERCENT_S "(%d): STL error: " _STLP_PERCENT_S "\n"), \
-_STLP_STRING_LITERAL(_STLP_PERCENT_S "(%d): STL assertion failure : " _STLP_PERCENT_S "\n" _STLP_ASSERT_MSG_TRAILER), \
-_STLP_STRING_LITERAL("\n" _STLP_PERCENT_S "(%d): STL error : " _STLP_PERCENT_S "\n" _STLP_PERCENT_S "(%d): STL assertion failure:     " _STLP_PERCENT_S " \n" _STLP_ASSERT_MSG_TRAILER), \
-_STLP_STRING_LITERAL("Invalid argument to operation (see operation documentation)"),                  \
-_STLP_STRING_LITERAL("Taking an iterator out of destroyed (or otherwise corrupted) container"),       \
-_STLP_STRING_LITERAL("Trying to extract an object out from empty container"),\
-_STLP_STRING_LITERAL("Past-the-end iterator could not be erased"),  \
-_STLP_STRING_LITERAL("Index out of bounds"),  \
-_STLP_STRING_LITERAL("Container doesn't own the iterator"),  \
-_STLP_STRING_LITERAL("Container is owner of the iterator, but should not"),  \
-_STLP_STRING_LITERAL("Uninitialized or invalidated (by mutating operation) iterator used"),  \
-_STLP_STRING_LITERAL("Uninitialized or invalidated (by mutating operation) lefthand iterator in expression"),  \
-_STLP_STRING_LITERAL("Uninitialized or invalidated (by mutating operation) righthand iterator in expression"),  \
-_STLP_STRING_LITERAL("Iterators used in expression are from different owners"),  \
-_STLP_STRING_LITERAL("Iterator could not be dereferenced (past-the-end ?)"),  \
-_STLP_STRING_LITERAL("Range [first,last) is invalid"),  \
-_STLP_STRING_LITERAL("Iterator is not in range [first,last)"),  \
-_STLP_STRING_LITERAL("Range [first,last) is not in range [start,finish)"),  \
-_STLP_STRING_LITERAL("The advance would produce invalid iterator"),  \
-_STLP_STRING_LITERAL("Iterator is singular (advanced beyond the bounds ?)"),  \
-_STLP_STRING_LITERAL("Invalid strict weak ordering predicate, if pred(a, b) then we should have !pred(b, a)"), \
-_STLP_STRING_LITERAL("Invalid equivalent predicate, if pred(a, b) then we should have pred(b, a)"), \
-_STLP_STRING_LITERAL("Memory block deallocated twice"),  \
-_STLP_STRING_LITERAL("Deallocating a block that was never allocated"),  \
-_STLP_STRING_LITERAL("Deallocating a memory block allocated for another type"),  \
-_STLP_STRING_LITERAL("Size of block passed to deallocate() doesn't match block size"),  \
-_STLP_STRING_LITERAL("Pointer underrun - safety margin at front of memory block overwritten"),  \
-_STLP_STRING_LITERAL("Pointer overrrun - safety margin at back of memory block overwritten"),   \
-_STLP_STRING_LITERAL("Attempt to dereference null pointer returned by auto_ptr::get()"),   \
-_STLP_STRING_LITERAL("Memory allocation function returned a wrongly align memory block"),   \
-_STLP_STRING_LITERAL("Unknown problem") \
-  }
-
 template <class _Dummy>
-const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX]  _STLP_MESSAGE_TABLE_BODY;
-
-#    undef _STLP_STRING_LITERAL
-#    undef _STLP_PERCENT_S
+const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX] = {
+  "\n%s(%d): STL error: %s\n",
+  "%s(%d): STL assertion failure : %s\n" _STLP_ASSERT_MSG_TRAILER,
+  "\n%s(%d): STL error : %s\n%s(%d): STL assertion failure:     %s \n" _STLP_ASSERT_MSG_TRAILER,
+  "Invalid argument to operation (see operation documentation)",
+  "Taking an iterator out of destroyed (or otherwise corrupted) container",
+  "Trying to extract an object out from empty container",
+  "Past-the-end iterator could not be erased",
+  "Index out of bounds",
+  "Container doesn't own the iterator",
+  "Container is owner of the iterator, but should not",
+  "Uninitialized or invalidated (by mutating operation) iterator used",
+  "Uninitialized or invalidated (by mutating operation) lefthand iterator in expression",
+  "Uninitialized or invalidated (by mutating operation) righthand iterator in expression",
+  "Iterators used in expression are from different owners",
+  "Iterator could not be dereferenced (past-the-end ?)",
+  "Range [first,last) is invalid",
+  "Iterator is not in range [first,last)",
+  "Range [first,last) is not in range [start,finish)",
+  "The advance would produce invalid iterator",
+  "Iterator is singular (advanced beyond the bounds ?)",
+  "Invalid strict weak ordering predicate, if pred(a, b) then we should have !pred(b, a)",
+  "Invalid equivalent predicate, if pred(a, b) then we should have pred(b, a)",
+  "Memory block deallocated twice",
+  "Deallocating a block that was never allocated",
+  "Deallocating a memory block allocated for another type",
+  "Size of block passed to deallocate() doesn't match block size",
+  "Pointer underrun - safety margin at front of memory block overwritten",
+  "Pointer overrrun - safety margin at back of memory block overwritten",
+  "Attempt to dereference null pointer returned by auto_ptr::get()",
+  "Memory allocation function returned a wrongly align memory block",
+  "Unknown problem"
+};
 
 _STLP_MOVE_TO_STD_NAMESPACE
 _STLP_END_NAMESPACE
@@ -310,18 +294,7 @@ __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
   STLPORT_CSTD::va_list __args;
   va_start( __args, __format_str );
 
-#      if !defined (_STLP_DEBUG_MODE_THROWS)
-#        if defined (_STLP_USE_WIDE_INTERFACE)
-  TCHAR __buffer[512];
-  int _convert = strlen(__format_str) + 1;
-  LPWSTR _lpw = (LPWSTR)alloca(_convert * sizeof(wchar_t));
-  _lpw[0] = '\0';
-  MultiByteToWideChar(GetACP(), 0, __format_str, -1, _lpw, _convert);
-  wvsprintf(__buffer, _lpw, __args);
-  _STLP_WINCE_TRACE(__buffer);
-  STLPORT_CSTD::vfprintf(stderr, __format_str, __args);
-#        endif
-#      else
+#      if defined (_STLP_DEBUG_MODE_THROWS)
   char __buffer[4096];
 
 #        if defined (_STLP_USE_SAFE_STRING_FUNCTIONS)

@@ -44,8 +44,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class _Tp, class _Alloc>
 class _String_base {
   typedef _String_base<_Tp, _Alloc> _Self;
-protected:
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
 public:
   //dums: Some compiler(MSVC6) require it to be public not simply protected!
   enum {_DEFAULT_SIZE = _STLP_SHORT_STRING_SZ};

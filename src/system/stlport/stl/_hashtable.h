@@ -188,7 +188,6 @@ public:
   key_equal key_eq() const { return _M_equals; }
 
 private:
-  _STLP_FORCE_ALLOCATORS(_Val, _All)
 #if defined (_STLP_DEBUG)
   typedef _STLP_PRIV _STLP_NON_DBG_NAME(slist)<value_type, _All> _ElemsCont;
 #else

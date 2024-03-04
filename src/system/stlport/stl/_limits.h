@@ -268,11 +268,7 @@ class numeric_limits<float>
                                         FLT_MAX_EXP,    // Maximum exponent
                                         FLT_MIN_10_EXP, // Minimum base 10 exponent
                                         FLT_MAX_10_EXP, // Maximum base 10 exponent
-#if defined (_STLP_NO_IEC559_SUPPORT)
-                                        false,          // do not conform to iec559
-#else
                                         true,           // conforms to iec559
-#endif
                                         round_to_nearest> {
 public:
   static float (min) () _STLP_NOTHROW { return FLT_MIN; }
@@ -294,11 +290,7 @@ class numeric_limits<double>
                                         DBL_MAX_EXP,    // Maximum exponent
                                         DBL_MIN_10_EXP, // Minimum base 10 exponent
                                         DBL_MAX_10_EXP, // Maximum base 10 exponent
-#if defined (_STLP_NO_IEC559_SUPPORT)
-                                        false,          // do not conform to iec559
-#else
                                         true,           // conforms to iec559
-#endif
                                         round_to_nearest> {
 public:
   static double (min)() _STLP_NOTHROW { return DBL_MIN; }

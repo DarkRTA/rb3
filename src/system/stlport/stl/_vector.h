@@ -67,7 +67,6 @@ template <class _Tp, class _Size, class _Alloc>
 class _Vector_base {
 public:
   typedef _Vector_base<_Tp, _Size, _Alloc> _Self;
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Alloc_traits<_Tp, _Alloc>::allocator_type allocator_type;
   typedef _Tp* pointer;
   typedef _STLP_alloc_proxy<pointer, _Tp, allocator_type> _AllocProxy;
@@ -116,7 +115,6 @@ private:
   typedef _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc> _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
 public:
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Base::allocator_type allocator_type;
 
   typedef _Tp value_type;

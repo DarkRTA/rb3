@@ -62,7 +62,6 @@ public:
   typedef random_access_iterator_tag _Iterator_category;
 
   _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
-  _STLP_FORCE_ALLOCATORS(value_type, _Alloc)
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const

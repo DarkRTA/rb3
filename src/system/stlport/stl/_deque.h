@@ -320,7 +320,6 @@ class _Deque_base {
   typedef _Deque_base<_Tp, _Alloc> _Self;
 public:
   typedef _Tp value_type;
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Alloc_traits<_Tp,_Alloc>::allocator_type  allocator_type;
   typedef _STLP_alloc_proxy<size_t, value_type,  allocator_type> _Alloc_proxy;
 
@@ -387,7 +386,6 @@ public:                         // Basic types
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
   typedef random_access_iterator_tag _Iterator_category;
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Base::allocator_type allocator_type;
 
 public:                         // Iterators

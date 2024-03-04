@@ -213,7 +213,6 @@ class _Rb_tree_base {
 public:
   typedef _Rb_tree_node_base _Node_base;
   typedef _Rb_tree_node<_Tp> _Node;
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Alloc_traits<_Tp, _Alloc>::allocator_type allocator_type;
 private:
   typedef _Rb_tree_base<_Tp, _Alloc> _Self;

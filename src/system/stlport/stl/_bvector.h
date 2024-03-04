@@ -251,7 +251,6 @@ template <class _Alloc>
 class _Bvector_base {
   typedef _Bvector_base<_Alloc> _Self;
 public:
-  _STLP_FORCE_ALLOCATORS(bool, _Alloc)
   typedef typename _Alloc_traits<bool, _Alloc>::allocator_type allocator_type;
   typedef unsigned int __chunk_type;
   typedef typename _Alloc_traits<__chunk_type,

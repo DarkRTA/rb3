@@ -102,7 +102,6 @@ public:
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
   typedef random_access_iterator_tag _Iterator_category;
-  _STLP_FORCE_ALLOCATORS(value_type, _Alloc)
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
   typedef _STLP_PRIV _Deque_iterator<value_type, _Nonconst_traits<value_type> > iterator;
   typedef _STLP_PRIV _Deque_iterator<value_type, _Const_traits<value_type> >    const_iterator;

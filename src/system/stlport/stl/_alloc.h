@@ -445,10 +445,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Tp>
 struct __type_traits<allocator<_Tp> > : _STLP_PRIV __alloc_type_traits<_Tp> {};
 
-#if !defined (_STLP_FORCE_ALLOCATORS)
-#  define _STLP_FORCE_ALLOCATORS(a,y)
-#endif
-
 template <class _Tp, class _Alloc>
 inline typename _Alloc_traits<_Tp, _Alloc>::allocator_type
 __stl_alloc_create(const _Alloc& __a, const _Tp*) {

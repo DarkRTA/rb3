@@ -52,7 +52,6 @@ public:
   typedef const value_type& const_reference;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
-  _STLP_FORCE_ALLOCATORS(value_type, _Alloc)
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
   typedef bidirectional_iterator_tag _Iterator_category;
 
