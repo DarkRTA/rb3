@@ -32,7 +32,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template<class _CharT, class _Traits>
-extern basic_streambuf<_CharT, _Traits>* _STLP_CALL __get_ostreambuf(basic_ostream<_CharT, _Traits>&);
+extern basic_streambuf<_CharT, _Traits>* __get_ostreambuf(basic_ostream<_CharT, _Traits>&);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -81,7 +81,7 @@ inline ostreambuf_iterator<_CharT, _Traits>::ostreambuf_iterator(basic_ostream<_
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _CharT, class _Traits>
-inline output_iterator_tag _STLP_CALL
+inline output_iterator_tag
 iterator_category(const ostreambuf_iterator<_CharT, _Traits>&) { return output_iterator_tag(); }
 #endif
 

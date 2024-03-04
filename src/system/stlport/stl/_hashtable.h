@@ -156,10 +156,10 @@ template <class _Dummy>
 class _Stl_prime {
 public:
   //Returns the maximum number of buckets handled by the hashtable implementation
-  static size_t _STLP_CALL _S_max_nb_buckets();
+  static size_t _S_max_nb_buckets();
 
   //Returns the bucket size next to a required size
-  static size_t _STLP_CALL _S_next_size(size_t);
+  static size_t _S_next_size(size_t);
 };
 
 typedef _Stl_prime<bool> _Stl_prime_type;
@@ -262,7 +262,7 @@ public:
       _M_equals(__eql),
       _M_get_key(__ext),
       _M_elems(__a),
-      _M_buckets(_STLP_CONVERT_ALLOCATOR(__a, _BucketType*)),
+      _M_buckets(__a),
       _M_num_elements(0),
       _M_max_load_factor(1.0f)
   { _M_initialize_buckets(__n); }
@@ -275,7 +275,7 @@ public:
       _M_equals(__eql),
       _M_get_key(_ExK()),
       _M_elems(__a),
-      _M_buckets(_STLP_CONVERT_ALLOCATOR(__a, _BucketType*)),
+      _M_buckets(__a),
       _M_num_elements(0),
       _M_max_load_factor(1.0f)
   { _M_initialize_buckets(__n); }
@@ -285,7 +285,7 @@ public:
       _M_equals(__ht._M_equals),
       _M_get_key(__ht._M_get_key),
       _M_elems(__ht.get_allocator()),
-      _M_buckets(_STLP_CONVERT_ALLOCATOR(__ht.get_allocator(), _BucketType*)),
+      _M_buckets(__ht.get_allocator()),
       _M_num_elements(0),
       _M_max_load_factor(1.0f)
   { _M_copy_from(__ht); }
@@ -336,7 +336,7 @@ public:
   const_local_iterator begin(size_type __n) const { return _ElemsIte(_M_buckets[__n]); }
   const_local_iterator end(size_type __n) const { return _ElemsIte(_M_buckets[__n + 1]); }
 
-  //static bool _STLP_CALL _M_equal (const _Self&, const _Self&);
+  //static bool _M_equal (const _Self&, const _Self&);
 
 public:
   //The number of buckets is size() - 1 because the last bucket always contains

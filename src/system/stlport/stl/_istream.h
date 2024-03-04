@@ -67,9 +67,9 @@ public:
   typedef _Traits                    traits_type;
   typedef basic_ios<_CharT, _Traits>     _Basic_ios;
 
-  typedef basic_ios<_CharT, _Traits>& (_STLP_CALL *__ios_fn)(basic_ios<_CharT, _Traits>&);
-  typedef ios_base& (_STLP_CALL *__ios_base_fn)(ios_base&);
-  typedef _Self& (_STLP_CALL *__istream_fn)(_Self&);
+  typedef basic_ios<_CharT, _Traits>& (*__ios_fn)(basic_ios<_CharT, _Traits>&);
+  typedef ios_base& (*__ios_base_fn)(ios_base&);
+  typedef _Self& (*__istream_fn)(_Self&);
 
 public:                         // Constructor and destructor.
   explicit basic_istream(basic_streambuf<_CharT, _Traits>* __buf) :
@@ -191,42 +191,42 @@ public:
 
 // Non-member character and string extractor functions.
 template <class _CharT, class _Traits>
-inline basic_istream<_CharT, _Traits>& _STLP_CALL
+inline basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT& __c) {
   __in_str._M_formatted_get(__c);
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char& __c) {
   __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, signed char& __c) {
   __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
 template <class _CharT, class _Traits>
-inline basic_istream<_CharT, _Traits>& _STLP_CALL
+inline basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT* __s) {
   __in_str._M_formatted_get(__s);
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char* __s) {
   __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, signed char* __s) {
   __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
@@ -235,7 +235,7 @@ operator>>(basic_istream<char, _Traits>& __in_str, signed char* __s) {
 //----------------------------------------------------------------------
 // istream manipulator.
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 ws(basic_istream<_CharT, _Traits>& __istr) {
   if (!__istr.eof()) {
     typedef typename basic_istream<_CharT, _Traits>::sentry      _Sentry;
@@ -292,7 +292,7 @@ public:
 };
 
 template <class _CharT, class _Traits>
-basic_streambuf<_CharT, _Traits>* _STLP_CALL _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)
+basic_streambuf<_CharT, _Traits>* _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)
 { return __istr.rdbuf(); }
 
 _STLP_END_NAMESPACE

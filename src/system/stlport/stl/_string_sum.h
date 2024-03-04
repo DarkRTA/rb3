@@ -301,7 +301,7 @@ template <class _CharT, class _Traits, class _Alloc,
 inline __bstr_sum<_CharT, _Traits, _Alloc,
                   __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1>,
                   __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2>,
-                  __on_right> _STLP_CALL
+                  __on_right>
 operator + (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
             const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs) {
   return __bstr_sum<_CharT, _Traits, _Alloc,
@@ -313,7 +313,7 @@ operator + (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &_
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator == (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
              const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return (__lhs.size() == __rhs.size()) && (__lhs._M_get_storage() == __rhs._M_get_storage()); }
@@ -321,7 +321,7 @@ operator == (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator < (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
             const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return __lhs._M_get_storage() < __rhs._M_get_storage(); }
@@ -331,7 +331,7 @@ operator < (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &_
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator != (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
              const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return !(__lhs == __rhs); }
@@ -339,7 +339,7 @@ operator != (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator > (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
             const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return __rhs < __lhs; }
@@ -347,7 +347,7 @@ operator > (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &_
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator <= (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
              const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return !(__rhs < __lhs); }
@@ -355,7 +355,7 @@ operator <= (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &
 template <class _CharT, class _Traits, class _Alloc,
           class _Lh1, class _Rh1, class _StoreDir1,
           class _Lh2, class _Rh2, class _StoreDir2>
-inline bool _STLP_CALL
+inline bool
 operator >= (const __bstr_sum<_CharT, _Traits, _Alloc, _Lh1, _Rh1, _StoreDir1> &__lhs,
              const __bstr_sum<_CharT, _Traits, _Alloc, _Lh2, _Rh2, _StoreDir2> &__rhs)
 { return !(__lhs < __rhs); }

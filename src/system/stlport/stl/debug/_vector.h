@@ -83,7 +83,7 @@ struct _Vector_const_traits<bool, _Bit_iterator> {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-template <class _Tp, class _Size = unsigned short, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DBG_ALLOCATOR(_Tp) >
 class vector : private _STLP_PRIV __construct_checker< _STLP_NON_DBG_VECTOR >
 {
 private:

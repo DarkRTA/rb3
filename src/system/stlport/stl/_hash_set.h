@@ -41,7 +41,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(HashSetTraitsT, Const_traits)
 
 template <class _Value, class _HashFcn = hash<_Value>,
           class _EqualKey = equal_to<_Value>,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class hash_set
 {
   typedef hash_set<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
@@ -165,7 +165,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(HashMultisetTraitsT, Const_traits)
 
 template <class _Value, class _HashFcn = hash<_Value>,
           class _EqualKey = equal_to<_Value>,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class hash_multiset
 {
   typedef hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc> _Self;

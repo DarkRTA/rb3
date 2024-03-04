@@ -38,7 +38,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 // num_put facet
 
 template <class _CharT, class _OutputIter>
-_OutputIter  _STLP_CALL
+_OutputIter 
 __copy_float_and_fill(const _CharT* __first, const _CharT* __last,
                       _OutputIter __oi,
                       ios_base::fmtflags __flags,
@@ -69,7 +69,7 @@ __copy_float_and_fill(const _CharT* __first, const _CharT* __last,
 
 // Helper routine for wchar_t
 template <class _OutputIter>
-_OutputIter  _STLP_CALL
+_OutputIter 
 __put_float(__iostring &__str, _OutputIter __oi,
             ios_base& __f, wchar_t __fill,
             wchar_t __decimal_point, wchar_t __sep,
@@ -91,7 +91,7 @@ __put_float(__iostring &__str, _OutputIter __oi,
 
 // Helper routine for char
 template <class _OutputIter>
-_OutputIter  _STLP_CALL
+_OutputIter 
 __put_float(__iostring &__str, _OutputIter __oi,
             ios_base& __f, char __fill,
             char __decimal_point, char __sep,
@@ -111,7 +111,7 @@ __put_float(__iostring &__str, _OutputIter __oi,
 }
 
 template <class _CharT, class _OutputIter, class _Float>
-_OutputIter _STLP_CALL
+_OutputIter
 __do_put_float(_OutputIter __s, ios_base& __f,
                 _CharT __fill, _Float __x) {
   __iostring __buf;
@@ -137,13 +137,13 @@ inline void __get_money_digits_aux (__iowstring &__wbuf, ios_base &__f, long dou
 }
 
 template <class _CharT>
-void _STLP_CALL __get_money_digits(_STLP_BASIC_IOSTRING(_CharT) &__buf, ios_base& __f, long double __x)
+void __get_money_digits(_STLP_BASIC_IOSTRING(_CharT) &__buf, ios_base& __f, long double __x)
 { __get_money_digits_aux(__buf, __f, __x); }
 
 // _M_do_put_integer and its helper functions.
 
 template <class _CharT, class _OutputIter>
-_OutputIter _STLP_CALL
+_OutputIter
 __copy_integer_and_fill(const _CharT* __buf, ptrdiff_t __len,
                         _OutputIter __oi,
                         ios_base::fmtflags __flg, streamsize __wid, _CharT __fill,
@@ -186,7 +186,7 @@ __copy_integer_and_fill(const _CharT* __buf, ptrdiff_t __len,
 
 // Helper function for wchar_t
 template <class _OutputIter>
-_OutputIter _STLP_CALL
+_OutputIter
 __put_integer(char* __buf, char* __iend, _OutputIter __s,
               ios_base& __f,
               ios_base::fmtflags __flags, wchar_t __fill) {
@@ -229,7 +229,7 @@ __put_integer(char* __buf, char* __iend, _OutputIter __s,
 
 // Helper function for char
 template <class _OutputIter>
-_OutputIter _STLP_CALL
+_OutputIter
 __put_integer(char* __buf, char* __iend, _OutputIter __s,
               ios_base& __f, ios_base::fmtflags __flags, char __fill) {
   char __grpbuf[64];
@@ -267,11 +267,11 @@ __put_integer(char* __buf, char* __iend, _OutputIter __s,
 typedef long long __max_int_t;
 typedef unsigned long long __umax_int_t;
 
-_STLP_DECLSPEC const char* _STLP_CALL __hex_char_table_lo();
-_STLP_DECLSPEC const char* _STLP_CALL __hex_char_table_hi();
+const char* __hex_char_table_lo();
+const char* __hex_char_table_hi();
 
 template <class _Integer>
-inline char* _STLP_CALL
+inline char*
 __write_decimal_backward(char* __ptr, _Integer __x, ios_base::fmtflags __flags, const __true_type& /* is_signed */) {
   const bool __negative = __x < 0 ;
   __max_int_t __temp = __x;
@@ -288,7 +288,7 @@ __write_decimal_backward(char* __ptr, _Integer __x, ios_base::fmtflags __flags, 
 }
 
 template <class _Integer>
-inline char* _STLP_CALL
+inline char*
 __write_decimal_backward(char* __ptr, _Integer __x, ios_base::fmtflags __flags, const __false_type& /* is_signed */) {
   for (; __x != 0; __x /= 10)
     *--__ptr = (char)((int)(__x % 10) + '0');
@@ -299,7 +299,7 @@ __write_decimal_backward(char* __ptr, _Integer __x, ios_base::fmtflags __flags, 
 }
 
 template <class _Integer>
-char* _STLP_CALL
+char*
 __write_integer_backward(char* __buf, ios_base::fmtflags __flags, _Integer __x) {
   char* __ptr = __buf;
 
@@ -359,7 +359,7 @@ __write_integer_backward(char* __buf, ios_base::fmtflags __flags, _Integer __x) 
 }
 
 template <class _CharT, class _OutputIter, class _Integer>
-_OutputIter _STLP_CALL
+_OutputIter
 __do_put_integer(_OutputIter __s, ios_base& __f, _CharT __fill, _Integer __x) {
   // buffer size = number of bytes * number of digit necessary in the smallest Standard base (base 8, 3 digits/byte)
   //               plus the longest base representation '0x'

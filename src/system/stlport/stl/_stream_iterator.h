@@ -62,7 +62,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp,
-          class _CharT = _STLP_DEFAULTCHAR, class _Traits = char_traits<_CharT>,
+          class _CharT = char, class _Traits = char_traits<_CharT>,
           class _Dist = ptrdiff_t>
 class istream_iterator : public iterator<input_iterator_tag, _Tp , _Dist,
                                          const _Tp*, const _Tp& > {
@@ -126,7 +126,7 @@ private:
 };
 
 template <class _TpP,
-          class _CharT = _STLP_DEFAULTCHAR, class _Traits = char_traits<_CharT> >
+          class _CharT = char, class _Traits = char_traits<_CharT> >
 class ostream_iterator: public iterator<output_iterator_tag, void, void, void, void> {
   typedef ostream_iterator<_TpP, _CharT, _Traits> _Self;
 public:
@@ -154,7 +154,7 @@ private:
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _TpP, class _CharT, class _Traits>
-inline output_iterator_tag _STLP_CALL
+inline output_iterator_tag
 iterator_category(const ostream_iterator<_TpP, _CharT, _Traits>&) { return output_iterator_tag(); }
 #endif
 
@@ -164,14 +164,14 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline bool _STLP_CALL
+inline bool
 operator==(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
            const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __y)
 { return __x._M_equal(__y); }
 
 #if defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
 template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline bool _STLP_CALL
+inline bool
 operator!=(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
            const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __y)
 { return !__x._M_equal(__y); }
@@ -179,14 +179,14 @@ operator!=(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline input_iterator_tag _STLP_CALL
+inline input_iterator_tag
 iterator_category(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&)
 { return input_iterator_tag(); }
 template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline _Tp* _STLP_CALL
+inline _Tp*
 value_type(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&) { return (_Tp*) 0; }
 template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline _Dist* _STLP_CALL
+inline _Dist*
 distance_type(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&) { return (_Dist*)0; }
 #endif
 

@@ -57,7 +57,7 @@ struct _SlistDbgTraits : _Traits {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class slist : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_SLIST >
 {
 private:

@@ -42,14 +42,14 @@
 _STLP_BEGIN_NAMESPACE
 
 #    if !defined (_STLP_NO_EXCEPTION_HEADER)
-#      if !defined (_STLP_EXCEPTION_BASE) && !defined (_STLP_BROKEN_EXCEPTION_CLASS) && \
+#      if !defined (_STLP_EXCEPTION_BASE) && \
            defined (_STLP_USE_NAMESPACES) &&  defined (_STLP_USE_OWN_NAMESPACE)
 using _STLP_VENDOR_EXCEPT_STD::exception;
 #      endif
 #    endif
 #    define _STLP_EXCEPTION_BASE exception
 
-class _STLP_CLASS_DECLSPEC __Named_exception : public _STLP_EXCEPTION_BASE {
+class __Named_exception : public _STLP_EXCEPTION_BASE {
 public:
   __Named_exception(const string& __str)
 #    ifndef _STLP_USE_NO_IOSTREAMS

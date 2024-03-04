@@ -153,7 +153,7 @@ struct _Scan_for_int_val {
 // return true if the pushback succeeded.  Does not throw.
 
 template <class _CharT, class _Traits>
-bool _STLP_CALL
+bool
 __pushback(basic_streambuf<_CharT, _Traits>* __buf, _CharT __c) {
   bool ret;
   _STLP_TRY {
@@ -171,7 +171,7 @@ __pushback(basic_streambuf<_CharT, _Traits>* __buf, _CharT __c) {
 
 // Helper function for formatted input of numbers.
 template <class _CharT, class _Traits, class _Number>
-ios_base::iostate _STLP_CALL
+ios_base::iostate
 __get_num(basic_istream<_CharT, _Traits>& __that, _Number& __val) {
   typedef typename basic_istream<_CharT, _Traits>::sentry _Sentry;
   ios_base::iostate __err = 0;
@@ -560,7 +560,7 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT& __c) {
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template < class _CharT, class _Traits, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __buf,
                   streamsize _Num, _CharT* __s,
                   _Is_Delim __is_delim,
@@ -617,7 +617,7 @@ __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
 // such that __is_delim(p) is true.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __buf,
                  streamsize _Num, _CharT* __s,
                  _Is_Delim __is_delim, _Scan_Delim __scan_delim,
@@ -870,7 +870,7 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT* __s) {
 // __is_delim is true, if and only if __extract_delim is true.
 
 template < class _CharT, class _Traits, class _Is_Delim>
-void _STLP_CALL
+void
 _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
                      basic_streambuf<_CharT, _Traits>* __buf,
                      _Is_Delim __is_delim,
@@ -910,7 +910,7 @@ _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
 // last) such that __is_delim(p) is true.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-void _STLP_CALL
+void
 _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
                    basic_streambuf<_CharT, _Traits>* __buf,
                    _Is_Delim __is_delim, _Scan_Delim __scan_delim,
@@ -965,7 +965,7 @@ _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
 // be minus<>, and for the latter it should return a constant maximum value.
 
 template < class _CharT, class _Traits, class _Max_Chars, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
                      basic_streambuf<_CharT, _Traits>* __buf,
                      streamsize _Num, _Max_Chars __max_chars,
@@ -1007,7 +1007,7 @@ _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
 }
 
 template < class _CharT, class _Traits, class _Max_Chars, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
                    basic_streambuf<_CharT, _Traits>* __buf,
                    streamsize _Num,
@@ -1195,7 +1195,7 @@ void basic_istream<_CharT, _Traits>::_M_skip_whitespace(bool __set_failbit) {
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template < class _CharT, class _Traits, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 __copy_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __src,
                   basic_streambuf<_CharT, _Traits>* __dest,
                   _Is_Delim __is_delim,
@@ -1264,7 +1264,7 @@ __copy_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
 // the streambuf might decide to switch from a buffered to an unbuffered mode.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 __copy_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __src,
                 basic_streambuf<_CharT, _Traits>* __dest,
                 _Scan_Delim __scan_delim, _Is_Delim __is_delim,

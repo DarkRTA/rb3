@@ -170,7 +170,7 @@ template <class _Tp>
 class mem_fun_t<void, _Tp> : public unary_function<_Tp*,void> {
   typedef void (_Tp::*__fun_type)(void);
 public:
-  explicit mem_fun_t _STLP_PSPEC2(void,_Tp) (__fun_type __pf) : _M_f(__pf) {}
+  explicit mem_fun_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(_Tp* __p) const { (__p->*_M_f)(); }
 private:
   __fun_type _M_f;
@@ -180,7 +180,7 @@ template <class _Tp>
 class const_mem_fun_t<void, _Tp> : public unary_function<const _Tp*,void> {
   typedef void (_Tp::*__fun_type)(void) const;
 public:
-  explicit const_mem_fun_t _STLP_PSPEC2(void,_Tp) (__fun_type __pf) : _M_f(__pf) {}
+  explicit const_mem_fun_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(const _Tp* __p) const { (__p->*_M_f)(); }
 private:
   __fun_type _M_f;
@@ -190,7 +190,7 @@ template <class _Tp>
 class mem_fun_ref_t<void, _Tp> : public unary_function<_Tp,void> {
   typedef void (_Tp::*__fun_type)(void);
 public:
-  explicit mem_fun_ref_t _STLP_PSPEC2(void,_Tp) (__fun_type __pf) : _M_f(__pf) {}
+  explicit mem_fun_ref_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(_Tp& __r) const { (__r.*_M_f)(); }
 private:
   __fun_type _M_f;
@@ -200,7 +200,7 @@ template <class _Tp>
 class const_mem_fun_ref_t<void, _Tp> : public unary_function<_Tp,void> {
   typedef void (_Tp::*__fun_type)(void) const;
 public:
-  explicit const_mem_fun_ref_t _STLP_PSPEC2(void,_Tp) (__fun_type __pf) : _M_f(__pf) {}
+  explicit const_mem_fun_ref_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(const _Tp& __r) const { (__r.*_M_f)(); }
 private:
   __fun_type _M_f;
@@ -210,7 +210,7 @@ template <class _Tp, class _Arg>
 class mem_fun1_t<void, _Tp, _Arg> : public binary_function<_Tp*,_Arg,void> {
   typedef void (_Tp::*__fun_type)(_Arg);
 public:
-  explicit mem_fun1_t _STLP_PSPEC3(void,_Tp,_Arg) (__fun_type __pf) : _M_f(__pf) {}
+  explicit mem_fun1_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(_Tp* __p, _Arg __x) const { (__p->*_M_f)(__x); }
 private:
   __fun_type _M_f;
@@ -221,7 +221,7 @@ class const_mem_fun1_t<void, _Tp, _Arg>
   : public binary_function<const _Tp*,_Arg,void> {
   typedef void (_Tp::*__fun_type)(_Arg) const;
 public:
-  explicit const_mem_fun1_t _STLP_PSPEC3(void,_Tp,_Arg) (__fun_type __pf) : _M_f(__pf) {}
+  explicit const_mem_fun1_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(const _Tp* __p, _Arg __x) const { (__p->*_M_f)(__x); }
 private:
   __fun_type _M_f;
@@ -232,7 +232,7 @@ class mem_fun1_ref_t<void, _Tp, _Arg>
   : public binary_function<_Tp,_Arg,void> {
   typedef void (_Tp::*__fun_type)(_Arg);
 public:
-  explicit mem_fun1_ref_t _STLP_PSPEC3(void,_Tp,_Arg) (__fun_type __pf) : _M_f(__pf) {}
+  explicit mem_fun1_ref_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(_Tp& __r, _Arg __x) const { (__r.*_M_f)(__x); }
 private:
   __fun_type _M_f;
@@ -243,7 +243,7 @@ class const_mem_fun1_ref_t<void, _Tp, _Arg>
   : public binary_function<_Tp,_Arg,void> {
   typedef void (_Tp::*__fun_type)(_Arg) const;
 public:
-  explicit const_mem_fun1_ref_t _STLP_PSPEC3(void,_Tp,_Arg) (__fun_type __pf) : _M_f(__pf) {}
+  explicit const_mem_fun1_ref_t (__fun_type __pf) : _M_f(__pf) {}
   void operator()(const _Tp& __r, _Arg __x) const { (__r.*_M_f)(__x); }
 private:
   __fun_type _M_f;
@@ -271,7 +271,6 @@ public:
 
 #endif /*_STLP_DONT_RETURN_VOID*/
 
-# if !defined (_STLP_MEMBER_POINTER_PARAM_BUG)
 // Mem_fun adaptor helper functions.  There are only two:
 //  mem_fun and mem_fun_ref.  (mem_fun1 and mem_fun1_ref
 //  are provided for backward compatibility, but they are no longer
@@ -329,8 +328,6 @@ inline const_mem_fun1_ref_t<_Result,_Tp,_Arg>
 mem_fun1_ref(_Result (_Tp::*__f)(_Arg) const) { return const_mem_fun1_ref_t<_Result,_Tp,_Arg>(__f); }
 
 # endif /* _STLP_NO_EXTENSIONS */
-
-# endif /* _STLP_MEMBER_POINTER_PARAM_BUG */
 
 template <class _Arg, class _Result>
 inline pointer_to_unary_function<_Arg, _Result>

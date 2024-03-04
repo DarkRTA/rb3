@@ -37,7 +37,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 //==========================================================
 // [ i1, i2)
 template <class _Iterator>
-inline bool  _STLP_CALL
+inline bool 
 __in_range_aux(const _Iterator& __it, const _Iterator& __first,
                const _Iterator& __last, const random_access_iterator_tag &) {
     return ( __it >= __first &&
@@ -45,7 +45,7 @@ __in_range_aux(const _Iterator& __it, const _Iterator& __first,
 }
 
 template <class _Iterator1, class _Iterator>
-inline bool _STLP_CALL  __in_range_aux(const _Iterator1& __it, const _Iterator& __first,
+inline bool  __in_range_aux(const _Iterator1& __it, const _Iterator& __first,
                                        const _Iterator& __last, const forward_iterator_tag &) {
   _Iterator1 __i(__first);
   for (;  __i != __last && __i != __it; ++__i);
@@ -53,25 +53,25 @@ inline bool _STLP_CALL  __in_range_aux(const _Iterator1& __it, const _Iterator& 
 }
 
 template <class _Iterator>
-bool _STLP_CALL __check_range_aux(const _Iterator& __first, const _Iterator& __last,
+bool __check_range_aux(const _Iterator& __first, const _Iterator& __last,
                                   const __false_type& /*_IsIntegral*/) {
   _STLP_VERBOSE_RETURN(__valid_range(__first,__last), _StlMsg_INVALID_RANGE )
   return true;
 }
 
 template <class _Integral>
-bool _STLP_CALL __check_range_aux(_Integral /*__first*/, _Integral /*__last*/,
+bool __check_range_aux(_Integral /*__first*/, _Integral /*__last*/,
                                   const __true_type& /*_IsIntegral*/)
 { return true; }
 
 template <class _Iterator>
-bool _STLP_CALL  __check_range(const _Iterator& __first, const _Iterator& __last) {
+bool  __check_range(const _Iterator& __first, const _Iterator& __last) {
   typedef typename _IsIntegral<_Iterator>::_Ret _Integral;
   return __check_range_aux(__first, __last, _Integral());
 }
 
 template <class _Iterator>
-bool _STLP_CALL  __check_range(const _Iterator& __it,
+bool  __check_range(const _Iterator& __it,
                                const _Iterator& __start, const _Iterator& __finish) {
   _STLP_VERBOSE_RETURN(__in_range(__it, __start, __finish),
                        _StlMsg_NOT_IN_RANGE_1)
@@ -79,7 +79,7 @@ bool _STLP_CALL  __check_range(const _Iterator& __it,
 }
 
 template <class _Iterator>
-bool _STLP_CALL  __check_range(const _Iterator& __first, const _Iterator& __last,
+bool  __check_range(const _Iterator& __first, const _Iterator& __last,
                                const _Iterator& __start, const _Iterator& __finish) {
   _STLP_VERBOSE_RETURN(__in_range(__first, __last, __start, __finish),
                        _StlMsg_NOT_IN_RANGE_2)
@@ -87,7 +87,7 @@ bool _STLP_CALL  __check_range(const _Iterator& __first, const _Iterator& __last
 }
 
 template <class _Tp>
-bool _STLP_CALL __check_ptr_range(const _Tp* __first, const _Tp* __last) {
+bool __check_ptr_range(const _Tp* __first, const _Tp* __last) {
   _STLP_VERBOSE_RETURN((__first != 0 || __last == 0), _StlMsg_INVALID_ARGUMENT)
   _STLP_VERBOSE_RETURN(__valid_range(__first, __last, random_access_iterator_tag()),
                        _StlMsg_INVALID_RANGE)
@@ -96,7 +96,7 @@ bool _STLP_CALL __check_ptr_range(const _Tp* __first, const _Tp* __last) {
 
 //===============================================================
 template <class _Iterator>
-void _STLP_CALL __invalidate_range(const __owned_list* __base,
+void __invalidate_range(const __owned_list* __base,
                                    const _Iterator& __first,
                                    const _Iterator& __last) {
   typedef __owned_link _L_type;
@@ -121,7 +121,7 @@ void _STLP_CALL __invalidate_range(const __owned_list* __base,
 }
 
 template <class _Iterator>
-void _STLP_CALL __invalidate_iterator(const __owned_list* __base,
+void __invalidate_iterator(const __owned_list* __base,
                                       const _Iterator& __it) {
   typedef __owned_link   _L_type;
   _STLP_ACQUIRE_LOCK(__base->_M_lock)
@@ -143,7 +143,7 @@ void _STLP_CALL __invalidate_iterator(const __owned_list* __base,
 }
 
 template <class _Iterator>
-void _STLP_CALL  __change_range_owner(const _Iterator& __first,
+void  __change_range_owner(const _Iterator& __first,
                                       const _Iterator& __last,
                                       const __owned_list* __dst) {
   if (__first._Owner() == __dst)
@@ -178,7 +178,7 @@ void _STLP_CALL  __change_range_owner(const _Iterator& __first,
 }
 
 template <class _Iterator>
-void _STLP_CALL __change_ite_owner(const _Iterator& __it,
+void __change_ite_owner(const _Iterator& __it,
                                    const __owned_list* __dst) {
   if (__it._Owner() == __dst)
     return;
@@ -305,7 +305,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
   STLPORT_CSTD::va_list __args;
   va_start( __args, __format_str );
@@ -349,7 +349,7 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...)
 {}
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -360,14 +360,14 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_IndexedError(int __error_ind, const char* __f, int __l) {
   __stl_debug_message(_Message_table[_StlFormat_ERROR_RETURN],
                       __f, __l, _Message_table[__error_ind]);
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_VerboseAssert(const char* __expr, int __error_ind, const char* __f, int __l) {
   __stl_debug_message(_Message_table[_StlFormat_VERBOSE_ASSERTION_FAILURE],
                       __f, __l, _Message_table[__error_ind], __f, __l, __expr);
@@ -375,7 +375,7 @@ __stl_debug_engine<_Dummy>::_VerboseAssert(const char* __expr, int __error_ind, 
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Assert(const char* __expr, const char* __f, int __l) {
   __stl_debug_message(_Message_table[_StlFormat_ASSERTION_FAILURE],__f, __l, __expr);
   __stl_debug_terminate();
@@ -384,9 +384,9 @@ __stl_debug_engine<_Dummy>::_Assert(const char* __expr, const char* __f, int __l
 // if exceptions are present, sends unique exception
 // if not, calls abort() to terminate
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Terminate()
-{ _STLP_ABORT(); }
+{ abort(); }
 
 _STLP_MOVE_TO_STD_NAMESPACE
 _STLP_END_NAMESPACE
@@ -403,7 +403,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 //==========================================================
 
 template <class _Dummy>
-void  _STLP_CALL
+void 
 __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   _Stamp_all(__l, 0);
@@ -413,7 +413,7 @@ __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
 
 // boris : this is unasafe routine; should be used from within critical section only !
 template <class _Dummy>
-void  _STLP_CALL
+void 
 __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
   // crucial
   if (__l->_M_node._M_owner) {
@@ -426,7 +426,7 @@ __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
 }
 
 template <class _Dummy>
-void  _STLP_CALL
+void 
 __stl_debug_engine<_Dummy>::_Verify(const __owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   if (__l) {
@@ -440,7 +440,7 @@ __stl_debug_engine<_Dummy>::_Verify(const __owned_list* __l) {
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Swap_owners(__owned_list& __x, __owned_list& __y) {
   /*
    *  according to the standard : --no swap() function invalidates any references,
@@ -465,7 +465,7 @@ __stl_debug_engine<_Dummy>::_Swap_owners(__owned_list& __x, __owned_list& __y) {
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_Set_owner(__owned_list& __src, __owned_list& __dst) {
   if (&__src == &__dst)
     return;
@@ -486,7 +486,7 @@ __stl_debug_engine<_Dummy>::_Set_owner(__owned_list& __src, __owned_list& __dst)
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_M_detach(__owned_list* __l, __owned_link* __c_node) {
   if (__l  != 0) {
 
@@ -510,7 +510,7 @@ __stl_debug_engine<_Dummy>::_M_detach(__owned_list* __l, __owned_link* __c_node)
 }
 
 template <class _Dummy>
-void _STLP_CALL
+void
 __stl_debug_engine<_Dummy>::_M_attach(__owned_list* __l, __owned_link* __c_node) {
   if (__l ==0) {
     (__c_node)->_M_owner = 0;
@@ -525,7 +525,7 @@ __stl_debug_engine<_Dummy>::_M_attach(__owned_list* __l, __owned_link* __c_node)
 }
 
 template <class _Dummy>
-void* _STLP_CALL
+void*
 __stl_debug_engine<_Dummy>::_Get_container_ptr(const __owned_link* __l) {
   const __owned_list* __owner    = __l->_Owner();
   _STLP_VERBOSE_RETURN_0(__owner != 0, _StlMsg_INVALID_ITERATOR)
@@ -535,7 +535,7 @@ __stl_debug_engine<_Dummy>::_Get_container_ptr(const __owned_link* __l) {
 }
 
 template <class _Dummy>
-bool _STLP_CALL
+bool
 __stl_debug_engine<_Dummy>::_Check_same_owner(const __owned_link& __i1,
                                               const __owned_link& __i2) {
   _STLP_VERBOSE_RETURN(__i1._Valid(), _StlMsg_INVALID_LEFTHAND_ITERATOR)
@@ -545,7 +545,7 @@ __stl_debug_engine<_Dummy>::_Check_same_owner(const __owned_link& __i1,
 }
 
 template <class _Dummy>
-bool _STLP_CALL
+bool
 __stl_debug_engine<_Dummy>::_Check_same_or_null_owner(const __owned_link& __i1,
                                                       const __owned_link& __i2) {
   _STLP_VERBOSE_RETURN(__i1._Owner() == __i2._Owner(), _StlMsg_DIFFERENT_OWNERS)
@@ -553,7 +553,7 @@ __stl_debug_engine<_Dummy>::_Check_same_or_null_owner(const __owned_link& __i1,
 }
 
 template <class _Dummy>
-bool _STLP_CALL
+bool
 __stl_debug_engine<_Dummy>::_Check_if_owner( const __owned_list * __l, const __owned_link& __it) {
   const __owned_list* __owner_ptr = __it._Owner();
   _STLP_VERBOSE_RETURN(__owner_ptr != 0, _StlMsg_INVALID_ITERATOR)
@@ -562,7 +562,7 @@ __stl_debug_engine<_Dummy>::_Check_if_owner( const __owned_list * __l, const __o
 }
 
 template <class _Dummy>
-bool _STLP_CALL
+bool
 __stl_debug_engine<_Dummy>::_Check_if_not_owner( const __owned_list * __l, const __owned_link& __it) {
   const __owned_list* __owner_ptr = __it._Owner();
   _STLP_VERBOSE_RETURN(__owner_ptr != 0, _StlMsg_INVALID_ITERATOR)

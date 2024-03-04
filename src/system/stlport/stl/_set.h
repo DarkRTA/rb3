@@ -42,7 +42,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_CREATE_ITERATOR_TRAITS(SetTraitsT, Const_traits)
 
 template <class _Key, class _Compare = less<_Key>,
-                     _STLP_DEFAULT_ALLOCATOR_SELECT(_Key) >
+                     class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Key) >
 class set
 {
   typedef set<_Key, _Compare, _Alloc> _Self;
@@ -166,7 +166,7 @@ public:
 _STLP_CREATE_ITERATOR_TRAITS(MultisetTraitsT, Const_traits)
 
 template <class _Key, class _Compare = less<_Key>,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Key) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Key) >
 class multiset
 {
   typedef multiset<_Key, _Compare, _Alloc> _Self;

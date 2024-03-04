@@ -63,7 +63,7 @@ template <class _Dummy>
 class _List_global {
 public:
   typedef _List_node_base _Node_base;
-  static void  _STLP_CALL _Transfer(_Node_base* __pos,
+  static void  _Transfer(_Node_base* __pos,
                                     _Node_base* __first, _Node_base* __last);
 };
 
@@ -73,7 +73,6 @@ template <class _Tp>
 class _List_node : public _List_node_base {
 public:
   _Tp _M_data;
-  __TRIVIAL_STUFF(_List_node)
 };
 
 struct _List_iterator_base {
@@ -177,9 +176,9 @@ public:
   typedef typename _Alloc_traits<_Tp, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR((const _Node_allocator_type&)_M_node, _Tp); }
+  { return (const _Node_allocator_type&)_M_node; }
 
-  _List_base(const allocator_type& __a) : _M_node(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Node_base())
+  _List_base(const allocator_type& __a) : _M_node(__a, _Node_base())
   { _M_empty_initialize(); }
   _List_base(__move_source<_Self> src) :
     _M_node(__move_source<_AllocProxy>(src.get()._M_node)) {
@@ -215,7 +214,7 @@ public:
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class list;
 
 #if !defined (list)
@@ -587,7 +586,7 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp, class _Alloc>
-_STLP_INLINE_LOOP bool  _STLP_CALL
+inline bool
 operator==(const list<_Tp,_Alloc>& __x, const list<_Tp,_Alloc>& __y) {
   typedef typename list<_Tp,_Alloc>::const_iterator const_iterator;
   const_iterator __end1 = __x.end();

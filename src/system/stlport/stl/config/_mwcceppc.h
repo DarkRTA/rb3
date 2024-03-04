@@ -12,8 +12,6 @@
 
 #define _STLP_USE_UNIX_EMULATION_IO  1
 
-#define _STLP_USE_AUTO_PTR_CONVERSIONS  1
-
 #ifdef __INTEL__
 #  define _STLP_LITTLE_ENDIAN
 #else
@@ -23,15 +21,6 @@
 #if defined(_MSL_NO_LOCALE)
 #  define _STLP_NO_IMPORT_LOCALE
 #endif
-
-//  *** Version-specific settings ***
-
-#if __MWERKS__ >= 0x2405
-#  define _STLP_HAS_NATIVE_FLOAT_ABS
-#endif
-
-// Remaining version checks omitted since they aren't relevant to this project
-// (__MWERKS__ == 0x4301)
 
 // No -l or -f prefix versions of math.h functions
 #define _STLP_NO_VENDOR_MATH_L 1

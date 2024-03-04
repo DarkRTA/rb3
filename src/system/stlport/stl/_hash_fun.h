@@ -42,7 +42,6 @@ template <class _Key> struct hash { };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 inline size_t __stl_hash_string(const char* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   unsigned long __h = 0;
   for ( ; *__s; ++__s)
     __h = 5*__h + *__s;
@@ -55,7 +54,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template<>
 struct hash<char*> {
   size_t operator()(const char* __s) const {
-    _STLP_FIX_LITERAL_BUG(__s)
     return _STLP_PRIV __stl_hash_string(__s);
   }
 };
@@ -63,7 +61,6 @@ struct hash<char*> {
 template<>
 struct hash<const char*> {
   size_t operator()(const char* __s) const {
-    _STLP_FIX_LITERAL_BUG(__s)
     return _STLP_PRIV __stl_hash_string(__s);
   }
 };

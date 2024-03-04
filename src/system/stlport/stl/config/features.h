@@ -160,10 +160,6 @@
  * final workaround tuning based on given flags
  * ========================================================== */
 
-#ifndef _STLP_ABORT
-#  define _STLP_ABORT() abort()
-#endif
-
 #if !defined (_STLP_HAS_NO_NAMESPACES)
 #  if defined _STLP_NO_NAMESPACES
 #    undef _STLP_USE_NAMESPACES
@@ -201,8 +197,7 @@
 #endif
 
 /* Use own namespace always if possible and not explicitly instructed otherwise */
-#if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_BROKEN_USING_DIRECTIVE) && \
-   !defined (_STLP_NO_OWN_NAMESPACE)
+#if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_NO_OWN_NAMESPACE)
 #  undef  _STLP_USE_OWN_NAMESPACE
 #  define _STLP_USE_OWN_NAMESPACE  1
 #else
@@ -265,21 +260,10 @@
 #  define _STLP_STATIC_MUTEX _STLP_mutex_base
 #endif
 
-#if (defined (_MFC_VER) || defined (_AFXDLL)) && !defined (_STLP_USE_MFC)
-#  define _STLP_USE_MFC 1
-#endif
-
 #if defined (_STLP_THREADS)
 #  define _STLP_VOLATILE volatile
 #else
 #  define _STLP_VOLATILE
-#endif
-
-/* SUNpro 4.2 inline string literal bug */
-#ifdef _STLP_INLINE_STRING_LITERAL_BUG
-#  define _STLP_FIX_LITERAL_BUG(__x) __x = __x;
-#else
-#  define _STLP_FIX_LITERAL_BUG(__x)
 #endif
 
 #ifdef _STLP_DEBUG
@@ -305,24 +289,9 @@
 #  define _STLP_DEBUG_DO(expr)
 #endif
 
-/* SGI compatibility */
-
-#if !defined (_STLP_NO_AT_MEMBER_FUNCTION)
-#  define _STLP_CAN_THROW_RANGE_ERRORS 1
-#endif
-
-#if !defined (_STLP_USE_RAW_SGI_ALLOCATORS)
-#  define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) class _Alloc = StlNodeAlloc< _Tp >
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) \
-            class _Alloc = StlNodeAlloc< pair < _Key, _Tp > >
-#else
-#  define _STLP_DEFAULT_ALLOCATOR( _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) class _Alloc = __sgi_alloc
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR( _Key, _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) class _Alloc = __sgi_alloc
-#endif
+/* default allocator configuration */
+#define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
+#define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
 
 /* debug mode tool */
 #if defined (_STLP_DEBUG)
@@ -531,16 +500,6 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_TEMPLATE_FOR_CONT_EXT
 #endif
 
-#if defined (_STLP_LOOP_INLINE_PROBLEMS)
-#  define _STLP_INLINE_LOOP
-#else
-#  define _STLP_INLINE_LOOP inline
-#endif
-
-#if defined (__SGI_STL_NO_ARROW_OPERATOR) && ! defined (_STLP_NO_ARROW_OPERATOR)
-#  define _STLP_NO_ARROW_OPERATOR
-#endif
-
 #define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
    typedef _STLP_STD::reverse_iterator<const_iterator> const_reverse_iterator; \
    typedef _STLP_STD::reverse_iterator<iterator> reverse_iterator
@@ -587,26 +546,7 @@ namespace _STL = _STLP_STD_NAME;
 #define __IMPORT_WITH_REVERSE_ITERATORS(_Super) \
   __IMPORT_WITH_ITERATORS(_Super) __IMPORT_REVERSE_ITERATORS(_Super)
 
-#if defined (_STLP_TRIVIAL_CONSTRUCTOR_BUG)
-#  define __TRIVIAL_CONSTRUCTOR(__type) __type() {}
-#else
-#  define __TRIVIAL_CONSTRUCTOR(__type)
-#endif
-
-#if defined (_STLP_TRIVIAL_DESTRUCTOR_BUG)
-#  define __TRIVIAL_DESTRUCTOR(__type) ~__type() {}
-#else
-#  define __TRIVIAL_DESTRUCTOR(__type)
-#endif
-
-#define __TRIVIAL_STUFF(__type)  \
-  __TRIVIAL_CONSTRUCTOR(__type) __TRIVIAL_DESTRUCTOR(__type)
-
-#if defined (_STLP_HAS_NO_EXCEPTIONS)
-#  define _STLP_NO_EXCEPTIONS
-#endif
-
-#if !defined (_STLP_DONT_USE_EXCEPTIONS) && !defined (_STLP_NO_EXCEPTIONS) && !defined (_STLP_USE_EXCEPTIONS)
+#if !defined (_STLP_DONT_USE_EXCEPTIONS) && !defined (_STLP_USE_EXCEPTIONS)
 #  define _STLP_USE_EXCEPTIONS
 #endif
 
@@ -651,31 +591,17 @@ namespace _STL = _STLP_STD_NAME;
  * exception support but not the _STLP_USE_EXCEPTIONS which simply means
  * that the user do not want to use them.
  */
-#if !defined (_STLP_NO_EXCEPTIONS) && !defined (_STLP_NO_EXCEPTION_SPEC)
-#  define _STLP_THROWS_INHERENTLY(x) throw x
-#  define _STLP_NOTHROW_INHERENTLY throw()
-#else
-#  define _STLP_THROWS_INHERENTLY(x)
-#  define _STLP_NOTHROW_INHERENTLY
-#endif
+#define _STLP_THROWS_INHERENTLY(x) throw x
+#define _STLP_NOTHROW_INHERENTLY throw()
 
 /* STLport function not returning are functions that throw so we translate
  * the noreturn functions in throwing functions taking also into account
  * exception support activation.
  */
-#if defined (_STLP_NORETURN_FUNCTION) && !defined (_STLP_NO_EXCEPTIONS) && \
-   !defined (_STLP_FUNCTION_THROWS)
+#if defined (_STLP_NORETURN_FUNCTION) && !defined (_STLP_FUNCTION_THROWS)
 #  define _STLP_FUNCTION_THROWS _STLP_NORETURN_FUNCTION
 #else
 #  define _STLP_FUNCTION_THROWS
-#endif
-
-#ifndef _STLP_MPW_EXTRA_CONST
-#  define _STLP_MPW_EXTRA_CONST
-#endif
-
-#ifndef _STLP_DEFAULTCHAR
-#  define _STLP_DEFAULTCHAR char
 #endif
 
 #if defined (_STLP_DEBUG_ALLOC) && !defined (_STLP_ASSERTIONS)
@@ -689,60 +615,13 @@ namespace _STL = _STLP_STD_NAME;
 #endif /* _STLP_SHRED_BYTE */
 
 /* shared library tune-up */
-#ifndef _STLP_IMPORT_DECLSPEC
-#  define _STLP_IMPORT_DECLSPEC
-#endif
-
 #ifdef _STLP_USE_NO_IOSTREAMS
 /*
- * If we do not use iostreams we do not use the export/import
- * techniques to avoid build of the STLport library.
- */
-#  undef _STLP_USE_DECLSPEC
-/* We also undef USE_DYNAMIC_LIB macro as this macro add some code
+ * If we do not use iostreams we undef USE_DYNAMIC_LIB macro as this macro add some code
  * to use the dynamic (shared) STLport library for some platform/compiler
  * configuration leading to problem when do not link to the STLport lib.
  */
 #  undef _STLP_USE_DYNAMIC_LIB
-#endif
-
-#if defined (_STLP_USE_DECLSPEC) /* using export/import technique */
-
-#  ifndef _STLP_EXPORT_DECLSPEC
-#    define _STLP_EXPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_IMPORT_DECLSPEC
-#    define _STLP_IMPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_CLASS_EXPORT_DECLSPEC
-#    define _STLP_CLASS_EXPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_CLASS_IMPORT_DECLSPEC
-#    define _STLP_CLASS_IMPORT_DECLSPEC
-#  endif
-#  if defined (_STLP_DESIGNATED_DLL) /* This is a lib which will contain STLport exports */
-#    define  _STLP_DECLSPEC        _STLP_EXPORT_DECLSPEC
-#    define  _STLP_CLASS_DECLSPEC  _STLP_CLASS_EXPORT_DECLSPEC
-#  else
-#    define  _STLP_DECLSPEC        _STLP_IMPORT_DECLSPEC   /* Other modules, importing STLport exports */
-#    define  _STLP_CLASS_DECLSPEC  _STLP_CLASS_IMPORT_DECLSPEC
-#  endif
-
-#else /* Not using DLL export/import specifications */
-
-#  define _STLP_DECLSPEC
-#  define _STLP_CLASS_DECLSPEC
-
-#endif
-
-#if defined (_STLP_MSVC) || defined (__ICL)
-#  define _STLP_STATIC_MEMBER_DECLSPEC
-#else
-#  define _STLP_STATIC_MEMBER_DECLSPEC _STLP_DECLSPEC
-#endif
-
-#if !defined (_STLP_CALL)
-#  define _STLP_CALL
 #endif
 
 #ifndef _STLP_USE_NO_IOSTREAMS
@@ -769,25 +648,18 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-#define _STLP_PSPEC2(t1,t2)  /* nothing */
-#define _STLP_PSPEC3(t1,t2,t3)  /* nothing */
-
 #ifndef _STLP_USE_NO_IOSTREAMS
 #  define _STLP_NEW_IO_NAMESPACE _STLP_STD
 #endif
 
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 #  define _STLP_RELOPS_OPERATORS(_TMPL, _TP) \
-_TMPL inline bool _STLP_CALL operator!=(const _TP& __x, const _TP& __y) {return !(__x == __y);}\
-_TMPL inline bool _STLP_CALL operator>(const _TP& __x, const _TP& __y)  {return __y < __x;}\
-_TMPL inline bool _STLP_CALL operator<=(const _TP& __x, const _TP& __y) { return !(__y < __x);}\
-_TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return !(__x < __y);}
+_TMPL inline bool operator!=(const _TP& __x, const _TP& __y) {return !(__x == __y);}\
+_TMPL inline bool operator>(const _TP& __x, const _TP& __y)  {return __y < __x;}\
+_TMPL inline bool operator<=(const _TP& __x, const _TP& __y) { return !(__y < __x);}\
+_TMPL inline bool operator>=(const _TP& __x, const _TP& __y) { return !(__x < __y);}
 #else
 #  define _STLP_RELOPS_OPERATORS(_TMPL, _TP)
-#endif
-
-#if defined ( _STLP_USE_ABBREVS )
-#  include <stl/_abbrevs.h>
 #endif
 
 /* A really useful macro */
@@ -795,8 +667,6 @@ _TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return
 #define _STLP_ARRAY_AND_SIZE(A) A, sizeof(A) / sizeof(A[0])
 
 /* some cleanup */
-#undef _STLP_LOOP_INLINE_PROBLEMS
-#undef _STLP_NO_NEW_STYLE_CASTS
 #undef __AUTO_CONFIGURED
 
 #endif /* _STLP_FEATURES_H */

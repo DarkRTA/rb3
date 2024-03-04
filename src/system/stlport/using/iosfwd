@@ -36,7 +36,6 @@ using _STLP_NEW_IO_NAMESPACE::fstream;
 using _STLP_NEW_IO_NAMESPACE::streampos;
 using _STLP_NEW_IO_NAMESPACE::streamoff;
 
-# if !defined (_STLP_NO_WIDE_STREAMS)
 using _STLP_NEW_IO_NAMESPACE::wios;
 using _STLP_NEW_IO_NAMESPACE::wstreambuf;
 using _STLP_NEW_IO_NAMESPACE::wistream;
@@ -51,4 +50,3 @@ using _STLP_NEW_IO_NAMESPACE::wifstream;
 using _STLP_NEW_IO_NAMESPACE::wofstream;
 using _STLP_NEW_IO_NAMESPACE::wfstream;
 using _STLP_NEW_IO_NAMESPACE::wstreampos;
-# endif

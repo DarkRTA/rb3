@@ -59,16 +59,6 @@ public:
                  ios_base::iostate& __err, bool& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
 
-#if defined (_STLP_FIX_LIBRARY_ISSUES)
-  _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                 ios_base::iostate& __err, short& __val) const
-  { return do_get(__ii, __end, __str, __err, __val); }
-
-  _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                 ios_base::iostate& __err, int& __val) const
-  { return do_get(__ii, __end, __str, __err, __val); }
-#endif
-
   _InputIter get(_InputIter __ii, _InputIter __end, ios_base& __str,
                  ios_base::iostate& __err, long& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
@@ -109,7 +99,7 @@ public:
                  ios_base::iostate& __err, void*& __val) const
   { return do_get(__ii, __end, __str, __err, __val); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~num_get() {}
@@ -128,14 +118,6 @@ protected:
                             ios_base::iostate& __err, unsigned int& __val) const;
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, unsigned long& __val) const;
-
-#if defined (_STLP_FIX_LIBRARY_ISSUES)
-  // issue 118 : those are actually not supposed to be here
-  virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                            ios_base::iostate& __err, short& __val) const;
-  virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
-                            ios_base::iostate& __err, int& __val) const;
-#endif
 
   virtual _InputIter do_get(_InputIter __ii, _InputIter __end, ios_base& __str,
                             ios_base::iostate& __err, float& __val) const;
@@ -158,16 +140,16 @@ protected:
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-_STLP_DECLSPEC bool _STLP_CALL __valid_grouping(const char*, const char*, const char*, const char*);
+bool __valid_grouping(const char*, const char*, const char*, const char*);
 
 template <class _InputIter, class _Integer, class _CharT>
-bool _STLP_CALL
+bool
 __get_decimal_integer(_InputIter& __first, _InputIter& __last, _Integer& __val, _CharT*);
 
-bool _STLP_DECLSPEC _STLP_CALL __get_fdigit(wchar_t&, const wchar_t*);
-bool _STLP_DECLSPEC _STLP_CALL __get_fdigit_or_sep(wchar_t&, wchar_t, const wchar_t*);
+bool __get_fdigit(wchar_t&, const wchar_t*);
+bool __get_fdigit_or_sep(wchar_t&, wchar_t, const wchar_t*);
 
-inline void  _STLP_CALL
+inline void
 _Initialize_get_float(const ctype<char>&,
                        char& Plus, char& Minus,
                        char& pow_e, char& pow_E,
@@ -178,11 +160,11 @@ _Initialize_get_float(const ctype<char>&,
   pow_E = 'E';
 }
 
-void _STLP_DECLSPEC _STLP_CALL _Initialize_get_float(const ctype<wchar_t>&,
+void _Initialize_get_float(const ctype<wchar_t>&,
                                                      wchar_t&, wchar_t&, wchar_t&, wchar_t&, wchar_t*);
-void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, float&);
-void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, double&);
-void _STLP_DECLSPEC _STLP_CALL __string_to_float(const __iostring&, long double&);
+void __string_to_float(const __iostring&, float&);
+void __string_to_float(const __iostring&, double&);
+void __string_to_float(const __iostring&, long double&);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

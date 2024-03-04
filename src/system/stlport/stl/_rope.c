@@ -1130,9 +1130,6 @@ rope<_CharT,_Alloc>::_S_fetch(_RopeRep* __r, size_type __i)
       }
       }
     }
-#if defined(_STLP_NEED_UNREACHABLE_RETURN)
-    return 0;
-#endif
 }
 
 // Return a uniquely referenced character slot for the given
@@ -1184,9 +1181,6 @@ rope<_CharT,_Alloc>::_S_fetch_ptr(_RopeRep* __r, size_type __i)
       return 0;
       }
     }
-#if defined(_STLP_NEED_UNREACHABLE_RETURN)
-    return 0;
-#endif
 
 }
 
@@ -1272,10 +1266,8 @@ _Rope_char_ref_proxy<_CharT, _Alloc>::operator& () const {
 template<class _CharT, class _Alloc>
 _CharT rope<_CharT,_Alloc>::_S_empty_c_str[1] = { _CharT() };
 
-#if !defined (_STLP_STATIC_CONST_INIT_BUG)
 template <class _CharT, class _Alloc>
 const size_t rope<_CharT, _Alloc>::npos;
-#endif
 
 template<class _CharT, class _Alloc>
 const _CharT* rope<_CharT,_Alloc>::c_str() const {

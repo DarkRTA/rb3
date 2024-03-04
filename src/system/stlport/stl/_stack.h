@@ -68,12 +68,12 @@ public:
 };
 
 template < class _Tp, class _Sequence >
-inline bool _STLP_CALL  operator==(const stack< _Tp, _Sequence >& __x,
+inline bool  operator==(const stack< _Tp, _Sequence >& __x,
                                    const stack< _Tp, _Sequence >& __y)
 { return __x._Get_s() == __y._Get_s(); }
 
 template < class _Tp, class _Sequence >
-inline bool _STLP_CALL  operator<(const stack< _Tp, _Sequence >& __x,
+inline bool  operator<(const stack< _Tp, _Sequence >& __x,
                                   const stack< _Tp, _Sequence >& __y)
 { return __x._Get_s() < __y._Get_s(); }
 

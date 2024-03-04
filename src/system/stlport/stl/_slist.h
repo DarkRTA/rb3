@@ -59,7 +59,6 @@ template <class _Tp>
 class _Slist_node : public _Slist_node_base {
 public:
   _Tp _M_data;
-  __TRIVIAL_STUFF(_Slist_node)
 };
 
 struct _Slist_iterator_base {
@@ -134,9 +133,9 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Tp, class _Traits>
-inline _Tp* _STLP_CALL value_type(const _STLP_PRIV _Slist_iterator<_Tp, _Traits>&) { return static_cast<_Tp*>(0); }
-inline ptrdiff_t* _STLP_CALL distance_type(const _STLP_PRIV _Slist_iterator_base&) { return 0; }
-inline forward_iterator_tag _STLP_CALL iterator_category(const _STLP_PRIV _Slist_iterator_base&) { return forward_iterator_tag(); }
+inline _Tp* value_type(const _STLP_PRIV _Slist_iterator<_Tp, _Traits>&) { return static_cast<_Tp*>(0); }
+inline ptrdiff_t* distance_type(const _STLP_PRIV _Slist_iterator_base&) { return 0; }
+inline forward_iterator_tag iterator_category(const _STLP_PRIV _Slist_iterator_base&) { return forward_iterator_tag(); }
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif /* OLD_QUERIES */
 
@@ -155,7 +154,7 @@ public:
   typedef typename _Alloc_traits<_Tp,_Alloc>::allocator_type allocator_type;
 
   _Slist_base(const allocator_type& __a) :
-    _M_head(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Slist_node_base() ) {
+    _M_head(__a, _Slist_node_base() ) {
     _M_head._M_data._M_next = 0;
   }
   _Slist_base(__move_source<_Self> src) :
@@ -177,7 +176,7 @@ protected:
 
 public:
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR((const _M_node_allocator_type&)_M_head, _Tp); }
+  { return (const _M_node_allocator_type&)_M_head; }
   _AllocProxy _M_head;
 };
 
@@ -189,7 +188,7 @@ public:
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class slist;
 
 #if !defined (slist)
@@ -654,7 +653,7 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp, class _Alloc>
-inline bool  _STLP_CALL
+inline bool
 operator == (const slist<_Tp,_Alloc>& _SL1, const slist<_Tp,_Alloc>& _SL2) {
   typedef typename slist<_Tp,_Alloc>::const_iterator const_iterator;
   const_iterator __end1 = _SL1.end();

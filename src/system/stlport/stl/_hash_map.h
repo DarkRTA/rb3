@@ -41,7 +41,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(HashMapTraitsT, traits)
 
 template <class _Key, class _Tp, class _HashFcn = hash<_Key>,
           class _EqualKey = equal_to<_Key>,
-          _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(const _Key, _Tp) >
+          class _Alloc = _STLP_DEFAULT_PAIR_ALLOCATOR(const _Key, _Tp) >
 class hash_map
 {
 private:
@@ -173,7 +173,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(HashMultimapTraitsT, traits)
 
 template <class _Key, class _Tp, class _HashFcn = hash<_Key>,
           class _EqualKey = equal_to<_Key>,
-          _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(const _Key, _Tp) >
+          class _Alloc = _STLP_DEFAULT_PAIR_ALLOCATOR(const _Key, _Tp) >
 class hash_multimap
 {
 private:

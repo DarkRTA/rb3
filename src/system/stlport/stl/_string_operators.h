@@ -21,7 +21,7 @@ _STLP_BEGIN_NAMESPACE
 #if !defined (_STLP_USE_TEMPLATE_EXPRESSION)
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
+inline basic_string<_CharT,_Traits,_Alloc>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
@@ -33,10 +33,9 @@ operator+(const basic_string<_CharT,_Traits,_Alloc>& __s,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
+inline basic_string<_CharT,_Traits,_Alloc>
 operator+(const _CharT* __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
   const size_t __n = _Traits::length(__s);
@@ -47,7 +46,7 @@ operator+(const _CharT* __s,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
+inline basic_string<_CharT,_Traits,_Alloc>
 operator+(_CharT __c,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
@@ -59,10 +58,9 @@ operator+(_CharT __c,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
+inline basic_string<_CharT,_Traits,_Alloc>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
   typedef typename _Str::_Reserve_t _Reserve_t;
   const size_t __n = _Traits::length(__s);
@@ -73,7 +71,7 @@ operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_string<_CharT,_Traits,_Alloc> _STLP_CALL
+inline basic_string<_CharT,_Traits,_Alloc>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT __c) {
   typedef basic_string<_CharT,_Traits,_Alloc> _Str;
@@ -94,7 +92,7 @@ inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                                                    _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
                                                    _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
                                                    _STLP_PRIV __on_right>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __lhs,
           const basic_string<_CharT,_Traits,_Alloc>& __rhs) {
   typedef _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
@@ -110,7 +108,7 @@ template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, 
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                              _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
                              _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __lhs,
           const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __rhs) {
   return _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
@@ -122,7 +120,7 @@ template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, 
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                              _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
                              _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
-                             _STLP_PRIV __on_left> _STLP_CALL
+                             _STLP_PRIV __on_left>
 operator+(const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __lhs,
           const basic_string<_CharT,_Traits,_Alloc>& __rhs) {
   return _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
@@ -138,7 +136,7 @@ inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                                                    _STLP_PRIV __cstr_wrapper<_CharT>,
                                                    _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
                                                    _STLP_PRIV __on_right>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT* __s) {
   const size_t __n = _Traits::length(__s);
@@ -157,7 +155,7 @@ inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                                                    _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
                                                    _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
                                                    _STLP_PRIV __on_right>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const _CharT* __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   const size_t __n = _Traits::length(__s);
@@ -174,7 +172,7 @@ template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, 
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                              _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
                              _STLP_PRIV __cstr_wrapper<_CharT>,
-                             _STLP_PRIV __on_left> _STLP_CALL
+                             _STLP_PRIV __on_left>
 operator+(const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __x,
           const _CharT* __s) {
   const size_t __n = _Traits::length(__s);
@@ -187,7 +185,7 @@ template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, 
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                              _STLP_PRIV __cstr_wrapper<_CharT>,
                              _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const _CharT* __s,
           const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __y) {
   const size_t __n = _Traits::length(__s);
@@ -204,7 +202,7 @@ inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                                                    _STLP_PRIV __char_wrapper<_CharT>,
                                                    _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
                                                    _STLP_PRIV __on_right>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const basic_string<_CharT,_Traits,_Alloc>& __x, const _CharT __c) {
   typedef _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __char_wrapper<_CharT>,
                                                          _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
@@ -221,7 +219,7 @@ inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                                                    _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
                                                    _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
                                                    _STLP_PRIV __on_right>,
-                             _STLP_PRIV __on_right> _STLP_CALL
+                             _STLP_PRIV __on_right>
 operator+(const _CharT __c, const basic_string<_CharT,_Traits,_Alloc>& __x) {
   typedef _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __bstr_wrapper<_CharT,_Traits,_Alloc>,
                                                          _STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc>,
@@ -235,7 +233,7 @@ template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, 
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
                              _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
                              _STLP_PRIV __char_wrapper<_CharT>,
-                             _STLP_PRIV __on_left> _STLP_CALL
+                             _STLP_PRIV __on_left>
 operator+(const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __x, const _CharT __c) {
   return _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
                                                         _STLP_PRIV __char_wrapper<_CharT>, _STLP_PRIV __on_left>(__x, __c);
@@ -244,7 +242,7 @@ operator+(const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _S
 template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, class _StorageDir>
 inline _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __char_wrapper<_CharT>,
                                                       _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
-                                                      _STLP_PRIV __on_right> _STLP_CALL
+                                                      _STLP_PRIV __on_right>
 operator+(const _CharT __c, const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __x) {
   return _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _STLP_PRIV __char_wrapper<_CharT>,
                                                         _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>,
@@ -256,7 +254,7 @@ operator+(const _CharT __c, const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc,
 // Operator== and operator!=
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator==(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
   return __x.size() == __y.size() && _Traits::compare(__x.data(), __y.data(), __x.size()) == 0;
@@ -264,14 +262,14 @@ operator==(const basic_string<_CharT,_Traits,_Alloc>& __x,
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator==(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
   return __x.size() == __y.size() && _Traits::compare(__x.data(), __y.data(), __x.size()) == 0;
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator==(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
   return __x.size() == __y.size() && _Traits::compare(__x.data(), __y.data(), __x.size()) == 0;
@@ -280,38 +278,34 @@ operator==(const basic_string<_CharT,_Traits,_Alloc>& __x,
 
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator==(const _CharT* __s,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return __n == __y.size() && _Traits::compare(__s, __y.data(), __n) == 0;
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator==(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return __x.size() == __n && _Traits::compare(__x.data(), __s, __n) == 0;
 }
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator==(const _CharT* __s,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return __n == __y.size() && _Traits::compare(__s, __y.data(), __n) == 0;
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator==(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return __x.size() == __n && _Traits::compare(__x.data(), __s, __n) == 0;
 }
@@ -320,7 +314,7 @@ operator==(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir
 // Operator< (and also >, <=, and >=).
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__x.begin(), __x.end(),
@@ -329,7 +323,7 @@ operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__x.begin(), __x.end(),
@@ -337,7 +331,7 @@ operator<(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__x.begin(), __x.end(),
@@ -346,20 +340,18 @@ operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<(const _CharT* __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__s, __s + __n,
                                                           __y.begin(), __y.end()) < 0;
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__x.begin(), __x.end(),
                                                           __s, __s + __n) < 0;
@@ -367,20 +359,18 @@ operator<(const basic_string<_CharT,_Traits,_Alloc>& __x,
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<(const _CharT* __s,
           const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__s, __s + __n,
                                                           __y.begin(), __y.end()) < 0;
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
           const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   size_t __n = _Traits::length(__s);
   return basic_string<_CharT,_Traits,_Alloc> ::_M_compare(__x.begin(), __x.end(),
                                                           __s, __s + __n) < 0;
@@ -394,38 +384,38 @@ operator<(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>
  * from rel_ops namespace.
  */
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator!=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y)
 { return !(__x == __y); }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const basic_string<_CharT,_Traits,_Alloc>& __y)
 { return __y < __x; }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y)
 { return !(__y < __x); }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y)
 { return !(__x < __y); }
 
 #  if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const basic_string<_CharT,_Traits,_Alloc>& __y)
 { return !(__x==__y); }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator!=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y)
 { return !(__x==__y); }
@@ -434,137 +424,121 @@ operator!=(const basic_string<_CharT,_Traits,_Alloc>& __x,
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _CharT* __s,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s == __y);
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator!=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__x == __s);
 }
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _CharT* __s,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s == __y);
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__x == __s);
 }
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>(const _CharT* __s,
           const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return __y < __s;
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>(const basic_string<_CharT,_Traits,_Alloc>& __x,
           const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return __s < __x;
 }
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator>(const _CharT* __s,
           const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return __y < __s;
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator>(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
           const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return __s < __x;
 }
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<=(const _CharT* __s,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__y < __s);
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator<=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s < __x);
 }
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<=(const _CharT* __s,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__y < __s);
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator<=(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s < __x);
 }
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>=(const _CharT* __s,
            const basic_string<_CharT,_Traits,_Alloc>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s < __y);
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-inline bool _STLP_CALL
+inline bool
 operator>=(const basic_string<_CharT,_Traits,_Alloc>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__x < __s);
 }
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator>=(const _CharT* __s,
            const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __y) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__s < __y);
 }
 
 template <class _CharT, class _Traits, class _Alloc, class _Lhs, class _Rhs, class _StoreDir>
-inline bool _STLP_CALL
+inline bool
 operator>=(const _STLP_PRIV __bstr_sum<_CharT,_Traits,_Alloc,_Lhs,_Rhs,_StoreDir>& __x,
            const _CharT* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   return !(__x < __s);
 }
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */

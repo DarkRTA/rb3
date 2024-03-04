@@ -102,10 +102,10 @@ int lexicographical_compare_3way(_InputIter1 __first1, _InputIter1 __last1,
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _RandomAccessIter, class _Tp>
-_STLP_INLINE_LOOP _RandomAccessIter __find(_RandomAccessIter __first, _RandomAccessIter __last,
+inline _RandomAccessIter __find(_RandomAccessIter __first, _RandomAccessIter __last,
                                            const _Tp& __val,
                                            const random_access_iterator_tag &) {
-  _STLP_DIFFERENCE_TYPE(_RandomAccessIter) __trip_count = (__last - __first) >> 2;
+  typename iterator_traits<_RandomAccessIter>::difference_type __trip_count = (__last - __first) >> 2;
 
   for ( ; __trip_count > 0 ; --__trip_count) {
     if (*__first == __val) return __first;
@@ -149,10 +149,10 @@ __find(const char* __first, const char* __last, char __val, const random_access_
 }
 
 template <class _RandomAccessIter, class _Predicate>
-_STLP_INLINE_LOOP _RandomAccessIter __find_if(_RandomAccessIter __first, _RandomAccessIter __last,
+inline _RandomAccessIter __find_if(_RandomAccessIter __first, _RandomAccessIter __last,
                                               _Predicate __pred,
                                               const random_access_iterator_tag &) {
-  _STLP_DIFFERENCE_TYPE(_RandomAccessIter) __trip_count = (__last - __first) >> 2;
+  typename iterator_traits<_RandomAccessIter>::difference_type __trip_count = (__last - __first) >> 2;
 
   for ( ; __trip_count > 0 ; --__trip_count) {
     if (__pred(*__first)) return __first;
@@ -185,7 +185,7 @@ _STLP_INLINE_LOOP _RandomAccessIter __find_if(_RandomAccessIter __first, _Random
 }
 
 template <class _InputIter, class _Tp>
-_STLP_INLINE_LOOP _InputIter __find(_InputIter __first, _InputIter __last,
+inline _InputIter __find(_InputIter __first, _InputIter __last,
                                     const _Tp& __val,
                                     const input_iterator_tag &) {
   while (__first != __last && !(*__first == __val)) ++__first;
@@ -193,7 +193,7 @@ _STLP_INLINE_LOOP _InputIter __find(_InputIter __first, _InputIter __last,
 }
 
 template <class _InputIter, class _Predicate>
-_STLP_INLINE_LOOP _InputIter __find_if(_InputIter __first, _STLP_MPW_EXTRA_CONST _InputIter __last,
+inline _InputIter __find_if(_InputIter __first, _InputIter __last,
                                        _Predicate __pred,
                                        const input_iterator_tag &) {
   while (__first != __last && !__pred(*__first))

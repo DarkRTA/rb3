@@ -214,20 +214,20 @@ struct _Deque_iterator : public _Deque_iterator_base< _Tp> {
 
 
 template <class _Tp, class _Traits>
-inline _Deque_iterator<_Tp, _Traits> _STLP_CALL
+inline _Deque_iterator<_Tp, _Traits>
 operator+(ptrdiff_t __n, const _Deque_iterator<_Tp, _Traits>& __x)
 { return __x + __n; }
 
 
 #if defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator==(const _Deque_iterator_base<_Tp >& __x,
            const _Deque_iterator_base<_Tp >& __y)
 { return __x._M_cur == __y._M_cur; }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator < (const _Deque_iterator_base<_Tp >& __x,
             const _Deque_iterator_base<_Tp >& __y) {
   return (__x._M_node == __y._M_node) ?
@@ -235,37 +235,37 @@ operator < (const _Deque_iterator_base<_Tp >& __x,
 }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _Deque_iterator_base<_Tp >& __x,
            const _Deque_iterator_base<_Tp >& __y)
 { return __x._M_cur != __y._M_cur; }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator>(const _Deque_iterator_base<_Tp >& __x,
           const _Deque_iterator_base<_Tp >& __y)
 { return __y < __x; }
 
 template <class _Tp>
-inline bool  _STLP_CALL operator>=(const _Deque_iterator_base<_Tp >& __x,
+inline bool  operator>=(const _Deque_iterator_base<_Tp >& __x,
                                    const _Deque_iterator_base<_Tp >& __y)
 { return !(__x < __y); }
 
 template <class _Tp>
-inline bool  _STLP_CALL operator<=(const _Deque_iterator_base<_Tp >& __x,
+inline bool  operator<=(const _Deque_iterator_base<_Tp >& __x,
                                    const _Deque_iterator_base<_Tp >& __y)
 { return !(__y < __x); }
 
 #else /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
 template <class _Tp, class _Traits1, class _Traits2>
-inline bool  _STLP_CALL
+inline bool
 operator==(const _Deque_iterator<_Tp, _Traits1 >& __x,
            const _Deque_iterator<_Tp, _Traits2 >& __y)
 { return __x._M_cur == __y._M_cur; }
 
 template <class _Tp, class _Traits1, class _Traits2>
-inline bool _STLP_CALL
+inline bool
 operator < (const _Deque_iterator<_Tp, _Traits1 >& __x,
             const _Deque_iterator<_Tp, _Traits2 >& __y) {
   return (__x._M_node == __y._M_node) ?
@@ -273,25 +273,25 @@ operator < (const _Deque_iterator<_Tp, _Traits1 >& __x,
 }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator!=(const _Deque_iterator<_Tp, _Nonconst_traits<_Tp> >& __x,
            const _Deque_iterator<_Tp, _Const_traits<_Tp> >& __y)
 { return __x._M_cur != __y._M_cur; }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator>(const _Deque_iterator<_Tp, _Nonconst_traits<_Tp> >& __x,
           const _Deque_iterator<_Tp, _Const_traits<_Tp> >& __y)
 { return __y < __x; }
 
 template <class _Tp>
-inline bool  _STLP_CALL
+inline bool
 operator>=(const _Deque_iterator<_Tp, _Nonconst_traits<_Tp> >& __x,
            const _Deque_iterator<_Tp, _Const_traits<_Tp> >& __y)
 { return !(__x < __y); }
 
 template <class _Tp>
-inline bool _STLP_CALL
+inline bool
 operator<=(const _Deque_iterator<_Tp, _Nonconst_traits<_Tp> >& __x,
            const _Deque_iterator<_Tp, _Const_traits<_Tp> >& __y)
 { return !(__y < __x); }
@@ -310,11 +310,11 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 #if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
 _STLP_MOVE_TO_STD_NAMESPACE
-template <class _Tp, class _Traits> inline _Tp*  _STLP_CALL
+template <class _Tp, class _Traits> inline _Tp*
 value_type(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return (_Tp*)0; }
-template <class _Tp, class _Traits> inline random_access_iterator_tag _STLP_CALL
+template <class _Tp, class _Traits> inline random_access_iterator_tag
 iterator_category(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return random_access_iterator_tag(); }
-template <class _Tp, class _Traits> inline ptrdiff_t* _STLP_CALL
+template <class _Tp, class _Traits> inline ptrdiff_t*
 distance_type(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return 0; }
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
@@ -341,15 +341,15 @@ public:
   typedef _Deque_iterator<_Tp, _Nonconst_traits<_Tp> > iterator;
   typedef _Deque_iterator<_Tp, _Const_traits<_Tp> >    const_iterator;
 
-  static size_t _STLP_CALL buffer_size() { return (size_t)_Deque_iterator_base<_Tp>::__buffer_size; }
+  static size_t buffer_size() { return (size_t)_Deque_iterator_base<_Tp>::__buffer_size; }
 
   _Deque_base(const allocator_type& __a, size_t __num_elements)
-    : _M_start(), _M_finish(), _M_map(_STLP_CONVERT_ALLOCATOR(__a, _Tp*), 0),
+    : _M_start(), _M_finish(), _M_map(__a, 0),
       _M_map_size(__a, (size_t)0)
   { _M_initialize_map(__num_elements); }
 
   _Deque_base(const allocator_type& __a)
-    : _M_start(), _M_finish(), _M_map(_STLP_CONVERT_ALLOCATOR(__a, _Tp*), 0),
+    : _M_start(), _M_finish(), _M_map(__a, 0),
       _M_map_size(__a, (size_t)0) {}
 
   _Deque_base(__move_source<_Self> src)
@@ -384,7 +384,7 @@ protected:
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class deque : protected _STLP_PRIV _Deque_base<_Tp, _Alloc>
 {
   typedef _STLP_PRIV _Deque_base<_Tp, _Alloc> _Base;

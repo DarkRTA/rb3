@@ -37,7 +37,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-class _STLP_CLASS_DECLSPEC codecvt_base {
+class codecvt_base {
 public:
   enum result {ok, partial, error, noconv};
 };
@@ -95,7 +95,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt() {}
@@ -153,7 +153,7 @@ template <class _InternT, class _ExternT, class _StateT>
 class codecvt_byname : public codecvt<_InternT, _ExternT, _StateT> {};
 
 template<>
-class _STLP_CLASS_DECLSPEC codecvt<char, char, mbstate_t>
+class codecvt<char, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
   friend class _Locale_impl;
@@ -204,7 +204,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt();
@@ -243,7 +243,7 @@ private:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC codecvt<wchar_t, char, mbstate_t>
+class codecvt<wchar_t, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
   friend class _Locale_impl;
@@ -294,7 +294,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt();
@@ -337,7 +337,7 @@ private:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC codecvt_byname<char, char, mbstate_t>
+class codecvt_byname<char, char, mbstate_t>
   : public codecvt<char, char, mbstate_t> {
 public:
   explicit codecvt_byname(const char* __name, size_t __refs = 0);
@@ -348,7 +348,7 @@ private:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC codecvt_byname<wchar_t, char, mbstate_t>
+class codecvt_byname<wchar_t, char, mbstate_t>
   : public codecvt<wchar_t, char, mbstate_t>
 {
 public:

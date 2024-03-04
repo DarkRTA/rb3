@@ -45,11 +45,11 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp>
-pair<_Tp*, ptrdiff_t>  _STLP_CALL
+pair<_Tp*, ptrdiff_t> 
 __get_temporary_buffer(ptrdiff_t __len, _Tp*);
 
 template <class _Tp>
-inline pair<_Tp*, ptrdiff_t>  _STLP_CALL get_temporary_buffer(ptrdiff_t __len) {
+inline pair<_Tp*, ptrdiff_t>  get_temporary_buffer(ptrdiff_t __len) {
   return __get_temporary_buffer(__len, (_Tp*) 0);
 }
 
@@ -60,14 +60,14 @@ inline pair<_Tp*, ptrdiff_t>  _STLP_CALL get_temporary_buffer(ptrdiff_t __len) {
 // function template arguments) that is required for the standard
 // version of get_temporary_buffer.
 template <class _Tp>
-inline pair<_Tp*, ptrdiff_t>  _STLP_CALL
+inline pair<_Tp*, ptrdiff_t> 
 get_temporary_buffer(ptrdiff_t __len, _Tp*) {
   return __get_temporary_buffer(__len, (_Tp*) 0);
 }
 # endif
 
 template <class _Tp>
-inline void  _STLP_CALL return_temporary_buffer(_Tp* __p) {
+inline void  return_temporary_buffer(_Tp* __p) {
 // SunPro brain damage
   free((char*)__p);
 }

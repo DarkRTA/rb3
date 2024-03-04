@@ -280,7 +280,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InputIterator, class _OutputIterator, class _BinaryPredicate,
           class _Tp>
-_STLP_INLINE_LOOP _OutputIterator
+inline _OutputIterator
 __unique_copy(_InputIterator __first, _InputIterator __last,
               _OutputIterator __result,
               _BinaryPredicate __binary_pred, _Tp*) {
@@ -302,7 +302,7 @@ __unique_copy(_InputIter __first, _InputIter __last,_OutputIter __result,
 }
 
 template <class _InputIter, class _ForwardIter, class _BinaryPredicate>
-_STLP_INLINE_LOOP _ForwardIter
+inline _ForwardIter
 __unique_copy(_InputIter __first, _InputIter __last, _ForwardIter __result,
               _BinaryPredicate __binary_pred, const forward_iterator_tag &) {
   *__result = *__first;
@@ -626,7 +626,7 @@ random_sample(_InputIter __first, _InputIter __last,
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _ForwardIter, class _Predicate>
-_STLP_INLINE_LOOP _ForwardIter __partition(_ForwardIter __first,
+inline _ForwardIter __partition(_ForwardIter __first,
                                            _ForwardIter __last,
                                            _Predicate   __pred,
                                            const forward_iterator_tag &) {
@@ -647,7 +647,7 @@ _STLP_INLINE_LOOP _ForwardIter __partition(_ForwardIter __first,
 }
 
 template <class _BidirectionalIter, class _Predicate>
-_STLP_INLINE_LOOP _BidirectionalIter __partition(_BidirectionalIter __first,
+inline _BidirectionalIter __partition(_BidirectionalIter __first,
                                                  _BidirectionalIter __last,
                                                  _Predicate __pred,
                                                  const bidirectional_iterator_tag &) {
@@ -1814,9 +1814,6 @@ bool __next_permutation(_BidirectionalIter __first, _BidirectionalIter __last,
       return false;
     }
   }
-#if defined (_STLP_NEED_UNREACHABLE_RETURN)
-    return false;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -1865,9 +1862,6 @@ bool __prev_permutation(_BidirectionalIter __first, _BidirectionalIter __last,
       return false;
     }
   }
-#if defined (_STLP_NEED_UNREACHABLE_RETURN)
-    return false;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE

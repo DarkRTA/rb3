@@ -31,7 +31,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(UnorderedSetTraitsT, Const_traits)
 
 template <class _Value, class _HashFcn = hash<_Value>,
           class _EqualKey = equal_to<_Value>,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class unordered_set
 {
   typedef unordered_set<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
@@ -147,7 +147,7 @@ _STLP_CREATE_HASH_ITERATOR_TRAITS(UnorderedMultisetTraitsT, Const_traits)
 
 template <class _Value, class _HashFcn = hash<_Value>,
           class _EqualKey = equal_to<_Value>,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class unordered_multiset
 {
   typedef unordered_multiset<_Value, _HashFcn, _EqualKey, _Alloc> _Self;

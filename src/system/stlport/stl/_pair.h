@@ -46,11 +46,8 @@ struct pair {
 
   _T1 first;
   _T2 second;
-#if defined (_STLP_CONST_CONSTRUCTOR_BUG)
-  pair() {}
-#else
+
   pair() : first(_T1()), second(_T2()) {}
-#endif
   pair(const _T1& __a, const _T2& __b) : first(__a), second(__b) {}
 
   template <class _U1, class _U2>
@@ -61,35 +58,33 @@ struct pair {
   pair(__move_source<pair<_T1, _T2> > src) : first(_STLP_PRIV _AsMoveSource(src.get().first)),
                                              second(_STLP_PRIV _AsMoveSource(src.get().second))
   {}
-
-  __TRIVIAL_DESTRUCTOR(pair)
 };
 
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+inline bool operator==(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
 { return __x.first == __y.first && __x.second == __y.second; }
 
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y) {
+inline bool operator<(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y) {
   return __x.first < __y.first ||
          (!(__y.first < __x.first) && __x.second < __y.second);
 }
 
 #if defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator!=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+inline bool operator!=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
 { return !(__x == __y); }
 
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator>(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+inline bool operator>(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
 { return __y < __x; }
 
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator<=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+inline bool operator<=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
 { return !(__y < __x); }
 
 template <class _T1, class _T2>
-inline bool _STLP_CALL operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
+inline bool operator>=(const pair<_T1, _T2>& __x, const pair<_T1, _T2>& __y)
 { return !(__x < __y); }
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
@@ -113,7 +108,7 @@ inline pair<_T1 const*, _T2 const*> make_pair(_T1 const (&__x)[_Sz1],
 #endif
 
 template <class _T1, class _T2>
-inline pair<_T1, _T2> _STLP_CALL make_pair(_T1 __x, _T2 __y)
+inline pair<_T1, _T2> make_pair(_T1 __x, _T2 __y)
 { return pair<_T1, _T2>(__x, __y); }
 
 _STLP_END_NAMESPACE
@@ -122,19 +117,19 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_RELOPS_NAMESPACE
 
 template <class _Tp>
-inline bool _STLP_CALL operator!=(const _Tp& __x, const _Tp& __y)
+inline bool operator!=(const _Tp& __x, const _Tp& __y)
 { return !(__x == __y); }
 
 template <class _Tp>
-inline bool _STLP_CALL operator>(const _Tp& __x, const _Tp& __y)
+inline bool operator>(const _Tp& __x, const _Tp& __y)
 { return __y < __x; }
 
 template <class _Tp>
-inline bool _STLP_CALL operator<=(const _Tp& __x, const _Tp& __y)
+inline bool operator<=(const _Tp& __x, const _Tp& __y)
 { return !(__y < __x); }
 
 template <class _Tp>
-inline bool _STLP_CALL  operator>=(const _Tp& __x, const _Tp& __y)
+inline bool  operator>=(const _Tp& __x, const _Tp& __y)
 { return !(__x < __y); }
 
 _STLP_END_RELOPS_NAMESPACE

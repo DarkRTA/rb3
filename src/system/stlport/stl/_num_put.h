@@ -91,7 +91,7 @@ public:
     return do_put(__s, __f, __fill, __val);
   }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~num_put() {}
@@ -112,34 +112,34 @@ protected:
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Integer>
-char* _STLP_CALL
+char*
 __write_integer_backward(char* __buf, ios_base::fmtflags __flags, _Integer __x);
 
 /*
  * Returns the position on the right of the digits that has to be considered
  * for the application of the grouping policy.
  */
-extern size_t _STLP_CALL __write_float(__iostring&, ios_base::fmtflags, int, double);
-extern size_t _STLP_CALL __write_float(__iostring&, ios_base::fmtflags, int, long double);
+extern size_t __write_float(__iostring&, ios_base::fmtflags, int, double);
+extern size_t __write_float(__iostring&, ios_base::fmtflags, int, long double);
 
 /*
  * Gets the digits of the integer part.
  */
-void _STLP_CALL __get_floor_digits(__iostring&, long double);
+void __get_floor_digits(__iostring&, long double);
 
 template <class _CharT>
-void _STLP_CALL __get_money_digits(_STLP_BASIC_IOSTRING(_CharT)&, ios_base&, long double);
+void __get_money_digits(_STLP_BASIC_IOSTRING(_CharT)&, ios_base&, long double);
 
-extern void _STLP_CALL __convert_float_buffer(__iostring const&, __iowstring&, const ctype<wchar_t>&, wchar_t, bool = true);
-extern void _STLP_CALL __adjust_float_buffer(__iostring&, char);
+extern void __convert_float_buffer(__iostring const&, __iowstring&, const ctype<wchar_t>&, wchar_t, bool = true);
+extern void __adjust_float_buffer(__iostring&, char);
 
-extern char* _STLP_CALL
+extern char*
 __write_integer(char* buf, ios_base::fmtflags flags, long x);
 
-extern ptrdiff_t _STLP_CALL __insert_grouping(char* first, char* last, const string&, char, char, char, int);
-extern void _STLP_CALL __insert_grouping(__iostring&, size_t, const string&, char, char, char, int);
-extern ptrdiff_t _STLP_CALL __insert_grouping(wchar_t*, wchar_t*, const string&, wchar_t, wchar_t, wchar_t, int);
-extern void _STLP_CALL __insert_grouping(__iowstring&, size_t, const string&, wchar_t, wchar_t, wchar_t, int);
+extern ptrdiff_t __insert_grouping(char* first, char* last, const string&, char, char, char, int);
+extern void __insert_grouping(__iostring&, size_t, const string&, char, char, char, int);
+extern ptrdiff_t __insert_grouping(wchar_t*, wchar_t*, const string&, wchar_t, wchar_t, wchar_t, int);
+extern void __insert_grouping(__iowstring&, size_t, const string&, wchar_t, wchar_t, wchar_t, int);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

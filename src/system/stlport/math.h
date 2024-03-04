@@ -20,17 +20,7 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-#if !defined (exception)
-#  define _STLP_EXCEPTION_WAS_REDEFINED 1
-#  define exception __math_exception
-#endif
-
 #include _STLP_NATIVE_C_HEADER(math.h)
-
-#if defined (_STLP_EXCEPTION_WAS_REDEFINED)
-#  undef exception
-#  undef _STLP_EXCEPTION_WAS_REDEFINED
-#endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x244)
 #  if ! defined (_STLP_DONT_POP_HEADER_ID)

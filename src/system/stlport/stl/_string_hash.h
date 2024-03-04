@@ -30,7 +30,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits, class _Alloc>
-_STLP_INLINE_LOOP size_t
+inline size_t
 __stl_string_hash(const basic_string<_CharT,_Traits,_Alloc>& __s) {
   unsigned long __h = 0;
   size_t __len = __s.size();

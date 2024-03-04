@@ -44,7 +44,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 template <class _Dummy>
-void _STLP_CALL
+void
 _List_global<_Dummy>::_Transfer(_List_node_base* __position,
                                 _List_node_base* __first, _List_node_base* __last) {
   if (__position != __last) {

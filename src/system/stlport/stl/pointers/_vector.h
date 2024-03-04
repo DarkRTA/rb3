@@ -33,7 +33,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
-template <class _Tp, class _Size = unsigned short, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class vector
 {
   /* In the vector implementation iterators are pointer which give a number
@@ -66,7 +66,7 @@ public:
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
+  { return _M_impl.get_allocator(); }
 
   iterator begin()             { return cast_traits::to_value_type_ptr(_M_impl.begin()); }
   const_iterator begin() const { return cast_traits::to_value_type_cptr(_M_impl.begin()); }
@@ -96,12 +96,12 @@ public:
   const_reference at(size_type __n) const { return cast_traits::to_value_type_cref(_M_impl.at(__n)); }
 
   explicit vector(const allocator_type& __a = allocator_type())
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__a) {}
 
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
-      _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+      __a) {}
 
   vector(const _Self& __x)
     : _M_impl(__x._M_impl) {}
@@ -113,7 +113,7 @@ public:
   vector(_InputIterator __first, _InputIterator __last,
          const allocator_type& __a = allocator_type() )
   : _M_impl(__first, __last,
-            _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+            __a) {}
 
   _Self& operator=(const _Self& __x) { _M_impl = __x._M_impl; return *this; }
 

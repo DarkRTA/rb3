@@ -67,7 +67,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 // structure to aid in counting bits
-class _STLP_CLASS_DECLSPEC _Bs_G
+class _Bs_G
 {
   public:
     //returns the number of bit set within the buffer between __beg and __end.
@@ -116,16 +116,16 @@ struct _Base_bitset {
     _M_w[0] = __val;
   }
 
-  static size_t _STLP_CALL _S_whichword( size_t __pos ) {
+  static size_t _S_whichword( size_t __pos ) {
     return __pos / __BITS_PER_WORD;
   }
-  static size_t _STLP_CALL _S_whichbyte( size_t __pos ) {
+  static size_t _S_whichbyte( size_t __pos ) {
     return (__pos % __BITS_PER_WORD) / CHAR_BIT;
   }
-  static size_t _STLP_CALL _S_whichbit( size_t __pos ) {
+  static size_t _S_whichbit( size_t __pos ) {
     return __pos % __BITS_PER_WORD;
   }
-  static _WordT _STLP_CALL _S_maskbit( size_t __pos ) {
+  static _WordT _S_maskbit( size_t __pos ) {
     return static_cast<_WordT>(1) << _S_whichbit(__pos);
   }
 
@@ -216,16 +216,16 @@ struct _Base_bitset<1UL> {
   _Base_bitset( void ) : _M_w(0) {}
   _Base_bitset(unsigned long __val) : _M_w(__val) {}
 
-  static size_t _STLP_CALL _S_whichword( size_t __pos ) {
+  static size_t _S_whichword( size_t __pos ) {
     return __pos / __BITS_PER_WORD ;
   }
-  static size_t _STLP_CALL _S_whichbyte( size_t __pos ) {
+  static size_t _S_whichbyte( size_t __pos ) {
     return (__pos % __BITS_PER_WORD) / CHAR_BIT;
   }
-  static size_t _STLP_CALL _S_whichbit( size_t __pos ) {
+  static size_t _S_whichbit( size_t __pos ) {
     return __pos % __BITS_PER_WORD;
   }
-  static _WordT _STLP_CALL _S_maskbit( size_t __pos ) {
+  static _WordT _S_maskbit( size_t __pos ) {
     return (static_cast<_WordT>(1)) << _S_whichbit(__pos);
   }
 
@@ -330,12 +330,12 @@ _Base_bitset<1UL>::_M_do_find_next(size_t __prev,
 // Helper class to zero out the unused high-order bits in the highest word.
 
 template <size_t _Extrabits> struct _Sanitize {
-  static void _STLP_CALL _M_do_sanitize(unsigned long& __val)
+  static void _M_do_sanitize(unsigned long& __val)
   { __val &= ~((~static_cast<unsigned long>(0)) << _Extrabits); }
 };
 
 template<> struct _Sanitize<0UL> {
-  static void _STLP_CALL _M_do_sanitize(unsigned long) {}
+  static void _M_do_sanitize(unsigned long) {}
 };
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -641,7 +641,7 @@ public:
 // 23.3.5.3 bitset operations:
 //
 template <size_t _Nb>
-inline bitset<_Nb>  _STLP_CALL
+inline bitset<_Nb> 
 operator&(const bitset<_Nb>& __x,
           const bitset<_Nb>& __y) {
   bitset<_Nb> __result(__x);
@@ -651,7 +651,7 @@ operator&(const bitset<_Nb>& __x,
 
 
 template <size_t _Nb>
-inline bitset<_Nb>  _STLP_CALL
+inline bitset<_Nb> 
 operator|(const bitset<_Nb>& __x,
           const bitset<_Nb>& __y) {
   bitset<_Nb> __result(__x);
@@ -660,7 +660,7 @@ operator|(const bitset<_Nb>& __x,
 }
 
 template <size_t _Nb>
-inline bitset<_Nb>  _STLP_CALL
+inline bitset<_Nb> 
 operator^(const bitset<_Nb>& __x,
           const bitset<_Nb>& __y) {
   bitset<_Nb> __result(__x);
@@ -679,11 +679,11 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_istream<_CharT, _Traits>&  _STLP_CALL
+basic_istream<_CharT, _Traits>& 
 operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x);
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os, const bitset<_Nb>& __x);
 
 #endif

@@ -38,7 +38,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DBG_ALLOCATOR(_Tp) >
 class deque : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_DEQUE >
 {
   typedef deque<_Tp,_Alloc> _Self;

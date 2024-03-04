@@ -176,14 +176,6 @@
 */
 
 /*
- * You should define this macro if compiling with MFC - STLport <stl/config/_windows.h>
- * then include <afx.h> instead of <windows.h> to get synchronisation primitives
- */
-/*
-#define _STLP_USE_MFC 1
-*/
-
-/*
  * boris : this setting is here as we cannot detect precense of new Platform SDK automatically
  * If you are using new PSDK with VC++ 6.0 or lower,
  * please define this to get correct prototypes for InterlockedXXX functions

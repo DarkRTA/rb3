@@ -42,7 +42,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class list : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_LIST >
 {
   typedef _STLP_NON_DBG_LIST _Base;

@@ -59,34 +59,22 @@ template <class __number>
 class _Numeric_limits_base {
 public:
 
-  static __number (_STLP_CALL min)() _STLP_NOTHROW { return __number(); }
-  static __number (_STLP_CALL max)() _STLP_NOTHROW { return __number(); }
+  static __number (min)() _STLP_NOTHROW { return __number(); }
+  static __number (max)() _STLP_NOTHROW { return __number(); }
 
-#if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  enum {
-#else
   static const int
-#endif
-
   digits = 0,
   digits10 = 0,
   radix = 0,
   min_exponent = 0,
   min_exponent10 = 0,
   max_exponent = 0,
-  max_exponent10 = 0
+  max_exponent10 = 0;
 
-#if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  ,
-  has_denorm = denorm_absent,
-  round_style = round_toward_zero,
-#else
-  ;
   static const float_denorm_style has_denorm =  denorm_absent;
   static const float_round_style round_style = round_toward_zero;
-  static const bool
-#endif
 
+  static const bool
     is_specialized = false,
     is_signed  = false,
     is_integer = false,
@@ -99,19 +87,15 @@ public:
     is_bounded = false,
     is_modulo = false,
     traps = false,
-    tinyness_before = false
-#if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  }
-#endif
-  ;
+    tinyness_before = false;
 
-  static __number _STLP_CALL epsilon() _STLP_NOTHROW     { return __number(); }
-  static __number _STLP_CALL round_error() _STLP_NOTHROW { return __number(); }
+  static __number epsilon() _STLP_NOTHROW     { return __number(); }
+  static __number round_error() _STLP_NOTHROW { return __number(); }
 
-  static __number _STLP_CALL infinity() _STLP_NOTHROW      { return __number(); }
-  static __number _STLP_CALL quiet_NaN() _STLP_NOTHROW     { return __number(); }
-  static __number _STLP_CALL signaling_NaN() _STLP_NOTHROW { return __number(); }
-  static __number _STLP_CALL denorm_min() _STLP_NOTHROW    { return __number(); }
+  static __number infinity() _STLP_NOTHROW      { return __number(); }
+  static __number quiet_NaN() _STLP_NOTHROW     { return __number(); }
+  static __number signaling_NaN() _STLP_NOTHROW { return __number(); }
+  static __number denorm_min() _STLP_NOTHROW    { return __number(); }
 };
 
 // Base class for integers.
@@ -120,35 +104,23 @@ template <class _Int, _Int __imin, _Int __imax, int __idigits, bool __ismod>
 class _Integer_limits : public _Numeric_limits_base<_Int> {
 public:
 
-  static _Int (_STLP_CALL min) () _STLP_NOTHROW { return (_Int)__imin; }
-  static _Int (_STLP_CALL max) () _STLP_NOTHROW { return (_Int)__imax; }
+  static _Int (min) () _STLP_NOTHROW { return (_Int)__imin; }
+  static _Int (max) () _STLP_NOTHROW { return (_Int)__imax; }
 
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum {
-#else
   static const int
-#endif
   digits = (__idigits < 0) ?
   ((int)((sizeof(_Int) * (CHAR_BIT))) - ((__imin == 0) ? 0 : 1))
   : (__idigits),
   digits10 = (digits * 301UL) / 1000,
-  radix = 2
-#if !defined (_STLP_STATIC_CONST_INIT_BUG)
-  ;
+  radix = 2;
+
   static const bool
-#else
-  ,
-#endif
   is_specialized = true,
   is_signed = (__imin != 0),
   is_integer = true,
   is_exact = true,
   is_bounded = true,
-  is_modulo = __ismod
-#if defined ( _STLP_STATIC_CONST_INIT_BUG)
-  }
-#endif
-  ;
+  is_modulo = __ismod;
 };
 
 // Base class for floating-point numbers.
@@ -161,12 +133,7 @@ template <class __number,
 class _Floating_limits : public _Numeric_limits_base<__number> {
 public:
 
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum {
-#else
   static const int
-#endif
-
   digits = __Digits,
   digits10 = __Digits10,
 
@@ -174,19 +141,12 @@ public:
   min_exponent = __MinExp,
   max_exponent = __MaxExp,
   min_exponent10 = __MinExp10,
-  max_exponent10 = __MaxExp10
+  max_exponent10 = __MaxExp10;
 
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  ,
-  has_denorm = denorm_indeterminate,
-  round_style = __RoundStyle,
-#else
-  ;
   static const float_denorm_style has_denorm = denorm_indeterminate;
   static const float_round_style round_style = __RoundStyle;
-  static const bool
-#endif
 
+  static const bool
   is_specialized = true,
   is_signed = true,
 
@@ -198,15 +158,10 @@ public:
   has_signaling_NaN = __IsIEC559,
 
   has_denorm_loss   =  false,
-  is_iec559      =  __IsIEC559,
-  is_bounded     =  true,
-  traps          =  true,
-  tinyness_before=  false
-
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  }
-#endif
-  ;
+  is_iec559         =  __IsIEC559,
+  is_bounded        =  true,
+  traps             =  true,
+  tinyness_before   =  false;
 };
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -291,15 +246,15 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class __dummy>
 class _LimG {
 public:
-  static float _STLP_CALL get_F_inf();
-  static float _STLP_CALL get_F_qNaN();
-  static float _STLP_CALL get_F_sNaN();
-  static double _STLP_CALL get_D_inf();
-  static double _STLP_CALL get_D_qNaN();
-  static double _STLP_CALL get_D_sNaN();
-  static long double _STLP_CALL get_LD_inf();
-  static long double _STLP_CALL get_LD_qNaN();
-  static long double _STLP_CALL get_LD_sNaN();
+  static float get_F_inf();
+  static float get_F_qNaN();
+  static float get_F_sNaN();
+  static double get_D_inf();
+  static double get_D_qNaN();
+  static double get_D_sNaN();
+  static long double get_LD_inf();
+  static long double get_LD_qNaN();
+  static long double get_LD_sNaN();
 };
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -320,14 +275,14 @@ class numeric_limits<float>
 #endif
                                         round_to_nearest> {
 public:
-  static float (_STLP_CALL min) () _STLP_NOTHROW { return FLT_MIN; }
-  static float _STLP_CALL denorm_min() _STLP_NOTHROW { return FLT_MIN; }
-  static float (_STLP_CALL max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return FLT_MAX; }
-  static float _STLP_CALL epsilon() _STLP_NOTHROW { return FLT_EPSILON; }
-  static float _STLP_CALL round_error() _STLP_NOTHROW { return 0.5f; } // Units: ulps.
-  static  float _STLP_CALL infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_inf(); }
-  static  float _STLP_CALL quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_qNaN(); }
-  static  float _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_sNaN(); }
+  static float (min) () _STLP_NOTHROW { return FLT_MIN; }
+  static float denorm_min() _STLP_NOTHROW { return FLT_MIN; }
+  static float (max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return FLT_MAX; }
+  static float epsilon() _STLP_NOTHROW { return FLT_EPSILON; }
+  static float round_error() _STLP_NOTHROW { return 0.5f; } // Units: ulps.
+  static  float infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_inf(); }
+  static  float quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_qNaN(); }
+  static  float signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_sNaN(); }
 };
 
 template<>
@@ -346,14 +301,14 @@ class numeric_limits<double>
 #endif
                                         round_to_nearest> {
 public:
-  static double (_STLP_CALL min)() _STLP_NOTHROW { return DBL_MIN; }
-  static double _STLP_CALL denorm_min() _STLP_NOTHROW { return DBL_MIN; }
-  static double (_STLP_CALL max)() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return DBL_MAX; }
-  static double _STLP_CALL epsilon() _STLP_NOTHROW { return DBL_EPSILON; }
-  static double _STLP_CALL round_error() _STLP_NOTHROW { return 0.5; } // Units: ulps.
-  static  double _STLP_CALL infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_inf(); }
-  static  double _STLP_CALL quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_qNaN(); }
-  static  double _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_sNaN(); }
+  static double (min)() _STLP_NOTHROW { return DBL_MIN; }
+  static double denorm_min() _STLP_NOTHROW { return DBL_MIN; }
+  static double (max)() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return DBL_MAX; }
+  static double epsilon() _STLP_NOTHROW { return DBL_EPSILON; }
+  static double round_error() _STLP_NOTHROW { return 0.5; } // Units: ulps.
+  static  double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_inf(); }
+  static  double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_qNaN(); }
+  static  double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_sNaN(); }
 };
 
 template<>
@@ -368,14 +323,14 @@ class numeric_limits<long double>
                                         false,          // do not conform to iec559
                                         round_to_nearest> {
 public:
-  static long double (_STLP_CALL min) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
-  static long double _STLP_CALL denorm_min() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
-  static long double (_STLP_CALL max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MAX; }
-  static long double _STLP_CALL epsilon() _STLP_NOTHROW { return LDBL_EPSILON; }
-  static long double _STLP_CALL round_error() _STLP_NOTHROW { return 4; } // Units: ulps.
-  static long double _STLP_CALL infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_inf(); }
-  static long double _STLP_CALL quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_qNaN(); }
-  static long double _STLP_CALL signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_sNaN(); }
+  static long double (min) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
+  static long double denorm_min() _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MIN; }
+  static long double (max) () _STLP_NOTHROW { _STLP_USING_VENDOR_CSTD return LDBL_MAX; }
+  static long double epsilon() _STLP_NOTHROW { return LDBL_EPSILON; }
+  static long double round_error() _STLP_NOTHROW { return 4; } // Units: ulps.
+  static long double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_inf(); }
+  static long double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_qNaN(); }
+  static long double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_sNaN(); }
 };
 
 // We write special values (Inf and NaN) as bit patterns and

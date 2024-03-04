@@ -83,13 +83,13 @@ public:
 };
 
 template <class _Tp, class _Sequence>
-inline bool _STLP_CALL
+inline bool
 operator==(const queue<_Tp, _Sequence>& __x, const queue<_Tp, _Sequence>& __y) {
   return __x._Get_s() == __y._Get_s();
 }
 
 template <class _Tp, class _Sequence>
-inline bool _STLP_CALL
+inline bool
 operator<(const queue<_Tp, _Sequence>& __x, const queue<_Tp, _Sequence>& __y) {
   return __x._Get_s() < __y._Get_s();
 }

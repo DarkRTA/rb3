@@ -72,7 +72,7 @@ extern "C" int __nanosleep(const struct timespec*, struct timespec*);
 #  endif
 
 template <int __inst>
-void _STLP_CALL
+void
 _STLP_mutex_spin<__inst>::_S_nsec_sleep(int __log_nsec) {
 #  if defined (_STLP_WIN32THREADS)
   if (__log_nsec <= 20) {
@@ -101,7 +101,7 @@ _STLP_mutex_spin<__inst>::_S_nsec_sleep(int __log_nsec) {
 }
 
 template <int __inst>
-void  _STLP_CALL
+void 
 _STLP_mutex_spin<__inst>::_M_do_lock(volatile __stl_atomic_t* __lock) {
 #  if defined(_STLP_ATOMIC_EXCHANGE)
   if (_Atomic_swap(__lock, 1)) {

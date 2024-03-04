@@ -578,7 +578,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
 template <class _CharT, class _Traits, class _Alloc>
-void _STLP_CALL _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
+void _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
                                _CharT* __buf, size_t __n) {
   if (__n > 0) {
     __n = (min) (__n - 1, __s.size());
@@ -633,7 +633,6 @@ template <class _CharT, class _Traits, class _Alloc>
 basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT* __s,
                                                     const allocator_type& __a)
   : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
-  _STLP_FIX_LITERAL_BUG(__s)
   _M_range_initialize(__s, __s + traits_type::length(__s));
 }
 
@@ -649,10 +648,8 @@ _STLP_MOVE_TO_STD_NAMESPACE
 /* If basic_string is defined it means that it won't be the basic_string class
  * exposed to STLport users so npos do not need external linkage.
  */
-#  if !defined (_STLP_STATIC_CONST_INIT_BUG)
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
-#  endif
 #endif
 
 _STLP_END_NAMESPACE

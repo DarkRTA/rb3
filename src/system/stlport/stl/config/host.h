@@ -175,7 +175,7 @@
  * user-defined global function:
  *  void __stl_debug_terminate(void). This allows
  * you to take control of assertion behaviour for debugging purposes.
- * Default routine calls _STLP_ABORT().
+ * Default routine calls abort().
  * Note : If you set this macro, you must supply __stl_debug_terminate
  * function definition somewhere.
  */
@@ -220,16 +220,6 @@
 */
 
 /*
- * _STLP_USE_RAW_SGI_ALLOCATORS is a hook so that users can disable use of
- * allocator<T> as default parameter for containers, and use SGI
- * raw allocators as default ones, without having to edit library headers.
- * Use of this macro is strongly discouraged.
- */
-/*
-#define _STLP_USE_RAW_SGI_ALLOCATORS 1
-*/
-
-/*
  * Use obsolete overloaded template functions iterator_category(), value_type(), distance_type()
  * for querying iterator properties. Please note those names are non-standard and are not guaranteed
  * to be used by every implementation. However, this setting is on by default when partial specialization
@@ -259,14 +249,6 @@
 */
 
 /*==========================================================================*/
-
-/* This section contains swithes which should be off by default,
- * but so few compilers would have it undefined, so that we set them here,
- * with the option to be turned off later in compiler-specific file
- */
-
-#define _STLP_NO_UNCAUGHT_EXCEPT_SUPPORT
-#define _STLP_NO_UNEXPECTED_EXCEPT_SUPPORT
 
 /*
   Local Variables:

@@ -33,7 +33,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _Tp>
-pair<_Tp*, ptrdiff_t> _STLP_CALL
+pair<_Tp*, ptrdiff_t>
 __get_temporary_buffer(ptrdiff_t __len, _Tp*)
 {
   if (__len > ptrdiff_t(INT_MAX / sizeof(_Tp)))

@@ -37,7 +37,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _RandomAccessIterator, class _Distance, class _Tp>
-_STLP_INLINE_LOOP
+inline
 void
 __push_heap(_RandomAccessIterator __first,
             _Distance __holeIndex, _Distance __topIndex, _Tp __val)
@@ -71,7 +71,7 @@ push_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 
 template <class _RandomAccessIterator, class _Distance, class _Tp,
           class _Compare>
-_STLP_INLINE_LOOP
+inline
 void
 __push_heap(_RandomAccessIterator __first, _Distance __holeIndex,
             _Distance __topIndex, _Tp __val, _Compare __comp)
@@ -185,7 +185,7 @@ pop_heap(_RandomAccessIterator __first,
 }
 
 template <class _RandomAccessIterator, class _Tp, class _Distance>
-_STLP_INLINE_LOOP
+inline
 void
 __make_heap(_RandomAccessIterator __first,
             _RandomAccessIterator __last, _Tp*, _Distance*)
@@ -211,7 +211,7 @@ make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 
 template <class _RandomAccessIterator, class _Compare,
           class _Tp, class _Distance>
-_STLP_INLINE_LOOP
+inline
 void
 __make_heap(_RandomAccessIterator __first, _RandomAccessIterator __last,
             _Compare __comp, _Tp*, _Distance*)

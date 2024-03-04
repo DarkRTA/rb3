@@ -43,7 +43,7 @@ locale::id time_put<_CharT, _OutputIterator>::id;
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InIt, class _CharT>
-const string* _STLP_CALL
+const string*
 __match(_InIt& __first, _InIt& __last, const string *__name, const string *__name_end,
         const ctype<_CharT>& __ct) {
   typedef ptrdiff_t difference_type;
@@ -111,7 +111,7 @@ __match(_InIt& __first, _InIt& __last, const string *__name, const string *__nam
 // Note that the antepenultimate parameter is being used only to determine
 // the correct overloading for the calls to __get_integer_nogroup.
 template <class _InIt1, class _Ch>
-string::const_iterator _STLP_CALL
+string::const_iterator
 __get_formatted_time (_InIt1 __first,  _InIt1 __last,
                                  string::const_iterator __format, string::const_iterator __format_end,
                                  _Ch*, const _Time_Info& __table,
@@ -257,7 +257,7 @@ __get_formatted_time (_InIt1 __first,  _InIt1 __last,
 }
 
 template <class _InIt, class _CharT>
-bool _STLP_CALL
+bool
 __get_short_or_long_dayname(_InIt& __first, _InIt& __last, const ctype<_CharT>& __ct,
                             const _Time_Info& __table, tm* __t) {
   const string* __pr =
@@ -267,7 +267,7 @@ __get_short_or_long_dayname(_InIt& __first, _InIt& __last, const ctype<_CharT>& 
 }
 
 template <class _InIt, class _CharT>
-bool _STLP_CALL
+bool
 __get_short_or_long_monthname(_InIt& __first, _InIt& __last, const ctype<_CharT>& __ct,
                               const _Time_Info& __table, tm* __t) {
   const string* __pr =
@@ -277,7 +277,7 @@ __get_short_or_long_monthname(_InIt& __first, _InIt& __last, const ctype<_CharT>
 }
 
 template <class _OuIt>
-_OuIt _STLP_CALL
+_OuIt
 __put_time(char * __first, char * __last, _OuIt __out_ite,
            const ios_base& __s, wchar_t) {
     const ctype<wchar_t>& __ct = *static_cast<const ctype<wchar_t>*>(__s._M_ctype_facet());

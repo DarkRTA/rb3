@@ -83,7 +83,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 // constructor invoked from the _byname subclass constructor to
 // construct the base class.
 
-class _STLP_CLASS_DECLSPEC _Time_Info {
+class _Time_Info {
 public:
   string _M_dayname[14];
   string _M_monthname[24];
@@ -95,12 +95,12 @@ public:
   string _M_long_date_time_format;
 };
 
-void _STLP_CALL _Init_timeinfo(_Time_Info&);
-void _STLP_CALL _Init_timeinfo(_Time_Info&, _Locale_time*);
+void _Init_timeinfo(_Time_Info&);
+void _Init_timeinfo(_Time_Info&, _Locale_time*);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-class _STLP_CLASS_DECLSPEC time_base {
+class time_base {
 public:
   enum dateorder {no_order, dmy, mdy, ymd, ydm};
 };
@@ -132,7 +132,7 @@ public:
                      ios_base::iostate&  __err, tm* __t) const
   { return do_get_year(__s,  __end,  __str,  __err, __t); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   time_get(_Locale_time *, size_t __refs) : locale::facet(__refs) {}
@@ -167,9 +167,9 @@ protected:
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-time_base::dateorder _STLP_CALL __get_date_order(_Locale_time*);
-_Locale_time* _STLP_CALL __acquire_time(const char* __name, _Locale_name_hint*);
-void _STLP_CALL __release_time(_Locale_time* __time);
+time_base::dateorder __get_date_order(_Locale_time*);
+_Locale_time* __acquire_time(const char* __name, _Locale_name_hint*);
+void __release_time(_Locale_time* __time);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -216,17 +216,17 @@ private:
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-char * _STLP_CALL
+char *
 __write_formatted_time(char *__buf, size_t __buf_size, char __format, char __modifier,
                        const _Time_Info& __table, const tm* __t);
 
 template <class _OuIt>
-inline _OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
+inline _OuIt __put_time(char * __first, char * __last, _OuIt __out_ite,
                                    const ios_base& /* __loc */, char)
 { return copy(__first, __last, __out_ite); }
 
 template <class _OuIt>
-_OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
+_OuIt __put_time(char * __first, char * __last, _OuIt __out_ite,
                             const ios_base& __s, wchar_t);
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -249,7 +249,7 @@ public:
                   const tm* __tmb, char __format, char __modifier = 0) const
   { return do_put(__s, __f,  __fill, __tmb, __format, __modifier); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   time_put(_Locale_time* /*__time*/, size_t __refs) : locale::facet(__refs)

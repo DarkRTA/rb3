@@ -75,7 +75,7 @@ private:
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
-          _STLP_DBG_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DBG_ALLOCATOR(_Value) >
 class _Rb_tree {
   typedef _STLP_NON_DBG_TREE _Base;
   typedef _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> _Self;

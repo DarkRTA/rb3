@@ -21,8 +21,7 @@
 
 // _STLP_DONT_THROW_RANGE_ERRORS is a hook so that users can disable
 // this exception throwing.
-#if defined (_STLP_CAN_THROW_RANGE_ERRORS) && defined (_STLP_USE_EXCEPTIONS) && \
-   !defined (_STLP_DONT_THROW_RANGE_ERRORS)
+#if defined (_STLP_USE_EXCEPTIONS) && !defined (_STLP_DONT_THROW_RANGE_ERRORS)
 #  define _STLP_THROW_RANGE_ERRORS
 #endif
 
@@ -32,12 +31,12 @@
 #endif
 
 _STLP_BEGIN_NAMESPACE
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_runtime_error(const char* __msg);
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_range_error(const char* __msg);
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_out_of_range(const char* __msg);
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_length_error(const char* __msg);
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_invalid_argument(const char* __msg);
-void _STLP_FUNCTION_THROWS _STLP_DECLSPEC _STLP_CALL __stl_throw_overflow_error(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_runtime_error(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_range_error(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_out_of_range(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_length_error(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_invalid_argument(const char* __msg);
+void _STLP_FUNCTION_THROWS __stl_throw_overflow_error(const char* __msg);
 _STLP_END_NAMESPACE
 
 #if !defined (_STLP_EXTERN_RANGE_ERRORS)
@@ -51,17 +50,13 @@ _STLP_END_NAMESPACE
 #    endif
 #    define _STLP_THROW_MSG(ex,msg)  throw ex(string(msg))
 #  else
-#    if defined (_STLP_RTTI_BUG)
-#      define _STLP_THROW_MSG(ex,msg)  TerminateProcess(GetCurrentProcess(), 0)
-#    else
-#      ifndef _STLP_INTERNAL_CSTDLIB
-#        include <stl/_cstdlib.h>
-#      endif
-#      ifndef _STLP_INTERNAL_CSTDIO
-#        include <stl/_cstdio.h>
-#      endif
-#      define _STLP_THROW_MSG(ex,msg)  puts(msg),_STLP_ABORT()
+#    ifndef _STLP_INTERNAL_CSTDLIB
+#      include <stl/_cstdlib.h>
 #    endif
+#    ifndef _STLP_INTERNAL_CSTDIO
+#      include <stl/_cstdio.h>
+#    endif
+#    define _STLP_THROW_MSG(ex,msg)  puts(msg),abort()
 #  endif
 
 // For mode without library and throwing range errors, include the
@@ -69,22 +64,22 @@ _STLP_END_NAMESPACE
 
 _STLP_BEGIN_NAMESPACE
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_runtime_error(const char* __msg)
+inline void __stl_throw_runtime_error(const char* __msg)
 { _STLP_THROW_MSG(runtime_error, __msg); }
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_range_error(const char* __msg)
+inline void __stl_throw_range_error(const char* __msg)
 { _STLP_THROW_MSG(range_error, __msg); }
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_out_of_range(const char* __msg)
+inline void __stl_throw_out_of_range(const char* __msg)
 { _STLP_THROW_MSG(out_of_range, __msg); }
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_length_error(const char* __msg)
+inline void __stl_throw_length_error(const char* __msg)
 { _STLP_THROW_MSG(length_error, __msg); }
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_invalid_argument(const char* __msg)
+inline void __stl_throw_invalid_argument(const char* __msg)
 { _STLP_THROW_MSG(invalid_argument, __msg); }
 
-inline void _STLP_DECLSPEC _STLP_CALL __stl_throw_overflow_error(const char* __msg)
+inline void __stl_throw_overflow_error(const char* __msg)
 { _STLP_THROW_MSG(overflow_error, __msg); }
 
 _STLP_END_NAMESPACE

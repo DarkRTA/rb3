@@ -66,12 +66,11 @@ public:
   _Tp* get() const _STLP_NOTHROW
   { return reinterpret_cast<_Tp*>(const_cast<void*>(_M_p)); }
 
-#if !defined (_STLP_NO_ARROW_OPERATOR)
   _Tp* operator->() const _STLP_NOTHROW {
     _STLP_VERBOSE_ASSERT(get()!=0, _StlMsg_AUTO_PTR_NULL)
     return get();
   }
-#endif
+
   _Tp& operator*() const _STLP_NOTHROW {
     _STLP_VERBOSE_ASSERT(get()!= 0, _StlMsg_AUTO_PTR_NULL)
     return *get();

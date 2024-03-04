@@ -143,7 +143,7 @@ uninitialized_copy(const wchar_t* __first, const wchar_t* __last, wchar_t* __res
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InputIter, class _Size, class _ForwardIter>
-_STLP_INLINE_LOOP
+inline
 pair<_InputIter, _ForwardIter>
 __ucopy_n(_InputIter __first, _Size __count, _ForwardIter __result,
           const input_iterator_tag &) {
@@ -360,7 +360,7 @@ __uninitialized_move(_InputIter __first, _InputIter __last, _ForwardIter __resul
 { return __ucopy_ptrs(__first, __last, __result, __trivial_ucpy); }
 
 template <class _InputIter, class _ForwardIter, class _TrivialUCpy>
-_STLP_INLINE_LOOP
+inline
 _ForwardIter
 __uninitialized_move(_InputIter __first, _InputIter __last, _ForwardIter __result,
                      _TrivialUCpy , const __true_type& /*_Movable*/) {

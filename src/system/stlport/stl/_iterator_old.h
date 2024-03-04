@@ -39,13 +39,13 @@ _STLP_BEGIN_NAMESPACE
 # ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
 
 template <class _Container>
-inline output_iterator_tag _STLP_CALL
+inline output_iterator_tag
 iterator_category(const back_insert_iterator<_Container>&) { return output_iterator_tag(); }
 template <class _Container>
-inline output_iterator_tag _STLP_CALL
+inline output_iterator_tag
 iterator_category(const front_insert_iterator<_Container>&) { return output_iterator_tag(); }
 template <class _Container>
-inline output_iterator_tag _STLP_CALL
+inline output_iterator_tag
 iterator_category(const insert_iterator<_Container>&) { return output_iterator_tag(); }
 
 # endif
@@ -97,24 +97,24 @@ public:
 # ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
 template <class _BidirectionalIterator, class _Tp, class _Reference,
           class _Distance>
-inline bidirectional_iterator_tag _STLP_CALL
+inline bidirectional_iterator_tag
 iterator_category(const reverse_bidirectional_iterator<_BidirectionalIterator, _Tp, _Reference, _Distance>&)
 { return bidirectional_iterator_tag(); }
 template <class _BidirectionalIterator, class _Tp, class _Reference,
   class _Distance>
-inline _Tp* _STLP_CALL
+inline _Tp*
 value_type(const reverse_bidirectional_iterator<_BidirectionalIterator, _Tp, _Reference, _Distance>&)
 { return (_Tp*) 0; }
 template <class _BidirectionalIterator, class _Tp, class _Reference,
           class _Distance>
-inline _Distance* _STLP_CALL
+inline _Distance*
 distance_type(const reverse_bidirectional_iterator<_BidirectionalIterator, _Tp, _Reference, _Distance>&)
 { return (_Distance*) 0; }
 #endif
 
 template <class _BidirectionalIterator, class _Tp, class _Reference,
           class _Distance>
-inline bool  _STLP_CALL operator==(
+inline bool  operator==(
     const reverse_bidirectional_iterator<_BidirectionalIterator, _Tp,
                                                _Reference, _Distance>& __x,
     const reverse_bidirectional_iterator<_BidirectionalIterator, _Tp,
@@ -126,7 +126,7 @@ inline bool  _STLP_CALL operator==(
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 
 template <class _BiIter, class _Tp, class _Reference, class _Distance>
-inline bool  _STLP_CALL operator!=(
+inline bool  operator!=(
     const reverse_bidirectional_iterator<_BiIter, _Tp, _Reference, _Distance>& __x,
     const reverse_bidirectional_iterator<_BiIter, _Tp, _Reference, _Distance>& __y)
 {

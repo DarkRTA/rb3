@@ -109,45 +109,45 @@ public:
 };
 
 template <class _Iterator>
-inline bool  _STLP_CALL operator==(const reverse_iterator<_Iterator>& __x,
+inline bool  operator==(const reverse_iterator<_Iterator>& __x,
                                    const reverse_iterator<_Iterator>& __y)
 { return __x.base() == __y.base(); }
 
 template <class _Iterator>
-inline bool _STLP_CALL operator<(const reverse_iterator<_Iterator>& __x,
+inline bool operator<(const reverse_iterator<_Iterator>& __x,
                                  const reverse_iterator<_Iterator>& __y)
 { return __y.base() < __x.base(); }
 
 #  if defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
 template <class _Iterator>
-inline bool _STLP_CALL operator!=(const reverse_iterator<_Iterator>& __x,
+inline bool operator!=(const reverse_iterator<_Iterator>& __x,
                                   const reverse_iterator<_Iterator>& __y)
 { return !(__x == __y); }
 
 template <class _Iterator>
-inline bool _STLP_CALL operator>(const reverse_iterator<_Iterator>& __x,
+inline bool operator>(const reverse_iterator<_Iterator>& __x,
                                  const reverse_iterator<_Iterator>& __y)
 { return __y < __x; }
 
 template <class _Iterator>
-inline bool _STLP_CALL operator<=(const reverse_iterator<_Iterator>& __x,
+inline bool operator<=(const reverse_iterator<_Iterator>& __x,
                                   const reverse_iterator<_Iterator>& __y)
 { return !(__y < __x); }
 
 template <class _Iterator>
-inline bool _STLP_CALL operator>=(const reverse_iterator<_Iterator>& __x,
+inline bool operator>=(const reverse_iterator<_Iterator>& __x,
                                   const reverse_iterator<_Iterator>& __y)
 { return !(__x < __y); }
 #  endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
 template <class _Iterator>
-inline typename reverse_iterator<_Iterator>::difference_type _STLP_CALL
+inline typename reverse_iterator<_Iterator>::difference_type
 operator-(const reverse_iterator<_Iterator>& __x,
           const reverse_iterator<_Iterator>& __y)
 { return __y.base() - __x.base(); }
 
 template <class _Iterator, class _DifferenceType>
-inline reverse_iterator<_Iterator>  _STLP_CALL
+inline reverse_iterator<_Iterator> 
 operator+(_DifferenceType n,const reverse_iterator<_Iterator>& x)
 { return x.operator+(n); }
 
@@ -178,7 +178,7 @@ public:
 };
 
 template <class _Container>
-inline back_insert_iterator<_Container>  _STLP_CALL back_inserter(_Container& __x)
+inline back_insert_iterator<_Container>  back_inserter(_Container& __x)
 { return back_insert_iterator<_Container>(__x); }
 
 template <class _Container>
@@ -207,7 +207,7 @@ public:
 };
 
 template <class _Container>
-inline front_insert_iterator<_Container>  _STLP_CALL front_inserter(_Container& __x)
+inline front_insert_iterator<_Container>  front_inserter(_Container& __x)
 { return front_insert_iterator<_Container>(__x); }
 
 template <class _Container>
@@ -240,7 +240,7 @@ public:
 };
 
 template <class _Container, class _Iterator>
-inline insert_iterator<_Container>  _STLP_CALL
+inline insert_iterator<_Container> 
 inserter(_Container& __x, _Iterator __i) {
   typedef typename _Container::iterator __iter;
   return insert_iterator<_Container>(__x, __iter(__i));

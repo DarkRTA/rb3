@@ -40,7 +40,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_CREATE_ITERATOR_TRAITS(MapTraitsT, traits)
 
 template <class _Key, class _Tp, class _Compare = less<_Key>,
-          _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(const _Key, _Tp) >
+          class _Alloc = _STLP_DEFAULT_PAIR_ALLOCATOR(const _Key, _Tp) >
 class map
 {
   typedef map<_Key, _Tp, _Compare, _Alloc> _Self;
@@ -186,7 +186,7 @@ public:
 _STLP_CREATE_ITERATOR_TRAITS(MultimapTraitsT, traits)
 
 template <class _Key, class _Tp, class _Compare = less<_Key>,
-          _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(const _Key, _Tp) >
+          class _Alloc = _STLP_DEFAULT_PAIR_ALLOCATOR(const _Key, _Tp) >
 class multimap
 {
   typedef multimap<_Key, _Tp, _Compare, _Alloc> _Self;

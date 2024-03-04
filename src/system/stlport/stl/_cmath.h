@@ -184,13 +184,6 @@ inline long double pow(long double __x, int __y) { return _STLP_CMATH_FUNC_NAMES
 inline long double pow(long double __x, int __y) { return static_cast<long double>(_STLP_CMATH_FUNC_NAMESPACE::pow(__x, static_cast<long double>(__y))); }
 #endif
 
-#if defined (_STLP_RESTORE_FUNCTION_INTRINSIC)
-//restoration of the default intrinsic status of those functions:
-#  pragma intrinsic (abs, acos, asin, atan, atan2, cos, cosh, exp, fabs, fmod, log, log10, sin, sinh, sqrt, tan, tanh)
-#  pragma warning(pop)
-#  undef _STLP_RESTORE_FUNCTION_INTRINSIC
-#endif
-
 /* C++ Standard is unclear about several call to 'using ::func' if new overloads
  * of ::func appears between 2 successive 'using' calls. To avoid this potential
  * problem we provide all abs overload before the 'using' call.

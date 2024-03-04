@@ -95,7 +95,7 @@ make_heap(_RandomAccessIterator __first,
           _RandomAccessIterator __last, _Compare __comp);
 
 template <class _RandomAccessIterator>
-_STLP_INLINE_LOOP
+inline
 void sort_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 {
   while (__last - __first > 1)
@@ -103,7 +103,7 @@ void sort_heap(_RandomAccessIterator __first, _RandomAccessIterator __last)
 }
 
 template <class _RandomAccessIterator, class _Compare>
-_STLP_INLINE_LOOP
+inline
 void
 sort_heap(_RandomAccessIterator __first,
           _RandomAccessIterator __last, _Compare __comp)

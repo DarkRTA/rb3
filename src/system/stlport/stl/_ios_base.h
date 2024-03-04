@@ -45,10 +45,10 @@ _STLP_BEGIN_NAMESPACE
 // manipulation to the streambuf classes, and they delegate most
 // formatting tasks to a locale.
 
-class _STLP_CLASS_DECLSPEC ios_base {
+class ios_base {
 public:
 
-  class _STLP_CLASS_DECLSPEC failure : public __Named_exception {
+  class failure : public __Named_exception {
   public:
     explicit failure(const string&);
     virtual ~failure() _STLP_NOTHROW_INHERENTLY;
@@ -64,12 +64,7 @@ public:
 # endif
 
   // Formatting flags.
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum  {
-#else
-  // boris : type for all those constants is int
   static const int
-#endif
     left       = 0x0001,
     right      = 0x0002,
     internal   = 0x0004,
@@ -108,11 +103,7 @@ public:
 
     beg = 0x01,
     cur = 0x02,
-    end = 0x04
-# ifdef _STLP_STATIC_CONST_INIT_BUG
-  }
-# endif
-  ;
+    end = 0x04;
 
 public:                         // Flag-manipulation functions.
   fmtflags flags() const { return _M_fmtflags; }
@@ -154,7 +145,7 @@ public:                         // Locales
   locale getloc() const { return _M_locale; }
 
 public:                         // Auxiliary storage.
-  static int _STLP_CALL xalloc();
+  static int xalloc();
   long&  iword(int __index);
   void*& pword(int __index);
 
@@ -169,7 +160,7 @@ public:                         // Callbacks.
 public:                         // This member function affects only
                                 // the eight predefined ios objects:
                                 // cin, cout, etc.
-  static bool _STLP_CALL sync_with_stdio(bool __sync = true);
+  static bool sync_with_stdio(bool __sync = true);
 
 public:                         // The C++ standard requires only that these
                                 // member functions be defined in basic_ios.
@@ -208,8 +199,8 @@ protected:                      // The functional protected interface.
   ios_base();                   // Default constructor.
 
 protected:                        // Initialization of the I/O system
-  static void _STLP_CALL _S_initialize();
-  static void _STLP_CALL _S_uninitialize();
+  static void _S_initialize();
+  static void _S_uninitialize();
   static bool _S_was_synced;
 
 private:                        // Invalidate the copy constructor and
@@ -259,7 +250,7 @@ public:
   // implementations where such a thing is required) is declared in
   // <iostream>
 
-  class _STLP_CLASS_DECLSPEC Init
+  class Init
   {
     public:
       Init();
@@ -287,75 +278,75 @@ public:
 // All of them are trivial one-line wrapper functions.
 
 // fmtflag manipulators, section 27.4.5.1
-inline ios_base& _STLP_CALL boolalpha(ios_base& __s)
+inline ios_base& boolalpha(ios_base& __s)
   { __s.setf(ios_base::boolalpha); return __s;}
 
-inline ios_base& _STLP_CALL noboolalpha(ios_base& __s)
+inline ios_base& noboolalpha(ios_base& __s)
   { __s.unsetf(ios_base::boolalpha); return __s;}
 
-inline ios_base& _STLP_CALL showbase(ios_base& __s)
+inline ios_base& showbase(ios_base& __s)
   { __s.setf(ios_base::showbase); return __s;}
 
-inline ios_base& _STLP_CALL noshowbase(ios_base& __s)
+inline ios_base& noshowbase(ios_base& __s)
   { __s.unsetf(ios_base::showbase); return __s;}
 
-inline ios_base& _STLP_CALL showpoint(ios_base& __s)
+inline ios_base& showpoint(ios_base& __s)
   { __s.setf(ios_base::showpoint); return __s;}
 
-inline ios_base& _STLP_CALL noshowpoint(ios_base& __s)
+inline ios_base& noshowpoint(ios_base& __s)
   { __s.unsetf(ios_base::showpoint); return __s;}
 
-inline ios_base& _STLP_CALL showpos(ios_base& __s)
+inline ios_base& showpos(ios_base& __s)
   { __s.setf(ios_base::showpos); return __s;}
 
-inline ios_base& _STLP_CALL noshowpos(ios_base& __s)
+inline ios_base& noshowpos(ios_base& __s)
   { __s.unsetf(ios_base::showpos); return __s;}
 
-inline ios_base& _STLP_CALL skipws(ios_base& __s)
+inline ios_base& skipws(ios_base& __s)
   { __s.setf(ios_base::skipws); return __s;}
 
-inline ios_base& _STLP_CALL noskipws(ios_base& __s)
+inline ios_base& noskipws(ios_base& __s)
   { __s.unsetf(ios_base::skipws); return __s;}
 
-inline ios_base& _STLP_CALL uppercase(ios_base& __s)
+inline ios_base& uppercase(ios_base& __s)
   { __s.setf(ios_base::uppercase); return __s;}
 
-inline ios_base& _STLP_CALL nouppercase(ios_base& __s)
+inline ios_base& nouppercase(ios_base& __s)
   { __s.unsetf(ios_base::uppercase); return __s;}
 
-inline ios_base& _STLP_CALL unitbuf(ios_base& __s)
+inline ios_base& unitbuf(ios_base& __s)
   { __s.setf(ios_base::unitbuf); return __s;}
 
-inline ios_base& _STLP_CALL nounitbuf(ios_base& __s)
+inline ios_base& nounitbuf(ios_base& __s)
   { __s.unsetf(ios_base::unitbuf); return __s;}
 
 
 // adjustfield manipulators, section 27.4.5.2
-inline ios_base& _STLP_CALL internal(ios_base& __s)
+inline ios_base& internal(ios_base& __s)
   { __s.setf(ios_base::internal, ios_base::adjustfield); return __s; }
 
-inline ios_base& _STLP_CALL left(ios_base& __s)
+inline ios_base& left(ios_base& __s)
   { __s.setf(ios_base::left, ios_base::adjustfield); return __s; }
 
-inline ios_base& _STLP_CALL right(ios_base& __s)
+inline ios_base& right(ios_base& __s)
   { __s.setf(ios_base::right, ios_base::adjustfield); return __s; }
 
 // basefield manipulators, section 27.4.5.3
-inline ios_base& _STLP_CALL dec(ios_base& __s)
+inline ios_base& dec(ios_base& __s)
   { __s.setf(ios_base::dec, ios_base::basefield); return __s; }
 
-inline ios_base& _STLP_CALL hex(ios_base& __s)
+inline ios_base& hex(ios_base& __s)
   { __s.setf(ios_base::hex, ios_base::basefield); return __s; }
 
-inline ios_base& _STLP_CALL oct(ios_base& __s)
+inline ios_base& oct(ios_base& __s)
   { __s.setf(ios_base::oct, ios_base::basefield); return __s; }
 
 
 // floatfield manipulators, section 27.4.5.3
-inline ios_base& _STLP_CALL fixed(ios_base& __s)
+inline ios_base& fixed(ios_base& __s)
   { __s.setf(ios_base::fixed, ios_base::floatfield); return __s; }
 
-inline ios_base& _STLP_CALL scientific(ios_base& __s)
+inline ios_base& scientific(ios_base& __s)
   { __s.setf(ios_base::scientific, ios_base::floatfield); return __s; }
 
 _STLP_END_NAMESPACE

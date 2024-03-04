@@ -181,7 +181,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 // Helper function for numeric output.
 template <class _CharT, class _Traits, class _Number>
-basic_ostream<_CharT, _Traits>&  _STLP_CALL
+basic_ostream<_CharT, _Traits>& 
 __put_num(basic_ostream<_CharT, _Traits>& __os, _Number __x) {
   typedef typename basic_ostream<_CharT, _Traits>::sentry _Sentry;
   _Sentry __sentry(__os);

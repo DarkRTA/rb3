@@ -173,7 +173,7 @@ _STLP_END_NAMESPACE
 _STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x) {
   basic_string<_CharT, _Traits> __tmp;
   __tmp.reserve(_Nb);
@@ -213,7 +213,7 @@ operator>>(basic_istream<_CharT, _Traits>& __is, bitset<_Nb>& __x) {
 }
 
 template <class _CharT, class _Traits, size_t _Nb>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os,
            const bitset<_Nb>& __x) {
   basic_string<_CharT, _Traits> __tmp;

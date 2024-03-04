@@ -90,12 +90,12 @@ struct _Rb_tree_node_base {
   _Base_ptr _M_left;
   _Base_ptr _M_right;
 
-  static _Base_ptr _STLP_CALL _S_minimum(_Base_ptr __x) {
+  static _Base_ptr _S_minimum(_Base_ptr __x) {
     while (__x->_M_left != 0) __x = __x->_M_left;
     return __x;
   }
 
-  static _Base_ptr _STLP_CALL _S_maximum(_Base_ptr __x) {
+  static _Base_ptr _S_maximum(_Base_ptr __x) {
     while (__x->_M_right != 0) __x = __x->_M_right;
     return __x;
   }
@@ -104,7 +104,6 @@ struct _Rb_tree_node_base {
 template <class _Value>
 struct _Rb_tree_node : public _Rb_tree_node_base {
   _Value _M_value_field;
-  __TRIVIAL_STUFF(_Rb_tree_node)
 };
 
 struct _Rb_tree_base_iterator;
@@ -114,17 +113,17 @@ class _Rb_global {
 public:
   typedef _Rb_tree_node_base* _Base_ptr;
   // those used to be global functions
-  static void _STLP_CALL _Rebalance(_Base_ptr __x, _Base_ptr& __root);
-  static _Base_ptr _STLP_CALL _Rebalance_for_erase(_Base_ptr __z,
+  static void _Rebalance(_Base_ptr __x, _Base_ptr& __root);
+  static _Base_ptr _Rebalance_for_erase(_Base_ptr __z,
                                                    _Base_ptr& __root,
                                                    _Base_ptr& __leftmost,
                                                    _Base_ptr& __rightmost);
   // those are from _Rb_tree_base_iterator - moved here to reduce code bloat
   // moved here to reduce code bloat without templatizing _Rb_tree_base_iterator
-  static _Base_ptr  _STLP_CALL _M_increment (_Base_ptr);
-  static _Base_ptr  _STLP_CALL _M_decrement (_Base_ptr);
-  static void       _STLP_CALL _Rotate_left (_Base_ptr __x, _Base_ptr& __root);
-  static void       _STLP_CALL _Rotate_right(_Base_ptr __x, _Base_ptr& __root);
+  static _Base_ptr  _M_increment (_Base_ptr);
+  static _Base_ptr  _M_decrement (_Base_ptr);
+  static void       _Rotate_left (_Base_ptr __x, _Base_ptr& __root);
+  static void       _Rotate_right(_Base_ptr __x, _Base_ptr& __root);
 };
 
 typedef _Rb_global<bool> _Rb_global_inst;
@@ -235,12 +234,12 @@ private:
 
 public:
   allocator_type get_allocator() const {
-    return _STLP_CONVERT_ALLOCATOR(_M_header, _Tp);
+    return _M_header;
   }
 
 protected:
   _Rb_tree_base(const allocator_type& __a) :
-    _M_header(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Node_base() ) {
+    _M_header(__a, _Node_base() ) {
     _M_empty_initialize();
   }
   _Rb_tree_base(__move_source<_Self> src) :
@@ -277,7 +276,7 @@ protected:
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class _Rb_tree : public _Rb_tree_base<_Value, _Alloc> {
   typedef _Rb_tree_base<_Value, _Alloc> _Base;
   typedef _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> _Self;
@@ -335,23 +334,23 @@ protected:
   _Base_ptr& _M_rightmost()
   { return this->_M_header._M_data._M_right; }
 
-  static _Base_ptr& _STLP_CALL _S_left(_Base_ptr __x)
+  static _Base_ptr& _S_left(_Base_ptr __x)
   { return __x->_M_left; }
-  static _Base_ptr& _STLP_CALL _S_right(_Base_ptr __x)
+  static _Base_ptr& _S_right(_Base_ptr __x)
   { return __x->_M_right; }
-  static _Base_ptr& _STLP_CALL _S_parent(_Base_ptr __x)
+  static _Base_ptr& _S_parent(_Base_ptr __x)
   { return __x->_M_parent; }
-  static value_type& _STLP_CALL _S_value(_Base_ptr __x)
+  static value_type& _S_value(_Base_ptr __x)
   { return static_cast<_Link_type>(__x)->_M_value_field; }
-  static const _Key& _STLP_CALL _S_key(_Base_ptr __x)
+  static const _Key& _S_key(_Base_ptr __x)
   { return _KeyOfValue()(_S_value(__x));}
-  static _Color_type& _STLP_CALL _S_color(_Base_ptr __x)
+  static _Color_type& _S_color(_Base_ptr __x)
   { return (_Color_type&)(__x->_M_color); }
 
-  static _Base_ptr _STLP_CALL _S_minimum(_Base_ptr __x)
+  static _Base_ptr _S_minimum(_Base_ptr __x)
   { return _Rb_tree_node_base::_S_minimum(__x); }
 
-  static _Base_ptr _STLP_CALL _S_maximum(_Base_ptr __x)
+  static _Base_ptr _S_maximum(_Base_ptr __x)
   { return _Rb_tree_node_base::_S_maximum(__x); }
 
 public:

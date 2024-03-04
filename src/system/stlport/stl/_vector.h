@@ -109,7 +109,7 @@ protected:
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-template <class _Tp, class _Size = unsigned short, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class vector : protected _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>
 {
 private:
@@ -134,7 +134,7 @@ public:
   _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
 
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR((const allocator_type&)this->_M_ptr, _Tp); }
+  { return (const allocator_type&)this->_M_ptr; }
 
 private:
   typedef typename __type_traits<_Tp>::has_trivial_assignment_operator _TrivialCopy;

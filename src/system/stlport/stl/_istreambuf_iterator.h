@@ -35,7 +35,7 @@ _STLP_BEGIN_NAMESPACE
 
 // defined in _istream.h
 template <class _CharT, class _Traits>
-extern basic_streambuf<_CharT, _Traits>* _STLP_CALL _M_get_istreambuf(basic_istream<_CharT, _Traits>& ) ;
+extern basic_streambuf<_CharT, _Traits>* _M_get_istreambuf(basic_istream<_CharT, _Traits>& ) ;
 
 // We do not read any characters until operator* is called. operator* calls sgetc
 // unless the iterator is unchanged from the last call in which case a cached value is
@@ -108,7 +108,7 @@ inline istreambuf_iterator<_CharT, _Traits>::istreambuf_iterator(basic_istream<_
 { this->_M_init(_M_get_istreambuf(__is)); }
 
 template<class _CharT, class _Traits>
-inline bool _STLP_CALL operator==(const istreambuf_iterator<_CharT, _Traits>& __x,
+inline bool operator==(const istreambuf_iterator<_CharT, _Traits>& __x,
                                   const istreambuf_iterator<_CharT, _Traits>& __y) {
   return __x.equal(__y);
 }
@@ -116,7 +116,7 @@ inline bool _STLP_CALL operator==(const istreambuf_iterator<_CharT, _Traits>& __
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 
 template<class _CharT, class _Traits>
-inline bool _STLP_CALL operator!=(const istreambuf_iterator<_CharT, _Traits>& __x,
+inline bool operator!=(const istreambuf_iterator<_CharT, _Traits>& __x,
                                   const istreambuf_iterator<_CharT, _Traits>& __y) {
   return !__x.equal(__y);
 }
@@ -125,12 +125,12 @@ inline bool _STLP_CALL operator!=(const istreambuf_iterator<_CharT, _Traits>& __
 
 # ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
 template <class _CharT, class _Traits>
-inline input_iterator_tag _STLP_CALL iterator_category(const istreambuf_iterator<_CharT, _Traits>&) { return input_iterator_tag(); }
+inline input_iterator_tag iterator_category(const istreambuf_iterator<_CharT, _Traits>&) { return input_iterator_tag(); }
 template <class _CharT, class _Traits>
-inline streamoff* _STLP_CALL
+inline streamoff*
 distance_type(const istreambuf_iterator<_CharT, _Traits>&) { return (streamoff*)0; }
 template <class _CharT, class _Traits>
-inline _CharT* _STLP_CALL value_type(const istreambuf_iterator<_CharT, _Traits>&) { return (_CharT*)0; }
+inline _CharT* value_type(const istreambuf_iterator<_CharT, _Traits>&) { return (_CharT*)0; }
 # endif
 
 template <class _CharT, class _Traits>

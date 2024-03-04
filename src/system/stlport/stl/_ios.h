@@ -106,7 +106,7 @@ public:                         // Locale-related member functions.
   inline _CharT widen(char) const;
 
   // Helper function that makes testing for EOF more convenient.
-  static bool _STLP_CALL _S_eof(int_type __c) {
+  static bool _S_eof(int_type __c) {
     const int_type __eof = _Traits::eof();
     return _Traits::eq_int_type(__c, __eof);
   }

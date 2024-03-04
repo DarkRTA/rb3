@@ -73,33 +73,12 @@ inline void _Destroy_Moved(_Tp* __pointer) {
 #endif
 }
 
-#if defined (new)
-#  define _STLP_NEW_REDEFINE new
-#  undef new
-#endif
-
-#if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
-template <class _T1>
-inline void _Construct_aux (_T1* __p, const __false_type&) {
-  new (__p) _T1();
-}
-
-template <class _T1>
-inline void _Construct_aux (_T1* __p, const __true_type&) {
-  new (__p) _T1(0);
-}
-#endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
-
 template <class _T1>
 inline void _Construct(_T1* __p) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_T1));
 #endif
-#if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
-  _Construct_aux (__p, _HasDefaultZeroValue(__p)._Answer() );
-#else
   new (__p) _T1();
-#endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
 }
 
 template <class _Tp>
@@ -136,15 +115,8 @@ inline void _Move_Construct(_T1* __p, _T2& __val) {
   _Move_Construct_Aux(__p, __val, _Is_POD(__p)._Answer());
 }
 
-#if defined(_STLP_NEW_REDEFINE)
-#  if defined (DEBUG_NEW)
-#    define new DEBUG_NEW
-#  endif
-#  undef _STLP_NEW_REDEFINE
-#endif
-
 template <class _ForwardIterator, class _Tp>
-_STLP_INLINE_LOOP void
+inline void
 __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, const __false_type& /*_Trivial_destructor*/) {
   for ( ; __first != __last; ++__first) {
     __destroy_aux(&(*__first), __false_type());
@@ -156,7 +128,7 @@ __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, con
 
 template <class _ForwardIterator, class _Tp>
 #if defined (_STLP_DEBUG_UNINITIALIZED)
-_STLP_INLINE_LOOP void
+inline void
 __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, const __true_type& /*_Trivial_destructor*/) {
   for ( ; __first != __last; ++__first)
     memset((char*)&(*__first), _STLP_SHRED_BYTE, sizeof(_Tp));

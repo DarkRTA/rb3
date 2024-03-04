@@ -33,7 +33,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class slist
 {
   typedef typename _STLP_PRIV _StorageType<_Tp>::_Type _StorageType;
@@ -63,14 +63,14 @@ public:
 
 public:
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
+  { return _M_impl.get_allocator(); }
 
   explicit slist(const allocator_type& __a = allocator_type())
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__a) {}
 
   explicit slist(size_type __n, const value_type& __x = value_type(),
         const allocator_type& __a =  allocator_type())
-    : _M_impl(__n, cast_traits::to_storage_type_cref(__x), _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__n, cast_traits::to_storage_type_cref(__x), __a) {}
 
   // We don't need any dispatching tricks here, because _M_insert_after_range
   // already does them.
@@ -78,9 +78,9 @@ public:
   slist(_InputIterator __first, _InputIterator __last,
         const allocator_type& __a = allocator_type())
 #  if !defined (_STLP_USE_ITERATOR_WRAPPER)
-    : _M_impl(__first, __last, _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__first, __last, __a) {}
 #  else
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
+    : _M_impl(__a) {
     insert_after(before_begin(), __first, __last);
   }
 #  endif

@@ -45,7 +45,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rotate_left(_Rb_tree_node_base* __x,
                                  _Rb_tree_node_base*& __root) {
   _Rb_tree_node_base* __y = __x->_M_right;
@@ -64,7 +64,7 @@ _Rb_global<_Dummy>::_Rotate_left(_Rb_tree_node_base* __x,
   __x->_M_parent = __y;
 }
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rotate_right(_Rb_tree_node_base* __x,
                                   _Rb_tree_node_base*& __root) {
   _Rb_tree_node_base* __y = __x->_M_left;
@@ -83,7 +83,7 @@ _Rb_global<_Dummy>::_Rotate_right(_Rb_tree_node_base* __x,
   __x->_M_parent = __y;
 }
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rebalance(_Rb_tree_node_base* __x,
                                _Rb_tree_node_base*& __root) {
   __x->_M_color = _S_rb_tree_red;
@@ -128,7 +128,7 @@ _Rb_global<_Dummy>::_Rebalance(_Rb_tree_node_base* __x,
   __root->_M_color = _S_rb_tree_black;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_Rebalance_for_erase(_Rb_tree_node_base* __z,
                                          _Rb_tree_node_base*& __root,
                                          _Rb_tree_node_base*& __leftmost,
@@ -263,7 +263,7 @@ _Rb_global<_Dummy>::_Rebalance_for_erase(_Rb_tree_node_base* __z,
   return __y;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_M_decrement(_Rb_tree_node_base* _M_node) {
   if (_M_node->_M_color == _S_rb_tree_red && _M_node->_M_parent->_M_parent == _M_node)
     _M_node = _M_node->_M_right;
@@ -281,7 +281,7 @@ _Rb_global<_Dummy>::_M_decrement(_Rb_tree_node_base* _M_node) {
   return _M_node;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_M_increment(_Rb_tree_node_base* _M_node) {
   if (_M_node->_M_right != 0) {
     _M_node = _Rb_tree_node_base::_S_minimum(_M_node->_M_right);

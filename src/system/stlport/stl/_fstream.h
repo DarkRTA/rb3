@@ -53,7 +53,7 @@ _STLP_BEGIN_NAMESPACE
 // Class _Filebuf_base, a private base class to factor out the system-
 // dependent code from basic_filebuf<>.
 
-class _STLP_CLASS_DECLSPEC _Filebuf_base {
+class _Filebuf_base {
 public:                      // Opening and closing files.
   _Filebuf_base();
 
@@ -126,7 +126,7 @@ protected:                      // Data members.
   unsigned char      _M_regular_file ;
 
 public :
-  static size_t  _STLP_CALL __page_size() { return _M_page_size; }
+  static size_t  __page_size() { return _M_page_size; }
   int  __o_mode() const { return (int)_M_openmode; }
   bool __is_open()      const { return (_M_is_open !=0 ); }
   bool __should_close() const { return (_M_should_close != 0); }
@@ -359,15 +359,15 @@ template <class _Traits>
 class _Noconv_output {
 public:
   typedef typename _Traits::char_type char_type;
-  static bool  _STLP_CALL _M_doit(basic_filebuf<char_type, _Traits >*,
+  static bool  _M_doit(basic_filebuf<char_type, _Traits >*,
                                   char_type*, char_type*)
   { return false; }
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC _Noconv_output< char_traits<char> > {
+class _Noconv_output< char_traits<char> > {
 public:
-  static bool  _STLP_CALL
+  static bool 
   _M_doit(basic_filebuf<char, char_traits<char> >* __buf,
           char* __first, char* __last) {
     ptrdiff_t __n = __last - __first;
@@ -392,7 +392,7 @@ public:
   typedef typename _Traits::int_type int_type;
   typedef typename _Traits::char_type char_type;
 
-  static inline int_type _STLP_CALL
+  static inline int_type
   _M_doit(basic_filebuf<char_type, _Traits>*)
   { return _Traits::eof(); }
 };
@@ -400,7 +400,7 @@ public:
 template<>
 class _Noconv_input<char_traits<char> > {
 public:
-  static inline int _STLP_CALL
+  static inline int
   _M_doit(basic_filebuf<char, char_traits<char> >* __buf) {
     return __buf->_M_do_noconv_input();
   }
@@ -416,25 +416,25 @@ public:
   typedef typename _Traits::int_type int_type;
   typedef _Traits                    traits_type;
 
-  static int_type _STLP_CALL _M_doit(basic_filebuf<_CharT, _Traits>* __this);
+  static int_type _M_doit(basic_filebuf<_CharT, _Traits>* __this);
 };
 
 
 // Specialization of underflow: if the character type is char, maybe
 // we can use mmap instead of read.
 template<>
-class _STLP_CLASS_DECLSPEC _Underflow< char, char_traits<char> > {
+class _Underflow< char, char_traits<char> > {
 public:
   typedef char_traits<char>::int_type int_type;
   typedef char_traits<char> traits_type;
-  static  int _STLP_CALL _M_doit(basic_filebuf<char, traits_type >* __this);
+  static  int _M_doit(basic_filebuf<char, traits_type >* __this);
 };
 
 // There is a specialized version of underflow, for basic_filebuf<char>,
 // in fstream.cxx.
 
 template <class _CharT, class _Traits>
-typename _Underflow<_CharT, _Traits>::int_type // _STLP_CALL
+typename _Underflow<_CharT, _Traits>::int_type //
  _Underflow<_CharT, _Traits>::_M_doit(basic_filebuf<_CharT, _Traits>* __this) {
   if (!__this->_M_in_input_mode) {
     if (!__this->_M_switch_to_input_mode())

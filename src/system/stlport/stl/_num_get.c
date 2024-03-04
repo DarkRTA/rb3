@@ -30,19 +30,19 @@ _STLP_BEGIN_NAMESPACE
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-_STLP_DECLSPEC unsigned char _STLP_CALL __digit_val_table(unsigned);
-_STLP_DECLSPEC const char* _STLP_CALL __narrow_atoms();
+unsigned char __digit_val_table(unsigned);
+const char* __narrow_atoms();
 
 template < class _InputIter, class _Integer, class _CharT>
-_InputIter _STLP_CALL
+_InputIter
 __do_get_integer(_InputIter&, _InputIter&, ios_base&, ios_base::iostate&, _Integer&, _CharT*);
 
 // __do_get_integer and its helper functions.
 
-inline bool _STLP_CALL __get_fdigit(char __c, const char*)
+inline bool __get_fdigit(char __c, const char*)
 { return __c >= '0' && __c <= '9'; }
 
-inline bool _STLP_CALL __get_fdigit_or_sep(char& __c, char __sep, const char *__digits) {
+inline bool __get_fdigit_or_sep(char& __c, char __sep, const char *__digits) {
   if (__c == __sep) {
     __c = ',' ;
     return true ;
@@ -51,7 +51,7 @@ inline bool _STLP_CALL __get_fdigit_or_sep(char& __c, char __sep, const char *__
     return  __get_fdigit(__c, __digits);
 }
 
-inline int _STLP_CALL
+inline int
 __get_digit_from_table(unsigned __index)
 { return (__index > 127 ? 0xFF : __digit_val_table(__index)); }
 
@@ -119,7 +119,7 @@ __get_base_or_zero(_InputIter& __in_ite, _InputIter& __end, ios_base& __str, _Ch
 
 
 template <class _InputIter, class _Integer, class _CharT>
-bool _STLP_CALL
+bool
 __get_integer(_InputIter& __first, _InputIter& __last,
               int __base, _Integer& __val,
               int __got, bool __is_negative, _CharT __separator, const string& __grouping, const __true_type& /*_IsSigned*/) {
@@ -179,7 +179,7 @@ __get_integer(_InputIter& __first, _InputIter& __last,
 }
 
 template <class _InputIter, class _Integer, class _CharT>
-bool _STLP_CALL
+bool
 __get_integer(_InputIter& __first, _InputIter& __last,
               int __base, _Integer& __val,
               int __got, bool __is_negative, _CharT __separator, const string& __grouping, const __false_type& /*_IsSigned*/) {
@@ -240,7 +240,7 @@ __get_integer(_InputIter& __first, _InputIter& __last,
 
 
 template <class _InputIter, class _Integer, class _CharT>
-bool _STLP_CALL
+bool
 __get_decimal_integer(_InputIter& __first, _InputIter& __last, _Integer& __val, _CharT* /*dummy*/) {
   string __grp;
   //Here there is no grouping so separator is not important, we just pass the default charater.
@@ -248,7 +248,7 @@ __get_decimal_integer(_InputIter& __first, _InputIter& __last, _Integer& __val, 
 }
 
 template <class _InputIter, class _Integer, class _CharT>
-_InputIter _STLP_CALL
+_InputIter
 __do_get_integer(_InputIter& __in_ite, _InputIter& __end, ios_base& __str,
                  ios_base::iostate& __err, _Integer& __val, _CharT* __pc) {
   typedef typename __bool2type<numeric_limits<_Integer>::is_signed>::_Ret _IsSigned;
@@ -284,7 +284,7 @@ __do_get_integer(_InputIter& __in_ite, _InputIter& __end, ios_base& __str,
 
 // __read_float and its helper functions.
 template <class _InputIter, class _CharT>
-_InputIter  _STLP_CALL
+_InputIter
 __copy_sign(_InputIter __first, _InputIter __last, __iostring& __v,
             _CharT __xplus, _CharT __xminus) {
   if (__first != __last) {
@@ -301,7 +301,7 @@ __copy_sign(_InputIter __first, _InputIter __last, __iostring& __v,
 
 
 template <class _InputIter, class _CharT>
-bool _STLP_CALL
+bool
 __copy_digits(_InputIter& __first, _InputIter __last,
               __iostring& __v, const _CharT* __digits) {
   bool __ok = false;
@@ -319,7 +319,7 @@ __copy_digits(_InputIter& __first, _InputIter __last,
 }
 
 template <class _InputIter, class _CharT>
-bool _STLP_CALL
+bool
 __copy_grouped_digits(_InputIter& __first, _InputIter __last,
                       __iostring& __v, const _CharT * __digits,
                       _CharT __sep, const string& __grouping,
@@ -355,7 +355,7 @@ __copy_grouped_digits(_InputIter& __first, _InputIter __last,
 
 
 template <class _InputIter, class _CharT>
-bool _STLP_CALL
+bool
 __read_float(__iostring& __buf, _InputIter& __in_ite, _InputIter& __end, ios_base& __s, _CharT*) {
   // Create a string, copying characters of the form
   // [+-]? [0-9]* .? [0-9]* ([eE] [+-]? [0-9]+)?
@@ -484,21 +484,6 @@ num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end,
     return __tmp;
   }
 }
-
-#if defined (_STLP_FIX_LIBRARY_ISSUES)
-template <class _CharT, class _InputIter>
-_InputIter
-num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
-                                    ios_base::iostate& __err, short& __val) const
-{ return _STLP_PRIV __do_get_integer(__in_ite, __end, __str, __err, __val, (_CharT*)0 ); }
-
-template <class _CharT, class _InputIter>
-_InputIter
-num_get<_CharT, _InputIter>::do_get(_InputIter __in_ite, _InputIter __end, ios_base& __str,
-                                    ios_base::iostate& __err, int& __val) const
-{ return _STLP_PRIV __do_get_integer(__in_ite, __end, __str, __err, __val, (_CharT*)0 ); }
-
-#endif
 
 template <class _CharT, class _InputIter>
 _InputIter

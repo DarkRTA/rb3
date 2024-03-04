@@ -261,7 +261,7 @@ inline _OutputIter copy_backward(_InputIter __first, _InputIter __last, _OutputI
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InputIter, class _Size, class _OutputIter>
-_STLP_INLINE_LOOP pair<_InputIter, _OutputIter>
+inline pair<_InputIter, _OutputIter>
 __copy_n(_InputIter __first, _Size __count,
          _OutputIter __result,
          const input_iterator_tag &) {
@@ -287,7 +287,6 @@ _STLP_MOVE_TO_STD_NAMESPACE
 template <class _InputIter, class _Size, class _OutputIter>
 inline pair<_InputIter, _OutputIter>
 copy_n(_InputIter __first, _Size __count, _OutputIter __result) {
-  _STLP_FIX_LITERAL_BUG(__first)
   return _STLP_PRIV __copy_n(__first, __count, __result, _STLP_ITERATOR_CATEGORY(__first, _InputIter));
 }
 #endif
@@ -295,7 +294,7 @@ copy_n(_InputIter __first, _Size __count, _OutputIter __result) {
 //--------------------------------------------------
 // fill and fill_n
 template <class _ForwardIter, class _Tp>
-_STLP_INLINE_LOOP
+inline
 void fill(_ForwardIter __first, _ForwardIter __last, const _Tp& __val) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
   for ( ; __first != __last; ++__first)
@@ -305,9 +304,8 @@ void fill(_ForwardIter __first, _ForwardIter __last, const _Tp& __val) {
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _OutputIter, class _Size, class _Tp>
-_STLP_INLINE_LOOP
+inline
 _OutputIter __fill_n(_OutputIter __first, _Size __n, const _Tp& __val) {
-  _STLP_FIX_LITERAL_BUG(__first)
   for ( ; __n > 0; --__n, ++__first)
     *__first = __val;
   return __first;
@@ -316,9 +314,8 @@ _OutputIter __fill_n(_OutputIter __first, _Size __n, const _Tp& __val) {
 _STLP_MOVE_TO_STD_NAMESPACE
 
 template <class _OutputIter, class _Size, class _Tp>
-_STLP_INLINE_LOOP
+inline
 void fill_n(_OutputIter __first, _Size __n, const _Tp& __val) {
-  _STLP_FIX_LITERAL_BUG(__first)
   _STLP_PRIV __fill_n(__first, __n, __val);
 }
 
@@ -369,11 +366,10 @@ _STLP_MOVE_TO_STD_NAMESPACE
 // equal and mismatch
 
 template <class _InputIter1, class _InputIter2>
-_STLP_INLINE_LOOP
+inline
 pair<_InputIter1, _InputIter2> mismatch(_InputIter1 __first1,
                                         _InputIter1 __last1,
                                         _InputIter2 __first2) {
-  _STLP_FIX_LITERAL_BUG(__first2)
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   while (__first1 != __last1 && *__first1 == *__first2) {
     ++__first1;
@@ -383,12 +379,11 @@ pair<_InputIter1, _InputIter2> mismatch(_InputIter1 __first1,
 }
 
 template <class _InputIter1, class _InputIter2, class _BinaryPredicate>
-_STLP_INLINE_LOOP
+inline
 pair<_InputIter1, _InputIter2> mismatch(_InputIter1 __first1,
                                         _InputIter1 __last1,
                                         _InputIter2 __first2,
                                         _BinaryPredicate __binary_pred) {
-  _STLP_FIX_LITERAL_BUG(__first2)
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   while (__first1 != __last1 && __binary_pred(*__first1, *__first2)) {
     ++__first1;
@@ -398,10 +393,9 @@ pair<_InputIter1, _InputIter2> mismatch(_InputIter1 __first1,
 }
 
 template <class _InputIter1, class _InputIter2>
-_STLP_INLINE_LOOP
+inline
 bool equal(_InputIter1 __first1, _InputIter1 __last1,
                   _InputIter2 __first2) {
-  _STLP_FIX_LITERAL_BUG(__first1) _STLP_FIX_LITERAL_BUG(__last1)  _STLP_FIX_LITERAL_BUG(__first2)
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   for ( ; __first1 != __last1; ++__first1, ++__first2)
     if (!(*__first1 == *__first2))
@@ -410,10 +404,9 @@ bool equal(_InputIter1 __first1, _InputIter1 __last1,
 }
 
 template <class _InputIter1, class _InputIter2, class _BinaryPredicate>
-_STLP_INLINE_LOOP
+inline
 bool equal(_InputIter1 __first1, _InputIter1 __last1,
                   _InputIter2 __first2, _BinaryPredicate __binary_pred) {
-  _STLP_FIX_LITERAL_BUG(__first2)
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   for ( ; __first1 != __last1; ++__first1, ++__first2)
     if (!__binary_pred(*__first1, *__first2))
@@ -503,10 +496,10 @@ int lexicographical_compare_3way(_InputIter1 __first1, _InputIter1 __last1,
 
 // count
 template <class _InputIter, class _Tp>
-_STLP_INLINE_LOOP _STLP_DIFFERENCE_TYPE(_InputIter)
+inline typename iterator_traits<_InputIter>::difference_type
 count(_InputIter __first, _InputIter __last, const _Tp& __val) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
-  _STLP_DIFFERENCE_TYPE(_InputIter) __n = 0;
+  typename iterator_traits<_InputIter>::difference_type __n = 0;
   for ( ; __first != __last; ++__first)
     if (*__first == __val)
       ++__n;
@@ -544,7 +537,7 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
 
 // replace
 template <class _ForwardIter, class _Tp>
-_STLP_INLINE_LOOP void
+inline void
 replace(_ForwardIter __first, _ForwardIter __last,
         const _Tp& __old_value, const _Tp& __new_value) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))

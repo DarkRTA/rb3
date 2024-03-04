@@ -140,24 +140,24 @@ struct _Bit_iterator_base {
   }
 };
 
-inline bool  _STLP_CALL operator==(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
+inline bool  operator==(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
   return __y._M_p == __x._M_p && __y._M_offset == __x._M_offset;
 }
-inline bool  _STLP_CALL operator!=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
+inline bool  operator!=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
   return __y._M_p != __x._M_p || __y._M_offset != __x._M_offset;
 }
 
-inline bool _STLP_CALL operator<(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
+inline bool operator<(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
   return __x._M_p < __y._M_p || (__x._M_p == __y._M_p && __x._M_offset < __y._M_offset);
 }
 
-inline bool _STLP_CALL operator>(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y)  {
+inline bool operator>(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y)  {
   return operator <(__y , __x);
 }
-inline bool _STLP_CALL operator<=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
+inline bool operator<=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
   return !(__y < __x);
 }
-inline bool _STLP_CALL operator>=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
+inline bool operator>=(const _Bit_iterator_base& __x, const _Bit_iterator_base& __y) {
   return !(__x < __y);
 }
 
@@ -224,7 +224,7 @@ struct _Bit_iter : public _Bit_iterator_base {
 };
 
 template <class _Ref, class _Ptr>
-inline _Bit_iter<_Ref,_Ptr>  _STLP_CALL
+inline _Bit_iter<_Ref,_Ptr>
 operator+(ptrdiff_t __n, const _Bit_iter<_Ref, _Ptr>& __x) {
    return __x + __n;
 }
@@ -268,12 +268,12 @@ public:
   typedef typename _Alloc_traits<__chunk_type,
           _Alloc>::allocator_type __chunk_allocator_type;
   allocator_type get_allocator() const {
-    return _STLP_CONVERT_ALLOCATOR((const __chunk_allocator_type&)_M_end_of_storage, bool);
+    return (const __chunk_allocator_type&)_M_end_of_storage;
   }
   static allocator_type __get_dfl_allocator() { return allocator_type(); }
 
   _Bvector_base(const allocator_type& __a)
-    : _M_start(), _M_finish(), _M_end_of_storage(_STLP_CONVERT_ALLOCATOR(__a, __chunk_type),
+    : _M_start(), _M_finish(), _M_end_of_storage(__a,
                                                  (__chunk_type*)0)
   {}
   _Bvector_base(__move_source<_Self> src)

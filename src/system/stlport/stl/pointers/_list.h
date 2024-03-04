@@ -33,7 +33,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class list
 {
   typedef typename _STLP_PRIV _StorageType<_Tp>::_Type _StorageType;
@@ -62,23 +62,23 @@ public:
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
   allocator_type get_allocator() const
-  { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
+  { return _M_impl.get_allocator(); }
 
   explicit list(const allocator_type& __a = allocator_type())
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__a) {}
 
   explicit list(size_type __n, const value_type& __val = value_type(),
        const allocator_type& __a = allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
-              _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+              __a) {}
 
   template <class _InputIterator>
   list(_InputIterator __first, _InputIterator __last,
        const allocator_type& __a = allocator_type())
 #  if !defined (_STLP_USE_ITERATOR_WRAPPER)
-    : _M_impl(__first, __last, _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
+    : _M_impl(__first, __last, __a) {}
 #  else
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
+    : _M_impl(__a) {
     insert(begin(), __first, __last);
   }
 #  endif

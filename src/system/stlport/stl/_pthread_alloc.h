@@ -63,29 +63,29 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 struct _Pthread_alloc_per_thread_state;
 
 // Pthread-specific allocator.
-class _STLP_CLASS_DECLSPEC _Pthread_alloc {
+class _Pthread_alloc {
 public: // but only for internal use:
   typedef _Pthread_alloc_per_thread_state __state_type;
   typedef char value_type;
 
 public:
   // Return a recycled or new per thread state.
-  static __state_type * _STLP_CALL _S_get_per_thread_state();
+  static __state_type * _S_get_per_thread_state();
 
   /* n must be > 0      */
-  static void * _STLP_CALL allocate(size_t& __n);
+  static void * allocate(size_t& __n);
 
   /* p may not be 0 */
-  static void _STLP_CALL deallocate(void *__p, size_t __n);
+  static void deallocate(void *__p, size_t __n);
 
   // boris : versions for per_thread_allocator
   /* n must be > 0      */
-  static void * _STLP_CALL allocate(size_t& __n, __state_type* __a);
+  static void * allocate(size_t& __n, __state_type* __a);
 
   /* p may not be 0 */
-  static void _STLP_CALL deallocate(void *__p, size_t __n, __state_type* __a);
+  static void deallocate(void *__p, size_t __n, __state_type* __a);
 
-  static void * _STLP_CALL reallocate(void *__p, size_t __old_sz, size_t& __new_sz);
+  static void * reallocate(void *__p, size_t __old_sz, size_t& __new_sz);
 };
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -184,7 +184,7 @@ protected:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC pthread_allocator<void> {
+class pthread_allocator<void> {
 public:
   typedef size_t      size_type;
   typedef ptrdiff_t   difference_type;
@@ -206,13 +206,6 @@ template <class _T1, class _T2>
 inline bool operator!=(const pthread_allocator<_T1>&,
                        const pthread_allocator<_T2>&)
 { return false; }
-
-
-#  if defined (_STLP_USE_RAW_SGI_ALLOCATORS)
-template <class _Tp>
-struct _Alloc_traits<_Tp, _Pthread_alloc>
-{ typedef __allocator<_Tp, _Pthread_alloc> allocator_type; };
-#  endif
 
 template <class _Tp, class _Atype>
 struct _Alloc_traits<_Tp, pthread_allocator<_Atype> >
@@ -339,7 +332,7 @@ protected:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC per_thread_allocator<void> {
+class per_thread_allocator<void> {
 public:
   typedef size_t      size_type;
   typedef ptrdiff_t   difference_type;

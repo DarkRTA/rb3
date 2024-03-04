@@ -45,7 +45,7 @@ template <class _CharT> class numpunct_byname {};
 template <class _Ch, class _InIt> class num_get;
 
 template<>
-class _STLP_CLASS_DECLSPEC numpunct<char> : public locale::facet
+class numpunct<char> : public locale::facet
 {
   friend class _Locale_impl;
   template <class _Ch, class _InIt> friend class num_get;
@@ -63,7 +63,7 @@ public:
   string truename() const { return do_truename(); }
   string falsename() const { return do_falsename(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~numpunct();
@@ -80,7 +80,7 @@ protected:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC numpunct<wchar_t> : public locale::facet
+class numpunct<wchar_t> : public locale::facet
 {
   friend class _Locale_impl;
 public:
@@ -96,7 +96,7 @@ public:
   wstring truename() const { return do_truename(); }
   wstring falsename() const { return do_falsename(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   wstring _M_truename;
@@ -113,7 +113,7 @@ protected:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC numpunct_byname<char> : public numpunct<char> {
+class numpunct_byname<char> : public numpunct<char> {
 public:
   typedef char                char_type;
   typedef string              string_type;
@@ -139,7 +139,7 @@ private:
 };
 
 template<>
-class _STLP_CLASS_DECLSPEC numpunct_byname<wchar_t>: public numpunct<wchar_t> {
+class numpunct_byname<wchar_t>: public numpunct<wchar_t> {
 public:
   typedef wchar_t               char_type;
   typedef wstring               string_type;
