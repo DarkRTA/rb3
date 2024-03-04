@@ -60,6 +60,7 @@
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
+            "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "NonMatching",
@@ -148,6 +149,9 @@
             "system/ui/UIResource.cpp": "NonMatching",
 
             "system/utl/BinStream.cpp": "NonMatching",
+            "system/utl/BufStream.cpp": "NonMatching",
+            "system/utl/Cache.cpp": "NonMatching",
+            "system/utl/Chunks.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": "NonMatching",
             "system/utl/Compress.cpp": "NonMatching",
@@ -155,7 +159,7 @@
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/FileStream.cpp": "Matching",
             "system/utl/HangBlock_Wii.cpp": "Matching",
-            "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
+            "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ] },
             "system/utl/IntPacker.cpp": "Matching",
             "system/utl/JobMgr.cpp": "NonMatching",
             "system/utl/Locale.cpp": "NonMatching",

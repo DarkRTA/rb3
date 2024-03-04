@@ -11,12 +11,13 @@ HxGuid::HxGuid(){
 
 void HxGuid::Generate(){
     Clear();
-    if(&gGuidCrit != 0) gGuidCrit.Enter();
-    mData[0] = RandomInt();
-    mData[1] = RandomInt();
-    mData[2] = RandomInt();
-    mData[3] = RandomInt();
-    if(&gGuidCrit != 0) gGuidCrit.Exit();
+    {
+        CritSecTracker tracker(&gGuidCrit);
+        mData[0] = RandomInt();
+        mData[1] = RandomInt();
+        mData[2] = RandomInt();
+        mData[3] = RandomInt();
+    }
     if(IsNull()){
         MILO_WARN("Generated HxGuid is Null.  Will try again...\n");
         Generate();
@@ -27,7 +28,7 @@ void HxGuid::Clear(){
     mData[0] = mData[1] = mData[2] = mData[3] = 0;
 }
 
-bool HxGuid::IsNull() const {
+inline bool HxGuid::IsNull() const {
     bool ret = false;
     if(mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0) ret = true;
     return ret;
