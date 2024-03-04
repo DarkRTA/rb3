@@ -36,8 +36,20 @@ public:
     // more pure virtuals go here
     virtual CacheResult WaitForResult();
 
+    bool IsDone();
+    CacheResult GetLastResult();
+
     OpType mOpCur;
     CacheResult mLastResult;
+};
+
+class CacheID {
+public:
+    CacheID(){}
+    virtual ~CacheID(){}
+    virtual const char* GetCachePath(const char*) = 0;
+    virtual const char* GetCacheSearchPath(const char*) = 0;
+    virtual int GetDeviceID() const;
 };
 
 #endif
