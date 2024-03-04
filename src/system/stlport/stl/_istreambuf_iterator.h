@@ -123,16 +123,6 @@ inline bool operator!=(const istreambuf_iterator<_CharT, _Traits>& __x,
 
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
-# ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-template <class _CharT, class _Traits>
-inline input_iterator_tag iterator_category(const istreambuf_iterator<_CharT, _Traits>&) { return input_iterator_tag(); }
-template <class _CharT, class _Traits>
-inline streamoff*
-distance_type(const istreambuf_iterator<_CharT, _Traits>&) { return (streamoff*)0; }
-template <class _CharT, class _Traits>
-inline _CharT* value_type(const istreambuf_iterator<_CharT, _Traits>&) { return (_CharT*)0; }
-# endif
-
 template <class _CharT, class _Traits>
 istreambuf_iterator<_CharT, _Traits>
 istreambuf_iterator<_CharT, _Traits>::operator++(int) {

@@ -930,23 +930,6 @@ public:
   }
 };
 
-# ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-template <class _CharT, class _Alloc>
-inline random_access_iterator_tag
-iterator_category(const _Rope_iterator<_CharT,_Alloc>&) {  return random_access_iterator_tag();}
-template <class _CharT, class _Alloc>
-inline _CharT* value_type(const _Rope_iterator<_CharT,_Alloc>&) { return 0; }
-template <class _CharT, class _Alloc>
-inline ptrdiff_t* distance_type(const _Rope_iterator<_CharT,_Alloc>&) { return 0; }
-template <class _CharT, class _Alloc>
-inline random_access_iterator_tag
-iterator_category(const _Rope_const_iterator<_CharT,_Alloc>&) { return random_access_iterator_tag(); }
-template <class _CharT, class _Alloc>
-inline _CharT* value_type(const _Rope_const_iterator<_CharT,_Alloc>&) { return 0; }
-template <class _CharT, class _Alloc>
-inline ptrdiff_t* distance_type(const _Rope_const_iterator<_CharT,_Alloc>&) { return 0; }
-#endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
-
 template <class _CharT, class _Alloc, class _CharConsumer>
 bool _S_apply_to_pieces(_CharConsumer& __c,
                         _Rope_RopeRep<_CharT, _Alloc> *__r,

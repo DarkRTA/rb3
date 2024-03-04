@@ -248,10 +248,6 @@ inserter(_Container& __x, _Iterator __i) {
 
 _STLP_END_NAMESPACE
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  include <stl/_iterator_old.h>
-#endif
-
 #endif /* _STLP_INTERNAL_ITERATOR_H */
 
 // Local Variables:

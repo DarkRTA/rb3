@@ -152,12 +152,6 @@ private:
   const _CharT* _M_string;
 };
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template <class _TpP, class _CharT, class _Traits>
-inline output_iterator_tag
-iterator_category(const ostream_iterator<_TpP, _CharT, _Traits>&) { return output_iterator_tag(); }
-#endif
-
 _STLP_END_NAMESPACE
 
 // form-independent definiotion of stream iterators
@@ -175,19 +169,6 @@ inline bool
 operator!=(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
            const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __y)
 { return !__x._M_equal(__y); }
-#endif
-
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline input_iterator_tag
-iterator_category(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&)
-{ return input_iterator_tag(); }
-template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline _Tp*
-value_type(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&) { return (_Tp*) 0; }
-template <class _Tp, class _CharT, class _Traits, class _Dist>
-inline _Dist*
-distance_type(const istream_iterator<_Tp, _CharT, _Traits, _Dist>&) { return (_Dist*)0; }
 #endif
 
 _STLP_END_NAMESPACE

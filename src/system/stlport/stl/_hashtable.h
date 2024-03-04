@@ -134,22 +134,6 @@ struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
   typedef __false_type   is_POD_type;
 };
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template <class _BaseIte, class _Traits>
-inline
-typename _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>::value_type *
-value_type(const _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>&) {
-  typedef typename _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>::value_type _Val;
-  return (_Val*) 0;
-}
-template <class _BaseIte, class _Traits>
-inline forward_iterator_tag iterator_category(const _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>&)
-{ return forward_iterator_tag(); }
-template <class _BaseIte, class _Traits>
-inline ptrdiff_t* distance_type(const _STLP_PRIV _Ht_iterator<_BaseIte,_Traits>&)
-{ return (ptrdiff_t*) 0; }
-#endif
-
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Dummy>

@@ -308,17 +308,6 @@ struct __type_traits<_STLP_PRIV _Deque_iterator<_Tp, _Traits> > {
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Tp, class _Traits> inline _Tp*
-value_type(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return (_Tp*)0; }
-template <class _Tp, class _Traits> inline random_access_iterator_tag
-iterator_category(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return random_access_iterator_tag(); }
-template <class _Tp, class _Traits> inline ptrdiff_t*
-distance_type(const _STLP_PRIV _Deque_iterator<_Tp, _Traits  >&) { return 0; }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif
-
 /* Deque base class.  It has two purposes.  First, its constructor
  *  and destructor allocate (but don't initialize) storage.  This makes
  *  exception safety easier.  Second, the base class encapsulates all of

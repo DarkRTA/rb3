@@ -130,15 +130,6 @@ struct __type_traits<_STLP_PRIV _Slist_iterator<_Tp, _Traits> > {
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Tp, class _Traits>
-inline _Tp* value_type(const _STLP_PRIV _Slist_iterator<_Tp, _Traits>&) { return static_cast<_Tp*>(0); }
-inline ptrdiff_t* distance_type(const _STLP_PRIV _Slist_iterator_base&) { return 0; }
-inline forward_iterator_tag iterator_category(const _STLP_PRIV _Slist_iterator_base&) { return forward_iterator_tag(); }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif /* OLD_QUERIES */
-
 // Base class that encapsulates details of allocators and simplifies EH
 template <class _Tp, class _Alloc>
 class _Slist_base {

@@ -394,31 +394,6 @@ protected:
   }
 };
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-
-template <class _Container>
-inline ptrdiff_t*
-distance_type(const _STLP_PRIV _DBG_iter_base<_Container>&) { return (ptrdiff_t*) 0; }
-
-template <class _Container>
-inline typename _STLP_PRIV _DBG_iter_base<_Container>::value_type*
-value_type(const _STLP_PRIV _DBG_iter_base<_Container>&) {
-  typedef typename _STLP_PRIV _DBG_iter_base<_Container>::value_type _Val;
-  return (_Val*)0;
-}
-
-template <class _Container>
-inline typename _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category
-iterator_category(const _STLP_PRIV _DBG_iter_base<_Container>&) {
-  typedef typename _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category _Category;
-  return _Category();
-}
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-
-#endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
-
 _STLP_MOVE_TO_STD_NAMESPACE
 
 _STLP_END_NAMESPACE

@@ -79,12 +79,6 @@ template <class _CharT, class _Traits>
 inline ostreambuf_iterator<_CharT, _Traits>::ostreambuf_iterator(basic_ostream<_CharT, _Traits>& __o) _STLP_NOTHROW
   : _M_buf(_STLP_PRIV __get_ostreambuf(__o)), _M_ok(_M_buf != 0) {}
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template <class _CharT, class _Traits>
-inline output_iterator_tag
-iterator_category(const ostreambuf_iterator<_CharT, _Traits>&) { return output_iterator_tag(); }
-#endif
-
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_OSTREAMBUF_ITERATOR_H */

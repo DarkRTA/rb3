@@ -66,10 +66,6 @@ public:
   }
 };
 
-# ifdef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-template <class _ForwardIterator, class _Tp>
-inline output_iterator_tag iterator_category(const raw_storage_iterator<_ForwardIterator, _Tp>&) { return output_iterator_tag(); }
-#endif
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_RAW_STORAGE_ITERATOR_H */

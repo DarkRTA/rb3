@@ -61,19 +61,10 @@ struct iterator<output_iterator_tag, void, void, void, void> {
   typedef void                reference;
 };
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  define _STLP_ITERATOR_CATEGORY(_It, _Tp) iterator_category(_It)
-#  define _STLP_DISTANCE_TYPE(_It, _Tp)     distance_type(_It)
-#  define _STLP_VALUE_TYPE(_It, _Tp)        value_type(_It)
-//Old HP iterator queries do not give information about the iterator
-//associated reference type so we consider that it is not a real reference.
-#  define _STLP_IS_REF_TYPE_REAL_REF(_It, _Tp) __false_type()
-#else
-#  define _STLP_VALUE_TYPE(_It, _Tp)        (typename iterator_traits< _Tp >::value_type*)0
-#  define _STLP_DISTANCE_TYPE(_It, _Tp)     (typename iterator_traits< _Tp >::difference_type*)0
-#  define _STLP_ITERATOR_CATEGORY(_It, _Tp) typename iterator_traits< _Tp >::iterator_category()
-#  define _STLP_IS_REF_TYPE_REAL_REF(_It, _Tp) _IsRefType< typename iterator_traits< _Tp >::reference >::_Ret()
-#endif
+#define _STLP_VALUE_TYPE(_It, _Tp)        (typename iterator_traits< _Tp >::value_type*)0
+#define _STLP_DISTANCE_TYPE(_It, _Tp)     (typename iterator_traits< _Tp >::difference_type*)0
+#define _STLP_ITERATOR_CATEGORY(_It, _Tp) typename iterator_traits< _Tp >::iterator_category()
+#define _STLP_IS_REF_TYPE_REAL_REF(_It, _Tp) _IsRefType< typename iterator_traits< _Tp >::reference >::_Ret()
 
 template <class _Iterator>
 struct iterator_traits {
@@ -102,46 +93,6 @@ struct iterator_traits<_Tp*> {
   typedef _Tp*                        pointer;
   typedef _Tp&                        reference;
 };
-
-#ifndef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-// The overloaded functions iterator_category, distance_type, and
-// value_type are not part of the C++ standard.  (They have been
-// replaced by struct iterator_traits.)  They are included for
-// backward compatibility with the HP STL.
-// We introduce internal names for these functions.
-
-template <class _Iter>
-inline typename iterator_traits<_Iter>::iterator_category __iterator_category(const _Iter&) {
-  typedef typename iterator_traits<_Iter>::iterator_category _Category;
-  return _Category();
-}
-
-template <class _Iter>
-inline typename iterator_traits<_Iter>::difference_type* __distance_type(const _Iter&) {
-  typedef typename iterator_traits<_Iter>::difference_type _diff_type;
-  return static_cast<_diff_type*>(0);
-}
-
-template <class _Iter>
-inline typename iterator_traits<_Iter>::value_type* __value_type(const _Iter&) {
-  typedef typename iterator_traits<_Iter>::value_type _value_type;
-  return static_cast<_value_type*>(0);
-}
-
-#else /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
-template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
-inline _Category iterator_category(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return _Category(); }
-template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
-inline _Tp* value_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return static_cast<_Tp*>(0); }
-template <class _Category, class _Tp, class _Distance, class _Pointer, class _Reference>
-inline _Distance* distance_type(const iterator<_Category,_Tp,_Distance,_Pointer,_Reference>&) { return static_cast<_Distance*>(0); }
-template <class _Tp>
-inline random_access_iterator_tag iterator_category(const _Tp*) { return random_access_iterator_tag(); }
-template <class _Tp>
-inline _Tp* value_type(const _Tp*) { return static_cast<_Tp*>(0); }
-template <class _Tp>
-inline ptrdiff_t* distance_type(const _Tp*) { return static_cast<ptrdiff_t*>(0); }
-#endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
 
 # if ! defined (_STLP_NO_ANACHRONISMS)
 // The base classes input_iterator, output_iterator, forward_iterator,

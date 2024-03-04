@@ -206,18 +206,6 @@ struct __type_traits<_STLP_PRIV _Rb_tree_iterator<_Value, _Traits> > {
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Value, class _Traits>
-inline _Value* value_type(const _STLP_PRIV _Rb_tree_iterator<_Value, _Traits>&)
-{ return (_Value*)0; }
-inline bidirectional_iterator_tag iterator_category(const _STLP_PRIV _Rb_tree_base_iterator&)
-{ return bidirectional_iterator_tag(); }
-inline ptrdiff_t* distance_type(const _STLP_PRIV _Rb_tree_base_iterator&)
-{ return (ptrdiff_t*) 0; }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
-
 // Base class to help EH
 
 template <class _Tp, class _Alloc>

@@ -220,21 +220,6 @@
 */
 
 /*
- * Use obsolete overloaded template functions iterator_category(), value_type(), distance_type()
- * for querying iterator properties. Please note those names are non-standard and are not guaranteed
- * to be used by every implementation. However, this setting is on by default when partial specialization
- * is not implemented in the compiler and cannot be simulated (only if _STLP_NO_ANACHRONISMS is not set).
- * Use of those interfaces for user-defined iterators is strongly discouraged:
- * please use public inheritance from iterator<> template to achieve desired effect.
- * Second form is to disable old-style queries in any case.
- */
-/*
-#define _STLP_USE_OLD_HP_ITERATOR_QUERIES
-#define _STLP_NO_OLD_HP_ITERATOR_QUERIES
-*/
-
-
-/*
  * On systems with support of large files (_LARGEFILE_SOURCE,
  * _LARGEFILE64_SOURCE defined) we will use 64-bit file offset, even if
  * __USE_FILE_OFFSET64 or _FILE_OFFSET_BITS not defined or _FILE_OFFSET_BITS

@@ -151,15 +151,6 @@ struct __type_traits<_STLP_PRIV _List_iterator<_Tp, _Traits> > {
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Tp, class _Traits>
-inline _Tp* value_type(const _STLP_PRIV _List_iterator<_Tp, _Traits>&) { return 0; }
-inline bidirectional_iterator_tag iterator_category(const _STLP_PRIV _List_iterator_base&) { return bidirectional_iterator_tag();}
-inline ptrdiff_t* distance_type(const _STLP_PRIV _List_iterator_base&) { return 0; }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif
-
 // Base class that encapsulates details of allocators and helps
 // to simplify EH
 
