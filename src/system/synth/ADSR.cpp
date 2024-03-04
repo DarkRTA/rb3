@@ -46,12 +46,12 @@ void Ps2ADSR::SetAttackMode(AttackMode mode){
 }
 
 void Ps2ADSR::SetAttackRate(unsigned int rate){
-    ASSERT(rate <= kMaxAttackRate, 71);
+    MILO_ASSERT(rate <= kMaxAttackRate, 71);
     mReg1 = (mReg1 & 0xFFFF80FF) | (rate << 8);
 }
 
 void Ps2ADSR::SetDecayRate(unsigned int rate){
-    ASSERT(rate <= kMaxDecayRate, 78);
+    MILO_ASSERT(rate <= kMaxDecayRate, 78);
     mReg1 = (mReg1 & 0xFFFFFF0F) | (rate << 4);
 }
 
@@ -60,12 +60,12 @@ void Ps2ADSR::SetSustainMode(SustainMode mode){
 }
 
 void Ps2ADSR::SetSustainRate(unsigned int rate){
-    ASSERT(rate <= kMaxSustainRate, 91);
+    MILO_ASSERT(rate <= kMaxSustainRate, 91);
     mReg2 = (mReg2 & 0xFFFFE03F) | (rate << 6);
 }
 
 void Ps2ADSR::SetSustainLevel(unsigned int level){
-    ASSERT(level <= kMaxSustainLevel, 98);
+    MILO_ASSERT(level <= kMaxSustainLevel, 98);
     mReg1 = (mReg1 & 0xFFFFFFF0) | level;
 }
 
@@ -74,7 +74,7 @@ void Ps2ADSR::SetReleaseMode(ReleaseMode mode){
 }
 
 void Ps2ADSR::SetReleaseRate(unsigned int rate){
-    ASSERT(rate <= kMaxReleaseRate, 111);
+    MILO_ASSERT(rate <= kMaxReleaseRate, 111);
     mReg2 = (mReg2 & 0xFFFFFFE0) | rate;
 }
 
@@ -91,7 +91,7 @@ inline Ps2ADSR::ReleaseMode Ps2ADSR::GetReleaseMode() const {
 }
 
 int FindNearestInTable(const float*, int, float val) {
-    ASSERT(val >= 0.0f, 139);
+    MILO_ASSERT(val >= 0.0f, 139);
     /*
       for (pfVar5 = param_1 + param_2; pfVar5[-1] <= 0.0; pfVar5 = pfVar5 + -1) {
   }
