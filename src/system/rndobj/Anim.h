@@ -64,9 +64,9 @@ public:
     OBJ_CLASSNAME(AnimTask);
     virtual void Poll(float);
 
-    ObjOwnerPtr<RndAnimatable, ObjectDir> mAnim;
-    ObjPtr<Hmx::Object, ObjectDir> mAnimTarget;
-    ObjPtr<AnimTask, ObjectDir> mBlendTask;
+    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
+    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;
+    ObjPtr<AnimTask, class ObjectDir> mBlendTask;
     bool mBlending;
     float mBlendTime;
     float mBlendPeriod;
