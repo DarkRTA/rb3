@@ -175,6 +175,38 @@ DataNode op28(DataArray* msg);
 DataNode op29(DataArray* msg);
 DataNode op30(DataArray* msg);
 DataNode op31(DataArray* msg);
+DataNode op32(DataArray* msg);
+DataNode op33(DataArray* msg);
+DataNode op34(DataArray* msg);
+DataNode op35(DataArray* msg);
+DataNode op36(DataArray* msg);
+DataNode op37(DataArray* msg);
+DataNode op38(DataArray* msg);
+DataNode op39(DataArray* msg);
+DataNode op40(DataArray* msg);
+DataNode op41(DataArray* msg);
+DataNode op42(DataArray* msg);
+DataNode op43(DataArray* msg);
+DataNode op44(DataArray* msg);
+DataNode op45(DataArray* msg);
+DataNode op46(DataArray* msg);
+DataNode op47(DataArray* msg);
+DataNode op48(DataArray* msg);
+DataNode op49(DataArray* msg);
+DataNode op50(DataArray* msg);
+DataNode op51(DataArray* msg);
+DataNode op52(DataArray* msg);
+DataNode op53(DataArray* msg);
+DataNode op54(DataArray* msg);
+DataNode op55(DataArray* msg);
+DataNode op56(DataArray* msg);
+DataNode op57(DataArray* msg);
+DataNode op58(DataArray* msg);
+DataNode op59(DataArray* msg);
+DataNode op60(DataArray* msg);
+DataNode op61(DataArray* msg);
+DataNode op62(DataArray* msg);
+DataNode op63(DataArray* msg);
 
 extern DataArray* DataReadString(const char*);
 
@@ -230,12 +262,9 @@ DataNode magicNumberGenerator(DataArray* da){
     return DataNode(kDataInt, v);
 }
 
+#pragma dont_inline on
 void ByteGrinder::Init(){
-//     // Local variables
-//     char functionName[256]; // r1+0x130
-//     class vector funPtrs; // r1+0x124
-//     int i; // r30
-    char functionName[256];
+    char functionName[8];
     functionName[0] = 'N';
     functionName[1] = 'a';
     functionName[2] = '\0';
@@ -289,7 +318,45 @@ void ByteGrinder::Init(){
         DataRegisterFunc(functionName, funPtrs[i]);
     }
     funPtrs.clear();
+    funPtrs.push_back(op32);
+    funPtrs.push_back(op33);
+    funPtrs.push_back(op34);
+    funPtrs.push_back(op35);
+    funPtrs.push_back(op36);
+    funPtrs.push_back(op37);
+    funPtrs.push_back(op38);
+    funPtrs.push_back(op39);
+    funPtrs.push_back(op40);
+    funPtrs.push_back(op41);
+    funPtrs.push_back(op42);
+    funPtrs.push_back(op43);
+    funPtrs.push_back(op44);
+    funPtrs.push_back(op45);
+    funPtrs.push_back(op46);
+    funPtrs.push_back(op47);
+    funPtrs.push_back(op48);
+    funPtrs.push_back(op49);
+    funPtrs.push_back(op50);
+    funPtrs.push_back(op51);
+    funPtrs.push_back(op52);
+    funPtrs.push_back(op53);
+    funPtrs.push_back(op54);
+    funPtrs.push_back(op55);
+    funPtrs.push_back(op56);
+    funPtrs.push_back(op57);
+    funPtrs.push_back(op58);
+    funPtrs.push_back(op59);
+    funPtrs.push_back(op60);
+    funPtrs.push_back(op61);
+    funPtrs.push_back(op62);
+    funPtrs.push_back(op63);
+    pickOneOf32A(true, 0x23E);
+    for(int i = 0; i < funPtrs.size(); i++){
+        sprintf(functionName, "O%d", pickOneOf32A(false, 0) + 32);
+        DataRegisterFunc(functionName, funPtrs[i]);
+    }
 }
+#pragma dont_inline reset
 
 void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, int moggVersion){
     char script[256];
