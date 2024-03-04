@@ -288,8 +288,6 @@
 /* assume std:: namespace for C++ std library if not being told otherwise */
 #    define _STLP_VENDOR_STD std
 
-#  define _STLP_OLD_IO_NAMESPACE
-
 #    if !defined (_STLP_STD_NAME)
 #      if !defined (_STLP_DEBUG)
 #        if !defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
