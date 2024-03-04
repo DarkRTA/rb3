@@ -100,14 +100,11 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                         i13 = 0;
                         DataArray* theArr = 0;
                         bool isToken = phType == 4;
-                        if(!b && isToken){
+                        if(!b && !isToken){
                             theArr = da->FindArray(phInfoPos, false);
                         }
-                        if(!theArr && isToken){
-                            MILO_WARN("couldn't find parameter for placeholder '%s'\n", phInfo);
-                        }
-                        else {
-                            DataNode node((isToken) ? theArr->Evaluate(1) : DataNode(0));
+                        if(theArr || isToken) {
+                            DataNode node((isToken) ? DataNode(0) : theArr->Evaluate(1));
                             bool node_bool = false;
                             switch(phType){
                                 case 0:
@@ -150,7 +147,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                                         sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, param, node.Float(0));
                                         break;
                                     case 4:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", Localize(Symbol(phInfo), false));
+                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", Localize(phInfo, false));
                                         break;
                                     case 5:
                                         sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", 
@@ -166,6 +163,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                             }
                             MILO_WARN("parameter for placeholder '%s' was the wrong type\n", phInfo);
                         }
+                        else MILO_WARN("couldn't find parameter for placeholder '%s'\n", phInfo);
                         tempFmtPos += snprintf(tempFmtPos, paramPos - tempFmtPos, "{missing:%s}", phInfo);
                     }
                     else *tempFmtPos++ = *p;
