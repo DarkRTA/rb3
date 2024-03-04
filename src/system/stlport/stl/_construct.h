@@ -60,7 +60,7 @@ inline void _Destroy(_Tp* __pointer) {
   typedef typename __type_traits<_Tp>::has_trivial_destructor _Trivial_destructor;
   __destroy_aux(__pointer, _Trivial_destructor());
 #if defined (_STLP_DEBUG_UNINITIALIZED)
-  memset(__REINTERPRET_CAST(char*, __pointer), _STLP_SHRED_BYTE, sizeof(_Tp));
+  memset(reinterpret_cast<char*>(__pointer), _STLP_SHRED_BYTE, sizeof(_Tp));
 #endif
 }
 
@@ -73,33 +73,12 @@ inline void _Destroy_Moved(_Tp* __pointer) {
 #endif
 }
 
-#if defined (new)
-#  define _STLP_NEW_REDEFINE new
-#  undef new
-#endif
-
-#if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
-template <class _T1>
-inline void _Construct_aux (_T1* __p, const __false_type&) {
-  _STLP_PLACEMENT_NEW (__p) _T1();
-}
-
-template <class _T1>
-inline void _Construct_aux (_T1* __p, const __true_type&) {
-  _STLP_PLACEMENT_NEW (__p) _T1(0);
-}
-#endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
-
 template <class _T1>
 inline void _Construct(_T1* __p) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_T1));
 #endif
-#if defined (_STLP_DEF_CONST_PLCT_NEW_BUG)
-  _Construct_aux (__p, _HasDefaultZeroValue(__p)._Answer() );
-#else
-  _STLP_PLACEMENT_NEW (__p) _T1();
-#endif /* _STLP_DEF_CONST_PLCT_NEW_BUG */
+  new (__p) _T1();
 }
 
 template <class _Tp>
@@ -107,7 +86,7 @@ inline void _Copy_Construct(_Tp* __p, const _Tp& __val) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_Tp));
 #endif
-  _STLP_PLACEMENT_NEW (__p) _Tp(__val);
+  new (__p) _Tp(__val);
 }
 
 template <class _T1, class _T2>
@@ -115,17 +94,17 @@ inline void _Param_Construct(_T1* __p, const _T2& __val) {
 #if defined (_STLP_DEBUG_UNINITIALIZED)
   memset((char*)__p, _STLP_SHRED_BYTE, sizeof(_T1));
 #endif
-  _STLP_PLACEMENT_NEW (__p) _T1(__val);
+  new (__p) _T1(__val);
 }
 
 template <class _T1, class _T2>
 inline void _Move_Construct_Aux(_T1* __p, _T2& __val, const __false_type& /*_IsPOD*/) {
-  _STLP_PLACEMENT_NEW (__p) _T1(_STLP_PRIV _AsMoveSource(__val));
+  new (__p) _T1(_STLP_PRIV _AsMoveSource(__val));
 }
 
 template <class _T1, class _T2>
 inline void _Move_Construct_Aux(_T1* __p, _T2& __val, const __true_type& /*_IsPOD*/) {
-  _STLP_PLACEMENT_NEW (__p) _T1(__val);
+  new (__p) _T1(__val);
 }
 
 template <class _T1, class _T2>
@@ -136,15 +115,8 @@ inline void _Move_Construct(_T1* __p, _T2& __val) {
   _Move_Construct_Aux(__p, __val, _Is_POD(__p)._Answer());
 }
 
-#if defined(_STLP_NEW_REDEFINE)
-#  if defined (DEBUG_NEW)
-#    define new DEBUG_NEW
-#  endif
-#  undef _STLP_NEW_REDEFINE
-#endif
-
 template <class _ForwardIterator, class _Tp>
-_STLP_INLINE_LOOP void
+inline void
 __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, const __false_type& /*_Trivial_destructor*/) {
   for ( ; __first != __last; ++__first) {
     __destroy_aux(&(*__first), __false_type());
@@ -156,7 +128,7 @@ __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, con
 
 template <class _ForwardIterator, class _Tp>
 #if defined (_STLP_DEBUG_UNINITIALIZED)
-_STLP_INLINE_LOOP void
+inline void
 __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, const __true_type& /*_Trivial_destructor*/) {
   for ( ; __first != __last; ++__first)
     memset((char*)&(*__first), _STLP_SHRED_BYTE, sizeof(_Tp));
@@ -179,10 +151,8 @@ inline void _Destroy_Range(_ForwardIterator __first, _ForwardIterator __last) {
 }
 
 inline void _Destroy_Range(char*, char*) {}
-#if defined (_STLP_HAS_WCHAR_T) // dwa 8/15/97
 inline void _Destroy_Range(wchar_t*, wchar_t*) {}
 inline void _Destroy_Range(const wchar_t*, const wchar_t*) {}
-#endif
 
 template <class _ForwardIterator, class _Tp>
 inline void
@@ -195,29 +165,6 @@ template <class _ForwardIterator>
 inline void _Destroy_Moved_Range(_ForwardIterator __first, _ForwardIterator __last) {
   __destroy_mv_srcs(__first, __last, _STLP_VALUE_TYPE(__first, _ForwardIterator));
 }
-
-#if defined (_STLP_DEF_CONST_DEF_PARAM_BUG)
-// Those adaptors are here to fix common compiler bug regarding builtins:
-// expressions like int k = int() should initialize k to 0
-template <class _Tp>
-inline _Tp __default_constructed_aux(_Tp*, const __false_type&) {
-  return _Tp();
-}
-template <class _Tp>
-inline _Tp __default_constructed_aux(_Tp*, const __true_type&) {
-  return _Tp(0);
-}
-
-template <class _Tp>
-inline _Tp __default_constructed(_Tp* __p) {
-  return __default_constructed_aux(__p, _HasDefaultZeroValue(__p)._Answer());
-}
-
-#  define _STLP_DEFAULT_CONSTRUCTED(_TTp) __default_constructed((_TTp*)0)
-#else
-#  define _STLP_DEFAULT_CONSTRUCTED(_TTp) _TTp()
-#endif /* _STLP_DEF_CONST_DEF_PARAM_BUG */
-
 
 #if !defined (_STLP_NO_ANACHRONISMS)
 // --------------------------------------------------

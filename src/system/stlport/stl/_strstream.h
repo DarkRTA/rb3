@@ -43,7 +43,7 @@ _STLP_BEGIN_NAMESPACE
 // Class strstreambuf, a streambuf class that manages an array of char.
 // Note that this class is not a template.
 
-class _STLP_CLASS_DECLSPEC strstreambuf : public basic_streambuf<char, char_traits<char> > {
+class strstreambuf : public basic_streambuf<char, char_traits<char> > {
 public:                         // Types.
   typedef char_traits<char>              _Traits;
   typedef basic_streambuf<char, char_traits<char> > _Base;
@@ -99,7 +99,7 @@ private:                        // Data members.
 //----------------------------------------------------------------------
 // Class istrstream, an istream that manages a strstreambuf.
 
-class _STLP_CLASS_DECLSPEC istrstream : public basic_istream<char, char_traits<char> > {
+class istrstream : public basic_istream<char, char_traits<char> > {
 public:
   explicit istrstream(char*);
   explicit istrstream(const char*);
@@ -117,7 +117,7 @@ private:
 //----------------------------------------------------------------------
 // Class ostrstream
 
-class _STLP_CLASS_DECLSPEC ostrstream : public basic_ostream<char, char_traits<char> >
+class ostrstream : public basic_ostream<char, char_traits<char> >
 {
 public:
   ostrstream();
@@ -136,7 +136,7 @@ private:
 //----------------------------------------------------------------------
 // Class strstream
 
-class _STLP_CLASS_DECLSPEC strstream : public basic_iostream<char, char_traits<char> > {
+class strstream : public basic_iostream<char, char_traits<char> > {
 public:
   typedef char                        char_type;
   typedef char_traits<char>::int_type int_type;

@@ -75,66 +75,56 @@ _STLP_BEGIN_NAMESPACE
 template <class _Tp> struct _IsIntegral
 { typedef __false_type _Ret; };
 
-#  ifndef _STLP_NO_BOOL
-_STLP_TEMPLATE_NULL struct _IsIntegral<bool>
-{ typedef __true_type _Ret; };
-#  endif /* _STLP_NO_BOOL */
-
-_STLP_TEMPLATE_NULL struct _IsIntegral<char>
+template<> struct _IsIntegral<bool>
 { typedef __true_type _Ret; };
 
-#  ifndef _STLP_NO_SIGNED_BUILTINS
-_STLP_TEMPLATE_NULL struct _IsIntegral<signed char>
-{ typedef __true_type _Ret; };
-#  endif
-
-_STLP_TEMPLATE_NULL struct _IsIntegral<unsigned char>
+template<> struct _IsIntegral<char>
 { typedef __true_type _Ret; };
 
-#  if defined ( _STLP_HAS_WCHAR_T ) && ! defined (_STLP_WCHAR_T_IS_USHORT)
-_STLP_TEMPLATE_NULL struct _IsIntegral<wchar_t>
-{ typedef __true_type _Ret; };
-#  endif /* _STLP_HAS_WCHAR_T */
-
-_STLP_TEMPLATE_NULL struct _IsIntegral<short>
+template<> struct _IsIntegral<signed char>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<unsigned short>
+template<> struct _IsIntegral<unsigned char>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<int>
+template<> struct _IsIntegral<wchar_t>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<unsigned int>
+template<> struct _IsIntegral<short>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<long>
+template<> struct _IsIntegral<unsigned short>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<unsigned long>
+template<> struct _IsIntegral<int>
 { typedef __true_type _Ret; };
 
-#  ifdef _STLP_LONG_LONG
-_STLP_TEMPLATE_NULL struct _IsIntegral<_STLP_LONG_LONG>
+template<> struct _IsIntegral<unsigned int>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsIntegral<unsigned _STLP_LONG_LONG>
+template<> struct _IsIntegral<long>
 { typedef __true_type _Ret; };
-#  endif /* _STLP_LONG_LONG */
+
+template<> struct _IsIntegral<unsigned long>
+{ typedef __true_type _Ret; };
+
+template<> struct _IsIntegral<long long>
+{ typedef __true_type _Ret; };
+
+template<> struct _IsIntegral<unsigned long long>
+{ typedef __true_type _Ret; };
 
 template <class _Tp> struct _IsRational
 { typedef __false_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsRational<float>
+template<> struct _IsRational<float>
 { typedef __true_type _Ret; };
 
-_STLP_TEMPLATE_NULL struct _IsRational<double>
+template<> struct _IsRational<double>
 { typedef __true_type _Ret; };
 
-#  if !defined ( _STLP_NO_LONG_DOUBLE )
-_STLP_TEMPLATE_NULL struct _IsRational<long double>
+template<> struct _IsRational<long double>
 { typedef __true_type _Ret; };
-#  endif
 
 // Forward declarations.
 template <class _Tp> struct __type_traits;
@@ -146,7 +136,7 @@ template <class _IsPOD> struct __type_traits_aux {
    typedef __false_type    is_POD_type;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __type_traits_aux<__false_type> {
    typedef __false_type    has_trivial_default_constructor;
    typedef __false_type    has_trivial_copy_constructor;
@@ -155,7 +145,7 @@ struct __type_traits_aux<__false_type> {
    typedef __false_type    is_POD_type;
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct __type_traits_aux<__true_type> {
   typedef __true_type    has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
@@ -168,49 +158,6 @@ template <class _Tp>
 struct _IsRef {
   typedef __false_type _Ret;
 };
-
-#  if defined (_STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS)
-/*
- * Boris : simulation technique is used here according to Adobe Open Source License Version 1.0.
- * Copyright 2000 Adobe Systems Incorporated and others. All rights reserved.
- * Authors: Mat Marcus and Jesse Jones
- * The original version of this source code may be found at
- * http://opensource.adobe.com.
- */
-
-struct _PointerShim {
-  /*
-   * Since the compiler only allows at most one non-trivial
-   * implicit conversion we can make use of a shim class to
-   * be sure that IsPtr below doesn't accept classes with
-   * implicit pointer conversion operators
-   */
-  _PointerShim(const volatile void*); // no implementation
-};
-
-// These are the discriminating functions
-char _STLP_CALL _IsP(bool, _PointerShim);  // no implementation is required
-char* _STLP_CALL _IsP(bool, ...);          // no implementation is required
-
-template <class _Tp>
-struct _IsPtr {
-  /*
-   * This template meta function takes a type T
-   * and returns true exactly when T is a pointer.
-   * One can imagine meta-functions discriminating on
-   * other criteria.
-   */
-  static _Tp& __null_rep();
-  enum { _Ptr = (sizeof(_IsP(false,__null_rep())) == sizeof(char)) };
-  typedef typename __bool2type<_Ptr>::_Ret _Ret;
-
-};
-
-// we make general case dependant on the fact the type is actually a pointer.
-template <class _Tp>
-struct __type_traits : __type_traits_aux<typename _IsPtr<_Tp>::_Ret> {};
-
-#  else /* _STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS */
 
 template <class _Tp>  struct _IsPtr {
   typedef __false_type _Ret;
@@ -235,22 +182,14 @@ struct __type_traits {
           - Members you add will be treated like regular members unless
 
             you add the appropriate support in the compiler. */
-#  if !defined (_STLP_HAS_TYPE_TRAITS_INTRINSICS)
+
    typedef __false_type    has_trivial_default_constructor;
    typedef __false_type    has_trivial_copy_constructor;
    typedef __false_type    has_trivial_assignment_operator;
    typedef __false_type    has_trivial_destructor;
    typedef __false_type    is_POD_type;
-#  else
-   typedef typename __bool2type<_STLP_HAS_TRIVIAL_CONSTRUCTOR(_Tp)>::_Ret has_trivial_default_constructor;
-   typedef typename __bool2type<_STLP_HAS_TRIVIAL_COPY(_Tp)>::_Ret has_trivial_copy_constructor;
-   typedef typename __bool2type<_STLP_HAS_TRIVIAL_ASSIGN(_Tp)>::_Ret has_trivial_assignment_operator;
-   typedef typename __bool2type<_STLP_HAS_TRIVIAL_DESTRUCTOR(_Tp)>::_Ret has_trivial_destructor;
-   typedef typename __bool2type<_STLP_IS_POD(_Tp)>::_Ret is_POD_type;
-#  endif
 };
 
-#    if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp> struct _IsPtr<_Tp*>
 { typedef __true_type _Ret; };
 template <class _Tp> struct _IsRef<_Tp&>
@@ -258,35 +197,21 @@ template <class _Tp> struct _IsRef<_Tp&>
 
 template <class _Tp> struct __type_traits<_Tp*> : __type_traits_aux<__true_type>
 {};
-#    endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-
-#  endif /* _STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS */
 
 // Provide some specializations.  This is harmless for compilers that
 //  have built-in __types_traits support, and essential for compilers
 //  that don't.
-#  if !defined (_STLP_QUALIFIED_SPECIALIZATION_BUG)
-#    define _STLP_DEFINE_TYPE_TRAITS_FOR(Type) \
-_STLP_TEMPLATE_NULL struct __type_traits< Type > : __type_traits_aux<__true_type> {}; \
-_STLP_TEMPLATE_NULL struct __type_traits< const Type > : __type_traits_aux<__true_type> {}; \
-_STLP_TEMPLATE_NULL struct __type_traits< volatile Type > : __type_traits_aux<__true_type> {}; \
-_STLP_TEMPLATE_NULL struct __type_traits< const volatile Type > : __type_traits_aux<__true_type> {}
-#  else
-#    define _STLP_DEFINE_TYPE_TRAITS_FOR(Type) \
-_STLP_TEMPLATE_NULL struct __type_traits< Type > : __type_traits_aux<__true_type> {};
-#  endif
+#  define _STLP_DEFINE_TYPE_TRAITS_FOR(Type) \
+template<> struct __type_traits< Type > : __type_traits_aux<__true_type> {}; \
+template<> struct __type_traits< const Type > : __type_traits_aux<__true_type> {}; \
+template<> struct __type_traits< volatile Type > : __type_traits_aux<__true_type> {}; \
+template<> struct __type_traits< const volatile Type > : __type_traits_aux<__true_type> {}
 
-#  ifndef _STLP_NO_BOOL
 _STLP_DEFINE_TYPE_TRAITS_FOR(bool);
-#  endif /* _STLP_NO_BOOL */
 _STLP_DEFINE_TYPE_TRAITS_FOR(char);
-#  ifndef _STLP_NO_SIGNED_BUILTINS
 _STLP_DEFINE_TYPE_TRAITS_FOR(signed char);
-#  endif
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned char);
-#  if defined ( _STLP_HAS_WCHAR_T ) && ! defined (_STLP_WCHAR_T_IS_USHORT)
 _STLP_DEFINE_TYPE_TRAITS_FOR(wchar_t);
-#  endif /* _STLP_HAS_WCHAR_T */
 
 _STLP_DEFINE_TYPE_TRAITS_FOR(short);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned short);
@@ -294,20 +219,13 @@ _STLP_DEFINE_TYPE_TRAITS_FOR(int);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned int);
 _STLP_DEFINE_TYPE_TRAITS_FOR(long);
 _STLP_DEFINE_TYPE_TRAITS_FOR(unsigned long);
-
-#  ifdef _STLP_LONG_LONG
-_STLP_DEFINE_TYPE_TRAITS_FOR(_STLP_LONG_LONG);
-_STLP_DEFINE_TYPE_TRAITS_FOR(unsigned _STLP_LONG_LONG);
-#  endif /* _STLP_LONG_LONG */
+_STLP_DEFINE_TYPE_TRAITS_FOR(long long);
+_STLP_DEFINE_TYPE_TRAITS_FOR(unsigned long long);
 
 _STLP_DEFINE_TYPE_TRAITS_FOR(float);
 _STLP_DEFINE_TYPE_TRAITS_FOR(double);
-
-#  if !defined ( _STLP_NO_LONG_DOUBLE )
 _STLP_DEFINE_TYPE_TRAITS_FOR(long double);
-#  endif
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _ArePtrs, class _Src, class _Dst>
 struct _IsCVConvertibleIf
 { typedef typename _IsCVConvertible<_Src, _Dst>::_Ret _Ret; };
@@ -315,35 +233,6 @@ struct _IsCVConvertibleIf
 template <class _Src, class _Dst>
 struct _IsCVConvertibleIf<__false_type, _Src, _Dst>
 { typedef __false_type _Ret; };
-#else
-#  if defined (_STLP_MEMBER_TEMPLATE_CLASSES)
-template <class _ArePtrs>
-struct _IsCVConvertibleIfAux {
-  template <class _Src, class _Dst>
-  struct _In
-  { typedef typename _IsCVConvertible<_Src, _Dst>::_Ret _Ret; };
-};
-
-_STLP_TEMPLATE_NULL
-struct _IsCVConvertibleIfAux<__false_type> {
-  template <class _Src, class _Dst>
-  struct _In
-  { typedef __false_type _Ret; };
-};
-
-template <class _ArePtrs, class _Src, class _Dst>
-struct _IsCVConvertibleIf {
-  typedef typename _IsCVConvertibleIfAux<_ArePtrs>::_STLP_TEMPLATE _In<_Src, _Dst>::_Ret _Ret;
-};
-#  else
-/* default behavior: we prefer to miss an optimization rather than taking the risk of
- * a compilation error if playing with types with exotic memory alignment.
- */
-template <class _ArePtrs, class _Src, class _Dst>
-struct _IsCVConvertibleIf
-{ typedef __false_type _Ret; };
-#  endif
-#endif
 
 template <class _Src, class _Dst>
 struct _TrivialNativeTypeCopy {
@@ -434,7 +323,7 @@ struct __call_traits {
 #endif /* _STLP_USE_BOOST_SUPPORT */
 };
 
-#if !defined (_STLP_USE_BOOST_SUPPORT) && !defined (_STLP_NO_EXTENSIONS) && defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
+#if !defined (_STLP_USE_BOOST_SUPPORT) && !defined (_STLP_NO_EXTENSIONS)
 template <class _Tp>
 struct __call_traits<_Tp&>
 { typedef _Tp& param_type; };
@@ -508,13 +397,6 @@ struct _IsSTLportClass {
   typedef typename _IsConvertible<_Tp, __stlport_class<_Tp> >::_Ret _Ret;
 };
 
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
-template <class _Tp>
-struct _SwapImplemented {
-  typedef typename _IsSTLportClass<_Tp>::_Ret _Ret;
-};
-#endif
-
 template <class _Tp>
 class _TpWithState : private _Tp {
   _TpWithState();
@@ -531,11 +413,7 @@ struct _IsStateless {
 
 _STLP_END_NAMESPACE
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
-#  define _STLP_IS_POD_ITER(_It, _Tp) typename __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
-#else
-#  define _STLP_IS_POD_ITER(_It, _Tp) _Is_POD( _STLP_VALUE_TYPE( _It, _Tp ) )._Answer()
-#endif
+#define _STLP_IS_POD_ITER(_It, _Tp) typename __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
 
 #endif /* _STLP_TYPE_TRAITS_H */
 

@@ -38,7 +38,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _InputIterator, class _Tp>
-_STLP_INLINE_LOOP
+inline
 _Tp accumulate(_InputIterator __first, _InputIterator __last, _Tp _Init) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
   for ( ; __first != __last; ++__first)
@@ -47,7 +47,7 @@ _Tp accumulate(_InputIterator __first, _InputIterator __last, _Tp _Init) {
 }
 
 template <class _InputIterator, class _Tp, class _BinaryOperation>
-_STLP_INLINE_LOOP
+inline
 _Tp accumulate(_InputIterator __first, _InputIterator __last, _Tp _Init,
                _BinaryOperation __binary_op) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
@@ -57,7 +57,7 @@ _Tp accumulate(_InputIterator __first, _InputIterator __last, _Tp _Init,
 }
 
 template <class _InputIterator1, class _InputIterator2, class _Tp>
-_STLP_INLINE_LOOP
+inline
 _Tp inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
                   _InputIterator2 __first2, _Tp _Init) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
@@ -68,7 +68,7 @@ _Tp inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
 
 template <class _InputIterator1, class _InputIterator2, class _Tp,
           class _BinaryOperation1, class _BinaryOperation2>
-_STLP_INLINE_LOOP
+inline
 _Tp inner_product(_InputIterator1 __first1, _InputIterator1 __last1,
                   _InputIterator2 __first2, _Tp _Init,
                   _BinaryOperation1 __binary_op1,
@@ -170,7 +170,7 @@ inline _Tp power(_Tp __x, _Integer __n) {
 // iota is not part of the C++ standard.  It is an extension.
 
 template <class _ForwardIterator, class _Tp>
-_STLP_INLINE_LOOP
+inline
 void iota(_ForwardIterator __first, _ForwardIterator __last, _Tp __val) {
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
   while (__first != __last)

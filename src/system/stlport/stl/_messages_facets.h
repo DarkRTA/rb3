@@ -51,8 +51,8 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 class _Messages;
 _STLP_MOVE_TO_STD_NAMESPACE
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC messages<char> : public locale::facet, public messages_base {
+template<>
+class messages<char> : public locale::facet, public messages_base {
   friend class _Locale_impl;
 public:
   typedef messages_base::catalog catalog;
@@ -69,7 +69,7 @@ public:
   inline void close(catalog __c) const
   { do_close(__c); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 private:
   messages(_STLP_PRIV _Messages*);
@@ -89,10 +89,8 @@ private:
   _STLP_PRIV _Messages* _M_impl;
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
-
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC messages<wchar_t> : public locale::facet, public messages_base {
+template<>
+class messages<wchar_t> : public locale::facet, public messages_base {
   friend class _Locale_impl;
 public:
   typedef messages_base::catalog catalog;
@@ -109,7 +107,7 @@ public:
   inline void close(catalog __c) const
     { do_close(__c); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 private:
   messages(_STLP_PRIV _Messages*);
@@ -129,12 +127,10 @@ private:
   _STLP_PRIV _Messages* _M_impl;
 };
 
-#endif
-
 template <class _CharT> class messages_byname {};
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC messages_byname<char> : public messages<char> {
+template<>
+class messages_byname<char> : public messages<char> {
 public:
   typedef messages_base::catalog catalog;
   typedef string     string_type;
@@ -151,9 +147,8 @@ private:
   _Self& operator = (_Self const&);
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC messages_byname<wchar_t> : public messages<wchar_t> {
+template<>
+class messages_byname<wchar_t> : public messages<wchar_t> {
 public:
   typedef messages_base::catalog catalog;
   typedef wstring                string_type;
@@ -169,7 +164,6 @@ private:
   messages_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-#endif /* WCHAR_T */
 
 _STLP_END_NAMESPACE
 
@@ -178,4 +172,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

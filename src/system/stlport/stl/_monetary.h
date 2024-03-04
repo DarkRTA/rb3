@@ -46,15 +46,10 @@ public:
 };
 
 // moneypunct facets: forward declaration
-template <class _charT, _STLP_DFL_NON_TYPE_PARAM(bool, _International, false) > class moneypunct {};
+template <class _charT, bool _International = false> class moneypunct {};
 
 // money_get facets
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _CharT, class _InputIter>
-#else
 template <class _CharT, class _InputIter = istreambuf_iterator<_CharT, char_traits<_CharT> > >
-#endif
 class money_get : public locale::facet {
   friend class _Locale_impl;
 
@@ -66,20 +61,20 @@ public:
   money_get(size_t __refs = 0) : locale::facet(__refs) {}
   iter_type get(iter_type __s, iter_type  __end, bool __intl,
                 ios_base&  __str, ios_base::iostate&  __err,
-                _STLP_LONGEST_FLOAT_TYPE& __units) const
+                long double& __units) const
     { return do_get(__s,  __end, __intl,  __str,  __err, __units); }
   iter_type get(iter_type __s, iter_type  __end, bool __intl,
                 ios_base&  __str, ios_base::iostate& __err,
                 string_type& __digits) const
     { return do_get(__s,  __end, __intl,  __str,  __err, __digits); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~money_get() {}
   virtual iter_type do_get(iter_type __s, iter_type  __end, bool  __intl,
                            ios_base&  __str, ios_base::iostate& __err,
-                           _STLP_LONGEST_FLOAT_TYPE& __units) const;
+                           long double& __units) const;
   virtual iter_type do_get(iter_type __s, iter_type __end, bool __intl,
                            ios_base&  __str, ios_base::iostate& __err,
                            string_type& __digits) const;
@@ -88,13 +83,13 @@ protected:
 
 // moneypunct facets: definition of specializations
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct<char, true> : public locale::facet, public money_base {
+template<>
+class moneypunct<char, true> : public locale::facet, public money_base {
 
 public:
   typedef char                 char_type;
   typedef string               string_type;
-  explicit moneypunct _STLP_PSPEC2(char, true) (size_t __refs = 0);
+  explicit moneypunct (size_t __refs = 0);
 
   char        decimal_point() const { return do_decimal_point(); }
   char        thousands_sep() const { return do_thousands_sep(); }
@@ -106,18 +101,14 @@ public:
   pattern     pos_format()    const { return do_pos_format(); }
   pattern     neg_format()    const { return do_neg_format(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
-# if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum _IntlVal { intl = 1 } ;
-# else
+  static locale::id id;
   static const bool intl = true;
-# endif
 
 protected:
   pattern _M_pos_format;
   pattern _M_neg_format;
 
-  ~moneypunct _STLP_PSPEC2(char, true) ();
+  ~moneypunct ();
 
   virtual char        do_decimal_point() const;
   virtual char        do_thousands_sep() const;
@@ -134,14 +125,14 @@ protected:
   friend class _Locale_impl;
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct<char, false> : public locale::facet, public money_base
+template<>
+class moneypunct<char, false> : public locale::facet, public money_base
 {
 public:
   typedef char                 char_type;
   typedef string               string_type;
 
-  explicit moneypunct _STLP_PSPEC2(char, false) (size_t __refs = 0);
+  explicit moneypunct (size_t __refs = 0);
 
   char        decimal_point() const { return do_decimal_point(); }
   char        thousands_sep() const { return do_thousands_sep(); }
@@ -153,18 +144,14 @@ public:
   pattern     pos_format()    const { return do_pos_format(); }
   pattern     neg_format()    const { return do_neg_format(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
-# if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum _IntlVal { intl = 0 } ;
-# else
+  static locale::id id;
   static const bool intl = false;
-# endif
 
 protected:
   pattern _M_pos_format;
   pattern _M_neg_format;
 
-  ~moneypunct _STLP_PSPEC2(char, false) ();
+  ~moneypunct ();
 
   virtual char        do_decimal_point() const;
   virtual char        do_thousands_sep() const;
@@ -181,17 +168,14 @@ protected:
   friend class _Locale_impl;
 };
 
-
-# ifndef _STLP_NO_WCHAR_T
-
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct<wchar_t, true> : public locale::facet, public money_base
+template<>
+class moneypunct<wchar_t, true> : public locale::facet, public money_base
 {
   friend class _Locale_impl;
 public:
   typedef wchar_t                 char_type;
   typedef wstring                 string_type;
-  explicit moneypunct _STLP_PSPEC2(wchar_t, true) (size_t __refs = 0);
+  explicit moneypunct (size_t __refs = 0);
   wchar_t     decimal_point() const { return do_decimal_point(); }
   wchar_t     thousands_sep() const { return do_thousands_sep(); }
   string      grouping()      const { return do_grouping(); }
@@ -202,18 +186,14 @@ public:
   pattern     pos_format()    const { return do_pos_format(); }
   pattern     neg_format()    const { return do_neg_format(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
-# if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum _IntlVal { intl = 1 } ;
-# else
+  static locale::id id;
   static const bool intl = true;
-# endif
 
 protected:
   pattern _M_pos_format;
   pattern _M_neg_format;
 
-  ~moneypunct _STLP_PSPEC2(wchar_t, true) ();
+  ~moneypunct ();
 
   virtual wchar_t     do_decimal_point() const;
   virtual wchar_t     do_thousands_sep() const;
@@ -229,14 +209,14 @@ protected:
 };
 
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct<wchar_t, false> : public locale::facet, public money_base
+template<>
+class moneypunct<wchar_t, false> : public locale::facet, public money_base
 {
   friend class _Locale_impl;
 public:
   typedef wchar_t                 char_type;
   typedef wstring                 string_type;
-  explicit moneypunct _STLP_PSPEC2(wchar_t, false) (size_t __refs = 0);
+  explicit moneypunct (size_t __refs = 0);
   wchar_t     decimal_point() const { return do_decimal_point(); }
   wchar_t     thousands_sep() const { return do_thousands_sep(); }
   string      grouping()      const { return do_grouping(); }
@@ -247,18 +227,14 @@ public:
   pattern     pos_format()    const { return do_pos_format(); }
   pattern     neg_format()    const { return do_neg_format(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
-# if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum _IntlVal { intl = 0 } ;
-# else
+  static locale::id id;
   static const bool intl = false;
-# endif
 
 protected:
   pattern _M_pos_format;
   pattern _M_neg_format;
 
-  ~moneypunct _STLP_PSPEC2(wchar_t, false) ();
+  ~moneypunct ();
 
   virtual wchar_t     do_decimal_point() const;
   virtual wchar_t     do_thousands_sep() const;
@@ -273,23 +249,21 @@ protected:
   virtual pattern     do_neg_format()    const;
 };
 
-# endif
+template <class _charT, bool _International = false> class moneypunct_byname {};
 
-template <class _charT, _STLP_DFL_NON_TYPE_PARAM(bool , _International , false) > class moneypunct_byname {};
-
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct_byname<char, true> : public moneypunct<char, true> {
+template<>
+class moneypunct_byname<char, true> : public moneypunct<char, true> {
 public:
   typedef money_base::pattern   pattern;
   typedef char                  char_type;
   typedef string                string_type;
 
-  explicit moneypunct_byname _STLP_PSPEC2(char, true) (const char * __name, size_t __refs = 0,
+  explicit moneypunct_byname (const char * __name, size_t __refs = 0,
                                                        _Locale_name_hint* __hint = 0);
 
 protected:
   _Locale_monetary* _M_monetary;
-  ~moneypunct_byname _STLP_PSPEC2(char, true) ();
+  ~moneypunct_byname ();
   virtual char        do_decimal_point() const;
   virtual char        do_thousands_sep() const;
   virtual string      do_grouping()      const;
@@ -307,20 +281,20 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct_byname<char, false> : public moneypunct<char, false>
+template<>
+class moneypunct_byname<char, false> : public moneypunct<char, false>
 {
 public:
   typedef money_base::pattern   pattern;
   typedef char                  char_type;
   typedef string                string_type;
 
-  explicit moneypunct_byname _STLP_PSPEC2(char, false) (const char * __name, size_t __refs = 0,
+  explicit moneypunct_byname (const char * __name, size_t __refs = 0,
                                                         _Locale_name_hint* __hint = 0);
 
 protected:
   _Locale_monetary* _M_monetary;
-  ~moneypunct_byname _STLP_PSPEC2(char, false) ();
+  ~moneypunct_byname ();
   virtual char        do_decimal_point() const;
   virtual char        do_thousands_sep() const;
   virtual string      do_grouping()      const;
@@ -339,21 +313,20 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(moneypunct_byname<char, false>*);
 };
 
-#if !defined (_STLP_NO_WCHAR_T)
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct_byname<wchar_t, true> : public moneypunct<wchar_t, true>
+template<>
+class moneypunct_byname<wchar_t, true> : public moneypunct<wchar_t, true>
 {
 public:
   typedef money_base::pattern   pattern;
   typedef wchar_t               char_type;
   typedef wstring               string_type;
 
-  explicit moneypunct_byname _STLP_PSPEC2(wchar_t, true) (const char * __name, size_t __refs = 0,
+  explicit moneypunct_byname (const char * __name, size_t __refs = 0,
                                                           _Locale_name_hint* __hint = 0);
 
 protected:
   _Locale_monetary* _M_monetary;
-  ~moneypunct_byname _STLP_PSPEC2(wchar_t, true) ();
+  ~moneypunct_byname ();
   virtual wchar_t     do_decimal_point() const;
   virtual wchar_t     do_thousands_sep() const;
   virtual string      do_grouping()      const;
@@ -371,20 +344,20 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC moneypunct_byname<wchar_t, false> : public moneypunct<wchar_t, false>
+template<>
+class moneypunct_byname<wchar_t, false> : public moneypunct<wchar_t, false>
 {
 public:
   typedef money_base::pattern   pattern;
   typedef wchar_t               char_type;
   typedef wstring               string_type;
 
-  explicit moneypunct_byname _STLP_PSPEC2(wchar_t, false) (const char * __name, size_t __refs = 0,
+  explicit moneypunct_byname (const char * __name, size_t __refs = 0,
                                                            _Locale_name_hint* __hint = 0);
 
 protected:
   _Locale_monetary* _M_monetary;
-  ~moneypunct_byname _STLP_PSPEC2(wchar_t, false) ();
+  ~moneypunct_byname ();
   virtual wchar_t     do_decimal_point() const;
   virtual wchar_t     do_thousands_sep() const;
   virtual string      do_grouping()      const;
@@ -401,18 +374,11 @@ private:
   moneypunct_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-#endif
 
 //===== methods ======
 
-
 // money_put facets
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _CharT, class _OutputIter>
-#else
 template <class _CharT, class _OutputIter = ostreambuf_iterator<_CharT, char_traits<_CharT> > >
-#endif
 class money_put : public locale::facet {
   friend class _Locale_impl;
 
@@ -423,36 +389,23 @@ public:
 
   money_put(size_t __refs = 0) : locale::facet(__refs) {}
   iter_type put(iter_type __s, bool __intl, ios_base& __str,
-                char_type  __fill, _STLP_LONGEST_FLOAT_TYPE __units) const
+                char_type  __fill, long double __units) const
     { return do_put(__s, __intl, __str, __fill, __units); }
   iter_type put(iter_type __s, bool __intl, ios_base& __str,
                 char_type  __fill,
                 const string_type& __digits) const
     { return do_put(__s, __intl, __str, __fill, __digits); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~money_put() {}
   virtual iter_type do_put(iter_type __s, bool  __intl, ios_base&  __str,
-                           char_type __fill, _STLP_LONGEST_FLOAT_TYPE __units) const;
+                           char_type __fill, long double __units) const;
   virtual iter_type do_put(iter_type __s, bool  __intl, ios_base&  __str,
                            char_type __fill,
                            const string_type& __digits) const;
 };
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS money_get<char, istreambuf_iterator<char, char_traits<char> > >;
-_STLP_EXPORT_TEMPLATE_CLASS money_put<char, ostreambuf_iterator<char, char_traits<char> > >;
-//_STLP_EXPORT_TEMPLATE_CLASS money_get<char, const char* >;
-//_STLP_EXPORT_TEMPLATE_CLASS money_put<char, char* >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS money_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-_STLP_EXPORT_TEMPLATE_CLASS money_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS money_get<wchar_t, const wchar_t* >;
-// _STLP_EXPORT_TEMPLATE_CLASS money_put<wchar_t, wchar_t* >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_END_NAMESPACE
 
@@ -465,5 +418,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-
-

@@ -32,7 +32,7 @@ _STLP_BEGIN_NAMESPACE
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template<class _CharT, class _Traits>
-extern basic_streambuf<_CharT, _Traits>* _STLP_CALL __get_ostreambuf(basic_ostream<_CharT, _Traits>&);
+extern basic_streambuf<_CharT, _Traits>* __get_ostreambuf(basic_ostream<_CharT, _Traits>&);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -79,19 +79,6 @@ template <class _CharT, class _Traits>
 inline ostreambuf_iterator<_CharT, _Traits>::ostreambuf_iterator(basic_ostream<_CharT, _Traits>& __o) _STLP_NOTHROW
   : _M_buf(_STLP_PRIV __get_ostreambuf(__o)), _M_ok(_M_buf != 0) {}
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS ostreambuf_iterator<char, char_traits<char> >;
-#  if defined (INSTANTIATE_WIDE_STREAMS)
-_STLP_EXPORT_TEMPLATE_CLASS ostreambuf_iterator<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template <class _CharT, class _Traits>
-inline output_iterator_tag _STLP_CALL
-iterator_category(const ostreambuf_iterator<_CharT, _Traits>&) { return output_iterator_tag(); }
-#endif
-
 _STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_OSTREAMBUF_ITERATOR_H */
@@ -99,4 +86,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

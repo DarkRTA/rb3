@@ -29,7 +29,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _Alloc>
-void * _STLP_CALL __debug_alloc<_Alloc>::allocate(size_t __n) {
+void * __debug_alloc<_Alloc>::allocate(size_t __n) {
   size_t __total_extra = __extra_before_chunk() + __extra_after_chunk();
   size_t __real_n = __n + __total_extra;
   if (__real_n < __n) {
@@ -41,12 +41,12 @@ void * _STLP_CALL __debug_alloc<_Alloc>::allocate(size_t __n) {
   memset((char*)__result, __shred_byte, __real_n * sizeof(value_type));
   __result->__magic = __magic;
   __result->__type_size = sizeof(value_type);
-  __result->_M_size = (_STLP_UINT32_T)__n;
+  __result->_M_size = __n;
   return ((char*)__result) + (long)__extra_before;
 }
 
 template <class _Alloc>
-void  _STLP_CALL
+void 
 __debug_alloc<_Alloc>::deallocate(void *__p, size_t __n) {
   __alloc_header * __real_p = (__alloc_header*)((char *)__p -(long)__extra_before);
   // check integrity

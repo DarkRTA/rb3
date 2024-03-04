@@ -102,10 +102,10 @@ int lexicographical_compare_3way(_InputIter1 __first1, _InputIter1 __last1,
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _RandomAccessIter, class _Tp>
-_STLP_INLINE_LOOP _RandomAccessIter __find(_RandomAccessIter __first, _RandomAccessIter __last,
+inline _RandomAccessIter __find(_RandomAccessIter __first, _RandomAccessIter __last,
                                            const _Tp& __val,
                                            const random_access_iterator_tag &) {
-  _STLP_DIFFERENCE_TYPE(_RandomAccessIter) __trip_count = (__last - __first) >> 2;
+  typename iterator_traits<_RandomAccessIter>::difference_type __trip_count = (__last - __first) >> 2;
 
   for ( ; __trip_count > 0 ; --__trip_count) {
     if (*__first == __val) return __first;
@@ -140,19 +140,19 @@ _STLP_INLINE_LOOP _RandomAccessIter __find(_RandomAccessIter __first, _RandomAcc
 inline char*
 __find(char* __first, char* __last, char __val, const random_access_iterator_tag &) {
   void *res =  memchr(__first, __val, __last - __first);
-  return res != 0 ? __STATIC_CAST(char*, res) : __last;
+  return res != 0 ? static_cast<char*>(res) : __last;
 }
 inline const char*
 __find(const char* __first, const char* __last, char __val, const random_access_iterator_tag &) {
   const void *res =  memchr(__first, __val, __last - __first);
-  return res != 0 ? __STATIC_CAST(const char*, res) : __last;
+  return res != 0 ? static_cast<const char*>(res) : __last;
 }
 
 template <class _RandomAccessIter, class _Predicate>
-_STLP_INLINE_LOOP _RandomAccessIter __find_if(_RandomAccessIter __first, _RandomAccessIter __last,
+inline _RandomAccessIter __find_if(_RandomAccessIter __first, _RandomAccessIter __last,
                                               _Predicate __pred,
                                               const random_access_iterator_tag &) {
-  _STLP_DIFFERENCE_TYPE(_RandomAccessIter) __trip_count = (__last - __first) >> 2;
+  typename iterator_traits<_RandomAccessIter>::difference_type __trip_count = (__last - __first) >> 2;
 
   for ( ; __trip_count > 0 ; --__trip_count) {
     if (__pred(*__first)) return __first;
@@ -185,7 +185,7 @@ _STLP_INLINE_LOOP _RandomAccessIter __find_if(_RandomAccessIter __first, _Random
 }
 
 template <class _InputIter, class _Tp>
-_STLP_INLINE_LOOP _InputIter __find(_InputIter __first, _InputIter __last,
+inline _InputIter __find(_InputIter __first, _InputIter __last,
                                     const _Tp& __val,
                                     const input_iterator_tag &) {
   while (__first != __last && !(*__first == __val)) ++__first;
@@ -193,7 +193,7 @@ _STLP_INLINE_LOOP _InputIter __find(_InputIter __first, _InputIter __last,
 }
 
 template <class _InputIter, class _Predicate>
-_STLP_INLINE_LOOP _InputIter __find_if(_InputIter __first, _STLP_MPW_EXTRA_CONST _InputIter __last,
+inline _InputIter __find_if(_InputIter __first, _InputIter __last,
                                        _Predicate __pred,
                                        const input_iterator_tag &) {
   while (__first != __last && !__pred(*__first))
@@ -309,9 +309,7 @@ _ForwardIter1 __find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-// find_end for bidirectional iterators.  Requires partial specialization.
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-
+// find_end for bidirectional iterators.
 #  ifndef _STLP_INTERNAL_ITERATOR_H
 _STLP_END_NAMESPACE
 #    include <stl/_iterator.h>
@@ -346,7 +344,6 @@ __find_end(_BidirectionalIter1 __first1, _BidirectionalIter1 __last1,
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 template <class _ForwardIter1, class _ForwardIter2,
           class _BinaryPredicate>
@@ -357,13 +354,8 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first2, __last2))
   return _STLP_PRIV __find_end(__first1, __last1, __first2, __last2,
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
                                _STLP_ITERATOR_CATEGORY(__first1, _ForwardIter1),
                                _STLP_ITERATOR_CATEGORY(__first2, _ForwardIter2),
-#else
-                               forward_iterator_tag(),
-                               forward_iterator_tag(),
-#endif
                                __comp);
 }
 

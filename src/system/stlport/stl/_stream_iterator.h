@@ -61,39 +61,12 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if !defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-#  define __ISI_TMPL_HEADER_ARGUMENTS class _Tp, class _CharT, class _Traits, class _Dist
-#  define __ISI_TMPL_ARGUMENTS _Tp, _CharT, _Traits, _Dist
 template <class _Tp,
-          class _CharT = _STLP_DEFAULTCHAR, class _Traits = char_traits<_CharT>,
+          class _CharT = char, class _Traits = char_traits<_CharT>,
           class _Dist = ptrdiff_t>
 class istream_iterator : public iterator<input_iterator_tag, _Tp , _Dist,
                                          const _Tp*, const _Tp& > {
-#else
-#  if defined (_STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS) && !defined (_STLP_DEFAULT_TYPE_PARAM)
-#    define __ISI_TMPL_HEADER_ARGUMENTS class _Tp
-#    define __ISI_TMPL_ARGUMENTS        _Tp
-template <class _Tp>
-class istream_iterator : public iterator<input_iterator_tag, _Tp , ptrdiff_t,
-                                         const _Tp*, const _Tp& > {
-#  else
-#    define __ISI_TMPL_HEADER_ARGUMENTS class _Tp, class _Dist
-#    define __ISI_TMPL_ARGUMENTS        _Tp, _Dist
-template <class _Tp, _STLP_DFL_TYPE_PARAM(_Dist, ptrdiff_t)>
-class istream_iterator : public iterator<input_iterator_tag, _Tp, _Dist ,
-                                         const _Tp*, const _Tp& > {
-#  endif /* _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS */
-#endif /* _STLP_LIMITED_DEFAULT_TEMPLATES */
-
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-  typedef char _CharT;
-  typedef char_traits<char> _Traits;
-#  if defined (_STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS) && !defined (_STLP_DEFAULT_TYPE_PARAM)
-  typedef ptrdiff_t _Dist;
-#  endif
-#endif
-
-  typedef istream_iterator< __ISI_TMPL_ARGUMENTS > _Self;
+  typedef istream_iterator<_Tp, _CharT, _Traits, _Dist> _Self;
 public:
   typedef _CharT                         char_type;
   typedef _Traits                        traits_type;
@@ -114,8 +87,7 @@ public:
     }
     return _M_value;
   }
-
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     _M_read();
@@ -153,20 +125,10 @@ private:
   }
 };
 
-#if !defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
 template <class _TpP,
-          class _CharT = _STLP_DEFAULTCHAR, class _Traits = char_traits<_CharT> >
-#else
-template <class _TpP>
-#endif
+          class _CharT = char, class _Traits = char_traits<_CharT> >
 class ostream_iterator: public iterator<output_iterator_tag, void, void, void, void> {
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-  typedef char _CharT;
-  typedef char_traits<char> _Traits;
-  typedef ostream_iterator<_TpP> _Self;
-#else
   typedef ostream_iterator<_TpP, _CharT, _Traits> _Self;
-#endif
 public:
   typedef _CharT                         char_type;
   typedef _Traits                        traits_type;
@@ -190,61 +152,26 @@ private:
   const _CharT* _M_string;
 };
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _TpP>
-inline output_iterator_tag _STLP_CALL
-iterator_category(const ostream_iterator<_TpP>&) { return output_iterator_tag(); }
-#  else
-template <class _TpP, class _CharT, class _Traits>
-inline output_iterator_tag _STLP_CALL
-iterator_category(const ostream_iterator<_TpP, _CharT, _Traits>&) { return output_iterator_tag(); }
-#  endif
-#endif
-
 _STLP_END_NAMESPACE
 
 // form-independent definiotion of stream iterators
 _STLP_BEGIN_NAMESPACE
 
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline bool _STLP_CALL
-operator==(const istream_iterator< __ISI_TMPL_ARGUMENTS >& __x,
-           const istream_iterator< __ISI_TMPL_ARGUMENTS >& __y)
+template <class _Tp, class _CharT, class _Traits, class _Dist>
+inline bool
+operator==(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
+           const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __y)
 { return __x._M_equal(__y); }
 
 #if defined (_STLP_USE_SEPARATE_RELOPS_NAMESPACE)
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline bool _STLP_CALL
-operator!=(const istream_iterator< __ISI_TMPL_ARGUMENTS >& __x,
-           const istream_iterator< __ISI_TMPL_ARGUMENTS >& __y)
+template <class _Tp, class _CharT, class _Traits, class _Dist>
+inline bool
+operator!=(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
+           const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __y)
 { return !__x._M_equal(__y); }
 #endif
 
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline input_iterator_tag _STLP_CALL
-iterator_category(const istream_iterator< __ISI_TMPL_ARGUMENTS >&)
-{ return input_iterator_tag(); }
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline _Tp* _STLP_CALL
-value_type(const istream_iterator< __ISI_TMPL_ARGUMENTS >&) { return (_Tp*) 0; }
-
-#  if defined (_STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS) && !defined (_STLP_DEFAULT_TYPE_PARAM)
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline ptrdiff_t* _STLP_CALL
-distance_type(const istream_iterator< __ISI_TMPL_ARGUMENTS >&) { return (ptrdiff_t*)0; }
-#  else
-template < __ISI_TMPL_HEADER_ARGUMENTS >
-inline _Dist* _STLP_CALL
-distance_type(const istream_iterator< __ISI_TMPL_ARGUMENTS >&) { return (_Dist*)0; }
-#  endif /* _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS */
-#endif
-
 _STLP_END_NAMESPACE
-
-#undef __ISI_TMPL_HEADER_ARGUMENTS
-#undef __ISI_TMPL_ARGUMENTS
 
 #endif /* _STLP_INTERNAL_STREAM_ITERATOR_H */
 

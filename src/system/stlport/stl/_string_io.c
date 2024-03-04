@@ -12,7 +12,7 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits>
-bool _STLP_CALL
+bool
 __stlp_string_fill(basic_ostream<_CharT, _Traits>& __os,
                    basic_streambuf<_CharT, _Traits>* __buf,
                    streamsize __n) {
@@ -26,14 +26,14 @@ __stlp_string_fill(basic_ostream<_CharT, _Traits>& __os,
 
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator << (basic_ostream<_CharT, _Traits>& __os,
              const basic_string<_CharT,_Traits,_Alloc>& __s) {
   typedef basic_ostream<_CharT, _Traits> __ostream;
   typedef typename basic_string<_CharT, _Traits, _Alloc>::size_type size_type;
 
   // The hypothesis of this implementation is that size_type is unsigned:
-  _STLP_STATIC_ASSERT(__STATIC_CAST(size_type, -1) > 0)
+  _STLP_STATIC_ASSERT(static_cast<size_type>(-1) > 0)
 
   typename __ostream::sentry __sentry(__os);
   bool __ok = false;
@@ -45,8 +45,8 @@ operator << (basic_ostream<_CharT, _Traits>& __os,
     const streamsize __w = __os.width(0);
     basic_streambuf<_CharT, _Traits>* __buf = __os.rdbuf();
 
-    const bool __need_pad = (((sizeof(streamsize) > sizeof(size_t)) && (__STATIC_CAST(streamsize, __n) < __w)) ||
-                             ((sizeof(streamsize) <= sizeof(size_t)) && (__n < __STATIC_CAST(size_t, __w))));
+    const bool __need_pad = (((sizeof(streamsize) > sizeof(size_t)) && (static_cast<streamsize>(__n) < __w)) ||
+                             ((sizeof(streamsize) <= sizeof(size_t)) && (__n < static_cast<size_t>(__w))));
     streamsize __pad_len = __need_pad ? __w - __n : 0;
 
     if (!__left)
@@ -65,14 +65,14 @@ operator << (basic_ostream<_CharT, _Traits>& __os,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 operator >> (basic_istream<_CharT, _Traits>& __is,
              basic_string<_CharT,_Traits, _Alloc>& __s) {
   typedef basic_istream<_CharT, _Traits> __istream;
   typedef typename basic_string<_CharT, _Traits, _Alloc>::size_type size_type;
 
   // The hypothesis of this implementation is that size_type is unsigned:
-  _STLP_STATIC_ASSERT(__STATIC_CAST(size_type, -1) > 0)
+  _STLP_STATIC_ASSERT(static_cast<size_type>(-1) > 0)
 
   typename __istream::sentry __sentry(__is);
 
@@ -92,10 +92,10 @@ operator >> (basic_istream<_CharT, _Traits>& __is,
      * that size_type is unsigned.
      */
     else if (sizeof(streamsize) > sizeof(size_type) &&
-             (__width > __STATIC_CAST(streamsize, __s.max_size())))
+             (__width > static_cast<streamsize>(__s.max_size())))
       __n = 0;
     else {
-      __n = __STATIC_CAST(size_type, __width);
+      __n = static_cast<size_type>(__width);
       __s.reserve(__n);
     }
 
@@ -129,7 +129,7 @@ operator >> (basic_istream<_CharT, _Traits>& __is,
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 getline(basic_istream<_CharT, _Traits>& __is,
         basic_string<_CharT,_Traits,_Alloc>& __s,
         _CharT __delim) {

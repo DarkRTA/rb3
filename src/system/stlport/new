@@ -34,7 +34,7 @@
 #  undef _STLP_OUTERMOST_HEADER_ID
 #endif
 
-#endif /* _STLP_NEW */
+#endif /* _STLP_NEW_HEADER */
 
 // Local Variables:
 // mode:C++

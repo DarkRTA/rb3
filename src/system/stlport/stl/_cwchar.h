@@ -16,40 +16,15 @@
 #ifndef _STLP_INTERNAL_CWCHAR
 #define _STLP_INTERNAL_CWCHAR
 
-#  if !defined (_STLP_NO_CWCHAR) && defined (_STLP_USE_NEW_C_HEADERS)
-#    include _STLP_NATIVE_CPP_C_HEADER(cwchar)
-#  elif defined (_STLP_NO_WCHAR_T)
-#    include _STLP_NATIVE_C_HEADER(stddef.h)
-#  else
-#    include _STLP_NATIVE_C_HEADER(wchar.h)
-#  endif
-
-#  ifndef _STLP_INTERNAL_MBSTATE_T
-#    include <stl/_mbstate_t.h>
-#  endif
-
-#  if !defined (_STLP_NO_WCHAR_T)
-#    ifndef WCHAR_MIN
-#      define WCHAR_MIN 0
-#      define WCHAR_MAX ((wchar_t)~0)
-#    endif
-#  endif
-
-#  if defined (_STLP_IMPORT_VENDOR_CSTD)
+#include _STLP_NATIVE_CPP_C_HEADER(cwchar)
 
 _STLP_BEGIN_NAMESPACE
-#    if defined (_STLP_NO_WCHAR_T)
-typedef int wint_t;
-#    else
 using _STLP_VENDOR_CSTD::wint_t;
-#    endif
 
 using _STLP_VENDOR_CSTD::size_t;
 
-#    if !defined (_STLP_NO_NATIVE_MBSTATE_T) && !defined (_STLP_USE_OWN_MBSTATE_T)
 using _STLP_VENDOR_MB_NAMESPACE::mbstate_t;
 
-#      if !defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
 using _STLP_VENDOR_MB_NAMESPACE::btowc;
 using _STLP_VENDOR_MB_NAMESPACE::mbsinit;
 using _STLP_VENDOR_MB_NAMESPACE::mbrlen;
@@ -57,11 +32,6 @@ using _STLP_VENDOR_MB_NAMESPACE::mbrtowc;
 using _STLP_VENDOR_MB_NAMESPACE::mbsrtowcs;
 using _STLP_VENDOR_MB_NAMESPACE::wcrtomb;
 using _STLP_VENDOR_MB_NAMESPACE::wcsrtombs;
-#      endif
-
-#    endif /* _STLP_NO_NATIVE_MBSTATE_T */
-
-#    if !defined (_STLP_NO_NATIVE_WIDE_FUNCTIONS) && ! defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
 
 using _STLP_VENDOR_CSTD::fgetwc;
 using _STLP_VENDOR_CSTD::fgetws;
@@ -127,9 +97,6 @@ using _STLP_VENDOR_CSTD::wcsstr;
 using _STLP_VENDOR_CSTD::wcschr;
 using _STLP_VENDOR_CSTD::wcsrchr;
 using _STLP_VENDOR_CSTD::wcspbrk;
-#    endif /* _STLP_NO_NATIVE_WIDE_FUNCTIONS */
 _STLP_END_NAMESPACE
-
-#  endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif /* _STLP_INTERNAL_CWCHAR */

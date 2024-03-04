@@ -269,13 +269,8 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first1, __last1))
   _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first2, __last2))
   return _STLP_PRIV __find_end(__first1, __last1, __first2, __last2,
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
                                _STLP_ITERATOR_CATEGORY(__first1, _ForwardIter1),
                                _STLP_ITERATOR_CATEGORY(__first2, _ForwardIter2),
-#else
-                               forward_iterator_tag(),
-                               forward_iterator_tag(),
-#endif
                                _STLP_PRIV __equal_to(_STLP_VALUE_TYPE(__first1, _ForwardIter1))
     );
 }
@@ -285,7 +280,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InputIterator, class _OutputIterator, class _BinaryPredicate,
           class _Tp>
-_STLP_INLINE_LOOP _OutputIterator
+inline _OutputIterator
 __unique_copy(_InputIterator __first, _InputIterator __last,
               _OutputIterator __result,
               _BinaryPredicate __binary_pred, _Tp*) {
@@ -307,7 +302,7 @@ __unique_copy(_InputIter __first, _InputIter __last,_OutputIter __result,
 }
 
 template <class _InputIter, class _ForwardIter, class _BinaryPredicate>
-_STLP_INLINE_LOOP _ForwardIter
+inline _ForwardIter
 __unique_copy(_InputIter __first, _InputIter __last, _ForwardIter __result,
               _BinaryPredicate __binary_pred, const forward_iterator_tag &) {
   *__result = *__first;
@@ -315,24 +310,6 @@ __unique_copy(_InputIter __first, _InputIter __last, _ForwardIter __result,
     if (!__binary_pred(*__result, *__first)) *++__result = *__first;
   return ++__result;
 }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIterator, class _BidirectionalIterator, class _BinaryPredicate>
-inline _BidirectionalIterator
-__unique_copy(_InputIterator __first, _InputIterator __last,
-              _BidirectionalIterator __result, _BinaryPredicate __binary_pred,
-              const bidirectional_iterator_tag &) {
-  return __unique_copy(__first, __last, __result, __binary_pred, forward_iterator_tag());
-}
-
-template <class _InputIterator, class _RandomAccessIterator, class _BinaryPredicate>
-inline _RandomAccessIterator
-__unique_copy(_InputIterator __first, _InputIterator __last,
-              _RandomAccessIterator __result, _BinaryPredicate __binary_pred,
-              const random_access_iterator_tag &) {
-  return __unique_copy(__first, __last, __result, __binary_pred, forward_iterator_tag());
-}
-#endif /* _STLP_NONTEMPL_BASE_MATCH_BUG */
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -507,11 +484,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _Distance>
 inline _Distance __random_number(_Distance __n) {
-#ifdef _STLP_NO_DRAND48
   return rand() % __n;
-#else
-  return lrand48() % __n;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -653,7 +626,7 @@ random_sample(_InputIter __first, _InputIter __last,
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _ForwardIter, class _Predicate>
-_STLP_INLINE_LOOP _ForwardIter __partition(_ForwardIter __first,
+inline _ForwardIter __partition(_ForwardIter __first,
                                            _ForwardIter __last,
                                            _Predicate   __pred,
                                            const forward_iterator_tag &) {
@@ -674,7 +647,7 @@ _STLP_INLINE_LOOP _ForwardIter __partition(_ForwardIter __first,
 }
 
 template <class _BidirectionalIter, class _Predicate>
-_STLP_INLINE_LOOP _BidirectionalIter __partition(_BidirectionalIter __first,
+inline _BidirectionalIter __partition(_BidirectionalIter __first,
                                                  _BidirectionalIter __last,
                                                  _Predicate __pred,
                                                  const bidirectional_iterator_tag &) {
@@ -700,17 +673,6 @@ _STLP_INLINE_LOOP _BidirectionalIter __partition(_BidirectionalIter __first,
     ++__first;
   }
 }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _BidirectionalIter, class _Predicate>
-inline
-_BidirectionalIter __partition(_BidirectionalIter __first,
-                               _BidirectionalIter __last,
-                               _Predicate __pred,
-                               const random_access_iterator_tag &) {
-  return __partition(__first, __last, __pred, bidirectional_iterator_tag());
-}
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -792,7 +754,6 @@ inline _ForwardIter
 __stable_partition_aux_aux(_ForwardIter __first, _ForwardIter __last,
                            _Predicate __pred, _Tp*, _Distance*, bool __pred_of_before_last = false) {
   _Temporary_buffer<_ForwardIter, _Tp> __buf(__first, __last);
-  _STLP_MPWFIX_TRY    //*TY 06/01/2000 - they forget to call dtor for _Temporary_buffer if no try/catch block is present
   return (__buf.size() > 0) ?
     __stable_partition_adaptive(__first, __last, __pred,
                                 _Distance(__buf.requested_size()),
@@ -801,7 +762,6 @@ __stable_partition_aux_aux(_ForwardIter __first, _ForwardIter __last,
     __inplace_stable_partition(__first, __last, __pred,
                                _Distance(__buf.requested_size()),
                                false, __pred_of_before_last);
-  _STLP_MPWFIX_CATCH  //*TY 06/01/2000 - they forget to call dtor for _Temporary_buffer if no try/catch block is present
 }
 
 template <class _ForwardIter, class _Predicate>
@@ -831,15 +791,6 @@ __stable_partition_aux(_BidirectIter __first, _BidirectIter __last, _Predicate _
                                     _STLP_VALUE_TYPE(__first, _BidirectIter),
                                     _STLP_DISTANCE_TYPE(__first, _BidirectIter), true);
 }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _BidirectIter, class _Predicate>
-_BidirectIter
-__stable_partition_aux(_BidirectIter __first, _BidirectIter __last, _Predicate __pred,
-                       const random_access_iterator_tag &) {
-  return __stable_partition_aux(__first, __last, __pred, bidirectional_iterator_tag());
-}
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -1863,9 +1814,6 @@ bool __next_permutation(_BidirectionalIter __first, _BidirectionalIter __last,
       return false;
     }
   }
-#if defined (_STLP_NEED_UNREACHABLE_RETURN)
-    return false;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE
@@ -1914,9 +1862,6 @@ bool __prev_permutation(_BidirectionalIter __first, _BidirectionalIter __last,
       return false;
     }
   }
-#if defined (_STLP_NEED_UNREACHABLE_RETURN)
-    return false;
-#endif
 }
 
 _STLP_MOVE_TO_STD_NAMESPACE

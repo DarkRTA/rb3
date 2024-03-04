@@ -53,25 +53,21 @@ class _Sl_global {
 public:
   // those used to be global functions
   // moved here to reduce code bloat without templatizing _Slist_iterator_base
-  static size_t _STLP_CALL size(_Slist_node_base* __node);
-  static _Slist_node_base* _STLP_CALL __reverse(_Slist_node_base* __node);
-  static void _STLP_CALL __splice_after(_Slist_node_base* __pos,
+  static size_t size(_Slist_node_base* __node);
+  static _Slist_node_base* __reverse(_Slist_node_base* __node);
+  static void __splice_after(_Slist_node_base* __pos,
                                         _Slist_node_base* __before_first,
                                         _Slist_node_base* __before_last);
 
-  static void _STLP_CALL __splice_after(_Slist_node_base* __pos, _Slist_node_base* __head);
+  static void __splice_after(_Slist_node_base* __pos, _Slist_node_base* __head);
 
-  static _Slist_node_base* _STLP_CALL __previous(_Slist_node_base* __head,
+  static _Slist_node_base* __previous(_Slist_node_base* __head,
                                                  const _Slist_node_base* __node);
-  static const _Slist_node_base* _STLP_CALL __previous(const _Slist_node_base* __head,
+  static const _Slist_node_base* __previous(const _Slist_node_base* __head,
                                                        const _Slist_node_base* __node) {
-    return _Sl_global<_Dummy>::__previous(__CONST_CAST(_Slist_node_base*, __head), __node);
+    return _Sl_global<_Dummy>::__previous(const_cast<_Slist_node_base*>(__head), __node);
   }
 };
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Sl_global<bool>;
-#endif
 
 typedef _Sl_global<bool> _Sl_global_inst;
 

@@ -36,40 +36,11 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if (_STLP_STATIC_TEMPLATE_DATA > 0)
-
 template <class _CharT, class _InputIterator>
 locale::id money_get<_CharT, _InputIterator>::id;
 
 template <class _CharT, class _OutputIterator>
 locale::id money_put<_CharT, _OutputIterator>::id;
-
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-//typedef money_get<char, const char*> money_get_char;
-//typedef money_put<char, char*> money_put_char;
-typedef money_get<char, istreambuf_iterator<char, char_traits<char> > > money_get_char_2;
-typedef money_put<char, ostreambuf_iterator<char, char_traits<char> > > money_put_char_2;
-
-//__DECLARE_INSTANCE(locale::id, money_get_char::id, );
-//__DECLARE_INSTANCE(locale::id, money_put_char::id, );
-__DECLARE_INSTANCE(locale::id, money_get_char_2::id, );
-__DECLARE_INSTANCE(locale::id, money_put_char_2::id, );
-
-#  ifndef _STLP_NO_WCHAR_T
-
-//typedef money_get<wchar_t, const wchar_t*> money_get_wchar_t;
-//typedef money_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > > money_get_wchar_t_2;
-typedef money_put<wchar_t, wchar_t*> money_put_wchar_t;
-typedef money_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > > money_put_wchar_t_2;
-
-//__DECLARE_INSTANCE(locale::id, money_get_wchar_t::id, );
-//__DECLARE_INSTANCE(locale::id, money_put_wchar_t::id, );
-__DECLARE_INSTANCE(locale::id, money_get_wchar_t_2::id, );
-__DECLARE_INSTANCE(locale::id, money_put_wchar_t_2::id, );
-
-#  endif
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
 
 // money_get facets
 
@@ -317,7 +288,7 @@ template <class _CharT, class _InputIter>
 _InputIter
 money_get<_CharT, _InputIter>::do_get(_InputIter __s, _InputIter  __end, bool  __intl,
                                       ios_base&  __str, ios_base::iostate& __err,
-                                      _STLP_LONGEST_FLOAT_TYPE& __units) const {
+                                      long double& __units) const {
   string_type __buf;
   bool __is_positive = true;
   __s = _STLP_PRIV __money_do_get(__s, __end, __intl, __str, __err, __buf, __is_positive, (_CharT*)0);
@@ -458,8 +429,8 @@ _OutputIter __money_do_put(_OutputIter __s, bool  __intl, ios_base&  __str,
       ++__length;
   }
 
-  const bool __need_fill = (((sizeof(streamsize) > sizeof(size_t)) && (__STATIC_CAST(streamsize, __length) < __width)) ||
-                            ((sizeof(streamsize) <= sizeof(size_t)) && (__length < __STATIC_CAST(size_t, __width))));
+  const bool __need_fill = (((sizeof(streamsize) > sizeof(size_t)) && (static_cast<streamsize>(__length) < __width)) ||
+                            ((sizeof(streamsize) <= sizeof(size_t)) && (__length < static_cast<size_t>(__width))));
   streamsize __fill_amt = __need_fill ? __width - __length : 0;
 
   ios_base::fmtflags __fill_pos = __str.flags() & ios_base::adjustfield;
@@ -526,10 +497,10 @@ template <class _CharT, class _OutputIter>
 _OutputIter
 money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
-          char_type __fill, _STLP_LONGEST_FLOAT_TYPE __units) const {
+          char_type __fill, long double __units) const {
   _STLP_BASIC_IOSTRING(char_type) __digits;
   _STLP_PRIV __get_money_digits(__digits, __str, __units);
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, __STATIC_CAST(string_type*, 0));
+  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, static_cast<string_type*>(0));
 }
 
 template <class _CharT, class _OutputIter>
@@ -537,7 +508,7 @@ _OutputIter
 money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
           char_type __fill, const string_type& __digits) const {
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, true, __STATIC_CAST(string_type*, 0));
+  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, true, static_cast<string_type*>(0));
 }
 
 _STLP_END_NAMESPACE

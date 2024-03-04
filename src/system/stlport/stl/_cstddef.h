@@ -16,17 +16,11 @@
 #ifndef _STLP_INTERNAL_CSTDDEF
 #define _STLP_INTERNAL_CSTDDEF
 
-#  if defined (_STLP_USE_NEW_C_HEADERS)
-#    include _STLP_NATIVE_CPP_C_HEADER(cstddef)
-#  else
-#    include <stddef.h>
-#  endif
+#include _STLP_NATIVE_CPP_C_HEADER(cstddef)
 
-#  ifdef _STLP_IMPORT_VENDOR_CSTD
 _STLP_BEGIN_NAMESPACE
 using _STLP_VENDOR_CSTD::ptrdiff_t;
 using _STLP_VENDOR_CSTD::size_t;
 _STLP_END_NAMESPACE
-#  endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif /* _STLP_INTERNAL_CSTDDEF */

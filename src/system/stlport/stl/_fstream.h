@@ -53,7 +53,7 @@ _STLP_BEGIN_NAMESPACE
 // Class _Filebuf_base, a private base class to factor out the system-
 // dependent code from basic_filebuf<>.
 
-class _STLP_CLASS_DECLSPEC _Filebuf_base {
+class _Filebuf_base {
 public:                      // Opening and closing files.
   _Filebuf_base();
 
@@ -126,7 +126,7 @@ protected:                      // Data members.
   unsigned char      _M_regular_file ;
 
 public :
-  static size_t  _STLP_CALL __page_size() { return _M_page_size; }
+  static size_t  __page_size() { return _M_page_size; }
   int  __o_mode() const { return (int)_M_openmode; }
   bool __is_open()      const { return (_M_is_open !=0 ); }
   bool __should_close() const { return (_M_should_close != 0); }
@@ -139,11 +139,11 @@ public :
 
 // Forward declaration of two helper classes.
 template <class _Traits> class _Noconv_input;
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_input<char_traits<char> >;
 
 template <class _Traits> class _Noconv_output;
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_output< char_traits<char> >;
 
 // There is a specialized version of underflow, for basic_filebuf<char>,
@@ -152,7 +152,7 @@ class _Noconv_output< char_traits<char> >;
 template <class _CharT, class _Traits>
 class _Underflow;
 
-_STLP_TEMPLATE_NULL class _Underflow< char, char_traits<char> >;
+template<> class _Underflow< char, char_traits<char> >;
 
 template <class _CharT, class _Traits>
 class basic_filebuf : public basic_streambuf<_CharT, _Traits> {
@@ -341,13 +341,6 @@ public:
   }
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_filebuf<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_filebuf<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 // public:
 // helper class.
 template <class _CharT>
@@ -366,15 +359,15 @@ template <class _Traits>
 class _Noconv_output {
 public:
   typedef typename _Traits::char_type char_type;
-  static bool  _STLP_CALL _M_doit(basic_filebuf<char_type, _Traits >*,
+  static bool  _M_doit(basic_filebuf<char_type, _Traits >*,
                                   char_type*, char_type*)
   { return false; }
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC _Noconv_output< char_traits<char> > {
+template<>
+class _Noconv_output< char_traits<char> > {
 public:
-  static bool  _STLP_CALL
+  static bool 
   _M_doit(basic_filebuf<char, char_traits<char> >* __buf,
           char* __first, char* __last) {
     ptrdiff_t __n = __last - __first;
@@ -399,15 +392,15 @@ public:
   typedef typename _Traits::int_type int_type;
   typedef typename _Traits::char_type char_type;
 
-  static inline int_type _STLP_CALL
+  static inline int_type
   _M_doit(basic_filebuf<char_type, _Traits>*)
   { return _Traits::eof(); }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _Noconv_input<char_traits<char> > {
 public:
-  static inline int _STLP_CALL
+  static inline int
   _M_doit(basic_filebuf<char, char_traits<char> >* __buf) {
     return __buf->_M_do_noconv_input();
   }
@@ -423,25 +416,25 @@ public:
   typedef typename _Traits::int_type int_type;
   typedef _Traits                    traits_type;
 
-  static int_type _STLP_CALL _M_doit(basic_filebuf<_CharT, _Traits>* __this);
+  static int_type _M_doit(basic_filebuf<_CharT, _Traits>* __this);
 };
 
 
 // Specialization of underflow: if the character type is char, maybe
 // we can use mmap instead of read.
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC _Underflow< char, char_traits<char> > {
+template<>
+class _Underflow< char, char_traits<char> > {
 public:
   typedef char_traits<char>::int_type int_type;
   typedef char_traits<char> traits_type;
-  static  int _STLP_CALL _M_doit(basic_filebuf<char, traits_type >* __this);
+  static  int _M_doit(basic_filebuf<char, traits_type >* __this);
 };
 
 // There is a specialized version of underflow, for basic_filebuf<char>,
 // in fstream.cxx.
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE _Underflow<_CharT, _Traits>::int_type // _STLP_CALL
+typename _Underflow<_CharT, _Traits>::int_type //
  _Underflow<_CharT, _Traits>::_M_doit(basic_filebuf<_CharT, _Traits>* __this) {
   if (!__this->_M_in_input_mode) {
     if (!__this->_M_switch_to_input_mode())
@@ -457,10 +450,6 @@ _STLP_TYPENAME_ON_RETURN_TYPE _Underflow<_CharT, _Traits>::int_type // _STLP_CAL
 
   return __this->_M_underflow_aux();
 }
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT) && !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _Underflow<wchar_t, char_traits<wchar_t> >;
-#endif
 
 //----------------------------------------------------------------------
 // Class basic_ifstream<>
@@ -522,7 +511,7 @@ public:                         // Constructors, destructor.
 
 public:                         // File and buffer operations.
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();
@@ -601,7 +590,7 @@ public:                         // Constructors, destructor.
 
 public:                         // File and buffer operations.
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();
@@ -682,7 +671,7 @@ public:                         // Constructors, destructor.
 public:                         // File and buffer operations.
 
   basic_filebuf<_CharT, _Traits>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   bool is_open() {
     return this->rdbuf()->is_open();
@@ -711,17 +700,6 @@ _STLP_END_NAMESPACE
 #endif
 
 _STLP_BEGIN_NAMESPACE
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ifstream<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ofstream<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_fstream<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ifstream<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ofstream<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_fstream<wchar_t, char_traits<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_END_NAMESPACE
 

@@ -55,13 +55,8 @@ struct __move_traits {
    * copy constructor is just fine. Most of the time the copy constructor is fine only
    * if the following info is true.
    */
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && \
-   !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && \
-   !defined (_STLP_NO_MOVE_SEMANTIC)
-  typedef typename _IsSTLportClass<_Tp>::_Ret implemented;
-#else
   typedef __false_type implemented;
-#endif
+
   /*
    * complete tells if the move is complete or partial, that is to say, does the source
    * needs to be destroyed once it has been moved.
@@ -92,7 +87,7 @@ struct _MoveSourceTraits {
 
 //The helper function
 template <class _Tp>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _MoveSourceTraits<_Tp>::_Type
+inline typename _MoveSourceTraits<_Tp>::_Type
 _AsMoveSource (_Tp &src) {
   typedef typename _MoveSourceTraits<_Tp>::_Type _SrcType;
   return _SrcType(src);

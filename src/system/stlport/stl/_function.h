@@ -96,46 +96,10 @@ template <class _Tp> inline _Tp identity_element(plus<_Tp>) {  return _Tp(0); }
 template <class _Tp> inline _Tp identity_element(multiplies<_Tp>) { return _Tp(1); }
 #endif
 
-#if defined (_STLP_BASE_TYPEDEF_BUG)
-// this workaround is needed for SunPro 4.0.1
-// suggested by "Martin Abernethy" <gma@paston.co.uk>:
-
-// We have to introduce the XXary_predicate_aux structures in order to
-// access the argument and return types of predicate functions supplied
-// as type parameters. SUN C++ 4.0.1 compiler gives errors for template type parameters
-// of the form 'name1::name2', where name1 is itself a type parameter.
-template <class _Pair>
-struct __pair_aux : private _Pair {
-  typedef typename _Pair::first_type first_type;
-  typedef typename _Pair::second_type second_type;
-};
-
-template <class _Operation>
-struct __unary_fun_aux : private _Operation {
-  typedef typename _Operation::argument_type argument_type;
-  typedef typename _Operation::result_type result_type;
-};
-
-template <class _Operation>
-struct __binary_fun_aux  : private _Operation {
-  typedef typename _Operation::first_argument_type first_argument_type;
-  typedef typename _Operation::second_argument_type second_argument_type;
-  typedef typename _Operation::result_type result_type;
-};
-
-#  define __UNARY_ARG(__Operation,__type)  __unary_fun_aux<__Operation>::__type
-#  define __BINARY_ARG(__Operation,__type)  __binary_fun_aux<__Operation>::__type
-#  define __PAIR_ARG(__Pair,__type)  __pair_aux<__Pair>::__type
-#else
-#  define __UNARY_ARG(__Operation,__type)  __Operation::__type
-#  define __BINARY_ARG(__Operation,__type) __Operation::__type
-#  define __PAIR_ARG(__Pair,__type) __Pair::__type
-#endif
-
 template <class _Predicate>
 class unary_negate
-    : public unary_function<typename __UNARY_ARG(_Predicate, argument_type), bool> {
-  typedef unary_function<typename __UNARY_ARG(_Predicate, argument_type), bool> _Base;
+    : public unary_function<typename _Predicate::argument_type, bool> {
+  typedef unary_function<typename _Predicate::argument_type, bool> _Base;
 public:
   typedef typename _Base::argument_type argument_type;
 private:
@@ -157,11 +121,11 @@ not1(const _Predicate& __pred) {
 
 template <class _Predicate>
 class binary_negate
-    : public binary_function<typename __BINARY_ARG(_Predicate, first_argument_type),
-                             typename __BINARY_ARG(_Predicate, second_argument_type),
+    : public binary_function<typename _Predicate::first_argument_type,
+                             typename _Predicate::second_argument_type,
                              bool> {
-  typedef binary_function<typename __BINARY_ARG(_Predicate, first_argument_type),
-                          typename __BINARY_ARG(_Predicate, second_argument_type),
+  typedef binary_function<typename _Predicate::first_argument_type,
+                          typename _Predicate::second_argument_type,
                           bool> _Base;
 public:
   typedef typename _Base::first_argument_type first_argument_type;
@@ -186,10 +150,10 @@ not2(const _Predicate& __pred) {
 
 template <class _Operation>
 class binder1st :
-    public unary_function<typename __BINARY_ARG(_Operation, second_argument_type),
-                          typename __BINARY_ARG(_Operation, result_type) > {
-  typedef unary_function<typename __BINARY_ARG(_Operation, second_argument_type),
-                         typename __BINARY_ARG(_Operation, result_type) > _Base;
+    public unary_function<typename _Operation::second_argument_type,
+                          typename _Operation::result_type > {
+  typedef unary_function<typename _Operation::second_argument_type,
+                         typename _Operation::result_type > _Base;
 public:
   typedef typename _Base::argument_type argument_type;
   typedef typename _Base::result_type result_type;
@@ -218,10 +182,10 @@ bind1st(const _Operation& __fn, const _Tp& __x) {
 
 template <class _Operation>
 class binder2nd
-  : public unary_function<typename __BINARY_ARG(_Operation, first_argument_type),
-                          typename __BINARY_ARG(_Operation, result_type)> {
-  typedef unary_function<typename __BINARY_ARG(_Operation, first_argument_type),
-                         typename __BINARY_ARG(_Operation, result_type)> _Base;
+  : public unary_function<typename _Operation::first_argument_type,
+                          typename _Operation::result_type> {
+  typedef unary_function<typename _Operation::first_argument_type,
+                         typename _Operation::result_type> _Base;
 public:
   typedef typename _Base::argument_type argument_type;
   typedef typename _Base::result_type result_type;
@@ -253,10 +217,10 @@ bind2nd(const _Operation& __fn, const _Tp& __x) {
 
 template <class _Operation1, class _Operation2>
 class unary_compose :
-  public unary_function<typename __UNARY_ARG(_Operation2, argument_type),
-                        typename __UNARY_ARG(_Operation1, result_type)> {
-  typedef unary_function<typename __UNARY_ARG(_Operation2, argument_type),
-                         typename __UNARY_ARG(_Operation1, result_type)> _Base;
+  public unary_function<typename _Operation2::argument_type,
+                        typename _Operation1::result_type> {
+  typedef unary_function<typename _Operation2::argument_type,
+                         typename _Operation1::result_type> _Base;
 public:
   typedef typename _Base::argument_type argument_type;
   typedef typename _Base::result_type result_type;
@@ -282,10 +246,10 @@ compose1(const _Operation1& __fn1, const _Operation2& __fn2) {
 
 template <class _Operation1, class _Operation2, class _Operation3>
 class binary_compose :
-    public unary_function<typename __UNARY_ARG(_Operation2, argument_type),
-                          typename __BINARY_ARG(_Operation1, result_type)> {
-  typedef unary_function<typename __UNARY_ARG(_Operation2, argument_type),
-                         typename __BINARY_ARG(_Operation1, result_type)> _Base;
+    public unary_function<typename _Operation2::argument_type,
+                          typename _Operation1::result_type> {
+  typedef unary_function<typename _Operation2::argument_type,
+                         typename _Operation1::result_type> _Base;
 public:
   typedef typename _Base::argument_type argument_type;
   typedef typename _Base::result_type result_type;
@@ -348,13 +312,13 @@ struct constant_void_fun : public _STLP_PRIV _Constant_void_fun<_Result> {
     : _STLP_PRIV _Constant_void_fun<_Result>(__v) {}
 };
 
-template <class _Result, _STLP_DFL_TMPL_PARAM( _Argument , _Result) >
+template <class _Result, class _Argument = _Result >
 struct constant_unary_fun : public _STLP_PRIV _Constant_unary_fun<_Result, _Argument> {
   constant_unary_fun(const _Result& __v)
     : _STLP_PRIV _Constant_unary_fun<_Result, _Argument>(__v) {}
 };
 
-template <class _Result, _STLP_DFL_TMPL_PARAM( _Arg1 , _Result), _STLP_DFL_TMPL_PARAM( _Arg2 , _Arg1) >
+template <class _Result, class _Arg1 = _Result, class _Arg2 = _Arg1 >
 struct constant_binary_fun
   : public _STLP_PRIV _Constant_binary_fun<_Result, _Arg1, _Arg2> {
   constant_binary_fun(const _Result& __v)
@@ -379,25 +343,28 @@ constant2(const _Result& __val) {
 
 // subtractive_rng is an extension: it is not part of the standard.
 // Note: this code assumes that int is 32 bits.
-class subtractive_rng : public unary_function<_STLP_UINT32_T, _STLP_UINT32_T> {
+typedef unsigned int __rng_int;
+_STLP_STATIC_ASSERT(sizeof(__rng_int) == 4);
+
+class subtractive_rng : public unary_function<__rng_int, __rng_int> {
 private:
-  _STLP_UINT32_T _M_table[55];
-  _STLP_UINT32_T _M_index1;
-  _STLP_UINT32_T _M_index2;
+  __rng_int _M_table[55];
+  __rng_int _M_index1;
+  __rng_int _M_index2;
 public:
-  _STLP_UINT32_T operator()(_STLP_UINT32_T __limit) {
+  __rng_int operator()(__rng_int __limit) {
     _M_index1 = (_M_index1 + 1) % 55;
     _M_index2 = (_M_index2 + 1) % 55;
     _M_table[_M_index1] = _M_table[_M_index1] - _M_table[_M_index2];
     return _M_table[_M_index1] % __limit;
   }
 
-  void _M_initialize(_STLP_UINT32_T __seed) {
-    _STLP_UINT32_T __k = 1;
+  void _M_initialize(__rng_int __seed) {
+    __rng_int __k = 1;
     _M_table[54] = __seed;
-    _STLP_UINT32_T __i;
+    __rng_int __i;
     for (__i = 0; __i < 54; __i++) {
-        _STLP_UINT32_T __ii = (21 * (__i + 1) % 55) - 1;
+        __rng_int __ii = (21 * (__i + 1) % 55) - 1;
         _M_table[__ii] = __k;
         __k = __seed - __k;
         __seed = _M_table[__ii];

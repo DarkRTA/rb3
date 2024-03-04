@@ -36,29 +36,10 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if !defined ( _STLP_LIMITED_DEFAULT_TEMPLATES )
 template <class _Tp, class _Sequence = deque<_Tp> >
-#elif defined ( _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS )
-#  define _STLP_STACK_ARGS _Tp
-template <class _Tp>
-#else
-template <class _Tp, class _Sequence>
-#endif
 class stack
-#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-#  if defined (_STLP_STACK_ARGS)
-            : public __stlport_class<stack<_Tp> >
-#  else
-            : public __stlport_class<stack<_Tp, _Sequence> >
-#  endif
-#endif
 {
-#ifdef _STLP_STACK_ARGS
-  typedef deque<_Tp> _Sequence;
-  typedef stack<_Tp> _Self;
-#else
   typedef stack<_Tp, _Sequence> _Self;
-#endif
 
 public:
   typedef typename _Sequence::value_type      value_type;
@@ -86,34 +67,26 @@ public:
   const _Sequence& _Get_s() const { return c; }
 };
 
-#ifndef _STLP_STACK_ARGS
-#  define _STLP_STACK_ARGS _Tp, _Sequence
-#  define _STLP_STACK_HEADER_ARGS class _Tp, class _Sequence
-#else
-#  define _STLP_STACK_HEADER_ARGS class _Tp
-#endif
-
-template < _STLP_STACK_HEADER_ARGS >
-inline bool _STLP_CALL  operator==(const stack< _STLP_STACK_ARGS >& __x,
-                                   const stack< _STLP_STACK_ARGS >& __y)
+template < class _Tp, class _Sequence >
+inline bool  operator==(const stack< _Tp, _Sequence >& __x,
+                                   const stack< _Tp, _Sequence >& __y)
 { return __x._Get_s() == __y._Get_s(); }
 
-template < _STLP_STACK_HEADER_ARGS >
-inline bool _STLP_CALL  operator<(const stack< _STLP_STACK_ARGS >& __x,
-                                  const stack< _STLP_STACK_ARGS >& __y)
+template < class _Tp, class _Sequence >
+inline bool  operator<(const stack< _Tp, _Sequence >& __x,
+                                  const stack< _Tp, _Sequence >& __y)
 { return __x._Get_s() < __y._Get_s(); }
 
+#define _STLP_STACK_ARGS _Tp, _Sequence
+#define _STLP_STACK_HEADER_ARGS class _Tp, class _Sequence
 _STLP_RELOPS_OPERATORS(template < _STLP_STACK_HEADER_ARGS >, stack< _STLP_STACK_ARGS >)
-
 #undef _STLP_STACK_ARGS
 #undef _STLP_STACK_HEADER_ARGS
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Tp, class _Sequence>
 struct __move_traits<stack<_Tp, _Sequence> > :
   _STLP_PRIV __move_traits_aux<_Sequence>
 {};
-#endif
 
 _STLP_END_NAMESPACE
 

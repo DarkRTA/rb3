@@ -1,7 +1,3 @@
-#  ifdef _STLP_BROKEN_USING_DIRECTIVE
-using namespace _STLP_NEW_IO_NAMESPACE;
-#  else
-
 using _STLP_NEW_IO_NAMESPACE::ios;
 using _STLP_NEW_IO_NAMESPACE::streamoff;
 using _STLP_NEW_IO_NAMESPACE::streamsize;
@@ -36,6 +32,3 @@ using _STLP_NEW_IO_NAMESPACE::oct;
 // _lib.floatfield.manip_ floatfield:
 using _STLP_NEW_IO_NAMESPACE::fixed;
 using _STLP_NEW_IO_NAMESPACE::scientific;
-
-#  endif  /* _STLP_BROKEN_USING_DIRECTIVE */
-

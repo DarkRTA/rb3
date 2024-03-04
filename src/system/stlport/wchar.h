@@ -20,13 +20,7 @@
 #  define _STLP_DONT_POP_HEADER_ID
 #endif
 
-#if !defined (_STLP_NO_WCHAR_T)
-#  include _STLP_NATIVE_C_HEADER(wchar.h)
-#endif
-
-#ifndef _STLP_INTERNAL_MBSTATE_T
-#  include <stl/_mbstate_t.h>
-#endif
+#include _STLP_NATIVE_C_HEADER(wchar.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x278)
 #  if ! defined (_STLP_DONT_POP_HEADER_ID)

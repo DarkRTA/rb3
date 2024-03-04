@@ -88,7 +88,7 @@ void complex<_Tp>::_div(const _Tp& __z1_r,
 // Complex output, in the form (re,im).  We use a two-step process
 // involving stringstream so that we get the padding right.
 template <class _Tp, class _CharT, class _Traits>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os, const complex<_Tp>& __z) {
   basic_ostringstream<_CharT, _Traits, allocator<_CharT> > __tmp;
   __tmp.flags(__os.flags());
@@ -103,7 +103,7 @@ operator<<(basic_ostream<_CharT, _Traits>& __os, const complex<_Tp>& __z) {
 // locale and the separator between real and imaginary parts does not.
 
 template <class _Tp, class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __is, complex<_Tp>& __z) {
   _Tp  __re = 0;
   _Tp  __im = 0;
@@ -111,7 +111,7 @@ operator>>(basic_istream<_CharT, _Traits>& __is, complex<_Tp>& __z) {
   // typedef ctype<_CharT> _Ctype;
   //  locale __loc = __is.getloc();
   //const _Ctype&  __c_type  = use_facet<_Ctype>(__loc);
-  const ctype<_CharT>& __c_type = *__STATIC_CAST(const ctype<_CharT>*, __is._M_ctype_facet());
+  const ctype<_CharT>& __c_type = *static_cast<const ctype<_CharT>*>(__is._M_ctype_facet());
 
   const char __punct[4] = "(,)";
   _CharT __wpunct[3];

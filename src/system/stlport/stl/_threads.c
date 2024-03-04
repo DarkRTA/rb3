@@ -46,8 +46,6 @@ using _STLP_VENDOR_CSTD::time_t;
 
 _STLP_BEGIN_NAMESPACE
 
-#if (_STLP_STATIC_TEMPLATE_DATA > 0)
-
 #  if defined (_STLP_USE_ATOMIC_SWAP_MUTEX)
 template<int __32bits>
 _STLP_STATIC_MUTEX
@@ -63,21 +61,6 @@ template <int __inst>
 unsigned _STLP_mutex_spin<__inst>::__last = 0;
 #  endif // _STLP_USE_PTHREAD_SPINLOCK
 
-#else /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
-#  if defined (_STLP_USE_ATOMIC_SWAP_MUTEX)
-__DECLARE_INSTANCE(_STLP_STATIC_MUTEX, _Atomic_swap_struct<sizeof(__stl_atomic_t) == sizeof(void*)>::_S_swap_lock,
-                   _STLP_MUTEX_INITIALIZER  );
-#    undef _STLP_USE_ATOMIC_SWAP_MUTEX
-#  endif /* _STLP_PTHREADS */
-
-#  if defined (_STLP_THREADS) && !defined (_STLP_USE_PTHREAD_SPINLOCK)
-__DECLARE_INSTANCE(unsigned, _STLP_mutex_spin<0>::__max,  =30);
-__DECLARE_INSTANCE(unsigned, _STLP_mutex_spin<0>::__last, =0);
-#  endif // _STLP_USE_PTHREAD_SPINLOCK
-
-#endif /* ( _STLP_STATIC_TEMPLATE_DATA > 0 ) */
-
 #if defined (_STLP_THREADS) && !defined (_STLP_USE_PTHREAD_SPINLOCK)
 
 #  if defined (_STLP_SPARC_SOLARIS_THREADS)
@@ -89,7 +72,7 @@ extern "C" int __nanosleep(const struct timespec*, struct timespec*);
 #  endif
 
 template <int __inst>
-void _STLP_CALL
+void
 _STLP_mutex_spin<__inst>::_S_nsec_sleep(int __log_nsec) {
 #  if defined (_STLP_WIN32THREADS)
   if (__log_nsec <= 20) {
@@ -118,7 +101,7 @@ _STLP_mutex_spin<__inst>::_S_nsec_sleep(int __log_nsec) {
 }
 
 template <int __inst>
-void  _STLP_CALL
+void 
 _STLP_mutex_spin<__inst>::_M_do_lock(volatile __stl_atomic_t* __lock) {
 #  if defined(_STLP_ATOMIC_EXCHANGE)
   if (_Atomic_swap(__lock, 1)) {

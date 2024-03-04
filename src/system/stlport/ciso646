@@ -21,11 +21,7 @@
 #  include <stl/_prolog.h>
 #endif
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(ciso646)
-#else
-#  include <iso646.h>
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(ciso646)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x107 )
 #  include <stl/_epilog.h>

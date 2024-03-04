@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-struct mbstate_t; /* TODO */
+struct mbstate_t {}; /* TODO */
 
 wint_t btowc(int c);
 int wctob(wint_t c);

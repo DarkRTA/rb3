@@ -50,8 +50,8 @@ bool __locale_do_operator_call (const locale& __loc,
                                 const basic_string<_CharT, _Traits, _Alloc>& __x,
                                 const basic_string<_CharT, _Traits, _Alloc>& __y);
 
-_STLP_DECLSPEC _Locale_impl * _STLP_CALL _get_Locale_impl( _Locale_impl *locimpl );
-_STLP_DECLSPEC _Locale_impl * _STLP_CALL _copy_Nameless_Locale_impl( _Locale_impl *locimpl );
+_Locale_impl * _get_Locale_impl( _Locale_impl *locimpl );
+_Locale_impl * _copy_Nameless_Locale_impl( _Locale_impl *locimpl );
 
 template <class _Facet>
 bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW;
@@ -59,10 +59,10 @@ bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW;
 template <class _Facet>
 _Facet* _UseFacet(const locale& __loc, const _Facet* __facet);
 
-class _STLP_CLASS_DECLSPEC locale {
+class locale {
 public:
   // types:
-  class _STLP_CLASS_DECLSPEC facet : protected _Refcount_Base {
+  class facet : protected _Refcount_Base {
   protected:
     /* Here we filter __init_count user value to 0 or 1 because __init_count is a
      * size_t instance and _Refcount_Base use __stl_atomic_t instances that might
@@ -73,15 +73,15 @@ public:
     virtual ~facet();
     friend class locale;
     friend class _Locale_impl;
-    friend facet * _STLP_CALL _get_facet( facet * );
-    friend void _STLP_CALL _release_facet( facet *& );
+    friend facet * _get_facet( facet * );
+    friend void _release_facet( facet *& );
 
   private:                        // Invalidate assignment and copying.
     facet(const facet& ) /* : _Refcount_Base(1) {} */;
     void operator=(const facet&);
   };
 
-  class _STLP_CLASS_DECLSPEC id {
+  class id {
     friend class locale;
     friend class _Locale_impl;
   public:
@@ -90,11 +90,7 @@ public:
   };
 
   typedef int category;
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  enum _Category {
-#else
   static const category
-#endif
     none      = 0x000,
     collate   = 0x010,
     ctype     = 0x020,
@@ -102,11 +98,7 @@ public:
     numeric   = 0x100,
     time      = 0x200,
     messages  = 0x400,
-    all       = collate | ctype | monetary | numeric | time | messages
-#if defined (_STLP_STATIC_CONST_INIT_BUG)
-  }
-#endif
-  ;
+    all       = collate | ctype | monetary | numeric | time | messages;
 
   // construct/copy/destroy:
   locale() _STLP_NOTHROW;
@@ -114,7 +106,6 @@ public:
   explicit locale(const char *);
   locale(const locale&, const char*, category);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Facet>
   locale(const locale& __loc, _Facet* __f) {
     if ( __f != 0 ) {
@@ -124,7 +115,6 @@ public:
       this->_M_impl = _get_Locale_impl( __loc._M_impl );
     }
   }
-#endif // _STLP_MEMBER_TEMPLATES
 
 protected:
   // those are for internal use
@@ -137,7 +127,6 @@ public:
 
   ~locale() _STLP_NOTHROW;
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS)
   template <class _Facet>
   locale combine(const locale& __loc) const {
     _Facet *__facet = 0;
@@ -146,7 +135,6 @@ public:
 
     return locale(*this, _UseFacet(__loc, __facet));
   }
-#endif // _STLP_MEMBER_TEMPLATES && !_STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
 
   // locale operations:
   string name() const;
@@ -154,27 +142,20 @@ public:
   bool operator==(const locale&) const;
   bool operator!=(const locale&) const;
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || defined (_STLP_INLINE_MEMBER_TEMPLATES)
-  bool operator()(const string& __x, const string& __y) const;
-#  ifndef _STLP_NO_WCHAR_T
-  bool operator()(const wstring& __x, const wstring& __y) const;
-#  endif
-#else
   template <class _CharT, class _Traits, class _Alloc>
   bool operator()(const basic_string<_CharT, _Traits, _Alloc>& __x,
                   const basic_string<_CharT, _Traits, _Alloc>& __y) const
   { return __locale_do_operator_call(*this, __x, __y); }
-#endif
 
   // global locale objects:
-  static locale _STLP_CALL global(const locale&);
-  static const locale& _STLP_CALL classic();
+  static locale global(const locale&);
+  static const locale& classic();
 
 //protected:                         // Helper functions for locale globals.
   facet* _M_get_facet(const id&) const;
   // same, but throws
   facet* _M_use_facet(const id&) const;
-  static void _STLP_FUNCTION_THROWS _STLP_CALL _M_throw_runtime_error(const char* = 0);
+  static void _STLP_FUNCTION_THROWS _M_throw_runtime_error(const char* = 0);
 
 protected:                        // More helper functions.
   void _M_insert(facet* __f, id& __id);
@@ -191,36 +172,15 @@ protected:                        // Data members
 //----------------------------------------------------------------------
 // locale globals
 
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-template <class _Facet>
-inline const _Facet&
-_Use_facet<_Facet>::operator *() const
-#else
-template <class _Facet> inline const _Facet& use_facet(const locale& __loc)
-#endif
-{
+template <class _Facet> inline const _Facet& use_facet(const locale& __loc) {
   _Facet *__facet = 0;
   return *_UseFacet(__loc, __facet);
 }
 
-
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-template <class _Facet>
-struct has_facet {
-  const locale& __loc;
-  has_facet(const locale& __p_loc) : __loc(__p_loc) {}
-  operator bool() const _STLP_NOTHROW
-#else
-template <class _Facet> inline bool has_facet(const locale& __loc) _STLP_NOTHROW
-#endif
-{
+template <class _Facet> inline bool has_facet(const locale& __loc) _STLP_NOTHROW {
   _Facet *__facet = 0;
   return _HasFacet(__loc, __facet);
 }
-
-#ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-}; // close class definition
-#endif
 
 template <class _Facet>
 bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW
@@ -228,7 +188,7 @@ bool _HasFacet(const locale& __loc, const _Facet* __facet) _STLP_NOTHROW
 
 template <class _Facet>
 _Facet* _UseFacet(const locale& __loc, const _Facet* __facet)
-{ return __STATIC_CAST(_Facet*, __loc._M_use_facet(_Facet::id)); }
+{ return static_cast<_Facet*>(__loc._M_use_facet(_Facet::id)); }
 
 _STLP_END_NAMESPACE
 

@@ -54,8 +54,8 @@ basic_streambuf<_CharT, _Traits>::xsgetn(_CharT* __s, streamsize __n) {
 
   while (__result < __n) {
     if (_M_gnext < _M_gend) {
-      size_t __chunk = (min) (__STATIC_CAST(size_t,_M_gend - _M_gnext),
-                              __STATIC_CAST(size_t,__n - __result));
+      size_t __chunk = (min) (static_cast<size_t>(_M_gend - _M_gnext),
+                              static_cast<size_t>(__n - __result));
       _Traits::copy(__s, _M_gnext, __chunk);
       __result += __chunk;
       __s += __chunk;
@@ -85,8 +85,8 @@ basic_streambuf<_CharT, _Traits>::xsputn(const _CharT* __s, streamsize __n)
 
   while (__result < __n) {
     if (_M_pnext < _M_pend) {
-      size_t __chunk = (min) (__STATIC_CAST(size_t,_M_pend - _M_pnext),
-                           __STATIC_CAST(size_t,__n - __result));
+      size_t __chunk = (min) (static_cast<size_t>(_M_pend - _M_pnext),
+                           static_cast<size_t>(__n - __result));
       _Traits::copy(_M_pnext, __s, __chunk);
       __result += __chunk;
       __s += __chunk;
@@ -113,8 +113,8 @@ basic_streambuf<_CharT, _Traits>::_M_xsputnc(_CharT __c, streamsize __n)
 
   while (__result < __n) {
     if (_M_pnext < _M_pend) {
-      size_t __chunk = (min) (__STATIC_CAST(size_t,_M_pend - _M_pnext),
-                           __STATIC_CAST(size_t,__n - __result));
+      size_t __chunk = (min) (static_cast<size_t>(_M_pend - _M_pnext),
+                           static_cast<size_t>(__n - __result));
       _Traits::assign(_M_pnext, __chunk, __c);
       __result += __chunk;
       _M_pnext += __chunk;
@@ -130,7 +130,7 @@ basic_streambuf<_CharT, _Traits>::_M_xsputnc(_CharT __c, streamsize __n)
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::_M_snextc_aux()
 {
   int_type __eof = _Traits::eof();
@@ -143,19 +143,19 @@ basic_streambuf<_CharT, _Traits>::_M_snextc_aux()
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::pbackfail(int_type) {
  return _Traits::eof();
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::overflow(int_type) {
   return _Traits::eof();
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::uflow() {
     return ( _Traits::eq_int_type(this->underflow(),_Traits::eof()) ?
              _Traits::eof() :
@@ -163,7 +163,7 @@ basic_streambuf<_CharT, _Traits>::uflow() {
 }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::int_type
+typename basic_streambuf<_CharT, _Traits>::int_type
 basic_streambuf<_CharT, _Traits>::underflow()
 { return _Traits::eof(); }
 
@@ -181,12 +181,12 @@ int
 basic_streambuf<_CharT, _Traits>::sync() { return 0; }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::pos_type
+typename basic_streambuf<_CharT, _Traits>::pos_type
 basic_streambuf<_CharT, _Traits>::seekpos(pos_type, ios_base::openmode)
 { return pos_type(-1); }
 
 template <class _CharT, class _Traits>
-_STLP_TYPENAME_ON_RETURN_TYPE basic_streambuf<_CharT, _Traits>::pos_type
+typename basic_streambuf<_CharT, _Traits>::pos_type
 basic_streambuf<_CharT, _Traits>::seekoff(off_type, ios_base::seekdir,
                                           ios_base::openmode)
 { return pos_type(-1); }

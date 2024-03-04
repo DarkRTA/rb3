@@ -155,9 +155,9 @@ inline long _STLP_atomic_add_gcc_x86(long volatile* p, long addend) {
 
 #    if !defined (_STLP_ATOMIC_INCREMENT)
 #      if !defined (_STLP_NEW_PLATFORM_SDK)
-#        define _STLP_ATOMIC_INCREMENT(__x)           InterlockedIncrement(__CONST_CAST(long*, __x))
-#        define _STLP_ATOMIC_DECREMENT(__x)           InterlockedDecrement(__CONST_CAST(long*, __x))
-#        define _STLP_ATOMIC_EXCHANGE(__x, __y)       InterlockedExchange(__CONST_CAST(long*, __x), __y)
+#        define _STLP_ATOMIC_INCREMENT(__x)           InterlockedIncrement(const_cast<long*>(__x))
+#        define _STLP_ATOMIC_DECREMENT(__x)           InterlockedDecrement(const_cast<long*>(__x))
+#        define _STLP_ATOMIC_EXCHANGE(__x, __y)       InterlockedExchange(const_cast<long*>(__x), __y)
 #      else
 #        define _STLP_ATOMIC_INCREMENT(__x)           InterlockedIncrement(__x)
 #        define _STLP_ATOMIC_DECREMENT(__x)           InterlockedDecrement(__x)
@@ -269,8 +269,8 @@ struct _STLP_mutex_spin {
   // Low if we suspect uniprocessor, high for multiprocessor.
   static unsigned __max;
   static unsigned __last;
-  static void _STLP_CALL _M_do_lock(volatile __stl_atomic_t* __lock);
-  static void _STLP_CALL _S_nsec_sleep(int __log_nsec);
+  static void _M_do_lock(volatile __stl_atomic_t* __lock);
+  static void _S_nsec_sleep(int __log_nsec);
 };
 #endif // !_STLP_USE_PTHREAD_SPINLOCK
 
@@ -288,7 +288,7 @@ struct _STLP_mutex_spin {
 
 // For non-static cases, clients should use  _STLP_mutex.
 
-struct _STLP_CLASS_DECLSPEC _STLP_mutex_base {
+struct _STLP_mutex_base {
 #if defined (_STLP_ATOMIC_EXCHANGE) || defined (_STLP_SGI_THREADS)
   // It should be relatively easy to get this to work on any modern Unix.
   volatile __stl_atomic_t _M_lock;
@@ -421,7 +421,7 @@ struct _STLP_CLASS_DECLSPEC _STLP_mutex_base {
 // Locking class.  The constructor initializes the lock, the destructor destroys it.
 // Well - behaving class, does not need static initializer
 
-class _STLP_CLASS_DECLSPEC _STLP_mutex : public _STLP_mutex_base {
+class _STLP_mutex : public _STLP_mutex_base {
   public:
     inline _STLP_mutex () { _M_initialize(); }
     inline ~_STLP_mutex () { _M_destroy(); }
@@ -436,7 +436,7 @@ class _STLP_CLASS_DECLSPEC _STLP_mutex : public _STLP_mutex_base {
 // It's not clear that this is exactly the right functionality.
 // It will probably change in the future.
 
-struct _STLP_CLASS_DECLSPEC _STLP_auto_lock {
+struct _STLP_auto_lock {
   _STLP_auto_lock(_STLP_STATIC_MUTEX& __lock) : _M_lock(__lock)
   { _M_lock._M_acquire_lock(); }
   ~_STLP_auto_lock()
@@ -454,7 +454,7 @@ private:
  * atomic preincrement/predecrement.  The constructor initializes
  * _M_ref_count.
  */
-class _STLP_CLASS_DECLSPEC _Refcount_Base {
+class _Refcount_Base {
   // The data member _M_ref_count
 #if defined (__DMC__)
 public:
@@ -544,8 +544,8 @@ public:
   return _STLP_ATOMIC_EXCHANGE_PTR(__p, __q);
 #  elif defined (_STLP_ATOMIC_EXCHANGE)
   _STLP_STATIC_ASSERT(sizeof(__stl_atomic_t) == sizeof(void*))
-  return __REINTERPRET_CAST(void*, _STLP_ATOMIC_EXCHANGE(__REINTERPRET_CAST(volatile __stl_atomic_t*, __p),
-                                                         __REINTERPRET_CAST(__stl_atomic_t, __q))
+  return reinterpret_cast<void*>(_STLP_ATOMIC_EXCHANGE(reinterpret_cast<volatile __stl_atomic_t*>(__p),
+                                                         reinterpret_cast<__stl_atomic_t>(__q))
                             );
 #  elif defined (_STLP_USE_ATOMIC_SWAP_MUTEX)
   _S_swap_lock._M_acquire_lock();
@@ -565,7 +565,7 @@ public:
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 class _Atomic_swap_struct<0> {
 public:
 #if defined (_STLP_THREADS) && \
@@ -607,8 +607,8 @@ public:
   return _STLP_ATOMIC_EXCHANGE_PTR(__p, __q);
 #  elif defined (_STLP_ATOMIC_EXCHANGE)
   _STLP_STATIC_ASSERT(sizeof(__stl_atomic_t) == sizeof(void*))
-  return __REINTERPRET_CAST(void*, _STLP_ATOMIC_EXCHANGE(__REINTERPRET_CAST(volatile __stl_atomic_t*, __p),
-                                                         __REINTERPRET_CAST(__stl_atomic_t, __q))
+  return reinterpret_cast<void*>(_STLP_ATOMIC_EXCHANGE(reinterpret_cast<volatile __stl_atomic_t*>(__p),
+                                                         reinterpret_cast<__stl_atomic_t>(__q))
                             );
 #  elif defined (_STLP_USE_ATOMIC_SWAP_MUTEX)
   _S_swap_lock._M_acquire_lock();
@@ -633,12 +633,12 @@ public:
 #  pragma warning (disable : 4189) //__use_ptr_atomic_swap initialized but not used
 #endif
 
-inline __stl_atomic_t _STLP_CALL _Atomic_swap(_STLP_VOLATILE __stl_atomic_t * __p, __stl_atomic_t __q) {
+inline __stl_atomic_t _Atomic_swap(_STLP_VOLATILE __stl_atomic_t * __p, __stl_atomic_t __q) {
   const int __use_ptr_atomic_swap = sizeof(__stl_atomic_t) == sizeof(void*);
   return _Atomic_swap_struct<__use_ptr_atomic_swap>::_S_swap(__p, __q);
 }
 
-inline void* _STLP_CALL _Atomic_swap_ptr(void* _STLP_VOLATILE* __p, void* __q) {
+inline void* _Atomic_swap_ptr(void* _STLP_VOLATILE* __p, void* __q) {
   const int __use_ptr_atomic_swap = sizeof(__stl_atomic_t) == sizeof(void*);
   return _Atomic_swap_struct<__use_ptr_atomic_swap>::_S_swap_ptr(__p, __q);
 }

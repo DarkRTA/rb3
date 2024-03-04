@@ -15,16 +15,10 @@
 #ifndef _STLP_INTERNAL_CSTDARG
 #define _STLP_INTERNAL_CSTDARG
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(cstdarg)
-#else
-#  include _STLP_NATIVE_C_HEADER(stdarg.h)
-#endif
+#include _STLP_NATIVE_CPP_C_HEADER(cstdarg)
 
-#ifdef _STLP_IMPORT_VENDOR_CSTD
 _STLP_BEGIN_NAMESPACE
 using _STLP_VENDOR_CSTD::va_list;
 _STLP_END_NAMESPACE
-#endif /* _STLP_IMPORT_VENDOR_CSTD */
 
 #endif

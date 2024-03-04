@@ -106,13 +106,6 @@ private:
   _CharT _M_Buf[ 8 /* _S_BufSiz */];
 };
 
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_stringbuf<char, char_traits<char>, allocator<char> >;
-#  if !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_stringbuf<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 //----------------------------------------------------------------------
 // Class basic_istringstream, an input stream that uses a stringbuf.
 
@@ -139,7 +132,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
   void str(const _String& __s) { _M_buf.str(__s); }
@@ -175,7 +168,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); } // dwa 02/07/00 - BUG STOMPER DAVE
@@ -214,7 +207,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return __CONST_CAST(_Buf*,&_M_buf); }
+    { return const_cast<_Buf*>(&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); }
@@ -222,18 +215,6 @@ public:                         // Member functions.
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
 };
-
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_istringstream<char, char_traits<char>, allocator<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ostringstream<char, char_traits<char>, allocator<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_stringstream<char, char_traits<char>, allocator<char> >;
-#  if !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_istringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_ostringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_stringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_END_NAMESPACE
 

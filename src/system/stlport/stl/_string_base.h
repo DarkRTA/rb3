@@ -44,8 +44,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 template <class _Tp, class _Alloc>
 class _String_base {
   typedef _String_base<_Tp, _Alloc> _Self;
-protected:
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
 public:
   //dums: Some compiler(MSVC6) require it to be public not simply protected!
   enum {_DEFAULT_SIZE = _STLP_SHORT_STRING_SZ};
@@ -228,13 +226,6 @@ protected:
 };
 
 #undef _STLP_SHORT_STRING_SZ
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _String_base<char, allocator<char> >;
-#  if defined (_STLP_HAS_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _String_base<wchar_t, allocator<wchar_t> >;
-#  endif
-#endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

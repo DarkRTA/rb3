@@ -57,23 +57,21 @@ _STLP_BEGIN_NAMESPACE
 // wcerr/wclog.
 
 # ifdef _STLP_REDIRECT_STDSTREAMS
-extern _STLP_DECLSPEC istream cin;
-extern _STLP_DECLSPEC ofstream cout;
-extern _STLP_DECLSPEC ofstream cerr;
-extern _STLP_DECLSPEC ofstream clog;
+extern istream cin;
+extern ofstream cout;
+extern ofstream cerr;
+extern ofstream clog;
 # else
-extern _STLP_DECLSPEC istream cin;
-extern _STLP_DECLSPEC ostream cout;
-extern _STLP_DECLSPEC ostream cerr;
-extern _STLP_DECLSPEC ostream clog;
+extern istream cin;
+extern ostream cout;
+extern ostream cerr;
+extern ostream clog;
 # endif
 
-# ifndef _STLP_NO_WCHAR_T
-extern _STLP_DECLSPEC wistream wcin;
-extern _STLP_DECLSPEC wostream wcout;
-extern _STLP_DECLSPEC wostream wcerr;
-extern _STLP_DECLSPEC wostream wclog;
-# endif
+extern wistream wcin;
+extern wostream wcout;
+extern wostream wcerr;
+extern wostream wclog;
 
 _STLP_END_NAMESPACE
 

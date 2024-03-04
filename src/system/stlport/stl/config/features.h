@@ -43,9 +43,6 @@
 
 /* Other macros defined by this file:
 
- * bool, true, and false, if _STLP_NO_BOOL is defined.
- * typename, as a null macro if it's not already a keyword.
- * explicit, as a null macro if it's not already a keyword.
  * namespace-related macros (_STLP_STD, _STLP_BEGIN_NAMESPACE, etc.)
  * exception-related macros (_STLP_TRY, _STLP_UNWIND, etc.)
  * _STLP_ASSERT, either as a test or as a null macro, depending on
@@ -119,35 +116,11 @@
 
 /* SGI terms */
 
-#if !defined (_STLP_NO_MEMBER_TEMPLATES) && !defined (_STLP_MEMBER_TEMPLATES)
-#  define _STLP_MEMBER_TEMPLATES 1
-#endif
-
-#if !defined (_STLP_NO_FRIEND_TEMPLATES) && !defined (_STLP_FRIEND_TEMPLATES)
-#  define _STLP_FRIEND_TEMPLATES 1
-#endif
-
-#if !defined (_STLP_NO_MEMBER_TEMPLATE_CLASSES) && !defined (_STLP_MEMBER_TEMPLATE_CLASSES)
-#  define _STLP_MEMBER_TEMPLATE_CLASSES 1
-#endif
-
-#if defined (_STLP_NO_MEMBER_TEMPLATE_CLASSES) && !defined (_STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE)
-#  define _STLP_DONT_SUPPORT_REBIND_MEMBER_TEMPLATE 1
-#endif
-
-#if !defined (_STLP_NO_CLASS_PARTIAL_SPECIALIZATION) && !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-#  define _STLP_CLASS_PARTIAL_SPECIALIZATION 1
-#endif
-
-#if !defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER) && !defined (_STLP_NO_FUNCTION_TMPL_PARTIAL_ORDER)
-#  define _STLP_FUNCTION_TMPL_PARTIAL_ORDER 1
-#endif
-
 #if !defined (_STLP_DONT_USE_SHORT_STRING_OPTIM) && !defined (_STLP_USE_SHORT_STRING_OPTIM)
 #  define _STLP_USE_SHORT_STRING_OPTIM 1
 #endif
 
-#if defined (_STLP_MEMBER_TEMPLATES) && !defined (_STLP_NO_EXTENSIONS) && \
+#if !defined (_STLP_NO_EXTENSIONS) && \
    !defined (_STLP_NO_CONTAINERS_EXTENSION) && !defined (_STLP_USE_CONTAINERS_EXTENSION)
 #  define _STLP_USE_CONTAINERS_EXTENSION
 #endif
@@ -156,11 +129,6 @@
 #  define _STLP_TEMPLATE_FOR_CONT_EXT template <class _KT>
 #else
 #  define _STLP_TEMPLATE_FOR_CONT_EXT
-#endif
-
-#if defined (_STLP_USE_PTR_SPECIALIZATIONS) && \
-    (defined (_STLP_NO_CLASS_PARTIAL_SPECIALIZATION) && defined (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS))
-#  error "Sorry but according the STLport settings your compiler can not support the pointer specialization feature."
 #endif
 
 #if defined (_STLP_NO_IOSTREAMS) && \
@@ -192,13 +160,6 @@
  * final workaround tuning based on given flags
  * ========================================================== */
 
-#ifndef _STLP_UINT32_T
-#  define _STLP_UINT32_T unsigned long
-#endif
-#ifndef _STLP_ABORT
-#  define _STLP_ABORT() abort()
-#endif
-
 #if !defined (_STLP_HAS_NO_NAMESPACES)
 #  if defined _STLP_NO_NAMESPACES
 #    undef _STLP_USE_NAMESPACES
@@ -224,30 +185,6 @@
 #  define _STLP_WIN16
 #endif /* __unix */
 
-#if defined (_STLP_WIN16)
-#  define _STLP_LDOUBLE_80
-#elif defined(_STLP_WIN32)
-#  if defined (_STLP_MSVC) || defined (__ICL) || defined (__BORLANDC__) || defined (__CYGWIN__)
-#    define _STLP_LDOUBLE_64
-#  else
-#    define _STLP_LDOUBLE_96
-#  endif
-#elif defined (_STLP_UNIX)
-#  if defined (__CYGWIN__)
-#    define _STLP_LDOUBLE_96
-#  endif
-#endif
-
-#if !defined (_STLP_LDOUBLE_64) && !defined (_STLP_LDOUBLE_80) && !defined (_STLP_LDOUBLE_96) && !defined (_STLP_LDOUBLE_128)
-#  define _STLP_LDOUBLE_128
-#endif
-
-#if !defined (_STLP_NO_LONG_DOUBLE)
-#  define _STLP_LONGEST_FLOAT_TYPE long double
-#else
-#  define _STLP_LONGEST_FLOAT_TYPE double
-#endif
-
 /* Native headers access macros */
 #include <stl/config/_native_headers.h>
 
@@ -260,8 +197,7 @@
 #endif
 
 /* Use own namespace always if possible and not explicitly instructed otherwise */
-#if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_BROKEN_USING_DIRECTIVE) && \
-   !defined (_STLP_NO_OWN_NAMESPACE)
+#if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_NO_OWN_NAMESPACE)
 #  undef  _STLP_USE_OWN_NAMESPACE
 #  define _STLP_USE_OWN_NAMESPACE  1
 #else
@@ -324,62 +260,11 @@
 #  define _STLP_STATIC_MUTEX _STLP_mutex_base
 #endif
 
-#if (defined (_MFC_VER) || defined (_AFXDLL)) && !defined (_STLP_USE_MFC)
-#  define _STLP_USE_MFC 1
-#endif
-
 #if defined (_STLP_THREADS)
 #  define _STLP_VOLATILE volatile
-/* windows.h _MUST be included before bool definition ;( */
-#  if defined (_STLP_WIN32THREADS) && defined (_STLP_NO_BOOL)
-#    undef  NOMINMAX
-#    define NOMINMAX
-#    ifdef _STLP_USE_MFC
-#      include <afx.h>
-#    else
-#      include <windows.h>
-#    endif
-#    define _STLP_WINDOWS_H_INCLUDED
-#  endif
 #else
 #  define _STLP_VOLATILE
 #endif
-
-#if !defined (_STLP_USE_NEW_C_HEADERS) && !defined (_STLP_HAS_NO_NEW_C_HEADERS)
-#  define _STLP_USE_NEW_C_HEADERS
-#endif
-/* disable new-style headers if requested */
-#if defined (_STLP_NO_NEW_C_HEADERS)
-#  undef _STLP_USE_NEW_C_HEADERS
-#endif
-
-#if !defined (_STLP_STATIC_TEMPLATE_DATA)
-#  define _STLP_STATIC_TEMPLATE_DATA 1
-#endif
-
-#if defined (_STLP_BASE_TYPEDEF_BUG)
-#  undef  _STLP_BASE_TYPEDEF_OUTSIDE_BUG
-#  define _STLP_BASE_TYPEDEF_OUTSIDE_BUG 1
-#endif
-
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG) || (defined (_STLP_MSVC) && (_STLP_MSVC < 1100))
-#  define _STLP_GLOBAL_NESTED_RETURN_TYPE_PARAM_BUG
-#endif
-
-/* SUNpro 4.2 inline string literal bug */
-#ifdef _STLP_INLINE_STRING_LITERAL_BUG
-#  define _STLP_FIX_LITERAL_BUG(__x) __x = __x;
-#else
-#  define _STLP_FIX_LITERAL_BUG(__x)
-#endif
-
-#if defined (_STLP_NON_TYPE_TMPL_PARAM_BUG)
-#  undef  _STLP_NO_DEFAULT_NON_TYPE_PARAM
-#  define _STLP_NO_DEFAULT_NON_TYPE_PARAM 1
-#endif
-
-#define _STLP_NEW new
-#define _STLP_PLACEMENT_NEW new
 
 #ifdef _STLP_DEBUG
 #  define _STLP_ASSERTIONS 1
@@ -390,17 +275,6 @@
  * a compilation time error.
  */
 #  define _STLP_STATIC_ASSERT(expr) typedef char __static_assert[expr ? 1 : -1];
-#endif
-
-/* apple mpw exception handling bug */
-#ifndef _STLP_MPWFIX_TRY
-#  define _STLP_MPWFIX_TRY
-#endif
-#ifndef _STLP_MPWFIX_CATCH
-#  define _STLP_MPWFIX_CATCH
-#endif
-#ifndef _STLP_MPWFIX_CATCH_ACTION
-#  define _STLP_MPWFIX_CATCH_ACTION(action)
 #endif
 
 /* if _STLP_DEBUG or _STLP_ASSERTIONS are set, stl/debug/_debug.h defines those */
@@ -415,63 +289,9 @@
 #  define _STLP_DEBUG_DO(expr)
 #endif
 
-#if !defined (_STLP_WEAK)
-#  define _STLP_WEAK
-#endif
-
-/* default parameters as template types derived from arguments ( not always supported ) */
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-#  define _STLP_DFL_TMPL_PARAM( classname, defval ) class classname
-#else
-#  if !defined (_STLP_DEFAULT_TYPE_PARAM)
-#    define _STLP_DEFAULT_TYPE_PARAM 1
-#  endif
-#  define _STLP_DFL_TMPL_PARAM( classname, defval ) class classname = defval
-#endif
-
-/* default parameters as complete types */
-#if defined (_STLP_DEFAULT_TYPE_PARAM)
-#  define _STLP_DFL_TYPE_PARAM( classname, defval ) class classname = defval
-#  define _STLP_DFL_NON_TYPE_PARAM(type,name,val) type name = val
-#else
-#  define _STLP_DFL_TYPE_PARAM( classname, defval ) class classname
-#  define _STLP_DFL_NON_TYPE_PARAM(type,name,val) type name
-#endif
-
-/* SGI compatibility */
-
-#ifdef _STLP_NO_WCHAR_T
-#  ifndef _STLP_NO_NATIVE_WIDE_STREAMS
-#    define  _STLP_NO_NATIVE_WIDE_STREAMS 1
-#  endif
-#else
-#  define _STLP_HAS_WCHAR_T 1
-#endif
-
-#if !defined (_STLP_NO_AT_MEMBER_FUNCTION)
-#  define _STLP_CAN_THROW_RANGE_ERRORS 1
-#endif
-
-#if !defined (_STLP_USE_RAW_SGI_ALLOCATORS)
-#  define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) _STLP_DFL_TMPL_PARAM(_Alloc, StlNodeAlloc< _Tp >)
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
-#  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-#    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) class _Alloc
-#    define _STLP_USE_WRAPPER_FOR_ALLOC_PARAM 1
-#  else
-#    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) \
-            class _Alloc = StlNodeAlloc< pair < _Key, _Tp > >
-#  endif
-#else
-#  define _STLP_DEFAULT_ALLOCATOR( _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) _STLP_DFL_TYPE_PARAM(_Alloc,__sgi_alloc)
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR( _Key, _Tp ) __sgi_alloc
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) _STLP_DFL_TYPE_PARAM(_Alloc,__sgi_alloc)
-#  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES) && !defined (_STLP_DEFAULT_TYPE_PARAM)
-#    define _STLP_USE_WRAPPER_FOR_ALLOC_PARAM 1
-#  endif
-#endif
+/* default allocator configuration */
+#define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
+#define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
 
 /* debug mode tool */
 #if defined (_STLP_DEBUG)
@@ -502,17 +322,6 @@
 #    undef   _STLP_MINIMUM_IMPORT_STD
 #  endif
 
-/* if using stlport:: namespace or if C library stuff is not in vendor's std::,
- * try importing 'em.
- * MSVC has ambiguity problem when we try to import C-style std:: stuff back into global namespace */
-#  if defined (_STLP_USE_NAMESPACES) && (defined(_STLP_USE_OWN_NAMESPACE) || defined (_STLP_VENDOR_GLOBAL_CSTD))
-#    define  _STLP_IMPORT_VENDOR_CSTD 1
-#  endif
-
-#  if defined (_STLP_NO_USING_FOR_GLOBAL_FUNCTIONS) && !defined (_STLP_DO_IMPORT_CSTD_FUNCTIONS)
-#    define _STLP_NO_CSTD_FUNCTION_IMPORTS
-#  endif
-
 #  define _STLP_USING_NAMESPACE(x) using namespace x ;
 
 namespace std { }
@@ -526,7 +335,7 @@ namespace __std_alias = std;
 #  endif
 
 /* tune things that come from C library */
-#  if  defined (_STLP_VENDOR_GLOBAL_CSTD) || !defined(_STLP_USE_NEW_C_HEADERS)
+#  if  defined (_STLP_VENDOR_GLOBAL_CSTD)
 /*  in old-style headers, C functions go to global scope. */
 #    define _STLP_VENDOR_CSTD
 #    define _STLP_USING_VENDOR_CSTD
@@ -682,52 +491,7 @@ namespace _STL = _STLP_STD_NAME;
 #define STLPORT_CSTD _STLP_VENDOR_CSTD
 #define STLPORT      _STLP_STD_NAME
 
-#if defined(_STLP_BOGUS_TEMPLATE_TYPE_MATCHING_BUG)
-#  define _STLP_SIMPLE_TYPE(T) _stl_trivial_proxy<T>
-#else
-#  define _STLP_SIMPLE_TYPE(T) T
-#endif
-
-#ifndef _STLP_RAND48
-#  define _STLP_NO_DRAND48
-#endif
-
 /* advanced keywords usage */
-#define __C_CAST(__x, __y) ((__x)(__y))
-#ifndef  _STLP_NO_NEW_STYLE_CASTS
-#  define __CONST_CAST(__x,__y) const_cast<__x>(__y)
-#  define __STATIC_CAST(__x,__y) static_cast<__x>(__y)
-#  define __REINTERPRET_CAST(__x,__y) reinterpret_cast<__x>(__y)
-#  define __DYNAMIC_CAST(__x,__y) dynamic_cast<__x>(__y)
-#else
-#  define __STATIC_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __CONST_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __REINTERPRET_CAST(__x,__y) __C_CAST(__x, __y)
-#  define __DYNAMIC_CAST(__x,__y) __C_CAST(__x, __y)
-#endif
-
-#if defined (_STLP_NEED_TYPENAME) && ! defined (typename)
-#  define typename
-#endif
-
-#if defined (_STLP_NEED_TYPENAME) || defined (_STLP_NO_TYPENAME_ON_RETURN_TYPE )
-#  define _STLP_TYPENAME_ON_RETURN_TYPE
-#else
-#  define _STLP_TYPENAME_ON_RETURN_TYPE typename
-#endif
-
-#ifdef _STLP_NO_TYPENAME_IN_TEMPLATE_HEADER
-#  define _STLP_HEADER_TYPENAME
-#else
-#  define _STLP_HEADER_TYPENAME typename
-#endif
-
-#ifndef _STLP_NO_MEMBER_TEMPLATE_KEYWORD
-#  define _STLP_TEMPLATE template
-#else
-#  define _STLP_TEMPLATE
-#endif
-
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)
 #  define _STLP_KEY_TYPE_FOR_CONT_EXT(type)
 #  define _STLP_TEMPLATE_FOR_CONT_EXT template <class _KT>
@@ -736,123 +500,9 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_TEMPLATE_FOR_CONT_EXT
 #endif
 
-#if defined (_STLP_NEED_EXPLICIT) && !defined (explicit)
-#  define explicit
-#endif
-
-#if !defined (_STLP_NEED_MUTABLE)
-#  define _STLP_ASSIGN_MUTABLE(type,x,y) x = y
-#else
-#  define _STLP_ASSIGN_MUTABLE(type,x,y) __CONST_CAST(type,x)=y
-#  define mutable
-#endif
-
-#if defined (_STLP_NO_SIGNED_BUILTINS)
-/* old HP-UX doesn't understand "signed" keyword */
-#  define signed
-#endif
-
-#if defined (_STLP_LOOP_INLINE_PROBLEMS)
-#  define _STLP_INLINE_LOOP
-#else
-#  define _STLP_INLINE_LOOP inline
-#endif
-
-#define _STLP_PRIVATE public
-
-#ifndef _STLP_NO_PARTIAL_SPECIALIZATION_SYNTAX
-#  define _STLP_TEMPLATE_NULL template<>
-#else
-#  define _STLP_TEMPLATE_NULL
-#endif
-
-#ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
-#  define _STLP_OPERATOR_TEMPLATE
-#else
-#  define _STLP_OPERATOR_TEMPLATE _STLP_TEMPLATE_NULL
-#endif
-
-#ifndef _STLP_CLASS_PARTIAL_SPECIALIZATION
-/* unless we have other compiler problem, try simulating partial spec here */
-#  if !defined (_STLP_DONT_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS)
-#    define _STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS
-#  endif
-/* For your own iterators, please use inheritance from iterator<> instead of these obsolete queries. */
-#  if  (defined (_STLP_NESTED_TYPE_PARAM_BUG) || !defined (_STLP_SIMULATE_PARTIAL_SPEC_FOR_TYPE_TRAITS))
-#    if ! defined ( _STLP_USE_OLD_HP_ITERATOR_QUERIES )
-#      define _STLP_USE_OLD_HP_ITERATOR_QUERIES
-#    endif
-#  elif defined ( _STLP_NO_ANACHRONISMS )
-#    undef _STLP_USE_OLD_HP_ITERATOR_QUERIES
-#  endif
-#endif
-
-#ifndef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
-#  define _STLP_NULL_TMPL_ARGS <>
-# else
-#  define _STLP_NULL_TMPL_ARGS
-#endif
-
-#if !defined (_STLP_ALLOCATOR_TYPE_DFL)
-#  if defined (_STLP_DONT_SUP_DFLT_PARAM)
-#    define _STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS
-#  endif
-#  if defined (_STLP_NEEDS_EXTRA_TEMPLATE_CONSTRUCTORS)
-#    define _STLP_ALLOCATOR_TYPE_DFL
-#  else
-#    define _STLP_ALLOCATOR_TYPE_DFL = allocator_type()
-#  endif
-#endif
-
-/* When the compiler do not correctly initialized the basic types value in default parameters we prefer
- * to avoid them to be able to correct this bug.
- */
-#if defined (_STLP_DEF_CONST_DEF_PARAM_BUG)
-#  define _STLP_DONT_SUP_DFLT_PARAM 1
-#endif
-
-#if defined (__SGI_STL_NO_ARROW_OPERATOR) && ! defined (_STLP_NO_ARROW_OPERATOR)
-#  define _STLP_NO_ARROW_OPERATOR
-#endif
-
-#if !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
-#  if !(defined (_STLP_NO_ARROW_OPERATOR)) && \
-       !defined (_STLP_NO_MSVC50_COMPATIBILITY) && !defined (_STLP_MSVC50_COMPATIBILITY)
-/* this one is needed for proper reverse_iterator<> operator ->() handling */
-#    define _STLP_MSVC50_COMPATIBILITY 1
-#  endif
-#endif
-
-#if defined ( _STLP_CLASS_PARTIAL_SPECIALIZATION )
-#  if (defined(__IBMCPP__) && (500 <= __IBMCPP__) && (__IBMCPP__ < 600) )
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-   typedef typename _STLP_STD :: reverse_iterator<const_iterator> const_reverse_iterator; \
-   typedef typename _STLP_STD :: reverse_iterator<iterator> reverse_iterator
-#  elif (defined (__sgi) && ! defined (__GNUC__)) || defined (__SUNPRO_CC) || defined (__xlC__)
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-   typedef _STLP_STD:: _STLP_TEMPLATE reverse_iterator<const_iterator> const_reverse_iterator; \
-   typedef _STLP_STD:: _STLP_TEMPLATE reverse_iterator<iterator> reverse_iterator
-#  else
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
+#define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
    typedef _STLP_STD::reverse_iterator<const_iterator> const_reverse_iterator; \
    typedef _STLP_STD::reverse_iterator<iterator> reverse_iterator
-#  endif
-#else /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-#  if defined (_STLP_MSVC50_COMPATIBILITY)
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-  typedef _STLP_STD::__reverse_iterator<const_iterator, value_type, const_reference, \
-    const_pointer, difference_type>  const_reverse_iterator; \
-  typedef _STLP_STD::__reverse_iterator<iterator, value_type, reference, pointer, difference_type> \
-    reverse_iterator
-#  else
-#    define _STLP_DECLARE_REVERSE_ITERATORS(__reverse_iterator) \
-  typedef _STLP_STD::__reverse_iterator<const_iterator, value_type, const_reference, \
-    difference_type>  const_reverse_iterator; \
-  typedef _STLP_STD::__reverse_iterator<iterator, value_type, \
-    reference, difference_type> \
-    reverse_iterator
-#  endif
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 #define _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS \
         _STLP_DECLARE_REVERSE_ITERATORS(reverse_bidirectional_iterator)
@@ -896,26 +546,7 @@ namespace _STL = _STLP_STD_NAME;
 #define __IMPORT_WITH_REVERSE_ITERATORS(_Super) \
   __IMPORT_WITH_ITERATORS(_Super) __IMPORT_REVERSE_ITERATORS(_Super)
 
-#if defined (_STLP_TRIVIAL_CONSTRUCTOR_BUG)
-#  define __TRIVIAL_CONSTRUCTOR(__type) __type() {}
-#else
-#  define __TRIVIAL_CONSTRUCTOR(__type)
-#endif
-
-#if defined (_STLP_TRIVIAL_DESTRUCTOR_BUG)
-#  define __TRIVIAL_DESTRUCTOR(__type) ~__type() {}
-#else
-#  define __TRIVIAL_DESTRUCTOR(__type)
-#endif
-
-#define __TRIVIAL_STUFF(__type)  \
-  __TRIVIAL_CONSTRUCTOR(__type) __TRIVIAL_DESTRUCTOR(__type)
-
-#if defined (_STLP_HAS_NO_EXCEPTIONS)
-#  define _STLP_NO_EXCEPTIONS
-#endif
-
-#if !defined (_STLP_DONT_USE_EXCEPTIONS) && !defined (_STLP_NO_EXCEPTIONS) && !defined (_STLP_USE_EXCEPTIONS)
+#if !defined (_STLP_DONT_USE_EXCEPTIONS) && !defined (_STLP_USE_EXCEPTIONS)
 #  define _STLP_USE_EXCEPTIONS
 #endif
 
@@ -960,56 +591,17 @@ namespace _STL = _STLP_STD_NAME;
  * exception support but not the _STLP_USE_EXCEPTIONS which simply means
  * that the user do not want to use them.
  */
-#if !defined (_STLP_NO_EXCEPTIONS) && !defined (_STLP_NO_EXCEPTION_SPEC)
-#  define _STLP_THROWS_INHERENTLY(x) throw x
-#  define _STLP_NOTHROW_INHERENTLY throw()
-#else
-#  define _STLP_THROWS_INHERENTLY(x)
-#  define _STLP_NOTHROW_INHERENTLY
-#endif
+#define _STLP_THROWS_INHERENTLY(x) throw x
+#define _STLP_NOTHROW_INHERENTLY throw()
 
 /* STLport function not returning are functions that throw so we translate
  * the noreturn functions in throwing functions taking also into account
  * exception support activation.
  */
-#if defined (_STLP_NORETURN_FUNCTION) && !defined (_STLP_NO_EXCEPTIONS) && \
-   !defined (_STLP_FUNCTION_THROWS)
+#if defined (_STLP_NORETURN_FUNCTION) && !defined (_STLP_FUNCTION_THROWS)
 #  define _STLP_FUNCTION_THROWS _STLP_NORETURN_FUNCTION
 #else
 #  define _STLP_FUNCTION_THROWS
-#endif
-
-#if defined(_STLP_NO_BOOL)
-#  if (defined (__IBMCPP__) && (__IBMCPP__ < 400)) && ! defined (_AIX)
-#    include <isynonym.hpp>
-#    if defined (__OS400__)
-typedef int bool;
-#    elif !( defined (__xlC__) || defined (_AIX))
-typedef Boolean bool;
-#    endif
-#  else
-#    if defined(_STLP_YVALS_H)
-#      include <yvals.h>
-#    else
-#      if defined (_STLP_DONT_USE_BOOL_TYPEDEF)
-#        define bool int
-#      else
-typedef int bool;
-#      endif
-#      define true 1
-#      define false 0
-#    endif
-#  endif /* __IBMCPP__ */
-#else
-#  define _STLP_BOOL_KEYWORD 1
-#endif /* _STLP_NO_BOOL */
-
-#ifndef _STLP_MPW_EXTRA_CONST
-#  define _STLP_MPW_EXTRA_CONST
-#endif
-
-#ifndef _STLP_DEFAULTCHAR
-#  define _STLP_DEFAULTCHAR char
 #endif
 
 #if defined (_STLP_DEBUG_ALLOC) && !defined (_STLP_ASSERTIONS)
@@ -1023,90 +615,13 @@ typedef int bool;
 #endif /* _STLP_SHRED_BYTE */
 
 /* shared library tune-up */
-#ifndef _STLP_IMPORT_DECLSPEC
-#  define _STLP_IMPORT_DECLSPEC
-#endif
-
-/* a keyword used to instantiate export template */
-#ifndef _STLP_EXPORT_TEMPLATE_KEYWORD
-#  define _STLP_EXPORT_TEMPLATE_KEYWORD
-#endif
-#ifndef _STLP_IMPORT_TEMPLATE_KEYWORD
-#  define _STLP_IMPORT_TEMPLATE_KEYWORD
-#endif
-
 #ifdef _STLP_USE_NO_IOSTREAMS
 /*
- * If we do not use iostreams we do not use the export/import
- * techniques to avoid build of the STLport library.
- */
-#  undef _STLP_USE_DECLSPEC
-/* We also undef USE_DYNAMIC_LIB macro as this macro add some code
+ * If we do not use iostreams we undef USE_DYNAMIC_LIB macro as this macro add some code
  * to use the dynamic (shared) STLport library for some platform/compiler
  * configuration leading to problem when do not link to the STLport lib.
  */
 #  undef _STLP_USE_DYNAMIC_LIB
-#endif
-
-#if  defined (_STLP_DLLEXPORT_NEEDS_PREDECLARATION) && defined (_STLP_USE_DECLSPEC)
-#  if ! defined (_STLP_USE_TEMPLATE_EXPORT)
-/* this setting turns on "extern template" extension use */
-#    define _STLP_USE_TEMPLATE_EXPORT
-#  endif
-#  if defined (_STLP_DESIGNATED_DLL) && ! defined (_STLP_NO_FORCE_INSTANTIATE)
-#    define _STLP_NO_FORCE_INSTANTIATE
-#  endif
-#endif
-
-#if defined (_STLP_DESIGNATED_DLL) /* This is a lib which will contain STLport exports */
-#  define  _STLP_EXPORT _STLP_EXPORT_TEMPLATE_KEYWORD
-#else
-#  define  _STLP_EXPORT _STLP_IMPORT_TEMPLATE_KEYWORD
-#endif
-
-#ifndef _STLP_EXPORT_TEMPLATE
-#  define  _STLP_EXPORT_TEMPLATE _STLP_EXPORT template
-#endif
-
-#if defined (_STLP_USE_DECLSPEC) /* using export/import technique */
-
-#  ifndef _STLP_EXPORT_DECLSPEC
-#    define _STLP_EXPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_IMPORT_DECLSPEC
-#    define _STLP_IMPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_CLASS_EXPORT_DECLSPEC
-#    define _STLP_CLASS_EXPORT_DECLSPEC
-#  endif
-#  ifndef _STLP_CLASS_IMPORT_DECLSPEC
-#    define _STLP_CLASS_IMPORT_DECLSPEC
-#  endif
-#  if defined (_STLP_DESIGNATED_DLL) /* This is a lib which will contain STLport exports */
-#    define  _STLP_DECLSPEC        _STLP_EXPORT_DECLSPEC
-#    define  _STLP_CLASS_DECLSPEC  _STLP_CLASS_EXPORT_DECLSPEC
-#  else
-#    define  _STLP_DECLSPEC        _STLP_IMPORT_DECLSPEC   /* Other modules, importing STLport exports */
-#    define  _STLP_CLASS_DECLSPEC  _STLP_CLASS_IMPORT_DECLSPEC
-#  endif
-
-#else /* Not using DLL export/import specifications */
-
-#  define _STLP_DECLSPEC
-#  define _STLP_CLASS_DECLSPEC
-
-#endif
-
-#define _STLP_EXPORT_TEMPLATE_CLASS _STLP_EXPORT template class _STLP_CLASS_DECLSPEC
-
-#if defined (_STLP_MSVC) || defined (__ICL)
-#  define _STLP_STATIC_MEMBER_DECLSPEC
-#else
-#  define _STLP_STATIC_MEMBER_DECLSPEC _STLP_DECLSPEC
-#endif
-
-#if !defined (_STLP_CALL)
-#  define _STLP_CALL
 #endif
 
 #ifndef _STLP_USE_NO_IOSTREAMS
@@ -1133,38 +648,18 @@ typedef int bool;
 #  define _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-#ifdef _STLP_PARTIAL_SPEC_NEEDS_TEMPLATE_ARGS
-#  define _STLP_PSPEC2(t1,t2) < t1,t2 >
-#  define _STLP_PSPEC3(t1,t2,t3) < t1,t2,t3 >
-#else
-#  define _STLP_PSPEC2(t1,t2)  /* nothing */
-#  define _STLP_PSPEC3(t1,t2,t3)  /* nothing */
-#endif
-
-/* Activation of the partial template workaround:
- */
-#if !defined(_STLP_DONT_USE_PARTIAL_SPEC_WRKD) &&\
-   (!defined(_STLP_CLASS_PARTIAL_SPECIALIZATION) || !defined(_STLP_FUNCTION_TMPL_PARTIAL_ORDER))
-#  define _STLP_USE_PARTIAL_SPEC_WORKAROUND
-#endif
-
 #ifndef _STLP_USE_NO_IOSTREAMS
 #  define _STLP_NEW_IO_NAMESPACE _STLP_STD
-#  define _STLP_NO_WIDE_STREAMS  _STLP_NO_WCHAR_T
 #endif
 
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 #  define _STLP_RELOPS_OPERATORS(_TMPL, _TP) \
-_TMPL inline bool _STLP_CALL operator!=(const _TP& __x, const _TP& __y) {return !(__x == __y);}\
-_TMPL inline bool _STLP_CALL operator>(const _TP& __x, const _TP& __y)  {return __y < __x;}\
-_TMPL inline bool _STLP_CALL operator<=(const _TP& __x, const _TP& __y) { return !(__y < __x);}\
-_TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return !(__x < __y);}
+_TMPL inline bool operator!=(const _TP& __x, const _TP& __y) {return !(__x == __y);}\
+_TMPL inline bool operator>(const _TP& __x, const _TP& __y)  {return __y < __x;}\
+_TMPL inline bool operator<=(const _TP& __x, const _TP& __y) { return !(__y < __x);}\
+_TMPL inline bool operator>=(const _TP& __x, const _TP& __y) { return !(__x < __y);}
 #else
 #  define _STLP_RELOPS_OPERATORS(_TMPL, _TP)
-#endif
-
-#if defined ( _STLP_USE_ABBREVS )
-#  include <stl/_abbrevs.h>
 #endif
 
 /* A really useful macro */
@@ -1172,12 +667,6 @@ _TMPL inline bool _STLP_CALL operator>=(const _TP& __x, const _TP& __y) { return
 #define _STLP_ARRAY_AND_SIZE(A) A, sizeof(A) / sizeof(A[0])
 
 /* some cleanup */
-#undef _STLP_DONT_USE_BOOL_TYPEDEF
-#undef _STLP_YVALS_H
-#undef _STLP_LOOP_INLINE_PROBLEMS
-#undef _STLP_NEED_EXPLICIT
-#undef _STLP_NEED_TYPENAME
-#undef _STLP_NO_NEW_STYLE_CASTS
 #undef __AUTO_CONFIGURED
 
 #endif /* _STLP_FEATURES_H */

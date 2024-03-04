@@ -37,7 +37,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-class _STLP_CLASS_DECLSPEC codecvt_base {
+class codecvt_base {
 public:
   enum result {ok, partial, error, noconv};
 };
@@ -95,7 +95,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt() {}
@@ -134,7 +134,7 @@ protected:
                         const extern_type* __from,
                         const extern_type* __end,
                         size_t __max) const
-  { return (int)(min) ( __STATIC_CAST(size_t, (__end - __from)), __max); }
+  { return (int)(min) ( static_cast<size_t>((__end - __from)), __max); }
 
   virtual int do_max_length() const _STLP_NOTHROW
   { return 1; }
@@ -145,17 +145,15 @@ private:
 };
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
-#  if (_STLP_STATIC_TEMPLATE_DATA > 0)
 template <class _InternT, class _ExternT, class _StateT>
 locale::id codecvt<_InternT, _ExternT, _StateT>::id;
-#  endif
 #endif
 
 template <class _InternT, class _ExternT, class _StateT>
 class codecvt_byname : public codecvt<_InternT, _ExternT, _StateT> {};
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC codecvt<char, char, mbstate_t>
+template<>
+class codecvt<char, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
   friend class _Locale_impl;
@@ -206,7 +204,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt();
@@ -244,10 +242,8 @@ private:
   codecvt<char, char, mbstate_t>& operator =(const codecvt<char, char, mbstate_t>&);
 };
 
-# ifndef _STLP_NO_WCHAR_T
-
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC codecvt<wchar_t, char, mbstate_t>
+template<>
+class codecvt<wchar_t, char, mbstate_t>
   : public locale::facet, public codecvt_base
 {
   friend class _Locale_impl;
@@ -298,7 +294,7 @@ public:
 
   int max_length() const _STLP_NOTHROW { return do_max_length(); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~codecvt();
@@ -340,10 +336,8 @@ private:
   codecvt<wchar_t, char, mbstate_t>& operator = (const codecvt<wchar_t, char, mbstate_t>&);
 };
 
-# endif
-
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC codecvt_byname<char, char, mbstate_t>
+template<>
+class codecvt_byname<char, char, mbstate_t>
   : public codecvt<char, char, mbstate_t> {
 public:
   explicit codecvt_byname(const char* __name, size_t __refs = 0);
@@ -353,9 +347,8 @@ private:
   codecvt_byname<char, char, mbstate_t>& operator =(const codecvt_byname<char, char, mbstate_t>&);
 };
 
-# ifndef _STLP_NO_WCHAR_T
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC codecvt_byname<wchar_t, char, mbstate_t>
+template<>
+class codecvt_byname<wchar_t, char, mbstate_t>
   : public codecvt<wchar_t, char, mbstate_t>
 {
 public:
@@ -401,8 +394,6 @@ private:
   codecvt_byname(const codecvt_byname<wchar_t, char, mbstate_t>&);
   codecvt_byname<wchar_t, char, mbstate_t>& operator =(const codecvt_byname<wchar_t, char, mbstate_t>&);
 };
-
-# endif
 
 _STLP_END_NAMESPACE
 

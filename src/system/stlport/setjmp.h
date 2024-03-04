@@ -23,15 +23,7 @@
 #  define _STLP_SETJMP_H
 #endif
 
-#if !defined (setjmp)
-#  define _STLP_NATIVE_SETJMP_H_INCLUDED
-#  include _STLP_NATIVE_C_HEADER(setjmp.h)
-#endif
-
-#if !defined (_STLP_NATIVE_SETJMP_H_INCLUDED)
-/* See errno.h file for a description of this problem. */
-#  error setjmp has been defined before inclusion of setjmp.h header.
-#endif
+#include _STLP_NATIVE_C_HEADER(setjmp.h)
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x256)
 #  if ! defined (_STLP_DONT_POP_HEADER_ID)

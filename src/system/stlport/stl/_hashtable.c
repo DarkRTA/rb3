@@ -45,14 +45,14 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 }
 
 template <class _Dummy>
-size_t _STLP_CALL
+size_t
 _Stl_prime<_Dummy>::_S_max_nb_buckets() {
   const size_t _list[] = __PRIME_LIST_BODY;
   return _list[(sizeof(_list)/sizeof(_list[0])) - 1];
 }
 
 template <class _Dummy>
-size_t _STLP_CALL
+size_t
 _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
   static const size_t _list[] = __PRIME_LIST_BODY;
   const size_t* __first = _list;
@@ -76,24 +76,6 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 // fbp: these defines are for outline methods definitions.
 // needed to definitions to be portable. Should not be used in method bodies.
 
-#if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-#  define __size_type__       size_t
-#  define size_type           size_t
-#  define value_type          _Val
-#  define key_type            _Key
-#  define __reference__       _Val&
-
-#  define __iterator__        _Ht_iterator<_Val, _STLP_HEADER_TYPENAME _Traits::_NonConstTraits, \
-                                           _Key, _HF, _ExK, _EqK, _All>
-#  define __const_iterator__  _Ht_iterator<_Val, _STLP_HEADER_TYPENAME _Traits::_ConstTraits, \
-                                           _Key, _HF, _ExK, _EqK, _All>
-#else
-#  define __size_type__       _STLP_TYPENAME_ON_RETURN_TYPE hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::size_type
-#  define __reference__       _STLP_TYPENAME_ON_RETURN_TYPE  hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::reference
-#  define __iterator__        _STLP_TYPENAME_ON_RETURN_TYPE hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
-#  define __const_iterator__  _STLP_TYPENAME_ON_RETURN_TYPE hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::const_iterator
-#endif
-
 /*
  * This method is too difficult to implement for hashtable that do not
  * require a sorted operation on the stored type.
@@ -113,7 +95,7 @@ bool hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::_M_equal(
  */
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__iterator__
+typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_before_begin(size_type &__n) const {
   return _S_before_begin(_M_elems, _M_buckets, __n);
@@ -121,11 +103,11 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__iterator__
+typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_S_before_begin(const _ElemsCont& __elems, const _BucketVector& __buckets,
                     size_type &__n) {
-  _ElemsCont &__mutable_elems = __CONST_CAST(_ElemsCont&, __elems);
+  _ElemsCont &__mutable_elems = const_cast<_ElemsCont&>(__elems);
   typename _BucketVector::const_iterator __bpos(__buckets.begin() + __n);
 
   _ElemsIte __pos(*__bpos);
@@ -148,7 +130,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__iterator__
+typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_insert_noresize(size_type __n, const value_type& __obj) {
   //We always insert this element as 1st in the bucket to not break
@@ -164,7 +146,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-pair<__iterator__, bool>
+pair<typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator, bool>
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::insert_unique_noresize(const value_type& __obj) {
   const size_type __n = _M_bkt_num(__obj);
@@ -195,7 +177,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__iterator__
+typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::iterator
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::insert_equal_noresize(const value_type& __obj) {
   const size_type __n = _M_bkt_num(__obj);
@@ -219,7 +201,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__reference__
+typename  hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::reference
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_insert(const value_type& __obj) {
   resize(_M_num_elements + 1);
@@ -229,7 +211,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 /*
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__reference__
+typename  hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::reference
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::find_or_insert(const value_type& __obj) {
   _Node* __first = _M_find(_M_get_key(__obj));
@@ -242,7 +224,7 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
-__size_type__
+typename hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All>::size_type
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::erase(const key_type& __key) {
   const size_type __n = _M_bkt_num_key(__key);
@@ -373,7 +355,7 @@ template <class _Val, class _Key, class _HF,
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_rehash(size_type __num_buckets) {
   _ElemsCont __tmp_elems(_M_elems.get_allocator());
-  _BucketVector __tmp(__num_buckets + 1, __STATIC_CAST(_BucketType*, 0), _M_buckets.get_allocator());
+  _BucketVector __tmp(__num_buckets + 1, static_cast<_BucketType*>(0), _M_buckets.get_allocator());
   _ElemsIte __cur, __last(_M_elems.end());
   while (!_M_elems.empty()) {
     __cur = _M_elems.begin();
@@ -417,7 +399,7 @@ template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::clear() {
   _M_elems.clear();
-  _M_buckets.assign(_M_buckets.size(), __STATIC_CAST(_BucketType*, 0));
+  _M_buckets.assign(_M_buckets.size(), static_cast<_BucketType*>(0));
   _M_num_elements = 0;
 }
 
@@ -442,19 +424,11 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
         break;
     }
   }
-  fill(__dst_b, __dst_end_b, __STATIC_CAST(_BucketType*, 0));
+  fill(__dst_b, __dst_end_b, static_cast<_BucketType*>(0));
   _M_num_elements = __ht._M_num_elements;
   _M_max_load_factor = __ht._M_max_load_factor;
 }
 
-#undef __iterator__
-#undef const_iterator
-#undef __size_type__
-#undef __reference__
-#undef size_type
-#undef value_type
-#undef key_type
-#undef __stl_num_primes
 
 #if defined (_STLP_DEBUG)
 #  undef hashtable

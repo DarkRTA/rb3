@@ -36,7 +36,7 @@
 
 _STLP_BEGIN_NAMESPACE
 
-class _STLP_CLASS_DECLSPEC ctype_base {
+class ctype_base {
 public:
   enum mask {
     space   = _Locale_SPACE,
@@ -60,11 +60,9 @@ template <class charT> class ctype_byname {};
 
 //ctype specializations
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC ctype<char> : public locale::facet, public ctype_base {
-#ifndef _STLP_NO_WCHAR_T
-    friend class ctype<wchar_t>;
-#endif
+template<>
+class ctype<char> : public locale::facet, public ctype_base {
+  friend class ctype<wchar_t>;
   friend class _Locale_impl;
 public:
 
@@ -107,16 +105,12 @@ public:
     return do_narrow(__low, __high, __dfault, __to);
   }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
-# if defined(_STLP_STATIC_CONST_INIT_BUG)
-  enum __TableSize { table_size = 256 };
-# else
+  static locale::id id;
   static const size_t table_size = 256;
-# endif
 
 protected:
   const mask* table() const _STLP_NOTHROW { return _M_ctype_table; }
-  static const mask* _STLP_CALL classic_table() _STLP_NOTHROW;
+  static const mask* classic_table() _STLP_NOTHROW;
 
   ~ctype();
 
@@ -143,8 +137,8 @@ private:
   bool _M_delete;
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC ctype_byname<char>: public ctype<char> {
+template<>
+class ctype_byname<char>: public ctype<char> {
 public:
   explicit ctype_byname(const char*, size_t = 0, _Locale_name_hint* __hint = 0);
   ~ctype_byname();
@@ -166,9 +160,8 @@ private:
   friend _Locale_name_hint* _Locale_extract_hint(ctype_byname<char>*);
 };
 
-#  ifndef _STLP_NO_WCHAR_T
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC ctype<wchar_t> : public locale::facet, public ctype_base
+template<>
+class ctype<wchar_t> : public locale::facet, public ctype_base
 {
   friend class _Locale_impl;
 public:
@@ -210,7 +203,7 @@ public:
                         char __dfault, char* __to) const
     { return do_narrow(__low, __high, __dfault, __to); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   ~ctype();
@@ -232,8 +225,8 @@ protected:
                                    char, char*) const;
 };
 
-_STLP_TEMPLATE_NULL
-class _STLP_CLASS_DECLSPEC ctype_byname<wchar_t>: public ctype<wchar_t> {
+template<>
+class ctype_byname<wchar_t>: public ctype<wchar_t> {
 public:
   explicit ctype_byname(const char* __name, size_t __refs = 0, _Locale_name_hint* __hint = 0);
 
@@ -259,8 +252,6 @@ private:
   ctype_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-
-#  endif /* WCHAR_T */
 
 _STLP_END_NAMESPACE
 

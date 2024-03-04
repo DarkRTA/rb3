@@ -31,14 +31,14 @@
 _STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os,
            const basic_string<_CharT,_Traits,_Alloc>& __s);
 
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION)
 
 template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, class _StorageDir>
-basic_ostream<_CharT, _Traits>& _STLP_CALL
+basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os,
            const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __sum) {
   basic_string<_CharT, _Traits, _Alloc> __tmp(__sum);
@@ -48,18 +48,18 @@ operator<<(basic_ostream<_CharT, _Traits>& __os,
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_istream<_CharT, _Traits>&  _STLP_CALL
+basic_istream<_CharT, _Traits>& 
 operator>>(basic_istream<_CharT, _Traits>& __is,
            basic_string<_CharT,_Traits,_Alloc>& __s);
 
 template <class _CharT, class _Traits, class _Alloc>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 getline(basic_istream<_CharT, _Traits>& __is,
         basic_string<_CharT,_Traits,_Alloc>& __s,
         _CharT __delim);
 
 template <class _CharT, class _Traits, class _Alloc>
-inline basic_istream<_CharT, _Traits>& _STLP_CALL
+inline basic_istream<_CharT, _Traits>&
 getline(basic_istream<_CharT, _Traits>& __is,
         basic_string<_CharT,_Traits,_Alloc>& __s) {
   return getline(__is, __s, __is.widen('\n'));

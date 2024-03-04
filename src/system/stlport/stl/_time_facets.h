@@ -83,7 +83,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 // constructor invoked from the _byname subclass constructor to
 // construct the base class.
 
-class _STLP_CLASS_DECLSPEC _Time_Info {
+class _Time_Info {
 public:
   string _M_dayname[14];
   string _M_monthname[24];
@@ -95,21 +95,17 @@ public:
   string _M_long_date_time_format;
 };
 
-void _STLP_CALL _Init_timeinfo(_Time_Info&);
-void _STLP_CALL _Init_timeinfo(_Time_Info&, _Locale_time*);
+void _Init_timeinfo(_Time_Info&);
+void _Init_timeinfo(_Time_Info&, _Locale_time*);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-class _STLP_CLASS_DECLSPEC time_base {
+class time_base {
 public:
   enum dateorder {no_order, dmy, mdy, ymd, ydm};
 };
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _InIt>
-#else
 template <class _Ch, class _InIt = istreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_get : public locale::facet, public time_base {
   friend class _Locale_impl;
 
@@ -136,7 +132,7 @@ public:
                      ios_base::iostate&  __err, tm* __t) const
   { return do_get_year(__s,  __end,  __str,  __err, __t); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   time_get(_Locale_time *, size_t __refs) : locale::facet(__refs) {}
@@ -171,9 +167,9 @@ protected:
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-time_base::dateorder _STLP_CALL __get_date_order(_Locale_time*);
-_Locale_time* _STLP_CALL __acquire_time(const char* __name, _Locale_name_hint*);
-void _STLP_CALL __release_time(_Locale_time* __time);
+time_base::dateorder __get_date_order(_Locale_time*);
+_Locale_time* __acquire_time(const char* __name, _Locale_name_hint*);
+void __release_time(_Locale_time* __time);
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
@@ -183,11 +179,7 @@ class time_get_byname;
 template <class _Ch, class _InIt>
 _Locale_name_hint* _Locale_time_extract_hint(time_get_byname<_Ch, _InIt>*);
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _InIt>
-#else
 template <class _Ch, class _InIt = istreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_get_byname : public time_get<_Ch, _InIt> {
 public:
   typedef  time_base::dateorder dateorder;
@@ -224,28 +216,22 @@ private:
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
-char * _STLP_CALL
+char *
 __write_formatted_time(char *__buf, size_t __buf_size, char __format, char __modifier,
                        const _Time_Info& __table, const tm* __t);
 
 template <class _OuIt>
-inline _OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
+inline _OuIt __put_time(char * __first, char * __last, _OuIt __out_ite,
                                    const ios_base& /* __loc */, char)
 { return copy(__first, __last, __out_ite); }
 
-#if !defined (_STLP_NO_WCHAR_T)
 template <class _OuIt>
-_OuIt _STLP_CALL __put_time(char * __first, char * __last, _OuIt __out_ite,
+_OuIt __put_time(char * __first, char * __last, _OuIt __out_ite,
                             const ios_base& __s, wchar_t);
-#endif
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _OutIt>
-#else
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_put : public locale::facet, public time_base {
   friend class _Locale_impl;
 public:
@@ -263,7 +249,7 @@ public:
                   const tm* __tmb, char __format, char __modifier = 0) const
   { return do_put(__s, __f,  __fill, __tmb, __format, __modifier); }
 
-  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+  static locale::id id;
 
 protected:
   time_put(_Locale_time* /*__time*/, size_t __refs) : locale::facet(__refs)
@@ -277,11 +263,7 @@ protected:
   _STLP_PRIV _Time_Info _M_timeinfo;
 };
 
-#if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
-template <class _Ch, class _OutIt>
-#else
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
-#endif
 class time_put_byname : public time_put<_Ch, _OutIt> {
   friend class _Locale_impl;
 public:
@@ -305,20 +287,6 @@ private:
   time_put_byname(_Self const&);
   _Self& operator = (_Self const&);
 };
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS time_get<char, istreambuf_iterator<char, char_traits<char> > >;
-_STLP_EXPORT_TEMPLATE_CLASS time_put<char, ostreambuf_iterator<char, char_traits<char> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS time_get<char, const char*>;
-// _STLP_EXPORT_TEMPLATE_CLASS time_put<char, char*>;
-#  if !defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS time_get<wchar_t, istreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-_STLP_EXPORT_TEMPLATE_CLASS time_put<wchar_t, ostreambuf_iterator<wchar_t, char_traits<wchar_t> > >;
-// _STLP_EXPORT_TEMPLATE_CLASS time_get<wchar_t, const wchar_t*>;
-// _STLP_EXPORT_TEMPLATE_CLASS time_put<wchar_t, wchar_t*>;
-#  endif
-
-#endif
 
 _STLP_END_NAMESPACE
 

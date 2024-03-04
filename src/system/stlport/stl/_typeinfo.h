@@ -16,25 +16,9 @@
 #ifndef _STLP_INTERNAL_TYPEINFO
 #define _STLP_INTERNAL_TYPEINFO
 
-#if !defined (_STLP_NO_TYPEINFO)
+#include _STLP_NATIVE_CPP_RUNTIME_HEADER(typeinfo)
 
-#  if defined (_STLP_NO_NEW_NEW_HEADER)
-#    include <typeinfo.h>
-#  else
-#    ifdef _STLP_BROKEN_BAD_CAST_CLASS
-#      define bad_cast _STLP_NULLIFIED_BROKEN_BAD_CAST_CLASS
-#    endif
-#    include _STLP_NATIVE_CPP_RUNTIME_HEADER(typeinfo)
-#    ifdef _STLP_BROKEN_BAD_CAST_CLASS
-#      undef bad_cast
-#      undef _STLP_NULLIFIED_BROKEN_BAD_CAST_CLASS
-#    endif
-#  endif
-
-// if <typeinfo.h> already included, do not import anything
-#  if defined(_STLP_USE_NAMESPACES) && !defined(_STLP_OLDSTD_typeinfo) && \
-      (defined(_STLP_VENDOR_GLOBAL_EXCEPT_STD) || \
-       defined(_STLP_USE_OWN_NAMESPACE) || defined (_STLP_DEBUG))
+#if defined(_STLP_USE_OWN_NAMESPACE)
 
 _STLP_BEGIN_NAMESPACE
 
@@ -44,19 +28,6 @@ using _STLP_VENDOR_EXCEPT_STD::bad_cast;
 
 _STLP_END_NAMESPACE
 
-#  endif
-
-#else
-
-#  ifndef _STLP_INTERNAL_EXCEPTION
-#    include <stl/_exception.h>
-#  endif
-
-_STLP_BEGIN_NAMESPACE
-
-struct bad_cast : exception {};
-
-_STLP_END_NAMESPACE
 #endif
 
 #endif

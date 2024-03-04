@@ -73,24 +73,9 @@ private:
 
 #define _STLP_NON_DBG_TREE _STLP_PRIV _STLP_NON_DBG_NAME(Rb_tree) <_Key, _STLP_PRIV _DbgCompare<_Key, _Compare>, _Value, _KeyOfValue, _Traits, _Alloc>
 
-#if defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Key, class _Compare,
-          class _Value, class _KeyOfValue, class _Traits, class _Alloc >
-inline _Value*
-value_type(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_TREE >&)
-{ return (_Value*)0; }
-template <class _Key, class _Compare,
-          class _Value, class _KeyOfValue, class _Traits, class _Alloc >
-inline bidirectional_iterator_tag
-iterator_category(const _STLP_PRIV _DBG_iter_base< _STLP_NON_DBG_TREE >&)
-{ return bidirectional_iterator_tag(); }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif
-
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
-          _STLP_DBG_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DBG_ALLOCATOR(_Value) >
 class _Rb_tree {
   typedef _STLP_NON_DBG_TREE _Base;
   typedef _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> _Self;
@@ -235,7 +220,6 @@ public:
     return iterator(&_M_iter_list, _M_non_dbg_impl.insert_equal(__pos._M_iterator, __x));
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template<class _InputIterator>
   void insert_equal(_InputIterator __first, _InputIterator __last) {
     _STLP_DEBUG_CHECK(__check_range(__first,__last))
@@ -246,24 +230,6 @@ public:
     _STLP_DEBUG_CHECK(__check_range(__first,__last))
     _M_non_dbg_impl.insert_unique(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
   }
-#else
-  void insert_unique(const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(__check_range(__first,__last))
-    _M_non_dbg_impl.insert_unique(__first._M_iterator, __last._M_iterator);
-  }
-  void insert_unique(const value_type* __first, const value_type* __last) {
-    _STLP_DEBUG_CHECK(__check_ptr_range(__first,__last))
-    _M_non_dbg_impl.insert_unique(__first, __last);
-  }
-  void insert_equal(const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(__check_range(__first,__last))
-    _M_non_dbg_impl.insert_equal(__first._M_iterator, __last._M_iterator);
-  }
-  void insert_equal(const value_type* __first, const value_type* __last) {
-    _STLP_DEBUG_CHECK(__check_ptr_range(__first,__last))
-    _M_non_dbg_impl.insert_equal(__first, __last);
-  }
-#endif
 
   void erase(iterator __pos) {
     _STLP_DEBUG_CHECK(__check_if_owner(&_M_iter_list,__pos))

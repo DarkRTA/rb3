@@ -19,7 +19,7 @@
 #define _STLP_INTERNAL_ISTREAM
 
 // this block is included by _ostream.h, we include it here to lower #include level
-#if defined (_STLP_HAS_WCHAR_T) && !defined (_STLP_INTERNAL_CWCHAR)
+#if !defined (_STLP_INTERNAL_CWCHAR)
 #  include <stl/_cwchar.h>
 #endif
 
@@ -38,11 +38,6 @@
 #include <stl/_ctraits_fns.h>    // Helper functions that allow char traits
                                 // to be used as function objects.
 _STLP_BEGIN_NAMESPACE
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-template <class _CharT, class _Traits>
-class _Isentry;
-#endif
 
 struct _No_Skip_WS {};        // Dummy class used by sentry.
 
@@ -72,9 +67,9 @@ public:
   typedef _Traits                    traits_type;
   typedef basic_ios<_CharT, _Traits>     _Basic_ios;
 
-  typedef basic_ios<_CharT, _Traits>& (_STLP_CALL *__ios_fn)(basic_ios<_CharT, _Traits>&);
-  typedef ios_base& (_STLP_CALL *__ios_base_fn)(ios_base&);
-  typedef _Self& (_STLP_CALL *__istream_fn)(_Self&);
+  typedef basic_ios<_CharT, _Traits>& (*__ios_fn)(basic_ios<_CharT, _Traits>&);
+  typedef ios_base& (*__ios_base_fn)(ios_base&);
+  typedef _Self& (*__istream_fn)(_Self&);
 
 public:                         // Constructor and destructor.
   explicit basic_istream(basic_streambuf<_CharT, _Traits>* __buf) :
@@ -98,18 +93,12 @@ public:                         // Formatted input of numbers.
   _Self& operator>> (unsigned int& __val);
   _Self& operator>> (long& __val);
   _Self& operator>> (unsigned long& __val);
-#ifdef _STLP_LONG_LONG
-  _Self& operator>> (_STLP_LONG_LONG& __val);
-  _Self& operator>> (unsigned _STLP_LONG_LONG& __val);
-#endif
+  _Self& operator>> (long long& __val);
+  _Self& operator>> (unsigned long long& __val);
   _Self& operator>> (float& __val);
   _Self& operator>> (double& __val);
-# ifndef _STLP_NO_LONG_DOUBLE
   _Self& operator>> (long double& __val);
-# endif
-# ifndef _STLP_NO_BOOL
   _Self& operator>> (bool& __val);
-# endif
   _Self& operator>> (void*& __val);
 
 public:                         // Copying characters into a streambuf.
@@ -167,20 +156,8 @@ private:                        // Number of characters extracted by the
   streamsize _M_gcount;         // most recent unformatted input function.
 
 public:
-
-#if defined (_STLP_USE_TEMPLATE_EXPORT)
-  // If we are using DLL specs, we have not to use inner classes
-  // end class declaration here
-  typedef _Isentry<_CharT, _Traits>      sentry;
-};
-#  define sentry _Isentry
-template <class _CharT, class _Traits>
-class _Isentry {
-  typedef _Isentry<_CharT, _Traits> _Self;
-# else
   class sentry {
     typedef sentry _Self;
-#endif
 
   private:
     const bool _M_ok;
@@ -210,69 +187,55 @@ class _Isentry {
     _Self& operator=(const _Self&) { return *this; }
   };
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-#  undef sentry
-# else
-  // close basic_istream class definition here
 };
-# endif
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Isentry<char, char_traits<char> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_istream<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS _Isentry<wchar_t, char_traits<wchar_t> >;
-_STLP_EXPORT_TEMPLATE_CLASS basic_istream<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 // Non-member character and string extractor functions.
 template <class _CharT, class _Traits>
-inline basic_istream<_CharT, _Traits>& _STLP_CALL
+inline basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT& __c) {
   __in_str._M_formatted_get(__c);
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char& __c) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char&,__c));
+  __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, signed char& __c) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char&,__c));
+  __in_str._M_formatted_get(reinterpret_cast<char&>(__c));
   return __in_str;
 }
 
 template <class _CharT, class _Traits>
-inline basic_istream<_CharT, _Traits>& _STLP_CALL
+inline basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __in_str, _CharT* __s) {
   __in_str._M_formatted_get(__s);
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, unsigned char* __s) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char*,__s));
+  __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
 }
 
 template <class _Traits>
-inline basic_istream<char, _Traits>& _STLP_CALL
+inline basic_istream<char, _Traits>&
 operator>>(basic_istream<char, _Traits>& __in_str, signed char* __s) {
-  __in_str._M_formatted_get(__REINTERPRET_CAST(char*,__s));
+  __in_str._M_formatted_get(reinterpret_cast<char*>(__s));
   return __in_str;
 }
 
 //----------------------------------------------------------------------
 // istream manipulator.
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 ws(basic_istream<_CharT, _Traits>& __istr) {
   if (!__istr.eof()) {
     typedef typename basic_istream<_CharT, _Traits>::sentry      _Sentry;
@@ -328,16 +291,8 @@ public:
   virtual ~basic_iostream();
 };
 
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_iostream<char, char_traits<char> >;
-
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_iostream<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
-
 template <class _CharT, class _Traits>
-basic_streambuf<_CharT, _Traits>* _STLP_CALL _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)
+basic_streambuf<_CharT, _Traits>* _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)
 { return __istr.rdbuf(); }
 
 _STLP_END_NAMESPACE

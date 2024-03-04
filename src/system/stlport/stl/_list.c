@@ -44,7 +44,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 template <class _Dummy>
-void _STLP_CALL
+void
 _List_global<_Dummy>::_Transfer(_List_node_base* __position,
                                 _List_node_base* __first, _List_node_base* __last) {
   if (__position != __last) {
@@ -64,20 +64,16 @@ _List_global<_Dummy>::_Transfer(_List_node_base* __position,
 
 template <class _Tp, class _Alloc>
 void _List_base<_Tp,_Alloc>::clear() {
-  _Node* __cur = __STATIC_CAST(_Node*, _M_node._M_data._M_next);
+  _Node* __cur = static_cast<_Node*>(_M_node._M_data._M_next);
   while (__cur != &(_M_node._M_data)) {
     _Node* __tmp = __cur;
-    __cur = __STATIC_CAST(_Node*, __cur->_M_next);
+    __cur = static_cast<_Node*>(__cur->_M_next);
     _STLP_STD::_Destroy(&__tmp->_M_data);
     this->_M_node.deallocate(__tmp, 1);
   }
   _M_node._M_data._M_next = &_M_node._M_data;
   _M_node._M_data._M_prev = &_M_node._M_data;
 }
-
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define size_type size_t
-#endif
 
 #if defined (_STLP_USE_PTR_SPECIALIZATIONS)
 #  define list _STLP_PTR_IMPL_NAME(List)

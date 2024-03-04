@@ -90,12 +90,12 @@ struct _Rb_tree_node_base {
   _Base_ptr _M_left;
   _Base_ptr _M_right;
 
-  static _Base_ptr _STLP_CALL _S_minimum(_Base_ptr __x) {
+  static _Base_ptr _S_minimum(_Base_ptr __x) {
     while (__x->_M_left != 0) __x = __x->_M_left;
     return __x;
   }
 
-  static _Base_ptr _STLP_CALL _S_maximum(_Base_ptr __x) {
+  static _Base_ptr _S_maximum(_Base_ptr __x) {
     while (__x->_M_right != 0) __x = __x->_M_right;
     return __x;
   }
@@ -104,7 +104,6 @@ struct _Rb_tree_node_base {
 template <class _Value>
 struct _Rb_tree_node : public _Rb_tree_node_base {
   _Value _M_value_field;
-  __TRIVIAL_STUFF(_Rb_tree_node)
 };
 
 struct _Rb_tree_base_iterator;
@@ -114,22 +113,18 @@ class _Rb_global {
 public:
   typedef _Rb_tree_node_base* _Base_ptr;
   // those used to be global functions
-  static void _STLP_CALL _Rebalance(_Base_ptr __x, _Base_ptr& __root);
-  static _Base_ptr _STLP_CALL _Rebalance_for_erase(_Base_ptr __z,
+  static void _Rebalance(_Base_ptr __x, _Base_ptr& __root);
+  static _Base_ptr _Rebalance_for_erase(_Base_ptr __z,
                                                    _Base_ptr& __root,
                                                    _Base_ptr& __leftmost,
                                                    _Base_ptr& __rightmost);
   // those are from _Rb_tree_base_iterator - moved here to reduce code bloat
   // moved here to reduce code bloat without templatizing _Rb_tree_base_iterator
-  static _Base_ptr  _STLP_CALL _M_increment (_Base_ptr);
-  static _Base_ptr  _STLP_CALL _M_decrement (_Base_ptr);
-  static void       _STLP_CALL _Rotate_left (_Base_ptr __x, _Base_ptr& __root);
-  static void       _STLP_CALL _Rotate_right(_Base_ptr __x, _Base_ptr& __root);
+  static _Base_ptr  _M_increment (_Base_ptr);
+  static _Base_ptr  _M_decrement (_Base_ptr);
+  static void       _Rotate_left (_Base_ptr __x, _Base_ptr& __root);
+  static void       _Rotate_right(_Base_ptr __x, _Base_ptr& __root);
 };
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Rb_global<bool>;
-# endif
 
 typedef _Rb_global<bool> _Rb_global_inst;
 
@@ -168,10 +163,9 @@ struct _Rb_tree_iterator : public _Rb_tree_base_iterator {
   _Rb_tree_iterator(const iterator& __it) : _Rb_tree_base_iterator(__it._M_node) {}
 
   reference operator*() const {
-    return __STATIC_CAST(_Link_type, _M_node)->_M_value_field;
+    return static_cast<_Link_type>(_M_node)->_M_value_field;
   }
-
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     _M_node = _Rb_global_inst::_M_increment(_M_node);
@@ -201,7 +195,6 @@ struct _Rb_tree_iterator : public _Rb_tree_base_iterator {
   }
 };
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 _STLP_MOVE_TO_STD_NAMESPACE
 template <class _Value, class _Traits>
 struct __type_traits<_STLP_PRIV _Rb_tree_iterator<_Value, _Traits> > {
@@ -212,19 +205,6 @@ struct __type_traits<_STLP_PRIV _Rb_tree_iterator<_Value, _Traits> > {
   typedef __false_type   is_POD_type;
 };
 _STLP_MOVE_TO_PRIV_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
-
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-_STLP_MOVE_TO_STD_NAMESPACE
-template <class _Value, class _Traits>
-inline _Value* value_type(const _STLP_PRIV _Rb_tree_iterator<_Value, _Traits>&)
-{ return (_Value*)0; }
-inline bidirectional_iterator_tag iterator_category(const _STLP_PRIV _Rb_tree_base_iterator&)
-{ return bidirectional_iterator_tag(); }
-inline ptrdiff_t* distance_type(const _STLP_PRIV _Rb_tree_base_iterator&)
-{ return (ptrdiff_t*) 0; }
-_STLP_MOVE_TO_PRIV_NAMESPACE
-#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
 
 // Base class to help EH
 
@@ -233,7 +213,6 @@ class _Rb_tree_base {
 public:
   typedef _Rb_tree_node_base _Node_base;
   typedef _Rb_tree_node<_Tp> _Node;
-  _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   typedef typename _Alloc_traits<_Tp, _Alloc>::allocator_type allocator_type;
 private:
   typedef _Rb_tree_base<_Tp, _Alloc> _Self;
@@ -242,12 +221,12 @@ private:
 
 public:
   allocator_type get_allocator() const {
-    return _STLP_CONVERT_ALLOCATOR(_M_header, _Tp);
+    return _M_header;
   }
 
 protected:
   _Rb_tree_base(const allocator_type& __a) :
-    _M_header(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Node_base() ) {
+    _M_header(__a, _Node_base() ) {
     _M_empty_initialize();
   }
   _Rb_tree_base(__move_source<_Self> src) :
@@ -284,7 +263,7 @@ protected:
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
-          _STLP_DEFAULT_ALLOCATOR_SELECT(_Value) >
+          class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Value) >
 class _Rb_tree : public _Rb_tree_base<_Value, _Alloc> {
   typedef _Rb_tree_base<_Value, _Alloc> _Base;
   typedef _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> _Self;
@@ -342,23 +321,23 @@ protected:
   _Base_ptr& _M_rightmost()
   { return this->_M_header._M_data._M_right; }
 
-  static _Base_ptr& _STLP_CALL _S_left(_Base_ptr __x)
+  static _Base_ptr& _S_left(_Base_ptr __x)
   { return __x->_M_left; }
-  static _Base_ptr& _STLP_CALL _S_right(_Base_ptr __x)
+  static _Base_ptr& _S_right(_Base_ptr __x)
   { return __x->_M_right; }
-  static _Base_ptr& _STLP_CALL _S_parent(_Base_ptr __x)
+  static _Base_ptr& _S_parent(_Base_ptr __x)
   { return __x->_M_parent; }
-  static value_type& _STLP_CALL _S_value(_Base_ptr __x)
-  { return __STATIC_CAST(_Link_type, __x)->_M_value_field; }
-  static const _Key& _STLP_CALL _S_key(_Base_ptr __x)
+  static value_type& _S_value(_Base_ptr __x)
+  { return static_cast<_Link_type>(__x)->_M_value_field; }
+  static const _Key& _S_key(_Base_ptr __x)
   { return _KeyOfValue()(_S_value(__x));}
-  static _Color_type& _STLP_CALL _S_color(_Base_ptr __x)
+  static _Color_type& _S_color(_Base_ptr __x)
   { return (_Color_type&)(__x->_M_color); }
 
-  static _Base_ptr _STLP_CALL _S_minimum(_Base_ptr __x)
+  static _Base_ptr _S_minimum(_Base_ptr __x)
   { return _Rb_tree_node_base::_S_minimum(__x); }
 
-  static _Base_ptr _STLP_CALL _S_maximum(_Base_ptr __x)
+  static _Base_ptr _S_maximum(_Base_ptr __x)
   { return _Rb_tree_node_base::_S_maximum(__x); }
 
 public:
@@ -416,7 +395,7 @@ public:
   iterator begin() { return iterator(_M_leftmost()); }
   const_iterator begin() const { return const_iterator(_M_leftmost()); }
   iterator end() { return iterator(&this->_M_header._M_data); }
-  const_iterator end() const { return const_iterator(__CONST_CAST(_Base_ptr, &this->_M_header._M_data)); }
+  const_iterator end() const { return const_iterator(const_cast<_Base_ptr>(&this->_M_header._M_data)); }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const
@@ -456,7 +435,6 @@ public:
   iterator insert_unique(iterator __pos, const value_type& __x);
   iterator insert_equal(iterator __pos, const value_type& __x);
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template<class _II> void insert_equal(_II __first, _II __last) {
     for ( ; __first != __last; ++__first)
       insert_equal(*__first);
@@ -465,24 +443,6 @@ public:
     for ( ; __first != __last; ++__first)
       insert_unique(*__first);
   }
-#else
-  void insert_unique(const_iterator __first, const_iterator __last) {
-    for ( ; __first != __last; ++__first)
-      insert_unique(*__first);
-  }
-  void insert_unique(const value_type* __first, const value_type* __last) {
-    for ( ; __first != __last; ++__first)
-      insert_unique(*__first);
-  }
-  void insert_equal(const_iterator __first, const_iterator __last) {
-    for ( ; __first != __last; ++__first)
-      insert_equal(*__first);
-  }
-  void insert_equal(const value_type* __first, const value_type* __last) {
-    for ( ; __first != __last; ++__first)
-      insert_equal(*__first);
-  }
-#endif
 
   void erase(iterator __pos) {
     _Base_ptr __x = _Rb_global_inst::_Rebalance_for_erase(__pos._M_node,
@@ -490,7 +450,7 @@ public:
                                                           this->_M_header._M_data._M_left,
                                                           this->_M_header._M_data._M_right);
     _STLP_STD::_Destroy(&_S_value(__x));
-    this->_M_header.deallocate(__STATIC_CAST(_Link_type, __x), 1);
+    this->_M_header.deallocate(static_cast<_Link_type>(__x), 1);
     --_M_node_count;
   }
 
@@ -541,7 +501,7 @@ public:
 private:
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_find(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data);      // Last node which is not less than __k.
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data);      // Last node which is not less than __k.
     _Base_ptr __x = _M_root();      // Current node.
 
     while (__x != 0)
@@ -552,7 +512,7 @@ private:
 
     if (__y != &this->_M_header._M_data) {
       if (_M_key_compare(__k, _S_key(__y))) {
-        __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data);
+        __y = const_cast<_Base_ptr>(&this->_M_header._M_data);
       }
     }
     return __y;
@@ -560,7 +520,7 @@ private:
 
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_lower_bound(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data); /* Last node which is not less than __k. */
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data); /* Last node which is not less than __k. */
     _Base_ptr __x = _M_root(); /* Current node. */
 
     while (__x != 0)
@@ -574,7 +534,7 @@ private:
 
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Base_ptr _M_upper_bound(const _KT& __k) const {
-    _Base_ptr __y = __CONST_CAST(_Base_ptr, &this->_M_header._M_data); /* Last node which is greater than __k. */
+    _Base_ptr __y = const_cast<_Base_ptr>(&this->_M_header._M_data); /* Last node which is greater than __k. */
     _Base_ptr __x = _M_root(); /* Current node. */
 
     while (__x != 0)
@@ -664,11 +624,9 @@ _STLP_BEGIN_NAMESPACE
 #undef _STLP_TEMPLATE_CONTAINER
 #undef _STLP_TEMPLATE_HEADER
 
-#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
 template <class _Key, class _Compare, class _Value, class _KeyOfValue, class _Traits, class _Alloc>
 struct __move_traits<_STLP_PRIV _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> >
   : _STLP_PRIV __move_traits_help2<_Compare, _Alloc> {};
-#endif
 
 _STLP_END_NAMESPACE
 

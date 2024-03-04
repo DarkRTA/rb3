@@ -42,7 +42,6 @@ template <class _Key> struct hash { };
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 inline size_t __stl_hash_string(const char* __s) {
-  _STLP_FIX_LITERAL_BUG(__s)
   unsigned long __h = 0;
   for ( ; *__s; ++__s)
     __h = 5*__h + *__s;
@@ -52,63 +51,57 @@ inline size_t __stl_hash_string(const char* __s) {
 
 _STLP_MOVE_TO_STD_NAMESPACE
 
-_STLP_TEMPLATE_NULL
+template<>
 struct hash<char*> {
   size_t operator()(const char* __s) const {
-    _STLP_FIX_LITERAL_BUG(__s)
     return _STLP_PRIV __stl_hash_string(__s);
   }
 };
 
-_STLP_TEMPLATE_NULL
+template<>
 struct hash<const char*> {
   size_t operator()(const char* __s) const {
-    _STLP_FIX_LITERAL_BUG(__s)
     return _STLP_PRIV __stl_hash_string(__s);
   }
 };
 
-_STLP_TEMPLATE_NULL struct hash<char> {
+template<> struct hash<char> {
   size_t operator()(char __x) const { return __x; }
 };
-_STLP_TEMPLATE_NULL struct hash<unsigned char> {
+template<> struct hash<unsigned char> {
   size_t operator()(unsigned char __x) const { return __x; }
 };
-#if !defined (_STLP_NO_SIGNED_BUILTINS)
-_STLP_TEMPLATE_NULL struct hash<signed char> {
-  size_t operator()(unsigned char __x) const { return __x; }
+template<> struct hash<signed char> {
+  size_t operator()(signed char __x) const { return __x; }
 };
-#endif
-_STLP_TEMPLATE_NULL struct hash<short> {
+template<> struct hash<short> {
   size_t operator()(short __x) const { return __x; }
 };
-_STLP_TEMPLATE_NULL struct hash<unsigned short> {
+template<> struct hash<unsigned short> {
   size_t operator()(unsigned short __x) const { return __x; }
 };
-_STLP_TEMPLATE_NULL struct hash<int> {
+template<> struct hash<int> {
   size_t operator()(int __x) const { return __x; }
 };
-_STLP_TEMPLATE_NULL struct hash<unsigned int> {
+template<> struct hash<unsigned int> {
   size_t operator()(unsigned int __x) const { return __x; }
 };
 
-_STLP_TEMPLATE_NULL struct hash<long> {
+template<> struct hash<long> {
   size_t operator()(long __x) const { return __x; }
 };
-_STLP_TEMPLATE_NULL struct hash<unsigned long> {
+template<> struct hash<unsigned long> {
   size_t operator()(unsigned long __x) const { return __x; }
 };
 
-#if defined (_STLP_LONG_LONG)
-_STLP_TEMPLATE_NULL struct hash<_STLP_LONG_LONG> {
-  size_t operator()(_STLP_LONG_LONG x) const { return (size_t)x; }
+template<> struct hash<long long> {
+  size_t operator()(long long x) const { return (size_t)x; }
 };
-_STLP_TEMPLATE_NULL struct hash<unsigned _STLP_LONG_LONG> {
-  size_t operator()(unsigned _STLP_LONG_LONG x) const { return (size_t)x; }
+template<> struct hash<unsigned long long> {
+  size_t operator()(unsigned long long x) const { return (size_t)x; }
 };
-#endif
 
-_STLP_TEMPLATE_NULL
+template<>
 struct hash<void *>
 {
     union __vp {

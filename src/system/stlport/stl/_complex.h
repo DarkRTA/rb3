@@ -32,16 +32,11 @@
 
 _STLP_BEGIN_NAMESPACE
 
-#if !defined (_STLP_NO_COMPLEX_SPECIALIZATIONS)    //*TY 02/25/2000 - added for MPW compiler workaround
-
 template <class _Tp> struct complex;
 
-_STLP_TEMPLATE_NULL struct complex<float>;
-_STLP_TEMPLATE_NULL struct complex<double>;
-#  if !defined (_STLP_NO_LONG_DOUBLE)
-_STLP_TEMPLATE_NULL struct complex<long double>;
-#  endif
-#endif /* _STLP_NO_COMPLEX_SPECIALIZATIONS */
+template<> struct complex<float>;
+template<> struct complex<double>;
+template<> struct complex<long double>;
 
 template <class _Tp>
 struct complex {
@@ -63,7 +58,6 @@ struct complex {
     return *this;
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES) && (defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER) || defined(_STLP_NO_COMPLEX_SPECIALIZATIONS))
   template <class _Tp2>
   explicit complex(const complex<_Tp2>& __z)
     : _M_re(__z._M_re), _M_im(__z._M_im) {}
@@ -74,7 +68,6 @@ struct complex {
     _M_im = __z._M_im;
     return *this;
   }
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   // Element access.
   value_type real() const { return _M_re; }
@@ -108,15 +101,13 @@ struct complex {
 
   // Arithmetic op= operations involving two complex arguments.
 
-  static void  _STLP_CALL _div(const value_type& __z1_r, const value_type& __z1_i,
+  static void  _div(const value_type& __z1_r, const value_type& __z1_i,
                                const value_type& __z2_r, const value_type& __z2_i,
                                value_type& __res_r, value_type& __res_i);
 
-  static void _STLP_CALL _div(const value_type& __z1_r,
+  static void _div(const value_type& __z1_r,
                               const value_type& __z2_r, const value_type& __z2_i,
                               value_type& __res_r, value_type& __res_i);
-
-#if defined (_STLP_MEMBER_TEMPLATES) // && defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 
   template <class _Tp2> _Self& operator+= (const complex<_Tp2>& __z) {
     _M_re += __z._M_re;
@@ -146,7 +137,6 @@ struct complex {
     _M_im = __i;
     return *this;
   }
-#endif /* _STLP_MEMBER_TEMPLATES */
 
   _Self& operator+= (const _Self& __z) {
     _M_re += __z._M_re;
@@ -182,14 +172,13 @@ struct complex {
   value_type _M_im;
 };
 
-#if !defined (_STLP_NO_COMPLEX_SPECIALIZATIONS)    //*TY 02/25/2000 - added for MPW compiler workaround
 // Explicit specializations for float, double, long double.  The only
 // reason for these specializations is to enable automatic conversions
 // from complex<float> to complex<double>, and complex<double> to
 // complex<long double>.
 
-_STLP_TEMPLATE_NULL
-struct _STLP_CLASS_DECLSPEC complex<float> {
+template<>
+struct complex<float> {
   typedef float value_type;
   typedef complex<float> _Self;
   // Constructors, destructor, assignment operator.
@@ -200,9 +189,8 @@ struct _STLP_CLASS_DECLSPEC complex<float> {
   complex(const complex<float>& __z)    : _M_re(__z._M_re), _M_im(__z._M_im) {}
 
   inline explicit complex(const complex<double>& __z);
-#  ifndef _STLP_NO_LONG_DOUBLE
   inline explicit complex(const complex<long double>& __z);
-#  endif
+
   // Element access.
   value_type real() const { return _M_re; }
   value_type imag() const { return _M_im; }
@@ -235,15 +223,14 @@ struct _STLP_CLASS_DECLSPEC complex<float> {
 
   // Arithmetic op= operations involving two complex arguments.
 
-  static void _STLP_CALL _div(const float& __z1_r, const float& __z1_i,
+  static void _div(const float& __z1_r, const float& __z1_i,
                               const float& __z2_r, const float& __z2_i,
                               float& __res_r, float& __res_i);
 
-  static void _STLP_CALL _div(const float& __z1_r,
+  static void _div(const float& __z1_r,
                               const float& __z2_r, const float& __z2_i,
                               float& __res_r, float& __res_i);
 
-#  if defined (_STLP_MEMBER_TEMPLATES)
   template <class _Tp2>
   complex<float>& operator=(const complex<_Tp2>& __z) {
     _M_re = __z._M_re;
@@ -284,8 +271,6 @@ struct _STLP_CLASS_DECLSPEC complex<float> {
     return *this;
   }
 
-#  endif /* _STLP_MEMBER_TEMPLATES */
-
   _Self& operator=(const _Self& __z) {
     _M_re = __z._M_re;
     _M_im = __z._M_im;
@@ -326,8 +311,8 @@ struct _STLP_CLASS_DECLSPEC complex<float> {
   value_type _M_im;
 };
 
-_STLP_TEMPLATE_NULL
-struct _STLP_CLASS_DECLSPEC complex<double> {
+template<>
+struct complex<double> {
   typedef double value_type;
   typedef complex<double> _Self;
 
@@ -339,9 +324,8 @@ struct _STLP_CLASS_DECLSPEC complex<double> {
   complex(const complex<double>& __z)
     : _M_re(__z._M_re), _M_im(__z._M_im) {}
   inline complex(const complex<float>& __z);
-#  if !defined (_STLP_NO_LONG_DOUBLE)
   explicit inline complex(const complex<long double>& __z);
-#  endif
+
   // Element access.
   value_type real() const { return _M_re; }
   value_type imag() const { return _M_im; }
@@ -374,14 +358,13 @@ struct _STLP_CLASS_DECLSPEC complex<double> {
 
   // Arithmetic op= operations involving two complex arguments.
 
-  static void _STLP_CALL _div(const double& __z1_r, const double& __z1_i,
+  static void _div(const double& __z1_r, const double& __z1_i,
                               const double& __z2_r, const double& __z2_i,
                               double& __res_r, double& __res_i);
-  static void _STLP_CALL _div(const double& __z1_r,
+  static void _div(const double& __z1_r,
                               const double& __z2_r, const double& __z2_i,
                               double& __res_r, double& __res_i);
 
-#  if defined (_STLP_MEMBER_TEMPLATES) && defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
   template <class _Tp2>
   complex<double>& operator=(const complex<_Tp2>& __z) {
     _M_re = __z._M_re;
@@ -422,8 +405,6 @@ struct _STLP_CLASS_DECLSPEC complex<double> {
     return *this;
   }
 
-#  endif /* _STLP_MEMBER_TEMPLATES */
-
   _Self& operator=(const _Self& __z) {
     _M_re = __z._M_re;
     _M_im = __z._M_im;
@@ -464,10 +445,8 @@ struct _STLP_CLASS_DECLSPEC complex<double> {
   value_type _M_im;
 };
 
-#  if !defined (_STLP_NO_LONG_DOUBLE)
-
-_STLP_TEMPLATE_NULL
-struct _STLP_CLASS_DECLSPEC complex<long double> {
+template<>
+struct complex<long double> {
   typedef long double value_type;
   typedef complex<long double> _Self;
 
@@ -512,15 +491,13 @@ struct _STLP_CLASS_DECLSPEC complex<long double> {
 
   // Arithmetic op= operations involving two complex arguments.
 
-  static void _STLP_CALL _div(const long double& __z1_r, const long double& __z1_i,
+  static void _div(const long double& __z1_r, const long double& __z1_i,
                               const long double& __z2_r, const long double& __z2_i,
                               long double& __res_r, long double& __res_i);
 
-  static void _STLP_CALL _div(const long double& __z1_r,
+  static void _div(const long double& __z1_r,
                               const long double& __z2_r, const long double& __z2_i,
                               long double& __res_r, long double& __res_i);
-
-#    if defined (_STLP_MEMBER_TEMPLATES) && defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 
   template <class _Tp2>
   complex<long double>& operator=(const complex<_Tp2>& __z) {
@@ -562,8 +539,6 @@ struct _STLP_CLASS_DECLSPEC complex<long double> {
     return *this;
   }
 
-#    endif /* _STLP_MEMBER_TEMPLATES */
-
   _Self& operator=(const _Self& __z) {
     _M_re = __z._M_re;
     _M_im = __z._M_im;
@@ -604,8 +579,6 @@ struct _STLP_CLASS_DECLSPEC complex<long double> {
   value_type _M_im;
 };
 
-#  endif /* _STLP_NO_LONG_DOUBLE */
-
 // Converting constructors from one of these three specialized types
 // to another.
 
@@ -613,7 +586,6 @@ inline complex<float>::complex(const complex<double>& __z)
   : _M_re((float)__z._M_re), _M_im((float)__z._M_im) {}
 inline complex<double>::complex(const complex<float>& __z)
   : _M_re(__z._M_re), _M_im(__z._M_im) {}
-#  ifndef _STLP_NO_LONG_DOUBLE
 inline complex<float>::complex(const complex<long double>& __z)
   : _M_re((float)__z._M_re), _M_im((float)__z._M_im) {}
 inline complex<double>::complex(const complex<long double>& __z)
@@ -622,48 +594,45 @@ inline complex<long double>::complex(const complex<float>& __z)
   : _M_re(__z._M_re), _M_im(__z._M_im) {}
 inline complex<long double>::complex(const complex<double>& __z)
   : _M_re(__z._M_re), _M_im(__z._M_im) {}
-#  endif
-
-#endif /* SPECIALIZATIONS */
 
 // Unary non-member arithmetic operators.
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator+(const complex<_Tp>& __z)
+inline complex<_Tp> operator+(const complex<_Tp>& __z)
 { return __z; }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL  operator-(const complex<_Tp>& __z)
+inline complex<_Tp>  operator-(const complex<_Tp>& __z)
 { return complex<_Tp>(-__z._M_re, -__z._M_im); }
 
 // Non-member arithmetic operations involving one real argument.
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator+(const _Tp& __x, const complex<_Tp>& __z)
+inline complex<_Tp> operator+(const _Tp& __x, const complex<_Tp>& __z)
 { return complex<_Tp>(__x + __z._M_re, __z._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator+(const complex<_Tp>& __z, const _Tp& __x)
+inline complex<_Tp> operator+(const complex<_Tp>& __z, const _Tp& __x)
 { return complex<_Tp>(__z._M_re + __x, __z._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator-(const _Tp& __x, const complex<_Tp>& __z)
+inline complex<_Tp> operator-(const _Tp& __x, const complex<_Tp>& __z)
 { return complex<_Tp>(__x - __z._M_re, -__z._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator-(const complex<_Tp>& __z, const _Tp& __x)
+inline complex<_Tp> operator-(const complex<_Tp>& __z, const _Tp& __x)
 { return complex<_Tp>(__z._M_re - __x, __z._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator*(const _Tp& __x, const complex<_Tp>& __z)
+inline complex<_Tp> operator*(const _Tp& __x, const complex<_Tp>& __z)
 { return complex<_Tp>(__x * __z._M_re, __x * __z._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator*(const complex<_Tp>& __z, const _Tp& __x)
+inline complex<_Tp> operator*(const complex<_Tp>& __z, const _Tp& __x)
 { return complex<_Tp>(__z._M_re * __x, __z._M_im * __x); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator/(const _Tp& __x, const complex<_Tp>& __z) {
+inline complex<_Tp> operator/(const _Tp& __x, const complex<_Tp>& __z) {
   complex<_Tp> __result;
   complex<_Tp>::_div(__x,
                      __z._M_re, __z._M_im,
@@ -672,30 +641,30 @@ inline complex<_Tp> _STLP_CALL operator/(const _Tp& __x, const complex<_Tp>& __z
 }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL operator/(const complex<_Tp>& __z, const _Tp& __x)
+inline complex<_Tp> operator/(const complex<_Tp>& __z, const _Tp& __x)
 { return complex<_Tp>(__z._M_re / __x, __z._M_im / __x); }
 
 // Non-member arithmetic operations involving two complex arguments
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL
+inline complex<_Tp>
 operator+(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
 { return complex<_Tp>(__z1._M_re + __z2._M_re, __z1._M_im + __z2._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL
+inline complex<_Tp>
 operator-(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
 { return complex<_Tp>(__z1._M_re - __z2._M_re, __z1._M_im - __z2._M_im); }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL
+inline complex<_Tp>
 operator*(const complex<_Tp>& __z1, const complex<_Tp>& __z2) {
   return complex<_Tp>(__z1._M_re * __z2._M_re - __z1._M_im * __z2._M_im,
                       __z1._M_re * __z2._M_im + __z1._M_im * __z2._M_re);
 }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL
+inline complex<_Tp>
 operator/(const complex<_Tp>& __z1, const complex<_Tp>& __z2) {
   complex<_Tp> __result;
   complex<_Tp>::_div(__z1._M_re, __z1._M_im,
@@ -707,101 +676,92 @@ operator/(const complex<_Tp>& __z1, const complex<_Tp>& __z2) {
 // Comparison operators.
 
 template <class _Tp>
-inline bool _STLP_CALL operator==(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
+inline bool operator==(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
 { return __z1._M_re == __z2._M_re && __z1._M_im == __z2._M_im; }
 
 template <class _Tp>
-inline bool _STLP_CALL operator==(const complex<_Tp>& __z, const _Tp& __x)
+inline bool operator==(const complex<_Tp>& __z, const _Tp& __x)
 { return __z._M_re == __x && __z._M_im == 0; }
 
 template <class _Tp>
-inline bool _STLP_CALL operator==(const _Tp& __x, const complex<_Tp>& __z)
+inline bool operator==(const _Tp& __x, const complex<_Tp>& __z)
 { return __x == __z._M_re && 0 == __z._M_im; }
 
-//04/27/04 dums: removal of this check, if it is restablish
-//please explain why the other operators are not macro guarded
-//#ifdef _STLP_FUNCTION_TMPL_PARTIAL_ORDER
-
 template <class _Tp>
-inline bool _STLP_CALL operator!=(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
+inline bool operator!=(const complex<_Tp>& __z1, const complex<_Tp>& __z2)
 { return __z1._M_re != __z2._M_re || __z1._M_im != __z2._M_im; }
 
-//#endif /* _STLP_FUNCTION_TMPL_PARTIAL_ORDER */
-
 template <class _Tp>
-inline bool _STLP_CALL operator!=(const complex<_Tp>& __z, const _Tp& __x)
+inline bool operator!=(const complex<_Tp>& __z, const _Tp& __x)
 { return __z._M_re != __x || __z._M_im != 0; }
 
 template <class _Tp>
-inline bool _STLP_CALL operator!=(const _Tp& __x, const complex<_Tp>& __z)
+inline bool operator!=(const _Tp& __x, const complex<_Tp>& __z)
 { return __x != __z._M_re || 0 != __z._M_im; }
 
 // Other basic arithmetic operations
 template <class _Tp>
-inline _Tp _STLP_CALL real(const complex<_Tp>& __z)
+inline _Tp real(const complex<_Tp>& __z)
 { return __z._M_re; }
 
 template <class _Tp>
-inline _Tp _STLP_CALL imag(const complex<_Tp>& __z)
+inline _Tp imag(const complex<_Tp>& __z)
 { return __z._M_im; }
 
 template <class _Tp>
-_Tp _STLP_CALL abs(const complex<_Tp>& __z);
+_Tp abs(const complex<_Tp>& __z);
 
 template <class _Tp>
-_Tp _STLP_CALL arg(const complex<_Tp>& __z);
+_Tp arg(const complex<_Tp>& __z);
 
 template <class _Tp>
-inline _Tp _STLP_CALL norm(const complex<_Tp>& __z)
+inline _Tp norm(const complex<_Tp>& __z)
 { return __z._M_re * __z._M_re + __z._M_im * __z._M_im; }
 
 template <class _Tp>
-inline complex<_Tp> _STLP_CALL conj(const complex<_Tp>& __z)
+inline complex<_Tp> conj(const complex<_Tp>& __z)
 { return complex<_Tp>(__z._M_re, -__z._M_im); }
 
 template <class _Tp>
-complex<_Tp> _STLP_CALL polar(const _Tp& __rho)
+complex<_Tp> polar(const _Tp& __rho)
 { return complex<_Tp>(__rho, 0); }
 
 template <class _Tp>
-complex<_Tp> _STLP_CALL polar(const _Tp& __rho, const _Tp& __phi);
+complex<_Tp> polar(const _Tp& __rho, const _Tp& __phi);
 
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC float _STLP_CALL abs(const complex<float>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC double _STLP_CALL abs(const complex<double>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC float _STLP_CALL arg(const complex<float>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC double _STLP_CALL arg(const complex<double>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC complex<float> _STLP_CALL polar(const float& __rho, const float& __phi);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC complex<double> _STLP_CALL polar(const double& __rho, const double& __phi);
+template<>
+float abs(const complex<float>&);
+template<>
+double abs(const complex<double>&);
+template<>
+float arg(const complex<float>&);
+template<>
+double arg(const complex<double>&);
+template<>
+complex<float> polar(const float& __rho, const float& __phi);
+template<>
+complex<double> polar(const double& __rho, const double& __phi);
 
 template <class _Tp>
-_Tp _STLP_CALL abs(const complex<_Tp>& __z)
+_Tp abs(const complex<_Tp>& __z)
 { return _Tp(abs(complex<double>(double(__z.real()), double(__z.imag())))); }
 
 template <class _Tp>
-_Tp _STLP_CALL arg(const complex<_Tp>& __z)
+_Tp arg(const complex<_Tp>& __z)
 { return _Tp(arg(complex<double>(double(__z.real()), double(__z.imag())))); }
 
 template <class _Tp>
-complex<_Tp> _STLP_CALL polar(const _Tp& __rho, const _Tp& __phi) {
+complex<_Tp> polar(const _Tp& __rho, const _Tp& __phi) {
   complex<double> __tmp = polar(double(__rho), double(__phi));
   return complex<_Tp>(_Tp(__tmp.real()), _Tp(__tmp.imag()));
 }
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC long double _STLP_CALL arg(const complex<long double>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC long double _STLP_CALL abs(const complex<long double>&);
-_STLP_TEMPLATE_NULL
-_STLP_DECLSPEC complex<long double> _STLP_CALL polar(const long double&, const long double&);
-#endif
-
+template<>
+long double arg(const complex<long double>&);
+template<>
+long double abs(const complex<long double>&);
+template<>
+complex<long double> polar(const long double&, const long double&);
 
 #if !defined (_STLP_USE_NO_IOSTREAMS)
 
@@ -814,60 +774,33 @@ _STLP_BEGIN_NAMESPACE
 // Complex output, in the form (re,im).  We use a two-step process
 // involving stringstream so that we get the padding right.
 template <class _Tp, class _CharT, class _Traits>
-basic_ostream<_CharT, _Traits>&  _STLP_CALL
+basic_ostream<_CharT, _Traits>& 
 operator<<(basic_ostream<_CharT, _Traits>& __os, const complex<_Tp>& __z);
 
 template <class _Tp, class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& _STLP_CALL
+basic_istream<_CharT, _Traits>&
 operator>>(basic_istream<_CharT, _Traits>& __is, complex<_Tp>& __z);
 
 // Specializations for narrow characters; lets us avoid widen.
 
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_istream<char, char_traits<char> >& _STLP_CALL
+basic_istream<char, char_traits<char> >&
 operator>>(basic_istream<char, char_traits<char> >& __is, complex<float>& __z);
 
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_istream<char, char_traits<char> >& _STLP_CALL
+basic_istream<char, char_traits<char> >&
 operator>>(basic_istream<char, char_traits<char> >& __is, complex<double>& __z);
 
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_ostream<char, char_traits<char> >& _STLP_CALL
+basic_ostream<char, char_traits<char> >&
 operator<<(basic_ostream<char, char_traits<char> >& __is, const complex<float>& __z);
 
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_ostream<char, char_traits<char> >& _STLP_CALL
+basic_ostream<char, char_traits<char> >&
 operator<<(basic_ostream<char, char_traits<char> >& __is, const complex<double>& __z);
 
-#  if !defined (_STLP_NO_LONG_DOUBLE)
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_istream<char, char_traits<char> >& _STLP_CALL
+basic_istream<char, char_traits<char> >&
 operator>>(basic_istream<char, char_traits<char> >& __is, complex<long double>& __z);
 
-_STLP_OPERATOR_TEMPLATE
-_STLP_DECLSPEC basic_ostream<char, char_traits<char> >& _STLP_CALL
+basic_ostream<char, char_traits<char> >&
 operator<<(basic_ostream<char, char_traits<char> >& __is, const complex<long double>& __z);
 
-#  endif
-
-#  if defined (_STLP_USE_TEMPLATE_EXPORT) && ! defined (_STLP_NO_WCHAR_T)
-
-_STLP_EXPORT_TEMPLATE basic_istream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator>>(basic_istream<wchar_t, char_traits<wchar_t> >&, complex<double>&);
-_STLP_EXPORT_TEMPLATE basic_ostream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator<<(basic_ostream<wchar_t, char_traits<wchar_t> >&, const complex<double>&);
-_STLP_EXPORT_TEMPLATE basic_istream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator>>(basic_istream<wchar_t, char_traits<wchar_t> >&, complex<float>&);
-_STLP_EXPORT_TEMPLATE basic_ostream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator<<(basic_ostream<wchar_t, char_traits<wchar_t> >&, const complex<float>&);
-
-#    if !defined (_STLP_NO_LONG_DOUBLE)
-_STLP_EXPORT_TEMPLATE basic_istream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator>>(basic_istream<wchar_t, char_traits<wchar_t> >&, complex<long double>&);
-_STLP_EXPORT_TEMPLATE basic_ostream<wchar_t, char_traits<wchar_t> >& _STLP_CALL
-operator<<(basic_ostream<wchar_t, char_traits<wchar_t> >&, const complex<long double>&);
-#    endif
-#  endif
 #endif
 
 
@@ -875,64 +808,62 @@ operator<<(basic_ostream<wchar_t, char_traits<wchar_t> >&, const complex<long do
 //  double, and long double.  (Sqrt isn't transcendental, of course,
 //  but it's included in this section anyway.)
 
-_STLP_DECLSPEC complex<float> _STLP_CALL sqrt(const complex<float>&);
+complex<float> sqrt(const complex<float>&);
 
-_STLP_DECLSPEC complex<float> _STLP_CALL exp(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL  log(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL log10(const complex<float>&);
+complex<float> exp(const complex<float>&);
+complex<float>  log(const complex<float>&);
+complex<float> log10(const complex<float>&);
 
-_STLP_DECLSPEC complex<float> _STLP_CALL pow(const complex<float>&, int);
-_STLP_DECLSPEC complex<float> _STLP_CALL pow(const complex<float>&, const float&);
-_STLP_DECLSPEC complex<float> _STLP_CALL pow(const float&, const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL pow(const complex<float>&, const complex<float>&);
+complex<float> pow(const complex<float>&, int);
+complex<float> pow(const complex<float>&, const float&);
+complex<float> pow(const float&, const complex<float>&);
+complex<float> pow(const complex<float>&, const complex<float>&);
 
-_STLP_DECLSPEC complex<float> _STLP_CALL sin(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL cos(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL tan(const complex<float>&);
+complex<float> sin(const complex<float>&);
+complex<float> cos(const complex<float>&);
+complex<float> tan(const complex<float>&);
 
-_STLP_DECLSPEC complex<float> _STLP_CALL sinh(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL cosh(const complex<float>&);
-_STLP_DECLSPEC complex<float> _STLP_CALL tanh(const complex<float>&);
+complex<float> sinh(const complex<float>&);
+complex<float> cosh(const complex<float>&);
+complex<float> tanh(const complex<float>&);
 
-_STLP_DECLSPEC complex<double> _STLP_CALL sqrt(const complex<double>&);
+complex<double> sqrt(const complex<double>&);
 
-_STLP_DECLSPEC complex<double> _STLP_CALL exp(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL log(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL log10(const complex<double>&);
+complex<double> exp(const complex<double>&);
+complex<double> log(const complex<double>&);
+complex<double> log10(const complex<double>&);
 
-_STLP_DECLSPEC complex<double> _STLP_CALL pow(const complex<double>&, int);
-_STLP_DECLSPEC complex<double> _STLP_CALL pow(const complex<double>&, const double&);
-_STLP_DECLSPEC complex<double> _STLP_CALL pow(const double&, const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL pow(const complex<double>&, const complex<double>&);
+complex<double> pow(const complex<double>&, int);
+complex<double> pow(const complex<double>&, const double&);
+complex<double> pow(const double&, const complex<double>&);
+complex<double> pow(const complex<double>&, const complex<double>&);
 
-_STLP_DECLSPEC complex<double> _STLP_CALL sin(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL cos(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL tan(const complex<double>&);
+complex<double> sin(const complex<double>&);
+complex<double> cos(const complex<double>&);
+complex<double> tan(const complex<double>&);
 
-_STLP_DECLSPEC complex<double> _STLP_CALL sinh(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL cosh(const complex<double>&);
-_STLP_DECLSPEC complex<double> _STLP_CALL tanh(const complex<double>&);
+complex<double> sinh(const complex<double>&);
+complex<double> cosh(const complex<double>&);
+complex<double> tanh(const complex<double>&);
 
-#if !defined (_STLP_NO_LONG_DOUBLE)
-_STLP_DECLSPEC complex<long double> _STLP_CALL sqrt(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL exp(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL log(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL log10(const complex<long double>&);
+complex<long double> sqrt(const complex<long double>&);
+complex<long double> exp(const complex<long double>&);
+complex<long double> log(const complex<long double>&);
+complex<long double> log10(const complex<long double>&);
 
-_STLP_DECLSPEC complex<long double> _STLP_CALL pow(const complex<long double>&, int);
-_STLP_DECLSPEC complex<long double> _STLP_CALL pow(const complex<long double>&, const long double&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL pow(const long double&, const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL pow(const complex<long double>&,
+complex<long double> pow(const complex<long double>&, int);
+complex<long double> pow(const complex<long double>&, const long double&);
+complex<long double> pow(const long double&, const complex<long double>&);
+complex<long double> pow(const complex<long double>&,
                                                    const complex<long double>&);
 
-_STLP_DECLSPEC complex<long double> _STLP_CALL sin(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL cos(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL tan(const complex<long double>&);
+complex<long double> sin(const complex<long double>&);
+complex<long double> cos(const complex<long double>&);
+complex<long double> tan(const complex<long double>&);
 
-_STLP_DECLSPEC complex<long double> _STLP_CALL sinh(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL cosh(const complex<long double>&);
-_STLP_DECLSPEC complex<long double> _STLP_CALL tanh(const complex<long double>&);
-#endif
+complex<long double> sinh(const complex<long double>&);
+complex<long double> cosh(const complex<long double>&);
+complex<long double> tanh(const complex<long double>&);
 
 _STLP_END_NAMESPACE
 

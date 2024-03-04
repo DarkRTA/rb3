@@ -28,7 +28,7 @@
 #  include <stl/_alloc.h>
 #endif
 
-#define _STLP_DBG_ALLOCATOR_SELECT( _Tp ) _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp )
+#define _STLP_DBG_ALLOCATOR( _Tp ) _STLP_DEFAULT_ALLOCATOR( _Tp )
 
 _STLP_BEGIN_NAMESPACE
 
@@ -114,7 +114,7 @@ bool _Incrementable(const _Iterator& __it, ptrdiff_t __n, const random_access_it
   __container_type* __c = __it._Get_container_ptr();
   if (__c == 0) return false;
   ptrdiff_t __new_pos = (__it._M_iterator - __c->begin()) + __n;
-  return  (__new_pos >= 0) && (__STATIC_CAST(typename __container_type::size_type, __new_pos) <= __c->size());
+  return  (__new_pos >= 0) && (static_cast<typename __container_type::size_type>(__new_pos) <= __c->size());
 }
 
 
@@ -130,11 +130,7 @@ public:
   typedef typename _Container::const_iterator  _Const_iterator;
   typedef _Container                     _Container_type;
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
   typedef typename iterator_traits<_Const_iterator>::iterator_category _Iterator_category;
-#else
-  typedef typename _Container::_Iterator_category  _Iterator_category;
-#endif
   typedef _Iterator_category iterator_category;
 
   _DBG_iter_base() : __owned_link(0)  {}
@@ -212,9 +208,7 @@ private:
 
 public:
 
-#ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
   typedef typename _Base::iterator_category iterator_category;
-#endif
   typedef typename _Base::_Iterator_category  _Iterator_category;
 
 public:
@@ -244,8 +238,7 @@ public:
   }
 
   reference operator*() const;
-
-  _STLP_DEFINE_ARROW_OPERATOR
+  pointer operator->() const { return &(operator*()); }
 
   _Self& operator++() {
     this->__increment();
@@ -290,11 +283,7 @@ public:
 
 template <class _Container, class _Traits>
 inline
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-_STLP_TYPENAME_ON_RETURN_TYPE _Traits::reference
-#else
-_STLP_TYPENAME_ON_RETURN_TYPE _DBG_iter<_Container, _Traits>::reference
-#endif
+typename _DBG_iter<_Container, _Traits>::reference
 _DBG_iter<_Container, _Traits>::operator*() const {
   _STLP_DEBUG_CHECK(_Dereferenceable(*this))
   _STLP_DEBUG_CHECK(_Traits::_Check(*this))
@@ -362,12 +351,10 @@ template <class _Iterator>
 inline _Iterator _Non_Dbg_iter(_Iterator __it)
 { return __it; }
 
-#if defined (_STLP_FUNCTION_TMPL_PARTIAL_ORDER)
 template <class _Container, class _Traits>
 inline typename _DBG_iter<_Container, _Traits>::_Nonconst_iterator
 _Non_Dbg_iter(_DBG_iter<_Container, _Traits> __it)
 { return __it._M_iterator; }
-#endif
 
 /*
  * Helper classes to check iterator range or pointer validity
@@ -383,7 +370,6 @@ protected:
     _STLP_VERBOSE_ASSERT((__p != 0), _StlMsg_INVALID_ARGUMENT)
   }
 
-#if defined (_STLP_MEMBER_TEMPLATES)
   template <class _InputIter>
   __construct_checker(const _InputIter& __f, const _InputIter& __l) {
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
@@ -397,9 +383,7 @@ protected:
   void _M_check_dispatch(const _InputIter& __f, const _InputIter& __l, const __false_type& /*IsIntegral*/) {
     _STLP_DEBUG_CHECK(__check_range(__f,__l))
   }
-#endif
 
-#if !defined (_STLP_MEMBER_TEMPLATES) || !defined (_STLP_NO_METHOD_SPECIALIZATION)
   __construct_checker(const value_type* __f, const value_type* __l) {
     _STLP_DEBUG_CHECK(__check_ptr_range(__f,__l))
   }
@@ -408,39 +392,7 @@ protected:
   __construct_checker(const _IteType& __f, const _IteType& __l) {
     _STLP_DEBUG_CHECK(__check_range(__f,__l))
   }
-#endif
 };
-
-#if defined (_STLP_USE_OLD_HP_ITERATOR_QUERIES)
-#  if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#    define _STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS 1
-#  endif
-
-_STLP_MOVE_TO_STD_NAMESPACE
-
-template <class _Container>
-inline ptrdiff_t*
-distance_type(const _STLP_PRIV _DBG_iter_base<_Container>&) { return (ptrdiff_t*) 0; }
-
-#  if !defined (_STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS)
-template <class _Container>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _STLP_PRIV _DBG_iter_base<_Container>::value_type*
-value_type(const _STLP_PRIV _DBG_iter_base<_Container>&) {
-  typedef typename _STLP_PRIV _DBG_iter_base<_Container>::value_type _Val;
-  return (_Val*)0;
-}
-
-template <class _Container>
-inline _STLP_TYPENAME_ON_RETURN_TYPE _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category
-iterator_category(const _STLP_PRIV _DBG_iter_base<_Container>&) {
-  typedef typename _STLP_PRIV _DBG_iter_base<_Container>::_Iterator_category _Category;
-  return _Category();
-}
-#  endif
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
-
-#endif /* _STLP_USE_OLD_HP_ITERATOR_QUERIES */
 
 _STLP_MOVE_TO_STD_NAMESPACE
 

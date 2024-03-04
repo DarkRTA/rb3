@@ -38,14 +38,6 @@
 #  define basic_string _STLP_NON_DBG_NAME(str)
 #endif
 
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define __size_type__ size_t
-#  define size_type size_t
-#  define iterator _CharT*
-#else
-#  define __size_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_string<_CharT,_Traits,_Alloc>::size_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -192,7 +184,7 @@ template <class _CharT, class _Traits, class _Alloc>
 basic_string<_CharT,_Traits,_Alloc>&
 basic_string<_CharT,_Traits,_Alloc>::_M_assign(const _CharT* __f, const _CharT* __l) {
   ptrdiff_t __n = __l - __f;
-  if (__STATIC_CAST(size_type, __n) <= size()) {
+  if (static_cast<size_type>(__n) <= size()) {
     _Traits::copy(this->_M_Start(), __f, __n);
     erase(begin() + __n, end());
   }
@@ -215,7 +207,7 @@ _CharT* basic_string<_CharT,_Traits,_Alloc> ::_M_insert_aux(_CharT* __p,
   }
   else {
     const size_type __old_len = size();
-    size_type __len = __old_len + (max)(__old_len, __STATIC_CAST(size_type,1)) + 1;
+    size_type __len = __old_len + (max)(__old_len, static_cast<size_type>(1)) + 1;
     pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
     pointer __new_finish = __new_start;
     _STLP_TRY {
@@ -360,7 +352,7 @@ void basic_string<_CharT,_Traits,_Alloc>::_M_insert(iterator __pos,
     }
     else {
       const size_type __old_size = size();
-      size_type __len = __old_size + (max)(__old_size, __STATIC_CAST(const size_type,__n)) + 1;
+      size_type __len = __old_size + (max)(__old_size, static_cast<const size_type>(__n)) + 1;
       pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
       pointer __new_finish = __new_start;
       _STLP_TRY {
@@ -436,7 +428,7 @@ basic_string<_CharT,_Traits,_Alloc> ::_M_replace(iterator __first, iterator __la
   return *this;
 }
 
-template <class _CharT, class _Traits, class _Alloc> __size_type__
+template <class _CharT, class _Traits, class _Alloc> typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find(const _CharT* __s, size_type __pos,
                                            size_type __n) const {
   const size_t __len = size();
@@ -450,7 +442,7 @@ basic_string<_CharT,_Traits,_Alloc> ::find(const _CharT* __s, size_type __pos,
   }
 }
 
-template <class _CharT, class _Traits, class _Alloc> __size_type__
+template <class _CharT, class _Traits, class _Alloc> typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find(_CharT __c, size_type __pos) const {
   if (__pos >= size()) /*__pos + 1 > size()*/
     return npos;
@@ -463,7 +455,7 @@ basic_string<_CharT,_Traits,_Alloc> ::find(_CharT __c, size_type __pos) const {
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__size_type__
+typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc>::rfind(const _CharT* __s, size_type __pos, size_type __n) const
 {
   const size_type __len = size();
@@ -477,7 +469,7 @@ basic_string<_CharT,_Traits,_Alloc>::rfind(const _CharT* __s, size_type __pos, s
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__size_type__
+typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc>::rfind(_CharT __c, size_type __pos) const
 {
   const size_type __len = size();
@@ -491,7 +483,7 @@ basic_string<_CharT,_Traits,_Alloc>::rfind(_CharT __c, size_type __pos) const
   return __rresult != rend() ? (__rresult.base() - 1) - begin() : npos;
 }
 
-template <class _CharT, class _Traits, class _Alloc> __size_type__
+template <class _CharT, class _Traits, class _Alloc> typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find_first_of(const _CharT* __s, size_type __pos,
                                                     size_type __n) const {
   if (__pos >= size()) /*__pos + 1 > size()*/
@@ -505,7 +497,7 @@ basic_string<_CharT,_Traits,_Alloc> ::find_first_of(const _CharT* __s, size_type
 }
 
 template <class _CharT, class _Traits, class _Alloc>
- __size_type__
+ typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find_last_of(const _CharT* __s, size_type __pos,
                                                    size_type __n) const
 {
@@ -522,7 +514,7 @@ basic_string<_CharT,_Traits,_Alloc> ::find_last_of(const _CharT* __s, size_type 
 }
 
 
-template <class _CharT, class _Traits, class _Alloc> __size_type__
+template <class _CharT, class _Traits, class _Alloc> typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find_first_not_of(const _CharT* __s, size_type __pos,
                                                         size_type __n) const {
   typedef typename _Traits::char_type _CharType;
@@ -530,13 +522,13 @@ basic_string<_CharT,_Traits,_Alloc> ::find_first_not_of(const _CharT* __s, size_
     return npos;
   else {
     const_pointer __result = _STLP_STD::find_if(this->_M_Start() + __pos, this->_M_Finish(),
-                                                _STLP_PRIV _Not_within_traits<_Traits>(__CONST_CAST(const _CharType*, __s),
-                                                                                        __CONST_CAST(const _CharType*, __s) + __n));
+                                                _STLP_PRIV _Not_within_traits<_Traits>(const_cast<const _CharType*>(__s),
+                                                                                        const_cast<const _CharType*>(__s) + __n));
     return __result != this->_M_finish ? __result - this->_M_Start() : npos;
   }
 }
 
-template <class _CharT, class _Traits, class _Alloc> __size_type__
+template <class _CharT, class _Traits, class _Alloc> typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc> ::find_first_not_of(_CharT __c, size_type __pos) const {
   if (1 > size())
     return npos;
@@ -548,7 +540,7 @@ basic_string<_CharT,_Traits,_Alloc> ::find_first_not_of(_CharT __c, size_type __
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__size_type__
+typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT,_Traits,_Alloc>::find_last_not_of(const _CharT* __s, size_type __pos, size_type __n) const
 {
   typedef typename _Traits::char_type _CharType;
@@ -566,7 +558,7 @@ basic_string<_CharT,_Traits,_Alloc>::find_last_not_of(const _CharT* __s, size_ty
 }
 
 template <class _CharT, class _Traits, class _Alloc>
-__size_type__
+typename basic_string<_CharT,_Traits,_Alloc>::size_type
 basic_string<_CharT, _Traits, _Alloc>::find_last_not_of(_CharT __c, size_type __pos) const
 {
   const size_type __len = size();
@@ -586,7 +578,7 @@ _STLP_MOVE_TO_PRIV_NAMESPACE
 #endif
 
 template <class _CharT, class _Traits, class _Alloc>
-void _STLP_CALL _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
+void _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
                                _CharT* __buf, size_t __n) {
   if (__n > 0) {
     __n = (min) (__n - 1, __s.size());
@@ -637,20 +629,10 @@ void _String_base<_Tp, _Alloc>::_M_allocate_block(size_t __n) {
 _STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-#if defined (_STLP_DONT_SUP_DFLT_PARAM)
-template <class _CharT, class _Traits, class _Alloc>
-basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT* __s)
-  : _STLP_PRIV _String_base<_CharT,_Alloc>(allocator_type()) {
-  _STLP_FIX_LITERAL_BUG(__s)
-  _M_range_initialize(__s, __s + traits_type::length(__s));
-}
-#endif
-
 template <class _CharT, class _Traits, class _Alloc>
 basic_string<_CharT, _Traits, _Alloc>::basic_string(const _CharT* __s,
                                                     const allocator_type& __a)
   : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
-  _STLP_FIX_LITERAL_BUG(__s)
   _M_range_initialize(__s, __s + traits_type::length(__s));
 }
 
@@ -666,19 +648,11 @@ _STLP_MOVE_TO_STD_NAMESPACE
 /* If basic_string is defined it means that it won't be the basic_string class
  * exposed to STLport users so npos do not need external linkage.
  */
-#  if !defined (_STLP_STATIC_CONST_INIT_BUG)
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
-#  endif
 #endif
 
 _STLP_END_NAMESPACE
-
-#undef __size_type__
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  undef size_type
-#  undef iterator
-#endif
 
 #endif /*  _STLP_STRING_C */
 

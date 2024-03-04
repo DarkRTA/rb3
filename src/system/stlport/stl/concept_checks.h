@@ -145,18 +145,6 @@ do { \
       __const_binary_operator_requirement_violation; \
   __y = __y; __x = __x; } while (0)
 
-
-#ifdef _STLP_NO_FUNCTION_PTR_IN_CLASS_TEMPLATE
-
-#define _STLP_CLASS_REQUIRES(__type_var, __concept)
-#define _STLP_CLASS_REQUIRES_SAME_TYPE(__type_x, __type_y)
-#define _STLP_CLASS_GENERATOR_CHECK(__func, __ret)
-#define _STLP_CLASS_UNARY_FUNCTION_CHECK(__func, __ret, __arg)
-#define _STLP_CLASS_BINARY_FUNCTION_CHECK(__func, __ret, __first, __second)
-#define _STLP_CLASS_REQUIRES_BINARY_OP(__opname, __ret, __first, __second)
-
-#else
-
 // Use this macro inside of template classes, where you would
 // like to place requirements on the template arguments to the class
 // Warning: do not pass pointers and such (e.g. T*) in as the __type_var,
@@ -223,8 +211,6 @@ do { \
     _STL_BINARY##__opname##_ERROR<__ret, __first, __second>:: \
   __binary_operator_requirement_violation>  \
   __dummy_ptr_##__func##__ret##__first##__second##_binary_op
-
-#endif
 
 /* helper class for finding non-const version of a type. Need to have
    something to assign to etc. when testing constant iterators. */

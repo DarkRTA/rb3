@@ -39,24 +39,13 @@
 #  define _Rb_tree _STLP_NON_DBG_NAME(Rb_tree)
 #endif
 
-// fbp: these defines are for outline methods definitions.
-// needed for definitions to be portable. Should not be used in method bodies.
-#if defined (_STLP_NESTED_TYPE_PARAM_BUG)
-#  define __iterator__  _Rb_tree_iterator<_Value, _STLP_HEADER_TYPENAME _Traits::_NonConstTraits>
-#  define __size_type__ size_t
-#  define iterator __iterator__
-#else
-#  define __iterator__  _STLP_TYPENAME_ON_RETURN_TYPE _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
-#  define __size_type__  _STLP_TYPENAME_ON_RETURN_TYPE _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::size_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rotate_left(_Rb_tree_node_base* __x,
                                  _Rb_tree_node_base*& __root) {
   _Rb_tree_node_base* __y = __x->_M_right;
@@ -75,7 +64,7 @@ _Rb_global<_Dummy>::_Rotate_left(_Rb_tree_node_base* __x,
   __x->_M_parent = __y;
 }
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rotate_right(_Rb_tree_node_base* __x,
                                   _Rb_tree_node_base*& __root) {
   _Rb_tree_node_base* __y = __x->_M_left;
@@ -94,7 +83,7 @@ _Rb_global<_Dummy>::_Rotate_right(_Rb_tree_node_base* __x,
   __x->_M_parent = __y;
 }
 
-template <class _Dummy> void _STLP_CALL
+template <class _Dummy> void
 _Rb_global<_Dummy>::_Rebalance(_Rb_tree_node_base* __x,
                                _Rb_tree_node_base*& __root) {
   __x->_M_color = _S_rb_tree_red;
@@ -139,7 +128,7 @@ _Rb_global<_Dummy>::_Rebalance(_Rb_tree_node_base* __x,
   __root->_M_color = _S_rb_tree_black;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_Rebalance_for_erase(_Rb_tree_node_base* __z,
                                          _Rb_tree_node_base*& __root,
                                          _Rb_tree_node_base*& __leftmost,
@@ -274,7 +263,7 @@ _Rb_global<_Dummy>::_Rebalance_for_erase(_Rb_tree_node_base* __z,
   return __y;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_M_decrement(_Rb_tree_node_base* _M_node) {
   if (_M_node->_M_color == _S_rb_tree_red && _M_node->_M_parent->_M_parent == _M_node)
     _M_node = _M_node->_M_right;
@@ -292,7 +281,7 @@ _Rb_global<_Dummy>::_M_decrement(_Rb_tree_node_base* _M_node) {
   return _M_node;
 }
 
-template <class _Dummy> _Rb_tree_node_base* _STLP_CALL
+template <class _Dummy> _Rb_tree_node_base*
 _Rb_global<_Dummy>::_M_increment(_Rb_tree_node_base* _M_node) {
   if (_M_node->_M_right != 0) {
     _M_node = _Rb_tree_node_base::_S_minimum(_M_node->_M_right);
@@ -346,7 +335,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::operator=(
 // comparison as true)
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::_M_insert(_Rb_tree_node_base * __parent,
                                                                       const _Value& __val,
                                                                       _Rb_tree_node_base * __on_left,
@@ -383,7 +372,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::_M_insert(_Rb_tree_n
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(const _Value& __val) {
   _Base_ptr __y = &this->_M_header._M_data;
   _Base_ptr __x = _M_root();
@@ -401,7 +390,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(const _
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-pair<__iterator__, bool>
+pair<typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator, bool>
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(const _Value& __val) {
   _Base_ptr __y = &this->_M_header._M_data;
   _Base_ptr __x = _M_root();
@@ -428,7 +417,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(const 
 // efficiency.
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(iterator __position,
                                                                           const _Value& __val) {
   if (__position._M_node == this->_M_header._M_data._M_left) { // begin()
@@ -535,7 +524,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_unique(iterat
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-__iterator__
+typename _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc>::iterator
 _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc> ::insert_equal(iterator __position,
                                                                          const _Value& __val) {
   if (__position._M_node == this->_M_header._M_data._M_left) { // begin()
@@ -658,7 +647,7 @@ _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>::_M_erase(_Rb_tree_nod
     _M_erase(_S_right(__x));
     _Base_ptr __y = _S_left(__x);
     _STLP_STD::_Destroy(&_S_value(__x));
-    this->_M_header.deallocate(__STATIC_CAST(_Link_type, __x),1);
+    this->_M_header.deallocate(static_cast<_Link_type>(__x),1);
     __x = __y;
   }
 }
@@ -718,10 +707,9 @@ bool _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>::__rb_verify() co
 _STLP_MOVE_TO_STD_NAMESPACE
 _STLP_END_NAMESPACE
 
-#undef _Rb_tree
-#undef __iterator__
-#undef iterator
-#undef __size_type__
+#if defined (_Rb_tree)
+#  undef _Rb_tree
+#endif
 
 #endif /*  _STLP_TREE_C */
 

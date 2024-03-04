@@ -106,7 +106,7 @@ public:                         // Locale-related member functions.
   inline _CharT widen(char) const;
 
   // Helper function that makes testing for EOF more convenient.
-  static bool _STLP_CALL _S_eof(int_type __c) {
+  static bool _S_eof(int_type __c) {
     const int_type __eof = _Traits::eof();
     return _Traits::eq_int_type(__c, __eof);
   }
@@ -134,35 +134,26 @@ private:                        // Data members
 template <class _CharT, class _Traits>
 inline char
 basic_ios<_CharT, _Traits>::narrow(_CharT __c, char __default) const
-{ return __STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())->narrow(__c, __default); }
+{ return static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())->narrow(__c, __default); }
 
 template <class _CharT, class _Traits>
 inline _CharT
 basic_ios<_CharT, _Traits>::widen(char __c) const
-{ return __STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())->widen(__c); }
+{ return static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())->widen(__c); }
 
-# if !defined (_STLP_NO_METHOD_SPECIALIZATION)
-_STLP_TEMPLATE_NULL
+template<>
 inline char
 basic_ios<char, char_traits<char> >::narrow(char __c, char) const
 {
   return __c;
 }
 
-_STLP_TEMPLATE_NULL
+template<>
 inline char
 basic_ios<char, char_traits<char> >::widen(char __c) const
 {
   return __c;
 }
-# endif /* _STLP_NO_METHOD_SPECIALIZATION */
-
-# if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ios<char, char_traits<char> >;
-#  if ! defined (_STLP_NO_WCHAR_T)
-_STLP_EXPORT_TEMPLATE_CLASS basic_ios<wchar_t, char_traits<wchar_t> >;
-#  endif
-# endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 _STLP_END_NAMESPACE
 
@@ -175,4 +166,3 @@ _STLP_END_NAMESPACE
 // Local Variables:
 // mode:C++
 // End:
-

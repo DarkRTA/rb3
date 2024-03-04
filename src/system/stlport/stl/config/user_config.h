@@ -176,14 +176,6 @@
 */
 
 /*
- * You should define this macro if compiling with MFC - STLport <stl/config/_windows.h>
- * then include <afx.h> instead of <windows.h> to get synchronisation primitives
- */
-/*
-#define _STLP_USE_MFC 1
-*/
-
-/*
  * boris : this setting is here as we cannot detect precense of new Platform SDK automatically
  * If you are using new PSDK with VC++ 6.0 or lower,
  * please define this to get correct prototypes for InterlockedXXX functions
@@ -229,20 +221,6 @@
  */
 /*
 #define _STLP_VERBOSE_AUTO_LINK 1
-*/
-
-/*
- * Use minimum set of default arguments on template classes that have more
- * than one - for example map<>, set<>.
- * This has effect only if _STLP_LIMITED_DEFAULT_TEMPLATES is on.
- * If _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS is set, you'll be able to compile
- * set<T> with those compilers, but you'll have to use __set__<T, less<T>>
- *
- * Affects : map<>, multimap<>, set<>, multiset<>, hash_*<>,
- * queue<>, priority_queue<>, stack<>, istream_iterator<>
- */
-/*
-#define _STLP_MINIMUM_DEFAULT_TEMPLATE_PARAMS 1
 */
 
 /*

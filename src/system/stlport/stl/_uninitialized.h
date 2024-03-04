@@ -66,18 +66,6 @@ inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
                            _OutputIter __result, const input_iterator_tag &, _Distance* __d)
 { return __ucopy(__first, __last, __result, __d); }
 
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIter, class _OutputIter, class _Distance>
-inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
-                           _OutputIter __result, const forward_iterator_tag &, _Distance* __d)
-{ return __ucopy(__first, __last, __result, __d); }
-
-template <class _InputIter, class _OutputIter, class _Distance>
-inline _OutputIter __ucopy(_InputIter __first, _InputIter __last,
-                           _OutputIter __result, const bidirectional_iterator_tag &, _Distance* __d)
-{ return __ucopy(__first, __last, __result, __d); }
-#endif
-
 template <class _RandomAccessIter, class _OutputIter, class _Distance>
 inline _OutputIter __ucopy(_RandomAccessIter __first, _RandomAccessIter __last,
                            _OutputIter __result, const random_access_iterator_tag &, _Distance*) {
@@ -147,17 +135,15 @@ inline char*
 uninitialized_copy(const char* __first, const char* __last, char* __result)
 { return  (char*)_STLP_PRIV __ucopy_trivial(__first, __last, __result); }
 
-#  if defined (_STLP_HAS_WCHAR_T) // dwa 8/15/97
 inline wchar_t*
 uninitialized_copy(const wchar_t* __first, const wchar_t* __last, wchar_t* __result)
 { return  (wchar_t*)_STLP_PRIV __ucopy_trivial (__first, __last, __result); }
-#  endif
 
 // uninitialized_copy_n (not part of the C++ standard)
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template <class _InputIter, class _Size, class _ForwardIter>
-_STLP_INLINE_LOOP
+inline
 pair<_InputIter, _ForwardIter>
 __ucopy_n(_InputIter __first, _Size __count, _ForwardIter __result,
           const input_iterator_tag &) {
@@ -170,22 +156,6 @@ __ucopy_n(_InputIter __first, _Size __count, _ForwardIter __result,
   _STLP_UNWIND(_STLP_STD::_Destroy_Range(__result, __cur))
   _STLP_RET_AFTER_THROW((pair<_InputIter, _ForwardIter>(__first, __cur)))
 }
-
-#  if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _InputIter, class _Size, class _ForwardIterator>
-inline pair<_InputIter, _ForwardIterator>
-__ucopy_n(_InputIter __first, _Size __count,
-                       _ForwardIterator __result,
-                       const forward_iterator_tag &)
-{ return __ucopy_n(__first, __count, __result, input_iterator_tag()); }
-
-template <class _InputIter, class _Size, class _ForwardIterator>
-inline pair<_InputIter, _ForwardIterator>
-__ucopy_n(_InputIter __first, _Size __count,
-                       _ForwardIterator __result,
-                       const bidirectional_iterator_tag &)
-{ return __ucopy_n(__first, __count, __result, input_iterator_tag()); }
-#  endif
 
 template <class _RandomAccessIter, class _Size, class _ForwardIter>
 inline pair<_RandomAccessIter, _ForwardIter>
@@ -229,18 +199,6 @@ inline void __ufill(_ForwardIter __first, _ForwardIter __last,
                     const _Tp& __x, const input_iterator_tag &, _Distance* __d)
 { __ufill(__first, __last, __x, __d); }
 
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _ForwardIter, class _Tp, class _Distance>
-inline void __ufill(_ForwardIter __first, _ForwardIter __last,
-                    const _Tp& __x, const forward_iterator_tag &, _Distance* __d)
-{ __ufill(__first, __last, __x, __d); }
-
-template <class _ForwardIter, class _Tp, class _Distance>
-inline void __ufill(_ForwardIter __first, _ForwardIter __last,
-                    const _Tp& __x, const bidirectional_iterator_tag &, _Distance* __d)
-{ __ufill(__first, __last, __x, __d); }
-#endif
-
 template <class _ForwardIter, class _Tp, class _Distance>
 inline void __ufill(_ForwardIter __first, _ForwardIter __last,
                     const _Tp& __x, const random_access_iterator_tag &, _Distance*) {
@@ -267,16 +225,16 @@ inline void uninitialized_fill(unsigned char* __first, unsigned char* __last,
   unsigned char __tmp = __val;
   memset(__first, __tmp, __last - __first);
 }
-#if !defined (_STLP_NO_SIGNED_BUILTINS)
+
 inline void uninitialized_fill(signed char* __first, signed char* __last,
                                const signed char& __val) {
   signed char __tmp = __val;
-  memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);
+  memset(__first, static_cast<unsigned char>(__tmp), __last - __first);
 }
-#endif
+
 inline void uninitialized_fill(char* __first, char* __last, const char& __val) {
   char __tmp = __val;
-  memset(__first, __STATIC_CAST(unsigned char,__tmp), __last - __first);
+  memset(__first, static_cast<unsigned char>(__tmp), __last - __first);
 }
 
 _STLP_MOVE_TO_PRIV_NAMESPACE
@@ -296,18 +254,6 @@ template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
                               const input_iterator_tag &)
 { return __ufill_n(__first, __n, __x); }
-
-#if defined (_STLP_NONTEMPL_BASE_MATCH_BUG)
-template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
-                              const forward_iterator_tag &)
-{ return __ufill_n(__first, __n, __x); }
-
-template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
-                              const bidirectional_iterator_tag &)
-{ return __ufill_n(__first, __n, __x); }
-#endif
 
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x) {
@@ -414,7 +360,7 @@ __uninitialized_move(_InputIter __first, _InputIter __last, _ForwardIter __resul
 { return __ucopy_ptrs(__first, __last, __result, __trivial_ucpy); }
 
 template <class _InputIter, class _ForwardIter, class _TrivialUCpy>
-_STLP_INLINE_LOOP
+inline
 _ForwardIter
 __uninitialized_move(_InputIter __first, _InputIter __last, _ForwardIter __result,
                      _TrivialUCpy , const __true_type& /*_Movable*/) {

@@ -30,17 +30,6 @@
 #  include <stl/_num_get.h>
 #endif
 
-#if defined ( _STLP_NESTED_TYPE_PARAM_BUG )
-// no wchar_t is supported for this mode
-#  define __BIS_int_type__ int
-#  define __BIS_pos_type__ streampos
-#  define __BIS_off_type__ streamoff
-#else
-#  define __BIS_int_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::int_type
-#  define __BIS_pos_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::pos_type
-#  define __BIS_off_type__ _STLP_TYPENAME_ON_RETURN_TYPE basic_istream<_CharT, _Traits>::off_type
-#endif
-
 _STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
@@ -164,7 +153,7 @@ struct _Scan_for_int_val {
 // return true if the pushback succeeded.  Does not throw.
 
 template <class _CharT, class _Traits>
-bool _STLP_CALL
+bool
 __pushback(basic_streambuf<_CharT, _Traits>* __buf, _CharT __c) {
   bool ret;
   _STLP_TRY {
@@ -182,7 +171,7 @@ __pushback(basic_streambuf<_CharT, _Traits>* __buf, _CharT __c) {
 
 // Helper function for formatted input of numbers.
 template <class _CharT, class _Traits, class _Number>
-ios_base::iostate _STLP_CALL
+ios_base::iostate
 __get_num(basic_istream<_CharT, _Traits>& __that, _Number& __val) {
   typedef typename basic_istream<_CharT, _Traits>::sentry _Sentry;
   ios_base::iostate __err = 0;
@@ -210,8 +199,8 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (shor
   if ( this->fail() ) {
     return *this;
   }
-  short __tmp = __STATIC_CAST(short, __lval);
-  unsigned short __uval = __STATIC_CAST(unsigned short, __lval);
+  short __tmp = static_cast<short>(__lval);
+  unsigned short __uval = static_cast<unsigned short>(__lval);
   // check if we lose digits
   //    if ((__val != __lval) && ((unsigned short)__val != __lval))
   if ((__tmp != __lval) && ((long)__uval != __lval))
@@ -263,43 +252,41 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsi
   return *this;
 }
 
-#if defined (_STLP_LONG_LONG)
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (_STLP_LONG_LONG& __val) {
+basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (long long& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
 
 template <class _CharT, class _Traits>
-basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsigned _STLP_LONG_LONG& __val) {
+basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (unsigned long long& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (float& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (double& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#if !defined (_STLP_NO_LONG_DOUBLE)
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (long double& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
-#if !defined (_STLP_NO_BOOL)
+
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (bool& __val) {
   _STLP_PRIV __get_num(*this, __val);
   return *this;
 }
-#endif
 
 template <class _CharT, class _Traits>
 basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (void*& __val) {
@@ -310,7 +297,7 @@ basic_istream<_CharT, _Traits>& basic_istream<_CharT, _Traits>::operator>> (void
 // Unformatted input
 
 template <class _CharT, class _Traits>
-__BIS_int_type__
+typename basic_istream<_CharT, _Traits>::int_type
 basic_istream<_CharT, _Traits>::peek() {
   typename _Traits::int_type __tmp = _Traits::eof();
 
@@ -333,7 +320,7 @@ basic_istream<_CharT, _Traits>::peek() {
 
 
 template <class _CharT, class _Traits>
-__BIS_int_type__
+typename basic_istream<_CharT, _Traits>::int_type
 basic_istream<_CharT, _Traits>::get() {
   typename _Traits::int_type __tmp = _Traits::eof();
   sentry __sentry(*this, _No_Skip_WS());
@@ -488,7 +475,7 @@ int basic_istream<_CharT, _Traits>::sync() {
 }
 
 template <class _CharT, class _Traits>
-__BIS_pos_type__
+typename basic_istream<_CharT, _Traits>::pos_type
 basic_istream<_CharT, _Traits>::tellg() {
   sentry __sentry(*this, _No_Skip_WS());
 
@@ -573,7 +560,7 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT& __c) {
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template < class _CharT, class _Traits, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __buf,
                   streamsize _Num, _CharT* __s,
                   _Is_Delim __is_delim,
@@ -614,12 +601,12 @@ __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
   }
   _STLP_CATCH_ALL {
     __that->_M_handle_exception(ios_base::badbit);
-    *__s = _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    *__s = _CharT();
     return __n;
   }
 
   if (__append_null)
-    *__s =  _STLP_DEFAULT_CONSTRUCTED(_CharT);
+    *__s =  _CharT();
   if (__status)
     __that->setstate(__status);    // This might throw.
   return __n;
@@ -630,7 +617,7 @@ __read_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
 // such that __is_delim(p) is true.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __buf,
                  streamsize _Num, _CharT* __s,
                  _Is_Delim __is_delim, _Scan_Delim __scan_delim,
@@ -648,7 +635,7 @@ __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, 
       //is larger than ptrdiff_t one.
       _STLP_STATIC_ASSERT((sizeof(streamsize) > sizeof(ptrdiff_t)) ||
                           (sizeof(streamsize) == sizeof(ptrdiff_t)) && numeric_limits<ptrdiff_t>::is_signed)
-      ptrdiff_t __request = __STATIC_CAST(ptrdiff_t, (min) (__STATIC_CAST(streamsize, (numeric_limits<ptrdiff_t>::max)()), _Num - __n));
+      ptrdiff_t __request = static_cast<ptrdiff_t>((min) (static_cast<streamsize>((numeric_limits<ptrdiff_t>::max)()), _Num - __n));
 
       const _CharT* __p  = __scan_delim(__first, __last);
       ptrdiff_t __chunk = (min) (ptrdiff_t(__p - __first), __request);
@@ -698,7 +685,7 @@ __read_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, 
 
   if (__done) {
     if (__append_null)
-        *__s =  _STLP_DEFAULT_CONSTRUCTED(_CharT);
+        *__s =  _CharT();
     if (__status != 0)
       __that->setstate(__status);   // This might throw.
     return __n;
@@ -865,11 +852,11 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT* __s) {
 
     streamsize __n = __buf->gptr() != __buf->egptr()
       ? _STLP_PRIV __read_buffered(this,  __buf, __nmax, __s,
-                                   _STLP_PRIV _Is_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
-                                   _STLP_PRIV _Scan_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                                   _STLP_PRIV _Is_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
+                                   _STLP_PRIV _Scan_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                                    false, true, false)
       : _STLP_PRIV __read_unbuffered(this,  __buf, __nmax, __s,
-                                     _STLP_PRIV _Is_wspace_null<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                                     _STLP_PRIV _Is_wspace_null<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                                      false, true, false);
     if (__n == 0)
       this->setstate(ios_base::failbit);
@@ -883,7 +870,7 @@ void basic_istream<_CharT, _Traits>::_M_formatted_get(_CharT* __s) {
 // __is_delim is true, if and only if __extract_delim is true.
 
 template < class _CharT, class _Traits, class _Is_Delim>
-void _STLP_CALL
+void
 _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
                      basic_streambuf<_CharT, _Traits>* __buf,
                      _Is_Delim __is_delim,
@@ -923,7 +910,7 @@ _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
 // last) such that __is_delim(p) is true.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-void _STLP_CALL
+void
 _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
                    basic_streambuf<_CharT, _Traits>* __buf,
                    _Is_Delim __is_delim, _Scan_Delim __scan_delim,
@@ -978,7 +965,7 @@ _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
 // be minus<>, and for the latter it should return a constant maximum value.
 
 template < class _CharT, class _Traits, class _Max_Chars, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
                      basic_streambuf<_CharT, _Traits>* __buf,
                      streamsize _Num, _Max_Chars __max_chars,
@@ -1020,7 +1007,7 @@ _M_ignore_unbuffered(basic_istream<_CharT, _Traits>* __that,
 }
 
 template < class _CharT, class _Traits, class _Max_Chars, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
                    basic_streambuf<_CharT, _Traits>* __buf,
                    streamsize _Num,
@@ -1037,7 +1024,7 @@ _M_ignore_buffered(basic_istream<_CharT, _Traits>* __that,
       streamsize __m = __max_chars(_Num, __n);
 
       if (__avail >= __m) {       // We have more characters than we need.
-        const _CharT* __last = __buf->_M_gptr() + __STATIC_CAST(ptrdiff_t, __m);
+        const _CharT* __last = __buf->_M_gptr() + static_cast<ptrdiff_t>(__m);
         const _CharT* __p = __scan_delim(__buf->_M_gptr(), __last);
         ptrdiff_t __chunk = __p - __buf->_M_gptr();
         __n += __chunk;
@@ -1188,12 +1175,12 @@ void basic_istream<_CharT, _Traits>::_M_skip_whitespace(bool __set_failbit) {
     this->setstate(ios_base::badbit);
   else if (__buf->gptr() != __buf->egptr())
     _M_ignore_buffered(this,  __buf,
-                       _STLP_PRIV _Is_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
-                       _STLP_PRIV _Scan_for_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                       _STLP_PRIV _Is_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
+                       _STLP_PRIV _Scan_for_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                        false, __set_failbit);
   else
     _M_ignore_unbuffered(this,  __buf,
-                         _STLP_PRIV _Is_not_wspace<_Traits>(__STATIC_CAST(const ctype<_CharT>*, this->_M_ctype_facet())),
+                         _STLP_PRIV _Is_not_wspace<_Traits>(static_cast<const ctype<_CharT>*>(this->_M_ctype_facet())),
                          false, __set_failbit);
 }
 
@@ -1208,7 +1195,7 @@ void basic_istream<_CharT, _Traits>::_M_skip_whitespace(bool __set_failbit) {
 _STLP_MOVE_TO_PRIV_NAMESPACE
 
 template < class _CharT, class _Traits, class _Is_Delim>
-streamsize _STLP_CALL
+streamsize
 __copy_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __src,
                   basic_streambuf<_CharT, _Traits>* __dest,
                   _Is_Delim __is_delim,
@@ -1277,7 +1264,7 @@ __copy_unbuffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT
 // the streambuf might decide to switch from a buffered to an unbuffered mode.
 
 template < class _CharT, class _Traits, class _Is_Delim, class _Scan_Delim>
-streamsize _STLP_CALL
+streamsize
 __copy_buffered(basic_istream<_CharT, _Traits>* __that, basic_streambuf<_CharT, _Traits>* __src,
                 basic_streambuf<_CharT, _Traits>* __dest,
                 _Scan_Delim __scan_delim, _Is_Delim __is_delim,
@@ -1416,10 +1403,6 @@ basic_iostream<_CharT, _Traits>::~basic_iostream()
 {}
 
 _STLP_END_NAMESPACE
-
-#undef __BIS_int_type__
-#undef __BIS_pos_type__
-#undef __BIS_off_type__
 
 #endif /* _STLP_ISTREAM_C */
 

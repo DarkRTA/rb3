@@ -16,14 +16,8 @@
 #ifndef _STLP_INTERNAL_CCTYPE
 #define _STLP_INTERNAL_CCTYPE
 
-#if defined (_STLP_USE_NEW_C_HEADERS)
-#  include _STLP_NATIVE_CPP_C_HEADER(cctype)
-#else
-#  include <ctype.h>
-#endif /* _STLP_USE_NEW_C_HEADERS */
+#include _STLP_NATIVE_CPP_C_HEADER(cctype)
 
-#if ! defined (_STLP_NO_CSTD_FUNCTION_IMPORTS)
-#  if defined ( _STLP_IMPORT_VENDOR_CSTD )
 _STLP_BEGIN_NAMESPACE
 using _STLP_VENDOR_CSTD::isalnum;
 using _STLP_VENDOR_CSTD::isalpha;
@@ -39,7 +33,5 @@ using _STLP_VENDOR_CSTD::isxdigit;
 using _STLP_VENDOR_CSTD::tolower;
 using _STLP_VENDOR_CSTD::toupper;
 _STLP_END_NAMESPACE
-#  endif /* _STLP_IMPORT_VENDOR_CSTD*/
-#endif /* _STLP_NO_CSTD_FUNCTION_IMPORTS */
 
 #endif
