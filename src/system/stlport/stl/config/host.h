@@ -2,6 +2,9 @@
  * This file defines site configuration.
  */
 
+// Required for symbols to match
+#define _STLP_DONT_USE_PRIV_NAMESPACE
+
 /*
  * _STLP_NO_THREADS: if defined, STLport don't use any
  * multithreading support. Synonym is _NOTHREADS

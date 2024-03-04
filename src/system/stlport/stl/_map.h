@@ -67,7 +67,7 @@ public:
   };
 
 protected:
-  typedef _STLP_PRIV::_MapTraitsT<value_type> _MapTraits;
+  typedef _STLP_PRIV_FORCE::_MapTraitsT<value_type> _MapTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
@@ -213,7 +213,7 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_MultimapTraitsT<value_type> _MultimapTraits;
+  typedef _STLP_PRIV_FORCE::_MultimapTraitsT<value_type> _MultimapTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.

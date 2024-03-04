@@ -45,7 +45,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_UnorderedMapTraitsT<value_type> _UnorderedMapTraits;
+  typedef _STLP_PRIV_FORCE::_UnorderedMapTraitsT<value_type> _UnorderedMapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _UnorderedMapTraits,

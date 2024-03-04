@@ -55,7 +55,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_SetTraitsT<value_type> _SetTraits;
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<value_type> _SetTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
@@ -180,7 +180,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_MultisetTraitsT<value_type> _MultisetTraits;
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<value_type> _MultisetTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.

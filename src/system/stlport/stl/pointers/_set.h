@@ -47,12 +47,12 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_SetTraitsT<value_type> _SetTraits;
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<value_type> _SetTraits;
   typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
                               value_type, _STLP_PRIV::_Identity<value_type>,
                               _SetTraits, _Alloc> _Priv_Rep_type;
 
-  typedef _STLP_PRIV::_SetTraitsT<_KeyStorageType> _SetStorageTraits;
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<_KeyStorageType> _SetStorageTraits;
 
 public:
   //dums: need the following public for the __move_traits framework
@@ -245,12 +245,12 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_MultisetTraitsT<value_type> _MultisetTraits;
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<value_type> _MultisetTraits;
   typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
                               value_type, _STLP_PRIV::_Identity<value_type>,
                               _MultisetTraits, _Alloc> _Priv_Rep_type;
 
-  typedef _STLP_PRIV::_MultisetTraitsT<_KeyStorageType> _MultisetStorageTraits;
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<_KeyStorageType> _MultisetStorageTraits;
 public:
   //dums: need the following public for the __move_traits framework
   typedef _STLP_PRIV::_Rb_tree<_KeyStorageType, _CompareStorageType,

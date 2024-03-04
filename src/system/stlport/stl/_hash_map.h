@@ -55,7 +55,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_HashMapTraitsT<value_type> _HashMapTraits;
+  typedef _STLP_PRIV_FORCE::_HashMapTraitsT<value_type> _HashMapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _HashMapTraits,

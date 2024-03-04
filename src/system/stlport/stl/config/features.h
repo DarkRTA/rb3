@@ -327,8 +327,10 @@
 
 namespace _STLP_STD { }
 
+#  define _STLP_PRIV_FORCE stlp_priv
+
 #  if !defined (_STLP_DONT_USE_PRIV_NAMESPACE)
-#    define _STLP_PRIV stlp_priv
+#    define _STLP_PRIV _STLP_PRIV_FORCE
 namespace _STLP_PRIV {
   using namespace _STLP_STD;
 }

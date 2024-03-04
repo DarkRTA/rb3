@@ -224,12 +224,12 @@ struct _##Motif : public _STLP_STD::_Nonconst_##Traits<_Tp> {    \
 };
 
 #define _STLP_CREATE_ITERATOR_TRAITS(Motif, Traits)             \
-} namespace _STLP_PRIV {                                   \
+} namespace _STLP_PRIV_FORCE {                                  \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(Motif, Traits)                \
 } namespace _STLP_STD {
 
 #define _STLP_CREATE_HASH_ITERATOR_TRAITS(Motif, Traits)        \
-} namespace _STLP_PRIV {                                    \
+} namespace _STLP_PRIV_FORCE {                                  \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(NonLocal##Motif, Traits)      \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(Local##Motif, Traits)         \
 template <class _Tp>                                            \
