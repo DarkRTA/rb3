@@ -15,7 +15,7 @@ void MetaMusicScene::Configure(DataArray* i_pConfig){
     m_symName = i_pConfig->Sym(0);
     DataArray* screens_found = i_pConfig->FindArray(screens, false);
     if(screens_found){
-        for(int i = 0; i < m_lScreens.size(); i++){
+        for(int i = 1; i < screens_found->Size(); i++){
             m_lScreens.push_back(screens_found->Sym(i));
         }
     }
