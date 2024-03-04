@@ -30,25 +30,21 @@
 
 #include _STLP_NATIVE_CPP_RUNTIME_HEADER(exception)
 
-#if defined (_STLP_USE_OWN_NAMESPACE)
+namespace _STLP_STD {
 
-_STLP_BEGIN_NAMESPACE
+using _STLP_VENDOR_STD::exception;
+using _STLP_VENDOR_STD::bad_exception;
 
-using _STLP_VENDOR_EXCEPT_STD::exception;
-using _STLP_VENDOR_EXCEPT_STD::bad_exception;
+using _STLP_VENDOR_STD::unexpected;
+using _STLP_VENDOR_STD::unexpected_handler;
+using _STLP_VENDOR_STD::set_unexpected;
 
-using _STLP_VENDOR_EXCEPT_STD::unexpected;
-using _STLP_VENDOR_EXCEPT_STD::unexpected_handler;
-using _STLP_VENDOR_EXCEPT_STD::set_unexpected;
+using _STLP_VENDOR_STD::terminate;
+using _STLP_VENDOR_STD::terminate_handler;
+using _STLP_VENDOR_STD::set_terminate;
 
-using _STLP_VENDOR_EXCEPT_STD::terminate;
-using _STLP_VENDOR_EXCEPT_STD::terminate_handler;
-using _STLP_VENDOR_EXCEPT_STD::set_terminate;
+using _STLP_VENDOR_STD::uncaught_exception;
 
-using _STLP_VENDOR_EXCEPT_STD::uncaught_exception;
-
-_STLP_END_NAMESPACE
-
-#endif /* _STLP_OWN_NAMESPACE */
+}
 
 #endif /* _STLP_INTERNAL_EXCEPTION */

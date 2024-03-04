@@ -19,8 +19,6 @@
 #ifndef _STLP_INTERNAL_STDEXCEPT_BASE
 #define _STLP_INTERNAL_STDEXCEPT_BASE
 
-#if !defined (_STLP_USE_NATIVE_STDEXCEPT) || defined (_STLP_USE_OWN_NAMESPACE)
-
 #  ifndef _STLP_INTERNAL_EXCEPTION
 #    include <stl/_exception.h>
 #  endif
@@ -39,17 +37,11 @@
 #      define _STLP_OWN_STDEXCEPT 1
 #    endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
-#    if !defined (_STLP_NO_EXCEPTION_HEADER)
-#      if !defined (_STLP_EXCEPTION_BASE) && \
-           defined (_STLP_USE_NAMESPACES) &&  defined (_STLP_USE_OWN_NAMESPACE)
-using _STLP_VENDOR_EXCEPT_STD::exception;
-#      endif
-#    endif
-#    define _STLP_EXCEPTION_BASE exception
+using _STLP_VENDOR_STD::exception;
 
-class __Named_exception : public _STLP_EXCEPTION_BASE {
+class __Named_exception : public exception {
 public:
   __Named_exception(const string& __str)
 #    ifndef _STLP_USE_NO_IOSTREAMS
@@ -59,10 +51,10 @@ public:
 #    else
   {
 #      if !defined (_STLP_USE_SAFE_STRING_FUNCTIONS)
-    strncpy(_M_name, _STLP_PRIV __get_c_string(__str), _S_bufsize);
+    strncpy(_M_name, _STLP_PRIV::__get_c_string(__str), _S_bufsize);
     _M_name[_S_bufsize - 1] = '\0';
 #      else
-    strncpy_s(_STLP_ARRAY_AND_SIZE(_M_name), _STLP_PRIV __get_c_string(__str), _TRUNCATE);
+    strncpy_s(_STLP_ARRAY_AND_SIZE(_M_name), _STLP_PRIV::__get_c_string(__str), _TRUNCATE);
 #      endif
   }
   const char* what() const _STLP_NOTHROW_INHERENTLY { return _M_name; }
@@ -78,9 +70,8 @@ private:
 #      undef _STLP_DO_WARNING_POP
 #    endif
 
-_STLP_END_NAMESPACE
+}
 
-#  endif /* Not o32, and no exceptions */
-#endif /* _STLP_STDEXCEPT_SEEN */
+#  endif /*No exceptions */
 
 #endif /* _STLP_INTERNAL_STDEXCEPT_BASE */

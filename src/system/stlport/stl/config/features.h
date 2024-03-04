@@ -43,7 +43,7 @@
 
 /* Other macros defined by this file:
 
- * namespace-related macros (_STLP_STD, _STLP_BEGIN_NAMESPACE, etc.)
+ * namespace-related macros (_STLP_STD, _STLP_PRIV, etc.)
  * exception-related macros (_STLP_TRY, _STLP_UNWIND, etc.)
  * _STLP_ASSERT, either as a test or as a null macro, depending on
    whether or not _STLP_ASSERTIONS is defined.
@@ -87,13 +87,6 @@
 #include <stl/config/_system.h>
 
 /* ========================================================= */
-
-/* some fixes to configuration. This also includes modifications
- * of STLport switches depending on compiler flags,
- * or settings applicable to a group of compilers, such as
- * to all who use EDG front-end.
- */
-#include <stl/config/stl_confix.h>
 
 #ifdef _STLP_USE_BOOST_SUPPORT
 /* We are going to use the boost library support. To limit the problem
@@ -160,16 +153,6 @@
  * final workaround tuning based on given flags
  * ========================================================== */
 
-#if !defined (_STLP_HAS_NO_NAMESPACES)
-#  if defined _STLP_NO_NAMESPACES
-#    undef _STLP_USE_NAMESPACES
-#  else
-/* assume it as the default, turn it off later if NO_NAMESPACES selected */
-#    undef _STLP_USE_NAMESPACES
-#    define _STLP_USE_NAMESPACES 1
-#  endif
-#endif
-
 #if defined (_STLP_NO_IOSTREAMS)
 #  define _STLP_USE_NO_IOSTREAMS
 #endif
@@ -194,14 +177,6 @@
 /*  if we are rebuilding right now, place everything here */
 #  undef  _STLP_DESIGNATED_DLL
 #  define _STLP_DESIGNATED_DLL 1
-#endif
-
-/* Use own namespace always if possible and not explicitly instructed otherwise */
-#if defined (_STLP_USE_NAMESPACES) && !defined (_STLP_NO_OWN_NAMESPACE)
-#  undef  _STLP_USE_OWN_NAMESPACE
-#  define _STLP_USE_OWN_NAMESPACE  1
-#else
-#  undef _STLP_WHOLE_NATIVE_STD
 #endif
 
 #if !defined (_NOTHREADS) && !defined (_STLP_THREADS_DEFINED)
@@ -303,18 +278,6 @@
 #  define _STLP_PTR_IMPL_NAME(X) _##X##_impl
 #endif
 
-/* this always mean the C library is in global namespace */
-#if defined (_STLP_HAS_NO_NEW_C_HEADERS) && !defined (_STLP_VENDOR_GLOBAL_CSTD)
-#  define _STLP_VENDOR_GLOBAL_CSTD 1
-#endif
-
-/* Depending of whether compiler supports namespaces,
- * tune the parameters for vendor-supplied libraries.
- * This section is guarded by _STLP_HAS_NO_NAMESPACES, not by _STLP_USE_NAMESPACES,
- * since it depends only on the native features, not on user's preference whether
- * to use namespace for STLport or not.
- */
-#if !defined (_STLP_HAS_NO_NAMESPACES)
 /* Import some vendor's headers into corresponding STLport ones if they might be needed
  * (if we wrap native iostreams and use namepace other than std::) */
 #  if defined (_STLP_WHOLE_NATIVE_STD)
@@ -322,64 +285,22 @@
 #    undef   _STLP_MINIMUM_IMPORT_STD
 #  endif
 
-#  define _STLP_USING_NAMESPACE(x) using namespace x ;
-
-namespace std { }
-namespace __std_alias = std;
-
 /* assume std:: namespace for C++ std library if not being told otherwise */
-#  if defined (_STLP_VENDOR_GLOBAL_STD)
-#    define _STLP_VENDOR_STD
-#  else
-#    define _STLP_VENDOR_STD __std_alias
-#  endif
+#    define _STLP_VENDOR_STD std
 
-/* tune things that come from C library */
-#  if  defined (_STLP_VENDOR_GLOBAL_CSTD)
-/*  in old-style headers, C functions go to global scope. */
-#    define _STLP_VENDOR_CSTD
-#    define _STLP_USING_VENDOR_CSTD
-#  else
-#    define _STLP_VENDOR_CSTD  _STLP_VENDOR_STD
-#    define _STLP_USING_VENDOR_CSTD _STLP_USING_NAMESPACE(_STLP_VENDOR_CSTD)
-#  endif /* _STLP_VENDOR_CSTD */
-/* exception, typeinfo, new - always come from the vendor */
-#  if !defined (_STLP_VENDOR_EXCEPT_STD)
-#    if defined (_STLP_VENDOR_GLOBAL_EXCEPT_STD)
-#      define _STLP_VENDOR_EXCEPT_STD
-#    else
-#      define _STLP_VENDOR_EXCEPT_STD _STLP_VENDOR_STD
-#    endif
-#  endif
-#  define _STLP_OLD_IO_NAMESPACE
-#  if !defined (_STLP_VENDOR_MB_NAMESPACE)
-#    define _STLP_VENDOR_MB_NAMESPACE _STLP_VENDOR_CSTD
-#  endif
-#else
-/* compiler has no namespace support */
-#  define _STLP_VENDOR_STD
-#  define _STLP_VENDOR_CSTD
-#  define _STLP_USING_NAMESPACE(x)
-#  define _STLP_USING_VENDOR_CSTD
-#  define _STLP_VENDOR_EXCEPT_STD
-#endif
-
-#if defined (_STLP_USE_NAMESPACES)
-
-#  if defined (_STLP_USE_OWN_NAMESPACE)
-#    if !defined (_STLP_STD_NAME)
+#    if !defined (_STLP_STD)
 #      if !defined (_STLP_DEBUG)
 #        if !defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpmtx_std
+#            define _STLP_STD  stlpmtx_std
 #          else
-#            define _STLP_STD_NAME  stlp_std
+#            define _STLP_STD  stlp_std
 #          endif
 #        else
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpxmtx_std
+#            define _STLP_STD  stlpxmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpx_std
+#            define _STLP_STD  stlpx_std
 #          endif
 #        endif
 #      else
@@ -390,106 +311,44 @@ namespace __std_alias = std;
  */
 #        if !defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpdmtx_std
+#            define _STLP_STD  stlpdmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpd_std
+#            define _STLP_STD  stlpd_std
 #          endif
 #        else
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpdxmtx_std
+#            define _STLP_STD  stlpdxmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpdx_std
+#            define _STLP_STD  stlpdx_std
 #          endif
 #        endif
 #      endif
 #    endif
-namespace _STLP_STD_NAME { }
-#  else
-#    if defined (_STLP_DEBUG)
-namespace stdD = std;
-#    endif
-#    define _STLP_STD_NAME std
-#  endif /* _STLP_USE_OWN_NAMESPACE */
 
-#  if !defined (_STLP_USING_NAMESPACE_BUG)
-#    define _STLP_PRIV_NAME stlp_priv
-namespace _STLP_PRIV_NAME {
-  using namespace _STLP_STD_NAME;
-}
-#  else
-#    define _STLP_PRIV_NAME priv
-#  endif
+namespace _STLP_STD { }
 
-#  define _STLP_BEGIN_NAMESPACE namespace _STLP_STD_NAME {
-#  define _STLP_END_NAMESPACE }
+#  define _STLP_PRIV_FORCE stlp_priv
 
 #  if !defined (_STLP_DONT_USE_PRIV_NAMESPACE)
-#    if !defined (_STLP_USING_NAMESPACE_BUG)
-/* We prefer to make private namespace a totaly seperated namespace...
- */
-#      define _STLP_PRIV ::_STLP_PRIV_NAME::
-#      define _STLP_MOVE_TO_PRIV_NAMESPACE } namespace _STLP_PRIV_NAME {
-#      define _STLP_MOVE_TO_STD_NAMESPACE } namespace _STLP_STD_NAME {
-#    else
-/* but sometimes we can't:
- */
-#      define _STLP_PRIV _STLP_PRIV_NAME::
-#      define _STLP_MOVE_TO_PRIV_NAMESPACE namespace _STLP_PRIV_NAME {
-#      define _STLP_MOVE_TO_STD_NAMESPACE }
-#    endif
+#    define _STLP_PRIV _STLP_PRIV_FORCE
+namespace _STLP_PRIV {
+  using namespace _STLP_STD;
+}
 #  else
-#    define _STLP_PRIV
-#    define _STLP_MOVE_TO_PRIV_NAMESPACE
-#    define _STLP_MOVE_TO_STD_NAMESPACE
+#    define _STLP_PRIV _STLP_STD
 #  endif
 
 /* decide whether or not we use separate namespace for rel ops */
-#  if defined (_STLP_NO_RELOPS_NAMESPACE)
-#    define _STLP_BEGIN_RELOPS_NAMESPACE _STLP_BEGIN_NAMESPACE namespace rel_ops {}
-#    define _STLP_END_RELOPS_NAMESPACE }
-#  else
+#  if !defined (_STLP_NO_RELOPS_NAMESPACE)
 /* Use std::rel_ops namespace */
-#    define _STLP_BEGIN_RELOPS_NAMESPACE _STLP_BEGIN_NAMESPACE namespace rel_ops {
-#    define _STLP_END_RELOPS_NAMESPACE } }
 #    define _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 #  endif /* Use std::rel_ops namespace */
-
-#  define _STLP_STD ::_STLP_STD_NAME
 
 /* Official STLport namespace when std is not redefined.
  * Here we don't use a macro as stlport is used as file name by boost
  * and folder name under beos:
  */
-namespace stlport = _STLP_STD_NAME;
-
-/* Backward compatibility:
- */
-namespace _STL = _STLP_STD_NAME;
-#undef __STLPORT_NAMESPACE
-#define __STLPORT_NAMESPACE _STLP_STD_NAME
-
-#else /* _STLP_USE_NAMESPACES */
-/* STLport is being put into global namespace */
-#  define _STLP_STD
-#  define _STLP_PRIV
-#  define _STLP_BEGIN_NAMESPACE
-#  define _STLP_END_NAMESPACE
-#  define _STLP_MOVE_TO_PRIV_NAMESPACE
-#  define _STLP_MOVE_TO_STD_NAMESPACE
-
-/* boris : it was found out that _STLP_USE_SEPARATE_RELOPS_NAMESPACE
-   causes less problems than having relational operator templates in global namespace
-   Please define _STLP_NO_RELOPS_NAMESPACE in config/user_config.h if your code rely on them. */
-#  if !defined (_STLP_NO_RELOPS_NAMESPACE)
-#    define _STLP_USE_SEPARATE_RELOPS_NAMESPACE
-#  endif
-#  define _STLP_BEGIN_RELOPS_NAMESPACE
-#  define _STLP_END_RELOPS_NAMESPACE
-#  undef  _STLP_USE_OWN_NAMESPACE
-#endif  /* _STLP_USE_NAMESPACES */
-
-#define STLPORT_CSTD _STLP_VENDOR_CSTD
-#define STLPORT      _STLP_STD_NAME
+namespace stlport = _STLP_STD;
 
 /* advanced keywords usage */
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)
@@ -648,10 +507,6 @@ namespace _STL = _STLP_STD_NAME;
 #  define _STLP_EXPOSE_GLOBALS_IMPLEMENTATION
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-#ifndef _STLP_USE_NO_IOSTREAMS
-#  define _STLP_NEW_IO_NAMESPACE _STLP_STD
-#endif
-
 #ifdef _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 #  define _STLP_RELOPS_OPERATORS(_TMPL, _TP) \
 _TMPL inline bool operator!=(const _TP& __x, const _TP& __y) {return !(__x == __y);}\
@@ -665,8 +520,5 @@ _TMPL inline bool operator>=(const _TP& __x, const _TP& __y) { return !(__x < __
 /* A really useful macro */
 #define _STLP_ARRAY_SIZE(A) sizeof(A) / sizeof(A[0])
 #define _STLP_ARRAY_AND_SIZE(A) A, sizeof(A) / sizeof(A[0])
-
-/* some cleanup */
-#undef __AUTO_CONFIGURED
 
 #endif /* _STLP_FEATURES_H */

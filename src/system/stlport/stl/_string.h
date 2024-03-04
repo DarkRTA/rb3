@@ -74,7 +74,7 @@
 
 #include <stl/_string_base.h>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // ------------------------------------------------------------
 // Class basic_string.
@@ -99,14 +99,16 @@ struct _String_reserve_t {};
 #endif
 
 #if defined (basic_string)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 template <class _CharT, class _Traits, class _Alloc>
-class basic_string : protected _STLP_PRIV _String_base<_CharT,_Alloc>
+class basic_string : protected _STLP_PRIV::_String_base<_CharT,_Alloc>
 {
 protected:                        // Protected members inherited from base.
-  typedef _STLP_PRIV _String_base<_CharT,_Alloc> _Base;
+  typedef _STLP_PRIV::_String_base<_CharT,_Alloc> _Base;
   typedef basic_string<_CharT, _Traits, _Alloc> _Self;
   // fbp : used to optimize char/wchar_t cases
   typedef typename _IsIntegral<_CharT>::_Ret _Char_Is_Integral;
@@ -141,19 +143,19 @@ public:                         // Constructor, destructor, assignment.
   { return (const allocator_type&)this->_M_end_of_storage; }
 
   explicit basic_string(const allocator_type& __a = allocator_type())
-      : _STLP_PRIV _String_base<_CharT,_Alloc>(__a, _Base::_DEFAULT_SIZE)
+      : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a, _Base::_DEFAULT_SIZE)
   { _M_terminate_string(); }
 
   basic_string(_Reserve_t, size_t __n,
                const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a, __n + 1)
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a, __n + 1)
   { _M_terminate_string(); }
 
   basic_string(const _Self&);
 
   basic_string(const _Self& __s, size_type __pos, size_type __n = npos,
                const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a) {
     if (__pos > __s.size())
       this->_M_throw_out_of_range();
     else
@@ -163,7 +165,7 @@ public:                         // Constructor, destructor, assignment.
 
   basic_string(const _CharT* __s, size_type __n,
                const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a) {
       _M_range_initialize(__s, __s + __n);
     }
 
@@ -172,7 +174,7 @@ public:                         // Constructor, destructor, assignment.
 
   basic_string(size_type __n, _CharT __c,
                const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a, __n + 1) {
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a, __n + 1) {
 #if defined (_STLP_USE_SHORT_STRING_OPTIM)
     if (this->_M_using_static_buf()) {
       _Traits::assign(this->_M_Start(), __n, __c);
@@ -180,19 +182,19 @@ public:                         // Constructor, destructor, assignment.
     }
     else
 #endif
-    this->_M_finish = _STLP_PRIV __uninitialized_fill_n(this->_M_Start(), __n, __c);
+    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __c);
     _M_terminate_string();
   }
 
   basic_string(__move_source<_Self> src)
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__move_source<_Base>(src.get())) {}
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__move_source<_Base>(src.get())) {}
 
   // Check to see if _InputIterator is an integer type.  If so, then
   // it can't be an iterator.
   template <class _InputIterator>
   basic_string(_InputIterator __f, _InputIterator __l,
                const allocator_type & __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
     _M_initialize_dispatch(__f, __l, _Integral());
   }
@@ -200,7 +202,7 @@ public:                         // Constructor, destructor, assignment.
 #if !defined (_STLP_NO_EXTENSIONS)
   basic_string(const _CharT* __f, const _CharT* __l,
                const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _String_base<_CharT,_Alloc>(__a) {
+    : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a) {
     _M_range_initialize(__f, __l);
   }
 #endif
@@ -248,7 +250,7 @@ private:
     }
     else
 #endif /* _STLP_USE_SHORT_STRING_OPTIM */
-    this->_M_finish = _STLP_PRIV __uninitialized_fill_n(this->_M_Start(), __n, __x);
+    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __x);
     this->_M_terminate_string();
   }
 
@@ -1139,24 +1141,26 @@ public:                        // Helper functions for compare.
     return cmp != 0 ? cmp : (__n1 < __n2 ? -1 : (__n1 > __n2 ? 1 : 0));
   }
 #if defined (_STLP_USE_TEMPLATE_EXPRESSION) && !defined (_STLP_DEBUG)
-#  define _STLP_STRING_SUM_BASE(__reserve, __size, __alloc) _STLP_PRIV _String_base<_CharT,_Alloc>(__alloc, __size + 1)
+#  define _STLP_STRING_SUM_BASE(__reserve, __size, __alloc) _STLP_PRIV::_String_base<_CharT,_Alloc>(__alloc, __size + 1)
 #  include <stl/_string_sum_methods.h>
 #  undef _STLP_STRING_SUM_BASE
 #endif /* _STLP_USE_TEMPLATE_EXPRESSION */
 };
 
 #if defined (basic_string)
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #  undef basic_string
 #endif
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_DEBUG)
 #  include <stl/debug/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // ------------------------------------------------------------
 // Non-member functions.
@@ -1174,7 +1178,9 @@ struct __move_traits<basic_string<_CharT, _Traits, _Alloc> > {
   typedef typename __move_traits<_Alloc>::complete complete;
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _CharT, class _Traits, class _Alloc>
 void _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
@@ -1183,9 +1189,7 @@ void _S_string_copy(const basic_string<_CharT,_Traits,_Alloc>& __s,
 inline const char*
 __get_c_string(const string& __str) { return __str.c_str(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #include <stl/_string_operators.h>
 

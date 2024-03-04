@@ -24,13 +24,13 @@
 #  include <stl/pointers/_tools.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
 #define VECTOR_IMPL _STLP_PTR_IMPL_NAME(Vector)
 
 #if defined (_STLP_DEBUG)
 #  define vector _STLP_NON_DBG_NAME(vector)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
+#else
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
@@ -42,12 +42,12 @@ class vector
    * So vector implementation will always use a qualified void pointer type and
    * won't use iterator wrapping.
    */
-  typedef typename _STLP_PRIV _StorageType<_Tp>::_QualifiedType _StorageType;
+  typedef typename _STLP_PRIV::_StorageType<_Tp>::_QualifiedType _StorageType;
   typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
+  typedef _STLP_PRIV::VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
 
-  typedef _STLP_PRIV _CastTraits<_StorageType, _Tp> cast_traits;
+  typedef _STLP_PRIV::_CastTraits<_StorageType, _Tp> cast_traits;
 
 public:
   typedef _Tp value_type;
@@ -166,13 +166,12 @@ private:
   _Base _M_impl;
 };
 
+}
+
 #if defined (vector)
 #  undef vector
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
 #undef VECTOR_IMPL
-
-_STLP_END_NAMESPACE
 
 #endif /* _STLP_SPECIALIZED_VECTOR_H */

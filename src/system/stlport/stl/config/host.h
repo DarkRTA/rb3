@@ -2,6 +2,9 @@
  * This file defines site configuration.
  */
 
+// Required for symbols to match
+#define _STLP_DONT_USE_PRIV_NAMESPACE
+
 /*
  * _STLP_NO_THREADS: if defined, STLport don't use any
  * multithreading support. Synonym is _NOTHREADS
@@ -88,14 +91,6 @@
 /*
 #undef _STLP_NATIVE_CPP_RUNTIME_INCLUDE_PATH
 #define _STLP_NATIVE_CPP_RUNTIME_INCLUDE_PATH _STLP_NATIVE_INCLUDE_PATH
-*/
-
-/*
- * If namespases available, STLport use own namespace (and masquerade
- * it as std). Disable own namespace may cause undefined behaviour.
- */
-/*
-#define _STLP_NO_OWN_NAMESPACE  1
 */
 
 /*
@@ -187,14 +182,6 @@
  * Uncomment that to disable exception handling code
  */
 #define _STLP_DONT_USE_EXCEPTIONS 1
-
-/*
- * _STLP_NO_NAMESPACES: if defined, don't put the library in namespace
- * stlport:: or std::, even if the compiler supports namespaces
- */
-/*
-#define _STLP_NO_NAMESPACES 1
-*/
 
 /*==========================================================
  * Compatibility section

@@ -36,7 +36,7 @@
 
 #if !defined (_STLP_USE_PTR_SPECIALIZATIONS)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_ITERATOR_TRAITS(SetTraitsT, Const_traits)
@@ -55,12 +55,12 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _SetTraitsT<value_type> _SetTraits;
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<value_type> _SetTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Identity<value_type>,
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Identity<value_type>,
                               _SetTraits, _Alloc> _Rep_type;
 
   typedef typename _Rep_type::pointer pointer;
@@ -180,12 +180,12 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _MultisetTraitsT<value_type> _MultisetTraits;
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<value_type> _MultisetTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Identity<value_type>,
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Identity<value_type>,
                               _MultisetTraits, _Alloc> _Rep_type;
 
   typedef typename _Rep_type::pointer pointer;
@@ -284,7 +284,7 @@ public:
 
 #else
 #  include <stl/pointers/_set.h>
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 #endif /* _STLP_USE_PTR_SPECIALIZATIONS */
 
 #define _STLP_TEMPLATE_HEADER template <class _Key, class _Compare, class _Alloc>
@@ -298,15 +298,15 @@ _STLP_BEGIN_NAMESPACE
 
 template <class _Key, class _Compare, class _Alloc>
 struct __move_traits<set<_Key,_Compare,_Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename set<_Key,_Compare,_Alloc>::_Rep_type>
+  _STLP_PRIV::__move_traits_aux<typename set<_Key,_Compare,_Alloc>::_Rep_type>
 {};
 
 template <class _Key, class _Compare, class _Alloc>
 struct __move_traits<multiset<_Key,_Compare,_Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename multiset<_Key,_Compare,_Alloc>::_Rep_type>
+  _STLP_PRIV::__move_traits_aux<typename multiset<_Key,_Compare,_Alloc>::_Rep_type>
 {};
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_SET_H */
 

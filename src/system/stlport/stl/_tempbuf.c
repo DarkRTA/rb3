@@ -30,7 +30,7 @@
 # include <stl/_tempbuf.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp>
 pair<_Tp*, ptrdiff_t>
@@ -48,7 +48,7 @@ __get_temporary_buffer(ptrdiff_t __len, _Tp*)
 
   return pair<_Tp*, ptrdiff_t>((_Tp*)0, 0);
 }
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_TEMPBUF_C */
 

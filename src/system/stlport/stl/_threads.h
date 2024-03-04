@@ -61,10 +61,8 @@
 typedef long __stl_atomic_t;
 #else
 /* Don't import whole namespace!!!! - ptr */
-// # if defined (_STLP_USE_NAMESPACES) && ! defined (_STLP_VENDOR_GLOBAL_CSTD)
-// // using _STLP_VENDOR_CSTD::size_t;
-// using namespace _STLP_VENDOR_CSTD;
-// # endif
+// // using _STLP_VENDOR_STD::size_t;
+// using namespace _STLP_VENDOR_STD;
 typedef size_t __stl_atomic_t;
 #endif
 
@@ -193,9 +191,7 @@ inline long _STLP_atomic_add_gcc_x86(long volatile* p, long addend) {
 #    ifndef _STLP_INTERNAL_CTIME
 #      include <stl/_ctime.h>
 #    endif
-#    if defined (_STLP_USE_NAMESPACES) && ! defined (_STLP_VENDOR_GLOBAL_CSTD)
-using _STLP_VENDOR_CSTD::time_t;
-#    endif
+using _STLP_VENDOR_STD::time_t;
 #    include <synch.h>
 #    include <cstdio>
 #    include <cwchar>
@@ -258,7 +254,7 @@ using _STLP_VENDOR_CSTD::time_t;
 #  endif
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #if defined (_STLP_THREADS) && !defined (_STLP_USE_PTHREAD_SPINLOCK)
 // Helper struct.  This is a workaround for various compilers that don't
@@ -687,7 +683,7 @@ inline void _STLP_mutex_base::_M_acquire_lock() {
 }
 #endif
 
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_threads.c>

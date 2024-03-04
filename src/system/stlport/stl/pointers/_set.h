@@ -23,7 +23,7 @@
 #  include <stl/pointers/_tools.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_ITERATOR_TRAITS(SetTraitsT, Const_traits)
@@ -32,11 +32,11 @@ template <class _Key, class _Compare = less<_Key>,
                       class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Key) >
 class set
 {
-  typedef _STLP_PRIV _AssocStorageTypes<_Key, _Compare> _AssocStorageTypes;
+  typedef _STLP_PRIV::_AssocStorageTypes<_Key, _Compare> _AssocStorageTypes;
   typedef typename _AssocStorageTypes::_KeyStorageType _KeyStorageType;
   typedef typename _AssocStorageTypes::_CompareStorageType _CompareStorageType;
   typedef typename _Alloc_traits<_KeyStorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV _CastTraits<_KeyStorageType, _Key> cast_traits;
+  typedef _STLP_PRIV::_CastTraits<_KeyStorageType, _Key> cast_traits;
 
   typedef set<_Key, _Compare, _Alloc> _Self;
 public:
@@ -47,17 +47,17 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _SetTraitsT<value_type> _SetTraits;
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Identity<value_type>,
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<value_type> _SetTraits;
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Identity<value_type>,
                               _SetTraits, _Alloc> _Priv_Rep_type;
 
-  typedef _STLP_PRIV _SetTraitsT<_KeyStorageType> _SetStorageTraits;
+  typedef _STLP_PRIV_FORCE::_SetTraitsT<_KeyStorageType> _SetStorageTraits;
 
 public:
   //dums: need the following public for the __move_traits framework
-  typedef _STLP_PRIV _Rb_tree<_KeyStorageType, _CompareStorageType,
-                              _KeyStorageType, _STLP_PRIV _Identity<_KeyStorageType>,
+  typedef _STLP_PRIV::_Rb_tree<_KeyStorageType, _CompareStorageType,
+                              _KeyStorageType, _STLP_PRIV::_Identity<_KeyStorageType>,
                               _SetStorageTraits, _StorageTypeAlloc> _Rep_type;
 
 private:
@@ -103,8 +103,8 @@ public:
   set(_InputIterator __first, _InputIterator __last)
     : _M_t(_Compare(), _StorageTypeAlloc()) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_unique(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                       typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_unique(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                       typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_unique(__first, __last);
 #  endif
@@ -115,8 +115,8 @@ public:
       const allocator_type& __a = allocator_type())
     : _M_t(__comp, __a) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_unique(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                       typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_unique(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                       typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_unique(__first, __last);
 #  endif
@@ -162,8 +162,8 @@ public:
   template <class _InputIterator>
   void insert(_InputIterator __first, _InputIterator __last) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_unique(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                       typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_unique(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                       typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_unique(__first, __last);
 #  endif
@@ -229,11 +229,11 @@ template <class _Key, class _Compare = less<_Key>,
                      class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Key) >
 class multiset
 {
-  typedef _STLP_PRIV _AssocStorageTypes<_Key, _Compare> _AssocStorageTypes;
+  typedef _STLP_PRIV::_AssocStorageTypes<_Key, _Compare> _AssocStorageTypes;
   typedef typename _AssocStorageTypes::_KeyStorageType _KeyStorageType;
   typedef typename _AssocStorageTypes::_CompareStorageType _CompareStorageType;
   typedef typename _Alloc_traits<_KeyStorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV _CastTraits<_KeyStorageType, _Key> cast_traits;
+  typedef _STLP_PRIV::_CastTraits<_KeyStorageType, _Key> cast_traits;
 
   typedef multiset<_Key, _Compare, _Alloc> _Self;
 public:
@@ -245,16 +245,16 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _MultisetTraitsT<value_type> _MultisetTraits;
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Identity<value_type>,
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<value_type> _MultisetTraits;
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Identity<value_type>,
                               _MultisetTraits, _Alloc> _Priv_Rep_type;
 
-  typedef _STLP_PRIV _MultisetTraitsT<_KeyStorageType> _MultisetStorageTraits;
+  typedef _STLP_PRIV_FORCE::_MultisetTraitsT<_KeyStorageType> _MultisetStorageTraits;
 public:
   //dums: need the following public for the __move_traits framework
-  typedef _STLP_PRIV _Rb_tree<_KeyStorageType, _CompareStorageType,
-                              _KeyStorageType, _STLP_PRIV _Identity<_KeyStorageType>,
+  typedef _STLP_PRIV::_Rb_tree<_KeyStorageType, _CompareStorageType,
+                              _KeyStorageType, _STLP_PRIV::_Identity<_KeyStorageType>,
                               _MultisetStorageTraits, _StorageTypeAlloc> _Rep_type;
 
 private:
@@ -300,8 +300,8 @@ public:
   multiset(_InputIterator __first, _InputIterator __last)
     : _M_t(_Compare(), _StorageTypeAlloc()) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_equal(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                      typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_equal(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                      typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_equal(__first, __last);
 #  endif
@@ -313,8 +313,8 @@ public:
            const allocator_type& __a = allocator_type())
     : _M_t(__comp, __a) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_equal(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                      typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_equal(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                      typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_equal(__first, __last);
 #  endif
@@ -361,8 +361,8 @@ public:
   template <class _InputIterator>
   void insert(_InputIterator __first, _InputIterator __last) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
-    _M_t.insert_equal(typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
-                      typename _STLP_PRIV _IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
+    _M_t.insert_equal(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
+                      typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
 #  else
     _M_t.insert_equal(__first, __last);
 #  endif
@@ -415,7 +415,7 @@ public:
   }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_PTR_SPECIALIZED_SET_H */
 

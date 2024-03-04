@@ -18,7 +18,7 @@
 #  include <stl/char_traits.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class ios_base;
 
@@ -127,7 +127,7 @@ typedef basic_ifstream<wchar_t, char_traits<wchar_t> > wifstream;
 typedef basic_ofstream<wchar_t, char_traits<wchar_t> > wofstream;
 typedef basic_fstream<wchar_t, char_traits<wchar_t> >  wfstream;
 
-_STLP_END_NAMESPACE
+}
 
 #endif
 

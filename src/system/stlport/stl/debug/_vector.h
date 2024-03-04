@@ -34,11 +34,9 @@
 #  include <stl/debug/_iterator.h>
 #endif
 
-#define _STLP_NON_DBG_VECTOR _STLP_PRIV _STLP_NON_DBG_NAME(vector) <_Tp, _Size, _Alloc>
+#define _STLP_NON_DBG_VECTOR _STLP_PRIV::_STLP_NON_DBG_NAME(vector) <_Tp, _Size, _Alloc>
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp, class _NcIt>
 struct _Vector_const_traits;
@@ -81,34 +79,36 @@ struct _Vector_const_traits<bool, _Bit_iterator> {
   typedef _Vector_nonconst_traits<bool, _Bit_iterator> _NonConstTraits;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DBG_ALLOCATOR(_Tp) >
-class vector : private _STLP_PRIV __construct_checker< _STLP_NON_DBG_VECTOR >
+class vector : private _STLP_PRIV::__construct_checker< _STLP_NON_DBG_VECTOR >
 {
 private:
   typedef _STLP_NON_DBG_VECTOR _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
-  typedef _STLP_PRIV __construct_checker<_STLP_NON_DBG_VECTOR > _ConstructCheck;
+  typedef _STLP_PRIV::__construct_checker<_STLP_NON_DBG_VECTOR > _ConstructCheck;
   _Base _M_non_dbg_impl;
-  _STLP_PRIV __owned_list _M_iter_list;
+  _STLP_PRIV::__owned_list _M_iter_list;
 
 public:
   __IMPORT_CONTAINER_TYPEDEFS(_Base)
 
-  typedef _STLP_PRIV _DBG_iter<_Base,
-    _STLP_PRIV _DbgTraits<_STLP_PRIV _Vector_nonconst_traits<value_type, typename _Base::iterator> > > iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base,
+    _STLP_PRIV::_DbgTraits<_STLP_PRIV::_Vector_nonconst_traits<value_type, typename _Base::iterator> > > iterator;
 
-  typedef _STLP_PRIV _DBG_iter<_Base,
-    _STLP_PRIV _DbgTraits<_STLP_PRIV _Vector_const_traits<value_type, typename _Base::iterator> > > const_iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base,
+    _STLP_PRIV::_DbgTraits<_STLP_PRIV::_Vector_const_traits<value_type, typename _Base::iterator> > > const_iterator;
 
 private:
   void _Invalidate_all()
   { _M_iter_list._Invalidate_all(); }
   void _Invalidate_iterator(const iterator& __it)
-  { _STLP_PRIV __invalidate_iterator(&_M_iter_list, __it); }
+  { _STLP_PRIV::__invalidate_iterator(&_M_iter_list, __it); }
   void _Invalidate_iterators(const iterator& __first, const iterator& __last)
-  { _STLP_PRIV __invalidate_range(&_M_iter_list, __first, __last); }
+  { _STLP_PRIV::__invalidate_range(&_M_iter_list, __first, __last); }
 
   void _Check_Overflow(size_type __nb) {
     if (size() + __nb > capacity())
@@ -177,7 +177,7 @@ public:
   vector(_InputIterator __first, _InputIterator __last,
          const allocator_type& __a = allocator_type())
     : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last), __a),
+      _M_non_dbg_impl(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last), __a),
       _M_iter_list(&_M_non_dbg_impl) {}
 
   _Self& operator=(const _Self& __x) {
@@ -217,7 +217,7 @@ public:
   }
 
   iterator insert(iterator __pos, const _Tp& __x = _Tp()) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _Check_Overflow(1);
     return iterator(&_M_iter_list, _M_non_dbg_impl.insert(__pos._M_iterator, __x));
   }
@@ -229,18 +229,18 @@ public:
     typedef typename _AreSameUnCVTypes<_InputIterator, iterator>::_Ret _IsNonConstIterator;
     typedef typename _AreSameUnCVTypes<_InputIterator, const_iterator>::_Ret _IsConstIterator;
     typedef typename _Lor2<_IsNonConstIterator, _IsConstIterator>::_Ret _DoCheck;
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     //Sequence requirements 23.1.1 Table 67:
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_not_owner(&_M_iter_list, __first, _DoCheck()));
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_not_owner(&_M_iter_list, __first, _DoCheck()));
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.insert(__pos._M_iterator,
-                           _STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+                           _STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
     _Compare_Capacity(__old_capacity);
   }
 
   void insert (iterator __pos, size_type __n, const _Tp& __x){
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _Check_Overflow(__n);
     _M_non_dbg_impl.insert(__pos._M_iterator, __n, __x);
   }
@@ -251,13 +251,13 @@ public:
     _M_non_dbg_impl.pop_back();
   }
   iterator erase(iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _Invalidate_iterators(__pos, end());
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__pos._M_iterator));
   }
   iterator erase(iterator __first, iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, begin(), end()))
     _Invalidate_iterators(__first, end());
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__first._M_iterator, __last._M_iterator));
   }
@@ -283,11 +283,11 @@ private:
   template <class _InputIter>
   void _M_assign_dispatch(_InputIter __first, _InputIter __last,
                           const __false_type& /*_IsIntegral*/) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first,__last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first,__last))
     size_type __old_size = size();
     size_type __old_capacity = capacity();
     iterator __old_end = end();
-    _M_non_dbg_impl.assign(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+    _M_non_dbg_impl.assign(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
     if (__old_capacity != 0) {
       if (empty() || (capacity() > __old_capacity)) {
         _Invalidate_all();
@@ -331,7 +331,7 @@ public:
   }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #undef _STLP_NON_DBG_VECTOR
 

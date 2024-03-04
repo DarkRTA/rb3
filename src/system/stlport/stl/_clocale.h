@@ -18,10 +18,10 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(clocale)
 
-_STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::lconv;
-using _STLP_VENDOR_CSTD::localeconv;
-using _STLP_VENDOR_CSTD::setlocale;
-_STLP_END_NAMESPACE
+namespace _STLP_STD {
+using _STLP_VENDOR_STD::lconv;
+using _STLP_VENDOR_STD::localeconv;
+using _STLP_VENDOR_STD::setlocale;
+}
 
 #endif

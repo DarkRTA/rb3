@@ -35,7 +35,7 @@
 #  include <stl/_istreambuf_iterator.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class money_base {
 public:
@@ -407,7 +407,7 @@ protected:
                            const string_type& __digits) const;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_monetary.c>

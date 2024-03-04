@@ -60,11 +60,11 @@
  * unordered_set, unordered_map, unordered_multiset, unordered_multimap.
  */
 
-_STLP_BEGIN_NAMESPACE
-
 #if defined (_STLP_DEBUG)
 #  define hashtable _STLP_NON_DBG_NAME(hashtable)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
+#else
+namespace _STLP_STD {
 #endif
 
 // some compilers require the names of template parameters to be the same
@@ -73,7 +73,9 @@ template <class _Val, class _Key, class _HF,
 class hashtable;
 
 #if !defined (_STLP_DEBUG)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 template <class _BaseIte, class _Traits>
@@ -123,10 +125,12 @@ struct _Ht_iterator {
   _BaseIte _M_ite;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _BaseIte, class _Traits>
-struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
+struct __type_traits<_STLP_PRIV::_Ht_iterator<_BaseIte, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
   typedef __true_type    has_trivial_assignment_operator;
@@ -134,7 +138,9 @@ struct __type_traits<_STLP_PRIV _Ht_iterator<_BaseIte, _Traits> > {
   typedef __false_type   is_POD_type;
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 class _Stl_prime {
@@ -149,7 +155,9 @@ public:
 typedef _Stl_prime<bool> _Stl_prime_type;
 
 #if !defined (_STLP_DEBUG)
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 /*
@@ -189,13 +197,13 @@ public:
 
 private:
 #if defined (_STLP_DEBUG)
-  typedef _STLP_PRIV _STLP_NON_DBG_NAME(slist)<value_type, _All> _ElemsCont;
+  typedef _STLP_PRIV::_STLP_NON_DBG_NAME(slist)<value_type, _All> _ElemsCont;
 #else
   typedef slist<value_type, _All> _ElemsCont;
 #endif
   typedef typename _ElemsCont::iterator _ElemsIte;
   typedef typename _ElemsCont::const_iterator _ElemsConstIte;
-  typedef _STLP_PRIV _Slist_node_base _BucketType;
+  typedef _STLP_PRIV::_Slist_node_base _BucketType;
   typedef typename _Alloc_traits<_BucketType*, _All>::allocator_type _M_bucket_allocator_type;
   /*
    * We are going to use vector of _Slist_node_base pointers for 2 reasons:
@@ -206,7 +214,7 @@ private:
    *    has to be move from a slist to the other.
    */
 #if defined (_STLP_DEBUG)
-  typedef _STLP_PRIV _STLP_NON_DBG_NAME(vector)<_BucketType*, _M_bucket_allocator_type> _BucketVector;
+  typedef _STLP_PRIV::_STLP_NON_DBG_NAME(vector)<_BucketType*, _M_bucket_allocator_type> _BucketVector;
 #else
   typedef vector<_BucketType*, _M_bucket_allocator_type> _BucketVector;
 #endif
@@ -221,13 +229,13 @@ private:
   _STLP_KEY_TYPE_FOR_CONT_EXT(key_type)
 
 public:
-  typedef _STLP_PRIV _Ht_iterator<_ElemsIte, _NonConstTraits> iterator;
-  typedef _STLP_PRIV _Ht_iterator<_ElemsIte, _ConstTraits> const_iterator;
+  typedef _STLP_PRIV::_Ht_iterator<_ElemsIte, _NonConstTraits> iterator;
+  typedef _STLP_PRIV::_Ht_iterator<_ElemsIte, _ConstTraits> const_iterator;
   //TODO: Avoids this debug check and make the local_iterator different from
   //iterator in debug mode too.
 #if !defined (_STLP_DEBUG)
-  typedef _STLP_PRIV _Ht_iterator<_ElemsIte, _NonConstLocalTraits> local_iterator;
-  typedef _STLP_PRIV _Ht_iterator<_ElemsIte, _ConstLocalTraits> const_local_iterator;
+  typedef _STLP_PRIV::_Ht_iterator<_ElemsIte, _NonConstLocalTraits> local_iterator;
+  typedef _STLP_PRIV::_Ht_iterator<_ElemsIte, _ConstLocalTraits> const_local_iterator;
 #else
   typedef iterator       local_iterator;
   typedef const_iterator const_local_iterator;
@@ -274,9 +282,9 @@ public:
   { _M_copy_from(__ht); }
 
   hashtable(__move_source<_Self> src)
-    : _M_hash(_STLP_PRIV _AsMoveSource(src.get()._M_hash)),
-      _M_equals(_STLP_PRIV _AsMoveSource(src.get()._M_equals)),
-      _M_get_key(_STLP_PRIV _AsMoveSource(src.get()._M_get_key)),
+    : _M_hash(_STLP_PRIV::_AsMoveSource(src.get()._M_hash)),
+      _M_equals(_STLP_PRIV::_AsMoveSource(src.get()._M_equals)),
+      _M_get_key(_STLP_PRIV::_AsMoveSource(src.get()._M_get_key)),
       _M_elems(__move_source<_ElemsCont>(src.get()._M_elems)),
       _M_buckets(__move_source<_BucketVector>(src.get()._M_buckets)),
       _M_num_elements(src.get()._M_num_elements),
@@ -325,7 +333,7 @@ public:
   //The number of buckets is size() - 1 because the last bucket always contains
   //_M_elems.end() to make algo easier to implement.
   size_type bucket_count() const { return _M_buckets.size() - 1; }
-  size_type max_bucket_count() const { return _STLP_PRIV _Stl_prime_type::_S_max_nb_buckets(); }
+  size_type max_bucket_count() const { return _STLP_PRIV::_Stl_prime_type::_S_max_nb_buckets(); }
   size_type elems_in_bucket(size_type __bucket) const
   { return distance(_ElemsIte(_M_buckets[__bucket]), _ElemsIte(_M_buckets[__bucket + 1])); }
 
@@ -491,7 +499,7 @@ private:
                                   size_type &__n);
 
   void _M_initialize_buckets(size_type __n) {
-    const size_type __n_buckets = _STLP_PRIV _Stl_prime_type::_S_next_size(__n) + 1;
+    const size_type __n_buckets = _STLP_PRIV::_Stl_prime_type::_S_next_size(__n) + 1;
     _M_buckets.reserve(__n_buckets);
     _M_buckets.assign(__n_buckets, static_cast<_BucketType*>(0));
   }
@@ -513,12 +521,11 @@ private:
   void _M_copy_from(const _Self& __ht);
 };
 
+}
+
 #if defined (_STLP_DEBUG)
 #  undef hashtable
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_hashtable.c>
@@ -528,7 +535,7 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_hashtable.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #define _STLP_TEMPLATE_HEADER template <class _Val, class _Key, class _HF, class _Traits, class _ExK, class _EqK, class _All>
 #define _STLP_TEMPLATE_CONTAINER hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
@@ -545,7 +552,7 @@ struct __move_traits<hashtable<_Val, _Key, _HF, _Traits, _ExK, _EqK, _All> > {
   typedef __false_type complete;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_HASHTABLE_H */
 

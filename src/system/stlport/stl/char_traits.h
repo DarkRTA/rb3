@@ -37,7 +37,7 @@
 #  include <stl/_cwchar.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp> class allocator;
 
@@ -225,7 +225,7 @@ public:
   { __c1 = __c2; }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_CHAR_TRAITS_H */
 

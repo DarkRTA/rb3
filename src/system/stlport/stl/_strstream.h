@@ -30,14 +30,7 @@
 #  include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-#ifndef _STLP_USE_NAMESPACES
-#  define strstream _STLP_strstream
-#  define ostrstream _STLP_ostrstream
-#  define istrstream _STLP_istrstream
-#  define strstreambuf _STLP_strstreambuf
-#endif
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Class strstreambuf, a streambuf class that manages an array of char.
@@ -160,6 +153,6 @@ private:
   strstream& operator = (strstream const&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_STRSTREAM */

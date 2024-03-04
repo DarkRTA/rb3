@@ -18,16 +18,12 @@
 
 #include _STLP_NATIVE_CPP_RUNTIME_HEADER(typeinfo)
 
-#if defined(_STLP_USE_OWN_NAMESPACE)
+namespace _STLP_STD {
 
-_STLP_BEGIN_NAMESPACE
+using _STLP_VENDOR_STD::type_info;
+using _STLP_VENDOR_STD::bad_typeid;
+using _STLP_VENDOR_STD::bad_cast;
 
-using _STLP_VENDOR_EXCEPT_STD::type_info;
-using _STLP_VENDOR_EXCEPT_STD::bad_typeid;
-using _STLP_VENDOR_EXCEPT_STD::bad_cast;
-
-_STLP_END_NAMESPACE
-
-#endif
+}
 
 #endif

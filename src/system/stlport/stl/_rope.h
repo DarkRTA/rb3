@@ -79,7 +79,7 @@
 
 #define _STLP_CREATE_ALLOCATOR(__atype,__a, _Tp) (_Alloc_traits<_Tp,__atype>::create_allocator(__a))
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // First a lot of forward declarations.  The standard seems to require
 // much stricter "declaration before use" than many of the implementations
@@ -95,7 +95,9 @@ template<class _CharT, class _Alloc> class _Rope_const_iterator;
 template<class _CharT, class _Alloc> class _Rope_char_ref_proxy;
 template<class _CharT, class _Alloc> class _Rope_char_ptr_proxy;
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Some helpers, so we can use the power algorithm on ropes.
 // See below for why this isn't local to the implementation.
@@ -118,7 +120,9 @@ rope<_CharT,_Alloc>
 __identity_element(_Rope_Concat_fn<_CharT, _Alloc>)
 { return rope<_CharT,_Alloc>(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 // Store an eos
 template <class _CharT>
@@ -313,7 +317,7 @@ public:
 
   unsigned char _M_depth;
   _CharT* _STLP_VOLATILE _M_c_string;
-  _STLP_PRIV _STLP_alloc_proxy<size_t, _CharT, allocator_type> _M_size;
+  _STLP_PRIV::_STLP_alloc_proxy<size_t, _CharT, allocator_type> _M_size;
 
   /* Flattened version of string, if needed.  */
   /* typically 0.                             */
@@ -495,7 +499,7 @@ public:
       {
         _CharT* __s =
           static_cast<_RopeLeaf*>(_M_base)->_M_data;
-        _STLP_PRIV __ucopy_n(__s + __start_pos + _M_start, __req_len, __buffer);
+        _STLP_PRIV::__ucopy_n(__s + __start_pos + _M_start, __req_len, __buffer);
       }
       break;
     default:
@@ -973,7 +977,7 @@ public:
 
 public:
   // The only data member of a rope:
-  _STLP_PRIV _STLP_alloc_proxy<_RopeRep*, _CharT, allocator_type> _M_tree_ptr;
+  _STLP_PRIV::_STLP_alloc_proxy<_RopeRep*, _CharT, allocator_type> _M_tree_ptr;
 
 public:
   allocator_type get_allocator() const { return allocator_type(_M_tree_ptr); }
@@ -1076,7 +1080,7 @@ protected:
 
    _CharT* __buf = _STLP_CREATE_ALLOCATOR(allocator_type,__a, _CharT).allocate(_S_rounded_up_size(_p_size));
 
-    _STLP_PRIV __ucopy_n(__s, _p_size, __buf);
+    _STLP_PRIV::__ucopy_n(__s, _p_size, __buf);
     _S_construct_null(__buf + _p_size);
 
     _STLP_TRY {
@@ -1111,7 +1115,7 @@ protected:
   // A helper function for exponentiating strings.
   // This uses a nonstandard refcount convention.
   // The result has refcount 0.
-  typedef _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
+  typedef _STLP_PRIV::_Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
   friend struct _Concat_fn;
 
 public:
@@ -1254,7 +1258,7 @@ public:
     rope<_CharT,_Alloc> __remainder_rope;
 
     // gcc-2.7.2 bugs
-    typedef _STLP_PRIV _Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
+    typedef _STLP_PRIV::_Rope_Concat_fn<_CharT,_Alloc> _Concat_fn;
 
     size_t __exponent = __n / __exponentiate_threshold;
     size_t __rest = __n % __exponentiate_threshold;
@@ -1288,7 +1292,7 @@ public:
         // One each for base_rope and __result
         //_STLP_ASSERT(2 == __result._M_tree_ptr._M_data->_M_ref_count)
       } else {
-        __result = _STLP_PRIV __power(__base_rope, __exponent, _Concat_fn());
+        __result = _STLP_PRIV::__power(__base_rope, __exponent, _Concat_fn());
       }
       if (0 != __remainder) {
         __result += __remainder_rope;
@@ -2176,7 +2180,7 @@ struct __move_traits<rope<_CharT, _Alloc> > {
   typedef typename __move_traits<_Alloc>::complete complete;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_rope.c>

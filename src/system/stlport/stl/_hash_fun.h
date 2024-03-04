@@ -35,11 +35,13 @@
 #  include <stl/_cstddef.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Key> struct hash { };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 inline size_t __stl_hash_string(const char* __s) {
   unsigned long __h = 0;
@@ -49,19 +51,21 @@ inline size_t __stl_hash_string(const char* __s) {
   return size_t(__h);
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template<>
 struct hash<char*> {
   size_t operator()(const char* __s) const {
-    return _STLP_PRIV __stl_hash_string(__s);
+    return _STLP_PRIV::__stl_hash_string(__s);
   }
 };
 
 template<>
 struct hash<const char*> {
   size_t operator()(const char* __s) const {
-    return _STLP_PRIV __stl_hash_string(__s);
+    return _STLP_PRIV::__stl_hash_string(__s);
   }
 };
 
@@ -117,7 +121,7 @@ struct hash<void *>
       }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_HASH_FUN_H */
 

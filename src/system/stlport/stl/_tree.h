@@ -70,9 +70,7 @@ iterators invalidated are those referring to the deleted node.
 #  include <stl/_function_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 typedef bool _Rb_tree_Color_type;
 //const _Rb_tree_Color_type _S_rb_tree_red = false;
@@ -195,16 +193,20 @@ struct _Rb_tree_iterator : public _Rb_tree_base_iterator {
   }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 template <class _Value, class _Traits>
-struct __type_traits<_STLP_PRIV _Rb_tree_iterator<_Value, _Traits> > {
+struct __type_traits<_STLP_PRIV::_Rb_tree_iterator<_Value, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
   typedef __true_type    has_trivial_assignment_operator;
   typedef __true_type    has_trivial_destructor;
   typedef __false_type   is_POD_type;
 };
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Base class to help EH
 
@@ -604,9 +606,7 @@ public:
 #  undef _Rb_tree
 #endif
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_tree.c>
@@ -616,19 +616,19 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_tree.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #define _STLP_TEMPLATE_HEADER template <class _Key, class _Compare, class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-#define _STLP_TEMPLATE_CONTAINER _STLP_PRIV _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>
+#define _STLP_TEMPLATE_CONTAINER _STLP_PRIV::_Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>
 #include <stl/_relops_cont.h>
 #undef _STLP_TEMPLATE_CONTAINER
 #undef _STLP_TEMPLATE_HEADER
 
 template <class _Key, class _Compare, class _Value, class _KeyOfValue, class _Traits, class _Alloc>
-struct __move_traits<_STLP_PRIV _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> >
-  : _STLP_PRIV __move_traits_help2<_Compare, _Alloc> {};
+struct __move_traits<_STLP_PRIV::_Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> >
+  : _STLP_PRIV::__move_traits_help2<_Compare, _Alloc> {};
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_TREE_H */
 

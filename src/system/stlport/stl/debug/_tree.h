@@ -42,9 +42,7 @@
 #  include <stl/_alloc.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Key, class _Compare>
 class _DbgCompare {
@@ -71,7 +69,7 @@ private:
   _Compare _M_non_dbg_cmp;
 };
 
-#define _STLP_NON_DBG_TREE _STLP_PRIV _STLP_NON_DBG_NAME(Rb_tree) <_Key, _STLP_PRIV _DbgCompare<_Key, _Compare>, _Value, _KeyOfValue, _Traits, _Alloc>
+#define _STLP_NON_DBG_TREE _STLP_PRIV::_STLP_NON_DBG_NAME(Rb_tree) <_Key, _STLP_PRIV::_DbgCompare<_Key, _Compare>, _Value, _KeyOfValue, _Traits, _Alloc>
 
 template <class _Key, class _Compare,
           class _Value, class _KeyOfValue, class _Traits,
@@ -80,7 +78,7 @@ class _Rb_tree {
   typedef _STLP_NON_DBG_TREE _Base;
   typedef _Rb_tree<_Key, _Compare, _Value, _KeyOfValue, _Traits, _Alloc> _Self;
   _Base _M_non_dbg_impl;
-  _STLP_PRIV __owned_list _M_iter_list;
+  _STLP_PRIV::__owned_list _M_iter_list;
 
 public:
   __IMPORT_CONTAINER_TYPEDEFS(_Base)
@@ -88,17 +86,17 @@ public:
 
   typedef typename _Traits::_NonConstTraits _NonConstIteTraits;
   typedef typename _Traits::_ConstTraits    _ConstIteTraits;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_NonConstIteTraits> > iterator;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_ConstIteTraits> >    const_iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_NonConstIteTraits> > iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_ConstIteTraits> >    const_iterator;
 
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
 private:
   _STLP_KEY_TYPE_FOR_CONT_EXT(key_type)
   void _Invalidate_iterator(const iterator& __it)
-  { _STLP_PRIV __invalidate_iterator(&_M_iter_list,__it); }
+  { _STLP_PRIV::__invalidate_iterator(&_M_iter_list,__it); }
   void _Invalidate_iterators(const iterator& __first, const iterator& __last)
-  { _STLP_PRIV __invalidate_range(&_M_iter_list, __first, __last); }
+  { _STLP_PRIV::__invalidate_range(&_M_iter_list, __first, __last); }
 
   typedef typename _Base::iterator _Base_iterator;
   typedef typename _Base::const_iterator _Base_const_iterator;
@@ -223,12 +221,12 @@ public:
   template<class _InputIterator>
   void insert_equal(_InputIterator __first, _InputIterator __last) {
     _STLP_DEBUG_CHECK(__check_range(__first,__last))
-    _M_non_dbg_impl.insert_equal(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+    _M_non_dbg_impl.insert_equal(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
   template<class _InputIterator>
   void insert_unique(_InputIterator __first, _InputIterator __last) {
     _STLP_DEBUG_CHECK(__check_range(__first,__last))
-    _M_non_dbg_impl.insert_unique(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+    _M_non_dbg_impl.insert_unique(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
 
   void erase(iterator __pos) {
@@ -270,8 +268,7 @@ public:
   }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #undef _STLP_NON_DBG_TREE
 

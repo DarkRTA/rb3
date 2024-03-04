@@ -31,11 +31,9 @@
 #  include <stl/debug/_iterator.h>
 #endif
 
-#define _STLP_NON_DBG_SLIST _STLP_PRIV _STLP_NON_DBG_NAME(slist) <_Tp, _Alloc>
+#define _STLP_NON_DBG_SLIST _STLP_PRIV::_STLP_NON_DBG_NAME(slist) <_Tp, _Alloc>
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 /*
  * slist special debug traits version.
@@ -55,32 +53,34 @@ struct _SlistDbgTraits : _Traits {
   { return !(__it._M_iterator == (__it._Get_container_ptr())->before_begin()); }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
-class slist : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_SLIST >
+class slist : private _STLP_PRIV::__construct_checker<_STLP_NON_DBG_SLIST >
 {
 private:
   typedef _STLP_NON_DBG_SLIST _Base;
   typedef slist<_Tp,_Alloc> _Self;
-  typedef _STLP_PRIV __construct_checker<_STLP_NON_DBG_SLIST > _ConstructCheck;
+  typedef _STLP_PRIV::__construct_checker<_STLP_NON_DBG_SLIST > _ConstructCheck;
 
 public:
 
   __IMPORT_CONTAINER_TYPEDEFS(_Base)
 
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _SlistDbgTraits<_Nonconst_traits<value_type> > > iterator;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _SlistDbgTraits<_Const_traits<value_type> > >    const_iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_SlistDbgTraits<_Nonconst_traits<value_type> > > iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_SlistDbgTraits<_Const_traits<value_type> > >    const_iterator;
 
   allocator_type get_allocator() const { return _M_non_dbg_impl.get_allocator(); }
 private:
   _Base _M_non_dbg_impl;
-  _STLP_PRIV __owned_list _M_iter_list;
+  _STLP_PRIV::__owned_list _M_iter_list;
 
   void _Invalidate_iterator(const iterator& __it)
-  { _STLP_PRIV __invalidate_iterator(&_M_iter_list, __it); }
+  { _STLP_PRIV::__invalidate_iterator(&_M_iter_list, __it); }
   void _Invalidate_iterators(const iterator& __first, const iterator& __last)
-  { _STLP_PRIV __invalidate_range(&_M_iter_list, __first, __last); }
+  { _STLP_PRIV::__invalidate_range(&_M_iter_list, __first, __last); }
 
   typedef typename _Base::iterator _Base_iterator;
 
@@ -108,7 +108,7 @@ public:
   slist(_InputIterator __first, _InputIterator __last,
         const allocator_type& __a = allocator_type())
     : _ConstructCheck(__first, __last),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last), __a),
+      _M_non_dbg_impl(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last), __a),
       _M_iter_list(&_M_non_dbg_impl) {}
 
   slist(const value_type* __first, const value_type* __last,
@@ -180,93 +180,93 @@ public:
     _M_non_dbg_impl.pop_front();
   }
   iterator previous(const_iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     return iterator(&_M_iter_list, _M_non_dbg_impl.previous(__pos._M_iterator));
   }
   const_iterator previous(const_iterator __pos) const {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     return const_iterator(&_M_iter_list, _M_non_dbg_impl.previous(__pos._M_iterator));
   }
 
 public:
   iterator insert_after(iterator __pos, const value_type& __x = _Tp()) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     return iterator(&_M_iter_list,_M_non_dbg_impl.insert_after(__pos._M_iterator, __x));
   }
 
   void insert_after(iterator __pos, size_type __n, const value_type& __x) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _M_non_dbg_impl.insert_after(__pos._M_iterator, __n, __x);
   }
 
   template <class _InputIterator>
   void assign(_InputIterator __first, _InputIterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
     _Invalidate_iterators(begin(), end());
-    _M_non_dbg_impl.assign(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+    _M_non_dbg_impl.assign(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
 
   template <class _InIter>
   void insert_after(iterator __pos, _InIter __first, _InIter __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
     _M_non_dbg_impl.insert_after(__pos._M_iterator,
-                                 _STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+                                 _STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
 
   template <class _InIter>
   void insert(iterator __pos, _InIter __first, _InIter __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
     _M_non_dbg_impl.insert(__pos._M_iterator,
-                           _STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+                           _STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
 
   iterator insert(iterator __pos, const value_type& __x = _Tp()) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     return iterator(&_M_iter_list, _M_non_dbg_impl.insert(__pos._M_iterator, __x));
   }
 
   void insert(iterator __pos, size_type __n, const value_type& __x) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     _M_non_dbg_impl.insert(__pos._M_iterator, __n, __x);
   }
 
 public:
   iterator erase_after(iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     iterator __tmp = __pos; ++__tmp;
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__tmp))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__tmp))
     _Invalidate_iterator(__tmp);
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase_after(__pos._M_iterator));
   }
   iterator erase_after(iterator __before_first, iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__before_first))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__before_first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__before_first))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__before_first, __last, begin(), end()))
     iterator __tmp = __before_first; ++__tmp;
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__tmp))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__tmp))
     _Invalidate_iterators(__tmp, __last);
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase_after(__before_first._M_iterator, __last._M_iterator));
   }
 
   iterator erase(iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
     _STLP_VERBOSE_ASSERT(__pos._M_iterator != _M_non_dbg_impl.before_begin(), _StlMsg_INVALID_ARGUMENT)
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
     _Invalidate_iterator(__pos);
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__pos._M_iterator));
   }
   iterator erase(iterator __first, iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, begin(), end()))
     _Invalidate_iterators(__first, __last);
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__first._M_iterator, __last._M_iterator));
   }
@@ -285,8 +285,8 @@ public:
   // them immediately after __pos.  __x must not be *this.  Complexity:
   // linear in __x.size().
   void splice_after(iterator __pos, _Self& __x) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     _STLP_VERBOSE_ASSERT(!(&__x == this), _StlMsg_INVALID_ARGUMENT)
     _M_non_dbg_impl.splice_after(__pos._M_iterator, __x._M_non_dbg_impl);
     if (get_allocator() == __x.get_allocator()) {
@@ -300,14 +300,14 @@ public:
   // Moves the element that follows __prev to *this, inserting it immediately
   //  after __pos.  This is constant time.
   void splice_after(iterator __pos, _Self& __x, iterator __prev) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__prev))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&__x._M_iter_list, __prev))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__prev))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&__x._M_iter_list, __prev))
     iterator __elem = __prev; ++__elem;
     _M_non_dbg_impl.splice_after(__pos._M_iterator, __x._M_non_dbg_impl, __prev._M_iterator);
     if (get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV __change_ite_owner(__elem, &_M_iter_list);
+      _STLP_PRIV::__change_ite_owner(__elem, &_M_iter_list);
     }
     else {
       __x._Invalidate_iterator(__elem);
@@ -318,16 +318,16 @@ public:
   //  inserting it immediately after __pos.  This is constant time.
   void splice_after(iterator __pos, _Self& __x,
                     iterator __before_first, iterator __before_last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__before_first, __before_last))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&__x._M_iter_list, __before_first))
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__before_first))
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__before_last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__before_first, __before_last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&__x._M_iter_list, __before_first))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__before_first))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__before_last))
     iterator __first = __before_first; ++__first;
     iterator __last = __before_last; ++__last;
     if (get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV __change_range_owner(__first, __last, &_M_iter_list);
+      _STLP_PRIV::__change_range_owner(__first, __last, &_M_iter_list);
     }
     else {
       __x._Invalidate_iterators(__first, __last);
@@ -338,7 +338,7 @@ public:
 
   // Linear in distance(begin(), __pos), and linear in __x.size().
   void splice(iterator __pos, _Self& __x) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     _STLP_VERBOSE_ASSERT(!(&__x == this), _StlMsg_INVALID_ARGUMENT)
     _M_non_dbg_impl.splice(__pos._M_iterator, __x._M_non_dbg_impl);
@@ -353,14 +353,14 @@ public:
   // Linear in distance(begin(), __pos), and in distance(__x.begin(), __i).
   void splice(iterator __pos, _Self& __x, iterator __i) {
     //__pos should be owned by *this and not be the before_begin iterator
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     //__i should be dereferenceable, not before_begin and be owned by __x
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__i))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&__x._M_iter_list ,__i))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__i))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&__x._M_iter_list ,__i))
     _STLP_VERBOSE_ASSERT(!(__i == __x.before_begin()), _StlMsg_INVALID_ARGUMENT)
     if (get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV __change_ite_owner(__i, &_M_iter_list);
+      _STLP_PRIV::__change_ite_owner(__i, &_M_iter_list);
     }
     else {
       __x._Invalidate_iterator(__i);
@@ -371,12 +371,12 @@ public:
   // Linear in distance(begin(), __pos), in distance(__x.begin(), __first),
   // and in distance(__first, __last).
   void splice(iterator __pos, _Self& __x, iterator __first, iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     _STLP_VERBOSE_ASSERT(!(__pos._M_iterator == _M_non_dbg_impl.before_begin()), _StlMsg_INVALID_ARGUMENT)
     //_STLP_VERBOSE_ASSERT(&__x != this, _StlMsg_INVALID_ARGUMENT)
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, __x.begin(), __x.end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, __x.begin(), __x.end()))
     if (get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV __change_range_owner(__first, __last, &_M_iter_list);
+      _STLP_PRIV::__change_range_owner(__first, __last, &_M_iter_list);
     }
     else {
       __x._Invalidate_iterators(__first, __last);
@@ -489,7 +489,7 @@ public:
   { _M_non_dbg_impl.sort(__comp); }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #undef _STLP_NON_DBG_SLIST
 

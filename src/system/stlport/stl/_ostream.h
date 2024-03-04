@@ -32,14 +32,14 @@
 #  include <stl/_exception.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _CharT, class _Traits>
 bool __init_bostr(basic_ostream<_CharT, _Traits>& __str);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // class basic_ostream<>
@@ -141,7 +141,7 @@ public:                         // Buffer positioning and manipulation.
       bool _M_ok;
     public:
       explicit sentry(basic_ostream<_CharT, _Traits>& __str)
-        : _M_str(__str), /* _M_buf(__str.rdbuf()), */ _M_ok(_STLP_PRIV __init_bostr(__str))
+        : _M_str(__str), /* _M_buf(__str.rdbuf()), */ _M_ok(_STLP_PRIV::__init_bostr(__str))
       {}
 
       ~sentry() {
@@ -159,7 +159,9 @@ public:                         // Buffer positioning and manipulation.
 
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Helper functions for istream<>::sentry constructor.
 template <class _CharT, class _Traits>
@@ -181,7 +183,9 @@ inline basic_streambuf<_CharT, _Traits>*
 __get_ostreambuf(basic_ostream<_CharT, _Traits>& __St)
 { return __St.rdbuf(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 // Non-member functions.
 template <class _CharT, class _Traits>
@@ -280,7 +284,7 @@ flush(basic_ostream<_CharT, _Traits>& __os) {
   return __os;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_ostream.c>

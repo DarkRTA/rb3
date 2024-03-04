@@ -36,7 +36,7 @@
 #  endif
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // Non-inline member functions.
 
@@ -139,7 +139,7 @@ operator>>(basic_istream<_CharT, _Traits>& __is, complex<_Tp>& __z) {
 
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_COMPLEX_C */
 

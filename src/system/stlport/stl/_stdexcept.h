@@ -23,11 +23,9 @@
 #  include <stl/_stdexcept_base.h>
 #endif
 
-#if !defined (_STLP_USE_NATIVE_STDEXCEPT) || defined (_STLP_USE_OWN_NAMESPACE)
-
 #  if defined(_STLP_USE_EXCEPTIONS)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class logic_error : public __Named_exception {
 public:
@@ -101,9 +99,8 @@ public:
 #    endif
 };
 
-_STLP_END_NAMESPACE
+}
 
 #  endif
-#endif
 
 #endif /* _STLP_INTERNAL_STDEXCEPT */

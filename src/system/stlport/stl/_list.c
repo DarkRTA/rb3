@@ -38,9 +38,7 @@
 #  include <stl/_range_errors.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 template <class _Dummy>
@@ -80,7 +78,9 @@ void _List_base<_Tp,_Alloc>::clear() {
 #elif defined (_STLP_DEBUG)
 #  define list _STLP_NON_DBG_NAME(list)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc>
@@ -124,7 +124,9 @@ void list<_Tp, _Alloc>::_M_fill_assign(size_type __n, const _Tp& __val) {
 }
 
 #if !defined (list)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 template <class _Tp, class _Alloc, class _Predicate>
@@ -203,7 +205,7 @@ void _S_sort(list<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
 
   list<_Tp, _Alloc> __carry(__that.get_allocator());
   const int NB = 64;
-  _STLP_PRIV _CArray<list<_Tp, _Alloc>, NB> __counter(__carry);
+  _STLP_PRIV::_CArray<list<_Tp, _Alloc>, NB> __counter(__carry);
   int __fill = 0;
   while (!__that.empty()) {
     __carry.splice(__carry.begin(), __that, __that.begin());
@@ -231,9 +233,7 @@ void _S_sort(list<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
 #  undef list
 #endif
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_LIST_C */
 

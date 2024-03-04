@@ -28,10 +28,7 @@
 #  pragma once
 #endif
 
-#if defined (_STLP_USE_OWN_NAMESPACE)
-#  include <stl/_string.h>
-#endif
-
+#include <stl/_string.h>
 #include <stl/_string_hash.h>
 
 #if !defined (_STLP_USE_NO_IOSTREAMS)
@@ -48,4 +45,3 @@
 // Local Variables:
 // mode:C++
 // End:
-

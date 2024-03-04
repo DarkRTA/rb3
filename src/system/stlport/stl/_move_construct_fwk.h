@@ -21,7 +21,7 @@
 #  include <stl/type_traits.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 /*************************************************************
  * Move constructor framework
@@ -70,7 +70,9 @@ typedef __true_type __stlp_movable;
 typedef __false_type __stlp_movable;
 #endif
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 /*
  * This struct should never be used if the user has not explicitely stipulated
@@ -142,8 +144,6 @@ struct __move_traits_help2 {
                           typename _MoveTraits2::complete>::_Ret complete;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_MOVE_CONSTRUCT_FWK_H */

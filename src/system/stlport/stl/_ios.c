@@ -30,7 +30,7 @@
 # include <stl/_numpunct.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // basic_ios<>'s non-inline member functions
 
@@ -119,7 +119,7 @@ void basic_ios<_CharT, _Traits>::_M_handle_exception(ios_base::iostate __flag)
     _STLP_RETHROW;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_IOS_C */
 

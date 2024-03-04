@@ -42,7 +42,7 @@
 #  include <stl/_uninitialized.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp>
 pair<_Tp*, ptrdiff_t> 
@@ -142,7 +142,7 @@ struct temporary_buffer : public _Temporary_buffer<_ForwardIterator, _Tp>
 
 # endif /* _STLP_NO_EXTENSIONS */
 
-_STLP_END_NAMESPACE
+}
 
 # ifndef _STLP_LINK_TIME_INSTANTIATION
 #  include <stl/_tempbuf.c>

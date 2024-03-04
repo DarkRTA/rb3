@@ -16,7 +16,7 @@
 #ifndef _STLP_NULL_STREAM_H
 # define _STLP_NULL_STREAM_H
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 struct __null_stream
 {
@@ -37,6 +37,6 @@ __null_stream& operator >>(const _Tp&, __null_stream& __x )
 
 extern __null_stream cin, cout, cerr, endl, ws, hex, dec;
 
-_STLP_END_NAMESPACE
+}
 
 # endif

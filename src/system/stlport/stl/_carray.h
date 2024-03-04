@@ -28,9 +28,7 @@
 #  include <stl/_construct.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp, size_t _Nb>
 struct _CArray {
@@ -54,8 +52,6 @@ private:
   char _M_data[sizeof(_Tp) * _Nb];
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif //_STLP_CARRAY_H

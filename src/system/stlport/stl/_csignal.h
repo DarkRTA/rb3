@@ -18,10 +18,10 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(csignal)
 
-_STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::signal;
-using _STLP_VENDOR_CSTD::raise;
-using _STLP_VENDOR_CSTD::sig_atomic_t;
-_STLP_END_NAMESPACE
+namespace _STLP_STD {
+using _STLP_VENDOR_STD::signal;
+using _STLP_VENDOR_STD::raise;
+using _STLP_VENDOR_STD::sig_atomic_t;
+}
 
 #endif /* _STLP_INTERNAL_CSIGNAL */

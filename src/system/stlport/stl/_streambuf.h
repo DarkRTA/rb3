@@ -22,7 +22,7 @@
 #  include <stl/_ios_base.h>      // Needed for ios_base bitfield members.
 #endif                            // <ios_base> includes <iosfwd>.
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Class basic_streambuf<>, the base class of the streambuf hierarchy.
@@ -261,7 +261,7 @@ public:                         // Locale-related functions.
 #endif
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_streambuf.c>

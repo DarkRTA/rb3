@@ -34,7 +34,7 @@
 #  include <stl/_hashtable.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_HASH_ITERATOR_TRAITS(HashMapTraitsT, traits)
@@ -55,11 +55,11 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _HashMapTraitsT<value_type> _HashMapTraits;
+  typedef _STLP_PRIV_FORCE::_HashMapTraitsT<value_type> _HashMapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _HashMapTraits,
-                    _STLP_PRIV _Select1st<value_type>, _EqualKey, _Alloc > _Ht;
+                    _STLP_PRIV::_Select1st<value_type>, _EqualKey, _Alloc > _Ht;
 
   typedef typename _Ht::hasher hasher;
   typedef typename _Ht::key_equal key_equal;
@@ -187,11 +187,11 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _HashMultimapTraitsT<value_type> _HashMultimapTraits;
+  typedef _STLP_PRIV::_HashMultimapTraitsT<value_type> _HashMultimapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _HashMultimapTraits,
-                    _STLP_PRIV _Select1st<value_type>, _EqualKey, _Alloc > _Ht;
+                    _STLP_PRIV::_Select1st<value_type>, _EqualKey, _Alloc > _Ht;
 
   typedef typename _Ht::hasher hasher;
   typedef typename _Ht::key_equal key_equal;
@@ -309,12 +309,12 @@ public:
 
 template <class _Key, class _Tp, class _HashFn,  class _EqKey, class _Alloc>
 struct __move_traits<hash_map<_Key, _Tp, _HashFn, _EqKey, _Alloc> > :
-  _STLP_PRIV __move_traits_help<typename hash_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_help<typename hash_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
 {};
 
 template <class _Key, class _Tp, class _HashFn,  class _EqKey, class _Alloc>
 struct __move_traits<hash_multimap<_Key, _Tp, _HashFn, _EqKey, _Alloc> > :
-  _STLP_PRIV __move_traits_help<typename hash_multimap<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_help<typename hash_multimap<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
 {};
 
 // Specialization of insert_iterator so that it will work for hash_map
@@ -372,7 +372,7 @@ public:
   insert_iterator<_Container>& operator++(int) { return *this; }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_HASH_MAP_H */
 

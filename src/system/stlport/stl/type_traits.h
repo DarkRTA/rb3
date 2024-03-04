@@ -65,7 +65,7 @@ template <class T> inline void copy(T* source,T* destination,int n) {
 #  include <boost/type_traits/add_const.hpp>
 #endif /* _STLP_USE_BOOST_SUPPORT */
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #if !defined (_STLP_USE_BOOST_SUPPORT)
 
@@ -411,7 +411,7 @@ struct _IsStateless {
   typedef typename __bool2type<_Is>::_Ret _Ret;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #define _STLP_IS_POD_ITER(_It, _Tp) typename __type_traits< typename iterator_traits< _Tp >::value_type >::is_POD_type()
 

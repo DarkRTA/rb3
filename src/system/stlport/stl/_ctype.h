@@ -34,7 +34,7 @@
 #  include <stl/_algobase.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class ctype_base {
 public:
@@ -253,7 +253,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CTYPE_H */
 

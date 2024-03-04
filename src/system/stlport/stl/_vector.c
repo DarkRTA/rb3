@@ -32,9 +32,7 @@
 
 #include <stl/_range_errors.h>
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp, class _Size, class _Alloc>
 void _Vector_base<_Tp, _Size, _Alloc>::_M_throw_length_error() const {
@@ -51,7 +49,9 @@ void _Vector_base<_Tp, _Size, _Alloc>::_M_throw_out_of_range() const {
 #elif defined (_STLP_DEBUG)
 #  define vector _STLP_NON_DBG_NAME(vector)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Size, class _Alloc>
@@ -82,15 +82,15 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, const _Tp
   pointer __new_start = this->_M_ptr.allocate(__len, __len);
   pointer __new_finish = __new_start;
   _STLP_TRY {
-    __new_finish = _STLP_PRIV __uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
+    __new_finish = _STLP_PRIV::__uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
     // handle insertion
     if (__fill_len == 1) {
       _Copy_Construct(__new_finish, __x);
       ++__new_finish;
     } else
-      __new_finish = _STLP_PRIV __uninitialized_fill_n(__new_finish, __fill_len, __x);
+      __new_finish = _STLP_PRIV::__uninitialized_fill_n(__new_finish, __fill_len, __x);
     if (!__atend)
-      __new_finish = _STLP_PRIV __uninitialized_move(__pos, end(), __new_finish, _TrivialUCopy(), _Movable()); // copy remainder
+      __new_finish = _STLP_PRIV::__uninitialized_move(__pos, end(), __new_finish, _TrivialUCopy(), _Movable()); // copy remainder
   }
   _STLP_UNWIND((_STLP_STD::_Destroy_Range(__new_start,__new_finish),
                this->_M_ptr.deallocate(__new_start,__len)))
@@ -105,11 +105,11 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow(pointer __pos, const _Tp& __
   size_type __len = __old_size + (max)(__old_size, __fill_len);
 
   pointer __new_start = this->_M_ptr.allocate(__len, __len);
-  pointer __new_finish = static_cast<pointer>(_STLP_PRIV __copy_trivial(begin(), __pos, __new_start));
+  pointer __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(begin(), __pos, __new_start));
   // handle insertion
-  __new_finish = _STLP_PRIV __fill_n(__new_finish, __fill_len, __x);
+  __new_finish = _STLP_PRIV::__fill_n(__new_finish, __fill_len, __x);
   if (!__atend)
-    __new_finish = static_cast<pointer>(_STLP_PRIV __copy_trivial(__pos, end(), __new_finish)); // copy remainder
+    __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(__pos, end(), __new_finish)); // copy remainder
   _M_clear();
   _M_set(__new_start, __new_finish, __new_start + __len);
 }
@@ -128,7 +128,7 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux(iterator __pos, size_type __
     _STLP_STD::_Move_Construct(__dst, *__src);
     _STLP_STD::_Destroy_Moved(__src);
   }
-  _STLP_PRIV __uninitialized_fill_n(__pos, __n, __x);
+  _STLP_PRIV::__uninitialized_fill_n(__pos, __n, __x);
   this->_M_size += __n;
 }
 
@@ -144,14 +144,14 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_type _
   const size_type __elems_after = end() - __pos;
   pointer __old_finish = end();
   if (__elems_after > __n) {
-    _STLP_PRIV __ucopy_ptrs(end() - __n, end(), end(), _TrivialUCopy());
+    _STLP_PRIV::__ucopy_ptrs(end() - __n, end(), end(), _TrivialUCopy());
     this->_M_size += __n;
-    _STLP_PRIV __copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
+    _STLP_PRIV::__copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
     _STLP_STD::fill(__pos, __pos + __n, __x);
   } else {
-    auto end = _STLP_PRIV __uninitialized_fill_n(end(), __n - __elems_after, __x);
+    auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - __elems_after, __x);
     this->_M_size = end - begin();
-    _STLP_PRIV __ucopy_ptrs(__pos, __old_finish, end(), _TrivialUCopy());
+    _STLP_PRIV::__ucopy_ptrs(__pos, __old_finish, end(), _TrivialUCopy());
     this->_M_size += __elems_after;
     _STLP_STD::fill(__pos, __old_finish, __x);
   }
@@ -180,13 +180,13 @@ vector<_Tp, _Size, _Alloc>& vector<_Tp, _Size, _Alloc>::operator = (const vector
       this->_M_ptr._M_data = __tmp;
       this->_M_capacity = __len;
     } else if (size() >= __xlen) {
-      pointer __i = _STLP_PRIV __copy_ptrs(const_cast<const_pointer>(__x.begin()) + 0,
+      pointer __i = _STLP_PRIV::__copy_ptrs(const_cast<const_pointer>(__x.begin()) + 0,
                                            const_cast<const_pointer>(__x.end()) + 0, begin(), _TrivialCopy());
       _STLP_STD::_Destroy_Range(__i, end());
     } else {
-      _STLP_PRIV __copy_ptrs(const_cast<const_pointer>(__x.begin()),
+      _STLP_PRIV::__copy_ptrs(const_cast<const_pointer>(__x.begin()),
                              const_cast<const_pointer>(__x.begin()) + size(), begin(), _TrivialCopy());
-      _STLP_PRIV __ucopy_ptrs(const_cast<const_pointer>(__x.begin()) + size(),
+      _STLP_PRIV::__ucopy_ptrs(const_cast<const_pointer>(__x.begin()) + size(),
                               const_cast<const_pointer>(__x.end()) + 0, end(), _TrivialUCopy());
     }
     this->_M_size = __xlen;
@@ -201,10 +201,10 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_t __n, const _Tp& __val) {
     __tmp.swap(*this);
   } else if (__n > size()) {
     fill(begin(), end(), __val);
-    auto end = _STLP_PRIV __uninitialized_fill_n(end(), __n - size(), __val);
+    auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val);
     this->_M_size = end - begin();
   } else
-    erase(_STLP_PRIV __fill_n(begin(), __n, __val), end());
+    erase(_STLP_PRIV::__fill_n(begin(), __n, __val), end());
 }
 
 template <class _Tp, class _Size, class _Alloc>
@@ -215,12 +215,11 @@ vector<_Tp, _Size, _Alloc>::insert(iterator __pos, const _Tp& __x) {
   return begin() + __n;
 }
 
+}
+
 #if defined (vector)
 #  undef vector
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #endif /*  _STLP_VECTOR_C */
 

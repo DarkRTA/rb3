@@ -27,7 +27,7 @@
 # include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT, class _Traits, class _Alloc>
 inline size_t
@@ -46,6 +46,6 @@ struct hash<basic_string<_CharT,_Traits,_Alloc> > {
     { return __stl_string_hash(__s); }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif

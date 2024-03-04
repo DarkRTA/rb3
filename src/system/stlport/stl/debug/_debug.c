@@ -29,15 +29,14 @@
 #  define _STLP_RELEASE_LOCK(_Lock)
 #endif /* _STLP_THREADS */
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 //==========================================================
 //  global non-inline functions
 //==========================================================
 // [ i1, i2)
 template <class _Iterator>
-inline bool 
+inline bool
 __in_range_aux(const _Iterator& __it, const _Iterator& __first,
                const _Iterator& __last, const random_access_iterator_tag &) {
     return ( __it >= __first &&
@@ -210,8 +209,7 @@ void __change_ite_owner(const _Iterator& __it,
   //_STLP_RELEASE_LOCK(__base->_M_lock)
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_DEBUG */
 
@@ -228,8 +226,7 @@ _STLP_END_NAMESPACE
 
 #  if defined (_STLP_ASSERTIONS)
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX] = {
@@ -266,8 +263,7 @@ const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX] = {
   "Unknown problem"
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 // abort()
 #  ifndef _STLP_INTERNAL_CSTDLIB
@@ -285,13 +281,12 @@ _STLP_END_NAMESPACE
 #      include <stl/_range_errors.h>
 #    endif
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
-  STLPORT_CSTD::va_list __args;
+  _STLP_VENDOR_STD::va_list __args;
   va_start( __args, __format_str );
 
 #      if defined (_STLP_DEBUG_MODE_THROWS)
@@ -315,22 +310,18 @@ __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
 #      endif
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #    else
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 template <class _Dummy>
 void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...)
 {}
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 #    endif /* _STLP_DEBUG_MESSAGE */
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 void
@@ -361,22 +352,20 @@ void
 __stl_debug_engine<_Dummy>::_Terminate()
 { abort(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #  endif /* _STLP_ASSERTIONS */
 
 #  if defined (_STLP_DEBUG)
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 //==========================================================
 //  owned_list non-inline methods
 //==========================================================
 
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   _Stamp_all(__l, 0);
@@ -386,7 +375,7 @@ __stl_debug_engine<_Dummy>::_Invalidate_all(__owned_list* __l) {
 
 // boris : this is unasafe routine; should be used from within critical section only !
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
   // crucial
   if (__l->_M_node._M_owner) {
@@ -399,7 +388,7 @@ __stl_debug_engine<_Dummy>::_Stamp_all(__owned_list* __l, __owned_list* __o) {
 }
 
 template <class _Dummy>
-void 
+void
 __stl_debug_engine<_Dummy>::_Verify(const __owned_list* __l) {
   _STLP_ACQUIRE_LOCK(__l->_M_lock);
   if (__l) {
@@ -543,8 +532,7 @@ __stl_debug_engine<_Dummy>::_Check_if_not_owner( const __owned_list * __l, const
   return true;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #  endif /* _STLP_DEBUG */
 

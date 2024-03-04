@@ -35,7 +35,7 @@
 # include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // numpunct facets
@@ -163,7 +163,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_NUMPUNCT_H */
 

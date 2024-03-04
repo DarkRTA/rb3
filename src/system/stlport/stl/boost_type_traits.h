@@ -36,7 +36,7 @@
  * as we don't know what the user might have prefer, specializing the boost
  * type traits or the STLport one.
  */
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp> struct _IsRef {
   enum { _Is = ::boost::is_reference<_Tp>::value };
@@ -138,6 +138,6 @@ struct _TrivialInit {
   static _Ret _Answer() { return _Ret(); }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_BOOST_TYPE_TRAITS_H */

@@ -24,24 +24,24 @@
 #  include <stl/pointers/_tools.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
 #define LIST_IMPL _STLP_PTR_IMPL_NAME(List)
 
 #if defined (_STLP_DEBUG)
 #  define list _STLP_NON_DBG_NAME(list)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
+#else
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class list
 {
-  typedef typename _STLP_PRIV _StorageType<_Tp>::_Type _StorageType;
+  typedef typename _STLP_PRIV::_StorageType<_Tp>::_Type _StorageType;
   typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV LIST_IMPL<_StorageType, _StorageTypeAlloc> _Base;
+  typedef _STLP_PRIV::LIST_IMPL<_StorageType, _StorageTypeAlloc> _Base;
   typedef typename _Base::iterator _BaseIte;
   typedef typename _Base::const_iterator _BaseConstIte;
-  typedef _STLP_PRIV _CastTraits<_StorageType, _Tp> cast_traits;
+  typedef _STLP_PRIV::_CastTraits<_StorageType, _Tp> cast_traits;
   typedef list<_Tp, _Alloc> _Self;
 
 public:
@@ -55,8 +55,8 @@ public:
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
   typedef bidirectional_iterator_tag _Iterator_category;
 
-  typedef _STLP_PRIV _List_iterator<value_type, _Nonconst_traits<value_type> > iterator;
-  typedef _STLP_PRIV _List_iterator<value_type, _Const_traits<value_type> >    const_iterator;
+  typedef _STLP_PRIV::_List_iterator<value_type, _Nonconst_traits<value_type> > iterator;
+  typedef _STLP_PRIV::_List_iterator<value_type, _Const_traits<value_type> >    const_iterator;
 
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
@@ -131,8 +131,8 @@ private:
                           _InputIterator __first, _InputIterator __last,
                           const __false_type&) {
     _M_impl.insert(_BaseIte(__pos._M_node),
-                   typename _STLP_PRIV _IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__first),
-                   typename _STLP_PRIV _IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__last));
+                   typename _STLP_PRIV::_IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__first),
+                   typename _STLP_PRIV::_IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__last));
   }
 
 public:
@@ -180,8 +180,8 @@ private:
   template <class _InputIterator>
   void _M_assign_dispatch(_InputIterator __first, _InputIterator __last,
                           const __false_type&) {
-    _M_impl.assign(typename _STLP_PRIV _IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__first),
-                   typename _STLP_PRIV _IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__last));
+    _M_impl.assign(typename _STLP_PRIV::_IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__first),
+                   typename _STLP_PRIV::_IteWrapper<_StorageType, _Tp, _InputIterator>::_Ite(__last));
   }
 
 public:
@@ -214,31 +214,30 @@ public:
 
   template <class _Predicate>
   void remove_if(_Predicate __pred)
-  { _M_impl.remove_if(_STLP_PRIV _UnaryPredWrapper<_StorageType, _Tp, _Predicate>(__pred)); }
+  { _M_impl.remove_if(_STLP_PRIV::_UnaryPredWrapper<_StorageType, _Tp, _Predicate>(__pred)); }
   template <class _BinaryPredicate>
   void unique(_BinaryPredicate __bin_pred)
-  { _M_impl.unique(_STLP_PRIV _BinaryPredWrapper<_StorageType, _Tp, _BinaryPredicate>(__bin_pred)); }
+  { _M_impl.unique(_STLP_PRIV::_BinaryPredWrapper<_StorageType, _Tp, _BinaryPredicate>(__bin_pred)); }
 
   template <class _StrictWeakOrdering>
   void merge(_Self &__x, _StrictWeakOrdering __comp)
-  { _M_impl.merge(__x._M_impl, _STLP_PRIV _BinaryPredWrapper<_StorageType, _Tp, _StrictWeakOrdering>(__comp)); }
+  { _M_impl.merge(__x._M_impl, _STLP_PRIV::_BinaryPredWrapper<_StorageType, _Tp, _StrictWeakOrdering>(__comp)); }
 
   template <class _StrictWeakOrdering>
   void sort(_StrictWeakOrdering __comp)
-  { _M_impl.sort(_STLP_PRIV _BinaryPredWrapper<_StorageType, _Tp, _StrictWeakOrdering>(__comp)); }
+  { _M_impl.sort(_STLP_PRIV::_BinaryPredWrapper<_StorageType, _Tp, _StrictWeakOrdering>(__comp)); }
 
 private:
   _Base _M_impl;
 };
 
+}
+
 #if defined (list)
 #  undef list
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
 #undef LIST_IMPL
-
-_STLP_END_NAMESPACE
 
 #endif /* _STLP_PTR_SPECIALIZED_LIST_H */
 

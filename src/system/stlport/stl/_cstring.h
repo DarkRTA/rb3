@@ -18,8 +18,8 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cstring)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 #  include <using/cstring>
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CSTRING */

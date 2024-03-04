@@ -24,7 +24,7 @@
 #  include <stl/_hashtable.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_HASH_ITERATOR_TRAITS(UnorderedMapTraitsT, traits)
@@ -45,11 +45,11 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _UnorderedMapTraitsT<value_type> _UnorderedMapTraits;
+  typedef _STLP_PRIV_FORCE::_UnorderedMapTraitsT<value_type> _UnorderedMapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _UnorderedMapTraits,
-                    _STLP_PRIV _Select1st<value_type>, _EqualKey, _Alloc > _Ht;
+                    _STLP_PRIV::_Select1st<value_type>, _EqualKey, _Alloc > _Ht;
 
   typedef typename _Ht::hasher hasher;
   typedef typename _Ht::key_equal key_equal;
@@ -177,11 +177,11 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _UnorderedMultimapTraitsT<value_type> _UnorderedMultimapTraits;
+  typedef _STLP_PRIV::_UnorderedMultimapTraitsT<value_type> _UnorderedMultimapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _UnorderedMultimapTraits,
-                    _STLP_PRIV _Select1st<value_type>, _EqualKey, _Alloc > _Ht;
+                    _STLP_PRIV::_Select1st<value_type>, _EqualKey, _Alloc > _Ht;
 
   typedef typename _Ht::hasher hasher;
   typedef typename _Ht::key_equal key_equal;
@@ -300,12 +300,12 @@ public:
 
 template <class _Key, class _Tp, class _HashFn,  class _EqKey, class _Alloc>
 struct __move_traits<unordered_map<_Key, _Tp, _HashFn, _EqKey, _Alloc> > :
-  _STLP_PRIV __move_traits_help<typename unordered_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_help<typename unordered_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
 {};
 
 template <class _Key, class _Tp, class _HashFn,  class _EqKey, class _Alloc>
 struct __move_traits<unordered_multimap<_Key, _Tp, _HashFn, _EqKey, _Alloc> > :
-  _STLP_PRIV __move_traits_help<typename unordered_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_help<typename unordered_map<_Key, _Tp, _HashFn, _EqKey, _Alloc>::_Ht>
 {};
 
 template <class _Key, class _Tp, class _HashFn,  class _EqKey, class _Alloc>
@@ -361,7 +361,7 @@ public:
   insert_iterator<_Container>& operator++(int) { return *this; }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_UNORDERED_MAP_H */
 

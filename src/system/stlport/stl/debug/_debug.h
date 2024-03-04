@@ -30,9 +30,7 @@
 #    define _STLP_FILE__ __FILE__
 #  endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 enum {
   //General errors
@@ -153,13 +151,11 @@ struct __stl_debug_engine {
 
 typedef __stl_debug_engine<bool> __stl_debugger;
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #  if !defined (_STLP_ASSERT)
 #    define _STLP_ASSERT(expr) \
-       if (!(expr)) { _STLP_PRIV __stl_debugger::_Assert( # expr, _STLP_FILE__, __LINE__); }
+       if (!(expr)) { _STLP_PRIV::__stl_debugger::_Assert( # expr, _STLP_FILE__, __LINE__); }
 #  endif
 
 #endif /* _STLP_ASSERTIONS || _STLP_DEBUG */
@@ -170,8 +166,8 @@ _STLP_END_NAMESPACE
 #  if !defined (_STLP_VERBOSE_ASSERT)
 // fbp : new form not requiring ";"
 #    define _STLP_VERBOSE_ASSERT(expr, __diag_num) \
-       if (!(expr)) { _STLP_PRIV __stl_debugger::_VerboseAssert\
-                               ( # expr,  _STLP_PRIV __diag_num, _STLP_FILE__, __LINE__ ); \
+       if (!(expr)) { _STLP_PRIV::__stl_debugger::_VerboseAssert\
+                               ( # expr,  _STLP_PRIV::__diag_num, _STLP_FILE__, __LINE__ ); \
           }
 #  endif
 
@@ -188,13 +184,13 @@ _STLP_END_NAMESPACE
 
 #  if !defined (_STLP_VERBOSE_RETURN)
 #    define _STLP_VERBOSE_RETURN(__expr,__diag_num) if (!(__expr)) { \
-         _STLP_PRIV __stl_debugger::_IndexedError(__diag_num, _STLP_FILE__ , __LINE__); \
+         _STLP_PRIV::__stl_debugger::_IndexedError(__diag_num, _STLP_FILE__ , __LINE__); \
          return false; }
 #  endif
 
 #  if !defined (_STLP_VERBOSE_RETURN_0)
 #    define _STLP_VERBOSE_RETURN_0(__expr,__diag_num) if (!(__expr)) { \
-         _STLP_PRIV __stl_debugger::_IndexedError(__diag_num, _STLP_FILE__, __LINE__); \
+         _STLP_PRIV::__stl_debugger::_IndexedError(__diag_num, _STLP_FILE__, __LINE__); \
          return 0; }
 #  endif
 
@@ -206,9 +202,7 @@ _STLP_END_NAMESPACE
 #    include <stl/_iterator_base.h>
 #  endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 /*
  * Special debug iterator traits having an additionnal static member
@@ -412,9 +406,7 @@ inline bool __check_if_not_owner( const __owned_list* __owner,
                                              const __true_type&)
 { return __stl_debugger::_Check_if_not_owner(__owner, (const __owned_link&)__it); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_DEBUG */
 

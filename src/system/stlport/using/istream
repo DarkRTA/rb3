@@ -1,12 +1,12 @@
 # include <using/ostream>
 
-using _STLP_NEW_IO_NAMESPACE::basic_istream;
-using _STLP_NEW_IO_NAMESPACE::basic_iostream;
+using _STLP_VENDOR_STD::basic_istream;
+using _STLP_VENDOR_STD::basic_iostream;
 
-using _STLP_NEW_IO_NAMESPACE::istream;
-using _STLP_NEW_IO_NAMESPACE::iostream;
+using _STLP_VENDOR_STD::istream;
+using _STLP_VENDOR_STD::iostream;
 
-using _STLP_NEW_IO_NAMESPACE::wistream;
-using _STLP_NEW_IO_NAMESPACE::wiostream;
+using _STLP_VENDOR_STD::wistream;
+using _STLP_VENDOR_STD::wiostream;
 
-using _STLP_NEW_IO_NAMESPACE::ws;
+using _STLP_VENDOR_STD::ws;

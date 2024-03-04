@@ -30,7 +30,7 @@
 #  include <stl/_num_get.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Declarations of static template members.
@@ -40,7 +40,9 @@ locale::id time_get<_CharT, _InputIterator>::id;
 template <class _CharT, class _OutputIterator>
 locale::id time_put<_CharT, _OutputIterator>::id;
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _InIt, class _CharT>
 const string*
@@ -288,7 +290,9 @@ __put_time(char * __first, char * __last, _OuIt __out_ite,
     return copy((wchar_t*)__wbuf, __eend, __out_ite);
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Ch, class _InIt>
 _InIt
@@ -301,7 +305,7 @@ time_get<_Ch, _InIt>::do_get_date(_InIt __s, _InIt  __end,
   string_iterator __format_end = _M_timeinfo._M_date_format.end();
 
   string_iterator __result
-    = _STLP_PRIV __get_formatted_time(__s, __end, __format, __format_end,
+    = _STLP_PRIV::__get_formatted_time(__s, __end, __format, __format_end,
                                       static_cast<_Ch*>(0), _M_timeinfo,
                                       __str, __err, __t);
   if (__result == __format_end)
@@ -324,7 +328,7 @@ time_get<_Ch, _InIt>::do_get_time(_InIt __s, _InIt  __end,
   string_iterator __format_end = _M_timeinfo._M_time_format.end();
 
   string_iterator __result
-    = _STLP_PRIV __get_formatted_time(__s, __end, __format, __format_end,
+    = _STLP_PRIV::__get_formatted_time(__s, __end, __format, __format_end,
                                       static_cast<_Ch*>(0), _M_timeinfo,
                                       __str, __err, __t);
   __err = __result == __format_end ? ios_base::goodbit
@@ -344,7 +348,7 @@ time_get<_Ch, _InIt>::do_get_year(_InIt __s, _InIt  __end,
     return __s;
   }
 
-  bool __pr =  _STLP_PRIV __get_decimal_integer(__s, __end, __t->tm_year, static_cast<_Ch*>(0));
+  bool __pr =  _STLP_PRIV::__get_decimal_integer(__s, __end, __t->tm_year, static_cast<_Ch*>(0));
   __t->tm_year -= 1900;
   __err = __pr ? ios_base::goodbit : ios_base::failbit;
   if (__s == __end)
@@ -360,7 +364,7 @@ time_get<_Ch, _InIt>::do_get_weekday(_InIt __s, _InIt  __end,
                                      tm *__t) const {
   const ctype<_Ch>& __ct = *static_cast<const ctype<_Ch>*>(__str._M_ctype_facet());
   bool __result =
-    _STLP_PRIV __get_short_or_long_dayname(__s, __end, __ct, _M_timeinfo, __t);
+    _STLP_PRIV::__get_short_or_long_dayname(__s, __end, __ct, _M_timeinfo, __t);
   if (__result)
     __err = ios_base::goodbit;
   else {
@@ -378,7 +382,7 @@ time_get<_Ch, _InIt>::do_get_monthname(_InIt __s, _InIt  __end,
                                        tm *__t) const {
   const ctype<_Ch>& __ct = *static_cast<const ctype<_Ch>*>(__str._M_ctype_facet());
   bool __result =
-    _STLP_PRIV __get_short_or_long_monthname(__s, __end, __ct, _M_timeinfo, __t);
+    _STLP_PRIV::__get_short_or_long_monthname(__s, __end, __ct, _M_timeinfo, __t);
   if (__result)
     __err = ios_base::goodbit;
   else {
@@ -421,13 +425,13 @@ time_put<_Ch,_OutputIter>::do_put(_OutputIter __s, ios_base& __f, _Ch /* __fill 
                                   const tm* __tmb, char __format,
                                   char __modifier ) const {
   char __buf[64];
-  char * __iend = _STLP_PRIV __write_formatted_time(_STLP_ARRAY_AND_SIZE(__buf),
+  char * __iend = _STLP_PRIV::__write_formatted_time(_STLP_ARRAY_AND_SIZE(__buf),
                                                     __format, __modifier, _M_timeinfo, __tmb);
   //  locale __loc = __f.getloc();
-  return _STLP_PRIV __put_time(__buf, __iend, __s, __f, _Ch());
+  return _STLP_PRIV::__put_time(__buf, __iend, __s, __f, _Ch());
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_TIME_FACETS_C */
 

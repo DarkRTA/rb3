@@ -18,12 +18,10 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cmath)
 
-#define _STLP_CMATH_FUNC_NAMESPACE
-
 #define _STLP_MATH_INLINE(float_type, func, cfunc) \
-     inline float_type func (float_type x) { return _STLP_CMATH_FUNC_NAMESPACE::cfunc(x); }
+     inline float_type func (float_type x) { return _STLP_VENDOR_STD::cfunc(x); }
 #define _STLP_MATH_INLINE2(float_type, type, func, cfunc) \
-     inline float_type func (float_type x, type y) { return _STLP_CMATH_FUNC_NAMESPACE::cfunc(x, y); }
+     inline float_type func (float_type x, type y) { return _STLP_VENDOR_STD::cfunc(x, y); }
 #define _STLP_MATH_INLINE_D(float_type, func, cfunc)
 #define _STLP_MATH_INLINE2_D(float_type, type, func, cfunc)
 
@@ -33,20 +31,20 @@ double functions but cast the arguments and return values to the given type. */
 
 #define _STLP_MATH_INLINEX(__type,func,cfunc) \
   inline __type func (__type x) \
-  { return static_cast<__type>(_STLP_CMATH_FUNC_NAMESPACE::cfunc((double)x)); }
+  { return static_cast<__type>(_STLP_VENDOR_STD::cfunc((double)x)); }
 #define _STLP_MATH_INLINE2X(__type1,__type2,func,cfunc) \
   inline __type1 func (__type1 x, __type2 y) \
-  { return static_cast<__type1>(_STLP_CMATH_FUNC_NAMESPACE::cfunc((double)x, y)); }
+  { return static_cast<__type1>(_STLP_VENDOR_STD::cfunc((double)x, y)); }
 #define _STLP_MATH_INLINE2PX(__type,func,cfunc) \
   inline __type func (__type x, __type *y) { \
     double tmp1, tmp2; \
-    tmp1 = _STLP_CMATH_FUNC_NAMESPACE::cfunc(static_cast<double>(x), &tmp2); \
+    tmp1 = _STLP_VENDOR_STD::cfunc(static_cast<double>(x), &tmp2); \
     *y = static_cast<__type>(tmp2); \
     return static_cast<__type>(tmp1); \
   }
 #define _STLP_MATH_INLINE2XX(__type,func,cfunc) \
   inline __type func (__type x, __type y) \
-  { return static_cast<__type>(_STLP_CMATH_FUNC_NAMESPACE::cfunc((double)x, (double)y)); }
+  { return static_cast<__type>(_STLP_VENDOR_STD::cfunc((double)x, (double)y)); }
 
 
 /** rough characterization of compiler and native C library
@@ -172,16 +170,16 @@ _STLP_DEF_MATH_INLINE(tanh, tanh)
 _STLP_DEF_MATH_INLINE2(pow, pow)
 
 #ifndef _STLP_NO_VENDOR_MATH_F
-inline float pow(float __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::powf(__x, static_cast<float>(__y)); }
+inline float pow(float __x, int __y) { return _STLP_VENDOR_STD::powf(__x, static_cast<float>(__y)); }
 #else
-inline float pow(float __x, int __y) { return static_cast<float>(_STLP_CMATH_FUNC_NAMESPACE::pow(__x, static_cast<float>(__y))); }
+inline float pow(float __x, int __y) { return static_cast<float>(_STLP_VENDOR_STD::pow(__x, static_cast<float>(__y))); }
 #endif
-inline double pow(double __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::pow(__x, static_cast<double>(__y)); }
+inline double pow(double __x, int __y) { return _STLP_VENDOR_STD::pow(__x, static_cast<double>(__y)); }
 
 #if !defined(_STLP_NO_VENDOR_MATH_L)
-inline long double pow(long double __x, int __y) { return _STLP_CMATH_FUNC_NAMESPACE::powl(__x, static_cast<long double>(__y)); }
+inline long double pow(long double __x, int __y) { return _STLP_VENDOR_STD::powl(__x, static_cast<long double>(__y)); }
 #else
-inline long double pow(long double __x, int __y) { return static_cast<long double>(_STLP_CMATH_FUNC_NAMESPACE::pow(__x, static_cast<long double>(__y))); }
+inline long double pow(long double __x, int __y) { return static_cast<long double>(_STLP_VENDOR_STD::pow(__x, static_cast<long double>(__y))); }
 #endif
 
 /* C++ Standard is unclear about several call to 'using ::func' if new overloads
@@ -194,7 +192,7 @@ inline long double pow(long double __x, int __y) { return static_cast<long doubl
 #  include <stl/_cstdlib.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using ::abs;
 using ::acos;
 using ::asin;
@@ -219,7 +217,7 @@ using ::sinh;
 using ::sqrt;
 using ::tan;
 using ::tanh;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CMATH */
 

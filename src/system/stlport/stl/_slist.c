@@ -31,9 +31,7 @@
 #  include <stl/_range_errors.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp, class _Alloc>
 _Slist_node_base*
@@ -55,7 +53,9 @@ _Slist_base<_Tp,_Alloc>::_M_erase_after(_Slist_node_base* __before_first,
 #elif defined (_STLP_DEBUG)
 #  define slist _STLP_NON_DBG_NAME(slist)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 /* When building STLport lib Digital Mars Compiler complains on the _M_data assignment
@@ -123,7 +123,9 @@ void slist<_Tp,_Alloc>::remove(const _Tp& __val) {
 }
 
 #if !defined (slist)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 template <class _Tp, class _Alloc, class _BinaryPredicate>
@@ -144,7 +146,7 @@ template <class _Tp, class _Alloc, class _StrictWeakOrdering>
 void _Slist_merge(slist<_Tp, _Alloc>& __that, slist<_Tp, _Alloc>& __x,
                   _StrictWeakOrdering __comp) {
   typedef _Slist_node<_Tp> _Node;
-  typedef _STLP_PRIV _Slist_node_base _Node_base;
+  typedef _STLP_PRIV::_Slist_node_base _Node_base;
   if (__that.get_allocator() == __x.get_allocator()) {
     typename slist<_Tp, _Alloc>::iterator __ite(__that.before_begin());
     while (__ite._M_node->_M_next && !__x.empty()) {
@@ -183,13 +185,13 @@ void _Slist_sort(slist<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
 
   slist<_Tp, _Alloc> __carry(__that.get_allocator());
   const int NB = 64;
-  _STLP_PRIV _CArray<slist<_Tp, _Alloc>, NB> __counter(__carry);
+  _STLP_PRIV::_CArray<slist<_Tp, _Alloc>, NB> __counter(__carry);
   int __fill = 0;
   while (!__that.empty()) {
     __carry.splice_after(__carry.before_begin(), __that, __that.before_begin());
     int __i = 0;
     while (__i < __fill && !__counter[__i].empty()) {
-      _STLP_PRIV _Slist_merge(__counter[__i], __carry, __comp);
+      _STLP_PRIV::_Slist_merge(__counter[__i], __carry, __comp);
       __carry.swap(__counter[__i]);
       ++__i;
     }
@@ -204,7 +206,7 @@ void _Slist_sort(slist<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
   }
 
   for (int __i = 1; __i < __fill; ++__i)
-    _STLP_PRIV _Slist_merge(__counter[__i], __counter[__i - 1], __comp);
+    _STLP_PRIV::_Slist_merge(__counter[__i], __counter[__i - 1], __comp);
   __that.swap(__counter[__fill-1]);
 }
 
@@ -212,9 +214,7 @@ void _Slist_sort(slist<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp) {
 #  undef slist
 #endif
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_SLIST_C */
 

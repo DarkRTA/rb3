@@ -34,7 +34,7 @@
 #  include <stl/type_traits.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Arg, class _Result>
 struct unary_function {
@@ -76,7 +76,9 @@ struct __type_traits<less<_Tp> > {
   typedef _STLportLess is_POD_type;
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Tp>
 less<_Tp> __less(_Tp* ) { return less<_Tp>(); }
@@ -84,7 +86,9 @@ less<_Tp> __less(_Tp* ) { return less<_Tp>(); }
 template <class _Tp>
 equal_to<_Tp> __equal_to(_Tp* ) { return equal_to<_Tp>(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp>
 struct plus : public binary_function<_Tp, _Tp, _Tp> {
@@ -96,7 +100,9 @@ struct minus : public binary_function<_Tp, _Tp, _Tp> {
   _Tp operator()(const _Tp& __x, const _Tp& __y) const { return __x - __y; }
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Tp>
 plus<_Tp> __plus(_Tp* ) { return plus<_Tp>(); }
@@ -104,14 +110,18 @@ plus<_Tp> __plus(_Tp* ) { return plus<_Tp>(); }
 template <class _Tp>
 minus<_Tp> __minus(_Tp* ) { return minus<_Tp>(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp>
 struct multiplies : public binary_function<_Tp, _Tp, _Tp> {
   _Tp operator()(const _Tp& __x, const _Tp& __y) const { return __x * __y; }
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Pair>
 struct _Select1st : public unary_function<_Pair, typename _Pair::first_type> {
@@ -171,9 +181,7 @@ struct _Constant_binary_fun {
 template <class _Tp> inline _Tp __identity_element(plus<_Tp>) {  return _Tp(0); }
 template <class _Tp> inline _Tp __identity_element(multiplies<_Tp>) { return _Tp(1); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_FUNCTION_BASE_H */
 

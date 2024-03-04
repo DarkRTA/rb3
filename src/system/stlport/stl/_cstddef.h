@@ -18,9 +18,9 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cstddef)
 
-_STLP_BEGIN_NAMESPACE
-using _STLP_VENDOR_CSTD::ptrdiff_t;
-using _STLP_VENDOR_CSTD::size_t;
-_STLP_END_NAMESPACE
+namespace _STLP_STD {
+using _STLP_VENDOR_STD::ptrdiff_t;
+using _STLP_VENDOR_STD::size_t;
+}
 
 #endif /* _STLP_INTERNAL_CSTDDEF */
