@@ -175,6 +175,7 @@
             "system/utl/Messages4.cpp": "Matching",
             "system/utl/Profiler.cpp": "NonMatching",
             "system/utl/SongInfoAudioType.cpp": "Matching",
+            "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": "NonMatching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
