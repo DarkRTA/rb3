@@ -1,20 +1,23 @@
 #ifndef UTL_STRINGTABLE_H
 #define UTL_STRINGTABLE_H
+#include <vector>
 
 class StringTable {
 public:
-    int list;
-    int unknown;
+    struct Buf {
+        int size;
+        char* chars;
+    };
+    
+    std::vector<Buf> mBuffers;
+    char* mCurChar;
+    int mCurBuf;
     
     StringTable(int);
+    ~StringTable();
     const char* Add(const char*);
+    void AddBuf(int);
+    void Clear();
 };
 
 #endif
-
-// class StringTable {
-//     // total size: 0x14
-//     class vector mBuffers; // offset 0x0, size 0xC
-//     char * mCurChar; // offset 0xC, size 0x4
-//     int mCurBuf; // offset 0x10, size 0x4
-// };
