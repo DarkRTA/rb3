@@ -2,7 +2,9 @@
 #include "os/Debug.h"
 #include "utl/MemMgr.h"
 #include "system/milo_types.h"
+
 #include <ctype.h>
+#include <string.h>
 
 char gEmpty = 0;
 const char* fname = "Str.cpp";
@@ -238,7 +240,28 @@ bool String::contains(const char *str) const {
     return (index != -1);
 }
 
-// split goes here
+int String::split(const char *token, std::vector<String>& subStrings) const {
+    MILO_ASSERT(subStrings.empty(), 345);
+
+    int lastIndex = 0;
+    int splitIndex = find_first_of(token, 0);
+
+    while (splitIndex != -1U) {
+        if (splitIndex > lastIndex) {
+            String split = substr(lastIndex, splitIndex - lastIndex);
+            subStrings.push_back(split);
+        }
+        lastIndex = splitIndex + 1;
+        splitIndex = find_first_of(token, lastIndex);
+    }
+
+    if (lastIndex < length()) {
+        String split = substr(lastIndex, length() - lastIndex);
+        subStrings.push_back(split);
+    }
+
+    return subStrings.size();
+}
 
 String String::substr(unsigned int pos) const {
     MILO_ASSERT(pos <= mCap, 0x183);

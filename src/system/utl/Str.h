@@ -3,6 +3,7 @@
 #include "utl/TextStream.h"
 #include "utl/Symbol.h"
 #include <string.h>
+#include <vector>
 
 class String : public TextStream {
 public:
@@ -58,8 +59,8 @@ public:
     unsigned int rfind(const char*) const;
 
     bool contains(const char*) const;
-    
-    // split (const char*, vector<String>)
+
+    int split(const char *token, std::vector<String>& subStrings) const;
 
     String substr(unsigned int) const;
     String substr(unsigned int, unsigned int) const;
