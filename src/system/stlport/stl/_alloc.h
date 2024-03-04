@@ -72,7 +72,7 @@
 
 #include "utl/MemMgr.h"
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // Malloc-based allocator.  Typically slower than default alloc below.
 // Typically thread-safe and more storage efficient.
@@ -207,12 +207,12 @@ struct _Alloc_traits {
 
 #if defined (_STLP_USE_PERTHREAD_ALLOC)
 
-_STLP_END_NAMESPACE
+}
 
 // include additional header here
 #  include <stl/_pthread_alloc.h>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #  if defined (_STLP_DEBUG_ALLOC)
 typedef __debug_alloc<__pthread_alloc> __sgi_alloc;
@@ -425,7 +425,9 @@ public:
   }
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Tp>
 struct __alloc_type_traits {
@@ -440,10 +442,12 @@ struct __alloc_type_traits {
   typedef _STLportAlloc is_POD_type;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp>
-struct __type_traits<allocator<_Tp> > : _STLP_PRIV __alloc_type_traits<_Tp> {};
+struct __type_traits<allocator<_Tp> > : _STLP_PRIV::__alloc_type_traits<_Tp> {};
 
 template <class _Tp, class _Alloc>
 inline typename _Alloc_traits<_Tp, _Alloc>::allocator_type
@@ -452,7 +456,9 @@ __stl_alloc_create(const _Alloc& __a, const _Tp*) {
   return _Rebound_type(__a);
 }
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // inheritance is being used for EBO optimization
 template <class _Value, class _Tp, class _MaybeReboundAlloc>
@@ -468,8 +474,8 @@ public:
     _MaybeReboundAlloc(__a), _M_data(__p) {}
 
   _STLP_alloc_proxy (__move_source<_Self> src) :
-    _MaybeReboundAlloc(_STLP_PRIV _AsMoveSource<_Base>(src.get())),
-    _M_data(_STLP_PRIV _AsMoveSource<_Value>(src.get()._M_data)) {}
+    _MaybeReboundAlloc(_STLP_PRIV::_AsMoveSource<_Base>(src.get())),
+    _M_data(_STLP_PRIV::_AsMoveSource<_Value>(src.get()._M_data)) {}
 
 private:
   /* Following are helper methods to detect stateless allocators and avoid
@@ -514,8 +520,7 @@ private:
   { __allocated_n = __n; return allocate(__n); }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_alloc.c>

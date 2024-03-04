@@ -55,13 +55,11 @@ void std_vec_range_assert(size_t value, size_t max, const char *func);
 #  define _STLP_VEC_RANGE_ASSERT(value, max) (void)0
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
 // The vector base class serves one purpose, its constructor and
 // destructor allocate (but don't initialize) storage.  This makes
 // exception safety easier.
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp, class _Size, class _Alloc>
 class _Vector_base {
@@ -105,14 +103,16 @@ protected:
 #elif defined (_STLP_DEBUG)
 #  define vector _STLP_NON_DBG_NAME(Vector)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
-class vector : protected _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>
+class vector : protected _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>
 {
 private:
-  typedef _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc> _Base;
+  typedef _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc> _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
 public:
   typedef typename _Base::allocator_type allocator_type;
@@ -200,35 +200,35 @@ public:
   const_reference at(size_type __n) const { _M_range_check(__n); return (*this)[__n]; }
 
   explicit vector(const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__a) {}
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__a) {}
 
 private:
   //We always call _M_initialize with only 1 parameter. Default parameter
   //is used to allow explicit instanciation of vector with types with no
   //default constructor.
   void _M_initialize(size_type __n, const _Tp& __val = _Tp()) {
-    auto end = _STLP_PRIV __uninitialized_init(this->_M_ptr._M_data, __n, __val);
+    auto end = _STLP_PRIV::__uninitialized_init(this->_M_ptr._M_data, __n, __val);
     this->_M_size = end - this->_M_ptr._M_data;
   }
 
 public:
   explicit vector(size_type __n)
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type())
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type())
   { _M_initialize(__n); }
   vector(size_type __n, const _Tp& __val, const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__n, __a) {
-    auto end = _STLP_PRIV __uninitialized_fill_n(this->_M_ptr._M_data, __n, __val);
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__n, __a) {
+    auto end = _STLP_PRIV::__uninitialized_fill_n(this->_M_ptr._M_data, __n, __val);
     this->_M_size = end - this->_M_ptr._M_data;
   }
 
   vector(const _Self& __x)
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__x.size(), __x.get_allocator()) {
-    auto end = _STLP_PRIV __ucopy_ptrs(__x.begin(), __x.end(), this->_M_data, _TrivialUCopy());
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__x.size(), __x.get_allocator()) {
+    auto end = _STLP_PRIV::__ucopy_ptrs(__x.begin(), __x.end(), this->_M_data, _TrivialUCopy());
     this->_M_size = end - this->_M_ptr._M_data;
   }
 
   vector(__move_source<_Self> src)
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__move_source<_Base>(src.get()))
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__move_source<_Base>(src.get()))
   {}
 
 private:
@@ -253,7 +253,7 @@ public:
   template <class _InputIterator>
   vector(_InputIterator __first, _InputIterator __last,
                const allocator_type& __a = allocator_type() )
-    : _STLP_PRIV _Vector_base<_Tp, _Size, _Alloc>(__a) {
+    : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__a) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
     _M_initialize_aux(__first, __last, _Integral());
   }
@@ -367,9 +367,9 @@ private:
     pointer __new_start = this->_M_ptr.allocate(__len, __len);
     pointer __new_finish = __new_start;
     _STLP_TRY {
-      __new_finish = _STLP_PRIV __uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
+      __new_finish = _STLP_PRIV::__uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
       __new_finish = uninitialized_copy(__first, __last, __new_finish);
-      __new_finish = _STLP_PRIV __uninitialized_move(__pos, end(), __new_finish, _TrivialUCopy(), _Movable());
+      __new_finish = _STLP_PRIV::__uninitialized_move(__pos, end(), __new_finish, _TrivialUCopy(), _Movable());
     }
     _STLP_UNWIND((_STLP_STD::_Destroy_Range(__new_start,__new_finish),
                   this->_M_ptr.deallocate(__new_start,__len)))
@@ -398,9 +398,9 @@ private:
     const size_type __elems_after = end() - __pos;
     pointer __old_finish = end();
     if (__elems_after > __n) {
-      _STLP_PRIV __ucopy_ptrs(end() - __n, end(), end(), _TrivialUCopy());
+      _STLP_PRIV::__ucopy_ptrs(end() - __n, end(), end(), _TrivialUCopy());
       this->_M_size += __n;
-      _STLP_PRIV __copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
+      _STLP_PRIV::__copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
       copy(__first, __last, __pos);
     }
     else {
@@ -408,7 +408,7 @@ private:
       advance(__mid, __elems_after);
       uninitialized_copy(__mid, __last,end());
       this->_M_size += __n - __elems_after;
-      _STLP_PRIV __ucopy_ptrs(__pos, __old_finish,end(), _TrivialUCopy());
+      _STLP_PRIV::__ucopy_ptrs(__pos, __old_finish,end(), _TrivialUCopy());
       this->_M_size += __elems_after;
       copy(__first, __mid, __pos);
     } /* elems_after */
@@ -487,7 +487,7 @@ private:
   }
   iterator _M_erase(iterator __pos, const __false_type& /*_Movable*/) {
     if (__pos + 1 != end())
-      _STLP_PRIV __copy_ptrs(__pos + 1, end(), __pos, _TrivialCopy());
+      _STLP_PRIV::__copy_ptrs(__pos + 1, end(), __pos, _TrivialCopy());
     --this->_M_size;
     _STLP_STD::_Destroy(end());
     return __pos;
@@ -516,7 +516,7 @@ private:
     return __first;
   }
   iterator _M_erase(iterator __first, iterator __last, const __false_type& /*_Movable*/) {
-    pointer __i = _STLP_PRIV __copy_ptrs(__last, end(), __first, _TrivialCopy());
+    pointer __i = _STLP_PRIV::__copy_ptrs(__last, end(), __first, _TrivialCopy());
     _STLP_STD::_Destroy_Range(__i, end());
     this->_M_size = __i - begin();
     return __first;
@@ -592,12 +592,11 @@ private:
   }
 };
 
+}
+
 #if defined (vector)
 #  undef vector
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_vector.c>
@@ -620,7 +619,7 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_vector.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #if !defined (_STLP_NO_EXTENSIONS)
 // This typedef is non-standard.  It is provided for backward compatibility.
@@ -645,7 +644,7 @@ struct _DefaultZeroValue<vector<_Tp, _Size, _Alloc> >
 { typedef typename __type_traits<_Alloc>::has_trivial_default_constructor _Ret; };
 #  endif
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_VECTOR_H */
 

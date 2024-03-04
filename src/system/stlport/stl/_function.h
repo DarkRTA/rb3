@@ -38,7 +38,7 @@
 #  include <stl/_function_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp>
 struct not_equal_to : public binary_function<_Tp, _Tp, bool> {
@@ -277,23 +277,25 @@ compose2(const _Operation1& __fn1, const _Operation2& __fn2,
 }
 
 // identity is an extension: it is not part of the standard.
-template <class _Tp> struct identity : public _STLP_PRIV _Identity<_Tp> {};
+template <class _Tp> struct identity : public _STLP_PRIV::_Identity<_Tp> {};
 // select1st and select2nd are extensions: they are not part of the standard.
-template <class _Pair> struct select1st : public _STLP_PRIV _Select1st<_Pair> {};
-template <class _Pair> struct select2nd : public _STLP_PRIV _Select2nd<_Pair> {};
+template <class _Pair> struct select1st : public _STLP_PRIV::_Select1st<_Pair> {};
+template <class _Pair> struct select2nd : public _STLP_PRIV::_Select2nd<_Pair> {};
 
 template <class _Arg1, class _Arg2>
-struct project1st : public _STLP_PRIV _Project1st<_Arg1, _Arg2> {};
+struct project1st : public _STLP_PRIV::_Project1st<_Arg1, _Arg2> {};
 
 template <class _Arg1, class _Arg2>
-struct project2nd : public _STLP_PRIV _Project2nd<_Arg1, _Arg2> {};
+struct project2nd : public _STLP_PRIV::_Project2nd<_Arg1, _Arg2> {};
 
 
 // constant_void_fun, constant_unary_fun, and constant_binary_fun are
 // extensions: they are not part of the standard.  (The same, of course,
 // is true of the helper functions constant0, constant1, and constant2.)
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Result>
 struct _Constant_void_fun {
@@ -304,25 +306,27 @@ struct _Constant_void_fun {
   const result_type& operator()() const { return _M_val; }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Result>
-struct constant_void_fun : public _STLP_PRIV _Constant_void_fun<_Result> {
+struct constant_void_fun : public _STLP_PRIV::_Constant_void_fun<_Result> {
   constant_void_fun(const _Result& __v)
-    : _STLP_PRIV _Constant_void_fun<_Result>(__v) {}
+    : _STLP_PRIV::_Constant_void_fun<_Result>(__v) {}
 };
 
 template <class _Result, class _Argument = _Result >
-struct constant_unary_fun : public _STLP_PRIV _Constant_unary_fun<_Result, _Argument> {
+struct constant_unary_fun : public _STLP_PRIV::_Constant_unary_fun<_Result, _Argument> {
   constant_unary_fun(const _Result& __v)
-    : _STLP_PRIV _Constant_unary_fun<_Result, _Argument>(__v) {}
+    : _STLP_PRIV::_Constant_unary_fun<_Result, _Argument>(__v) {}
 };
 
 template <class _Result, class _Arg1 = _Result, class _Arg2 = _Arg1 >
 struct constant_binary_fun
-  : public _STLP_PRIV _Constant_binary_fun<_Result, _Arg1, _Arg2> {
+  : public _STLP_PRIV::_Constant_binary_fun<_Result, _Arg1, _Arg2> {
   constant_binary_fun(const _Result& __v)
-    : _STLP_PRIV _Constant_binary_fun<_Result, _Arg1, _Arg2>(__v) {}
+    : _STLP_PRIV::_Constant_binary_fun<_Result, _Arg1, _Arg2>(__v) {}
 };
 
 template <class _Result>
@@ -383,7 +387,7 @@ public:
 
 #endif /* _STLP_NO_EXTENSIONS */
 
-_STLP_END_NAMESPACE
+}
 
 #include <stl/_function_adaptors.h>
 

@@ -254,7 +254,7 @@ using _STLP_VENDOR_STD::time_t;
 #  endif
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #if defined (_STLP_THREADS) && !defined (_STLP_USE_PTHREAD_SPINLOCK)
 // Helper struct.  This is a workaround for various compilers that don't
@@ -683,7 +683,7 @@ inline void _STLP_mutex_base::_M_acquire_lock() {
 }
 #endif
 
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_threads.c>

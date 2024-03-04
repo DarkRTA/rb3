@@ -34,7 +34,7 @@
 #  include <stl/_cstddef.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 struct input_iterator_tag {};
 struct output_iterator_tag {};
@@ -224,12 +224,12 @@ struct _##Motif : public _STLP_STD::_Nonconst_##Traits<_Tp> {    \
 };
 
 #define _STLP_CREATE_ITERATOR_TRAITS(Motif, Traits)             \
-_STLP_MOVE_TO_PRIV_NAMESPACE                                    \
+} namespace _STLP_PRIV {                                   \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(Motif, Traits)                \
-_STLP_MOVE_TO_STD_NAMESPACE
+} namespace _STLP_STD {
 
 #define _STLP_CREATE_HASH_ITERATOR_TRAITS(Motif, Traits)        \
-_STLP_MOVE_TO_PRIV_NAMESPACE                                    \
+} namespace _STLP_PRIV {                                    \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(NonLocal##Motif, Traits)      \
 _STLP_CREATE_ITERATOR_TRAITS_BASE(Local##Motif, Traits)         \
 template <class _Tp>                                            \
@@ -239,7 +239,7 @@ struct _##Motif {                                               \
   typedef _ConstLocal##Motif<_Tp> _ConstLocalTraits;            \
   typedef _Local##Motif<_Tp> _NonConstLocalTraits;              \
 };                                                              \
-_STLP_MOVE_TO_STD_NAMESPACE
+} namespace _STLP_STD {
 
 template <class _InputIter, class _Distance>
 inline void
@@ -276,7 +276,7 @@ inline void advance(_InputIterator& __i, _Distance __n) {
   __advance(__i, __n, _STLP_ITERATOR_CATEGORY(__i, _InputIterator));
 }
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_DEBUG) && !defined (_STLP_DEBUG_H)
 #  include <stl/debug/_debug.h>

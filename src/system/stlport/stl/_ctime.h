@@ -18,7 +18,7 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(ctime)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::size_t;
 using _STLP_VENDOR_STD::clock_t;
 using _STLP_VENDOR_STD::time_t;
@@ -33,6 +33,6 @@ using _STLP_VENDOR_STD::mktime;
 using _STLP_VENDOR_STD::localtime;
 using _STLP_VENDOR_STD::strftime;
 using _STLP_VENDOR_STD::time;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CTIME */

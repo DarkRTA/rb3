@@ -47,7 +47,7 @@ typedef int _STLP_fd;
 #  error "Configure i/o !"
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Class _Filebuf_base, a private base class to factor out the system-
@@ -693,15 +693,11 @@ private:
   basic_filebuf<_CharT, _Traits> _M_buf;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_fstream.c>
 #endif
-
-_STLP_BEGIN_NAMESPACE
-
-_STLP_END_NAMESPACE
 
 #endif /* _STLP_FSTREAM */
 

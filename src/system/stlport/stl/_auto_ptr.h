@@ -19,7 +19,7 @@
 #ifndef _STLP_AUTO_PTR_H
 # define _STLP_AUTO_PTR_H
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 // implementation primitive
 class __ptr_base {
 public:
@@ -111,7 +111,7 @@ public:
   template<class _Tp1> operator auto_ptr<_Tp1>() _STLP_NOTHROW
   { return auto_ptr<_Tp1>(release()); }
 };
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_AUTO_PTR_H */
 

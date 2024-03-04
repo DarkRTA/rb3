@@ -43,7 +43,7 @@
 
 #include <stl/_range_errors.h>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template<class _CharT, class _Alloc>
 _Rope_iterator<_CharT, _Alloc>::_Rope_iterator(rope<_CharT,_Alloc>* __r, size_t __pos)
@@ -354,8 +354,8 @@ rope<_CharT,_Alloc>::_S_leaf_concat_char_iter (
   _CharT* __new_data = __r->_M_size.allocate(_S_rounded_up_size(__old_len + __len));
   _RopeLeaf* __result;
 
-  _STLP_PRIV __ucopy_n(__r->_M_data, __old_len, __new_data);
-  _STLP_PRIV __ucopy_n(__iter, __len, __new_data + __old_len);
+  _STLP_PRIV::__ucopy_n(__r->_M_data, __old_len, __new_data);
+  _STLP_PRIV::__ucopy_n(__iter, __len, __new_data + __old_len);
   _S_construct_null(__new_data + __old_len + __len);
   _STLP_TRY {
     __result = _S_new_RopeLeaf(__new_data, __old_len + __len, __r->get_allocator());
@@ -395,7 +395,7 @@ rope<_CharT,_Alloc>::_S_destr_leaf_concat_char_iter (_RopeLeaf* __r, const _Char
   if (_S_rounded_up_size(__old_len) == _S_rounded_up_size(__old_len + __len)) {
     // The space has been partially initialized for the standard
     // character types.  But that doesn't matter for those types.
-    _STLP_PRIV __ucopy_n(__iter, __len, __r->_M_data + __old_len);
+    _STLP_PRIV::__ucopy_n(__iter, __len, __r->_M_data + __old_len);
     _Terminate_RopeLeaf(__r, __old_len + __len, _IsBasicCharType());
     __r->_M_size._M_data = __old_len + __len;
     // _STLP_ASSERT(__r->_M_ref_count == 1)
@@ -697,7 +697,7 @@ public:
   }
   ~_Rope_flatten_char_consumer() {}
   bool operator() (const _CharT* __leaf, size_t __n) {
-    _STLP_PRIV __ucopy_n(__leaf, __n, _M_buf_ptr);
+    _STLP_PRIV::__ucopy_n(__leaf, __n, _M_buf_ptr);
     _M_buf_ptr += __n;
     return true;
   }
@@ -902,7 +902,7 @@ rope<_CharT,_Alloc>::_S_flatten(_Rope_RopeRep<_CharT, _Alloc>* __r, _CharT* __bu
   case _RopeRep::_S_leaf:
   {
     _RopeLeaf* __l = static_cast<_RopeLeaf*>(__r);
-    return _STLP_PRIV __ucopy_n(__l->_M_data, __l->_M_size._M_data, __buffer).second;
+    return _STLP_PRIV::__ucopy_n(__l->_M_data, __l->_M_size._M_data, __buffer).second;
   }
   case _RopeRep::_S_function:
   case _RopeRep::_S_substringfn:
@@ -1203,13 +1203,13 @@ rope<_CharT,_Alloc>::_S_compare (const _RopeRep* __left,
     const _RopeLeaf* __l = static_cast<const _RopeLeaf*>(__left);
     if (_RopeRep::_S_leaf == __right->_M_tag) {
       const _RopeLeaf* __r = static_cast<const _RopeLeaf*>(__right);
-      return _STLP_PRIV __lexicographical_compare_3way(__l->_M_data, __l->_M_data + __left_len,
+      return _STLP_PRIV::__lexicographical_compare_3way(__l->_M_data, __l->_M_data + __left_len,
                                                        __r->_M_data, __r->_M_data + __right_len);
     }
     else {
       const_iterator __rstart(__right, 0);
       const_iterator __rend(__right, __right_len);
-      return _STLP_PRIV __lexicographical_compare_3way(__l->_M_data, __l->_M_data + __left_len,
+      return _STLP_PRIV::__lexicographical_compare_3way(__l->_M_data, __l->_M_data + __left_len,
                                                        __rstart, __rend);
     }
   }
@@ -1218,13 +1218,13 @@ rope<_CharT,_Alloc>::_S_compare (const _RopeRep* __left,
     const_iterator __lend(__left, __left_len);
     if (_RopeRep::_S_leaf == __right->_M_tag) {
       const _RopeLeaf* __r = static_cast<const _RopeLeaf*>(__right);
-      return _STLP_PRIV __lexicographical_compare_3way(__lstart, __lend,
+      return _STLP_PRIV::__lexicographical_compare_3way(__lstart, __lend,
                                                        __r->_M_data, __r->_M_data + __right_len);
     }
     else {
       const_iterator __rstart(__right, 0);
       const_iterator __rend(__right, __right_len);
-      return _STLP_PRIV __lexicographical_compare_3way(__lstart, __lend, __rstart, __rend);
+      return _STLP_PRIV::__lexicographical_compare_3way(__lstart, __lend, __rstart, __rend);
     }
   }
 }
@@ -1334,7 +1334,7 @@ void _Rope_rotate(_Rope_iterator<_CharT,_Alloc> __first,
   __r += __suffix;
 }
 
-_STLP_END_NAMESPACE
+}
 
 # endif /* ROPEIMPL_H */
 

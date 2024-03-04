@@ -43,7 +43,7 @@
 
 /* Other macros defined by this file:
 
- * namespace-related macros (_STLP_STD, _STLP_BEGIN_NAMESPACE, etc.)
+ * namespace-related macros (_STLP_STD, _STLP_PRIV, etc.)
  * exception-related macros (_STLP_TRY, _STLP_UNWIND, etc.)
  * _STLP_ASSERT, either as a test or as a null macro, depending on
    whether or not _STLP_ASSERTIONS is defined.
@@ -288,19 +288,19 @@
 /* assume std:: namespace for C++ std library if not being told otherwise */
 #    define _STLP_VENDOR_STD std
 
-#    if !defined (_STLP_STD_NAME)
+#    if !defined (_STLP_STD)
 #      if !defined (_STLP_DEBUG)
 #        if !defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpmtx_std
+#            define _STLP_STD  stlpmtx_std
 #          else
-#            define _STLP_STD_NAME  stlp_std
+#            define _STLP_STD  stlp_std
 #          endif
 #        else
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpxmtx_std
+#            define _STLP_STD  stlpxmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpx_std
+#            define _STLP_STD  stlpx_std
 #          endif
 #        endif
 #      else
@@ -311,50 +311,34 @@
  */
 #        if !defined (_STLP_USING_CROSS_NATIVE_RUNTIME_LIB)
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpdmtx_std
+#            define _STLP_STD  stlpdmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpd_std
+#            define _STLP_STD  stlpd_std
 #          endif
 #        else
 #          ifndef _STLP_THREADS
-#            define _STLP_STD_NAME  stlpdxmtx_std
+#            define _STLP_STD  stlpdxmtx_std
 #          else
-#            define _STLP_STD_NAME  stlpdx_std
+#            define _STLP_STD  stlpdx_std
 #          endif
 #        endif
 #      endif
 #    endif
 
-#  define _STLP_STD ::_STLP_STD_NAME
-
-namespace _STLP_STD_NAME { }
-
-#    define _STLP_PRIV_NAME stlp_priv
-namespace _STLP_PRIV_NAME {
-  using namespace _STLP_STD_NAME;
-}
-
-#  define _STLP_BEGIN_NAMESPACE namespace _STLP_STD_NAME {
-#  define _STLP_END_NAMESPACE }
+namespace _STLP_STD { }
 
 #  if !defined (_STLP_DONT_USE_PRIV_NAMESPACE)
-#      define _STLP_PRIV ::_STLP_PRIV_NAME::
-#      define _STLP_MOVE_TO_PRIV_NAMESPACE } namespace _STLP_PRIV_NAME {
-#      define _STLP_MOVE_TO_STD_NAMESPACE } namespace _STLP_STD_NAME {
+#    define _STLP_PRIV stlp_priv
+namespace _STLP_PRIV {
+  using namespace _STLP_STD;
+}
 #  else
-#    define _STLP_PRIV
-#    define _STLP_MOVE_TO_PRIV_NAMESPACE
-#    define _STLP_MOVE_TO_STD_NAMESPACE
+#    define _STLP_PRIV _STLP_STD
 #  endif
 
 /* decide whether or not we use separate namespace for rel ops */
-#  if defined (_STLP_NO_RELOPS_NAMESPACE)
-#    define _STLP_BEGIN_RELOPS_NAMESPACE _STLP_BEGIN_NAMESPACE namespace rel_ops {}
-#    define _STLP_END_RELOPS_NAMESPACE }
-#  else
+#  if !defined (_STLP_NO_RELOPS_NAMESPACE)
 /* Use std::rel_ops namespace */
-#    define _STLP_BEGIN_RELOPS_NAMESPACE _STLP_BEGIN_NAMESPACE namespace rel_ops {
-#    define _STLP_END_RELOPS_NAMESPACE } }
 #    define _STLP_USE_SEPARATE_RELOPS_NAMESPACE
 #  endif /* Use std::rel_ops namespace */
 
@@ -362,7 +346,7 @@ namespace _STLP_PRIV_NAME {
  * Here we don't use a macro as stlport is used as file name by boost
  * and folder name under beos:
  */
-namespace stlport = _STLP_STD_NAME;
+namespace stlport = _STLP_STD;
 
 /* advanced keywords usage */
 #if defined (_STLP_USE_CONTAINERS_EXTENSION)

@@ -18,7 +18,7 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cctype)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::isalnum;
 using _STLP_VENDOR_STD::isalpha;
 using _STLP_VENDOR_STD::iscntrl;
@@ -32,6 +32,6 @@ using _STLP_VENDOR_STD::isupper;
 using _STLP_VENDOR_STD::isxdigit;
 using _STLP_VENDOR_STD::tolower;
 using _STLP_VENDOR_STD::toupper;
-_STLP_END_NAMESPACE
+}
 
 #endif

@@ -34,7 +34,7 @@
 #  include <stl/_deque.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp, class _Sequence = deque<_Tp> >
 class stack
@@ -56,7 +56,7 @@ public:
   explicit stack(const _Sequence& __s) : c(__s) {}
 
   stack(__move_source<_Self> src)
-    : c(_STLP_PRIV _AsMoveSource(src.get().c)) {}
+    : c(_STLP_PRIV::_AsMoveSource(src.get().c)) {}
 
   bool empty() const { return c.empty(); }
   size_type size() const { return c.size(); }
@@ -85,10 +85,10 @@ _STLP_RELOPS_OPERATORS(template < _STLP_STACK_HEADER_ARGS >, stack< _STLP_STACK_
 
 template <class _Tp, class _Sequence>
 struct __move_traits<stack<_Tp, _Sequence> > :
-  _STLP_PRIV __move_traits_aux<_Sequence>
+  _STLP_PRIV::__move_traits_aux<_Sequence>
 {};
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_STACK_H */
 

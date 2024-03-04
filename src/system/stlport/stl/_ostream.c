@@ -26,7 +26,7 @@
 #  include <stl/_num_put.h>            // For basic_streambuf and iterators
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Definitions of non-inline member functions.
@@ -177,7 +177,9 @@ bool basic_ostream<_CharT, _Traits>
   }
 }
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Helper function for numeric output.
 template <class _CharT, class _Traits, class _Number>
@@ -203,7 +205,9 @@ __put_num(basic_ostream<_CharT, _Traits>& __os, _Number __x) {
   return __os;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 /*
  * In the following operators we try to limit code bloat by limiting the
@@ -214,13 +218,13 @@ basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(short
   _STLP_STATIC_ASSERT( sizeof(short) <= sizeof(long) )
   long __tmp = ((this->flags() & _Basic_ios::basefield) != ios_base::dec) ?
                   static_cast<long>(static_cast<unsigned short>(__x)): __x;
-  return _STLP_PRIV __put_num(*this, __tmp);
+  return _STLP_PRIV::__put_num(*this, __tmp);
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(unsigned short __x) {
   _STLP_STATIC_ASSERT( sizeof(unsigned short) <= sizeof(unsigned long) )
-  return _STLP_PRIV __put_num(*this, static_cast<unsigned long>(__x));
+  return _STLP_PRIV::__put_num(*this, static_cast<unsigned long>(__x));
 }
 
 template <class _CharT, class _Traits>
@@ -228,50 +232,50 @@ basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(int _
   _STLP_STATIC_ASSERT( sizeof(int) <= sizeof(long) )
   long __tmp = ((this->flags() & _Basic_ios::basefield) != ios_base::dec) ?
                   static_cast<long>(static_cast<unsigned int>(__x)): __x;
-  return _STLP_PRIV __put_num(*this, __tmp);
+  return _STLP_PRIV::__put_num(*this, __tmp);
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(unsigned int __x) {
   _STLP_STATIC_ASSERT( sizeof(unsigned int) <= sizeof(unsigned long) )
-  return _STLP_PRIV __put_num(*this,  static_cast<unsigned long>(__x));
+  return _STLP_PRIV::__put_num(*this,  static_cast<unsigned long>(__x));
 }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(long __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(unsigned long __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<< (long long __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<< (unsigned long long __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(float __x)
-{ return _STLP_PRIV __put_num(*this,  static_cast<double>(__x)); }
+{ return _STLP_PRIV::__put_num(*this,  static_cast<double>(__x)); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(double __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(long double __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(const void* __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 basic_ostream<_CharT, _Traits>& basic_ostream<_CharT, _Traits>::operator<<(bool __x)
-{ return _STLP_PRIV __put_num(*this,  __x); }
+{ return _STLP_PRIV::__put_num(*this,  __x); }
 
 template <class _CharT, class _Traits>
 void basic_ostream<_CharT, _Traits>::_M_put_char(_CharT __c) {
@@ -423,7 +427,7 @@ basic_ostream<_CharT, _Traits>::write(const char_type* __s, streamsize __n) {
   return *this;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_OSTREAM_C */
 

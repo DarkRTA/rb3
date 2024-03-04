@@ -37,7 +37,7 @@
 #      define _STLP_OWN_STDEXCEPT 1
 #    endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 using _STLP_VENDOR_STD::exception;
 
@@ -51,10 +51,10 @@ public:
 #    else
   {
 #      if !defined (_STLP_USE_SAFE_STRING_FUNCTIONS)
-    strncpy(_M_name, _STLP_PRIV __get_c_string(__str), _S_bufsize);
+    strncpy(_M_name, _STLP_PRIV::__get_c_string(__str), _S_bufsize);
     _M_name[_S_bufsize - 1] = '\0';
 #      else
-    strncpy_s(_STLP_ARRAY_AND_SIZE(_M_name), _STLP_PRIV __get_c_string(__str), _TRUNCATE);
+    strncpy_s(_STLP_ARRAY_AND_SIZE(_M_name), _STLP_PRIV::__get_c_string(__str), _TRUNCATE);
 #      endif
   }
   const char* what() const _STLP_NOTHROW_INHERENTLY { return _M_name; }
@@ -70,7 +70,7 @@ private:
 #      undef _STLP_DO_WARNING_POP
 #    endif
 
-_STLP_END_NAMESPACE
+}
 
 #  endif /*No exceptions */
 

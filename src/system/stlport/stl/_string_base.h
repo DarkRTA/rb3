@@ -33,9 +33,7 @@
 // points to a block of memory that was allocated using _String_base's
 // allocator and whose size is _M_end_of_storage._M_data - _M_start.
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 #ifndef _STLP_SHORT_STRING_SZ
 #  define _STLP_SHORT_STRING_SZ 16
@@ -227,9 +225,7 @@ protected:
 
 #undef _STLP_SHORT_STRING_SZ
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_STRING_BASE_H */
 

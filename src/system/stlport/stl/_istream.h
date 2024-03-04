@@ -37,7 +37,7 @@
 
 #include <stl/_ctraits_fns.h>    // Helper functions that allow char traits
                                 // to be used as function objects.
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 struct _No_Skip_WS {};        // Dummy class used by sentry.
 
@@ -295,7 +295,7 @@ template <class _CharT, class _Traits>
 basic_streambuf<_CharT, _Traits>* _M_get_istreambuf(basic_istream<_CharT, _Traits>& __istr)
 { return __istr.rdbuf(); }
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_istream.c>

@@ -27,9 +27,7 @@
 //  numeric_limits static members
 //==========================================================
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 #  define __declare_numeric_base_member(__type, __mem, _Init) \
 template <class __number> \
@@ -211,8 +209,6 @@ long double _LimG<__dummy>::get_LD_sNaN() {
 #undef _STLP_LDOUBLE_QNAN_REP
 #undef _STLP_LDOUBLE_SNAN_REP
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_LIMITS_C_INCLUDED */

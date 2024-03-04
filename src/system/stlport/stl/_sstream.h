@@ -37,7 +37,7 @@
 #  include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // This version of basic_stringbuf relies on the internal details of
@@ -216,7 +216,7 @@ private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_sstream.c>

@@ -16,9 +16,7 @@
 #ifndef _STLP_STRING_SUM_H
 #define _STLP_STRING_SUM_H
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 /*char wrapper to simulate basic_string*/
 template <class _CharT>
@@ -406,8 +404,6 @@ private:
   mutable basic_string<_CharT, _Traits, _Alloc> _M_storage;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /*_STLP_STRING_SUM_H*/

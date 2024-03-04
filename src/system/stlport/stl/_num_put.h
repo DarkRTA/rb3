@@ -39,7 +39,7 @@
 # include <stl/_iostream_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // num_put facet
 template <class _CharT, class _OutputIter = ostreambuf_iterator<_CharT, char_traits<_CharT> > >
@@ -107,9 +107,11 @@ protected:
   virtual _OutputIter do_put(_OutputIter __s, ios_base& __f, _CharT __fill, const void* __val) const;
 };
 
+}
+
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION)
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Integer>
 char*
@@ -141,11 +143,9 @@ extern void __insert_grouping(__iostring&, size_t, const string&, char, char, ch
 extern ptrdiff_t __insert_grouping(wchar_t*, wchar_t*, const string&, wchar_t, wchar_t, wchar_t, int);
 extern void __insert_grouping(__iowstring&, size_t, const string&, wchar_t, wchar_t, wchar_t, int);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
 
 #endif /* _STLP_EXPOSE_STREAM_IMPLEMENTATION */
-
-_STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_num_put.c>

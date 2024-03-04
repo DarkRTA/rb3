@@ -23,7 +23,7 @@
 
 #include _STLP_NATIVE_CPP_RUNTIME_HEADER(new)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 using _STLP_VENDOR_STD::bad_alloc;
 
@@ -33,12 +33,12 @@ using _STLP_VENDOR_STD::nothrow;
 using _STLP_VENDOR_STD::new_handler;
 using _STLP_VENDOR_STD::set_new_handler;
 
-_STLP_END_NAMESPACE
+}
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 inline void* __stl_new(size_t __n)   { return ::operator new(__n); }
 inline void  __stl_delete(void* __p) { ::operator delete(__p); }
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_NEW */
 

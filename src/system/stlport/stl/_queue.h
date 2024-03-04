@@ -46,7 +46,7 @@
 #  include <stl/_function_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp, class _Sequence = deque<_Tp> >
 class queue
@@ -69,7 +69,7 @@ public:
   explicit queue(const _Sequence& __c) : c(__c) {}
 
   queue(__move_source<_Self> src)
-    : c(_STLP_PRIV _AsMoveSource(src.get().c)) {}
+    : c(_STLP_PRIV::_AsMoveSource(src.get().c)) {}
 
   bool empty() const { return c.empty(); }
   size_type size() const { return c.size(); }
@@ -121,8 +121,8 @@ public:
     { make_heap(c.begin(), c.end(), comp); }
 
   priority_queue(__move_source<_Self> src)
-    : c(_STLP_PRIV _AsMoveSource(src.get().c)),
-      comp(_STLP_PRIV _AsMoveSource(src.get().comp)) {}
+    : c(_STLP_PRIV::_AsMoveSource(src.get().c)),
+      comp(_STLP_PRIV::_AsMoveSource(src.get().comp)) {}
 
   template <class _InputIterator>
   priority_queue(_InputIterator __first, _InputIterator __last)
@@ -164,15 +164,15 @@ public:
 
 template <class _Tp, class _Sequence>
 struct __move_traits<queue<_Tp, _Sequence> > :
-  _STLP_PRIV __move_traits_aux<_Sequence>
+  _STLP_PRIV::__move_traits_aux<_Sequence>
 {};
 
 template <class _Tp, class _Sequence, class _Compare>
 struct __move_traits<priority_queue<_Tp, _Sequence, _Compare> > :
-  _STLP_PRIV __move_traits_aux2<_Sequence, _Compare>
+  _STLP_PRIV::__move_traits_aux2<_Sequence, _Compare>
 {};
 
-_STLP_END_NAMESPACE
+}
 
 #undef comp
 

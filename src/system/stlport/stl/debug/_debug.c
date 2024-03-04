@@ -29,8 +29,7 @@
 #  define _STLP_RELEASE_LOCK(_Lock)
 #endif /* _STLP_THREADS */
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 //==========================================================
 //  global non-inline functions
@@ -210,8 +209,7 @@ void __change_ite_owner(const _Iterator& __it,
   //_STLP_RELEASE_LOCK(__base->_M_lock)
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_DEBUG */
 
@@ -228,8 +226,7 @@ _STLP_END_NAMESPACE
 
 #  if defined (_STLP_ASSERTIONS)
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX] = {
@@ -266,8 +263,7 @@ const char* __stl_debug_engine<_Dummy>::_Message_table[_StlMsg_MAX] = {
   "Unknown problem"
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 // abort()
 #  ifndef _STLP_INTERNAL_CSTDLIB
@@ -285,8 +281,7 @@ _STLP_END_NAMESPACE
 #      include <stl/_range_errors.h>
 #    endif
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 void
@@ -315,22 +310,18 @@ __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...) {
 #      endif
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #    else
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 template <class _Dummy>
 void
 __stl_debug_engine<_Dummy>::_Message(const char * __format_str, ...)
 {}
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 #    endif /* _STLP_DEBUG_MESSAGE */
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 void
@@ -361,15 +352,13 @@ void
 __stl_debug_engine<_Dummy>::_Terminate()
 { abort(); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #  endif /* _STLP_ASSERTIONS */
 
 #  if defined (_STLP_DEBUG)
 
-_STLP_BEGIN_NAMESPACE
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 //==========================================================
 //  owned_list non-inline methods
@@ -543,8 +532,7 @@ __stl_debug_engine<_Dummy>::_Check_if_not_owner( const __owned_list * __l, const
   return true;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #  endif /* _STLP_DEBUG */
 

@@ -34,7 +34,7 @@
 #  include <stl/_hashtable.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_HASH_ITERATOR_TRAITS(HashSetTraitsT, Const_traits)
@@ -46,10 +46,10 @@ class hash_set
 {
   typedef hash_set<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV _HashSetTraitsT<_Value> _HashSetTraits;
+  typedef _STLP_PRIV::_HashSetTraitsT<_Value> _HashSetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
-                    _HashSetTraits, _STLP_PRIV _Identity<_Value>, _EqualKey, _Alloc> _Ht;
+                    _HashSetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;
 public:
   typedef typename _Ht::key_type key_type;
   typedef typename _Ht::value_type value_type;
@@ -170,10 +170,10 @@ class hash_multiset
 {
   typedef hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV _HashMultisetTraitsT<_Value> _HashMultisetTraits;
+  typedef _STLP_PRIV::_HashMultisetTraitsT<_Value> _HashMultisetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
-                    _HashMultisetTraits, _STLP_PRIV _Identity<_Value>, _EqualKey, _Alloc> _Ht;
+                    _HashMultisetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;
 
   typedef typename _Ht::key_type key_type;
   typedef typename _Ht::value_type value_type;
@@ -303,12 +303,12 @@ public:
 
 template <class _Value, class _HashFcn, class _EqualKey, class _Alloc>
 struct __move_traits<hash_set<_Value, _HashFcn, _EqualKey, _Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename hash_set<_Value, _HashFcn, _EqualKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_aux<typename hash_set<_Value, _HashFcn, _EqualKey, _Alloc>::_Ht>
 {};
 
 template <class _Value, class _HashFcn, class _EqualKey, class _Alloc>
 struct __move_traits<hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc>::_Ht>
+  _STLP_PRIV::__move_traits_aux<typename hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc>::_Ht>
 {};
 
 template <class _Value, class _HashFcn, class _EqualKey, class _Alloc>
@@ -364,7 +364,7 @@ public:
   insert_iterator<_Container>& operator++(int) { return *this; }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_HASH_SET_H */
 

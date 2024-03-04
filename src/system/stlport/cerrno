@@ -25,9 +25,9 @@
 
 #ifndef errno
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::errno;
-_STLP_END_NAMESPACE
+}
 
 #endif
 

@@ -25,7 +25,7 @@
 
 #  if defined(_STLP_USE_EXCEPTIONS)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class logic_error : public __Named_exception {
 public:
@@ -99,7 +99,7 @@ public:
 #    endif
 };
 
-_STLP_END_NAMESPACE
+}
 
 #  endif
 

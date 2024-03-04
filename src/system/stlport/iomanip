@@ -31,7 +31,7 @@
 #include <stl/_ioserr.h>
 #include <stl/_istream.h>              // Includes <ostream> and <ios>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Machinery for defining manipulators.
@@ -161,7 +161,7 @@ setfill(_CharT __c) {
   return _Setfill_Manip<_CharT>(__c);
 }
 
-_STLP_END_NAMESPACE
+}
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x1030)
 #  include <stl/_epilog.h>

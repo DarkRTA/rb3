@@ -30,9 +30,7 @@
 #  include <stl/_slist_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Dummy>
 _Slist_node_base* 
@@ -93,9 +91,7 @@ _Sl_global<_Dummy>::size(_Slist_node_base* __node) {
   return __result;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_SLIST_BASE_C */
 

@@ -18,12 +18,12 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(csetjmp)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::jmp_buf;
 #if !defined (setjmp)
 using _STLP_VENDOR_STD::setjmp;
 #endif
 using _STLP_VENDOR_STD::longjmp;
-_STLP_END_NAMESPACE
+}
 
 #endif

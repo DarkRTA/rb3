@@ -50,9 +50,7 @@
 #  include <stl/_function_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 struct _List_node_base {
   _List_node_base* _M_next;
@@ -140,16 +138,20 @@ struct _List_iterator : public _List_iterator_base {
   }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 template <class _Tp, class _Traits>
-struct __type_traits<_STLP_PRIV _List_iterator<_Tp, _Traits> > {
+struct __type_traits<_STLP_PRIV::_List_iterator<_Tp, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
   typedef __true_type    has_trivial_assignment_operator;
   typedef __true_type    has_trivial_destructor;
   typedef __false_type   is_POD_type;
 };
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Base class that encapsulates details of allocators and helps
 // to simplify EH
@@ -201,14 +203,18 @@ public:
 #elif defined (_STLP_DEBUG)
 #  define list _STLP_NON_DBG_NAME(list)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class list;
 
 #if !defined (list)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 // helper functions to reduce code duplication
@@ -226,16 +232,18 @@ template <class _Tp, class _Alloc, class _StrictWeakOrdering>
 void _S_sort(list<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp);
 
 #if !defined (list)
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc>
-class list : public _STLP_PRIV _List_base<_Tp, _Alloc>
+class list : public _STLP_PRIV::_List_base<_Tp, _Alloc>
 {
-  typedef _STLP_PRIV _List_base<_Tp, _Alloc> _Base;
+  typedef _STLP_PRIV::_List_base<_Tp, _Alloc> _Base;
   typedef list<_Tp, _Alloc> _Self;
-  typedef _STLP_PRIV _List_node<_Tp> _Node;
-  typedef _STLP_PRIV _List_node_base _Node_base;
+  typedef _STLP_PRIV::_List_node<_Tp> _Node;
+  typedef _STLP_PRIV::_List_node_base _Node_base;
 public:
   typedef _Tp value_type;
   typedef value_type* pointer;
@@ -248,8 +256,8 @@ public:
   typedef bidirectional_iterator_tag _Iterator_category;
 
 public:
-  typedef _STLP_PRIV _List_iterator<_Tp, _Nonconst_traits<_Tp> > iterator;
-  typedef _STLP_PRIV _List_iterator<_Tp, _Const_traits<_Tp> >    const_iterator;
+  typedef _STLP_PRIV::_List_iterator<_Tp, _Nonconst_traits<_Tp> > iterator;
+  typedef _STLP_PRIV::_List_iterator<_Tp, _Const_traits<_Tp> >    const_iterator;
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
 protected:
@@ -265,7 +273,7 @@ protected:
 public:
   explicit list(size_type __n, const_reference __val = value_type(),
                 const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
+    : _STLP_PRIV::_List_base<_Tp, _Alloc>(__a)
     { this->insert(begin(), __n, __val); }
 
   // We don't need any dispatching tricks here, because insert does all of
@@ -273,17 +281,17 @@ public:
   template <class _InputIterator>
   list(_InputIterator __first, _InputIterator __last,
        const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__a)
+    : _STLP_PRIV::_List_base<_Tp, _Alloc>(__a)
   { _M_insert(begin(), __first, __last); }
 
   explicit list(const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__a) {}
+    : _STLP_PRIV::_List_base<_Tp, _Alloc>(__a) {}
 
-  list(const _Self& __x) : _STLP_PRIV _List_base<_Tp, _Alloc>(__x.get_allocator())
+  list(const _Self& __x) : _STLP_PRIV::_List_base<_Tp, _Alloc>(__x.get_allocator())
   { _M_insert(begin(), __x.begin(), __x.end()); }
 
   list(__move_source<_Self> src)
-    : _STLP_PRIV _List_base<_Tp, _Alloc>(__move_source<_Base>(src.get())) {}
+    : _STLP_PRIV::_List_base<_Tp, _Alloc>(__move_source<_Base>(src.get())) {}
 
   ~list() {}
 
@@ -474,7 +482,7 @@ public:
   void splice(iterator __pos, _Self& __x) {
     if (!__x.empty()) {
       if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV _List_global_inst::_Transfer(__pos._M_node, __x.begin()._M_node, __x.end()._M_node);
+        _STLP_PRIV::_List_global_inst::_Transfer(__pos._M_node, __x.begin()._M_node, __x.end()._M_node);
       }
       else {
         insert(__pos, __x.begin(), __x.end());
@@ -487,7 +495,7 @@ public:
     ++__j;
     if (__pos == __i || __pos == __j) return;
     if (this->get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV _List_global_inst::_Transfer(__pos._M_node, __i._M_node, __j._M_node);
+      _STLP_PRIV::_List_global_inst::_Transfer(__pos._M_node, __i._M_node, __j._M_node);
     }
     else {
       insert(__pos, *__i);
@@ -497,7 +505,7 @@ public:
   void splice(iterator __pos, _Self& __x, iterator __first, iterator __last) {
     if (__first != __last) {
       if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV _List_global_inst::_Transfer(__pos._M_node, __first._M_node, __last._M_node);
+        _STLP_PRIV::_List_global_inst::_Transfer(__pos._M_node, __first._M_node, __last._M_node);
       }
       else {
         insert(__pos, __first, __last);
@@ -518,10 +526,10 @@ public:
   }
 
   void unique()
-  { _STLP_PRIV _S_unique(*this, equal_to<value_type>()); }
+  { _STLP_PRIV::_S_unique(*this, equal_to<value_type>()); }
 
   void merge(_Self& __x)
-  { _STLP_PRIV _S_merge(*this, __x, less<value_type>()); }
+  { _STLP_PRIV::_S_merge(*this, __x, less<value_type>()); }
 
   void reverse() {
     _Node_base* __p = &this->_M_node._M_data;
@@ -533,32 +541,31 @@ public:
   }
 
   void sort()
-  { _STLP_PRIV _S_sort(*this, less<value_type>()); }
+  { _STLP_PRIV::_S_sort(*this, less<value_type>()); }
 
   template <class _Predicate>
   void remove_if(_Predicate __pred)
-  { _STLP_PRIV _S_remove_if(*this, __pred); }
+  { _STLP_PRIV::_S_remove_if(*this, __pred); }
   template <class _BinaryPredicate>
   void unique(_BinaryPredicate __binary_pred)
-  { _STLP_PRIV _S_unique(*this, __binary_pred); }
+  { _STLP_PRIV::_S_unique(*this, __binary_pred); }
 
   template <class _StrictWeakOrdering>
   void merge(_Self& __x,
              _StrictWeakOrdering __comp) {
-    _STLP_PRIV _S_merge(*this, __x, __comp);
+    _STLP_PRIV::_S_merge(*this, __x, __comp);
   }
 
   template <class _StrictWeakOrdering>
   void sort(_StrictWeakOrdering __comp)
-  { _STLP_PRIV _S_sort(*this, __comp); }
+  { _STLP_PRIV::_S_sort(*this, __comp); }
 };
+
+}
 
 #if defined (list)
 #  undef list
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_list.c>
@@ -572,7 +579,7 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_list.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp, class _Alloc>
 inline bool
@@ -604,7 +611,7 @@ struct __move_traits<list<_Tp, _Alloc> > {
   typedef typename __move_traits<_Alloc>::complete complete;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_LIST_IMPL_H */
 

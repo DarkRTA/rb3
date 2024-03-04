@@ -30,7 +30,7 @@
 #  include <stl/_cmath.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp> struct complex;
 
@@ -765,11 +765,11 @@ complex<long double> polar(const long double&, const long double&);
 
 #if !defined (_STLP_USE_NO_IOSTREAMS)
 
-_STLP_END_NAMESPACE
+}
 
 #  include <iosfwd>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // Complex output, in the form (re,im).  We use a two-step process
 // involving stringstream so that we get the padding right.
@@ -865,7 +865,7 @@ complex<long double> sinh(const complex<long double>&);
 complex<long double> cosh(const complex<long double>&);
 complex<long double> tanh(const complex<long double>&);
 
-_STLP_END_NAMESPACE
+}
 
 #ifndef _STLP_LINK_TIME_INSTANTIATION
 #  include <stl/_complex.c>

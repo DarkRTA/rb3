@@ -18,7 +18,7 @@
 
 #  include _STLP_NATIVE_CPP_C_HEADER(cstdlib)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::div_t;
 using _STLP_VENDOR_STD::ldiv_t;
 using _STLP_VENDOR_STD::size_t;
@@ -61,7 +61,7 @@ using _STLP_VENDOR_STD::lldiv;
 
 using _STLP_VENDOR_STD::rand;
 using _STLP_VENDOR_STD::srand;
-_STLP_END_NAMESPACE
+}
 
 inline long abs(long __x) { return _STLP_VENDOR_STD::labs(__x); }
 inline _STLP_VENDOR_STD::ldiv_t div(long __x, long __y) { return _STLP_VENDOR_STD::ldiv(__x, __y); }
@@ -83,9 +83,9 @@ inline long long abs(long long __x) { return __x < 0 ? -__x : __x; }
 #  include <stl/_cmath.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::abs;
 using _STLP_VENDOR_STD::div;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CSTDLIB */

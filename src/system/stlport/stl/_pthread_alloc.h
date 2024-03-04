@@ -56,9 +56,7 @@ STLport libraries.
 #  include <stl/_alloc.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 struct _Pthread_alloc_per_thread_state;
 
@@ -88,9 +86,11 @@ public:
   static void * reallocate(void *__p, size_t __old_sz, size_t& __new_sz);
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
 
-typedef _STLP_PRIV _Pthread_alloc __pthread_alloc;
+namespace _STLP_STD {
+
+typedef _STLP_PRIV::_Pthread_alloc __pthread_alloc;
 typedef __pthread_alloc pthread_alloc;
 
 template <class _Tp>
@@ -211,7 +211,9 @@ template <class _Tp, class _Atype>
 struct _Alloc_traits<_Tp, pthread_allocator<_Atype> >
 { typedef pthread_allocator<_Tp> allocator_type; };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Tp>
 struct __pthread_alloc_type_traits {
@@ -225,10 +227,12 @@ struct __pthread_alloc_type_traits {
   typedef _STLportAlloc is_POD_type;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp>
-struct __type_traits<pthread_allocator<_Tp> > : _STLP_PRIV __pthread_alloc_type_traits<_Tp> {};
+struct __type_traits<pthread_allocator<_Tp> > : _STLP_PRIV::__pthread_alloc_type_traits<_Tp> {};
 
 //
 // per_thread_allocator<> : this allocator always return memory to the same thread
@@ -360,7 +364,9 @@ template <class _Tp, class _Atype>
 struct _Alloc_traits<_Tp, per_thread_allocator<_Atype> >
 { typedef per_thread_allocator<_Tp> allocator_type; };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _Tp>
 struct __perthread_alloc_type_traits {
@@ -374,13 +380,15 @@ struct __perthread_alloc_type_traits {
   typedef __false_type is_POD_type;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Tp>
-struct __type_traits<per_thread_allocator<_Tp> > : _STLP_PRIV __perthread_alloc_type_traits<_Tp> {};
+struct __type_traits<per_thread_allocator<_Tp> > : _STLP_PRIV::__perthread_alloc_type_traits<_Tp> {};
 
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_PTHREAD_ALLOC */
 

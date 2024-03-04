@@ -30,9 +30,7 @@
 #  include <stl/_deque.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 // Non-inline member functions from _Deque_base.
 
@@ -88,7 +86,9 @@ void _Deque_base<_Tp,_Alloc>::_M_destroy_nodes(_Tp** __nstart,
 #elif defined (_STLP_DEBUG)
 #  define deque _STLP_NON_DBG_NAME(deque)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc >
@@ -409,14 +409,14 @@ typename deque<_Tp, _Alloc>::iterator deque<_Tp,_Alloc>::_M_fill_insert_aux(iter
     _STLP_TRY {
       if (__elems_before >= difference_type(__n)) {
         iterator __start_n = this->_M_start + difference_type(__n);
-        _STLP_PRIV __ucopy(this->_M_start, __start_n, __new_start);
+        _STLP_PRIV::__ucopy(this->_M_start, __start_n, __new_start);
         this->_M_start = __new_start;
         copy(__start_n, __pos, __old_start);
         fill(__pos - difference_type(__n), __pos, __x_copy);
         __pos -= difference_type(__n);
       }
       else {
-        _STLP_PRIV __uninitialized_copy_fill(this->_M_start, __pos, __new_start,
+        _STLP_PRIV::__uninitialized_copy_fill(this->_M_start, __pos, __new_start,
                                              this->_M_start, __x_copy);
         this->_M_start = __new_start;
         fill(__old_start, __pos, __x_copy);
@@ -433,13 +433,13 @@ typename deque<_Tp, _Alloc>::iterator deque<_Tp,_Alloc>::_M_fill_insert_aux(iter
     _STLP_TRY {
       if (__elems_after > difference_type(__n)) {
         iterator __finish_n = this->_M_finish - difference_type(__n);
-        _STLP_PRIV __ucopy(__finish_n, this->_M_finish, this->_M_finish);
+        _STLP_PRIV::__ucopy(__finish_n, this->_M_finish, this->_M_finish);
         this->_M_finish = __new_finish;
         copy_backward(__pos, __finish_n, __old_finish);
         fill(__pos, __pos + difference_type(__n), __x_copy);
       }
       else {
-        _STLP_PRIV __uninitialized_fill_copy(this->_M_finish, __pos + difference_type(__n),
+        _STLP_PRIV::__uninitialized_fill_copy(this->_M_finish, __pos + difference_type(__n),
                                              __x_copy, __pos, this->_M_finish);
         this->_M_finish = __new_finish;
         fill(__pos, __old_finish, __x_copy);
@@ -513,12 +513,11 @@ void deque<_Tp,_Alloc>::_M_reallocate_map(size_type __nodes_to_add,
   this->_M_finish._M_set_node(__new_nstart + __old_num_nodes - 1);
 }
 
+}
+
 #if defined (deque)
 #  undef deque
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #endif /*  _STLP_DEQUE_C */
 

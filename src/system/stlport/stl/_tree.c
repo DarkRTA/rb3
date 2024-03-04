@@ -39,9 +39,7 @@
 #  define _Rb_tree _STLP_NON_DBG_NAME(Rb_tree)
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 
@@ -704,8 +702,7 @@ bool _Rb_tree<_Key,_Compare,_Value,_KeyOfValue,_Traits,_Alloc>::__rb_verify() co
 }
 #endif /* _STLP_DEBUG */
 
-_STLP_MOVE_TO_STD_NAMESPACE
-_STLP_END_NAMESPACE
+}
 
 #if defined (_Rb_tree)
 #  undef _Rb_tree

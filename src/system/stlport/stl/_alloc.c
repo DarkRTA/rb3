@@ -26,7 +26,7 @@
 #  include <stl/_alloc.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Alloc>
 void * __debug_alloc<_Alloc>::allocate(size_t __n) {
@@ -73,7 +73,7 @@ __debug_alloc<_Alloc>::deallocate(void *__p, size_t __n) {
   __allocator_type::deallocate(__real_p, __real_n);
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_ALLOC_C */
 

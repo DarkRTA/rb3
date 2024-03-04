@@ -18,15 +18,19 @@
 #ifndef _STLP_TYPE_MANIPS_H
 #define _STLP_TYPE_MANIPS_H
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 struct __true_type {};
 struct __false_type {};
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 using _STLP_STD::__true_type;
 using _STLP_STD::__false_type;
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 //bool to type
 template <int _Is>
@@ -189,6 +193,6 @@ struct _IsConst { typedef __false_type _Ret; };
 template <class _Tp>
 struct _IsConst <const _Tp> { typedef __true_type _Ret; };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_TYPE_MANIPS_H */

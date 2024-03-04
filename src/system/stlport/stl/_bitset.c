@@ -25,9 +25,7 @@
 
 #define __BITS_PER_WORD (CHAR_BIT * sizeof(unsigned long))
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 //
 // Definitions of non-inline functions from _Base_bitset.
 //
@@ -160,17 +158,15 @@ _Base_bitset<_Nw>::_M_do_find_next(size_t __prev,
   return __not_found;
 } // end _M_do_find_next
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
 
 #  if !defined (_STLP_USE_NO_IOSTREAMS)
-
-_STLP_END_NAMESPACE
 
 #ifndef _STLP_STRING_IO_H
 #  include <stl/_string_io.h> //includes _istream.h and _ostream.h
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT, class _Traits, size_t _Nb>
 basic_istream<_CharT, _Traits>&
@@ -221,9 +217,10 @@ operator<<(basic_ostream<_CharT, _Traits>& __os,
   return __os << __tmp;
 }
 
+}
+
 #  endif /* !_STLP_USE_NO_IOSTREAMS */
 
-_STLP_END_NAMESPACE
 
 #undef __BITS_PER_WORD
 #undef bitset

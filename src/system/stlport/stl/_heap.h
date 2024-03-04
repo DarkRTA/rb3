@@ -30,7 +30,7 @@
 #ifndef _STLP_INTERNAL_HEAP_H
 #define _STLP_INTERNAL_HEAP_H
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // Heap-manipulation functions: push_heap, pop_heap, make_heap, sort_heap.
 
@@ -112,7 +112,7 @@ sort_heap(_RandomAccessIterator __first,
     pop_heap(__first, __last--, __comp);
 }
 
-_STLP_END_NAMESPACE
+}
 
 # if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_heap.c>

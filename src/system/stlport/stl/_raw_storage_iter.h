@@ -34,7 +34,7 @@
 #  include <stl/_iterator_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _ForwardIterator, class _Tp>
 class raw_storage_iterator
@@ -66,7 +66,7 @@ public:
   }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_RAW_STORAGE_ITERATOR_H */
 

@@ -24,12 +24,14 @@
 #  include <stl/type_traits.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Some usefull declarations:
 template <class _Tp> struct less;
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _StorageT, class _ValueT, class _BinaryPredicate>
 struct _BinaryPredWrapper;
@@ -342,8 +344,6 @@ private:
   _BinaryPredicate _M_pred;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_POINTERS_SPEC_TOOLS_H */

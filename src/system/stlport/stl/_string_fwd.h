@@ -23,7 +23,7 @@
 #  include <iosfwd>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT,
           class _Traits = char_traits<_CharT>,
@@ -33,15 +33,15 @@ class basic_string;
 typedef basic_string<char, char_traits<char>, allocator<char> > string;
 typedef basic_string<wchar_t, char_traits<wchar_t>, allocator<wchar_t> > wstring;
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 //This function limits header dependency between exception and string
 //implementation. It is implemented in _string.h
 const char* __get_c_string(const string& __str);
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_STRING_FWD_H */
 

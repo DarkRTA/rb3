@@ -30,9 +30,7 @@
 
 #define _STLP_DBG_ALLOCATOR( _Tp ) _STLP_DEFAULT_ALLOCATOR( _Tp )
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 //============================================================
 
@@ -394,9 +392,7 @@ protected:
   }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* INTERNAL_H */
 

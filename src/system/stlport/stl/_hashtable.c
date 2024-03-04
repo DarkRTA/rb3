@@ -28,11 +28,13 @@
 #  include <stl/_hashtable.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #if defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 #  define __PRIME_LIST_BODY { \
   7ul,          23ul, \
@@ -64,13 +66,17 @@ _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
 
 #  undef __PRIME_LIST_BODY
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 #endif
 
 #if defined (_STLP_DEBUG)
 #  define hashtable _STLP_NON_DBG_NAME(hashtable)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 // fbp: these defines are for outline methods definitions.
@@ -329,7 +335,7 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   //as a size_type. The result concerning the respect of the max_load_factor will then be
   //undefined.
   __num_buckets_hint = (max) (__num_buckets_hint, (size_type)((float)size() / max_load_factor()));
-  size_type __num_buckets = _STLP_PRIV _Stl_prime_type::_S_next_size(__num_buckets_hint);
+  size_type __num_buckets = _STLP_PRIV::_Stl_prime_type::_S_next_size(__num_buckets_hint);
   _M_rehash(__num_buckets);
 }
 
@@ -343,7 +349,7 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   }
 
   size_type __num_buckets_hint = (size_type)((float)(max) (__num_elements_hint, size()) / max_load_factor());
-  size_type __num_buckets = _STLP_PRIV _Stl_prime_type::_S_next_size(__num_buckets_hint);
+  size_type __num_buckets = _STLP_PRIV::_Stl_prime_type::_S_next_size(__num_buckets_hint);
 #if defined (_STLP_DEBUG)
   _M_check();
 #endif
@@ -429,13 +435,11 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   _M_max_load_factor = __ht._M_max_load_factor;
 }
 
+}
 
 #if defined (_STLP_DEBUG)
 #  undef hashtable
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #endif /*  _STLP_HASHTABLE_C */
 

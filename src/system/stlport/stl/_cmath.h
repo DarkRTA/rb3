@@ -192,7 +192,7 @@ inline long double pow(long double __x, int __y) { return static_cast<long doubl
 #  include <stl/_cstdlib.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using ::abs;
 using ::acos;
 using ::asin;
@@ -217,7 +217,7 @@ using ::sinh;
 using ::sqrt;
 using ::tan;
 using ::tanh;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CMATH */
 

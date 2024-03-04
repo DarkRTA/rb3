@@ -34,7 +34,7 @@
 #  include <stl/_iterator_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // This is the new version of reverse_iterator, as defined in the
 //  draft C++ standard.  It relies on the iterator_traits template,
@@ -246,7 +246,7 @@ inserter(_Container& __x, _Iterator __i) {
   return insert_iterator<_Container>(__x, __iter(__i));
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_ITERATOR_H */
 

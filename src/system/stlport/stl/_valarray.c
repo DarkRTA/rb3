@@ -30,7 +30,7 @@
 # include <stl/_valarray.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp>
 _Valarray_bool valarray<_Tp>:: operator!() const {
@@ -187,7 +187,7 @@ valarray<_Tp> valarray<_Tp>::cshift(int __m) const
   return __tmp;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_VALARRAY_C */
 

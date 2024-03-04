@@ -34,7 +34,7 @@
 #  include <stl/_tree.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //Specific iterator traits creation
 _STLP_CREATE_ITERATOR_TRAITS(MapTraitsT, traits)
@@ -67,12 +67,12 @@ public:
   };
 
 protected:
-  typedef _STLP_PRIV _MapTraitsT<value_type> _MapTraits;
+  typedef _STLP_PRIV::_MapTraitsT<value_type> _MapTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Select1st<value_type>,
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Select1st<value_type>,
                               _MapTraits, _Alloc> _Rep_type;
 
   typedef typename _Rep_type::pointer pointer;
@@ -213,12 +213,12 @@ public:
 
 protected:
   //Specific iterator traits creation
-  typedef _STLP_PRIV _MultimapTraitsT<value_type> _MultimapTraits;
+  typedef _STLP_PRIV::_MultimapTraitsT<value_type> _MultimapTraits;
 
 public:
   //Following typedef have to be public for __move_traits specialization.
-  typedef _STLP_PRIV _Rb_tree<key_type, key_compare,
-                              value_type, _STLP_PRIV _Select1st<value_type>,
+  typedef _STLP_PRIV::_Rb_tree<key_type, key_compare,
+                              value_type, _STLP_PRIV::_Select1st<value_type>,
                               _MultimapTraits, _Alloc> _Rep_type;
 
   typedef typename _Rep_type::pointer pointer;
@@ -331,15 +331,15 @@ public:
 
 template <class _Key, class _Tp, class _Compare, class _Alloc>
 struct __move_traits<map<_Key,_Tp,_Compare,_Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename map<_Key,_Tp,_Compare,_Alloc>::_Rep_type>
+  _STLP_PRIV::__move_traits_aux<typename map<_Key,_Tp,_Compare,_Alloc>::_Rep_type>
 {};
 
 template <class _Key, class _Tp, class _Compare, class _Alloc>
 struct __move_traits<multimap<_Key,_Tp,_Compare,_Alloc> > :
-  _STLP_PRIV __move_traits_aux<typename multimap<_Key,_Tp,_Compare,_Alloc>::_Rep_type>
+  _STLP_PRIV::__move_traits_aux<typename multimap<_Key,_Tp,_Compare,_Alloc>::_Rep_type>
 {};
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_MAP_H */
 

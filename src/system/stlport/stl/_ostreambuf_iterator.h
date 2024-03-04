@@ -27,14 +27,14 @@
 # include <stl/_streambuf.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template<class _CharT, class _Traits>
 extern basic_streambuf<_CharT, _Traits>* __get_ostreambuf(basic_ostream<_CharT, _Traits>&);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 // The default template argument is declared in iosfwd
 template <class _CharT, class _Traits>
@@ -77,9 +77,9 @@ private:
 
 template <class _CharT, class _Traits>
 inline ostreambuf_iterator<_CharT, _Traits>::ostreambuf_iterator(basic_ostream<_CharT, _Traits>& __o) _STLP_NOTHROW
-  : _M_buf(_STLP_PRIV __get_ostreambuf(__o)), _M_ok(_M_buf != 0) {}
+  : _M_buf(_STLP_PRIV::__get_ostreambuf(__o)), _M_ok(_M_buf != 0) {}
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_OSTREAMBUF_ITERATOR_H */
 

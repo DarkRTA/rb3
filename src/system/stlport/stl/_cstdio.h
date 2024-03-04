@@ -18,7 +18,7 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cstdio)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::FILE;
 using _STLP_VENDOR_STD::fpos_t;
 using _STLP_VENDOR_STD::size_t;
@@ -67,6 +67,6 @@ using _STLP_VENDOR_STD::vfprintf;
 using _STLP_VENDOR_STD::vprintf;
 using _STLP_VENDOR_STD::vsprintf;
 using _STLP_VENDOR_STD::vsnprintf;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CSTDIO */

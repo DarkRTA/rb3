@@ -76,9 +76,7 @@
  *    if and only if the pointer is in the range [start.node, finish.node].
  */
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp>
 struct _Deque_iterator_base {
@@ -297,16 +295,20 @@ operator<=(const _Deque_iterator<_Tp, _Nonconst_traits<_Tp> >& __x,
 { return !(__y < __x); }
 #endif /* _STLP_USE_SEPARATE_RELOPS_NAMESPACE */
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 template <class _Tp, class _Traits>
-struct __type_traits<_STLP_PRIV _Deque_iterator<_Tp, _Traits> > {
+struct __type_traits<_STLP_PRIV::_Deque_iterator<_Tp, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
   typedef __true_type    has_trivial_assignment_operator;
   typedef __true_type    has_trivial_destructor;
   typedef __false_type   is_POD_type;
 };
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 /* Deque base class.  It has two purposes.  First, its constructor
  *  and destructor allocate (but don't initialize) storage.  This makes
@@ -369,13 +371,15 @@ protected:
 #elif defined (_STLP_DEBUG)
 #  define deque _STLP_NON_DBG_NAME(deque)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
-class deque : protected _STLP_PRIV _Deque_base<_Tp, _Alloc>
+class deque : protected _STLP_PRIV::_Deque_base<_Tp, _Alloc>
 {
-  typedef _STLP_PRIV _Deque_base<_Tp, _Alloc> _Base;
+  typedef _STLP_PRIV::_Deque_base<_Tp, _Alloc> _Base;
   typedef deque<_Tp, _Alloc> _Self;
 public:                         // Basic types
   typedef _Tp value_type;
@@ -452,11 +456,11 @@ public:                         // Basic accessors
 
 public:                         // Constructor, destructor.
   explicit deque(const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__a, 0) {}
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(__a, 0) {}
 
   deque(const _Self& __x)
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__x.get_allocator(), __x.size())
-  { _STLP_PRIV __ucopy(__x.begin(), __x.end(), this->_M_start); }
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(__x.get_allocator(), __x.size())
+  { _STLP_PRIV::__ucopy(__x.begin(), __x.end(), this->_M_start); }
 
 private:
   void _M_initialize(size_type __n, const value_type& __val = _Tp())
@@ -464,10 +468,10 @@ private:
 
 public:
   explicit deque(size_type __n)
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(allocator_type(), __n)
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(allocator_type(), __n)
   { _M_initialize(__n); }
   deque(size_type __n, const value_type& __val, const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__a, __n)
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(__a, __n)
   { _M_fill_initialize(__val, __false_type()); }
 
 protected:
@@ -488,13 +492,13 @@ public:
   template <class _InputIterator>
   deque(_InputIterator __first, _InputIterator __last,
         const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__a) {
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(__a) {
     typedef typename _IsIntegral<_InputIterator>::_Ret _Integral;
     _M_initialize_dispatch(__first, __last, _Integral());
   }
 
   deque(__move_source<_Self> src)
-    : _STLP_PRIV _Deque_base<_Tp, _Alloc>(__move_source<_Base>(src.get()))
+    : _STLP_PRIV::_Deque_base<_Tp, _Alloc>(__move_source<_Base>(src.get()))
   {}
 
   ~deque()
@@ -840,7 +844,7 @@ protected:                        // Internal insert functions
         else {
           _ForwardIterator __mid = __first;
           advance(__mid, difference_type(__n) - __elemsbefore);
-          _STLP_PRIV __uninitialized_copy_copy(this->_M_start, __pos, __first, __mid, __new_start);
+          _STLP_PRIV::__uninitialized_copy_copy(this->_M_start, __pos, __first, __mid, __new_start);
           this->_M_start = __new_start;
           copy(__mid, __last, __old_start);
         }
@@ -863,7 +867,7 @@ protected:                        // Internal insert functions
         else {
           _ForwardIterator __mid = __first;
           advance(__mid, __elemsafter);
-          _STLP_PRIV __uninitialized_copy_copy(__mid, __last, __pos, this->_M_finish, this->_M_finish);
+          _STLP_PRIV::__uninitialized_copy_copy(__mid, __last, __pos, this->_M_finish, this->_M_finish);
           this->_M_finish = __new_finish;
           copy(__first, __mid, __pos);
         }
@@ -908,12 +912,11 @@ protected:                      // Allocation of _M_map and nodes
   void _M_reallocate_map(size_type __nodes_to_add, bool __add_at_front);
 };
 
+}
+
 #if defined (deque)
 #  undef deque
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
-
-_STLP_END_NAMESPACE
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_deque.c>
@@ -927,7 +930,7 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_deque.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #define _STLP_TEMPLATE_CONTAINER deque<_Tp, _Alloc>
 #define _STLP_TEMPLATE_HEADER    template <class _Tp, class _Alloc>
@@ -941,7 +944,7 @@ struct __move_traits<deque<_Tp, _Alloc> > {
   typedef typename __move_traits<_Alloc>::complete complete;
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_DEQUE_H */
 

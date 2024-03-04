@@ -34,7 +34,7 @@
 # include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT> class collate {};
 template <class _CharT> class collate_byname {};
@@ -162,7 +162,7 @@ __locale_do_operator_call (const locale& __loc,
                         __y.data(), __y.data() + __y.size()) < 0;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_COLLATE_H */
 

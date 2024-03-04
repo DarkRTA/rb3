@@ -30,7 +30,7 @@
 
 #include _STLP_NATIVE_CPP_RUNTIME_HEADER(exception)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 using _STLP_VENDOR_STD::exception;
 using _STLP_VENDOR_STD::bad_exception;
@@ -45,6 +45,6 @@ using _STLP_VENDOR_STD::set_terminate;
 
 using _STLP_VENDOR_STD::uncaught_exception;
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_EXCEPTION */

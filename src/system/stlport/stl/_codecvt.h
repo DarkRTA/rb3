@@ -35,7 +35,7 @@
 #  include <stl/_algobase.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class codecvt_base {
 public:
@@ -395,7 +395,7 @@ private:
   codecvt_byname<wchar_t, char, mbstate_t>& operator =(const codecvt_byname<wchar_t, char, mbstate_t>&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CODECVT_H */
 

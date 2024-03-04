@@ -38,7 +38,7 @@
 #include <stl/_iosfwd.h>
 #include <stl/_istream.h>
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // Note: cin and wcin are both associated with stdio.  The C standard
 // (Amendment 1, section 4.6.2.1) says that it is an error to mix
@@ -64,7 +64,7 @@ extern wostream wcout;
 extern wostream wcerr;
 extern wostream wclog;
 
-_STLP_END_NAMESPACE
+}
 
 //# elif defined ( _STLP_USE_NO_IOSTREAMS )
 //#  include <stl/_null_stream.h>

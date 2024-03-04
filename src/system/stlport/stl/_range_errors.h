@@ -30,14 +30,14 @@
 #  define _STLP_EXTERN_RANGE_ERRORS
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 void _STLP_FUNCTION_THROWS __stl_throw_runtime_error(const char* __msg);
 void _STLP_FUNCTION_THROWS __stl_throw_range_error(const char* __msg);
 void _STLP_FUNCTION_THROWS __stl_throw_out_of_range(const char* __msg);
 void _STLP_FUNCTION_THROWS __stl_throw_length_error(const char* __msg);
 void _STLP_FUNCTION_THROWS __stl_throw_invalid_argument(const char* __msg);
 void _STLP_FUNCTION_THROWS __stl_throw_overflow_error(const char* __msg);
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_EXTERN_RANGE_ERRORS)
 
@@ -62,7 +62,7 @@ _STLP_END_NAMESPACE
 // For mode without library and throwing range errors, include the
 // stdexcept header and throw the appropriate exceptions directly.
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 inline void __stl_throw_runtime_error(const char* __msg)
 { _STLP_THROW_MSG(runtime_error, __msg); }
@@ -82,7 +82,7 @@ inline void __stl_throw_invalid_argument(const char* __msg)
 inline void __stl_throw_overflow_error(const char* __msg)
 { _STLP_THROW_MSG(overflow_error, __msg); }
 
-_STLP_END_NAMESPACE
+}
 
 #  undef _STLP_THROW_MSG
 

@@ -36,7 +36,7 @@
 #  include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // messages facets
 
@@ -47,9 +47,13 @@ class messages_base {
 
 template <class _CharT> class messages {};
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 class _Messages;
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template<>
 class messages<char> : public locale::facet, public messages_base {
@@ -72,7 +76,7 @@ public:
   static locale::id id;
 
 private:
-  messages(_STLP_PRIV _Messages*);
+  messages(_STLP_PRIV::_Messages*);
 
 protected:
   messages(size_t, _Locale_messages*);
@@ -86,7 +90,7 @@ protected:
   void _M_initialize(const char* __name);
 
 private:
-  _STLP_PRIV _Messages* _M_impl;
+  _STLP_PRIV::_Messages* _M_impl;
 };
 
 template<>
@@ -110,7 +114,7 @@ public:
   static locale::id id;
 
 private:
-  messages(_STLP_PRIV _Messages*);
+  messages(_STLP_PRIV::_Messages*);
 
 protected:
   messages(size_t, _Locale_messages*);
@@ -124,7 +128,7 @@ protected:
   void _M_initialize(const char* __name);
 
 private:
-  _STLP_PRIV _Messages* _M_impl;
+  _STLP_PRIV::_Messages* _M_impl;
 };
 
 template <class _CharT> class messages_byname {};
@@ -165,7 +169,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_MESSAGES_H */
 

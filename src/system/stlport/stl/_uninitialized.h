@@ -42,9 +42,7 @@
 #  include <stl/_construct.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 // uninitialized_copy
 
@@ -124,23 +122,27 @@ inline _OutputIter __ucopy_aux(_InputIter __first, _InputIter __last, _OutputIte
                  _STLP_DISTANCE_TYPE(__first, _InputIter));
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _InputIter, class _ForwardIter>
 inline _ForwardIter
 uninitialized_copy(_InputIter __first, _InputIter __last, _ForwardIter __result)
-{ return _STLP_PRIV __ucopy_aux(__first, __last, __result, _BothPtrType< _InputIter, _ForwardIter>::_Answer()); }
+{ return _STLP_PRIV::__ucopy_aux(__first, __last, __result, _BothPtrType< _InputIter, _ForwardIter>::_Answer()); }
 
 inline char*
 uninitialized_copy(const char* __first, const char* __last, char* __result)
-{ return  (char*)_STLP_PRIV __ucopy_trivial(__first, __last, __result); }
+{ return  (char*)_STLP_PRIV::__ucopy_trivial(__first, __last, __result); }
 
 inline wchar_t*
 uninitialized_copy(const wchar_t* __first, const wchar_t* __last, wchar_t* __result)
-{ return  (wchar_t*)_STLP_PRIV __ucopy_trivial (__first, __last, __result); }
+{ return  (wchar_t*)_STLP_PRIV::__ucopy_trivial (__first, __last, __result); }
 
 // uninitialized_copy_n (not part of the C++ standard)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _InputIter, class _Size, class _ForwardIter>
 inline
@@ -169,18 +171,22 @@ __ucopy_n(_RandomAccessIter __first, _Size __count, _ForwardIter __result,
 template <class _InputIter, class _Size, class _ForwardIter>
 inline pair<_InputIter, _ForwardIter>
 __ucopy_n(_InputIter __first, _Size __count, _ForwardIter __result)
-{ return _STLP_PRIV __ucopy_n(__first, __count, __result, _STLP_ITERATOR_CATEGORY(__first, _InputIter)); }
+{ return _STLP_PRIV::__ucopy_n(__first, __count, __result, _STLP_ITERATOR_CATEGORY(__first, _InputIter)); }
 
 #if !defined (_STLP_NO_EXTENSIONS)
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _InputIter, class _Size, class _ForwardIter>
 inline pair<_InputIter, _ForwardIter>
 uninitialized_copy_n(_InputIter __first, _Size __count, _ForwardIter __result)
-{ return _STLP_PRIV __ucopy_n(__first, __count, __result); }
+{ return _STLP_PRIV::__ucopy_n(__first, __count, __result); }
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 #endif
 
@@ -210,11 +216,13 @@ inline void __ufill(_ForwardIter __first, _ForwardIter __last,
   _STLP_UNWIND(_STLP_STD::_Destroy_Range(__first, __cur))
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _ForwardIter, class _Tp>
 inline void uninitialized_fill(_ForwardIter __first, _ForwardIter __last,  const _Tp& __x) {
-  _STLP_PRIV __ufill(__first, __last, __x,
+  _STLP_PRIV::__ufill(__first, __last, __x,
                      _STLP_ITERATOR_CATEGORY(__first, _ForwardIter),
                      _STLP_DISTANCE_TYPE(__first, _ForwardIter));
 }
@@ -237,7 +245,9 @@ inline void uninitialized_fill(char* __first, char* __last, const char& __val) {
   memset(__first, static_cast<unsigned char>(__tmp), __last - __first);
 }
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x) {
@@ -297,12 +307,14 @@ template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __uninitialized_init(_ForwardIter __first, _Size __n, const _Tp& __val)
 { return __uinit_aux(__first, __n, __val, _UseTrivialInit(__first)._Answer()); }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _ForwardIter, class _Size, class _Tp>
 inline void
 uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x)
-{ _STLP_PRIV __ufill_n(__first, __n, __x, _STLP_ITERATOR_CATEGORY(__first, _ForwardIter)); }
+{ _STLP_PRIV::__ufill_n(__first, __n, __x, _STLP_ITERATOR_CATEGORY(__first, _ForwardIter)); }
 
 // Extensions: __uninitialized_copy_copy, __uninitialized_copy_fill,
 // __uninitialized_fill_copy.
@@ -312,7 +324,9 @@ uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x)
 //  copies [first2, last2) into
 //  [result + (last1 - first1), result + (last1 - first1) + (last2 - first2)).
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _InputIter1, class _InputIter2, class _ForwardIter>
 inline _ForwardIter
@@ -372,9 +386,7 @@ __uninitialized_move(_InputIter __first, _InputIter __last, _ForwardIter __resul
   return __result;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_UNINITIALIZED_H */
 

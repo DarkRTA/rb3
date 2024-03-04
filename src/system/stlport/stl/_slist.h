@@ -51,9 +51,7 @@
 #  include <stl/_slist_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Tp>
 class _Slist_node : public _Slist_node_base {
@@ -119,16 +117,20 @@ public:
   }
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 template <class _Tp, class _Traits>
-struct __type_traits<_STLP_PRIV _Slist_iterator<_Tp, _Traits> > {
+struct __type_traits<_STLP_PRIV::_Slist_iterator<_Tp, _Traits> > {
   typedef __false_type   has_trivial_default_constructor;
   typedef __true_type    has_trivial_copy_constructor;
   typedef __true_type    has_trivial_assignment_operator;
   typedef __true_type    has_trivial_destructor;
   typedef __false_type   is_POD_type;
 };
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Base class that encapsulates details of allocators and simplifies EH
 template <class _Tp, class _Alloc>
@@ -175,14 +177,18 @@ public:
 #elif defined (_STLP_DEBUG)
 #  define slist _STLP_NON_DBG_NAME(slist)
 #else
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class slist;
 
 #if !defined (slist)
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 #endif
 
 // helper functions to reduce code duplication
@@ -197,14 +203,16 @@ template <class _Tp, class _Alloc, class _StrictWeakOrdering>
 void _Slist_sort(slist<_Tp, _Alloc>& __that, _StrictWeakOrdering __comp);
 
 #if !defined (slist)
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 #endif
 
 template <class _Tp, class _Alloc>
-class slist : protected _STLP_PRIV _Slist_base<_Tp,_Alloc>
+class slist : protected _STLP_PRIV::_Slist_base<_Tp,_Alloc>
 {
 private:
-  typedef _STLP_PRIV _Slist_base<_Tp,_Alloc> _Base;
+  typedef _STLP_PRIV::_Slist_base<_Tp,_Alloc> _Base;
   typedef slist<_Tp,_Alloc> _Self;
 public:
   typedef _Tp                value_type;
@@ -217,14 +225,14 @@ public:
   typedef ptrdiff_t         difference_type;
   typedef forward_iterator_tag _Iterator_category;
 
-  typedef _STLP_PRIV _Slist_iterator<_Tp, _Nonconst_traits<_Tp> > iterator;
-  typedef _STLP_PRIV _Slist_iterator<_Tp, _Const_traits<_Tp> >    const_iterator;
+  typedef _STLP_PRIV::_Slist_iterator<_Tp, _Nonconst_traits<_Tp> > iterator;
+  typedef _STLP_PRIV::_Slist_iterator<_Tp, _Const_traits<_Tp> >    const_iterator;
 
   typedef typename _Base::allocator_type allocator_type;
 
 private:
-  typedef _STLP_PRIV _Slist_node<_Tp> _Node;
-  typedef _STLP_PRIV _Slist_node_base _Node_base;
+  typedef _STLP_PRIV::_Slist_node<_Tp> _Node;
+  typedef _STLP_PRIV::_Slist_node_base _Node_base;
 
   _Node* _M_create_node(const value_type& __x = _Tp()) {
     _Node* __node = this->_M_head.allocate(1);
@@ -241,11 +249,11 @@ public:
   allocator_type get_allocator() const { return _Base::get_allocator(); }
 
   explicit slist(const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__a) {}
+    : _STLP_PRIV::_Slist_base<_Tp,_Alloc>(__a) {}
 
   explicit slist(size_type __n, const value_type& __x = _Tp(),
                  const allocator_type& __a =  allocator_type())
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__a)
+    : _STLP_PRIV::_Slist_base<_Tp,_Alloc>(__a)
     { _M_insert_after_fill(&this->_M_head._M_data, __n, __x); }
 
   // We don't need any dispatching tricks here, because _M_insert_after_range
@@ -253,15 +261,15 @@ public:
   template <class _InputIterator>
   slist(_InputIterator __first, _InputIterator __last,
         const allocator_type& __a = allocator_type())
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__a)
+    : _STLP_PRIV::_Slist_base<_Tp,_Alloc>(__a)
     { _M_insert_after_range(&this->_M_head._M_data, __first, __last); }
 
   slist(const _Self& __x)
-    : _STLP_PRIV _Slist_base<_Tp,_Alloc>(__x.get_allocator())
+    : _STLP_PRIV::_Slist_base<_Tp,_Alloc>(__x.get_allocator())
     { _M_insert_after_range(&this->_M_head._M_data, __x.begin(), __x.end()); }
 
   slist(__move_source<_Self> src)
-    : _STLP_PRIV _Slist_base<_Tp, _Alloc>(__move_source<_Base>(src.get())) {}
+    : _STLP_PRIV::_Slist_base<_Tp, _Alloc>(__move_source<_Base>(src.get())) {}
 
   _Self& operator= (const _Self& __x);
 
@@ -330,7 +338,7 @@ public:
   const_iterator end() const { return const_iterator(); }
 
   size_type size() const
-  { return _STLP_PRIV _Sl_global_inst::size(this->_M_head._M_data._M_next); }
+  { return _STLP_PRIV::_Sl_global_inst::size(this->_M_head._M_data._M_next); }
 
   size_type max_size() const { return size_type(-1); }
 
@@ -348,7 +356,7 @@ public:
 #else
   void push_front(const value_type& __x)   {
 #endif
-    _STLP_PRIV __slist_make_link(&this->_M_head._M_data, _M_create_node(__x));
+    _STLP_PRIV::__slist_make_link(&this->_M_head._M_data, _M_create_node(__x));
   }
 
   void pop_front() {
@@ -359,23 +367,23 @@ public:
   }
 
   iterator previous(const_iterator __pos) {
-    return iterator(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node));
+    return iterator(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node));
   }
   const_iterator previous(const_iterator __pos) const {
     return const_iterator(const_cast<_Node_base*>(
-                                       _STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data,
+                                       _STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data,
                                                                                __pos._M_node)));
   }
 
 private:
   _Node* _M_insert_after(_Node_base* __pos, const value_type& __x = _Tp()) {
-    return static_cast<_Node*>(_STLP_PRIV __slist_make_link(__pos, _M_create_node(__x)));
+    return static_cast<_Node*>(_STLP_PRIV::__slist_make_link(__pos, _M_create_node(__x)));
   }
 
   void _M_insert_after_fill(_Node_base* __pos,
                             size_type __n, const value_type& __x) {
     for (size_type __i = 0; __i < __n; ++__i)
-      __pos = _STLP_PRIV __slist_make_link(__pos, _M_create_node(__x));
+      __pos = _STLP_PRIV::__slist_make_link(__pos, _M_create_node(__x));
   }
 
   template <class _InIter>
@@ -397,7 +405,7 @@ private:
                              _InIter __first, _InIter __last,
                              const __false_type&) {
     while (__first != __last) {
-      __pos = _STLP_PRIV __slist_make_link(__pos, _M_create_node(*__first));
+      __pos = _STLP_PRIV::__slist_make_link(__pos, _M_create_node(*__first));
       ++__first;
     }
   }
@@ -436,7 +444,7 @@ private:
   template <class _Integer>
   void _M_splice_range(_Node_base* __pos, _Integer __n, _Integer __x,
                        const __true_type&) {
-    _M_insert_after_fill(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos),
+    _M_insert_after_fill(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos),
                          __n, __x);
   }
 
@@ -467,12 +475,12 @@ public:
   }
 
   iterator insert(iterator __pos, const value_type& __x = _Tp()) {
-    return iterator(_M_insert_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+    return iterator(_M_insert_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
                     __x));
   }
 
   void insert(iterator __pos, size_type __n, const value_type& __x) {
-    _M_insert_after_fill(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node), __n, __x);
+    _M_insert_after_fill(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node), __n, __x);
   }
 
   // We don't need any dispatching tricks here, because _M_insert_after_range
@@ -489,9 +497,9 @@ public:
   { return iterator(this->_M_erase_after(__before_first._M_node, __last._M_node)); }
 
   iterator erase(iterator __pos)
-  { return iterator(this->_M_erase_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node))); }
+  { return iterator(this->_M_erase_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node))); }
   iterator erase(iterator __first, iterator __last)
-  { return iterator(this->_M_erase_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __first._M_node), __last._M_node)); }
+  { return iterator(this->_M_erase_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __first._M_node), __last._M_node)); }
 
   void resize(size_type new_size, const value_type& __x = _Tp());
 
@@ -505,7 +513,7 @@ public:
                     iterator __before_first, iterator __before_last) {
     if (__before_first != __before_last) {
       if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV _Sl_global_inst::__splice_after(__pos._M_node,
+        _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
                                                    __before_first._M_node, __before_last._M_node);
       }
       else {
@@ -519,7 +527,7 @@ public:
   //  after __pos.  This is constant time.
   void splice_after(iterator __pos, _Self& __x, iterator __prev) {
     if (this->get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV _Sl_global_inst::__splice_after(__pos._M_node,
+      _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
                                                  __prev._M_node, __prev._M_node->_M_next);
     }
     else {
@@ -533,7 +541,7 @@ public:
   // linear in __x.size().
   void splice_after(iterator __pos, _Self& __x) {
     if (this->get_allocator() == __x.get_allocator())
-      _STLP_PRIV _Sl_global_inst::__splice_after(__pos._M_node, &__x._M_head._M_data);
+      _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node, &__x._M_head._M_data);
     else {
       this->insert_after(__pos, __x.begin(), __x.end());
       __x.clear();
@@ -544,9 +552,9 @@ public:
   void splice(iterator __pos, _Self& __x) {
     if (__x._M_head._M_data._M_next) {
       if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV _Sl_global_inst::__splice_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+        _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
                                                    &__x._M_head._M_data,
-                                                   _STLP_PRIV _Sl_global_inst::__previous(&__x._M_head._M_data, 0));
+                                                   _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, 0));
       }
       else {
         insert(__pos, __x.begin(), __x.end());
@@ -558,8 +566,8 @@ public:
   // Linear in distance(begin(), __pos), and in distance(__x.begin(), __i).
   void splice(iterator __pos, _Self& __x, iterator __i) {
     if (this->get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV _Sl_global_inst::__splice_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                                 _STLP_PRIV _Sl_global_inst::__previous(&__x._M_head._M_data, __i._M_node),
+      _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+                                                 _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __i._M_node),
                                                  __i._M_node);
     }
     else {
@@ -573,9 +581,9 @@ public:
   void splice(iterator __pos, _Self& __x, iterator __first, iterator __last) {
     if (__first != __last) {
       if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV _Sl_global_inst::__splice_after(_STLP_PRIV _Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                                   _STLP_PRIV _Sl_global_inst::__previous(&__x._M_head._M_data, __first._M_node),
-                                                   _STLP_PRIV _Sl_global_inst::__previous(__first._M_node, __last._M_node));
+        _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+                                                   _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __first._M_node),
+                                                   _STLP_PRIV::_Sl_global_inst::__previous(__first._M_node, __last._M_node));
       }
       else {
         insert(__pos, __first, __last);
@@ -587,14 +595,14 @@ public:
 public:
   void reverse() {
     if (this->_M_head._M_data._M_next)
-      this->_M_head._M_data._M_next = _STLP_PRIV _Sl_global_inst::__reverse(this->_M_head._M_data._M_next);
+      this->_M_head._M_data._M_next = _STLP_PRIV::_Sl_global_inst::__reverse(this->_M_head._M_data._M_next);
   }
 
   void remove(const _Tp& __val);
 
-  void unique() { _STLP_PRIV _Slist_unique(*this, equal_to<value_type>()); }
-  void merge(_Self& __x) { _STLP_PRIV _Slist_merge(*this, __x, less<value_type>()); }
-  void sort() { _STLP_PRIV _Slist_sort(*this, less<value_type>()); }
+  void unique() { _STLP_PRIV::_Slist_unique(*this, equal_to<value_type>()); }
+  void merge(_Self& __x) { _STLP_PRIV::_Slist_merge(*this, __x, less<value_type>()); }
+  void sort() { _STLP_PRIV::_Slist_sort(*this, less<value_type>()); }
 
   template <class _Predicate>
   void remove_if(_Predicate __pred) {
@@ -609,23 +617,22 @@ public:
 
   template <class _BinaryPredicate>
   void unique(_BinaryPredicate __pred)
-  { _STLP_PRIV _Slist_unique(*this, __pred); }
+  { _STLP_PRIV::_Slist_unique(*this, __pred); }
 
   template <class _StrictWeakOrdering>
   void merge(_Self& __x, _StrictWeakOrdering __comp)
-  { _STLP_PRIV _Slist_merge(*this, __x, __comp); }
+  { _STLP_PRIV::_Slist_merge(*this, __x, __comp); }
 
   template <class _StrictWeakOrdering>
   void sort(_StrictWeakOrdering __comp)
-  { _STLP_PRIV _Slist_sort(*this, __comp); }
+  { _STLP_PRIV::_Slist_sort(*this, __comp); }
 };
 
 #if defined (slist)
 #  undef slist
-_STLP_MOVE_TO_STD_NAMESPACE
 #endif
 
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_slist.c>
@@ -639,7 +646,7 @@ _STLP_END_NAMESPACE
 #  include <stl/debug/_slist.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp, class _Alloc>
 inline bool
@@ -706,7 +713,7 @@ public:
   insert_iterator<_Container>& operator++(int) { return *this; }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_SLIST_H */
 

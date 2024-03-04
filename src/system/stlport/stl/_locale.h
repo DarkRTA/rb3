@@ -39,7 +39,7 @@
 #  include <stl/_string_fwd.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class _Locale_impl;        // Forward declaration of opaque type.
 class ios_base;
@@ -190,7 +190,7 @@ template <class _Facet>
 _Facet* _UseFacet(const locale& __loc, const _Facet* __facet)
 { return static_cast<_Facet*>(__loc._M_use_facet(_Facet::id)); }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_LOCALE_H */
 

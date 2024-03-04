@@ -38,9 +38,7 @@
 #  include <stl/debug/_iterator.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _Key, class _Equal>
 class _DbgEqual {
@@ -67,10 +65,12 @@ private:
   _Equal _M_non_dbg_eq;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 #define _STLP_NON_DBG_HT \
-_STLP_PRIV _STLP_NON_DBG_NAME(hashtable) <_Val, _Key, _HF, _Traits, _ExK, _STLP_PRIV _DbgEqual<_Key, _EqK>, _All>
+_STLP_PRIV::_STLP_NON_DBG_NAME(hashtable) <_Val, _Key, _HF, _Traits, _ExK, _STLP_PRIV::_DbgEqual<_Key, _EqK>, _All>
 
 template <class _Val, class _Key, class _HF,
           class _Traits, class _ExK, class _EqK, class _All>
@@ -84,7 +84,7 @@ class hashtable {
   typedef typename _Traits::_ConstLocalTraits _ConstLocalTraits;
 
   _Base _M_non_dbg_impl;
-  _STLP_PRIV __owned_list _M_iter_list;
+  _STLP_PRIV::__owned_list _M_iter_list;
 
 public:
   typedef _Key key_type;
@@ -93,11 +93,11 @@ public:
 
   __IMPORT_CONTAINER_TYPEDEFS(_Base)
 
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_NonConstTraits> > iterator;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_ConstTraits> >    const_iterator;
-  //typedef _STLP_PRIV _DBG_iter<_Base, _DbgTraits<_NonConstLocalTraits> > local_iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_NonConstTraits> > iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_ConstTraits> >    const_iterator;
+  //typedef _STLP_PRIV::_DBG_iter<_Base, _DbgTraits<_NonConstLocalTraits> > local_iterator;
   typedef iterator local_iterator;
-  //typedef _STLP_PRIV _DBG_iter<_Base, _DbgTraits<_ConstLocalTraits> >    const_local_iterator;
+  //typedef _STLP_PRIV::_DBG_iter<_Base, _DbgTraits<_ConstLocalTraits> >    const_local_iterator;
   typedef const_iterator const_local_iterator;
 
   typedef typename _Base::iterator _Base_iterator;
@@ -108,9 +108,9 @@ public:
 
 private:
   void _Invalidate_iterator(const const_iterator& __it)
-  { _STLP_PRIV __invalidate_iterator(&_M_iter_list, __it); }
+  { _STLP_PRIV::__invalidate_iterator(&_M_iter_list, __it); }
   void _Invalidate_iterators(const const_iterator& __first, const const_iterator& __last)
-  { _STLP_PRIV __invalidate_range(&_M_iter_list, __first, __last); }
+  { _STLP_PRIV::__invalidate_range(&_M_iter_list, __first, __last); }
 
   _STLP_KEY_TYPE_FOR_CONT_EXT(key_type)
 
@@ -208,14 +208,14 @@ public:
 
   template <class _InputIterator>
   void insert_unique(_InputIterator __f, _InputIterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
-    _M_non_dbg_impl.insert_unique(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l));
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
+    _M_non_dbg_impl.insert_unique(_STLP_PRIV::_Non_Dbg_iter(__f), _STLP_PRIV::_Non_Dbg_iter(__l));
   }
 
   template <class _InputIterator>
   void insert_equal(_InputIterator __f, _InputIterator __l){
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
-    _M_non_dbg_impl.insert_equal(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l));
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
+    _M_non_dbg_impl.insert_equal(_STLP_PRIV::_Non_Dbg_iter(__f), _STLP_PRIV::_Non_Dbg_iter(__l));
   }
 
   _STLP_TEMPLATE_FOR_CONT_EXT
@@ -251,13 +251,13 @@ public:
   }
 
   void erase(const const_iterator& __it) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__it))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list, __it))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__it))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list, __it))
     _Invalidate_iterator(__it);
     _M_non_dbg_impl.erase(__it._M_iterator);
   }
   void erase(const_iterator __first, const_iterator __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last,
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last,
                                                const_iterator(begin()), const_iterator(end())))
     _Invalidate_iterators(__first, __last);
     _M_non_dbg_impl.erase(__first._M_iterator, __last._M_iterator);
@@ -290,7 +290,7 @@ public:
   }
 };
 
-_STLP_END_NAMESPACE
+}
 
 #undef _STLP_NON_DBG_HT
 

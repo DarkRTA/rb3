@@ -9,7 +9,7 @@
 #  include <stl/_ctype.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT, class _Traits>
 bool
@@ -163,7 +163,7 @@ getline(basic_istream<_CharT, _Traits>& __is,
   return __is;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif
 

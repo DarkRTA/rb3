@@ -55,7 +55,7 @@
 //  ignore it by using the helper function mem_fun and mem_fun_ref,
 //  which create whichever type of adaptor is appropriate.
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Ret, class _Tp>
 class mem_fun_t : public unary_function<_Tp*,_Ret> {
@@ -339,4 +339,4 @@ inline pointer_to_binary_function<_Arg1,_Arg2,_Result>
 ptr_fun(_Result (*__f)(_Arg1, _Arg2))
 { return pointer_to_binary_function<_Arg1,_Arg2,_Result>(__f); }
 
-_STLP_END_NAMESPACE
+}

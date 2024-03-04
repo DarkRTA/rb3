@@ -18,7 +18,7 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cwchar)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::wint_t;
 
 using _STLP_VENDOR_STD::size_t;
@@ -97,6 +97,6 @@ using _STLP_VENDOR_STD::wcsstr;
 using _STLP_VENDOR_STD::wcschr;
 using _STLP_VENDOR_STD::wcsrchr;
 using _STLP_VENDOR_STD::wcspbrk;
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CWCHAR */

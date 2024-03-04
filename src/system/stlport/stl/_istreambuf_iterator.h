@@ -31,7 +31,7 @@
 # include <stl/_streambuf.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // defined in _istream.h
 template <class _CharT, class _Traits>
@@ -135,7 +135,7 @@ istreambuf_iterator<_CharT, _Traits>::operator++(int) {
   return __tmp;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_ISTREAMBUF_ITERATOR_H */
 

@@ -18,12 +18,12 @@
 
 #include _STLP_NATIVE_CPP_RUNTIME_HEADER(typeinfo)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 using _STLP_VENDOR_STD::type_info;
 using _STLP_VENDOR_STD::bad_typeid;
 using _STLP_VENDOR_STD::bad_cast;
 
-_STLP_END_NAMESPACE
+}
 
 #endif

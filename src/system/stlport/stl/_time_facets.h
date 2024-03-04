@@ -35,9 +35,7 @@
 #  include <stl/_ios_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 // Template functions used by time_get
 
@@ -98,7 +96,9 @@ public:
 void _Init_timeinfo(_Time_Info&);
 void _Init_timeinfo(_Time_Info&, _Locale_time*);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 class time_base {
 public:
@@ -114,7 +114,7 @@ public:
   typedef _InIt iter_type;
 
   explicit time_get(size_t __refs = 0) : locale::facet(__refs)
-  { _STLP_PRIV _Init_timeinfo(_M_timeinfo); }
+  { _STLP_PRIV::_Init_timeinfo(_M_timeinfo); }
   dateorder date_order() const { return do_date_order(); }
   iter_type get_time(iter_type __s, iter_type  __end, ios_base&  __str,
                      ios_base::iostate&  __err, tm* __t) const
@@ -162,16 +162,20 @@ protected:
                                 ios_base&, ios_base::iostate& __err,
                                 tm* __t) const;
 
-  _STLP_PRIV _Time_Info _M_timeinfo;
+  _STLP_PRIV::_Time_Info _M_timeinfo;
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 time_base::dateorder __get_date_order(_Locale_time*);
 _Locale_time* __acquire_time(const char* __name, _Locale_name_hint*);
 void __release_time(_Locale_time* __time);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Ch, class _InIt>
 class time_get_byname;
@@ -187,12 +191,12 @@ public:
 
   explicit time_get_byname(const char* __name, size_t __refs = 0, _Locale_name_hint* __hint = 0)
     : time_get<_Ch, _InIt>((_Locale_time*) 0, __refs),
-      _M_time(_STLP_PRIV __acquire_time(__name, __hint))
-  { _STLP_PRIV _Init_timeinfo(this->_M_timeinfo, this->_M_time); }
+      _M_time(_STLP_PRIV::__acquire_time(__name, __hint))
+  { _STLP_PRIV::_Init_timeinfo(this->_M_timeinfo, this->_M_time); }
 
 protected:
-  ~time_get_byname() { _STLP_PRIV __release_time(_M_time); }
-  dateorder do_date_order() const { return _STLP_PRIV __get_date_order(_M_time); }
+  ~time_get_byname() { _STLP_PRIV::__release_time(_M_time); }
+  dateorder do_date_order() const { return _STLP_PRIV::__get_date_order(_M_time); }
 
 private:
   _Locale_time* _M_time;
@@ -214,7 +218,9 @@ private:
 // format.  As indicated by the foregoing remark, this will never be
 // 'x', 'X', or 'c'.
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 char *
 __write_formatted_time(char *__buf, size_t __buf_size, char __format, char __modifier,
@@ -229,7 +235,9 @@ template <class _OuIt>
 _OuIt __put_time(char * __first, char * __last, _OuIt __out_ite,
                             const ios_base& __s, wchar_t);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
 class time_put : public locale::facet, public time_base {
@@ -239,7 +247,7 @@ public:
   typedef _OutIt iter_type;
 
   explicit time_put(size_t __refs = 0) : locale::facet(__refs)
-  { _STLP_PRIV _Init_timeinfo(_M_timeinfo); }
+  { _STLP_PRIV::_Init_timeinfo(_M_timeinfo); }
 
   _OutIt put(iter_type __s, ios_base& __f, _Ch __fill,
                   const tm* __tmb,
@@ -253,14 +261,14 @@ public:
 
 protected:
   time_put(_Locale_time* /*__time*/, size_t __refs) : locale::facet(__refs)
-  {} //_STLP_PRIV _Init_timeinfo(_M_timeinfo, __time); }
+  {} //_STLP_PRIV::_Init_timeinfo(_M_timeinfo, __time); }
 
   ~time_put() {}
   virtual iter_type do_put(iter_type __s, ios_base& __f,
                            char_type  /* __fill */, const tm* __tmb,
                            char __format, char /* __modifier */) const;
 
-  _STLP_PRIV _Time_Info _M_timeinfo;
+  _STLP_PRIV::_Time_Info _M_timeinfo;
 };
 
 template <class _Ch, class _OutIt = ostreambuf_iterator<_Ch, char_traits<_Ch> > >
@@ -273,11 +281,11 @@ public:
 
   explicit time_put_byname(const char * __name, size_t __refs = 0, _Locale_name_hint* __hint = 0)
     : time_put<_Ch, _OutIt>((_Locale_time*) 0, __refs),
-    _M_time(_STLP_PRIV __acquire_time(__name, __hint))
-  { _STLP_PRIV _Init_timeinfo(this->_M_timeinfo, this->_M_time); }
+    _M_time(_STLP_PRIV::__acquire_time(__name, __hint))
+  { _STLP_PRIV::_Init_timeinfo(this->_M_timeinfo, this->_M_time); }
 
 protected:
-  ~time_put_byname() { _STLP_PRIV __release_time(_M_time); }
+  ~time_put_byname() { _STLP_PRIV::__release_time(_M_time); }
 
 private:
   _Locale_time* _M_time;
@@ -288,7 +296,7 @@ private:
   _Self& operator = (_Self const&);
 };
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_time_facets.c>

@@ -34,7 +34,7 @@
 # include <stl/_num_get.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT, class _InputIterator>
 locale::id money_get<_CharT, _InputIterator>::id;
@@ -44,7 +44,9 @@ locale::id money_put<_CharT, _OutputIterator>::id;
 
 // money_get facets
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // helper functions for do_get
 template <class _InIt1, class _InIt2>
@@ -281,7 +283,9 @@ _InputIter __money_do_get(_InputIter __s, _InputIter __end, bool  __intl,
   return __s;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 //===== methods ======
 template <class _CharT, class _InputIter>
@@ -291,7 +295,7 @@ money_get<_CharT, _InputIter>::do_get(_InputIter __s, _InputIter  __end, bool  _
                                       long double& __units) const {
   string_type __buf;
   bool __is_positive = true;
-  __s = _STLP_PRIV __money_do_get(__s, __end, __intl, __str, __err, __buf, __is_positive, (_CharT*)0);
+  __s = _STLP_PRIV::__money_do_get(__s, __end, __intl, __str, __err, __buf, __is_positive, (_CharT*)0);
 
   if (__err == ios_base::goodbit || __err == ios_base::eofbit) {
     typename string_type::iterator __b = __buf.begin(), __e = __buf.end();
@@ -299,7 +303,7 @@ money_get<_CharT, _InputIter>::do_get(_InputIter __s, _InputIter  __end, bool  _
     if (!__is_positive) ++__b;
     // Can't use atold, since it might be wchar_t. Don't get confused by name below :
     // it's perfectly capable of reading long double.
-    _STLP_PRIV __get_decimal_integer(__b, __e, __units, (_CharT*)0);
+    _STLP_PRIV::__get_decimal_integer(__b, __e, __units, (_CharT*)0);
 
     if (!__is_positive) {
       __units = -__units;
@@ -315,12 +319,14 @@ money_get<_CharT, _InputIter>::do_get(iter_type __s, iter_type  __end, bool  __i
                                       ios_base&  __str, ios_base::iostate&  __err,
                                       string_type& __digits) const {
   bool __is_positive = true;
-  return _STLP_PRIV __money_do_get(__s, __end, __intl, __str, __err, __digits, __is_positive, (_CharT*)0);
+  return _STLP_PRIV::__money_do_get(__s, __end, __intl, __str, __err, __digits, __is_positive, (_CharT*)0);
 }
 
 // money_put facets
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 template <class _CharT, class _OutputIter, class _Str_Type, class _Str>
 _OutputIter __money_do_put(_OutputIter __s, bool  __intl, ios_base&  __str,
@@ -491,7 +497,9 @@ _OutputIter __money_do_put(_OutputIter __s, bool  __intl, ios_base&  __str,
   return __s;
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template <class _CharT, class _OutputIter>
 _OutputIter
@@ -499,8 +507,8 @@ money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
           char_type __fill, long double __units) const {
   _STLP_BASIC_IOSTRING(char_type) __digits;
-  _STLP_PRIV __get_money_digits(__digits, __str, __units);
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, false, static_cast<string_type*>(0));
+  _STLP_PRIV::__get_money_digits(__digits, __str, __units);
+  return _STLP_PRIV::__money_do_put(__s, __intl, __str, __fill, __digits, false, static_cast<string_type*>(0));
 }
 
 template <class _CharT, class _OutputIter>
@@ -508,10 +516,10 @@ _OutputIter
 money_put<_CharT, _OutputIter>
  ::do_put(_OutputIter __s, bool __intl, ios_base& __str,
           char_type __fill, const string_type& __digits) const {
-  return _STLP_PRIV __money_do_put(__s, __intl, __str, __fill, __digits, true, static_cast<string_type*>(0));
+  return _STLP_PRIV::__money_do_put(__s, __intl, __str, __fill, __digits, true, static_cast<string_type*>(0));
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_MONETARY_C */
 

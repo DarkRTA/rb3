@@ -31,9 +31,7 @@
 #  include <stl/_cstddef.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 struct _Slist_node_base {
   _Slist_node_base* _M_next;
@@ -71,9 +69,7 @@ public:
 
 typedef _Sl_global<bool> _Sl_global_inst;
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION) && defined (_STLP_EXPOSE_GLOBALS_IMPLEMENTATION)
 #  include <stl/_slist_base.c>

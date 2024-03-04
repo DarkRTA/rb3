@@ -33,9 +33,7 @@
 #  include <stl/_string.h>
 #endif /* _STLP_INTERNAL_STRING_H */
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 template <class _CharT>
 class __iostring_allocator : public allocator<_CharT> {
@@ -91,7 +89,7 @@ struct __basic_iostring : public basic_string<_CharT, char_traits<_CharT>, __ios
 typedef __basic_iostring<char> __iostring;
 typedef __basic_iostring<wchar_t> __iowstring;
 
-#  define _STLP_BASIC_IOSTRING(_CharT) _STLP_PRIV __basic_iostring<_CharT>
+#  define _STLP_BASIC_IOSTRING(_CharT) _STLP_PRIV::__basic_iostring<_CharT>
 
 #else
 
@@ -102,8 +100,6 @@ typedef wstring __iowstring;
 
 #endif
 
-_STLP_MOVE_TO_STD_NAMESPACE
-
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_IOSTREAM_STRING_H */

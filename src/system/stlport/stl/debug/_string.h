@@ -22,25 +22,25 @@
 #  include <stl/debug/_iterator.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 #define _STLP_NON_DBG_STRING_NAME _STLP_NON_DBG_NAME(str)
-#define _STLP_NON_DBG_STRING _STLP_PRIV _STLP_NON_DBG_STRING_NAME <_CharT, _Traits, _Alloc>
+#define _STLP_NON_DBG_STRING _STLP_PRIV::_STLP_NON_DBG_STRING_NAME <_CharT, _Traits, _Alloc>
 
 template <class _CharT, class _Traits, class _Alloc>
-class basic_string : private _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING >
+class basic_string : private _STLP_PRIV::__construct_checker<_STLP_NON_DBG_STRING >
 {
 protected:
   typedef _STLP_NON_DBG_STRING _Base;
   typedef basic_string<_CharT, _Traits, _Alloc> _Self;
-  typedef _STLP_PRIV __construct_checker<_STLP_NON_DBG_STRING > _ConstructCheck;
+  typedef _STLP_PRIV::__construct_checker<_STLP_NON_DBG_STRING > _ConstructCheck;
   typedef typename _IsPOD<_CharT>::_Type _Char_Is_POD;
 
 public:
   __IMPORT_CONTAINER_TYPEDEFS(_Base)
   typedef typename _Base::traits_type traits_type;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_Nonconst_traits<value_type> > > iterator;
-  typedef _STLP_PRIV _DBG_iter<_Base, _STLP_PRIV _DbgTraits<_Const_traits<value_type> > > const_iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_Nonconst_traits<value_type> > > iterator;
+  typedef _STLP_PRIV::_DBG_iter<_Base, _STLP_PRIV::_DbgTraits<_Const_traits<value_type> > > const_iterator;
   _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
 
 public:                         // Constructor, destructor, assignment.
@@ -48,7 +48,7 @@ public:                         // Constructor, destructor, assignment.
 
 private:
   _Base _M_non_dbg_impl;
-  _STLP_PRIV __owned_list _M_iter_list;
+  _STLP_PRIV::__owned_list _M_iter_list;
 
   void _Invalidate_all()
   { _M_iter_list._Invalidate_all(); }
@@ -58,9 +58,9 @@ private:
     }
   }
   void _Invalidate_iterator(const iterator& __it)
-  { _STLP_PRIV __invalidate_iterator(&_M_iter_list, __it); }
+  { _STLP_PRIV::__invalidate_iterator(&_M_iter_list, __it); }
   void _Invalidate_iterators(const iterator& __f, const iterator& __l)
-  { _STLP_PRIV __invalidate_range(&_M_iter_list, __f, __l); }
+  { _STLP_PRIV::__invalidate_range(&_M_iter_list, __f, __l); }
 
 public:
   static const size_t npos = ~(size_t)0;
@@ -111,7 +111,7 @@ public:
   basic_string(_InputIterator __f, _InputIterator __l,
                const allocator_type & __a = allocator_type())
     : _ConstructCheck(__f, __l),
-      _M_non_dbg_impl(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l), __a),
+      _M_non_dbg_impl(_STLP_PRIV::_Non_Dbg_iter(__f), _STLP_PRIV::_Non_Dbg_iter(__l), __a),
       _M_iter_list(&_M_non_dbg_impl) {}
 
 private:
@@ -197,16 +197,16 @@ public:
 
   template <class _InputIter>
   _Self& append(_InputIter __first, _InputIter __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
     size_type __old_capacity = capacity();
-    _M_non_dbg_impl.append(_STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+    _M_non_dbg_impl.append(_STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
     _Compare_Capacity(__old_capacity);
     return *this;
   }
 
 #if !defined (_STLP_NO_EXTENSIONS)
   _Self& append(const _CharT* __f, const _CharT* __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_ptr_range(__f, __l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.append(__f, __l);
     _Compare_Capacity(__old_capacity);
@@ -214,7 +214,7 @@ public:
   }
 
   _Self& append(const_iterator __f, const_iterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.append(__f._M_iterator, __l._M_iterator);
     _Compare_Capacity(__old_capacity);
@@ -326,12 +326,12 @@ private:
   template <class _InputIter>
   void _M_assign_dispatch(_InputIter __f, _InputIter __l, const __false_type& /*_Integral*/)  {
     _M_check_assign(distance(__f, __l));
-    _M_non_dbg_impl.assign(_STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l));
+    _M_non_dbg_impl.assign(_STLP_PRIV::_Non_Dbg_iter(__f), _STLP_PRIV::_Non_Dbg_iter(__l));
   }
 public:
   template <class _InputIter>
   inline _Self& assign(_InputIter __first, _InputIter __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last))
     typedef typename _IsIntegral<_InputIter>::_Ret _Integral;
     _M_assign_dispatch(__first, __last, _Integral());
     return *this;
@@ -339,13 +339,13 @@ public:
 
 #if !defined (_STLP_NO_EXTENSIONS)
   _Self& assign(const _CharT* __f, const _CharT* __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_ptr_range(__f, __l))
     _M_check_assign(distance(__f, __l));
     _M_non_dbg_impl.assign(__f, __l);
     return *this;
   }
   _Self& assign(const_iterator __f, const_iterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
     _M_check_assign(distance(__f, __l));
     _M_non_dbg_impl.assign(__f._M_iterator, __l._M_iterator);
     return *this;
@@ -389,7 +389,7 @@ public:
   }
 
   iterator insert(iterator __p, _CharT __c) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__p))
     size_type __old_capacity = capacity();
     typename _Base::iterator __ret = _M_non_dbg_impl.insert(__p._M_iterator, __c);
     _Compare_Capacity(__old_capacity);
@@ -397,7 +397,7 @@ public:
   }
 
   void insert(iterator __p, size_t __n, _CharT __c) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__p))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.insert(__p._M_iterator, __n, __c);
     _Compare_Capacity(__old_capacity);
@@ -413,14 +413,14 @@ private:
   void _M_insert_aux (iterator __p, _InputIter __first, _InputIter __last,
                       const __false_type& /*_IsIterator*/) {
     _M_non_dbg_impl.insert(__p._M_iterator,
-                           _STLP_PRIV _Non_Dbg_iter(__first), _STLP_PRIV _Non_Dbg_iter(__last));
+                           _STLP_PRIV::_Non_Dbg_iter(__first), _STLP_PRIV::_Non_Dbg_iter(__last));
   }
 
 public:
   template <class _InputIter>
   void insert(iterator __p, _InputIter __first, _InputIter __last) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first,__last))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__p))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first,__last))
 
     /* In debug mode we are encapsulating non debug string iterators in debug one.
      * Doing so the non debug implementation will not check for self insertion
@@ -439,15 +439,15 @@ public:
 
 #if !defined (_STLP_NO_EXTENSIONS)
   void insert(iterator __p, const_iterator __f, const_iterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f,__l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__p))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f,__l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.insert(__p._M_iterator, __f._M_iterator, __l._M_iterator);
     _Compare_Capacity(__old_capacity);
   }
   void insert(iterator __p, const _CharT* __f, const _CharT* __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__p))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f,__l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__p))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_ptr_range(__f,__l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.insert(__p._M_iterator, __f, __l);
     _Compare_Capacity(__old_capacity);
@@ -463,13 +463,13 @@ public:
     return *this;
   }
   iterator erase(iterator __pos) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV _Dereferenceable(__pos))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_if_owner(&_M_iter_list,__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::_Dereferenceable(__pos))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_if_owner(&_M_iter_list,__pos))
     _Invalidate_iterators(__pos, end());
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__pos._M_iterator));
   }
   iterator erase(iterator __f, iterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l, begin(), end()))
     _Invalidate_iterators(__f, end());
     return iterator(&_M_iter_list, _M_non_dbg_impl.erase(__f._M_iterator, __l._M_iterator));
   }
@@ -518,7 +518,7 @@ public:
   }
 
   _Self& replace(iterator __f, iterator __l, const _Self& __s) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l, begin(), end()))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__f._M_iterator, __l._M_iterator, __s._M_non_dbg_impl);
     _Compare_Capacity(__old_capacity);
@@ -526,7 +526,7 @@ public:
   }
 
   _Self& replace(iterator __f, iterator __l, const _CharT* __s, size_type __n) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l, begin(), end()))
     _STLP_VERBOSE_ASSERT((__s != 0), _StlMsg_INVALID_ARGUMENT)
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__f._M_iterator, __l._M_iterator, __s, __n);
@@ -535,7 +535,7 @@ public:
   }
 
   _Self& replace(iterator __f, iterator __l, const _CharT* __s) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l, begin(), end()))
     _STLP_VERBOSE_ASSERT((__s != 0), _StlMsg_INVALID_ARGUMENT)
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__f._M_iterator, __l._M_iterator, __s);
@@ -544,7 +544,7 @@ public:
   }
 
   _Self& replace(iterator __f, iterator __l, size_type __n, _CharT __c) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l, begin(), end()))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__f._M_iterator, __l._M_iterator, __n, __c);
     _Compare_Capacity(__old_capacity);
@@ -561,15 +561,15 @@ private:
   void _M_replace_aux(iterator __first, iterator __last,
                       _InputIter __f, _InputIter __l, __false_type const& /*_IsIterator*/) {
     _M_non_dbg_impl.replace(__first._M_iterator, __last._M_iterator,
-                            _STLP_PRIV _Non_Dbg_iter(__f), _STLP_PRIV _Non_Dbg_iter(__l));
+                            _STLP_PRIV::_Non_Dbg_iter(__f), _STLP_PRIV::_Non_Dbg_iter(__l));
   }
 
 public:
   template <class _InputIter>
   _Self& replace(iterator __first, iterator __last,
                  _InputIter __f, _InputIter __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
 
     /* See insert comment for reson of iterator detection.
      */
@@ -586,8 +586,8 @@ public:
 #if !defined (_STLP_NO_EXTENSIONS)
   _Self& replace(iterator __first, iterator __last,
                  const_iterator __f, const_iterator __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__f, __l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__first._M_iterator, __last._M_iterator,
                             __f._M_iterator, __l._M_iterator);
@@ -597,8 +597,8 @@ public:
 
   _Self& replace(iterator __first, iterator __last,
                  const _CharT* __f, const _CharT* __l) {
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_range(__first, __last, begin(), end()))
-    _STLP_DEBUG_CHECK(_STLP_PRIV __check_ptr_range(__f, __l))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_range(__first, __last, begin(), end()))
+    _STLP_DEBUG_CHECK(_STLP_PRIV::__check_ptr_range(__f, __l))
     size_type __old_capacity = capacity();
     _M_non_dbg_impl.replace(__first._M_iterator, __last._M_iterator, __f, __l);
     _Compare_Capacity(__old_capacity);
@@ -747,12 +747,11 @@ public:
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
 
+}
+
 #if defined (basic_string)
-_STLP_MOVE_TO_STD_NAMESPACE
 #undef basic_string
 #endif
-
-_STLP_END_NAMESPACE
 
 #endif /* _STLP_DBG_STRING */
 

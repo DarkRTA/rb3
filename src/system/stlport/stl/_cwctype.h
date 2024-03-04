@@ -18,7 +18,7 @@
 
 #include _STLP_NATIVE_CPP_C_HEADER(cwctype)
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 using _STLP_VENDOR_STD::wctype_t;
 using _STLP_VENDOR_STD::wint_t;
 
@@ -43,7 +43,7 @@ using _STLP_VENDOR_STD::iswxdigit;
 
 using _STLP_VENDOR_STD::towlower;
 using _STLP_VENDOR_STD::towupper;
-_STLP_END_NAMESPACE
+}
 
 
 #endif /* _STLP_INTERNAL_CWCTYPE */

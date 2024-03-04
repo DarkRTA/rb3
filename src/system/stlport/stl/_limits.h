@@ -36,7 +36,7 @@
 #  include <stl/_cwchar.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 enum float_round_style {
   round_indeterminate       = -1,
@@ -52,7 +52,9 @@ enum float_denorm_style {
   denorm_present       =  1
 };
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Base class for all specializations of numeric_limits.
 template <class __number>
@@ -164,83 +166,87 @@ public:
   tinyness_before   =  false;
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 // Class numeric_limits
 
 // The unspecialized class.
 
 template<class _Tp>
-class numeric_limits : public _STLP_PRIV _Numeric_limits_base<_Tp> {};
+class numeric_limits : public _STLP_PRIV::_Numeric_limits_base<_Tp> {};
 
 // Specializations for all built-in integral types.
 
 template<>
 class numeric_limits<bool>
-  : public _STLP_PRIV _Integer_limits<bool, false, true, 1, false>
+  : public _STLP_PRIV::_Integer_limits<bool, false, true, 1, false>
 {};
 
 template<>
 class numeric_limits<char>
-  : public _STLP_PRIV _Integer_limits<char, CHAR_MIN, CHAR_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<char, CHAR_MIN, CHAR_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<signed char>
-  : public _STLP_PRIV _Integer_limits<signed char, SCHAR_MIN, SCHAR_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<signed char, SCHAR_MIN, SCHAR_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<unsigned char>
-  : public _STLP_PRIV _Integer_limits<unsigned char, 0, UCHAR_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<unsigned char, 0, UCHAR_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<wchar_t>
-  : public _STLP_PRIV _Integer_limits<wchar_t, WCHAR_MIN, WCHAR_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<wchar_t, WCHAR_MIN, WCHAR_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<short>
-  : public _STLP_PRIV _Integer_limits<short, SHRT_MIN, SHRT_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<short, SHRT_MIN, SHRT_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<unsigned short>
-  : public _STLP_PRIV _Integer_limits<unsigned short, 0, USHRT_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<unsigned short, 0, USHRT_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<int>
-  : public _STLP_PRIV _Integer_limits<int, INT_MIN, INT_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<int, INT_MIN, INT_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<unsigned int>
-  : public _STLP_PRIV _Integer_limits<unsigned int, 0, UINT_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<unsigned int, 0, UINT_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<long>
-  : public _STLP_PRIV _Integer_limits<long, LONG_MIN, LONG_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<long, LONG_MIN, LONG_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<unsigned long>
-  : public _STLP_PRIV _Integer_limits<unsigned long, 0, ULONG_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<unsigned long, 0, ULONG_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<long long>
-  : public _STLP_PRIV _Integer_limits<long long, LLONG_MIN, LLONG_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<long long, LLONG_MIN, LLONG_MAX, -1, true>
 {};
 
 template<>
 class numeric_limits<unsigned long long>
-  : public _STLP_PRIV _Integer_limits<unsigned long long, 0, ULLONG_MAX, -1, true>
+  : public _STLP_PRIV::_Integer_limits<unsigned long long, 0, ULLONG_MAX, -1, true>
 {};
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+}
+
+namespace _STLP_PRIV {
 
 // Specializations for all built-in floating-point types.
 template <class __dummy>
@@ -257,11 +263,13 @@ public:
   static long double get_LD_sNaN();
 };
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 template<>
 class numeric_limits<float>
-  : public _STLP_PRIV _Floating_limits<float,
+  : public _STLP_PRIV::_Floating_limits<float,
                                         FLT_MANT_DIG,   // Binary digits of precision
                                         FLT_DIG,        // Decimal digits of precision
                                         FLT_MIN_EXP,    // Minimum exponent
@@ -276,14 +284,14 @@ public:
   static float (max) () _STLP_NOTHROW { return FLT_MAX; }
   static float epsilon() _STLP_NOTHROW { return FLT_EPSILON; }
   static float round_error() _STLP_NOTHROW { return 0.5f; } // Units: ulps.
-  static  float infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_inf(); }
-  static  float quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_qNaN(); }
-  static  float signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_F_sNaN(); }
+  static  float infinity() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_F_inf(); }
+  static  float quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_F_qNaN(); }
+  static  float signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_F_sNaN(); }
 };
 
 template<>
 class numeric_limits<double>
-  : public _STLP_PRIV _Floating_limits<double,
+  : public _STLP_PRIV::_Floating_limits<double,
                                         DBL_MANT_DIG,   // Binary digits of precision
                                         DBL_DIG,        // Decimal digits of precision
                                         DBL_MIN_EXP,    // Minimum exponent
@@ -298,14 +306,14 @@ public:
   static double (max)() _STLP_NOTHROW { return DBL_MAX; }
   static double epsilon() _STLP_NOTHROW { return DBL_EPSILON; }
   static double round_error() _STLP_NOTHROW { return 0.5; } // Units: ulps.
-  static  double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_inf(); }
-  static  double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_qNaN(); }
-  static  double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_D_sNaN(); }
+  static  double infinity() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_D_inf(); }
+  static  double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_D_qNaN(); }
+  static  double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_D_sNaN(); }
 };
 
 template<>
 class numeric_limits<long double>
-  : public _STLP_PRIV _Floating_limits<long double,
+  : public _STLP_PRIV::_Floating_limits<long double,
                                         LDBL_MANT_DIG,  // Binary digits of precision
                                         LDBL_DIG,       // Decimal digits of precision
                                         LDBL_MIN_EXP,   // Minimum exponent
@@ -320,14 +328,14 @@ public:
   static long double (max) () _STLP_NOTHROW { return LDBL_MAX; }
   static long double epsilon() _STLP_NOTHROW { return LDBL_EPSILON; }
   static long double round_error() _STLP_NOTHROW { return 4; } // Units: ulps.
-  static long double infinity() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_inf(); }
-  static long double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_qNaN(); }
-  static long double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV _LimG<bool>::get_LD_sNaN(); }
+  static long double infinity() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_LD_inf(); }
+  static long double quiet_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_LD_qNaN(); }
+  static long double signaling_NaN() _STLP_NOTHROW { return _STLP_PRIV::_LimG<bool>::get_LD_sNaN(); }
 };
 
 // We write special values (Inf and NaN) as bit patterns and
 // cast the the appropriate floating-point types.
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_limits.c>

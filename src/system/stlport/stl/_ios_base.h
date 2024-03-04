@@ -34,7 +34,7 @@
 #  include <stl/_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // ----------------------------------------------------------------------
 
@@ -349,7 +349,7 @@ inline ios_base& fixed(ios_base& __s)
 inline ios_base& scientific(ios_base& __s)
   { __s.setf(ios_base::scientific, ios_base::floatfield); return __s; }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_IOS_BASE */
 

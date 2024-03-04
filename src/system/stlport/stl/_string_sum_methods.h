@@ -21,12 +21,12 @@
 
 public:
   template <class _Left, class _Right, class _StorageDir>
-  basic_string(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s)
+  basic_string(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s)
     : _STLP_STRING_SUM_BASE(_Reserve_t(), __s.size(), __s.get_allocator())
   { _M_append_sum(__s); }
 
   template <class _Left, class _Right, class _StorageDir>
-  basic_string(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
+  basic_string(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
                size_type __pos, size_type __n = npos,
                const allocator_type& __a = allocator_type())
     : _STLP_STRING_SUM_BASE(_Reserve_t(), (__pos <= __s.size()) ? ((min) (__n, __s.size() - __pos)) : 0, __a) {
@@ -38,25 +38,25 @@ public:
   }
 
 private:
-  _CharT* _M_append_fast(_STLP_PRIV __char_wrapper<_CharT> __c, _CharT *__buf) {
+  _CharT* _M_append_fast(_STLP_PRIV::__char_wrapper<_CharT> __c, _CharT *__buf) {
     _STLP_STD::_Copy_Construct(__buf, __c.getValue());
     return __buf + 1;
   }
   _CharT* _M_append_fast(_CharT const* __s, size_type __s_size, _CharT *__buf)
   { return uninitialized_copy(__s, __s + __s_size, __buf); }
-  _CharT* _M_append_fast(_STLP_PRIV __cstr_wrapper<_CharT> const& __s, _CharT *__buf)
+  _CharT* _M_append_fast(_STLP_PRIV::__cstr_wrapper<_CharT> const& __s, _CharT *__buf)
   { return _M_append_fast(__s.c_str(), __s.size(), __buf); }
-  _CharT* _M_append_fast(_STLP_PRIV __bstr_wrapper<_CharT, _Traits, _Alloc> __s, _CharT *__buf)
+  _CharT* _M_append_fast(_STLP_PRIV::__bstr_wrapper<_CharT, _Traits, _Alloc> __s, _CharT *__buf)
   { return _M_append_fast(__s.b_str(), __buf); }
   _CharT* _M_append_fast(_Self const& __s, _CharT *__buf)
   { return _M_append_fast(__s.data(), __s.size(), __buf); }
-  _CharT* _M_append_fast(_STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc> const&, _CharT *__buf)
+  _CharT* _M_append_fast(_STLP_PRIV::__sum_storage_elem<_CharT, _Traits, _Alloc> const&, _CharT *__buf)
   { return __buf; }
   template <class _Left, class _Right, class _StorageDir>
-  _CharT* _M_append_fast(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s, _CharT *__buf)
+  _CharT* _M_append_fast(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s, _CharT *__buf)
   { return _M_append_fast(__s.getRhs(), _M_append_fast(__s.getLhs(), __buf)); }
 
-  _CharT* _M_append_fast_pos(_STLP_PRIV __char_wrapper<_CharT> __c, _CharT *__buf, size_type /*__pos*/, size_type __n) {
+  _CharT* _M_append_fast_pos(_STLP_PRIV::__char_wrapper<_CharT> __c, _CharT *__buf, size_type /*__pos*/, size_type __n) {
     if (__n == 0)
       return __buf;
     _STLP_STD::_Copy_Construct(__buf, __c.getValue());
@@ -65,21 +65,21 @@ private:
   _CharT* _M_append_fast_pos(_CharT const* __s, size_type __s_size, _CharT *__buf,
                              size_type __pos, size_type __n)
   { return uninitialized_copy(__s + __pos, __s + __pos + (min)(__n, __s_size - __pos), __buf); }
-  _CharT* _M_append_fast_pos(_STLP_PRIV __cstr_wrapper<_CharT> const& __s, _CharT *__buf,
+  _CharT* _M_append_fast_pos(_STLP_PRIV::__cstr_wrapper<_CharT> const& __s, _CharT *__buf,
                              size_type __pos, size_type __n)
   { return _M_append_fast_pos(__s.c_str(), __s.size(), __buf, __pos, __n); }
-  _CharT* _M_append_fast_pos(_STLP_PRIV __bstr_wrapper<_CharT, _Traits, _Alloc> __s, _CharT *__buf,
+  _CharT* _M_append_fast_pos(_STLP_PRIV::__bstr_wrapper<_CharT, _Traits, _Alloc> __s, _CharT *__buf,
                              size_type __pos, size_type __n)
   { return _M_append_fast_pos(__s.b_str(), __buf, __pos, __n); }
   _CharT* _M_append_fast_pos(_Self const& __s, _CharT *__buf,
                              size_type __pos, size_type __n)
   { return _M_append_fast_pos(__s.data(), __s.size(), __buf, __pos, __n); }
-  _CharT* _M_append_fast_pos(_STLP_PRIV __sum_storage_elem<_CharT, _Traits, _Alloc> const&, _CharT *__buf,
+  _CharT* _M_append_fast_pos(_STLP_PRIV::__sum_storage_elem<_CharT, _Traits, _Alloc> const&, _CharT *__buf,
                              size_type, size_type)
   { return __buf; }
 
   template <class _Left, class _Right, class _StorageDir>
-  _CharT* _M_append_fast_pos(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
+  _CharT* _M_append_fast_pos(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
                              _CharT *__buf, size_type __pos, size_type __n) {
     if (__n == 0) {
       return __buf;
@@ -115,7 +115,7 @@ private:
   { return 0; }
 
   template <class _Left, class _Right, class _StorageDir>
-  _Self& _M_append_sum (_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s) {
+  _Self& _M_append_sum (_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s) {
     size_type __s_size = __s.size();
     if (__s_size == 0)
       return *this;
@@ -145,7 +145,7 @@ private:
   }
 
   template <class _Left, class _Right, class _StorageDir>
-  _Self& _M_append_sum_pos(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
+  _Self& _M_append_sum_pos(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
                            size_type __pos, size_type __n) {
     size_type __s_size = (min)(__s.size() - __pos, __n);
     if (__s_size == 0)
@@ -176,7 +176,7 @@ private:
   }
 
   template <class _Left, class _Right, class _StorageDir>
-  void _M_append_sum_no_overflow(_STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
+  void _M_append_sum_no_overflow(_STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir> const& __s,
                                  size_type __pos, size_type __n) {
     pointer __finish = this->_M_Finish();
     _M_append_fast_pos(__s, __finish + 1, __pos + 1, __n - 1);

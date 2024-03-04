@@ -44,7 +44,7 @@
 #  include <stl/debug/_debug.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 class slice;
 class gslice;
@@ -1647,7 +1647,7 @@ valarray<_Tp>::operator[](const _Valarray_size_t& __addr)
   return indirect_array<_Tp>(__addr, *this);
 }
 
-_STLP_END_NAMESPACE
+}
 
 # if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_valarray.c>

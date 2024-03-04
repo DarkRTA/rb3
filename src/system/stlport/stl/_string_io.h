@@ -28,7 +28,7 @@
 #endif
 
 // I/O.
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT, class _Traits, class _Alloc>
 basic_ostream<_CharT, _Traits>&
@@ -40,7 +40,7 @@ operator<<(basic_ostream<_CharT, _Traits>& __os,
 template <class _CharT, class _Traits, class _Alloc, class _Left, class _Right, class _StorageDir>
 basic_ostream<_CharT, _Traits>&
 operator<<(basic_ostream<_CharT, _Traits>& __os,
-           const _STLP_PRIV __bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __sum) {
+           const _STLP_PRIV::__bstr_sum<_CharT, _Traits, _Alloc, _Left, _Right, _StorageDir>& __sum) {
   basic_string<_CharT, _Traits, _Alloc> __tmp(__sum);
   return __os << __tmp;
 }
@@ -65,7 +65,7 @@ getline(basic_istream<_CharT, _Traits>& __is,
   return getline(__is, __s, __is.widen('\n'));
 }
 
-_STLP_END_NAMESPACE
+}
 
 #if !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_string_io.c>

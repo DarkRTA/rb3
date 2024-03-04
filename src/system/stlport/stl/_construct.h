@@ -46,7 +46,7 @@
 #  include <stl/_move_construct_fwk.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp>
 inline void __destroy_aux(_Tp* __pointer, const __false_type& /*_Trivial_destructor*/)
@@ -99,7 +99,7 @@ inline void _Param_Construct(_T1* __p, const _T2& __val) {
 
 template <class _T1, class _T2>
 inline void _Move_Construct_Aux(_T1* __p, _T2& __val, const __false_type& /*_IsPOD*/) {
-  new (__p) _T1(_STLP_PRIV _AsMoveSource(__val));
+  new (__p) _T1(_STLP_PRIV::_AsMoveSource(__val));
 }
 
 template <class _T1, class _T2>
@@ -180,7 +180,7 @@ template <class _ForwardIterator>
 inline void destroy(_ForwardIterator __first, _ForwardIterator __last) { _STLP_STD::_Destroy_Range(__first, __last); }
 #endif /* _STLP_NO_ANACHRONISMS */
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_CONSTRUCT_H */
 

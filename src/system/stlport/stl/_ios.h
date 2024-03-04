@@ -30,7 +30,7 @@
 # include <stl/_numpunct.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // ----------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ basic_ios<char, char_traits<char> >::widen(char __c) const
   return __c;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_ios.c>

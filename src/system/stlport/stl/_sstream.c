@@ -23,7 +23,7 @@
 #  include <stl/_sstream.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 //----------------------------------------------------------------------
 // Non-inline stringbuf member functions.
@@ -505,7 +505,7 @@ template <class _CharT, class _Traits, class _Alloc>
 basic_stringstream<_CharT, _Traits, _Alloc>::~basic_stringstream()
 {}
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_SSTREAM_C */
 

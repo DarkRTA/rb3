@@ -34,7 +34,7 @@
 # include <stl/_iterator_base.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _RandomAccessIterator, class _Distance, class _Tp>
 inline
@@ -237,7 +237,7 @@ make_heap(_RandomAccessIterator __first,
               _STLP_VALUE_TYPE(__first, _RandomAccessIterator), _STLP_DISTANCE_TYPE(__first, _RandomAccessIterator));
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /*  _STLP_HEAP_C */
 

@@ -26,9 +26,7 @@
 #  include <stl/_limits.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
-
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 // __do_put_float and its helper functions.  Strategy: write the output
 // to a buffer of char, transform the buffer to _CharT, and then copy
@@ -372,7 +370,9 @@ __do_put_integer(_OutputIter __s, ios_base& __f, _CharT __fill, _Integer __x) {
   return __put_integer(__ibeg, (char*)__buf+__buf_size, __s, __f, __flags, __fill);
 }
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
+
+namespace _STLP_STD {
 
 // num_put<>
 template <class _CharT, class _OutputIterator>
@@ -402,7 +402,7 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f,
   if ((__flags & ios_base::adjustfield) == ios_base::internal)
     __flags = (__flags & ~ios_base::adjustfield) | ios_base::right;
 
-  return _STLP_PRIV __copy_integer_and_fill(__str.c_str(), __str.size(), __s,
+  return _STLP_PRIV::__copy_integer_and_fill(__str.c_str(), __str.size(), __s,
                                             __flags, __f.width(0), __fill,
                                             (_CharT) 0, (_CharT) 0);
 }
@@ -411,37 +411,37 @@ template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      long __val) const
-{ return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_integer(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      unsigned long __val) const
-{ return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_integer(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      double __val) const
-{ return _STLP_PRIV __do_put_float(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_float(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      long double __val) const
-{ return _STLP_PRIV __do_put_float(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_float(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      long long __val) const
-{ return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_integer(__s, __f, __fill, __val); }
 
 template <class _CharT, class _OutputIter>
 _OutputIter
 num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT __fill,
                                      unsigned long long __val) const
-{ return _STLP_PRIV __do_put_integer(__s, __f, __fill, __val); }
+{ return _STLP_PRIV::__do_put_integer(__s, __f, __fill, __val); }
 
 
 // lib.facet.num.put.virtuals "12 For conversion from void* the specifier is %p."
@@ -461,7 +461,7 @@ num_put<_CharT, _OutputIter>::do_put(_OutputIter __s, ios_base& __f, _CharT /*__
   return result;
 }
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_NUM_PUT_C */
 

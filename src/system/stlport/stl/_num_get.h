@@ -43,7 +43,7 @@
 #  include <stl/_iostream_string.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 // num_get facets
 template <class _CharT, class _InputIter = istreambuf_iterator<_CharT, char_traits<_CharT> > >
@@ -136,9 +136,11 @@ protected:
 
 };
 
+}
+
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION)
 
-_STLP_MOVE_TO_PRIV_NAMESPACE
+namespace _STLP_PRIV {
 
 bool __valid_grouping(const char*, const char*, const char*, const char*);
 
@@ -166,11 +168,9 @@ void __string_to_float(const __iostring&, float&);
 void __string_to_float(const __iostring&, double&);
 void __string_to_float(const __iostring&, long double&);
 
-_STLP_MOVE_TO_STD_NAMESPACE
+}
 
 #endif /* _STLP_EXPOSE_STREAM_IMPLEMENTATION */
-
-_STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_num_get.c>

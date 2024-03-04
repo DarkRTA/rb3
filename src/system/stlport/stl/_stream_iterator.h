@@ -59,7 +59,7 @@
 // using new, templatized iostreams than if we're using the old cfront
 // version.
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp,
           class _CharT = char, class _Traits = char_traits<_CharT>,
@@ -152,10 +152,10 @@ private:
   const _CharT* _M_string;
 };
 
-_STLP_END_NAMESPACE
+}
 
 // form-independent definiotion of stream iterators
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _Tp, class _CharT, class _Traits, class _Dist>
 inline bool
@@ -171,7 +171,7 @@ operator!=(const istream_iterator<_Tp, _CharT, _Traits, _Dist>& __x,
 { return !__x._M_equal(__y); }
 #endif
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_STREAM_ITERATOR_H */
 

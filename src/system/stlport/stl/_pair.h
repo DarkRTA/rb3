@@ -37,7 +37,7 @@
 #  include <stl/_move_construct_fwk.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _T1, class _T2>
 struct pair {
@@ -55,8 +55,8 @@ struct pair {
 
   pair(const pair<_T1,_T2>& __o) : first(__o.first), second(__o.second) {}
 
-  pair(__move_source<pair<_T1, _T2> > src) : first(_STLP_PRIV _AsMoveSource(src.get().first)),
-                                             second(_STLP_PRIV _AsMoveSource(src.get().second))
+  pair(__move_source<pair<_T1, _T2> > src) : first(_STLP_PRIV::_AsMoveSource(src.get().first)),
+                                             second(_STLP_PRIV::_AsMoveSource(src.get().second))
   {}
 };
 
@@ -111,9 +111,9 @@ template <class _T1, class _T2>
 inline pair<_T1, _T2> make_pair(_T1 __x, _T2 __y)
 { return pair<_T1, _T2>(__x, __y); }
 
-_STLP_END_NAMESPACE
-
-_STLP_BEGIN_RELOPS_NAMESPACE
+#ifndef _STLP_NO_RELOPS_NAMESPACE
+namespace rel_ops {
+#endif
 
 template <class _Tp>
 inline bool operator!=(const _Tp& __x, const _Tp& __y)
@@ -131,9 +131,9 @@ template <class _Tp>
 inline bool  operator>=(const _Tp& __x, const _Tp& __y)
 { return !(__x < __y); }
 
-_STLP_END_RELOPS_NAMESPACE
-
-_STLP_BEGIN_NAMESPACE
+#ifndef _STLP_NO_RELOPS_NAMESPACE
+}
+#endif
 
 template <class _T1, class _T2>
 struct __type_traits<pair<_T1, _T2> > {
@@ -152,9 +152,9 @@ struct __type_traits<pair<_T1, _T2> > {
 
 template <class _T1, class _T2>
 struct __move_traits<pair<_T1, _T2> >
-  : _STLP_PRIV __move_traits_help1<_T1, _T2> {};
+  : _STLP_PRIV::__move_traits_help1<_T1, _T2> {};
 
-_STLP_END_NAMESPACE
+}
 
 #endif /* _STLP_INTERNAL_PAIR_H */
 

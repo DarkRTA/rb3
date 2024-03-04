@@ -79,7 +79,7 @@
 #undef toupper
 #undef tolower
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 
 template <class _CharT> 
 inline bool isspace (_CharT c, const locale& loc)
@@ -133,7 +133,7 @@ template <class _CharT>
 inline _CharT tolower(_CharT c, const locale& loc)
 { return (use_facet<ctype<_CharT> >(loc)).tolower(c); }
 
-_STLP_END_NAMESPACE
+}
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x1041)
 #  include <stl/_epilog.h>

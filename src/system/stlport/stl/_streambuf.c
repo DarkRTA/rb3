@@ -22,7 +22,7 @@
 #  include <stl/_streambuf.h>
 #endif
 
-_STLP_BEGIN_NAMESPACE
+namespace _STLP_STD {
 //----------------------------------------------------------------------
 // Non-inline basic_streambuf<> member functions.
 template <class _CharT, class _Traits>
@@ -196,7 +196,7 @@ basic_streambuf<_CharT, _Traits>*
 basic_streambuf<_CharT, _Traits>:: setbuf(char_type*, streamsize)
 { return this; }
 
-_STLP_END_NAMESPACE
+}
 
 #endif
 
