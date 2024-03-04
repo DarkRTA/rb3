@@ -11,12 +11,71 @@ void ChunkHeader::Read(BinStream& bs){
         bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
         if(riffCmp){
             mIsList = false;
-            return;
+        }
+        else {
+            bs.Read((void*)mID.Str(), 4);
+            mIsList = true;
+            MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
         }
     }
-    bs.Read((void*)mID.Str(), 4);
-    mIsList = true;
-    MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
+    else mIsList = false;
+}
+
+const char* listbegin = "LIST:";
+const char* start = "<";
+const char* end = ">";
+
+IDataChunk::IDataChunk(IListChunk& chunk) : BinStream(true), mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mFailed(0), mEof(0) {
+    MILO_ASSERT(mParent->CurSubChunkHeader(), 0x47);
+    mHeader = new ChunkHeader(*mParent->CurSubChunkHeader());
+    MILO_ASSERT(!mHeader->IsList(), 0x49);
+    int tell = mBaseBinStream.Tell();
+    mStartMarker = tell;
+    mEndMarker = tell + mHeader->Length();
+    mParent->Lock();
+}
+
+IDataChunk::~IDataChunk(){
+    if(mParent) mParent->UnLock();
+    delete mHeader;
+}
+
+void IDataChunk::SeekImpl(int iOffset, SeekType t){
+    if(!Fail()){
+        switch(t){
+            case BinStream::kSeekBegin: 
+                MILO_ASSERT(iOffset >= 0, 0x79);
+                if(iOffset > mHeader->Length()) mFailed = true;
+                mBaseBinStream.Seek(iOffset + mStartMarker, kSeekBegin);
+                break;
+            case BinStream::kSeekCur: 
+                mBaseBinStream.Seek(iOffset, kSeekCur);
+                break;
+            case BinStream::kSeekEnd: 
+                MILO_ASSERT(iOffset <= 0, 0x8A);
+                if(iOffset < -mHeader->Length()) mFailed = true;
+                mBaseBinStream.Seek(iOffset + mEndMarker, kSeekBegin);
+                break;
+            default: break;
+        }
+        mEof = mBaseBinStream.Eof() != 0;
+    }
+}
+
+int IDataChunk::Tell(){
+    if(Fail()) return -1;
+    else return mBaseBinStream.Tell() - mStartMarker;
+}
+
+void IDataChunk::ReadImpl(void* data, int bytes){
+    int tell = mBaseBinStream.Tell();
+    if(bytes < mEndMarker - tell){
+        mBaseBinStream.Read(data, bytes);
+    }
+    else {
+        mBaseBinStream.Read(data, mEndMarker - tell);
+        mEof = true;
+    }
 }
 
 IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0), 
