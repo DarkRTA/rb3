@@ -1,8 +1,28 @@
 #ifndef RNDOBJ_BITMAP_H
 #define RNDOBJ_BITMAP_H
-
 #include "utl/BinStream.h"
 typedef unsigned char u8;
+
+struct tagBITMAPFILEHEADER {
+    unsigned int bfSize;
+    unsigned short bfReserved1;
+    unsigned short bfReserved2;
+    unsigned int bfOffBits;
+};
+
+struct tagBITMAPINFOHEADER {
+    unsigned int biSize;
+    int biWidth;
+    int biHeight;
+    unsigned short biPlanes;
+    unsigned short biBitCount;
+    unsigned int biCompression;
+    unsigned int biSizeImage;
+    int biXPelsPerMeter;
+    int biYPelsPerMeter;
+    unsigned int biClrUsed;
+    unsigned int biClrImportant;
+};
 
 class RndBitmap { // 0x1c
 public:
@@ -16,9 +36,9 @@ public:
     unsigned short mRowBytes; // 0x4
     u8 mBpp; // 0x6
     int mOrder; // 0x8
-    void* mPixels; // 0xc
-    void* mPalette; // 0x10
-    void* mBuffer; // 0x14
+    u8* mPixels; // 0xc
+    u8* mPalette; // 0x10
+    u8* mBuffer; // 0x14
     RndBitmap* mMip; // 0x18
 
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}
