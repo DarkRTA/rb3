@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "obj/Data.h"
+#include "obj/DataFunc.h"
 #include "utl/Str.h"
 #include "os/Debug.h"
 
@@ -63,7 +64,7 @@ DataNode hashTo6Bits(DataArray* da) {
 }
 
 DataNode getRandomSequence32A(DataArray* da){
-    static int seed;
+    static unsigned long s_seed;
     static bool usedUp[0x20];
     bool enough = da->Size() > 1;
     
@@ -71,7 +72,7 @@ DataNode getRandomSequence32A(DataArray* da){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
         if(dataint != 0){
-            seed = dataint;
+            s_seed = dataint;
         }
         return DataNode(kDataInt, 0x610A660F);
     }
@@ -79,8 +80,8 @@ DataNode getRandomSequence32A(DataArray* da){
         bool loop = true;
         int idx = 0;
         while(loop){
-            seed = seed * 0x19660D + 0x3C6EF35F;
-            idx = (seed >> 2 & 0x1F);
+            s_seed = s_seed * 0x19660D + 0x3C6EF35F;
+            idx = (s_seed >> 2 & 0x1F);
             if(usedUp[idx] == false){
                 loop = false;
                 usedUp[idx] = true;
@@ -91,7 +92,7 @@ DataNode getRandomSequence32A(DataArray* da){
 }
 
 DataNode getRandomSequence32B(DataArray* da){
-    static int seed;
+    static unsigned long s_seed;
     static bool usedUp[0x20];
     bool enough = da->Size() > 1;
     
@@ -99,7 +100,7 @@ DataNode getRandomSequence32B(DataArray* da){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
         if(dataint != 0){
-            seed = dataint;
+            s_seed = dataint;
         }
         return DataNode(kDataInt, 0x610A660F);
     }
@@ -107,8 +108,8 @@ DataNode getRandomSequence32B(DataArray* da){
         bool loop = true;
         int idx = 0;
         while(loop){
-            seed = seed * 0x19660D + 0x3C6EF35F;
-            idx = (seed >> 2 & 0x1F);
+            s_seed = s_seed * 0x19660D + 0x3C6EF35F;
+            idx = (s_seed >> 2 & 0x1F);
             if(usedUp[idx] == false){
                 loop = false;
                 usedUp[idx] = true;
@@ -118,33 +119,62 @@ DataNode getRandomSequence32B(DataArray* da){
     }
 }
 
-DataNode op0(DataArray* da){
-    int i1 = da->Int(1);
-    int i2 = da->Int(2);
-    return DataNode(kDataInt, ((i2 ^ i1) & 0xFF));
+DataNode op0(DataArray* msg){
+    unsigned long operand = msg->Int(1);
+    unsigned long w = msg->Int(2);
+    return DataNode(kDataInt, ((w ^ operand) & 0xFF));
 }
 
-DataNode op1(DataArray* da){
-    int i1 = da->Int(1);
-    int i2 = da->Int(2);
-    return DataNode(kDataInt, ((i2 & 0xFF) + (i1 & 0xFF) & 0xFF));
+DataNode op1(DataArray* msg){
+    unsigned long operand = msg->Int(1);
+    unsigned long w = msg->Int(2);
+    return DataNode(kDataInt, ((w & 0xFF) + (operand & 0xFF) & 0xFF));
 }
 
-DataNode op2(DataArray* da){
-    int i1 = da->Int(1);
-    int i2 = da->Int(2);
-    unsigned int ret = (i2 & 0xFF) | ((i2 << 8) & 0xFF00);
-    ret >>= (i1 & 7) & 0xFF;
+DataNode op2(DataArray* msg){
+    unsigned long operand = msg->Int(1);
+    unsigned long w = msg->Int(2);
+    unsigned long ret = (w & 0xFF) | ((w << 8) & 0xFF00);
+    ret >>= (operand & 7) & 0xFF;
     return DataNode(kDataInt, (unsigned char)ret);
 }
 
-DataNode op3(DataArray* da){
-    int i1 = da->Int(1);
-    int i2 = da->Int(2);
-    unsigned int ret = (i2 & 0xFF) | ((i2 & 0xFF) << 8);
-    ret >>= (i1 == 0);
+DataNode op3(DataArray* msg){
+    unsigned long operand = msg->Int(1);
+    unsigned long w = msg->Int(2);
+    unsigned long ret = (w & 0xFF) | ((w & 0xFF) << 8);
+    ret >>= (operand == 0);
     return DataNode(kDataInt, (unsigned char)ret);
 }
+
+DataNode op4(DataArray* msg);
+DataNode op5(DataArray* msg);
+DataNode op6(DataArray* msg);
+DataNode op7(DataArray* msg);
+DataNode op8(DataArray* msg);
+DataNode op9(DataArray* msg);
+DataNode op10(DataArray* msg);
+DataNode op11(DataArray* msg);
+DataNode op12(DataArray* msg);
+DataNode op13(DataArray* msg);
+DataNode op14(DataArray* msg);
+DataNode op15(DataArray* msg);
+DataNode op16(DataArray* msg);
+DataNode op17(DataArray* msg);
+DataNode op18(DataArray* msg);
+DataNode op19(DataArray* msg);
+DataNode op20(DataArray* msg);
+DataNode op21(DataArray* msg);
+DataNode op22(DataArray* msg);
+DataNode op23(DataArray* msg);
+DataNode op24(DataArray* msg);
+DataNode op25(DataArray* msg);
+DataNode op26(DataArray* msg);
+DataNode op27(DataArray* msg);
+DataNode op28(DataArray* msg);
+DataNode op29(DataArray* msg);
+DataNode op30(DataArray* msg);
+DataNode op31(DataArray* msg);
 
 extern DataArray* DataReadString(const char*);
 
@@ -188,24 +218,80 @@ DataNode getRandomLong(DataArray* da){
 }
 
 DataNode magicNumberGenerator(DataArray* da){
-    int magic = 0x5c5c5c5c;
+    long magic = 0x5c5c5c5c;
     if(da->Int(2) == 2){
         magic = 0x36363636;
     }
     int idx = da->Int(1);
-    int v = ((idx ^ magic) * 0x19660d + 0x3c6ef35f);
+    long v = ((idx ^ magic) * 0x19660d + 0x3c6ef35f);
     if(da->Int(2) == 1){
-        v = ((int)v * 0x19660d + 0x3c6ef35f);
+        v = (v * 0x19660d + 0x3c6ef35f);
     }
     return DataNode(kDataInt, v);
 }
 
 void ByteGrinder::Init(){
-    char buf[32];
-    sprintf(buf, "O%d");
+//     // Local variables
+//     char functionName[256]; // r1+0x130
+//     class vector funPtrs; // r1+0x124
+//     int i; // r30
+    char functionName[256];
+    functionName[0] = 'N';
+    functionName[1] = 'a';
+    functionName[2] = '\0';
+    DataRegisterFunc(functionName, getRandomLong);
+    functionName[0] = 'h';
+    DataRegisterFunc(functionName, magicNumberGenerator);
+    functionName[0] = 'm';
+    DataRegisterFunc(functionName, hashTo5Bits);
+    functionName[0] = 'z';
+    DataRegisterFunc(functionName, hashTo6Bits);
+    functionName[0] = 'x';
+    DataRegisterFunc(functionName, getRandomSequence32A);
+    functionName[0] = 'y';
+    DataRegisterFunc(functionName, getRandomSequence32B);
+    std::vector<DataFunc*> funPtrs;
+    funPtrs.push_back(op0);
+    funPtrs.push_back(op1);
+    funPtrs.push_back(op2);
+    funPtrs.push_back(op3);
+    funPtrs.push_back(op4);
+    funPtrs.push_back(op5);
+    funPtrs.push_back(op6);
+    funPtrs.push_back(op7);
+    funPtrs.push_back(op8);
+    funPtrs.push_back(op9);
+    funPtrs.push_back(op10);
+    funPtrs.push_back(op11);
+    funPtrs.push_back(op12);
+    funPtrs.push_back(op13);
+    funPtrs.push_back(op14);
+    funPtrs.push_back(op15);
+    funPtrs.push_back(op16);
+    funPtrs.push_back(op17);
+    funPtrs.push_back(op18);
+    funPtrs.push_back(op19);
+    funPtrs.push_back(op20);
+    funPtrs.push_back(op21);
+    funPtrs.push_back(op22);
+    funPtrs.push_back(op23);
+    funPtrs.push_back(op24);
+    funPtrs.push_back(op25);
+    funPtrs.push_back(op26);
+    funPtrs.push_back(op27);
+    funPtrs.push_back(op28);
+    funPtrs.push_back(op29);
+    funPtrs.push_back(op30);
+    funPtrs.push_back(op31);
+    pickOneOf32A(true, 0xD5);
+    for(int i = 0; i < funPtrs.size(); i++){
+        sprintf(functionName, "O%d", pickOneOf32A(false, 0));
+        DataRegisterFunc(functionName, funPtrs[i]);
+    }
+    funPtrs.clear();
 }
 
-void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, long moggVersion){
+void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, int moggVersion){
     char script[256];
     DataArray* mainScriptArray;
     
