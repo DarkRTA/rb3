@@ -1,6 +1,62 @@
 #include "utl/SongInfoCopy.h"
 #include "os/System.h"
 
+SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPackageName() {
+    mName = info->GetName();
+    mBaseFileName = info->GetBaseFileName();
+//       iVar4 = FileIsDLC(*(char **)(this + 0x10));
+//   if (iVar4 != 0) {
+//     local_40 = (String *)0x0;
+//     local_3c = 0;
+//     local_3a = 0;
+//     String::split((String *)(this + 8),::@stringBase0,(vector<> *)&local_40);
+//     if (3 < local_3c) {
+//       iVar4 = String::find((String *)(local_40 + 0x18),s__song_80bbfaea);
+//       if (iVar4 == -1) {
+//         String::operator_+=((String *)(local_40 + 0x18),s__song_80bbfaea);
+//         String::String(&SStack_2c,local_40);
+//         uVar10 = 1;
+//         iVar4 = 0xc;
+//         while( true ) {
+//           if (local_3c <= uVar10) break;
+//           String::operator_+=(&SStack_2c,::@stringBase0);
+//           String::operator_+=(&SStack_2c,local_40 + iVar4);
+//           uVar10 = uVar10 + 1;
+//           iVar4 = iVar4 + 0xc;
+//         }
+//         String::operator_=((String *)(this + 8),(String *)&SStack_2c);
+//         String::~String(&SStack_2c);
+//       }
+//     }
+//     pSVar1 = local_40;
+//     if (&stack0x00000000 != (undefined *)0x40) {
+//       for (pSVar11 = local_40 + (uint)local_3c * 0xc; pSVar11 != pSVar1; pSVar11 = pSVar11 + -0xc)  {
+//         (**(code **)(*(int *)(pSVar11 + -0xc) + 8))(pSVar11 + -0xc,0xffffffff);
+//       }
+//       if (&stack0x00000000 != (undefined *)0x40) {
+//         if (local_40 != (String *)0x0) {
+//           _MemOrPoolFreeSTL((uint)local_3a * 0xc,1,local_40);
+//         }
+//         local_40 = (String *)0x0;
+//         local_3c = 0;
+//         local_3a = 0;
+//       }
+//     }
+//   }
+    mPackageName = info->GetPackageName();
+    mNumVocalParts = info->GetNumVocalParts();
+    mHopoThreshold = info->GetHopoThreshold();
+    mMuteVolume = info->GetMuteVolume();
+    mVocalMuteVolume = info->GetVocalMuteVolume();
+    mPans = info->GetPans();
+    mVols = info->GetVols();
+    mCores = info->GetCores();
+    mCrowdChannels = info->GetCrowdChannels();
+    mDrumSoloSamples = info->GetDrumSoloSamples();
+    mDrumFreestyleSamples = info->GetDrumFreestyleSamples();
+    // mTrackChannels = info->GetTracks();
+}
+
 SongInfoCopy::SongInfoCopy() : mName() {
     mName = Symbol();
     mNumVocalParts = 1;
@@ -19,8 +75,8 @@ SongInfoCopy::~SongInfoCopy(){
 
 }
 
-const char* SongInfoCopy::GetName() const {
-    return mName.Str();
+Symbol SongInfoCopy::GetName() const {
+    return mName;
 }
 
 const char* SongInfoCopy::GetBaseFileName() const {
@@ -30,6 +86,10 @@ const char* SongInfoCopy::GetBaseFileName() const {
 const char* SongInfoCopy::GetPackageName() const {
     if(!mPackageName.empty()) return mPackageName.c_str();
     else return 0;
+}
+
+const std::vector<TrackChannels>& SongInfoCopy::GetTracks() const {
+    return mTrackChannels;
 }
 
 int SongInfoCopy::GetNumVocalParts() const {
