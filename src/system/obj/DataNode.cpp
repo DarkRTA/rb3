@@ -450,9 +450,9 @@ void DataNode::Print(TextStream& ts, bool b) const {
     }
 }
 
-unsigned int DataNode::PrintUnused(TextStream& ts, bool b) const {
+bool DataNode::PrintUnused(TextStream& ts, bool b) const {
     MILO_WARN("Enable PRINT_UNUSED in Data.h to utilize DataNode::PrintUnused()");
-    return 0;
+    return false;
 }
 
 void DataNode::Save(BinStream& d) const {

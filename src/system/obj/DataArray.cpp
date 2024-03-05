@@ -131,6 +131,14 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
     }
 }
 
+bool DataArray::PrintUnused(TextStream& ts, DataType ty, bool b) const {
+    bool ret = false;
+    for(int i = 0; i < mSize; i++){
+        ret |= mNodes[i].PrintUnused(ts, b);
+    }
+    return ret;
+}
+
 void* NodesLinearAlloc(int i){
     MILO_ASSERT(gLinearNodesMemSize > 0, 0x108);
     void* oldpos = gLinearNodesMemPos;
@@ -460,21 +468,34 @@ void DataArray::SaveGlob(BinStream &bs, bool b) const {
     }
 }
 
-// // fn_80317B9C
-// void DataArray::LoadGlob(BinStream &bs, bool b) {
-//     unsigned int v;
-//     NodesFree(-mSize, mNodes);
-//     if (b) {
-//         bs >> v;
-//         mSize = -(v + 1);
-//         mNodes = NodesAlloc(-mSize);
-//         bs.Read(mNodes, v);
-//     } else {
-//         bs >> mSize;
-//         mNodes = NodesAlloc(-mSize);
-//         bs.Read(mNodes, -mSize);
-//     }
-// }
+// fn_80317B9C
+void DataArray::LoadGlob(BinStream &bs, bool b) {
+    MILO_ASSERT(mSize <= 0, 0x52A);
+    int v;
+    NodesFree(-mSize, mNodes);
+    if (b) {
+        bs >> v;
+        mSize = -(v + 1);
+        mNodes = (DataNode*)NodesAlloc(-mSize);
+        bs.Read(mNodes, v);
+    } else {
+        bs >> mSize;
+        mNodes = (DataNode*)NodesAlloc(-mSize);
+        bs.Read(mNodes, -mSize);
+    }
+}
+
+void DataArray::SetFile(Symbol s){
+    gFile = s;
+}
+
+DataNode DataArray::ExecuteBlock(int len){
+    for(; len < mSize - 1; len++){
+        Command(len)->Execute();
+    }
+    return Evaluate(len);
+}
+
 
 // // extern void DataPushVar(DataNode *dn);
 // // extern void DataPopVar();
