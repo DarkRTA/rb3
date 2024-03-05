@@ -10,14 +10,13 @@ class TrackChannels {
 public:
     TrackChannels(){}
     ~TrackChannels(){}
+    SongInfoAudioType mAudioType; // SongInfoAudioType? maybe?
     std::vector<int> mChannels;
 };
 
 BinStream& operator<<(BinStream& bs, const TrackChannels& chans){
-    bs << (int)chans.mChannels.size();
-    for(std::vector<int>::const_iterator it = chans.mChannels.begin(); it != chans.mChannels.end(); it++){
-        bs << *it;
-    }
+    bs << chans.mAudioType;
+    bs << chans.mChannels;
     return bs;
 }
 
