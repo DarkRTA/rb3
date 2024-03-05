@@ -1,5 +1,7 @@
 #include "meta/DataArraySongInfo.h"
 
+int DataArraySongInfo::sSaveVer = 1;
+
 DataArraySongInfo::DataArraySongInfo(SongInfo* info) : SongInfoCopy(info) {
 
 }

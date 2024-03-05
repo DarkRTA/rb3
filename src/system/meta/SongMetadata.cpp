@@ -108,7 +108,15 @@ int SongMetadata::NumVocalParts() const {
 }
 
 void SongMetadata::Save(BinStream& d) {
-    d << sSaveVer << mVersion << mID << mIsOnDisc << mGameOrigin << mPreviewStartTime << mPreviewEndTime << mShortName << (int)&mSongVocalsBlock;
+    d << sSaveVer;
+    d << mVersion;
+    d << mID;
+    d << mIsOnDisc;
+    d << mGameOrigin;
+    d << mPreviewStartTime;
+    d << mPreviewEndTime;
+    d << mShortName;
+    d << (int)mSongVocalsBlock; // could be a fake match
     MILO_ASSERT(mSongInfo, 0x97);
     d << *mSongInfo;
 }
