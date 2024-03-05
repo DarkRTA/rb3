@@ -407,82 +407,58 @@ void DataArray::SetFileLine(Symbol s, int i) {
     mLine = i;
 }
 
-// int NodeCmp(const void *a, const void *b) {
-//     DataNode *da = (DataNode *)a;
-//     DataNode *db = (DataNode *)b;
-//     switch (da->Type()) {
-//     case kDataFloat:
-//     case kDataInt:
-//         double d1 = da->LiteralFloat(nullptr);
-//         double d2 = db->LiteralFloat(nullptr);
-//         if (d1 < d2)
-//             return -1;
-//         return (d1 != d2);
-//     case kDataString:
-//     case kDataSymbol:
-//         return stricmp(da->Str(nullptr), db->Str(nullptr));
-//     case kDataArray:
-//         return NodeCmp(
-//             &(da->Array(nullptr)->Node(0)), &(db->Array(nullptr)->Node(0))
-//         );
-//     case kDataObject:
-//         Hmx::Object *obj = da->GetObj(nullptr);
-//         char *c1;
-//         char *c2;
-//         if (obj != nullptr) {
-//             c1 = (char *)(da->GetObj(nullptr)->Name());
-//         } else
-//             c1 = '\0';
-//         obj = db->GetObj(nullptr);
-//         if (obj != nullptr) {
-//             c2 = (char *)(db->GetObj(nullptr)->Name());
-//         } else
-//             c2 = '\0';
-//         return stricmp(c1, c2);
-//     default:
-//         return 0;
-//     }
-// }
+int DataArray::NodeCmp(const void* a, const void* b){
+    const DataNode* anode = (const DataNode*)a;
+    const DataNode* bnode = (const DataNode*)b;
+    switch(anode->Type()){
+        case kDataFloat:
+        case kDataInt:
+            float a = anode->LiteralFloat(0);
+            float b = bnode->LiteralFloat(0);
+            if(a < b) return -1;
+            return a != b;
+        case kDataString:
+        case kDataSymbol:
+            return stricmp(anode->Str(0), bnode->Str(0));
+        case kDataArray:
+            return NodeCmp(&(anode->Array(0)->Node(0)), &(bnode->Array(0)->Node(0)));
+        case kDataObject:
+            return stricmp(anode->GetObj(0) ? anode->GetObj(0)->Name() : "", bnode->GetObj(0) ? bnode->GetObj(0)->Name() : "");
+        default:
+            MILO_WARN("could not sort array, bad type");
+            return 0;
+    }
+}
 
-// void DataArray::SortNodes() {
-//     if (mSize <= 0)
-//         return;
-//     qsort(mNodes, mSize, 8, NodeCmp);
-// }
+void DataArray::SortNodes() {
+    if (mSize <= 0)
+        return;
+    qsort(mNodes, mSize, 8, NodeCmp);
+}
 
-// BinStream &operator<<(BinStream &bs, const DataNode *dn);
+void DataArrayGlitchCB(float f, void* v){
+    DataArray* arr = ((DataArray*)v);
+    arr->Node(0).Print(TheDebug, true);
+    TheDebug << MakeString(" took %.2f ms (File: %s Line: %d)\n", f, arr->File(), arr->Line());
+}
 
-// // fn_803171F8
-// void DataArray::Save(BinStream &bs) const {
-//     bs << mSize << mLine << mDeprecated;
-//     for (int i = 0; i < mSize; i++) {
-//         bs << &mNodes[i];
-//     }
-// }
+void DataArray::Save(BinStream &bs) const {
+    bs << mSize << mLine << mDeprecated;
+    for (int i = 0; i < mSize; i++) {
+        bs << mNodes[i];
+    }
+}
 
-// // fn_80317278
-// BinStream &operator<<(BinStream &bs, const DataNode *dn) {
-//     dn->Save(bs);
-//     return bs;
-// }
-
-// // fn_80317AE0
-// BinStream &operator>>(BinStream &bs, DataNode *dn) {
-//     dn->Load(bs);
-//     return bs;
-// }
-
-// // fn_80317B18
-// void DataArray::SaveGlob(BinStream &bs, bool b) const {
-//     if (b) {
-//         int i = -1 - mSize;
-//         bs << (unsigned int)i;
-//         bs.Write(mNodes, i);
-//     } else {
-//         bs << mSize;
-//         bs.Write(mNodes, -mSize);
-//     }
-// }
+void DataArray::SaveGlob(BinStream &bs, bool b) const {
+    if (b) {
+        int i = -1 - mSize;
+        bs << i;
+        bs.Write(mNodes, i);
+    } else {
+        bs << mSize;
+        bs.Write(mNodes, -mSize);
+    }
+}
 
 // // fn_80317B9C
 // void DataArray::LoadGlob(BinStream &bs, bool b) {
@@ -536,33 +512,28 @@ void DataArray::SetFileLine(Symbol s, int i) {
 // //     return ret;
 // // }
 
-// // fn_80317E5C
-// TextStream &operator<<(TextStream &ts, const DataArray *da) {
-//     if (da != nullptr)
-//         da->Print(ts, kDataArray, false);
-//     else
-//         ts << "<null>";
-//     return ts;
-// }
+TextStream& operator<<(TextStream& ts, const DataArray* da){
+    if(da) da->Print(ts, kDataArray, false);
+    else ts << "<null>";
+    return ts;
+}
 
-// // fn_80317EB8
-// BinStream &operator>>(BinStream &bs, DataArray *&da) {
-//     bool b;
-//     bs >> b;
-//     if (b) {
-//         da = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
-//         da->Load(bs);
-//     } else
-//         da = nullptr;
-//     return bs;
-// }
+BinStream &operator>>(BinStream &bs, DataArray *&da) {
+    bool b;
+    bs >> b;
+    if (b) {
+        da = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+        da->Load(bs);
+    } else
+        da = nullptr;
+    return bs;
+}
 
-// // fn_80317F3C
-// BinStream &operator<<(BinStream &bs, const DataArray *da) {
-//     if (da != nullptr) {
-//         bs << (char)1;
-//         da->Save(bs);
-//     } else
-//         bs << (char)0;
-//     return bs;
-// }
+BinStream &operator<<(BinStream &bs, const DataArray *da) {
+    if (da != 0) {
+        bs << true;
+        da->Save(bs);
+    } else
+        bs << false;
+    return bs;
+}

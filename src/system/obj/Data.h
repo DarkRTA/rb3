@@ -158,6 +158,8 @@ public:
     static Symbol gFile;
     static DataFunc* sDefaultHandler;
 
+    static int NodeCmp(const void*, const void*);
+
     const char* File() { return mFile.mStr; }
     int Size() const { return mSize; }
     int Line(){ return mLine; }
@@ -238,6 +240,11 @@ public:
     }
     
 };
+
+inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
+    node.Save(bs);
+    return bs;
+}
 
 TextStream& operator<<(TextStream&, const DataArray*);
 BinStream& operator>>(BinStream&, DataArray*&);
