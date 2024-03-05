@@ -232,6 +232,10 @@ public:
     DataNode& Evaluate(int i) const {
         return Node(i).Evaluate();
     }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(DataArray), FastPool, v);
+    }
     
 };
 

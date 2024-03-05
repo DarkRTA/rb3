@@ -6,6 +6,7 @@
 #include "obj/Object.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
+#include "math/MathFuncs.h"
 
 std::list<bool> gDataArrayConditional;
 Symbol DataArray::gFile;
@@ -161,130 +162,107 @@ void NodesFree(int i, DataNode* n){
     _MemOrPoolFree(i, FastPool, n);
 }
 
-// // fn_80315CFC
-// void DataArray::Insert(int count, const DataNode &dn) {
-//     int i = 0;
-//     int newNodeCount = mSize + 1;
-//     DataNode *oldNodes = mNodes; // Save all nodes pointer
-//     // allocate new nodes
-//     mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+void DataArray::Insert(int count, const DataNode &dn) {
+    int i = 0;
+    int newNodeCount = mSize + 1;
+    DataNode *oldNodes = mNodes; // Save all nodes pointer
+    // allocate new nodes
+    mNodes = (DataNode*)NodesAlloc(newNodeCount * sizeof(DataNode));
 
-//     for (i = 0; i < count; i++) {
-//         new (&mNodes[i]) DataNode(oldNodes[i]);
-//     }
-//     for (; i < count + 1; i++) {
-//         new (&mNodes[i]) DataNode(dn);
-//     }
-//     for (; i < newNodeCount; i++) {
-//         new (&mNodes[i]) DataNode(oldNodes[i - 1]);
-//     }
-//     for (i = 0; i < mSize; i++) {
-//         oldNodes[i].~DataNode();
-//     }
+    for (i = 0; i < count; i++) {
+        new (&mNodes[i]) DataNode(oldNodes[i]);
+    }
+    for (; i < count + 1; i++) {
+        new (&mNodes[i]) DataNode(dn);
+    }
+    for (; i < newNodeCount; i++) {
+        new (&mNodes[i]) DataNode(oldNodes[i - 1]);
+    }
+    for (i = 0; i < mSize; i++) {
+        oldNodes[i].~DataNode();
+    }
 
-//     // free old nodes
-//     NodesFree(mSize * sizeof(DataNode), oldNodes);
-//     mSize = newNodeCount;
-// }
+    // free old nodes
+    NodesFree(mSize * sizeof(DataNode), oldNodes);
+    mSize = newNodeCount;
+}
 
-// // fn_80315E1C
-// void DataArray::InsertNodes(int count, const DataArray *da) {
-//     if ((da == 0) || (da->Size() == 0))
-//         return;
-//     int i = 0;
-//     int dacnt = da->Size();
-//     int newNodeCount = mSize + dacnt;
-//     DataNode *oldNodes = mNodes; // Save all nodes pointer
-//     // allocate new nodes
-//     mNodes = NodesAlloc(newNodeCount * sizeof(DataNode));
+void DataArray::InsertNodes(int count, const DataArray *da) {
+    if ((da == 0) || (da->Size() == 0))
+        return;
+    int i = 0;
+    int dacnt = da->Size();
+    int newNodeCount = mSize + dacnt;
+    DataNode *oldNodes = mNodes; // Save all nodes pointer
+    // allocate new nodes
+    mNodes = (DataNode*)NodesAlloc(newNodeCount * sizeof(DataNode));
 
-//     for (i = 0; i < count; i++) {
-//         new (&mNodes[i]) DataNode(oldNodes[i]);
-//     }
+    for (i = 0; i < count; i++) {
+        new (&mNodes[i]) DataNode(oldNodes[i]);
+    }
 
-//     for (; i < count + dacnt; i++) {
-//         new (&mNodes[i]) DataNode(da->Node(i - count));
-//     }
+    for (; i < count + dacnt; i++) {
+        new (&mNodes[i]) DataNode(da->Node(i - count));
+    }
 
-//     for (; i < newNodeCount; i++) {
-//         new (&mNodes[i]) DataNode(oldNodes[i - dacnt]);
-//     }
-//     for (i = 0; i < mSize; i++) {
-//         oldNodes[i].~DataNode();
-//     }
-//     NodesFree(mSize * sizeof(DataNode), oldNodes);
-//     mSize = newNodeCount;
-// }
+    for (; i < newNodeCount; i++) {
+        new (&mNodes[i]) DataNode(oldNodes[i - dacnt]);
+    }
+    for (i = 0; i < mSize; i++) {
+        oldNodes[i].~DataNode();
+    }
+    NodesFree(mSize * sizeof(DataNode), oldNodes);
+    mSize = newNodeCount;
+}
 
-// // fn_80315F74
-// void DataArray::Resize(int i) {
-//     DataNode *oldNodes = mNodes;
-//     mNodes = NodesAlloc(i * sizeof(DataNode));
-//     int min = Minimum(mSize, i);
-//     int cnt = 0;
-//     for (cnt = 0; cnt < min; cnt++) {
-//         new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
-//     }
-//     for (; cnt < i; cnt++) {
-//         new (&mNodes[cnt]) DataNode();
-//     }
-//     for (cnt = 0; cnt < mSize; cnt++) {
-//         oldNodes[cnt].~DataNode();
-//     }
-//     NodesFree(mSize * sizeof(DataNode), oldNodes);
-//     mSize = i;
-//     mDeprecated = 0;
-// }
+// fn_80315F74
+void DataArray::Resize(int i) {
+    DataNode *oldNodes = mNodes;
+    mNodes = (DataNode*)NodesAlloc(i * sizeof(DataNode));
+    int min = Minimum<int>(mSize, i);
+    int cnt = 0;
+    for (cnt = 0; cnt < min; cnt++) {
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for (; cnt < i; cnt++) {
+        new (&mNodes[cnt]) DataNode();
+    }
+    for (cnt = 0; cnt < mSize; cnt++) {
+        oldNodes[cnt].~DataNode();
+    }
+    NodesFree(mSize * sizeof(DataNode), oldNodes);
+    mSize = i;
+    mDeprecated = 0;
+}
 
-// // fn_80316064
-// void DataArray::Remove(int i) {
-//     DataNode *oldNodes = mNodes;
-//     int newCnt = mSize - 1;
-//     mNodes = NodesAlloc(newCnt * sizeof(DataNode));
-//     int cnt = 0;
-//     for (cnt = 0; cnt < i; cnt++) {
-//         new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
-//     }
-//     for (; i < newCnt; i++) {
-//         new (&mNodes[i]) DataNode(oldNodes[i + 1]);
-//     }
-//     for (int j = 0; j < mSize; j++) {
-//         oldNodes[j].~DataNode();
-//     }
-//     NodesFree(mSize * sizeof(DataNode), oldNodes);
-//     mSize = newCnt;
-// }
+void DataArray::Remove(int index) {
+    MILO_ASSERT(index < mSize, 0x1B0);
+    DataNode *oldNodes = mNodes;
+    int newCnt = mSize - 1;
+    mNodes = (DataNode*)NodesAlloc(newCnt * sizeof(DataNode));
+    int cnt = 0;
+    for (cnt = 0; cnt < index; cnt++) {
+        new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
+    }
+    for (; index < newCnt; index++) {
+        new (&mNodes[index]) DataNode(oldNodes[index + 1]);
+    }
+    for (int j = 0; j < mSize; j++) {
+        oldNodes[j].~DataNode();
+    }
+    NodesFree(mSize * sizeof(DataNode), oldNodes);
+    mSize = newCnt;
+}
 
-// // fn_80316150
-// void DataArray::Remove(const DataNode &dn) {
-//     int searchType = dn.mValue.integer;
-//     for (int lol = mSize - 1; lol >= 0; lol--) {
-//         if (mNodes[lol].mValue.integer == searchType) {
-//             Remove(lol);
-//             return;
-//         }
-//     }
-// }
-
-// // fn_80315F74
-// void DataArray::Resize(int i) {
-//     DataNode *oldNodes = mNodes;
-//     mNodes = NodesAlloc(i * sizeof(DataNode));
-//     int min = MIN(mSize, i);
-//     int cnt = 0;
-//     for (cnt = 0; cnt < min; cnt++) {
-//         new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
-//     }
-//     for (; cnt < i; cnt++) {
-//         new (&mNodes[cnt]) DataNode();
-//     }
-//     for (cnt = 0; cnt < mSize; cnt++) {
-//         oldNodes[cnt].~DataNode();
-//     }
-//     NodesFree(mSize * sizeof(DataNode), oldNodes);
-//     mSize = i;
-//     mDeprecated = 0;
-// }
+void DataArray::Remove(const DataNode &dn) {
+    int searchType = dn.mValue.integer;
+    for (int lol = mSize - 1; lol >= 0; lol--) {
+        if (mNodes[lol].mValue.integer == searchType) {
+            Remove(lol);
+            return;
+        }
+    }
+}
 
 bool DataArray::Contains(const DataNode &dn) const {
     int searchType = dn.mValue.integer;
@@ -384,36 +362,28 @@ bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
         return false;
 }
 
-// // // fn_803169C4
-// // DataArray *DataArray::Clone(bool b1, bool b2, int i) {
-// //     DataArray *da = new (fn_8035CF9C(0x10, 0x10, 1)) DataArray(mSize + i);
-// //     for (int i = 0; i < mSize; i++) {
-// //         DataNode evaluated;
-// //         if (b2) {
-// //             DataNode *dn = &mNodes[i];
-// //             evaluated = dn->Evaluate();
-// //         } else
-// //             evaluated = &mNodes[i];
-// //         da->mNodes[i] = *evaluated;
-// //         if (b1) {
-// //             if (da->mNodes[i].GetType() == 0x10) {
-// //                 DataArray *arr = da->mNodes[i].LiteralArray(0);
-// //                 DataArray *cloned = arr->Clone(true, b2, 0);
-// //                 da->mNodes[i] = DataNode(cloned, (DataType)0x10);
-// //                 cloned->DecRefCount();
-// //             }
-// //         }
-// //     }
-// //     return da;
-// // }
+DataArray* DataArray::Clone(bool b1, bool b2, int i){
+    DataArray* da = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(mSize + i);
+    for(int i = 0; i < mSize; i++){
+        da->mNodes[i] = (b2) ? mNodes[i].Evaluate() : mNodes[i];
+        if(b1){
+            if(da->mNodes[i].Type() == kDataArray){
+                DataArray* cloned = da->mNodes[i].LiteralArray(0)->Clone(true, b2, 0);
+                da->mNodes[i] = DataNode(cloned, kDataArray);
+                cloned->Release();
+            }
+        }
+    }
+    return da;
+}
 
-// DataArray::DataArray(int size)
-//     : mFile(), mSize(size), mRefs(1), mLine(0), mDeprecated(0) {
-//     mNodes = NodesAlloc(size * sizeof(DataNode));
-//     for (int n = 0; n < size; n++) {
-//         new (&mNodes[n]) DataNode();
-//     }
-// }
+DataArray::DataArray(int size)
+    : mFile(), mSize(size), mRefs(1), mLine(0), mDeprecated(0) {
+    mNodes = (DataNode*)NodesAlloc(size * sizeof(DataNode));
+    for (int n = 0; n < size; n++) {
+        new (&mNodes[n]) DataNode();
+    }
+}
 
 DataArray::DataArray(const void *glob, int size)
     : mFile(), mSize(-size), mRefs(1), mLine(0), mDeprecated(0) {
@@ -421,16 +391,16 @@ DataArray::DataArray(const void *glob, int size)
     memcpy(mNodes, glob, size);
 }
 
-// DataArray::~DataArray() {
-//     if (mSize < 0)
-//         NodesFree(-mSize, mNodes);
-//     else {
-//         for (int i = 0; i < mSize; i++) {
-//             mNodes[i].~DataNode();
-//         }
-//         NodesFree(mSize * sizeof(DataNode), mNodes);
-//     }
-// }
+DataArray::~DataArray() {
+    if (mSize < 0)
+        NodesFree(-mSize, mNodes);
+    else {
+        for (int i = 0; i < mSize; i++) {
+            mNodes[i].~DataNode();
+        }
+        NodesFree(mSize * sizeof(DataNode), mNodes);
+    }
+}
 
 void DataArray::SetFileLine(Symbol s, int i) {
     mFile = s;
