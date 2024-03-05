@@ -7,6 +7,7 @@
 class DataArraySongInfo : public SongInfoCopy {
 public:
     DataArraySongInfo(DataArray*, DataArray*, Symbol);
+    DataArraySongInfo(SongInfo*);
     DataArraySongInfo();
     virtual ~DataArraySongInfo();
 
@@ -14,7 +15,10 @@ public:
         return _MemAlloc(ul, 0);
     }
 
-    char filler[0x50];
+    void operator delete(void* v){
+        return _MemFree(v);
+    }
+
 };
 
 BinStream& operator<<(BinStream&, const DataArraySongInfo&);
