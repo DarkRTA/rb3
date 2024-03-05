@@ -98,6 +98,10 @@ public:
   ~_Vector_base() {
     if (_M_ptr._M_data != pointer())
       _M_ptr.deallocate(_M_ptr._M_data, _M_data_size);
+
+    _M_ptr._M_data = 0;
+    _M_finish_idx = 0;
+    _M_data_size = 0;
   }
 
 protected:
@@ -576,12 +580,12 @@ public:
 private:
   void _M_clear() {
     _STLP_STD::_Destroy_Range(rbegin(), rend());
-    this->_M_ptr.deallocate(begin(), this->_M_data_size);
+    this->_M_ptr.deallocate(this->_M_ptr._M_data, this->_M_data_size);
   }
 
   void _M_clear_after_move() {
     _STLP_STD::_Destroy_Moved_Range(rbegin(), rend());
-    this->_M_ptr.deallocate(begin(), this->_M_data_size);
+    this->_M_ptr.deallocate(this->_M_ptr._M_data, this->_M_data_size);
   }
 
   void _M_set(pointer __s, pointer __f, pointer __e) {

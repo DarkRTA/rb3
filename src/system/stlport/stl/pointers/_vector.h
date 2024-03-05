@@ -129,7 +129,10 @@ public:
 #else
   void push_back(const value_type& __x)
 #endif
-  { _M_impl.push_back(cast_traits::to_storage_type_cref(__x)); }
+  {
+    const _StorageType __s = cast_traits::to_storage_type_cref(__x);
+    _M_impl.push_back(__s);
+  }
 
 #if !defined(_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const value_type& __x = value_type())

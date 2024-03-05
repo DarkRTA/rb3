@@ -67,6 +67,8 @@ public:
 
     JsonObject *LoadFromString(const String &str);
     JsonObject *GetElement(JsonArray *array, int index);
+
+private:
     void PushObject(JsonObject *obj);
 };
 

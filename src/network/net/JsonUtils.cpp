@@ -79,7 +79,7 @@ JsonConverter::~JsonConverter() {
     if (objects.size() != 0) {
         int count = objects.size() - 1;
         while (count >= 0) {
-            JsonObject *o = objects.at(count);
+            JsonObject *o = objects[count];
             delete o;
             count--;
         }

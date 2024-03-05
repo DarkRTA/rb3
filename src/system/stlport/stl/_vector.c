@@ -105,7 +105,7 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow(pointer __pos, const _Tp& __
   size_type __len = __old_size + (max)(__old_size, __fill_len);
 
   pointer __new_start = this->_M_ptr.allocate(__len, __len);
-  pointer __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(begin(), __pos, __new_start));
+  pointer __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(this->_M_ptr._M_data, __pos, __new_start));
   // handle insertion
   __new_finish = _STLP_PRIV::__fill_n(__new_finish, __fill_len, __x);
   if (!__atend)
