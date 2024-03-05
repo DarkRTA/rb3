@@ -352,7 +352,7 @@ bool DataNode::NotNull() const {
 }
 
 DataNode& DataNode::operator=(const DataNode& node){
-    if(this != &node){
+    if(&node != this){
         if(mType & kDataArray) mValue.array->Release();
         mValue = node.mValue;
         mType = node.mType;
@@ -491,7 +491,7 @@ void DataNode::Save(BinStream& d) const {
         case kDataObject:
             if(mValue.object)
                 d << mValue.object->Name();
-            else d << "\0";
+            else d << "";
             break;
         case kDataVar:
             d << DataVarName(mValue.var);

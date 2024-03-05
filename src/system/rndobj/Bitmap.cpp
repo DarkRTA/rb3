@@ -7,7 +7,7 @@ int RndBitmap::NumMips() const {
     return i;
 }
 
-inline int RndBitmap::PixelBytes() const {return mRowBytes * mHeight;}
+int RndBitmap::PixelBytes() const {return mRowBytes * mHeight;}
 
 int RndBitmap::PaletteBytes() const {
     if (mBpp <= 8) {

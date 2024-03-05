@@ -3,10 +3,15 @@
 
 class Block {
 public:
+    Block();
+
     const char* mBuffer;
     int mArkfileNum;
     int mBlockNum;
     int mTimestamp;
+    bool mWritten;
+    const char* mDebugName;
+    static int sCurrTimeStamp;
 };
 
 class BlockMgr {
