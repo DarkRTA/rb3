@@ -3,6 +3,7 @@
 #include "utl/Symbol.h"
 #include "utl/Str.h"
 #include "utl/SongInfoAudioType.h"
+#include "utl/BinStream.h"
 #include <vector>
 
 class TrackChannels {
@@ -11,6 +12,14 @@ public:
     ~TrackChannels(){}
     std::vector<int> mChannels;
 };
+
+BinStream& operator<<(BinStream& bs, const TrackChannels& chans){
+    bs << (int)chans.mChannels.size();
+    for(std::vector<int>::const_iterator it = chans.mChannels.begin(); it != chans.mChannels.end(); it++){
+        bs << *it;
+    }
+    return bs;
+}
 
 class SongInfo {
 public:

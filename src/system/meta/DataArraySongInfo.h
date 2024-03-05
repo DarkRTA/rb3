@@ -10,6 +10,12 @@ public:
     DataArraySongInfo(SongInfo*);
     DataArraySongInfo();
     virtual ~DataArraySongInfo();
+    virtual void Save(BinStream&) const;
+    virtual void Load(BinStream&);
+    virtual void SetBaseFileName(const char*);
+    virtual void AddExtraMidiFile(const char*, const char*);
+
+    static int sSaveVer;
 
     void* operator new(size_t ul){
         return _MemAlloc(ul, 0);
@@ -21,7 +27,14 @@ public:
 
 };
 
-BinStream& operator<<(BinStream&, const DataArraySongInfo&);
-BinStream& operator>>(BinStream&, DataArraySongInfo&);
+BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo){
+    dinfo.Save(bs);
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo){
+    dinfo.Load(bs);
+    return bs;
+}
 
 #endif

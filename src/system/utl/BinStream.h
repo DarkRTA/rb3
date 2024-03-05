@@ -3,6 +3,7 @@
 #include "math/Rand2.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
+#include <vector>
 
 #define BS_WRITE_TYPE(var) \
     BinStream& operator<<(var x){ \
@@ -136,5 +137,13 @@ public:
     }
   
 };
+
+template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vector<T1, T2>& vec){
+    bs << (int)vec.size();
+    for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
+        bs << *it;
+    }
+    return bs;
+}
 
 #endif
