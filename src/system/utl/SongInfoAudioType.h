@@ -8,7 +8,7 @@ enum SongInfoAudioType {
     kAudioTypeBass,
     kAudioTypeVocals,
     kAudioTypeKeys,
-    kAudioTypeUnknown,
+    kAudioTypeFake,
     kAudioTypeMulti
 };
 

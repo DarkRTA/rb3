@@ -52,10 +52,30 @@ const std::vector<int>& SongInfoCopy::GetCores() const {
     return mCores;
 }
 
+const std::vector<int>& SongInfoCopy::GetCrowdChannels() const {
+    return mCrowdChannels;
+}
+
+const std::vector<Symbol>& SongInfoCopy::GetDrumSoloSamples() const {
+    return mDrumSoloSamples;
+}
+
+const std::vector<Symbol>& SongInfoCopy::GetDrumFreestyleSamples() const {
+    return mDrumFreestyleSamples;
+}
+
 float SongInfoCopy::GetMuteVolume() const {
     return mMuteVolume;
 }
 
 float SongInfoCopy::GetVocalMuteVolume() const {
     return mVocalMuteVolume;
+}
+
+int SongInfoCopy::NumExtraMidiFiles() const {
+    return mExtraMidiFiles.size();
+}
+
+const char* SongInfoCopy::GetExtraMidiFile(int idx) const {
+    return mExtraMidiFiles[idx].c_str();
 }

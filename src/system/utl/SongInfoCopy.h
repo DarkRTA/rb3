@@ -23,13 +23,13 @@ public:
     virtual const std::vector<float>& GetPans() const = 0;
     virtual const std::vector<float>& GetVols() const = 0;
     virtual const std::vector<int>& GetCores() const = 0;
-    virtual int GetCrowdChannels() const = 0;
-    virtual int GetDrumSoloSamples() const = 0;
-    virtual int GetDrumFreestyleSamples() const = 0;
+    virtual const std::vector<int>& GetCrowdChannels() const = 0;
+    virtual const std::vector<Symbol>& GetDrumSoloSamples() const = 0;
+    virtual const std::vector<Symbol>& GetDrumFreestyleSamples() const = 0;
     virtual float GetMuteVolume() const = 0;
     virtual float GetVocalMuteVolume() const = 0;
     virtual int NumExtraMidiFiles() const = 0;
-    virtual int GetExtraMidiFile() const = 0;
+    virtual const char* GetExtraMidiFile(int) const = 0;
 };
 
 class SongInfoCopy {
@@ -50,12 +50,13 @@ public:
     virtual const std::vector<float>& GetPans() const;
     virtual const std::vector<float>& GetVols() const;
     virtual const std::vector<int>& GetCores() const;
-    virtual int GetCrowdChannels() const;
-    virtual int GetDrumSoloSamples() const;
-    virtual int GetDrumFreestyleSamples() const;
+    virtual const std::vector<int>& GetCrowdChannels() const;
+    virtual const std::vector<Symbol>& GetDrumSoloSamples() const;
+    virtual const std::vector<Symbol>& GetDrumFreestyleSamples() const;
     virtual float GetMuteVolume() const;
     virtual float GetVocalMuteVolume() const;
-    // TODO: there are also more virtual methods in the vtable, declare and define them
+    virtual int NumExtraMidiFiles() const;
+    virtual const char* GetExtraMidiFile(int) const;
 
     Symbol mName;
     class String mBaseFileName;
@@ -67,12 +68,11 @@ public:
     std::vector<float> mPans;
     std::vector<float> mVols;
     std::vector<int> mCores;
-    // TODO: change the type of these vectors
     std::vector<int> mCrowdChannels;
-    std::vector<int> mDrumSoloSamples;
-    std::vector<int> mDrumFreestyleSamples;
-    std::vector<int> mTrackChannels;
-    std::vector<int> mExtraMidiFiles;
+    std::vector<Symbol> mDrumSoloSamples;
+    std::vector<Symbol> mDrumFreestyleSamples;
+    std::vector<int> mTrackChannels; // vector of int but also TrackChannels?
+    std::vector<String> mExtraMidiFiles;
 };
 
 #endif
