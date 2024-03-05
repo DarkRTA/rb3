@@ -11,7 +11,12 @@ class BeatMap {
 public:
     BeatMap();
     ~BeatMap(){}
+    float Beat(float) const;
+    float BeatToTick(float) const;
+
     std::vector<BeatInfo> mInfos;
 };
+
+extern BeatMap* TheBeatMap;
 
 #endif

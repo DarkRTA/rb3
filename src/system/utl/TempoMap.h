@@ -20,4 +20,6 @@ public:
     virtual float GetTimeInLoop(float) = 0;
 };
 
+extern TempoMap* TheTempoMap;
+
 #endif
