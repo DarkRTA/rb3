@@ -11,6 +11,7 @@ class BeatMap {
 public:
     BeatMap();
     ~BeatMap(){}
+    float Beat(int) const;
     float Beat(float) const;
     float BeatToTick(float) const;
 
