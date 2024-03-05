@@ -54,7 +54,7 @@ SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPa
     mCrowdChannels = info->GetCrowdChannels();
     mDrumSoloSamples = info->GetDrumSoloSamples();
     mDrumFreestyleSamples = info->GetDrumFreestyleSamples();
-    // mTrackChannels = info->GetTracks();
+    // mTrackChannels = info->GetTracks(); // this causes an error and i have no clue why
 }
 
 SongInfoCopy::SongInfoCopy() : mName() {
@@ -90,6 +90,15 @@ const char* SongInfoCopy::GetPackageName() const {
 
 const std::vector<TrackChannels>& SongInfoCopy::GetTracks() const {
     return mTrackChannels;
+}
+
+// this is wrong
+const std::vector<int>& SongInfoCopy::FindTrackChannel(SongInfoAudioType ty) const {
+    for(int i = 0; i < mTrackChannels.size(); i++){
+        if(i == (int)ty){
+            return mTrackChannels[i].mChannels;
+        }   
+    }
 }
 
 int SongInfoCopy::GetNumVocalParts() const {
