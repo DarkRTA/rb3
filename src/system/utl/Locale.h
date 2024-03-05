@@ -41,6 +41,7 @@ public:
 
 void SetLocaleVerboseNotify(bool);
 
+void SyncReloadLocale();
 const char* Localize(Symbol, bool*);
 const char* LocalizeSeparatedInt(int);
 const char* LocalizeFloat(const char*, float);

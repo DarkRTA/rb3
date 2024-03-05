@@ -12,6 +12,8 @@ extern "C" float cos_f(double);
 extern "C" float tan_f(double);
 extern "C" float log10_f(double);
 extern "C" float sqrt_f(double);
+extern "C" float floor_f(double);
+extern "C" float ceil_f(double);
 
 inline int CountBits(int num) {
     int temp_r0;
@@ -26,6 +28,14 @@ inline int CountBits(int num) {
         var_r4 += temp_r0;
     }
     return var_r4;
+}
+
+inline int Round(float f) {
+    if (f > (float)0.0) {
+        return (int)((float)0.5 + f);
+    } else {
+        return (int)(f - (float)0.5);
+    }
 }
 
 template<class T> inline T Minimum(T x, T y){
@@ -80,6 +90,14 @@ inline float tan_f(double d){
 
 inline float log10_f(double d){
     return log10(d);
+}
+
+inline float floor_f(double d){
+    return floor(d);
+}
+
+inline float ceil_f(double d){
+    return ceil(d);
 }
 
 #endif
