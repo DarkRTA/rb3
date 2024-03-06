@@ -34,8 +34,13 @@ public:
     MidiReader(BinStream&, MidiReceiver&, const char*);
     ~MidiReader();
     void Init();
+    void ReadAllTracks();
+    bool ReadTrack();
+    bool ReadSomeEvents(int);
     const char* GetFilename() const;
     void SkipCurrentTrack();
+    void ReadNextEvent();
+    void ReadNextEventImpl();
 
     class BinStream * mStream; // offset 0x0, size 0x4
     bool mStreamCreatedHere; // offset 0x4, size 0x1

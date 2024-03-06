@@ -55,6 +55,44 @@ MidiReader::~MidiReader(){
     }
 }
 
+void MidiReader::ReadAllTracks(){
+    if(mStream->Tell() != 0){
+        mStream->Seek(0, BinStream::kSeekBegin);
+    }
+    while(ReadTrack());
+}
+
+bool MidiReader::ReadSomeEvents(int cnt){
+    for(int i2 = 0; i2 < cnt; i2++){
+        ReadNextEvent();
+        if(mState == kEnd || mFail) return true;
+    }
+    return false;
+}
+
+bool MidiReader::ReadTrack(){
+    do {
+        ReadNextEvent();
+        if(mState == kEnd || mState == kNewTrack) break;
+    } while(!mFail);
+    return mState == kNewTrack;
+}
+
+void MidiReader::SkipCurrentTrack(){
+    if(mState == kInTrack){
+        if(mCurTrackIndex == mNumTracks){
+            mState = kEnd;
+            mRcvr.OnEndOfTrack();
+            mRcvr.OnAllTracksRead();
+        }
+        else {
+            mState = kNewTrack;
+            mStream->Seek(mTrackEndPos, BinStream::kSeekBegin);
+            mRcvr.OnEndOfTrack();
+        }
+    }
+}
+
 const char* MidiReader::GetFilename() const {
     return mStreamName.c_str();
 }
