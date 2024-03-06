@@ -192,6 +192,15 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
+// BEGIN SAVE MACRO ------------------------------------------------------------------------------------
+
+#define SAVE_OBJ(objType, line_num) \
+void objType::Save(BinStream&){ \
+    MILO_ASSERT(0, line_num); \
+}
+
+// END SAVE MACRO --------------------------------------------------------------------------------------
+
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
 #define BEGIN_HANDLERS(objType) \

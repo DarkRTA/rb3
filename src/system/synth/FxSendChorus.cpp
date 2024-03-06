@@ -11,9 +11,7 @@ FxSendChorus::FxSendChorus() : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFee
     mWetGain = -3.0f;
 }
 
-void FxSendChorus::Save(BinStream&){
-    MILO_ASSERT(0, 0x1F);
-}
+SAVE_OBJ(FxSendChorus, 0x1F);
 
 void FxSendChorus::Load(BinStream& bs){
     unsigned int rev;
@@ -75,6 +73,6 @@ BEGIN_PROPSYNCS(FxSendChorus)
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
 
-void UnusedClassThatOnlyExistsToMoveSetTypeUp(FxSendChorus* chorus){
+static void UnusedClassThatOnlyExistsToMoveSetTypeUp(FxSendChorus* chorus){
     chorus->SetType(Symbol());
 }

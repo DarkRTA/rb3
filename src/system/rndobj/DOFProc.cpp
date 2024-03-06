@@ -24,14 +24,14 @@ DOFProc& DOFProc::Params(){
     return *TheDOFProc;
 }
 
-void UnusedBlur(DOFProc* proc){
+static void UnusedBlur(DOFProc* proc){
     proc->Blur();
 }
 
-void UnusedSetTint(DOFProc* proc){
+static void UnusedSetTint(DOFProc* proc){
     proc->SetTint(false, Hmx::Color(0.0f, 0.0f, 0.0f));
 }
 
-void UnusedSetType(DOFProc* proc){
+static void UnusedSetType(DOFProc* proc){
     proc->SetType(Symbol());
 }
