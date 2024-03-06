@@ -85,7 +85,7 @@ public:
 
   _Vector_base(size_t __n, const _Alloc& __a)
     : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(__n) {
-    _M_ptr._M_data = _M_ptr.allocate(__n, __n);
+    _M_ptr._M_data = _M_ptr.allocate(__n);
   }
 
   _Vector_base(__move_source<_Self> src)
@@ -269,9 +269,8 @@ private:
   template <class _Integer>
   void _M_initialize_aux(_Integer __n, _Integer __val,
                          const __true_type& /*_IsIntegral*/) {
-    size_type __real_n;
-    this->_M_ptr._M_data = this->_M_ptr.allocate(__n, __real_n);
-    _M_set_data_size(__real_n);
+    this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
+    _M_set_data_size(__n);
     _M_set_finish_idx(__n);
     auto end = __uninitialized_fill_n(this->_M_data, __n, __val);
     _M_set_finish_idx(end - this->_M_ptr._M_data);
@@ -398,7 +397,7 @@ private:
                                size_type __n) {
     const size_type __old_size = size();
     size_type __len = __old_size + (max)(__old_size, __n);
-    pointer __new_start = this->_M_ptr.allocate(__len, __len);
+    pointer __new_start = this->_M_ptr.allocate(__len);
     pointer __new_finish = __new_start;
     _STLP_TRY {
       __new_finish = _STLP_PRIV::__uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
@@ -598,7 +597,7 @@ private:
   pointer _M_allocate_and_copy(size_type& __n,
                                _ForwardIterator __first, _ForwardIterator __last)
   {
-    pointer __result = this->_M_ptr.allocate(__n, __n);
+    pointer __result = this->_M_ptr.allocate(__n);
     _STLP_TRY {
       uninitialized_copy(__first, __last, __result);
       return __result;
@@ -619,7 +618,7 @@ private:
   void _M_range_initialize(_ForwardIterator __first, _ForwardIterator __last,
                            const forward_iterator_tag &) {
     size_type __n = distance(__first, __last);
-    this->_M_ptr._M_data = this->_M_ptr.allocate(__n, __n);
+    this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
     _M_set_data_size(__n);
     auto end = uninitialized_copy(__first, __last, this->_M_ptr._M_data);
     _M_set_finish_idx(end - this->_M_ptr._M_data);

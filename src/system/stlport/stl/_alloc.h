@@ -414,13 +414,13 @@ public:
   template <class _Tp1>
   StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
 
-  value_type *allocate(const size_type count) {
+  value_type *allocate(const size_type count, const void* ptr = nullptr) const {
     return reinterpret_cast<value_type *>(
       _MemOrPoolAllocSTL(count * sizeof(value_type), FastPool)
     );
   }
 
-  void deallocate(value_type *ptr, const size_type count) {
+  void deallocate(value_type *ptr, const size_type count) const {
     _MemOrPoolFreeSTL(count * sizeof(value_type), FastPool, ptr);
   }
 };
@@ -506,18 +506,21 @@ public:
     _STLP_STD::swap(_M_data, __x._M_data);
   }
 
-  _Tp* allocate(size_type __n, size_type& __allocated_n) {
-    typedef typename _IsSTLportClass<_MaybeReboundAlloc>::_Ret _STLportAlloc;
-    return allocate(__n, __allocated_n, _STLportAlloc());
-  }
-  _Tp* allocate(size_type __n)
-  { return _Base::allocate(__n); }
+// These overloads cause problems with the signature that StlNodeAlloc::allocate has,
+// and also mismatch in retail with the assumption that there is no inlining happening with these
+// Leaving these as commented-out in case they're needed in the future
+//   _Tp* allocate(size_type __n, size_type& __allocated_n) {
+//     typedef typename _IsSTLportClass<_MaybeReboundAlloc>::_Ret _STLportAlloc;
+//     return allocate(__n, __allocated_n, _STLportAlloc());
+//   }
+//   _Tp* allocate(size_type __n)
+//   { return _Base::allocate(__n); }
 
-private:
-  _Tp* allocate(size_type __n, size_type& __allocated_n, const __true_type& /*STLport allocator*/)
-  { return _Base::allocate(__n, __allocated_n); }
-  _Tp* allocate(size_type __n, size_type& __allocated_n, const __false_type& /*STLport allocator*/)
-  { __allocated_n = __n; return allocate(__n); }
+// private:
+//   _Tp* allocate(size_type __n, size_type& __allocated_n, const __true_type& /*STLport allocator*/)
+//   { return _Base::allocate(__n, __allocated_n); }
+//   _Tp* allocate(size_type __n, size_type& __allocated_n, const __false_type& /*STLport allocator*/)
+//   { __allocated_n = __n; return allocate(__n); }
 };
 
 }
