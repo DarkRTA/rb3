@@ -44,6 +44,6 @@ unsigned int PackRGData(int string, int fret){
 }
 
 void UnpackRGData(unsigned int packed, int& string, int& fret){
-    string = (int)packed >> 0x10;
+    string = (int)(packed & 0xFFFF0000) >> 0x10;
     fret = (int)packed & 0xFFFF;
 }
