@@ -71,7 +71,7 @@
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
-            "system/midi/MidiReceiver.cpp": "NonMatching",
+            "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
             "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
