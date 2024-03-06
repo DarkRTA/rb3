@@ -181,7 +181,7 @@ namespace Hmx {
         DataNode OnIterateRefs(const DataArray*);
         DataNode HandleType(DataArray*);
         DataNode PropertyArray(Symbol);
-        char* GetHeap();
+        const char* AllocHeapName();
 
     };
 }
@@ -213,6 +213,24 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
         expr; \
         return DataNode(0); \
     }
+
+#define NEW_STATIC_SYMBOL(str) \
+    static Symbol _s(#str);
+
+#define HANDLE_STATIC(sym, func) { \
+    NEW_STATIC_SYMBOL(sym) \
+    HANDLE(_s, func); \
+}
+
+#define HANDLE_EXPR_STATIC(symbol, expr) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    HANDLE_EXPR(_s, expr) \
+}
+
+#define HANDLE_ACTION_STATIC(symbol, expr) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    HANDLE_ACTION(_s, expr) \
+}
 
 #define HANDLE_SUPERCLASS(parent) \
     { \
