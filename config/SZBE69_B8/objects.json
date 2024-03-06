@@ -101,6 +101,7 @@
             "system/os/SynchronizationEvent.cpp": "Matching",
             "system/os/System.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/os/Timer.cpp": "NonMatching",
+            "system/os/UsbMidiGuitar.cpp": "NonMatching",
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "NonMatching",

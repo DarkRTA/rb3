@@ -1,10 +1,14 @@
 #ifndef OS_USBMIDIGUITAR_H
 #define OS_USBMIDIGUITAR_H
+#include "os/Timer.h"
 
 class UsbMidiGuitar {
 public:
     UsbMidiGuitar();
     ~UsbMidiGuitar();
+
+    static bool mUsbMidiGuitarExists;
+    static Timer mTimer;
 
     bool mStringStrummed[8][6];
     int mStringFret[8][6];
