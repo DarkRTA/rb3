@@ -41,6 +41,7 @@
         "cflags": "system",
         "objects": {
             "system/beatmatch/Output.cpp": "Matching",
+            "system/beatmatch/RGState.cpp": "NonMatching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
