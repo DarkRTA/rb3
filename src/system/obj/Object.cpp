@@ -6,12 +6,17 @@
 #include "obj/MessageTimer.h"
 #include "os/OSFuncs.h"
 
+const char* blank = "";
+const char* unk = "unknown";
+
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
     else return ObjectDir::sMainDir;
 }
+
+const char* newobjectstr = "Unknown class %s";
 
 void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
     sFactories[s] = func;
@@ -40,6 +45,10 @@ Hmx::Object::~Object(){
     mTypeDef = 0;
     RemoveFromDir();
 }
+
+const char* setnamedirstr = "dir";
+const char* existssttr = "%s already exists";
+const char* removefromdirstr = "No entry for %s in %s";
 
 void Hmx::Object::SetTypeDef(DataArray* da){
     if(mTypeDef != da){
@@ -97,7 +106,7 @@ DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
         return DataNode(n);
     }
     if(fail){
-        MILO_FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "none");
+        MILO_FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "<none>");
     }
     return DataNode(0);
 }

@@ -148,6 +148,10 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     }
 }
 
+const char* savestr = "%s: Removing type properties without type definition";
+
+const char* loadstr = "%s: type based property \"%s\" is outdated, will clear on save\n";
+
 void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
     Hmx::Object* o = n.mValue.object;
     if(o == from){

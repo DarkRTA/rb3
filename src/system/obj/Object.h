@@ -151,7 +151,7 @@ namespace Hmx {
 
         Symbol Type() const {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
-            else return gNullStr;
+            else return Symbol();
         }
         class ObjectDir* Dir() const { return mDir; }
 
