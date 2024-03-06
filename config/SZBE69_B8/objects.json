@@ -150,6 +150,7 @@
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/FxSend.cpp": "NonMatching",
+            "system/synth/FxSendChorus.cpp": "NonMatching",
             "system/synth/tomcrypt/aes.c": "NonMatching",
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",
