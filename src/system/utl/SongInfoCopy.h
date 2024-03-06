@@ -3,59 +3,80 @@
 #include "utl/Symbol.h"
 #include "utl/Str.h"
 #include "utl/SongInfoAudioType.h"
+#include "utl/BinStream.h"
 #include <vector>
+
+class TrackChannels {
+public:
+    TrackChannels(){}
+    ~TrackChannels(){}
+    SongInfoAudioType mAudioType; // SongInfoAudioType? maybe?
+    std::vector<int> mChannels;
+};
+
+BinStream& operator<<(BinStream& bs, const TrackChannels& chans){
+    bs << chans.mAudioType;
+    bs << chans.mChannels;
+    return bs;
+}
 
 class SongInfo {
 public:
     SongInfo(){}
     virtual ~SongInfo(){}
-    virtual const char* GetName() const = 0;
+    virtual Symbol GetName() const = 0;
     virtual const char* GetBaseFileName() const = 0;
     virtual const char* GetPackageName() const = 0;
+
     // TODO: fix the return types of these methods below as you implement them
-    virtual int GetTracks() const = 0;
+    virtual const std::vector<TrackChannels>& GetTracks() const = 0;
     virtual bool IsPlayTrackChannel(int) const = 0;
-    virtual int FindTrackChannel(SongInfoAudioType) const = 0;
+    virtual const std::vector<int>& FindTrackChannel(SongInfoAudioType) const = 0;
     virtual int NumChannelsOfTrack(SongInfoAudioType) const = 0;
     virtual int TrackIndex(SongInfoAudioType) const = 0;
+
     virtual int GetNumVocalParts() const = 0;
     virtual int GetHopoThreshold() const = 0;
     virtual const std::vector<float>& GetPans() const = 0;
     virtual const std::vector<float>& GetVols() const = 0;
     virtual const std::vector<int>& GetCores() const = 0;
-    virtual int GetCrowdChannels() const = 0;
-    virtual int GetDrumSoloSamples() const = 0;
-    virtual int GetDrumFreestyleSamples() const = 0;
+    virtual const std::vector<int>& GetCrowdChannels() const = 0;
+    virtual const std::vector<Symbol>& GetDrumSoloSamples() const = 0;
+    virtual const std::vector<Symbol>& GetDrumFreestyleSamples() const = 0;
     virtual float GetMuteVolume() const = 0;
     virtual float GetVocalMuteVolume() const = 0;
     virtual int NumExtraMidiFiles() const = 0;
-    virtual int GetExtraMidiFile() const = 0;
+    virtual const char* GetExtraMidiFile(int) const = 0;
 };
 
 class SongInfoCopy {
 public:
     SongInfoCopy();
+    SongInfoCopy(const SongInfo*);
     virtual ~SongInfoCopy();
-    virtual const char* GetName() const;
+    virtual Symbol GetName() const;
     virtual const char* GetBaseFileName() const;
     virtual const char* GetPackageName() const;
+
     // TODO: fix the return types of these methods below as you implement them
-    virtual int GetTracks() const;
+    virtual const std::vector<TrackChannels>& GetTracks() const;
     virtual bool IsPlayTrackChannel(int) const;
-    virtual int FindTrackChannel(SongInfoAudioType) const;
+    virtual const std::vector<int>& FindTrackChannel(SongInfoAudioType) const;
     virtual int NumChannelsOfTrack(SongInfoAudioType) const;
     virtual int TrackIndex(SongInfoAudioType) const;
+
     virtual int GetNumVocalParts() const;
     virtual int GetHopoThreshold() const;
     virtual const std::vector<float>& GetPans() const;
     virtual const std::vector<float>& GetVols() const;
     virtual const std::vector<int>& GetCores() const;
-    virtual int GetCrowdChannels() const;
-    virtual int GetDrumSoloSamples() const;
-    virtual int GetDrumFreestyleSamples() const;
+    virtual const std::vector<int>& GetCrowdChannels() const;
+    virtual const std::vector<Symbol>& GetDrumSoloSamples() const;
+    virtual const std::vector<Symbol>& GetDrumFreestyleSamples() const;
     virtual float GetMuteVolume() const;
     virtual float GetVocalMuteVolume() const;
-    // TODO: there are also more virtual methods in the vtable, declare and define them
+    virtual int NumExtraMidiFiles() const;
+    virtual const char* GetExtraMidiFile(int) const;
 
     Symbol mName;
     class String mBaseFileName;
@@ -67,12 +88,11 @@ public:
     std::vector<float> mPans;
     std::vector<float> mVols;
     std::vector<int> mCores;
-    // TODO: change the type of these vectors
     std::vector<int> mCrowdChannels;
-    std::vector<int> mDrumSoloSamples;
-    std::vector<int> mDrumFreestyleSamples;
-    std::vector<int> mTrackChannels;
-    std::vector<int> mExtraMidiFiles;
+    std::vector<Symbol> mDrumSoloSamples;
+    std::vector<Symbol> mDrumFreestyleSamples;
+    std::vector<TrackChannels> mTrackChannels;
+    std::vector<String> mExtraMidiFiles;
 };
 
 #endif

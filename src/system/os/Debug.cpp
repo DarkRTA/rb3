@@ -1,7 +1,9 @@
 #include "os/Debug.h"
 #include "os/OSFuncs.h"
+#include <vector>
 
 Debug TheDebug;
+std::vector<String> gNotifies;
 
 // Temp strings needed for string pooling to match
 const char* s0 = "%s";

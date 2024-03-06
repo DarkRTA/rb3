@@ -142,7 +142,7 @@ public:
     DataNode& operator=(const DataNode& n);
 
     void Print(TextStream& s, bool) const;
-    unsigned int PrintUnused(TextStream&, bool) const;
+    bool PrintUnused(TextStream&, bool) const;
     void Save(BinStream& d) const;
     void Load(BinStream& d);
 };
@@ -157,6 +157,9 @@ public:
     short mDeprecated;
     static Symbol gFile;
     static DataFunc* sDefaultHandler;
+
+    static int NodeCmp(const void*, const void*);
+    static void SetFile(Symbol);
 
     const char* File() { return mFile.mStr; }
     int Size() const { return mSize; }
@@ -186,6 +189,7 @@ public:
     DataNode& Node(int i) const;
 
     void Print(TextStream& s, DataType type, bool compact) const;
+    bool PrintUnused(TextStream&, DataType, bool) const;
     void Insert(int index, const DataNode& node);
     void InsertNodes(int index, const DataArray* array);
     void Resize(int size);
@@ -224,6 +228,7 @@ public:
     void SetFileLine(Symbol, int);
     void SortNodes();
     DataNode Execute();
+    DataNode ExecuteBlock(int);
     void Save(BinStream& d) const;
     void Load(BinStream& d);
     void SaveGlob(BinStream& d, bool str) const;
@@ -232,8 +237,17 @@ public:
     DataNode& Evaluate(int i) const {
         return Node(i).Evaluate();
     }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(DataArray), FastPool, v);
+    }
     
 };
+
+inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
+    node.Save(bs);
+    return bs;
+}
 
 TextStream& operator<<(TextStream&, const DataArray*);
 BinStream& operator>>(BinStream&, DataArray*&);

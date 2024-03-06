@@ -50,11 +50,7 @@ void TextFile::Print(const char* str){
 
 BEGIN_HANDLERS(TextFile);
     HANDLE(print, OnPrint);
-    static Symbol _s("printf");
-    if(sym == _s){
-        DataNode node_printf = OnPrintf(_msg);
-        if(node_printf.Type() != kDataUnhandled) return DataNode(node_printf);
-    }
+    HANDLE_STATIC(printf, OnPrintf);
     HANDLE(reflect, OnReflect);
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x4D);

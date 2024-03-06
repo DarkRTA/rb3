@@ -24,7 +24,7 @@ int Rand::Int(int low, int high) {
     return low + Int() % (high - low);
 }
 
-float Rand::Float(float f1, float f2) {
+inline float Rand::Float(float f1, float f2) {
     return ((f2 - f1) * Float() + f1);
 }
 

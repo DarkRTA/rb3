@@ -6,12 +6,17 @@
 #include "obj/MessageTimer.h"
 #include "os/OSFuncs.h"
 
+const char* blank = "";
+const char* unk = "unknown";
+
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
     else return ObjectDir::sMainDir;
 }
+
+const char* newobjectstr = "Unknown class %s";
 
 void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
     sFactories[s] = func;
@@ -40,6 +45,10 @@ Hmx::Object::~Object(){
     mTypeDef = 0;
     RemoveFromDir();
 }
+
+const char* setnamedirstr = "dir";
+const char* existssttr = "%s already exists";
+const char* removefromdirstr = "No entry for %s in %s";
 
 void Hmx::Object::SetTypeDef(DataArray* da){
     if(mTypeDef != da){
@@ -97,7 +106,7 @@ DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
         return DataNode(n);
     }
     if(fail){
-        MILO_FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "none");
+        MILO_FAIL("%s: property %s not found", PathName(this), (prop != 0) ? prop->Sym(0) : "<none>");
     }
     return DataNode(0);
 }
@@ -175,109 +184,36 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
 
+#pragma dont_inline on
 // see scratch: https://decomp.me/scratch/9abtP
 DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     Symbol sym = _msg->Sym(1);
     MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
-    {
-        static Symbol _s("get");
-        if(sym == _s){
-            DataNode got = OnGet(_msg);
-            if(got.Type() != kDataUnhandled) return DataNode(got);
-        }
-    }
+    HANDLE_STATIC(get, OnGet);
     {
         static Symbol _s("get_array");
         if(sym == _s){
             return PropertyArray(_msg->Sym(2));
         }
     }
-    {
-        static Symbol _s("size");
-        if(sym == _s){
-            return DataNode(PropertySize(_msg->Array(2)));
-        }
-    }
-    {
-        static Symbol _s("set");
-        if(sym == _s){
-            DataNode set = OnSet(_msg);
-            if(set.Type() != kDataUnhandled) return DataNode(set);
-        }
-    }
-    {
-        static Symbol _s("insert");
-        if(sym == _s){
-            InsertProperty(_msg->Array(2), _msg->Evaluate(3));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("remove");
-        if(sym == _s){
-            RemoveProperty(_msg->Array(2));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("clear");
-        if(sym == _s){
-            PropertyClear(_msg->Array(2));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("append");
-        if(sym == _s){
-            DataNode app = OnPropertyAppend(_msg);
-            if(app.Type() != kDataUnhandled) return DataNode(app);
-        }
-    }
-    {
-        static Symbol _s("has");
-        if(sym == _s){
-            return DataNode(Property(_msg->Array(2), false) != 0);
-        }
-    }
+    HANDLE_EXPR_STATIC(size, PropertySize(_msg->Array(2)));
+    HANDLE_STATIC(set, OnSet);
+    HANDLE_ACTION_STATIC(insert, InsertProperty(_msg->Array(2), _msg->Evaluate(3)));
+    HANDLE_ACTION_STATIC(remove, RemoveProperty(_msg->Array(2)));
+    HANDLE_ACTION_STATIC(clear, PropertyClear(_msg->Array(2)));
+    HANDLE_STATIC(append, OnPropertyAppend);
+    HANDLE_EXPR_STATIC(has, Property(_msg->Array(2), false) != 0);
     {
         static Symbol _s("prop_handle");
         if(sym == _s){
             return HandleProperty(_msg, _msg->Array(2), true);
         }
     }
-    {
-        static Symbol _s("copy");
-        if(sym == _s){
-            Copy(_msg->GetObj(2), (CopyType)_msg->Int(3));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("replace");
-        if(sym == _s){
-            Replace(_msg->GetObj(2), _msg->GetObj(3));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("class_name");
-        if(sym == _s){
-            return DataNode(ClassName());
-        }
-    }
-    {
-        static Symbol _s("name");
-        if(sym == _s){
-            return DataNode(mName);
-        }
-    }
-    {
-        static Symbol _s("iterate_refs");
-        if(sym == _s){
-            DataNode refs = OnIterateRefs(_msg);
-            if(refs.Type() != kDataUnhandled) return DataNode(refs);
-        }
-    }
+    HANDLE_ACTION_STATIC(copy, Copy(_msg->GetObj(2), (CopyType)_msg->Int(3)));
+    HANDLE_ACTION_STATIC(replace, Replace(_msg->GetObj(2), _msg->GetObj(3)));
+    HANDLE_EXPR_STATIC(class_name, ClassName());
+    HANDLE_EXPR_STATIC(name, mName);
+    HANDLE_STATIC(iterate_refs, OnIterateRefs);
     {
         static Symbol _s("dir");
         if(sym == _s){
@@ -293,31 +229,10 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     
         }
     }
-    {
-        static Symbol _s("set_type");
-        if(sym == _s){
-            SetType(_msg->Sym(2));
-            return DataNode(0);
-        }
-    }
-    {
-        static Symbol _s("is_a");
-        if(sym == _s){
-            return DataNode(IsASubclass(ClassName(), _msg->Sym(2)));
-        }
-    }
-    {
-        static Symbol _s("get_type");
-        if(sym == _s){
-            return DataNode(Type());
-        }
-    }
-    {
-        static Symbol _s("get_heap");
-        if(sym == _s){
-            return DataNode(GetHeap());
-        }
-    }
+    HANDLE_ACTION_STATIC(set_type, SetType(_msg->Sym(2)));
+    HANDLE_EXPR_STATIC(is_a, IsASubclass(ClassName(), _msg->Sym(2)));
+    HANDLE_EXPR_STATIC(get_type, Type());
+    HANDLE_EXPR_STATIC(get_heap, AllocHeapName());
     // if none of those symbols matched, we fall back here
     bool stank = false;
     if(mTypeDef != 0){
@@ -332,6 +247,7 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
 
     return DataNode(kDataUnhandled, 0);
 }
+#pragma dont_inline reset
 
 // DataNode Hmx::Object::HandleType(DataArray* msg){
 //     Symbol t = msg->Sym(1);
