@@ -22,6 +22,11 @@ struct Midi {
 };
 
 class MidiReader {
+public:
+
+    const char* GetFilename() const;
+    void SkipCurrentTrack();
+
     // total size: 0x60
     class BinStream * mStream; // offset 0x0, size 0x4
     bool mStreamCreatedHere; // offset 0x4, size 0x1
@@ -48,7 +53,7 @@ class MidiReader {
 class MidiReceiver {
 public:
     MidiReceiver();
-    virtual ~MidiReceiver();
+    virtual ~MidiReceiver(){}
     virtual void OnNewTrack(int) = 0;
     virtual void OnEndOfTrack() = 0;
     virtual void OnAllTracksRead() = 0;
