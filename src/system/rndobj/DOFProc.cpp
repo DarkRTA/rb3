@@ -23,3 +23,15 @@ DOFProc& DOFProc::Params(){
     MILO_ASSERT(TheDOFProc != NULL, 0x28);
     return *TheDOFProc;
 }
+
+void UnusedBlur(DOFProc* proc){
+    proc->Blur();
+}
+
+void UnusedSetTint(DOFProc* proc){
+    proc->SetTint(false, Hmx::Color(0.0f, 0.0f, 0.0f));
+}
+
+void UnusedSetType(DOFProc* proc){
+    proc->SetType(Symbol());
+}

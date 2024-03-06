@@ -116,7 +116,7 @@
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
-            "system/rndobj/DOFProc.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
