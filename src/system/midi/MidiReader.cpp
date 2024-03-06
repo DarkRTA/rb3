@@ -1,5 +1,7 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
+#include "utl/MultiTempoTempoMap.h"
+#include "utl/MeasureMap.h"
 
 MidiChunkID MidiChunkID::kMThd("MThd");
 MidiChunkID MidiChunkID::kMTrk("MTrk");
@@ -36,4 +38,23 @@ MidiReader::MidiReader(BinStream& bs, MidiReceiver& rec, const char* name) : mSt
     mMidiListTick(0), mLessFunc(DefaultMidiLess), mFail(0) {
         MILO_ASSERT(!mStream->mLittleEndian, 0xAA);
         Init();
+}
+
+void MidiReader::Init(){
+    mOwnMaps = true;
+    mTempoMap = new MultiTempoTempoMap();
+    mMeasureMap = new MeasureMap();
+    mRcvr.SetMidiReader(this);
+}
+
+MidiReader::~MidiReader(){
+    if(mStreamCreatedHere) delete mStream;
+    if(mOwnMaps){
+        delete mTempoMap;
+        delete mMeasureMap;
+    }
+}
+
+const char* MidiReader::GetFilename() const {
+    return mStreamName.c_str();
 }

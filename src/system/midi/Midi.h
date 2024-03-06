@@ -32,6 +32,7 @@ public:
     };
 
     MidiReader(BinStream&, MidiReceiver&, const char*);
+    ~MidiReader();
     void Init();
     const char* GetFilename() const;
     void SkipCurrentTrack();
