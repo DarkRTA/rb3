@@ -33,9 +33,7 @@ void JsonArray::AddMember(JsonObject *obj) {
     json_object_array_add(mObject, obj->GetObject());
 }
 
-// TODO: This is getting eliminated due to the inline,
-// but it needs to be inline for JsonConverter::GetElement()
-inline int JsonArray::GetSize() const {
+int JsonArray::GetSize() const {
     return json_object_array_length(mObject);
 }
 

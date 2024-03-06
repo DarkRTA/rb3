@@ -27,6 +27,10 @@ public:
 
     void AddMember(JsonObject *);
     int GetSize() const;
+
+    // Necessary to match JsonConverter::GetElement while
+    // still generating `GetSize() const` in the compiled object
+    int GetSize() { return json_object_array_length(mObject); }
 };
 
 class JsonString : public JsonObject {
