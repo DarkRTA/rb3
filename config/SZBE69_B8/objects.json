@@ -42,6 +42,7 @@
         "objects": {
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/RGState.cpp": "Matching",
+            "system/beatmatch/TrackType.cpp": "Matching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
