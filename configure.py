@@ -28,6 +28,7 @@ from tools.project import (
 from cflags_common import cflags_includes
 
 # Game versions
+# Be sure to update macros.h if this list changes!
 DEFAULT_VERSION = 1
 VERSIONS = [
     "SZBE69",    # 0
@@ -178,9 +179,11 @@ def are_flags_inherited(name: str) -> bool:
 def set_flags_inherited(name: str):
     cflags[name]["inherited"] = True
 
-# Debug flags
+# Additional base flags
+base_flags = get_flags("base")
+base_flags.append(f"-d GAME_VERSION={version_num}")
 if config.debug:
-    get_flags("base").append("-sym dwarf-2,full")
+    base_flags.append("-sym dwarf-2,full")
 
 # Apply cflag inheritance
 def apply_base_flags(key: str):

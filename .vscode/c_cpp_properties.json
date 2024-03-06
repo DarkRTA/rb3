@@ -36,7 +36,7 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "defines": [
-                "NDEBUG",
+                "MILO_DEBUG",
                 "__MWERKS__=0x4302"
             ]
         }

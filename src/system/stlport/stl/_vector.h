@@ -46,7 +46,7 @@
 #  include <stl/_uninitialized.h>
 #endif
 
-#if 1 //def _STLP_DEBUG // TODO: Tie to whatever define excludes MILO debug code
+#ifdef MILO_DEBUG
 // From system/os/Debug.cpp
 // Declared here since it's not relevant anywhere else
 void std_vec_range_assert(size_t value, size_t max, const char *func);
