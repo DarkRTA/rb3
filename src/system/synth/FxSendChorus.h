@@ -5,8 +5,7 @@
 class FxSendChorus : public FxSend {
 public:
     FxSendChorus();
-    virtual ~FxSendChorus();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual ~FxSendChorus(){}
     OBJ_CLASSNAME(FxSendChorus);
     OBJ_SET_TYPE(FxSendChorus);
     virtual DataNode Handle(DataArray*, bool);

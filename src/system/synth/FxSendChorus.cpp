@@ -1,5 +1,6 @@
 #include "synth/FxSendChorus.h"
 #include "utl/Symbols.h"
+#include "obj/PropSync_p.h"
 
 unsigned short FxSendChorus::gRev = 0;
 unsigned short FxSendChorus::gAltRev = 0;
@@ -40,3 +41,36 @@ void FxSendChorus::Load(BinStream& bs){
     }
     OnParametersChanged();
 }
+
+void FxSendChorus::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
+    FxSend::Copy(o, ty);
+    const FxSendChorus* c = dynamic_cast<const FxSendChorus*>(o);
+    if(c){
+        mDelayMs = c->mDelayMs;
+        mRate = c->mRate;
+        mDepth = c->mDepth;
+        mFeedbackPct = c->mFeedbackPct;
+        mOffsetPct = c->mOffsetPct;
+        mTempoSync = c->mTempoSync;
+        mSyncType = c->mSyncType;
+        mTempo = c->mTempo;
+    }
+}
+
+BEGIN_HANDLERS(FxSendChorus)
+    HANDLE_SUPERCLASS(FxSend)
+    HANDLE_CHECK(0x5C)
+END_HANDLERS
+
+
+BEGIN_PROPSYNCS(FxSendChorus)
+    SYNC_PROP_ACTION(delay_ms, mDelayMs, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(rate, mRate, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(depth, mDepth, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(feedback_pct, mFeedbackPct, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(offset_pct, mOffsetPct, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(tempo_sync, mTempoSync, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(sync_type, mSyncType, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_SUPERCLASS(FxSend)
+END_PROPSYNCS
