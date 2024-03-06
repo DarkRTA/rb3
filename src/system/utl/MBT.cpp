@@ -8,7 +8,7 @@ void ParseMBT(const char* str, int& measure, int& beat, int& tick){
     char buf[32];
     strncpy(buf, str, 0x20);
     buf[31] = '\0';
-    int data[4] = { 1, 1, 0, 0 };
+    int data[3] = { 1, 1, 0 };
     int i2 = 0;
     char* n = strtok(buf, ":");
     while(i2 < 3 && n != 0){
@@ -29,6 +29,9 @@ const char* TickFormat(int tick, const MeasureMap& map){
     else return "negative tick";
 }
 
+// this feels fake, double check retail and see if fmod_f or something to that effect got called
 const char* FormatTimeMSH(float f){
-    return MakeString("%d:%02d.%02d", (int)(f / 60000.0), (int)(fmod_f(f, 60000.0) / 60000.0f), (int)(fmod_f(f, 1000.0) / 1000.0f));
+    double f2 = fmod((double)f, 60000.0);
+    double f3 = fmod((double)f, 1000.0);
+    return MakeString("%d:%02d.%02d", (int)(f / 60000.0f), (int)(f2 / 1000.0), (int)(f3 / 10.0));
 }

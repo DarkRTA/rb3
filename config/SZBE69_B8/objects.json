@@ -177,7 +177,7 @@
             "system/utl/LogFile.cpp": "Matching",
             "system/utl/Magnu.cpp": "Matching",
             "system/utl/MakeString.cpp": "Matching",
-            "system/utl/MBT.cpp": "NonMatching",
+            "system/utl/MBT.cpp": "Matching",
             "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
