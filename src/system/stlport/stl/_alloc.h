@@ -70,6 +70,7 @@
 #  define __ALLOC __sgi_alloc
 #endif
 
+#include "macros.h"
 #include "utl/MemMgr.h"
 
 namespace _STLP_STD {
@@ -191,6 +192,15 @@ public:
 
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
+// Decomp hack: converts an allocator from one type to another
+#if GAME_VERSION == VERSION_SZBE69
+   // Note: does not preserve state! This is fine since StlNodeAlloc has no state,
+   // and no other allocators are used as far as we've seen
+#  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) _Alloc_traits<_Tp, _Alloc>::allocator_type()
+#elif GAME_VERSION == VERSION_SZBE69_BE
+#  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) __a
+#endif
+
 // Another allocator adaptor: _Alloc_traits.  This serves two
 // purposes.  First, make it possible to write containers that can use
 // either SGI-style allocators or standard-conforming allocator.
@@ -202,7 +212,7 @@ struct _Alloc_traits {
   typedef typename _Allocator::template rebind<_Tp> _Rebind_type;
   typedef typename _Rebind_type::other  allocator_type;
   static allocator_type create_allocator(const _Orig& __a)
-  { return allocator_type(__a); }
+  { return _STLP_CONVERT_ALLOCATOR(__a, _Orig, _Tp); }
 };
 
 #if defined (_STLP_USE_PERTHREAD_ALLOC)
@@ -408,11 +418,14 @@ public:
     typedef StlNodeAlloc<_Tp1> other;
   };
 
+#if GAME_VERSION == VERSION_SZBE69_BE
   StlNodeAlloc() _STLP_NOTHROW {}
   StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
-  ~StlNodeAlloc() _STLP_NOTHROW {}
   template <class _Tp1>
   StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
+#endif
+
+  ~StlNodeAlloc() _STLP_NOTHROW {}
 
   value_type *allocate(const size_type count, const void* ptr = nullptr) const {
     return reinterpret_cast<value_type *>(

@@ -228,7 +228,7 @@ public:
 
 protected:
   _Rb_tree_base(const allocator_type& __a) :
-    _M_header(__a, _Node_base() ) {
+    _M_header(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _Node), _Node_base() ) {
     _M_empty_initialize();
   }
   _Rb_tree_base(__move_source<_Self> src) :

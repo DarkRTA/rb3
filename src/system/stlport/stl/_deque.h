@@ -334,7 +334,7 @@ public:
   static size_t buffer_size() { return (size_t)_Deque_iterator_base<_Tp>::__buffer_size; }
 
   _Deque_base(const allocator_type& __a, size_t __num_elements)
-    : _M_start(), _M_finish(), _M_map(__a, 0),
+    : _M_start(), _M_finish(), _M_map(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _Tp*), 0),
       _M_map_size(__a, (size_t)0)
   { _M_initialize_map(__num_elements); }
 

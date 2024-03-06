@@ -95,7 +95,7 @@ public:
   const_reference at(size_type __n) const { return cast_traits::to_value_type_cref(_M_impl.at(__n)); }
 
   explicit vector(const allocator_type& __a = allocator_type())
-    : _M_impl(__a) {}
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
 
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
@@ -223,7 +223,7 @@ public:
   const_reference at(size_type __n) const { return reinterpret_cast<const_reference>(_M_impl.at(__n)); }
 
   explicit vector(const allocator_type& __a = allocator_type())
-    : _M_impl(__a) {}
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
 
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
