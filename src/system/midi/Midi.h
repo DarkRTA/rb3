@@ -2,6 +2,7 @@
 #define MIDI_MIDI_H
 #include "utl/BinStream.h"
 #include "utl/TempoMap.h"
+#include "utl/ChunkIDs.h"
 #include <vector>
 
 class MidiReader;
@@ -15,15 +16,23 @@ enum State {
     kEnd = 3,
 };
 
-struct Midi {
-    unsigned char mStat;
-    unsigned char mD1;
-    unsigned char mD2;
+class MidiChunkID : public ChunkID {
+public:
+    MidiChunkID(const char* str) : ChunkID(str) {}
+    static MidiChunkID kMThd;
+    static MidiChunkID kMTrk;
 };
 
 class MidiReader {
 public:
+    struct Midi {
+        unsigned char mStat;
+        unsigned char mD1;
+        unsigned char mD2;
+    };
 
+    MidiReader(BinStream&, MidiReceiver&, const char*);
+    void Init();
     const char* GetFilename() const;
     void SkipCurrentTrack();
 
@@ -43,7 +52,7 @@ public:
     std::vector<String> mTrackNames;
     std::vector<Midi> mMidiList; 
     int mMidiListTick; 
-    bool (* mLessFunc)(struct Midi &, struct Midi &); 
+    bool (* mLessFunc)(const struct Midi &, const struct Midi &); 
     bool mOwnMaps;
     class MultiTempoTempoMap * mTempoMap; 
     class MeasureMap * mMeasureMap;
