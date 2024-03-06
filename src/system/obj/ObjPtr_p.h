@@ -38,11 +38,11 @@ template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
 
     ObjOwnerPtr(Hmx::Object* obj, T1* cls): mOwner(obj), mPtr(cls) {
-        if(cls != nullptr) cls->AddRef(obj);
+        if(cls != 0) cls->AddRef(obj);
     }
 
     virtual ~ObjOwnerPtr(){
-        if(mPtr != nullptr) mPtr->Release(mOwner);
+        if(mPtr != 0) mPtr->Release(mOwner);
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
