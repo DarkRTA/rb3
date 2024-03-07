@@ -41,30 +41,30 @@ void SampleInst::SetSend(FxSend* send){
 
 void SampleInst::SetReverbMixDb(float db){
     mReverbMixDb = db;
-    SetReverbMixDbImpl(db);
+    SetReverbMixDbImpl(mReverbMixDb);
 }
 
 void SampleInst::SetReverbEnable(bool b){
     mReverbEnabled = b;
-    SetReverbEnableImpl(b);
+    SetReverbEnableImpl(mReverbEnabled);
 }
 
 void SampleInst::SetPan(float pan){
     mPan = pan;
-    SetPanImpl(pan + mBankPan);
+    SetPanImpl(mPan + mBankPan);
 }
 
 void SampleInst::SetBankPan(float bpan){
     mBankPan = bpan;
-    SetPanImpl(mPan + bpan);
+    SetPanImpl(mPan + mBankPan);
 }
 
 void SampleInst::SetSpeed(float spd){
     mSpeed = spd;
-    SetSpeedImpl(spd * mBankSpeed);
+    SetSpeedImpl(mSpeed * mBankSpeed);
 }
 
 void SampleInst::SetBankSpeed(float bspd){
     mBankSpeed = bspd;
-    SetSpeedImpl(mSpeed * bspd);
+    SetSpeedImpl(mSpeed * mBankSpeed);
 }
