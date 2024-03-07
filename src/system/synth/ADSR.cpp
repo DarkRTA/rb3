@@ -1,5 +1,6 @@
 #include "synth/ADSR.h"
 #include "os/Debug.h"
+#include <algorithm>
 
 #define kMaxAttackRate 0x7f
 #define kMaxDecayRate 0xf
@@ -90,28 +91,55 @@ inline Ps2ADSR::ReleaseMode Ps2ADSR::GetReleaseMode() const {
     return (ReleaseMode)((mReg2 >> 5) & 1);
 }
 
-int FindNearestInTable(const float*, int, float val) {
+static int FindNearestInTable(const float* table, int tableSize, float val) {
     MILO_ASSERT(val >= 0.0f, 139);
-    /*
-      for (pfVar5 = param_1 + param_2; pfVar5[-1] <= 0.0; pfVar5 = pfVar5 + -1) {
-  }
-  local_14[0] = 0;
-  pfVar3 = (float *)__lower_bound<>__11stlpmtx_stdFPCfPCfRCfQ211stlpmtx_std13__less_2<f,f>Pl_PCf
-                              (param_1,pfVar5,&local_18,local_14,0);
-  if (pfVar3 == param_1) {
-    iVar4 = 0;
-  }
-  else if ((pfVar3 == pfVar5) || (local_18 - pfVar3[-1] < *pfVar3 - local_18)) {
-    uVar1 = (int)pfVar3 - (int)param_1;
-    iVar4 = ((int)uVar1 >> 2) + (uint)((int)uVar1 < 0 && (uVar1 & 3) != 0) + -1;
-  }
-  else {
-    uVar1 = (int)pfVar3 - (int)param_1;
-    iVar4 = ((int)uVar1 >> 2) + (uint)((int)uVar1 < 0 && (uVar1 & 3) != 0);
-  }
-  return iVar4;
-  */
+
+    const float* end;
+    for(end = &table[tableSize]; table[-1] <= 0.0f; end--);
+    const float* lbound = std::lower_bound(table, end, val);
+    if(lbound == table) return 0;
+    else if(lbound == end){
+
+    }
+    else {
+
+    }
 }
+
+// int FindNearestInTable(float *param_1,int param_2,float param_3)
+
+// {
+//   uint uVar1;
+//   char *pcVar2;
+//   float *pfVar3;
+//   int iVar4;
+//   float *pfVar5;
+//   float local_18;
+//   undefined local_14 [12];
+  
+//   local_18 = param_3;
+//   if (param_3 < 0.0) {
+//     pcVar2 = MakeString(kAssertStr,&@stringBase0,0x108,s_val_>=_0.0f_80c2c7d3);
+//     Debug::Fail((Debug *)TheDebug,pcVar2);
+//   }
+//   for (pfVar5 = param_1 + param_2; pfVar5[-1] <= 0.0; pfVar5 = pfVar5 + -1) {
+//   }
+//   local_14[0] = 0;
+//   pfVar3 = (float *)__lower_bound<>__11stlpmtx_stdF PC f PC f RC f Q211stlpmtx_std13__less_2<f,f>Pl_PCf
+//                               (param_1,pfVar5,&local_18,local_14,0);
+//   if (pfVar3 == param_1) {
+//     iVar4 = 0;
+//   }
+//   else if ((pfVar3 == pfVar5) || (local_18 - pfVar3[-1] < *pfVar3 - local_18)) {
+//     uVar1 = (int)pfVar3 - (int)param_1;
+//     iVar4 = ((int)uVar1 >> 2) + (uint)((int)uVar1 < 0 && (uVar1 & 3) != 0) + -1;
+//   }
+//   else {
+//     uVar1 = (int)pfVar3 - (int)param_1;
+//     iVar4 = ((int)uVar1 >> 2) + (uint)((int)uVar1 < 0 && (uVar1 & 3) != 0);
+//   }
+//   return iVar4;
+// }
 
 int Ps2ADSR::NearestAttackRate(float f) const {
     const float* table;
