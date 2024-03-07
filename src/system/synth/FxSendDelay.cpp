@@ -30,13 +30,6 @@ void FxSendDelay::Load(BinStream& bs){
     OnParametersChanged();
 }
 
-// float mDelayTime;
-//     float mGain;
-//     float mPingPongPct;
-//     bool mTempoSync;
-//     Symbol mSyncType;
-//     float mTempo;
-
 BEGIN_COPYS(FxSendDelay)
     COPY_SUPERCLASS(FxSend)
     GET_COPY(FxSendDelay)
