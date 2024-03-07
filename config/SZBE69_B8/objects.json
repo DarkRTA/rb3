@@ -158,7 +158,7 @@
             "system/synth/FxSendFlanger.cpp": "Matching",
             "system/synth/FxSendReverb.cpp": "Matching",
             "system/synth/FxSendPitchShift.cpp": "Matching",
-            "system/synth/FxSendSynapse.cpp": "NonMatching",
+            "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/tomcrypt/aes.c": "NonMatching",
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",

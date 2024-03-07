@@ -10,6 +10,31 @@ FxSendSynapse::FxSendSynapse() : mAmount(0.0f), mProximityEffect(0.5f), mProximi
 
 }
 
+void FxSendSynapse::SetAttackSmoothing(float as){
+    mAttackSmoothing = as;
+    OnParametersChanged();
+}
+
+void FxSendSynapse::SetReleaseSmoothing(float rs){
+    mReleaseSmoothing = rs;
+    OnParametersChanged();
+}
+
+void FxSendSynapse::SetAmount(float amt){
+    mAmount = amt;
+    OnParametersChanged();
+}
+
+void FxSendSynapse::SetProximityEffect(float pe){
+    mProximityEffect = pe;
+    OnParametersChanged();
+}
+
+void FxSendSynapse::SetProximityFocus(float pf){
+    mProximityFocus = pf;
+    OnParametersChanged();
+}
+
 BEGIN_HANDLERS(FxSendSynapse)
     HANDLE_SUPERCLASS(FxSend)
     HANDLE_CHECK(0x52)
