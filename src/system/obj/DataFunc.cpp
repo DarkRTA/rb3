@@ -16,6 +16,7 @@
 #include <stdlib.h>
 
 std::map<Symbol, DataFunc*> gDataFuncs;
+DataThisPtr gDataThisPtr;
 
 extern Hmx::Object *gDataThis;
 extern ObjectDir* gDataDir;

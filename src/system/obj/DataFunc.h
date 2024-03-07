@@ -4,6 +4,7 @@
 #include "obj/Object.h"
 #include "obj/Dir.h"
 #include "utl/MemMgr.h"
+#include "obj/ObjPtr_p.h"
 
 extern Hmx::Object *gDataThis;
 
@@ -28,6 +29,13 @@ public:
     }
 
     static DataNode New(DataArray*);
+};
+
+class DataThisPtr : public ObjPtr<Hmx::Object, ObjectDir> {
+public:
+    DataThisPtr() : ObjPtr(0, 0) {}
+    virtual ~DataThisPtr(){}
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
 };
 
 void DataRegisterFunc(Symbol s, DataFunc* func);
