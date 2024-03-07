@@ -86,3 +86,11 @@ DataNode TextFile::OnReflect(DataArray* array){
     }
     return DataNode(0);
 }
+
+void MoveDtorUp(TextFile* tf){
+    delete tf;
+}
+
+void MoveSetTypeUp(TextFile* tf){
+    tf->SetType(Symbol());
+}

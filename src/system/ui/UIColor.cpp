@@ -18,31 +18,20 @@ void UIColor::SetColor(const Hmx::Color& color){
     mColor = color;
 }
 
-void UIColor::Save(BinStream&){
-    MILO_ASSERT(0, 0x24);
-}
+SAVE_OBJ(UIColor, 0x24)
 
 void UIColor::Load(BinStream& bs){
-    int rev;
-    bs >> rev;
-    gRev = (unsigned int)rev;
-    gAltRev = (unsigned int)rev >> 0x10;
-    if((unsigned short)rev != 0){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)0);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(0, 0);
     Hmx::Object::Load(bs);
     bs >> mColor;
 }
 
-void UIColor::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    Hmx::Object::Copy(o, ty);
-    const UIColor* c = dynamic_cast<const UIColor*>(o);
-    MILO_ASSERT(c, 0x34);
-    mColor = c->mColor;
-}
+BEGIN_COPYS(UIColor)
+    COPY_SUPERCLASS(Hmx::Object)
+    GET_COPY_AND_ASSERT(UIColor, 0x34)
+    COPY_MEMBER(mColor)
+END_COPYS
 
 BEGIN_HANDLERS(UIColor);
     HANDLE_SUPERCLASS(Hmx::Object);

@@ -14,6 +14,7 @@ extern "C" float log10_f(double);
 extern "C" float sqrt_f(double);
 extern "C" float floor_f(double);
 extern "C" float ceil_f(double);
+extern "C" float fmod_f(double,double);
 
 inline int CountBits(int num) {
     int temp_r0;
@@ -98,6 +99,10 @@ inline float floor_f(double d){
 
 inline float ceil_f(double d){
     return ceil(d);
+}
+
+inline float fmod_f(double x, double y){
+    return fmod(x, y);
 }
 
 #endif

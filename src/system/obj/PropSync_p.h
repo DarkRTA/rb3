@@ -29,21 +29,21 @@ inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op
 
 inline bool PropSync(int& iref, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x2C);
-    if(op == (PropOp)1) node = DataNode(iref);
+    if(op == kPropGet) node = DataNode(iref);
     else iref = node.Int(0);
     return true;
 }
 
-inline bool PropSync(bool& b, DataNode& node, DataArray* da, int i, PropOp op){
-    da->Size();
-    if(op == (PropOp)1) node = DataNode(b);
+inline bool PropSync(bool& b, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x40);
+    if(op == kPropGet) node = DataNode(b);
     else b = node.Int(0) != 0;
     return true;
 }
 
-inline bool PropSync(Symbol& sym, DataNode& node, DataArray* da, int i, PropOp op){
-    da->Size();
-    if(op == (PropOp)1) node = DataNode(sym);
+inline bool PropSync(Symbol& sym, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x4A);
+    if(op == kPropGet) node = DataNode(sym);
     else sym = node.Str(0);
     return true;
 }

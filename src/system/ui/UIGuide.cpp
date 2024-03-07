@@ -13,35 +13,23 @@ UIGuide::~UIGuide(){
     
 }
 
-void UIGuide::Save(BinStream&){
-    MILO_ASSERT(0, 0x21);
-}
+SAVE_OBJ(UIGuide, 0x21);
 
 void UIGuide::Load(BinStream& bs){
-    unsigned int rev;
-    unsigned short huh;
-    bs >> rev;
-    huh = rev & 0xFFFF;
-    gRev = huh;
-    gAltRev = rev >> 0x10;
-    if(huh > 1){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)1);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
     bs >> mType >> mPos;
 }
 
-void UIGuide::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    Hmx::Object::Copy(o, ty);
-    const UIGuide* c = dynamic_cast<const UIGuide*>(o);
-    if(c){
-        mType = c->mType;
-        mPos = c->mPos;
-    }
-}
+BEGIN_COPYS(UIGuide)
+    COPY_SUPERCLASS(Hmx::Object)
+    GET_COPY(UIGuide)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mType)
+        COPY_MEMBER(mPos)
+    END_COPY_CHECKED
+END_COPYS
 
 BEGIN_PROPSYNCS(UIGuide);
     SYNC_PROP(pos, mPos);

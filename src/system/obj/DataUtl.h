@@ -6,7 +6,7 @@ void DataInit();
 void DataTerminate();
 void DataMacroWarning(bool);
 void DataSetMacro(Symbol, DataArray*);
-DataArray* DataGetMacro();
+DataArray* DataGetMacro(Symbol);
 Symbol DataGetMacroByInt(int, const char*);
 Hmx::Object* DataSetThis(Hmx::Object*);
 Hmx::Object* DataThis();

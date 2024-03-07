@@ -192,6 +192,14 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
+inline unsigned short getHmxRev(unsigned int ui){
+    return ui;
+}
+
+inline unsigned short getAltRev(unsigned int ui){
+    return ui >> 0x10;
+}
+
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
 #define BEGIN_HANDLERS(objType) \
@@ -270,11 +278,76 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
             } \
         }
 
+#define SYNC_SUPERCLASS(parent) \
+        return parent::SyncProperty(_val, _prop, _i, _op);
+
 #define END_PROPSYNCS \
         return false; \
     } \
 }
 
 // END SYNCPROPERTY MACROS -----------------------------------------------------------------------------
+
+// BEGIN SAVE MACRO ------------------------------------------------------------------------------------
+
+#define SAVE_OBJ(objType, line_num) \
+void objType::Save(BinStream&){ \
+    MILO_ASSERT(0, line_num); \
+}
+
+// END SAVE MACRO --------------------------------------------------------------------------------------
+
+// BEGIN COPY MACROS -----------------------------------------------------------------------------------
+
+#define BEGIN_COPYS(objType) \
+void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){ 
+
+#define COPY_SUPERCLASS(parent) \
+    parent::Copy(o, ty);
+
+#define GET_COPY(objType) \
+    const objType* c = dynamic_cast<const objType*>(o);
+
+#define GET_COPY_AND_ASSERT(objType, line_num) \
+    const objType* c = dynamic_cast<const objType*>(o); \
+    MILO_ASSERT(c, line_num);
+
+#define BEGIN_COPY_CHECKED \
+    if(c){
+
+#define COPY_MEMBER(mem) \
+        mem = c->mem;
+
+#define END_COPY_CHECKED \
+    }
+
+#define END_COPYS \
+}
+
+// END COPY MACROS -------------------------------------------------------------------------------------
+
+// BEGIN LOAD MACROS -----------------------------------------------------------------------------------
+
+#define LOAD_REVS(bs) \
+    unsigned int rev; \
+    bs >> rev; \
+    gRev = getHmxRev(rev); \
+    gAltRev = getAltRev(rev);
+
+#define ASSERT_REV(ver) \
+    if ((ver == 0) ? (gRev != ver) : (gRev > ver)){ \
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)ver); \
+    }
+
+#define ASSERT_ALTREV(ver) \
+    if ((ver == 0) ? (gAltRev != ver) : (gAltRev > ver)){ \
+        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
+    }
+
+#define ASSERT_REVS(rev1, rev2) \
+    ASSERT_REV(rev1) \
+    ASSERT_ALTREV(rev2)
+
+// END LOAD MACROS -------------------------------------------------------------------------------------
 
 #endif

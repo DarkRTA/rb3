@@ -41,6 +41,8 @@
         "cflags": "system",
         "objects": {
             "system/beatmatch/Output.cpp": "Matching",
+            "system/beatmatch/RGState.cpp": "Matching",
+            "system/beatmatch/TrackType.cpp": "Matching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
@@ -69,6 +71,8 @@
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
+            "system/midi/MidiReader.cpp": "NonMatching",
+            "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
             "system/obj/DataArray.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
@@ -112,7 +116,7 @@
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
-            "system/rndobj/DOFProc.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
@@ -145,6 +149,17 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
+            "system/synth/FxSend.cpp": "NonMatching",
+            "system/synth/FxSendChorus.cpp": "Matching",
+            "system/synth/FxSendCompress.cpp": "Matching",
+            "system/synth/FxSendDelay.cpp": "Matching",
+            "system/synth/FxSendDistortion.cpp": "Matching",
+            "system/synth/FxSendEQ.cpp": "Matching",
+            "system/synth/FxSendFlanger.cpp": "Matching",
+            "system/synth/FxSendReverb.cpp": "Matching",
+            "system/synth/FxSendPitchShift.cpp": "Matching",
+            "system/synth/FxSendSynapse.cpp": "Matching",
+            "system/synth/FxSendWah.cpp": "Matching",
             "system/synth/tomcrypt/aes.c": "NonMatching",
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",
@@ -174,6 +189,7 @@
             "system/utl/LogFile.cpp": "Matching",
             "system/utl/Magnu.cpp": "Matching",
             "system/utl/MakeString.cpp": "Matching",
+            "system/utl/MBT.cpp": "Matching",
             "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
