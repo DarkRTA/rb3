@@ -326,4 +326,28 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 
 // END COPY MACROS -------------------------------------------------------------------------------------
 
+// BEGIN LOAD MACROS -----------------------------------------------------------------------------------
+
+#define LOAD_REVS(bs) \
+    unsigned int rev; \
+    bs >> rev; \
+    gRev = getHmxRev(rev); \
+    gAltRev = getAltRev(rev);
+
+#define ASSERT_REV(ver) \
+    if ((ver == 0) ? (gRev != ver) : (gRev > ver)){ \
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)ver); \
+    }
+
+#define ASSERT_ALTREV(ver) \
+    if ((ver == 0) ? (gAltRev != ver) : (gAltRev > ver)){ \
+        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
+    }
+
+#define ASSERT_REVS(rev1, rev2) \
+    ASSERT_REV(rev1) \
+    ASSERT_ALTREV(rev2)
+
+// END LOAD MACROS -------------------------------------------------------------------------------------
+
 #endif

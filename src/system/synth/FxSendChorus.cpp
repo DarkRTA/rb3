@@ -14,18 +14,8 @@ FxSendChorus::FxSendChorus() : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFee
 SAVE_OBJ(FxSendChorus, 0x1F);
 
 void FxSendChorus::Load(BinStream& bs){
-    unsigned int rev;
-    unsigned short huh;
-    bs >> rev;
-    huh = rev & 0xFFFF;
-    gRev = huh;
-    gAltRev = rev >> 0x10;
-    if(huh > 3){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)3);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(3, 0);
     FxSend::Load(bs);
     if(gRev == 1){
         mDryGain = -3.0f;

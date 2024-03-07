@@ -21,16 +21,8 @@ void UIColor::SetColor(const Hmx::Color& color){
 SAVE_OBJ(UIColor, 0x24)
 
 void UIColor::Load(BinStream& bs){
-    int rev;
-    bs >> rev;
-    gRev = (unsigned int)rev;
-    gAltRev = (unsigned int)rev >> 0x10;
-    if((unsigned short)rev != 0){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)0);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(0, 0);
     Hmx::Object::Load(bs);
     bs >> mColor;
 }
