@@ -107,8 +107,10 @@ public:
     bool mForceFeedback;
     bool mCanForceFeedback;
     bool mWireless;
-
-    char filler[0x30];
+    int unk58, unk5c, unk60;
+    bool unk64;
+    bool mVibrateEnabled;
+    char filler[0x20];
 
     JoypadType mType;
     Symbol mControllerType;
@@ -126,7 +128,13 @@ public:
     int GetPressureBucket(JoypadButton) const;
 };
 
-JoypadData* JoypadGetPadData(int);
+extern "C" bool JoypadIsCalbertGuitar(int);
+
+void JoypadSetVibrate(int, bool);
+Symbol JoypadControllerTypePadNum(int padNum);
+bool JoypadIsConnectedPadNum(int);
+class JoypadData* JoypadGetPadData(int);
+void JoypadReset();
 bool JoypadIsControllerTypePadNum(int, Symbol);
 bool JoypadTypeHasLeftyFlip(Symbol);
 int JoypadTypePadShiftButton(Symbol);
