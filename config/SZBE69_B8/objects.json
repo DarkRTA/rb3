@@ -161,6 +161,7 @@
             "system/synth/FxSendPitchShift.cpp": "Matching",
             "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/FxSendWah.cpp": "Matching",
+            "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "NonMatching",
             "system/synth/tomcrypt/aes.c": "NonMatching",
             "system/synth/tomcrypt/crypt.c": "NonMatching",
