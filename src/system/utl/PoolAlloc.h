@@ -16,19 +16,21 @@ public:
 
 class FixedSizeAlloc {
 public:
+    FixedSizeAlloc(int, ChunkAllocator*, int);
+    virtual ~FixedSizeAlloc();
+    virtual void* RawAlloc(int);
+
     int mAllocSizeWords;
     int mNumAllocs;
     int mMaxAllocs;
     int mNumChunks;
     int* mFreeList;
     int mNodesPerChunk;
+    ChunkAllocator* mAlloc;
 
-    FixedSizeAlloc(int, ChunkAllocator*, int);
-    ~FixedSizeAlloc();
     void* Alloc();
     void Free(void*);
     void Refill();
-    void* RawAlloc(int);
 };
 
 enum PoolType {

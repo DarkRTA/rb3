@@ -156,10 +156,13 @@
             "system/synth/FxSendDistortion.cpp": "Matching",
             "system/synth/FxSendEQ.cpp": "Matching",
             "system/synth/FxSendFlanger.cpp": "Matching",
+            "system/synth/FxSendMeterEffect.cpp": "NonMatching",
             "system/synth/FxSendReverb.cpp": "Matching",
             "system/synth/FxSendPitchShift.cpp": "Matching",
             "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/FxSendWah.cpp": "Matching",
+            "system/synth/Pollable.cpp": "NonMatching",
+            "system/synth/SampleInst.cpp": "NonMatching",
             "system/synth/tomcrypt/aes.c": "NonMatching",
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",
@@ -178,8 +181,10 @@
             "system/utl/ChunkStream.cpp": "NonMatching",
             "system/utl/Compress.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
+            "system/utl/FakeSongMgr.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/FileStream.cpp": "Matching",
+            "system/utl/GlitchFinder.cpp": "NonMatching",
             "system/utl/HangBlock_Wii.cpp": "Matching",
             "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ] },
             "system/utl/IntPacker.cpp": "Matching",
@@ -197,6 +202,8 @@
             "system/utl/Messages3.cpp": "Matching",
             "system/utl/Messages4.cpp": "Matching",
             "system/utl/MultiTempoTempoMap.cpp": "NonMatching",
+            "system/utl/Option.cpp": "NonMatching",
+            "system/utl/PoolAlloc.cpp": "NonMatching",
             "system/utl/Profiler.cpp": "NonMatching",
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
@@ -216,7 +223,9 @@
             "system/utl/TimeConversion.cpp": "Matching",
             "system/utl/UserGuid.cpp": "Matching",
             "system/utl/UTF8.cpp": "NonMatching",
-            "system/utl/VarTimer.cpp": "NonMatching"
+            "system/utl/VarTimer.cpp": "NonMatching",
+
+            "system/world/ColorPalette.cpp": "NonMatching"
         }
     },
     "zlib": {
