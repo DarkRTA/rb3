@@ -154,6 +154,7 @@
             "system/synth/FxSendCompress.cpp": "Matching",
             "system/synth/FxSendDelay.cpp": "Matching",
             "system/synth/FxSendDistortion.cpp": "Matching",
+            "system/synth/FxSendEQ.cpp": "Matching",
             "system/synth/FxSendFlanger.cpp": "Matching",
             "system/synth/FxSendReverb.cpp": "Matching",
             "system/synth/tomcrypt/aes.c": "NonMatching",

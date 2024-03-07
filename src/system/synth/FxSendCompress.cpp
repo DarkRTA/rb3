@@ -13,16 +13,6 @@ FxSendCompress::~FxSendCompress(){
 
 }
 
-// float mThresholdDB;
-//     float mRatio;
-//     float mOutputLevel;
-//     float mAttack;
-//     float mRelease;
-//     float mExpRatio;
-//     float mExpAttack;
-//     float mExpRelease;
-//     float mGateThresholdDB;
-
 SAVE_OBJ(FxSendCompress, 0x1F);
 
 void FxSendCompress::Load(BinStream& bs){
