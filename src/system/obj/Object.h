@@ -192,6 +192,14 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
+inline unsigned short getHmxRev(unsigned int ui){
+    return ui;
+}
+
+inline unsigned short getAltRev(unsigned int ui){
+    return ui >> 0x10;
+}
+
 // BEGIN SAVE MACRO ------------------------------------------------------------------------------------
 
 #define SAVE_OBJ(objType, line_num) \
