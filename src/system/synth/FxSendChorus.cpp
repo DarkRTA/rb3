@@ -40,26 +40,25 @@ void FxSendChorus::Load(BinStream& bs){
     OnParametersChanged();
 }
 
-void FxSendChorus::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    FxSend::Copy(o, ty);
-    const FxSendChorus* c = dynamic_cast<const FxSendChorus*>(o);
-    if(c){
-        mDelayMs = c->mDelayMs;
-        mRate = c->mRate;
-        mDepth = c->mDepth;
-        mFeedbackPct = c->mFeedbackPct;
-        mOffsetPct = c->mOffsetPct;
-        mTempoSync = c->mTempoSync;
-        mSyncType = c->mSyncType;
-        mTempo = c->mTempo;
-    }
-}
+BEGIN_COPYS(FxSendChorus)
+    COPY_SUPERCLASS(FxSend)
+    GET_COPY(FxSendChorus)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mDelayMs)
+        COPY_MEMBER(mRate)
+        COPY_MEMBER(mDepth)
+        COPY_MEMBER(mFeedbackPct)
+        COPY_MEMBER(mOffsetPct)
+        COPY_MEMBER(mTempoSync)
+        COPY_MEMBER(mSyncType)
+        COPY_MEMBER(mTempo)
+    END_COPY_CHECKED
+END_COPYS
 
 BEGIN_HANDLERS(FxSendChorus)
     HANDLE_SUPERCLASS(FxSend)
     HANDLE_CHECK(0x5C)
 END_HANDLERS
-
 
 BEGIN_PROPSYNCS(FxSendChorus)
     SYNC_PROP_ACTION(delay_ms, mDelayMs, kPropSize|kPropGet, OnParametersChanged())

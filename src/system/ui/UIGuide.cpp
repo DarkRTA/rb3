@@ -34,14 +34,23 @@ void UIGuide::Load(BinStream& bs){
     bs >> mType >> mPos;
 }
 
-void UIGuide::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    Hmx::Object::Copy(o, ty);
-    const UIGuide* c = dynamic_cast<const UIGuide*>(o);
-    if(c){
-        mType = c->mType;
-        mPos = c->mPos;
-    }
-}
+// void UIGuide::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
+//     Hmx::Object::Copy(o, ty);
+//     const UIGuide* c = dynamic_cast<const UIGuide*>(o);
+//     if(c){
+//         mType = c->mType;
+//         mPos = c->mPos;
+//     }
+// }
+
+BEGIN_COPYS(UIGuide)
+    COPY_SUPERCLASS(Hmx::Object)
+    GET_COPY(UIGuide)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mType)
+        COPY_MEMBER(mPos)
+    END_COPY_CHECKED
+END_COPYS
 
 BEGIN_PROPSYNCS(UIGuide);
     SYNC_PROP(pos, mPos);

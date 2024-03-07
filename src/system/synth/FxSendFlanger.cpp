@@ -47,20 +47,20 @@ void FxSendFlanger::Load(BinStream& bs){
     OnParametersChanged();
 }
 
-void FxSendFlanger::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    FxSend::Copy(o, ty);
-    const FxSendFlanger* c = dynamic_cast<const FxSendFlanger*>(o);
-    if(c){
-        mDelayMs = c->mDelayMs;
-        mRate = c->mRate;
-        mDepthPct = c->mDepthPct;
-        mFeedbackPct = c->mFeedbackPct;
-        mOffsetPct = c->mOffsetPct;
-        mTempoSync = c->mTempoSync;
-        mSyncType = c->mSyncType;
-        mTempo = c->mTempo;
-    }
-}
+BEGIN_COPYS(FxSendFlanger)
+    COPY_SUPERCLASS(FxSend)
+    GET_COPY(FxSendFlanger)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mDelayMs)
+        COPY_MEMBER(mRate)
+        COPY_MEMBER(mDepthPct)
+        COPY_MEMBER(mFeedbackPct)
+        COPY_MEMBER(mOffsetPct)
+        COPY_MEMBER(mTempoSync)
+        COPY_MEMBER(mSyncType)
+        COPY_MEMBER(mTempo)
+    END_COPY_CHECKED
+END_COPYS
 
 BEGIN_HANDLERS(FxSendFlanger)
     HANDLE_SUPERCLASS(FxSend)
