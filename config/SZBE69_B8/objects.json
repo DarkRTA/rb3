@@ -156,6 +156,7 @@
             "system/synth/FxSendDistortion.cpp": "Matching",
             "system/synth/FxSendEQ.cpp": "Matching",
             "system/synth/FxSendFlanger.cpp": "Matching",
+            "system/synth/FxSendMeterEffect.cpp": "NonMatching",
             "system/synth/FxSendReverb.cpp": "Matching",
             "system/synth/FxSendPitchShift.cpp": "Matching",
             "system/synth/FxSendSynapse.cpp": "Matching",
