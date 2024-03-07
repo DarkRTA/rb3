@@ -18,16 +18,8 @@ FxSendReverb::~FxSendReverb(){
 SAVE_OBJ(FxSendReverb, 0x23);
 
 void FxSendReverb::Load(BinStream& bs){
-    unsigned int rev;
-    bs >> rev;
-    gRev = getHmxRev(rev);
-    gAltRev = getAltRev(rev);
-    if(gRev > 2){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)2);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(2, 0);
     FxSend::Load(bs);
     bs >> mEnvironmentPreset;
     if(gRev >= 2){
@@ -36,20 +28,20 @@ void FxSendReverb::Load(BinStream& bs){
     OnParametersChanged();
 }
 
-void FxSendReverb::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
-    FxSend::Copy(o, ty);
-    const FxSendReverb* c = dynamic_cast<const FxSendReverb*>(o);
-    if(c){
-        mEnvironmentPreset = c->mEnvironmentPreset;
-        mPreDelayMs = c->mPreDelayMs;
-        mHighCut = c->mHighCut;
-        mLowCut = c->mLowCut;
-        mRoomSize = c->mRoomSize;
-        mDamping = c->mDamping;
-        mDiffusion = c->mDiffusion;
-        mEarlyLate = c->mEarlyLate;
-    }
-}
+BEGIN_COPYS(FxSendReverb)
+    COPY_SUPERCLASS(FxSend)
+    GET_COPY(FxSendReverb)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mEnvironmentPreset)
+        COPY_MEMBER(mPreDelayMs)
+        COPY_MEMBER(mHighCut)
+        COPY_MEMBER(mLowCut)
+        COPY_MEMBER(mRoomSize)
+        COPY_MEMBER(mDamping)
+        COPY_MEMBER(mDiffusion)
+        COPY_MEMBER(mEarlyLate)
+    END_COPY_CHECKED
+END_COPYS
 
 BEGIN_HANDLERS(FxSendReverb)
     HANDLE_SUPERCLASS(FxSend)

@@ -14,18 +14,8 @@ FxSendFlanger::FxSendFlanger() : mDelayMs(2.0f), mRate(0.5f), mDepthPct(50), mFe
 SAVE_OBJ(FxSendFlanger, 0x1F);
 
 void FxSendFlanger::Load(BinStream& bs){
-    unsigned int rev;
-    unsigned short huh;
-    bs >> rev;
-    huh = rev & 0xFFFF;
-    gRev = huh;
-    gAltRev = rev >> 0x10;
-    if(huh > 6){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), gRev, (unsigned short)6);
-    }
-    if(gAltRev != 0){
-        MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)0);
-    }
+    LOAD_REVS(bs);
+    ASSERT_REVS(6, 0);
     FxSend::Load(bs);
     if(gRev <= 4){
         mDryGain = -3.0f;
