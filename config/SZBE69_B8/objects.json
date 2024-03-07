@@ -218,7 +218,9 @@
             "system/utl/TimeConversion.cpp": "Matching",
             "system/utl/UserGuid.cpp": "Matching",
             "system/utl/UTF8.cpp": "NonMatching",
-            "system/utl/VarTimer.cpp": "NonMatching"
+            "system/utl/VarTimer.cpp": "NonMatching",
+
+            "system/world/ColorPalette.cpp": "NonMatching"
         }
     },
     "zlib": {
