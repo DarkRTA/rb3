@@ -184,6 +184,7 @@
             "system/utl/FakeSongMgr.cpp": "NonMatching",
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/FileStream.cpp": "Matching",
+            "system/utl/GlitchFinder.cpp": "NonMatching",
             "system/utl/HangBlock_Wii.cpp": "Matching",
             "system/utl/HxGuid.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ] },
             "system/utl/IntPacker.cpp": "Matching",
