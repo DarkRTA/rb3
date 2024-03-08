@@ -19,3 +19,15 @@ RndCubeTex::RndCubeTex(){
 RndCubeTex::~RndCubeTex(){
     
 }
+
+SAVE_OBJ(RndCubeTex, 0x116);
+
+void RndCubeTex::Load(BinStream& bs){
+    PreLoad(bs);
+    PostLoad(bs);
+}
+
+BEGIN_HANDLERS(RndCubeTex)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x1D3)
+END_HANDLERS
