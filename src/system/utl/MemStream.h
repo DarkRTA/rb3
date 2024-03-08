@@ -8,19 +8,22 @@ class MemStream : public BinStream {
 public:
     MemStream(bool);
     virtual ~MemStream();
+    virtual void Flush();
+    virtual int Tell();
+    virtual bool Eof();
+    virtual bool Fail();
+    virtual const char* Name() const;
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int);
-    void WriteStream(BinStream&, int);
     virtual void SeekImpl(int, SeekType);
+
+    void WriteStream(BinStream&, int);
     void Compact();
-    virtual bool Fail();
-    virtual void Flush();
+
 
     bool mFail;
-    int a;
-    std::vector<char> mem;
-    int b;
-    int c;
+    int mTell;
+    std::vector<char, unsigned int> mBuffer;
 
 };
 
