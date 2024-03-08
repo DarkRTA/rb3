@@ -50,7 +50,7 @@
             "system/math/strips/Striper.cpp": "NonMatching",
 
             "system/math/Color.cpp": "NonMatching",
-            "system/math/Decibels.cpp": "NonMatching",
+            "system/math/Decibels.cpp": "Matching",
             "system/math/FileChecksum.cpp": "NonMatching",
             "system/math/Interp.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/math/Primes.cpp": "Matching",
