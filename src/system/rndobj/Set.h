@@ -9,8 +9,8 @@ class RndSet : public Hmx::Object {
     RndSet();
     virtual ~RndSet();
     
-    // ObjPtrList<Hmx::Object, ObjectDir> list;
-    std::vector<int> i_have_no_idea;
+    // ObjPtrList<Hmx::Object, ObjectDir> mObjects;
+    std::vector<int> mProps;
 };
 
 #endif // RNDOBJ_SET_H

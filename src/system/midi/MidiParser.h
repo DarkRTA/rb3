@@ -9,15 +9,15 @@ class MidiParser : public MsgSource { // 0xd0
 public: 
     struct PostProcess {
         PostProcess();
-        bool a;
-        float b;
-        float c;
-        float d;
-        float e;
-        float f;
-        float g;
-        bool h;
-        float j;
+        bool zeroLength;
+        float startOffset;
+        float endOffset;
+        float minLength;
+        float maxLength;
+        float minGap;
+        float maxGap;
+        bool useRealtimeGaps;
+        float variableBlendPct;
     };
 
     struct Note {
@@ -31,6 +31,34 @@ public:
     void Reset(float);
 
     DataEventList* mEvents;
+    Symbol mTrackName;
+    DataArray* mGemParser;
+    DataArray* mNoteParser;
+    DataArray* mTextParser;
+    DataArray* mLyricParser;
+    DataArray* mIdleParser;
+    DataArray* mCurParser;
+    DataArray* mAllowedNotes;
+    // vector* mVocalEvents;
+    // vector mNotes;
+    // GemListInterface* mGems;
+    bool mInverted;
+    PostProcess mProcess;
+    float mLastStart;
+    float mLastEnd;
+    float mFirstEnd;
+    DataEvent* mEvent;
+    Symbol mMessageType;
+    bool mAppendLength;
+    bool mUseVariableBlending;
+    float mVariableBlendPct;
+    bool mMessageSelf;
+    bool mCompressed;
+    int mGemIndex;
+    int mNoteIndex;
+    int mVicalIndex;
+    float mStart;
+    int mBefore;
 
     static Hmx::Object* NewObject();
     static void Init();

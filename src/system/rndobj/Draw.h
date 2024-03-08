@@ -21,6 +21,6 @@ public:
     virtual void Load(BinStream&);
     virtual void UpdateSphere();
     // there's more virtual methods
-}
+};
 
 #endif

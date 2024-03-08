@@ -2,9 +2,9 @@
 
 Hmx::Object* MidiParser::NewObject() { return new MidiParser; }
 
-MidiParser::PostProcess::PostProcess() : a(0), b(0), c(0), d(0), e(1e30), f(-1e30), g(1e30), h(0), j(0) {
-
-}
+MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),
+            endOffset(0), minLength(0), maxLength(1e30), minGap(-1e30), 
+            maxGap(1e30), useRealtimeGaps(false), variableBlendPct(0) { }
 
 MidiParser::MidiParser() {
     mEvents = new DataEventList;
