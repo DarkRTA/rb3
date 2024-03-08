@@ -1,6 +1,7 @@
 #ifndef OBJ_OBJPTR_H
 #define OBJ_OBJPTR_H
 #include "obj/Object.h"
+#include "utl/BinStream.h"
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
@@ -34,6 +35,8 @@ public:
     T1* mPtr;
 };
 
+template <class T> BinStream& operator>>(BinStream&, ObjPtr<T, ObjectDir>&);
+
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
 
@@ -53,4 +56,23 @@ public:
     T1* mPtr;
 };
 
+/* template <class T1, class T2> class ObjPtrList : public ObjRef {
+public:
+    struct Node {
+        T1* obj;
+        struct Node* next;
+        struct Node* prev;
+    };
+
+    ObjPtrList(Hmx::Object* obj, T2* cls): mPtr(cls) { }
+    virtual ~ObjPtrList() { }
+
+    virtual Hmx::Object* RefOwner(){ return NULL; }
+    virtual void Replace(Hmx::Object*, Hmx::Object*){ }
+    virtual bool IsDirPtr(){ return 0; }
+
+    std::list<Hmx::Object> mList;
+    T2* mPtr;
+};
+*/
 #endif

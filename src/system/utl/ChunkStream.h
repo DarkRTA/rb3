@@ -13,6 +13,7 @@ BinStream& ReadChunks(BinStream&, void*, int, int);
 BinStream& WriteChunks(BinStream&, const void*, int, int);
 
 #define kChunkSizeMask 0x00ffffff
+#define kChunkUnusedMask 0xfe000000
 #define CHUNKSTREAM_Z_ID 0xCBBEDEAF
 #define kChunkIDMask 0xC0BEDEAF
 
@@ -29,7 +30,7 @@ struct DecompressTask {
     int* mState;
     int mOutLen;
     uint mID;
-    char* mFilename;
+    const char* mFilename;
 };
 
 class ChunkStream : public BinStream {
@@ -65,7 +66,7 @@ public:
     static void DecompressChunk(DecompressTask&);
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
-    void WriteChunk();
+    uint WriteChunk();
 
     File * mFile;
     String mFilename;
@@ -90,5 +91,7 @@ public:
     int* mChunkEnd;
     int mTell; // which is different from mCurBufOffset... why?
 };
+
+void DecompressMemHelper(const void*, int, void*, int&, const char*);
 
 #endif // UTL_CHUNKSTREAM_H

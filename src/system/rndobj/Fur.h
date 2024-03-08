@@ -1,6 +1,9 @@
 #ifndef RNDOBJ_FUR_H
 #define RNDOBJ_FUR_H
+#include "milo_types.h"
 #include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
+#include "rndobj/Tex.h"
 
 class RndFur : public Hmx::Object {
 public:
@@ -17,6 +20,9 @@ public:
     void operator delete(void* v){
         _MemFree(v);
     }
+
+    static ushort gRev;
+    static ushort gAltRev;
 };
 
 #endif
