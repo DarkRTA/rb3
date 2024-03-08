@@ -1,33 +1,80 @@
 #include "ChunkStream.h"
 #include "os/Debug.h"
 #include "os/System.h"
-#include "string.h"
+#include "utl/Compress.h"
+#include "utl/MemMgr.h"
 #include <list>
+#include <string.h>
 
 extern File* NewFile(const char*, int);
 template <typename T> extern void EndianSwapEq(T&);
 
 namespace {std::list<DecompressTask> gDecompressionQueue;}
 
-/*BinStream& MarkChunk(BinStream& bs) {
-    ChunkStream potato = dynamic_cast<ChunkStream>(bs);
-    if (potato) potato.MaybeWriteChunk(false);
+BinStream& MarkChunk(BinStream& bs) {
+    ChunkStream* cs = dynamic_cast<ChunkStream*>(&bs);
+    if (cs) cs->MaybeWriteChunk(false);
     return bs;
-}*/
-
-BinStream& ReadChunks(BinStream& bs, void*, int, int) {
-
 }
 
-BinStream& WriteChunks(BinStream& bs, const void*, int, int) {
-
+BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_size) {
+    int curr_size = 0;
+    while (curr_size != total_len) {
+        int len_left = total_len - curr_size;
+        if (max_chunk_size < total_len - curr_size) len_left = max_chunk_size;
+        bs.Read(data, len_left);
+        curr_size += len_left;
+        if (bs.Eof()) {
+            Timer::Sleep(0);
+        }
+    }
+    return bs;
 }
 
-ChunkStream::ChunkStream(const char* c, FileType type, int i, bool b1, Platform plat, bool b2) : BinStream(false), mFilename(c), mChunkInfo(b2) {
+BinStream& WriteChunks(BinStream& bs, const void* data, int total_len, int max_chunk_size) {
+    int curr_size = 0;
+    while (curr_size != total_len) {
+        int len_left = total_len - curr_size;
+        if (max_chunk_size < total_len - curr_size) len_left = max_chunk_size;
+        bs.Write(data, len_left);
+        curr_size += len_left;
+        if (bs.GetPlatform() == kPlatformWii) MarkChunk(bs);
+    }
+    return bs;
+}
+
+ChunkStream::ChunkStream(const char* c2, FileType type, int i, bool b1, Platform plat, bool b2) : BinStream(false), mFilename(c2), mType(type), mChunkInfo(b1), mIsCached(b2) {
+    b[0] = i;
+    b[1] = 0;
+    mCurBufferIdx = -1;
+    mCurBufOffset = 0;
+    mTell = 0;
     SetPlatform(plat);
-    File* f = NewFile(c, type == kRead ? 2 : 2564);
+    mBuffersState = NULL;
+    int size = 2564;
+    mBuffersOffset = 0;
+    mBuffers[0] = 0;
+    pad = 0;
+    c = 0;
+    mBuffers[1] = 0;
+    mCurReadBuffer = 0;
+    if (type == kRead) size = 2; 
+    File* f = NewFile(c2, size);
     mFile = f;
     mFail = !f;
+    if (!mFail) {
+        if (type == kWrite) {
+            mFile->Write(&mChunkInfo, 0x810);
+            size = b[0] << 1;
+            mCurBufSize = size;
+            mBuffers[0] = (char*)_MemAllocTemp(size, 0);
+            mBuffers[1] = (char*)_MemAllocTemp(mCurBufSize, 0);
+            mCurBufferIdx = 0;
+        } else {
+            mChunkInfoPending = true;
+            mFile->ReadAsync(&mChunkInfo, 0x810);
+        }
+    }
 }
 
 void ChunkStream::SetPlatform(Platform plat) {
@@ -73,8 +120,14 @@ void ChunkStream::ReadImpl(void* Pv, int bytes) {
 }
 
 void ChunkStream::WriteImpl(const void* Pv, int bytes) {
-    if (mCurBufSize < mCurBufOffset + bytes) {
-
+    if (mCurBufSize > mCurBufOffset + bytes) {
+        while (mCurBufSize > mCurBufOffset + bytes) mCurBufSize += mCurBufSize;
+        void* a = _MemAllocTemp(mCurBufSize, 0);
+        memcpy(a, mBuffers[0], mCurBufOffset);
+        _MemFree(mBuffers[0]);
+        mBuffers[0] = (char*)a;
+        _MemFree(mBuffers[1]);
+        mBuffers[1] = (char*)_MemAllocTemp(mCurBufSize, 0);
     }
     memcpy(mBuffers[0] + mCurBufOffset, Pv, bytes);
     mCurBufOffset += bytes;
@@ -95,7 +148,16 @@ int ChunkStream::Tell() {
 }
 
 void ChunkStream::ReadChunkAsync() {
-
+    int i = 1;
+    int placeholder = mCurBufferIdx + 1;
+    int id = placeholder >> 0x1f;
+    id = ((placeholder & 1) ^ -id) + id;
+    if (mBuffers[id + 0x13] == NULL) {
+        if (mChunkInfo.mID == 0xCABEDEAF) mFile->ReadAsync(mBuffers[0], placeholder);
+        else mFile->ReadAsync(mBuffers[id] + mCurBufSize - placeholder, placeholder);
+        mBuffers[id + 0x15] = (char*)(mCurChunk + i);
+        mBuffers[id + 0x13] = (char*)1;
+    }
 }
 
 bool ChunkStream::Eof() {
@@ -138,12 +200,51 @@ bool ChunkStream::Eof() {
 
 bool ChunkStream::Fail() { return mFail; }
 
+char* unused = "mCurBufOffset == (*mCurChunk & kChunkSizeMask)";
+
 void ChunkStream::MaybeWriteChunk(bool b) {
     if (mChunkInfo.mNumChunks < 2 && 0x1fff < mCurBufOffset) b = true;
 
 
     if (mChunkInfo.mNumChunks > 0x200) MILO_FAIL("%s has %d chunks, max is %d", mFilename, mChunkInfo.mNumChunks, 0x200);
     WriteChunk();
+}
+
+uint ChunkStream::WriteChunk() {
+    MILO_ASSERT(mCurBufOffset < kChunkSizeMask, 778);
+    int result = mCurBufOffset;
+    char* test = mBuffers[0];
+    int size;
+    int flags; // ?
+    int sagasasdgg = 0;
+    if (mChunkInfo.mID == 0xCDBEDEAF) {
+        int dingus = mCurBufSize - 4;
+        int dongus = (int)mBuffers[1];
+        dongus = result;
+        EndianSwapEq(dongus);
+        CompressMem(mBuffers[0], result, (void*)(dongus + 1), dingus,NULL);
+        // float x, y = x = 176.0f;
+        if (/*x / y <= 1.1*/ false) {
+            sagasasdgg = 0x1000000;
+        } else {
+            result = dingus + 4;
+            test = (char*)dongus;
+        }
+    }
+    if (result != mFile->Write(test, result)) {
+        mFail = true;
+    }
+    MILO_ASSERT((size & ~kChunkSizeMask) == 0, 820);
+    MILO_ASSERT((flags & (kChunkSizeMask|kChunkUnusedMask)) == 0, 822);
+    MILO_ASSERT((result & kChunkUnusedMask) == 0, 827);
+    return result | sagasasdgg;
+}
+
+void DecompressMemHelper(const void* a, int b, void* c, int& dstLen, const char* fname) {
+    int expectedDstLen;
+    EndianSwapEq(expectedDstLen);
+    DecompressMem((void*)((int)a + 4), b - 4, c, dstLen, false, fname);
+    MILO_ASSERT(dstLen == expectedDstLen, 949);
 }
 
 void ChunkStream::DecompressChunk(DecompressTask& task) {
@@ -153,12 +254,15 @@ void ChunkStream::DecompressChunk(DecompressTask& task) {
     int out_len = task.mOutLen;
     uint id = task.mID;
     if (id == 0xCDBEDEAF) {
-
+        DecompressMemHelper((void*)(task.out_data + (out_len - data) + 10), data, (void*)task.out_data, out_len, task.mFilename);
     } else if (id == 0xCCBEDEAF) {
-
+        DecompressMem((void *)(task.out_data + (out_len - data) + 10), data - 0x12, (void*)task.out_data, out_len, false, task.mFilename);
     } else {
         MILO_ASSERT(task.mID == CHUNKSTREAM_Z_ID, 977);
+        DecompressMem((void *)(task.out_data + (task.mOutLen - data)), data, (void*)task.out_data, out_len, false, task.mFilename);
     }
+    *task.mChunkSize = out_len;
+    *task.mState = 3;
 }
 
 ChunkStream::ChunkInfo::ChunkInfo(bool isCompressed) {

@@ -36,7 +36,7 @@ class RndTransformable : public virtual RndHighlightable {
 
     static ushort gRev;
     static ushort gAltRev;
-    static Plane sShadowPlane;
+    //static Plane sShadowPlane;
 };
 
 #endif

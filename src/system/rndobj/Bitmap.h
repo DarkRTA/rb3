@@ -1,28 +1,36 @@
 #ifndef RNDOBJ_BITMAP_H
 #define RNDOBJ_BITMAP_H
 #include "utl/BinStream.h"
-typedef unsigned char u8;
+#include "utl/MemMgr.h"
+#include "milo_types.h"
+#include "types.h"
 
 struct tagBITMAPFILEHEADER {
-    unsigned int bfSize;
-    unsigned short bfReserved1;
-    unsigned short bfReserved2;
-    unsigned int bfOffBits;
+    uint bfSize;
+    ushort bfReserved1;
+    ushort bfReserved2;
+    uint bfOffBits;
 };
 
+BinStream& operator>>(BinStream&, tagBITMAPFILEHEADER&);
+BinStream& operator<<(BinStream&, const tagBITMAPFILEHEADER&);
+
 struct tagBITMAPINFOHEADER {
-    unsigned int biSize;
+    uint biSize;
     int biWidth;
     int biHeight;
-    unsigned short biPlanes;
-    unsigned short biBitCount;
-    unsigned int biCompression;
-    unsigned int biSizeImage;
+    ushort biPlanes;
+    ushort biBitCount;
+    uint biCompression;
+    uint biSizeImage;
     int biXPelsPerMeter;
     int biYPelsPerMeter;
-    unsigned int biClrUsed;
-    unsigned int biClrImportant;
+    uint biClrUsed;
+    uint biClrImportant;
 };
+
+BinStream& operator>>(BinStream&, tagBITMAPINFOHEADER&);
+BinStream& operator<<(BinStream&, const tagBITMAPINFOHEADER&);
 
 class RndBitmap { // 0x1c
 public:
@@ -31,11 +39,11 @@ public:
         kGrayscaleWhite = 1,
         kTransparentBlack = 2,
     };
-    unsigned short mWidth; // 0x0
-    unsigned short mHeight; // 0x2
-    unsigned short mRowBytes; // 0x4
+    u16 mWidth; // 0x0
+    u16 mHeight; // 0x2
+    u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
-    int mOrder; // 0x8
+    u32 mOrder; // 0x8
     u8* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14
@@ -64,9 +72,22 @@ public:
     void SetPreMultipliedAlpha();
     void SelfMip();
     void GenerateMips();
+    RndBitmap* DetachMip();
+    void SetMip(RndBitmap*);
 
     void Save(BinStream&) const;
     void Load(BinStream&);
+
+    inline u16 Width() { return mWidth; }
+    inline u16 Height() { return mHeight; }
+    inline u32 Order() { return mOrder; }
+    inline u8 Bpp() { return mBpp; }
+
+    void operator delete(void* b) {
+        _MemFree(b);
+    }
 };
+
+unsigned char BITMAP_REV = 1;
 
 #endif // RNDOBJ_BITMAP_H

@@ -21,6 +21,8 @@ public:
     };
 
     DataEventList();
+    void Reset(float f);
+    void Clear();
 
     int mCurIndex;
     int mSize;

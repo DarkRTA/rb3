@@ -1,4 +1,5 @@
 #include "Tex.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "utl/Symbols.h"
@@ -28,9 +29,7 @@ RndTex::~RndTex() {
     mBitmap->Reset();
 }
 
-void RndTex::Save(BinStream&) {
-    MILO_ASSERT(0, 744);
-}
+SAVE_OBJ(RndTex, 744)
 
 void RndTex::SaveBitmap(const char*) {
     MILO_ASSERT(0, 1033);

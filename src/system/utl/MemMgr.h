@@ -15,6 +15,7 @@ void* operator new[](size_t) throw();
 void operator delete[](void*) throw();
 
 void* _MemAlloc(int, int);
+void* _MemAllocTemp(int, int);
 void _MemFree(void*);
 
 void* _MemOrPoolAlloc(int, PoolType);

@@ -2,7 +2,7 @@
 #define RNDOBJ_CONSOLE_H
 
 #include "obj/Object.h"
-#include "stlport/list"
+#include <list>
 #include "utl/Str.h"
 
 class RndOverlay;
@@ -33,8 +33,7 @@ public:
     bool mShowing; // 0x1c
     RndOverlay* mOutput; // 0x20
     RndOverlay* mInput; // 0x24
-    //std::list<String> mBuffer; // 0x28 // lists are broken, nathan pls fix :pray:
-    int pad; int pad2;
+    std::list<String> mBuffer; // 0x28
     std::list<String>::iterator mBufPtr; // 0x30
     int mMaxBuffer; // 0x34
     int mTabLen; // 0x38
@@ -43,7 +42,7 @@ public:
     bool mPumpMsgs; // 0x44
     DataArray* mDebugging; // 0x48
     int mLevel; // 0x4c
-    //std::list<Breakpoint> mBreakpoints; // 0x50
+    std::list<Breakpoint> mBreakpoints; // 0x50
 };
 
 static RndConsole* gConsole;
