@@ -67,6 +67,7 @@
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
+            "system/meta/Profile.cpp": "NonMatching",
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "NonMatching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",

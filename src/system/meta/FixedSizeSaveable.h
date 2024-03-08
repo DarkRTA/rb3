@@ -4,12 +4,14 @@
 
 typedef int SaveSizeMethodFunc(int);
 
+class FixedSizeSaveableStream;
+
 class FixedSizeSaveable {
 public:
     FixedSizeSaveable();
     virtual ~FixedSizeSaveable();
-    // virtual void SaveFixed(FixedSizeSaveableStream&) const = 0;
-    // virtual void LoadFixed(FixedSizeSaveableStream&, int) = 0;
+    virtual void SaveFixed(FixedSizeSaveableStream&) const = 0;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int) = 0;
 
     static void Init(int, int);
 
