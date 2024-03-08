@@ -47,11 +47,11 @@ void ExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
     mY0 = f1;
     mY1 = f2;
     if (fabs_f(f0) < 0.000001f)
-        unk1c = 1.0f;
+        mInvRun = 1.0f;
     else
-        unk1c = 1.0f / f0;
-    unk14 = f5;
-    unk18 = f2 - f1;
+        mInvRun = 1.0f / f0;
+    mPower = f5;
+    mRise = f2 - f1;
 }
 
 // fn_802DD238
@@ -61,8 +61,8 @@ void ExpInterpolator::Reset(const DataArray *data) {
 
 // fn_802DD32C
 float ExpInterpolator::Eval(float f) {
-    float pow_res = pow_f(unk1c * (f - mX0), unk14);
-    return pow_res * unk18 + mY0;
+    float pow_res = pow_f(mInvRun * (f - mX0), mPower);
+    return pow_res * mRise + mY0;
 }
 
 
@@ -79,11 +79,11 @@ void InvExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5)
     mY0 = f1;
     mY1 = f2;
     if (fabs_f(f0) < 0.000001f)
-        unk1c = 1.0f;
+        mInvRun = 1.0f;
     else
-        unk1c = 1.0f / f0;
-    unk14 = f5;
-    unk18 = f2 - f1;
+        mInvRun = 1.0f / f0;
+    mPower = f5;
+    mRise = f2 - f1;
 }
 
 // fn_802DD4C4
@@ -93,8 +93,8 @@ void InvExpInterpolator::Reset(const DataArray *data) {
 
 // fn_802DD5B8
 float InvExpInterpolator::Eval(float f) {
-    float pow_res = pow(-(unk1c * (f - mX0) - 1.0f), unk14);
-    return (1.0f - pow_res) * unk18 + mY0;
+    float pow_res = pow(-(mInvRun * (f - mX0) - 1.0f), mPower);
+    return (1.0f - pow_res) * mRise + mY0;
 }
 
 // fn_802DD61C
