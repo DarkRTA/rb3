@@ -4,6 +4,7 @@
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
 #include "os/Debug.h"
+#include "os/Endian.h"
 #include <string.h>
 #include <list>
 
@@ -215,10 +216,33 @@ void BinStream::Seek(int offset, SeekType type){
     SeekImpl(offset, type);
 }
 
+inline void SwapData(const void *v1, void *v2, int num_bytes) {
+    switch (num_bytes) {
+        case 2:
+            unsigned short *s1 = (unsigned short *)v1;
+            short *s2 = (short *)v2;
+            *s2 = EndianSwap(*s1);
+            break;
+        case 4:
+            unsigned int *i1 = (unsigned int *)v1;
+            int *i2 = (int *)v2;
+            *i2 = EndianSwap(*i1);
+            break;
+        case 8:
+            unsigned long long *l1 = (unsigned long long *)v1;
+            long long *l2 = (long long *)v2;
+            *l2 = EndianSwap(*l1);
+            break;
+        default:
+            MILO_ASSERT(0, 0x6F);
+            break;
+    }
+}
+
 void BinStream::ReadEndian(void* data, int bytes){
     Read(data, bytes);
     if(mLittleEndian){
-        // SwapData(data, data, bytes);
+        SwapData(data, data, bytes);
     }
 }
 
