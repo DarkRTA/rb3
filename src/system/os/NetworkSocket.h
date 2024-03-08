@@ -1,7 +1,12 @@
-#ifndef OS_NETWORKSOCKETWII_H
-#define OS_NETWORKSOCKETWII_H
+#ifndef OS_NETWORKSOCKET_H
+#define OS_NETWORKSOCKET_H
 #include "utl/Str.h"
 #include <revolution/rvl/so.h>
+
+struct NetAddress {
+    unsigned int mIP;
+    unsigned short mPort;
+};
 
 class NetworkSocket {
 public:

@@ -101,6 +101,7 @@
             "system/os/JoypadMsgs.cpp": "Matching",
             "system/os/Keyboard.cpp": "NonMatching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
+            "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
             "system/os/SynchronizationEvent.cpp": "Matching",
