@@ -79,4 +79,8 @@ public:
     // Vector4(const Vector4 &);
 };
 
+inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
+    dst.Set(v1.x * f, v1.y * f, v1.z * f);
+}
+
 #endif

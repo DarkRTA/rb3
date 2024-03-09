@@ -50,4 +50,6 @@ public:
     void Zero();
 };
 
+void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
+
 #endif
