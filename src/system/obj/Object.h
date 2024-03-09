@@ -176,6 +176,9 @@ namespace Hmx {
         DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Object* NewObject(Symbol);
 
+        void SaveType(BinStream&);
+        void SaveRest(BinStream&);
+
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
         DataNode OnIterateRefs(const DataArray*);

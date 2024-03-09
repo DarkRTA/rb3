@@ -180,6 +180,21 @@ void Hmx::Object::AddRef(ObjRef* ref){
         mRefs.push_back(ref);
 }
 
+void Hmx::Object::Save(BinStream& bs){
+    SaveType(bs);
+    SaveRest(bs);
+}
+
+void Hmx::Object::SaveType(BinStream& bs){
+    bs << 2;
+    bs << ((mTypeDef) ? mTypeDef->Sym(0) : Symbol());
+}
+
+void Hmx::Object::SaveRest(BinStream& bs){
+    mTypeProps.Save(bs, this);
+    bs << 0;
+}
+
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
@@ -249,19 +264,20 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
 }
 #pragma dont_inline reset
 
-// DataNode Hmx::Object::HandleType(DataArray* msg){
-//     Symbol t = msg->Sym(1);
-//     bool found = false;
-//     DataArray* handler;
-//     if(mTypeDef != nullptr){
-//         handler = mTypeDef->FindArray(t, false);
-//         if(handler != nullptr) found = true;
-//     }
-//     if(found){
-//         return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
-//     }
-//     else return DataNode(kDataUnhandled, 0);
-// }
+DataNode Hmx::Object::HandleType(DataArray* msg){
+    Symbol t = msg->Sym(1);
+    MessageTimer timer((MessageTimer::Active()) ? this : 0, t);
+    bool found = false;
+    DataArray* handler;
+    if(mTypeDef != 0){
+        handler = mTypeDef->FindArray(t, false);
+        if(handler != 0) found = true;
+    }
+    if(found){
+        return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
 
 DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     DataArray* arr = da->Array(2);
