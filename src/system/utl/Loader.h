@@ -2,6 +2,8 @@
 #define UTL_LOADER_H
 #include "utl/FilePath.h"
 #include "os/System.h"
+#include "os/File.h"
+#include "utl/Str.h"
 // #include <list>
 
 enum LoaderPos {
@@ -38,10 +40,20 @@ public:
     // class Timer mTimer; // offset 0x28, size 0x38
 };
 
-class FileLoader : Loader {
+class FileLoader : public Loader {
 public:
     FileLoader(const FilePath&, const char*, LoaderPos, int, bool, bool, BinStream*);
     virtual ~FileLoader();
+
+    File* mFile;
+    BinStream* mStream;
+    const char* mBuffer;
+    int mBufLen;
+    bool mAccessed;
+    bool mTemp;
+    bool mWarn;
+    int mFlags;
+    class String mFilename;
 };
 
 #endif

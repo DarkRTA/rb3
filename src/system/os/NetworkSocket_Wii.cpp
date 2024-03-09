@@ -1,4 +1,4 @@
-#include "os/NetworkSocket_Wii.h"
+#include "os/NetworkSocket.h"
 #include "os/Debug.h"
 
 int UnimplementedFunction(const char* str){

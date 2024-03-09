@@ -22,7 +22,7 @@ public:
     virtual ~UIPanel();
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray *);
-    virtual ObjectDir* DataDir();
+    virtual class ObjectDir* DataDir();
 
     virtual void Draw();
     virtual void Enter();
@@ -44,10 +44,11 @@ public:
     void CheckUnload();
     bool CheckIsLoaded();
     void UnsetLoadedDir();
+    DataNode OnLoad(DataArray*);
 
-    PanelDir* mDir;
+    class PanelDir* mDir;
     DirLoader* mLoader;
-    String mFocusName;
+    class String mFocusName;
     State mState;
     bool mLoaded;
     bool mPaused;

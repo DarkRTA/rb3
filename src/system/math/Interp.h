@@ -37,9 +37,9 @@ public:
 
     void Reset(float, float, float, float, float); // fn_802DD16C
     
-    float unk14;
-    float unk18;
-    float unk1c;
+    float mPower;
+    float mRise;
+    float mInvRun;
 };
 
 class InvExpInterpolator : public Interpolator {
@@ -52,9 +52,9 @@ public:
 
     void Reset(float, float, float, float, float); // fn_802DD3F8
     
-    float unk14;
-    float unk18;
-    float unk1c;
+    float mPower;
+    float mRise;
+    float mInvRun;
 };
 
 class ATanInterpolator : public Interpolator {

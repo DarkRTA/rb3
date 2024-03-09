@@ -51,7 +51,8 @@
             "system/math/strips/Striper.cpp": "NonMatching",
 
             "system/math/Color.cpp": "NonMatching",
-            "system/math/Decibels.cpp": "NonMatching",
+            "system/math/Decibels.cpp": "Matching",
+            "system/math/FileChecksum.cpp": "NonMatching",
             "system/math/Interp.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
@@ -67,6 +68,7 @@
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
+            "system/meta/Profile.cpp": "NonMatching",
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "NonMatching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
@@ -97,11 +99,13 @@
             "system/os/Debug.cpp": "NonMatching",
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "NonMatching",
+            "system/os/HolmesKeyboard.cpp": "NonMatching",
             "system/os/Joypad.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
             "system/os/Keyboard.cpp": "NonMatching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
+            "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
             "system/os/SynchronizationEvent.cpp": "Matching",
@@ -118,6 +122,7 @@
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
+            "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
@@ -226,6 +231,7 @@
             "system/utl/UserGuid.cpp": "Matching",
             "system/utl/UTF8.cpp": "NonMatching",
             "system/utl/VarTimer.cpp": "NonMatching",
+            "system/utl/Wav.cpp": "NonMatching",
 
             "system/world/ColorPalette.cpp": "NonMatching"
         }
