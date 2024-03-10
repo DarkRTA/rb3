@@ -119,6 +119,78 @@ const char* UTF8strchr(const char* str, unsigned short us){
     return 0;
 }
 
+void UTF8ToLower(unsigned short arg0, char *arg1) {
+    int temp_r6;
+    int var_r3;
+
+    var_r3 = arg0;
+    if (var_r3 < 0x80U) {
+        if ((unsigned short)(var_r3 + 0xFFBF) <= 0x19U) {
+            arg1[0] = (var_r3 + 0x20);
+        } else
+            arg1[0] = var_r3;
+    } else if (var_r3 < 0x800U) {
+        if ((unsigned short)(var_r3 + 0xFF40) <= 0x1DU) {
+            var_r3 = (var_r3 + 0x20) & 0xffff;
+        }
+        arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
+        arg1[1] = ((var_r3 % 64) + 0x80);
+    } else {
+        temp_r6 = (var_r3 >> 6) & 0x3FF;
+        arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
+        arg1[1] = ((temp_r6 % 64) + 0x80);
+        arg1[2] = ((var_r3 % 64) + 0x80);
+    }
+}
+
+void UTF8ToUpper(unsigned short arg0, char *arg1) {
+    int temp_r6;
+    int var_r3;
+
+    var_r3 = arg0;
+    if (var_r3 < 0x80U) {
+        if ((unsigned short)(var_r3 + 0xFF9F) <= 0x19U) {
+            arg1[0] = (var_r3 - 0x20);
+        } else
+            arg1[0] = var_r3;
+    } else if (var_r3 < 0x800U) {
+        if ((unsigned short)(var_r3 + 0xFF20) <= 0x1DU) {
+            var_r3 = (var_r3 - 0x20) & 0xffff;
+        }
+        arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
+        arg1[1] = ((var_r3 % 64) + 0x80);
+    } else {
+        temp_r6 = (var_r3 >> 6) & 0x3FF;
+        arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
+        arg1[1] = ((temp_r6 % 64) + 0x80);
+        arg1[2] = ((var_r3 % 64) + 0x80);
+    }
+}
+
+void UTF8FilterString(char* out, int len, const char* in, const char* allowed, char c){
+    MILO_ASSERT(out, 0x191);
+    MILO_ASSERT(in, 0x192);
+    MILO_ASSERT(len > 0, 0x193);
+    MILO_ASSERT(allowed, 0x194);
+    unsigned short us;
+    int decoded;
+    char* out_beg = out;
+
+    while((*in != 0) && (out - out_beg < len - 3)){
+        us = 0;
+        decoded = DecodeUTF8(us, in);
+        if(UTF8strchr(allowed, us) != 0){
+            for(unsigned int i = 0; i < decoded; i++) *out++ = *in++;
+        }
+        else {
+            *out++ = c;
+            in += decoded;
+        }
+    }
+    MILO_ASSERT((out - out_beg) < len, 0x1A7);
+    *out = 0;
+}
+
 // extern "C" void fn_8037B78C(char *, int, const char *, char *, char);
 
 // // fn_8037B78C
@@ -218,56 +290,4 @@ const char* UTF8strchr(const char* str, unsigned short us){
 //     }
 //     *arg0 = 0;
 //     return ctr;
-// }
-
-// extern "C" void fn_8037B60C(unsigned short, char *);
-
-// // fn_8037B60C
-// void UTF8ToLower(unsigned short arg0, char *arg1) {
-//     int temp_r6;
-//     int var_r3;
-
-//     var_r3 = arg0;
-//     if (var_r3 < 0x80U) {
-//         if ((unsigned short)(var_r3 + 0xFFBF) <= 0x19U) {
-//             arg1[0] = (var_r3 + 0x20);
-//         } else
-//             arg1[0] = var_r3;
-//     } else if (var_r3 < 0x800U) {
-//         if ((unsigned short)(var_r3 + 0xFF40) <= 0x1DU) {
-//             var_r3 = (var_r3 + 0x20) & 0xffff;
-//         }
-//         arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
-//         arg1[1] = ((var_r3 % 64) + 0x80);
-//     } else {
-//         temp_r6 = (var_r3 >> 6) & 0x3FF;
-//         arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
-//         arg1[1] = ((temp_r6 % 64) + 0x80);
-//         arg1[2] = ((var_r3 % 64) + 0x80);
-//     }
-// }
-
-// // fn_8037B66C
-// void UTF8ToUpper(unsigned short arg0, char *arg1) {
-//     int temp_r6;
-//     int var_r3;
-
-//     var_r3 = arg0;
-//     if (var_r3 < 0x80U) {
-//         if ((unsigned short)(var_r3 + 0xFF9F) <= 0x19U) {
-//             arg1[0] = (var_r3 - 0x20);
-//         } else
-//             arg1[0] = var_r3;
-//     } else if (var_r3 < 0x800U) {
-//         if ((unsigned short)(var_r3 + 0xFF20) <= 0x1DU) {
-//             var_r3 = (var_r3 - 0x20) & 0xffff;
-//         }
-//         arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
-//         arg1[1] = ((var_r3 % 64) + 0x80);
-//     } else {
-//         temp_r6 = (var_r3 >> 6) & 0x3FF;
-//         arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
-//         arg1[1] = ((temp_r6 % 64) + 0x80);
-//         arg1[2] = ((var_r3 % 64) + 0x80);
-//     }
 // }
