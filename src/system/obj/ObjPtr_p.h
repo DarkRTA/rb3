@@ -56,7 +56,13 @@ public:
     T1* mPtr;
 };
 
-/* template <class T1, class T2> class ObjPtrList : public ObjRef {
+enum ObjListMode {
+    kObjListNoNull,
+    kObjListAllowNull,
+    kObjListOwnerControl
+};
+
+template <class T1, class T2> class ObjPtrList : public ObjRef {
 public:
     struct Node {
         T1* obj;
@@ -64,15 +70,17 @@ public:
         struct Node* prev;
     };
 
-    ObjPtrList(Hmx::Object* obj, T2* cls): mPtr(cls) { }
-    virtual ~ObjPtrList() { }
+    int mSize;
+    Node* mNodes;
+    Hmx::Object* mOwner;
+    ObjListMode mMode;    
 
-    virtual Hmx::Object* RefOwner(){ return NULL; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*){ }
-    virtual bool IsDirPtr(){ return 0; }
+    // ObjPtrList(Hmx::Object* obj, T2* cls): mPtr(cls) { }
+    // virtual ~ObjPtrList() { }
 
-    std::list<Hmx::Object> mList;
-    T2* mPtr;
+    // virtual Hmx::Object* RefOwner(){ return NULL; }
+    // virtual void Replace(Hmx::Object*, Hmx::Object*){ }
+    // virtual bool IsDirPtr(){ return 0; }
 };
-*/
+
 #endif
