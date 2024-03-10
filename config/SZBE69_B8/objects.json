@@ -64,6 +64,7 @@
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
+            "system/meta/ConnectionStatusPanel.cpp": "NonMatching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
@@ -84,6 +85,7 @@
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/DataUtl.cpp": "NonMatching",
+            "system/obj/Dir.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
             "system/obj/PropSync.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },

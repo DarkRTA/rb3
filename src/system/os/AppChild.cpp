@@ -1,5 +1,9 @@
 #include "os/AppChild.h"
 #include "obj/Data.h"
+#include "utl/Option.h"
+#include "obj/DataFunc.h"
+#include "os/NetStream.h"
+#include "os/Debug.h"
 
 AppChild* TheAppChild;
 
@@ -18,11 +22,32 @@ static DataNode SyncAppChild(DataArray* array){
     return DataNode(0);
 }
 
+void AppChild::Init(){
+    bool appchildbool = OptionBool("app_child", false);
+    if(appchildbool){
+        MILO_ASSERT(!TheAppChild, 0x3B);
+        TheAppChild = new AppChild(OptionStr("pipe_name", 0));
+    }
+    *DataVariable("app_child") = DataNode(appchildbool);
+    DataRegisterFunc("enable_app_child", EnableAppChild);
+    DataRegisterFunc("disable_app_child", DisableAppChild);
+    DataRegisterFunc("sync_app_child", SyncAppChild);
+}
+
 void AppChild::Terminate(){
     delete TheAppChild;
     TheAppChild = 0;
 }
 
+extern unsigned int HolmesResolveIP();
+
+AppChild::AppChild(const char* str) : mEnabled(1), mStream(0), mSync(0) {
+    NetAddress addr(HolmesResolveIP(), 0x11BF);
+    NetStream* net = new NetStream();
+    net->ClientConnect(addr);
+    mStream = net;
+    TheDebug << MakeString("AppChild::Connect\n");
+}
 
 AppChild::~AppChild(){
     delete mStream;
@@ -39,4 +64,16 @@ void AppChild::Sync(unsigned short sh){
     *mStream << sh;
     mStream->Flush();
     mSync = true;
+}
+
+void AppChild::Poll(){
+    if(mStream){
+        while(mEnabled && !mSync){
+            DataArray* arr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+            arr->Load(*mStream);
+            arr->Execute();
+            arr->Release();
+        }
+        mSync = false;
+    }
 }

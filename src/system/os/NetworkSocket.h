@@ -4,6 +4,7 @@
 #include <revolution/rvl/so.h>
 
 struct NetAddress {
+    NetAddress(unsigned int ip, unsigned short port) : mIP(ip), mPort(port) {}
     unsigned int mIP;
     unsigned short mPort;
 };

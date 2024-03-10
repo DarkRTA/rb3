@@ -26,6 +26,9 @@ unsigned int DecodeUTF8(unsigned short &us, const char *str) {
     return 1;
 }
 
+const char* decodestr = "HMX wide chars cannot exceed 16 bits: %s (0x%02x)";
+const char* decodeStr2 = "Invalid UTF character: %s (0x%02x)";
+
 unsigned int EncodeUTF8(String &s, unsigned int ui) {
     if (ui < 0x80) {
         s.resize(2);
@@ -60,70 +63,133 @@ unsigned int EncodeUTF8(String &s, unsigned int ui) {
     }
 }
 
-// // fn_8037AF40
-// void UTF8toASCIIs(char *dst, int arg1, const char *src, char arg3) {
-//     unsigned short us;
-//     int i = 0;
-//     const char *src_ = src;
-//     char *dst_ = dst;
-//     for (; *src_ != 0 && i < arg1 - 1; i++) {
-//         src_ += DecodeUTF8(us, src_);
-//         if (us < 0x100)
-//             *dst_++ = us;
-//         else
-//             *dst_++ = arg3;
-//     }
-//     *dst_ = 0;
-// }
+void UTF8toASCIIs(char* out, int len, const char* in, char c){
+    unsigned short us;
+    MILO_ASSERT(out, 0x5E);
+    MILO_ASSERT(in, 0x5F);
+    MILO_ASSERT(len > 0, 0x60);
+    for(int i = 0; *in != 0 && i < len - 1; i++){
+        in += DecodeUTF8(us, in);
+        if(us < 0x100) *out++ = us;
+        else *out++ = c;
+    }
+    *out = '\0';
+}
 
-// // fn_8037AFD4
-// void ASCIItoUTF8(char *arg0, int arg1, const char *arg2) {
-//     memset(arg0, 0, arg1);
-//     String sp8;
-//     char *var_r31 = arg0;
-//     for (int i = 0; (char)arg2[i] != '\0'; i++) {
-//         int utf8 = EncodeUTF8(sp8, (unsigned char)arg2[i]);
-//         if (((var_r31 - arg0) + utf8) >= (unsigned int)arg1) {
-//             return;
-//         }
-//         for (int j = 0; j < sp8.length(); j++) {
-//             *var_r31++ = sp8.c_str()[j];
-//         }
-//     }
-// }
+void ASCIItoUTF8(char* out, int len, const char* in){
+    MILO_ASSERT(out, 0x75);
+    MILO_ASSERT(in, 0x76);
+    MILO_ASSERT(len > 0, 0x77);
+    memset(out, 0, len);
+    String str;
+    char* p = out;
+    for(int i = 0; (char)in[i] != '\0'; i++){
+        int utf8 = EncodeUTF8(str, (unsigned char)in[i]);
+        if((p - out) + utf8 >= (unsigned int)len){
+            return;
+        }
+        for(int j = 0; j < str.length(); j++){
+            *p++ = str.c_str()[j];
+        }
+    }
+}
 
-// // fn_8037B534
-// int UTF8StrLen(const char *str) {
-//     unsigned short sp8;
-//     int var_r30;
-//     char *var_r29;
+int UTF8StrLen(const char* str){
+    int len = 0;
+    unsigned short us;
+    const char* p = str;
+    while(*p != '\0'){
+        us = 0;
+        len++;
+        p += DecodeUTF8(us, p);
+    }
+    return len;
+}
 
-//     var_r29 = (char *)str;
-//     var_r30 = 0;
-//     while (*var_r29 != 0) {
-//         sp8 = 0;
-//         var_r30++;
-//         var_r29 = &var_r29[DecodeUTF8(sp8, (const char *)var_r29)];
-//     }
-//     return var_r30;
-// }
+const char* UTF8strchr(const char* str, unsigned short us){
+    unsigned short us_loc;
+    int decoded;
 
-// extern "C" char *fn_8037B598(char *, unsigned short);
+    while(*str){
+        us_loc = 0;
+        decoded = DecodeUTF8(us_loc, str);
+        if(us_loc == us) return str;
+        str += decoded;
+    }
+    return 0;
+}
 
-// // fn_8037B598
-// char *fn_8037B598(char *arg0, unsigned short arg1) {
-//     unsigned short sp8;
-//     int temp_r3;
+void UTF8ToLower(unsigned short arg0, char *arg1) {
+    int temp_r6;
+    int var_r3;
 
-//     while (*arg0 != 0) {
-//         sp8 = 0;
-//         temp_r3 = DecodeUTF8(sp8, (const char *)arg0);
-//         if (sp8 == arg1)
-//             return arg0;
-//         arg0 = &arg0[temp_r3];
-//     }
-//     return 0;
-// }
+    var_r3 = arg0;
+    if (var_r3 < 0x80U) {
+        if ((unsigned short)(var_r3 + 0xFFBF) <= 0x19U) {
+            arg1[0] = (var_r3 + 0x20);
+        } else
+            arg1[0] = var_r3;
+    } else if (var_r3 < 0x800U) {
+        if ((unsigned short)(var_r3 + 0xFF40) <= 0x1DU) {
+            var_r3 = (var_r3 + 0x20) & 0xffff;
+        }
+        arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
+        arg1[1] = ((var_r3 % 64) + 0x80);
+    } else {
+        temp_r6 = (var_r3 >> 6) & 0x3FF;
+        arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
+        arg1[1] = ((temp_r6 % 64) + 0x80);
+        arg1[2] = ((var_r3 % 64) + 0x80);
+    }
+}
+
+void UTF8ToUpper(unsigned short arg0, char *arg1) {
+    int temp_r6;
+    int var_r3;
+
+    var_r3 = arg0;
+    if (var_r3 < 0x80U) {
+        if ((unsigned short)(var_r3 + 0xFF9F) <= 0x19U) {
+            arg1[0] = (var_r3 - 0x20);
+        } else
+            arg1[0] = var_r3;
+    } else if (var_r3 < 0x800U) {
+        if ((unsigned short)(var_r3 + 0xFF20) <= 0x1DU) {
+            var_r3 = (var_r3 - 0x20) & 0xffff;
+        }
+        arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
+        arg1[1] = ((var_r3 % 64) + 0x80);
+    } else {
+        temp_r6 = (var_r3 >> 6) & 0x3FF;
+        arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
+        arg1[1] = ((temp_r6 % 64) + 0x80);
+        arg1[2] = ((var_r3 % 64) + 0x80);
+    }
+}
+
+void UTF8FilterString(char* out, int len, const char* in, const char* allowed, char c){
+    MILO_ASSERT(out, 0x191);
+    MILO_ASSERT(in, 0x192);
+    MILO_ASSERT(len > 0, 0x193);
+    MILO_ASSERT(allowed, 0x194);
+    unsigned short us;
+    int decoded;
+    char* out_beg = out;
+
+    while((*in != 0) && (out - out_beg < len - 3)){
+        us = 0;
+        decoded = DecodeUTF8(us, in);
+        if(UTF8strchr(allowed, us) != 0){
+            for(unsigned int i = 0; i < decoded; i++) *out++ = *in++;
+        }
+        else {
+            *out++ = c;
+            in += decoded;
+        }
+    }
+    MILO_ASSERT((out - out_beg) < len, 0x1A7);
+    *out = 0;
+}
 
 // extern "C" void fn_8037B78C(char *, int, const char *, char *, char);
 
@@ -224,56 +290,4 @@ unsigned int EncodeUTF8(String &s, unsigned int ui) {
 //     }
 //     *arg0 = 0;
 //     return ctr;
-// }
-
-// extern "C" void fn_8037B60C(unsigned short, char *);
-
-// // fn_8037B60C
-// void UTF8ToLower(unsigned short arg0, char *arg1) {
-//     int temp_r6;
-//     int var_r3;
-
-//     var_r3 = arg0;
-//     if (var_r3 < 0x80U) {
-//         if ((unsigned short)(var_r3 + 0xFFBF) <= 0x19U) {
-//             arg1[0] = (var_r3 + 0x20);
-//         } else
-//             arg1[0] = var_r3;
-//     } else if (var_r3 < 0x800U) {
-//         if ((unsigned short)(var_r3 + 0xFF40) <= 0x1DU) {
-//             var_r3 = (var_r3 + 0x20) & 0xffff;
-//         }
-//         arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
-//         arg1[1] = ((var_r3 % 64) + 0x80);
-//     } else {
-//         temp_r6 = (var_r3 >> 6) & 0x3FF;
-//         arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
-//         arg1[1] = ((temp_r6 % 64) + 0x80);
-//         arg1[2] = ((var_r3 % 64) + 0x80);
-//     }
-// }
-
-// // fn_8037B66C
-// void UTF8ToUpper(unsigned short arg0, char *arg1) {
-//     int temp_r6;
-//     int var_r3;
-
-//     var_r3 = arg0;
-//     if (var_r3 < 0x80U) {
-//         if ((unsigned short)(var_r3 + 0xFF9F) <= 0x19U) {
-//             arg1[0] = (var_r3 - 0x20);
-//         } else
-//             arg1[0] = var_r3;
-//     } else if (var_r3 < 0x800U) {
-//         if ((unsigned short)(var_r3 + 0xFF20) <= 0x1DU) {
-//             var_r3 = (var_r3 - 0x20) & 0xffff;
-//         }
-//         arg1[0] = (((var_r3 >> 6) & 0x3FF) + 0xC0);
-//         arg1[1] = ((var_r3 % 64) + 0x80);
-//     } else {
-//         temp_r6 = (var_r3 >> 6) & 0x3FF;
-//         arg1[0] = (((var_r3 >> 0xCU) & 0xF) + 0xE0);
-//         arg1[1] = ((temp_r6 % 64) + 0x80);
-//         arg1[2] = ((var_r3 % 64) + 0x80);
-//     }
 // }

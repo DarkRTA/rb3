@@ -14,6 +14,16 @@ enum LocaleNumber {
     LocalePlural = 1,
 };
 
+class LocaleChunkSort {
+public:
+    struct OrderedLocaleChunk {
+        OrderedLocaleChunk() : node1(0), node2(0), node3(0) {}
+        DataNode node1;
+        DataNode node2;
+        DataNode node3;
+    };
+};
+
 class Locale {
 public:
     Locale() : mSize(0), mSymTable(0), mStrTable(0), mStringData(0), 
@@ -21,7 +31,7 @@ public:
     ~Locale();
 
     static bool sVerboseNotify;
-    static char* sIgnoreMissingText;
+    static const char* sIgnoreMissingText;
     static void Init();
     static void Terminate();
 

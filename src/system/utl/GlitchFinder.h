@@ -18,6 +18,7 @@ public:
     ~GlitchPoker();
 
     void ClearData();
+    bool OverBudget();
 
     char mName[64];
     float mTime;

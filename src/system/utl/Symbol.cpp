@@ -14,7 +14,7 @@ Symbol::Symbol(const char* str){
     if(str == 0 || *str == '\0') mStr = gNullStr;
     else {
         if(gHashTable){
-            const char* found = gHashTable->Find(str);
+            const char* found = *gHashTable->Find(str);
             if(found) mStr = found;
             else {
                 if(gLiteralSymbolStaticInitialization) mStr = str;
@@ -34,6 +34,7 @@ void Symbol::PreInit(int stringSize, int hashSize){
     KeylessHash<const char*, const char*>* tmp;
     if(!gStringTable){
         gStringTable = new (_PoolAlloc(0x10, 0x10, FastPool)) StringTable(stringSize);
+        #pragma dont_inline on
         tmp = new KeylessHash<const char*, const char*>(hashSize, 0, 0, 0);
     }
     gHashTable = tmp;
