@@ -14,7 +14,7 @@ Symbol::Symbol(const char* str){
     if(str == 0 || *str == '\0') mStr = gNullStr;
     else {
         if(gHashTable){
-            const char* found = gHashTable->Find(str);
+            const char* found = *gHashTable->Find(str);
             if(found) mStr = found;
             else {
                 if(gLiteralSymbolStaticInitialization) mStr = str;

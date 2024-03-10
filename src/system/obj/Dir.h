@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "utl/FilePath.h"
 #include "utl/StringTable.h"
+#include "utl/KeylessHash.h"
 
 enum ViewportId {
     kPerspective = 0,
@@ -18,6 +19,17 @@ enum ViewportId {
 
 class ObjectDir : public virtual Hmx::Object {
 public:
+    struct Entry {
+        Entry() : name(0), obj(0) {}
+        Entry& operator=(const Entry& entry){
+            name = entry.name;
+            obj = entry.obj;
+        }
+        
+        const char* name;
+        Hmx::Object* obj;
+    };
+
     ObjectDir();
     virtual Symbol ClassName() const; // fn_800103C8
     virtual void SetType(Symbol); // fn_800102A0
@@ -36,7 +48,7 @@ public:
         // return dynamic_cast<T*>(GetObj(a));
     }
 
-    char mHashTable[0x20]; // should be a KeylessHash<const char*, ObjectDir::Entry*>
+    KeylessHash<const char*, Entry> mHashTable;
     StringTable mStringTable;
     FilePath mProxyFile;
     bool mProxyOverride;

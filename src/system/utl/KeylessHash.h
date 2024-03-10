@@ -1,17 +1,9 @@
 #ifndef UTL_KEYLESSHASH_H
 #define UTL_KEYLESSHASH_H
 #include "math/Primes.h"
-
-// forward declaration
-namespace Hmx {
-    class Object;
-}
-
-// ObjectDir::Entry?
-struct Entry {
-    const char* name;
-    Hmx::Object* obj;
-};
+#include "math/Sort.h"
+#include "os/Debug.h"
+#include <string.h>
 
 template <class T1, class T2> class KeylessHash {
 public:
@@ -47,7 +39,21 @@ public:
     }
 
     ~KeylessHash();
-    T1 Find(const T1&);
+    T1* Find(const T1& key);
+    // T1* Find(const T1& key){
+    //     if(mEntries){
+    //         int i = HashString(key, mSize);
+    //         MILO_ASSERT(i >= 0, 0x88);
+    //         T2* end = &mEmpty;
+    //         T2* it = &mEntries[i];
+    //         while(it != end){
+    //             if(strcmp(0, key) != 0) return it;
+    //             if(++i == mSize) i = 0;
+    //         }
+    //     }
+    //     return 0;
+    // }
+
     int Insert(const T2&);
     void Resize(int, T2*);
     T2* FirstFrom(T2*);
