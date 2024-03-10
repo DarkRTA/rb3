@@ -12,7 +12,9 @@ public:
     ~AppChild();
     void Sync();
     void Sync(unsigned short);
+    void Poll();
 
+    static void Init();
     static void Terminate();
 };
 
