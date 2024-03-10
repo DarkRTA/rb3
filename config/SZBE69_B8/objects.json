@@ -64,6 +64,7 @@
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
+            "system/meta/ConnectionStatusPanel.cpp": "NonMatching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
