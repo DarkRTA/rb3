@@ -17,6 +17,16 @@ void GlitchPoker::ClearData(){
     mAvg = 0;
 }
 
+bool GlitchPoker::OverBudget(){
+    if(mBudget > 0.0f && (mTimeEnd - mTime > mBudget)) return true;
+    else {
+        for(int i = 0; i < mChildren.size(); i++){
+            if(mParent->OverBudget()) return true;
+        }
+        return false;
+    }
+}
+
 GlitchFinder::GlitchFinder(){
 
 }
