@@ -5,11 +5,7 @@
 BEGIN_HANDLERS(RndPollable);
     HANDLE_ACTION(enter, Enter());
     HANDLE_ACTION(poll, Poll());
-    static Symbol _s("exit");
-    if(sym == _s){
-        Exit();
-        return DataNode(0);
-    }
+    HANDLE_ACTION_STATIC(exit, Exit());
     HANDLE_CHECK(0x1A);
 END_HANDLERS;
 
