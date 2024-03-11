@@ -18,21 +18,22 @@ public:
         void Export(DataArray*);
     };
 
-    struct EventSink {
-        Symbol ev;
-        std::list<Sink> sinks;
-    };
-
     struct EventSinkElem : public Sink {
         Symbol handler;
     };
+
+    struct EventSink {
+        Symbol ev;
+        std::list<EventSinkElem> sinks;
+    };
+
+    virtual ~MsgSource();
 
     std::list<Sink> mSinks;
     std::list<EventSink> mEventSinks;
     int mExporting;
 
     MsgSource() : mSinks(), mEventSinks(), mExporting(0) {}
-    virtual ~MsgSource();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(MsgSource);
     OBJ_SET_TYPE(MsgSource);
