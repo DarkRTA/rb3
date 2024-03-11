@@ -2,8 +2,12 @@
 #define META_CONNECTIONSTATUSPANEL_H
 #include "obj/Object.h"
 #include "ui/UIPanel.h"
+#include "obj/Msg.h"
 
-class ConnectionStatusPanel : public UIPanel, virtual Hmx::Object {
+BEGIN_MESSAGE(ConnectionStatusChangedMsg, connection_status_changed, int);
+END_MESSAGE;
+
+class ConnectionStatusPanel : public UIPanel {
 public:
     ConnectionStatusPanel();
     OBJ_CLASSNAME(ConnectionStatusPanel);
@@ -12,6 +16,9 @@ public:
     virtual ~ConnectionStatusPanel();
     virtual void Enter();
     virtual void Exit();
+    
+    void CheckForLostConnection();
+    DataNode OnMsg(const ConnectionStatusChangedMsg&);
 };
 
 #endif

@@ -1,11 +1,16 @@
 #ifndef OS_PLATFORMMGR_H
 #define OS_PLATFORMMGR_H
+#include "obj/MsgSource.h"
+#include "os/ContentMgr.h"
 
 enum DiskError {
-    i, d, k, l, m, a, o
+    kNoDiskError,
+    kDiskError,
+    kWrongDisk,
+    kFailedChecksum
 };
 
-class PlatformMgr {
+class PlatformMgr : public MsgSource, ContentMgr::Callback {
 public:
     int filler;
 
