@@ -12,7 +12,8 @@ enum DiskError {
 
 class PlatformMgr : public MsgSource, ContentMgr::Callback {
 public:
-    int filler;
+    int filler1, filler2;
+    bool bool1, bool2;
 
     void SetDiskError(DiskError);
 };

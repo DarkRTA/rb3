@@ -5,6 +5,7 @@
 #include "obj/Msg.h"
 
 BEGIN_MESSAGE(ConnectionStatusChangedMsg, connection_status_changed, int);
+    MESSAGE_ARRAY_CTOR(ConnectionStatusChangedMsg)
 END_MESSAGE;
 
 class ConnectionStatusPanel : public UIPanel {
@@ -16,7 +17,7 @@ public:
     virtual ~ConnectionStatusPanel();
     virtual void Enter();
     virtual void Exit();
-    
+
     void CheckForLostConnection();
     DataNode OnMsg(const ConnectionStatusChangedMsg&);
 };

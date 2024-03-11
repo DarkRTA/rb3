@@ -1,5 +1,6 @@
 #include "meta/ConnectionStatusPanel.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 #include "os/PlatformMgr.h"
 
 extern PlatformMgr ThePlatformMgr;
@@ -27,3 +28,15 @@ DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg& msg){
     CheckForLostConnection();
     return DataNode(0);
 }
+
+void ConnectionStatusPanel::CheckForLostConnection(){
+    if(!ThePlatformMgr.bool2){
+        Handle(on_connection_lost_msg.Data(), true);
+    }
+}
+
+BEGIN_HANDLERS(ConnectionStatusPanel)
+    HANDLE_MESSAGE(ConnectionStatusChangedMsg)
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x42)
+END_HANDLERS

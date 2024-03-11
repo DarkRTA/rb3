@@ -225,6 +225,12 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
         return DataNode(0); \
     }
 
+#define HANDLE_MESSAGE(msg) \
+    if(sym == msg::Type()){ \
+        DataNode result = OnMsg(msg(_msg)); \
+        if(result.Type() != kDataUnhandled) return DataNode(result); \
+    }
+
 #define NEW_STATIC_SYMBOL(str) \
     static Symbol _s(#str);
 
