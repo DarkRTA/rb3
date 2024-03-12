@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
+#include <list>
 
 enum Constraint {
     kNone,
@@ -42,11 +43,12 @@ public:
     static Hmx::Object* NewObject();
 
     ObjOwnerPtr<RndTransformable, ObjectDir> mParent;
+    std::list<int> mChildren;
     Transform mLocalXfm;
     Transform mWorldXfm;
-    bool mDirty;
+    bool mDirty, mPreserveScale;
     Constraint mConstraint;
-    bool mPreserveScale;
+    // bool 
     ObjPtr<RndTransformable, ObjectDir> mTarget;
 
     static ushort gRev;

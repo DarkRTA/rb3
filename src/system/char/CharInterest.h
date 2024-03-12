@@ -17,6 +17,10 @@ public:
     virtual ~CharInterest();
     virtual void Highlight();
 
+    void operator delete(void* v){
+        _MemFree(v);
+    }
+
     void SyncMaxViewAngle();
 
     float mMaxViewAngle;
