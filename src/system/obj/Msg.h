@@ -127,6 +127,9 @@ public:
             return t; \
         } \
 
+#define MESSAGE_ARRAY_CTOR(classname) \
+        classname(DataArray* da) : Message(da) {}
+        
         // custom methods, additional members go here
 
 #define END_MESSAGE }

@@ -16,13 +16,11 @@ MsgSource::~MsgSource(){
         if(o) o->Release(o);
     }
     for(std::list<EventSink>::iterator it = mEventSinks.begin(); it != mEventSinks.end(); it++){
-        for(std::list<Sink>::iterator sit = it->sinks.begin(); sit != it->sinks.end(); sit++){
-            Hmx::Object* o = sit->obj;
+        for(std::list<EventSinkElem>::iterator inner_it = it->sinks.begin(); inner_it != it->sinks.end(); inner_it++){
+            Hmx::Object* o = inner_it->obj;
             if(o) o->Release(o);
         }
     }
-    mEventSinks.clear();
-    mSinks.clear();
 }
 
 BEGIN_HANDLERS(MsgSource);

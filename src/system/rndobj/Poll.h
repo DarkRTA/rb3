@@ -12,7 +12,7 @@ public:
     virtual void Poll(){}
     virtual void Enter();
     virtual void Exit();
-    virtual void ListPollChildren(std::list<RndPollable>&) const {}
+    virtual void ListPollChildren(std::list<RndPollable*>&) const {}
     virtual ~RndPollable(){}
 };
 

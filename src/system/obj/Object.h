@@ -208,7 +208,7 @@ inline unsigned short getAltRev(unsigned int ui){
 #define BEGIN_HANDLERS(objType) \
 DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     Symbol sym = _msg->Sym(1); \
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
+    MessageTimer timer((MessageTimer::Active()) ? static_cast<Hmx::Object*>(this) : 0, sym);
 
 #define HANDLE(symbol, func) \
     if(sym == symbol){ \
@@ -223,6 +223,12 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     if(sym == symbol){ \
         expr; \
         return DataNode(0); \
+    }
+
+#define HANDLE_MESSAGE(msg) \
+    if(sym == msg::Type()){ \
+        DataNode result = OnMsg(msg(_msg)); \
+        if(result.Type() != kDataUnhandled) return DataNode(result); \
     }
 
 #define NEW_STATIC_SYMBOL(str) \

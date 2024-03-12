@@ -7,18 +7,20 @@
 
 #define BUF_SIZE 0x800
 
+// https://decomp.me/scratch/yZLdj
 SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b){
     char param[8];
     char tempFmt[2048];
     char phInfo[64];
     if(!da && !b) InitializeWithFmt(cc, true);
     else {
-        int i13 = 0;
         int phType = 0;
+        int i13 = 0;
         char* paramPos = param;
         char* phInfoPos = phInfo;
+        char* baseTempFmt = tempFmt;
         char* tempFmtPos = tempFmt;
-        for(const char* p = cc; p != 0; p++){
+        for(const char* p = cc; *p != 0; p++){
             switch(i13){
                 case 0:
                     if(*p == '{'){
@@ -78,19 +80,21 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                 case 2:
                     if(*p == ':'){
                         if(phType == 3){
-                            *tempFmtPos++ = 'f';
-                            *tempFmtPos = '\0';
+                            *paramPos++ = 'f';
+                            *paramPos = '\0';
                         }
                         else if(phType == 1){
-                            *tempFmtPos++ = 'i';
-                            *tempFmtPos = '\0';
+                            *paramPos++ = 'i';
+                            *paramPos = '\0';
                         }
                         MILO_ASSERT(paramPos - param < 8, 0x78);
-                        MILO_ASSERT(param + 2 == paramPos, 0x7E);
+                        if (phType == 5) {
+                            MILO_ASSERT(param + 2 == paramPos, 0x7E);
+                        }
                         paramPos = param;
                         i13 = 3;
                     }
-                    else *tempFmtPos++ = *p;
+                    else *paramPos++ = *p;
                     break;
                 case 3:
                     if(*p == '}'){
@@ -111,49 +115,57 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                                     node_bool = (node.Type() != kDataString) && (node.Type() != kDataSymbol);
                                     break;
                                 case 1: 
-                                    node_bool = node.Type() == kDataInt;
+                                    node_bool = node.Type() != kDataInt;
                                     break;
                                 case 2:
-                                    node_bool = node.Type() == kDataInt;
+                                    node_bool = node.Type() != kDataInt;
                                     break;
                                 case 3:
                                     node_bool = (node.Type() != kDataFloat) && (node.Type() != kDataInt);
                                     break;
-                                case 4: node_bool = false; break;
+                                case 4:
+                                    node_bool = false;
+                                    break;
                                 case 5:
-                                    node_bool = node.Type() == kDataInt;
+                                    node_bool = node.Type() != kDataInt;
                                     break;
                                 default: break;
                             }
 
                             if(!node_bool){
-                                int sn_res = 0;
+                                int sn_res = 0; 
+                                LocaleGender gender;
+                                LocaleNumber  num;
+                                int x;
                                 switch(phType){
                                     case 0:
                                         if(node.Type() == kDataString){
-                                            sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", node.Str(0));
+                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", node.Str(0));
                                         }
                                         else {
-                                            sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", Localize(node.Sym(0), false));
+                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", Localize(node.Sym(0), false));
                                         }
                                         break;
                                     case 1:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, param, node.Int(0));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Int(0));
                                         break;
                                     case 2:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", LocalizeSeparatedInt(node.Int(0)));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", LocalizeSeparatedInt(node.Int(0)));
                                         break;
                                     case 3:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, param, node.Float(0));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Float(0));
                                         break;
                                     case 4:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", Localize(phInfo, false));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", Localize(phInfo, false));
                                         break;
                                     case 5:
-                                        sn_res = snprintf(tempFmtPos, paramPos - tempFmtPos, "%s", 
-                                            LocalizeOrdinal(node.Int(0), 
-                                                (LocaleGender)(param[0] != 'm'), 
-                                                (LocaleNumber)(param[1] != 's'), 
+                                        gender = (LocaleGender)(param[0] != 'm');
+                                        num = (LocaleNumber)(param[1] != 's'); 
+                                        x = node.Int(0);
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", 
+                                            LocalizeOrdinal(x, 
+                                                gender, 
+                                                num, 
                                                 false));
                                         break;
                                 }
@@ -164,7 +176,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                             MILO_WARN("parameter for placeholder '%s' was the wrong type\n", phInfo);
                         }
                         else MILO_WARN("couldn't find parameter for placeholder '%s'\n", phInfo);
-                        tempFmtPos += snprintf(tempFmtPos, paramPos - tempFmtPos, "{missing:%s}", phInfo);
+                        tempFmtPos += snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "{missing:%s}", phInfo);
                     }
                     else *tempFmtPos++ = *p;
                     break;
@@ -176,8 +188,10 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
         if(i13 != 0){
             *phInfoPos = '\0';
             MILO_WARN("bad formatting for placeholder '%s'\n", phInfo);
-            tempFmtPos += snprintf(tempFmtPos, paramPos - tempFmtPos, "{badfmt:%s", phInfo);
+            // I think this is wrong
+            tempFmtPos += snprintf(tempFmtPos, tempFmt - tempFmtPos, "{badfmt:%s", phInfo);
         }
+        *tempFmtPos = 0;
         MILO_ASSERT(tempFmtPos - tempFmt < BUF_SIZE, 0xF0);
         InitializeWithFmt(tempFmt, b == 0);
     }

@@ -7,7 +7,7 @@ template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
 
     ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
-        if(cls != 0) cls->AddRef(this);
+        if(mPtr != 0) mPtr->AddRef(this);
     }
 
     virtual ~ObjPtr(){
@@ -41,7 +41,7 @@ template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
 
     ObjOwnerPtr(Hmx::Object* obj, T1* cls): mOwner(obj), mPtr(cls) {
-        if(cls != 0) cls->AddRef(obj);
+        if(mPtr != 0) mPtr->AddRef(this);
     }
 
     virtual ~ObjOwnerPtr(){

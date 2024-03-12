@@ -7,8 +7,22 @@
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
+#include <list>
+
+enum Constraint {
+    kNone,
+    kLocalRotate,
+    kParentWorld,
+    kLookAtTarget,
+    kShadowTarget,
+    kBillboardZ,
+    kBillboardXZ,
+    kBillboardXYZ,
+    kTargetWorld
+};
 
 class RndTransformable : public virtual RndHighlightable {
+public:
     RndTransformable();
     virtual ~RndTransformable();
 
@@ -29,9 +43,12 @@ class RndTransformable : public virtual RndHighlightable {
     static Hmx::Object* NewObject();
 
     ObjOwnerPtr<RndTransformable, ObjectDir> mParent;
+    std::list<int> mChildren;
     Transform mLocalXfm;
     Transform mWorldXfm;
-
+    bool mDirty, mPreserveScale;
+    Constraint mConstraint;
+    // bool 
     ObjPtr<RndTransformable, ObjectDir> mTarget;
 
     static ushort gRev;
