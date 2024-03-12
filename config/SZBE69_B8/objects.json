@@ -130,7 +130,7 @@
             "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Fur.cpp": "NonMatching",
-            "system/rndobj/Poll.cpp": "NonMatching",
+            "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
