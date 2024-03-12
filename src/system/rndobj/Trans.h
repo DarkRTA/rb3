@@ -8,7 +8,20 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
 
+enum Constraint {
+    kNone,
+    kLocalRotate,
+    kParentWorld,
+    kLookAtTarget,
+    kShadowTarget,
+    kBillboardZ,
+    kBillboardXZ,
+    kBillboardXYZ,
+    kTargetWorld
+};
+
 class RndTransformable : public virtual RndHighlightable {
+public:
     RndTransformable();
     virtual ~RndTransformable();
 
@@ -31,7 +44,9 @@ class RndTransformable : public virtual RndHighlightable {
     ObjOwnerPtr<RndTransformable, ObjectDir> mParent;
     Transform mLocalXfm;
     Transform mWorldXfm;
-
+    bool mDirty;
+    Constraint mConstraint;
+    bool mPreserveScale;
     ObjPtr<RndTransformable, ObjectDir> mTarget;
 
     static ushort gRev;
