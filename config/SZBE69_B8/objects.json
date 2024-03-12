@@ -45,6 +45,7 @@
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/TrackType.cpp": "Matching",
 
+            "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",

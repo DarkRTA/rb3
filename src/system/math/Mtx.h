@@ -50,6 +50,11 @@ public:
     void Zero();
 };
 
+class Plane {
+public:
+    float a, b, c, d;
+};
+
 void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
 
 #endif
