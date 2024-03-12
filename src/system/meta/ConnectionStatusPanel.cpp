@@ -40,3 +40,7 @@ BEGIN_HANDLERS(ConnectionStatusPanel)
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0x42)
 END_HANDLERS
+
+static void unusedclassname(ConnectionStatusPanel* p){
+    p->ClassName();
+}
