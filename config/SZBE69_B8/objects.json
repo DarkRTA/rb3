@@ -143,6 +143,7 @@
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
+            "system/rndobj/Wind.cpp": "NonMatching",
 
             "system/speex/libspeex/bits.c": "NonMatching",
             "system/speex/libspeex/cb_search.c": "Matching",

@@ -22,7 +22,7 @@ public:
     Vector3(float f1, float f2, float f3) : x(f1), y(f2), z(f3) {}
     Vector3(const Vector3& v) : x(v.x), y(v.y), z(v.z) {}
     void Set(float f1, float f2, float f3){ x = f1; y = f2; z = f3; }
-    void Zero(){ z = 0.0f; y = 0.0f; x = 0.0f; }
+    void Zero(){ x = y = z = 0.0f; }
     
     Vector3& operator=(const Vector3& v){
         x = v.x; y = v.y; z = v.z;
