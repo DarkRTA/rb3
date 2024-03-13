@@ -188,6 +188,7 @@
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",
 
+            "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIColor.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIGuide.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIPanel.cpp": "NonMatching",

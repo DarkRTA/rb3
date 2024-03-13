@@ -16,13 +16,15 @@ TaskUnits RndAnimatable::RateToTaskUnits(Rate myRate){
     return gRateUnits[myRate];
 }
 
-int RndAnimatable::Units() const {
+#pragma force_active on
+inline int RndAnimatable::Units() const {
     return gRateUnits[mRate];
 }
 
-float RndAnimatable::FramesPerUnit(){
+inline float RndAnimatable::FramesPerUnit(){
     return gRateFpu[mRate];
 }
+#pragma force_active reset
 
 bool RndAnimatable::ConvertFrames(float& f){
     f /= FramesPerUnit();
