@@ -18,6 +18,7 @@ public:
     const char* Add(const char*);
     void AddBuf(int);
     void Clear();
+    void Reserve(int);
 };
 
 #endif
