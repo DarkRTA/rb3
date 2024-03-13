@@ -4,6 +4,8 @@
 
 class Sphere {
 public:
+    Sphere(){ Zero(); }
+    void Zero(){ radius = 0.0f; center.Zero(); }
     Vector3 center;
     float radius;
 };
