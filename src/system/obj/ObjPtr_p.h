@@ -23,12 +23,18 @@ public:
 
     virtual bool IsDirPtr(){ return 0; }
 
+    T1* operator->() const { return mPtr; }
+
     void operator=(T1* t){
         if(t != mPtr){
             if(mPtr != 0) mPtr->Release(this);
             mPtr = t;
             if(t != 0) t->AddRef(this);
         }
+    }
+
+    void operator=(const ObjPtr<T1, T2>& oPtr){
+        *this = oPtr.operator->();
     }
 
     Hmx::Object* mOwner;

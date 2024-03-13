@@ -6,6 +6,11 @@
 class MsgSource* gSource;
 ObjPtr<Hmx::Object, ObjectDir> gObjOverride(0, 0);
 
+void KeyboardInitCommon(){
+    MILO_ASSERT(!gSource, 0x12);
+    gSource = Hmx::Object::New<MsgSource>();
+}
+
 void KeyboardTerminateCommon(){
     delete gSource;
     gSource = 0;

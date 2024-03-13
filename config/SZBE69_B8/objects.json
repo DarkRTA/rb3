@@ -46,6 +46,7 @@
             "system/beatmatch/TrackType.cpp": "Matching",
 
             "system/char/CharEyeDartRuleset.cpp": "Matching",
+            "system/char/CharGuitarString.cpp": "NonMatching",
             "system/char/CharInterest.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharWeightable.cpp": "NonMatching",
@@ -132,10 +133,15 @@
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
+            "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
+            "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
+            "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
+            "system/rndobj/SIVideo.cpp": "NonMatching",
             "system/rndobj/Tex.cpp": "NonMatching",
+            "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
 
             "system/speex/libspeex/bits.c": "NonMatching",

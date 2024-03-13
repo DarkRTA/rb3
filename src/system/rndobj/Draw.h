@@ -3,15 +3,18 @@
 #include "rndobj/Highlightable.h"
 #include "obj/Object.h"
 #include "math/Sphere.h"
+#include "math/Mtx.h"
+#include "math/Geo.h"
 
 class RndDrawable : public virtual RndHighlightable {
 public:
-    bool mShowing;
-    Sphere mSphere;
-    float mOrder;
+    struct Collision {
+        RndDrawable* object; // offset 0x0, size 0x4
+        float distance; // offset 0x4, size 0x4
+        Plane plane; // offset 0x10, size 0x10
+    };
 
     RndDrawable();
-    virtual ~RndDrawable();
     OBJ_CLASSNAME(Draw);
     OBJ_SET_TYPE(Draw);
     virtual DataNode Handle(DataArray*, bool);
@@ -20,7 +23,25 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual void UpdateSphere();
-    // there's more virtual methods
+    virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
+    virtual int MakeWorldSphere(Sphere&, bool){ return 0; }
+    virtual int CamOverride(){ return 0; }
+    virtual void Mats(std::list<class RndMat*>&, bool){}
+    virtual void Draw();
+    virtual void DrawShowing(){}
+    virtual int DrawShowingBudget(float);
+    virtual void ListDrawChildren(std::list<RndDrawable*>&){}
+    virtual int CollideShowing(const Segment&, float&, Plane&){ return 0; }
+    virtual int CollidePlane(const Plane&);
+    virtual void CollideList(const Segment&, std::list<Collision>&);
+    virtual void DrawPreClear(){}
+    virtual void UpdatePreClearState(){}
+    virtual void Highlight();
+    virtual ~RndDrawable(){}
+    
+    char mShowing;
+    Sphere mSphere;
+    float mOrder;
 };
 
 #endif
