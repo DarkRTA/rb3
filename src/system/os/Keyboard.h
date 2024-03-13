@@ -3,6 +3,8 @@
 #include "obj/Msg.h"
 #include "obj/Object.h"
 
+void KeyboardInitCommon();
+void KeyboardTerminateCommon();
 void KeyboardSubscribe(Hmx::Object*);
 void KeyboardUnsubscribe(Hmx::Object*);
 Hmx::Object* KeyboardOverride(Hmx::Object*);
