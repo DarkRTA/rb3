@@ -1,5 +1,7 @@
 #include "Trans.h"
 #include "os/System.h"
+#include <new>
+#include "utl/PoolAlloc.h"
 
 void RndTransformable::Init() {
     RegisterFactory(StaticClassName(), (*NewObject));
@@ -9,6 +11,6 @@ void RndTransformable::Init() {
     // dingus_da->FindData(dingus_b, sShadowPlane, true);
 }
 
-RndTransformable::RndTransformable() : mParent(this, NULL), mLocalXfm(), mWorldXfm(), mTarget(this, NULL) {
+RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL) {
 
 }

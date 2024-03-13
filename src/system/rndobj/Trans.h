@@ -1,6 +1,5 @@
 #ifndef RNDOBJ_TRANS_H
 #define RNDOBJ_TRANS_H
-
 #include "milo_types.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
@@ -8,6 +7,7 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
 #include <list>
+#include <vector>
 
 enum Constraint {
     kNone,
@@ -43,17 +43,23 @@ public:
     static Hmx::Object* NewObject();
 
     ObjOwnerPtr<RndTransformable, ObjectDir> mParent;
-    std::list<int> mChildren;
-    Transform mLocalXfm;
+    std::vector<int> mChildren;
+    Transform mLocalXfm; // 0x20
     Transform mWorldXfm;
-    bool mDirty, mPreserveScale;
-    Constraint mConstraint;
-    // bool 
+    // vector pointer - 0x7c
+    // some short at 0x80
+    // some bool at 0x82
+    // then mTarget at 0x84
+    std::vector<int>* vptr;
+    short idk;
+    bool idkbool;
+    // bool mDirty, mPreserveScale;
+    // Constraint mConstraint;
     ObjPtr<RndTransformable, ObjectDir> mTarget;
 
     static ushort gRev;
     static ushort gAltRev;
-    //static Plane sShadowPlane;
+    static Plane sShadowPlane;
 };
 
 #endif

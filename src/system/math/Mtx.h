@@ -37,7 +37,10 @@ public:
     class Vector3 v;
 
     // all of these are weak
-    Transform(){}
+    Transform(){
+        m.Identity();
+        v.Zero();
+    }
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
