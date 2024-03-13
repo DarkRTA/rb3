@@ -132,6 +132,7 @@
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
+            "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",

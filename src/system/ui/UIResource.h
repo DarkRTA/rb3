@@ -4,12 +4,12 @@
 #include "utl/FilePath.h"
 #include "obj/Dir.h"
 
-class RndDir : public ObjectDir {int penis;};
+// class RndDir : public ObjectDir {int penis;};
 
 class UIResource {
     int mRefCount;
     FilePath mResourcePath;
-    ObjDirPtr<RndDir> mDir;
+    // ObjDirPtr<RndDir> mDir;
 
     UIResource(const FilePath&);
     void Load(bool);
