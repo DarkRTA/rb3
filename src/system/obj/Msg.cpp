@@ -1,5 +1,6 @@
 #include "obj/MsgSource.h"
 #include "utl/Symbols.h"
+#include "obj/PropSync_p.h"
 
 void MsgSource::Sink::Export(DataArray* da){
     switch(mode){
@@ -67,4 +68,21 @@ DataNode MsgSource::OnRemoveSink(DataArray* da){
     }
     else RemoveSink(da->GetObj(2), Symbol());
     return DataNode(0);
+}
+
+bool PropSync(MsgSource::Sink& sink, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(i == prop->Size()) return true;
+    else {
+        Symbol sym = prop->Sym(i);
+        if(sym == obj){
+            return PropSync<Hmx::Object>(sink.obj, node, prop, i + 1, op);
+        }
+        if(sym == mode){
+            int x = sink.mode;
+            bool ret = PropSync(x, node, prop, i + 1, op);
+            sink.mode = (MsgSource::SinkMode)x;
+            return ret;
+        }
+    }
+    return true;
 }
