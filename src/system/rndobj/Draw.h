@@ -39,7 +39,7 @@ public:
     virtual void Highlight();
     virtual ~RndDrawable(){}
     
-    unsigned char mShowing;
+    char mShowing;
     Sphere mSphere;
     float mOrder;
 };

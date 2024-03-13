@@ -8,4 +8,12 @@ public:
     Vector3 end;
 };
 
+namespace Hmx {
+    class Rect {
+    public:
+        Rect() : x(0.0f), y(0.0f), w(1.0f), h(1.0f) {}
+        float x, y, w, h;
+    };
+}
+
 #endif
