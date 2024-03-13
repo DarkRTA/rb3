@@ -26,10 +26,10 @@ bool ObjectDir::IsProxy() const {
 
 SAVE_OBJ(ObjectDir, 0x1A2)
 
-// ObjectDir::ObjectDir() {
-//     ObjectDir::Entry entry1, entry2;
-//     mHashTable = new KeylessHash<const char*, ObjectDir::Entry>(0, entry1, entry2, 0);
-// }
+ObjectDir::ObjectDir() : mHashTable(0, Entry(), Entry(), 0), mStringTable(0), mProxyFile(), mProxyOverride(0), 
+    mInline(1), mLoader(0), mIsSubDir(0), unk58(0), mPathName(gNullStr), fpath2(), unk74(0), unk78(0), unk7c(gNullStr) {
+    
+}
 
 void ObjectDir::PostSave(BinStream& bs){
     SyncObjects();
