@@ -138,6 +138,7 @@
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
+            "system/rndobj/SIVideo.cpp": "NonMatching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
 
