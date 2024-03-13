@@ -20,6 +20,16 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    bool GetCurrentDistance(float&) const;
+    void UpdateReferenceDistance();
+    void UpdateMinDistance();
+    void UpdateMaxDistance();
+    void UpdateAllDistances();
+
+    void operator delete(void* v){
+        _MemFree(v);
+    }
+
     ObjPtr<RndMesh, ObjectDir> mMesh;
     ObjPtr<RndTransformable, ObjectDir> mObject1;
     ObjPtr<RndTransformable, ObjectDir> mObject2;

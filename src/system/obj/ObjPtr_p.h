@@ -31,6 +31,10 @@ public:
         }
     }
 
+    void operator=(const ObjPtr<T1, T2>& oPtr){
+        *this = oPtr.mPtr;
+    }
+
     Hmx::Object* mOwner;
     T1* mPtr;
 };
