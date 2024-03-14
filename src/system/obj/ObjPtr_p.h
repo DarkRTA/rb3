@@ -97,17 +97,36 @@ public:
         struct Node* prev;
     };
 
-    int mSize;
+    // int mSize;
     Node* mNodes;
     Hmx::Object* mOwner;
     ObjListMode mMode;    
 
-    // ObjPtrList(Hmx::Object* obj, T2* cls): mPtr(cls) { }
-    // virtual ~ObjPtrList() { }
+    ObjPtrList(Hmx::Object* obj, ObjListMode mode) : mNodes(0), mOwner(obj), mMode(mode) {}
 
-    // virtual Hmx::Object* RefOwner(){ return NULL; }
-    // virtual void Replace(Hmx::Object*, Hmx::Object*){ }
-    // virtual bool IsDirPtr(){ return 0; }
+    virtual ~ObjPtrList() { }
+    // sample ObjPtrList dtor from RB3 retail
+    // /* __thiscall ObjPtrList<Fader,ObjectDir>::~ObjPtrList(void) */
+
+    // ObjPtrList<> * __thiscall ObjPtrList<>::~ObjPtrList(ObjPtrList<> *this)
+
+    // {
+    // int in_r4;
+    
+    // if (this != (ObjPtrList<> *)0x0) {
+    //     *(undefined ***)this = &__vtable;
+    //     fn_806703D0();
+    //     fn_8000DD10(this,0);
+    //     if (0 < in_r4) {
+    //     delete(this);
+    //     }
+    // }
+    // return this;
+    // }
+
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
+    virtual void Replace(Hmx::Object*, Hmx::Object*){ }
+    virtual bool IsDirPtr(){ return 0; }
 };
 
 #endif

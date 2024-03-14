@@ -132,6 +132,7 @@
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
+            "system/rndobj/CamAnim.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
@@ -147,6 +148,7 @@
             "system/rndobj/SIVideo.cpp": "NonMatching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
+            "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
