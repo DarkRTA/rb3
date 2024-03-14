@@ -1,9 +1,8 @@
 #include "ui/UIPanel.h"
+#include "ui/PanelDir.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
 
 int UIPanel::sMaxPanelId = 0;
 
@@ -13,7 +12,7 @@ UIPanel::UIPanel() : mDir(0), mLoader(0), mFocusName(), mState(kUnloaded), mLoad
 
 class ObjectDir* UIPanel::DataDir() {
     if (mDir) {
-        return NULL; // TODO crawl through the members and figure this bastard out
+        return mDir->DataDir();
     }
     return Hmx::Object::DataDir();
 }
