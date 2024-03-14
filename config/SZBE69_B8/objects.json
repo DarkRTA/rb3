@@ -131,6 +131,7 @@
             "system/rndobj/Anim.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ]},
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Bitmap.cpp": "NonMatching",
+            "system/rndobj/Cam.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",

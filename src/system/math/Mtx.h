@@ -37,10 +37,7 @@ public:
     class Vector3 v;
 
     // all of these are weak
-    Transform(){
-        m.Identity();
-        v.Zero();
-    }
+    Transform(){ }
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
@@ -56,6 +53,17 @@ public:
 class Plane {
 public:
     float a, b, c, d;
+};
+
+class Frustum {
+    // total size: 0x60
+public:
+    class Plane front; // offset 0x0, size 0x10
+    class Plane back; // offset 0x10, size 0x10
+    class Plane left; // offset 0x20, size 0x10
+    class Plane right; // offset 0x30, size 0x10
+    class Plane top; // offset 0x40, size 0x10
+    class Plane bottom; // offset 0x50, size 0x10
 };
 
 void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
