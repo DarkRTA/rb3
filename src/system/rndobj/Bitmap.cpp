@@ -12,12 +12,7 @@ void RndBitmap::SaveHeader(BinStream& bs) const {
     u8 rb = mRowBytes;
     u32 ord = mOrder;
     u16 rev = BITMAP_REV;
-    bs << BITMAP_REV;
-    bs << rb;
-    bs << (int)ord;
-    bs << mipCt;
-    bs << w;
-    bs << h;
+    bs << BITMAP_REV << rb << (int)ord << mipCt << w << h;
     bs.Write(pad, 0x13);
 }
 
@@ -30,10 +25,7 @@ BinStream& operator>>(BinStream& bs, tagBITMAPFILEHEADER& bmfh) {
 }
 
 BinStream& operator<<(BinStream& bs, const tagBITMAPFILEHEADER &bmfh) {
-    // bs << (int)bmfh.bfSize;
-    // bs << bmfh.bfReserved1;
-    // bs << bmfh.bfReserved2;
-    // bs << (int)bmfh.bfOffBits;
+    bs << bmfh.bfSize << bmfh.bfReserved1 << bmfh.bfReserved2 << bmfh.bfOffBits;
     return bs;
 }
 
@@ -49,6 +41,13 @@ BinStream& operator>>(BinStream& bs, tagBITMAPINFOHEADER& bmih) {
     bs >> bmih.biYPelsPerMeter;
     bs >> bmih.biClrUsed;
     bs >> bmih.biClrImportant;
+    return bs;
+}
+
+
+BinStream& operator<<(BinStream& bs, const tagBITMAPINFOHEADER& bmih){
+    bs << bmih.biSize << bmih.biWidth << bmih.biHeight << bmih.biPlanes << bmih.biBitCount << 
+        bmih.biCompression << bmih.biSizeImage << bmih.biXPelsPerMeter << bmih.biYPelsPerMeter << bmih.biClrUsed << bmih.biClrImportant;
     return bs;
 }
 
