@@ -137,6 +137,7 @@
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
+            "system/rndobj/HiResScreen.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
