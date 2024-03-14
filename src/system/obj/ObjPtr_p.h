@@ -38,6 +38,10 @@ public:
         *this = oPtr.operator->();
     }
 
+    operator bool() const {
+        return mPtr != 0;
+    }
+
     Hmx::Object* mOwner;
     T1* mPtr;
 };
