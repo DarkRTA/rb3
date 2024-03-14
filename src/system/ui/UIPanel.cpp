@@ -1,5 +1,6 @@
 #include "ui/UIPanel.h"
 #include "ui/PanelDir.h"
+#include "obj/DirLoader.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"

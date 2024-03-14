@@ -15,8 +15,20 @@ enum LoaderPos {
 
 class Loader {
 public:
+    class Callback {
+    public:
+        Callback(){}
+        virtual ~Callback(){}
+        virtual void FinishLoading(Loader*){}
+        virtual void FailedLoading(Loader*){}
+    };
+
     Loader(const FilePath&, LoaderPos);
     virtual ~Loader();
+    virtual const char* DebugText();
+    virtual bool IsLoaded() const = 0;
+    virtual const char* StateName() const { return "Unknown"; }
+    virtual void PollLoading() = 0;
 
     LoaderPos mPos;
     FilePath mFile;
@@ -44,6 +56,9 @@ class FileLoader : public Loader {
 public:
     FileLoader(const FilePath&, const char*, LoaderPos, int, bool, bool, BinStream*);
     virtual ~FileLoader();
+    virtual const char* DebugText();
+    virtual bool IsLoaded();
+    virtual void PollLoading();
 
     File* mFile;
     BinStream* mStream;
