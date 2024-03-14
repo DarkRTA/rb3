@@ -31,7 +31,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndAnimatable(); // weak
+    virtual ~RndAnimatable(){}
     virtual int Loop(){ return 0; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
@@ -40,7 +40,11 @@ public:
     virtual float EndFrame(){ return 0.0f; }
     virtual RndAnimatable* AnimTarget(); // weak
     virtual void SetKey(float){}
-    virtual void ListAnimChildren(std::list<RndAnimatable*>&) const{}
+    virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
+
+    void operator delete(void* v){
+        _MemFree(v);
+    }
 
     DataNode OnAnimate(DataArray*);
     void StopAnimation();

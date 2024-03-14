@@ -1,9 +1,10 @@
 #include "ui/UIPanel.h"
+#include "ui/PanelDir.h"
+#include "obj/DirLoader.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
+#include "utl/Messages.h"
 
 int UIPanel::sMaxPanelId = 0;
 
@@ -13,7 +14,7 @@ UIPanel::UIPanel() : mDir(0), mLoader(0), mFocusName(), mState(kUnloaded), mLoad
 
 class ObjectDir* UIPanel::DataDir() {
     if (mDir) {
-        return NULL; // TODO crawl through the members and figure this bastard out
+        return mDir->DataDir();
     }
     return Hmx::Object::DataDir();
 }
@@ -32,8 +33,53 @@ void UIPanel::CheckLoad(){
     if(++mLoadRefs == 1) Load();
 }
 
+void UIPanel::CheckUnload(){
+    if(mLoadRefs >= 1){
+        if(mState == kDown){
+            Handle(exit_complete_msg.Data(), false);
+        }
+        if(--mLoadRefs == 0) Unload();
+    }
+}
+
+bool UIPanel::IsLoaded() const {
+    if(mState == kUnloaded){
+        if(mLoader == 0 || mLoader->IsLoaded()){
+            // this doesn't currently work because HandleType is not const, but this method is
+            // DataNode node = HandleType(is_loaded_msg.Data());
+        }
+        else return false;
+    }
+    else return true;
+}
+
+bool UIPanel::CheckIsLoaded(){
+    if(mState != kUnloaded) return true;
+    else {
+        PollForLoading();
+        if(IsLoaded()){
+            FinishLoad();
+            return true;
+        }
+        else return false;
+    }
+}
+
+void UIPanel::FinishLoad(){
+    HandleType(finish_load_msg.Data());
+    MILO_ASSERT(mLoadRefs > 0, 0x118);
+    mState = kDown;
+}
+
 UIPanel::~UIPanel(){
     Unload();
+}
+
+bool UIPanel::Entering() const {
+    if(mDir && !mLoaded){
+        return mDir->IsDirPtr(); // TODO: find the right virtual function called here
+    }
+    else return false;
 }
 
 

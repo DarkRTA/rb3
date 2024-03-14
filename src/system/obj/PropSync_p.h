@@ -48,4 +48,14 @@ inline bool PropSync(Symbol& sym, DataNode& node, DataArray* prop, int i, PropOp
     return true;
 }
 
+template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop, int i, PropOp op){
+    if((int)op == 0x40) return false;
+    else {
+        MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
+        if(op == kPropGet) node = DataNode(obj);
+        else obj = node.GetObj(0);
+        return true;
+    }
+}
+
 #endif

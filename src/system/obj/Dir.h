@@ -39,6 +39,24 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~ObjectDir();
+    virtual ObjectDir* DataDir(){}
+    virtual void SetProxyFile(const FilePath&, bool);
+    virtual FilePath* ProxyFile();
+    virtual void PostSave(BinStream&);
+    virtual void SetSubDir(bool);
+    virtual void PreLoad(BinStream&);
+    virtual void PostLoad(BinStream&);
+    virtual void SyncObjects();
+    virtual void ResetEditorState();
+    virtual bool AllowsInlineProxy();
+    virtual int InlineSubDirType();
+    virtual void AddedObject(Hmx::Object*);
+    virtual void RemovingObject(Hmx::Object*);
+    virtual void OldLoadProxies(BinStream&, int);
+
+    void Reserve(int, int);
+    bool IsProxy() const;
+    bool HasSubDir(ObjectDir*);
 
     static ObjectDir* sMainDir;
 
@@ -54,12 +72,12 @@ public:
     bool mProxyOverride;
     bool mInline;
     int mLoader; // should be a DirLoader*
-    char mSubDirs[0x8]; // should be a vector
+    std::vector<ObjectDir*> mSubDirs;
     bool mIsSubDir;
     int unk58;
     const char* mPathName;
     FilePath fpath2;
-    char mViewports[0x8]; // should also be a vector
+    std::vector<int> mViewPorts; // fix the vector's data type
     int unk74;
     int unk78;
     const char* unk7c;

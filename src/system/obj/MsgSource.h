@@ -33,7 +33,7 @@ public:
     std::list<EventSink> mEventSinks;
     int mExporting;
 
-    MsgSource() : mSinks(), mEventSinks(), mExporting(0) {}
+    MsgSource();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(MsgSource);
     OBJ_SET_TYPE(MsgSource);

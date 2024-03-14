@@ -16,7 +16,7 @@ public:
 
     void Set(const char *, const char *); // fn_8034C91C - the only not-weak method here
 
-    FilePath *operator=(const FilePath &);
+    // FilePath *operator=(const FilePath &);
     char* FilePathRelativeToRoot();
     void SetRoot(const char*);
 };

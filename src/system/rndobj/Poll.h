@@ -1,5 +1,5 @@
-#ifndef RNDOBJ_DRAW_H
-#define RNDOBJ_DRAW_H
+#ifndef RNDOBJ_POLL_H
+#define RNDOBJ_POLL_H
 #include "obj/Object.h"
 #include <list>
 

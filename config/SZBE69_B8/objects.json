@@ -108,6 +108,7 @@
             "system/os/Debug.cpp": "NonMatching",
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "NonMatching",
+            "system/os/FileCache.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
             "system/os/Joypad.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ]},
             "system/os/JoypadClient.cpp": "NonMatching",
@@ -132,6 +133,7 @@
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
+            "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
@@ -143,6 +145,7 @@
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
+            "system/rndobj/Wind.cpp": "NonMatching",
 
             "system/speex/libspeex/bits.c": "NonMatching",
             "system/speex/libspeex/cb_search.c": "Matching",
@@ -188,10 +191,12 @@
             "system/synth/tomcrypt/crypt.c": "NonMatching",
             "system/synth/tomcrypt/ctr.c": "NonMatching",
 
+            "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIColor.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIGuide.cpp": { "status": "Matching", "extra_cflags": [ "-inline level=1" ]},
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
+            "system/ui/UITransitionHandler.cpp": "NonMatching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",

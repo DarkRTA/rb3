@@ -2,9 +2,9 @@
 #define UI_UIRESOURCE_H
 
 #include "utl/FilePath.h"
-#include "obj/Dir.h"
+#include "rndobj/Dir.h"
 
-class RndDir : public ObjectDir {int penis;};
+// class RndDir : public ObjectDir {int penis;};
 
 class UIResource {
     int mRefCount;

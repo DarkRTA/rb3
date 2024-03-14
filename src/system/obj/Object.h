@@ -203,6 +203,9 @@ inline unsigned short getAltRev(unsigned int ui){
     return ui >> 0x10;
 }
 
+#define DELETE_OVERLOAD \
+    void operator delete(void* v){ _MemFree(v); }
+
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
 #define BEGIN_HANDLERS(objType) \
@@ -336,6 +339,10 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 // END COPY MACROS -------------------------------------------------------------------------------------
 
 // BEGIN LOAD MACROS -----------------------------------------------------------------------------------
+
+#define INIT_REVS(objType) \
+    unsigned short objType::gRev = 0; \
+    unsigned short objType::gAltRev = 0;
 
 #define LOAD_REVS(bs) \
     unsigned int rev; \
