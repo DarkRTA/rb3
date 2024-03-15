@@ -97,7 +97,13 @@ public:
         struct Node* prev;
     };
 
-    // int mSize;
+    class iterator {
+    public:
+        // __ml, __pp, __ne
+        // copy ctor
+        struct Node* mNode;
+    };
+
     Node* mNodes;
     Hmx::Object* mOwner;
     ObjListMode mMode;    
@@ -115,8 +121,8 @@ public:
     
     // if (this != (ObjPtrList<> *)0x0) {
     //     *(undefined ***)this = &__vtable;
-    //     fn_806703D0();
-    //     fn_8000DD10(this,0);
+    //     fn_806703D0(); // presumably pop_back?
+    //     fn_8000DD10(this,0); // generic dtor
     //     if (0 < in_r4) {
     //     delete(this);
     //     }
@@ -125,8 +131,33 @@ public:
     // }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*){ }
+    virtual void Replace(Hmx::Object*, Hmx::Object*){
+        
+    }
     virtual bool IsDirPtr(){ return 0; }
+
+    // found from RB2
+    // Load, link, insert, Set, unlink, pop_back
+    // empty, size, front, begin, end, back, push_back
+    // __as
+
+    // see pop_back__32ObjPtrList<8Sequence,9ObjectDir>Fv for reference
+    void pop_back(){
+        MILO_ASSERT(mNodes, 0x16D);
+        Node* n = mNodes->next;
+        MILO_ASSERT(n && mNodes, 0x24D);
+    }
+
+    //     // Range: 0x8040DBA4 -> 0x8040DEF0
+    // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
+    //     // Local variables
+    //     struct Node * to; // r28
+    //     struct Node * from; // r31
+
+    //     // References
+    //     // -> class Debug TheDebug;
+    //     // -> const char * kAssertStr;
+    // }
 };
 
 #endif
