@@ -2,6 +2,7 @@
 #define OBJ_OBJPTR_H
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "obj/Dir.h"
 #include "utl/BinStream.h"
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
@@ -18,36 +19,51 @@ public:
     virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
-        if (mPtr == o1)
-            *this = dynamic_cast<T1*>(o2);
+        if (mPtr == o1) *this = dynamic_cast<T1*>(o2);
     }
 
     virtual bool IsDirPtr(){ return 0; }
 
-    // T1* operator T1*() const { return mPtr; }
+    operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
 
     void operator=(T1* t){
         if(t != mPtr){
             if(mPtr != 0) mPtr->Release(this);
             mPtr = t;
-            if(t != 0) t->AddRef(this);
+            if(mPtr != 0) mPtr->AddRef(this);
         }
     }
 
-    void operator=(const ObjPtr<T1, T2>& oPtr){
-        *this = oPtr.operator->();
-    }
+    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = oPtr.operator->(); }
+    operator bool() const { return mPtr != 0; }
 
-    operator bool() const {
-        return mPtr != 0;
+    bool Load(BinStream& bs, bool b, ObjectDir* dir){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        if(!dir && mOwner) dir = mOwner->Dir();
+        if(mOwner && dir){
+            *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
+            if(mPtr == 0 && buf[0] != '\0' && b){
+                MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+            }
+            return false;
+        }
+        else {
+            *this = 0;
+            if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
+        }
+        return true;
     }
 
     Hmx::Object* mOwner;
     T1* mPtr;
 };
 
-template <class T> BinStream& operator>>(BinStream&, ObjPtr<T, ObjectDir>&);
+template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, ObjectDir>& ptr){
+    ptr.Load(bs, true, 0);
+    return bs;
+}
 
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
