@@ -2,6 +2,7 @@
 #include "char/CharCollide.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Wind.h"
+#include "math/MathFuncs.h"
 
 // ObjPtrList<CharCollide, ObjectDir>::iterator::iterator(const ObjPtrList<CharCollide, ObjectDir>::iterator&)
 
@@ -32,4 +33,5 @@ static void rndwindptrtest(RndWind* wind, BinStream& bs){
     (RndWind*)ptr;
     bs >> ptr;
 }
+
 #pragma dont_inline reset

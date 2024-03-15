@@ -43,7 +43,7 @@ template<class T> inline T Minimum(T x, T y){
     return (y < x) ? y : x;
 }
 
-template<class T> inline T Maximum(T x, T y){
+template<class T> inline T Max(T x, T y){
     return (x < y) ? y : x;
 }
 
@@ -51,6 +51,13 @@ template<class T> inline T Clamp(T x, T y, T z){
     if(z > y) return y;
     if(!(z > x)) return z;
     return x;
+}
+
+inline int Mod(int num, int modbase){
+    if(modbase == 0) return 0;
+    int div = num % modbase;
+    if(div < 0) return div + modbase;
+    else return div;
 }
 
 inline float sqrt_f(double d){
