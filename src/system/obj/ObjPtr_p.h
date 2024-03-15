@@ -24,6 +24,7 @@ public:
 
     virtual bool IsDirPtr(){ return 0; }
 
+    // T1* operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
 
     void operator=(T1* t){
@@ -99,8 +100,27 @@ public:
 
     class iterator {
     public:
-        // __ml, __pp, __ne
-        // copy ctor
+        // if you wanna check the iterator methods in objdiff, go to CharHair.cpp
+        // CharHair.cpp has plenty of ObjPtr and ObjPtrList methods for you to double check
+        
+        iterator() : mNode(0) {}
+        iterator(Node* node) : mNode(node) {}
+        iterator(const ObjPtrList<T1, T2>::iterator& it){ mNode = it.mNode; }
+        T1* operator*(){ return mNode->obj; }
+
+        iterator& operator++(){
+            mNode = mNode->next;
+            return *this;
+        }
+
+        bool operator!=(ObjPtrList<T1, T2>::iterator it){ return mNode != it.mNode; }
+
+        // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
+        void insert(T1*);
+
+        // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
+        void link(Node*);
+
         struct Node* mNode;
     };
 
@@ -176,6 +196,7 @@ public:
         _PoolFree(0xc, FastPool, n);
     }    
 
+    // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     void unlink(Node* n){
         MILO_ASSERT(n && mNodes, 0x24D);
         if(n->obj) n->obj->Release(this);
@@ -187,8 +208,27 @@ public:
     }
 
     bool empty() const {
-        return mMode == kObjListNoNull;
+        return (mMode >> 8) == kObjListNoNull;
     }
+
+    iterator begin() const {
+        iterator it(mNodes);
+        return it;
+    }
+
+    iterator end() const {
+        return 0;
+    }
+
+    int size() const {
+        return mMode >> 8;
+    }
+
+    // // Range: 0x80377A54 -> 0x80377ABC
+    // class RndTransformable * ObjPtrList::front(const class ObjPtrList * const this /* r31 */) {
+    //     // References
+    //     // -> class Debug TheDebug;
+    //     /
 
     //     // Range: 0x8040DBA4 -> 0x8040DEF0
     // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
