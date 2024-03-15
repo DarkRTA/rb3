@@ -138,14 +138,56 @@ public:
 
     // found from RB2
     // Load, link, insert, Set, unlink, pop_back
-    // empty, size, front, begin, end, back, push_back
+    // empty, size, front, begin, end, push_back
     // __as
 
-    // see pop_back__32ObjPtrList<8Sequence,9ObjectDir>Fv for reference
+    // see pop_back__36ObjPtrList<11RndDrawable,9ObjectDir>Fv for reference
+    // https://decomp.me/scratch/UBBvV
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
-        Node* n = mNodes->next;
+
+        Node* n = mNodes->prev;
+        unlink(n);
+
+        // n = pivar4 here
+        if(n == mNodes){
+            if(mNodes->next != 0){
+                mNodes->next->prev = mNodes->prev;
+                mNodes = mNodes->next;
+            }
+            else {
+                mNodes = 0;
+            }
+        }
+        else if(n == mNodes->prev){
+            mNodes->prev = mNodes->prev->prev;
+            mNodes->prev->next = 0;
+        }
+        else {
+            n->prev->next = n->next;
+            n->next->prev = n->prev;
+        }
+
+        *(int*)&mMode = (((*(int*)&mMode >> 8) - 1) * 0x100) | (*(int*)&mMode & 0xff);
+        // mMode = (mMode == kObjListNoNull) ? kObjListAllowNull : kObjListOwnerControl;
+        // mMode = kObjListAllowNull;
+        // some sort of ObjListMode modification
+        // *(uint *)(this + 0xc) = (((int)*(uint *)(this + 0xc) >> 8) + -1) * 0x100 | *(uint *)(this + 0xc) & 0xff;
+        _PoolFree(0xc, FastPool, n);
+    }    
+
+    void unlink(Node* n){
         MILO_ASSERT(n && mNodes, 0x24D);
+        if(n->obj) n->obj->Release(this);
+    }
+
+    T1* back() const {
+        MILO_ASSERT(mNodes, 0x16C);
+        return mNodes->prev->obj;
+    }
+
+    bool empty() const {
+        return mMode == kObjListNoNull;
     }
 
     //     // Range: 0x8040DBA4 -> 0x8040DEF0
