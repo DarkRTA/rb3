@@ -146,25 +146,9 @@ public:
 
     ObjPtrList(Hmx::Object* obj, ObjListMode mode) : mNodes(0), mOwner(obj), mMode(mode) {}
 
-    virtual ~ObjPtrList() { }
-    // sample ObjPtrList dtor from RB3 retail
-    // /* __thiscall ObjPtrList<Fader,ObjectDir>::~ObjPtrList(void) */
-
-    // ObjPtrList<> * __thiscall ObjPtrList<>::~ObjPtrList(ObjPtrList<> *this)
-
-    // {
-    // int in_r4;
-    
-    // if (this != (ObjPtrList<> *)0x0) {
-    //     *(undefined ***)this = &__vtable;
-    //     fn_806703D0(); // presumably pop_back?
-    //     fn_8000DD10(this,0); // generic dtor
-    //     if (0 < in_r4) {
-    //     delete(this);
-    //     }
-    // }
-    // return this;
-    // }
+    virtual ~ObjPtrList() { 
+        while(mNodes) pop_back();
+    }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
     virtual void Replace(Hmx::Object*, Hmx::Object*){
@@ -173,27 +157,28 @@ public:
     virtual bool IsDirPtr(){ return 0; }
 
     // found from RB2
-    // Load, link, insert, Set, unlink, pop_back
-    // empty, size, front, begin, end, push_back
+    // Load, link, insert, Set
+    // push_back
     // __as
+
+    // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
+    void push_back(T1* obj){
+
+    }
 
     // see pop_back__36ObjPtrList<11RndDrawable,9ObjectDir>Fv for reference
     // https://decomp.me/scratch/UBBvV
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
-
         Node* n = mNodes->prev;
         unlink(n);
 
-        // n = pivar4 here
         if(n == mNodes){
             if(mNodes->next != 0){
                 mNodes->next->prev = mNodes->prev;
                 mNodes = mNodes->next;
             }
-            else {
-                mNodes = 0;
-            }
+            else mNodes = 0;
         }
         else if(n == mNodes->prev){
             mNodes->prev = mNodes->prev->prev;
@@ -203,12 +188,9 @@ public:
             n->prev->next = n->next;
             n->next->prev = n->prev;
         }
-
-        *(int*)&mMode = (((*(int*)&mMode >> 8) - 1) * 0x100) | (*(int*)&mMode & 0xff);
-        // mMode = (mMode == kObjListNoNull) ? kObjListAllowNull : kObjListOwnerControl;
-        // mMode = kObjListAllowNull;
+        
         // some sort of ObjListMode modification
-        // *(uint *)(this + 0xc) = (((int)*(uint *)(this + 0xc) >> 8) + -1) * 0x100 | *(uint *)(this + 0xc) & 0xff;
+        *(int*)&mMode = (((*(int*)&mMode >> 8) - 1) * 0x100) | (*(int*)&mMode & 0xff);
         _PoolFree(0xc, FastPool, n);
     }    
 
@@ -216,6 +198,11 @@ public:
     void unlink(Node* n){
         MILO_ASSERT(n && mNodes, 0x24D);
         if(n->obj) n->obj->Release(this);
+    }
+
+    T1* front() const {
+        MILO_ASSERT(mNodes, 0x167);
+        return mNodes->obj;
     }
 
     T1* back() const {
@@ -239,12 +226,9 @@ public:
         return mMode >> 8;
     }
 
-    // // Range: 0x80377A54 -> 0x80377ABC
-    // class RndTransformable * ObjPtrList::front(const class ObjPtrList * const this /* r31 */) {
-    //     // References
-    //     // -> class Debug TheDebug;
-    //     /
-
+    // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
+    // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
+    // __as__37ObjPtrList<12EventTrigger,9ObjectDir>FRC37ObjPtrList<12EventTrigger,9ObjectDir>
     //     // Range: 0x8040DBA4 -> 0x8040DEF0
     // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
     //     // Local variables

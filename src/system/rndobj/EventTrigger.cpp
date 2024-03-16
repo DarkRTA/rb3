@@ -7,5 +7,6 @@ static void thisisheretotestobjptrlist(Hmx::Object* obj){
     lol.pop_back();
     lol.back();
     lol.empty();
+    lol.push_back(0);
 }
 #pragma dont_inline reset
