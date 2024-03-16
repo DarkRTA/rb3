@@ -158,7 +158,7 @@ public:
     }
 
     virtual ~ObjPtrList() { 
-        while(mNodes) pop_back();
+        while(!empty()) pop_back();
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
@@ -169,12 +169,34 @@ public:
 
     // found from RB2
     // Load, link, insert, Set
-    // push_back
     // __as
 
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
+    // insert and link are inlined somewhere in here
     void push_back(T1* obj){
+        // insert?
+        if((mMask << 0x18 | (mMask >> 8) >> 0x18) == 0){
+            MILO_ASSERT(obj, 0x15A);
+        }
+        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
+        node->obj = obj;
+        if(obj) obj->AddRef(this);
+        node->next = 0;
 
+        if(mNodes){
+            node->prev = mNodes->prev;
+            mNodes->prev->next = node;
+            mNodes->prev = node;
+        }
+        else {
+            node->prev = node;
+            mNodes = node;
+        }
+
+        // link?
+        int tmpSize = (mMask >> 8) + 1;
+        MILO_ASSERT(tmpSize < 8388607, 0x244);
+        mMask = ((((mMask >> 8) + 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
     }
 
     // see pop_back__36ObjPtrList<11RndDrawable,9ObjectDir>Fv for reference
