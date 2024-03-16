@@ -5,6 +5,8 @@
 #include "obj/Dir.h"
 #include "utl/BinStream.h"
 
+// BEGIN OBJPTR TEMPLATE -------------------------------------------------------------------------------
+
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
 
@@ -65,6 +67,10 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, ObjectDir>& 
     return bs;
 }
 
+// END OBJPTR TEMPLATE ---------------------------------------------------------------------------------
+
+// BEGIN OBJOWNERPTR TEMPLATE --------------------------------------------------------------------------
+
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
 
@@ -100,6 +106,10 @@ public:
     T1* mPtr;
 };
 
+// END OBJOWNERPTR TEMPLATE ----------------------------------------------------------------------------
+
+// BEGIN OBJPTRLIST TEMPLATE ---------------------------------------------------------------------------
+
 enum ObjListMode {
     kObjListNoNull,
     kObjListAllowNull,
@@ -131,22 +141,18 @@ public:
 
         bool operator!=(ObjPtrList<T1, T2>::iterator it){ return mNode != it.mNode; }
 
-        // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
-        void insert(T1*);
-
-        // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
-        void link(Node*);
-
         struct Node* mNode;
     };
 
     Node* mNodes;
     Hmx::Object* mOwner;
-    ObjListMode mMode;    
+    int mMask;
+    // ObjListMode mMode;
 
     // https://decomp.me/scratch/OIOhV
-    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mMode(mode){
-        if(mMode == kObjListOwnerControl){
+    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner) {
+        mMask = (mode & 0xFF) | (mMask & 0xFFFFFF00);
+        if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
         }
     }
@@ -194,8 +200,11 @@ public:
             n->next->prev = n->prev;
         }
         
-        // some sort of ObjListMode modification
-        *(int*)&mMode = (((*(int*)&mMode >> 8) - 1) * 0x100) | (*(int*)&mMode & 0xff);
+        // decrease the size part of the bitmask by 1?
+        // r0 = ((mMask >> 8) - 1)
+        // r7 = ((r0<< 8) & 0xFFFFFF00) | (r7 & 0xFF);
+        mMask = ((((mMask >> 8) - 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
+        // mMask = (((mMask >> 8) - 1) * 0x100) | (mMask & 0xFF);
         _PoolFree(0xc, FastPool, n);
     }    
 
@@ -216,7 +225,7 @@ public:
     }
 
     bool empty() const {
-        return (mMode >> 8) == kObjListNoNull;
+        return (mMask >> 8) == 0;
     }
 
     iterator& begin() const {
@@ -228,8 +237,14 @@ public:
     }
 
     int size() const {
-        return mMode >> 8;
+        return mMask >> 8;
     }
+
+    // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
+    void insert(iterator, T1*);
+
+    // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
+    void link(iterator, Node*);
 
     // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
     // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
@@ -245,5 +260,7 @@ public:
     //     // -> const char * kAssertStr;
     // }
 };
+
+// END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 
 #endif
