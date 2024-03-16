@@ -126,7 +126,7 @@ public:
 
         iterator& operator++(){
             mNode = mNode->next;
-            return *this;
+            return *reinterpret_cast<iterator*>(mNode);
         }
 
         bool operator!=(ObjPtrList<T1, T2>::iterator it){ return mNode != it.mNode; }
@@ -227,13 +227,12 @@ public:
         return (mMode >> 8) == kObjListNoNull;
     }
 
-    iterator begin() const {
-        iterator it(mNodes);
-        return it;
+    iterator& begin() const {
+        return *reinterpret_cast<iterator*>(mNodes);
     }
 
-    iterator end() const {
-        return 0;
+    iterator& end() const {
+        return *reinterpret_cast<iterator*>(0);
     }
 
     int size() const {
