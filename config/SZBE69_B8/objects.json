@@ -259,6 +259,7 @@
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
 
+            "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching"
         }
     },

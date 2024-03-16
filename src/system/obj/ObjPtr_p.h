@@ -144,7 +144,12 @@ public:
     Hmx::Object* mOwner;
     ObjListMode mMode;    
 
-    ObjPtrList(Hmx::Object* obj, ObjListMode mode) : mNodes(0), mOwner(obj), mMode(mode) {}
+    // https://decomp.me/scratch/OIOhV
+    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mMode(mode){
+        if(mMode == kObjListOwnerControl){
+            MILO_ASSERT(owner, 0xFC);
+        }
+    }
 
     virtual ~ObjPtrList() { 
         while(mNodes) pop_back();
