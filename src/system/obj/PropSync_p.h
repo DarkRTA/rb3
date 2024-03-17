@@ -59,7 +59,7 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
     }
 }
 
-template <class T> inline bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+template <class T> bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
     if((int)op == 0x40) return false;
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x125);
@@ -69,7 +69,7 @@ template <class T> inline bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNod
     }
 }
 
-template <class T> inline bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
     if((int)op == 0x40) return false;
     else {
         MILO_ASSERT(op <= kPropInsert, 0x132);

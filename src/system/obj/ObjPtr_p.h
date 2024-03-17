@@ -208,8 +208,8 @@ public:
     // void link(iterator, Node*);
     void push_back(T1* obj){
         // insert?
-        if(mSize == 0){
-            MILO_ASSERT(obj, 0x15A);
+        if(mMode == kObjListNoNull){
+            MILO_ASSERT(obj, 0x15A); // assert for insert
         }
         Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
         node->obj = obj;
@@ -228,7 +228,7 @@ public:
         }
 
         int tmpSize = mSize + 1;
-        MILO_ASSERT(tmpSize < 8388607, 0x244);
+        MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
         mSize = tmpSize;
     }
 
