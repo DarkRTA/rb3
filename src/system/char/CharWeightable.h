@@ -17,8 +17,11 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharWeightable();
 
+    static unsigned short gRev;
+    static unsigned short gAltRev;
+
     float mWeight;
-    ObjOwnerPtr<CharWeightable, ObjectDir> mWeightOwner;
+    ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner;
 };
 
 #endif
