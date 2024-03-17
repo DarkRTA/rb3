@@ -26,6 +26,7 @@ public:
 
     virtual bool IsDirPtr(){ return 0; }
 
+    T1* Ptr(){ return mPtr; }
     operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
 
@@ -37,7 +38,7 @@ public:
         }
     }
 
-    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = oPtr.operator->(); }
+    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
     operator bool() const { return mPtr != 0; }
 
     bool Load(BinStream& bs, bool b, ObjectDir* dir){
@@ -88,23 +89,49 @@ public:
     }
     virtual bool IsDirPtr(){ return 0; }
 
-    T1* operator->() const { return mPtr; }
+    T1* Ptr(){ return mPtr; }
+    operator T1*() const { return mPtr; }
+    T1* operator->() const {
+        MILO_ASSERT(mPtr, 0xAB);
+        return mPtr;
+    }
 
     void operator=(T1* t){
         if(t != mPtr){
             if(mPtr != 0) mPtr->Release(mOwner);
             mPtr = t;
-            if(t != 0) t->AddRef(mOwner);
+            if(mPtr != 0) mPtr->AddRef(mOwner);
         }
     }
 
-    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){
-        *this = oPtr.operator->();
+    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
+
+    bool Load(BinStream& bs, bool b, ObjectDir* dir){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        if(!dir && mOwner) dir = mOwner->Dir();
+        if(mOwner && dir){
+            *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
+            if(mPtr == 0 && buf[0] != '\0' && b){
+                MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+            }
+            return false;
+        }
+        else {
+            *this = 0;
+            if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
+        }
+        return true;
     }
 
     Hmx::Object* mOwner;
     T1* mPtr;
 };
+
+template <class T1> BinStream& operator>>(BinStream& bs, ObjOwnerPtr<T1, ObjectDir>& ptr){
+    ptr.Load(bs, true, 0);
+    return bs;
+}
 
 // END OBJOWNERPTR TEMPLATE ----------------------------------------------------------------------------
 
@@ -122,6 +149,10 @@ public:
         T1* obj;
         struct Node* next;
         struct Node* prev;
+
+        void operator delete(void* v){
+            _PoolFree(sizeof(Node), FastPool, v);
+        }
     };
 
     class iterator {
@@ -162,9 +193,11 @@ public:
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
+
     virtual void Replace(Hmx::Object*, Hmx::Object*){
         
     }
+
     virtual bool IsDirPtr(){ return 0; }
 
     // found from RB2
@@ -183,6 +216,7 @@ public:
         if(obj) obj->AddRef(this);
         node->next = 0;
 
+        // link?
         if(mNodes){
             node->prev = mNodes->prev;
             mNodes->prev->next = node;
@@ -193,7 +227,6 @@ public:
             mNodes = node;
         }
 
-        // link?
         int tmpSize = (mMask >> 8) + 1;
         MILO_ASSERT(tmpSize < 8388607, 0x244);
         mMask = ((((mMask >> 8) + 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
@@ -204,22 +237,33 @@ public:
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         Node* n = mNodes->prev;
-        unlink(n);
+        unlink(n);     
+        delete n;
+    }    
 
+    // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
+    // fn_80389E34 in RB3 retail
+    Node* unlink(Node* n){
+        Node* ret;
+        MILO_ASSERT(n && mNodes, 0x24D);
+        if(n->obj) n->obj->Release(this);
         if(n == mNodes){
             if(mNodes->next != 0){
                 mNodes->next->prev = mNodes->prev;
                 mNodes = mNodes->next;
             }
             else mNodes = 0;
+            ret = mNodes;
         }
         else if(n == mNodes->prev){
             mNodes->prev = mNodes->prev->prev;
             mNodes->prev->next = 0;
+            ret = mNodes->prev;
         }
         else {
             n->prev->next = n->next;
             n->next->prev = n->prev;
+            ret = n->next;
         }
         
         // decrease the size part of the bitmask by 1?
@@ -227,13 +271,7 @@ public:
         // r7 = ((r0<< 8) & 0xFFFFFF00) | (r7 & 0xFF);
         mMask = ((((mMask >> 8) - 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
         // mMask = (((mMask >> 8) - 1) * 0x100) | (mMask & 0xFF);
-        _PoolFree(0xc, FastPool, n);
-    }    
-
-    // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
-    void unlink(Node* n){
-        MILO_ASSERT(n && mNodes, 0x24D);
-        if(n->obj) n->obj->Release(this);
+        return ret;
     }
 
     T1* front() const {
