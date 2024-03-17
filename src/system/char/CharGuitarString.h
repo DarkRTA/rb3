@@ -19,16 +19,17 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+    
+    DELETE_OVERLOAD;
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    static unsigned short gRev;
+    static unsigned short gAltRev;
 
     bool mOpen;
-    ObjPtr<RndTransformable, ObjectDir> mNut;
-    ObjPtr<RndTransformable, ObjectDir> mBridge;
-    ObjPtr<RndTransformable, ObjectDir> mBend;
-    ObjPtr<RndTransformable, ObjectDir> mTarget;
+    ObjPtr<RndTransformable, class ObjectDir> mNut;
+    ObjPtr<RndTransformable, class ObjectDir> mBridge;
+    ObjPtr<RndTransformable, class ObjectDir> mBend;
+    ObjPtr<RndTransformable, class ObjectDir> mTarget;
 
 };
 
