@@ -177,19 +177,17 @@ public:
 
     Node* mNodes;
     Hmx::Object* mOwner;
-    int mMask;
-    // ObjListMode mMode;
-
-    // https://decomp.me/scratch/OIOhV
-    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner) {
-        mMask = (mode & 0xFF) | (mMask & 0xFFFFFF00);
+    int mSize : 24;
+    ObjListMode mMode : 8;
+    
+    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
         }
     }
 
     virtual ~ObjPtrList() { 
-        while(!empty()) pop_back();
+        while(mSize != 0) pop_back();
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
@@ -206,9 +204,11 @@ public:
 
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // insert and link are inlined somewhere in here
+    // void insert(iterator, T1*);
+    // void link(iterator, Node*);
     void push_back(T1* obj){
         // insert?
-        if((mMask << 0x18 | (mMask >> 8) >> 0x18) == 0){
+        if(mSize == 0){
             MILO_ASSERT(obj, 0x15A);
         }
         Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
@@ -227,9 +227,9 @@ public:
             mNodes = node;
         }
 
-        int tmpSize = (mMask >> 8) + 1;
+        int tmpSize = mSize + 1;
         MILO_ASSERT(tmpSize < 8388607, 0x244);
-        mMask = ((((mMask >> 8) + 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
+        mSize = tmpSize;
     }
 
     // see pop_back__36ObjPtrList<11RndDrawable,9ObjectDir>Fv for reference
@@ -265,12 +265,7 @@ public:
             n->next->prev = n->prev;
             ret = n->next;
         }
-        
-        // decrease the size part of the bitmask by 1?
-        // r0 = ((mMask >> 8) - 1)
-        // r7 = ((r0<< 8) & 0xFFFFFF00) | (r7 & 0xFF);
-        mMask = ((((mMask >> 8) - 1) << 8) & 0xFFFFFF00) | (mMask & 0xFF);
-        // mMask = (((mMask >> 8) - 1) * 0x100) | (mMask & 0xFF);
+        mSize--;
         return ret;
     }
 
@@ -285,7 +280,7 @@ public:
     }
 
     bool empty() const {
-        return (mMask >> 8) == 0;
+        return mSize == 0;
     }
 
     iterator& begin() const {
@@ -297,7 +292,7 @@ public:
     }
 
     int size() const {
-        return mMask >> 8;
+        return mSize;
     }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
