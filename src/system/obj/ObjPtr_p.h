@@ -201,6 +201,7 @@ public:
     // Load, link, insert, Set
     // __as
 
+    // https://decomp.me/scratch/3c1sU
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // insert and link are inlined somewhere in here
     // void insert(iterator, T1*);
@@ -231,8 +232,6 @@ public:
         mSize = tmpSize;
     }
 
-    // see pop_back__36ObjPtrList<11RndDrawable,9ObjectDir>Fv for reference
-    // https://decomp.me/scratch/UBBvV
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         Node* n = mNodes->prev;
