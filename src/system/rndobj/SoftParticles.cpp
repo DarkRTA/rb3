@@ -12,10 +12,12 @@ SAVE_OBJ(RndSoftParticles, 0x22)
 void RndSoftParticles::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
+    int filler;
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
     ObjPtrList<RndDrawable, ObjectDir> pList(0, kObjListNoNull);
-    // bs >> pList; // whoops forgot to implement this, should probably do that
+    bs >> pList; // whoops forgot to implement this, should probably do that
+    bs >> filler;
 }
 
 BEGIN_COPYS(RndSoftParticles)
