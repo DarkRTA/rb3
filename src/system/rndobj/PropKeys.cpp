@@ -74,7 +74,7 @@ float FloatKeys::EndFrame(){
 }
 
 bool FloatKeys::FrameFromIndex(int idx, float& f){
-    if(size() <= idx) return false;
+    if(idx >= size()) return false;
     else f = (*this)[idx];
     return true;
 }

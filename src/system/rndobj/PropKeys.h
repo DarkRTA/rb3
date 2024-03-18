@@ -60,7 +60,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float>& AsFloatKeys(){ MILO_ASSERT(false, 0xA7); }
+    virtual Keys<float>* AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return 0; }
     virtual int AsColorKeys(){ MILO_ASSERT(false, 0xA9); return 0; }
     virtual int AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return 0; }
     virtual int AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return 0; }
@@ -108,9 +108,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float>& AsFloatKeys(){
-        return *this;
-    }
+    virtual Keys<float>* AsFloatKeys(){ return this; }
     virtual int FloatAt(float, float&);
 };
 
