@@ -29,6 +29,14 @@ namespace Hmx {
         Matrix3& operator=(const Matrix3 &);
         Vector3& operator[](int);
     };
+
+    class Quat {
+    public:
+        float x;
+        float y;
+        float z;
+        float w;
+    };
 }
 
 class Transform {

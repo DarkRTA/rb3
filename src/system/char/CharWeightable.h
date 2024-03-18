@@ -15,7 +15,7 @@ public:
     virtual void Load(BinStream&);
     virtual void SetWeight(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
-    virtual ~CharWeightable();
+    virtual ~CharWeightable(){}
 
     static unsigned short gRev;
     static unsigned short gAltRev;

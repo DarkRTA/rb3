@@ -3,14 +3,15 @@
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
 
-enum Type {
-    kRange = 0,
-    kLoop = 1,
-    kShuttle = 2,
-};
+
 
 class RndAnimFilter : public RndAnimatable {
 public:
+    enum Type {
+        kRange = 0,
+        kLoop = 1,
+        kShuttle = 2,
+    };
     RndAnimFilter();
     OBJ_CLASSNAME(AnimFilter);
     OBJ_SET_TYPE(AnimFilter);
@@ -20,7 +21,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~RndAnimFilter(){}
-    virtual int Loop();
+    virtual bool Loop();
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
@@ -28,6 +29,8 @@ public:
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
 
     void SetAnim(RndAnimatable*);
+
+    DECLARE_REVS;
 
     ObjPtr<RndAnimatable, ObjectDir> mAnim; // offset 0x10, size 0xC
     float mPeriod; // offset 0x1C, size 0x4
