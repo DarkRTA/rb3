@@ -12,19 +12,21 @@ RndFur::RndFur() {
 }
 
 BEGIN_COPYS(RndFur)
-    GET_COPY_AND_ASSERT(RndFur, 23)
+    // GET_COPY_AND_ASSERT(RndFur, 23)
+    const RndFur* m = dynamic_cast<const RndFur*>(o);
+    MILO_ASSERT(m, 23);
     COPY_SUPERCLASS(Hmx::Object)
 END_COPYS
 
 SAVE_OBJ(RndFur, 29)
 
 void RndFur::Load(BinStream& bs) {
-    int filler1;
-    int filler2;
     LOAD_REVS(bs);
     ASSERT_REVS(3, 0)
     Hmx::Object::Load(bs);
     Hmx::Color color;
+    int filler2;
+    int filler1;
     ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
     bs >> filler2 >> filler1 >> filler1;
     if(gRev > 1){
@@ -46,3 +48,7 @@ END_HANDLERS;
 
 BEGIN_PROPSYNCS(RndFur);
 END_PROPSYNCS;
+
+static void rndfursettype(RndFur* fur){
+    fur->SetType(Symbol());
+}
