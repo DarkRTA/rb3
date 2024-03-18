@@ -82,4 +82,6 @@ template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode&
     }
 }
 
+// fn_80642860 - PropSync(ObjPtrList&, ...)
+
 #endif
