@@ -53,8 +53,15 @@ public:
     // virtual void Poll(){}
 
     float DrawOrder() const;
+    float DisabledAlphaScale() const;
+    UIListWidgetDrawType WidgetDrawType() const;
+    UIList* ParentList();
+    // void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
+
+    void SetParentList(UIList*);
 
     float mDrawOrder;
+    float mDisabledAlphaScale;
     ObjPtr<UIColor, ObjectDir> mDefaultColor;
     std::vector<ObjPtr<UIColor, ObjectDir> > mColors;
     UIListWidgetDrawType mWidgetDrawType;
