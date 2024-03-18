@@ -128,7 +128,7 @@
             "system/os/User.cpp": "NonMatching",
             "system/os/VirtualKeyboard.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
-            "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
+            "system/rndobj/AmbientOcclusion.cpp": "Matching",
             "system/rndobj/Anim.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ]},
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Bitmap.cpp": "NonMatching",
