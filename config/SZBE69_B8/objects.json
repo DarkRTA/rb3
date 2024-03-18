@@ -45,6 +45,7 @@
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/TrackType.cpp": "Matching",
 
+            "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
             "system/char/CharHair.cpp": "NonMatching",
