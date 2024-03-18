@@ -302,7 +302,16 @@ public:
     //     // -> class Debug TheDebug;
     //     // -> const char * kAssertStr;
     // }
+
+    bool Load(BinStream&, bool);
+
 };
+
+// __rs<Q23Hmx6Object>__F R9BinStream R36ObjPtrList<Q23Hmx6Object,9ObjectDir> _R9BinStream
+template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, ObjectDir>& ptr){
+    ptr.Load(bs, true);
+    return bs;
+}
 
 // Binstream >> ObjPtrList
 // undefined4 fn_8049C2CC(undefined4 param_1,undefined4 param_2)
