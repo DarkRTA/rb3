@@ -81,6 +81,8 @@
             "system/meta/ConnectionStatusPanel.cpp": "NonMatching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
+            "system/meta/FixedSizeSaveableStream.cpp": "NonMatching",
+            "system/meta/HAQManager.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "NonMatching",

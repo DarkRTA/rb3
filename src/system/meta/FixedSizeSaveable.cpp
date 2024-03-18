@@ -1,5 +1,8 @@
 #include "meta/FixedSizeSaveable.h"
 
+int FixedSizeSaveable::sSaveVersion = -1;
+int FixedSizeSaveable::sMaxSymbols = -1;
+
 FixedSizeSaveable::FixedSizeSaveable() : mSaveSizeMethod(0) {
     
 }
