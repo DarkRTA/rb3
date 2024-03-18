@@ -8,6 +8,9 @@ public:
     virtual ~SynthPollable();
     virtual const char* GetSoundDisplayName(){ return ""; }
     virtual void SynthPoll() = 0;
+
+    void CancelPolling();
+
     std::list<SynthPollable*>::iterator mItr;
 
     static std::list<SynthPollable*> sPollables;
