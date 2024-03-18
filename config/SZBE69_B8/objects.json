@@ -51,8 +51,10 @@
             "system/char/CharInterest.cpp": "NonMatching",
             "system/char/CharNeckTwist.cpp": "NonMatching",
             "system/char/CharPollGroup.cpp": "NonMatching",
+            "system/char/CharPosConstraint.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "NonMatching",
+            "system/char/CharUpperTwist.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
 

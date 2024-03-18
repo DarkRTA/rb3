@@ -16,4 +16,11 @@ namespace Hmx {
     };
 }
 
+class Box {
+public:
+    Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
+    Vector3 mMin;
+    Vector3 mMax;
+};
+
 #endif
