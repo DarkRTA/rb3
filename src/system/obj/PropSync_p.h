@@ -8,7 +8,10 @@
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
-#include "obj/ObjPtr_p.h"
+
+// forward declarations
+template<class T1, class T2> class ObjPtr;
+template<class T1, class T2> class ObjOwnerPtr;
 
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
