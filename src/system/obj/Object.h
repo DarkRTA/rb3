@@ -340,6 +340,10 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 
 // BEGIN LOAD MACROS -----------------------------------------------------------------------------------
 
+#define DECLARE_REVS \
+    static unsigned short gRev; \
+    static unsigned short gAltRev;
+
 #define INIT_REVS(objType) \
     unsigned short objType::gRev = 0; \
     unsigned short objType::gAltRev = 0;
