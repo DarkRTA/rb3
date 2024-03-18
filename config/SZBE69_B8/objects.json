@@ -146,6 +146,7 @@
             "system/rndobj/Fur.cpp": "Matching",
             "system/rndobj/HiResScreen.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
+            "system/rndobj/Movie.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",

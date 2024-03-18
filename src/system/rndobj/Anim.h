@@ -32,7 +32,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~RndAnimatable(){}
-    virtual int Loop(){ return 0; }
+    virtual bool Loop(){ return 0; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
     virtual void SetFrame(float, float); // weak
