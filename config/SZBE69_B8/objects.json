@@ -164,6 +164,7 @@
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
+            "system/rndobj/TransProxy.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
             "system/speex/libspeex/bits.c": "NonMatching",

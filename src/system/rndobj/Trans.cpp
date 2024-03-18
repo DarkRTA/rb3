@@ -12,5 +12,8 @@ void RndTransformable::Init() {
 }
 
 RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL) {
-
+    mLocalXfm.Reset();
+    mWorldXfm.Reset();
+    vptr = new (_PoolAlloc(0xc, 0xc, FastPool)) (std::vector<int>);
+    
 }
