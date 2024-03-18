@@ -9,6 +9,10 @@
 #include "utl/Symbol.h"
 #include "os/Debug.h"
 
+// forward declarations
+template<class T1, class T2> class ObjPtr;
+template<class T1, class T2> class ObjOwnerPtr;
+
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Hmx::Color&, DataNode&, DataArray*, int, PropOp);
@@ -57,5 +61,27 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
         return true;
     }
 }
+
+template <class T> bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+    if((int)op == 0x40) return false;
+    else {
+        MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x125);
+        if(op == kPropGet) node = DataNode(ptr.Ptr());
+        else ptr = node.Obj<T>(0);
+        return true;
+    }
+}
+
+template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+    if((int)op == 0x40) return false;
+    else {
+        MILO_ASSERT(op <= kPropInsert, 0x132);
+        if(op == kPropGet) node = DataNode(ptr.Ptr());
+        else ptr = node.Obj<T>(0);
+        return true;
+    }
+}
+
+// fn_80642860 - PropSync(ObjPtrList&, ...)
 
 #endif

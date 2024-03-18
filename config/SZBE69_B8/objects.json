@@ -47,8 +47,11 @@
 
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
+            "system/char/CharHair.cpp": "NonMatching",
             "system/char/CharInterest.cpp": "NonMatching",
+            "system/char/CharNeckTwist.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
+            "system/char/CharTransCopy.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
 
@@ -127,23 +130,30 @@
             "system/os/User.cpp": "NonMatching",
             "system/os/VirtualKeyboard.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline level=1" ] },
 
-            "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
+            "system/rndobj/AmbientOcclusion.cpp": "Matching",
             "system/rndobj/Anim.cpp": { "status": "NonMatching", "extra_cflags": [ "-inline noauto" ]},
+            "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Bitmap.cpp": "NonMatching",
+            "system/rndobj/Cam.cpp": "NonMatching",
+            "system/rndobj/CamAnim.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
-            "system/rndobj/Fur.cpp": "NonMatching",
+            "system/rndobj/EventTrigger.cpp": "NonMatching",
+            "system/rndobj/Fur.cpp": "Matching",
+            "system/rndobj/HiResScreen.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "NonMatching",
+            "system/rndobj/SoftParticles.cpp": "NonMatching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
+            "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
@@ -252,6 +262,7 @@
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
 
+            "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching"
         }
     },

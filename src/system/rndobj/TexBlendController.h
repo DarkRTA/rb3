@@ -26,9 +26,9 @@ public:
     void UpdateMaxDistance();
     void UpdateAllDistances();
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    DELETE_OVERLOAD;
+
+    static unsigned short gRev;
 
     ObjPtr<RndMesh, ObjectDir> mMesh;
     ObjPtr<RndTransformable, ObjectDir> mObject1;

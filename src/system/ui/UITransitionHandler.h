@@ -19,6 +19,7 @@ public:
     bool HasTransitions() const;
     void ClearAnimationState();
     void CopyHandlerData(const UITransitionHandler*);
+    void LoadHandlerData(BinStream&);
     void UpdateHandler();
     bool IsReadyToChange() const;
 

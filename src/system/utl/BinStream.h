@@ -104,6 +104,7 @@ public:
 
     BS_WRITE_TYPE(int);
     BS_WRITE_TYPE(float);
+    BS_WRITE_TYPE(unsigned int);
     BS_WRITE_TYPE(unsigned short);
     BS_WRITE_TYPE(short);
     
