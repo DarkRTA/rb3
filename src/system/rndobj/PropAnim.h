@@ -28,23 +28,10 @@ public:
 
     void RemoveKeys();
     
-    std::vector<PropKeys> mPropKeys;
+    std::vector<PropKeys*> mPropKeys;
     float mLastFrame;
     bool mInSetFrame;
     bool mLoop;
 };
-
-// class RndPollable : public virtual Hmx::Object {
-// public:
-//     RndPollable(){}
-//     OBJ_CLASSNAME(Poll);
-//     OBJ_SET_TYPE(Poll);
-//     virtual DataNode Handle(DataArray*, bool);
-//     virtual void Poll(){}
-//     virtual void Enter();
-//     virtual void Exit();
-//     virtual void ListPollChildren(std::list<RndPollable*>&) const {}
-//     virtual ~RndPollable(){}
-// };
 
 #endif

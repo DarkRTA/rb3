@@ -80,3 +80,8 @@ bool FloatKeys::FrameFromIndex(int idx, float& f){
 }
 
 int FloatKeys::NumKeys(){ return size(); }
+
+void PropKeys::SetInterpHandler(Symbol sym){
+    mInterpHandler = sym;
+    SetPropExceptionID();
+}

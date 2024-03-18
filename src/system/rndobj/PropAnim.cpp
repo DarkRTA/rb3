@@ -9,3 +9,10 @@ RndPropAnim::~RndPropAnim(){
 }
 
 SAVE_OBJ(RndPropAnim, 0x43);
+
+void RndPropAnim::RemoveKeys(){
+    for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); it++){
+        delete *it;
+    }
+    mPropKeys.clear();
+}

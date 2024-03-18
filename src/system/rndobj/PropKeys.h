@@ -2,7 +2,7 @@
 #define RNDOBJ_PROPKEYS_H
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
-#include "rndobj/Env.h"
+#include "rndobj/Trans.h"
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "os/Debug.h"
@@ -79,12 +79,13 @@ public:
     void SetPropExceptionID();
     void ChangeFrame(int, float, bool);
     void ReSort();
+    void SetInterpHandler(Symbol);
 
     static unsigned short gRev;
 
     ObjOwnerPtr<Hmx::Object, ObjectDir> mTarget;
     DataArray* mProp;
-    RndEnviron* mTrans;
+    RndTransformable* mTrans;
     Symbol mInterpHandler;
     AnimKeysType mKeysType : 1;
     Interpolation mInterpolation : 1;
