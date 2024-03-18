@@ -186,10 +186,7 @@ public:
         }
     }
 
-    virtual ~ObjPtrList() { 
-        while(mSize != 0) pop_back();
-    }
-
+    virtual ~ObjPtrList() { clear(); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     virtual void Replace(Hmx::Object*, Hmx::Object*){
@@ -197,6 +194,8 @@ public:
     }
 
     virtual bool IsDirPtr(){ return 0; }
+
+    void clear(){ while(mSize != 0) pop_back(); }
 
     // found from RB2
     // Load, link, insert, Set
@@ -279,21 +278,10 @@ public:
         return mNodes->prev->obj;
     }
 
-    bool empty() const {
-        return mSize == 0;
-    }
-
-    iterator& begin() const {
-        return *reinterpret_cast<iterator*>(mNodes);
-    }
-
-    iterator& end() const {
-        return *reinterpret_cast<iterator*>(0);
-    }
-
-    int size() const {
-        return mSize;
-    }
+    bool empty() const { return mSize == 0; }
+    iterator& begin() const { return *reinterpret_cast<iterator*>(mNodes); }
+    iterator& end() const { return *reinterpret_cast<iterator*>(0); }
+    int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
     void insert(iterator, T1*);
@@ -315,6 +303,15 @@ public:
     //     // -> const char * kAssertStr;
     // }
 };
+
+// Binstream >> ObjPtrList
+// undefined4 fn_8049C2CC(undefined4 param_1,undefined4 param_2)
+
+// {
+    // Load__36ObjPtrList<11RndDrawable,9ObjectDir>F R9BinStream b - returns a bool
+//   fn_8049C308(param_2,param_1,1); // ObjPtrList::Load
+//   return param_1;
+// }
 
 // END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 

@@ -17,6 +17,10 @@ void UITransitionHandler::CopyHandlerData(const UITransitionHandler* ui){
     mOutAnim = ui->mOutAnim;
 }
 
+void UITransitionHandler::LoadHandlerData(BinStream& bs){
+    bs >> mInAnim >> mOutAnim;
+}
+
 void UITransitionHandler::UpdateHandler(){
     b3 = false;
     if(b2 && IsReadyToChange()){
