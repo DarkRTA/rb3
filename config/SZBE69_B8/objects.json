@@ -153,6 +153,8 @@
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
+            "system/rndobj/PropAnim.cpp": "NonMatching",
+            "system/rndobj/PropKeys.cpp": "NonMatching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "NonMatching",
