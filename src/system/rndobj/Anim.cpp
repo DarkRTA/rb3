@@ -77,7 +77,7 @@ AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, f
     MILO_ASSERT(anim, 0x1DF);
     mMin = (f2 < f1) ? f2 : f1;
     mMax = (f1 < f2) ? f2 : f1;
-    if(f2 > f1){
+    if(f1 < f2){
         mScale = f3;
         mOffset = mMin;
     }
@@ -179,3 +179,23 @@ AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, f
 //   (**(code **)(*(int *)(*(int *)(this + 0x24) + 4) + 0x2c))();
 //   return this;
 // }
+
+AnimTask::~AnimTask(){
+    AnimTask* blendPtr = mBlendTask.Ptr();
+    delete blendPtr;
+}
+
+void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    if(to == 0){
+        RndAnimatable* animPtr = mAnim.Ptr();
+        if(from == animPtr){
+            AnimTask* taskPtr = mBlendTask.Ptr();
+            // bool tPtrExists = taskPtr != 0;
+            if(taskPtr && (taskPtr->mAnim.Ptr() == animPtr)){
+                taskPtr->Release(mBlendTask);
+            }
+
+        }
+    }
+}

@@ -42,9 +42,7 @@ public:
     virtual void SetKey(float){}
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    DELETE_OVERLOAD;
 
     DataNode OnAnimate(DataArray*);
     void StopAnimation();
