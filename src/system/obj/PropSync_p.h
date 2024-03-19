@@ -13,6 +13,7 @@
 // forward declarations
 template<class T1, class T2> class ObjPtr;
 template<class T1, class T2> class ObjOwnerPtr;
+template<class T1, class T2> class ObjPtrList;
 
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
@@ -84,5 +85,14 @@ template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode&
 }
 
 // fn_80642860 - PropSync(ObjPtrList&, ...)
+template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+    if((int)op == 0x40) return false;
+    // else {
+    //     MILO_ASSERT(op <= kPropInsert, 0x132);
+    //     if(op == kPropGet) node = DataNode(ptr.Ptr());
+    //     else ptr = node.Obj<T>(0);
+    //     return true;
+    // }
+}
 
 #endif
