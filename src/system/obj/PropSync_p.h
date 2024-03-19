@@ -8,6 +8,7 @@
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
+#include "math/Geo.h"
 
 // forward declarations
 template<class T1, class T2> class ObjPtr;
@@ -20,9 +21,9 @@ bool PropSync(Hmx::Matrix3&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(class Sphere&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Vector2&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(Vector3&, DataNode&, DataArray*, int, PropOp);
-// bool PropSync(Transform&, DataNode&, DataArray*, int, PropOp);
-// bool PropSync(Hmx::Rect&, DataNode&, DataArray*, int, PropOp);
-// bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(Transform&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(Hmx::Rect&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);
 
 inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x17);
