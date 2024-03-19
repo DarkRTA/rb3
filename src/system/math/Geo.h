@@ -12,7 +12,8 @@ public:
 namespace Hmx {
     class Rect {
     public:
-        Rect() : x(0.0f), y(0.0f), w(1.0f), h(1.0f) {}
+        Rect() {}
+        Rect(float xx, float yy, float ww, float hh) : x(xx), y(yy), w(ww), h(hh) {}
         float x, y, w, h;
     };
 }

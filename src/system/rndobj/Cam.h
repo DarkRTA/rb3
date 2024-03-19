@@ -22,23 +22,31 @@ public:
     virtual void Select();
     virtual int ProjectZ(float){ return 0; }
 
+    void UpdateLocal();
+    DataNode OnSetFrustum(const DataArray*);
+    DataNode OnSetZRange(const DataArray*);
+    DataNode OnSetScreenRect(const DataArray*);
+    DataNode OnFarPlane(const DataArray*);
+
     static RndCam* sCurrent;
 
     DELETE_OVERLOAD;
 
-    Transform mInvWorldXfm; // offset 0xC0, size 0x40
-    Transform mLocalProjectXfm; // offset 0x100, size 0x40
-    Transform mInvLocalProjectXfm; // offset 0x140, size 0x40
-    Transform mWorldProjectXfm; // offset 0x180, size 0x40
-    Transform mInvWorldProjectXfm; // offset 0x1C0, size 0x40
-    Frustum mLocalFrustum; // offset 0x200, size 0x60
-    Frustum mWorldFrustum; // offset 0x260, size 0x60
-    float mNearPlane; // offset 0x2C0, size 0x4
-    float mFarPlane; // offset 0x2C4, size 0x4
-    float mYFov; // offset 0x2C8, size 0x4
-    Vector2 mZRange; // offset 0x2CC, size 0x8
-    Hmx::Rect mScreenRect; // offset 0x2D4, size 0x10
-    ObjPtr<RndTex, ObjectDir> mTargetTex; // offset 0x2E4, size 0xC
+    Transform mInvWorldXfm;
+    Transform mLocalProjectXfm;
+    Transform mInvLocalProjectXfm;
+    Transform mWorldProjectXfm;
+    Transform mInvWorldProjectXfm;
+    Frustum mLocalFrustum;
+    Frustum mWorldFrustum;
+    float mNearPlane;
+    float mFarPlane;
+    float mYFov;
+    float mUnknownFloat;
+    Vector2 mZRange;
+    Hmx::Rect mScreenRect;
+    ObjPtr<RndTex, class ObjectDir> mTargetTex;
+    int asdf;
 };
 
 #endif
