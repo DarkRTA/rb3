@@ -11,9 +11,8 @@ void RndTransformable::Init() {
     // dingus_da->FindData(dingus_b, sShadowPlane, true);
 }
 
-RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL) {
+RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL), mConstraint(kNone), mPreserveScale(0) {
     mLocalXfm.Reset();
     mWorldXfm.Reset();
     vptr = new (_PoolAlloc(0xc, 0xc, FastPool)) (std::vector<int>);
-    
 }

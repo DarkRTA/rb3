@@ -3,6 +3,7 @@
 #include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
 #include "obj/ObjPtr_p.h"
+#include "rndobj/PropKeys.h"
 
 class RndCamAnim : public RndAnimatable {
 public:
@@ -23,7 +24,7 @@ public:
     virtual void Print();
 
     ObjPtr<RndCam, ObjectDir> mCam;
-    char mFovKeys[0x8]; // supposedly a Keys? which derives from vector
+    Keys<float> mFovKeys;
     ObjOwnerPtr<RndCamAnim, ObjectDir> mKeysOwner;
 };
 

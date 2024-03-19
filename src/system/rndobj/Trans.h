@@ -42,20 +42,14 @@ public:
     static void Init();
     static Hmx::Object* NewObject();
 
-    ObjOwnerPtr<RndTransformable, ObjectDir> mParent;
+    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
     std::vector<int> mChildren;
     Transform mLocalXfm; // 0x20
     Transform mWorldXfm;
-    // vector pointer - 0x7c
-    // some short at 0x80
-    // some bool at 0x82
-    // then mTarget at 0x84
-    std::vector<int>* vptr;
-    short idk;
-    bool idkbool;
-    // bool mDirty, mPreserveScale;
-    // Constraint mConstraint;
-    ObjPtr<RndTransformable, ObjectDir> mTarget;
+    std::vector<int>* vptr; // actually a ptr to DirtyCache? which is a class containing a vector and a char/bool/byte
+    short mConstraint;
+    bool mPreserveScale;
+    ObjPtr<RndTransformable, class ObjectDir> mTarget;
 
     static ushort gRev;
     static ushort gAltRev;
