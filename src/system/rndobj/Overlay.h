@@ -15,6 +15,7 @@ public:
 
     void SetLines(int);
 
+    static RndOverlay* Find(Symbol, bool);
     static std::list<RndOverlay*> sOverlays;
 
     const char* mName;

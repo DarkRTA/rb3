@@ -1,7 +1,10 @@
-#include "Console.h"
+#include "rndobj/Console.h"
 #include "os/Debug.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
+#include "os/System.h"
+#include "rndobj/Overlay.h"
+#include <string.h>
 
 static DataNode DataContinue(DataArray*) {
     gConsole->Continue();
@@ -48,8 +51,18 @@ static DataNode DataBreakpoints(DataArray*) {
     return DataNode(0);
 }
 
-static DataNode DataClear(DataArray*) {
-
+static DataNode DataClear(DataArray* da) {
+    int clearInt;
+    if(da->Size() < 2) clearInt = 0;
+    else {
+        bool b = ((const DataArray*)(da))->Node(1).Type() == kDataSymbol;
+        if(b){
+            clearInt = strcmp(da->Sym(1).Str(), "all");
+            b = clearInt == 0;
+        }
+        clearInt = b ? -1 : da->Int(1);
+    }
+    gConsole->Clear(clearInt);
     return DataNode(0);
 }
 
@@ -73,14 +86,12 @@ static DataNode DataCppBreak(DataArray*) {
     PlatformDebugBreak();
     return DataNode(0);
 }
-#pragma inline off
+
 static DataNode DataHelp(DataArray* da) {
-    DataNode n = da->Node(1);
-    Symbol s = n.Sym(da);
-    gConsole->Help(s);
+    gConsole->Help(da->Size() > 1 ? da->Sym(1) : "");
     return DataNode(0);
 }
-#pragma inline reset
+
 extern DataFunc* gPreExecuteFunc;
 extern int gPreExecuteLevel;
 
@@ -100,12 +111,18 @@ void RndConsole::Continue() {
 RndConsole::RndConsole() : mShowing(0), mBuffer(),
   mTabLen(0), mCursor(0), mPumpMsgs(0), mDebugging(0), mLevel(0) {
     gConsole = this;
+    mBufPtr = mBuffer.begin();
+    mOutput = RndOverlay::Find("output", true);
+    mInput = RndOverlay::Find("input", true);
+    DataArray* rndCfg = SystemConfig("rnd");
+    rndCfg->FindData("console_buffer", mMaxBuffer, true);
     DataRegisterFunc("break", DataBreak);
     DataRegisterFunc("continue", DataContinue);
     DataRegisterFunc("step", DataStep);
     DataRegisterFunc("next", DataNext);
     DataRegisterFunc("finish", DataFinish);
     DataRegisterFunc("list", DataList);
+    DataRegisterFunc("where", DataWhere);
     DataRegisterFunc("set_break", DataSetBreak);
     DataRegisterFunc("clear", DataClear);
     DataRegisterFunc("breakpoints", DataBreakpoints);
@@ -113,4 +130,8 @@ RndConsole::RndConsole() : mShowing(0), mBuffer(),
     DataRegisterFunc("down", DataDown);
     DataRegisterFunc("cpp_break", DataCppBreak);
     DataRegisterFunc("help", DataHelp);
+}
+
+RndConsole::~RndConsole(){
+    
 }

@@ -10,6 +10,9 @@ class RndOverlay;
 class RndConsole : public Hmx::Object { // 0x58 - 0x1c = 0x3c
 public:
     class Breakpoint { // total size: 0x8
+    public:
+        Breakpoint();
+        ~Breakpoint();
         DataArray* parent; // offset 0x0, size 0x4
         int index; // offset 0x4, size 0x4
     };
