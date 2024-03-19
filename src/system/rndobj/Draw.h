@@ -29,7 +29,7 @@ public:
     virtual void Mats(std::list<class RndMat*>&, bool){}
     virtual void Draw();
     virtual void DrawShowing(){}
-    virtual int DrawShowingBudget(float);
+    virtual bool DrawShowingBudget(float);
     virtual void ListDrawChildren(std::list<RndDrawable*>&){}
     virtual int CollideShowing(const Segment&, float&, Plane&){ return 0; }
     virtual int CollidePlane(const Plane&);
@@ -38,6 +38,15 @@ public:
     virtual void UpdatePreClearState(){}
     virtual void Highlight();
     virtual ~RndDrawable(){}
+
+    bool DrawBudget(float);
+    void DumpLoad(BinStream&);
+
+    DataNode OnCopySphere(const DataArray*);
+    DataNode OnGetSphere(const DataArray*);
+    DataNode OnSetShowing(const DataArray*);
+    DataNode OnShowing(const DataArray*);
+    DataNode OnZeroSphere(const DataArray*);
     
     bool mShowing : 1;
     bool unk8p1 : 1;

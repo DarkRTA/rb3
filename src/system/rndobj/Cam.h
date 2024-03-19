@@ -22,6 +22,10 @@ public:
     virtual void Select();
     virtual int ProjectZ(float){ return 0; }
 
+    static RndCam* sCurrent;
+
+    DELETE_OVERLOAD;
+
     Transform mInvWorldXfm; // offset 0xC0, size 0x40
     Transform mLocalProjectXfm; // offset 0x100, size 0x40
     Transform mInvLocalProjectXfm; // offset 0x140, size 0x40
