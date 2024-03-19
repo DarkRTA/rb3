@@ -39,7 +39,24 @@ public:
     virtual void Highlight();
     virtual ~RndDrawable(){}
     
-    char mShowing;
+    bool mShowing : 1;
+    bool unk8p1 : 1;
+    bool unk8p2 : 1;
+    bool unk8p3 : 1;
+    bool unk8p4 : 1;
+    bool unk8p5 : 1;
+    bool unk8p6 : 1;
+    bool unk8p7 : 1;
+
+    bool unk9p0 : 1;
+    bool unk9p1 : 1;
+    bool unk9p2 : 1;
+    bool unk9p3 : 1;
+    bool unk9p4 : 1;
+    bool unk9p5 : 1; // used in RndScreenMask
+    bool unk9p6 : 1; // used in RndTexBlender
+    bool unk9p7 : 1;
+
     Sphere mSphere;
     float mOrder;
 };
