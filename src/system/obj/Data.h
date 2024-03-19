@@ -4,6 +4,9 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
+#include "math/Vec.h"
+#include "math/Mtx.h"
+#include "math/Color.h"
 
 // forward declarations
 class DataNode;
@@ -209,10 +212,10 @@ public:
     bool FindData(Symbol tag, int & ret, bool fail) const;
     bool FindData(Symbol tag, float & ret, bool fail) const;
     bool FindData(Symbol tag, bool & ret, bool fail) const;
-    // bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
-    // bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
-    // bool FindData(Symbol tag, Plane & ret, bool fail) const;
-    // bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
+    bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
+    bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
+    bool FindData(Symbol tag, Plane & ret, bool fail) const;
+    bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
 
     int FindInt(Symbol tag) const { return FindArray(tag, true)->Int(1); }
     float FindFloat(Symbol tag) const { return FindArray(tag, true)->Float(1); }
