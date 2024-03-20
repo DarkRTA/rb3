@@ -1,4 +1,5 @@
 #include "rndobj/PostProc.h"
+#include "utl/Symbols.h"
 
 RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f), mBloomThreshold(4.0f), mBloomIntensity(0.0f), 
     mBloomGlare(0), mBloomStreak(0), mBloomStreakAttenuation(0.9f), mBloomStreakAngle(0.0f), mLuminanceMap(this, 0), 
@@ -13,4 +14,34 @@ RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f
     mRefractDist(0.05f), mRefractScale(1.0f, 1.0f), mRefractPanning(0.0f, 0.0f), mRefractVelocity(0.0f, 0.0f), mRefractAngle(0.0f),
     mChromaticAberrationOffset(0.0f), mChromaticSharpen(0), mVignetteColor(0.0f, 0.0f, 0.0f, 0.0f), mVignetteIntensity(0.0f) {
     mColorXfm.Reset();
+}
+
+RndPostProc::~RndPostProc(){
+    Unselect();
+}
+
+BEGIN_HANDLERS(RndPostProc)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_ACTION(select, Select())
+    HANDLE_ACTION(unselect, Unselect())
+    HANDLE_ACTION(multi_select, OnSelect()) // fix what gets called
+    HANDLE_ACTION(multi_unselect, OnUnselect()) // fix what gets called
+    HANDLE_ACTION(interp, Interp(_msg->Obj<RndPostProc>(2), _msg->Obj<RndPostProc>(3), _msg->Float(4)))
+    HANDLE(allowed_normal_map, OnAllowedNormalMap)
+    HANDLE_CHECK(0x3BB)
+END_HANDLERS
+
+ProcCounter::ProcCounter() : mProcAndLock(0), mCount(0), mSwitch(0), mOdd(0), mFPS(0), mEvenOddDisabled(0), mTriFrameRendering(0) {
+    
+}
+
+void ProcCounter::SetProcAndLock(bool pandl){
+    mProcAndLock = pandl;
+    mCount = -1;
+}
+
+void ProcCounter::SetEvenOddDisabled(bool eod){
+    if(mEvenOddDisabled == eod) return;
+    else mEvenOddDisabled = eod;
+    if(mEvenOddDisabled) mCount = -1;
 }

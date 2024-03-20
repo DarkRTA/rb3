@@ -7,6 +7,22 @@
 #include "rndobj/ColorXfm.h"
 #include "math/Vec.h"
 
+class ProcCounter {
+public:
+    ProcCounter();
+    void SetProcAndLock(bool);
+    void SetEvenOddDisabled(bool);
+    int ProcCommands();
+
+    bool mProcAndLock;
+    int mCount;
+    int mSwitch;
+    int mOdd;
+    int mFPS;
+    bool mEvenOddDisabled;
+    bool mTriFrameRendering;
+};
+
 class PostProc {
 public:
     PostProc(){}
@@ -42,6 +58,11 @@ public:
     virtual void SetBloomColor();
     virtual void OnSelect();
     virtual void OnUnselect();
+
+    void Interp(const RndPostProc*, const RndPostProc*, float);
+    DataNode OnAllowedNormalMap(const DataArray*);
+
+    DELETE_OVERLOAD;
 
     float mPriority;
     Hmx::Color mBloomColor;
