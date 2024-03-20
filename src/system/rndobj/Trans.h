@@ -26,8 +26,8 @@ public:
     RndTransformable();
     virtual ~RndTransformable();
 
-    OBJ_CLASSNAME(RndTransformable)
-    OBJ_SET_TYPE(RndTransformable)
+    OBJ_CLASSNAME(Trans)
+    OBJ_SET_TYPE(Trans)
 
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
