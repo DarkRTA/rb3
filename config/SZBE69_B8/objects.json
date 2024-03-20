@@ -151,6 +151,7 @@
             "system/rndobj/EventTrigger.cpp": "NonMatching",
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
+            "system/rndobj/Graph.cpp": "NonMatching",
             "system/rndobj/Group.cpp": "NonMatching",
             "system/rndobj/HiResScreen.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
