@@ -1,0 +1,110 @@
+#ifndef RNDOBJ_POSTPROC_H
+#define RNDOBJ_POSTPROC_H
+#include <revolution/OS.h>
+#include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
+#include "rndobj/Tex.h"
+#include "rndobj/ColorXfm.h"
+#include "math/Vec.h"
+
+class PostProc {
+public:
+    PostProc(){}
+    virtual void BeginWorld(){}
+    virtual void EndWorld(){}
+    virtual void DoPost(){}
+    virtual void OnGPHangRecover(){ OSReport("Base PostProcessor::OnGPHangRecover called.\n"); }
+    virtual float Priority(){ return 1.0f; }
+};
+
+class RndDrawable; // forward dec
+
+class RndPostProc : public Hmx::Object, public PostProc {
+public:
+    RndPostProc();
+    virtual ~RndPostProc();
+    OBJ_CLASSNAME(Object);
+    OBJ_SET_TYPE(Object);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+
+    virtual void EndWorld();
+    virtual void DoPost();
+    virtual void OnGPHangRecover();
+    virtual float Priority();
+    virtual void Select();
+    virtual void Unselect();
+    virtual void SetPriority(float);
+    virtual void QueueMotionBlurObject(RndDrawable*);
+    virtual void SetBloomColor();
+    virtual void OnSelect();
+    virtual void OnUnselect();
+
+    float mPriority;
+    Hmx::Color mBloomColor;
+    float mBloomThreshold;
+    float mBloomIntensity;
+    bool mBloomGlare;
+    bool mBloomStreak;
+    float mBloomStreakAttenuation;
+    float mBloomStreakAngle;
+    ObjPtr<RndTex, ObjectDir> mLuminanceMap;
+    bool mForceCurrentInterp;
+    RndColorXfm mColorXfm;
+    float mNumLevels;
+    float mMinIntensity;
+    float mKaleidoscopeComplexity;
+    float mKaleidoscopeSize;
+    float mKaleidoscopeAngle;
+    float mKaleidoscopeRadius;
+    bool mKaleidoscopeFlipUVs;
+    Vector2 mFlickerIntensity;
+    Vector2 mFlickerSecsRange;
+
+    Vector2 unk108;
+    float unk110;
+
+    Vector2 mNoiseBaseScale;
+
+    float unk11c;
+
+    float mNoiseIntensity;
+    bool mNoiseStationary;
+    bool mNoiseMidtone;
+    ObjPtr<RndTex, ObjectDir> mNoiseMap;
+    float mThreshold;
+    float mDuration;
+
+    Vector3 unk13c;
+    float mEmulateFPS;
+    float unk14c;
+    int unk150;
+
+    int mHallOfTimeType;
+    float mHallOfTimeRate;
+    Hmx::Color mHallOfTimeColor;
+    float mHallOfTimeMix;
+    Hmx::Color mMotionBlurWeight;
+    float mMotionBlurBlend;
+    bool mMotionBlurVelocity;
+    ObjPtr<RndTex, ObjectDir> mGradientMap;
+    float mGradientMapOpacity;
+    float mGradientMapIndex;
+    float mGradientMapStart;
+    float mGradientMapEnd;
+    ObjPtr<RndTex, ObjectDir> mRefractMap;
+    float mRefractDist;
+    Vector2 mRefractScale;
+    Vector2 mRefractPanning;
+    Vector2 mRefractVelocity;
+    float mRefractAngle;
+    float mChromaticAberrationOffset;
+    bool mChromaticSharpen;
+    Hmx::Color mVignetteColor;
+    float mVignetteIntensity;
+};
+
+#endif
