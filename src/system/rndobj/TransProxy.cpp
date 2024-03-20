@@ -1,5 +1,5 @@
 #include "rndobj/TransProxy.h"
 
-RndTransProxy::RndTransProxy() : mProxy(0, 0), mPart() {
+RndTransProxy::RndTransProxy() : mProxy(this, 0), mPart() {
 
 }

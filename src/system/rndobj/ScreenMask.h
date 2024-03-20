@@ -18,12 +18,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual void DrawShowing();
-    virtual ~RndScreenMask();
+    virtual ~RndScreenMask(){}
 
-    ObjPtr<RndMat, ObjectDir> mMat;
+    DELETE_OVERLOAD;
+
+    ObjPtr<RndMat, class ObjectDir> mMat;
     Hmx::Color mColor;
     Hmx::Rect mRect;
-    // bool mUseCurrentRect;
 };
 
 #endif

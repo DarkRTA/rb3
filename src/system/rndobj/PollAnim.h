@@ -4,7 +4,7 @@
 #include "rndobj/Poll.h"
 #include "obj/ObjPtr_p.h"
 
-class RndPollAnim : public virtual RndPollable, public RndAnimatable {
+class RndPollAnim : public virtual RndAnimatable, public virtual RndPollable {
 public:
     RndPollAnim();
     OBJ_CLASSNAME(PollAnim);

@@ -1,4 +1,5 @@
 #include "rndobj/AnimFilter.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(RndAnimFilter);
 
@@ -39,3 +40,10 @@ void RndAnimFilter::Load(BinStream& bs){
         bs >> mSnap >> mJitter;
     }
 }
+
+BEGIN_HANDLERS(RndAnimFilter)
+    HANDLE(safe_anims, OnSafeAnims)
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xE3)
+END_HANDLERS

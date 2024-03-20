@@ -29,7 +29,7 @@ public:
     virtual void Mats(std::list<class RndMat*>&, bool){}
     virtual void Draw();
     virtual void DrawShowing(){}
-    virtual int DrawShowingBudget(float);
+    virtual bool DrawShowingBudget(float);
     virtual void ListDrawChildren(std::list<RndDrawable*>&){}
     virtual int CollideShowing(const Segment&, float&, Plane&){ return 0; }
     virtual int CollidePlane(const Plane&);
@@ -38,8 +38,34 @@ public:
     virtual void UpdatePreClearState(){}
     virtual void Highlight();
     virtual ~RndDrawable(){}
+
+    bool DrawBudget(float);
+    void DumpLoad(BinStream&);
+
+    DataNode OnCopySphere(const DataArray*);
+    DataNode OnGetSphere(const DataArray*);
+    DataNode OnSetShowing(const DataArray*);
+    DataNode OnShowing(const DataArray*);
+    DataNode OnZeroSphere(const DataArray*);
     
-    char mShowing;
+    bool mShowing : 1;
+    bool unk8p1 : 1; // used in RndGroup
+    bool unk8p2 : 1;
+    bool mTestDone : 1; // used in RndFlare
+    bool mLastDone : 1; // used in RndFlare
+    bool unk8p5 : 1;
+    bool unk8p6 : 1;
+    bool unk8p7 : 1;
+
+    bool unk9p0 : 1;
+    bool unk9p1 : 1;
+    bool unk9p2 : 1;
+    bool unk9p3 : 1;
+    bool unk9p4 : 1; // used in RndMultiMesh
+    bool mUseCurrentRect : 1; // used in RndScreenMask
+    bool unk9p6 : 1; // used in RndTexBlender
+    bool unk9p7 : 1;
+
     Sphere mSphere;
     float mOrder;
 };

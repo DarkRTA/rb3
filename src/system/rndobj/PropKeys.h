@@ -87,10 +87,10 @@ public:
     DataArray* mProp;
     RndTransformable* mTrans;
     Symbol mInterpHandler;
-    AnimKeysType mKeysType : 1;
-    Interpolation mInterpolation : 1;
-    ExceptionID mPropExceptionID : 1;
-    int mLastKeyFrameIndex : 1;
+    AnimKeysType mKeysType : 8;
+    Interpolation mInterpolation : 8;
+    ExceptionID mPropExceptionID : 8;
+    int mLastKeyFrameIndex : 8;
 };
 
 class FloatKeys : public PropKeys, public Keys<float> {

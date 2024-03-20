@@ -61,6 +61,8 @@ public:
     DebugNotifier& operator<<(const char* c){ TheDebug.Notify(c); }
 };
 
+extern DebugNotifier TheDebugNotifier;
+
 class DebugNotifyOncer {
 public:
     std::list<class String> mNotifies;

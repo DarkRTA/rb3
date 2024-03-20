@@ -13,10 +13,16 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void DrawShowing();
-    virtual ~RndMotionBlur();
+    virtual void DrawShowing(){}
+    virtual ~RndMotionBlur(){}
 
-    ObjPtrList<RndDrawable, ObjectDir> mDrawList;
+    bool CanMotionBlur(RndDrawable*);
+    DataNode OnAllowedDrawable(const DataArray*);
+
+    DECLARE_REVS;
+    DELETE_OVERLOAD;
+
+    ObjPtrList<RndDrawable, class ObjectDir> mDrawList;
 };
 
 #endif

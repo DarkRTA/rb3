@@ -1,14 +1,13 @@
-#include "Tex.h"
+#include "rndobj/Tex.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols4.h"
+#include "os/System.h"
 
 bool UseBottomMip() {
-    Symbol rnd("rnd");
-    Symbol use_bottom_mip("use_bottom_mip");
+    DataArray* found = SystemConfig("rnd")->FindArray("use_bottom_mip", false);
+    return found ? (found->Int(1) != 0) : false;
 }
 
 void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
@@ -18,15 +17,13 @@ void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
     dst.Create(*dingus, dingus->mBpp, dingus->mOrder, NULL);
 }
 
-RndTex::RndTex() {
-    mBitmap->Reset();
-    mMipMapK = -8;
+RndTex::RndTex() : mMipMapK(-8.0f), mType(Regular), mWidth(0), mHeight(0), mBpp(32), mFilename(), mLoader(0), mOptimizeForPS3(0), unk60(0) {
+    
 }
 
 RndTex::~RndTex() {
     delete mLoader;
     mLoader = NULL;
-    mBitmap->Reset();
 }
 
 SAVE_OBJ(RndTex, 744)
@@ -45,15 +42,15 @@ void RndTex::Print() {
 }
 
 BEGIN_HANDLERS(RndTex)
-HANDLE(set_bitmap, OnSetBitmap)
-HANDLE(set_rendered, OnSetRendered)
-HANDLE_EXPR(file_path, mFilename.c_str())
-HANDLE_ACTION(set_file_path, mFilename.Set(FilePath::sRoot.c_str(), _msg->Str(2)))
-HANDLE_EXPR(size_kb, (int)((mWidth * mHeight * mBpp) >> 3)) // i don't like this expression. someone pls make it go away kthxbai
-HANDLE_EXPR(tex_type, mType)
-HANDLE_ACTION(save_bmp, SaveBitmap(_msg->Str(2)))
-HANDLE_SUPERCLASS(Hmx::Object)
-HANDLE_CHECK(1082)
+    HANDLE(set_bitmap, OnSetBitmap)
+    HANDLE(set_rendered, OnSetRendered)
+    HANDLE_EXPR(file_path, mFilename.c_str())
+    HANDLE_ACTION(set_file_path, mFilename.Set(FilePath::sRoot.c_str(), _msg->Str(2)))
+    HANDLE_EXPR(size_kb, (int)((mWidth * mHeight * mBpp) >> 3)) // i don't like this expression. someone pls make it go away kthxbai
+    HANDLE_EXPR(tex_type, mType)
+    HANDLE_ACTION(save_bmp, SaveBitmap(_msg->Str(2)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(1082)
 END_HANDLERS
 
 int RndTex::TexelsPitch() const { return 0; }
