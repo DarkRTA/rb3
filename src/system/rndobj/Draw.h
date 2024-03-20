@@ -51,8 +51,8 @@ public:
     bool mShowing : 1;
     bool unk8p1 : 1;
     bool unk8p2 : 1;
-    bool unk8p3 : 1;
-    bool unk8p4 : 1;
+    bool mTestDone : 1; // used in RndFlare
+    bool mLastDone : 1; // used in RndFlare
     bool unk8p5 : 1;
     bool unk8p6 : 1;
     bool unk8p7 : 1;

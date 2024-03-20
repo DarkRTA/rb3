@@ -149,6 +149,7 @@
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/EventTrigger.cpp": "NonMatching",
+            "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
             "system/rndobj/HiResScreen.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
