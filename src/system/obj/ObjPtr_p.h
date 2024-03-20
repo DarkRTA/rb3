@@ -63,7 +63,7 @@ public:
     T1* mPtr;
 };
 
-template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, ObjectDir>& ptr){
+template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true, 0);
     return bs;
 }
@@ -128,7 +128,7 @@ public:
     T1* mPtr;
 };
 
-template <class T1> BinStream& operator>>(BinStream& bs, ObjOwnerPtr<T1, ObjectDir>& ptr){
+template <class T1> BinStream& operator>>(BinStream& bs, ObjOwnerPtr<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true, 0);
     return bs;
 }
@@ -307,7 +307,7 @@ public:
 };
 
 // __rs<Q23Hmx6Object>__F R9BinStream R36ObjPtrList<Q23Hmx6Object,9ObjectDir> _R9BinStream
-template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, ObjectDir>& ptr){
+template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true);
     return bs;
 }

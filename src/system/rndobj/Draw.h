@@ -49,7 +49,7 @@ public:
     DataNode OnZeroSphere(const DataArray*);
     
     bool mShowing : 1;
-    bool unk8p1 : 1;
+    bool unk8p1 : 1; // used in RndGroup
     bool unk8p2 : 1;
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare
