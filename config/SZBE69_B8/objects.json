@@ -157,6 +157,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "NonMatching",
+            "system/rndobj/MultiMesh.cpp": "NonMatching",
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/PollAnim.cpp": "NonMatching",

@@ -61,7 +61,7 @@ public:
     bool unk9p1 : 1;
     bool unk9p2 : 1;
     bool unk9p3 : 1;
-    bool unk9p4 : 1;
+    bool unk9p4 : 1; // used in RndMultiMesh
     bool mUseCurrentRect : 1; // used in RndScreenMask
     bool unk9p6 : 1; // used in RndTexBlender
     bool unk9p7 : 1;
