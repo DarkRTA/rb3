@@ -54,14 +54,19 @@ public:
 
     void SaveBitmap(const char*);
 
-    RndBitmap* mBitmap;
+    DELETE_OVERLOAD;
+
+    RndBitmap mBitmap;
     float mMipMapK;
-    Type mType; // ?
+    Type mType;
     int mWidth;
     int mHeight;
     int mBpp;
     FilePath mFilename;
     FileLoader* mLoader;
+    bool mIsPowerOf2;
+    bool mOptimizeForPS3;
+    int unk60; // this is def a ptr to something judging by the fact it gets released in the dtor
 };
 
 bool UseBottomMip();
