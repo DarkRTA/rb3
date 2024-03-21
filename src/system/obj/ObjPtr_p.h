@@ -222,12 +222,9 @@ public:
     // found from RB2
     // Set, __as
 
-    // https://decomp.me/scratch/3c1sU
+    // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
-    // void insert(iterator, T1*);
-    // void link(iterator, Node*);
-    // fn_8049C424 - presumably push_back
-    // fn_8049C470 - insert
+    // fn_8049C424 - push_back
     void push_back(T1* obj){
         iterator it;
         insert(it, obj);
@@ -235,15 +232,18 @@ public:
 
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
-        Node* n = mNodes->prev;
-        unlink(n);     
-        delete n;
-    }    
+        remove(mNodes->prev);
+    }
+
+    iterator remove(iterator it){
+        Node* unlinked = unlink(it.mNode);
+        delete it.mNode;
+        return unlinked;
+    }
 
     // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     // fn_80389E34 in RB3 retail
     Node* unlink(Node* n){
-        Node* ret;
         MILO_ASSERT(n && mNodes, 0x24D);
         if(n->obj) n->obj->Release(this);
         if(n == mNodes){
@@ -252,20 +252,20 @@ public:
                 mNodes = mNodes->next;
             }
             else mNodes = 0;
-            ret = mNodes;
+            n = mNodes;
         }
         else if(n == mNodes->prev){
             mNodes->prev = mNodes->prev->prev;
             mNodes->prev->next = 0;
-            ret = mNodes->prev;
+            n = mNodes->prev;
         }
         else {
             n->prev->next = n->next;
             n->next->prev = n->prev;
-            ret = n->next;
+            n = n->next;
         }
         mSize--;
-        return ret;
+        return n;
     }
 
     T1* front() const {
@@ -284,6 +284,7 @@ public:
     int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
+    // fn_8049C470 - insert
     iterator& insert(iterator it, T1* obj) {
         if(mMode == kObjListNoNull)  MILO_ASSERT(obj, 0x15A);
         Node* node = new (_PoolAlloc(0xc, 0xc, FastPool))(Node);
@@ -291,21 +292,6 @@ public:
         link(it, node);
         return it;
     }
-
-    // undefined4 fn_8049C470(undefined4 param_1,undefined4 *param_2,undefined4 param_3)
-
-    // {
-    //     undefined4 *puVar1;
-    //     undefined auStack_18 [4];
-    //     undefined4 local_14 [2];
-        
-    //     puVar1 = (undefined4 *)_PoolAlloc(0xc,0xc,1);
-    //     *puVar1 = param_3;
-    //     local_14[0] = *param_2;
-    //     fn_803D1DBC(param_1,local_14,puVar1);
-    //     puVar1 = (undefined4 *)fn_8000DA6C(auStack_18,puVar1);
-    //     return *puVar1;
-    // }
 
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     void link(iterator it, Node* n) {
@@ -338,7 +324,7 @@ public:
 
         int size = mSize;
         int tmpSize = size + 1;
-        MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
+        MILO_ASSERT(tmpSize < 8388607, 0x244);
         mSize = size + 1;
     }
 
@@ -357,27 +343,28 @@ public:
     // }
 
     bool Load(BinStream& bs, bool b){
+        bool ret = true;
         clear();
         int count;
         bs >> count;
         class ObjectDir* dir = 0;
         if(mOwner) dir = mOwner->Dir();
         MILO_ASSERT(dir, 0x207);
-        while(count-- != 0){
+        for(; count != 0; count--){
             char buf[0x80];
             bs.ReadString(buf, 0x80);
             if(dir){
                 T1* casted = dynamic_cast<T1*>(dir->FindObject(buf, false));
                 if(!casted && buf[0] != '\0'){
                     if(b) MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
-                    return false;
+                    ret = false;
                 }
                 else if(casted){
                     push_back(casted);
                 }
             }
         }
-        return true;
+        return ret;
     }
 
 };
