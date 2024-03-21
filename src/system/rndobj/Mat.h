@@ -30,12 +30,12 @@ enum StencilMode {
     kTest = 2,
 };
 enum TexGen {
-    kNone = 0,
-    kXfm = 1,
-    kSphere = 2,
-    kProjected = 3,
-    kXfmOrigin = 4,
-    kEnviron = 5,
+    kTexGenNone,
+    kXfm,
+    kSphere,
+    kProjected,
+    kXfmOrigin,
+    kEnviron,
 };
 enum TexWrap {
     kClamp = 0,

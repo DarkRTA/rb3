@@ -330,6 +330,9 @@ public:
 
     // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
     // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
+    // fn_80453DC4 in retail
+    // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
+    // ObjPtrList::Set(iterator, T1*)
     // __as__37ObjPtrList<12EventTrigger,9ObjectDir>FRC37ObjPtrList<12EventTrigger,9ObjectDir>
     //     // Range: 0x8040DBA4 -> 0x8040DEF0
     // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
@@ -342,6 +345,28 @@ public:
     //     // -> const char * kAssertStr;
     // }
 
+    void Set(iterator it, T1* obj){
+        if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
+        Hmx::Object* itobj = it.mNode->obj;
+        if(itobj) itobj->Release(this);
+        itobj = obj;
+        if(obj) obj->AddRef(this);
+    }
+
+    void operator=(const ObjPtrList<T1, T2>& x){
+        if(this == &x) return;
+        while(size() > x.size()) pop_back();
+        Node* otherNodes = x.mNodes;
+        for(Node* curNodes = mNodes; curNodes != 0; curNodes = curNodes->next){
+            Set(curNodes, otherNodes->obj);
+            otherNodes = otherNodes->next;
+        }
+        for(; otherNodes != 0; otherNodes = otherNodes->next){
+            push_back(otherNodes->obj);
+        }
+    }
+
+    // fn_8049C308 in retail
     bool Load(BinStream& bs, bool b){
         bool ret = true;
         clear();
@@ -370,19 +395,11 @@ public:
 };
 
 // __rs<Q23Hmx6Object>__F R9BinStream R36ObjPtrList<Q23Hmx6Object,9ObjectDir> _R9BinStream
+// fn_8049C2CC in retail
 template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true);
     return bs;
 }
-
-// Binstream >> ObjPtrList
-// undefined4 fn_8049C2CC(undefined4 param_1,undefined4 param_2)
-
-// {
-    // Load__36ObjPtrList<11RndDrawable,9ObjectDir>F R9BinStream b - returns a bool
-//   fn_8049C308(param_2,param_1,1); // ObjPtrList::Load
-//   return param_1;
-// }
 
 // END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 
