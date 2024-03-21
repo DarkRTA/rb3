@@ -229,6 +229,8 @@ public:
         insert(it, obj);
     }
 
+    // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
+    // PLEASE FIX
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         remove(mNodes->prev);
