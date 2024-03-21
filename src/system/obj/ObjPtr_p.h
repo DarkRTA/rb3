@@ -220,12 +220,10 @@ public:
     void clear(){ while(mSize != 0) pop_back(); }
 
     // found from RB2
-    // Load, link, insert, Set
-    // __as
+    // Set, __as
 
     // https://decomp.me/scratch/3c1sU
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
-    // insert and link are inlined somewhere in here
     // void insert(iterator, T1*);
     // void link(iterator, Node*);
     // fn_8049C424 - presumably push_back
@@ -233,30 +231,6 @@ public:
     void push_back(T1* obj){
         iterator it;
         insert(it, obj);
-        // // insert?
-        // if(mMode == kObjListNoNull){
-        //     MILO_ASSERT(obj, 0x15A); // assert for insert
-        // }
-        // Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
-        // node->obj = obj;
-
-        // // link - fn_803D1DBC
-        // if(obj) obj->AddRef(this);
-        // node->next = 0;
-
-        // if(mNodes){
-        //     node->prev = mNodes->prev;
-        //     mNodes->prev->next = node;
-        //     mNodes->prev = node;
-        // }
-        // else {
-        //     node->prev = node;
-        //     mNodes = node;
-        // }
-
-        // int tmpSize = mSize + 1;
-        // MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
-        // mSize = tmpSize;
     }
 
     void pop_back(){
@@ -310,11 +284,10 @@ public:
     int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
-    iterator& insert(iterator it, T1* obj){
-        if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x15A);
-        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
+    iterator& insert(iterator it, T1* obj) {
+        if(mMode == kObjListNoNull)  MILO_ASSERT(obj, 0x15A);
+        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool))(Node);
         node->obj = obj;
-        it.mNode = node;
         link(it, node);
         return it;
     }
@@ -335,34 +308,38 @@ public:
     // }
 
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
-    void link(iterator it, Node* n){
-        if(n->obj) n->obj->AddRef(this);
-        n->next = it.mNode;
+    void link(iterator it, Node* n) {
+        Node*& itNode = it.mNode;
         
-        Node* itNode = it.mNode;
-        if(mNodes == itNode){ // mNodes = ivar1, itNode = ivar2
-            if(mNodes){
+        if (n->obj) {
+            n->obj->AddRef(this);
+        }
+        n->next = itNode;
+
+        if (itNode == mNodes) { // mNodes = ivar1, itNode = ivar2
+
+            if (mNodes) {
                 n->prev = mNodes->prev;
                 mNodes->prev = n;
+            } else {
+                n->prev = n;
             }
-            else n->prev = n;
+
             mNodes = n;
-        }
-        else if(itNode){
+        } else if (!itNode) {
+            n->prev = mNodes->prev;
+            mNodes->prev->next = n;
+            mNodes->prev = n;
+        } else {
             n->prev = itNode->prev;
             itNode->prev->next = n;
             itNode->prev = n;
         }
-        else {
-            n->prev = mNodes->prev;
-            mNodes->prev->next = n;
-            mNodes->prev = n;
-        }
 
-        // mSize++;
-        int tmpSize = mSize + 1;
+        int size = mSize;
+        int tmpSize = size + 1;
         MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
-        mSize = tmpSize;
+        mSize = size + 1;
     }
 
     // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)

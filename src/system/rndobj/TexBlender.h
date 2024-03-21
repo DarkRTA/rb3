@@ -18,7 +18,7 @@ public:
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
     virtual int MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
-    virtual ~RndTexBlender();
+    virtual ~RndTexBlender(){}
 
     DataNode OnGetRenderTextures(DataArray*);
 
