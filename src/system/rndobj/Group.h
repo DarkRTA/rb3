@@ -37,6 +37,7 @@ public:
 
     void Update();
     void UpdateLODState();
+    void Merge(const RndGroup*);
 
     ObjPtrList<Hmx::Object, ObjectDir> mObjects;
     ObjPtr<RndEnviron, ObjectDir> mEnv;

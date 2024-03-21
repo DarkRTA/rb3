@@ -179,6 +179,8 @@ public:
     Hmx::Object* mOwner;
     int mSize : 24;
     ObjListMode mMode : 8;
+
+    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
     
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
@@ -189,60 +191,60 @@ public:
     virtual ~ObjPtrList() { clear(); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
 
-    virtual void Replace(Hmx::Object*, Hmx::Object*){
-        
+    virtual void Replace(Hmx::Object* from, Hmx::Object* to){
+        if(mMode == kObjListOwnerControl){
+            mOwner->Replace(from, to);
+            return;
+        }
+        else {
+            Node* it = mNodes;
+            while(it != 0){
+                if(it->obj == from){
+                    if(mMode == kObjListNoNull && !to){
+                        Node* next = unlink(it);
+                        delete it;
+                        it = next;
+                        continue;
+                    }
+                    else {
+                        from->Release(this);
+                        it->obj = dynamic_cast<T1*>(to);
+                        if(to) to->AddRef(this);
+                    }
+                }
+                it = it->next;
+            }
+        }
     }
 
     virtual bool IsDirPtr(){ return 0; }
 
     void clear(){ while(mSize != 0) pop_back(); }
 
-    // found from RB2
-    // Load, link, insert, Set
-    // __as
-
-    // https://decomp.me/scratch/3c1sU
+    // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
-    // insert and link are inlined somewhere in here
-    // void insert(iterator, T1*);
-    // void link(iterator, Node*);
+    // fn_8049C424 - push_back
     void push_back(T1* obj){
-        // insert?
-        if(mMode == kObjListNoNull){
-            MILO_ASSERT(obj, 0x15A); // assert for insert
-        }
-        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
-        node->obj = obj;
-        if(obj) obj->AddRef(this);
-        node->next = 0;
-
-        // link?
-        if(mNodes){
-            node->prev = mNodes->prev;
-            mNodes->prev->next = node;
-            mNodes->prev = node;
-        }
-        else {
-            node->prev = node;
-            mNodes = node;
-        }
-
-        int tmpSize = mSize + 1;
-        MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
-        mSize = tmpSize;
+        iterator it;
+        insert(it, obj);
     }
 
+    // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
+    // PLEASE FIX
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
-        Node* n = mNodes->prev;
-        unlink(n);     
-        delete n;
-    }    
+        remove(mNodes->prev);
+    }
+
+    iterator remove(iterator it){
+        Node* unlinked = unlink(it.mNode);
+        delete it.mNode;
+        return unlinked;
+    }
 
     // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     // fn_80389E34 in RB3 retail
     Node* unlink(Node* n){
-        Node* ret;
         MILO_ASSERT(n && mNodes, 0x24D);
         if(n->obj) n->obj->Release(this);
         if(n == mNodes){
@@ -251,20 +253,20 @@ public:
                 mNodes = mNodes->next;
             }
             else mNodes = 0;
-            ret = mNodes;
+            n = mNodes;
         }
         else if(n == mNodes->prev){
             mNodes->prev = mNodes->prev->prev;
             mNodes->prev->next = 0;
-            ret = mNodes->prev;
+            n = mNodes->prev;
         }
         else {
             n->prev->next = n->next;
             n->next->prev = n->prev;
-            ret = n->next;
+            n = n->next;
         }
         mSize--;
-        return ret;
+        return n;
     }
 
     T1* front() const {
@@ -283,43 +285,107 @@ public:
     int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
-    void insert(iterator, T1*);
+    // fn_8049C470 - insert
+    iterator& insert(iterator it, T1* obj) {
+        if(mMode == kObjListNoNull)  MILO_ASSERT(obj, 0x15A);
+        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool))(Node);
+        node->obj = obj;
+        link(it, node);
+        return it;
+    }
 
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
-    void link(iterator, Node*);
+    void link(iterator it, Node* n) {
+        Node*& itNode = it.mNode;
+        
+        if (n->obj) {
+            n->obj->AddRef(this);
+        }
+        n->next = itNode;
 
-    // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
-    // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
-    // __as__37ObjPtrList<12EventTrigger,9ObjectDir>FRC37ObjPtrList<12EventTrigger,9ObjectDir>
-    //     // Range: 0x8040DBA4 -> 0x8040DEF0
-    // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
-    //     // Local variables
-    //     struct Node * to; // r28
-    //     struct Node * from; // r31
+        if (itNode == mNodes) { // mNodes = ivar1, itNode = ivar2
 
-    //     // References
-    //     // -> class Debug TheDebug;
-    //     // -> const char * kAssertStr;
-    // }
+            if (mNodes) {
+                n->prev = mNodes->prev;
+                mNodes->prev = n;
+            } else {
+                n->prev = n;
+            }
 
-    bool Load(BinStream&, bool);
+            mNodes = n;
+        } else if (!itNode) {
+            n->prev = mNodes->prev;
+            mNodes->prev->next = n;
+            mNodes->prev = n;
+        } else {
+            n->prev = itNode->prev;
+            itNode->prev->next = n;
+            itNode->prev = n;
+        }
+
+        int size = mSize;
+        int tmpSize = size + 1;
+        MILO_ASSERT(tmpSize < 8388607, 0x244);
+        mSize = size + 1;
+    }
+
+    // fn_80453DC4 in retail
+    // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
+    // ObjPtrList::Set(iterator, T1*)
+    void Set(iterator it, T1* obj){
+        if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
+        if(it.mNode->obj) it.mNode->obj->Release(this);
+        it.mNode->obj = obj;
+        if(it.mNode->obj) it.mNode->obj->AddRef(this);
+    }
+
+    void operator=(const ObjPtrList<T1, T2>& x){
+        if(this == &x) return;
+        while(size() > x.size()) pop_back();
+        Node* otherNodes = x.mNodes;
+        for(Node* curNodes = mNodes; curNodes != 0; curNodes = curNodes->next){
+            Set(curNodes, otherNodes->obj);
+            otherNodes = otherNodes->next;
+        }
+        for(; otherNodes != 0; otherNodes = otherNodes->next){
+            push_back(otherNodes->obj);
+        }
+    }
+
+    // fn_8049C308 in retail
+    bool Load(BinStream& bs, bool b){
+        bool ret = true;
+        clear();
+        int count;
+        bs >> count;
+        class ObjectDir* dir = 0;
+        if(mOwner) dir = mOwner->Dir();
+        MILO_ASSERT(dir, 0x207);
+        for(; count != 0; count--){
+            char buf[0x80];
+            bs.ReadString(buf, 0x80);
+            if(dir){
+                T1* casted = dynamic_cast<T1*>(dir->FindObject(buf, false));
+                if(!casted && buf[0] != '\0'){
+                    if(b) MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+                    ret = false;
+                }
+                else if(casted){
+                    push_back(casted);
+                }
+            }
+        }
+        return ret;
+    }
 
 };
 
 // __rs<Q23Hmx6Object>__F R9BinStream R36ObjPtrList<Q23Hmx6Object,9ObjectDir> _R9BinStream
+// fn_8049C2CC in retail
 template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true);
     return bs;
 }
-
-// Binstream >> ObjPtrList
-// undefined4 fn_8049C2CC(undefined4 param_1,undefined4 param_2)
-
-// {
-    // Load__36ObjPtrList<11RndDrawable,9ObjectDir>F R9BinStream b - returns a bool
-//   fn_8049C308(param_2,param_1,1); // ObjPtrList::Load
-//   return param_1;
-// }
 
 // END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 
