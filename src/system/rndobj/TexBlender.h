@@ -20,13 +20,18 @@ public:
     virtual void DrawShowing();
     virtual ~RndTexBlender();
 
-    ObjPtr<RndTex, ObjectDir> p1;
-    ObjPtr<RndTex, ObjectDir> p2;
-    ObjPtr<RndTex, ObjectDir> p3;
-    ObjPtr<RndTex, ObjectDir> p4;
-    ObjPtrList<RndTexBlendController, ObjectDir> p5;
-    ObjPtr<RndDrawable, ObjectDir> p6;
-    float unk6c;
+    DataNode OnGetRenderTextures(DataArray*);
+
+    DECLARE_REVS;
+    DELETE_OVERLOAD;
+
+    ObjPtr<RndTex, class ObjectDir> mBaseMap;
+    ObjPtr<RndTex, class ObjectDir> mNearMap;
+    ObjPtr<RndTex, class ObjectDir> mFarMap;
+    ObjPtr<RndTex, class ObjectDir> mOutputTextures;
+    ObjPtrList<RndTexBlendController, class ObjectDir> mControllerList;
+    ObjPtr<RndDrawable, class ObjectDir> mOwner;
+    float mControllerInfluence;
     int unk70;
 };
 

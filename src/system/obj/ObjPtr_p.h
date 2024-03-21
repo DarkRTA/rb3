@@ -189,8 +189,30 @@ public:
     virtual ~ObjPtrList() { clear(); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
 
-    virtual void Replace(Hmx::Object*, Hmx::Object*){
-        
+    virtual void Replace(Hmx::Object* from, Hmx::Object* to){
+        if(mMode == kObjListOwnerControl){
+            mOwner->Replace(from, to);
+            return;
+        }
+        else {
+            Node* it = mNodes;
+            while(it != 0){
+                if(it->obj == from){
+                    if(mMode == kObjListNoNull && !to){
+                        Node* next = unlink(it);
+                        delete it;
+                        it = next;
+                        continue;
+                    }
+                    else {
+                        from->Release(this);
+                        it->obj = dynamic_cast<T1*>(to);
+                        if(to) to->AddRef(this);
+                    }
+                }
+                it = it->next;
+            }
+        }
     }
 
     virtual bool IsDirPtr(){ return 0; }
@@ -206,30 +228,35 @@ public:
     // insert and link are inlined somewhere in here
     // void insert(iterator, T1*);
     // void link(iterator, Node*);
+    // fn_8049C424 - presumably push_back
+    // fn_8049C470 - insert
     void push_back(T1* obj){
-        // insert?
-        if(mMode == kObjListNoNull){
-            MILO_ASSERT(obj, 0x15A); // assert for insert
-        }
-        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
-        node->obj = obj;
-        if(obj) obj->AddRef(this);
-        node->next = 0;
+        iterator it;
+        insert(it, obj);
+        // // insert?
+        // if(mMode == kObjListNoNull){
+        //     MILO_ASSERT(obj, 0x15A); // assert for insert
+        // }
+        // Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
+        // node->obj = obj;
 
-        // link?
-        if(mNodes){
-            node->prev = mNodes->prev;
-            mNodes->prev->next = node;
-            mNodes->prev = node;
-        }
-        else {
-            node->prev = node;
-            mNodes = node;
-        }
+        // // link - fn_803D1DBC
+        // if(obj) obj->AddRef(this);
+        // node->next = 0;
 
-        int tmpSize = mSize + 1;
-        MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
-        mSize = tmpSize;
+        // if(mNodes){
+        //     node->prev = mNodes->prev;
+        //     mNodes->prev->next = node;
+        //     mNodes->prev = node;
+        // }
+        // else {
+        //     node->prev = node;
+        //     mNodes = node;
+        // }
+
+        // int tmpSize = mSize + 1;
+        // MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
+        // mSize = tmpSize;
     }
 
     void pop_back(){
@@ -283,10 +310,60 @@ public:
     int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
-    void insert(iterator, T1*);
+    iterator& insert(iterator it, T1* obj){
+        if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x15A);
+        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool)) (Node);
+        node->obj = obj;
+        it.mNode = node;
+        link(it, node);
+        return it;
+    }
+
+    // undefined4 fn_8049C470(undefined4 param_1,undefined4 *param_2,undefined4 param_3)
+
+    // {
+    //     undefined4 *puVar1;
+    //     undefined auStack_18 [4];
+    //     undefined4 local_14 [2];
+        
+    //     puVar1 = (undefined4 *)_PoolAlloc(0xc,0xc,1);
+    //     *puVar1 = param_3;
+    //     local_14[0] = *param_2;
+    //     fn_803D1DBC(param_1,local_14,puVar1);
+    //     puVar1 = (undefined4 *)fn_8000DA6C(auStack_18,puVar1);
+    //     return *puVar1;
+    // }
 
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
-    void link(iterator, Node*);
+    void link(iterator it, Node* n){
+        if(n->obj) n->obj->AddRef(this);
+        n->next = it.mNode;
+        
+        Node* itNode = it.mNode;
+        if(mNodes == itNode){ // mNodes = ivar1, itNode = ivar2
+            if(mNodes){
+                n->prev = mNodes->prev;
+                mNodes->prev = n;
+            }
+            else n->prev = n;
+            mNodes = n;
+        }
+        else if(itNode){
+            n->prev = itNode->prev;
+            itNode->prev->next = n;
+            itNode->prev = n;
+        }
+        else {
+            n->prev = mNodes->prev;
+            mNodes->prev->next = n;
+            mNodes->prev = n;
+        }
+
+        // mSize++;
+        int tmpSize = mSize + 1;
+        MILO_ASSERT(tmpSize < 8388607, 0x244); // assert for link
+        mSize = tmpSize;
+    }
 
     // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
     // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
@@ -302,7 +379,29 @@ public:
     //     // -> const char * kAssertStr;
     // }
 
-    bool Load(BinStream&, bool);
+    bool Load(BinStream& bs, bool b){
+        clear();
+        int count;
+        bs >> count;
+        class ObjectDir* dir = 0;
+        if(mOwner) dir = mOwner->Dir();
+        MILO_ASSERT(dir, 0x207);
+        while(count-- != 0){
+            char buf[0x80];
+            bs.ReadString(buf, 0x80);
+            if(dir){
+                T1* casted = dynamic_cast<T1*>(dir->FindObject(buf, false));
+                if(!casted && buf[0] != '\0'){
+                    if(b) MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+                    return false;
+                }
+                else if(casted){
+                    push_back(casted);
+                }
+            }
+        }
+        return true;
+    }
 
 };
 
