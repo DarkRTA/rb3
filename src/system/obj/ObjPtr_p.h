@@ -347,10 +347,9 @@ public:
 
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
-        Hmx::Object* itobj = it.mNode->obj;
-        if(itobj) itobj->Release(this);
-        itobj = obj;
-        if(obj) obj->AddRef(this);
+        if(it.mNode->obj) it.mNode->obj->Release(this);
+        it.mNode->obj = obj;
+        if(it.mNode->obj) it.mNode->obj->AddRef(this);
     }
 
     void operator=(const ObjPtrList<T1, T2>& x){
