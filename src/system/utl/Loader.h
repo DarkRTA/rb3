@@ -4,6 +4,7 @@
 #include "os/System.h"
 #include "os/File.h"
 #include "utl/Str.h"
+#include <list>
 // #include <list>
 
 enum LoaderPos {
@@ -36,10 +37,12 @@ public:
 
 class LoadMgr {
 public:
-    char mLoaders[8];
+    std::list<Loader*> mLoaders;
     Platform mPlatform;
     bool mCacheMode;
     bool mEditMode;
+
+    Loader* AddLoader(const FilePath&, LoaderPos);
 
     // // total size: 0x60
     // class list mLoaders; // offset 0x0, size 0x8
