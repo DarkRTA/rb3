@@ -32,3 +32,21 @@ void RndGroup::Load(BinStream& bs){
     }
     UpdateLODState();
 }
+
+BEGIN_COPYS(RndGroup)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndAnimatable)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_SUPERCLASS(RndTransformable)
+    GET_COPY(RndGroup)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mEnv)
+        COPY_MEMBER(mDrawOnly)
+        COPY_MEMBER(mLod)
+        COPY_MEMBER(mLodScreenSize)
+        COPY_MEMBER(unk8p1)
+        if(ty == kCopyDeep) COPY_MEMBER(mObjects)
+        else if(ty == kCopyFromMax) Merge(c);
+    END_COPY_CHECKED
+    Update();
+END_COPYS

@@ -1,6 +1,7 @@
 #include "rndobj/Lit.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
+#include "os/Debug.h"
 
 INIT_REVS(RndLight);
 
@@ -11,6 +12,13 @@ RndLight::RndLight() : mColor(), mColorOwner(this, this), mRange(1000.0f), mFall
 }
 
 SAVE_OBJ(RndLight, 0x33);
+
+BEGIN_COPYS(RndLight)
+    const RndLight* l = dynamic_cast<const RndLight*>(o);
+    MILO_ASSERT(l, 0xD6);
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndTransformable)
+END_COPYS
 
 void RndLight::SetTopRadius(float rad){ mTopRadius = rad; }
 void RndLight::SetBotRadius(float rad){ mBotRadius = rad; }

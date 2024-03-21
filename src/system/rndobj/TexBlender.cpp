@@ -8,6 +8,22 @@ RndTexBlender::RndTexBlender() : mBaseMap(this, 0), mNearMap(this, 0), mFarMap(t
     unk9p6 = 1;
 }
 
+BEGIN_COPYS(RndTexBlender)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndDrawable)
+    GET_COPY(RndTexBlender)
+    BEGIN_COPY_CHECKED
+        COPY_MEMBER(mOutputTextures)
+        COPY_MEMBER(mBaseMap)
+        COPY_MEMBER(mNearMap)
+        COPY_MEMBER(mFarMap)
+        COPY_MEMBER(mControllerList)
+        COPY_MEMBER(mOwner)
+        COPY_MEMBER(mControllerInfluence)
+    END_COPY_CHECKED
+    unk70 = 0;
+END_COPYS
+
 SAVE_OBJ(RndTexBlender, 0x52);
 
 void RndTexBlender::Load(BinStream& bs){

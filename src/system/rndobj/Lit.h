@@ -31,13 +31,13 @@ public:
 
     void SetTopRadius(float);
     void SetBotRadius(float);
-    void SetShadowOverride(ObjPtrList<RndDrawable, ObjectDir>*);
+    void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
     Hmx::Color mColor;
-    ObjOwnerPtr<RndLight, ObjectDir> mColorOwner;
+    ObjOwnerPtr<RndLight, class ObjectDir> mColorOwner;
     float mRange;
     float mFalloffStart;
     Type mType;
@@ -45,9 +45,9 @@ public:
     bool mAnimatePositionFromPreset;
     bool mAnimateRangeFromPreset;
     bool mShowing;
-    ObjPtr<RndTex, ObjectDir> mTexture;
+    ObjPtr<RndTex, class ObjectDir> mTexture;
     int unknownint; // figure this out too
-    ObjPtrList<RndDrawable, ObjectDir> mShadowObjects;
+    ObjPtrList<RndDrawable, class ObjectDir> mShadowObjects;
     Transform mTextureXfm;
     float mTopRadius;
     float mBotRadius;

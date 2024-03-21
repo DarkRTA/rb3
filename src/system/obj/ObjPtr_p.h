@@ -179,6 +179,8 @@ public:
     Hmx::Object* mOwner;
     int mSize : 24;
     ObjListMode mMode : 8;
+
+    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
     
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
@@ -218,9 +220,6 @@ public:
     virtual bool IsDirPtr(){ return 0; }
 
     void clear(){ while(mSize != 0) pop_back(); }
-
-    // found from RB2
-    // Set, __as
 
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
@@ -328,23 +327,9 @@ public:
         mSize = size + 1;
     }
 
-    // ObjPtrList<EventTrigger, ObjectDir>::operator=(const ObjPtrList<EventTrigger, ObjectDir>&)
-    // ObjPtrList<RndPartLauncher, ObjectDir>::operator=(const ObjPtrList<RndPartLauncher, ObjectDir>&)
     // fn_80453DC4 in retail
     // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
     // ObjPtrList::Set(iterator, T1*)
-    // __as__37ObjPtrList<12EventTrigger,9ObjectDir>FRC37ObjPtrList<12EventTrigger,9ObjectDir>
-    //     // Range: 0x8040DBA4 -> 0x8040DEF0
-    // void ObjPtrList::__as(class ObjPtrList * const this /* r29 */, const class ObjPtrList & x /* r30 */) {
-    //     // Local variables
-    //     struct Node * to; // r28
-    //     struct Node * from; // r31
-
-    //     // References
-    //     // -> class Debug TheDebug;
-    //     // -> const char * kAssertStr;
-    // }
-
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
         if(it.mNode->obj) it.mNode->obj->Release(this);
