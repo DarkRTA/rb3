@@ -29,6 +29,8 @@ enum PropOp {
     kPropHandle = 32,
 };
 
+#include "obj/PropSync_p.h"
+
 /** A dictionary representing the different properties an Object can have. */
 class TypeProps {
 public:
@@ -202,6 +204,9 @@ inline unsigned short getHmxRev(unsigned int ui){
 inline unsigned short getAltRev(unsigned int ui){
     return ui >> 0x10;
 }
+
+#define NEW_OVERLOAD \
+    void* operator new(size_t t) {return _MemAlloc(t, 0);}
 
 #define DELETE_OVERLOAD \
     void operator delete(void* v){ _MemFree(v); }

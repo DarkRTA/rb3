@@ -13,6 +13,7 @@ BEGIN_MESSAGE(ButtonUpMsg, "button_up", LocalUser*, JoypadButton, JoypadAction, 
 END_MESSAGE;
 
 BEGIN_MESSAGE(ButtonDownMsg, "button_down", LocalUser*, JoypadButton, JoypadAction, int);
+    ButtonDownMsg(DataArray*);
     LocalUser* GetUser() const;
 END_MESSAGE;
 
