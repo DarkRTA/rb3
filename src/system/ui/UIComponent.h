@@ -1,14 +1,28 @@
 #ifndef UI_UICOMPONENT_H
 #define UI_UICOMPONENT_H
 
+#include "types.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
+#include "os/User.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Mesh.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
+#include "utl/FilePath.h"
+#include <vector>
 
-class UIComponent : public RndTransformable, public RndDrawable, public RndPollable {
+
+class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
+    enum State {
+        kStateNormal,
+        kStateFocused,
+        kStateDisabled,
+        kStateSelecting,
+        kStateSelected,
+        kStateInvalid
+    };
     UIComponent();
     virtual ~UIComponent();
     OBJ_CLASSNAME(UIComponent)
@@ -22,10 +36,44 @@ class UIComponent : public RndTransformable, public RndDrawable, public RndPolla
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void Poll();
+    virtual void SetState(UIComponent::State);
     virtual void Exit();
+    virtual void Enter();
     virtual void Highlight();
+    virtual int CanHaveFocus() {return true;}
+    virtual void CopyMembers(const UIComponent*, CopyType);
+
+    void FinishSelecting();
+    Symbol StateSym() const;
+    void SendSelect(LocalUser*);
+    char* GetResourcesPath();
+    void ResourceFileUpdated(bool);
+    DataNode OnGetResourcesPath(DataArray*);
+    bool Exiting() const;
+    ObjectDir* ResourceDir();
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+
     ObjPtr<UIComponent, ObjectDir> mNavRight;
     ObjPtr<UIComponent, ObjectDir> mNavDown;
+    int test4[2];
+    RndMesh* mMesh;
+    std::vector<int> mSomeVec;
+    String mResourceName;
+    ObjDirPtr<ObjectDir> mObjDir;
+    FilePath mResourcePath;
+    bool a;
+    s8 mState;
+    bool c, d;
+
+    static Hmx::Object* NewObject();
+    static void Init();
+    static int sSelectFrames;
+    DECLARE_REVS
 };
+
+Symbol UIComponentStateToSym(UIComponent::State);
+UIComponent::State SymToUIComponentState(Symbol);
 
 #endif // UI_UICOMPONENT_H

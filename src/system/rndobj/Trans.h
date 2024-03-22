@@ -39,6 +39,8 @@ public:
     virtual void Print();
     virtual void UpdatedWorldXfm();
 
+    void SetTransParent(RndTransformable*, bool);
+
     static void Init();
     static Hmx::Object* NewObject();
 

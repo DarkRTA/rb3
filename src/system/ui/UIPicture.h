@@ -38,7 +38,6 @@ public:
     void HookupMesh();
     DELETE_OVERLOAD
 
-    int offset[0xF];
 
     ObjPtr<RndMesh, ObjectDir> mMesh;
     FilePath mTexFile;

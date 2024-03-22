@@ -22,6 +22,10 @@ void Screenshot::Load(BinStream& bs){
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
+    char x[0x100];
+    bs.ReadString(x, 256);
+    mTexPath.Set(FilePath::sRoot.c_str(), x);
+    Sync();
 }
 
 void Screenshot::Sync(){
