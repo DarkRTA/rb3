@@ -151,6 +151,7 @@
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EventTrigger.cpp": "NonMatching",
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
