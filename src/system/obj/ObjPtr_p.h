@@ -162,15 +162,16 @@ public:
         
         iterator() : mNode(0) {}
         iterator(Node* node) : mNode(node) {}
-        iterator(const ObjPtrList<T1, T2>::iterator& it){ mNode = it.mNode; }
         T1* operator*(){ return mNode->obj; }
 
+        // RB2 says this returns an iterator rather than an iterator&
+        // apparently this can return an iterator if inlining is off?
         iterator& operator++(){
             mNode = mNode->next;
-            return *reinterpret_cast<iterator*>(mNode);
+            return *this;
         }
 
-        bool operator!=(ObjPtrList<T1, T2>::iterator it){ return mNode != it.mNode; }
+        bool operator!=(iterator it){ return mNode != it.mNode; }
 
         struct Node* mNode;
     };
@@ -201,9 +202,7 @@ public:
             while(it != 0){
                 if(it->obj == from){
                     if(mMode == kObjListNoNull && !to){
-                        Node* next = unlink(it);
-                        delete it;
-                        it = next;
+                        it = remove(it).mNode;
                         continue;
                     }
                     else {
@@ -225,8 +224,7 @@ public:
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // fn_8049C424 - push_back
     void push_back(T1* obj){
-        iterator it;
-        insert(it, obj);
+        insert(end(), obj);
     }
 
     // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
@@ -280,18 +278,21 @@ public:
     }
 
     bool empty() const { return mSize == 0; }
-    iterator& begin() const { return *reinterpret_cast<iterator*>(mNodes); }
-    iterator& end() const { return *reinterpret_cast<iterator*>(0); }
+
+    // if inlining is off, these could work too? explore this
+    iterator begin() const { return iterator(mNodes); }
+    iterator end() const { return iterator(0); }
+
     int size() const { return mSize; }
 
     // insert__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P11RndDrawable
     // fn_8049C470 - insert
-    iterator& insert(iterator it, T1* obj) {
-        if(mMode == kObjListNoNull)  MILO_ASSERT(obj, 0x15A);
+    iterator insert(iterator it, T1* obj) {
+        if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x15A);
         Node* node = new (_PoolAlloc(0xc, 0xc, FastPool))(Node);
         node->obj = obj;
         link(it, node);
-        return it;
+        return node;
     }
 
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
@@ -352,7 +353,7 @@ public:
         }
     }
 
-    // fn_8049C308 in retail
+    // fn_8056349C in retail
     bool Load(BinStream& bs, bool b){
         bool ret = true;
         clear();
@@ -361,7 +362,7 @@ public:
         class ObjectDir* dir = 0;
         if(mOwner) dir = mOwner->Dir();
         MILO_ASSERT(dir, 0x207);
-        for(; count != 0; count--){
+        while(count != 0){
             char buf[0x80];
             bs.ReadString(buf, 0x80);
             if(dir){
@@ -374,14 +375,14 @@ public:
                     push_back(casted);
                 }
             }
+            count--;
         }
         return ret;
     }
 
 };
 
-// __rs<Q23Hmx6Object>__F R9BinStream R36ObjPtrList<Q23Hmx6Object,9ObjectDir> _R9BinStream
-// fn_8049C2CC in retail
+// fn_80563460 in retail (BinStream >> ObjPtrList<Hmx::Object, ObjectDir>)
 template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true);
     return bs;
@@ -390,3 +391,7 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class Ob
 // END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 
 #endif
+
+// ObjPtrList work:
+// https://decomp.me/scratch/xXn7G
+// https://decomp.me/scratch/3EvHB
