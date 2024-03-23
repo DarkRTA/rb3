@@ -34,6 +34,9 @@ public:
     void OnRemoveAllLights();
     DataNode OnAllowableLights_Real(const DataArray*);
     DataNode OnAllowableLights_Approx(const DataArray*);
+    bool FogEnable() const;
+    bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, ObjectDir>&) const;
+    bool IsValidRealLight(const RndLight*) const;
 
     DELETE_OVERLOAD
 
@@ -49,11 +52,12 @@ public:
     int i2;
     int i3;
     int i4;
-    bool mHasPointCubeTex;
-    ObjOwnerPtr<RndEnviron, ObjectDir> mOwner;
-    ObjPtr<RndTransformable, ObjectDir> mTrans;
-    Timer mTimer;
-    int test[0x2];
+    bool mHasPointCubeTex; // 0x70
+    ObjOwnerPtr<RndEnviron, ObjectDir> mOwner; // 0x74
+    bool mFog; // 0x80
+    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x84
+    Timer mTimer; // 0x90
+    int test;
     RndColorXfm mColor;
     bool b;
     bool mAnimateFromPreset;

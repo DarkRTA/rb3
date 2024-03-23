@@ -59,6 +59,26 @@ BEGIN_COPYS(RndEnviron)
     GET_COPY_AND_ASSERT(RndEnviron, 365)
 END_COPYS
 
+bool RndEnviron::IsValidRealLight(const RndLight*) const {
+    bool ret = false; if (mTimer.mRunning != 0) {
+        if (mTimer.mRunning != 2) return ret;
+    }
+    ret = true;
+    return ret;
+}
+
+bool RndEnviron::IsFake(RndLight* l) const {
+    return IsLightInList(l, mLightsApprox);
+}
+
+bool RndEnviron::IsReal(RndLight* l) const {
+    return IsLightInList(l, mLightsReal);
+}
+
+bool RndEnviron::FogEnable() const {
+    return mOwner->mFog;
+}
+
 void RndEnviron::ReclassifyLights() {
 
 }
@@ -73,6 +93,8 @@ BEGIN_HANDLERS(RndEnviron)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(582)
 END_HANDLERS
+
+void RndEnviron::ApplyApproxLighting(const _GXColor*) { }
 
 BEGIN_PROPSYNCS(RndEnviron)
     SYNC_PROP(lights_real, mLightsReal)
