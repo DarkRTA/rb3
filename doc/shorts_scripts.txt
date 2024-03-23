@@ -1,0 +1,8 @@
+PREEXISTING ELEVATOR PITCH LINES
+pointers - "computers gotta store stuff somewhere, but they want to be able to use it without copying the entire thing"
+virtualization - "you might want base functionality from something and have different variations do different stuff to/from it"
+inlining - "sometimes it's faster to do stuff where you are instead of going to the proper place for it"
+templates - "you want something done to a bunch of different types of stuff but don't wanna write unique variations"
+operator overloading - "sometimes it's nice to be able to do math operations to two things together that aren't just numbers"
+structs - "you have a particular object that has several attributes, and want to be able to perform operations on them. for example, I can have a Song struct that has attributes like length, title, artist, and I want to perform operations like play, pause or stop"
+classes - "kinda like structs, maybe I don’t want someone to access certain members so easily - like maybe I wrote this Song and I don’t want someone changing the artist member, so I can make it private"
