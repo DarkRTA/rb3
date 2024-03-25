@@ -17,8 +17,8 @@ void FretHand::SetFinger(uint finger, int a, int b, int c) {
 
 void FretHand::GetFinger(uint finger, int& a, int& b, int& c) const {
     MILO_ASSERT(finger < kNumFingers, 33);
-    finger *= 12;
-    a = test[0 + finger];
+    finger * 12;
+    a = test[0] + finger;
     b = test[1];
     c = test[2];
 }
