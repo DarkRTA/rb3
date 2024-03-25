@@ -23,6 +23,9 @@
                 "-pragma \"cats off\"",
                 "-pragma \"warn_notinlined off\"",
 
+                "-RTTI on",
+                "-Cpp_exceptions off",
+
                 "-d NDEBUG"
             ]
         },
@@ -59,9 +62,6 @@
                 "-fp_contract on",
                 "-pragma \"merge_float_consts on\"",
 
-                "-RTTI on",
-                "-Cpp_exceptions off",
-
                 "-O4,s",
                 "-inline off"
             ]
@@ -82,7 +82,8 @@
                 "-pragma \"merge_float_consts on\"",
 
                 "-lang=c99",
-                "-inline auto"
+                "-O4,s",
+                "-inline noauto"
             ]
         },
         "zlib": {
@@ -90,10 +91,13 @@
             "flags": [
                 "-sdata 2",
                 "-sdata2 2",
+
                 "-pool on",
+                "-str reuse,pool",
                 "-pragma \"merge_float_consts on\"",
 
                 "-lang=c99",
+                "-O4,p",
                 "-inline auto"
             ]
         },
@@ -122,6 +126,7 @@
                 "-pragma \"merge_float_consts on\"",
 
                 "-lang=c99",
+                "-O4,p",
                 "-inline auto"
             ]
         }

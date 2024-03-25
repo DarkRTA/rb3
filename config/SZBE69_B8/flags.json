@@ -23,7 +23,9 @@
                 "-pragma \"warn_notinlined off\"",
 
                 "-RTTI on",
-                "-Cpp_exceptions off"
+                "-Cpp_exceptions off",
+
+                "-d MILO_DEBUG"
             ]
         },
         "runtime": {

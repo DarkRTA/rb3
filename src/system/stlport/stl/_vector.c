@@ -67,7 +67,7 @@ void vector<_Tp, _Size, _Alloc>::reserve(size_type __n) {
       __tmp = _M_allocate_and_copy(__n, begin(), end());
       _M_clear();
     } else {
-      __tmp = this->_M_ptr.allocate(__n, __n);
+      __tmp = this->_M_ptr.allocate(__n);
     }
     _M_set(__tmp, __tmp + __old_size, __tmp + __n);
   }
@@ -79,7 +79,7 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, const _Tp
   const size_type __old_size = size();
   size_type __len = __old_size + (max)(__old_size, __fill_len);
 
-  pointer __new_start = this->_M_ptr.allocate(__len, __len);
+  pointer __new_start = this->_M_ptr.allocate(__len);
   pointer __new_finish = __new_start;
   _STLP_TRY {
     __new_finish = _STLP_PRIV::__uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
@@ -104,12 +104,12 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow(pointer __pos, const _Tp& __
   const size_type __old_size = size();
   size_type __len = __old_size + (max)(__old_size, __fill_len);
 
-  pointer __new_start = this->_M_ptr.allocate(__len, __len);
-  pointer __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(begin(), __pos, __new_start));
+  pointer __new_start = this->_M_ptr.allocate(__len);
+  pointer __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(this->_M_ptr._M_data, __pos, __new_start));
   // handle insertion
   __new_finish = _STLP_PRIV::__fill_n(__new_finish, __fill_len, __x);
   if (!__atend)
-    __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(__pos, end(), __new_finish)); // copy remainder
+    __new_finish = static_cast<pointer>(_STLP_PRIV::__copy_trivial(__pos, _M_finish(), __new_finish)); // copy remainder
   _M_clear();
   _M_set(__new_start, __new_finish, __new_start + __len);
 }
@@ -129,7 +129,7 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux(iterator __pos, size_type __
     _STLP_STD::_Destroy_Moved(__src);
   }
   _STLP_PRIV::__uninitialized_fill_n(__pos, __n, __x);
-  this->_M_size += __n;
+  _M_inc_finish_idx(__n);
 }
 
 template <class _Tp, class _Size, class _Alloc>
@@ -145,14 +145,14 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_type _
   pointer __old_finish = end();
   if (__elems_after > __n) {
     _STLP_PRIV::__ucopy_ptrs(end() - __n, end(), end(), _TrivialUCopy());
-    this->_M_size += __n;
+    _M_inc_finish_idx(__n);
     _STLP_PRIV::__copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
     _STLP_STD::fill(__pos, __pos + __n, __x);
   } else {
     auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - __elems_after, __x);
-    this->_M_size = end - begin();
+    _M_set_finish_idx(end - begin());
     _STLP_PRIV::__ucopy_ptrs(__pos, __old_finish, end(), _TrivialUCopy());
-    this->_M_size += __elems_after;
+    _M_inc_finish_idx(__elems_after);
     _STLP_STD::fill(__pos, __old_finish, __x);
   }
 }
@@ -161,7 +161,7 @@ template <class _Tp, class _Size, class _Alloc>
 void vector<_Tp, _Size, _Alloc>::_M_fill_insert(iterator __pos,
                                          size_type __n, const _Tp& __x) {
   if (__n != 0) {
-    if (size_type(this->_M_capacity - this->_M_size) >= __n) {
+    if (size_type(this->_M_data_size - this->_M_finish_idx) >= __n) {
       _M_fill_insert_aux(__pos, __n, __x, _Movable());
     } else
       _M_insert_overflow(__pos, __x, _TrivialCopy(), __n);
@@ -178,7 +178,7 @@ vector<_Tp, _Size, _Alloc>& vector<_Tp, _Size, _Alloc>::operator = (const vector
                                                   const_cast<const_pointer>(__x.end()) + 0);
       _M_clear();
       this->_M_ptr._M_data = __tmp;
-      this->_M_capacity = __len;
+      _M_set_data_size(__len);
     } else if (size() >= __xlen) {
       pointer __i = _STLP_PRIV::__copy_ptrs(const_cast<const_pointer>(__x.begin()) + 0,
                                            const_cast<const_pointer>(__x.end()) + 0, begin(), _TrivialCopy());
@@ -189,20 +189,20 @@ vector<_Tp, _Size, _Alloc>& vector<_Tp, _Size, _Alloc>::operator = (const vector
       _STLP_PRIV::__ucopy_ptrs(const_cast<const_pointer>(__x.begin()) + size(),
                               const_cast<const_pointer>(__x.end()) + 0, end(), _TrivialUCopy());
     }
-    this->_M_size = __xlen;
+    _M_set_finish_idx(__xlen);
   }
   return *this;
 }
 
 template <class _Tp, class _Size, class _Alloc>
-void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_t __n, const _Tp& __val) {
+void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_type __n, const _Tp& __val) {
   if (__n > capacity()) {
     vector<_Tp, _Size, _Alloc> __tmp(__n, __val, get_allocator());
     __tmp.swap(*this);
   } else if (__n > size()) {
     fill(begin(), end(), __val);
     auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val);
-    this->_M_size = end - begin();
+    _M_set_finish_idx(end - begin());
   } else
     erase(_STLP_PRIV::__fill_n(begin(), __n, __val), end());
 }

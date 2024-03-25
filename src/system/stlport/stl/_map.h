@@ -139,7 +139,7 @@ public:
     iterator __i = lower_bound(__k);
     // __i->first is greater than or equivalent to __k.
     if (__i == end() || key_comp()(__k, (*__i).first))
-      __i = insert(__i, value_type(__k, _Tp()));
+      __i = _M_t.insert_unique(__i, value_type(__k, _Tp()));
     return (*__i).second;
   }
   void swap(_Self& __x) { _M_t.swap(__x._M_t); }

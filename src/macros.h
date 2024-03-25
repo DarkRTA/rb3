@@ -1,6 +1,12 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+// Possibilities for the GAME_VERSION define
+// Be sure to update if the list in configure.py changes!
+#define VERSION_SZBE69 0
+#define VERSION_SZBE69_BE 1
+
+// Useful macros
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 

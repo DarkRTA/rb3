@@ -436,7 +436,7 @@ private: // Helper functions for append.
         this->_M_throw_length_error();
       if (__old_size + __n > this->capacity()) {
         size_type __len = __old_size + (max)(__old_size, static_cast<size_type>(__n)) + 1;
-        pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
+        pointer __new_start = this->_M_end_of_storage.allocate(__len);
         pointer __new_finish = __new_start;
         _STLP_TRY {
           __new_finish = uninitialized_copy(this->_M_Start(), this->_M_Finish(), __new_start);
@@ -668,7 +668,7 @@ protected:  // Helper functions for insert.
                           difference_type __n) {
     const size_type __old_size = this->size();
     size_type __len = __old_size + (max)(__old_size, static_cast<size_type>(__n)) + 1;
-    pointer __new_start = this->_M_end_of_storage.allocate(__len, __len);
+    pointer __new_start = this->_M_end_of_storage.allocate(__len);
     pointer __new_finish = __new_start;
     _STLP_TRY {
       __new_finish = uninitialized_copy(this->_M_Start(), __pos, __new_start);
