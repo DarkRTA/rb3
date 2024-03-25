@@ -46,6 +46,8 @@
 #  include <stl/_uninitialized.h>
 #endif
 
+#include "macros.h"
+
 #ifdef MILO_DEBUG
 // From system/os/Debug.cpp
 // Declared here since it's not relevant anywhere else
@@ -108,10 +110,16 @@ protected:
   void _STLP_FUNCTION_THROWS _M_throw_length_error() const;
   void _STLP_FUNCTION_THROWS _M_throw_out_of_range() const;
 
-  pointer _M_finish() { return &_M_ptr._M_data[_M_finish_idx]; }
-  const_pointer _M_finish() const { return &_M_ptr._M_data[_M_finish_idx]; }
+  pointer _M_finish() { return _M_ptr._M_data + _M_finish_idx; }
+  const_pointer _M_finish() const { return _M_ptr._M_data + _M_finish_idx; }
 
-  void _M_inc_finish_idx(difference_type increment) {
+    // _M_inc_finish_idx in retail doesn't match with size_type as the parameter,
+    // but symbols in bank 8 indicate it uses size_type
+#if GAME_VERSION == VERSION_SZBE69
+  void _M_inc_finish_idx(_Size increment) {
+#elif GAME_VERSION == VERSION_SZBE69_BE
+  void _M_inc_finish_idx(size_type increment) {
+#endif
     _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);
     _M_finish_idx += increment;
   }
@@ -204,13 +212,15 @@ private:
 public:
   iterator begin()             { return this->_M_ptr._M_data; }
   const_iterator begin() const { return this->_M_ptr._M_data; }
-  iterator end()               { return this->_M_ptr._M_data + _M_finish_idx + 1; }
-  const_iterator end() const   { return this->_M_ptr._M_data + _M_finish_idx + 1; }
+  iterator end()               { return this->_M_ptr._M_data + _M_finish_idx; }
+  const_iterator end() const   { return this->_M_ptr._M_data + _M_finish_idx; }
 
+                                         // for some reason rbegin() uses end()
+                                         // but rend() doesn't use begin()? wack
   reverse_iterator rbegin()              { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const  { return const_reverse_iterator(end()); }
-  reverse_iterator rend()                { return reverse_iterator(begin()); }
-  const_reverse_iterator rend() const    { return const_reverse_iterator(begin()); }
+  reverse_iterator rend()                { return reverse_iterator(this->_M_ptr._M_data); }
+  const_reverse_iterator rend() const    { return const_reverse_iterator(this->_M_ptr._M_data); }
 
   size_type size() const        { return _M_finish_idx; }
   size_type max_size() const {
@@ -222,8 +232,8 @@ public:
   size_type capacity() const    { return _M_data_size; }
   bool empty() const            { return _M_finish_idx == 0; }
 
-  reference operator[](size_type __n) { return *(begin() + __n); }
-  const_reference operator[](size_type __n) const { return *(begin() + __n); }
+  reference operator[](size_type __n) { return this->_M_ptr._M_data[__n]; }
+  const_reference operator[](size_type __n) const { return this->_M_ptr._M_data[__n]; }
 
   reference front()             { return *begin(); }
   const_reference front() const { return *begin(); }
