@@ -67,7 +67,10 @@ extern const char* kAssertStr;
 
 class DebugNotifier {
 public:
-    DebugNotifier& operator<<(const char* c){ TheDebug.Notify(c); }
+    DebugNotifier& operator<<(const char* c){
+        TheDebug.Notify(c);
+        return *this;
+    }
 };
 
 extern DebugNotifier TheDebugNotifier;

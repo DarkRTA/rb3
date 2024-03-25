@@ -6,7 +6,7 @@
 #include "utl/Messages3.h"
 #include "utl/Messages4.h"
 
-#define LITERAL_MSG(name) Message name##_msg##(#name)
+#define LITERAL_MSG(name) Message name##_msg(#name)
 
 extern Message allows_hiding_msg;
 extern Message allows_input_to_shell_msg;

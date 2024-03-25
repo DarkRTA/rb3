@@ -1,7 +1,7 @@
 #include "math/Primes.h"
 
 int NextHashPrime(int i){
-    static int primes[62] = {  
+    static int primes[62] = {
         0x1D, 0x25, 0x29, 0x2F,
         0x35, 0x43, 0x4F, 0x61,
         0x6B, 0x83, 0x9D, 0xB5,
@@ -24,4 +24,6 @@ int NextHashPrime(int i){
         if(primes[i2] >= i)
             return primes[i2];
     }
+
+    return i;
 }

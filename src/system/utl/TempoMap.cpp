@@ -12,7 +12,9 @@ void ResetTheTempoMap(){
     TheTempoMap = &gDefaultTempoMap;
 }
 
-float SimpleTempoMap::GetTimeInLoop(float){}
+float SimpleTempoMap::GetTimeInLoop(float time){
+    return time;
+}
 
 int SimpleTempoMap::GetLoopTick(int, int&) const {
     return 0;

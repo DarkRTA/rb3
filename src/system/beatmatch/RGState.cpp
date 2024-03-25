@@ -37,6 +37,7 @@ RGState& RGState::operator=(const RGState& state){
     mStrings[3] = state.mStrings[3];
     mStrings[4] = state.mStrings[4];
     mStrings[5] = state.mStrings[5];
+    return *this;
 }
 
 unsigned int PackRGData(int string, int fret){

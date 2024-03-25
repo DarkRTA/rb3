@@ -121,7 +121,7 @@ namespace Hmx {
         Object();
         Object(const Object&);
         virtual ~Object();
-        virtual Hmx::Object* RefOwner(){}
+        virtual Hmx::Object* RefOwner(){ return this; }
         virtual void Replace(Hmx::Object*, Hmx::Object*);
         OBJ_CLASSNAME(Object);
         OBJ_SET_TYPE(Object);
@@ -148,7 +148,7 @@ namespace Hmx {
             if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
             return obj;
         }
-        
+
         std::vector<ObjRef*>& Refs(){ return mRefs; }
 
         Symbol Type() const {
@@ -279,7 +279,7 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
     if(_i == _prop->Size()) return true; \
     else { \
         Symbol sym = _prop->Sym(_i);
-        
+
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
@@ -317,7 +317,7 @@ void objType::Save(BinStream&){ \
 // BEGIN COPY MACROS -----------------------------------------------------------------------------------
 
 #define BEGIN_COPYS(objType) \
-void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){ 
+void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 
 #define COPY_SUPERCLASS(parent) \
     parent::Copy(o, ty);

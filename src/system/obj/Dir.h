@@ -24,8 +24,9 @@ public:
         Entry& operator=(const Entry& entry){
             name = entry.name;
             obj = entry.obj;
+            return *this;
         }
-        
+
         const char* name;
         Hmx::Object* obj;
     };
@@ -39,7 +40,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~ObjectDir();
-    virtual ObjectDir* DataDir(){}
+    virtual ObjectDir* DataDir(){ return this; }
     virtual void SetProxyFile(const FilePath&, bool);
     virtual FilePath* ProxyFile();
     virtual void PostSave(BinStream&);
