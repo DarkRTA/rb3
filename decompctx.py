@@ -46,8 +46,14 @@ passthrough_defines: list[str] = [
     "__STDC__",
     "__STDC_VERSION__",
 
+    # Game version defines
+    "GAME_VERSION",
+    "VERSION_SZBE69"
+    "VERSION_SZBE69_BE"
+
     # Debug defines
     "NDEBUG",
+    "MILO_DEBUG",
 
     # __option
     "__option",
