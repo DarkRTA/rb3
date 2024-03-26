@@ -2,6 +2,7 @@
 #define _STDINT_H
 
 #include <limits.h>
+#include "MSL_Common/intmax_def.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,9 +39,6 @@ typedef unsigned char      uint_fast8_t;
 typedef unsigned int       uint_fast16_t;
 typedef unsigned int       uint_fast32_t;
 typedef unsigned long long uint_fast64_t;
-
-typedef long long          intmax_t;
-typedef unsigned long long uintmax_t;
 
 #define INT8_MIN           CHAR_MIN
 #define INT16_MIN          SHRT_MIN

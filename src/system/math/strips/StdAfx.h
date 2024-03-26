@@ -17,7 +17,7 @@
 
 	#define	null	0
 	#define RELEASE(x)		{ delete x;		x = null; }
-	#define RELEASEARRAY(x)	{ delete []x;	x = null; }
+	#define RELEASEARRAY(x)	{ delete[] (ubyte*)x;	x = null; }
 
 	inline void ZeroMemory(void* addr, udword size)
 	{

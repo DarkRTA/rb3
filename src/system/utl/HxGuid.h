@@ -29,6 +29,7 @@ public:
         mData[1] = u.mData[1];
         mData[2] = u.mData[2];
         mData[3] = u.mData[3];
+        return *this;
     }
 };
 

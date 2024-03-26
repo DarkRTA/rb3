@@ -23,6 +23,7 @@ namespace Hmx {
         // can we toggle between these methods?
         Color& operator=(const Color& c){
             red = c.red; green = c.green; blue = c.blue; alpha = c.alpha;
+            return *this;
         }
 
         void Set(float f1, float f2, float f3, float f4){

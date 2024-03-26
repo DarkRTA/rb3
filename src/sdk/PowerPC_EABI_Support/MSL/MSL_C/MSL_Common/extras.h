@@ -13,6 +13,7 @@ int strnicmp(const char*, const char*, size_t);
 size_t strnlen(const char *str, size_t maxlen);
 
 int strcasecmp(const char *lhs, const char *rhs);
+int strncasecmp(const char *lhs, const char *rhs, size_t maxlen);
 
 #ifdef __cplusplus
 }

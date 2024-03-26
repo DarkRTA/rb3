@@ -1,6 +1,8 @@
 #ifndef _COMPLEX_H
 #define _COMPLEX_H
 
+#if __STDC_VERSION__ >= 199901L
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -61,6 +63,8 @@ _COMPLEX_FN_RS(ctanh);
 
 #ifdef __cplusplus
 }
+#endif
+
 #endif
 
 #endif

@@ -221,7 +221,7 @@ Hmx::Object* DataNode::GetObj(const DataArray* da) const {
                 else msg = "**no file**";
                 TheDebug.Fail(MakeString(kNotObjectMsg, str, msg));
             }
-            
+
         }
         return ret;
     }
@@ -514,18 +514,21 @@ void DataNode::Save(BinStream& d) const {
 
 extern std::map<Symbol, DataFunc*> gDataFuncs;
 
+inline BinStream& operator>>(BinStream& bs, DataType& ty){
+    bs.ReadEndian(&ty, sizeof(ty));
+    return bs;
+}
+
 void DataNode::Load(BinStream& d){
     static char buf[128];
-    int theType;
-    d >> theType;
-    mType = (DataType)theType;
+    d >> mType;
     switch(mType){
         case kDataFunc: {
-            Symbol sym3;
-            d >> sym3;
-            const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym3);
+            Symbol sym;
+            d >> sym;
+            const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym);
             if(it == gDataFuncs.end()){
-                TheDebug.Fail(MakeString("Couldn't bind %s", sym3));
+                TheDebug.Fail(MakeString("Couldn't bind %s", sym));
             }
             mValue.func = it->second;
             break;
@@ -537,9 +540,9 @@ void DataNode::Load(BinStream& d){
         case kDataMerge:
         case kDataIfndef:
         case kDataUndef: {
-            Symbol sym2;
-            d >> sym2;
-            mValue.symbol = sym2.Str();
+            Symbol sym;
+            d >> sym;
+            mValue.symbol = sym.Str();
             break;
         }
         case kDataFloat:
@@ -559,7 +562,7 @@ void DataNode::Load(BinStream& d){
         case kDataObject:
             d.ReadString(buf, 0x80);
             mValue.object = gDataDir->FindObject(buf, true);
-            if(mValue.object == 0 && buf){
+            if(mValue.object == 0 && *buf){
                 TheDebug.Notify(MakeString("Couldn't find %s from %s", buf, gDataDir->Name()));
             }
             break;
