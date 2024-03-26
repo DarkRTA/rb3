@@ -17,7 +17,7 @@ namespace {
             case 0xe: ret = 1; break;
             case 0xf: ret = 2; break;
             case 0x10: ret = 3; break;
-            default: 
+            default:
                 MILO_WARN(" Wrong encryption version passed to ByteGrinder: [%d] !\n", ver);
                 break;
         }
@@ -30,7 +30,7 @@ DataNode hashTo5Bits(DataArray *da) {
 
     unsigned long seed = da->Int(1) & 0xFF;
     unsigned long ret = hashMapping[seed];
-    bool hasEnoughElements = da->Size() > 2;  
+    bool hasEnoughElements = da->Size() > 2;
 
     if (hasEnoughElements) {
         seed = da->Int(1);
@@ -67,7 +67,7 @@ DataNode getRandomSequence32A(DataArray* da){
     static unsigned long s_seed;
     static bool usedUp[0x20];
     bool enough = da->Size() > 1;
-    
+
     if(enough){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
@@ -95,7 +95,7 @@ DataNode getRandomSequence32B(DataArray* da){
     static unsigned long s_seed;
     static bool usedUp[0x20];
     bool enough = da->Size() > 1;
-    
+
     if(enough){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
@@ -264,10 +264,11 @@ DataNode magicNumberGenerator(DataArray* da){
 
 #pragma dont_inline on
 void ByteGrinder::Init(){
-    char functionName[8];
-    functionName[0] = 'N';
-    functionName[1] = 'a';
+    char functionName[0x100];
+    // This *must* be written out in reverse to match
     functionName[2] = '\0';
+    functionName[1] = 'a';
+    functionName[0] = 'N';
     DataRegisterFunc(functionName, getRandomLong);
     functionName[0] = 'h';
     DataRegisterFunc(functionName, magicNumberGenerator);
@@ -361,12 +362,12 @@ void ByteGrinder::Init(){
 void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, int moggVersion){
     char script[256];
     DataArray* mainScriptArray;
-    
+
     sprintf(script, "{ma %d 2}", seedA);
     mainScriptArray = DataReadString(script);
     mainScriptArray->Evaluate(0).Int(nullptr);
     mainScriptArray->Release();
-    
+
     sprintf(script, "{za %d 2}", seedB);
     mainScriptArray = DataReadString(script);
     mainScriptArray->Evaluate(0).Int(nullptr);
@@ -378,7 +379,7 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
     if(encMethod != 0){
         mainScript = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{za{O67 $bar $ix}}";
     }
-    
+
     pickOneOf32B(true, seedB);
     for(int i = 0; i < 0x20; i++){
         char block[256];
