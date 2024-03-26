@@ -16,9 +16,8 @@
         "cflags": "json_c",
         "objects": {
             "network/net/json-c/arraylist.c": "Matching",
-            "network/net/json-c/debug.c": "NonMatching",
-            "network/net/json-c/json_object.c": "NonMatching",
-            "network/net/json-c/json_tokener.c": "NonMatching",
+            "network/net/json-c/json_object.c": "Matching",
+            "network/net/json-c/json_tokener.c": "Matching",
             "network/net/json-c/linkhash.c": "Matching",
             "network/net/json-c/printbuf.c": "Matching"
         }
