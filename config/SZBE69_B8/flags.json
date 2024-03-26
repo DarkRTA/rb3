@@ -70,7 +70,6 @@
                 "-sdata 2",
                 "-sdata2 2",
                 "-str reuse,pool",
-                "-func_align 4",
 
                 "-fp_contract on",
                 "-pragma \"merge_float_consts on\"",
