@@ -1,8 +1,11 @@
 // MSL_C
 #include <assert.h>
+#include <complex.h>
 #include <ctype.h>
 #include <errno.h>
+#include <fenv.h>
 #include <float.h>
+#include <inttypes.h>
 #include <iso646.h>
 #include <limits.h>
 #include <locale.h>
@@ -10,21 +13,16 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <tgmath.h>
 #include <time.h>
 #include <wchar.h>
 #include <wctype.h>
-
-// Not in the include path currently since we rely on STLport for that
-// #include <complex.h>
-// #include <fenv.h>
-// #include <inttypes.h>
-// #include <stdbool.h>
-// #include <stdint.h>
-// #include <tgmath.h>
 
 // MSL_C++
 #include <cassert>
@@ -51,7 +49,6 @@
 
 // STLport
 #include <algorithm>
-#include <assert.h>
 #include <bitset>
 #include <cassert>
 #include <cctype>
@@ -70,44 +67,28 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <ctype.h>
 #include <cwchar>
 #include <cwctype>
 #include <deque>
-#include <errno.h>
 #include <exception>
-#include <float.h>
 #include <functional>
-#include <iso646.h>
 #include <iterator>
 #include <limits>
-#include <limits.h>
 #include <list>
-#include <locale.h>
 #include <map>
-#include <math.h>
 #include <memory>
 #include <new>
 #include <numeric>
 #include <rope>
 #include <set>
-#include <setjmp.h>
-#include <signal.h>
 #include <slist>
 #include <stack>
-#include <stdarg.h>
-#include <stddef.h>
 #include <stdexcept>
-#include <stdio.h>
 #include <string>
-#include <string.h>
-#include <time.h>
 #include <typeinfo>
 #include <utility>
 #include <valarray>
 #include <vector>
-#include <wchar.h>
-#include <wctype.h>
 
 // iostreams are unsupported and not used by the target
 // #include <fstream>
