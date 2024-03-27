@@ -20,7 +20,7 @@ class ObjectDir* UIPanel::DataDir() {
 }
 
 void UIPanel::SetTypeDef(DataArray* data){
-    if(mTypeDef != data){
+    if(TypeDef() != data){
         Hmx::Object::SetTypeDef(data);
         if(data != 0){
             data->FindData(focus, mFocusName, false);

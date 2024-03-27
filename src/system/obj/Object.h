@@ -151,6 +151,7 @@ namespace Hmx {
 
         std::vector<ObjRef*>& Refs(){ return mRefs; }
 
+        const DataArray* TypeDef() const { return mTypeDef; }
         Symbol Type() const {
             if(mTypeDef != 0) return mTypeDef->Sym(0);
             else return Symbol();
@@ -264,6 +265,20 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     { \
         DataNode baseResult = parent::Handle(_msg, false); \
         if (baseResult.Type() != kDataUnhandled) return baseResult; \
+    }
+
+#define HANDLE_MEMBER(member) \
+    { \
+        DataNode baseResult = member.Handle(_msg, false); \
+        if (baseResult.Type() != kDataUnhandled) return baseResult; \
+    }
+
+#define HANDLE_MEMBER_PTR(member) \
+    { \
+        if (member) {\
+            DataNode baseResult = member->Handle(_msg, false); \
+            if (baseResult.Type() != kDataUnhandled) return baseResult; \
+        } \
     }
 
 #define HANDLE_CHECK(line_num) \
