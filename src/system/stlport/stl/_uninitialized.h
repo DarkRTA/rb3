@@ -96,7 +96,8 @@ __ucopy_trivial(const void* __first, const void* __last, void* __result) {
 template <class _InputIter, class _OutputIter>
 inline _OutputIter __ucopy_ptrs(_InputIter __first, _InputIter __last, _OutputIter __result,
                                 const __false_type& /*TrivialUCopy*/)
-{ return __ucopy(__first, __last, __result, random_access_iterator_tag(), (ptrdiff_t*)0); }
+{ return __ucopy(__first, __last, __result, input_iterator_tag(), (ptrdiff_t*)0); }
+// { return __ucopy(__first, __last, __result, random_access_iterator_tag(), (ptrdiff_t*)0); }
 
 template <class _InputIter, class _OutputIter>
 inline _OutputIter __ucopy_ptrs(_InputIter __first, _InputIter __last, _OutputIter __result,
@@ -266,10 +267,15 @@ inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
 { return __ufill_n(__first, __n, __x); }
 
 template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x) {
+inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __true_type&) {
   _ForwardIter __last = __first + __n;
   __ufill(__first, __last, __x, random_access_iterator_tag(), (ptrdiff_t*)0);
   return __last;
+}
+
+template <class _ForwardIter, class _Size, class _Tp>
+inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __false_type&) {
+  return __ufill_n(__first, __n, __x, input_iterator_tag());
 }
 
 template <class _ForwardIter, class _Size, class _Tp>
