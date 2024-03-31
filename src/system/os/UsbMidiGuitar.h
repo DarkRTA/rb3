@@ -10,16 +10,17 @@ public:
     static bool mUsbMidiGuitarExists;
     static Timer mTimer;
 
-    bool mStringStrummed[8][6];
-    int mStringFret[8][6];
-    int mStringVelocity[8][6];
-    int mAccelerometer[8][3];
-    int mConnectedAccessories[8];
-    int mPitchBend[8];
-    int mMuting[8];
-    bool mStompBox[8];
-    int mProgramChange[8];
-    int mLastSixStringsStrummed[8][6];
+    bool mStringStrummed[4][6];
+    int mStringFret[4][6];
+    int mStringVelocity[4][6];
+    bool mFretDown[4][5]; // could be wrong?
+    int mAccelerometer[4][3];
+    int mConnectedAccessories[4];
+    int mPitchBend[4];
+    int mMuting[4];
+    bool mStompBox[4];
+    int mProgramChange[4];
+    int mLastSixStringsStrummed[4][6]; // take another look at this and mPadNum maybe?
     int mPadNum;
 
 };
