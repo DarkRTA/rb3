@@ -130,3 +130,22 @@ void UsbMidiGuitar::SetProgramChange(int pad, int pc){
 void UsbMidiGuitar::SetFretDown(int pad, int str, bool down){
     mFretDown[pad][str] = down;
 }
+
+Queue::Queue(int i) : mArrayStart(0) {
+    Initialize(i);
+}
+
+Queue::~Queue(){
+    CritSecTracker tracker(&gCritSection);
+    delete mArrayStart;
+}
+
+void Queue::Initialize(int i){
+    CritSecTracker tracker(&gCritSection);
+    delete mArrayStart;
+    mArrayStart = new MidiMessage[i + 1];
+    mArrayEnd = &mArrayStart[i] + 1;
+    mUsurpedFret[0] = mUsurpedFret[1] = mUsurpedFret[2] = mUsurpedFret[3] = mUsurpedFret[4] = mUsurpedFret[5] = -1;
+    mQueueStart = mArrayStart;
+    mQueueEnd = mArrayStart;
+}
