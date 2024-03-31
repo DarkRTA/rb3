@@ -3,6 +3,8 @@
 #include "obj/MsgSource.h"
 #include "os/ContentMgr.h"
 
+class OnlineID; // forward dec
+
 enum DiskError {
     kNoDiskError,
     kDiskError,
@@ -16,6 +18,9 @@ public:
     bool bool1, bool2;
 
     void SetDiskError(DiskError);
+    void GetOnlineID(int, OnlineID*) const;
 };
+
+
 
 #endif
