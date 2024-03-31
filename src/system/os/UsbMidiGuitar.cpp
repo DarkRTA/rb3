@@ -1,14 +1,19 @@
 #include "os/UsbMidiGuitar.h"
+#include "os/CritSec.h"
+#include "os/Debug.h"
 
+CriticalSection gCritSection;
+Queue gQueue(0x32);
+Timer UsbMidiGuitar::mTimer;
 UsbMidiGuitar* TheGuitar;
 bool UsbMidiGuitar::mUsbMidiGuitarExists = false;
+int UsbMidiGuitar::mMinVelocity = 5;
 
 UsbMidiGuitar::UsbMidiGuitar(){
     mPadNum = 0;
     if(!mUsbMidiGuitarExists){
         mUsbMidiGuitarExists = true;
-        int inc = 0;
-        for(int i = 0; i < 4; i++){
+        for(int inc = 0; inc < 4; inc++){
             mConnectedAccessories[inc] = 0;
             mPitchBend[inc] = 0;
             mMuting[inc] = 0;
@@ -54,9 +59,74 @@ UsbMidiGuitar::UsbMidiGuitar(){
             mAccelerometer[inc][0] = 0;
             mAccelerometer[inc][1] = 0;
             mAccelerometer[inc][2] = 0;
-            inc++;
         }
         mTimer.Init();
         mTimer.Start();
     }
+}
+
+UsbMidiGuitar::~UsbMidiGuitar(){
+    CritSecTracker tracker(&gCritSection);
+}
+
+void UsbMidiGuitar::Init(){
+    MILO_ASSERT(TheGuitar == NULL, 0x64);
+    TheGuitar = new UsbMidiGuitar();
+}
+
+void UsbMidiGuitar::Terminate(){
+    MILO_ASSERT(TheGuitar != NULL, 0x6F);
+    delete TheGuitar;
+    TheGuitar = 0;
+}
+
+int UsbMidiGuitar::E3CheatGetMinVelocity(){
+    return mMinVelocity;
+}
+
+void UsbMidiGuitar::E3CheatSetMinVelocity(int vel){
+    mMinVelocity = vel;
+}
+
+int UsbMidiGuitar::CurrentAccelAxisVal(int pad, int str){
+    if(0 <= str && (unsigned int)str < 4) return mAccelerometer[pad][str];
+    else return 0;
+}
+
+void UsbMidiGuitar::SetFret(int pad, int str, int fret){
+    mStringFret[pad][str] = fret;
+}
+
+void UsbMidiGuitar::SetVelocity(int pad, int str, int vel){
+    mStringVelocity[pad][str] = vel;
+}
+
+void UsbMidiGuitar::SetAccelerometer(int pad, int a1, int a2, int a3){
+    mAccelerometer[pad][0] = a1;
+    mAccelerometer[pad][1] = a2;
+    mAccelerometer[pad][2] = a3;
+}
+
+void UsbMidiGuitar::SetConnectedAccessories(int pad, int accs){
+    mConnectedAccessories[pad] = accs;
+}
+
+void UsbMidiGuitar::SetPitchBend(int pad, int pb){
+    mPitchBend[pad] = pb;
+}
+
+void UsbMidiGuitar::SetMuting(int pad, int mute){
+    mMuting[pad] = mute;
+}
+
+void UsbMidiGuitar::SetStompBox(int pad, bool stomp){
+    mStompBox[pad] = stomp;
+}
+
+void UsbMidiGuitar::SetProgramChange(int pad, int pc){
+    mProgramChange[pad] = pc;
+}
+
+void UsbMidiGuitar::SetFretDown(int pad, int str, bool down){
+    mFretDown[pad][str] = down;
 }

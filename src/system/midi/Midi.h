@@ -5,6 +5,13 @@
 #include "utl/ChunkIDs.h"
 #include <vector>
 
+struct MidiMessage {
+    unsigned int wMsg;
+    unsigned long dwParam1;
+    unsigned long dwParam2;
+    unsigned int wTimeMs;
+};
+
 class MidiReader;
 class MidiReceiver;
 class MeasureMap;
