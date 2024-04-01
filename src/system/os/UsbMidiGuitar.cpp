@@ -1,138 +1,151 @@
 #include "os/UsbMidiGuitar.h"
+#include "os/CritSec.h"
+#include "os/Debug.h"
 
+CriticalSection gCritSection;
+Queue gQueue(0x32);
+Timer UsbMidiGuitar::mTimer;
 UsbMidiGuitar* TheGuitar;
 bool UsbMidiGuitar::mUsbMidiGuitarExists = false;
+int UsbMidiGuitar::mMinVelocity = 5;
 
 UsbMidiGuitar::UsbMidiGuitar(){
+    mPadNum = 0;
     if(!mUsbMidiGuitarExists){
         mUsbMidiGuitarExists = true;
-        int i7 = 0;
-        for(int i = 4; i != 0; i--){
-            mStringVelocity[1][5] = 0;
-            mStringVelocity[2][3] = 0;
-            mStringVelocity[3][1] = 0;
-            mStringVelocity[3][i7 + 4] = 0;
-            mStringVelocity[4][0] = 0;
+        for(int inc = 0; inc < 4; inc++){
+            mConnectedAccessories[inc] = 0;
+            mPitchBend[inc] = 0;
+            mMuting[inc] = 0;
+            mStompBox[inc] = false;
+            mProgramChange[inc] = 0;
+            
+            mStringStrummed[inc][0] = false;
+            mStringFret[inc][0] = 0;
+            mStringVelocity[inc][0] = 0;
+            mLastSixStringsStrummed[inc][0] = 0;
+            
+            mStringStrummed[inc][1] = false;
+            mStringFret[inc][1] = 0;
+            mStringVelocity[inc][1] = 0;
+            mLastSixStringsStrummed[inc][1] = 0;
 
-//       pUVar2 = (UsbMidiGuitar *)(pUVar2->mStringStrummed[0] + 4);
-//       pUVar3->mStringStrummed[0][0] = false;
-//       *(undefined4 *)pUVar4->mStringStrummed[4] = 0;
-//       pUVar4->mStringFret[3][0] = 0;
-//       pUVar4->mStringVelocity[4][4] = 0;
-//       pUVar3->mStringStrummed[0][1] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[4] + 4) = 0;
-//       pUVar4->mStringFret[3][1] = 0;
-//       pUVar4->mStringVelocity[4][5] = 0;
-//       pUVar3->mStringStrummed[0][2] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[5] + 2) = 0;
-//       pUVar4->mStringFret[3][2] = 0;
-//       pUVar4->mStringVelocity[5][0] = 0;
-//       pUVar3->mStringStrummed[0][3] = false;
-//       *(undefined4 *)pUVar4->mStringStrummed[6] = 0;
-//       pUVar4->mStringFret[3][3] = 0;
-//       pUVar4->mStringVelocity[5][1] = 0;
-//       pUVar3->mStringStrummed[0][4] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[6] + 4) = 0;
-//       pUVar4->mStringFret[3][4] = 0;
-//       pUVar4->mStringVelocity[5][2] = 0;
-//       pUVar3->mStringStrummed[0][5] = false;
-//       pUVar3 = (UsbMidiGuitar *)(pUVar3->mStringStrummed + 1);
-//       *(undefined4 *)(pUVar4->mStringStrummed[7] + 2) = 0;
-//       pUVar4->mStringFret[3][5] = 0;
-//       pUVar4->mStringVelocity[5][3] = 0;
-//       pUVar4 = (UsbMidiGuitar *)(pUVar4->mStringStrummed + 4);
-//       *(undefined *)pUVar5->mStringFret[7] = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 1) = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 2) = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 3) = 0;
-//       *(undefined *)(pUVar5->mStringFret[7] + 1) = 0;
-//       pUVar5 = (UsbMidiGuitar *)(pUVar5->mStringStrummed[0] + 5);
-//       pUVar6->mStringFret[7][5] = 0;
-//       pUVar6->mStringVelocity[0][0] = 0;
-//       pUVar6->mStringVelocity[0][1] = 0;
-//       pUVar6 = (UsbMidiGuitar *)(pUVar6->mStringStrummed + 2);
-//       iVar8 = iVar8 + -1;
-//       iVar7 = iVar7 + 1;
+            mStringStrummed[inc][2] = false;
+            mStringFret[inc][2] = 0;
+            mStringVelocity[inc][2] = 0;
+            mLastSixStringsStrummed[inc][2] = 0;
+
+            mStringStrummed[inc][3] = false;
+            mStringFret[inc][3] = 0;
+            mStringVelocity[inc][3] = 0;
+            mLastSixStringsStrummed[inc][3] = 0;
+
+            mStringStrummed[inc][4] = false;
+            mStringFret[inc][4] = 0;
+            mStringVelocity[inc][4] = 0;
+            mLastSixStringsStrummed[inc][4] = 0;
+
+            mStringStrummed[inc][5] = false;
+            mStringFret[inc][5] = 0;
+            mStringVelocity[inc][5] = 0;
+            mLastSixStringsStrummed[inc][5] = 0;
+
+            mFretDown[inc][0] = false;
+            mFretDown[inc][1] = false;
+            mFretDown[inc][2] = false;
+            mFretDown[inc][3] = false;
+            mFretDown[inc][4] = false;
+
+            mAccelerometer[inc][0] = 0;
+            mAccelerometer[inc][1] = 0;
+            mAccelerometer[inc][2] = 0;
         }
+        mTimer.Init();
+        mTimer.Start();
     }
-    mTimer.Init();
 }
 
-// UsbMidiGuitar * __thiscall UsbMidiGuitar::UsbMidiGuitar(UsbMidiGuitar *this)
+UsbMidiGuitar::~UsbMidiGuitar(){
+    CritSecTracker tracker(&gCritSection);
+}
 
-// {
-//   bool bVar1;
-//   UsbMidiGuitar *pUVar2;
-//   UsbMidiGuitar *pUVar3;
-//   UsbMidiGuitar *pUVar4;
-//   UsbMidiGuitar *pUVar5;
-//   UsbMidiGuitar *pUVar6;
-//   int iVar7;
-//   int iVar8;
-//   undefined4 in_TBLr;
-  
-//   this->mAccelerometer[1][1] = 0;
-//   if (mUsbMidiGuitarExists == '\0') {
-//     mUsbMidiGuitarExists = '\x01';
-//     iVar8 = 4;
-//     pUVar2 = this;
-//     pUVar3 = this;
-//     pUVar4 = this;
-//     pUVar5 = this;
-//     pUVar6 = this;
-//     iVar7 = 0;
-//     do {
-//       pUVar2->mStringVelocity[1][5] = 0;
-//       pUVar2->mStringVelocity[2][3] = 0;
-//       pUVar2->mStringVelocity[3][1] = 0;
-//       *(undefined *)((int)this->mStringVelocity[3] + iVar7 + 0x14) = 0;
-//       pUVar2->mStringVelocity[4][0] = 0;
-//       pUVar2 = (UsbMidiGuitar *)(pUVar2->mStringStrummed[0] + 4);
-//       pUVar3->mStringStrummed[0][0] = false;
-//       *(undefined4 *)pUVar4->mStringStrummed[4] = 0;
-//       pUVar4->mStringFret[3][0] = 0;
-//       pUVar4->mStringVelocity[4][4] = 0;
-//       pUVar3->mStringStrummed[0][1] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[4] + 4) = 0;
-//       pUVar4->mStringFret[3][1] = 0;
-//       pUVar4->mStringVelocity[4][5] = 0;
-//       pUVar3->mStringStrummed[0][2] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[5] + 2) = 0;
-//       pUVar4->mStringFret[3][2] = 0;
-//       pUVar4->mStringVelocity[5][0] = 0;
-//       pUVar3->mStringStrummed[0][3] = false;
-//       *(undefined4 *)pUVar4->mStringStrummed[6] = 0;
-//       pUVar4->mStringFret[3][3] = 0;
-//       pUVar4->mStringVelocity[5][1] = 0;
-//       pUVar3->mStringStrummed[0][4] = false;
-//       *(undefined4 *)(pUVar4->mStringStrummed[6] + 4) = 0;
-//       pUVar4->mStringFret[3][4] = 0;
-//       pUVar4->mStringVelocity[5][2] = 0;
-//       pUVar3->mStringStrummed[0][5] = false;
-//       pUVar3 = (UsbMidiGuitar *)(pUVar3->mStringStrummed + 1);
-//       *(undefined4 *)(pUVar4->mStringStrummed[7] + 2) = 0;
-//       pUVar4->mStringFret[3][5] = 0;
-//       pUVar4->mStringVelocity[5][3] = 0;
-//       pUVar4 = (UsbMidiGuitar *)(pUVar4->mStringStrummed + 4);
-//       *(undefined *)pUVar5->mStringFret[7] = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 1) = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 2) = 0;
-//       *(undefined *)((int)pUVar5->mStringFret[7] + 3) = 0;
-//       *(undefined *)(pUVar5->mStringFret[7] + 1) = 0;
-//       pUVar5 = (UsbMidiGuitar *)(pUVar5->mStringStrummed[0] + 5);
-//       pUVar6->mStringFret[7][5] = 0;
-//       pUVar6->mStringVelocity[0][0] = 0;
-//       pUVar6->mStringVelocity[0][1] = 0;
-//       pUVar6 = (UsbMidiGuitar *)(pUVar6->mStringStrummed + 2);
-//       iVar8 = iVar8 + -1;
-//       iVar7 = iVar7 + 1;
-//     } while (iVar8 != 0);
-//     Timer::Init((Timer *)this);
-//     bVar1 = DAT_80cab59c == 0;
-//     DAT_80cab59c = DAT_80cab59c + 1;
-//     if (bVar1) {
-//       mTimer = in_TBLr;
-//     }
-//   }
-//   return this;
-// }
+void UsbMidiGuitar::Init(){
+    MILO_ASSERT(TheGuitar == NULL, 0x64);
+    TheGuitar = new UsbMidiGuitar();
+}
+
+void UsbMidiGuitar::Terminate(){
+    MILO_ASSERT(TheGuitar != NULL, 0x6F);
+    delete TheGuitar;
+    TheGuitar = 0;
+}
+
+int UsbMidiGuitar::E3CheatGetMinVelocity(){
+    return mMinVelocity;
+}
+
+void UsbMidiGuitar::E3CheatSetMinVelocity(int vel){
+    mMinVelocity = vel;
+}
+
+int UsbMidiGuitar::CurrentAccelAxisVal(int pad, int str){
+    if(0 <= str && (unsigned int)str < 4) return mAccelerometer[pad][str];
+    else return 0;
+}
+
+void UsbMidiGuitar::SetFret(int pad, int str, int fret){
+    mStringFret[pad][str] = fret;
+}
+
+void UsbMidiGuitar::SetVelocity(int pad, int str, int vel){
+    mStringVelocity[pad][str] = vel;
+}
+
+void UsbMidiGuitar::SetAccelerometer(int pad, int a1, int a2, int a3){
+    mAccelerometer[pad][0] = a1;
+    mAccelerometer[pad][1] = a2;
+    mAccelerometer[pad][2] = a3;
+}
+
+void UsbMidiGuitar::SetConnectedAccessories(int pad, int accs){
+    mConnectedAccessories[pad] = accs;
+}
+
+void UsbMidiGuitar::SetPitchBend(int pad, int pb){
+    mPitchBend[pad] = pb;
+}
+
+void UsbMidiGuitar::SetMuting(int pad, int mute){
+    mMuting[pad] = mute;
+}
+
+void UsbMidiGuitar::SetStompBox(int pad, bool stomp){
+    mStompBox[pad] = stomp;
+}
+
+void UsbMidiGuitar::SetProgramChange(int pad, int pc){
+    mProgramChange[pad] = pc;
+}
+
+void UsbMidiGuitar::SetFretDown(int pad, int str, bool down){
+    mFretDown[pad][str] = down;
+}
+
+Queue::Queue(int i) : mArrayStart(0) {
+    Initialize(i);
+}
+
+Queue::~Queue(){
+    CritSecTracker tracker(&gCritSection);
+    delete mArrayStart;
+}
+
+void Queue::Initialize(int i){
+    CritSecTracker tracker(&gCritSection);
+    delete mArrayStart;
+    mArrayStart = new MidiMessage[i + 1];
+    mArrayEnd = &mArrayStart[i] + 1;
+    mUsurpedFret[0] = mUsurpedFret[1] = mUsurpedFret[2] = mUsurpedFret[3] = mUsurpedFret[4] = mUsurpedFret[5] = -1;
+    mQueueStart = mArrayStart;
+    mQueueEnd = mArrayStart;
+}
