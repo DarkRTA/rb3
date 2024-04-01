@@ -23,9 +23,18 @@ namespace {
         return DataNode(JoypadIsConnectedPadNum(arr->Int(1)));
     }
 
+    static DataNode OnJoypadIsButtonDownPadNum(DataArray* arr){
+        int pad = arr->Int(1);
+        MILO_ASSERT(( 0) <= (pad) && (pad) < ( kNumJoypads), 0x80);
+        int ret = gJoypadData[pad].mButtons & 1 << arr->Int(2);
+        return DataNode(ret != 0);
+    }
+
     static DataNode OnJoypadIsCalbertGuitar(DataArray* arr){
         return DataNode(JoypadIsCalbertGuitar(arr->Int(1)));
     }
+
+    #pragma pool_data off
 
     bool IsJoypadDetectMatch(DataArray* detect_cfg, const JoypadData& data){
         static Symbol type("type");
@@ -36,72 +45,44 @@ namespace {
         static Symbol Y("Y");
         static Symbol OR("or");
         static Symbol AND("and");
-        Symbol axis_sym = detect_cfg->Sym(0);
-        if(axis_sym == type){
+        Symbol sym = detect_cfg->Sym(0);
+        if(sym == type){
             return detect_cfg->Int(1) == (int)data.mType;
-            // iVar2 = DataArray::Int(param_1,1);
-            // uVar1 = countLeadingZeros(iVar2 - *(int *)(param_2 + 0x88));
-            // uVar1 = uVar1 >> 5;
         }
-        else if(axis_sym == button){
+        else if(sym == button){
             return data.mButtons & 1 << detect_cfg->Int(1);
-            // uVar3 = DataArray::Int(param_1,1);
-            // uVar1 = fn_80182C98(param_2,uVar3);
-
-            // side note:
-            // bool fn_80182C98(uint *param_1,int param_2)
-
-            // {
-            // return (*param_1 & 1 << param_2) != 0;
-            // }
         }
-        else if(axis_sym == stick){
-            // iVar4 = 0;
-            // local_38 = DataArray::Sym(param_1,2);
-            // Symbol::operator=(aSStack_30,(Symbol *)&local_38);
-            // iVar2 = Symbol::operator==(aSStack_30,(Symbol *)X);
-            // if (iVar2 == 0) {
-                // iVar2 = Symbol::operator==(aSStack_30,(Symbol *)Y);
-                // if (iVar2 != 0) {
-                //     iVar4 = 1;
-                // }
-            // }
-            // else {
-                // iVar4 = 0;
-            // }
-            // iVar2 = DataArray::Int(param_1,1);
-            // dVar6 = (double)*(float *)(param_2 + iVar2 * 8 + iVar4 * 4 + 0xc);
-            // dVar5 = (double)DataArray::Float(param_1,3);
-            // uVar1 = ((uint)(byte)((dVar5 == dVar6) << 1) << 0x1c) >> 0x1d;
+        else if(sym == stick){
+            int i4 = 0;
+            Symbol axis_sym = detect_cfg->Sym(2);
+            if(axis_sym == X){
+                i4 = 0;
+            }
+            else if(axis_sym == Y){
+                i4 = 1;
+            }
+            else MILO_FAIL("bad axis %s in controller detect array\n", axis_sym);
+            int i3 = detect_cfg->Int(1);
+            float f7 = detect_cfg->Float(3);
+            return f7 == data.mSticks[i3][i4];
         }
-        else if(axis_sym == trigger){
-            // iVar2 = DataArray::Int(param_1,1);
-            // dVar6 = (double)*(float *)(param_2 + iVar2 * 4 + 0x1c);
-            // dVar5 = (double)DataArray::Float(param_1,2);
-            // uVar1 = ((uint)(byte)((dVar5 == dVar6) << 1) << 0x1c) >> 0x1d;
+        else if(sym == trigger){
+            return detect_cfg->Float(2) == data.mTriggers[detect_cfg->Int(1)];
         }
-        else if(axis_sym == OR){
-            // for (iVar2 = 1; iVar4 = DataArray::Size(param_1), iVar2 < iVar4; iVar2 = iVar2 + 1) {
-            //     uVar3 = DataArray::Array(param_1,iVar2);
-            //     iVar4 = fn_80301190(uVar3,param_2);
-            //     if (iVar4 != 0) {
-            //         return 1;
-            //     }
-            // }
-            // uVar1 = 0;
+        else if(sym == OR){
+            for(int i = 1; i < detect_cfg->Size(); i++){
+                if(IsJoypadDetectMatch(detect_cfg->Array(i), data)) return true;
+            }
+            return false;
         }
-        else if(axis_sym == AND){
-            // for (iVar2 = 1; iVar4 = DataArray::Size(param_1), iVar2 < iVar4; iVar2 = iVar2 + 1) {
-            //     uVar3 = DataArray::Array(param_1,iVar2);
-            //     iVar4 = fn_80301190(uVar3,param_2);
-            //     if (iVar4 == 0) {
-            //       return 0;
-            //     }
-            // }
-            // uVar1 = 1;
+        else if(sym == AND){
+            for(int i = 1; i < detect_cfg->Size(); i++){
+                if(!IsJoypadDetectMatch(detect_cfg->Array(i), data)) return false;
+            }
+            return true;
         }
         else {
-            MILO_FAIL("Unknown keyword '%s' in joypad detect block", axis_sym);
+            MILO_FAIL("Unknown keyword '%s' in joypad detect block", sym);
             return false;
         }
     }
