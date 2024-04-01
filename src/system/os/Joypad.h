@@ -150,6 +150,7 @@ public:
 };
 
 extern "C" bool JoypadIsCalbertGuitar(int);
+extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);

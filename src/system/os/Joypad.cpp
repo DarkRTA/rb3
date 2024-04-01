@@ -150,6 +150,38 @@ int JoypadData::GetPressureBucket(JoypadButton b) const {
     return FloatToBucket(val);
 }
 
+int ButtonToVelocityBucket(JoypadData* data, JoypadButton btn){
+    switch(data->mType){
+        case kJoypadXboxDrumsRb2:
+            switch(btn){
+                case kPad_Circle: return data->GetVelocityBucket(LX);
+                case kPad_Tri: return data->GetVelocityBucket(LY);
+                case kPad_Square: return data->GetVelocityBucket(RX);
+                case kPad_X: return data->GetVelocityBucket(RY);
+                default: return 0;
+            }
+            break;
+        case kJoypadXboxDrums:
+            switch(btn){
+                case kPad_Circle: return data->GetVelocityBucket(LY);
+                case kPad_Tri: return data->GetVelocityBucket(RX);
+                case kPad_Square: return data->GetVelocityBucket(RX);
+                case kPad_X: return data->GetVelocityBucket(LY);
+                default: return 0;
+            }
+            break;
+        case kJoypadPs3HxDrums:
+        case kJoypadPs3HxDrumsRb2:
+        case kJoypadWiiHxDrumsRb2:
+            switch(btn){
+                case kPad_Circle: case kPad_Tri: case kPad_Square: case kPad_X:
+                    return data->GetPressureBucket(btn);
+                default: return 0;
+            }
+        default: return 0;
+    }
+}
+
 JoypadData* JoypadGetPadData(int pad_num){
     MILO_ASSERT(0 <= pad_num && pad_num < kNumJoypads, 0x5CC);
     return &gJoypadData[pad_num];
