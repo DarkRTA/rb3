@@ -7,7 +7,6 @@
 namespace Hmx {
     class Object;
 }
-class ObjectDir;
 
 void InitObject(Hmx::Object*);
 const char* PathName(const Hmx::Object*);
@@ -25,10 +24,10 @@ public:
     MergeFilter();
     MergeFilter(Action a, Subdirs s) : mAction(a), mSubdirs(s) {}
     virtual ~MergeFilter(){}
-    virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*){ return mAction; }
-    virtual Action FilterSubDir(ObjectDir*, ObjectDir*);
+    virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*){ return mAction; }
+    virtual Action FilterSubDir(class ObjectDir*, class ObjectDir*);
 
-    Action DefaultSubdirAction(ObjectDir*, Subdirs);
+    Action DefaultSubdirAction(class ObjectDir*, Subdirs);
 
     Action mAction;
     Subdirs mSubdirs;
@@ -38,7 +37,7 @@ class DataMergeFilter : public MergeFilter {
 public:
     DataMergeFilter(const DataNode&, Subdirs);
     virtual ~DataMergeFilter();
-    virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);
+    virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*);
 
     DataType mType;
     DataFunc* mFunc;

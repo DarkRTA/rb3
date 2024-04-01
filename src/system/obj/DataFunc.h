@@ -31,7 +31,7 @@ public:
     static DataNode New(DataArray*);
 };
 
-class DataThisPtr : public ObjPtr<Hmx::Object, ObjectDir> {
+class DataThisPtr : public ObjPtr<Hmx::Object, class ObjectDir> {
 public:
     DataThisPtr() : ObjPtr(0, 0) {}
     virtual ~DataThisPtr(){}

@@ -1,6 +1,7 @@
 #ifndef OS_JOYPAD_H
 #define OS_JOYPAD_H
 #include "utl/Symbol.h"
+#include "obj/Msg.h"
 
 #define kNumJoypads 4
 #define kNumPressureButtons 8
@@ -115,7 +116,6 @@ enum JoypadType {
 
 class JoypadData {
 public:
-    // RB3's members differ - verify this!
     unsigned int mButtons;
     unsigned int mNewPressed;
     unsigned int mNewReleased;
@@ -123,24 +123,34 @@ public:
     float mTriggers[2]; // LT, RT
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
-    int mUserNum;
-    bool mConnected;
-    bool mForceFeedback;
-    bool mCanForceFeedback;
-    bool mWireless;
-    int unk58, unk5c, unk60;
-    bool unk64;
-    bool mVibrateEnabled;
-    char filler[0x20];
 
+    int unk50;
+    bool unk54, unk55, unk56, unk57;
+    int unk58, unk5c;
+
+    class LocalUser* mUser;
+    bool mConnected;
+    bool mVibrateEnabled;
+
+    bool unk66, unk67, unk68;
+
+    bool mHasAnalogSticks;
+    bool mTranslateSticks;
+    int mIgnoreButtonMask;
+    int mGreenCymbalMask;
+    int mYellowCymbalMask;
+    int mBlueCymbalMask;
+    int mSecondaryPedalMask;
+    int mCymbalMask;
+    bool mIsDrum;
     JoypadType mType;
     Symbol mControllerType;
     float mDistFromRest;
     bool mHasGreenCymbal;
-    bool mHasBlueCymbal;
     bool mHasYellowCymbal;
+    bool mHasBlueCymbal;
     
-    int morefiller;
+    int unk98;
 
     JoypadData();
     float GetAxis(Symbol) const;
@@ -151,6 +161,9 @@ public:
 
 extern "C" bool JoypadIsCalbertGuitar(int);
 extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
+extern "C" void JoypadInitCommon(class DataArray*);
+extern "C" void AssociateUserAndPad(class LocalUser*, int);
+extern "C" void ResetAllUsersPads();
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -162,5 +175,12 @@ bool JoypadTypeHasLeftyFlip(Symbol);
 int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
+
+// forward dec
+namespace Hmx { class Object; }
+
+void JoypadSubscribe(Hmx::Object*);
+void JoypadUnsubscribe(Hmx::Object*);
+void JoypadPushThroughMsg(const Message&);
 
 #endif

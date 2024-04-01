@@ -2,10 +2,21 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "math/MathFuncs.h"
+#include "obj/MsgSource.h"
+#include "obj/DataFunc.h"
 
 namespace {
-    JoypadData gJoypadData[4];
-    DataArray* gControllersCfg;
+    static DataArray* gControllersCfg; // 0x0
+    static DataArray* gButtonMeanings; // 0x4
+    static int gPadsToKeepAlive; // prolly not an int
+    static int gPadsToKeepAliveNext; // also prolly not an int
+    static int gKeepAliveCountdown;
+    static int gKeepaliveThresholdMs = -1; // 0x18
+    static bool gExportMsgs;
+    static bool gJoypadLibInitialized;
+    static JoypadData gJoypadData[4];
+    static bool gJoypadDisabled[4]; // 0x28c
+    static MsgSource* gJoypadMsgSource; // 0x290
 
     static DataNode OnJoypadSetVibrate(DataArray* arr){
         JoypadSetVibrate(arr->Int(1), arr->Int(2) != 0);
@@ -182,17 +193,69 @@ int ButtonToVelocityBucket(JoypadData* data, JoypadButton btn){
     }
 }
 
+void JoypadInitCommon(DataArray* joypad_config){
+    gJoypadMsgSource = Hmx::Object::New<MsgSource>();
+    float thresh;
+    joypad_config->FindData("threshold", thresh, true);
+    joypad_config->FindData("keepalive_ms", gKeepaliveThresholdMs, true);
+    gJoypadDisabled[0] = 0;
+    gJoypadDisabled[1] = 0;
+    gJoypadDisabled[2] = 0;
+    gJoypadDisabled[3] = 0;
+    DataArray* ignores = joypad_config->FindArray("ignore", true);
+    for(int i = 1; i < ignores->Size(); i++){
+        int nodeInt = ignores->Int(i);
+        if(nodeInt <= 3U){
+            gJoypadDisabled[nodeInt] = true;
+        }
+    }
+    gControllersCfg = joypad_config->FindArray("controllers", true);
+    gButtonMeanings = joypad_config->FindArray("button_meanings", true);
+    DataRegisterFunc("joypad_reset", DataJoypadReset);
+    DataRegisterFunc("joypad_vibrate", OnJoypadVibrate);
+    DataRegisterFunc("joypad_set_vibrate", OnJoypadSetVibrate);
+    DataRegisterFunc("joypad_controller_type_padnum", OnJoypadControllerTypePadNum);
+    DataRegisterFunc("joypad_is_connected_padnum", OnJoypadIsConnectedPadNum);
+    DataRegisterFunc("joypad_is_button_down", OnJoypadIsButtonDownPadNum);
+    DataRegisterFunc("joypad_is_calbert_guitar", OnJoypadIsCalbertGuitar);
+    gJoypadLibInitialized = true;
+}
+
 JoypadData* JoypadGetPadData(int pad_num){
     MILO_ASSERT(0 <= pad_num && pad_num < kNumJoypads, 0x5CC);
     return &gJoypadData[pad_num];
+}
+
+void JoypadSubscribe(Hmx::Object* obj){
+    if(gJoypadMsgSource)
+        gJoypadMsgSource->AddSink(obj, Symbol(), Symbol(), MsgSource::kHandle);
+}
+
+void JoypadUnsubscribe(Hmx::Object* obj){
+    if(gJoypadMsgSource)
+        gJoypadMsgSource->RemoveSink(obj, Symbol());
+}
+
+void JoypadPushThroughMsg(const Message& msg){
+    if(gExportMsgs){
+        gJoypadMsgSource->Handle(msg.Data(), false);
+    }
+}
+
+void AssociateUserAndPad(LocalUser* iUser, int iPadNum){
+    MILO_ASSERT(( 0) <= (iPadNum) && (iPadNum) < ( kNumJoypads), 0x61C);
+    gJoypadData[iPadNum].mUser = iUser;
+}
+
+void ResetAllUsersPads(){
+    for(int i = 0; i < 4; i++) AssociateUserAndPad(0, i);
 }
 
 bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type){
     MILO_ASSERT(padNum != -1, 0x641);
     MILO_ASSERT(gControllersCfg, 0x644);
     DataArray* type_cfg = gControllersCfg->FindArray(controller_type, false);
-    if(!type_cfg) return false;
-    else {
+    if(type_cfg){
         DataArray* detect_cfg = type_cfg->FindArray("detect", true);
         if(detect_cfg->Size() != 1){
             if(!IsJoypadDetectMatch(detect_cfg->Array(1), gJoypadData[padNum])){
@@ -200,6 +263,7 @@ bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type){
             }
         }
     }
+    else return false;
 }
 
 bool JoypadTypeHasLeftyFlip(Symbol type){
