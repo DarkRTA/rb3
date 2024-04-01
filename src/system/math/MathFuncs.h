@@ -49,7 +49,7 @@ template<class T> inline T Max(T x, T y){
 
 template<class T> inline T Clamp(T x, T y, T z){
     if(z > y) return y;
-    if(!(z > x)) return z;
+    if(!(z < x)) return z;
     return x;
 }
 

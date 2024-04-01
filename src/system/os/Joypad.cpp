@@ -1,6 +1,7 @@
 #include "os/Joypad.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
+#include "math/MathFuncs.h"
 
 namespace {
     JoypadData gJoypadData[4];
@@ -121,6 +122,8 @@ float JoypadData::GetAxis(Symbol axis) const {
     return 0.0f;
 }
 
+#pragma pool_data on
+
 int JoypadData::FloatToBucket(float f) const {
     if(f < 0.11f) return 0;
     if(f < 0.31f) return 6;
@@ -140,6 +143,10 @@ int JoypadData::GetVelocityBucket(Symbol axis) const {
 int JoypadData::GetPressureBucket(JoypadButton b) const {
     MILO_ASSERT(int(b) < kNumPressureButtons, 0x140);
     float val = mPressures[b];
+    if(mType == kJoypadPs3RoDrums){
+        val = val * 255.0f;
+        val = 1.0f - Clamp<float>(0.0f, 100.0f, val - 22.0f) / 100.0f;
+    }
     return FloatToBucket(val);
 }
 
