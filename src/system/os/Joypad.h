@@ -159,14 +159,16 @@ public:
     int GetPressureBucket(JoypadButton) const;
 };
 
+class LocalUser; // forward dec
+
 extern "C" bool JoypadIsCalbertGuitar(int);
 extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
 extern "C" void JoypadInitCommon(class DataArray*);
-extern "C" void AssociateUserAndPad(class LocalUser*, int);
+extern "C" void AssociateUserAndPad(LocalUser*, int);
 extern "C" void ResetAllUsersPads();
-extern "C" int GetUsersPadNum(class LocalUser*);
+extern "C" int GetUsersPadNum(LocalUser*);
 extern "C" LocalUser* JoypadGetUserFromPadNum(int);
-extern "C" int JoypadGetUsersPadNum(class LocalUser*);
+extern "C" int JoypadGetUsersPadNum(LocalUser*);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -178,6 +180,12 @@ bool JoypadTypeHasLeftyFlip(Symbol);
 int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
+JoypadAction ButtonToAction(JoypadButton, Symbol);
+
+bool UserHasController(LocalUser*);
+bool UserHasGHDrums(LocalUser*);
+bool UserHas22FretGuitar(LocalUser*);
+bool UserHasButtonGuitar(LocalUser*);
 
 // forward dec
 namespace Hmx { class Object; }

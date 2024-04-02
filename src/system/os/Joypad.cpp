@@ -273,15 +273,104 @@ bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type){
     MILO_ASSERT(gControllersCfg, 0x644);
     DataArray* type_cfg = gControllersCfg->FindArray(controller_type, false);
     if(type_cfg){
+        JoypadData* theData = &gJoypadData[padNum];
         DataArray* detect_cfg = type_cfg->FindArray("detect", true);
         if(detect_cfg->Size() != 1){
-            if(!IsJoypadDetectMatch(detect_cfg->Array(1), gJoypadData[padNum])){
-                return false;
+            if(IsJoypadDetectMatch(detect_cfg->Array(1), gJoypadData[padNum])){
+                theData->mControllerType = controller_type;
+                Symbol analogsticks("has_analog_sticks");
+                DataArray* analog_sticks_arr = type_cfg->FindArray(analogsticks, true);
+                theData->mHasAnalogSticks = analog_sticks_arr->Int(1) != 0;
+
+                Symbol transsticks("translate_sticks");
+                DataArray* translate_sticks_arr = type_cfg->FindArray(transsticks, true);
+                theData->mTranslateSticks = translate_sticks_arr->Int(1) != 0;
+
+                theData->mIgnoreButtonMask = 0;
+                DataArray* ignore_arr = type_cfg->FindArray("ignore_buttons", false);
+                if(ignore_arr){
+                    for(int i = 1; i < ignore_arr->Size(); i++){
+                        theData->mIgnoreButtonMask |= (1 << ignore_arr->Int(i));
+                    }
+                }
+
+                Symbol isdrumsym("is_drum");
+                DataArray* drum_arr = type_cfg->FindArray(isdrumsym, true);
+                theData->mIsDrum = drum_arr->Int(1) != 0;
+
+                Symbol cymbal("cymbal_mask");
+                DataArray* cymbal_mask_arr = type_cfg->FindArray(cymbal, true);
+                theData->mCymbalMask = cymbal_mask_arr->Int(1);
+
+                Symbol green("green_cymbal_mask");
+                DataArray* green_cymbal_mask_arr = type_cfg->FindArray(green, true);
+                theData->mGreenCymbalMask = green_cymbal_mask_arr->Int(1);
+
+                Symbol yellow("yellow_cymbal_mask");
+                DataArray* yellow_mask_arr = type_cfg->FindArray(yellow, true);
+                theData->mYellowCymbalMask = yellow_mask_arr->Int(1);
+
+                Symbol blue("blue_cymbal_mask");
+                DataArray* blue_cymbal_mask_arr = type_cfg->FindArray(blue, true);
+                theData->mBlueCymbalMask = blue_cymbal_mask_arr->Int(1);
+
+                Symbol mask("secondary_pedal_mask");
+                DataArray* secondary_arr = type_cfg->FindArray(mask, true);
+                theData->mSecondaryPedalMask = secondary_arr->Int(1);
+                return true;
             }
         }
     }
     else return false;
 }
+
+Symbol JoypadControllerTypePadNum(int padNum){
+    Symbol ret = none;
+    if(padNum != -1 && !gJoypadDisabled[padNum] && !gJoypadData[padNum].mConnected){
+        if(!gJoypadData[padNum].mControllerType.IsNull()){
+            return gJoypadData[padNum].mControllerType;
+        }
+        else {
+            MILO_ASSERT(gControllersCfg, 0x67B);
+            for(int i = 1; i < gControllersCfg->Size(); i++){
+                Symbol sym = gControllersCfg->Array(i)->Sym(0);
+                if(JoypadIsControllerTypePadNum(padNum, sym)) return sym;
+            }
+            return unknown;
+        }
+    }
+}
+
+bool JoypadIsConnectedPadNum(int padNum){
+    if(padNum == -1) return false;
+    else return gJoypadData[padNum].mConnected;
+}
+
+bool JoypadIsCalbertGuitar(int padNum){
+    JoypadType ty = gJoypadData[padNum].mType;
+    if(ty == kJoypadXboxHxGuitarRb2 || ty == kJoypadXboxButtonGuitar || 
+        ty == kJoypadPs3HxGuitarRb2 || ty == kJoypadPs3ButtonGuitar || 
+        ty == kJoypadWiiHxGuitarRb2 || ty == kJoypadWiiButtonGuitar) 
+        return true;
+    else return false;
+}
+
+bool UserHasController(LocalUser* user){
+    return GetUsersPadNum(user) != -1;
+}
+
+bool UserHasGHDrums(LocalUser* user){
+    int padNum = GetUsersPadNum(user);
+    if(padNum != -1){
+        JoypadType ty = gJoypadData[padNum].mType;
+        return (ty == kJoypadXboxRoDrums || ty == kJoypadPs3RoDrums);
+    }
+    else return false;
+}
+
+bool UserHas22FretGuitar(LocalUser*);
+
+bool UserHasButtonGuitar(LocalUser*);
 
 bool JoypadTypeHasLeftyFlip(Symbol type){
     DataArray* found = gControllersCfg->FindArray(type, true)->FindArray(lefty_flip, true);
@@ -296,4 +385,30 @@ int JoypadTypePadShiftButton(Symbol type){
 int JoypadTypeCymbalShiftButton(Symbol type){
     DataArray* found = gControllersCfg->FindArray(type, true)->FindArray(cymbal_shift_button, true);
     return found->Int(1);
+}
+
+bool JoypadIsShiftButton(int padNum, JoypadButton btn){
+    DataArray* type_array = gControllersCfg->FindArray(JoypadControllerTypePadNum(padNum), false);
+    MILO_ASSERT(type_array, 0x702);
+    if(btn == (JoypadButton)type_array->FindArray(cymbal_shift_button, true)->Int(1)){
+        return true;
+    }
+    else if(btn == (JoypadButton)type_array->FindArray(pad_shift_button, true)->Int(1)){
+        return true;
+    }
+    else if(btn == (JoypadButton)type_array->FindArray(guitar_shift_button, true)->Int(1)){
+        return true;
+    }
+    else return false;
+}
+
+JoypadAction ButtonToAction(JoypadButton btn, Symbol sym){
+    if(sym == none) return kAction_None;
+    else {
+        DataArray* arr = gButtonMeanings->FindArray(sym, false);
+        if(arr){
+            arr = arr->FindArray(btn, false);
+            if(arr) return (JoypadAction)arr->Int(1);
+        }
+    }
 }
