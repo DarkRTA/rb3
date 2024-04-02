@@ -164,6 +164,9 @@ extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
 extern "C" void JoypadInitCommon(class DataArray*);
 extern "C" void AssociateUserAndPad(class LocalUser*, int);
 extern "C" void ResetAllUsersPads();
+extern "C" int GetUsersPadNum(class LocalUser*);
+extern "C" LocalUser* JoypadGetUserFromPadNum(int);
+extern "C" int JoypadGetUsersPadNum(class LocalUser*);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);

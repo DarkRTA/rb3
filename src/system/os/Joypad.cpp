@@ -251,6 +251,23 @@ void ResetAllUsersPads(){
     for(int i = 0; i < 4; i++) AssociateUserAndPad(0, i);
 }
 
+int GetUsersPadNum(LocalUser* user){
+    bool* disabled = gJoypadDisabled;
+    JoypadData* data = gJoypadData;
+    if(!disabled[0] && data[0].mUser == user) return 0;
+    else if(!disabled[1] && data[1].mUser == user) return 1;
+    else if(!disabled[2] && data[2].mUser == user) return 2;
+    else if(!disabled[3] && data[3].mUser == user) return 3;
+    else return -1;
+}
+
+LocalUser* JoypadGetUserFromPadNum(int iPadNum){
+    MILO_ASSERT(( 0) <= (iPadNum) && (iPadNum) < ( kNumJoypads), 0x633);
+    return gJoypadData[iPadNum].mUser;
+}
+
+int JoypadGetUsersPadNum(LocalUser* user){ return GetUsersPadNum(user); }
+
 bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type){
     MILO_ASSERT(padNum != -1, 0x641);
     MILO_ASSERT(gControllersCfg, 0x644);
