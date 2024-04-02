@@ -5,7 +5,8 @@
         "objects": {
             "Main.cpp": "Matching",
             "App.cpp": "NonMatching",
-            "ChecksumData_wii.cpp": "Matching"
+            "ChecksumData_wii.cpp": "Matching",
+            "keygen_wii.cpp": "NonMatching"
         }
     },
     "band3": {
