@@ -252,7 +252,7 @@ for (lib, lib_config) in objects.items():
                 if type(object_cflags) is str:
                     obj_config["cflags"] = get_flags(object_cflags)
 
-            lib_objects.append(Object(completed, path, options=obj_config))
+            lib_objects.append(Object(completed, path, **obj_config))
         pass
 
     libs.append({

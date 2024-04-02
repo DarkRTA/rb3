@@ -60,7 +60,7 @@
       "items": { "type": "string" }
     },
     "mw_version": {
-      "description": "The version of MWCC to use.",
+      "description": "The version of MWCC to use, for example \"Wii/1.3\".",
       "type": "string"
     },
     "comment": {
