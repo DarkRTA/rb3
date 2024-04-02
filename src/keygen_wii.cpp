@@ -1,7 +1,5 @@
 
 
-static long s_seed = 0xEB;
-
 unsigned char asciiDigitToHex(char digit){
     if(0x61 <= digit && digit <= 0x66){
         return digit - 0x57;
@@ -12,13 +10,12 @@ unsigned char asciiDigitToHex(char digit){
     return digit - 0x30;
 }
 
-void parseHex16(const char* cc, unsigned char* uc){
-    for(int i = 0; i < 0x10; i++){
-        int i1 = asciiDigitToHex(*cc);
-        char c = asciiDigitToHex(cc[1]);
-        *uc = c + i1 << 4;
-        uc = uc + 1;
-        cc = cc + 2;
+void parseHex16(const char* input, unsigned char* output){
+    for(int i = 0; i < 16; i++){
+        unsigned int upper = asciiDigitToHex(input[0]) << 4;
+        unsigned int lower = asciiDigitToHex(input[1]);
+        output[i] = lower + upper;
+        input += 2;
     }
 }
 
@@ -39,9 +36,11 @@ void parseHex16(const char* cc, unsigned char* uc){
 //   return;
 // }
 
-void random(long l){
+int random(long l){
+    static long s_seed = 0xEB;
     if(l != 0) s_seed = l;
     s_seed = s_seed * 0x19660E + 0x3C6EF35F;
+    return s_seed;
 }
 
 void mash(unsigned char* uc1, unsigned char* uc2){
@@ -59,4 +58,12 @@ void swap(char& c1, char& c2){
     char tmp = c1;
     c1 = c2;
     c2 = tmp;
+}
+
+void shuffle1(char* c){
+    for(int i = 0; i < 8; i++){
+        int i1 = i * 4;
+        swap(c[roll(i1)], c[i1 + 2]);
+        swap(c[roll(i1 + 3)], c[i1 + 1]);
+    }
 }
