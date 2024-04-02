@@ -1,6 +1,7 @@
 #ifndef OS_JOYPAD_H
 #define OS_JOYPAD_H
 #include "utl/Symbol.h"
+#include "obj/Msg.h"
 
 #define kNumJoypads 4
 #define kNumPressureButtons 8
@@ -62,7 +63,6 @@ enum JoypadButton {
     kPad_Xbox_RS = 10,
 };
 
-// there might be more of these specifically for RB3, who knows
 enum JoypadType {
     kJoypadNone = 0,
     kJoypadDigital = 1,
@@ -74,27 +74,48 @@ enum JoypadType {
     kJoypadXboxRoGuitar = 7,
     kJoypadXboxDrums = 8,
     kJoypadXboxDrumsRb2 = 9,
-    kJoypadXboxStageKit = 10,
-    kJoypadPs3HxGuitar = 11,
-    kJoypadPs3HxGuitarRb2 = 12,
-    kJoypadPs3HxDrums = 13,
-    kJoypadPs3HxDrumsRb2 = 14,
-    kJoypadPs3RoGuitar = 15,
-    kJoypadWiiCore = 16,
-    kJoypadWiiFS = 17,
-    kJoypadWiiClassic = 18,
-    kJoypadWiiGamecube = 19,
-    kJoypadWiiGuitar = 20,
-    kJoypadWiiDrums = 21,
-    kJoypadWiiHxGuitar = 22,
-    kJoypadWiiHxGuitarRb2 = 23,
-    kJoypadWiiHxDrums = 24,
-    kJoypadWiiHxDrumsRb2 = 25,
+    kJoypadXboxRoDrums = 10,
+    kJoypadXboxStageKit = 11,
+    kJoypadPs3HxGuitar = 12,
+    kJoypadPs3HxGuitarRb2 = 13,
+    kJoypadPs3HxDrums = 14,
+    kJoypadPs3HxDrumsRb2 = 15,
+    kJoypadPs3RoGuitar = 16,
+    kJoypadPs3RoDrums = 17,
+    kJoypadPs3KonamiDrums = 18,
+    kJoypadWiiCore = 19,
+    kJoypadWiiFS = 20,
+    kJoypadWiiClassic = 21,
+    kJoypadWiiGamecube = 22,
+    kJoypadWiiGuitar = 23,
+    kJoypadWiiDrums = 24,
+    kJoypadWiiHxGuitar = 25,
+    kJoypadWiiHxGuitarRb2 = 26,
+    kJoypadWiiHxDrums = 27,
+    kJoypadWiiHxDrumsRb2 = 28,
+    kJoypadXboxCoreGuitar = 29,
+    kJoypadXboxButtonGuitar = 30,
+    kJoypadXboxRealGuitar22Fret = 31,
+    kJoypadXboxMidiBoxKeyboard = 32,
+    kJoypadXboxMidiBoxDrums = 33,
+    kJoypadXboxKeytar = 34,
+    kJoypadPs3CoreGuitar = 35,
+    kJoypadPs3ButtonGuitar = 36,
+    kJoypadPs3RealGuitar22Fret = 37,
+    kJoypadPs3MidiBoxKeyboard = 38,
+    kJoypadPs3MidiBoxDrums = 39,
+    kJoypadPs3Keytar = 40,
+    kJoypadWiiCoreGuitar = 41,
+    kJoypadWiiButtonGuitar = 42,
+    kJoypadWiiRealGuitar22Fret = 43,
+    kJoypadWiiMidiBoxKeyboard = 44,
+    kJoypadWiiMidiBoxDrums = 45,
+    kJoypadWiiKeytar = 46,
+    kJoypadNumTypes = 47
 };
 
 class JoypadData {
 public:
-    // RB3's members differ - verify this!
     unsigned int mButtons;
     unsigned int mNewPressed;
     unsigned int mNewReleased;
@@ -102,24 +123,34 @@ public:
     float mTriggers[2]; // LT, RT
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
-    int mUserNum;
-    bool mConnected;
-    bool mForceFeedback;
-    bool mCanForceFeedback;
-    bool mWireless;
-    int unk58, unk5c, unk60;
-    bool unk64;
-    bool mVibrateEnabled;
-    char filler[0x20];
 
+    int unk50;
+    bool unk54, unk55, unk56, unk57;
+    int unk58, unk5c;
+
+    class LocalUser* mUser;
+    bool mConnected;
+    bool mVibrateEnabled;
+
+    bool unk66, unk67, unk68;
+
+    bool mHasAnalogSticks;
+    bool mTranslateSticks;
+    int mIgnoreButtonMask;
+    int mGreenCymbalMask;
+    int mYellowCymbalMask;
+    int mBlueCymbalMask;
+    int mSecondaryPedalMask;
+    int mCymbalMask;
+    bool mIsDrum;
     JoypadType mType;
     Symbol mControllerType;
     float mDistFromRest;
     bool mHasGreenCymbal;
-    bool mHasBlueCymbal;
     bool mHasYellowCymbal;
+    bool mHasBlueCymbal;
     
-    int morefiller;
+    int unk98;
 
     JoypadData();
     float GetAxis(Symbol) const;
@@ -128,7 +159,16 @@ public:
     int GetPressureBucket(JoypadButton) const;
 };
 
+class LocalUser; // forward dec
+
 extern "C" bool JoypadIsCalbertGuitar(int);
+extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
+extern "C" void JoypadInitCommon(class DataArray*);
+extern "C" void AssociateUserAndPad(LocalUser*, int);
+extern "C" void ResetAllUsersPads();
+extern "C" int GetUsersPadNum(LocalUser*);
+extern "C" LocalUser* JoypadGetUserFromPadNum(int);
+extern "C" int JoypadGetUsersPadNum(LocalUser*);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -140,5 +180,18 @@ bool JoypadTypeHasLeftyFlip(Symbol);
 int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
+JoypadAction ButtonToAction(JoypadButton, Symbol);
+
+bool UserHasController(LocalUser*);
+bool UserHasGHDrums(LocalUser*);
+bool UserHas22FretGuitar(LocalUser*);
+bool UserHasButtonGuitar(LocalUser*);
+
+// forward dec
+namespace Hmx { class Object; }
+
+void JoypadSubscribe(Hmx::Object*);
+void JoypadUnsubscribe(Hmx::Object*);
+void JoypadPushThroughMsg(const Message&);
 
 #endif

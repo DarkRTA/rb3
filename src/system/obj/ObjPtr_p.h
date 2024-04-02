@@ -41,7 +41,7 @@ public:
     void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
     operator bool() const { return mPtr != 0; }
 
-    bool Load(BinStream& bs, bool b, ObjectDir* dir){
+    bool Load(BinStream& bs, bool b, class ObjectDir* dir){
         char buf[0x80];
         bs.ReadString(buf, 0x80);
         if(!dir && mOwner) dir = mOwner->Dir();
@@ -106,7 +106,7 @@ public:
 
     void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
 
-    bool Load(BinStream& bs, bool b, ObjectDir* dir){
+    bool Load(BinStream& bs, bool b, class ObjectDir* dir){
         char buf[0x80];
         bs.ReadString(buf, 0x80);
         if(!dir && mOwner) dir = mOwner->Dir();
