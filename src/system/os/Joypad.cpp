@@ -12,7 +12,7 @@ namespace {
     static int gPadsToKeepAliveNext; // also prolly not an int
     static int gKeepAliveCountdown;
     static int gKeepaliveThresholdMs = -1; // 0x18
-    static bool gExportMsgs;
+    static bool gExportMsgs = true;
     static bool gJoypadLibInitialized;
     static JoypadData gJoypadData[4];
     static bool gJoypadDisabled[4]; // 0x28c
