@@ -4,6 +4,7 @@
 #include "os/ContentMgr.h"
 
 class OnlineID; // forward dec
+class LocalUser;
 
 enum DiskError {
     kNoDiskError,
@@ -19,6 +20,11 @@ public:
 
     void SetDiskError(DiskError);
     void GetOnlineID(int, OnlineID*) const;
+    const char* GetName(int) const;
+    bool UserHasOnlinePrivilege(const LocalUser*) const;
+    bool IsUserAGuest(const LocalUser*) const;
+    bool IsUserSignedIn(const LocalUser*) const;
+    bool IsUserSignedIntoLive(const LocalUser*) const;
 };
 
 

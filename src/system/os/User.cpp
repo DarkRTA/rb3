@@ -2,13 +2,20 @@
 #include "os/Debug.h"
 #include "obj/MessageTimer.h"
 #include "utl/Symbols.h"
+#include "os/Joypad.h"
+#include "os/Joypad_Wii.h"
+#include "os/PlatformMgr.h"
+#include "meta/WiiProfileMgr.h"
 
-User::User() : mOnlineID(new OnlineID()), mUserGuid(), unk30(-1) {
+extern PlatformMgr ThePlatformMgr;
+extern WiiProfileMgr TheWiiProfileMgr;
+
+User::User() : mOnlineID(new OnlineID()), mUserGuid(), mMachineID(-1) {
     mUserGuid.Generate();
 }
 
 void User::Reset(){
-    unk30 = -1;
+    mMachineID = -1;
 }
 
 void User::SetUserGuid(const UserGuid& id){
@@ -17,7 +24,7 @@ void User::SetUserGuid(const UserGuid& id){
 }
 
 void User::SyncSave(BinStream& bs, unsigned int ui) const {
-    bs << unk30;
+    bs << mMachineID;
     bs << UserName();
     bs << *mOnlineID;
 }
@@ -41,25 +48,109 @@ bool User::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     }
 }
 
-LocalUser::LocalUser() : idk(0) {
+LocalUser::LocalUser() : mHasOnlineID(0) {
 
 }
 
 bool LocalUser::IsLocal() const { return true; }
 
-void LocalUser::GetLocalUser(){}
-void LocalUser::GetLocalUser() const {}
+User* LocalUser::GetLocalUser(){}
+User* LocalUser::GetLocalUser() const {}
 
 User* LocalUser::GetRemoteUser(){
-    TheDebug.Fail(MakeString("Bad Conversion"));
+    MILO_FAIL("Bad Conversion");
     return 0;
 }
 
 User* LocalUser::GetRemoteUser() const {
-    TheDebug.Fail(MakeString("Bad Conversion"));
+    MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-RemoteUser::RemoteUser() : str() {
+int LocalUser::GetPadNum() const {
+    return JoypadGetUsersPadNum((LocalUser*)this);
+}
+
+int LocalUser::GetPadType() const {
+    return GetWiiJoypadType(GetPadNum());
+}
+
+void LocalUser::UpdateOnlineID(){
+    mHasOnlineID = ThePlatformMgr.IsUserSignedIn((LocalUser*)this);
+    mOnlineID->SetPrincipalID(
+        TheWiiProfileMgr.GetIdForIndex(
+            TheWiiProfileMgr.GetIndexForUser((LocalUser*)this)
+        )
+    );
+}
+
+bool LocalUser::IsJoypadConnected() const {
+    static DataNode* fake_controllers = DataVariable("fake_controllers");
+    int pad = fake_controllers->Int(0);
+    if(pad) return true;
+    else return JoypadIsConnectedPadNum(GetPadNum());
+}
+
+bool LocalUser::HasOnlinePrivilege() const {
+    return ThePlatformMgr.UserHasOnlinePrivilege((LocalUser*)this);
+}
+
+bool LocalUser::IsGuest() const {
+    return ThePlatformMgr.IsUserAGuest((LocalUser*)this);
+}
+
+bool LocalUser::IsSignedIn() const {
+    return ThePlatformMgr.IsUserSignedIn((LocalUser*)this);
+}
+
+bool LocalUser::IsSignedInOnline() const {
+    return ThePlatformMgr.IsUserSignedIntoLive((LocalUser*)this);
+}
+
+bool LocalUser::CanSaveData() const {
+    bool check = IsSignedIn() && !IsGuest();
+    if(check){
+        return TheWiiProfileMgr.IsIndexValid(
+            TheWiiProfileMgr.GetIndexForUser((LocalUser*)this)
+        );
+    }
+    else return check;
+}
+
+const char* LocalUser::UserName() const {
+    return ThePlatformMgr.GetName(GetPadNum());
+}
+
+BEGIN_HANDLERS(LocalUser)
+    HANDLE_EXPR(get_pad_num, GetPadNum());
+    HANDLE_EXPR(get_pad_type, GetPadType());
+    HANDLE_EXPR(has_online_privilege, HasOnlinePrivilege());
+    HANDLE_EXPR(is_signed_in_online, IsSignedInOnline());
+    HANDLE_CHECK(0xDE);
+END_HANDLERS
+
+RemoteUser::RemoteUser() : mUserName() {
     
+}
+
+bool RemoteUser::IsLocal() const { return false; }
+
+User* RemoteUser::GetLocalUser() {
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+User* RemoteUser::GetLocalUser() const {
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+User* RemoteUser::GetRemoteUser(){}
+User* RemoteUser::GetRemoteUser() const {}
+
+const char* RemoteUser::UserName() const { return mUserName.c_str(); }
+
+void RemoteUser::SyncLoad(BinStream& bs, unsigned int ui){
+    bs >> mMachineID >> mUserName;
+    bs >> *mOnlineID;
 }
