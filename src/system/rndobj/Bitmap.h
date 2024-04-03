@@ -1,6 +1,7 @@
 #ifndef RNDOBJ_BITMAP_H
 #define RNDOBJ_BITMAP_H
 #include "utl/BinStream.h"
+#include "obj/Object.h"
 #include "utl/MemMgr.h"
 #include "milo_types.h"
 #include "types.h"
@@ -43,7 +44,7 @@ public:
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
-    u32 mOrder; // 0x8
+    int mOrder; // 0x8
     u8* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14
@@ -51,7 +52,7 @@ public:
 
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}
     ~RndBitmap() {Reset();}
-    void LoadHeader(BinStream&, u8&);
+    BinStream& LoadHeader(BinStream&, u8&);
     void SaveHeader(BinStream&) const;
     int NumMips() const;
     int PixelBytes() const;
@@ -74,6 +75,7 @@ public:
     void GenerateMips();
     RndBitmap* DetachMip();
     void SetMip(RndBitmap*);
+    bool LoadSafely(BinStream&, int, int);
 
     void Save(BinStream&) const;
     void Load(BinStream&);
@@ -83,9 +85,8 @@ public:
     inline u32 Order() { return mOrder; }
     inline u8 Bpp() { return mBpp; }
 
-    void operator delete(void* b) {
-        _MemFree(b);
-    }
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 };
 
 unsigned char BITMAP_REV = 1;
