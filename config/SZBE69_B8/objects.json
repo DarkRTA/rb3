@@ -6,7 +6,7 @@
             "Main.cpp": "Matching",
             "App.cpp": "NonMatching",
             "ChecksumData_wii.cpp": "Matching",
-            "keygen_wii.cpp": { "status": "NonMatching", "mw_version": "Wii/1.0", "extra_cflags": [ "-sdata 8" ] }
+            "keygen_wii.cpp": { "status": "NonMatching", "extra_cflags": [ "-O2,p -sdata 8 -opt noschedule" ] }
         }
     },
     "band3": {
