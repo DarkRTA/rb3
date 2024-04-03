@@ -140,7 +140,7 @@
             "system/os/UsbMidiGuitar.cpp": "NonMatching",
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
-            "system/os/User.cpp": "NonMatching",
+            "system/os/User.cpp": "Matching",
             "system/os/VirtualKeyboard.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",

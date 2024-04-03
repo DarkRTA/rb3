@@ -8,8 +8,8 @@
 class User : public Hmx::Object {
 public:
     User();
-    virtual ~User(){}
     virtual DataNode Handle(DataArray*, bool);
+    virtual ~User(){}
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Reset();
     virtual void SyncSave(BinStream&, unsigned int) const;
