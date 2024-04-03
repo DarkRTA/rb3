@@ -3,6 +3,9 @@
 #include "rndobj/Mat.h"
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
+#include "utl/Loader.h"
+
+extern LoadMgr TheLoadMgr;
 
 unsigned short Screenshot::gRev = 0;
 unsigned short Screenshot::gAltRev = 0;
@@ -29,7 +32,17 @@ void Screenshot::Load(BinStream& bs){
 }
 
 void Screenshot::Sync(){
-    
+    if(TheLoadMgr.mCacheMode){
+        delete mTex;
+        delete mMat;
+        mTex = Hmx::Object::New<RndTex>();
+        mTex->SetBitmap(mTexPath);
+        mMat = Hmx::Object::New<RndMat>();
+        mMat->unkb0p1 = 0;
+        mMat->unkb4p1 |= 2;
+        mMat->mDiffuseTex = mTex;
+        mMat->unkb4p1 |= 2;
+    }
 }
 
 Screenshot::~Screenshot(){
