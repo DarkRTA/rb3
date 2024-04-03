@@ -27,7 +27,6 @@ const unsigned char hiddenKeys[0x180] = {
     0x29,0xc3,0x0c,0x96,0x96,0xeb,0x10,0xa0,0xda,0x59,0x32,0xd3,0x17,0x41,0x25,0xdc,
     0x63,0x08,0x04,0xae,0x77,0xcb,0x84,0x5a,0x60,0x4d,0xdd,0x45,0xb5,0xf4,0xa0,0x05
 };
-// 7f 95 5b 9d 94 ba 12 f1 d7 5a 67 d9 16 45 28 dd 61 55 55 af 23 91 d6 0a 3a 42 81 18 b4 f7 f3 04 78 96 5d 92 92 b0 47 ac 8f 5b 6d dc 1c 41 7e da 6a 55 53 af 20 c8 dc 0a 66 43 dd 1c b2 a5 a4 0c 7e 92 5c 93 90 ed 4a ad 8b 07 36 d3 10 41 78 8f 60 08 55 a8 26 cf d0 0f 65 11 84 45 b1 a0 fa 57 79 97 0b 90 92 b0 44 ad 8a 0e 60 d9 14 11 7e 8d 35 5d 5c fb 21 9c d3 0e 32 40 d1 48 b8 a7 a1 0d 28 c3 5d 97 c1 ec 42 f1 dc 5d 37 da 14 47 79 8a 32 5c 54 f2 72 9d d3 0d 67 4c d6 49 b4 a2 f3 50 28 96 5e 95 c5 e9 45 ad 8a 5d 64 8e 17 40 2e 87 36 58 06 fd 75 90 d0 5f 3a 40 d4 4c b0 f7 a7 04 2c 96 01 96 9b bc 15 a6 de 0e 65 8d 17 47 2f dd 63 54 55 af 76 ca 84 5f 62 44 80 4a b3 f4 f4 0c 7e c4 0e c6 9a eb 43 a0 db 0a 64 df 1c 42 24 89 63 5c 55 f3 71 90 dc 5d 60 40 d1 4d b2 a3 a7 0d 2c 9a 0b 90 9a be 47 a7 88 5a 6d df 13 1d 2e 8b 60 5e 55 f2 74 9c d7 0e 60 40 80 1c b7 a1 f4 02 28 96 5b 95 c1 e9 40 a3 8f 0c 32 df 43 1d 24 8d 61 09 54 ab 27 9a d3 58 60 16 84 4f b3 a4 f3 0d 25 93 08 c0 9a bd 10 a2 d6 09 60 8f 11 1d 7a 8f 63 0b 5d f2 21 ec d7 08 62 40 84 49 b0 ad f2 07 29 c3 0c 96 96 eb 10 a0 da 59 32 d3 17 41 25 dc 63 08 04 ae 77 cb 84 5a 60 4d dd 45 b5 f4 a0 05
 
 unsigned char asciiDigitToHex(char digit){
     if(0x61 <= digit && digit <= 0x66){
