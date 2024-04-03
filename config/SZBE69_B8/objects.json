@@ -278,7 +278,7 @@
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
-            "system/utl/Str.cpp": "NonMatching",
+            "system/utl/Str.cpp": "Matching",
             "system/utl/StringTable.cpp": "NonMatching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
             "system/utl/Symbol.cpp": "NonMatching",
