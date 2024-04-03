@@ -223,8 +223,8 @@ bool Striper::Compute(STRIPERRESULT& result)
 
 	mStripLengths->Collapse(result.StripLengths);
 	mStripRuns->Collapse(result.StripRuns);
-	RELEASEARRAY(mStripLengths);
-	RELEASEARRAY(mStripRuns);
+	RELEASE(mStripLengths);
+	RELEASE(mStripRuns);
 
 	// result.StripLengths	= (udword*)	mStripLengths	->Collapse();
 	// result.StripRuns	=			mStripRuns		->Collapse();
@@ -421,68 +421,84 @@ udword Striper::TrackStrip(udword face, udword oldest, udword middle, udword* st
 // Remark	:	-
 bool Striper::ConnectAllStrips(STRIPERRESULT& result)
 {
-	MemDoTempAllocations tmp(true, false);
-	mSingleStrip = new CustomArray;
-	if(!mSingleStrip) return false;
-
-	mTotalLength	= 0;
-	uword* wrefs	= mAskForWords ? (uword*)result.StripRuns : null;
-	udword* drefs	= mAskForWords ? null : (udword*)result.StripRuns;
-
-	// Loop over strips and link them together
-	for(udword k=0;k<result.NbStrips;k++)
 	{
-		// Nothing to do for the first strip, we just copy it
-		if(k)
-		{
-			// This is not the first strip, so we must copy two void vertices between the linked strips
-			udword LastRef	= drefs ? drefs[-1] : (udword)wrefs[-1];
-			udword FirstRef	= drefs ? drefs[0] : (udword)wrefs[0];
-			if(mAskForWords)	mSingleStrip->Store((uword)LastRef).Store((uword)FirstRef);
-			else				mSingleStrip->Store(LastRef).Store(FirstRef);
-			mTotalLength += 2;
+		MemDoTempAllocations tmp(true, false);
+		mSingleStrip = new CustomArray;
+		if(!mSingleStrip) return false;
 
-			// Linking two strips may flip their culling. If the user asked for single-sided strips we must fix that
-			if(mOneSided)
+		mTotalLength	= 0;
+		// uword* wrefs	= mAskForWords ? (uword*)result.StripRuns : null;
+		// udword* drefs	= mAskForWords ? null : (udword*)result.StripRuns;
+		// uword* wrefs	= null;
+		uword* drefs	= (uword*)result.StripRuns;
+
+		// Loop over strips and link them together
+		for(udword k=0;k<result.NbStrips;k++)
+		{
+			// Nothing to do for the first strip, we just copy it
+			if(k)
 			{
-				// Culling has been inverted only if mTotalLength is odd
-				if(mTotalLength&1)
+				// This is not the first strip, so we must copy two void vertices between the linked strips
+				// udword LastRef	= drefs ? drefs[-1] : (udword)wrefs[-1];
+				// udword FirstRef	= drefs ? drefs[0] : (udword)wrefs[0];
+				uword LastRef	= drefs[-1];
+				uword FirstRef	= drefs[0];
+				// if(mAskForWords)	mSingleStrip->Store((uword)LastRef).Store((uword)FirstRef);
+				// else				mSingleStrip->Store(LastRef).Store(FirstRef);
+				mSingleStrip->Store(LastRef).Store(FirstRef);
+				mTotalLength += 2;
+
+				// Linking two strips may flip their culling. If the user asked for single-sided strips we must fix that
+				if(mOneSided)
 				{
-					// We can fix culling by replicating the first vertex once again...
-					udword SecondRef = drefs ? drefs[1] : (udword)wrefs[1];
-					if(FirstRef!=SecondRef)
+					// Culling has been inverted only if mTotalLength is odd
+					if(mTotalLength & 1)
 					{
-						if(mAskForWords)	mSingleStrip->Store((uword)FirstRef);
-						else				mSingleStrip->Store(FirstRef);
-						mTotalLength++;
-					}
-					else
-					{
-						// ...but if flipped strip already begin with a replicated vertex, we just can skip it.
-						result.StripLengths[k]--;
-						if(wrefs)	wrefs++;
-						if(drefs)	drefs++;
+						// We can fix culling by replicating the first vertex once again...
+						// udword SecondRef = drefs ? drefs[1] : (udword)wrefs[1];
+						uword SecondRef = drefs[1];
+						if(FirstRef!=SecondRef)
+						{
+							// if(mAskForWords)	mSingleStrip->Store((uword)FirstRef);
+							// else				mSingleStrip->Store(FirstRef);
+							mSingleStrip->Store(FirstRef);
+							mTotalLength++;
+						}
+						else
+						{
+							// ...but if flipped strip already begin with a replicated vertex, we just can skip it.
+							result.StripLengths[k]--;
+							// if(wrefs)	wrefs++;
+							if(drefs)	drefs++;
+						}
 					}
 				}
 			}
-		}
 
-		// Copy strip
-		for(udword j=0;j<result.StripLengths[k];j++)
-		{
-			udword Ref = drefs ? drefs[j] : (udword)wrefs[j];
-			if(mAskForWords)	mSingleStrip->Store((uword)Ref);
-			else				mSingleStrip->Store(Ref);
+			// Copy strip
+			for(udword j=0;j<result.StripLengths[k];j++)
+			{
+				// udword Ref = drefs ? drefs[j] : (udword)wrefs[j];
+				uword Ref = drefs[j];
+				// if(mAskForWords)	mSingleStrip->Store((uword)Ref);
+				// else				mSingleStrip->Store(Ref);
+				mSingleStrip->Store(Ref);
+			}
+			// if(wrefs)	wrefs += result.StripLengths[k];
+			if(drefs)	drefs += result.StripLengths[k];
+			mTotalLength += result.StripLengths[k];
 		}
-		if(wrefs)	wrefs += result.StripLengths[k];
-		if(drefs)	drefs += result.StripLengths[k];
-		mTotalLength += result.StripLengths[k];
 	}
 
 	// Update result structure
+	result.FreeLengthsAndRuns();
 	result.NbStrips		= 1;
-	result.StripRuns	= mSingleStrip->Collapse();
-	result.StripLengths	= &mTotalLength;
+	result.AllocLengthsAndRuns(result.NbStrips, mSingleStrip->GetOffset() >> 1);
+	// result.StripLengths	= &mTotalLength;
+	*(result.StripLengths) = mTotalLength;
+	// result.StripRuns	= mSingleStrip->Collapse();
+	mSingleStrip->Collapse(result.StripRuns);
+	RELEASE(mSingleStrip);
 
 	return true;
 }
