@@ -49,6 +49,9 @@ public:
     bool IsAnimating();
     DataNode OnConvertFrames(DataArray*);
 
+    void Animate(float, bool, float);
+    void Animate(float, float, TaskUnits, float, float);
+
     static TaskUnits RateToTaskUnits(Rate);
     int Units() const;
     float FramesPerUnit();
