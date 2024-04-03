@@ -22,6 +22,8 @@ public:
     virtual bool IsTimelineResetAllowed() const { return true; }
     virtual void SendTransitionComplete(UIScreen*, UIScreen*);
 
+    void InitResources(Symbol);
+
     int unkc;
     // more members here
 };
