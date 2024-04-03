@@ -127,10 +127,10 @@ bool Striper::Init(STRIPERCREATE& create)
 		Status = mAdj->CreateDatabase();
 		if(!Status)	{ RELEASE(mAdj); return false; }
 
-		mAskForWords		= create.AskForWords;
+		// mAskForWords		= create.AskForWords;
 		mOneSided			= create.OneSided;
 		mSGIAlgorithm		= create.SGIAlgorithm;
-		// mConnectAllStrips	= create.ConnectAllStrips;
+		mConnectAllStrips	= create.ConnectAllStrips;
 	}
 
 	return true;
