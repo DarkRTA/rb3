@@ -39,7 +39,8 @@ void UITransitionHandler::UpdateHandler(){
 
 bool UITransitionHandler::IsReadyToChange() const {
     bool ret = false;
-    switch(mAnimationState){
+    unsigned int theState = mAnimationState;
+    switch(theState){
         case 0: case 1: ret = true; break;
         case 2:
             MILO_ASSERT(mInAnim, 0x59);
