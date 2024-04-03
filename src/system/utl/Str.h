@@ -19,7 +19,7 @@ public:
     String(const String &);
     String(unsigned int, char);
 
-    static unsigned int npos;
+    static const unsigned int npos;
 
     unsigned int length() const { return strlen(mStr); }
     const char* c_str() const { return mStr; }

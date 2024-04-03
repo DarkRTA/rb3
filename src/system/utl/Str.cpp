@@ -6,6 +6,8 @@
 #include <ctype.h>
 #include <string.h>
 
+const unsigned int String::npos = -1;
+
 char gEmpty = 0;
 const char* fname = "Str.cpp";
 const char* unusedAssert = "i < mCap + 1";
@@ -44,7 +46,7 @@ void String::reserve(unsigned int arg) {
 
 String::String(unsigned int arg, char charg) : mCap(0), mStr(&gEmpty) {
     reserve(arg);
-    for(int i = 0; i < arg; i++) mStr[i] = charg;
+    for(unsigned int i = 0; i < arg; i++) mStr[i] = charg;
     mStr[arg] = '\0';
 }
 
@@ -371,6 +373,10 @@ String& String::erase(unsigned int start, unsigned int len){
     return replace(start, len, "");
 }
 
+static const char* const unusedStringStrings[] = {
+    "strlen( format ) < 30", "out", "in", "len > 0", "allowed"
+};
+
 // inserts the char c into this->text at index pos, cnt times
 String& String::insert(unsigned int pos, unsigned int cnt, char c){
     MILO_ASSERT(pos <= mCap, 0x1FC);
@@ -429,28 +435,12 @@ bool SearchReplace(
 // returns true if the copy operation was terminated because of reaching the maximum
 // length or encountering the end of src, and 0 otherwise.
 bool StrNCopy(char *dest, const char *src, int n) {
-    int var_r5_2;
-    char temp_r0;
-    bool max_len_reached;
-    char *var_r3;
-    char *var_r4;
-
     MILO_ASSERT(n, 0x278);
 
-    var_r3 = dest;
-    var_r4 = (char *)src;
-    var_r5_2 = n - 1;
-
-    while (*var_r4 != 0 && (var_r5_2 != 0)) {
-        temp_r0 = *var_r4++;
-        *var_r3++ = temp_r0;
-        var_r5_2--;
+    for(n = n - 1; *src != '\0' && n != 0; n--){
+        *dest++ = *src++;
     }
-
-    max_len_reached = false;
-    *var_r3 = 0;
-    if ((var_r5_2 != 0) || (*var_r4 == 0)) {
-        max_len_reached = true;
-    }
-    return max_len_reached;
+    *dest = '\0';
+    
+    return (n != 0 || *src == '\0');
 }
