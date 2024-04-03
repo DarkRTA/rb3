@@ -146,71 +146,88 @@ bool Striper::Init(STRIPERCREATE& create)
 // Remark	:	-
 bool Striper::Compute(STRIPERRESULT& result)
 {
-	MemDoTempAllocations tmp(true, false);
-	// You must call Init() first
-	if(!mAdj)	return false;
-
-	// Get some bytes
-	mStripLengths			= new CustomArray;				if(!mStripLengths)	return false;
-	mStripRuns				= new CustomArray;				if(!mStripRuns)		return false;
-	mTags					= new bool[mAdj->mNbFaces];		if(!mTags)			return false;
-	udword* Connectivity	= new udword[mAdj->mNbFaces];	if(!Connectivity)	return false;
-
-	// mTags contains one bool/face. True=>the face has already been included in a strip
-	ZeroMemory(mTags, mAdj->mNbFaces*sizeof(bool));
-
-	// Compute the number of connections for each face. This buffer is further recycled into
-	// the insertion order, ie contains face indices in the order we should treat them
-	ZeroMemory(Connectivity, mAdj->mNbFaces*sizeof(udword));
-	if(mSGIAlgorithm)
 	{
-		// Compute number of adjacent triangles for each face
-		for(udword i=0;i<mAdj->mNbFaces;i++)
+		MemDoTempAllocations tmp(true, false);
+		// You must call Init() first
+		if(!mAdj)	return false;
+
+		// Get some bytes
+		mStripLengths			= new CustomArray;				if(!mStripLengths)	return false;
+		mStripRuns				= new CustomArray;				if(!mStripRuns)		return false;
+		mTags					= new bool[mAdj->mNbFaces];		if(!mTags)			return false;
+		udword* Connectivity	= new udword[mAdj->mNbFaces];	if(!Connectivity)	return false;
+
+		// mTags contains one bool/face. True=>the face has already been included in a strip
+		ZeroMemory(mTags, mAdj->mNbFaces*sizeof(bool));
+
+		// Compute the number of connections for each face. This buffer is further recycled into
+		// the insertion order, ie contains face indices in the order we should treat them
+		ZeroMemory(Connectivity, mAdj->mNbFaces*sizeof(udword));
+		if(mSGIAlgorithm)
 		{
-			AdjTriangle* Tri = &mAdj->mFaces[i];
-			if(!IS_BOUNDARY(Tri->ATri[0]))	Connectivity[i]++;
-			if(!IS_BOUNDARY(Tri->ATri[1]))	Connectivity[i]++;
-			if(!IS_BOUNDARY(Tri->ATri[2]))	Connectivity[i]++;
+			// Compute number of adjacent triangles for each face
+			for(udword i=0;i<mAdj->mNbFaces;i++)
+			{
+				AdjTriangle* Tri = &mAdj->mFaces[i];
+				if(!IS_BOUNDARY(Tri->ATri[0]))	Connectivity[i]++;
+				if(!IS_BOUNDARY(Tri->ATri[1]))	Connectivity[i]++;
+				if(!IS_BOUNDARY(Tri->ATri[2]))	Connectivity[i]++;
+			}
+
+			// Sort by number of neighbors
+			RadixSorter RS;
+			udword* Sorted = RS.Sort(Connectivity, mAdj->mNbFaces).GetIndices();
+
+			// The sorted indices become the order of insertion in the strips
+			CopyMemory(Connectivity, Sorted, mAdj->mNbFaces*sizeof(udword));
+		}
+		else
+		{
+			// Default order
+			for(udword i=0;i<mAdj->mNbFaces;i++)	Connectivity[i] = i;
 		}
 
-		// Sort by number of neighbors
-		RadixSorter RS;
-		udword* Sorted = RS.Sort(Connectivity, mAdj->mNbFaces).GetIndices();
+		mNbStrips			= 0;	// #strips created
+		udword TotalNbFaces	= 0;	// #faces already transformed into strips
+		udword Index		= 0;	// Index of first face
 
-		// The sorted indices become the order of insertion in the strips
-		CopyMemory(Connectivity, Sorted, mAdj->mNbFaces*sizeof(udword));
-	}
-	else
-	{
-		// Default order
-		for(udword i=0;i<mAdj->mNbFaces;i++)	Connectivity[i] = i;
-	}
+		while(TotalNbFaces!=mAdj->mNbFaces)
+		{
+			// Look for the first face [could be optimized]
+			while(mTags[Connectivity[Index]])	Index++;
+			udword FirstFace = Connectivity[Index];
 
-	mNbStrips			= 0;	// #strips created
-	udword TotalNbFaces	= 0;	// #faces already transformed into strips
-	udword Index		= 0;	// Index of first face
+			// Compute the three possible strips from this face and take the best
+			TotalNbFaces += ComputeBestStrip(FirstFace);
 
-	while(TotalNbFaces!=mAdj->mNbFaces)
-	{
-		// Look for the first face [could be optimized]
-		while(mTags[Connectivity[Index]])	Index++;
-		udword FirstFace = Connectivity[Index];
+			// Let's wrap
+			mNbStrips++;
+		}
 
-		// Compute the three possible strips from this face and take the best
-		TotalNbFaces += ComputeBestStrip(FirstFace);
+		// Free now useless ram
+		RELEASEARRAY(Connectivity);
+		RELEASEARRAY(mTags);
 
-		// Let's wrap
-		mNbStrips++;
+		// Fill result structure and exit
+		result.NbStrips		= mNbStrips;
 	}
 
-	// Free now useless ram
-	RELEASEARRAY(Connectivity);
-	RELEASEARRAY(mTags);
+	// this is where tmp gets deleted and custom code begins
+	if(mConnectAllStrips){
+		MemDoTempAllocations tmp2(true, false);
+		result.AllocLengthsAndRuns(mStripLengths->GetOffset() >> 2, mStripRuns->GetOffset() >> 1);
+	}
+	else {
+		result.AllocLengthsAndRuns(mStripLengths->GetOffset() >> 2, mStripRuns->GetOffset() >> 1);
+	}
 
-	// Fill result structure and exit
-	result.NbStrips		= mNbStrips;
-	result.StripLengths	= (udword*)	mStripLengths	->Collapse();
-	result.StripRuns	=			mStripRuns		->Collapse();
+	mStripLengths->Collapse(result.StripLengths);
+	mStripRuns->Collapse(result.StripRuns);
+	RELEASEARRAY(mStripLengths);
+	RELEASEARRAY(mStripRuns);
+
+	// result.StripLengths	= (udword*)	mStripLengths	->Collapse();
+	// result.StripRuns	=			mStripRuns		->Collapse();
 
 	if(mConnectAllStrips)	ConnectAllStrips(result);
 
