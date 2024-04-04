@@ -5,6 +5,10 @@
 #include "os/OnlineID.h"
 #include "utl/Str.h"
 
+// forward decs
+class LocalUser;
+class RemoteUser;
+
 class User : public Hmx::Object {
 public:
     User();
@@ -14,10 +18,10 @@ public:
     virtual void Reset();
     virtual void SyncSave(BinStream&, unsigned int) const;
     virtual bool IsLocal() const = 0;
-    virtual User* GetLocalUser() = 0;
-    virtual User* GetLocalUser() const = 0;
-    virtual User* GetRemoteUser() = 0;
-    virtual User* GetRemoteUser() const = 0;
+    virtual LocalUser* GetLocalUser() = 0;
+    virtual LocalUser* GetLocalUser() const = 0;
+    virtual RemoteUser* GetRemoteUser() = 0;
+    virtual RemoteUser* GetRemoteUser() const = 0;
     virtual const char* UserName() const = 0;
 
     void SetUserGuid(const UserGuid&);
@@ -45,10 +49,10 @@ public:
     virtual bool CanSaveData() const;
     virtual const char* UserName() const;
     virtual bool IsLocal() const;
-    virtual User* GetLocalUser();
-    virtual User* GetLocalUser() const;
-    virtual User* GetRemoteUser();
-    virtual User* GetRemoteUser() const;
+    virtual LocalUser* GetLocalUser();
+    virtual LocalUser* GetLocalUser() const;
+    virtual RemoteUser* GetRemoteUser();
+    virtual RemoteUser* GetRemoteUser() const;
 
     void UpdateOnlineID();
 
@@ -60,10 +64,10 @@ public:
     RemoteUser();
     virtual ~RemoteUser(){}
     virtual bool IsLocal() const;
-    virtual User* GetLocalUser();
-    virtual User* GetLocalUser() const;
-    virtual User* GetRemoteUser();
-    virtual User* GetRemoteUser() const;
+    virtual LocalUser* GetLocalUser();
+    virtual LocalUser* GetLocalUser() const;
+    virtual RemoteUser* GetRemoteUser();
+    virtual RemoteUser* GetRemoteUser() const;
     virtual const char* UserName() const;
     virtual void SyncLoad(BinStream&, unsigned int);
 
