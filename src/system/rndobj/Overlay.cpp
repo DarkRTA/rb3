@@ -1,6 +1,11 @@
 #include "rndobj/Overlay.h"
+#include "os/Debug.h"
 
 std::list<RndOverlay*> RndOverlay::sOverlays;
+
+void RndOverlay::Terminate() {
+    for (std::list<RndOverlay*>::iterator i = sOverlays.begin(); i != sOverlays.end(); i++) delete *i;
+}
 
 RndOverlay::~RndOverlay(){
 
@@ -16,4 +21,13 @@ RndOverlay::RndOverlay(const DataArray* da) : mShowing(0), mLines(), mLine(), mB
     da->FindData("color", mBackColor, false);
     da->FindData("modal", mModal, false);
     da->FindData("text_color", mTextColor, false);
+}
+
+void RndOverlay::SetLines(int lines) {
+    MILO_ASSERT(lines >= 1, 117);
+    int i;
+    for (mLine = mLines.begin(); ++mLine != mLines.end(); i++) {}
+    if (i == lines) return;
+    mLines.resize(i);
+    mLine = mLines.end();
 }

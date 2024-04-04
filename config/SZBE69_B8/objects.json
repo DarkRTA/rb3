@@ -76,6 +76,7 @@
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
+            "system/math/Rot.cpp": "NonMatching",
             "system/math/SHA1.cpp": "NonMatching",
             "system/math/Sort.cpp": "Matching",
             "system/math/StreamChecksum.cpp": "Matching",
@@ -123,6 +124,7 @@
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "NonMatching",
             "system/os/FileCache.cpp": "NonMatching",
+            "system/os/HDCache.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
@@ -183,6 +185,7 @@
             "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/TransProxy.cpp": "NonMatching",
+            "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
             "system/speex/libspeex/bits.c": "NonMatching",

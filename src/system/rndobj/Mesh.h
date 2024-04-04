@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_MESH_H
 #define RNDOBJ_MESH_H
+#include "obj/ObjPtr_p.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 
@@ -24,6 +25,7 @@ public:
 
     // TODO: figure out what RndMesh's members are
     int filler;
+    ObjOwnerPtr<RndMesh, ObjectDir> mOwner;
 };
 
 #endif

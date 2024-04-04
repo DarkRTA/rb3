@@ -1,14 +1,20 @@
 #include "Trans.h"
+#include "obj/Object.h"
 #include "os/System.h"
-#include <new>
 #include "utl/PoolAlloc.h"
+#include "math/Rot.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
+#include <new>
+
+Plane RndTransformable::sShadowPlane;
 
 void RndTransformable::Init() {
     RegisterFactory(StaticClassName(), (*NewObject));
-    Symbol dingus_a("rnd");
-    DataArray* dingus_da = SystemConfig(dingus_a);
-    Symbol dingus_b("shadow_plane");
-    // dingus_da->FindData(dingus_b, sShadowPlane, true);
+    DataArray* dingus_da = SystemConfig("rnd");
+    dingus_da->FindData("shadow_plane", sShadowPlane, true);
 }
 
 RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL), mConstraint(kNone), mPreserveScale(0) {
@@ -16,3 +22,32 @@ RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL)
     mWorldXfm.Reset();
     vptr = new (_PoolAlloc(0xc, 0xc, FastPool)) (std::vector<int>);
 }
+
+RndTransformable::~RndTransformable() {
+    
+}
+
+void RndTransformable::Print() {
+    TheDebug << "   localXfm: " << mLocalXfm << "\n";
+    TheDebug << "   worldXfm: " << mWorldXfm << "\n";
+}
+
+SAVE_OBJ(RndTransformable, 586)
+
+BEGIN_HANDLERS(RndTransformable)
+    HANDLE(copy_local_to, OnCopyLocalTo)
+    HANDLE(set_constraint, OnSetTransConstraint)
+    HANDLE(set_local_rot, OnSetLocalRot)
+    HANDLE(set_local_rot_index, OnSetLocalRotIndex)
+    HANDLE(set_local_rot_mat, OnSetLocalRotMat)
+    HANDLE(get_local_rot, OnGetLocalRot)
+    HANDLE(get_local_rot_index, OnGetLocalRotIndex)
+    HANDLE(get_local_pos, OnGetLocalPos)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(RndTransformable)
+    SYNC_PROP(trans_parent, mLocalXfm)
+    SYNC_PROP(trans_constraint, mLocalXfm)
+    SYNC_PROP(trans_target, mLocalXfm)
+    SYNC_PROP(preserve_scale, mLocalXfm)
+END_PROPSYNCS

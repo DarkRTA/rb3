@@ -2,6 +2,8 @@
 #include "os/Debug.h"
 #include "utl/BinStream.h"
 #include "utl/ChunkStream.h"
+#include "utl/MemMgr.h"
+#include "utl/Symbols4.h"
 
 BinStream& RndBitmap::LoadHeader(BinStream& bs, u8& test) {
     u8 ver, h;
@@ -19,16 +21,18 @@ BinStream& RndBitmap::LoadHeader(BinStream& bs, u8& test) {
     return bs;
 }
 
-void RndBitmap::SaveHeader(BinStream& bs) const {
+BinStream& RndBitmap::SaveHeader(BinStream& bs) const {
     static u8 pad[0x13];
     u16 h = mHeight;
     u16 w = mWidth;
     u8 mipCt = NumMips();
-    u8 rb = mRowBytes;
+    u8 rev = BITMAP_REV;
     u32 ord = mOrder;
-    u16 rev = BITMAP_REV;
-    bs << BITMAP_REV << rb << (int)ord << mipCt << w << h;
+    bs << rev << mBpp << (int)ord << mipCt << w << h;
+    u16 rb = mRowBytes;
+    bs << rb;
     bs.Write(pad, 0x13);
+    return bs;
 }
 
 BinStream& operator>>(BinStream& bs, tagBITMAPFILEHEADER& bmfh) {
@@ -104,16 +108,51 @@ void RndBitmap::Reset() {
     mMip = 0;
 }
 
-void RndBitmap::AllocateBuffer() {
-    int palette_bytes;
-    if (mPalette) {
-        palette_bytes = PaletteBytes();
-    } else palette_bytes = 0;
+void RndBitmap::Create(const RndBitmap& bm, int a, int b, void* c) {
+    int test = 0;
+    Create(bm.mWidth, bm.mHeight, 0, a, b, c, NULL, NULL);
+    if (!mPalette || !c) {
+        MILO_ASSERT(bm.Palette(), 392);
 
-    if (mPalette) {
-        int x = palette_bytes + mWidth * mHeight;
-        _MemAlloc(x, 0x20);
     }
+}
+
+void RndBitmap::AllocateBuffer() {
+    int paletteBytes;
+    if (mPalette) paletteBytes = 0; else paletteBytes = PaletteBytes();
+
+    /*if (mPalette) {
+        int x = paletteBytes + mWidth * mHeight;
+        _MemAlloc(x, 0x20);
+    }*/
+    int test = mRowBytes * mHeight + paletteBytes;
+    if (mPalette) mBuffer = (u8*)_MemAlloc(test, 0x20);
+    if (paletteBytes) mPalette = mBuffer;
+    mPixels = mBuffer + paletteBytes;
+    MILO_ASSERT(!paletteBytes, 439);
+    MILO_ASSERT(!((int)mPixels & 31), 441);
+}
+
+void RndBitmap::Create(int width, int height, int rowlen, int bpp, int order, void* palette, void* pixels, void* buf) {
+    MILO_ASSERT(width >= 0 && height >= 0, 454);
+    MILO_ASSERT(bpp == 4 || bpp == 8 || bpp == 16 || bpp == 24 || bpp == 32, 455);
+    mWidth = width;
+    mHeight = height;
+    mRowBytes = rowlen;
+    mBpp = bpp;
+    mOrder = order;
+    mPixels = (u8*)pixels;
+    MILO_ASSERT(!((int)mPixels & 31), 465);
+    mPalette = (u8*)palette;
+    delete mMip;
+    mMip = 0;
+    if (mRowBytes) {}
+    // TODO bpp magic, someone else pls do it
+    if (mPalette) {
+        _MemFree(mPalette);
+        mPalette = 0;
+    }
+    else if (!buf) AllocateBuffer();
 }
 
 void PreMultiplyAlpha(u8&, u8&, u8&, u8) {
@@ -137,6 +176,33 @@ void RndBitmap::SetMip(RndBitmap* bm) {
         MILO_ASSERT(mBpp == bm->Bpp(), 1104);
         mMip = bm;
     }
+}
+
+void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int width, int height) {
+    MILO_ASSERT(dX + width <= mWidth, 1728);
+    MILO_ASSERT(dY + height <= mHeight, 1729);
+    MILO_ASSERT(sX + width <= bm.Width(), 1730);
+    MILO_ASSERT(sY + height <= bm.Height(), 1731);
+    if (!SamePixelFormat(bm)) {
+
+    }
+}
+
+bool RndBitmap::SamePixelFormat(const RndBitmap& bm) const {
+    if (mBpp != bm.Bpp() || mOrder != bm.Order()) return false;
+    if (mPalette && bm.Palette()) {
+        return SamePaletteColors(bm); 
+    } else return true;
+}
+
+bool RndBitmap::ColumnNonTransparent(int x, int y, int h, int* d) {
+    for (int i; i < h; i++) {
+        u8 r, g, b, a;
+        PixelColor(x, y, r, g, b, a);
+        if (a != 0) return false;
+        else *d = y;
+    }
+    return false;
 }
 
 void RndBitmap::Save(BinStream& bs) const {

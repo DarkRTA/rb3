@@ -41,6 +41,17 @@ public:
 
     void SetTransParent(RndTransformable*, bool);
 
+    // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
+    DataNode OnCopyLocalTo(const DataArray*);
+    DataNode OnGetLocalPos(const DataArray*);
+    DataNode OnGetLocalRot(const DataArray*);
+    DataNode OnGetLocalRotIndex(const DataArray*);
+    DataNode OnSetLocalPos(const DataArray*);
+    DataNode OnSetLocalRot(const DataArray*);
+    DataNode OnSetLocalRotIndex(const DataArray*);
+    DataNode OnSetLocalRotMat(const DataArray*);
+    DataNode OnSetTransConstraint(const DataArray*);
+
     static void Init();
     static Hmx::Object* NewObject();
 
@@ -56,6 +67,9 @@ public:
     static ushort gRev;
     static ushort gAltRev;
     static Plane sShadowPlane;
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 };
 
 #endif

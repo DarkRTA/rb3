@@ -53,7 +53,7 @@ public:
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}
     ~RndBitmap() {Reset();}
     BinStream& LoadHeader(BinStream&, u8&);
-    void SaveHeader(BinStream&) const;
+    BinStream& SaveHeader(BinStream&) const;
     int NumMips() const;
     int PixelBytes() const;
     int PaletteBytes() const;
@@ -65,6 +65,7 @@ public:
     void AllocateBuffer();
     void Create(int, int, int, int, int, void*, void*, void*);
     void Create(void*);
+    void PixelColor(int, int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
     int PixelOffset(int, int, bool&) const;
     int PixelIndex(int, int) const;
     void SetPixelIndex(int, int, unsigned char);
@@ -75,15 +76,20 @@ public:
     void GenerateMips();
     RndBitmap* DetachMip();
     void SetMip(RndBitmap*);
+    bool ColumnNonTransparent(int, int, int, int*);
     bool LoadSafely(BinStream&, int, int);
+    void Blt(const RndBitmap&, int, int, int, int, int, int);
+    bool SamePixelFormat(const RndBitmap&) const;
+    bool SamePaletteColors(const RndBitmap&) const;
 
     void Save(BinStream&) const;
     void Load(BinStream&);
 
-    inline u16 Width() { return mWidth; }
-    inline u16 Height() { return mHeight; }
-    inline u32 Order() { return mOrder; }
-    inline u8 Bpp() { return mBpp; }
+    inline u16 Width() const { return mWidth; }
+    inline u16 Height() const { return mHeight; }
+    inline u32 Order() const { return mOrder; }
+    inline u8 Bpp() const { return mBpp; }
+    inline u8* Palette() const { return mPalette; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
