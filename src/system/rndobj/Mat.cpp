@@ -1,4 +1,5 @@
 #include "rndobj/Mat.h"
+#include "obj/Object.h"
 
 MatShaderOptions::MatShaderOptions() : b(0), i(0x12) {
 
@@ -14,3 +15,5 @@ RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mE
     mEmissiveMultiplier = 1.0f;
     mTexXfm.Reset();
 }
+
+SAVE_OBJ(RndMat, 159)

@@ -11,5 +11,7 @@ inline bool MainThread() {
     return ret;
 }
 
+inline OSThread* CurrentThreadID() { return OSGetCurrentThread(); }
+
 
 #endif

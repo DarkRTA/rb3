@@ -1,6 +1,7 @@
 #ifndef RNDOBJ_BITMAP_H
 #define RNDOBJ_BITMAP_H
 #include "utl/BinStream.h"
+#include "obj/Object.h"
 #include "utl/MemMgr.h"
 #include "milo_types.h"
 #include "types.h"
@@ -43,7 +44,7 @@ public:
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
-    u32 mOrder; // 0x8
+    int mOrder; // 0x8
     u8* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14
@@ -51,8 +52,8 @@ public:
 
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}
     ~RndBitmap() {Reset();}
-    void LoadHeader(BinStream&, u8&);
-    void SaveHeader(BinStream&) const;
+    BinStream& LoadHeader(BinStream&, u8&);
+    BinStream& SaveHeader(BinStream&) const;
     int NumMips() const;
     int PixelBytes() const;
     int PaletteBytes() const;
@@ -64,6 +65,7 @@ public:
     void AllocateBuffer();
     void Create(int, int, int, int, int, void*, void*, void*);
     void Create(void*);
+    void PixelColor(int, int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
     int PixelOffset(int, int, bool&) const;
     int PixelIndex(int, int) const;
     void SetPixelIndex(int, int, unsigned char);
@@ -74,18 +76,23 @@ public:
     void GenerateMips();
     RndBitmap* DetachMip();
     void SetMip(RndBitmap*);
+    bool ColumnNonTransparent(int, int, int, int*);
+    bool LoadSafely(BinStream&, int, int);
+    void Blt(const RndBitmap&, int, int, int, int, int, int);
+    bool SamePixelFormat(const RndBitmap&) const;
+    bool SamePaletteColors(const RndBitmap&) const;
 
     void Save(BinStream&) const;
     void Load(BinStream&);
 
-    inline u16 Width() { return mWidth; }
-    inline u16 Height() { return mHeight; }
-    inline u32 Order() { return mOrder; }
-    inline u8 Bpp() { return mBpp; }
+    inline u16 Width() const { return mWidth; }
+    inline u16 Height() const { return mHeight; }
+    inline u32 Order() const { return mOrder; }
+    inline u8 Bpp() const { return mBpp; }
+    inline u8* Palette() const { return mPalette; }
 
-    void operator delete(void* b) {
-        _MemFree(b);
-    }
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 };
 
 unsigned char BITMAP_REV = 1;

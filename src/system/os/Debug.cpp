@@ -1,9 +1,12 @@
 #include "os/Debug.h"
 #include "os/OSFuncs.h"
+#include "utl/MakeString.h"
+#include <cstdlib>
 #include <vector>
 
 Debug TheDebug;
 std::vector<String> gNotifies;
+static int* gpDbgFrameID;
 
 // Temp strings needed for string pooling to match
 const char* s0 = "%s";
@@ -39,6 +42,11 @@ const char* s29 = "FAIL: %s\n";
 const char* s30 = "APP EXITED, EXIT CODE %d\n";
 const char* s31 = "Debug::Print";
 
+int DbgGetFrameID() {
+    if (gpDbgFrameID) return *gpDbgFrameID;
+    else return 0;
+}
+
 void Debug::Poll(){
     MILO_ASSERT(MainThread(), 0xC5);
     if(mTry != 0){
@@ -73,6 +81,19 @@ void Debug::Notify(const char* msg){
             TheDebug << MakeString("THREAD-NOTIFY not called in MainThread: %s\n", msg);
         else TheDebug << MakeString("NOTIFY: %s\n", msg);
     }
+}
+
+extern void HolmesClientTerminate();
+void Debug::Exit(int status, bool actually_exit) {
+    mNoTry = true;
+    /*for (std::list<ExitCallbackFunc*>::reverse_iterator i = mExitCallbacks.rbegin(); i != mExitCallbacks.rend(); i++) {
+        (*i)();
+    }*/
+    mExitCallbacks.clear();
+    TheDebug << MakeString("APP EXITED, EXIT CODE %d\n", status);
+    StopLog();
+    HolmesClientTerminate();
+    if (actually_exit) exit(status);
 }
 
 void Debug::RemoveExitCallback(ExitCallbackFunc* func){

@@ -60,7 +60,7 @@ public:
     FileLoader(const FilePath&, const char*, LoaderPos, int, bool, bool, BinStream*);
     virtual ~FileLoader();
     virtual const char* DebugText();
-    virtual bool IsLoaded();
+    virtual bool IsLoaded() const;
     virtual void PollLoading();
 
     File* mFile;
