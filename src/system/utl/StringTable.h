@@ -12,6 +12,10 @@ public:
     std::vector<Buf> mBuffers;
     char* mCurChar;
     int mCurBuf;
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(StringTable), FastPool, v);
+    }
     
     StringTable(int);
     ~StringTable();
@@ -19,6 +23,8 @@ public:
     void AddBuf(int);
     void Clear();
     void Reserve(int);
+    int Size() const;
+    int UsedSize() const;
 };
 
 #endif

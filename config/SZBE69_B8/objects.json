@@ -6,7 +6,7 @@
             "Main.cpp": "Matching",
             "App.cpp": "NonMatching",
             "ChecksumData_wii.cpp": "Matching",
-            "keygen_wii.cpp": { "status": "NonMatching", "mw_version": "Wii/1.0", "extra_cflags": [ "-sdata 8" ] }
+            "keygen_wii.cpp": { "status": "Matching", "extra_cflags": [ "-O2,p -sdata 4 -opt noschedule -func_align 4" ] }
         }
     },
     "band3": {
@@ -83,7 +83,7 @@
             "system/math/Vec.cpp": "Matching",
 
             "system/meta/Achievements.cpp": "Matching",
-            "system/meta/ConnectionStatusPanel.cpp": "NonMatching",
+            "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/FixedSizeSaveableStream.cpp": "NonMatching",
@@ -140,7 +140,7 @@
             "system/os/UsbMidiGuitar.cpp": "NonMatching",
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
-            "system/os/User.cpp": "NonMatching",
+            "system/os/User.cpp": "Matching",
             "system/os/VirtualKeyboard.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
@@ -236,11 +236,12 @@
             "system/ui/UIGuide.cpp": "Matching",
             "system/ui/UILabel.cpp": "NonMatching",
             "system/ui/UIList.cpp": "NonMatching",
+            "system/ui/UIListArrow.cpp": "NonMatching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIPicture.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
-            "system/ui/UITransitionHandler.cpp": "NonMatching",
+            "system/ui/UITransitionHandler.cpp": "Matching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
@@ -278,7 +279,7 @@
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
-            "system/utl/Str.cpp": "NonMatching",
+            "system/utl/Str.cpp": "Matching",
             "system/utl/StringTable.cpp": "NonMatching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
             "system/utl/Symbol.cpp": "NonMatching",

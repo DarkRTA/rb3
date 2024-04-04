@@ -30,10 +30,10 @@
 				udword					NbFaces;			// #faces in source topo
 				udword*					DFaces;				// list of faces (dwords) or null
 				uword*					WFaces;				// list of faces (words) or null
-				bool					AskForWords;		// true => results are in words (else dwords)
 				bool					OneSided;			// true => create one-sided strips
 				bool					SGIAlgorithm;		// true => use the SGI algorithm, pick least connected faces first
 				bool					ConnectAllStrips;	// true => create a single strip with void faces
+				bool					AskForWords;		// true => results are in words (else dwords)
 	};
 
 	struct STRIPERRESULT{
@@ -70,10 +70,10 @@
 				CustomArray*			mSingleStrip;		// Array to store the single strip
 
 				// Flags
-				bool					mAskForWords;
 				bool					mOneSided;
 				bool					mSGIAlgorithm;
 				bool					mConnectAllStrips;
+				bool					mAskForWords;
 
 	public:
 				Striper();

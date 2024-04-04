@@ -127,10 +127,10 @@ bool Striper::Init(STRIPERCREATE& create)
 		Status = mAdj->CreateDatabase();
 		if(!Status)	{ RELEASE(mAdj); return false; }
 
-		mAskForWords		= create.AskForWords;
+		// mAskForWords		= create.AskForWords;
 		mOneSided			= create.OneSided;
 		mSGIAlgorithm		= create.SGIAlgorithm;
-		// mConnectAllStrips	= create.ConnectAllStrips;
+		mConnectAllStrips	= create.ConnectAllStrips;
 	}
 
 	return true;
@@ -146,71 +146,88 @@ bool Striper::Init(STRIPERCREATE& create)
 // Remark	:	-
 bool Striper::Compute(STRIPERRESULT& result)
 {
-	MemDoTempAllocations tmp(true, false);
-	// You must call Init() first
-	if(!mAdj)	return false;
-
-	// Get some bytes
-	mStripLengths			= new CustomArray;				if(!mStripLengths)	return false;
-	mStripRuns				= new CustomArray;				if(!mStripRuns)		return false;
-	mTags					= new bool[mAdj->mNbFaces];		if(!mTags)			return false;
-	udword* Connectivity	= new udword[mAdj->mNbFaces];	if(!Connectivity)	return false;
-
-	// mTags contains one bool/face. True=>the face has already been included in a strip
-	ZeroMemory(mTags, mAdj->mNbFaces*sizeof(bool));
-
-	// Compute the number of connections for each face. This buffer is further recycled into
-	// the insertion order, ie contains face indices in the order we should treat them
-	ZeroMemory(Connectivity, mAdj->mNbFaces*sizeof(udword));
-	if(mSGIAlgorithm)
 	{
-		// Compute number of adjacent triangles for each face
-		for(udword i=0;i<mAdj->mNbFaces;i++)
+		MemDoTempAllocations tmp(true, false);
+		// You must call Init() first
+		if(!mAdj)	return false;
+
+		// Get some bytes
+		mStripLengths			= new CustomArray;				if(!mStripLengths)	return false;
+		mStripRuns				= new CustomArray;				if(!mStripRuns)		return false;
+		mTags					= new bool[mAdj->mNbFaces];		if(!mTags)			return false;
+		udword* Connectivity	= new udword[mAdj->mNbFaces];	if(!Connectivity)	return false;
+
+		// mTags contains one bool/face. True=>the face has already been included in a strip
+		ZeroMemory(mTags, mAdj->mNbFaces*sizeof(bool));
+
+		// Compute the number of connections for each face. This buffer is further recycled into
+		// the insertion order, ie contains face indices in the order we should treat them
+		ZeroMemory(Connectivity, mAdj->mNbFaces*sizeof(udword));
+		if(mSGIAlgorithm)
 		{
-			AdjTriangle* Tri = &mAdj->mFaces[i];
-			if(!IS_BOUNDARY(Tri->ATri[0]))	Connectivity[i]++;
-			if(!IS_BOUNDARY(Tri->ATri[1]))	Connectivity[i]++;
-			if(!IS_BOUNDARY(Tri->ATri[2]))	Connectivity[i]++;
+			// Compute number of adjacent triangles for each face
+			for(udword i=0;i<mAdj->mNbFaces;i++)
+			{
+				AdjTriangle* Tri = &mAdj->mFaces[i];
+				if(!IS_BOUNDARY(Tri->ATri[0]))	Connectivity[i]++;
+				if(!IS_BOUNDARY(Tri->ATri[1]))	Connectivity[i]++;
+				if(!IS_BOUNDARY(Tri->ATri[2]))	Connectivity[i]++;
+			}
+
+			// Sort by number of neighbors
+			RadixSorter RS;
+			udword* Sorted = RS.Sort(Connectivity, mAdj->mNbFaces).GetIndices();
+
+			// The sorted indices become the order of insertion in the strips
+			CopyMemory(Connectivity, Sorted, mAdj->mNbFaces*sizeof(udword));
+		}
+		else
+		{
+			// Default order
+			for(udword i=0;i<mAdj->mNbFaces;i++)	Connectivity[i] = i;
 		}
 
-		// Sort by number of neighbors
-		RadixSorter RS;
-		udword* Sorted = RS.Sort(Connectivity, mAdj->mNbFaces).GetIndices();
+		mNbStrips			= 0;	// #strips created
+		udword TotalNbFaces	= 0;	// #faces already transformed into strips
+		udword Index		= 0;	// Index of first face
 
-		// The sorted indices become the order of insertion in the strips
-		CopyMemory(Connectivity, Sorted, mAdj->mNbFaces*sizeof(udword));
-	}
-	else
-	{
-		// Default order
-		for(udword i=0;i<mAdj->mNbFaces;i++)	Connectivity[i] = i;
-	}
+		while(TotalNbFaces!=mAdj->mNbFaces)
+		{
+			// Look for the first face [could be optimized]
+			while(mTags[Connectivity[Index]])	Index++;
+			udword FirstFace = Connectivity[Index];
 
-	mNbStrips			= 0;	// #strips created
-	udword TotalNbFaces	= 0;	// #faces already transformed into strips
-	udword Index		= 0;	// Index of first face
+			// Compute the three possible strips from this face and take the best
+			TotalNbFaces += ComputeBestStrip(FirstFace);
 
-	while(TotalNbFaces!=mAdj->mNbFaces)
-	{
-		// Look for the first face [could be optimized]
-		while(mTags[Connectivity[Index]])	Index++;
-		udword FirstFace = Connectivity[Index];
+			// Let's wrap
+			mNbStrips++;
+		}
 
-		// Compute the three possible strips from this face and take the best
-		TotalNbFaces += ComputeBestStrip(FirstFace);
+		// Free now useless ram
+		RELEASEARRAY(Connectivity);
+		RELEASEARRAY(mTags);
 
-		// Let's wrap
-		mNbStrips++;
+		// Fill result structure and exit
+		result.NbStrips		= mNbStrips;
 	}
 
-	// Free now useless ram
-	RELEASEARRAY(Connectivity);
-	RELEASEARRAY(mTags);
+	// this is where tmp gets deleted and custom code begins
+	if(mConnectAllStrips){
+		MemDoTempAllocations tmp2(true, false);
+		result.AllocLengthsAndRuns(mStripLengths->GetOffset() >> 2, mStripRuns->GetOffset() >> 1);
+	}
+	else {
+		result.AllocLengthsAndRuns(mStripLengths->GetOffset() >> 2, mStripRuns->GetOffset() >> 1);
+	}
 
-	// Fill result structure and exit
-	result.NbStrips		= mNbStrips;
-	result.StripLengths	= (udword*)	mStripLengths	->Collapse();
-	result.StripRuns	=			mStripRuns		->Collapse();
+	mStripLengths->Collapse(result.StripLengths);
+	mStripRuns->Collapse(result.StripRuns);
+	RELEASE(mStripLengths);
+	RELEASE(mStripRuns);
+
+	// result.StripLengths	= (udword*)	mStripLengths	->Collapse();
+	// result.StripRuns	=			mStripRuns		->Collapse();
 
 	if(mConnectAllStrips)	ConnectAllStrips(result);
 
@@ -404,68 +421,84 @@ udword Striper::TrackStrip(udword face, udword oldest, udword middle, udword* st
 // Remark	:	-
 bool Striper::ConnectAllStrips(STRIPERRESULT& result)
 {
-	MemDoTempAllocations tmp(true, false);
-	mSingleStrip = new CustomArray;
-	if(!mSingleStrip) return false;
-
-	mTotalLength	= 0;
-	uword* wrefs	= mAskForWords ? (uword*)result.StripRuns : null;
-	udword* drefs	= mAskForWords ? null : (udword*)result.StripRuns;
-
-	// Loop over strips and link them together
-	for(udword k=0;k<result.NbStrips;k++)
 	{
-		// Nothing to do for the first strip, we just copy it
-		if(k)
-		{
-			// This is not the first strip, so we must copy two void vertices between the linked strips
-			udword LastRef	= drefs ? drefs[-1] : (udword)wrefs[-1];
-			udword FirstRef	= drefs ? drefs[0] : (udword)wrefs[0];
-			if(mAskForWords)	mSingleStrip->Store((uword)LastRef).Store((uword)FirstRef);
-			else				mSingleStrip->Store(LastRef).Store(FirstRef);
-			mTotalLength += 2;
+		MemDoTempAllocations tmp(true, false);
+		mSingleStrip = new CustomArray;
+		if(!mSingleStrip) return false;
 
-			// Linking two strips may flip their culling. If the user asked for single-sided strips we must fix that
-			if(mOneSided)
+		mTotalLength	= 0;
+		// uword* wrefs	= mAskForWords ? (uword*)result.StripRuns : null;
+		// udword* drefs	= mAskForWords ? null : (udword*)result.StripRuns;
+		// uword* wrefs	= null;
+		uword* drefs	= (uword*)result.StripRuns;
+
+		// Loop over strips and link them together
+		for(udword k=0;k<result.NbStrips;k++)
+		{
+			// Nothing to do for the first strip, we just copy it
+			if(k)
 			{
-				// Culling has been inverted only if mTotalLength is odd
-				if(mTotalLength&1)
+				// This is not the first strip, so we must copy two void vertices between the linked strips
+				// udword LastRef	= drefs ? drefs[-1] : (udword)wrefs[-1];
+				// udword FirstRef	= drefs ? drefs[0] : (udword)wrefs[0];
+				uword LastRef	= drefs[-1];
+				uword FirstRef	= drefs[0];
+				// if(mAskForWords)	mSingleStrip->Store((uword)LastRef).Store((uword)FirstRef);
+				// else				mSingleStrip->Store(LastRef).Store(FirstRef);
+				mSingleStrip->Store(LastRef).Store(FirstRef);
+				mTotalLength += 2;
+
+				// Linking two strips may flip their culling. If the user asked for single-sided strips we must fix that
+				if(mOneSided)
 				{
-					// We can fix culling by replicating the first vertex once again...
-					udword SecondRef = drefs ? drefs[1] : (udword)wrefs[1];
-					if(FirstRef!=SecondRef)
+					// Culling has been inverted only if mTotalLength is odd
+					if(mTotalLength & 1)
 					{
-						if(mAskForWords)	mSingleStrip->Store((uword)FirstRef);
-						else				mSingleStrip->Store(FirstRef);
-						mTotalLength++;
-					}
-					else
-					{
-						// ...but if flipped strip already begin with a replicated vertex, we just can skip it.
-						result.StripLengths[k]--;
-						if(wrefs)	wrefs++;
-						if(drefs)	drefs++;
+						// We can fix culling by replicating the first vertex once again...
+						// udword SecondRef = drefs ? drefs[1] : (udword)wrefs[1];
+						uword SecondRef = drefs[1];
+						if(FirstRef!=SecondRef)
+						{
+							// if(mAskForWords)	mSingleStrip->Store((uword)FirstRef);
+							// else				mSingleStrip->Store(FirstRef);
+							mSingleStrip->Store(FirstRef);
+							mTotalLength++;
+						}
+						else
+						{
+							// ...but if flipped strip already begin with a replicated vertex, we just can skip it.
+							result.StripLengths[k]--;
+							// if(wrefs)	wrefs++;
+							if(drefs)	drefs++;
+						}
 					}
 				}
 			}
-		}
 
-		// Copy strip
-		for(udword j=0;j<result.StripLengths[k];j++)
-		{
-			udword Ref = drefs ? drefs[j] : (udword)wrefs[j];
-			if(mAskForWords)	mSingleStrip->Store((uword)Ref);
-			else				mSingleStrip->Store(Ref);
+			// Copy strip
+			for(udword j=0;j<result.StripLengths[k];j++)
+			{
+				// udword Ref = drefs ? drefs[j] : (udword)wrefs[j];
+				uword Ref = drefs[j];
+				// if(mAskForWords)	mSingleStrip->Store((uword)Ref);
+				// else				mSingleStrip->Store(Ref);
+				mSingleStrip->Store(Ref);
+			}
+			// if(wrefs)	wrefs += result.StripLengths[k];
+			if(drefs)	drefs += result.StripLengths[k];
+			mTotalLength += result.StripLengths[k];
 		}
-		if(wrefs)	wrefs += result.StripLengths[k];
-		if(drefs)	drefs += result.StripLengths[k];
-		mTotalLength += result.StripLengths[k];
 	}
 
 	// Update result structure
+	result.FreeLengthsAndRuns();
 	result.NbStrips		= 1;
-	result.StripRuns	= mSingleStrip->Collapse();
-	result.StripLengths	= &mTotalLength;
+	result.AllocLengthsAndRuns(result.NbStrips, mSingleStrip->GetOffset() >> 1);
+	// result.StripLengths	= &mTotalLength;
+	*(result.StripLengths) = mTotalLength;
+	// result.StripRuns	= mSingleStrip->Collapse();
+	mSingleStrip->Collapse(result.StripRuns);
+	RELEASE(mSingleStrip);
 
 	return true;
 }

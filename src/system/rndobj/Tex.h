@@ -53,6 +53,7 @@ public:
     DataNode OnSetBitmap(const DataArray*);
 
     void SetBitmap(FileLoader*);
+    void SetBitmap(const FilePath&);
     void SaveBitmap(const char*);
 
     DELETE_OVERLOAD;
