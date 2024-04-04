@@ -54,15 +54,15 @@ LocalUser::LocalUser() : mHasOnlineID(0) {
 
 bool LocalUser::IsLocal() const { return true; }
 
-User* LocalUser::GetLocalUser(){}
-User* LocalUser::GetLocalUser() const {}
+LocalUser* LocalUser::GetLocalUser(){}
+LocalUser* LocalUser::GetLocalUser() const {}
 
-User* LocalUser::GetRemoteUser(){
+RemoteUser* LocalUser::GetRemoteUser(){
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-User* LocalUser::GetRemoteUser() const {
+RemoteUser* LocalUser::GetRemoteUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
@@ -135,18 +135,18 @@ RemoteUser::RemoteUser() : mUserName() {
 
 bool RemoteUser::IsLocal() const { return false; }
 
-User* RemoteUser::GetLocalUser() {
+LocalUser* RemoteUser::GetLocalUser() {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-User* RemoteUser::GetLocalUser() const {
+LocalUser* RemoteUser::GetLocalUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-User* RemoteUser::GetRemoteUser(){}
-User* RemoteUser::GetRemoteUser() const {}
+RemoteUser* RemoteUser::GetRemoteUser(){}
+RemoteUser* RemoteUser::GetRemoteUser() const {}
 
 const char* RemoteUser::UserName() const { return mUserName.c_str(); }
 

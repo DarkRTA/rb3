@@ -34,6 +34,10 @@ public:
     virtual bool ReadDone(int &);
     virtual void GetFileHandle(DVDFileInfo*&);
     
+    void operator delete(void* v){
+        _PoolFree(sizeof(FileCacheFile), FastPool, v);
+    }
+
     FileCacheEntry* mParent;
     int mBytesRead;
     void* mData;

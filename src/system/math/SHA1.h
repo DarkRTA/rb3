@@ -29,7 +29,7 @@ public:
     void Reset();
     void Transform(unsigned long*, const unsigned char*);
     void Update(const unsigned char*, unsigned long);
-    void Final();
+    Digest* Final();
 };
 
 BinStream& operator>>(BinStream&, CSHA1::Digest&);

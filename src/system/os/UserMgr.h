@@ -10,10 +10,16 @@ public:
     UserMgr();
     virtual ~UserMgr(){}
     virtual DataNode Handle(DataArray*, bool);
-    virtual void GetUsers(User*, std::vector<User*>&) const = 0;
+    virtual void GetUsers(std::vector<User*>&) const = 0;
     virtual User* GetUser(const UserGuid&, bool) const = 0;
-    virtual User* GetLocalUser(const UserGuid&, bool) const;
-    virtual User* GetRemoteUser(const UserGuid&, bool) const;
+    virtual LocalUser* GetLocalUser(const UserGuid&, bool) const;
+    virtual RemoteUser* GetRemoteUser(const UserGuid&, bool) const;
+
+    void GetLocalUsers(std::vector<LocalUser*>&) const;
+    void GetRemoteUsers(std::vector<RemoteUser*>&) const;
+    LocalUser* GetLocalUserFromPadNum(int) const;
 };
+
+void SetTheUserMgr(UserMgr*);
 
 #endif
