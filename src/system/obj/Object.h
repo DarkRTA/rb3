@@ -120,12 +120,12 @@ namespace Hmx {
 
         Object();
         Object(const Object&);
-        virtual ~Object();
         virtual Hmx::Object* RefOwner(){ return this; }
         virtual void Replace(Hmx::Object*, Hmx::Object*);
         OBJ_CLASSNAME(Object);
         OBJ_SET_TYPE(Object);
         virtual DataNode Handle(DataArray*, bool);
+        virtual ~Object();
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
         virtual void Save(BinStream&);
         virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);

@@ -78,13 +78,13 @@ public:
 
     Hmx::Color mColor; // 0x1c
     Transform mTexXfm; // 0x2c
-    ObjPtr<RndTex, ObjectDir> mDiffuseTex; // 0x5c
+    ObjPtr<RndTex, class ObjectDir> mDiffuseTex; // 0x5c
     int mAlphaThresh; // 0x68
-    ObjPtr<RndMat, ObjectDir> mNextPass; // 0x6c
+    ObjPtr<RndMat, class ObjectDir> mNextPass; // 0x6c
     float mEmissiveMultiplier; // 0x78
-    ObjPtr<RndTex, ObjectDir> mEmissiveMap; // 0x7c
+    ObjPtr<RndTex, class ObjectDir> mEmissiveMap; // 0x7c
     float mRefractStrength; // 0x88
-    ObjPtr<RndTex, ObjectDir> mRefractNormalMap; // 0x8c
+    ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
     std::vector<int> unk98;
     MatPerfSettings unka0;
     MatShaderOptions unka4;
@@ -114,7 +114,14 @@ public:
     // stencil mode = (int)(*(uint *)(this + 0xb0) << 0x10 | *(uint *)(this + 0xb0) >> 0x10) >> 0x18;
     // texwrap = *(int *)(this + 0xb0) >> 0x18;
     // shader variation = (int)(*(uint *)(this + 0xb0) << 0x18 | *(uint *)(this + 0xb0) >> 8) >> 0x18
-    int unkb0, unkb4;
+    int unkb0p0 : 8;
+    int unkb0p1 : 8;
+    int unkb0p2 : 8;
+    int unkb0p3 : 8;
+    int unkb4p0 : 8;
+    int unkb4p1 : 8;
+    int unkb4p2 : 8;
+    int unkb4p3 : 8;
 };
 
 #endif

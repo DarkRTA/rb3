@@ -4,6 +4,14 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Anim.h"
 
+enum UITransitionAnimationState {
+    kUITransitionAnimationInvalid,
+    kUITransitionAnimationIdle,
+    kUITransitionAnimationInAnimating,
+    kUITransitionAnimationOutAnimating,
+    kUITransitionAnimationReverseOutAnimating
+};
+
 class UITransitionHandler {
 public:
     UITransitionHandler(Hmx::Object*);
@@ -25,8 +33,8 @@ public:
 
     ObjPtr<RndAnimatable, ObjectDir> mInAnim;
     ObjPtr<RndAnimatable, ObjectDir> mOutAnim;
-    unsigned char mAnimationState;
-    bool b2, b3; // mChangePending, mOutAnimStartedThisFrame
+    unsigned char mAnimationState; // make this the enum above but only take up 1 byte?
+    bool mChangePending, b3; // mChangePending, mOutAnimStartedThisFrame
 };
 
 #endif

@@ -18,6 +18,9 @@
 #define ROUND_DOWN(x, align) ((x) & (-(align)))
 #define ROUND_DOWN_PTR(x, align) ((void *)(((u32)(x)) & (~((align)-1))))
 
+#define ROTATE_LEFT(x, i)  (((x) << (i)) | ((x) >> ((sizeof((x)) * 8) - (i))))
+#define ROTATE_RIGHT(x, i) (((x) >> (i)) | ((x) << ((sizeof((x)) * 8) - (i))))
+
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
 // Codewarrior tricks for matching decomp
