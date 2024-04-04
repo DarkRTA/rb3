@@ -77,7 +77,7 @@
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
             "system/math/Rot.cpp": "NonMatching",
-            "system/math/SHA1.cpp": "NonMatching",
+            "system/math/SHA1.cpp": "Matching",
             "system/math/Sort.cpp": "Matching",
             "system/math/StreamChecksum.cpp": "Matching",
             "system/math/Trig.cpp": "Matching",

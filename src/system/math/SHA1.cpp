@@ -23,10 +23,6 @@ void CSHA1::Reset(){
     m_count[1] = 0;
 }
 
-void CSHA1::Digest::Copy(unsigned char* c) const {
-    memcpy(c, this, 0x14);
-}
-
 // shoutouts to clibs' implementation of sha1: https://github.com/clibs/sha1
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
@@ -188,6 +184,10 @@ CSHA1::Digest* CSHA1::Final(){
     memset(finalcount, 0, 8);
     Transform(m_state, m_buffer);
     return &m_digest;
+}
+
+void CSHA1::Digest::Copy(unsigned char* c) const {
+    memcpy(c, this, 0x14);
 }
 
 void CSHA1::Digest::ReportHash(char* c1, unsigned char uc) const {
