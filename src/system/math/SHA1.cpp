@@ -173,11 +173,9 @@ CSHA1::Digest* CSHA1::Final(){
         finalcount[i] = (unsigned char) ((m_count[(i >= 4 ? 0 : 1)] >> ((3 - (i & 3)) * 8)) & 255);
     }
 
-    c = 0200;
-    Update(&c, 1);
+    Update((const unsigned char*)"\x80", 1);
     while((m_count[0] & 504) != 448){
-        c = 0000;
-        Update(&c, 1);
+        Update((const unsigned char*)"\x00", 1);
     }
     Update(finalcount, 8);
     for (i = 0; i < 20; i++){
