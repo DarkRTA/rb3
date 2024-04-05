@@ -18,5 +18,5 @@ cflags_includes = [
     "-i src",
     "-i src/network",
     "-i src/system",
-    "-i src/rb3",
+    "-i src/band3",
 ]

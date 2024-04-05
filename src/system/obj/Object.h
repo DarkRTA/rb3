@@ -211,6 +211,9 @@ inline unsigned short getAltRev(unsigned int ui){
 #define DELETE_OVERLOAD \
     void operator delete(void* v){ _MemFree(v); }
 
+#define NEW_OBJ(objType) \
+    static Hmx::Object* NewObject() { return new objType; }
+
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
 #define BEGIN_HANDLERS(objType) \

@@ -38,6 +38,6 @@ public:
     int mCache;
 };
 
-extern HiResScreen* TheHighResScreen;
+extern HiResScreen* TheHiResScreen;
 
 #endif

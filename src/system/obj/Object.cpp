@@ -16,6 +16,15 @@ ObjectDir* Hmx::Object::DataDir(){
     else return ObjectDir::sMainDir;
 }
 
+Hmx::Object* Hmx::Object::NewObject(Symbol s) {
+    ObjectFunc* f = sFactories[s];
+    if (f) return (*f)();
+    else {
+        MILO_FAIL("nop %s", s);
+        return NULL;
+    }
+}
+
 const char* newobjectstr = "Unknown class %s";
 
 void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){

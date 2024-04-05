@@ -1,5 +1,7 @@
 #ifndef UI_UILISTARROW_H
 #define UI_UILISTARROW_H
+#include "obj/Object.h"
+#include "ui/UIColor.h"
 #include "ui/UIListWidget.h"
 #include "obj/ObjPtr_p.h"
 
@@ -23,13 +25,16 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     // Draw
-    // StartScroll
+    void StartScroll(int, bool);
 
     ObjPtr<RndMesh, ObjectDir> mMesh;
     ObjPtr<RndAnimatable, ObjectDir> mScrollAnim;
     UIListArrowPosition mPosition;
     bool mShowOnlyScroll;
     bool mOnHighlight;
+
+    DECLARE_REVS
+    DELETE_OVERLOAD
 };
 
 

@@ -5,8 +5,6 @@
 #include "utl/Symbols.h"
 #include "utl/Loader.h"
 
-extern LoadMgr TheLoadMgr;
-
 unsigned short Screenshot::gRev = 0;
 unsigned short Screenshot::gAltRev = 0;
 
