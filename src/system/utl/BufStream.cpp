@@ -70,6 +70,7 @@ void BufStream::SeekImpl(int offset, SeekType t){
     
     switch(t){
         case kSeekBegin:
+            pos = offset;
             break;
         case kSeekCur:
             pos = mTell + offset;
@@ -100,4 +101,11 @@ const char* BufStream::Name() const {
 
 void BufStream::SetName(const char* name) {
     mName = name;
+}
+
+static void idklol(BufStream* bs){
+    bs->Flush();
+    bs->Tell();
+    bs->Eof();
+    bs->Fail();
 }
