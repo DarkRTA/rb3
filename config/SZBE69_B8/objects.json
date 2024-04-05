@@ -256,7 +256,7 @@
             "system/utl/ChunkStream.cpp": "NonMatching",
             "system/utl/Compress.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
-            "system/utl/FakeSongMgr.cpp": "NonMatching",
+            "system/utl/FakeSongMgr.cpp": "Matching",
             "system/utl/FilePath.cpp": "Matching",
             "system/utl/FileStream.cpp": "Matching",
             "system/utl/GlitchFinder.cpp": "NonMatching",

@@ -66,21 +66,27 @@ void BufStream::WriteImpl(const void* data, int bytes){
 }
 
 void BufStream::SeekImpl(int offset, SeekType t){
+    int pos;
+    
     switch(t){
-        case kSeekBegin: break;
+        case kSeekBegin:
+            break;
         case kSeekCur:
-            offset += mTell;
+            pos = mTell + offset;
             break;
         case kSeekEnd:
-            offset += mSize;
+            pos = mSize + offset;
             break;
-        default: return;
+        default:
+            return;
     }
-
-    if(0 <= offset && offset > mSize){
+    
+    if(pos < 0 || pos > mSize){
         mFail = true;
     }
-    else mTell = offset;
+    else {
+        mTell = pos;
+    }
 
     // case 0: validate offset, mFail = true or mTell = offset
     // case 1: offset += mTell, then case 0's logic

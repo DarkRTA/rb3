@@ -139,10 +139,10 @@ ChunkHeader* IListChunk::Next(){
         int sublen = (mSubHeader.IsList()) ? 12 : 8;
         
         ChunkID theID = mSubHeader.mID;
-        int newlen = mSubHeader.Length() + sublen;
+        unsigned int newlen = mSubHeader.Length() + sublen;
         bool trackID = strncmp(theID.Str(), kMidiTrackChunkID.Str(), 4) == 0;
         if(!trackID){
-            int tmp = newlen >> 0x1FU;
+            unsigned int tmp = newlen >> 0x1FU;
             newlen += ((newlen & 1) ^ tmp) - tmp;
         }
 
