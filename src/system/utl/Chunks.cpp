@@ -1,44 +1,17 @@
 #include "utl/Chunks.h"
 #include "utl/ChunkIDs.h"
 #include "os/Debug.h"
-#include <string.h>
 
 void ChunkHeader::Read(BinStream& bs){
     bs.Read((void*)mID.Str(), 4);
     bs >> mLength;
-
-    // bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
-    // bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
-    if((strncmp(mID.Str(), kListChunkID.Str(), 4) != 0) || (strncmp(mID.Str(), kRiffChunkID.Str(), 4) != 0)){
+    if(CheckChunkID(mID.Str(), kListChunkID.Str()) || CheckChunkID(mID.Str(), kRiffChunkID.Str())){
         bs.Read((void*)mID.Str(), 4);
         mIsList = true;
         mLength -= 4;
         MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
     }
     else mIsList = false;
-    // if(!listCmp){
-    //     bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
-    //     if(!riffCmp){
-    //         mIsList = false;
-    //         return;
-    //     }
-    // }
-    // bs.Read((void*)mID.Str(), 4);
-    // mIsList = true;
-    // mLength -= 4;
-    // MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
-    // bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
-    // if(!listCmp){
-    //     bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
-    //     if(!riffCmp){
-    //         mIsList = false;
-    //         return;
-    //     }
-    // }
-    // bs.Read((void*)mID.Str(), 4);
-    // mIsList = true;
-    // mLength -= 4;
-    // MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
 }
 
 const char* listbegin = "LIST:";
@@ -157,12 +130,11 @@ ChunkHeader* IListChunk::Next(){
         mSubChunkValid = true;
         mBaseBinStream.Seek(mSubChunkMarker, BinStream::kSeekBegin);
         mSubHeader.Read(mBaseBinStream);
-        int sublen = (mSubHeader.IsList()) ? 12 : 8;
-        
+
+        unsigned int newlen = mSubHeader.GetNewLength();
         ChunkID theID = mSubHeader.mID;
-        unsigned int newlen = mSubHeader.Length() + sublen;
-        bool trackID = strncmp(theID.Str(), kMidiTrackChunkID.Str(), 4) == 0;
-        if(!trackID){
+        if(!CheckChunkID(theID.Str(), kMidiTrackChunkID.Str())){
+            // probably a branchless comparison
             unsigned int tmp = newlen >> 0x1FU;
             newlen += ((newlen & 1) ^ tmp) - tmp;
         }
@@ -176,8 +148,7 @@ ChunkHeader* IListChunk::Next(ChunkID id){
     MILO_ASSERT(!mLocked, 0x155);
     while(Next()){
         ChunkID theID = mSubHeader.mID;
-        bool sub = strncmp(id.Str(), theID.Str(), 4) == 0;
-        if(sub) return &mSubHeader;
+        if(CheckChunkID(id.Str(), theID.Str())) return &mSubHeader;
     }
     return 0;
 }
