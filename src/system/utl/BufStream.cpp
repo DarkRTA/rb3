@@ -39,11 +39,14 @@ bool BufStream::ValidateChecksum(){
 }
 
 void BufStream::ReadImpl(void* data, int bytes){
-    if(mTell + bytes > mSize){
+    int tell = mTell;
+    int size = mSize;
+    if(tell + bytes > size){
         mFail = true;
-        bytes = mSize - mTell;
+        bytes = size - tell;
     }
-    memcpy(data, mBuffer + mTell, bytes);
+    
+    memcpy(data, &mBuffer[mTell], bytes);
     mTell += bytes;
     if(mChecksum && !mFail){
         mChecksum->Update((const unsigned char*)data, bytes);
@@ -52,11 +55,13 @@ void BufStream::ReadImpl(void* data, int bytes){
 }
 
 void BufStream::WriteImpl(const void* data, int bytes){
-    if(mTell + bytes > mSize){
+    int tell = mTell;
+    int size = mSize;
+    if(tell + bytes > size){
         mFail = true;
-        bytes = mSize - mTell;
+        bytes = size - tell;
     }
-    memcpy(mBuffer + mTell, data, bytes);
+    memcpy(&mBuffer[mTell], data, bytes);
     mTell += bytes;
 }
 

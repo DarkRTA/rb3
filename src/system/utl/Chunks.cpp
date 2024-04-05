@@ -9,16 +9,15 @@ void ChunkHeader::Read(BinStream& bs){
     bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
     if(!listCmp){
         bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
-        if(riffCmp){
+        if(!riffCmp){
             mIsList = false;
-        }
-        else {
-            bs.Read((void*)mID.Str(), 4);
-            mIsList = true;
-            MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
+            return;
         }
     }
-    else mIsList = false;
+    bs.Read((void*)mID.Str(), 4);
+    mIsList = true;
+    mLength -= 4;
+    MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
 }
 
 const char* listbegin = "LIST:";
@@ -94,8 +93,8 @@ IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), 
     Init();
 }
 
-IListChunk::IListChunk(IListChunk& chunk) : mParent(chunk.mParent), mBaseBinStream(chunk.mBaseBinStream), mHeader(chunk.mHeader), mLocked(0), mSubHeader(), mRecentlyReset(1) {
-    mHeader = new ChunkHeader(*CurSubChunkHeader());
+IListChunk::IListChunk(IListChunk& chunk) : mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mLocked(0), mSubHeader(), mRecentlyReset(1) {
+    mHeader = new ChunkHeader(*mParent->CurSubChunkHeader());
     mStartMarker = mBaseBinStream.Tell();
     Init();
 }
@@ -129,35 +128,37 @@ const ChunkHeader* IListChunk::CurSubChunkHeader() const {
 ChunkHeader* IListChunk::Next(){
     MILO_ASSERT(!mLocked, 0x133);
     mRecentlyReset = false;
-    if(mSubChunkMarker >= mStartMarker){
+    if(mSubChunkMarker >= mEndMarker){
         mSubChunkValid = false;
         return 0;
     }
     else {
-        int sublen = 8;
-        if(mSubHeader.IsList()) sublen = 12;
-//     local_18[0] = *(undefined4 *)(this + 0x18);
-//     uVar5 = *(int *)(this + 0x1c) + sublen;
-//     sublen = strncmp((char *)local_18,(char *)&kMidiTrackChunkID,4);
-//     uVar1 = countLeadingZeros(sublen);
-//     if (uVar1 >> 5 == 0) {
-//       uVar5 = uVar5 + (uVar5 & 1 ^ -((int)uVar5 >> 0x1f)) + ((int)uVar5 >> 0x1f);
-//     }
-//     pIVar3 = this + 0x18;
-//     *(uint *)(this + 0x28) = *(int *)(this + 0x28) + uVar5;
         mSubChunkValid = true;
         mBaseBinStream.Seek(mSubChunkMarker, BinStream::kSeekBegin);
         mSubHeader.Read(mBaseBinStream);
+        int sublen = (mSubHeader.IsList()) ? 12 : 8;
+        
+        ChunkID theID = mSubHeader.mID;
+        int newlen = mSubHeader.Length() + sublen;
+        bool trackID = strncmp(theID.Str(), kMidiTrackChunkID.Str(), 4) == 0;
+        if(!trackID){
+            int tmp = newlen >> 0x1FU;
+            newlen += ((newlen & 1) ^ tmp) - tmp;
+        }
+
+        mSubChunkMarker += newlen;
+        return &mSubHeader;
     }
 }
 
 ChunkHeader* IListChunk::Next(ChunkID id){
     MILO_ASSERT(!mLocked, 0x155);
-    while(strncmp(id.Str(), mSubHeader.mID.Str(), 4) == 0){
-        ChunkHeader* next = Next();
-        if(!next) return 0;
+    while(Next()){
+        ChunkID theID = mSubHeader.mID;
+        bool sub = strncmp(id.Str(), theID.Str(), 4) == 0;
+        if(sub) return &mSubHeader;
     }
-    return &mSubHeader;
+    return 0;
 }
 
 void IListChunk::Lock(){
