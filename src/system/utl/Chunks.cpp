@@ -14,9 +14,7 @@ void ChunkHeader::Read(BinStream& bs){
     else mIsList = false;
 }
 
-const char* listbegin = "LIST:";
-const char* start = "<";
-const char* end = ">";
+static const char* unusedChunksStrings[] = { "LIST:", "<", ">" };
 
 IDataChunk::IDataChunk(IListChunk& chunk) : BinStream(true), mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mFailed(0), mEof(0) {
     MILO_ASSERT(mParent->CurSubChunkHeader(), 0x47);
@@ -161,4 +159,9 @@ void IListChunk::Lock(){
 void IListChunk::UnLock(){
     MILO_ASSERT(mLocked == true, 0x16F);
     mLocked = false;
+}
+
+static void idklol(IDataChunk* ichunk){
+    ichunk->WriteImpl(0, 0);
+    ichunk->Flush();
 }
