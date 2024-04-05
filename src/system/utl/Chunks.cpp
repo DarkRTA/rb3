@@ -6,18 +6,39 @@
 void ChunkHeader::Read(BinStream& bs){
     bs.Read((void*)mID.Str(), 4);
     bs >> mLength;
-    bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
-    if(!listCmp){
-        bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
-        if(!riffCmp){
-            mIsList = false;
-            return;
-        }
+
+    // bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
+    // bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
+    if((strncmp(mID.Str(), kListChunkID.Str(), 4) != 0) || (strncmp(mID.Str(), kRiffChunkID.Str(), 4) != 0)){
+        bs.Read((void*)mID.Str(), 4);
+        mIsList = true;
+        mLength -= 4;
+        MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
     }
-    bs.Read((void*)mID.Str(), 4);
-    mIsList = true;
-    mLength -= 4;
-    MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
+    else mIsList = false;
+    // if(!listCmp){
+    //     bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
+    //     if(!riffCmp){
+    //         mIsList = false;
+    //         return;
+    //     }
+    // }
+    // bs.Read((void*)mID.Str(), 4);
+    // mIsList = true;
+    // mLength -= 4;
+    // MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
+    // bool listCmp = strncmp(mID.Str(), kListChunkID.Str(), 4) == 0;
+    // if(!listCmp){
+    //     bool riffCmp = strncmp(mID.Str(), kRiffChunkID.Str(), 4) == 0;
+    //     if(!riffCmp){
+    //         mIsList = false;
+    //         return;
+    //     }
+    // }
+    // bs.Read((void*)mID.Str(), 4);
+    // mIsList = true;
+    // mLength -= 4;
+    // MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
 }
 
 const char* listbegin = "LIST:";

@@ -83,7 +83,8 @@ int HxGuid::SaveSize(){
 
 BinStream& operator<<(BinStream& bs, const HxGuid& hx){
     int rev = kGuidRev;
-    bs << rev << hx.mData[0] << hx.mData[1] << hx.mData[2] << hx.mData[3];
+    bs << rev;
+    bs << hx.mData[0] << hx.mData[1] << hx.mData[2] << hx.mData[3];
     return bs;
 }
 
