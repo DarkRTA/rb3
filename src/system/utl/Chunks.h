@@ -2,8 +2,13 @@
 #define UTL_CHUNKS_H
 #include "utl/BinStream.h"
 #include "utl/ChunkIDs.h"
+#include <string.h>
 
 #define kDataHeaderSize 8
+
+inline bool CheckChunkID(const char* str, const char* id){
+    return strncmp(str, id, 4) == 0;
+}
 
 class ChunkHeader {
 public:
@@ -18,6 +23,12 @@ public:
     void Read(BinStream&);
     int Length(){ return mLength; }
     bool IsList(){ return mIsList; }
+
+    // prolly not the function name, it's inlined in debug
+    unsigned int GetNewLength(){
+        unsigned int sublen = mIsList ? 12 : 8;
+        return mLength + sublen;
+    }
 };
 
 class IListChunk {

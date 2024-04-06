@@ -39,11 +39,14 @@ bool BufStream::ValidateChecksum(){
 }
 
 void BufStream::ReadImpl(void* data, int bytes){
-    if(mTell + bytes > mSize){
+    int tell = mTell;
+    int size = mSize;
+    if(tell + bytes > size){
         mFail = true;
-        bytes = mSize - mTell;
+        bytes = size - tell;
     }
-    memcpy(data, mBuffer + mTell, bytes);
+    
+    memcpy(data, &mBuffer[mTell], bytes);
     mTell += bytes;
     if(mChecksum && !mFail){
         mChecksum->Update((const unsigned char*)data, bytes);
@@ -52,30 +55,39 @@ void BufStream::ReadImpl(void* data, int bytes){
 }
 
 void BufStream::WriteImpl(const void* data, int bytes){
-    if(mTell + bytes > mSize){
+    int tell = mTell;
+    int size = mSize;
+    if(tell + bytes > size){
         mFail = true;
-        bytes = mSize - mTell;
+        bytes = size - tell;
     }
-    memcpy(mBuffer + mTell, data, bytes);
+    memcpy(&mBuffer[mTell], data, bytes);
     mTell += bytes;
 }
 
 void BufStream::SeekImpl(int offset, SeekType t){
+    int pos;
+    
     switch(t){
-        case kSeekBegin: break;
+        case kSeekBegin:
+            pos = offset;
+            break;
         case kSeekCur:
-            offset += mTell;
+            pos = mTell + offset;
             break;
         case kSeekEnd:
-            offset += mSize;
+            pos = mSize + offset;
             break;
-        default: return;
+        default:
+            return;
     }
-
-    if(0 <= offset && offset > mSize){
+    
+    if(pos < 0 || pos > mSize){
         mFail = true;
     }
-    else mTell = offset;
+    else {
+        mTell = pos;
+    }
 
     // case 0: validate offset, mFail = true or mTell = offset
     // case 1: offset += mTell, then case 0's logic
@@ -89,4 +101,11 @@ const char* BufStream::Name() const {
 
 void BufStream::SetName(const char* name) {
     mName = name;
+}
+
+static void idklol(BufStream* bs){
+    bs->Flush();
+    bs->Tell();
+    bs->Eof();
+    bs->Fail();
 }
