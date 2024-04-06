@@ -7,9 +7,6 @@
 #include "os/PlatformMgr.h"
 #include "meta/WiiProfileMgr.h"
 
-extern PlatformMgr ThePlatformMgr;
-extern WiiProfileMgr TheWiiProfileMgr;
-
 User::User() : mOnlineID(new OnlineID()), mUserGuid(), mMachineID(-1) {
     mUserGuid.Generate();
 }

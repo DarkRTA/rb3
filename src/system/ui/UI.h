@@ -28,4 +28,6 @@ public:
     // more members here
 };
 
+extern UIManager* TheUI;
+
 #endif

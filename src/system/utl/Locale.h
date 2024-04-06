@@ -49,6 +49,8 @@ public:
     const char* Localize(Symbol, bool) const;
 };
 
+extern Locale TheLocale;
+
 void SetLocaleVerboseNotify(bool);
 
 void SyncReloadLocale();

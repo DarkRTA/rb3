@@ -16,8 +16,6 @@ AsyncTask::AsyncTask(int arknum, int bnum) :
     
 }
 
-extern BlockMgr TheBlockMgr;
-
 bool AsyncTask::FillData(){
     const char* data = TheBlockMgr.GetBlockData(mArkfileNum, mBlockNum);
     if(data && mOwner){

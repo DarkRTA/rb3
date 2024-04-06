@@ -1,8 +1,6 @@
 #include "os/ProfilePicture.h"
 #include "os/PlatformMgr.h"
 
-extern PlatformMgr ThePlatformMgr;
-
 void ProfilePicture::Update(){
 
     switch(mState){

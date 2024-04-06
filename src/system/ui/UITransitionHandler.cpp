@@ -2,8 +2,6 @@
 #include "os/Debug.h"
 #include "ui/UI.h"
 
-extern UIManager* TheUI;
-
 static const char* const UItranshandlerstrs[] = { __FILE__, "0" };
 
 UITransitionHandler::UITransitionHandler(Hmx::Object* obj) : mInAnim(obj, 0), mOutAnim(obj, 0), mAnimationState(0), mChangePending(0), b3(0) {

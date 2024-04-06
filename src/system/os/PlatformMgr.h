@@ -27,6 +27,6 @@ public:
     bool IsUserSignedIntoLive(const LocalUser*) const;
 };
 
-
+extern PlatformMgr ThePlatformMgr;
 
 #endif

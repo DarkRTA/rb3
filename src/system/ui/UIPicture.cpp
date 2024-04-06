@@ -6,6 +6,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 #include "utl/Symbols4.h"
+#include "utl/Loader.h"
 #include <string.h>
 
 UIPicture::UIPicture() : UITransitionHandler(NULL), mMesh(this, NULL), mTexFile(), mLoadedFile() {

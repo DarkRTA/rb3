@@ -3,8 +3,6 @@
 #include "utl/Messages.h"
 #include "os/PlatformMgr.h"
 
-extern PlatformMgr ThePlatformMgr;
-
 ConnectionStatusPanel::ConnectionStatusPanel(){
 
 }

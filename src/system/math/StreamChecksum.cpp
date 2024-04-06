@@ -1,9 +1,8 @@
 #include "math/StreamChecksum.h"
+#include "math/FileChecksum.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include <string.h>
-
-extern PlatformMgr ThePlatformMgr;
 
 void StreamChecksum::Begin(){
     if(mState == 1) End();
@@ -61,8 +60,6 @@ void StreamChecksumValidator::HandleError(const char* c){
     TheDebug << MakeString(c);
     ThePlatformMgr.SetDiskError((DiskError)3);
 }
-
-extern unsigned char* GetFileChecksum(const char*, bool);
 
 bool StreamChecksumValidator::SetFileChecksum(bool b){
     if(*mFile == '.'){

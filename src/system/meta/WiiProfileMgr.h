@@ -12,4 +12,6 @@ public:
     bool IsIndexValid(int) const;
 };
 
+extern WiiProfileMgr TheWiiProfileMgr;
+
 #endif
