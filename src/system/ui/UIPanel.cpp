@@ -36,7 +36,7 @@ void UIPanel::CheckLoad(){
 void UIPanel::CheckUnload(){
     if(mLoadRefs >= 1){
         if(mState == kDown){
-            Handle(exit_complete_msg.Data(), false);
+            Handle(exit_complete_msg, false);
         }
         if(--mLoadRefs == 0) Unload();
     }
@@ -46,7 +46,7 @@ bool UIPanel::IsLoaded() const {
     if(mState == kUnloaded){
         if(mLoader == 0 || mLoader->IsLoaded()){
             // this doesn't currently work because HandleType is not const, but this method is
-            // DataNode node = HandleType(is_loaded_msg.Data());
+            // DataNode node = HandleType(is_loaded_msg);
         }
         else return false;
     }
@@ -66,7 +66,7 @@ bool UIPanel::CheckIsLoaded(){
 }
 
 void UIPanel::FinishLoad(){
-    HandleType(finish_load_msg.Data());
+    HandleType(finish_load_msg);
     MILO_ASSERT(mLoadRefs > 0, 0x118);
     mState = kDown;
 }

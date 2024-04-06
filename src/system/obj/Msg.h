@@ -27,7 +27,7 @@ public:
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
     }
-    
+
     Message(Symbol type, const DataNode & arg1, const DataNode & arg2, const DataNode & arg3){
         mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(5);
         mData->Node(1) = DataNode(type);
@@ -35,7 +35,7 @@ public:
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
     }
-            
+
     Message(Symbol type, const DataNode & arg1, const DataNode & arg2, const DataNode & arg3, const DataNode & arg4){
         mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(6);
         mData->Node(1) = DataNode(type);
@@ -104,17 +104,18 @@ public:
         mData->Node(9) = arg8;
         mData->Node(10) = arg9;
     }
-    
+
     Message(DataArray* da) : mData(da) { da->AddRef(); }
 
     Message(int i){
         mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(i + 2);
     }
-    
+
     virtual ~Message(){ mData->Release(); }
 
     DataArray* mData;
     DataArray* Data() const { return mData; }
+    operator DataArray*() { return mData; }
 };
 
 #define BEGIN_MESSAGE(classname, type, ...) \
@@ -129,7 +130,7 @@ public:
 
 #define MESSAGE_ARRAY_CTOR(classname) \
         classname(DataArray* da) : Message(da) {}
-        
+
         // custom methods, additional members go here
 
 #define END_MESSAGE }

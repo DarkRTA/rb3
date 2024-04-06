@@ -38,5 +38,5 @@ void ProfilePicture::Poll(){
 void ProfilePicture::Succeed(){
     MILO_ASSERT(mState == kComplete, 0x4A);
     ProfilePictureFetchedMsg msg(1);
-    mCallback->Handle(msg.Data(), false);
+    mCallback->Handle(msg, false);
 }

@@ -21,7 +21,7 @@ void VirtualKeyboard::Poll(){
     if(mCallbackReady){
         VirtualKeyboardResultMsg msg(mMsgOk, mCallbackMsg.c_str());
         if(mPobjKeyboardCallback){
-            mPobjKeyboardCallback->Handle(msg.Data(), true);
+            mPobjKeyboardCallback->Handle(msg, true);
         }
         mPobjKeyboardCallback = 0;
         mCallbackMsg = gNullStr;

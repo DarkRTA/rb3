@@ -107,7 +107,7 @@ namespace {
 }
 
 JoypadData::JoypadData() : mControllerType() {
-    
+
 }
 
 float JoypadData::GetAxis(Symbol axis) const {
@@ -238,7 +238,7 @@ void JoypadUnsubscribe(Hmx::Object* obj){
 
 void JoypadPushThroughMsg(const Message& msg){
     if(gExportMsgs){
-        gJoypadMsgSource->Handle(msg.Data(), false);
+        gJoypadMsgSource->Handle(msg, false);
     }
 }
 
@@ -348,9 +348,9 @@ bool JoypadIsConnectedPadNum(int padNum){
 
 bool JoypadIsCalbertGuitar(int padNum){
     JoypadType ty = gJoypadData[padNum].mType;
-    if(ty == kJoypadXboxHxGuitarRb2 || ty == kJoypadXboxButtonGuitar || 
-        ty == kJoypadPs3HxGuitarRb2 || ty == kJoypadPs3ButtonGuitar || 
-        ty == kJoypadWiiHxGuitarRb2 || ty == kJoypadWiiButtonGuitar) 
+    if(ty == kJoypadXboxHxGuitarRb2 || ty == kJoypadXboxButtonGuitar ||
+        ty == kJoypadPs3HxGuitarRb2 || ty == kJoypadPs3ButtonGuitar ||
+        ty == kJoypadWiiHxGuitarRb2 || ty == kJoypadWiiButtonGuitar)
         return true;
     else return false;
 }
