@@ -19,6 +19,7 @@ public:
     bool operator==(const Symbol & s) const {
         return mStr == s.mStr;
     }
+    bool operator!=(const Symbol & s);
     bool operator!=(const char *);
     // Symbol *operator=(const Symbol & s){
     //     mStr = s.mStr;

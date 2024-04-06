@@ -44,5 +44,6 @@ Symbol SystemLanguage();
 DataArray* SupportedLanguages(bool);
 bool IsSupportedLanguage(Symbol, bool);
 int SystemExec(const char*);
+void SystemPoll(bool pollTasks);
 
 #endif
