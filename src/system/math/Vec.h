@@ -1,5 +1,6 @@
 #ifndef MATH_VEC_H
 #define MATH_VEC_H
+#include "utl/BinStream.h"
 
 class Vector2 {
 public:
@@ -67,6 +68,11 @@ public:
     // bool operator==(const Vector3 &) const;
     // bool operator!=(const Vector3 &) const;
 };
+
+inline BinStream& operator>>(BinStream& bs, Vector3& vec){
+    bs >> vec.x >> vec.y >> vec.z;
+    return bs;
+}
 
 class Vector4 {
 public:

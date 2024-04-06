@@ -1,6 +1,7 @@
 #ifndef MATH_MTX_H
 #define MATH_MTX_H
 #include "math/Vec.h"
+#include "utl/BinStream.h"
 
 namespace Hmx {
     class Matrix3 {
@@ -39,6 +40,11 @@ namespace Hmx {
     };
 }
 
+inline BinStream& operator>>(BinStream& bs, Hmx::Matrix3& mtx){
+    bs >> mtx.x >> mtx.y >> mtx.z;
+    return bs;
+}
+
 class Transform {
 public:
     class Hmx::Matrix3 m;
@@ -57,6 +63,11 @@ public:
     void LookAt(const Vector3&, const Vector3&);
     void Zero();
 };
+
+inline BinStream& operator>>(BinStream& bs, Transform& tf){
+    bs >> tf.m >> tf.v;
+    return bs;
+}
 
 class Plane {
 public:

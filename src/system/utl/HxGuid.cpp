@@ -29,9 +29,7 @@ void HxGuid::Clear(){
 }
 
 inline bool HxGuid::IsNull() const {
-    bool ret = false;
-    if(mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0) ret = true;
-    return ret;
+    return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0);
 }
 
 int HxGuid::Chunk32(int i) const {
@@ -44,9 +42,7 @@ const char* HxGuid::ToString() const {
 }
 
 bool HxGuid::operator==(const HxGuid& hx) const {
-    bool ret = false;
-    if(mData[0] == hx.mData[0] && mData[1] == hx.mData[1] && mData[2] == hx.mData[2] && mData[3] == hx.mData[3]) ret = true;
-    return ret;
+    return (mData[0] == hx.mData[0] && mData[1] == hx.mData[1] && mData[2] == hx.mData[2] && mData[3] == hx.mData[3]);
 }
 
 bool HxGuid::operator<(const HxGuid& hx) const {
@@ -79,11 +75,14 @@ int HxGuid::SaveSize(){
     return 0x14;
 }
 
+static const char* unusedHxGuidStrings[] = { "%04x", "hex.length() == 32" };
+
 #define kGuidRev 1
 
 BinStream& operator<<(BinStream& bs, const HxGuid& hx){
     int rev = kGuidRev;
-    bs << rev << hx.mData[0] << hx.mData[1] << hx.mData[2] << hx.mData[3];
+    bs << rev;
+    bs << hx.mData[0] << hx.mData[1] << hx.mData[2] << hx.mData[3];
     return bs;
 }
 

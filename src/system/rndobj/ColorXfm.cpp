@@ -15,12 +15,34 @@ int ModChan(int chan){
     else return i;
 }
 
+extern void Multiply(const Transform&, const Transform&, Transform&);
+
+void RndColorXfm::AdjustBrightness(){
+    Transform tf;
+    tf.Reset();
+    float set = (mBrightness + 100.0f) / 200.0f + -0.5f;
+    tf.v.Set(set, set, set);
+    Multiply(mColorXfm, tf, mColorXfm);
+}
+
 void RndColorXfm::AdjustColorXfm(){
-    mColorXfm.Reset(); // with the right inlining settings, we could make this just RndColorXfm::Reset
+    mColorXfm.Reset();
     AdjustHue();
     AdjustSaturation();
     AdjustLightness();
     AdjustContrast();
     AdjustBrightness();
     AdjustLevels();
+}
+
+bool RndColorXfm::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    if(rev > 0) return false;
+    else {
+        bs >> mColorXfm;
+        bs >> mHue >> mSaturation >> mLightness >> mContrast >> mBrightness;
+        bs >> mLevelInLo >> mLevelInHi >> mLevelOutLo >> mLevelOutHi;
+        return true;
+    }
 }
