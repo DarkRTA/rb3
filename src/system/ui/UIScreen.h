@@ -72,7 +72,7 @@ public:
     void SetPanelActive(class UIPanel *, bool);
     void SetShowing(bool);
     bool HasPanel(class UIPanel *);
-    int AddPanel(class UIPanel *, bool);
+    bool AddPanel(class UIPanel *, bool);
 
     DataNode ForeachPanel(const DataArray *);
     DataNode OnMsg(const ButtonDownMsg &);
