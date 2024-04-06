@@ -51,15 +51,15 @@ LocalUser::LocalUser() : mHasOnlineID(0) {
 
 bool LocalUser::IsLocal() const { return true; }
 
-LocalUser* LocalUser::GetLocalUser(){}
-LocalUser* LocalUser::GetLocalUser() const {}
+LocalUser* LocalUser::GetLocalUser(){ return this; }
+const LocalUser* LocalUser::GetLocalUser() const { return this; }
 
 RemoteUser* LocalUser::GetRemoteUser(){
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-RemoteUser* LocalUser::GetRemoteUser() const {
+const RemoteUser* LocalUser::GetRemoteUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
@@ -127,7 +127,7 @@ BEGIN_HANDLERS(LocalUser)
 END_HANDLERS
 
 RemoteUser::RemoteUser() : mUserName() {
-    
+
 }
 
 bool RemoteUser::IsLocal() const { return false; }
@@ -137,13 +137,13 @@ LocalUser* RemoteUser::GetLocalUser() {
     return 0;
 }
 
-LocalUser* RemoteUser::GetLocalUser() const {
+const LocalUser* RemoteUser::GetLocalUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-RemoteUser* RemoteUser::GetRemoteUser(){}
-RemoteUser* RemoteUser::GetRemoteUser() const {}
+RemoteUser* RemoteUser::GetRemoteUser(){ return this; }
+const RemoteUser* RemoteUser::GetRemoteUser() const { return this; }
 
 const char* RemoteUser::UserName() const { return mUserName.c_str(); }
 

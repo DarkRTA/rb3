@@ -361,6 +361,7 @@ String& String::replace(unsigned int pos, unsigned int n, const char *buffer) {
 
 String& String::erase(){
     mStr[0] = '\0';
+    return *this;
 }
 
 String& String::erase(unsigned int idx){
@@ -441,6 +442,6 @@ bool StrNCopy(char *dest, const char *src, int n) {
         *dest++ = *src++;
     }
     *dest = '\0';
-    
+
     return (n != 0 || *src == '\0');
 }

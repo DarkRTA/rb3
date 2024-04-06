@@ -19,9 +19,9 @@ public:
     virtual void SyncSave(BinStream&, unsigned int) const;
     virtual bool IsLocal() const = 0;
     virtual LocalUser* GetLocalUser() = 0;
-    virtual LocalUser* GetLocalUser() const = 0;
+    virtual const LocalUser* GetLocalUser() const = 0;
     virtual RemoteUser* GetRemoteUser() = 0;
-    virtual RemoteUser* GetRemoteUser() const = 0;
+    virtual const RemoteUser* GetRemoteUser() const = 0;
     virtual const char* UserName() const = 0;
 
     void SetUserGuid(const UserGuid&);
@@ -50,9 +50,9 @@ public:
     virtual const char* UserName() const;
     virtual bool IsLocal() const;
     virtual LocalUser* GetLocalUser();
-    virtual LocalUser* GetLocalUser() const;
+    virtual const LocalUser* GetLocalUser() const;
     virtual RemoteUser* GetRemoteUser();
-    virtual RemoteUser* GetRemoteUser() const;
+    virtual const RemoteUser* GetRemoteUser() const;
 
     void UpdateOnlineID();
 
@@ -65,9 +65,9 @@ public:
     virtual ~RemoteUser(){}
     virtual bool IsLocal() const;
     virtual LocalUser* GetLocalUser();
-    virtual LocalUser* GetLocalUser() const;
+    virtual const LocalUser* GetLocalUser() const;
     virtual RemoteUser* GetRemoteUser();
-    virtual RemoteUser* GetRemoteUser() const;
+    virtual const RemoteUser* GetRemoteUser() const;
     virtual const char* UserName() const;
     virtual void SyncLoad(BinStream&, unsigned int);
 
