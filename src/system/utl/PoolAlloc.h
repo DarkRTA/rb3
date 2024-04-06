@@ -12,6 +12,11 @@ public:
     void* Alloc(int);
     void Free(void*, int);
     void UploadDebugStats();
+
+    // *might* be wrong
+    operator bool(){
+        return mAllocs != 0;
+    }
 };
 
 class FixedSizeAlloc {
