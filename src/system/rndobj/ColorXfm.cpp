@@ -16,11 +16,23 @@ int ModChan(int chan){
 }
 
 void RndColorXfm::AdjustColorXfm(){
-    mColorXfm.Reset(); // with the right inlining settings, we could make this just RndColorXfm::Reset
+    mColorXfm.Reset();
     AdjustHue();
     AdjustSaturation();
     AdjustLightness();
     AdjustContrast();
     AdjustBrightness();
     AdjustLevels();
+}
+
+bool RndColorXfm::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    if(rev > 0) return false;
+    else {
+        bs >> mColorXfm;
+        bs >> mHue >> mSaturation >> mLightness >> mContrast >> mBrightness;
+        bs >> mLevelInLo >> mLevelInHi >> mLevelOutLo >> mLevelOutHi;
+        return true;
+    }
 }
