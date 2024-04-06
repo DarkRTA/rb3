@@ -117,21 +117,51 @@ enum JoypadType {
 struct ProGuitarData {
     unsigned char unk0upper : 3;
     unsigned char unk0lower : 5;
-    unsigned char unk1;
-    unsigned char unk2;
-    unsigned char unk3;
-    unsigned char unk4;
-    unsigned char unk5;
-    unsigned char unk6;
-    unsigned char unk7;
-    unsigned char unk8;
-    unsigned char unk9;
-    unsigned char unka;
-    unsigned char unkb;
-    unsigned char unkc;
+
+    bool unk1upper : 1;
+    unsigned char unk1middle : 5;
+    unsigned char unk1lower : 2;
+
+    unsigned char unk2upper : 3;
+    unsigned char unk2lower : 5;
+
+    bool unk3upper : 1;
+    unsigned char unk3middle : 5;
+    unsigned char unk3lower : 2;
+
+    bool unk4bool : 1;
+    unsigned char unk4char : 7;
+
+    bool unk5bool : 1;
+    unsigned char unk5char : 7;
+
+    bool unk6bool : 1;
+    unsigned char unk6char : 7;
+
+    bool unk7bool : 1;
+    unsigned char unk7char : 7;
+
+    bool unk8bool : 1;
+    unsigned char unk8char : 7;
+
+    bool unk9bool : 1;
+    unsigned char unk9char : 7;
+
+    bool unkabool : 1;
+    unsigned char unkachar : 7;
+
+    bool unkbbool : 1;
+    unsigned char unkbchar : 7;
+
+    bool unkcbool : 1;
+    unsigned char unkcchar : 7;
+
     bool unkdbool : 1;
     unsigned char unkdchar : 7;
-    unsigned char unke;
+
+    bool unkebool : 1;
+    unsigned char unkechar : 7;
+
     unsigned char unkf;
 };
 
@@ -146,50 +176,51 @@ public:
     float mPressures[8];
 
     // might be a struct of 16 bytes instead
-    unsigned char unk50upper : 3;
-    unsigned char unk50lower : 5;
-    bool unk51upper : 1;
-    unsigned char unk51middle : 5;
-    unsigned char unk51lower : 2;
-    unsigned char unk52upper : 3;
-    unsigned char unk52lower : 5;
-    bool unk53upper : 1;
-    unsigned char unk53middle : 5;
-    unsigned char unk53lower : 2;
+    ProGuitarData mExtended;
+    // unsigned char unk50upper : 3;
+    // unsigned char unk50lower : 5;
+    // bool unk51upper : 1;
+    // unsigned char unk51middle : 5;
+    // unsigned char unk51lower : 2;
+    // unsigned char unk52upper : 3;
+    // unsigned char unk52lower : 5;
+    // bool unk53upper : 1;
+    // unsigned char unk53middle : 5;
+    // unsigned char unk53lower : 2;
 
-    bool unk54bool : 1;
-    unsigned char unk54char : 7;
+    // bool unk54bool : 1;
+    // unsigned char unk54char : 7;
 
-    bool unk55bool : 1;
-    unsigned char unk55char : 7;
+    // bool unk55bool : 1;
+    // unsigned char unk55char : 7;
 
-    bool unk56bool : 1;
-    unsigned char unk56char : 7;
+    // bool unk56bool : 1;
+    // unsigned char unk56char : 7;
 
-    bool unk57bool : 1;
-    unsigned char unk57char : 7;
+    // bool unk57bool : 1;
+    // unsigned char unk57char : 7;
 
-    bool unk58bool : 1;
-    unsigned char unk58char : 7;
+    // bool unk58bool : 1;
+    // unsigned char unk58char : 7;
 
-    bool unk59bool : 1;
-    unsigned char unk59char : 7;
+    // bool unk59bool : 1;
+    // unsigned char unk59char : 7;
 
-    bool unk5abool : 1;
-    unsigned char unk5achar : 7;
+    // bool unk5abool : 1;
+    // unsigned char unk5achar : 7;
 
-    bool unk5bbool : 1;
-    unsigned char unk5bchar : 7;
+    // bool unk5bbool : 1;
+    // unsigned char unk5bchar : 7;
 
-    bool unk5cbool : 1;
-    unsigned char unk5cchar : 7;
+    // bool unk5cbool : 1;
+    // unsigned char unk5cchar : 7;
 
-    bool unk5dbool : 1;
-    unsigned char unk5dchar : 7;
+    // bool unk5dbool : 1;
+    // unsigned char unk5dchar : 7;
 
-    bool unk5ebool : 1;
-    unsigned char unk5echar : 7;
-    unsigned char unk5f;
+    // bool unk5ebool : 1;
+    // unsigned char unk5echar : 7;
+    // unsigned char unk5f;
 
     class LocalUser* mUser;
     bool mConnected;

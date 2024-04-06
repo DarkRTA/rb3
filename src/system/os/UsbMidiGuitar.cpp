@@ -93,33 +93,34 @@ void UsbMidiGuitar::Poll(){
                 ty == kJoypadXboxRealGuitar22Fret || ty == kJoypadPs3RealGuitar22Fret || ty == kJoypadWiiRealGuitar22Fret){
                     JoypadData* padData = JoypadGetPadData(i);
                     // here, assign a pointer to padData's struct for pro guitar data
+                    ProGuitarData* proData = &padData->mExtended;
                     // this loop sets frets and velocities
                     for(int j = 5; j >= 0; j--){
                         int curFret, curVel;
                         switch(j){
                             case 5:
-                                curFret = padData->unk50lower;
-                                curVel = padData->unk54char;
+                                curFret = proData->unk0lower;
+                                curVel = proData->unk4char;
                                 break;
                             case 4:
-                                curFret = padData->unk50upper + padData->unk51lower * 8;
-                                curVel = padData->unk55char;
+                                curFret = proData->unk0upper + proData->unk1lower * 8;
+                                curVel = proData->unk5char;
                                 break;
                             case 3:
-                                curFret = padData->unk51middle;
-                                curVel = padData->unk56char;
+                                curFret = proData->unk1middle;
+                                curVel = proData->unk6char;
                                 break;
                             case 2:
-                                curFret = padData->unk52lower;
-                                curVel = padData->unk57char;
+                                curFret = proData->unk2lower;
+                                curVel = proData->unk7char;
                                 break;
                             case 1:
-                                curFret = padData->unk52upper + padData->unk53lower * 8;
-                                curVel = padData->unk58char;
+                                curFret = proData->unk2upper + proData->unk3lower * 8;
+                                curVel = proData->unk8char;
                                 break;
                             default:
-                                curFret = padData->unk53middle;
-                                curVel = padData->unk59char;
+                                curFret = proData->unk3middle;
+                                curVel = proData->unk9char;
                                 break;
                         }
                         bool mustUpdateVel = curVel != TheGuitar->mStringVelocity[i][j];
@@ -136,9 +137,9 @@ void UsbMidiGuitar::Poll(){
                         }
                     }
                     // this loop sets whether frets are up or down
-                    bool RGFretBool = padData->unk53upper;
+                    bool RGFretBool = proData->unk3upper;
                     for(int k = 0; k < 5; k++){
-                        bool padDataFretDown = (padData->unk50upper + i + 4) >> 7;
+                        bool padDataFretDown = (proData + i + 4); // accesses the bool bitfield of proData with offset i + 4
                         bool isTheGuitarFretDown = TheGuitar->mFretDown[i][k];
                         if(padDataFretDown != isTheGuitarFretDown){
                             if(padDataFretDown){
@@ -154,36 +155,36 @@ void UsbMidiGuitar::Poll(){
                     if(uVar9 != 0){
                         JoypadPushThroughMsg(RGSwingMsg(uVar9, i));
                     }
-                    int axisVal11 = padData->unk5achar;
-                    int axisVal12 = padData->unk5bchar;
-                    int axisVal10 = padData->unk5cchar;
+                    int axisVal11 = proData->unkachar;
+                    int axisVal12 = proData->unkbchar;
+                    int axisVal10 = proData->unkcchar;
                     if(axisVal11 != TheGuitar->CurrentAccelAxisVal(i, 0) ||
                         axisVal12 != TheGuitar->CurrentAccelAxisVal(i, 1) ||
                         axisVal10 != TheGuitar->CurrentAccelAxisVal(i, 2)){
                             TheGuitar->SetAccelerometer(i, axisVal11, axisVal12, axisVal10);
                             JoypadPushThroughMsg(RGAccelerometerMsg(axisVal11, axisVal12, axisVal10, i));
                         }
-                    int connAcc = padData->unk5dchar;
+                    int connAcc = proData->unkdchar;
                     if(connAcc != TheGuitar->mConnectedAccessories[i]){
                         TheGuitar->SetConnectedAccessories(i, connAcc);
                         JoypadPushThroughMsg(RGConnectedAccessoriesMsg(connAcc, i));
                     }
-                    int pitchBend = padData->unk5dchar;
+                    int pitchBend = proData->unkdchar;
                     if(pitchBend != TheGuitar->mPitchBend[i]){
                         TheGuitar->SetPitchBend(i, pitchBend);
                         JoypadPushThroughMsg(RGPitchBendMsg(pitchBend, i));
                     }
-                    int muting = padData->unk5echar;
+                    int muting = proData->unkechar;
                     if(muting != TheGuitar->mMuting[i]){
                         TheGuitar->SetMuting(i, muting);
                         JoypadPushThroughMsg(RGMutingMsg(muting, i));
                     }
-                    bool stompBox = padData->unk5dbool;
+                    bool stompBox = proData->unkdbool;
                     if(stompBox != TheGuitar->mStompBox[i]){
                         TheGuitar->SetStompBox(i, stompBox);
                         JoypadPushThroughMsg(RGStompBoxMsg(stompBox, i));
                     }
-                    int programChange = padData->unk5bbool + padData->unk5cbool + padData->unk5abool;
+                    int programChange = proData->unkbbool + proData->unkcbool + proData->unkabool;
                     if(programChange != TheGuitar->mProgramChange[i]){
                         TheGuitar->SetProgramChange(i, programChange);
                         JoypadPushThroughMsg(RGProgramChangeMsg(i, programChange));
