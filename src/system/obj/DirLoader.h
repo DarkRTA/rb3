@@ -1,7 +1,11 @@
 #ifndef OBJ_DIRLOADER_H
 #define OBJ_DIRLOADER_H
+#include "obj/Dir.h"
+#include "obj/ObjPtr_p.h"
+#include "os/Timer.h"
 #include "utl/Loader.h"
 #include "obj/Object.h"
+#include "utl/PoolAlloc.h"
 
 class DirLoader : public Loader, public ObjRef {
 public:
@@ -13,7 +17,34 @@ public:
     virtual Hmx::Object* RefOwner();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
-    int filler;
+    void Cleanup(const char*);
+    void DoneLoading();
+    ObjectDir* GetDir();
+    bool SaveObjects(const char*, ObjectDir*);
+    void OpenFile();
+    const char* CachedPath(const char*, bool);
+    void SetCacheMode(bool);
+
+    static void PrintLoaded(const char*);
+    static ObjectDir* LoadObjects(const FilePath&, Loader::Callback*, BinStream*);
+
+    int filler[4];
+    String mRoot; // 0x28
+    bool mOwnStream; // 0x34
+    BinStream* mStream; // 0x38
+    int test[0x2];
+    ObjPtrList<Hmx::Object, ObjectDir> mObjects;
+    Callback* mCallback;
+    ObjectDir* mDir;
+    int adsf[2];
+    ObjectDir* mProxyDir; // 0x64
+    Timer mTimer; // 0x68
+    bool mAccessed; // 0x98, guess
+
+
+    static bool sCacheMode;
+
+    void operator delete (void* x) { _PoolFree(0xa0, FastPool, x); }
 };
 
 #endif

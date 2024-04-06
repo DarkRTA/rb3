@@ -2,7 +2,7 @@
 #include "os/Debug.h"
 
 HiResScreen gHiResScreen;
-HiResScreen* TheHighResScreen = &gHiResScreen;
+HiResScreen* TheHiResScreen = &gHiResScreen;
 
 HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2){
     mRowsPerCacheLine = ui2 + 1;

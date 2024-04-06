@@ -8,8 +8,6 @@
 #include "utl/Symbols4.h"
 #include <string.h>
 
-extern LoadMgr TheLoadMgr;
-
 UIPicture::UIPicture() : UITransitionHandler(NULL), mMesh(this, NULL), mTexFile(), mLoadedFile() {
     mTex = Hmx::Object::New<RndTex>();
     mHookTex = true;

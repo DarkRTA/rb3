@@ -20,7 +20,7 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    static Hmx::Object* NewObject();
+    NEW_OBJ(UILabelDir)
 };
 
 class UILabel : public UIComponent {
@@ -73,7 +73,7 @@ public:
     ObjPtr<UIColor, ObjectDir> mColor2;
     int x[0x14];
 
-    static Hmx::Object* NewObject();
+    NEW_OBJ(UILabel)
     static void Init();
     static bool sDeferUpdate;
 };

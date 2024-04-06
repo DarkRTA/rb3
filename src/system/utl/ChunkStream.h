@@ -1,6 +1,7 @@
 #ifndef UTL_CHUNKSTREAM_H
 #define UTL_CHUNKSTREAM_H
 
+#include "obj/Object.h"
 #include "os/File.h"
 #include "os/System.h"
 #include "os/Timer.h"
@@ -90,6 +91,10 @@ public:
     int* mCurChunk;
     int* mChunkEnd;
     int mTell; // which is different from mCurBufOffset... why?
+
+    void *operator new(size_t t) {
+        return _MemAllocTemp(t, 0);
+    }
 };
 
 void DecompressMemHelper(const void*, int, void*, int&, const char*);

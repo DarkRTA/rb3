@@ -26,6 +26,9 @@ public:
 
     HiResScreen();
     virtual ~HiResScreen();
+    void Accumulate();
+    void Finish();
+
     bool mActive;
     int mTiling;
     String mFileBase;
@@ -38,6 +41,6 @@ public:
     int mCache;
 };
 
-extern HiResScreen* TheHighResScreen;
+extern HiResScreen* TheHiResScreen;
 
 #endif

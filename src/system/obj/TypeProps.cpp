@@ -6,8 +6,6 @@
 #include "utl/Loader.h"
 #include <new>
 
-extern LoadMgr TheLoadMgr;
-
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
     DataArray* ret;
