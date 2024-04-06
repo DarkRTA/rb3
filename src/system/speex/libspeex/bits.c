@@ -89,7 +89,7 @@ EXPORT void speex_bits_destroy(SpeexBits *bits)
    /* Will do something once the allocation is dynamic */
 }
 
-EXPORT void speex_bits_reset(SpeexBits *bits)
+static inline EXPORT void speex_bits_reset(SpeexBits *bits)
 {
    /* We only need to clear the first byte now */
    bits->chars[0]=0;
@@ -363,7 +363,7 @@ EXPORT int speex_bits_nbytes(SpeexBits *bits)
    return ((bits->nbBits+BITS_PER_CHAR-1)>>LOG2_BITS_PER_CHAR);
 }
 
-EXPORT void speex_bits_insert_terminator(SpeexBits *bits)
+static inline EXPORT void speex_bits_insert_terminator(SpeexBits *bits)
 {
    if (bits->bitPtr)
       speex_bits_pack(bits, 0, 1);

@@ -26,6 +26,9 @@ public:
 
     HiResScreen();
     virtual ~HiResScreen();
+    void Accumulate();
+    void Finish();
+
     bool mActive;
     int mTiling;
     String mFileBase;
