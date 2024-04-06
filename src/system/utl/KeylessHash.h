@@ -14,7 +14,7 @@ public:
     T2 mEmpty; // 0x10
     T2 mRemoved;
 
-    KeylessHash(int i, const T2& tmp1, const T2& tmp2, T2* tmp_ptr){
+    KeylessHash(int i, const T2& tmp1 = T2(), const T2& tmp2 = T2(), T2* tmp_ptr = NULL){
         mEmpty = tmp1;
         mRemoved = tmp2;
         if(tmp_ptr){

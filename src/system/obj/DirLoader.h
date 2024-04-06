@@ -9,7 +9,7 @@
 
 class DirLoader : public Loader, public ObjRef {
 public:
-    DirLoader(const FilePath&, LoaderPos, Loader::Callback*, BinStream*, ObjectDir*, bool);
+    DirLoader(const FilePath&, LoaderPos, Loader::Callback*, BinStream*, class ObjectDir*, bool);
     virtual ~DirLoader();
     virtual bool IsLoaded() const;
     virtual const char* StateName() const;

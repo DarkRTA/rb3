@@ -17,6 +17,29 @@ enum ViewportId {
     kNumViewports = 8,
 };
 
+enum InlineDirType {
+    kInlineNever = 0,
+    kInlineCached = 1 << 0,
+    kInlineAlways = 1 << 1,
+};
+
+// Circular dependency moment
+class DirLoader;
+
+template <class T> class ObjDirPtr : public ObjRef {
+public:
+
+    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) {}
+    virtual ~ObjDirPtr(); // nightmare
+    virtual Hmx::Object* RefOwner(){ return 0; }
+    virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
+    virtual bool IsDirPtr(){ return true; }
+    void operator=(T*);
+
+    T* mDir;
+    DirLoader* mLoader;
+};
+
 class ObjectDir : public virtual Hmx::Object {
 public:
     struct Entry {
@@ -29,6 +52,14 @@ public:
 
         const char* name;
         Hmx::Object* obj;
+    };
+
+    struct InlinedDir {
+        // Note: names are fabricated, no DWARF info
+        ObjDirPtr<ObjectDir> dir;
+        FilePath file;
+        bool shared;
+        InlineDirType inlineDirType;
     };
 
     static ObjectDir* sMainDir;
@@ -73,53 +104,17 @@ public:
     StringTable mStringTable;
     FilePath mProxyFile;
     bool mProxyOverride;
-    bool mInline;
-    int mLoader; // should be a DirLoader*
-    std::vector<ObjectDir*> mSubDirs;
+    bool mInlineProxy;
+    DirLoader* mLoader;
+    std::vector<ObjDirPtr<ObjectDir> > mSubDirs;
     bool mIsSubDir;
-    int unk58;
+    InlineDirType mInlineSubDirType;
     const char* mPathName;
-    FilePath fpath2;
-    std::vector<int> mViewPorts; // fix the vector's data type
-    int unk74;
-    int unk78;
-    const char* unk7c;
-
-};
-
-template <class T> class ObjDirPtr : public ObjRef {
-public:
-
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) {}
-    virtual ~ObjDirPtr(); // nightmare
-    virtual Hmx::Object* RefOwner(){ return 0; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
-    virtual bool IsDirPtr(){ return true; }
-    void operator=(T*);
-
-    T* mDir;
-    int* mLoader; // DirLoader*
+    FilePath mStoredFile;
+    std::vector<InlinedDir> mInlinedDirs;
+    Hmx::Object* mCurCam;
+    bool mAlwaysInlined;
+    const char* mAlwaysInlineHash;
 };
 
 #endif
-
-// class ObjectDir : public virtual Object {
-//     // total size: 0xAC
-// public:
-//     void * __vptr$; // offset 0x4, size 0x4
-// private:
-//     class KeylessHash mHashTable; // offset 0x8, size 0x20
-//     class StringTable mStringTable; // offset 0x28, size 0x14
-//     class FilePath mProxyFile; // offset 0x3C, size 0xC
-//     unsigned char mProxyOverride; // offset 0x48, size 0x1
-//     unsigned char mInline; // offset 0x49, size 0x1
-//     class DirLoader * mLoader; // offset 0x4C, size 0x4
-//     class vector mSubDirs; // offset 0x50, size 0xC
-//     unsigned char mIsSubDir; // offset 0x5C, size 0x1
-//     char * mPathName; // offset 0x60, size 0x4
-//     class vector mViewports; // offset 0x64, size 0xC
-//     enum ViewportId mCurViewport; // offset 0x70, size 0x4
-//     class Object * mCurAnim; // offset 0x74, size 0x4
-//     class Object * mCurCam; // offset 0x78, size 0x4
-//     const char * mDestFileName; // offset 0x7C, size 0x4
-// };
