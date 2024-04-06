@@ -8,7 +8,7 @@
 NameGenerator::NameGenerator(DataArray* x) {
     MILO_ASSERT(!TheNameGenerator, 19);
     TheNameGenerator = this;
-    SetName("name_generator", ObjectDir::sMainDir);
+    SetName("name_generator", ObjectDir::Main());
     Init(x);
 }
 

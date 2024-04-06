@@ -85,7 +85,7 @@ Hmx::Object* DataSetThis(Hmx::Object* o){
     ObjectDir* dir;
     if(o != gDataThis){
         if(o) dir = o->DataDir();
-        else dir = ObjectDir::sMainDir;
+        else dir = ObjectDir::Main();
         old = gDataThis;
         gDataDir = dir;
         gDataThis = o;

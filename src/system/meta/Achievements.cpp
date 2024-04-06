@@ -5,7 +5,7 @@
 
 void Achievements::Init() {
     TheAchievements = new Achievements;
-    TheAchievements->SetName("achievements", ObjectDir::sMainDir);
+    TheAchievements->SetName("achievements", ObjectDir::Main());
 }
 
 void Achievements::Poll() {return;}

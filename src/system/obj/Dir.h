@@ -31,6 +31,10 @@ public:
         Hmx::Object* obj;
     };
 
+    static ObjectDir* sMainDir;
+
+    static ObjectDir* Main() { return sMainDir; }
+
     ObjectDir();
     virtual Symbol ClassName() const; // fn_800103C8
     virtual void SetType(Symbol); // fn_800102A0
@@ -58,8 +62,6 @@ public:
     void Reserve(int, int);
     bool IsProxy() const;
     bool HasSubDir(ObjectDir*);
-
-    static ObjectDir* sMainDir;
 
     Hmx::Object* FindObject(const char*, bool);
     static Symbol StaticClassName();

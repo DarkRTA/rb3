@@ -9,11 +9,11 @@ VirtualKeyboard::VirtualKeyboard() : mPobjKeyboardCallback(0), mCallbackReady(0)
 }
 
 VirtualKeyboard::~VirtualKeyboard(){
-    
+
 }
 
 void VirtualKeyboard::Init(){
-    SetName("virtual_keyboard", ObjectDir::sMainDir);
+    SetName("virtual_keyboard", ObjectDir::Main());
 }
 
 void VirtualKeyboard::Poll(){
@@ -27,7 +27,7 @@ void VirtualKeyboard::Poll(){
         mCallbackMsg = gNullStr;
         mMsgOk = false;
         mCallbackReady = false;
-    }   
+    }
 }
 
 void VirtualKeyboard::Terminate(){

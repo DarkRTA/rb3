@@ -14,16 +14,16 @@ public:
 
     DataFuncObj(DataArray* da) : mFunc(da) {
         da->AddRef();
-        SetName(da->Str(1), ObjectDir::sMainDir);
+        SetName(da->Str(1), ObjectDir::Main());
     }
-    
+
     virtual ~DataFuncObj(){
         mFunc->Release();
     }
     virtual DataNode Handle(DataArray* _msg, bool _warn){
         return mFunc->ExecuteScript(2, gDataThis, _msg, 1);
     }
-    
+
     void operator delete(void* v){
         _PoolFree(sizeof(DataFuncObj), FastPool, v);
     }
