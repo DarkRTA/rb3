@@ -7,6 +7,7 @@
       "label": "configure SZBE69",
       "type": "shell",
       "command": "python",
+      "linux": { "command": "python3" },
       "args": [
         "configure.py",
         "--version",
@@ -19,6 +20,7 @@
       "label": "configure SZBE69_B8",
       "type": "shell",
       "command": "python",
+      "linux": { "command": "python3" },
       "args": [
         "configure.py",
         "--version",
@@ -75,6 +77,7 @@
       "label": "decompctx (current file)",
       "type": "shell",
       "command": "python",
+      "linux": { "command": "python3" },
       "args": [
         "decompctx.py",
         "${relativeFile}"
@@ -89,6 +92,7 @@
       "label": "Python (current file)",
       "type": "shell",
       "command": "python",
+      "linux": { "command": "python3" },
       "args": [
         "${relativeFile}"
       ],
