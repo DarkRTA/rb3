@@ -14,6 +14,7 @@ public:
 
     static void Init();
     static void Terminate();
+    static void Poll();
 
     int E3CheatGetMinVelocity();
     static void E3CheatSetMinVelocity(int);
@@ -27,6 +28,7 @@ public:
     void SetStompBox(int, bool);
     void SetProgramChange(int, int);
     void SetFretDown(int, int, bool);
+    void UpdateStringStrummed(int, int);
 
     bool mStringStrummed[4][6];
     int mStringFret[4][6];
