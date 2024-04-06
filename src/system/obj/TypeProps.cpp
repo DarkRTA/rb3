@@ -122,7 +122,7 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     DataArray* arr = mMap;
-    DataArray* def = ref->mTypeDef;
+    const DataArray* def = ref->TypeDef();
     if(arr && TheLoadMgr.mCacheMode && def->Size() != 0){
         int i9 = 0;
         while(arr){
@@ -269,7 +269,7 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
             }
             cnt -= 2;
         }
-    }    
+    }
 }
 
 void TypeProps::ClearAll(Hmx::Object* ref){

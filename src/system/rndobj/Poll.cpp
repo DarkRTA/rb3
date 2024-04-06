@@ -10,9 +10,9 @@ BEGIN_HANDLERS(RndPollable);
 END_HANDLERS;
 
 void RndPollable::Enter(){
-    HandleType(enter_msg.Data());
+    HandleType(enter_msg);
 }
 
 void RndPollable::Exit(){
-    HandleType(exit_msg.Data());
+    HandleType(exit_msg);
 }

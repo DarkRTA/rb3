@@ -26,9 +26,10 @@ bool ObjectDir::IsProxy() const {
 
 SAVE_OBJ(ObjectDir, 0x1A2)
 
-ObjectDir::ObjectDir() : mHashTable(0, Entry(), Entry(), 0), mStringTable(0), mProxyFile(), mProxyOverride(0), 
-    mInline(1), mLoader(0), mIsSubDir(0), unk58(0), mPathName(gNullStr), fpath2(), unk74(0), unk78(0), unk7c(gNullStr) {
-    
+ObjectDir::ObjectDir()
+    : mHashTable(0), mStringTable(0), mProxyOverride(false), mInlineProxy(true),
+      mLoader(0), mIsSubDir(false), mInlineSubDirType(kInlineNever), mPathName(gNullStr),
+      mCurCam(0), mAlwaysInlined(false), mAlwaysInlineHash(gNullStr) {
 }
 
 void ObjectDir::PostSave(BinStream& bs){
@@ -36,5 +37,5 @@ void ObjectDir::PostSave(BinStream& bs){
 }
 
 bool ObjectDir::AllowsInlineProxy(){
-    return mInline;
+    return mInlineProxy;
 }

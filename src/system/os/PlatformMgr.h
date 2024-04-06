@@ -25,8 +25,10 @@ public:
     bool IsUserAGuest(const LocalUser*) const;
     bool IsUserSignedIn(const LocalUser*) const;
     bool IsUserSignedIntoLive(const LocalUser*) const;
+
+    void Poll();
 };
 
-
+extern PlatformMgr ThePlatformMgr;
 
 #endif

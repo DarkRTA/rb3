@@ -20,4 +20,6 @@ public:
     const char* GetBlockData(int, int);
 };
 
+extern BlockMgr TheBlockMgr;
+
 #endif

@@ -127,16 +127,13 @@ __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, con
 }
 
 template <class _ForwardIterator, class _Tp>
-#if defined (_STLP_DEBUG_UNINITIALIZED)
 inline void
 __destroy_range_aux(_ForwardIterator __first, _ForwardIterator __last, _Tp*, const __true_type& /*_Trivial_destructor*/) {
+#if defined (_STLP_DEBUG_UNINITIALIZED)
   for ( ; __first != __last; ++__first)
     memset((char*)&(*__first), _STLP_SHRED_BYTE, sizeof(_Tp));
-}
-#else
-inline void
-__destroy_range_aux(_ForwardIterator, _ForwardIterator, _Tp*, const __true_type& /*_Trivial_destructor*/) {}
 #endif
+}
 
 template <class _ForwardIterator, class _Tp>
 inline void

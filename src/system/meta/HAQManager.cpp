@@ -7,15 +7,15 @@ HAQManager* TheHAQMgr;
 HAQManager::HAQManager() : m_bEnabled(0) {
     MILO_ASSERT(!TheHAQMgr, 0x1A);
     TheHAQMgr = this;
-    SetName("haq_mgr", ObjectDir::sMainDir);
+    SetName("haq_mgr", ObjectDir::Main());
 }
 
 HAQManager::~HAQManager(){
-    
+
 }
 
 void HAQManager::Init(){
-    
+
 }
 
 String HAQManager::GetLabelForType(HAQType type) const {

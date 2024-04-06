@@ -8,7 +8,6 @@
 
 extern bool UsingHolmes(int);
 extern DataArray* DataReadFile(const char*, bool);
-extern Locale TheLocale;
 
 static DataNode MagnuRefreshStrings(DataArray* arr){
     DataArray* yeet = 0;

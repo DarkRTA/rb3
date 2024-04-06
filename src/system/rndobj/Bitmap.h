@@ -95,6 +95,4 @@ public:
     DELETE_OVERLOAD
 };
 
-unsigned char BITMAP_REV = 1;
-
 #endif // RNDOBJ_BITMAP_H

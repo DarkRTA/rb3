@@ -583,7 +583,7 @@ public:
   }
 
   void clear() {
-    erase(begin(), end());
+    erase(this->_M_ptr._M_data, end());
   }
 
 private:

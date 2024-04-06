@@ -35,7 +35,7 @@ extern DataNode *DataVariable(Symbol);
 
 // fn_8031B504
 DataNode DataFuncObj::New(DataArray* da){
-    Hmx::Object* o = ObjectDir::sMainDir->Find<Hmx::Object>(da->Str(1), false);
+    Hmx::Object* o = ObjectDir::Main()->Find<Hmx::Object>(da->Str(1), false);
     if(o != 0) delete o;
     return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(da));
 }
@@ -44,7 +44,7 @@ DataNode DataFuncObj::New(DataArray* da){
 DataFuncObj::DataFuncObj(DataArray* da){
     mFunc = da;
     da->AddRef();
-    SetName(da->Str(1), ObjectDir::sMainDir);
+    SetName(da->Str(1), ObjectDir::Main());
 }
 
 // fn_8031B62C

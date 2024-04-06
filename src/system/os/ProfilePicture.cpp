@@ -1,8 +1,6 @@
 #include "os/ProfilePicture.h"
 #include "os/PlatformMgr.h"
 
-extern PlatformMgr ThePlatformMgr;
-
 void ProfilePicture::Update(){
 
     switch(mState){
@@ -40,5 +38,5 @@ void ProfilePicture::Poll(){
 void ProfilePicture::Succeed(){
     MILO_ASSERT(mState == kComplete, 0x4A);
     ProfilePictureFetchedMsg msg(1);
-    mCallback->Handle(msg.Data(), false);
+    mCallback->Handle(msg, false);
 }

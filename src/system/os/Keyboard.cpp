@@ -37,9 +37,9 @@ Hmx::Object* KeyboardOverride(Hmx::Object* o){
 void KeyboardSendMsg(int i, bool b1, bool b2, bool b3){
     KeyboardKeyMsg msg(i, b1, b2, b3);
     if(gObjOverride.mPtr){
-        gObjOverride.mPtr->Handle(msg.Data(), false);
+        gObjOverride.mPtr->Handle(msg, false);
     }
     else {
-        gSource->Handle(msg.Data(), false);
+        gSource->Handle(msg, false);
     }
 }

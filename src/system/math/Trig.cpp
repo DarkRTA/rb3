@@ -1,10 +1,9 @@
 #include "math/Trig.h"
 #include "math/MathFuncs.h"
 #include "obj/Data.h"
+#include "obj/DataFunc.h"
 
 float gBigSinTable[0x200];
-
-extern void DataRegisterFunc(Symbol, DataNode (*)(DataArray *));
 
 void TrigTableInit() {
     float *temp_r30 = gBigSinTable;

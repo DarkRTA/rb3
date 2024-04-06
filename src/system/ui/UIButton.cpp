@@ -5,8 +5,6 @@
 #include "ui/UIComponent.h"
 #include "ui/UI.h"
 
-extern UIManager* TheUI;
-
 INIT_REVS(UIButton)
 
 UIButton::UIButton() { }

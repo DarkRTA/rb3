@@ -55,7 +55,7 @@ public:
     // class Timer mTimer; // offset 0x28, size 0x38
 };
 
-// LoadMgr TheLoadMgr;
+extern LoadMgr TheLoadMgr;
 
 class FileLoader : public Loader {
 public:

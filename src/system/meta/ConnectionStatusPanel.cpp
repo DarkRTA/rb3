@@ -3,8 +3,6 @@
 #include "utl/Messages.h"
 #include "os/PlatformMgr.h"
 
-extern PlatformMgr ThePlatformMgr;
-
 ConnectionStatusPanel::ConnectionStatusPanel(){
 
 }
@@ -31,7 +29,7 @@ DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg& msg){
 
 void ConnectionStatusPanel::CheckForLostConnection(){
     if(!ThePlatformMgr.bool2){
-        Handle(on_connection_lost_msg.Data(), true);
+        Handle(on_connection_lost_msg, true);
     }
 }
 

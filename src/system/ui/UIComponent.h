@@ -64,7 +64,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     ObjDirPtr<ObjectDir> mObjDir;
     FilePath mResourcePath;
     bool a;
-    s8 mState;
+    u8 mState;
     bool c, d;
 
     static Hmx::Object* NewObject();

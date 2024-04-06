@@ -82,13 +82,14 @@ void vector<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, const _Tp
   pointer __new_start = this->_M_ptr.allocate(__len);
   pointer __new_finish = __new_start;
   _STLP_TRY {
-    __new_finish = _STLP_PRIV::__uninitialized_move(begin(), __pos, __new_start, _TrivialUCopy(), _Movable());
+    __new_finish = _STLP_PRIV::__uninitialized_move(this->_M_ptr._M_data, __pos, __new_start, _TrivialUCopy(), _Movable());
     // handle insertion
     if (__fill_len == 1) {
       _Copy_Construct(__new_finish, __x);
       ++__new_finish;
     } else
-      __new_finish = _STLP_PRIV::__uninitialized_fill_n(__new_finish, __fill_len, __x);
+      // TODO: Figure out which type trait should be used here
+      __new_finish = _STLP_PRIV::__uninitialized_fill_n(__new_finish, __fill_len, __x, __false_type());
     if (!__atend)
       __new_finish = _STLP_PRIV::__uninitialized_move(__pos, end(), __new_finish, _TrivialUCopy(), _Movable()); // copy remainder
   }

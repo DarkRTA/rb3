@@ -41,7 +41,7 @@ void DataRegisterFunc(Symbol s, DataFunc* func){
 }
 
 DataNode DataFuncObj::New(DataArray* arr){
-    Hmx::Object* o = ObjectDir::sMainDir->FindObject(arr->Str(1), false);
+    Hmx::Object* o = ObjectDir::Main()->FindObject(arr->Str(1), false);
     if(o) delete o;
     return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(arr));
 }
@@ -702,7 +702,7 @@ static DataNode DataNotifyBeta(DataArray* da);
 //   String SStack_934;
 //   char acStack_928 [256];
 //   FormatString aFStack_828 [2076];
-  
+
 //   String::String(&SStack_934);
 //   for (iVar3 = 1; iVar3 < in_r4->mSize; iVar3 = iVar3 + 1) {
 //     pDVar1 = (DataNode *)DataArray::Node(in_r4,iVar3);

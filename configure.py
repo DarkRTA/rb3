@@ -232,11 +232,13 @@ objects: dict[str, dict] = json.load(open(objects_path, "r", encoding="utf-8"))
 for (lib, lib_config) in objects.items():
     lib_mw_version: str = lib_config["mw_version"]
 
-    config_cflags: str | list[str] = lib_config["cflags"]
+    # config_cflags: str | list[str]
+    config_cflags: list[str] = lib_config["cflags"]
     lib_cflags = get_flags(config_cflags) if type(config_cflags) is str else config_cflags
 
     lib_objects: list[Object] = []
-    config_objects: dict[str, str | dict] = lib_config["objects"]
+    # config_objects: dict[str, str | dict]
+    config_objects: dict[str, dict] = lib_config["objects"]
     if len(config_objects) < 1:
         continue
 

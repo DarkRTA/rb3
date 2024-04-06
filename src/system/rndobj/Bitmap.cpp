@@ -5,6 +5,8 @@
 #include "utl/MemMgr.h"
 #include "utl/Symbols4.h"
 
+static unsigned char BITMAP_REV = 1;
+
 BinStream& RndBitmap::LoadHeader(BinStream& bs, u8& test) {
     u8 ver, h;
     u8 pad[0x13];
@@ -65,7 +67,7 @@ BinStream& operator>>(BinStream& bs, tagBITMAPINFOHEADER& bmih) {
 
 
 BinStream& operator<<(BinStream& bs, const tagBITMAPINFOHEADER& bmih){
-    bs << bmih.biSize << bmih.biWidth << bmih.biHeight << bmih.biPlanes << bmih.biBitCount << 
+    bs << bmih.biSize << bmih.biWidth << bmih.biHeight << bmih.biPlanes << bmih.biBitCount <<
         bmih.biCompression << bmih.biSizeImage << bmih.biXPelsPerMeter << bmih.biYPelsPerMeter << bmih.biClrUsed << bmih.biClrImportant;
     return bs;
 }
@@ -191,7 +193,7 @@ void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int wid
 bool RndBitmap::SamePixelFormat(const RndBitmap& bm) const {
     if (mBpp != bm.Bpp() || mOrder != bm.Order()) return false;
     if (mPalette && bm.Palette()) {
-        return SamePaletteColors(bm); 
+        return SamePaletteColors(bm);
     } else return true;
 }
 
