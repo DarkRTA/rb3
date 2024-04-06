@@ -15,6 +15,16 @@ int ModChan(int chan){
     else return i;
 }
 
+extern void Multiply(const Transform&, const Transform&, Transform&);
+
+void RndColorXfm::AdjustBrightness(){
+    Transform tf;
+    tf.Reset();
+    float set = (mBrightness + 100.0f) / 200.0f + -0.5f;
+    tf.v.Set(set, set, set);
+    Multiply(mColorXfm, tf, mColorXfm);
+}
+
 void RndColorXfm::AdjustColorXfm(){
     mColorXfm.Reset();
     AdjustHue();
