@@ -84,7 +84,6 @@ void UsbMidiGuitar::Terminate(){
 
 // https://decomp.me/scratch/Kfn0h
 void UsbMidiGuitar::Poll(){
-    unsigned int uVar9;
     char someCharArr[8];
     if(TheGuitar){
         for(int i = 0; i < 4; i++){
@@ -94,48 +93,50 @@ void UsbMidiGuitar::Poll(){
                 ty == kJoypadXboxRealGuitar22Fret || ty == kJoypadPs3RealGuitar22Fret || ty == kJoypadWiiRealGuitar22Fret){
                     JoypadData* padData = JoypadGetPadData(i);
                     // here, assign a pointer to padData's struct for pro guitar data
-                    ProGuitarData* proData = &padData->mExtended;
+                    ProGuitarData* proData = &padData->mProData;
                     // this loop sets frets and velocities
+                    unsigned int uVar9 = 0;
                     for(int j = 5; j >= 0; j--){
                         int curFret, curVel;
                         switch(j){
                             case 5:
-                                curFret = proData->unk0lower;
-                                curVel = proData->unk4char;
+                                curFret = proData->mString5Fret;
+                                curVel = proData->mString5Velocity;
                                 break;
                             case 4:
-                                curFret = proData->unk0upper + proData->unk1lower * 8;
-                                curVel = proData->unk5char;
+                                // concatenate 2 bit and 3 bit numbers to make one big 5 bit number
+                                curFret = proData->mString4FretTopHalf * 8 + proData->mString4FretBottomHalf; 
+                                curVel = proData->mString4Velocity;
                                 break;
                             case 3:
-                                curFret = proData->unk1middle;
-                                curVel = proData->unk6char;
+                                curFret = proData->mString3Fret;
+                                curVel = proData->mString3Velocity;
                                 break;
                             case 2:
-                                curFret = proData->unk2lower;
-                                curVel = proData->unk7char;
+                                curFret = proData->mString2Fret;
+                                curVel = proData->mString2Velocity;
                                 break;
                             case 1:
-                                curFret = proData->unk2upper + proData->unk3lower * 8;
-                                curVel = proData->unk8char;
+                                curFret = proData->mString1FretTopHalf * 8 + proData->mString1FretBottomHalf;
+                                curVel = proData->mString1Velocity;
                                 break;
                             default:
-                                curFret = proData->unk3middle;
-                                curVel = proData->unk9char;
+                                curFret = proData->mString0Fret;
+                                curVel = proData->mString0Velocity;
                                 break;
                         }
-                        bool mustUpdateVel = false;
+                        bool velUpdated = false;
                         if(curVel != TheGuitar->mStringVelocity[i][j]){
                             TheGuitar->SetVelocity(i, j, curVel);
-                            mustUpdateVel = true;
+                            velUpdated = true;
                         }
-                        if(curFret != TheGuitar->mStringFret[i][j] || mustUpdateVel){
+                        if(curFret != TheGuitar->mStringFret[i][j] || velUpdated){
                             TheGuitar->SetFret(i, j, curFret);
                             TheGuitar->SetVelocity(i, j, curVel);
-                            StringStrummedMsg ssmsg(j, curFret, curVel & mustUpdateVel != 0, i);
+                            StringStrummedMsg ssmsg(j, curFret, curVel & velUpdated != 0, i);
                             JoypadPushThroughMsg(ssmsg);
                             TheGuitar->UpdateStringStrummed(i, j);
-                            if((curVel > UsbMidiGuitar::mMinVelocity) && mustUpdateVel){
+                            if((curVel > UsbMidiGuitar::mMinVelocity) && velUpdated){
                                 uVar9 = uVar9 | 1 << 5 - j;
                             }
                         }
@@ -181,17 +182,19 @@ void UsbMidiGuitar::Poll(){
                         TheGuitar->SetPitchBend(i, pitchBend);
                         JoypadPushThroughMsg(RGPitchBendMsg(pitchBend, i));
                     }
-                    int muting = proData->unkechar;
+                    int muting = proData->mMuting;
                     if(muting != TheGuitar->mMuting[i]){
                         TheGuitar->SetMuting(i, muting);
                         JoypadPushThroughMsg(RGMutingMsg(muting, i));
                     }
-                    bool stompBox = proData->unkdbool;
+                    bool stompBox = proData->mStompBox;
                     if(stompBox != TheGuitar->mStompBox[i]){
                         TheGuitar->SetStompBox(i, stompBox);
                         JoypadPushThroughMsg(RGStompBoxMsg(stompBox, i));
                     }
-                    int programChange = proData->unkcbool + proData->unkabool + proData->unkbbool;
+                    // these bits could be combined together into one 3 bit value?
+                    // from MSB to LSB: unkcbool, unkbbool, unkabool
+                    int programChange = proData->unkcbool + proData->unkbbool + proData->unkabool;
                     if(programChange != TheGuitar->mProgramChange[i]){
                         TheGuitar->SetProgramChange(i, programChange);
                         JoypadPushThroughMsg(RGProgramChangeMsg(programChange, i));
@@ -209,8 +212,9 @@ void UsbMidiGuitar::E3CheatSetMinVelocity(int vel){
     mMinVelocity = vel;
 }
 
-int UsbMidiGuitar::CurrentAccelAxisVal(int pad, int str){
-    if(0 <= str && (unsigned int)str < 4) return mAccelerometer[pad][str];
+// axes are presumably X, Y, Z
+int UsbMidiGuitar::CurrentAccelAxisVal(int pad, int axis){
+    if(0 <= axis && (unsigned int)axis < 4) return mAccelerometer[pad][axis];
     else return 0;
 }
 

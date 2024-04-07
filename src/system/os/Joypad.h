@@ -115,37 +115,37 @@ enum JoypadType {
 };
 
 struct ProGuitarData {
-    unsigned char unk0upper : 3;
-    unsigned char unk0lower : 5;
+    unsigned char mString4FretBottomHalf : 3;
+    unsigned char mString5Fret : 5;
 
     bool unk1upper : 1;
-    unsigned char unk1middle : 5;
-    unsigned char unk1lower : 2;
+    unsigned char mString3Fret : 5;
+    unsigned char mString4FretTopHalf : 2;
 
-    unsigned char unk2upper : 3;
-    unsigned char unk2lower : 5;
+    unsigned char mString1FretBottomHalf : 3;
+    unsigned char mString2Fret : 5;
 
     bool unk3upper : 1;
-    unsigned char unk3middle : 5;
-    unsigned char unk3lower : 2;
+    unsigned char mString0Fret : 5;
+    unsigned char mString1FretTopHalf : 2;
 
     bool unk4bool : 1;
-    unsigned char unk4char : 7;
+    unsigned char mString5Velocity : 7;
 
     bool unk5bool : 1;
-    unsigned char unk5char : 7;
+    unsigned char mString4Velocity : 7;
 
     bool unk6bool : 1;
-    unsigned char unk6char : 7;
+    unsigned char mString3Velocity : 7;
 
     bool unk7bool : 1;
-    unsigned char unk7char : 7;
+    unsigned char mString2Velocity : 7;
 
     bool unk8bool : 1;
-    unsigned char unk8char : 7;
+    unsigned char mString1Velocity : 7;
 
     bool unk9bool : 1;
-    unsigned char unk9char : 7;
+    unsigned char mString0Velocity : 7;
 
     bool unkabool : 1;
     unsigned char unkachar : 7;
@@ -156,11 +156,11 @@ struct ProGuitarData {
     bool unkcbool : 1;
     unsigned char unkcchar : 7;
 
-    bool unkdbool : 1;
+    bool mStompBox : 1;
     unsigned char unkdchar : 7;
 
     bool unkebool : 1;
-    unsigned char unkechar : 7;
+    unsigned char mMuting : 7;
 
     unsigned char unkf;
 };
@@ -175,7 +175,9 @@ public:
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
 
-    ProGuitarData mExtended;
+    // could be a union?
+    // chooses between the bitfields for pro guitar or the bitfields for pro keys maybe
+    ProGuitarData mProData;
 
     class LocalUser* mUser;
     bool mConnected;
