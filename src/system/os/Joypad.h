@@ -114,6 +114,92 @@ enum JoypadType {
     kJoypadNumTypes = 47
 };
 
+struct ProGuitarData {
+    unsigned char mString4FretBottomHalf : 3;
+    unsigned char mString5Fret : 5;
+
+    bool unk1upper : 1;
+    unsigned char mString3Fret : 5;
+    unsigned char mString4FretTopHalf : 2;
+
+    unsigned char mString1FretBottomHalf : 3;
+    unsigned char mString2Fret : 5;
+
+    bool unk3upper : 1;
+    unsigned char mString0Fret : 5;
+    unsigned char mString1FretTopHalf : 2;
+
+    bool unk4bool : 1;
+    unsigned char mString5Velocity : 7;
+
+    bool unk5bool : 1;
+    unsigned char mString4Velocity : 7;
+
+    bool unk6bool : 1;
+    unsigned char mString3Velocity : 7;
+
+    bool unk7bool : 1;
+    unsigned char mString2Velocity : 7;
+
+    bool unk8bool : 1;
+    unsigned char mString1Velocity : 7;
+
+    bool unk9bool : 1;
+    unsigned char mString0Velocity : 7;
+
+    bool unkabool : 1;
+    unsigned char unkachar : 7;
+
+    bool unkbbool : 1;
+    unsigned char unkbchar : 7;
+
+    bool unkcbool : 1;
+    unsigned char unkcchar : 7;
+
+    bool mStompBox : 1;
+    unsigned char unkdchar : 7;
+
+    bool unkebool : 1;
+    unsigned char mMuting : 7;
+
+    unsigned char unkf; // appears to be unused
+};
+
+struct ProKeysData {
+    unsigned char unk0[8]; // an array of bitfielded uchars? 1 for bool, 7 for actual uchar data
+    // used in GetSlottedKeyVelocityFromExtended
+
+    bool mSustain : 1;
+    unsigned char unk8char : 7;
+
+    bool mStompPedal : 1;
+    unsigned char mExpressionPedal : 7;
+
+    bool unkabool : 1;
+    unsigned char unkachar : 7; // used for both mModVal and accelerometer axis val at index 0?
+
+    bool unkbbool : 1;
+    unsigned char unkbchar : 7;
+
+    bool unkcbool : 1;
+    unsigned char unkcchar : 7;
+
+    bool unkdbool : 1;
+    unsigned char unkdchar : 7;
+
+    bool unkebool : 1; // bit 7
+    unsigned char unkemiddle : 2; // bits 5-6
+    unsigned char mLowHandPlacement : 5; // bits 0-4
+
+    unsigned char mConnectedAccessories;
+
+};
+
+union ProData {
+    ProGuitarData guitarData;
+    ProKeysData keysData;
+};
+
 class JoypadData {
 public:
     unsigned int mButtons;
@@ -124,9 +210,7 @@ public:
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
 
-    int unk50;
-    bool unk54, unk55, unk56, unk57;
-    int unk58, unk5c;
+    ProData mProData;
 
     class LocalUser* mUser;
     bool mConnected;
