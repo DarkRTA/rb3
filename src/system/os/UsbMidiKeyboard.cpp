@@ -3,6 +3,7 @@
 #include "os/System.h"
 #include "utl/Symbols.h"
 #include "os/Joypad.h"
+#include "os/UsbMidiKeyboardMsgs.h"
 
 UsbMidiKeyboard* TheKeyboard;
 bool UsbMidiKeyboard::mUsbMidiKeyboardExists = false;
@@ -84,13 +85,57 @@ void UsbMidiKeyboard::Poll(){
             if(ty == kJoypadXboxMidiBoxKeyboard || ty == kJoypadPs3MidiBoxKeyboard || ty == kJoypadWiiMidiBoxKeyboard ||
                 ty == kJoypadXboxKeytar || ty == kJoypadPs3Keytar || ty == kJoypadWiiKeytar || gForceDetectKeytar){
                     JoypadData* padData = JoypadGetPadData(i);
-                    // here, assign a pointer to padData's struct for pro guitar data
+                    // here, assign a pointer to padData's struct for pro keys data
                     ProKeysData* proData = &padData->mProData.keysData;
                     // this loop sets keys as pressed or released
                     for(int j = 0; j < 25; j++){
 
                     }
-                    
+                    bool sus = proData->mSustain;
+                    if(sus != TheKeyboard->mSustain[i]){
+                        TheKeyboard->SetSustain(i, sus);
+                        JoypadPushThroughMsg(KeyboardSustainMsg(sus, i));
+                    }
+                    bool stomped = proData->mStompPedal;
+                    if(stomped != TheKeyboard->mStompPedal[i]){
+                        TheKeyboard->SetStompPedal(i, stomped);
+                        JoypadPushThroughMsg(KeyboardStompBoxMsg(stomped, i));
+                    }
+                    int mod = proData->unkachar;
+                    if(mod != TheKeyboard->mModVal[i]){
+                        TheKeyboard->SetModVal(i, mod);
+                        JoypadPushThroughMsg(KeyboardModMsg(mod, i));
+                    }
+                    int exp = proData->mExpressionPedal;
+                    if(exp != TheKeyboard->mExpressionPedal[i]){
+                        TheKeyboard->SetExpressionPedal(i, exp);
+                        JoypadPushThroughMsg(KeyboardExpressionPedalMsg(exp, i));
+                    }
+                    int conn = proData->mConnectedAccessories;
+                    if(conn != TheKeyboard->mConnectedAccessories[i]){
+                        TheKeyboard->SetConnectedAccessories(i, conn);
+                        JoypadPushThroughMsg(KeyboardConnectedAccessoriesMsg(conn, i));
+                    }
+                    int lowhand = proData->mLowHandPlacement;
+                    if(lowhand != TheKeyboard->mLowHandPlacement[i]){
+                        TheKeyboard->SetLowHandPlacement(i, lowhand);
+                        JoypadPushThroughMsg(KeyboardLowHandPlacementMsg(lowhand, i));
+                    }
+                    // like in the case of pro guitar's poll, I think this is a bunch of bits concatenated together
+                    int highhand = proData->unkebool + proData->unkdbool + proData->unkbbool + proData->unkcbool;
+                    if(highhand != TheKeyboard->mHighHandPlacement[i]){
+                        TheKeyboard->SetHighHandPlacement(i, highhand);
+                        JoypadPushThroughMsg(KeyboardHighHandPlacementMsg(highhand, i));
+                    }
+                    int accelaxisval0 = proData->unkachar;
+                    int accelaxisval1 = proData->unkbchar;
+                    int accelaxisval2 = proData->unkcchar;
+                    if(accelaxisval0 != TheKeyboard->GetAccelAxisVal(i, 0) ||
+                        accelaxisval1 != TheKeyboard->GetAccelAxisVal(i, 1) ||
+                        accelaxisval2 != TheKeyboard->GetAccelAxisVal(i, 2)){
+                        TheKeyboard->SetAccelerometer(i, accelaxisval0, accelaxisval1, accelaxisval2);
+                        JoypadPushThroughMsg(KeysAccelerometerMsg(accelaxisval0, accelaxisval1, accelaxisval2, i));
+                    }
                 }
         }
     }
