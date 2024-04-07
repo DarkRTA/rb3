@@ -93,7 +93,7 @@ void UsbMidiGuitar::Poll(){
                 ty == kJoypadXboxRealGuitar22Fret || ty == kJoypadPs3RealGuitar22Fret || ty == kJoypadWiiRealGuitar22Fret){
                     JoypadData* padData = JoypadGetPadData(i);
                     // here, assign a pointer to padData's struct for pro guitar data
-                    ProGuitarData* proData = &padData->mProData;
+                    ProGuitarData* proData = &padData->mProData.guitarData;
                     // this loop sets frets and velocities
                     unsigned int uVar9 = 0;
                     for(int j = 5; j >= 0; j--){

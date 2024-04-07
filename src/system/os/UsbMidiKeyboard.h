@@ -12,6 +12,7 @@ public:
     static void Terminate();
     static void Poll();
 
+    int GetSlottedKeyVelocityFromExtended(int, unsigned char*);
     int GetAccelAxisVal(int, int);
     bool GetKeyPressed(int, int);
     int GetKeyVelocity(int, int);

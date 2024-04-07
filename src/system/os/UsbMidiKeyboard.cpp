@@ -2,6 +2,7 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "utl/Symbols.h"
+#include "os/Joypad.h"
 
 UsbMidiKeyboard* TheKeyboard;
 bool UsbMidiKeyboard::mUsbMidiKeyboardExists = false;
@@ -73,6 +74,40 @@ void UsbMidiKeyboard::Terminate(){
     MILO_ASSERT(TheKeyboard != NULL, 0x65);
     delete TheKeyboard;
     TheKeyboard = 0;   
+}
+
+void UsbMidiKeyboard::Poll(){
+    if(!gUseMidiPort && TheKeyboard){
+        for(int i = 0; i < 4; i++){
+            JoypadData* thePadData = JoypadGetPadData(i);
+            JoypadType ty = thePadData->mType;
+            if(ty == kJoypadXboxMidiBoxKeyboard || ty == kJoypadPs3MidiBoxKeyboard || ty == kJoypadWiiMidiBoxKeyboard ||
+                ty == kJoypadXboxKeytar || ty == kJoypadPs3Keytar || ty == kJoypadWiiKeytar || gForceDetectKeytar){
+                    JoypadData* padData = JoypadGetPadData(i);
+                    // here, assign a pointer to padData's struct for pro guitar data
+                    ProKeysData* proData = &padData->mProData.keysData;
+                    // this loop sets keys as pressed or released
+                    for(int j = 0; j < 25; j++){
+
+                    }
+                    
+                }
+        }
+    }
+}
+
+int UsbMidiKeyboard::GetSlottedKeyVelocityFromExtended(int i, unsigned char* uc){
+    if(gUseMidiPort) return 0;
+    if(i - 1U <= 4){
+        switch(i){
+            case 1: return uc[3] & 0x7F;
+            case 2: return uc[4] & 0x7F;
+            case 3: return uc[5] & 0x7F;
+            case 4: return uc[6] & 0x7F;
+            case 5: return uc[7] & 0x7F;
+        }
+    }
+    return 0;
 }
 
 int UsbMidiKeyboard::GetAccelAxisVal(int pad, int axis){
