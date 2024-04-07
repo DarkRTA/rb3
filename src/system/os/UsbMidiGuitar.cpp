@@ -82,6 +82,7 @@ void UsbMidiGuitar::Terminate(){
     TheGuitar = 0;
 }
 
+// https://decomp.me/scratch/Kfn0h
 void UsbMidiGuitar::Poll(){
     unsigned int uVar9;
     char someCharArr[8];
@@ -123,15 +124,18 @@ void UsbMidiGuitar::Poll(){
                                 curVel = proData->unk9char;
                                 break;
                         }
-                        bool mustUpdateVel = curVel != TheGuitar->mStringVelocity[i][j];
-                        if(mustUpdateVel) TheGuitar->SetVelocity(i, j, curVel);
-                        if(curFret != TheGuitar->mStringFret[i][j] && mustUpdateVel){
+                        bool mustUpdateVel = false;
+                        if(curVel != TheGuitar->mStringVelocity[i][j]){
+                            TheGuitar->SetVelocity(i, j, curVel);
+                            mustUpdateVel = true;
+                        }
+                        if(curFret != TheGuitar->mStringFret[i][j] || mustUpdateVel){
                             TheGuitar->SetFret(i, j, curFret);
                             TheGuitar->SetVelocity(i, j, curVel);
-                            StringStrummedMsg ssmsg(j, curFret, mustUpdateVel != 0, i);
+                            StringStrummedMsg ssmsg(j, curFret, curVel & mustUpdateVel != 0, i);
                             JoypadPushThroughMsg(ssmsg);
                             TheGuitar->UpdateStringStrummed(i, j);
-                            if((UsbMidiGuitar::mMinVelocity < curVel) && mustUpdateVel){
+                            if((curVel > UsbMidiGuitar::mMinVelocity) && mustUpdateVel){
                                 uVar9 = uVar9 | 1 << 5 - j;
                             }
                         }
@@ -139,7 +143,10 @@ void UsbMidiGuitar::Poll(){
                     // this loop sets whether frets are up or down
                     bool RGFretBool = proData->unk3upper;
                     for(int k = 0; k < 5; k++){
-                        bool padDataFretDown = (proData + i + 4); // accesses the bool bitfield of proData with offset i + 4
+                        // this part needs work
+                        // i assume judging by the fact there's a neg in the asm,
+                        // there's either a char assignment or a branchless comparison being assigned to a bool
+                        bool padDataFretDown = (proData + k + 4); // accesses the bool bitfield of proData with offset k + 4?
                         bool isTheGuitarFretDown = TheGuitar->mFretDown[i][k];
                         if(padDataFretDown != isTheGuitarFretDown){
                             if(padDataFretDown){
@@ -184,10 +191,10 @@ void UsbMidiGuitar::Poll(){
                         TheGuitar->SetStompBox(i, stompBox);
                         JoypadPushThroughMsg(RGStompBoxMsg(stompBox, i));
                     }
-                    int programChange = proData->unkbbool + proData->unkcbool + proData->unkabool;
+                    int programChange = proData->unkcbool + proData->unkabool + proData->unkbbool;
                     if(programChange != TheGuitar->mProgramChange[i]){
                         TheGuitar->SetProgramChange(i, programChange);
-                        JoypadPushThroughMsg(RGProgramChangeMsg(i, programChange));
+                        JoypadPushThroughMsg(RGProgramChangeMsg(programChange, i));
                     }
             }
         }

@@ -175,52 +175,7 @@ public:
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
 
-    // might be a struct of 16 bytes instead
     ProGuitarData mExtended;
-    // unsigned char unk50upper : 3;
-    // unsigned char unk50lower : 5;
-    // bool unk51upper : 1;
-    // unsigned char unk51middle : 5;
-    // unsigned char unk51lower : 2;
-    // unsigned char unk52upper : 3;
-    // unsigned char unk52lower : 5;
-    // bool unk53upper : 1;
-    // unsigned char unk53middle : 5;
-    // unsigned char unk53lower : 2;
-
-    // bool unk54bool : 1;
-    // unsigned char unk54char : 7;
-
-    // bool unk55bool : 1;
-    // unsigned char unk55char : 7;
-
-    // bool unk56bool : 1;
-    // unsigned char unk56char : 7;
-
-    // bool unk57bool : 1;
-    // unsigned char unk57char : 7;
-
-    // bool unk58bool : 1;
-    // unsigned char unk58char : 7;
-
-    // bool unk59bool : 1;
-    // unsigned char unk59char : 7;
-
-    // bool unk5abool : 1;
-    // unsigned char unk5achar : 7;
-
-    // bool unk5bbool : 1;
-    // unsigned char unk5bchar : 7;
-
-    // bool unk5cbool : 1;
-    // unsigned char unk5cchar : 7;
-
-    // bool unk5dbool : 1;
-    // unsigned char unk5dchar : 7;
-
-    // bool unk5ebool : 1;
-    // unsigned char unk5echar : 7;
-    // unsigned char unk5f;
 
     class LocalUser* mUser;
     bool mConnected;
