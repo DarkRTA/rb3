@@ -7,6 +7,8 @@ namespace Quazal {
     public:
         CriticalSection(unsigned int);
         ~CriticalSection();
+        void EnterImpl();
+        void LeaveImpl();
 
         int mutexprimitive;
         int lockchecker;
