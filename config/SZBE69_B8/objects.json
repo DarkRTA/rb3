@@ -41,6 +41,7 @@
         "cflags": "quazal",
         "objects": {
             "network/Platform/CriticalSection.cpp": "Matching",
+            "network/Platform/DateTime.cpp": "NonMatching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/LockChecker.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
