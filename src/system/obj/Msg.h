@@ -115,7 +115,7 @@ public:
 
     DataArray* mData;
     DataArray* Data() const { return mData; }
-    operator DataArray*() { return mData; }
+    operator DataArray*() const { return mData; }
 };
 
 #define BEGIN_MESSAGE(classname, type, ...) \

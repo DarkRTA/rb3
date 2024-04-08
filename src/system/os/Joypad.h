@@ -233,7 +233,7 @@ public:
     bool mHasGreenCymbal;
     bool mHasYellowCymbal;
     bool mHasBlueCymbal;
-    
+    bool mHasSecondaryPedal;    
     int unk98;
 
     JoypadData();
@@ -265,6 +265,7 @@ int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
+const char* JoypadGetBreedString(int);
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);

@@ -2,6 +2,10 @@
 #include "utl/MakeString.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
+#include "os/System.h"
+#include "utl/Symbols.h"
+#include "utl/Locale.h"
+#include "utl/LocaleOrdinal.h"
 #include <revolution/os.h>
 
 void DateTimeInit(){}
@@ -63,22 +67,26 @@ unsigned int DateTime::ToCode() const {
 //          (uint)this->mMonth * 0x2a3000 + (uint)this->mDay * 0x15180;
 // }
 
-void DateTime::ToString(String& str) const {
+void DateTime::ToString(class String& str) const {
     ToDateString(str);
     str += MakeString(" %02d:%02d:%02d", mHour, mMin, mSec);
 }
 
-void DateTime::ToDateString(String& str) const {
+void DateTime::ToDateString(class String& str) const {
     ToMiniDateString(str);
     str += MakeString("/%04d", mYear + 1900);
 }
 
-void DateTime::ToMiniDateString(String& str) const {
+void DateTime::ToMiniDateString(class String& str) const {
     str += MakeString("%02d/%02d", mMonth + 1, mDay);
 }
 
 unsigned short DateTime::Year() const {
-    return (unsigned short)mYear + 1900;
+    return mYear + 1900;
+}
+
+static const char* early2d(){
+    return "%02d";
 }
 
 namespace {
@@ -90,6 +98,48 @@ namespace {
             "month_september", "month_october", "month_november", "month_december"
         };
         return month_symbols[month];
+    }
+}
+
+void DateTime::Format(class String& str) const {
+    char buf[256];
+
+    if(SearchReplace(str.c_str(), "%d", MakeString("%02d", mDay), buf)){
+        str = buf;
+    }
+
+    Symbol lang = SystemLanguage();
+    if(lang == fre || lang == ita || lang == esl){
+        if(SearchReplace(str.c_str(), "%e", MakeString("%02d", mDay), buf)){
+            str = buf;
+        }
+    }
+    else {
+        if(SearchReplace(str.c_str(), "%e", LocalizeOrdinal(mDay, LocaleGenderMasculine, LocaleSingular, false), buf)){
+            str = buf;
+        }
+    }
+
+    if(SearchReplace(str.c_str(), "%m", MakeString("%02d", mMonth + 1), buf)){
+        str = buf;
+    }
+    if(strstr(str.c_str(), "%M")){
+        if(SearchReplace(str.c_str(), "%M", Localize(MonthToken(mMonth), false), buf)){
+            str = buf;
+        }
+    }
+
+    if(SearchReplace(str.c_str(), "%Y", MakeString("%04d", mYear + 1900), buf)){
+        str = buf;
+    }
+    if(SearchReplace(str.c_str(), "%H", MakeString("%02d", mHour), buf)){
+        str = buf;
+    }
+    if(SearchReplace(str.c_str(), "%i", MakeString("%02d", mMin), buf)){
+        str = buf;
+    }
+    if(SearchReplace(str.c_str(), "%s", MakeString("%02d", mSec), buf)){
+        str = buf;
     }
 }
 
