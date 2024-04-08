@@ -46,6 +46,7 @@
             "network/Platform/LockChecker.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
             "network/Platform/MutexPrimitive.cpp": "NonMatching",
+            "network/Platform/OutputFormat.cpp": "NonMatching",
             "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
             "network/Platform/Result.cpp": "NonMatching",

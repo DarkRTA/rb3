@@ -5,6 +5,7 @@
 namespace Quazal {
     class Time {
     public:
+        void GetTime();
         Time& operator=(const Time&);
         Time& operator=(unsigned long long);
         operator unsigned long long();
