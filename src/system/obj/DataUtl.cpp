@@ -12,13 +12,13 @@
 std::map<Symbol, DataArray*> gMacroTable;
 ObjectDir* gDataDir;
 Hmx::Object* gDataThis;
-static bool gDataMacroWarning;
+static bool gDataMacroWarning = true;
 struct VarStack {
     DataNode* var;
     DataNode value;
 };
 VarStack gVarStack[VAR_STACK_SIZE];
-VarStack* gVarStackPtr;
+VarStack* gVarStackPtr = gVarStack;
 
 void DataMacroWarning(bool b){
     gDataMacroWarning = b;
@@ -27,7 +27,8 @@ void DataMacroWarning(bool b){
 void DataSetMacro(Symbol key, DataArray* macro){
     gMacroTable[key] = macro;
     macro->Release();
-    if(macro) MILO_WARN("Resetting macro %s (file %s, line %d)", key, macro->File(), macro->Line());
+    if(macro && gDataMacroWarning) MILO_WARN("Resetting macro %s (file %s, line %d)", key, macro->File(), macro->Line());
+    macro->AddRef();
 }
 
 DataArray* DataGetMacro(Symbol s){

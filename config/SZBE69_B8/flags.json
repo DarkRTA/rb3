@@ -101,6 +101,20 @@
                 "-inline auto"
             ]
         },
+        "quazal": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-pool on",
+                "-str reuse,pool",
+                "-fp_contract on",
+                "-pragma \"merge_float_consts on\"",
+
+                "-O4,p",
+                "-inline auto"
+            ]
+        },
         "zlib": {
             "base": "base",
             "flags": [

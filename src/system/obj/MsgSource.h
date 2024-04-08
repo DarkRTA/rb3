@@ -25,6 +25,9 @@ public:
     struct EventSink {
         Symbol ev;
         std::list<EventSinkElem> sinks;
+
+        void Add(Hmx::Object*, SinkMode, Symbol, bool);
+        void Remove(Hmx::Object*, MsgSource*, bool);
     };
 
     virtual ~MsgSource();
