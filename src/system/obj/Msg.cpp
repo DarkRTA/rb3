@@ -1,6 +1,7 @@
 #include "obj/MsgSource.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
+#include "os/Debug.h"
 
 void MsgSource::Sink::Export(DataArray* da){
     switch(mode){
@@ -16,14 +17,71 @@ MsgSource::MsgSource() : mSinks(), mEventSinks(), mExporting(0) {}
 MsgSource::~MsgSource(){
     for(std::list<Sink>::iterator it = mSinks.begin(); it != mSinks.end(); it++){
         Hmx::Object* o = it->obj;
-        if(o) o->Release(o);
+        if(o) o->Release(this);
     }
     for(std::list<EventSink>::iterator it = mEventSinks.begin(); it != mEventSinks.end(); it++){
         for(std::list<EventSinkElem>::iterator inner_it = it->sinks.begin(); inner_it != it->sinks.end(); inner_it++){
             Hmx::Object* o = inner_it->obj;
-            if(o) o->Release(o);
+            if(o) o->Release(this);
         }
     }
+}
+
+void MsgSource::ChainSource(MsgSource* source, MsgSource* othersource){
+    MILO_ASSERT(source, 0x3D);
+    if(!othersource) othersource = this;
+    if(!mSinks.empty()){
+        source->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+    }
+    else {
+        for(std::list<EventSink>::iterator it = othersource->mEventSinks.begin(); it != othersource->mEventSinks.end(); it++){
+            source->AddSink(this, it->ev, Symbol(), MsgSource::kHandle);
+        }
+    }
+}
+
+void MsgSource::AddSink(Hmx::Object* s, Symbol sym1, Symbol sym2, MsgSource::SinkMode mode){
+    MILO_ASSERT(s, 0x5D);
+    RemoveSink(s, sym1);
+    s->AddRef(this);
+    if(sym1.IsNull()){
+        MILO_ASSERT(s != this, 0x66);
+        if(mExporting == 0){
+            Sink theSink;
+            theSink.mode = mode;
+            theSink.obj = s;
+            mSinks.push_back(theSink);
+        }
+    }
+}
+
+void MsgSource::EventSink::Add(Hmx::Object* o, MsgSource::SinkMode mode, Symbol sym, bool b){
+    EventSinkElem s;
+    s.obj = o;
+    s.mode = mode;
+    s.handler = sym;
+    if(b){
+        sinks.push_back(s);
+    }
+    else {
+        sinks.push_back(s);
+    }
+}
+
+void MsgSource::EventSink::Remove(Hmx::Object* o, MsgSource* src, bool exporting){
+    std::list<EventSinkElem>::iterator it = sinks.begin();
+    for(; it != sinks.end(); it++){
+        if(it->obj == o){
+            break;
+        }
+    }
+    it->obj->Release(src);
+    // sinks.remove(*elem);
+    // sinks.remove(*it);
+}
+
+void MsgSource::Replace(Hmx::Object* o1, Hmx::Object* o2){
+    RemoveSink(o1, Symbol());
 }
 
 BEGIN_HANDLERS(MsgSource);
