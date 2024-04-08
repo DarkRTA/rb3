@@ -332,6 +332,7 @@
             "system/utl/UTF8.cpp": "NonMatching",
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
+            "system/utl/WaveFile.cpp": "NonMatching",
 
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching"
