@@ -4,12 +4,12 @@
 namespace Quazal {
     class RootObject {
     public:
-        void* operator new(unsigned long);
-        void* operator new(unsigned long, const char *, unsigned int);
-        void* operator new[](unsigned long);
-        void* operator new[](unsigned long, const char *, unsigned int);
-        void operator delete(void *);
-        void operator delete[](void *);
+        static void* operator new(unsigned long);
+        static void* operator new(unsigned long, const char *, unsigned int);
+        static void* operator new[](unsigned long);
+        static void* operator new[](unsigned long, const char *, unsigned int);
+        static void operator delete(void *);
+        static void operator delete[](void *);
     };
 }
 
