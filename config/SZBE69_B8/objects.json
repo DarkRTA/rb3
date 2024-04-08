@@ -73,6 +73,7 @@
 
             "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "NonMatching",
+            "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/TrackType.cpp": "Matching",

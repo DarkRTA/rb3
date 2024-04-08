@@ -1,5 +1,6 @@
 #ifndef UTL_SYMBOL_H
 #define UTL_SYMBOL_H
+#include <string.h>
 
 #define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(&str)
 
@@ -13,6 +14,12 @@ public:
 
     bool operator<(const Symbol& s) const {
         return mStr < s.mStr;
+    }
+
+    // found in GDRB
+    bool operator==(const char* cc) const {
+        if(cc) return strcmp(mStr, cc) == 0;
+        else return cc == gNullStr;
     }
 
     // methods found in RB2
