@@ -17,7 +17,12 @@ namespace Quazal {
             _InstType1,
             _InstType2,
             _InstType3,
-            _InstType4
+            _InstType4,
+            _InstType5,
+            _InstType6,
+            _InstType7,
+            _InstType8,
+            _InstType9
         };
 
         MemoryManager(char *);
@@ -38,5 +43,11 @@ namespace Quazal {
         MutexPrimitive *unk18;
     };
 }
+
+#define QUAZAL_DEFAULT_ALLOC(ul, ui, instType) \
+    MemoryManager::Allocate(MemoryManager::GetDefaultMemoryManager(), ul, __FILE__, ui, MemoryManager::instType);
+
+#define QUAZAL_DEFAULT_FREE(memToFree, instType) \
+    MemoryManager::Free(MemoryManager::GetDefaultMemoryManager(), memToFree, MemoryManager::instType);
 
 #endif

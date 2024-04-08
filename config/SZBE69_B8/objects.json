@@ -23,7 +23,12 @@
         "cflags": "network",
         "objects": {
             "network/net/JsonUtils.cpp": "NonMatching",
-            "network/Platform/RootObject.cpp": "NonMatching"
+            "network/Platform/ExceptionHandler.cpp": "Matching",
+            "network/Platform/LockChecker.cpp": "Matching",
+            "network/Platform/MemoryManager.cpp": "NonMatching",
+            "network/Platform/MutexPrimitive.cpp": "NonMatching",
+            "network/Platform/RootObject.cpp": "NonMatching",
+            "network/Platform/StringStream.cpp": "NonMatching"
         }
     },
     "network/net/json_c": {
