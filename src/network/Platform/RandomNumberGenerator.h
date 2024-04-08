@@ -1,12 +1,12 @@
 #ifndef PLATFORM_RANDOMNUMBERGENERATOR_H
 #define PLATFORM_RANDOMNUMBERGENERATOR_H
-// #include "Platform/RootObject.h"
 
 namespace Quazal {
     class RandomNumberGenerator {
     public:
         RandomNumberGenerator();
-        
+        ~RandomNumberGenerator();
+
         void SetRandomNumberSeed(unsigned int);
         unsigned int GetRandomNumber(unsigned int);
         float GetRealRandomNumber(float);

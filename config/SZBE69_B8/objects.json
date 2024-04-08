@@ -14,7 +14,6 @@
         "cflags": "band3",
         "objects": {
             "band3/game/FretHand.cpp": "NonMatching",
-
             "band3/meta_band/NameGenerator.cpp": "NonMatching"
         }
     },
@@ -22,16 +21,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "network",
         "objects": {
-            "network/net/JsonUtils.cpp": "NonMatching",
-            "network/Platform/CriticalSection.cpp": "Matching",
-            "network/Platform/ExceptionHandler.cpp": "Matching",
-            "network/Platform/LockChecker.cpp": "Matching",
-            "network/Platform/MemoryManager.cpp": "NonMatching",
-            "network/Platform/MutexPrimitive.cpp": "NonMatching",
-            "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
-            "network/Platform/RefCountedObject.cpp": "NonMatching",
-            "network/Platform/RootObject.cpp": "NonMatching",
-            "network/Platform/StringStream.cpp": "NonMatching"
+            "network/net/JsonUtils.cpp": "NonMatching"
         }
     },
     "network/net/json_c": {
@@ -44,6 +34,23 @@
             "network/net/json-c/json_tokener.c": "NonMatching",
             "network/net/json-c/linkhash.c": "Matching",
             "network/net/json-c/printbuf.c": "Matching"
+        }
+    },
+    "network/Platform": {
+        "mw_version": "Wii/1.3",
+        "cflags": "system",
+        "objects": {
+            "network/Platform/CriticalSection.cpp": "Matching",
+            "network/Platform/ExceptionHandler.cpp": "Matching",
+            "network/Platform/LockChecker.cpp": "Matching",
+            "network/Platform/MemoryManager.cpp": "NonMatching",
+            "network/Platform/MutexPrimitive.cpp": "NonMatching",
+            "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
+            "network/Platform/RefCountedObject.cpp": "NonMatching",
+            "network/Platform/Result.cpp": "NonMatching",
+            "network/Platform/RootObject.cpp": "NonMatching",
+            "network/Platform/String.cpp": "NonMatching",
+            "network/Platform/StringStream.cpp": "NonMatching"
         }
     },
     "sdk": {
