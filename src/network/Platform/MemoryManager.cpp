@@ -1,5 +1,9 @@
 #include "Platform/MemoryManager.h"
 
-Quazal::MemoryManager::~MemoryManager(){
+namespace Quazal {
+
+    MemoryManager::~MemoryManager(){
+
+    }
 
 }

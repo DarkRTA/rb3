@@ -23,6 +23,7 @@
         "cflags": "network",
         "objects": {
             "network/net/JsonUtils.cpp": "NonMatching",
+            "network/Platform/CriticalSection.cpp": "Matching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/LockChecker.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
