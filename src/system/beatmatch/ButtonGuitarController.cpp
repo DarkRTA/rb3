@@ -10,6 +10,8 @@ ButtonGuitarController::~ButtonGuitarController(){
     
 }
 
+void ButtonGuitarController::Poll(){}
+
 void ButtonGuitarController::Disable(bool b){
     mDisabled = b;
 }

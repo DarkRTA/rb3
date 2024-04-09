@@ -16,7 +16,7 @@ public:
     ButtonGuitarController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
     virtual ~ButtonGuitarController();
     virtual DataNode Handle(DataArray*, bool);
-    virtual void Poll(){}
+    virtual void Poll();
     virtual void Disable(bool);
     virtual bool IsDisabled() const;
     virtual float GetWhammyBar() const;
