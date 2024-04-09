@@ -35,6 +35,8 @@ public:
     int OnMsg(const ButtonDownMsg&);
     int OnMsg(const ButtonUpMsg&);
 
+    JoypadData* GetJoypadData() const { return mLocalUser ? JoypadGetPadData(mLocalUser->GetPadNum()) : 0; }
+
     bool mDisabled;
     bool unk3d;
     bool mAlternateMapping;
