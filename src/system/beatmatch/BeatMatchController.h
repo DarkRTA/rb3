@@ -1,10 +1,11 @@
 #ifndef BEATMATCH_BEATMATCHCONTROLLER_H
 #define BEATMATCH_BEATMATCHCONTROLLER_H
 #include "obj/Object.h"
-#include "os/User.h"
 #include "obj/Data.h"
 #include "os/Joypad.h"
 #include "beatmatch/HitSink.h"
+
+class User; // forward dec
 
 enum BeatMatchControllerGemMapping {
     kDefaultGemMapping,

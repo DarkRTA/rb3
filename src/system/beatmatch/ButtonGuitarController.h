@@ -2,11 +2,6 @@
 #define BEATMATCH_BUTTONGUITARCONTROLLER_H
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
-#include "obj/Object.h"
-#include "os/User.h"
-#include "obj/Data.h"
-#include "os/Joypad.h"
-#include "beatmatch/HitSink.h"
 #include "os/JoypadMsgs.h"
 #include "os/UsbMidiGuitarMsgs.h"
 

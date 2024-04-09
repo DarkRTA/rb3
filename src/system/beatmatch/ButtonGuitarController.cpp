@@ -1,4 +1,5 @@
 #include "beatmatch/ButtonGuitarController.h"
+#include "os/User.h"
 
 ButtonGuitarController::ButtonGuitarController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool b1, bool lefty) : BeatMatchController(user, cfg, false),
     mDisabled(b1), mShifted(0), mSlotMask(0), mSink(bsink) {

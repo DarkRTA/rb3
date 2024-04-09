@@ -1,4 +1,5 @@
 #include "beatmatch/BeatMatchController.h"
+#include "os/User.h"
 
 BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool lefty) : mUser(user), mForceMercuryBut(-1), mLefty(lefty), unk25(0),
     mGemMapping(kDefaultGemMapping), mHitSink(0) {
@@ -44,8 +45,5 @@ void BeatMatchController::RegisterRGStrum(int i) const {
 }
 
 bool BeatMatchController::IsOurPadNum(int i) const {
-    if(mUser->IsLocal()){
-        return mUser->GetLocalUser()->GetPadNum() == i;
-    }
-    else return false;
+    return !mUser->IsLocal() ? false : mUser->GetLocalUser()->GetPadNum() == i;
 }

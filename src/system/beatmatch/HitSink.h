@@ -2,7 +2,10 @@
 #define BEATMATCH_HITSINK_H
 
 enum HitType {
-    a, s, d, f
+    kPoor = 0,
+    kGood = 1,
+    kPerfect = 2,
+    kNumHitTypes = 3
 };
 
 class HitSink {
