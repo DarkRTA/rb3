@@ -5,6 +5,11 @@
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
 
+enum SecondaryPedalFunction {
+    kHiHatPedal,
+    kSecondKickPedal
+};
+
 class JoypadController : public BeatMatchController {
 public:
     JoypadController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
@@ -23,17 +28,19 @@ public:
     virtual void SetSecondPedalHiHat(bool);
     virtual void SetCymbalConfiguration(int);
 
+    int MapSlot(int) const;
     void ReconcileFretState();
+    bool IsCymbal(int) const;
 
     int OnMsg(const ButtonDownMsg&);
     int OnMsg(const ButtonUpMsg&);
 
-    bool unk3c;
+    bool mDisabled;
     bool unk3d;
-    bool unk3e;
-    int unk40;
-    int unk44;
-    int unk48;
+    bool mAlternateMapping;
+    unsigned int mFretMask;
+    SecondaryPedalFunction mSecondaryPedalFunction;
+    int mCymbalConfiguration;
     JoypadButton mPadShiftButton;
     JoypadButton mCymbalShiftButton;
     JoypadButton mSecondaryPedalButton;

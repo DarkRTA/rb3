@@ -2,7 +2,7 @@
 #include "utl/Symbols.h"
 
 JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool b1, bool lefty) : BeatMatchController(user, cfg, lefty),
-    unk3c(b1), unk3d(0), unk3e(0), unk40(0), unk44(0), unk48(0), mSink(bsink) {
+    mDisabled(b1), unk3d(0), mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal), mCymbalConfiguration(0), mSink(bsink) {
     mVelocityAxes = cfg->FindArray("velocity_axes", false);
     mVelocityPressures = cfg->FindArray("velocity_pressures", false);
     if(user->IsLocal()){
@@ -25,4 +25,57 @@ JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchCo
 
 JoypadController::~JoypadController(){
     
+}
+
+int JoypadController::MapSlot(int i) const {
+    int ret = i;
+    if(mLefty){
+        if(mGemMapping == kDrumGemMapping){
+            if(ret == 0) return 0;
+            else if(ret == 4 && IsCymbal(4) && mCymbalShiftButton != kPad_NumButtons){
+                return 4;
+            }
+            else return 5 - ret;
+        }
+        else return 4 - ret;
+    }
+    return ret;
+}
+
+int JoypadController::ButtonToSlot(JoypadButton btn) const {
+    if(mSecondaryPedalFunction == kSecondKickPedal && btn == mSecondaryPedalButton) return 0;
+    else {
+        int bmSlot = BeatMatchController::ButtonToSlot(btn);
+        if(bmSlot == -1) return bmSlot;
+        else return MapSlot(bmSlot);
+    }
+}
+
+int JoypadController::SlotToButton(int i) const {
+    return BeatMatchController::SlotToButton(MapSlot(i));
+}
+
+void JoypadController::Disable(bool b){
+    mDisabled = b;
+    if(b){
+        for(int i = 0; i < 5; i++){
+            if(mFretMask & (1 << i)){
+                mSink->FretButtonUp(i);
+            }
+        }
+        mFretMask = 0;
+    }
+    else ReconcileFretState();
+}
+
+float JoypadController::GetWhammyBar() const {
+    if(!mUser->IsLocal()) return 0.0f;
+    if(mLocalUser){
+        JoypadData* thePadData = mLocalUser ? JoypadGetPadData(mLocalUser->GetPadNum()) : 0;
+        float stick = thePadData->mSticks[0][1];
+        return (stick < 0.0f) ? stick : 0.0f;
+    }
+    else {
+        return 0.0f;
+    }
 }
