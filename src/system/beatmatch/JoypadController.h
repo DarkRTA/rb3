@@ -36,6 +36,9 @@ public:
     int OnMsg(const ButtonUpMsg&);
 
     JoypadData* GetJoypadData() const { return mLocalUser ? JoypadGetPadData(mLocalUser->GetPadNum()) : 0; }
+    bool HasYellowCymbal(JoypadData* data) const { return (mCymbalConfiguration & 4) || data->mHasYellowCymbal; }
+    bool HasBlueCymbal(JoypadData* data) const { return (mCymbalConfiguration & 8) || data->mHasBlueCymbal; }
+    bool HasGreenCymbal(JoypadData* data) const { return (mCymbalConfiguration & 0x10) || data->mHasGreenCymbal; }
 
     bool mDisabled;
     bool unk3d;
