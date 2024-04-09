@@ -18,13 +18,13 @@ public:
     virtual int ButtonToSlot(JoypadButton) const;
     virtual int SlotToButton(int) const;
     virtual void Disable(bool);
-    virtual bool IsDisabled() const;
+    virtual bool IsDisabled() const { return mDisabled; }
     virtual float GetWhammyBar() const;
-    virtual int GetFretButtons() const;
+    virtual int GetFretButtons() const { return 0; }
     virtual int GetVelocityBucket(int) const;
     virtual int GetVirtualSlot(int i) const;
-    virtual void UseAlternateMapping(bool);
-    virtual bool IsAlternateMapping() const;
+    virtual void UseAlternateMapping(bool b){ mAlternateMapping = b; }
+    virtual bool IsAlternateMapping() const { return mAlternateMapping; }
     virtual void SetSecondPedalHiHat(bool);
     virtual void SetCymbalConfiguration(int);
 

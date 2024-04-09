@@ -1,6 +1,8 @@
 #include "beatmatch/JoypadController.h"
 #include "utl/Symbols.h"
 
+float somefloatidk = 0.0f;
+
 JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool b1, bool lefty) : BeatMatchController(user, cfg, lefty),
     mDisabled(b1), unk3d(0), mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal), mCymbalConfiguration(0), mSink(bsink) {
     mVelocityAxes = cfg->FindArray("velocity_axes", false);
@@ -73,9 +75,30 @@ float JoypadController::GetWhammyBar() const {
     if(mLocalUser){
         JoypadData* thePadData = mLocalUser ? JoypadGetPadData(mLocalUser->GetPadNum()) : 0;
         float stick = thePadData->mSticks[0][1];
-        return (stick < 0.0f) ? stick : 0.0f;
+        return (stick < somefloatidk) ? stick : somefloatidk;
     }
     else {
         return 0.0f;
     }
+}
+
+void JoypadController::SetSecondPedalHiHat(bool b){
+    mSecondaryPedalFunction = (SecondaryPedalFunction)(b == 0);
+}
+
+void JoypadController::SetCymbalConfiguration(int i){
+    mCymbalConfiguration = i;
+}
+
+BEGIN_HANDLERS(JoypadController)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(ButtonUpMsg)
+    HANDLE_CHECK(0x273)
+END_HANDLERS
+
+static void weakfuncslol(JoypadController* jc){
+    jc->IsDisabled();
+    jc->GetFretButtons();
+    jc->UseAlternateMapping(0);
+    jc->IsAlternateMapping();
 }
