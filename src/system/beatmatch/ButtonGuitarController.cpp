@@ -116,49 +116,20 @@ int ButtonGuitarController::OnMsg(const RGAccelerometerMsg& msg){
 
 int ButtonGuitarController::GetCurrentSlot() const {
     int ret = -1;
-    int i;
-
-    for (i = 0; i < 5; i++) {
-        if ((mSlotMask & (1 << i))) {
-            ret = i;
-        }
-    }
-    
+    for(int i = 0; i < 5; i++){
+        if(mSlotMask & (1 << i)) ret = i;
+    }    
     return ret;
 }
 
 BEGIN_HANDLERS(ButtonGuitarController)
-    if(sym == StringStrummedMsg::Type()){
-        DataNode result = DataNode(OnMsg(StringStrummedMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == StringStoppedMsg::Type()){
-        DataNode result = DataNode(OnMsg(StringStoppedMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == RGSwingMsg::Type()){
-        DataNode result = DataNode(OnMsg(RGSwingMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == ButtonDownMsg::Type()){
-        DataNode result = DataNode(OnMsg(ButtonDownMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == ButtonUpMsg::Type()){
-        DataNode result = DataNode(OnMsg(ButtonUpMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == RGFretButtonDownMsg::Type()){
-        DataNode result = DataNode(OnMsg(RGFretButtonDownMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == RGFretButtonUpMsg::Type()){
-        DataNode result = DataNode(OnMsg(RGFretButtonUpMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
-    if(sym == RGAccelerometerMsg::Type()){
-        DataNode result = DataNode(OnMsg(RGAccelerometerMsg(_msg)));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
+    HANDLE_MESSAGE(StringStrummedMsg)
+    HANDLE_MESSAGE(StringStoppedMsg)
+    HANDLE_MESSAGE(RGSwingMsg)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(ButtonUpMsg)
+    HANDLE_MESSAGE(RGFretButtonDownMsg)
+    HANDLE_MESSAGE(RGFretButtonUpMsg)
+    HANDLE_MESSAGE(RGAccelerometerMsg)
     HANDLE_CHECK(0xDA)
 END_HANDLERS
