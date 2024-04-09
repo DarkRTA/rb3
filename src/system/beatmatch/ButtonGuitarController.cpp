@@ -35,9 +35,8 @@ void ButtonGuitarController::SetAutoSoloButtons(bool){}
 int ButtonGuitarController::OnMsg(const RGSwingMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
-    
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(3);
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     int slot = GetCurrentSlot();
@@ -49,10 +48,10 @@ int ButtonGuitarController::OnMsg(const ButtonDownMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(5);
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
-    if(((DataArray*)msg)->Int(3) == 8)
+    if(msg.GetButton() == kPad_Select)
         mSink->ForceMercurySwitch(true);
     return 0;
 }
@@ -61,10 +60,10 @@ int ButtonGuitarController::OnMsg(const ButtonUpMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(5);
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
-    if(((DataArray*)msg)->Int(3) == 8)
+    if(msg.GetButton() == kPad_Select)
         mSink->ForceMercurySwitch(false);
     return 0;
 }
@@ -73,7 +72,7 @@ int ButtonGuitarController::OnMsg(const RGFretButtonDownMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = msg.GetNode3();
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0x8A);
@@ -90,7 +89,7 @@ int ButtonGuitarController::OnMsg(const RGFretButtonUpMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = msg.GetNode3();
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0xA4);
@@ -107,11 +106,10 @@ int ButtonGuitarController::OnMsg(const RGAccelerometerMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(5);
+    int msgInt = msg.GetPadNum();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0xBB);
-    DataArray* arr = ((DataArray*)msg);
     mSink->MercurySwitch(msg.GetNode3() / 127.0f);
     return 0;
 }
@@ -119,7 +117,7 @@ int ButtonGuitarController::OnMsg(const RGAccelerometerMsg& msg){
 int ButtonGuitarController::GetCurrentSlot() const {
     int ret = -1;
     int i;
-    
+
     for (i = 0; i < 5; i++) {
         if ((mSlotMask & (1 << i))) {
             ret = i;

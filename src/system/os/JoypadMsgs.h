@@ -13,6 +13,7 @@ BEGIN_MESSAGE(ButtonUpMsg, "button_up", LocalUser*, JoypadButton, JoypadAction, 
     LocalUser* GetUser() const;
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
     JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }
+    int GetPadNum() const { return mData->Int(5); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(ButtonDownMsg, "button_down", LocalUser*, JoypadButton, JoypadAction, int);
@@ -20,6 +21,7 @@ BEGIN_MESSAGE(ButtonDownMsg, "button_down", LocalUser*, JoypadButton, JoypadActi
     LocalUser* GetUser() const;
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
     JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }
+    int GetPadNum() const { return mData->Int(5); }
 END_MESSAGE;
 
 #endif
