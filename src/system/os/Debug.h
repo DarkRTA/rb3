@@ -11,16 +11,16 @@ typedef void ExitCallbackFunc(void);
 
 class Debug : public TextStream {
 public:
-    bool mDisabled;
-    bool mExiting;
-    bool mNoTry;
-    bool mNoModal;
-    bool unk8;
-    int mTry;
-    TextFileStream* mLog;
-    bool mAlwaysFlush;
-    TextStream* mReflect;
-    ModalCallbackFunc* mModalCallback;
+    bool mDisabled; // 0x4
+    bool mExiting; // 0x5
+    bool mNoTry; // 0x6
+    bool mNoModal; // 0x7
+    bool unk8; // 0x8
+    int mTry; // 0xc
+    TextFileStream* mLog; // 0x10
+    bool mAlwaysFlush; // 0x14
+    TextStream* mReflect; // 0x18
+    ModalCallbackFunc* mModalCallback; // 0x1c
     std::list<ModalCallbackFunc*> mFailCallbacks;
     std::list<ExitCallbackFunc*> mExitCallbacks;
     unsigned int mFailThreadStack[50];

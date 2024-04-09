@@ -1,9 +1,12 @@
 #include "obj/DataFunc.h"
 #include "math/Rand.h"
 #include "obj/Data.h"
+#include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
+#include "obj/Utl.h"
 #include "os/Debug.h"
+#include "os/File.h"
 #include "utl/MakeString.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
@@ -689,14 +692,20 @@ static DataNode DataNotify(DataArray* da){
     return DataNode(0);
 }
 
-static DataNode DataNotifyBeta(DataArray* da);
+static DataNode DataNotifyBeta(DataArray* da) {
+    String s;
+    for (int i = 1; i < da->Size(); i++) {
+        da->Evaluate(i).Print(s, true);
+    }
+    TheDebug << MakeString(s.c_str());
+    return DataNode();
+}
 
-// void DataNotifyBeta(DataArray *param_1)
+// DataNode DataNotifyBeta(DataArray *da)
 
 // {
 //   DataNode *pDVar1;
 //   char *pcVar2;
-//   DataArray *in_r4;
 //   int iVar3;
 //   undefined local_938 [4];
 //   String SStack_934;
@@ -704,8 +713,8 @@ static DataNode DataNotifyBeta(DataArray* da);
 //   FormatString aFStack_828 [2076];
 
 //   String::String(&SStack_934);
-//   for (iVar3 = 1; iVar3 < in_r4->mSize; iVar3 = iVar3 + 1) {
-//     pDVar1 = (DataNode *)DataArray::Node(in_r4,iVar3);
+//   for (iVar3 = 1; iVar3 < da->mSize; iVar3 = iVar3 + 1) {
+//     pDVar1 = (DataNode *)DataArray::Node(da,iVar3);
 //     pDVar1 = (DataNode *)DataNode::Evaluate(pDVar1);
 //     DataNode::Print(pDVar1,(TextStream *)&SStack_934,true);
 //   }
@@ -754,6 +763,342 @@ static DataNode DataCond(DataArray* da){
 }
 
 static DataNode DataSwitch(DataArray* da);
+
+static DataNode DataInsertElems(DataArray* da) {
+    da->Array(1)->InsertNodes(da->Int(2), da->Array(3));
+    return DataNode();
+
+}
+
+static DataNode DataInsertElem(DataArray* da) {
+    da->Array(1)->Insert(da->Int(2), da->Evaluate(3));
+    return DataNode();
+}
+
+static DataNode DataPrintArray(DataArray* da) {
+    da->Array(1)->Print(TheDebug, kDataArray, false);
+    return DataNode();
+}
+
+static DataNode DataSize(DataArray* da) {
+    if (da->Type(1) == kDataProperty) {
+        MILO_ASSERT(gDataThis, 1213); // dammit hmx why couldn't it've been 1312
+        return DataNode(gDataThis->PropertySize(da->Node(1).mValue.array)); // TODO figure out what this actually is
+    }
+    return DataNode(da->Array(1)->Size());
+}
+
+static DataNode DataRemoveElem(DataArray* da) {
+    DataArray* a = da->Array(1);
+    a->Remove(da->Evaluate(2));
+    return DataNode();
+}
+
+static DataNode DataResize(DataArray* da) {
+    da->Array(1)->Resize(da->Int(2));
+    return DataNode();
+}
+
+static DataNode DataNewArray(DataArray* da);
+
+static DataNode DataSetElem(DataArray* da) {
+    DataArray* aaaa = da->Array(1);
+    return aaaa->Evaluate(da->Int(2));
+    
+}
+
+static DataNode DataEval(DataArray* da);
+
+static DataNode DataReverseInterp(DataArray* da);
+
+static DataNode DataInterp(DataArray* da) {
+    float st, end, pct;
+    pct = da->Float(3);
+    end = da->Float(2);
+    st = da->Float(1);
+    return DataNode(((end - st) * pct) + st);
+}
+
+static DataNode DataInc(DataArray* da);
+
+static DataNode DataDec(DataArray* da);
+
+static DataNode DataHandle(DataArray* da) {
+    for (int i = 1; i < da->Size(); i++) {
+        DataArray* handlo = da->Array(i);
+        DataNode n = da->Evaluate(0);
+        Hmx::Object* obj;
+        if (n.Type() == kDataObject) obj = n.mValue.object;
+        else if (n.Type() == kDataInt) obj = NULL; 
+        else obj = gDataDir->FindObject(n.LiteralStr(handlo), true);
+        if (obj) obj->Handle(handlo, false);
+        // read->mRefs -= 1; if (read->mRefs == 0) delete read;
+    }
+    return DataNode();
+}
+
+static DataNode DataRun(DataArray* da) {
+    const char* e = FileMakePath(FileExecRoot(), da->Str(1), NULL);
+    DataArray* read = DataReadFile(e, true);
+    DataNode ret;
+    if (read) {
+        ret = read->ExecuteScript(0, gDataThis, NULL, 1);
+        read->mRefs -= 1; if (read->mRefs == 0) delete read;
+    }
+    return ret;
+}
+
+static DataNode OnReadFile(DataArray* da) {
+    DataArray* read = DataReadFile(da->Str(1), true);
+    if (read == 0) return DataNode();
+    else {
+        DataNode dn(read, kDataArray);
+        read->mRefs -= 1; if (read->mRefs == 0) delete read;
+        return dn;
+    }
+}
+
+static DataNode OnWriteFile(DataArray* da) {
+    DataArray* write_me = da->Array(2);
+    DataWriteFile(da->Str(1), write_me, false);
+    return DataNode();
+}
+
+static DataNode OnFileExists(DataArray* da) {
+    return DataNode(FileExists(da->Str(1), 0));
+}
+
+static DataNode OnFileReadOnly(DataArray* da) {
+    return DataNode(FileReadOnly(da->Str(1)));
+}
+
+static DataNode DataExit(DataArray*) { TheDebug.Exit(0, true); return DataNode(); }
+
+static DataNode DataContains(DataArray*);
+
+static DataNode DataStrlen(DataArray* da) {
+    return DataNode((int)strlen(da->Str(1)));
+}
+
+static DataNode DataPushBack(DataArray* da) {
+    DataArray* work = da->Array(1);
+    int nu_size = work->Size() + 1;
+    work->Resize(nu_size);
+    work->Node(nu_size) = da->Evaluate(2);
+    return DataNode();
+}
+
+static DataNode DataSort(DataArray* da) {
+    da->Array(1)->SortNodes();
+    return DataNode();
+}
+
+static DataNode DataGetType(DataArray* da) {
+    return DataNode(da->Evaluate(1).Type());
+}
+
+static DataNode DataWith(DataArray* da) {
+    return da->ExecuteScript(2, da->GetObj(1), NULL, 1);
+}
+
+static DataNode OnSetThis(DataArray* da) {
+    Hmx::Object* new_this;
+    new_this = da->GetObj(1);
+    // gDataThisPtr.Replace(gDataThis, new_this);
+    DataSetThis(new_this);
+    return DataNode();
+}
+
+static DataNode DataReplaceObject(DataArray* da) {
+    int x, y, z;
+    bool a,b,c;
+    if (da->Size() > 3) x = da->Int(3);
+    else x = 1;
+    a = x;
+    if (da->Size() > 4) y = da->Int(4);
+    else y = 1;
+    b = y;
+    if (da->Size() > 5) y = da->Int(5);
+    else z = 1;
+    c = z;
+    ReplaceObject(da->GetObj(1), da->GetObj(2), a, b, c);
+    return DataNode();
+}
+
+static DataNode DataNextName(DataArray* da) {
+    ObjectDir* d = gDataDir;
+    if (da->Size() > 2) {
+        d = da->Obj<ObjectDir>(2);
+    }
+    return DataNode(NextName(da->Str(1), d));
+}
+
+static DataNode DataFileList(DataArray*) {
+
+}
+
+static DataNode DataFileListPaths(DataArray*) {
+
+}
+
+static DataNode DataObjectList(DataArray* da) {
+    ObjectDir* dir = da->Obj<ObjectDir>(1);
+    Symbol s = da->Sym(2);
+    int x;
+    if (da->Size() > 3) x = (bool)da->Int(3); else x = 1;
+    return ObjectList(dir, s, x);
+}
+
+void ScriptDebugModal(bool&, char*, bool) { }
+
+static DataNode DataDisableNotify(DataArray*) {
+
+    return DataNode();
+}
+
+static DataNode DataFilterNotify(DataArray*) {
+    return DataNode();
+}
+
+void DataInitFuncs() {
+    DataRegisterFunc("replace_object", DataReplaceObject);
+    DataRegisterFunc("next_name", DataNextName);
+    DataRegisterFunc("printf", DataPrintf);
+    DataRegisterFunc("sprintf", DataSprintf);
+    DataRegisterFunc("sprint", DataSprint);
+    DataRegisterFunc("func", DataFuncObj::New);
+    DataRegisterFunc("elem", DataGetElem);
+    DataRegisterFunc("last_elem", DataGetLastElem);
+    DataRegisterFunc("foreach", DataForEach);
+    DataRegisterFunc("foreach_int", DataForEachInt);
+    DataRegisterFunc("min", DataMin);
+    DataRegisterFunc("max", DataMax);
+    DataRegisterFunc("abs", DataAbs);
+    DataRegisterFunc("+", DataAdd);
+    DataRegisterFunc("+=", DataAddEq);
+    DataRegisterFunc("-", DataSub);
+    DataRegisterFunc("-=", DataSubEq);
+    DataRegisterFunc("mean", DataMean);
+    DataRegisterFunc("clamp", DataClamp);
+    DataRegisterFunc("clamp_eq", DataClampEq);
+    DataRegisterFunc("*", DataMultiply);
+    DataRegisterFunc("*=", DataMultiplyEq);
+    // DataRegisterFunc("/", DataDivide); // this one's strbase isn't inline with the others
+    DataRegisterFunc("/=", DataDivideEq);
+    DataRegisterFunc("sqrt", DataSqrt);
+    DataRegisterFunc("mod", DataMod);
+    DataRegisterFunc("dist", DataDist);
+    DataRegisterFunc("symbol", DataSymbol);
+    DataRegisterFunc("int", DataInt);
+    DataRegisterFunc("char", DataChar);
+    DataRegisterFunc("round", DataRound);
+    DataRegisterFunc("floor", DataFloor);
+    DataRegisterFunc("ceil", DataCeil);
+    DataRegisterFunc("set", DataSet);
+    DataRegisterFunc("if_else", DataIfElse);
+    DataRegisterFunc("if", DataIf);
+    DataRegisterFunc("unless", DataUnless);
+    DataRegisterFunc("==", DataEq);
+    DataRegisterFunc("!=", DataNe);
+    DataRegisterFunc("<=", DataLe);
+    DataRegisterFunc("<", DataLt);
+    DataRegisterFunc(">=", DataGe);
+    DataRegisterFunc(">", DataGt);
+    DataRegisterFunc("!", DataNot);
+    DataRegisterFunc("&&", DataAnd);
+    DataRegisterFunc("||", DataOr);
+    DataRegisterFunc("^^", DataXor);
+    DataRegisterFunc("&", DataBitAnd);
+    DataRegisterFunc("&=", DataAndEqual);
+    DataRegisterFunc("mask_eq", DataMaskEqual);
+    // DataRegisterFunc("|", DataBitOr);
+    DataRegisterFunc("|=", DataOrEqual);
+    DataRegisterFunc("^", DataBitXor);
+    DataRegisterFunc("~", DataBitNot);
+    DataRegisterFunc("lowest_bit", DataLowestBit);
+    DataRegisterFunc("count_bits", DataCountBits);
+    DataRegisterFunc("while", DataWhile);
+    DataRegisterFunc("do", DataDo);
+    DataRegisterFunc("new", DataNew);
+    DataRegisterFunc("delete", DataDelete);
+    DataRegisterFunc("object", DataObject);
+    DataRegisterFunc("exists", DataExists);
+    DataRegisterFunc("localize", DataLocalize);
+    DataRegisterFunc("localize_separated_int", DataLocalizeSeparatedInt);
+    DataRegisterFunc("localize_float", DataLocalizeFloat);
+    DataRegisterFunc("sync_reload_locale", DataSyncReloadLocale);
+    DataRegisterFunc("print_unused", DataPrintUnused);
+    DataRegisterFunc("startswith", DataStartsWith);
+    DataRegisterFunc("print", DataPrint);
+    DataRegisterFunc("time", DataTime);
+    DataRegisterFunc("random_int", DataRandomInt);
+    DataRegisterFunc("random_float", DataRandomFloat);
+    DataRegisterFunc("random_elem", DataRandomElem);
+    DataRegisterFunc("random", DataRandom);
+    DataRegisterFunc("random_seed", DataRandomSeed);
+    DataRegisterFunc("notify", DataNotify);
+    DataRegisterFunc("notify_beta", DataNotifyBeta);
+    DataRegisterFunc("fail", DataFail);
+    DataRegisterFunc("notify_once", DataNotifyOnce);
+    DataRegisterFunc("switch", DataSwitch);
+    DataRegisterFunc("cond", DataCond);
+    DataRegisterFunc("insert_elems", DataInsertElems);
+    DataRegisterFunc("insert_elem", DataInsertElem);
+    DataRegisterFunc("print_array", DataPrintArray);
+    DataRegisterFunc("size", DataSize);
+    DataRegisterFunc("remove_elem", DataRemoveElem);
+    DataRegisterFunc("resize", DataResize);
+    DataRegisterFunc("array", DataNewArray);
+    DataRegisterFunc("set_elem", DataSetElem);
+    DataRegisterFunc("eval", DataEval);
+    DataRegisterFunc("reverse_interp", DataReverseInterp);
+    DataRegisterFunc("interp", DataInterp);
+    DataRegisterFunc("++", DataInc);
+    DataRegisterFunc("--", DataDec);
+    DataRegisterFunc("run", DataRun);
+    DataRegisterFunc("read_file", OnReadFile);
+    DataRegisterFunc("write_file", OnWriteFile);
+    //DataRegisterFunc("file_exists", OnFileExists);
+    DataRegisterFunc("file_read_only", OnFileReadOnly);
+    DataRegisterFunc("handle_type", DataRun);
+    DataRegisterFunc("handle_type_ret", DataRun);
+    DataRegisterFunc("handle", DataRun);
+    DataRegisterFunc("handle_ret", DataRun);
+    DataRegisterFunc("contains", DataContains);
+    DataRegisterFunc("export", DataContains);
+    DataRegisterFunc("exit", DataExit);
+    
+    DataRegisterFunc("pack_color", DataPackColor);
+    DataRegisterFunc("unpack_color", DataUnpackColor);
+    DataRegisterFunc("set_this", OnSetThis);
+    DataRegisterFunc("with", DataWith);
+    DataRegisterFunc("get_type", DataGetType);
+    DataRegisterFunc("object_list", DataObjectList);
+    DataRegisterFunc("file_list", DataFileList);
+    DataRegisterFunc("file_list_paths", DataFileListPaths);
+    DataRegisterFunc("disable_notify", DataDisableNotify);
+    DataRegisterFunc("filter_notify", DataFilterNotify);
+    // key deriv dta
+    char magic[8];
+    memset(magic, 0, 8);
+    magic[0] = 'O'; 
+    magic[1] = '6';
+    magic[2] = '4';
+    DataRegisterFunc(magic, DataWhile);
+    magic[2] = '5';
+    DataRegisterFunc(magic, DataSize);
+    magic[2] = '6';
+    DataRegisterFunc(magic, DataSwitch);
+    magic[2] = '7';
+    DataRegisterFunc(magic, DataGetElem);
+    magic[2] = '8';
+    DataRegisterFunc(magic, DataDo);
+    magic[2] = '9';
+    DataRegisterFunc(magic, DataSet);
+    magic[1] = '7';
+    magic[2] = '0';
+    DataRegisterFunc(magic, DataSize);
+}
 
 void DataTermFuncs(){
     gDataFuncs.clear();
