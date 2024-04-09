@@ -73,14 +73,12 @@ int ButtonGuitarController::OnMsg(const RGFretButtonDownMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(3);
+    int msgInt = msg.GetNode3();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0x8A);
-    DataArray* arr = ((DataArray*)msg);
-    int i1 = arr->Int(2);
-    int i3 = arr->Int(4);
-    mShifted = i3 != 0;
+    int i1 = msg.GetNode2();
+    mShifted = msg.GetShifted() != 0;
     mSlotMask |= (1 << i1);
     mSink->FretButtonDown(i1, -1);
     if(mShifted && mSink->Swing(i1, false, true, true, false, kGemHitFlagSolo) != 0) return 0;
@@ -92,14 +90,12 @@ int ButtonGuitarController::OnMsg(const RGFretButtonUpMsg& msg){
     if(mDisabled) return 0;
     if(!mUser->IsLocal()) return 0;
     LocalUser* lUser = mUser->GetLocalUser();
-    int msgInt = ((DataArray*)msg)->Int(3);
+    int msgInt = msg.GetNode3();
     int padnum = lUser->GetPadNum();
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0xA4);
-    DataArray* arr = ((DataArray*)msg);
-    int i1 = arr->Int(2);
-    int i3 = arr->Int(4);
-    mShifted = i3 != 0;
+    int i1 = msg.GetNode2();
+    mShifted = msg.GetShifted() != 0;
     mSlotMask &= ~(1 << i1);
     mSink->FretButtonUp(i1);
     if(mSlotMask != 0)
@@ -116,37 +112,30 @@ int ButtonGuitarController::OnMsg(const RGAccelerometerMsg& msg){
     if(msgInt != padnum) return 0;
     MILO_ASSERT(mSink, 0xBB);
     DataArray* arr = ((DataArray*)msg);
-    int i3 = arr->Int(3);
-    mSink->MercurySwitch(127.0f);
-    // mShifted = i3 != 0;
-    // mSlotMask &= ~(1 << i1);
-    // mSink->FretButtonUp(i1);
-    // if(mSlotMask != 0)
-    //     mSink->NonStrumSwing(GetCurrentSlot(), false, mShifted);
+    mSink->MercurySwitch(msg.GetNode3() / 127.0f);
     return 0;
 }
 
 int ButtonGuitarController::GetCurrentSlot() const {
     int ret = -1;
-    if(mSlotMask & 1) ret = 0;
-    if(mSlotMask & 2) ret = 1;
-    if(mSlotMask & 4) ret = 2;
-    if(mSlotMask & 8) ret = 3;
-    if(mSlotMask & 0x10) ret = 4;
+    int i;
+    
+    for (i = 0; i < 5; i++) {
+        if ((mSlotMask & (1 << i))) {
+            ret = i;
+        }
+    }
+    
     return ret;
 }
 
 BEGIN_HANDLERS(ButtonGuitarController)
     if(sym == StringStrummedMsg::Type()){
-        StringStrummedMsg theMsg(_msg);
-        DataNode result(0);
-        theMsg.~StringStrummedMsg();
+        DataNode result = DataNode(OnMsg(StringStrummedMsg(_msg)));
         if(result.Type() != kDataUnhandled) return DataNode(result);
     }
     if(sym == StringStoppedMsg::Type()){
-        StringStoppedMsg theMsg(_msg);
-        DataNode result = DataNode(0);
-        theMsg.~StringStoppedMsg();
+        DataNode result = DataNode(OnMsg(StringStoppedMsg(_msg)));
         if(result.Type() != kDataUnhandled) return DataNode(result);
     }
     if(sym == RGSwingMsg::Type()){

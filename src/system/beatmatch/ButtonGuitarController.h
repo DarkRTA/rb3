@@ -30,6 +30,10 @@ public:
     int OnMsg(const RGFretButtonDownMsg&);
     int OnMsg(const RGFretButtonUpMsg&);
     int OnMsg(const RGAccelerometerMsg&);
+
+    int OnMsg(const StringStrummedMsg&){ return 0; }
+    int OnMsg(const StringStoppedMsg&){ return 0; }
+
     int GetCurrentSlot() const;
 
     bool mDisabled;
