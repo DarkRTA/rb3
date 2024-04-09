@@ -3,12 +3,15 @@
 #include "obj/Msg.h"
 
 BEGIN_MESSAGE(StringStrummedMsg, string_strummed, int, int, int, int);
+    MESSAGE_ARRAY_CTOR(StringStrummedMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(StringStoppedMsg, string_stopped, int, int, int, int);
+    MESSAGE_ARRAY_CTOR(StringStoppedMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(RGAccelerometerMsg, rg_accelerometer, int, int, int, int);
+    MESSAGE_ARRAY_CTOR(RGAccelerometerMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(RGConnectedAccessoriesMsg, rg_connected_accessories, int, int);
@@ -27,12 +30,15 @@ BEGIN_MESSAGE(RGProgramChangeMsg, rg_program_change, int, int);
 END_MESSAGE;
 
 BEGIN_MESSAGE(RGSwingMsg, rg_swing, int, int);
+    MESSAGE_ARRAY_CTOR(RGSwingMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(RGFretButtonDownMsg, rg_fret_button_down, int, int, bool);
+    MESSAGE_ARRAY_CTOR(RGFretButtonDownMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(RGFretButtonUpMsg, rg_fret_button_up, int, int, bool);
+    MESSAGE_ARRAY_CTOR(RGFretButtonUpMsg)
 END_MESSAGE;
 
 #endif
