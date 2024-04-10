@@ -51,8 +51,8 @@
 
 #include "deflate.h"
 
-const char deflate_copyright[] =
-   " deflate 1.2.1 Copyright 1995-2003 Jean-loup Gailly ";
+// uncomment this in retail
+// const char deflate_copyright[] = " deflate 1.2.1 Copyright 1995-2003 Jean-loup Gailly ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -233,7 +233,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
      * output size for (length,distance) codes is <= 24 bits.
      */
 
-    if (version == Z_NULL || version[0] != my_version[0] ||
+    if (version == Z_NULL || 
+        // version[0] != my_version[0] || // use this for retail
+        version[0] != 0x31 ||
         stream_size != sizeof(z_stream)) {
         return Z_VERSION_ERROR;
     }
