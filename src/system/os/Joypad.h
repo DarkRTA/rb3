@@ -242,6 +242,7 @@ public:
     int GetVelocityBucket(Symbol) const;
     int GetPressureBucket(JoypadButton) const;
     bool IsButtonInMask(int i) const { return (mButtons & 1 << i); }
+    bool IsButtonNewlyPressed(int i) const { return (mNewPressed & 1 << i); }
 };
 
 class LocalUser; // forward dec

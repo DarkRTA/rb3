@@ -31,6 +31,7 @@ public:
     int MapSlot(int) const;
     void ReconcileFretState();
     bool IsCymbal(int) const;
+    bool NoSlotButtonsThisFrame() const;
 
     int OnMsg(const ButtonDownMsg&);
     int OnMsg(const ButtonUpMsg&);

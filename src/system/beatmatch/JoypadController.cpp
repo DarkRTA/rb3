@@ -160,17 +160,21 @@ int JoypadController::GetVirtualSlot(int i) const {
     int ret = i;
     JoypadData* thePadData = GetJoypadData();
     if(mPadShiftButton == kPad_NumButtons){
-        if((thePadData->mType == kJoypadXboxRoDrums || thePadData->mType == kJoypadPs3RoDrums) && !mLefty){
-            switch(i){
-                case 2:
-                    ret = 5;
-                    break;
-                case 4:
-                    if(IsCymbal(4)) ret = 4;
-                    else ret = 8;
-                    break;
-                default: break;
+        if((thePadData->mType == kJoypadXboxRoDrums || thePadData->mType == kJoypadPs3RoDrums)){
+            if(mLefty){
+                switch(i){
+                    case 2:
+                        ret = 5;
+                        break;
+                    case 4:
+                        bool cym = IsCymbal(4);
+                        ret = 8;
+                        if(cym) ret = 4;
+                        break;
+                    default: break;
+                }
             }
+            return ret;
         }
     }
     else if(1U < i){
@@ -243,6 +247,122 @@ int JoypadController::GetVirtualSlot(int i) const {
         }
     }
     return ret;
+}
+
+int JoypadController::OnMsg(const ButtonDownMsg& msg){
+    if(mDisabled) return 0;
+    if(!mLocalUser) return 0;
+    if(msg.GetUser() != mLocalUser) return 0;
+    JoypadData* thePadData = GetJoypadData();
+    MILO_ASSERT(mSink, 0x1A2);
+    JoypadButton btn = msg.GetButton();
+    if(btn == mForceMercuryBut){
+        mSink->ForceMercurySwitch(true);
+        RegisterHit((HitType)0x15);
+    }
+    else if((btn == mCymbalShiftButton || btn == mPadShiftButton) && NoSlotButtonsThisFrame()){
+        if(mLefty){
+            if(GetJoypadData()->IsButtonInMask(SlotToButton(4))){
+                if(btn == mCymbalShiftButton){
+                    mSink->Swing(4, false, true, false, false, (GemHitFlags)4);
+                    RegisterHit((HitType)0x11);
+                }
+                else {
+                    mSink->Swing(1, false, true, false, false, (GemHitFlags)0);
+                    RegisterHit((HitType)0);
+                }
+            }
+        }
+    }
+    else {
+        int slot = ButtonToSlot(btn);
+        if(slot != -1){
+            int i9 = 0;
+            int i5 = BeatMatchController::ButtonToSlot(btn);
+            if(IsCymbal(i5)) i9 |= 4;
+            switch(i5){
+                case 0:
+                    RegisterHit((HitType)0xE);
+                    break;
+                case 1:
+                    RegisterHit((HitType)1);
+                    break;
+                case 2:
+                    HitType ty2 = (HitType)2;
+                    if(i9) ty2 = (HitType)0xF;
+                    RegisterHit(ty2);
+                    break;
+                case 3:
+                    HitType ty3 = (HitType)3;
+                    if(i9) ty3 = (HitType)0x10;
+                    RegisterHit(ty3);
+                    break;
+                case 4:
+                    HitType ty4 = (HitType)0;
+                    if(i9) ty4 = (HitType)0x11;
+                    RegisterHit(ty4);
+                    break;
+                default: break;
+            }
+            mSink->Swing(slot, false, true, false, false, (GemHitFlags)i9);
+            mSink->FretButtonDown(slot, -1);
+            mFretMask |= 1 << slot;
+            if(mLefty && BeatMatchController::ButtonToSlot(btn) == 4 && 
+                thePadData->IsButtonInMask(mCymbalShiftButton) &&
+                thePadData->IsButtonInMask(mPadShiftButton) &&
+                !thePadData->IsButtonInMask(0xC) &&
+                !thePadData->IsButtonInMask(0xE) &&
+                !thePadData->IsButtonInMask(BeatMatchController::SlotToButton(1)) &&
+                !thePadData->IsButtonInMask(BeatMatchController::SlotToButton(2)) &&
+                !thePadData->IsButtonInMask(BeatMatchController::SlotToButton(3))){
+                mSink->Swing(1, false, true, false, false, (GemHitFlags)0);
+                RegisterHit((HitType)0);
+            }
+        }
+    }
+    return 0;
+}
+
+int JoypadController::OnMsg(const ButtonUpMsg& msg){
+    if(mDisabled) return 0;
+    MILO_ASSERT(mSink, 0x213);
+    if(!mLocalUser) return 0;
+    if(msg.GetUser() != mLocalUser) return 0;
+    JoypadButton btn = msg.GetButton();
+    if(btn == mForceMercuryBut){
+        mSink->ForceMercurySwitch(false);
+    }
+    int slot = ButtonToSlot(btn);
+    if(slot != -1){
+        mSink->FretButtonUp(slot);
+        mFretMask &= ~(1 << slot);
+    }
+    return 0;
+}
+
+void JoypadController::ReconcileFretState(){
+    if(mLocalUser && UserHasController(mLocalUser)){
+        int mask = 0;
+        for(int i = 0; i < 5; i++){
+            bool curMask = mFretMask & 1 << i;
+            bool btnInMask = GetJoypadData()->IsButtonInMask(SlotToButton(i));
+            if(btnInMask) mask |= 1 << i;
+            if(curMask != btnInMask){
+                if(btnInMask) mSink->FretButtonDown(i, -1);
+                else mSink->FretButtonUp(i);
+            }
+        }
+        mFretMask = mask;
+    }
+}
+
+bool JoypadController::NoSlotButtonsThisFrame() const {
+    for(int i = 1; i <= 4; i++){
+        if(GetJoypadData()->IsButtonNewlyPressed(
+            BeatMatchController::SlotToButton(i)
+        )) return false;
+    }
+    return true;
 }
 
 void JoypadController::SetSecondPedalHiHat(bool b){
