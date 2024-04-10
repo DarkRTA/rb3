@@ -53,6 +53,18 @@ template<class T> inline T Clamp(T x, T y, T z){
     return x;
 }
 
+template<class T> inline bool ClampEq(T& x, const T& y, const T& z){
+    if(x < y){
+        x = y;
+        return true;
+    }
+    if(z < x){
+        x = z;
+        return true;
+    }
+    return false;
+}
+
 inline int Mod(int num, int modbase){
     if(modbase == 0) return 0;
     int div = num % modbase;
