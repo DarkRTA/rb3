@@ -609,6 +609,23 @@ local void gen_codes (tree, max_code, bl_count)
 }
 
 /* ===========================================================================
+ * Reverse the first len bits of a code, using straightforward code (a faster
+ * method would use a table)
+ * IN assertion: 1 <= len <= 15
+ */
+local unsigned bi_reverse(code, len)
+    unsigned code; /* the value to invert */
+    int len;       /* its bit length */
+{
+    register unsigned res = 0;
+    do {
+        res |= code & 1;
+        code >>= 1, res <<= 1;
+    } while (--len > 0);
+    return res >> 1;
+}
+
+/* ===========================================================================
  * Construct one Huffman tree and assigns the code bit strings and lengths.
  * Update the total bit length for the current block.
  * IN assertion: the field freq is set for all tree elements.
@@ -862,6 +879,52 @@ local void send_all_trees(s, lcodes, dcodes, blcodes)
 }
 
 /* ===========================================================================
+ * Copy a stored block, storing first the length and its
+ * one's complement if requested.
+ */
+local void copy_block(s, buf, len, header)
+    deflate_state *s;
+    charf    *buf;    /* the input data */
+    unsigned len;     /* its length */
+    int      header;  /* true if block header must be written */
+{
+    bi_windup(s);        /* align on byte boundary */
+    s->last_eob_len = 8; /* enough lookahead for inflate */
+
+    if (header) {
+        put_short(s, (ush)len);
+        put_short(s, (ush)~len);
+#ifdef DEBUG
+        s->bits_sent += 2*16;
+#endif
+    }
+#ifdef DEBUG
+    s->bits_sent += (ulg)len<<3;
+#endif
+    while (len--) {
+        put_byte(s, *buf++);
+    }
+}
+
+/* ===========================================================================
+ * Flush the bit buffer and align the output on a byte boundary
+ */
+local void bi_windup(s)
+    deflate_state *s;
+{
+    if (s->bi_valid > 8) {
+        put_short(s, s->bi_buf);
+    } else if (s->bi_valid > 0) {
+        put_byte(s, (Byte)s->bi_buf);
+    }
+    s->bi_buf = 0;
+    s->bi_valid = 0;
+#ifdef DEBUG
+    s->bits_sent = (s->bits_sent+7) & ~7;
+#endif
+}
+
+/* ===========================================================================
  * Send a stored block
  */
 void _tr_stored_block(s, buf, stored_len, eof)
@@ -912,6 +975,24 @@ void _tr_align(s)
         bi_flush(s);
     }
     s->last_eob_len = 7;
+}
+
+/* ===========================================================================
+ * Set the data type to ASCII or BINARY, using a crude approximation:
+ * binary if more than 20% of the bytes are <= 6 or >= 128, ascii otherwise.
+ * IN assertion: the fields freq of dyn_ltree are set and the total of all
+ * frequencies does not exceed 64K (to fit in an int on 16 bit machines).
+ */
+local void set_data_type(s)
+    deflate_state *s;
+{
+    int n = 0;
+    unsigned ascii_freq = 0;
+    unsigned bin_freq = 0;
+    while (n < 7)        bin_freq += s->dyn_ltree[n++].Freq;
+    while (n < 128)    ascii_freq += s->dyn_ltree[n++].Freq;
+    while (n < LITERALS) bin_freq += s->dyn_ltree[n++].Freq;
+    s->data_type = (Byte)(bin_freq > (ascii_freq >> 2) ? Z_BINARY : Z_ASCII);
 }
 
 /* ===========================================================================
@@ -1116,40 +1197,7 @@ local void compress_block(s, ltree, dtree)
     s->last_eob_len = ltree[END_BLOCK].Len;
 }
 
-/* ===========================================================================
- * Set the data type to ASCII or BINARY, using a crude approximation:
- * binary if more than 20% of the bytes are <= 6 or >= 128, ascii otherwise.
- * IN assertion: the fields freq of dyn_ltree are set and the total of all
- * frequencies does not exceed 64K (to fit in an int on 16 bit machines).
- */
-local void set_data_type(s)
-    deflate_state *s;
-{
-    int n = 0;
-    unsigned ascii_freq = 0;
-    unsigned bin_freq = 0;
-    while (n < 7)        bin_freq += s->dyn_ltree[n++].Freq;
-    while (n < 128)    ascii_freq += s->dyn_ltree[n++].Freq;
-    while (n < LITERALS) bin_freq += s->dyn_ltree[n++].Freq;
-    s->data_type = (Byte)(bin_freq > (ascii_freq >> 2) ? Z_BINARY : Z_ASCII);
-}
 
-/* ===========================================================================
- * Reverse the first len bits of a code, using straightforward code (a faster
- * method would use a table)
- * IN assertion: 1 <= len <= 15
- */
-local unsigned bi_reverse(code, len)
-    unsigned code; /* the value to invert */
-    int len;       /* its bit length */
-{
-    register unsigned res = 0;
-    do {
-        res |= code & 1;
-        code >>= 1, res <<= 1;
-    } while (--len > 0);
-    return res >> 1;
-}
 
 /* ===========================================================================
  * Flush the bit buffer, keeping at most 7 bits in it.
@@ -1165,51 +1213,5 @@ local void bi_flush(s)
         put_byte(s, (Byte)s->bi_buf);
         s->bi_buf >>= 8;
         s->bi_valid -= 8;
-    }
-}
-
-/* ===========================================================================
- * Flush the bit buffer and align the output on a byte boundary
- */
-local void bi_windup(s)
-    deflate_state *s;
-{
-    if (s->bi_valid > 8) {
-        put_short(s, s->bi_buf);
-    } else if (s->bi_valid > 0) {
-        put_byte(s, (Byte)s->bi_buf);
-    }
-    s->bi_buf = 0;
-    s->bi_valid = 0;
-#ifdef DEBUG
-    s->bits_sent = (s->bits_sent+7) & ~7;
-#endif
-}
-
-/* ===========================================================================
- * Copy a stored block, storing first the length and its
- * one's complement if requested.
- */
-local void copy_block(s, buf, len, header)
-    deflate_state *s;
-    charf    *buf;    /* the input data */
-    unsigned len;     /* its length */
-    int      header;  /* true if block header must be written */
-{
-    bi_windup(s);        /* align on byte boundary */
-    s->last_eob_len = 8; /* enough lookahead for inflate */
-
-    if (header) {
-        put_short(s, (ush)len);
-        put_short(s, (ush)~len);
-#ifdef DEBUG
-        s->bits_sent += 2*16;
-#endif
-    }
-#ifdef DEBUG
-    s->bits_sent += (ulg)len<<3;
-#endif
-    while (len--) {
-        put_byte(s, *buf++);
     }
 }
