@@ -80,7 +80,7 @@
             "system/beatmatch/KeyboardController.cpp": "Matching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
-            "system/beatmatch/RealGuitarController.cpp": "NonMatching",
+            "system/beatmatch/RealGuitarController.cpp": "Matching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/TrackType.cpp": "Matching",
 

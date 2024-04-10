@@ -27,6 +27,7 @@ public:
     int OnMsg(const ButtonDownMsg&);
     int OnMsg(const ButtonUpMsg&);
     int OnMsg(const RGAccelerometerMsg&);
+    int OnMsg(const StringStoppedMsg&){ return 0; }
 
     bool mDisabled;
     int unk40;
