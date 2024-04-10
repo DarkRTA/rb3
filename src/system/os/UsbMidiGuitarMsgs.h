@@ -3,6 +3,10 @@
 #include "obj/Msg.h"
 
 BEGIN_MESSAGE(StringStrummedMsg, string_strummed, int, int, int, int);
+    int GetNode2() const { return mData->Int(2); }
+    int GetNode3() const { return mData->Int(3); }
+    int GetNode4() const { return mData->Int(4); }
+    int GetNode5() const { return mData->Int(5); }
     MESSAGE_ARRAY_CTOR(StringStrummedMsg)
 END_MESSAGE;
 

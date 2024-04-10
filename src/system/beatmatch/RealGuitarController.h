@@ -4,6 +4,9 @@
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
+#include "os/UsbMidiGuitarMsgs.h"
+
+#define kNumRGStrings 6
 
 class RealGuitarController : public BeatMatchController {
 public:
@@ -19,7 +22,16 @@ public:
     virtual void SetAutoSoloButtons(bool);
     virtual int GetRGFret(int) const;
 
-    int dummy;
+    int OnMsg(const StringStrummedMsg&);
+    int OnMsg(const RGSwingMsg&);
+    int OnMsg(const ButtonDownMsg&);
+    int OnMsg(const ButtonUpMsg&);
+    int OnMsg(const RGAccelerometerMsg&);
+
+    bool mDisabled;
+    int unk40;
+    BeatMatchControllerSink* mSink;
+    int mStrings[kNumRGStrings];
 
 };
 
