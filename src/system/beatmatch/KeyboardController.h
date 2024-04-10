@@ -4,6 +4,8 @@
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
+#include "os/UsbMidiKeyboardMsgs.h"
+#include <vector>
 
 class KeyboardController : public BeatMatchController {
 public:
@@ -17,7 +19,18 @@ public:
     virtual float GetCapStrip() const;
     virtual int GetFretButtons() const;
 
-    int dummy;
+    int OnMsg(const KeyboardKeyPressedMsg&);
+    int OnMsg(const KeyboardKeyReleasedMsg&);
+    int OnMsg(const KeyboardSustainMsg&);
+    int OnMsg(const KeyboardModMsg&);
+    int OnMsg(const ButtonDownMsg&);
+
+    int MidiNoteToSlot(int) const;
+
+    bool mDisabled;
+    std::vector<int>* mFretButtons;
+    float unk44;
+    BeatMatchControllerSink* mSink;
 
 };
 
