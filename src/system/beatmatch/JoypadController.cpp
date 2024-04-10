@@ -87,27 +87,28 @@ float JoypadController::GetWhammyBar() const {
 }
 
 int JoypadController::GetVelocityBucket(int i) const {
-    if(mLocalUser == 0) return 0;
-    else if(mVelocityAxes){
+    if (mLocalUser == 0)
+        return 0;
+
+    if (mVelocityAxes) {
         DataArray* findMapSlot = mVelocityAxes->FindArray(MapSlot(i), false);
-        if(!findMapSlot) return 0;
-        else {
-            Symbol sym = findMapSlot->Sym(1);
-            JoypadData* thePadData = GetJoypadData();
-            return thePadData->GetVelocityBucket(sym);
+        if (!findMapSlot) {
+            return 0;
+        } else {
+            return GetJoypadData()->GetVelocityBucket(findMapSlot->Sym(1));
         }
-    }
-    else if(mVelocityPressures){
+    } else if (mVelocityPressures) {
         DataArray* findMapSlot = mVelocityPressures->FindArray(MapSlot(i), false);
-        if(!findMapSlot) return 0;
+        if (!findMapSlot)
+            return 0;
         else {
-            JoypadButton btn = (JoypadButton)findMapSlot->Int(1);
-            JoypadData* thePadData = GetJoypadData();
-            return thePadData->GetPressureBucket(btn);
+            return GetJoypadData()->GetPressureBucket((JoypadButton)findMapSlot->Int(1));
         }
     }
-    else return 0;
+
+    return 0;
 }
+
 
 bool JoypadController::IsCymbal(int i) const {
     if(!mLocalUser) return false;
@@ -288,19 +289,13 @@ int JoypadController::OnMsg(const ButtonDownMsg& msg){
                     RegisterHit((HitType)1);
                     break;
                 case 2:
-                    HitType ty2 = (HitType)2;
-                    if(i9) ty2 = (HitType)0xF;
-                    RegisterHit(ty2);
+                    RegisterHit((i9 & 4) ? (HitType)0xF : (HitType)2);
                     break;
                 case 3:
-                    HitType ty3 = (HitType)3;
-                    if(i9) ty3 = (HitType)0x10;
-                    RegisterHit(ty3);
+                    RegisterHit((i9 & 4) ? (HitType)0x10 : (HitType)3);
                     break;
                 case 4:
-                    HitType ty4 = (HitType)0;
-                    if(i9) ty4 = (HitType)0x11;
-                    RegisterHit(ty4);
+                    RegisterHit((i9 & 4) ? (HitType)0x11 : (HitType)0);
                     break;
                 default: break;
             }
