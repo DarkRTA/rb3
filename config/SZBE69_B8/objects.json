@@ -72,7 +72,7 @@
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BeatMatch.cpp": "Matching",
-            "system/beatmatch/BeatMatchController.cpp": "NonMatching",
+            "system/beatmatch/BeatMatchController.cpp": "Matching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
             "system/beatmatch/GuitarController.cpp": "NonMatching",
             "system/beatmatch/JoypadController.cpp": "NonMatching",

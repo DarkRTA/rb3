@@ -19,7 +19,7 @@ BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool 
 
 BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchControllerSink* sink, bool disabled, bool lefty, TrackType ty){
     DataArray* ctrl_cfg = SystemConfig("beatmatcher", "controllers", "beatmatch_controller_mapping");
-    Symbol instr = ctrl_cfg->FindArray(cfg->Sym(0), true)->Sym(1);
+    Symbol instr = ctrl_cfg->FindSym(cfg->Sym(0));
     BeatMatchController* controller = 0;
     if(instr == "guitar"){
         controller = new GuitarController(user, cfg, sink, disabled, lefty);
@@ -31,13 +31,13 @@ BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchCo
         controller = new JoypadGuitarController(user, cfg, sink, disabled, lefty);
     }
     else if(instr == "real_guitar"){
-        if(ty - 1 <= 1U){
+        if(ty == kTrackGuitar || ty == kTrackBass){
             controller = new ButtonGuitarController(user, cfg, sink, disabled, lefty);
         }
         else controller = new RealGuitarController(user, cfg, sink, disabled, lefty);
     }
     else if(instr == "keys"){
-        if(ty == 5){
+        if(ty == kTrackRealKeys){
             controller = new KeyboardController(user, cfg, sink, disabled);
         }
         else controller = new JoypadMidiController(user, cfg, sink, disabled);
@@ -94,4 +94,11 @@ void BeatMatchController::RegisterRGStrum(int i) const {
 
 bool BeatMatchController::IsOurPadNum(int i) const {
     return !mUser->IsLocal() ? false : mUser->GetLocalUser()->GetPadNum() == i;
+}
+
+static void lol(BeatMatchController* cnt){
+    cnt->Poll();
+    cnt->EnableShift(0);
+    cnt->IsShifted();
+    cnt->SetAutoSoloButtons(0);
 }
