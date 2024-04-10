@@ -63,16 +63,14 @@ int JoypadMidiController::OnMsg(const KeyboardModMsg& msg){
 
 JoypadButton JoypadMidiController::MidiNoteToButton(int note) const {
     static DataNode* keyboard_wide_frets = DataVariable("keyboard_wide_frets");
-    int theInt = keyboard_wide_frets->Int(0);
-    if(theInt != 0){
-        theInt = note / 0xC + (note >> 0x1F);
-        int u5 = theInt - (theInt >> 0x1F);
+    if(keyboard_wide_frets->Int(0)){
+        int octave = note / 12;
         int pad = mLocalUser->GetPadNum();
-        if(pad < 2 && (theInt = u5 >> 0x1F, (u5 & 1 ^ -theInt) + theInt != pad)) return kPad_Circle;
+        if (pad <= 1u && (octave % 2) != pad) {
+            return kPad_Circle;
+        }
     }
-    theInt = note / 0xC + (note >> 0x1F);
-    theInt = note + (theInt - (theInt >> 0x1F)) * -0xC;
-    switch(theInt){
+    switch(note % 12){
         case 0:
             return kPad_L2;
         case 2:
