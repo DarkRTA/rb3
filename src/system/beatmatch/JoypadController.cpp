@@ -2,7 +2,7 @@
 #include "utl/Symbols.h"
 #include "os/Debug.h"
 
-float somefloatidk = 0.0f; // JoypadController's RX - possibly a resting position for the whammy?
+float somefloatidk = 0.0f; // JoypadController's right stick X axis - possibly a resting position for the whammy?
 
 JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool b1, bool lefty) : BeatMatchController(user, cfg, lefty),
     mDisabled(b1), unk3d(0), mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal), mCymbalConfiguration(0), mSink(bsink) {
@@ -157,95 +157,102 @@ bool JoypadController::IsCymbal(int i) const {
 }
 
 int JoypadController::GetVirtualSlot(int i) const {
-    if(!mLocalUser) return i;
+    if (!mLocalUser)
+        return i;
     int ret = i;
     JoypadData* thePadData = GetJoypadData();
-    if(mPadShiftButton == kPad_NumButtons){
-        if((thePadData->mType == kJoypadXboxRoDrums || thePadData->mType == kJoypadPs3RoDrums)){
-            if(mLefty){
-                switch(i){
+    if (mPadShiftButton == kPad_NumButtons) {
+        if ((thePadData->mType == kJoypadXboxRoDrums || thePadData->mType == kJoypadPs3RoDrums)) {
+            if (mLefty) {
+                switch (i) {
                     case 2:
                         ret = 5;
                         break;
                     case 4:
-                        bool cym = IsCymbal(4);
-                        ret = 8;
-                        if(cym) ret = 4;
+                        if (IsCymbal(4)) {
+                            ret = 4;
+                        } else {
+                            ret = 8;
+                        }
                         break;
-                    default: break;
+                }
+                return ret;
+            }
+        }
+        return ret;
+    }
+    switch (i) {
+        case 0:
+        case 1:
+            break;
+        case 2:
+            if (mLefty) {
+                if (HasBlueCymbal(thePadData)) {
+                    if (IsCymbal(3)) {
+                        if (thePadData->mHasSecondaryPedal && mSecondaryPedalFunction == kHiHatPedal) {
+                            ret = thePadData->IsButtonInMask(mSecondaryPedalButton) ? 5 : 6;
+                        } else
+                            ret = 5;
+                    } else
+                        ret = 2;
+                } else {
+                    ret = mAlternateMapping ? 5 : 2;
+                }
+            } else {
+                if (HasYellowCymbal(thePadData)) {
+                    if (IsCymbal(2)) {
+                        if (thePadData->mHasSecondaryPedal && mSecondaryPedalFunction == kHiHatPedal) {
+                            ret = thePadData->IsButtonInMask(mSecondaryPedalButton) ? 5 : 6;
+                        } else
+                            ret = 5;
+                    } else
+                        ret = 2;
+                } else {
+                    ret = mAlternateMapping ? 5 : 2;
                 }
             }
-            return ret;
-        }
-    }
-    else if(1U < i){
-        switch(i){
-            case 2:
-                if(mLefty){
-                    if(HasBlueCymbal(thePadData)){
-                        if(IsCymbal(3)){
-                            if(thePadData->mHasSecondaryPedal && mSecondaryPedalFunction == kHiHatPedal){
-                                ret = thePadData->IsButtonInMask(mSecondaryPedalButton) + 6;
-                            }
-                            else ret = 5;
-                        }
-                        else ret = 2;
-                    }
-                    else {
-                        ret = mAlternateMapping ? 5 : 2;
-                    }
-                }
-                else {
-                    if(HasYellowCymbal(thePadData)){
-                        if(IsCymbal(2)){
-                            if(thePadData->mHasSecondaryPedal && mSecondaryPedalFunction == kHiHatPedal){
-                                ret = thePadData->IsButtonInMask(mSecondaryPedalButton) + 6;
-                            }
-                            else ret = 5;
-                        }
-                        else ret = 2;
-                    }
-                    else {
-                        ret = mAlternateMapping ? 5 : 2;
-                    }
-                }
-                break;
-            case 3:
-                if(mLefty){
-                    if(IsCymbal(2)) ret = 7;
-                    else ret = 3;
-                }
-                else {
-                    if(IsCymbal(3)) ret = 7;
-                    else ret = 3;
-                }
-                break;
-            case 4:
-                if(mLefty){
-                    if(HasGreenCymbal(thePadData)){
-                        if(IsCymbal(4)) ret = 4;
-                        else ret = 8;
-                    }
-                    else {
+            break;
+        case 3:
+            if (mLefty) {
+                if (IsCymbal(2))
+                    ret = 7;
+                else
+                    ret = 3;
+            } else {
+                if (IsCymbal(3))
+                    ret = 7;
+                else
+                    ret = 3;
+            }
+            break;
+        case 4:
+            if (mLefty) {
+                if (HasGreenCymbal(thePadData)) {
+                    if (IsCymbal(4))
+                        ret = 4;
+                    else
                         ret = 8;
-                        if(mAlternateMapping) ret = 4;
-                    }
+                } else {
+                    ret = 8;
+                    if (mAlternateMapping)
+                        ret = 4;
                 }
-                else {
-                    if(HasGreenCymbal(thePadData)){
-                        if(IsCymbal(4)) ret = 4;
-                        else ret = 8;
-                    }
-                    else {
+            } else {
+                if (HasGreenCymbal(thePadData)) {
+                    if (IsCymbal(4))
+                        ret = 4;
+                    else
                         ret = 8;
-                        if(mAlternateMapping) ret = 4;
-                    }
+                } else {
+                    ret = 8;
+                    if (mAlternateMapping)
+                        ret = 4;
                 }
-                break;
-            default: 
-                MILO_FAIL("JoypadController::GetVirtualSlot of bad slot %d", i);
-                break;
-        }
+            }
+            break;
+        default:
+            MILO_FAIL("JoypadController::GetVirtualSlot of bad slot %d", i);
+            break;
     }
     return ret;
 }
