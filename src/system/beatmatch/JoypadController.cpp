@@ -109,7 +109,7 @@ int JoypadController::GetVelocityBucket(int i) const {
     return 0;
 }
 
-
+// https://decomp.me/scratch/yKF19
 bool JoypadController::IsCymbal(int i) const {
     if(!mLocalUser) return false;
     else {
@@ -156,6 +156,7 @@ bool JoypadController::IsCymbal(int i) const {
     }
 }
 
+// https://decomp.me/scratch/Q41Vw
 int JoypadController::GetVirtualSlot(int i) const {
     if (!mLocalUser)
         return i;
