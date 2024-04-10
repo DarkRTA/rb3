@@ -13,10 +13,10 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
     virtual void Disable(bool);
-    virtual bool IsDisabled() const;
+    virtual bool IsDisabled() const { return mDisabled; }
     virtual float GetWhammyBar() const;
     virtual float GetCapStrip() const;
-    virtual int GetFretButtons() const;
+    virtual int GetFretButtons() const { return mFretButtons; }
 
     int OnMsg(const KeyboardKeyPressedMsg&);
     int OnMsg(const KeyboardKeyReleasedMsg&);
@@ -28,7 +28,7 @@ public:
 
     bool mDisabled;
     int mFretButtons;
-    float unk44;
+    float mWhammy;
     BeatMatchControllerSink* mSink;
 
 };
