@@ -4,8 +4,8 @@
 
 float somefloatidk = 0.0f; // JoypadController's right stick X axis - possibly a resting position for the whammy?
 
-JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool b1, bool lefty) : BeatMatchController(user, cfg, lefty),
-    mDisabled(b1), unk3d(0), mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal), mCymbalConfiguration(0), mSink(bsink) {
+JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool disabled, bool lefty) : BeatMatchController(user, cfg, lefty),
+    mDisabled(disabled), unk3d(0), mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal), mCymbalConfiguration(0), mSink(bsink) {
     mVelocityAxes = cfg->FindArray("velocity_axes", false);
     mVelocityPressures = cfg->FindArray("velocity_pressures", false);
     if(user->IsLocal()){
@@ -23,7 +23,7 @@ JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchCo
         mSecondaryPedalButton = kPad_NumButtons;
     }
     JoypadSubscribe(this);
-    if(!b1) ReconcileFretState();
+    if(!disabled) ReconcileFretState();
 }
 
 JoypadController::~JoypadController(){

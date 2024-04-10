@@ -4,6 +4,7 @@
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
+#include "os/UsbMidiKeyboardMsgs.h"
 
 class JoypadMidiController : public JoypadController {
 public:
@@ -13,8 +14,14 @@ public:
     virtual float GetWhammyBar() const;
     virtual float GetCapStrip() const;
 
-    int dummy;
+    JoypadButton MidiNoteToButton(int) const;
+    int OnMsg(const KeyboardKeyPressedMsg&);
+    int OnMsg(const KeyboardKeyReleasedMsg&);
+    int OnMsg(const KeyboardSustainMsg&);
+    int OnMsg(const KeyboardModMsg&);
+    int OnMsg(const ButtonDownMsg&);
 
+    float mWhammy;
 };
 
 #endif

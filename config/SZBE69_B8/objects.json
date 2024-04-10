@@ -75,6 +75,7 @@
             "system/beatmatch/BeatMatchController.cpp": "NonMatching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
             "system/beatmatch/JoypadController.cpp": "NonMatching",
+            "system/beatmatch/JoypadMidiController.cpp": "NonMatching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/RGState.cpp": "Matching",
