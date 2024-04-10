@@ -79,6 +79,8 @@ public:
     float mZ;
     void* mId;
     std::vector<Drawable*> mStuff;
+
+    static void ResetAll();
 };
 
 #endif

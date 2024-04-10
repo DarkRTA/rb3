@@ -1,4 +1,10 @@
 #include "rndobj/Graph.h"
+#include "obj/Data.h"
+
+static DataNode OnGraphReset(DataArray*) {
+    RndGraph::ResetAll();
+    return DataNode();
+}
 
 RndGraph::RndGraph(const void* cv) : mEnable(1), mDrawFixedZ(0), mZ(0.0f), mId((void*)cv) {
     

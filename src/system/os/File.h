@@ -42,6 +42,8 @@ const char* FileSystemRoot();
 extern "C" void FileNormalizePath();
 extern "C" const char* FileMakePath(const char* root, const char* file, char*);
 extern "C" const char* FileRelativePath(const char* root, const char* filepath);
+bool FileReadOnly(const char* filepath);
+bool FileExists(const char* filepath, int);
 extern "C" const char* FileGetPath(const char*, char*);
 extern "C" const char* FileGetExt(const char* root);
 extern "C" const char* FileGetDrive(const char* file);

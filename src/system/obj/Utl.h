@@ -7,13 +7,17 @@
 namespace Hmx {
     class Object;
 }
+class ObjectDir;
 
 void InitObject(Hmx::Object*);
 const char* PathName(const Hmx::Object*);
 const char* SafeName(Hmx::Object*);
+DataNode ObjectList(ObjectDir*, Symbol, bool); // i think???
 
 bool RecurseSuperClassesSearch(Symbol, Symbol);
 bool IsASubclass(Symbol, Symbol);
+void ReplaceObject(Hmx::Object*, Hmx::Object*, bool, bool, bool);
+const char* NextName(const char*, ObjectDir*);
 
 // mergefilter classes go here
 class MergeFilter {
