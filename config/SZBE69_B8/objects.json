@@ -353,7 +353,7 @@
         "objects": {
             "system/zlib/adler32.c": "Matching",
             "system/zlib/crc32.c": "Matching",
-            "system/zlib/deflate.c": "NonMatching",
+            "system/zlib/deflate.c": "Matching",
             "system/zlib/trees.c": "NonMatching",
             "system/zlib/zutil.c": "NonMatching",
             "system/zlib/inflate.c": "Matching",
