@@ -973,7 +973,9 @@ void _tr_align(s)
     deflate_state *s;
 {
     send_bits(s, STATIC_TREES<<1, 3);
-    send_code(s, END_BLOCK, static_ltree);
+
+    send_bits(s, 0, 7);
+    // send_code(s, END_BLOCK, static_ltree); // use this for retail
 #ifdef DEBUG
     s->compressed_len += 10L; /* 3 for block type, 7 for EOB */
 #endif
@@ -985,7 +987,8 @@ void _tr_align(s)
      */
     if (1 + s->last_eob_len + 10 - s->bi_valid < 9) {
         send_bits(s, STATIC_TREES<<1, 3);
-        send_code(s, END_BLOCK, static_ltree);
+        send_bits(s, 0, 7);
+        // send_code(s, END_BLOCK, static_ltree); // use this for retail
 #ifdef DEBUG
         s->compressed_len += 10L;
 #endif
