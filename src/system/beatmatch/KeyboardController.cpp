@@ -10,3 +10,5 @@ KeyboardController::~KeyboardController(){
 }
 
 void KeyboardController::Poll(){}
+
+void KeyboardController::Disable(bool b){ mDisabled = b; }

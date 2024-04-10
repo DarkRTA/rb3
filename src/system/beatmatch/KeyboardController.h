@@ -5,7 +5,6 @@
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
 #include "os/UsbMidiKeyboardMsgs.h"
-#include <vector>
 
 class KeyboardController : public BeatMatchController {
 public:
@@ -28,7 +27,7 @@ public:
     int MidiNoteToSlot(int) const;
 
     bool mDisabled;
-    std::vector<int>* mFretButtons;
+    int mFretButtons;
     float unk44;
     BeatMatchControllerSink* mSink;
 
