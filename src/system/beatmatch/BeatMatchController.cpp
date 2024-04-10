@@ -48,11 +48,12 @@ BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchCo
 }
 
 int BeatMatchController::ButtonToSlot(JoypadButton btn, const DataArray* arr) const {
-    int i = 0;
-    for(; i < arr->Size(); i++){
-        if(arr->Int(i) == btn) break;
+    int thresh = (arr->Size() - 1) / 2;
+    for(int i = 0; i < thresh; i++){
+        if(btn == arr->Int(i * 2 + 1)) 
+            return arr->Int(i * 2 + 2);
     }
-    return arr->Int(i * 2 + 2);
+    return -1;
 }
 
 int BeatMatchController::ButtonToSlot(JoypadButton btn) const {
@@ -61,6 +62,15 @@ int BeatMatchController::ButtonToSlot(JoypadButton btn) const {
         cfg = mLefty ? mLeftySlots : mRightySlots;
         if(cfg) return ButtonToSlot(btn, cfg);
     }
+}
+
+int BeatMatchController::SlotToButton(int slot) const {
+    int thresh = (mSlots->Size() - 1) / 2;
+    for(int i = 0; i < thresh; i++){
+        if(slot == mSlots->Int(i * 2 + 2))
+            return mSlots->Int(i * 2 + 1);
+    }
+    return 0x18;
 }
 
 int BeatMatchController::GetVelocityBucket(int) const { return 0; }
