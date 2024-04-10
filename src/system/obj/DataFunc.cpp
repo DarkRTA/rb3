@@ -14,6 +14,7 @@
 #include "math/MathFuncs.h"
 #include "obj/DataUtl.h"
 #include "utl/Locale.h"
+#include <cstring>
 #include <list>
 #include <map>
 #include <stdlib.h>
@@ -23,6 +24,9 @@ DataThisPtr gDataThisPtr;
 
 extern Hmx::Object *gDataThis;
 extern ObjectDir* gDataDir;
+
+#define DefDataFunc(name, code) \
+static DataNode Data##name(DataArray* da) code
 
 namespace {
     bool AddToNotifies(const char* str, std::list<String>& list){
@@ -49,13 +53,13 @@ DataNode DataFuncObj::New(DataArray* arr){
     return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(arr));
 }
 
-static DataNode DataSprintf(DataArray *da) {
+DefDataFunc(Sprintf, {
     FormatString fs(da->Str(1));
     for (int i = 2; i < da->Size(); i++) {
         fs << da->Evaluate(i);
     }
     return DataNode(fs.Str());
-}
+})
 
 static DataNode DataPrintf(DataArray *da) {
     FormatString fs(da->Str(1));
@@ -807,6 +811,10 @@ static DataNode DataSetElem(DataArray* da) {
     
 }
 
+static DataNode DataQuote(DataArray* da) {
+    return da->Node(1);
+}
+
 static DataNode DataEval(DataArray* da);
 
 static DataNode DataReverseInterp(DataArray* da);
@@ -819,9 +827,23 @@ static DataNode DataInterp(DataArray* da) {
     return DataNode(((end - st) * pct) + st);
 }
 
-static DataNode DataInc(DataArray* da);
+static DataNode DataInc(DataArray* da) {
+    const DataNode me = da->Node(1);
+    if (me.Type() == kDataProperty) {
+        MILO_ASSERT(gDataThis, 1286);
+        gDataThis->Property(me.mValue.array, true);
+    }
+}
 
 static DataNode DataDec(DataArray* da);
+
+static DataNode DataHandleType(DataArray* da) { }
+
+static DataNode DataHandleTypeRet(DataArray* da) { }
+
+static DataNode DataExport(DataArray* da) {
+
+}
 
 static DataNode DataHandle(DataArray* da) {
     for (int i = 1; i < da->Size(); i++) {
@@ -836,6 +858,8 @@ static DataNode DataHandle(DataArray* da) {
     }
     return DataNode();
 }
+
+static DataNode DataHandleRet(DataArray* da) { }
 
 static DataNode DataRun(DataArray* da) {
     const char* e = FileMakePath(FileExecRoot(), da->Str(1), NULL);
@@ -874,10 +898,106 @@ static DataNode OnFileReadOnly(DataArray* da) {
 
 static DataNode DataExit(DataArray*) { TheDebug.Exit(0, true); return DataNode(); }
 
-static DataNode DataContains(DataArray*);
+static DataNode DataContains(DataArray* da) {
+    DataArray* w = da->Array(1);
+    bool b = !w->Contains(DataNode(da->Evaluate(2)));
+    if (b) return DataNode(kDataUnhandled, 0);
+    else return DataNode(1);
+}
+
+static DataNode DataFindExists(DataArray*) {
+
+}
+
+static DataNode DataFind(DataArray* da) {
+    DataFindExists(da);
+    if (true) MILO_FAIL("Couldn't find key (file %s, line %d)", da->File(), da->Line());
+    //return x;
+}
+
+static DataNode DataFindObj(DataArray* da) {
+
+}
+
+static DataNode DataBasename(DataArray* da) {
+    return DataNode(FileGetBase(da->Str(1), NULL));
+}
+
+static DataNode DataDirname(DataArray* da) {
+    String str = da->Str(1);
+    str.find_last_of("/");
+}
+
+DefDataFunc(HasSubStr, {
+    return DataNode((int)strstr(da->Str(1), da->Str(2)));
+})
+
+DefDataFunc(HasAnySubStr, {
+    
+})
+
+DefDataFunc(FindSubStr, {
+    
+})
+
+DefDataFunc(StrElem, {
+
+})
+
+DefDataFunc(SubStr, {
+    
+})
+
+
+DefDataFunc(StrCat, {
+    DataNode n = da->Var(1);
+    String s(n.Str(NULL));
+    for (int i = 2; i < da->Size(); i++) {
+        s += da->Str(i);
+    }
+    n = s;
+    return DataNode(n.Str(0));
+})
+
+DefDataFunc(StringFlags, {
+    int x = da->Int(1);
+    DataArray* d = da->Array(2);
+    String s("");
+    for (int i = 1; i < da->Size(); i++) {
+        bool b = 0;
+        DataArray* macro = DataGetMacro(da->Str(i));
+        if (macro) {
+            MILO_ASSERT(macro && macro->Size() == 1, 1626);
+            macro->Int(0);
+        }
+    }
+    return DataNode(s);
+})
+
+char* test = "|";
+
+DefDataFunc(StrToLower, {
+    String s = da->Str(1);
+    s.ToLower();
+    return DataNode(s);
+})
+
+DefDataFunc(StrToUpper, {
+    String s = da->Str(1);
+    s.ToUpper();
+    return DataNode(s);
+})
 
 static DataNode DataStrlen(DataArray* da) {
     return DataNode((int)strlen(da->Str(1)));
+}
+
+static DataNode DataStrieq(DataArray* da) {
+    return DataNode(!stricmp(da->Str(1), da->Str(2)));
+}
+
+static DataNode DataSearchReplace(DataArray* da) {
+
 }
 
 static DataNode DataPushBack(DataArray* da) {
@@ -893,9 +1013,9 @@ static DataNode DataSort(DataArray* da) {
     return DataNode();
 }
 
-static DataNode DataGetType(DataArray* da) {
+DefDataFunc(GetType, {
     return DataNode(da->Evaluate(1).Type());
-}
+})
 
 static DataNode DataWith(DataArray* da) {
     return da->ExecuteScript(2, da->GetObj(1), NULL, 1);
@@ -906,6 +1026,20 @@ static DataNode OnSetThis(DataArray* da) {
     new_this = da->GetObj(1);
     // gDataThisPtr.Replace(gDataThis, new_this);
     DataSetThis(new_this);
+    return DataNode();
+}
+
+DefDataFunc(MacroElem, {
+    DataArray* macro = DataGetMacro(da->Str(1));
+    int i;
+    if (da->Size() > 2) {
+        i = da->Int(2);
+    } else i = 0;
+    MILO_ASSERT(macro && macro->Size() > i, 1748);
+    return da->Node(i);
+})
+
+static DataNode DataMergeDirs(DataArray*) {
     return DataNode();
 }
 
@@ -931,6 +1065,18 @@ static DataNode DataNextName(DataArray* da) {
         d = da->Obj<ObjectDir>(2);
     }
     return DataNode(NextName(da->Str(1), d));
+}
+
+DataNode Quasiquote(const DataNode&) {
+
+}
+
+static DataNode DataQuasiquote(DataArray* da) { return Quasiquote(da->Node(1)); }
+
+static DataNode DataUnquote(DataArray*) { return DataNode(); }
+
+static DataNode DataGetDateTime(DataArray* da) {
+    return DataNode();
 }
 
 static DataNode DataFileList(DataArray*) {
@@ -983,7 +1129,7 @@ void DataInitFuncs() {
     DataRegisterFunc("clamp_eq", DataClampEq);
     DataRegisterFunc("*", DataMultiply);
     DataRegisterFunc("*=", DataMultiplyEq);
-    // DataRegisterFunc("/", DataDivide); // this one's strbase isn't inline with the others
+    DataRegisterFunc("/", DataDivide); // this one's strbase isn't inline with the others
     DataRegisterFunc("/=", DataDivideEq);
     DataRegisterFunc("sqrt", DataSqrt);
     DataRegisterFunc("mod", DataMod);
@@ -1011,7 +1157,7 @@ void DataInitFuncs() {
     DataRegisterFunc("&", DataBitAnd);
     DataRegisterFunc("&=", DataAndEqual);
     DataRegisterFunc("mask_eq", DataMaskEqual);
-    // DataRegisterFunc("|", DataBitOr);
+    DataRegisterFunc("|", DataBitOr);
     DataRegisterFunc("|=", DataOrEqual);
     DataRegisterFunc("^", DataBitXor);
     DataRegisterFunc("~", DataBitNot);
@@ -1058,21 +1204,48 @@ void DataInitFuncs() {
     DataRegisterFunc("run", DataRun);
     DataRegisterFunc("read_file", OnReadFile);
     DataRegisterFunc("write_file", OnWriteFile);
-    //DataRegisterFunc("file_exists", OnFileExists);
+    DataRegisterFunc("file_exists", OnFileExists);
     DataRegisterFunc("file_read_only", OnFileReadOnly);
-    DataRegisterFunc("handle_type", DataRun);
-    DataRegisterFunc("handle_type_ret", DataRun);
-    DataRegisterFunc("handle", DataRun);
-    DataRegisterFunc("handle_ret", DataRun);
+    DataRegisterFunc("handle_type", DataHandleType);
+    DataRegisterFunc("handle_type_ret", DataHandleTypeRet);
+    DataRegisterFunc("handle", DataHandle);
+    DataRegisterFunc("handle_ret", DataHandleRet);
     DataRegisterFunc("contains", DataContains);
     DataRegisterFunc("export", DataContains);
     DataRegisterFunc("exit", DataExit);
-    
+    DataRegisterFunc("find", DataFind);
+    DataRegisterFunc("find_exists", DataFindExists);
+    DataRegisterFunc("find_elem", DataFindElem);
+    DataRegisterFunc("find_obj", DataFindObj);
+    DataRegisterFunc("basename", DataBasename);
+    DataRegisterFunc("dirname", DataDirname);
+    DataRegisterFunc("has_substr", DataHasSubStr);
+    DataRegisterFunc("has_any_substr", DataHasAnySubStr);
+    DataRegisterFunc("find_substr", DataFindSubStr);
+    DataRegisterFunc("strlen", DataStrlen);
+    DataRegisterFunc("str_elem", DataStrElem);
+    DataRegisterFunc("search_replace", DataSearchReplace);
+    DataRegisterFunc("substr", DataSubStr);
+    DataRegisterFunc("strcat", DataStrCat);
+    DataRegisterFunc("string_flags", DataStringFlags);
+    DataRegisterFunc("tolower", DataStrToLower);
+    DataRegisterFunc("toupper", DataStrToUpper);
+    DataRegisterFunc("strieq", DataStrieq);
+    DataRegisterFunc("push_back", DataPushBack);
+    DataRegisterFunc("sort", DataSort);
+    DataRegisterFunc("var", DataVar);
+    DataRegisterFunc("set_var", DataSetVar);
     DataRegisterFunc("pack_color", DataPackColor);
     DataRegisterFunc("unpack_color", DataUnpackColor);
     DataRegisterFunc("set_this", OnSetThis);
+    DataRegisterFunc("macro_elem", DataMacroElem);
+    DataRegisterFunc("merge_dirs", DataMergeDirs);
+    DataRegisterFunc("", DataQuote); DataRegisterFunc("quote", DataQuote);
+    DataRegisterFunc("'", DataQuasiquote); DataRegisterFunc("quasiquote", DataQuasiquote);
+    DataRegisterFunc("`", DataUnquote); DataRegisterFunc("unquote", DataUnquote);
+    DataRegisterFunc("get_date_time", DataGetDateTime);
     DataRegisterFunc("with", DataWith);
-    DataRegisterFunc("get_type", DataGetType);
+    DataRegisterFunc("type", DataGetType);
     DataRegisterFunc("object_list", DataObjectList);
     DataRegisterFunc("file_list", DataFileList);
     DataRegisterFunc("file_list_paths", DataFileListPaths);
@@ -1097,7 +1270,7 @@ void DataInitFuncs() {
     DataRegisterFunc(magic, DataSet);
     magic[1] = '7';
     magic[2] = '0';
-    DataRegisterFunc(magic, DataSize);
+    DataRegisterFunc(magic, DataInc);
 }
 
 void DataTermFuncs(){
