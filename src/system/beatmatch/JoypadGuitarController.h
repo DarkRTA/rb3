@@ -11,11 +11,18 @@ public:
     virtual ~JoypadGuitarController();
     virtual DataNode Handle(DataArray*, bool);
     virtual void Disable(bool);
-    virtual bool IsDisabled() const;
+    virtual bool IsDisabled() const { return mDisabled; }
     virtual float GetWhammyBar() const;
-    virtual int GetFretButtons() const;
+    virtual int GetFretButtons() const { return mFretMask; }
 
-    int dummy;
+    int OnMsg(const ButtonDownMsg&);
+    int OnMsg(const ButtonUpMsg&);
+    void ReconcileFretState();
+
+    bool mDisabled;
+    bool mDpadForNavigation;
+    int mFretMask;
+    BeatMatchControllerSink* mSink;
 
 };
 

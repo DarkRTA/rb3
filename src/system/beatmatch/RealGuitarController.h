@@ -8,6 +8,7 @@
 
 #define kNumRGStrings 6
 
+// for the Squier
 class RealGuitarController : public BeatMatchController {
 public:
     RealGuitarController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
