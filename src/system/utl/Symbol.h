@@ -19,7 +19,7 @@ public:
     // found in GDRB
     bool operator==(const char* cc) const {
         if(cc) return strcmp(mStr, cc) == 0;
-        else return cc == gNullStr;
+        else return IsNull();
     }
 
     // methods found in RB2
