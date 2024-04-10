@@ -1,6 +1,13 @@
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "os/User.h"
+#include "beatmatch/GuitarController.h"
+#include "beatmatch/JoypadController.h"
+#include "beatmatch/JoypadGuitarController.h"
+#include "beatmatch/ButtonGuitarController.h"
+#include "beatmatch/RealGuitarController.h"
+#include "beatmatch/KeyboardController.h"
+#include "beatmatch/JoypadMidiController.h"
 
 BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool lefty) : mUser(user), mForceMercuryBut(-1), mLefty(lefty), unk25(0),
     mGemMapping(kDefaultGemMapping), mHitSink(0) {
@@ -11,7 +18,33 @@ BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool 
 }
 
 BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchControllerSink* sink, bool disabled, bool lefty, TrackType ty){
-
+    DataArray* ctrl_cfg = SystemConfig("beatmatcher", "controllers", "beatmatch_controller_mapping");
+    Symbol instr = ctrl_cfg->FindArray(cfg->Sym(0), true)->Sym(1);
+    BeatMatchController* controller = 0;
+    if(instr == "guitar"){
+        controller = new GuitarController(user, cfg, sink, disabled, lefty);
+    }
+    else if(instr == "joypad"){
+        controller = new JoypadController(user, cfg, sink, disabled, lefty);
+    }
+    else if(instr == "joypad_guitar"){
+        controller = new JoypadGuitarController(user, cfg, sink, disabled, lefty);
+    }
+    else if(instr == "real_guitar"){
+        if(ty - 1 <= 1U){
+            controller = new ButtonGuitarController(user, cfg, sink, disabled, lefty);
+        }
+        else controller = new RealGuitarController(user, cfg, sink, disabled, lefty);
+    }
+    else if(instr == "keys"){
+        if(ty == 5){
+            controller = new KeyboardController(user, cfg, sink, disabled);
+        }
+        else controller = new JoypadMidiController(user, cfg, sink, disabled);
+    }
+    else MILO_FAIL("NewController: Bad controller type %s, %s", cfg->Sym(0), instr.Str());
+    sink->SetController(controller);
+    return controller;
 }
 
 int BeatMatchController::ButtonToSlot(JoypadButton btn, const DataArray* arr) const {

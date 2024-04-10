@@ -7,7 +7,7 @@
 
 class JoypadMidiController : public JoypadController {
 public:
-    JoypadMidiController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
+    JoypadMidiController(User*, const DataArray*, BeatMatchControllerSink*, bool);
     virtual ~JoypadMidiController();
     virtual DataNode Handle(DataArray*, bool);
     virtual float GetWhammyBar() const;

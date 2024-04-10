@@ -7,7 +7,7 @@
 
 class KeyboardController : public BeatMatchController {
 public:
-    KeyboardController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
+    KeyboardController(User*, const DataArray*, BeatMatchControllerSink*, bool);
     virtual ~KeyboardController();
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
