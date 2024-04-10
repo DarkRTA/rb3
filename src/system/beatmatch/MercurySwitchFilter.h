@@ -30,7 +30,7 @@ public:
     virtual ~LowPassMercurySwitchFilter(){}
     virtual bool Poll(float f1, float f2){
         float loc = f1 - mLastPoll;
-        float loc2 = f2;
+        float& loc2 = f2;
         float& res = Minimum<float&>(LowPassFloat, loc);
         ClampEq<float>(loc2, 0.0f, 1.0f);
 

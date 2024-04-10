@@ -4,8 +4,11 @@
 #include "obj/Data.h"
 #include "os/Joypad.h"
 #include "beatmatch/HitSink.h"
+#include "beatmatch/TrackType.h"
 
-class User; // forward dec
+// forward decs
+class BeatMatchControllerSink;
+class User;
 
 enum BeatMatchControllerGemMapping {
     kDefaultGemMapping,
@@ -53,5 +56,7 @@ public:
     DataArray* mLeftySlots;
     DataArray* mRightySlots;
 };
+
+BeatMatchController* NewController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool, TrackType);
 
 #endif

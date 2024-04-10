@@ -1,4 +1,5 @@
 #include "beatmatch/BeatMatchController.h"
+#include "beatmatch/BeatMatchControllerSink.h"
 #include "os/User.h"
 
 BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool lefty) : mUser(user), mForceMercuryBut(-1), mLefty(lefty), unk25(0),
@@ -7,6 +8,10 @@ BeatMatchController::BeatMatchController(User* user, const DataArray* cfg, bool 
         mLeftySlots = cfg->FindArray("lefty_slots", false);
         mRightySlots = cfg->FindArray("righty_slots", false);
         cfg->FindData("force_mercury", mForceMercuryBut, false);
+}
+
+BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchControllerSink* sink, bool disabled, bool lefty, TrackType ty){
+
 }
 
 int BeatMatchController::ButtonToSlot(JoypadButton btn, const DataArray* arr) const {
