@@ -119,34 +119,72 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
     }
 }
 
+extern bool gLoadingProxyFromDisk;
+
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
-    DataArray* arr = mMap;
-    const DataArray* def = ref->TypeDef();
-    if(arr && TheLoadMgr.mCacheMode && def->Size() != 0){
-        int i9 = 0;
-        while(arr){
-            while(true){
-                arr = mMap;
-                if(!mMap || mMap->Size() <= i9) break;
-                arr = def->FindArray(arr->Sym(i9), false);
-                if(!arr) break;
-                DataNode& n10 = arr->Node(1);
-                if(n10.Type() != kDataCommand){
-                    if(!arr->Node(1).CompatibleType(mMap->Node(i9 + 1).Type())){
-                        break;
+    // begin debug exclusive
+    if(mMap){
+        if(TheLoadMgr.mCacheMode){
+            const DataArray* def = ref->TypeDef();
+            if(def){
+                int i = 0;
+                while(mMap && i < mMap->Size()){
+                    DataArray* theArr = def->FindArray(mMap->Sym(i), false);
+                    if(theArr){
+                        DataNode& node = ((const DataArray*)(theArr))->Node(1);
+                        if(node.Type() == kDataCommand) goto next;
+                        if(theArr->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type()))
+                            goto next;
                     }
+                    ClearKeyValue(mMap->Sym(i), ref);
+                    if(mMap) continue;
+                    else break;
+            next:
+                    i += 2;
                 }
-                i9 += 2;
             }
-            arr = mMap;
-            ClearKeyValue(arr->Sym(i9), ref);
-            arr = mMap;
         }
     }
+    // end debug exclusive
+    if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
+        d << mMap;
+        return;
+    }
+    const DataArray* theTypeDef = ref->TypeDef();
+    if(!theTypeDef){
+        MILO_WARN("%s: Removing type properties without type definition", ref->Name());
+        d << (DataArray*)0;
+        return;
+    }
+    DataArray* potentialArr = 0;
+    int keyIdx = 0;
+    for(int i = 0; i < mMap->Size(); i += 2){
+        Symbol sym = mMap->Sym(i);
+        DataArray* found = theTypeDef->FindArray(sym, false);
+        if(found){
+            bool b1 = false;
+            bool b2 = false;
+            GetSaveFlags(found, b1, b2);
+            if(!b2 && b1 != gLoadingProxyFromDisk){
+                if(!potentialArr){
+                    potentialArr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(mMap->Size());
+                }
+                potentialArr->Node(keyIdx) = DataNode(sym);
+                potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);
+                keyIdx += 2;
+            }
+        }
+    }
+    if(potentialArr){
+        potentialArr->Resize(keyIdx);
+        d << potentialArr;
+        potentialArr->Release();
+        return;
+    }
+    d << potentialArr;
+    
 }
-
-const char* savestr = "%s: Removing type properties without type definition";
 
 const char* loadstr = "%s: type based property \"%s\" is outdated, will clear on save\n";
 
