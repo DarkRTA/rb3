@@ -399,7 +399,7 @@
             "system/zlib/adler32.c": "Matching",
             "system/zlib/crc32.c": "Matching",
             "system/zlib/deflate.c": "Matching",
-            "system/zlib/trees.c": "NonMatching",
+            "system/zlib/trees.c": "Matching",
             "system/zlib/zutil.c": "NonMatching",
             "system/zlib/inflate.c": "Matching",
             "system/zlib/inftrees.c": "Matching",

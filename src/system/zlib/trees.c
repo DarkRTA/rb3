@@ -614,14 +614,16 @@ local void gen_codes (tree, max_code, bl_count)
  * IN assertion: 1 <= len <= 15
  */
 local unsigned bi_reverse(code, len)
-    unsigned code; /* the value to invert */
-    int len;       /* its bit length */
+    unsigned code;
+    int len;
 {
+    int len2 = len;
+    unsigned code2 = code;
     register unsigned res = 0;
     do {
-        res |= code & 1;
-        code >>= 1, res <<= 1;
-    } while (--len > 0);
+        res |= code2 & 1;
+        code2 >>= 1, res <<= 1;
+    } while (--len2 > 0);
     return res >> 1;
 }
 
