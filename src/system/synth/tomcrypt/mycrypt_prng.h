@@ -59,4 +59,3 @@ extern int prng_is_valid(int idx);
 extern unsigned long rng_get_bytes(unsigned char *buf, unsigned long len, void (*callback)(void));
 
 extern int rng_make_prng(int bits, int wprng, prng_state *prng, void (*callback)(void));
-

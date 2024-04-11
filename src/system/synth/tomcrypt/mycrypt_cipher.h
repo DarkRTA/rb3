@@ -346,4 +346,3 @@ extern int register_cipher(const struct _cipher_descriptor *cipher);
 extern int unregister_cipher(const struct _cipher_descriptor *cipher);
 
 extern int cipher_is_valid(int idx);
-

@@ -136,4 +136,3 @@ extern clock_t XCLOCK(void);
 #endif /* MPI */
 
 #endif /* MYCRYPT_CFG_H */
-
