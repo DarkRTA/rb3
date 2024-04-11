@@ -74,4 +74,3 @@ extern char* crypt_error;
 #endif
 
 #endif /* CRYPT_H_ */
-

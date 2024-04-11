@@ -34,16 +34,30 @@ int ctr_start(int cipher, const unsigned char *count, const unsigned char *key, 
    return CRYPT_OK;
 }
 
+int ctr_encrypt_fast(const unsigned char*, unsigned char*, unsigned long len, symmetric_CTR* ctr){
+   return 0;
+}
+
 int ctr_encrypt(const unsigned char *pt, unsigned char *ct, unsigned long len, symmetric_CTR *ctr)
 {
-   int x, errno;
+   int x;
 
    // _ARGCHK(pt != NULL);
    // _ARGCHK(ct != NULL);
    // _ARGCHK(ctr != NULL);
 
-   if ((errno = cipher_is_valid(ctr->cipher)) != CRYPT_OK) {
-       return errno;
+   if (cipher_is_valid(ctr->cipher) != CRYPT_OK) {
+       return CRYPT_ERROR;
+   }
+
+   if(
+      (((int)pt & 3) == 0) && 
+      (((int)ct & 3) == 0) && 
+      ((len & ctr->blocklen - 1U) == 0) &&
+      (ctr->blocklen == 0x10) &&
+      (ctr->padlen == ctr->blocklen)
+   ){
+      return ctr_encrypt_fast(pt, ct, len, ctr);
    }
 
    while (len--) {
@@ -76,4 +90,3 @@ int ctr_decrypt(const unsigned char *ct, unsigned char *pt, unsigned long len, s
 }
 
 #endif
-

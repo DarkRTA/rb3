@@ -7107,87 +7107,87 @@ system/usbwii/UsbWii.cpp:
 	.sbss       start:0x80C7AF40 end:0x80C7AF48
 	.bss        start:0x80D218A0 end:0x80D21CC8
 
-system/oggvorbis/analysis.cpp:
+system/oggvorbis/analysis.c:
 	.text       start:0x809FE640 end:0x809FE640
 	.rodata     start:0x80B3FDB0 end:0x80B3FDC8
 
-system/oggvorbis/bitrate.cpp:
+system/oggvorbis/bitrate.c:
 	.text       start:0x809FE640 end:0x809FE780
 
-system/oggvorbis/bitwise.cpp:
+system/oggvorbis/bitwise.c:
 	.text       start:0x809FE780 end:0x809FEC20
 	.data       start:0x80C36330 end:0x80C363B8
 
-system/oggvorbis/block.cpp:
+system/oggvorbis/block.c:
 	.text       start:0x809FEC20 end:0x80A00720
 	.rodata     start:0x80B3FDC8 end:0x80B3FDD0
 
-system/oggvorbis/codebook.cpp:
+system/oggvorbis/codebook.c:
 	.text       start:0x80A00720 end:0x80A01300
 	.data       start:0x80C363B8 end:0x80C363E0
 
-system/oggvorbis/envelope.cpp:
+system/oggvorbis/envelope.c:
 	.text       start:0x80A01300 end:0x80A01390
 
-system/oggvorbis/floor0.cpp:
+system/oggvorbis/floor0.c:
 	.text       start:0x80A01390 end:0x80A01C60
 	.rodata     start:0x80B3FDD0 end:0x80B3FDD8
 	.data       start:0x80C363E0 end:0x80C36400
 
-system/oggvorbis/floor1.cpp:
+system/oggvorbis/floor1.c:
 	.text       start:0x80A01C60 end:0x80A047A0
 	.rodata     start:0x80B3FDD8 end:0x80B3FDE0
 	.data       start:0x80C36400 end:0x80C36820
 	.bss        start:0x80D21CC8 end:0x80D21CD0
 
-system/oggvorbis/framing.cpp:
+system/oggvorbis/framing.c:
 	.text       start:0x80A047A0 end:0x80A056B0
 	.data       start:0x80C36820 end:0x80C36C28
 
-system/oggvorbis/info.cpp:
+system/oggvorbis/info.c:
 	.text       start:0x80A056B0 end:0x80A061A0
 	.data       start:0x80C36C28 end:0x80C36C38
 
-system/oggvorbis/lsp.cpp:
+system/oggvorbis/lsp.c:
 	.text       start:0x80A061A0 end:0x80A06890
 	.rodata     start:0x80B3FDE0 end:0x80B3FDF0
 	.data       start:0x80C36C38 end:0x80C370D0
 
-system/oggvorbis/mapping0.cpp:
+system/oggvorbis/mapping0.c:
 	.text       start:0x80A06890 end:0x80A083B0
 	.data       start:0x80C370D0 end:0x80C370F8
 
-system/oggvorbis/mdct.cpp:
+system/oggvorbis/mdct.c:
 	.text       start:0x80A083B0 end:0x80A0A050
 	.rodata     start:0x80B3FDF0 end:0x80B3FDF8
 
-system/oggvorbis/psy.cpp:
+system/oggvorbis/psy.c:
 	.text       start:0x80A0A050 end:0x80A0E1F0
 	.rodata     start:0x80B3FDF8 end:0x80B3FE40
 	.data       start:0x80C370F8 end:0x80C3D060
 
-system/oggvorbis/registry.cpp:
+system/oggvorbis/registry.c:
 	.data       start:0x80C3D060 end:0x80C3D080
 
-system/oggvorbis/res0.cpp:
+system/oggvorbis/res0.c:
 	.text       start:0x80A0E1F0 end:0x80A102A0
 	.data       start:0x80C3D080 end:0x80C3D0E0
 
-system/oggvorbis/sharedbook.cpp:
+system/oggvorbis/sharedbook.c:
 	.text       start:0x80A102A0 end:0x80A116F0
 
-system/oggvorbis/smallft.cpp:
+system/oggvorbis/smallft.c:
 	.text       start:0x80A116F0 end:0x80A14640
 	.data       start:0x80C3D0E0 end:0x80C3D100
 
 system/oggvorbis/VorbisMem.cpp:
 	.text       start:0x80A14640 end:0x80A146C0
 
-system/oggvorbis/window.cpp:
+system/oggvorbis/window.c:
 	.text       start:0x80A146C0 end:0x80A14BA0
 	.data       start:0x80C3D100 end:0x80C450A0
 
-system/oggvorbis/synthesis.cpp:
+system/oggvorbis/synthesis.c:
 	.text       start:0x80A14BA0 end:0x80A14D90
 
 lib/binkwii/src/binkwii.c:

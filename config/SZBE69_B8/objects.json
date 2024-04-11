@@ -140,7 +140,6 @@
 
             "system/obj/DataArray.cpp": "NonMatching",
             "system/obj/DataFile.cpp": "NonMatching",
-            "system/obj/DataFlex.c": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/DataUtl.cpp": "NonMatching",
@@ -152,6 +151,8 @@
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp":  "NonMatching",
             "system/obj/Utl.cpp": "NonMatching",
+
+            "system/oggvorbis/VorbisMem.cpp": "NonMatching",
 
             "system/os/AppChild.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
@@ -228,30 +229,6 @@
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
-            "system/speex/libspeex/bits.c": "NonMatching",
-            "system/speex/libspeex/cb_search.c": "Matching",
-            "system/speex/libspeex/exc_10_16_table.c": "Matching",
-            "system/speex/libspeex/exc_10_32_table.c": "Matching",
-            "system/speex/libspeex/exc_20_32_table.c": "Matching",
-            "system/speex/libspeex/exc_5_256_table.c": "Matching",
-            "system/speex/libspeex/exc_5_64_table.c": "Matching",
-            "system/speex/libspeex/exc_8_128_table.c": "Matching",
-            "system/speex/libspeex/filters.c": "NonMatching",
-            "system/speex/libspeex/gain_table.c": "Matching",
-            "system/speex/libspeex/gain_table_lbr.c": "Matching",
-            "system/speex/libspeex/lpc.c": "Matching",
-            "system/speex/libspeex/lsp.c": "Matching",
-            "system/speex/libspeex/lsp_tables_nb.c": "Matching",
-            "system/speex/libspeex/ltp.c": "NonMatching",
-            "system/speex/libspeex/modes.c": "Matching",
-            "system/speex/libspeex/nb_celp.c": "NonMatching",
-            "system/speex/libspeex/quant_lsp.c": "Matching",
-            "system/speex/libspeex/speex.c": "Matching",
-            "system/speex/libspeex/speex_callbacks.c": "Matching",
-            "system/speex/libspeex/vbr.c": "NonMatching",
-            "system/speex/libspeex/window.c": "Matching",
-            "system/speex/libspeex/vq.c": "Matching",
-
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/FxSend.cpp": "NonMatching",
@@ -268,9 +245,6 @@
             "system/synth/FxSendWah.cpp": "Matching",
             "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",
-            "system/synth/tomcrypt/aes.c": "NonMatching",
-            "system/synth/tomcrypt/crypt.c": "NonMatching",
-            "system/synth/tomcrypt/ctr.c": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
@@ -347,6 +321,77 @@
             "system/world/ColorPalette.cpp": "NonMatching"
         }
     },
+    "flex": {
+        "mw_version": "Wii/1.3",
+        "cflags": "flex",
+        "objects": {
+            "system/obj/DataFlex.c": "NonMatching"
+        }
+    },
+    "speex": {
+        "mw_version": "Wii/1.3",
+        "cflags": "speex",
+        "objects": {
+            "system/speex/libspeex/bits.c": "NonMatching",
+            "system/speex/libspeex/cb_search.c": "Matching",
+            "system/speex/libspeex/exc_10_16_table.c": "Matching",
+            "system/speex/libspeex/exc_10_32_table.c": "Matching",
+            "system/speex/libspeex/exc_20_32_table.c": "Matching",
+            "system/speex/libspeex/exc_5_256_table.c": "Matching",
+            "system/speex/libspeex/exc_5_64_table.c": "Matching",
+            "system/speex/libspeex/exc_8_128_table.c": "Matching",
+            "system/speex/libspeex/filters.c": "Matching",
+            "system/speex/libspeex/gain_table.c": "Matching",
+            "system/speex/libspeex/gain_table_lbr.c": "Matching",
+            "system/speex/libspeex/lpc.c": "Matching",
+            "system/speex/libspeex/lsp.c": "Matching",
+            "system/speex/libspeex/lsp_tables_nb.c": "Matching",
+            "system/speex/libspeex/ltp.c": "NonMatching",
+            "system/speex/libspeex/modes.c": "Matching",
+            "system/speex/libspeex/nb_celp.c": "NonMatching",
+            "system/speex/libspeex/quant_lsp.c": "Matching",
+            "system/speex/libspeex/speex.c": "Matching",
+            "system/speex/libspeex/speex_callbacks.c": "Matching",
+            "system/speex/libspeex/vbr.c": "NonMatching",
+            "system/speex/libspeex/window.c": "Matching",
+            "system/speex/libspeex/vq.c": "Matching"
+        }
+    },
+    "tomcrypt": {
+        "mw_version": "Wii/1.3",
+        "cflags": "libtomcrypt",
+        "objects": {
+            "system/synth/tomcrypt/aes.c": "NonMatching",
+            "system/synth/tomcrypt/crypt.c": "Matching",
+            "system/synth/tomcrypt/ctr.c": "NonMatching"
+        }
+    },
+    "vorbis": {
+        "mw_version": "Wii/1.3",
+        "cflags": "vorbis",
+        "objects": {
+            "system/oggvorbis/analysis.c": "NonMatching",
+            "system/oggvorbis/bitrate.c": "Matching",
+            "system/oggvorbis/bitwise.c": "Matching",
+            "system/oggvorbis/block.c": "Matching",
+            "system/oggvorbis/codebook.c": "NonMatching",
+            "system/oggvorbis/envelope.c": "Matching",
+            "system/oggvorbis/floor0.c": "NonMatching",
+            "system/oggvorbis/floor1.c": "NonMatching",
+            "system/oggvorbis/framing.c": "Matching",
+            "system/oggvorbis/info.c": "Matching",
+            "system/oggvorbis/lsp.c": "Matching",
+            "system/oggvorbis/mapping0.c": "NonMatching",
+            "system/oggvorbis/mdct.c": "NonMatching",
+            "system/oggvorbis/psy.c": "NonMatching",
+            "system/oggvorbis/registry.c": "NonMatching",
+            "system/oggvorbis/res0.c": "NonMatching",
+            "system/oggvorbis/sharedbook.c": "NonMatching",
+            "system/oggvorbis/smallft.c": "Matching",
+            "system/oggvorbis/window.c": "Matching",
+            "system/oggvorbis/synthesis.c": "NonMatching"
+        }
+    },
     "zlib": {
         "mw_version": "Wii/1.3",
         "cflags": "zlib",
@@ -354,11 +399,17 @@
             "system/zlib/adler32.c": "Matching",
             "system/zlib/crc32.c": "Matching",
             "system/zlib/deflate.c": "Matching",
-            "system/zlib/trees.c": "NonMatching",
-            "system/zlib/zutil.c": "NonMatching",
+            "system/zlib/trees.c": "Matching",
             "system/zlib/inflate.c": "Matching",
             "system/zlib/inftrees.c": "Matching",
             "system/zlib/inffast.c": "Matching"
+        }
+    },
+    "zlib/zutil": {
+        "mw_version": "Wii/1.3",
+        "cflags": "zlib/zutil",
+        "objects": {
+            "system/zlib/zutil.c": "Matching"
         }
     }
 }
