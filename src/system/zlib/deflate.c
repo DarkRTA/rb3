@@ -51,8 +51,8 @@
 
 #include "deflate.h"
 
-const char deflate_copyright[] =
-   " deflate 1.2.1 Copyright 1995-2003 Jean-loup Gailly ";
+// uncomment this in retail
+// const char deflate_copyright[] = " deflate 1.2.1 Copyright 1995-2003 Jean-loup Gailly ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
   in the documentation of your product. If for some reason you cannot
@@ -79,7 +79,7 @@ local block_state deflate_fast   OF((deflate_state *s, int flush));
 #ifndef FASTEST
 local block_state deflate_slow   OF((deflate_state *s, int flush));
 #endif
-local inline void lm_init        OF((deflate_state *s));
+local void lm_init        OF((deflate_state *s));
 local void putShortMSB    OF((deflate_state *s, uInt b));
 local void flush_pending  OF((z_streamp strm));
 local int read_buf        OF((z_streamp strm, Bytef *buf, unsigned size));
@@ -233,7 +233,9 @@ int ZEXPORT deflateInit2_(strm, level, method, windowBits, memLevel, strategy,
      * output size for (length,distance) codes is <= 24 bits.
      */
 
-    if (version == Z_NULL || version[0] != my_version[0] ||
+    if (version == Z_NULL || 
+        // version[0] != my_version[0] || // use this for retail
+        version[0] != 0x31 ||
         stream_size != sizeof(z_stream)) {
         return Z_VERSION_ERROR;
     }
@@ -352,6 +354,34 @@ int ZEXPORT deflateSetDictionary (strm, dictionary, dictLength)
     }
     if (hash_head) hash_head = 0;  /* to make compiler happy */
     return Z_OK;
+}
+
+/* ===========================================================================
+ * Initialize the "longest match" routines for a new zlib stream
+ */
+local void lm_init (s)
+    deflate_state *s;
+{
+    s->window_size = (ulg)2L*s->w_size;
+
+    CLEAR_HASH(s);
+
+    /* Set the default configuration parameters:
+     */
+    s->max_lazy_match   = configuration_table[s->level].max_lazy;
+    s->good_match       = configuration_table[s->level].good_length;
+    s->nice_match       = configuration_table[s->level].nice_length;
+    s->max_chain_length = configuration_table[s->level].max_chain;
+
+    s->strstart = 0;
+    s->block_start = 0L;
+    s->lookahead = 0;
+    s->match_length = s->prev_length = MIN_MATCH-1;
+    s->match_available = 0;
+    s->ins_h = 0;
+#ifdef ASMV
+    match_init(); /* initialize the asm code */
+#endif
 }
 
 /* ========================================================================= */
@@ -815,33 +845,7 @@ local int read_buf(strm, buf, size)
     return (int)len;
 }
 
-/* ===========================================================================
- * Initialize the "longest match" routines for a new zlib stream
- */
-local inline void lm_init (s)
-    deflate_state *s;
-{
-    s->window_size = (ulg)2L*s->w_size;
 
-    CLEAR_HASH(s);
-
-    /* Set the default configuration parameters:
-     */
-    s->max_lazy_match   = configuration_table[s->level].max_lazy;
-    s->good_match       = configuration_table[s->level].good_length;
-    s->nice_match       = configuration_table[s->level].nice_length;
-    s->max_chain_length = configuration_table[s->level].max_chain;
-
-    s->strstart = 0;
-    s->block_start = 0L;
-    s->lookahead = 0;
-    s->match_length = s->prev_length = MIN_MATCH-1;
-    s->match_available = 0;
-    s->ins_h = 0;
-#ifdef ASMV
-    match_init(); /* initialize the asm code */
-#endif
-}
 
 #ifndef FASTEST
 /* ===========================================================================

@@ -142,7 +142,7 @@ void UsbMidiGuitar::Poll(){
                         }
                     }
                     // this loop sets whether frets are up or down
-                    bool RGFretBool = proData->unk3upper;
+                    bool RGFretBool = proData->unk3upper; // shifted?
                     for(int k = 0; k < 5; k++){
                         // this part needs work
                         // i assume judging by the fact there's a neg in the asm,

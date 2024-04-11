@@ -16,7 +16,7 @@ public:
     static void Terminate();
     static void Poll();
 
-    int E3CheatGetMinVelocity();
+    static int E3CheatGetMinVelocity();
     static void E3CheatSetMinVelocity(int);
     int CurrentAccelAxisVal(int, int);
     void SetFret(int, int, int);

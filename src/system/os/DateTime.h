@@ -16,10 +16,11 @@ public:
     DateTime(unsigned short, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char);
     void GetDateAndTime(DateTime&);
     unsigned int ToCode() const;
-    void ToString(String&) const;
-    void ToDateString(String&) const;
-    void ToMiniDateString(String&) const;
+    void ToString(class String&) const;
+    void ToDateString(class String&) const;
+    void ToMiniDateString(class String&) const;
     unsigned short Year() const;
+    void Format(class String&) const;
 };
 
 void DateTimeInit();

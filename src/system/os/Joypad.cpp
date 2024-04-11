@@ -106,8 +106,16 @@ namespace {
 
 }
 
-JoypadData::JoypadData() : mControllerType() {
-
+JoypadData::JoypadData() : mButtons(0), mUser(0), mConnected(false), mVibrateEnabled(true), unk66(false), unk67(false), unk68(false), 
+    mHasAnalogSticks(false), mTranslateSticks(false), mIgnoreButtonMask(0), mGreenCymbalMask(0), mYellowCymbalMask(0), mBlueCymbalMask(0),
+    mSecondaryPedalMask(0), mCymbalMask(0), mIsDrum(false), mType(kJoypadNone), mControllerType(), mHasGreenCymbal(false), mHasYellowCymbal(false),
+    mHasBlueCymbal(false), mHasSecondaryPedal(false) {
+        mSticks[0][0] = 0.0f;
+        mSticks[0][1] = 0.0f;
+        mSticks[1][0] = 0.0f;
+        mSticks[1][1] = 0.0f;
+        mTriggers[0] = 0.0f;
+        mTriggers[1] = 0.0f;
 }
 
 float JoypadData::GetAxis(Symbol axis) const {
@@ -411,4 +419,10 @@ JoypadAction ButtonToAction(JoypadButton btn, Symbol sym){
             if(arr) return (JoypadAction)arr->Int(1);
         }
     }
+}
+
+const char* JoypadGetBreedString(int pad){
+    class String s1;
+    class String s2(s1);
+    return MakeString<JoypadType, class String>("%02x%s", gJoypadData[pad].mType, s2);
 }

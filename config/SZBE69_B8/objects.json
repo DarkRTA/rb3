@@ -72,7 +72,16 @@
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BeatMatch.cpp": "Matching",
+            "system/beatmatch/BeatMatchController.cpp": "Matching",
+            "system/beatmatch/ButtonGuitarController.cpp": "Matching",
+            "system/beatmatch/GuitarController.cpp": "NonMatching",
+            "system/beatmatch/JoypadController.cpp": "NonMatching",
+            "system/beatmatch/JoypadGuitarController.cpp": "NonMatching",
+            "system/beatmatch/JoypadMidiController.cpp": "Matching",
+            "system/beatmatch/KeyboardController.cpp": "Matching",
+            "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
+            "system/beatmatch/RealGuitarController.cpp": "Matching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/TrackType.cpp": "Matching",
 
@@ -332,6 +341,7 @@
             "system/utl/UTF8.cpp": "NonMatching",
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
+            "system/utl/WaveFile.cpp": "NonMatching",
 
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching"
@@ -343,7 +353,7 @@
         "objects": {
             "system/zlib/adler32.c": "Matching",
             "system/zlib/crc32.c": "Matching",
-            "system/zlib/deflate.c": "NonMatching",
+            "system/zlib/deflate.c": "Matching",
             "system/zlib/trees.c": "NonMatching",
             "system/zlib/zutil.c": "NonMatching",
             "system/zlib/inflate.c": "Matching",

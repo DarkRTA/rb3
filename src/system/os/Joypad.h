@@ -233,7 +233,7 @@ public:
     bool mHasGreenCymbal;
     bool mHasYellowCymbal;
     bool mHasBlueCymbal;
-    
+    bool mHasSecondaryPedal;    
     int unk98;
 
     JoypadData();
@@ -241,6 +241,8 @@ public:
     int FloatToBucket(float) const;
     int GetVelocityBucket(Symbol) const;
     int GetPressureBucket(JoypadButton) const;
+    bool IsButtonInMask(int i) const { return (mButtons & 1 << i); }
+    bool IsButtonNewlyPressed(int i) const { return (mNewPressed & 1 << i); }
 };
 
 class LocalUser; // forward dec
@@ -265,6 +267,7 @@ int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
+const char* JoypadGetBreedString(int);
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);

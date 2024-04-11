@@ -3,12 +3,22 @@
 #include "obj/Msg.h"
 
 BEGIN_MESSAGE(KeyboardKeyPressedMsg, keyboard_key_pressed, int, int, int);
+    MESSAGE_ARRAY_CTOR(KeyboardKeyPressedMsg)
+    int GetNode2() const { return mData->Int(2); }
+    int GetNode3() const { return mData->Int(3); }
+    int GetNode4() const { return mData->Int(4); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardKeyReleasedMsg, keyboard_key_released, int, int);
+    MESSAGE_ARRAY_CTOR(KeyboardKeyReleasedMsg)
+    int GetNode2() const { return mData->Int(2); }
+    int GetNode3() const { return mData->Int(3); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardModMsg, keyboard_mod, int, int);
+    MESSAGE_ARRAY_CTOR(KeyboardModMsg)
+    int GetNode2() const { return mData->Int(2); }
+    int GetNode3() const { return mData->Int(3); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardExpressionPedalMsg, keyboard_expression_pedal, int, int);
@@ -18,6 +28,9 @@ BEGIN_MESSAGE(KeyboardConnectedAccessoriesMsg, keyboard_connected_accessories, i
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardSustainMsg, keyboard_sustain, bool, int);
+    MESSAGE_ARRAY_CTOR(KeyboardSustainMsg)
+    int GetNode2() const { return mData->Int(2); }
+    int GetNode3() const { return mData->Int(3); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardStompBoxMsg, keyboard_stomp_box, bool, int);
