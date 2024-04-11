@@ -71,7 +71,7 @@
     "valarray": "cpp",
     "vector": "cpp",
   },
-  "files.autoSave": "onFocusChange",
+  "files.autoSave": "off",
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "C/C++ Include Guard.Macro Type": "Filepath",
