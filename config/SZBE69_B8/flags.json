@@ -136,7 +136,9 @@
         },
         "speex": {
             "base": "zlib",
-            "flags": []
+            "flags": [
+                "-fp_contract on"
+            ]
         },
         "libogg": {
             "base": "zlib",
