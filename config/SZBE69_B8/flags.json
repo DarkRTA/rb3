@@ -142,7 +142,7 @@
                 "-fp_contract on"
             ]
         },
-        "libogg": {
+        "flex": {
             "base": "zlib",
             "flags": []
         },
