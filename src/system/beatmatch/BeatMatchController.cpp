@@ -58,10 +58,12 @@ int BeatMatchController::ButtonToSlot(JoypadButton btn, const DataArray* arr) co
 
 int BeatMatchController::ButtonToSlot(JoypadButton btn) const {
     DataArray* cfg;
-    if(ButtonToSlot(btn, mSlots) == -1){
+    int slot = ButtonToSlot(btn, mSlots);
+    if(slot == -1){
         cfg = mLefty ? mLeftySlots : mRightySlots;
         if(cfg) return ButtonToSlot(btn, cfg);
     }
+    return slot;
 }
 
 int BeatMatchController::SlotToButton(int slot) const {
