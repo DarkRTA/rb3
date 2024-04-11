@@ -15,7 +15,7 @@
 
  ********************************************************************/
 
-#include "vorbis/codec.h"
+#include "codec.h"
 #include "codec_internal.h"
 #include "registry.h"
 #include "misc.h"
@@ -43,4 +43,3 @@ vorbis_func_residue   *_residue_P[]={
 vorbis_func_mapping   *_mapping_P[]={
   &mapping0_exportbundle,
 };
-

@@ -16,8 +16,8 @@
  ********************************************************************/
 
 #include <stdio.h>
-#include <ogg/ogg.h>
-#include "vorbis/codec.h"
+#include <ogg.h>
+#include "codec.h"
 #include "codec_internal.h"
 #include "registry.h"
 #include "misc.h"
@@ -166,5 +166,3 @@ int vorbis_synthesis_halfrate_p(vorbis_info *vi){
   codec_setup_info     *ci=vi->codec_setup;
   return ci->halfrate_flag;
 }
-
-

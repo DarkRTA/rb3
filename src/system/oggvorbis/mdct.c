@@ -41,7 +41,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include "vorbis/codec.h"
+#include "codec.h"
 #include "mdct.h"
 #include "os.h"
 #include "misc.h"
@@ -566,4 +566,3 @@ void mdct_forward(mdct_lookup *init, DATA_TYPE *in, DATA_TYPE *out){
     T+=2;
   }
 }
-

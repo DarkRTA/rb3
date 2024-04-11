@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <ogg/ogg.h>
-#include "vorbis/codec.h"
+#include <ogg.h>
+#include "codec.h"
 #include "codec_internal.h"
 #include "registry.h"
 #include "codebook.h"
@@ -908,4 +908,3 @@ vorbis_func_residue residue2_exportbundle={
   &res2_forward,
   &res2_inverse
 };
-

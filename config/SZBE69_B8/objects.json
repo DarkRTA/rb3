@@ -364,7 +364,18 @@
             "system/oggvorbis/envelope.c": "Matching",
             "system/oggvorbis/floor0.c": "NonMatching",
             "system/oggvorbis/floor1.c": "NonMatching",
-            "system/oggvorbis/framing.c": "Matching"
+            "system/oggvorbis/framing.c": "Matching",
+            "system/oggvorbis/info.c": "NonMatching",
+            "system/oggvorbis/lsp.c": "NonMatching",
+            "system/oggvorbis/mapping0.c": "NonMatching",
+            "system/oggvorbis/mdct.c": "NonMatching",
+            "system/oggvorbis/psy.c": "NonMatching",
+            "system/oggvorbis/registry.c": "NonMatching",
+            "system/oggvorbis/res0.c": "NonMatching",
+            "system/oggvorbis/sharedbook.c": "NonMatching",
+            "system/oggvorbis/smallft.c": "NonMatching",
+            "system/oggvorbis/window.c": "NonMatching",
+            "system/oggvorbis/synthesis.c": "NonMatching"
         }
     },
     "zlib": {

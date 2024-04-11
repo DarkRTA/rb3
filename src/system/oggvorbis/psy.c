@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "vorbis/codec.h"
+#include "codec.h"
 #include "codec_internal.h"
 
 #include "masking.h"
@@ -1154,4 +1154,3 @@ void _vp_couple(int blobno,
     }
   }
 }
-
