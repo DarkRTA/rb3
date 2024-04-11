@@ -356,7 +356,14 @@
         "mw_version": "Wii/1.3",
         "cflags": "vorbis",
         "objects": {
+            "system/oggvorbis/analysis.c": "NonMatching",
+            "system/oggvorbis/bitrate.c": "Matching",
             "system/oggvorbis/bitwise.c": "Matching",
+            "system/oggvorbis/block.c": "Matching",
+            "system/oggvorbis/codebook.c": "NonMatching",
+            "system/oggvorbis/envelope.c": "Matching",
+            "system/oggvorbis/floor0.c": "NonMatching",
+            "system/oggvorbis/floor1.c": "NonMatching",
             "system/oggvorbis/framing.c": "Matching"
         }
     },

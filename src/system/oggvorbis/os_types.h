@@ -37,6 +37,8 @@ void OggFree(void*);
 #define _ogg_realloc OggRealloc
 #define _ogg_free    OggFree
 
+#define NULL 0
+
 #if defined(_WIN32) 
 
 #  if defined(__CYGWIN__)

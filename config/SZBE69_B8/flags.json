@@ -146,7 +146,9 @@
         },
         "vorbis": {
             "base": "zlib",
-            "flags": []
+            "flags": [
+                "-fp_contract on"
+            ]
         },
         "bt": {
             "base": "base",
