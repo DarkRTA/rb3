@@ -335,7 +335,7 @@
             "system/speex/libspeex/exc_5_256_table.c": "Matching",
             "system/speex/libspeex/exc_5_64_table.c": "Matching",
             "system/speex/libspeex/exc_8_128_table.c": "Matching",
-            "system/speex/libspeex/filters.c": "NonMatching",
+            "system/speex/libspeex/filters.c": "Matching",
             "system/speex/libspeex/gain_table.c": "NonMatching",
             "system/speex/libspeex/gain_table_lbr.c": "Matching",
             "system/speex/libspeex/lpc.c": "Matching",
