@@ -16,19 +16,7 @@
  ********************************************************************/
 #ifndef _OS_TYPES_H
 #define _OS_TYPES_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif // ifdef __cplusplus
-
-void* OggMalloc(int);
-void* OggCalloc(int, int);
-void* OggRealloc(void*, int);
-void OggFree(void*);
-
-#ifdef __cplusplus
-};
-#endif // ifdef __cplusplus
+#include "VorbisMem.h"
 
 /* make it easy on the folks that want to compile the libs with a
    different malloc than stdlib */  

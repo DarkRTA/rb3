@@ -153,6 +153,8 @@
             "system/obj/TypeProps.cpp":  "NonMatching",
             "system/obj/Utl.cpp": "NonMatching",
 
+            "system/oggvorbis/VorbisMem.cpp": "NonMatching",
+
             "system/os/AppChild.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
