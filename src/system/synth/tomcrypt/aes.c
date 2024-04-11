@@ -419,4 +419,3 @@ int rijndael_keysize(int *desired_keysize)
 }
 
 #endif
-

@@ -246,9 +246,6 @@
             "system/synth/FxSendWah.cpp": "Matching",
             "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",
-            "system/synth/tomcrypt/aes.c": "NonMatching",
-            "system/synth/tomcrypt/crypt.c": "NonMatching",
-            "system/synth/tomcrypt/ctr.c": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
@@ -352,6 +349,15 @@
             "system/speex/libspeex/vbr.c": "NonMatching",
             "system/speex/libspeex/window.c": "Matching",
             "system/speex/libspeex/vq.c": "Matching"
+        }
+    },
+    "tomcrypt": {
+        "mw_version": "Wii/1.3",
+        "cflags": "libtomcrypt",
+        "objects": {
+            "system/synth/tomcrypt/aes.c": "NonMatching",
+            "system/synth/tomcrypt/crypt.c": "NonMatching",
+            "system/synth/tomcrypt/ctr.c": "NonMatching"
         }
     },
     "vorbis": {

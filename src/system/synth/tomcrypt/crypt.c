@@ -1,6 +1,8 @@
 #include "mycrypt.h"
 #include <signal.h>
 
+#define NULL 0
+
 struct _cipher_descriptor cipher_descriptor[32] = {
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
 { NULL, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL, NULL },
@@ -515,4 +517,3 @@ const char *crypt_build_settings =
 
     "\n\n\n"
     ;
-

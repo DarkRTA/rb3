@@ -132,7 +132,9 @@
         },
         "libtomcrypt": {
             "base": "zlib",
-            "flags": []
+            "flags": [
+                "-inline off"
+            ]
         },
         "speex": {
             "base": "zlib",
