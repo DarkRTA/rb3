@@ -400,10 +400,16 @@
             "system/zlib/crc32.c": "Matching",
             "system/zlib/deflate.c": "Matching",
             "system/zlib/trees.c": "Matching",
-            "system/zlib/zutil.c": "NonMatching",
             "system/zlib/inflate.c": "Matching",
             "system/zlib/inftrees.c": "Matching",
             "system/zlib/inffast.c": "Matching"
+        }
+    },
+    "zlib/zutil": {
+        "mw_version": "Wii/1.3",
+        "cflags": "zlib/zutil",
+        "objects": {
+            "system/zlib/zutil.c": "Matching"
         }
     }
 }

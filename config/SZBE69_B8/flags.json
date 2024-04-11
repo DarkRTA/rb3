@@ -130,6 +130,21 @@
                 "-inline auto"
             ]
         },
+        "zlib/zutil": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+
+                "-pool on",
+                "-str nopool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-O4,p",
+                "-inline auto"
+            ]
+        },
         "libtomcrypt": {
             "base": "zlib",
             "flags": [
