@@ -166,7 +166,7 @@ namespace Hmx {
         void RemoveFromDir();
 
         DataNode *Property(DataArray *, bool) const;
-        DataNode* Property(Symbol, bool);
+        DataNode* Property(Symbol, bool) const;
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
         int PropertySize(DataArray *);

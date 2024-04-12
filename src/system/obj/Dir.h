@@ -117,4 +117,6 @@ public:
     const char* mAlwaysInlineHash;
 };
 
+extern bool gLoadingProxyFromDisk;
+
 #endif

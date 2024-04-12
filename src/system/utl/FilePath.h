@@ -1,6 +1,7 @@
 #ifndef UTL_FILEPATH_H
 #define UTL_FILEPATH_H
 #include "utl/Str.h"
+#include "os/File.h"
 
 class FilePath : public String {
 public:
@@ -17,8 +18,8 @@ public:
     void Set(const char *, const char *); // fn_8034C91C - the only not-weak method here
 
     // FilePath *operator=(const FilePath &);
-    char* FilePathRelativeToRoot();
-    void SetRoot(const char*);
+    const char* FilePathRelativeToRoot(){ return FileRelativePath(sRoot.c_str(), this->c_str()); }
+    void SetRoot(const char* str){ Set(sRoot.c_str(), str); }
 };
 
 #endif

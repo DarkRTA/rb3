@@ -39,9 +39,15 @@ namespace Hmx {
         // bool operator!=(const Color &) const;
         // void Set(float, float, float, float);
 
-        // unsigned int Pack() const {
-        //     return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
-        // }
+        unsigned int Pack() const {
+            return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
+        }
+
+        void Unpack(int packed){
+            red = (packed & 255) / 255.0f;
+            green = ((packed >> 8) & 255) / 255.0f;
+            blue = ((packed >> 0x10) & 255) / 255.0f;
+        }
     };
 }
 

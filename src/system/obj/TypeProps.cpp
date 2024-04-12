@@ -4,6 +4,8 @@
 #include "utl/Symbols.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Loader.h"
+#include "obj/DataUtl.h"
+#include "obj/Dir.h"
 #include <new>
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
@@ -69,14 +71,14 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
         if(o) o->AddRef(ref);
     }
     if(!mMap){
-        mMap = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2);
+        mMap = NEW_POOL_ARRAY(2);
         mMap->Node(0) = key;
         mMap->Node(1) = value;
     }
     else {
         int nodeCnt = mMap->Size();
         for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
-            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
@@ -98,7 +100,7 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     if(mMap != 0){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
-            int symstr = (int)((const DataArray*)mMap)->Node(i).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(i).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 return &mMap->Node(i + 1);
@@ -121,34 +123,112 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
-    DataArray* arr = mMap;
-    const DataArray* def = ref->TypeDef();
-    if(arr && TheLoadMgr.mCacheMode && def->Size() != 0){
-        int i9 = 0;
-        while(arr){
-            while(true){
-                arr = mMap;
-                if(!mMap || mMap->Size() <= i9) break;
-                arr = def->FindArray(arr->Sym(i9), false);
-                if(!arr) break;
-                DataNode& n10 = arr->Node(1);
-                if(n10.Type() != kDataCommand){
-                    if(!arr->Node(1).CompatibleType(mMap->Node(i9 + 1).Type())){
-                        break;
+    // begin debug exclusive
+    if(mMap){
+        if(TheLoadMgr.mCacheMode){
+            const DataArray* def = ref->TypeDef();
+            if(def){
+                int i = 0;
+                while(mMap && i < mMap->Size()){
+                    DataArray* theArr = def->FindArray(mMap->Sym(i), false);
+                    if(theArr){
+                        DataNode& node = CONST_ARRAY(theArr)->Node(1);
+                        if(node.Type() == kDataCommand) goto next;
+                        if(theArr->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type()))
+                            goto next;
                     }
+                    ClearKeyValue(mMap->Sym(i), ref);
+                    if(mMap) continue;
+                    else break;
+            next:
+                    i += 2;
                 }
-                i9 += 2;
             }
-            arr = mMap;
-            ClearKeyValue(arr->Sym(i9), ref);
-            arr = mMap;
         }
     }
+    // end debug exclusive
+    if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
+        d << mMap;
+        return;
+    }
+    const DataArray* theTypeDef = ref->TypeDef();
+    if(!theTypeDef){
+        MILO_WARN("%s: Removing type properties without type definition", ref->Name());
+        d << (DataArray*)0;
+        return;
+    }
+    DataArray* potentialArr = 0;
+    int keyIdx = 0;
+    for(int i = 0; i < mMap->Size(); i += 2){
+        Symbol sym = mMap->Sym(i);
+        DataArray* found = theTypeDef->FindArray(sym, false);
+        if(found){
+            bool b1 = false;
+            bool b2 = false;
+            GetSaveFlags(found, b1, b2);
+            if(!b2 && b1 != gLoadingProxyFromDisk){
+                if(!potentialArr){
+                    potentialArr = NEW_POOL_ARRAY(mMap->Size());
+                }
+                potentialArr->Node(keyIdx) = DataNode(sym);
+                potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);
+                keyIdx += 2;
+            }
+        }
+    }
+    if(potentialArr){
+        potentialArr->Resize(keyIdx);
+        d << potentialArr;
+        potentialArr->Release();
+        return;
+    }
+    d << potentialArr;
+    
 }
 
-const char* savestr = "%s: Removing type properties without type definition";
+void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
+    ReleaseObjects(ref);
+    const DataArray* def = ref->TypeDef();
+    Hmx::Object* theThis = 0;
+    if(def) theThis = DataSetThis(ref);
+    if(mMap && gLoadingProxyFromDisk && def){
+        DataArray* arr = mMap;
+        d >> mMap;
+        int mapsize = arr->Size();
+        for(int i = 0; i < mapsize; i += 2){
+            Symbol sym = arr->Sym(i);
+            if(old_proxy){
+                bool b1 = false;
+                bool b2 = false;
+                GetSaveFlags(def->FindArray(sym, false), b1, b2);
+                if(b1 || b2) continue;
+            }
+                SetKeyValue(sym, arr->Node(i + 1), false, ref);
+        }
+        arr->Release();
+    }
+    else {
+        if(mMap){
+            mMap->Release();
+            mMap = 0;
+        }
+        d >> mMap;
+    }
 
-const char* loadstr = "%s: type based property \"%s\" is outdated, will clear on save\n";
+    if(def){
+        if(mMap && TheLoadMgr.mCacheMode){
+            
+            for(int i = 0; mMap && i < mMap->Size(); i += 2){
+                DataArray* found = def->FindArray(mMap->Sym(i), false);
+                if(!found || (CONST_ARRAY(found)->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
+                    TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
+                }
+            }
+        }
+        DataSetThis(theThis);
+        AddRefObjects(ref);
+    }
+}
 
 void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
     Hmx::Object* o = n.mValue.object;
@@ -251,7 +331,7 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
     if(mMap != 0){
         int cnt = mMap->Size() - 2;
         while(cnt >= 0){
-            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
