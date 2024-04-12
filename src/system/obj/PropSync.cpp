@@ -10,24 +10,19 @@ bool PropSync(class String& str, DataNode& node, DataArray* prop, int i, PropOp 
     return true;
 }
 
-// bool PropSync(FilePath& fp, DataNode& node, DataArray* da, int i, PropOp op){
-//     da->Size();
-//     if(op == (PropOp)1) node = DataNode(fp.FilePathRelativeToRoot());
-//     else fp.SetRoot(node.Str(0));
-//     return true;
-// }
+bool PropSync(FilePath& fp, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && (op & (kPropSet|kPropGet|kPropInsert)), 0x1C);
+    if(op == kPropGet) node = DataNode(fp.FilePathRelativeToRoot());
+    else fp.SetRoot(node.Str(0));
+    return true;
+}
 
-// bool PropSync(Hmx::Color& color, DataNode& node, DataArray* da, int i, PropOp op){
-//     da->Size();
-//     if(op == (PropOp)1) node = DataNode((int)color.Pack());
-//     else color.Unpack(node.Int(0));
-//     return true;
-// }
-
-// extern "C" int fn_80338AA8(int*);
-// int fn_80338AA8(int* i){
-//     return *i | 0xFF000000;
-// }
+bool PropSync(Hmx::Color& color, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && (op & (kPropSet|kPropGet|kPropInsert)), 0x26);
+    if(op == kPropGet) node = DataNode((int)color.Pack());
+    else color.Unpack(node.Int(0));
+    return true;
+}
 
 bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropOp _op){
     MILO_ASSERT(_i == _prop->Size() - 1 && (_op & (kPropSet|kPropGet|kPropInsert)), 0x45);
