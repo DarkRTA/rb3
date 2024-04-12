@@ -149,7 +149,7 @@
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
             "system/obj/TextFile.cpp": "NonMatching",
-            "system/obj/TypeProps.cpp":  "NonMatching",
+            "system/obj/TypeProps.cpp":  "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
             "system/oggvorbis/VorbisMem.cpp": "NonMatching",

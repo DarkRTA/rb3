@@ -5,6 +5,7 @@
 #include "utl/PoolAlloc.h"
 #include "utl/Loader.h"
 #include "obj/DataUtl.h"
+#include "obj/Dir.h"
 #include <new>
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
@@ -188,7 +189,6 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     
 }
 
-// https://decomp.me/scratch/GCAHH
 void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     ReleaseObjects(ref);
     const DataArray* def = ref->TypeDef();
@@ -204,12 +204,9 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
                 bool b1 = false;
                 bool b2 = false;
                 GetSaveFlags(def->FindArray(sym, false), b1, b2);
-                if(!b1 && !b2) goto next;
+                if(b1 || b2) continue;
             }
-            else {
-        next:
                 SetKeyValue(sym, arr->Node(i + 1), false, ref);
-            }
         }
         arr->Release();
     }
@@ -226,15 +223,7 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
             
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
                 DataArray* found = def->FindArray(mMap->Sym(i), false);
-                if(found){
-                    if(((const DataArray*)(found))->Node(1).Type() != kDataCommand){
-                        if(!found->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type())){
-                            goto next2;
-                        }
-                    }
-                }
-                else {
-            next2:
+                if(!found || (((const DataArray*)(found))->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type())) {
                     TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
                 }
             }
