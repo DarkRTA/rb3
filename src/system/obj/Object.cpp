@@ -114,6 +114,22 @@ DataNode* Hmx::Object::Property(Symbol prop, bool fail) const {
     return Property(d.mData, fail);
 }
 
+DataNode Hmx::Object::PropertyArray(Symbol sym){
+    static DataArrayPtr d(DataNode(1));
+    d.Node(0) = DataNode(sym);
+    int size = PropertySize(d.mData);
+    DataArray* newArr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(size);
+    static DataArrayPtr path(new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2));
+    path.Node(0) = DataNode(sym);
+    for(int i = 0; i < size; i++){
+        path.Node(1) = DataNode(i);
+        newArr->Node(i) = *Property(path.mData, true);
+    }
+    DataNode ret = DataNode(newArr, kDataArray);
+    newArr->Release();
+    return ret;
+}
+
 DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
     static DataNode n(a2, kDataArray);
     if(SyncProperty(n, prop, 0, kPropHandle)){
@@ -138,11 +154,11 @@ void Hmx::Object::SetProperty(DataArray* prop, const DataNode& val){
     }
 }
 
-// void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
-//     static DataArrayPtr d(DataNode(1));
-//     d.Node(0) = DataNode(prop);
-//     SetProperty(d.mData, val);
-// }
+void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
+    static DataArrayPtr d(DataNode(1));
+    d.Node(0) = DataNode(prop);
+    SetProperty(d.mData, val);
+}
 
 // int Hmx::Object::PropertySize(DataArray* prop){
 //     static DataNode n;
@@ -194,6 +210,14 @@ void Hmx::Object::AddRef(ObjRef* ref){
         mRefs.push_back(ref);
 }
 
+void Hmx::Object::Release(ObjRef* o){
+    if(sDeleting != this && o->RefOwner() != this){
+        for(std::vector<ObjRef*>::iterator i = mRefs.begin(); i != mRefs.end(); i++){
+            // MILO_ASSERT(*(i.base()) == o, 0x1E6);
+        }
+    }
+}
+
 void Hmx::Object::Save(BinStream& bs){
     SaveType(bs);
     SaveRest(bs);
@@ -207,6 +231,18 @@ void Hmx::Object::SaveType(BinStream& bs){
 void Hmx::Object::SaveRest(BinStream& bs){
     mTypeProps.Save(bs, this);
     bs << 0;
+}
+
+void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
+    if(ty != kCopyFromMax){
+        if(ClassName() == obj->ClassName()){
+            SetTypeDef((DataArray*)obj->TypeDef());
+            mTypeProps.Copy(obj->mTypeProps, this);
+        }
+        else if(obj->TypeDef() || TypeDef()){
+            MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s", obj->Type(), Name(), obj->Name(), ClassName(), obj->ClassName());
+        }
+    }
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){

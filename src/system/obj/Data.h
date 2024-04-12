@@ -265,14 +265,21 @@ bool DataVarExists(Symbol);
 
 class DataArrayPtr {
 public:
-    DataArray* mData;
     
     DataArrayPtr(const DataNode& node){
         mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(1);
         mData->Node(0) = node;
     }
+
+    DataArrayPtr(DataArray* arr){
+        mData = arr;
+        if(!arr) mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(1);
+    }
+
+    DataArray* mData;
+
     ~DataArrayPtr();
-    DataNode& Node(int i) const;
+    DataNode& Node(int i) const { return mData->Node(i); }
 };
 
 #endif
