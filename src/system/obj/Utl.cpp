@@ -136,3 +136,10 @@ bool PathCompare(DataArray* arr1, DataArray* arr2){
     }
     return true;
 }
+
+DataNode* GetPropertyVal(Hmx::Object* o, DataArray* arr, bool b){
+    if(IsPropPathValid(o, arr)){
+        return o->Property(arr, b);
+    }
+    else return 0;
+}

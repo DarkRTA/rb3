@@ -10,6 +10,7 @@ public:
     unsigned long pickOneOf32B(bool, long);
     void GrindArray(long, long, unsigned char*, int, int);
     void Init();
+    void HvDecrypt(unsigned char*, unsigned char*, int);
 };
 
 #endif

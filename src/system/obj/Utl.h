@@ -20,6 +20,7 @@ bool RecurseSuperClassesSearch(Symbol, Symbol);
 bool IsASubclass(Symbol, Symbol);
 void ReplaceObject(Hmx::Object*, Hmx::Object*, bool, bool, bool);
 void CopyTypeProperties(Hmx::Object*, Hmx::Object*);
+void ReserveToFit(ObjectDir*, ObjectDir*, int);
 int SubDirStringUsed(ObjectDir*);
 int SubDirHashUsed(ObjectDir*);
 const char* NextName(const char*, ObjectDir*);
@@ -27,6 +28,7 @@ bool StringMatchesFilter(const char*, const char*);
 int GetPropSize(Hmx::Object*, DataArray*, int);
 bool IsPropPathValid(Hmx::Object*, DataArray*);
 bool PathCompare(DataArray*, DataArray*);
+DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
 
 // mergefilter classes go here
 class MergeFilter {
