@@ -85,6 +85,12 @@ public:
     class Plane bottom; // offset 0x50, size 0x10
 };
 
-void Scale(const Vector3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
+// https://decomp.me/scratch/kGwAB
+// lol, regswaps galore
+inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res){
+    Scale(mtx.x, vec.x, res.x);
+    Scale(mtx.y, vec.y, res.y);
+    Scale(mtx.z, vec.z, res.z);
+}
 
 #endif

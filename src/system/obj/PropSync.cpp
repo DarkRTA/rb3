@@ -29,49 +29,59 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
     Symbol sym = _prop->Sym(_i);
     Vector3 rotation, scale;
     bool result = false;
-    static Symbol _s("pitch");
-    if(sym == _s){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(rotation.x, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("pitch");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(rotation.x, node, _prop, _i + 1, _op);
+        }
     }
-    static Symbol SymRoll("roll");
-    if(sym == SymRoll){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(rotation.y, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("roll");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(rotation.y, node, _prop, _i + 1, _op);
+        }
     }
-    static Symbol SymYaw("yaw");
-    if(sym == SymYaw){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(rotation.z, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("yaw");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(rotation.z, node, _prop, _i + 1, _op);
+        }
     }
-    static Symbol SymXScale("x_scale");
-    if(sym == SymXScale){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(scale.x, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("x_scale");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(scale.x, node, _prop, _i + 1, _op);
+        }
     }
-    static Symbol SymYScale("y_scale");
-    if(sym == SymYScale){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(scale.y, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("y_scale");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(scale.y, node, _prop, _i + 1, _op);
+        }
     }
-    static Symbol SymZScale("z_scale");
-    if(sym == SymZScale){
-        MakeEulerScale(mtx, rotation, scale);
-        Scale(rotation, 57.295776f, rotation);
-        result = PropSync(scale.z, node, _prop, _i + 1, _op);
+    {
+        static Symbol _s("z_scale");
+        if(sym == _s){
+            MakeEulerScale(mtx, rotation, scale);
+            Scale(rotation, 57.295776f, rotation);
+            result = PropSync(scale.z, node, _prop, _i + 1, _op);
+        }
     }
-
-    if (result && _op != 1) {
+    if (result && _op != kPropGet) {
         Scale(rotation, 0.0174532923847f, rotation);
         MakeRotMatrix(rotation, mtx, true);
         Scale(scale, mtx, mtx);
     }
-
     return result;
 }
 
