@@ -71,14 +71,14 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
         if(o) o->AddRef(ref);
     }
     if(!mMap){
-        mMap = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2);
+        mMap = NEW_POOL_ARRAY(2);
         mMap->Node(0) = key;
         mMap->Node(1) = value;
     }
     else {
         int nodeCnt = mMap->Size();
         for(int cnt = nodeCnt - 2; cnt >= 0; cnt -= 2){
-            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
@@ -100,7 +100,7 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     if(mMap != 0){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
-            int symstr = (int)((const DataArray*)mMap)->Node(i).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(i).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 return &mMap->Node(i + 1);
@@ -121,8 +121,6 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
     }
 }
 
-extern bool gLoadingProxyFromDisk;
-
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     // begin debug exclusive
@@ -134,9 +132,9 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
                 while(mMap && i < mMap->Size()){
                     DataArray* theArr = def->FindArray(mMap->Sym(i), false);
                     if(theArr){
-                        DataNode& node = ((const DataArray*)(theArr))->Node(1);
+                        DataNode& node = CONST_ARRAY(theArr)->Node(1);
                         if(node.Type() == kDataCommand) goto next;
-                        if(theArr->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type()))
+                        if(theArr->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type()))
                             goto next;
                     }
                     ClearKeyValue(mMap->Sym(i), ref);
@@ -149,7 +147,6 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
         }
     }
     // end debug exclusive
-    // why won't the extra lwz's for the Hmx::Object* casts spawn here? figure this out
     if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
@@ -171,7 +168,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
             GetSaveFlags(found, b1, b2);
             if(!b2 && b1 != gLoadingProxyFromDisk){
                 if(!potentialArr){
-                    potentialArr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(mMap->Size());
+                    potentialArr = NEW_POOL_ARRAY(mMap->Size());
                 }
                 potentialArr->Node(keyIdx) = DataNode(sym);
                 potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);
@@ -223,7 +220,7 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
             
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
                 DataArray* found = def->FindArray(mMap->Sym(i), false);
-                if(!found || (((const DataArray*)(found))->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type())) {
+                if(!found || (CONST_ARRAY(found)->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
                     TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
                 }
             }
@@ -334,7 +331,7 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
     if(mMap != 0){
         int cnt = mMap->Size() - 2;
         while(cnt >= 0){
-            int symstr = (int)((const DataArray*)mMap)->Node(cnt).mValue.symbol;
+            int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);

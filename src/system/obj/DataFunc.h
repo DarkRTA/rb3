@@ -5,6 +5,7 @@
 #include "obj/Dir.h"
 #include "utl/MemMgr.h"
 #include "obj/ObjPtr_p.h"
+#include "obj/DataUtl.h"
 
 extern Hmx::Object *gDataThis;
 
@@ -35,7 +36,10 @@ class DataThisPtr : public ObjPtr<Hmx::Object, class ObjectDir> {
 public:
     DataThisPtr() : ObjPtr(0, 0) {}
     virtual ~DataThisPtr(){}
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object* from, Hmx::Object* to){
+        ObjPtr<Hmx::Object, class ObjectDir>::operator=(to);
+        if(gDataThis == from) DataSetThis(to);
+    }
 };
 
 void DataRegisterFunc(Symbol s, DataFunc* func);

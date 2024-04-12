@@ -263,22 +263,27 @@ inline DataNode::~DataNode(){
 DataNode* DataVariable(Symbol);
 bool DataVarExists(Symbol);
 
+#define NEW_POOL_ARRAY(size) new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(size)
+// to properly generate DataArray::Node const vs non-const
+#define CONST_ARRAY(array) ((const DataArray*)(array))
+#define UNCONST_ARRAY(array) ((DataArray*)(array))
+
 class DataArrayPtr {
 public:
     
     DataArrayPtr(const DataNode& node){
-        mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(1);
+        mData = NEW_POOL_ARRAY(1);
         mData->Node(0) = node;
     }
 
     DataArrayPtr(DataArray* arr){
         mData = arr;
-        if(!arr) mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(1);
+        if(!mData) mData = NEW_POOL_ARRAY(0);
     }
 
     DataArray* mData;
 
-    ~DataArrayPtr();
+    ~DataArrayPtr(){ mData->Release(); }
     DataNode& Node(int i) const { return mData->Node(i); }
 };
 
