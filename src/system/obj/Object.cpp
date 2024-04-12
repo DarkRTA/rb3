@@ -6,6 +6,8 @@
 #include "obj/MessageTimer.h"
 #include "os/OSFuncs.h"
 
+extern Hmx::Object *gDataThis;
+
 const char* blank = "";
 const char* unk = "unknown";
 
@@ -53,6 +55,12 @@ Hmx::Object::~Object(){
     if(mTypeDef) mTypeDef->Release();
     mTypeDef = 0;
     RemoveFromDir();
+    Hmx::Object* tmp = sDeleting;
+    for(std::vector<ObjRef*>::iterator it = mRefs.begin(); it != mRefs.end(); it++){
+        // (*it)->Replace(0, 0);
+    }
+    if(gDataThis == this) gDataThis = 0;
+    sDeleting = tmp;
 }
 
 const char* setnamedirstr = "dir";
@@ -71,43 +79,40 @@ void Hmx::Object::SetTypeDef(DataArray* da){
     }
 }
 
-// DataNode* Hmx::Object::Property(DataArray* prop, bool fail){
-//     static DataNode n;
-//     if(SyncProperty(n, prop, 0, kPropGet)) return &n;
-//     Symbol name = prop->Sym(0);
-//     DataNode* kv = mTypeProps.KeyValue(name, false);
-//     if(kv == nullptr){
-//         if(mTypeDef != nullptr){
-//             DataArray* found = mTypeDef->FindArray(name, fail);
-//             if(found != nullptr){
-//                 kv = &found->Evaluate(1);
-//             }
-//         }
-//     }
-//     if(kv != nullptr){
-//         int cnt = prop->Size();
-//         if(cnt == 1) return kv;
-//         else if(cnt == 2){
-//             if(kv->Type() == kDataArray){
-//                 DataArray* ret = kv->mValue.array;
-//                 return &ret->Node(prop->Int(1));
-//             }
-//         }
-//     }
-//     if(fail){
-//         String str;
-//         str << prop;
-//         String str2(str);
-//         PropertyNOP("%s: property %s not found", PathName(this), str2);
-//     }
-//     return nullptr;
-// }
+DataNode* Hmx::Object::Property(DataArray* prop, bool fail) const {
+    static DataNode n;
+    // if(SyncProperty(n, prop, 0, kPropGet)) return &n; // fails because n needs to be a DataNode&...why tho?
+    Symbol name = prop->Sym(0);
+    DataNode* kv = mTypeProps.KeyValue(name, false);
+    if(!kv){
+        if(mTypeDef){
+            DataArray* found = mTypeDef->FindArray(name, fail);
+            if(found) kv = &found->Evaluate(1);
+        }
+    }
+    if(kv){
+        int cnt = prop->Size();
+        if(cnt == 1) return kv;
+        else if(cnt == 2){
+            if(kv->Type() == kDataArray){
+                DataArray* ret = kv->mValue.array;
+                return &ret->Node(prop->Int(1));
+            }
+        }
+    }
+    if(fail){
+        String str;
+        str << prop;
+        MILO_FAIL("%s: property %s not found", PathName(this), String(str));
+    }
+    return 0;
+}
 
-// DataNode* Hmx::Object::Property(Symbol prop, bool fail){
-//     static DataArrayPtr d(DataNode(1));
-//     d.Node(0) = DataNode(prop);
-//     return Property(d.mData, fail);
-// }
+DataNode* Hmx::Object::Property(Symbol prop, bool fail) const {
+    static DataArrayPtr d(DataNode(1));
+    d.Node(0) = DataNode(prop);
+    return Property(d.mData, fail);
+}
 
 DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
     static DataNode n(a2, kDataArray);
@@ -185,7 +190,7 @@ void Hmx::Object::InsertProperty(DataArray* prop, const DataNode& val){
 }
 
 void Hmx::Object::AddRef(ObjRef* ref){
-    if(ref->RefOwner())
+    if(ref->RefOwner() != this)
         mRefs.push_back(ref);
 }
 
@@ -196,7 +201,7 @@ void Hmx::Object::Save(BinStream& bs){
 
 void Hmx::Object::SaveType(BinStream& bs){
     bs << 2;
-    bs << ((mTypeDef) ? mTypeDef->Sym(0) : Symbol());
+    bs << Type();
 }
 
 void Hmx::Object::SaveRest(BinStream& bs){

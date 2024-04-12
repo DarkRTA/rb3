@@ -267,7 +267,10 @@ class DataArrayPtr {
 public:
     DataArray* mData;
     
-    DataArrayPtr(const DataNode&);
+    DataArrayPtr(const DataNode& node){
+        mData = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(1);
+        mData->Node(0) = node;
+    }
     ~DataArrayPtr();
     DataNode& Node(int i) const;
 };

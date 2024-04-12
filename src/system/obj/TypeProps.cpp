@@ -188,6 +188,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     
 }
 
+// https://decomp.me/scratch/GCAHH
 void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     ReleaseObjects(ref);
     const DataArray* def = ref->TypeDef();
