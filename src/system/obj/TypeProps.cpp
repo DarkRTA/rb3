@@ -4,6 +4,7 @@
 #include "utl/Symbols.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Loader.h"
+#include "obj/DataUtl.h"
 #include <new>
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
@@ -147,6 +148,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
         }
     }
     // end debug exclusive
+    // why won't the extra lwz's for the Hmx::Object* casts spawn here? figure this out
     if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
@@ -186,7 +188,60 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     
 }
 
-const char* loadstr = "%s: type based property \"%s\" is outdated, will clear on save\n";
+void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
+    ReleaseObjects(ref);
+    const DataArray* def = ref->TypeDef();
+    Hmx::Object* theThis = 0;
+    if(def) theThis = DataSetThis(ref);
+    if(mMap && gLoadingProxyFromDisk && def){
+        DataArray* arr = mMap;
+        d >> mMap;
+        int mapsize = arr->Size();
+        for(int i = 0; i < mapsize; i += 2){
+            Symbol sym = arr->Sym(i);
+            if(old_proxy){
+                bool b1 = false;
+                bool b2 = false;
+                GetSaveFlags(def->FindArray(sym, false), b1, b2);
+                if(!b1 && !b2) goto next;
+            }
+            else {
+        next:
+                SetKeyValue(sym, arr->Node(i + 1), false, ref);
+            }
+        }
+        arr->Release();
+    }
+    else {
+        if(mMap){
+            mMap->Release();
+            mMap = 0;
+        }
+        d >> mMap;
+    }
+
+    if(def){
+        if(mMap && TheLoadMgr.mCacheMode){
+            
+            for(int i = 0; mMap && i < mMap->Size(); i += 2){
+                DataArray* found = def->FindArray(mMap->Sym(i), false);
+                if(found){
+                    if(((const DataArray*)(found))->Node(1).Type() != kDataCommand){
+                        if(!found->Node(1).CompatibleType(((const DataArray*)(mMap))->Node(i + 1).Type())){
+                            goto next2;
+                        }
+                    }
+                }
+                else {
+            next2:
+                    TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
+                }
+            }
+        }
+        DataSetThis(theThis);
+        AddRefObjects(ref);
+    }
+}
 
 void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
     Hmx::Object* o = n.mValue.object;
