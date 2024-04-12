@@ -249,7 +249,6 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
 
-#pragma dont_inline on
 // see scratch: https://decomp.me/scratch/9abtP
 DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     Symbol sym = _msg->Sym(1);
@@ -282,16 +281,15 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     {
         static Symbol _s("dir");
         if(sym == _s){
-            // Hmx::Object* ret = 0;
-            // if(mDir != 0) ret = (Hmx::Object*)mDir;
-            // Hmx::Object* ret = mDir ? (Hmx::Object*)mDir : 0;
             return DataNode((Hmx::Object*)mDir);
         }
     }
     {
         static Symbol _s("set_name");
         if(sym == _s){
-
+            ObjectDir* theDir = _msg->Size() < 4 ? mDir : _msg->Obj<ObjectDir>(3);
+            SetName(_msg->Str(2), theDir);
+            return DataNode(0);
         }
     }
     HANDLE_ACTION_STATIC(set_type, SetType(_msg->Sym(2)));
@@ -312,7 +310,6 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
 
     return DataNode(kDataUnhandled, 0);
 }
-#pragma dont_inline reset
 
 DataNode Hmx::Object::HandleType(DataArray* msg){
     Symbol t = msg->Sym(1);
