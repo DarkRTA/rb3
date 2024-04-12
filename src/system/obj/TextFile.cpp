@@ -48,6 +48,7 @@ void TextFile::Print(const char* str){
     }
 }
 
+// FIXME: in order for this TU to link, the bss for "_s" needs to come BEFORE the bss for SetType's "types"
 BEGIN_HANDLERS(TextFile);
     HANDLE(print, OnPrint);
     {
