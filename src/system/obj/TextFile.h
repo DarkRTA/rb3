@@ -8,7 +8,7 @@
 #include "os/System.h"
 #include "os/Debug.h"
 
-class TextFile : public Hmx::Object, TextStream {
+class TextFile : public Hmx::Object, public TextStream {
 public:
     File* mFile;
 

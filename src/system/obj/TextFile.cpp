@@ -50,7 +50,10 @@ void TextFile::Print(const char* str){
 
 BEGIN_HANDLERS(TextFile);
     HANDLE(print, OnPrint);
-    HANDLE_STATIC(printf, OnPrintf);
+    {
+        static Symbol _s("printf");
+        HANDLE(_s, OnPrintf);
+    }
     HANDLE(reflect, OnReflect);
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x4D);

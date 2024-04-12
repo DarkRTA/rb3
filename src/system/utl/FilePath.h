@@ -1,6 +1,7 @@
 #ifndef UTL_FILEPATH_H
 #define UTL_FILEPATH_H
 #include "utl/Str.h"
+#include "os/File.h"
 
 class FilePath : public String {
 public:
