@@ -149,50 +149,48 @@ bool PropSync(Transform& tf, DataNode& node, DataArray* prop, int i, PropOp op){
     return true;
 }
 
-// bool PropSync(Hmx::Rect& rect, DataNode& node, DataArray* da, int i, PropOp op){
-//     int cnt = da->Size();
-//     if(i == cnt) return true;
-//     else {
-//         Symbol sym = da->Sym(i);
-//         if(sym == SymX){
-//             return PropSync(rect.x1, node, da, i + 1, op);
-//         }
-//         if(sym == SymY){
-//             return PropSync(rect.y1, node, da, i + 1, op);
-//         }
-//         if(sym == SymW){
-//             return PropSync(rect.x2, node, da, i + 1, op);
-//         }
-//         if(sym == SymH){
-//             return PropSync(rect.y2, node, da, i + 1, op);
-//         }
-//     }
-//     return false;
-// }
+bool PropSync(Hmx::Rect& rect, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(i == prop->Size()) return true;
+    else {
+        Symbol sym = prop->Sym(i);
+        if(sym == x){
+            return PropSync(rect.x, node, prop, i + 1, op);
+        }
+        if(sym == y){
+            return PropSync(rect.y, node, prop, i + 1, op);
+        }
+        if(sym == w){
+            return PropSync(rect.w, node, prop, i + 1, op);
+        }
+        if(sym == h){
+            return PropSync(rect.h, node, prop, i + 1, op);
+        }
+    }
+    return false;
+}
 
-// bool PropSync(Box& box, DataNode& node, DataArray* da, int i, PropOp op){
-//     int cnt = da->Size();
-//     if(i == cnt) return true;
-//     else {
-//         Symbol sym = da->Sym(i);
-//         if(sym == SymMinX){
-//             return PropSync(box.minX, node, da, i + 1, op);
-//         }
-//         if(sym == SymMaxX){
-//             return PropSync(box.maxX, node, da, i + 1, op);
-//         }
-//         if(sym == SymMinY){
-//             return PropSync(box.minY, node, da, i + 1, op);
-//         }
-//         if(sym == SymMaxY){
-//             return PropSync(box.maxY, node, da, i + 1, op);
-//         }
-//         if(sym == SymMinZ){
-//             return PropSync(box.minZ, node, da, i + 1, op);
-//         }
-//         if(sym == SymMaxZ){
-//             return PropSync(box.maxZ, node, da, i + 1, op);
-//         }
-//     }
-//     return false;
-// }
+bool PropSync(Box& box, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(i == prop->Size()) return true;
+    else {
+        Symbol sym = prop->Sym(i);
+        if(sym == min_x){
+            return PropSync(box.mMin.x, node, prop, i + 1, op);
+        }
+        if(sym == max_x){
+            return PropSync(box.mMax.x, node, prop, i + 1, op);
+        }
+        if(sym == min_y){
+            return PropSync(box.mMin.y, node, prop, i + 1, op);
+        }
+        if(sym == max_y){
+            return PropSync(box.mMax.y, node, prop, i + 1, op);
+        }
+        if(sym == min_z){
+            return PropSync(box.mMin.z, node, prop, i + 1, op);
+        }
+        if(sym == max_z){
+            return PropSync(box.mMax.z, node, prop, i + 1, op);
+        }
+    }
+    return false;
+}
