@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <vector>
-
+#include "types.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
 #include "utl/Str.h"
@@ -123,26 +123,25 @@ DataNode getRandomSequence32B(DataArray* da){
 
 #define OP_ROT_L(byte, dist) (unsigned char)((byte << (dist & 31) | byte >> (8 - dist & 31)) & 255)
 #define OP_ROT_R(byte, dist) (unsigned char)((byte >> (dist & 31) | byte << (8 - dist & 31)) & 255)
-#define BYTE(val) (unsigned char)(val)
 
 DataNode op0(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    return DataNode(kDataInt, BYTE(w ^ operand));
+    return DataNode(kDataInt, u8(w ^ operand));
 }
 
 DataNode op1(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    return DataNode(kDataInt, BYTE(BYTE(w) + BYTE(operand)));
+    return DataNode(kDataInt, u8(u8(w) + u8(operand)));
 }
 
 DataNode op2(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    unsigned long ret = BYTE(w) | ((w << 8) & 0xFF00);
-    ret >>= BYTE(operand & 7);
-    return DataNode(kDataInt, BYTE(ret));
+    unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
+    ret >>= u8(operand & 7);
+    return DataNode(kDataInt, u8(ret));
     // can we put the return value directly in the DataNode and still have the function match?
     // return DataNode(kDataInt, (BYTE(w) | ((w << 8) & 0xFF00)) >> BYTE(operand & 7));
 }
@@ -150,9 +149,9 @@ DataNode op2(DataArray* msg){
 DataNode op3(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    unsigned long ret = BYTE(w) | ((w << 8) & 0xFF00);
+    unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
     ret >>= (operand == 0);
-    return DataNode(kDataInt, BYTE(ret)); 
+    return DataNode(kDataInt, u8(ret)); 
 }
 
 DataNode op4(DataArray* msg){
@@ -173,10 +172,10 @@ DataNode op4(DataArray* msg){
     // r5 = ((r3<< 27) & 0x1) | (r5 & 0xFFFFFFFE);
     // Could also be:
     // r5 = ((r3<< 27) & ~0xFFFFFFFE) | (r5 & ~0x1);
-    unsigned long ret = ((BYTE(w) == 0) << 3) & ~0xFF;
-    ret = ((BYTE(w) << 27) & 1) | (ret & ~0x1);
+    unsigned long ret = ((u8(w) == 0) << 3) & ~0xFF;
+    ret = ((u8(w) << 27) & 1) | (ret & ~0x1);
     ret >>= (operand == 0);
-    return DataNode(kDataInt, BYTE(ret));
+    return DataNode(kDataInt, u8(ret));
 }
 
 DataNode op5(DataArray* msg);
