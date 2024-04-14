@@ -10,11 +10,13 @@ void SetPropKeysRev(int rev){
 }
 
 BinStream& operator>>(BinStream& bs, ObjectStage& stage){
+    ObjectDir* dir = 0;
     if(PropKeys::gRev > 8){
         ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), 0);
-        bs >> dirPtr; // this should be inlined
+        dirPtr.Load(bs, true, dir);
+        dir = dirPtr.Ptr();
     }
-    bs >> (ObjPtr<Hmx::Object, ObjectDir>&)stage; // ditto
+    stage.Load(bs, true, dir);
     return bs;
 }
 
@@ -126,7 +128,7 @@ void PropKeys::ReSort(){
 
 void Interp(const ObjectStage& stage1, const ObjectStage& stage2, float f, Hmx::Object*& obj){
     if(f < 1.0f) &stage2 = &stage1;
-    obj = (Hmx::Object*)stage2;
+    obj = stage2.Ptr();
 }
 
 SAVE_OBJ(PropKeys, 0xCF);
@@ -253,7 +255,6 @@ void PropKeys::SetPropExceptionID(){
             if(mPropExceptionID == kTransQuat || mPropExceptionID == kTransScale || mPropExceptionID == kTransPos){
                 if((Hmx::Object*)mTrans != mTarget.Ptr()){
                     mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
-                    // const objType* c = dynamic_cast<const objType*>(o);
                 }
             }
         }

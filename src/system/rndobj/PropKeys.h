@@ -102,6 +102,7 @@ public:
 };
 
 void SetPropKeysRev(int);
+float CalcSpline(float, float*); // putting this here for now, maybe it's better off in Key.h?
 
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
