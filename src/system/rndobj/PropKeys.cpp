@@ -11,6 +11,13 @@ void SetPropKeysRev(int rev){
 
 static const char* filler = "a;oweifjaoweiaoweuihf";
 
+BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
+    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.mOwner, (stage.mPtr) ? stage.mPtr->Dir() : 0);
+    bs << dirPtr;
+    bs << ObjPtr<Hmx::Object, ObjectDir>(stage);
+    return bs;
+}
+
 PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0), mInterpHandler(),
     mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
     
@@ -47,6 +54,23 @@ int PropKeys::SetKey(float frame){
         }
     }
     return -1;
+}
+
+void PropKeys::SetTarget(Hmx::Object* o){
+    if(mTarget.Ptr() != o){
+        bool b2 = true;
+        bool b1 = false;
+        if(mProp && GetPropertyVal(o, mProp, false) != 0) b1 = true;
+        if(!b1 && (mPropExceptionID == kHandleInterp || mPropExceptionID == kMacro)) b2 = false;
+        if(!o || !b2){
+            if(mProp){
+                mProp->Release();
+                mProp = 0;
+            }
+        }
+        mTarget = o;
+        SetPropExceptionID();
+    }
 }
 
 void PropKeys::ChangeFrame(int i, float f, bool b){
@@ -144,71 +168,71 @@ void PropKeys::Load(BinStream& bs){
 }
 
 void PropKeys::Print(){
-    TextStream* ts = &TheDebug;
-    *ts << "      target: " << mTarget.Ptr() << "\n";
-    *ts << "      property: " << mProp << "\n";
-    *ts << "      interpolation: " << mInterpolation << "\n";
+    TextStream& ts = TheDebug;
+    ts << "      target: " << mTarget.Ptr() << "\n";
+    ts << "      property: " << mProp << "\n";
+    ts << "      interpolation: " << mInterpolation << "\n";
 
-    float theFloat = 0.0f;
     for(int i = 0; i < NumKeys(); i++){
-        FrameFromIndex(i, theFloat);
-        *ts << "      " << theFloat << " -> ";
+        float frame = 0.0f;
+        FrameFromIndex(i, frame);
+        ts << "      " << frame << " -> ";
         switch((unsigned int)mKeysType){
             case kFloat:
                 Keys<float, float>* fKeys = AsFloatKeys();
-                *ts << fKeys->operator[](i).value;
+                ts << fKeys->operator[](i).value;
                 break;
             case kColor:
                 Keys<Hmx::Color, Hmx::Color>* cKeys = AsColorKeys();
-                *ts << cKeys->operator[](i).value;
+                ts << cKeys->operator[](i).value;
                 break;
             case kObject:
                 Keys<ObjectStage, Hmx::Object*>* oKeys = AsObjectKeys();
-                *ts << (Hmx::Object*)oKeys->operator[](i).value;
+                ts << (Hmx::Object*)oKeys->operator[](i).value;
                 break;
             case kBool:
                 Keys<bool, bool>* bKeys = AsBoolKeys();
-                *ts << bKeys->operator[](i).value;
+                ts << bKeys->operator[](i).value;
                 break;
             case kQuat:
                 Keys<Hmx::Quat, Hmx::Quat>* qKeys = AsQuatKeys();
-                *ts << qKeys->operator[](i).value;
+                ts << qKeys->operator[](i).value;
                 break;
             case kVector3:
                 Keys<Vector3, Vector3>* vKeys = AsVector3Keys();
-                *ts << vKeys->operator[](i).value;
+                ts << vKeys->operator[](i).value;
                 break;
             case kSymbol:
                 Keys<Symbol, Symbol>* sKeys = AsSymbolKeys();
-                *ts << sKeys->operator[](i).value;
+                ts << sKeys->operator[](i).value;
                 break;
         }
-        *ts << "\n";
+        ts << "\n";
     }
 }
 
 ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
     if(!this || !o) return kNoException;
-    String str;
-    arr->Print(str, kDataArray, true);
-    str = str.substr(1, strlen(str.c_str()) - 2);
+    String propString;
+    arr->Print(propString, kDataArray, true);
+    propString = propString.substr(1, strlen(propString.c_str()) - 2);
     bool b1 = false;
-    if(str == "rotation"){
+    if(propString == "rotation"){
         if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
         if(b1) return kTransQuat;
     }
     b1 = false;
-    if(str == "scale"){
+    if(propString == "scale"){
         if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
         if(b1) return kTransScale;
     }
     b1 = false;
-    if(str == "position"){
+    if(propString == "position"){
         if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
         if(b1) return kTransPos;
     }
     b1 = false;
-    if(str == "event"){
+    if(propString == "event"){
         if(IsASubclass(o->ClassName(), "ObjectDir")) b1 = true;
         if(b1) return kDirEvent;
     }
