@@ -147,15 +147,16 @@ template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vec
     return bs;
 }
 
-template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1, T2>& vec){
-    int vecSize;
-    bs >> vecSize;
-    T1 filler;
-    vec.resize(vecSize, filler);
-    for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
-        bs >> *it;
-    }
-    return bs;
-}
+// holup, gonna let nathan cook
+// template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1, T2>& vec){
+//     int vecSize;
+//     bs >> vecSize;
+//     T1 filler;
+//     vec.resize(vecSize, filler);
+//     for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
+//         bs >> *it;
+//     }
+//     return bs;
+// }
 
 #endif
