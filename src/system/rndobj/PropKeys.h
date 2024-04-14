@@ -8,9 +8,19 @@
 #include "os/Debug.h"
 #include <vector>
 
-// what on earth?!?!
-template <class T> class Keys : public std::vector<T> {
+// thank god for the RB2 dump
+template <class T> class Key {
 public:
+    T value;
+    float frame;
+};
+
+// I now think Keys is a vector<Key<T>>
+// would make sense for determining what value is at what frame,
+// not sure how the second template gets incorporated yet
+template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
+public:
+
 };
 
 enum AnimKeysType {
@@ -60,7 +70,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float>* AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return 0; }
+    virtual Keys<float, float>* AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return 0; }
     virtual int AsColorKeys(){ MILO_ASSERT(false, 0xA9); return 0; }
     virtual int AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return 0; }
     virtual int AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return 0; }
@@ -93,7 +103,7 @@ public:
     int mLastKeyFrameIndex : 8;
 };
 
-class FloatKeys : public PropKeys, public Keys<float> {
+class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
     virtual ~FloatKeys(){}
     virtual float StartFrame();
@@ -108,7 +118,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float>* AsFloatKeys(){ return this; }
+    virtual Keys<float, float>* AsFloatKeys(){ return this; }
     virtual int FloatAt(float, float&);
 };
 

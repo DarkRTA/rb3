@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <vector>
-
+#include "types.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
 #include "utl/Str.h"
@@ -33,36 +33,32 @@ namespace {
     }
 }
 
-DataNode hashTo5Bits(DataArray *da) {
+DataNode hashTo5Bits(DataArray* da) {
     static unsigned long hashMapping[0x100];
-
     unsigned long seed = da->Int(1) & 0xFF;
     unsigned long ret = hashMapping[seed];
-    bool hasEnoughElements = da->Size() > 2;
 
-    if (hasEnoughElements) {
+    if (da->Size() > 2) {
         seed = da->Int(1);
-        for (int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++) {
+        int max = ARRAY_LENGTH(hashMapping);
+        for (int idx = 0; idx < max; idx++) {
             hashMapping[idx] = (seed >> 3) & 0x1F;
             seed = (seed * 0x19660D) + 0x3C6EF35F;
         }
-
         return DataNode(kDataInt, 0);
     }
-
     return DataNode(kDataInt, ret);
 }
 
 DataNode hashTo6Bits(DataArray* da) {
     static unsigned long hashMapping[0x100];
-
     unsigned long seed = da->Int(1) & 0xFF;
     unsigned long ret = hashMapping[seed];
-    bool hasEnoughElements = da->Size() > 2;
 
-    if (hasEnoughElements) {
+    if (da->Size() > 2) {
         seed = da->Int(1);
-        for (int idx = 0; idx < sizeof(hashMapping) / sizeof(*hashMapping); idx++) {
+        int max = ARRAY_LENGTH(hashMapping);
+        for (int idx = 0; idx < max; idx++) {
             hashMapping[idx] = (seed >> 2) & 0x3F;
             seed = (seed * 0x19660D) + 0x3C6EF35F;
         }
@@ -72,11 +68,10 @@ DataNode hashTo6Bits(DataArray* da) {
 }
 
 DataNode getRandomSequence32A(DataArray* da){
-    static unsigned long s_seed;
+    static unsigned long s_seed = 0x521;
     static bool usedUp[0x20];
-    bool enough = da->Size() > 1;
 
-    if(enough){
+    if(da->Size() > 1){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
         if(dataint != 0){
@@ -100,11 +95,10 @@ DataNode getRandomSequence32A(DataArray* da){
 }
 
 DataNode getRandomSequence32B(DataArray* da){
-    static unsigned long s_seed;
+    static unsigned long s_seed = 0x303F;
     static bool usedUp[0x20];
-    bool enough = da->Size() > 1;
 
-    if(enough){
+    if(da->Size() > 1){
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
         if(dataint != 0){
@@ -127,35 +121,63 @@ DataNode getRandomSequence32B(DataArray* da){
     }
 }
 
+#define OP_ROT_L(byte, dist) (unsigned char)((byte << (dist & 31) | byte >> (8 - dist & 31)) & 255)
+#define OP_ROT_R(byte, dist) (unsigned char)((byte >> (dist & 31) | byte << (8 - dist & 31)) & 255)
+
 DataNode op0(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    return DataNode(kDataInt, ((w ^ operand) & 0xFF));
+    return DataNode(kDataInt, u8(w ^ operand));
 }
 
 DataNode op1(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    return DataNode(kDataInt, ((w & 0xFF) + (operand & 0xFF) & 0xFF));
+    return DataNode(kDataInt, u8(u8(w) + u8(operand)));
 }
 
 DataNode op2(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    unsigned long ret = (w & 0xFF) | ((w << 8) & 0xFF00);
-    ret >>= (operand & 7) & 0xFF;
-    return DataNode(kDataInt, (unsigned char)ret);
+    unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
+    ret >>= u8(operand & 7);
+    return DataNode(kDataInt, u8(ret));
+    // can we put the return value directly in the DataNode and still have the function match?
+    // return DataNode(kDataInt, (BYTE(w) | ((w << 8) & 0xFF00)) >> BYTE(operand & 7));
 }
 
 DataNode op3(DataArray* msg){
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
-    unsigned long ret = (w & 0xFF) | ((w & 0xFF) << 8);
+    unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
     ret >>= (operand == 0);
-    return DataNode(kDataInt, (unsigned char)ret);
+    return DataNode(kDataInt, u8(ret)); 
 }
 
-DataNode op4(DataArray* msg);
+DataNode op4(DataArray* msg){
+    unsigned long operand = msg->Int(1);
+    unsigned long w = msg->Int(2);
+    // w & 0xFF = clrlwi r0, r3, 24
+    // extlwi r5, r3, 24, 3
+    // Output:
+    // r5 = (r3 << 3) & 0xFFFFFF00;
+    // Could also be:
+    // r5 = (r3 << 3) & ~0xFF;
+    // r5 = (r3 >> 29) & 0xFFFFFF00;
+    // r5 = (r3 & 0xFFFFFFE0) << 3;
+    // Other info: accesses bits 5-28
+
+    // rlwimi r5, r3, 27, 31, 31
+    // Output:
+    // r5 = ((r3<< 27) & 0x1) | (r5 & 0xFFFFFFFE);
+    // Could also be:
+    // r5 = ((r3<< 27) & ~0xFFFFFFFE) | (r5 & ~0x1);
+    unsigned long ret = ((u8(w) == 0) << 3) & ~0xFF;
+    ret = ((u8(w) << 27) & 1) | (ret & ~0x1);
+    ret >>= (operand == 0);
+    return DataNode(kDataInt, u8(ret));
+}
+
 DataNode op5(DataArray* msg);
 DataNode op6(DataArray* msg);
 DataNode op7(DataArray* msg);
@@ -249,9 +271,8 @@ unsigned long ByteGrinder::pickOneOf32B(bool b, long l){
 }
 
 DataNode getRandomLong(DataArray* da){
-    static unsigned long s_seed;
-    bool enough = da->Size() > 1;
-    if(enough){
+    static unsigned long s_seed = 0x521;
+    if(da->Size() > 1){
         s_seed = s_seed * 0x19660D + 0x3C6EF35F;
     }
     return DataNode(kDataInt, s_seed);

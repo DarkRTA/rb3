@@ -61,21 +61,21 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
 
 float FloatKeys::StartFrame(){
     if(size() != 0){
-        return (*this)[0];
+        return (*this)[0].frame;
     }
     else return 0.0f;
 }
 
 float FloatKeys::EndFrame(){
     if(size() != 0){
-        return this->back();
+        return this->back().frame;
     }
     else return 0.0f;
 }
 
 bool FloatKeys::FrameFromIndex(int idx, float& f){
     if(idx >= size()) return false;
-    else f = (*this)[idx];
+    else f = (*this)[idx].frame;
     return true;
 }
 
