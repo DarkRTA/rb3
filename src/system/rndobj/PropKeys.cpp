@@ -130,28 +130,46 @@ void PropKeys::Load(BinStream& bs){
 }
 
 void PropKeys::Print(){
-    TheDebug << "      target: " << mTarget.Ptr() << "\n" << 
-        "      property: " << mProp << "\n" << 
-        "      interpolation: " << mInterpolation << "\n";
+    TextStream* ts = &TheDebug;
+    *ts << "      target: " << mTarget.Ptr() << "\n";
+    *ts << "      property: " << mProp << "\n";
+    *ts << "      interpolation: " << mInterpolation << "\n";
 
     float theFloat = 0.0f;
     for(int i = 0; i < NumKeys(); i++){
         FrameFromIndex(i, theFloat);
-        TheDebug << "      " << theFloat << " -> ";
+        *ts << "      " << theFloat << " -> ";
         switch((unsigned int)mKeysType){
             case kFloat:
                 Keys<float, float>* fKeys = AsFloatKeys();
-                TheDebug << fKeys->operator[](i).value;
+                *ts << fKeys->operator[](i).value;
                 break;
             case kColor:
+                Keys<Hmx::Color, Hmx::Color>* cKeys = AsColorKeys();
+                *ts << cKeys->operator[](i).value;
+                break;
             case kObject:
+                Keys<ObjectStage, Hmx::Object*>* oKeys = AsObjectKeys();
+                *ts << (Hmx::Object*)oKeys->operator[](i).value;
+                break;
             case kBool:
+                Keys<bool, bool>* bKeys = AsBoolKeys();
+                *ts << bKeys->operator[](i).value;
+                break;
             case kQuat:
+                Keys<Hmx::Quat, Hmx::Quat>* qKeys = AsQuatKeys();
+                *ts << qKeys->operator[](i).value;
+                break;
             case kVector3:
+                Keys<Vector3, Vector3>* vKeys = AsVector3Keys();
+                *ts << vKeys->operator[](i).value;
+                break;
             case kSymbol:
+                Keys<Symbol, Symbol>* sKeys = AsSymbolKeys();
+                *ts << sKeys->operator[](i).value;
                 break;
         }
-        TheDebug << "\n";
+        *ts << "\n";
     }
 }
 
