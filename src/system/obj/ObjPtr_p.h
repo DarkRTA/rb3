@@ -26,7 +26,8 @@ public:
 
     virtual bool IsDirPtr(){ return 0; }
 
-    T1* Ptr(){ return mPtr; }
+    Hmx::Object* Owner() const { return mOwner; }
+    T1* Ptr() const { return mPtr; }
     operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
 
@@ -62,6 +63,13 @@ public:
     Hmx::Object* mOwner;
     T1* mPtr;
 };
+
+template <class T1> BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
+    MILO_ASSERT(f.Owner(), 0x2D1);
+    const char* objName = (f.Ptr()) ? f.Ptr()->Name() : "";
+    bs << objName;
+    return bs;
+}
 
 template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true, 0);
