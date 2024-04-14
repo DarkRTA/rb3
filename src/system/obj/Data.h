@@ -270,6 +270,10 @@ bool DataVarExists(Symbol);
 
 class DataArrayPtr {
 public:
+
+    DataArrayPtr(){
+        mData = NEW_POOL_ARRAY(0);
+    }
     
     DataArrayPtr(const DataNode& node){
         mData = NEW_POOL_ARRAY(1);

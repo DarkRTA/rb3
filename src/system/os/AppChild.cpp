@@ -69,10 +69,9 @@ void AppChild::Sync(unsigned short sh){
 void AppChild::Poll(){
     if(mStream){
         while(mEnabled && !mSync){
-            DataArray* arr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
-            arr->Load(*mStream);
-            arr->Execute();
-            arr->Release();
+            DataArrayPtr cmd;
+            cmd.mData->Load(*mStream);
+            cmd.mData->Execute();
         }
         mSync = false;
     }
