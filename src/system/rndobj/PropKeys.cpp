@@ -57,28 +57,41 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
             fKeys->operator[](i).frame = f;
             break;
         case kColor:
-            AsColorKeys();
+            AsColorKeys()->operator[](i).frame = f;
             break;
         case kObject:
-            AsObjectKeys();
+            AsObjectKeys()->operator[](i).frame = f;
             break;
         case kBool:
-            AsBoolKeys();
+            AsBoolKeys()->operator[](i).frame = f;
             break;
         case kSymbol:
-            AsSymbolKeys();
+            AsSymbolKeys()->operator[](i).frame = f;
             break;
         case kVector3:
-            AsVector3Keys();
+            AsVector3Keys()->operator[](i).frame = f;
             break;
         case kQuat:
-            AsQuatKeys();
+            AsQuatKeys()->operator[](i).frame = f;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
             break;
     }
     if(b) ReSort();
+}
+
+void PropKeys::ReSort(){
+    switch((unsigned int)mKeysType){
+        case kFloat:
+        case kColor:
+        case kObject:
+        case kBool:
+        case kSymbol:
+        case kVector3:
+        case kQuat:
+            break;
+    }
 }
 
 void Interp(const ObjectStage& stage1, const ObjectStage& stage2, float f, Hmx::Object*& obj){
