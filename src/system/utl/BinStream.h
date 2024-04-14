@@ -150,10 +150,12 @@ template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vec
 template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1, T2>& vec){
     int vecSize;
     bs >> vecSize;
-    // vec.reserve(vecSize); // this produces errors due to max_size() not being found
-    for(int i = 0; i != vec.size(); i++){
-        bs >> vec[i];
+    T1 filler;
+    vec.resize(vecSize, filler);
+    for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
+        bs >> *it;
     }
+    return bs;
 }
 
 #endif

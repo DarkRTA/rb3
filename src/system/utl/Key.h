@@ -5,6 +5,7 @@
 // thank god for the RB2 dump
 template <class T> class Key {
 public:
+    Key() : frame(0.0f) {}
     T value;
     float frame;
 

@@ -266,9 +266,10 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
+// disabled the reading from binstream for now because vector::resize is broken lol
 void SymbolKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    bs >> *this;
+    // bs >> *this;
 }
 
 void SymbolKeys::Save(BinStream& bs){
@@ -278,7 +279,7 @@ void SymbolKeys::Save(BinStream& bs){
 
 void FloatKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    bs >> *this;
+    // bs >> *this;
 }
 
 void FloatKeys::Save(BinStream& bs){
