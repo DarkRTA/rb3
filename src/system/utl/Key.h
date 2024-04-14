@@ -12,6 +12,16 @@ public:
     // not sure if we need to explicitly write these or not
 };
 
+template <class T> BinStream& operator>>(BinStream& bs, Key<T>& key){
+    bs >> key.value >> key.frame;
+    return bs;
+}
+
+template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
+    bs << key.value << key.frame;
+    return bs;
+}
+
 // Keys is a vector<Key<T>>
 // would make sense for determining what value is at what frame,
 // not sure how the second template gets incorporated yet

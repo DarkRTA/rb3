@@ -123,4 +123,23 @@ public:
     virtual int FloatAt(float, float&);
 };
 
+class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
+public:
+    virtual ~SymbolKeys(){}
+    virtual float StartFrame();
+    virtual float EndFrame();
+    virtual bool FrameFromIndex(int, float&);
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int);
+    virtual int SetKey(float);
+    virtual int RemoveKey(int);
+    virtual int NumKeys();
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream&);
+    virtual void Load(BinStream&);
+    virtual void Copy(const PropKeys*);
+    virtual Keys<Symbol, Symbol>* AsSymbolKeys(){ return this; }
+    virtual int SymbolAt(float, Symbol&);
+};
+
 #endif

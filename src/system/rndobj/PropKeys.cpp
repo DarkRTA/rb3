@@ -261,6 +261,31 @@ void PropKeys::SetPropExceptionID(){
     }
 }
 
+void PropKeys::SetInterpHandler(Symbol sym){
+    mInterpHandler = sym;
+    SetPropExceptionID();
+}
+
+void SymbolKeys::Load(BinStream& bs){
+    PropKeys::Load(bs);
+    bs >> *this;
+}
+
+void SymbolKeys::Save(BinStream& bs){
+    PropKeys::Save(bs);
+    bs << *this;
+}
+
+void FloatKeys::Load(BinStream& bs){
+    PropKeys::Load(bs);
+    bs >> *this;
+}
+
+void FloatKeys::Save(BinStream& bs){
+    PropKeys::Save(bs);
+    bs << *this;
+}
+
 int FloatKeys::RemoveKey(int i){
     erase(begin() + i);
     return size();
@@ -287,8 +312,3 @@ bool FloatKeys::FrameFromIndex(int idx, float& f){
 }
 
 int FloatKeys::NumKeys(){ return size(); }
-
-void PropKeys::SetInterpHandler(Symbol sym){
-    mInterpHandler = sym;
-    SetPropExceptionID();
-}
