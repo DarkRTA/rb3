@@ -8,6 +8,7 @@
 #include "os/Debug.h"
 #include "obj/ObjectStage.h"
 #include "utl/Key.h"
+#include "obj/Msg.h"
 
 enum AnimKeysType {
     kFloat,
@@ -81,6 +82,7 @@ public:
     ExceptionID PropExceptionID(Hmx::Object*, DataArray*);
 
     static unsigned short gRev;
+    static Message sInterpMessage;
 
     ObjOwnerPtr<Hmx::Object, ObjectDir> mTarget;
     DataArray* mProp;
@@ -90,7 +92,7 @@ public:
     // presumably, bits 10-31 of 0x1C would be mlastKeyFrameIndex?
     // mKeysType: bits 7-9 of 0x1C
     // interpolation: bits 4-6 of 0x1C
-    // something else is bits 1-3 of 0x1C
+    // exception id is bits 1-3 of 0x1C
     // unknown is bit 0 of 0x1C
     int mLastKeyFrameIndex : 22;
     AnimKeysType mKeysType : 3;

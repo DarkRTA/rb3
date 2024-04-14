@@ -3,6 +3,7 @@
 #include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;
+Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
 
 void SetPropKeysRev(int rev){
     PropKeys::gRev = rev;
@@ -170,6 +171,49 @@ void PropKeys::Print(){
                 break;
         }
         *ts << "\n";
+    }
+}
+
+ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
+    if(!this || !o) return kNoException;
+    String str;
+    arr->Print(str, kDataArray, true);
+    str = str.substr(1, strlen(str.c_str()) - 2);
+    bool b1 = false;
+    if(str == "rotation"){
+        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
+        if(b1) return kTransQuat;
+    }
+    b1 = false;
+    if(str == "scale"){
+        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
+        if(b1) return kTransScale;
+    }
+    b1 = false;
+    if(str == "position"){
+        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
+        if(b1) return kTransPos;
+    }
+    b1 = false;
+    if(str == "event"){
+        if(IsASubclass(o->ClassName(), "ObjectDir")) b1 = true;
+        if(b1) return kDirEvent;
+    }
+    return kNoException;
+}
+
+void PropKeys::SetPropExceptionID(){
+    if(!mInterpHandler.IsNull()) mPropExceptionID = kNoException;
+    else {
+        if(mPropExceptionID != (unsigned int)kMacro){
+            mPropExceptionID = PropExceptionID(mTarget.Ptr(), mProp);
+            if(mPropExceptionID == kTransQuat || mPropExceptionID == kTransScale || mPropExceptionID == kTransPos){
+                if((Hmx::Object*)mTrans != mTarget.Ptr()){
+                    mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+                    // const objType* c = dynamic_cast<const objType*>(o);
+                }
+            }
+        }
     }
 }
 
