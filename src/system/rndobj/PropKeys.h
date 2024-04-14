@@ -6,22 +6,8 @@
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "os/Debug.h"
-#include <vector>
-
-// thank god for the RB2 dump
-template <class T> class Key {
-public:
-    T value;
-    float frame;
-};
-
-// I now think Keys is a vector<Key<T>>
-// would make sense for determining what value is at what frame,
-// not sure how the second template gets incorporated yet
-template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
-public:
-
-};
+#include "obj/ObjectStage.h"
+#include "utl/Key.h"
 
 enum AnimKeysType {
     kFloat,
@@ -71,10 +57,10 @@ public:
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
     virtual Keys<float, float>* AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return 0; }
-    virtual int AsColorKeys(){ MILO_ASSERT(false, 0xA9); return 0; }
-    virtual int AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return 0; }
-    virtual int AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return 0; }
-    virtual int AsQuatKeys(){ MILO_ASSERT(false, 0xAF); return 0; }
+    virtual Keys<Hmx::Color, Hmx::Color>* AsColorKeys(){ MILO_ASSERT(false, 0xA9); return 0; }
+    virtual Keys<ObjectStage, Hmx::Object*>* AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return 0; }
+    virtual Keys<bool, bool>* AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return 0; }
+    virtual Keys<Hmx::Quat, Hmx::Quat>* AsQuatKeys(){ MILO_ASSERT(false, 0xAF); return 0; }
     virtual int AsVector3Keys(){ MILO_ASSERT(false, 0xB1); return 0; }
     virtual int AsSymbolKeys(){ MILO_ASSERT(false, 0xB3); return 0; }
     virtual int FloatAt(float, float&){ MILO_ASSERT(false, 0xB6); return -1; }
@@ -86,10 +72,12 @@ public:
     virtual int SymbolAt(float, Symbol&){ MILO_ASSERT(false, 0xC2); return -1; }
 
     void SetProp(DataNode&);
+    void SetTarget(Hmx::Object*);
     void SetPropExceptionID();
     void ChangeFrame(int, float, bool);
     void ReSort();
     void SetInterpHandler(Symbol);
+    void Print();
 
     static unsigned short gRev;
 
@@ -97,11 +85,20 @@ public:
     DataArray* mProp;
     RndTransformable* mTrans;
     Symbol mInterpHandler;
-    AnimKeysType mKeysType : 8;
-    Interpolation mInterpolation : 8;
-    ExceptionID mPropExceptionID : 8;
-    int mLastKeyFrameIndex : 8;
+    
+    // presumably, bits 10-31 of 0x1C would be mlastKeyFrameIndex?
+    // mKeysType: bits 7-9 of 0x1C
+    // interpolation: bits 4-6 of 0x1C
+    // something else is bits 1-3 of 0x1C
+    // unknown is bit 0 of 0x1C
+    int mLastKeyFrameIndex : 22;
+    AnimKeysType mKeysType : 3;
+    Interpolation mInterpolation : 3;
+    ExceptionID mPropExceptionID : 3;
+    int unk18lastbit : 1;
 };
+
+void SetPropKeysRev(int);
 
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:

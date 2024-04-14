@@ -1,10 +1,17 @@
 #include "rndobj/PropKeys.h"
+#include "obj/ObjectStage.h"
+#include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;
 
-PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0),
-    mKeysType(kFloat), mInterpolation(kStep), mPropExceptionID(kNoException), 
-    mInterpHandler(), mLastKeyFrameIndex(-2) {
+void SetPropKeysRev(int rev){
+    PropKeys::gRev = rev;
+}
+
+static const char* filler = "a;oweifjaoweiaoweuihf";
+
+PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0), mInterpHandler(),
+    mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
     
 }
 
@@ -29,10 +36,24 @@ void PropKeys::SetProp(DataNode& node){
     SetPropExceptionID();
 }
 
+int PropKeys::SetKey(float frame){
+    float f = 0.0f;
+    for(int i = 0; i < NumKeys(); i++){
+        if(FrameFromIndex(i, f)){
+            float fabsFloat = __fabs(frame - f);
+            if(fabsFloat < 0.000099999997f)
+                return i;
+        }
+    }
+    return -1;
+}
+
 void PropKeys::ChangeFrame(int i, float f, bool b){
-    switch(mKeysType){
+    unsigned int keyType = mKeysType;
+    switch((keyType)){
         case kFloat:
-            AsFloatKeys();
+            Keys<float, float>* fKeys = AsFloatKeys();
+            fKeys->operator[](i).frame = f;
             break;
         case kColor:
             AsColorKeys();
@@ -57,6 +78,81 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
             break;
     }
     if(b) ReSort();
+}
+
+void Interp(const ObjectStage& stage1, const ObjectStage& stage2, float f, Hmx::Object*& obj){
+    if(f < 1.0f) &stage2 = &stage1;
+    obj = (Hmx::Object*)stage2;
+}
+
+SAVE_OBJ(PropKeys, 0xCF);
+
+void PropKeys::Load(BinStream& bs){
+    if(gRev < 7) MILO_FAIL("PropKeys::Load should not be called before version 7");
+    else {
+        int animType;
+        bs >> animType;
+        mKeysType = (AnimKeysType)animType;
+        bs >> mTarget;
+        bs >> mProp;
+
+        int anotherVal;
+        if(gRev >= 8) bs >> anotherVal;
+        else anotherVal = (mKeysType == (unsigned int)kObject || mKeysType == (unsigned int)kBool) == 0;
+
+        if(gRev < 0xB && anotherVal == 4){
+            mKeysType = kSymbol;
+            mInterpolation = kStep;
+        }
+        else mInterpolation = (Interpolation)anotherVal;
+
+        if(gRev > 9){
+            Symbol sym;
+            bs >> sym;
+            if(!sym.IsNull()){
+                SetInterpHandler(sym);
+            }
+        }
+
+        if(gRev > 10){
+            int exceptID;
+            bs >> exceptID;
+            mPropExceptionID = (ExceptionID)exceptID;
+        }
+
+        if(gRev > 0xC){
+            bool b;
+            bs >> b;
+            unk18lastbit = b;
+        }
+        SetPropExceptionID();
+    }
+}
+
+void PropKeys::Print(){
+    TheDebug << "      target: " << mTarget.Ptr() << "\n" << 
+        "      property: " << mProp << "\n" << 
+        "      interpolation: " << mInterpolation << "\n";
+
+    float theFloat = 0.0f;
+    for(int i = 0; i < NumKeys(); i++){
+        FrameFromIndex(i, theFloat);
+        TheDebug << "      " << theFloat << " -> ";
+        switch((unsigned int)mKeysType){
+            case kFloat:
+                Keys<float, float>* fKeys = AsFloatKeys();
+                TheDebug << fKeys->operator[](i).value;
+                break;
+            case kColor:
+            case kObject:
+            case kBool:
+            case kQuat:
+            case kVector3:
+            case kSymbol:
+                break;
+        }
+        TheDebug << "\n";
+    }
 }
 
 float FloatKeys::StartFrame(){
