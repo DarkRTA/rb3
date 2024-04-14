@@ -9,12 +9,19 @@ void SetPropKeysRev(int rev){
     PropKeys::gRev = rev;
 }
 
-static const char* filler = "a;oweifjaoweiaoweuihf";
+BinStream& operator>>(BinStream& bs, ObjectStage& stage){
+    if(PropKeys::gRev > 8){
+        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), 0);
+        bs >> dirPtr; // this should be inlined
+    }
+    bs >> (ObjPtr<Hmx::Object, ObjectDir>&)stage; // ditto
+    return bs;
+}
 
 BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
-    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.mOwner, (stage.mPtr) ? stage.mPtr->Dir() : 0);
+    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : 0);
     bs << dirPtr;
-    bs << ObjPtr<Hmx::Object, ObjectDir>(stage);
+    bs << ObjPtr<Hmx::Object, ObjectDir>(stage.Owner(), stage.Ptr());
     return bs;
 }
 
@@ -61,7 +68,7 @@ void PropKeys::SetTarget(Hmx::Object* o){
         bool b2 = true;
         bool b1 = false;
         if(mProp && GetPropertyVal(o, mProp, false) != 0) b1 = true;
-        if(!b1 && (mPropExceptionID == kHandleInterp || mPropExceptionID == kMacro)) b2 = false;
+        if(!b1 && !(mPropExceptionID == kTransQuat || mPropExceptionID == kTransScale || mPropExceptionID == kTransPos || mPropExceptionID == kDirEvent)) b2 = false;
         if(!o || !b2){
             if(mProp){
                 mProp->Release();
@@ -74,8 +81,7 @@ void PropKeys::SetTarget(Hmx::Object* o){
 }
 
 void PropKeys::ChangeFrame(int i, float f, bool b){
-    unsigned int keyType = mKeysType;
-    switch((keyType)){
+    switch((unsigned int)(mKeysType)){
         case kFloat:
             Keys<float, float>* fKeys = AsFloatKeys();
             fKeys->operator[](i).frame = f;
@@ -252,6 +258,11 @@ void PropKeys::SetPropExceptionID(){
             }
         }
     }
+}
+
+int FloatKeys::RemoveKey(int i){
+    erase(begin() + i);
+    return size();
 }
 
 float FloatKeys::StartFrame(){
