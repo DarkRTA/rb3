@@ -118,7 +118,7 @@ void PropKeys::ReSort(){
     switch(mKeysType){
         case kFloat:
             AsFloatKeys();
-            // mystery vector method - fn_806280C0 in retail
+            // mystery vector method - fn_806280C0 in retail, scratch: https://decomp.me/scratch/5Vpiu
             break;
         case kColor:
             AsColorKeys();
