@@ -427,6 +427,10 @@ public:
 
   ~StlNodeAlloc() _STLP_NOTHROW {}
 
+  size_type max_size() const _STLP_NOTHROW  {
+    return size_type(-1) / sizeof(value_type);
+  }
+
   value_type *allocate(const size_type count, const void* ptr = nullptr) const {
     return reinterpret_cast<value_type *>(
       _MemOrPoolAllocSTL(count * sizeof(value_type), FastPool)

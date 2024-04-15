@@ -150,8 +150,9 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_type _
     _STLP_PRIV::__copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialCopy());
     _STLP_STD::fill(__pos, __pos + __n, __x);
   } else {
-    auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - __elems_after, __x);
-    _M_set_finish_idx(end - begin());
+    // TODO: Figure out which type trait should be used here
+    iterator __end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - __elems_after, __x, __false_type());
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
     _STLP_PRIV::__ucopy_ptrs(__pos, __old_finish, end(), _TrivialUCopy());
     _M_inc_finish_idx(__elems_after);
     _STLP_STD::fill(__pos, __old_finish, __x);
@@ -202,8 +203,8 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_type __n, const _Tp& __val)
     __tmp.swap(*this);
   } else if (__n > size()) {
     fill(begin(), end(), __val);
-    auto end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val);
-    _M_set_finish_idx(end - begin());
+    iterator __end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val);
+    _M_set_finish_idx(__end - begin());
   } else
     erase(_STLP_PRIV::__fill_n(begin(), __n, __val), end());
 }
