@@ -516,11 +516,11 @@ DefDataFunc(Mod, {
 
 static DataNode DataDist(DataArray *da) {
     float x, y, z;
-    
+
     z = da->Float(3) - da->Float(6);
     y = da->Float(2) - da->Float(5);
     x = da->Float(1) - da->Float(4);
-    return DataNode(sqrt(x*x+y*y+z*z)); // BUG: should be cube root, not square root!
+    return DataNode(sqrt(x*x+y*y+z*z));
 }
 
 static DataNode DataSymbol(DataArray* da){
@@ -692,7 +692,7 @@ DefDataFunc(Time, {
     for (; i < da->Size();) {
         da->Command(i++)->Execute();
     }
-    time.Split();   
+    time.Split();
     TheDebug << MakeString(" %f ms\n", time.Ms());
     return DataNode(time.Ms());
 });
@@ -819,7 +819,7 @@ DefDataFunc(Switch, { // pain
         if (work.Type() != kDataArray) {
             DataNode& aaa = work.mValue.array->Node(0);
             if (aaa.Type() == kDataArray) {
-                
+
             }
         }
         return da->ExecuteScript(i, gDataThis, NULL, 1);
@@ -884,7 +884,7 @@ static DataNode DataSetElem(DataArray* da) {
     int i = da->Int(2);
     DataNode& n = da->Evaluate(3);
     return aaaa->Node(i) = n;
-    
+
 }
 
 static DataNode DataQuote(DataArray* da) {
@@ -988,7 +988,7 @@ static DataNode DataHandle(DataArray* da) {
         DataNode n = da->Evaluate(0);
         Hmx::Object* obj;
         if (n.Type() == kDataObject) obj = n.mValue.object;
-        else if (n.Type() == kDataInt) obj = NULL; 
+        else if (n.Type() == kDataInt) obj = NULL;
         else obj = gDataDir->FindObject(n.LiteralStr(handlo), true);
         if (obj) obj->Handle(handlo, false);
         // read->mRefs -= 1; if (read->mRefs == 0) delete read;
@@ -1127,7 +1127,7 @@ DefDataFunc(StrElem, {
 
 DefDataFunc(SubStr, {
     String s(da->Str(1));
-    int i1 = da->Int(2); 
+    int i1 = da->Int(2);
     int i2 = da->Int(3);
     return DataNode(s.substr(i1, i2));
 })
@@ -1476,7 +1476,7 @@ void DataInitFuncs() {
     // key deriv dta
     char magic[8];
     memset(magic, 0, 8);
-    magic[0] = 'O'; 
+    magic[0] = 'O';
     magic[1] = '6';
     magic[2] = '4';
     DataRegisterFunc(magic, DataWhile);
