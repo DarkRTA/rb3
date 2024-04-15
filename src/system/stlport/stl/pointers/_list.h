@@ -63,8 +63,14 @@ public:
   allocator_type get_allocator() const
   { return _M_impl.get_allocator(); }
 
-  explicit list(const allocator_type& __a = allocator_type())
+  explicit list()
+    : _M_impl(allocator_type()) {}
+
+  explicit list(const allocator_type& __a)
     : _M_impl(__a) {}
+
+  // explicit list(const allocator_type& __a = allocator_type())
+  //   : _M_impl(__a) {}
 
   explicit list(size_type __n, const value_type& __val = value_type(),
        const allocator_type& __a = allocator_type())
