@@ -6,14 +6,14 @@
 
 const char* gNullStr = "";
 
-static Symbol gSystemLanguage;
-static DataArray* gSystemConfig;
-static DataArray* gSystemTitles;
-static int gUsingCD;
-static GfxMode gGfxMode;
-static int gSystemMs;
-static float gSystemFrac;
-static Timer gSystemTimer;
+Symbol gSystemLanguage;
+DataArray* gSystemConfig;
+DataArray* gSystemTitles;
+int gUsingCD;
+GfxMode gGfxMode;
+int gSystemMs;
+float gSystemFrac;
+Timer gSystemTimer;
 bool gHostConfig;
 bool gHostLogging;
 std::vector<char*> TheSystemArgs;
