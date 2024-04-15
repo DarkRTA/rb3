@@ -31,6 +31,17 @@ public:
     // definitely change the return types, I wasn't able to infer them
     void LastFrame() const;
     void Add(const T1&, float, bool);
+
+    // this is what SymbolAt calls
+    int AtFrame(float frame, T1& val) const {
+        const Key<T1>* prev;
+        const Key<T1>* next;
+        float r;
+        int idx = AtFrame(frame, prev, next, r);
+        // if(prev) // if prev is not null, call Interp for T1's type - for ObjectKeys, this'll call the Interp(ObjectStage&) method
+        
+    }
+
     int AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
 
     // fn_8039C750 in retail, for T1 = Symbol
@@ -44,7 +55,7 @@ public:
             return -1;
         }
         else {
-            const Key<T1>* key = &this->operator[](0);
+            const Key<T1>* key = &front();
             if(key->frame < frame){
                 key1 = key;
                 key2 = key;

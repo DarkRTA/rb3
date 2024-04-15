@@ -113,15 +113,36 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
     if(b) ReSort();
 }
 
+// 80627a64 in retail
 void PropKeys::ReSort(){
     switch(mKeysType){
         case kFloat:
+            AsFloatKeys();
+            // mystery vector method
+            break;
         case kColor:
+            AsColorKeys();
+            // mystery vector method
+            break;
         case kObject:
+            AsObjectKeys();
+            // mystery vector method
+            break;
         case kBool:
+            AsBoolKeys();
+            // mystery vector method
+            break;
         case kSymbol:
+            AsSymbolKeys();
+            // mystery vector method
+            break;
         case kVector3:
+            AsVector3Keys();
+            // mystery vector method
+            break;
         case kQuat:
+            AsQuatKeys();
+            // mystery vector method
             break;
     }
 }
@@ -282,10 +303,7 @@ void SymbolKeys::Save(BinStream& bs){
 
 int SymbolKeys::SymbolAt(float f, Symbol& sym){
     MILO_ASSERT(size(), 0x322);
-    const Key<Symbol>* ptr1;
-    const Key<Symbol>* ptr2;
-    float someFloat;
-    int frameAt = AtFrame(f, ptr1, ptr2, someFloat);
+    return AtFrame(f, sym);
 }
 
 void FloatKeys::SetToCurrentVal(int i){
