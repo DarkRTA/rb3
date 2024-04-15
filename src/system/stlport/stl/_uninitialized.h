@@ -266,15 +266,16 @@ inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
                               const input_iterator_tag &)
 { return __ufill_n(__first, __n, __x); }
 
+// TODO: Figure out which type trait should be used here
 template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __true_type&) {
+inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __true_type& /*unknown*/) {
   _ForwardIter __last = __first + __n;
   __ufill(__first, __last, __x, random_access_iterator_tag(), (ptrdiff_t*)0);
   return __last;
 }
 
 template <class _ForwardIter, class _Size, class _Tp>
-inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __false_type&) {
+inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, const _Tp& __x, const __false_type& /*unknown*/) {
   return __ufill_n(__first, __n, __x, input_iterator_tag());
 }
 

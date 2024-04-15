@@ -251,8 +251,8 @@ private:
   //is used to allow explicit instanciation of vector with types with no
   //default constructor.
   void _M_initialize(size_type __n, const _Tp& __val = _Tp()) {
-    auto end = _STLP_PRIV::__uninitialized_init(this->_M_ptr._M_data, __n, __val);
-    _M_set_finish_idx(end - this->_M_ptr._M_data);
+    iterator __end = _STLP_PRIV::__uninitialized_init(this->_M_ptr._M_data, __n, __val);
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
 public:
@@ -261,14 +261,15 @@ public:
   { _M_initialize(__n); }
   vector(size_type __n, const _Tp& __val, const allocator_type& __a = allocator_type())
     : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__n, __a) {
-    auto end = _STLP_PRIV::__uninitialized_fill_n(this->_M_ptr._M_data, __n, __val);
-    _M_set_finish_idx(end - this->_M_ptr._M_data);
+    // TODO: Figure out which type trait should be used here
+    iterator __end = _STLP_PRIV::__uninitialized_fill_n(this->_M_ptr._M_data, __n, __val, __false_type());
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
   vector(const _Self& __x)
     : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__x.size(), __x.get_allocator()) {
-    auto end = _STLP_PRIV::__ucopy_ptrs(__x.begin(), __x.end(), this->_M_data, _TrivialUCopy());
-    _M_set_finish_idx(end - this->_M_ptr._M_data);
+    iterator __end = _STLP_PRIV::__ucopy_ptrs(__x.begin(), __x.end(), this->_M_data, _TrivialUCopy());
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
   vector(__move_source<_Self> src)
@@ -282,8 +283,8 @@ private:
     this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
     _M_set_data_size(__n);
     _M_set_finish_idx(__n);
-    auto end = __uninitialized_fill_n(this->_M_data, __n, __val);
-    _M_set_finish_idx(end - this->_M_ptr._M_data);
+    iterator __end = __uninitialized_fill_n(this->_M_data, __n, __val);
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
   template <class _InputIterator>
@@ -630,8 +631,8 @@ private:
     size_type __n = distance(__first, __last);
     this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
     _M_set_data_size(__n);
-    auto end = uninitialized_copy(__first, __last, this->_M_ptr._M_data);
-    _M_set_finish_idx(end - this->_M_ptr._M_data);
+    iterator __end = uninitialized_copy(__first, __last, this->_M_ptr._M_data);
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 };
 
