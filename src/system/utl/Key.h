@@ -31,8 +31,41 @@ public:
     // definitely change the return types, I wasn't able to infer them
     void LastFrame() const;
     void Add(const T1&, float, bool);
-    void AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
-    void AtFrame(float, const Key<T1>*&, const Key<T1>*&, float&) const;
+    int AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
+
+    // fn_8039C750 in retail, for T1 = Symbol
+    // scratch: https://decomp.me/scratch/GPlJ4
+    // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
+    int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
+        if(empty()){
+            key1 = 0;
+            key2 = 0;
+            ref = 0.0f;
+            return -1;
+        }
+        else {
+            const Key<T1>* key = &this->operator[](0);
+            if(key->frame < frame){
+                key1 = key;
+                key2 = key;
+                ref = 0.0f;
+                return -1;
+            }
+            else {
+                const Key<T1>* otherKey = &back();
+                if(otherKey->frame != frame){
+                    const Key<T1>* otherKeyToRet = &back();
+                    key2 = otherKeyToRet;
+                    key1 = otherKeyToRet;
+                    ref = 0.0f;
+                    return size() - 1;
+                }
+                else {
+                    
+                }
+            }
+        }
+    }
 };
 
 #endif

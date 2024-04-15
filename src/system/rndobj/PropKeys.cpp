@@ -282,6 +282,14 @@ void SymbolKeys::Save(BinStream& bs){
     bs << *this;
 }
 
+int SymbolKeys::SymbolAt(float f, Symbol& sym){
+    MILO_ASSERT(size(), 0x322);
+    const Key<Symbol>* ptr1;
+    const Key<Symbol>* ptr2;
+    float someFloat;
+    int frameAt = AtFrame(f, ptr1, ptr2, someFloat);
+}
+
 void FloatKeys::SetToCurrentVal(int i){
     this->operator[](i).value = mTarget->Property(mProp, true)->Float(0);
 }
