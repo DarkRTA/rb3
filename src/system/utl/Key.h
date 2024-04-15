@@ -31,6 +31,14 @@ public:
     // definitely change the return types, I wasn't able to infer them
     void LastFrame() const;
     void Add(const T1&, float, bool);
+    void Remove(int); // used in RemoveKey
+
+    // void SetVal(const T1& prevVal, const T1& nextVal, float r, T1& val){
+    //     if(r < 1.0f){
+    //         nextVal = prevVal;
+    //     }
+    //     val = nextVal;
+    // }
 
     // this is what SymbolAt calls
     int AtFrame(float frame, T1& val) const {
@@ -39,6 +47,14 @@ public:
         float r;
         int idx = AtFrame(frame, prev, next, r);
         // if(prev) // if prev is not null, call Interp for T1's type - for ObjectKeys, this'll call the Interp(ObjectStage&) method
+        if(prev){
+            // SetVal(&prev->value, &next->value, r, val);
+            if(r < 1.0f){
+                next = prev;
+            }
+            val = next->value;
+        }
+        return idx;
         
     }
 
@@ -49,22 +65,22 @@ public:
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
     int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
         if(empty()){
-            key1 = 0;
             key2 = 0;
+            key1 = 0;
             ref = 0.0f;
             return -1;
         }
         else {
             const Key<T1>* key = &front();
-            if(key->frame < frame){
-                key1 = key;
+            if(frame < key->frame){
                 key2 = key;
+                key1 = key;
                 ref = 0.0f;
                 return -1;
             }
             else {
                 const Key<T1>* otherKey = &back();
-                if(otherKey->frame != frame){
+                if(frame >= otherKey->frame){
                     const Key<T1>* otherKeyToRet = &back();
                     key2 = otherKeyToRet;
                     key1 = otherKeyToRet;
@@ -72,9 +88,45 @@ public:
                     return size() - 1;
                 }
                 else {
-                    
+                    // scratch for this function: https://decomp.me/scratch/cPad6
+                    int somethingidk = idunnolol(frame);
+                    key1 = &this->operator[](somethingidk);
+                    key2 = &this->operator[](somethingidk + 1);
+                    ref = (frame - key1->frame) / (key2->frame - key1->frame);
+                    return somethingidk;
                 }
             }
+        }
+    }
+
+    int idunnolol(float ff) const {
+        if(empty() || (ff < front().frame)) return -1;
+        else {
+            int cnt = 0;
+            int threshold = size();
+            while(threshold > cnt + 1){
+                int newCnt = cnt + threshold >> 1;
+                const Key<T1>* keyHere = &this->operator[](newCnt);
+                if(ff < keyHere->frame) threshold = newCnt;
+                if(ff <= keyHere->frame) cnt = newCnt;
+            }
+
+            const Key<T1>* key1;
+            const Key<T1>* key2;
+            do {
+                cnt++;
+                if(cnt + 1 >= size()) break;
+                key1 = &this->operator[](cnt);
+                key2 = &this->operator[](cnt + 1);
+            } while(key2->frame == key1->frame);
+            
+            // while(cnt + 1 > size()){
+            //     const Key<T1>* key1 = &this->operator[](cnt);
+            //     const Key<T1>* key2 = &this->operator[](cnt + 1);
+            //     if(key1->frame == key2->frame) break;
+            //     cnt++;
+            // }
+            return cnt;
         }
     }
 };

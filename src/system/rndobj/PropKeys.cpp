@@ -118,31 +118,31 @@ void PropKeys::ReSort(){
     switch(mKeysType){
         case kFloat:
             AsFloatKeys();
-            // mystery vector method
+            // mystery vector method - fn_806280C0 in retail
             break;
         case kColor:
             AsColorKeys();
-            // mystery vector method
+            // mystery vector method - fn_80627FEC in retail
             break;
         case kObject:
             AsObjectKeys();
-            // mystery vector method
+            // mystery vector method - fn_80627F0C in retail
             break;
         case kBool:
             AsBoolKeys();
-            // mystery vector method
+            // mystery vector method - fn_80627E24 in retail
             break;
         case kSymbol:
             AsSymbolKeys();
-            // mystery vector method
+            // mystery vector method - fn_80627D50 in retail
             break;
         case kVector3:
             AsVector3Keys();
-            // mystery vector method
+            // mystery vector method - fn_80627C7C in retail
             break;
         case kQuat:
             AsQuatKeys();
-            // mystery vector method
+            // mystery vector method - fn_80627B64 in retail
             break;
     }
 }
