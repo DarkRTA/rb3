@@ -1,7 +1,11 @@
 #include "MemStream.h"
 
-MemStream::MemStream(bool b) : BinStream(b), mFail(0), mTell(0), mBuffer() {
-    // mBuffer.reserve(0x1000); // TODO: fix reserve
+MemStream::MemStream(bool b) : BinStream(b) {
+    mBuffer.reserve(0x1000);
+
+    // Initializer list wasn't used here for some reason
+    mFail = false;
+    mTell = 0;
 }
 
 

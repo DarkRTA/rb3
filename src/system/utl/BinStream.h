@@ -107,7 +107,7 @@ public:
     BS_WRITE_TYPE(unsigned int);
     BS_WRITE_TYPE(unsigned short);
     BS_WRITE_TYPE(short);
-    
+
     BinStream& operator<<(unsigned char uc){
         Write(&uc, 1);
         return *this;
@@ -124,7 +124,7 @@ public:
     BS_READ_TYPE(unsigned int);
     BS_READ_TYPE(unsigned short);
     BS_READ_TYPE(short);
-    
+
     BinStream& operator>>(unsigned char& out) {
         Read(&out, 1);
         return *this;
@@ -136,7 +136,7 @@ public:
         b = (uc != 0);
         return *this;
     }
-  
+
 };
 
 template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vector<T1, T2>& vec){
@@ -144,6 +144,18 @@ template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vec
     for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
         bs << *it;
     }
+    return bs;
+}
+
+template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1, T2>& vec){
+    unsigned int length;
+    bs >> length;
+    vec.resize(length);
+
+    for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
+        bs >> *it;
+    }
+
     return bs;
 }
 
