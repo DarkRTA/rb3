@@ -14,8 +14,11 @@ void InitObject(Hmx::Object*);
 const char* PathName(const Hmx::Object*);
 const char* SafeName(Hmx::Object*);
 DataNode ObjectList(ObjectDir*, Symbol, bool); // i think???
-void RecurseSuperClasses(Symbol, std::vector<Symbol>&);
+DataNode MakeFileList(const char*, bool, bool (*)(char*));
+DataNode MakeFileListFullPath(const char*);
+
 void ListSuperClasses(Symbol, std::vector<Symbol>&);
+void RecurseSuperClasses(Symbol, std::vector<Symbol>&);
 bool RecurseSuperClassesSearch(Symbol, Symbol);
 bool IsASubclass(Symbol, Symbol);
 void ReplaceObject(Hmx::Object*, Hmx::Object*, bool, bool, bool);

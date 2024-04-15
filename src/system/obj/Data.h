@@ -241,6 +241,10 @@ public:
         return Node(i).Evaluate();
     }
 
+    void* operator new(size_t){
+        return _PoolAlloc(0x10, 0x10, FastPool);
+    }
+
     void operator delete(void* v){
         _PoolFree(sizeof(DataArray), FastPool, v);
     }
@@ -263,7 +267,6 @@ inline DataNode::~DataNode(){
 DataNode* DataVariable(Symbol);
 bool DataVarExists(Symbol);
 
-#define NEW_POOL_ARRAY(size) new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(size)
 // to properly generate DataArray::Node const vs non-const
 #define CONST_ARRAY(array) ((const DataArray*)(array))
 #define UNCONST_ARRAY(array) ((DataArray*)(array))
@@ -272,17 +275,17 @@ class DataArrayPtr {
 public:
 
     DataArrayPtr(){
-        mData = NEW_POOL_ARRAY(0);
+        mData = new DataArray(0);
     }
     
     DataArrayPtr(const DataNode& node){
-        mData = NEW_POOL_ARRAY(1);
+        mData = new DataArray(1);
         mData->Node(0) = node;
     }
 
     DataArrayPtr(DataArray* arr){
         mData = arr;
-        if(!mData) mData = NEW_POOL_ARRAY(0);
+        if(!mData) mData = new DataArray(0);
     }
 
     DataArray* mData;

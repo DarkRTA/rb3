@@ -371,7 +371,7 @@ bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
 }
 
 DataArray* DataArray::Clone(bool b1, bool b2, int i){
-    DataArray* da = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(mSize + i);
+    DataArray* da = new DataArray(mSize + i);
     for(int i = 0; i < mSize; i++){
         da->mNodes[i] = (b2) ? mNodes[i].Evaluate() : mNodes[i];
         if(b1){
@@ -543,7 +543,7 @@ BinStream &operator>>(BinStream &bs, DataArray *&da) {
     bool b;
     bs >> b;
     if (b) {
-        da = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+        da = new DataArray(0);
         da->Load(bs);
     } else
         da = nullptr;

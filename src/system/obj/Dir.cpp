@@ -2,6 +2,8 @@
 
 #include "obj/Object.h"
 
+const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
+
 Hmx::Object* Hmx::Object::NewObject(){
     return new Hmx::Object();
 }

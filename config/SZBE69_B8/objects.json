@@ -108,6 +108,7 @@
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "Matching",
             "system/math/FileChecksum.cpp": "NonMatching",
+            "system/math/Geo.cpp": "NonMatching",
             "system/math/Interp.cpp": "NonMatching",
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
@@ -155,6 +156,7 @@
             "system/oggvorbis/VorbisMem.cpp": "NonMatching",
 
             "system/os/AppChild.cpp": "NonMatching",
+            "system/os/Archive.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
             "system/os/CritSec.cpp": "Matching",
@@ -224,6 +226,7 @@
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": "NonMatching",
+            "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/TransProxy.cpp": "NonMatching",
             "system/rndobj/Utl.cpp": "NonMatching",
