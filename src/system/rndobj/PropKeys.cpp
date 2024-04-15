@@ -136,21 +136,20 @@ SAVE_OBJ(PropKeys, 0xCF);
 void PropKeys::Load(BinStream& bs){
     if(gRev < 7) MILO_FAIL("PropKeys::Load should not be called before version 7");
     else {
-        unsigned int animType;
-        bs >> animType;
-        mKeysType = animType;
+        int iVal;
+        bs >> iVal;
+        mKeysType = iVal;
         bs >> mTarget;
         bs >> mProp;
 
-        int anotherVal;
-        if(gRev >= 8) bs >> anotherVal;
-        else anotherVal = (mKeysType == kObject || mKeysType == kBool) == 0;
+        if(gRev >= 8) bs >> iVal;
+        else iVal = (mKeysType == kObject || mKeysType == kBool) == 0;
 
-        if(gRev < 0xB && anotherVal == 4){
+        if(gRev < 0xB && iVal == 4){
             mKeysType = kSymbol;
             mInterpolation = kStep;
         }
-        else mInterpolation = anotherVal;
+        else mInterpolation = iVal;
 
         if(gRev > 9){
             Symbol sym;
@@ -161,9 +160,8 @@ void PropKeys::Load(BinStream& bs){
         }
 
         if(gRev > 10){
-            unsigned int exceptID;
-            bs >> exceptID;
-            mPropExceptionID = exceptID;
+            bs >> iVal;
+            mPropExceptionID = iVal;
         }
 
         if(gRev > 0xC){
@@ -185,13 +183,13 @@ void PropKeys::Print(){
     TextStream& ts = TheDebug;
     ts << "      target: " << mTarget.Ptr() << "\n";
     ts << "      property: " << mProp << "\n";
-    ts << "      interpolation: " << mInterpolation << "\n";
+    ts << "      interpolation: " << (int)mInterpolation << "\n";
 
     for(int i = 0; i < NumKeys(); i++){
         float frame = 0.0f;
         FrameFromIndex(i, frame);
         ts << "      " << frame << " -> ";
-        switch((unsigned int)mKeysType){
+        switch(mKeysType){
             case kFloat:
                 Keys<float, float>* fKeys = AsFloatKeys();
                 ts << fKeys->operator[](i).value;
@@ -225,8 +223,8 @@ void PropKeys::Print(){
     }
 }
 
-ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
-    if(!this || !o) return kNoException;
+unsigned int PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
+    if(!o || !arr) return kNoException;
     String propString;
     arr->Print(propString, kDataArray, true);
     propString = propString.substr(1, strlen(propString.c_str()) - 2);
@@ -254,9 +252,9 @@ ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
 }
 
 void PropKeys::SetPropExceptionID(){
-    if(!mInterpHandler.IsNull()) mPropExceptionID = kNoException;
+    if(!mInterpHandler.IsNull()) mPropExceptionID = kHandleInterp;
     else {
-        if(mPropExceptionID != (unsigned int)kMacro){
+        if(mPropExceptionID != kMacro){
             mPropExceptionID = PropExceptionID(mTarget.Ptr(), mProp);
             if(mPropExceptionID == kTransQuat || mPropExceptionID == kTransScale || mPropExceptionID == kTransPos){
                 if((Hmx::Object*)mTrans != mTarget.Ptr()){

@@ -79,7 +79,7 @@ public:
     void ReSort();
     void SetInterpHandler(Symbol);
     void Print();
-    ExceptionID PropExceptionID(Hmx::Object*, DataArray*);
+    static unsigned int PropExceptionID(Hmx::Object*, DataArray*);
 
     static unsigned short gRev;
     static Message sInterpMessage;
