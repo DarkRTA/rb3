@@ -83,7 +83,7 @@ void PropKeys::SetTarget(Hmx::Object* o){
 }
 
 void PropKeys::ChangeFrame(int i, float f, bool b){
-    switch((unsigned int)(mKeysType)){
+    switch(mKeysType){
         case kFloat:
             Keys<float, float>* fKeys = AsFloatKeys();
             fKeys->operator[](i).frame = f;
@@ -114,7 +114,7 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
 }
 
 void PropKeys::ReSort(){
-    switch((unsigned int)mKeysType){
+    switch(mKeysType){
         case kFloat:
         case kColor:
         case kObject:
@@ -136,21 +136,21 @@ SAVE_OBJ(PropKeys, 0xCF);
 void PropKeys::Load(BinStream& bs){
     if(gRev < 7) MILO_FAIL("PropKeys::Load should not be called before version 7");
     else {
-        int animType;
+        unsigned int animType;
         bs >> animType;
-        mKeysType = (AnimKeysType)animType;
+        mKeysType = animType;
         bs >> mTarget;
         bs >> mProp;
 
         int anotherVal;
         if(gRev >= 8) bs >> anotherVal;
-        else anotherVal = (mKeysType == (unsigned int)kObject || mKeysType == (unsigned int)kBool) == 0;
+        else anotherVal = (mKeysType == kObject || mKeysType == kBool) == 0;
 
         if(gRev < 0xB && anotherVal == 4){
             mKeysType = kSymbol;
             mInterpolation = kStep;
         }
-        else mInterpolation = (Interpolation)anotherVal;
+        else mInterpolation = anotherVal;
 
         if(gRev > 9){
             Symbol sym;
@@ -161,9 +161,9 @@ void PropKeys::Load(BinStream& bs){
         }
 
         if(gRev > 10){
-            int exceptID;
+            unsigned int exceptID;
             bs >> exceptID;
-            mPropExceptionID = (ExceptionID)exceptID;
+            mPropExceptionID = exceptID;
         }
 
         if(gRev > 0xC){

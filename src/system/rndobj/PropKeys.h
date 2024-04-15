@@ -95,9 +95,9 @@ public:
     // exception id is bits 1-3 of 0x1C
     // unknown is bit 0 of 0x1C
     int mLastKeyFrameIndex : 22;
-    AnimKeysType mKeysType : 3;
-    Interpolation mInterpolation : 3;
-    ExceptionID mPropExceptionID : 3;
+    unsigned int mKeysType : 3; // represents the enum AnimKeysType
+    unsigned int mInterpolation : 3; // represents the enum Interpolation
+    unsigned int mPropExceptionID : 3; // represents the enum ExceptionID
     int unk18lastbit : 1;
 };
 
