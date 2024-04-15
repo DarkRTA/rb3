@@ -175,6 +175,12 @@ void PropKeys::Load(BinStream& bs){
     }
 }
 
+void PropKeys::Copy(const PropKeys* keys){
+    mInterpHandler = keys->mInterpHandler;
+    mKeysType = keys->mKeysType;
+    mLastKeyFrameIndex = keys->mLastKeyFrameIndex;
+}
+
 void PropKeys::Print(){
     TextStream& ts = TheDebug;
     ts << "      target: " << mTarget.Ptr() << "\n";
@@ -266,10 +272,9 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
-// disabled the reading from binstream for now because vector::resize is broken lol
 void SymbolKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    // bs >> *this;
+    bs >> *this;
 }
 
 void SymbolKeys::Save(BinStream& bs){
@@ -277,9 +282,33 @@ void SymbolKeys::Save(BinStream& bs){
     bs << *this;
 }
 
+void FloatKeys::SetToCurrentVal(int i){
+    this->operator[](i).value = mTarget->Property(mProp, true)->Float(0);
+}
+
+void SymbolKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID == kMacro){
+        if(0 < i){
+            this->operator[](i).value = this->operator[](i - 1).value;
+        }
+    }
+    else this->operator[](i).value = mTarget->Property(mProp, true)->Sym(0);
+}
+
+void SymbolKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const SymbolKeys* newKeys = dynamic_cast<const SymbolKeys*>(keys);
+        // retail calls some function (this vector, this vector, newKeys' vector, newKeys' vector end)
+        // not so sure that it's insert, or if it is, what its params are
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }    
+}
+
 void FloatKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    // bs >> *this;
+    bs >> *this;
 }
 
 void FloatKeys::Save(BinStream& bs){
