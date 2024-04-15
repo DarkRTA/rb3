@@ -85,26 +85,25 @@ void PropKeys::SetTarget(Hmx::Object* o){
 void PropKeys::ChangeFrame(int i, float f, bool b){
     switch(mKeysType){
         case kFloat:
-            Keys<float, float>* fKeys = AsFloatKeys();
-            fKeys->operator[](i).frame = f;
+            (*AsFloatKeys())[i].frame = f;
             break;
         case kColor:
-            AsColorKeys()->operator[](i).frame = f;
+            (*AsColorKeys())[i].frame = f;
             break;
         case kObject:
-            AsObjectKeys()->operator[](i).frame = f;
+            (*AsObjectKeys())[i].frame = f;
             break;
         case kBool:
-            AsBoolKeys()->operator[](i).frame = f;
+            (*AsBoolKeys())[i].frame = f;
             break;
         case kSymbol:
-            AsSymbolKeys()->operator[](i).frame = f;
+            (*AsSymbolKeys())[i].frame = f;
             break;
         case kVector3:
-            AsVector3Keys()->operator[](i).frame = f;
+            (*AsVector3Keys())[i].frame = f;
             break;
         case kQuat:
-            AsQuatKeys()->operator[](i).frame = f;
+            (*AsQuatKeys())[i].frame = f;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
@@ -212,32 +211,25 @@ void PropKeys::Print(){
         ts << "      " << frame << " -> ";
         switch(mKeysType){
             case kFloat:
-                Keys<float, float>* fKeys = AsFloatKeys();
-                ts << fKeys->operator[](i).value;
+                ts << (*AsFloatKeys())[i].value;
                 break;
             case kColor:
-                Keys<Hmx::Color, Hmx::Color>* cKeys = AsColorKeys();
-                ts << cKeys->operator[](i).value;
+                ts << (*AsColorKeys())[i].value;
                 break;
             case kObject:
-                Keys<ObjectStage, Hmx::Object*>* oKeys = AsObjectKeys();
-                ts << (Hmx::Object*)oKeys->operator[](i).value;
+                ts << (Hmx::Object*)((*AsObjectKeys())[i].value);
                 break;
             case kBool:
-                Keys<bool, bool>* bKeys = AsBoolKeys();
-                ts << bKeys->operator[](i).value;
+                ts << (*AsBoolKeys())[i].value;
                 break;
             case kQuat:
-                Keys<Hmx::Quat, Hmx::Quat>* qKeys = AsQuatKeys();
-                ts << qKeys->operator[](i).value;
+                ts << (*AsQuatKeys())[i].value;
                 break;
             case kVector3:
-                Keys<Vector3, Vector3>* vKeys = AsVector3Keys();
-                ts << vKeys->operator[](i).value;
+                ts << (*AsVector3Keys())[i].value;
                 break;
             case kSymbol:
-                Keys<Symbol, Symbol>* sKeys = AsSymbolKeys();
-                ts << sKeys->operator[](i).value;
+                ts << (*AsSymbolKeys())[i].value;
                 break;
         }
         ts << "\n";
@@ -307,16 +299,16 @@ int SymbolKeys::SymbolAt(float f, Symbol& sym){
 }
 
 void FloatKeys::SetToCurrentVal(int i){
-    this->operator[](i).value = mTarget->Property(mProp, true)->Float(0);
+    (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
 }
 
 void SymbolKeys::SetToCurrentVal(int i){
     if(mPropExceptionID == kMacro){
         if(0 < i){
-            this->operator[](i).value = this->operator[](i - 1).value;
+            (*this)[i].value = (*this)[i - 1].value;
         }
     }
-    else this->operator[](i).value = mTarget->Property(mProp, true)->Sym(0);
+    else (*this)[i].value = mTarget->Property(mProp, true)->Sym(0);
 }
 
 void SymbolKeys::Copy(const PropKeys* keys){

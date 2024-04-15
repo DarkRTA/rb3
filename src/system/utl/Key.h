@@ -61,7 +61,7 @@ public:
     int AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
 
     // fn_8039C750 in retail, for T1 = Symbol
-    // scratch: https://decomp.me/scratch/GPlJ4
+    // scratch: https://decomp.me/scratch/R1SeP
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
     int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
         if(empty()){
