@@ -36,7 +36,8 @@ struct DecompressTask {
 
 class ChunkStream : public BinStream {
 public:
-    class ChunkInfo { public:
+    class ChunkInfo {
+    public:
         ChunkInfo(bool);
         int mID; // offset 0x0, size 0x4
         int mChunkInfoSize; // offset 0x4, size 0x4
@@ -92,7 +93,7 @@ public:
     int* mChunkEnd;
     int mTell; // which is different from mCurBufOffset... why?
 
-    void *operator new(size_t t) {
+    void* operator new(size_t t) {
         return _MemAllocTemp(t, 0);
     }
 };

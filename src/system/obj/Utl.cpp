@@ -98,7 +98,7 @@ bool StringMatchesFilter(const char* c1, const char* c2){
 }
 
 int GetPropSize(Hmx::Object* o, DataArray* arr, int size){
-    DataArrayPtr ptr(new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(size));
+    DataArrayPtr ptr(new DataArray(size));
     for(int x = 0; x < size; x++){
         ptr.Node(x) = arr->Node(x);
     }

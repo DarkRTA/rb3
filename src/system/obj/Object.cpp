@@ -118,8 +118,8 @@ DataNode Hmx::Object::PropertyArray(Symbol sym){
     static DataArrayPtr d(DataNode(1));
     d.Node(0) = DataNode(sym);
     int size = PropertySize(d.mData);
-    DataArray* newArr = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(size);
-    static DataArrayPtr path(new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(2));
+    DataArray* newArr = new DataArray(size);
+    static DataArrayPtr path(new DataArray(2));
     path.Node(0) = DataNode(sym);
     for(int i = 0; i < size; i++){
         path.Node(1) = DataNode(i);

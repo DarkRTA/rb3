@@ -5,6 +5,7 @@
 #include "utl/MemMgr.h"
 #include <list>
 #include <string.h>
+#include "math/MathFuncs.h"
 
 extern File* NewFile(const char*, int);
 template <typename T> extern void EndianSwapEq(T&);
@@ -19,14 +20,12 @@ BinStream& MarkChunk(BinStream& bs) {
 
 BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_size) {
     int curr_size = 0;
-    while (curr_size != total_len) {
-        int len_left = total_len - curr_size;
-        if (max_chunk_size < total_len - curr_size) len_left = max_chunk_size;
-        bs.Read(data, len_left);
+    while(curr_size != total_len){
+        int len_left = Minimum(total_len - curr_size, max_chunk_size);
+        char* dataAsChars = (char*)data;
+        bs.Read(&dataAsChars[curr_size], len_left);
         curr_size += len_left;
-        if (bs.Eof()) {
-            Timer::Sleep(0);
-        }
+        while(bs.Eof() == 2) Timer::Sleep(0);
     }
     return bs;
 }
@@ -34,9 +33,9 @@ BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_si
 BinStream& WriteChunks(BinStream& bs, const void* data, int total_len, int max_chunk_size) {
     int curr_size = 0;
     while (curr_size != total_len) {
-        int len_left = total_len - curr_size;
-        if (max_chunk_size < total_len - curr_size) len_left = max_chunk_size;
-        bs.Write(data, len_left);
+        int len_left = Minimum(total_len - curr_size, max_chunk_size);
+        const char* dataChars = (const char*)data;
+        bs.Write(&dataChars[curr_size], len_left);
         curr_size += len_left;
         if (bs.GetPlatform() == kPlatformWii) MarkChunk(bs);
     }
