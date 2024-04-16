@@ -83,28 +83,27 @@ void PropKeys::SetTarget(Hmx::Object* o){
 }
 
 void PropKeys::ChangeFrame(int i, float f, bool b){
-    switch((unsigned int)(mKeysType)){
+    switch(mKeysType){
         case kFloat:
-            Keys<float, float>* fKeys = AsFloatKeys();
-            fKeys->operator[](i).frame = f;
+            (*AsFloatKeys())[i].frame = f;
             break;
         case kColor:
-            AsColorKeys()->operator[](i).frame = f;
+            (*AsColorKeys())[i].frame = f;
             break;
         case kObject:
-            AsObjectKeys()->operator[](i).frame = f;
+            (*AsObjectKeys())[i].frame = f;
             break;
         case kBool:
-            AsBoolKeys()->operator[](i).frame = f;
+            (*AsBoolKeys())[i].frame = f;
             break;
         case kSymbol:
-            AsSymbolKeys()->operator[](i).frame = f;
+            (*AsSymbolKeys())[i].frame = f;
             break;
         case kVector3:
-            AsVector3Keys()->operator[](i).frame = f;
+            (*AsVector3Keys())[i].frame = f;
             break;
         case kQuat:
-            AsQuatKeys()->operator[](i).frame = f;
+            (*AsQuatKeys())[i].frame = f;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
@@ -113,15 +112,36 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
     if(b) ReSort();
 }
 
+// 80627a64 in retail
 void PropKeys::ReSort(){
-    switch((unsigned int)mKeysType){
+    switch(mKeysType){
         case kFloat:
+            AsFloatKeys();
+            // mystery vector method - fn_806280C0 in retail, scratch: https://decomp.me/scratch/5Vpiu
+            break;
         case kColor:
+            AsColorKeys();
+            // mystery vector method - fn_80627FEC in retail
+            break;
         case kObject:
+            AsObjectKeys();
+            // mystery vector method - fn_80627F0C in retail
+            break;
         case kBool:
+            AsBoolKeys();
+            // mystery vector method - fn_80627E24 in retail
+            break;
         case kSymbol:
+            AsSymbolKeys();
+            // mystery vector method - fn_80627D50 in retail
+            break;
         case kVector3:
+            AsVector3Keys();
+            // mystery vector method - fn_80627C7C in retail
+            break;
         case kQuat:
+            AsQuatKeys();
+            // mystery vector method - fn_80627B64 in retail
             break;
     }
 }
@@ -136,21 +156,20 @@ SAVE_OBJ(PropKeys, 0xCF);
 void PropKeys::Load(BinStream& bs){
     if(gRev < 7) MILO_FAIL("PropKeys::Load should not be called before version 7");
     else {
-        int animType;
-        bs >> animType;
-        mKeysType = (AnimKeysType)animType;
+        int iVal;
+        bs >> iVal;
+        mKeysType = iVal;
         bs >> mTarget;
         bs >> mProp;
 
-        int anotherVal;
-        if(gRev >= 8) bs >> anotherVal;
-        else anotherVal = (mKeysType == (unsigned int)kObject || mKeysType == (unsigned int)kBool) == 0;
+        if(gRev >= 8) bs >> iVal;
+        else iVal = (mKeysType == kObject || mKeysType == kBool) == 0;
 
-        if(gRev < 0xB && anotherVal == 4){
+        if(gRev < 0xB && iVal == 4){
             mKeysType = kSymbol;
             mInterpolation = kStep;
         }
-        else mInterpolation = (Interpolation)anotherVal;
+        else mInterpolation = iVal;
 
         if(gRev > 9){
             Symbol sym;
@@ -161,9 +180,8 @@ void PropKeys::Load(BinStream& bs){
         }
 
         if(gRev > 10){
-            int exceptID;
-            bs >> exceptID;
-            mPropExceptionID = (ExceptionID)exceptID;
+            bs >> iVal;
+            mPropExceptionID = iVal;
         }
 
         if(gRev > 0xC){
@@ -175,52 +193,51 @@ void PropKeys::Load(BinStream& bs){
     }
 }
 
+void PropKeys::Copy(const PropKeys* keys){
+    mInterpHandler = keys->mInterpHandler;
+    mKeysType = keys->mKeysType;
+    mLastKeyFrameIndex = keys->mLastKeyFrameIndex;
+}
+
 void PropKeys::Print(){
     TextStream& ts = TheDebug;
     ts << "      target: " << mTarget.Ptr() << "\n";
     ts << "      property: " << mProp << "\n";
-    ts << "      interpolation: " << mInterpolation << "\n";
+    ts << "      interpolation: " << (int)mInterpolation << "\n";
 
     for(int i = 0; i < NumKeys(); i++){
         float frame = 0.0f;
         FrameFromIndex(i, frame);
         ts << "      " << frame << " -> ";
-        switch((unsigned int)mKeysType){
+        switch(mKeysType){
             case kFloat:
-                Keys<float, float>* fKeys = AsFloatKeys();
-                ts << fKeys->operator[](i).value;
+                ts << (*AsFloatKeys())[i].value;
                 break;
             case kColor:
-                Keys<Hmx::Color, Hmx::Color>* cKeys = AsColorKeys();
-                ts << cKeys->operator[](i).value;
+                ts << (*AsColorKeys())[i].value;
                 break;
             case kObject:
-                Keys<ObjectStage, Hmx::Object*>* oKeys = AsObjectKeys();
-                ts << (Hmx::Object*)oKeys->operator[](i).value;
+                ts << (Hmx::Object*)((*AsObjectKeys())[i].value);
                 break;
             case kBool:
-                Keys<bool, bool>* bKeys = AsBoolKeys();
-                ts << bKeys->operator[](i).value;
+                ts << (*AsBoolKeys())[i].value;
                 break;
             case kQuat:
-                Keys<Hmx::Quat, Hmx::Quat>* qKeys = AsQuatKeys();
-                ts << qKeys->operator[](i).value;
+                ts << (*AsQuatKeys())[i].value;
                 break;
             case kVector3:
-                Keys<Vector3, Vector3>* vKeys = AsVector3Keys();
-                ts << vKeys->operator[](i).value;
+                ts << (*AsVector3Keys())[i].value;
                 break;
             case kSymbol:
-                Keys<Symbol, Symbol>* sKeys = AsSymbolKeys();
-                ts << sKeys->operator[](i).value;
+                ts << (*AsSymbolKeys())[i].value;
                 break;
         }
         ts << "\n";
     }
 }
 
-ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
-    if(!this || !o) return kNoException;
+unsigned int PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
+    if(!o || !arr) return kNoException;
     String propString;
     arr->Print(propString, kDataArray, true);
     propString = propString.substr(1, strlen(propString.c_str()) - 2);
@@ -248,9 +265,9 @@ ExceptionID PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
 }
 
 void PropKeys::SetPropExceptionID(){
-    if(!mInterpHandler.IsNull()) mPropExceptionID = kNoException;
+    if(!mInterpHandler.IsNull()) mPropExceptionID = kHandleInterp;
     else {
-        if(mPropExceptionID != (unsigned int)kMacro){
+        if(mPropExceptionID != kMacro){
             mPropExceptionID = PropExceptionID(mTarget.Ptr(), mProp);
             if(mPropExceptionID == kTransQuat || mPropExceptionID == kTransScale || mPropExceptionID == kTransPos){
                 if((Hmx::Object*)mTrans != mTarget.Ptr()){
@@ -266,10 +283,9 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
-// disabled the reading from binstream for now because vector::resize is broken lol
 void SymbolKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    // bs >> *this;
+    bs >> *this;
 }
 
 void SymbolKeys::Save(BinStream& bs){
@@ -277,9 +293,49 @@ void SymbolKeys::Save(BinStream& bs){
     bs << *this;
 }
 
+int SymbolKeys::SymbolAt(float f, Symbol& sym){
+    MILO_ASSERT(size(), 0x322);
+    return AtFrame(f, sym);
+}
+
+int FloatKeys::SetKey(float frame){
+    int retVal;
+    if(!mProp || !mTarget.Ptr()) retVal = -1;
+    else {
+        retVal = PropKeys::SetKey(frame);
+        // some vector method that takes in frame, a label that = 0, and 0
+        SetToCurrentVal(retVal);
+    }
+    return retVal;
+}
+
+void FloatKeys::SetToCurrentVal(int i){
+    (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
+}
+
+void SymbolKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID == kMacro){
+        if(0 < i){
+            (*this)[i].value = (*this)[i - 1].value;
+        }
+    }
+    else (*this)[i].value = mTarget->Property(mProp, true)->Sym(0);
+}
+
+void SymbolKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const SymbolKeys* newKeys = dynamic_cast<const SymbolKeys*>(keys);
+        // retail calls some function (this vector, this vector, newKeys' vector, newKeys' vector end)
+        // not so sure that it's insert, or if it is, what its params are
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }    
+}
+
 void FloatKeys::Load(BinStream& bs){
     PropKeys::Load(bs);
-    // bs >> *this;
+    bs >> *this;
 }
 
 void FloatKeys::Save(BinStream& bs){
@@ -294,14 +350,14 @@ int FloatKeys::RemoveKey(int i){
 
 float FloatKeys::StartFrame(){
     if(size() != 0){
-        return (*this)[0].frame;
+        return front().frame;
     }
     else return 0.0f;
 }
 
 float FloatKeys::EndFrame(){
     if(size() != 0){
-        return this->back().frame;
+        return back().frame;
     }
     else return 0.0f;
 }
