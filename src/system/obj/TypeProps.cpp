@@ -71,7 +71,7 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
         if(o) o->AddRef(ref);
     }
     if(!mMap){
-        mMap = NEW_POOL_ARRAY(2);
+        mMap = new DataArray(2);
         mMap->Node(0) = key;
         mMap->Node(1) = value;
     }
@@ -168,7 +168,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
             GetSaveFlags(found, b1, b2);
             if(!b2 && b1 != gLoadingProxyFromDisk){
                 if(!potentialArr){
-                    potentialArr = NEW_POOL_ARRAY(mMap->Size());
+                    potentialArr = new DataArray(mMap->Size());
                 }
                 potentialArr->Node(keyIdx) = DataNode(sym);
                 potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);

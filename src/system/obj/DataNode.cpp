@@ -278,12 +278,12 @@ DataNode::DataNode(const DataNode& node){
 }
 
 DataNode::DataNode(const char* c){
-    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(c, strlen(c) + 1);
+    mValue.array = new DataArray(c, strlen(c) + 1);
     mType = kDataString;
 }
 
 DataNode::DataNode(const String& s){
-    mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(s.c_str(), s.length() + 1);
+    mValue.array = new DataArray(s.c_str(), s.length() + 1);
     mType = kDataString;
 }
 
@@ -550,13 +550,13 @@ void DataNode::Load(BinStream& d){
             break;
         case kDataString:
         case kDataGlob:
-            mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+            mValue.array = new DataArray(0);
             mValue.array->LoadGlob(d, (mType - 0x12) == 0);
             break;
         case kDataArray:
         case kDataCommand:
         case kDataProperty:
-            mValue.array = new (_PoolAlloc(0x10, 0x10, FastPool)) DataArray(0);
+            mValue.array = new DataArray(0);
             mValue.array->Load(d);
             break;
         case kDataObject:

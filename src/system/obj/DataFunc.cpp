@@ -495,7 +495,14 @@ static DataNode DataSqrt(DataArray* da){
     return DataNode(sqrt(da->Float(1)));
 }
 
-static DataNode DataMod(DataArray* da);
+DefDataFunc(Mod, {
+    DataNode &n1 = da->Evaluate(1);
+    DataNode &n2 = da->Evaluate(2);
+    if (n1.Type() == kDataFloat || n2.Type() == kDataFloat)
+        return DataNode(Mod(n1.LiteralFloat(da), n2.LiteralFloat(da)));
+    else
+        return DataNode(Mod(n1.LiteralInt(da), n2.LiteralInt(da)));
+})
 
 // // fn_8031D490
 // DataNode DataMod(DataArray *da) {
@@ -507,19 +514,14 @@ static DataNode DataMod(DataArray* da);
 //         return DataNode(Modulo(dn1->LiteralInt(da), dn2->LiteralInt(da)));
 // }
 
-static DataNode DataDist(DataArray* da);
+static DataNode DataDist(DataArray *da) {
+    float x, y, z;
 
-// // fn_8031D56C
-// DataNode DataDist(DataArray *da) {
-//     Vector3 vec;
-//     vec.Set(
-//         da->Float(1) - da->Float(4),
-//         da->Float(2) - da->Float(5),
-//         da->Float(3) - da->Float(6)
-//     );
-
-//     return DataNode(GetSqrtAsFloat(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z));
-// }
+    z = da->Float(3) - da->Float(6);
+    y = da->Float(2) - da->Float(5);
+    x = da->Float(1) - da->Float(4);
+    return DataNode(sqrt(x*x+y*y+z*z));
+}
 
 static DataNode DataSymbol(DataArray* da){
     return DataNode(da->ForceSym(1));
@@ -628,9 +630,28 @@ static DataNode DataGetLastElem(DataArray *da) {
     return DataNode(arr->Node(arr->Size() - 1));
 }
 
-static DataNode DataObject(DataArray* da);
+DefDataFunc(Object, {
+    DataNode& n = da->Evaluate(1);
+    if (n.Type() == kDataObject) return n;
+    else {
+        const char* s = n.LiteralStr(da);
+        Hmx::Object* o = gDataDir->FindObject(s, true);
+        if (!o && s[0]) {
+            MILO_FAIL(kNotObjectMsg, s, PathName(gDataDir) ? PathName(gDataDir) : "**no file**");
+        }
+        return DataNode(o);
+    }
+})
 
-static DataNode DataExists(DataArray* da);
+DefDataFunc(Exists, {
+    const char* s = da->Str(1);
+    bool does_exist = gDataDir->FindObject(s, true);
+    if (!does_exist) {
+        Symbol sym(s);
+        for (std::map<Symbol, DataFunc*>::iterator* i = &gDataFuncs.begin(); i != NULL; i++) ;
+    }
+    return DataNode(does_exist);
+})
 
 static DataNode DataLocalize(DataArray* da){
     const char* loc = Localize(da->ForceSym(1), false);
@@ -659,7 +680,22 @@ static DataNode DataStartsWith(DataArray *da) {
     return DataNode(!strncmp(da->Str(1), da->Str(2), (da->Size() > 3) ? da->Int(3) : strlen(da->Str(2))));
 }
 
-static DataNode DataTime(DataArray *);
+DefDataFunc(Time, {
+    int i;
+    for (i = 1; i < da->Size(); i++) {
+        if (da->Node(i).Type() == kDataCommand) break;
+        da->Node(i).Print(TheDebug, true);
+    }
+    if (i == 1) TheDebug << MakeString("Timing %s, line %d:", da->File(), da->Line());
+    Timer time;
+    time.Start();
+    for (; i < da->Size();) {
+        da->Command(i++)->Execute();
+    }
+    time.Split();
+    TheDebug << MakeString(" %f ms\n", time.Ms());
+    return DataNode(time.Ms());
+});
 
 static DataNode DataRandomInt(DataArray *da) {
     return DataNode(RandomInt(da->Int(1), da->Int(2)));
@@ -745,12 +781,22 @@ static DataNode DataFail(DataArray* da){
     for(int i = 1; i < da->Size(); i++){
         da->Evaluate(i).Print(str, true);
     }
-    TheDebug << MakeString("%d", da->Line());
+    TheDebug << MakeString("%d\n", da->Line());
     TheDebug.Fail(str.c_str());
     return DataNode(0);
 }
 
-static DataNode DataNotifyOnce(DataArray* da);
+static DataNode DataNotifyOnce(DataArray *da) {
+    String s;
+    for (int i = 1; i < da->Size(); i++) {
+        da->Evaluate(i).Print(s, true);
+    }
+    static DebugNotifyOncer _dw;
+    const char *ms = MakeString(s.c_str());
+    if (AddToNotifies(ms, _dw.mNotifies))
+        TheDebug.Notify(ms);
+    return DataNode();
+}
 
 static DataNode DataCond(DataArray* da){
     for(int i = 1; i < da->Size(); i++){
@@ -766,7 +812,19 @@ static DataNode DataCond(DataArray* da){
     return DataNode(0);
 }
 
-static DataNode DataSwitch(DataArray* da);
+DefDataFunc(Switch, { // pain
+    DataNode& n = da->Evaluate(1);
+    for (int i = 1; i < da->Size(); i++) {
+        DataNode& work = da->Node(i);
+        if (work.Type() != kDataArray) {
+            DataNode& aaa = work.mValue.array->Node(0);
+            if (aaa.Type() == kDataArray) {
+
+            }
+        }
+        return da->ExecuteScript(i, gDataThis, NULL, 1);
+    }
+})
 
 static DataNode DataInsertElems(DataArray* da) {
     da->Array(1)->InsertNodes(da->Int(2), da->Array(3));
@@ -775,7 +833,9 @@ static DataNode DataInsertElems(DataArray* da) {
 }
 
 static DataNode DataInsertElem(DataArray* da) {
-    da->Array(1)->Insert(da->Int(2), da->Evaluate(3));
+    DataArray* a = da->Array(1);
+    int idx = da->Int(2);
+    a->Insert(idx, da->Evaluate(3));
     return DataNode();
 }
 
@@ -803,21 +863,47 @@ static DataNode DataResize(DataArray* da) {
     return DataNode();
 }
 
-static DataNode DataNewArray(DataArray* da);
+DefDataFunc(NewArray, { // this is fucked!
+    DataNode& n = da->Evaluate(1);
+    DataArray* a = new DataArray(0);
+    if (n.Type() == kDataInt) {
+        a->Resize(n.LiteralInt(NULL));
+    } else if (n.Type() == kDataArray) {
+        DataArray* a2 = n.LiteralArray(NULL)->Clone(true, true, 0);
+        if (a != a2) {
+            a2->mRefs -= 1; if (a2->mRefs == 0) delete a2;
+            a->mRefs++;
+        }
+        DataArrayPtr* a3 = new DataArrayPtr(n);
+    } else MILO_FAIL("DataNewArray wrong argument for %s %d", da->File(), da->Line());
+    return DataNode(a, kDataArray);
+})
 
 static DataNode DataSetElem(DataArray* da) {
     DataArray* aaaa = da->Array(1);
-    return aaaa->Evaluate(da->Int(2));
-    
+    int i = da->Int(2);
+    DataNode& n = da->Evaluate(3);
+    return aaaa->Node(i) = n;
+
 }
 
 static DataNode DataQuote(DataArray* da) {
     return da->Node(1);
 }
 
-static DataNode DataEval(DataArray* da);
+static DataNode DataEval(DataArray* da) {
+    return da->Evaluate(1).Evaluate();
+}
 
-static DataNode DataReverseInterp(DataArray* da);
+DefDataFunc(ReverseInterp, {
+    float c = da->Float(3);
+    float b = da->Float(2);
+    float a = da->Float(1);
+    if (b != a) {
+        a = (c-a)/(b-a);
+    } else a = 1;
+    return DataNode(a > 1 ? 1 : (a < 0 ? a : 0));
+})
 
 static DataNode DataInterp(DataArray* da) {
     float st, end, pct;
@@ -828,22 +914,73 @@ static DataNode DataInterp(DataArray* da) {
 }
 
 static DataNode DataInc(DataArray* da) {
-    const DataNode me = da->Node(1);
-    if (me.Type() == kDataProperty) {
+    const DataNode& n = da->Node(1);
+    if (n.Type() == kDataProperty) {
         MILO_ASSERT(gDataThis, 1286);
-        gDataThis->Property(me.mValue.array, true);
+        DataArray* a = da->Node(1).mValue.array;
+        int x = 1 + gDataThis->Property(a, true)->Int(NULL);
+        gDataThis->SetProperty(a, x);
+        return DataNode(x);
+
+    } else {
+        DataNode* Pn = da->Var(1);
+        int i = Pn->Int(NULL);
+        return DataNode(*Pn = DataNode(i-1));
     }
 }
 
-static DataNode DataDec(DataArray* da);
+DefDataFunc(Dec, {
+    const DataNode& n = da->Node(1);
+    if (n.Type() == kDataProperty) {
+        MILO_ASSERT(gDataThis, 1303);
+        DataArray* a = da->Node(1).mValue.array;
+        int x = gDataThis->Property(a, true)->Int(NULL) - 1;
+        gDataThis->SetProperty(a, x);
+        return DataNode(x);
 
-static DataNode DataHandleType(DataArray* da) { }
+    } else {
+        DataNode* Pn = da->Var(1);
+        int i = Pn->Int(NULL);
+        return DataNode(*Pn = DataNode(i-1));
+    }
+})
 
-static DataNode DataHandleTypeRet(DataArray* da) { }
+DefDataFunc(HandleType, {
+    for (int i = 1; i < da->Size(); i++) {
+        DataArray* a = da->Array(i);
+        Hmx::Object* o;
+        DataNode& n = a->Evaluate(0);
+        if (n.Type() == kDataObject) o = n.mValue.object;
+        else o = gDataDir->FindObject(n.LiteralStr(da), true);
+        if (o) o->HandleType(a);
+    }
+    return DataNode();
+})
 
-static DataNode DataExport(DataArray* da) {
+DefDataFunc(HandleTypeRet, {
+    DataArray* a = da->Array(1);
+    Hmx::Object* o;
+    DataNode& n = a->Evaluate(0);
+    if (n.Type() == kDataObject) o = n.mValue.object;
+    else o = gDataDir->FindObject(n.LiteralStr(da), true);
+    if (!o) {
+        String str;
+        n.Print(str, true);
+        MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), da->File(), da->Line());
+    }
+    return o->HandleType(a);
+})
 
-}
+DefDataFunc(Export, {
+    DataArray* a = da->Array(1);
+    bool i = da->Int(2);
+    DataNode& n = a->Evaluate(0);
+    Hmx::Object* obj;
+    if (n.Type() == kDataObject) obj = n.mValue.object;
+    else obj = gDataDir->FindObject(n.LiteralStr(da), true);
+    if (obj) obj->Export(a, i);
+    return DataNode();
+})
 
 static DataNode DataHandle(DataArray* da) {
     for (int i = 1; i < da->Size(); i++) {
@@ -851,7 +988,7 @@ static DataNode DataHandle(DataArray* da) {
         DataNode n = da->Evaluate(0);
         Hmx::Object* obj;
         if (n.Type() == kDataObject) obj = n.mValue.object;
-        else if (n.Type() == kDataInt) obj = NULL; 
+        else if (n.Type() == kDataInt) obj = NULL;
         else obj = gDataDir->FindObject(n.LiteralStr(handlo), true);
         if (obj) obj->Handle(handlo, false);
         // read->mRefs -= 1; if (read->mRefs == 0) delete read;
@@ -859,7 +996,19 @@ static DataNode DataHandle(DataArray* da) {
     return DataNode();
 }
 
-static DataNode DataHandleRet(DataArray* da) { }
+DefDataFunc(HandleRet, {
+    DataArray* a = da->Array(1);
+    Hmx::Object* o;
+    DataNode& n = a->Evaluate(0);
+    if (n.Type() == kDataObject) o = n.mValue.object;
+    else o = gDataDir->FindObject(n.LiteralStr(da), true);
+    if (!o) {
+        String str;
+        n.Print(str, true);
+        MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), da->File(), da->Line());
+    }
+    return o->Handle(a, false);
+})
 
 static DataNode DataRun(DataArray* da) {
     const char* e = FileMakePath(FileExecRoot(), da->Str(1), NULL);
@@ -900,14 +1049,22 @@ static DataNode DataExit(DataArray*) { TheDebug.Exit(0, true); return DataNode()
 
 static DataNode DataContains(DataArray* da) {
     DataArray* w = da->Array(1);
-    bool b = !w->Contains(DataNode(da->Evaluate(2)));
+    bool b = !w->Contains(DataNode(&da->Evaluate(2)));
     if (b) return DataNode(kDataUnhandled, 0);
     else return DataNode(1);
 }
 
-static DataNode DataFindExists(DataArray*) {
+DefDataFunc(FindExists, {
+    DataArray* ret;
+    DataArray* a = da->Array(1);
+    for (int i = 1; i < da->Size(); i++) {
+        DataNode& n = da->Evaluate(i);
+        if (n.Type() == kDataInt) {
 
-}
+        }
+    }
+    return DataNode(ret, kDataArray);
+})
 
 static DataNode DataFind(DataArray* da) {
     DataFindExists(da);
@@ -915,17 +1072,32 @@ static DataNode DataFind(DataArray* da) {
     //return x;
 }
 
-static DataNode DataFindObj(DataArray* da) {
+DefDataFunc(FindObj, {
+    ObjectDir* d;
+    int i;
+    for (i = 1; i < da->Size() - 1; i++) {
+        d = da->Obj<ObjectDir>(0);
+        if (da->Evaluate(i).Type() == kDataObject) {
+            d = da->Obj<ObjectDir>(i);
+        } else {
 
-}
+        }
+        if (d == 0) { } else {
+            return DataNode(d);
+        }
+    }
+    return DataNode(d->FindObject(da->Str(i), false));
+})
 
 static DataNode DataBasename(DataArray* da) {
     return DataNode(FileGetBase(da->Str(1), NULL));
 }
 
 static DataNode DataDirname(DataArray* da) {
-    String str = da->Str(1);
-    str.find_last_of("/");
+    const char* s = FileGetPath(da->Str(1), NULL);
+    String str = s;
+    uint x = str.find_last_of("/");
+    return DataNode(s + x);
 }
 
 DefDataFunc(HasSubStr, {
@@ -933,19 +1105,31 @@ DefDataFunc(HasSubStr, {
 })
 
 DefDataFunc(HasAnySubStr, {
-    
+    DataArray* a = da->Array(2);
+    for (int i = 0; i < a->Size(); i++) {
+        const char* haystack = a->Str(i);
+        if (strstr(da->Str(1), haystack)) return DataNode(1);
+    }
+    return DataNode(0);
 })
 
 DefDataFunc(FindSubStr, {
-    
+    String s(da->Str(1));
+    return DataNode((int)s.find(da->Str(2)));
 })
 
 DefDataFunc(StrElem, {
-
+    char s[2] = {'A'};
+    int off = da->Int(2);
+    s[0] = da->Str(1)[off];
+    return DataNode((Symbol)s);
 })
 
 DefDataFunc(SubStr, {
-    
+    String s(da->Str(1));
+    int i1 = da->Int(2);
+    int i2 = da->Int(3);
+    return DataNode(s.substr(i1, i2));
 })
 
 
@@ -955,8 +1139,8 @@ DefDataFunc(StrCat, {
     for (int i = 2; i < da->Size(); i++) {
         s += da->Str(i);
     }
-    n = s;
-    return DataNode(n.Str(0));
+    n = s.c_str();
+    return n;
 })
 
 DefDataFunc(StringFlags, {
@@ -988,25 +1172,32 @@ DefDataFunc(StrToUpper, {
     return DataNode(s);
 })
 
-static DataNode DataStrlen(DataArray* da) {
+DefDataFunc(Strlen, {
     return DataNode((int)strlen(da->Str(1)));
-}
+})
 
 static DataNode DataStrieq(DataArray* da) {
     return DataNode(!stricmp(da->Str(1), da->Str(2)));
 }
 
-static DataNode DataSearchReplace(DataArray* da) {
+DefDataFunc(SearchReplace, {
+    const char* s3 = da->Str(3);
+    const char* s2 = da->Str(2);
+    const char* s1 = da->Str(1);
+    char beeg[0x800];
+    bool ret = SearchReplace(s1, s2, s3, beeg);
+    DataNode n(beeg);
+    da->Var(4);
+    return DataNode(ret);
+})
 
-}
-
-static DataNode DataPushBack(DataArray* da) {
+DefDataFunc(PushBack, {
     DataArray* work = da->Array(1);
-    int nu_size = work->Size() + 1;
-    work->Resize(nu_size);
+    int nu_size = work->Size();
+    work->Resize(nu_size + 1);
     work->Node(nu_size) = da->Evaluate(2);
     return DataNode();
-}
+})
 
 static DataNode DataSort(DataArray* da) {
     da->Array(1)->SortNodes();
@@ -1073,19 +1264,40 @@ DataNode Quasiquote(const DataNode&) {
 
 static DataNode DataQuasiquote(DataArray* da) { return Quasiquote(da->Node(1)); }
 
-static DataNode DataUnquote(DataArray*) { return DataNode(); }
+DefDataFunc(Unquote, { return DataNode(da->Evaluate(1)); })
 
 static DataNode DataGetDateTime(DataArray* da) {
     return DataNode();
 }
 
-static DataNode DataFileList(DataArray*) {
+static DataArray* sFileMsg;
 
+bool FileListCallBack(char* s) {
+    bool ret;
+    DataArray* da = sFileMsg;
+    DataNode* n = da->Var(3);
+    DataNode n2 = *n; {DataNode n3 = s; *n = n3;}
+    ret = (bool)sFileMsg->ExecuteBlock(4).Int(NULL);
+    if (ret) {
+        strcpy(s, n->Str(0));
+    }
+    *n = n2;
+    return ret;
 }
 
-static DataNode DataFileListPaths(DataArray*) {
-
+static DataNode DataFileList(DataArray* da) {
+    sFileMsg = da;
+    bool (*x)(char*) = NULL;
+    int i, s = da->Size();
+    if (s > 3) x = (&FileListCallBack);
+    if (s > 2) i = da->Int(2); else i = 1;
+    return MakeFileList(da->Str(1), i, x);
 }
+
+DefDataFunc(FileListPaths, {
+    sFileMsg = da;
+    return MakeFileListFullPath(da->Str(1));
+})
 
 static DataNode DataObjectList(DataArray* da) {
     ObjectDir* dir = da->Obj<ObjectDir>(1);
@@ -1097,10 +1309,20 @@ static DataNode DataObjectList(DataArray* da) {
 
 void ScriptDebugModal(bool&, char*, bool) { }
 
-static DataNode DataDisableNotify(DataArray*) {
+const char* sgjhfjhadslkgjhasdg = ",";
 
+DefDataFunc(DisableNotify, {
+    if (da->Size() > 1) {
+        TheDebug.SetDisabled(true);
+        for (int i = 1; i < da->Size(); i++) {
+            da->Command(i)->Execute();
+        }
+        TheDebug.SetDisabled(false);
+    } else {
+        TheDebug << MakeString("invalid # of arguments...\n");
+    }
     return DataNode();
-}
+})
 
 static DataNode DataFilterNotify(DataArray*) {
     return DataNode();
@@ -1211,7 +1433,7 @@ void DataInitFuncs() {
     DataRegisterFunc("handle", DataHandle);
     DataRegisterFunc("handle_ret", DataHandleRet);
     DataRegisterFunc("contains", DataContains);
-    DataRegisterFunc("export", DataContains);
+    DataRegisterFunc("export", DataExport);
     DataRegisterFunc("exit", DataExit);
     DataRegisterFunc("find", DataFind);
     DataRegisterFunc("find_exists", DataFindExists);
@@ -1240,9 +1462,9 @@ void DataInitFuncs() {
     DataRegisterFunc("set_this", OnSetThis);
     DataRegisterFunc("macro_elem", DataMacroElem);
     DataRegisterFunc("merge_dirs", DataMergeDirs);
-    DataRegisterFunc("", DataQuote); DataRegisterFunc("quote", DataQuote);
-    DataRegisterFunc("'", DataQuasiquote); DataRegisterFunc("quasiquote", DataQuasiquote);
-    DataRegisterFunc("`", DataUnquote); DataRegisterFunc("unquote", DataUnquote);
+    DataRegisterFunc("quote", DataQuote); DataRegisterFunc("'", DataQuote);
+    DataRegisterFunc("quasiquote", DataQuasiquote); DataRegisterFunc("`", DataQuasiquote);
+    DataRegisterFunc("unquote", DataUnquote); DataRegisterFunc(",", DataUnquote);
     DataRegisterFunc("get_date_time", DataGetDateTime);
     DataRegisterFunc("with", DataWith);
     DataRegisterFunc("type", DataGetType);
@@ -1254,7 +1476,7 @@ void DataInitFuncs() {
     // key deriv dta
     char magic[8];
     memset(magic, 0, 8);
-    magic[0] = 'O'; 
+    magic[0] = 'O';
     magic[1] = '6';
     magic[2] = '4';
     DataRegisterFunc(magic, DataWhile);

@@ -5,12 +5,11 @@
 #include "rndobj/Dir.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "rndobj/Font.h"
+#include "rndobj/Text.h"
 #include "ui/UIComponent.h"
 #include "ui/UIColor.h"
 #include "utl/MemMgr.h"
-
-class RndFont : public Hmx::Object {int i;}; //#include "rndobj/Font.h"
-class RndText : public RndTransformable {int i;}; //#include "rndobj/Text.h"
 
 class UILabelDir : public RndDir /*, public UIFontImporter*/ {
 public:
@@ -19,6 +18,8 @@ public:
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
+
+    int HighlightMeshGroup() const;
 
     NEW_OBJ(UILabelDir)
 };
@@ -57,6 +58,14 @@ public:
 
     void Terminate();
     void LabelUpdate(bool, bool);
+    void AdjustHeight(bool);
+    void SetFloat(const char*, float);
+    void CenterWithLabel(UILabel*, bool, float);
+
+    DataNode OnSetTokenFmt(const DataArray*);
+    DataNode OnSetInt(const DataArray*);
+    DataNode OnGetMaterialVariations(const DataArray*);
+    DataNode OnGetAltMaterialVariations(const DataArray*);
 
     UILabelDir* mLabelDir;
     RndText* mText; // TrackWidget* in bank 5

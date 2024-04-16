@@ -7,6 +7,7 @@
 #include "rndobj/Draw.h" // RndDrawable : public virtual RndHighlightable
 #include "obj/Dir.h" // ObjectDir : public virtual Object
 #include <vector>
+#include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Env.h"
 
@@ -36,6 +37,8 @@ public:
     std::vector<RndPollable*> mPolls;
     ObjPtr<RndEnviron, ObjectDir> mEnv;
     Symbol mTestEvent;
+
+    DELETE_OVERLOAD
 };
 
 #endif
