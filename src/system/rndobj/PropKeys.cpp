@@ -298,6 +298,17 @@ int SymbolKeys::SymbolAt(float f, Symbol& sym){
     return AtFrame(f, sym);
 }
 
+int FloatKeys::SetKey(float frame){
+    int retVal;
+    if(!mProp || !mTarget.Ptr()) retVal = -1;
+    else {
+        retVal = PropKeys::SetKey(frame);
+        // some vector method that takes in frame, a label that = 0, and 0
+        SetToCurrentVal(retVal);
+    }
+    return retVal;
+}
+
 void FloatKeys::SetToCurrentVal(int i){
     (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
 }
@@ -339,14 +350,14 @@ int FloatKeys::RemoveKey(int i){
 
 float FloatKeys::StartFrame(){
     if(size() != 0){
-        return (*this)[0].frame;
+        return front().frame;
     }
     else return 0.0f;
 }
 
 float FloatKeys::EndFrame(){
     if(size() != 0){
-        return this->back().frame;
+        return back().frame;
     }
     else return 0.0f;
 }
