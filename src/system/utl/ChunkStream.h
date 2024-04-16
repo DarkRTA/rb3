@@ -18,9 +18,9 @@ BinStream& WriteChunks(BinStream&, const void*, int, int);
 #define CHUNKSTREAM_Z_ID 0xCBBEDEAF
 #define kChunkIDMask 0xC0BEDEAF
 
-enum DecompressionState {
-    kUnk0,
-    kUnk1,
+enum BufferState {
+    kInvalid,
+    kReading,
     kDecompressing,
     kReady,
 };
@@ -70,23 +70,22 @@ public:
     void ReadChunkAsync();
     uint WriteChunk();
 
-    File * mFile;
+    File* mFile;
     String mFilename;
     bool mFail;
     FileType mType;
     ChunkInfo mChunkInfo;
     bool mIsCached;
     Platform mPlatform;
-    int mCurBufSize;
+    int mBufSize;
     char* mBuffers[2];
-    int mCurReadBuffer;
+    char* mCurReadBuffer;
     Timer mStartTime;
-    int b[2];
+    int mRecommendedChunkSize;
+    int mLastWriteMarker;
     int mCurBufferIdx;
-    DecompressionState* mBuffersState;
-    int pad;
-    int** mBuffersOffset;
-    int c;
+    BufferState mBuffersState[2];
+    int* mBuffersOffset[2];
     int mCurBufOffset;
     bool mChunkInfoPending;
     int* mCurChunk;

@@ -6,9 +6,8 @@
 #include <list>
 #include <string.h>
 #include "math/MathFuncs.h"
-
-extern File* NewFile(const char*, int);
-template <typename T> extern void EndianSwapEq(T&);
+#include "os/File.h"
+#include "os/Endian.h"
 
 namespace {std::list<DecompressTask> gDecompressionQueue;}
 
@@ -25,7 +24,7 @@ BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_si
         char* dataAsChars = (char*)data;
         bs.Read(&dataAsChars[curr_size], len_left);
         curr_size += len_left;
-        while(bs.Eof() == 2) Timer::Sleep(0);
+        while(bs.Eof() == TempEof) Timer::Sleep(0);
     }
     return bs;
 }
@@ -42,21 +41,20 @@ BinStream& WriteChunks(BinStream& bs, const void* data, int total_len, int max_c
     return bs;
 }
 
-ChunkStream::ChunkStream(const char* c2, FileType type, int i, bool b1, Platform plat, bool b2) : BinStream(false), mFilename(c2), mType(type), mChunkInfo(b1), mIsCached(b2) {
-    b[0] = i;
-    b[1] = 0;
+ChunkStream::ChunkStream(const char* c2, FileType type, int i, bool b1, Platform plat, bool b2) : BinStream(false), mFilename(c2), mType(type), mChunkInfo(b1), mIsCached(b2), mStartTime() {
+    mRecommendedChunkSize = i;
+    mLastWriteMarker = 0;
     mCurBufferIdx = -1;
     mCurBufOffset = 0;
     mTell = 0;
     SetPlatform(plat);
-    mBuffersState = NULL;
-    int size = 2564;
-    mBuffersOffset = 0;
-    mBuffers[0] = 0;
-    pad = 0;
-    c = 0;
-    mBuffers[1] = 0;
+    for(int bufCnt = 0; bufCnt < 2; bufCnt++){
+        mBuffersState[bufCnt] = kInvalid;
+        mBuffersOffset[bufCnt] = 0;
+        mBuffers[bufCnt] = 0;
+    }
     mCurReadBuffer = 0;
+    int size = 0xA04;
     if (type == kRead) size = 2; 
     File* f = NewFile(c2, size);
     mFile = f;
@@ -64,10 +62,9 @@ ChunkStream::ChunkStream(const char* c2, FileType type, int i, bool b1, Platform
     if (!mFail) {
         if (type == kWrite) {
             mFile->Write(&mChunkInfo, 0x810);
-            size = b[0] << 1;
-            mCurBufSize = size;
-            mBuffers[0] = (char*)_MemAllocTemp(size, 0);
-            mBuffers[1] = (char*)_MemAllocTemp(mCurBufSize, 0);
+            mBufSize = mRecommendedChunkSize * 2;
+            mBuffers[0] = (char*)_MemAllocTemp(mBufSize, 0);
+            mBuffers[1] = (char*)_MemAllocTemp(mBufSize, 0);
             mCurBufferIdx = 0;
         } else {
             mChunkInfoPending = true;
@@ -119,14 +116,14 @@ void ChunkStream::ReadImpl(void* Pv, int bytes) {
 }
 
 void ChunkStream::WriteImpl(const void* Pv, int bytes) {
-    if (mCurBufSize > mCurBufOffset + bytes) {
-        while (mCurBufSize > mCurBufOffset + bytes) mCurBufSize += mCurBufSize;
-        void* a = _MemAllocTemp(mCurBufSize, 0);
+    if (mBufSize > mCurBufOffset + bytes) {
+        while (mBufSize > mCurBufOffset + bytes) mBufSize += mBufSize;
+        void* a = _MemAllocTemp(mBufSize, 0);
         memcpy(a, mBuffers[0], mCurBufOffset);
         _MemFree(mBuffers[0]);
         mBuffers[0] = (char*)a;
         _MemFree(mBuffers[1]);
-        mBuffers[1] = (char*)_MemAllocTemp(mCurBufSize, 0);
+        mBuffers[1] = (char*)_MemAllocTemp(mBufSize, 0);
     }
     memcpy(mBuffers[0] + mCurBufOffset, Pv, bytes);
     mCurBufOffset += bytes;
@@ -153,7 +150,7 @@ void ChunkStream::ReadChunkAsync() {
     id = ((placeholder & 1) ^ -id) + id;
     if (mBuffers[id + 0x13] == NULL) {
         if (mChunkInfo.mID == 0xCABEDEAF) mFile->ReadAsync(mBuffers[0], placeholder);
-        else mFile->ReadAsync(mBuffers[id] + mCurBufSize - placeholder, placeholder);
+        else mFile->ReadAsync(mBuffers[id] + mBufSize - placeholder, placeholder);
         mBuffers[id + 0x15] = (char*)(mCurChunk + i);
         mBuffers[id + 0x13] = (char*)1;
     }
@@ -217,7 +214,7 @@ uint ChunkStream::WriteChunk() {
     int flags; // ?
     int sagasasdgg = 0;
     if (mChunkInfo.mID == 0xCDBEDEAF) {
-        int dingus = mCurBufSize - 4;
+        int dingus = mBufSize - 4;
         int dongus = (int)mBuffers[1];
         dongus = result;
         EndianSwapEq(dongus);
