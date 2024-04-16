@@ -86,16 +86,14 @@ ChunkStream::~ChunkStream() {
         MaybeWriteChunk(true);
         if (mChunkInfo.mNumChunks == 0x200) MILO_WARN("%s is %d compressed bytes too large", mFilename, mChunkInfo.mChunks[0x1ff]);
         mFile->Seek(0,0);
-        int i;
-        for (i = 0; i < mChunkInfo.mNumChunks; i++) {
+        for (int i = 0; i < mChunkInfo.mNumChunks; i++) {
             EndianSwapEq(mChunkInfo.mChunks[i]);
         }
         EndianSwapEq(mChunkInfo.mID);
         EndianSwapEq(mChunkInfo.mChunkInfoSize);
         EndianSwapEq(mChunkInfo.mNumChunks);
         EndianSwapEq(mChunkInfo.mMaxChunkSize);
-        i = mChunkInfo.mNumChunks;
-        memset((void*)&mChunkInfo.mChunks[i], 0, (0x200 - i) * 4);
+        memset((void*)&mChunkInfo.mChunks[mChunkInfo.mNumChunks], 0, (0x200 - mChunkInfo.mNumChunks) * 4);
         mFile->Write(&mChunkInfo, 2064);
     }
     delete mFile;
@@ -116,8 +114,8 @@ void ChunkStream::ReadImpl(void* Pv, int bytes) {
 }
 
 void ChunkStream::WriteImpl(const void* Pv, int bytes) {
-    if (mBufSize > mCurBufOffset + bytes) {
-        while (mBufSize > mCurBufOffset + bytes) mBufSize += mBufSize;
+    if (mCurBufOffset + bytes > mBufSize) {
+        while (mCurBufOffset + bytes > mBufSize) mBufSize += mBufSize;
         void* a = _MemAllocTemp(mBufSize, 0);
         memcpy(a, mBuffers[0], mCurBufOffset);
         _MemFree(mBuffers[0]);
@@ -144,15 +142,22 @@ int ChunkStream::Tell() {
 }
 
 void ChunkStream::ReadChunkAsync() {
-    int i = 1;
-    int placeholder = mCurBufferIdx + 1;
-    int id = placeholder >> 0x1f;
-    id = ((placeholder & 1) ^ -id) + id;
-    if (mBuffers[id + 0x13] == NULL) {
-        if (mChunkInfo.mID == 0xCABEDEAF) mFile->ReadAsync(mBuffers[0], placeholder);
-        else mFile->ReadAsync(mBuffers[id] + mBufSize - placeholder, placeholder);
-        mBuffers[id + 0x15] = (char*)(mCurChunk + i);
-        mBuffers[id + 0x13] = (char*)1;
+    int chunkIdx = 1;
+    int idx = (mCurBufferIdx + 1) > 1;
+    if(mBuffersState[idx] != kInvalid){
+        chunkIdx = 2;
+        idx = (mCurBufferIdx + 2) > 1;
+        if(mBuffersState[idx] != kInvalid) chunkIdx = 3;
+    }
+    if(mBuffersState[idx] == kInvalid){
+        if(&mCurChunk[chunkIdx] != mChunkEnd){
+            if(mChunkInfo.mID = 0xCABEDEAF || mCurChunk[chunkIdx] != 0){
+                mFile->ReadAsync(mBuffers[idx], chunkIdx);
+            }
+            else mFile->ReadAsync(mBuffers[idx], mBufSize);
+            mBuffersOffset[idx] = &mCurChunk[chunkIdx];
+            mBuffersState[idx] = kReading;
+        }
     }
 }
 
