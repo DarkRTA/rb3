@@ -55,7 +55,7 @@ public:
     virtual ~ChunkStream();
     virtual void Flush();
     virtual int Tell();
-    virtual bool Eof();
+    virtual EofType Eof();
     virtual bool Fail();
     virtual const char* Name() const;
     virtual bool Cached() const;

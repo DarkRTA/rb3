@@ -11,7 +11,7 @@ public:
     // weak
     virtual void Flush(){}
     virtual int Tell(){ return mTell; } 
-    virtual bool Eof(){ return mSize - mTell == 0; }
+    virtual EofType Eof(){ return (EofType)(mSize - mTell == 0); }
     virtual bool Fail(){ return mFail; }
 
     virtual const char *Name() const;

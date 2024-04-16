@@ -159,11 +159,11 @@ void ChunkStream::ReadChunkAsync() {
     }
 }
 
-bool ChunkStream::Eof() {
+EofType ChunkStream::Eof() {
     MILO_ASSERT(!mFail && mType == kRead, 552);
     if (mChunkInfoPending) {
         int x;
-        if (mFile->ReadDone(x) == 0) return 2;
+        if (mFile->ReadDone(x) == 0) return TempEof;
         mChunkInfoPending = false;
         EndianSwapEq(mChunkInfo.mID);
         EndianSwapEq(mChunkInfo.mChunkInfoSize);
@@ -240,7 +240,7 @@ uint ChunkStream::WriteChunk() {
 }
 
 void DecompressMemHelper(const void* a, int b, void* c, int& dstLen, const char* fname) {
-    int expectedDstLen;
+    int expectedDstLen = *((int*)a);
     EndianSwapEq(expectedDstLen);
     DecompressMem((void*)((int)a + 4), b - 4, c, dstLen, false, fname);
     MILO_ASSERT(dstLen == expectedDstLen, 949);
