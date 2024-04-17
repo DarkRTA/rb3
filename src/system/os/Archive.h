@@ -50,7 +50,7 @@ class Archive {
     void Enumerate(const char*, void (*)(const char*, const char*), bool, const char*);
     const char* GetArkfileName(int) const;
     void GetGuid(HxGuid&) const;
-    bool DebugArkOrder();
+    static bool DebugArkOrder();
     bool HasArchivePermission(int) const;
     void SetArchivePermission(int, const int*);
     int GetArkfileCachePriority(int) const;

@@ -20,6 +20,7 @@ public:
     const char* GetBlockData(int, int);
     void KillBlockRequests(ArkFile*);
     void Poll();
+    void GetAssociatedBlocks(unsigned long long, int, int&, int&, int&);
 };
 
 extern BlockMgr TheBlockMgr;

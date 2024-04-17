@@ -4,6 +4,8 @@
 #include "os/Archive.h"
 #include "os/BlockMgr.h"
 #include "os/CDReader.h"
+#include "os/System.h"
+#include "utl/Loader.h"
 
 ArkFile::ArkFile(const char* iFilename, int iMode) : mNumOutstandingTasks(0), mBytesRead(0), mTell(0), mFail(0), mReadAhead(true), mFilename(iFilename) {
     bool fileinfores = TheArchive->GetFileInfo(FileMakePath(".", iFilename, 0), mArkfileNum, mByteStart, mSize, mUCSize);
@@ -24,8 +26,34 @@ int ArkFile::Read(void *c, int a) {
     return ret;
 }
 
-bool ArkFile::ReadAsync(void*, int){
-    
+bool ArkFile::ReadAsync(void* iBuff, int iBytes){
+    MILO_ASSERT(iBytes >= 0, 0x5A);
+    if(mTell == mSize || mNumOutstandingTasks != 0) return false;
+    else {
+        mBytesRead = 0;
+        if(iBytes == 0) return true;
+        if(mReadAhead){
+            unsigned int last = mFilename.find_last_of('_');
+            bool met = last != String::npos;
+            if(met){
+                Symbol plat = PlatformSymbol(TheLoadMgr.mPlatform);
+                const char* strIdx = mFilename.c_str() + last + 1;
+                met = plat == strIdx;
+            }
+            String someStrIdk(met ? mFilename.substr(0, last) : mFilename);
+            TheArchive->HasArchivePermission(mArkfileNum);
+            if(Archive::DebugArkOrder() != 0){
+                TheDebug << MakeString("ArkFile%d:   '%s'\n", mArkfileNum, someStrIdk.c_str());
+            }
+        }
+        mReadAhead = false;
+        if(mTell + iBytes > mSize){
+            iBytes = mSize - mTell;
+        }
+        MILO_ASSERT(iBytes >= 0, 0x82);
+        // more crap goes here
+        return true;
+    }
 }
 
 bool ArkFile::Write(const void*, int){

@@ -24,7 +24,7 @@ Archive::Archive(const char* c, int i) : mBasename(c), mMode(kRead), mIsPatched(
     Read(i);
 }
 
-void Archive::GetFileInfo(const char* file, int& arkfileNum, unsigned long long& byteOffset, int& fileSize, int& fileUCSize) {
+bool Archive::GetFileInfo(const char* file, int& arkfileNum, unsigned long long& byteOffset, int& fileSize, int& fileUCSize) {
     
 }
 
