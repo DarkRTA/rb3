@@ -4,6 +4,7 @@
 #include "utl/HxGuid.h"
 #include "utl/Str.h"
 #include "types.h"
+#include "os/Debug.h"
 #include <vector>
 
 class ArkHash {
@@ -11,7 +12,10 @@ public:
     ArkHash();
     int GetHashValue(const char*) const;
     int Read(BinStream&, int);
-    int operator[](int) const;
+    char* operator[](int idx) const {
+        MILO_ASSERT(idx < mTableSize, 0x99);
+        return mTable[idx];
+    }
     
     char* mHeap;
     char* mHeapEnd;
@@ -46,6 +50,11 @@ class Archive {
     void Enumerate(const char*, void (*)(const char*, const char*), bool, const char*);
     const char* GetArkfileName(int) const;
     void GetGuid(HxGuid&) const;
+    bool DebugArkOrder();
+    bool HasArchivePermission(int) const;
+    void SetArchivePermission(int, const int*);
+    int GetArkfileCachePriority(int) const;
+    int GetArkfileNumBlocks(int) const;
 
     int mNumArkfiles;
     std::vector<uint> mArkfileSizes;
@@ -58,6 +67,8 @@ class Archive {
     uint mMaxArkfileSize;
     bool mIsPatched;
     HxGuid mGuid;
+    const int* unk60;
+    int unk64;
 
 };
 

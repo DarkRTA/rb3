@@ -3,6 +3,9 @@
 #include "utl/FileStream.h"
 #include "math/Sort.h"
 
+bool gDebugArkOrder = false;
+int kArkBlockSize = 0x10000;
+
 ArkHash::ArkHash() : mHeap(0), mHeapEnd(0), mFree(0), mTable(0), mTableSize(0) {
 
 }
@@ -45,7 +48,9 @@ void Archive::Read(int heap_headroom) {
         return;
     }
     else {
-        arkhdr >> mGuid >> mNumArkfiles >> mArkfileSizes;
+        arkhdr >> mGuid;
+        arkhdr >> mNumArkfiles >> mArkfileSizes;
+
         if(version == 3){
             for(int i = 0; i < mArkfileSizes.size(); i++){
                 mArkfileNames.push_back(String(MakeString("%s_%d.ark", mBasename, i)));
@@ -53,17 +58,40 @@ void Archive::Read(int heap_headroom) {
         }
         else arkhdr >> mArkfileNames;
 
-        if(version < 6){
+        if(version > 5) arkhdr >> mArkfileCachePriority;
+        else {
             for(int i = 0; i < mArkfileSizes.size(); i++){
                 mArkfileCachePriority.push_back(-1);
             }
         }
-        else arkhdr >> mArkfileCachePriority;
 
         mHashTable.Read(arkhdr, heap_headroom);
 
         arkhdr >> mFileEntries;
     }
+}
+
+bool Archive::DebugArkOrder(){ return gDebugArkOrder; }
+
+bool Archive::HasArchivePermission(int i) const {
+    for(int x = unk64, idx = 0; x > 0; x--, idx++){
+        if(i == unk60[idx]) return true;
+    }
+    return false;
+}
+
+void Archive::SetArchivePermission(int i, const int* ci){
+    unk64 = i;
+    unk60 = ci;
+}
+
+int Archive::GetArkfileCachePriority(int arkfileNum) const {
+    MILO_ASSERT(arkfileNum < mArkfileCachePriority.size(), 0x4BB);
+    return mArkfileCachePriority[arkfileNum];
+}
+
+int Archive::GetArkfileNumBlocks(int file) const {
+    return (mArkfileSizes[file] - 1) / kArkBlockSize + 1;
 }
 
 void Archive::GetGuid(HxGuid& g) const {
