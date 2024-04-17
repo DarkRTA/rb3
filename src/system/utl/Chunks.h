@@ -70,7 +70,7 @@ public:
     virtual ~IDataChunk();
     virtual void Flush(){}
     virtual int Tell();
-    virtual bool Eof(){ return mEof != 0; }
+    virtual EofType Eof(){ return (EofType)(mEof != 0); }
     virtual bool Fail(){ return mFailed; }
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int){}

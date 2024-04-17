@@ -61,9 +61,9 @@ int FileStream::Tell(){
     return mFile->Tell();
 }
 
-bool FileStream::Eof(){
+EofType FileStream::Eof(){
     MILO_ASSERT(!mFail, 0x64);
-    return mFile->Eof() != false;
+    return (EofType)(mFile->Eof() != false);
 }
 
 bool FileStream::Fail(){

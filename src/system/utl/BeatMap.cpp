@@ -11,10 +11,21 @@ void ResetTheBeatMap(){
     TheBeatMap = &gDefaultBeatMap;
 }
 
-bool BeatInfoCmp(const BeatInfo& info, int i){
-//       return ((int)(param_2 ^ *(uint *)param_1) >> 1) - ((param_2 ^ *(uint *)param_1) & param_2) >> 0x1f;
+bool BeatInfoCmp(const BeatInfo& info, int tick){
+    return info.mTick < tick;
 }
 
 BeatMap::BeatMap(){
     
+}
+
+bool BeatMap::AddBeat(int tick, int level){
+    if(mInfos.empty() || mInfos.back().mTick < tick){
+        BeatInfo info;
+        info.mTick = tick;
+        info.mLevel = level;
+        mInfos.push_back(info);
+        return true;
+    }
+    else return false;
 }

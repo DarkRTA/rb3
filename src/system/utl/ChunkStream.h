@@ -18,9 +18,9 @@ BinStream& WriteChunks(BinStream&, const void*, int, int);
 #define CHUNKSTREAM_Z_ID 0xCBBEDEAF
 #define kChunkIDMask 0xC0BEDEAF
 
-enum DecompressionState {
-    kUnk0,
-    kUnk1,
+enum BufferState {
+    kInvalid,
+    kReading,
     kDecompressing,
     kReady,
 };
@@ -36,7 +36,8 @@ struct DecompressTask {
 
 class ChunkStream : public BinStream {
 public:
-    class ChunkInfo { public:
+    class ChunkInfo {
+    public:
         ChunkInfo(bool);
         int mID; // offset 0x0, size 0x4
         int mChunkInfoSize; // offset 0x4, size 0x4
@@ -54,7 +55,7 @@ public:
     virtual ~ChunkStream();
     virtual void Flush();
     virtual int Tell();
-    virtual bool Eof();
+    virtual EofType Eof();
     virtual bool Fail();
     virtual const char* Name() const;
     virtual bool Cached() const;
@@ -68,31 +69,32 @@ public:
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
     uint WriteChunk();
+    void DecompressChunkAsync();
+    void PollDecompressionWorker();
 
-    File * mFile;
+    File* mFile;
     String mFilename;
     bool mFail;
     FileType mType;
     ChunkInfo mChunkInfo;
     bool mIsCached;
     Platform mPlatform;
-    int mCurBufSize;
+    int mBufSize;
     char* mBuffers[2];
-    int mCurReadBuffer;
+    char* mCurReadBuffer;
     Timer mStartTime;
-    int b[2];
+    int mRecommendedChunkSize;
+    int mLastWriteMarker;
     int mCurBufferIdx;
-    DecompressionState* mBuffersState;
-    int pad;
-    int** mBuffersOffset;
-    int c;
+    BufferState mBuffersState[2];
+    int* mBuffersOffset[2];
     int mCurBufOffset;
     bool mChunkInfoPending;
     int* mCurChunk;
     int* mChunkEnd;
     int mTell; // which is different from mCurBufOffset... why?
 
-    void *operator new(size_t t) {
+    void* operator new(size_t t) {
         return _MemAllocTemp(t, 0);
     }
 };

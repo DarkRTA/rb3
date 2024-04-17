@@ -7,10 +7,10 @@
 class MemStream : public BinStream {
 public:
     MemStream(bool);
-    virtual ~MemStream();
+    virtual ~MemStream(){}
     virtual void Flush();
     virtual int Tell();
-    virtual bool Eof();
+    virtual EofType Eof();
     virtual bool Fail();
     virtual const char* Name() const;
     virtual void ReadImpl(void*, int);

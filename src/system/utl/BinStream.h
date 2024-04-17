@@ -17,6 +17,12 @@
         return *this; \
     }
 
+enum EofType {
+    NotEof = 0,
+    RealEof = 1,
+    TempEof = 2
+};
+
 class BinStream {
 public:
     /** The three seek types for BinStream::Seek
@@ -37,7 +43,7 @@ public:
     virtual ~BinStream();
     virtual void Flush() = 0;
     virtual int Tell() = 0;
-    virtual bool Eof() = 0;
+    virtual EofType Eof() = 0;
     virtual bool Fail() = 0;
     virtual const char* Name() const;
     virtual bool Cached() const { return false; }
