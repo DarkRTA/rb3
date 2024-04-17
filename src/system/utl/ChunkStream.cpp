@@ -182,19 +182,61 @@ EofType ChunkStream::Eof() {
             MILO_ASSERT((mChunkInfo.mMaxChunkSize & ~kChunkSizeMask) == 0, 583);
             mChunkInfo.mChunks[0] = mChunkInfo.mMaxChunkSize;
         }
+
         if (strstr(mFilename.c_str(), ".milo_")) {
-            const char* aaa = mFilename.c_str();
+            const char* miloStr = mFilename.c_str();
             mIsCached = true;
-            if (strstr(aaa, ".milo_xbox")) {
-                SetPlatform(kPlatformXBox);
-            } else if (strstr(aaa, ".milo_ps3")) {
-                SetPlatform(kPlatformPS3);
-            } else if (strstr(aaa, ".milo_wii")) {
-                SetPlatform(kPlatformWii);
-            } else SetPlatform(kPlatformPC);
-        } else {
+            if(strstr(miloStr, ".milo_xbox")) SetPlatform(kPlatformXBox);
+            else if(strstr(miloStr, ".milo_ps3")) SetPlatform(kPlatformPS3);
+            else if(strstr(miloStr, ".milo_wii")) SetPlatform(kPlatformWii);
+            else SetPlatform(kPlatformPC);
+        }
+        else {
             mIsCached = false;
-            SetPlatform(kPlatformPS2);
+            SetPlatform(kPlatformPC);
+        }
+
+        mBufSize = mChunkInfo.mMaxChunkSize;
+        if(mChunkInfo.mID != 0xCABEDEAF) mBufSize += 0x800;
+        int cap = 2;
+        if(mChunkInfo.mNumChunks < 2) cap = mChunkInfo.mNumChunks;
+        for(int i = 0; i < cap; i++){
+            mBuffers[i] = (char*)_MemAllocTemp(mBufSize, 0);
+        }
+
+        mChunkEnd = &mChunkInfo.mChunks[mChunkInfo.mNumChunks];
+        mCurChunk = &mChunkInfo.mMaxChunkSize;
+        mCurBufOffset = mChunkInfo.mMaxChunkSize & kChunkSizeMask;
+        mCurBufferIdx = 1;
+        mFile->Seek(mChunkInfo.mChunkInfoSize, 0);
+        ReadChunkAsync();
+    }
+
+    if(mCurBufOffset < (*mCurChunk & kChunkSizeMask)){
+        return NotEof;
+    }
+    else {
+        MILO_ASSERT(mCurBufOffset == (*mCurChunk & kChunkSizeMask), 0x28B);
+        if(mBuffersOffset[mCurBufferIdx] == mCurChunk){
+            mBuffersState[mCurBufferIdx] = kInvalid;
+        }
+        if(mCurChunk + 1 == mChunkEnd) return RealEof;
+        else {
+            int x;
+            if(mFile->ReadDone(x)){
+                DecompressChunkAsync();
+                ReadChunkAsync();
+                PollDecompressionWorker();
+            }
+            int idx = (mCurBufferIdx + 1) >= 0;
+            if(mBuffersState[idx] != kReady) return TempEof;
+            else {
+                mCurBufferIdx = idx;
+                mCurChunk++;
+                mCurBufOffset = 0;
+                mCurReadBuffer = mBuffers[idx];
+                return NotEof;
+            }
         }
     }
 }
@@ -204,11 +246,40 @@ bool ChunkStream::Fail() { return mFail; }
 char* unused = "mCurBufOffset == (*mCurChunk & kChunkSizeMask)";
 
 void ChunkStream::MaybeWriteChunk(bool b) {
-    if (mChunkInfo.mNumChunks < 2 && 0x1fff < mCurBufOffset) b = true;
-
-
-    if (mChunkInfo.mNumChunks > 0x200) MILO_FAIL("%s has %d chunks, max is %d", mFilename, mChunkInfo.mNumChunks, 0x200);
-    WriteChunk();
+    if (mChunkInfo.mNumChunks < 2 && 0x2000 <= mCurBufOffset) b = true;
+    if(mCurBufOffset >= mRecommendedChunkSize || b){
+        bool idk = mChunkInfo.mNumChunks & 0x1FF;
+        if(!b && idk) return;
+        if((mCurBufOffset >= mRecommendedChunkSize + 0x2000) && (0x2000 <= mLastWriteMarker) && !idk){
+            int __n = mCurBufOffset - mLastWriteMarker;
+            void* __dest = _MemAllocTemp(__n, 0);
+            memcpy(__dest, mBuffers[0] + mLastWriteMarker, __n);
+            mCurBufOffset = mLastWriteMarker;
+            mLastWriteMarker = 0;
+            MaybeWriteChunk(true);
+            mCurBufOffset = __n;
+            memcpy(mBuffers[0], __dest, __n);
+            _MemFree(__dest);
+            if(!b) return;
+        }
+        if (mChunkInfo.mNumChunks >= 0x200) MILO_FAIL("%s has %d chunks, max is %d", mFilename, mChunkInfo.mNumChunks, 0x200);
+        unsigned int wrote = WriteChunk();
+        int numchunks = mChunkInfo.mNumChunks;
+        mChunkInfo.mChunks[numchunks] = wrote;
+        int offset = mCurBufOffset;
+        int size = mChunkInfo.mMaxChunkSize;
+        mChunkInfo.mNumChunks = numchunks + 1;
+        if(offset < size){
+            offset = size;
+        }
+        size = wrote & kChunkSizeMask;
+        if(size < offset){
+            size = offset;
+        }
+        mChunkInfo.mMaxChunkSize = size;
+        mCurBufOffset = 0;
+    }
+    mLastWriteMarker = mCurBufOffset;
 }
 
 uint ChunkStream::WriteChunk() {

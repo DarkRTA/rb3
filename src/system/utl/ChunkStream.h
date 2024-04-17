@@ -69,6 +69,8 @@ public:
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
     uint WriteChunk();
+    void DecompressChunkAsync();
+    void PollDecompressionWorker();
 
     File* mFile;
     String mFilename;
