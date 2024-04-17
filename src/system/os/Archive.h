@@ -45,7 +45,7 @@ enum Mode {
 class Archive {
     public:
     Archive(const char*, int);
-    void GetFileInfo(const char*, int&, unsigned long long&, int&, int&);
+    bool GetFileInfo(const char*, int&, unsigned long long&, int&, int&);
     void Read(int);
     void Enumerate(const char*, void (*)(const char*, const char*), bool, const char*);
     const char* GetArkfileName(int) const;
@@ -72,6 +72,6 @@ class Archive {
 
 };
 
-Archive* TheArchive;
+extern Archive* TheArchive;
 
 #endif // OS_ARCHIVE_H

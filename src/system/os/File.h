@@ -8,8 +8,8 @@ public:
     File(){ sOpenCount[0]++; }
     virtual ~File(){ sOpenCount[0]--; }
     virtual class String Filename() const { 
-        class String str;
-        return str;
+        // class String str;
+        return String();
     }
     virtual int Read(void *, int) = 0;
     virtual bool ReadAsync(void *, int) = 0;
@@ -27,7 +27,7 @@ public:
         i = 0; 
         return true;
     }
-    virtual void GetFileHandle(DVDFileInfo*&) = 0;
+    virtual int GetFileHandle(DVDFileInfo*&) = 0;
     virtual int Truncate(int){ return 0; }
 
     static int sOpenCount[4];

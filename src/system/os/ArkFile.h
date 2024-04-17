@@ -19,9 +19,13 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual void GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo*&);
 
     void TaskDone(int);
+
+    void operator delete(void* v){
+        _MemFree(v);
+    }
 
     int mArkfileNum;
     unsigned long long mByteStart;

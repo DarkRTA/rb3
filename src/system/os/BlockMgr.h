@@ -18,6 +18,8 @@ class BlockMgr {
 public:
     int dummy;
     const char* GetBlockData(int, int);
+    void KillBlockRequests(ArkFile*);
+    void Poll();
 };
 
 extern BlockMgr TheBlockMgr;

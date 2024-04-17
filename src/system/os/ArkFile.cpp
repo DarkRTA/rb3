@@ -1,11 +1,31 @@
 #include "os/ArkFile.h"
 #include "os/Debug.h"
+#include "os/File.h"
+#include "os/Archive.h"
+#include "os/BlockMgr.h"
+#include "os/CDReader.h"
+
+ArkFile::ArkFile(const char* iFilename, int iMode) : mNumOutstandingTasks(0), mBytesRead(0), mTell(0), mFail(0), mReadAhead(true), mFilename(iFilename) {
+    bool fileinfores = TheArchive->GetFileInfo(FileMakePath(".", iFilename, 0), mArkfileNum, mByteStart, mSize, mUCSize);
+    if(!fileinfores || (iMode & 4)){
+        mFail = 1;
+    }
+}
+
+ArkFile::~ArkFile(){
+    if(mNumOutstandingTasks > 0)
+        TheBlockMgr.KillBlockRequests(this);
+}
 
 int ArkFile::Read(void *c, int a) {
     if(ReadAsync(c, a) == 0) return 0;
     int ret = -1;
     while(ReadDone(ret) == 0);
     return ret;
+}
+
+bool ArkFile::ReadAsync(void*, int){
+    
 }
 
 bool ArkFile::Write(const void*, int){
@@ -54,4 +74,14 @@ void ArkFile::TaskDone(int a) {
     mNumOutstandingTasks--;
     mBytesRead += a;
     mTell += a;
+}
+
+bool ArkFile::ReadDone(int& i){
+    TheBlockMgr.Poll();
+    i = mBytesRead;
+    return mNumOutstandingTasks == 0;
+}
+
+int ArkFile::GetFileHandle(DVDFileInfo*& info){
+    return CDReadExternal(info, mArkfileNum, mByteStart);
 }
