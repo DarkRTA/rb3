@@ -21,13 +21,13 @@ extern "C" {
 #include <errno.h>
 /* #endif */
 
-#if __option(little_endian)
+/*#if __option(little_endian)
 #define __HIp(x) *(1 + (int*)x)
 #define __LOp(x) *(int*)x
 #else
 #define __HIp(x) *(int*)x
 #define __LOp(x) *(1 + (int*)x)
-#endif
+#endif*/
 
 /* TODO: should __STDC__ actually be defined?
 #ifdef __STDC__

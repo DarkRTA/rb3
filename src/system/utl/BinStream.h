@@ -1,6 +1,7 @@
 #ifndef UTL_BINSTREAM_H
 #define UTL_BINSTREAM_H
 #include "math/Rand2.h"
+#include "types.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include <vector>
@@ -96,10 +97,10 @@ public:
     /** Seeks to `offset` using `mode`. */
     void Seek(int offset, SeekType mode);
 
-    /** Reads `len` bytes of data, backwards, into `out`.
+    /** Reads `len` bytes of data into `out`, reversed if mLittleEndian is true.
      * Reads a length of data specified by `len` from the open file
-     * into `out`, using the reverse endianness.
-     * (PPC == BE, therefore reverse == LE)
+     * into `out`, using the endianness specified by mLittleEndian.
+     * (mLE == LE, therefore !mLE == BE)
      *
      * @param [out] out The pointer to read data into.
      * @param [in] len The length of data to read.
@@ -128,8 +129,10 @@ public:
     BS_READ_TYPE(int);
     BS_READ_TYPE(float);
     BS_READ_TYPE(unsigned int);
-    BS_READ_TYPE(unsigned short);
     BS_READ_TYPE(short);
+    BS_READ_TYPE(u16);
+    BS_READ_TYPE(u32);
+    BS_READ_TYPE(u64);
 
     BinStream& operator>>(unsigned char& out) {
         Read(&out, 1);

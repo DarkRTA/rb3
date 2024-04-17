@@ -14,9 +14,9 @@ typedef struct OSMutex {
     struct OSMutex* prev; // at 0x14
 } OSMutex;
 
-struct OSCond {
+typedef struct OSCond {
   OSThreadQueue queue;
-};
+} OSCond;
 
 void OSInitMutex(OSMutex* mutex);
 void OSLockMutex(OSMutex* mutex);

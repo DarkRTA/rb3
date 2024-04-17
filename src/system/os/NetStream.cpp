@@ -19,8 +19,8 @@ void NetStream::ClientConnect(const NetAddress& addr){
     timer.Restart();
 }
 
-bool NetStream::Eof(){
-    return !mSocket->CanRead();
+EofType NetStream::Eof(){
+    return (EofType)!mSocket->CanRead();
 }
 
 void NetStream::SeekImpl(int i, SeekType ty){
