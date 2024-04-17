@@ -61,14 +61,34 @@
         "cflags": "base",
         "objects": {
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/arith.c": "NonMatching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/buffer_io.c": "NonMatching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/errno.c": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/rand.c": "NonMatching"
+
         }
     },
+    "embedded": {
+        "mw_version": "Wii/1.3",
+        "cflags": "runtime",
+        "objects": { 
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_acos.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_asin.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_atan2.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_exp.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_fmod.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_log.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_log10.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/w_pow.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/time.dolphin.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/math_ppc.c": "Matching"
+        }
+    },    
     "system": {
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
             "system/bandobj/BandCamShot.cpp": "NonMatching",
+            "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BeatMatch.cpp": "Matching",

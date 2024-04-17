@@ -41,7 +41,8 @@
 
                 "-lang=c99",
                 "-O4,p",
-                "-inline auto"
+                "-inline auto",
+                "-func_align 4"
             ]
         },
         "rvl_sdk": {
