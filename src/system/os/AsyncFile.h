@@ -3,15 +3,17 @@
 #include "os/File.h"
 
 #define FILE_OPEN_READ 2
+#define FILE_OPEN_WRITE 4
 
 class AsyncFile : public File {
 public:
     AsyncFile(const char *, int);
     virtual ~AsyncFile(){}
-    virtual String Filename(){ return String(mFilename); }
+    virtual String Filename() const { return String(mFilename); }
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
     virtual int Write(const void *, int);
+    virtual bool WriteAsync(const void*, int);
     virtual int Seek(int, int);
     virtual int Tell();
     virtual void Flush();
@@ -22,7 +24,7 @@ public:
     virtual bool ReadDone(int &);
     virtual bool WriteDone(int &);
     virtual int GetFileHandle(DVDFileInfo*&) = 0;
-
+    // File::Truncate goes here
     virtual void _OpenAsync() = 0;
     virtual bool _OpenDone() = 0;
     virtual void _WriteAsync(const void*, int) = 0;

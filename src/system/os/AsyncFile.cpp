@@ -4,6 +4,8 @@
 #include "os/File.h"
 #include "utl/Loader.h"
 #include "os/System.h"
+#include "os/Archive.h"
+#include "os/File_Wii.h"
 
 static int gBufferSize = 0x20000;
 
@@ -34,14 +36,22 @@ void PrintDiscFile(const char* cc){
     }
     String fullPath(MakeString("%s/%s%s.%s", path, gen, base, ext));
     unsigned int last = fullPath.find_last_of('_');
-    bool asdf = false;
-    if(last != String::npos){
-        if(PlatformSymbol(TheLoadMgr.mPlatform) == &fullPath[last + 1]){
-            asdf = true;
-        }
+    bool lastFound = last != String::npos;
+    if(lastFound){
+        Symbol plat = PlatformSymbol(TheLoadMgr.mPlatform);
+        lastFound = plat == fullPath.c_str() + last + 1;
     }
-    fullPath = (asdf) ? fullPath.substr(0, last) : fullPath;
+    fullPath = (lastFound) ? fullPath.substr(0, last) : fullPath;
     TheDebug << MakeString("AsyncFile:   '%s'\n", fullPath);
+}
+
+extern bool UsingHolmes(int);
+
+AsyncFile* AsyncFile::New(const char* cc, int i){
+    if(Archive::DebugArkOrder() != 0) PrintDiscFile(cc);
+    if(!UsingHolmes(4) || !(i & 4U) || FileIsLocal(cc)){
+
+    }
 }
 
 AsyncFile::AsyncFile(const char* c, int i) : mMode(i), mFail(false), unk9(0), mFilename(c), mTell(0), mOffset(0), mBuffer(0), mData(0), mBytesLeft(0) {
@@ -68,7 +78,7 @@ bool AsyncFile::ReadAsync(void* iBuff, int iBytes){
     if(mFail) return false;
     else {
         if(!mBuffer){
-            _WriteAsync(iBuff, iBytes);
+            _ReadAsync(iBuff, iBytes);
         }
         else {
             if(mTell + iBytes > mSize){
@@ -82,4 +92,55 @@ bool AsyncFile::ReadAsync(void* iBuff, int iBytes){
         }
         return mFail == 0;
     }
+}
+
+bool AsyncFile::ReadDone(int& i){
+    if(mFail){
+        i = 0;
+        return true;
+    }
+    else {
+        if(mBuffer && mBytesLeft == 0){
+            i = mBytesRead;
+            return true;
+        }
+        else {
+            if(!_ReadDone()){
+                i = mBytesRead;
+                return false;
+            }
+            else {
+                if(!mBuffer) return true;
+                else {
+                    if(mOffset + mBytesLeft > gBufferSize){
+                        int size = gBufferSize - mOffset;
+                        memcpy(mData, mBuffer + mOffset, size);
+                        mBytesRead += size;
+                        mOffset = gBufferSize;
+                        mTell += size;
+                        mBytesLeft -= size;
+                        mData += size;
+                        FillBuffer();
+                        i = mBytesRead;
+                        return false;
+                    }
+                    else {
+                        memcpy(mData, mBuffer + mOffset, mBytesLeft);
+                        mOffset += mBytesLeft;
+                        int ret = mBytesRead + mBytesLeft;
+                        mTell += mBytesLeft;
+                        mBytesLeft = 0;
+                        mBytesRead = ret;
+                        i = ret;
+                        return true;
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool AsyncFile::WriteDone(int& i){
+    if(mBuffer) return true;
+    else return _WriteDone();
 }
