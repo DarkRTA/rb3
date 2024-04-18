@@ -144,3 +144,80 @@ bool AsyncFile::WriteDone(int& i){
     if(mBuffer) return true;
     else return _WriteDone();
 }
+
+bool AsyncFile::WriteAsync(const void* v, int i){
+    MILO_ASSERT(mMode & FILE_OPEN_WRITE, 0x18E);
+    if(mFail) return false;
+    else {
+        if(!mBuffer){
+            _WriteAsync(v, i);
+        }
+        else {
+            do {
+                if(mOffset + i > gBufferSize){
+                    int size = gBufferSize - mOffset;
+                    memcpy(mBuffer + mOffset, v, size);
+                    mOffset = gBufferSize;
+                    v = (void*)((int)v + size);
+                    mTell += size;
+                    Flush();
+                    i -= size;
+                }
+                else {
+                    memcpy(mBuffer + mOffset, v, i);
+                    mTell += i;
+                    mOffset += i;
+                    if(mSize < mTell) mSize = mTell;
+                    goto okthen;
+                }
+                
+            } while(!mFail);
+            return false;
+        }
+    okthen:
+        return i != 0;
+    }
+}
+
+int AsyncFile::Seek(int i, int j){
+    if(mFail) return mTell;
+    else {
+        if(mMode & FILE_OPEN_WRITE) Flush();
+        else MILO_ASSERT(!mBytesLeft, 0x1CA);
+        // stuff in between
+        _SeekToTell();
+        if(mBuffer && (mMode & FILE_OPEN_READ)){
+            mOffset = gBufferSize;
+            FillBuffer();
+        }
+        return mTell;
+    }
+}
+
+int AsyncFile::Tell(){ return mTell; }
+
+void AsyncFile::Flush(){
+    if(!mFail && (mMode & FILE_OPEN_WRITE)){
+        _WriteAsync(mBuffer, mOffset);
+        while(!_WriteDone());
+        mOffset = 0;
+    }
+}
+
+void AsyncFile::FillBuffer(){
+    if(!mFail && (mMode & FILE_OPEN_READ)){
+        if(mOffset != gBufferSize) _SeekToTell();
+        int newsize = mSize - mTell;
+        if(gBufferSize < newsize) newsize = gBufferSize;
+        _ReadAsync(mBuffer, newsize);
+        mOffset = 0;
+    }
+}
+
+bool AsyncFile::Eof(){
+    return mTell == mSize;
+}
+
+bool AsyncFile::Fail(){ return mFail; }
+int AsyncFile::Size(){ return mSize; }
+int AsyncFile::UncompressedSize(){ return mUCSize; }
