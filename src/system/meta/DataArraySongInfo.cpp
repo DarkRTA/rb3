@@ -1,10 +1,13 @@
 #include "meta/DataArraySongInfo.h"
 #include "os/Debug.h"
+#include "utl/Symbols.h"
 
 int DataArraySongInfo::sSaveVer = 1;
 
 // this big macro needs to evaluate to a bool for the purpose of a MILO_ASSERT
-#define FIND_WITH_BACKUP(sym) \
+// I think this ultimately needs to evaluate to a DataArray*
+// and it takes in a Symbol - see my shoddy attempt at it with FIND_WITH_BACKUP below
+#define GET_MEMBER_ARRAY(sym) \
     member_exists = true; \
     existing_member_array = arr1->FindArray(sym, false); \
     if(!existing_member_array){ \
@@ -16,9 +19,13 @@ int DataArraySongInfo::sSaveVer = 1;
         if(!exists_in_missing) member_exists = false; \
     }
 
-DataArraySongInfo::DataArraySongInfo(DataArray*, DataArray*, Symbol){
+#define FIND_WITH_BACKUP(sym) \
+    arr1->FindArray(sym, false) ? arr1->FindArray(sym, false) : arr2->FindArray(sym, false)
+
+DataArraySongInfo::DataArraySongInfo(DataArray* arr1, DataArray* arr2, Symbol){
     bool member_exists;
     DataArray* existing_member_array;
+    MILO_ASSERT(FIND_WITH_BACKUP(name), 0x1C);
 }
 
 DataArraySongInfo::DataArraySongInfo(SongInfo* info) : SongInfoCopy(info) {
@@ -77,7 +84,8 @@ void DataArraySongInfo::SetBaseFileName(const char* name){
 }
 
 void DataArraySongInfo::AddExtraMidiFile(const char* cc1, const char* cc2){
-    mExtraMidiFiles.push_back(String(cc1));
+    class String k(cc1);
+    mExtraMidiFiles.push_back(k);
 }
 
 BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo){
