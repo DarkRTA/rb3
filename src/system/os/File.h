@@ -7,10 +7,7 @@ class File {
 public:
     File(){ sOpenCount[0]++; }
     virtual ~File(){ sOpenCount[0]--; }
-    virtual class String Filename() const { 
-        // class String str;
-        return String();
-    }
+    virtual class String Filename() const { return String(); }
     virtual int Read(void *, int) = 0;
     virtual bool ReadAsync(void *, int) = 0;
     virtual int Write(const void *, int) = 0;
@@ -35,6 +32,9 @@ public:
 
 File* NewFile(const char*, int);
 
+extern "C" void FileInit();
+extern "C" void FileTerminate();
+
 const char* FileRoot();
 const char* FileExecRoot();
 const char* FileSystemRoot();
@@ -54,5 +54,7 @@ extern "C" int FileClose(int iFd);
 extern "C" int FileWrite(int iFd, void* iBuff, unsigned int iLen);
 const char* FileLocalize(const char* iFilename, char* buffer);
 extern "C" bool FileMatch(const char*, const char*);
+extern "C" void FileRecursePattern(const char*, void (*)(char const *,char const *), bool);
+void RecursePatternInternal(const char*, void (*)(const char*, const char*), bool, bool);
 
 #endif
