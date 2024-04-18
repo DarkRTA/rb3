@@ -197,6 +197,7 @@
             "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
+            "system/os/PlatformMgr.cpp": "NonMatching",
             "system/os/ProfilePicture.cpp": "NonMatching",
             "system/os/ProfilePicture_Wii.cpp": "Matching",
             "system/os/SynchronizationEvent.cpp": "Matching",

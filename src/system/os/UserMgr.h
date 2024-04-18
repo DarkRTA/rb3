@@ -21,5 +21,6 @@ public:
 };
 
 void SetTheUserMgr(UserMgr*);
+extern UserMgr* TheUserMgr;
 
 #endif
