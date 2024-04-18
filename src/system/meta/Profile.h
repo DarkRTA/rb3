@@ -2,6 +2,7 @@
 #define META_PROFILE_H
 #include "meta/FixedSizeSaveable.h"
 #include "obj/Object.h"
+#include "os/UserMgr.h"
 
 enum ProfileSaveState {
     kMetaProfileUnloaded = 0,
@@ -27,10 +28,18 @@ public:
 
     bool IsAutosaveEnabled() const;
     bool HasValidSaveData() const;
-    int GetPadNum() const;
     ProfileSaveState GetSaveState() const;
     void SetSaveState(ProfileSaveState);
     void MakeDirty();
+
+    int GetPadNum() const;
+    const char* GetName() const;
+
+    // int GetPadNum() const { return mPadNum; }
+    // const char* GetName() const {
+    //     LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
+    //     return u->UserName();
+    // }
 
     bool mDirty;
     int mPadNum;
