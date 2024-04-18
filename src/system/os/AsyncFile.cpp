@@ -1,7 +1,7 @@
 #include "os/AsyncFile.h"
 #include "os/Debug.h"
 
-static int gBufferSize;
+static int gBufferSize = 0x20000;
 
 AsyncFile::AsyncFile(const char* c, int i) : mMode(i), mFail(false), unk9(0), mFilename(c), mTell(0), mOffset(0), mBuffer(0), mData(0), mBytesLeft(0) {
 
