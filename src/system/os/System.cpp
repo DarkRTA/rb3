@@ -2,6 +2,7 @@
 #include "os/System.h"
 #include "utl/Symbols.h"
 #include "os/Timer.h"
+#include <vector>
 
 const char* gNullStr = "";
 
@@ -15,6 +16,7 @@ static float gSystemFrac;
 static Timer gSystemTimer;
 bool gHostConfig;
 bool gHostLogging;
+std::vector<char*> TheSystemArgs;
 
 GfxMode GetGfxMode(){ return gGfxMode; }
 

@@ -42,7 +42,8 @@ void AppChild::Terminate(){
 extern unsigned int HolmesResolveIP();
 
 AppChild::AppChild(const char* str) : mEnabled(1), mStream(0), mSync(0) {
-    NetAddress addr(HolmesResolveIP(), 0x11BF);
+    unsigned int theIP = HolmesResolveIP();
+    NetAddress addr(theIP, 0x11BF);
     NetStream* net = new NetStream();
     net->ClientConnect(addr);
     mStream = net;
@@ -67,12 +68,11 @@ void AppChild::Sync(unsigned short sh){
 }
 
 void AppChild::Poll(){
-    if(mStream){
-        while(mEnabled && !mSync){
-            DataArrayPtr cmd;
-            cmd.mData->Load(*mStream);
-            cmd.mData->Execute();
-        }
-        mSync = false;
+    if(!mStream) return;
+    while(mEnabled && !mSync){
+        DataArrayPtr cmd;
+        cmd.mData->Load(*mStream);
+        cmd.mData->Execute();
     }
+    mSync = false;
 }

@@ -2,10 +2,26 @@
 #include "obj/Data.h"
 #include "os/OSFuncs.h"
 #include "os/Debug.h"
+#include "utl/FilePath.h"
+#include <vector>
+#include "os/System.h"
+#include "utl/Loader.h"
+#include "obj/DataFunc.h"
+#include "utl/Option.h"
 
+
+std::vector<File*> gFiles;
+File* gOpenCaptureFile;
 static char gRoot[256];
 static char gExecRoot[256];
 static char gSystemRoot[256];
+std::vector<String> gDirList;
+DataArray* gFrameRateArray;
+bool gNullFiles;
+
+void DirListCB(const char* cc1, const char* cc2){
+    gDirList.push_back(String(cc2));
+}
 
 const char* FileRoot(){
     return gRoot;
@@ -55,6 +71,21 @@ static DataNode OnFileRelativePath(DataArray* da){
     return DataNode(FileRelativePath(da->Str(1), da->Str(2)));
 }
 
+static DataNode OnWithFileRoot(DataArray* da){
+    const char* str = da->Str(1);
+    FilePath fp;
+    fp = FilePath::sRoot;
+    FilePath::sRoot.Set(FileRoot(), str);
+    int i;
+    int thresh = da->Size() - 1;
+    for(i = 2; i < thresh; i++){
+        da->Command(i)->Execute();
+    }
+    DataNode ret = da->Evaluate(i);
+    FilePath::sRoot = fp;
+    return ret;
+}
+
 static DataNode OnSynchProc(DataArray* da){
     TheDebug.Fail(MakeString("calling synchproc on non-pc platform"));
     return DataNode("");
@@ -63,6 +94,94 @@ static DataNode OnSynchProc(DataArray* da){
 static DataNode OnToggleFakeFileErrors(DataArray* da){
     return DataNode(0);
 }
+
+void OnFrameRateRecurseCB(const char* cc1, const char* cc2){
+    MILO_ASSERT(gFrameRateArray, 0x148);
+    String str(cc2);
+    const char* keepStr = MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.mPlatform));
+    int theStrLen = strlen(str.c_str());
+    int keepLen = strlen(keepStr);
+    str = str.substr(0, theStrLen - keepLen);
+    gFrameRateArray->Insert(gFrameRateArray->Size(), DataNode(str));
+}
+
+static DataNode OnEnumerateFrameRateResults(DataArray* da){
+    DataNode ret(new DataArray(0), kDataArray);
+    gFrameRateArray = ret.Array(0);
+    FileRecursePattern(MakeString("ui/framerate/venue_test/*%s", MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.mPlatform))), OnFrameRateRecurseCB, false);
+    gFrameRateArray = 0;
+    return ret;
+}
+
+extern void HolmesClientInit();
+
+void FileInit(){
+    strcpy(gRoot, ".");
+    strcpy(gExecRoot, ".");
+    strcpy(gSystemRoot, FileMakePath(gExecRoot, "../../system/run", 0));
+    FilePath::sRoot.Set(gRoot, gRoot);
+    DataRegisterFunc("file_root", OnFileRoot);
+    DataRegisterFunc("file_exec_root", OnFileExecRoot);
+    DataRegisterFunc("file_get_drive", OnFileGetDrive);
+    DataRegisterFunc("file_get_path", OnFileGetPath);
+    DataRegisterFunc("file_get_base", OnFileGetBase);
+    DataRegisterFunc("file_get_ext", OnFileGetExt);
+    DataRegisterFunc("file_match", OnFileMatch);
+    DataRegisterFunc("file_absolute_path", OnFileAbsolutePath);
+    DataRegisterFunc("file_relative_path", OnFileRelativePath);
+    DataRegisterFunc("with_file_root", OnWithFileRoot);
+    DataRegisterFunc("synch_proc", OnSynchProc);
+    DataRegisterFunc("toggle_fake_file_errors", OnToggleFakeFileErrors);
+    DataRegisterFunc("enumerate_frame_rate_results", OnEnumerateFrameRateResults);
+    HolmesClientInit();
+    const char* optionStr = OptionStr("file_order", 0);
+    if(optionStr && *optionStr){
+        gOpenCaptureFile = NewFile(optionStr, 0xA04);
+        MILO_ASSERT(gOpenCaptureFile, 0x1AE);
+    }
+}
+
+void FileTerminate(){
+    delete gOpenCaptureFile;
+    gOpenCaptureFile = 0;
+    *gRoot = 0;
+    *gExecRoot = 0;
+    *gSystemRoot = 0;
+}
+
+File* NewFile(const char* cc, int i){
+    File* retFile = 0;
+    if(gNullFiles){
+        return new NullFile();
+    }
+    else {
+        if(!MainThread()){
+            MILO_WARN("NewFile(%s) from !MainThread()", cc);
+        }
+        if(!cc || !*cc) return 0;
+        else {
+            if(strstr(cc, "/band3_ng/")){
+                MILO_WARN("Loading files from the wrong branch: %s", cc);
+                return 0;
+            }
+            else {
+                
+            }
+        }
+    }
+}
+
+bool FileExists(const char* filepath, int iMode){
+    MILO_ASSERT((iMode & ~FILE_OPEN_NOARK) == 0, 0x2D5);
+    File* theFile = NewFile(filepath, iMode | 0x40002);
+    if(theFile){
+        delete theFile;
+        return true;
+    }
+    else return false;
+}
+
+bool FileReadOnly(const char*){ return true; }
 
 const char* FileGetPath(const char* arg1, char* arg2){
     static char static_path[256];

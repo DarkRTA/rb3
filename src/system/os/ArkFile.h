@@ -10,7 +10,7 @@ public:
     virtual String Filename() const { return String(mFilename); }
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
-    virtual bool Write(const void *, int);
+    virtual int Write(const void *, int);
     virtual int Seek(int, int);
     virtual int Tell();
     virtual void Flush(){}
@@ -19,9 +19,13 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual void GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo*&);
 
     void TaskDone(int);
+
+    void operator delete(void* v){
+        _MemFree(v);
+    }
 
     int mArkfileNum;
     unsigned long long mByteStart;

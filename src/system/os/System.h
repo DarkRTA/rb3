@@ -2,8 +2,10 @@
 #define OS_SYSTEM_H
 #include "obj/Data.h"
 #include "utl/Symbol.h"
+#include <vector>
 
 extern const char* gNullStr;
+extern std::vector<char*> TheSystemArgs;
 
 enum GfxMode {
     kOldGfx = 0,
