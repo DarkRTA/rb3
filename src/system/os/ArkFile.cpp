@@ -56,9 +56,9 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
     }
 }
 
-bool ArkFile::Write(const void*, int){
+int ArkFile::Write(const void*, int){
     TheDebug.Fail(MakeString("ERROR: Cannot write to a file in an archive!"));
-    return false;
+    return 0;
 }
 
 int ArkFile::Seek(int offset, int mode) {

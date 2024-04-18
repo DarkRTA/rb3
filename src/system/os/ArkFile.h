@@ -10,7 +10,7 @@ public:
     virtual String Filename() const { return String(mFilename); }
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
-    virtual bool Write(const void *, int);
+    virtual int Write(const void *, int);
     virtual int Seek(int, int);
     virtual int Tell();
     virtual void Flush(){}

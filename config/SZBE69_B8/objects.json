@@ -178,6 +178,7 @@
             "system/os/AppChild.cpp": "NonMatching",
             "system/os/Archive.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
+            "system/os/AsyncFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",

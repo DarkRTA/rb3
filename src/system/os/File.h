@@ -13,7 +13,7 @@ public:
     }
     virtual int Read(void *, int) = 0;
     virtual bool ReadAsync(void *, int) = 0;
-    virtual bool Write(const void *, int);
+    virtual int Write(const void *, int) = 0;
     virtual bool WriteAsync(const void*, int){ return false; }
     virtual int Seek(int, int) = 0;
     virtual int Tell() = 0;
