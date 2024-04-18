@@ -27,14 +27,7 @@ public:
 
 };
 
-BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo){
-    dinfo.Save(bs);
-    return bs;
-}
-
-BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo){
-    dinfo.Load(bs);
-    return bs;
-}
+BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo);
+BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo);
 
 #endif

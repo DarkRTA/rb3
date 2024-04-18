@@ -52,6 +52,54 @@ void DataArraySongInfo::Save(BinStream& bs) const {
     bs << mExtraMidiFiles;
 }
 
+void DataArraySongInfo::Load(BinStream& bs) {
+    int lol;
+    bs >> lol;
+    bs >> mName;
+    bs >> mBaseFileName;
+    bs >> mPackageName;
+    bs >> mNumVocalParts;
+    bs >> mHopoThreshold;
+    bs >> mMuteVolume;
+    bs >> mVocalMuteVolume;
+    bs >> mPans;
+    bs >> mVols;
+    bs >> mCores;
+    bs >> mCrowdChannels;
+    bs >> mDrumSoloSamples;
+    bs >> mDrumFreestyleSamples;
+    // bs >> mTrackChannels; // why does this cause an error?
+    bs >> mExtraMidiFiles;
+}
+
 void DataArraySongInfo::SetBaseFileName(const char* name){
     mBaseFileName = name;
+}
+
+void DataArraySongInfo::AddExtraMidiFile(const char* cc1, const char* cc2){
+    mExtraMidiFiles.push_back(String(cc1));
+}
+
+BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo){
+    dinfo.Save(bs);
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo){
+    dinfo.Load(bs);
+    return bs;
+}
+
+BinStream& operator<<(BinStream& bs, const TrackChannels& chans){
+    bs << chans.mAudioType;
+    bs << chans.mChannels;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, TrackChannels& chans){
+    int ty;
+    bs >> ty;
+    chans.mAudioType = (SongInfoAudioType)ty;
+    bs >> chans.mChannels;
+    return bs;
 }
