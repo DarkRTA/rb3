@@ -2,6 +2,8 @@
 #define OS_ASYNCFILE_H
 #include "os/File.h"
 
+#define FILE_OPEN_READ 2
+
 class AsyncFile : public File {
 public:
     AsyncFile(const char *, int);
