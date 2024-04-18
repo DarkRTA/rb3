@@ -17,6 +17,7 @@ static char gExecRoot[256];
 static char gSystemRoot[256];
 std::vector<String> gDirList;
 DataArray* gFrameRateArray;
+bool gNullFiles;
 
 void DirListCB(const char* cc1, const char* cc2){
     gDirList.push_back(String(cc2));
@@ -147,6 +148,40 @@ void FileTerminate(){
     *gExecRoot = 0;
     *gSystemRoot = 0;
 }
+
+File* NewFile(const char* cc, int i){
+    File* retFile = 0;
+    if(gNullFiles){
+        return new NullFile();
+    }
+    else {
+        if(!MainThread()){
+            MILO_WARN("NewFile(%s) from !MainThread()", cc);
+        }
+        if(!cc || !*cc) return 0;
+        else {
+            if(strstr(cc, "/band3_ng/")){
+                MILO_WARN("Loading files from the wrong branch: %s", cc);
+                return 0;
+            }
+            else {
+                
+            }
+        }
+    }
+}
+
+bool FileExists(const char* filepath, int iMode){
+    MILO_ASSERT((iMode & ~FILE_OPEN_NOARK) == 0, 0x2D5);
+    File* theFile = NewFile(filepath, iMode | 0x40002);
+    if(theFile){
+        delete theFile;
+        return true;
+    }
+    else return false;
+}
+
+bool FileReadOnly(const char*){ return true; }
 
 const char* FileGetPath(const char* arg1, char* arg2){
     static char static_path[256];

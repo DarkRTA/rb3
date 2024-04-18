@@ -23,7 +23,7 @@ public:
     virtual ~FileCacheFile();
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
-    virtual bool Write(const void *, int);
+    virtual int Write(const void *, int);
     virtual int Seek(int, int);
     virtual int Tell();
     virtual void Flush();
@@ -32,7 +32,7 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual void GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo*&);
     
     void operator delete(void* v){
         _PoolFree(sizeof(FileCacheFile), FastPool, v);

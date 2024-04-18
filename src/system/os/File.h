@@ -3,6 +3,8 @@
 #include "utl/Str.h"
 #include <revolution/DVD.h>
 
+#define FILE_OPEN_NOARK 0x10000
+
 class File {
 public:
     File(){ sOpenCount[0]++; }
@@ -28,6 +30,33 @@ public:
     virtual int Truncate(int){ return 0; }
 
     static int sOpenCount[4];
+};
+
+class NullFile : public File {
+public:
+    NullFile(){}
+    virtual ~NullFile(){}
+    virtual int Read(void* v, int i){
+        memset(v, 0, i);
+        return i;
+    }
+    virtual bool ReadAsync(void* v, int i){
+        Read(v, i);
+        return true;
+    }
+    virtual int Write(const void* v, int i){ return i; }
+    virtual int Seek(int, int){ return 0; }
+    virtual int Tell(){ return 0; }
+    virtual void Flush(){}
+    virtual bool Eof(){ return true; }
+    virtual bool Fail(){ return false; }
+    virtual int Size(){ return 0; }
+    virtual int UncompressedSize(){ return 0; }
+    virtual bool ReadDone(int& i){
+        i = 0;
+        return true;
+    }
+    virtual int GetFileHandle(DVDFileInfo*&){ return 0; }
 };
 
 File* NewFile(const char*, int);
