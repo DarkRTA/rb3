@@ -1,5 +1,6 @@
 #ifndef OS_BLOCKMGR_H
 #define OS_BLOCKMGR_H
+#include "os/AsyncTask.h"
 
 class Block {
 public:
@@ -21,6 +22,7 @@ public:
     void KillBlockRequests(ArkFile*);
     void Poll();
     void GetAssociatedBlocks(unsigned long long, int, int&, int&, int&);
+    void AddTask(const AsyncTask&);
 };
 
 extern BlockMgr TheBlockMgr;

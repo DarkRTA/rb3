@@ -111,5 +111,5 @@ bool ArkFile::ReadDone(int& i){
 }
 
 int ArkFile::GetFileHandle(DVDFileInfo*& info){
-    return CDReadExternal(info, mArkfileNum, mByteStart);
+    return CDReadExternal(info, mArkfileNum, mByteStart + mTell);
 }
