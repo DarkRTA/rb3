@@ -3,6 +3,8 @@
 #include "os/User.h"
 #include "os/UserMgr.h"
 
+PlatformMgr ThePlatformMgr;
+
 Symbol PlatformRegionToSymbol(PlatformRegion r){
     MILO_ASSERT(r < kNumRegions, 0x29);
     static Symbol sym[4] = { "", "na", "europe", "japan" };
@@ -61,8 +63,3 @@ LocalUser* PlatformMgr::GetOwnerUserOfGuestUser(LocalUser* pUser){
     MILO_ASSERT(pUser, 0xBA);
     return TheUserMgr->GetLocalUserFromPadNum(GetOwnerOfGuest(pUser->GetPadNum()));
 }
-
-bool PlatformMgr::IsConnected() const { return mConnected; }
-
-int PlatformMgr::SigninMask() const { return mSigninMask; }
-int PlatformMgr::SigninChangedMask() const { return mSigninChangeMask; }
