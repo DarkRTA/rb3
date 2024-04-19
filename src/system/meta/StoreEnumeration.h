@@ -1,9 +1,16 @@
 #ifndef META_STOREENUMERATION_H
 #define META_STOREENUMERATION_H
+#include "utl/Str.h"
+#include <list>
 
-#include "stlport/list"
-
-struct EnumProduct {int ihavenoclue;};
+struct EnumProduct {
+    String mName;
+    String mGameCode;
+    unsigned short mContentId;
+    unsigned short mWiiPoints;
+    bool mPurchased;
+    bool mDownloaded;
+};
 
 class StoreEnumeration {
 public:
@@ -15,21 +22,25 @@ public:
         kSuccess = 4,
         kFail = 5,
     };
-    ~StoreEnumeration();
+    StoreEnumeration(){}
+    ~StoreEnumeration(){}
+    virtual void Start() = 0;
+    virtual bool IsSuccess() const = 0;
+    virtual int IsEnumerating() const = 0;
+    virtual void Poll() = 0;
+
+    std::list<EnumProduct> mContentList;
 };
 
 class WiiEnumeration : public StoreEnumeration { // 0x1c
 public:
     WiiEnumeration(int);
-    virtual ~WiiEnumeration() {
-            mContentList.clear();
-    }
+    virtual ~WiiEnumeration(){}
     virtual void Start();
     virtual bool IsSuccess() const;
     virtual int IsEnumerating() const;
     virtual void Poll();
 
-    std::list<EnumProduct> mContentList;
     bool mLoading;
     StoreEnumeration::State mState;
 };
