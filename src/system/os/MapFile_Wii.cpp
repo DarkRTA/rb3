@@ -2,10 +2,7 @@
 #include "os/Debug.h"
 #include <string.h>
 #include <stdlib.h>
-
-inline bool IsAsciiNum(char c){
-    return c >= 0x30 && c <= 0x39;
-}
+#include "utl/Str.h"
 
 bool HasMoreParams(String str){
     unsigned int len = strlen(str.c_str());
