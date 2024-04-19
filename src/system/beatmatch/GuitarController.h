@@ -23,16 +23,20 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
     virtual void Disable(bool);
-    virtual bool IsDisabled() const;
+    virtual bool IsDisabled() const { return mDisabled; }
     virtual float GetWhammyBar() const;
-    virtual int GetFretButtons() const;
+    virtual float GetCapStrip() const;
+    virtual int GetFretButtons() const { return mFretMask; }
     virtual bool IsShifted() const;
-    virtual void SetAutoSoloButtons(bool);
+    virtual void SetAutoSoloButtons(bool b){ mAutoSoloButtons = b; }
 
+    int GetCurrentSlot() const;
+    int OnMsg(const ButtonDownMsg&);
+    int OnMsg(const ButtonUpMsg&);
     void ReconcileFretState();
     
     bool mDisabled;
-    bool unk3d;
+    bool mAutoSoloButtons;
     int mFretMask;
     int mShiftButtonMask;
     BeatMatchControllerSink* mSink;
