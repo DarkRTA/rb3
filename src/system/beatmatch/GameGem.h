@@ -3,6 +3,8 @@
 
 class GameGem {
 public:
+    int GetFret(unsigned int) const;
+
     float mMs;
     int mTick;
     unsigned short mDurationMs;
