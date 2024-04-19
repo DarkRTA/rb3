@@ -65,6 +65,7 @@ public:
     static ObjectDir* sMainDir;
 
     static ObjectDir* Main() { return sMainDir; }
+    static void PreInit(int, int);
 
     ObjectDir();
     virtual Symbol ClassName() const; // fn_800103C8

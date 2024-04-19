@@ -1,5 +1,8 @@
 #include "Compress.h"
 #include "zlib/zlib.h"
+#undef SEEK_SET
+#undef SEEK_CUR
+#undef SEEK_END
 #include "os/Debug.h"
 
 extern void* _MemAllocTemp(int, int);
@@ -12,7 +15,6 @@ void ZFree(void* a, void*b) {_MemFree(b);}
 
 void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool bits, const char* filename) {
     z_stream s;
-    unsigned int windowBits = -15;
 
     s.next_in = (unsigned char*)in;
     s.avail_in = in_len;
@@ -20,7 +22,7 @@ void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool bit
     s.avail_out = out_len;
     s.zalloc = ZAlloc;
     s.zfree = ZFree;
-    if (bits) windowBits = 15;
+    int windowBits = bits ? 15 : -15;
 
     MILO_ASSERT(inflateInit2(&s, windowBits) == Z_OK, 106);
 
@@ -35,10 +37,10 @@ void DecompressMem(const void* in, int in_len, void* out, int& out_len, bool bit
 
 void CompressMem(const void* in, int in_len, void* out, int& out_len, const char* filename) {
     z_stream s;
-    s.avail_out = out_len;
     s.next_in = (unsigned char*)in;
     s.avail_in = in_len;
     s.next_out = (unsigned char*)out;
+    s.avail_out = out_len;
     s.zalloc = ZAlloc;
     s.zfree = ZFree;
 

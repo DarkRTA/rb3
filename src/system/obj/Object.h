@@ -181,6 +181,8 @@ namespace Hmx {
 
         void SaveType(BinStream&);
         void SaveRest(BinStream&);
+        void LoadType(BinStream&);
+        void LoadRest(BinStream&);
 
         DataNode OnGet(const DataArray*);
         DataNode OnSet(const DataArray*);
@@ -188,6 +190,9 @@ namespace Hmx {
         DataNode HandleType(DataArray*);
         DataNode PropertyArray(Symbol);
         const char* AllocHeapName();
+
+        static unsigned short gRev;
+        static unsigned short gAltRev;
 
     };
 }

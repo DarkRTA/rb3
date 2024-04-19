@@ -55,6 +55,7 @@ public:
 
 
     void Poll();
+    void InitGQR();
 };
 
 Symbol PlatformRegionToSymbol(PlatformRegion);

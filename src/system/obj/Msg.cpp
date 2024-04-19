@@ -1,4 +1,5 @@
 #include "obj/MsgSource.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
@@ -144,3 +145,8 @@ bool PropSync(MsgSource::Sink& sink, DataNode& node, DataArray* prop, int i, Pro
     }
     return true;
 }
+
+BEGIN_PROPSYNCS(MsgSource)
+    SYNC_PROP(sinks, mSinks)
+    SYNC_PROP(event_sinks, mEventSinks)
+END_PROPSYNCS

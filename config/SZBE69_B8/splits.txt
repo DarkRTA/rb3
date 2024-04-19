@@ -3612,7 +3612,7 @@ band3/net_band/RBBinaryDataDDL_Wii.cpp:
 band3/net_band/RBBinaryBufferDDL_Wii.cpp:
 	.text       start:0x803F6840 end:0x803F6980
 
-system/math/Sqrt_Wii.cpp:
+system/math/Sqrt_Wii.c:
 	.text       start:0x803F6980 end:0x803F69C0
 
 system/math/SHA1.cpp:

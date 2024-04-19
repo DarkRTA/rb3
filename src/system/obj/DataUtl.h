@@ -1,7 +1,9 @@
 #ifndef OBJ_DATAUTL_H
 #define OBJ_DATAUTL_H
 #include "obj/Data.h"
+#include "utl/Loader.h"
 
+Loader* DataFactory(const FilePath&, LoaderPos);
 void DataInit();
 void DataTerminate();
 void DataMacroWarning(bool);

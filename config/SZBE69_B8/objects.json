@@ -63,7 +63,9 @@
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/arith.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/buffer_io.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/errno.c": "Matching",
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/rand.c": "NonMatching"
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/rand.c": "NonMatching",
+            "sdk/RevoEX/src/so/SOCommon.c": "NonMatching",
+            "sdk/RevoEX/src/so/SOBasic.c": "NonMatching"
 
         }
     },
@@ -136,6 +138,7 @@
             "system/math/Rot.cpp": "NonMatching",
             "system/math/SHA1.cpp": "Matching",
             "system/math/Sort.cpp": "Matching",
+            "system/math/Sqrt_Wii.c": "Matching",
             "system/math/StreamChecksum.cpp": "Matching",
             "system/math/Trig.cpp": "Matching",
             "system/math/Vec.cpp": "Matching",
@@ -202,6 +205,7 @@
             "system/os/ProfilePicture_Wii.cpp": "Matching",
             "system/os/SynchronizationEvent.cpp": "Matching",
             "system/os/System.cpp": "NonMatching",
+            "system/os/System_Wii.cpp": "NonMatching",
             "system/os/Timer.cpp": "NonMatching",
             "system/os/UsbMidiGuitar.cpp": "NonMatching",
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
@@ -235,7 +239,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "NonMatching",
-            "system/rndobj/MultiMesh.cpp": "NonMatching",
+            "system/rndobj/MultiMesh.cpp": {"status": "NonMatching", "extra_cflags": [""]},
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/PollAnim.cpp": "NonMatching",
@@ -294,7 +298,7 @@
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": "NonMatching",
-            "system/utl/Compress.cpp": "NonMatching",
+            "system/utl/Compress.cpp": "Matching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FakeSongMgr.cpp": "Matching",
             "system/utl/FilePath.cpp": "Matching",
