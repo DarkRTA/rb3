@@ -45,5 +45,7 @@ public:
 void DataRegisterFunc(Symbol s, DataFunc* func);
 Symbol DataFuncName(DataFunc*);
 bool FileListCallBack(char*);
+void DataInitFuncs();
+void DataTermFuncs();
 
 #endif

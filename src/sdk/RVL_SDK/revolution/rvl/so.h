@@ -60,6 +60,7 @@ enum so_ret_t {
     SO_ETIMEDOUT = -76,
     SO_E112 = -112,
     SO_E121 = -121,
+    SO_EFATAL = 0x80000000
 };
 
 enum so_af_t {
@@ -104,8 +105,8 @@ enum so_event_t {
 
 struct so_poll_t {
     so_fd_t socket;
-    so_event_t mask;
-    so_event_t result;
+    enum so_event_t mask;
+    enum so_event_t result;
 };
 
 struct so_host_t {
@@ -355,6 +356,30 @@ static inline so_ret_t SOSend(
         so_fd_t socket, const void *buffer, size_t buffer_size, int flags) {
     return SOiSendTo(0, socket, buffer, buffer_size, flags, NULL);
 }
+
+// past this point are things i had to grab from mkwii since this so.h just Doesn't Have Them
+int SOiPrepare(const char*, s32*);
+int SOiConclude(const char*, int);
+enum {
+  SO_INTERNAL_STATE_TERMINATED = 0,
+  SO_INTERNAL_STATE_READY = 1,
+  SO_INTERNAL_STATE_ACTIVE = 2
+};
+typedef struct SOSysWork {
+  so_alloc_fn_t allocFunc; // 0x00
+  so_free_fn_t freeFunc;   // 0x04
+  s32 rmState;            // 0x08
+  s32 rmFd;               // 0x0C
+  u32 _unk10;             // 0x10
+  s32 allocCount;         // 0x14
+} SOSysWork;
+
+enum {
+  SO_INTERNAL_RM_STATE_OPENED = 0,
+  SO_INTERNAL_RM_STATE_WORKING = -1,
+  SO_INTERNAL_RM_STATE_CLOSED = -2
+};
+
 #ifdef __cplusplus
 }
 #endif

@@ -22,7 +22,7 @@ public:
 
     void GetAppendFile(const char*, const char*, int);
     
-    static TextFile* NewObject(){ return new TextFile(); }
+    NEW_OBJ(TextFile)
     // static Init
 
     DataNode OnPrint(DataArray*);

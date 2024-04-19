@@ -9,6 +9,7 @@
 #include "utl/Symbol.h"
 #include "os/Debug.h"
 #include "math/Geo.h"
+#include <list>
 
 // forward declarations
 template<class T1, class T2> class ObjPtr;
@@ -93,6 +94,16 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
     //     else ptr = node.Obj<T>(0);
     //     return true;
     // }
+}
+
+template <class T> bool PropSync(std::list<T>& list, DataNode& node, DataArray* prop, int i, PropOp op)  {
+    if((int)op == 0x40) return false;
+    else {
+        MILO_ASSERT(op == kPropSize, 146);
+        //if(op == kPropGet) node = DataNode(ptr.Ptr());
+        //else ptr = node.Obj<T>(0);
+        return true;
+    }
 }
 
 #endif

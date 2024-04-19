@@ -47,5 +47,7 @@ DataArray* SupportedLanguages(bool);
 bool IsSupportedLanguage(Symbol, bool);
 int SystemExec(const char*);
 void SystemPoll(bool pollTasks);
+void SetSystemArgs(int, char**);
+void SystemPreInit(const char*);
 
 #endif

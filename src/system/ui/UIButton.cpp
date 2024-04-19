@@ -43,7 +43,7 @@ BEGIN_HANDLERS(UIButton)
 END_HANDLERS
 
 DataNode UIButton::OnMsg(const ButtonDownMsg& msg) {
-    if (msg.mData->Int(4) == 1 && mState == kStateFocused) {
+    if (msg.mData->Int(4) == 1 && (int)mState == kStateFocused) {
         SendSelect(msg.GetUser());
         return DataNode(1);
     }

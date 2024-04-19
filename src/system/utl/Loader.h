@@ -43,6 +43,7 @@ public:
 
     Loader* AddLoader(const FilePath&, LoaderPos);
     void PollUntilLoaded(Loader*, Loader*);
+    void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
 
     // // total size: 0x60
     // class list mLoaders; // offset 0x0, size 0x8

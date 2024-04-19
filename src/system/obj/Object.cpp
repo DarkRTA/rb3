@@ -11,6 +11,8 @@ extern Hmx::Object *gDataThis;
 const char* blank = "";
 const char* unk = "unknown";
 
+INIT_REVS(Hmx::Object)
+
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 
 ObjectDir* Hmx::Object::DataDir(){
@@ -243,6 +245,22 @@ void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
             MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s", obj->Type(), Name(), obj->Name(), ClassName(), obj->ClassName());
         }
     }
+}
+
+void Hmx::Object::LoadType(BinStream& bs) {
+    LOAD_REVS(bs)
+    ASSERT_REVS(29, 0)
+    Symbol& s = (Symbol&)gNullStr;
+    bs >> s;
+}
+
+void Hmx::Object::LoadRest(BinStream& bs) {
+
+}
+
+void Hmx::Object::Load(BinStream& bs) {
+    LoadType(bs);
+    LoadRest(bs);
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
