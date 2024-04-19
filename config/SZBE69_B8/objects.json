@@ -150,7 +150,7 @@
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "NonMatching",
             "system/meta/SongMetadata.cpp": "NonMatching",
-            "system/meta/Sorting.cpp": "NonMatching",
+            "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",

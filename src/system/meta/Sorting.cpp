@@ -40,23 +40,22 @@ void CalculateAlphaKey(char* c1, const char* c2, bool b){
 inline bool IsASCII(char c){ return c & 0x80; }
 
 int AlphaKeyStrCmp(const char* c1, const char* c2, bool b){
-    const char* p1 = AlphaKeySkip(c1, b);
-    const char* p2 = AlphaKeySkip(c2, b);
-    if(IsASCII(*p1)){
-        if(!IsASCII(*p2)) return -1;
+    c1 = AlphaKeySkip(c1, b);
+    c2 = AlphaKeySkip(c2, b);
+    if(IsASCII(*c1)){
+        if(!IsASCII(*c2)) return -1;
     }
-    else if(IsASCII(*p2)) return 1;
-    return stricmp(p1, p2);
+    else if(IsASCII(*c2)) return 1;
+    return stricmp(c1, c2);
 }
 
 Symbol FirstSortChar(const char* cc, bool b){
     char buf[256];
     CalculateAlphaKey(buf, cc, b);
 
-    unsigned char c = buf[0];
-    if(!IsASCII(c)){
-        if(isalpha(c) != 0){
-            return Symbol(MakeString("%c", toupper(c)));
+    if(!IsASCII(buf[0])){
+        if(isalpha(buf[0])){
+            return Symbol(MakeString("%c", toupper(buf[0])));
         }
     }
 
