@@ -28,8 +28,9 @@ int GemNumSlots(int slot_bitfield){
         int ret = 0;
         int exp = 0;
         while(slot_bitfield){
-            if(slot_bitfield & 1 << exp){
-                slot_bitfield -= 1 << exp;
+            int bit = (1 << exp);
+            if(slot_bitfield & bit){
+                slot_bitfield -= bit;
                 ret++;
             }
             exp++;
@@ -38,55 +39,17 @@ int GemNumSlots(int slot_bitfield){
     }
 }
 
-// int fn_804595B4(uint param_1)
-
-// {
-//   int iVar1;
-//   int iVar2;
-  
-//   if (param_1 < 0x20) {
-//     return *(int *)(lbl_808835B8 + param_1 * 4);
-//   }
-//   iVar1 = 0;
-//   iVar2 = 0;
-//   while( true ) {
-//     if (param_1 == 0) break;
-//     if ((param_1 & 1 << iVar2) != 0) {
-//       param_1 = param_1 - (1 << iVar2);
-//       iVar1 = iVar1 + 1;
-//     }
-//     iVar2 = iVar2 + 1;
-//   }
-//   return iVar1;
-// }
-
 // fn_80459608
 int ConsumeNumber(const char*& cc){
     int ret = 0;
     while(true){
-        int num = *cc - 0x30;
-        if(num < 0 || num > 9) break;
-        cc++;
+        int num;
+        if((num = *cc - 0x30) < 0 || num > 9) break;
         ret = num + ret * 10;
+        cc++;
     }
     return ret;
 }
-
-// int fn_80459608(char **param_1)
-
-// {
-//   int iVar1;
-//   int iVar2;
-  
-//   iVar1 = 0;
-//   while( true ) {
-//     iVar2 = **param_1 + -0x30;
-//     if ((iVar2 < 0) || (9 < iVar2)) break;
-//     *param_1 = *param_1 + 1;
-//     iVar1 = iVar2 + iVar1 * 10;
-//   }
-//   return iVar1;
-// }
 
 float VelocityBucketToDb(int bucket){
     DataArray* cfg = SystemConfig("beatmatcher", "audio");
