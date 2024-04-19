@@ -180,6 +180,7 @@
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
+            "system/os/BlockMgr.cpp": "NonMatching",
             "system/os/CDReader.cpp": "NonMatching",
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",
