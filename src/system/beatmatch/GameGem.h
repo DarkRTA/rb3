@@ -1,9 +1,18 @@
 #ifndef BEATMATCH_GAMEGEM_H
 #define BEATMATCH_GAMEGEM_H
 #include "os/Debug.h"
+#include "utl/PoolAlloc.h"
+#include "beatmatch/GemInfo.h"
+
+class TempoMap; // forward dec
 
 class GameGem {
 public:
+    GameGem(const MultiGemInfo&);
+    GameGem(const RGGemInfo&);
+    ~GameGem();
+    GameGem& operator=(const GameGem&);
+
     char GetFret(unsigned int) const;
     bool GetShowSlashes() const;
     unsigned char GetRootNote() const;
@@ -25,6 +34,19 @@ public:
     unsigned char GetRGStrumType() const;
     int GetChordNameOverride() const;
     void SetFret(unsigned int, signed char);
+    bool PlayableBy(int) const;
+    static int CountBitsInSlotType(unsigned int);
+    int NumSlots() const;
+    void Flip(const GameGem&);
+    void RecalculateTimes(TempoMap*);
+
+    void* operator new(size_t s){
+        return _PoolAlloc(s, 0x10, FastPool);
+    }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(GameGem), FastPool, v);
+    }
 
     unsigned char GetRGNoteTypeEntry(int x) const {
         switch(x){
@@ -40,11 +62,25 @@ public:
         }
     }
 
+    void SetRGNoteTypeEntry(int x, RGNoteType ty){
+        switch(x){
+            case 0: unk14top = ty; break;
+            case 1: unk14bot = ty; break;
+            case 2: unk15top = ty; break;
+            case 3: unk15bot = ty; break;
+            case 4: unk16top = ty; break;
+            case 5: unk16bot = ty; break;
+            default:
+                MILO_ASSERT(0, 0xFC);
+                break;
+        }
+    }
+
     float mMs;
     int mTick;
     unsigned short mDurationMs;
     unsigned short mDurationTicks;
-    int unkc; // slot type?
+    unsigned int mSlot;
     unsigned char unk10b7 : 1;
     unsigned char unk10b6 : 1;
     unsigned char unk10b5 : 1;
