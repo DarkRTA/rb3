@@ -41,6 +41,17 @@ void RGGemMatcher::FretUp(int iii, float f){
     mStringNonStrum[x] = f;
 }
 
+bool RGGemMatcher::FretMatch(const GameGem& gem, float f1, float f2, float f3, float f4, bool b1, bool b2, RGMatchType ty) const {
+    bool matchimpl = FretMatchImpl(gem, f1, f2, f3, f4, b1, b2, ty);
+    if(TheBeatMatchOutput.IsActive()){
+        const char* str;
+        if(matchimpl) str = MakeString("(%2d%10.1f MATCH_SUCCESS)\n", 0, f4 + f3);
+        else str = MakeString("(%2d%10.1f MATCH_FAIL)\n", 0, f4 + f3);
+        TheBeatMatchOutput.Print(str);
+    }
+    return matchimpl;
+}
+
 RGState* RGGemMatcher::GetState(){ return &mState; }
 const RGState* RGGemMatcher::GetState() const { return &mState; }
 

@@ -8,6 +8,7 @@ enum RGMatchType {
 };
 
 // no clue what this is
+// gets referenced in AddFretHistory, maybe the pair is time and fret?
 struct RGGemMatcherPair {
     RGGemMatcherPair() : f(0.0f), i(-1) {}
     float f;

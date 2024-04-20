@@ -17,6 +17,7 @@ public:
 
     void Reset();
     void AdvanceFile();
+    bool IsActive(){ return mActive; }
 };
 
 #endif
