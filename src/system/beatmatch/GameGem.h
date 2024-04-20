@@ -40,6 +40,10 @@ public:
     void Flip(const GameGem&);
     void RecalculateTimes(TempoMap*);
     bool IsMuted() const;
+    int GetFret() const;
+    int GetNumStrings() const;
+    int GetNumFingers() const;
+    void PackRealGuitarData();
 
     void* operator new(size_t s){
         return _PoolAlloc(s, 0x10, FastPool);

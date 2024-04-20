@@ -188,3 +188,36 @@ bool GameGem::IsMuted() const {
     }
     return false;
 }
+
+int GameGem::GetFret() const {
+    int count = 0;
+    int ret = -1;
+    for(unsigned int i = 0; i < 6; i++){
+        if(GetFret(i) != -1){
+            ret = 3;
+            count++;
+        }
+    }
+    MILO_ASSERT(count == 1, 0x1A1);
+    return ret;
+}
+
+int GameGem::GetNumStrings() const {
+    int count = 0;
+    for(unsigned int i = 0; i < 6; i++){
+        if(GetFret(i) != -1){
+            count++;
+        }
+    }
+    return count;
+}
+
+int GameGem::GetNumFingers() const {
+    int count = 0;
+    for(unsigned int i = 0; i < 6; i++){
+        if(GetFret(i) > 0){
+            count++;
+        }
+    }
+    return count;
+}
