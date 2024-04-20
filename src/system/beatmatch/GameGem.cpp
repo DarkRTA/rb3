@@ -6,6 +6,36 @@
 
 const char* gameGemStrings = "Bad slots %d\n";
 
+GameGem::GameGem(const MultiGemInfo& info){
+    mMs = info.ms;
+    mTick = info.tick;
+    mDurationMs = info.duration_ms;
+    mDurationTicks = info.duration_ticks;
+    mSlots = info.slots;
+    unk10b7 = false;
+    unk10b6 = info.no_strum == kStrumForceOn;
+    unk10b5 = info.ignore_duration;
+    unk10b4 = info.is_cymbal;
+    mShowChordNames = true;
+    mShowSlashes = true;
+    unk10b1 = false;
+    mRealGuitar = false;
+
+    mLoose = false;
+    mShowChordNums = false;
+    mLeftHandSlide = false;
+    mReverseSlide = false;
+    mEnharmonic = false;
+
+    unk18 = info.players;
+    mChordNameOverride = gNullStr;
+    mImportantStrings = 0;
+}
+
+GameGem::GameGem(const RGGemInfo& info){
+
+}
+
 GameGem::~GameGem(){
 
 }
@@ -15,7 +45,7 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mTick = gem.mTick;
     mDurationMs = gem.mDurationMs;
     mDurationTicks = gem.mDurationTicks;
-    mSlot = gem.mSlot;
+    mSlots = gem.mSlots;
     unk18 = gem.unk18;
     // 10
     unk10b7 = gem.unk10b7;
@@ -80,7 +110,7 @@ unsigned char GameGem::GetImportantStrings() const { return mImportantStrings; }
 void GameGem::SetImportantStrings(unsigned char c){ mImportantStrings = c; }
 unsigned char GameGem::GetHandPosition() const { return mHandPosition; }
 int GameGem::GetRGChordID() const { return mRGChordID; }
-int GameGem::GetChordNameOverride() const { return mChordNameOverride; }
+const char* GameGem::GetChordNameOverride() const { return mChordNameOverride; }
 
 char GameGem::GetFret(unsigned int string) const {
     MILO_ASSERT(string < kMaxRGStrings, 0x10C);
@@ -125,26 +155,36 @@ bool GameGem::PlayableBy(int i) const {
 }
 
 int GameGem::NumSlots() const {
-    int bits = CountBitsInSlotType(mSlot);
+    int bits = CountBitsInSlotType(mSlots);
     if(bits == 0){
-        MILO_FAIL("Bad slots %d\n", mSlot);
+        MILO_FAIL("Bad slots %d\n", mSlots);
     }
     return bits;
 }
 
 void GameGem::Flip(const GameGem& gem){
-    unsigned int slot = gem.mSlot;
+    unsigned int slot = gem.mSlots;
     if(slot == 2){
-        mSlot = 4;
+        mSlots = 4;
         unk10b4 = true;
         return;
     }
     if(slot != 4) return;
-    mSlot = 2;
+    mSlots = 2;
     unk10b4 = false;
 }
 
 void GameGem::RecalculateTimes(TempoMap* tmap){
     mMs = tmap->TickToTime(mTick);
     mDurationMs = tmap->TickToTime(mTick + mDurationTicks) - mMs;
+}
+
+bool GameGem::IsMuted() const {
+    if(!mRealGuitar) return false;
+    for(unsigned int i = 0; i < 6; i++){
+        if(GetFret(i) == -1) continue;
+        RGNoteType ty = (RGNoteType)GetRGNoteType(i);
+        if(ty == kRGMuted) return true;
+    }
+    return false;
 }

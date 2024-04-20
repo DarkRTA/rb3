@@ -32,13 +32,14 @@ public:
     unsigned int GetLowestString() const;
     unsigned int GetHighestString() const;
     unsigned char GetRGStrumType() const;
-    int GetChordNameOverride() const;
+    const char* GetChordNameOverride() const;
     void SetFret(unsigned int, signed char);
     bool PlayableBy(int) const;
     static int CountBitsInSlotType(unsigned int);
     int NumSlots() const;
     void Flip(const GameGem&);
     void RecalculateTimes(TempoMap*);
+    bool IsMuted() const;
 
     void* operator new(size_t s){
         return _PoolAlloc(s, 0x10, FastPool);
@@ -80,7 +81,7 @@ public:
     int mTick;
     unsigned short mDurationMs;
     unsigned short mDurationTicks;
-    unsigned int mSlot;
+    unsigned int mSlots;
     unsigned char unk10b7 : 1;
     unsigned char unk10b6 : 1;
     unsigned char unk10b5 : 1;
@@ -113,7 +114,7 @@ public:
     unsigned char unk18;
     char mFrets[6];
     int mRGChordID;
-    int mChordNameOverride;
+    const char* mChordNameOverride;
     unsigned char mImportantStrings;
 };
 
