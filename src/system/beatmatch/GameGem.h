@@ -3,7 +3,9 @@
 
 class GameGem {
 public:
-    int GetFret(unsigned int) const;
+    char GetFret(unsigned int) const;
+    bool GetShowSlashes(void) const;
+    unsigned char GetRootNote(void) const;
 
     float mMs;
     int mTick;

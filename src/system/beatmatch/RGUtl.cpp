@@ -1,6 +1,7 @@
 #include "beatmatch/RGUtl.h"
 #include "os/Debug.h"
 #include <string.h>
+#include <stdio.h>
 
 const char* gNoteNames[] = {
     "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
@@ -14,6 +15,7 @@ int gSlashNote = -1;
 int gSlashString = -1;
 int gSlashFret = -1;
 bool gSuperscriptStarted;
+int gCurrNoteNames[2];
 
 void RGSetTuning(const std::vector<int>& vec){
     unsigned char* stringPtr = gStringNotes;
@@ -107,5 +109,82 @@ void RGStringContainsNote(unsigned char uc, const GameGem& gem, unsigned char& u
             ucRef |= 1 << i;
         }
         tunedPtr++;
+    }
+}
+
+void HandleSlashChords(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
+    char localbuf[20];
+    if(gem.GetShowSlashes()){
+        if(gSlashNote != gem.GetRootNote()){
+            sprintf(buf, "/%s", gCurrNoteNames[gSlashNote]);
+            AddChordLevel(buf, bufLen, i4, iRef, localbuf, false);
+        }
+    }
+}
+
+bool HandleInterval(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
+    unsigned char root = gem.GetRootNote();
+    unsigned char* tunedPtr = gTunedNotes;
+    unsigned int i = 0;
+    unsigned char i7 = -1;
+    unsigned char i8;
+    while(true){
+        i8 = i7;
+        if(0 <= gem.GetFret(i)){
+            unsigned char u1 = (*tunedPtr + gem.GetFret(i)) % 0xC;
+            // this part needs work
+            if(u1 != root){
+                i8 = u1;
+                if(i7 != 0xFF){
+                    i8 = i7;
+                    if(i7 != u1){
+                        return false;
+                    }
+                }
+            }
+            // end the part that needs work
+        }
+        i++;
+        *tunedPtr++;
+        // i7 = i8;
+        if(6 <= i){
+            if(i8 == (root + 7) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "5", false);
+                return true;
+            }
+            else if(i8 == (root + 1) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(b2)", false);
+                return true;
+            }
+            else if(i8 == (root + 2) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(2)", false);
+                return true;
+            }
+            else if(i8 == (root + 5) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(4)", false);
+                return true;
+            }
+            else if(i8 == (root + 6) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(b5)", false);
+                return true;
+            }
+            else if(i8 == (root + 8) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(b6)", false);
+                return true;
+            }
+            else if(i8 == (root + 9) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(6)", false);
+                return true;
+            }
+            else if(i8 == (root + 10) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(b7)", false);
+                return true;
+            }
+            else if(i8 == (root + 11) % 0xC){
+                AddChordLevel(buf, bufLen, i4, iRef, "(7)", false);
+                return true;
+            }
+            else return false;
+        }
     }
 }
