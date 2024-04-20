@@ -104,6 +104,7 @@
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
+            "system/beatmatch/RGGemMatcher.cpp": "NonMatching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/RGUtl.cpp": "NonMatching",
             "system/beatmatch/TrackType.cpp": "Matching",
