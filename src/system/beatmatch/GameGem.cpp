@@ -78,6 +78,14 @@ GameGem& GameGem::operator=(const GameGem& gem){
     return *this;
 }
 
+int GameGem::NumSlots() const {
+    int bits = CountBitsInSlotType(mSlots);
+    if(bits == 0){
+        MILO_FAIL("Bad slots %d\n", mSlots);
+    }
+    return bits;
+}
+
 int GameGem::CountBitsInSlotType(unsigned int ui){
     int i1 = 0;
     for(unsigned int i = 32, i2 = 0; i != 0; i--, i2++){
@@ -91,75 +99,8 @@ int GameGem::CountBitsInSlotType(unsigned int ui){
     return i1;
 }
 
-bool GameGem::IsRealGuitar() const { return mRealGuitar; }
-bool GameGem::GetShowSlashes() const { return mShowSlashes; }
-bool GameGem::GetShowChordNames() const { return mShowChordNames; }
-unsigned char GameGem::GetRootNote() const { return mRootNote; }
-bool GameGem::Loose() const { return mLoose; }
-bool GameGem::ShowChordNums() const { return mShowChordNums; }
-bool GameGem::LeftHandSlide() const { return mLeftHandSlide; }
-bool GameGem::ReverseSlide() const { return mReverseSlide; }
-bool GameGem::Enharmonic() const { return mEnharmonic; }
-
-unsigned char GameGem::GetRGNoteType(unsigned int string) const {
-    MILO_ASSERT(string < kMaxRGStrings, 0x14C);
-    return GetRGNoteTypeEntry(string);
-}
-
-unsigned char GameGem::GetImportantStrings() const { return mImportantStrings; }
-void GameGem::SetImportantStrings(unsigned char c){ mImportantStrings = c; }
-unsigned char GameGem::GetHandPosition() const { return mHandPosition; }
-int GameGem::GetRGChordID() const { return mRGChordID; }
-const char* GameGem::GetChordNameOverride() const { return mChordNameOverride; }
-
-char GameGem::GetFret(unsigned int string) const {
-    MILO_ASSERT(string < kMaxRGStrings, 0x10C);
-    return mFrets[string];
-}
-
-bool GameGem::RightHandTap() const {
-    for(unsigned int i = 0; i < 6; i++){
-        char curFret = mFrets[i];
-        if(0 <= curFret){
-            if((char)GetRGNoteTypeEntry(i) == 4) return true;
-        }
-    }
-    return false;
-}
-
-unsigned int GameGem::GetLowestString() const {
-    for(unsigned int i = 0; i < 6; i++){
-        if(GetFret(i) != -1) return i;
-    }
-    return -1;
-}
-
-unsigned int GameGem::GetHighestString() const {
-    for(int i = 5; i >= 0; i--){
-        if(GetFret(i) != -1) return i;
-    }
-    return -1;
-}
-
-unsigned char GameGem::GetRGStrumType() const {
-    return mStrumType;
-}
-
-void GameGem::SetFret(unsigned int string, signed char fret){
-    MILO_ASSERT(string < kMaxRGStrings, 0x1BD);
-    mFrets[string] = fret;
-}
-
 bool GameGem::PlayableBy(int i) const {
     return GemPlayableBy(unk18, i);
-}
-
-int GameGem::NumSlots() const {
-    int bits = CountBitsInSlotType(mSlots);
-    if(bits == 0){
-        MILO_FAIL("Bad slots %d\n", mSlots);
-    }
-    return bits;
 }
 
 void GameGem::Flip(const GameGem& gem){
@@ -178,6 +119,59 @@ void GameGem::RecalculateTimes(TempoMap* tmap){
     mMs = tmap->TickToTime(mTick);
     mDurationMs = tmap->TickToTime(mTick + mDurationTicks) - mMs;
 }
+
+bool GameGem::IsRealGuitar() const { return mRealGuitar; }
+
+char GameGem::GetFret(unsigned int string) const {
+    MILO_ASSERT(string < kMaxRGStrings, 0x10C);
+    return mFrets[string];
+}
+
+bool GameGem::Loose() const { return mLoose; }
+bool GameGem::ShowChordNums() const { return mShowChordNums; }
+bool GameGem::LeftHandSlide() const { return mLeftHandSlide; }
+bool GameGem::ReverseSlide() const { return mReverseSlide; }
+bool GameGem::Enharmonic() const { return mEnharmonic; }
+
+bool GameGem::RightHandTap() const {
+    for(unsigned int i = 0; i < 6; i++){
+        char curFret = mFrets[i];
+        if(0 <= curFret){
+            if((char)GetRGNoteTypeEntry(i) == 4) return true;
+        }
+    }
+    return false;
+}
+
+unsigned char GameGem::GetImportantStrings() const { return mImportantStrings; }
+void GameGem::SetImportantStrings(unsigned char c){ mImportantStrings = c; }
+
+unsigned char GameGem::GetRGNoteType(unsigned int string) const {
+    MILO_ASSERT(string < kMaxRGStrings, 0x14C);
+    return GetRGNoteTypeEntry(string);
+}
+
+unsigned char GameGem::GetHandPosition() const { return mHandPosition; }
+int GameGem::GetRGChordID() const { return mRGChordID; }
+unsigned char GameGem::GetRootNote() const { return mRootNote; }
+bool GameGem::GetShowChordNames() const { return mShowChordNames; }
+bool GameGem::GetShowSlashes() const { return mShowSlashes; }
+
+unsigned int GameGem::GetLowestString() const {
+    for(unsigned int i = 0; i < 6; i++){
+        if(GetFret(i) != -1) return i;
+    }
+    return -1;
+}
+
+unsigned int GameGem::GetHighestString() const {
+    for(int i = 5; i >= 0; i--){
+        if(GetFret(i) != -1) return i;
+    }
+    return -1;
+}
+
+unsigned char GameGem::GetRGStrumType() const { return mStrumType; }
 
 bool GameGem::IsMuted() const {
     if(!mRealGuitar) return false;
@@ -221,3 +215,10 @@ int GameGem::GetNumFingers() const {
     }
     return count;
 }
+
+void GameGem::SetFret(unsigned int string, signed char fret){
+    MILO_ASSERT(string < kMaxRGStrings, 0x1BD);
+    mFrets[string] = fret;
+}
+
+const char* GameGem::GetChordNameOverride() const { return mChordNameOverride; }
