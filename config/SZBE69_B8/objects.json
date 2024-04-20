@@ -95,7 +95,9 @@
 
             "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "Matching",
+            "system/beatmatch/BeatMatchUtl.cpp": "Matching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
+            "system/beatmatch/GameGem.cpp": "NonMatching",
             "system/beatmatch/GuitarController.cpp": "NonMatching",
             "system/beatmatch/JoypadController.cpp": "NonMatching",
             "system/beatmatch/JoypadGuitarController.cpp": "NonMatching",
@@ -104,7 +106,10 @@
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
+            "system/beatmatch/RGGemMatcher.cpp": "NonMatching",
             "system/beatmatch/RGState.cpp": "Matching",
+            "system/beatmatch/RGUtl.cpp": "NonMatching",
+            "system/beatmatch/SlotChannelMapping.cpp": "NonMatching",
             "system/beatmatch/TrackType.cpp": "Matching",
 
             "system/char/CharBoneTwist.cpp": "NonMatching",
@@ -153,7 +158,7 @@
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "NonMatching",
             "system/meta/SongMetadata.cpp": "NonMatching",
-            "system/meta/Sorting.cpp": "NonMatching",
+            "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
@@ -183,6 +188,7 @@
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncFile.cpp": "NonMatching",
             "system/os/AsyncTask.cpp": "Matching",
+            "system/os/BlockMgr.cpp": "NonMatching",
             "system/os/CDReader.cpp": "NonMatching",
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",

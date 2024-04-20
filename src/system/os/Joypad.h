@@ -243,6 +243,11 @@ public:
     int GetPressureBucket(JoypadButton) const;
     bool IsButtonInMask(int i) const { return (mButtons & 1 << i); }
     bool IsButtonNewlyPressed(int i) const { return (mNewPressed & 1 << i); }
+
+    float GetLX() const { return mSticks[0][0]; }
+    float GetLY() const { return mSticks[0][1]; }
+    float GetRX() const { return mSticks[1][0]; }
+    float GetRY() const { return mSticks[1][1]; }
 };
 
 class LocalUser; // forward dec

@@ -31,6 +31,8 @@ public:
     bool unk2b;
     PlatformRegion mRegion;
 
+    PlatformMgr();
+
     void SetDiskError(DiskError);
     void GetOnlineID(int, OnlineID*) const;
     const char* GetName(int) const;
@@ -47,9 +49,11 @@ public:
     bool IsSignedIntoLive(int) const;
 
     PlatformRegion GetRegion() const;
-    bool IsConnected() const;
-    int SigninMask() const;
-    int SigninChangedMask() const;
+
+    bool IsConnected() const { return mConnected; }
+    int SigninMask() const { return mSigninMask; }
+    int SigninChangedMask() const { return mSigninChangeMask; }
+    
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;
 

@@ -14,11 +14,8 @@ public:
     std::vector<int> mChannels;
 };
 
-inline BinStream& operator<<(BinStream& bs, const TrackChannels& chans){
-    bs << chans.mAudioType;
-    bs << chans.mChannels;
-    return bs;
-}
+BinStream& operator<<(BinStream&, const TrackChannels&);
+BinStream& operator>>(BinStream&, TrackChannels&);
 
 class SongInfo {
 public:

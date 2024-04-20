@@ -1,5 +1,9 @@
 #include "meta/Profile.h"
 #include "os/Debug.h"
+#include "meta/WiiProfileMgr.h"
+#include "utl/Symbols.h"
+
+static const char* profileSymbols[] = { __FILE__, "user" };
 
 Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {
     
@@ -11,6 +15,19 @@ Profile::~Profile(){
 
 bool Profile::IsAutosaveEnabled() const {
     return mState != kMetaProfileError;
+}
+
+bool Profile::HasValidSaveData() const {
+    if(mState == kMetaProfileUnloaded || mState == kMetaProfileLoaded){
+        int padIdx = TheWiiProfileMgr.GetIndexForPad(mPadNum);
+        return TheWiiProfileMgr.IsIndexValid(padIdx);
+    }
+    else return false;
+}
+
+const char* Profile::GetName() const {
+    LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
+    return u->UserName();
 }
 
 int Profile::GetPadNum() const {
@@ -47,3 +64,11 @@ void Profile::DeleteAll(){
 void Profile::MakeDirty(){
     mDirty = true;
 }
+
+BEGIN_HANDLERS(Profile)
+    HANDLE_EXPR(get_pad_num, GetPadNum())
+    HANDLE_EXPR(get_name, GetName())
+    HANDLE_EXPR(has_cheated, HasCheated())
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xC3)
+END_HANDLERS

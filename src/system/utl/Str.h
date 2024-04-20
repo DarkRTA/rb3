@@ -5,6 +5,11 @@
 #include <string.h>
 #include <vector>
 
+// i can't think of a better place to put this
+inline bool IsAsciiNum(char c){
+    return c >= 0x30 && c <= 0x39;
+}
+
 class String : public TextStream {
 public:
     unsigned int mCap;

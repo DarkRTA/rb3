@@ -121,6 +121,65 @@ void SongMetadata::Save(BinStream& d) {
     d << *mSongInfo;
 }
 
+void SongMetadata::Load(BinStream& d){
+    int version;
+    d >> version;
+    d >> mVersion;
+    d >> mID;
+    if(version < 2){
+        unsigned char c;
+        d >> c;
+    }
+    if(version < 3){
+        int dummy;
+        d >> dummy;
+    }
+    if(3 <= version){
+        unsigned char c;
+        d >> c;
+        mIsOnDisc = c;
+    }
+    d >> mGameOrigin;
+    d >> mPreviewStartTime;
+    d >> mPreviewEndTime;
+    if(version < 1){
+        class String lol;
+        d >> lol;
+    }
+    if(version < 3){
+        class String lmao;
+        d >> lmao;
+    }
+    if(version < 5){
+        DataArray* arr;
+        d >> arr;
+        if(arr) arr->Release();
+        d >> arr;
+        if(arr) arr->Release();
+    }
+    if(1 <= version){ 
+        d >> mShortName;
+    }
+    if(4 <= version){
+        // d >> mSongVocalsBlock;
+        d.ReadEndian(&mSongVocalsBlock, sizeof(DataArray*));
+    }
+    if(5 <= version){
+        MILO_ASSERT(!mSongInfo, 0xDB);
+        mSongInfo = new DataArraySongInfo();
+        d >> *mSongInfo;
+        if(version < 6){
+            unsigned char c;
+            d >> c;
+            if(c){
+                DataArraySongInfo* info = new DataArraySongInfo();
+                d >> *info;
+                delete info;
+            }
+        }
+    }
+}
+
 BEGIN_HANDLERS(SongMetadata);
     HANDLE_EXPR(version, mVersion);
     HANDLE_SUPERCLASS(Hmx::Object);

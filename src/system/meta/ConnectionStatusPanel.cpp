@@ -28,7 +28,7 @@ DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg& msg){
 }
 
 void ConnectionStatusPanel::CheckForLostConnection(){
-    if(!ThePlatformMgr.mConnected){
+    if(!ThePlatformMgr.IsConnected()){
         Handle(on_connection_lost_msg, true);
     }
 }

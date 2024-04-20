@@ -241,8 +241,8 @@ public:
         return Node(i).Evaluate();
     }
 
-    void* operator new(size_t){
-        return _PoolAlloc(0x10, 0x10, FastPool);
+    void* operator new(size_t s){
+        return _PoolAlloc(s, 0x10, FastPool);
     }
 
     void operator delete(void* v){
