@@ -138,7 +138,7 @@ public:
     int mPitchBendMsToFull;
     float mPitchBendMsHit;
     float mBiggestWhammy;
-    std::vector<int> mRollSlotsLastSwingMs;
+    std::vector<float> mRollSlotsLastSwingMs;
     int mRollActiveSlots;
     float mRollIntervalMs;
     int mRollEndTick;
