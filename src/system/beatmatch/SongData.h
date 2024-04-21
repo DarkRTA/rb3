@@ -43,6 +43,8 @@ public:
     virtual bool GetGem(int, int&, int&, int&);
 
     bool GetTrillSlotsAtTick(int, int, std::pair<int, int>&) const;
+    int GetRollingSlotsAtTick(int, int) const;
+    bool GetNextRoll(int, int, unsigned int&, int&) const;
 
     GameGemList* GetGemList(int);
 

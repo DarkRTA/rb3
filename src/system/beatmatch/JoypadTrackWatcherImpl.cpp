@@ -1,6 +1,9 @@
 #include "beatmatch/JoypadTrackWatcherImpl.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/TrackWatcherParent.h"
+#include "beatmatch/SongData.h"
+#include "utl/TempoMap.h"
+#include "beatmatch/BeatMatchUtl.h"
 
 JoypadTrackWatcherImpl::JoypadTrackWatcherImpl(int track, const UserGuid& u, int slot, SongData* data, GameGemList* gemlist, TrackWatcherParent* parent, DataArray* cfg, int size) :
     TrackWatcherImpl(track, u, slot, data, gemlist, parent, cfg, size), mChordSlop(50.0f), mChordGemInProgress(-1), mChordSlotsInProgress(0), mChordLastSlot(0) {
@@ -31,7 +34,15 @@ bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
 
     bool somebool = false;
     if(AllowAllInputInRolls()){
-
+        int tick = mSongData->GetTempoMap()->TimeToTick(now + mSyncOffset);
+        int locInt = 0;
+        int loopTick = mSongData->GetTempoMap()->GetLoopTick(tick, locInt);
+        if(mSongData->GetRollingSlotsAtTick(mTrack, loopTick)){
+            unsigned int roll1;
+            int roll2;
+            mSongData->GetNextRoll(mTrack, loopTick, roll1, roll2);
+            // float rollInterval = GetRollIntervalMs(mRollIntervalsConfig, )
+        }
     }
 
     if(mChordGemInProgress != -1){
