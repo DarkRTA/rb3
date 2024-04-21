@@ -12,10 +12,15 @@ class DataArray;
 class BeatMatchSink;
 
 struct GemInProgress {
-    // total size: 0xC
-    int mTick; // offset 0x0, size 0x4
-    int mNoStrum; // offset 0x4, size 0x4
-    int mPlayers; // offset 0x8, size 0x4
+    // what RB2 has
+    // int mTick; // offset 0x0, size 0x4
+    // int mNoStrum; // offset 0x4, size 0x4
+    // int mPlayers; // offset 0x8, size 0x4
+
+    // actually a byte, word, and float
+    char unk0;
+    int unk4;
+    float unk8;
 };
 
 class TrackWatcherState {
@@ -58,8 +63,8 @@ public:
     virtual void NonStrumSwing(int, bool, bool) = 0;
     virtual void FretButtonDown(int) = 0;
     virtual void FretButtonUp(int) = 0;
-    virtual void RGFretButtonDown(int);
-    virtual void OutOfRangeSwing();
+    virtual void RGFretButtonDown(int){}
+    virtual void OutOfRangeSwing(){}
     virtual void SetGemsPlayedUntil(int);
     virtual void Enable(bool);
     virtual bool IsCheating() const;
@@ -70,11 +75,11 @@ public:
     virtual void OnMiss(float, int, int, unsigned int, GemHitFlags);
     virtual void OnPass(float, int);
     virtual void FakeHitGem(float, int, GemHitFlags);
-    virtual void RegisterFill(int);
-    virtual void ResetFill();
-    virtual void FillSwing(int, int, int, bool);
+    virtual void RegisterFill(int){}
+    virtual void ResetFill(){}
+    virtual void FillSwing(int, int, int, bool){}
     virtual void CodaSwing(int, int);
-    virtual void FillStop();
+    virtual void FillStop(){}
     virtual bool IsSwingInRoll(int, unsigned int);
     virtual bool AreSlotsInRoll(unsigned int, int) const;
     virtual void GetNextRoll(int, unsigned int&, int&) const;

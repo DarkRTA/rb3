@@ -30,9 +30,9 @@ TrackWatcherImpl::TrackWatcherImpl(int track, const UserGuid& u, int slot, SongD
     MILO_ASSERT(mPitchBendMsToFull > 0, 0x66);
     mNextCheatError = (mCheatError == 0) ? 0 : RandomInt(-mCheatError, mCheatError);
     GemInProgress gem;
-    gem.mTick = 0;
-    gem.mNoStrum = -1;
-    gem.mPlayers = 0;
+    gem.unk0 = 0;
+    gem.unk4 = -1;
+    gem.unk8 = 0.0f;
     if(gemsize < mGemsInProgress.size()){
         mGemsInProgress.push_back(gem);
     }
