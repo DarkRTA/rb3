@@ -125,6 +125,8 @@ public:
     void CheckForPitchBend(float);
     void CheckForCodaLanes(int);
 
+    void HitGem(float, int, unsigned int, GemHitFlags);
+
     UserGuid mUserGuid;
     bool mIsLocalUser;
     int mPlayerSlot;

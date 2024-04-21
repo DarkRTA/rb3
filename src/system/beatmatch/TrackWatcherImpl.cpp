@@ -185,7 +185,53 @@ void TrackWatcherImpl::E3CheatDecSlop(){
     MILO_WARN("Slop = %f ms", mSlop);
 }
 
+bool TrackWatcherImpl::InTrill(int i) const {
+    int tick = mSongData->GetTempoMap()->GetLoopTick(i);
+    std::pair<int, int> thePair;
+    return mSongData->GetTrillSlotsAtTick(mTrack, tick, thePair);
+}
+
+bool TrackWatcherImpl::ShouldAutoplayGem(float f, int i){
+    GameGem* gem = mGemList->GetGem(i);
+    if(!InTrill(gem->mTick)) return false;
+    else return mTrillSucceeding;
+}
+
+int TrackWatcherImpl::NextGemAfter(int i, bool b){
+    int ret = i + 1;
+    if(ret < (int)mGemList->mGems.size()) return ret;
+    else return -1;
+}
+
+int TrackWatcherImpl::ClosestUnplayedGem(float f, int i){
+    int idx = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset);
+    GameGem* gem = mGemList->GetGem(idx);
+    if(gem->PlayableBy(mPlayerSlot)){
+        GameGem* gemgem = mGemList->GetGem(idx);
+        if(!gemgem->unk10b7) goto oh;
+    }
+    if(idx + 1 < (int)mGemList->mGems.size()) return idx + 1;
+oh:
+    return idx;
+}
+
+bool TrackWatcherImpl::InSlopWindow(float f1, float f2) const {
+    return fabs_f(f2 + mSyncOffset) - f1 <= mSlop;
+}
+
+void TrackWatcherImpl::SetGemsPlayedUntil(int thresh){
+    for(int x = mLastGemPassed + 1; x < thresh; x++){
+        GameGem* gem = mGemList->GetGem(x);
+        gem->unk10b7 = true;
+    }
+}
+
 void TrackWatcherImpl::SetAllGemsUnplayed(){ mGemList->Reset(); }
+
+void TrackWatcherImpl::FakeHitGem(float f, int i, GemHitFlags flags){
+    GameGem* gem = mGemList->GetGem(i);
+    HitGem(f, i, gem->mSlots, flags);
+}
 
 GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float f){
     for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){

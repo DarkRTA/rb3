@@ -42,6 +42,8 @@ public:
     virtual void SetTrack(Symbol);
     virtual bool GetGem(int, int&, int&, int&);
 
+    bool GetTrillSlotsAtTick(int, int, std::pair<int, int>&) const;
+
     GameGemList* GetGemList(int);
 
     int dummy;
