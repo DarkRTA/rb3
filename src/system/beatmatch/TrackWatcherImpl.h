@@ -109,6 +109,15 @@ public:
     bool InSlopWindow(float, float) const;
     bool Playable(int);
 
+    void CheckForSustainedNoteTimeout(float);
+    void CheckForRolls(float, int);
+    void CheckForTrillTimeout(float);
+    void CheckForAutoplay(float);
+    void CheckForPasses(float);
+    void CheckForGemsSeen(float);
+    void CheckForPitchBend(float);
+    void CheckForCodaLanes(int);
+
     UserGuid mUserGuid;
     bool mIsLocalUser;
     int mPlayerSlot;

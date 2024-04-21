@@ -3,6 +3,7 @@
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/GemListInterface.h"
 #include "beatmatch/HxSongData.h"
+#include "beatmatch/GameGemList.h"
 
 class SongData : public InternalSongParserSink, public GemListInterface, public HxSongData {
 public:
@@ -33,13 +34,15 @@ public:
     virtual void AddRangeShift(int, float);
     virtual void AddKeyboardRangeShift(int, int, float, int, int);
 
-    virtual void SetTrack(Symbol);
-    virtual bool GetGem(int, int&, int&, int&);
-
     virtual void CalcSongPos(float);
     virtual TempoMap* GetTempoMap() const;
     virtual BeatMap* GetBeatMap() const;
     virtual MeasureMap* GetMeasureMap() const;
+
+    virtual void SetTrack(Symbol);
+    virtual bool GetGem(int, int&, int&, int&);
+
+    GameGemList* GetGemList(int);
 
     int dummy;
 };
