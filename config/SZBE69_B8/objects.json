@@ -104,6 +104,7 @@
             "system/beatmatch/JoypadController.cpp": "NonMatching",
             "system/beatmatch/JoypadGuitarController.cpp": "NonMatching",
             "system/beatmatch/JoypadMidiController.cpp": "Matching",
+            "system/beatmatch/JoypadTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/KeyboardController.cpp": "Matching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",

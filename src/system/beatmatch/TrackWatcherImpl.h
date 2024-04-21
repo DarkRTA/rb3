@@ -99,6 +99,7 @@ public:
     void SetAutoplayAccuracy(float);
     void E3CheatIncSlop();
     void E3CheatDecSlop();
+    void KillSustainForSlot(int);
 
     UserGuid mUserGuid;
     bool mIsLocalUser;
