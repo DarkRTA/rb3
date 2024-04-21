@@ -61,7 +61,7 @@ bool JoypadTrackWatcherImpl::AllowAllInputInRolls() const { return false; }
 void JoypadTrackWatcherImpl::TryToCompleteChord(float f, int i){
     GameGem* gem = mGemList->GetGem(mChordGemInProgress);
     int slots = gem->mSlots;
-    if(slots & 1 << i){
+    if(1 << i & slots){
         mChordSlotsInProgress |= 1 << i;
         if(mChordSlotsInProgress == slots){
             OnHit(f, i, mChordGemInProgress, mChordSlotsInProgress, kGemHitFlagNone);

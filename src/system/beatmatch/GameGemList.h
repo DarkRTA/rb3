@@ -14,6 +14,8 @@ public:
     void CopyFrom(const GameGemList*);
     float TimeAt(int) const;
     float TimeAtNext(int) const;
+    void Reset();
+    int ClosestMarkerIdxAtOrAfter(float) const;
 
     int NumGems(){ return mGems.size(); }
 

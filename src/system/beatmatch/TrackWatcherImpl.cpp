@@ -33,8 +33,8 @@ TrackWatcherImpl::TrackWatcherImpl(int track, const UserGuid& u, int slot, SongD
     MILO_ASSERT(mPitchBendMsToFull > 0, 0x66);
     mNextCheatError = (mCheatError == 0) ? 0 : RandomInt(-mCheatError, mCheatError);
     GemInProgress gem;
-    gem.unk0 = 0;
-    gem.unk4 = -1;
+    gem.mInUse = 0;
+    gem.mGemID = -1;
     gem.unk8 = 0.0f;
     if(gemsize < mGemsInProgress.size()){
         mGemsInProgress.push_back(gem);
@@ -133,6 +133,25 @@ void TrackWatcherImpl::Poll(float time){
 
 float TrackWatcherImpl::PollHook(float){}
 
+void TrackWatcherImpl::Jump(float f){
+    SetAllGemsUnplayed();
+    EndAllSustainedNotes();
+    int marker = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset);
+    if(marker == -1) marker = mGemList->mGems.size();
+    mLastGemPassed = marker - 1;
+    mLastGemHit = -1;
+    mLastGemSeen = marker - 1;
+    mLastMiss = -10000.0f;
+    mNextGemToAutoplay = marker;
+    mLastCheatCodaSwing = 0.0f;
+    // vector stuff
+    mRollActiveSlots = 0;
+    mRollIntervalMs = 0.0f;
+    mRollEndTick = 0;
+    mTrillLastFretMs = 0.0f;
+    JumpHook(f);
+}
+
 float TrackWatcherImpl::JumpHook(float){}
 void TrackWatcherImpl::Restart(){}
 void TrackWatcherImpl::Enable(bool b){ mEnabled = b; }
@@ -152,3 +171,75 @@ void TrackWatcherImpl::SetAutoplayAccuracy(float f){
 }
 
 void TrackWatcherImpl::SetSyncOffset(float f){ mSyncOffset = f; }
+
+bool TrackWatcherImpl::IsTrillActive() const { return mTrillSucceeding; }
+
+void TrackWatcherImpl::E3CheatIncSlop(){
+    mSlop += 10.0f;
+    MILO_WARN("Slop = %f ms", mSlop);
+}
+
+void TrackWatcherImpl::E3CheatDecSlop(){
+    mSlop -= 10.0f;
+    if(mSlop < 0.0f) mSlop = 0.0f;
+    MILO_WARN("Slop = %f ms", mSlop);
+}
+
+void TrackWatcherImpl::SetAllGemsUnplayed(){ mGemList->Reset(); }
+
+GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float f){
+    for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
+        if(!iter->mInUse) return iter;
+        if(iter->unk8 < f){
+            iter->mInUse = 0;
+            iter->mGemID = -1;
+            iter->unk8 = 0.0f;
+            return iter;
+        }
+    }
+    MILO_FAIL("Couldn't find unused gem in progress!");
+    return mGemsInProgress.begin();
+}
+
+GemInProgress* TrackWatcherImpl::GetGemInProgressWithSlot(int slot){
+    for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
+        if(iter->mInUse){
+            MILO_ASSERT(iter->mGemID != -1, 0x3FD);
+            GameGem* gem = mGemList->GetGem(iter->mGemID);
+            if(1 << slot & gem->mSlots) return iter;
+        }
+    }
+    return 0;
+}
+
+GemInProgress* TrackWatcherImpl::GetGemInProgressWithID(int id){
+    for(std::vector<GemInProgress>::iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+        if(it->mInUse && it->mGemID == id) return it;
+    }
+    return 0;
+}
+
+bool TrackWatcherImpl::HasAnyGemInProgress() const {
+    for(std::vector<GemInProgress>::const_iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+        if(it->mInUse) return true;
+    }
+    return false;
+}
+
+bool TrackWatcherImpl::Playable(int i){
+    return mGemList->GetGem(i)->PlayableBy(mPlayerSlot);
+}
+
+void TrackWatcherImpl::EndSustainedNote(GemInProgress& gem){
+    mParent->ResetPitchBend(mTrack);
+    mPitchBendReady = false;
+    gem.mInUse = 0;
+    gem.mGemID = -1;
+    gem.unk8 = 0.0f;
+}
+
+void TrackWatcherImpl::EndAllSustainedNotes(){
+    for(std::vector<GemInProgress>::iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+        EndSustainedNote(*it);
+    }
+}

@@ -18,8 +18,8 @@ struct GemInProgress {
     // int mPlayers; // offset 0x8, size 0x4
 
     // actually a byte, word, and float
-    char unk0;
-    int unk4;
+    bool mInUse;
+    int mGemID;
     float unk8;
 };
 
@@ -108,6 +108,13 @@ public:
     void NoteSwing(unsigned int, int);
     bool InSlopWindow(float, float) const;
     bool Playable(int);
+    bool IsTrillActive() const;
+    void SetAllGemsUnplayed();
+    void EndSustainedNote(GemInProgress&);
+    bool HasAnyGemInProgress() const;
+    GemInProgress* GetGemInProgressWithID(int);
+    GemInProgress* GetGemInProgressWithSlot(int);
+    GemInProgress* GetUnusedGemInProgress(float);
 
     void CheckForSustainedNoteTimeout(float);
     void CheckForRolls(float, int);
@@ -126,7 +133,7 @@ public:
     float mSlop;
     int mLastGemHit;
     bool mIsCurrentTrack;
-    std::vector<GemInProgress> mGemsInProgress; // instead of int, the type is GemInProgress
+    std::vector<GemInProgress> mGemsInProgress;
     float mSyncOffset;
     bool mSucceeding;
     bool mEnabled;
