@@ -12,6 +12,8 @@ public:
     void MergeChordGems();
     void Finalize();
     void CopyFrom(const GameGemList*);
+    float TimeAt(int) const;
+    float TimeAtNext(int) const;
 
     int NumGems(){ return mGems.size(); }
 

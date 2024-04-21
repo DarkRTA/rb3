@@ -53,6 +53,43 @@ public:
         _PoolFree(sizeof(GameGem), FastPool, v);
     }
 
+    int GetSlot() const {
+        for(unsigned int i = 32, ret = 0; i != 0; i--, ret++){
+            if(mSlots & 1 << ret) return ret;
+        }
+        MILO_FAIL("Bad slots %d\n", mSlots);
+        return -1;
+    }
+
+    // int i1 = 0;
+    // for(unsigned int i = 32, i2 = 0; i != 0; i--, i2++){
+    //     if(ui & 1 << i2){
+    //         ui &= ~(1 << i2);
+    //         i1++;
+    //         if(ui == 0) return ui;
+    //     }
+    //     i2++;
+    // }
+    // return i1;
+
+    // int fn_800D1F4C(int param_1)
+
+    // {
+    // int iVar1;
+    // int iVar2;
+    
+    // iVar1 = 0;
+    // iVar2 = 0x20;
+    // do {
+    //     if ((*(uint *)(param_1 + 0xc) & 1 << iVar1) != 0) {
+    //     return iVar1;
+    //     }
+    //     iVar1 = iVar1 + 1;
+    //     iVar2 = iVar2 + -1;
+    // } while (iVar2 != 0);
+    // return -1;
+    // }
+
     unsigned char GetRGNoteTypeEntry(int x) const {
         switch(x){
             case 0: return unk14top;

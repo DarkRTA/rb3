@@ -114,6 +114,7 @@
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/RGUtl.cpp": "NonMatching",
             "system/beatmatch/SlotChannelMapping.cpp": "NonMatching",
+            "system/beatmatch/SongData.cpp": "NonMatching",
             "system/beatmatch/Submix.cpp": "NonMatching",
             "system/beatmatch/TrackType.cpp": "Matching",
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",

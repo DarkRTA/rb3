@@ -105,6 +105,9 @@ public:
     void E3CheatIncSlop();
     void E3CheatDecSlop();
     void KillSustainForSlot(int);
+    void NoteSwing(unsigned int, int);
+    bool InSlopWindow(float, float) const;
+    bool Playable(int);
 
     UserGuid mUserGuid;
     bool mIsLocalUser;

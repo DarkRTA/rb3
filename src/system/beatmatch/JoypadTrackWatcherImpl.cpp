@@ -1,5 +1,6 @@
 #include "beatmatch/JoypadTrackWatcherImpl.h"
 #include "beatmatch/GameGemList.h"
+#include "beatmatch/TrackWatcherParent.h"
 
 JoypadTrackWatcherImpl::JoypadTrackWatcherImpl(int track, const UserGuid& u, int slot, SongData* data, GameGemList* gemlist, TrackWatcherParent* parent, DataArray* cfg, int size) :
     TrackWatcherImpl(track, u, slot, data, gemlist, parent, cfg, size), mChordSlop(50.0f), mChordGemInProgress(-1), mChordSlotsInProgress(0), mChordLastSlot(0) {
@@ -11,8 +12,48 @@ JoypadTrackWatcherImpl::~JoypadTrackWatcherImpl(){
 }
 
 // fn_804672B8 - swing
-bool JoypadTrackWatcherImpl::Swing(int, bool, bool, GemHitFlags){
+bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
+    KillSustainForSlot(i1);
+    float now = mParent->GetNow();
+    int idk = ClosestUnplayedGem(now, i1);
+    float timeat = mGemList->TimeAt(idk);
+    float timeatnext = mGemList->TimeAtNext(idk);
+    bool inslopwindow = InSlopWindow(timeat, now);
+    GameGem* gem = mGemList->GetGem(idk);
+    GameGem* gem2 = mGemList->GetGem(idk);
+    int tick = gem2->mTick;
+    if(gem->NumSlots() == 1){
+        NoteSwing(1 << i1, tick);
+    }
+    else {
+        NoteSwing(mChordSlotsInProgress | 1 << i1, tick);
+    }
 
+    bool somebool = false;
+    if(AllowAllInputInRolls()){
+
+    }
+
+    if(mChordGemInProgress != -1){
+        if(mChordGemInProgress == idk){
+            TryToCompleteChord(now, i1);
+            return false;
+        }
+        OnMiss(now, mChordLastSlot, idk, 0, kGemHitFlagNone);
+        ResetChordInProgress();
+    }
+    if(!inslopwindow){
+        if(!somebool){
+            OnMiss(now, i1, idk, 0, kGemHitFlagNone);
+        }
+    }
+    else if(!gem2->unk10b7 || !Playable(idk)){
+        OnMiss(now, mChordLastSlot, idk, 0, kGemHitFlagNone);
+    }
+    else {
+
+    }
+    return true;
 }
 
 bool JoypadTrackWatcherImpl::AllowAllInputInRolls() const { return false; }

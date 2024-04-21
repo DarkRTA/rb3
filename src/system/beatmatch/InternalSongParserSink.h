@@ -5,6 +5,7 @@
 #include "utl/SongInfoAudioType.h"
 #include "beatmatch/GemInfo.h"
 #include "beatmatch/VocalNote.h"
+#include "beatmatch/RGChords.h"
 
 struct AudioTrackNum {
     int mVal;
