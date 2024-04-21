@@ -9,8 +9,8 @@ GameGemDB::GameGemDB(int count, int thresh) : mHopoThreshold(thresh) {
 
 GameGemDB::~GameGemDB(){
     for(int i = 0; i < mGameGemLists.size(); i++){
-        for(std::vector<GameGem*>::iterator it = mGameGemLists[i]->mGems.begin(); it != mGameGemLists[i]->mGems.end(); it++){
-            delete *it;
+        for(std::vector<GameGem>::iterator it = mGameGemLists[i]->mGems.begin(); it != mGameGemLists[i]->mGems.end(); it++){
+            delete it;
         }
     }
 }

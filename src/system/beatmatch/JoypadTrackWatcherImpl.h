@@ -17,6 +17,7 @@ public:
     virtual void CheckForChordTimeout(float);
 
     void ResetChordInProgress();
+    void TryToCompleteChord(float, int);
 
     float mChordSlop;
     int mChordGemInProgress;

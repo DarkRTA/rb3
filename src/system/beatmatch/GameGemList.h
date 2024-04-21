@@ -13,8 +13,15 @@ public:
     void Finalize();
     void CopyFrom(const GameGemList*);
 
+    int NumGems(){ return mGems.size(); }
+
+    GameGem* GetGem(int id){
+        MILO_ASSERT(0 <= id && id < NumGems(), 0x3A);
+        return &mGems[id];
+    }
+
     int mHopoThreshold;
-    std::vector<GameGem*> mGems;
+    std::vector<GameGem> mGems;
 };
 
 #endif
