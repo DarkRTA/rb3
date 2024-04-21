@@ -111,6 +111,8 @@
             "system/beatmatch/RGUtl.cpp": "NonMatching",
             "system/beatmatch/SlotChannelMapping.cpp": "NonMatching",
             "system/beatmatch/TrackType.cpp": "Matching",
+            "system/beatmatch/TrackWatcher.cpp": "NonMatching",
+            "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
 
             "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",

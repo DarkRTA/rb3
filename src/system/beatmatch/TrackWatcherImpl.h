@@ -11,6 +11,38 @@ class TrackWatcherParent;
 class DataArray;
 class BeatMatchSink;
 
+struct GemInProgress {
+    // total size: 0xC
+    int mTick; // offset 0x0, size 0x4
+    int mNoStrum; // offset 0x4, size 0x4
+    int mPlayers; // offset 0x8, size 0x4
+};
+
+class TrackWatcherState {
+public:
+    int mLastGemHit;
+    bool mAutoplayCoda;
+    bool mIsCurrentTrack;
+    std::vector<GemInProgress> mGemsInProgress;
+    float mSyncOffset;
+    int mTrack;
+    bool mEnabled;
+    int mLastGemPassed;
+    int mLastGemSeen;
+    float mLastMiss;
+    bool mCheating;
+    int mCheatError;
+    int mNextCheatError;
+    int mNextGemToAutoplay;
+    bool mPitchBendReady;
+    int mPitchBendRange;
+    int mPitchBendMsToFull;
+    float mPitchBendMsHit;
+    float mBiggestWhammy;
+    int mCymbalAutoplayMs;
+    bool mSucceeding;
+};
+
 class TrackWatcherImpl {
 public:
     TrackWatcherImpl(int, const UserGuid&, int, SongData*, GameGemList*, TrackWatcherParent*, DataArray*, int);
@@ -58,6 +90,16 @@ public:
     virtual int SustainedGemToKill(int);
     virtual bool InTrill(int) const;
 
+    void EndAllSustainedNotes();
+    void LoadState(TrackWatcherState&);
+    void SaveState(TrackWatcherState&);
+    void RecalcGemList();
+    void SetAutoplayCoda(bool);
+    float CycleAutoplayAccuracy();
+    void SetAutoplayAccuracy(float);
+    void E3CheatIncSlop();
+    void E3CheatDecSlop();
+
     UserGuid mUserGuid;
     bool mIsLocalUser;
     int mPlayerSlot;
@@ -66,21 +108,19 @@ public:
     float mSlop;
     int mLastGemHit;
     bool mIsCurrentTrack;
-    std::vector<int> mGemsInProgress;
+    std::vector<GemInProgress> mGemsInProgress; // instead of int, the type is GemInProgress
     float mSyncOffset;
     bool mSucceeding;
     bool mEnabled;
-    std::vector<int> mSinks;
+    std::vector<BeatMatchSink*> mSinks;
     SongData* mSongData;
     bool mTrillSucceeding;
     int mTrillNextSlot;
     float mTrillLastFretMs;
     float mTrillIntervalMs;
     DataArray* mRollIntervalsConfig;
-
-    int unk60;
-    int unk64;
-
+    int mTrack;
+    bool mButtonMashingMode;
     int mLastGemPassed;
     int mLastGemSeen;
     float mLastMiss;
@@ -105,5 +145,7 @@ public:
     DataArray* mTrillIntervalsConfig;
 
 };
+
+TrackWatcherImpl* NewTrackWatcherImpl(int, const UserGuid&, int, Symbol, SongData*, TrackWatcherParent*, DataArray*);
 
 #endif
