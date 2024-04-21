@@ -98,6 +98,7 @@
             "system/beatmatch/BeatMatchUtl.cpp": "Matching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
             "system/beatmatch/GameGem.cpp": "NonMatching",
+            "system/beatmatch/GameGemDB.cpp": "NonMatching",
             "system/beatmatch/GuitarController.cpp": "NonMatching",
             "system/beatmatch/JoypadController.cpp": "NonMatching",
             "system/beatmatch/JoypadGuitarController.cpp": "NonMatching",

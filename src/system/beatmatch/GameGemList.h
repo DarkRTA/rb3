@@ -6,6 +6,13 @@
 class GameGemList {
 public:
     GameGemList(int);
+    void Clear();
+    bool AddMultiGem(const MultiGemInfo&);
+    bool AddRGGem(const RGGemInfo&);
+    void MergeChordGems();
+    void Finalize();
+    void CopyFrom(const GameGemList*);
+
     int mHopoThreshold;
     std::vector<GameGem*> mGems;
 };
