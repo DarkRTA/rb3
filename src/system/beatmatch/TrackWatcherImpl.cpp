@@ -131,7 +131,7 @@ void TrackWatcherImpl::Poll(float time){
     }
 }
 
-float TrackWatcherImpl::PollHook(float){}
+void TrackWatcherImpl::PollHook(float){}
 
 void TrackWatcherImpl::Jump(float f){
     SetAllGemsUnplayed();
@@ -152,7 +152,7 @@ void TrackWatcherImpl::Jump(float f){
     JumpHook(f);
 }
 
-float TrackWatcherImpl::JumpHook(float){}
+void TrackWatcherImpl::JumpHook(float){}
 void TrackWatcherImpl::Restart(){}
 void TrackWatcherImpl::Enable(bool b){ mEnabled = b; }
 bool TrackWatcherImpl::IsCheating() const { return mCheating; }

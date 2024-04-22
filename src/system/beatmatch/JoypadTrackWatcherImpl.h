@@ -10,8 +10,8 @@ public:
     virtual void NonStrumSwing(int, bool, bool){}
     virtual void FretButtonDown(int){}
     virtual void FretButtonUp(int);
-    virtual float PollHook(float);
-    virtual float JumpHook(float);
+    virtual void PollHook(float);
+    virtual void JumpHook(float);
     virtual float HitGemHook(float, int, GemHitFlags);
     virtual bool AllowAllInputInRolls() const;
     virtual void CheckForChordTimeout(float);

@@ -93,6 +93,7 @@
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
+            "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "Matching",
             "system/beatmatch/BeatMatchUtl.cpp": "Matching",

@@ -84,8 +84,8 @@ public:
     virtual bool AreSlotsInRoll(unsigned int, int) const;
     virtual void GetNextRoll(int, unsigned int&, int&) const;
     virtual void CheckForTrills(float, int, unsigned int);
-    virtual float PollHook(float);
-    virtual float JumpHook(float);
+    virtual void PollHook(float);
+    virtual void JumpHook(float);
     virtual float HitGemHook(float, int, GemHitFlags);
     virtual bool ShouldAutoplayGem(float, int);
     virtual bool GemCanBePassed(int);
@@ -105,6 +105,7 @@ public:
     void E3CheatIncSlop();
     void E3CheatDecSlop();
     void KillSustainForSlot(int);
+    void KillSustain(int);
     void NoteSwing(unsigned int, int);
     bool InSlopWindow(float, float) const;
     bool Playable(int);
@@ -126,6 +127,7 @@ public:
     void CheckForCodaLanes(int);
 
     void HitGem(float, int, unsigned int, GemHitFlags);
+    void SendSwingAtHopo(float, int);
 
     UserGuid mUserGuid;
     bool mIsLocalUser;

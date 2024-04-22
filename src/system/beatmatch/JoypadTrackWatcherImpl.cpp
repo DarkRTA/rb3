@@ -86,8 +86,8 @@ void JoypadTrackWatcherImpl::TryToCompleteChord(float f, int i){
 
 void JoypadTrackWatcherImpl::FretButtonUp(int i){ KillSustainForSlot(i); }
 float JoypadTrackWatcherImpl::HitGemHook(float, int, GemHitFlags){ ResetChordInProgress(); }
-float JoypadTrackWatcherImpl::JumpHook(float f){ ResetChordInProgress(); }
-float JoypadTrackWatcherImpl::PollHook(float f){ CheckForChordTimeout(f); }
+void JoypadTrackWatcherImpl::JumpHook(float f){ ResetChordInProgress(); }
+void JoypadTrackWatcherImpl::PollHook(float f){ CheckForChordTimeout(f); }
 
 void JoypadTrackWatcherImpl::CheckForChordTimeout(float f){
     if(mChordGemInProgress != -1 && mChordTimeout < f){
