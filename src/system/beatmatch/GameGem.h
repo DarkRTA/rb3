@@ -3,6 +3,7 @@
 #include "os/Debug.h"
 #include "utl/PoolAlloc.h"
 #include "beatmatch/GemInfo.h"
+#include "utl/Symbol.h"
 
 class TempoMap; // forward dec
 
@@ -14,6 +15,7 @@ public:
     GameGem& operator=(const GameGem&);
 
     char GetFret(unsigned int) const;
+    char GetHighestFret() const;
     bool GetShowSlashes() const;
     unsigned char GetRootNote() const;
     bool IsRealGuitar() const;
@@ -32,7 +34,7 @@ public:
     unsigned int GetLowestString() const;
     unsigned int GetHighestString() const;
     unsigned char GetRGStrumType() const;
-    const char* GetChordNameOverride() const;
+    Symbol GetChordNameOverride() const;
     void SetFret(unsigned int, signed char);
     bool PlayableBy(int) const;
     static int CountBitsInSlotType(unsigned int);
@@ -135,7 +137,7 @@ public:
     unsigned char unk18; // mPlayers?
     char mFrets[6];
     int mRGChordID;
-    const char* mChordNameOverride;
+    Symbol mChordNameOverride;
     unsigned char mImportantStrings;
 };
 
