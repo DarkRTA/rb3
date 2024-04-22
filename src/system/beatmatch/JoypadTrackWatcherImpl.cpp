@@ -22,10 +22,10 @@ bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
     float timeat = mGemList->TimeAt(idk);
     float timeatnext = mGemList->TimeAtNext(idk);
     bool inslopwindow = InSlopWindow(timeat, now);
-    GameGem* gem = mGemList->GetGem(idk);
-    GameGem* gem2 = mGemList->GetGem(idk);
-    int tick = gem2->mTick;
-    if(gem->NumSlots() == 1){
+    GameGem& gem = mGemList->GetGem(idk);
+    GameGem& gem2 = mGemList->GetGem(idk);
+    int tick = gem2.mTick;
+    if(gem.NumSlots() == 1){
         NoteSwing(1 << i1, tick);
     }
     else {
@@ -58,7 +58,7 @@ bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
             OnMiss(now, i1, idk, 0, kGemHitFlagNone);
         }
     }
-    else if(!gem2->unk10b7 || !Playable(idk)){
+    else if(!gem2.GetPlayed() || !Playable(idk)){
         OnMiss(now, mChordLastSlot, idk, 0, kGemHitFlagNone);
     }
     else {
@@ -70,8 +70,8 @@ bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
 bool JoypadTrackWatcherImpl::AllowAllInputInRolls() const { return false; }
 
 void JoypadTrackWatcherImpl::TryToCompleteChord(float f, int i){
-    GameGem* gem = mGemList->GetGem(mChordGemInProgress);
-    int slots = gem->mSlots;
+    GameGem& gem = mGemList->GetGem(mChordGemInProgress);
+    int slots = gem.mSlots;
     if(1 << i & slots){
         mChordSlotsInProgress |= 1 << i;
         if(mChordSlotsInProgress == slots){

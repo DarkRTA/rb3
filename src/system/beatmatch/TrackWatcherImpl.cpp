@@ -192,8 +192,8 @@ bool TrackWatcherImpl::InTrill(int i) const {
 }
 
 bool TrackWatcherImpl::ShouldAutoplayGem(float f, int i){
-    GameGem* gem = mGemList->GetGem(i);
-    if(!InTrill(gem->mTick)) return false;
+    GameGem& gem = mGemList->GetGem(i);
+    if(!InTrill(gem.mTick)) return false;
     else return mTrillSucceeding;
 }
 
@@ -205,10 +205,10 @@ int TrackWatcherImpl::NextGemAfter(int i, bool b){
 
 int TrackWatcherImpl::ClosestUnplayedGem(float f, int i){
     int idx = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset);
-    GameGem* gem = mGemList->GetGem(idx);
-    if(gem->PlayableBy(mPlayerSlot)){
-        GameGem* gemgem = mGemList->GetGem(idx);
-        if(!gemgem->unk10b7) goto oh;
+    GameGem& gem = mGemList->GetGem(idx);
+    if(gem.PlayableBy(mPlayerSlot)){
+        GameGem& gemgem = mGemList->GetGem(idx);
+        if(!gemgem.GetPlayed()) goto oh;
     }
     if(idx + 1 < (int)mGemList->mGems.size()) return idx + 1;
 oh:
@@ -221,16 +221,16 @@ bool TrackWatcherImpl::InSlopWindow(float f1, float f2) const {
 
 void TrackWatcherImpl::SetGemsPlayedUntil(int thresh){
     for(int x = mLastGemPassed + 1; x < thresh; x++){
-        GameGem* gem = mGemList->GetGem(x);
-        gem->unk10b7 = true;
+        GameGem& gem = mGemList->GetGem(x);
+        gem.unk10b7 = true;
     }
 }
 
 void TrackWatcherImpl::SetAllGemsUnplayed(){ mGemList->Reset(); }
 
 void TrackWatcherImpl::FakeHitGem(float f, int i, GemHitFlags flags){
-    GameGem* gem = mGemList->GetGem(i);
-    HitGem(f, i, gem->mSlots, flags);
+    GameGem& gem = mGemList->GetGem(i);
+    HitGem(f, i, gem.mSlots, flags);
 }
 
 GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float f){
@@ -251,8 +251,8 @@ GemInProgress* TrackWatcherImpl::GetGemInProgressWithSlot(int slot){
     for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
         if(iter->mInUse){
             MILO_ASSERT(iter->mGemID != -1, 0x3FD);
-            GameGem* gem = mGemList->GetGem(iter->mGemID);
-            if(1 << slot & gem->mSlots) return iter;
+            GameGem& gem = mGemList->GetGem(iter->mGemID);
+            if(1 << slot & gem.mSlots) return iter;
         }
     }
     return 0;
@@ -273,7 +273,7 @@ bool TrackWatcherImpl::HasAnyGemInProgress() const {
 }
 
 bool TrackWatcherImpl::Playable(int i){
-    return mGemList->GetGem(i)->PlayableBy(mPlayerSlot);
+    return mGemList->GetGem(i).PlayableBy(mPlayerSlot);
 }
 
 void TrackWatcherImpl::EndSustainedNote(GemInProgress& gem){

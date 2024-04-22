@@ -19,9 +19,9 @@ public:
 
     int NumGems(){ return mGems.size(); }
 
-    GameGem* GetGem(int id){
+    GameGem& GetGem(int id){
         MILO_ASSERT(0 <= id && id < NumGems(), 0x3A);
-        return &mGems[id];
+        return mGems[id];
     }
 
     int mHopoThreshold;

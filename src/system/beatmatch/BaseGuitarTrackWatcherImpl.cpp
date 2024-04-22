@@ -40,8 +40,8 @@ bool BaseGuitarTrackWatcherImpl::Swing(int, bool, bool, GemHitFlags){
 void BaseGuitarTrackWatcherImpl::NonStrumSwing(int i, bool b1, bool b2){
     float now = mParent->GetNow();
     int uu = ClosestUnplayedGem(now, i);
-    GameGem* gem = mGemList->GetGem(uu);
-    int tick = gem->mTick;
+    GameGem& gem = mGemList->GetGem(uu);
+    int tick = gem.mTick;
     unsigned int btns = GetFretButtonsDown();
     CheckForTrills(now, tick, btns);
     if(!IsTrillActive()) TryToHopo(now, i, b1, b2);
@@ -99,8 +99,7 @@ void BaseGuitarTrackWatcherImpl::ResetGemNotFretted(){
 
 void BaseGuitarTrackWatcherImpl::TryToFinishSwing(float f, int i){
     if(mEnabled && mGemNotFretted != -1 && f < mFretWaitTimeout){
-        GameGem* gem2 = mGemList->GetGem(mGemNotFretted);
-        GameGem& gem = *gem2; // ugh now i have to make the return type for get gem a reference and refactor all its existing uses
+        GameGem& gem = mGemList->GetGem(mGemNotFretted);
         MILO_ASSERT(!gem.GetPlayed(), 0x142); 
         if(FretMatch(mGemNotFretted, false, false)){
             OnHit(f, i, mGemNotFretted, gem.mSlots, kGemHitFlagNone);
@@ -133,17 +132,17 @@ void BaseGuitarTrackWatcherImpl::TryToHopo(float f, int i, bool b1, bool b2){
     MILO_ASSERT(mGemList, 0x17B);
     if(f != mMostRecentHit){
         int closestgem = ClosestUnplayedGem(f, i);
-        GameGem* gem = mGemList->GetGem(closestgem);
+        GameGem& gem = mGemList->GetGem(closestgem);
         if(CanHopo(closestgem)){
             float timeat = mGemList->TimeAt(closestgem);
             float timeatnext = mGemList->TimeAtNext(closestgem);
             float f2 = mSlop;
             float f1 = f + mSyncOffset - timeat;
-            if((-f2 <= f1) && (f1 - mFretSlop <= f2) && (!gem->unk10b7) && Playable(closestgem) && (closestgem != mLastNoStrumGemSwung)){
+            if((-f2 <= f1) && (f1 - mFretSlop <= f2) && (!gem.GetPlayed()) && Playable(closestgem) && (closestgem != mLastNoStrumGemSwung)){
                 if(FretMatch(closestgem, true, false)){
                     int flags = mBaseGuitarFlags | kGemHitFlagHopo;
                     if(b2) flags = flags | kGemHitFlagSolo;
-                    OnHit(f, i, closestgem, gem->mSlots, (GemHitFlags)flags);
+                    OnHit(f, i, closestgem, gem.mSlots, (GemHitFlags)flags);
                 }
                 else {
                     int tick = mSongData->GetTempoMap()->TimeToTick(f);
@@ -151,7 +150,7 @@ void BaseGuitarTrackWatcherImpl::TryToHopo(float f, int i, bool b1, bool b2){
                         FillSwing(tick, i, -1, false);
                     }
                     else {
-                        if(b1 && IsHighestFret(i) && !InGem(i, *gem) && IsCoreGuitar()){
+                        if(b1 && IsHighestFret(i) && !InGem(i, gem) && IsCoreGuitar()){
                             mLastNoStrumGemSwung = closestgem;
                         }
                     }
@@ -164,8 +163,8 @@ void BaseGuitarTrackWatcherImpl::TryToHopo(float f, int i, bool b1, bool b2){
 void BaseGuitarTrackWatcherImpl::CheckForFretTimeout(float f){
     if(mGemNotFretted != -1 && mFretWaitTimeout < f){
         if(!mHarmlessSwing){
-            GameGem* gem = mGemList->GetGem(mGemNotFretted);
-            if(!gem->Loose()){
+            GameGem& gem = mGemList->GetGem(mGemNotFretted);
+            if(!gem.Loose()){
                 if(TheBeatMatchOutput.IsActive()){
                     TheBeatMatchOutput.Print(MakeString("(%2d%10.1f MISS_FRET_TIMEOUT\t%d)\n", 0, f, mGemNotFretted));
                 }
@@ -181,32 +180,33 @@ void BaseGuitarTrackWatcherImpl::CheckForFretTimeout(float f){
 
 void BaseGuitarTrackWatcherImpl::CheckForHopoTimeout(float f){
     if(mLastNoStrumGemHit != -1){
-        GameGem* gem = mGemList->GetGem(mLastNoStrumGemHit);
-        if(!InSlopWindow(gem->mMs, f)){
+        GameGem& gem = mGemList->GetGem(mLastNoStrumGemHit);
+        if(!InSlopWindow(gem.mMs, f)){
             SetLastNoStrumGem(f, -1);
         }
     }
 }
 
+// fn_80457708
 bool BaseGuitarTrackWatcherImpl::CanHopo(int i) const {
     bool ret;
-    GameGem* gem = mGemList->GetGem(i);
-    if(gem->IsRealGuitar()){
+    GameGem& gem = mGemList->GetGem(i);
+    if(gem.IsRealGuitar()){
         ret = true;
-        if(!gem->RightHandTap()){
-            if(gem->unk10b6 && (mLastGemHit == i - 1) && mSucceeding){
+        if(!gem.RightHandTap()){
+            if(gem.unk10b6 && (mLastGemHit == i - 1) && mSucceeding){
                 if(i != 0){
-                    GameGem* gemgem = mGemList->GetGem(i);
-                    if(!gemgem->unk10b7) ret = false;
+                    GameGem& gemgem = mGemList->GetGem(i);
+                    if(!gemgem.GetPlayed()) ret = false;
                 }
             }
         }
     }
     else {
         ret = false;
-        if(gem->unk10b6 && (0 < i) && (mLastGemHit == i - 1) && mSucceeding){
-            GameGem* gemgem = mGemList->GetGem(i);
-            if(gemgem->unk10b7) ret = true;
+        if(gem.unk10b6 && (0 < i) && (mLastGemHit == i - 1) && mSucceeding){
+            GameGem& gemgem = mGemList->GetGem(i);
+            if(gemgem.GetPlayed()) ret = true;
         }
     }
     return ret;
