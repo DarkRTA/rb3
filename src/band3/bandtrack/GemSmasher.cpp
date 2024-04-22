@@ -36,16 +36,16 @@ GemSmasher::GemSmasher(int slot, RndDir* dir, bool keys) : mSlot(slot), mDir(dir
         EventTrigger* hitFillLight = mDir->Find<EventTrigger>("hit_fill_light.trig", false);
         if (hitFillLight) {
             EventTrigger* hitFillMediumTrig, *hitFillHardTrig;
-            hitFillMediumTrig = mDir->Find<EventTrigger>("hit_fill_medium.trig", false);
-            hitFillHardTrig = mDir->Find<EventTrigger>("hit_fill_hard.trig", false);
+            hitFillMediumTrig = (EventTrigger*)mDir->Find<EventTrigger>("hit_fill_medium.trig", false);
+            hitFillHardTrig = (EventTrigger*)mDir->Find<EventTrigger>("hit_fill_hard.trig", false);
             MILO_ASSERT(hitFillMediumTrig, 87);
             MILO_ASSERT(hitFillHardTrig, 88);
+            mMoreTriggers.push_back(mHitFillTrig);
             mMoreTriggers.push_back(hitFillLight);
             mMoreTriggers.push_back(hitFillLight);
-            mMoreTriggers.push_back(hitFillHardTrig);
-            mMoreTriggers.push_back(hitFillLight);
-            mMoreTriggers.push_back(hitFillHardTrig);
             mMoreTriggers.push_back(hitFillMediumTrig);
+            mMoreTriggers.push_back(hitFillMediumTrig);
+            mMoreTriggers.push_back(hitFillHardTrig);
             mMoreTriggers.push_back(hitFillHardTrig);
         }
     }
