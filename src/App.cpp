@@ -16,9 +16,9 @@ void App::DrawRegular() {
 }
 
 void App::CaptureHiRes() {
-    bool x = false;
-    if (TheGame && TheGame->mIsPaused) x = true;
-    if (x) TheGame->SetPaused(true, true, true);
+    bool notPaused = false;
+    if (TheGame && !TheGame->mIsPaused) notPaused = true;
+    if (notPaused) TheGame->SetPaused(true, true, true);
     DrawRegular();
     for (int i = 0; i < TheHiResScreen->mTiling * TheHiResScreen->mTiling; i++) {
         DrawRegular();
@@ -26,7 +26,7 @@ void App::CaptureHiRes() {
     }
     TheHiResScreen->Finish();
 
-    if (x) TheGame->SetPaused(false, true, true);
+    if (notPaused) TheGame->SetPaused(false, true, true);
 }
 
 void App::Draw() {

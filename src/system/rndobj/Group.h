@@ -38,6 +38,7 @@ public:
     void Update();
     void UpdateLODState();
     void Merge(const RndGroup*);
+    void RemoveObject(Hmx::Object*);
 
     ObjPtrList<Hmx::Object, ObjectDir> mObjects;
     ObjPtr<RndEnviron, ObjectDir> mEnv;
