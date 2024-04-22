@@ -4,6 +4,7 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "obj/DataFile.h"
+#include "beatmatch/BeatMatcher.h"
 
 Playback TheBeatMatchPlayback;
 
@@ -51,10 +52,34 @@ void Playback::Poll(float f){
 }
 
 void Playback::DoCommand(DataArray* arr){
-    if(3 < arr->Size()){
+    if(4 <= arr->Size()){
         int player = arr->Int(0);
         MILO_ASSERT(player < kMaxNumberOfPlayers, 0x5E);
         BeatMatcher* sink = mPlayerSinks[player];
+        if(sink){
+            Symbol sym = arr->Sym(2);
+            if(sym == SWING){
+                sink->Swing(arr->Int(3), arr->Int(4) != 0, true, false, arr->Int(4) != 0, kGemHitFlagNone);
+            }
+            else if(sym == UP){
+                sink->FretButtonUp(arr->Int(3));
+            }
+            else if(sym == DOWN){
+                sink->FretButtonDown(arr->Int(3), -1);
+            }
+            else if(sym == TRACK){
+                sink->SetTrack(arr->Int(3));
+            }
+            else if(sym == HOPO){
+                sink->NonStrumSwing(arr->Int(3), arr->Int(4) != 0, false);
+            }
+            else if(sym == FLIP){
+                sink->MercurySwitch(arr->Float(3));
+            }
+            else if(sym == FFLIP){
+                sink->ForceMercurySwitch(arr->Int(3) != 0);
+            }
+        }
     }   
 }
 
