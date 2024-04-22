@@ -66,17 +66,21 @@ int Quest::GetTier() const { return mTier; }
 float Quest::GetWeight() const { return mWeight; }
 const TourCondition* Quest::GetPrereqs() const {return &mPrerequisites; }
 
-bool Quest::HasCustomIntro() const { // there is some compiler clown nonsense happening here
-    return !strcmp(mIntroVignette.Str(), "");
+bool Quest::HasCustomIntro() const {
+    return !(mIntroVignette == "");
 }
 
-Symbol Quest::GetCustomIntro() const {
-    MILO_ASSERT(HasCustomIntro(), 184);
+bool Quest::HasCustomOutro() const {
+    return !(mOutroVignette == "");
+}
+
+Symbol Quest::GetCustomIntro() const { // this looks stupid, i'm aware, but i can't really do anything about it
+    (!(mIntroVignette == "") || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, 184, "HasCustomIntro()")), 0));
     return mIntroVignette;
 }
 
 Symbol Quest::GetCustomOutro() const {
-    MILO_ASSERT(HasCustomOutro(), 192);
+    (!(mOutroVignette == "") || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, 192, "HasCustomOutro()")), 0));
     return mOutroVignette;
 }
 
