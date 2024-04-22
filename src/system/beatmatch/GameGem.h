@@ -134,7 +134,7 @@ public:
     unsigned char mRGNoteTypeStr5 : 4;
 
     unsigned char mRootNote;
-    unsigned char unk18; // mPlayers?
+    unsigned char unk18 : 8; // mPlayers?
     char mFrets[6];
     int mRGChordID;
     Symbol mChordNameOverride;

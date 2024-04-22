@@ -4,17 +4,31 @@
 
 #define kMaxRGStrings 6
 
-const char* gameGemStrings = "Bad slots %d\n";
+// const char* gameGemStrings = "Bad slots %d\n";
 
 GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
     mSlots(info.slots), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), unk10b5(info.ignore_duration), unk10b4(info.is_cymbal),
-    mShowChordNames(true), mShowSlashes(true), unk10b1(false), mRealGuitar(false), mLoose(false), mShowChordNums(false), mLeftHandSlide(false),
-    mReverseSlide(false), mEnharmonic(false), unk11b2(true), unk11b1(true), unk11b0(true), unk18(info.players), mChordNameOverride(), mImportantStrings(0) {
+    unk10b1(false), mRealGuitar(false), mLoose(false), mShowChordNums(false), mLeftHandSlide(false),
+    mReverseSlide(false), mEnharmonic(false), unk18(info.players), mChordNameOverride(), mImportantStrings(0) {
     
 }
 
-GameGem::GameGem(const RGGemInfo& info){
-
+GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
+    mSlots(0), unk10b6(info.no_strum == kStrumForceOn), unk10b5(info.ignore_duration), mShowChordNames(info.show_chord_names), 
+    mShowSlashes(info.show_slashes), mLoose(info.loose), mShowChordNums(info.show_chord_nums), mLeftHandSlide(info.left_hand_slide),
+    mReverseSlide(info.reverse_slide), mEnharmonic(info.enharmonic), mStrumType(info.strum_type), mHandPosition(info.hand_position), mRootNote(info.root_note),
+    unk18(0), mChordNameOverride(), mImportantStrings(0) {
+    int slot = 1;
+    for(unsigned int i = 0; i < 6; i++, slot <<= 1){
+        mFrets[i] = info.frets[i];
+        SetRGNoteTypeEntry(i, info.note_types[i]);
+        if(info.frets[i] != -1 && info.note_types[i] != kRGGhost){
+            mSlots |= slot;
+        }
+    }
+    PackRealGuitarData();
+    if(info.chord_name != 0) mChordNameOverride = Symbol(&info.chord_name);
+    unk10b6 |= RightHandTap();
 }
 
 GameGem::~GameGem(){
@@ -203,6 +217,10 @@ int GameGem::GetFret() const {
     MILO_ASSERT(count == 1, 0x1A1);
     return ret;
 }
+
+static const char* unusedGameGemStrings[] = {
+    "gem.GetHandPosition() == 5", "gem.GetFret(i) == gem.GetHandPosition() + i"
+};
 
 int GameGem::GetNumStrings() const {
     int count = 0;
