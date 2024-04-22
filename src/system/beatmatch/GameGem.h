@@ -118,6 +118,8 @@ public:
         }
     }
 
+    bool GetPlayed(){ return unk10b7 != 0; }
+
     float mMs;
     int mTick;
     unsigned short mDurationMs;
