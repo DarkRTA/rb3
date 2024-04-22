@@ -128,6 +128,7 @@ public:
 
     void HitGem(float, int, unsigned int, GemHitFlags);
     void SendSwingAtHopo(float, int);
+    void SendHopo(float, int);
 
     UserGuid mUserGuid;
     bool mIsLocalUser;

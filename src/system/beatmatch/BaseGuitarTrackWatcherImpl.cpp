@@ -35,6 +35,11 @@ void BaseGuitarTrackWatcherImpl::HandleDifficultyChange(){
 bool BaseGuitarTrackWatcherImpl::Swing(int, bool, bool, GemHitFlags){
     MILO_ASSERT(mParent, 0x47);
     MILO_ASSERT(mGemList, 0x48);
+    float now = mParent->GetNow();
+    int tick = mSongData->GetTempoMap()->TimeToTick(now + mSyncOffset);
+    if(mParent->InCodaFreestyle(tick, true)){
+
+    }
 }
 
 void BaseGuitarTrackWatcherImpl::NonStrumSwing(int i, bool b1, bool b2){
@@ -210,4 +215,9 @@ bool BaseGuitarTrackWatcherImpl::CanHopo(int i) const {
         }
     }
     return ret;
+}
+
+void BaseGuitarTrackWatcherImpl::SetLastNoStrumGem(float f, int i){
+    if(mLastNoStrumGemHit != -1) SendHopo(f, mLastNoStrumGemHit);
+    mLastNoStrumGemHit = i;
 }

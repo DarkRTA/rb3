@@ -12,7 +12,7 @@ GameGem::GameGem(const MultiGemInfo& info){
     mDurationMs = info.duration_ms;
     mDurationTicks = info.duration_ticks;
     mSlots = info.slots;
-    unk10b7 = false;
+    mPlayed = false;
     unk10b6 = info.no_strum == kStrumForceOn;
     unk10b5 = info.ignore_duration;
     unk10b4 = info.is_cymbal;
@@ -48,7 +48,7 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mSlots = gem.mSlots;
     unk18 = gem.unk18;
     // 10
-    unk10b7 = gem.unk10b7;
+    mPlayed = gem.mPlayed;
     unk10b6 = gem.unk10b6;
     unk10b5 = gem.unk10b5;
     unk10b4 = gem.unk10b4;
@@ -88,15 +88,22 @@ int GameGem::NumSlots() const {
 
 int GameGem::CountBitsInSlotType(unsigned int ui){
     int i1 = 0;
-    for(unsigned int i = 32, i2 = 0; i != 0; i--, i2++){
+    for(unsigned int i = 0, i2 = 0; i < 32; i++, i2++){
         if(ui & 1 << i2){
             ui &= ~(1 << i2);
             i1++;
-            if(ui == 0) return ui;
+            if(ui == 0) return i1;
         }
-        i2++;
     }
     return i1;
+}
+
+int GameGem::GetHighestSlot(unsigned int ui){
+    int max = -1;
+    for(unsigned int i = 0; i < 32; i++){
+        if(1 << i & ui) max = i;
+    }
+    return max;
 }
 
 bool GameGem::PlayableBy(int i) const {
@@ -122,6 +129,15 @@ void GameGem::RecalculateTimes(TempoMap* tmap){
 
 bool GameGem::IsRealGuitar() const { return mRealGuitar; }
 
+bool GameGem::IsRealGuitarChord() const {
+    if(!mRealGuitar) return false;
+    int count = 0;
+    for(int i = 0; i < 6; i++){
+        if(mFrets[i] >= 0) count++;
+    }
+    return count > 1;
+}
+
 char GameGem::GetFret(unsigned int string) const {
     MILO_ASSERT(string < kMaxRGStrings, 0x10C);
     return mFrets[string];
@@ -137,7 +153,7 @@ bool GameGem::RightHandTap() const {
     for(unsigned int i = 0; i < 6; i++){
         char curFret = mFrets[i];
         if(0 <= curFret){
-            if((char)GetRGNoteTypeEntry(i) == 4) return true;
+            if(GetRGNoteTypeEntry(i) == kRGTap) return true;
         }
     }
     return false;
@@ -146,7 +162,7 @@ bool GameGem::RightHandTap() const {
 unsigned char GameGem::GetImportantStrings() const { return mImportantStrings; }
 void GameGem::SetImportantStrings(unsigned char c){ mImportantStrings = c; }
 
-unsigned char GameGem::GetRGNoteType(unsigned int string) const {
+RGNoteType GameGem::GetRGNoteType(unsigned int string) const {
     MILO_ASSERT(string < kMaxRGStrings, 0x14C);
     return GetRGNoteTypeEntry(string);
 }

@@ -222,7 +222,7 @@ bool TrackWatcherImpl::InSlopWindow(float f1, float f2) const {
 void TrackWatcherImpl::SetGemsPlayedUntil(int thresh){
     for(int x = mLastGemPassed + 1; x < thresh; x++){
         GameGem& gem = mGemList->GetGem(x);
-        gem.unk10b7 = true;
+        gem.mPlayed = true;
     }
 }
 
