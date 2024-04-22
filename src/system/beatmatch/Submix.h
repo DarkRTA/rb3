@@ -11,8 +11,8 @@ public:
     Submix(DataArray*);
     ~Submix();
     int GetNumSlots() const;
-    void FillChannelList(stlpmtx_std::list<int, stlpmtx_std::StlNodeAlloc<int> >&) const;
-    void FillChannelList(stlpmtx_std::list<int, stlpmtx_std::StlNodeAlloc<int> >&, int) const;
+    void FillChannelList(std::list<int>&) const;
+    void FillChannelList(std::list<int>&, int) const;
 
     Symbol mName;
     std::vector<int> mChannelsPerSlot;
