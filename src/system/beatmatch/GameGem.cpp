@@ -13,6 +13,7 @@ GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDu
     
 }
 
+// fn_80460334
 GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
     mSlots(0), unk10b6(info.no_strum == kStrumForceOn), unk10b5(info.ignore_duration), mShowChordNames(info.show_chord_names), 
     mShowSlashes(info.show_slashes), mLoose(info.loose), mShowChordNums(info.show_chord_nums), mLeftHandSlide(info.left_hand_slide),
@@ -35,6 +36,7 @@ GameGem::~GameGem(){
 
 }
 
+// fn_80460558
 GameGem& GameGem::operator=(const GameGem& gem){
     mMs = gem.mMs;
     mTick = gem.mTick;
@@ -83,10 +85,11 @@ int GameGem::NumSlots() const {
 
 int GameGem::CountBitsInSlotType(unsigned int ui){
     int i1 = 0;
-    for(unsigned int i = 0, i2 = 0; i < 32; i++, i2++){
-        if(ui & 1 << i2){
-            ui &= ~(1 << i2);
+    for(int i = 0; i < 32; i++){
+        int mask = 1 << i;
+        if(ui & mask){
             i1++;
+            ui &= ~mask;
             if(ui == 0) return i1;
         }
     }
@@ -121,6 +124,8 @@ void GameGem::RecalculateTimes(TempoMap* tmap){
     mMs = tmap->TickToTime(mTick);
     mDurationMs = tmap->TickToTime(mTick + mDurationTicks) - mMs;
 }
+
+// fn_804608BC - copy gem
 
 bool GameGem::IsRealGuitar() const { return mRealGuitar; }
 

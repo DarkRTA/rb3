@@ -21,6 +21,7 @@ Playback::~Playback(){
     }
 }
 
+// fn_80471F34
 void Playback::Poll(float f){
     if(mCommands){
         int cmdSize = mCommands->Size();
@@ -34,13 +35,13 @@ void Playback::Poll(float f){
                 }
             }
 
-            while(mTime <= floc || mTime < f && fabs_f(floc - mTime) < fabs_f(floc - f)){
+            while(floc <= mTime || mTime < f && (fabs_f(floc - mTime) < fabs_f(floc - f))){
                 DoCommand(arr);
                 mCommandIndex++;
                 if(mCommandIndex >= cmdSize) break;
-                DataArray* innerArr = arr->Array(mCommandIndex);
-                if(1 < innerArr->Size()){
-                    DataNode& node = innerArr->Node(1);
+                arr = mCommands->Array(mCommandIndex);
+                if(1 < arr->Size()){
+                    DataNode& node = arr->Node(1);
                     if(node.Type() == kDataFloat){
                         floc = node.Float(0);
                     }
@@ -113,8 +114,7 @@ void Playback::Jump(float f){
                 DataNode& node = arr->Node(1);
                 if(node.Type() == kDataFloat){
                     if(node.Float(0) > f){
-                        int less = mCommandIndex - 1;
-                        mCommandIndex = less & (less > 0);
+                        mCommandIndex = (mCommandIndex - 1) > 0 ? (mCommandIndex - 1) : 0;
                         return;
                     }
                 }
