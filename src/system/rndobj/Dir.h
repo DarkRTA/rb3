@@ -6,6 +6,7 @@
 #include "rndobj/Anim.h" // RndAnimatable : public virtual Object
 #include "rndobj/Draw.h" // RndDrawable : public virtual RndHighlightable
 #include "obj/Dir.h" // ObjectDir : public virtual Object
+#include "types.h"
 #include <vector>
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
@@ -31,10 +32,13 @@ public:
     virtual void OldLoadProxies(BinStream&, int);
     virtual void Export(DataArray*, bool);
     virtual void Highlight();
+
+    DataNode OnShowObjects(DataArray*);
+    DataNode OnSupportedEvents(DataArray*);
     
-    std::vector<RndDrawable*> mDraws;
+    std::vector<RndDrawable*, u16> mDraws;
     std::vector<RndAnimatable*> mAnims;
-    std::vector<RndPollable*> mPolls;
+    std::vector<RndPollable*, u16> mPolls;
     ObjPtr<RndEnviron, ObjectDir> mEnv;
     Symbol mTestEvent;
 

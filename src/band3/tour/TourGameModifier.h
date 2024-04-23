@@ -1,0 +1,8 @@
+#ifndef TOUR_TOURGAMEMODIFIER_H
+#define TOUR_TOURGAMEMODIFIER_H
+
+class TourGameModifier {
+
+};
+
+#endif // TOUR_TOURGAMEMODIFIER_H

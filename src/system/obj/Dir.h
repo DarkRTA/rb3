@@ -97,8 +97,8 @@ public:
 
     Hmx::Object* FindObject(const char*, bool);
     static Symbol StaticClassName();
-    template <class T> T* Find(const char*, bool) {
-        // return dynamic_cast<T*>(GetObj(a));
+    template <class T> T* Find(const char* name, bool b) {
+        return dynamic_cast<T*>(FindObject(name, b));
     }
 
     KeylessHash<const char*, Entry> mHashTable;
