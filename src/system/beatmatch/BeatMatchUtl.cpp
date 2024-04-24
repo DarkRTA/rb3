@@ -62,26 +62,26 @@ float VelocityBucketToDb(int bucket){
     else return 0.0f;
 }
 
-AudioType TrackTypeToAudioType(TrackType ty){
+BeatmatchAudioType TrackTypeToAudioType(TrackType ty){
     switch(ty){
         case kTrackDrum:
-            return (AudioType)0;
+            return kAudioDrums;
         case kTrackGuitar:
         case kTrackRealGuitar:
         case kTrackRealGuitar22Fret:
-            return (AudioType)1;
+            return kAudioGuitar;
         case kTrackBass:
         case kTrackRealBass:
         case kTrackRealBass22Fret:
-            return (AudioType)2;
+            return kAudioBass;
         case kTrackKeys:
         case kTrackRealKeys:
-            return (AudioType)4;
+            return kAudioKeys;
         case kTrackVocals:
-            return (AudioType)3;
+            return kAudioVocals;
         default:
             MILO_FAIL("No instrument for %d\n", ty);
-            return (AudioType)0;
+            return kAudioDrums;
     }
 }
 
