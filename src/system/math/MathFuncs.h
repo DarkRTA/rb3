@@ -88,6 +88,18 @@ inline float atan_f(double d){
     return atan(d);
 }
 
+// inline float my_fabsf(float x){
+//     return fabsf(x);
+// }
+
+// inline float fabsf(float x) {
+//     return (float)fabs((double)x);
+// }
+
+// extern inline double fabs(double x) {
+//     return __fabs(x);
+// }
+
 inline float fabs_f(double d){
     return __fabs(d);
 }

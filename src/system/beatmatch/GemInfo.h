@@ -47,20 +47,25 @@ enum RGStrumType {
 
 struct RGGemInfo {
     int track;
-    int slots;
     float ms;
     float duration_ms;
+    bool ignore_duration;
     int tick;
     int duration_ticks;
     NoStrumState no_strum;
     bool show_chord_names;
     bool show_slashes;
-    char mFret[6];
-    RGNoteType mRGNoteType[6];
-    RGStrumType mStrumType;
-    unsigned char mHandPosition;
-    unsigned char mRootNote;
-    
+    bool loose;
+    bool show_chord_nums;
+    bool left_hand_slide;
+    bool reverse_slide;
+    bool enharmonic;
+    char frets[6];
+    RGNoteType note_types[6];
+    RGStrumType strum_type;
+    unsigned char hand_position;
+    unsigned char root_note;
+    char chord_name;
 };
 
 #endif

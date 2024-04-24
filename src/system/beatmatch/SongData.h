@@ -4,9 +4,60 @@
 #include "beatmatch/GemListInterface.h"
 #include "beatmatch/HxSongData.h"
 #include "beatmatch/GameGemList.h"
+#include "beatmatch/BeatMatchUtl.h"
+#include "beatmatch/RGChords.h"
+#include "utl/RangedData.h"
+#include "utl/TickedInfo.h"
+#include <vector>
+#include <map>
+
+// forward decs
+class SongParserSink;
+class BeatMatcher;
+class DrumMap;
+class DrumMixDB;
+class GameGemDB;
+class PhraseDB;
+class VocalNoteList;
+class TempoMap;
+class MeasureMap;
+class BeatMap;
+class TuningOffsetList;
+class DrumFillInfo;
 
 class SongData : public InternalSongParserSink, public GemListInterface, public HxSongData {
 public:
+    class TrackInfo {
+    public:
+        TrackInfo(Symbol, SongInfoAudioType, AudioTrackNum, TrackType, bool);
+        ~TrackInfo();
+
+        Symbol mName;
+        TickedInfoCollection<String>* mLyrics; // fix type
+        BeatmatchAudioType mAudioType;
+        AudioTrackNum mAudioTrackNum;
+        TrackType mType;
+        bool mIndependentSlots;
+    };
+
+    class BackupTrack {
+    public:
+        BackupTrack() : mOriginalTrack(0), mGems(0), mMixes(0) {}
+        ~BackupTrack();
+
+        int mOriginalTrack;
+        GameGemDB* mGems;
+        DrumMixDB* mMixes;
+    };
+
+    class FakeTrack {
+    public:
+        FakeTrack(Symbol);
+        ~FakeTrack();
+        Symbol mName;
+        GameGemDB* mGems;
+    };
+
     SongData();
     virtual ~SongData();
     virtual void AddTrack(int, AudioTrackNum, Symbol, SongInfoAudioType, TrackType, bool);
@@ -48,7 +99,50 @@ public:
 
     GameGemList* GetGemList(int);
 
-    int dummy;
+    int unkc;
+    int unk10;
+    int unk14;
+    bool unk18;
+    int unk1c;
+    int unk20;
+    int unk24;
+    bool unk28;
+    // fix vector types
+    std::vector<SongParserSink*> mSongParserSinks;
+    std::vector<BeatMatcher*> mBeatMatchers;
+    std::vector<TrackInfo*> mTrackInfos;
+    std::vector<int> mTrackDifficulties;
+    std::vector<DrumFillInfo*> mFills;
+    std::vector<DrumMap*> mDrumMaps;
+    std::vector<RangedDataCollection<unsigned int>*> mRollInfos;
+    std::vector<RangedDataCollection<std::pair<int, int> >*> mTrillInfos;
+    std::vector<RangedDataCollection<RGRollChord>*> mRGRollInfos;
+    std::vector<RangedDataCollection<RGTrill>*> mRGTrillInfos;
+    std::vector<DrumMixDB*> mDrumMixDBs;
+    std::vector<GameGemDB*> mGemDBs;
+    std::vector<PhraseDB*> mPhraseDBs;
+    int unk94; // actually a PhraseAnalyzer
+    int unk98;
+    std::vector<VocalNoteList*> mVocalNoteLists;
+    std::vector<BackupTrack*> mBackupTracks;
+    std::vector<FakeTrack*> mFakeTracks;
+    TempoMap* mTempoMap;
+    MeasureMap* mMeasureMap;
+    BeatMap* mBeatMap;
+    TuningOffsetList* mTuningOffsetList;
+    std::vector<float> vecc4; // float
+    std::vector<float> veccc; // float
+    float unkd4;
+    int unkd8;
+    int unkdc;
+    int unke0;
+    String unke4;
+    std::map<int, float> mapf0;
+    std::vector<RangeSection> mRangeSections;
+    std::vector<std::vector<RangeSection> > mKeyboardRangeSections;
+    int unk118;
+    int unk11c;
+    bool unk120;
 };
 
 #endif

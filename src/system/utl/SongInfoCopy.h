@@ -89,7 +89,7 @@ public:
     std::vector<Symbol> mDrumSoloSamples;
     std::vector<Symbol> mDrumFreestyleSamples;
     std::vector<TrackChannels> mTrackChannels;
-    std::vector<String> mExtraMidiFiles;
+    std::vector<class String> mExtraMidiFiles;
 };
 
 #endif

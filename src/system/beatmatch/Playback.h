@@ -12,7 +12,7 @@ public:
     virtual ~Playback();
     void Poll(float);
     void DoCommand(DataArray*);
-    bool LoadFile(const String&);
+    bool LoadFile(const class String&);
     void AddSink(BeatMatcher*);
     void Jump(float);
     int GetPlaybackNum(BeatMatcher*);

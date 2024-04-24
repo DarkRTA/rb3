@@ -15,7 +15,11 @@ public:
     float TimeAt(int) const;
     float TimeAtNext(int) const;
     void Reset();
+    int ClosestMarkerIdx(float) const;
     int ClosestMarkerIdxAtOrAfter(float) const;
+    bool AddGameGem(const GameGem&, NoStrumState);
+    void RecalculateGemTimes(TempoMap*);
+    bool WillBeNoStrum(const GameGem&);
 
     int NumGems(){ return mGems.size(); }
 
@@ -27,5 +31,7 @@ public:
     int mHopoThreshold;
     std::vector<GameGem> mGems;
 };
+
+bool GameGemCmp(const GameGem& gem, float ms);
 
 #endif

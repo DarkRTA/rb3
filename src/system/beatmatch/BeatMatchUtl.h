@@ -4,15 +4,20 @@
 
 class DataArray; // forward dec
 
-enum AudioType {
-    a, b, c
+enum BeatmatchAudioType {
+    kAudioDrums,
+    kAudioGuitar,
+    kAudioBass,
+    kAudioVocals,
+    kAudioKeys,
+    kAudioFake
 };
 
 bool GemPlayableBy(int, int);
 int GemNumSlots(int);
 int ConsumeNumber(const char*&);
 float VelocityBucketToDb(int);
-AudioType TrackTypeToAudioType(TrackType);
+BeatmatchAudioType TrackTypeToAudioType(TrackType);
 float GetRollIntervalMs(const DataArray*, TrackType, int, bool);
 
 #endif
