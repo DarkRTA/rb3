@@ -287,15 +287,21 @@ Symbol GameGem::GetChordNameOverride() const { return mChordNameOverride; }
 
 // fn_80460EF4
 void GameGem::PackRealGuitarData(){
-    mRGChordID = mHandPosition << 24;
+    int idx;
     u32 i;
     u32 fret;
-    for(i = 0; i < 6; i++){
-        if( mFrets[i] < 0) fret = 0;
-        else if( mFrets[i] == 0) fret = 1;
-        else fret =  mFrets[i] - mHandPosition + 2;
+    
+    mRGChordID = mHandPosition << 24;
+    i = 0;
+    idx = 0;
+    for(i; i < 6; i++, idx += 4){
+        s8 f = mFrets[i];
+        
+        if(f < 0) fret = 0;
+        else if(f == 0) fret = 1;
+        else fret = f - mHandPosition + 2;
         MILO_ASSERT(fret < 16, 0x214);
-        fret <<= i * 4;
+        fret <<= idx;
         mRGChordID |= fret;
     }
 }
