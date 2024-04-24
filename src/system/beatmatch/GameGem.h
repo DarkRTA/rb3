@@ -61,6 +61,10 @@ public:
     int GetTick() const { return mTick; }
     bool IgnoreDuration() const { return mIgnoreDuration; }
     unsigned int GetSlots() const { return mSlots; }
+    
+    bool CompareTimes(const GameGem& g1, const GameGem& g2){
+        return g1.mMs < g2.mMs;
+    }
 
     int GetSlot() const {
         for(unsigned int i = 0, ret = 0; i < 32; i++, ret++){
