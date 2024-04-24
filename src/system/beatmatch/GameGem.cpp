@@ -138,14 +138,14 @@ void GameGem::CopyGem(GameGem* gem, int i){
     unk10b6 = gem->unk10b6;
     mIgnoreDuration = gem->IgnoreDuration();
     mSlots = gem->GetSlots();
-    mRealGuitar = gem->IsRealGuitar();
+    mRealGuitar = gem->mRealGuitar != 0; // this is gem->IsRealGuitar() but inlined
     
     for(unsigned int ui = 0; ui < 6; ui++){
         mFrets[ui] = gem->GetFret(ui);
         SetRGNoteTypeEntry(ui, gem->GetRGNoteType(ui));
     }
 
-    mHandPosition = gem->GetHandPosition();
+    mHandPosition = gem->mHandPosition; // this is gem->GetHandPosition() but inlined
     mStrumType = gem->mStrumType;
     mRootNote = gem->mRootNote;
     mLoose = gem->mLoose;
@@ -285,18 +285,17 @@ void GameGem::SetFret(unsigned int string, signed char fret){
 
 Symbol GameGem::GetChordNameOverride() const { return mChordNameOverride; }
 
+// fn_80460EF4
 void GameGem::PackRealGuitarData(){
-    mRGChordID = mHandPosition;
-    unsigned char fret;
-    int i5 = 0;
-    for(int i = 0; i < 6; i++){
-        char thisFret = mFrets[i];
-        if(thisFret < 0) fret = 0;
-        else if(thisFret == 0) fret = 1;
-        else fret = mHandPosition;
+    mRGChordID = mHandPosition << 24;
+    u32 i;
+    u32 fret;
+    for(i = 0; i < 6; i++){
+        if( mFrets[i] < 0) fret = 0;
+        else if( mFrets[i] == 0) fret = 1;
+        else fret =  mFrets[i] - mHandPosition + 2;
         MILO_ASSERT(fret < 16, 0x214);
-        fret <<= i5;
-        i5 += 4;
+        fret <<= i * 4;
         mRGChordID |= fret;
     }
 }
