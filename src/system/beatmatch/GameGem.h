@@ -48,6 +48,7 @@ public:
     void PackRealGuitarData();
     static int GetHighestSlot(unsigned int);
     bool IsRealGuitarChord() const;
+    void CopyGem(GameGem*, int);
 
     void* operator new(size_t s){
         return _PoolAlloc(s, 0x10, FastPool);
@@ -56,6 +57,10 @@ public:
     void operator delete(void* v){
         _PoolFree(sizeof(GameGem), FastPool, v);
     }
+
+    int GetTick() const { return mTick; }
+    bool IgnoreDuration() const { return mIgnoreDuration; }
+    unsigned int GetSlots() const { return mSlots; }
 
     int GetSlot() const {
         for(unsigned int i = 0, ret = 0; i < 32; i++, ret++){
@@ -103,7 +108,7 @@ public:
 
     unsigned char mPlayed : 1;
     unsigned char unk10b6 : 1;
-    unsigned char unk10b5 : 1;
+    unsigned char mIgnoreDuration : 1;
     unsigned char unk10b4 : 1;
     unsigned char mShowChordNames : 1;
     unsigned char mShowSlashes : 1;
@@ -133,7 +138,7 @@ public:
     unsigned char mRGNoteTypeStr4 : 4;
     unsigned char mRGNoteTypeStr5 : 4;
 
-    unsigned char mRootNote;
+    unsigned char mRootNote : 8;
     unsigned char unk18 : 8; // mPlayers?
     char mFrets[6];
     int mRGChordID;
