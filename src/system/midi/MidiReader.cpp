@@ -5,6 +5,7 @@
 
 MidiChunkID MidiChunkID::kMThd("MThd");
 MidiChunkID MidiChunkID::kMTrk("MTrk");
+bool MidiReader::sVerify = false;
 
 namespace {
     bool DefaultMidiLess(const MidiReader::Midi& m1, const MidiReader::Midi& m2){
@@ -36,10 +37,11 @@ namespace {
 MidiReader::MidiReader(BinStream& bs, MidiReceiver& rec, const char* name) : mStream(&bs), mStreamCreatedHere(0), mStreamName(name), 
     mRcvr(rec), mState(kStart), mNumTracks(0), mTicksPerQuarter(0), mDesiredTPQ(480), mCurTrackIndex(0), mCurTick(0), mPrevStatus(0), mCurTrackName(),
     mMidiListTick(0), mLessFunc(DefaultMidiLess), mFail(0) {
-        MILO_ASSERT(!mStream->mLittleEndian, 0xAA);
+        MILO_ASSERT(!mStream->LittleEndian(), 0xAA);
         Init();
 }
 
+// fn_80533C30
 void MidiReader::Init(){
     mOwnMaps = true;
     mTempoMap = new MultiTempoTempoMap();
@@ -78,6 +80,7 @@ bool MidiReader::ReadTrack(){
     return mState == kNewTrack;
 }
 
+// fn_80533EC0
 void MidiReader::SkipCurrentTrack(){
     if(mState == kInTrack){
         if(mCurTrackIndex == mNumTracks){
@@ -96,3 +99,87 @@ void MidiReader::SkipCurrentTrack(){
 const char* MidiReader::GetFilename() const {
     return mStreamName.c_str();
 }
+
+void MidiReader::ReadNextEvent(){
+
+}
+
+// fn_80533f70
+void MidiReader::ReadNextEventImpl(){
+    if(mFail) return;
+    switch(mState){
+        case kInTrack:
+            ReadEvent(*mStream);
+            return;
+        case kNewTrack:
+            ReadTrackHeader(*mStream);
+            return;
+        case kStart:
+            ReadFileHeader(*mStream);
+            return;
+        default:
+            break;
+    }
+}
+
+// fn_80533FB8
+void MidiReader::ReadFileHeader(BinStream& bs){
+    MILO_ASSERT(mState == kStart, 0x146);
+    char* someStr;
+    bs.Read(someStr, 4);
+    int anotherInt = 0;
+    bs >> anotherInt;
+    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
+    if(!kmthdcmp || anotherInt != 6U){
+        MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
+    }
+    short midiType;
+    bs >> midiType;
+    if(midiType != 1){
+        MILO_WARN("%s: Only type 1 MIDI files are supported; this file is type %d", mStreamName.c_str(), midiType);
+    }
+    bs >> mNumTracks;
+    if(mNumTracks <= 0){
+        MILO_WARN("%s: MIDI file has no tracks", mStreamName.c_str());
+    }
+    else {
+        mTrackNames.resize(mNumTracks);
+    }
+    bs >> mTicksPerQuarter;
+    if(mTicksPerQuarter & 0x8000U){
+        MILO_WARN("%s: MIDI file uses SMPTE time division; this is not allowed", mStreamName.c_str());
+    }
+    if(mTicksPerQuarter != 480){
+        MILO_WARN("%s: Time division must be 480 ticks per quarter; this file is %d ticks per quarter", mStreamName.c_str(), mTicksPerQuarter);
+    }
+
+    if(mNumTracks != 0 && midiType == 1 && !(mTicksPerQuarter & 0x8000U) && mTicksPerQuarter != 480){
+        mFail = true;
+        return;
+    }
+    mState = kNewTrack;
+}
+
+void MidiReader::ReadTrackHeader(BinStream& bs){
+    MILO_ASSERT(mState == kNewTrack, 0x180);
+    char* someStr;
+    bs.Read(someStr, 4);
+    int anotherInt = 0;
+    bs >> anotherInt;
+    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
+    if(!kmthdcmp){
+        MILO_WARN("%s: MIDI track header for track %d is corrupt", mStreamName.c_str(), mCurTrackIndex);
+        mFail = true;
+    }
+    else {
+        mTrackEndPos = bs.Tell() + anotherInt;
+        mCurTrackIndex++;
+        mPrevStatus = 0;
+        mCurTick = 0;
+        mMidiListTick = -1;
+        mState = kInTrack;
+        mRcvr.OnNewTrack(mCurTrackIndex - 1);
+    }
+}
+
+// fn_80534280 - read event(binstream&)

@@ -30,6 +30,8 @@ public:
     std::vector<TempoInfoPoint> mTempoPoints;
     float mStartLoopTick;
     float mEndLoopTick;
+    float unkf1;
+    float unkf2;
 };
 
 #endif

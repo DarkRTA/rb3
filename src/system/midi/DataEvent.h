@@ -21,8 +21,13 @@ public:
     };
 
     DataEventList();
+    ~DataEventList();
     void Reset(float f);
     void Clear();
+    void Compress(DataArray*, int);
+    void SecOffset(float);
+
+    int Size() const { return mSize; }
 
     int mCurIndex;
     int mSize;

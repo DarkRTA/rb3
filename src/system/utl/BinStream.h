@@ -109,6 +109,8 @@ public:
 
     void WriteEndian(const void *, int);
 
+    bool LittleEndian() const { return mLittleEndian; }
+
     BS_WRITE_TYPE(int);
     BS_WRITE_TYPE(float);
     BS_WRITE_TYPE(unsigned int);

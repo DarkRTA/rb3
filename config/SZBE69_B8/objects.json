@@ -179,7 +179,8 @@
             "system/meta/StoreEnumeration.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
-            "system/midi/MidiParser.cpp": "NonMatching",
+            "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
+            "system/midi/MidiParserMgr.cpp": "NonMatching",
             "system/midi/MidiReader.cpp": "NonMatching",
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
