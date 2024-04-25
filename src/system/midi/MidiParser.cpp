@@ -1,5 +1,6 @@
 #include "MidiParser.h"
 #include "obj/Data.h"
+#include "utl/Symbols.h"
 
 std::list<MidiParser*> MidiParser::sParsers;
 DataNode* MidiParser::mpStart = 0;
@@ -128,3 +129,29 @@ bool MidiParser::AllowedNote(int i){
         return false;
     }
 }
+
+#pragma dont_inline on
+BEGIN_HANDLERS(MidiParser)
+    HANDLE_EXPR(add_message, AddMessage(MidiParser::mpStart->Float(0), MidiParser::mpEnd->Float(0), _msg, 2))
+    HANDLE_EXPR(add_message_se, AddMessage(_msg->Float(2), _msg->Float(3), _msg, 4))
+    HANDLE(get_start, OnGetStart)
+    HANDLE(get_end, OnGetEnd)
+    HANDLE(next_start_delta, OnNextStartDelta)
+    HANDLE(debug_draw, OnDebugDraw)
+    HANDLE_EXPR(num_events, mEvents->Size())
+    HANDLE_ACTION(clear_events, mEvents->Clear())
+    HANDLE(insert_idle, OnInsertIdle)
+    HANDLE(beat_to_sec_length, OnBeatToSecLength)
+    HANDLE(sec_offset_all, OnSecOffsetAll)
+    HANDLE(sec_offset, OnSecOffset)
+    HANDLE(prev_val, OnPrevVal)
+    HANDLE(next_val, OnNextVal)
+    HANDLE(delta, OnDelta)
+    HANDLE(has_space, OnHasSpace)
+    HANDLE(rt_compute_space, OnRtComputeSpace)
+    HANDLE_ACTION(reset_to_beat, Reset(_msg->Float(2)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0x369)
+END_HANDLERS
+#pragma dont_inline reset

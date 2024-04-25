@@ -41,6 +41,21 @@ public:
     void Reset(float);
     bool InsertIdle(float, int);
     bool AllowedNote(int);
+    bool AddMessage(float, float, DataArray*, int);
+
+    DataNode OnGetStart(DataArray*);
+    DataNode OnGetEnd(DataArray*);
+    DataNode OnNextStartDelta(DataArray*);
+    DataNode OnDebugDraw(DataArray*);
+    DataNode OnInsertIdle(DataArray*);
+    DataNode OnBeatToSecLength(DataArray*);
+    DataNode OnSecOffsetAll(DataArray*);
+    DataNode OnSecOffset(DataArray*);
+    DataNode OnPrevVal(DataArray*);
+    DataNode OnNextVal(DataArray*);
+    DataNode OnDelta(DataArray*);
+    DataNode OnHasSpace(DataArray*);
+    DataNode OnRtComputeSpace(DataArray*);
 
     DataEventList* mEvents;
     Symbol mTrackName;

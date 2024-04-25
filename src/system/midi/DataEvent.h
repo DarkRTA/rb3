@@ -25,6 +25,8 @@ public:
     void Clear();
     void Compress(DataArray*, int);
 
+    int Size() const { return mSize; }
+
     int mCurIndex;
     int mSize;
     std::vector<DataEvent, unsigned short> mEvents;
