@@ -64,6 +64,7 @@ extern const char* kAssertStr;
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
 #  define MILO_WARN(...) ((void)0)
+#  define MILO_NOTIFIER_WARN(...) ((void)0)
 #endif
 
 class DebugNotifier {
