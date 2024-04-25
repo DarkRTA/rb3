@@ -56,6 +56,7 @@ extern const char* kAssertStr;
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebug.Fail(MakeString(__VA_ARGS__)), 0))
 #  define MILO_FAIL(...) TheDebug.Fail(MakeString(__VA_ARGS__))
 #  define MILO_WARN(...) TheDebug.Notify(MakeString(__VA_ARGS__))
+#  define MILO_NOTIFIER_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
 #else
    // The actual conditions for asserts appear to still be evaluated in retail,
    // various random calls are left over from asserts that exist in debug
