@@ -1,6 +1,8 @@
 #include "MidiParser.h"
 #include "obj/Data.h"
 #include "utl/Symbols.h"
+#include "utl/TimeConversion.h"
+#include "beatmatch/GemListInterface.h"
 
 std::list<MidiParser*> MidiParser::sParsers;
 DataNode* MidiParser::mpStart = 0;
@@ -43,7 +45,7 @@ MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),
             maxGap(1e30), useRealtimeGaps(false), variableBlendPct(0) { }
 
 MidiParser::MidiParser() : mTrackName(), mGemParser(0), mNoteParser(0), mTextParser(0), mLyricParser(0), mCurParser(0), 
-    unk40(0), unk44(0), unk48(0), unk4c(0), unk50(0), mInverted(0), mLastStart(-1e+30f), mLastEnd(-1e+30f), mFirstEnd(-1e+30f),
+    mVocalEvents(0), mNotes(), mGems(0), mInverted(0), mLastStart(-1e+30f), mLastEnd(-1e+30f), mFirstEnd(-1e+30f),
     mMessageType(), mAppendLength(false), mUseVariableBlending(false), mMessageSelf(false), mCompressed(false), mStart(0.0f), mBefore(0) {
     mEvents = new DataEventList();
     sParsers.push_back(this);
@@ -102,8 +104,8 @@ void MidiParser::Clear() {
     mEvents->Clear();
     mFirstEnd = -1e+30f;
     mCurParser = 0;
-    unk40 = 0;
-    unk50 = 0;
+    mVocalEvents = 0;
+    mGems = 0;
     mStart = 0.0f;
     mBefore = 0;
 }
@@ -127,6 +129,50 @@ bool MidiParser::AllowedNote(int i){
             if(i == mAllowedNotes->Int(i)) return true;
         }
         return false;
+    }
+}
+
+float MidiParser::GetStart(int i){
+    if(i < 0) return -1e30f;
+    else {
+        MILO_ASSERT(mCurParser, 0x307);
+        if(mCurParser == mGemParser){
+            int x, y, z;
+            if(mGems->GetGem(i, x, y, z)){
+                return TickToBeat(x);
+            }
+        }
+        else if(mCurParser == mNoteParser){
+            if(i < mNotes.size()){
+                return TickToBeat(mNotes[i].unk4);
+            }
+        }
+        else {
+            MILO_WARN("%s calling get_start outside of gem or note parser", mName);
+        }
+        return 1e30f;
+    }
+}
+
+float MidiParser::GetEnd(int i){
+    if(i < 0) return -1e30f;
+    else {
+        MILO_ASSERT(mCurParser, 0x307);
+        if(mCurParser == mGemParser){
+            int x, y, z;
+            if(mGems->GetGem(i, x, y, z)){
+                return TickToBeat(x);
+            }
+        }
+        else if(mCurParser == mNoteParser){
+            if(i < mNotes.size()){
+                return TickToBeat(mNotes[i].unk8);
+            }
+        }
+        else {
+            MILO_WARN("%s calling get_end outside of gem or note parser", mName);
+        }
+        return 1e30f;
     }
 }
 
@@ -155,3 +201,83 @@ BEGIN_HANDLERS(MidiParser)
     HANDLE_CHECK(0x369)
 END_HANDLERS
 #pragma dont_inline reset
+
+float MidiParser::ConvertToBeats(float f1, float f2){
+    float secs = BeatToSeconds(f2);
+    return SecondsToBeat(secs + f1) - f2;
+}
+
+DataNode MidiParser::OnGetStart(DataArray* arr){
+    return DataNode(GetStart(arr->Int(2)));
+}
+
+DataNode MidiParser::OnGetEnd(DataArray* arr){
+    return DataNode(GetEnd(arr->Int(2)));
+}
+
+DataNode MidiParser::OnSecOffsetAll(DataArray* arr){
+    mEvents->SecOffset(arr->Float(2));
+    return DataNode(0);
+}
+
+DataNode MidiParser::OnSecOffset(DataArray* arr){
+    float f2 = arr->Float(2);
+    float f3 = arr->Float(3);
+    return DataNode(MsToBeat(1000.0f * f3 + BeatToMs(f2)));
+}
+
+DataNode MidiParser::OnNextVal(DataArray* arr){
+    int idx = GetIndex();
+    SetIndex(idx + 1);
+    DataNode ret(*mpVal);
+    SetIndex(idx);
+    return ret;
+}
+
+DataNode MidiParser::OnPrevVal(DataArray* arr){
+    int idx = GetIndex();
+    if(idx != 0){
+        SetIndex(idx - 1);
+        DataNode ret(*mpVal);
+        SetIndex(idx);
+        return DataNode(ret);
+    }
+    else return DataNode(0);
+}
+
+DataNode MidiParser::OnDelta(DataArray* arr){
+    int idx = GetIndex();
+    return DataNode(GetStart(idx + 1) - mpStart->Float(0));
+}
+
+DataNode MidiParser::OnHasSpace(DataArray* arr){
+    float f2 = arr->Float(2);
+    float f3 = arr->Float(3);
+    int idx = GetIndex();
+    bool ret = false;
+    if(mpPrevStartDelta->Float(0) > f2){
+        if(GetStart(idx + 1) - mpStart->Float(0) > f3){
+            ret = true;
+        }
+    }
+    return DataNode(ret);
+}
+
+DataNode MidiParser::OnRtComputeSpace(DataArray* arr){
+    int idx = GetIndex();
+    *mpBeforeDeltaSec = DataNode(BeatToSeconds(mpStart->Float(0) - GetEnd(idx - 1)));
+    *mpAfterDeltaSec = DataNode(BeatToSeconds(GetStart(idx + 1) - mpEnd->Float(0)));
+    return DataNode(0);
+}
+
+BEGIN_PROPSYNCS(MidiParser)
+    SYNC_PROP(zero_length, mProcess.zeroLength)
+    SYNC_PROP(start_offset, mProcess.startOffset)
+    SYNC_PROP(end_offset, mProcess.endOffset)
+    SYNC_PROP(min_length, mProcess.minLength)
+    SYNC_PROP(max_length, mProcess.maxLength)
+    SYNC_PROP(min_gap, mProcess.minGap)
+    SYNC_PROP(max_gap, mProcess.maxGap)
+    SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
+    SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
+END_PROPSYNCS

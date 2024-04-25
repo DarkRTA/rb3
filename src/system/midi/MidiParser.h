@@ -5,6 +5,8 @@
 #include <vector>
 #include <list>
 
+class GemListInterface; // forward dec
+
 class MidiParser : public MsgSource { // 0xd0
 public: 
     struct PostProcess {
@@ -21,10 +23,13 @@ public:
     };
 
     struct Note {
-        int mNoteNum;
-        float mVolume;
-        std::vector<int> mSamples;
-        std::vector<int> mTransposes;
+        int unk0;
+        int unk4;
+        int unk8;
+    };
+
+    struct VocalEvent {
+        int dummy;
     };
 
     MidiParser();
@@ -42,6 +47,11 @@ public:
     bool InsertIdle(float, int);
     bool AllowedNote(int);
     bool AddMessage(float, float, DataArray*, int);
+    float ConvertToBeats(float, float);
+    float GetStart(int);
+    float GetEnd(int);
+    void SetIndex(int);
+    int GetIndex();
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
@@ -66,17 +76,9 @@ public:
     DataArray* mIdleParser;
     DataArray* mCurParser;
     DataArray* mAllowedNotes;
-
-    // vector* mVocalEvents;
-    // vector mNotes;
-    // GemListInterface* mGems;
-
-    int unk40;
-    int unk44;
-    int unk48;
-    int unk4c;
-    int unk50;
-
+    std::vector<VocalEvent>* mVocalEvents;
+    std::vector<Note, unsigned int> mNotes;
+    GemListInterface* mGems;
     bool mInverted;
     PostProcess mProcess;
     float mLastStart;
