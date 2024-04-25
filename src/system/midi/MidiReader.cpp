@@ -41,6 +41,7 @@ MidiReader::MidiReader(BinStream& bs, MidiReceiver& rec, const char* name) : mSt
         Init();
 }
 
+// fn_80533C30
 void MidiReader::Init(){
     mOwnMaps = true;
     mTempoMap = new MultiTempoTempoMap();
@@ -79,6 +80,7 @@ bool MidiReader::ReadTrack(){
     return mState == kNewTrack;
 }
 
+// fn_80533EC0
 void MidiReader::SkipCurrentTrack(){
     if(mState == kInTrack){
         if(mCurTrackIndex == mNumTracks){
@@ -102,6 +104,7 @@ void MidiReader::ReadNextEvent(){
 
 }
 
+// fn_80533f70
 void MidiReader::ReadNextEventImpl(){
     if(mFail) return;
     switch(mState){
@@ -119,6 +122,7 @@ void MidiReader::ReadNextEventImpl(){
     }
 }
 
+// fn_80533FB8
 void MidiReader::ReadFileHeader(BinStream& bs){
     MILO_ASSERT(mState == kStart, 0x146);
     char* someStr;
@@ -177,3 +181,5 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
         mRcvr.OnNewTrack(mCurTrackIndex - 1);
     }
 }
+
+// fn_80534280 - read event(binstream&)

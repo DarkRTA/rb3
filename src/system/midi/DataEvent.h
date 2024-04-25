@@ -21,6 +21,7 @@ public:
     };
 
     DataEventList();
+    ~DataEventList();
     void Reset(float f);
     void Clear();
     void Compress(DataArray*, int);

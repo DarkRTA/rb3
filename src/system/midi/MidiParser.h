@@ -40,8 +40,6 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual ~MidiParser();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
-    virtual void Export(DataArray*, bool);
     virtual void SetTypeDef(DataArray*);
 
     void Clear();
