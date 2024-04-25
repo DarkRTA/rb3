@@ -132,6 +132,83 @@ bool MidiParser::AllowedNote(int i){
     }
 }
 
+int MidiParser::GetIndex(){
+    MILO_ASSERT(mCurParser, 0x178);
+    if(mCurParser == mTextParser || mCurParser == mLyricParser)
+        return mVocalIndex;
+    else if(mCurParser == mNoteParser)
+        return mNoteIndex;
+    else {
+        MILO_ASSERT(mCurParser == mGemParser, 0x17F);
+        return mGemIndex;
+    }
+}
+
+void MidiParser::SetIndex(int idx){
+    if(idx > 0){
+        if(mCurParser == mNoteParser){
+            if(idx < mNotes.size()){
+                mNoteIndex = idx;
+                SetGlobalVars(mNotes[idx].unk4, mNotes[idx].unk8, DataNode(mNotes[idx].unk0));
+            }
+        }
+        else if(mCurParser == mGemParser){
+            int x, y, z;
+            if(mGems->GetGem(idx, x, y, z)){
+                mGemIndex = idx;
+                SetGlobalVars(x, y, DataNode(z));
+            }
+        }
+        else if(mCurParser == mTextParser || mCurParser == mLyricParser){
+            if(idx < mVocalEvents->size()){
+                mVocalIndex = idx;
+                VocalEvent& ev = mVocalEvents->operator[](idx);
+                SetGlobalVars(ev.unk0, ev.unk0, DataNode(ev.unk0));
+            }
+        }
+        else MILO_WARN("%s calling set index without note or gem parser", mName);
+    }
+    *mpOutOfBounds = DataNode(1);
+}
+
+void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data){
+    float beat1 = TickToBeat(startTick);
+    float beat2 = TickToBeat(endTick);
+    *mpOutOfBounds = DataNode(0);
+    *mpStart = DataNode(beat1);
+    *mpEnd = DataNode(beat2);
+    *mpLength = DataNode(beat2 - beat1);
+    *mpPrevStartDelta = DataNode(beat1 - mLastStart);
+    *mpPrevEndDelta = DataNode(beat1 - mLastEnd);
+    *mpData = data;
+    if(mCurParser == mTextParser){
+        MILO_ASSERT(data.Type() == kDataArray, 0x230);
+        if(data.Array(0)->Type(0) == kDataSymbol){
+            *mpVal = DataNode(data.Array(0)->Sym(0));
+        }
+        else MILO_WARN("Text Event in midi file is missing Text.  \n");
+    }
+    else if(mCurParser == mLyricParser){
+        MILO_ASSERT(data.Type() == kDataString, 0x23A);
+        *mpVal = DataNode(data.Str(0));
+    }
+    else {
+        *mpVal = data;
+        if(mCurParser == mGemParser){
+
+        }
+    }
+    mLastStart = beat1;
+    mLastEnd = beat2;
+}
+
+void MidiParser::HandleEvent(int start, int end, const DataNode& data){
+    MILO_ASSERT(mCurParser, 0x27F);
+    SetGlobalVars(start, end, data);
+    mCurParser->ExecuteScript(1, this, 0, 1);
+    *mpData = DataNode(0);
+}
+
 float MidiParser::GetStart(int i){
     if(i < 0) return -1e30f;
     else {
@@ -280,4 +357,13 @@ BEGIN_PROPSYNCS(MidiParser)
     SYNC_PROP(max_gap, mProcess.maxGap)
     SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
     SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
+    if(sym == index){
+        if(_op == kPropSet) SetIndex(_val.Int(0));
+        else {
+            if(_op == (PropOp)0x40){
+                _val = DataNode(GetIndex());
+            }
+        }
+        return true;
+    }
 END_PROPSYNCS

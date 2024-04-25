@@ -29,7 +29,9 @@ public:
     };
 
     struct VocalEvent {
-        int dummy;
+        int unk0;
+        int unk4;
+        int unk8;
     };
 
     MidiParser();
@@ -52,6 +54,8 @@ public:
     float GetEnd(int);
     void SetIndex(int);
     int GetIndex();
+    void SetGlobalVars(int, int, const DataNode&);
+    void HandleEvent(int, int, const DataNode&);
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
@@ -93,7 +97,7 @@ public:
     bool mCompressed;
     int mGemIndex;
     int mNoteIndex;
-    int mVicalIndex;
+    int mVocalIndex;
     float mStart;
     int mBefore;
 
