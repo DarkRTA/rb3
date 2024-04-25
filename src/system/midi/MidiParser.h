@@ -39,6 +39,8 @@ public:
 
     void Clear();
     void Reset(float);
+    bool InsertIdle(float, int);
+    bool AllowedNote(int);
 
     DataEventList* mEvents;
     Symbol mTrackName;
@@ -80,6 +82,21 @@ public:
 
     static Hmx::Object* NewObject();
     static void Init();
+
+    static DataNode* mpStart;
+    static DataNode* mpEnd;
+    static DataNode* mpLength;
+    static DataNode* mpPrevStartDelta;
+    static DataNode* mpPrevEndDelta;
+    static DataNode* mpVal;
+    static DataNode* mpSingleBit;
+    static DataNode* mpLowestBit;
+    static DataNode* mpLowestSlot;
+    static DataNode* mpHighestSlot;
+    static DataNode* mpData;
+    static DataNode* mpOutOfBounds;
+    static DataNode* mpBeforeDeltaSec;
+    static DataNode* mpAfterDeltaSec;
 
     static std::list<MidiParser*> sParsers;
 };

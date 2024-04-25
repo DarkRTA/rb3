@@ -23,6 +23,7 @@ public:
     DataEventList();
     void Reset(float f);
     void Clear();
+    void Compress(DataArray*, int);
 
     int mCurIndex;
     int mSize;
