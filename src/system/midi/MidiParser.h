@@ -1,8 +1,8 @@
 #ifndef MIDI_MIDIPARSER_H
 #define MIDI_MIDIPARSER_H
-
 #include "obj/MsgSource.h"
 #include "midi/DataEvent.h"
+#include <vector>
 #include <list>
 
 class MidiParser : public MsgSource { // 0xd0
@@ -21,11 +21,21 @@ public:
     };
 
     struct Note {
-
+        int mNoteNum;
+        float mVolume;
+        std::vector<int> mSamples;
+        std::vector<int> mTransposes;
     };
 
     MidiParser();
+    OBJ_CLASSNAME(MidiParser);
+    OBJ_SET_TYPE(MidiParser);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual ~MidiParser();
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Export(DataArray*, bool);
+    virtual void SetTypeDef(DataArray*);
 
     void Clear();
     void Reset(float);
@@ -39,9 +49,17 @@ public:
     DataArray* mIdleParser;
     DataArray* mCurParser;
     DataArray* mAllowedNotes;
+
     // vector* mVocalEvents;
     // vector mNotes;
     // GemListInterface* mGems;
+
+    int unk40;
+    int unk44;
+    int unk48;
+    int unk4c;
+    int unk50;
+
     bool mInverted;
     PostProcess mProcess;
     float mLastStart;
@@ -63,7 +81,7 @@ public:
     static Hmx::Object* NewObject();
     static void Init();
 
-    static std::list<MidiParser> sParsers;
+    static std::list<MidiParser*> sParsers;
 };
 
 #endif // MIDI_MIDIPARSER_H

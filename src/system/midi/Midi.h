@@ -48,6 +48,11 @@ public:
     void SkipCurrentTrack();
     void ReadNextEvent();
     void ReadNextEventImpl();
+    void ReadEvent(BinStream&);
+    void ReadTrackHeader(BinStream&);
+    void ReadFileHeader(BinStream&);
+
+    static bool sVerify;
 
     class BinStream * mStream; // offset 0x0, size 0x4
     bool mStreamCreatedHere; // offset 0x4, size 0x1
