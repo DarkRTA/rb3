@@ -52,6 +52,8 @@ public:
 
     ObjPtr<RndMesh, class ObjectDir> mMesh;
     std::list<Transform> mTransforms;
+
+    static void Terminate();
 };
 
 #endif

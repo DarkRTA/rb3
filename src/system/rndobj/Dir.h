@@ -42,6 +42,7 @@ public:
     ObjPtr<RndEnviron, ObjectDir> mEnv;
     Symbol mTestEvent;
 
+    NEW_OBJ(RndDir)
     DELETE_OVERLOAD
 };
 

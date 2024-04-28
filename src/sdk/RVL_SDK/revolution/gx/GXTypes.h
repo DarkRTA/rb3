@@ -734,8 +734,8 @@ typedef enum _GXZTexOp {
     GX_MAX_ZTEXOP
 } GXZTexOp;
 
-// TODO: Fabricated name
-typedef enum _GXVtxFmtIdx {
+// 
+typedef enum _GXVtxFmt {
     GX_VTXFMT0, // from patent
     GX_VTXFMT1,
     GX_VTXFMT2,

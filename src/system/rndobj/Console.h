@@ -32,6 +32,7 @@ public:
     void Step(int);
     void Continue();
     void Help(Symbol);
+    void SetShowing(bool);
 
     bool mShowing; // 0x1c
     RndOverlay* mOutput; // 0x20

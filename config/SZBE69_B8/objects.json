@@ -270,6 +270,7 @@
             "system/rndobj/PostProc.cpp": "NonMatching",
             "system/rndobj/PropAnim.cpp": "NonMatching",
             "system/rndobj/PropKeys.cpp": "NonMatching",
+            "system/rndobj/Rnd.cpp": "NonMatching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "NonMatching",
@@ -282,6 +283,8 @@
             "system/rndobj/TransProxy.cpp": "NonMatching",
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
+
+            "system/rndwii/Rnd.cpp": "NonMatching",
 
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
