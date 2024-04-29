@@ -26,16 +26,15 @@ UIComponent::State SymToUIComponentState(Symbol s) {
     return UIComponent::kStateInvalid;
 }
 
-UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), mObjDir(NULL), mMesh(NULL), a(0), mState(kStateNormal), c(0), d(0) {
+UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), mObjDir(NULL), mMesh(NULL), a(0), mState(kStateNormal), c(0), d(0), test2(0) {
     
 }
 
 
 void UIComponent::Init() {
     Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
-    DataArray* da = SystemConfig("UIComponent", "objects");
-    da = da->FindArray("select_frames", true);
-    sSelectFrames = da->Int(1);
+    DataArray* cfg = SystemConfig("UIComponent", "objects")->FindArray("select_frames", true);
+    sSelectFrames = cfg->Int(1);
 }
 
 Hmx::Object* UIComponent::NewObject() {return new UIComponent;}
