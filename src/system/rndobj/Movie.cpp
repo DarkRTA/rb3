@@ -70,9 +70,39 @@ BEGIN_HANDLERS(RndMovie)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndMovie)
-    SYNC_PROP(movie_file, mFile)
-    SYNC_PROP(stream, mStream)
+    if(sym == movie_file){
+        if(_op == kPropSet){
+            const char* str = _val.Str(0);
+            FilePath fp;
+            fp.SetRoot(str);
+            SetFile(fp, mStream);
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mFile.FilePathRelativeToRoot());
+        }
+        return true;
+    }
+    if(sym == stream){
+        if(_op == kPropSet){
+            SetFile(mFile, _val.Int(0) != 0);
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mStream);
+        }
+        return true;
+    }
     SYNC_PROP(loop, mLoop)
-    // SYNC_PROP(tex, mTex)
+    if(sym == tex){
+        if(_op == kPropSet){
+            SetTex(_val.Obj<RndTex>(0));
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mTex);
+        }
+        return true;
+    }
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS
