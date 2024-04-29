@@ -29,7 +29,7 @@ public:
     FilePath mFile;
     bool mStream;
     bool mLoop;
-    ObjOwnerPtr<RndTex, ObjectDir> mTex;
+    ObjOwnerPtr<RndTex, class ObjectDir> mTex;
     
 };
 
