@@ -1,4 +1,5 @@
 #include "utl/GlitchFinder.h"
+#include "obj/DataFunc.h"
 
 GlitchFinder TheGlitchFinder;
 float GlitchPoker::smLastDumpTime = 0.0f;
@@ -168,14 +169,57 @@ void GlitchPoker::PollAveragesRecurse(bool b){
     }
 }
 
-GlitchFinder::GlitchFinder(){
-
-}
-
-GlitchPoker::~GlitchPoker(){
-
+GlitchFinder::GlitchFinder() : mFrameCount(0), mGlitchCount(0), mStop(true), mTime(), mLastTime(0.0f), mStartPoker(0), mCurPoker(0), 
+    mActive(true), mDumpLeavesOnly(false), mLeafThreshold(0.0f), mOverheadCycles(0) {
+    mTime.Start();
 }
 
 GlitchFinder::~GlitchFinder(){
     
+}
+
+void GlitchFinder::Init(){
+    DataRegisterFunc("glitch_find", OnGlitchFind);
+    DataRegisterFunc("glitch_find_budget", OnGlitchFindBudget);
+    DataRegisterFunc("glitch_find_leaves", OnGlitchFindLeaves);
+    DataRegisterFunc("glitch_find_poke", OnGlitchFindPoke);    
+}
+
+void GlitchFinder::Poke(const char* cc, unsigned int ui){
+    PokeStart(cc, 0, -1.0f, 0.0f, 0);
+    PokeEnd(ui);
+}
+
+GlitchPoker* GlitchFinder::NewPoker(){
+    if(8 <= mPokerIndex) MILO_FAIL("too many glitch pokers : %d\n", mPokerIndex);
+    GlitchPoker* thePoker = &mPokerPool[mPokerIndex++];
+    thePoker->ClearData();
+    return thePoker;
+}
+
+void GlitchFinder::Reset(){
+    mPokerIndex = 0;
+    mCurPoker = 0;
+    mStartPoker = 0;
+}
+
+DataNode GlitchFindScriptImpl(DataArray*, int){
+
+}
+
+DataNode GlitchFinder::OnGlitchFind(DataArray* arr){
+    return GlitchFindScriptImpl(arr, 3);
+}
+
+DataNode GlitchFinder::OnGlitchFindBudget(DataArray* arr){
+    return GlitchFindScriptImpl(arr, 4);
+}
+
+DataNode GlitchFinder::OnGlitchFindLeaves(DataArray* arr){
+    return GlitchFindScriptImpl(arr, 5);
+}
+
+DataNode GlitchFinder::OnGlitchFindPoke(DataArray* arr){
+    TheGlitchFinder.Poke(arr->Str(1), 0);
+    return DataNode(0);
 }

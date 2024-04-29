@@ -18,7 +18,7 @@ public:
 class GlitchPoker {
 public:
     GlitchPoker();
-    ~GlitchPoker();
+    ~GlitchPoker(){}
 
     void ClearData();
     bool OverBudget();
@@ -46,6 +46,19 @@ class GlitchFinder {
 public:
     GlitchFinder();
     ~GlitchFinder();
+
+    static void Init();
+    static DataNode OnGlitchFind(DataArray*);
+    static DataNode OnGlitchFindBudget(DataArray*);
+    static DataNode OnGlitchFindLeaves(DataArray*);
+    static DataNode OnGlitchFindPoke(DataArray*);
+    
+    void Poke(const char*, unsigned int);
+    void PokeStart(const char*, unsigned int, float, float, GlitchAverager*);
+    void PokeEnd(unsigned int);
+    GlitchPoker* NewPoker();
+    void Reset();
+
     int mFrameCount;
     int mGlitchCount;
     bool mStop;
