@@ -13,6 +13,11 @@ public:
     // not sure if we need to explicitly write these or not
 };
 
+template <class T> TextStream& operator<<(TextStream& ts, const Key<T>& key){
+    ts << "(frame:" << key.frame << " value:" << key.value << ")";
+    return ts;
+}
+
 template <class T> BinStream& operator>>(BinStream& bs, Key<T>& key){
     bs >> key.value >> key.frame;
     return bs;
