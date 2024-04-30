@@ -300,6 +300,7 @@
             "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/FxSendWah.cpp": "Matching",
             "system/synth/Mic.cpp": "Matching",
+            "system/synth/MicNull.cpp": "NonMatching",
             "system/synth/OggMap.cpp": "NonMatching",
             "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",
