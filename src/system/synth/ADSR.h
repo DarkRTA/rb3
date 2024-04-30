@@ -1,5 +1,6 @@
 #ifndef SYNTH_ADSR_H
 #define SYNTH_ADSR_H
+#include "utl/BinStream.h"
 
 class Ps2ADSR {
 public:
@@ -46,6 +47,7 @@ public:
 
 class ADSR {
 public:
+    ADSR();
     float mAttackRate;
     float mDecayRate;
     float mSustainRate;
@@ -57,5 +59,7 @@ public:
     Ps2ADSR mPacked;
     bool mSynced;
 };
+
+BinStream& operator>>(BinStream&, ADSR&);
 
 #endif
