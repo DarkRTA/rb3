@@ -9,7 +9,7 @@ class File {
 public:
     File(){ sOpenCount[0]++; }
     virtual ~File(){ sOpenCount[0]--; }
-    virtual class String Filename() const { return String(); }
+    virtual class String Filename() const { class String str; return str; }
     virtual int Read(void *, int) = 0;
     virtual bool ReadAsync(void *, int) = 0;
     virtual int Write(const void *, int) = 0;
