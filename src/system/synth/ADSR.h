@@ -2,6 +2,8 @@
 #define SYNTH_ADSR_H
 #include "utl/BinStream.h"
 
+class ADSR; // forward dec
+
 class Ps2ADSR {
 public:
     enum AttackMode {
@@ -41,6 +43,8 @@ public:
     int NearestSustainRate(float) const;
     int NearestReleaseRate(float) const;
 
+    void Set(const ADSR&);
+
     unsigned short mReg1;
     unsigned short mReg2;
 };
@@ -48,6 +52,11 @@ public:
 class ADSR {
 public:
     ADSR();
+    float GetAttackRate() const;
+    float GetReleaseRate() const;
+    void Load(BinStream&);
+    void SyncPacked();
+
     float mAttackRate;
     float mDecayRate;
     float mSustainRate;
@@ -61,5 +70,6 @@ public:
 };
 
 BinStream& operator>>(BinStream&, ADSR&);
+static int FindNearestInTable(const float* table, int tableSize, float val);
 
 #endif

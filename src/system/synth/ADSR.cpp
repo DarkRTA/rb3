@@ -79,6 +79,17 @@ void Ps2ADSR::SetReleaseRate(unsigned int rate){
     mReg2 = (mReg2 & 0xFFFFFFE0) | rate;
 }
 
+void Ps2ADSR::Set(const ADSR& adsr){
+    SetAttackMode(adsr.mAttackMode);
+    SetSustainMode(adsr.mSustainMode);
+    SetReleaseMode(adsr.mReleaseMode);
+    SetAttackRate(NearestAttackRate(adsr.mAttackRate));
+    SetDecayRate(FindNearestInTable(gDecayRate, 0x10, adsr.mDecayRate));
+    SetSustainRate(NearestSustainRate(adsr.mSustainRate));
+    SetReleaseRate(NearestReleaseRate(adsr.mReleaseRate));
+    SetSustainLevel(FindNearestInTable(gSustainLevel, 0x10, adsr.mSustainLevel));
+}
+
 inline Ps2ADSR::AttackMode Ps2ADSR::GetAttackMode() const {
     return (AttackMode)((mReg1 >> 0xF) & 1);
 }
@@ -142,11 +153,7 @@ static int FindNearestInTable(const float* table, int tableSize, float val) {
 // }
 
 int Ps2ADSR::NearestAttackRate(float f) const {
-    const float* table;
-    if(GetAttackMode() == kAttackLinear){
-        table = gLinInc;
-    }
-    else table = gExpInc;
+    const float* table = (GetAttackMode() == kAttackLinear) ? gLinInc : gExpInc;
     return FindNearestInTable(table, 0x80, f);
 }
 
@@ -156,4 +163,42 @@ int Ps2ADSR::NearestSustainRate(float f) const {
 
 int Ps2ADSR::NearestReleaseRate(float f) const {
     return FindNearestInTable(gDecayRate, 0x10, f);
+}
+
+ADSR::ADSR() : mAttackRate(0.001f), mDecayRate(0.0001f), mSustainRate(0.001f), mReleaseRate(0.005f), mSustainLevel(1.0f),
+    mAttackMode(Ps2ADSR::kAttackExp), mSustainMode(Ps2ADSR::kSustainLinInc), mReleaseMode(Ps2ADSR::kReleaseLinear), mPacked(), mSynced(0) {
+
+}
+
+float ADSR::GetAttackRate() const { return mAttackRate; }
+float ADSR::GetReleaseRate() const { return mReleaseRate; }
+
+void ADSR::Load(BinStream& bs){
+    int version;
+    bs >> version;
+    if(version > 1) MILO_WARN("Can't load new ADSR");
+    else {
+        bs >> mAttackRate >> mDecayRate >> mSustainRate >> mReleaseRate >> mSustainLevel;
+        int ps2enum;
+        bs >> ps2enum;
+        mAttackMode = (Ps2ADSR::AttackMode)ps2enum;
+        bs >> ps2enum;
+        mSustainMode = (Ps2ADSR::SustainMode)ps2enum;
+        bs >> ps2enum;
+        mReleaseMode = (Ps2ADSR::ReleaseMode)ps2enum;
+        mSynced = false;
+        SyncPacked();
+    }
+}
+
+void ADSR::SyncPacked(){
+    if(!mSynced){
+        mPacked.Set(*this);
+        mSynced = true;
+    }
+}
+
+BinStream& operator>>(BinStream& bs, ADSR& adsr){
+    adsr.Load(bs);
+    return bs;
 }
