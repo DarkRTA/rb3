@@ -307,6 +307,7 @@
             "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",
             "system/synth/SampleZone.cpp": "Matching",
+            "system/synth/SfxMap.cpp": "Matching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
