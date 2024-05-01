@@ -50,8 +50,8 @@ public:
     float mInputGain;
     float mReverbMixDb;
     // one of these bools is mEnableUpdates
-    bool unk40;
-    bool unk41;
+    bool mReverbEnable;
+    bool mEnableUpdates;
     SendChannels mChannels;
 };
 
