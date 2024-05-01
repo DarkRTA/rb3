@@ -38,8 +38,8 @@ class LoadMgr {
 public:
     std::list<Loader*> mLoaders;
     Platform mPlatform;
-    bool mCacheMode;
     bool mEditMode;
+    bool mCacheMode;
 
     Loader* AddLoader(const FilePath&, LoaderPos);
     void PollUntilLoaded(Loader*, Loader*);

@@ -49,7 +49,6 @@ public:
     float mWetGain;
     float mInputGain;
     float mReverbMixDb;
-    // one of these bools is mEnableUpdates
     bool mReverbEnable;
     bool mEnableUpdates;
     SendChannels mChannels;
