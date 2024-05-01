@@ -50,11 +50,14 @@ void FxSend::RebuildChain(){
 
 void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
     vec.push_back(this);
-    for(std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin(); rit != mRefs.rend(); rit++){
-        FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
+    std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin();
+    std::vector<ObjRef*>::reverse_iterator end = mRefs.rend();
+    for(; rit != end; rit++){
+        ObjRef* ref = *rit;
+        FxSend* rsend = dynamic_cast<FxSend*>((ref)->RefOwner());
         if(rsend && rsend->mNextSend == this) rsend->BuildChainVector(vec);
         else {
-            Sfx* seq = dynamic_cast<Sfx*>((*rit)->RefOwner());
+            Sfx* seq = dynamic_cast<Sfx*>((ref)->RefOwner());
             if(seq) seq->Stop(false);
         }
     }
