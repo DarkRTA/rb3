@@ -9,6 +9,14 @@
 
 class RndOverlay : public TextStream {
 public:
+
+    class Callback {
+    public:
+        Callback(){}
+        virtual ~Callback(){}
+        virtual void UpdateOverlay(RndOverlay*, float){}
+    };
+
     RndOverlay(const DataArray*);
     virtual ~RndOverlay();
     virtual void Print(const char *);
@@ -26,7 +34,7 @@ public:
     Hmx::Color mBackColor;
     Hmx::Color mTextColor;
     int mCursorChar;
-    int mCallback; // should be a Callback*?
+    Callback* mCallback;
     Timer mTimer;
     float mTimeout;
     bool mModal;

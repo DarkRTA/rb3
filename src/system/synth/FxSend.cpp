@@ -2,6 +2,7 @@
 #include "synth/Sfx.h"
 #include "utl/Loader.h"
 #include "math/Decibels.h"
+#include "synth/Synth.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(FxSend);
@@ -142,6 +143,10 @@ END_COPYS
 
 void FxSend::TestWithMic(){
     MILO_ASSERT(TheLoadMgr.EditMode(), 0x10A);
+    Mic* mic = TheSynth->GetMic(0);
+    mic->Start();
+    mic->StartPlayback();
+    mic->SetFxSend(this);
 }
 
 void FxSend::EnableUpdates(bool b){
