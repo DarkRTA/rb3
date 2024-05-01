@@ -15,6 +15,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void SetVal(float);
+
     float mVal;
     class FaderTask* mFaderTask;
     Symbol mLocalName;
@@ -29,5 +31,17 @@ public:
 //     Fader* mFader;
 //     bool mDone;
 // };
+
+class FaderGroup {
+public:
+    FaderGroup(Hmx::Object*);
+    ~FaderGroup();
+    Fader* AddLocal(Symbol);
+    Fader* FindLocal(Symbol, bool);
+    void Add(Fader*);
+
+    ObjPtrList<Fader, ObjectDir> mFaders;
+    bool mDirty;
+};
 
 #endif
