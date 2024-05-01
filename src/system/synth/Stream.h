@@ -6,7 +6,7 @@
 class FaderGroup;
 
 struct Marker {
-    String name;
+    class String name;
     int position;
     float posMS;
 };
