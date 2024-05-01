@@ -1,7 +1,12 @@
 #include "synth/FxSend.h"
+#include "synth/Sfx.h"
+#include "utl/Loader.h"
+#include "math/Decibels.h"
+
+INIT_REVS(FxSend);
 
 FxSend::FxSend() : mNextSend(this, 0), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f), 
-    mInputGain(0.0f), mReverbMixDb(-96.0f), mEnableUpdates(0), unk41(1), mChannels(kSendAll) {
+    mInputGain(0.0f), mReverbMixDb(-96.0f), unk40(0), unk41(1), mChannels(kSendAll) {
 }
 
 FxSend::~FxSend(){
@@ -15,8 +20,107 @@ void FxSend::Replace(Hmx::Object* from, Hmx::Object* to){
     RebuildChain();
 }
 
+void FxSend::SetNextSend(FxSend* next){
+    if(next != mNextSend.Ptr() && CheckChain(next, mStage)){
+        mNextSend = next;
+        RebuildChain();
+    }
+}
+
+void FxSend::SetStage(int stage){
+    if(stage != mStage && CheckChain(mNextSend, stage)){
+        mStage = stage;
+        RebuildChain();
+    }
+}
+
+void FxSend::SetChannels(SendChannels chans){
+    if(chans == mChannels) return;
+    mChannels = chans;
+    RebuildChain();
+}
+
+void FxSend::RebuildChain(){
+    std::vector<FxSend*> vec;
+    BuildChainVector(vec);
+    Recreate(vec);
+}
+
+void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
+    vec.push_back(this);
+    for(std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin(); rit != mRefs.rend(); rit++){
+        FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
+        if(rsend && rsend->mNextSend == this) rsend->BuildChainVector(vec);
+        else {
+            Sfx* seq = dynamic_cast<Sfx*>((*rit)->RefOwner());
+            if(seq) seq->Stop(false);
+        }
+    }
+}
+
+bool FxSend::CheckChain(FxSend* send, int i){
+    FxSend* cur;
+    for(cur = send; cur && cur != this; cur = cur->mNextSend);
+    if(cur == this){
+        MILO_WARN("Error: can't have loops in your FX chain.");
+        return false;
+    }
+    else if(send && send->mStage <= i){
+        MILO_WARN("Error: output send must be set to a higher stage (%d <= %d).", send->mStage, i);
+        return false;
+    }
+    else {
+        for(std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin(); rit != mRefs.rend(); rit++){
+            FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
+            if(rsend && rsend->mNextSend == this && rsend->mStage >= i){
+                MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", mName);
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
 void FxSend::Save(BinStream&){
     MILO_ASSERT(0, 0xA2);
+}
+
+void FxSend::Load(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(7, 0);
+    Hmx::Object::Load(bs);
+    FxSend* oldPtr = mNextSend;
+    int oldStage = mStage;
+    SendChannels oldchans = mChannels;
+    bs >> mNextSend;
+    bs >> mStage;
+    if(gRev < 5){
+        if(gRev >= 2){
+            float f;
+            bs >> f;
+            mDryGain = RatioToDb((100.0f - f) / 100.0f);
+            mWetGain = RatioToDb(f / 100.0f);
+        }
+        if(gRev >= 3){
+            bs >> mBypass;
+        }
+    }
+    if(gRev >= 4){
+        int chans;
+        bs >> chans;
+        mChannels = (SendChannels)chans;
+    }
+    if(gRev >= 5){
+        bs >> mDryGain >> mWetGain >> mInputGain;
+    }
+    if(gRev >= 6){
+        bs >> mBypass;
+    }
+    if(gRev >= 7){
+        bs >> mReverbMixDb >> unk40;
+    }
+    if(mNextSend != oldPtr || mStage != oldStage || mChannels != oldchans) RebuildChain();
+    UpdateMix();
 }
 
 BEGIN_COPYS(FxSend)
@@ -31,6 +135,16 @@ BEGIN_COPYS(FxSend)
         COPY_MEMBER(mChannels)
         COPY_MEMBER(mBypass)
         COPY_MEMBER(mReverbMixDb)
-        COPY_MEMBER(mEnableUpdates)
+        COPY_MEMBER(unk40)
     END_COPY_CHECKED
 END_COPYS
+
+void FxSend::TestWithMic(){
+    MILO_ASSERT(TheLoadMgr.EditMode(), 0x10A);
+}
+
+void FxSend::EnableUpdates(bool b){
+    unk41 = b;
+    if(!b) return;
+    OnParametersChanged();
+}

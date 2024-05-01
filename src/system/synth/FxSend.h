@@ -30,9 +30,17 @@ public:
     virtual void UpdateMix(){}
     virtual void OnParametersChanged(){}
 
+    bool CheckChain(FxSend*, int);
+    void SetStage(int);
+    void SetChannels(SendChannels);
+    void TestWithMic();
+    void EnableUpdates(bool);
+
     void operator delete(void* v){
         _MemFree(v);
     }
+
+    DECLARE_REVS;
 
     ObjOwnerPtr<FxSend, class ObjectDir> mNextSend;
     int mStage;
@@ -41,7 +49,8 @@ public:
     float mWetGain;
     float mInputGain;
     float mReverbMixDb;
-    bool mEnableUpdates;
+    // one of these bools is mEnableUpdates
+    bool unk40;
     bool unk41;
     SendChannels mChannels;
 };

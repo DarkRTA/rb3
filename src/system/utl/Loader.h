@@ -45,6 +45,8 @@ public:
     void PollUntilLoaded(Loader*, Loader*);
     void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
 
+    bool EditMode() const { return mEditMode; }
+
     // // total size: 0x60
     // class list mLoaders; // offset 0x0, size 0x8
     // enum Platform mPlatform; // offset 0x8, size 0x4
