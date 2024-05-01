@@ -1,7 +1,16 @@
 #ifndef SYNTH_FXSENDMETEREFFECT_H
 #define SYNTH_FXSENDMETEREFFECT_H
 #include "synth/FxSend.h"
+#include "utl/Str.h"
 #include <vector>
+
+struct MeterEffectChannelData {
+    int unk0;
+    float unk4;
+    int unk8;
+    int unkc;
+    class String unk10;
+};
 
 class FxSendMeterEffect : public FxSend {
 public:
@@ -21,7 +30,7 @@ public:
     static unsigned short gAltRev;
 
     bool mResetPeaks;
-    std::vector<float> mChannels;
+    std::vector<MeterEffectChannelData> mChannels;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "synth/FxSendMeterEffect.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
+#include "math/MathFuncs.h"
 
 unsigned short FxSendMeterEffect::gRev = 0;
 unsigned short FxSendMeterEffect::gAltRev = 0;
@@ -25,10 +26,7 @@ END_COPYS
 
 float FxSendMeterEffect::ChannelData(int idx){
     if(mChannels.empty()) return 0.0f;
-    int max = mChannels.size() - 1;
-    if(max < idx)
-        idx = max;
-    return mChannels[idx];
+    return mChannels[Minimum<int>(idx, mChannels.size() - 1)].unk4;
 }
 
 BEGIN_HANDLERS(FxSendMeterEffect)
