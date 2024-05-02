@@ -50,6 +50,7 @@ public:
 
 extern Debug TheDebug;
 extern const char* kAssertStr;
+extern int* gpDbgFrameID;
 
 #ifdef MILO_DEBUG
 #  define MILO_ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))

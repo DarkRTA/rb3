@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_CAM_H
 #define RNDOBJ_CAM_H
+#include "obj/Object.h"
 #include "rndobj/Trans.h"
 #include "math/Mtx.h"
 #include "math/Vec.h"
@@ -29,7 +30,7 @@ public:
     DataNode OnFarPlane(const DataArray*);
 
     static RndCam* sCurrent;
-
+    NEW_OBJ(RndCam)
     DELETE_OVERLOAD;
 
     Transform mInvWorldXfm;

@@ -22,7 +22,7 @@ public:
     virtual void Print(const char *);
 
     void SetLines(int);
-    void Terminate();
+    static void Terminate();
 
     static RndOverlay* Find(Symbol, bool);
     static std::list<RndOverlay*> sOverlays;

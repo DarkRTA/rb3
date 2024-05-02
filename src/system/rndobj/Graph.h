@@ -80,6 +80,7 @@ public:
     void* mId;
     std::vector<Drawable*> mStuff;
 
+    static void Init();
     static void ResetAll();
 };
 
