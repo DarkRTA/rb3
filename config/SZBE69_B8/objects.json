@@ -179,6 +179,7 @@
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
+            "system/meta/StreamPlayer.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
