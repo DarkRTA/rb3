@@ -30,7 +30,7 @@ void Screenshot::Load(BinStream& bs){
 }
 
 void Screenshot::Sync(){
-    if(TheLoadMgr.mCacheMode){
+    if(TheLoadMgr.EditMode()){
         delete mTex;
         delete mMat;
         mTex = Hmx::Object::New<RndTex>();

@@ -125,7 +125,7 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
     // begin debug exclusive
     if(mMap){
-        if(TheLoadMgr.mCacheMode){
+        if(TheLoadMgr.EditMode()){
             const DataArray* def = ref->TypeDef();
             if(def){
                 int i = 0;
@@ -216,7 +216,7 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     }
 
     if(def){
-        if(mMap && TheLoadMgr.mCacheMode){
+        if(mMap && TheLoadMgr.EditMode()){
             
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
                 DataArray* found = def->FindArray(mMap->Sym(i), false);

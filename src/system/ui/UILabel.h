@@ -69,17 +69,17 @@ public:
 
     UILabelDir* mLabelDir;
     RndText* mText; // TrackWidget* in bank 5
-    String hi;
-    ObjPtr<RndFont, ObjectDir> mFont;
+    class String hi;
+    ObjPtr<RndFont, class ObjectDir> mFont;
     const char* a;
     const char* b;
-    String c;
+    class String c;
     float f;
 
-    String mPath;
+    class String mPath;
     float h;
-    ObjPtr<UIColor, ObjectDir> mColor;
-    ObjPtr<UIColor, ObjectDir> mColor2;
+    ObjPtr<UIColor, class ObjectDir> mColor;
+    ObjPtr<UIColor, class ObjectDir> mColor2;
     int x[0x14];
 
     NEW_OBJ(UILabel)

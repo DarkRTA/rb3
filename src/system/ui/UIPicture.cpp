@@ -56,7 +56,7 @@ void UIPicture::PreLoad(BinStream& bs) {
 void UIPicture::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     CancelLoading();
-    if (TheLoadMgr.mCacheMode && mMesh.mPtr != NULL ) { // i think this might be a fakematch
+    if (TheLoadMgr.EditMode() && mMesh.mPtr != NULL ) { // i think this might be a fakematch
         /*??.field0x8 &= 0x7fU*/
     }
 }
@@ -81,7 +81,7 @@ bool UIPicture::IsEmptyValue() const {
 
 void UIPicture::SetTex(const FilePath& p) {
     if (HasTransitions() || (!(p == mLoadedFile) || !(p == mTexFile))) {
-        if (TheLoadMgr.mCacheMode) {
+        if (TheLoadMgr.EditMode()) {
             mDelayedTexFile = p;
         } else UpdateTexture(p);
     }

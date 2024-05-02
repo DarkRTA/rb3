@@ -38,12 +38,14 @@ class LoadMgr {
 public:
     std::list<Loader*> mLoaders;
     Platform mPlatform;
-    bool mCacheMode;
     bool mEditMode;
+    bool mCacheMode;
 
     Loader* AddLoader(const FilePath&, LoaderPos);
     void PollUntilLoaded(Loader*, Loader*);
     void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
+
+    bool EditMode() const { return mEditMode; }
 
     // // total size: 0x60
     // class list mLoaders; // offset 0x0, size 0x8

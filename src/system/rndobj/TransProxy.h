@@ -12,9 +12,15 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndTransProxy();
+    virtual ~RndTransProxy(){}
     virtual void PreSave(BinStream&);
     virtual void PostSave(BinStream&);
+
+    void SetProxy(ObjectDir*);
+    void SetPart(Symbol);
+    void Sync();
+
+    DECLARE_REVS;
 
     ObjPtr<ObjectDir, ObjectDir> mProxy;
     Symbol mPart;

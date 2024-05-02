@@ -44,7 +44,7 @@ public:
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
-    int mOrder; // 0x8
+    u32 mOrder; // 0x8
     u8* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14

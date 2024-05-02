@@ -23,8 +23,10 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    DECLARE_REVS;
+
     ObjPtr<RndCam, ObjectDir> mCam;
-    Keys<float> mFovKeys;
+    Keys<float, float> mFovKeys;
     ObjOwnerPtr<RndCamAnim, ObjectDir> mKeysOwner;
 };
 

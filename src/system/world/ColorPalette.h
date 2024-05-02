@@ -24,7 +24,7 @@ class ColorPalette : public Hmx::Object {
     static unsigned short gRev;
     static unsigned short gAltRev;
 
-    std::vector<ColorSet> mColors;
+    std::vector<Hmx::Color> mColors;
 };
 
 BinStream& operator>>(BinStream&, ColorSet&);

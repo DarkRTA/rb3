@@ -50,19 +50,20 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     void ResourceFileUpdated(bool);
     DataNode OnGetResourcesPath(DataArray*);
     bool Exiting() const;
-    ObjectDir* ResourceDir();
+    class ObjectDir* ResourceDir();
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    ObjPtr<UIComponent, ObjectDir> mNavRight;
-    ObjPtr<UIComponent, ObjectDir> mNavDown;
-    int test4[2];
+    ObjPtr<UIComponent, class ObjectDir> mNavRight;
+    ObjPtr<UIComponent, class ObjectDir> mNavDown;
+    int test1;
+    int test2;
     RndMesh* mMesh;
     std::vector<int> mSomeVec;
-    String mResourceName;
-    ObjDirPtr<ObjectDir> mObjDir;
-    FilePath mResourcePath;
+    class String mResourceName;
+    ObjDirPtr<class ObjectDir> mObjDir;
+    class String mResourcePath;
     bool a;
     u8 mState;
     bool c, d;

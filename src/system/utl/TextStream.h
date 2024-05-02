@@ -1,6 +1,7 @@
 #ifndef UTL_TEXTSTREAM_H
 #define UTL_TEXTSTREAM_H
 #include "utl/Symbol.h"
+#include <vector>
 
 /** A stream of text. */
 class TextStream {
@@ -28,5 +29,13 @@ public:
     */
     void Space(int i);
 };
+
+template<class T1, class T2> TextStream& operator<<(TextStream& ts, const std::vector<T1, T2>& vec){
+    ts << "(size:" << vec.size() << ")";
+    for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
+        ts << "\n" << it - vec.begin() << "\t" << *it;
+    }
+    return ts;
+}
 
 #endif

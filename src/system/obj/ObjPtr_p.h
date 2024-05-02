@@ -24,8 +24,6 @@ public:
         if (mPtr == o1) *this = dynamic_cast<T1*>(o2);
     }
 
-    virtual bool IsDirPtr(){ return 0; }
-
     Hmx::Object* Owner() const { return mOwner; }
     T1* Ptr() const { return mPtr; }
     operator T1*() const { return mPtr; }
@@ -95,7 +93,6 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*){ 
         MILO_FAIL("Should go to owner");
     }
-    virtual bool IsDirPtr(){ return 0; }
 
     T1* Ptr(){ return mPtr; }
     operator T1*() const { return mPtr; }

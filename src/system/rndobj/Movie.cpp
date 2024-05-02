@@ -1,4 +1,7 @@
 #include "rndobj/Movie.h"
+#include "utl/Loader.h"
+#include "utl/Symbols.h"
+#include "obj/PropSync_p.h"
 
 INIT_REVS(RndMovie);
 
@@ -11,6 +14,21 @@ SAVE_OBJ(RndMovie, 0x1F);
 void RndMovie::Load(BinStream& bs){
     PreLoad(bs);
     PostLoad(bs);
+}
+
+void RndMovie::PreLoad(BinStream& bs){
+    char buf[0x100];
+    LOAD_REVS(bs);
+    ASSERT_REVS(8, 0);
+    if(gRev > 6) Hmx::Object::Load(bs);
+    RndAnimatable::Load(bs);
+    bs.ReadString(buf, 0x100);
+    mFile.Set(FilePath::sRoot.c_str(), buf);
+    if(gRev > 3) bs >> mTex;
+    if(gRev > 4) bs >> mStream;
+    if(gRev > 7 && !mStream){
+        TheLoadMgr.AddLoader(mFile, kLoadFront);
+    }
 }
 
 void RndMovie::PostLoad(BinStream& bs){
@@ -31,7 +49,7 @@ BEGIN_COPYS(RndMovie)
     COPY_SUPERCLASS(RndAnimatable)
     mLoop = t->mLoop;
     mTex = t->mTex;
-    SetFile(mFile, mStream);
+    SetFile(t->mFile, t->mStream);
 END_COPYS
 
 void RndMovie::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -50,3 +68,41 @@ BEGIN_HANDLERS(RndMovie)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x73)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(RndMovie)
+    if(sym == movie_file){
+        if(_op == kPropSet){
+            const char* str = _val.Str(0);
+            FilePath fp;
+            fp.SetRoot(str);
+            SetFile(fp, mStream);
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mFile.FilePathRelativeToRoot());
+        }
+        return true;
+    }
+    if(sym == stream){
+        if(_op == kPropSet){
+            SetFile(mFile, _val.Int(0) != 0);
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mStream);
+        }
+        return true;
+    }
+    SYNC_PROP(loop, mLoop)
+    if(sym == tex){
+        if(_op == kPropSet){
+            SetTex(_val.Obj<RndTex>(0));
+        }
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mTex);
+        }
+        return true;
+    }
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS
