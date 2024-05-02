@@ -9,12 +9,18 @@
 
 class RndOverlay : public TextStream {
 public:
+    class Callback {
+public:
+        virtual ~Callback() {}
+        virtual float UpdateOverlay(RndOverlay*, float);
+    };
+
     RndOverlay(const DataArray*);
     virtual ~RndOverlay();
     virtual void Print(const char *);
 
     void SetLines(int);
-    void Terminate();
+    static void Terminate();
 
     static RndOverlay* Find(Symbol, bool);
     static std::list<RndOverlay*> sOverlays;
