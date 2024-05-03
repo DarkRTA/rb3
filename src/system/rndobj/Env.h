@@ -7,7 +7,7 @@
 #include "math/Vec.h"
 #include "rndobj/Lit.h"
 #include "rndobj/ColorXfm.h"
-
+#include "math/Color.h"
 
 class _GXColor;
 
@@ -35,30 +35,34 @@ public:
     DataNode OnAllowableLights_Real(const DataArray*);
     DataNode OnAllowableLights_Approx(const DataArray*);
     bool FogEnable() const;
-    bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, ObjectDir>&) const;
+    bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
 
     DELETE_OVERLOAD
 
-    ObjPtrList<RndLight, ObjectDir> mLightsReal;
-    ObjPtrList<RndLight, ObjectDir> mLightsApprox;
-    ObjPtrList<RndLight, ObjectDir> mLights3;
-    float f0;
-    float f1;
-    float f2;
-    float f3;
+    ObjPtrList<RndLight, class ObjectDir> mLightsReal;
+    ObjPtrList<RndLight, class ObjectDir> mLightsApprox;
+    ObjPtrList<RndLight, class ObjectDir> mLightsOld;
+    Hmx::Color mAmbientColor;
+    // mNumLightsReal, mNumLightsApprox, mNumLightsPoint, mNumLightsProj
     int i0;
     int i1;
     int i2;
     int i3;
     int i4;
     bool mHasPointCubeTex; // 0x70
-    ObjOwnerPtr<RndEnviron, ObjectDir> mOwner; // 0x74
+    ObjOwnerPtr<RndEnviron, class ObjectDir> mOwner; // 0x74
     bool mFog; // 0x80
-    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x84
+    float f1, f2, f3, f4, f5, f6;
+    bool unk9c;
+    float unka0, unka4, unka8;
+    ObjPtr<RndTransformable, class ObjectDir> mTrans; // 0x84
+    float unkb8, unkbc, unkc0, unkc4;
+    RndColorXfm mColorXfm;
+    bool unk14c, unk14d, unk14e;
+    float unk150;
     Timer mTimer; // 0x90
-    int test;
-    RndColorXfm mColor;
+    float unk188, unk18c, unk190, unk194;
     bool b;
     bool mAnimateFromPreset;
     bool mAmbientOcclusion; // 0x14E
