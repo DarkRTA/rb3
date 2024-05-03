@@ -313,8 +313,9 @@
             "system/synth/SampleInst.cpp": "Matching",
             "system/synth/SampleZone.cpp": "Matching",
             "system/synth/SfxMap.cpp": "Matching",
-            "system/synth/Stream.cpp": "NonMatching",
+            "system/synth/Stream.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
+            "system/synth/Synth.cpp": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",

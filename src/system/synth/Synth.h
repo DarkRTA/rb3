@@ -5,6 +5,7 @@
 #include "synth/FxSend.h"
 #include "synth/FxSendPitchShift.h"
 #include "synth/Mic.h"
+#include "synth/ByteGrinder.h"
 
 enum FXMode {
     kFXModeOff,
@@ -22,6 +23,7 @@ enum FXMode {
     kFXModeFlanger
 };
 
+class Fader;
 class Stream;
 class StandardStream;
 
@@ -79,7 +81,14 @@ public:
     virtual FxSendPitchShift* CreatePitchShift(int, SendChannels);
     virtual void DestroyPitchShift(FxSendPitchShift*);
 
-    int dummy;
+    std::vector<int> unk20; // mLevelData?
+    ByteGrinder mGrinder; // unk28
+    int mNumMics; // unk2c
+    int unk30; // MidiSynth* mMidiSynth
+    std::vector<int> unk34; // mNullMics
+    bool unk3c; // mMuted
+    ObjDirPtr<class ObjectDir> unk40;
+    Fader* unk4c;
 };
 
 extern Synth* TheSynth;
