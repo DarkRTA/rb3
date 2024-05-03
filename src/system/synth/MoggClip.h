@@ -30,6 +30,9 @@ public:
     virtual const char* GetSoundDisplayName();
     virtual void SynthPoll();
 
+    void LoadFile(BinStream*);
+    void EnsureLoaded();
+
     FilePath mFilePath;
     float mVolume;
     bool mLoop;
@@ -38,15 +41,15 @@ public:
     float unk44;
     int unk48;
     int unk4c;
-    int unk50;
+    int unk50; // some object pointer
     std::vector<Fader*> vec54;
     std::vector<PanInfo> unk5c;
     Fader* unk64;
     bool unk68;
     bool unk69;
     bool unk6a;
-    int mLoopStart; // loop start sample
-    int mLoopEnd; // loop end sample
+    int mLoopStart;
+    int mLoopEnd;
 };
 
 #endif

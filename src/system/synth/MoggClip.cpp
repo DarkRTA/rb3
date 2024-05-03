@@ -41,5 +41,22 @@ END_COPYS
 void MoggClip::Load(BinStream& bs){
     PreLoad(bs);
     PostLoad(bs);
-    MILO_WARN("%s:  Ogg files are not supported in RB3_Wii.", GetSoundDisplayName());
+    MILO_WARN("%s:  Ogg files are not supported in RB3_Wii.", (const char*)FindPathName());
 }
+
+void MoggClip::PreLoad(BinStream& bs){
+    int rev;
+    bs >> rev;
+    if(rev > 2) MILO_WARN("Can't load new MoggClip");
+    else {
+        Hmx::Object::Load(bs);
+        char buf[0x100];
+        bs.ReadString(buf, 0x100);
+        mFilePath.SetRoot(buf);
+        bs >> mVolume >> mLoop;
+        if(rev > 1) bs >> mLoopStart >> mLoopEnd;
+        LoadFile(rev > 0 ? &bs : 0);
+    }
+}
+
+void MoggClip::PostLoad(BinStream& bs){ EnsureLoaded(); }
