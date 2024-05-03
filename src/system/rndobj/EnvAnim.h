@@ -15,10 +15,10 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndEnvAnim();
+    virtual ~RndEnvAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual RndAnimatable* AnimTarget(); // weak
+    virtual Hmx::Object* AnimTarget(); // weak
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();

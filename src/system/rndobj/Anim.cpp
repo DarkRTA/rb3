@@ -85,7 +85,7 @@ AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, f
         mScale = -f3;
         mOffset = mMax;
     }
-    RndAnimatable* target = anim->AnimTarget();
+    Hmx::Object* target = anim->AnimTarget();
 }
 
 // float mBlendTime;
