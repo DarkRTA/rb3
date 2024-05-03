@@ -22,23 +22,22 @@ void RndEnviron::Select(const Vector3* v) {
         sCurrentPos.y = 0;
         sCurrentPos.x = 0;
     }
-    i1 = 0;
-    i2 = 0;
-    i3 = 0;
-    i4 = 0;
+    mNumLightsReal = 0;
+    mNumLightsApprox = 0;
+    mNumLightsPoint = 0;
+    mNumLightsProj = 0;
     mHasPointCubeTex = false;
-    i0 = 0;
+    mAmbientAlpha = 0;
     ReclassifyLights();
 }
 
 RndEnviron::RndEnviron() : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull), mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f),
-    i0(0), i1(0), i2(0), i3(0), i4(0), mHasPointCubeTex(false), mOwner(this, this), 
-    mFog(0), f1(0.0f), f2(1.0f), f3(1.0f), f4(1.0f), f5(1.0f), f6(1.0f), unk9c(0), unka0(0.0f), unka4(1000.0f), unka8(1.0f),
-    mTrans(this, NULL), 
-    unkb8(0.0f), unkbc(0.0f), unkc0(0.0f), unkc4(0.0f),
-    mColorXfm(),
-    unk14c(0), unk14d(1), unk14e(1), unk150(1.0f), mTimer(), unk188(0.0f), unk18c(0.1f), unk190(1.0f), unk194(1.0f), b(0), mAnimateFromPreset(1), mAmbientOcclusion(1) {
-    mTimer.Restart();
+    mAmbientAlpha(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this), 
+    mFogEnable(0), mFogStart(0.0f), mFogEnd(1.0f), mFogColor(), mFadeOut(0), mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f),
+    mFadeRef(this, NULL), mLRFade(0.0f, 0.0f, 0.0f, 0.0f), mColorXfm(),
+    mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(), mIntensityAverage(0.0f), 
+    mIntensityRate(0.1f), mExposure(1.0f), mWhitePoint(1.0f), mUseToneMapping(0), mUseApprox_Local(1), mUseApprox_Global(1) {
+    mUpdateTimer.Restart();
 }
 
 RndEnviron::~RndEnviron() {
@@ -58,7 +57,7 @@ SAVE_OBJ(RndEnviron, 119)
     ASSERT_REVS(ENVIRON_REV, 0)
     if (gRev > 1) Hmx::Object::Load(bs);
     if (gRev < 3) RndDrawable::DumpLoad(bs);
-    bs >> mTrans;
+    bs >> mFadeRef;
 }*/
 
 BEGIN_COPYS(RndEnviron)
@@ -67,11 +66,20 @@ BEGIN_COPYS(RndEnviron)
 END_COPYS
 
 bool RndEnviron::IsValidRealLight(const RndLight*) const {
-    bool ret = false; if (mTimer.mRunning != 0) {
-        if (mTimer.mRunning != 2) return ret;
+    bool ret = false; if (mUpdateTimer.mRunning != 0) {
+        if (mUpdateTimer.mRunning != 2) return ret;
     }
     ret = true;
     return ret;
+}
+
+bool RndEnviron::IsLightInList(const RndLight* light, const ObjPtrList<RndLight, class ObjectDir>& pList) const {
+    if(light == 0) return 0;
+    for(ObjPtrList<RndLight, class ObjectDir>::Node* it = pList.mNodes; it != 0; it = it->next){
+        RndLight* itLight = it->obj;
+        if(itLight == light) return itLight;
+    }
+    return 0;
 }
 
 bool RndEnviron::IsFake(RndLight* l) const {
@@ -83,7 +91,7 @@ bool RndEnviron::IsReal(RndLight* l) const {
 }
 
 bool RndEnviron::FogEnable() const {
-    return mOwner->mFog;
+    return mAmbientFogOwner->mFogEnable;
 }
 
 void RndEnviron::ReclassifyLights() {
@@ -92,7 +100,7 @@ void RndEnviron::ReclassifyLights() {
 
 BEGIN_HANDLERS(RndEnviron)
     HANDLE_ACTION(remove_all_lights, OnRemoveAllLights())
-    HANDLE_ACTION(toggle_ao, mAmbientOcclusion = !mAmbientOcclusion)
+    HANDLE_ACTION(toggle_ao, mAOEnabled = !mAOEnabled)
     HANDLE_ACTION(remove_light, RemoveLight(_msg->Obj<RndLight>(2)))
     HANDLE(allowable_lights_real, OnAllowableLights_Real)
     HANDLE(allowable_lights_approx, OnAllowableLights_Approx)
@@ -106,7 +114,7 @@ void RndEnviron::ApplyApproxLighting(const _GXColor*) { }
 BEGIN_PROPSYNCS(RndEnviron)
     SYNC_PROP(lights_real, mLightsReal)
     SYNC_PROP(lights_approx, mLightsApprox)
-    SYNC_PROP(ambient_color, mOwner)
+    SYNC_PROP(ambient_color, mAmbientFogOwner)
 
     SYNC_PROP(contrast, mColorXfm.mContrast)
     // SYNC_PROP(in_lo, mColorXfm.mLevelInLo)

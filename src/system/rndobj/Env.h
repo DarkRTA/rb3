@@ -40,32 +40,41 @@ public:
 
     DELETE_OVERLOAD
 
-    ObjPtrList<RndLight, class ObjectDir> mLightsReal;
-    ObjPtrList<RndLight, class ObjectDir> mLightsApprox;
-    ObjPtrList<RndLight, class ObjectDir> mLightsOld;
-    Hmx::Color mAmbientColor;
+    ObjPtrList<RndLight, class ObjectDir> mLightsReal; // 0x1c
+    ObjPtrList<RndLight, class ObjectDir> mLightsApprox; // 0x2c
+    ObjPtrList<RndLight, class ObjectDir> mLightsOld; // 0x3c
+    Hmx::Color mAmbientColor; // 0x4c
+    int mAmbientAlpha; // 0x5c
     // mNumLightsReal, mNumLightsApprox, mNumLightsPoint, mNumLightsProj
-    int i0;
-    int i1;
-    int i2;
-    int i3;
-    int i4;
+    int mNumLightsReal; // 0x60
+    int mNumLightsApprox; // 0x64
+    int mNumLightsPoint; // 0x68
+    int mNumLightsProj; // 0x6c
     bool mHasPointCubeTex; // 0x70
-    ObjOwnerPtr<RndEnviron, class ObjectDir> mOwner; // 0x74
-    bool mFog; // 0x80
-    float f1, f2, f3, f4, f5, f6;
-    bool unk9c;
-    float unka0, unka4, unka8;
-    ObjPtr<RndTransformable, class ObjectDir> mTrans; // 0x84
-    float unkb8, unkbc, unkc0, unkc4;
-    RndColorXfm mColorXfm;
-    bool unk14c, unk14d, unk14e;
-    float unk150;
-    Timer mTimer; // 0x90
-    float unk188, unk18c, unk190, unk194;
-    bool b;
-    bool mAnimateFromPreset;
-    bool mAmbientOcclusion; // 0x14E
+    ObjOwnerPtr<RndEnviron, class ObjectDir> mAmbientFogOwner; // 0x74
+    bool mFogEnable; // 0x80
+    float mFogStart; // 0x84
+    float mFogEnd; // 0x88
+    Hmx::Color mFogColor; // 0x8c
+    bool mFadeOut; // 0x9c
+    float mFadeStart; // 0xa0
+    float mFadeEnd; // 0xa4
+    float mFadeMax; // 0xa8
+    ObjPtr<RndTransformable, class ObjectDir> mFadeRef; // 0xac
+    Vector4 mLRFade; // 0xb8 - 0xc4, mLeftOut, mLeftOpaque, mRightOpaque, mRightOut
+    RndColorXfm mColorXfm; // 0xc8
+    bool mUseColorAdjust; // 0x14c
+    bool mAnimateFromPreset; // 0x14d
+    bool mAOEnabled; // 0x14e
+    float mAOStrength; // mAoStrength
+    Timer mUpdateTimer; // 0x158
+    float mIntensityAverage; // 0x188
+    float mIntensityRate; // 0x18c
+    float mExposure; // 0x190
+    float mWhitePoint; // 0x194
+    bool mUseToneMapping; // 0x198
+    bool mUseApprox_Local;
+    bool mUseApprox_Global;
 
     static RndEnviron* sCurrent;
     static Vector3 sCurrentPos;
