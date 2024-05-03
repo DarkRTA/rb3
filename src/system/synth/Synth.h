@@ -75,7 +75,7 @@ public:
     virtual int NewStreamDecoder(File*, StandardStream*, Symbol){ return 0; }
     virtual void NewStreamFile(const char*, File*&, Symbol&);
     virtual void EnableLevels(bool){}
-    virtual void UpdateOverlay(RndOverlay*, float);
+    virtual float UpdateOverlay(RndOverlay*, float);
     virtual void RequirePushToTalk(bool, int){}
     virtual void SetIncomingVoiceChatVolume(float){}
     virtual FxSendPitchShift* CreatePitchShift(int, SendChannels);

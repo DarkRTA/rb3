@@ -14,7 +14,7 @@ public:
     public:
         Callback(){}
         virtual ~Callback(){}
-        virtual void UpdateOverlay(RndOverlay*, float){}
+        virtual float UpdateOverlay(RndOverlay*, float){}
     };
 
     RndOverlay(const DataArray*);
