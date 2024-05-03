@@ -18,7 +18,7 @@ public:
     virtual ~RndLightAnim(){}
     virtual void SetFrame(float, float); 
     virtual float EndFrame();
-    virtual RndAnimatable* AnimTarget();
+    virtual Hmx::Object* AnimTarget(){ return mLight; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
@@ -26,9 +26,9 @@ public:
     void SetKeysOwner(RndLightAnim*);
     DataNode OnCopyKeys(DataArray*);
 
-    ObjPtr<RndLight, ObjectDir> mLight;
-    Keys<Hmx::Color> mColorKeys;
-    ObjOwnerPtr<RndLightAnim, ObjectDir> mKeysOwner;
+    ObjPtr<RndLight, class ObjectDir> mLight;
+    Keys<Hmx::Color, Hmx::Color> mColorKeys;
+    ObjOwnerPtr<RndLightAnim, class ObjectDir> mKeysOwner;
 };
 
 #endif

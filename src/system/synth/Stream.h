@@ -51,7 +51,7 @@ public:
     virtual void AddMarker(Marker){}
     virtual int MarkerListSize() const { return 0; }
     virtual int MarkerAt(int, Marker&) const { return 0; }
-    virtual void SetLoop(String&, String&) = 0;
+    virtual void SetLoop(class String&, class String&) = 0;
     virtual int CurrentLoopPoints(Marker&, Marker&){ return 0; }
     virtual void AbandonLoop() = 0;
     virtual void SetJump(float, float, const char*) = 0;
@@ -67,6 +67,9 @@ public:
     virtual void RemapChannel(int, int){}
 
     void SetVolume(float);
+
+    static const float kStreamEndMs;
+    static const int kStreamEndSamples;
 
     FaderGroup* mFaders;
 };

@@ -182,6 +182,7 @@
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
+            "system/meta/StreamPlayer.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
@@ -257,6 +258,7 @@
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Env.cpp": "NonMatching",
+            "system/rndobj/EnvAnim.cpp": "NonMatching",
             "system/rndobj/EventTrigger.cpp": "NonMatching",
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
@@ -314,8 +316,9 @@
             "system/synth/SampleInst.cpp": "Matching",
             "system/synth/SampleZone.cpp": "Matching",
             "system/synth/SfxMap.cpp": "Matching",
-            "system/synth/Stream.cpp": "NonMatching",
+            "system/synth/Stream.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
+            "system/synth/Synth.cpp": "NonMatching",
 
             "system/track/TrackTest.cpp": "Matching",
 

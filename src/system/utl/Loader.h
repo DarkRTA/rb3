@@ -68,6 +68,8 @@ public:
     virtual bool IsLoaded() const;
     virtual void PollLoading();
 
+    const char* GetBuffer(int*);
+
     File* mFile;
     BinStream* mStream;
     const char* mBuffer;

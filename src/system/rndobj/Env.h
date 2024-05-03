@@ -7,7 +7,7 @@
 #include "math/Vec.h"
 #include "rndobj/Lit.h"
 #include "rndobj/ColorXfm.h"
-
+#include "math/Color.h"
 
 class _GXColor;
 
@@ -35,33 +35,46 @@ public:
     DataNode OnAllowableLights_Real(const DataArray*);
     DataNode OnAllowableLights_Approx(const DataArray*);
     bool FogEnable() const;
-    bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, ObjectDir>&) const;
+    bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
 
     DELETE_OVERLOAD
 
-    ObjPtrList<RndLight, ObjectDir> mLightsReal;
-    ObjPtrList<RndLight, ObjectDir> mLightsApprox;
-    ObjPtrList<RndLight, ObjectDir> mLights3;
-    float f0;
-    float f1;
-    float f2;
-    float f3;
-    int i0;
-    int i1;
-    int i2;
-    int i3;
-    int i4;
+    ObjPtrList<RndLight, class ObjectDir> mLightsReal; // 0x1c
+    ObjPtrList<RndLight, class ObjectDir> mLightsApprox; // 0x2c
+    ObjPtrList<RndLight, class ObjectDir> mLightsOld; // 0x3c
+    Hmx::Color mAmbientColor; // 0x4c
+    int mAmbientAlpha; // 0x5c
+    // mNumLightsReal, mNumLightsApprox, mNumLightsPoint, mNumLightsProj
+    int mNumLightsReal; // 0x60
+    int mNumLightsApprox; // 0x64
+    int mNumLightsPoint; // 0x68
+    int mNumLightsProj; // 0x6c
     bool mHasPointCubeTex; // 0x70
-    ObjOwnerPtr<RndEnviron, ObjectDir> mOwner; // 0x74
-    bool mFog; // 0x80
-    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x84
-    Timer mTimer; // 0x90
-    int test;
-    RndColorXfm mColor;
-    bool b;
-    bool mAnimateFromPreset;
-    bool mAmbientOcclusion; // 0x14E
+    ObjOwnerPtr<RndEnviron, class ObjectDir> mAmbientFogOwner; // 0x74
+    bool mFogEnable; // 0x80
+    float mFogStart; // 0x84
+    float mFogEnd; // 0x88
+    Hmx::Color mFogColor; // 0x8c
+    bool mFadeOut; // 0x9c
+    float mFadeStart; // 0xa0
+    float mFadeEnd; // 0xa4
+    float mFadeMax; // 0xa8
+    ObjPtr<RndTransformable, class ObjectDir> mFadeRef; // 0xac
+    Vector4 mLRFade; // 0xb8 - 0xc4, mLeftOut, mLeftOpaque, mRightOpaque, mRightOut
+    RndColorXfm mColorXfm; // 0xc8
+    bool mUseColorAdjust; // 0x14c
+    bool mAnimateFromPreset; // 0x14d
+    bool mAOEnabled; // 0x14e
+    float mAOStrength; // mAoStrength
+    Timer mUpdateTimer; // 0x158
+    float mIntensityAverage; // 0x188
+    float mIntensityRate; // 0x18c
+    float mExposure; // 0x190
+    float mWhitePoint; // 0x194
+    bool mUseToneMapping; // 0x198
+    bool mUseApprox_Local;
+    bool mUseApprox_Global;
 
     static RndEnviron* sCurrent;
     static Vector3 sCurrentPos;

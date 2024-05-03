@@ -1,6 +1,7 @@
 #ifndef UTL_KEY_H
 #define UTL_KEY_H
 #include <vector>
+#include "math/Rot.h" // so that Vector2 is textstream-able
 
 // thank god for the RB2 dump
 template <class T> class Key {
