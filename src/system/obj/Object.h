@@ -306,6 +306,16 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
+#define SYNC_PROP_METHOD(symbol, member, method) \
+        if(sym == symbol){ \
+            if(_op == kPropSet) method; \
+            else { \
+                if(_op == (PropOp)0x40) return false; \
+                _val = DataNode(member); \
+            } \
+            return true; \
+        }
+
 #define SYNC_PROP_ACTION(symbol, member, opmask, action) \
         if(sym == symbol){ \
             bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
