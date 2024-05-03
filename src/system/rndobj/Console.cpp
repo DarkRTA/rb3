@@ -56,9 +56,8 @@ static DataNode DataClear(DataArray* da) {
     if(da->Size() < 2) clearInt = 0;
     else {
         bool b = ((const DataArray*)(da))->Node(1).Type() == kDataSymbol;
-        if(b){
-            clearInt = strcmp(da->Sym(1).Str(), "all");
-            b = clearInt == 0;
+        if (b) {
+            b = da->Sym(1) == "all"; // i'm just gonna hope that this isn't matching because dtk misreloc moment
         }
         clearInt = b ? -1 : da->Int(1);
     }
