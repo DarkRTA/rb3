@@ -21,7 +21,7 @@ inline int RndAnimatable::Units() const {
     return gRateUnits[mRate];
 }
 
-inline float RndAnimatable::FramesPerUnit(){
+inline float RndAnimatable::FramesPerUnit() {
     return gRateFpu[mRate];
 }
 #pragma force_active reset

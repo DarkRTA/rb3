@@ -17,7 +17,8 @@ void UIButton::Init() {
 Hmx::Object* UIButton::NewObject() {return new UIButton;}
 
 BEGIN_COPYS(UIButton)
-    GET_COPY_AND_ASSERT(UIButton, 42)
+    const UIButton* f = dynamic_cast<const UIButton*>(o); \
+    MILO_ASSERT(f, 42);
     COPY_SUPERCLASS(UILabel)
 END_COPYS
 

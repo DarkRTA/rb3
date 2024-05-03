@@ -52,23 +52,27 @@ public:
     DataNode OnSetRendered(const DataArray*);
     DataNode OnSetBitmap(const DataArray*);
 
+    void SetBitmap(int, int, int, RndTex::Type, bool, const char*);
     void SetBitmap(FileLoader*);
     void SetBitmap(const FilePath&);
     void SaveBitmap(const char*);
+    inline bool IsRenderTarget() { return mType & Rendered; }
 
     DELETE_OVERLOAD;
 
     RndBitmap mBitmap;
-    float mMipMapK;
-    Type mType;
-    int mWidth;
-    int mHeight;
-    int mBpp;
-    FilePath mFilename;
-    FileLoader* mLoader;
-    bool mIsPowerOf2;
-    bool mOptimizeForPS3;
+    float mMipMapK; // 0x38
+    Type mType; // 0x3C
+    int mWidth; // 0x40
+    int mHeight; // 0x44
+    int mBpp; // 0x48
+    FilePath mFilepath; // 0x4C
+    FileLoader* mLoader; // 0x58
+    bool mIsPowerOf2; // 0x5C
+    bool mOptimizeForPS3; // 0x5D
     int unk60; // this is def a ptr to something judging by the fact it gets released in the dtor
+
+    DECLARE_REVS
 };
 
 bool UseBottomMip();

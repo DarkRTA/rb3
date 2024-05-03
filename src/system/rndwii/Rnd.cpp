@@ -5,6 +5,7 @@
 #include "revolution/gx/GXTransform.h"
 #include "revolution/gx/GXTypes.h"
 #include "revolution/gx/GXVert.h"
+#include "rndwii/Tex.h"
 #include "types.h"
 #include "utl/Symbols.h"
 #include "revolution/GX.h"
@@ -36,6 +37,13 @@ WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2
 }
 
 WiiRnd::~WiiRnd() {}
+
+void WiiRnd::WiiPreInit() {
+    Rnd::PreInit();
+    Hmx::Object::RegisterFactory(WiiTex::StaticClassName(), WiiTex::NewObject);
+}
+
+bool WiiRnd::GetProgressiveScan() { return mProgScan; }
 
 void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, bool) { // ????·
     int col;
