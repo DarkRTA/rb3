@@ -10,6 +10,11 @@ public:
     float y;
 };
 
+inline BinStream& operator>>(BinStream& bs, Vector2& vec){
+    bs >> vec.x >> vec.y;
+    return bs;
+}
+
 class Vector3 {
 public:
     static Vector3 sX;
