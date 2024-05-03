@@ -68,7 +68,7 @@ Diffing
 
 Once the initial build succeeds, an `objdiff.json` should exist in the project root.
 
-Download the latest release from [encounter/objdiff](https://github.com/encounter/objdiff). Under project settings, set `Project directory`. The configuration should be loaded automatically.
+Download the latest release from [encounter/objdiff](https://github.com/encounter/objdiff). Under `Project`>`Settings`, set `Project directory`. The configuration should be loaded automatically.
 
 Select an object from the left sidebar to begin diffing. Changes to the project will rebuild automatically: changes to source files, headers, `configure.py`, `splits.txt` or `symbols.txt`.
 
