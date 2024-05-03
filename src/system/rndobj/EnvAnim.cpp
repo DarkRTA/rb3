@@ -69,7 +69,3 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndEnvAnim)
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS
-
-Hmx::Object* RndEnvAnim::AnimTarget(){
-    return mEnviron;
-}

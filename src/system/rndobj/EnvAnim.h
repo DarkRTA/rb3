@@ -18,7 +18,7 @@ public:
     virtual ~RndEnvAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget(); // weak
+    virtual Hmx::Object* AnimTarget(){ return mEnviron; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
