@@ -3,9 +3,19 @@
 #include "obj/Object.h"
 #include "synth/Pollable.h"
 #include "utl/FilePath.h"
+#include "synth/Faders.h"
+
+class Stream;
 
 class MoggClip : public Hmx::Object, public SynthPollable {
 public:
+
+    struct PanInfo {
+        PanInfo(int, float);
+        int unk0;
+        float unk4;
+    };
+
     MoggClip();
     virtual ~MoggClip();
     OBJ_CLASSNAME(MoggClip);
@@ -21,7 +31,22 @@ public:
     virtual void SynthPoll();
 
     FilePath mFilePath;
-    float unk34;
+    float mVolume;
+    bool mLoop;
+    float unk3c;
+    Stream* unk40; // StandardStream*
+    float unk44;
+    int unk48;
+    int unk4c;
+    int unk50;
+    std::vector<Fader*> vec54;
+    std::vector<PanInfo> unk5c;
+    Fader* unk64;
+    bool unk68;
+    bool unk69;
+    bool unk6a;
+    int mLoopStart; // loop start sample
+    int mLoopEnd; // loop end sample
 };
 
 #endif
