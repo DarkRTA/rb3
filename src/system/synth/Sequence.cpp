@@ -1,4 +1,5 @@
 #include "synth/Sequence.h"
+#include "synth/SeqInst.h"
 #include "math/Rand.h"
 #include "utl/Symbols.h"
 
