@@ -56,6 +56,16 @@ public:
     float mWaitSpread;
 };
 
-// groupseq
+class GroupSeq : public Sequence {
+public:
+    GroupSeq();
+    virtual ~GroupSeq(){}
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+
+    ObjPtrList<Sequence, class ObjectDir> mChildren;
+};
 
 #endif

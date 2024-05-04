@@ -153,6 +153,33 @@ BEGIN_PROPSYNCS(WaitSeq)
     SYNC_SUPERCLASS(Sequence)
 END_PROPSYNCS
 
+GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
+
+}
+
+BEGIN_COPYS(GroupSeq)
+    COPY_SUPERCLASS(Sequence)
+    GET_COPY(GroupSeq)
+    if(c && ty != kCopyFromMax){
+        COPY_MEMBER(mChildren)
+    }
+END_COPYS
+
+SAVE_OBJ(GroupSeq, 0x322)
+
+void GroupSeq::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    if(rev > 3) MILO_WARN("Can't load new SfxSeq");
+    else {
+        if(rev > 1) Sequence::Load(bs);
+        if(rev < 3){
+
+        }
+        else bs >> mChildren;
+    }
+}
+
 SeqInst::SeqInst(Sequence* seq) : mOwner(seq), mVolume(0.0f), mStarted(false) {
     mRandVol = RandomVal(mOwner->mAvgVol, mOwner->mVolSpread);
     mRandPan = RandomVal(mOwner->mAvgPan, mOwner->mPanSpread);
