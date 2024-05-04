@@ -21,7 +21,6 @@ public:
     virtual const char* GetSoundDisplayName();
     virtual SeqInst* MakeInstImpl() = 0;
     virtual void SynthPoll();
-    // possibly another pure virtual here?
 
     SeqInst* MakeInst();
     SeqInst* Play(float, float, float);

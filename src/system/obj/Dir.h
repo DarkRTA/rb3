@@ -119,5 +119,6 @@ public:
 };
 
 extern bool gLoadingProxyFromDisk;
+extern const char* kNotObjectMsg;
 
 #endif
