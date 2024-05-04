@@ -25,6 +25,8 @@ public:
 
     SeqInst* MakeInst();
     SeqInst* Play(float, float, float);
+    DataNode OnPlay(DataArray*);
+    void OnTriggerSound(int);
 
     void Stop(bool);
     
