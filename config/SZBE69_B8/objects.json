@@ -313,6 +313,7 @@
             "system/synth/MoggClipMap.cpp": "Matching",
             "system/synth/OggMap.cpp": "NonMatching",
             "system/synth/Pollable.cpp": "NonMatching",
+            "system/synth/SampleData.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",
             "system/synth/SampleZone.cpp": "Matching",
             "system/synth/SfxMap.cpp": "Matching",
