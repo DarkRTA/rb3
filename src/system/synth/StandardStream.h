@@ -2,9 +2,37 @@
 #define SYNTH_STANDARDSTREAM_H
 #include "synth/Stream.h"
 #include "synth/Pollable.h"
+#include "synth/StreamReader.h"
+#include <vector>
+#include "utl/VarTimer.h"
+#include "synth/Faders.h"
+
+enum State {
+    kInit = 0,
+    kBuffering = 1,
+    kReady = 2,
+    kPlaying = 3,
+    kSuspended = 4,
+    kStopped = 5,
+    kFinished = 6,
+};
 
 class StandardStream : public Stream, public SynthPollable {
 public:
+
+    class ChannelParams {
+    public:
+        ChannelParams();
+        float mPan;
+        float mSlipSpeed;
+        bool mSlipEnabled;
+        ADSR mADSR;
+        FaderGroup mFaders;
+        ObjPtr<FxSend, ObjectDir> mFxSend;
+        FXCore mFXCore;
+        bool mPitchShift;
+    };
+
     StandardStream(File*, float, float, Symbol, bool, bool);
     virtual ~StandardStream();
     virtual bool Fail();
@@ -66,6 +94,45 @@ public:
     virtual void SynthPoll();
 
     void PollStream();
+    void ClearLoopMarkers();
+    void Init(float, float, Symbol, bool);
+
+    State mState;
+    File* mFile;
+    StreamReader* mRdr;
+    std::vector<int> mChannels;
+    int mSampleRate;
+    float mBufSecs;
+    float mFileStartMs;
+    float mStartMs;
+    float mLastStreamTime;
+    int unk3c;
+    VarTimer mTimer;
+    std::vector<ChannelParams> mChanParams;
+    int mJumpFromSamples;
+    int mJumpToSamples;
+    float mJumpFromMs;
+    float mJumpToMs;
+    bool mJumpSamplesInvalid;
+    String mJumpFile;
+    int mCurrentSamp;
+    float mSpeed;
+    Timer mFrameTimer;
+    float mThrottle;
+    Symbol mExt;
+    bool mFloatSamples;
+    int mVirtualChans;
+    int mInfoChannels;
+    float unkec;
+    bool mGetInfoOnly;
+    std::vector<int> unkf4;
+    std::vector<int> unkfc;
+    std::vector<int> unk104;
+    std::vector<int> unk10c;
+    Marker mStartMarker;
+    Marker mEndMarker;
+    float mAccumulatedLoopbacks;
+    bool mPollingEnabled;
 };
 
 #endif
