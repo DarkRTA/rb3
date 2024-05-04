@@ -40,7 +40,7 @@ public:
     Fader* FindLocal(Symbol, bool);
     void Add(Fader*);
 
-    ObjPtrList<Fader, ObjectDir> mFaders;
+    ObjPtrList<Fader, class ObjectDir> mFaders;
     bool mDirty;
 };
 
