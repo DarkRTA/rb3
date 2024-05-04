@@ -316,6 +316,7 @@
             "system/synth/SampleInst.cpp": "Matching",
             "system/synth/SampleZone.cpp": "Matching",
             "system/synth/SfxMap.cpp": "Matching",
+            "system/synth/SlipTrack.cpp": "NonMatching",
             "system/synth/StandardStream.cpp": "NonMatching",
             "system/synth/Stream.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
