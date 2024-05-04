@@ -1,9 +1,12 @@
 #ifndef SYNTH_SEQINST_H
 #define SYNTH_SEQINST_H
 #include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
+#include "obj/ObjVector.h"
 
 class Sequence;
 class WaitSeq;
+class GroupSeq;
 
 class SeqInst : public Hmx::Object {
 public:
@@ -49,6 +52,18 @@ public:
 
     float mWaitMs;
     float mEndTime;
+};
+
+class GroupSeqInst : public SeqInst {
+public:
+    GroupSeqInst(GroupSeq*, bool);
+    virtual ~GroupSeqInst();
+    virtual void UpdateVolume();
+    virtual void SetPan(float);
+    virtual void SetTranspose(float);
+    virtual void Poll();
+
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> > mSeqs;
 };
 
 #endif

@@ -180,6 +180,11 @@ void GroupSeq::Load(BinStream& bs){
     }
 }
 
+BEGIN_PROPSYNCS(GroupSeq)
+    SYNC_PROP(children, mChildren)
+    SYNC_SUPERCLASS(Sequence)
+END_PROPSYNCS
+
 SeqInst::SeqInst(Sequence* seq) : mOwner(seq), mVolume(0.0f), mStarted(false) {
     mRandVol = RandomVal(mOwner->mAvgVol, mOwner->mVolSpread);
     mRandPan = RandomVal(mOwner->mAvgPan, mOwner->mPanSpread);
@@ -207,4 +212,8 @@ WaitSeqInst::WaitSeqInst(WaitSeq* seq) : SeqInst(seq), mEndTime(-1.0f) {
 
 void WaitSeqInst::Stop(){
     mEndTime = -1.0f;
+}
+
+GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
+
 }
