@@ -117,6 +117,42 @@ BEGIN_PROPSYNCS(Sequence)
     SYNC_PROP_METHOD(trigger_sound, 0, OnTriggerSound(_val.Int(0)))
 END_PROPSYNCS
 
+WaitSeq::WaitSeq() : mAvgWaitSecs(0.0f), mWaitSpread(0.0f) {
+
+}
+
+SeqInst* WaitSeq::MakeInstImpl(){
+    return new WaitSeqInst(this);
+}
+
+SAVE_OBJ(WaitSeq, 0x166)
+
+void WaitSeq::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    if(rev > 2) MILO_WARN("Can't load new WaitSeq");
+    else {
+        Sequence::Load(bs);
+        bs >> mAvgWaitSecs;
+        if(rev >= 2) bs >> mWaitSpread;
+    }
+}
+
+BEGIN_COPYS(WaitSeq)
+    COPY_SUPERCLASS(Sequence)
+    GET_COPY(WaitSeq)
+    if(c && ty != kCopyFromMax){
+        COPY_MEMBER(mAvgWaitSecs)
+        COPY_MEMBER(mWaitSpread)
+    }
+END_COPYS
+
+BEGIN_PROPSYNCS(WaitSeq)
+    SYNC_PROP(avg_wait_seconds, mAvgWaitSecs)
+    SYNC_PROP(wait_spread, mWaitSpread)
+    SYNC_SUPERCLASS(Sequence)
+END_PROPSYNCS
+
 SeqInst::SeqInst(Sequence* seq) : mOwner(seq), mVolume(0.0f), mStarted(false) {
     mRandVol = RandomVal(mOwner->mAvgVol, mOwner->mVolSpread);
     mRandPan = RandomVal(mOwner->mAvgPan, mOwner->mPanSpread);
@@ -135,4 +171,13 @@ void SeqInst::Start(){
 void SeqInst::SetVolume(float f){
     mVolume = f;
     UpdateVolume();
+}
+
+WaitSeqInst::WaitSeqInst(WaitSeq* seq) : SeqInst(seq), mEndTime(-1.0f) {
+    float rand = RandomVal(seq->mAvgWaitSecs, seq->mWaitSpread);
+    mWaitMs = rand * 1000.0f;
+}
+
+void WaitSeqInst::Stop(){
+    mEndTime = -1.0f;
 }

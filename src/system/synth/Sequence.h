@@ -41,4 +41,22 @@ public:
     bool mCanStop;
 };
 
+class WaitSeq : public Sequence {
+public:
+    WaitSeq();
+    virtual ~WaitSeq(){}
+    OBJ_CLASSNAME(WaitSeq);
+    OBJ_SET_TYPE(WaitSeq);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+    virtual SeqInst* MakeInstImpl();
+
+    float mAvgWaitSecs;
+    float mWaitSpread;
+};
+
+// groupseq
+
 #endif

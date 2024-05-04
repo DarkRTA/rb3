@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 
 class Sequence;
+class WaitSeq;
 
 class SeqInst : public Hmx::Object {
 public:
@@ -19,6 +20,10 @@ public:
     void Start();
     void SetVolume(float);
 
+    void* operator new(size_t s){
+        return _PoolAlloc(s, 0x3c, FastPool);
+    }
+
     void operator delete(void* v){
         _PoolFree(sizeof(SeqInst), FastPool, v);
     }
@@ -29,6 +34,21 @@ public:
     float mRandTp;
     float mVolume;
     bool mStarted;
+};
+
+class WaitSeqInst : public SeqInst {
+public:
+    WaitSeqInst(WaitSeq*);
+    virtual ~WaitSeqInst();
+    virtual void Stop();
+    virtual bool IsRunning();
+    virtual void UpdateVolume();
+    virtual void SetPan(float);
+    virtual void SetTranspose(float);
+    virtual void StartImpl();
+
+    float mWaitMs;
+    float mEndTime;
 };
 
 #endif
