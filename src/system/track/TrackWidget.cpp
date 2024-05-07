@@ -1,0 +1,185 @@
+#include "TrackWidget.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "rndobj/Draw.h"
+#include "rndobj/Text.h"
+#include "track/TrackWidgetImp.h"
+#include "utl/Loader.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
+#include "utl/BinStream.h"
+#include <list>
+
+INIT_REVS(TrackWidget)
+
+TrackWidget::TrackWidget() : unk_0x20(this, kObjListNoNull), unk_0x30(this, kObjListNoNull), 
+    unk_0x40(this, kObjListNoNull), unk_0x50(this, kObjListNoNull), unk_0x60(this, NULL), unk_0x6C(1), unk_0x70(1),
+    unk_0x74(0), unk_0x78(0), unk_0x7C(0), unk_0x80(0), unk_0x84(0), unk_0x88(this, NULL), unk_0x94(this, NULL),
+    mAlignment(RndText::kAlignCenterRight), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { unk_0xD4 &= 0x3FFFFF; SyncImp();}
+
+TrackWidget::~TrackWidget() {}
+
+BEGIN_COPYS(TrackWidget)
+    GET_COPY_AND_ASSERT(TrackWidget, 66)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_MEMBER(unk_0x20)
+    COPY_MEMBER(unk_0xD0_1)
+    COPY_MEMBER(unk_0x30)
+    COPY_MEMBER(unk_0x40)
+    COPY_MEMBER(unk_0x50)
+    COPY_MEMBER(unk_0x60)
+    COPY_MEMBER(unk_0x6C)
+    COPY_MEMBER(unk_0x70)
+    COPY_MEMBER(unk_0xD0_2)
+    COPY_MEMBER(unk_0x88)
+    COPY_MEMBER(unk_0x94)
+    COPY_MEMBER(mAlignment)
+    
+    COPY_MEMBER(unk_0xC4)
+    COPY_MEMBER(unk_0xA4)
+    COPY_MEMBER(unk_0xB4)
+    COPY_MEMBER(unk_0x74)
+    COPY_MEMBER(unk_0x78)
+    COPY_MEMBER(unk_0x7C)
+    COPY_MEMBER(unk_0xD0_3)
+    COPY_MEMBER(unk_0xD0_4)
+END_COPYS
+
+SAVE_OBJ(TrackWidget, 100)
+
+void TrackWidget::Load(BinStream& bs) { // bitfield and stack nonsense abound
+    bool x, y, z, a;
+    int i, u____;
+    LOAD_REVS(bs)
+    ASSERT_REVS(15, 0)
+    Hmx::Object::Load(bs);
+    if (gRev > 0) RndDrawable::Load(bs);
+    bs >> unk_0x20;
+    if (gRev > 4) {
+        bs >> x;
+        unk_0xD0_1 = x;
+        bs >> unk_0x30;
+        bs >> unk_0x40;
+        bs >> unk_0x50;
+    }
+    bs >> unk_0x60;
+    if (gRev > 2) bs >> unk_0x6C;
+    if (gRev > 8) bs >> unk_0x70;
+    if ((u16)(gRev + 0xFFFE) <= 5) { // ?
+        bs >> y;
+        if (!y) {
+            //unk_0xD0_4 = y;
+        }
+    }
+    if (gRev > 3) {
+        bs >> z;
+        unk_0xD0_2 = z;
+    }
+    if (gRev > 5) {
+        bs >> unk_0x88;
+        if (gRev < 8) {
+            bs >> x;
+            if (x) ; // i have no idea
+        }
+    }
+    if (gRev > 6) {
+        bs >> unk_0x94;
+        bs >> u____;
+        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 175);
+        bs >> i;
+        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 176);
+    }
+    if (gRev > 7) {
+
+
+        bs >> unk_0xC4;
+    }
+    if (gRev > 9) {
+        bs >> i;
+        mAlignment = (RndText::Alignment)i;
+    }
+    if (gRev > 10) {
+        bs >> unk_0xA4;
+        bs >> unk_0xB4;
+    }
+    if (gRev > 11) bs >> unk_0x78;
+    if (gRev > 12) {
+        bs >> unk_0x74;
+        bs >> unk_0x7C;
+    }
+    if (gRev > 13) {
+        bs >> y;
+        unk_0xD0_3 = y;
+    }
+    if (gRev > 14) {
+        bs >> x;
+        unk_0xD0_4 = x;
+    }
+
+    SyncImp();
+}
+
+void TrackWidget::CheckValid() const {
+    if (!TheLoadMgr.EditMode()) return;
+    if (unk_0x84 == NULL) return;
+    unk_0x84->CheckValid(mName);
+}
+
+void TrackWidget::Init() { unk_0x84->Init(); }
+
+bool TrackWidget::Empty() { return unk_0x84->Empty(); }
+float TrackWidget::GetFirstInstanceY() { return unk_0x84->GetFirstInstanceY(); }
+
+void TrackWidget::Clear() { unk_0x84->Clear(); }
+
+void TrackWidget::SetTextAlignment(RndText::Alignment a) {
+    if (a == mAlignment) return;
+    mAlignment = a;
+    SyncImp();
+}
+
+void TrackWidget::Mats(std::list<class RndMat*>&, bool) {
+
+}
+
+void TrackWidget::SyncImp() {
+    delete unk_0x84; // genius move; can't have an out-of-sync widget if you just Make A New One
+    unk_0x84 = 0;
+    switch (unk_0xD0_4) {
+        case 3:
+            unk_0x84 = new MultiMeshWidgetImp(unk_0x20, unk_0xD0_2);
+        default:
+            unk_0x84 = new ImmediateWidgetImp;
+    }
+    CheckValid();
+    if (TheLoadMgr.mEditMode) Init();
+}
+
+void TrackWidget::SetInactive() {mActive = 0;}
+
+BEGIN_HANDLERS(TrackWidget)
+    HANDLE_ACTION(clear, Clear())
+    HANDLE(set_meshes, OnSetMeshes)
+    HANDLE(add_instance, OnAddInstance)
+    HANDLE(add_text_instance, OnAddTextInstance)
+    HANDLE(add_mesh_instance, OnAddMeshInstance)
+    HANDLE_EXPR(size, unk_0x84->Size())
+    HANDLE_SUPERCLASS(RndDrawable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(575)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(TrackWidget)
+    SYNC_PROP_ACTION(meshes, unk_0x20, 0x11, CheckScales())
+    SYNC_PROP((Symbol)"wide_widget", unk_0xD4)
+    SYNC_PROP(meshes_left, unk_0x30)
+    SYNC_PROP(meshes_span, unk_0x40)
+    SYNC_PROP(meshes_right, unk_0x50)
+    SYNC_PROP((Symbol)"environ", unk_0x60)
+
+    SYNC_PROP_ACTION(text_color, unk_0xA4, 0x11, SyncImp())
+    SYNC_PROP_ACTION(alt_text_color, unk_0xB4, 0x11, SyncImp())
+
+    SYNC_SUPERCLASS(RndDrawable)
+END_PROPSYNCS

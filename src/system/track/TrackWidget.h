@@ -1,10 +1,71 @@
 #ifndef TRACK_TRACKWIDGET_H
 #define TRACK_TRACKWIDGET_H
 
+#include "obj/Dir.h"
+#include "obj/ObjPtr_p.h"
+#include "obj/Object.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Env.h"
+#include "rndobj/Font.h"
+#include "rndobj/Mat.h"
+#include "rndobj/Mesh.h"
+#include "rndobj/Text.h"
+#include "track/TrackDir.h"
+#include "track/TrackWidgetImp.h"
+#include <list>
 
 class TrackWidget : public RndDrawable {
-    
+public:
+    ObjPtrList<RndMesh, ObjectDir> unk_0x20, unk_0x30, unk_0x40, unk_0x50;
+    ObjPtr<RndEnviron, ObjectDir> unk_0x60;
+    float unk_0x6C, unk_0x70, unk_0x74, unk_0x78, unk_0x7C;
+    TrackDir* unk_0x80;
+    TrackWidgetImpBase* unk_0x84;
+    ObjPtr<RndFont, ObjectDir> unk_0x88;
+    ObjPtr<RndText, ObjectDir> unk_0x94;
+    RndText::Alignment mAlignment;
+    Hmx::Color unk_0xA4, unk_0xB4;
+    ObjPtr<RndMat, ObjectDir> unk_0xC4;
+    bool mActive : 1; // 0xD0_1; :sparkles: bitfield nonsense :sparkles:
+    bool unk_0xD0_1 : 1;
+    bool unk_0xD0_2 : 1;
+    bool unk_0xD0_3 : 1;
+    bool unk_0xD0_4 : 1;
+    bool unk_0xD0_5 : 1;
+    bool unk_0xD0_6 : 1;
+    bool unk_0xD0_7 : 1;
+    int unk_0xD4;
+
+    TrackWidget();
+    virtual ~TrackWidget();
+    OBJ_CLASSNAME(TrackWidget)
+    OBJ_SET_TYPE(TrackWidget)
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+    virtual void Mats(std::list<class RndMat*>&, bool);
+
+    void Clear();
+    void SyncImp();
+    void Init();
+    void CheckValid() const;
+    void CheckScales() const;
+    void SetInactive();
+    void SetTextAlignment(RndText::Alignment);
+    bool Empty();
+    float GetFirstInstanceY();
+
+    DataNode OnSetMeshes(const DataArray*);
+    DataNode OnAddInstance(const DataArray*);
+    DataNode OnAddTextInstance(const DataArray*);
+    DataNode OnAddMeshInstance(const DataArray*);
+
+    NEW_OBJ(TrackWidget)
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    DECLARE_REVS
 };
 
 #endif // TRACK_TRACKWIDGET_H
