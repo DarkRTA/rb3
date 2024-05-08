@@ -135,6 +135,8 @@ public:
     BS_READ_TYPE(u16);
     BS_READ_TYPE(u32);
     BS_READ_TYPE(u64);
+    BS_READ_TYPE(s32);
+    BS_READ_TYPE(s64);
 
     BinStream& operator>>(unsigned char& out) {
         Read(&out, 1);

@@ -16,7 +16,7 @@ public:
     };
 
     enum Alignment {
-
+        kAlignCenterRight = 34,
     };
 
     class Line {
