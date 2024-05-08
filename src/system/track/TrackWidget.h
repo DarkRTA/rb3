@@ -18,7 +18,8 @@ class TrackWidget : public RndDrawable {
 public:
     ObjPtrList<RndMesh, ObjectDir> unk_0x20, unk_0x30, unk_0x40, unk_0x50;
     ObjPtr<RndEnviron, ObjectDir> unk_0x60;
-    float unk_0x6C, unk_0x70, unk_0x74, unk_0x78, unk_0x7C;
+    float unk_0x6C, unk_0x70;
+    Vector3 unk_0x74;
     TrackDir* unk_0x80;
     TrackWidgetImpBase* unk_0x84;
     ObjPtr<RndFont, ObjectDir> unk_0x88;
@@ -26,14 +27,13 @@ public:
     RndText::Alignment mAlignment;
     Hmx::Color unk_0xA4, unk_0xB4;
     ObjPtr<RndMat, ObjectDir> unk_0xC4;
-    bool mActive : 1; // 0xD0_1; :sparkles: bitfield nonsense :sparkles:
-    bool unk_0xD0_1 : 1;
-    bool unk_0xD0_2 : 1;
-    bool unk_0xD0_3 : 1;
-    bool unk_0xD0_4 : 1;
-    bool unk_0xD0_5 : 1;
-    bool unk_0xD0_6 : 1;
-    bool unk_0xD0_7 : 1;
+    u8 mActive : 1; // 0xD0_1; :sparkles: bitfield nonsense :sparkles:
+    u8 unk_0xD0_1 : 1;
+    u8 unk_0xD0_2 : 1;
+    u8 unk_0xD0_3 : 1;
+    u8 unk_0xD0_4 : 2;
+    u8 unk_0xD0_6 : 1;
+    u8 unk_0xD0_7 : 1;
     int unk_0xD4;
 
     TrackWidget();
@@ -55,7 +55,12 @@ public:
     void SetInactive();
     void SetTextAlignment(RndText::Alignment);
     bool Empty();
+    void ApplyOffsets(Transform&);
+    void UpdateActiveStatus();
     float GetFirstInstanceY();
+    void AddInstance(Transform, float);
+    void AddTextInstance(const Transform&, String, bool);
+    void AddMeshInstance(const Transform&, RndMesh*, float);
 
     DataNode OnSetMeshes(const DataArray*);
     DataNode OnAddInstance(const DataArray*);

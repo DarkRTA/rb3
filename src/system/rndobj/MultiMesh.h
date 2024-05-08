@@ -9,7 +9,7 @@
 class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {
-        Instance();
+        Instance(Transform t) : mXfm(t) {}
         Transform mXfm;
     };
     RndMultiMesh();
@@ -51,6 +51,7 @@ public:
     DataNode OnDistribute(const DataArray*);
 
     ObjPtr<RndMesh, class ObjectDir> mMesh;
+    std::list<RndMultiMesh::Instance> mInstances; // 0x2C
     std::list<Transform> mTransforms;
 
     static void Terminate();

@@ -1,9 +1,9 @@
 #include "TrackWidget.h"
+#include "math/Mtx.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Text.h"
-#include "track/TrackWidgetImp.h"
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols4.h"
@@ -14,7 +14,7 @@ INIT_REVS(TrackWidget)
 
 TrackWidget::TrackWidget() : unk_0x20(this, kObjListNoNull), unk_0x30(this, kObjListNoNull), 
     unk_0x40(this, kObjListNoNull), unk_0x50(this, kObjListNoNull), unk_0x60(this, NULL), unk_0x6C(1), unk_0x70(1),
-    unk_0x74(0), unk_0x78(0), unk_0x7C(0), unk_0x80(0), unk_0x84(0), unk_0x88(this, NULL), unk_0x94(this, NULL),
+    unk_0x74(), unk_0x80(0), unk_0x84(0), unk_0x88(this, NULL), unk_0x94(this, NULL),
     mAlignment(RndText::kAlignCenterRight), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { unk_0xD4 &= 0x3FFFFF; SyncImp();}
 
 TrackWidget::~TrackWidget() {}
@@ -40,8 +40,6 @@ BEGIN_COPYS(TrackWidget)
     COPY_MEMBER(unk_0xA4)
     COPY_MEMBER(unk_0xB4)
     COPY_MEMBER(unk_0x74)
-    COPY_MEMBER(unk_0x78)
-    COPY_MEMBER(unk_0x7C)
     COPY_MEMBER(unk_0xD0_3)
     COPY_MEMBER(unk_0xD0_4)
 END_COPYS
@@ -103,10 +101,10 @@ void TrackWidget::Load(BinStream& bs) { // bitfield and stack nonsense abound
         bs >> unk_0xA4;
         bs >> unk_0xB4;
     }
-    if (gRev > 11) bs >> unk_0x78;
+    if (gRev > 11) bs >> unk_0x74.y;
     if (gRev > 12) {
-        bs >> unk_0x74;
-        bs >> unk_0x7C;
+        bs >> unk_0x74.x;
+        bs >> unk_0x74.z;
     }
     if (gRev > 13) {
         bs >> y;
@@ -131,6 +129,31 @@ void TrackWidget::Init() { unk_0x84->Init(); }
 bool TrackWidget::Empty() { return unk_0x84->Empty(); }
 float TrackWidget::GetFirstInstanceY() { return unk_0x84->GetFirstInstanceY(); }
 
+void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Hmx::Matrix3::operator= is inlined psq nonsense
+    if (f != 0) {
+        t.m.y.y = (unk_0x80->SecondsToY(f) + unk_0x74.y) / unk_0x6C;
+    }
+    ApplyOffsets(t);
+    if (unk_0x84->AddInstance(t, f) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
+    UpdateActiveStatus();
+}
+
+void TrackWidget::AddTextInstance(const Transform& Ct, class String s, bool b) {
+    Transform t = Ct;
+    ApplyOffsets(t);
+    if (unk_0x84->AddTextInstance(t, s, b) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
+    UpdateActiveStatus();
+}
+
+void TrackWidget::AddMeshInstance(const Transform& Ct, RndMesh* m, float f) {
+    if (unk_0x84->AddMeshInstance(Ct, m, f) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
+    UpdateActiveStatus();
+}
+
+void TrackWidget::ApplyOffsets(Transform& t) {
+    t.v += unk_0x74; 
+}
+
 void TrackWidget::Clear() { unk_0x84->Clear(); }
 
 void TrackWidget::SetTextAlignment(RndText::Alignment a) {
@@ -147,13 +170,52 @@ void TrackWidget::SyncImp() {
     delete unk_0x84; // genius move; can't have an out-of-sync widget if you just Make A New One
     unk_0x84 = 0;
     switch (unk_0xD0_4) {
+        case 2:
+            unk_0x84 = new CharWidgetImp/*(NULL, NULL, 0, 0, RndText::kAlignCenterRight)*/;
         case 3:
             unk_0x84 = new MultiMeshWidgetImp(unk_0x20, unk_0xD0_2);
+        case 1:
         default:
-            unk_0x84 = new ImmediateWidgetImp;
+            unk_0x84 = new ImmediateWidgetImp(!unk_0xD0_2);
     }
     CheckValid();
     if (TheLoadMgr.mEditMode) Init();
+}
+
+DataNode TrackWidget::OnSetMeshes(const DataArray* da) {
+    unk_0x20.clear();
+    for (int i = 2; i < da->Size(); i++)
+        unk_0x20.push_back(da->Obj<RndMesh>(i));
+    return DataNode();
+}
+
+DataNode TrackWidget::OnAddInstance(const DataArray* da) {
+    Transform t;
+    t.SetFromDA(da);
+    AddInstance(t, 0);
+    return DataNode();
+}
+
+DataNode TrackWidget::OnAddTextInstance(const DataArray* da) {
+    Transform t;
+    t.SetFromDA(da);
+    class String s(da->Str(5));
+    AddTextInstance(t, s, false);
+    return DataNode();
+}
+
+DataNode TrackWidget::OnAddMeshInstance(const DataArray* da) {
+    Transform t;
+    t.SetFromDA(da);
+    AddMeshInstance(t, da->Obj<RndMesh>(5), 0);
+    return DataNode();
+}
+
+void TrackWidget::UpdateActiveStatus() {
+    if (!mActive && !unk_0x84->Empty()) {
+        unk_0x80->AddActiveWidget(this);
+        mActive = true;
+    }
 }
 
 void TrackWidget::SetInactive() {mActive = 0;}

@@ -327,6 +327,7 @@
             "system/track/Track.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
+            "system/track/TrackWidgetImp.cpp": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",

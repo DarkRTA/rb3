@@ -1,6 +1,7 @@
 #ifndef MATH_MTX_H
 #define MATH_MTX_H
 #include "math/Vec.h"
+#include "obj/Data.h"
 #include "utl/BinStream.h"
 
 namespace Hmx {
@@ -59,6 +60,13 @@ public:
     void Reset(){
         m.Identity();
         v.Zero();
+    }
+
+    void SetFromDA(const class DataArray* da) {
+        Reset();
+        v.x = da->Float(2);
+        v.y = da->Float(3);
+        v.z = da->Float(4);
     }
     void LookAt(const Vector3&, const Vector3&);
     void Zero();

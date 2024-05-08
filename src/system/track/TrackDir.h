@@ -9,7 +9,11 @@ public:
     TrackDir();
     OBJ_CLASSNAME(TrackDir)
 
+    float SecondsToY(float) const;
+    void AddActiveWidget(class TrackWidget*);
     NEW_OBJ(TrackDir)
+
+    bool unk_0x20C;
 };
 
 #endif // TRACK_TRACKDIR_H

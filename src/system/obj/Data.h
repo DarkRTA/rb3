@@ -5,7 +5,6 @@
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
 #include "math/Vec.h"
-#include "math/Mtx.h"
 #include "math/Color.h"
 
 // forward declarations
@@ -214,7 +213,7 @@ public:
     bool FindData(Symbol tag, bool & ret, bool fail) const;
     bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
     bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
-    bool FindData(Symbol tag, Plane & ret, bool fail) const;
+    bool FindData(Symbol tag, class Plane & ret, bool fail) const;
     bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
 
     int FindInt(Symbol tag) const { return FindArray(tag, true)->Int(1); }
