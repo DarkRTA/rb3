@@ -25,9 +25,7 @@ public:
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
-    virtual RndAnimatable* AnimTarget(){
-        return mAnim.Ptr() ? mAnim.Ptr() : 0;
-    }
+    virtual Hmx::Object* AnimTarget(){ return mAnim; }
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
 
     float Scale();
