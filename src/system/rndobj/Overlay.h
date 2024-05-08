@@ -22,6 +22,7 @@ public:
     virtual void Print(const char *);
 
     void SetLines(int);
+    void Clear();
     static void Terminate();
 
     static RndOverlay* Find(Symbol, bool);
