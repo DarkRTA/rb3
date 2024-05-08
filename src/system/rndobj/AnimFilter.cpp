@@ -12,6 +12,26 @@ void RndAnimFilter::SetAnim(RndAnimatable* anim){
     }
 }
 
+void RndAnimFilter::ListAnimChildren(std::list<RndAnimatable*>& theList) const {
+    if(mAnim) theList.push_back(mAnim);
+}
+
+BEGIN_COPYS(RndAnimFilter)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndAnimatable)
+    GET_COPY(RndAnimFilter)
+    if(c && ty != kCopyFromMax){
+        COPY_MEMBER(mScale)
+        COPY_MEMBER(mOffset)
+        COPY_MEMBER(mStart)
+        COPY_MEMBER(mEnd)
+        COPY_MEMBER(mType)
+        COPY_MEMBER(mAnim)
+        COPY_MEMBER(mPeriod)
+        COPY_MEMBER(mSnap)
+        COPY_MEMBER(mJitter)
+    }
+END_COPYS
 
 RndAnimFilter::RndAnimFilter() : mAnim(this, 0), mPeriod(0.0f), mStart(0.0f), mEnd(0.0f), mScale(1.0f), mOffset(0.0f), mSnap(0.0f), mJitter(0.0f), mJitterFrame(0.0f), mType(kRange) {
     
@@ -26,10 +46,8 @@ void RndAnimFilter::Load(BinStream& bs){
     RndAnimatable::Load(bs);
     bs >> mAnim >> mScale >> mOffset >> mStart >> mEnd;
     if(gRev != 0){
-        int i;
-        bs >> i;
-        mType = (RndAnimFilter::Type)i;
-        bs >> mScale;
+        bs >> (int&)mType;
+        bs >> mPeriod;
     }
     else {
         unsigned char c;
@@ -39,6 +57,18 @@ void RndAnimFilter::Load(BinStream& bs){
     if(gRev > 1){
         bs >> mSnap >> mJitter;
     }
+}
+
+float RndAnimFilter::Scale(){
+    float ret;
+    if(mPeriod != 0.0f){
+        ret = (mEnd - mStart) / (mPeriod * FramesPerUnit());
+    }
+    else {
+        if(mEnd >= mStart) ret = mScale;
+        else ret = -mScale;
+    }
+    return ret;
 }
 
 BEGIN_HANDLERS(RndAnimFilter)
