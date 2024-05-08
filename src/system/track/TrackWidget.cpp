@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Env.h"
 #include "rndobj/Text.h"
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
@@ -15,9 +16,11 @@ INIT_REVS(TrackWidget)
 TrackWidget::TrackWidget() : unk_0x20(this, kObjListNoNull), unk_0x30(this, kObjListNoNull), 
     unk_0x40(this, kObjListNoNull), unk_0x50(this, kObjListNoNull), unk_0x60(this, NULL), unk_0x6C(1), unk_0x70(1),
     unk_0x74(), unk_0x80(0), unk_0x84(0), unk_0x88(this, NULL), unk_0x94(this, NULL),
-    mAlignment(RndText::kAlignCenterRight), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { unk_0xD4 &= 0x3FFFFF; SyncImp();}
+mAlignment(RndText::kAlignCenterRight), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { 
+    unk_0xD4 &= 0x3FFFFF; SyncImp();
+}
 
-TrackWidget::~TrackWidget() {}
+TrackWidget::~TrackWidget() { delete unk_0x84; unk_0x84 = NULL;}
 
 BEGIN_COPYS(TrackWidget)
     GET_COPY_AND_ASSERT(TrackWidget, 66)
@@ -41,7 +44,7 @@ BEGIN_COPYS(TrackWidget)
     COPY_MEMBER(unk_0xB4)
     COPY_MEMBER(unk_0x74)
     COPY_MEMBER(unk_0xD0_3)
-    COPY_MEMBER(unk_0xD0_4)
+    COPY_MEMBER(mWidgetType)
 END_COPYS
 
 SAVE_OBJ(TrackWidget, 100)
@@ -67,7 +70,7 @@ void TrackWidget::Load(BinStream& bs) { // bitfield and stack nonsense abound
     if ((u16)(gRev + 0xFFFE) <= 5) { // ?
         bs >> y;
         if (!y) {
-            //unk_0xD0_4 = y;
+            //mWidgetType = y;
         }
     }
     if (gRev > 3) {
@@ -112,7 +115,7 @@ void TrackWidget::Load(BinStream& bs) { // bitfield and stack nonsense abound
     }
     if (gRev > 14) {
         bs >> x;
-        unk_0xD0_4 = x;
+        mWidgetType = x;
     }
 
     SyncImp();
@@ -126,10 +129,25 @@ void TrackWidget::CheckValid() const {
 
 void TrackWidget::Init() { unk_0x84->Init(); }
 
+void TrackWidget::DrawShowing() {
+    if (!unk_0x84->Empty()) {
+        if (&(*unk_0x60) != NULL && &(*unk_0x60) != RndEnviron::sCurrent) unk_0x60->Select(NULL);
+
+        unk_0x84->DrawInstances(unk_0x20, unk_0xD0_7);
+    }
+}
+
+void TrackWidget::Poll() {
+    if (unk_0x80) {
+        unk_0x84->RemoveUntil(unk_0x80->CutOffY(), unk_0x6C);
+        unk_0x84->Poll();
+    }
+}
+
 bool TrackWidget::Empty() { return unk_0x84->Empty(); }
 float TrackWidget::GetFirstInstanceY() { return unk_0x84->GetFirstInstanceY(); }
 
-void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Hmx::Matrix3::operator= is inlined psq nonsense
+void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Transform::operator= is inlined psq nonsense
     if (f != 0) {
         t.m.y.y = (unk_0x80->SecondsToY(f) + unk_0x74.y) / unk_0x6C;
     }
@@ -150,6 +168,10 @@ void TrackWidget::AddMeshInstance(const Transform& Ct, RndMesh* m, float f) {
     UpdateActiveStatus();
 }
 
+void TrackWidget::RemoveAt(float f) {
+    unk_0x84->RemoveAt(unk_0x80->SecondsToY(f) + unk_0x74.y, unk_0x74.x, -1);
+}
+
 void TrackWidget::ApplyOffsets(Transform& t) {
     t.v += unk_0x74; 
 }
@@ -162,16 +184,19 @@ void TrackWidget::SetTextAlignment(RndText::Alignment a) {
     SyncImp();
 }
 
-void TrackWidget::Mats(std::list<class RndMat*>&, bool) {
+void TrackWidget::Mats(std::list<class RndMat*>& mats, bool) {
+    for (std::list<class RndMat*>::iterator i = mats.begin(); *i != NULL; i++) {
 
+        
+    }
 }
 
 void TrackWidget::SyncImp() {
     delete unk_0x84; // genius move; can't have an out-of-sync widget if you just Make A New One
     unk_0x84 = 0;
-    switch (unk_0xD0_4) {
+    switch (mWidgetType) {
         case 2:
-            unk_0x84 = new CharWidgetImp/*(NULL, NULL, 0, 0, RndText::kAlignCenterRight)*/;
+            //unk_0x84 = new CharWidgetImp/*(NULL, NULL, 0, 0, RndText::kAlignCenterRight)*/;
         case 3:
             unk_0x84 = new MultiMeshWidgetImp(unk_0x20, unk_0xD0_2);
         case 1:
@@ -239,9 +264,33 @@ BEGIN_PROPSYNCS(TrackWidget)
     SYNC_PROP(meshes_span, unk_0x40)
     SYNC_PROP(meshes_right, unk_0x50)
     SYNC_PROP((Symbol)"environ", unk_0x60)
-
+    SYNC_PROP(base_length, unk_0x6C)
+    SYNC_PROP(base_width, unk_0x70)
+    // SYNC_PROP((Symbol)"max_meshes", ) // part of the bitfield... 
+    SYNC_PROP_ACTION(font, unk_0x88, 0x11, SyncImp())
+    SYNC_PROP_ACTION(text_obj, unk_0x94, 0x11, SyncImp())
+    SYNC_PROP_ACTION(text_alignment, *(int*)&mAlignment, 0x11, SyncImp()) // compiler complains if you don't do the dirty variant
     SYNC_PROP_ACTION(text_color, unk_0xA4, 0x11, SyncImp())
     SYNC_PROP_ACTION(alt_text_color, unk_0xB4, 0x11, SyncImp())
+    SYNC_PROP_ACTION(mat, unk_0xC4, 0x11, SyncImp())
+    SYNC_PROP(x_offset, unk_0x74.x)
+    SYNC_PROP(y_offset, unk_0x74.y)
+    SYNC_PROP(z_offset, unk_0x74.z)
+    // SYNC_PROP_ACTION((Symbol)"allow_shift", *(bool*)&unk_0xD0_7, 0x11, SyncImp()) // bitfield
+
+    if (sym == (Symbol) "widget_type") {
+        int x = mWidgetType;
+        bool synced = PropSync(x, _val, _prop, _i + 1, _op);
+        mWidgetType = x;
+        if (!synced)
+            return false;
+        else {
+            if (!(_op & (0x11))) {
+                SyncImp();
+            }
+            return true;
+        }
+    }
 
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

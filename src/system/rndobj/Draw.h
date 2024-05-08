@@ -5,6 +5,7 @@
 #include "math/Sphere.h"
 #include "math/Mtx.h"
 #include "math/Geo.h"
+#include <list>
 
 class RndDrawable : public virtual RndHighlightable {
 public:

@@ -10,7 +10,7 @@
  * it under the terms of the MIT license. See COPYING for details.
  *
  */
-
+/*
 #include "config.h"
 
 #include <stdio.h>
@@ -20,15 +20,15 @@
 
 #if HAVE_SYSLOG_H
 #include <syslog.h>
-#endif /* HAVE_SYSLOG_H */
+#endif // HAVE_SYSLOG_H 
 
 #if HAVE_UNISTD_H
 #include <unistd.h>
-#endif /* HAVE_UNISTD_H */
+#endif // HAVE_UNISTD_H 
 
 #if HAVE_SYS_PARAM_H
 #include <sys/param.h>
-#endif /* HAVE_SYS_PARAM_H */
+#endif // HAVE_SYS_PARAM_H 
 
 #include "debug.h"
 
@@ -103,5 +103,6 @@ void mc_info(const char *msg, ...)
         vfprintf(stderr, msg, ap);
     va_end(ap);
 }
+*/
 
 // clang-format enable

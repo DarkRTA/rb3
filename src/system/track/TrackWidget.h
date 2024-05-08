@@ -12,7 +12,6 @@
 #include "rndobj/Text.h"
 #include "track/TrackDir.h"
 #include "track/TrackWidgetImp.h"
-#include <list>
 
 class TrackWidget : public RndDrawable {
 public:
@@ -27,13 +26,13 @@ public:
     RndText::Alignment mAlignment;
     Hmx::Color unk_0xA4, unk_0xB4;
     ObjPtr<RndMat, ObjectDir> unk_0xC4;
-    u8 mActive : 1; // 0xD0_1; :sparkles: bitfield nonsense :sparkles:
-    u8 unk_0xD0_1 : 1;
-    u8 unk_0xD0_2 : 1;
-    u8 unk_0xD0_3 : 1;
-    u8 unk_0xD0_4 : 2;
-    u8 unk_0xD0_6 : 1;
-    u8 unk_0xD0_7 : 1;
+    int mActive : 1; // 0xD0_0; :sparkles: bitfield nonsense :sparkles:
+    int unk_0xD0_1 : 1;
+    int unk_0xD0_2 : 1;
+    int unk_0xD0_3 : 1;
+    int mWidgetType : 2; // 0xD0_4-5
+    int unk_0xD0_6 : 1;
+    int unk_0xD0_7 : 1;
     int unk_0xD4;
 
     TrackWidget();
@@ -50,6 +49,8 @@ public:
     void Clear();
     void SyncImp();
     void Init();
+    void DrawShowing();
+    void Poll();
     void CheckValid() const;
     void CheckScales() const;
     void SetInactive();
@@ -57,6 +58,7 @@ public:
     bool Empty();
     void ApplyOffsets(Transform&);
     void UpdateActiveStatus();
+    void RemoveAt(float);
     float GetFirstInstanceY();
     void AddInstance(Transform, float);
     void AddTextInstance(const Transform&, String, bool);

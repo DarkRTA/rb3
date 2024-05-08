@@ -5,5 +5,6 @@
 
 RndGroup* GroupOwner(Hmx::Object*);
 float ConvertFov(float a, float b);
+void SetLocalScale(RndTransformable*, const Vector3&);
 
 #endif // RNDOBJ_UTL_H

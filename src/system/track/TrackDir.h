@@ -11,6 +11,7 @@ public:
 
     float SecondsToY(float) const;
     void AddActiveWidget(class TrackWidget*);
+    float CutOffY() const;
     NEW_OBJ(TrackDir)
 
     bool unk_0x20C;
