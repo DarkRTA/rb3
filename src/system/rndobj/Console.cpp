@@ -7,9 +7,6 @@
 #include <string.h>
 
 static RndConsole* gConsole;
-// // declared/defined in DataArray.cpp
-// DataArray* gCallStack[100];
-// DataArray** gCallStackPtr;
 
 static DataNode DataContinue(DataArray*) {
     gConsole->Continue();
@@ -115,8 +112,26 @@ void RndConsole::InsertBreak(DataArray* arr, int i){
     mBreakpoints.back().index = i;
 }
 
+
+// // declared/defined in DataArray.cpp
+extern DataArray* gCallStack[100];
+extern DataArray** gCallStackPtr;
+
 extern DataFunc* gPreExecuteFunc;
 extern int gPreExecuteLevel;
+
+void RndConsole::Where(){
+    if(mDebugging){
+        mOutput->Clear();
+        for(DataArray** it = gCallStackPtr - 2 * sizeof(DataArray*); (int)it > gPreExecuteLevel + 3U; it--){
+            if(*it != mDebugging){
+                TheDebug << "  ";
+            }
+            TheDebug << MakeString("%s:%d\n", (*it)->mFile, (*it)->mLine);
+        }
+    }
+    else MILO_FAIL("Can't where unless debugging");
+}
 
 void RndConsole::Step(int i) {
     if (mDebugging) {
