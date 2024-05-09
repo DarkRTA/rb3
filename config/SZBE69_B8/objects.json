@@ -132,6 +132,7 @@
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
 
+            "system/char/Character.cpp": "NonMatching",
             "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
