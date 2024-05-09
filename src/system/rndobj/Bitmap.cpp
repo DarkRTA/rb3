@@ -5,7 +5,7 @@
 #include "utl/MemMgr.h"
 #include "utl/Symbols4.h"
 
-static unsigned char BITMAP_REV = 1;
+unsigned char BITMAP_REV = 1;
 
 BinStream& RndBitmap::LoadHeader(BinStream& bs, u8& test) {
     u8 ver, h;
@@ -25,14 +25,8 @@ BinStream& RndBitmap::LoadHeader(BinStream& bs, u8& test) {
 
 BinStream& RndBitmap::SaveHeader(BinStream& bs) const {
     static u8 pad[0x13];
-    u16 h = mHeight;
-    u16 w = mWidth;
-    u8 mipCt = NumMips();
-    u8 rev = BITMAP_REV;
-    u32 ord = mOrder;
-    bs << rev << mBpp << (int)ord << mipCt << w << h;
-    u16 rb = mRowBytes;
-    bs << rb;
+    bs << BITMAP_REV << mBpp << (unsigned int)mOrder << (unsigned char)NumMips() << mWidth << mHeight;
+    bs << mRowBytes;
     bs.Write(pad, 0x13);
     return bs;
 }

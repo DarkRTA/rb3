@@ -38,7 +38,7 @@ public:
     virtual void SetFrame(float, float); // weak
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
-    virtual Hmx::Object* AnimTarget(); // weak
+    virtual Hmx::Object* AnimTarget(){ return this; }
     virtual void SetKey(float){}
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
 
