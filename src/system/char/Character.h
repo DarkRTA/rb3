@@ -15,6 +15,7 @@ public:
         Lod(Hmx::Object*);
         Lod(const Lod&);
         Lod& operator=(const Lod&);
+        ~Lod(){}
 
         float mScreenSize;
         ObjPtr<RndGroup, ObjectDir> mGroup;
@@ -39,6 +40,8 @@ public:
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
+
+    void UnhookShadow();
 
     ObjVector<Lod> mLods; // 0x18c
     int mLastLod;

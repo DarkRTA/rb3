@@ -23,5 +23,6 @@ Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0),
 }
 
 Character::~Character(){
-
+    UnhookShadow();
+    delete mTest;
 }
