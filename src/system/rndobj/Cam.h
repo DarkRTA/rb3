@@ -23,6 +23,8 @@ public:
     virtual void Select();
     virtual int ProjectZ(float){ return 0; }
 
+    void SetFrustum(float, float, float, float);
+    void SetTargetTex(RndTex*);
     void UpdateLocal();
     DataNode OnSetFrustum(const DataArray*);
     DataNode OnSetZRange(const DataArray*);

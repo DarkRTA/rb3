@@ -6,6 +6,7 @@ class Vector2 {
 public:
     Vector2(){}
     Vector2(float xx, float yy) : x(xx), y(yy) {}
+    void Set(float xx, float yy){ x = xx; y = yy; }
     float x;
     float y;
 };
