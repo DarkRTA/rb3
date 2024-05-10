@@ -21,6 +21,7 @@
 
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
 
+            "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
             "band3/tour/TourProgress.cpp": "NonMatching"
         }
