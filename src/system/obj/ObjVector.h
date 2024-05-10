@@ -1,10 +1,10 @@
 #ifndef OBJ_OBJVECTOR_H
 #define OBJ_OBJVECTOR_H
+#include "types.h"
 #include <vector>
-#include "utl/BinStream.h"
 #include "obj/Object.h"
 
-template <class T> class ObjVector : public std::vector<T> {
+template <class T1, class T2 = u16> class ObjVector : public std::vector<T1, T2> {
 public:
     ObjVector(Hmx::Object* o) : mOwner(o) {}
     Hmx::Object* mOwner;

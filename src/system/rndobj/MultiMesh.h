@@ -10,6 +10,7 @@
 class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {
+        Instance();
         Instance(Transform t) : mXfm(t) {}
         Transform mXfm;
     };

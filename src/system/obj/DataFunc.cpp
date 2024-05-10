@@ -1066,6 +1066,8 @@ DefDataFunc(FindExists, {
     return DataNode(ret, kDataArray);
 })
 
+const char* deadstripped_txt = "Bad key %s (file %s, line %d)";
+
 static DataNode DataFind(DataArray* da) {
     DataFindExists(da);
     if (true) MILO_FAIL("Couldn't find key (file %s, line %d)", da->File(), da->Line());
