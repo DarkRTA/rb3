@@ -19,6 +19,9 @@
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
+            "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",
+            "band3/meta_band/Award.cpp": "NonMatching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",

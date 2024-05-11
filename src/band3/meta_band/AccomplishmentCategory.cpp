@@ -1,0 +1,48 @@
+#include "AccomplishmentCategory.h"
+#include "os/Debug.h"
+#include "system/utl/Symbols.h"
+
+AccomplishmentCategory::AccomplishmentCategory(const DataArray*, int) : mName(""), mAward(""), mGroup("") {
+
+}
+
+AccomplishmentCategory::~AccomplishmentCategory(){
+}
+
+void AccomplishmentCategory::Configure(const DataArray* i_pConfig) {
+    MILO_ASSERT(i_pConfig, 0x1e);
+
+    mName = i_pConfig->Sym(0);
+    i_pConfig->FindData(group, mGroup, true);
+    i_pConfig->FindData(award, mAward, false);
+}
+
+Symbol AccomplishmentCategory::GetName() const {
+    return mName;
+}
+
+int AccomplishmentCategory::GetIndex() const {
+    return mIndex;
+}
+
+Symbol AccomplishmentCategory::GetGroup() const {
+    return mGroup;
+}
+
+Symbol AccomplishmentCategory::GetAward() const {
+    return mAward;
+}
+
+bool AccomplishmentCategory::HasAward() const {
+    bool noDesc;
+
+    if (gNullStr) {
+        noDesc = !strcmp(mAward.Str(), gNullStr);
+    } else {
+        noDesc = (mAward.Str() == gNullStr);
+    }
+
+    if (!noDesc){
+        return false;
+    }
+}

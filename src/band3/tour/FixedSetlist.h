@@ -10,7 +10,7 @@ class FixedSetlist {
     Symbol mName; Symbol GetName() const;
     Symbol mGroup; Symbol GetGroup() const;
     float mWeight; float GetWeight() const;
-    DataArray* mSongEntries;
+    DataArray* m_pSongEntries;
     Symbol GetSongName(int);
     int GetNumSongs() const;
 
