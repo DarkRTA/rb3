@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_MESH_H
 #define RNDOBJ_MESH_H
+#include "math/Vec.h"
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
@@ -16,9 +17,10 @@ class RndMultiMesh;
 class RndBone : public ObjPtr<RndTransformable, ObjectDir> {
     public:
     RndBone() : ObjPtr<RndTransformable, ObjectDir>(NULL, NULL) {}
+    operator ObjPtr<RndTransformable, ObjectDir>&() { return *this; } 
     void Load(BinStream&);
 
-    Transform mXfm;
+    Transform mOffset;
 };
 
 class RndMesh : public RndDrawable, public RndTransformable {
@@ -28,7 +30,7 @@ public:
         Vert();
         float x, y, z; // 0x0, 0x4, 0x8
         float nx, ny, nz; // 0xC, 0x10, 0x14 W component gets shadowrealmed on wii
-        u16 unk_0x18, unk_0x1A, unk_0x1C, unk_0x1E;
+        Vector4_16_01 why; // 0x18 the hate format
         int unk_0x20; // ????
         float u, v; // 0x24, 0x28 WHY ARE THEY OUT HERE
         u16 unk_0x2C, unk_0x2E, unk_0x30, unk_0x32;
@@ -39,10 +41,17 @@ public:
         u16 idx0, idx1, idx2;
     };
 
-    class VertVector : public std::vector<Vert, u32> {
+    enum Volume {
+        kVolumeEmpty,
+        kVolumeTriangles,
+        kVolumeBSP,
+        kVolumeBox
+    };
+
+    class VertVector : public std::vector<Vert, s32> {
         public:
-        std::vector<Vert>::iterator begin() { return std::vector<Vert, u32>::begin(); }
-        std::vector<Vert>::iterator end() { return std::vector<Vert, u32>::end(); }
+        std::vector<Vert>::iterator begin() { return std::vector<Vert, s32>::begin(); }
+        std::vector<Vert>::iterator end() { return std::vector<Vert, s32>::end(); }
     };
 
     RndMesh();
@@ -62,8 +71,14 @@ public:
     virtual void Highlight();
     virtual ~RndMesh();
 
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
+    virtual void DrawFaces() {}
+    virtual int NumFaces() const;
+    virtual int NumVerts() const;
+    virtual void Print();
+    virtual void OnSync(int);
 
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
@@ -82,8 +97,6 @@ public:
 
     int NumBones() const;
     bool IsSkinned() const;
-    int NumVerts() const;
-    int NumFaces() const;
     void SetMat(RndMat*);
     int EstimatedSizeKb() const;
     void CopyBones(const RndMesh*);
@@ -114,5 +127,6 @@ public:
 };
 
 BinStream& operator>>(BinStream&, RndMesh::Face&);
+TextStream& operator<<(TextStream&, RndMesh::Volume);
 
 #endif

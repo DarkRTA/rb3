@@ -28,7 +28,7 @@ void HxGuid::Clear(){
     mData[0] = mData[1] = mData[2] = mData[3] = 0;
 }
 
-inline bool HxGuid::IsNull() const {
+bool HxGuid::IsNull() const {
     return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0);
 }
 

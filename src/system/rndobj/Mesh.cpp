@@ -4,6 +4,7 @@
 #include "os/Debug.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
 #include "utl/BufStream.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols4.h"
@@ -26,7 +27,7 @@ RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
     unk9p3 = false;
 }
 
-RndMesh::Vert::Vert() : x(0), y(0), z(0), nx(0), ny(1), nz(0), unk_0x18(0), unk_0x1A(0), unk_0x1C(0), unk_0x1E(0),
+RndMesh::Vert::Vert() : x(0), y(0), z(0), nx(0), ny(1), nz(0), why(),
     unk_0x20(-1), u(0), v(0), unk_0x2C(0), unk_0x2E(0), unk_0x30(0), unk_0x32(0) {}
 
 void RndMesh::PreLoadVertices(BinStream& bs) {
@@ -126,18 +127,24 @@ void RndMesh::PostLoad(BinStream& bs) {
             if ((RndTransformable*)t) {
                 mBones.resize(4);
                 if (gRev > 22) {
-                    //mBones[0] = t;
+                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = t;
                     bs >> mBones[1] >> mBones[2] >> mBones[3];
-                    bs >> mBones[0].mXfm >> mBones[1].mXfm >> mBones[2].mXfm >> mBones[3].mXfm;
+                    bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
                     if (gRev < 25) { // incoming headache
                         for (std::vector<Vert>::iterator it = mVerts.begin(); it != mVerts.end(); it++) {
-
+                            it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
+                                it->why.GetX(), it->why.GetY(), it->why.GetZ());
                         }
                     }
                 } else {
-                    if (TransConstraint() == kParentWorld) {
-
-                    }
+                    if (TransConstraint() == kParentWorld) 
+                        (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = TransParent(); 
+                    else (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = this;
+                    mBones[0].mOffset.Reset();
+                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[1] = t;
+                    bs >> mBones[2];
+                    bs >> mBones[1].mOffset >> mBones[2].mOffset;
+                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[3] = NULL;
                 }
             }
             mBones.clear();
@@ -157,8 +164,31 @@ void RndMesh::PostLoad(BinStream& bs) {
 }
 #pragma dont_inline reset
 
-int RndMesh::NumVerts() const { return mVerts.size(); }
+BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
+    bs >> v.x >> v.y >> v.z;
+    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) { int a,b; bs >> a >> b; }
+    bs >> v.nx >> v.ny >> v.nz;
+
+
+    if (RndMesh::gRev < 20) { int a,b; bs >> b >> a; }
+    if (RndMesh::gRev > 28) bs >> v.unk_0x2C >> v.unk_0x2E >> v.unk_0x30 >> v.unk_0x32;
+    if (RndMesh::gRev > 29) {
+        int a,b,c,d;
+        bs >> d >> c >> b >> a;
+    }
+    return bs;
+}
+
+TextStream& operator<<(TextStream& ts, RndMesh::Volume v) {
+    if (v == RndMesh::kVolumeEmpty) ts << "kVolumeEmpty";
+    else if (v == RndMesh::kVolumeTriangles) ts << "kVolumeTriangles";
+    else if (v == RndMesh::kVolumeBSP) ts << "kVolumeBSP";
+    else if (v == RndMesh::kVolumeBox) ts << "kVolumeBox";
+    return ts;
+}
+
 int RndMesh::NumFaces() const { return mFaces.size(); }
+int RndMesh::NumVerts() const { return mVerts.size(); }
 
 BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
     bs >> f.idx0 >> f.idx1 >> f.idx2;
@@ -167,6 +197,10 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
         bs >> z >> y >> x;
     }
     return bs;
+}
+
+void RndMesh::Sync(int i) {
+    OnSync(unk9p1 ? i | 0x200 : i);
 }
 
 #pragma dont_inline on
@@ -194,6 +228,111 @@ BEGIN_HANDLERS(RndMesh)
     HANDLE_CHECK(2306)
 END_HANDLERS
 #pragma dont_inline reset
+
+DataNode RndMesh::OnAttachMesh(const DataArray* da) {
+    RndMesh* m = da->Obj<RndMesh>(2);
+    AttachMesh(this, m);
+    delete m;
+    return DataNode();
+}
+
+DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2446);
+    v = &mVerts[index];
+    *da->Var(3) = DataNode(v->nx);
+    *da->Var(4) = DataNode(v->ny);
+    *da->Var(5) = DataNode(v->nz);
+    return DataNode();
+}
+
+DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2457);
+    v = &mVerts[index];
+    v->nx = da->Float(3);
+    v->ny = da->Float(4);
+    v->nz = da->Float(5);
+    Sync(31);
+    return DataNode();
+}
+
+DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2469);
+    v = &mVerts[index];
+    *da->Var(3) = DataNode(v->x);
+    *da->Var(4) = DataNode(v->y);
+    *da->Var(5) = DataNode(v->z);
+    return DataNode();
+}
+
+DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2480);
+    v = &mVerts[index];
+    v->x = da->Float(3);
+    v->y = da->Float(4);
+    v->z = da->Float(5);
+    Sync(31);
+    return DataNode();
+}
+
+DataNode RndMesh::OnGetVertUV(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2492);
+    v = &mVerts[index];
+    *da->Var(3) = DataNode(v->u);
+    *da->Var(4) = DataNode(v->v);
+    return DataNode();
+}
+
+DataNode RndMesh::OnSetVertUV(const DataArray* da) {
+    Vert* v;
+    s32 index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mVerts.size(), 2502);
+    v = &mVerts[index];
+    v->u = da->Float(3);
+    v->v = da->Float(4);
+    Sync(31);
+    return DataNode();
+}
+
+DataNode RndMesh::OnGetFace(const DataArray* da) {
+    Face* f;
+    int index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mFaces.size(), 2513);
+    f = &mFaces[index];
+    *da->Var(3) = DataNode(f->idx0);
+    *da->Var(4) = DataNode(f->idx1);
+    *da->Var(5) = DataNode(f->idx2);
+    return DataNode();
+}
+
+DataNode RndMesh::OnSetFace(const DataArray* da) {
+    Face* f;
+    int index = da->Int(2);
+    MILO_ASSERT(index >= 0 && index < mFaces.size(), 2524);
+    f = &mFaces[index];
+    f->idx0 = da->Int(3); f->idx1 = da->Int(4); f->idx2 = da->Int(5);
+    Sync(32);
+    return DataNode();
+}
+
+bool PropSync(RndBone& b, DataNode& _val, DataArray* _prop, int _i, PropOp _op) {
+    if(_i == _prop->Size()) return true; \
+    else { \
+        Symbol sym = _prop->Sym(_i);
+        SYNC_PROP(bone, (ObjPtr<RndTransformable,class ObjectDir>&)b);
+        SYNC_PROP(offset, b.mOffset)
+        return false;
+    }
+}
 
 BEGIN_PROPSYNCS(RndMesh)
     SYNC_PROP(mat, mMat)
