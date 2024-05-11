@@ -24,11 +24,11 @@ enum Constraint {
 class RndTransformable : public virtual RndHighlightable {
 public:
     RndTransformable();
-    virtual ~RndTransformable();
 
     OBJ_CLASSNAME(Trans)
     OBJ_SET_TYPE(Trans)
 
+    virtual ~RndTransformable();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -40,6 +40,7 @@ public:
     virtual void UpdatedWorldXfm();
 
     void SetTransParent(RndTransformable*, bool);
+    RndTransformable* TransParent() const;
 
     // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
     DataNode OnCopyLocalTo(const DataArray*);
@@ -60,7 +61,7 @@ public:
     Transform mLocalXfm; // 0x20
     Transform mWorldXfm;
     std::vector<int>* vptr; // actually a ptr to DirtyCache? which is a class containing a vector and a char/bool/byte
-    short mConstraint;
+    u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; }
     bool mPreserveScale;
     ObjPtr<RndTransformable, class ObjectDir> mTarget;
 

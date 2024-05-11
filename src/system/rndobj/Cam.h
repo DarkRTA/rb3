@@ -23,6 +23,7 @@ public:
     virtual void Select();
     virtual int ProjectZ(float){ return 0; }
 
+    void WorldToScreen(const Vector3&, Vector2&) const;
     void UpdateLocal();
     DataNode OnSetFrustum(const DataArray*);
     DataNode OnSetZRange(const DataArray*);
@@ -38,16 +39,16 @@ public:
     Transform mInvLocalProjectXfm;
     Transform mWorldProjectXfm;
     Transform mInvWorldProjectXfm;
-    Frustum mLocalFrustum;
-    Frustum mWorldFrustum;
-    float mNearPlane;
-    float mFarPlane;
-    float mYFov;
-    float mUnknownFloat;
-    Vector2 mZRange;
-    Hmx::Rect mScreenRect;
-    ObjPtr<RndTex, class ObjectDir> mTargetTex;
-    int asdf;
+    Frustum mLocalFrustum; // 0x180
+    Frustum mWorldFrustum; // 0x1E0
+    float mNearPlane; // 0x240
+    float mFarPlane; // 0x244
+    float mYFov; // 0x248
+    float mUnknownFloat; // 0x24C
+    Vector2 mZRange; // 0x250
+    Hmx::Rect mScreenRect; // 0x258
+    ObjPtr<RndTex, class ObjectDir> mTargetTex; // 0x268
+    int asdf; // 0x274
 };
 
 #endif

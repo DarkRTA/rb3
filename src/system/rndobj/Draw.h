@@ -41,7 +41,7 @@ public:
     virtual ~RndDrawable(){}
 
     bool DrawBudget(float);
-    void DumpLoad(BinStream&);
+    static void DumpLoad(BinStream&);
 
     DataNode OnCopySphere(const DataArray*);
     DataNode OnGetSphere(const DataArray*);
