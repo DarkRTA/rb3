@@ -42,6 +42,17 @@ void AccomplishmentManager::InitializePrecachedFilters(){
 
 }
 
+void AccomplishmentManager::ConfigureFanValueData(DataArray*){}
+void AccomplishmentManager::ConfigureFanScalingData(DataArray*){}
+void AccomplishmentManager::ConfigureAwardData(DataArray*){}
+void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentGroupData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentCategoryData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray*){}
+
 void AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
     if (true) {
         TheDebug.Notify(MakeString("", 0));

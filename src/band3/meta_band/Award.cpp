@@ -1,6 +1,7 @@
 #include "Award.h"
 #include "os/Debug.h"
 #include "system/utl/Symbols2.h"
+#include "ProfileAssets.h"
 
 Award::Award(DataArray* configure, int index) : mName(""), mIconArt(""), mIndex(index), mDescription("") {
     Configure(configure);
@@ -11,7 +12,7 @@ Award::~Award() {
 }
 
 void Award::Configure(DataArray* i_pConfig) {
-    MILO_ASSERT(i_pConfig, 0x1e);
+    MILO_ASSERT(i_pConfig, 0x0a);
 
     mName = i_pConfig->Sym(0);
 }
@@ -21,15 +22,16 @@ Symbol Award::GetName() const{
 }
 
 Symbol Award::GetDescription() const{
-    if(HasAssets()){
+    if (HasAssets()) {
         return award_genericdesc;
     }
-    return mDescription;
+    return MakeString("", mDescription);
 }
 
 Symbol Award::GetDisplayName() const{
     bool hasAssets = HasAssets();
-    if(hasAssets){
+
+    if (hasAssets) {
         return Symbol(award_generic);
     }
     return Symbol(award_generic);
@@ -55,31 +57,6 @@ bool Award::IsBonus() const{
     return mIsBonus;
 }
 
-void Award::GrantAward(const AwardEntry& awardEntry, BandProfile* i_pProfile) {
-    MILO_ASSERT(i_pProfile, 0x00);
-
-    ProfileAssets::AddAsset(asset);
-}
-
-void Award::InqAssets(std::vector<Symbol>&) {
-
-}
-
-bool Award::HasAssets() const {
-    if(asset == mPadding2){
-        return true;
-    }
-    return false;
-}
-
-void Award::GrantAwards(BandProfile* bandProfile) {
-    for (int i = 0; i < pAwardArray.size(); i++) {
-        AwardEntry& entry = pAwardArray.at(i);
-        GrantAward(entry, bandProfile);
-    }
-}
-
-
 static const char* unusedAwardStrings[] = {
     "pAwardArray->Size() > 1", 
     "pAwardEntryArray", 
@@ -89,9 +66,33 @@ static const char* unusedAwardStrings[] = {
     "AWARD: %s is awarding too many assets! count = %i.", 
     "%s_desc", 
     "%s_howto", 
-    "%s_gray", 
-    "i_pProfile", 
+    "%s_gray"
+};
+
+void Award::GrantAward(const AwardEntry& awardEntry, BandProfile* i_pProfile) {
+    MILO_ASSERT(i_pProfile, 0xbd);
+
+    ProfileAssets::AddAsset(asset);
+
+    BandProfile::GrantCampaignKey(asset);
+}
+
+static const char* unusedAwardStrings2[] = {
     "pPerformer", 
     "Award Category is not currently supported: %s .", 
-    "o_rAssets.empty()"
 };
+
+void Award::InqAssets(std::vector<Symbol>& o_rAssets) {
+    MILO_ASSERT(o_rAssets.empty(), 0xe5);
+}
+
+bool Award::HasAssets() const {
+    return !pAwardEntryArray.empty();
+}
+
+void Award::GrantAwards(BandProfile* bandProfile) {
+    for (int i = 0; i < pAwardEntryArray.size(); i++) {
+        AwardEntry& entry = pAwardEntryArray.at(i);
+        GrantAward(entry, bandProfile);
+    }
+}

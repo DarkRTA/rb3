@@ -24,10 +24,8 @@ class Award {
     Symbol mName;
     Symbol mIconArt;
     Symbol mDescription;
-    Symbol mPadding;
-    Symbol mPadding2;
+    std::vector<AwardEntry> pAwardEntryArray;
     int mIndex;
-    std::vector<AwardEntry> pAwardArray;
 
     bool mIsBonus;
 };

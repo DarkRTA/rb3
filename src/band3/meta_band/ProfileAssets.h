@@ -10,13 +10,15 @@ class ProfileAssets {
     virtual ~ProfileAssets();
 
     void Clear();
-    void AddAsset(Symbol);
     bool HasAsset(Symbol) const;
     bool IsNew(Symbol) const;
     void SetOld(Symbol);
     void SaveSize(int);
 
     std::vector<Symbol> mSymbols;
+
+public:
+    static void AddAsset(Symbol);
 };
 
 #endif // METABAND_PROFILEASSETS_H

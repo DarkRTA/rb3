@@ -2,8 +2,14 @@
 #define METABAND_ACCOMPLISHMENTMANAGER_H
 
 #include "system/obj/Data.h"
+#include <map>
+
+class Award;
 
 class AccomplishmentManager {
+    std::map<Symbol, Award*> mAwards;
+    std::map<Symbol, Symbol> mSymbols;
+
     void InitializeTourSafeDiscSongs();
     void ContentDone();
     void Init(DataArray*);
