@@ -40,6 +40,7 @@ public:
     virtual void UpdatedWorldXfm();
 
     void SetTransParent(RndTransformable*, bool);
+    Constraint TransConstraint();
 
     // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
     DataNode OnCopyLocalTo(const DataArray*);

@@ -8,6 +8,8 @@ template <class T1, class T2 = u16> class ObjVector : public std::vector<T1, T2>
 public:
     ObjVector(Hmx::Object* o) : mOwner(o) {}
     Hmx::Object* mOwner;
+
+    void resize(u32);
 };
 
 #endif

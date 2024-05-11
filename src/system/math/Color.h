@@ -51,7 +51,8 @@ namespace Hmx {
     };
 
     class Color32 {
-
+        uint x;
+        void Reset() { x = -1; }
     };
 }
 
