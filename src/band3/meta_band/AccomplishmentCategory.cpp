@@ -2,13 +2,12 @@
 #include "os/Debug.h"
 #include "system/utl/Symbols.h"
 
-AccomplishmentCategory::AccomplishmentCategory(const DataArray*, int) : mName(""), mAward(""), mGroup("") {
-
+AccomplishmentCategory::AccomplishmentCategory(const DataArray* config, int index): mIndex(index), mName(""), mGroup(""), mAward("") {
+    Configure(config);
 }
 
 AccomplishmentCategory::~AccomplishmentCategory(){
 }
-
 void AccomplishmentCategory::Configure(const DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1e);
 
@@ -34,15 +33,12 @@ Symbol AccomplishmentCategory::GetAward() const {
 }
 
 bool AccomplishmentCategory::HasAward() const {
-    bool noDesc;
-
-    if (gNullStr) {
-        noDesc = !strcmp(mAward.Str(), gNullStr);
-    } else {
-        noDesc = (mAward.Str() == gNullStr);
-    }
-
-    if (!noDesc){
-        return false;
-    }
+    return !(mAward == "");
 }
+
+static const char* unusedAccomplishmentCategoryStrings[] = {
+    "%s_desc", 
+    "ui/accomplishments/category_art/%s_keep.png", 
+    "%s_gray"
+};
+

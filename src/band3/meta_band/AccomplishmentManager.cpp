@@ -1,4 +1,5 @@
 #include "AccomplishmentManager.h"
+#include "os/Debug.h"
 
 AccomplishmentManager::AccomplishmentManager() {
 
@@ -42,5 +43,7 @@ void AccomplishmentManager::InitializePrecachedFilters(){
 }
 
 void AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
-
+    if (true) {
+        TheDebug.Notify(MakeString("", 0));
+    }
 }

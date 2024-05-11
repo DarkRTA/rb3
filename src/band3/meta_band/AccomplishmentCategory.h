@@ -17,6 +17,5 @@ class AccomplishmentCategory {
     Symbol mName;
     Symbol mGroup;
     Symbol mAward;
-
 };
 #endif // METABAND_ACCOMPLISHMENTCATEGORY_H

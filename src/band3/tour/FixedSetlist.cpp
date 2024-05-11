@@ -53,4 +53,8 @@ int FixedSetlist::GetNumSongs() const {
 
 void FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
     MILO_ASSERT(o_rSongs.empty(), 0x56);
+
+    for(int i = 0; i < o_rSongs.size(); i++){
+        TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(0);
+    }
 }
