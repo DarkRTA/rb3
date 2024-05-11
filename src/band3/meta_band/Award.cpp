@@ -1,6 +1,6 @@
 #include "Award.h"
 
-Award::Award(DataArray*, int) {
+Award::Award(DataArray*, int) : mName(""), mIconArt("") {
 
 }
 
@@ -18,16 +18,28 @@ Symbol Award::GetName() const{
 
 Symbol Award::GetDescription() const{
     bool hasAssets = HasAssets();
+    if(!hasAssets){
+        return Symbol("award_genericdesc");
+    }
 }
 
 Symbol Award::GetDisplayName() const{
     bool hasAssets = HasAssets();
 }
 
-bool Award::HasIconArt() const{
+bool Award::HasIconArt() const {
+    bool noIcon;
 
+    if (gNullStr) {
+        noIcon = !strcmp(mIconArt.Str(), gNullStr);
+    } else {
+        noIcon = (mIconArt.Str() == gNullStr);
+    }
+
+    return !noIcon;
 }
-Symbol* Award::GetIconArt() const{
+
+Symbol Award::GetIconArt() const{
     return mIconArt;
 }
 

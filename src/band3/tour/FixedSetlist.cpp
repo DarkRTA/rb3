@@ -4,7 +4,7 @@
 #include <vector>
 #include "band3/meta_band/AccomplishmentManager.h"
 
-FixedSetlist::FixedSetlist() : mWeight(0.0), m_pSongEntries(NULL), mName("") {
+FixedSetlist::FixedSetlist() : mWeight(1), m_pSongEntries(NULL), mName("") {
 }
 
 FixedSetlist::~FixedSetlist() {

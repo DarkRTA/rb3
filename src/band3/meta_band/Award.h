@@ -10,7 +10,7 @@ class Award {
     Symbol GetDescription() const;
     Symbol GetDisplayName() const;
     bool HasIconArt() const;
-    Symbol* GetIconArt() const;
+    Symbol GetIconArt() const;
     bool IsBonus() const;
     // void GrantAward();
     void InqAssets(std::vector<Symbol>&);
@@ -18,7 +18,7 @@ class Award {
     // void GrantAwards();
 
     Symbol mName;
-    Symbol* mIconArt;
+    Symbol mIconArt;
     bool mIsBonus;
 };
 
