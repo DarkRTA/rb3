@@ -4,8 +4,6 @@
 #include <vector>
 #include "rndobj/Trans.h"
 
-
-
 class CharBone : public Hmx::Object {
 public:
 
