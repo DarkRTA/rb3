@@ -28,17 +28,7 @@ extern ObjectDir* gDataDir;
 #define DefDataFunc(name, code) \
 static DataNode Data##name(DataArray* da) code
 
-namespace {
-    bool AddToNotifies(const char* str, std::list<String>& list){
-        if(list.size() > 0x10) return false;
-        for(std::list<String>::iterator it = list.begin(); it != list.end(); it++){
-            bool strFound = !strcmp(it->c_str(), str);
-            if(strFound) return false;
-        }
-        list.push_back(str);
-        return true;
-    }
-}
+ADD_NOTIFS
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
     const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
@@ -1065,6 +1055,8 @@ DefDataFunc(FindExists, {
     }
     return DataNode(ret, kDataArray);
 })
+
+const char* deadstripped_txt = "Bad key %s (file %s, line %d)";
 
 static DataNode DataFind(DataArray* da) {
     DataFindExists(da);

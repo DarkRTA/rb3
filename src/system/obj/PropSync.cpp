@@ -141,15 +141,15 @@ bool PropSync(Transform& tf, DataNode& node, DataArray* prop, int i, PropOp op){
     else {
         Symbol sym = prop->Sym(i);
         if(sym == x){
-            return PropSync(tf.m.x, node, prop, i + 1, op);
+            return PropSync(tf.v.x, node, prop, i + 1, op);
         }
         if(sym == y){
-            return PropSync(tf.m.y, node, prop, i + 1, op);
+            return PropSync(tf.v.y, node, prop, i + 1, op);
         }
         if(sym == z){
-            return PropSync(tf.m.z, node, prop, i + 1, op);
+            return PropSync(tf.v.z, node, prop, i + 1, op);
         }
-        else return PropSync(tf.v, node, prop, i, op);
+        else return PropSync(tf.m, node, prop, i, op);
     }
     return true;
 }

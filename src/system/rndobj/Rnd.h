@@ -18,6 +18,7 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     virtual float UpdateOverlay(RndOverlay*, float);
+    virtual void SetShrinkToSafeArea(bool b) { mShrinkToSafe = b; }
 
     float unk_0x20, unk_0x24, unk_0x28, unk_0x2C;
     int mWidth, mHeight; // 0x30, 0x34
@@ -30,11 +31,16 @@ public:
 
     int mAspectRatio; // 0xE0
 
+    bool mShrinkToSafe; // 0xEA
+    bool ShrinkToSafeArea() { return mShrinkToSafe; }
+
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
 
     void PreInit(); void Init(); void Terminate(); void ReInit();
     void ShowConsole(bool); bool ConsoleShowing();
     void SetShowTimers(bool, bool);
+    bool GetEvenOddDisabled() const;
+    void SetEvenOddDisabled(bool);
     void UpdateRate(); void UpdateHeap();
     float DrawTimers(float);
     float YRatio();
@@ -44,5 +50,7 @@ public:
     DataNode OnScaleObject(const DataArray*);
     DataNode OnReflect(const DataArray*);
 };
+
+extern Rnd* TheRnd;
 
 #endif // RNDOBJ_RND_H
