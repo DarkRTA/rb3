@@ -136,6 +136,8 @@
             "system/char/CharBlendBone.cpp": "NonMatching",
             "system/char/CharBone.cpp": "NonMatching",
             "system/char/CharBoneDir.cpp": "NonMatching",
+            "system/char/CharBoneOffset.cpp": "NonMatching",
+            "system/char/CharBones.cpp": "NonMatching",
             "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
