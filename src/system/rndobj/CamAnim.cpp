@@ -10,12 +10,12 @@ BEGIN_COPYS(RndCamAnim)
     GET_COPY(RndCamAnim)
     BEGIN_COPY_CHECKED
         COPY_MEMBER(mCam)
-        if(ty == kCopyShallow || ty == kCopyFromMax && c->mKeysOwner != this){
+        if(ty == kCopyShallow || ty == kCopyFromMax && c->mKeysOwner != c){
             COPY_MEMBER(mKeysOwner)
         }
         else {
             mKeysOwner = this;
-            mFovKeys = mKeysOwner.operator->()->mFovKeys;
+            mFovKeys = c->mKeysOwner->mFovKeys;
         }
     END_COPY_CHECKED
 END_COPYS
@@ -45,10 +45,16 @@ void RndCamAnim::Load(BinStream& bs){
 
 void RndCamAnim::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
-    if(mKeysOwner.Ptr() == from){
+    if(mKeysOwner == from){
         if(!to) mKeysOwner = this;
         else mKeysOwner = dynamic_cast<RndCamAnim*>(to)->mKeysOwner;
     }
+}
+
+float RndCamAnim::EndFrame(){
+    Keys<float, float>& theKeys = mKeysOwner->mFovKeys;
+    if(!theKeys.empty()) return theKeys.back().frame;
+    else return 0.0f;
 }
 
 RndCamAnim::~RndCamAnim(){

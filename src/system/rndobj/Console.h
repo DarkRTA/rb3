@@ -9,9 +9,8 @@ class RndOverlay;
 
 class RndConsole : public Hmx::Object { // 0x58 - 0x1c = 0x3c
 public:
-    class Breakpoint { // total size: 0x8
-    public:
-        Breakpoint();
+    struct Breakpoint { // total size: 0x8
+        Breakpoint() : parent(0), index(0) {}
         ~Breakpoint();
         DataArray* parent; // offset 0x0, size 0x4
         int index; // offset 0x4, size 0x4
@@ -34,6 +33,14 @@ public:
     void Help(Symbol);
     void SetShowing(bool);
 
+    void* operator new(size_t s){
+        return _PoolAlloc(s, sizeof(RndConsole), FastPool);
+    }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(RndConsole), FastPool, v);
+    }
+
     bool mShowing; // 0x1c
     RndOverlay* mOutput; // 0x20
     RndOverlay* mInput; // 0x24
@@ -48,7 +55,5 @@ public:
     int mLevel; // 0x4c
     std::list<Breakpoint> mBreakpoints; // 0x50
 };
-
-static RndConsole* gConsole;
 
 #endif // RNDOBJ_CONSOLE_H

@@ -58,7 +58,7 @@ public:
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
     std::vector<int> mChildren;
-    Transform mLocalXfm; // 0x20
+    Transform mLocalXfm; // 0x1c
     Transform mWorldXfm;
     std::vector<int>* vptr; // actually a ptr to DirtyCache? which is a class containing a vector and a char/bool/byte
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; }

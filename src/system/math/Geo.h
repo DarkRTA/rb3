@@ -14,6 +14,7 @@ namespace Hmx {
     public:
         Rect() {}
         Rect(float xx, float yy, float ww, float hh) : x(xx), y(yy), w(ww), h(hh) {}
+        void Set(float xx, float yy, float ww, float hh){ x = xx; y = yy; w = ww; h = hh; }
         float x, y, w, h;
     };
 }

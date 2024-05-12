@@ -18,7 +18,7 @@ public:
     virtual ~RndCamAnim();
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual RndAnimatable* AnimTarget(); // weak
+    virtual Hmx::Object* AnimTarget(){ return mCam; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
