@@ -31,6 +31,7 @@ public:
     virtual ~AccomplishmentManager();
 
     void GetTourSafeDiscSongAtDifficultyIndex(int index);
+    void AddAssetAward(Symbol, Symbol);
 };
 
 static AccomplishmentManager TheAccomplishmentMgr;

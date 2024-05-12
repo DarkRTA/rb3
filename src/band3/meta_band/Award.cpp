@@ -1,10 +1,12 @@
 #include "Award.h"
 #include "os/Debug.h"
+#include "system/utl/Symbols.h"
 #include "system/utl/Symbols2.h"
 #include "ProfileAssets.h"
+#include "AccomplishmentManager.h"
 
-Award::Award(DataArray* configure, int index) : mName(""), mIconArt(""), mIndex(index), mDescription("") {
-    Configure(configure);
+Award::Award(DataArray* configure, int index) : mName(gNullStr), mIconArt(gNullStr), mIndex(index) {
+
 }
 
 Award::~Award() {
@@ -15,6 +17,16 @@ void Award::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x0a);
 
     mName = i_pConfig->Sym(0);
+    i_pConfig->FindData(is_secret, mIsSecret, false);
+    i_pConfig->FindData(is_bonus, mIsBonus, false);
+    i_pConfig->FindData(icon, mIcon, false);
+    DataArray* pAwardArray = i_pConfig->FindArray(awards, false);
+
+    MILO_ASSERT(pAwardArray->Size() > 1, 0x39);
+
+    pAwardArray->Node(0);
+
+    TheAccomplishmentMgr.AddAssetAward(Symbol(), Symbol());
 }
 
 Symbol Award::GetName() const{
@@ -58,12 +70,13 @@ bool Award::IsBonus() const{
 }
 
 static const char* unusedAwardStrings[] = {
-    "pAwardArray->Size() > 1", 
+    // These are likely part of configuration
     "pAwardEntryArray", 
     "pAwardEntryArray->Size() >= 1", 
     "pAssetMgr", 
     "Award: %s is granting unknown asset: %s.", 
     "AWARD: %s is awarding too many assets! count = %i.", 
+    // Likely in description
     "%s_desc", 
     "%s_howto", 
     "%s_gray"

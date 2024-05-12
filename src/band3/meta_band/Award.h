@@ -27,7 +27,10 @@ class Award {
     std::vector<AwardEntry> pAwardEntryArray;
     int mIndex;
 
+    bool mIsSecret;
     bool mIsBonus;
+    Symbol mIcon;
+    Symbol mAwards;
 };
 
 #endif // METABAND_AWARD_H
