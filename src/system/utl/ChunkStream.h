@@ -97,6 +97,7 @@ public:
     void* operator new(size_t t) {
         return _MemAllocTemp(t, 0);
     }
+    DELETE_OVERLOAD
 };
 
 void DecompressMemHelper(const void*, int, void*, int&, const char*);

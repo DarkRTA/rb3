@@ -5,6 +5,7 @@
 #include "math/Sphere.h"
 #include "math/Mtx.h"
 #include "math/Geo.h"
+#include <list>
 
 class RndDrawable : public virtual RndHighlightable {
 public:
@@ -40,7 +41,7 @@ public:
     virtual ~RndDrawable(){}
 
     bool DrawBudget(float);
-    void DumpLoad(BinStream&);
+    static void DumpLoad(BinStream&);
 
     DataNode OnCopySphere(const DataArray*);
     DataNode OnGetSphere(const DataArray*);

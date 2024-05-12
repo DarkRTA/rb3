@@ -69,6 +69,7 @@ public:
     virtual void PollLoading();
 
     const char* GetBuffer(int*);
+    int GetSize();
 
     File* mFile;
     BinStream* mStream;

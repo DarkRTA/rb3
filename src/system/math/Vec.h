@@ -97,6 +97,16 @@ public:
     // Vector4(const Vector4 &);
 };
 
+class Vector4_16_01 {
+    public:
+    //Vector4_16_01() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+    u16 x, y, z, w;
+    float GetX() const { return (1.0f - x) / 65535.0;}
+    float GetY() const; 
+    float GetZ() const;
+    void Set(float, float, float, float);
+};
+
 inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
     dst.Set(v1.x * f, v1.y * f, v1.z * f);
 }

@@ -1,7 +1,20 @@
 #include "rndobj/Cam.h"
+#include "obj/ObjPtr_p.h"
+#include "obj/Object.h"
+#include "rndobj/Draw.h"
+#include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 RndCam* RndCam::sCurrent = 0;
+int CAM_REV = 12;
+Transform sFlipYZ;
+
+ADD_NOTIFS
+
+void RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
+    s = mZRange;
+}
 
 void RndCam::SetTargetTex(RndTex* tex){
     if(sCurrent == this && mTargetTex){
@@ -11,7 +24,31 @@ void RndCam::SetTargetTex(RndTex* tex){
     UpdateLocal();
 }
 
-SAVE_OBJ(RndCam, 0x8F);
+SAVE_OBJ(RndCam, 0x8F)
+
+void RndCam::Load(BinStream& bs) {
+    int rev;
+    bs >> rev;
+    if (rev > CAM_REV) {
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, CAM_REV);
+    }
+    if (rev > 10) Hmx::Object::Load(bs);
+    RndTransformable::Load(bs);
+    if (rev < 10) RndDrawable::DumpLoad(bs);
+    if (rev == 8) {
+        ObjPtrList<Hmx::Object, class ObjectDir> d(this, kObjListNoNull); int x;
+        bs >> x >> d;
+    }
+    bs >> mNearPlane >> mFarPlane >> mYFov;
+    if (rev < 12) mYFov = ConvertFov(mYFov, 0.75);
+    if (rev < 2) { int x; bs >> x; }
+    bs >> mScreenRect;
+    if (uint(rev - 1) <= 1) { int x; bs >> x; }
+    if (rev > 3) bs >> mZRange;
+    if (rev > 4) bs >> mTargetTex;
+    if (rev == 6) { int x; bs >> x; }
+    UpdateLocal();
+}
 
 BEGIN_COPYS(RndCam)
     COPY_SUPERCLASS(Hmx::Object)
@@ -72,3 +109,8 @@ DataNode RndCam::OnSetScreenRect(const DataArray* da){
 DataNode RndCam::OnFarPlane(const DataArray*){
     return DataNode(mFarPlane);
 }
+
+BEGIN_PROPSYNCS(RndCam)
+    SYNC_PROP(z_range, mZRange)
+    SYNC_PROP_ACTION(screen_rect, mScreenRect, 0x11, UpdateLocal())
+END_PROPSYNCS

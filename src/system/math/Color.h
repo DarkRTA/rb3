@@ -49,6 +49,11 @@ namespace Hmx {
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
     };
+
+    class Color32 {
+        uint x;
+        void Reset() { x = -1; }
+    };
 }
 
 void MakeHSL(const Hmx::Color&, float&, float&, float&);

@@ -21,9 +21,9 @@ void MemStream::ReadImpl(void* data, int bytes){
 
 void MemStream::WriteImpl(const void* data, int bytes){
     int toReserve = mBuffer.capacity();
-    while(toReserve < mTell + bytes) toReserve *= 2;
+    while(mTell + bytes > toReserve) toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mBuffer.size() < mTell + bytes){
+    if(mBuffer.size() > mTell + bytes){
         mBuffer.resize(toReserve);
     }
     memcpy(&mBuffer[mTell], data, bytes);
@@ -32,9 +32,9 @@ void MemStream::WriteImpl(const void* data, int bytes){
 
 void MemStream::WriteStream(BinStream& bs, int bytes){
     int toReserve = mBuffer.capacity();
-    while(toReserve < mTell + bytes) toReserve *= 2;
+    while(mTell + bytes > toReserve) toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mBuffer.size() < mTell + bytes){
+    if(mBuffer.size() > mTell + bytes){
         mBuffer.resize(toReserve);
     }
     bs.Read(&mBuffer[mTell], bytes);

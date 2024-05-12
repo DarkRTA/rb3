@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_MULTIMESH_H
 #define RNDOBJ_MULTIMESH_H
+#include "obj/Object.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Mesh.h"
@@ -10,6 +11,7 @@ class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {
         Instance();
+        Instance(Transform t) : mXfm(t) {}
         Transform mXfm;
     };
     RndMultiMesh();
@@ -27,11 +29,12 @@ public:
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
-    virtual ~RndMultiMesh();
+    virtual ~RndMultiMesh() {InvalidateProxies();}
     virtual void Print();
     virtual void UpdateMesh(){}
 
     void SetMesh(RndMesh*);
+    void InvalidateProxies();
     DataNode OnGetPos(const DataArray*);
     DataNode OnSetPos(const DataArray*);
     DataNode OnGetRot(const DataArray*);
@@ -50,10 +53,12 @@ public:
     DataNode OnScrambleXfms(const DataArray*);
     DataNode OnDistribute(const DataArray*);
 
-    ObjPtr<RndMesh, class ObjectDir> mMesh;
-    std::list<Transform> mTransforms;
+    ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x20
+    std::list<RndMultiMesh::Instance> mInstances; // 0x2C
 
     static void Terminate();
+
+    DELETE_OVERLOAD
 };
 
 #endif

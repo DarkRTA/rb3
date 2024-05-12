@@ -21,6 +21,7 @@
 
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
 
+            "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
             "band3/tour/TourProgress.cpp": "NonMatching"
         }
@@ -29,9 +30,15 @@
         "mw_version": "Wii/1.3",
         "cflags": "network",
         "objects": {
+            "network/Core/CacheManager.cpp": "Matching",
+            "network/Core/JobQueue.cpp": "Matching",
+
             "network/net/JsonUtils.cpp": "NonMatching",
 
-            "network/Plugins/ZLibPlugin.cpp": "Matching"
+            "network/Plugins/ZLibPlugin.cpp": "Matching",
+
+            "network/Plugins/JobGetPublicURL.cpp": "Matching",
+            "network/Services/UserMessage.cpp": "Matching"
         }
     },
     "network/net/json_c": {
@@ -39,7 +46,7 @@
         "cflags": "json_c",
         "objects": {
             "network/net/json-c/arraylist.c": "Matching",
-            "network/net/json-c/debug.c": "NonMatching",
+            "network/net/json-c/debug.c": "Matching",
             "network/net/json-c/json_object.c": "NonMatching",
             "network/net/json-c/json_tokener.c": "NonMatching",
             "network/net/json-c/linkhash.c": "Matching",
@@ -53,6 +60,7 @@
             "network/Platform/CriticalSection.cpp": "Matching",
             "network/Platform/DateTime.cpp": "NonMatching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
+            "network/Platform/Inet.cpp": "Matching",
             "network/Platform/LockChecker.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
             "network/Platform/MutexPrimitive.cpp": "NonMatching",
@@ -63,7 +71,8 @@
             "network/Platform/RootObject.cpp": "NonMatching",
             "network/Platform/String.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
-            "network/Platform/Time.cpp": "NonMatching"
+            "network/Platform/Time.cpp": "NonMatching",
+            "network/Platform/WiiNetInit.cpp": "Matching"
         }
     },
     "sdk": {
@@ -277,6 +286,7 @@
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
+            "system/rndobj/Mesh.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "NonMatching",
             "system/rndobj/MultiMesh.cpp": {"status": "NonMatching", "extra_cflags": [""]},
@@ -333,7 +343,10 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
 
+            "system/track/Track.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
+            "system/track/TrackWidget.cpp": "NonMatching",
+            "system/track/TrackWidgetImp.cpp": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
