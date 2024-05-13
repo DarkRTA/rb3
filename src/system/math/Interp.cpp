@@ -99,7 +99,11 @@ void InvExpInterpolator::Reset(const DataArray *data) {
 
 // fn_802DD5B8
 float InvExpInterpolator::Eval(float f) {
-    float pow_res = pow(-(mInvRun * (f - mX0) - 1.0f), mPower);
+    float pow_res;
+
+    double a = -(mInvRun * (f - mX0) - 1);
+
+    pow_res = pow(a, (double)mPower);
     return (1.0f - pow_res) * mRise + mY0;
 }
 
