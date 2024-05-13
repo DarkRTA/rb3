@@ -61,8 +61,14 @@ void ExpInterpolator::Reset(const DataArray *data) {
 
 // fn_802DD32C
 float ExpInterpolator::Eval(float f) {
-    float pow_res = pow_f(mInvRun * (f - mX0), mPower);
-    return pow_res * mRise + mY0;
+    double pow_res = pow((double)(mInvRun * (f - mX0)), (double)mPower);
+
+    // mInvRun * (f - mX0) is an implicit cast from float to double?
+    // mPower is also implicitly casted from float to double
+
+    // float pow_f(double x, double y) => double pow(double x, double y)
+    //pow_res = pow_f(mInvRun * (f - mX0), mPower);
+    return (float)pow_res * mRise + mY0;
 }
 
 
