@@ -156,6 +156,8 @@
             "system/char/CharClipSet.cpp": "NonMatching",
             "system/char/CharCollide.cpp": "NonMatching",
             "system/char/CharCuff.cpp": "NonMatching",
+            "system/char/CharDriver.cpp": "NonMatching",
+            "system/char/CharDriverMidi.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
             "system/char/CharHair.cpp": "NonMatching",
