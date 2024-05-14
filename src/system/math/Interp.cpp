@@ -128,7 +128,10 @@ void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float sever
     mY0 = y0;
     mY1 = y1;
 
-    if(severity < 0.001f) MILO_FAIL("ATanInterpolator: severity (%f) too small.", severity);
+    if(severity > 0.001f) {
+
+    } 
+    else MILO_FAIL("ATanInterpolator: severity (%f) too small.", severity);
 
     float ftan = atan(f31);
 
