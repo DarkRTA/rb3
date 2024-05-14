@@ -66,7 +66,7 @@ public:
     bool mUseColorAdjust; // 0x14c
     bool mAnimateFromPreset; // 0x14d
     bool mAOEnabled; // 0x14e
-    float mAOStrength; // mAoStrength
+    float mAOStrength; // 0x150
     Timer mUpdateTimer; // 0x158
     float mIntensityAverage; // 0x188
     float mIntensityRate; // 0x18c

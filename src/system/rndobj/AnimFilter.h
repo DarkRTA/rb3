@@ -21,16 +21,14 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~RndAnimFilter(){}
-    virtual bool Loop(){ return mType == kLoop; }
+    virtual bool Loop(){ return mType >= kLoop; }
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
-    virtual RndAnimatable* AnimTarget(){
-        RndAnimatable* ptr = mAnim.Ptr();
-        return (ptr) ? 0 : ptr;
-    }
+    virtual Hmx::Object* AnimTarget(){ return mAnim; }
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
 
+    float Scale();
     void SetAnim(RndAnimatable*);
     DataNode OnSafeAnims(DataArray*);
 

@@ -38,7 +38,7 @@ public:
     virtual void SetFrame(float, float); // weak
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
-    virtual Hmx::Object* AnimTarget(); // weak
+    virtual Hmx::Object* AnimTarget(){ return this; }
     virtual void SetKey(float){}
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
 
@@ -68,6 +68,16 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(AnimTask);
     virtual void Poll(float);
+
+    float TimeUntilEnd();
+
+    void* operator new(size_t s){
+        return _PoolAlloc(s, sizeof(AnimTask), FastPool);
+    }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(AnimTask), FastPool, v);
+    }
 
     ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
     ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;

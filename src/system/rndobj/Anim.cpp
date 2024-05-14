@@ -47,6 +47,21 @@ void RndAnimatable::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     }
 }
 
+bool RndAnimatable::IsAnimating(){
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+        Hmx::Object* owner = (*it)->RefOwner();
+        if(dynamic_cast<AnimTask*>(owner)) return true;
+    }
+    return false;
+}
+
+void RndAnimatable::StopAnimation(){
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+        AnimTask* task = dynamic_cast<AnimTask*>((*it)->RefOwner());
+        if(task) delete task;
+    }
+}
+
 BEGIN_HANDLERS(RndAnimatable);
     HANDLE_ACTION(set_frame, SetFrame(_msg->Float(2), 1.0f));
     HANDLE_EXPR(frame, mFrame);
@@ -180,6 +195,19 @@ AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, f
 //   return this;
 // }
 
+float AnimTask::TimeUntilEnd(){
+    float time;
+    if(mScale > 0.0f){
+        float fpu = mAnim->FramesPerUnit();
+        time = (mMax - mAnim->mFrame) / fpu;
+    }
+    else {
+        float fpu = mAnim->FramesPerUnit();
+        time = (mAnim->mFrame - mMin) / fpu;
+    }
+    return time;
+}
+
 AnimTask::~AnimTask(){
     AnimTask* blendPtr = mBlendTask.Ptr();
     delete blendPtr;
@@ -191,11 +219,10 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
         RndAnimatable* animPtr = mAnim.Ptr();
         if(from == animPtr){
             AnimTask* taskPtr = mBlendTask.Ptr();
-            // bool tPtrExists = taskPtr != 0;
             if(taskPtr && (taskPtr->mAnim.Ptr() == animPtr)){
-                taskPtr->Release(mBlendTask);
+                mBlendTask = 0;
             }
-
+            delete this;
         }
     }
 }

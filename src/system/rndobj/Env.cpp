@@ -62,7 +62,40 @@ SAVE_OBJ(RndEnviron, 119)
 
 BEGIN_COPYS(RndEnviron)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY_AND_ASSERT(RndEnviron, 365)
+    if(ty != kCopyFromMax){
+        GET_COPY(RndEnviron)
+        BEGIN_COPY_CHECKED
+            COPY_MEMBER(mLightsReal)
+            COPY_MEMBER(mLightsApprox)
+            COPY_MEMBER(mLightsOld)
+            COPY_MEMBER(mFadeOut)
+            COPY_MEMBER(mFadeStart)
+            COPY_MEMBER(mFadeEnd)
+            COPY_MEMBER(mFadeMax)
+            COPY_MEMBER(mFadeRef)
+            COPY_MEMBER(mLRFade)
+            COPY_MEMBER(mUseColorAdjust)
+            COPY_MEMBER(mColorXfm)
+            COPY_MEMBER(mAnimateFromPreset)
+            COPY_MEMBER(mAOEnabled)
+            COPY_MEMBER(mAOStrength)
+            COPY_MEMBER(mIntensityRate)
+            COPY_MEMBER(mExposure)
+            COPY_MEMBER(mWhitePoint)
+            COPY_MEMBER(mUseToneMapping)
+            if(ty == kCopyShallow || ty == kCopyFromMax && c->mAmbientFogOwner != c){
+                COPY_MEMBER(mAmbientFogOwner)
+            }
+            else {
+                mAmbientFogOwner = this;
+                mAmbientColor = mAmbientFogOwner->mAmbientColor;
+                mFogColor = mAmbientFogOwner->mFogColor;
+                mFogStart = mAmbientFogOwner->mFogStart;
+                mFogEnd = mAmbientFogOwner->mFogEnd;
+                mFogEnable = mAmbientFogOwner->mFogEnable;
+            }
+        END_COPY_CHECKED
+    }
 END_COPYS
 
 bool RndEnviron::IsValidRealLight(const RndLight*) const {
@@ -92,6 +125,15 @@ bool RndEnviron::IsReal(RndLight* l) const {
 
 bool RndEnviron::FogEnable() const {
     return mAmbientFogOwner->mFogEnable;
+}
+
+void RndEnviron::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    if(mAmbientFogOwner == from){
+        RndEnviron* env = dynamic_cast<RndEnviron*>(to);
+        if(env) mAmbientFogOwner = env->mAmbientFogOwner;
+        else mAmbientFogOwner = this;
+    }
 }
 
 void RndEnviron::ReclassifyLights() {
