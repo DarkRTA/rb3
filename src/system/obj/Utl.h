@@ -13,7 +13,7 @@ class ObjectDir;
 void InitObject(Hmx::Object*);
 const char* PathName(const Hmx::Object*);
 const char* SafeName(Hmx::Object*);
-DataNode ObjectList(ObjectDir*, Symbol, bool); // i think???
+DataNode ObjectList(class ObjectDir*, Symbol, bool); // i think???
 DataNode MakeFileList(const char*, bool, bool (*)(char*));
 DataNode MakeFileListFullPath(const char*);
 
@@ -23,10 +23,10 @@ bool RecurseSuperClassesSearch(Symbol, Symbol);
 bool IsASubclass(Symbol, Symbol);
 void ReplaceObject(Hmx::Object*, Hmx::Object*, bool, bool, bool);
 void CopyTypeProperties(Hmx::Object*, Hmx::Object*);
-void ReserveToFit(ObjectDir*, ObjectDir*, int);
-int SubDirStringUsed(ObjectDir*);
-int SubDirHashUsed(ObjectDir*);
-const char* NextName(const char*, ObjectDir*);
+void ReserveToFit(class ObjectDir*, class ObjectDir*, int);
+int SubDirStringUsed(class ObjectDir*);
+int SubDirHashUsed(class ObjectDir*);
+const char* NextName(const char*, class ObjectDir*);
 bool StringMatchesFilter(const char*, const char*);
 int GetPropSize(Hmx::Object*, DataArray*, int);
 bool IsPropPathValid(Hmx::Object*, DataArray*);

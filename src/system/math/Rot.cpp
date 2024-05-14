@@ -1,4 +1,23 @@
 #include "Rot.h"
+#include "os/Debug.h"
+#include <cmath>
+
+void deadstripped_assert() {MILO_ASSERT(false, 0);}
+
+float GetXAngle(const Hmx::Matrix3& m) {
+    float z = m.y.z;
+    return atan2(z, m.y.y);
+}
+
+float GetYAngle(const Hmx::Matrix3& m) {
+    float z = -m.x.z;
+    return atan2(z, m.z.z);
+}
+
+float GetZAngle(const Hmx::Matrix3& m) {
+    float x = m.y.x;
+    return -atan2(x, m.y.y);
+}
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v) {
     ts << "(x:" << v.x << " y:" << v.y << " z:" << v.z << " w:" << v.w << ")";

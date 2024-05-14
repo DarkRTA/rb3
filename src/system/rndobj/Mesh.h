@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_MESH_H
 #define RNDOBJ_MESH_H
+#include "math/Bsp.h"
 #include "math/Vec.h"
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
@@ -68,7 +69,7 @@ public:
     virtual void Mats(std::list<class RndMat*>&, bool);
     virtual int CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
-    virtual void Highlight();
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~RndMesh();
 
     virtual void Replace(Hmx::Object *, Hmx::Object *);
@@ -87,7 +88,8 @@ public:
     std::vector<u8, u16> unk_0xD0; // ???
     ObjOwnerPtr<RndMesh, ObjectDir> mOwner; // 0xD8
     ObjVector<RndBone> mBones;
-    int unk_0xF0, unk_0xF4, unk_0xF8;
+    int unk_0xF0, unk_0xF4;
+    BSPNode* unk_0xF8;
     RndMultiMesh* unk_0xFC; // ...why?
     std::vector<int> unk_0x100;
     int unk_0x108, unk_0x10C;

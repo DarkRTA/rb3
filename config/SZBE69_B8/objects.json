@@ -110,6 +110,7 @@
         "objects": {
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
