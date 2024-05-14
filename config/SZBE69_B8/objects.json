@@ -174,7 +174,7 @@
             "system/math/Decibels.cpp": "Matching",
             "system/math/FileChecksum.cpp": "NonMatching",
             "system/math/Geo.cpp": "NonMatching",
-            "system/math/Interp.cpp": "NonMatching",
+            "system/math/Interp.cpp": "Matching",
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
