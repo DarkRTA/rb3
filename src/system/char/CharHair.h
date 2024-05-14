@@ -32,6 +32,7 @@ public:
     public:
         Strand(Hmx::Object*);
         ~Strand();
+        void Load(BinStream&);
 
         bool mShowSpheres;
         bool mShowCollide;
@@ -57,7 +58,9 @@ public:
     virtual void Poll();    
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual void Enter();
-    virtual void SetName(const char*, class ObjectDir*);    
+    virtual void SetName(const char*, class ObjectDir*);
+
+    DECLARE_REVS;
 
     float mStiffness;
     float mTorsion;
@@ -76,5 +79,13 @@ public:
     ObjPtrList<CharCollide, ObjectDir> mCollide;
     bool unk6c;
 };
+
+BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, CharHair::Strand& strand){
+    strand.Load(bs);
+}
 
 #endif
