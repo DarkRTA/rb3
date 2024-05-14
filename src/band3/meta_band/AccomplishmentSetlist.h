@@ -5,15 +5,21 @@
 #include <set>
 #include "Accomplishment.h"
 
-// Don't know if these are classes or enums, using enums for now.
 enum ScoreType {};
 enum Difficulty {};
 
 class AccomplishmentSetlist {
     Accomplishment mAccomplishment;
-    
+
+    int mPadding[28];
+
+    Symbol mSetlist;    // 0x74
+    int mInstrument;    // 0x78
+    int mDifficulty;    // 0x7c
+    int mMinStars;     // 0x80
+
     AccomplishmentSetlist(DataArray*, int);
-    ~AccomplishmentSetlist();
+    virtual ~AccomplishmentSetlist();
     void Configure(DataArray*);
     int GetType() const;
     bool CanBeLaunched() const;
@@ -22,10 +28,7 @@ class AccomplishmentSetlist {
     void InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
 
-    Symbol mSetlist;
-    int mDifficulty;
-    int mInstrument;
-    int mMin_stars;
+
 };
 
 #endif // METABAND_ACCOMPLISHMENTSETLIST_H

@@ -1,12 +1,12 @@
 #ifndef METABAND_AWARD_H
 #define METABAND_AWARD_H
 #include "system/obj/Data.h"
-#include "BandProfile.h"
 
-class AwardEntry {
-};
+class BandProfile;
 
-class Award {
+class AwardEntry {};
+
+class Award {     
     Award(DataArray*, int);
     virtual ~Award();
     void Configure(DataArray*);
@@ -21,16 +21,16 @@ class Award {
     bool HasAssets() const;
     void GrantAwards(BandProfile*);
 
-    Symbol mName;
-    Symbol mIconArt;
-    Symbol mDescription;
-    std::vector<AwardEntry> pAwardEntryArray;
-    int mIndex;
-
-    bool mIsSecret;
-    bool mIsBonus;
-    Symbol mIcon;
+    Symbol mName;         // 0x04
+    Symbol mIcon;         // 0x08
+    bool mIsSecret;       // 0x10
+    bool mIsBonus;        // 0x1c
     Symbol mAwards;
+
+
+    // unknown offset
+    int mIndex;                             
+    std::vector<AwardEntry> mAwardEntries;     
 };
 
 #endif // METABAND_AWARD_H

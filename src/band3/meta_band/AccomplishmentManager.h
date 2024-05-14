@@ -3,11 +3,16 @@
 
 #include "system/obj/Data.h"
 #include <map>
+#include <utility>
+#include "AccomplishmentCategory.cpp"
+#include "Accomplishment.h"
 
 class Award;
 
 class AccomplishmentManager {
     std::map<Symbol, Award*> mAwards;
+    std::map<Symbol, AccomplishmentCategory> mAccomplishmentCategory;
+    std::map<Symbol, Accomplishment*> mAccomplishments;
     std::map<Symbol, Symbol> mSymbols;
 
     void InitializeTourSafeDiscSongs();
@@ -30,7 +35,7 @@ public:
     AccomplishmentManager();
     virtual ~AccomplishmentManager();
 
-    void GetTourSafeDiscSongAtDifficultyIndex(int index);
+    DataArray* GetTourSafeDiscSongAtDifficultyIndex(int index);
     void AddAssetAward(Symbol, Symbol);
 };
 

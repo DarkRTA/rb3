@@ -4,8 +4,11 @@
 #include "Award.h"
 
 class AccomplishmentCategory {
+public:
     AccomplishmentCategory(const DataArray*, int);
     virtual ~AccomplishmentCategory();
+
+private:
     void Configure(const DataArray*);
     Symbol GetName() const;
     int GetIndex() const;

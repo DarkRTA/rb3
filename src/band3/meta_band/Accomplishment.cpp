@@ -5,17 +5,13 @@ Accomplishment::Accomplishment(DataArray*, int) {
 }
 
 Accomplishment::~Accomplishment() {
-
+    
 }
 
 void Accomplishment::Configure(DataArray*) {
 
 }
 
-void Accomplishment::GetType() const {
-
-}
-
-void Accomplishment::GetName() const {
-
+int Accomplishment::GetType() const {
+    return 0;
 }

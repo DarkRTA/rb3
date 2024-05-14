@@ -8,7 +8,6 @@ public:
     Accomplishment(DataArray*, int);
     virtual ~Accomplishment();
     void Configure(DataArray*);
-    void GetType() const;
-    void GetName() const;
+    int GetType() const;
 };
 #endif // METABAND_ACCOMPLISHMENT_H

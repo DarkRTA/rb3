@@ -53,8 +53,10 @@ void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(DataArra
 void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(DataArray*){}
 void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray*){}
 
-void AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
-    if (true) {
+DataArray* AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
+    if (index) {
         TheDebug.Notify(MakeString("", 0));
     }
+
+    return NULL;
 }
