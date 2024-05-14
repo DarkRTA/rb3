@@ -152,6 +152,7 @@
             "system/char/CharBonesSamples.cpp": "NonMatching",
             "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharClip.cpp": "NonMatching",
+            "system/char/CharClipGroup.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharGuitarString.cpp": "NonMatching",
             "system/char/CharHair.cpp": "NonMatching",

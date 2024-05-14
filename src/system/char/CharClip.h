@@ -80,7 +80,7 @@ public:
     CharBonesSamples mFull;
     CharBonesSamples mOne;
     FacingSet mFacing;
-    std::vector<int> mZeros;
+    std::vector<int> mZeros; // change vector type
 };
 
 #endif
