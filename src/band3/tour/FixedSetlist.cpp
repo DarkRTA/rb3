@@ -1,34 +1,29 @@
 #include "FixedSetlist.h"
 #include "os/Debug.h"
-#include "system/utl/Symbols.h";
+#include "system/utl/Symbols.h"
 #include <vector>
+#include "band3/meta_band/AccomplishmentManager.h"
 
-FixedSetlist::FixedSetlist() : mWeight(0.0), mSongEntries(nullptr), mName("") {
+FixedSetlist::FixedSetlist() : mWeight(1), m_pSongEntries(NULL), mName("") {
 }
 
 FixedSetlist::~FixedSetlist() {
-
+    
 }
 
-void FixedSetlist::Init(const DataArray *config) {
-    if (config == nullptr) {
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 30, "i_pConfig"));
-    }
+void FixedSetlist::Init(const DataArray *i_pConfig) {
+    MILO_ASSERT(i_pConfig, 0x1e);
 
-    mName = config->Sym(0);
+    mName = i_pConfig->Sym(0);
 
-    config->FindData(group, mGroup, true);
-    config->FindData(weight, mWeight, false);
-    DataArray* pSongsArray = config->FindArray(songs, true);
+    i_pConfig->FindData(group, mGroup, true);
+    i_pConfig->FindData(weight, mWeight, false);
+    DataArray* pSongsArray = i_pConfig->FindArray(songs, true);
 
-    if (pSongsArray == nullptr) {
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 42, "pSongsArray"));
-    }
-    if (pSongsArray->Size() <= 1) {
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 43, "pSongsArray->Size() > 1"));
-    }
+    MILO_ASSERT(pSongsArray, 0x2A);
+    MILO_ASSERT(pSongsArray->Size() > 1, 0x2B);
 
-    mSongEntries = pSongsArray;
+    m_pSongEntries = pSongsArray;
 }
 
 Symbol FixedSetlist::GetName() const {
@@ -43,28 +38,35 @@ float FixedSetlist::GetWeight() const {
     return mWeight;
 }
 
-Symbol FixedSetlist::GetSongName(int index) {
-    if (index < GetNumSongs()){
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 68, "i_iIndex < GetNumSongs()"));
-    }
+Symbol FixedSetlist::GetSongName(int i_iIndex) {
+    MILO_ASSERT(i_iIndex < GetNumSongs(), 0x44);
 
-    Symbol name = mSongs.at(index);
+    Symbol name = mSongs.at(i_iIndex);
+
+    DataArray* result;
+    InqSongs(mSongs);
+    if(result) {
+        result->FindData(Symbol(""), name, true);
+    }
 
     return name;
 }
 
 int FixedSetlist::GetNumSongs() const {
-    if (mSongEntries == nullptr) {
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 79, "m_pSongEntries"));
-    }
-    
-    return mSongEntries->Size() - 1;
+    MILO_ASSERT(m_pSongEntries, 0x4F);
+
+    return m_pSongEntries->Size() - 1;
 }
 
-void FixedSetlist::InqSongs(std::vector<Symbol>& songs) const {
-    if (songs.empty()) {
-        TheDebug.Fail(MakeString(kAssertStr, __FILE__, 86, "o_rSongs.empty()"));
-    }
+void FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
+    MILO_ASSERT(o_rSongs.empty(), 0x56);
 
-    // Requires TheAccomplishMgr to continue. 
+    for (int i = 0; i < o_rSongs.size(); i++) {
+        DataArray* pArray;
+
+        MILO_ASSERT(pArray->Size(), 0x0);
+        pArray = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(0);
+        Symbol s = pArray->Sym(0);
+        pArray->Array(0);
+    }
 }

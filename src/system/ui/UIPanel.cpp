@@ -1,4 +1,4 @@
-#include "ui/UIPanel.h"
+#include "UIPanel.h"
 #include "ui/PanelDir.h"
 #include "obj/DirLoader.h"
 #include "obj/Object.h"
@@ -40,6 +40,22 @@ void UIPanel::CheckUnload(){
         }
         if(--mLoadRefs == 0) Unload();
     }
+}
+
+void UIPanel::SetLoadedDir(class PanelDir* dir, bool b) {
+    MILO_ASSERT(!mLoader, 106);
+    MILO_ASSERT(dir, 107);
+    if (mDir) { mDir->mPanel = NULL; }
+    mDir = dir;
+    mLoaded = b;
+    mDir->mPanel = this;
+}
+
+void UIPanel::UnsetLoadedDir() {
+    MILO_ASSERT(!mLoader, 120);
+    if (mDir) { mDir->mPanel = NULL; }
+    mDir = NULL;
+    mLoaded = false;
 }
 
 bool UIPanel::IsLoaded() const {

@@ -27,6 +27,8 @@ RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
     unk9p3 = false;
 }
 
+RndMesh::~RndMesh() { delete unk_0x11C; delete unk_0xF8; }
+
 RndMesh::Vert::Vert() : x(0), y(0), z(0), nx(0), ny(1), nz(0), why(),
     unk_0x20(-1), u(0), v(0), unk_0x2C(0), unk_0x2E(0), unk_0x30(0), unk_0x32(0) {}
 

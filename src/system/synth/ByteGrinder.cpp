@@ -178,11 +178,49 @@ DataNode op4(DataArray* msg){
     return DataNode(kDataInt, u8(ret));
 }
 
-DataNode op5(DataArray* msg);
-DataNode op6(DataArray* msg);
-DataNode op7(DataArray* msg);
-DataNode op8(DataArray* msg);
-DataNode op9(DataArray* msg);
+DataNode op5(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+    u32 ret;
+    // r5 = u8(r3 NOR r3)
+    // r3 = (r31 << 29) >> 29;
+    // r5 |= r5 << 8
+    // r5 >>= r3
+    // r0 = u8(r5)
+    ret = u8(~(w | w));
+    u32 r3 = (operand << 29) >> 29, r4 = ret << 8;
+    ret |= r4; 
+    ret >>= r3;
+    return DataNode(u8(ret));
+}
+
+DataNode op6(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+    return DataNode(u8(!w ^ operand));
+}
+
+DataNode op7(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+    u32 ret = !w + u8(operand);
+    return DataNode(u8(ret));
+}
+
+DataNode op8(DataArray* msg) {
+    u32 op = msg->Int(1);
+    u8 ret = u8(msg->Int(2)) + u8(op);
+    return DataNode(ret ^ u8(op));
+}
+
+DataNode op9(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+    u8 a = u8(operand), b = u8(w);
+    a ^= b;
+    return DataNode(u8(a + b));
+}
+
 DataNode op10(DataArray* msg);
 DataNode op11(DataArray* msg);
 DataNode op12(DataArray* msg);

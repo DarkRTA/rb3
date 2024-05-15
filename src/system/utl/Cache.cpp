@@ -1,5 +1,7 @@
 #include "utl/Cache.h"
 #include "os/Debug.h"
+#include "os/Timer.h"
+#include "os/ThreadCall_Wii.h"
 
 int CacheID::GetDeviceID() const {
     MILO_FAIL("CacheID::GetDeviceID() not supported on this platform.\n");
@@ -19,5 +21,13 @@ bool Cache::IsDone(){
 }
 
 CacheResult Cache::GetLastResult(){
+    return mLastResult;
+}
+
+CacheResult Cache::WaitForResult() {
+    while (mOpCur != kOpNone) {
+        Timer::Sleep(0);
+        ThreadCallPoll();
+    }
     return mLastResult;
 }

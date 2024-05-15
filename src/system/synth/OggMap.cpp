@@ -13,7 +13,7 @@ void OggMap::Read(BinStream& bs){
     int version;
     bs >> version;
     if(version < 0xb) MILO_FAIL("Incorrect oggmap version.");
-    bs >> mGran; // >> mLookup;
+    bs >> mGran >> mLookup;
 }
 
 void OggMap::GetSeekPos(int sampTarget, int& seekPos, int& actSamp){

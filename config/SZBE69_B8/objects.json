@@ -19,6 +19,11 @@
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
+            "band3/meta_band/Accomplishment.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentSetlist.cpp": "NonMatching",
+            "band3/meta_band/Award.cpp": "NonMatching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",
@@ -110,6 +115,7 @@
         "objects": {
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
@@ -231,7 +237,7 @@
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
-            "system/obj/TextFile.cpp": "NonMatching",
+            "system/obj/TextFile.cpp": "LinkIssues",
             "system/obj/TypeProps.cpp":  "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
@@ -361,6 +367,7 @@
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
             "system/ui/Screenshot.cpp": "NonMatching",
+            "system/ui/ScrollSelect.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
             "system/ui/UIColor.cpp": "Matching",
             "system/ui/UIComponent.cpp": "NonMatching",
@@ -378,7 +385,7 @@
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/BufStream.cpp": "Matching",
-            "system/utl/Cache.cpp": "NonMatching",
+            "system/utl/Cache.cpp": "LinkIssues",
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": "NonMatching",
