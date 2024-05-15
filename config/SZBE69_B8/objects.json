@@ -183,6 +183,7 @@
             "system/char/CharSleeve.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "NonMatching",
+            "system/char/CharTransDraw.cpp": "NonMatching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
