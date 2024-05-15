@@ -77,7 +77,6 @@ bool Award::IsBonus() const{
 }
 
 static const char* unusedAwardStrings2[] = {
-    // Likely in description
     "%s_howto", 
     "%s_gray"
 };
@@ -101,15 +100,6 @@ void Award::InqAssets(std::vector<Symbol>& o_rAssets) {
 }
 
 bool Award::HasAssets() const {
-    // for (std::vector<AwardEntry>::iterator it = mAwardEntries.begin(); it != mAwardEntries.end(); it++) {
-
-    //     if(it == mAwardEntries.end()) {
-    //         return 0;
-    //     }
-
-    //     if(it == asset) break;
-    // }
-
     return 0;
 }
 
