@@ -423,6 +423,5 @@ JoypadAction ButtonToAction(JoypadButton btn, Symbol sym){
 
 const char* JoypadGetBreedString(int pad){
     class String s1;
-    class String s2(s1);
-    return MakeString<JoypadType, class String>("%02x%s", gJoypadData[pad].mType, s2);
+    return MakeString<JoypadType, class String>("%02x%s", gJoypadData[pad].mType, s1);
 }

@@ -2,6 +2,7 @@
 #define CHAR_WAYPOINT_H
 
 #include "obj/ObjPtr_p.h"
+#include "obj/ObjVector.h"
 #include "rndobj/Trans.h"
 #include <list>
 
@@ -25,7 +26,7 @@ class Waypoint : public RndTransformable { // 0xe4
     float mRadius, mYRadius, d;
     int pad, e;
     float mStrictRadiusDelta;
-    // ObjOwnerPtr<Waypoint, ObjectDir> mConnections; // this is an ObjVector :D
+    ObjVector<ObjOwnerPtr<Waypoint, ObjectDir>, u16> mConnections; // this is an ObjVector :D
 
     static void Init();
     static void Terminate();

@@ -2,12 +2,29 @@
 #include "math/Color.h"
 #include "math/Geo.h"
 #include "obj/Data.h"
+#include "obj/DataFunc.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/System.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
+#include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/MultiMesh.h"
+#include "utl/Loader.h"
 #include <cmath>
+
+float gLimitUVRange;
+
+ADD_NOTIFS
+
+RndGroup* GroupOwner(Hmx::Object*) {
+
+}
+
+static DataNode OnGroupOwner(DataArray* da) {
+    return DataNode(GroupOwner(da->GetObj(1)));
+}
 
 RndEnviron* FindEnviron(RndDrawable*) {
 
@@ -28,17 +45,15 @@ void RandomXfms(RndMultiMesh*) {
 }
 
 void MoveXfms(RndMultiMesh* mm, const Vector3& v) {
-    for (std::list<Transform>::iterator i = mm->mTransforms.begin(); i != mm->mTransforms.end(); i++) {
-        i->v.x += v.x;
-        i->v.y += v.y;
-        i->v.z += v.z;
+    for (std::list<RndMultiMesh::Instance>::iterator i = mm->mInstances.begin(); i != mm->mInstances.end(); i++) {
+        i->mXfm.v += v;
     }
 
 }
 
 const char* CacheResource(const char*, Hmx::Object*);
 
-FileLoader* ResourceFactory(const FilePath& f, LoaderPos p) {
+Loader* ResourceFactory(const FilePath& f, LoaderPos p) {
     return new FileLoader(f, CacheResource(f.c_str(), NULL), p, 0, false, true, NULL);
 }
 
@@ -47,8 +62,23 @@ DataNode DataFindEnviron(DataArray* da) {
     return DataNode(FindEnviron(da->Obj<RndDrawable>(1)));
 }
 
+void RndUtlPreInit() {
+    SystemConfig("rnd")->FindData("limit_uv_range", gLimitUVRange, true);
+    TheLoadMgr.RegisterFactory("bmp", ResourceFactory);
+    TheLoadMgr.RegisterFactory("png", ResourceFactory);
+    TheLoadMgr.RegisterFactory("xbv", ResourceFactory);
+    TheLoadMgr.RegisterFactory("jpg", ResourceFactory);
+    TheLoadMgr.RegisterFactory("tif", ResourceFactory);
+    TheLoadMgr.RegisterFactory("tiff", ResourceFactory);
+    TheLoadMgr.RegisterFactory("psd", ResourceFactory);
+    TheLoadMgr.RegisterFactory("gif", ResourceFactory);
+    TheLoadMgr.RegisterFactory("tga", ResourceFactory);
+    DataRegisterFunc("find_environ", DataFindEnviron);
+    DataRegisterFunc("group_owner", OnGroupOwner);
+}
+
 float ConvertFov(float a, float b) {
-    float x = tan(a / 2);
+    float x = tan(0.5f * a);
     return atan(b * x) * 2;
 }
 

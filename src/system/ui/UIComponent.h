@@ -9,12 +9,18 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
+#include "ui/UIResource.h"
 #include "utl/FilePath.h"
 #include <vector>
 
 
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
+
+    class UIMesh {
+        
+    };
+
     enum State {
         kStateNormal,
         kStateFocused,
@@ -57,18 +63,18 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
 
     ObjPtr<UIComponent, class ObjectDir> mNavRight;
     ObjPtr<UIComponent, class ObjectDir> mNavDown;
-    int test1;
-    int test2;
-    RndMesh* mMesh;
-    std::vector<int> mSomeVec;
-    class String mResourceName;
-    ObjDirPtr<class ObjectDir> mObjDir;
-    class String mResourcePath;
-    bool a;
-    u8 mState;
-    bool c, d;
+    int test1; // 0xD0
+    int unk_0xD4; // 0xD4
+    UIResource* mMesh; // 0xD8
+    std::vector<int> unk_0xDC; // 0xDC
+    class String mResourceName; // 0xE4
+    ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
+    class String mResourcePath; // 0xFC
+    bool a; // 0x108
+    u8 mState; // 0x109
+    bool c, d; // 0x10A, 0x10B
 
-    static Hmx::Object* NewObject();
+    NEW_OBJ(UIComponent)
     static void Init();
     static int sSelectFrames;
     DECLARE_REVS

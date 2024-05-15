@@ -26,9 +26,8 @@ UIComponent::State SymToUIComponentState(Symbol s) {
     return UIComponent::kStateInvalid;
 }
 
-UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), mObjDir(NULL), mMesh(NULL), a(0), mState(kStateNormal), c(0), d(0), test2(0) {
-    
-}
+UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mMesh(NULL),
+    mResourceName(), mObjDir(NULL), a(0), mState(kStateNormal), c(0), d(0) { }
 
 
 void UIComponent::Init() {
@@ -36,8 +35,6 @@ void UIComponent::Init() {
     DataArray* cfg = SystemConfig("UIComponent", "objects")->FindArray("select_frames", true);
     sSelectFrames = cfg->Int(1);
 }
-
-Hmx::Object* UIComponent::NewObject() {return new UIComponent;}
 
 UIComponent::~UIComponent() {}
 
@@ -89,7 +86,7 @@ void UIComponent::PreLoad(BinStream& bs) {
 
 void UIComponent::PostLoad(BinStream& bs) {
     if (mMesh) {
-        mMesh->PostLoad(bs);
+        mMesh->PostLoad();
     }
 }
 
@@ -116,7 +113,7 @@ void UIComponent::Poll() {
 class ObjectDir* UIComponent::ResourceDir() {
     if (mObjDir.mDir) return mObjDir.mDir;
     if (mMesh) {
-        return (class ObjectDir*)mMesh->filler; // TODO fix when RndMesh is memberized
+        return mMesh->mDir.mDir;
     }
     return NULL;
 }

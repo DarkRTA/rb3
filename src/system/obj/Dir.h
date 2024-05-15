@@ -30,6 +30,7 @@ template <class T> class ObjDirPtr : public ObjRef {
 public:
 
     ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
+    ObjDirPtr() : mDir(NULL), mLoader(NULL) {}
     virtual ~ObjDirPtr(); // nightmare
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
