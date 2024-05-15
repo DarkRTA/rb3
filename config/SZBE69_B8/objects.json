@@ -166,6 +166,7 @@
             "system/char/CharInterest.cpp": "NonMatching",
             "system/char/CharLipSync.cpp": "NonMatching",
             "system/char/CharLipSyncDriver.cpp": "NonMatching",
+            "system/char/CharLookAt.cpp": "NonMatching",
             "system/char/CharNeckTwist.cpp": "NonMatching",
             "system/char/CharPollGroup.cpp": "NonMatching",
             "system/char/CharPosConstraint.cpp": "NonMatching",
