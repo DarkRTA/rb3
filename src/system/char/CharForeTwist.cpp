@@ -10,7 +10,7 @@ CharForeTwist::CharForeTwist() : mHand(this, 0), mTwist2(this, 0), mOffset(0.0f)
 void CharForeTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mHand);
     change.push_back(mTwist2);
-    if(mTwist2) change.push_back(mTwist2);
+    if(mTwist2) change.push_back(mTwist2->mParent);
 }
 
 SAVE_OBJ(CharForeTwist, 0x79)
