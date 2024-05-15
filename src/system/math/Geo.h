@@ -42,6 +42,11 @@ public:
     Vector3 mMax;
 };
 
+inline BinStream& operator>>(BinStream& bs, Box& box){
+    bs >> box.mMin >> box.mMax;
+    return bs;
+}
+
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 
 #endif
