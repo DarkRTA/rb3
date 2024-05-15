@@ -36,7 +36,8 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Rect& rect){
 
 class Box {
 public:
-    Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
+    Box(){}
+    // Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
     Vector3 mMin;
     Vector3 mMax;
 };

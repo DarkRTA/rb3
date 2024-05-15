@@ -180,6 +180,7 @@
             "system/char/CharPollGroup.cpp": "NonMatching",
             "system/char/CharPosConstraint.cpp": "NonMatching",
             "system/char/CharServoBone.cpp": "NonMatching",
+            "system/char/CharSleeve.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "NonMatching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
