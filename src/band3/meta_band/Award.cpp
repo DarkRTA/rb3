@@ -33,7 +33,6 @@ void Award::Configure(DataArray* i_pConfig) {
 }
 
 static const char* unusedAwardStrings[] = {
-    // These are likely part of configuration
     "pAssetMgr", 
     "Award: %s is granting unknown asset: %s.", 
     "AWARD: %s is awarding too many assets! count = %i.", 
@@ -102,7 +101,16 @@ void Award::InqAssets(std::vector<Symbol>& o_rAssets) {
 }
 
 bool Award::HasAssets() const {
-    return !mAwardEntries.empty();
+    // for (std::vector<AwardEntry>::iterator it = mAwardEntries.begin(); it != mAwardEntries.end(); it++) {
+
+    //     if(it == mAwardEntries.end()) {
+    //         return 0;
+    //     }
+
+    //     if(it == asset) break;
+    // }
+
+    return 0;
 }
 
 void Award::GrantAwards(BandProfile* bandProfile) {
