@@ -3,3 +3,7 @@
 CharBonesMeshes::CharBonesMeshes() : mMeshes(this), mDummyMesh(Hmx::Object::New<RndTransformable>()) {
 
 }
+
+CharBonesMeshes::~CharBonesMeshes(){
+    
+}
