@@ -186,6 +186,7 @@
             "system/char/CharTransDraw.cpp": "NonMatching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "NonMatching",
+            "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
             "system/char/Waypoint.cpp": "NonMatching",
 
