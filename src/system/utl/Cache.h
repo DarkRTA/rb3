@@ -1,6 +1,9 @@
 #ifndef UTL_CACHE_H
 #define UTL_CACHE_H
 
+#include <vector>
+#include "obj/Object.h"
+
 enum OpType {
     kOpNone = 0,
     kOpDirectory = 1,
@@ -24,6 +27,8 @@ enum CacheResult {
     kCache_ErrorUnknown = -1,
 };
 
+struct CacheDirEntry;
+
 class Cache {
 public:
     Cache();
@@ -33,6 +38,11 @@ public:
     virtual bool IsConnectedSync() = 0;
     virtual int GetFreeSpaceSync(unsigned long long*) = 0;
     virtual bool DeleteSync(const char*) = 0;
+    virtual bool GetDirectoryAsync(const char*, std::vector<CacheDirEntry>*, Hmx::Object*) = 0;
+    virtual bool GetFileSizeAsync(const char*, uint*, Hmx::Object*) = 0;
+    virtual bool ReadAsync(const char*, void*, uint, Hmx::Object*) = 0;
+    virtual bool WriteAsync(const char*, void*, uint, Hmx::Object*) = 0;
+    virtual bool DeleteAsync(const char*, Hmx::Object*) = 0;
     // more pure virtuals go here
     virtual CacheResult WaitForResult();
 
@@ -46,7 +56,7 @@ public:
 class CacheID {
 public:
     CacheID(){}
-    virtual ~CacheID(){}
+    virtual ~CacheID() = 0;
     virtual const char* GetCachePath(const char*) = 0;
     virtual const char* GetCacheSearchPath(const char*) = 0;
     virtual int GetDeviceID() const;
