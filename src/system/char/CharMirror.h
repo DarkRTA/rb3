@@ -11,6 +11,11 @@ class CharServoBone; // forward dec
 
 class CharMirror : public CharWeightable, public CharPollable {
 public:
+
+    struct MirrorOp {
+        Symbol op;
+    };
+
     CharMirror();
     OBJ_CLASSNAME(CharMirror);
     OBJ_SET_TYPE(CharMirror);
@@ -23,10 +28,17 @@ public:
     virtual void Poll();    
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
 
-    ObjPtr<CharServoBone, ObjectDir> mServo;
-    ObjPtr<CharServoBone, ObjectDir> mMirrorServo;
+    void SetServo(CharServoBone*);
+    void SetMirrorServo(CharServoBone*);
+    void SyncBones();
+
+    DECLARE_REVS;
+    DELETE_OVERLOAD;
+
+    ObjPtr<CharServoBone, class ObjectDir> mServo;
+    ObjPtr<CharServoBone, class ObjectDir> mMirrorServo;
     CharBonesAlloc mBones;
-    std::vector<int> mOps;
+    std::vector<MirrorOp> mOps;
 };
 
 #endif
