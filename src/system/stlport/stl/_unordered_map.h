@@ -177,7 +177,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_UnorderedMultimapTraitsT<value_type> _UnorderedMultimapTraits;
+  typedef _STLP_PRIV_FORCE::_UnorderedMultimapTraitsT<value_type> _UnorderedMultimapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _UnorderedMultimapTraits,

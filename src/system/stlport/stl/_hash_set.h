@@ -46,7 +46,7 @@ class hash_set
 {
   typedef hash_set<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_HashSetTraitsT<_Value> _HashSetTraits;
+  typedef _STLP_PRIV_FORCE::_HashSetTraitsT<_Value> _HashSetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
                     _HashSetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;
@@ -170,7 +170,7 @@ class hash_multiset
 {
   typedef hash_multiset<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_HashMultisetTraitsT<_Value> _HashMultisetTraits;
+  typedef _STLP_PRIV_FORCE::_HashMultisetTraitsT<_Value> _HashMultisetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
                     _HashMultisetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;

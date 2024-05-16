@@ -36,7 +36,7 @@ class unordered_set
 {
   typedef unordered_set<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_UnorderedSetTraitsT<_Value> _UnorderedSetTraits;
+  typedef _STLP_PRIV_FORCE::_UnorderedSetTraitsT<_Value> _UnorderedSetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
                     _UnorderedSetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;
@@ -152,7 +152,7 @@ class unordered_multiset
 {
   typedef unordered_multiset<_Value, _HashFcn, _EqualKey, _Alloc> _Self;
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_UnorderedMultisetTraitsT<_Value> _UnorderedMultisetTraits;
+  typedef _STLP_PRIV_FORCE::_UnorderedMultisetTraitsT<_Value> _UnorderedMultisetTraits;
 public:
   typedef hashtable<_Value, _Value, _HashFcn,
                     _UnorderedMultisetTraits, _STLP_PRIV::_Identity<_Value>, _EqualKey, _Alloc> _Ht;

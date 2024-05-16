@@ -187,7 +187,7 @@ public:
 
 private:
   //Specific iterator traits creation
-  typedef _STLP_PRIV::_HashMultimapTraitsT<value_type> _HashMultimapTraits;
+  typedef _STLP_PRIV_FORCE::_HashMultimapTraitsT<value_type> _HashMultimapTraits;
 
 public:
   typedef hashtable<value_type, key_type, _HashFcn, _HashMultimapTraits,
