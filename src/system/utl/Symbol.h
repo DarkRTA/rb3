@@ -26,15 +26,24 @@ public:
     bool operator==(const Symbol & s) const {
         return mStr == s.mStr;
     }
-    bool operator!=(const Symbol & s);
-    bool operator!=(const char *);
+
+    bool operator!=(const Symbol & s) const {
+        return !(*this == s);
+    }
+
+    bool operator!=(const char * cc) const {
+        return !(*this == cc);
+    }
+
     // Symbol *operator=(const Symbol & s){
     //     mStr = s.mStr;
     // }
     const char *Str() const { return mStr; }
+
     static void PreInit(int, int);
-    void Init();
-    void Terminate();
+    static void Init();
+    static void Terminate();
+
     int GetIntVal(); // https://decomp.me/scratch/sxK01
     bool IsNull() const { return mStr == gNullStr; }
 };

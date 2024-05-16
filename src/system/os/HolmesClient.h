@@ -2,6 +2,7 @@
 #define OS_HOLMESCLIENT_H
 
 void HolmesClientInit();
+void HolmesClientReInit();
 void HolmesClientTerminate();
 
 bool UsingHolmes(int);

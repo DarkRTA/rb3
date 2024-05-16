@@ -35,4 +35,6 @@ inline VirtualKeyboardResultMsg::VirtualKeyboardResultMsg(int i, const char* c)
     : Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)) {
 }
 
+extern VirtualKeyboard TheVirtualKeyboard;
+
 #endif

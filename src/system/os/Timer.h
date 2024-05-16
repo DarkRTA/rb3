@@ -44,7 +44,7 @@ public:
     void Start() {
         if (mRunning++ != 0)
             return;
-    
+
         TIMER_GET_CYCLES(cycle);
         mStart = cycle;
     }
@@ -52,14 +52,14 @@ public:
     // Function addresses from retail, not sure what these do yet
     long long fn_800A8898() {
         long long cycles = 0;
-    
+
         mRunning--; // Must be outside the if to match
         if (mRunning == 0) {
             TIMER_GET_CYCLES(cycle);
             cycles = cycle - mStart;
             mCycles += cycles;
         }
-    
+
         return cycles;
     }
 
@@ -67,9 +67,9 @@ public:
         if (mRunning >= 0) {
             return;
         }
-    
+
         mRunning = -mRunning;
-    
+
         TIMER_GET_CYCLES(cycle);
         mStart = cycle;
     }
@@ -78,9 +78,9 @@ public:
         if (mRunning <= 0) {
             return;
         }
-    
+
         mRunning = -mRunning;
-    
+
         TIMER_GET_CYCLES(cycle);
         mCycles += cycle - mStart;
     }
@@ -90,7 +90,7 @@ public:
     void Split() {
         if (mRunning <= 0)
             return;
-    
+
         TIMER_GET_CYCLES(cycle);
 
         mCycles += cycle - mStart;
@@ -106,6 +106,7 @@ public:
     void Restart();
 
     float Ms() { return CyclesToMs(mCycles); }
+    float GetLastMs() { return mLastMs; }
     void SetLastMs(float ms);
 };
 
