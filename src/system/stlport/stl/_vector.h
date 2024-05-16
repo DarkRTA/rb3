@@ -268,7 +268,7 @@ public:
 
   vector(const _Self& __x)
     : _STLP_PRIV::_Vector_base<_Tp, _Size, _Alloc>(__x.size(), __x.get_allocator()) {
-    iterator __end = _STLP_PRIV::__ucopy_ptrs(__x.begin(), __x.end(), this->_M_data, _TrivialUCopy());
+    iterator __end = _STLP_PRIV::__ucopy_ptrs(__x.begin(), __x.end(), this->_M_ptr._M_data, _TrivialUCopy());
     _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
@@ -284,7 +284,7 @@ private:
     _M_set_data_size(__n);
     _M_set_finish_idx(__n);
     // TODO: Figure out which type trait should be used here
-    iterator __end = __uninitialized_fill_n(this->_M_data, __n, __val, __false_type());
+    iterator __end = __uninitialized_fill_n(this->_M_ptr._M_data, __n, __val, __false_type());
     _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 
