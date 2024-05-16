@@ -12,7 +12,6 @@ public:
     virtual int Tell();
     virtual EofType Eof();
     virtual bool Fail();
-    virtual const char* Name() const;
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int);
     virtual void SeekImpl(int, SeekType);
