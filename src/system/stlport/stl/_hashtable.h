@@ -216,7 +216,7 @@ private:
 #if defined (_STLP_DEBUG)
   typedef _STLP_PRIV::_STLP_NON_DBG_NAME(vector)<_BucketType*, _M_bucket_allocator_type> _BucketVector;
 #else
-  typedef vector<_BucketType*, _M_bucket_allocator_type> _BucketVector;
+  typedef vector<_BucketType*, unsigned short, _M_bucket_allocator_type> _BucketVector;
 #endif
 
   hasher                _M_hash;

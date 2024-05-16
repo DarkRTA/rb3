@@ -129,7 +129,8 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_insert_aux(iterator __pos, size_type __
     _STLP_STD::_Move_Construct(__dst, *__src);
     _STLP_STD::_Destroy_Moved(__src);
   }
-  _STLP_PRIV::__uninitialized_fill_n(__pos, __n, __x);
+    // TODO: Figure out which type trait should be used here
+  _STLP_PRIV::__uninitialized_fill_n(__pos, __n, __x, __false_type());
   _M_inc_finish_idx(__n);
 }
 
@@ -203,7 +204,8 @@ void vector<_Tp, _Size, _Alloc>::_M_fill_assign(size_type __n, const _Tp& __val)
     __tmp.swap(*this);
   } else if (__n > size()) {
     fill(begin(), end(), __val);
-    iterator __end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val);
+    // TODO: Figure out which type trait should be used here
+    iterator __end = _STLP_PRIV::__uninitialized_fill_n(end(), __n - size(), __val, __false_type());
     _M_set_finish_idx(__end - begin());
   } else
     erase(_STLP_PRIV::__fill_n(begin(), __n, __val), end());
