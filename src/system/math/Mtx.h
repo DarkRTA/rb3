@@ -52,7 +52,7 @@ public:
     class Vector3 v;
 
     // all of these are weak
-    Transform(){ Reset(); }
+    Transform(){}
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
