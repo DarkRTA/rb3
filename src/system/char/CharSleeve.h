@@ -22,6 +22,7 @@ public:
     virtual void Load(BinStream&);
     virtual void SetName(const char*, class ObjectDir*);
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
     ObjPtr<RndTransformable, ObjectDir> mSleeve;
