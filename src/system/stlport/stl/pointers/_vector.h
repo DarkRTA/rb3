@@ -178,19 +178,19 @@ class vector<_Tp*, _Size, _Alloc>
   typedef vector<_Tp, _Size, _Alloc> _Self;
 
 public:
-  typedef _Tp value_type;
+  typedef _Tp* value_type;
   typedef value_type* pointer;
   typedef const value_type* const_pointer;
-  typedef pointer* iterator;
-  typedef const pointer* const_iterator;
-  typedef pointer& reference;
-  typedef const pointer& const_reference;
+  typedef value_type* iterator;
+  typedef const value_type* const_iterator;
+  typedef value_type& reference;
+  typedef const value_type& const_reference;
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
   typedef random_access_iterator_tag _Iterator_category;
 
   _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
-  typedef typename _Alloc_traits<pointer, _Alloc>::allocator_type allocator_type;
+  typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const
   { return _M_impl.get_allocator(); }
@@ -211,8 +211,8 @@ public:
   size_type capacity() const    { return _M_impl.capacity(); }
   bool empty() const            { return _M_impl.empty(); }
 
-  pointer& operator[](size_type __n) { return reinterpret_cast<pointer&>(_M_impl[__n]); }
-  const_pointer& operator[](size_type __n) const { return reinterpret_cast<const_pointer&>(_M_impl[__n]); }
+  reference operator[](size_type __n) { return reinterpret_cast<reference>(_M_impl[__n]); }
+  const_reference operator[](size_type __n) const { return reinterpret_cast<const_reference>(_M_impl[__n]); }
 
   reference front()             { return reinterpret_cast<reference>(_M_impl.front()); }
   const_reference front() const { return reinterpret_cast<const_reference>(_M_impl.front()); }
@@ -252,8 +252,8 @@ public:
   void assign(_InputIterator __first, _InputIterator __last)
   { _M_impl.assign(__first, __last); }
 
-  void push_back(pointer __x) {
-    value_type& __y = *__x; // Necessary to match correctly
+  void push_back(value_type __x) {
+    _Tp& __y = *__x; // Necessary to match correctly
     _M_impl.push_back(reinterpret_cast<_StorageType*>(&__y));
   }
 
