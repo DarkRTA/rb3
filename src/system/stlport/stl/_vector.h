@@ -121,7 +121,7 @@ protected:
   void _M_inc_finish_idx(size_type increment) {
 #endif
     _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);
-    _M_finish_idx += increment;
+    _M_finish_idx = _M_finish_idx + increment;
   }
 
   void _M_set_finish_idx(size_type idx) {
