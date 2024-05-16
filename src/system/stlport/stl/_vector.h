@@ -283,7 +283,8 @@ private:
     this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
     _M_set_data_size(__n);
     _M_set_finish_idx(__n);
-    iterator __end = __uninitialized_fill_n(this->_M_data, __n, __val);
+    // TODO: Figure out which type trait should be used here
+    iterator __end = __uninitialized_fill_n(this->_M_data, __n, __val, __false_type());
     _M_set_finish_idx(__end - this->_M_ptr._M_data);
   }
 

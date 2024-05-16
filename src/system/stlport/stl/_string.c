@@ -106,7 +106,8 @@ basic_string<_CharT,_Traits,_Alloc>::append(size_type __n, _CharT __c) {
       _Traits::assign(this->_M_finish + 1, __n - 1, __c);
     else
 #endif /* _STLP_USE_SHORT_STRING_OPTIM */
-    _STLP_PRIV::__uninitialized_fill_n(this->_M_finish + 1, __n - 1, __c);
+    // TODO: Figure out which type trait should be used here
+    _STLP_PRIV::__uninitialized_fill_n(this->_M_finish + 1, __n - 1, __c, __false_type());
     _STLP_TRY {
       _M_construct_null(this->_M_finish + __n);
     }
@@ -251,7 +252,8 @@ void basic_string<_CharT,_Traits,_Alloc>::insert(iterator __pos,
           _Traits::assign(this->_M_finish + 1, __n - __elems_after - 1, __c);
         else
 #endif /* _STLP_USE_SHORT_STRING_OPTIM */
-        _STLP_PRIV::__uninitialized_fill_n(this->_M_finish + 1, __n - __elems_after - 1, __c);
+        // TODO: Figure out which type trait should be used here
+        _STLP_PRIV::__uninitialized_fill_n(this->_M_finish + 1, __n - __elems_after - 1, __c, __false_type());
         this->_M_finish += __n - __elems_after;
         _STLP_TRY {
 #if defined (_STLP_USE_SHORT_STRING_OPTIM)
@@ -274,7 +276,8 @@ void basic_string<_CharT,_Traits,_Alloc>::insert(iterator __pos,
       pointer __new_finish = __new_start;
       _STLP_TRY {
         __new_finish = _STLP_PRIV::__ucopy(this->_M_Start(), __pos, __new_start);
-        __new_finish = _STLP_PRIV::__uninitialized_fill_n(__new_finish, __n, __c);
+        // TODO: Figure out which type trait should be used here
+        __new_finish = _STLP_PRIV::__uninitialized_fill_n(__new_finish, __n, __c, __false_type());
         __new_finish = _STLP_PRIV::__ucopy(__pos, this->_M_finish, __new_finish);
         _M_construct_null(__new_finish);
       }

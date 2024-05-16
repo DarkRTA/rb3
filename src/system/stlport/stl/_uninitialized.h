@@ -282,7 +282,8 @@ inline _ForwardIter __uninitialized_fill_n(_ForwardIter __first, _Size __n, cons
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
                               const random_access_iterator_tag &)
-{ return __uninitialized_fill_n(__first, __n, __x); }
+// TODO: Figure out which type trait should be used here
+{ return __uninitialized_fill_n(__first, __n, __x, __false_type()); }
 
 /* __uninitialized_init is an internal algo to init a range with a value
  * built using default constructor. It is only called with pointer as
@@ -291,7 +292,8 @@ inline _ForwardIter __ufill_n(_ForwardIter __first, _Size __n, const _Tp& __x,
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __uinit_aux_aux(_ForwardIter __first, _Size __n, const _Tp& __val,
                                     const __false_type& /*_HasDefaultZero*/)
-{ return __uninitialized_fill_n(__first, __n, __val); }
+// TODO: Figure out which type trait should be used here
+{ return __uninitialized_fill_n(__first, __n, __val, __false_type()); }
 
 template <class _ForwardIter, class _Size, class _Tp>
 inline _ForwardIter __uinit_aux_aux(_ForwardIter __first, _Size __n, const _Tp& __val,

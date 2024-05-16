@@ -182,7 +182,8 @@ public:                         // Constructor, destructor, assignment.
     }
     else
 #endif
-    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __c);
+    // TODO: Figure out which type trait should be used here
+    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __c, __false_type());
     _M_terminate_string();
   }
 
@@ -250,7 +251,8 @@ private:
     }
     else
 #endif /* _STLP_USE_SHORT_STRING_OPTIM */
-    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __x);
+    // TODO: Figure out which type trait should be used here
+    this->_M_finish = _STLP_PRIV::__uninitialized_fill_n(this->_M_Start(), __n, __x, __false_type());
     this->_M_terminate_string();
   }
 
