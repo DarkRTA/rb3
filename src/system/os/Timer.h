@@ -3,7 +3,8 @@
 #include "utl/Symbol.h"
 #include "obj/Data.h"
 
-#define ASM_BLOCK asm
+#include "macros.h"
+
 #define TIMER_GET_CYCLES(name) \
     register int name; \
     ASM_BLOCK(mftb name)
