@@ -4,13 +4,19 @@
 #include "system/utl/Symbols2.h"
 #include "AccomplishmentManager.h"
 
-Award::Award(DataArray* configure, int index) : mName(gNullStr), mIndex(index) {
-
+Award::Award(DataArray* configure, int index) : mName(gNullStr), mIcon(gNullStr), mIsSecret(false), mIsBonus(false), mIndex(index) {
+    
 }
 
 Award::~Award() {
 
 }
+
+class AssetMgr{};
+
+static const char* unusedAwardStrings[] = {
+    "pAssetMgr", 
+};
 
 void Award::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x25);
@@ -23,20 +29,20 @@ void Award::Configure(DataArray* i_pConfig) {
 
     MILO_ASSERT(pAwardArray->Size() > 1, 0x39);
 
-    for (int i = 0; i < pAwardArray->Size(); i++) {
+    int i;
+    for (i = 0; i < pAwardArray->Size(); i++) {
         DataNode node = pAwardArray->Node(i);
         DataArray* pAwardEntryArray  = node.Array(0); 
 
         MILO_ASSERT(pAwardEntryArray, 0x3f);
         MILO_ASSERT(pAwardEntryArray->Size() >= 1, 0x40);
+        DataNode assetMgr = pAwardEntryArray->Node(0);
+    }
+
+    if (i > 8) {
+        TheDebug.Notify(MakeString("AWARD: %s is awarding too many assets! count = %i.", mName, i));
     }
 }
-
-static const char* unusedAwardStrings[] = {
-    "pAssetMgr", 
-    "Award: %s is granting unknown asset: %s.", 
-    "AWARD: %s is awarding too many assets! count = %i.", 
-};
 
 Symbol Award::GetName() const{
     return mName;

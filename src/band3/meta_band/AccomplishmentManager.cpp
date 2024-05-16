@@ -60,3 +60,8 @@ DataArray* AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index
 
     return NULL;
 }
+
+void AccomplishmentManager::AddAssetAward(Symbol, Symbol) {
+    Symbol s2 = gNullStr;
+    
+}
