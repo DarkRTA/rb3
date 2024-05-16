@@ -9,7 +9,8 @@ public:
     ~WiiMapFile();
     const char* GetFunction(unsigned int, bool);
     void ReadLine(char*, int);
-    bool ParseStack(const char*, unsigned int*, int, char*);
+
+    static bool ParseStack(const char*, unsigned int*, int, char*);
 
     File* mFile;
     int mStart;
