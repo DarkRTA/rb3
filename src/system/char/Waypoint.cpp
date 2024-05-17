@@ -33,7 +33,7 @@ DataNode Waypoint::OnWaypointFind(DataArray* da) {
     return DataNode(Waypoint::Find(da->Int(1)));
 }
 
-Waypoint::Waypoint() {
+Waypoint::Waypoint() : mConnections(this) {
 
 }
 
@@ -52,7 +52,7 @@ void Waypoint::Load(BinStream& bs) {
     if (gRev < 5) { RndMesh* x = Hmx::Object::New<RndMesh>(); x->RndDrawable::Load(bs); delete x; } // why not just DumpLoad...?
     RndTransformable::Load(bs);
     bs >> mFlags;
-    // bs >> mOwner;
+    bs >> mConnections;
     if (gRev > 1) {
         bs >> mRadius;
     } else mRadius = 12;
@@ -72,7 +72,7 @@ BEGIN_PROPSYNCS(Waypoint)
     SYNC_PROP(y_radius, mYRadius)
 
     SYNC_PROP(strict_radius_delta, mStrictRadiusDelta)
-    // SYNC_PROP(connections, mConnections)
+    SYNC_PROP(connections, mConnections)
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
 

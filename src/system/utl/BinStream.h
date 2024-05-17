@@ -4,6 +4,7 @@
 #include "types.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
+#include <utility>
 #include <vector>
 
 #define BS_WRITE_TYPE(var) \
@@ -172,17 +173,8 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1
     return bs;
 }
 
-template <class T1, class T2> class ObjVector;
-
-template <class T1, class T2> BinStream& operator>>(BinStream& bs, ObjVector<T1, T2>& vec) {
-    unsigned int length;
-    bs >> length;
-    vec.resize(length);
-
-    for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
-        it->Load(bs);
-    }
-
+template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2> p) {
+    bs >> p.first >> p.second;
     return bs;
 }
 

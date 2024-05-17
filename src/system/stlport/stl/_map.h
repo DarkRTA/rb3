@@ -127,20 +127,34 @@ public:
   const_iterator begin() const { return _M_t.begin(); }
   iterator end() { return _M_t.end(); }
   const_iterator end() const { return _M_t.end(); }
+
   reverse_iterator rbegin() { return _M_t.rbegin(); }
   const_reverse_iterator rbegin() const { return _M_t.rbegin(); }
   reverse_iterator rend() { return _M_t.rend(); }
   const_reverse_iterator rend() const { return _M_t.rend(); }
+
   bool empty() const { return _M_t.empty(); }
   size_type size() const { return _M_t.size(); }
   size_type max_size() const { return _M_t.max_size(); }
+
   _STLP_TEMPLATE_FOR_CONT_EXT
   _Tp& operator[](const _KT& __k) {
     iterator __i = lower_bound(__k);
     // __i->first is greater than or equivalent to __k.
     if (__i == end() || key_comp()(__k, (*__i).first)) {
-      // TODO: This change doesn't seem to match everywhere
-      // __i = _M_t.insert_unique(__i, value_type(__k, _Tp()));
+      __i = _M_t.insert_unique(__i, value_type(__k, _Tp()));
+    }
+    return (*__i).second;
+  }
+
+  // Modified indexer to try and match DataNode::Load()
+  // Only issues left are extra loads and a comparison regswap
+  _STLP_TEMPLATE_FOR_CONT_EXT
+  _Tp& hack_indexer(const _KT& __k) {
+    const _KT& __k2 = __k; // Gets rid of some regswaps, but introduces an extra load
+    iterator __i = lower_bound(__k2);
+    if (__i == end() || key_comp()(__k, (*__i).first)) {
+      // insert() instead of _M_t.insert_unique() fixes a stack swap
       __i = insert(__i, value_type(__k, _Tp()));
     }
     return (*__i).second;

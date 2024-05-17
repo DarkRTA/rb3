@@ -31,7 +31,7 @@ SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPa
     mCrowdChannels = info->GetCrowdChannels();
     mDrumSoloSamples = info->GetDrumSoloSamples();
     mDrumFreestyleSamples = info->GetDrumFreestyleSamples();
-    // mTrackChannels = info->GetTracks(); // this causes an error and i have no clue why
+    mTrackChannels = info->GetTracks();
     int midifilenum = NumExtraMidiFiles();
     mExtraMidiFiles.reserve(midifilenum);
     for(int i = 0; i < midifilenum; i++){

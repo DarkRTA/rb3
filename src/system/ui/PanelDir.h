@@ -18,7 +18,8 @@ public:
     virtual void SyncObjects();
     virtual void RemovingObject(Hmx::Object*);
 
-    int filler;
+    int unk_0x18C;
+    class UIPanel* mPanel;
 };
 
 #endif

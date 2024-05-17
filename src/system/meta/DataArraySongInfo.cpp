@@ -75,7 +75,7 @@ void DataArraySongInfo::Load(BinStream& bs) {
     bs >> mCrowdChannels;
     bs >> mDrumSoloSamples;
     bs >> mDrumFreestyleSamples;
-    // bs >> mTrackChannels; // why does this cause an error?
+    bs >> mTrackChannels;
     bs >> mExtraMidiFiles;
 }
 

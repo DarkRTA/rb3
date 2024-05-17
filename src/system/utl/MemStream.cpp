@@ -23,8 +23,8 @@ void MemStream::WriteImpl(const void* data, int bytes){
     int toReserve = mBuffer.capacity();
     while(mTell + bytes > toReserve) toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mBuffer.size() > mTell + bytes){
-        mBuffer.resize(toReserve);
+    if(mTell + bytes > mBuffer.size()){
+        mBuffer.resize(mTell + bytes);
     }
     memcpy(&mBuffer[mTell], data, bytes);
     mTell += bytes;
@@ -34,8 +34,8 @@ void MemStream::WriteStream(BinStream& bs, int bytes){
     int toReserve = mBuffer.capacity();
     while(mTell + bytes > toReserve) toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mBuffer.size() > mTell + bytes){
-        mBuffer.resize(toReserve);
+    if(mTell + bytes > mBuffer.size()){
+        mBuffer.resize(mTell + bytes);
     }
     bs.Read(&mBuffer[mTell], bytes);
     mTell += bytes;
@@ -43,7 +43,7 @@ void MemStream::WriteStream(BinStream& bs, int bytes){
 
 void MemStream::SeekImpl(int offset, SeekType t){
     int pos;
-    
+
     switch(t){
         case kSeekBegin:
             pos = offset;
@@ -57,7 +57,7 @@ void MemStream::SeekImpl(int offset, SeekType t){
         default:
             return;
     }
-    
+
     if(pos < 0 || pos > mBuffer.size()){
         mFail = true;
     }

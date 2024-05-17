@@ -8,7 +8,7 @@
 class CharBonesMeshes : public CharBonesAlloc {
 public:
     CharBonesMeshes();
-    virtual ~CharBonesMeshes(){}
+    virtual ~CharBonesMeshes();
     virtual void ReallocateInternal();
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Replace(Hmx::Object*, Hmx::Object*);

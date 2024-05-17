@@ -17,6 +17,16 @@ namespace Hmx {
         void Set(float xx, float yy, float ww, float hh){ x = xx; y = yy; w = ww; h = hh; }
         float x, y, w, h;
     };
+
+    class Polygon {
+        Polygon() {}
+        ~Polygon() {}
+        std::vector<Vector2> mPoints;
+    };
+
+    struct Ray {
+        Vector2 base, dir;
+    };
 }
 
 inline BinStream& operator>>(BinStream& bs, Hmx::Rect& rect){
@@ -30,5 +40,7 @@ public:
     Vector3 mMin;
     Vector3 mMax;
 };
+
+void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 
 #endif

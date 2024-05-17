@@ -37,10 +37,10 @@ void GameGemDB::MergeChordGems(){
     }
 }
 
-// const GameGemList* GameGemDB::GetDiffGemList(int diff) const {
-//     MILO_ASSERT(0 <= diff && diff < mGameGemLists.size() && mGameGemLists[ diff], 0x48);
-//     return mGameGemLists[diff];
-// }
+const GameGemList* GameGemDB::GetDiffGemList(int diff) const {
+    MILO_ASSERT(0 <= diff && diff < mGameGemLists.size() && mGameGemLists[ diff], 0x48);
+    return mGameGemLists[diff];
+}
 
 GameGemList* GameGemDB::GetDiffGemList(int diff) {
     MILO_ASSERT(0 <= diff && diff < mGameGemLists.size() && mGameGemLists[ diff], 0x4E);
@@ -53,9 +53,9 @@ void GameGemDB::Finalize(){
     }
 }
 
-// GameGemDB* GameGemDB::Duplicate() const {
-//     GameGemDB* duped = new GameGemDB(mGameGemLists.size(), mHopoThreshold);
-//     for(int i = 0; i < mGameGemLists.size(); i++){
-//         duped->mGameGemLists[i]->CopyFrom(mGameGemLists[i]);
-//     }
-// }
+GameGemDB* GameGemDB::Duplicate() const {
+    GameGemDB* duped = new GameGemDB(mGameGemLists.size(), mHopoThreshold);
+    for(int i = 0; i < mGameGemLists.size(); i++){
+        duped->mGameGemLists[i]->CopyFrom(mGameGemLists[i]);
+    }
+}
