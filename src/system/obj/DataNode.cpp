@@ -569,7 +569,7 @@ void DataNode::Load(BinStream& d){
         case kDataVar: {
             Symbol sym;
             d >> sym;
-            mValue.var = &gDataVars[sym];
+            mValue.var = &gDataVars.hack_indexer(sym);
             break;
         }
         case kDataUnhandled:
