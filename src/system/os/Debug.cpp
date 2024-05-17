@@ -1,4 +1,5 @@
 #include "os/Debug.h"
+#include "os/HolmesClient.h"
 #include "os/OSFuncs.h"
 #include "utl/MakeString.h"
 #include <cstdlib>
@@ -83,7 +84,6 @@ void Debug::Notify(const char* msg){
     }
 }
 
-extern void HolmesClientTerminate();
 void Debug::Exit(int status, bool actually_exit) {
     mNoTry = true;
     /*for (std::list<ExitCallbackFunc*>::reverse_iterator i = mExitCallbacks.rbegin(); i != mExitCallbacks.rend(); i++) {

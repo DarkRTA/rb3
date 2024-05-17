@@ -5,6 +5,11 @@
 
 void KeyboardInitCommon();
 void KeyboardTerminateCommon();
+
+void KeyboardInit();
+void KeyboardTerminate();
+void KeyboardPoll();
+
 void KeyboardSubscribe(Hmx::Object*);
 void KeyboardUnsubscribe(Hmx::Object*);
 Hmx::Object* KeyboardOverride(Hmx::Object*);

@@ -36,16 +36,22 @@ Platform ConsolePlatform();
 void StripEditorData();
 bool UsingCD();
 void SetUsingCD(bool);
+
 DataArray* SystemConfig();
 DataArray* SystemConfig(Symbol);
 DataArray* SystemConfig(Symbol, Symbol);
 DataArray* SystemConfig(Symbol, Symbol, Symbol);
 DataArray* SystemConfig(Symbol, Symbol, Symbol, Symbol);
 DataArray* SystemConfig(Symbol, Symbol, Symbol, Symbol, Symbol);
+
 Symbol SystemLanguage();
 DataArray* SupportedLanguages(bool);
 bool IsSupportedLanguage(Symbol, bool);
+Symbol GetSystemLanguage(Symbol);
+void SetSystemLanguage(Symbol, bool);
+
 int SystemExec(const char*);
+int SystemMs();
 void SystemPoll(bool pollTasks);
 void SetSystemArgs(int, char**);
 void SystemPreInit(const char*);

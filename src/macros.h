@@ -46,7 +46,7 @@
 #endif
 
 // For VSCode
-#ifdef __MWERKS__
+#if defined(__MWERKS__) && !defined(__VS_CODE__)
 #define ASM_DECL asm
 #define ASM_BLOCK asm
 #else

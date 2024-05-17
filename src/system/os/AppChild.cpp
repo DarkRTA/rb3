@@ -1,5 +1,6 @@
 #include "os/AppChild.h"
 #include "obj/Data.h"
+#include "os/HolmesClient.h"
 #include "utl/Option.h"
 #include "obj/DataFunc.h"
 #include "os/NetStream.h"
@@ -38,8 +39,6 @@ void AppChild::Terminate(){
     delete TheAppChild;
     TheAppChild = 0;
 }
-
-extern unsigned int HolmesResolveIP();
 
 AppChild::AppChild(const char* str) : mEnabled(1), mStream(0), mSync(0) {
     unsigned int theIP = HolmesResolveIP();

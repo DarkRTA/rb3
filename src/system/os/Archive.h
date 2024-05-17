@@ -16,7 +16,7 @@ public:
         MILO_ASSERT(idx < mTableSize, 0x99);
         return mTable[idx];
     }
-    
+
     char* mHeap;
     char* mHeapEnd;
     char* mFree;

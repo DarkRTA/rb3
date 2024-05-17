@@ -46,7 +46,7 @@ bool OptionBool(const char* option, bool def){
     if(opt == TheSystemArgs.end()) return def;
     else {
         TheSystemArgs.erase(opt);
-        return def == 0;
+        return !def;
     }
 }
 
@@ -61,3 +61,6 @@ const char* OptionStr(const char* option, const char* def){
         return def;
     }
 }
+
+static char* dummy1 = "%llx";
+static char* dummy2 = "Unprocessed option %s\n";

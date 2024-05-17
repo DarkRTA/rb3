@@ -37,7 +37,8 @@
             },
             "defines": [
                 "MILO_DEBUG",
-                "__MWERKS__=0x4302"
+                "__MWERKS__=0x4302",
+                "__VS_CODE__"
             ]
         }
     ],

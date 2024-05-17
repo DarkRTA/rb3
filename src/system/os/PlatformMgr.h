@@ -35,6 +35,7 @@ public:
 
     void SetDiskError(DiskError);
     void GetOnlineID(int, OnlineID*) const;
+
     const char* GetName(int) const;
 
     bool IsSignedIn(int) const;
@@ -49,11 +50,12 @@ public:
     bool IsSignedIntoLive(int) const;
 
     PlatformRegion GetRegion() const;
+    void SetRegion(PlatformRegion);
 
     bool IsConnected() const { return mConnected; }
     int SigninMask() const { return mSigninMask; }
     int SigninChangedMask() const { return mSigninChangeMask; }
-    
+
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;
 
