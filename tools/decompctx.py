@@ -223,7 +223,7 @@ class ContextPreprocessor(CmdPreprocessor):
 
         return super(ContextPreprocessor, self).on_include_not_found(is_malformed, is_system_include, curdir, includepath)
 
-    def on_unknown_macro_in_expr(self, ident):
+    def on_unknown_macro_in_expr(self, ident): # type: ignore
         if self.context_args.eval_mwcc_options and ident in mwcc_options:
             return 1 if mwcc_options[ident] else 0
 
@@ -236,7 +236,7 @@ class ContextPreprocessor(CmdPreprocessor):
             return None
         return super(ContextPreprocessor, self).on_unknown_macro_in_defined_expr(tok)
 
-    def on_unknown_macro_function_in_expr(self, ident):
+    def on_unknown_macro_function_in_expr(self, ident): # type: ignore
         def mwcc_option(tokens):
             assert isinstance(tokens, Value), "Unrecognized token type"
             if tokens.exception is not None:
