@@ -6,10 +6,12 @@
 import os
 import re
 import argparse
+
 from io import StringIO
 from pcpp import CmdPreprocessor
 from pcpp.evaluator import Value
 from contextlib import redirect_stdout
+from typing import Optional
 
 # Note: requires being in the same directory as cflags_common.py
 from cflags_common import cflags_includes
@@ -90,7 +92,7 @@ src_dir = "src"
 include_dir = "include"
 cwd_dir = os.getcwd()
 script_dir = os.path.dirname(os.path.realpath(__file__))
-root_dir = script_dir # os.path.abspath(os.path.join(script_dir, "..")) # We're already in the root dir
+root_dir = os.path.abspath(os.path.join(script_dir, ".."))
 # Bring in include dirs from configure.py so we don't have to duplicate them here
 default_include_directories: list[str] = [flag.strip("-i").lstrip() for flag in cflags_includes]
 
@@ -102,6 +104,7 @@ class ContextArguments:
     def __init__(self):
         self.preprocessor_arguments: list[str] = ['pcpp']
         self.output_path: str = ''
+        self.deps_path: Optional[str] = None
 
         self.strip_attributes: bool = False
         self.strip_at_address: bool = False
@@ -118,6 +121,7 @@ class ContextArguments:
         parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
         parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
         parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true", default=False)
+        parser.add_argument("-d", dest = "deps_path", help="Path to output list of included files to", action="store", default=None)
 
         # For the output path, we either want to be explicit or relative, but not both
         output_target_group = parser.add_mutually_exclusive_group()
@@ -156,6 +160,8 @@ class ContextArguments:
             self.output_path = f"{known_args.c_file}.ctx"
         else:
             self.output_path = os.path.join(os.getcwd(), default_output_filename)
+
+        self.deps_path = known_args.deps_path
 
         # Append in the default include directories
         include_directories: list[str] = []
@@ -204,6 +210,7 @@ class ContextPreprocessor(CmdPreprocessor):
     def __init__(self, args: ContextArguments):
         self.context_args = args
         self.in_directive = False
+        self.include_deps: list[str] = []
         super(ContextPreprocessor, self).__init__(args.preprocessor_arguments)
 
     def on_include_not_found(self, is_malformed, is_system_include, curdir, includepath):
@@ -239,7 +246,7 @@ class ContextPreprocessor(CmdPreprocessor):
         def warn_if_arg_expanded(tokens):
             assert isinstance(tokens, Value), "Unrecognized token type"
             if tokens.exception is None and tokens.value() == 0:
-                self.on_error(self.source, -1, "Unhandled argument to %s built-in macro (real line number below)" % ident)
+                self.on_error(self.source, -1, f"Unhandled argument to {ident} built-in macro (real line number below)")
 
             # This return value causes an assert, which will be caught and
             # results in a log with the correct line number for the above error
@@ -252,12 +259,8 @@ class ContextPreprocessor(CmdPreprocessor):
         return super(ContextPreprocessor, self).on_unknown_macro_function_in_expr(ident)
 
     def expand_macros(self, tokens, expanding_from=[]):
-        # Always expand if we're not preserving macros
-        if not self.context_args.preserve_macros:
-            return super(ContextPreprocessor, self).expand_macros(tokens, expanding_from)
-
         # Don't expand outside of directives
-        if not self.in_directive:
+        if self.context_args.preserve_macros and not self.in_directive:
             return tokens
 
         # Expand first before exiting the directive, since this is called recursively
@@ -274,6 +277,13 @@ class ContextPreprocessor(CmdPreprocessor):
         # Inside an #include directive
         self.in_directive = True
         return super(ContextPreprocessor, self).include(tokens, original_line)
+
+    def on_file_open(self, is_system_include, includepath):
+        # Open before adding, as it may not be a valid path and will raise an error
+        ret = super(ContextPreprocessor, self).on_file_open(is_system_include, includepath)
+        # Only successfully opened files will reach this point and be added
+        self.include_deps.append(includepath)
+        return ret
 #endregion
 
 #region Attribute Stripping
@@ -363,36 +373,53 @@ def main():
     with StringIO() as file_string_writer:
         with redirect_stdout(file_string_writer):
             # Parse the target file:
-            ContextPreprocessor(args)
+            processor = ContextPreprocessor(args)
 
-            # Check if empty
-            string_writer_position = file_string_writer.tell()
-            if string_writer_position == 0:
+        # Check if empty
+        string_writer_position = file_string_writer.tell()
+        if string_writer_position == 0:
+            return
+
+        with open(args.output_path, "w", encoding="utf-8", newline="\n") as f:
+            # Do we need to sanitize this further?
+            if not args.strip_attributes and not args.strip_at_address and not args.convert_binary_literals:
+                f.write(file_string_writer.getvalue())
                 return
 
-            with open(args.output_path, "w", encoding="utf-8", newline="\n") as f:
-                # Do we need to sanitize this further?
-                if not args.strip_attributes and not args.strip_at_address and not args.convert_binary_literals:
-                    f.write(file_string_writer.getvalue())
-                    return
+            # Sanitize line-by line for easier parsing
+            file_string_writer.seek(0)
+            while True:
+                line_to_write = file_string_writer.readline()
+                if not line_to_write:
+                    break
 
-                # Sanitize line-by line for easier parsing
-                file_string_writer.seek(0)
-                while True:
-                    line_to_write = file_string_writer.readline()
-                    if not line_to_write:
-                        break
+                if args.strip_attributes:
+                    line_to_write = strip_attributes(line_to_write)
 
-                    if args.strip_attributes:
-                        line_to_write = strip_attributes(line_to_write)
+                if args.strip_at_address:
+                    line_to_write = strip_at_address(line_to_write)
 
-                    if args.strip_at_address:
-                        line_to_write = strip_at_address(line_to_write)
+                if args.convert_binary_literals:
+                    line_to_write = strip_binary_literals(line_to_write)
 
-                    if args.convert_binary_literals:
-                        line_to_write = strip_binary_literals(line_to_write)
+                f.writelines(line_to_write)
 
-                    f.writelines(line_to_write)
+    def sanitize_path(path: str) -> str:
+        return path.replace("\\", "/").replace(" ", "\\ ")
+
+    san_root_dir = sanitize_path(root_dir)
+    if not san_root_dir.endswith("/"):
+        san_root_dir = san_root_dir + "/"
+
+    def make_relative(path: str) -> str:
+        path = sanitize_path(path)
+        return path.replace(san_root_dir, "")
+
+    if args.deps_path:
+        with open(os.path.join(root_dir, args.deps_path), "w", encoding="utf-8") as f:
+            f.write(make_relative(args.output_path) + ":")
+            for dep in processor.include_deps:
+                f.write(f" \\\n\t{make_relative(dep)}")
 #endregion
 
 if __name__ == "__main__":
