@@ -1,10 +1,11 @@
 #ifndef META_FIXEDSIZESAVEABLE_H
 #define META_FIXEDSIZESAVEABLE_H
 #include "utl/BinStream.h"
+#include "utl/BufStream.h"
 
 typedef int SaveSizeMethodFunc(int);
 
-class FixedSizeSaveableStream;
+class FixedSizeSaveableStream : public BufStream {};
 
 class FixedSizeSaveable {
 public:
@@ -17,6 +18,7 @@ public:
 
     static int sSaveVersion;
     static int sMaxSymbols;
+    static bool sPrintoutsEnabled;
     SaveSizeMethodFunc* mSaveSizeMethod;
 };
 

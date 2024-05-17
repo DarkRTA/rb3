@@ -3,6 +3,8 @@
 #include "obj/Dir.h"
 #include "utl/Symbols4.h"
 
+Achievements* TheAchievements;
+
 void Achievements::Init() {
     TheAchievements = new Achievements;
     TheAchievements->SetName("achievements", ObjectDir::Main());

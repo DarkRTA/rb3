@@ -42,11 +42,11 @@ public:
     void CheckLoad();
     void CheckUnload();
     bool CheckIsLoaded();
-    void SetLoadedDir(PanelDir*, bool);
+    void SetLoadedDir(class PanelDir*, bool);
     void UnsetLoadedDir();
     DataNode OnLoad(DataArray*);
 
-    PanelDir* mDir;
+    class PanelDir* mDir;
     DirLoader* mLoader;
     class String mFocusName;
     State mState;

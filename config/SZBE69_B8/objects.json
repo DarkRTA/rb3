@@ -16,6 +16,7 @@
             "band3/bandtrack/GemSmasher.cpp": "NonMatching",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
 
+            "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
@@ -24,6 +25,8 @@
             "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSetlist.cpp": "NonMatching",
             "band3/meta_band/Award.cpp": "NonMatching",
+            "band3/meta_band/CampaignKey.cpp": "Matching",
+            "band3/meta_band/GameplayOptions.cpp": "NonMatching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",
@@ -416,6 +419,7 @@
             "system/utl/Option.cpp": "Matching",
             "system/utl/PoolAlloc.cpp": "NonMatching",
             "system/utl/Profiler.cpp": "NonMatching",
+            "system/utl/Rso_Utl.cpp": "NonMatching",
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",

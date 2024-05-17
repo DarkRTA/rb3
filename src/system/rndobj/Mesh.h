@@ -15,10 +15,10 @@
 
 class RndMultiMesh;
 
-class RndBone : public ObjPtr<RndTransformable, ObjectDir> {
+class RndBone : public ObjPtr<RndTransformable, class ObjectDir> {
     public:
-    RndBone() : ObjPtr<RndTransformable, ObjectDir>(NULL, NULL) {}
-    operator ObjPtr<RndTransformable, ObjectDir>&() { return *this; } 
+    RndBone() : ObjPtr<RndTransformable, class ObjectDir>(NULL, NULL) {}
+    operator ObjPtr<RndTransformable, class ObjectDir>&() { return *this; } 
     void Load(BinStream&);
 
     Transform mOffset;
@@ -84,9 +84,9 @@ public:
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
-    ObjPtr<RndMat,ObjectDir> mMat; // 0xC4
+    ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
     std::vector<u8, u16> unk_0xD0; // ???
-    ObjOwnerPtr<RndMesh, ObjectDir> mOwner; // 0xD8
+    ObjOwnerPtr<RndMesh, class ObjectDir> mOwner; // 0xD8
     ObjVector<RndBone> mBones;
     int unk_0xF0, unk_0xF4;
     BSPNode* unk_0xF8;
