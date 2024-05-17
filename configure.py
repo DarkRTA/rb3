@@ -25,7 +25,7 @@ from tools.project import (
     is_windows,
 )
 
-from cflags_common import cflags_includes
+from tools.cflags_common import cflags_includes
 
 # Game versions
 # Be sure to update macros.h if this list changes!
