@@ -6,6 +6,10 @@
 class FixedSizeSaveableStream : public BufStream {
 public:
     FixedSizeSaveableStream(void*, int, bool);
+    virtual ~FixedSizeSaveableStream();
+    virtual void FinishWrite(){}
+    virtual void FinishStream(){}
+
     std::unordered_map<Symbol, int> m_mapSymbolToID;
     std::unordered_map<int, Symbol> m_mapIDToSymbol;
     int m_iCurrentID;

@@ -15,6 +15,12 @@ public:
     virtual void LoadFixed(FixedSizeSaveableStream&, int) = 0;
 
     static void Init(int, int);
+    static void PadStream(FixedSizeSaveableStream&, int);
+    static void DepadStream(FixedSizeSaveableStream&, int);
+    static void SaveFixedSymbol(FixedSizeSaveableStream&, const Symbol&);
+    static void LoadFixedSymbol(FixedSizeSaveableStream&, Symbol&);
+    static void SaveFixedString(FixedSizeSaveableStream&, const String&);
+    static void LoadFixedString(FixedSizeSaveableStream&, String&);
 
     static int sSaveVersion;
     static int sMaxSymbols;
