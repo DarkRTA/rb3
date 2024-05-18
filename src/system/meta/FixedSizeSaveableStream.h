@@ -10,6 +10,11 @@ public:
     virtual void FinishWrite(){}
     virtual void FinishStream(){}
 
+    bool HasSymbol(Symbol) const;
+    int GetID(Symbol) const;
+    int AddSymbol(Symbol);
+    Symbol GetSymbol(int) const;
+
     std::unordered_map<Symbol, int> m_mapSymbolToID;
     std::unordered_map<int, Symbol> m_mapIDToSymbol;
     int m_iCurrentID;

@@ -2,10 +2,9 @@
 #define META_FIXEDSIZESAVEABLE_H
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
+#include "meta/FixedSizeSaveableStream.h"
 
 typedef int SaveSizeMethodFunc(int);
-
-class FixedSizeSaveableStream : public BufStream {};
 
 class FixedSizeSaveable {
 public:
@@ -21,6 +20,8 @@ public:
     static void LoadFixedSymbol(FixedSizeSaveableStream&, Symbol&);
     static void SaveFixedString(FixedSizeSaveableStream&, const String&);
     static void LoadFixedString(FixedSizeSaveableStream&, String&);
+    static void SaveSymbolID(FixedSizeSaveableStream&, Symbol);
+    static void LoadSymbolFromID(FixedSizeSaveableStream&, Symbol&);
 
     static int sSaveVersion;
     static int sMaxSymbols;

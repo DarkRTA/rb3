@@ -68,3 +68,16 @@ void FixedSizeSaveable::LoadFixedString(FixedSizeSaveableStream& fixedStream, St
     MILO_ASSERT(fixedStream.Tell()-start <= kStringSize, 0x5B);
     DepadStream(fixedStream, start + (kStringSize - fixedStream.Tell()));
 }
+
+void FixedSizeSaveable::SaveSymbolID(FixedSizeSaveableStream& stream, Symbol sym){
+    int id;
+    if(stream.HasSymbol(sym)) id = stream.GetID(sym);
+    else id = stream.AddSymbol(sym);
+    stream << id;
+}
+
+void FixedSizeSaveable::LoadSymbolFromID(FixedSizeSaveableStream& stream, Symbol& sym){
+    int id = 0;
+    stream >> id;
+    sym = stream.GetSymbol(id);
+}
