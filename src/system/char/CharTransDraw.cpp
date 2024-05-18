@@ -1,4 +1,5 @@
 #include "char/CharTransDraw.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(CharTransDraw);
 
@@ -20,3 +21,14 @@ void CharTransDraw::Load(BinStream& bs){
     bs >> mChars;
     SetDrawModes(Character::kCharDrawOpaque);
 }
+
+BEGIN_HANDLERS(CharTransDraw)
+    HANDLE_SUPERCLASS(RndDrawable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x5E)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(CharTransDraw)
+    SYNC_PROP(chars, mChars)
+    SYNC_SUPERCLASS(RndDrawable)
+END_PROPSYNCS

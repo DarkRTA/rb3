@@ -191,6 +191,7 @@
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/CharWeightSetter.cpp": "NonMatching",
             "system/char/CharacterTest.cpp": "NonMatching",
+            "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
             "system/char/Waypoint.cpp": "NonMatching",
 

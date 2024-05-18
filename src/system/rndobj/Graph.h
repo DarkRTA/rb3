@@ -82,6 +82,7 @@ public:
 
     static void Init();
     static void ResetAll();
+    static RndGraph* Get(const void*);
 };
 
 #endif
