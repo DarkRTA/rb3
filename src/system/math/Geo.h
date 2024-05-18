@@ -36,10 +36,16 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Rect& rect){
 
 class Box {
 public:
-    Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
+    Box(){}
+    // Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
     Vector3 mMin;
     Vector3 mMax;
 };
+
+inline BinStream& operator>>(BinStream& bs, Box& box){
+    bs >> box.mMin >> box.mMax;
+    return bs;
+}
 
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 

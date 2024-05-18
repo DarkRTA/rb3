@@ -29,19 +29,14 @@ public:
         void Add(Hmx::Object*, SinkMode, Symbol, bool);
         void Remove(Hmx::Object*, MsgSource*, bool);
     };
-
-    virtual ~MsgSource();
-
-    std::list<Sink> mSinks;
-    std::list<EventSink> mEventSinks;
-    int mExporting;
-
+    
     MsgSource();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(MsgSource);
     OBJ_SET_TYPE(MsgSource);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual ~MsgSource();
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Export(DataArray*, bool);
 
     void ChainSource(MsgSource*, MsgSource*);
@@ -49,6 +44,10 @@ public:
     void RemoveSink(Hmx::Object*, Symbol);
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
+
+    std::list<Sink> mSinks;
+    std::list<EventSink> mEventSinks;
+    int mExporting;
 };
 
 #endif

@@ -18,6 +18,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
     ObjPtr<RndTransformable, ObjectDir> mUpperArm;

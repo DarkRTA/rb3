@@ -10,6 +10,13 @@ class CharacterTest; // forward dec
 class Character : public RndDir {
 public:
 
+    enum DrawMode {
+        kCharDrawNone,
+        kCharDrawOpaque,
+        kCharDrawTranslucent,
+        kCharDrawAll
+    };
+
     class Lod {
     public:
         Lod(Hmx::Object*);
