@@ -58,4 +58,5 @@ GameGemDB* GameGemDB::Duplicate() const {
     for(int i = 0; i < mGameGemLists.size(); i++){
         duped->mGameGemLists[i]->CopyFrom(mGameGemLists[i]);
     }
+    return duped;
 }

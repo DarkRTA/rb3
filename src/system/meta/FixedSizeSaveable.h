@@ -23,6 +23,7 @@ public:
     static void SaveSymbolID(FixedSizeSaveableStream&, Symbol);
     static void LoadSymbolFromID(FixedSizeSaveableStream&, Symbol&);
 
+    static int sCurrentMemcardLoadVer;
     static int sSaveVersion;
     static int sMaxSymbols;
     static bool sPrintoutsEnabled;
