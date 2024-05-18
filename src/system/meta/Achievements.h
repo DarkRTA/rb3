@@ -25,6 +25,6 @@ public:
     static void Init();
 };
 
-Achievements* TheAchievements;
+extern Achievements* TheAchievements;
 
 #endif // META_ACHIEVEMENTS_H

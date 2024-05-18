@@ -1,6 +1,7 @@
 #ifndef RNDOBJ_RND_H
 #define RNDOBJ_RND_H
 
+#include "math/Color.h"
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
@@ -19,8 +20,13 @@ public:
 
     virtual float UpdateOverlay(RndOverlay*, float);
     virtual void SetShrinkToSafeArea(bool b) { mShrinkToSafe = b; }
+    virtual void PreInit(), Init(), ReInit(), Terminate();
+    virtual void SetClearColor(const Hmx::Color& c) { mColor = c; }
+    virtual void ForceColorClear() {}
 
-    float unk_0x20, unk_0x24, unk_0x28, unk_0x2C;
+    virtual void BeginDrawing(), EndDrawing();
+
+    Hmx::Color mColor; // 0x20
     int mWidth, mHeight; // 0x30, 0x34
     int mScreenBpp; // 0x38
     int unk_0x3C;
@@ -36,7 +42,6 @@ public:
 
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
 
-    void PreInit(); void Init(); void Terminate(); void ReInit();
     void ShowConsole(bool); bool ConsoleShowing();
     void SetShowTimers(bool, bool);
     bool GetEvenOddDisabled() const;

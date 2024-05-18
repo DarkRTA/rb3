@@ -19,25 +19,25 @@ public:
 
     void Cleanup(const char*);
     void DoneLoading();
-    ObjectDir* GetDir();
-    bool SaveObjects(const char*, ObjectDir*);
+    class ObjectDir* GetDir();
+    bool SaveObjects(const char*, class ObjectDir*);
     void OpenFile();
     const char* CachedPath(const char*, bool);
     void SetCacheMode(bool);
 
     static void PrintLoaded(const char*);
-    static ObjectDir* LoadObjects(const FilePath&, Loader::Callback*, BinStream*);
+    static class ObjectDir* LoadObjects(const FilePath&, Loader::Callback*, BinStream*);
 
     int filler[4];
-    String mRoot; // 0x28
+    class String mRoot; // 0x28
     bool mOwnStream; // 0x34
     BinStream* mStream; // 0x38
     int test[0x2];
-    ObjPtrList<Hmx::Object, ObjectDir> mObjects;
+    ObjPtrList<Hmx::Object, class ObjectDir> mObjects;
     Callback* mCallback;
-    ObjectDir* mDir;
+    class ObjectDir* mDir;
     int adsf[2];
-    ObjectDir* mProxyDir; // 0x64
+    class ObjectDir* mProxyDir; // 0x64
     Timer mTimer; // 0x68
     bool mAccessed; // 0x98, guess
 
