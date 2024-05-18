@@ -12,11 +12,11 @@
 # Append --help to see available options.
 ###
 
-import sys
 import argparse
 import json
-
+import sys
 from pathlib import Path
+
 from tools.project import (
     Object,
     ProjectConfig,
@@ -25,7 +25,7 @@ from tools.project import (
     is_windows,
 )
 
-from cflags_common import cflags_includes
+from tools.cflags_common import cflags_includes
 
 # Game versions
 # Be sure to update macros.h if this list changes!
@@ -35,77 +35,77 @@ VERSIONS = [
     "SZBE69_B8", # 1
 ]
 
-if len(VERSIONS) > 1:
-    versions_str = ", ".join(VERSIONS[:-1]) + f" or {VERSIONS[-1]}"
-else:
-    versions_str = VERSIONS[0]
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "mode",
+    choices=["configure", "progress"],
     default="configure",
-    help="configure or progress (default: configure)",
+    help="script mode (default: configure)",
     nargs="?",
 )
 parser.add_argument(
+    "-v",
     "--version",
-    dest="version",
+    choices=VERSIONS,
+    type=str.upper,
     default=VERSIONS[DEFAULT_VERSION],
-    help=f"version to build ({versions_str})",
+    help="version to build",
 )
 parser.add_argument(
     "--build-dir",
-    dest="build_dir",
+    metavar="DIR",
     type=Path,
     default=Path("build"),
     help="base build directory (default: build)",
 )
 parser.add_argument(
     "--binutils",
-    dest="binutils",
+    metavar="BINARY",
     type=Path,
     help="path to binutils (optional)",
 )
 parser.add_argument(
     "--compilers",
-    dest="compilers",
+    metavar="DIR",
     type=Path,
     help="path to compilers (optional)",
 )
 parser.add_argument(
     "--map",
-    dest="map",
     action="store_true",
     help="generate map file(s)",
 )
 parser.add_argument(
+    "--no-asm",
+    action="store_true",
+    help="don't incorporate .s files from asm directory",
+)
+parser.add_argument(
     "--debug",
-    dest="debug",
     action="store_true",
     help="build with debug info (non-matching)",
 )
 if not is_windows():
     parser.add_argument(
         "--wrapper",
-        dest="wrapper",
+        metavar="BINARY",
         type=Path,
         help="path to wibo or wine (optional)",
     )
 parser.add_argument(
-    "--build-dtk",
-    dest="build_dtk",
+    "--dtk",
+    metavar="BINARY | DIR",
     type=Path,
-    help="path to decomp-toolkit source (optional)",
+    help="path to decomp-toolkit binary or source (optional)",
 )
 parser.add_argument(
     "--sjiswrap",
-    dest="sjiswrap",
+    metavar="EXE",
     type=Path,
     help="path to sjiswrap.exe (optional)",
 )
 parser.add_argument(
     "--verbose",
-    dest="verbose",
     action="store_true",
     help="print verbose output",
 )
@@ -117,29 +117,27 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-config = ProjectConfig()
-config.version = args.version.upper()
-if config.version not in VERSIONS:
-    sys.exit(f"Invalid version '{config.version}', expected {versions_str}")
+config = ProjectConfig(args.version)
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments
 config.build_dir = args.build_dir
-config.build_dtk_path = args.build_dtk
+config.dtk_path = args.dtk
 config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.debug = args.debug
 config.generate_map = args.map
 config.non_matching = args.non_matching
-
 config.sjiswrap_path = args.sjiswrap
 if not is_windows():
     config.wrapper = args.wrapper
+if args.no_asm:
+    config.asm_dir = None
 
 # Tool versions
 config.binutils_tag = "2.41-1"
 config.compilers_tag = "20231018"
-config.dtk_tag = "v0.7.2"
+config.dtk_tag = "v0.8.2"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 

@@ -13,6 +13,7 @@ import os
 import argparse
 
 from pathlib import Path
+from typing import Optional
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -67,7 +68,7 @@ def print_file_error(file_text: str, index: int, msg: str):
 
 print("Splitting input file...")
 compile_units: list[CompileUnitInfo] = []
-current_unit: CompileUnitInfo = None
+current_unit: Optional[CompileUnitInfo] = None
 search_start_index = 0
 while True:
     start_index = dump_text.find(BLOCK_START, search_start_index)

@@ -79,7 +79,7 @@
       "command": "python",
       "linux": { "command": "python3" },
       "args": [
-        "decompctx.py",
+        "tools/decompctx.py",
         "${relativeFile}"
       ],
       "options": {
