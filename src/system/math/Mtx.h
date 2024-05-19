@@ -69,7 +69,12 @@ public:
         v.z = da->Float(4);
     }
     void LookAt(const Vector3&, const Vector3&);
-    void Zero();
+    void Zero(){
+        m.x.Zero();
+        m.y.Zero();
+        m.z.Zero();
+        v.Zero();
+    }
 };
 
 inline BinStream& operator>>(BinStream& bs, Transform& tf){
