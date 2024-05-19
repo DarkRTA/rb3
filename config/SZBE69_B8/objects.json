@@ -172,6 +172,7 @@
             "system/char/CharForeTwist.cpp": "NonMatching",
             "system/char/CharGuitarString.cpp": "NonMatching",
             "system/char/CharHair.cpp": "NonMatching",
+            "system/char/CharIKHead.cpp": "NonMatching",
             "system/char/CharIKMidi.cpp": "NonMatching",
             "system/char/CharIKRod.cpp": "NonMatching",
             "system/char/CharIKScale.cpp": "NonMatching",
