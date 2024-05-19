@@ -23,6 +23,7 @@ public:
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual void Enter();
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
     
     ObjPtr<RndTransformable, ObjectDir> mBone;
