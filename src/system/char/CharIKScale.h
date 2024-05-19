@@ -19,6 +19,10 @@ public:
     virtual void Poll();
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
 
+    void CaptureBefore();
+    void CaptureAfter();
+
+    DECLARE_REVS;
     DELETE_OVERLOAD;
     
     ObjPtr<RndTransformable, ObjectDir> mDest;
