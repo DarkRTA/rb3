@@ -6,14 +6,14 @@
 #include "utl/FilePath.h"
 #include "utl/Str.h"
 
-enum State {
-    kUnloaded = 0,
-    kUp = 1,
-    kDown = 2,
-};
-
 class UIPanel : public virtual Hmx::Object {
 public:
+    enum State {
+        kUnloaded = 0,
+        kUp = 1,
+        kDown = 2,
+    };
+
     UIPanel();
     OBJ_CLASSNAME(UIPanel);
     OBJ_SET_TYPE(UIPanel);
@@ -44,6 +44,7 @@ public:
     bool CheckIsLoaded();
     void SetLoadedDir(class PanelDir*, bool);
     void UnsetLoadedDir();
+    UIComponent* FocusComponent();
     DataNode OnLoad(DataArray*);
 
     class PanelDir* mDir;

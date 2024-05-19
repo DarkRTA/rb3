@@ -44,6 +44,8 @@ public:
     Loader* AddLoader(const FilePath&, LoaderPos);
     void PollUntilLoaded(Loader*, Loader*);
     void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
+    void StartAsyncUnload();
+    void FinishAsyncUnload();
 
     bool EditMode() const { return mEditMode; }
 

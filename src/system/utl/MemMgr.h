@@ -24,4 +24,9 @@ void _MemOrPoolFree(int, PoolType, void*);
 void* _MemOrPoolAllocSTL(int, PoolType);
 void _MemOrPoolFreeSTL(int, PoolType, void*);
 
+int GetCurrentHeapNum();
+int MemFindHeap(const char*);
+void MemPushHeap(int);
+void MemPopHeap();
+
 #endif

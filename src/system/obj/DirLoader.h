@@ -44,6 +44,9 @@ public:
 
     static bool sCacheMode;
 
+    void* operator new(size_t s){
+        return _PoolAlloc(s, sizeof(DirLoader), FastPool);
+    }
     void operator delete (void* x) { _PoolFree(0xa0, FastPool, x); }
 };
 
