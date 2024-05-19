@@ -15,8 +15,6 @@
 class RndDir : public ObjectDir, public RndDrawable, public RndAnimatable, public RndTransformable, public RndPollable, public MsgSource {
 public:
     RndDir();
-    virtual ~RndDir(){}
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(RndDir)
     OBJ_SET_TYPE(RndDir)
     virtual DataNode Handle(DataArray*, bool);
@@ -24,14 +22,32 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual ~RndDir(){}
     virtual void SetSubDir(bool);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
     virtual void RemovingObject(Hmx::Object*);
     virtual void OldLoadProxies(BinStream&, int);
-    virtual void Export(DataArray*, bool);
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void UpdateSphere();
+    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual int MakeWorldSphere(Sphere&, bool);
+    virtual void DrawShowing();
+    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual int CollidePlane(const Plane&);
+    virtual void CollideList(const Segment&, std::list<Collision>&);
+    virtual void ListDrawChildren(std::list<RndDrawable*>&);
+    virtual void SetFrame(float, float);
+    virtual float EndFrame();
+    virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
+    virtual void Poll();
+    virtual void Enter();
+    virtual void Exit();
+    virtual void ListPollChildren(std::list<RndPollable*>&) const;
     virtual void Highlight();
+    virtual void Export(DataArray*, bool);
+    virtual void ChainSourceSubdir(MsgSource*, ObjectDir*);
 
     DataNode OnShowObjects(DataArray*);
     DataNode OnSupportedEvents(DataArray*);
