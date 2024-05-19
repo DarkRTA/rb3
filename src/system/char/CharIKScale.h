@@ -8,8 +8,8 @@
 class CharIKScale : public CharWeightable, public CharPollable {
 public:
     CharIKScale();
-    OBJ_CLASSNAME(Poll);
-    OBJ_SET_TYPE(Poll);
+    OBJ_CLASSNAME(CharIKScale);
+    OBJ_SET_TYPE(CharIKScale);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);

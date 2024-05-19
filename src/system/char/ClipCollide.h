@@ -26,8 +26,8 @@ public:
 
     ClipCollide();
     virtual ~ClipCollide();
-    OBJ_CLASSNAME(CharCollide)
-    OBJ_SET_TYPE(CharCollide)
+    OBJ_CLASSNAME(ClipCollide)
+    OBJ_SET_TYPE(ClipCollide)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);

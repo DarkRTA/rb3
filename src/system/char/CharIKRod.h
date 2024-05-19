@@ -7,8 +7,8 @@
 class CharIKRod : public CharPollable {
 public:
     CharIKRod();
-    OBJ_CLASSNAME(Poll);
-    OBJ_SET_TYPE(Poll);
+    OBJ_CLASSNAME(CharIKRod);
+    OBJ_SET_TYPE(CharIKRod);
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
     virtual ~CharIKRod();
