@@ -42,6 +42,7 @@ public:
     bool mCacheMode;
 
     Loader* AddLoader(const FilePath&, LoaderPos);
+    Loader* GetLoader(const FilePath&) const;
     void PollUntilLoaded(Loader*, Loader*);
     void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
     void StartAsyncUnload();

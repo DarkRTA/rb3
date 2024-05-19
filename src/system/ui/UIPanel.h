@@ -45,6 +45,7 @@ public:
     void SetLoadedDir(class PanelDir*, bool);
     void UnsetLoadedDir();
     UIComponent* FocusComponent();
+    void SetFocusComponent(UIComponent*);
     DataNode OnLoad(DataArray*);
 
     class PanelDir* mDir;

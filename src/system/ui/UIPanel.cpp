@@ -104,7 +104,7 @@ void UIPanel::Unload(){
         }
         if(b){
             TheLoadMgr.StartAsyncUnload();
-            mFilePath.SetRoot(0);
+            mFilePath.SetRoot(mDir->mPathName);
         }
         else mFilePath.SetRoot(gNullStr);
 
@@ -117,6 +117,19 @@ void UIPanel::Unload(){
     MILO_ASSERT(mLoadRefs == 0, 0xD9);
     mLoaded = false;
     mState = kUnloaded;
+}
+
+void UIPanel::PollForLoading(){
+    MILO_ASSERT(mState == kUnloaded, 0xE0);
+    if(mLoader && mLoader->IsLoaded()){
+        class PanelDir* pDir = dynamic_cast<class PanelDir*>(mLoader->GetDir());
+        if(!pDir){
+            MILO_FAIL("%s not PanelDir", mLoader->mFile);
+        }
+        delete mLoader;
+        mLoader = 0;
+        SetLoadedDir(pDir, mLoaded);
+    }
 }
 
 bool UIPanel::IsLoaded() const {
@@ -164,6 +177,28 @@ bool UIPanel::Exiting() const {
     else return false;
 }
 
+bool UIPanel::Unloading() const {
+    if(!mFilePath.empty()){
+        if(TheLoadMgr.GetLoader(mFilePath)){
+            return true;
+        }
+        const_cast<UIPanel*>(this)->mFilePath.SetRoot(gNullStr);
+    }
+    return false;
+}
+
+void UIPanel::Enter(){
+    MILO_ASSERT(mState == kDown, 0x14E);
+    if(!mFocusName.empty() && mDir){
+        SetFocusComponent(mDir->FindComponent(mFocusName.c_str()));
+    }
+    MILO_ASSERT(mLoadRefs > 0, 0x154);
+    mState = kUp;
+    if(mDir && !mLoaded){
+        mDir->Enter();
+    }
+    const_cast<UIPanel*>(this)->HandleType(enter_msg);
+}
 
 BEGIN_HANDLERS(UIPanel)
     HANDLE_EXPR(is_loaded, IsLoaded())
