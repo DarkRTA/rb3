@@ -1,5 +1,6 @@
 #include "UIPanel.h"
 #include "utl/MemMgr.h"
+#include "ui/UIComponent.h"
 #include "ui/PanelDir.h"
 #include "obj/DirLoader.h"
 #include "obj/Object.h"
@@ -62,7 +63,7 @@ void UIPanel::UnsetLoadedDir() {
 
 void UIPanel::Load(){
     if(mState != kUnloaded) MILO_FAIL("Can't load a panel already in state %i", mState);
-    const_cast<UIPanel*>(this)->HandleType(load_msg);
+    HandleType(load_msg);
     if(mTypeDef){
         static Symbol fileSym("file");
         FilePath fp;
@@ -93,7 +94,7 @@ void UIPanel::Load(){
 }
 
 void UIPanel::Unload(){
-    const_cast<UIPanel*>(this)->HandleType(unload_msg);
+    HandleType(unload_msg);
     if(UIPanel::IsLoaded()){
         bool b = false;
         if(mTypeDef){
@@ -197,7 +198,45 @@ void UIPanel::Enter(){
     if(mDir && !mLoaded){
         mDir->Enter();
     }
-    const_cast<UIPanel*>(this)->HandleType(enter_msg);
+    HandleType(enter_msg);
+}
+
+void UIPanel::Exit(){
+    MILO_ASSERT(mState == kUp, 0x165);
+    bool theBool = false;
+    DataArray* td = mTypeDef;
+    if(td){
+        td->FindData("reset_focus", theBool, false);
+    }
+    if(!theBool && FocusComponent()){
+        mFocusName = FocusComponent()->Name();
+    }
+    MILO_ASSERT(mLoadRefs > 0, 0x16E);
+    mState = kDown;
+    HandleType(exit_msg);
+    if(mDir && !mLoaded){
+        mDir->Exit();
+    }
+}
+
+void UIPanel::Poll(){
+    HandleType(poll_msg);
+    if(mDir && !mLoaded){
+        mDir->Poll();
+    }
+}
+
+void UIPanel::Draw(){
+    class PanelDir* pDir = mDir;
+    if(!pDir) return;
+    if(mLoaded) return;
+    pDir->DrawShowing();
+}
+
+void UIPanel::SetFocusComponent(UIComponent* comp){
+    if(mDir){
+        mDir->SetFocusComponent(comp, gNullStr);
+    }
 }
 
 BEGIN_HANDLERS(UIPanel)
@@ -210,7 +249,28 @@ BEGIN_HANDLERS(UIPanel)
     HANDLE_EXPR(paused, mPaused)
     HANDLE(load, OnLoad)
     HANDLE_ACTION(unload, CheckUnload())
+    HANDLE_ACTION(set_focus, SetFocusComponent(_msg->Obj<UIComponent>(2)))
+    HANDLE_ACTION(enter, Enter())
+    HANDLE_ACTION_STATIC(exit, Exit())
+    HANDLE_EXPR(loaded_dir, mDir)
+    HANDLE_ACTION(set_showing, mShowing = _msg->Int(2))
+    HANDLE_EXPR(showing, mShowing)
+    HANDLE_ACTION(set_loaded_dir, SetLoadedDir(_msg->Obj<class PanelDir>(2), false))
+    HANDLE_ACTION(set_loaded_dir_shared, SetLoadedDir(_msg->Obj<class PanelDir>(2), true))
     HANDLE_ACTION(unset_loaded_dir, UnsetLoadedDir())
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(450)
 END_HANDLERS
+
+DataNode UIPanel::OnLoad(DataArray* da){
+    CheckLoad();
+    if(da->Size() > 2){
+        bool bb = da->Int(2) != 0;
+        if(bb && mLoader){
+            TheLoadMgr.PollUntilLoaded(mLoader, 0);
+            bool bLoaded = CheckIsLoaded();
+            MILO_ASSERT(bLoaded, 0x1D1);
+        }
+    }
+    return DataNode(0);
+}
