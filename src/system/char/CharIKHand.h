@@ -40,6 +40,7 @@ public:
     Vector3 mWorldDst;
     float mInv2ab;
     float mAAPlusBB;
+    // end unknown data range
 
     bool mConstrainWrist; // 0x70
     float mWristRadians; // 0x74

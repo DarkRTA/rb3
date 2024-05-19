@@ -18,13 +18,14 @@ namespace Hmx {
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
         Color(const register Color& color){
+            register Color* theCol = this;
             register float temp1;
             register float temp2;
             ASM_BLOCK(
                 psq_lx  temp2,0,color,0,0
                 psq_l   temp1,8(color),0,0
-                psq_stx temp2,0,r3,0,0
-                psq_st  temp1,8(r3),0,0
+                psq_st  temp2,0(theCol),0,0
+                psq_st  temp1,8(theCol),0,0
             )
         }
 
