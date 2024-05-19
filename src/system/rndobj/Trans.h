@@ -27,13 +27,12 @@ public:
 
     OBJ_CLASSNAME(Trans)
     OBJ_SET_TYPE(Trans)
-
-    virtual ~RndTransformable();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual ~RndTransformable();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Highlight();
     virtual void Print();

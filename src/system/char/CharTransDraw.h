@@ -20,7 +20,6 @@ public:
     void SetDrawModes(Character::DrawMode);
 
     DELETE_OVERLOAD;
-
     DECLARE_REVS;
 
     ObjPtrList<Character, ObjectDir> mChars;
