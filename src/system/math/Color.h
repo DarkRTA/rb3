@@ -17,6 +17,8 @@ namespace Hmx {
         Color() : red(1.0f), green(1.0f), blue(1.0f), alpha(1.0f) {}
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
+
+        // copy ctor uses asm magic
         Color(const register Color& color){
             register Color* theCol = this;
             register float temp1;
@@ -29,9 +31,7 @@ namespace Hmx {
             )
         }
 
-        // this copy ctor uses moving between float registers in UIColor::Copy,
-        // but in other TUs such as RndGraph, there's some powerpc asm magic
-        // can we toggle between these methods?
+        // assignment operator does not
         Color& operator=(const Color& c){
             red = c.red; green = c.green; blue = c.blue; alpha = c.alpha;
             return *this;
