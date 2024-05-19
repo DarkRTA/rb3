@@ -20,8 +20,6 @@ class AccomplishmentSetlist {
 
     Accomplishment mAccomplishment;
 
-    int mPadding[10];   // Size of Accomplishment
-
     Symbol mSetlist;    // 0x74
     int mInstrument;    // 0x78
     int mDifficulty;    // 0x7c
