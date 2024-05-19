@@ -23,9 +23,7 @@ SAVE_OBJ(RndEnvAnim, 0x46)
 void RndEnvAnim::Load(BinStream& bs){
     int rev;
     bs >> rev;
-    if(rev > ENVANIM_REV){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ENVANIM_REV, rev);
-    }
+    ASSERT_GLOBAL_REV(rev, ENVANIM_REV)
     if(rev > 3) Hmx::Object::Load(bs);
     RndAnimatable::Load(bs);
     bs >> mEnviron >> mAmbientColorKeys >> mKeysOwner;
