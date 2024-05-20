@@ -1,6 +1,8 @@
 #include "world/ColorPalette.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(ColorPalette)
+
 ColorPalette::ColorPalette(){
 
 }
@@ -30,7 +32,7 @@ void ColorPalette::Load(BinStream& bs){
 
 BEGIN_COPYS(ColorPalette)
     GET_COPY_AND_ASSERT(ColorPalette, 0x4A);
-    COPY_SUPERCLASS(Hmx::Object)
+    Hmx::Object::Copy(c, ty);
     COPY_MEMBER(mColors)
 END_COPYS
 

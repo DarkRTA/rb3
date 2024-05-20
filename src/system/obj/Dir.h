@@ -4,6 +4,7 @@
 #include "utl/FilePath.h"
 #include "utl/StringTable.h"
 #include "utl/KeylessHash.h"
+#include "utl/Loader.h"
 #include "obj/DirLoader.h"
 
 enum ViewportId {
@@ -89,7 +90,7 @@ public:
     }
 
     T* mDir;
-    DirLoader* mLoader;
+    class DirLoader* mLoader;
 };
 
 class ObjectDir : public virtual Hmx::Object {
