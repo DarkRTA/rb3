@@ -1,10 +1,12 @@
 #ifndef UI_UIPANEL_H
 #define UI_UIPANEL_H
-#include "obj/DirLoader.h"
+// #include "obj/DirLoader.h"
 #include "obj/Object.h"
 #include "ui/PanelDir.h"
 #include "utl/FilePath.h"
 #include "utl/Str.h"
+
+class DirLoader;
 
 class UIPanel : public virtual Hmx::Object {
 public:

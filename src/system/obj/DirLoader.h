@@ -33,7 +33,11 @@ public:
     bool mOwnStream; // 0x34
     BinStream* mStream; // 0x38
     int test[0x2];
-    ObjPtrList<Hmx::Object, class ObjectDir> mObjects;
+
+    // uncommenting this results in an error related to a circular dependency between ObjDirPtr and DirLoader
+    // and i have no idea how to fix it
+    // ObjPtrList<Hmx::Object, class ObjectDir> mObjects; 
+
     Callback* mCallback;
     class ObjectDir* mDir;
     int adsf[2];

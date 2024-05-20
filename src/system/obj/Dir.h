@@ -4,6 +4,7 @@
 #include "utl/FilePath.h"
 #include "utl/StringTable.h"
 #include "utl/KeylessHash.h"
+#include "obj/DirLoader.h"
 
 enum ViewportId {
     kPerspective = 0,
@@ -23,19 +24,69 @@ enum InlineDirType {
     kInlineAlways = 1 << 1,
 };
 
-// Circular dependency moment
-class DirLoader;
+// // Circular dependency moment
+// class DirLoader;
 
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
     ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
     ObjDirPtr() : mDir(NULL), mLoader(NULL) {}
-    virtual ~ObjDirPtr(); // nightmare
+    virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*); // nightmare
+    virtual void Replace(Hmx::Object* from, Hmx::Object* to){
+        if(mDir == from) *this = dynamic_cast<T*>(to);
+    }
     virtual bool IsDirPtr(){ return true; }
-    void operator=(T*);
+
+    // GetFile__21ObjDirPtr<9ObjectDir>CFv
+    // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
+    // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
+    // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
+
+    T* operator->() const {
+        MILO_ASSERT(mDir, 0x4D);
+        return mDir;
+    }
+
+    // IsLoaded__21ObjDirPtr<9ObjectDir>CFv
+    bool IsLoaded() const {
+        bool ret = true;
+        if(!mDir){
+            bool b = false;
+            if(mLoader && mLoader->IsLoaded()) b = true;
+            if(!b) ret = false;
+        }
+        return ret;
+    }
+
+    // PostLoad__21ObjDirPtr<9ObjectDir>FP6Loader
+    void PostLoad(Loader* loader){
+        if(mLoader){
+            TheLoadMgr.PollUntilLoaded(mLoader, loader);
+            class ObjectDir* gotten = mLoader->GetDir();
+            mLoader = 0;
+            *this = dynamic_cast<T*>(gotten);
+        }
+    }
+
+    // __as__18ObjDirPtr<6RndDir>FP6RndDir
+    ObjDirPtr& operator=(T* dir){
+        if(mLoader && mLoader->IsLoaded()) PostLoad(0);
+        if((dir != mDir) || !dir){
+            delete mLoader;
+            mLoader = 0;
+            if(mDir){
+                mDir->Release(this);
+                if(!mDir->HasDirPtrs()){
+                    delete mDir;
+                }
+            }
+            mDir = dir;
+            if(mDir) mDir->AddRef(this);
+        }
+        return *this;
+    }
 
     T* mDir;
     DirLoader* mLoader;
@@ -95,6 +146,7 @@ public:
     void Reserve(int, int);
     bool IsProxy() const;
     bool HasSubDir(ObjectDir*);
+    bool HasDirPtrs() const;
 
     Hmx::Object* FindObject(const char*, bool);
     static Symbol StaticClassName();
