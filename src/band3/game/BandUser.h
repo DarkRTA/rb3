@@ -26,4 +26,8 @@ class BandUser : public virtual User {
     u8 unk_0x84, unk_0x85, unk_0x86;
 };
 
+class LocalBandUser : public BandUser {
+
+};
+
 #endif // GAME_BANDUSER_H

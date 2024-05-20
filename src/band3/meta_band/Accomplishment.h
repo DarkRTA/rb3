@@ -9,24 +9,6 @@
 enum ScoreType {
 
 };
-
-enum Difficulty {
-    kDifficultyEasy = 0,
-    kDifficultyMedium = 1,
-    kDifficultyHard = 2,
-    kDifficultyExpert = 3,
-    kNumDifficulties = 4,
-};
-
-// Don't know where to put this yet
-enum ControllerType {
-    kControllerDrum = 0,
-    kControllerGuitar = 1,
-    kControllerVocals = 2,
-    kControllerNone = 3,
-    kNumControllerTypes = 3,
-};
-
 class TrackerDesc;
 
 class Accomplishment {
