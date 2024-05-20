@@ -45,10 +45,10 @@ private:
     bool ShowBestAfterEarn() const;
     bool HideProgress() const;
     Symbol GetSecretCampaignLevelPrereq() const;
-    Accomplishment* GetSecretPrereqs() const;
+    const std::vector<Accomplishment*>& GetSecretPrereqs() const;
     bool IsDynamic() const;
     bool GetDynamicAlwaysVisible() const;
-    Accomplishment* GetDynamicPrereqsSongs() const;
+    const std::vector<Accomplishment*>& GetDynamicPrereqsSongs() const;
     int GetDynamicPrereqsNumSongs() const;
     Symbol GetDynamicPrereqsFilter() const;
     Symbol GetCategory() const;
@@ -84,8 +84,7 @@ private:
     Symbol GetPassiveMsgPriority() const;
 
     Symbol mName;       // 0x04
-    Accomplishment* mSecretPrereqs; // 0x08 this REALLY feels like a vector
-    int mPadding;
+    std::vector<Accomplishment*> mSecretPrereqs; // 0x08 this REALLY feels like a vector
     int mAccomplishmentType;    //0x10
     Symbol mCategory; // 0x14
     Symbol mAward; // 0x18
@@ -93,7 +92,7 @@ private:
     Symbol mUnitsTokenSingular; // 0x20
     Symbol mIconOverride; // 0x24
     Symbol mSecretCampaignLevelPrereq; // 0x28
-    std::vector<int> mControllerTypes; // don't know this type yet, used in destructor
+    std::vector<ControllerType> mControllerTypes; // don't know this type yet, used in destructor
 
     Symbol mScoreType; //0x34
     Symbol mLaunchableDifficulty; // 0x38
@@ -102,8 +101,7 @@ private:
     int mPlayerCountMin; // 0x44
     int mPlayerCountMax; // 0x48
     int mDynamicPrereqsNumSongs; // 0x4c
-    Accomplishment* mDynamicPrereqsSongs; // 0x50
-    Symbol mPadding2;
+    std::vector<Accomplishment*> mDynamicPrereqsSongs; // 0x50
     Symbol mDynamicPrereqsFilter; // 0x58
     int mProgressStep; // 0x5c
 

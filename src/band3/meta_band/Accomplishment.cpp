@@ -7,7 +7,7 @@
 #include "os/Debug.h"
 #include <string>
 
-Accomplishment::Accomplishment(DataArray* i_pConfig, int) : mName(gNullStr), mSecretPrereqs(NULL), mCategory(gNullStr), mAward(gNullStr),
+Accomplishment::Accomplishment(DataArray* i_pConfig, int) : mName(gNullStr), mCategory(gNullStr), mAward(gNullStr),
  mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr), mRequiresUnison(false), 
  mDynamicAlwaysVisible(true), mShouldShowDenominator(true), mHideProgress(false), mCanBeEarnedWithNoFail(true), mIsTrackedInLeaderboard(false) {
     Configure(i_pConfig);
@@ -16,6 +16,14 @@ Accomplishment::Accomplishment(DataArray* i_pConfig, int) : mName(gNullStr), mSe
 Accomplishment::~Accomplishment() {
     
 }
+
+std::string unusedStrings[] = {
+    "There are less songs in the dynamic prereq song list than the num_songs provided: %s.", 
+    "Passive Message Priority for goal %s is less than the minimum: %i!", 
+    "Passive Message Priority for goal %s is more than the maximum: %i!", 
+    "%s_howto", 
+
+};
 
 void Accomplishment::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3e);
@@ -86,14 +94,6 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(metascore_value, mMetaScoreValue, true);
 }
 
-std::string unusedStrings[] = {
-    "There are less songs in the dynamic prereq song list than the num_songs provided: %s.", 
-    "Passive Message Priority for goal %s is less than the minimum: %i!", 
-    "Passive Message Priority for goal %s is more than the maximum: %i!", 
-    "%s_howto", 
-
-};
-
 int Accomplishment::GetType() const {
     return 0;
 }
@@ -135,7 +135,7 @@ Symbol Accomplishment::GetSecretCampaignLevelPrereq() const {
     return mSecretCampaignLevelPrereq;
 }
 
-Accomplishment* Accomplishment::GetSecretPrereqs() const {
+const std::vector<Accomplishment*>& Accomplishment::GetSecretPrereqs() const {
     return mSecretPrereqs;
 }
 
@@ -151,7 +151,7 @@ bool Accomplishment::GetDynamicAlwaysVisible() const {
     return mDynamicAlwaysVisible;
 }
 
-Accomplishment* Accomplishment::GetDynamicPrereqsSongs() const {
+const std::vector<Accomplishment*>& Accomplishment::GetDynamicPrereqsSongs() const {
     return mDynamicPrereqsSongs;
 }
 

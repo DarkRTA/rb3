@@ -5,8 +5,6 @@
 #include <set>
 #include "Accomplishment.h"
 
-enum Difficulty {};
-
 class AccomplishmentSetlist {
     Accomplishment mAccomplishment;
     Symbol mSetlist;    // 0x74
