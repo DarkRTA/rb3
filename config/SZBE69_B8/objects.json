@@ -463,7 +463,8 @@
             "system/utl/WaveFile.cpp": "NonMatching",
 
             "system/world/CameraShot.cpp": "NonMatching",
-            "system/world/ColorPalette.cpp": "NonMatching"
+            "system/world/ColorPalette.cpp": "NonMatching",
+            "system/world/Instance.cpp": "NonMatching"
         }
     },
     "flex": {
