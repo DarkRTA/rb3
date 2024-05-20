@@ -36,7 +36,7 @@ SAVE_OBJ(UILabel, 173)
 void UILabel::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
 
 void UILabel::Draw() {
-    // if (!(h <= 0)) RndDrawable::Draw();
+    if (!(mAlpha <= 0)) RndDrawable::Draw();
 }
 
 void UILabel::Update() {

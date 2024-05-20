@@ -16,6 +16,14 @@ class UILabelDir;
 
 class UILabel : public UIComponent {
 public:
+
+    enum FitType {
+        kFitWrap = 0,
+        kFitStretch = 1,
+        kFitJust = 2,
+        kFitEllipsis = 3,
+    };
+
     UILabel();
     OBJ_CLASSNAME(UILabel);
     OBJ_SET_TYPE(UILabel);

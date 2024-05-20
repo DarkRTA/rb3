@@ -16,7 +16,21 @@ public:
     };
 
     enum Alignment {
-        kAlignCenterRight = 34,
+        kTopLeft = 17,
+        kTopCenter = 18,
+        kTopRight = 20,
+        kMiddleLeft = 33,
+        kMiddleCenter = 34,
+        kMiddleRight = 36,
+        kBottomLeft = 65,
+        kBottomCenter = 66,
+        kBottomRight = 68,
+    };
+    
+    enum CapsMode {
+        kCapsModeNone = 0,
+        kForceLower = 1,
+        kForceUpper = 2,
     };
 
     class Line {
