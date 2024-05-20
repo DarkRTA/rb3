@@ -56,7 +56,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
 
     void FinishSelecting();
     void SendSelect(LocalUser*);
-    char* GetResourcesPath();
+    const char* GetResourcesPath();
     void ResourceFileUpdated(bool);
     DataNode OnGetResourcesPath(DataArray*);
     class ObjectDir* ResourceDir();
