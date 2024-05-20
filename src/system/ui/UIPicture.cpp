@@ -3,17 +3,14 @@
 #include "os/File.h"
 #include "ui/UIComponent.h"
 #include "ui/UITransitionHandler.h"
-#include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
-#include "utl/Symbols4.h"
 #include "utl/Loader.h"
 #include <string.h>
+#include "utl/Symbols.h"
 
-UIPicture::UIPicture() : UITransitionHandler(NULL), mMesh(this, NULL), mTexFile(), mLoadedFile() {
-    mTex = Hmx::Object::New<RndTex>();
-    mHookTex = true;
-    mDelayedTexFile.Set(FilePath::sRoot.c_str(), "");
-    //static char* why2 = "tex_file";
+UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(), 
+    mTex(Hmx::Object::New<RndTex>()), mLoader(0), mHookTex(true), mDelayedTexFile() {
+    mDelayedTexFile.SetRoot("");
 }
 
 void UIPicture::SetTypeDef(DataArray* da) {
@@ -45,13 +42,10 @@ void UIPicture::Load(BinStream& bs) {
 void UIPicture::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(2, 0)
-
     bs >> mMesh;
     if (gRev > 1) UITransitionHandler::LoadHandlerData(bs);
     UIComponent::PreLoad(bs);
 }
-
-// why is classname here?????
 
 void UIPicture::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
@@ -65,7 +59,7 @@ void UIPicture::Poll() {
     UIComponent::Poll();
     if (mDelayedTexFile != "") {
         UpdateTexture(mDelayedTexFile);
-        mDelayedTexFile.Set(FilePath::sRoot.c_str(), "p");
+        mDelayedTexFile.Set(FilePath::sRoot.c_str(), "");
     }
     UpdateHandler();
 }

@@ -37,7 +37,7 @@ protected:
 
 public:
     UIScreen();
-    virtual ~UIScreen();
+    virtual ~UIScreen(){}
 
     OBJ_CLASSNAME(UIScreen);
     OBJ_SET_TYPE(UIScreen);

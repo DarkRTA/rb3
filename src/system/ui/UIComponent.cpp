@@ -23,11 +23,11 @@ UIComponent::State SymToUIComponentState(Symbol s) {
         if (s.Str() == UIComponentStateToSym((UIComponent::State)i).Str()) return (UIComponent::State)i;
     }
     MILO_ASSERT(false, 38);
-    return UIComponent::kStateInvalid;
+    return UIComponent::kNumStates;
 }
 
 UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mMesh(NULL),
-    mResourceName(), mObjDir(NULL), a(0), mState(kStateNormal), c(0), d(0) { }
+    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), c(0), d(0) { }
 
 
 void UIComponent::Init() {
@@ -43,15 +43,35 @@ Symbol UIComponent::StateSym() const {
 }
 
 void UIComponent::SetState(UIComponent::State s) {
-    if (!CanHaveFocus() && s == kStateFocused) {
+    if (!CanHaveFocus() && s == kFocused) {
         MILO_WARN("Component: %s cannot have focus.  Why are we setting it to the focused state?", Name());
-        s = kStateNormal;
+        s = kNormal;
     }
     mState = s;
 }
 
 void UIComponent::SetTypeDef(DataArray* da) {
-
+    if(!da && strlen(mResourcePath.c_str()) == 0){
+        DataArray* cfg = SystemConfig("objects", ClassName());
+        DataArray* found = cfg->FindArray("init", false);
+        if(found){
+            DataArray* typesArr = cfg->FindArray("types", true);
+            DataArray* defaultArr = typesArr->FindArray("default", false);
+            if(defaultArr){
+                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(this));
+                SetTypeDef(defaultArr);
+                return;
+            }
+            else {
+                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->mFile, PathName(this));
+                return;
+            }
+        }
+    }
+    if(mTypeDef != da){
+        Hmx::Object::SetTypeDef(da);
+        UpdateResource();
+    }
 }
 
 BEGIN_COPYS(UIComponent)
@@ -91,14 +111,14 @@ void UIComponent::PostLoad(BinStream& bs) {
 }
 
 bool UIComponent::Exiting() const {
-    return mState == kStateSelecting;
+    return mState == kSelecting;
 }
 
 void UIComponent::Enter() {
     RndPollable::Enter();
     a = false;
-    if (mState == kStateSelecting) {
-        SetState(kStateFocused);
+    if (mState == kSelecting) {
+        SetState(kFocused);
     }
 }
 
