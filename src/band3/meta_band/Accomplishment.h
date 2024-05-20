@@ -3,13 +3,30 @@
 
 #include "system/obj/Data.h"
 #include <set>
+#include "BandProfile.h"
+#include "band3/game/BandUser.h"
 
-class BandProfile;
-class LocalBandUser;
 enum ScoreType {
 
 };
-enum ControllerType {};
+
+enum Difficulty {
+    kDifficultyEasy = 0,
+    kDifficultyMedium = 1,
+    kDifficultyHard = 2,
+    kDifficultyExpert = 3,
+    kNumDifficulties = 4,
+};
+
+// Don't know where to put this yet
+enum ControllerType {
+    kControllerDrum = 0,
+    kControllerGuitar = 1,
+    kControllerVocals = 2,
+    kControllerNone = 3,
+    kNumControllerTypes = 3,
+};
+
 class TrackerDesc;
 
 class Accomplishment {
@@ -31,7 +48,7 @@ private:
     Accomplishment* GetSecretPrereqs() const;
     bool IsDynamic() const;
     bool GetDynamicAlwaysVisible() const;
-    int GetDynamicPrereqsSongs() const;
+    Accomplishment* GetDynamicPrereqsSongs() const;
     int GetDynamicPrereqsNumSongs() const;
     Symbol GetDynamicPrereqsFilter() const;
     Symbol GetCategory() const;
@@ -67,8 +84,8 @@ private:
     Symbol GetPassiveMsgPriority() const;
 
     Symbol mName;       // 0x04
-    Accomplishment* mSecretPrereqs; // 0x08
-    int mPadding;        // 0x0c, probably a pointer of some kind. 
+    Accomplishment* mSecretPrereqs; // 0x08 this REALLY feels like a vector
+    int mPadding;
     int mAccomplishmentType;    //0x10
     Symbol mCategory; // 0x14
     Symbol mAward; // 0x18
@@ -76,7 +93,7 @@ private:
     Symbol mUnitsTokenSingular; // 0x20
     Symbol mIconOverride; // 0x24
     Symbol mSecretCampaignLevelPrereq; // 0x28
-    std::vector<int> mVector1; // don't know this type yet, used in destructor
+    std::vector<int> mControllerTypes; // don't know this type yet, used in destructor
 
     Symbol mScoreType; //0x34
     Symbol mLaunchableDifficulty; // 0x38
@@ -85,10 +102,12 @@ private:
     int mPlayerCountMin; // 0x44
     int mPlayerCountMax; // 0x48
     int mDynamicPrereqsNumSongs; // 0x4c
-    std::vector<int> mVector2; // missing 0x50, likely vector of pointers 
-    Symbol mSomething; // 0x54
+    Accomplishment* mDynamicPrereqsSongs; // 0x50
+    Symbol mPadding2;
     Symbol mDynamicPrereqsFilter; // 0x58
     int mProgressStep; // 0x5c
+
+    int mPadding3; // 0x60, Don't know what this is yet
     
     Symbol mContextId;  // 0x64
 
@@ -101,7 +120,5 @@ private:
     bool mHideProgress; // 0x71
     bool mCanBeEarnedWithNoFail; // 0x72
     bool mIsTrackedInLeaderboard; // 0x73
-
-    std::set<ScoreType> mScoreTypes;
 };
 #endif // METABAND_ACCOMPLISHMENT_H

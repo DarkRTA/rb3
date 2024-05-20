@@ -16,12 +16,12 @@ void AccomplishmentSetlist::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1f);
 
     i_pConfig->FindData(setlist, mSetlist, true);
-    int difficultyVal;
+    int difficultyVal = false;
     bool parsed = i_pConfig->FindData(difficulty, difficultyVal, false);
     if (parsed) {
         mDifficulty = difficultyVal;
     }
-    int instrumentVal;
+    int instrumentVal = false;
     parsed = i_pConfig->FindData(instrument, instrumentVal, false);
     if (parsed) {
         mInstrument = instrumentVal;
@@ -45,14 +45,14 @@ int AccomplishmentSetlist::GetRequiredDifficulty() const {
     return mDifficulty;
 }
 
-ScoreType AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
+bool AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
     MILO_ASSERT(o_rScoreTypes.empty(), 0x52);
 
     if (mInstrument != 10) {
         o_rScoreTypes.insert((ScoreType)mInstrument);
     }
     
-    return (ScoreType)0;    // This isn't quite right
+    return !o_rScoreTypes.empty();
 }
 
 bool AccomplishmentSetlist::CheckRequirements(ScoreType scoreType, Difficulty difficulty, int minStars) {

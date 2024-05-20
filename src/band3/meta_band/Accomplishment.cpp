@@ -23,7 +23,7 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     mName = i_pConfig->Sym(0);
     DataArray* controllerTypes = i_pConfig->FindArray(launchable_controller_types, false);
     if (controllerTypes != NULL) {
-        mVector1.reserve(controllerTypes->Size());
+        mControllerTypes.reserve(controllerTypes->Size());
         for (int i = 0; i < controllerTypes->Size(); i++) {
             DataNode& node = controllerTypes->Node(i);
             if (1) {
@@ -117,8 +117,6 @@ Symbol Accomplishment::GetFlavorText() const {
 std::string unusedStrings2[] = {
     "%s_gray", 
     "i_pUser", 
-    "o_rScoreTypes.empty()", 
-    "TheCampaign"
 };
 
 bool Accomplishment::GetShouldShowDenominator() const {
@@ -138,8 +136,7 @@ Symbol Accomplishment::GetSecretCampaignLevelPrereq() const {
 }
 
 Accomplishment* Accomplishment::GetSecretPrereqs() const {
-    // Returning mSecretPrereqs doesn't compile to the same thing. I know it's terrible. 
-    return (Accomplishment*)((unsigned long)this + 8);   
+    return mSecretPrereqs;
 }
 
 bool Accomplishment::IsDynamic() const {
@@ -154,8 +151,8 @@ bool Accomplishment::GetDynamicAlwaysVisible() const {
     return mDynamicAlwaysVisible;
 }
 
-int Accomplishment::GetDynamicPrereqsSongs() const {
-    return mDynamicPrereqsNumSongs;
+Accomplishment* Accomplishment::GetDynamicPrereqsSongs() const {
+    return mDynamicPrereqsSongs;
 }
 
 int Accomplishment::GetDynamicPrereqsNumSongs() const {
@@ -175,6 +172,12 @@ Symbol Accomplishment::GetContextID() const {
 }
 
 void Accomplishment::GetIconArt() const {
+    bool noIconArt;
+    if (gNullStr) {
+        noIconArt = !strcmp(mIconOverride.Str(), gNullStr);
+    } else { noIconArt = (mIconOverride.Str() == gNullStr); }
+
+    MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", noIconArt ? mIconOverride : mName);
 }
 
 bool Accomplishment::IsFulfilled(BandProfile*) const {
@@ -196,7 +199,6 @@ bool Accomplishment::GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const {
 bool Accomplishment::InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const {
     return 0;
 }
-
 
 bool Accomplishment::IsSymbolEntryFulfilled(BandProfile*, Symbol) const {
     return false;
@@ -291,11 +293,15 @@ Symbol Accomplishment::GetRequiredDifficulty() const {
 }
 
 void Accomplishment::GetRequiredScoreType() const {
+    int local_18 = 0;
 
+    if(local_18 == 1) {
+
+    }
 }
 
-void Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>&) const {
-
+void Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
+    MILO_ASSERT(o_rScoreTypes.empty(), 0x00);
 }
 
 int Accomplishment::GetRequiredMinPlayers() const {
@@ -317,7 +323,9 @@ bool Accomplishment::GetRequiresBREAbility() const {
 // void Accomplishment::InitializeMusicLibraryTask() const {}
 
 void Accomplishment::InitializeTrackerDesc(TrackerDesc&) const {
+    // MILO_ASSERT(TheCampaign, 0x2b8);
 
+    // TheCampaign.GetLaunchUser();
 }
 
 bool Accomplishment::CanBeEarnedWithNoFail() const {
