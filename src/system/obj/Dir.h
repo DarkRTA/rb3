@@ -139,7 +139,7 @@ public:
     virtual void SyncObjects();
     virtual void ResetEditorState();
     virtual bool AllowsInlineProxy();
-    virtual int InlineSubDirType();
+    virtual InlineDirType InlineSubDirType();
     virtual void AddedObject(Hmx::Object*);
     virtual void RemovingObject(Hmx::Object*);
     virtual void OldLoadProxies(BinStream&, int);
