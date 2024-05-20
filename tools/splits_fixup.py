@@ -1,6 +1,5 @@
 import os
 import re
-from pathlib import *
 
 # Converts split paths from archive/object paths to source paths.
 # Various fixups are applied to organize things to our liking.
@@ -105,6 +104,7 @@ for obj_match in obj_regex.finditer(symbols_text):
         if lib_name == "lib":
             # RB3 code, determine folders and put them in top-level directory
             band_match = band_regex.match(lib_path)
+            assert band_match is not None
             obj_path = band_match.group(1) + "/" + band_match.group(2) + ".cpp"
         elif lib_name == "MSL_C.PPCEABI.bare.H":
             # Results in sdk/PowerPC_EABI_Support/MSL_C/...

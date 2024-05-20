@@ -8,6 +8,11 @@ CharNeckTwist::CharNeckTwist() : mTwist(this, 0), mHead(this, 0) {
 
 }
 
+void CharNeckTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    changedBy.push_back(mHead);
+    change.push_back(mTwist);
+}
+
 SAVE_OBJ(CharNeckTwist, 0x4A);
 
 void CharNeckTwist::Load(BinStream& bs){

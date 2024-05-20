@@ -5,6 +5,7 @@
 #include "utl/Symbol.h"
 #include "ui/UIComponent.h"
 #include "ui/UIScreen.h"
+#include "ui/UIPanel.h"
 
 class UIManager : public virtual Hmx::Object {
 public:
@@ -34,7 +35,7 @@ public:
     void CancelTransition();
     void GotoScreenImpl(UIScreen*, bool, bool);
 
-    UIPanel* FocusPanel();
+    class UIPanel* FocusPanel();
     UIComponent* FocusComponent();
 
     void Resource(const UIComponent*);

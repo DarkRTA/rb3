@@ -17,6 +17,8 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharWeightable(){}
 
+    float Weight(){ return mWeightOwner->mWeight; }
+
     static unsigned short gRev;
     static unsigned short gAltRev;
 

@@ -12,6 +12,11 @@ CharTransCopy::~CharTransCopy(){
 
 }
 
+void CharTransCopy::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    change.push_back(mDest);
+    changedBy.push_back(mSrc);
+}
+
 SAVE_OBJ(CharTransCopy, 0x2D);
 
 void CharTransCopy::Load(BinStream& bs){

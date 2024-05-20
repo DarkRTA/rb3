@@ -52,7 +52,7 @@ public:
     class Vector3 v;
 
     // all of these are weak
-    Transform(){ Reset(); }
+    Transform(){}
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
@@ -69,7 +69,12 @@ public:
         v.z = da->Float(4);
     }
     void LookAt(const Vector3&, const Vector3&);
-    void Zero();
+    void Zero(){
+        m.x.Zero();
+        m.y.Zero();
+        m.z.Zero();
+        v.Zero();
+    }
 };
 
 inline BinStream& operator>>(BinStream& bs, Transform& tf){

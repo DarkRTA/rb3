@@ -386,6 +386,9 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     unsigned short objType::gRev = 0; \
     unsigned short objType::gAltRev = 0;
 
+#define BEGIN_LOADS(objType) \
+void objType::Load(BinStream& bs){
+
 #define LOAD_REVS(bs) \
     unsigned int rev; \
     bs >> rev; \
@@ -405,6 +408,18 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 #define ASSERT_REVS(rev1, rev2) \
     ASSERT_REV(rev1) \
     ASSERT_ALTREV(rev2)
+
+// for loading in a version number that isn't a class's gRev/gAltRev
+#define ASSERT_GLOBAL_REV(ver, rev_name) \
+    if (ver > rev_name){ \
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev_name, ver); \
+    }
+
+#define LOAD_SUPERCLASS(parent) \
+    parent::Load(bs);
+
+#define END_LOADS \
+}
 
 // END LOAD MACROS -------------------------------------------------------------------------------------
 

@@ -111,4 +111,38 @@ public:
     void SetLastMs(float ms);
 };
 
+typedef void (*StupidAutoTimerFunc)(float, void*);
+
+class AutoTimer {
+public:
+
+    AutoTimer(Timer* t, float f, StupidAutoTimerFunc s, void* v) {
+        mTimer = t; 
+        if (!t) return;
+        unk_0x4 = f; unk_0x8 = s; unk_0xC = v;
+        mTimer->Start(); 
+    }
+
+    ~AutoTimer() { if (mTimer) mTimer->fn_800A8898(); }
+
+    Timer* mTimer; // 0x0
+    float unk_0x4;
+    StupidAutoTimerFunc unk_0x8; // ???
+    void* unk_0xC;
+
+    static Timer* GetTimer(Symbol);
+};
+
+#define TIMER_THING(name, func) {\
+    static Timer* _t = AutoTimer::GetTimer(name); \
+    AutoTimer t(_t, 50.0f, NULL, NULL); \
+    func; \
+    }
+
+#define TIMER_THING_NODEL(name, func) \
+    static Timer* _t = AutoTimer::GetTimer(name); \
+    AutoTimer t(_t, 50.0f, NULL, NULL); \
+    func; 
+    
+
 #endif

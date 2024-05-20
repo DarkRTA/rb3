@@ -58,7 +58,8 @@ public:
 
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;
-
+    
+    void Draw();
 
     void Poll();
     void InitGQR();

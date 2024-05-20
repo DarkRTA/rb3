@@ -20,19 +20,17 @@ void RndEnvAnim::Replace(Hmx::Object* from, Hmx::Object* to){
 
 SAVE_OBJ(RndEnvAnim, 0x46)
 
-void RndEnvAnim::Load(BinStream& bs){
+BEGIN_LOADS(RndEnvAnim)
     int rev;
     bs >> rev;
-    if(rev > ENVANIM_REV){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ENVANIM_REV, rev);
-    }
-    if(rev > 3) Hmx::Object::Load(bs);
-    RndAnimatable::Load(bs);
+    ASSERT_GLOBAL_REV(rev, ENVANIM_REV)
+    if(rev > 3) LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndAnimatable)
     bs >> mEnviron >> mAmbientColorKeys >> mKeysOwner;
     if(!mKeysOwner.Ptr()) mKeysOwner = this;
     if(rev > 1) bs >> mFogColorKeys;
     if(rev > 2) bs >> mFogRangeKeys;
-}
+END_LOADS
 
 BEGIN_COPYS(RndEnvAnim)
     const RndEnvAnim* l = dynamic_cast<const RndEnvAnim*>(o);

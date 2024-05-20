@@ -54,6 +54,7 @@ int SystemExec(const char*);
 int SystemMs();
 void SystemPoll(bool pollTasks);
 void SetSystemArgs(int, char**);
+void SystemPreInit(int, char**, const char*);
 void SystemPreInit(const char*);
 
 #endif

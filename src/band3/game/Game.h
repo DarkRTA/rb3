@@ -2,6 +2,7 @@
 #define GAME_GAME_H
 
 #include "obj/Object.h"
+#include "types.h"
 
 class Game : public Hmx::Object {
     public:
@@ -10,9 +11,10 @@ class Game : public Hmx::Object {
 
     void SetPaused(bool, bool, bool);
 
+    u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno
 };
 
-Game* /*you just lost*/ TheGame;
+extern Game* /*you just lost*/ TheGame;
 
 #endif // GAME_GAME_H

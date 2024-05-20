@@ -6,6 +6,27 @@
 
 class CharLipSync : public Hmx::Object {
 public:
+
+    class Generator {
+    public:
+        Generator();
+
+        CharLipSync* mLipSync;
+        int mLastCount;
+        std::vector<int> mWeights;
+    };
+
+    class PlayBack {
+    public:
+        std::vector<int> mWeights;
+        CharLipSync* mLipSync;
+        RndPropAnim* mPropAnim;
+        ObjectDir* mClips;
+        int mIndex;
+        int mOldIndex;
+        int mFrame;
+    };
+
     CharLipSync();
     virtual ~CharLipSync();
     OBJ_CLASSNAME(CharLipSync);
@@ -15,6 +36,9 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    DECLARE_REVS;
+    DELETE_OVERLOAD;
 
     ObjPtr<RndPropAnim, ObjectDir> mPropAnim;
     std::vector<String> mVisemes;

@@ -1,9 +1,11 @@
 #include "synth/OggMap.h"
 #include "os/Debug.h"
 
+#pragma pool_data off
 OggMap::OggMap() : mGran(1000), mLookup() {
     mLookup.push_back(std::pair<int,int>(0, 0));
 }
+#pragma pool_data reset
 
 OggMap::~OggMap(){
     mLookup.clear();
