@@ -51,7 +51,27 @@ void UIComponent::SetState(UIComponent::State s) {
 }
 
 void UIComponent::SetTypeDef(DataArray* da) {
-
+    if(!da && strlen(mResourcePath.c_str()) == 0){
+        DataArray* cfg = SystemConfig("objects", ClassName());
+        DataArray* found = cfg->FindArray("init", false);
+        if(found){
+            DataArray* typesArr = cfg->FindArray("types", true);
+            DataArray* defaultArr = typesArr->FindArray("default", false);
+            if(defaultArr){
+                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(this));
+                SetTypeDef(defaultArr);
+                return;
+            }
+            else {
+                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->mFile, PathName(this));
+                return;
+            }
+        }
+    }
+    if(mTypeDef != da){
+        Hmx::Object::SetTypeDef(da);
+        UpdateResource();
+    }
 }
 
 BEGIN_COPYS(UIComponent)

@@ -9,7 +9,7 @@
 #include "utl/Loader.h"
 #include <string.h>
 
-UIPicture::UIPicture() : UITransitionHandler(NULL), mMesh(this, NULL), mTexFile(), mLoadedFile() {
+UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile() {
     mTex = Hmx::Object::New<RndTex>();
     mHookTex = true;
     mDelayedTexFile.Set(FilePath::sRoot.c_str(), "");

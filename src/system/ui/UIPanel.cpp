@@ -124,9 +124,7 @@ void UIPanel::PollForLoading(){
     MILO_ASSERT(mState == kUnloaded, 0xE0);
     if(mLoader && mLoader->IsLoaded()){
         class PanelDir* pDir = dynamic_cast<class PanelDir*>(mLoader->GetDir());
-        if(!pDir){
-            MILO_FAIL("%s not PanelDir", mLoader->mFile);
-        }
+        MILO_ASSERT_FMT(pDir, "%s not PanelDir", mLoader->mFile);
         delete mLoader;
         mLoader = 0;
         SetLoadedDir(pDir, mLoaded);
