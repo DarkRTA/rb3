@@ -22,13 +22,14 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     };
 
     enum State {
-        kStateNormal,
-        kStateFocused,
-        kStateDisabled,
-        kStateSelecting,
-        kStateSelected,
-        kStateInvalid
+        kNormal = 0,
+        kFocused = 1,
+        kDisabled = 2,
+        kSelecting = 3,
+        kSelected = 4,
+        kNumStates = 5,
     };
+
     UIComponent();
     OBJ_CLASSNAME(UIComponent)
     OBJ_SET_TYPE(UIComponent)

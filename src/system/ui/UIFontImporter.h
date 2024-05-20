@@ -5,6 +5,8 @@
 #include "rndobj/Font.h"
 #include "rndobj/Mat.h"
 
+class RndText;
+
 class UIFontImporter : public virtual Hmx::Object {
 public:
     UIFontImporter();
@@ -18,6 +20,8 @@ public:
     virtual ~UIFontImporter();
 
     void GenerateBitmapFilename();
+    RndText* GetGennedText(Symbol) const;
+    void FontImporterSyncObjects();
 
     DELETE_OVERLOAD;
     
