@@ -23,11 +23,11 @@ UIComponent::State SymToUIComponentState(Symbol s) {
         if (s.Str() == UIComponentStateToSym((UIComponent::State)i).Str()) return (UIComponent::State)i;
     }
     MILO_ASSERT(false, 38);
-    return UIComponent::kStateInvalid;
+    return UIComponent::kNumStates;
 }
 
 UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mMesh(NULL),
-    mResourceName(), mObjDir(NULL), a(0), mState(kStateNormal), c(0), d(0) { }
+    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), c(0), d(0) { }
 
 
 void UIComponent::Init() {
@@ -43,9 +43,9 @@ Symbol UIComponent::StateSym() const {
 }
 
 void UIComponent::SetState(UIComponent::State s) {
-    if (!CanHaveFocus() && s == kStateFocused) {
+    if (!CanHaveFocus() && s == kFocused) {
         MILO_WARN("Component: %s cannot have focus.  Why are we setting it to the focused state?", Name());
-        s = kStateNormal;
+        s = kNormal;
     }
     mState = s;
 }
@@ -111,14 +111,14 @@ void UIComponent::PostLoad(BinStream& bs) {
 }
 
 bool UIComponent::Exiting() const {
-    return mState == kStateSelecting;
+    return mState == kSelecting;
 }
 
 void UIComponent::Enter() {
     RndPollable::Enter();
     a = false;
-    if (mState == kStateSelecting) {
-        SetState(kStateFocused);
+    if (mState == kSelecting) {
+        SetState(kFocused);
     }
 }
 
