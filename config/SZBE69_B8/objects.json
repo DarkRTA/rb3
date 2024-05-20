@@ -382,6 +382,7 @@
             "system/synth/Synth.cpp": "NonMatching",
 
             "system/track/Track.cpp": "NonMatching",
+            "system/track/TrackDir.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",

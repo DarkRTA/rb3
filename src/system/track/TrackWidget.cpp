@@ -16,7 +16,7 @@ INIT_REVS(TrackWidget)
 TrackWidget::TrackWidget() : unk_0x20(this, kObjListNoNull), unk_0x30(this, kObjListNoNull), 
     unk_0x40(this, kObjListNoNull), unk_0x50(this, kObjListNoNull), unk_0x60(this, NULL), unk_0x6C(1), unk_0x70(1),
     unk_0x74(), unk_0x80(0), unk_0x84(0), unk_0x88(this, NULL), unk_0x94(this, NULL),
-mAlignment(RndText::kAlignCenterRight), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { 
+mAlignment(RndText::kMiddleCenter), unk_0xA4(0,0,0,0), unk_0xB4(0,0,0,0), unk_0xC4(this, NULL) { 
     unk_0xD4 &= 0x3FFFFF; SyncImp();
 }
 
