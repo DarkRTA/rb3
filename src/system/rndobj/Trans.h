@@ -41,20 +41,21 @@ public:
     unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
 };
 
-enum Constraint {
-    kNone,
-    kLocalRotate,
-    kParentWorld,
-    kLookAtTarget,
-    kShadowTarget,
-    kBillboardZ,
-    kBillboardXZ,
-    kBillboardXYZ,
-    kTargetWorld
-};
-
 class RndTransformable : public virtual RndHighlightable {
 public:
+
+    enum Constraint {
+        kNone,
+        kLocalRotate,
+        kParentWorld,
+        kLookAtTarget,
+        kShadowTarget,
+        kBillboardZ,
+        kBillboardXZ,
+        kBillboardXYZ,
+        kTargetWorld
+    };
+
     RndTransformable();
 
     OBJ_CLASSNAME(Trans)
@@ -71,18 +72,31 @@ public:
     virtual void UpdatedWorldXfm();
 
     void SetTransParent(RndTransformable*, bool);
+    void SetTransConstraint(Constraint, RndTransformable*, bool);
     RndTransformable* TransParent() const;
+    Transform& DirtyLocalXfm();
+    void DistributeChildren(bool, float);
 
     // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
     DataNode OnCopyLocalTo(const DataArray*);
     DataNode OnGetLocalPos(const DataArray*);
+    DataNode OnGetLocalPosIndex(const DataArray*);
     DataNode OnGetLocalRot(const DataArray*);
     DataNode OnGetLocalRotIndex(const DataArray*);
     DataNode OnSetLocalPos(const DataArray*);
+    DataNode OnSetLocalPosIndex(const DataArray*);
     DataNode OnSetLocalRot(const DataArray*);
     DataNode OnSetLocalRotIndex(const DataArray*);
     DataNode OnSetLocalRotMat(const DataArray*);
     DataNode OnSetTransConstraint(const DataArray*);
+    DataNode OnSetLocalScale(const DataArray*);
+    DataNode OnSetLocalScaleIndex(const DataArray*);
+    DataNode OnGetLocalScale(const DataArray*);
+    DataNode OnGetLocalScaleIndex(const DataArray*);
+    DataNode OnGetWorldForward(const DataArray*);
+    DataNode OnGetWorldPos(const DataArray*);
+    DataNode OnGetWorldRot(const DataArray*);
+    DataNode OnGetChildren(const DataArray*);
 
     static void Init();
     static Hmx::Object* NewObject();
