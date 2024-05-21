@@ -37,6 +37,7 @@ public:
     // uncommenting this results in an error related to a circular dependency between ObjDirPtr and DirLoader
     // and i have no idea how to fix it
     // ObjPtrList<Hmx::Object, class ObjectDir> mObjects; 
+    int objptrlistfiller[4]; // only here until we get the above ObjPtrList fixed
 
     Callback* mCallback;
     class ObjectDir* mDir;

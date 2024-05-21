@@ -58,7 +58,35 @@ public:
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
-    Transform& operator=(const Transform&);
+    Transform& operator=(const register Transform& tf){
+        register Transform* other = this;
+        register float temp1;
+        register float temp2;
+        register float temp3;
+        register float temp4;
+        register float temp5;
+        register float temp6;
+        register float temp7;
+        register float temp8;
+        ASM_BLOCK(
+            psq_lx temp8,0,tf,0,0
+            lfs temp7, 8(tf);
+            psq_l temp6,0xc(tf),0,0
+            lfs temp5, 0x14(tf);
+            psq_l temp4,0x18(tf),0,0
+            lfs temp3, 0x20(tf);
+            psq_l temp2,0x24(tf),0,0
+            lfs temp1, 0x2C(tf);
+            psq_stx temp8,0,other,0,0
+            stfs temp7, 8(other);
+            psq_st temp6,0x0c(other),0,0
+            stfs temp5, 0x14(other);
+            psq_st temp4,0x18(other),0,0
+            stfs temp3, 0x20(other);
+            psq_st temp2,0x24(other),0,0
+            stfs temp1, 0x2C(other);
+        )
+    }
 
     void Reset(){
         m.Identity();
@@ -71,7 +99,7 @@ public:
         v.y = da->Float(3);
         v.z = da->Float(4);
     }
-    
+
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
         m.x.Zero();

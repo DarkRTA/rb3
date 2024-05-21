@@ -257,6 +257,7 @@ BEGIN_HANDLERS(UIPanel)
     HANDLE_ACTION(set_loaded_dir_shared, SetLoadedDir(_msg->Obj<class PanelDir>(2), true))
     HANDLE_ACTION(unset_loaded_dir, UnsetLoadedDir())
     HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_MEMBER_PTR(mDir)
     HANDLE_CHECK(450)
 END_HANDLERS
 

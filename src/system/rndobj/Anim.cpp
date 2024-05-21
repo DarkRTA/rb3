@@ -1,7 +1,11 @@
 #include "rndobj/Anim.h"
 #include "os/Debug.h"
+#include "rndobj/AnimFilter.h"
+#include "rndobj/Group.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
+
+INIT_REVS(RndAnimatable)
 
 static TaskUnits gRateUnits[5] = {
     kTaskSeconds,
@@ -16,15 +20,13 @@ TaskUnits RndAnimatable::RateToTaskUnits(Rate myRate){
     return gRateUnits[myRate];
 }
 
-#pragma force_active on
-inline int RndAnimatable::Units() const {
+int RndAnimatable::Units() const {
     return gRateUnits[mRate];
 }
 
-inline float RndAnimatable::FramesPerUnit() {
+float RndAnimatable::FramesPerUnit() {
     return gRateFpu[mRate];
 }
-#pragma force_active reset
 
 bool RndAnimatable::ConvertFrames(float& f){
     f /= FramesPerUnit();
@@ -38,6 +40,71 @@ RndAnimatable::RndAnimatable() : mFrame(0.0f), mRate(k30_fps) {
 void RndAnimatable::Save(BinStream&){
     MILO_ASSERT(0, 0x7A);
 }
+
+BEGIN_LOADS(RndAnimatable)
+    LOAD_REVS(bs);
+    ASSERT_REVS(4, 0);
+    if(gRev > 1) bs >> mFrame;
+    if(gRev > 3){
+        bs >> (int&)mRate;
+    }
+    else if(gRev > 2){
+        unsigned char uc;
+        bs >> uc;
+        mRate = (Rate)(uc == 0);
+    }
+    if(gRev < 1){
+        int count;
+        bs >> count;
+        bool theLoop = false;
+        float theScale = 0.0f;
+        float theOffset = 0.0f;
+        float theMin = 0.0f;
+        float theMax = 1.0f;
+        int unused1, unused2, unused3, unused4, unused5, unused6, unused7;
+        while(count-- != 0){
+            int read;
+            bs >> read;
+            switch(read){
+                case 0:
+                    bs >> theMax >> theMin;
+                    break;
+                case 1:
+                    bs >> theOffset >> theScale >> theLoop;
+                    break;
+                case 2:
+                    bs >> unused1 >> unused2;
+                    break;
+                case 3:
+                    bs >> unused3 >> unused4;
+                    break;
+                case 4:
+                    bs >> unused5 >> unused6 >> unused7;
+                    break;
+                default: break;
+            }
+        }
+        if(theMax != 1.0f || theMin != 0.0f || (theOffset != theScale)){
+            const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
+            class ObjectDir* thisDir = mDir;
+            RndAnimFilter* filtObj = Hmx::Object::New<RndAnimFilter>();
+            if(filtObj) filtObj->SetName(filt, thisDir);
+            filtObj->SetProperty("anim", DataNode(filtObj));
+            filtObj->SetProperty("scale", DataNode(theMax));
+            filtObj->SetProperty("offset", DataNode(theOffset));
+            filtObj->SetProperty("min", DataNode(theMin));
+            filtObj->SetProperty("max", DataNode(theMax));
+            filtObj->SetProperty("loop", DataNode(theLoop));
+        }
+        ObjPtrList<RndAnimatable, class ObjectDir> animList(this, kObjListNoNull);
+        bs >> animList;
+        RndGroup* theGroup = dynamic_cast<RndGroup*>(this);
+        for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = animList.begin(); it != animList.end(); ++it){
+            if(theGroup) theGroup->AddObject(*it, 0);
+            else MILO_WARN("%s not in group", (*it)->Name());
+        }
+    }
+END_LOADS
 
 void RndAnimatable::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     const RndAnimatable* c = dynamic_cast<const RndAnimatable*>(o);
