@@ -465,6 +465,7 @@
 
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching",
+            "system/world/FreeCamera.cpp": "NonMatching",
             "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching"
         }
