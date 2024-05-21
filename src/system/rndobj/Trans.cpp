@@ -1,13 +1,6 @@
-#include "Trans.h"
-#include "obj/Object.h"
-#include "os/System.h"
-#include "utl/PoolAlloc.h"
+#include "rndobj/Trans.h"
 #include "math/Rot.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
-#include <new>
 
 Plane RndTransformable::sShadowPlane;
 
