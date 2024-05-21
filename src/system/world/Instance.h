@@ -24,7 +24,7 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
-    virtual int MakeWorldSphere(Sphere&, bool){ return 0; }
+    virtual bool MakeWorldSphere(Sphere&, bool){ return 0; }
     virtual void DrawShowing();
     virtual int CollideShowing(const Segment&, float&, Plane&);
     virtual void Poll();
