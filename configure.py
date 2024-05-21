@@ -117,7 +117,8 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-config = ProjectConfig(args.version)
+config = ProjectConfig()
+config.version = str(args.version)
 version_num = VERSIONS.index(config.version)
 
 # Apply arguments

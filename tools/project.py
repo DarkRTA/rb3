@@ -49,7 +49,7 @@ class Object:
 
 
 class ProjectConfig:
-    def __init__(self, version: str) -> None:
+    def __init__(self) -> None:
         # Paths
         self.build_dir: Path = Path("build")  # Output build files
         self.src_dir: Path = Path("src")  # C/C++/asm source files
@@ -79,7 +79,7 @@ class ProjectConfig:
         self.ldflags: Optional[List[str]] = None  # Linker flags
         self.libs: Optional[List[Dict[str, Any]]] = None  # List of libraries
         self.linker_version: Optional[str] = None  # mwld version
-        self.version: str = version  # Version name
+        self.version: Optional[str] = None  # Version name
         self.warn_missing_config: bool = False  # Warn on missing unit configuration
         self.warn_missing_source: bool = False  # Warn on missing source file
         self.rel_strip_partial: bool = True  # Generate PLFs with -strip_partial
@@ -547,6 +547,7 @@ def generate_build_ninja(
                 )
             n.newline()
 
+    link_outputs: List[Path] = []
     if build_config:
         link_steps: List[LinkStep] = []
         used_compiler_versions: Set[str] = set()
@@ -754,6 +755,7 @@ def generate_build_ninja(
         ###
         for step in link_steps:
             step.write(n)
+            link_outputs.append(step.output())
         n.newline()
 
         ###
@@ -853,9 +855,9 @@ def generate_build_ninja(
         )
         n.build(
             outputs=ok_path,
-            rule="phony" if config.non_matching else "check",
+            rule="check",
             inputs=config.check_sha_path,
-            implicit=[dtk, *map(lambda step: step.output(), link_steps)],
+            implicit=[dtk, *link_outputs],
         )
         n.newline()
 
@@ -870,7 +872,7 @@ def generate_build_ninja(
         )
         n.build(
             outputs=progress_path,
-            rule="phony" if config.non_matching else "progress",
+            rule="progress",
             implicit=[ok_path, configure_script, python_lib, config.config_path],
         )
 
@@ -965,7 +967,10 @@ def generate_build_ninja(
     ###
     n.comment("Default rule")
     if build_config:
-        n.default(progress_path)
+        if config.non_matching:
+            n.default(link_outputs)
+        else:
+            n.default(progress_path)
     else:
         n.default(build_config_path)
 
@@ -1062,10 +1067,6 @@ def generate_objdiff_config(
                 options[key] = value
 
         unit_src_path = src_dir / str(options["source"])
-
-        if not unit_src_path.exists():
-            objdiff_config["units"].append(unit_config)
-            return
 
         if not unit_src_path.exists():
             objdiff_config["units"].append(unit_config)
