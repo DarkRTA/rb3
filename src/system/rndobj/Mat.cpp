@@ -1,7 +1,7 @@
 #include "rndobj/Mat.h"
 #include "obj/Object.h"
 
-MatShaderOptions::MatShaderOptions() : b(0), i(0x12) {
+MatShaderOptions::MatShaderOptions() : b(0), i4(1), i1(1) {
 
 }
 

@@ -60,8 +60,16 @@ struct MatPerfSettings {
 
 struct MatShaderOptions {
     MatShaderOptions();
+    int itop : 24;
+    int i7 : 1;
+    int i6 : 1;
+    int i5 : 1;
+    int i4 : 1;
+    int i3 : 1;
+    int i2 : 1;
+    int i1 : 1;
+    int i0 : 1;
     bool b; 
-    int i;
 };
 
 class RndMat : public Hmx::Object {
