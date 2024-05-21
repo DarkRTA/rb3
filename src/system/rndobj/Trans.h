@@ -74,8 +74,11 @@ public:
     void SetTransParent(RndTransformable*, bool);
     void SetTransConstraint(Constraint, RndTransformable*, bool);
     RndTransformable* TransParent() const;
-    Transform& DirtyLocalXfm();
     void DistributeChildren(bool, float);
+    Transform& DirtyLocalXfm(){
+        mCache->SetDirty();
+        return mLocalXfm;
+    }
 
     // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
     DataNode OnCopyLocalTo(const DataArray*);

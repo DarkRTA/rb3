@@ -14,7 +14,7 @@ RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL)
     mLocalXfm.Reset();
     mWorldXfm.Reset();
     mCache = new DirtyCache();
-    mCache->mFlags = (u32)mCache | (mCache->mFlags & 1);
+    mCache->Set((u32)mCache);
 }
 
 RndTransformable::~RndTransformable() {

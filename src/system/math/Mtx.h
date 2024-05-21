@@ -53,10 +53,13 @@ public:
 
     // all of these are weak
     Transform(){}
+
+    // both of these use powerpc asm magic
     Transform(const Transform& tf){
         m = tf.m; v = tf.v;
     }
     Transform& operator=(const Transform&);
+
     void Reset(){
         m.Identity();
         v.Zero();
@@ -68,6 +71,7 @@ public:
         v.y = da->Float(3);
         v.z = da->Float(4);
     }
+    
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
         m.x.Zero();
