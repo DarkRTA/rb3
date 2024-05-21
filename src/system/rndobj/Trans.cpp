@@ -12,7 +12,7 @@
 Plane RndTransformable::sShadowPlane;
 
 void RndTransformable::Init() {
-    RegisterFactory(StaticClassName(), (*NewObject));
+    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
     DataArray* dingus_da = SystemConfig("rnd");
     dingus_da->FindData("shadow_plane", sShadowPlane, true);
 }
@@ -20,11 +20,15 @@ void RndTransformable::Init() {
 RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL), mConstraint(kNone), mPreserveScale(0) {
     mLocalXfm.Reset();
     mWorldXfm.Reset();
-    vptr = new (_PoolAlloc(0xc, 0xc, FastPool)) (std::vector<int>);
+    mCache = new DirtyCache();
+    mCache->mFlags = 0;
 }
 
 RndTransformable::~RndTransformable() {
-    
+    if(mParent){
+
+    }
+    delete mCache;
 }
 
 void RndTransformable::Print() {

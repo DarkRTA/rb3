@@ -9,6 +9,23 @@
 #include <list>
 #include <vector>
 
+class DirtyCache {
+public:
+    DirtyCache(){}
+    ~DirtyCache(){}
+
+    void* operator new(size_t s){
+        return _PoolAlloc(s, sizeof(DirtyCache), FastPool);
+    }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(DirtyCache), FastPool, v);
+    }
+
+    std::vector<DirtyCache*> mChildren;
+    int mFlags;
+};
+
 enum Constraint {
     kNone,
     kLocalRotate,
@@ -56,10 +73,10 @@ public:
     static Hmx::Object* NewObject();
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
-    std::vector<int> mChildren;
+    std::vector<RndTransformable*> mChildren;
     Transform mLocalXfm; // 0x1c
-    Transform mWorldXfm;
-    std::vector<int>* vptr; // actually a ptr to DirtyCache? which is a class containing a vector and a char/bool/byte
+    Transform mWorldXfm; // 0x4c
+    DirtyCache* mCache; // 0x7c
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; }
     bool mPreserveScale;
     ObjPtr<RndTransformable, class ObjectDir> mTarget;
