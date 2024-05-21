@@ -1,5 +1,6 @@
 #include "rndobj/Trans.h"
 #include "math/Rot.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 Plane RndTransformable::sShadowPlane;
@@ -46,6 +47,23 @@ void DirtyCache::SetDirty_Force(){
     }
 }
 
+void RndTransformable::SetWorldXfm(const Transform& tf){
+    mWorldXfm = tf;
+    mCache->SetLastBit(0);
+    UpdatedWorldXfm();
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
+        (*it)->mCache->SetDirty();
+    }
+}
+
+void RndTransformable::SetWorldPos(const Vector3& vec){
+    mWorldXfm.v = vec;
+    UpdatedWorldXfm();
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
+        (*it)->mCache->SetDirty();
+    }
+}
+
 void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, bool b){
     MILO_ASSERT(t != this, 0x1C1);
     mConstraint = cst;
@@ -71,6 +89,12 @@ void RndTransformable::Print() {
     *ts << "   constraint: " << mConstraint << "\n";
     *ts << "   preserveScale: " << mPreserveScale << "\n";
     *ts << "   parent: " << mParent << "\n";
+}
+
+void RndTransformable::Highlight(){
+    Transform& tf = (mCache->mFlags & 1) ? WorldXfm_Force() : mWorldXfm;
+    Hmx::Color col;
+    UtilDrawAxes(tf, 3.0f, col);
 }
 
 SAVE_OBJ(RndTransformable, 586)

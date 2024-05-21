@@ -1,4 +1,4 @@
-// #include "Utl.h"
+#include "rndobj/Utl.h"
 #include "math/Color.h"
 #include "math/Geo.h"
 #include "obj/Data.h"
@@ -18,8 +18,16 @@ float gLimitUVRange;
 
 ADD_NOTIFS
 
-RndGroup* GroupOwner(Hmx::Object*) {
-
+RndGroup* GroupOwner(Hmx::Object* o) {
+    for(std::vector<ObjRef*>::reverse_iterator rit = o->Refs().rbegin(); rit != o->Refs().rend(); rit++){
+        RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
+        if(grp){
+            for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
+                if(*pit == o) return grp;
+            }
+        }
+    }
+    return 0;
 }
 
 static DataNode OnGroupOwner(DataArray* da) {

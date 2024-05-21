@@ -71,10 +71,14 @@ public:
     virtual void Print();
     virtual void UpdatedWorldXfm();
 
+    void SetWorldXfm(const Transform&);
+    void SetWorldPos(const Vector3&);
     void SetTransParent(RndTransformable*, bool);
     void SetTransConstraint(Constraint, RndTransformable*, bool);
     RndTransformable* TransParent() const;
     void DistributeChildren(bool, float);
+    Transform& WorldXfm_Force();
+
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
         return mLocalXfm;
