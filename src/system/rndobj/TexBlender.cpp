@@ -42,9 +42,34 @@ void RndTexBlender::Load(BinStream& bs){
     unk70 = 0;
 }
 
+float RndTexBlender::GetDistanceToPlane(const Plane& plane, Vector3& vec){
+    if(mOwner){
+        return mOwner->GetDistanceToPlane(plane, vec);
+    }
+    else return 0.0f;
+}
+
+bool RndTexBlender::MakeWorldSphere(Sphere& sphere, bool b){
+    if(mOwner){
+        return mOwner->MakeWorldSphere(sphere, b);
+    }
+    else return 0;
+}
+
 BEGIN_HANDLERS(RndTexBlender)
     HANDLE(get_render_textures, OnGetRenderTextures)
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x1A5)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(RndTexBlender)
+    SYNC_PROP(base_map, mBaseMap)
+    SYNC_PROP(near_map, mNearMap)
+    SYNC_PROP(far_map, mFarMap)
+    SYNC_PROP(output_texture, mOutputTextures)
+    SYNC_PROP(controller_list, mControllerList)
+    SYNC_PROP(owner, mOwner)
+    SYNC_PROP(controller_influence, mControllerInfluence)
+    SYNC_SUPERCLASS(RndDrawable)
+END_PROPSYNCS

@@ -25,7 +25,7 @@ public:
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual int MakeWorldSphere(Sphere&, bool);
+    virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
     virtual bool DrawShowingBudget(float);
     virtual void ListDrawChildren(std::list<RndDrawable*>&);

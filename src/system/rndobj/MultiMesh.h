@@ -24,7 +24,7 @@ public:
     virtual void Load(BinStream&);
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual int MakeWorldSphere(Sphere&, bool);
+    virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void Mats(std::list<class RndMat*>&, bool);
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
