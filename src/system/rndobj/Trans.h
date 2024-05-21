@@ -23,7 +23,7 @@ public:
     }
 
     std::vector<DirtyCache*> mChildren;
-    int mFlags;
+    int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
 };
 
 enum Constraint {

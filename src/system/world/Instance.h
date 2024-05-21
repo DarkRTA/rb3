@@ -42,6 +42,7 @@ public:
     virtual ~SharedGroup();
 
     void AddPolls(RndGroup*);
+    void ClearPollMaster();
 
     RndGroup* unk8;
     ObjPtr<WorldInstance, ObjectDir> unkc;

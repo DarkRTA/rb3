@@ -18,7 +18,7 @@ void ColorPalette::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    if(gRev == 0){
+    if(gRev < 1){
         std::vector<ColorSet> setvec;
         bs >> setvec;
         mColors.resize(setvec.size());
