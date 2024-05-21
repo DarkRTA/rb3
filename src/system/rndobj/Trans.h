@@ -13,6 +13,21 @@ class DirtyCache {
 public:
     DirtyCache(){}
     ~DirtyCache(){}
+    void SetDirty_Force(); // fn_8064E044
+
+    // Set and SetDirty are unknown method names
+    void Set(unsigned int ui){
+        mFlags = ui | (mFlags & 1);
+    }
+
+    void SetDirty(){
+        if(mFlags & 1) return;
+        SetDirty_Force();
+    }
+
+    void SetLastBit(unsigned int ui){
+        mFlags = mFlags & 0xfffffffe | ui;
+    }
 
     void* operator new(size_t s){
         return _PoolAlloc(s, sizeof(DirtyCache), FastPool);
@@ -23,7 +38,7 @@ public:
     }
 
     std::vector<DirtyCache*> mChildren;
-    int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
+    unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
 };
 
 enum Constraint {
@@ -88,5 +103,7 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
+
+template <class T> void RemoveSwap(std::vector<T*>&, T*);
 
 #endif

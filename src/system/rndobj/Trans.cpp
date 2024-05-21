@@ -19,9 +19,24 @@ RndTransformable::RndTransformable() : mParent(this, NULL),  mTarget(this, NULL)
 
 RndTransformable::~RndTransformable() {
     if(mParent){
-
+        RemoveSwap(mParent->mChildren, this);
+        RemoveSwap(mParent->mCache->mChildren, mCache);
+    }
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
+        (*it)->mParent = 0;
+        (*it)->mCache->Set(0);
+        (*it)->mCache->SetDirty();
     }
     delete mCache;
+}
+
+void DirtyCache::SetDirty_Force(){
+    SetLastBit(1);
+    if(!mChildren.empty()){
+        for(std::vector<DirtyCache*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
+            (*it)->SetDirty();
+        }
+    }
 }
 
 void RndTransformable::Print() {
