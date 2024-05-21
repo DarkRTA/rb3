@@ -2,6 +2,9 @@
 #define WORLD_INSTANCE_H
 #include "rndobj/Dir.h"
 #include "obj/Dir.h"
+#include <list>
+
+class RndGroup;
 
 class WorldInstance : public RndDir {
 public:
@@ -31,6 +34,18 @@ public:
     ObjDirPtr<WorldInstance> unk18c;
     int unk198;
     int unk19c;
+};
+
+class SharedGroup : public RndPollable {
+public:
+    SharedGroup(RndGroup*);
+    virtual ~SharedGroup();
+
+    void AddPolls(RndGroup*);
+
+    RndGroup* unk8;
+    ObjPtr<WorldInstance, ObjectDir> unkc;
+    std::list<void*> unk18;
 };
 
 #endif

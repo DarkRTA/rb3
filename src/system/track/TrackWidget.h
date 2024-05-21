@@ -75,9 +75,9 @@ public:
     bool unkd3;
     int unkd4 : 10;
 
-    // rlwinm r0, r5, 0, 8, 4: accesses bits 27-23 (sets to 0)
-    // rlwimi r0, r4, 15, 8, 16: 15-23?
-    // rlwinm r0, r0, 0, 27, 16: accesses bits 15-4 (sets to 0)
+    // rlwinm r0, r5, 0, 8, 4: accesses bits 27-23 (sets to 0) - 5 bits
+    // rlwimi r0, r4, 15, 8, 16: 15-23? - 7 bits
+    // rlwinm r0, r0, 0, 27, 16: accesses bits 15-4 (sets to 0) - 12 bits
 
     // mMaxMeshes: 0xd0...? - accesses bits 14-23
     // mCharsPerInst: 0xd0...? - accesses bits 4-14

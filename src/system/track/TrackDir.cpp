@@ -12,6 +12,6 @@ TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mA
     unk338.Reset();
 }
 
-    // Transform unk2d8;
-    // Transform unk308;
-    // Transform unk338;
+TrackDir::~TrackDir(){
+    
+}
