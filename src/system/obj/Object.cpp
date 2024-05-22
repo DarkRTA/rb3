@@ -4,6 +4,7 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 #include "obj/MessageTimer.h"
+#include "utl/MemMgr.h"
 #include "os/OSFuncs.h"
 
 extern Hmx::Object *gDataThis;
@@ -300,25 +301,31 @@ void Hmx::Object::Load(BinStream& bs) {
 }
 
 const char* Hmx::Object::FindPathName(){
-    bool b = false;
-    if(mName && *mName) b = true;
-    if(!b) return ClassName().Str();
+    const char* name = (mName && *mName) ? mName : ClassName().Str();
+    
     class ObjectDir* dataDir = DataDir();
     if(dataDir){
-        return MakeString("%s (%s)", FileLocalize(dataDir->Name(), 0));
+        if(dataDir->mLoader){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->mLoader->mFile.c_str(), 0));
+        }
+        else if(!dataDir->ProxyFile()->empty()){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile()->c_str(), 0));
+        }
+        else if(*dataDir->mPathName != '\0'){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->mPathName, 0));
+        }
+        else if(dataDir != this && dataDir->mName && *dataDir->mName){
+            return MakeString("%s/%s", dataDir->mName, name);
+        }
+        else if(mDir && *mDir->mPathName){
+            return MakeString("%s (%s)", name, FileLocalize(mDir->mPathName, 0));
+        }
     }
-    if(!dataDir->ProxyFile()->empty()){
-        return MakeString("%s (%s)", FileLocalize(dataDir->ProxyFile()->c_str(), 0));
-    }
-    if(dataDir->mPathName){
-        return MakeString("%s (%s)", FileLocalize(dataDir->mPathName, 0));
-    }
-    if(dataDir == this || dataDir->mName == 0 || *dataDir->mName == '\0'){
-        return MakeString("%s/%s", dataDir->mName, ClassName());
-    }
-    if(mDir && mDir->mPathName && *mDir->mPathName != '\0'){
-        return MakeString("%s (%s)", ClassName(), FileLocalize(mDir->mPathName, 0));
-    }
+    return name;
+}
+
+const char* Hmx::Object::AllocHeapName(){
+    return MemHeapName(MemFindAddrHeap(this));
 }
 
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
@@ -349,11 +356,11 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     {
         static Symbol _s("prop_handle");
         if(sym == _s){
-            return HandleProperty(_msg, _msg->Array(2), true);
+            return HandleProperty(_msg->Array(2), _msg, true);
         }
     }
-    HANDLE_ACTION_STATIC(copy, Copy(_msg->GetObj(2), (CopyType)_msg->Int(3)));
-    HANDLE_ACTION_STATIC(replace, Replace(_msg->GetObj(2), _msg->GetObj(3)));
+    HANDLE_ACTION_STATIC(copy, Copy(_msg->Obj<Hmx::Object>(2), (CopyType)_msg->Int(3)));
+    HANDLE_ACTION_STATIC(replace, Replace(_msg->Obj<Hmx::Object>(2), _msg->Obj<Hmx::Object>(3)));
     HANDLE_EXPR_STATIC(class_name, ClassName());
     HANDLE_EXPR_STATIC(name, mName);
     HANDLE_STATIC(iterate_refs, OnIterateRefs);
@@ -377,16 +384,16 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     HANDLE_EXPR_STATIC(get_heap, AllocHeapName());
     // if none of those symbols matched, we fall back here
     bool stank = false;
-    if(mTypeDef != 0){
-        DataArray* found = mTypeDef->FindArray(sym, false);
-        if(found != 0) stank = true;
-        if(stank){
-            DataNode ran = found->ExecuteScript(1, this, _msg, 2);
-            if(ran.Type() != kDataUnhandled) return DataNode(ran);
-        }
-        HANDLE_CHECK(0x2E6);
+    DataArray* found;
+    if(mTypeDef){
+        found = mTypeDef->FindArray(sym, false);
+        if(found) stank = true;
     }
-
+    if(stank){
+        DataNode ran = found->ExecuteScript(1, this, _msg, 2);
+        if(ran.Type() != kDataUnhandled) return DataNode(ran);
+    }
+    HANDLE_CHECK(0x2E6);
     return DataNode(kDataUnhandled, 0);
 }
 #pragma pop
