@@ -267,6 +267,8 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
 
+#pragma push
+#pragma dont_inline on
 // see scratch: https://decomp.me/scratch/9abtP
 DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     Symbol sym = _msg->Sym(1);
@@ -299,13 +301,13 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     {
         static Symbol _s("dir");
         if(sym == _s){
-            return DataNode((Hmx::Object*)mDir);
+            return DataNode(mDir);
         }
     }
     {
         static Symbol _s("set_name");
         if(sym == _s){
-            ObjectDir* theDir = _msg->Size() < 4 ? mDir : _msg->Obj<ObjectDir>(3);
+            ObjectDir* theDir = _msg->Size() > 3 ? _msg->Obj<ObjectDir>(3) : Dir();
             SetName(_msg->Str(2), theDir);
             return DataNode(0);
         }
@@ -323,11 +325,12 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
             DataNode ran = found->ExecuteScript(1, this, _msg, 2);
             if(ran.Type() != kDataUnhandled) return DataNode(ran);
         }
-        if(_warn) PathName(this);
+        HANDLE_CHECK(0x2E6);
     }
 
     return DataNode(kDataUnhandled, 0);
 }
+#pragma pop
 
 DataNode Hmx::Object::HandleType(DataArray* msg){
     Symbol t = msg->Sym(1);

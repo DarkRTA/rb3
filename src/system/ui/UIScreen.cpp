@@ -342,9 +342,9 @@ void UIScreen::Print(TextStream& s) {
                 if (fileArray != NULL) {
                     DataNode type = fileArray->Node(1);
                     if (type.Type() == kDataString || type.Type() == kDataSymbol) {
-                        s << "(" << type.LiteralStr(NULL) << ")";
+                        s << "(" << type.LiteralStr(NULL) << ") ";
                     } else {
-                        s << "(dynamic)";
+                        s << "(dynamic) ";
                     }
                 }
             } else {
@@ -359,7 +359,7 @@ void UIScreen::Print(TextStream& s) {
         }
     }
 
-    s << "}";
+    s << "}\n";
 }
 
 DataNode UIScreen::OnMsg(const ButtonDownMsg& msg) {
