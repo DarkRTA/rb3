@@ -106,15 +106,15 @@ template <class T> bool PropSync(std::list<T>& list, DataNode& node, DataArray* 
     }
 }
 
-template <class T> bool PropSync(std::vector<T>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
-    if((int)op == 0x40) return false;
-    else {
-        MILO_ASSERT(op == kPropSize, 146);
-        //if(op == kPropGet) node = DataNode(ptr.Ptr());
-        //else ptr = node.Obj<T>(0);
-        return true;
-    }
-}
+// template <class T> bool PropSync(std::vector<T>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
+//     if((int)op == 0x40) return false;
+//     else {
+//         MILO_ASSERT(op == kPropSize, 146);
+//         //if(op == kPropGet) node = DataNode(ptr.Ptr());
+//         //else ptr = node.Obj<T>(0);
+//         return true;
+//     }
+// }
 
 template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if((int)op == 0x40) return false;

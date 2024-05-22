@@ -42,6 +42,7 @@ public:
     virtual void SetKey(float){}
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
     DataNode OnAnimate(DataArray*);

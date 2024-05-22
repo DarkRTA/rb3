@@ -20,9 +20,8 @@ class ColorPalette : public Hmx::Object {
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    
+    DECLARE_REVS;
 
     std::vector<Hmx::Color> mColors;
 };

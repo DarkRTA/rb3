@@ -9,20 +9,53 @@
 #include <list>
 #include <vector>
 
-enum Constraint {
-    kNone,
-    kLocalRotate,
-    kParentWorld,
-    kLookAtTarget,
-    kShadowTarget,
-    kBillboardZ,
-    kBillboardXZ,
-    kBillboardXYZ,
-    kTargetWorld
+class DirtyCache {
+public:
+    DirtyCache(){}
+    ~DirtyCache(){}
+    void SetDirty_Force(); // fn_8064E044
+
+    // Set and SetDirty are unknown method names
+    void Set(unsigned int ui){
+        mFlags = ui | (mFlags & 1);
+    }
+
+    void SetDirty(){
+        if(mFlags & 1) return;
+        SetDirty_Force();
+    }
+
+    void SetLastBit(unsigned int ui){
+        mFlags = mFlags & 0xfffffffe | ui;
+    }
+
+    void* operator new(size_t s){
+        return _PoolAlloc(s, sizeof(DirtyCache), FastPool);
+    }
+
+    void operator delete(void* v){
+        _PoolFree(sizeof(DirtyCache), FastPool, v);
+    }
+
+    std::vector<DirtyCache*> mChildren;
+    unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
 };
 
 class RndTransformable : public virtual RndHighlightable {
 public:
+
+    enum Constraint {
+        kNone,
+        kLocalRotate,
+        kParentWorld,
+        kLookAtTarget,
+        kShadowTarget,
+        kBillboardZ,
+        kBillboardXZ,
+        kBillboardXYZ,
+        kTargetWorld
+    };
+
     RndTransformable();
 
     OBJ_CLASSNAME(Trans)
@@ -38,28 +71,48 @@ public:
     virtual void Print();
     virtual void UpdatedWorldXfm();
 
+    void SetWorldXfm(const Transform&);
+    void SetWorldPos(const Vector3&);
     void SetTransParent(RndTransformable*, bool);
+    void SetTransConstraint(Constraint, RndTransformable*, bool);
     RndTransformable* TransParent() const;
+    void DistributeChildren(bool, float);
+    Transform& WorldXfm_Force();
+
+    Transform& DirtyLocalXfm(){
+        mCache->SetDirty();
+        return mLocalXfm;
+    }
 
     // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
     DataNode OnCopyLocalTo(const DataArray*);
     DataNode OnGetLocalPos(const DataArray*);
+    DataNode OnGetLocalPosIndex(const DataArray*);
     DataNode OnGetLocalRot(const DataArray*);
     DataNode OnGetLocalRotIndex(const DataArray*);
     DataNode OnSetLocalPos(const DataArray*);
+    DataNode OnSetLocalPosIndex(const DataArray*);
     DataNode OnSetLocalRot(const DataArray*);
     DataNode OnSetLocalRotIndex(const DataArray*);
     DataNode OnSetLocalRotMat(const DataArray*);
     DataNode OnSetTransConstraint(const DataArray*);
+    DataNode OnSetLocalScale(const DataArray*);
+    DataNode OnSetLocalScaleIndex(const DataArray*);
+    DataNode OnGetLocalScale(const DataArray*);
+    DataNode OnGetLocalScaleIndex(const DataArray*);
+    DataNode OnGetWorldForward(const DataArray*);
+    DataNode OnGetWorldPos(const DataArray*);
+    DataNode OnGetWorldRot(const DataArray*);
+    DataNode OnGetChildren(const DataArray*);
 
     static void Init();
     static Hmx::Object* NewObject();
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
-    std::vector<int> mChildren;
+    std::vector<RndTransformable*> mChildren;
     Transform mLocalXfm; // 0x1c
-    Transform mWorldXfm;
-    std::vector<int>* vptr; // actually a ptr to DirtyCache? which is a class containing a vector and a char/bool/byte
+    Transform mWorldXfm; // 0x4c
+    DirtyCache* mCache; // 0x7c
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; }
     bool mPreserveScale;
     ObjPtr<RndTransformable, class ObjectDir> mTarget;
@@ -71,5 +124,7 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
+
+template <class T> void RemoveSwap(std::vector<T*>&, T*);
 
 #endif

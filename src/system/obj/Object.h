@@ -328,6 +328,11 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
             } \
         }
 
+#define SYNC_PROP_STATIC(symbol, member) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP(symbol, member) \
+}
+
 #define SYNC_SUPERCLASS(parent) \
         return parent::SyncProperty(_val, _prop, _i, _op);
 

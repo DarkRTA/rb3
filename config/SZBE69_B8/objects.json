@@ -382,6 +382,7 @@
             "system/synth/Synth.cpp": "NonMatching",
 
             "system/track/Track.cpp": "NonMatching",
+            "system/track/TrackDir.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",
@@ -463,7 +464,10 @@
             "system/utl/WaveFile.cpp": "NonMatching",
 
             "system/world/CameraShot.cpp": "NonMatching",
-            "system/world/ColorPalette.cpp": "NonMatching"
+            "system/world/ColorPalette.cpp": "NonMatching",
+            "system/world/FreeCamera.cpp": "NonMatching",
+            "system/world/Instance.cpp": "NonMatching",
+            "system/world/LightHue.cpp": "NonMatching"
         }
     },
     "flex": {

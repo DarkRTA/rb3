@@ -20,6 +20,8 @@ public:
     virtual ~RndFlare();
     virtual void Highlight();
     virtual void Print();
+    virtual void DrawShowing();
+    virtual void Mats(std::list<class RndMat*>&, bool);
 
     bool mPointTest; // 0xb0
     bool mAreaTest;
