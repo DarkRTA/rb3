@@ -24,7 +24,7 @@ void RndTransProxy::SetPart(Symbol sym){
 
 void RndTransProxy::Sync(){
     SetTransParent(0, false);
-    if(mProxy.Ptr() && mPart.IsNull()){
+    if(mProxy.Ptr() && mPart.Null()){
         RndTransformable* trans = dynamic_cast<RndTransformable*>(mProxy.Ptr());
         if(trans){
             SetTransParent(trans, false);

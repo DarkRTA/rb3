@@ -79,7 +79,7 @@ public:
 #define OBJ_SET_TYPE(classname) \
     virtual void SetType(Symbol classname){ \
         static DataArray* types = SystemConfig("objects", StaticClassName(), "types"); \
-        if(classname.IsNull()) SetTypeDef(0); \
+        if(classname.Null()) SetTypeDef(0); \
         else { \
             DataArray* found = types->FindArray(classname, false); \
             if(found != 0) SetTypeDef(found); \
