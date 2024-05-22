@@ -47,4 +47,14 @@ bool AddrIsInPool(void*, PoolType);
 void* _PoolAlloc(int, int, PoolType);
 void _PoolFree(int, PoolType, void*);
 
+#define NEW_POOL_OVERLOAD(obj) \
+    void* operator new(size_t s){ \
+        return _PoolAlloc(s, sizeof(obj), FastPool); \
+    }
+
+#define DELETE_POOL_OVERLOAD(obj) \
+    void operator delete(void* v){ \
+        _PoolFree(sizeof(obj), FastPool, v); \
+    }
+
 #endif

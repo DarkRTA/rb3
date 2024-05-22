@@ -36,8 +36,9 @@ public:
     void SetHookTex(bool);
     void SetTex(const FilePath&);
     void HookupMesh();
-    DELETE_OVERLOAD
 
+    DECLARE_REVS;
+    DELETE_OVERLOAD
 
     ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x12c
     FilePath mTexFile; // 0x138
@@ -47,7 +48,6 @@ public:
     bool mHookTex; // 0x158
     FilePath mDelayedTexFile; // 0x15c
 
-    DECLARE_REVS
 };
 
 #endif // UI_UIPICTURE_H
