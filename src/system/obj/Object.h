@@ -139,7 +139,7 @@ namespace Hmx {
         virtual class ObjectDir* DataDir();
         virtual void PreLoad(BinStream&);
         virtual void PostLoad(BinStream&){}
-        virtual char* FindPathName();
+        virtual const char* FindPathName();
 
         const char* Name() const { return mName; }
 
