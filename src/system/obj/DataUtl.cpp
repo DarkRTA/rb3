@@ -13,7 +13,7 @@
 #define VAR_STACK_SIZE 100
 
 std::map<Symbol, DataArray*> gMacroTable;
-ObjectDir* gDataDir;
+class ObjectDir* gDataDir;
 Hmx::Object* gDataThis;
 static bool gDataMacroWarning = true;
 struct VarStack {

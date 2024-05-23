@@ -2,9 +2,11 @@
 #define OBJ_DATAUTL_H
 #include "obj/Data.h"
 #include "utl/Loader.h"
+#include <map>
+#include "obj/Dir.h"
 
 extern std::map<Symbol, DataArray*> gMacroTable;
-extern ObjectDir* gDataDir;
+extern class ObjectDir* gDataDir;
 extern Hmx::Object* gDataThis;
 
 Loader* DataFactory(const FilePath&, LoaderPos);

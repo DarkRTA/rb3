@@ -287,6 +287,18 @@ public:
         if(!mData) mData = new DataArray(0);
     }
 
+    DataArrayPtr& operator=(DataArray* arr){
+        if(mData != arr){
+            mData->Release();
+            mData = arr;
+            if(arr) arr->AddRef();
+            else mData = new DataArray(0);
+        }
+        return *this;
+    }
+
+    operator DataArray*() const { return mData; }
+
     DataArray* mData;
 
     ~DataArrayPtr(){ mData->Release(); }
@@ -294,10 +306,3 @@ public:
 };
 
 #endif
-
-// DataArrayPtr();
-//     DataArrayPtr(const DataNode&);
-//     ~DataArrayPtr();
-//     DataNode *GetNodeAtIndex(int) const; // fn_80134490 
-//     DataArray* GetArray();
-//     DataArrayPtr* operator=(DataArray*);
