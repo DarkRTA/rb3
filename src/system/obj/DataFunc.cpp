@@ -1535,3 +1535,23 @@ Symbol DataFuncName(DataFunc* func){
     }
     return Symbol("");
 }
+
+static void mfsubdir(){
+    MergeFilter mf;
+    mf.FilterSubdir(0, 0);
+}
+
+MergeFilter::Action DataMergeFilter::Filter(Hmx::Object* from, Hmx::Object* to, class ObjectDir* dir){
+    if(mType == kDataInt){
+        return (MergeFilter::Action)mInt;
+    }
+    else {
+        static DataArrayPtr d(new DataArray(3));
+        d.Node(1) = DataNode(from);
+        d.Node(2) = DataNode(to);
+        if(mType == kDataFunc){
+            return (MergeFilter::Action) mFunc(UNCONST_ARRAY(d)).Int(0);
+        }
+        else return (MergeFilter::Action) mObj->Handle(UNCONST_ARRAY(d), true).Int(0);
+    }
+}

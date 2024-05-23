@@ -43,7 +43,7 @@ public:
     MergeFilter(Action a, Subdirs s) : mAction(a), mSubdirs(s) {}
     virtual ~MergeFilter(){}
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*){ return mAction; }
-    virtual Action FilterSubDir(class ObjectDir* o1, class ObjectDir*){
+    virtual Action FilterSubdir(class ObjectDir* o1, class ObjectDir*){
         return DefaultSubdirAction(o1, mSubdirs);
     }
 

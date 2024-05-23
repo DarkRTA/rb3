@@ -78,11 +78,27 @@ public:
 
 extern DebugNotifier TheDebugNotifier;
 
+class DebugFailer {
+    DebugFailer& operator<<(const char* cc){
+        TheDebug.Fail(cc);
+        return *this;
+    }
+};
+
+extern DebugFailer TheDebugFailer;
+
 class DebugNotifyOncer {
 public:
     std::list<class String> mNotifies;
     DebugNotifyOncer(){}
-    ~DebugNotifyOncer();
+    ~DebugNotifyOncer(){}
+
+    // DebugNotifyOncer& operator<<(const char* cc){
+    //     if(AddToNotifies(cc, mNotifies)){
+    //         TheDebug.Notify(cc);
+    //     }
+    //     return *this;
+    // }
 };
 
 #endif
