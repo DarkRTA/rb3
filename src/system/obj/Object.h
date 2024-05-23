@@ -211,6 +211,10 @@ inline unsigned short getAltRev(int ui){
     return (unsigned int)ui >> 0x10;
 }
 
+inline int packRevs(unsigned short rev, unsigned short alt){
+    return ((alt << 16) & 0xFFFF0000) | (rev & 0xFFFF);
+}
+
 #define NEW_OVERLOAD \
     void* operator new(size_t t) {return _MemAlloc(t, 0);}
 

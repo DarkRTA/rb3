@@ -7,6 +7,7 @@
 #include "utl/MemMgr.h"
 #include "os/OSFuncs.h"
 #include "obj/DataUtl.h"
+#include "obj/ObjVersion.h"
 
 const char* blank = "";
 const char* unk = "unknown";
@@ -16,6 +17,7 @@ INIT_REVS(Hmx::Object)
 Hmx::Object* Hmx::Object::sDeleting = 0;
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
 bool gLoadingProxyFromDisk = 0;
+std::vector<ObjVersion> sRevStack;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
@@ -285,10 +287,12 @@ void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
 
 void Hmx::Object::LoadType(BinStream& bs) {
     LOAD_REVS(bs)
-    ASSERT_REVS(29, 0)
-    Symbol& s = (Symbol&)gNullStr;
+    ASSERT_REVS(2, 0)
+    Symbol s;
     bs >> s;
-    // ObjVersion: an ObjPtr and a word, the word being the packing of rev and altrev
+    SetType(s);
+    ObjVersion v(this, packRevs(gRev, gAltRev));
+    sRevStack.push_back(v);
 }
 
 void Hmx::Object::LoadRest(BinStream& bs) {
@@ -399,6 +403,43 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
     }
     else return DataNode(kDataUnhandled, 0);
 }
+
+DataNode Hmx::Object::OnIterateRefs(const DataArray* da){
+    DataNode* var = da->Var(2);
+    DataNode node(*var);
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+        *var = DataNode((*it)->RefOwner());
+        for(int i = 3; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+    }
+    *var = node;
+    return DataNode(0);
+}
+
+DataNode Hmx::Object::OnSet(const DataArray* da){
+    if(da->Size() % 2){
+        MILO_FAIL("Uneven number of properties (file %s, line %d)", da->File(), da->Line());
+    }
+    for(int i = 2; i < da->Size(); i += 2){
+        DataNode& node = da->Evaluate(i);
+        if(node.Type() == kDataSymbol){
+            SetProperty(STR_TO_SYM(node.mValue.symbol), da->Evaluate(i + 1));
+        }
+        else {
+            if(node.Type() != kDataArray){
+                String str;
+                node.Print(str, true);
+                MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
+            }
+            SetProperty(node.mValue.array, da->Evaluate(i + 1));
+        }
+    }
+    return DataNode(0);
+}
+
+
+const char* smodifier = "%s";
 
 DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     DataArray* arr = da->Array(2);

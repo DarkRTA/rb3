@@ -5,7 +5,8 @@
 
 class ObjVersion {
 public:
-    ObjPtr<Hmx::Object, ObjectDir> ptr;
+    ObjVersion(Hmx::Object* o, int i) : obj(o, 0), revs(i) {}
+    ObjPtr<Hmx::Object, ObjectDir> obj;
     int revs;
 };
 
