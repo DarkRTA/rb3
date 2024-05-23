@@ -17,14 +17,6 @@ Accomplishment::~Accomplishment() {
     
 }
 
-std::string unusedStrings[] = {
-    "There are less songs in the dynamic prereq song list than the num_songs provided: %s.", 
-    "Passive Message Priority for goal %s is less than the minimum: %i!", 
-    "Passive Message Priority for goal %s is more than the maximum: %i!", 
-    "%s_howto", 
-
-};
-
 void Accomplishment::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3e);
 
@@ -34,11 +26,9 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         mControllerTypes.reserve(controllerTypes->Size());
         for (int i = 0; i < controllerTypes->Size(); i++) {
             DataNode& node = controllerTypes->Node(i);
-            if (1) {
+            int controllerType = node.Int(controllerTypes);
 
-            } else {
-
-            }
+            mControllerTypes.push_back((ControllerType)controllerType);
         }
     }
 
@@ -60,22 +50,50 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
 
     DataArray* secretPrereqs = i_pConfig->FindArray(secret_prereqs, false);
     if (secretPrereqs != NULL) {
+        mSecretPrereqs.reserve(secretPrereqs->Size());
+        for (int i = 0; i < secretPrereqs->Size(); i++) {
+            DataNode& node = secretPrereqs->Node(i);
+            Symbol s = node.Sym(secretPrereqs);
 
+            mSecretPrereqs.push_back(NULL);
+        }
     }
 
     DataArray* dynamicPrereqs = i_pConfig->FindArray(dynamic_prereqs, false);
     if (dynamicPrereqs != NULL) {
+        dynamicPrereqs->FindData(num_songs, mDynamicPrereqsNumSongs, false);
+        dynamicPrereqs->FindData(always_visible, mDynamicAlwaysVisible, false);
+        dynamicPrereqs->FindData(precached_filter, mDynamicPrereqsFilter, false);
 
+        dynamicPrereqs = dynamicPrereqs->FindArray(songs, false);
+
+        if(dynamicPrereqs != NULL){
+            mDynamicPrereqsSongs.reserve(dynamicPrereqs->Size());
+            for (int i = 0; i < dynamicPrereqs->Size(); i++) {
+                DataNode& node = dynamicPrereqs->Node(i);
+                Symbol s = node.Sym(dynamicPrereqs);
+
+                mDynamicPrereqsSongs.push_back(NULL);
+            }
+            if (mDynamicPrereqsSongs.size() < mDynamicPrereqsNumSongs) {
+                TheDebug.Notify(MakeString("There are less songs in the dynamic prereq song list than the num_songs provided: %s.", name));
+                mDynamicPrereqsNumSongs = 0xffffffff;
+            }
+        }
     }
 
     i_pConfig->FindData(passive_msg_channel, mPassiveMsgChannel, false);
     i_pConfig->FindData(passive_msg_priority, mPassiveMsgPriority, false);
 
-    // if() {}
-    // else {}
+    bool noMsgChannel = !(mPassiveMsgChannel == "");
 
-    // if() {}
-    // else {}
+    if (!noMsgChannel) {
+        if (mPassiveMsgPriority < 1) {
+            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is less than the minimum: %i!", mName, 1));
+        } else if (1000 < mPassiveMsgPriority) {
+            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is more than the maximum: %i!", mName, 1000));
+        }
+    }
 
     i_pConfig->FindData(progress_step, mProgressStep, false);
     i_pConfig->FindData(show_best_after_earn, mShowBestAfterEarn, false);
@@ -115,6 +133,7 @@ Symbol Accomplishment::GetFlavorText() const {
 }
 
 std::string unusedStrings2[] = {
+    "%s_howto", 
     "%s_gray", 
     "i_pUser", 
 };
@@ -369,6 +388,6 @@ Symbol Accomplishment::GetPassiveMsgChannel() const {
     return mPassiveMsgChannel;
 }
 
-Symbol Accomplishment::GetPassiveMsgPriority() const {
+int Accomplishment::GetPassiveMsgPriority() const {
     return mPassiveMsgPriority;
 }

@@ -63,10 +63,10 @@ private:
     bool IsTrackedInLeaderboard() const;
     Symbol GetUnitsToken(int) const;
     Symbol GetPassiveMsgChannel() const;
-    Symbol GetPassiveMsgPriority() const;
+    int GetPassiveMsgPriority() const;
 
     Symbol mName;       // 0x04
-    std::vector<Accomplishment*> mSecretPrereqs; // 0x08 this REALLY feels like a vector
+    std::vector<Accomplishment*> mSecretPrereqs; // 0x08
     int mAccomplishmentType;    //0x10
     Symbol mCategory; // 0x14
     Symbol mAward; // 0x18
@@ -74,12 +74,11 @@ private:
     Symbol mUnitsTokenSingular; // 0x20
     Symbol mIconOverride; // 0x24
     Symbol mSecretCampaignLevelPrereq; // 0x28
-    std::vector<ControllerType> mControllerTypes; // don't know this type yet, used in destructor
-
+    std::vector<ControllerType> mControllerTypes; // 0x2c
     Symbol mScoreType; //0x34
     Symbol mLaunchableDifficulty; // 0x38
     Symbol mPassiveMsgChannel;  // 0x3c
-    Symbol mPassiveMsgPriority; // 0x40
+    int mPassiveMsgPriority; // 0x40
     int mPlayerCountMin; // 0x44
     int mPlayerCountMax; // 0x48
     int mDynamicPrereqsNumSongs; // 0x4c
