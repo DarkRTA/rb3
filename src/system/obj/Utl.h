@@ -43,9 +43,11 @@ public:
     MergeFilter(Action a, Subdirs s) : mAction(a), mSubdirs(s) {}
     virtual ~MergeFilter(){}
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*){ return mAction; }
-    virtual Action FilterSubDir(class ObjectDir*, class ObjectDir*);
+    virtual Action FilterSubDir(class ObjectDir* o1, class ObjectDir*){
+        return DefaultSubdirAction(o1, mSubdirs);
+    }
 
-    Action DefaultSubdirAction(class ObjectDir*, Subdirs);
+    static Action DefaultSubdirAction(class ObjectDir*, Subdirs);
 
     Action mAction;
     Subdirs mSubdirs;
@@ -53,15 +55,17 @@ public:
 
 class DataMergeFilter : public MergeFilter {
 public:
-    DataMergeFilter(const DataNode&, Subdirs);
-    virtual ~DataMergeFilter();
+    inline DataMergeFilter(const DataNode&, Subdirs);
+    virtual ~DataMergeFilter(){}
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*);
 
     DataType mType;
     DataFunc* mFunc;
     Hmx::Object* mObj;
+    int mInt;
 };
 
+void MergeDirs(ObjectDir*, ObjectDir*, MergeFilter&);
 
 // apparently uncommenting this breaks TypeProps.cpp, which is just lovely
 // #include "obj/Object.h" // if i put this earlier, then i get circular dependencies with objects' SetType for using PathName

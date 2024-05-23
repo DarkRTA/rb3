@@ -25,9 +25,8 @@ public:
         return mFunc->ExecuteScript(2, gDataThis, _msg, 1);
     }
 
-    void operator delete(void* v){
-        _PoolFree(sizeof(DataFuncObj), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(DataFuncObj);
+    DELETE_POOL_OVERLOAD(DataFuncObj);
 
     static DataNode New(DataArray*);
 };

@@ -44,7 +44,7 @@ void DataRegisterFunc(Symbol s, DataFunc* func){
 DataNode DataFuncObj::New(DataArray* arr){
     Hmx::Object* o = ObjectDir::Main()->FindObject(arr->Str(1), false);
     if(o) delete o;
-    return DataNode(new (_PoolAlloc(0x20, 0x20, FastPool)) DataFuncObj(arr));
+    return DataNode(new DataFuncObj(arr));
 }
 
 DefDataFunc(Sprintf, {
@@ -1193,16 +1193,15 @@ static DataNode DataStrieq(DataArray* da) {
     return DataNode(!stricmp(da->Str(1), da->Str(2)));
 }
 
-DefDataFunc(SearchReplace, {
+static DataNode DataSearchReplace(DataArray* da){
     const char* s3 = da->Str(3);
     const char* s2 = da->Str(2);
     const char* s1 = da->Str(1);
     char beeg[0x800];
     bool ret = SearchReplace(s1, s2, s3, beeg);
-    DataNode n(beeg);
-    da->Var(4);
+    *da->Var(4) = DataNode(beeg);
     return DataNode(ret);
-})
+}
 
 DefDataFunc(PushBack, {
     DataArray* work = da->Array(1);
@@ -1226,25 +1225,41 @@ static DataNode DataWith(DataArray* da) {
 }
 
 static DataNode OnSetThis(DataArray* da) {
-    Hmx::Object* new_this;
-    new_this = da->GetObj(1);
-    // gDataThisPtr.Replace(gDataThis, new_this);
-    DataSetThis(new_this);
-    return DataNode();
+    // Hmx::Object* new_this;
+    // new_this = da->GetObj(1);
+    // // gDataThisPtr.Replace(gDataThis, new_this);
+    // DataSetThis(new_this);
+    gDataThisPtr.Replace(gDataThis, da->GetObj(1));
+    return DataNode(0);
 }
 
-DefDataFunc(MacroElem, {
+static DataNode DataMacroElem(DataArray* da){
     DataArray* macro = DataGetMacro(da->Str(1));
-    int i;
-    if (da->Size() > 2) {
-        i = da->Int(2);
-    } else i = 0;
+    int i = da->Size() > 2 ? da->Int(2) : 0;
     MILO_ASSERT(macro && macro->Size() > i, 1748);
-    return da->Node(i);
-})
+    return macro->Node(i);
+}
 
-static DataNode DataMergeDirs(DataArray*) {
-    return DataNode();
+DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilter(kMerge, subs), mType(node.Type()) {
+    if(mType == kDataInt) mInt = node.Int(0);
+    else if(mType == kDataFunc) mFunc = node.Func(0);
+    else if(mType == kDataObject) mObj = node.GetObj(0);
+    else if(mType == kDataSymbol){
+        mObj = gDataDir->FindObject(node.mValue.symbol, true);
+        if(!mObj){
+            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(node.mValue.symbol);
+            MILO_ASSERT(func != gDataFuncs.end(), 0x6ED);
+            mFunc = func->second;
+            mType = kDataFunc;
+        }
+        else mType = kDataObject;
+    }
+}
+
+static DataNode DataMergeDirs(DataArray* da) {
+    DataMergeFilter filt(da->Evaluate(3), (MergeFilter::Subdirs)da->Int(4));
+    MergeDirs(da->Obj<ObjectDir>(1), da->Obj<ObjectDir>(2), filt);
+    return DataNode(0);
 }
 
 static DataNode DataReplaceObject(DataArray* da) {
