@@ -6,8 +6,7 @@
 #include "obj/MessageTimer.h"
 #include "utl/MemMgr.h"
 #include "os/OSFuncs.h"
-
-extern Hmx::Object *gDataThis;
+#include "obj/DataUtl.h"
 
 const char* blank = "";
 const char* unk = "unknown";
@@ -16,6 +15,7 @@ INIT_REVS(Hmx::Object)
 
 Hmx::Object* Hmx::Object::sDeleting = 0;
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
+bool gLoadingProxyFromDisk = 0;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
@@ -335,7 +335,6 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
 #pragma push
 #pragma dont_inline on
 #pragma pool_data off
-// see scratch: https://decomp.me/scratch/9abtP
 DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     Symbol sym = _msg->Sym(1);
     MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
@@ -364,20 +363,8 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     HANDLE_EXPR_STATIC(class_name, ClassName());
     HANDLE_EXPR_STATIC(name, mName);
     HANDLE_STATIC(iterate_refs, OnIterateRefs);
-    {
-        static Symbol _s("dir");
-        if(sym == _s){
-            return DataNode(mDir);
-        }
-    }
-    {
-        static Symbol _s("set_name");
-        if(sym == _s){
-            ObjectDir* theDir = _msg->Size() > 3 ? _msg->Obj<ObjectDir>(3) : Dir();
-            SetName(_msg->Str(2), theDir);
-            return DataNode(0);
-        }
-    }
+    HANDLE_EXPR_STATIC(dir, mDir);
+    HANDLE_ACTION_STATIC(set_name, SetName(_msg->Str(2), _msg->Size() > 3 ? _msg->Obj<ObjectDir>(3) : Dir()))
     HANDLE_ACTION_STATIC(set_type, SetType(_msg->Sym(2)));
     HANDLE_EXPR_STATIC(is_a, IsASubclass(ClassName(), _msg->Sym(2)));
     HANDLE_EXPR_STATIC(get_type, Type());
@@ -400,7 +387,6 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
 
 DataNode Hmx::Object::HandleType(DataArray* msg){
     Symbol t = msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, t);
     bool found = false;
     DataArray* handler;
     if(mTypeDef != 0){
@@ -408,6 +394,7 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
         if(handler != 0) found = true;
     }
     if(found){
+        MessageTimer timer(this, t);
         return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
     }
     else return DataNode(kDataUnhandled, 0);

@@ -203,12 +203,12 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
-inline unsigned short getHmxRev(unsigned int ui){
+inline unsigned short getHmxRev(int ui){
     return ui;
 }
 
-inline unsigned short getAltRev(unsigned int ui){
-    return ui >> 0x10;
+inline unsigned short getAltRev(int ui){
+    return (unsigned int)ui >> 0x10;
 }
 
 #define NEW_OVERLOAD \
@@ -395,7 +395,7 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 void objType::Load(BinStream& bs){
 
 #define LOAD_REVS(bs) \
-    unsigned int rev; \
+    int rev; \
     bs >> rev; \
     gRev = getHmxRev(rev); \
     gAltRev = getAltRev(rev);
