@@ -14,6 +14,8 @@
 #include "math/MathFuncs.h"
 #include "obj/DataUtl.h"
 #include "utl/Locale.h"
+#include "os/DateTime.h"
+#include "utl/Symbols.h"
 #include <cstring>
 #include <list>
 #include <map>
@@ -23,7 +25,7 @@ std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
 extern Hmx::Object *gDataThis;
-extern ObjectDir* gDataDir;
+extern class ObjectDir* gDataDir;
 
 #define DefDataFunc(name, code) \
 static DataNode Data##name(DataArray* da) code
@@ -72,7 +74,7 @@ static DataNode DataPrint(DataArray *da) {
 }
 
 static DataNode DataSprint(DataArray *da) {
-    String str;
+    class String str;
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(str, true);
     }
@@ -678,13 +680,14 @@ static DataNode DataStartsWith(DataArray *da) {
 DefDataFunc(Time, {
     int i;
     for (i = 1; i < da->Size(); i++) {
-        if (da->Node(i).Type() == kDataCommand) break;
-        da->Node(i).Print(TheDebug, true);
+        DataNode& eval = da->Node(i);
+        if (eval.Type() == kDataCommand) break;
+        eval.Print(TheDebug, true);
     }
     if (i == 1) TheDebug << MakeString("Timing %s, line %d:", da->File(), da->Line());
     Timer time;
     time.Start();
-    for (; i < da->Size();) {
+    while (i < da->Size()) {
         da->Command(i++)->Execute();
     }
     time.Split();
@@ -719,7 +722,7 @@ static DataNode DataRandomSeed(DataArray *da) {
 }
 
 static DataNode DataNotify(DataArray* da){
-    String str;
+    class String str;
     for(int i = 1; i < da->Size(); i++){
         da->Evaluate(i).Print(str, true);
     }
@@ -728,7 +731,7 @@ static DataNode DataNotify(DataArray* da){
 }
 
 static DataNode DataNotifyBeta(DataArray* da) {
-    String s;
+    class String s;
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(s, true);
     }
@@ -772,7 +775,7 @@ static DataNode DataNotifyBeta(DataArray* da) {
 // }
 
 static DataNode DataFail(DataArray* da){
-    String str;
+    class String str;
     for(int i = 1; i < da->Size(); i++){
         da->Evaluate(i).Print(str, true);
     }
@@ -782,7 +785,7 @@ static DataNode DataFail(DataArray* da){
 }
 
 static DataNode DataNotifyOnce(DataArray *da) {
-    String s;
+    class String s;
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(s, true);
     }
@@ -972,7 +975,7 @@ DefDataFunc(HandleTypeRet, {
     if (n.Type() == kDataObject) o = n.mValue.object;
     else o = gDataDir->FindObject(n.LiteralStr(da), true);
     if (!o) {
-        String str;
+        class String str;
         n.Print(str, true);
         MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), da->File(), da->Line());
     }
@@ -1011,7 +1014,7 @@ DefDataFunc(HandleRet, {
     if (n.Type() == kDataObject) o = n.mValue.object;
     else o = gDataDir->FindObject(n.LiteralStr(da), true);
     if (!o) {
-        String str;
+        class String str;
         n.Print(str, true);
         MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), da->File(), da->Line());
     }
@@ -1074,7 +1077,7 @@ static DataNode DataFindExists(DataArray* da){
             }
         }
         else {
-            String str;
+            class String str;
             n.Print(str, true);
             MILO_FAIL("Bad key %s (file %s, line %d)", str.c_str(), da->File(), da->Line());
         }
@@ -1091,12 +1094,12 @@ static DataNode DataFind(DataArray* da) {
 }
 
 static DataNode DataFindObj(DataArray* da){
-    ObjectDir* d = ObjectDir::Main();
+    class ObjectDir* d = ObjectDir::Main();
     int i;
     for (i = 1; i < da->Size() - 1; i++) {
         DataNode& n = da->Evaluate(i);
-        if(n.Type() == kDataObject) d = n.Obj<ObjectDir>(0);
-        else d = dynamic_cast<ObjectDir*>(d->FindObject(n.LiteralStr(0), false));
+        if(n.Type() == kDataObject) d = n.Obj<class ObjectDir>(0);
+        else d = dynamic_cast<class ObjectDir*>(d->FindObject(n.LiteralStr(0), false));
         if(!d) return DataNode(d);
     }
     return DataNode(d->FindObject(da->Str(i), false));
@@ -1108,7 +1111,7 @@ static DataNode DataBasename(DataArray* da) {
 
 static DataNode DataDirname(DataArray* da) {
     const char* s = FileGetPath(da->Str(1), NULL);
-    String str(s);
+    class String str(s);
     uint x = str.find_last_of("/");
     return DataNode(x != String::npos);
 }
@@ -1127,7 +1130,7 @@ DefDataFunc(HasAnySubStr, {
 })
 
 DefDataFunc(FindSubStr, {
-    String s(da->Str(1));
+    class String s(da->Str(1));
     return DataNode((int)s.find(da->Str(2)));
 })
 
@@ -1139,7 +1142,7 @@ DefDataFunc(StrElem, {
 })
 
 DefDataFunc(SubStr, {
-    String s(da->Str(1));
+    class String s(da->Str(1));
     int i1 = da->Int(2);
     int i2 = da->Int(3);
     return DataNode(s.substr(i1, i2));
@@ -1147,40 +1150,40 @@ DefDataFunc(SubStr, {
 
 
 DefDataFunc(StrCat, {
-    DataNode n = da->Var(1);
-    String s(n.Str(NULL));
+    DataNode& n = *da->Var(1);
+    class String s(n.Str(NULL));
     for (int i = 2; i < da->Size(); i++) {
         s += da->Str(i);
     }
-    n = s.c_str();
-    return n;
+    n = DataNode(s.c_str());
+    return DataNode(n.Str(0));
 })
 
-DefDataFunc(StringFlags, {
+static DataNode DataStringFlags(DataArray* da){
     int x = da->Int(1);
-    DataArray* d = da->Array(2);
-    String s("");
-    for (int i = 1; i < da->Size(); i++) {
-        bool b = 0;
-        DataArray* macro = DataGetMacro(da->Str(i));
-        if (macro) {
-            MILO_ASSERT(macro && macro->Size() == 1, 1626);
-            macro->Int(0);
+    DataArray* arr = da->Array(2);
+    class String s("");
+    for (int i = 0; i < arr->Size(); i++) {
+        DataArray* macro = DataGetMacro(arr->Str(i));
+        MILO_ASSERT(macro && macro->Size() == 1, 1626);
+        if(x & macro->Int(0)){
+            if(s != ""){
+                s += "|";
+            }
+            s += arr->Str(i);
         }
     }
     return DataNode(s);
-})
-
-char* test = "|";
+}
 
 DefDataFunc(StrToLower, {
-    String s = da->Str(1);
+    class String s = da->Str(1);
     s.ToLower();
     return DataNode(s);
 })
 
 DefDataFunc(StrToUpper, {
-    String s = da->Str(1);
+    class String s = da->Str(1);
     s.ToUpper();
     return DataNode(s);
 })
@@ -1258,7 +1261,7 @@ DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilt
 
 static DataNode DataMergeDirs(DataArray* da) {
     DataMergeFilter filt(da->Evaluate(3), (MergeFilter::Subdirs)da->Int(4));
-    MergeDirs(da->Obj<ObjectDir>(1), da->Obj<ObjectDir>(2), filt);
+    MergeDirs(da->Obj<class ObjectDir>(1), da->Obj<class ObjectDir>(2), filt);
     return DataNode(0);
 }
 
@@ -1279,15 +1282,31 @@ static DataNode DataReplaceObject(DataArray* da) {
 }
 
 static DataNode DataNextName(DataArray* da) {
-    ObjectDir* d = gDataDir;
+    class ObjectDir* d = gDataDir;
     if (da->Size() > 2) {
-        d = da->Obj<ObjectDir>(2);
+        d = da->Obj<class ObjectDir>(2);
     }
     return DataNode(NextName(da->Str(1), d));
 }
 
-DataNode Quasiquote(const DataNode&) {
-
+DataNode Quasiquote(const DataNode& node) {
+    static Symbol unquoteAbbrev(",");
+    DataType nodeType = node.Type();
+    if(nodeType - 0x10 <= 1U){
+        DataArray* nodeArr = node.mValue.array;
+        if(nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol){
+            char* str = (char*)nodeArr->Node(0).mValue.symbol;
+            if(STR_TO_SYM(str) == unquote || STR_TO_SYM(str) == unquoteAbbrev){
+                return DataNode(nodeArr->Evaluate(1));
+            }
+        }
+        DataArrayPtr ptr(new DataArray(nodeArr->Size()));
+        for(int i = 0; i < nodeArr->Size(); i++){
+            ptr.Node(i) = Quasiquote(nodeArr->Node(i));
+        }
+        return DataNode(UNCONST_ARRAY(ptr), nodeType);
+    }
+    else return DataNode(node);
 }
 
 static DataNode DataQuasiquote(DataArray* da) { return Quasiquote(da->Node(1)); }
@@ -1295,7 +1314,27 @@ static DataNode DataQuasiquote(DataArray* da) { return Quasiquote(da->Node(1)); 
 DefDataFunc(Unquote, { return DataNode(da->Evaluate(1)); })
 
 static DataNode DataGetDateTime(DataArray* da) {
-    return DataNode();
+    DateTime dt;
+    GetDateAndTime(dt);
+    if(da->Size() > 1){
+        *da->Var(1) = DataNode(dt.mYear + 1900);
+    }
+    if(da->Size() > 2){
+        *da->Var(2) = DataNode(dt.mMonth + 1);
+    }
+    if(da->Size() > 3){
+        *da->Var(3) = DataNode(dt.mDay);
+    }
+    if(da->Size() > 4){
+        *da->Var(4) = DataNode(dt.mHour);
+    }
+    if(da->Size() > 5){
+        *da->Var(5) = DataNode(dt.mMin);
+    }
+    if(da->Size() > 6){
+        *da->Var(6) = DataNode(dt.mSec);
+    }
+    return DataNode((int)dt.ToCode());
 }
 
 static DataArray* sFileMsg;
@@ -1328,7 +1367,7 @@ DefDataFunc(FileListPaths, {
 })
 
 static DataNode DataObjectList(DataArray* da) {
-    ObjectDir* dir = da->Obj<ObjectDir>(1);
+    class ObjectDir* dir = da->Obj<class ObjectDir>(1);
     Symbol s = da->Sym(2);
     int x;
     if (da->Size() > 3) x = (bool)da->Int(3); else x = 1;

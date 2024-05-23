@@ -12,6 +12,9 @@ public:
     unsigned char mMonth;
     unsigned char mYear;
 
+    DateTime(){
+        memset(&mSec, 0, 6);
+    }
     DateTime(unsigned int);
     DateTime(unsigned short, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char);
     void GetDateAndTime(DateTime&);
@@ -24,6 +27,7 @@ public:
 };
 
 void DateTimeInit();
+void GetDateAndTime(DateTime&);
 BinStream& operator<<(BinStream&, const DateTime&);
 BinStream& operator>>(BinStream&, DateTime&);
 
