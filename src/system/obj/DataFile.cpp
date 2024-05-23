@@ -114,6 +114,10 @@ DataArray* DataReadStream(BinStream* bs) {
     return ret;
 }
 
+DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18("") {
+
+}
+
 void DataWriteFile(const char* c, const DataArray* da, int i) {
     TextStream* ts;
     if (c) ts = new TextFileStream(c, false);
