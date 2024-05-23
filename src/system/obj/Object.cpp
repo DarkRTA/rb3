@@ -296,7 +296,15 @@ void Hmx::Object::LoadType(BinStream& bs) {
 }
 
 void Hmx::Object::LoadRest(BinStream& bs) {
-
+    // begin PopRev stuff
+    // this should pop_back and then return an int
+    // said int will represent packed revs
+    ObjVersion v = sRevStack.back();
+    sRevStack.pop_back();
+    // end PopRev stuff
+    gAltRev = getAltRev(v.revs);
+    gRev = getHmxRev(v.revs);
+    mTypeProps.Load(bs, packRevs(gRev, gAltRev), 0);
 }
 
 void Hmx::Object::Load(BinStream& bs) {
@@ -438,7 +446,6 @@ DataNode Hmx::Object::OnSet(const DataArray* da){
     return DataNode(0);
 }
 
-
 const char* smodifier = "%s";
 
 DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
@@ -449,6 +456,25 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     InsertProperty(cloned, da->Evaluate(3));
     cloned->Release();
     return DataNode(size);
+}
+
+DataNode Hmx::Object::OnGet(const DataArray* da){
+    DataNode& node = da->Evaluate(2);
+    if(node.Type() == kDataSymbol){
+        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() % 2);
+        if(prop) return DataNode(*prop);
+    }
+    else {
+        if(node.Type() != kDataArray){
+            String str;
+            node.Print(str, true);
+            MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
+        }
+        bool size = da->Size() % 2;
+        DataNode* prop = Property(node.mValue.array, size);
+        if(prop) return DataNode(*prop);
+    }
+    return DataNode(da->Node(3));
 }
 
 BEGIN_PROPSYNCS(Hmx::Object);
