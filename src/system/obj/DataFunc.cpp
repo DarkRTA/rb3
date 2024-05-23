@@ -30,6 +30,10 @@ static DataNode Data##name(DataArray* da) code
 
 ADD_NOTIFS
 
+static void mfdtor(){
+    MergeFilter mf;
+}
+
 void DataRegisterFunc(Symbol s, DataFunc* func){
     const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
     if(it != gDataFuncs.end() && it->second != func)
@@ -93,7 +97,7 @@ static DataNode DataSetVar(DataArray *da) {
 }
 
 static DataNode DataIfElse(DataArray *da) {
-    if(da->Size() != 4) MILO_FAIL("One condition and two alternatives expected (file %s, line %d)", da->mFile.mStr, (int)da->mLine);
+    if(da->Size() != 4) MILO_FAIL("One condition and two alternatives expected (file %s, line %d)", da->File(), da->Line());
     if(da->Node(1).NotNull())
         return DataNode(da->Evaluate(2));
     else return DataNode(da->Evaluate(3));
@@ -633,15 +637,16 @@ DefDataFunc(Object, {
     }
 })
 
-DefDataFunc(Exists, {
+static DataNode DataExists(DataArray* da){
     const char* s = da->Str(1);
     bool does_exist = gDataDir->FindObject(s, true);
     if (!does_exist) {
         Symbol sym(s);
-        for (std::map<Symbol, DataFunc*>::iterator* i = &gDataFuncs.begin(); i != NULL; i++) ;
+        std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym);
+        does_exist = it != gDataFuncs.end();
     }
     return DataNode(does_exist);
-})
+}
 
 static DataNode DataLocalize(DataArray* da){
     const char* loc = Localize(da->ForceSym(1), false);
@@ -837,7 +842,7 @@ static DataNode DataPrintArray(DataArray* da) {
 static DataNode DataSize(DataArray* da) {
     if (da->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 1213); // dammit hmx why couldn't it've been 1312
-        return DataNode(gDataThis->PropertySize(da->Node(1).mValue.array)); // TODO figure out what this actually is
+        return DataNode(gDataThis->PropertySize(CONST_ARRAY(da)->Node(1).mValue.array)); // TODO figure out what this actually is
     }
     return DataNode(da->Array(1)->Size());
 }
@@ -904,26 +909,26 @@ static DataNode DataInterp(DataArray* da) {
 }
 
 static DataNode DataInc(DataArray* da) {
-    const DataNode& n = da->Node(1);
+    const DataNode& n = CONST_ARRAY(da)->Node(1);
     if (n.Type() == kDataProperty) {
         MILO_ASSERT(gDataThis, 1286);
-        DataArray* a = da->Node(1).mValue.array;
-        int x = 1 + gDataThis->Property(a, true)->Int(NULL);
+        DataArray* a = CONST_ARRAY(da)->Node(1).mValue.array;
+        int x = gDataThis->Property(a, true)->Int(NULL) + 1;
         gDataThis->SetProperty(a, x);
         return DataNode(x);
 
     } else {
         DataNode* Pn = da->Var(1);
         int i = Pn->Int(NULL);
-        return DataNode(*Pn = DataNode(i-1));
+        return DataNode(*Pn = DataNode(i+1));
     }
 }
 
 DefDataFunc(Dec, {
-    const DataNode& n = da->Node(1);
+    const DataNode& n = CONST_ARRAY(da)->Node(1);
     if (n.Type() == kDataProperty) {
         MILO_ASSERT(gDataThis, 1303);
-        DataArray* a = da->Node(1).mValue.array;
+        DataArray* a = CONST_ARRAY(da)->Node(1).mValue.array;
         int x = gDataThis->Property(a, true)->Int(NULL) - 1;
         gDataThis->SetProperty(a, x);
         return DataNode(x);

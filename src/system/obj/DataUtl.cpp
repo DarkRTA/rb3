@@ -12,7 +12,6 @@
 
 #define VAR_STACK_SIZE 100
 
-// class Symbol name; // size: 0x4, address: 0x80A54E84
 std::map<Symbol, DataArray*> gMacroTable;
 ObjectDir* gDataDir;
 Hmx::Object* gDataThis;

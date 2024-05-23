@@ -3,7 +3,9 @@
 #include "obj/Data.h"
 #include "utl/Loader.h"
 
-extern Hmx::Object *gDataThis;
+extern std::map<Symbol, DataArray*> gMacroTable;
+extern ObjectDir* gDataDir;
+extern Hmx::Object* gDataThis;
 
 Loader* DataFactory(const FilePath&, LoaderPos);
 void DataInit();
