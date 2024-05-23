@@ -4,7 +4,7 @@
 #include "rndobj/Poll.h"
 #include "obj/ObjPtr_p.h"
 
-class RndPollAnim : public virtual RndAnimatable, public virtual RndPollable {
+class RndPollAnim : public virtual RndAnimatable, public virtual RndPollable, public virtual Hmx::Object {
 public:
     RndPollAnim();
     OBJ_CLASSNAME(PollAnim);
@@ -14,15 +14,17 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void StartAnim();
-    virtual void EndAnim();
-    virtual void SetFrame(float, float);
+    virtual void StartAnim(){}
+    virtual void EndAnim(){}
+    virtual void SetFrame(float, float){}
     virtual float EndFrame();
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
-    virtual ~RndPollAnim();
+    virtual ~RndPollAnim(){}
+
+    DECLARE_REVS;
 
     ObjPtrList<RndAnimatable, ObjectDir> mAnims;
 };

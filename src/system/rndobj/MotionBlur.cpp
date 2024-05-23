@@ -31,7 +31,7 @@ void RndMotionBlur::Load(BinStream& bs){
 }
 
 bool RndMotionBlur::CanMotionBlur(RndDrawable* draw){
-    if(!dynamic_cast<RndMesh*>(draw) && !dynamic_cast<RndDir*>(draw) && dynamic_cast<RndGroup*>(draw)) return true;
+    if(dynamic_cast<RndMesh*>(draw) || dynamic_cast<RndDir*>(draw) || dynamic_cast<RndGroup*>(draw)) return true;
     else return false;
 }
 

@@ -655,6 +655,129 @@ YY_MALLOC_DECL
 #define YY_FATAL_ERROR(msg) yy_fatal_error( msg )
 #endif
 
+#ifdef YY_USE_PROTOS
+static void *yy_flex_alloc( yy_size_t size )
+#else
+static void *yy_flex_alloc( size )
+yy_size_t size;
+#endif
+	{
+	return (void *) malloc( size );
+	}
+
+#ifdef YY_USE_PROTOS
+YY_BUFFER_STATE yy_create_buffer( FILE *file, int size )
+#else
+YY_BUFFER_STATE yy_create_buffer( file, size )
+FILE *file;
+int size;
+#endif
+	{
+	YY_BUFFER_STATE b;
+
+	b = (YY_BUFFER_STATE) yy_flex_alloc( sizeof( struct yy_buffer_state ) );
+	if ( ! b )
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
+
+	b->yy_buf_size = size;
+
+	/* yy_ch_buf has to be 2 characters longer than the size given because
+	 * we need to put in 2 end-of-buffer characters.
+	 */
+	b->yy_ch_buf = (char *) yy_flex_alloc( b->yy_buf_size + 2 );
+	if ( ! b->yy_ch_buf )
+		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
+
+	b->yy_is_our_buffer = 1;
+
+	yy_init_buffer( b, file );
+
+	return b;
+	}
+
+#ifdef YY_USE_PROTOS
+void yy_load_buffer_state( void )
+#else
+void yy_load_buffer_state()
+#endif
+	{
+	yy_n_chars = yy_current_buffer->yy_n_chars;
+	yytext_ptr = yy_c_buf_p = yy_current_buffer->yy_buf_pos;
+	yyin = yy_current_buffer->yy_input_file;
+	yy_hold_char = *yy_c_buf_p;
+	}
+
+#ifdef YY_USE_PROTOS
+void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )
+#else
+void yy_init_buffer( b, file )
+YY_BUFFER_STATE b;
+FILE *file;
+#endif
+
+
+	{
+	yy_flush_buffer( b );
+
+	b->yy_input_file = file;
+	b->yy_fill_buffer = 1;
+
+#if YY_ALWAYS_INTERACTIVE
+	b->yy_is_interactive = 1;
+#else
+#if YY_NEVER_INTERACTIVE
+	b->yy_is_interactive = 0;
+#else
+	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+#endif
+#endif
+	}
+
+
+#ifdef YY_USE_PROTOS
+void yy_flush_buffer( YY_BUFFER_STATE b )
+#else
+void yy_flush_buffer( b )
+YY_BUFFER_STATE b;
+#endif
+
+	{
+	if ( ! b )
+		return;
+
+	b->yy_n_chars = 0;
+
+	/* We always need two end-of-buffer characters.  The first causes
+	 * a transition to the end-of-buffer state.  The second causes
+	 * a jam in that state.
+	 */
+	b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
+	b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
+
+	b->yy_buf_pos = &b->yy_ch_buf[0];
+
+	b->yy_at_bol = 1;
+	b->yy_buffer_status = YY_BUFFER_NEW;
+
+	if ( b == yy_current_buffer )
+		yy_load_buffer_state();
+	}
+
+#ifndef YY_EXIT_FAILURE
+#define YY_EXIT_FAILURE 2
+#endif
+
+#ifdef YY_USE_PROTOS
+static void yy_fatal_error( yyconst char msg[] )
+#else
+static void yy_fatal_error( msg )
+char msg[];
+#endif
+	{
+	(void) fprintf( stderr, "%s\n", msg );
+	exit( YY_EXIT_FAILURE );
+	}
+
 /* Default declaration of generated scanner - a define so the user can
  * easily add parameters.
  */
@@ -822,6 +945,9 @@ YY_RULE_SETUP
 #line 35 "x.y"
 ECHO;
 	YY_BREAK
+case 26:
+	DataFail("bad # directive");
+	break;
 #line 690 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
@@ -1190,8 +1316,8 @@ register char *yy_bp;
 		yy_current_buffer->yy_n_chars =
 			yy_n_chars = yy_current_buffer->yy_buf_size;
 
-		if ( yy_cp < yy_current_buffer->yy_ch_buf + 2 )
-			YY_FATAL_ERROR( "flex scanner push-back overflow" );
+		// if ( yy_cp < yy_current_buffer->yy_ch_buf + 2 )
+		// 	YY_FATAL_ERROR( "flex scanner push-back overflow" );
 		}
 
 	*--yy_cp = (char) c;
@@ -1324,50 +1450,6 @@ YY_BUFFER_STATE new_buffer;
 
 
 #ifdef YY_USE_PROTOS
-void yy_load_buffer_state( void )
-#else
-void yy_load_buffer_state()
-#endif
-	{
-	yy_n_chars = yy_current_buffer->yy_n_chars;
-	yytext_ptr = yy_c_buf_p = yy_current_buffer->yy_buf_pos;
-	yyin = yy_current_buffer->yy_input_file;
-	yy_hold_char = *yy_c_buf_p;
-	}
-
-
-#ifdef YY_USE_PROTOS
-YY_BUFFER_STATE yy_create_buffer( FILE *file, int size )
-#else
-YY_BUFFER_STATE yy_create_buffer( file, size )
-FILE *file;
-int size;
-#endif
-	{
-	YY_BUFFER_STATE b;
-
-	b = (YY_BUFFER_STATE) yy_flex_alloc( sizeof( struct yy_buffer_state ) );
-	if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
-
-	b->yy_buf_size = size;
-
-	/* yy_ch_buf has to be 2 characters longer than the size given because
-	 * we need to put in 2 end-of-buffer characters.
-	 */
-	b->yy_ch_buf = (char *) yy_flex_alloc( b->yy_buf_size + 2 );
-	if ( ! b->yy_ch_buf )
-		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
-
-	b->yy_is_our_buffer = 1;
-
-	yy_init_buffer( b, file );
-
-	return b;
-	}
-
-
-#ifdef YY_USE_PROTOS
 void yy_delete_buffer( YY_BUFFER_STATE b )
 #else
 void yy_delete_buffer( b )
@@ -1393,61 +1475,7 @@ extern int isatty YY_PROTO(( int ));
 #endif
 #endif
 
-#ifdef YY_USE_PROTOS
-void yy_init_buffer( YY_BUFFER_STATE b, FILE *file )
-#else
-void yy_init_buffer( b, file )
-YY_BUFFER_STATE b;
-FILE *file;
-#endif
 
-
-	{
-	yy_flush_buffer( b );
-
-	b->yy_input_file = file;
-	b->yy_fill_buffer = 1;
-
-#if YY_ALWAYS_INTERACTIVE
-	b->yy_is_interactive = 1;
-#else
-#if YY_NEVER_INTERACTIVE
-	b->yy_is_interactive = 0;
-#else
-	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
-#endif
-#endif
-	}
-
-
-#ifdef YY_USE_PROTOS
-void yy_flush_buffer( YY_BUFFER_STATE b )
-#else
-void yy_flush_buffer( b )
-YY_BUFFER_STATE b;
-#endif
-
-	{
-	if ( ! b )
-		return;
-
-	b->yy_n_chars = 0;
-
-	/* We always need two end-of-buffer characters.  The first causes
-	 * a transition to the end-of-buffer state.  The second causes
-	 * a jam in that state.
-	 */
-	b->yy_ch_buf[0] = YY_END_OF_BUFFER_CHAR;
-	b->yy_ch_buf[1] = YY_END_OF_BUFFER_CHAR;
-
-	b->yy_buf_pos = &b->yy_ch_buf[0];
-
-	b->yy_at_bol = 1;
-	b->yy_buffer_status = YY_BUFFER_NEW;
-
-	if ( b == yy_current_buffer )
-		yy_load_buffer_state();
-	}
 
 
 #ifndef YY_NO_SCAN_BUFFER
@@ -1596,20 +1624,7 @@ static int yy_top_state()
 	}
 #endif
 
-#ifndef YY_EXIT_FAILURE
-#define YY_EXIT_FAILURE 2
-#endif
 
-#ifdef YY_USE_PROTOS
-static void yy_fatal_error( yyconst char msg[] )
-#else
-static void yy_fatal_error( msg )
-char msg[];
-#endif
-	{
-	(void) fprintf( stderr, "%s\n", msg );
-	exit( YY_EXIT_FAILURE );
-	}
 
 
 
@@ -1664,15 +1679,7 @@ yyconst char *s;
 #endif
 
 
-#ifdef YY_USE_PROTOS
-static void *yy_flex_alloc( yy_size_t size )
-#else
-static void *yy_flex_alloc( size )
-yy_size_t size;
-#endif
-	{
-	return (void *) malloc( size );
-	}
+
 
 #ifdef YY_USE_PROTOS
 static void *yy_flex_realloc( void *ptr, yy_size_t size )
@@ -1717,9 +1724,9 @@ int argc;
 char **argv;
     {
     ++argv, --argc;  /* skip over program name */
-    if ( argc > 0 )
-            yyin = fopen( argv[0], "r" );
-    else
+    // if ( argc > 0 )
+    //         yyin = fopen( argv[0], "r" );
+    // else
             yyin = stdin;
 
     yylex();

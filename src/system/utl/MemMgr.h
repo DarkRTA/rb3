@@ -29,4 +29,7 @@ int MemFindHeap(const char*);
 void MemPushHeap(int);
 void MemPopHeap();
 
+int MemFindAddrHeap(void*);
+const char* MemHeapName(int);
+
 #endif

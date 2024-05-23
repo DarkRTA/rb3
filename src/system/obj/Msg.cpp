@@ -45,7 +45,7 @@ void MsgSource::AddSink(Hmx::Object* s, Symbol sym1, Symbol sym2, MsgSource::Sin
     MILO_ASSERT(s, 0x5D);
     RemoveSink(s, sym1);
     s->AddRef(this);
-    if(sym1.IsNull()){
+    if(sym1.Null()){
         MILO_ASSERT(s != this, 0x66);
         if(mExporting == 0){
             Sink theSink;

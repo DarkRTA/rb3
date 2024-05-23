@@ -79,7 +79,7 @@ public:
 #define OBJ_SET_TYPE(classname) \
     virtual void SetType(Symbol classname){ \
         static DataArray* types = SystemConfig("objects", StaticClassName(), "types"); \
-        if(classname.IsNull()) SetTypeDef(0); \
+        if(classname.Null()) SetTypeDef(0); \
         else { \
             DataArray* found = types->FindArray(classname, false); \
             if(found != 0) SetTypeDef(found); \
@@ -139,7 +139,7 @@ namespace Hmx {
         virtual class ObjectDir* DataDir();
         virtual void PreLoad(BinStream&);
         virtual void PostLoad(BinStream&){}
-        virtual char* FindPathName();
+        virtual const char* FindPathName();
 
         const char* Name() const { return mName; }
 
@@ -203,12 +203,16 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
-inline unsigned short getHmxRev(unsigned int ui){
+inline unsigned short getHmxRev(int ui){
     return ui;
 }
 
-inline unsigned short getAltRev(unsigned int ui){
-    return ui >> 0x10;
+inline unsigned short getAltRev(int ui){
+    return (unsigned int)ui >> 0x10;
+}
+
+inline int packRevs(unsigned short rev, unsigned short alt){
+    return ((alt << 16) & 0xFFFF0000) | (rev & 0xFFFF);
 }
 
 #define NEW_OVERLOAD \
@@ -395,7 +399,7 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 void objType::Load(BinStream& bs){
 
 #define LOAD_REVS(bs) \
-    unsigned int rev; \
+    int rev; \
     bs >> rev; \
     gRev = getHmxRev(rev); \
     gAltRev = getAltRev(rev);

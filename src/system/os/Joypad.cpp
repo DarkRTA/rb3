@@ -335,7 +335,7 @@ bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type){
 Symbol JoypadControllerTypePadNum(int padNum){
     Symbol ret = none;
     if(padNum != -1 && !gJoypadDisabled[padNum] && !gJoypadData[padNum].mConnected){
-        if(!gJoypadData[padNum].mControllerType.IsNull()){
+        if(!gJoypadData[padNum].mControllerType.Null()){
             return gJoypadData[padNum].mControllerType;
         }
         else {

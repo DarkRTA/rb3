@@ -163,9 +163,9 @@ public:
     static int NodeCmp(const void*, const void*);
     static void SetFile(Symbol);
 
-    const char* File() { return mFile.mStr; }
+    const char* File() const { return mFile.mStr; }
     int Size() const { return mSize; }
-    int Line(){ return mLine; }
+    int Line() const { return mLine; }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }

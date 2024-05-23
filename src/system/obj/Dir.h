@@ -121,8 +121,8 @@ public:
     static void PreInit(int, int);
 
     ObjectDir();
-    virtual Symbol ClassName() const; // fn_800103C8
-    virtual void SetType(Symbol); // fn_800102A0
+    OBJ_CLASSNAME(ObjectDir);
+    OBJ_SET_TYPE(ObjectDir);
     virtual DataNode Handle(DataArray*, bool); // fn_80336C94
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp); // fn_80337B7C
     virtual void Save(BinStream&);
@@ -148,9 +148,9 @@ public:
     bool IsProxy() const;
     bool HasSubDir(ObjectDir*);
     bool HasDirPtrs() const;
+    Entry* FindEntry(const char*, bool);
 
     Hmx::Object* FindObject(const char*, bool);
-    static Symbol StaticClassName();
     template <class T> T* Find(const char* name, bool b) {
         return dynamic_cast<T*>(FindObject(name, b));
     }

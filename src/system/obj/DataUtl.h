@@ -3,6 +3,8 @@
 #include "obj/Data.h"
 #include "utl/Loader.h"
 
+extern Hmx::Object *gDataThis;
+
 Loader* DataFactory(const FilePath&, LoaderPos);
 void DataInit();
 void DataTerminate();
