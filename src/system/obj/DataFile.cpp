@@ -36,14 +36,23 @@ DataArray* ReadEmbeddedFile(const char* c, bool b) {
     DataArray* ret;
     const char* x = FileMakePath(FileGetPath(gFile.Str(), NULL), c, NULL);
 
-    int a = gNode; BinStream* bs = gBinStream; int d = gDataLine;
-    Symbol e = gFile; DataArray* f = gArray; int g = gOpenArray;
+    int a = gNode;
+    BinStream* bs = gBinStream;
+    int d = gDataLine;
+    Symbol e = gFile;
+    DataArray* f = gArray;
+    int g = gOpenArray;
 
     yyrestart(NULL);
-    if ((ret = DataReadFile(x, b)) && !b) MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", x, f->File(), f->Line());
+    ret = DataReadFile(x, b);
+    if (b && !ret) MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", x, f->File(), f->Line());
     
-    gNode = a; gBinStream = bs; gDataLine = d;
-    gFile = e; gArray = f; gOpenArray = g;
+    gNode = a;
+    gBinStream = bs;
+    gDataLine = d;
+    gFile = e;
+    gArray = f;
+    gOpenArray = g;
 
     yyrestart(NULL);
     return ret;
@@ -161,19 +170,35 @@ bool ParseNode() {
         return true;
     }
     else switch(lex){
+        default:
+            if(yylex() != 5){
+                MILO_FAIL("DataReadFile: including a non-symbol (file %s, line %d)", gFile, gDataLine);
+            }
+            if(gCachingFile){
+                Symbol sym(yytext);
+                PushBack(DataNode(kDataInclude, (int)&sym));
+            }
+            return true;
         case 0x14:
         case 0x16:
-            break;
+            MILO_FAIL("DataReadFile: not macro symbol (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 0x17:
-            break;
+            MILO_FAIL("DataReadFile: #else not in conditional (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 0x18:
-            break;
+            MILO_FAIL("DataReadFile: #endif not in conditional (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 0xE:
-            break;
+            MILO_FAIL("DataReadFile: not command (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 0xD:
-            break;
+            MILO_FAIL("DataReadFile: not symbol (file %s, line %d)", gFile, gDataLine);
+            MILO_FAIL("DataReadFile: not array (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 0x15:
-            break;
+            MILO_FAIL("DataReadFile: not synbol (file %s, line %d)", gFile, gDataLine);
+            return true;
         case 9:
         case 0xB:
         case 7:
@@ -252,8 +277,6 @@ bool ParseNode() {
                 MILO_FAIL("DataReadFile: Unrecognized token %d (file %s, line %d)", lex, gFile, gDataLine);
                 return false;
             }
-            break;
-        default:
             break;
     }
 }
