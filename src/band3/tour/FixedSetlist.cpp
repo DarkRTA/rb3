@@ -2,7 +2,7 @@
 #include "os/Debug.h"
 #include "system/utl/Symbols.h"
 #include <vector>
-#include "band3/meta_band/AccomplishmentManager.h"
+// #include "band3/meta_band/AccomplishmentManager.h"
 
 FixedSetlist::FixedSetlist() : mWeight(1), m_pSongEntries(NULL), mName("") {
 }
@@ -41,15 +41,12 @@ float FixedSetlist::GetWeight() const {
 Symbol FixedSetlist::GetSongName(int i_iIndex) {
     MILO_ASSERT(i_iIndex < GetNumSongs(), 0x44);
 
-    Symbol name = mSongs.at(i_iIndex);
-
     DataArray* result;
-    InqSongs(mSongs);
-    if(result) {
-        result->FindData(Symbol(""), name, true);
-    }
+    std::vector<Symbol> songs;
 
-    return name;
+    InqSongs(songs);
+
+    return songs[i_iIndex];
 }
 
 int FixedSetlist::GetNumSongs() const {
@@ -58,14 +55,14 @@ int FixedSetlist::GetNumSongs() const {
     return m_pSongEntries->Size() - 1;
 }
 
-void FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
+void FixedSetlist::InqSongs(std::vector<Symbol>& songs) const {
     MILO_ASSERT(o_rSongs.empty(), 0x56);
 
-    for (int i = 0; i < o_rSongs.size(); i++) {
+    for (int i = 0; i < songs.size(); i++) {
         DataArray* pArray;
 
-        MILO_ASSERT(pArray->Size(), 0x0);
-        pArray = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(0);
+        MILO_ASSERT(pArray->Size() == 1, 0x0);
+        // pArray = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(0);
         Symbol s = pArray->Sym(0);
         pArray->Array(0);
     }

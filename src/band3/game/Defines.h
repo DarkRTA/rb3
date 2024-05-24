@@ -12,4 +12,16 @@ enum Difficulty {
 Difficulty DefaultDifficulty();
 Symbol DifficultyToSym(Difficulty);
 
+enum ControllerType {
+    kControllerDrum = 0,
+    kControllerGuitar = 1,
+    kControllerVocals = 2,
+    kControllerNone = 3,
+    kNumControllerTypes = 3,
+};
+
+enum ScoreType {
+
+};
+
 #endif // GAME_DEFINES_H

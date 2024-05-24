@@ -4,19 +4,28 @@
 #include "system/obj/Data.h"
 
 class FixedSetlist {
+
+public:
     FixedSetlist();
     virtual ~FixedSetlist();
+
+private:
     void Init(const DataArray*);
-    Symbol mName; Symbol GetName() const;
-    Symbol mGroup; Symbol GetGroup() const;
-    float mWeight; float GetWeight() const;
-    DataArray* m_pSongEntries;
+    Symbol GetName() const;
+    Symbol GetGroup() const;
+    float GetWeight() const;
+
     Symbol GetSongName(int);
     int GetNumSongs() const;
 
     void InqSongs(std::vector<Symbol>&) const;
 
-    std::vector<Symbol> mSongs;
+    Symbol mName;               // 0x04
+    Symbol mGroup;              // 0x08
+    float mWeight;              // 0x0c
+    DataArray* m_pSongEntries;  
+    std::vector<Symbol> o_rSongs;
+
 };
 
 #endif // TOUR_FIXEDSETLIST_H

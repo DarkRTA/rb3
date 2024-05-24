@@ -21,16 +21,12 @@ class Award {
     bool HasAssets() const;
     void GrantAwards(BandProfile*);
 
-    Symbol mName;         // 0x04
-    Symbol mIcon;         // 0x08
-    bool mIsSecret;       // 0x10
-    bool mIsBonus;        // 0x1c
-    Symbol mAwards;
-
-
-    // unknown offset
-    int mIndex;                             
-    std::vector<AwardEntry> mAwardEntries;     
+    Symbol mName;                           // 0x04
+    Symbol mIcon;                           // 0x08
+    int mIndex;                             // 0x0c
+    bool mIsSecret;                         // 0x10
+    std::vector<AwardEntry> mAwardEntries;  // 0x14
+    bool mIsBonus;                          // 0x1c
 };
 
 #endif // METABAND_AWARD_H
