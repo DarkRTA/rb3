@@ -6,9 +6,6 @@
 #include "BandProfile.h"
 #include "band3/game/BandUser.h"
 
-enum ScoreType {
-
-};
 class TrackerDesc;
 
 class Accomplishment {
@@ -50,8 +47,8 @@ private:
     char* GetIconPath();
     void IsUserOnValidScoreType(LocalBandUser*) const;
     void IsUserOnValidController(LocalBandUser*) const;
-    Symbol GetRequiredDifficulty() const;
-    void GetRequiredScoreType() const;
+    Difficulty GetRequiredDifficulty() const;
+    ScoreType GetRequiredScoreType() const;
     void InqRequiredScoreTypes(std::set<ScoreType>&) const;
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
@@ -75,8 +72,8 @@ private:
     Symbol mIconOverride; // 0x24
     Symbol mSecretCampaignLevelPrereq; // 0x28
     std::vector<ControllerType> mControllerTypes; // 0x2c
-    Symbol mScoreType; //0x34
-    Symbol mLaunchableDifficulty; // 0x38
+    ScoreType mScoreType; //0x34
+    Difficulty mLaunchableDifficulty; // 0x38
     Symbol mPassiveMsgChannel;  // 0x3c
     int mPassiveMsgPriority; // 0x40
     int mPlayerCountMin; // 0x44

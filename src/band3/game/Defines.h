@@ -20,4 +20,8 @@ enum ControllerType {
     kNumControllerTypes = 3,
 };
 
+enum ScoreType {
+
+};
+
 #endif // GAME_DEFINES_H

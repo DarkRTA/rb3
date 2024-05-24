@@ -21,10 +21,11 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3e);
 
     mName = i_pConfig->Sym(0);
+    
     DataArray* controllerTypes = i_pConfig->FindArray(launchable_controller_types, false);
     if (controllerTypes != NULL) {
-        mControllerTypes.reserve(controllerTypes->Size());
-        for (int i = 0; i < controllerTypes->Size(); i++) {
+        mControllerTypes.reserve(controllerTypes->Size() - 1);
+        for (int i = 1; i < controllerTypes->Size(); i++) {
             DataNode& node = controllerTypes->Node(i);
             int controllerType = node.Int(controllerTypes);
 
@@ -32,14 +33,14 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         }
     }
 
-    Symbol scoreType;
+    int scoreType;
     if (i_pConfig->FindData(launchable_scoretype, scoreType, false)) {
-        mScoreType = scoreType;
+        mScoreType = (ScoreType)scoreType;
     }
 
-    Symbol launchableDifficulty;
-    if(i_pConfig->FindArray(launchable_difficulty, false)) {
-        mLaunchableDifficulty = launchableDifficulty;
+    int launchableDifficulty;
+    if(i_pConfig->FindData(launchable_difficulty, launchableDifficulty, false)) {
+        mLaunchableDifficulty = (Difficulty)launchableDifficulty;
     }
 
     i_pConfig->FindData(launchable_playercount_min, mPlayerCountMin, false);
@@ -307,11 +308,11 @@ void Accomplishment::IsUserOnValidController(LocalBandUser*) const {
 
 }
 
-Symbol Accomplishment::GetRequiredDifficulty() const {
+Difficulty Accomplishment::GetRequiredDifficulty() const {
     return mLaunchableDifficulty;
 }
 
-void Accomplishment::GetRequiredScoreType() const {
+ScoreType Accomplishment::GetRequiredScoreType() const {
     int local_18 = 0;
 
     if(local_18 == 1) {
