@@ -41,3 +41,10 @@ ScriptTask::ScriptTask(DataArray* arr1, bool b, DataArray* arr2) : mThis(this, D
     UpdateVarsObjects(arr2);
     *task = obj;
 }
+
+ScriptTask::~ScriptTask(){
+    for(std::list<Hmx::Object*>::iterator it = mObjects.begin(); it != mObjects.end(); it++){
+        (*it)->Release(this);
+    }
+    mScript->Release();
+}

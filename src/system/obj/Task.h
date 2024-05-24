@@ -38,7 +38,7 @@ public:
     void UpdateVarsObjects(DataArray*);
 
     std::list<Var> mVars;
-    std::list<int> mObjects; // Hmx::Object*?
+    std::list<Hmx::Object*> mObjects;
     ObjOwnerPtr<Hmx::Object, ObjectDir> mThis;
     DataArray* mScript;
     bool mOnce;
