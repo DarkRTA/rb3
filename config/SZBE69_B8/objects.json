@@ -21,7 +21,7 @@
             "band3/game/Shuttle.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
-            "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentCategory.cpp": "Matching",
             "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSetlist.cpp": "NonMatching",
             "band3/meta_band/Award.cpp": "NonMatching",
