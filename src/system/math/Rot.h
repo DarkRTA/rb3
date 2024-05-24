@@ -8,6 +8,7 @@
 void Multiply(const Transform&, const Transform&, Transform&);
 void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
 void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);
+void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);

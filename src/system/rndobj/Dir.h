@@ -32,7 +32,7 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual int MakeWorldSphere(Sphere&, bool);
+    virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
     virtual int CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);

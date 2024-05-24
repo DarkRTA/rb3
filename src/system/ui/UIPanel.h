@@ -1,19 +1,21 @@
 #ifndef UI_UIPANEL_H
 #define UI_UIPANEL_H
-#include "obj/DirLoader.h"
+// #include "obj/DirLoader.h"
 #include "obj/Object.h"
 #include "ui/PanelDir.h"
 #include "utl/FilePath.h"
 #include "utl/Str.h"
 
-enum State {
-    kUnloaded = 0,
-    kUp = 1,
-    kDown = 2,
-};
+class DirLoader;
 
 class UIPanel : public virtual Hmx::Object {
 public:
+    enum State {
+        kUnloaded = 0,
+        kUp = 1,
+        kDown = 2,
+    };
+
     UIPanel();
     OBJ_CLASSNAME(UIPanel);
     OBJ_SET_TYPE(UIPanel);
@@ -44,6 +46,8 @@ public:
     bool CheckIsLoaded();
     void SetLoadedDir(class PanelDir*, bool);
     void UnsetLoadedDir();
+    UIComponent* FocusComponent();
+    void SetFocusComponent(UIComponent*);
     DataNode OnLoad(DataArray*);
 
     class PanelDir* mDir;

@@ -5,10 +5,12 @@
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 
-UILabel::UILabel() : mText(Hmx::Object::New<RndText>()), hi(), mFont(this, NULL), a(gNullStr), b(gNullStr), f(30), h(1), mColor(this, NULL),
-                    mColor2(this, NULL) {
+UILabel::UILabel() : mLabelDir(0), mText(Hmx::Object::New<RndText>()), unk114(), mFont(this, 0), unk12c(), mTextToken(), mIcon(),
+    mTextSize(30.0f), mLeading(1.0f), mKerning(0.0f), mItalics(0.0f), mWidth(0.0f), mHeight(0.0f), mFixedLength(0), mReservedLine(0),
+    mPreserveTruncText(), mAlpha(1.0f), mColorOverride(this, 0), mFontMatVariation(), mAltMatVariation(), mAltTextSize(mTextSize), mAltKerning(mKerning),
+    mAltTextColor(this, 0), mAltZOffset(0.0f), mAltItalics(0.0f), mAltAlpha(1.0f), mFitType(0), mAlignment(0x22), mCapsMode(0), mMarkup(0), mUseHighlightMesh(0), mAltStyleEnabled(0) {
     mText->SetTransParent(this, false);
-    mPath = GetResourcesPath();
+    mResourcePath = GetResourcesPath();
 }
 
 UILabel::~UILabel() {
@@ -17,7 +19,7 @@ UILabel::~UILabel() {
 
 void UILabel::Init() {
     Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
-    Hmx::Object::RegisterFactory(UILabelDir::StaticClassName(), UILabelDir::NewObject);
+    // Hmx::Object::RegisterFactory(UILabelDir::StaticClassName(), UILabelDir::NewObject);
 }
 
 void UILabel::Terminate() {}
@@ -34,7 +36,7 @@ SAVE_OBJ(UILabel, 173)
 void UILabel::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
 
 void UILabel::Draw() {
-    if (!(h <= 0)) RndDrawable::Draw();
+    if (!(mAlpha <= 0)) RndDrawable::Draw();
 }
 
 void UILabel::Update() {
@@ -53,7 +55,7 @@ BEGIN_HANDLERS(UILabel)
     HANDLE(set_int, OnSetInt)
     HANDLE_ACTION(set_float, SetFloat(_msg->Str(2), _msg->Float(3)))
     HANDLE_ACTION(center_with_label, CenterWithLabel(_msg->Obj<UILabel>(2), _msg->Int(3), _msg->Float(4)))
-    HANDLE_EXPR(has_highlight_mesh, (bool)mLabelDir->HighlightMeshGroup())
+    // HANDLE_EXPR(has_highlight_mesh, (bool)mLabelDir->HighlightMeshGroup())
     HANDLE(get_material_variations, OnGetMaterialVariations)
     HANDLE(get_altmaterial_variations, OnGetAltMaterialVariations)
     HANDLE_SUPERCLASS(UIComponent)

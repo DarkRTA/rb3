@@ -3,25 +3,34 @@
 #include "os/File.h"
 #include "ui/UIComponent.h"
 #include "ui/UITransitionHandler.h"
-#include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
-#include "utl/Symbols4.h"
 #include "utl/Loader.h"
 #include <string.h>
+#include "utl/Symbols.h"
 
-UIPicture::UIPicture() : UITransitionHandler(NULL), mMesh(this, NULL), mTexFile(), mLoadedFile() {
-    mTex = Hmx::Object::New<RndTex>();
-    mHookTex = true;
-    mDelayedTexFile.Set(FilePath::sRoot.c_str(), "");
-    //static char* why2 = "tex_file";
+INIT_REVS(UIPicture)
+
+UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(), 
+    mTex(Hmx::Object::New<RndTex>()), mLoader(0), mHookTex(true), mDelayedTexFile("") {
+    
 }
 
 void UIPicture::SetTypeDef(DataArray* da) {
-    UIComponent::SetTypeDef(da);
-    if (da == NULL) return;
-    if (!strlen(da->Str(1))) return;
-    FilePath p(FileGetPath(da->Str(1), NULL));
-    SetTex(p);
+    if(mTypeDef != da){
+        UIComponent::SetTypeDef(da);
+        if(da){
+            DataArray* findtex = da->FindArray("tex_file", false);
+            if(findtex){
+                if(strlen(findtex->Str(1)) != 0){
+                    const char* str = findtex->Str(1);
+                    const char* path = FileGetPath(findtex->mFile.Str(), 0);
+                    FilePath fp;
+                    fp.Set(path, str);
+                    SetTex(fp);
+                }
+            }
+        }
+    }
 }
 
 UIPicture::~UIPicture() {
@@ -30,9 +39,11 @@ UIPicture::~UIPicture() {
 }
 
 BEGIN_COPYS(UIPicture)
-    GET_COPY_AND_ASSERT(UIPicture, 65)
-    COPY_SUPERCLASS(UIComponent)
-    UITransitionHandler::CopyHandlerData(c);
+    const UIPicture* p = dynamic_cast<const UIPicture*>(o);
+    MILO_ASSERT(p, 0x41);
+    UIComponent::Copy(p, ty);
+    mMesh = p->mMesh;
+    UITransitionHandler::CopyHandlerData(p);
 END_COPYS
 
 SAVE_OBJ(UIPicture, 79)
@@ -45,19 +56,30 @@ void UIPicture::Load(BinStream& bs) {
 void UIPicture::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(2, 0)
-
-    bs >> mMesh;
-    if (gRev > 1) UITransitionHandler::LoadHandlerData(bs);
+    if(gRev != 0){
+        if(TheLoadMgr.EditMode()){
+            char buf[256];
+            FilePath fp;
+            bs.ReadString(buf, 0x100);
+            fp.SetRoot(buf);
+            SetTex(fp);
+        }
+        else {
+            char buf[256];
+            bs.ReadString(buf, 0x100);
+            mTexFile.SetRoot(buf);
+        }
+        bs >> mMesh;
+    }
+    if (gRev >= 2) UITransitionHandler::LoadHandlerData(bs);
     UIComponent::PreLoad(bs);
 }
-
-// why is classname here?????
 
 void UIPicture::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     CancelLoading();
-    if (TheLoadMgr.EditMode() && mMesh.mPtr != NULL ) { // i think this might be a fakematch
-        /*??.field0x8 &= 0x7fU*/
+    if(!TheLoadMgr.EditMode() && mMesh){
+        mMesh->mShowing = false;
     }
 }
 
@@ -65,7 +87,7 @@ void UIPicture::Poll() {
     UIComponent::Poll();
     if (mDelayedTexFile != "") {
         UpdateTexture(mDelayedTexFile);
-        mDelayedTexFile.Set(FilePath::sRoot.c_str(), "p");
+        mDelayedTexFile.SetRoot("");
     }
     UpdateHandler();
 }
@@ -88,14 +110,11 @@ void UIPicture::SetTex(const FilePath& p) {
 }
 
 void UIPicture::FinishValueChange() {
-    if (mLoader) {
-        if (mLoader->StateName()) {
-            FinishLoading();
-            UITransitionHandler::FinishValueChange();
-        } else {
-            if (mMesh.mPtr) HookupMesh();
-        }
+    if(mLoader && mLoader->IsLoaded()){
+        FinishLoading();
+        UITransitionHandler::FinishValueChange();
     }
+    else if(mMesh) mMesh->mShowing = false;
 }
 
 void UIPicture::UpdateTexture(const FilePath& p) {
@@ -119,9 +138,9 @@ void UIPicture::FinishLoading() {
 }
 
 void UIPicture::CancelLoading() {
-    if (mTex) {
-        delete mTex;
-        mTex = 0;
+    if (mLoader) {
+        delete mLoader;
+        mLoader = 0;
     }
 }
 

@@ -4,16 +4,20 @@
 #include "obj/Dir.h"
 #include "obj/Utl.h"
 #include "obj/MessageTimer.h"
+#include "utl/MemMgr.h"
 #include "os/OSFuncs.h"
-
-extern Hmx::Object *gDataThis;
+#include "obj/DataUtl.h"
+#include "obj/ObjVersion.h"
 
 const char* blank = "";
 const char* unk = "unknown";
 
 INIT_REVS(Hmx::Object)
 
+Hmx::Object* Hmx::Object::sDeleting = 0;
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
+bool gLoadingProxyFromDisk = 0;
+std::vector<ObjVersion> sRevStack;
 
 ObjectDir* Hmx::Object::DataDir(){
     if(mDir != 0) return mDir;
@@ -24,12 +28,10 @@ Hmx::Object* Hmx::Object::NewObject(Symbol s) {
     ObjectFunc* f = sFactories[s];
     if (f) return (*f)();
     else {
-        MILO_FAIL("nop %s", s);
+        MILO_FAIL("Unknown class %s", s);
         return NULL;
     }
 }
-
-const char* newobjectstr = "Unknown class %s";
 
 void Hmx::Object::RegisterFactory(Symbol s, ObjectFunc* func){
     sFactories[s] = func;
@@ -58,16 +60,45 @@ Hmx::Object::~Object(){
     mTypeDef = 0;
     RemoveFromDir();
     Hmx::Object* tmp = sDeleting;
-    for(std::vector<ObjRef*>::iterator it = mRefs.begin(); it != mRefs.end(); it++){
-        // (*it)->Replace(0, 0);
+    sDeleting = this;
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+        (*it)->Replace(this, 0);
     }
     if(gDataThis == this) gDataThis = 0;
     sDeleting = tmp;
 }
 
-const char* setnamedirstr = "dir";
-const char* existssttr = "%s already exists";
-const char* removefromdirstr = "No entry for %s in %s";
+void Hmx::Object::SetName(const char* cc, class ObjectDir* dir){
+    RemoveFromDir();
+    if(cc == 0 || *cc == '\0'){
+        mName = gNullStr;
+        mDir = 0;
+    }
+    else {
+        MILO_ASSERT(dir, 0xE0);
+        mDir = dir;
+        ObjectDir::Entry* entry = dir->FindEntry(cc, true);
+        if(entry->obj) MILO_FAIL("%s already exists", cc);
+        entry->obj = this;
+        mName = entry->name;
+        dir->AddedObject(this);
+    }
+}
+
+void Hmx::Object::RemoveFromDir(){
+    if(mDir){
+        if(mDir != sDeleting){
+            mDir->RemovingObject(this);
+            ObjectDir::Entry* entry = mDir->FindEntry(mName, false);
+            bool b = false;
+            if(entry && entry->obj == this) b = true;
+            if(!b){
+                MILO_FAIL("No entry for %s in %s", PathName(this), PathName(mDir));
+            }
+            entry->obj = 0;
+        }
+    }
+}
 
 void Hmx::Object::SetTypeDef(DataArray* da){
     if(mTypeDef != da){
@@ -82,7 +113,7 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 }
 
 DataNode* Hmx::Object::Property(DataArray* prop, bool fail) const {
-    static DataNode n;
+    static DataNode n(0);
     // if(SyncProperty(n, prop, 0, kPropGet)) return &n; // fails because n needs to be a DataNode&...why tho?
     Symbol name = prop->Sym(0);
     DataNode* kv = mTypeProps.KeyValue(name, false);
@@ -116,6 +147,8 @@ DataNode* Hmx::Object::Property(Symbol prop, bool fail) const {
     return Property(d.mData, fail);
 }
 
+#pragma push
+#pragma pool_data off
 DataNode Hmx::Object::PropertyArray(Symbol sym){
     static DataArrayPtr d(DataNode(1));
     d.Node(0) = DataNode(sym);
@@ -131,6 +164,7 @@ DataNode Hmx::Object::PropertyArray(Symbol sym){
     newArr->Release();
     return ret;
 }
+#pragma pop
 
 DataNode Hmx::Object::HandleProperty(DataArray* prop, DataArray* a2, bool fail){
     static DataNode n(a2, kDataArray);
@@ -162,25 +196,25 @@ void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
     SetProperty(d.mData, val);
 }
 
-// int Hmx::Object::PropertySize(DataArray* prop){
-//     static DataNode n;
-//     if(SyncProperty(n, prop, 0, kPropSize)){
-//         return n.Int(nullptr);
-//     }
-//     else {
-//         prop->Size();
-//         Symbol name = prop->Sym(0);
-//         DataNode* kv = mTypeProps.KeyValue(name, false);
-//         if(kv == nullptr){
-//             if(mTypeDef != nullptr){
-//                 kv = &mTypeDef->FindArray(name, true)->Evaluate(1);
-//             }
-//             else PathName(this);
-//         }
-//         kv->Type();
-//         return kv->mValue.array->Size();
-//     }
-// }
+int Hmx::Object::PropertySize(DataArray* prop){
+    static DataNode n;
+    if(SyncProperty(n, prop, 0, kPropSize)){
+        return n.Int(nullptr);
+    }
+    else {
+        MILO_ASSERT(prop->Size() == 1, 0x192);
+        Symbol name = prop->Sym(0);
+        DataNode* a = mTypeProps.KeyValue(name, false);
+        if(a == nullptr){
+            if(mTypeDef != nullptr){
+                a = &mTypeDef->FindArray(name, true)->Evaluate(1);
+            }
+            else MILO_FAIL("%s: property %s not found", PathName(this), name);
+        }
+        MILO_ASSERT(a->Type() == kDataArray, 0x1A1);
+        return a->mValue.array->Size();
+    }
+}
 
 void Hmx::Object::PropertyClear(DataArray* propArr){
     int size = PropertySize(propArr);
@@ -214,8 +248,12 @@ void Hmx::Object::AddRef(ObjRef* ref){
 
 void Hmx::Object::Release(ObjRef* o){
     if(sDeleting != this && o->RefOwner() != this){
-        for(std::vector<ObjRef*>::iterator i = mRefs.begin(); i != mRefs.end(); i++){
-            // MILO_ASSERT(*(i.base()) == o, 0x1E6);
+        for(std::vector<ObjRef*>::reverse_iterator i = mRefs.rbegin(); i != mRefs.rend(); i++){
+            if(*(i.base()) == o){
+                MILO_ASSERT(*(i.base()) == o, 0x1E6);
+                mRefs.erase(i.base());
+                return;
+            }
         }
     }
 }
@@ -249,13 +287,24 @@ void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
 
 void Hmx::Object::LoadType(BinStream& bs) {
     LOAD_REVS(bs)
-    ASSERT_REVS(29, 0)
-    Symbol& s = (Symbol&)gNullStr;
+    ASSERT_REVS(2, 0)
+    Symbol s;
     bs >> s;
+    SetType(s);
+    ObjVersion v(this, packRevs(gRev, gAltRev));
+    sRevStack.push_back(v);
 }
 
 void Hmx::Object::LoadRest(BinStream& bs) {
-
+    // begin PopRev stuff
+    // this should pop_back and then return an int
+    // said int will represent packed revs
+    ObjVersion v = sRevStack.back();
+    sRevStack.pop_back();
+    // end PopRev stuff
+    gAltRev = getAltRev(v.revs);
+    gRev = getHmxRev(v.revs);
+    mTypeProps.Load(bs, packRevs(gRev, gAltRev), 0);
 }
 
 void Hmx::Object::Load(BinStream& bs) {
@@ -263,11 +312,41 @@ void Hmx::Object::Load(BinStream& bs) {
     LoadRest(bs);
 }
 
+const char* Hmx::Object::FindPathName(){
+    const char* name = (mName && *mName) ? mName : ClassName().Str();
+    
+    class ObjectDir* dataDir = DataDir();
+    if(dataDir){
+        if(dataDir->mLoader){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->mLoader->mFile.c_str(), 0));
+        }
+        else if(!dataDir->ProxyFile()->empty()){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile()->c_str(), 0));
+        }
+        else if(*dataDir->mPathName != '\0'){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->mPathName, 0));
+        }
+        else if(dataDir != this && dataDir->mName && *dataDir->mName){
+            return MakeString("%s/%s", dataDir->mName, name);
+        }
+        else if(mDir && *mDir->mPathName){
+            return MakeString("%s (%s)", name, FileLocalize(mDir->mPathName, 0));
+        }
+    }
+    return name;
+}
+
+const char* Hmx::Object::AllocHeapName(){
+    return MemHeapName(MemFindAddrHeap(this));
+}
+
 void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
     mTypeProps.Replace(obj1, obj2, this);
 }
 
-// see scratch: https://decomp.me/scratch/9abtP
+#pragma push
+#pragma dont_inline on
+#pragma pool_data off
 DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     Symbol sym = _msg->Sym(1);
     MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
@@ -288,50 +367,38 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     {
         static Symbol _s("prop_handle");
         if(sym == _s){
-            return HandleProperty(_msg, _msg->Array(2), true);
+            return HandleProperty(_msg->Array(2), _msg, true);
         }
     }
-    HANDLE_ACTION_STATIC(copy, Copy(_msg->GetObj(2), (CopyType)_msg->Int(3)));
-    HANDLE_ACTION_STATIC(replace, Replace(_msg->GetObj(2), _msg->GetObj(3)));
+    HANDLE_ACTION_STATIC(copy, Copy(_msg->Obj<Hmx::Object>(2), (CopyType)_msg->Int(3)));
+    HANDLE_ACTION_STATIC(replace, Replace(_msg->Obj<Hmx::Object>(2), _msg->Obj<Hmx::Object>(3)));
     HANDLE_EXPR_STATIC(class_name, ClassName());
     HANDLE_EXPR_STATIC(name, mName);
     HANDLE_STATIC(iterate_refs, OnIterateRefs);
-    {
-        static Symbol _s("dir");
-        if(sym == _s){
-            return DataNode((Hmx::Object*)mDir);
-        }
-    }
-    {
-        static Symbol _s("set_name");
-        if(sym == _s){
-            ObjectDir* theDir = _msg->Size() < 4 ? mDir : _msg->Obj<ObjectDir>(3);
-            SetName(_msg->Str(2), theDir);
-            return DataNode(0);
-        }
-    }
+    HANDLE_EXPR_STATIC(dir, mDir);
+    HANDLE_ACTION_STATIC(set_name, SetName(_msg->Str(2), _msg->Size() > 3 ? _msg->Obj<ObjectDir>(3) : Dir()))
     HANDLE_ACTION_STATIC(set_type, SetType(_msg->Sym(2)));
     HANDLE_EXPR_STATIC(is_a, IsASubclass(ClassName(), _msg->Sym(2)));
     HANDLE_EXPR_STATIC(get_type, Type());
     HANDLE_EXPR_STATIC(get_heap, AllocHeapName());
     // if none of those symbols matched, we fall back here
     bool stank = false;
-    if(mTypeDef != 0){
-        DataArray* found = mTypeDef->FindArray(sym, false);
-        if(found != 0) stank = true;
-        if(stank){
-            DataNode ran = found->ExecuteScript(1, this, _msg, 2);
-            if(ran.Type() != kDataUnhandled) return DataNode(ran);
-        }
-        if(_warn) PathName(this);
+    DataArray* found;
+    if(mTypeDef){
+        found = mTypeDef->FindArray(sym, false);
+        if(found) stank = true;
     }
-
+    if(stank){
+        DataNode ran = found->ExecuteScript(1, this, _msg, 2);
+        if(ran.Type() != kDataUnhandled) return DataNode(ran);
+    }
+    HANDLE_CHECK(0x2E6);
     return DataNode(kDataUnhandled, 0);
 }
+#pragma pop
 
 DataNode Hmx::Object::HandleType(DataArray* msg){
     Symbol t = msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, t);
     bool found = false;
     DataArray* handler;
     if(mTypeDef != 0){
@@ -339,10 +406,47 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
         if(handler != 0) found = true;
     }
     if(found){
+        MessageTimer timer(this, t);
         return handler->ExecuteScript(1, this, (const DataArray*)msg, 2);
     }
     else return DataNode(kDataUnhandled, 0);
 }
+
+DataNode Hmx::Object::OnIterateRefs(const DataArray* da){
+    DataNode* var = da->Var(2);
+    DataNode node(*var);
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+        *var = DataNode((*it)->RefOwner());
+        for(int i = 3; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+    }
+    *var = node;
+    return DataNode(0);
+}
+
+DataNode Hmx::Object::OnSet(const DataArray* da){
+    if(da->Size() % 2){
+        MILO_FAIL("Uneven number of properties (file %s, line %d)", da->File(), da->Line());
+    }
+    for(int i = 2; i < da->Size(); i += 2){
+        DataNode& node = da->Evaluate(i);
+        if(node.Type() == kDataSymbol){
+            SetProperty(STR_TO_SYM(node.mValue.symbol), da->Evaluate(i + 1));
+        }
+        else {
+            if(node.Type() != kDataArray){
+                String str;
+                node.Print(str, true);
+                MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
+            }
+            SetProperty(node.mValue.array, da->Evaluate(i + 1));
+        }
+    }
+    return DataNode(0);
+}
+
+const char* smodifier = "%s";
 
 DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     DataArray* arr = da->Array(2);
@@ -352,6 +456,25 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     InsertProperty(cloned, da->Evaluate(3));
     cloned->Release();
     return DataNode(size);
+}
+
+DataNode Hmx::Object::OnGet(const DataArray* da){
+    DataNode& node = da->Evaluate(2);
+    if(node.Type() == kDataSymbol){
+        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() % 2);
+        if(prop) return DataNode(*prop);
+    }
+    else {
+        if(node.Type() != kDataArray){
+            String str;
+            node.Print(str, true);
+            MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
+        }
+        bool size = da->Size() % 2;
+        DataNode* prop = Property(node.mValue.array, size);
+        if(prop) return DataNode(*prop);
+    }
+    return DataNode(da->Node(3));
 }
 
 BEGIN_PROPSYNCS(Hmx::Object);

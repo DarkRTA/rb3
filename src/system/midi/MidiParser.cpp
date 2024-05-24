@@ -73,10 +73,10 @@ void MidiParser::SetTypeDef(DataArray* arr){
             arr->FindData("message_self", mMessageSelf, false);
             arr->FindData("compress", mCompressed, false);
             if(mCompressed){
-                DataArray* localArr = new DataArray(mAppendLength - mMessageType.IsNull() + 2);
+                DataArray* localArr = new DataArray(mAppendLength - mMessageType.Null() + 2);
                 localArr->Node(0) = DataNode(0);
                 int i = 1;
-                if(!mMessageType.IsNull()){
+                if(!mMessageType.Null()){
                     localArr->Node(1) = DataNode(mMessageType);
                     i = 2;
                 }

@@ -20,25 +20,26 @@ public:
     virtual ~RndGroup();
     virtual void StartAnim();
     virtual void EndAnim();
-    virtual void SetFrame(float, float); // weak
+    virtual void SetFrame(float, float);
     virtual float EndFrame();
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual int MakeWorldSphere(Sphere&, bool);
+    virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
-    virtual bool DrawShowingBudget(float);
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual int CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
-    virtual void Highlight();
+    virtual int CollidePlane(const Plane&);
+    virtual bool DrawShowingBudget(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Highlight();
 
     void Update();
     void UpdateLODState();
     void Merge(const RndGroup*);
     void RemoveObject(Hmx::Object*);
+    void AddObject(Hmx::Object*, Hmx::Object*);
 
     ObjPtrList<Hmx::Object, ObjectDir> mObjects;
     ObjPtr<RndEnviron, ObjectDir> mEnv;
@@ -48,6 +49,7 @@ public:
     bool unkf8;
     std::vector<int> mAnims;
     std::vector<int> mDraws;
+    int asdf;
 };
 
 #endif

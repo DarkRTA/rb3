@@ -6,9 +6,10 @@
 
 struct BSPNode {
 public:
+#pragma push
 #pragma inline_depth(3)
     ~BSPNode() { delete left; delete right; }
-#pragma inline_depth reset
+#pragma pop
     Plane plane; // 0x0
     BSPNode* left; // 0x10 yes they're called front/back but BSP works L/R, not F/B
     BSPNode* right; // 0x14

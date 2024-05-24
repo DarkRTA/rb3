@@ -1,6 +1,8 @@
 #include "world/ColorPalette.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(ColorPalette)
+
 ColorPalette::ColorPalette(){
 
 }
@@ -16,7 +18,7 @@ void ColorPalette::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    if(gRev == 0){
+    if(gRev < 1){
         std::vector<ColorSet> setvec;
         bs >> setvec;
         mColors.resize(setvec.size());
@@ -30,7 +32,7 @@ void ColorPalette::Load(BinStream& bs){
 
 BEGIN_COPYS(ColorPalette)
     GET_COPY_AND_ASSERT(ColorPalette, 0x4A);
-    COPY_SUPERCLASS(Hmx::Object)
+    Hmx::Object::Copy(c, ty);
     COPY_MEMBER(mColors)
 END_COPYS
 

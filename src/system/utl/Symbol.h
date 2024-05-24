@@ -19,7 +19,7 @@ public:
     // found in GDRB
     bool operator==(const char* cc) const {
         if(cc) return strcmp(mStr, cc) == 0;
-        else return IsNull();
+        else return Null();
     }
 
     // methods found in RB2
@@ -45,7 +45,7 @@ public:
     static void Terminate();
 
     int GetIntVal(); // https://decomp.me/scratch/sxK01
-    bool IsNull() const { return mStr == gNullStr; }
+    bool Null() const { return mStr == gNullStr; }
 };
 
 #endif

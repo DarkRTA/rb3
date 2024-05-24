@@ -16,7 +16,7 @@ static DataNode DataOptionStr(DataArray* arr){
 static DataNode DataOptionSym(DataArray* arr){
     const char* str = OptionStr(arr->Str(1), 0);
     Symbol s(str);
-    if(s.IsNull()) return DataNode(0);
+    if(s.Null()) return DataNode(0);
     else {
         *arr->Var(2) = DataNode(s);
         return DataNode(1);

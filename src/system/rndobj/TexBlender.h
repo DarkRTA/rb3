@@ -16,8 +16,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual int MakeWorldSphere(Sphere&, bool);
-    virtual void DrawShowing();
+    virtual bool MakeWorldSphere(Sphere&, bool);
+    virtual void DrawShowing(){}
     virtual ~RndTexBlender(){}
 
     DataNode OnGetRenderTextures(DataArray*);

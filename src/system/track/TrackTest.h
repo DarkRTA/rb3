@@ -1,6 +1,5 @@
 #ifndef TRACK_TRACKTEST_H
 #define TRACK_TRACKTEST_H
-
 #include "obj/ObjPtr_p.h"
 #include "obj/PropSync_p.h"
 #include "track/TrackDir.h"
@@ -11,7 +10,7 @@ class TrackTest {
     TrackTest(TrackDir*);
 
     TrackDir* mDir;    
-    ObjPtr<TrackWidget, ObjectDir> mWidget;
+    ObjPtr<TrackWidget, class ObjectDir> mWidget;
     int mSlot;
 };
 

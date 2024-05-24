@@ -135,7 +135,7 @@ void UIScreen::Enter(UIScreen* from) {
     }
 
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState == kDown) {
+        if (it->Active() && it->mPanel->mState == UIPanel::kDown) {
             it->mPanel->Enter();
         }
     }
@@ -171,7 +171,7 @@ void UIScreen::SetFocusPanel(class UIPanel* panel) {
 bool UIScreen::InComponentSelect() const {
     UIComponent* component = TheUI->FocusComponent();
     if (component != NULL) {
-        return component->mState == UIComponent::kStateSelecting;
+        return component->mState == UIComponent::kSelecting;
     }
 
     return false;
@@ -227,7 +227,7 @@ void UIScreen::Exit(UIScreen* to) {
         }
 
         if ((it->mPanel->mForceExit || to == NULL || !to->HasPanel(it->mPanel))
-            && it->mPanel->mState == kUp) {
+            && it->mPanel->mState == UIPanel::kUp) {
             it->mPanel->Exit();
         }
     }
@@ -298,7 +298,7 @@ bool UIScreen::CheckIsLoaded() {
 
 bool UIScreen::IsLoaded() const {
     for (const_iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState == kUnloaded) {
+        if (it->Active() && it->mPanel->mState == UIPanel::kUnloaded) {
             return false;
         }
     }
@@ -314,7 +314,7 @@ bool UIScreen::IsLoaded() const {
 
 bool UIScreen::AllPanelsDown() {
     for (const_iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState != kDown) {
+        if (it->Active() && it->mPanel->mState != UIPanel::kDown) {
             return false;
         }
     }
@@ -342,9 +342,9 @@ void UIScreen::Print(TextStream& s) {
                 if (fileArray != NULL) {
                     DataNode type = fileArray->Node(1);
                     if (type.Type() == kDataString || type.Type() == kDataSymbol) {
-                        s << "(" << type.LiteralStr(NULL) << ")";
+                        s << "(" << type.LiteralStr(NULL) << ") ";
                     } else {
-                        s << "(dynamic)";
+                        s << "(dynamic) ";
                     }
                 }
             } else {
@@ -359,7 +359,7 @@ void UIScreen::Print(TextStream& s) {
         }
     }
 
-    s << "}";
+    s << "}\n";
 }
 
 DataNode UIScreen::OnMsg(const ButtonDownMsg& msg) {

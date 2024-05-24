@@ -1,4 +1,7 @@
 #include "rndobj/MotionBlur.h"
+#include "rndobj/Mesh.h"
+#include "rndobj/Dir.h"
+#include "rndobj/Group.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
@@ -25,6 +28,11 @@ void RndMotionBlur::Load(BinStream& bs){
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
     bs >> mDrawList;
+}
+
+bool RndMotionBlur::CanMotionBlur(RndDrawable* draw){
+    if(dynamic_cast<RndMesh*>(draw) || dynamic_cast<RndDir*>(draw) || dynamic_cast<RndGroup*>(draw)) return true;
+    else return false;
 }
 
 BEGIN_HANDLERS(RndMotionBlur)

@@ -174,7 +174,7 @@ void PropKeys::Load(BinStream& bs){
         if(gRev > 9){
             Symbol sym;
             bs >> sym;
-            if(!sym.IsNull()){
+            if(!sym.Null()){
                 SetInterpHandler(sym);
             }
         }
@@ -265,7 +265,7 @@ unsigned int PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
 }
 
 void PropKeys::SetPropExceptionID(){
-    if(!mInterpHandler.IsNull()) mPropExceptionID = kHandleInterp;
+    if(!mInterpHandler.Null()) mPropExceptionID = kHandleInterp;
     else {
         if(mPropExceptionID != kMacro){
             mPropExceptionID = PropExceptionID(mTarget.Ptr(), mProp);

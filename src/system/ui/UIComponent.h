@@ -22,41 +22,46 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     };
 
     enum State {
-        kStateNormal,
-        kStateFocused,
-        kStateDisabled,
-        kStateSelecting,
-        kStateSelected,
-        kStateInvalid
+        kNormal = 0,
+        kFocused = 1,
+        kDisabled = 2,
+        kSelecting = 3,
+        kSelected = 4,
+        kNumStates = 5,
     };
+
     UIComponent();
-    virtual ~UIComponent();
     OBJ_CLASSNAME(UIComponent)
     OBJ_SET_TYPE(UIComponent)
-    virtual void SetTypeDef(DataArray *);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+    virtual void Highlight();
+    virtual ~UIComponent();
+    virtual void SetTypeDef(DataArray*);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-    virtual void Poll();
+    virtual void ResourceCopy(const UIComponent*);
     virtual void SetState(UIComponent::State);
-    virtual void Exit();
+    virtual Symbol StateSym() const;
+    virtual bool Entering() const;
+    virtual bool Exiting() const;
     virtual void Enter();
-    virtual void Highlight();
+    virtual void Exit();
+    virtual void Poll();
     virtual int CanHaveFocus() {return true;}
     virtual void CopyMembers(const UIComponent*, CopyType);
+    virtual void Update();
 
     void FinishSelecting();
-    Symbol StateSym() const;
     void SendSelect(LocalUser*);
-    char* GetResourcesPath();
+    const char* GetResourcesPath();
     void ResourceFileUpdated(bool);
     DataNode OnGetResourcesPath(DataArray*);
-    bool Exiting() const;
     class ObjectDir* ResourceDir();
+    void UpdateResource();
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
