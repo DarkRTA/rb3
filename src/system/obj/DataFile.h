@@ -25,6 +25,7 @@ public:
 
 extern "C" void DataFail(const char*);
 extern "C" int DataInput(void*, int);
+DataArray* ReadCacheStream(BinStream&, const char*);
 DataArray* ReadEmbeddedFile(const char*, bool);
 DataArray* DataReadFile(const char*, bool);
 DataArray* DataReadStream(BinStream*);
