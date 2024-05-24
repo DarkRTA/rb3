@@ -5,12 +5,16 @@
 #include <set>
 #include "Accomplishment.h"
 
-class AccomplishmentSetlist {
-    Accomplishment mAccomplishment;
-    Symbol mSetlist;    // 0x74
-    int mInstrument;    // 0x78
-    int mDifficulty;    // 0x7c
-    int mMinStars;      // 0x80
+class AccomplishmentSetlist : private Accomplishment {
+public:
+    AccomplishmentSetlist(DataArray*, int);
+    virtual ~AccomplishmentSetlist();
+
+private:
+    Symbol mSetlist;       // 0x74
+    ScoreType mInstrument; // 0x78
+    int mDifficulty;       // 0x7c
+    int mMinStars;         // 0x80
 
     void Configure(DataArray*);
     int GetType() const;
@@ -19,10 +23,6 @@ class AccomplishmentSetlist {
     int GetRequiredDifficulty() const;
     bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
-
-public:
-    AccomplishmentSetlist(DataArray*, int);
-    virtual ~AccomplishmentSetlist();
 };
 
 #endif // METABAND_ACCOMPLISHMENTSETLIST_H
