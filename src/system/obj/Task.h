@@ -26,6 +26,7 @@ class ScriptTask : public Task {
 public:
 
     struct Var {
+        Var(DataNode* np, const DataNode& n) : var(np), value(n) {}
         DataNode* var;
         DataNode value;
     };
