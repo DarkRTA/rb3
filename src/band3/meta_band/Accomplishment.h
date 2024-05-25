@@ -13,9 +13,12 @@ public:
     Accomplishment(DataArray*, int);
     virtual ~Accomplishment();
 
+protected:
+    virtual Difficulty GetRequiredDifficulty() const;
+
 private:
-    void Configure(DataArray*);
-    int GetType() const;
+    virtual void Configure(DataArray*);
+    virtual int GetType() const;
     Symbol GetName() const;
     Symbol GetDescription() const;
     Symbol GetSecretDescription() const;
@@ -39,17 +42,16 @@ private:
     bool GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
     bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const;
     bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
-    bool CanBeLaunched() const;
-    bool HasSpecificSongsToLaunch() const;
+    virtual bool CanBeLaunched() const;
+    virtual bool HasSpecificSongsToLaunch() const;
     Symbol GetAward() const;
     bool HasAward() const;
     int GetMetaScoreValue() const;
     char* GetIconPath();
     void IsUserOnValidScoreType(LocalBandUser*) const;
     void IsUserOnValidController(LocalBandUser*) const;
-    Difficulty GetRequiredDifficulty() const;
     ScoreType GetRequiredScoreType() const;
-    void InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    virtual void InqRequiredScoreTypes(std::set<ScoreType>&) const;
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
