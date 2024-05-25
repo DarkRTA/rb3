@@ -13,9 +13,8 @@ public:
     char* mCurChar;
     int mCurBuf;
 
-    void operator delete(void* v){
-        _PoolFree(sizeof(StringTable), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(StringTable);
+    DELETE_POOL_OVERLOAD(StringTable);
     
     StringTable(int);
     ~StringTable();
