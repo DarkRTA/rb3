@@ -3,6 +3,9 @@
 #include "rndobj/Text.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Group.h"
+#include "obj/ObjVersion.h"
+
+INIT_REVS(UILabelDir)
 
 UILabelDir::UILabelDir() : mDefaultColor(this, 0), mColors(), mTextObj(this, 0), mFocusAnim(this, 0), mPulseAnim(this, 0), mTopLeftHighlightBone(this, 0), 
     mTopRightHighlightBone(this, 0), mBottomLeftHighlightBone(this, 0), mBottomRightHighlightBone(this, 0), mHighlightMeshGroup(this, 0),
@@ -39,3 +42,10 @@ void UILabelDir::SyncObjects(){
 BEGIN_LOADS(UILabelDir)
     LOAD_SUPERCLASS(ObjectDir)
 END_LOADS
+
+void UILabelDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(9, 0);
+    PushRev(packRevs(gRev, gAltRev), this);
+    RndDir::PreLoad(bs);
+}

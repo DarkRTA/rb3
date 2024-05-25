@@ -10,4 +10,9 @@ public:
     int revs;
 };
 
+extern std::vector<ObjVersion> sRevStack;
+inline void PushRev(int i, Hmx::Object* o){
+    sRevStack.push_back(ObjVersion(o, i));
+}
+
 #endif

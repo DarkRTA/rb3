@@ -68,10 +68,6 @@ bool ObjectDir::AllowsInlineProxy(){
 
 extern std::vector<ObjVersion> sRevStack;
 
-void PushRev(int i, Hmx::Object* o){
-    sRevStack.push_back(ObjVersion(o, i));
-}
-
 int PopRev(Hmx::Object* o){
     while(sRevStack.back().obj != 0){
         sRevStack.pop_back();
