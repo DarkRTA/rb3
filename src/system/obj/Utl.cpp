@@ -3,15 +3,13 @@
 #include "obj/Dir.h"
 
 static const char* utlStrings[] = {
-    "fast", "main", "%d,%d,%d,%d\n"
+    "mem_copy", "fast", "main", "%d,%d,%d,%d\n"
 };
 
 void InitObject(Hmx::Object* obj){
     static DataArray* objects = SystemConfig("objects");
     static Symbol initSym("init");
-    obj->ClassName();
-    DataArray* found1 = objects->FindArray(initSym, true);
-    DataArray* found2 = found1->FindArray(initSym, false);
+    DataArray* found2 = objects->FindArray(obj->ClassName(), true)->FindArray(initSym, false);
     if(found2 != 0) found2->ExecuteScript(1, obj, 0, 1);
 }
 
@@ -26,7 +24,7 @@ const char* SafeName(Hmx::Object* obj){
 }
 
 void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
-    DataArray* found = SystemConfig(Symbol("objects"), sym)->FindArray("superclasses", false);
+    DataArray* found = SystemConfig("objects", sym)->FindArray("superclasses", false);
     if(found){
         for(int i = 1; i < found->Size(); i++){
             Symbol foundSym = found->Sym(i);
@@ -36,6 +34,10 @@ void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
         }
     }
 }
+
+static const char* utlStrings2[] = {
+    "Object", "ext", "."
+};
 
 void ListSuperClasses(Symbol sym, std::vector<Symbol>& classes){
     RecurseSuperClasses(sym, classes);

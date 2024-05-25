@@ -24,6 +24,8 @@ bool PropSync(Hmx::Color& color, DataNode& node, DataArray* prop, int i, PropOp 
     return true;
 }
 
+#pragma push
+#pragma pool_data off
 bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropOp _op){
     MILO_ASSERT(_i == _prop->Size() - 1 && (_op & (kPropSet|kPropGet|kPropInsert)), 0x45);
     Symbol sym = _prop->Sym(_i);
@@ -84,6 +86,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
     }
     return result;
 }
+#pragma pop
 
 bool PropSync(class Sphere& sphere, DataNode& node, DataArray* prop, int i, PropOp op){
     if(i == prop->Size()) return true;
