@@ -5,37 +5,33 @@
 
 unsigned int DecodeUTF8(unsigned short &us, const char *str) {
     unsigned char uc = str[0];
-    unsigned char uc1;
-    unsigned char uc2;
     if(uc <= 0x7FU){
         us = uc;
         return 1;
     }
-    else if(uc1 = str[1], (unsigned char)(uc + 0x40) <= 0x1FU){
+
+    unsigned char uc1 = str[1];
+    if((unsigned char)(uc + 0x40) <= 0x1FU){
         us = ((uc - 0xC0) << 6) + uc1 - 0x80;
         return 2;
     }
-    else if(uc2 = str[2], (unsigned char)(uc + 0x20) <= 0xFU){
-        int x3 = ((uc - 0xe0) << 0xC);
-        int x2 = ((uc1 - 0x80) << 6);
-        x3 += x2;
-        us = x3 + uc2 - 0x80;
+
+    unsigned char uc2 = str[2];
+    if((unsigned char)(uc + 0x20) <= 0xFU){
+        us = ((uc - 0xe0) << 0xC) + ((uc1 - 0x80) << 6) + (uc2 - 0x80);
         return 3;
     }
-    else if((unsigned char)(uc + 0x10) <= 0xDU){
+    
+    if((unsigned char)(uc + 0x10) <= 0xDU){
         MILO_WARN("HMX wide chars cannot exceed 16 bits: %s (0x%02x)", str, uc);
         us = 0x2A;
         return 1;
     }
-    else {
-        MILO_WARN("Invalid UTF character: %s (0x%02x)", str, uc);
-        us = 0x2A;
-        return 1;
-    }
-}
 
-const char* decodestr = "HMX wide chars cannot exceed 16 bits: %s (0x%02x)";
-const char* decodeStr2 = "Invalid UTF character: %s (0x%02x)";
+    MILO_WARN("Invalid UTF character: %s (0x%02x)", str, uc);
+    us = 0x2A;
+    return 1;
+}
 
 unsigned int EncodeUTF8(String &s, unsigned int ui) {
     if (ui < 0x80) {
