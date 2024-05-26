@@ -5,7 +5,7 @@ Character::Lod::Lod(Hmx::Object* obj) : mScreenSize(0.0f), mGroup(obj, 0), mGrou
 
 }
 
-Character::Lod::Lod(const Character::Lod& lod) : mScreenSize(lod.mScreenSize), mGroup(lod.mGroup.Owner(), lod.mGroup.Ptr()), mGroup2(lod.mGroup2.Owner(), lod.mGroup2.Ptr()) {
+Character::Lod::Lod(const Character::Lod& lod) : mScreenSize(lod.mScreenSize), mGroup(lod.mGroup), mGroup2(lod.mGroup2) {
     
 }
 

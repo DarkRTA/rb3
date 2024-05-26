@@ -14,6 +14,10 @@ public:
         if(mPtr != 0) mPtr->AddRef(this);
     }
 
+    ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.Owner()), mPtr(oPtr.Ptr()) {
+        if(mPtr != 0) mPtr->AddRef(this);
+    }
+
     virtual ~ObjPtr(){
         if(mPtr != 0) mPtr->Release(this);
     }
