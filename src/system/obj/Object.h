@@ -211,8 +211,8 @@ inline unsigned short getAltRev(int ui){
     return (unsigned int)ui >> 0x10;
 }
 
-inline int packRevs(unsigned short rev, unsigned short alt){
-    return ((alt << 16) & 0xFFFF0000) | (rev & 0xFFFF);
+inline int packRevs(unsigned short alt, unsigned short rev){
+    return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
 
 #define NEW_OVERLOAD \

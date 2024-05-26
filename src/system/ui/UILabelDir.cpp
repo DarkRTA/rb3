@@ -46,6 +46,6 @@ END_LOADS
 void UILabelDir::PreLoad(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(9, 0);
-    PushRev(packRevs(gRev, gAltRev), this);
+    PushRev(packRevs(gAltRev, gRev), this);
     RndDir::PreLoad(bs);
 }

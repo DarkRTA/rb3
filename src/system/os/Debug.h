@@ -55,8 +55,8 @@ extern int* gpDbgFrameID;
 #ifdef MILO_DEBUG
 #  define MILO_ASSERT(cond, line) ((cond) || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, line, #cond)), 0))
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebug.Fail(MakeString(__VA_ARGS__)), 0))
-#  define MILO_FAIL(...) TheDebug.Fail(MakeString(__VA_ARGS__))
-#  define MILO_WARN(...) TheDebug.Notify(MakeString(__VA_ARGS__))
+#  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
+#  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
 #  define MILO_NOTIFIER_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
 #else
    // The actual conditions for asserts appear to still be evaluated in retail,
@@ -79,6 +79,7 @@ public:
 extern DebugNotifier TheDebugNotifier;
 
 class DebugFailer {
+public:
     DebugFailer& operator<<(const char* cc){
         TheDebug.Fail(cc);
         return *this;

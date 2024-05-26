@@ -155,6 +155,8 @@ public:
         return dynamic_cast<T*>(FindObject(name, b));
     }
 
+    DECLARE_REVS;
+
     KeylessHash<const char*, Entry> mHashTable;
     StringTable mStringTable;
     FilePath mProxyFile;

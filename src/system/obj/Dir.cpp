@@ -4,6 +4,8 @@
 
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
 
+INIT_REVS(ObjectDir);
+
 BinStream& operator>>(BinStream& bs, InlineDirType& ty){
     unsigned char uc;
     bs >> uc;
@@ -61,6 +63,18 @@ void ObjectDir::OldLoadProxies(BinStream& bs, int i){
     bs >> x;
     if(x != 0) MILO_FAIL("Proxies not allowed here");
 }
+
+#pragma push
+#pragma dont_inline on
+void ObjectDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(0x1B, 0);
+    if(gRev > 0x15) Hmx::Object::LoadType(bs);
+    else if(gRev - 2 < 0xF) Hmx::Object::Load(bs);
+    // ...
+    PushRev(packRevs(gAltRev, gRev), this);
+}
+#pragma pop
 
 bool ObjectDir::AllowsInlineProxy(){
     return mInlineProxy;
