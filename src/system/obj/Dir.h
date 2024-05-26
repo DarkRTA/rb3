@@ -155,6 +155,8 @@ public:
     bool HasDirPtrs() const;
     Entry* FindEntry(const char*, bool);
     bool SaveSubdirs();
+    void SetPathName(const char*);
+    void TransferLoaderState(ObjectDir*);
 
     Hmx::Object* FindObject(const char*, bool);
     template <class T> T* Find(const char* name, bool b) {

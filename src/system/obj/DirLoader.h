@@ -24,6 +24,7 @@ public:
     class ObjectDir* GetDir();
     bool SaveObjects(const char*, class ObjectDir*);
     Symbol FixClassName(Symbol);
+    bool SetupDir(Symbol);
 
     void OpenFile();
     void LoadHeader();

@@ -30,4 +30,18 @@ inline BinStream& operator>>(BinStream& bs, FilePath& fp){
     return bs;
 }
 
+class FilePathTracker {
+public:
+    FilePathTracker(const char* root) : mOldRoot() {
+        mOldRoot = FilePath::sRoot;
+        FilePath::sRoot.Set(FileRoot(), root);
+    }
+
+    ~FilePathTracker(){
+        FilePath::sRoot = mOldRoot;
+    }
+
+    FilePath mOldRoot;
+};
+
 #endif

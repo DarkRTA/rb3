@@ -9,6 +9,7 @@
 #include "utl/LogFile.h"
 #include "utl/MakeString.h"
 #include "os/Archive.h"
+#include "obj/Utl.h"
 #include "utl/Symbols.h"
 
 bool gHostCached;
@@ -258,6 +259,44 @@ void DirLoader::OpenFile() {
         }
     }
     mState = LoadHeader;
+}
+
+bool DirLoader::SetupDir(Symbol sym){
+    BeginTrackObjMem(sym.Str(), mFile.c_str());
+    if(mDir){
+        if(mDir->ClassName() != sym){
+            MILO_WARN("%s: Proxy class %s not %s, converting", mFile.c_str(), mDir->ClassName(), sym);
+            class ObjectDir* newDir = dynamic_cast<class ObjectDir*>(Hmx::Object::NewObject(sym));
+            if(!newDir){
+                Cleanup(MakeString("%s: Trying to make non ObjectDir proxy class %s s", mFile.c_str(), mDir->ClassName(), sym));
+                return false;
+            }
+            newDir->TransferLoaderState(mDir);
+            ReplaceObject(mDir, newDir, true, true, false);
+            mDir = newDir;
+        }
+    }
+    else {
+        mDir = dynamic_cast<class ObjectDir*>(Hmx::Object::NewObject(sym));
+    }
+    mDir->SetPathName(mFile.c_str());
+    EndTrackObjMem(mDir, 0, mFile.c_str());
+    return true;
+}
+
+void DirLoader::LoadResources(){
+    if(mCounter-- != 0){
+        FilePathTracker fpt(mRoot.c_str());
+        FilePath fp2;
+        *mStream >> fpt.mOldRoot;
+        if(!fp2.empty()){
+            TheLoadMgr.AddLoader(fp2, kLoadFront);
+        }
+    }
+    else {
+        if(mRev > 0xD) mState = LoadDir;
+        else mState = LoadObjs;
+    }
 }
 
 void ReadDead(BinStream& bs) {

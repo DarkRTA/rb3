@@ -63,20 +63,20 @@ bool IsASubclass(Symbol child, Symbol parent){
     else return RecurseSuperClassesSearch(child, parent);
 }
 
-// void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool b2, bool b3){
-//     const char* name = from->Name();
-//     ObjectDir* dir = from->Dir();
-//     from->SetName(0, 0);
-//     to->SetName(name, dir);
-//     if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
-//     // for(std::vector<ObjRef*>::iterator it = from->Refs().begin(); it != from->Refs().end(); it++){
-//     //     (*it)->Replace(from, to);
-//     // }
-//     while(!from->Refs().empty()){
-//         from->Refs().back()->Replace(from, to);
-//     }
-//     if(b2) delete from;
-// }
+void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool b2, bool b3){
+    const char* name = from->Name();
+    ObjectDir* dir = from->Dir();
+    from->SetName(0, 0);
+    to->SetName(name, dir);
+    if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
+    // for(std::vector<ObjRef*>::iterator it = from->Refs().begin(); it != from->Refs().end(); it++){
+    //     (*it)->Replace(from, to);
+    // }
+    while(!from->Refs().empty()){
+        from->Refs().back()->Replace(from, to);
+    }
+    if(b2) delete from;
+}
 
 int SubDirStringUsed(ObjectDir* dir){
     if(!dir) return 0;
