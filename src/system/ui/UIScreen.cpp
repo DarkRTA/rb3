@@ -127,6 +127,8 @@ void UIScreen::Poll() {
     }
 }
 
+#pragma push
+#pragma pool_data off
 // Likely weak based on how bss gets used
 void UIScreen::Enter(UIScreen* from) {
     if (from != NULL) {
@@ -145,6 +147,7 @@ void UIScreen::Enter(UIScreen* from) {
     HandleType(msg);
     Poll();
 }
+#pragma pop
 
 void UIScreen::Draw() {
     if (!mShowing) {

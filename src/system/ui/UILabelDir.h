@@ -35,6 +35,8 @@ public:
     RndMesh* BottomRightHighlightBone() const;
     void SetColor(UIComponent::State, UIColor*);
 
+    DECLARE_REVS;
+
     ObjPtr<UIColor, ObjectDir> mDefaultColor;
     std::vector<ObjPtr<UIColor,ObjectDir> > mColors;
     ObjPtr<RndText, ObjectDir> mTextObj;
