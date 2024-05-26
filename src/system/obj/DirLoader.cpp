@@ -12,6 +12,8 @@
 bool gHostCached;
 bool DirLoader::sCacheMode = false;
 
+const char* memStrs[] = { "MemPoint Overflow", "MemPoint Underflow" };
+
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;
     std::list<Loader*>& refs = TheLoadMgr.mLoaders;
@@ -83,6 +85,8 @@ Symbol DirLoader::GetDirClass(const char* cc){
     }
 }
 
+static const char* moreDirLoaderStrs[] = { "ObjectDir", "system", "dir_sort", "0" };
+
 void DirLoader::SetCacheMode(bool b){
     sCacheMode = b;
 }
@@ -109,10 +113,9 @@ DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStr
     if(d){
         unk5e = true;
         unk60 = d->Name();
-        mProxyDir = d->Dir();
-        if(mProxyDir){
-            mProxyDir->AddRef(this);
-        }
+        ObjectDir* dDir = d->Dir();
+        mProxyDir = dDir;
+        if(dDir) mProxyDir->AddRef(this);
         mDir->mLoader = this;
     }
     if(!bs && !d && !b){
@@ -129,6 +132,17 @@ DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStr
 
 bool DirLoader::IsLoaded() const {
     return mState == DoneLoading;
+}
+
+const char* DirLoader::StateName() const {
+    if(mState == OpenFile) return "OpenFile";
+    else if(mState == LoadHeader) return "LoadHeader";
+    else if(mState == LoadDir) return "LoadDir";
+    else if(mState == LoadResources) return "LoadResources";
+    else if(mState == CreateObjects) return "CreateObjects";
+    else if(mState == LoadObjs) return "LoadObjs";
+    else if(mState == DoneLoading) return "DoneLoading";
+    else return "INVALID";
 }
 
 void DirLoader::OpenFile() {
@@ -163,9 +177,7 @@ void DirLoader::OpenFile() {
         if (mProxyDir) Cleanup(MakeString("%s/gen/%s", PathName(mProxyDir), path));
         else Cleanup(MakeString("%s", path));
     } else {
-        // filler[2] = -1;
-        // filler[1] = 0;
-        // filler[3] = 0;
+        mState = OpenFile;
     }
 }
 
@@ -192,10 +204,21 @@ void ReadDead(BinStream& bs) {
 
 void DirLoader::DoneLoading() { }
 
-DirLoader::~DirLoader() { 
-    if (IsLoaded()) {
+DirLoader::~DirLoader() {
+    unk5e = 0;
+    if (!IsLoaded()) {
         Cleanup(NULL);
-    } else {
-
+    }
+    else if(mDir){
+        mDir->mLoader = 0;
+        if(!mAccessed && !unk60){
+            delete mDir;
+            mDir = 0;
+        }
+    }
+    if(mProxyDir) mProxyDir->Release(this);
+    if(mCallback && unk99){
+        mCallback->FailedLoading(this);
+        mCallback = 0;
     }
 }
