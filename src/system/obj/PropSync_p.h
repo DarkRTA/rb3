@@ -11,6 +11,15 @@
 #include "math/Geo.h"
 #include <list>
 
+enum PropOp {
+    kPropGet = 1,
+    kPropSet = 2,
+    kPropInsert = 4,
+    kPropRemove = 8,
+    kPropSize = 16,
+    kPropHandle = 32,
+};
+
 // forward declarations
 template<class T1, class T2> class ObjPtr;
 template<class T1, class T2> class ObjOwnerPtr;

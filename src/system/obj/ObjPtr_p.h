@@ -1,6 +1,5 @@
 #ifndef OBJ_OBJPTR_H
 #define OBJ_OBJPTR_H
-#include "obj/Object.h"
 #include "os/Debug.h"
 #include "obj/Dir.h"
 #include "utl/BinStream.h"

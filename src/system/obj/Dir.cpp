@@ -64,6 +64,15 @@ void ObjectDir::OldLoadProxies(BinStream& bs, int i){
     if(x != 0) MILO_FAIL("Proxies not allowed here");
 }
 
+BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp){
+    bs >> vp.mXfm;
+    if(ObjectDir::gRev < 0x12){
+        int i;
+        bs >> i;
+    }
+    return bs;
+}
+
 #pragma push
 #pragma dont_inline on
 void ObjectDir::PreLoad(BinStream& bs){

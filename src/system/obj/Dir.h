@@ -180,14 +180,7 @@ public:
     const char* mAlwaysInlineHash;
 };
 
-BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp){
-    bs >> vp.mXfm;
-    if(ObjectDir::gRev < 0x12){
-        int i;
-        bs >> i;
-    }
-    return bs;
-}
+BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp);
 
 extern bool gLoadingProxyFromDisk;
 extern const char* kNotObjectMsg;
