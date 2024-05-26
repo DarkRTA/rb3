@@ -1,11 +1,12 @@
 #ifndef OBJ_DIRLOADER_H
 #define OBJ_DIRLOADER_H
-#include "obj/Dir.h"
-#include "obj/ObjPtr_p.h"
 #include "os/Timer.h"
 #include "utl/Loader.h"
 #include "obj/Object.h"
 #include "utl/PoolAlloc.h"
+#include "obj/ObjPtr_p.h"
+
+class ObjectDir;
 
 class DirLoader : public Loader, public ObjRef {
 public:
@@ -36,8 +37,7 @@ public:
 
     // uncommenting this results in an error related to a circular dependency between ObjDirPtr and DirLoader
     // and i have no idea how to fix it
-    // ObjPtrList<Hmx::Object, class ObjectDir> mObjects; 
-    int objptrlistfiller[4]; // only here until we get the above ObjPtrList fixed
+    ObjPtrList<Hmx::Object, class ObjectDir> mObjects;
 
     Callback* mCallback;
     class ObjectDir* mDir;

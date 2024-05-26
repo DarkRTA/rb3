@@ -44,7 +44,7 @@ bool DirLoader::SaveObjects(const char*, ObjectDir*) {
 }
 
 DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStream* bs, ObjectDir* d, bool b) : Loader(f, p), 
-    mOwnStream(false), mStream(bs), // mObjects(NULL, kObjListAllowNull), 
+    mOwnStream(false), mStream(bs), mObjects(NULL, kObjListAllowNull), 
     mCallback(c), mDir(d), mTimer(), mAccessed(false) {
     DataArray* da = SystemConfig()->FindArray("force_milo_inline", false);
     if (da)
