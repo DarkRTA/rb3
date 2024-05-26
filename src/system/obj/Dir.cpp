@@ -100,11 +100,11 @@ void ObjectDir::PreLoad(BinStream& bs){
     }
     if(gRev > 0xC){
         if(gRev > 0x13){
-            if(gLoadingProxyFromDisk){
+            if(!gLoadingProxyFromDisk) bs >> mInlineProxy;
+            else {
                 bool b;
                 bs >> b;
             }
-            else bs >> mInlineProxy;
         }
         if(gLoadingProxyFromDisk || mProxyOverride){
             bool fail = false;
