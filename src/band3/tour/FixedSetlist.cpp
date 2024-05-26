@@ -58,7 +58,12 @@ int FixedSetlist::GetNumSongs() const {
 void FixedSetlist::InqSongs(std::vector<Symbol>& songs) const {
     MILO_ASSERT(o_rSongs.empty(), 0x56);
 
-    for (int i = 0; i < songs.size(); i++) {
+    for (int i = 0; i < m_pSongEntries->Size(); i++) {
+        Symbol test;
+
+        DataNode node = m_pSongEntries->Node(i);
+        
+
         DataArray* pArray;
 
         MILO_ASSERT(pArray->Size() == 1, 0x0);

@@ -4,7 +4,7 @@
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
 
-AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty(0), mMinStars(0) {
+AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty((Difficulty)0), mMinStars(0) {
     Configure(i_pConfig);
 }
 
@@ -19,7 +19,7 @@ void AccomplishmentSetlist::Configure(DataArray* i_pConfig) {
     int difficultyVal = false;
     bool parsed = i_pConfig->FindData(difficulty, difficultyVal, false);
     if (parsed) {
-        mDifficulty = difficultyVal;
+        mDifficulty = (Difficulty)difficultyVal;
     }
     int instrumentVal = false;
     parsed = i_pConfig->FindData(instrument, instrumentVal, false);
@@ -41,18 +41,18 @@ bool AccomplishmentSetlist::HasSpecificSongsToLaunch() const {
     return true;
 }
 
-int AccomplishmentSetlist::GetRequiredDifficulty() const {
+Difficulty AccomplishmentSetlist::GetRequiredDifficulty() const {
     return mDifficulty;
 }
 
-bool AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
+void AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
     MILO_ASSERT(o_rScoreTypes.empty(), 0x52);
 
     if (mInstrument != 10) {
         o_rScoreTypes.insert(mInstrument);
     }
     
-    return !o_rScoreTypes.empty();
+    // return !o_rScoreTypes.empty();
 }
 
 bool AccomplishmentSetlist::CheckRequirements(ScoreType scoreType, Difficulty difficulty, int minStars) {

@@ -8,8 +8,7 @@ AccomplishmentConditional::~AccomplishmentConditional() {
 
 }
 
-void AccomplishmentConditional::
-    UpdateConditionOptionalData(AccomplishmentCondition&, DataArray*) {
+void AccomplishmentConditional::UpdateConditionOptionalData(AccomplishmentCondition&, DataArray*) {
 }
 
 void AccomplishmentConditional::Configure(DataArray* i_pConfig) {
