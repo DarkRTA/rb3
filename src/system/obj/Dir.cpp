@@ -70,8 +70,95 @@ void ObjectDir::PreLoad(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(0x1B, 0);
     if(gRev > 0x15) Hmx::Object::LoadType(bs);
-    else if(gRev - 2 < 0xF) Hmx::Object::Load(bs);
-    // ...
+    else if(gRev - 2U <= 0xE) Hmx::Object::Load(bs);
+    if(gRev < 3){
+        int i, j;
+        bs >> i >> j;
+        Reserve(i, j);
+    }
+    if(gRev > 0x19){
+        if(gRev < 0x1B){
+            bool b;
+            bs >> b;
+            mAlwaysInlined = b;
+        }
+        else bs >> mAlwaysInlined;
+        int toAlloc;
+        bs >> toAlloc;
+        if(toAlloc){
+            void* v = _MemOrPoolAlloc(toAlloc + 1, FastPool);
+            mAlwaysInlineHash = (char*)v;
+            bs.Read(v, toAlloc);
+            ((char*)v)[toAlloc] = 0;
+        }
+    }
+    if(gRev > 1){
+        std::vector<Viewport> vec;
+        int i;
+        bs >> vec;
+        bs >> i;
+    }
+    if(gRev > 0xC){
+        if(gRev > 0x13){
+            if(gLoadingProxyFromDisk){
+                bool b;
+                bs >> b;
+            }
+            else bs >> mInlineProxy;
+        }
+        if(gLoadingProxyFromDisk || mProxyOverride){
+            bool fail = false;
+            if(mProxyOverride && AllowsInlineProxy()) fail = true;
+            if(fail) MILO_FAIL("You cannot override an inlined proxy!");
+            FilePath fp;
+            bs >> fp;
+            mProxyOverride = false;
+        }
+        else {
+            FilePath fp;
+            bs >> fp;
+            if(!fp.empty() && fp == mProxyFile){
+                mProxyOverride = true;
+            }
+            else {
+                mProxyFile = fp;
+                mProxyOverride = false;
+            }
+        }
+    }
+    if(gRev - 2 < 9){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+    }
+    if(gRev - 4 < 7){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+    }
+    if(gRev == 5){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+    }
+
+    static std::vector<FilePath> inlinedSubDirs;
+    static std::vector<FilePath> notInlinedSubDirs;
+    if(gRev > 2){
+        bs >> notInlinedSubDirs;
+        std::vector<int> intVec;
+        if(gRev == 0x17) bs >> intVec;
+        if(gRev < 0x15) inlinedSubDirs.clear();
+        else {
+            bs >> mInlineSubDirType;
+            bs >> inlinedSubDirs;
+        }
+        bool dirsSaved = SaveSubdirs();
+    }
+    if(gRev - 0xC < 2){
+        OldLoadProxies(bs, gRev);
+    }
+    if(gRev < 0x13){
+
+    }
+    mIsSubDir = false;
     PushRev(packRevs(gAltRev, gRev), this);
 }
 #pragma pop
