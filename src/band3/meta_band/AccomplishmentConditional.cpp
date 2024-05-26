@@ -19,7 +19,7 @@ bool AccomplishmentConditional::CanBeLaunched() const {
     return true;
 }
 
-void AccomplishmentConditional::InqRequiredScoreTypes(std::set<ScoreType>&) const {
+bool AccomplishmentConditional::InqRequiredScoreTypes(std::set<ScoreType>&) const {
 
 }
 

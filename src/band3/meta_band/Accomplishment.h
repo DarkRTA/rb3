@@ -27,10 +27,10 @@ private:
     bool ShowBestAfterEarn() const;
     bool HideProgress() const;
     Symbol GetSecretCampaignLevelPrereq() const;
-    const std::vector<Accomplishment*>& GetSecretPrereqs() const;
+    const std::vector<Symbol>& GetSecretPrereqs() const;
     bool IsDynamic() const;
     bool GetDynamicAlwaysVisible() const;
-    const std::vector<Accomplishment*>& GetDynamicPrereqsSongs() const;
+    const std::vector<Symbol>& GetDynamicPrereqsSongs() const;
     int GetDynamicPrereqsNumSongs() const;
     Symbol GetDynamicPrereqsFilter() const;
     Symbol GetCategory() const;
@@ -39,7 +39,7 @@ private:
     bool IsFulfilled(BandProfile*) const;
     bool IsRelevantForSong(Symbol) const;
     bool InqProgressValues(BandProfile*, int&, int&);
-    bool GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
+    Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
     bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const;
     bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
     virtual bool CanBeLaunched() const;
@@ -48,10 +48,10 @@ private:
     bool HasAward() const;
     int GetMetaScoreValue() const;
     char* GetIconPath();
-    void IsUserOnValidScoreType(LocalBandUser*) const;
-    void IsUserOnValidController(LocalBandUser*) const;
+    bool IsUserOnValidScoreType(LocalBandUser*) const;
+    bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
-    virtual void InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
@@ -65,7 +65,7 @@ private:
     int GetPassiveMsgPriority() const;
 
     Symbol mName;       // 0x04
-    std::vector<Accomplishment*> mSecretPrereqs; // 0x08
+    std::vector<Symbol> mSecretPrereqs; // 0x08
     int mAccomplishmentType;    //0x10
     Symbol mCategory; // 0x14
     Symbol mAward; // 0x18
@@ -81,7 +81,7 @@ private:
     int mPlayerCountMin; // 0x44
     int mPlayerCountMax; // 0x48
     int mDynamicPrereqsNumSongs; // 0x4c
-    std::vector<Accomplishment*> mDynamicPrereqsSongs; // 0x50
+    std::vector<Symbol> mDynamicPrereqsSongs; // 0x50
     Symbol mDynamicPrereqsFilter; // 0x58
     int mProgressStep; // 0x5c
 

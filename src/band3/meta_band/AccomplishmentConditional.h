@@ -14,7 +14,7 @@ public:
     void UpdateConditionOptionalData(AccomplishmentCondition&, DataArray*);
     virtual void Configure(DataArray*);
     bool CanBeLaunched() const;
-    void InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     virtual Difficulty GetRequiredDifficulty() const;
 
 private:

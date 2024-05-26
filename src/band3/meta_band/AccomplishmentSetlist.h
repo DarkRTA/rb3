@@ -21,7 +21,7 @@ private:
     bool CanBeLaunched() const;
     bool HasSpecificSongsToLaunch() const;
     Difficulty GetRequiredDifficulty() const;
-    void InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
 };
 

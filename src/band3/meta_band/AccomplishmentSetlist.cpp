@@ -5,7 +5,7 @@
 #include "system/utl/Symbols4.h"
 
 AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty((Difficulty)0), mMinStars(0) {
-    Configure(i_pConfig);
+    AccomplishmentSetlist::Configure(i_pConfig);
 }
 
 AccomplishmentSetlist::~AccomplishmentSetlist() {
@@ -45,14 +45,14 @@ Difficulty AccomplishmentSetlist::GetRequiredDifficulty() const {
     return mDifficulty;
 }
 
-void AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
+bool AccomplishmentSetlist::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
     MILO_ASSERT(o_rScoreTypes.empty(), 0x52);
 
     if (mInstrument != 10) {
         o_rScoreTypes.insert(mInstrument);
     }
     
-    // return !o_rScoreTypes.empty();
+    return !o_rScoreTypes.empty();
 }
 
 bool AccomplishmentSetlist::CheckRequirements(ScoreType scoreType, Difficulty difficulty, int minStars) {
