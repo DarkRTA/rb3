@@ -6,6 +6,8 @@
 
 extern const char* gNullStr;
 extern std::vector<char*> TheSystemArgs;
+extern const char* gHostFile;
+extern bool gHostCached;
 
 enum GfxMode {
     kOldGfx = 0,
