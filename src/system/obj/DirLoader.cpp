@@ -103,15 +103,32 @@ bool DirLoader::SaveObjects(const char*, ObjectDir*) {
     return 0;
 }
 
-DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStream* bs, ObjectDir* d, bool b) : Loader(f, p), 
-    mOwnStream(false), mStream(bs), mObjects(NULL, kObjListAllowNull), 
-    mCallback(c), mDir(d), mTimer(), mAccessed(false) {
-    DataArray* da = SystemConfig()->FindArray("force_milo_inline", false);
-    if (da)
-    for (int i = 1; i < da->Size(); i++) {
-        const char* filename = da->Str(i);
-        if (FileMatch(f.c_str(), filename)) MILO_FAIL("Can't dynamically load milo files matching %s", filename);
+DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStream* bs, ObjectDir* d, bool b) : Loader(f, p),
+    mRoot(), mOwnStream(false), mStream(bs), mObjects(NULL, kObjListAllowNull), 
+    mCallback(c), mDir(d), unk5c(0), unk5d(1), unk5e(0), unk60(0), mProxyDir(0), mTimer(), mAccessed(false), unk99(0) {
+    if(d){
+        unk5e = true;
+        unk60 = d->Name();
+        mProxyDir = d->Dir();
+        if(mProxyDir){
+            mProxyDir->AddRef(this);
+        }
+        mDir->mLoader = this;
     }
+    if(!bs && !d && !b){
+        DataArray* da = SystemConfig()->FindArray("force_milo_inline", false);
+        if(da){
+            for(int i = 1; i < da->Size(); i++) {
+                const char* filename = da->Str(i);
+                if (FileMatch(f.c_str(), filename)) MILO_FAIL("Can't dynamically load milo files matching %s", filename);
+            }
+        }
+    }
+    mState = OpenFile;
+}
+
+bool DirLoader::IsLoaded() const {
+    return mState == DoneLoading;
 }
 
 void DirLoader::OpenFile() {
@@ -146,9 +163,9 @@ void DirLoader::OpenFile() {
         if (mProxyDir) Cleanup(MakeString("%s/gen/%s", PathName(mProxyDir), path));
         else Cleanup(MakeString("%s", path));
     } else {
-        filler[2] = -1;
-        filler[1] = 0;
-        filler[3] = 0;
+        // filler[2] = -1;
+        // filler[1] = 0;
+        // filler[3] = 0;
     }
 }
 

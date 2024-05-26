@@ -7,6 +7,7 @@
 #include "obj/ObjPtr_p.h"
 
 class ObjectDir;
+typedef void(DirLoader::*DirLoaderStateFunc)(void);
 
 class DirLoader : public Loader, public ObjRef {
 public:
@@ -19,10 +20,16 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
     void Cleanup(const char*);
-    void DoneLoading();
     class ObjectDir* GetDir();
     bool SaveObjects(const char*, class ObjectDir*);
+
     void OpenFile();
+    void LoadHeader();
+    void LoadDir();
+    void LoadResources();
+    void CreateObjects();
+    void LoadObjs();
+    void DoneLoading();
 
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
@@ -32,18 +39,23 @@ public:
     static Symbol GetDirClass(const char*);
     static const char* CachedPath(const char*, bool);
 
-    int filler[4];
+    DirLoaderStateFunc mState; // 0x1c
     class String mRoot; // 0x28
     bool mOwnStream; // 0x34
     BinStream* mStream; // 0x38
-    int test[0x2];
-    ObjPtrList<Hmx::Object, class ObjectDir> mObjects;
-    Callback* mCallback;
-    class ObjectDir* mDir;
-    int adsf[2];
+    int unk3c;
+    int unk40;
+    ObjPtrList<Hmx::Object, class ObjectDir> mObjects; // 0x44
+    Callback* mCallback; // 0x54
+    class ObjectDir* mDir; // 0x58
+    bool unk5c;
+    bool unk5d;
+    bool unk5e;
+    const char* unk60;
     class ObjectDir* mProxyDir; // 0x64
     Timer mTimer; // 0x68
     bool mAccessed; // 0x98, guess
+    bool unk99;
 
 
     static bool sCacheMode;
