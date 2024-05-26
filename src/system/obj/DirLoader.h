@@ -23,22 +23,21 @@ public:
     class ObjectDir* GetDir();
     bool SaveObjects(const char*, class ObjectDir*);
     void OpenFile();
-    const char* CachedPath(const char*, bool);
-    void SetCacheMode(bool);
 
+    static DirLoader* Find(const FilePath&);
+    static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);
     static class ObjectDir* LoadObjects(const FilePath&, Loader::Callback*, BinStream*);
+    static void SetCacheMode(bool);
+    static Symbol GetDirClass(const char*);
+    static const char* CachedPath(const char*, bool);
 
     int filler[4];
     class String mRoot; // 0x28
     bool mOwnStream; // 0x34
     BinStream* mStream; // 0x38
     int test[0x2];
-
-    // uncommenting this results in an error related to a circular dependency between ObjDirPtr and DirLoader
-    // and i have no idea how to fix it
     ObjPtrList<Hmx::Object, class ObjectDir> mObjects;
-
     Callback* mCallback;
     class ObjectDir* mDir;
     int adsf[2];
@@ -49,10 +48,8 @@ public:
 
     static bool sCacheMode;
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(DirLoader), FastPool);
-    }
-    void operator delete (void* x) { _PoolFree(0xa0, FastPool, x); }
+    NEW_POOL_OVERLOAD(DirLoader);
+    DELETE_POOL_OVERLOAD(DirLoader);
 };
 
 #endif

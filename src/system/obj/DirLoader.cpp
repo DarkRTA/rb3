@@ -10,20 +10,47 @@
 #include "utl/MakeString.h"
 
 bool gHostCached;
+bool DirLoader::sCacheMode = false;
+
+DirLoader* DirLoader::Find(const FilePath& fp){
+    if(fp.empty()) return 0;
+    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::iterator it = refs.begin(); it != refs.end(); it++){
+        if((*it)->mFile == fp){
+            DirLoader* dl = dynamic_cast<DirLoader*>(*it);
+            if(dl) return dl;
+        }
+    }
+    return 0;
+}
+
+DirLoader* DirLoader::FindLast(const FilePath& fp){
+    if(fp.empty()) return 0;
+    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::reverse_iterator it = refs.rbegin(); it != refs.rend(); it++){
+        if((*it)->mFile == fp){
+            DirLoader* dl = dynamic_cast<DirLoader*>(*it);
+            if(dl) return dl;
+        }
+    }
+    return 0;
+}
 
 void DirLoader::PrintLoaded(const char* text) {
-    TextStream* cout;
-    cout = &TheDebug;
+    TextStream* cout = &TheDebug;
     if (text) {
         cout = new LogFile(text);
     }
-    while (true) {
-        if (TheLoadMgr.mPlatform != kPlatformNone) {
-            break;
+    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::iterator it = refs.begin(); it != refs.end(); it++){
+        if(*it && (*it)->IsLoaded()){
+            FilePath& itFile = (*it)->mFile;
+            const char* text2 = itFile.c_str();
+            if(itFile.empty()) text2 = "unknown_dir";
+            cout->Print(MakeString("%s\n", text2));
         }
-        cout->Print(MakeString("%s", text));
     }
-    if (text) delete cout;
+    if (cout) delete cout;
 }
 
 ObjectDir* DirLoader::GetDir() {
@@ -36,6 +63,39 @@ ObjectDir* DirLoader::LoadObjects(const FilePath& f, Loader::Callback* c, BinStr
     DirLoader l(f, kLoadFront, c, b, NULL, false);
     TheLoadMgr.PollUntilLoaded(&l, NULL);
     return l.GetDir();
+}
+
+Symbol DirLoader::GetDirClass(const char* cc){
+    ChunkStream cs(cc, ChunkStream::kRead, 0x10000, true, kPlatformNone, false);
+    if(cs.Fail()){
+        return Symbol("");
+    }
+    else {
+        EofType t;
+        while(t = cs.Eof(), t != NotEof){
+            MILO_ASSERT(t == TempEof, 0x199);
+        }
+        int i;
+        cs >> i;
+        Symbol s;
+        cs >> s;
+        return s;
+    }
+}
+
+void DirLoader::SetCacheMode(bool b){
+    sCacheMode = b;
+}
+
+const char* DirLoader::CachedPath(const char* cc, bool b){
+    const char* ext = FileGetExt(cc);
+    if((sCacheMode || b) && ext){
+        bool isMilo = strcmp(ext, "milo") == 0;
+        if(isMilo){
+            return MakeString("%s/gen/%s.milo_%s", FileGetPath(cc, 0), FileGetBase(cc, 0), PlatformSymbol(TheLoadMgr.mPlatform));
+        }
+    }
+    return cc;
 }
 
 bool DirLoader::SaveObjects(const char*, ObjectDir*) {
