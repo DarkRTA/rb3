@@ -57,7 +57,6 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebug.Fail(MakeString(__VA_ARGS__)), 0))
 #  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
 #  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
-#  define MILO_NOTIFIER_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
 #else
    // The actual conditions for asserts appear to still be evaluated in retail,
    // various random calls are left over from asserts that exist in debug
@@ -65,7 +64,6 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
 #  define MILO_WARN(...) ((void)0)
-#  define MILO_NOTIFIER_WARN(...) ((void)0)
 #endif
 
 class DebugNotifier {

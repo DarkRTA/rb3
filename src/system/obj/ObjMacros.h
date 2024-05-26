@@ -102,7 +102,7 @@ DataNode objType::Handle(DataArray* _msg, bool _warn){ \
     }
 
 #define HANDLE_CHECK(line_num) \
-    if(_warn) MILO_NOTIFIER_WARN("%s(%d): %s unhandled msg: %s", __FILE__, line_num, PathName(this), sym);
+    if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, line_num, PathName(this), sym);
 
 #define END_HANDLERS \
     return DataNode(kDataUnhandled, 0); \
