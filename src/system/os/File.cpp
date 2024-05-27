@@ -72,17 +72,13 @@ static DataNode OnFileRelativePath(DataArray* da){
 }
 
 static DataNode OnWithFileRoot(DataArray* da){
-    const char* str = da->Str(1);
-    FilePath fp;
-    fp = FilePath::sRoot;
-    FilePath::sRoot.Set(FileRoot(), str);
+    FilePathTracker fpt(da->Str(1));
     int i;
     int thresh = da->Size() - 1;
     for(i = 2; i < thresh; i++){
         da->Command(i)->Execute();
     }
     DataNode ret = da->Evaluate(i);
-    FilePath::sRoot = fp;
     return ret;
 }
 
