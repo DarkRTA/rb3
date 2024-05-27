@@ -24,4 +24,11 @@ enum ScoreType {
 
 };
 
+enum TrackType {
+
+};
+
+TrackType ScoreTypeToTrackType(ScoreType scoreType);
+ControllerType TrackTypeToControllerType(TrackType trackType);
+
 #endif // GAME_DEFINES_H

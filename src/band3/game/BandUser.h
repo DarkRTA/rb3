@@ -11,6 +11,10 @@ class BandUser : public virtual User {
     virtual DataNode Handle(DataArray*, bool);
     virtual ~BandUser();
 
+public:
+    ControllerType GetControllerType();
+
+private:
     Difficulty unk_0x8;
     u8 unk_0xC;
     int unk_0x10, unk_0x14;

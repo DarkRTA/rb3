@@ -13,14 +13,14 @@ public:
 private:
     Symbol mSetlist;       // 0x74
     ScoreType mInstrument; // 0x78
-    int mDifficulty;       // 0x7c
+    Difficulty mDifficulty;// 0x7c
     int mMinStars;         // 0x80
 
     void Configure(DataArray*);
     int GetType() const;
     bool CanBeLaunched() const;
     bool HasSpecificSongsToLaunch() const;
-    int GetRequiredDifficulty() const;
+    Difficulty GetRequiredDifficulty() const;
     bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
 };

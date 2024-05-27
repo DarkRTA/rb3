@@ -4,12 +4,18 @@
 #include "system/utl/Symbols2.h"
 #include "system/utl/Symbols3.h"
 #include "system/utl/Symbols4.h"
+#include "game/Defines.h"
 #include "os/Debug.h"
 #include <string>
+#include "Campaign.h"
 
-Accomplishment::Accomplishment(DataArray* i_pConfig, int) : mName(gNullStr), mCategory(gNullStr), mAward(gNullStr),
- mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr), mRequiresUnison(false), 
- mDynamicAlwaysVisible(true), mShouldShowDenominator(true), mHideProgress(false), mCanBeEarnedWithNoFail(true), mIsTrackedInLeaderboard(false) {
+Accomplishment::Accomplishment(DataArray* i_pConfig, int index) : mName(gNullStr), mAccomplishmentType(0), mCategory(gNullStr), 
+    mAward(gNullStr), mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr), 
+    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(0xffffffff), 
+    mPlayerCountMin(0xffffffff), mPlayerCountMax(0xffffffff), mDynamicPrereqsNumSongs(0xffffffff), mDynamicPrereqsFilter(gNullStr), mProgressStep(0), 
+    mIndex(index), mContextId(gNullStr), mMetaScoreValue(0), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false), 
+    mShouldShowDenominator(true), mShowBestAfterEarn(true), mHideProgress(false), mCanBeEarnedWithNoFail(true) {
+
     Configure(i_pConfig);
 }
 
@@ -33,12 +39,12 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         }
     }
 
-    int scoreType;
+    int scoreType = 0;
     if (i_pConfig->FindData(launchable_scoretype, scoreType, false)) {
         mScoreType = (ScoreType)scoreType;
     }
 
-    int launchableDifficulty;
+    int launchableDifficulty = 0;
     if(i_pConfig->FindData(launchable_difficulty, launchableDifficulty, false)) {
         mLaunchableDifficulty = (Difficulty)launchableDifficulty;
     }
@@ -51,12 +57,12 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
 
     DataArray* secretPrereqs = i_pConfig->FindArray(secret_prereqs, false);
     if (secretPrereqs != NULL) {
-        mSecretPrereqs.reserve(secretPrereqs->Size());
-        for (int i = 0; i < secretPrereqs->Size(); i++) {
+        mSecretPrereqs.reserve(secretPrereqs->Size() - 1);
+        for (int i = 1; i < secretPrereqs->Size(); i++) {
             DataNode& node = secretPrereqs->Node(i);
             Symbol s = node.Sym(secretPrereqs);
 
-            mSecretPrereqs.push_back(NULL);
+            mSecretPrereqs.push_back(s);
         }
     }
 
@@ -69,15 +75,15 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         dynamicPrereqs = dynamicPrereqs->FindArray(songs, false);
 
         if(dynamicPrereqs != NULL){
-            mDynamicPrereqsSongs.reserve(dynamicPrereqs->Size());
-            for (int i = 0; i < dynamicPrereqs->Size(); i++) {
+            mDynamicPrereqsSongs.reserve(dynamicPrereqs->Size() - 1);
+            for (int i = 1; i < dynamicPrereqs->Size(); i++) {
                 DataNode& node = dynamicPrereqs->Node(i);
                 Symbol s = node.Sym(dynamicPrereqs);
 
-                mDynamicPrereqsSongs.push_back(NULL);
+                mDynamicPrereqsSongs.push_back(s);
             }
             if (mDynamicPrereqsSongs.size() < mDynamicPrereqsNumSongs) {
-                TheDebug.Notify(MakeString("There are less songs in the dynamic prereq song list than the num_songs provided: %s.", name));
+                TheDebug.Notify(MakeString("There are less songs in the dynamic prereq song list than the num_songs provided: %s\n", mName.Str()));
                 mDynamicPrereqsNumSongs = 0xffffffff;
             }
         }
@@ -86,13 +92,15 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(passive_msg_channel, mPassiveMsgChannel, false);
     i_pConfig->FindData(passive_msg_priority, mPassiveMsgPriority, false);
 
-    bool noMsgChannel = !(mPassiveMsgChannel == "");
+    bool noMsgChannel = !(mPassiveMsgChannel == gNullStr);
 
-    if (!noMsgChannel) {
+    if (noMsgChannel) {
         if (mPassiveMsgPriority < 1) {
-            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is less than the minimum: %i!", mName, 1));
+            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is less than the minimum: %i!\n", mName.Str(), 1));
+            mPassiveMsgPriority = 1;
         } else if (1000 < mPassiveMsgPriority) {
-            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is more than the maximum: %i!", mName, 1000));
+            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is more than the maximum: %i!\n", mName.Str(), 1000));
+            mPassiveMsgPriority = 1000;
         }
     }
 
@@ -125,6 +133,10 @@ Symbol Accomplishment::GetDescription() const {
     return MakeString("%s_desc", mName);
 }
 
+const char* unusedStrings[] = {
+    "%s_howto"
+};
+
 Symbol Accomplishment::GetSecretDescription() const {
     return acc_secretdesc;
 }
@@ -132,12 +144,6 @@ Symbol Accomplishment::GetSecretDescription() const {
 Symbol Accomplishment::GetFlavorText() const {
     return MakeString("%s_flavor", mName);
 }
-
-std::string unusedStrings2[] = {
-    "%s_howto", 
-    "%s_gray", 
-    "i_pUser", 
-};
 
 bool Accomplishment::GetShouldShowDenominator() const {
     return mShouldShowDenominator;
@@ -155,15 +161,18 @@ Symbol Accomplishment::GetSecretCampaignLevelPrereq() const {
     return mSecretCampaignLevelPrereq;
 }
 
-const std::vector<Accomplishment*>& Accomplishment::GetSecretPrereqs() const {
+const std::vector<Symbol>& Accomplishment::GetSecretPrereqs() const {
     return mSecretPrereqs;
 }
 
 bool Accomplishment::IsDynamic() const {
-    bool noFilter;
-    if (gNullStr) {
-        noFilter = !strcmp(mDynamicPrereqsFilter.Str(), gNullStr);
-    } else { noFilter = (mDynamicPrereqsFilter.Str() == gNullStr); }
+    bool noFilter = !mDynamicPrereqsSongs.empty();
+    if (!noFilter) {
+        if (gNullStr) {
+            noFilter = !strcmp(mDynamicPrereqsFilter.Str(), gNullStr);
+        } else { noFilter = (mDynamicPrereqsFilter.Str() == gNullStr); }
+        noFilter = !noFilter;
+    }
     return noFilter;
 }
 
@@ -171,7 +180,7 @@ bool Accomplishment::GetDynamicAlwaysVisible() const {
     return mDynamicAlwaysVisible;
 }
 
-const std::vector<Accomplishment*>& Accomplishment::GetDynamicPrereqsSongs() const {
+const std::vector<Symbol>& Accomplishment::GetDynamicPrereqsSongs() const {
     return mDynamicPrereqsSongs;
 }
 
@@ -197,8 +206,16 @@ void Accomplishment::GetIconArt() const {
         noIconArt = !strcmp(mIconOverride.Str(), gNullStr);
     } else { noIconArt = (mIconOverride.Str() == gNullStr); }
 
-    MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", noIconArt ? mIconOverride : mName);
+    if (!noIconArt) {
+        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mIconOverride.Str());
+    } else {
+        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mName.Str());
+    }
 }
+
+const char* unusedStrings2[] = {
+    "%s_gray"
+};
 
 bool Accomplishment::IsFulfilled(BandProfile*) const {
     return false;
@@ -212,8 +229,8 @@ bool Accomplishment::InqProgressValues(BandProfile*, int&, int&) {
     return false;
 }
 
-bool Accomplishment::GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const {
-    return strcmp(mName.Str(), gNullStr) != 0;
+Symbol Accomplishment::GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const {
+    return gNullStr;
 }
 
 bool Accomplishment::InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const {
@@ -300,12 +317,36 @@ char* Accomplishment::GetIconPath() {
     return "ui/accomplishments/accomplishment_art/%s_keep.png";
  }
 
-void Accomplishment::IsUserOnValidScoreType(LocalBandUser*) const {
+bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
+    ControllerType controllerType = i_pUser->GetControllerType();
 
+    std::set<ScoreType> scoreTypes;
+
+    InqRequiredScoreTypes(scoreTypes);
+
+    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+    ScoreType scoreType = *iterator;
+    TrackType trackType = ScoreTypeToTrackType(scoreType);
+    ControllerType c = TrackTypeToControllerType(trackType);
+
+    return controllerType == c;
 }
 
-void Accomplishment::IsUserOnValidController(LocalBandUser*) const {
+bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
+    MILO_ASSERT(i_pUser, 0x253);
 
+    ControllerType controllerType = i_pUser->GetControllerType();
+    bool isValid = IsUserOnValidScoreType(i_pUser);
+
+    bool anyControllers = false;
+    if (mControllerTypes.size() == 0) {
+        anyControllers = true;
+    } else {
+
+    }
+
+    bool returnValue = 0;
+    return returnValue;
 }
 
 Difficulty Accomplishment::GetRequiredDifficulty() const {
@@ -313,15 +354,25 @@ Difficulty Accomplishment::GetRequiredDifficulty() const {
 }
 
 ScoreType Accomplishment::GetRequiredScoreType() const {
-    int local_18 = 0;
+    std::set<ScoreType> scoreTypes;
+    ScoreType scoreType;
 
-    if(local_18 == 1) {
+    InqRequiredScoreTypes(scoreTypes);
 
-    }
+    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+    scoreType = *iterator;
+
+    return scoreType;
 }
 
-void Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
-    MILO_ASSERT(o_rScoreTypes.empty(), 0x00);
+bool Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
+    MILO_ASSERT(o_rScoreTypes.empty(), 0x28d);
+
+    if (mScoreType != 10) {
+        o_rScoreTypes.insert(mScoreType);
+    }    
+
+    return !o_rScoreTypes.empty();
 }
 
 int Accomplishment::GetRequiredMinPlayers() const {
@@ -340,12 +391,18 @@ bool Accomplishment::GetRequiresBREAbility() const {
     return mRequiresBre;
 }
 
-// void Accomplishment::InitializeMusicLibraryTask() const {}
+void Accomplishment::InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const {
 
-void Accomplishment::InitializeTrackerDesc(TrackerDesc&) const {
-    // MILO_ASSERT(TheCampaign, 0x2b8);
+}
 
-    // TheCampaign.GetLaunchUser();
+void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
+    MILO_ASSERT(TheCampaign, 0x2b8);
+
+    Symbol user = TheCampaign->GetLaunchUser();
+
+    trackerDesc.symbol2 = user;
+    trackerDesc.symbol3 = mName;
+    trackerDesc.int1 = 2;
 }
 
 bool Accomplishment::CanBeEarnedWithNoFail() const {

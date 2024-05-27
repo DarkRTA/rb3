@@ -23,8 +23,8 @@ private:
     Symbol mName;               // 0x04
     Symbol mGroup;              // 0x08
     float mWeight;              // 0x0c
-    DataArray* m_pSongEntries;  
-    std::vector<Symbol> o_rSongs;
+    DataArray* m_pSongEntries;  // 0x10
+    std::vector<Symbol> o_rSongs; // 0x14
 
 };
 

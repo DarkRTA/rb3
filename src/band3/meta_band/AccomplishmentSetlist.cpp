@@ -4,8 +4,8 @@
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
 
-AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty(0), mMinStars(0) {
-    Configure(i_pConfig);
+AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty((Difficulty)0), mMinStars(0) {
+    AccomplishmentSetlist::Configure(i_pConfig);
 }
 
 AccomplishmentSetlist::~AccomplishmentSetlist() {
@@ -19,7 +19,7 @@ void AccomplishmentSetlist::Configure(DataArray* i_pConfig) {
     int difficultyVal = false;
     bool parsed = i_pConfig->FindData(difficulty, difficultyVal, false);
     if (parsed) {
-        mDifficulty = difficultyVal;
+        mDifficulty = (Difficulty)difficultyVal;
     }
     int instrumentVal = false;
     parsed = i_pConfig->FindData(instrument, instrumentVal, false);
@@ -41,7 +41,7 @@ bool AccomplishmentSetlist::HasSpecificSongsToLaunch() const {
     return true;
 }
 
-int AccomplishmentSetlist::GetRequiredDifficulty() const {
+Difficulty AccomplishmentSetlist::GetRequiredDifficulty() const {
     return mDifficulty;
 }
 
