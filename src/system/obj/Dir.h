@@ -115,6 +115,11 @@ public:
         InlineDirType inlineDirType;
     };
 
+    class Viewport {
+    public:
+        Transform mXfm;
+    };
+
     static ObjectDir* sMainDir;
 
     static ObjectDir* Main() { return sMainDir; }
@@ -149,28 +154,35 @@ public:
     bool HasSubDir(ObjectDir*);
     bool HasDirPtrs() const;
     Entry* FindEntry(const char*, bool);
+    bool SaveSubdirs();
+    void SetPathName(const char*);
+    void TransferLoaderState(ObjectDir*);
 
     Hmx::Object* FindObject(const char*, bool);
     template <class T> T* Find(const char* name, bool b) {
         return dynamic_cast<T*>(FindObject(name, b));
     }
 
+    DECLARE_REVS;
+
     KeylessHash<const char*, Entry> mHashTable;
     StringTable mStringTable;
     FilePath mProxyFile;
     bool mProxyOverride;
-    bool mInlineProxy;
+    bool mInlineProxy; // 0x45
     DirLoader* mLoader;
-    std::vector<ObjDirPtr<ObjectDir> > mSubDirs;
+    std::vector<ObjDirPtr<ObjectDir> > mSubDirs; // 0x4c
     bool mIsSubDir;
     InlineDirType mInlineSubDirType;
-    const char* mPathName;
+    const char* mPathName; // 0x5c
     FilePath mStoredFile;
     std::vector<InlinedDir> mInlinedDirs;
     Hmx::Object* mCurCam;
-    bool mAlwaysInlined;
+    int mAlwaysInlined; // appears to be a word? - 0x78
     const char* mAlwaysInlineHash;
 };
+
+BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp);
 
 extern bool gLoadingProxyFromDisk;
 extern const char* kNotObjectMsg;

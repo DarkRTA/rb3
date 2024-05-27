@@ -3,15 +3,13 @@
 #include "obj/Dir.h"
 
 static const char* utlStrings[] = {
-    "fast", "main", "%d,%d,%d,%d\n"
+    "mem_copy", "fast", "main", "%d,%d,%d,%d\n"
 };
 
 void InitObject(Hmx::Object* obj){
     static DataArray* objects = SystemConfig("objects");
     static Symbol initSym("init");
-    obj->ClassName();
-    DataArray* found1 = objects->FindArray(initSym, true);
-    DataArray* found2 = found1->FindArray(initSym, false);
+    DataArray* found2 = objects->FindArray(obj->ClassName(), true)->FindArray(initSym, false);
     if(found2 != 0) found2->ExecuteScript(1, obj, 0, 1);
 }
 
@@ -26,7 +24,7 @@ const char* SafeName(Hmx::Object* obj){
 }
 
 void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
-    DataArray* found = SystemConfig(Symbol("objects"), sym)->FindArray("superclasses", false);
+    DataArray* found = SystemConfig("objects", sym)->FindArray("superclasses", false);
     if(found){
         for(int i = 1; i < found->Size(); i++){
             Symbol foundSym = found->Sym(i);
@@ -36,6 +34,10 @@ void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
         }
     }
 }
+
+static const char* utlStrings2[] = {
+    "Object", "ext", "."
+};
 
 void ListSuperClasses(Symbol sym, std::vector<Symbol>& classes){
     RecurseSuperClasses(sym, classes);
@@ -61,20 +63,20 @@ bool IsASubclass(Symbol child, Symbol parent){
     else return RecurseSuperClassesSearch(child, parent);
 }
 
-// void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool b2, bool b3){
-//     const char* name = from->Name();
-//     ObjectDir* dir = from->Dir();
-//     from->SetName(0, 0);
-//     to->SetName(name, dir);
-//     if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
-//     // for(std::vector<ObjRef*>::iterator it = from->Refs().begin(); it != from->Refs().end(); it++){
-//     //     (*it)->Replace(from, to);
-//     // }
-//     while(!from->Refs().empty()){
-//         from->Refs().back()->Replace(from, to);
-//     }
-//     if(b2) delete from;
-// }
+void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool b2, bool b3){
+    const char* name = from->Name();
+    ObjectDir* dir = from->Dir();
+    from->SetName(0, 0);
+    to->SetName(name, dir);
+    if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
+    // for(std::vector<ObjRef*>::iterator it = from->Refs().begin(); it != from->Refs().end(); it++){
+    //     (*it)->Replace(from, to);
+    // }
+    while(!from->Refs().empty()){
+        from->Refs().back()->Replace(from, to);
+    }
+    if(b2) delete from;
+}
 
 int SubDirStringUsed(ObjectDir* dir){
     if(!dir) return 0;

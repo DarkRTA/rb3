@@ -39,7 +39,7 @@ Timer gSystemTimer;
 bool gNetUseTimedSleep;
 
 std::vector<char*> TheSystemArgs;
-File* gHostFile;
+const char* gHostFile;
 
 unsigned char* g_pRSOReserveBuf;
 unsigned char* g_pDefaultRSOBuf;

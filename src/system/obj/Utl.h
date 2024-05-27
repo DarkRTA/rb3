@@ -2,6 +2,7 @@
 #define OBJ_UTL_H
 #include "utl/Symbol.h"
 #include "obj/Data.h"
+#include "obj/Object.h"
 #include <vector>
 
 // forward declarations
@@ -11,7 +12,7 @@ namespace Hmx {
 class ObjectDir;
 
 void InitObject(Hmx::Object*);
-const char* PathName(const Hmx::Object*);
+// const char* PathName(const Hmx::Object*); // declared in ObjMacros.h instead, which you can just include obj/Object.h for anyway
 const char* SafeName(Hmx::Object*);
 DataNode ObjectList(class ObjectDir*, Symbol, bool); // i think???
 DataNode MakeFileList(const char*, bool, bool (*)(char*));
@@ -32,6 +33,7 @@ int GetPropSize(Hmx::Object*, DataArray*, int);
 bool IsPropPathValid(Hmx::Object*, DataArray*);
 bool PathCompare(DataArray*, DataArray*);
 DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
+void CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
 
 // mergefilter classes go here
 class MergeFilter {
@@ -66,10 +68,5 @@ public:
 };
 
 void MergeDirs(ObjectDir*, ObjectDir*, MergeFilter&);
-
-// apparently uncommenting this breaks TypeProps.cpp, which is just lovely
-// #include "obj/Object.h" // if i put this earlier, then i get circular dependencies with objects' SetType for using PathName
-// i need this here so that CopyType can be included for this function prototype
-// void CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
 
 #endif

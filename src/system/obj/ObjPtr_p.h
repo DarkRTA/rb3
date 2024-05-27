@@ -1,8 +1,7 @@
 #ifndef OBJ_OBJPTR_H
 #define OBJ_OBJPTR_H
-#include "obj/Object.h"
 #include "os/Debug.h"
-#include "obj/Dir.h"
+#include "obj/Object.h"
 #include "utl/BinStream.h"
 
 // BEGIN OBJPTR TEMPLATE -------------------------------------------------------------------------------
@@ -11,6 +10,10 @@ template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
 
     ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
+        if(mPtr != 0) mPtr->AddRef(this);
+    }
+
+    ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.Owner()), mPtr(oPtr.Ptr()) {
         if(mPtr != 0) mPtr->AddRef(this);
     }
 
@@ -39,24 +42,7 @@ public:
 
     void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
     operator bool() const { return mPtr != 0; }
-
-    bool Load(BinStream& bs, bool b, class ObjectDir* dir){
-        char buf[0x80];
-        bs.ReadString(buf, 0x80);
-        if(!dir && mOwner) dir = mOwner->Dir();
-        if(mOwner && dir){
-            *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
-            if(mPtr == 0 && buf[0] != '\0' && b){
-                MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
-            }
-            return false;
-        }
-        else {
-            *this = 0;
-            if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
-        }
-        return true;
-    }
+    bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;
     T1* mPtr;
@@ -110,24 +96,7 @@ public:
     }
 
     void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
-
-    bool Load(BinStream& bs, bool b, class ObjectDir* dir){
-        char buf[0x80];
-        bs.ReadString(buf, 0x80);
-        if(!dir && mOwner) dir = mOwner->Dir();
-        if(mOwner && dir){
-            *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
-            if(mPtr == 0 && buf[0] != '\0' && b){
-                MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
-            }
-            return false;
-        }
-        else {
-            *this = 0;
-            if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
-        }
-        return true;
-    }
+    bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;
     T1* mPtr;
@@ -155,9 +124,8 @@ public:
         struct Node* next;
         struct Node* prev;
 
-        void operator delete(void* v){
-            _PoolFree(sizeof(Node), FastPool, v);
-        }
+        NEW_POOL_OVERLOAD(Node);
+        DELETE_POOL_OVERLOAD(Node);
     };
 
     class iterator {
@@ -294,7 +262,7 @@ public:
     // fn_8049C470 - insert
     iterator insert(iterator it, T1* obj) {
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x15A);
-        Node* node = new (_PoolAlloc(0xc, 0xc, FastPool))(Node);
+        Node* node = new Node;
         node->obj = obj;
         link(it, node);
         return node;
@@ -359,8 +327,63 @@ public:
     }
 
     // fn_8056349C in retail
-    bool Load(BinStream& bs, bool b){
-        bool ret = true;
+    bool Load(BinStream& bs, bool b);
+
+};
+
+// fn_80563460 in retail (BinStream >> ObjPtrList<Hmx::Object, ObjectDir>)
+template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
+    ptr.Load(bs, true);
+    return bs;
+}
+
+// END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
+
+// LOAD FUNCTIONS
+// They have to be done here outside of their class bodies due to a conflict with ObjectDir and DirLoader's headers
+#include "obj/Dir.h"
+
+template <class T1, class T2>
+inline bool ObjPtr<T1, T2>::Load(BinStream& bs, bool b, class ObjectDir* dir){
+    char buf[0x80];
+    bs.ReadString(buf, 0x80);
+    if(!dir && mOwner) dir = mOwner->Dir();
+    if(mOwner && dir){
+        *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
+        if(mPtr == 0 && buf[0] != '\0' && b){
+            MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+        }
+        return false;
+    }
+    else {
+        *this = 0;
+        if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
+    }
+    return true;
+}
+
+template <class T1, class T2>
+inline bool ObjOwnerPtr<T1, T2>::Load(BinStream& bs, bool b, class ObjectDir* dir){
+    char buf[0x80];
+    bs.ReadString(buf, 0x80);
+    if(!dir && mOwner) dir = mOwner->Dir();
+    if(mOwner && dir){
+        *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
+        if(mPtr == 0 && buf[0] != '\0' && b){
+            MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+        }
+        return false;
+    }
+    else {
+        *this = 0;
+        if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
+    }
+    return true;
+}
+
+template <class T1, class T2>
+inline bool ObjPtrList<T1, T2>::Load(BinStream& bs, bool b){
+    bool ret = true;
         clear();
         int count;
         bs >> count;
@@ -383,17 +406,8 @@ public:
             count--;
         }
         return ret;
-    }
-
-};
-
-// fn_80563460 in retail (BinStream >> ObjPtrList<Hmx::Object, ObjectDir>)
-template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class ObjectDir>& ptr){
-    ptr.Load(bs, true);
-    return bs;
 }
 
-// END OBJPTRLIST TEMPLATE -----------------------------------------------------------------------------
 
 #endif
 

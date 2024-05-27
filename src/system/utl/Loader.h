@@ -32,6 +32,7 @@ public:
 
     LoaderPos mPos;
     FilePath mFile;
+    int mHeap;
 };
 
 class LoadMgr {
