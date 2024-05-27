@@ -11,6 +11,7 @@ public:
 
     void StartPolling();
     void CancelPolling();
+    void PollAll();
 
     std::list<SynthPollable*>::iterator mItr;
 
