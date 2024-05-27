@@ -41,8 +41,16 @@ public:
     virtual bool IsDirPtr(){ return true; }
 
     // GetFile__21ObjDirPtr<9ObjectDir>CFv
+    FilePath& GetFile() const {
+        if(mDir && mDir->mLoader){
+            return mDir->mLoader->mFile;
+        }
+        if(mLoader) return mLoader->mFile;
+        if(mDir) return mDir->mStoredFile;
+        return FilePath::sNull;
+    }
+
     // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
-    // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
 
     T* operator->() const {
@@ -87,6 +95,17 @@ public:
             if(mDir) mDir->AddRef(this);
         }
         return *this;
+    }
+    
+    // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
+    ObjDirPtr& operator=(const ObjDirPtr& oPtr){
+        *this = oPtr.mDir;
+        // if(mLoader && mLoader->IsLoaded()) PostLoad(0);
+        // if(oPtr.mDir != mDir || !oPtr.mDir){
+        //     delete mLoader;
+        //     mLoader = 0;
+
+        // }
     }
 
     T* mDir;
@@ -145,7 +164,7 @@ public:
     virtual void ResetEditorState();
     virtual bool AllowsInlineProxy();
     virtual InlineDirType InlineSubDirType();
-    virtual void AddedObject(Hmx::Object*);
+    virtual void AddedObject(Hmx::Object*){}
     virtual void RemovingObject(Hmx::Object*);
     virtual void OldLoadProxies(BinStream&, int);
 
@@ -157,6 +176,9 @@ public:
     bool SaveSubdirs();
     void SetPathName(const char*);
     void TransferLoaderState(ObjectDir*);
+    void DeleteObjects();
+    void DeleteSubDirs();
+    bool InlineProxy(BinStream&);
 
     Hmx::Object* FindObject(const char*, bool);
     template <class T> T* Find(const char* name, bool b) {

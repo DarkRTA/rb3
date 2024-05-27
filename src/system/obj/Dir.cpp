@@ -176,6 +176,20 @@ bool ObjectDir::AllowsInlineProxy(){
     return mInlineProxy;
 }
 
+#pragma push
+#pragma dont_inline on
+void ObjectDir::PostLoad(BinStream& bs){
+    for(int i = mInlinedDirs.size(); i >= 0; i--){
+        ObjDirPtr<ObjectDir>& ptr = mInlinedDirs[i].dir;
+        ptr.IsLoaded();
+        ptr->Dir();
+        ptr.GetFile();
+        ptr.PostLoad(0);
+        ptr = ObjDirPtr<ObjectDir>();
+    }
+}
+#pragma pop
+
 extern std::vector<ObjVersion> sRevStack;
 
 int PopRev(Hmx::Object* o){
@@ -192,3 +206,49 @@ int PopRev(Hmx::Object* o){
     sRevStack.pop_back();
     return back.revs;
 }
+
+void ObjectDir::TransferLoaderState(ObjectDir* otherDir){
+    mProxyFile = otherDir->mProxyFile;
+    mProxyOverride = otherDir->mProxyOverride;
+    mLoader = otherDir->mLoader;
+    otherDir->mLoader = 0;
+}
+
+void ObjectDir::SetProxyFile(const FilePath& fp, bool b){
+    if(this == mDir){
+        MILO_WARN("Can't set proxy file if own dir");
+    }
+    else {
+        mProxyFile = fp;
+        mProxyOverride = b;
+        if(!b){
+            DeleteObjects();
+            DeleteSubDirs();
+            if(!mProxyFile.empty()){
+                TheLoadMgr.PollUntilLoaded(new DirLoader(mProxyFile, kLoadFront, 0, 0, this, false), 0);
+            }
+        }
+    }
+}
+
+void ObjectDir::RemovingObject(Hmx::Object* obj){
+    if(obj != mCurCam) return;
+    else mCurCam = 0;
+}
+
+bool ObjectDir::InlineProxy(BinStream& bs){
+    bool ret = false;
+    if(AllowsInlineProxy() && bs.Cached()){
+        ret = true;
+    }
+    return ret;
+}
+
+#pragma push
+#pragma dont_inline on
+static void keylesshashtest(){
+    ObjectDir::Entry entry;
+    KeylessHash<const char*, ObjectDir::Entry> hash(0, entry, entry, 0);
+    hash.Find(0);
+}
+#pragma pop

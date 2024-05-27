@@ -53,7 +53,7 @@ public:
     class PanelDir* mDir;
     DirLoader* mLoader;
     class String mFocusName;
-    State mState;
+    mutable State mState;
     bool mLoaded;
     bool mPaused;
     bool mShowing;

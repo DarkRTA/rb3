@@ -59,4 +59,8 @@ void SetSystemArgs(int, char**);
 void SystemPreInit(int, char**, const char*);
 void SystemPreInit(const char*);
 
+// System_Wii
+void CaptureStackTrace(int depth, unsigned int* trace);
+bool PlatformDebugBreak();
+
 #endif

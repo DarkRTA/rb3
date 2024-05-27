@@ -6,7 +6,6 @@
 #include "utl/TextStream.h"
 #include "os/Debug.h"
 #include "obj/ObjMacros.h"
-#include "obj/PropSync_p.h"
 #include <vector>
 #include <map>
 
@@ -180,12 +179,6 @@ inline unsigned short getAltRev(int ui){
 inline int packRevs(unsigned short alt, unsigned short rev){
     return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
-
-#define NEW_OVERLOAD \
-    void* operator new(size_t t) {return _MemAlloc(t, 0);}
-
-#define DELETE_OVERLOAD \
-    void operator delete(void* v){ _MemFree(v); }
 
 #define NEW_OBJ(objType) \
     static Hmx::Object* NewObject() { return new objType; }
