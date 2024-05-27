@@ -4,7 +4,7 @@
 
 LoadMgr TheLoadMgr;
 
-LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), unk10(), unk18(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
+LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), unk18(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
 
 }
 
@@ -81,4 +81,23 @@ Loader* LoadMgr::GetLoader(const FilePath& fp) const {
         }
         return theLoader;
     }
+}
+
+const char* polluntilloadedstr = "PollUntilLoaded circular dependency %s on %s";
+
+const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
+    static const char* names[4] = { "kLoadFront", "kLoadBack", "kLoadFrontStayBack", "kLoadStayBack" };
+    static const char* abbrevs[4] = { "F", "B", "FSB", "SB" };
+    MILO_ASSERT(pos >= 0 && pos <= kLoadStayBack, 0x11D);
+    if(abbrev) return abbrevs[pos];
+    else return names[pos];
+}
+
+void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
+    for(std::list<std::pair<String, LoaderFactoryFunc*> >::iterator it = mFactories.begin(); it != mFactories.end(); it++){
+        if((*it).first == cc){
+            MILO_WARN("More than one LoadMgr factory for extension \"%s\"!", cc);
+        }
+    }
+    mFactories.push_back(std::pair<String, LoaderFactoryFunc*>(String(cc), func));
 }
