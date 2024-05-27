@@ -212,5 +212,6 @@ int PopRev(Hmx::Object* o){
 static void keylesshashtest(){
     ObjectDir::Entry entry;
     KeylessHash<const char*, ObjectDir::Entry> hash(0, entry, entry, 0);
+    hash.Find(0);
 }
 #pragma pop

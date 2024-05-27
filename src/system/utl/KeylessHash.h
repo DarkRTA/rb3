@@ -38,21 +38,27 @@ public:
         mNumEntries = 0;
     }
 
-    ~KeylessHash();
-    T1* Find(const T1& key);
-    // T1* Find(const T1& key){
-    //     if(mEntries){
-    //         int i = HashString(key, mSize);
-    //         MILO_ASSERT(i >= 0, 0x88);
-    //         T2* end = &mEmpty;
-    //         T2* it = &mEntries[i];
-    //         while(it != end){
-    //             if(strcmp(0, key) != 0) return it;
-    //             if(++i == mSize) i = 0;
-    //         }
-    //     }
-    //     return 0;
-    // }
+    ~KeylessHash(){
+        if(mOwnEntries){
+            delete [] mEntries;
+        }
+    }
+    
+    DELETE_OVERLOAD;
+
+    T1* Find(const T1& key){
+        if(mEntries){
+            int i = HashString(key, mSize);
+            MILO_ASSERT(i >= 0, 0x88);
+            T2* end = &mEmpty;
+            T2* it = &mEntries[i];
+            while(it != end){
+                // if(strcmp(0, key) != 0) return it;
+                // if(++i == mSize) i = 0;
+            }
+        }
+        return 0;
+    }
 
     int Insert(const T2&);
     void Resize(int, T2*);

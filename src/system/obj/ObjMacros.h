@@ -2,6 +2,7 @@
 #define OBJ_OBJMACROS_H
 #include "obj/Object.h"
 #include "os/System.h"
+#include "obj/PropSync_p.h"
 #include "obj/MessageTimer.h"
 
 const char* PathName(const Hmx::Object*);

@@ -6,7 +6,6 @@
 #include "utl/TextStream.h"
 #include "os/Debug.h"
 #include "obj/ObjMacros.h"
-#include "obj/PropSync_p.h"
 #include <vector>
 #include <map>
 

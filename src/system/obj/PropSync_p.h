@@ -4,7 +4,6 @@
 #include "math/Sphere.h"
 #include "math/Mtx.h"
 #include "math/Vec.h"
-#include "obj/Object.h"
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
