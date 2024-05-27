@@ -432,6 +432,7 @@
             "system/utl/MakeString.cpp": "Matching",
             "system/utl/MBT.cpp": "Matching",
             "system/utl/MeasureMap.cpp": "NonMatching",
+            "system/utl/MemcardBufStream.cpp": "Matching",
             "system/utl/MemStream.cpp": "Matching",
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
