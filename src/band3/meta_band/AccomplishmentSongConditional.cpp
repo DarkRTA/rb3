@@ -8,17 +8,26 @@ AccomplishmentSongConditional::~AccomplishmentSongConditional() {
     
 }
 
-void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
-
+void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr* songManager, Symbol, const AccomplishmentCondition&) const {
+    // songManager->GetBestStars();
 }
 
 void AccomplishmentSongConditional::CheckScoreCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
     
 }
 
-void AccomplishmentSongConditional::CheckAccuracyCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
-void AccomplishmentSongConditional::CheckStreakCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
-void AccomplishmentSongConditional::CheckHoposPercentCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
+void AccomplishmentSongConditional::CheckAccuracyCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
+
+}
+
+void AccomplishmentSongConditional::CheckStreakCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
+
+}
+
+void AccomplishmentSongConditional::CheckHoposPercentCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
+
+}
+
 void AccomplishmentSongConditional::CheckSoloPercentCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
 void AccomplishmentSongConditional::CheckAwesomesCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
 void AccomplishmentSongConditional::CheckDoubleAwesomesCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}

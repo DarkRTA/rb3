@@ -18,6 +18,8 @@
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
+            "band3/game/Tracker.cpp": "NonMatching",
+            "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
@@ -36,6 +38,7 @@
             "band3/meta_band/CampaignKey.cpp": "Matching",
             "band3/meta_band/GameplayOptions.cpp": "NonMatching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
+            "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/GigFilter.cpp": "NonMatching",
@@ -245,6 +248,7 @@
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "NonMatching",
             "system/meta/SongMetadata.cpp": "NonMatching",
+            "system/meta/SongMgr.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
             "system/meta/StreamPlayer.cpp": "NonMatching",

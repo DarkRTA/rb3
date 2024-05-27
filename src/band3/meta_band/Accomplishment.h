@@ -5,8 +5,7 @@
 #include <set>
 #include "BandProfile.h"
 #include "band3/game/BandUser.h"
-
-class TrackerDesc;
+#include "band3/game/Tracker.h"
 
 class Accomplishment {
 public:
@@ -17,7 +16,7 @@ protected:
     virtual Difficulty GetRequiredDifficulty() const;
 
 private:
-    virtual void Configure(DataArray*);
+    void Configure(DataArray*);
     virtual int GetType() const;
     Symbol GetName() const;
     Symbol GetDescription() const;
@@ -57,7 +56,7 @@ private:
     bool GetRequiresUnisonAbility() const;
     bool GetRequiresBREAbility() const;
     // void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
-    void InitializeTrackerDesc(TrackerDesc&) const;
+    virtual void InitializeTrackerDesc(TrackerDesc&) const;
     bool CanBeEarnedWithNoFail() const;
     bool IsTrackedInLeaderboard() const;
     Symbol GetUnitsToken(int) const;
@@ -85,7 +84,7 @@ private:
     Symbol mDynamicPrereqsFilter; // 0x58
     int mProgressStep; // 0x5c
 
-    int mPadding3; // 0x60, Don't know what this is yet
+    int mIndex; // 0x60
     
     Symbol mContextId;  // 0x64
 

@@ -3,8 +3,7 @@
 
 #include "AccomplishmentConditional.h"
 #include "system/ui/UILabel.h"
-
-class SongStatusMgr;
+#include "SongStatusMgr.h"
 
 class AccomplishmentSongConditional : public AccomplishmentConditional {
     AccomplishmentSongConditional(DataArray*, int);
