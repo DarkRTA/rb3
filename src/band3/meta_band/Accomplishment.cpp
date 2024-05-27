@@ -4,6 +4,7 @@
 #include "system/utl/Symbols2.h"
 #include "system/utl/Symbols3.h"
 #include "system/utl/Symbols4.h"
+#include "game/Defines.h"
 #include "os/Debug.h"
 #include <string>
 #include "Campaign.h"
@@ -170,6 +171,7 @@ bool Accomplishment::IsDynamic() const {
         if (gNullStr) {
             noFilter = !strcmp(mDynamicPrereqsFilter.Str(), gNullStr);
         } else { noFilter = (mDynamicPrereqsFilter.Str() == gNullStr); }
+        noFilter = !noFilter;
     }
     return noFilter;
 }
@@ -318,6 +320,16 @@ char* Accomplishment::GetIconPath() {
 bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
     ControllerType controllerType = i_pUser->GetControllerType();
 
+    std::set<ScoreType> scoreTypes;
+
+    InqRequiredScoreTypes(scoreTypes);
+
+    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+    ScoreType scoreType = *iterator;
+    TrackType trackType = ScoreTypeToTrackType(scoreType);
+    ControllerType c = TrackTypeToControllerType(trackType);
+
+    return controllerType == c;
 }
 
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
@@ -342,15 +354,25 @@ Difficulty Accomplishment::GetRequiredDifficulty() const {
 }
 
 ScoreType Accomplishment::GetRequiredScoreType() const {
-    int local_18 = 0;
+    std::set<ScoreType> scoreTypes;
+    ScoreType scoreType;
 
-    if(local_18 == 1) {
+    InqRequiredScoreTypes(scoreTypes);
 
-    }
+    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+    scoreType = *iterator;
+
+    return scoreType;
 }
 
 bool Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
-    MILO_ASSERT(o_rScoreTypes.empty(), 0x00);
+    MILO_ASSERT(o_rScoreTypes.empty(), 0x28d);
+
+    if (mScoreType != 10) {
+        o_rScoreTypes.insert(mScoreType);
+    }    
+
+    return !o_rScoreTypes.empty();
 }
 
 int Accomplishment::GetRequiredMinPlayers() const {
@@ -369,7 +391,9 @@ bool Accomplishment::GetRequiresBREAbility() const {
     return mRequiresBre;
 }
 
-// void Accomplishment::InitializeMusicLibraryTask() const {}
+void Accomplishment::InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const {
+
+}
 
 void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
     MILO_ASSERT(TheCampaign, 0x2b8);

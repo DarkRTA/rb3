@@ -6,6 +6,7 @@
 #include "BandProfile.h"
 #include "band3/game/BandUser.h"
 #include "band3/game/Tracker.h"
+#include "band3/meta_band/MusicLibrary.h"
 
 class Accomplishment {
 public:
@@ -55,7 +56,7 @@ private:
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
     bool GetRequiresBREAbility() const;
-    // void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
+    void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
     virtual void InitializeTrackerDesc(TrackerDesc&) const;
     bool CanBeEarnedWithNoFail() const;
     bool IsTrackedInLeaderboard() const;
