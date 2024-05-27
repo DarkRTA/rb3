@@ -32,4 +32,10 @@ void MemPopHeap();
 int MemFindAddrHeap(void*);
 const char* MemHeapName(int);
 
+#define NEW_OVERLOAD \
+    void* operator new(size_t t) {return _MemAlloc(t, 0);}
+
+#define DELETE_OVERLOAD \
+    void operator delete(void* v){ _MemFree(v); }
+
 #endif
