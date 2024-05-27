@@ -46,29 +46,10 @@ bool HxGuid::operator==(const HxGuid& hx) const {
 }
 
 bool HxGuid::operator<(const HxGuid& hx) const {
-    bool b1, b2, b3, b4, b5, ret;
-    ret = true;
-    if(mData[0] >= hx.mData[0]){
-        b5 = false;
-        if(mData[0] == hx.mData[0]){
-            b4 = true;
-            if(mData[1] >= hx.mData[1]){
-                b3 = false;
-                if(mData[1] == hx.mData[1]){
-                    b2 = true;
-                    if(mData[2] >= hx.mData[2]){
-                        b1 = (mData[2] == hx.mData[2] && mData[3] < hx.mData[3]);
-                        if(!b1) b2 = false;
-                    }
-                    if(b2) b3 = true;
-                }
-                if(!b3) b4 = false;
-            }
-            if(b4) b5 = true;
-        }
-        if(!b5) ret = false;
-    }
-    return ret;
+    return mData[0] < hx.mData[0] || 
+        (mData[0] == hx.mData[0] && (mData[1] < hx.mData[1] || 
+        (mData[1] == hx.mData[1] && (mData[2] < hx.mData[2] ||
+        (mData[2] == hx.mData[2] && (mData[3] < hx.mData[3]))))));
 }
 
 int HxGuid::SaveSize(){
