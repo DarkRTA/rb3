@@ -59,7 +59,7 @@ public:
     Platform mPlatform;
     bool mEditMode;
     bool mCacheMode;
-    std::list<std::pair<String, LoaderFactoryFunc*> > mFactories;
+    std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories;
     float unk18; // mPeriod?
     float unk1c;
     std::list<int> unk20; // mLoading?
