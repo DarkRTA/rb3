@@ -176,6 +176,20 @@ bool ObjectDir::AllowsInlineProxy(){
     return mInlineProxy;
 }
 
+#pragma push
+#pragma dont_inline on
+void ObjectDir::PostLoad(BinStream& bs){
+    for(int i = mInlinedDirs.size(); i >= 0; i--){
+        ObjDirPtr<ObjectDir>& ptr = mInlinedDirs[i].dir;
+        ptr.IsLoaded();
+        ptr->Dir();
+        ptr.GetFile();
+        ptr.PostLoad(0);
+        ptr = ObjDirPtr<ObjectDir>();
+    }
+}
+#pragma pop
+
 extern std::vector<ObjVersion> sRevStack;
 
 int PopRev(Hmx::Object* o){

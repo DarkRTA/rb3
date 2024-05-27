@@ -41,8 +41,16 @@ public:
     virtual bool IsDirPtr(){ return true; }
 
     // GetFile__21ObjDirPtr<9ObjectDir>CFv
+    FilePath& GetFile() const {
+        if(mDir && mDir->mLoader){
+            return mDir->mLoader->mFile;
+        }
+        if(mLoader) return mLoader->mFile;
+        if(mDir) return mDir->mStoredFile;
+        return FilePath::sNull;
+    }
+
     // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
-    // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
 
     T* operator->() const {
@@ -87,6 +95,17 @@ public:
             if(mDir) mDir->AddRef(this);
         }
         return *this;
+    }
+    
+    // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
+    ObjDirPtr& operator=(const ObjDirPtr& oPtr){
+        *this = oPtr.mDir;
+        // if(mLoader && mLoader->IsLoaded()) PostLoad(0);
+        // if(oPtr.mDir != mDir || !oPtr.mDir){
+        //     delete mLoader;
+        //     mLoader = 0;
+
+        // }
     }
 
     T* mDir;
