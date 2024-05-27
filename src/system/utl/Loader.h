@@ -4,6 +4,7 @@
 #include "os/System.h"
 #include "os/File.h"
 #include "utl/Str.h"
+#include "os/Timer.h"
 #include <list>
 
 enum LoaderPos {
@@ -37,19 +38,31 @@ public:
 
 class LoadMgr {
 public:
-    std::list<Loader*> mLoaders;
-    Platform mPlatform;
-    bool mEditMode;
-    bool mCacheMode;
-
+    LoadMgr();
     Loader* AddLoader(const FilePath&, LoaderPos);
     Loader* GetLoader(const FilePath&) const;
     void PollUntilLoaded(Loader*, Loader*);
     void RegisterFactory(const char*, Loader* (*)(const FilePath&, LoaderPos));
     void StartAsyncUnload();
     void FinishAsyncUnload();
+    void Print();
+    void SetEditMode(bool);
+    void Init();
+    Loader* ForceGetLoader(const FilePath&);
 
     bool EditMode() const { return mEditMode; }
+
+    std::list<Loader*> mLoaders;
+    Platform mPlatform;
+    bool mEditMode;
+    bool mCacheMode;
+    std::list<int> unk10; // should be a list of std::pair<String, Loader* (*)(const FilePath&, LoaderPos)>
+    float unk18;
+    float unk1c;
+    std::list<int> unk20;
+    Timer mTimer;
+    int unk58;
+    int unk5c;
 
     // // total size: 0x60
     // class list mLoaders; // offset 0x0, size 0x8
