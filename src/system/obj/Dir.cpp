@@ -207,6 +207,43 @@ int PopRev(Hmx::Object* o){
     return back.revs;
 }
 
+void ObjectDir::TransferLoaderState(ObjectDir* otherDir){
+    mProxyFile = otherDir->mProxyFile;
+    mProxyOverride = otherDir->mProxyOverride;
+    mLoader = otherDir->mLoader;
+    otherDir->mLoader = 0;
+}
+
+void ObjectDir::SetProxyFile(const FilePath& fp, bool b){
+    if(this == mDir){
+        MILO_WARN("Can't set proxy file if own dir");
+    }
+    else {
+        mProxyFile = fp;
+        mProxyOverride = b;
+        if(!b){
+            DeleteObjects();
+            DeleteSubDirs();
+            if(!mProxyFile.empty()){
+                TheLoadMgr.PollUntilLoaded(new DirLoader(mProxyFile, kLoadFront, 0, 0, this, false), 0);
+            }
+        }
+    }
+}
+
+void ObjectDir::RemovingObject(Hmx::Object* obj){
+    if(obj != mCurCam) return;
+    else mCurCam = 0;
+}
+
+bool ObjectDir::InlineProxy(BinStream& bs){
+    bool ret = false;
+    if(AllowsInlineProxy() && bs.Cached()){
+        ret = true;
+    }
+    return ret;
+}
+
 #pragma push
 #pragma dont_inline on
 static void keylesshashtest(){

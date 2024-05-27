@@ -10,7 +10,6 @@ public:
     virtual bool IsLoaded() const;
     virtual void PollLoading();
 
-    int unk14;
     String unk18;
     int unk24;
     int unk28;

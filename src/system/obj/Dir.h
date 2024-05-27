@@ -164,7 +164,7 @@ public:
     virtual void ResetEditorState();
     virtual bool AllowsInlineProxy();
     virtual InlineDirType InlineSubDirType();
-    virtual void AddedObject(Hmx::Object*);
+    virtual void AddedObject(Hmx::Object*){}
     virtual void RemovingObject(Hmx::Object*);
     virtual void OldLoadProxies(BinStream&, int);
 
@@ -176,6 +176,9 @@ public:
     bool SaveSubdirs();
     void SetPathName(const char*);
     void TransferLoaderState(ObjectDir*);
+    void DeleteObjects();
+    void DeleteSubDirs();
+    bool InlineProxy(BinStream&);
 
     Hmx::Object* FindObject(const char*, bool);
     template <class T> T* Find(const char* name, bool b) {
