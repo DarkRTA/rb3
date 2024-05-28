@@ -39,6 +39,10 @@ void UILabel::Draw() {
     if (!(mAlpha <= 0)) RndDrawable::Draw();
 }
 
+void UILabel::SetDisplayText(const char* cc, bool b){
+
+}
+
 void UILabel::Update() {
     if (!sDeferUpdate) LabelUpdate(false, false);
 }

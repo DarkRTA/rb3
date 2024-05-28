@@ -46,7 +46,7 @@ public:
     virtual void CopyMembers(const UIComponent*, Hmx::Object::CopyType);
     virtual void Update();
     virtual void SetCreditsText() {MILO_ASSERT(false, 78);}
-    virtual void SetDisplayText();
+    virtual void SetDisplayText(const char*, bool);
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
