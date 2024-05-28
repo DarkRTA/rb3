@@ -51,7 +51,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();
-    virtual int CanHaveFocus() {return true;}
+    virtual bool CanHaveFocus() {return true;}
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
