@@ -4,9 +4,18 @@
 #include "os/UserMgr.h"
 #include "utl/Option.h"
 #include "obj/DataUtl.h"
+#include "os/ProfileSwappedMsg.h"
 #include "utl/Symbols.h"
 
 PlatformMgr ThePlatformMgr;
+
+LocalUser* ProfileSwappedMsg::GetUser1() const {
+    return mData->Obj<LocalUser>(2);
+}
+
+LocalUser* ProfileSwappedMsg::GetUser2() const {
+    return mData->Obj<LocalUser>(3);
+}
 
 Symbol PlatformRegionToSymbol(PlatformRegion r){
     MILO_ASSERT(r < kNumRegions, 0x29);
@@ -22,6 +31,8 @@ PlatformRegion SymbolToPlatformRegion(Symbol s){
     MILO_FAIL("Invalid region %s", s);
     return kNumRegions;
 }
+
+// UTF8FilterKeyboardString(char*, int, const char*) goes here
 
 bool PlatformMgr::IsSignedIn(int padnum) const {
     if(padnum < 0){
