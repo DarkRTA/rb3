@@ -18,7 +18,7 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Poll(float);
 
-    ObjOwnerPtr<Hmx::Object, ObjectDir> mObj;
+    ObjOwnerPtr<Hmx::Object, class ObjectDir> mObj;
     DataArray* mMsg;
 };
 
@@ -40,7 +40,7 @@ public:
 
     std::list<Var> mVars;
     std::list<Hmx::Object*> mObjects;
-    ObjOwnerPtr<Hmx::Object, ObjectDir> mThis;
+    ObjOwnerPtr<Hmx::Object, class ObjectDir> mThis;
     DataArray* mScript;
     bool mOnce;
 };

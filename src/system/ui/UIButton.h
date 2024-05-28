@@ -6,6 +6,7 @@
 #include "os/JoypadMsgs.h"
 
 class UIButton : public UILabel {
+public:
     UIButton();
     virtual ~UIButton() {}
     OBJ_CLASSNAME(UIButton);
