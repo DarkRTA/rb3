@@ -54,7 +54,6 @@ public:
     void RunNetStartUtility();
     void SetNotifyUILocation(NotifyLocation);
     int GetLastDWCError();
-    bool HasNetError();
     class String GetNetErrorString(bool);
     DataArrayPtr GetNetErrorStringAsDataArray(bool);
     void ClearNetError();
@@ -64,28 +63,29 @@ public:
     int InitNintendoConnection();
     void CloseNintendoConnection(bool, bool);
     void EnableProfanity(bool);
-    bool IsOnlineRestricted();
-    void RelaxOnlineRestriction();
     int GetLastNHTTPError();
     void SetConnected(bool);
     void SetPartyMicOptionsShowing(bool);
     int GetLastDNSError();
-    void SetIsRestarting(bool);
     void SetHomeMenuEnabled(bool);
-    bool HomeMenuActive();
-    void EnableSFX(bool);
-    bool AreSFXEnabled();
-    void IgnoreWiiSpeakFriends();
     void PrintParentalPin();
     void StartProfanity(const char*, Hmx::Object*);
+    bool IsEthernetCableConnected();
 
     bool OnMsg(const ButtonDownMsg&);
     bool OnMsg(const ButtonUpMsg&);
 
     bool IsConnected() const { return mConnected; }
-    bool IsEthernetCableConnected();
     int SigninMask() const { return mSigninMask; }
     int SigninChangedMask() const { return mSigninChangeMask; }
+    bool HasNetError() { return mHasNetError; }
+    bool IsOnlineRestricted() { return mIsOnlineRestricted; }
+    void RelaxOnlineRestriction(){ mIsOnlineRestricted = false; }
+    void SetIsRestarting(bool b){ mIsRestarting = b; }
+    bool HomeMenuActive();
+    void EnableSFX(bool b){ mEnableSFX = b; }
+    bool AreSFXEnabled(){ return mEnableSFX; }
+    void IgnoreWiiSpeakFriends(){ unkce5a = true; }
 
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;
@@ -110,7 +110,7 @@ public:
     bool unk6c;
     bool unk6d;
     int unk70;
-    bool unk74;
+    bool mEthernetCableConnected;
     
     char filler[0x432b];
 
@@ -119,8 +119,9 @@ public:
     bool unk43a2;
     bool unk43a3;
 
-    char filler43a4[0x4320];
+    char filler43a4[0x431c];
 
+    int mHasNetError;
     Symbol unk86c4;
 
     char filler86c8[0x4018];
@@ -130,7 +131,7 @@ public:
 
     char fillerunkc6f0[0x318];
 
-    bool unkca10;
+    bool mCheckingProfanity;
     bool unkca11;
     bool unkca12;
     int unkca14;
@@ -138,20 +139,20 @@ public:
 
     char fillerunkca1c[0x42c];
 
-    int unkce48; // HomeMenu*
+    int unkce48; // HomeMenu* - mHomeMenuWii
     bool unkce4c;
-    int unkce50; // DiscErrorMgrWii*
-    bool unkce54;
+    int unkce50; // DiscErrorMgrWii* - mDiscErrorMgr
+    bool mStorageChanged;
     bool unkce55;
     bool unkce56;
-    bool unkce57;
+    bool mIsRestarting;
     bool unkce58;
-    bool unkce59;
+    bool mEnableSFX;
     bool unkce5a;
     int unkce5c;
     int unkce60;
     int unkce64;
-    bool unkce68;
+    bool mIsOnlineRestricted;
     bool unkce69;
     bool unkce6a;
 };
