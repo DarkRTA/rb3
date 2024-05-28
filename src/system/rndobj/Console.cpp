@@ -81,8 +81,6 @@ static DataNode DataDown(DataArray*) {
     return DataNode(0);
 }
 
-void PlatformDebugBreak();
-
 static DataNode DataCppBreak(DataArray*) {
     PlatformDebugBreak();
     return DataNode(0);

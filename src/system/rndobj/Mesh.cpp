@@ -162,7 +162,7 @@ void RndMesh::PostLoad(BinStream& bs) {
     if (gAltRev > 1) { bool b; bs >> b; unk9p3 = b;}
     if (gAltRev > 3) { bool b; bs >> b;}
     Sync(191);
-    if (gAltRev >= 3 || NumBones() > 1) MILO_NOTIFIER_WARN("%s", PathName(this));
+    if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
 }
 #pragma dont_inline reset
 
