@@ -203,9 +203,7 @@ void PreInitSystem(const char* path) {
     DataRegisterFunc("switch_system_language", OnSwitchSystemLanguage);
     DataRegisterFunc("system_ms", OnSystemMs);
 
-    // TODO: wrong field, correct field at offset 0x6ab0
-    // ThePlatformMgr.mEnableSFX = OptionBool("disable_sfx", false) == 0;
-    ThePlatformMgr.unk28 = OptionBool("disable_sfx", false) == 0;
+    ThePlatformMgr.mEnableSFX = OptionBool("disable_sfx", false) == 0;
     SetGfxMode(kOldGfx);
 
     if (config != NULL && gHasPreconfig) {

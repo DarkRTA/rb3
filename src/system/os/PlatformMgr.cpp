@@ -5,6 +5,7 @@
 #include "utl/Option.h"
 #include "obj/DataUtl.h"
 #include "os/ProfileSwappedMsg.h"
+#include "utl/UTF8.h"
 #include "utl/Symbols.h"
 
 PlatformMgr ThePlatformMgr;
@@ -32,7 +33,10 @@ PlatformRegion SymbolToPlatformRegion(Symbol s){
     return kNumRegions;
 }
 
-// UTF8FilterKeyboardString(char*, int, const char*) goes here
+void UTF8FilterKeyboardString(char* c, int i, const char* cc){
+    static const char* allowed = SystemConfig(platform_mgr)->FindArray(keyboard_allowed_chars, true)->Str(1);
+    UTF8FilterString(c, i, cc, allowed, '?');
+}
 
 bool PlatformMgr::IsSignedIn(int padnum) const {
     if(padnum < 0){
