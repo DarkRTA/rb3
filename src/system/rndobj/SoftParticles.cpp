@@ -15,7 +15,7 @@ void RndSoftParticles::Load(BinStream& bs){
     int filler;
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
-    ObjPtrList<RndDrawable, ObjectDir> pList(0, kObjListNoNull);
+    ObjPtrList<RndDrawable, ObjectDir> pList(this, kObjListNoNull);
     bs >> pList; // whoops forgot to implement this, should probably do that
     bs >> filler;
 }
