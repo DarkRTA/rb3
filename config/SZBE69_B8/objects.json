@@ -418,6 +418,7 @@
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "NonMatching",
+            "system/ui/UIProxy.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
             "system/ui/UIScreen.cpp": "NonMatching",
             "system/ui/UITransitionHandler.cpp": "Matching",
