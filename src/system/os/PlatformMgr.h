@@ -3,6 +3,8 @@
 #include "obj/MsgSource.h"
 #include "os/ContentMgr.h"
 #include "os/JoypadMsgs.h"
+#include "os/HomeMenu_Wii.h"
+#include "os/DiscErrorMgr_Wii.h"
 
 class OnlineID; // forward dec
 class LocalUser;
@@ -82,7 +84,7 @@ public:
     bool IsOnlineRestricted() { return mIsOnlineRestricted; }
     void RelaxOnlineRestriction(){ mIsOnlineRestricted = false; }
     void SetIsRestarting(bool b){ mIsRestarting = b; }
-    bool HomeMenuActive();
+    bool HomeMenuActive(){ return mHomeMenuWii->mHomeMenuActive; }
     void EnableSFX(bool b){ mEnableSFX = b; }
     bool AreSFXEnabled(){ return mEnableSFX; }
     void IgnoreWiiSpeakFriends(){ unkce5a = true; }
@@ -139,9 +141,9 @@ public:
 
     char fillerunkca1c[0x42c];
 
-    int unkce48; // HomeMenu* - mHomeMenuWii
+    HomeMenu* mHomeMenuWii;
     bool unkce4c;
-    int unkce50; // DiscErrorMgrWii* - mDiscErrorMgr
+    DiscErrorMgrWii* mDiscErrorMgr;
     bool mStorageChanged;
     bool unkce55;
     bool unkce56;
