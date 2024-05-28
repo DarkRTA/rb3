@@ -24,14 +24,15 @@ RndCubeTex::RndCubeTex(){
 }
 
 bool RndCubeTex::LoadBitmap(const FilePath& fp, RndBitmap& bmap){
-    bool ret = true;
     const char* cc;
+    bool ret = true;
     FileLoader* fLoader = dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(fp));
     if(fLoader){
         cc = fLoader->GetBuffer(0);
-        delete fLoader;
     }
     else cc = 0;
+
+    delete fLoader;
     if(!cc){
         bmap.Reset();
         ret = false;
@@ -43,8 +44,8 @@ bool RndCubeTex::LoadBitmap(const FilePath& fp, RndBitmap& bmap){
         if(width != height){
             MILO_WARN("%s: CubeTex bitmap (%s) is not square.", PathName(this), fp.c_str());
             bmap.Reset();
+            ret = false;
         }
-        ret = false;
     }
     return ret;
 }
