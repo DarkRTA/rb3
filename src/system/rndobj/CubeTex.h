@@ -38,13 +38,17 @@ public:
     virtual void Load(BinStream&);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-    virtual void Select(int);
-    virtual void Reset();
-    virtual void Sync();
+    virtual void Select(int){}
+    virtual void Reset(){}
+    virtual void Sync(){}
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    bool LoadBitmap(const FilePath&, RndBitmap&);
+    void SetBitmap(CubeFace, const FilePath&, bool);
+    bool ValidateBitmapProperties(std::vector<CubeFace>&);
+    void Update();
+
+    DECLARE_REVS;
+    DELETE_OVERLOAD;
 
     static Hmx::Object* NewObject();
 
@@ -54,4 +58,4 @@ public:
     RndBitmap mBitmap[6];
 };
 
-#endif // RNDOBJ_BITMAP_H
+#endif
