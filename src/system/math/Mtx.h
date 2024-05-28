@@ -46,6 +46,11 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Matrix3& mtx){
     return bs;
 }
 
+inline BinStream& operator>>(BinStream& bs, Hmx::Quat& q){
+    bs >> q.x >> q.y >> q.z >> q.w;
+    return bs;
+}
+
 class Transform {
 public:
     class Hmx::Matrix3 m;
