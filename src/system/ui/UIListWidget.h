@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "ui/UIColor.h"
 #include "math/Vec.h"
+#include "ui/UIComponent.h"
 #include "obj/ObjPtr_p.h"
 #include <vector>
 
@@ -56,16 +57,19 @@ public:
     float DisabledAlphaScale() const;
     UIListWidgetDrawType WidgetDrawType() const;
     UIList* ParentList();
-    // void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
-
+    void DrawMesh(RndMesh*, UIListWidgetState, UIComponent::State, const Transform&, Box*);
+    UIColor* DisplayColor(UIListWidgetState, UIComponent::State) const;
+    void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
     void SetParentList(UIList*);
 
-    float mDrawOrder;
-    float mDisabledAlphaScale;
-    ObjPtr<UIColor, ObjectDir> mDefaultColor;
-    std::vector<ObjPtr<UIColor, ObjectDir> > mColors;
-    UIListWidgetDrawType mWidgetDrawType;
-    UIList* mParentList;
+    DECLARE_REVS;
+
+    float mDrawOrder; // 0x1c
+    float mDisabledAlphaScale; // 0x20
+    ObjPtr<UIColor, class ObjectDir> mDefaultColor; // 0x24
+    std::vector< std::vector<ObjPtr<UIColor, class ObjectDir> > > mColors; // 0x30 - a vector of vectors of ObjPtrs...wonderful
+    UIListWidgetDrawType mWidgetDrawType; // 0x38
+    UIList* mParentList; // 0x3c
 };
 
 #endif
