@@ -352,7 +352,7 @@
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "NonMatching",
-            "system/rndobj/SoftParticles.cpp": "LinkIssues",
+            "system/rndobj/SoftParticles.cpp": "Matching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": "NonMatching",
