@@ -1,5 +1,6 @@
 #include "rndobj/PropKeys.h"
 #include "obj/ObjectStage.h"
+#include "obj/Utl.h"
 #include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;

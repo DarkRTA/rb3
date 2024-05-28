@@ -32,8 +32,16 @@ public:
     void SetSaveState(ProfileSaveState);
     void MakeDirty();
 
-    int GetPadNum() const;
-    const char* GetName() const;
+    // int GetPadNum() const;
+    // const char* GetName() const;
+    const char* GetName() const {
+        LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
+        return u->UserName();
+    }
+
+    int GetPadNum() const {
+        return mPadNum;
+    }
 
     // int GetPadNum() const { return mPadNum; }
     // const char* GetName() const {
@@ -42,7 +50,7 @@ public:
     // }
 
     bool mDirty;
-    int mPadNum;
+    mutable int mPadNum;
     ProfileSaveState mState;
 };
 

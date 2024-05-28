@@ -18,21 +18,29 @@ bool Profile::IsAutosaveEnabled() const {
 }
 
 bool Profile::HasValidSaveData() const {
-    if(mState == kMetaProfileUnloaded || mState == kMetaProfileLoaded){
+    if(mState == kMetaProfileLoaded || mState == kMetaProfileError){
         int padIdx = TheWiiProfileMgr.GetIndexForPad(mPadNum);
         return TheWiiProfileMgr.IsIndexValid(padIdx);
     }
     else return false;
 }
 
-const char* Profile::GetName() const {
-    LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
-    return u->UserName();
+#pragma push
+#pragma dont_inline on
+static void lol(Profile* pf){
+    pf->GetPadNum();
+    pf->GetName();
 }
+#pragma pop
 
-int Profile::GetPadNum() const {
-    return mPadNum;
-}
+// const char* Profile::GetName() const {
+//     LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
+//     return u->UserName();
+// }
+
+// int Profile::GetPadNum() const {
+//     return mPadNum;
+// }
 
 ProfileSaveState Profile::GetSaveState() const {
     return mState;
