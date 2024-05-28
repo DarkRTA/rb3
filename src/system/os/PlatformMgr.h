@@ -2,6 +2,7 @@
 #define OS_PLATFORMMGR_H
 #include "obj/MsgSource.h"
 #include "os/ContentMgr.h"
+#include "os/JoypadMsgs.h"
 
 class OnlineID; // forward dec
 class LocalUser;
@@ -21,23 +22,22 @@ enum PlatformRegion {
     kNumRegions
 };
 
+enum NotifyLocation {
+    i, d, k
+};
+
 class PlatformMgr : public MsgSource, ContentMgr::Callback {
 public:
-    int mSigninMask;
-    int mSigninChangeMask;
-    bool unk28;
-    bool mConnected;
-    bool unk2a;
-    bool unk2b;
-    PlatformRegion mRegion;
-
     PlatformMgr();
+    virtual DataNode Handle(DataArray*, bool);
+    virtual ~PlatformMgr();
+    virtual void ContentStarted();
+    virtual void ContentDone();
+    virtual void ContentCancelled();
 
     void SetDiskError(DiskError);
     void GetOnlineID(int, OnlineID*) const;
-
     const char* GetName(int) const;
-
     bool IsSignedIn(int) const;
     bool IsUserSignedIn(const LocalUser*) const;
     bool HasUserSigninChanged(const LocalUser*) const;
@@ -45,24 +45,115 @@ public:
     bool UserHasOnlinePrivilege(const LocalUser*) const;
     bool IsUserAGuest(const LocalUser*) const;
     bool IsAnyUserSignedIntoLive() const;
-
     bool HasOnlinePrivilege(int) const;
     bool IsSignedIntoLive(int) const;
-
     PlatformRegion GetRegion() const;
     void SetRegion(PlatformRegion);
+    DataNode OnSignInUsers(const DataArray*);
+    void SetScreenSaver(bool);
+    void RunNetStartUtility();
+    void SetNotifyUILocation(NotifyLocation);
+    int GetLastDWCError();
+    bool HasNetError();
+    class String GetNetErrorString(bool);
+    DataArrayPtr GetNetErrorStringAsDataArray(bool);
+    void ClearNetError();
+    void ClearDWCError();
+
+    bool IsUserAWiiGuest(const LocalUser*) const;
+    int InitNintendoConnection();
+    void CloseNintendoConnection(bool, bool);
+    void EnableProfanity(bool);
+    bool IsOnlineRestricted();
+    void RelaxOnlineRestriction();
+    int GetLastNHTTPError();
+    void SetConnected(bool);
+    void SetPartyMicOptionsShowing(bool);
+    int GetLastDNSError();
+    void SetIsRestarting(bool);
+    void SetHomeMenuEnabled(bool);
+    bool HomeMenuActive();
+    void EnableSFX(bool);
+    bool AreSFXEnabled();
+    void IgnoreWiiSpeakFriends();
+    void PrintParentalPin();
+    void StartProfanity(const char*, Hmx::Object*);
+
+    bool OnMsg(const ButtonDownMsg&);
+    bool OnMsg(const ButtonUpMsg&);
 
     bool IsConnected() const { return mConnected; }
+    bool IsEthernetCableConnected();
     int SigninMask() const { return mSigninMask; }
     int SigninChangedMask() const { return mSigninChangeMask; }
 
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;
-    
     void Draw();
-
     void Poll();
     void InitGQR();
+
+    int mSigninMask;
+    int mSigninChangeMask;
+    bool mGuideShowing;
+    bool mConnected;
+    bool unk2a;
+    bool unk2b;
+    PlatformRegion mRegion;
+    int unk30;
+    int unk34;
+    Timer mTimer;
+    bool unk68;
+    bool unk69;
+    bool unk6a;
+    bool unk6b;
+    bool unk6c;
+    bool unk6d;
+    int unk70;
+    bool unk74;
+    
+    char filler[0x432b];
+
+    bool unk43a0;
+    bool unk43a1;
+    bool unk43a2;
+    bool unk43a3;
+
+    char filler43a4[0x4320];
+
+    Symbol unk86c4;
+
+    char filler86c8[0x4018];
+
+    class String unkc6e0;
+    class String unkc6ec;
+
+    char fillerunkc6f0[0x318];
+
+    bool unkca10;
+    bool unkca11;
+    bool unkca12;
+    int unkca14;
+    int unkca18;
+
+    char fillerunkca1c[0x42c];
+
+    int unkce48; // HomeMenu*
+    bool unkce4c;
+    int unkce50; // DiscErrorMgrWii*
+    bool unkce54;
+    bool unkce55;
+    bool unkce56;
+    bool unkce57;
+    bool unkce58;
+    bool unkce59;
+    bool unkce5a;
+    int unkce5c;
+    int unkce60;
+    int unkce64;
+    bool unkce68;
+    bool unkce69;
+    bool unkce6a;
 };
 
 Symbol PlatformRegionToSymbol(PlatformRegion);
