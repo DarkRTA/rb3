@@ -90,8 +90,8 @@ namespace Hmx {
         OBJ_CLASSNAME(Object);
         OBJ_SET_TYPE(Object);
         virtual DataNode Handle(DataArray*, bool);
-        virtual ~Object();
         virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+        virtual ~Object();
         virtual void Save(BinStream&);
         virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
         virtual void Load(BinStream&);

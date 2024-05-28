@@ -56,6 +56,7 @@ public:
     void SetBitmap(FileLoader*);
     void SetBitmap(const FilePath&);
     void SaveBitmap(const char*);
+    static const char* CheckSize(int, int, int, int, RndTex::Type, bool);
     inline bool IsRenderTarget() { return mType & Rendered; }
 
     DELETE_OVERLOAD;
