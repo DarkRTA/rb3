@@ -86,7 +86,6 @@ namespace Hmx {
         Object();
         Object(const Object&);
         virtual Hmx::Object* RefOwner(){ return this; }
-        virtual void Replace(Hmx::Object*, Hmx::Object*);
         OBJ_CLASSNAME(Object);
         OBJ_SET_TYPE(Object);
         virtual DataNode Handle(DataArray*, bool);
@@ -105,6 +104,7 @@ namespace Hmx {
         virtual void PreLoad(BinStream&);
         virtual void PostLoad(BinStream&){}
         virtual const char* FindPathName();
+        virtual void Replace(Hmx::Object*, Hmx::Object*);
 
         const char* Name() const { return mName; }
 

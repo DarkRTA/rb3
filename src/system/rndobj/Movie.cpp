@@ -106,3 +106,8 @@ BEGIN_PROPSYNCS(RndMovie)
     }
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS
+
+static void lol(RndMovie* movie){
+    movie->Loop();
+    movie->SetType(Symbol());
+}

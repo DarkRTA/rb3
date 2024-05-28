@@ -340,7 +340,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/Mesh.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
-            "system/rndobj/Movie.cpp": "LinkIssues",
+            "system/rndobj/Movie.cpp": "Matching",
             "system/rndobj/MultiMesh.cpp": {"status": "NonMatching", "extra_cflags": [""]},
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
