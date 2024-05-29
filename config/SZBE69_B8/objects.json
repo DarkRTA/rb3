@@ -489,7 +489,8 @@
             "system/world/FreeCamera.cpp": "NonMatching",
             "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
-            "system/world/Spotlight.cpp": "NonMatching"
+            "system/world/Spotlight.cpp": "NonMatching",
+            "system/world/SpotlightEnder.cpp": "NonMatching"
         }
     },
     "flex": {
