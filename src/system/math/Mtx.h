@@ -151,6 +151,17 @@ inline BinStream& operator>>(BinStream& bs, Transform& tf){
     return bs;
 }
 
+class ShortQuat {
+public:
+    short x, y, z, w;
+};
+
+class TransformNoScale {
+public:
+    ShortQuat q;
+    class Vector3 v;
+};
+
 class Plane {
 public:
     float a, b, c, d;

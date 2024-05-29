@@ -6,9 +6,49 @@
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
 
+class CamShot;
 class Spotlight;
+class WorldCrowd;
 
-// CamShotFrame and CamShotCrowd class headers go here
+class CamShotFrame {
+public:
+    CamShotFrame(Hmx::Object*);
+
+    float mDuration; // 0x0
+    float mBlend; // 0x4
+    float mBlendEase; // 0x8
+    float unkc;
+    TransformNoScale unk10;
+    Vector2 mScreenOffset; // 0x24
+    float mShakeNoiseAmp; // 0x2c
+    float mShakeNoiseFreq; // 0x30
+    float unk34, unk38, unk3c;
+    float mFocusBlurMultiplier; // 0x40
+    TransformNoScale unk44;
+    ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x58
+    CamShot* unk68;
+    ObjPtr<RndTransformable, ObjectDir> mParent; // 0x6c
+    int unk74;
+    ObjPtr<RndTransformable, ObjectDir> mFocusTarget; // 0x78
+    char unk84, unk85, unk86, unk87, unk88;
+    short unk89;
+    char unk8a, unk8b;
+    // mBlendEaseMode: 0x8b >> 2
+    // mUseParentNotation: 0x8b >> 1 & 1
+    // mParentFirstFrame: 0x8b & 1
+    // mFieldOfView: 0x84, lensMM, lensPreset
+    // mZoomFOV: 0x85
+};
+
+class CamShotCrowd {
+public:
+    CamShotCrowd(Hmx::Object*);
+
+    ObjPtr<WorldCrowd, ObjectDir> mCrowd;
+    int mCrowdRotate;
+    std::vector<std::pair<int, int> > unk10; // 0x10
+    CamShot* unk18; // 0x18
+};
 
 class CamShot : public RndAnimatable {
 public:
@@ -34,7 +74,7 @@ public:
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);
 
-    ObjVector<int> mKeyFrames; // 0x10 - CamShotFrame
+    ObjVector<CamShotFrame> mKeyFrames; // 0x10
     int mLoopKeyframe; // 0x1c
     float mNear; // 0x20
     float mFar; // 0x24
@@ -52,7 +92,7 @@ public:
     std::vector<int> unk74;
     ObjPtrList<RndDrawable, ObjectDir> mDrawOverrides; // 0x7c
     ObjPtrList<RndDrawable, ObjectDir> mPostProcOverrides; // 0x8c
-    ObjVector<int> mCrowds; // 0x9c - CamShotCrowd
+    ObjVector<CamShotCrowd> mCrowds; // 0x9c
     ObjPtr<Spotlight, ObjectDir> mGlowSpot; // 0xa8
     std::vector<int> unkb4;
     std::vector<int> unkbc;

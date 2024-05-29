@@ -1,5 +1,6 @@
 #include "world/CameraShot.h"
 #include "world/Spotlight.h"
+#include "world/Crowd.h"
 #include "rndobj/Trans.h"
 
 CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(), 
