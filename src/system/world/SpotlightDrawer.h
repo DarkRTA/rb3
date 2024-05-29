@@ -10,6 +10,8 @@ class SpotlightDrawer;
 class SpotDrawParams {
 public:
     SpotDrawParams(SpotlightDrawer*);
+    SpotDrawParams& operator=(const SpotDrawParams&);
+    void Load(BinStream&, int);
 
     float mIntensity;
     Hmx::Color mColor;
@@ -63,6 +65,8 @@ public:
     void UpdateBoxMap();
 
     static SpotlightDrawer* sCurrent;
+
+    SpotDrawParams mParams;
 };
 
 #endif

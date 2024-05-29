@@ -15,6 +15,9 @@ public:
     class BeamDef {
     public:
         BeamDef(Hmx::Object*);
+        BeamDef(const BeamDef&);
+        ~BeamDef();
+        void OnSetMat(RndMat*);
         
         RndMesh* mBeam; // 0x0
         bool mIsCone; // 0x4
