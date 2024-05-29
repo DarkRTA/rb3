@@ -1,4 +1,5 @@
 #include "world/SpotlightEnder.h"
+#include "world/SpotlightDrawer.h"
 
 INIT_REVS(SpotlightEnder)
 
@@ -11,7 +12,7 @@ SpotlightEnder::~SpotlightEnder(){
 }
 
 void SpotlightEnder::DrawShowing(){
-    
+    SpotlightDrawer::sCurrent->UpdateBoxMap();
 }
 
 BEGIN_LOADS(SpotlightEnder)

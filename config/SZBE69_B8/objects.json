@@ -490,7 +490,8 @@
             "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
             "system/world/Spotlight.cpp": "NonMatching",
-            "system/world/SpotlightEnder.cpp": "NonMatching"
+            "system/world/SpotlightDrawer.cpp": "NonMatching",
+            "system/world/SpotlightEnder.cpp": "Matching"
         }
     },
     "flex": {
