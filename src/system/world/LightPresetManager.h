@@ -1,6 +1,7 @@
 #ifndef WORLD_LIGHTPRESETMANAGER_H
 #define WORLD_LIGHTPRESETMANAGER_H
 #include "obj/Data.h"
+// #include <hash_map>
 
 class WorldDir;
 
@@ -11,11 +12,12 @@ public:
     virtual ~LightPresetManager();
 
     bool unk4;
+    // std::hash_map<int, int> unk8;
     int unk8, unkc, unk10;
     int unk14;
     int unk18;
     Symbol unk1c;
-    WorldDir* mParent; // 0x1c
+    WorldDir* mParent; // 0x20
     int unk24;
     int unk28;
     int unk2c;
