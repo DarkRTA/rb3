@@ -27,10 +27,12 @@ public:
 class SpotlightDrawer : public RndDrawable, public PostProcessor {
 public:
 
+    // size: 0x40
     class SpotMeshEntry {
     public:
     };
 
+    // size: 0x8
     class SpotlightEntry {
     public:
     };
@@ -65,6 +67,9 @@ public:
     void UpdateBoxMap();
 
     static SpotlightDrawer* sCurrent;
+    static std::vector<SpotlightEntry> sLights;
+    static std::vector<SpotMeshEntry> sCans;
+    static std::vector<class Spotlight*> sShadowSpots;
 
     SpotDrawParams mParams;
 };

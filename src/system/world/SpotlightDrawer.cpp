@@ -1,5 +1,9 @@
 #include "world/SpotlightDrawer.h"
 
+std::vector<SpotlightDrawer::SpotlightEntry> SpotlightDrawer::sLights;
+std::vector<SpotlightDrawer::SpotMeshEntry> SpotlightDrawer::sCans;
+std::vector<class Spotlight*> SpotlightDrawer::sShadowSpots;
+
 SpotlightDrawer::SpotlightDrawer() : mParams(this) {
     mOrder = -100000.f;
 }
