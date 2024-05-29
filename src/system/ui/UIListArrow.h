@@ -16,7 +16,7 @@ enum UIListArrowPosition {
 class UIListArrow : public UIListWidget {
 public:
     UIListArrow();
-    virtual ~UIListArrow();
+    virtual ~UIListArrow(){}
     OBJ_CLASSNAME(UIListArrow);
     OBJ_SET_TYPE(UIListArrow);
     virtual DataNode Handle(DataArray*, bool);
@@ -24,14 +24,14 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    // Draw
+    virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
     void StartScroll(int, bool);
 
-    ObjPtr<RndMesh, ObjectDir> mMesh;
-    ObjPtr<RndAnimatable, ObjectDir> mScrollAnim;
-    UIListArrowPosition mPosition;
-    bool mShowOnlyScroll;
-    bool mOnHighlight;
+    ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x40
+    ObjPtr<RndAnimatable, class ObjectDir> mScrollAnim; // 0x4c
+    UIListArrowPosition mPosition; // 0x58
+    bool mShowOnlyScroll; // 0x5c
+    bool mOnHighlight; // 0x5d
 
     DECLARE_REVS
     DELETE_OVERLOAD
