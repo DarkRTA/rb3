@@ -12,4 +12,6 @@ void UTF8ToLower(unsigned short, char*);
 void UTF8ToUpper(unsigned short, char*);
 void UTF8FilterString(char*, int, const char*, const char*, char);
 
+void UTF8FilterKeyboardString(char*, int, const char*); // defined in os/PlatformMgr.cpp for some reason
+
 #endif

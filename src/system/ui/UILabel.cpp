@@ -27,7 +27,7 @@ void UILabel::Terminate() {}
 BEGIN_COPYS(UILabel)
     GET_COPY_AND_ASSERT(UILabel, 96)
     COPY_SUPERCLASS(UIComponent)
-    SetCreditsText();
+    // SetCreditsText();
 END_COPYS
 
 

@@ -3,6 +3,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Anim.h"
 #include "ui/UIListWidget.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(UIListArrow)
 
@@ -16,20 +17,22 @@ void UIListArrow::Load(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(1, 0)
     UIListWidget::Load(bs);
-    int dump; bool tmp, tmp2;
-    bs >> mMesh;
-    bs >> dump;
-    bs >> tmp2;
-    mShowOnlyScroll = tmp2;
-    bs >> tmp;
+    int dump; bool tmp;
+    bs >> mMesh >> dump >> mShowOnlyScroll >> tmp;
     mOnHighlight = tmp;
     mPosition = (UIListArrowPosition)dump;
     if (gRev != 0) bs >> mScrollAnim;
 }
 
 BEGIN_COPYS(UIListArrow)
-    GET_COPY_AND_ASSERT(UIListArrow, 92)
-    COPY_MEMBER(mShowOnlyScroll)
+    COPY_SUPERCLASS(UIListWidget)
+    const UIListArrow* a = dynamic_cast<const UIListArrow*>(o);
+    MILO_ASSERT(a, 0x5C);
+    mMesh = a->mMesh;
+    mPosition = a->mPosition;
+    mShowOnlyScroll = a->mShowOnlyScroll;
+    mOnHighlight = a->mOnHighlight;
+    mScrollAnim = a->mScrollAnim;
 END_COPYS
 
 void UIListArrow::StartScroll(int i, bool) { // holy fakematch
@@ -43,5 +46,16 @@ void UIListArrow::StartScroll(int i, bool) { // holy fakematch
     mScrollAnim->Animate(0, false, 0);
 }
 
+BEGIN_HANDLERS(UIListArrow)
+    HANDLE_SUPERCLASS(UIListWidget)
+    HANDLE_CHECK(0x96)
+END_HANDLERS
 
-UIListArrow::~UIListArrow() {}
+BEGIN_PROPSYNCS(UIListArrow)
+    SYNC_PROP(mesh, mMesh)
+    SYNC_PROP(scroll_anim, mScrollAnim)
+    SYNC_PROP_METHOD(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
+    SYNC_PROP(show_only_scroll, mShowOnlyScroll)
+    SYNC_PROP(on_highlight, mOnHighlight)
+    SYNC_SUPERCLASS(UIListWidget)
+END_PROPSYNCS

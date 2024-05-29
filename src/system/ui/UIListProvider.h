@@ -2,7 +2,7 @@
 #define UI_UILISTPROVIDER_H
 #include "utl/Symbol.h"
 #include "ui/UIComponent.h"
-#include "ui/UIListWidget.h"
+#include "ui/UIEnums.h"
 
 // holy guacamole that's a lot of forward decs
 class RndMesh;
@@ -13,6 +13,8 @@ class UIListMesh;
 class UIListSlot;
 class UIListSubList;
 class UIListCustom;
+class UIListWidget;
+class UIColor;
 namespace Hmx {
     class Object;
 }

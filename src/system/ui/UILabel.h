@@ -42,7 +42,7 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void Poll();
-    virtual int CanHaveFocus();
+    virtual bool CanHaveFocus();
     virtual void CopyMembers(const UIComponent*, Hmx::Object::CopyType);
     virtual void Update();
     virtual void SetCreditsText(DataArray*, class UIListSlot*) {MILO_ASSERT(false, 78);}

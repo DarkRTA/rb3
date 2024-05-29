@@ -23,9 +23,10 @@ public:
     bool mTriFrameRendering;
 };
 
-class PostProc {
+class PostProcessor {
 public:
-    PostProc(){}
+    PostProcessor(){}
+    virtual ~PostProcessor(){}
     virtual void BeginWorld(){}
     virtual void EndWorld(){}
     virtual void DoPost(){}
@@ -35,7 +36,7 @@ public:
 
 class RndDrawable; // forward dec
 
-class RndPostProc : public Hmx::Object, public PostProc {
+class RndPostProc : public Hmx::Object, public PostProcessor {
 public:
     RndPostProc();
     virtual ~RndPostProc();

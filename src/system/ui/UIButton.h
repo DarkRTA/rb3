@@ -8,7 +8,6 @@
 class UIButton : public UILabel {
 public:
     UIButton();
-    virtual ~UIButton() {}
     OBJ_CLASSNAME(UIButton);
     OBJ_SET_TYPE(UIButton);
     virtual DataNode Handle(DataArray*, bool);
@@ -16,8 +15,10 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+    virtual ~UIButton(){}
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
+    virtual bool CanHaveFocus(){ return true; }
 
     DataNode OnMsg(const ButtonDownMsg&);
 

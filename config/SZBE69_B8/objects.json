@@ -301,6 +301,7 @@
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
             "system/os/PlatformMgr.cpp": "NonMatching",
+            "system/os/PlatformMgr_Wii.cpp": "NonMatching",
             "system/os/ProfilePicture.cpp": "NonMatching",
             "system/os/ProfilePicture_Wii.cpp": "Matching",
             "system/os/SynchronizationEvent.cpp": "Matching",
@@ -417,6 +418,7 @@
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "NonMatching",
+            "system/ui/UIProxy.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
             "system/ui/UIScreen.cpp": "NonMatching",
             "system/ui/UITransitionHandler.cpp": "Matching",
@@ -480,11 +482,18 @@
             "system/utl/Wav.cpp": "NonMatching",
             "system/utl/WaveFile.cpp": "NonMatching",
 
+            "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching",
+            "system/world/Dir.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
             "system/world/Instance.cpp": "NonMatching",
-            "system/world/LightHue.cpp": "NonMatching"
+            "system/world/LightHue.cpp": "NonMatching",
+            "system/world/LightPreset.cpp": "NonMatching",
+            "system/world/LightPresetManager.cpp": "NonMatching",
+            "system/world/Spotlight.cpp": "NonMatching",
+            "system/world/SpotlightDrawer.cpp": "NonMatching",
+            "system/world/SpotlightEnder.cpp": "Matching"
         }
     },
     "flex": {
