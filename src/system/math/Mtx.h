@@ -34,6 +34,12 @@ namespace Hmx {
 
     class Quat {
     public:
+        Quat(){}
+        Quat(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
+        
+        void Reset(){ x = y = z = 0.0f; w = 1.0f; }
+        void Zero(){ w = x = y = z = 0.0f; }
+
         float x;
         float y;
         float z;
