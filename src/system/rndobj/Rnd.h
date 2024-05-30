@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 #include "rndobj/Console.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Mat.h"
 #include "rndobj/Overlay.h"
 
 class Rnd : public Hmx::Object, public RndOverlay::Callback { // there's some multiple inheritance bs goin on here and i don't like it
@@ -23,6 +24,8 @@ public:
     virtual void PreInit(), Init(), ReInit(), Terminate();
     virtual void SetClearColor(const Hmx::Color& c) { mColor = c; }
     virtual void ForceColorClear() {}
+    virtual void ScreenDump(const char*), ScreenDumpUnique(const char*);
+    virtual void DrawRect(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*);
 
     virtual void BeginDrawing(), EndDrawing();
 
@@ -36,6 +39,7 @@ public:
     RndConsole* mConsole; // 0x80
 
     int mAspectRatio; // 0xE0
+    int unk_0xE4;
 
     bool mShrinkToSafe; // 0xEA
     bool ShrinkToSafeArea() { return mShrinkToSafe; }
@@ -49,6 +53,7 @@ public:
     void UpdateRate(); void UpdateHeap();
     float DrawTimers(float);
     float YRatio();
+    void Modal(bool&, char*, bool);
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);

@@ -26,8 +26,7 @@ public:
 
     void Sync();
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    DECLARE_REVS
 
     FilePath mTexPath;
     RndTex* mTex;

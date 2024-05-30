@@ -13,7 +13,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "band3",
         "objects": {
-            "band3/bandtrack/GemSmasher.cpp": "NonMatching",
+            "band3/bandtrack/GemSmasher.cpp": "LinkIssues",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
 
             "band3/game/BandUser.cpp": "NonMatching",
@@ -52,6 +52,11 @@
         "objects": {
             "network/Core/CacheManager.cpp": "Matching",
             "network/Core/JobQueue.cpp": "Matching",
+
+
+            "network/ddl/AdapterDeclaration.cpp": "Matching",
+            "network/ddl/NameSpace.cpp": "Matching",
+            "network/ddl/ParseTree.cpp": "Matching",
 
             "network/net/JsonUtils.cpp": "NonMatching",
 
@@ -397,7 +402,7 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
 
-            "system/track/Track.cpp": "LinkIssues",
+            "system/track/Track.cpp": {"status": "Matching", "extra_cflags": ["-ipa file"]},
             "system/track/TrackDir.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
@@ -406,7 +411,7 @@
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/ScrollSelect.cpp": "NonMatching",
-            "system/ui/UIButton.cpp": "LinkIssues",
+            "system/ui/UIButton.cpp": {"status": "Matching", "extra_cflags": ["-ipa file"]},
             "system/ui/UIColor.cpp": "Matching",
             "system/ui/UIComponent.cpp": "NonMatching",
             "system/ui/UIFontImporter.cpp": "NonMatching",
@@ -420,7 +425,7 @@
             "system/ui/UIPicture.cpp": "NonMatching",
             "system/ui/UIProxy.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
-            "system/ui/UIScreen.cpp": "NonMatching",
+            "system/ui/UIScreen.cpp": "Equivalent",
             "system/ui/UITransitionHandler.cpp": "Matching",
 
             "system/utl/BeatMap.cpp": "NonMatching",

@@ -48,15 +48,15 @@ void UIPanel::CheckUnload(){
 void UIPanel::SetLoadedDir(class PanelDir* dir, bool b) {
     MILO_ASSERT(!mLoader, 106);
     MILO_ASSERT(dir, 107);
-    if (mDir) { mDir->mPanel = NULL; }
+    if (mDir) { mDir->mOwnerPanel = NULL; }
     mDir = dir;
     mLoaded = b;
-    mDir->mPanel = this;
+    mDir->mOwnerPanel = this;
 }
 
 void UIPanel::UnsetLoadedDir() {
     MILO_ASSERT(!mLoader, 120);
-    if (mDir) { mDir->mPanel = NULL; }
+    if (mDir) { mDir->mOwnerPanel = NULL; }
     mDir = NULL;
     mLoaded = false;
 }

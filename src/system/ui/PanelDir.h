@@ -1,5 +1,6 @@
 #ifndef UI_PANELDIR_H
 #define UI_PANELDIR_H
+#include "obj/Object.h"
 #include "rndobj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include <list>
@@ -33,19 +34,23 @@ public:
     virtual UIComponent* FindComponent(const char*);
     virtual void SetFocusComponent(UIComponent*, Symbol);
 
+    void SyncEditModePanels();
+
     UIComponent* mFocusComponent;
-    class UIPanel* mPanel;
+    class UIPanel* mOwnerPanel;
     ObjPtr<RndCam, ObjectDir> mCam;
-    std::list<int> mTriggers;
-    std::list<int> mComponents;
-    bool mCanEndWorld;
-    bool mUseSpecifiedCam;
-    std::vector<int> mBackPanels;
-    std::vector<int> mBackFilenames;
-    std::vector<int> mFrontPanels;
-    std::vector<int> mFrontFilenames;
-    bool mShowEditModePanels;
-    bool mShowFocusComponent;
+    std::list<void*> mTriggers;
+    std::list<void*> mComponents;
+    bool mCanEndWorld; // 0x1b0
+    bool mUseSpecifiedCam; // 0x1b1
+    std::vector<PanelDir*> mBackPanels; // 0x1b4
+    std::vector<FilePath> mBackFilenames; // 0x1bc
+    std::vector<PanelDir*> mFrontPanels; // 0x1c4
+    std::vector<FilePath> mFrontFilenames; // 0x1cc
+    bool mShowEditModePanels; // 0x1d4
+    bool mShowFocusComponent; // 0x1d5
+
+    DECLARE_REVS
 };
 
 #endif
