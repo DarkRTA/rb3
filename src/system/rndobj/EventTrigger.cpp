@@ -277,3 +277,15 @@ BEGIN_CUSTOM_PROPSYNC(EventTrigger::HideDelay)
     SYNC_PROP(delay, o.mDelay)
     SYNC_PROP(rate, o.mRate)
 END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(EventTrigger)
+    SYNC_PROP_ACTION_STATIC(trigger_events, mTriggerEvents, kPropSize|kPropGet, UnregisterEvents())
+    SYNC_PROP_ACTION(anims, mAnims, kPropSize|kPropGet, CheckAnims())
+    SYNC_PROP(proxy_calls, mProxyCalls)
+    SYNC_PROP(sounds, mSounds)
+    SYNC_PROP(shows, mShows)
+    SYNC_PROP(hide_delays, mHideDelays)
+    SYNC_PROP(part_launchers, mPartLaunchers)
+    SYNC_PROP_ACTION_STATIC(enable_events, mEnableEvents, kPropSize|kPropGet, UnregisterEvents())
+    SYNC_PROP_ACTION_STATIC(disable_events, mDisableEvents, kPropSize|kPropGet, UnregisterEvents())
+END_PROPSYNCS

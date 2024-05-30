@@ -100,6 +100,9 @@ public:
     unsigned char mAnimTrigger; // 0xdd
     unsigned char unkde; // 0xde
     bool unkdf;
+    // unkdfp7
+    // mEnabled: 0xdf >> 6 & 1
+    // mEnabledAtStart: 0xdf >> 5 & 1
 };
 
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);

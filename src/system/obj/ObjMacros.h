@@ -152,7 +152,12 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 
 #define SYNC_PROP_STATIC(symbol, member) { \
     NEW_STATIC_SYMBOL(symbol) \
-    SYNC_PROP(symbol, member) \
+    SYNC_PROP(_s, member) \
+}
+
+#define SYNC_PROP_ACTION_STATIC(symbol, member, opmask, action) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_ACTION(_s, member, opmask, action) \
 }
 
 #define SYNC_SUPERCLASS(parent) \
