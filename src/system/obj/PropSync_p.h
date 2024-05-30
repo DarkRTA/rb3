@@ -68,7 +68,7 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
         if(op == kPropGet) node = DataNode(obj);
-        else obj = node.GetObj(0);
+        else obj = node.Obj<T>(0);
         return true;
     }
 }
