@@ -58,31 +58,39 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
         }
     }
     // after all the ObjDirs have been Itr'd through
-    for(std::list<EventTrigger*>::iterator trigItr = trigList.begin(); trigItr != trigList.end(); trigItr++){
-
+    for(std::list<EventTrigger*>::iterator iter = trigList.begin(); iter != trigList.end(); iter++){
+        std::list<EventTrigger*>::iterator iter2 = iter;
+        EventTrigger* t1 = *iter;
+        EventTrigger* t2 = *iter2;
+        if(t1 == t2){
+            if(t1->mTriggerEvents == t2->mTriggerEvents &&
+                t1->mEnableEvents == t2->mEnableEvents &&
+                t1->mDisableEvents == t2->mDisableEvents &&
+                t1->mWaitForEvents == t2->mWaitForEvents){
+                MILO_WARN("Combining %s with %s", t1->Name(), t2->Name());
+                while(!t1->mAnims.empty()){
+                    t2->mAnims.push_back(t1->mAnims.back());
+                    t1->mAnims.pop_back();
+                }
+                while(!t1->mSounds.empty()){
+                    t2->mSounds.push_back(t1->mSounds.back());
+                    t1->mSounds.pop_back();
+                }
+                while(!t1->mShows.empty()){
+                    t2->mShows.push_back(t1->mShows.back());
+                    t2->mShows.pop_back();
+                }
+            }
+        }
     }
     return DataNode(0);
 }
 #pragma pop
-
-// #pragma dont_inline on
-// static void thisisheretotestobjptrlist(Hmx::Object* obj){
-//     ObjPtrList<RndDrawable, ObjectDir> lol(obj, kObjListNoNull);
-//     lol.pop_back();
-//     lol.back();
-//     lol.empty();
-//     lol.push_back(0);
-// }
-
-// static void test2(ObjPtrList<EventTrigger, ObjectDir>* l1, ObjPtrList<EventTrigger, ObjectDir>* l2){
-//     *l1 = *l2;
-// }
-// #pragma dont_inline reset
-
-// SAVE_OBJ(EventTrigger, 406)
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this, 0), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
     unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1) {
     RegisterEvents();
 }
+
+SAVE_OBJ(EventTrigger, 406)
