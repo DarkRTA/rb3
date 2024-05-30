@@ -68,7 +68,7 @@ const char* FileRoot();
 const char* FileExecRoot();
 const char* FileSystemRoot();
 
-extern "C" void FileNormalizePath();
+extern "C" void FileNormalizePath(const char*);
 extern "C" const char* FileMakePath(const char* root, const char* file, char*);
 extern "C" const char* FileRelativePath(const char* root, const char* filepath);
 bool FileReadOnly(const char* filepath);

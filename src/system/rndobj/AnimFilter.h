@@ -31,6 +31,11 @@ public:
     float Scale();
     void SetAnim(RndAnimatable*);
     DataNode OnSafeAnims(DataArray*);
+    Type GetType(){ return mType; }
+    RndAnimatable* Anim(){ return mAnim; }
+    float Start(){ return mStart; }
+    float End(){ return mEnd; }
+    float Period(){ return mPeriod; }
 
     DECLARE_REVS;
 
