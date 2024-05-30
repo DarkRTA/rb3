@@ -42,7 +42,7 @@ public:
 
         ObjOwnerPtr<RndDrawable, class ObjectDir> mHide; // 0x0
         float mDelay; // 0xc
-        int unk10; // 0x10
+        int mRate; // 0x10
     };
 
     EventTrigger();
@@ -105,7 +105,7 @@ public:
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);
 BinStream& operator>>(BinStream&, EventTrigger::ProxyCall&);
 inline BinStream& operator>>(BinStream& bs, EventTrigger::HideDelay& hd){
-    bs >> hd.mHide >> hd.mDelay >> hd.unk10;
+    bs >> hd.mHide >> hd.mDelay >> hd.mRate;
     return bs;
 }
 

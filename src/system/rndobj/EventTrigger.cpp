@@ -141,7 +141,7 @@ EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull)
     RegisterEvents();
 }
 
-EventTrigger::HideDelay::HideDelay(Hmx::Object* o) : mHide(o, 0), mDelay(0.0f), unk10(0) {
+EventTrigger::HideDelay::HideDelay(Hmx::Object* o) : mHide(o, 0), mDelay(0.0f), mRate(0) {
 
 }
 
@@ -251,3 +251,29 @@ BEGIN_HANDLERS(EventTrigger)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x3AF)
 END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(EventTrigger::Anim)
+    SYNC_PROP_ACTION(anim, o.mAnim, kPropSize|kPropGet, ResetAnim(o))
+    SYNC_PROP(blend, o.mBlend)
+    SYNC_PROP(wait, o.mWait)
+    SYNC_PROP(delay, o.mDelay)
+    SYNC_PROP(enable, o.mEnable)
+    SYNC_PROP(rate, (int&)o.mRate)
+    SYNC_PROP(start, o.mStart)
+    SYNC_PROP(end, o.mEnd)
+    SYNC_PROP(scale, o.mScale)
+    SYNC_PROP(period, o.mPeriod)
+    SYNC_PROP(type, o.mType)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(EventTrigger::ProxyCall)
+    SYNC_PROP_ACTION(proxy, o.mProxy, kPropSize|kPropGet, o.mCall = Symbol(""))
+    SYNC_PROP(call, o.mCall)
+    SYNC_PROP(event, o.mEvent)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(EventTrigger::HideDelay)
+    SYNC_PROP(hide, o.mHide)
+    SYNC_PROP(delay, o.mDelay)
+    SYNC_PROP(rate, o.mRate)
+END_CUSTOM_PROPSYNC

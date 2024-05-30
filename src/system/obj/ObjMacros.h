@@ -119,6 +119,12 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
     else { \
         Symbol sym = _prop->Sym(_i);
 
+#define BEGIN_CUSTOM_PROPSYNC(objType) \
+bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){ \
+    if(_i == _prop->Size()) return true; \
+    else { \
+        Symbol sym = _prop->Sym(_i);
+
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
@@ -153,6 +159,11 @@ bool objType::SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op)
         return parent::SyncProperty(_val, _prop, _i, _op);
 
 #define END_PROPSYNCS \
+        return false; \
+    } \
+}
+
+#define END_CUSTOM_PROPSYNC \
         return false; \
     } \
 }
