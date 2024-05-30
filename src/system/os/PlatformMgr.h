@@ -157,7 +157,7 @@ public:
     bool mIsOnlineRestricted;
     bool unkce69;
     bool unkce6a;
-};
+} __attribute__((aligned(32)));
 
 Symbol PlatformRegionToSymbol(PlatformRegion);
 PlatformRegion SymbolToPlatformRegion(Symbol);
