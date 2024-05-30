@@ -114,7 +114,7 @@ namespace Hmx {
             return obj;
         }
 
-        std::vector<ObjRef*>& Refs(){ return mRefs; }
+        const std::vector<ObjRef*>& Refs() const { return mRefs; }
 
         const DataArray* TypeDef() const { return mTypeDef; }
         Symbol Type() const {

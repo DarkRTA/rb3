@@ -48,6 +48,7 @@ public:
     DataNode OnAnimate(DataArray*);
     void StopAnimation();
     bool IsAnimating();
+    Rate GetRate(){ return mRate; }
     DataNode OnConvertFrames(DataArray*);
 
     void Animate(float, bool, float);

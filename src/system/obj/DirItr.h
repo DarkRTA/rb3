@@ -24,6 +24,9 @@ public:
         return *this;
     }
 
+    operator T*(){ return mObj; }
+    T* operator->() { return mObj; }
+
     void Advance();
 
     ObjectDir* mDir;
