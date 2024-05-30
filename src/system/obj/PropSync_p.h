@@ -68,8 +68,8 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
     if((int)op == 0x40) return false;
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
-        if(op == kPropGet) node = DataNode(obj);
-        else obj = node.GetObj(0);
+        if(op == kPropGet) node = DataNode((Hmx::Object*)obj);
+        else obj = node.Obj<T>(0);
         return true;
     }
 }
@@ -94,15 +94,33 @@ template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode&
     }
 }
 
+// fn_805E3988 - PropSync(ObjPtrList<Sequence>&) - used in EventTrigger.cpp
 // fn_80642860 - PropSync(ObjPtrList&, ...)
 template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if((int)op == 0x40) return false;
-    // else {
-    //     MILO_ASSERT(op <= kPropInsert, 0x132);
-    //     if(op == kPropGet) node = DataNode(ptr.Ptr());
-    //     else ptr = node.Obj<T>(0);
-    //     return true;
-    // }
+    if((int)op == 0x40) return ptr.mMode == kObjListNoNull;
+    else if(i == prop->Size()){
+        MILO_ASSERT(op == kPropSize, 0x146);
+        node = DataNode(ptr.size());
+        return true;
+    }
+    else {
+        ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
+        for(int cnt = prop->Int(i++); cnt >= 0; cnt--) ++it;
+        MILO_ASSERT(i == prop->Size(), 0x150);
+        if(op == kPropGet){
+            // return PropSync(*it, node, prop, i, kPropGet); // supposed to call the Object PropSync template on line 67 but it doesn't for whatever reason
+        }
+        else if(op == kPropSet){
+
+        }
+        else if(op == kPropRemove){
+
+        }
+        else if(op == kPropInsert){
+
+        }
+        else return false;
+    }
 }
 
 template <class T> bool PropSync(std::list<T>& list, DataNode& node, DataArray* prop, int i, PropOp op)  {
