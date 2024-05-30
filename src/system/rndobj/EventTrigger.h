@@ -72,7 +72,12 @@ public:
     void RegisterEvents();
     void UnregisterEvents();
     void CleanupHideShow();
+    void CleanupEventCase(std::vector<Symbol>&);
+    void ConvertParticleTriggerType();
+
+    DataNode OnTrigger(DataArray*);
     DataNode Cleanup(DataArray*);
+    DataNode OnProxyCalls(DataArray*);
 
     ObjVector<Anim> mAnims; // 0x14
     ObjPtrList<Task, class ObjectDir> mSpawnedTasks; // 0x20
@@ -99,5 +104,9 @@ public:
 
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);
 BinStream& operator>>(BinStream&, EventTrigger::ProxyCall&);
+inline BinStream& operator>>(BinStream& bs, EventTrigger::HideDelay& hd){
+    bs >> hd.mHide >> hd.mDelay >> hd.unk10;
+    return bs;
+}
 
 #endif // RNDOBJ_EVENTTRIGGER_H

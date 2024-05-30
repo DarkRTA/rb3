@@ -127,7 +127,8 @@ EventTrigger::Anim::Anim(Hmx::Object* o) : mAnim(o, 0), mBlend(0.0f), mDelay(0.0
 BinStream& operator>>(BinStream& bs, EventTrigger::ProxyCall& pcall){
     bs >> pcall.mProxy;
     bs >> pcall.mCall;
-    if(EventTrigger::gRev > 10) bs >> pcall.mEvent;
+    if(EventTrigger::gRev > 10) pcall.mEvent.Load(bs, true, pcall.mProxy);
+    return bs;
 }
 
 EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) {
@@ -174,4 +175,79 @@ BEGIN_COPYS(EventTrigger)
 END_COPYS
 #pragma pop
 
+
+void RemoveNullEvents(std::vector<Symbol>& vec){
+    std::vector<Symbol>::iterator it = vec.begin();
+    while(it != vec.end()){
+        if(it->Null()) it = vec.erase(it);
+        else it++;
+    }
+}
+
 SAVE_OBJ(EventTrigger, 406)
+
+BEGIN_LOADS(EventTrigger)
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x11, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev > 0xF) LOAD_SUPERCLASS(RndAnimatable)
+    UnregisterEvents();
+    if(gRev > 9) bs >> mTriggerEvents;
+    else if(gRev > 6){
+        mTriggerEvents.clear();
+        Symbol sym;
+        bs >> sym;
+        if(!sym.Null()) mTriggerEvents.push_back(sym);
+    }
+    if(gRev > 6) bs >> mAnims >> mSounds >> mShows;
+    if(gRev > 0xC) bs >> mHideDelays;
+    else {
+        // gross
+    }
+    if(gRev > 2) bs >> mEnableEvents >> mDisableEvents;
+    if(gRev > 5) bs >> mWaitForEvents;
+    if(gRev > 6) bs >> mNextLink;
+    if(gRev < 10){
+        RemoveNullEvents(mEnableEvents);
+        RemoveNullEvents(mDisableEvents);
+        RemoveNullEvents(mWaitForEvents);
+    }
+    if(gRev < 7){
+        // iterator jank
+    }
+    if(gRev > 7) bs >> mProxyCalls;
+    if(gRev > 0xB){
+        int i = 0;
+        bs >> i;
+        mTriggerOrder = i;
+    }
+    if(gRev > 0xD) bs >> mResetTriggers;
+    if(gRev > 0xE) bs >> unkdf;
+    if(gRev > 0xF){
+        int i;
+        bs >> i;
+        mAnimTrigger = i;
+        bs >> mAnimFrame;
+    }
+    if(gRev > 0x10) bs >> mPartLaunchers;
+    CleanupEventCase(mTriggerEvents);
+    CleanupEventCase(mEnableEvents);
+    CleanupEventCase(mDisableEvents);
+    CleanupEventCase(mWaitForEvents);
+    RegisterEvents();
+    CleanupHideShow();
+    ConvertParticleTriggerType();
+END_LOADS
+
+BEGIN_HANDLERS(EventTrigger)
+    HANDLE(trigger, OnTrigger)
+    HANDLE_ACTION(enable, unkdf = true)
+    HANDLE_ACTION(disable, unkdf = false)
+    HANDLE_ACTION(wait_for, unkdf = true; Trigger();)
+    HANDLE(proxy_calls, OnProxyCalls)
+    if (sym == supported_events) return DataNode(SupportedEvents(), kDataArray);
+    HANDLE_ACTION(basic_cleanup, BasicReset())
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x3AF)
+END_HANDLERS
