@@ -34,7 +34,7 @@ PlatformRegion SymbolToPlatformRegion(Symbol s){
 }
 
 void UTF8FilterKeyboardString(char* c, int i, const char* cc){
-    static const char* allowed = SystemConfig(platform_mgr)->FindArray(keyboard_allowed_chars, true)->Str(1);
+    static const char* allowed = SystemConfig(platform_mgr)->FindStr(keyboard_allowed_chars);
     UTF8FilterString(c, i, cc, allowed, '?');
 }
 
