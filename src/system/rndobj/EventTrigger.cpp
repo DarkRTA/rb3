@@ -124,10 +124,54 @@ EventTrigger::Anim::Anim(Hmx::Object* o) : mAnim(o, 0), mBlend(0.0f), mDelay(0.0
     mType = range;
 }
 
+BinStream& operator>>(BinStream& bs, EventTrigger::ProxyCall& pcall){
+    bs >> pcall.mProxy;
+    bs >> pcall.mCall;
+    if(EventTrigger::gRev > 10) bs >> pcall.mEvent;
+}
+
+EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) {
+
+}
+
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this, 0), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
     unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1) {
     RegisterEvents();
 }
+
+EventTrigger::HideDelay::HideDelay(Hmx::Object* o) : mHide(o, 0), mDelay(0.0f), unk10(0) {
+
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_COPYS(EventTrigger)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndAnimatable)
+    GET_COPY(EventTrigger)
+    BEGIN_COPY_CHECKED
+        UnregisterEvents();
+        COPY_MEMBER(mTriggerEvents)
+        COPY_MEMBER(mAnims)
+        COPY_MEMBER(mSounds)
+        COPY_MEMBER(mProxyCalls)
+        COPY_MEMBER(mShows)
+        COPY_MEMBER(mHideDelays)
+        COPY_MEMBER(mEnableEvents)
+        COPY_MEMBER(mDisableEvents)
+        COPY_MEMBER(mWaitForEvents)
+        COPY_MEMBER(mNextLink)
+        COPY_MEMBER(mTriggerOrder)
+        COPY_MEMBER(mResetTriggers)
+        COPY_MEMBER(unkdf)
+        COPY_MEMBER(mAnimTrigger)
+        COPY_MEMBER(mAnimFrame)
+        COPY_MEMBER(mPartLaunchers)
+        RegisterEvents();
+        CleanupHideShow();
+    END_COPY_CHECKED
+END_COPYS
+#pragma pop
 
 SAVE_OBJ(EventTrigger, 406)

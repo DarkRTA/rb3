@@ -29,10 +29,20 @@ public:
 
     class ProxyCall {
     public:
+        ProxyCall(Hmx::Object*);
+
+        ObjOwnerPtr<class ObjectDir, class ObjectDir> mProxy; // 0x0
+        Symbol mCall; // 0xc
+        ObjOwnerPtr<EventTrigger, class ObjectDir> mEvent; // 0x10
     };
 
     class HideDelay {
     public:
+        HideDelay(Hmx::Object*);
+
+        ObjOwnerPtr<RndDrawable, class ObjectDir> mHide; // 0x0
+        float mDelay; // 0xc
+        int unk10; // 0x10
     };
 
     EventTrigger();
@@ -61,6 +71,7 @@ public:
 
     void RegisterEvents();
     void UnregisterEvents();
+    void CleanupHideShow();
     DataNode Cleanup(DataArray*);
 
     ObjVector<Anim> mAnims; // 0x14
@@ -87,5 +98,6 @@ public:
 };
 
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);
+BinStream& operator>>(BinStream&, EventTrigger::ProxyCall&);
 
 #endif // RNDOBJ_EVENTTRIGGER_H
