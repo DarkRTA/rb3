@@ -142,11 +142,28 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
 
 template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if((int)op == 0x40) return false;
-    else {
-        MILO_ASSERT(op == kPropSize, 146);
-        //if(op == kPropGet) node = DataNode(ptr.Ptr());
-        //else ptr = node.Obj<T>(0);
+    else if(i == prop->Size()){
+        MILO_ASSERT(op == kPropSize, 0x17F);
+        node = DataNode((int)objVec.size());
         return true;
+    }
+    else {
+        std::vector<T, T2>::iterator it = objVec.begin() + prop->Int(i++);
+        if(i < prop->Size() || op & 0x13){
+            return PropSync(*it, node, prop, i, op);
+        }
+        else if(op == kPropRemove){
+            objVec.erase(it);
+            return true;
+        }
+        else if(op == kPropInsert){
+            T item(objVec.Owner());
+            if(PropSync(item, node, prop, i, kPropInsert)){
+                objVec.insert(it, item);
+                return true;
+            }
+        }
+        return false;
     }
 }
 

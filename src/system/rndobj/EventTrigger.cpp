@@ -9,11 +9,7 @@
 INIT_REVS(EventTrigger)
 
 DataArray* EventTrigger::SupportedEvents(){
-    Symbol sym;
-    if(mTypeDef){
-        sym = mTypeDef->Sym(0);
-    }
-    if(sym == "endgame_action"){
+    if(Type() == "endgame_action"){
         return SystemConfig("objects", "EventTrigger", "types", "endgame_action", "supported_events")->Array(1);
     }
     else {
