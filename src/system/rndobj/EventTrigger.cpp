@@ -6,6 +6,8 @@
 #include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(EventTrigger)
+
 DataArray* EventTrigger::SupportedEvents(){
     Symbol sym;
     if(mTypeDef){
@@ -86,6 +88,41 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
     return DataNode(0);
 }
 #pragma pop
+
+void EventTrigger::SetName(const char* cc, class ObjectDir* dir){
+    UnregisterEvents();
+    Hmx::Object::SetName(cc, dir);
+    RegisterEvents();
+}
+
+void ResetAnim(EventTrigger::Anim& anim){
+    if(anim.mAnim){
+        anim.mRate = anim.mAnim->GetRate();
+        anim.mStart = anim.mAnim->StartFrame();
+        anim.mEnd = anim.mAnim->EndFrame();
+        anim.mPeriod = 0.0f;
+        anim.mScale = 1.0f;
+        anim.mType = anim.mAnim->Loop() ? loop : range;
+    }
+}
+
+BinStream& operator>>(BinStream& bs, EventTrigger::Anim& anim){
+    bs >> anim.mAnim >> anim.mBlend >> anim.mWait >> anim.mDelay;
+    if(EventTrigger::gRev > 9){
+        bs >> anim.mEnable;
+        int i;
+        bs >> i;
+        anim.mRate = i;
+        bs >> anim.mStart >> anim.mEnd >> anim.mPeriod >> anim.mType;
+        bs >> anim.mScale;
+    }
+    else ResetAnim(anim);
+    return bs;
+}
+
+EventTrigger::Anim::Anim(Hmx::Object* o) : mAnim(o, 0), mBlend(0.0f), mDelay(0.0f), mWait(0), mEnable(0), mRate(0), mStart(0.0f), mEnd(0.0f), mPeriod(0.0f), mScale(1.0f) {
+    mType = range;
+}
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this, 0), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),

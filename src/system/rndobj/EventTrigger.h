@@ -12,6 +12,8 @@ public:
 
     class Anim {
     public:
+        Anim(Hmx::Object*);
+
         ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim; // 0x0
         float mBlend; // 0xc
         float mDelay; // 0x10
@@ -53,10 +55,12 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void CheckAnims(){}
 
+    DECLARE_REVS
     NEW_OBJ(EventTrigger)
     static void Init();
 
     void RegisterEvents();
+    void UnregisterEvents();
     DataNode Cleanup(DataArray*);
 
     ObjVector<Anim> mAnims; // 0x14
@@ -81,5 +85,7 @@ public:
     unsigned char unkde; // 0xde
     bool unkdf;
 };
+
+BinStream& operator>>(BinStream&, EventTrigger::Anim&);
 
 #endif // RNDOBJ_EVENTTRIGGER_H
