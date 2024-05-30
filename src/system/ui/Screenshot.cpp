@@ -1,6 +1,8 @@
 #include "ui/Screenshot.h"
-#include "rndobj/Tex.h"
+#include "math/Color.h"
 #include "rndobj/Mat.h"
+#include "rndobj/Rnd.h"
+#include "rndobj/Tex.h"
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 #include "utl/Loader.h"
@@ -40,6 +42,12 @@ void Screenshot::Sync(){
         mMat->unkb4p1 |= 2;
         mMat->mDiffuseTex = mTex;
         mMat->unkb4p1 |= 2;
+    }
+}
+
+void Screenshot::DrawShowing() {
+    if (!TheRnd->unk_0xE4 && TheLoadMgr.EditMode() && mMat) {
+        TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->mWidth, TheRnd->mHeight), Hmx::Color(0, 0, 0), mMat, 0, 0);
     }
 }
 

@@ -28,7 +28,7 @@ enum NotifyLocation {
     i, d, k
 };
 
-class PlatformMgr : public MsgSource, ContentMgr::Callback {
+class PlatformMgr : public MsgSource, public ContentMgr::Callback {
 public:
     PlatformMgr();
     virtual DataNode Handle(DataArray*, bool);
@@ -113,7 +113,7 @@ public:
     bool unk6d;
     int unk70;
     bool mEthernetCableConnected;
-    
+
     char filler[0x432b];
 
     bool unk43a0;
@@ -157,7 +157,7 @@ public:
     bool mIsOnlineRestricted;
     bool unkce69;
     bool unkce6a;
-};
+} __attribute__((aligned(32)));
 
 Symbol PlatformRegionToSymbol(PlatformRegion);
 PlatformRegion SymbolToPlatformRegion(Symbol);

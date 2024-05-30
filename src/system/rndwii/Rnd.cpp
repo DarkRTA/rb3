@@ -29,14 +29,13 @@ void OnDrawSync(u16 s) {
 
 WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false), unk_0x2BC(false), 
     mFramesBuffered(2) { 
-    unk_0x20 = 0;
-    unk_0x24 = 0;
-    unk_0x28 = 0;
-    unk_0x2C = 0;
+    mColor.Set(0, 0, 0, 0);
     unk_0x2B4.reserve(0x20); 
 }
 
 WiiRnd::~WiiRnd() {}
+
+void WiiModal(bool& rb, char* c, bool b) { TheWiiRnd.Modal(rb, c, b); }
 
 void WiiRnd::WiiPreInit() {
     Rnd::PreInit();
