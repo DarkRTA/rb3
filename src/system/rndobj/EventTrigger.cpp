@@ -35,8 +35,8 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
         for(ObjVector<Anim>::iterator iter2 = iter->mAnims.begin(); iter2 != iter->mAnims.end(); iter2++){
             RndAnimFilter* filter = dynamic_cast<RndAnimFilter*>(iter2->mAnim.Ptr());
             if(filter){
-                std::vector<ObjRef*>::reverse_iterator rit = filter->Refs().rbegin();
-                std::vector<ObjRef*>::reverse_iterator rEnd = filter->Refs().rend();
+                std::vector<ObjRef*>::const_reverse_iterator rit = filter->Refs().rbegin();
+                std::vector<ObjRef*>::const_reverse_iterator rEnd = filter->Refs().rend();
                 for(; rit != rEnd; rit++){
                     if((*rit)->RefOwner()){
                         if((*rit)->RefOwner() != iter) break;
