@@ -74,7 +74,9 @@ bool FxSend::CheckChain(FxSend* send, int i){
         return false;
     }
     else {
-        for(std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin(); rit != mRefs.rend(); rit++){
+        std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+        std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+        for(; rit != ritEnd; ++rit){
             FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
             if(rsend && rsend->mNextSend == this && rsend->mStage >= i){
                 MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", mName);

@@ -2,8 +2,9 @@
 #include "os/Debug.h"
 #include "rndobj/AnimFilter.h"
 #include "rndobj/Group.h"
-#include "utl/Symbols.h"
+#include "obj/DataUtl.h"
 #include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(RndAnimatable)
 
@@ -22,7 +23,7 @@ TaskUnits RndAnimatable::RateToTaskUnits(Rate myRate){
 
 #pragma push
 #pragma force_active on
-inline int RndAnimatable::Units() const {
+inline TaskUnits RndAnimatable::Units() const {
     return gRateUnits[mRate];
 }
 
@@ -140,6 +141,15 @@ void RndAnimatable::StopAnimation(){
     }
 }
 
+AnimTask* RndAnimatable::Animate(float blend, bool b, float f2){
+    AnimTask* task = new AnimTask(this, StartFrame(), EndFrame(), FramesPerUnit(), Loop(), blend);
+    if(b && task->mBlendTask){
+        f2 += task->mBlendTask->TimeUntilEnd();
+    }
+    TheTaskMgr.Start(task, Units(), f2);
+    return task;
+}
+
 BEGIN_HANDLERS(RndAnimatable);
     HANDLE_ACTION(set_frame, SetFrame(_msg->Float(2), 1.0f));
     HANDLE_EXPR(frame, mFrame);
@@ -153,6 +163,70 @@ BEGIN_HANDLERS(RndAnimatable);
     HANDLE_CHECK(0x16C);
 END_HANDLERS;
 
+DataNode RndAnimatable::OnAnimate(DataArray* arr){
+    float local_blend = 0.0f;
+    float animTaskStart = StartFrame();
+    float animTaskEnd = EndFrame();
+    bool animTaskLoop = Loop();
+    TaskUnits local_units = Units();
+    float p = FramesPerUnit();
+    float local_delay = 0.0f;
+    const char* local_name = 0;
+    bool local_wait = false;
+
+    arr->FindData(blend, local_blend, false);
+    arr->FindData(delay, local_delay, false);
+    arr->FindData(units, (int&)local_units, false);
+    arr->FindData(name, local_name, false);
+    arr->FindData(wait, local_wait, false);
+
+    DataArray* rangeArr = arr->FindArray(range, false);
+    if(rangeArr){
+        animTaskStart = rangeArr->Float(1);
+        animTaskEnd = rangeArr->Float(2);
+        animTaskLoop = false;
+    }
+
+    DataArray* loopArr = arr->FindArray(loop, false);
+    if(loopArr){
+        if(loopArr->Size() > 1) animTaskStart = loopArr->Float(1);
+        else animTaskStart = StartFrame();
+        if(loopArr->Size() > 2) animTaskEnd = loopArr->Float(2);
+        else animTaskEnd = EndFrame();
+        animTaskLoop = true;
+    }
+
+    DataArray* destArr = arr->FindArray(dest, false);
+    if(destArr){
+        animTaskStart = mFrame;
+        animTaskEnd = destArr->Float(1);
+        animTaskLoop = false;
+    }
+
+    DataArray* periodArr = arr->FindArray(period, false);
+    if(periodArr){
+        p = periodArr->Float(1);
+        MILO_ASSERT(p, 0x1A9);
+        p = __fabs((animTaskEnd - animTaskStart)) / p;
+    }
+
+    AnimTask* theTask = new AnimTask(this, animTaskStart, animTaskEnd, p, animTaskLoop, local_blend);
+    if(local_name){
+        MILO_ASSERT(DataThis(), 0x1B1);
+        theTask->SetName(local_name, DataThis()->DataDir());
+    }
+    if(local_wait){
+        AnimTask* blendtask = theTask->mBlendTask;
+        if(blendtask){
+            RndAnimatable* blendtaskanim = blendtask->mAnim;
+            if(blendtaskanim->GetRate() != mRate) MILO_WARN("%s: need same rate to wait", Name());
+            else local_delay = blendtask->TimeUntilEnd();
+        }
+    }
+    TheTaskMgr.Start(theTask, local_units, local_delay);
+    return DataNode(theTask);
+}
+
 DataNode RndAnimatable::OnConvertFrames(DataArray* arr){
     float f = arr->Float(2);
     bool conv = ConvertFrames(f);
@@ -165,116 +239,41 @@ BEGIN_PROPSYNCS(RndAnimatable);
     SYNC_PROP_ACTION(frame, mFrame, kPropGet|kPropSize, SetFrame(mFrame, 1.0f));
 END_PROPSYNCS;
 
-AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, float f5) : 
-    mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(f5), mLoop(b4) {
+AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) : 
+    mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(blend), mLoop(loop) {
     MILO_ASSERT(anim, 0x1DF);
-    mMin = (f2 < f1) ? f2 : f1;
-    mMax = (f1 < f2) ? f2 : f1;
-    if(f1 < f2){
-        mScale = f3;
+    mMin = (end < start) ? end : start;
+    mMax = (start < end) ? end : start;
+    if(start < end){
+        mScale = fpu;
         mOffset = mMin;
     }
     else {
-        mScale = -f3;
+        mScale = -fpu;
         mOffset = mMax;
     }
     Hmx::Object* target = anim->AnimTarget();
     if(target){
-        
+        std::vector<ObjRef*>::const_reverse_iterator rit = target->Refs().rbegin();
+        std::vector<ObjRef*>::const_reverse_iterator ritEnd = target->Refs().rend();
+        for(; rit != ritEnd; ++rit){
+            Hmx::Object* owner = (*rit)->RefOwner();
+            if(owner){
+                bool isananimtask = owner->ClassName() == AnimTask::StaticClassName();
+                if(isananimtask){
+                    mAnimTarget = owner;
+                    break;
+                }
+            }
+        }
     }
+    if(mBlendPeriod != 0.0f && mBlendTask){
+        mBlendTask->mBlending = true;
+    }
+    mAnim = anim;
+    mAnimTarget = anim->AnimTarget();
+    mAnim->StartAnim();
 }
-
-// float mBlendTime;
-//     float mBlendPeriod;
-//     float mMin;
-//     float mMax;
-//     float mScale;
-//     float mOffset;
-//     bool mLoop;
-
-// AnimTask * __thiscall
-// AnimTask::AnimTask(AnimTask *this,RndAnimatable *param_1,float param_2,float param_3,float param_ 4,
-//                   bool param_5,float param_6)
-
-// {
-//   int iVar1;
-//   uint uVar2;
-//   Object *this_00;
-//   char *pcVar3;
-//   int iVar4;
-//   int *this_01;
-//   int iVar5;
-//   int *this_02;
-//   Object **ppOVar6;
-//   Object *this_03;
-//   int iVar7;
-
-//   iVar4 = (**(code **)(*(int *)(param_1 + 4) + 0x40))(param_1);
-//   if (iVar4 != 0) {
-//     iVar7 = *(int *)(iVar4 + 0x14);
-//     for (iVar4 = *(int *)(iVar4 + 0x14) + (uint)*(ushort *)(iVar4 + 0x18) * 4; iVar4 != iVar7;
-//         iVar4 = iVar4 + -4) {
-//       this_01 = (int *)(**(code **)(**(int **)(iVar4 + -4) + 0xc))();
-//       uVar2 = -((int)(-(int)this_01 | (uint)this_01) >> 0x1f);
-//       if (uVar2 != 0) {
-//         if (@GUARD@StaticClassName__8AnimTaskFv@name == '\0') {
-//           Symbol::Symbol((Symbol *)&@LOCAL@StaticClassName__8AnimTaskFv@name,
-//                          @STRING@StaticClassName__8AnimTaskFv);
-//           @GUARD@StaticClassName__8AnimTaskFv@name = '\x01';
-//         }
-//         iVar1 = @LOCAL@StaticClassName__8AnimTaskFv@name;
-//         iVar5 = (**(code **)(*this_01 + 0x18))(this_01);
-//         uVar2 = countLeadingZeros(iVar1 - iVar5);
-//         uVar2 = uVar2 >> 5;
-//       }
-//       if (uVar2 != 0) {
-//         this_02 = *(int **)(this + 0x3c);
-//         if (this_01 != this_02) {
-//           if (this_02 != (int *)0x0) {
-//             Hmx::Object::Release((Object *)this_02,(ObjRef *)(this + 0x34));
-//           }
-//           *(int **)(this + 0x3c) = this_01;
-//           if (this_01 != (int *)0x0) {
-//             Hmx::Object::AddRef((Object *)this_01,(ObjRef *)(this + 0x34));
-//           }
-//         }
-//         break;
-//       }
-//     }
-//   }
-//   if ((*(float *)(this + 0x48) != 0.0) && (*(int *)(this + 0x3c) != 0)) {
-//     *(undefined *)(*(int *)(this + 0x3c) + 0x40) = 1;
-//   }
-//   ppOVar6 = *(Object ***)(this + 0x24);
-//   if ((Object **)param_1 != ppOVar6) {
-//     if (ppOVar6 != (Object **)0x0) {
-//       Hmx::Object::Release(*ppOVar6,*(ObjRef **)(this + 0x20));
-//     }
-//     *(RndAnimatable **)(this + 0x24) = param_1;
-//     if (param_1 != (RndAnimatable *)0x0) {
-//       Hmx::Object::AddRef(*(Object **)param_1,*(ObjRef **)(this + 0x20));
-//     }
-//   }
-//   this_03 = (Object *)(**(code **)(*(int *)(param_1 + 4) + 0x40))(param_1);
-//   this_00 = *(Object **)(this + 0x30);
-//   if (this_03 != this_00) {
-//     if (this_00 != (Object *)0x0) {
-//       Hmx::Object::Release(this_00,(ObjRef *)(this + 0x28));
-//     }
-//     *(Object **)(this + 0x30) = this_03;
-//     if (this_03 != (Object *)0x0) {
-//       Hmx::Object::AddRef(this_03,(ObjRef *)(this + 0x28));
-//     }
-//   }
-//   if (*(int *)(this + 0x24) == 0) {
-//     pcVar3 = ::MakeString(kAssertStr,
-//                           @STRING@__rf__39ObjOwnerPtr<13RndAnimatable,9ObjectDir>CFv_80C17850,0xab ,
-//                           @STRING@__rf__39ObjOwnerPtr<13RndAnimatable,9ObjectDir>CFv@0_80C17848);
-//     Debug::Fail((Debug *)TheDebug,pcVar3);
-//   }
-//   (**(code **)(*(int *)(*(int *)(this + 0x24) + 4) + 0x2c))();
-//   return this;
-// }
 
 float AnimTask::TimeUntilEnd(){
     float time;
