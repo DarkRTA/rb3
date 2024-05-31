@@ -25,15 +25,11 @@ from tools.project import (
     is_windows,
 )
 
-from tools.cflags_common import cflags_includes
-
-# Game versions
-# Be sure to update macros.h if this list changes!
-DEFAULT_VERSION = 1
-VERSIONS = [
-    "SZBE69",    # 0
-    "SZBE69_B8", # 1
-]
+from tools.defines_common import (
+    cflags_includes,
+    DEFAULT_VERSION,
+    VERSIONS
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(

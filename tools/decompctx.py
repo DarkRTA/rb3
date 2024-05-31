@@ -13,8 +13,11 @@ from pcpp.evaluator import Value
 from contextlib import redirect_stdout
 from typing import Optional
 
-# Note: requires being in the same directory as cflags_common.py
-from cflags_common import cflags_includes
+# Note: requires being in the same directory as defines_common.py
+from tools.defines_common import (
+    cflags_includes,
+    VERSIONS
+)
 
 #region Regex Patterns
 at_address_pattern = re.compile(r"(?:.*?)(?:[a-zA-Z_$][\w$]*\s*\*?\s[a-zA-Z_$][\w$]*)\s*((?:AT_ADDRESS|:)(?:\s*\(?\s*)(0x[0-9a-fA-F]+|[a-zA-Z_$][\w$]*)\)?);")
@@ -49,9 +52,7 @@ passthrough_defines: list[str] = [
     "__STDC_VERSION__",
 
     # Game version defines
-    "GAME_VERSION",
-    "VERSION_SZBE69"
-    "VERSION_SZBE69_BE"
+    *[f"VERSION_{version}" for version in VERSIONS],
 
     # Debug defines
     "NDEBUG",

@@ -1,3 +1,11 @@
+# Game versions
+DEFAULT_VERSION = 1
+VERSIONS = [
+    "SZBE69",    # 0
+    "SZBE69_B8", # 1
+]
+
+# Include paths
 cflags_includes = [
     # C/C++ stdlib
     # STLport requires that it comes first in the include path list
