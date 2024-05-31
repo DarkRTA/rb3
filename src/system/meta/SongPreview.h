@@ -17,6 +17,7 @@ public:
 
     void Init();
     void Terminate();
+    void DetachFader(Fader*);
     void DetachFaders();
     void Start(Symbol);
 
@@ -30,10 +31,10 @@ public:
     Fader* mMusicFader; // 0x2c
     Fader* mCrowdSingFader; // 0x30
     int unk34;
-    float mAttenuation;
-    float mFadeTime;
+    float mAttenuation; // 0x38
+    float mFadeTime; // 0x3c
     bool unk40;
-    bool mLoopForever;
+    bool mLoopForever; // 0x41
     int unk44;
     Symbol unk48;
     Symbol unk4c;

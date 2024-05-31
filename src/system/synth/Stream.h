@@ -62,7 +62,7 @@ public:
     virtual float GetSlipOffset(int) = 0;
     virtual void SetSlipSpeed(int, float) = 0;
     virtual void SetStereoPair(int, int){}
-    virtual int ChannelFaders(int) = 0; // fix return type
+    virtual FaderGroup* ChannelFaders(int) = 0;
     virtual void AddVirtualChannels(int){}
     virtual void RemapChannel(int, int){}
 

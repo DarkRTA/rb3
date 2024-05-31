@@ -45,4 +45,15 @@ public:
     bool mOnce;
 };
 
+class TaskMgr : public Hmx::Object {
+public:
+    TaskMgr(){}
+    virtual ~TaskMgr();
+    virtual DataNode Handle(DataArray*, bool);
+
+    float UISeconds() const;
+};
+
+extern TaskMgr TheTaskMgr;
+
 #endif

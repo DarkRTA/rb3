@@ -41,6 +41,7 @@ public:
     Fader* AddLocal(Symbol);
     Fader* FindLocal(Symbol, bool);
     void Add(Fader*);
+    void Remove(Fader*);
 
     ObjPtrList<Fader, class ObjectDir> mFaders;
     bool mDirty;

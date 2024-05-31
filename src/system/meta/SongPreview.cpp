@@ -1,5 +1,6 @@
 #include "meta/SongPreview.h"
 #include "os/System.h"
+#include "obj/Task.h"
 #include "utl/Symbols.h"
 
 SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr((SongMgr&)mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0), unk34(0), mAttenuation(0.0f), unk44(0),
@@ -56,12 +57,62 @@ void SongPreview::Start(Symbol sym){
     }
     if(!sym.Null()){
         if(!mSongMgr.HasSong(sym, true)) return;
-        mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true));
+        mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true)); // this part is what needs fixing
         if(!unk72){
             TheContentMgr->RegisterCallback(this, false);
             unk72 = true;
         }
-        TheDebug << MakeString("Preview: Requesting %s...\n", sym);
+        TheDebug << MakeString("Preview: Requesting %s...\n", sym.Str());
+    }
+    unk68 = TheTaskMgr.UISeconds();
+    if(unk64){
+        unk6c = sym;
+        unk70 = true;
+        if(unk64){
+            mMusicFader->SetVal(0.0f);
+            mCrowdSingFader->SetVal(-96.0f);
+            switch(unk44){
+                case 0:
+                case 1:
+                    delete mStream;
+                    mStream = 0;
+                    unk44 = 0;
+                    break;
+                case 2:
+                    unk44 = 3;
+                    break;
+                case 4:
+                    mFader->DoFade(-48.0f, mFadeTime);
+                    unk44 = 5;
+                    break;
+                default: break;
+            }
+            unk64 = false;
+        }
+    }
+    else {
+        unk70 = false;
+        unk64 = true;
+        unk48 = sym;
+        unk40 = true;
+        mMusicFader->SetVal(0.0f);
+        mCrowdSingFader->SetVal(-96.0f);
+        switch(unk44){
+            case 0:
+            case 1:
+                delete mStream;
+                mStream = 0;
+                unk44 = 0;
+                break;
+            case 2:
+                unk44 = 3;
+                break;
+            case 4:
+                mFader->DoFade(-48.0f, mFadeTime);
+                unk44 = 5;
+                break;
+            default: break;
+        }
     }
 }
 
@@ -111,6 +162,19 @@ void SongPreview::SetMusicVol(float f){
 
 void SongPreview::SetCrowdSingVol(float f){
     mCrowdSingFader->DoFade(f, 0.0f);
+}
+
+void SongPreview::DetachFader(Fader* fader){
+    if(mStream && fader){
+        for(int i = 0; i < unk34; i++){
+            mStream->ChannelFaders(i)->Remove(fader);
+        }
+    }
+}
+
+void SongPreview::DetachFaders(){
+    DetachFader(mMusicFader);
+    DetachFader(mCrowdSingFader);
 }
 
 BEGIN_HANDLERS(SongPreview)
