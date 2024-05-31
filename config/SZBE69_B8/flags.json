@@ -100,7 +100,8 @@
 
                 "-lang=c99",
                 "-O4,p",
-                "-inline auto"
+                "-inline auto",
+                "-ipa file"
             ]
         },
         "quazal": {
