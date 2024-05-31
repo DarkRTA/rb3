@@ -24,8 +24,6 @@
 #  include <stl/pointers/_tools.h>
 #endif
 
-#include "decomp.h"
-
 #define VECTOR_IMPL _STLP_PTR_IMPL_NAME(Vector)
 
 #if defined (_STLP_DEBUG)
@@ -96,7 +94,7 @@ public:
   reference at(size_type __n) { return cast_traits::to_value_type_ref(_M_impl.at(__n)); }
   const_reference at(size_type __n) const { return cast_traits::to_value_type_cref(_M_impl.at(__n)); }
 
-#if GAME_VERSION == VERSION_SZBE69
+#ifdef VERSION_SZBE69
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
 #else
@@ -232,7 +230,7 @@ public:
   reference at(size_type __n) { return reinterpret_cast<reference>(_M_impl.at(__n)); }
   const_reference at(size_type __n) const { return reinterpret_cast<const_reference>(_M_impl.at(__n)); }
 
-#if GAME_VERSION == VERSION_SZBE69
+#ifdef VERSION_SZBE69
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
 #else

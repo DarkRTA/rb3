@@ -46,8 +46,6 @@
 #  include <stl/_uninitialized.h>
 #endif
 
-#include "decomp.h"
-
 #ifdef MILO_DEBUG
 // From system/os/Debug.cpp
 // Declared here since it's not relevant anywhere else
@@ -115,9 +113,9 @@ protected:
 
     // _M_inc_finish_idx in retail doesn't match with size_type as the parameter,
     // but symbols in bank 8 indicate it uses size_type
-#if GAME_VERSION == VERSION_SZBE69
+#if defined(VERSION_SZBE69)
   void _M_inc_finish_idx(_Size increment) {
-#elif GAME_VERSION == VERSION_SZBE69_BE
+#elif defined(VERSION_SZBE69_B8)
   void _M_inc_finish_idx(size_type increment) {
 #endif
     _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);

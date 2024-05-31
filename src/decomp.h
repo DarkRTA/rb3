@@ -1,13 +1,6 @@
 #ifndef DECOMP_H
 #define DECOMP_H
 
-/*
- * Game version defines
- * Be sure to update if the list in configure.py changes!
- */
-#define VERSION_SZBE69 0
-#define VERSION_SZBE69_BE 1
-
 /**
  * https://github.com/kiwi515/ogws/blob/master/include/decomp.h
  * Codewarrior tricks for matching decomp
