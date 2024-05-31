@@ -30,7 +30,7 @@ public:
     int mSize;
     StreamChecksumValidator* mChecksum;
     int mBytesChecksummed;
-    String mName;
+    class String mName;
 };
 
 #endif

@@ -18,8 +18,8 @@ public:
     static void DepadStream(FixedSizeSaveableStream&, int);
     static void SaveFixedSymbol(FixedSizeSaveableStream&, const Symbol&);
     static void LoadFixedSymbol(FixedSizeSaveableStream&, Symbol&);
-    static void SaveFixedString(FixedSizeSaveableStream&, const String&);
-    static void LoadFixedString(FixedSizeSaveableStream&, String&);
+    static void SaveFixedString(FixedSizeSaveableStream&, const class String&);
+    static void LoadFixedString(FixedSizeSaveableStream&, class String&);
     static void SaveSymbolID(FixedSizeSaveableStream&, Symbol);
     static void LoadSymbolFromID(FixedSizeSaveableStream&, Symbol&);
 

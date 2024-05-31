@@ -15,6 +15,7 @@
         "objects": {
             "band3/bandtrack/GemSmasher.cpp": "LinkIssues",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
+            "band3/bandtrack/TrackConfig.cpp": { "status": "LinkIssues", "extra_cflags": ["-ipa file"] },
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
@@ -36,14 +37,16 @@
             "band3/meta_band/Award.cpp": "NonMatching",
             "band3/meta_band/BandProfile.cpp": "NonMatching",
             "band3/meta_band/CampaignKey.cpp": "Matching",
-            "band3/meta_band/GameplayOptions.cpp": "NonMatching",
+            "band3/meta_band/GameplayOptions.cpp": "Matching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
             "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
-            "band3/tour/TourProgress.cpp": "NonMatching"
+            "band3/tour/TourGameRules.cpp": "Matching",
+            "band3/tour/TourProgress.cpp": "NonMatching",
+            "band3/tour/TourQuestGameRules.cpp": "Matching"
         }
     },
     "network": {
