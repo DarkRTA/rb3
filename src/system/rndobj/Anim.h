@@ -73,13 +73,8 @@ public:
 
     float TimeUntilEnd();
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(AnimTask), FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(AnimTask), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(AnimTask);
+    DELETE_POOL_OVERLOAD(AnimTask);
 
     ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
     ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;

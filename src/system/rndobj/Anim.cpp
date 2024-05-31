@@ -128,11 +128,15 @@ bool RndAnimatable::IsAnimating(){
 }
 
 void RndAnimatable::StopAnimation(){
-    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
-    for(; rit != ritEnd; ++rit){
-        AnimTask* task = dynamic_cast<AnimTask*>((*rit)->RefOwner());
-        if(task) delete task;
+    std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin();
+    std::vector<ObjRef*>::reverse_iterator ritEnd = mRefs.rend();
+    while(rit != ritEnd){
+        AnimTask* task = dynamic_cast<AnimTask*>((*rit++)->RefOwner());
+        if(task){
+            delete task;
+            rit = mRefs.rbegin();
+            ritEnd = mRefs.rend();
+        }
     }
 }
 
@@ -175,6 +179,9 @@ AnimTask::AnimTask(RndAnimatable* anim, float f1, float f2, float f3, bool b4, f
         mOffset = mMax;
     }
     Hmx::Object* target = anim->AnimTarget();
+    if(target){
+        
+    }
 }
 
 // float mBlendTime;
