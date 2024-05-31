@@ -29,6 +29,15 @@ enum CacheResult {
 
 struct CacheDirEntry;
 
+class CacheID {
+public:
+    CacheID(){}
+    virtual ~CacheID() = 0;
+    virtual const char* GetCachePath(const char*) = 0;
+    virtual const char* GetCacheSearchPath(const char*) = 0;
+    virtual int GetDeviceID() const;
+};
+
 class Cache {
 public:
     Cache();
@@ -51,15 +60,6 @@ public:
 
     OpType mOpCur;
     CacheResult mLastResult;
-};
-
-class CacheID {
-public:
-    CacheID(){}
-    virtual ~CacheID() = 0;
-    virtual const char* GetCachePath(const char*) = 0;
-    virtual const char* GetCacheSearchPath(const char*) = 0;
-    virtual int GetDeviceID() const;
 };
 
 #endif
