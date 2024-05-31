@@ -20,13 +20,16 @@ TaskUnits RndAnimatable::RateToTaskUnits(Rate myRate){
     return gRateUnits[myRate];
 }
 
-int RndAnimatable::Units() const {
+#pragma push
+#pragma force_active on
+inline int RndAnimatable::Units() const {
     return gRateUnits[mRate];
 }
 
-float RndAnimatable::FramesPerUnit() {
+inline float RndAnimatable::FramesPerUnit() {
     return gRateFpu[mRate];
 }
+#pragma pop
 
 bool RndAnimatable::ConvertFrames(float& f){
     f /= FramesPerUnit();
@@ -115,16 +118,20 @@ void RndAnimatable::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 }
 
 bool RndAnimatable::IsAnimating(){
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
-        Hmx::Object* owner = (*it)->RefOwner();
+    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+    for(; rit != ritEnd; ++rit){
+        Hmx::Object* owner = (*rit)->RefOwner();
         if(dynamic_cast<AnimTask*>(owner)) return true;
     }
     return false;
 }
 
 void RndAnimatable::StopAnimation(){
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
-        AnimTask* task = dynamic_cast<AnimTask*>((*it)->RefOwner());
+    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+    for(; rit != ritEnd; ++rit){
+        AnimTask* task = dynamic_cast<AnimTask*>((*rit)->RefOwner());
         if(task) delete task;
     }
 }
