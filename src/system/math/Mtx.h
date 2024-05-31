@@ -4,6 +4,8 @@
 #include "obj/Data.h"
 #include "utl/BinStream.h"
 
+#include "decomp.h"
+
 namespace Hmx {
     class Matrix3 {
     public:
@@ -20,7 +22,7 @@ namespace Hmx {
 
         Matrix3(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9) :
             x(f1, f2, f3), y(f4, f5, f6), z(f7, f8, f9) {}
-        
+
         void Set(float, float, float, float, float, float, float, float, float);
         void Set(const Vector3&, const Vector3&, const Vector3&);
         void Identity(){
@@ -36,7 +38,7 @@ namespace Hmx {
     public:
         Quat(){}
         Quat(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
-        
+
         void Reset(){ x = y = z = 0.0f; w = 1.0f; }
         void Zero(){ w = x = y = z = 0.0f; }
 

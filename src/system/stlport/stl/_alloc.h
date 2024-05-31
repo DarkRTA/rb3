@@ -70,7 +70,7 @@
 #  define __ALLOC __sgi_alloc
 #endif
 
-#include "macros.h"
+#include "decomp.h"
 #include "utl/MemMgr.h"
 
 namespace _STLP_STD {

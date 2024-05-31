@@ -10,7 +10,6 @@
 #include "utl/MakeString.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
-#include "macros.h"
 #include "math/MathFuncs.h"
 #include "obj/DataUtl.h"
 #include "utl/Locale.h"
@@ -833,7 +832,7 @@ static DataNode DataSwitch(DataArray* da){
                 return nextarr->ExecuteScript(1, gDataThis, 0, 1);
             }
         }
-        else return da->ExecuteScript(i, gDataThis, 0, 1); 
+        else return da->ExecuteScript(i, gDataThis, 0, 1);
     }
     return DataNode(0);
 }

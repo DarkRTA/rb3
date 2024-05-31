@@ -46,7 +46,7 @@
 #  include <stl/_uninitialized.h>
 #endif
 
-#include "macros.h"
+#include "decomp.h"
 
 #ifdef MILO_DEBUG
 // From system/os/Debug.cpp

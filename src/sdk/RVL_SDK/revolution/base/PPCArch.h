@@ -1,7 +1,8 @@
 #ifndef RVL_SDK_PPC_ARCH_H
 #define RVL_SDK_PPC_ARCH_H
-#include "macros.h"
+
 #include "types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -2,6 +2,7 @@
 #define _REVOSDK_OSFASTCAST_H
 
 #include "types.h"
+#include "decomp.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,7 +21,7 @@ static inline void OSInitFastCast(){
         li r3, 6
         oris r3, r3, 6
         mtgqr4 r3
-        
+
         li r3, 7
         oris r3, r3, 7
         mtgqr5 r3
@@ -34,7 +35,7 @@ static inline float __OSu16tof32(register const u16* arg) {
     ASM_BLOCK(
         psq_l ret, 0(arg), 1, 3
     )
-    
+
     return ret;
 }
 
@@ -48,7 +49,7 @@ static inline u16 __OSf32tou16(register float arg) {
     ASM_BLOCK(
         psq_st arg, 0(ptr), 1, 3
     )
-    
+
     r = *(u16*)ptr;
     return r;
 }
@@ -61,7 +62,7 @@ static inline float __OSs16tof32(register const s16* arg) {
     ASM_BLOCK(
         psq_l ret, 0(arg), 1, 5
     )
-    
+
     return ret;
 }
 
@@ -75,7 +76,7 @@ static inline s16 __OSf32tos16(register float arg) {
     ASM_BLOCK(
         psq_st arg, 0(ptr), 1, 5
     )
-    
+
     r = *(s16*)ptr;
     return r;
 }

@@ -1,4 +1,3 @@
-#include "macros.h"
 #include "os/System.h"
 #include "revolution/SC.h"
 #include "os/PlatformMgr.h"
@@ -7,6 +6,8 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/HangBlock_Wii.h"
+
+#include "decomp.h"
 
 bool (*ParseStack)(const char*, unsigned int*, int, char*) = WiiMapFile::ParseStack;
 

@@ -1,5 +1,5 @@
-#include "macros.h"
 #include "system/math/FileChecksum.h"
+#include "macros.h"
 
 // gotta love generated data
 FileChecksum gFileChecksums[] = {

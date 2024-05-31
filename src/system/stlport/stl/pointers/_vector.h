@@ -24,7 +24,7 @@
 #  include <stl/pointers/_tools.h>
 #endif
 
-#include "macros.h"
+#include "decomp.h"
 
 #define VECTOR_IMPL _STLP_PTR_IMPL_NAME(Vector)
 

@@ -3,7 +3,7 @@
 #include "utl/Symbol.h"
 #include "obj/Data.h"
 
-#include "macros.h"
+#include "decomp.h"
 
 #define TIMER_GET_CYCLES(name) \
     register int name; \
@@ -117,10 +117,10 @@ class AutoTimer {
 public:
 
     AutoTimer(Timer* t, float f, StupidAutoTimerFunc s, void* v) {
-        mTimer = t; 
+        mTimer = t;
         if (!t) return;
         unk_0x4 = f; unk_0x8 = s; unk_0xC = v;
-        mTimer->Start(); 
+        mTimer->Start();
     }
 
     ~AutoTimer() { if (mTimer) mTimer->fn_800A8898(); }
@@ -142,7 +142,7 @@ public:
 #define TIMER_THING_NODEL(name, func) \
     static Timer* _t = AutoTimer::GetTimer(name); \
     AutoTimer t(_t, 50.0f, NULL, NULL); \
-    func; 
-    
+    func;
+
 
 #endif
