@@ -1,5 +1,5 @@
 #include "utl/MakeString.h"
 
-static void unusedclipcompressor(){
+void unusedclipcompressor(){
     MakeString("%s %f %f", "beesechurger", 1.0f, 2.0f);
 }

@@ -12,7 +12,7 @@ void Mic::Set(const DataArray* data){
     SetCompressorParam(compressorArr->Float(2));
 }
 
-static void beesechurger(Mic* mic){
+void beesechurger(Mic* mic){
     mic->IsPlaying();
     mic->GetDroppedSamples();
     const char* unusedmicstrings[] = { "mBuffer", "len <= mSize"};

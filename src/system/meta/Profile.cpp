@@ -6,7 +6,7 @@
 static const char* profileSymbols[] = { __FILE__, "user" };
 
 Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {
-    
+
 }
 
 Profile::~Profile(){
@@ -27,7 +27,7 @@ bool Profile::HasValidSaveData() const {
 
 #pragma push
 #pragma dont_inline on
-static void lol(Profile* pf){
+void lol(Profile* pf){
     pf->GetPadNum();
     pf->GetName();
 }
