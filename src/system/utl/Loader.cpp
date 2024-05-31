@@ -2,6 +2,8 @@
 #include "utl/Option.h"
 #include "obj/DataFunc.h"
 
+#include "decomp.h"
+
 LoadMgr TheLoadMgr;
 
 LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), unk18(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
@@ -83,7 +85,9 @@ Loader* LoadMgr::GetLoader(const FilePath& fp) const {
     }
 }
 
-const char* polluntilloadedstr = "PollUntilLoaded circular dependency %s on %s";
+DECOMP_FORCEACTIVE(Loader,
+    "PollUntilLoaded circular dependency %s on %s"
+)
 
 const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
     static const char* names[4] = { "kLoadFront", "kLoadBack", "kLoadFrontStayBack", "kLoadStayBack" };

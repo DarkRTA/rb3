@@ -13,6 +13,8 @@
 #include "utl/Symbols.h"
 #include "utl/ClassSymbols.h"
 
+#include "decomp.h"
+
 bool gHostCached;
 bool DirLoader::sCacheMode = false;
 
@@ -24,7 +26,10 @@ void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
 
 }
 
-const char* memStrs[] = { "MemPoint Overflow", "MemPoint Underflow" };
+DECOMP_FORCEACTIVE(DirLoader,
+    "MemPoint Overflow",
+    "MemPoint Underflow"
+)
 
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;
@@ -97,7 +102,12 @@ Symbol DirLoader::GetDirClass(const char* cc){
     }
 }
 
-static const char* moreDirLoaderStrs[] = { "ObjectDir", "system", "dir_sort", "0" };
+DECOMP_FORCEACTIVE(DirLoader,
+    "ObjectDir",
+    "system",
+    "dir_sort",
+    "0"
+)
 
 void DirLoader::SetCacheMode(bool b){
     sCacheMode = b;
@@ -250,11 +260,11 @@ void DirLoader::OpenFile() {
         }
         if (mStream->Fail()) {
             if (mProxyDir){
-                Cleanup(MakeString("%s/gen/%s", PathName(mProxyDir), path));
+                Cleanup(MakeString("%s: could not load: %s", PathName(mProxyDir), path));
                 return;
             }
             else {
-                Cleanup(MakeString("%s", path));
+                Cleanup(MakeString("Could not load: %s", path));
                 return;
             }
         }

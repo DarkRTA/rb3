@@ -5,6 +5,8 @@
 #include "system/utl/Symbols3.h"
 #include "system/utl/Symbols4.h"
 
+#include "decomp.h"
+
 AccomplishmentGroup::AccomplishmentGroup(DataArray* i_pConfig, int index) : mName(""), mIndex(index), mInstrumentIcon(0x47), mScoreType((ScoreType)10), mAward("") {
     Configure(i_pConfig);
 }
@@ -17,7 +19,7 @@ void AccomplishmentGroup::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1d);
 
     mName = i_pConfig->Sym(0);
-    
+
     i_pConfig->FindData(award, mAward, false);
     String instrumentIcon;
     i_pConfig->FindData(instrument_icon, instrumentIcon, true);
@@ -55,8 +57,8 @@ bool AccomplishmentGroup::HasAward() const {
     return !(mAward == "");
 }
 
-const char* unusedStrings[] = {
-    "%s_desc", 
-    "ui/accomplishments/group_art/%s_keep.png", 
+DECOMP_FORCEACTIVE(AccomplishmentGroup,
+    "%s_desc",
+    "ui/accomplishments/group_art/%s_keep.png",
     "%s_gray"
-};
+)

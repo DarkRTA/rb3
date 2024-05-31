@@ -16,4 +16,7 @@ void Mic::Set(const DataArray* data){
 DECOMP_FORCEFUNC(Mic, Mic, GetDroppedSamples())
 DECOMP_FORCEFUNC(Mic, Mic, IsPlaying())
 
-const char* unusedmicstrings[] = { "mBuffer", "len <= mSize"};
+DECOMP_FORCEACTIVE(Mic,
+    "mBuffer",
+    "len <= mSize"
+)

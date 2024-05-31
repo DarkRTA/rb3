@@ -4,6 +4,8 @@
 #include "os/System.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 static DataNode DataOptionStr(DataArray* arr){
     const char* str = OptionStr(arr->Str(1), 0);
     if(str){
@@ -62,5 +64,7 @@ const char* OptionStr(const char* option, const char* def){
     }
 }
 
-static char* dummy1 = "%llx";
-static char* dummy2 = "Unprocessed option %s\n";
+DECOMP_FORCEACTIVE(Option,
+    "%llx",
+    "Unprocessed option %s\n"
+)

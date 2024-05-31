@@ -7,19 +7,19 @@
 FakeSongMgr* TheFakeSongMgr = 0;
 DataArray* gSongs = 0;
 
-static const char* const unusedFakeSongMgrStrings[] = {
+DECOMP_FORCEACTIVE(FakeSongMgr,
     "fake_song_mgr_init",
     "%s/songs/song*.dt?",
     "%s/songs_download/song*.dt?",
     "%s/songs_download_rb3/song*.dt?",
     "fake_songmgr"
-};
+)
 
 DataArray* FakeSongMgr::GetSongConfig(Symbol sym){
     return gSongs->FindArray(sym, true)->FindArray("song", true);
 }
 
-static const char* const unusedFakeSongMgrNameStr = "name";
+DECOMP_FORCEACTIVE(FakeSongMgr, "name")
 
 const char* FakeSongMgr::GetPath(const SongInfo* sinfo, const char* cc){
     const char* sname = sinfo->GetBaseFileName();
@@ -38,8 +38,8 @@ const char* FakeSongMgr::MidiFile(const SongInfo* sinfo){
     return GetPath(sinfo, ".mid");
 }
 
-static const char* const unusedFakeSongMgrStrings2[] = {
+DECOMP_FORCEACTIVE(FakeSongMgr,
     "",
     "%s(%d): %s unhandled msg: %s",
     __FILE__
-};
+)

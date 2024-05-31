@@ -2,20 +2,20 @@
 #include "beatmatch/BeatMatchUtl.h"
 #include "utl/TempoMap.h"
 
-#define kMaxRGStrings 6
+#include "decomp.h"
 
-// const char* gameGemStrings = "Bad slots %d\n";
+#define kMaxRGStrings 6
 
 GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
     mSlots(info.slots), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(info.is_cymbal),
     unk10b1(false), mRealGuitar(false), mLoose(false), mShowChordNums(false), mLeftHandSlide(false),
     mReverseSlide(false), mEnharmonic(false), unk18(info.players), mChordNameOverride(), mImportantStrings(0) {
-    
+
 }
 
 // fn_80460334
 GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
-    mSlots(0), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(0), mShowChordNames(info.show_chord_names), 
+    mSlots(0), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(0), mShowChordNames(info.show_chord_names),
     mShowSlashes(info.show_slashes), unk10b1(false), mRealGuitar(true), mLoose(info.loose), mShowChordNums(info.show_chord_nums), mLeftHandSlide(info.left_hand_slide),
     mReverseSlide(info.reverse_slide), mEnharmonic(info.enharmonic), mStrumType(info.strum_type), mHandPosition(info.hand_position), mRootNote(info.root_note),
     unk18(0), mChordNameOverride(), mImportantStrings(0) {
@@ -51,10 +51,10 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mShowChordNames = gem.mShowChordNames;
     mShowSlashes = gem.mShowSlashes;
     unk10b1 = gem.unk10b1;
-    
+
     unk18 = gem.unk18;
     mRealGuitar = gem.mRealGuitar;
-    
+
     // 11 - bits set: 7, 6, 5, 4, 3 - this seems right
     mLoose = gem.mLoose;
     mShowChordNums = gem.mShowChordNums;
@@ -69,7 +69,7 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mRGChordID = gem.mRGChordID;
     // 24
     mChordNameOverride = gem.mChordNameOverride;
-    
+
     mReverseSlide = gem.mReverseSlide;
     mEnharmonic = gem.mEnharmonic;
 
@@ -139,7 +139,7 @@ void GameGem::CopyGem(GameGem* gem, int i){
     mIgnoreDuration = gem->IgnoreDuration();
     mSlots = gem->GetSlots();
     mRealGuitar = gem->mRealGuitar != 0; // this is gem->IsRealGuitar() but inlined
-    
+
     for(unsigned int ui = 0; ui < 6; ui++){
         mFrets[ui] = gem->GetFret(ui);
         SetRGNoteTypeEntry(ui, gem->GetRGNoteType(ui));
@@ -254,9 +254,9 @@ int GameGem::GetFret() const {
     return ret;
 }
 
-static const char* unusedGameGemStrings[] = {
+DECOMP_FORCEACTIVE(GameGem,
     "gem.GetHandPosition() == 5", "gem.GetFret(i) == gem.GetHandPosition() + i"
-};
+)
 
 int GameGem::GetNumStrings() const {
     int count = 0;
@@ -290,13 +290,13 @@ void GameGem::PackRealGuitarData(){
     int idx;
     u32 i;
     u32 fret;
-    
+
     mRGChordID = mHandPosition << 24;
     i = 0;
     idx = 0;
     for(i; i < 6; i++, idx += 4){
         s8 f = mFrets[i];
-        
+
         if(f < 0) fret = 0;
         else if(f == 0) fret = 1;
         else fret = f - mHandPosition + 2;

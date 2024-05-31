@@ -1,18 +1,23 @@
 #include "meta/FixedSizeSaveable.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 int FixedSizeSaveable::sCurrentMemcardLoadVer = -1;
 int FixedSizeSaveable::sSaveVersion = -1;
 int FixedSizeSaveable::sMaxSymbols = -1;
 
-static const char* fss_strings[] = { "Classes implementing FixedSizeSaveable should have their own implementations of SaveSize!", __FILE__ };
+DECOMP_FORCEACTIVE(FixedSizeSaveable,
+    "Classes implementing FixedSizeSaveable should have their own implementations of SaveSize!",
+    __FILE__
+)
 
 FixedSizeSaveable::FixedSizeSaveable() : mSaveSizeMethod(0) {
-    
+
 }
 
 FixedSizeSaveable::~FixedSizeSaveable(){
-    
+
 }
 
 void FixedSizeSaveable::Init(int i1, int i2){

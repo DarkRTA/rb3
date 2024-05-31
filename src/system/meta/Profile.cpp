@@ -5,8 +5,6 @@
 
 #include "decomp.h"
 
-static const char* profileSymbols[] = { __FILE__, "user" };
-
 Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {
 
 }
@@ -42,6 +40,11 @@ DECOMP_FORCEFUNC(Profile, Profile, GetPadNum());
 // int Profile::GetPadNum() const {
 //     return mPadNum;
 // }
+
+DECOMP_FORCEACTIVE(Profile,
+    __FILE__,
+    "user"
+)
 
 ProfileSaveState Profile::GetSaveState() const {
     return mState;

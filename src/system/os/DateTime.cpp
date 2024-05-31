@@ -8,6 +8,8 @@
 #include "utl/LocaleOrdinal.h"
 #include <revolution/os.h>
 
+#include "decomp.h"
+
 void DateTimeInit(){}
 
 void GetDateAndTime(DateTime& dt){
@@ -31,7 +33,7 @@ DateTime::DateTime(unsigned int code){
 // {
 //   DateTime DVar1;
 //   uint uVar2;
-  
+
 //   this[5] = (DateTime)((char)(param_1 / 0x1fa4000) + 'd');
 //   this[4] = SUB41((param_1 % 0x1fa4000) / 0x2a3000,0);
 //   uVar2 = (param_1 % 0x1fa4000) % 0x2a3000;
@@ -45,7 +47,7 @@ DateTime::DateTime(unsigned int code){
 //   return;
 // }
 
-DateTime::DateTime(unsigned short year, unsigned char month, unsigned char day, 
+DateTime::DateTime(unsigned short year, unsigned char month, unsigned char day,
     unsigned char hr, unsigned char min, unsigned char sec) {
     mYear = year - 1900;
     mMonth = month - 1;
@@ -85,9 +87,7 @@ unsigned short DateTime::Year() const {
     return mYear + 1900;
 }
 
-static const char* early2d(){
-    return "%02d";
-}
+DECOMP_FORCEACTIVE(DateTime, "%02d")
 
 namespace {
     Symbol MonthToken(int month){

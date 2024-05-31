@@ -3,6 +3,8 @@
 #include "os/Debug.h"
 #include "utl/MakeString.h"
 
+#include "decomp.h"
+
 void LogColumnInfo(TextStream* ts, DataArray* da, bool b){
     const char* sep = b ? ";" : ",";
     *ts << "Category" << sep << "CategoryName" << sep << "Column" << sep << "Budget" << sep << "BudgetType" << sep << "AlwaysShow" << sep << "Tooltip\n";
@@ -15,4 +17,4 @@ void LogColumnInfo(TextStream* ts, DataArray* da, bool b){
     *ts << "\n";
 }
 
-const char* UnusedSystemTestStar = "*";
+DECOMP_FORCEACTIVE(SysTest, "*")

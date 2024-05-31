@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <vector>
 
+#include "decomp.h"
+
 Debug TheDebug;
 std::vector<String> gNotifies;
 static int* gpDbgFrameID;
@@ -17,34 +19,42 @@ static int* gpDbgFrameID;
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
 const GXColor DebugBGColor = { 0x80, 0, 0, 255 };
 
-static const char* debugStrs[] = { "%s", "no_try", "log", "no_modal", "no_notify", "Debug.cpp", "MainThread()" };
+DECOMP_FORCEACTIVE(Debug,
+    "%s",
+    "no_try",
+    "log",
+    "no_modal",
+    "no_notify",
+    __FILE__,
+    "MainThread()",
 
-// Temp strings needed for string pooling to match
-const char* s7 = "TRY conditional not exited %d";
-const char* s8idk = "\n\n-- Program ended --\n";
-const char* s9 = "%s\n";
-const char* s10 = "THREAD-NOTIFY not called in MainThread: %s\n";
-const char* s11 = "NOTIFY: %s\n";
-const char* s12 = "main";
-const char* s13 = "THREAD-FAIL: %s\n";
-const char* s14 = "FAIL-MSG: %s\n";
-const char* s15 = "APP FAILED\n";
-const char* s16idk = "n/a";
-const char* s17 = "version";
-const char* s18 = "<unknown>";
-const char* s19 = "\n\nConsoleName: %s   %s   Plat: %s   ";
-const char* s20 = "\nLang: %s   SystemConfig: %s";
-const char* s21 = "true";
-const char* s22 = "false";
-const char* s23 = "\nUptime: %.2f hrs   UsingCD: %s   SDK: %s";
-const char* s24 = "debug/fail";
-const char* s25 = "msg";
-const char* s26 = "callstack";
-const char* s27 = "dataCallstack";
-const char* s28 = "cheatsMsg";
-const char* s29 = "FAIL: %s\n";
-const char* s30 = "APP EXITED, EXIT CODE %d\n";
-const char* s31 = "Debug::Print";
+    // Temp strings needed for string pooling to match
+    "TRY conditional not exited %d",
+    "\n\n-- Program ended --\n",
+    "%s\n",
+    "THREAD-NOTIFY not called in MainThread: %s\n",
+    "NOTIFY: %s\n",
+    "main",
+    "THREAD-FAIL: %s\n",
+    "FAIL-MSG: %s\n",
+    "APP FAILED\n",
+    "n/a",
+    "version",
+    "<unknown>",
+    "\n\nConsoleName: %s   %s   Plat: %s   ",
+    "\nLang: %s   SystemConfig: %s",
+    "true",
+    "false",
+    "\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
+    "debug/fail",
+    "msg",
+    "callstack",
+    "dataCallstack",
+    "cheatsMsg",
+    "FAIL: %s\n",
+    "APP EXITED, EXIT CODE %d\n",
+    "Debug::Print"
+)
 
 int DbgGetFrameID() {
     if (gpDbgFrameID) return *gpDbgFrameID;

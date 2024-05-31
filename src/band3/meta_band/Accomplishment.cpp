@@ -9,25 +9,27 @@
 #include <string>
 #include "Campaign.h"
 
-Accomplishment::Accomplishment(DataArray* i_pConfig, int index) : mName(gNullStr), mAccomplishmentType(0), mCategory(gNullStr), 
-    mAward(gNullStr), mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr), 
-    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(0xffffffff), 
-    mPlayerCountMin(0xffffffff), mPlayerCountMax(0xffffffff), mDynamicPrereqsNumSongs(0xffffffff), mDynamicPrereqsFilter(gNullStr), mProgressStep(0), 
-    mIndex(index), mContextId(gNullStr), mMetaScoreValue(0), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false), 
+#include "decomp.h"
+
+Accomplishment::Accomplishment(DataArray* i_pConfig, int index) : mName(gNullStr), mAccomplishmentType(0), mCategory(gNullStr),
+    mAward(gNullStr), mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr),
+    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(0xffffffff),
+    mPlayerCountMin(0xffffffff), mPlayerCountMax(0xffffffff), mDynamicPrereqsNumSongs(0xffffffff), mDynamicPrereqsFilter(gNullStr), mProgressStep(0),
+    mIndex(index), mContextId(gNullStr), mMetaScoreValue(0), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false),
     mShouldShowDenominator(true), mShowBestAfterEarn(true), mHideProgress(false), mCanBeEarnedWithNoFail(true) {
 
     Configure(i_pConfig);
 }
 
 Accomplishment::~Accomplishment() {
-    
+
 }
 
 void Accomplishment::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3e);
 
     mName = i_pConfig->Sym(0);
-    
+
     DataArray* controllerTypes = i_pConfig->FindArray(launchable_controller_types, false);
     if (controllerTypes != NULL) {
         mControllerTypes.reserve(controllerTypes->Size() - 1);
@@ -133,9 +135,7 @@ Symbol Accomplishment::GetDescription() const {
     return MakeString("%s_desc", mName);
 }
 
-const char* unusedStrings[] = {
-    "%s_howto"
-};
+DECOMP_FORCEACTIVE(Accomplishment, "%s_howto")
 
 Symbol Accomplishment::GetSecretDescription() const {
     return acc_secretdesc;
@@ -213,9 +213,7 @@ void Accomplishment::GetIconArt() const {
     }
 }
 
-const char* unusedStrings2[] = {
-    "%s_gray"
-};
+DECOMP_FORCEACTIVE(Accomplishment, "%s_gray")
 
 bool Accomplishment::IsFulfilled(BandProfile*) const {
     return false;
@@ -313,7 +311,7 @@ int Accomplishment::GetMetaScoreValue() const {
     return mMetaScoreValue;
 }
 
-char* Accomplishment::GetIconPath() { 
+char* Accomplishment::GetIconPath() {
     return "ui/accomplishments/accomplishment_art/%s_keep.png";
  }
 
@@ -370,7 +368,7 @@ bool Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) c
 
     if (mScoreType != 10) {
         o_rScoreTypes.insert(mScoreType);
-    }    
+    }
 
     return !o_rScoreTypes.empty();
 }
@@ -437,7 +435,7 @@ Symbol Accomplishment::GetUnitsToken(int useSingular) const {
     } else {
         if (useSingular == 1) {
             return campaign_goalunits_singular_default;
-        } 
+        }
         return campaign_goalunits_default;
     }
 }

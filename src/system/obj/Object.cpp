@@ -9,8 +9,12 @@
 #include "obj/DataUtl.h"
 #include "obj/ObjVersion.h"
 
-const char* blank = "";
-const char* unk = "unknown";
+#include "decomp.h"
+
+DECOMP_FORCEACTIVE(Object,
+    "",
+    "unknown"
+)
 
 INIT_REVS(Hmx::Object)
 
@@ -314,7 +318,7 @@ void Hmx::Object::Load(BinStream& bs) {
 
 const char* Hmx::Object::FindPathName(){
     const char* name = (mName && *mName) ? mName : ClassName().Str();
-    
+
     class ObjectDir* dataDir = DataDir();
     if(dataDir){
         if(dataDir->mLoader){
@@ -446,7 +450,7 @@ DataNode Hmx::Object::OnSet(const DataArray* da){
     return DataNode(0);
 }
 
-const char* smodifier = "%s";
+DECOMP_FORCEACTIVE(Object, "%s")
 
 DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
     DataArray* arr = da->Array(2);

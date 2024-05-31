@@ -4,7 +4,7 @@
 #include "system/obj/Data.h"
 #include <map>
 #include <utility>
-#include "AccomplishmentCategory.cpp"
+#include "AccomplishmentCategory.h"
 #include "Accomplishment.h"
 
 class Award;

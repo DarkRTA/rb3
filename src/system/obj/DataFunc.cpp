@@ -1376,7 +1376,7 @@ static DataNode DataObjectList(DataArray* da) {
 
 void ScriptDebugModal(bool&, char*, bool) { }
 
-const char* sgjhfjhadslkgjhasdg = ",";
+DECOMP_FORCEACTIVE(DataFunc, ",")
 
 DefDataFunc(DisableNotify, {
     if (da->Size() > 1) {

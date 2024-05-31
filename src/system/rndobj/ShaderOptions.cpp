@@ -1,6 +1,8 @@
 #include "rndobj/ShaderOptions.h"
 #include "utl/Symbol.h"
 
+#include "decomp.h"
+
 Symbol sShaderTypes[26];
 
 void InitShaderOptions(){
@@ -31,8 +33,8 @@ void InitShaderOptions(){
     sShaderTypes[24] = "playerdepth_shell";
 }
 
-static const char* const unusedShaderStrings[] = {
-    "ShaderOptions.cpp",
+DECOMP_FORCEACTIVE(ShaderOptions,
+    __FILE__,
     "shader >= ShaderType(0) && shader < kMaxShaderTypes",
     "Shader type name %s not found\n",
     " /D%s=%s",
@@ -116,4 +118,4 @@ static const char* const unusedShaderStrings[] = {
     "HI_RES_SCREEN",
     "INTENSIFY",
     "vector"
-};
+)

@@ -1,10 +1,13 @@
 #include "rndobj/EnvAnim.h"
 
+#include "decomp.h"
+
 int ENVANIM_REV = 4;
 
-static const char* unused(int o){
-    MILO_ASSERT(o, 0x69);
-}
+DECOMP_FORCEACTIVE(EnvAnim,
+    __FILE__,
+    "o"
+)
 
 RndEnvAnim::RndEnvAnim() : mEnviron(this, 0), mKeysOwner(this, this) {
 

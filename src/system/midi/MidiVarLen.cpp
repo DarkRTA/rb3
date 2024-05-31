@@ -1,9 +1,13 @@
 #include "MidiVarLen.h"
 #include "os/Debug.h"
 
-const char* filename = "MidiVarLen.cpp";
-const char* assert_unused = "mValue<0x0fffffff";
-const char* len_unused = "len < 5";
+#include "decomp.h"
+
+DECOMP_FORCEACTIVE(MidiVarLen,
+    __FILE__,
+    "mValue<0x0fffffff",
+    "len < 5"
+)
 
 MidiVarLenNumber::MidiVarLenNumber(BinStream& b) {
     Read(b);

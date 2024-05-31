@@ -63,7 +63,7 @@ bool PlatformDebugBreak() {
 }
 
 // Hack to match below; empty string must come first in the string pool
-static char* a = "";
+DECOMP_FORCEACTIVE(System_Wii, "")
 
 void GetMapFileName(class String& s) {
     if (TheSystemArgs.size() != 0) {

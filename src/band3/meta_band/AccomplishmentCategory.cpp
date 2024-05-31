@@ -2,6 +2,8 @@
 #include "os/Debug.h"
 #include "system/utl/Symbols.h"
 
+#include "decomp.h"
+
 AccomplishmentCategory::AccomplishmentCategory(const DataArray* config, int index): mIndex(index), mName(""), mGroup(""), mAward("") {
     Configure(config);
 }
@@ -36,9 +38,8 @@ bool AccomplishmentCategory::HasAward() const {
     return !(mAward == "");
 }
 
-static const char* unusedAccomplishmentCategoryStrings[] = {
-    "%s_desc", 
-    "ui/accomplishments/category_art/%s_keep.png", 
+DECOMP_FORCEACTIVE(AccomplishmentCategory,
+    "%s_desc",
+    "ui/accomplishments/category_art/%s_keep.png",
     "%s_gray"
-};
-
+)
