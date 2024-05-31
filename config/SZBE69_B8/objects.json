@@ -272,14 +272,20 @@
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
-            "system/obj/DataUtl.cpp": "LinkIssues",
+            "system/obj/DataUtl.cpp": {
+                "status": "LinkIssues",
+                "comment": "TextFile::StaticClassName()::name swapped with DataSetThis(Hmx::Object*)::thisVar"
+            },
             "system/obj/Dir.cpp": "NonMatching",
             "system/obj/DirLoader.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
             "system/obj/Task.cpp": "NonMatching",
-            "system/obj/TextFile.cpp": "LinkIssues",
+            "system/obj/TextFile.cpp": {
+                "status": "LinkIssues",
+                "comment": "TextFile::SetType(Symbol)::types swapped with TextFile::Handle(DataArray*, bool)::_s"
+            },
             "system/obj/TypeProps.cpp":  "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
