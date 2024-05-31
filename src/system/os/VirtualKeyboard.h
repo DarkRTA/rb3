@@ -8,10 +8,18 @@
 
 class VirtualKeyboard : public Hmx::Object {
 public:
+
+    class Callback {
+    public:
+        Callback(){}
+        virtual void KeyboardOpen(){}
+        virtual void KeyboardClose(){}
+    };
+
     VirtualKeyboard();
     virtual ~VirtualKeyboard();
     virtual DataNode Handle(DataArray*, bool);
-    std::list<void*> mListIdk;
+    std::list<Callback*> mCallbacks;
     Hmx::Object* mPobjKeyboardCallback;
     bool mCallbackReady;
     bool mMsgOk;
@@ -21,6 +29,10 @@ public:
     void ClearKeyboardCallback();
     void Poll();
     void Terminate();
+    bool IsKeyboardShowing();
+    void RegisterCallback(Callback*);
+    void NotifyCallbacksOpen();
+    void NotifyCallbacksClose();
 
     void PlatformPoll();
     void PlatformTerminate();

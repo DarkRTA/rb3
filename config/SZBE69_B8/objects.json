@@ -332,6 +332,7 @@
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
             "system/os/VirtualKeyboard.cpp": "LinkIssues",
+            "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
             "system/rndobj/Anim.cpp": "NonMatching",
