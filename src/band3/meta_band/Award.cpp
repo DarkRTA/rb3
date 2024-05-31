@@ -4,8 +4,10 @@
 #include "system/utl/Symbols2.h"
 #include "AccomplishmentManager.h"
 
+#include "decomp.h"
+
 Award::Award(DataArray* configure, int index) : mName(gNullStr), mIcon(gNullStr), mIsSecret(false), mIsBonus(false), mIndex(index) {
-    
+
 }
 
 Award::~Award() {
@@ -13,10 +15,6 @@ Award::~Award() {
 }
 
 class AssetMgr{};
-
-static const char* unusedAwardStrings[] = {
-    "pAssetMgr", 
-};
 
 void Award::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x25);
@@ -32,15 +30,20 @@ void Award::Configure(DataArray* i_pConfig) {
     int i;
     for (i = 0; i < pAwardArray->Size(); i++) {
         DataNode node = pAwardArray->Node(i);
-        DataArray* pAwardEntryArray  = node.Array(0); 
+        DataArray* pAwardEntryArray  = node.Array(0);
 
         MILO_ASSERT(pAwardEntryArray, 0x3f);
         MILO_ASSERT(pAwardEntryArray->Size() >= 1, 0x40);
         DataNode assetMgr = pAwardEntryArray->Node(0);
     }
 
+    // TODO: Temporary to match string pool
+    void* pAssetMgr;
+    MILO_ASSERT(pAssetMgr, 0);
+    TheDebug.Notify("Award: %s is granting unknown asset: %s\n");
+
     if (i > 8) {
-        TheDebug.Notify(MakeString("AWARD: %s is awarding too many assets! count = %i.", mName, i));
+        TheDebug.Notify(MakeString("AWARD: %s is awarding too many assets!  count = %i\n", mName, i));
     }
 }
 
@@ -82,22 +85,21 @@ bool Award::IsBonus() const{
     return mIsBonus;
 }
 
-static const char* unusedAwardStrings2[] = {
-    "%s_howto", 
+DECOMP_FORCEACTIVE(Award,
+    "%s_howto",
     "%s_gray"
-};
-
-static const char* unusedAwardStrings3[] = {
-    "pPerformer", 
-};
+)
 
 void Award::GrantAward(const AwardEntry& awardEntry, BandProfile* i_pProfile) {
     MILO_ASSERT(i_pProfile, 0xbd);
 
+    // TODO: Temporary to match string pool
     // Requires BandProfile and ProfileAssets
+    void* pPerformer;
+    MILO_ASSERT(pPerformer, 0);
 
     if(mIndex){
-        TheDebug.Fail("Award Category is not currently supported: %s .");
+        TheDebug.Fail("Award Category is not currently supported: %s \n");
     }
 }
 

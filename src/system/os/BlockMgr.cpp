@@ -1,6 +1,8 @@
 #include "os/BlockMgr.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 #define kNumBlockBuffers 4
 
 BlockMgr TheBlockMgr;
@@ -23,7 +25,10 @@ int GetFreeBuffer(){
     return gCurrBuffNum++;
 }
 
-static const char* unusedBlockStr = "it->Exceeds(ark, block)";
+DECOMP_FORCEACTIVE(BlockMgr,
+    "it->Exceeds(ark, block)"
+)
+
 
 Block::Block() : mArkfileNum(-1), mBlockNum(-1), mWritten(true), mDebugName("") {
     mBuffer = gBuffers + GetFreeBuffer() + 0x10000;

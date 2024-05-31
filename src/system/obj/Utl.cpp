@@ -2,9 +2,14 @@
 #include "obj/Object.h"
 #include "obj/Dir.h"
 
-static const char* utlStrings[] = {
-    "mem_copy", "fast", "main", "%d,%d,%d,%d\n"
-};
+#include "decomp.h"
+
+DECOMP_FORCEACTIVE(Utl,
+    "mem_copy",
+    "fast",
+    "main",
+    "%d,%d,%d,%d\n"
+)
 
 void InitObject(Hmx::Object* obj){
     static DataArray* objects = SystemConfig("objects");
@@ -14,7 +19,7 @@ void InitObject(Hmx::Object* obj){
 }
 
 const char* PathName(const Hmx::Object* o){
-    if(o) return ((Hmx::Object*)o)->FindPathName();  
+    if(o) return ((Hmx::Object*)o)->FindPathName();
     else return "NULL Object";
 }
 
@@ -35,9 +40,11 @@ void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
     }
 }
 
-static const char* utlStrings2[] = {
-    "Object", "ext", "."
-};
+DECOMP_FORCEACTIVE(Utl,
+    "Object",
+    "ext",
+    "."
+)
 
 void ListSuperClasses(Symbol sym, std::vector<Symbol>& classes){
     RecurseSuperClasses(sym, classes);

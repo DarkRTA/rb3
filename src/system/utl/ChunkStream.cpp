@@ -9,6 +9,8 @@
 #include "os/File.h"
 #include "os/Endian.h"
 
+#include "decomp.h"
+
 namespace {std::list<DecompressTask> gDecompressionQueue;}
 
 BinStream& MarkChunk(BinStream& bs) {
@@ -55,7 +57,7 @@ ChunkStream::ChunkStream(const char* c2, FileType type, int i, bool b1, Platform
     }
     mCurReadBuffer = 0;
     int size = 0xA04;
-    if (type == kRead) size = 2; 
+    if (type == kRead) size = 2;
     File* f = NewFile(c2, size);
     mFile = f;
     mFail = !f;
@@ -243,7 +245,9 @@ EofType ChunkStream::Eof() {
 
 bool ChunkStream::Fail() { return mFail; }
 
-char* unused = "mCurBufOffset == (*mCurChunk & kChunkSizeMask)";
+DECOMP_FORCEACTIVE(ChunkStream,
+    "mCurBufOffset == (*mCurChunk & kChunkSizeMask)"
+)
 
 void ChunkStream::MaybeWriteChunk(bool b) {
     if (mChunkInfo.mNumChunks < 2 && 0x2000 <= mCurBufOffset) b = true;

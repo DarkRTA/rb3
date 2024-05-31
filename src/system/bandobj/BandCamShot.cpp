@@ -1,5 +1,8 @@
 #include "rndobj/Anim.h"
 
-static void justheretotestobjptrlistlol(ObjPtrList<RndAnimatable, ObjectDir>* plist, BinStream& bs){
+#include "decomp.h"
+
+// Here to test ObjPtrList
+DECOMP_FORCEBLOCK(BandCamShot, (ObjPtrList<RndAnimatable, ObjectDir>* plist, BinStream& bs),
     bs >> *plist;
-}
+)

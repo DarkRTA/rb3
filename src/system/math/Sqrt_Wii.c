@@ -1,4 +1,4 @@
-#include "macros.h"
+#include "decomp.h"
 double sqrt(register double f1) {
     register float f0 = f1;
     register float f2 = 0.5f, f3 = 3.0f, f4;

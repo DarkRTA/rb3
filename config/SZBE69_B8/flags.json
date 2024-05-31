@@ -76,7 +76,8 @@
                 "-pragma \"merge_float_consts on\"",
 
                 "-O4,p",
-                "-inline noauto"
+                "-inline noauto",
+                "-ipa file"
             ]
         },
         "system": {
@@ -99,7 +100,8 @@
 
                 "-lang=c99",
                 "-O4,p",
-                "-inline auto"
+                "-inline auto",
+                "-ipa file"
             ]
         },
         "quazal": {

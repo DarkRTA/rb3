@@ -3,10 +3,10 @@
 #include "meta/WiiProfileMgr.h"
 #include "utl/Symbols.h"
 
-static const char* profileSymbols[] = { __FILE__, "user" };
+#include "decomp.h"
 
 Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {
-    
+
 }
 
 Profile::~Profile(){
@@ -27,10 +27,9 @@ bool Profile::HasValidSaveData() const {
 
 #pragma push
 #pragma dont_inline on
-static void lol(Profile* pf){
-    pf->GetPadNum();
-    pf->GetName();
-}
+// Force ordering of GetName/GetPadNum
+DECOMP_FORCEFUNC(Profile, Profile, GetName());
+DECOMP_FORCEFUNC(Profile, Profile, GetPadNum());
 #pragma pop
 
 // const char* Profile::GetName() const {
@@ -41,6 +40,11 @@ static void lol(Profile* pf){
 // int Profile::GetPadNum() const {
 //     return mPadNum;
 // }
+
+DECOMP_FORCEACTIVE(Profile,
+    __FILE__,
+    "user"
+)
 
 ProfileSaveState Profile::GetSaveState() const {
     return mState;

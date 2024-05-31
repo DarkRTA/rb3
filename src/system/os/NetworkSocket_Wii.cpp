@@ -2,7 +2,7 @@
 #include "os/Debug.h"
 
 int UnimplementedFunction(const char* str){
-    MILO_FAIL("NetworkSocket_Wii.cpp, need to implement %s!", str);
+    MILO_FAIL(__FILE__ ", need to implement %s!", str);
     return 0;
 }
 

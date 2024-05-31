@@ -5,10 +5,12 @@
 #undef SEEK_END
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 extern void* _MemAllocTemp(int, int);
 extern void _MemFree(void*);
 
-char* why = "%s/gen/%s.%s_%s.z\0%s_%s.z";
+DECOMP_FORCEACTIVE(Compress, "%s/gen/%s.%s_%s.z\0%s_%s.z")
 
 void* ZAlloc(void* i, unsigned int len, unsigned int ct) {return _MemAllocTemp(len*ct, 0);}
 void ZFree(void* a, void*b) {_MemFree(b);}

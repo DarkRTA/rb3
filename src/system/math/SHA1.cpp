@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <string.h>
 
-static const char* const unusedCSHAString[] = { "rb" };
+#include "decomp.h"
+
+DECOMP_FORCEACTIVE(SHA1, "rb")
 
 CSHA1::CSHA1(){
     &m_block->c = &m_workspace;

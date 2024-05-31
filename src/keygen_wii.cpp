@@ -1,5 +1,5 @@
-#include "macros.h"
 #include "KeyChain.h"
+#include "macros.h"
 
 const unsigned char hiddenKeys[0x180] = {
     0x7f,0x95,0x5b,0x9d,0x94,0xba,0x12,0xf1,0xd7,0x5a,0x67,0xd9,0x16,0x45,0x28,0xdd,
@@ -42,7 +42,7 @@ void parseHex16(const char* input, unsigned char* output){
     const char* src = input;
     unsigned int val;
     int i;
-    
+
     for (i = 0; i < 0x10; i++, src += 2){
         val = asciiDigitToHex(src[1]) + (asciiDigitToHex(src[0]) << 4);
         *output++ = val;
@@ -74,7 +74,7 @@ void KeyChain::getMasher(unsigned char* uc){
     unsigned int* masher_p = reinterpret_cast<unsigned int*>(uc);
     unsigned int m = 1;
     int needs_byteswap = NEEDS_BYTESWAP(&m, 1);
-    
+
     for(int i = 0; i < 8; i++){
         *masher_p = random((i == 0) ? 0xEB : 0);
 

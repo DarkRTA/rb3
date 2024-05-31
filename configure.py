@@ -119,7 +119,6 @@ args = parser.parse_args()
 
 config = ProjectConfig()
 config.version = str(args.version)
-version_num = VERSIONS.index(config.version)
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -180,7 +179,7 @@ def set_flags_inherited(name: str):
 
 # Additional base flags
 base_flags = get_flags("base")
-base_flags.append(f"-d GAME_VERSION={version_num}")
+base_flags.append(f"-d VERSION_{config.version}")
 if config.debug:
     base_flags.append("-sym dwarf-2,full")
 

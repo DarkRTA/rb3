@@ -2,6 +2,8 @@
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
 
+#include "decomp.h"
+
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
 
 INIT_REVS(ObjectDir);
@@ -246,9 +248,8 @@ bool ObjectDir::InlineProxy(BinStream& bs){
 
 #pragma push
 #pragma dont_inline on
-static void keylesshashtest(){
-    ObjectDir::Entry entry;
-    KeylessHash<const char*, ObjectDir::Entry> hash(0, entry, entry, 0);
-    hash.Find(0);
-}
+// Here to test KeylessHash
+DECOMP_FORCEBLOCK(Dir, (KeylessHash<const char*, ObjectDir::Entry>* hash),
+    hash->Find(0);
+)
 #pragma pop

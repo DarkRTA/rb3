@@ -6,6 +6,8 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
+#include "decomp.h"
+
 Quest::Quest(DataArray* da) : mName(""), mDisplayName(gNullStr), mDescription(gNullStr), mLongDescription(gNullStr), mIngameDesc(gNullStr),
     mIntroVignette(""), mOutroVignette(""), mSuccess(""), mTier(-1), mGroup(""), mIsSpecial(0), mWeight(1), mIsUGCAllowed(1) {
     Configure(da);
@@ -60,7 +62,7 @@ Symbol Quest::GetDescription() const {
     if (!noDesc) return mDescription; else return Symbol(MakeString("%s_desc", mName));
 }
 
-char* asdf = "%s_ingame_desc"; // it's so sad that GetIngameDesc got deadstripped 
+DECOMP_FORCEACTIVE(Quest, "%s_ingame_desc") // it's so sad that GetIngameDesc died of ligma (got deadstripped)
 
 int Quest::GetTier() const { return mTier; }
 float Quest::GetWeight() const { return mWeight; }

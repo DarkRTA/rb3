@@ -3,6 +3,8 @@
 #include "os/Debug.h"
 #include "math/Rand.h"
 
+#include "decomp.h"
+
 CriticalSection gGuidCrit;
 
 HxGuid::HxGuid(){
@@ -46,8 +48,8 @@ bool HxGuid::operator==(const HxGuid& hx) const {
 }
 
 bool HxGuid::operator<(const HxGuid& hx) const {
-    return mData[0] < hx.mData[0] || 
-        (mData[0] == hx.mData[0] && (mData[1] < hx.mData[1] || 
+    return mData[0] < hx.mData[0] ||
+        (mData[0] == hx.mData[0] && (mData[1] < hx.mData[1] ||
         (mData[1] == hx.mData[1] && (mData[2] < hx.mData[2] ||
         (mData[2] == hx.mData[2] && (mData[3] < hx.mData[3]))))));
 }
@@ -56,7 +58,10 @@ int HxGuid::SaveSize(){
     return 0x14;
 }
 
-static const char* unusedHxGuidStrings[] = { "%04x", "hex.length() == 32" };
+DECOMP_FORCEACTIVE(HxGuid,
+    "%04x",
+    "hex.length() == 32"
+)
 
 #define kGuidRev 1
 

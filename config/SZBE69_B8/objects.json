@@ -13,9 +13,9 @@
         "mw_version": "Wii/1.3",
         "cflags": "band3",
         "objects": {
-            "band3/bandtrack/GemSmasher.cpp": "LinkIssues",
+            "band3/bandtrack/GemSmasher.cpp": "Matching",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
-            "band3/bandtrack/TrackConfig.cpp": { "status": "LinkIssues", "extra_cflags": ["-ipa file"] },
+            "band3/bandtrack/TrackConfig.cpp": "Matching",
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
@@ -44,7 +44,7 @@
             "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
-            "band3/tour/TourGameRules.cpp": "Matching",
+            "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourProgress.cpp": "NonMatching",
             "band3/tour/TourQuestGameRules.cpp": "Matching"
         }
@@ -75,8 +75,8 @@
         "objects": {
             "network/net/json-c/arraylist.c": "Matching",
             "network/net/json-c/debug.c": "Matching",
-            "network/net/json-c/json_object.c": "NonMatching",
-            "network/net/json-c/json_tokener.c": "NonMatching",
+            "network/net/json-c/json_object.c": "Matching",
+            "network/net/json-c/json_tokener.c": "Matching",
             "network/net/json-c/linkhash.c": "Matching",
             "network/net/json-c/printbuf.c": "Matching"
         }
@@ -96,7 +96,7 @@
             "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
             "network/Platform/Result.cpp": "NonMatching",
-            "network/Platform/RootObject.cpp": "NonMatching",
+            "network/Platform/RootObject.cpp": "Matching",
             "network/Platform/String.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
             "network/Platform/Time.cpp": "NonMatching",
@@ -272,14 +272,20 @@
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
-            "system/obj/DataUtl.cpp": "LinkIssues",
+            "system/obj/DataUtl.cpp": {
+                "status": "LinkIssues",
+                "comment": "TextFile::StaticClassName()::name swapped with DataSetThis(Hmx::Object*)::thisVar"
+            },
             "system/obj/Dir.cpp": "NonMatching",
             "system/obj/DirLoader.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
             "system/obj/Task.cpp": "NonMatching",
-            "system/obj/TextFile.cpp": "LinkIssues",
+            "system/obj/TextFile.cpp": {
+                "status": "LinkIssues",
+                "comment": "TextFile::SetType(Symbol)::types swapped with TextFile::Handle(DataArray*, bool)::_s"
+            },
             "system/obj/TypeProps.cpp":  "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
@@ -303,12 +309,15 @@
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
-            "system/os/Keyboard.cpp": "NonMatching",
+            "system/os/Keyboard.cpp": {
+                "status": "LinkIssues",
+                "comment": "KeyboardKeyMsg vtable/RTTI swapped with ObjPtr<Hmx::Object, ObjectDir>'s"
+            },
             "system/os/MapFile_Wii.cpp": "NonMatching",
             "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
             "system/os/OnlineID.cpp": "Matching",
-            "system/os/PlatformMgr.cpp": { "status": "Matching", "extra_cflags": ["-ipa file"] },
+            "system/os/PlatformMgr.cpp": "Matching",
             "system/os/PlatformMgr_Wii.cpp": "NonMatching",
             "system/os/ProfilePicture.cpp": "NonMatching",
             "system/os/ProfilePicture_Wii.cpp": "Matching",
@@ -350,7 +359,7 @@
             "system/rndobj/Mesh.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "Matching",
-            "system/rndobj/MultiMesh.cpp": {"status": "NonMatching", "extra_cflags": [""]},
+            "system/rndobj/MultiMesh.cpp": { "status": "NonMatching", "extra_cflags": [""] },
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/PollAnim.cpp": "NonMatching",
@@ -405,7 +414,7 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
 
-            "system/track/Track.cpp": {"status": "Matching", "extra_cflags": ["-ipa file"]},
+            "system/track/Track.cpp": "Matching",
             "system/track/TrackDir.cpp": "NonMatching",
             "system/track/TrackTest.cpp": "Matching",
             "system/track/TrackWidget.cpp": "NonMatching",
@@ -414,7 +423,7 @@
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/ScrollSelect.cpp": "NonMatching",
-            "system/ui/UIButton.cpp": {"status": "Matching", "extra_cflags": ["-ipa file"]},
+            "system/ui/UIButton.cpp": "Matching",
             "system/ui/UIColor.cpp": "Matching",
             "system/ui/UIComponent.cpp": "NonMatching",
             "system/ui/UIFontImporter.cpp": "NonMatching",
@@ -434,7 +443,7 @@
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
             "system/utl/BufStream.cpp": "Matching",
-            "system/utl/Cache.cpp": "LinkIssues",
+            "system/utl/Cache.cpp": "Matching",
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": "NonMatching",
@@ -457,7 +466,7 @@
             "system/utl/MBT.cpp": "Matching",
             "system/utl/MeasureMap.cpp": "NonMatching",
             "system/utl/MemcardBufStream.cpp": "Matching",
-            "system/utl/MemStream.cpp": "Matching",
+            "system/utl/MemStream.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/Messages.cpp": "Matching",
             "system/utl/Messages2.cpp": "Matching",
@@ -471,7 +480,7 @@
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
-            "system/utl/Str.cpp": "Matching",
+            "system/utl/Str.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/utl/StringTable.cpp": "NonMatching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
             "system/utl/Symbol.cpp": "NonMatching",

@@ -1,6 +1,8 @@
 #include "ui/UIListWidget.h"
 #include "utl/Symbols.h"
 
+#include "decomp.h"
+
 INIT_REVS(UIListWidget);
 
 UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0) {
@@ -45,7 +47,11 @@ void UIListWidget::SetColor(UIListWidgetState ws, UIComponent::State cs, UIColor
 
 SAVE_OBJ(UIListWidget, 0x97);
 
-static const char* unusedwidgetstrs[] = { "ObjPtr_p.h", "f.Owner()", "" };
+DECOMP_FORCEACTIVE(UIListWidget,
+    "ObjPtr_p.h",
+    "f.Owner()",
+    ""
+)
 
 BEGIN_LOADS(UIListWidget)
     LOAD_REVS(bs);

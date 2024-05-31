@@ -10,7 +10,6 @@
 #include "utl/MakeString.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
-#include "macros.h"
 #include "math/MathFuncs.h"
 #include "obj/DataUtl.h"
 #include "utl/Locale.h"
@@ -20,6 +19,8 @@
 #include <list>
 #include <map>
 #include <stdlib.h>
+
+#include "decomp.h"
 
 std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
@@ -32,9 +33,8 @@ static DataNode Data##name(DataArray* da) code
 
 ADD_NOTIFS
 
-static void mfdtor(){
-    MergeFilter mf;
-}
+// Force ~MergeFilter() to generate here
+DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
     const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
@@ -833,7 +833,7 @@ static DataNode DataSwitch(DataArray* da){
                 return nextarr->ExecuteScript(1, gDataThis, 0, 1);
             }
         }
-        else return da->ExecuteScript(i, gDataThis, 0, 1); 
+        else return da->ExecuteScript(i, gDataThis, 0, 1);
     }
     return DataNode(0);
 }
@@ -1376,7 +1376,7 @@ static DataNode DataObjectList(DataArray* da) {
 
 void ScriptDebugModal(bool&, char*, bool) { }
 
-const char* sgjhfjhadslkgjhasdg = ",";
+DECOMP_FORCEACTIVE(DataFunc, ",")
 
 DefDataFunc(DisableNotify, {
     if (da->Size() > 1) {
@@ -1575,10 +1575,8 @@ Symbol DataFuncName(DataFunc* func){
     return Symbol("");
 }
 
-static void mfsubdir(){
-    MergeFilter mf;
-    mf.FilterSubdir(0, 0);
-}
+// Force FilterSubdir to generate here
+DECOMP_FORCEFUNC(DataFunc, MergeFilter, FilterSubdir(0, 0))
 
 MergeFilter::Action DataMergeFilter::Filter(Hmx::Object* from, Hmx::Object* to, class ObjectDir* dir){
     if(mType == kDataInt){

@@ -6,11 +6,16 @@
 #include <ctype.h>
 #include <string.h>
 
+#include "decomp.h"
+
 const unsigned int String::npos = -1;
 
 char gEmpty = 0;
-const char* fname = "Str.cpp";
-const char* unusedAssert = "i < mCap + 1";
+
+DECOMP_FORCEACTIVE(Str,
+    __FILE__,
+    "i < mCap + 1"
+)
 
 String::String() : mCap(0), mStr(&gEmpty) {}
 
@@ -374,9 +379,13 @@ String& String::erase(unsigned int start, unsigned int len){
     return replace(start, len, "");
 }
 
-static const char* const unusedStringStrings[] = {
-    "strlen( format ) < 30", "out", "in", "len > 0", "allowed"
-};
+DECOMP_FORCEACTIVE(Str,
+    "strlen( format ) < 30",
+    "out",
+    "in",
+    "len > 0",
+    "allowed"
+)
 
 // inserts the char c into this->text at index pos, cnt times
 String& String::insert(unsigned int pos, unsigned int cnt, char c){

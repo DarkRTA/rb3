@@ -2,6 +2,8 @@
 #include "utl/ChunkIDs.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 void ChunkHeader::Read(BinStream& bs){
     bs.Read((void*)mID.Str(), 4);
     bs >> mLength;
@@ -14,7 +16,11 @@ void ChunkHeader::Read(BinStream& bs){
     else mIsList = false;
 }
 
-static const char* unusedChunksStrings[] = { "LIST:", "<", ">" };
+DECOMP_FORCEACTIVE(Chunks,
+    "LIST:",
+    "<",
+    ">"
+)
 
 IDataChunk::IDataChunk(IListChunk& chunk) : BinStream(true), mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mFailed(0), mEof(0) {
     MILO_ASSERT(mParent->CurSubChunkHeader(), 0x47);
@@ -34,15 +40,15 @@ IDataChunk::~IDataChunk(){
 void IDataChunk::SeekImpl(int iOffset, SeekType t){
     if(!Fail()){
         switch(t){
-            case BinStream::kSeekBegin: 
+            case BinStream::kSeekBegin:
                 MILO_ASSERT(iOffset >= 0, 0x79);
                 if(iOffset > mHeader->Length()) mFailed = true;
                 mBaseBinStream.Seek(iOffset + mStartMarker, kSeekBegin);
                 break;
-            case BinStream::kSeekCur: 
+            case BinStream::kSeekCur:
                 mBaseBinStream.Seek(iOffset, kSeekCur);
                 break;
-            case BinStream::kSeekEnd: 
+            case BinStream::kSeekEnd:
                 MILO_ASSERT(iOffset <= 0, 0x8A);
                 if(iOffset < -mHeader->Length()) mFailed = true;
                 mBaseBinStream.Seek(iOffset + mEndMarker, kSeekBegin);
@@ -69,7 +75,7 @@ void IDataChunk::ReadImpl(void* data, int bytes){
     }
 }
 
-IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0), 
+IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0),
     mLocked(0), mSubHeader(), mRecentlyReset(1) {
     if(b){
         mHeader = new ChunkHeader(mBaseBinStream);
@@ -161,7 +167,6 @@ void IListChunk::UnLock(){
     mLocked = false;
 }
 
-static void idklol(IDataChunk* ichunk){
-    ichunk->WriteImpl(0, 0);
-    ichunk->Flush();
-}
+// Force inline generation
+DECOMP_FORCEFUNC(Chunks, IDataChunk, Flush())
+DECOMP_FORCEFUNC(Chunks, IDataChunk, WriteImpl(0, 0))

@@ -11,6 +11,9 @@
 #include "os/Archive.h"
 #include "obj/Utl.h"
 #include "utl/Symbols.h"
+#include "utl/ClassSymbols.h"
+
+#include "decomp.h"
 
 bool gHostCached;
 bool DirLoader::sCacheMode = false;
@@ -23,7 +26,10 @@ void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
 
 }
 
-const char* memStrs[] = { "MemPoint Overflow", "MemPoint Underflow" };
+DECOMP_FORCEACTIVE(DirLoader,
+    "MemPoint Overflow",
+    "MemPoint Underflow"
+)
 
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;
@@ -96,7 +102,12 @@ Symbol DirLoader::GetDirClass(const char* cc){
     }
 }
 
-static const char* moreDirLoaderStrs[] = { "ObjectDir", "system", "dir_sort", "0" };
+DECOMP_FORCEACTIVE(DirLoader,
+    "ObjectDir",
+    "system",
+    "dir_sort",
+    "0"
+)
 
 void DirLoader::SetCacheMode(bool b){
     sCacheMode = b;
@@ -119,7 +130,7 @@ bool DirLoader::SaveObjects(const char*, class ObjectDir*) {
 }
 
 DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStream* bs, class ObjectDir* d, bool b) : Loader(f, p),
-    mRoot(), mOwnStream(false), mStream(bs), mObjects(NULL, kObjListAllowNull), 
+    mRoot(), mOwnStream(false), mStream(bs), mObjects(NULL, kObjListAllowNull),
     mCallback(c), mDir(d), mPostLoad(0), mLoadDir(1), mDeleteSelf(0), mProxyName(0), mProxyDir(0), mTimer(), mAccessed(false), unk99(0) {
     if(d){
         mDeleteSelf = true;
@@ -249,11 +260,11 @@ void DirLoader::OpenFile() {
         }
         if (mStream->Fail()) {
             if (mProxyDir){
-                Cleanup(MakeString("%s/gen/%s", PathName(mProxyDir), path));
+                Cleanup(MakeString("%s: could not load: %s", PathName(mProxyDir), path));
                 return;
             }
             else {
-                Cleanup(MakeString("%s", path));
+                Cleanup(MakeString("Could not load: %s", path));
                 return;
             }
         }
@@ -304,10 +315,10 @@ void ReadDead(BinStream& bs) {
     bs >> buf;
     while (true)
     {
-        if (buf == 0xAD) 
+        if (buf == 0xAD)
         {
-            if ((bs >> buf, buf == 0xDE) && 
-                (bs >> buf, buf == 0xAD) && 
+            if ((bs >> buf, buf == 0xDE) &&
+                (bs >> buf, buf == 0xAD) &&
                 (bs >> buf, buf == 0xDE))
             {
                 break;
@@ -315,7 +326,7 @@ void ReadDead(BinStream& bs) {
         }
         else
         {
-            bs >> buf; 
+            bs >> buf;
         }
     }
 }

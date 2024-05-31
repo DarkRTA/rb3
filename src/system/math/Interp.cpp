@@ -3,9 +3,13 @@
 #include "os/Debug.h"
 #include <stdlib.h>
 
-static const char* const unused1[] = {
-    "exp", "atan", "unknown interpolator type: %s\nat %d in %s"
-};
+#include "decomp.h"
+
+DECOMP_FORCEACTIVE(Interp,
+    "exp",
+    "atan",
+    "unknown interpolator type: %s\nat %d in %s"
+)
 
 LinearInterpolator::LinearInterpolator(float y0, float y1, float x0, float x1) {
     Reset(y0, y1, x0, x1);
@@ -152,6 +156,17 @@ float ATanInterpolator::Eval(float f) {
     return ret + mOffset;
 }
 
-static const char* const unused2[] = {
-    "Interp.cpp", "source", "numEntries > 1", "mTable", "source->Size() > startAt", "mDeltas"
-};
+DECOMP_FORCEACTIVE(Interp,
+    __FILE__,
+    "source",
+    "numEntries > 1",
+    "mTable",
+    "source->Size() > startAt",
+    "mDeltas"
+)
+
+// Force destructor ordering
+// Possibly a fakematch? Happens because of -ipa file
+// Can't be bothered to disable it for this file specifically
+DECOMP_FORCEDTOR(Interp, ExpInterpolator);
+DECOMP_FORCEDTOR(Interp, InvExpInterpolator);

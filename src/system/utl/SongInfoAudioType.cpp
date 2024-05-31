@@ -2,6 +2,8 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 
+#include "decomp.h"
+
 SongInfoAudioType SymbolToAudioType(Symbol sym){
     if(sym == drum) return kAudioTypeDrum;
     else if(sym == guitar) return kAudioTypeGuitar;
@@ -15,6 +17,12 @@ SongInfoAudioType SymbolToAudioType(Symbol sym){
     }
 }
 
-static const char* const unusedInstrumentAudioTypeStrings[] = {
-    "drum", "guitar", "bass", "vocals", "keys", "multi", "fake"
-};
+DECOMP_FORCEACTIVE(SongInfoAudioType,
+    "drum",
+    "guitar",
+    "bass",
+    "vocals",
+    "keys",
+    "multi",
+    "fake"
+)

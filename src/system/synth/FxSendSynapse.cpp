@@ -85,11 +85,3 @@ BEGIN_COPYS(FxSendSynapse)
         COPY_MEMBER(mReleaseSmoothing)
     END_COPY_CHECKED
 END_COPYS
-
-static void fakesettype(FxSendSynapse* shift){
-    shift->SetType(Symbol());
-}
-
-static void fakeclassname(FxSendSynapse* shift){
-    shift->ClassName();
-}

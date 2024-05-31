@@ -1,6 +1,8 @@
 #include "CampaignKey.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 CampaignKey::CampaignKey(DataArray* da) : mName("") { Configure(da); }
 CampaignKey::~CampaignKey() { }
 
@@ -11,4 +13,4 @@ void CampaignKey::Configure(DataArray* i_pConfig) {
 
 Symbol CampaignKey::GetName() const { return mName; }
 
-const char* strip = "%s_desc";
+DECOMP_FORCEACTIVE(CampaignKey, "%s_desc")

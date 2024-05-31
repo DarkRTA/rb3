@@ -50,7 +50,7 @@ BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchCo
 int BeatMatchController::ButtonToSlot(JoypadButton btn, const DataArray* arr) const {
     int thresh = (arr->Size() - 1) / 2;
     for(int i = 0; i < thresh; i++){
-        if(btn == arr->Int(i * 2 + 1)) 
+        if(btn == arr->Int(i * 2 + 1))
             return arr->Int(i * 2 + 2);
     }
     return -1;
@@ -96,11 +96,4 @@ void BeatMatchController::RegisterRGStrum(int i) const {
 
 bool BeatMatchController::IsOurPadNum(int i) const {
     return !mUser->IsLocal() ? false : mUser->GetLocalUser()->GetPadNum() == i;
-}
-
-static void lol(BeatMatchController* cnt){
-    cnt->Poll();
-    cnt->EnableShift(0);
-    cnt->IsShifted();
-    cnt->SetAutoSoloButtons(0);
 }

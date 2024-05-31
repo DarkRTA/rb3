@@ -2,6 +2,7 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
 
 void Mic::Set(const DataArray* data){
     MILO_ASSERT(data, 0x12);
@@ -12,8 +13,10 @@ void Mic::Set(const DataArray* data){
     SetCompressorParam(compressorArr->Float(2));
 }
 
-static void beesechurger(Mic* mic){
-    mic->IsPlaying();
-    mic->GetDroppedSamples();
-    const char* unusedmicstrings[] = { "mBuffer", "len <= mSize"};
-}
+DECOMP_FORCEFUNC(Mic, Mic, GetDroppedSamples())
+DECOMP_FORCEFUNC(Mic, Mic, IsPlaying())
+
+DECOMP_FORCEACTIVE(Mic,
+    "mBuffer",
+    "len <= mSize"
+)

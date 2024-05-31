@@ -2,6 +2,8 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
+#include "decomp.h"
+
 unsigned short CharEyeDartRuleset::gRev = 0;
 unsigned short CharEyeDartRuleset::gAltRev = 0;
 
@@ -10,7 +12,7 @@ CharEyeDartRuleset::CharEyeDartRuleset(){
 }
 
 CharEyeDartRuleset::~CharEyeDartRuleset(){
-    
+
 }
 
 void CharEyeDartRuleset::EyeDartRulesetData::ClearToDefaults(){
@@ -33,7 +35,7 @@ void CharEyeDartRuleset::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    bs >> mData.mMinRadius >> mData.mMaxRadius >> mData.mOnTargetAngleThresh >> mData.mMinDartsPerSequence >> mData.mMaxDartsPerSequence >> 
+    bs >> mData.mMinRadius >> mData.mMaxRadius >> mData.mOnTargetAngleThresh >> mData.mMinDartsPerSequence >> mData.mMaxDartsPerSequence >>
         mData.mMinSecsBetweenDarts >> mData.mMaxSecsBetweenDarts >> mData.mMinSecsBetweenSequences >> mData.mMaxSecsBetweenSequences >> mData.mScaleWithDistance >> mData.mReferenceDistance;
 }
 
@@ -70,14 +72,14 @@ BEGIN_PROPSYNCS(CharEyeDartRuleset)
     SYNC_PROP(reference_distance, mData.mReferenceDistance)
 END_PROPSYNCS
 
-static const char* const unused_chareyedartrulesetstrs[] = {
-    "min_radius", "max_radius", 
-    "min_darts_per_sequence", "max_darts_per_sequence", 
-    "min_time_between_darts", "max_time_between_darts", 
-    "min_time_between_sequences", "max_time_between_sequences", 
-    "scale_with_distance", 
+DECOMP_FORCEACTIVE(CharEyeDartRuleset,
+    "min_radius", "max_radius",
+    "min_darts_per_sequence", "max_darts_per_sequence",
+    "min_time_between_darts", "max_time_between_darts",
+    "min_time_between_sequences", "max_time_between_sequences",
+    "scale_with_distance",
     "reference_distance"
-};
+)
 
 BEGIN_HANDLERS(CharEyeDartRuleset)
     HANDLE_SUPERCLASS(Hmx::Object)

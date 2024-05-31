@@ -70,7 +70,6 @@
 #  define __ALLOC __sgi_alloc
 #endif
 
-#include "macros.h"
 #include "utl/MemMgr.h"
 
 namespace _STLP_STD {
@@ -193,11 +192,11 @@ public:
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
 // Decomp hack: converts an allocator from one type to another
-#if GAME_VERSION == VERSION_SZBE69
+#if defined(VERSION_SZBE69)
    // Note: does not preserve state! This is fine since StlNodeAlloc has no state,
    // and no other allocators are used as far as we've seen
 #  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) _Alloc_traits<_Tp, _Alloc>::allocator_type()
-#elif GAME_VERSION == VERSION_SZBE69_BE
+#elif defined(VERSION_SZBE69_B8)
 #  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) __a
 #endif
 
@@ -418,7 +417,7 @@ public:
     typedef StlNodeAlloc<_Tp1> other;
   };
 
-#if GAME_VERSION == VERSION_SZBE69_BE
+#ifdef VERSION_SZBE69_B8
   StlNodeAlloc() _STLP_NOTHROW {}
   StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
   template <class _Tp1>

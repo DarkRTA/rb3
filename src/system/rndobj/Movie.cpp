@@ -3,6 +3,8 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
+#include "decomp.h"
+
 INIT_REVS(RndMovie);
 
 RndMovie::RndMovie() : mFile(), mStream(0), mLoop(1), mTex(this, 0) {
@@ -107,7 +109,6 @@ BEGIN_PROPSYNCS(RndMovie)
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS
 
-static void lol(RndMovie* movie){
-    movie->Loop();
-    movie->SetType(Symbol());
-}
+// Force inline generation
+DECOMP_FORCEFUNC(Movie, RndMovie, SetType(Symbol()))
+DECOMP_FORCEFUNC(Movie, RndMovie, Loop())

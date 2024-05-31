@@ -3,6 +3,8 @@
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
 
+#include "decomp.h"
+
 namespace Hmx {
     class Color {
     public:

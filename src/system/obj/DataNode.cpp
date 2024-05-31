@@ -8,6 +8,8 @@
 #include "utl/PoolAlloc.h"
 #include <map>
 
+#include "decomp.h"
+
 std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 int gEvalIndex;
@@ -163,8 +165,10 @@ const char* DataNode::LiteralStr(const DataArray* a) const {
     }
 }
 
-const char* globfile = "Data %s is not Glob (file %s, line %d)";
-const char* glob = "Data %s is not Glob";
+DECOMP_FORCEACTIVE(DataNode,
+    "Data %s is not Glob (file %s, line %d)",
+    "Data %s is not Glob"
+)
 
 float DataNode::Float(const DataArray* a) const {
     DataNode& n = Evaluate();
@@ -248,8 +252,10 @@ DataArray* DataNode::LiteralArray(const DataArray* a) const {
     return mValue.array;
 }
 
-const char* propfile = "Data %s is not Property (file %s, line %d)";
-const char* prop = "Data %s is not Property";
+DECOMP_FORCEACTIVE(DataNode,
+    "Data %s is not Property (file %s, line %d)",
+    "Data %s is not Property"
+)
 
 DataArray* DataNode::Command(const DataArray* a) const {
     if(mType != kDataCommand){
