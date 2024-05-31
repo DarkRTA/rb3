@@ -3,6 +3,8 @@
 #include "obj/Object.h"
 #include "obj/MsgSource.h"
 
+#include "decomp.h"
+
 class MsgSource* gSource;
 ObjPtr<Hmx::Object, ObjectDir> gObjOverride(0, 0);
 
@@ -43,3 +45,9 @@ void KeyboardSendMsg(int i, bool b1, bool b2, bool b3){
         gSource->Handle(msg, false);
     }
 }
+
+DECOMP_FORCEBLOCK(Keyboard, (ObjPtr<Hmx::Object, ObjectDir>* objPtr),
+    objPtr->~ObjPtr();
+    objPtr->RefOwner();
+    objPtr->Replace(nullptr, nullptr);
+)
