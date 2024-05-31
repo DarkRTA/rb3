@@ -331,7 +331,7 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": "NonMatching",
+            "system/os/VirtualKeyboard.cpp": "LinkIssues",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
             "system/rndobj/Anim.cpp": "NonMatching",
