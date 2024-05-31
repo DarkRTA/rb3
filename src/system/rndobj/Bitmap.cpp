@@ -249,7 +249,7 @@ bool RndBitmap::LoadSafely(BinStream& bs, int a, int b) {
     if (mWidth > a || mHeight > b) {
         MILO_WARN("Something is wrong with the bitmap you're loading from %s, w = %d, h = %d", bs.Name(), mWidth, mHeight);
         Create(8,8,0,0x20,0,NULL,NULL,NULL);
-        return true;
+        return false;
     } else if (mBpp * mWidth / 8 != mRowBytes) {
         MILO_WARN("Something is wrong with the bitmap you're loading from %s, w = %d, bpp = %d, row bytes: %d", bs.Name(), mWidth, mBpp, mRowBytes);
         Create(8,8,0,0x20,0,NULL,NULL,NULL);

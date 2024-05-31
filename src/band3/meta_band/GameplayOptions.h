@@ -29,7 +29,7 @@ class GameplayOptions : public virtual Hmx::Object, public FixedSizeSaveable {
     int mVocalVolume;
     bool mLefty;
     VocalStyle mVocalStyle;
-    u8 unk_0x18;
+    mutable u8 mDirty;
 };
 
 #endif // METABAND_GAMEPLAYOPTIONS_H

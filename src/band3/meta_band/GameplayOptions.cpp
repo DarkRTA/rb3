@@ -4,28 +4,27 @@
 #include "obj/Object.h"
 #include "utl/Symbols.h"
 
-GameplayOptions::GameplayOptions() : mVocalVolume(11), mLefty(false), mVocalStyle(kVocStyle1), unk_0x18(false) { mSaveSizeMethod = SaveSize; }
+GameplayOptions::GameplayOptions() : mVocalVolume(11), mLefty(false), mVocalStyle(kVocStyle1), mDirty(false) { mSaveSizeMethod = SaveSize; }
 
 int GameplayOptions::GetVocalVolume(int) const { return mVocalVolume; }
 
 void GameplayOptions::SetVocalVolume(int, int i) {
     if (i < 0 || TheProfileMgr.GetSliderStepCount() <= i) return;
     if (mVocalVolume == i) return;
-    unk_0x18 = true;
+    mDirty = true;
     mVocalVolume = i;
     
 }
 
-void GameplayOptions::SetLefty(bool b) { if (mLefty == b) return; unk_0x18 = true; mLefty = b; }
+void GameplayOptions::SetLefty(bool b) { if (mLefty == b) return; mDirty = true; mLefty = b; }
 
-void GameplayOptions::SetVocalStyle(VocalStyle v) { if (mVocalStyle == v) return; unk_0x18 = true; mVocalStyle = v; }
+void GameplayOptions::SetVocalStyle(VocalStyle v) { if (mVocalStyle == v) return; mDirty = true; mVocalStyle = v; }
 
 void GameplayOptions::SaveFixed(FixedSizeSaveableStream& fsss) const {
-    GameplayOptions* why = const_cast<GameplayOptions*>(this);
     fsss << mLefty;
     fsss << mVocalVolume;
     fsss << mVocalStyle;
-    why->unk_0x18 = false;
+    mDirty = false;
 }
 
 void GameplayOptions::LoadFixed(FixedSizeSaveableStream& fsss, int) {
@@ -34,7 +33,7 @@ void GameplayOptions::LoadFixed(FixedSizeSaveableStream& fsss, int) {
     int x;
     fsss >> x;
     mVocalStyle = (VocalStyle)x;
-    unk_0x18 = false;
+    mDirty = false;
 }
 
 int GameplayOptions::SaveSize(int) {
