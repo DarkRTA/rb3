@@ -6,7 +6,7 @@ namespace Quazal {
 
     // forward declarations
     class WaterMark;
-    class MutexPrimitive; 
+    class MutexPrimitive;
 
     class MemoryManager : public RootObject {
     public:
@@ -34,6 +34,11 @@ namespace Quazal {
             MemoryManager *, unsigned long, const char *, unsigned int, _InstructionType
         );
         static void Free(MemoryManager *, void *, _InstructionType);
+
+        static void *Allocate(unsigned long size, _InstructionType inst) {
+            MemoryManager* memMgr = MemoryManager::GetDefaultMemoryManager();
+            Allocate(memMgr, size, "Unknown", 0, inst);
+        }
 
         int GetHeaderSize();
 

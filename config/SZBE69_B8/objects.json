@@ -96,7 +96,7 @@
             "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
             "network/Platform/Result.cpp": "NonMatching",
-            "network/Platform/RootObject.cpp": "NonMatching",
+            "network/Platform/RootObject.cpp": "Matching",
             "network/Platform/String.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
             "network/Platform/Time.cpp": "NonMatching",

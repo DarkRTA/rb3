@@ -4,10 +4,7 @@
 namespace Quazal {
 
     void* RootObject::operator new(unsigned long ul){
-        MemoryManager::Allocate(
-            MemoryManager::GetDefaultMemoryManager(), 
-            ul, "Unknown", 0, 
-            MemoryManager::_InstType3);
+        MemoryManager::Allocate(ul, MemoryManager::_InstType3);
     }
 
     void* RootObject::operator new(unsigned long ul, const char *cc, unsigned int ui) {
@@ -18,10 +15,7 @@ namespace Quazal {
     }
 
     void* RootObject::operator new[](unsigned long ul) {
-        MemoryManager::Allocate(
-            MemoryManager::GetDefaultMemoryManager(),
-            ul, "Unknown", 0,
-            MemoryManager::_InstType4);
+        MemoryManager::Allocate(ul, MemoryManager::_InstType4);
     }
 
     void* RootObject::operator new[](unsigned long ul, const char *cc, unsigned int ui) {
