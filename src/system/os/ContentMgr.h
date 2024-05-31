@@ -31,6 +31,7 @@ public:
         virtual bool HasContentAltDirs(){ return false; }
     };
 
+    void RegisterCallback(Callback*, bool);
     void UnregisterCallback(Callback*, bool);
 
     enum /* @enum$36095BandOffline_cpp */ {

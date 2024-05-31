@@ -24,7 +24,7 @@ public:
     void SetMusicVol(float);
     void SetCrowdSingVol(float);
 
-    const SongMgr& mSongMgr;
+    SongMgr& mSongMgr; // 0x20
     Stream* mStream; // 0x24
     Fader* mFader; // 0x28
     Fader* mMusicFader; // 0x2c

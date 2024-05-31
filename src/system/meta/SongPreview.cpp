@@ -2,7 +2,7 @@
 #include "os/System.h"
 #include "utl/Symbols.h"
 
-SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr(mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0), unk34(0), mAttenuation(0.0f), unk44(0),
+SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr((SongMgr&)mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0), unk34(0), mAttenuation(0.0f), unk44(0),
     unk50(0.0f), unk54(0.0f), unk58(0.0f), unk5c(0.0f), unk64(0), unk68(0.0f), unk70(0), unk71(0), unk72(0), unk73(0) {
 
 }
@@ -49,6 +49,20 @@ void SongPreview::Terminate(){
 
 void SongPreview::Start(Symbol sym){
     MILO_ASSERT(mFader && mMusicFader && mCrowdSingFader, 0x65);
+    if(sym.Null()){
+        unk70 = false;
+        unk64 = false;
+        unk68 = 0.0f;
+    }
+    if(!sym.Null()){
+        if(!mSongMgr.HasSong(sym, true)) return;
+        mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true));
+        if(!unk72){
+            TheContentMgr->RegisterCallback(this, false);
+            unk72 = true;
+        }
+        TheDebug << MakeString("Preview: Requesting %s...\n", sym);
+    }
 }
 
 void SongPreview::ContentMounted(const char* contentName, const char* cc2){
