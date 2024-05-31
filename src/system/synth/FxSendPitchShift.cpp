@@ -41,11 +41,3 @@ BEGIN_COPYS(FxSendPitchShift)
         COPY_MEMBER(mRatio)
     END_COPY_CHECKED
 END_COPYS
-
-static void fakesettype(FxSendPitchShift* shift){
-    shift->SetType(Symbol());
-}
-
-static void fakeclassname(FxSendPitchShift* shift){
-    shift->ClassName();
-}

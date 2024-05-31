@@ -14,7 +14,9 @@
 #ifdef NON_MATCHING
 #define DECOMP_FORCEACTIVE(module, ...)
 #define DECOMP_FORCELITERAL(module, ...)
+#define DECOMP_FORCEFUNC(module, decl, ...)
 #define DECOMP_FORCEDTOR(module, cls)
+#define DECOMP_FORCEBLOCK(module, ...)
 // Compile with matching hacks.
 // (This version of CW does not support pragmas inside macros.)
 #else
@@ -33,11 +35,24 @@
         (__VA_ARGS__);                                                         \
     }
 
+// Force referenced functions
+#define DECOMP_FORCEFUNC(module, cls, func)                                    \
+    void CONCAT(FORCEFUNC##module, __LINE__) (cls* dummy);                     \
+    void CONCAT(FORCEFUNC##module, __LINE__) (cls* dummy) {                    \
+        dummy->func;                                                           \
+    }
+
 // Force referenced destructor
-#define DECOMP_FORCEDTOR(module, cls)                                          \
-    void CONCAT(FORCEDTOR##module##cls, __LINE__)(void) {                      \
-        cls dummy;                                                             \
-        dummy.~cls();                                                          \
+#define DECOMP_FORCEDTOR(module, cls) DECOMP_FORCEFUNC(module, cls, ~cls())
+
+// For more complex forcing requirements
+// Example usage: DECOMP_FORCEBLOCK(Module, (Class* dummy, int arg),
+//     dummy->Method(arg);
+// )
+#define DECOMP_FORCEBLOCK(module, params, ...)                                 \
+    void CONCAT(FORCEBLOCK##module, __LINE__) params;                          \
+    void CONCAT(FORCEBLOCK##module, __LINE__) params {                         \
+        __VA_ARGS__                                                            \
     }
 #endif
 

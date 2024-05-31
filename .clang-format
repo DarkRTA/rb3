@@ -179,3 +179,4 @@ WhitespaceSensitiveMacros:
   - MILO_ASSERT
   - _STLP_ASSERT
   - _STLP_VERBOSE_ASSERT
+  - DECOMP_FORCEBLOCK

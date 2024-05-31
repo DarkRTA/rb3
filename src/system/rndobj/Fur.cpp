@@ -8,7 +8,7 @@
 INIT_REVS(RndFur);
 
 RndFur::RndFur() {
-    
+
 }
 
 BEGIN_COPYS(RndFur)
@@ -48,7 +48,3 @@ END_HANDLERS;
 
 BEGIN_PROPSYNCS(RndFur);
 END_PROPSYNCS;
-
-static void rndfursettype(RndFur* fur){
-    fur->SetType(Symbol());
-}

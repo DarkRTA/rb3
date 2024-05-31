@@ -4,7 +4,7 @@
 INIT_REVS(RndAmbientOcclusion);
 
 RndAmbientOcclusion::RndAmbientOcclusion(){
-    
+
 }
 
 SAVE_OBJ(RndAmbientOcclusion, 0x28);
@@ -43,7 +43,3 @@ END_HANDLERS;
 
 BEGIN_PROPSYNCS(RndAmbientOcclusion);
 END_PROPSYNCS;
-
-static void rndacsettype(RndAmbientOcclusion* ac){
-    ac->SetType(Symbol());
-}

@@ -69,7 +69,3 @@ BEGIN_PROPSYNCS(FxSendFlanger)
     SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
-
-static void UnusedClassThatOnlyExistsToMoveSetTypeUp(FxSendFlanger* flang){
-    flang->SetType(Symbol());
-}

@@ -1,5 +1,8 @@
 #include "rndobj/Trans.h"
 
-static void justheretotestobjptrlistlol(ObjPtrList<RndTransformable, ObjectDir>* plist, BinStream& bs){
+#include "decomp.h"
+
+// Here to test ObjPtrList
+DECOMP_FORCEBLOCK(VocalTrackDir, (ObjPtrList<RndTransformable, ObjectDir>* plist, BinStream& bs),
     bs >> *plist;
-}
+)

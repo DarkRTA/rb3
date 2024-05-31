@@ -34,3 +34,6 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndSoftParticles)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+
+// Force SetType to generate before destructor
+DECOMP_FORCEFUNC(SoftParticles, RndSoftParticles, SetType(Symbol()))

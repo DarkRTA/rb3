@@ -61,7 +61,3 @@ BEGIN_PROPSYNCS(FxSendChorus)
     SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
-
-static void UnusedClassThatOnlyExistsToMoveSetTypeUp(FxSendChorus* chorus){
-    chorus->SetType(Symbol());
-}

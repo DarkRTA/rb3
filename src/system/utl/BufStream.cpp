@@ -45,7 +45,7 @@ void BufStream::ReadImpl(void* data, int bytes){
         mFail = true;
         bytes = size - tell;
     }
-    
+
     memcpy(data, &mBuffer[mTell], bytes);
     mTell += bytes;
     if(mChecksum && !mFail){
@@ -67,7 +67,7 @@ void BufStream::WriteImpl(const void* data, int bytes){
 
 void BufStream::SeekImpl(int offset, SeekType t){
     int pos;
-    
+
     switch(t){
         case kSeekBegin:
             pos = offset;
@@ -81,7 +81,7 @@ void BufStream::SeekImpl(int offset, SeekType t){
         default:
             return;
     }
-    
+
     if(pos < 0 || pos > mSize){
         mFail = true;
     }
@@ -101,11 +101,4 @@ const char* BufStream::Name() const {
 
 void BufStream::SetName(const char* name) {
     mName = name;
-}
-
-static void idklol(BufStream* bs){
-    bs->Flush();
-    bs->Tell();
-    bs->Eof();
-    bs->Fail();
 }

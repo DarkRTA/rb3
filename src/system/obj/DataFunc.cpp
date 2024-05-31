@@ -20,6 +20,8 @@
 #include <map>
 #include <stdlib.h>
 
+#include "decomp.h"
+
 std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
@@ -31,9 +33,8 @@ static DataNode Data##name(DataArray* da) code
 
 ADD_NOTIFS
 
-static void mfdtor(){
-    MergeFilter mf;
-}
+// Force ~MergeFilter() to generate here
+DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
     const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
@@ -1574,10 +1575,8 @@ Symbol DataFuncName(DataFunc* func){
     return Symbol("");
 }
 
-static void mfsubdir(){
-    MergeFilter mf;
-    mf.FilterSubdir(0, 0);
-}
+// Force FilterSubdir to generate here
+DECOMP_FORCEFUNC(DataFunc, MergeFilter, FilterSubdir(0, 0))
 
 MergeFilter::Action DataMergeFilter::Filter(Hmx::Object* from, Hmx::Object* to, class ObjectDir* dir){
     if(mType == kDataInt){

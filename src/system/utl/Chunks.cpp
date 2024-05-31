@@ -2,6 +2,8 @@
 #include "utl/ChunkIDs.h"
 #include "os/Debug.h"
 
+#include "decomp.h"
+
 void ChunkHeader::Read(BinStream& bs){
     bs.Read((void*)mID.Str(), 4);
     bs >> mLength;
@@ -161,7 +163,6 @@ void IListChunk::UnLock(){
     mLocked = false;
 }
 
-static void idklol(IDataChunk* ichunk){
-    ichunk->WriteImpl(0, 0);
-    ichunk->Flush();
-}
+// Force inline generation
+DECOMP_FORCEFUNC(Chunks, IDataChunk, Flush())
+DECOMP_FORCEFUNC(Chunks, IDataChunk, WriteImpl(0, 0))

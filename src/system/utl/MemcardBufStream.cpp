@@ -1,6 +1,6 @@
 #include "meta/FixedSizeSaveableStream.h"
 
-void idk(FixedSizeSaveableStream* s){
-    s->FinishWrite();
-    s->FinishStream();
-}
+#include "decomp.h"
+
+DECOMP_FORCEFUNC(MemcardBufStream, FixedSizeSaveableStream, FinishStream())
+DECOMP_FORCEFUNC(MemcardBufStream, FixedSizeSaveableStream, FinishWrite())

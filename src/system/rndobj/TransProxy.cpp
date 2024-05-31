@@ -3,6 +3,8 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
+#include "decomp.h"
+
 INIT_REVS(RndTransProxy)
 
 RndTransProxy::RndTransProxy() : mProxy(this, 0), mPart() {
@@ -83,7 +85,7 @@ BEGIN_PROPSYNCS(RndTransProxy)
     if(sym == proxy){
         bool synced = PropSync(mProxy, _val, _prop, _i + 1, _op);
         if(synced){
-            if(!(_op & (kPropSize|kPropGet))){ Sync(); } 
+            if(!(_op & (kPropSize|kPropGet))){ Sync(); }
             return true;
         }
         else return false;
@@ -91,3 +93,6 @@ BEGIN_PROPSYNCS(RndTransProxy)
     SYNC_PROP_ACTION(part, mPart, kPropSize|kPropGet, Sync())
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
+
+// Force SetType to generate before destructor
+DECOMP_FORCEFUNC(TransProxy, RndTransProxy, SetType(Symbol()))

@@ -14,7 +14,7 @@ JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchCo
         mPadShiftButton = (JoypadButton)sysConfig->FindArray(pad_shift_button, true)->Int(1);
         mCymbalShiftButton = (JoypadButton)sysConfig->FindArray(cymbal_shift_button, true)->Int(1);
         mSecondaryPedalButton = (JoypadButton)sysConfig->FindArray(secondary_button, true)->Int(1);
-        
+
     }
     else {
         mLocalUser = 0;
@@ -27,7 +27,7 @@ JoypadController::JoypadController(User* user, const DataArray* cfg, BeatMatchCo
 }
 
 JoypadController::~JoypadController(){
-    
+
 }
 
 int JoypadController::MapSlot(int i) const {
@@ -310,7 +310,7 @@ int JoypadController::OnMsg(const ButtonDownMsg& msg){
             mSink->Swing(slot, false, true, false, false, (GemHitFlags)i9);
             mSink->FretButtonDown(slot, -1);
             mFretMask |= 1 << slot;
-            if(mLefty && BeatMatchController::ButtonToSlot(btn) == 4 && 
+            if(mLefty && BeatMatchController::ButtonToSlot(btn) == 4 &&
                 thePadData->IsButtonInMask(mCymbalShiftButton) &&
                 thePadData->IsButtonInMask(mPadShiftButton) &&
                 !thePadData->IsButtonInMask(0xC) &&
@@ -381,10 +381,3 @@ BEGIN_HANDLERS(JoypadController)
     HANDLE_MESSAGE(ButtonUpMsg)
     HANDLE_CHECK(0x273)
 END_HANDLERS
-
-static void weakfuncslol(JoypadController* jc){
-    jc->IsDisabled();
-    jc->GetFretButtons();
-    jc->UseAlternateMapping(0);
-    jc->IsAlternateMapping();
-}

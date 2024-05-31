@@ -1,14 +1,15 @@
 #include "synth/SlipTrack.h"
 #include "synth/Stream.h"
 
+#include "decomp.h"
+
 SlipTrack::SlipTrack(Stream* stream, int i){
     mChannels.push_back(i);
     Init(stream);
 }
 
-static void lol(Stream* stream){
-    stream->SetStereoPair(0, 0);
-}
+// Force SetStereoPair to generate here
+DECOMP_FORCEFUNC(SlipTrack, Stream, SetStereoPair(0, 0))
 
 void SlipTrack::Init(Stream* stream){
     mStream = stream;

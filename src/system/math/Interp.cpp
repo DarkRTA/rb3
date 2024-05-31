@@ -3,6 +3,8 @@
 #include "os/Debug.h"
 #include <stdlib.h>
 
+#include "decomp.h"
+
 static const char* const unused1[] = {
     "exp", "atan", "unknown interpolator type: %s\nat %d in %s"
 };
@@ -155,3 +157,9 @@ float ATanInterpolator::Eval(float f) {
 static const char* const unused2[] = {
     "Interp.cpp", "source", "numEntries > 1", "mTable", "source->Size() > startAt", "mDeltas"
 };
+
+// Force destructor ordering
+// Possibly a fakematch? Happens because of -ipa file
+// Can't be bothered to disable it for this file specifically
+DECOMP_FORCEDTOR(Interp, ExpInterpolator);
+DECOMP_FORCEDTOR(Interp, InvExpInterpolator);
