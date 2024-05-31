@@ -192,11 +192,11 @@ public:
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
 // Decomp hack: converts an allocator from one type to another
-#if defined(VERSION_SZBE69)
+#ifdef VERSION_SZBE69
    // Note: does not preserve state! This is fine since StlNodeAlloc has no state,
    // and no other allocators are used as far as we've seen
 #  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) _Alloc_traits<_Tp, _Alloc>::allocator_type()
-#elif defined(VERSION_SZBE69_B8)
+#else
 #  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) __a
 #endif
 
