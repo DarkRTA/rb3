@@ -81,7 +81,7 @@ public:
     virtual void SlipStop(int);
     virtual float GetSlipOffset(int);
     virtual void SetSlipSpeed(int, float);
-    virtual int ChannelFaders(int); // fix return type
+    virtual FaderGroup* ChannelFaders(int); // fix return type
     virtual void AddVirtualChannels(int);
     virtual void RemapChannel(int, int);
 
