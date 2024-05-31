@@ -2,7 +2,9 @@
 #include "game/Defines.h"
 #include "utl/Symbol.h"
 
-TrackConfig::TrackConfig(BandUser* bu) : mUser(bu), unk_0x4(true), mTrackNum(0), mMaxSlots(0), unk_0x10(0), 
+#include "decomp.h"
+
+TrackConfig::TrackConfig(BandUser* bu) : mUser(bu), unk_0x4(true), mTrackNum(0), mMaxSlots(0), unk_0x10(0),
     unk_0x14(gNullStr), mLefty(false), mCymbalLanes(0), mDisableHopos(0) {}
 
 const BandUser* TrackConfig::GetBandUser() const { return mUser; }
@@ -13,6 +15,8 @@ int TrackConfig::TrackNum() const { return mTrackNum; }
 #pragma force_active on
 inline int TrackConfig::GetMaxSlots() const { return mMaxSlots; }
 #pragma pop
+
+DECOMP_FORCEFUNC(TrackConfig, TrackConfig, GetMaxSlots())
 
 Symbol TrackConfig::Type() const { return mUser->GetTrackSym(); }
 bool TrackConfig::IsLefty() const { return mLefty; }
@@ -36,7 +40,7 @@ bool TrackConfig::IsRealGuitarTrack() const {
     bool b = 0;
     if (t == kTrackProGuitar || t == kTrackProBass) b = true;
     return b;
-}   
+}
 
 const char* TrackConfig::GetSlotColor(int slot) const {
     MILO_ASSERT(slot >= 0 && slot <= GetMaxSlots(), 156);
@@ -53,4 +57,6 @@ void TrackConfig::SetGameCymbalLanes(uint ui) { mCymbalLanes = ui; }
 void TrackConfig::SetDisableHopos(bool b) { mDisableHopos = b; }
 void TrackConfig::SetTrackNum(int i) { mTrackNum = i; }
 
-const char* unused = "slot >= 0 && slot <= mMaxSlots\0\0R\0L\0numSlots <= mMaxSlots\0left\0right"; // fun fact: this is broken under -ipa file!
+DECOMP_FORCEACTIVE(TrackConfig,
+    "slot >= 0 && slot <= mMaxSlots\0\0R\0L\0numSlots <= mMaxSlots\0left\0right"
+)
