@@ -16,7 +16,7 @@ public:
     void LoadKeyboard(BinStream&);
     void LoadJoypad(BinStream&);
     void SendKeyboardMessages();
-    void SendJoypadMessages();
+    int SendJoypadMessages();
 
     bool mSubscribe;
     MemStream* mJoypadBuffer;
