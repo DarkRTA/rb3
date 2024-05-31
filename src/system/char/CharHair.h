@@ -2,18 +2,25 @@
 #define CHAR_CHARHAIR_H
 #include "rndobj/Highlightable.h"
 #include "char/CharPollable.h"
+#include "rndobj/Trans.h"
+#include "char/CharCollide.h"
 #include "obj/ObjVector.h"
 
 // forward decs
 class Character;
 class RndWind;
-class CharCollide;
-class RndTransformable;
 
 class CharHair : public RndHighlightable, public CharPollable {
 public:
 
     struct Point {
+        Point(Hmx::Object* o) : bone(o, 0), length(0.0f), collides(o, kObjListNoNull), radius(0.0f), outerRadius(-1.0f){
+            pos.Zero();
+            force.Zero();
+            lastFriction.Zero();
+            lastZ.Zero();
+        }
+
         Vector3 pos;
         Vector3 force;
         Vector3 lastFriction;
@@ -33,6 +40,7 @@ public:
         Strand(Hmx::Object*);
         ~Strand();
         void Load(BinStream&);
+        void SetRoot(RndTransformable*);
 
         bool mShowSpheres;
         bool mShowCollide;
