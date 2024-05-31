@@ -257,6 +257,7 @@
             "system/meta/Profile.cpp": "Matching",
             "system/meta/SongMetadata.cpp": "NonMatching",
             "system/meta/SongMgr.cpp": "NonMatching",
+            "system/meta/SongPreview.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
             "system/meta/StreamPlayer.cpp": "NonMatching",

@@ -31,6 +31,8 @@ public:
         virtual bool HasContentAltDirs(){ return false; }
     };
 
+    void UnregisterCallback(Callback*, bool);
+
     enum /* @enum$36095BandOffline_cpp */ {
         kDone = 0,
         kDiscoveryEnumerating = 1,
@@ -50,5 +52,7 @@ public:
     // int mRootLoaded; // offset 0x60, size 0x4
     // class list mCallbackFiles; // offset 0x64, size 0x8
 };
+
+extern ContentMgr* TheContentMgr;
 
 #endif

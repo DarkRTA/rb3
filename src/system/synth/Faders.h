@@ -16,6 +16,8 @@ public:
     virtual void Load(BinStream&);
 
     void SetVal(float);
+    float GetTargetDb() const;
+    void DoFade(float, float);
 
     float mVal;
     class FaderTask* mFaderTask;
