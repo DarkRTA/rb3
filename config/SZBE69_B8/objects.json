@@ -370,6 +370,7 @@
             "system/rndobj/PropKeys.cpp": "NonMatching",
             "system/rndobj/Rnd.cpp": "NonMatching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
+            "system/rndobj/Set.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "NonMatching",
             "system/rndobj/SoftParticles.cpp": "Matching",
