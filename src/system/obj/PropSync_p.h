@@ -105,21 +105,31 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
     }
     else {
         ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
-        for(int cnt = prop->Int(i++); cnt >= 0; cnt--) ++it;
+        for(int cnt = prop->Int(i++); cnt > 0; cnt--) ++it;
         MILO_ASSERT(i == prop->Size(), 0x150);
-        if(op == kPropGet){
-            // return PropSync(*it, node, prop, i, kPropGet); // supposed to call the Object PropSync template on line 67 but it doesn't for whatever reason
+        switch(op){
+            case kPropGet:
+                return PropSync((T*&)(it), node, prop, i, kPropGet);
+            case kPropSet:
+                T* objToSet = 0;
+                if(PropSync(objToSet, node, prop, i, kPropSet)){
+                    ptr.Set(it, objToSet);
+                    return true;
+                }
+                else return false;
+            case kPropRemove:
+                ptr.erase(it);
+                return true;
+            case kPropInsert:
+                T* objToInsert = 0;
+                if(PropSync(objToInsert, node, prop, i, kPropSet)){
+                    ptr.insert(it, objToInsert);
+                    return true;
+                }
+                else return false;
+            default:
+                return false;
         }
-        else if(op == kPropSet){
-
-        }
-        else if(op == kPropRemove){
-
-        }
-        else if(op == kPropInsert){
-
-        }
-        else return false;
     }
 }
 
