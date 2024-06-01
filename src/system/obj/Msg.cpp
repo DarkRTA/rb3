@@ -129,22 +129,21 @@ DataNode MsgSource::OnRemoveSink(DataArray* da){
     return DataNode(0);
 }
 
-bool PropSync(MsgSource::Sink& sink, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(i == prop->Size()) return true;
-    else {
-        Symbol sym = prop->Sym(i);
-        if(sym == obj){
-            return PropSync<Hmx::Object>(sink.obj, node, prop, i + 1, op);
-        }
-        if(sym == mode){
-            int x = sink.mode;
-            bool ret = PropSync(x, node, prop, i + 1, op);
-            sink.mode = (MsgSource::SinkMode)x;
-            return ret;
-        }
-    }
-    return true;
-}
+BEGIN_CUSTOM_PROPSYNC(MsgSource::Sink)
+    SYNC_PROP(obj, (Hmx::Object*&)o.obj)
+    SYNC_PROP(mode, (int&)o.mode)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(MsgSource::EventSinkElem)
+    SYNC_PROP(handler, o.handler)
+    SYNC_PROP(obj, (Hmx::Object*&)o.obj)
+    SYNC_PROP(mode, (int&)o.mode)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(MsgSource::EventSink)
+    SYNC_PROP(event, o.ev)
+    SYNC_PROP(sinks, o.sinks)
+END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(MsgSource)
     SYNC_PROP(sinks, mSinks)

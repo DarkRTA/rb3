@@ -123,13 +123,33 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
     }
 }
 
-template <class T> bool PropSync(std::list<T>& list, DataNode& node, DataArray* prop, int i, PropOp op)  {
+template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if((int)op == 0x40) return false;
-    else {
+    else if(i == prop->Size()){
         MILO_ASSERT(op == kPropSize, 146);
-        //if(op == kPropGet) node = DataNode(ptr.Ptr());
-        //else ptr = node.Obj<T>(0);
+        node = DataNode((int)pList.size());
         return true;
+    }
+    else {
+        std::list<T>::iterator it = pList.begin();
+        for(int count = prop->Int(i++); count > 0; count--){
+            it++;
+        }
+        if(i < prop->Size() || op & 0x13){
+            return PropSync(*it, node, prop, i, op);
+        }
+        else if(op == kPropRemove){
+            pList.erase(it);
+            return true;
+        }
+        else if(op == kPropInsert){
+            T item;
+            if(PropSync(item, node, prop, i, op)){
+                pList.insert(it, item);
+                return true;
+            }
+        }
+        return false;
     }
 }
 
