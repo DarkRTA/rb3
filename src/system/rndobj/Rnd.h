@@ -8,9 +8,12 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/PostProc.h"
 
 class RndCam;
+class RndEnviron;
 class RndFlare;
+class RndLight;
 
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
@@ -70,6 +73,20 @@ public:
     virtual bool CanModal(bool){ return 0; }
     virtual void ModalDraw(bool, const char*){}
 
+    bool ShrinkToSafeArea() { return mShrinkToSafe; }
+    void ShowConsole(bool); bool ConsoleShowing();
+    void SetShowTimers(bool, bool);
+    bool GetEvenOddDisabled() const;
+    void SetEvenOddDisabled(bool);
+    void UpdateRate(); void UpdateHeap();
+    float DrawTimers(float);
+    void Modal(bool&, char*, bool);
+
+    DataNode OnScreenDump(const DataArray*);
+    DataNode OnScreenDumpUnique(const DataArray*);
+    DataNode OnScaleObject(const DataArray*);
+    DataNode OnReflect(const DataArray*);
+
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30
     int mHeight; // 0x34
@@ -88,35 +105,45 @@ public:
     RndCam* unk94; // 0x94
     RndEnviron* unk98; // 0x98
     RndLight* unk9c; // 0x9c
-    int unka0; // 0xa0
-    int unka4; // 0xa4
-    int unka8; // 0xa8
-    int unkac; // 0xac
-    int unkb0; // 0xb0
-    int unkb4; // 0xb4
-    int unkb8; // 0xb8
-    int unkbc; // 0xbc
 
+    int unk_arr[8]; // 0xa0 - 0xbc, inclusive
+
+    float unkc0; // 0xc0
+    int unkc4; // 0xc4
+    int unkc8; // 0xc8
+    unsigned int mFrameID; // 0xcc
+    const char* unkd0; // 0xd0
+    int unkd4; // 0xd4
+    int unkd8; // 0xd8
+    bool unkdc; // 0xdc
+    bool unkdd; // 0xdd
+    bool unkde; // 0xde
+    bool unkdf; // 0xdf
     int mAspectRatio; // 0xE0
-    int unk_0xE4;
-
+    int unk_0xE4; // 0xe4
+    bool unke8; // 0xe8
+    bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA
-    bool ShrinkToSafeArea() { return mShrinkToSafe; }
-
+    bool unkeb; // 0xeb
+    bool unkec; // 0xec
+    bool unked; // 0xed
+    bool unkee; // 0xee
+    bool unkef; // 0xef
+    bool unkf0; // 0xf0
+    int unkf4; // 0xf4
+    int unkf8; // 0xf8
+    std::list<int> unkfc; // 0xfc
+    std::list<int> unk104; // 0x104
+    int unk10c; // 0x10c
+    ObjPtrList<RndDrawable, ObjectDir> unk110; // 0x110
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
-
-    void ShowConsole(bool); bool ConsoleShowing();
-    void SetShowTimers(bool, bool);
-    bool GetEvenOddDisabled() const;
-    void SetEvenOddDisabled(bool);
-    void UpdateRate(); void UpdateHeap();
-    float DrawTimers(float);
-    void Modal(bool&, char*, bool);
-
-    DataNode OnScreenDump(const DataArray*);
-    DataNode OnScreenDumpUnique(const DataArray*);
-    DataNode OnScaleObject(const DataArray*);
-    DataNode OnReflect(const DataArray*);
+    bool unk130; // 0x130
+    bool unk131; // 0x131
+    ProcCounter mProcCounter; // 0x134
+    int unk14c; // 0x14c
+    int unk150; // 0x150
+    std::list<int> unk154; // 0x154
+    int unk15c; // 0x15c
 };
 
 extern Rnd* TheRnd;

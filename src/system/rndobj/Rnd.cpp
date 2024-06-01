@@ -32,6 +32,7 @@
 
 bool gFailKeepGoing;
 bool gFailRestartConsole;
+// int gpDbgFrameID;
 
 namespace {
     bool AddToNotifies(const char* add, std::list<class String>& notifies) {
@@ -60,10 +61,17 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
 
-Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
-    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0),
-    mDraws(this, kObjListNoNull) {
+void Rnd::Modal(bool& b, char* c, bool bb){
+    if(bb) TheDebug << MakeString("%s\n", c);
+}
 
+Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
+    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
+    unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), unkd8(1), unkdc(0), unkdd(0), unkde(0), unkdf(1), mAspectRatio(2), unk_0xE4(0),
+    unke8(0), unke9(0), mShrinkToSafe(1), unkeb(0), unkec(0), unked(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), unk10c(0),
+    unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), unk14c(7), unk150(7), unk15c(-1) {
+    for(int i = 0; i < 8; i++) unk_arr[i] = 0;
+    gpDbgFrameID = (int*)&mFrameID;
 }
 
 float Rnd::YRatio() {
@@ -141,8 +149,8 @@ float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
     return f;
 }
 
+#pragma push
 #pragma dont_inline on
-
 BEGIN_HANDLERS(Rnd)
     HANDLE_EXPR(aspect, mAspectRatio)
     HANDLE_EXPR(screen_width, mWidth)
@@ -154,5 +162,4 @@ BEGIN_HANDLERS(Rnd)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(1832)
 END_HANDLERS
-
-#pragma dont_inline reset
+#pragma pop
