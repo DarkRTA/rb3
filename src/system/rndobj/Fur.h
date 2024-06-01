@@ -17,9 +17,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    NEW_OBJ(RndFur)
+    DELETE_OVERLOAD
 
     static ushort gRev;
     static ushort gAltRev;

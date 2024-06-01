@@ -21,6 +21,8 @@ public:
     virtual ~RndOverlay();
     virtual void Print(const char *);
 
+    void SetCallback(Callback* cb){ mCallback = cb; }
+
     void SetLines(int);
     void Clear();
     static void Terminate();

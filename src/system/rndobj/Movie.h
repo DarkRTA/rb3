@@ -23,6 +23,7 @@ public:
     virtual void SetFile(const FilePath&, bool);
     virtual void SetTex(RndTex*);
 
+    NEW_OBJ(RndMovie)
     DELETE_OVERLOAD;
     DECLARE_REVS;
 

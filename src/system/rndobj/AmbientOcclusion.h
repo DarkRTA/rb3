@@ -14,10 +14,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    NEW_OBJ(RndAmbientOcclusion)
+    DECLARE_REVS;
     DELETE_OVERLOAD;
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
 
 };
 

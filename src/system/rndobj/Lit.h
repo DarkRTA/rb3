@@ -33,6 +33,7 @@ public:
     void SetBotRadius(float);
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
 
+    NEW_OBJ(RndLight)
     DECLARE_REVS;
     DELETE_OVERLOAD;
 

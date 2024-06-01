@@ -89,6 +89,7 @@ public:
     void SetPostProcOverride(RndPostProc*);
     PostProcessor* GetPostProcOverride() const;
     void SetupFont();
+    void CreateDefaults();
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);
@@ -121,7 +122,7 @@ public:
     int unkc8; // 0xc8
     unsigned int mFrameID; // 0xcc
     const char* unkd0; // 0xd0
-    int unkd4; // 0xd4
+    DataArray* mFont; // 0xd4
     int mSync; // 0xd8
     bool unkdc; // 0xdc
     bool unkdd; // 0xdd

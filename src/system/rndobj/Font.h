@@ -4,7 +4,9 @@
 #include "obj/Object.h"
 
 class RndFont : public Hmx::Object {
-    public:
+public:
+
+    NEW_OBJ(RndFont)
 }; 
 
 #endif // RNDOBJ_FONT_H

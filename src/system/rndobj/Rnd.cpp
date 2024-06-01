@@ -3,6 +3,7 @@
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/AmbientOcclusion.h"
 #include "rndobj/AnimFilter.h"
 #include "rndobj/Cam.h"
 #include "rndobj/CubeTex.h"
@@ -20,6 +21,8 @@
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Overlay.h"
 #include "rndobj/Set.h"
+#include "rndobj/ShaderOptions.h"
+#include "rndobj/SoftParticles.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
 #include "rndobj/TransProxy.h"
@@ -86,7 +89,7 @@ void TerminateCallback() {
 
 void Rnd::PreInit() {
     SetName("rnd", ObjectDir::sMainDir);
-    TheDebug.mExitCallbacks.push_back(TerminateCallback);
+    TheDebug.AddExitCallback(TerminateCallback);
     DataArray* rndcfg = SystemConfig("rnd");
     rndcfg->FindData("bpp", mScreenBpp, true);
     rndcfg->FindData("height", mHeight, true);
@@ -97,35 +100,44 @@ void Rnd::PreInit() {
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
     RndGraph::Init();
-    Hmx::Object::RegisterFactory(DOFProc::StaticClassName(), DOFProc::NewObject);
+    REGISTER_OBJ_FACTORY(DOFProc)
     RndTransformable::Init();
-    Hmx::Object::RegisterFactory(RndSet::StaticClassName(), RndSet::NewObject);
-    Hmx::Object::RegisterFactory(RndAnimFilter::StaticClassName(), RndAnimFilter::NewObject);
-    Hmx::Object::RegisterFactory(RndFlare::StaticClassName(), RndFlare::NewObject);
-    Hmx::Object::RegisterFactory(RndCam::StaticClassName(), RndCam::NewObject);
-    Hmx::Object::RegisterFactory(RndMesh::StaticClassName(), RndMesh::NewObject);
+    REGISTER_OBJ_FACTORY(RndSet)
+    REGISTER_OBJ_FACTORY(RndAnimFilter)
+    REGISTER_OBJ_FACTORY(RndFlare)
+    REGISTER_OBJ_FACTORY(RndCam)
+    REGISTER_OBJ_FACTORY(RndMesh)
+    // MeshDeform
+    RndText::Init();
+    REGISTER_OBJ_FACTORY(RndFont)
+    REGISTER_OBJ_FACTORY(RndEnviron)
+    REGISTER_OBJ_FACTORY(RndMat)
+    REGISTER_OBJ_FACTORY(RndTex)
+    REGISTER_OBJ_FACTORY(RndFur)
+    REGISTER_OBJ_FACTORY(RndCubeTex)
+    REGISTER_OBJ_FACTORY(RndSoftParticles)
+    REGISTER_OBJ_FACTORY(RndAmbientOcclusion)
+    REGISTER_OBJ_FACTORY(RndMovie)
+    REGISTER_OBJ_FACTORY(RndLight)
 
-    // RndText::Init();
-    // Hmx::Object::RegisterFactory(RndFont::StaticClassName(), RndFont::NewObject);
-    // Hmx::Object::RegisterFactory(RndEnviron::StaticClassName(), RndEnviron::NewObject);
-    // Hmx::Object::RegisterFactory(RndMat::StaticClassName(), RndMat::NewObject);
-    // Hmx::Object::RegisterFactory(RndTex::StaticClassName(), RndTex::NewObject);
-    // Hmx::Object::RegisterFactory(RndFur::StaticClassName(), RndFur::NewObject);
-    // Hmx::Object::RegisterFactory(RndCubeTex::StaticClassName(), RndCubeTex::NewObject);
-    // Hmx::Object::RegisterFactory(RndMovie::StaticClassName(), RndMovie::NewObject);
-    // Hmx::Object::RegisterFactory(RndLight::StaticClassName(), RndLight::NewObject);
-
-    // Hmx::Object::RegisterFactory(RndTransProxy::StaticClassName(), RndTransProxy::NewObject);
-
-    // Hmx::Object::RegisterFactory(RndMultiMesh::StaticClassName(), RndMultiMesh::NewObject);
-
-
-    // Hmx::Object::RegisterFactory(RndTransformable::StaticClassName(), RndTransformable::NewObject); // ?
-    // Hmx::Object::RegisterFactory(RndGroup::StaticClassName(), RndGroup::NewObject);
-    // Hmx::Object::RegisterFactory(RndDir::StaticClassName(), RndDir::NewObject);
-    // mConsole = new RndConsole;
-    // DataRegisterFunc("keep_going", FailKeepGoing);
-    // DataRegisterFunc("restart_console", FailRestartConsole);
+    InitShaderOptions();
+    mRateOverlay = RndOverlay::Find("rate", true);
+    mHeapOverlay = RndOverlay::Find("heap", true);
+    mStatsOverlay = RndOverlay::Find("stats", true);
+    mTimersOverlay = RndOverlay::Find("timers", true);
+    mRateOverlay->SetCallback(this);
+    mHeapOverlay->SetCallback(this);
+    mStatsOverlay->SetCallback(this);
+    mTimersOverlay->SetCallback(this);
+    mConsole = new RndConsole();
+    unkde = 0;
+    unkdf = 1;
+    unkdc = mTimersOverlay->mShowing;
+    CreateDefaults();
+    // InitParticleSystem() - from rndobj/Part.cpp
+    DataRegisterFunc("keep_going", FailKeepGoing);
+    DataRegisterFunc("restart_console", FailRestartConsole);
+    // RndUtlInit()
 }
 
 void Rnd::Init() {

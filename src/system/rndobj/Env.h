@@ -39,6 +39,7 @@ public:
     bool IsValidRealLight(const RndLight*) const;
 
     DELETE_OVERLOAD
+    NEW_OBJ(RndEnviron)
 
     ObjPtrList<RndLight, class ObjectDir> mLightsReal; // 0x1c
     ObjPtrList<RndLight, class ObjectDir> mLightsApprox; // 0x2c

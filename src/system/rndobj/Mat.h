@@ -84,6 +84,8 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    NEW_OBJ(RndMat)
+
     Hmx::Color mColor; // 0x1c
     Transform mTexXfm; // 0x2c
     ObjPtr<RndTex, class ObjectDir> mDiffuseTex; // 0x5c

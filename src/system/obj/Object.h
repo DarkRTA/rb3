@@ -183,4 +183,7 @@ inline int packRevs(unsigned short alt, unsigned short rev){
 #define NEW_OBJ(objType) \
     static Hmx::Object* NewObject() { return new objType; }
 
+#define REGISTER_OBJ_FACTORY(objType) \
+    Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
+
 #endif

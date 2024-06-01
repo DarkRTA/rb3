@@ -47,10 +47,9 @@ public:
     bool ValidateBitmapProperties(std::vector<CubeFace>&);
     void Update();
 
+    NEW_OBJ(RndCubeTex)
     DECLARE_REVS;
     DELETE_OVERLOAD;
-
-    static Hmx::Object* NewObject();
 
     CubeTexProperties props;
     CubeTexProperties moreprops[6];
