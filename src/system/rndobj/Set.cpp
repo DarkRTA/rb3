@@ -1,4 +1,6 @@
 #include "rndobj/Set.h"
+#include "obj/Dir.h"
+#include "obj/Msg.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndSet)
@@ -69,3 +71,21 @@ BEGIN_HANDLERS(RndSet)
     }
     HANDLE_CHECK(0x8C)
 END_HANDLERS
+
+#pragma push
+#pragma pool_data off
+BEGIN_PROPSYNCS(RndSet)
+    SYNC_PROP(objects, mObjects)
+    else if(_op == kPropSet){
+        static Hmx::Object* milo = ObjectDir::Main()->FindObject("milo", false);
+        for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
+            if(milo){
+                static Message msg("record", DataNode(0), DataNode(Symbol("Change from set")));
+                UNCONST_ARRAY(msg)->Node(2) = DataNode(*it);
+                milo->Handle(msg, true);
+            }
+            (*it)->SetProperty(_prop, _val);
+        }
+    }
+END_PROPSYNCS
+#pragma pop
