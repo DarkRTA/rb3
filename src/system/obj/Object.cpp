@@ -65,8 +65,10 @@ Hmx::Object::~Object(){
     RemoveFromDir();
     Hmx::Object* tmp = sDeleting;
     sDeleting = this;
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
-        (*it)->Replace(this, 0);
+    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+    for(; rit != ritEnd; ++rit){
+        (*rit)->Replace(this, 0);
     }
     if(gDataThis == this) gDataThis = 0;
     sDeleting = tmp;
@@ -295,7 +297,7 @@ void Hmx::Object::LoadType(BinStream& bs) {
     Symbol s;
     bs >> s;
     SetType(s);
-    ObjVersion v(this, packRevs(gRev, gAltRev));
+    ObjVersion v(this, packRevs(gAltRev, gRev));
     sRevStack.push_back(v);
 }
 
@@ -308,7 +310,7 @@ void Hmx::Object::LoadRest(BinStream& bs) {
     // end PopRev stuff
     gAltRev = getAltRev(v.revs);
     gRev = getHmxRev(v.revs);
-    mTypeProps.Load(bs, packRevs(gRev, gAltRev), 0);
+    mTypeProps.Load(bs, packRevs(gAltRev, gRev), 0);
 }
 
 void Hmx::Object::Load(BinStream& bs) {
@@ -419,7 +421,7 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
 DataNode Hmx::Object::OnIterateRefs(const DataArray* da){
     DataNode* var = da->Var(2);
     DataNode node(*var);
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+    for(std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin(); it != Refs().rend(); it++){
         *var = DataNode((*it)->RefOwner());
         for(int i = 3; i < da->Size(); i++){
             da->Command(i)->Execute();
