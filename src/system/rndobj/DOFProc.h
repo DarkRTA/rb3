@@ -25,6 +25,10 @@ public:
     static void Terminate();
     static DOFProc& Params();
     NEW_OBJ(DOFProc);
+
+    static void Register(){
+        REGISTER_OBJ_FACTORY(DOFProc)
+    }
 };
 
 DOFProc* TheDOFProc;

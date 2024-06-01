@@ -100,13 +100,13 @@ void Rnd::PreInit() {
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
     RndGraph::Init();
-    REGISTER_OBJ_FACTORY(DOFProc)
+    DOFProc::Register();
     RndTransformable::Init();
-    REGISTER_OBJ_FACTORY(RndSet)
-    REGISTER_OBJ_FACTORY(RndAnimFilter)
-    REGISTER_OBJ_FACTORY(RndFlare)
-    REGISTER_OBJ_FACTORY(RndCam)
-    REGISTER_OBJ_FACTORY(RndMesh)
+    RndSet::Init();
+    RndAnimFilter::Init();
+    RndFlare::Init();
+    RndCam::Init();
+    RndMesh::Init();
     // MeshDeform
     RndText::Init();
     REGISTER_OBJ_FACTORY(RndFont)
@@ -119,6 +119,7 @@ void Rnd::PreInit() {
     REGISTER_OBJ_FACTORY(RndAmbientOcclusion)
     REGISTER_OBJ_FACTORY(RndMovie)
     REGISTER_OBJ_FACTORY(RndLight)
+    // more register factories for the rest of the Rnd classes
 
     InitShaderOptions();
     mRateOverlay = RndOverlay::Find("rate", true);

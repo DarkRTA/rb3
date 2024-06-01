@@ -10,7 +10,12 @@ public:
     RndSet();
     virtual ~RndSet();
     
+    NEW_OVERLOAD;
     NEW_OBJ(RndSet);
+
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndSet)
+    }
 
     // ObjPtrList<Hmx::Object, ObjectDir> mObjects;
     std::vector<int> mProps;

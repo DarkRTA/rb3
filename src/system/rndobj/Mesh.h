@@ -111,6 +111,9 @@ public:
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndMesh)
+    }
 
     DataNode OnCompareEdgeVerts(const DataArray*);
     DataNode OnAttachMesh(const DataArray*);
