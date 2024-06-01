@@ -75,6 +75,8 @@ public:
     float mItalicStrength; // 0xe0
     ObjOwnerPtr<RndMesh, ObjectDir> unk_e0;
 
+    int unk_0x120;
+
     int mDeferUpdate : 4;
 
     static void Init();

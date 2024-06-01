@@ -1,4 +1,5 @@
 #include "rndobj/SIVideo.h"
+#include "decomp.h"
 #include "os/Debug.h"
 #include "utl/MemMgr.h"
 
@@ -10,14 +11,21 @@ void SIVideo::Reset(){
     }
 }
 
+inline int SIVideo::Bpp() const { return mBpp == 8 ? 4 : 8; }
+inline int SIVideo::FrameSize() const { return (mMagic * mWidth * Bpp()) >> 3; }
+
 void SIVideo::Load(BinStream& bs, bool load_data) {
-    int magic, dump;
+    int magic, dump, unused;
     bs >> magic;
     if (magic != 'SIV_') {
         mMagic = magic;
         bs >> mWidth;
         bs >> mHeight;
-        bs >> magic >> dump >> dump >> dump >> dump;
+        bs >> dump;
+        bs >> unused;
+        bs >> unused;
+        bs >> unused;
+        bs >> unused;
         mBpp = 8;
     } else {
         uint x;
@@ -28,20 +36,20 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
         bs >> mHeight;
         bs >> mBpp;
     }
-    if (mData) { _MemFree(mData); mData = NULL; }
+    if (mData) {
+        _MemFree(mData);
+        mData = 0;
+    }
     if (!load_data) {
-        uint x = mMagic * mWidth;
-        mData = (char*)_MemAlloc(mHeight * (x * (mBpp == 8 ? 4 : 8) >> 3), 0);
-        uint y = mMagic * mWidth;
-        bs.Read(mData, mHeight * (y * (mBpp == 8 ? 4 : 8) >> 3));
+        mData = (char*)_MemAlloc(mHeight * (mMagic * mWidth * Bpp() >> 3), 0);
+        bs.Read(mData, mHeight * (mMagic * mWidth * Bpp() >> 3));
     }
 }
 
-int SIVideo::Bpp() const { return mBpp == 8 ? 4 : 8; }
-
-int SIVideo::FrameSize() const {
-    return (mMagic * mWidth * Bpp()) >> 3;
-}
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCEBLOCK(SIVideo, (const SIVideo* s), s->Bpp(); s->FrameSize();)
+#pragma pop
 
 char* SIVideo::Frame(int i) {
     if (mData) {
