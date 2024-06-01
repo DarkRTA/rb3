@@ -5,13 +5,7 @@
 #include "obj/ObjPtr_p.h"
 #include <list>
 
-enum TaskUnits {
-    kTaskSeconds = 0,
-    kTaskBeats = 1,
-    kTaskUISeconds = 2,
-    kTaskTutorialSeconds = 3,
-    kTaskNumUnits = 4,
-};
+class AnimTask;
 
 class RndAnimatable : public virtual Hmx::Object {
 public:
@@ -51,11 +45,11 @@ public:
     Rate GetRate(){ return mRate; }
     DataNode OnConvertFrames(DataArray*);
 
-    void Animate(float, bool, float);
+    AnimTask* Animate(float, bool, float);
     void Animate(float, float, TaskUnits, float, float);
 
     static TaskUnits RateToTaskUnits(Rate);
-    int Units() const;
+    TaskUnits Units() const;
     float FramesPerUnit();
     bool ConvertFrames(float&);
 
@@ -73,13 +67,8 @@ public:
 
     float TimeUntilEnd();
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(AnimTask), FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(AnimTask), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(AnimTask);
+    DELETE_POOL_OVERLOAD(AnimTask);
 
     ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
     ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;

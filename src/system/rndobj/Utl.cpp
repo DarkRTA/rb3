@@ -19,7 +19,7 @@ float gLimitUVRange;
 ADD_NOTIFS
 
 RndGroup* GroupOwner(Hmx::Object* o) {
-    for(std::vector<ObjRef*>::reverse_iterator rit = o->Refs().rbegin(); rit != o->Refs().rend(); rit++){
+    for(std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin(); rit != o->Refs().rend(); rit++){
         RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
         if(grp){
             for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){

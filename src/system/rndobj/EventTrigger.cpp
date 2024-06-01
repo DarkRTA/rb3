@@ -35,7 +35,7 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
             if(filter){
                 std::vector<ObjRef*>::const_reverse_iterator rit = filter->Refs().rbegin();
                 std::vector<ObjRef*>::const_reverse_iterator rEnd = filter->Refs().rend();
-                for(; rit != rEnd; rit++){
+                for(; rit != rEnd; ++rit){
                     if((*rit)->RefOwner()){
                         if((*rit)->RefOwner() != iter) break;
                     }

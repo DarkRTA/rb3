@@ -7,3 +7,11 @@ MicNull::MicNull(){
         mBuf[i] = sRand.Int(-32000, 32000);
     }
 }
+
+void MicNull::GetRecentBuf(int& i){
+
+}
+
+void MicNull::GetContinuousBuf(int& i){
+    
+}

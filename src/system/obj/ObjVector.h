@@ -12,7 +12,22 @@ public:
     Hmx::Object* mOwner;
     
     Hmx::Object* Owner(){ return mOwner; }
-    void resize(u32);
+    
+    void resize(unsigned long ul){
+        std::vector<T1, T2>::resize(ul, T1(mOwner));
+    }
+
+    void push_back(const T1& t){
+        resize(size() + 1);
+        T1* last = &back();
+        *last = t;
+    }
+
+    void operator=(const ObjVector<T1, T2>& vec){
+        resize(vec.size());
+        std::vector<T1,T2>::operator=((std::vector<T1,T2>&)vec);
+    }
+
 };
 
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, ObjVector<T1, T2>& vec) {
