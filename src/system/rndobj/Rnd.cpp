@@ -17,6 +17,7 @@
 #include "rndobj/Lit.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/MeshDeform.h"
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Overlay.h"
@@ -36,21 +37,8 @@
 
 bool gFailKeepGoing;
 bool gFailRestartConsole;
-// int gpDbgFrameID;
 
-namespace {
-    bool AddToNotifies(const char* add, std::list<class String>& notifies) {
-        u32 i = 0;
-        if (notifies.size() > 16) return false;
-        for (std::list<class String>::iterator it = notifies.begin(); it != notifies.end(); it++) {
-            bool strFound = !strcmp(it->c_str(), add);
-            if (strFound) return false;
-        }
-        class String s(add);
-        notifies.push_back(s);
-        return true;
-    }
-}
+ADD_NOTIFS;
 
 static DataNode FailKeepGoing(DataArray*) {
     gFailKeepGoing = true;
@@ -84,7 +72,7 @@ float Rnd::YRatio() {
 }
 
 void TerminateCallback() {
-
+    TheRnd->Terminate();
 }
 
 void Rnd::PreInit() {
@@ -97,9 +85,11 @@ void Rnd::PreInit() {
     rndcfg->FindData("sync", mSync, true);
     rndcfg->FindData("aspect", (int&)mAspect, true);
     if(OptionBool("widescreen", false)) mAspect = kWidescreen;
+    // some other code
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
     RndGraph::Init();
+    // RndUtlPreInit();
     DOFProc::Register();
     RndTransformable::Init();
     RndSet::Init();
@@ -107,12 +97,13 @@ void Rnd::PreInit() {
     RndFlare::Init();
     RndCam::Init();
     RndMesh::Init();
-    // MeshDeform
+    RndMeshDeform::Init();
     RndText::Init();
-    REGISTER_OBJ_FACTORY(RndFont)
-    REGISTER_OBJ_FACTORY(RndEnviron)
-    REGISTER_OBJ_FACTORY(RndMat)
-    REGISTER_OBJ_FACTORY(RndTex)
+    RndFont::Init();
+    RndEnviron::Init();
+    RndMat::Init();
+    RndTex::Init();
+
     REGISTER_OBJ_FACTORY(RndFur)
     REGISTER_OBJ_FACTORY(RndCubeTex)
     REGISTER_OBJ_FACTORY(RndSoftParticles)

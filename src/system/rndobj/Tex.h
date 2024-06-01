@@ -61,6 +61,9 @@ public:
 
     NEW_OBJ(RndTex)
     DELETE_OVERLOAD;
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTex)
+    }
 
     RndBitmap mBitmap;
     float mMipMapK; // 0x38

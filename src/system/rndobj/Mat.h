@@ -85,6 +85,9 @@ public:
     virtual void Load(BinStream&);
 
     NEW_OBJ(RndMat)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndMat)
+    }
 
     Hmx::Color mColor; // 0x1c
     Transform mTexXfm; // 0x2c
