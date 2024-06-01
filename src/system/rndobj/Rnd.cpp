@@ -60,8 +60,11 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
 
-Rnd::Rnd() : unk_0x20(0.3), unk_0x24(0.3), unk_0x28(0.3), unk_0x2C(1), mWidth(640), mHeight(480), 
-    mDraws(this, kObjListNoNull) {}
+Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
+    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0),
+    mDraws(this, kObjListNoNull) {
+
+}
 
 float Rnd::YRatio() {
     static const float kRatio[4] = {1.0f, 0.75f, 0.5625f, 0.5625f}; // qualifiers :)
@@ -72,42 +75,42 @@ void TerminateCallback() {
 
 }
 
-void Rnd::PreInit() {
-    SetName("rnd", ObjectDir::sMainDir);
-    DataArray* rndcfg = SystemConfig("rnd");
-    rndcfg->FindData("bpp", mScreenBpp, false);
-    MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
-    RndGraph::Init();
-    Hmx::Object::RegisterFactory(DOFProc::StaticClassName(), DOFProc::NewObject);
-    RndTransformable::Init();
-    Hmx::Object::RegisterFactory(RndSet::StaticClassName(), RndSet::NewObject);
-    Hmx::Object::RegisterFactory(RndAnimFilter::StaticClassName(), RndAnimFilter::NewObject);
-    Hmx::Object::RegisterFactory(RndFlare::StaticClassName(), RndFlare::NewObject);
-    Hmx::Object::RegisterFactory(RndCam::StaticClassName(), RndCam::NewObject);
-    Hmx::Object::RegisterFactory(RndMesh::StaticClassName(), RndMesh::NewObject);
+// void Rnd::PreInit() {
+//     SetName("rnd", ObjectDir::sMainDir);
+//     DataArray* rndcfg = SystemConfig("rnd");
+//     rndcfg->FindData("bpp", mScreenBpp, false);
+//     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
+//     RndGraph::Init();
+//     Hmx::Object::RegisterFactory(DOFProc::StaticClassName(), DOFProc::NewObject);
+//     RndTransformable::Init();
+//     Hmx::Object::RegisterFactory(RndSet::StaticClassName(), RndSet::NewObject);
+//     Hmx::Object::RegisterFactory(RndAnimFilter::StaticClassName(), RndAnimFilter::NewObject);
+//     Hmx::Object::RegisterFactory(RndFlare::StaticClassName(), RndFlare::NewObject);
+//     Hmx::Object::RegisterFactory(RndCam::StaticClassName(), RndCam::NewObject);
+//     Hmx::Object::RegisterFactory(RndMesh::StaticClassName(), RndMesh::NewObject);
 
-    RndText::Init();
-    Hmx::Object::RegisterFactory(RndFont::StaticClassName(), RndFont::NewObject);
-    Hmx::Object::RegisterFactory(RndEnviron::StaticClassName(), RndEnviron::NewObject);
-    Hmx::Object::RegisterFactory(RndMat::StaticClassName(), RndMat::NewObject);
-    Hmx::Object::RegisterFactory(RndTex::StaticClassName(), RndTex::NewObject);
-    Hmx::Object::RegisterFactory(RndFur::StaticClassName(), RndFur::NewObject);
-    Hmx::Object::RegisterFactory(RndCubeTex::StaticClassName(), RndCubeTex::NewObject);
-    Hmx::Object::RegisterFactory(RndMovie::StaticClassName(), RndMovie::NewObject);
-    Hmx::Object::RegisterFactory(RndLight::StaticClassName(), RndLight::NewObject);
+//     RndText::Init();
+//     Hmx::Object::RegisterFactory(RndFont::StaticClassName(), RndFont::NewObject);
+//     Hmx::Object::RegisterFactory(RndEnviron::StaticClassName(), RndEnviron::NewObject);
+//     Hmx::Object::RegisterFactory(RndMat::StaticClassName(), RndMat::NewObject);
+//     Hmx::Object::RegisterFactory(RndTex::StaticClassName(), RndTex::NewObject);
+//     Hmx::Object::RegisterFactory(RndFur::StaticClassName(), RndFur::NewObject);
+//     Hmx::Object::RegisterFactory(RndCubeTex::StaticClassName(), RndCubeTex::NewObject);
+//     Hmx::Object::RegisterFactory(RndMovie::StaticClassName(), RndMovie::NewObject);
+//     Hmx::Object::RegisterFactory(RndLight::StaticClassName(), RndLight::NewObject);
 
-    Hmx::Object::RegisterFactory(RndTransProxy::StaticClassName(), RndTransProxy::NewObject);
+//     Hmx::Object::RegisterFactory(RndTransProxy::StaticClassName(), RndTransProxy::NewObject);
 
-    Hmx::Object::RegisterFactory(RndMultiMesh::StaticClassName(), RndMultiMesh::NewObject);
+//     Hmx::Object::RegisterFactory(RndMultiMesh::StaticClassName(), RndMultiMesh::NewObject);
 
 
-    Hmx::Object::RegisterFactory(RndTransformable::StaticClassName(), RndTransformable::NewObject); // ?
-    Hmx::Object::RegisterFactory(RndGroup::StaticClassName(), RndGroup::NewObject);
-    Hmx::Object::RegisterFactory(RndDir::StaticClassName(), RndDir::NewObject);
-    mConsole = new (_PoolAlloc(0x58, 0x58, FastPool)) RndConsole;
-    DataRegisterFunc("keep_going", FailKeepGoing);
-    DataRegisterFunc("restart_console", FailRestartConsole);
-}
+//     Hmx::Object::RegisterFactory(RndTransformable::StaticClassName(), RndTransformable::NewObject); // ?
+//     Hmx::Object::RegisterFactory(RndGroup::StaticClassName(), RndGroup::NewObject);
+//     Hmx::Object::RegisterFactory(RndDir::StaticClassName(), RndDir::NewObject);
+//     mConsole = new RndConsole;
+//     DataRegisterFunc("keep_going", FailKeepGoing);
+//     DataRegisterFunc("restart_console", FailRestartConsole);
+// }
 
 void Rnd::Init() {
     DataArray* syscfg = SystemConfig("rnd");
@@ -132,7 +135,9 @@ void Rnd::Terminate() {
 }
 
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
-    if (ovl == unk_0x74) UpdateRate(); else if (ovl == unk_0x78) UpdateHeap(); else if (ovl == unk_0x70) f = DrawTimers(f);
+    if (ovl == mRateOverlay) UpdateRate(); 
+    else if (ovl == mHeapOverlay) UpdateHeap(); 
+    else if (ovl == mTimersOverlay) f = DrawTimers(f);
     return f;
 }
 
@@ -151,5 +156,3 @@ BEGIN_HANDLERS(Rnd)
 END_HANDLERS
 
 #pragma dont_inline reset
-
-void Rnd::ReInit() {}
