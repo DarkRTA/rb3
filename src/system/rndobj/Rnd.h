@@ -22,7 +22,10 @@ public:
     };
 
     enum Aspect {
-
+        kSquare,
+        kRegular,
+        kWidescreen,
+        kLetterbox
     };
 
     Rnd();
@@ -42,7 +45,7 @@ public:
     virtual void BeginDrawing();
     virtual void EndDrawing();
     virtual void MakeDrawTarget(){}
-    virtual void SetSync(int);
+    virtual void SetSync(int i){ mSync = i; }
     virtual int GetFrameID() const;
     virtual int GetCurrentFrameTex(bool){ return 0; } // fix return type
     virtual void ReleaseOwnership(){}
@@ -52,7 +55,7 @@ public:
     virtual void CaptureNextGpuFrame(){}
     virtual void RemovePointTest(RndFlare*);
     virtual bool HasDeviceReset() const { return 0; }
-    virtual void SetAspect(Aspect);
+    virtual void SetAspect(Aspect a){ mAspect = a; }
     virtual float YRatio();
     virtual int GetShadowMap(){ return 0; } // fix return type
     virtual int GetShadowCam(){ return 0; } // fix return type
@@ -61,7 +64,7 @@ public:
     virtual void SetOverscan(bool){}
     virtual void ConfigureRenderMode(){}
     virtual void ChangeYScale(bool){}
-    virtual void SetInGame(bool);
+    virtual void SetInGame(bool b){ mInGame = b; }
     virtual int BeginQuery(RndDrawable*){ return -1; }
     virtual int EndQuery(int){ return 0; }
     virtual int VisibleSets(std::vector<RndDrawable*>&, std::vector<RndDrawable*>&){ return 0; } // fix return type
@@ -74,6 +77,7 @@ public:
     virtual void ModalDraw(bool, const char*){}
 
     bool ShrinkToSafeArea() { return mShrinkToSafe; }
+    bool InGame() const { return mInGame; }
     void ShowConsole(bool); bool ConsoleShowing();
     void SetShowTimers(bool, bool);
     bool GetEvenOddDisabled() const;
@@ -81,6 +85,10 @@ public:
     void UpdateRate(); void UpdateHeap();
     float DrawTimers(float);
     void Modal(bool&, char*, bool);
+    void UnregisterPostProcessor(PostProcessor*);
+    void SetPostProcOverride(RndPostProc*);
+    PostProcessor* GetPostProcOverride() const;
+    void SetupFont();
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);
@@ -114,17 +122,17 @@ public:
     unsigned int mFrameID; // 0xcc
     const char* unkd0; // 0xd0
     int unkd4; // 0xd4
-    int unkd8; // 0xd8
+    int mSync; // 0xd8
     bool unkdc; // 0xdc
     bool unkdd; // 0xdd
     bool unkde; // 0xde
     bool unkdf; // 0xdf
-    int mAspectRatio; // 0xE0
+    Aspect mAspect; // 0xE0
     int unk_0xE4; // 0xe4
     bool unke8; // 0xe8
     bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA
-    bool unkeb; // 0xeb
+    bool mInGame; // 0xeb
     bool unkec; // 0xec
     bool unked; // 0xed
     bool unkee; // 0xee
@@ -132,9 +140,9 @@ public:
     bool unkf0; // 0xf0
     int unkf4; // 0xf4
     int unkf8; // 0xf8
-    std::list<int> unkfc; // 0xfc
-    std::list<int> unk104; // 0x104
-    int unk10c; // 0x10c
+    std::list<PointTest> mPointTests; // 0xfc
+    std::list<PostProcessor*> mPostProcessors; // 0x104
+    PostProcessor* mPostProcOverride; // 0x10c
     ObjPtrList<RndDrawable, ObjectDir> unk110; // 0x110
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
     bool unk130; // 0x130

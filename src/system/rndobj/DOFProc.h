@@ -24,6 +24,7 @@ public:
     static void Init();
     static void Terminate();
     static DOFProc& Params();
+    NEW_OBJ(DOFProc);
 };
 
 DOFProc* TheDOFProc;

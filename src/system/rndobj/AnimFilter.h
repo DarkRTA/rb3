@@ -38,6 +38,7 @@ public:
     float Period(){ return mPeriod; }
 
     DECLARE_REVS;
+    NEW_OBJ(RndAnimFilter);
 
     ObjPtr<RndAnimatable, class ObjectDir> mAnim; // offset 0x10, size 0xC
     float mPeriod; // offset 0x1C, size 0x4

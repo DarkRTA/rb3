@@ -110,6 +110,7 @@ public:
     RndMultiMesh* CreateMultiMesh();
 
     DECLARE_REVS
+    NEW_OBJ(RndMesh)
 
     DataNode OnCompareEdgeVerts(const DataArray*);
     DataNode OnAttachMesh(const DataArray*);
