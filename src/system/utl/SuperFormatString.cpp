@@ -12,7 +12,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
     char param[8];
     char tempFmt[2048];
     char phInfo[64];
-    if(!da && !b) InitializeWithFmt(cc, true);
+    if(!da && !b) { InitializeWithFmt(cc, true); return; }
     else {
         int phType = 0;
         int i13 = 0;

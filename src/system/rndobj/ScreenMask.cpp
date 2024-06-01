@@ -1,21 +1,15 @@
-#include "rndobj/ScreenMask.h"
+#include "ScreenMask.h"
+#include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
+#include "rndobj/Cam.h"
+#include "rndobj/HiResScreen.h"
+#include "rndobj/Rnd.h"
 #include <list>
 
 int SCREENMASK_REV = 2;
 
-namespace {
-    bool AddToNotifies(const char* str, std::list<class String>& list){
-        if(list.size() > 0x10) return false;
-        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){
-            bool strFound = !strcmp(it->c_str(), str);
-            if(strFound) return false;
-        }
-        list.push_back(str);
-        return true;
-    }
-}
+ADD_NOTIFS
 
 RndScreenMask::RndScreenMask() : mMat(this, 0), mColor(), mRect(0.0f, 0.0f, 1.0f, 1.0f) {
     mUseCurrentRect = 0;
@@ -51,6 +45,25 @@ void RndScreenMask::Load(BinStream& bs){
         bool userect_loaded;
         bs >> userect_loaded;
         mUseCurrentRect = userect_loaded;
+    }
+}
+
+void RndScreenMask::DrawShowing() {
+    
+
+    {
+        static DebugNotifyOncer _dw;
+        const char* s = MakeString("%s: Overriding camera screen_rect not supported with render texture", mName);
+        if (::AddToNotifies(s, _dw.mNotifies))
+            TheDebugNotifier << s;
+    }
+    if (!mUseCurrentRect && !RndCam::sCurrent->mTargetTex.mPtr) {
+        //TheRnd->PostSave();
+        TheHiResScreen->InvScreenRect();
+    } else {
+        TheHiResScreen->InvScreenRect();
+        Hmx::Color c; Hmx::Rect r;
+        TheRnd->DrawRect(r, c, mMat, NULL, NULL);
     }
 }
 

@@ -37,6 +37,7 @@ public:
 
     RndOverlay* unk_0x70, *unk_0x74, *unk_0x78;
     RndConsole* mConsole; // 0x80
+    int unk_0x84, unk_0x88, unk_0x8C;
 
     int mAspectRatio; // 0xE0
     int unk_0xE4;
@@ -54,6 +55,7 @@ public:
     float DrawTimers(float);
     float YRatio();
     void Modal(bool&, char*, bool);
+    void SetupFont();
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);

@@ -38,6 +38,7 @@ public:
     int GetPaddingX() const; int GetPaddingY() const;
     Hmx::Rect CurrentTileRect(const Hmx::Rect&, Hmx::Rect&, Hmx::Rect&) const;
     Hmx::Rect ScreenRect(const RndCam*, const Hmx::Rect&) const; Hmx::Rect ScreenRect() const;
+    void InvScreenRect() const;
 
     bool mActive; // 0x4
     int mTiling; // 0x8

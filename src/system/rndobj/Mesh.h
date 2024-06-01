@@ -1,10 +1,12 @@
 #ifndef RNDOBJ_MESH_H
 #define RNDOBJ_MESH_H
 #include "math/Bsp.h"
+#include "math/strips/StdAfx.h"
 #include "math/Vec.h"
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
+#include "obj/Object.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Trans.h"
@@ -49,8 +51,10 @@ public:
         kVolumeBox
     };
 
-    class VertVector : public std::vector<Vert, s32> {
+    class VertVector : public std::vector<Vert, s32> { // ???????
         public:
+        void resize(int, bool);
+        void reserve(int, bool);
         std::vector<Vert>::iterator begin() { return std::vector<Vert, s32>::begin(); }
         std::vector<Vert>::iterator end() { return std::vector<Vert, s32>::end(); }
     };
@@ -87,29 +91,35 @@ public:
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
     std::vector<u8, u16> unk_0xD0; // ???
     ObjOwnerPtr<RndMesh, class ObjectDir> mOwner; // 0xD8
-    ObjVector<RndBone> mBones;
+    ObjVector<RndBone> mBones; // 0xe4
     int unk_0xF0, unk_0xF4;
     BSPNode* unk_0xF8;
     RndMultiMesh* unk_0xFC; // ...why?
-    std::vector<int> unk_0x100;
+    std::vector<STRIPERRESULT> unk_0x100;
     int unk_0x108, unk_0x10C;
     u8 unk_0x110;
-    int unk_0x114, unk_0x118;
+    int* unk_0x114, unk_0x118;
     FileLoader* unk_0x11C;
 
-    int NumBones() const;
-    bool IsSkinned() const;
-    void SetMat(RndMat*);
-    int EstimatedSizeKb() const;
+    bool CacheStrips(BinStream&);
+    void ClearCompressedVerts();
     void CopyBones(const RndMesh*);
     void CopyGeometryFromOwner();
+    RndMultiMesh* CreateMultiMesh();
+    void CreateStrip(int, int, Striper&, STRIPERRESULT&, bool);
+    int EstimatedSizeKb() const;
+    bool IsSkinned() const;
+    int NumBones() const;
     void PreLoadVertices(BinStream&);
     void PostLoadVertices(BinStream&);
     void RemoveInvalidBones();
+    void ScaleBones(float);
+    void SetMat(RndMat*);
+    void SetGeomOwner(RndMesh*);
     void Sync(int);
-    RndMultiMesh* CreateMultiMesh();
 
     DECLARE_REVS
+    NEW_OBJ(RndMesh)
 
     DataNode OnCompareEdgeVerts(const DataArray*);
     DataNode OnAttachMesh(const DataArray*);

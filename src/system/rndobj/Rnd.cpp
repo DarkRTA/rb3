@@ -60,8 +60,7 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
 
-Rnd::Rnd() : unk_0x20(0.3), unk_0x24(0.3), unk_0x28(0.3), unk_0x2C(1), mWidth(640), mHeight(480), 
-    mDraws(this, kObjListNoNull) {}
+Rnd::Rnd() : mColor(0.3, 0.3, 0.3, 1), mWidth(640), mHeight(480), mDraws(this, kObjListNoNull) {}
 
 float Rnd::YRatio() {
     static const float kRatio[4] = {1.0f, 0.75f, 0.5625f, 0.5625f}; // qualifiers :)
@@ -77,6 +76,7 @@ void Rnd::PreInit() {
     DataArray* rndcfg = SystemConfig("rnd");
     rndcfg->FindData("bpp", mScreenBpp, false);
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
+    SetupFont();
     RndGraph::Init();
     Hmx::Object::RegisterFactory(DOFProc::StaticClassName(), DOFProc::NewObject);
     RndTransformable::Init();
@@ -104,7 +104,7 @@ void Rnd::PreInit() {
     Hmx::Object::RegisterFactory(RndTransformable::StaticClassName(), RndTransformable::NewObject); // ?
     Hmx::Object::RegisterFactory(RndGroup::StaticClassName(), RndGroup::NewObject);
     Hmx::Object::RegisterFactory(RndDir::StaticClassName(), RndDir::NewObject);
-    mConsole = new (_PoolAlloc(0x58, 0x58, FastPool)) RndConsole;
+    mConsole = new RndConsole;
     DataRegisterFunc("keep_going", FailKeepGoing);
     DataRegisterFunc("restart_console", FailRestartConsole);
 }

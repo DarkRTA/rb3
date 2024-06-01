@@ -94,6 +94,11 @@ BEGIN_HANDLERS(RndText)
     HANDLE(set_size, OnSetSize)
     HANDLE(set_wrap_width, OnSetWrapWidth)
     HANDLE(set_color, OnSetColor)
+    if (sym == get_text_size) {
+        int x = strlen(unk_cc.c_str()), y = s16(unk_0x120) >> 16;
+        return DataNode(y < x ? x : y);
+    }
+    HANDLE_EXPR(get_string_width, GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
 
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(RndTransformable)
