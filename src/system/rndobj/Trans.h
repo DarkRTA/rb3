@@ -57,7 +57,6 @@ public:
     };
 
     RndTransformable();
-
     OBJ_CLASSNAME(Trans)
     OBJ_SET_TYPE(Trans)
     virtual DataNode Handle(DataArray*, bool);
@@ -106,7 +105,11 @@ public:
     DataNode OnGetChildren(const DataArray*);
 
     static void Init();
-    static Hmx::Object* NewObject();
+    
+    NEW_OBJ(RndTransformable)
+    static void Register(){
+        REGISTER_OBJ_FACTORY(RndTransformable)
+    }
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
     std::vector<RndTransformable*> mChildren;

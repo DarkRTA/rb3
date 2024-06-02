@@ -26,6 +26,8 @@
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/Part.h"
+#include "rndobj/PartAnim.h"
 #include "rndobj/PartLauncher.h"
 #include "rndobj/Set.h"
 #include "rndobj/ShaderOptions.h"
@@ -124,6 +126,9 @@ void Rnd::PreInit() {
     RndPartLauncher::Init();
     RndLine::Init();
     RndGenerator::Init();
+    RndParticleSys::Init();
+    RndParticleSysAnim::Init();
+    RndMultiMesh::Init();
     // more register factories for the rest of the Rnd classes
 
     InitShaderOptions();

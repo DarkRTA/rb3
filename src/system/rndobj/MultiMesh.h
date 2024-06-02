@@ -58,7 +58,12 @@ public:
 
     static void Terminate();
 
-    DELETE_OVERLOAD
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndMultiMesh)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndMultiMesh)
+    }
 };
 
 #endif
