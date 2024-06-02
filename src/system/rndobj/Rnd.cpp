@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
+#include "os/OSFuncs.h"
 #include "os/System.h"
 #include "rndobj/AmbientOcclusion.h"
 #include "rndobj/AnimFilter.h"
@@ -54,6 +55,8 @@
 #include "rndobj/Utl.h"
 #include "rndobj/Wind.h"
 #include "types.h"
+#include "utl/Cheats.h"
+#include "utl/MemMgr.h"
 #include "utl/Option.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Str.h"
@@ -61,6 +64,8 @@
 #include <cstring>
 #include <list>
 
+int gCurHeap = -1;
+bool gNotifyKeepGoing;
 bool gFailKeepGoing;
 bool gFailRestartConsole;
 
@@ -70,6 +75,23 @@ BEGIN_HANDLERS(ModalKeyListener)
     HANDLE_MESSAGE(KeyboardKeyMsg)
     HANDLE_CHECK(0xF8)
 END_HANDLERS
+
+DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg& k){
+    if(((DataArray*)k)->Int(2) == 0x12e){
+        if(!GetEnabledKeyCheats() && !TheRnd->mConsole->mShowing){
+            TheRnd->ShowConsole(true);
+            return DataNode(0);
+        }
+        else return DataNode(kDataUnhandled, 0);
+    }
+    else {
+        if(!TheRnd->mConsole->mShowing){
+            gNotifyKeepGoing = true;
+            return DataNode(0);
+        }
+        else return DataNode(kDataUnhandled, 0);
+    }
+}
 
 static DataNode FailKeepGoing(DataArray*) {
     gFailKeepGoing = true;
@@ -84,15 +106,36 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
 
+void WordWrap(const char*, int, char*, int){
+
+}
+
 void Rnd::Modal(bool& b, char* c, bool bb){
     if(bb) TheDebug << MakeString("%s\n", c);
+    if(CanModal(b)){
+        if(MainThread()){
+            // timer stuff
+            strcat(c, "Rnd::Modal");
+        }
+        char buf[0x1000];
+        WordWrap(c, 0x5a, buf, 0x1000);
+        if(!bb){
+            strcat(buf, "\n\n-- Waiting on Stack Trace --\n");
+        }
+        else if(!b){
+            strcat(buf, "\n\n-- Press any button to continue --\n");
+        }
+        else strcat(buf, "\n\n-- Program ended --\n");
+
+        strcat(c, ""); // only here to generate the string in the pool
+    }
 }
 
 Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
     mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
     unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), unkdc(0), mShowSafeArea(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
-    unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), unked(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
-    unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), unk14c(7), unk150(7), unk15c(-1) {
+    unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
+    unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll), mForceCharLod(-1) {
     for(int i = 0; i < 8; i++) unk_arr[i] = 0;
     gpDbgFrameID = (int*)&mFrameID;
 }
@@ -105,6 +148,15 @@ float Rnd::YRatio() {
 void TerminateCallback() {
     RndUtlTerminate();
     TheRnd->Terminate();
+}
+
+void Rnd::DrawRectScreen(const Hmx::Rect& r, const Hmx::Color& c1, RndMat* m, const Hmx::Color* c2, const Hmx::Color* c3){
+    DrawRect(r, c1, m, c2, c3);
+}
+
+void Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool){
+    static Vector2 s;
+    s = v;
 }
 
 void Rnd::SetupFont(){
@@ -262,7 +314,7 @@ void Rnd::DoWorldBegin(){
 }
 
 void Rnd::CopyWorldCam(RndCam* cam){
-    if(unk14c & 1){
+    if(mProcCmds & 1){
         if(!cam) cam = RndCam::sCurrent;
         unk94->Copy(cam, Hmx::Object::kCopyShallow);
         unk94->SetTransParent(0, false);
@@ -280,7 +332,7 @@ void Rnd::DoWorldEnd(){
 }
 
 void Rnd::DoPostProcess(){
-    if(!unked){
+    if(!mDisablePostProc){
         if(mPostProcOverride) mPostProcOverride->DoPost();
         else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
             (*it)->DoPost();
@@ -293,6 +345,7 @@ void Rnd::SetShowTimers(bool b1, bool b2){
     o->mShowing = b1;
     o->mTimer.Restart();
     unkec = b2;
+    SetGSTiming(b1);
 }
 
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
@@ -358,11 +411,70 @@ BEGIN_HANDLERS(Rnd)
     HANDLE_ACTION(test_material_textures, TestMaterialTextures(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(set_gfx_mode, SetGfxMode((GfxMode)_msg->Int(2)))
     HANDLE_EXPR(default_cam, unk90)
-    HANDLE_EXPR(last_proc_cmds, unk150)
-    HANDLE_EXPR(toggle_all_postprocs, unked = unked == 0)
+    HANDLE_EXPR(last_proc_cmds, mLastProcCmds)
+    HANDLE_EXPR(toggle_all_postprocs, mDisablePostProc = mDisablePostProc == 0)
     HANDLE_ACTION(recreate_defaults, CreateDefaults())
     HANDLE_SUPERCLASS(Hmx::Object)
-    HANDLE_ACTION(force_lod, unk15c = _msg->Int(2))
+    HANDLE_ACTION(force_lod, mForceCharLod = _msg->Int(2))
     HANDLE_CHECK(1832)
 END_HANDLERS
 #pragma pop
+
+DataNode Rnd::OnShowOverlay(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+    o->mShowing = da->Int(3);
+    o->mTimer.Restart();
+    if(da->Size() > 4){
+        o->SetTimeout(da->Float(4));
+    }
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleHeap(const DataArray* da){
+    int num = MemNumHeaps();
+    RndOverlay* o = mHeapOverlay;
+    if(!o->mShowing){
+        o->mShowing = true;
+        o->mTimer.Restart();
+    }
+    else {
+        gCurHeap++;
+        if(gCurHeap >= num){
+            gCurHeap = -1;
+            o->mShowing = false;
+            o->mTimer.Restart();
+        }
+        else {
+            o->mShowing = true;
+            o->mTimer.Restart();
+        }
+    }
+    return DataNode(0);
+}
+
+DataNode Rnd::OnReflect(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Sym(2), true);
+    if(o->Showing()){
+        TextStream* idk = TheDebug.SetReflect(o);
+        for(int i = 3; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+        TheDebug.SetReflect(idk);
+    }
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleOverlay(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+    o->mShowing = o->mShowing == 0;
+    o->mTimer.Restart();
+    if(o->mShowing){
+        o->mDumpCount = 1;
+    }
+    return DataNode(o->mShowing);
+}
+
+DataNode Rnd::OnToggleOverlayPosition(const DataArray* da){
+    RndOverlay::TogglePosition();
+    return DataNode(0);
+}

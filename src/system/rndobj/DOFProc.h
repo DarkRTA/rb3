@@ -21,8 +21,8 @@ public:
     virtual float MaxBlur(){ return 0.0f; }
     virtual float MinBlur(){ return 0.0f; }
 
-    static void SetDepthOfFieldTint(bool, Hmx::Color){
-
+    static void SetDepthOfFieldTint(bool b, Hmx::Color c){
+        Params().SetTint(b, c);
     }
     
     static void Init();

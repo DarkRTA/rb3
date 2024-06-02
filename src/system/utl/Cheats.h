@@ -2,5 +2,6 @@
 #define UTL_CHEATS_H
 
 void EnableKeyCheats(bool);
+bool GetEnabledKeyCheats();
 
 #endif // UTL_CHEATS_H

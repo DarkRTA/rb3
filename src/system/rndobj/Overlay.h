@@ -24,10 +24,12 @@ public:
     void SetCallback(Callback* cb){ mCallback = cb; }
     bool Showing() const { return mShowing; }
 
+    void SetTimeout(float);
     void SetLines(int);
     void Clear();
     static void Init();
     static void Terminate();
+    static void TogglePosition();
 
     static RndOverlay* Find(Symbol, bool);
     static std::list<RndOverlay*> sOverlays;

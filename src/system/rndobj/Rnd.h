@@ -15,6 +15,15 @@ class RndEnviron;
 class RndFlare;
 class RndLight;
 
+enum ProcessCmd {
+    kProcessNone = 0,
+    kProcessWorld = 1,
+    kProcessPost = 2,
+    kProcessChar = 4,
+    kProcessPostChar = 6,
+    kProcessAll = 7
+};
+
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
     struct PointTest {
@@ -95,6 +104,7 @@ public:
     void EndWorld();
     void SetProcAndLock(bool);
     bool ProcAndLock() const;
+    void DrawRectScreen(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -155,7 +165,7 @@ public:
     bool mShrinkToSafe; // 0xEA
     bool mInGame; // 0xeb
     bool unkec; // 0xec
-    bool unked; // 0xed
+    bool mDisablePostProc; // 0xed
     bool unkee; // 0xee
     bool unkef; // 0xef
     bool unkf0; // 0xf0
@@ -169,10 +179,10 @@ public:
     bool unk130; // 0x130
     bool unk131; // 0x131
     ProcCounter mProcCounter; // 0x134
-    int unk14c; // 0x14c
-    int unk150; // 0x150
+    ProcessCmd mProcCmds; // 0x14c
+    ProcessCmd mLastProcCmds; // 0x150
     std::list<int> unk154; // 0x154
-    int unk15c; // 0x15c
+    int mForceCharLod; // 0x15c
 };
 
 extern Rnd* TheRnd;
