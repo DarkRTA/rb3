@@ -20,6 +20,10 @@ public:
     virtual float BlurDepth(){ return 1.0f; }
     virtual float MaxBlur(){ return 0.0f; }
     virtual float MinBlur(){ return 0.0f; }
+
+    static void SetDepthOfFieldTint(bool, Hmx::Color){
+
+    }
     
     static void Init();
     static void Terminate();

@@ -54,6 +54,13 @@ public:
     static float sNormalDisplayLength;
     static bool sForceSubpartSelection;
 
+    static HighlightStyle GetHighlightStyle(){ return sHighlightStyle; }
+    static void SetHighlightStyle(HighlightStyle hs){ sHighlightStyle = hs; }
+    static float GetNormalDisplayLength(){ return sNormalDisplayLength; }
+    static void SetNormalDisplayLength(float f){ sNormalDisplayLength = f; }
+    static bool GetForceSubpartSelection(){ return sForceSubpartSelection; }
+    static void SetForceSubpartSelection(bool b){ sForceSubpartSelection = b; }
+
     DataNode OnCopySphere(const DataArray*);
     DataNode OnGetSphere(const DataArray*);
     DataNode OnSetShowing(const DataArray*);

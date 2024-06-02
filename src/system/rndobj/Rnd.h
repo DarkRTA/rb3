@@ -92,6 +92,7 @@ public:
     void SetupFont();
     void CreateDefaults();
     void CopyWorldCam(RndCam*);
+    void EndWorld();
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);

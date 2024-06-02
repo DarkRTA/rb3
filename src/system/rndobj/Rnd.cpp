@@ -246,6 +246,20 @@ void Rnd::SetPostProcOverride(RndPostProc* pp){
 
 PostProcessor* Rnd::GetPostProcOverride() const { return mPostProcOverride; }
 
+void Rnd::EndWorld(){
+    if(!unkdf){
+        // function ptr stuff here?
+        unkdf = true;
+    }
+}
+
+void Rnd::DoWorldBegin(){
+    if(mPostProcOverride) mPostProcOverride->BeginWorld();
+    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+        (*it)->BeginWorld();
+    }
+}
+
 void Rnd::CopyWorldCam(RndCam* cam){
     if(unk14c & 1){
         if(!cam) cam = RndCam::sCurrent;
@@ -273,6 +287,13 @@ void Rnd::DoPostProcess(){
     }
 }
 
+void Rnd::SetShowTimers(bool b1, bool b2){
+    RndOverlay* o = mTimersOverlay;
+    o->mShowing = b1;
+    o->mTimer.Restart();
+    unkec = b2;
+}
+
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
     if (ovl == mRateOverlay) UpdateRate(); 
     else if (ovl == mHeapOverlay) UpdateHeap(); 
@@ -283,14 +304,33 @@ float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(Rnd)
+    HANDLE_ACTION(reset_postproc, RndPostProc::Reset())
+    HANDLE_ACTION(set_postproc_override, SetPostProcOverride(_msg->Obj<RndPostProc>(2)))
+    HANDLE_ACTION(set_dof_depth_scale, RndPostProc::DOFOverrides().SetDepthScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_depth_offset, RndPostProc::DOFOverrides().SetDepthOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_min_scale, RndPostProc::DOFOverrides().SetMinBlurScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_min_offset, RndPostProc::DOFOverrides().SetMinBlurOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_max_scale, RndPostProc::DOFOverrides().SetMaxBlurScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_max_offset, RndPostProc::DOFOverrides().SetMaxBlurOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_width_scale, RndPostProc::DOFOverrides().SetBlurWidthScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_tint, DOFProc::SetDepthOfFieldTint(_msg->Int(2), Hmx::Color(_msg->Float(3), _msg->Float(4), _msg->Float(5))))
+    HANDLE_ACTION(set_aspect, SetAspect((Aspect)_msg->Int(2)))
     HANDLE_EXPR(aspect, mAspect)
     HANDLE_EXPR(screen_width, mWidth)
     HANDLE_EXPR(screen_height, mHeight)
-    HANDLE(screen_dump, OnScreenDump)
-    HANDLE(screen_dump_unique, OnScreenDumpUnique)
-    HANDLE(scale_object, OnScaleObject)
-    HANDLE(reflect, OnReflect)
-    HANDLE_SUPERCLASS(Hmx::Object)
-    HANDLE_CHECK(1832)
+    HANDLE_EXPR(highlight_style, RndDrawable::GetHighlightStyle())
+    HANDLE_ACTION(set_highlight_style, RndDrawable::SetHighlightStyle((HighlightStyle)_msg->Int(2)))
+    HANDLE_EXPR(get_normal_display_length, RndDrawable::GetNormalDisplayLength())
+    HANDLE_ACTION(set_normal_display_length, RndDrawable::SetNormalDisplayLength(_msg->Float(2)))
+    HANDLE_EXPR(get_force_select_proxied_subparts, RndDrawable::GetForceSubpartSelection())
+    HANDLE_ACTION(set_force_select_proxied_subparts, RndDrawable::SetForceSubpartSelection(_msg->Int(2)))
+    HANDLE_ACTION(set_sync, SetSync(_msg->Int(2)))
+    HANDLE_ACTION(set_shrink_to_safe, SetShrinkToSafeArea(_msg->Int(2)))
+    // HANDLE(screen_dump, OnScreenDump)
+    // HANDLE(screen_dump_unique, OnScreenDumpUnique)
+    // HANDLE(scale_object, OnScaleObject)
+    // HANDLE(reflect, OnReflect)
+    // HANDLE_SUPERCLASS(Hmx::Object)
+    // HANDLE_CHECK(1832)
 END_HANDLERS
 #pragma pop
