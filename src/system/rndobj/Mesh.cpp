@@ -1,4 +1,6 @@
 #include "Mesh.h"
+#include "decomp.h"
+#include "math/strips/Striper.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -14,9 +16,19 @@ INIT_REVS(RndMesh)
 
 int RndMesh::MaxBones() { return MAX_BONES; }
 
+// DECOMP_FORCEFUNC(Mesh, ObjVector<RndBone>, resize(3)) TODO figure out why this is a nothing burger
+
 bool RndMesh::IsSkinned() const { return mBones.size(); }
 
 void RndMesh::SetMat(RndMat* m) { mMat = m; }
+
+void RndMesh::SetGeomOwner(RndMesh* m) {MILO_ASSERT(m, 487); mOwner = m;}
+
+void RndMesh::ScaleBones(float f) {
+    for (std::vector<RndBone>::iterator it = mBones.begin(); it != mBones.end(); it++) {
+        it->mOffset.v *= f;
+    }
+}
 
 RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
     unk_0xF0(0), unk_0xF4(1), unk_0xF8(0), unk_0xFC(0), unk_0x108(0), unk_0x10C(0), unk_0x110(0), unk_0x114(0),
@@ -27,7 +39,12 @@ RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
     unk9p3 = false;
 }
 
-RndMesh::~RndMesh() { delete unk_0x11C; delete unk_0xF8; }
+RndMesh::~RndMesh() { 
+    delete unk_0x11C; unk_0x11C = NULL; 
+    delete unk_0xF8; unk_0xF8 = NULL; 
+    delete unk_0xFC; unk_0xFC = NULL; ClearCompressedVerts();
+    
+}
 
 RndMesh::Vert::Vert() : x(0), y(0), z(0), nx(0), ny(1), nz(0), why(),
     unk_0x20(-1), u(0), v(0), unk_0x2C(0), unk_0x2E(0), unk_0x30(0), unk_0x32(0) {}
@@ -58,6 +75,37 @@ RndMultiMesh* RndMesh::CreateMultiMesh() {
     }
     m->unk_0xFC->mInstances.resize(0);
     return m->unk_0xFC;
+}
+
+BinStream& operator>>(BinStream& bs, STRIPERRESULT& sr) {
+    bs >> sr.NbStrips;
+    int runs; bs >> runs;
+    sr.AllocLengthsAndRuns(sr.NbStrips, runs);
+    bs.Read(sr.StripLengths, sr.NbStrips * 4);
+    bs.Read(sr.StripRuns, runs * 2);
+
+    return bs;
+}
+
+bool RndMesh::CacheStrips(BinStream& bs) {
+    bool ret = false;
+    if (bs.Cached() && bs.GetPlatform() == kPlatformWii && mOwner.mPtr == this && mFaces.size() != 0
+        && mVerts.size() != 0 && !(unk_0xF0 & 0x20)) ret = true;
+    return ret;
+}
+
+void RndMesh::CreateStrip(int i, int j, Striper& striper, STRIPERRESULT& sr, bool onesided) {
+    STRIPERCREATE sc;
+    sc.WFaces = &mFaces[i].idx0;
+    sc.NbFaces = j;
+    sc.ConnectAllStrips = false;
+    sc.OneSided = onesided;
+    sc.SGIAlgorithm = false;
+    MILO_ASSERT(striper.Init(sc), 1115);
+    MILO_ASSERT(striper.Compute(sr), 1116);
+    for (int i = 1; i < sr.NbStrips; i++) {
+        sr.NbStrips += sr.StripLengths[i];
+    }
 }
 
 SAVE_OBJ(RndMesh, 1135)
@@ -203,6 +251,12 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
 
 void RndMesh::Sync(int i) {
     OnSync(unk9p1 ? i | 0x200 : i);
+}
+
+void RndMesh::ClearCompressedVerts() {
+    delete unk_0x114;
+    unk_0x114 = NULL;
+    unk_0x118 = 0;
 }
 
 #pragma dont_inline on

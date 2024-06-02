@@ -2,6 +2,7 @@
 #define RNDOBJ_FONT_H
 
 #include "obj/Object.h"
+#include "utl/MemMgr.h"
 
 class RndFont : public Hmx::Object {
 public:

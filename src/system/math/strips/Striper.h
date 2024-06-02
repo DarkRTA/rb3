@@ -22,7 +22,7 @@
 					DFaces				= null;
 					WFaces				= null;
 					NbFaces				= 0;
-					AskForWords			= true;
+					//AskForWords			= true;
 					OneSided			= true;
 					SGIAlgorithm		= true;
 					ConnectAllStrips	= false;
