@@ -230,6 +230,10 @@ void Rnd::Terminate() {
     SetName(NULL, NULL);
 }
 
+void Rnd::RegisterPostProcessor(PostProcessor* p){
+    mPostProcessors.push_back(p);
+}
+
 void Rnd::UnregisterPostProcessor(PostProcessor* p){
     for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
         if(p == *it) mPostProcessors.erase(it);
@@ -241,6 +245,33 @@ void Rnd::SetPostProcOverride(RndPostProc* pp){
 }
 
 PostProcessor* Rnd::GetPostProcOverride() const { return mPostProcOverride; }
+
+void Rnd::CopyWorldCam(RndCam* cam){
+    if(unk14c & 1){
+        if(!cam) cam = RndCam::sCurrent;
+        unk94->Copy(cam, Hmx::Object::kCopyShallow);
+        unk94->SetTransParent(0, false);
+        unkef = true;
+    }
+}
+
+void Rnd::DoWorldEnd(){
+    if(!unkef) CopyWorldCam(0);
+    unkef = false;
+    if(mPostProcOverride) mPostProcOverride->EndWorld();
+    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+        (*it)->EndWorld();
+    }
+}
+
+void Rnd::DoPostProcess(){
+    if(!unked){
+        if(mPostProcOverride) mPostProcOverride->DoPost();
+        else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+            (*it)->DoPost();
+        }
+    }
+}
 
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
     if (ovl == mRateOverlay) UpdateRate(); 

@@ -85,11 +85,13 @@ public:
     void UpdateRate(); void UpdateHeap();
     float DrawTimers(float);
     void Modal(bool&, char*, bool);
+    void RegisterPostProcessor(PostProcessor*);
     void UnregisterPostProcessor(PostProcessor*);
     void SetPostProcOverride(RndPostProc*);
     PostProcessor* GetPostProcOverride() const;
     void SetupFont();
     void CreateDefaults();
+    void CopyWorldCam(RndCam*);
 
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);

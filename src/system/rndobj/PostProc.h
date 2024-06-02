@@ -5,6 +5,7 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Tex.h"
 #include "rndobj/ColorXfm.h"
+#include "rndobj/DOFProc.h"
 #include "math/Vec.h"
 
 class ProcCounter {
@@ -62,6 +63,10 @@ public:
 
     void Interp(const RndPostProc*, const RndPostProc*, float);
     DataNode OnAllowedNormalMap(const DataArray*);
+
+    static void Reset();
+    static DOFOverrideParams sDOFOverride;
+    static DOFOverrideParams& DOFOverrides(){ return sDOFOverride; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

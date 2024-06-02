@@ -1,6 +1,8 @@
 #include "rndobj/PostProc.h"
 #include "utl/Symbols.h"
 
+DOFOverrideParams RndPostProc::sDOFOverride;
+
 RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f), mBloomThreshold(4.0f), mBloomIntensity(0.0f), 
     mBloomGlare(0), mBloomStreak(0), mBloomStreakAttenuation(0.9f), mBloomStreakAngle(0.0f), mLuminanceMap(this, 0), 
     mForceCurrentInterp(0), mColorXfm(), mNumLevels(0.0f), mMinIntensity(1.0f), mKaleidoscopeComplexity(0.0f), 

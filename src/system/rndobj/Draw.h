@@ -7,6 +7,14 @@
 #include "math/Geo.h"
 #include <list>
 
+enum HighlightStyle {
+    kHighlightWireframe,
+    kHighlightSphere,
+    kHighlightNone,
+    kHighlightWireframeWithNormals,
+    kNumHighlightStyles
+};
+
 class RndDrawable : public virtual RndHighlightable {
 public:
     struct Collision {
@@ -42,6 +50,9 @@ public:
 
     bool DrawBudget(float);
     static void DumpLoad(BinStream&);
+    static HighlightStyle sHighlightStyle;
+    static float sNormalDisplayLength;
+    static bool sForceSubpartSelection;
 
     DataNode OnCopySphere(const DataArray*);
     DataNode OnGetSphere(const DataArray*);
