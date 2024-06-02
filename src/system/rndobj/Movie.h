@@ -23,9 +23,13 @@ public:
     virtual void SetFile(const FilePath&, bool);
     virtual void SetTex(RndTex*);
 
-    NEW_OBJ(RndMovie)
-    DELETE_OVERLOAD;
+    NEW_OVERLOAD;
     DECLARE_REVS;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndMovie)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndMovie)
+    }
 
     FilePath mFile;
     bool mStream;

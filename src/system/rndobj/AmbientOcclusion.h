@@ -14,9 +14,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    NEW_OBJ(RndAmbientOcclusion)
+    NEW_OVERLOAD;
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndAmbientOcclusion)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndAmbientOcclusion)
+    }
 
 };
 

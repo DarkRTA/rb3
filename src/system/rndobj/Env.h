@@ -38,6 +38,7 @@ public:
     bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
 
+    NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(RndEnviron)
     static void Init(){

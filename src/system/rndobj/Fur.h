@@ -17,8 +17,12 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(RndFur)
-    DELETE_OVERLOAD
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndFur)
+    }
 
     static ushort gRev;
     static ushort gAltRev;

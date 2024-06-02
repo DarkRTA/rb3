@@ -15,8 +15,11 @@
 #include "rndobj/Graph.h"
 #include "rndobj/Group.h"
 #include "rndobj/Lit.h"
+#include "rndobj/LitAnim.h"
 #include "rndobj/Mat.h"
+#include "rndobj/MatAnim.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/MeshAnim.h"
 #include "rndobj/MeshDeform.h"
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
@@ -26,6 +29,7 @@
 #include "rndobj/SoftParticles.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
+#include "rndobj/TransAnim.h"
 #include "rndobj/TransProxy.h"
 #include "types.h"
 #include "utl/Option.h"
@@ -103,13 +107,17 @@ void Rnd::PreInit() {
     RndEnviron::Init();
     RndMat::Init();
     RndTex::Init();
-
-    REGISTER_OBJ_FACTORY(RndFur)
-    REGISTER_OBJ_FACTORY(RndCubeTex)
-    REGISTER_OBJ_FACTORY(RndSoftParticles)
-    REGISTER_OBJ_FACTORY(RndAmbientOcclusion)
-    REGISTER_OBJ_FACTORY(RndMovie)
-    REGISTER_OBJ_FACTORY(RndLight)
+    RndFur::Init();
+    RndCubeTex::Init();
+    RndSoftParticles::Init();
+    RndAmbientOcclusion::Init();
+    RndMovie::Init();
+    RndLight::Init();
+    RndTransAnim::Init();
+    RndLightAnim::Init();
+    RndMeshAnim::Init();
+    RndMatAnim::Init();
+    RndTransProxy::Init();
     // more register factories for the rest of the Rnd classes
 
     InitShaderOptions();
