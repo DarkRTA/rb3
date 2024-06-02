@@ -60,4 +60,6 @@ public:
     }
 };
 
+void InitParticleSystem();
+
 #endif // RNDOBJ_PART_H

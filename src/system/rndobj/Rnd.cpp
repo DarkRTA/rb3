@@ -1,4 +1,5 @@
 #include "Rnd.h"
+#include "rndobj/ModalKeyListener.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
@@ -49,6 +50,7 @@
 #include "rndobj/Trans.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/TransProxy.h"
+#include "rndobj/Utl.h"
 #include "rndobj/Wind.h"
 #include "types.h"
 #include "utl/Option.h"
@@ -62,6 +64,11 @@ bool gFailKeepGoing;
 bool gFailRestartConsole;
 
 ADD_NOTIFS;
+
+BEGIN_HANDLERS(ModalKeyListener)
+    HANDLE_MESSAGE(KeyboardKeyMsg)
+    HANDLE_CHECK(0xF8)
+END_HANDLERS
 
 static DataNode FailKeepGoing(DataArray*) {
     gFailKeepGoing = true;
@@ -108,11 +115,14 @@ void Rnd::PreInit() {
     rndcfg->FindData("sync", mSync, true);
     rndcfg->FindData("aspect", (int&)mAspect, true);
     if(OptionBool("widescreen", false)) mAspect = kWidescreen;
+
     // some other code
+    mWidth = YRatio();
+
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
     RndGraph::Init();
-    // RndUtlPreInit();
+    RndUtlPreInit();
     DOFProc::Register();
     RndTransformable::Init();
     RndSet::Init();
@@ -176,10 +186,10 @@ void Rnd::PreInit() {
     unkdf = 1;
     unkdc = mTimersOverlay->mShowing;
     CreateDefaults();
-    // InitParticleSystem() - from rndobj/Part.cpp
+    InitParticleSystem();
     DataRegisterFunc("keep_going", FailKeepGoing);
     DataRegisterFunc("restart_console", FailRestartConsole);
-    // RndUtlInit()
+    RndUtlInit();
 }
 
 void Rnd::Init() {

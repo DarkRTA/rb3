@@ -11,4 +11,8 @@ void AttachMesh(RndMesh*, RndMesh*);
 void UtilDrawAxes(const Transform&, float, const Hmx::Color&);
 void TransformKeys(class RndTransAnim*, const Transform&);
 
+void RndUtlPreInit();
+void RndUtlInit();
+void RndUtlTerminate();
+
 #endif // RNDOBJ_UTL_H

@@ -16,6 +16,7 @@ Hmx::Object* KeyboardOverride(Hmx::Object*);
 void KeyboardSendMsg(int, bool, bool, bool);
 
 BEGIN_MESSAGE(KeyboardKeyMsg, key, int, bool, bool, bool);
+    MESSAGE_ARRAY_CTOR(KeyboardKeyMsg)
 END_MESSAGE;
 
 inline KeyboardKeyMsg::KeyboardKeyMsg(int i, bool b1, bool b2, bool b3)
