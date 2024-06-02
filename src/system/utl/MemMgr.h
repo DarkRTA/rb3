@@ -28,7 +28,7 @@ int GetCurrentHeapNum();
 int MemFindHeap(const char*);
 void MemPushHeap(int);
 void MemPopHeap();
-
+int MemNumHeaps();
 int MemFindAddrHeap(void*);
 const char* MemHeapName(int);
 

@@ -1,5 +1,6 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Cam.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
@@ -34,6 +35,18 @@ bool RndDrawable::DrawBudget(float f){
 bool RndDrawable::DrawShowingBudget(float f){
     DrawShowing();
     return true;
+}
+
+void RndDrawable::Highlight(){
+    if(sHighlightStyle != kHighlightNone){
+        Sphere s;
+        if(!MakeWorldSphere(s, false) || !(s > RndCam::sCurrent->mWorldFrustum)){
+            mShowing = true;
+            Hmx::Color col(1.0f, 1.0f, 0.0f);
+            UtilDrawSphere(s.center, s.radius, col);
+            mShowing = false;
+        }
+    }
 }
 
 BEGIN_COPYS(RndDrawable)

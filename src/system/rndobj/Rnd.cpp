@@ -1,49 +1,96 @@
 #include "Rnd.h"
+#include "rndobj/ModalKeyListener.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
+#include "os/OSFuncs.h"
 #include "os/System.h"
+#include "rndobj/AmbientOcclusion.h"
 #include "rndobj/AnimFilter.h"
 #include "rndobj/Cam.h"
+#include "rndobj/CamAnim.h"
 #include "rndobj/CubeTex.h"
 #include "rndobj/DOFProc.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Env.h"
+#include "rndobj/EnvAnim.h"
+#include "rndobj/EventTrigger.h"
 #include "rndobj/Flare.h"
 #include "rndobj/Fur.h"
+#include "rndobj/Gen.h"
 #include "rndobj/Graph.h"
 #include "rndobj/Group.h"
+#include "rndobj/HiResScreen.h"
+#include "rndobj/Line.h"
 #include "rndobj/Lit.h"
+#include "rndobj/LitAnim.h"
 #include "rndobj/Mat.h"
+#include "rndobj/MatAnim.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/MeshAnim.h"
+#include "rndobj/MeshDeform.h"
+#include "rndobj/Morph.h"
+#include "rndobj/MotionBlur.h"
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/MultiMeshProxy.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/Part.h"
+#include "rndobj/PartAnim.h"
+#include "rndobj/PartLauncher.h"
+#include "rndobj/PollAnim.h"
+#include "rndobj/PostProc.h"
+#include "rndobj/PropAnim.h"
+#include "rndobj/ScreenMask.h"
 #include "rndobj/Set.h"
+#include "rndobj/ShaderOptions.h"
+#include "rndobj/SoftParticles.h"
+#include "rndobj/TexBlendController.h"
+#include "rndobj/TexBlender.h"
+#include "rndobj/TexRenderer.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
+#include "rndobj/TransAnim.h"
 #include "rndobj/TransProxy.h"
+#include "rndobj/Utl.h"
+#include "rndobj/Wind.h"
 #include "types.h"
+#include "utl/Cheats.h"
+#include "utl/FileStream.h"
+#include "utl/MemMgr.h"
+#include "utl/Option.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Str.h"
 #include "utl/Symbols.h"
 #include <cstring>
 #include <list>
 
+int gCurHeap = -1;
+bool gNotifyKeepGoing;
 bool gFailKeepGoing;
 bool gFailRestartConsole;
 
-namespace {
-    bool AddToNotifies(const char* add, std::list<class String>& notifies) {
-        u32 i = 0;
-        if (notifies.size() > 16) return false;
-        for (std::list<class String>::iterator it = notifies.begin(); it != notifies.end(); it++) {
-            bool strFound = !strcmp(it->c_str(), add);
-            if (strFound) return false;
+ADD_NOTIFS;
+
+BEGIN_HANDLERS(ModalKeyListener)
+    HANDLE_MESSAGE(KeyboardKeyMsg)
+    HANDLE_CHECK(0xF8)
+END_HANDLERS
+
+DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg& k){
+    if(((DataArray*)k)->Int(2) == 0x12e){
+        if(!GetEnabledKeyCheats() && !TheRnd->mConsole->mShowing){
+            TheRnd->ShowConsole(true);
+            return DataNode(0);
         }
-        class String s(add);
-        notifies.push_back(s);
-        return true;
+        else return DataNode(kDataUnhandled, 0);
+    }
+    else {
+        if(!TheRnd->mConsole->mShowing){
+            gNotifyKeepGoing = true;
+            return DataNode(0);
+        }
+        else return DataNode(kDataUnhandled, 0);
     }
 }
 
@@ -60,53 +107,159 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
 
-Rnd::Rnd() : mColor(0.3, 0.3, 0.3, 1), mWidth(640), mHeight(480), mDraws(this, kObjListNoNull) {}
+void WordWrap(const char*, int, char*, int){
+
+}
+
+void Rnd::Modal(bool& b, char* c, bool bb){
+    if(bb) TheDebug << MakeString("%s\n", c);
+    if(CanModal(b)){
+        if(MainThread()){
+            // timer stuff
+            strcat(c, "Rnd::Modal");
+        }
+        char buf[0x1000];
+        WordWrap(c, 0x5a, buf, 0x1000);
+        if(!bb){
+            strcat(buf, "\n\n-- Waiting on Stack Trace --\n");
+        }
+        else if(!b){
+            strcat(buf, "\n\n-- Press any button to continue --\n");
+        }
+        else strcat(buf, "\n\n-- Program ended --\n");
+
+        strcat(c, ""); // only here to generate the string in the pool
+    }
+}
+
+Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
+    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
+    unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), unkdc(0), mShowSafeArea(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
+    unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
+    unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll), mForceCharLod(-1) {
+    for(int i = 0; i < 8; i++) unk_arr[i] = 0;
+    gpDbgFrameID = (int*)&mFrameID;
+}
 
 float Rnd::YRatio() {
     static const float kRatio[4] = {1.0f, 0.75f, 0.5625f, 0.5625f}; // qualifiers :)
-    return kRatio[mAspectRatio];
+    return kRatio[mAspect];
 }
 
 void TerminateCallback() {
+    RndUtlTerminate();
+    TheRnd->Terminate();
+}
 
+void Rnd::DrawRectScreen(const Hmx::Rect& r, const Hmx::Color& c1, RndMat* m, const Hmx::Color* c2, const Hmx::Color* c3){
+    DrawRect(r, c1, m, c2, c3);
+}
+
+void Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool){
+    static Vector2 s;
+    s = v;
+}
+
+void Rnd::SetupFont(){
+    mFont = SystemConfig("rnd", "font");
+    for(int i = 0; i < 0x1a; i++){
+        DataArray* cloned = CONST_ARRAY(mFont)->Node(i + 0x42).Array(mFont)->Clone(true, false, 0);
+        for(int j = 0; j < cloned->Size(); j++){
+            DataArray* jArr = cloned->Array(j);
+            for(int k = 1; k < jArr->Size(); k += 2){
+                jArr->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
+            }
+        }
+        mFont->Node(i + 0x62) = DataNode(cloned, kDataArray);
+        cloned->Release();
+    }
 }
 
 void Rnd::PreInit() {
     SetName("rnd", ObjectDir::sMainDir);
+    TheDebug.AddExitCallback(TerminateCallback);
     DataArray* rndcfg = SystemConfig("rnd");
-    rndcfg->FindData("bpp", mScreenBpp, false);
+    rndcfg->FindData("bpp", mScreenBpp, true);
+    rndcfg->FindData("height", mHeight, true);
+    rndcfg->FindData("clear_color", mClearColor, true);
+    rndcfg->FindData("sync", mSync, true);
+    rndcfg->FindData("aspect", (int&)mAspect, true);
+    if(OptionBool("widescreen", false)) mAspect = kWidescreen;
+
+    // some other code
+    mWidth = YRatio();
+
     MILO_ASSERT((mScreenBpp == 16) || (mScreenBpp == 32), 575);
     SetupFont();
     RndGraph::Init();
-    Hmx::Object::RegisterFactory(DOFProc::StaticClassName(), DOFProc::NewObject);
+    RndUtlPreInit();
+    DOFProc::Register();
     RndTransformable::Init();
-    Hmx::Object::RegisterFactory(RndSet::StaticClassName(), RndSet::NewObject);
-    Hmx::Object::RegisterFactory(RndAnimFilter::StaticClassName(), RndAnimFilter::NewObject);
-    Hmx::Object::RegisterFactory(RndFlare::StaticClassName(), RndFlare::NewObject);
-    Hmx::Object::RegisterFactory(RndCam::StaticClassName(), RndCam::NewObject);
-    Hmx::Object::RegisterFactory(RndMesh::StaticClassName(), RndMesh::NewObject);
-
+    RndSet::Init();
+    RndAnimFilter::Init();
+    RndFlare::Init();
+    RndCam::Init();
+    RndMesh::Init();
+    RndMeshDeform::Init();
     RndText::Init();
-    Hmx::Object::RegisterFactory(RndFont::StaticClassName(), RndFont::NewObject);
-    Hmx::Object::RegisterFactory(RndEnviron::StaticClassName(), RndEnviron::NewObject);
-    Hmx::Object::RegisterFactory(RndMat::StaticClassName(), RndMat::NewObject);
-    Hmx::Object::RegisterFactory(RndTex::StaticClassName(), RndTex::NewObject);
-    Hmx::Object::RegisterFactory(RndFur::StaticClassName(), RndFur::NewObject);
-    Hmx::Object::RegisterFactory(RndCubeTex::StaticClassName(), RndCubeTex::NewObject);
-    Hmx::Object::RegisterFactory(RndMovie::StaticClassName(), RndMovie::NewObject);
-    Hmx::Object::RegisterFactory(RndLight::StaticClassName(), RndLight::NewObject);
+    RndFont::Init();
+    RndEnviron::Init();
+    RndMat::Init();
+    RndTex::Init();
+    RndFur::Init();
+    RndCubeTex::Init();
+    RndSoftParticles::Init();
+    RndAmbientOcclusion::Init();
+    RndMovie::Init();
+    RndLight::Init();
+    RndTransAnim::Init();
+    RndLightAnim::Init();
+    RndMeshAnim::Init();
+    RndMatAnim::Init();
+    RndTransProxy::Init();
+    RndPartLauncher::Init();
+    RndLine::Init();
+    RndGenerator::Init();
+    RndParticleSys::Init();
+    RndParticleSysAnim::Init();
+    RndMultiMesh::Init();
+    RndMultiMeshProxy::Init();
+    RndMorph::Init();
+    RndCamAnim::Init();
+    RndEnvAnim::Init();
+    RndTransformable::Register();
+    RndGroup::Init();
+    RndDir::Init();
+    RndMotionBlur::Init();
+    RndTexBlendController::Init();
+    RndTexBlender::Init();
+    RndTexRenderer::Init();
+    RndScreenMask::Init();
+    RndPostProc::Init();
+    RndOverlay::Init();
+    RndPropAnim::Init();
+    EventTrigger::Init();
+    RndWind::Init();
+    RndPollAnim::Init();
 
-    Hmx::Object::RegisterFactory(RndTransProxy::StaticClassName(), RndTransProxy::NewObject);
-
-    Hmx::Object::RegisterFactory(RndMultiMesh::StaticClassName(), RndMultiMesh::NewObject);
-
-
-    Hmx::Object::RegisterFactory(RndTransformable::StaticClassName(), RndTransformable::NewObject); // ?
-    Hmx::Object::RegisterFactory(RndGroup::StaticClassName(), RndGroup::NewObject);
-    Hmx::Object::RegisterFactory(RndDir::StaticClassName(), RndDir::NewObject);
-    mConsole = new RndConsole;
+    InitShaderOptions();
+    mRateOverlay = RndOverlay::Find("rate", true);
+    mHeapOverlay = RndOverlay::Find("heap", true);
+    mStatsOverlay = RndOverlay::Find("stats", true);
+    mTimersOverlay = RndOverlay::Find("timers", true);
+    mRateOverlay->SetCallback(this);
+    mHeapOverlay->SetCallback(this);
+    mStatsOverlay->SetCallback(this);
+    mTimersOverlay->SetCallback(this);
+    mConsole = new RndConsole();
+    unkde = 0;
+    unkdf = 1;
+    unkdc = mTimersOverlay->mShowing;
+    CreateDefaults();
+    InitParticleSystem();
     DataRegisterFunc("keep_going", FailKeepGoing);
     DataRegisterFunc("restart_console", FailRestartConsole);
+    RndUtlInit();
 }
 
 void Rnd::Init() {
@@ -131,25 +284,297 @@ void Rnd::Terminate() {
     SetName(NULL, NULL);
 }
 
+void Rnd::RegisterPostProcessor(PostProcessor* p){
+    mPostProcessors.push_back(p);
+}
+
+void Rnd::UnregisterPostProcessor(PostProcessor* p){
+    for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+        if(p == *it) mPostProcessors.erase(it);
+    }
+}
+
+void Rnd::SetPostProcOverride(RndPostProc* pp){
+    mPostProcOverride = pp;
+}
+
+PostProcessor* Rnd::GetPostProcOverride() const { return mPostProcOverride; }
+
+void Rnd::EndWorld(){
+    if(!unkdf){
+        // function ptr stuff here?
+        unkdf = true;
+    }
+}
+
+void Rnd::DoWorldBegin(){
+    if(mPostProcOverride) mPostProcOverride->BeginWorld();
+    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+        (*it)->BeginWorld();
+    }
+}
+
+void Rnd::CopyWorldCam(RndCam* cam){
+    if(mProcCmds & 1){
+        if(!cam) cam = RndCam::sCurrent;
+        unk94->Copy(cam, Hmx::Object::kCopyShallow);
+        unk94->SetTransParent(0, false);
+        unkef = true;
+    }
+}
+
+void Rnd::DoWorldEnd(){
+    if(!unkef) CopyWorldCam(0);
+    unkef = false;
+    if(mPostProcOverride) mPostProcOverride->EndWorld();
+    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+        (*it)->EndWorld();
+    }
+}
+
+void Rnd::DoPostProcess(){
+    if(!mDisablePostProc){
+        if(mPostProcOverride) mPostProcOverride->DoPost();
+        else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
+            (*it)->DoPost();
+        }
+    }
+}
+
+void Rnd::SetShowTimers(bool b1, bool b2){
+    RndOverlay* o = mTimersOverlay;
+    o->mShowing = b1;
+    o->mTimer.Restart();
+    unkec = b2;
+    SetGSTiming(b1);
+}
+
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
-    if (ovl == unk_0x74) UpdateRate(); else if (ovl == unk_0x78) UpdateHeap(); else if (ovl == unk_0x70) f = DrawTimers(f);
+    if (ovl == mRateOverlay) UpdateRate(); 
+    else if (ovl == mHeapOverlay) UpdateHeap(); 
+    else if (ovl == mTimersOverlay) f = DrawTimers(f);
     return f;
 }
 
+#pragma push
 #pragma dont_inline on
-
 BEGIN_HANDLERS(Rnd)
-    HANDLE_EXPR(aspect, mAspectRatio)
+    HANDLE_ACTION(reset_postproc, RndPostProc::Reset())
+    HANDLE_ACTION(set_postproc_override, SetPostProcOverride(_msg->Obj<RndPostProc>(2)))
+    HANDLE_ACTION(set_dof_depth_scale, RndPostProc::DOFOverrides().SetDepthScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_depth_offset, RndPostProc::DOFOverrides().SetDepthOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_min_scale, RndPostProc::DOFOverrides().SetMinBlurScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_min_offset, RndPostProc::DOFOverrides().SetMinBlurOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_max_scale, RndPostProc::DOFOverrides().SetMaxBlurScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_max_offset, RndPostProc::DOFOverrides().SetMaxBlurOffset(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_width_scale, RndPostProc::DOFOverrides().SetBlurWidthScale(_msg->Float(2)))
+    HANDLE_ACTION(set_dof_tint, DOFProc::SetDepthOfFieldTint(_msg->Int(2), Hmx::Color(_msg->Float(3), _msg->Float(4), _msg->Float(5))))
+    HANDLE_ACTION(set_aspect, SetAspect((Aspect)_msg->Int(2)))
+    HANDLE_EXPR(aspect, mAspect)
     HANDLE_EXPR(screen_width, mWidth)
     HANDLE_EXPR(screen_height, mHeight)
+    HANDLE_EXPR(highlight_style, RndDrawable::GetHighlightStyle())
+    HANDLE_ACTION(set_highlight_style, RndDrawable::SetHighlightStyle((HighlightStyle)_msg->Int(2)))
+    HANDLE_EXPR(get_normal_display_length, RndDrawable::GetNormalDisplayLength())
+    HANDLE_ACTION(set_normal_display_length, RndDrawable::SetNormalDisplayLength(_msg->Float(2)))
+    HANDLE_EXPR(get_force_select_proxied_subparts, RndDrawable::GetForceSubpartSelection())
+    HANDLE_ACTION(set_force_select_proxied_subparts, RndDrawable::SetForceSubpartSelection(_msg->Int(2)))
+    HANDLE_ACTION(set_sync, SetSync(_msg->Int(2)))
+    HANDLE_ACTION(set_shrink_to_safe, SetShrinkToSafeArea(_msg->Int(2)))
+    HANDLE(show_console, OnShowConsole)
+    HANDLE(toggle_timers, OnToggleTimers)
+    HANDLE(toggle_overlay_position, OnToggleOverlayPosition)
+    HANDLE(toggle_timers_verbose, OnToggleTimersVerbose)
+    HANDLE(toggle_overlay, OnToggleOverlay)
+    HANDLE_EXPR(show_safe_area, mShowSafeArea)
+    HANDLE_ACTION(set_show_safe_area, mShowSafeArea = _msg->Int(2))
+    HANDLE(show_overlay, OnShowOverlay)
+    HANDLE(set_sphere_test, OnSetSphereTest)
+    HANDLE_EXPR(overlay_showing, RndOverlay::Find(_msg->Str(2), true)->Showing())
+    HANDLE_ACTION(hi_res_screen, TheHiResScreen->TakeShot("ur_hi", _msg->Int(2)))
+    HANDLE_ACTION(proc_lock, SetProcAndLock(ProcAndLock() == 0))
+    HANDLE_ACTION(set_in_game, SetInGame(_msg->Int(2)))
+    HANDLE_ACTION(toggle_in_game, SetInGame(InGame() == 0))
+    HANDLE(clear_color_r, OnClearColorR)
+    HANDLE(clear_color_g, OnClearColorG)
+    HANDLE(clear_color_b, OnClearColorB)
+    HANDLE(clear_color_packed, OnClearColorPacked)
+    HANDLE(set_clear_color, OnSetClearColor)
+    HANDLE(set_clear_color_packed, OnSetClearColorPacked)
     HANDLE(screen_dump, OnScreenDump)
     HANDLE(screen_dump_unique, OnScreenDumpUnique)
     HANDLE(scale_object, OnScaleObject)
     HANDLE(reflect, OnReflect)
+    HANDLE(toggle_heap, OnToggleHeap)
+    HANDLE(test_draw_groups, OnTestDrawGroups)
+    HANDLE_ACTION(test_texture_size, TestTextureSize(_msg->Obj<ObjectDir>(2), _msg->Int(3), _msg->Int(4), _msg->Int(5), _msg->Int(6), _msg->Int(7)))
+    HANDLE_ACTION(test_texture_paths, TestTexturePaths(_msg->Obj<ObjectDir>(2)))
+    HANDLE_ACTION(test_material_textures, TestMaterialTextures(_msg->Obj<ObjectDir>(2)))
+    HANDLE_ACTION(set_gfx_mode, SetGfxMode((GfxMode)_msg->Int(2)))
+    HANDLE_EXPR(default_cam, unk90)
+    HANDLE_EXPR(last_proc_cmds, mLastProcCmds)
+    HANDLE_EXPR(toggle_all_postprocs, mDisablePostProc = mDisablePostProc == 0)
+    HANDLE_ACTION(recreate_defaults, CreateDefaults())
     HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_ACTION(force_lod, mForceCharLod = _msg->Int(2))
     HANDLE_CHECK(1832)
 END_HANDLERS
+#pragma pop
 
-#pragma dont_inline reset
+DataNode Rnd::OnShowOverlay(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+    o->mShowing = da->Int(3);
+    o->mTimer.Restart();
+    if(da->Size() > 4){
+        o->SetTimeout(da->Float(4));
+    }
+    return DataNode(0);
+}
 
-void Rnd::ReInit() {}
+DataNode Rnd::OnToggleHeap(const DataArray* da){
+    int num = MemNumHeaps();
+    RndOverlay* o = mHeapOverlay;
+    if(!o->mShowing){
+        o->mShowing = true;
+        o->mTimer.Restart();
+    }
+    else {
+        gCurHeap++;
+        if(gCurHeap >= num){
+            gCurHeap = -1;
+            o->mShowing = false;
+            o->mTimer.Restart();
+        }
+        else {
+            o->mShowing = true;
+            o->mTimer.Restart();
+        }
+    }
+    return DataNode(0);
+}
+
+DataNode Rnd::OnReflect(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Sym(2), true);
+    if(o->Showing()){
+        TextStream* idk = TheDebug.SetReflect(o);
+        for(int i = 3; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+        TheDebug.SetReflect(idk);
+    }
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleOverlay(const DataArray* da){
+    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+    o->mShowing = o->mShowing == 0;
+    o->mTimer.Restart();
+    if(o->mShowing){
+        o->mDumpCount = 1;
+    }
+    return DataNode(o->mShowing);
+}
+
+DataNode Rnd::OnToggleOverlayPosition(const DataArray* da){
+    RndOverlay::TogglePosition();
+    return DataNode(0);
+}
+
+void Rnd::SetProcAndLock(bool b){
+    mProcCounter.SetProcAndLock(b);
+}
+
+bool Rnd::ProcAndLock() const { return mProcCounter.mProcAndLock; }
+
+void Rnd::ResetProcCounter(){
+    if(unkde){
+        mProcCounter.mCount = -1;
+    }
+    else mLastProcCmds = kProcessWorld;
+}
+
+bool Rnd::GetEvenOddDisabled() const { return mProcCounter.mEvenOddDisabled; }
+void Rnd::SetEvenOddDisabled(bool b){ mProcCounter.SetEvenOddDisabled(b); }
+
+String UniqueFileName(const char* cc){
+
+}
+
+void Rnd::ScreenDump(const char* cc){
+    RndTex* tex = Hmx::Object::New<RndTex>();
+    RndBitmap bmap;
+    tex->SetBitmap(0, 0, 0, RndTex::FrontBuffer, 0, 0);
+    tex->LockBitmap(bmap, true);
+    FileStream fs(cc, FileStream::kWrite, true);
+    if(fs.Fail()) MILO_WARN("Screenshot failed; could not open destination file (%s).", cc);
+    else bmap.SaveBmp(&fs);
+    delete tex;
+}
+
+void Rnd::ScreenDumpUnique(const char* cc){
+    ScreenDump(UniqueFileName(cc).c_str());
+}
+
+DataNode Rnd::OnShowConsole(const DataArray* da){
+    ShowConsole(true);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleTimers(const DataArray* da){
+    SetShowTimers(unkec || !mTimersOverlay->mShowing, false);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleTimersVerbose(const DataArray* da){
+    SetShowTimers(unkec == 0, unkec == 0);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnClearColorR(const DataArray* da){
+    return DataNode(mClearColor.red);
+}
+
+DataNode Rnd::OnClearColorG(const DataArray* da){
+    return DataNode(mClearColor.green);
+}
+
+DataNode Rnd::OnClearColorB(const DataArray* da){
+    return DataNode(mClearColor.blue);
+}
+
+DataNode Rnd::OnClearColorPacked(const DataArray* da){
+    return DataNode((int)mClearColor.Pack());
+}
+
+DataNode Rnd::OnSetClearColor(const DataArray* da){
+    SetClearColor(Hmx::Color(da->Float(2), da->Float(3), da->Float(4)));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnSetClearColorPacked(const DataArray* da){
+    float red = (da->Int(2) & 255) / 255.0f;
+    float green = ((da->Int(2) >> 8) & 255) / 255.0f;
+    float blue = ((da->Int(2) >> 0x10) & 255) / 255.0f;
+    SetClearColor(Hmx::Color(red, green, blue));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScreenDump(const DataArray* da){
+    ScreenDump(da->Str(2));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScreenDumpUnique(const DataArray* da){
+    ScreenDumpUnique(da->Str(2));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScaleObject(const DataArray* da){
+    RndScaleObject(da->GetObj(2), da->Float(3), da->Float(4));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnSetSphereTest(const DataArray* da){
+    unk131 = da->Int(2);
+    return DataNode(0);
+}

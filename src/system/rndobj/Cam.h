@@ -35,6 +35,9 @@ public:
     static RndCam* sCurrent;
     NEW_OBJ(RndCam)
     DELETE_OVERLOAD;
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndCam)
+    }
 
     Transform mInvWorldXfm;
     Transform mLocalProjectXfm;

@@ -59,7 +59,12 @@ public:
     static const char* CheckSize(int, int, int, int, RndTex::Type, bool);
     inline bool IsRenderTarget() { return mType & Rendered; }
 
+    NEW_OVERLOAD
+    NEW_OBJ(RndTex)
     DELETE_OVERLOAD;
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTex)
+    }
 
     RndBitmap mBitmap;
     float mMipMapK; // 0x38

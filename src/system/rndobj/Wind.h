@@ -22,6 +22,8 @@ public:
     void SetDefaults();
     void SyncLoops();
 
+    static void Init();
+
     DELETE_OVERLOAD;
 
     Vector3 mPrevailing;

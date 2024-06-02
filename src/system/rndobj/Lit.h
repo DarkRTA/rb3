@@ -33,8 +33,13 @@ public:
     void SetBotRadius(float);
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
 
+    NEW_OVERLOAD;
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndLight)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndLight)
+    }
 
     Hmx::Color mColor;
     ObjOwnerPtr<RndLight, class ObjectDir> mColorOwner;

@@ -20,7 +20,12 @@ public:
     DataNode OnAllowedDrawable(const DataArray*);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndMotionBlur)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndMotionBlur)
+    }
 
     ObjPtrList<RndDrawable, class ObjectDir> mDrawList;
 };

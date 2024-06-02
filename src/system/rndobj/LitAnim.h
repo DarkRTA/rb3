@@ -26,6 +26,13 @@ public:
     void SetKeysOwner(RndLightAnim*);
     DataNode OnCopyKeys(DataArray*);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndLightAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndLightAnim)
+    }
+
     ObjPtr<RndLight, class ObjectDir> mLight;
     Keys<Hmx::Color, Hmx::Color> mColorKeys;
     ObjOwnerPtr<RndLightAnim, class ObjectDir> mKeysOwner;

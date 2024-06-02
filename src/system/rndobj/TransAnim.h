@@ -27,6 +27,13 @@ public:
     void SetTrans(RndTransformable*);
     void SetKeysOwner(RndTransAnim*);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndTransAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTransAnim)
+    }
+
     ObjPtr<RndTransformable, ObjectDir> mTrans;
     bool mTransSpline;
     bool mScaleSpline;

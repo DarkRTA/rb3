@@ -24,6 +24,12 @@ public:
     virtual void Print();
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndCamAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndCamAnim)
+    }
 
     ObjPtr<RndCam, ObjectDir> mCam;
     Keys<float, float> mFovKeys;

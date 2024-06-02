@@ -20,6 +20,12 @@ public:
     void SetPart(Symbol);
     void Sync();
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndTransProxy)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTransProxy)
+    }
     DECLARE_REVS;
 
     ObjPtr<ObjectDir, ObjectDir> mProxy;

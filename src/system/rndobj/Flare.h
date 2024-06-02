@@ -23,6 +23,11 @@ public:
     virtual void DrawShowing();
     virtual void Mats(std::list<class RndMat*>&, bool);
 
+    NEW_OBJ(RndFlare)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndFlare)
+    }
+
     bool mPointTest; // 0xb0
     bool mAreaTest;
     bool mVisible;

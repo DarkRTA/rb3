@@ -81,6 +81,7 @@ public:
     void Blt(const RndBitmap&, int, int, int, int, int, int);
     bool SamePixelFormat(const RndBitmap&) const;
     bool SamePaletteColors(const RndBitmap&) const;
+    void SaveBmp(BinStream*) const;
 
     void Save(BinStream&) const;
     void Load(BinStream&);

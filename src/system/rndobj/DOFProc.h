@@ -20,12 +20,41 @@ public:
     virtual float BlurDepth(){ return 1.0f; }
     virtual float MaxBlur(){ return 0.0f; }
     virtual float MinBlur(){ return 0.0f; }
+
+    static void SetDepthOfFieldTint(bool b, Hmx::Color c){
+        Params().SetTint(b, c);
+    }
     
     static void Init();
     static void Terminate();
     static DOFProc& Params();
+    NEW_OBJ(DOFProc);
+
+    static void Register(){
+        REGISTER_OBJ_FACTORY(DOFProc)
+    }
 };
 
-DOFProc* TheDOFProc;
+extern DOFProc* TheDOFProc;
+
+class DOFOverrideParams {
+public:
+    DOFOverrideParams();
+    void SetDepthScale(float f){ mDepthScale = f; }
+    void SetDepthOffset(float f){ mDepthOffset = f; }
+    void SetMinBlurScale(float f){ mMinBlurScale = f; }
+    void SetMinBlurOffset(float f){ mMinBlurOffset = f; }
+    void SetMaxBlurScale(float f){ mMaxBlurScale = f; }
+    void SetMaxBlurOffset(float f){ mMaxBlurOffset = f; }
+    void SetBlurWidthScale(float f){ mBlurWidthScale = f; }
+
+    float mDepthScale;
+    float mDepthOffset;
+    float mMinBlurScale;
+    float mMinBlurOffset;
+    float mMaxBlurScale;
+    float mMaxBlurOffset;
+    float mBlurWidthScale;
+};
 
 #endif

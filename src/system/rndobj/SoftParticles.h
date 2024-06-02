@@ -14,10 +14,13 @@ public:
     virtual void Load(BinStream&);
     virtual ~RndSoftParticles(){}
 
+    NEW_OVERLOAD;
+    DECLARE_REVS;
     DELETE_OVERLOAD;
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    NEW_OBJ(RndSoftParticles)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndSoftParticles)
+    }
 };
 
 #endif

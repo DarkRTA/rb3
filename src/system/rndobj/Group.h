@@ -41,6 +41,13 @@ public:
     void RemoveObject(Hmx::Object*);
     void AddObject(Hmx::Object*, Hmx::Object*);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndGroup)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndGroup)
+    }
+
     ObjPtrList<Hmx::Object, ObjectDir> mObjects;
     ObjPtr<RndEnviron, ObjectDir> mEnv;
     ObjPtr<RndDrawable, ObjectDir> mDrawOnly;
