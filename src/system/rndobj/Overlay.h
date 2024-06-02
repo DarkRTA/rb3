@@ -22,6 +22,7 @@ public:
     virtual void Print(const char *);
 
     void SetCallback(Callback* cb){ mCallback = cb; }
+    bool Showing() const { return mShowing; }
 
     void SetLines(int);
     void Clear();

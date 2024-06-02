@@ -11,6 +11,9 @@ void AttachMesh(RndMesh*, RndMesh*);
 void UtilDrawSphere(const Vector3&, float, const Hmx::Color&);
 void UtilDrawAxes(const Transform&, float, const Hmx::Color&);
 void TransformKeys(class RndTransAnim*, const Transform&);
+void TestTextureSize(ObjectDir*, int, int, int, int, int);
+void TestTexturePaths(ObjectDir*);
+void TestMaterialTextures(ObjectDir*);
 
 void RndUtlPreInit();
 void RndUtlInit();

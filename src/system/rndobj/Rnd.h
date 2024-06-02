@@ -93,11 +93,28 @@ public:
     void CreateDefaults();
     void CopyWorldCam(RndCam*);
     void EndWorld();
+    void SetProcAndLock(bool);
+    bool ProcAndLock() const;
 
+    DataNode OnShowConsole(const DataArray*);
+    DataNode OnToggleTimers(const DataArray*);
+    DataNode OnToggleOverlayPosition(const DataArray*);
+    DataNode OnToggleTimersVerbose(const DataArray*);
+    DataNode OnToggleOverlay(const DataArray*);
+    DataNode OnShowOverlay(const DataArray*);
+    DataNode OnSetSphereTest(const DataArray*);
+    DataNode OnClearColorR(const DataArray*);
+    DataNode OnClearColorG(const DataArray*);
+    DataNode OnClearColorB(const DataArray*);
+    DataNode OnClearColorPacked(const DataArray*);
+    DataNode OnSetClearColor(const DataArray*);
+    DataNode OnSetClearColorPacked(const DataArray*);
     DataNode OnScreenDump(const DataArray*);
     DataNode OnScreenDumpUnique(const DataArray*);
     DataNode OnScaleObject(const DataArray*);
     DataNode OnReflect(const DataArray*);
+    DataNode OnToggleHeap(const DataArray*);
+    DataNode OnTestDrawGroups(const DataArray*);
 
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30
@@ -128,7 +145,7 @@ public:
     DataArray* mFont; // 0xd4
     int mSync; // 0xd8
     bool unkdc; // 0xdc
-    bool unkdd; // 0xdd
+    bool mShowSafeArea; // 0xdd
     bool unkde; // 0xde
     bool unkdf; // 0xdf
     Aspect mAspect; // 0xE0

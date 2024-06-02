@@ -19,6 +19,7 @@
 #include "rndobj/Gen.h"
 #include "rndobj/Graph.h"
 #include "rndobj/Group.h"
+#include "rndobj/HiResScreen.h"
 #include "rndobj/Line.h"
 #include "rndobj/Lit.h"
 #include "rndobj/LitAnim.h"
@@ -89,7 +90,7 @@ void Rnd::Modal(bool& b, char* c, bool bb){
 
 Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
     mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
-    unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), unkdc(0), unkdd(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
+    unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), unkdc(0), mShowSafeArea(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
     unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), unked(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
     unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), unk14c(7), unk150(7), unk15c(-1) {
     for(int i = 0; i < 8; i++) unk_arr[i] = 0;
@@ -326,11 +327,42 @@ BEGIN_HANDLERS(Rnd)
     HANDLE_ACTION(set_force_select_proxied_subparts, RndDrawable::SetForceSubpartSelection(_msg->Int(2)))
     HANDLE_ACTION(set_sync, SetSync(_msg->Int(2)))
     HANDLE_ACTION(set_shrink_to_safe, SetShrinkToSafeArea(_msg->Int(2)))
-    // HANDLE(screen_dump, OnScreenDump)
-    // HANDLE(screen_dump_unique, OnScreenDumpUnique)
-    // HANDLE(scale_object, OnScaleObject)
-    // HANDLE(reflect, OnReflect)
-    // HANDLE_SUPERCLASS(Hmx::Object)
-    // HANDLE_CHECK(1832)
+    HANDLE(show_console, OnShowConsole)
+    HANDLE(toggle_timers, OnToggleTimers)
+    HANDLE(toggle_overlay_position, OnToggleOverlayPosition)
+    HANDLE(toggle_timers_verbose, OnToggleTimersVerbose)
+    HANDLE(toggle_overlay, OnToggleOverlay)
+    HANDLE_EXPR(show_safe_area, mShowSafeArea)
+    HANDLE_ACTION(set_show_safe_area, mShowSafeArea = _msg->Int(2))
+    HANDLE(show_overlay, OnShowOverlay)
+    HANDLE(set_sphere_test, OnSetSphereTest)
+    HANDLE_EXPR(overlay_showing, RndOverlay::Find(_msg->Str(2), true)->Showing())
+    HANDLE_ACTION(hi_res_screen, TheHiResScreen->TakeShot("ur_hi", _msg->Int(2)))
+    HANDLE_ACTION(proc_lock, SetProcAndLock(ProcAndLock() == 0))
+    HANDLE_ACTION(set_in_game, SetInGame(_msg->Int(2)))
+    HANDLE_ACTION(toggle_in_game, SetInGame(InGame() == 0))
+    HANDLE(clear_color_r, OnClearColorR)
+    HANDLE(clear_color_g, OnClearColorG)
+    HANDLE(clear_color_b, OnClearColorB)
+    HANDLE(clear_color_packed, OnClearColorPacked)
+    HANDLE(set_clear_color, OnSetClearColor)
+    HANDLE(set_clear_color_packed, OnSetClearColorPacked)
+    HANDLE(screen_dump, OnScreenDump)
+    HANDLE(screen_dump_unique, OnScreenDumpUnique)
+    HANDLE(scale_object, OnScaleObject)
+    HANDLE(reflect, OnReflect)
+    HANDLE(toggle_heap, OnToggleHeap)
+    HANDLE(test_draw_groups, OnTestDrawGroups)
+    HANDLE_ACTION(test_texture_size, TestTextureSize(_msg->Obj<ObjectDir>(2), _msg->Int(3), _msg->Int(4), _msg->Int(5), _msg->Int(6), _msg->Int(7)))
+    HANDLE_ACTION(test_texture_paths, TestTexturePaths(_msg->Obj<ObjectDir>(2)))
+    HANDLE_ACTION(test_material_textures, TestMaterialTextures(_msg->Obj<ObjectDir>(2)))
+    HANDLE_ACTION(set_gfx_mode, SetGfxMode((GfxMode)_msg->Int(2)))
+    HANDLE_EXPR(default_cam, unk90)
+    HANDLE_EXPR(last_proc_cmds, unk150)
+    HANDLE_EXPR(toggle_all_postprocs, unked = unked == 0)
+    HANDLE_ACTION(recreate_defaults, CreateDefaults())
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_ACTION(force_lod, unk15c = _msg->Int(2))
+    HANDLE_CHECK(1832)
 END_HANDLERS
 #pragma pop
