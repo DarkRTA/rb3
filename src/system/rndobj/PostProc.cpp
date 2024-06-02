@@ -1,6 +1,9 @@
 #include "rndobj/PostProc.h"
+#include "rndobj/Rnd.h"
+#include "utl/Messages.h"
 #include "utl/Symbols.h"
 
+RndPostProc* RndPostProc::sCurrent = 0;
 DOFOverrideParams RndPostProc::sDOFOverride;
 
 RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f), mBloomThreshold(4.0f), mBloomIntensity(0.0f), 
@@ -20,14 +23,47 @@ RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f
 
 RndPostProc::~RndPostProc(){
     Unselect();
+    if(TheRnd->GetPostProcOverride() == this) TheRnd->SetPostProcOverride(0);
+}
+
+void RndPostProc::Select(){
+    if(sCurrent != this){
+        if(sCurrent) sCurrent->OnUnselect();
+        sCurrent = this;
+        OnSelect();
+    }
+}
+
+void RndPostProc::Unselect(){
+    if(sCurrent == this){
+        sCurrent->OnUnselect();
+        sCurrent = 0;
+    }
+}
+
+void RndPostProc::Reset(){
+    if(sCurrent){
+        sCurrent->OnUnselect();
+        sCurrent = 0;
+    }
+}
+
+void RndPostProc::OnSelect(){
+    TheRnd->RegisterPostProcessor(this);
+    Handle(selected_msg, false);
+}
+
+void RndPostProc::OnUnselect(){
+    TheRnd->UnregisterPostProcessor(this);
+    Handle(unselected_msg, false);
 }
 
 BEGIN_HANDLERS(RndPostProc)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_ACTION(select, Select())
     HANDLE_ACTION(unselect, Unselect())
-    HANDLE_ACTION(multi_select, OnSelect()) // fix what gets called
-    HANDLE_ACTION(multi_unselect, OnUnselect()) // fix what gets called
+    HANDLE_ACTION(multi_select, OnSelect())
+    HANDLE_ACTION(multi_unselect, OnUnselect())
     HANDLE_ACTION(interp, Interp(_msg->Obj<RndPostProc>(2), _msg->Obj<RndPostProc>(3), _msg->Float(4)))
     HANDLE(allowed_normal_map, OnAllowedNormalMap)
     HANDLE_CHECK(0x3BB)
@@ -46,4 +82,9 @@ void ProcCounter::SetEvenOddDisabled(bool eod){
     if(mEvenOddDisabled == eod) return;
     else mEvenOddDisabled = eod;
     if(mEvenOddDisabled) mCount = -1;
+}
+
+DOFOverrideParams::DOFOverrideParams() : mDepthScale(1.0f), mDepthOffset(0.0f), mMinBlurScale(1.0f), mMinBlurOffset(0.0f),
+    mMaxBlurScale(1.0f), mMaxBlurOffset(0.0f), mBlurWidthScale(1.0f) {
+
 }

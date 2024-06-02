@@ -49,22 +49,24 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    virtual void EndWorld();
-    virtual void DoPost();
-    virtual void OnGPHangRecover();
-    virtual float Priority();
     virtual void Select();
     virtual void Unselect();
-    virtual void SetPriority(float);
-    virtual void QueueMotionBlurObject(RndDrawable*);
-    virtual void SetBloomColor();
+    virtual void EndWorld(){}
+    virtual void DoPost();
+    virtual void OnGPHangRecover(){}
+    virtual void SetPriority(float f){ mPriority = f; }
+    virtual float Priority(){ return mPriority; }
+    virtual void QueueMotionBlurObject(RndDrawable*){}
+    virtual void SetBloomColor(){}
     virtual void OnSelect();
     virtual void OnUnselect();
-
+    
     void Interp(const RndPostProc*, const RndPostProc*, float);
     DataNode OnAllowedNormalMap(const DataArray*);
 
     static void Reset();
+    static RndPostProc* sCurrent;
+    static RndPostProc* Current(){ return sCurrent; }
     static DOFOverrideParams sDOFOverride;
     static DOFOverrideParams& DOFOverrides(){ return sDOFOverride; }
 
