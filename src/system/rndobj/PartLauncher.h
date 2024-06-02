@@ -14,6 +14,13 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndPartLauncher)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndPartLauncher)
+    }
 };
 
 #endif

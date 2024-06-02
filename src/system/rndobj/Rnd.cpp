@@ -12,8 +12,10 @@
 #include "rndobj/Env.h"
 #include "rndobj/Flare.h"
 #include "rndobj/Fur.h"
+#include "rndobj/Gen.h"
 #include "rndobj/Graph.h"
 #include "rndobj/Group.h"
+#include "rndobj/Line.h"
 #include "rndobj/Lit.h"
 #include "rndobj/LitAnim.h"
 #include "rndobj/Mat.h"
@@ -24,6 +26,7 @@
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/PartLauncher.h"
 #include "rndobj/Set.h"
 #include "rndobj/ShaderOptions.h"
 #include "rndobj/SoftParticles.h"
@@ -118,6 +121,9 @@ void Rnd::PreInit() {
     RndMeshAnim::Init();
     RndMatAnim::Init();
     RndTransProxy::Init();
+    RndPartLauncher::Init();
+    RndLine::Init();
+    RndGenerator::Init();
     // more register factories for the rest of the Rnd classes
 
     InitShaderOptions();
