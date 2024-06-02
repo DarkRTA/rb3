@@ -58,8 +58,12 @@ public:
     ObjPtr<RndEnviron, ObjectDir> mEnv;
     Symbol mTestEvent;
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(RndDir)
-    DELETE_OVERLOAD
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndDir)
+    }
 };
 
 #endif

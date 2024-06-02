@@ -25,6 +25,7 @@ public:
 
     void SetLines(int);
     void Clear();
+    static void Init();
     static void Terminate();
 
     static RndOverlay* Find(Symbol, bool);

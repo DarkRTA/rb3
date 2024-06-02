@@ -20,7 +20,12 @@ public:
     virtual void DrawShowing();
     virtual ~RndScreenMask(){}
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndScreenMask)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndScreenMask)
+    }
 
     ObjPtr<RndMat, class ObjectDir> mMat;
     Hmx::Color mColor;

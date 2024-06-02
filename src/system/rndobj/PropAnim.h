@@ -27,6 +27,13 @@ public:
     virtual void Print();
 
     void RemoveKeys();
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndPropAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndPropAnim)
+    }
     
     std::vector<PropKeys*> mPropKeys;
     float mLastFrame;

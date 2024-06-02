@@ -63,7 +63,12 @@ public:
     void Interp(const RndPostProc*, const RndPostProc*, float);
     DataNode OnAllowedNormalMap(const DataArray*);
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndPostProc)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndPostProc)
+    }
 
     float mPriority;
     Hmx::Color mBloomColor;

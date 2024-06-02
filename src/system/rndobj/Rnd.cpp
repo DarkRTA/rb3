@@ -6,10 +6,13 @@
 #include "rndobj/AmbientOcclusion.h"
 #include "rndobj/AnimFilter.h"
 #include "rndobj/Cam.h"
+#include "rndobj/CamAnim.h"
 #include "rndobj/CubeTex.h"
 #include "rndobj/DOFProc.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Env.h"
+#include "rndobj/EnvAnim.h"
+#include "rndobj/EventTrigger.h"
 #include "rndobj/Flare.h"
 #include "rndobj/Fur.h"
 #include "rndobj/Gen.h"
@@ -23,19 +26,30 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/MeshAnim.h"
 #include "rndobj/MeshDeform.h"
+#include "rndobj/Morph.h"
+#include "rndobj/MotionBlur.h"
 #include "rndobj/Movie.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/MultiMeshProxy.h"
 #include "rndobj/Overlay.h"
 #include "rndobj/Part.h"
 #include "rndobj/PartAnim.h"
 #include "rndobj/PartLauncher.h"
+#include "rndobj/PollAnim.h"
+#include "rndobj/PostProc.h"
+#include "rndobj/PropAnim.h"
+#include "rndobj/ScreenMask.h"
 #include "rndobj/Set.h"
 #include "rndobj/ShaderOptions.h"
 #include "rndobj/SoftParticles.h"
+#include "rndobj/TexBlendController.h"
+#include "rndobj/TexBlender.h"
+#include "rndobj/TexRenderer.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/TransProxy.h"
+#include "rndobj/Wind.h"
 #include "types.h"
 #include "utl/Option.h"
 #include "utl/PoolAlloc.h"
@@ -129,7 +143,24 @@ void Rnd::PreInit() {
     RndParticleSys::Init();
     RndParticleSysAnim::Init();
     RndMultiMesh::Init();
-    // more register factories for the rest of the Rnd classes
+    RndMultiMeshProxy::Init();
+    RndMorph::Init();
+    RndCamAnim::Init();
+    RndEnvAnim::Init();
+    RndTransformable::Register();
+    RndGroup::Init();
+    RndDir::Init();
+    RndMotionBlur::Init();
+    RndTexBlendController::Init();
+    RndTexBlender::Init();
+    RndTexRenderer::Init();
+    RndScreenMask::Init();
+    RndPostProc::Init();
+    RndOverlay::Init();
+    RndPropAnim::Init();
+    EventTrigger::Init();
+    RndWind::Init();
+    RndPollAnim::Init();
 
     InitShaderOptions();
     mRateOverlay = RndOverlay::Find("rate", true);

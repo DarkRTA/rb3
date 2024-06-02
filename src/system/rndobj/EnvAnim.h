@@ -22,6 +22,13 @@ public:
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndEnvAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndEnvAnim)
+    }
     
     ObjPtr<RndEnviron, ObjectDir> mEnviron;
     Keys<Hmx::Color, Hmx::Color> mFogColorKeys;

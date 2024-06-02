@@ -26,7 +26,12 @@ public:
     void UpdateMaxDistance();
     void UpdateAllDistances();
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndTexBlendController)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTexBlendController)
+    }
 
     static unsigned short gRev;
 

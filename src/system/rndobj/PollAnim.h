@@ -25,6 +25,12 @@ public:
     virtual ~RndPollAnim(){}
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(RndPollAnim)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndPollAnim)
+    }
 
     ObjPtrList<RndAnimatable, ObjectDir> mAnims;
 };

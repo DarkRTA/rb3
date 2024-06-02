@@ -23,7 +23,12 @@ public:
     DataNode OnGetRenderTextures(DataArray*);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(RndTexBlender)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RndTexBlender)
+    }
 
     ObjPtr<RndTex, class ObjectDir> mBaseMap;
     ObjPtr<RndTex, class ObjectDir> mNearMap;
