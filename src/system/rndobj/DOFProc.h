@@ -35,7 +35,7 @@ public:
     }
 };
 
-DOFProc* TheDOFProc;
+extern DOFProc* TheDOFProc;
 
 class DOFOverrideParams {
 public:
