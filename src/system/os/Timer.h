@@ -2,7 +2,7 @@
 #define OS_TIMER_H
 #include "utl/Symbol.h"
 #include "obj/Data.h"
-
+#include <vector>
 #include "decomp.h"
 
 #define TIMER_GET_CYCLES(name) \
@@ -29,6 +29,7 @@ public:
 
     static float sLowCycles2Ms;
     static float sHighCycles2Ms;
+    static Timer sSlowFrameTimer;
 
     static void Init();
     static void Sleep(int);
@@ -111,6 +112,22 @@ public:
     void SetLastMs(float ms);
 };
 
+class TimerStats {
+public:
+    TimerStats(DataArray*);
+
+    int mCount; // 0x0
+    float mAvgMs; // 0x4
+    float mStdDevMs; // 0x8
+    float mMaxMs; // 0xc
+    int mNumOverBudget; // 0x10
+    float mBudget; // 0x14
+    bool mCritical; // 0x18
+    int mNumCritOverBudget; // 0x1c
+    float mAvgMsInCrit; // 0x20
+    float mTopValues[128]; // 0x24
+};
+
 typedef void (*StupidAutoTimerFunc)(float, void*);
 
 class AutoTimer {
@@ -129,6 +146,8 @@ public:
     float unk_0x4;
     StupidAutoTimerFunc unk_0x8; // ???
     void* unk_0xC;
+
+    static std::vector<std::pair<Timer, TimerStats> > sTimers;
 
     static Timer* GetTimer(Symbol);
 };
