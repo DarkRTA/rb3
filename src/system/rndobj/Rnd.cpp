@@ -56,6 +56,7 @@
 #include "rndobj/Wind.h"
 #include "types.h"
 #include "utl/Cheats.h"
+#include "utl/FileStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Option.h"
 #include "utl/PoolAlloc.h"
@@ -476,5 +477,104 @@ DataNode Rnd::OnToggleOverlay(const DataArray* da){
 
 DataNode Rnd::OnToggleOverlayPosition(const DataArray* da){
     RndOverlay::TogglePosition();
+    return DataNode(0);
+}
+
+void Rnd::SetProcAndLock(bool b){
+    mProcCounter.SetProcAndLock(b);
+}
+
+bool Rnd::ProcAndLock() const { return mProcCounter.mProcAndLock; }
+
+void Rnd::ResetProcCounter(){
+    if(unkde){
+        mProcCounter.mCount = -1;
+    }
+    else mLastProcCmds = kProcessWorld;
+}
+
+bool Rnd::GetEvenOddDisabled() const { return mProcCounter.mEvenOddDisabled; }
+void Rnd::SetEvenOddDisabled(bool b){ mProcCounter.SetEvenOddDisabled(b); }
+
+String UniqueFileName(const char* cc){
+
+}
+
+void Rnd::ScreenDump(const char* cc){
+    RndTex* tex = Hmx::Object::New<RndTex>();
+    RndBitmap bmap;
+    tex->SetBitmap(0, 0, 0, RndTex::FrontBuffer, 0, 0);
+    tex->LockBitmap(bmap, true);
+    FileStream fs(cc, FileStream::kWrite, true);
+    if(fs.Fail()) MILO_WARN("Screenshot failed; could not open destination file (%s).", cc);
+    else bmap.SaveBmp(&fs);
+    delete tex;
+}
+
+void Rnd::ScreenDumpUnique(const char* cc){
+    ScreenDump(UniqueFileName(cc).c_str());
+}
+
+DataNode Rnd::OnShowConsole(const DataArray* da){
+    ShowConsole(true);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleTimers(const DataArray* da){
+    SetShowTimers(unkec || !mTimersOverlay->mShowing, false);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnToggleTimersVerbose(const DataArray* da){
+    SetShowTimers(unkec == 0, unkec == 0);
+    return DataNode(0);
+}
+
+DataNode Rnd::OnClearColorR(const DataArray* da){
+    return DataNode(mClearColor.red);
+}
+
+DataNode Rnd::OnClearColorG(const DataArray* da){
+    return DataNode(mClearColor.green);
+}
+
+DataNode Rnd::OnClearColorB(const DataArray* da){
+    return DataNode(mClearColor.blue);
+}
+
+DataNode Rnd::OnClearColorPacked(const DataArray* da){
+    return DataNode((int)mClearColor.Pack());
+}
+
+DataNode Rnd::OnSetClearColor(const DataArray* da){
+    SetClearColor(Hmx::Color(da->Float(2), da->Float(3), da->Float(4)));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnSetClearColorPacked(const DataArray* da){
+    float red = (da->Int(2) & 255) / 255.0f;
+    float green = ((da->Int(2) >> 8) & 255) / 255.0f;
+    float blue = ((da->Int(2) >> 0x10) & 255) / 255.0f;
+    SetClearColor(Hmx::Color(red, green, blue));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScreenDump(const DataArray* da){
+    ScreenDump(da->Str(2));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScreenDumpUnique(const DataArray* da){
+    ScreenDumpUnique(da->Str(2));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnScaleObject(const DataArray* da){
+    RndScaleObject(da->GetObj(2), da->Float(3), da->Float(4));
+    return DataNode(0);
+}
+
+DataNode Rnd::OnSetSphereTest(const DataArray* da){
+    unk131 = da->Int(2);
     return DataNode(0);
 }

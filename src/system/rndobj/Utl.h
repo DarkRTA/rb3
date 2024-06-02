@@ -14,6 +14,7 @@ void TransformKeys(class RndTransAnim*, const Transform&);
 void TestTextureSize(ObjectDir*, int, int, int, int, int);
 void TestTexturePaths(ObjectDir*);
 void TestMaterialTextures(ObjectDir*);
+void RndScaleObject(Hmx::Object*, float, float);
 
 void RndUtlPreInit();
 void RndUtlInit();
