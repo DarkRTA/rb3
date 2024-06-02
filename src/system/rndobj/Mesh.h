@@ -19,7 +19,7 @@ class RndMultiMesh;
 
 class RndBone : public ObjPtr<RndTransformable, class ObjectDir> {
     public:
-    RndBone() : ObjPtr<RndTransformable, class ObjectDir>(NULL, NULL) {}
+    RndBone(Hmx::Object* o) : ObjPtr<RndTransformable, class ObjectDir>(o, NULL) {}
     operator ObjPtr<RndTransformable, class ObjectDir>&() { return *this; } 
     void Load(BinStream&);
 
