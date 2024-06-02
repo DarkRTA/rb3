@@ -102,7 +102,23 @@ float Rnd::YRatio() {
 }
 
 void TerminateCallback() {
+    RndUtlTerminate();
     TheRnd->Terminate();
+}
+
+void Rnd::SetupFont(){
+    mFont = SystemConfig("rnd", "font");
+    for(int i = 0; i < 0x1a; i++){
+        DataArray* cloned = CONST_ARRAY(mFont)->Node(i + 0x42).Array(mFont)->Clone(true, false, 0);
+        for(int j = 0; j < cloned->Size(); j++){
+            DataArray* jArr = cloned->Array(j);
+            for(int k = 1; k < jArr->Size(); k += 2){
+                jArr->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
+            }
+        }
+        mFont->Node(i + 0x62) = DataNode(cloned, kDataArray);
+        cloned->Release();
+    }
 }
 
 void Rnd::PreInit() {
