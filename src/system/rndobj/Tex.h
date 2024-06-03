@@ -53,6 +53,7 @@ public:
     DataNode OnSetBitmap(const DataArray*);
 
     void SetBitmap(int, int, int, RndTex::Type, bool, const char*);
+    void SetBitmap(const RndBitmap&, const char*, bool);
     void SetBitmap(FileLoader*);
     void SetBitmap(const FilePath&);
     void SaveBitmap(const char*);
@@ -86,7 +87,7 @@ public:
 
 bool UseBottomMip();
 void CopyBottomMip(RndBitmap&, const RndBitmap&);
-char* CheckDim(int, RndTex::Type, bool);
+const char* CheckDim(int, RndTex::Type, bool);
 TextStream& operator<<(TextStream&, RndTex::Type);
 
 #endif // RNDOBJ_TEX_H

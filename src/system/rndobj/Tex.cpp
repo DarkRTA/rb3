@@ -31,41 +31,41 @@ RndTex::~RndTex() {
     mLoader = NULL;
 }
 
-void RndTex::PlatformBppOrder(const char* cc, int& i, int& j, bool b){
+void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
     Platform plat = TheLoadMgr.mPlatform;
     if(plat < kPlatformXBox || kPlatformPS3 < plat){
         if(plat == kPlatformWii){
-            j = 8;
-            if(b){
-                j |= 0x100;
-                i = 8;
+            order = 8;
+            if(hasAlpha){
+                order |= 0x100;
+                bpp = 8;
             }
-            else i = 4;
-            j |= 0x40;
+            else bpp = 4;
+            order |= 0x40;
         }
-        else if(plat == kPlatformNone) j = 0;
+        else if(plat == kPlatformNone) order = 0;
     }
     else {
         bool bbb = false;
         if(strstr(cc, "_norm")) bbb = true;
         
         if(bbb){
-            if(plat == kPlatformXBox) j = 0x20;
-            else if(plat == kPlatformPS3) j = 8;
-            else j = 0;
+            if(plat == kPlatformXBox) order = 0x20;
+            else if(plat == kPlatformPS3) order = 8;
+            else order = 0;
         }
         else {
-            j = b ? 0x18 : 8;
+            order = hasAlpha ? 0x18 : 8;
         }
-        if(j == 8) i = 4;
-        else if(j & 0x38U) i = 8;
-        else if(bbb) i = 0x18;
-        else if(i < 0x10) i = 0x10;
-        else j = 0;
+        if(order == 8) bpp = 4;
+        else if(order & 0x38U) bpp = 8;
+        else if(bbb) bpp = 0x18;
+        else if(bpp < 0x10) bpp = 0x10;
+        else order = 0;
     }
 }
 
-void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char* cc){
+void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char* path){
     PresyncBitmap();
     mWidth = w;
     mHeight = h;
@@ -95,7 +95,7 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
             if(!(mType & 0x204U)){
                 int x = mBpp;
                 int y;
-                PlatformBppOrder(cc, x, y, true);
+                PlatformBppOrder(path, x, y, true);
                 mBitmap.Create(mWidth, mHeight, 0, x, y, 0, 0, 0);
                 if(useMips){
                     MILO_ASSERT(!useMips, 0xF8);
@@ -108,20 +108,149 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
     SyncBitmap();
 }
 
+void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
+    PresyncBitmap();
+    mWidth = bmap.Width();
+    mHeight = bmap.Height();
+    SetPowerOf2();
+    mBpp = bmap.Bpp();
+    mType = Regular;
+    mFilepath.SetRoot("");
+    mNumMips = bmap.NumMips();
+    MILO_ASSERT(!mNumMips, 0x111);
+    const char* sizeStr = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
+    if(sizeStr){
+        MILO_WARN(sizeStr, Name());
+        mBitmap.Reset();
+    }
+    else {
+        int i = bmap.Bpp();
+        int j = bmap.Order();
+        if(!b){
+            PlatformBppOrder(cc, i, j, bmap.IsTranslucent());
+        }
+        mBitmap.Create(bmap, i, j, 0);
+    }
+    SyncBitmap();
+}
+
+void RndTex::SetBitmap(FileLoader* fl){
+    PresyncBitmap();
+    mType = Regular;
+    void* buffer;
+    if(fl){
+        mFilepath = ((Loader*)fl)->mFile;
+        TheLoadMgr.PollUntilLoaded(fl, 0);
+        int i = 0;
+        buffer = (void*)fl->GetBuffer(&i);
+        if(!TheLoadMgr.EditMode() && fl != mLoader){
+            if(!strstr(mFilepath.c_str(), "_keep")){
+                MILO_WARN("%s will not be included on a disc build", mFilepath);
+            }
+        }
+        delete fl;
+    }
+    else {
+        mFilepath.SetRoot("");
+        buffer = 0;
+    }
+
+    if(buffer){
+        if(UseBottomMip()){
+            RndBitmap someotherbmap;
+            someotherbmap.Create(buffer);
+            CopyBottomMip(mBitmap, someotherbmap);
+        }
+        else {
+            mBitmap.Create(buffer);
+        }
+
+        mWidth = mBitmap.Width();
+        mHeight = mBitmap.Height();
+        SetPowerOf2();
+        mBpp = mBitmap.Bpp();
+        mNumMips = mBitmap.NumMips();
+        MILO_ASSERT(!mNumMips, 0x183);
+    }
+    else {
+        mBitmap.Reset();
+        mHeight = 0;
+        mWidth = 0;
+        SetPowerOf2();
+        mBpp = 0x20;
+        mNumMips = 0;
+    }
+    SyncBitmap();
+}
+
 void RndTex::SetBitmap(const FilePath& fp){
     SetBitmap(dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(fp)));
+}
+
+const char* CheckDim(int dim, RndTex::Type ty, bool b){
+    const char* ret = 0;
+    if(dim == 0) return ret;
+    else {
+        if(ty == RndTex::Movie && (dim % 16 != 0)){
+            ret = "%s: dimensions not multiple of 16";
+        }
+        if(GetGfxMode() == 0){
+            if(b && dim > 0x400){
+                ret = "%s: dimensions greater than 1024";
+            }
+            else if(dim > 0x800){
+                ret = "%s: dimensions greater than 2048";
+            }
+            if(dim % 8 != 0){
+                ret = "%s: dimensions not multiple of 8";
+            }
+        }
+        if(b){
+            bool bbb;
+            if(dim < 0) bbb = false;
+            else if(dim == 0) bbb = true;
+            else bbb = (dim & (dim - 1)) == 0;
+            if(!bbb) ret = "%s: dimensions are not power-of-2";
+        }
+    }
+    return ret;
+}
+
+const char* RndTex::CheckSize(int width, int height, int bpp, int numMips, Type ty, bool file){
+    const char* ret;
+    if(ty == DepthVolumeMap || ty == DensityMap || (ty & DeviceTexture)) return 0;
+    else {
+        ret = CheckDim(width, ty, file);
+        if(!ret) ret = CheckDim(height, ty, file);
+        if(!ret && bpp != 4 && bpp != 8 && bpp != 0x10 && bpp != 0x18 && bpp != 0x20){
+            ret = "%s: invalid bpp";
+        }
+        int u3 = (width * height * bpp) >> 3;
+        if(GetGfxMode() == 0){
+            if(!ret && u3 > 0x7FFF0){
+                ret = "%s: size over 524,272 bytes";
+            }
+            if(!ret && (u3 & 0xf)){
+                ret = "%s: size not multiple of 16 bytes";
+            }
+            if(!ret && numMips > 0){
+                ret = "%s: more than 0 mip levels";
+            }
+        }
+    }
+    return ret;
 }
 
 void RndTex::SetPowerOf2(){
     bool set;
     if(mWidth < 0) set = false;
     else if(mWidth == 0) set = true;
-    else set = mWidth == 1;
+    else set = (mWidth & (mWidth - 1)) == 0;
 
     if(set){
         if(mHeight < 0) set = false;
         else if(mHeight == 0) set = true;
-        else set = mHeight == 1;
+        else set = (mHeight & (mHeight - 1)) == 0;
     }
     mIsPowerOf2 = set;
 }
