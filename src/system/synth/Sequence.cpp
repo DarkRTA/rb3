@@ -37,12 +37,32 @@ SeqInst* Sequence::Play(float f1, float f2, float f3){
 
 void Sequence::Stop(bool b){
     if(mCanStop || b){
-
+        for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
+            // ptmf_scall (*it)
+        }
     }
 }
 
 Sequence::~Sequence(){
+    while(!mInsts.empty()){
+        delete mInsts.front();
+    }
+}
 
+void Sequence::SynthPoll(){
+    for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
+        SeqInst* curSeq = (*it);
+        curSeq->Poll();
+        if(curSeq->mStarted && !curSeq->IsRunning()){
+            delete curSeq;
+        }
+    }
+    if(mFaders.Dirty()){
+        for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
+            (*it)->UpdateVolume();
+        }
+    }
+    if(mInsts.empty()) CancelPolling();
 }
 
 SAVE_OBJ(Sequence, 0xCF)
@@ -92,7 +112,11 @@ void Sequence::OnTriggerSound(int i){
             Play(0.0f, 0.0f, 0.0f);
             break;
         case 2:
-            
+            ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin();
+            for(; it != mInsts.end(); ++it){
+                if((*it)->IsRunning()) break;
+            }
+            if(!(it != mInsts.end())) Play(0.0f, 0.0f, 0.0f);
             break;
         default: break;
     }

@@ -29,15 +29,15 @@ public:
 
     void Stop(bool);
     
-    ObjPtrList<SeqInst, class ObjectDir> mInsts;
-    float mAvgVol;
-    float mVolSpread;
-    float mAvgTranspose;
-    float mTransposeSpread;
-    float mAvgPan;
-    float mPanSpread;
-    FaderGroup mFaders;
-    bool mCanStop;
+    ObjPtrList<SeqInst, class ObjectDir> mInsts; // 0x28
+    float mAvgVol; // 0x38
+    float mVolSpread; // 0x3c
+    float mAvgTranspose; // 0x40
+    float mTransposeSpread; // 0x44
+    float mAvgPan; // 0x48
+    float mPanSpread; // 0x4c
+    FaderGroup mFaders; // 0x50
+    bool mCanStop; // 0x64
 };
 
 class WaitSeq : public Sequence {
