@@ -55,11 +55,19 @@ public:
 
 class TaskMgr : public Hmx::Object {
 public:
+
+    enum TimeReference {
+        a, b, c
+    };
+
     TaskMgr(){}
     virtual ~TaskMgr();
     virtual DataNode Handle(DataArray*, bool);
 
     float UISeconds() const;
+    float Beat() const;
+    float Seconds(TimeReference) const;
+    float TutorialSeconds() const;
     void Start(Task*, TaskUnits, float);
 };
 

@@ -389,7 +389,7 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
-            "system/synth/FxSend.cpp": "NonMatching",
+            "system/synth/FxSend.cpp": "Matching",
             "system/synth/FxSendChorus.cpp": "Matching",
             "system/synth/FxSendCompress.cpp": "Matching",
             "system/synth/FxSendDelay.cpp": "Matching",

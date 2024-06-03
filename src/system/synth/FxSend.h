@@ -36,11 +36,8 @@ public:
     void TestWithMic();
     void EnableUpdates(bool);
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
-
     DECLARE_REVS;
+    DELETE_OVERLOAD;
 
     ObjOwnerPtr<FxSend, class ObjectDir> mNextSend;
     int mStage;

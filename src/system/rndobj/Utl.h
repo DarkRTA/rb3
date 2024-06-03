@@ -15,6 +15,7 @@ void TestTextureSize(ObjectDir*, int, int, int, int, int);
 void TestTexturePaths(ObjectDir*);
 void TestMaterialTextures(ObjectDir*);
 void RndScaleObject(Hmx::Object*, float, float);
+const char* CacheResource(const char*, Hmx::Object*);
 
 void RndUtlPreInit();
 void RndUtlInit();
