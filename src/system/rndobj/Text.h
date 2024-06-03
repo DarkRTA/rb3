@@ -37,6 +37,10 @@ public:
 
     };
 
+    class MeshInfo {
+
+    };
+
     RndText();
     virtual ~RndText();
     virtual void Highlight();
@@ -67,17 +71,34 @@ public:
     DataNode OnSetWrapWidth(DataArray*);
     DataNode OnSetColor(DataArray*);
 
-    std::vector<Line, unsigned short> mLines;
-    ObjOwnerPtr<RndFont, ObjectDir> mFont;
-    float mWrapWidth, unk_c8;
-    String unk_cc;
+    std::vector<Line, unsigned short> mLines; // 0xb0
+    ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
+    float mWrapWidth; // 0xc4
+    float mLeading; // 0xc8
+    String unk_cc; // 0xcc
+    RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    ObjOwnerPtr<RndMesh, ObjectDir> unk_e0;
-
-    int unk_0x120;
-
-    int mDeferUpdate : 4;
+    int unke4; // packed color? Hmx::Color32?
+    bool unke8;
+    bool unke9;
+    float unkec;
+    int unkf0;
+    float unkf4;
+    float unkf8;
+    int unkfc;
+    bool unk100;
+    bool unk101;
+    float unk104;
+    std::map<unsigned int, MeshInfo> unk108;
+    Alignment mAlign : 8; // 0x120
+    CapsMode mCapsMode : 8; // 0x121
+    int unk122 : 8;
+    int unk123 : 8;
+    int mDeferUpdate : 4; // 0x124
+    int unk128;
+    float unk12c;
+    float unk130;
 
     static void Init();
     static std::set<RndText*> mTextMeshSet;
