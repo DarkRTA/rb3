@@ -24,6 +24,8 @@ public:
     virtual int CollidePlane(const Plane&);
     virtual void Poll();
 
+    void CheckLoadResources();
+
     ObjPtr<Sfx, ObjectDir> mSfx; // 0xb8
     ObjPtr<SfxInst, ObjectDir> mInst; // 0xc4
     ObjPtr<RndTransformable, ObjectDir> mListener; // 0xd0

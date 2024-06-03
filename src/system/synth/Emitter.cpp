@@ -1,5 +1,7 @@
 #include "synth/Emitter.h"
 #include "rndobj/Dir.h"
+#include "obj/DirLoader.h"
+#include "utl/Symbols.h"
 
 namespace {
     static RndDir* gIconDir;
@@ -41,8 +43,35 @@ BEGIN_LOADS(SynthEmitter)
     delete mInst;
 END_LOADS
 
-RndDrawable* SynthEmitter::CollideShowing(const Segment& seg, float& f, Plane& pl){
-    
+RndDrawable* SynthEmitter::CollideShowing(const Segment& s, float& dist, Plane& plane){
+    if(TheLoadMgr.EditMode()){
+        CheckLoadResources();
+        RndDrawable* dirDraw = gIconDir->CollideShowing(s, dist, plane);
+        if(dirDraw){
+            return this;
+        }
+    }
+    return 0;
+}
+
+int SynthEmitter::CollidePlane(const Plane& plane){
+    if(TheLoadMgr.EditMode()){
+        CheckLoadResources();
+        return gIconDir->CollidePlane(plane);
+    }
+    else return 0;
+}
+
+void SynthEmitter::CheckLoadResources(){
+    MILO_ASSERT(TheLoadMgr.EditMode(), 0x8B);
+    if(!gIconDir){
+        const char* str = "milo/emitter.milo";
+        const char* root = FileSystemRoot();
+        FilePath fp;
+        fp.Set(root, str);
+        gIconDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp, 0, 0));
+        MILO_ASSERT(gIconDir, 0x93);
+    }
 }
 
 SynthEmitter::~SynthEmitter(){
@@ -59,3 +88,27 @@ BEGIN_HANDLERS(SynthEmitter)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xE3)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(SynthEmitter)
+    SYNC_PROP_ACTION(sfx, mSfx, kPropSize|kPropGet, delete mInst)
+    SYNC_PROP_ACTION(listener, mListener, kPropSize|kPropGet, delete mInst)
+    { 
+        static Symbol _s("enabled"); 
+        bool b = mSynthEmitterEnabled;
+        if(sym == _s){
+            bool synced = PropSync(b, _val, _prop, _i + 1, _op);
+            if(!synced) return false;
+            else {
+                mSynthEmitterEnabled = b;
+                if(!(_op & (kPropSize|kPropGet))) delete mInst;
+                return true; 
+            }
+        }
+    }
+    SYNC_PROP(outer_radius, mRadOuter)
+    SYNC_PROP(inner_radius, mRadInner)
+    SYNC_PROP(outer_volume, mVolOuter)
+    SYNC_PROP(inner_volume, mVolInner)
+    if(RndTransformable::SyncProperty(_val, _prop, _i, _op)) return true;
+    SYNC_SUPERCLASS(RndDrawable)
+END_PROPSYNCS
