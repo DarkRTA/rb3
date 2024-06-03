@@ -41,9 +41,9 @@ void RndDrawable::Highlight(){
     if(sHighlightStyle != kHighlightNone){
         Sphere s;
         if(!MakeWorldSphere(s, false) || !(s > RndCam::sCurrent->mWorldFrustum)){
+            bool showing = mShowing;
             mShowing = true;
             Hmx::Color col(1.0f, 1.0f, 0.0f);
-            bool showing = mShowing;
             UtilDrawSphere(s.center, s.radius, col);
             mShowing = showing;
         }

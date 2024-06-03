@@ -53,11 +53,13 @@ void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
     std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
     std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
     for(; rit != ritEnd; ++rit){
-        Hmx::Object* owner = (*rit)->RefOwner();
-        FxSend* rsend = dynamic_cast<FxSend*>(owner);
-        if(rsend && rsend->mNextSend == this) rsend->BuildChainVector(vec);
+        ObjRef* ref = *rit;
+        FxSend* rsend = dynamic_cast<FxSend*>(ref->RefOwner());
+        if(rsend && rsend->mNextSend == this) {
+            rsend->BuildChainVector(vec);
+        }
         else {
-            Sfx* seq = dynamic_cast<Sfx*>(owner->RefOwner());
+            Sfx* seq = dynamic_cast<Sfx*>(ref->RefOwner());
             if(seq) seq->Stop(false);
         }
     }
@@ -80,7 +82,7 @@ bool FxSend::CheckChain(FxSend* send, int i){
         for(; rit != ritEnd; ++rit){
             FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
             if(rsend && rsend->mNextSend == this && rsend->mStage >= i){
-                MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", mName);
+                MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", rsend->Name());
                 return false;
             }
         }
