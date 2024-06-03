@@ -40,7 +40,7 @@ public:
     virtual void DrawShowing(){}
     virtual bool DrawShowingBudget(float);
     virtual void ListDrawChildren(std::list<RndDrawable*>&){}
-    virtual int CollideShowing(const Segment&, float&, Plane&){ return 0; }
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&){ return 0; }
     virtual int CollidePlane(const Plane&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
     virtual void DrawPreClear(){}

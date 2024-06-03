@@ -20,7 +20,7 @@ public:
     virtual ~SynthEmitter();
     virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual void DrawShowing();
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
     virtual void Poll();
 

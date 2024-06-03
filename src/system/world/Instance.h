@@ -26,7 +26,7 @@ public:
     virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
     virtual bool MakeWorldSphere(Sphere&, bool){ return 0; }
     virtual void DrawShowing();
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual void Poll();
     virtual void Enter();
     virtual void PreSave(BinStream&);

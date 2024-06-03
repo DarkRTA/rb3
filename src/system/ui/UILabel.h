@@ -35,7 +35,7 @@ public:
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
     virtual void Draw();
     virtual void DrawShowing();
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
     virtual void Highlight();
     virtual ~UILabel();

@@ -1,5 +1,9 @@
 #include "synth/Emitter.h"
+#include "rndobj/Dir.h"
 
+namespace {
+    static RndDir* gIconDir;
+}
 int kEmitterRev = 3;
 
 BEGIN_COPYS(SynthEmitter)
@@ -36,6 +40,10 @@ BEGIN_LOADS(SynthEmitter)
     if(rev >= 3) bs >> mVolOuter >> mVolInner;
     delete mInst;
 END_LOADS
+
+RndDrawable* SynthEmitter::CollideShowing(const Segment& seg, float& f, Plane& pl){
+    
+}
 
 SynthEmitter::~SynthEmitter(){
     delete mInst;
