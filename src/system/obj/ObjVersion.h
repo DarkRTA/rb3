@@ -15,4 +15,6 @@ inline void PushRev(int i, Hmx::Object* o){
     sRevStack.push_back(ObjVersion(o, i));
 }
 
+int PopRev(Hmx::Object* o);
+
 #endif

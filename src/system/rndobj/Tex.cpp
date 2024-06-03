@@ -3,7 +3,7 @@
 #include "os/Debug.h"
 #include "os/File.h"
 #include "utl/BinStream.h"
-#include "utl/Symbols.h"
+#include "utl/BufStream.h"
 #include "os/System.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/Utl.h"
@@ -295,6 +295,174 @@ void RndTex::PreLoad(BinStream& bs) {
     PushRev(packRevs(gAltRev, gRev), this);
 }
 
+void RndTex::PostLoad(BinStream& bs){
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    if(gRev < 5){
+        int cubemapmask;
+        bs >> cubemapmask;
+        if(cubemapmask != 0 && !mFilepath.empty()){
+            if(cubemapmask & 1) MILO_WARN("%s: kTransparentWhite no longer supported", Name());
+            else if(cubemapmask & 2){
+                mFilepath.insert(mFilepath.find('.'), "_tb");
+            }
+            else if(cubemapmask & 0x10){
+                mFilepath.insert(mFilepath.find('.'), "_ga");
+            }
+            else if(cubemapmask & 0x20){
+                mFilepath.insert(mFilepath.find('.'), "_gw");
+            }
+            else if(cubemapmask & 0x40){
+                MILO_WARN("%s: kCubeMap no longer supported", Name());
+            }
+        }
+    }
+    if(gRev != 0 && gRev < 3){
+        bool b;
+        bs >> b;
+    }
+    if(gRev > 7) bs >> mMipMapK;
+    else if(gRev > 3){
+        int i;
+        bs >> i;
+        mMipMapK = i;
+    }
+
+    if(gRev > 6){
+        bs >> (int&)mType;
+    }
+    else if(gRev > 5){
+        Type types[5] = { Regular, Rendered, Movie, BackBuffer, FrontBuffer };
+        int i;
+        bs >> i;
+        mType = types[i];
+    }
+    else if(gRev > 4){
+        bool b;
+        bs >> b;
+        Type ty = Regular;
+        if(b) ty = Rendered;
+        mType = ty;
+    }
+
+    if(mFilepath.empty()){
+        if(strcmp(Name(), "movie.tex") != 0 && strcmp(Name(), "movie_splash.tex") != 0 && (mType & Rendered)){
+            while(mWidth > 0x100) mWidth /= 2;
+            while(mHeight > 0x100) mHeight /= 2;
+        }
+    }
+    if(gRev > 7){
+        bool b;
+        bs >> b;
+    }
+    if(gRev > 10){
+        bool b;
+        bs >> b;
+        mOptimizeForPS3 = b;
+    }
+
+    if(bs.Cached()){
+        void* buffer = 0;
+        int size = 0;
+        if(mLoader){
+            buffer = (void*)mLoader->GetBuffer(0);
+            size = mLoader->GetSize();
+            delete mLoader;
+            mLoader = 0;
+        }
+        BufStream bufs(buffer, size, true);
+        if(buffer) bs = bufs;
+        PresyncBitmap();
+        if(UseBottomMip()){
+            RndBitmap someotherbmap;
+            someotherbmap.Load(bs);
+            CopyBottomMip(mBitmap, someotherbmap);
+        }
+        else mBitmap.Load(bs);
+        if(buffer) _MemFree(buffer);
+        mNumMips = mBitmap.NumMips();
+        MILO_ASSERT(!mNumMips, 0x3B7);
+        SyncBitmap();
+    }
+    else if(mFilepath.empty() || mType != Regular){
+        MILO_ASSERT(!mNumMips, 0x3BE);
+        SetBitmap(mWidth, mHeight, mBpp, mType, false, 0);
+    }
+    else if(TheLoadMgr.mPlatform != kPlatformNone){
+        MILO_ASSERT(!mNumMips, 0x3C7);
+        SetBitmap(mLoader);
+        mLoader = 0;
+    }
+    else {
+        delete mLoader;
+        mLoader = 0;
+    }
+}
+
+BEGIN_COPYS(RndTex)
+    COPY_SUPERCLASS(Hmx::Object)
+    GET_COPY(RndTex)
+    BEGIN_COPY_CHECKED
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mMipMapK)
+        }
+        if(ty == kCopyFromMax && mType != c->mType) return;
+        PresyncBitmap();
+        COPY_MEMBER(mType)
+        COPY_MEMBER(mWidth)
+        COPY_MEMBER(mHeight)
+        SetPowerOf2();
+        COPY_MEMBER(mBpp)
+        COPY_MEMBER(mFilepath)
+        COPY_MEMBER(mNumMips)
+        MILO_ASSERT(!mNumMips, 1000);
+        COPY_MEMBER(mOptimizeForPS3)
+        mBitmap.Create(c->mBitmap, c->mBitmap.mBpp, c->mBitmap.mOrder, 0);
+        SyncBitmap();
+    END_COPY_CHECKED
+END_COPYS
+
+// enum Type {
+//     Regular = 1,
+//     Rendered = 2,
+//     Movie = 4,
+//     BackBuffer = 8,
+//     FrontBuffer = 0x18,
+//     RenderedNoZ = 0x22,
+//     ShadowMap = 0x42,
+//     DepthVolumeMap = 0xA2,
+//     DensityMap = 0x122,
+//     Scratch = 0x200,
+//     DeviceTexture = 0x1000
+// };
+
+DECOMP_FORCEACTIVE(Tex,
+    "Regular", "Rendered", "Movie", "BackBuffer", "FrontBuffer", "RenderedNoZ",
+    "ShadowMap", "DepthVolumeMap", "DensityMap", "DeviceTexture", "Scratch"
+)
+
+TextStream& operator<<(TextStream& ts, RndTex::Type ty){
+    if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
+    else if(ty < RndTex::RenderedNoZ){
+        if(ty == RndTex::Movie) ts << "Movie";
+        else if(ty < RndTex::Movie){
+            if(ty == RndTex::Rendered) ts << "Rendered";
+            else if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
+        }
+        else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
+        else if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
+    }
+    else if(ty == RndTex::DensityMap) ts << "DensityMap";
+    else if(ty < RndTex::DensityMap){
+        if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
+        else if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
+    }
+    else if(ty == RndTex::DeviceTexture) ts << "DeviceTexture";
+    else if(ty < RndTex::DeviceTexture && ty == RndTex::Scratch) ts << "Scratch";
+    return ts;
+}
+
 void RndTex::SaveBitmap(const char*) {
     MILO_ASSERT(0, 1033);
 }
@@ -304,7 +472,7 @@ void RndTex::Print() {
     TheDebug << "   height: " << mHeight << "\n";
     TheDebug << "   bpp: " << mBpp << "\n";
     TheDebug << "   mipMapK: " << mMipMapK << "\n";
-    TheDebug << "   file: " << FileRelativePath(FilePath::sRoot.c_str(), mFilepath.c_str()) << "\n";
+    TheDebug << "   file: " << mFilepath.FilePathRelativeToRoot() << "\n";
     TheDebug << "   type: " << mType << "\n";
 }
 
