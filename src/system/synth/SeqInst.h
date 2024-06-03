@@ -8,6 +8,9 @@ class Sequence;
 class WaitSeq;
 class GroupSeq;
 class RandomGroupSeq;
+class RandomIntervalGroupSeq;
+class SerialGroupSeq;
+class ParallelGroupSeq;
 
 class SeqInst : public Hmx::Object {
 public:
@@ -79,6 +82,45 @@ public:
 
     int mNumSeqs; // 0x40
     int unk44; // 0x44
+};
+
+class RandomIntervalGroupSeqInst : public GroupSeqInst {
+public:
+    RandomIntervalGroupSeqInst(RandomIntervalGroupSeq*);
+    virtual ~RandomIntervalGroupSeqInst();
+    virtual void Stop();
+    virtual bool IsRunning();
+    virtual void Poll();
+    virtual void StartImpl();
+
+    NEW_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
+    DELETE_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
+};
+
+class SerialGroupSeqInst : public GroupSeqInst {
+public:
+    SerialGroupSeqInst(SerialGroupSeq*);
+    virtual ~SerialGroupSeqInst();
+    virtual void Stop();
+    virtual bool IsRunning();
+    virtual void Poll();
+    virtual void StartImpl();
+
+    NEW_POOL_OVERLOAD(SerialGroupSeqInst);
+    DELETE_POOL_OVERLOAD(SerialGroupSeqInst);
+};
+
+class ParallelGroupSeqInst : public GroupSeqInst {
+public:
+    ParallelGroupSeqInst(ParallelGroupSeq*);
+    virtual ~ParallelGroupSeqInst();
+    virtual void Stop();
+    virtual bool IsRunning();
+    virtual void Poll();
+    virtual void StartImpl();
+
+    NEW_POOL_OVERLOAD(ParallelGroupSeqInst);
+    DELETE_POOL_OVERLOAD(ParallelGroupSeqInst);
 };
 
 #endif
