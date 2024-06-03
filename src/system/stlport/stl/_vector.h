@@ -113,9 +113,9 @@ protected:
 
     // _M_inc_finish_idx in retail doesn't match with size_type as the parameter,
     // but symbols in bank 8 indicate it uses size_type
-#if defined(VERSION_SZBE69)
+#ifdef VERSION_SZBE69
   void _M_inc_finish_idx(_Size increment) {
-#elif defined(VERSION_SZBE69_B8)
+#else
   void _M_inc_finish_idx(size_type increment) {
 #endif
     _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);
