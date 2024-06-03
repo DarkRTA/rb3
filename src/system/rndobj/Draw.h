@@ -69,7 +69,7 @@ public:
     
     bool mShowing : 1;
     bool unk8p1 : 1; // used in RndGroup
-    bool unk8p2 : 1;
+    bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare
     bool unk8p5 : 1;
