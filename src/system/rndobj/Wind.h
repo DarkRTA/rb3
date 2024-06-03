@@ -24,15 +24,16 @@ public:
 
     static void Init();
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    Vector3 mPrevailing;
-    Vector3 mRandom;
-    float mTimeLoop;
-    float mSpaceLoop;
-    Vector3 mTimeRate;
-    Vector3 mSpaceRate;
-    ObjOwnerPtr<RndWind, ObjectDir> mWindOwner;
+    Vector3 mPrevailing; // 0x1c
+    Vector3 mRandom; // 0x28
+    float mTimeLoop; // 0x34
+    float mSpaceLoop; // 0x38
+    Vector3 mTimeRate; // 0x3c
+    Vector3 mSpaceRate; // 0x48
+    ObjOwnerPtr<RndWind, ObjectDir> mWindOwner; // 0x54
 };
 
 #endif // RNDOBJ_WIND_H
