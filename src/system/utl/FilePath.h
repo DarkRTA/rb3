@@ -23,6 +23,11 @@ public:
     void SetRoot(const char* str){ Set(sRoot.c_str(), str); }
 };
 
+inline TextStream& operator<<(TextStream& ts, FilePath& fp){
+    ts << fp.FilePathRelativeToRoot();
+    // return ts; // commented out to get RndTex::Print to match
+}
+
 inline BinStream& operator>>(BinStream& bs, FilePath& fp){
     char buf[0x100];
     bs.ReadString(buf, 0x100);

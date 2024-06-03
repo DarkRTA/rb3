@@ -472,7 +472,7 @@ void RndTex::Print() {
     TheDebug << "   height: " << mHeight << "\n";
     TheDebug << "   bpp: " << mBpp << "\n";
     TheDebug << "   mipMapK: " << mMipMapK << "\n";
-    TheDebug << "   file: " << mFilepath.FilePathRelativeToRoot() << "\n";
+    TheDebug << "   file: " << mFilepath << "\n";
     TheDebug << "   type: " << mType << "\n";
 }
 
@@ -481,7 +481,7 @@ BEGIN_HANDLERS(RndTex)
     HANDLE(set_rendered, OnSetRendered)
     HANDLE_EXPR(file_path, mFilepath.c_str())
     HANDLE_ACTION(set_file_path, mFilepath.Set(FilePath::sRoot.c_str(), _msg->Str(2)))
-    HANDLE_EXPR(size_kb, (int)((mWidth * mHeight * mBpp) >> 3)) // i don't like this expression. someone pls make it go away kthxbai
+    HANDLE_EXPR(size_kb, (int)((mWidth * mHeight * mBpp) / 8 / 1024)) // i don't like this expression. someone pls make it go away kthxbai
     HANDLE_EXPR(tex_type, mType)
     HANDLE_ACTION(save_bmp, SaveBitmap(_msg->Str(2)))
     HANDLE_SUPERCLASS(Hmx::Object)
@@ -509,9 +509,18 @@ DataNode RndTex::OnSetRendered(const DataArray*) {
 #pragma push
 #pragma pool_data off
 BEGIN_PROPSYNCS(RndTex)
-    SYNC_PROP_STATIC(width, mWidth)
-    SYNC_PROP_STATIC(height, mHeight)
-    SYNC_PROP_STATIC(bpp, mBpp)
+    { 
+        static Symbol _s("width"); 
+        if(sym == _s && _op & kPropGet) return PropSync(mWidth, _val, _prop, _i + 1, _op); 
+    }
+    {
+        static Symbol _s("height");
+        if(sym == _s && _op & kPropGet) return PropSync(mHeight, _val, _prop, _i + 1, _op);
+    }
+    {
+        static Symbol _s("bpp");
+        if(sym == _s && _op & kPropGet) return PropSync(mBpp, _val, _prop, _i + 1, _op);
+    }
     SYNC_PROP(mip_map_k, mMipMapK)
     SYNC_PROP(optimize_for_ps3, mOptimizeForPS3)
     if (sym == file_path) { // mfw have to manually branch predict
