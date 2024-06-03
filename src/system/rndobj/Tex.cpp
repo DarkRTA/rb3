@@ -6,6 +6,8 @@
 #include "utl/Symbols.h"
 #include "os/System.h"
 #include "rndobj/Rnd.h"
+#include "rndobj/Utl.h"
+#include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndTex)
@@ -269,13 +271,28 @@ SAVE_OBJ(RndTex, 744)
 void RndTex::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
 
 void RndTex::PreLoad(BinStream& bs) {
-    short s_dump;
     LOAD_REVS(bs)
     ASSERT_REVS(11, 1)
-    if (gRev > 8) Hmx::Object::Load(bs);
+    if (gRev > 8) LOAD_SUPERCLASS(Hmx::Object)
     if (gRev == 1) {
-        bs >> s_dump;
+        short s1, s2;
+        bs >> s1 >> s2;
+        mWidth = s1;
+        mHeight = s2;
     }
+    else bs >> mWidth >> mHeight;
+    SetPowerOf2();
+    bs >> mBpp;
+    bs >> mFilepath;
+    if(gRev > 9 && !bs.Cached()){
+        mLoader = new FileLoader(mFilepath, CacheResource(mFilepath.c_str(), this), kLoadFront, 0, false, true, 0);
+    }
+    else {
+        if(bs.Cached() && gAltRev != 0){
+            mLoader = new FileLoader(mFilepath, CacheResource(mFilepath.c_str(), this), kLoadFront, 0, true, true, &bs);
+        }
+    }
+    PushRev(packRevs(gAltRev, gRev), this);
 }
 
 void RndTex::SaveBitmap(const char*) {
