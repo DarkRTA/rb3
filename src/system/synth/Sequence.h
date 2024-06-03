@@ -96,4 +96,43 @@ public:
     std::list<int> mPlayHistory; // 0x88
 };
 
+class RandomIntervalGroupSeq : public GroupSeq {
+public:
+    RandomIntervalGroupSeq();
+    virtual ~RandomIntervalGroupSeq(){}
+    OBJ_CLASSNAME(RandomIntervalGroupSeq);
+    OBJ_SET_TYPE(RandomIntervalGroupSeq);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+    virtual SeqInst* MakeInstImpl();
+
+    float mAvgIntervalSecs; // 0x78
+    float mIntervalSpread; // 0x7c
+    int mMaxSimultaneous; // 0x80
+};
+
+class SerialGroupSeq : public GroupSeq {
+public:
+    SerialGroupSeq(){}
+    virtual ~SerialGroupSeq(){}
+    OBJ_CLASSNAME(SerialGroupSeq);
+    OBJ_SET_TYPE(SerialGroupSeq);
+    virtual void Save(BinStream&);
+    virtual void Load(BinStream&);
+    virtual SeqInst* MakeInstImpl();
+};
+
+class ParallelGroupSeq : public GroupSeq {
+public:
+    ParallelGroupSeq(){}
+    virtual ~ParallelGroupSeq(){}
+    OBJ_CLASSNAME(ParallelGroupSeq);
+    OBJ_SET_TYPE(ParallelGroupSeq);
+    virtual void Save(BinStream&);
+    virtual void Load(BinStream&);
+    virtual SeqInst* MakeInstImpl();
+};
+
 #endif

@@ -199,6 +199,10 @@ void RandomGroupSeq::PickNextIndex(){
     else mNextIndex = (mNextIndex + 1) % Children().size();
 }
 
+RandomIntervalGroupSeq::RandomIntervalGroupSeq() : mAvgIntervalSecs(4.0f), mIntervalSpread(2.0f), mMaxSimultaneous(8) {
+
+}
+
 GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
 
 }
