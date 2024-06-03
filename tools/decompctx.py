@@ -14,7 +14,7 @@ from contextlib import redirect_stdout
 from typing import Optional
 
 # Note: requires being in the same directory as defines_common.py
-from tools.defines_common import (
+from defines_common import (
     cflags_includes,
     VERSIONS
 )
