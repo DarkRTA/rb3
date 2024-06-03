@@ -7,6 +7,7 @@
 class Sequence;
 class WaitSeq;
 class GroupSeq;
+class RandomGroupSeq;
 
 class SeqInst : public Hmx::Object {
 public:
@@ -23,20 +24,15 @@ public:
     void Start();
     void SetVolume(float);
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, 0x3c, FastPool);
-    }
+    NEW_POOL_OVERLOAD(SeqInst);
+    DELETE_POOL_OVERLOAD(SeqInst);
 
-    void operator delete(void* v){
-        _PoolFree(sizeof(SeqInst), FastPool, v);
-    }
-
-    Sequence* mOwner;
-    float mRandVol;
-    float mRandPan;
-    float mRandTp;
-    float mVolume;
-    bool mStarted;
+    Sequence* mOwner; // 0x1c
+    float mRandVol; // 0x20
+    float mRandPan; // 0x24
+    float mRandTp; // 0x28
+    float mVolume; // 0x2c
+    bool mStarted; // 0x30
 };
 
 class WaitSeqInst : public SeqInst {
@@ -49,6 +45,9 @@ public:
     virtual void SetPan(float);
     virtual void SetTranspose(float);
     virtual void StartImpl();
+
+    NEW_POOL_OVERLOAD(WaitSeqInst);
+    DELETE_POOL_OVERLOAD(WaitSeqInst);
 
     float mWaitMs;
     float mEndTime;
@@ -63,7 +62,23 @@ public:
     virtual void SetTranspose(float);
     virtual void Poll();
 
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> > mSeqs;
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> > mSeqs; // 0x34
+};
+
+class RandomGroupSeqInst : public GroupSeqInst {
+public:
+    RandomGroupSeqInst(RandomGroupSeq*);
+    virtual ~RandomGroupSeqInst();
+    virtual void Stop();
+    virtual bool IsRunning();
+    virtual void Poll();
+    virtual void StartImpl();
+
+    NEW_POOL_OVERLOAD(RandomGroupSeqInst);
+    DELETE_POOL_OVERLOAD(RandomGroupSeqInst);
+
+    int mNumSeqs; // 0x40
+    int unk44; // 0x44
 };
 
 #endif

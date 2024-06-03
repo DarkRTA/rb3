@@ -9,7 +9,7 @@
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
 
-    ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
+    ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
         if(mPtr != 0) mPtr->AddRef(this);
     }
 

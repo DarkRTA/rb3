@@ -1,7 +1,10 @@
 #include "synth/Sequence.h"
 #include "synth/SeqInst.h"
 #include "math/Rand.h"
+#include "obj/ObjVector.h"
 #include "utl/Symbols.h"
+
+bool sForceSerialSequences;
 
 namespace {
     float RandomVal(float f1, float f2){
@@ -177,6 +180,25 @@ BEGIN_PROPSYNCS(WaitSeq)
     SYNC_SUPERCLASS(Sequence)
 END_PROPSYNCS
 
+RandomGroupSeq::RandomGroupSeq() : mNumSimul(1), mAllowRepeats(0), mNextIndex(-1), mForceChooseIndex(-1) {
+
+}
+
+SeqInst* RandomGroupSeq::MakeInstImpl(){
+    return new RandomGroupSeqInst(this);
+}
+
+int RandomGroupSeq::NextIndex(){
+    if(mNextIndex == -1 && !mChildren.empty()) PickNextIndex();
+    return mNextIndex;
+}
+
+void RandomGroupSeq::PickNextIndex(){
+    MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1C0);
+    if(!sForceSerialSequences) mNextIndex = RandomInt(0, Children().size());
+    else mNextIndex = (mNextIndex + 1) % Children().size();
+}
+
 GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
 
 }
@@ -196,9 +218,14 @@ void GroupSeq::Load(BinStream& bs){
     bs >> rev;
     if(rev > 3) MILO_WARN("Can't load new SfxSeq");
     else {
-        if(rev > 1) Sequence::Load(bs);
+        if(rev >= 2) Sequence::Load(bs);
         if(rev < 3){
-
+            mChildren.clear();
+            ObjVector<ObjPtr<Sequence, ObjectDir> > oVec(this);
+            bs >> oVec;
+            for(int i = 0; i < oVec.size(); i++){
+                mChildren.push_back(oVec[i]);
+            }
         }
         else bs >> mChildren;
     }

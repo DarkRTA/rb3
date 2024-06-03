@@ -5,6 +5,7 @@
 #include "utl/FilePath.h"
 #include "obj/ObjPtr_p.h"
 #include "synth/Faders.h"
+#include <list>
 
 class SeqInst;
 
@@ -65,7 +66,34 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    ObjPtrList<Sequence, class ObjectDir> mChildren;
+    ObjPtrList<Sequence, class ObjectDir>& Children(){ return mChildren; }
+
+    ObjPtrList<Sequence, class ObjectDir> mChildren; // 0x68
+};
+
+class RandomGroupSeq : public GroupSeq {
+public:
+    RandomGroupSeq();
+    virtual ~RandomGroupSeq(){}
+    OBJ_CLASSNAME(RandomGroupSeq);
+    OBJ_SET_TYPE(RandomGroupSeq);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual void Load(BinStream&);
+    virtual SeqInst* MakeInstImpl();
+
+    int NextIndex();
+    void PickNextIndex();
+    void ForceNextIndex();
+    int GetNumSimul(){ return mNumSimul; }
+
+    int mNumSimul; // 0x78
+    bool mAllowRepeats; // 0x7c
+    int mNextIndex; // 0x80
+    int mForceChooseIndex; // 0x84
+    std::list<int> mPlayHistory; // 0x88
 };
 
 #endif
