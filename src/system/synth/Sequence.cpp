@@ -2,6 +2,7 @@
 #include "synth/SeqInst.h"
 #include "math/Rand.h"
 #include "obj/ObjVector.h"
+#include "obj/Task.h"
 #include "utl/Symbols.h"
 
 bool sForceSerialSequences;
@@ -364,10 +365,48 @@ WaitSeqInst::WaitSeqInst(WaitSeq* seq) : SeqInst(seq), mEndTime(-1.0f) {
     mWaitMs = rand * 1000.0f;
 }
 
+void WaitSeqInst::StartImpl(){
+    mEndTime = TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f + mWaitMs;
+}
+
 void WaitSeqInst::Stop(){
     mEndTime = -1.0f;
 }
 
-GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
+bool WaitSeqInst::IsRunning(){
+    return TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f < mEndTime;
+}
 
+GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
+    mSeqs.push_back(ObjPtr<SeqInst, class ObjectDir>(this, 0));
+}
+
+GroupSeqInst::~GroupSeqInst(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+        delete *it;
+    }
+}
+
+void GroupSeqInst::UpdateVolume(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+        if(*it){
+            (*it)->SetVolume(mVolume + mRandVol + mOwner->mFaders.GetVal());
+        }
+    }
+}
+
+void GroupSeqInst::SetPan(float f){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+        if(*it){
+            (*it)->SetPan(f + mRandPan);
+        }
+    }
+}
+
+void GroupSeqInst::SetTranspose(float f){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+        if(*it){
+            (*it)->SetTranspose(f + mRandTp);
+        }
+    }
 }

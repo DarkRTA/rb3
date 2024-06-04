@@ -52,8 +52,8 @@ public:
     NEW_POOL_OVERLOAD(WaitSeqInst);
     DELETE_POOL_OVERLOAD(WaitSeqInst);
 
-    float mWaitMs;
-    float mEndTime;
+    float mWaitMs; // 0x34
+    float mEndTime; // 0x38
 };
 
 class GroupSeqInst : public SeqInst {
@@ -63,7 +63,7 @@ public:
     virtual void UpdateVolume();
     virtual void SetPan(float);
     virtual void SetTranspose(float);
-    virtual void Poll();
+    virtual void Poll(){}
 
     ObjVector<ObjPtr<SeqInst, class ObjectDir> > mSeqs; // 0x34
 };
