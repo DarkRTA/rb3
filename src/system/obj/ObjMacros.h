@@ -128,19 +128,9 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
-// make sync macros for objects and bitfields?
+// TODO: make specific sync macros for objects and bitfields?
 
-// SYNC_PROP_SET
-#define SYNC_PROP_METHOD(symbol, member, method) \
-        if(sym == symbol){ \
-            if(_op == kPropSet) method; \
-            else { \
-                if(_op == (PropOp)0x40) return false; \
-                _val = DataNode(member); \
-            } \
-            return true; \
-        }
-
+// for propsyncs that do something extra if the prop op is specifically kPropSet
 #define SYNC_PROP_SET(symbol, member, func) \
         if(sym == symbol){ \
             if(_op == kPropSet){ \
@@ -153,19 +143,7 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             return true; \
         }
 
-// !0x11 - set, insert, remove, handle, or NOT size and get
-#define SYNC_PROP_ACTION(symbol, member, opmask, action) \
-        if(sym == symbol){ \
-            bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
-            if(!synced) return false; \
-            else { \
-                if(!(_op & (opmask))){ \
-                    action; \
-                } \
-                return true; \
-            } \
-        }
-
+// for propsyncs that do NOT use size or get - aka, any combo of set, insert, remove, and handle is used
 #define SYNC_PROP_MODIFY(symbol, member, func) \
         if(sym == symbol){ \
             bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
@@ -178,6 +156,10 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             } \
         }
 
+// for SYNC_PROP_MODIFY uses where the condition order is flipped
+// if you know how to make this macro and SYNC_PROP_MODIFY into one singular macro,
+// while still matching every instance of SYNC_PROP_MODIFY being used regardless of condition order,
+// by all means please do so, because idk how to do it here
 #define SYNC_PROP_MODIFY_ALT(symbol, member, func) \
         if(sym == symbol){ \
             bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
@@ -193,11 +175,6 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 #define SYNC_PROP_STATIC(symbol, member) { \
     NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP(_s, member) \
-}
-
-#define SYNC_PROP_ACTION_STATIC(symbol, member, opmask, action) { \
-    NEW_STATIC_SYMBOL(symbol) \
-    SYNC_PROP_ACTION(_s, member, opmask, action) \
 }
 
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \

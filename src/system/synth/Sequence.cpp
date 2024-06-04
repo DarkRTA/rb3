@@ -142,7 +142,7 @@ BEGIN_PROPSYNCS(Sequence)
     SYNC_PROP(avg_pan, mAvgPan)
     SYNC_PROP(pan_spread, mPanSpread)
     SYNC_PROP(can_stop, mCanStop)
-    SYNC_PROP_METHOD(trigger_sound, 0, OnTriggerSound(_val.Int(0)))
+    SYNC_PROP_SET(trigger_sound, 0, OnTriggerSound(_val.Int(0)))
 END_PROPSYNCS
 
 WaitSeq::WaitSeq() : mAvgWaitSecs(0.0f), mWaitSpread(0.0f) {

@@ -54,7 +54,7 @@ BEGIN_HANDLERS(CharMirror)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharMirror)
-    SYNC_PROP_METHOD(servo, (Hmx::Object*)mServo, SetServo(_val.Obj<CharServoBone>(0)));
-    SYNC_PROP_METHOD(mirror_servo, (Hmx::Object*)mMirrorServo, SetMirrorServo(_val.Obj<CharServoBone>(0)));
+    SYNC_PROP_SET(servo, (Hmx::Object*)mServo, SetServo(_val.Obj<CharServoBone>(0)));
+    SYNC_PROP_SET(mirror_servo, (Hmx::Object*)mMirrorServo, SetMirrorServo(_val.Obj<CharServoBone>(0)));
     SYNC_SUPERCLASS(CharWeightable);
 END_PROPSYNCS

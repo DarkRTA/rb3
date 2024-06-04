@@ -84,7 +84,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndWind)
     SYNC_PROP(prevailing, mPrevailing)
     SYNC_PROP(random, mRandom)
-    SYNC_PROP_METHOD(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>(0)))
+    SYNC_PROP_SET(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>(0)))
     SYNC_PROP_MODIFY(time_loop, mTimeLoop, SyncLoops())
     SYNC_PROP_MODIFY(space_loop, mSpaceLoop, SyncLoops())
 END_PROPSYNCS

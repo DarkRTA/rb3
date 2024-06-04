@@ -54,7 +54,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(UIListArrow)
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(scroll_anim, mScrollAnim)
-    SYNC_PROP_METHOD(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
+    SYNC_PROP_SET(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
     SYNC_PROP(show_only_scroll, mShowOnlyScroll)
     SYNC_PROP(on_highlight, mOnHighlight)
     SYNC_SUPERCLASS(UIListWidget)
