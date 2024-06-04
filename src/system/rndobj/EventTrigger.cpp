@@ -146,8 +146,8 @@ EventTrigger::HideDelay::HideDelay(Hmx::Object* o) : mHide(o, 0), mDelay(0.0f), 
 BEGIN_COPYS(EventTrigger)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    GET_COPY(EventTrigger)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(EventTrigger)
+    BEGIN_COPYING_MEMBERS
         UnregisterEvents();
         COPY_MEMBER(mTriggerEvents)
         COPY_MEMBER(mAnims)
@@ -167,7 +167,7 @@ BEGIN_COPYS(EventTrigger)
         COPY_MEMBER(mPartLaunchers)
         RegisterEvents();
         CleanupHideShow();
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 #pragma pop
 

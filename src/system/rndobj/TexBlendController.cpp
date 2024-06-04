@@ -22,8 +22,8 @@ void RndTexBlendController::UpdateMinDistance(){
 
 BEGIN_COPYS(RndTexBlendController)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(RndTexBlendController)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndTexBlendController)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mMesh)
         COPY_MEMBER(mObject1)
         COPY_MEMBER(mObject2)
@@ -31,7 +31,7 @@ BEGIN_COPYS(RndTexBlendController)
         COPY_MEMBER(mMinDistance)
         COPY_MEMBER(mMaxDistance)
         COPY_MEMBER(mTex)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RndTexBlendController, 0xF5)

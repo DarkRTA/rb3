@@ -19,11 +19,11 @@ void CharBoneOffset::Load(BinStream& bs){
 
 BEGIN_COPYS(CharBoneOffset)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharBoneOffset)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharBoneOffset)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mDest)
         COPY_MEMBER(mOffset)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharBoneOffset)

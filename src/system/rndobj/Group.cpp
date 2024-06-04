@@ -38,8 +38,8 @@ BEGIN_COPYS(RndGroup)
     COPY_SUPERCLASS(RndAnimatable)
     COPY_SUPERCLASS(RndDrawable)
     COPY_SUPERCLASS(RndTransformable)
-    GET_COPY(RndGroup)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndGroup)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mEnv)
         COPY_MEMBER(mDrawOnly)
         COPY_MEMBER(mLod)
@@ -47,6 +47,6 @@ BEGIN_COPYS(RndGroup)
         COPY_MEMBER(unk8p1)
         if(ty == kCopyDeep) COPY_MEMBER(mObjects)
         else if(ty == kCopyFromMax) Merge(c);
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
     Update();
 END_COPYS

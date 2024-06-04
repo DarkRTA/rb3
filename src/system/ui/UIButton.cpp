@@ -17,7 +17,7 @@ void UIButton::Init() {
 Hmx::Object* UIButton::NewObject() {return new UIButton;}
 
 BEGIN_COPYS(UIButton)
-    CREATE_COPY(UIButton, f);
+    CREATE_COPY_AS(UIButton, f);
     MILO_ASSERT(f, 42);
     COPY_SUPERCLASS(UILabel)
 END_COPYS

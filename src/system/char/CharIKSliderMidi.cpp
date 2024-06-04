@@ -48,13 +48,13 @@ void CharIKSliderMidi::Load(BinStream& bs){
 BEGIN_COPYS(CharIKSliderMidi)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
-    GET_COPY(CharIKSliderMidi)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharIKSliderMidi)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mTarget)
         COPY_MEMBER(mFirstSpot)
         COPY_MEMBER(mSecondSpot)
         COPY_MEMBER(mTolerance)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharIKSliderMidi)

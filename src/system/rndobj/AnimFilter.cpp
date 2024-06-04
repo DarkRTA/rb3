@@ -19,18 +19,20 @@ void RndAnimFilter::ListAnimChildren(std::list<RndAnimatable*>& theList) const {
 BEGIN_COPYS(RndAnimFilter)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    GET_COPY(RndAnimFilter)
-    if(c && ty != kCopyFromMax){
-        COPY_MEMBER(mScale)
-        COPY_MEMBER(mOffset)
-        COPY_MEMBER(mStart)
-        COPY_MEMBER(mEnd)
-        COPY_MEMBER(mType)
-        COPY_MEMBER(mAnim)
-        COPY_MEMBER(mPeriod)
-        COPY_MEMBER(mSnap)
-        COPY_MEMBER(mJitter)
-    }
+    CREATE_COPY(RndAnimFilter)
+    BEGIN_COPYING_MEMBERS
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mScale)
+            COPY_MEMBER(mOffset)
+            COPY_MEMBER(mStart)
+            COPY_MEMBER(mEnd)
+            COPY_MEMBER(mType)
+            COPY_MEMBER(mAnim)
+            COPY_MEMBER(mPeriod)
+            COPY_MEMBER(mSnap)
+            COPY_MEMBER(mJitter)
+        }
+    END_COPYING_MEMBERS
 END_COPYS
 
 RndAnimFilter::RndAnimFilter() : mAnim(this, 0), mPeriod(0.0f), mStart(0.0f), mEnd(0.0f), mScale(1.0f), mOffset(0.0f), mSnap(0.0f), mJitter(0.0f), mJitterFrame(0.0f), mType(kRange) {

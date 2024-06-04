@@ -40,11 +40,11 @@ void CharMirror::Load(BinStream& bs){
 BEGIN_COPYS(CharMirror)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
-    GET_COPY(CharMirror)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharMirror)
+    BEGIN_COPYING_MEMBERS
         SetMirrorServo(c->mMirrorServo);
         SetServo(c->mServo);
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharMirror)

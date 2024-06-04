@@ -39,12 +39,12 @@ void CharPosConstraint::Load(BinStream& bs){
 
 BEGIN_COPYS(CharPosConstraint)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharPosConstraint)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharPosConstraint)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mTargets)
         COPY_MEMBER(mSrc)
         COPY_MEMBER(mBox)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharPosConstraint)

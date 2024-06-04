@@ -84,18 +84,18 @@ void Sequence::Load(BinStream& bs){
 
 BEGIN_COPYS(Sequence)
     COPY_SUPERCLASS(Hmx::Object)
-    CREATE_COPY(Sequence, c)
-    if(c){
+    CREATE_COPY(Sequence)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEM(c, mAvgVol)
-            COPY_MEM(c, mVolSpread)
-            COPY_MEM(c, mAvgTranspose)
-            COPY_MEM(c, mTransposeSpread)
-            COPY_MEM(c, mAvgPan)
-            COPY_MEM(c, mPanSpread)
-            COPY_MEM(c, mCanStop)
+            COPY_MEMBER(mAvgVol)
+            COPY_MEMBER(mVolSpread)
+            COPY_MEMBER(mAvgTranspose)
+            COPY_MEMBER(mTransposeSpread)
+            COPY_MEMBER(mAvgPan)
+            COPY_MEMBER(mPanSpread)
+            COPY_MEMBER(mCanStop)
         }
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 DataNode Sequence::OnPlay(DataArray* arr){
@@ -170,13 +170,13 @@ void WaitSeq::Load(BinStream& bs){
 
 BEGIN_COPYS(WaitSeq)
     COPY_SUPERCLASS(Sequence)
-    CREATE_COPY(WaitSeq, c)
-    if(c){
+    CREATE_COPY(WaitSeq)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEM(c, mAvgWaitSecs)
-            COPY_MEM(c, mWaitSpread)
+            COPY_MEMBER(mAvgWaitSecs)
+            COPY_MEMBER(mWaitSpread)
         }
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_PROPSYNCS(WaitSeq)
@@ -210,13 +210,13 @@ void RandomGroupSeq::ForceNextIndex(int i){
 
 BEGIN_COPYS(RandomGroupSeq)
     COPY_SUPERCLASS(GroupSeq)
-    CREATE_COPY(RandomGroupSeq, c)
-    if(c){
+    CREATE_COPY(RandomGroupSeq)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEM(c, mNumSimul)
-            COPY_MEM(c, mAllowRepeats)
+            COPY_MEMBER(mNumSimul)
+            COPY_MEMBER(mAllowRepeats)
         }
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RandomGroupSeq, 0x217)
@@ -256,14 +256,14 @@ SeqInst* RandomIntervalGroupSeq::MakeInstImpl(){
 
 BEGIN_COPYS(RandomIntervalGroupSeq)
     COPY_SUPERCLASS(GroupSeq)
-    CREATE_COPY(RandomIntervalGroupSeq, c)
-    if(c){
+    CREATE_COPY(RandomIntervalGroupSeq)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEM(c, mAvgIntervalSecs)
-            COPY_MEM(c, mIntervalSpread)
-            COPY_MEM(c, mMaxSimultaneous)
+            COPY_MEMBER(mAvgIntervalSecs)
+            COPY_MEMBER(mIntervalSpread)
+            COPY_MEMBER(mMaxSimultaneous)
         }
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RandomIntervalGroupSeq, 0x266)
@@ -317,12 +317,12 @@ GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
 
 BEGIN_COPYS(GroupSeq)
     COPY_SUPERCLASS(Sequence)
-    CREATE_COPY(GroupSeq, c)
-    if(c){
+    CREATE_COPY(GroupSeq)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEM(c, mChildren)
+            COPY_MEMBER(mChildren)
         }
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(GroupSeq, 0x322)

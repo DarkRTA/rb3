@@ -134,18 +134,18 @@ void FxSend::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSend)
     COPY_SUPERCLASS(Hmx::Object)
-    CREATE_COPY(FxSend, c)
-    if(c){
-        COPY_MEM(c, mNextSend)
-        COPY_MEM(c, mStage)
-        COPY_MEM(c, mWetGain)
-        COPY_MEM(c, mDryGain)
-        COPY_MEM(c, mInputGain)
-        COPY_MEM(c, mChannels)
-        COPY_MEM(c, mBypass)
-        COPY_MEM(c, mReverbMixDb)
-        COPY_MEM(c, mReverbEnable)
-    }
+    CREATE_COPY(FxSend)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mNextSend)
+        COPY_MEMBER(mStage)
+        COPY_MEMBER(mWetGain)
+        COPY_MEMBER(mDryGain)
+        COPY_MEMBER(mInputGain)
+        COPY_MEMBER(mChannels)
+        COPY_MEMBER(mBypass)
+        COPY_MEMBER(mReverbMixDb)
+        COPY_MEMBER(mReverbEnable)
+    END_COPYING_MEMBERS
 END_COPYS
 
 void FxSend::TestWithMic(){

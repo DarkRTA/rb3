@@ -33,18 +33,18 @@ void FxSendCompress::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendCompress)
     COPY_SUPERCLASS(FxSend)
-    CREATE_COPY(FxSendCompress, c)
-    if(c){
-        COPY_MEM(c, mThresholdDB)
-        COPY_MEM(c, mRatio)
-        COPY_MEM(c, mOutputLevel)
-        COPY_MEM(c, mAttack)
-        COPY_MEM(c, mRelease)
-        COPY_MEM(c, mExpRatio)
-        COPY_MEM(c, mExpAttack)
-        COPY_MEM(c, mExpRelease)
-        COPY_MEM(c, mGateThresholdDB)
-    }
+    CREATE_COPY(FxSendCompress)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mThresholdDB)
+        COPY_MEMBER(mRatio)
+        COPY_MEMBER(mOutputLevel)
+        COPY_MEMBER(mAttack)
+        COPY_MEMBER(mRelease)
+        COPY_MEMBER(mExpRatio)
+        COPY_MEMBER(mExpAttack)
+        COPY_MEMBER(mExpRelease)
+        COPY_MEMBER(mGateThresholdDB)
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendCompress)

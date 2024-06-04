@@ -43,8 +43,8 @@ void CharSleeve::Load(BinStream& bs){
 
 BEGIN_COPYS(CharSleeve)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharSleeve)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharSleeve)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mSleeve)
         COPY_MEMBER(mTopSleeve)
         COPY_MEMBER(mInertia)
@@ -53,7 +53,7 @@ BEGIN_COPYS(CharSleeve)
         COPY_MEMBER(mRange)
         COPY_MEMBER(mNegLength)
         COPY_MEMBER(mPosLength)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharSleeve)

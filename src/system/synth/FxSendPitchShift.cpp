@@ -36,8 +36,8 @@ void FxSendPitchShift::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendPitchShift)
     COPY_SUPERCLASS(FxSend)
-    CREATE_COPY(FxSendPitchShift, c)
-    if(c){
-        COPY_MEM(c, mRatio)
-    }
+    CREATE_COPY(FxSendPitchShift)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mRatio)
+    END_COPYING_MEMBERS
 END_COPYS

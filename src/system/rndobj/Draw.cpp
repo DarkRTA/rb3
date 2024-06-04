@@ -51,8 +51,8 @@ void RndDrawable::Highlight(){
 }
 
 BEGIN_COPYS(RndDrawable)
-    GET_COPY(RndDrawable)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndDrawable)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
             COPY_MEMBER(mShowing)
             COPY_MEMBER(mOrder)
@@ -63,7 +63,7 @@ BEGIN_COPYS(RndDrawable)
                 COPY_MEMBER(mSphere)
             }
         }
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RndDrawable, 0xAE)

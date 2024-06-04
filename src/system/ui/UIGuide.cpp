@@ -24,11 +24,11 @@ void UIGuide::Load(BinStream& bs){
 
 BEGIN_COPYS(UIGuide)
     COPY_SUPERCLASS(Hmx::Object)
-    CREATE_COPY(UIGuide, c)
-    if(c){
-        COPY_MEM(c, mType)
-        COPY_MEM(c, mPos)
-    }
+    CREATE_COPY(UIGuide)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mType)
+        COPY_MEMBER(mPos)
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_PROPSYNCS(UIGuide);

@@ -7,8 +7,8 @@ INIT_REVS(RndCamAnim);
 BEGIN_COPYS(RndCamAnim)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    GET_COPY(RndCamAnim)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndCamAnim)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mCam)
         if(ty == kCopyShallow || ty == kCopyFromMax && c->mKeysOwner != c){
             COPY_MEMBER(mKeysOwner)
@@ -17,7 +17,7 @@ BEGIN_COPYS(RndCamAnim)
             mKeysOwner = this;
             mFovKeys = c->mKeysOwner->mFovKeys;
         }
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 void RndCamAnim::Print(){

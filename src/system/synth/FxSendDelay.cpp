@@ -32,15 +32,15 @@ void FxSendDelay::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendDelay)
     COPY_SUPERCLASS(FxSend)
-    CREATE_COPY(FxSendDelay, c)
-    if(c){
-        COPY_MEM(c, mDelayTime)
-        COPY_MEM(c, mGain)
-        COPY_MEM(c, mTempoSync)
-        COPY_MEM(c, mSyncType)
-        COPY_MEM(c, mTempo)
-        COPY_MEM(c, mPingPongPct)
-    }
+    CREATE_COPY(FxSendDelay)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mDelayTime)
+        COPY_MEMBER(mGain)
+        COPY_MEMBER(mTempoSync)
+        COPY_MEMBER(mSyncType)
+        COPY_MEMBER(mTempo)
+        COPY_MEMBER(mPingPongPct)
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendDelay)

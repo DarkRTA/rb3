@@ -71,13 +71,13 @@ END_LOADS
 
 BEGIN_COPYS(UIListWidget)
     COPY_SUPERCLASS(Hmx::Object)
-    CREATE_COPY(UIListWidget, w)
+    CREATE_COPY_AS(UIListWidget, w)
     MILO_ASSERT(w, 0xC6);
-    COPY_MEM(w, mDrawOrder)
-    COPY_MEM(w, mDisabledAlphaScale)
-    COPY_MEM(w, mDefaultColor)
-    COPY_MEM(w, mColors)
-    COPY_MEM(w, mWidgetDrawType)
+    COPY_MEMBER_FROM(w, mDrawOrder)
+    COPY_MEMBER_FROM(w, mDisabledAlphaScale)
+    COPY_MEMBER_FROM(w, mDefaultColor)
+    COPY_MEMBER_FROM(w, mColors)
+    COPY_MEMBER_FROM(w, mWidgetDrawType)
 END_COPYS
 
 BEGIN_HANDLERS(UIListWidget)

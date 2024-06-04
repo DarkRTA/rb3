@@ -41,8 +41,8 @@ void CharEyeDartRuleset::Load(BinStream& bs){
 
 BEGIN_COPYS(CharEyeDartRuleset)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharEyeDartRuleset)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharEyeDartRuleset)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mData.mMinRadius)
         // COPY_MEMBER(mData.mMaxRadius)
         mData.mMaxRadius = c->mData.mMinRadius;
@@ -55,7 +55,7 @@ BEGIN_COPYS(CharEyeDartRuleset)
         COPY_MEMBER(mData.mMaxSecsBetweenSequences)
         COPY_MEMBER(mData.mScaleWithDistance)
         COPY_MEMBER(mData.mReferenceDistance)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_PROPSYNCS(CharEyeDartRuleset)

@@ -13,11 +13,11 @@ LightHue::~LightHue(){
 
 BEGIN_COPYS(LightHue)
     COPY_SUPERCLASS(Hmx::Object)
-    CREATE_COPY(LightHue, c)
-    if(c){
-        COPY_MEM(c, mPath)
-        COPY_MEM(c, mKeys)
-    }
+    CREATE_COPY(LightHue)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mPath)
+        COPY_MEMBER(mKeys)
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(LightHue, 0x27)

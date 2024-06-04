@@ -30,17 +30,17 @@ void FxSendReverb::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendReverb)
     COPY_SUPERCLASS(FxSend)
-    CREATE_COPY(FxSendReverb, c)
-    if(c){
-        COPY_MEM(c, mEnvironmentPreset)
-        COPY_MEM(c, mPreDelayMs)
-        COPY_MEM(c, mHighCut)
-        COPY_MEM(c, mLowCut)
-        COPY_MEM(c, mRoomSize)
-        COPY_MEM(c, mDamping)
-        COPY_MEM(c, mDiffusion)
-        COPY_MEM(c, mEarlyLate)
-    }
+    CREATE_COPY(FxSendReverb)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mEnvironmentPreset)
+        COPY_MEMBER(mPreDelayMs)
+        COPY_MEMBER(mHighCut)
+        COPY_MEMBER(mLowCut)
+        COPY_MEMBER(mRoomSize)
+        COPY_MEMBER(mDamping)
+        COPY_MEMBER(mDiffusion)
+        COPY_MEMBER(mEarlyLate)
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendReverb)

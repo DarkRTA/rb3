@@ -37,11 +37,11 @@ void CharTransCopy::Load(BinStream& bs){
 
 BEGIN_COPYS(CharTransCopy)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharTransCopy)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharTransCopy)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mSrc)
         COPY_MEMBER(mDest)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharTransCopy)

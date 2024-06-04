@@ -66,12 +66,12 @@ void RndTransProxy::Load(BinStream& bs){
 BEGIN_COPYS(RndTransProxy)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndTransformable)
-    GET_COPY(RndTransProxy)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndTransProxy)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mProxy)
         COPY_MEMBER(mPart)
         Sync();
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(RndTransProxy)

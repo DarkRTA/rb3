@@ -27,13 +27,13 @@ void CharGuitarString::Load(BinStream& bs){
 
 BEGIN_COPYS(CharGuitarString)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharGuitarString)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharGuitarString)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mTarget)
         COPY_MEMBER(mNut)
         COPY_MEMBER(mBridge)
         COPY_MEMBER(mBend)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharGuitarString)

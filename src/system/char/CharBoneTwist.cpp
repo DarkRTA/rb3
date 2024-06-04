@@ -28,11 +28,11 @@ void CharBoneTwist::Load(BinStream& bs){
 BEGIN_COPYS(CharBoneTwist)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
-    GET_COPY(CharBoneTwist)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharBoneTwist)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mBone)
         COPY_MEMBER(mTargets)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharBoneTwist)

@@ -37,15 +37,15 @@ void CharIKScale::Load(BinStream& bs){
 BEGIN_COPYS(CharIKScale)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
-    GET_COPY(CharIKScale)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharIKScale)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mDest)
         COPY_MEMBER(mScale)
         COPY_MEMBER(mSecondaryTargets)
         COPY_MEMBER(mAutoWeight)
         COPY_MEMBER(mBottomHeight)
         COPY_MEMBER(mTopHeight)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharIKScale)

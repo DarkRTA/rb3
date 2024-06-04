@@ -72,16 +72,16 @@ void FxSendSynapse::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendSynapse)
     COPY_SUPERCLASS(FxSend)
-    CREATE_COPY(FxSendSynapse, c)
-    if(c){
-        COPY_MEM(c, mAmount)
-        COPY_MEM(c, mProximityEffect)
-        COPY_MEM(c, mProximityFocus)
-        COPY_MEM(c, mNote1Hz)
-        COPY_MEM(c, mNote2Hz)
-        COPY_MEM(c, mNote3Hz)
-        COPY_MEM(c, mUnisonTrio)
-        COPY_MEM(c, mAttackSmoothing)
-        COPY_MEM(c, mReleaseSmoothing)   
-    }
+    CREATE_COPY(FxSendSynapse)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mAmount)
+        COPY_MEMBER(mProximityEffect)
+        COPY_MEMBER(mProximityFocus)
+        COPY_MEMBER(mNote1Hz)
+        COPY_MEMBER(mNote2Hz)
+        COPY_MEMBER(mNote3Hz)
+        COPY_MEMBER(mUnisonTrio)
+        COPY_MEMBER(mAttackSmoothing)
+        COPY_MEMBER(mReleaseSmoothing)   
+    END_COPYING_MEMBERS
 END_COPYS

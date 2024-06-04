@@ -55,15 +55,17 @@ void RndCam::Load(BinStream& bs) {
 BEGIN_COPYS(RndCam)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndTransformable)
-    GET_COPY(RndCam)
-    if(c && ty != kCopyFromMax){
-        COPY_MEMBER(mNearPlane)
-        COPY_MEMBER(mFarPlane)
-        COPY_MEMBER(mYFov)
-        COPY_MEMBER(mScreenRect)
-        COPY_MEMBER(mZRange)
-        COPY_MEMBER(mTargetTex)
-    }
+    CREATE_COPY(RndCam)
+    BEGIN_COPYING_MEMBERS
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mNearPlane)
+            COPY_MEMBER(mFarPlane)
+            COPY_MEMBER(mYFov)
+            COPY_MEMBER(mScreenRect)
+            COPY_MEMBER(mZRange)
+            COPY_MEMBER(mTargetTex)
+        }
+    END_COPYING_MEMBERS
     UpdateLocal();
 END_COPYS
 

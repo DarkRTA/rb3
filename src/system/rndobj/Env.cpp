@@ -63,8 +63,8 @@ SAVE_OBJ(RndEnviron, 119)
 BEGIN_COPYS(RndEnviron)
     COPY_SUPERCLASS(Hmx::Object)
     if(ty != kCopyFromMax){
-        GET_COPY(RndEnviron)
-        BEGIN_COPY_CHECKED
+        CREATE_COPY(RndEnviron)
+        BEGIN_COPYING_MEMBERS
             COPY_MEMBER(mLightsReal)
             COPY_MEMBER(mLightsApprox)
             COPY_MEMBER(mLightsOld)
@@ -94,7 +94,7 @@ BEGIN_COPYS(RndEnviron)
                 mFogEnd = mAmbientFogOwner->mFogEnd;
                 mFogEnable = mAmbientFogOwner->mFogEnable;
             }
-        END_COPY_CHECKED
+        END_COPYING_MEMBERS
     }
 END_COPYS
 
