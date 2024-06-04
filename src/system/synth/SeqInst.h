@@ -108,6 +108,8 @@ public:
 
     NEW_POOL_OVERLOAD(SerialGroupSeqInst);
     DELETE_POOL_OVERLOAD(SerialGroupSeqInst);
+
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt;
 };
 
 class ParallelGroupSeqInst : public GroupSeqInst {

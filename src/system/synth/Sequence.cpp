@@ -410,3 +410,37 @@ void GroupSeqInst::SetTranspose(float f){
         }
     }
 }
+
+SerialGroupSeqInst::SerialGroupSeqInst(SerialGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+
+}
+
+void SerialGroupSeqInst::StartImpl(){
+    mIt = mSeqs.begin();
+    if(*mIt) (*mIt)->Start();
+}
+
+void SerialGroupSeqInst::Stop(){
+    if(mIt != mSeqs.end()){
+        if(*mIt) (*mIt)->Stop();
+    }
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator curIt = mIt;
+    if(curIt != mSeqs.end()) curIt++;
+    while(curIt != mSeqs.end()){
+        delete *curIt++;
+    }
+}
+
+bool SerialGroupSeqInst::IsRunning(){
+    return mIt != mSeqs.end();
+}
+
+void SerialGroupSeqInst::Poll(){
+    while(mIt != mSeqs.end()){
+        if((*mIt) && (*mIt)->IsRunning()) return;
+        if(mIt++ != mSeqs.end()){
+            SeqInst* si = (*mIt);
+            if(si) si->Start();
+        }
+    }
+}
