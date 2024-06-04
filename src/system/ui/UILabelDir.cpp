@@ -16,7 +16,7 @@ UILabelDir::UILabelDir() : mDefaultColor(this, 0), mColors(), mTextObj(this, 0),
 }
 
 RndText* UILabelDir::TextObj(Symbol sym) const {
-    return (mGennedFonts.size() > 0) ? mTextObj : GetGennedText(sym);
+    return (mGennedFonts.size() > 0) ? (RndText*)mTextObj : GetGennedText(sym);
 }
 
 RndAnimatable* UILabelDir::FocusAnim() const { return mFocusAnim; }

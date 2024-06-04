@@ -37,16 +37,16 @@ void PanelDir::PreLoad(BinStream& bs) {
 
 BEGIN_COPYS(PanelDir)
     COPY_SUPERCLASS(RndDir)
-    CREATE_COPY(PanelDir, c)
-    if(c){
-        COPY_MEM(c, mCam)
-        COPY_MEM(c, mCanEndWorld)
-        COPY_MEM(c, mBackFilenames)
-        COPY_MEM(c, mFrontFilenames)
-        COPY_MEM(c, mShowEditModePanels)
-        COPY_MEM(c, mUseSpecifiedCam)
+    CREATE_COPY(PanelDir)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mCam)
+        COPY_MEMBER(mCanEndWorld)
+        COPY_MEMBER(mBackFilenames)
+        COPY_MEMBER(mFrontFilenames)
+        COPY_MEMBER(mShowEditModePanels)
+        COPY_MEMBER(mUseSpecifiedCam)
         SyncEditModePanels();
-    }
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_PROPSYNCS(PanelDir)

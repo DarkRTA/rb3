@@ -39,10 +39,10 @@ UIPicture::~UIPicture() {
 }
 
 BEGIN_COPYS(UIPicture)
-    CREATE_COPY(UIPicture, p)
+    CREATE_COPY_AS(UIPicture, p)
     MILO_ASSERT(p, 0x41);
     UIComponent::Copy(p, ty);
-    COPY_MEM(p, mMesh)
+    COPY_MEMBER_FROM(p, mMesh)
     UITransitionHandler::CopyHandlerData(p);
 END_COPYS
 
