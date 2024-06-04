@@ -25,10 +25,10 @@ void FxSendDistortion::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendDistortion)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendDistortion)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mDrive)
-    END_COPY_CHECKED
+    CREATE_COPY(FxSendDistortion, c)
+    if(c){
+        COPY_MEM(c, mDrive)
+    }
 END_COPYS
 
 BEGIN_HANDLERS(FxSendDistortion)

@@ -218,6 +218,9 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 #define CREATE_COPY(objType, var_name) \
     const objType* var_name = dynamic_cast<const objType*>(o);
 
+#define CREATE_COPY_AS(objType, var_name) \
+    const objType* var_name = dynamic_cast<const objType*>(o);
+
 #define GET_COPY(objType) \
     const objType* c = dynamic_cast<const objType*>(o);
 

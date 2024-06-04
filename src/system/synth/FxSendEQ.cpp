@@ -30,20 +30,20 @@ void FxSendEQ::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendEQ)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendEQ)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mHighFreqCutoff)
-        COPY_MEMBER(mHighFreqGain)
-        COPY_MEMBER(mMidFreqCutoff)
-        COPY_MEMBER(mMidFreqBandwidth)
-        COPY_MEMBER(mMidFreqGain)
-        COPY_MEMBER(mLowFreqCutoff)
-        COPY_MEMBER(mLowFreqGain)
-        COPY_MEMBER(mLowPassCutoff)
-        COPY_MEMBER(mLowPassReso)
-        COPY_MEMBER(mHighPassCutoff)
-        COPY_MEMBER(mHighPassReso)
-    END_COPY_CHECKED
+    CREATE_COPY(FxSendEQ, c)
+    if(c){
+        COPY_MEM(c, mHighFreqCutoff)
+        COPY_MEM(c, mHighFreqGain)
+        COPY_MEM(c, mMidFreqCutoff)
+        COPY_MEM(c, mMidFreqBandwidth)
+        COPY_MEM(c, mMidFreqGain)
+        COPY_MEM(c, mLowFreqCutoff)
+        COPY_MEM(c, mLowFreqGain)
+        COPY_MEM(c, mLowPassCutoff)
+        COPY_MEM(c, mLowPassReso)
+        COPY_MEM(c, mHighPassCutoff)
+        COPY_MEM(c, mHighPassReso)
+    }
 END_COPYS
 
 BEGIN_HANDLERS(FxSendEQ)

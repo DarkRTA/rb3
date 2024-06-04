@@ -21,7 +21,7 @@ void FxSendMeterEffect::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendMeterEffect)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendMeterEffect)
+    CREATE_COPY(FxSendMeterEffect, c)
 END_COPYS
 
 float FxSendMeterEffect::ChannelData(int idx){

@@ -59,14 +59,14 @@ SAVE_OBJ(MoggClip, 0x82)
 
 BEGIN_COPYS(MoggClip)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(MoggClip)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mFilePath)
-        COPY_MEMBER(mVolume)
-        COPY_MEMBER(mLoop)
-        COPY_MEMBER(mLoopStart)
-        COPY_MEMBER(mLoopEnd)
-    END_COPY_CHECKED
+    CREATE_COPY(MoggClip, c)
+    if(c){
+        COPY_MEM(c, mFilePath)
+        COPY_MEM(c, mVolume)
+        COPY_MEM(c, mLoop)
+        COPY_MEM(c, mLoopStart)
+        COPY_MEM(c, mLoopEnd)
+    }
 END_COPYS
 
 void MoggClip::Load(BinStream& bs){

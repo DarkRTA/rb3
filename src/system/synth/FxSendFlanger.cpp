@@ -39,17 +39,17 @@ void FxSendFlanger::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendFlanger)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendFlanger)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mDelayMs)
-        COPY_MEMBER(mRate)
-        COPY_MEMBER(mDepthPct)
-        COPY_MEMBER(mFeedbackPct)
-        COPY_MEMBER(mOffsetPct)
-        COPY_MEMBER(mTempoSync)
-        COPY_MEMBER(mSyncType)
-        COPY_MEMBER(mTempo)
-    END_COPY_CHECKED
+    CREATE_COPY(FxSendFlanger, c)
+    if(c){
+        COPY_MEM(c, mDelayMs)
+        COPY_MEM(c, mRate)
+        COPY_MEM(c, mDepthPct)
+        COPY_MEM(c, mFeedbackPct)
+        COPY_MEM(c, mOffsetPct)
+        COPY_MEM(c, mTempoSync)
+        COPY_MEM(c, mSyncType)
+        COPY_MEM(c, mTempo)
+    }
 END_COPYS
 
 BEGIN_HANDLERS(FxSendFlanger)

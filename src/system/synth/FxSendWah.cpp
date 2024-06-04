@@ -29,20 +29,20 @@ void FxSendWah::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendWah)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendWah)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mResonance)
-        COPY_MEMBER(mLowerFreq)
-        COPY_MEMBER(mUpperFreq)
-        COPY_MEMBER(mLfoFreq)
-        COPY_MEMBER(mMagic)
-        COPY_MEMBER(mTempoSync)
-        COPY_MEMBER(mTempo)
-        COPY_MEMBER(mSyncType)
-        COPY_MEMBER(mDistAmount)
-        COPY_MEMBER(mAutoWah)
-        COPY_MEMBER(mFrequency)
-    END_COPY_CHECKED
+    CREATE_COPY(FxSendWah, c)
+    if(c){
+        COPY_MEM(c, mResonance)
+        COPY_MEM(c, mLowerFreq)
+        COPY_MEM(c, mUpperFreq)
+        COPY_MEM(c, mLfoFreq)
+        COPY_MEM(c, mMagic)
+        COPY_MEM(c, mTempoSync)
+        COPY_MEM(c, mTempo)
+        COPY_MEM(c, mSyncType)
+        COPY_MEM(c, mDistAmount)
+        COPY_MEM(c, mAutoWah)
+        COPY_MEM(c, mFrequency)
+    }
 END_COPYS
 
 BEGIN_HANDLERS(FxSendWah)

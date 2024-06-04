@@ -14,17 +14,17 @@ BEGIN_COPYS(SynthEmitter)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndTransformable)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(SynthEmitter)
-    BEGIN_COPY_CHECKED
-        COPY_MEMBER(mSfx)
-        COPY_MEMBER(mListener)
-        COPY_MEMBER(mSynthEmitterEnabled)
-        COPY_MEMBER(mRadOuter)
-        COPY_MEMBER(mRadInner)
-        COPY_MEMBER(mVolOuter)
-        COPY_MEMBER(mVolInner)
+    CREATE_COPY(SynthEmitter, c)
+    if(c){
+        COPY_MEM(c, mSfx)
+        COPY_MEM(c, mListener)
+        COPY_MEM(c, mSynthEmitterEnabled)
+        COPY_MEM(c, mRadOuter)
+        COPY_MEM(c, mRadInner)
+        COPY_MEM(c, mVolOuter)
+        COPY_MEM(c, mVolInner)
         delete mInst;
-    END_COPY_CHECKED
+    }
 END_COPYS
 
 SAVE_OBJ(SynthEmitter, 0x30)
