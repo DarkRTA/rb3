@@ -86,7 +86,7 @@ public:
 
     int NextIndex();
     void PickNextIndex();
-    void ForceNextIndex();
+    void ForceNextIndex(int);
     int GetNumSimul(){ return mNumSimul; }
 
     int mNumSimul; // 0x78

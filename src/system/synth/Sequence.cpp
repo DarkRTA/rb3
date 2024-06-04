@@ -199,6 +199,46 @@ void RandomGroupSeq::PickNextIndex(){
     else mNextIndex = (mNextIndex + 1) % Children().size();
 }
 
+void RandomGroupSeq::ForceNextIndex(int i){
+
+}
+
+BEGIN_COPYS(RandomGroupSeq)
+    COPY_SUPERCLASS(GroupSeq)
+    GET_COPY(RandomGroupSeq)
+    if(c && ty != kCopyFromMax){
+        COPY_MEMBER(mNumSimul)
+        COPY_MEMBER(mAllowRepeats)
+    }
+END_COPYS
+
+SAVE_OBJ(RandomGroupSeq, 0x217)
+
+BEGIN_LOADS(RandomGroupSeq)
+    int rev;
+    bs >> rev;
+    if(rev > 2) MILO_WARN("Can't load new RandomGroupSeq");
+    else {
+        LOAD_SUPERCLASS(GroupSeq)
+        bs >> mNumSimul;
+        if(rev >= 2) bs >> mAllowRepeats;
+    }
+END_LOADS
+
+BEGIN_PROPSYNCS(RandomGroupSeq)
+    SYNC_PROP(num_simul, mNumSimul)
+    SYNC_PROP(allow_repeats, mAllowRepeats)
+    SYNC_PROP(force_choose_index, mForceChooseIndex)
+    SYNC_SUPERCLASS(GroupSeq)
+END_PROPSYNCS
+
+BEGIN_HANDLERS(RandomGroupSeq)
+    HANDLE_EXPR(get_next_play_index, NextIndex())
+    HANDLE_ACTION(force_next_play_index, ForceNextIndex(_msg->Int(2)))
+    HANDLE_SUPERCLASS(Sequence)
+    HANDLE_CHECK(0x241)
+END_HANDLERS
+
 RandomIntervalGroupSeq::RandomIntervalGroupSeq() : mAvgIntervalSecs(4.0f), mIntervalSpread(2.0f), mMaxSimultaneous(8) {
 
 }
