@@ -71,7 +71,7 @@ public:
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
     virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void Mats(std::list<class RndMat*>&, bool);
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
     virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~RndMesh();

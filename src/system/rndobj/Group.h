@@ -28,7 +28,7 @@ public:
     virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
     virtual int CollidePlane(const Plane&);
     virtual bool DrawShowingBudget(float);

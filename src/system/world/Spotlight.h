@@ -52,7 +52,7 @@ public:
     virtual void Mats(std::list<class RndMat*>&, bool);
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual int CollideShowing(const Segment&, float&, Plane&);
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
     virtual void Highlight();
     virtual ~Spotlight();

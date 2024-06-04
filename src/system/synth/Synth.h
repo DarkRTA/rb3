@@ -90,6 +90,7 @@ public:
     bool unk3c; // mMuted
     ObjDirPtr<class ObjectDir> unk40;
     Fader* unk4c;
+    Fader* unk50;
 };
 
 extern Synth* TheSynth;
