@@ -41,7 +41,7 @@ public:
 class WaitSeqInst : public SeqInst {
 public:
     WaitSeqInst(WaitSeq*);
-    virtual ~WaitSeqInst();
+    virtual ~WaitSeqInst(){}
     virtual void Stop();
     virtual bool IsRunning();
     virtual void UpdateVolume();
@@ -81,7 +81,7 @@ public:
     DELETE_POOL_OVERLOAD(RandomGroupSeqInst);
 
     int mNumSeqs; // 0x40
-    int unk44; // 0x44
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x44
 };
 
 class RandomIntervalGroupSeqInst : public GroupSeqInst {
@@ -93,14 +93,22 @@ public:
     virtual void Poll();
     virtual void StartImpl();
 
+    void ComputeNextTime();
+
     NEW_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
     DELETE_POOL_OVERLOAD(RandomIntervalGroupSeqInst);
+
+    int unk40;
+    int unk44;
+    int unk48;
+    std::vector<int> unk4c;
+    bool unk54;
 };
 
 class SerialGroupSeqInst : public GroupSeqInst {
 public:
     SerialGroupSeqInst(SerialGroupSeq*);
-    virtual ~SerialGroupSeqInst();
+    virtual ~SerialGroupSeqInst(){}
     virtual void Stop();
     virtual bool IsRunning();
     virtual void Poll();
@@ -109,7 +117,7 @@ public:
     NEW_POOL_OVERLOAD(SerialGroupSeqInst);
     DELETE_POOL_OVERLOAD(SerialGroupSeqInst);
 
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt;
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x40
 };
 
 class ParallelGroupSeqInst : public GroupSeqInst {
@@ -123,6 +131,8 @@ public:
 
     NEW_POOL_OVERLOAD(ParallelGroupSeqInst);
     DELETE_POOL_OVERLOAD(ParallelGroupSeqInst);
+
+    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x40
 };
 
 #endif

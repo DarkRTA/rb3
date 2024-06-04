@@ -444,3 +444,96 @@ void SerialGroupSeqInst::Poll(){
         }
     }
 }
+
+ParallelGroupSeqInst::ParallelGroupSeqInst(ParallelGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+
+}
+
+ParallelGroupSeqInst::~ParallelGroupSeqInst(){
+
+}
+
+void ParallelGroupSeqInst::StartImpl(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+        if(*it) (*it)->Start();
+    }
+    for(mIt = mSeqs.begin(); mIt != mSeqs.end(); mIt++){
+        if((*mIt) && (*mIt)->IsRunning()) return;
+    }
+}
+
+void ParallelGroupSeqInst::Stop(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+        if(*it) (*it)->Stop();
+    }
+}
+
+bool ParallelGroupSeqInst::IsRunning(){
+    return mIt != mSeqs.end();
+}
+
+void ParallelGroupSeqInst::Poll(){
+    for(; mIt != mSeqs.end(); mIt++){
+        if((*mIt) && (*mIt)->IsRunning()) return;
+    }
+}
+
+RandomGroupSeqInst::RandomGroupSeqInst(RandomGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+    mNumSeqs = seq->GetNumSimul();
+    int childrenSize = seq->Children().size();
+    if(childrenSize < mNumSeqs) mNumSeqs = childrenSize;
+    if(mNumSeqs == 1){
+        int next = seq->NextIndex();
+        seq->PickNextIndex();
+        int n = 0;
+        for(ObjPtrList<Sequence, class ObjectDir>::iterator it = seq->Children().begin(); it != seq->Children().end(); ++it){
+            if(n == next % childrenSize){
+                SeqInst* si = (*it)->MakeInst();
+                if(si) mSeqs.push_back(ObjPtr<SeqInst, ObjectDir>(si, 0));
+                break;
+            }
+            n++;
+        }
+        mIt = mSeqs.begin();
+    }
+    else {
+        if(mNumSeqs != 0){
+
+        }
+        mIt = mSeqs.begin();
+    }
+}
+
+RandomGroupSeqInst::~RandomGroupSeqInst(){
+
+}
+
+void RandomGroupSeqInst::StartImpl(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+        if(*it) (*it)->Start();
+    }
+}
+
+void RandomGroupSeqInst::Stop(){
+    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+        if(*it) (*it)->Stop();
+    }
+}
+
+bool RandomGroupSeqInst::IsRunning(){
+    return mIt != mSeqs.end();
+}
+
+void RandomGroupSeqInst::Poll(){
+    for(; mIt != mSeqs.end(); mIt++){
+        if((*mIt) && (*mIt)->IsRunning()) return;
+    }
+}
+
+RandomIntervalGroupSeqInst::RandomIntervalGroupSeqInst(RandomIntervalGroupSeq* seq) : GroupSeqInst(seq, true) {
+
+}
+
+RandomIntervalGroupSeqInst::~RandomIntervalGroupSeqInst(){
+    
+}
