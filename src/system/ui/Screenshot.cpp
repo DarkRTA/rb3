@@ -13,8 +13,8 @@ unsigned short Screenshot::gAltRev = 0;
 BEGIN_COPYS(Screenshot)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(Screenshot)
-    if(c && ty != kCopyFromMax) COPY_MEMBER(mTexPath)
+    CREATE_COPY(Screenshot, c)
+    if(c && ty != kCopyFromMax) COPY_MEM(c, mTexPath)
     Sync();
 END_COPYS
 

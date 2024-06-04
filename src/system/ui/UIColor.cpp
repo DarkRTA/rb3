@@ -29,8 +29,9 @@ void UIColor::Load(BinStream& bs){
 
 BEGIN_COPYS(UIColor)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY_AND_ASSERT(UIColor, 0x34)
-    COPY_MEMBER(mColor)
+    CREATE_COPY(UIColor, c)
+    MILO_ASSERT(c, 0x34);
+    COPY_MEM(c, mColor)
 END_COPYS
 
 BEGIN_HANDLERS(UIColor);

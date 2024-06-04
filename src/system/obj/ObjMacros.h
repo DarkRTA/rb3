@@ -215,6 +215,8 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
     parent::Copy(o, ty);
 
 // new copy macro where you specify the variable name (used in asserts in some copy methods)
+#define CREATE_COPY(objType, var_name) \
+    const objType* var_name = dynamic_cast<const objType*>(o);
 
 #define GET_COPY(objType) \
     const objType* c = dynamic_cast<const objType*>(o);
@@ -222,6 +224,9 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 #define GET_COPY_AND_ASSERT(objType, line_num) \
     const objType* c = dynamic_cast<const objType*>(o); \
     MILO_ASSERT(c, line_num);
+
+#define COPY_MEM(copy_name, member) \
+    member = copy_name->member;
 
 #define BEGIN_COPY_CHECKED \
     if(c){

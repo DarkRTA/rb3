@@ -39,10 +39,10 @@ UIPicture::~UIPicture() {
 }
 
 BEGIN_COPYS(UIPicture)
-    const UIPicture* p = dynamic_cast<const UIPicture*>(o);
+    CREATE_COPY(UIPicture, p)
     MILO_ASSERT(p, 0x41);
     UIComponent::Copy(p, ty);
-    mMesh = p->mMesh;
+    COPY_MEM(p, mMesh)
     UITransitionHandler::CopyHandlerData(p);
 END_COPYS
 
