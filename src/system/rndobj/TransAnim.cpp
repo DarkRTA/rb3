@@ -43,7 +43,7 @@ void RndTransAnim::Load(BinStream& bs){
 }
 
 BEGIN_COPYS(RndTransAnim)
-    const RndTransAnim* t = dynamic_cast<const RndTransAnim*>(o);
+    CREATE_COPY_AS(RndTransAnim, t)
     MILO_ASSERT(t, 0xE8);
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)

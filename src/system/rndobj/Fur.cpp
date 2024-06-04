@@ -12,8 +12,7 @@ RndFur::RndFur() {
 }
 
 BEGIN_COPYS(RndFur)
-    // GET_COPY_AND_ASSERT(RndFur, 23)
-    const RndFur* m = dynamic_cast<const RndFur*>(o);
+    CREATE_COPY_AS(RndFur, m)
     MILO_ASSERT(m, 23);
     COPY_SUPERCLASS(Hmx::Object)
 END_COPYS

@@ -48,13 +48,13 @@ void RndLightAnim::Load(BinStream& bs){
 }
 
 BEGIN_COPYS(RndLightAnim)
-    const RndLightAnim* l = dynamic_cast<const RndLightAnim*>(o);
+    CREATE_COPY_AS(RndLightAnim, l)
     MILO_ASSERT(l, 0x6B);
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    mLight = l->mLight;
+    COPY_MEMBER_FROM(l, mLight)
     if(ty == kCopyShallow || (ty == kCopyFromMax && l->mKeysOwner != l)){
-        mKeysOwner = l->mKeysOwner;
+        COPY_MEMBER_FROM(l, mKeysOwner)
     }
     else {
         mKeysOwner = this;
