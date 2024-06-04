@@ -1,6 +1,8 @@
 #include "synth/Emitter.h"
 #include "rndobj/Dir.h"
 #include "obj/DirLoader.h"
+#include "synth/FxSend.h"
+#include "synth/Sfx.h"
 #include "utl/Symbols.h"
 
 namespace {

@@ -3,9 +3,10 @@
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
-#include "synth/Sfx.h"
 #include "synth/SfxInst.h"
 #include "obj/ObjPtr_p.h"
+
+class Sfx;
 
 class SynthEmitter : public RndTransformable, public RndDrawable, public RndPollable {
 public:
