@@ -22,6 +22,18 @@ public:
     void GenerateBitmapFilename();
     RndText* GetGennedText(Symbol) const;
     void FontImporterSyncObjects();
+    void SyncWithGennedFonts();
+    void HandmadeFontChanged();
+
+    DataNode OnShowFontPicker(DataArray*);
+    DataNode OnGenerate(DataArray*);
+    DataNode OnGenerateOG(DataArray*);
+    DataNode OnForgetGened(DataArray*);
+    DataNode OnAttachToImportFont(DataArray*);
+    DataNode OnImportSettings(DataArray*);
+    DataNode OnSyncWithResourceFile(DataArray*);
+    DataNode OnGetResourcesPath(DataArray*);
+    DataNode OnGetGennedBitmapPath(DataArray*);
 
     DELETE_OVERLOAD;
     
