@@ -25,10 +25,10 @@ void FxSendDistortion::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendDistortion)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendDistortion)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendDistortion)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mDrive)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendDistortion)
@@ -37,6 +37,6 @@ BEGIN_HANDLERS(FxSendDistortion)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendDistortion)
-    SYNC_PROP_ACTION(drive, mDrive, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(drive, mDrive, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

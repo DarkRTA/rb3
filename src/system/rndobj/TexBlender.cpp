@@ -11,8 +11,8 @@ RndTexBlender::RndTexBlender() : mBaseMap(this, 0), mNearMap(this, 0), mFarMap(t
 BEGIN_COPYS(RndTexBlender)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(RndTexBlender)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndTexBlender)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mOutputTextures)
         COPY_MEMBER(mBaseMap)
         COPY_MEMBER(mNearMap)
@@ -20,7 +20,7 @@ BEGIN_COPYS(RndTexBlender)
         COPY_MEMBER(mControllerList)
         COPY_MEMBER(mOwner)
         COPY_MEMBER(mControllerInfluence)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
     unk70 = 0;
 END_COPYS
 

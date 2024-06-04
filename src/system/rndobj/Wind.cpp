@@ -52,8 +52,8 @@ END_LOADS
 
 BEGIN_COPYS(RndWind)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(RndWind)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndWind)
+    BEGIN_COPYING_MEMBERS
         if(ty == kCopyShallow) mWindOwner = c->mWindOwner;
         else {
             mWindOwner = this;
@@ -64,7 +64,7 @@ BEGIN_COPYS(RndWind)
             COPY_MEMBER(mSpaceLoop)
             SyncLoops();
         }
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 void RndWind::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -84,7 +84,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndWind)
     SYNC_PROP(prevailing, mPrevailing)
     SYNC_PROP(random, mRandom)
-    SYNC_PROP_METHOD(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>(0)))
-    SYNC_PROP_ACTION(time_loop, mTimeLoop, kPropSize|kPropGet, SyncLoops())
-    SYNC_PROP_ACTION(space_loop, mSpaceLoop, kPropSize|kPropGet, SyncLoops())
+    SYNC_PROP_SET(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>(0)))
+    SYNC_PROP_MODIFY(time_loop, mTimeLoop, SyncLoops())
+    SYNC_PROP_MODIFY(space_loop, mSpaceLoop, SyncLoops())
 END_PROPSYNCS

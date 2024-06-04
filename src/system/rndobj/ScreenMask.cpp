@@ -18,13 +18,13 @@ RndScreenMask::RndScreenMask() : mMat(this, 0), mColor(), mRect(0.0f, 0.0f, 1.0f
 BEGIN_COPYS(RndScreenMask)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(RndScreenMask)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndScreenMask)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mMat)
         COPY_MEMBER(mColor)
         COPY_MEMBER(mRect)
         COPY_MEMBER(mUseCurrentRect)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RndScreenMask, 0x38)

@@ -59,14 +59,14 @@ SAVE_OBJ(MoggClip, 0x82)
 
 BEGIN_COPYS(MoggClip)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(MoggClip)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(MoggClip)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mFilePath)
         COPY_MEMBER(mVolume)
         COPY_MEMBER(mLoop)
         COPY_MEMBER(mLoopStart)
         COPY_MEMBER(mLoopEnd)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 void MoggClip::Load(BinStream& bs){
@@ -228,11 +228,11 @@ void MoggClip::SetupPanInfo(float f1, float f2, bool b){
 }
 
 BEGIN_PROPSYNCS(MoggClip)
-    SYNC_PROP_METHOD(file, mFilePath, SetFile(_val.Str(0)))
-    SYNC_PROP_METHOD(volume, mVolume, SetVolume(_val.Float(0)))
-    SYNC_PROP_METHOD(loop, mLoop, SetLoop(_val.Int(0) != 0))
-    SYNC_PROP_METHOD(loop_start_sample, mLoopStart, SetLoopStart(_val.Int(0)))
-    SYNC_PROP_METHOD(loop_end_sample, mLoopEnd, SetLoopEnd(_val.Int(0)))
+    SYNC_PROP_SET(file, mFilePath, SetFile(_val.Str(0)))
+    SYNC_PROP_SET(volume, mVolume, SetVolume(_val.Float(0)))
+    SYNC_PROP_SET(loop, mLoop, SetLoop(_val.Int(0) != 0))
+    SYNC_PROP_SET(loop_start_sample, mLoopStart, SetLoopStart(_val.Int(0)))
+    SYNC_PROP_SET(loop_end_sample, mLoopEnd, SetLoopEnd(_val.Int(0)))
 END_PROPSYNCS
 
 BEGIN_HANDLERS(MoggClip)

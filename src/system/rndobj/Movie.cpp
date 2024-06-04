@@ -45,12 +45,12 @@ void RndMovie::SetFile(const FilePath& fp, bool b){
 }
 
 BEGIN_COPYS(RndMovie)
-    const RndMovie* t = dynamic_cast<const RndMovie*>(o);
+    CREATE_COPY_AS(RndMovie, t);
     MILO_ASSERT(t, 0x52);
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    mLoop = t->mLoop;
-    mTex = t->mTex;
+    COPY_MEMBER_FROM(t, mLoop)
+    COPY_MEMBER_FROM(t, mTex)
     SetFile(t->mFile, t->mStream);
 END_COPYS
 

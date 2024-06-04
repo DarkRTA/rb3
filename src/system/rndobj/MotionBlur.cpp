@@ -14,10 +14,10 @@ RndMotionBlur::RndMotionBlur() : mDrawList(this, kObjListNoNull) {
 BEGIN_COPYS(RndMotionBlur)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(RndMotionBlur)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndMotionBlur)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mDrawList)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RndMotionBlur, 0x2B)

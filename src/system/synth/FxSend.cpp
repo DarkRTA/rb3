@@ -134,8 +134,8 @@ void FxSend::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSend)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(FxSend)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSend)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mNextSend)
         COPY_MEMBER(mStage)
         COPY_MEMBER(mWetGain)
@@ -145,7 +145,7 @@ BEGIN_COPYS(FxSend)
         COPY_MEMBER(mBypass)
         COPY_MEMBER(mReverbMixDb)
         COPY_MEMBER(mReverbEnable)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 void FxSend::TestWithMic(){
@@ -169,31 +169,13 @@ BEGIN_HANDLERS(FxSend)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSend)
-    if(sym == next_send){
-        if(_op == kPropSet){
-            SetNextSend(_val.Obj<FxSend>(0));
-        }
-        else {
-            if(_op == (PropOp)0x40) return false;
-            _val = DataNode(mNextSend);
-        }
-        return true;
-    }
-    if(sym == stage){
-        if(_op == kPropSet){
-            SetStage(_val.Int(0));
-        }
-        else {
-            if(_op == (PropOp)0x40) return false;
-            _val = DataNode(mStage);
-        }
-        return true;
-    }
-    SYNC_PROP_ACTION(dry_gain, mDryGain, kPropSize|kPropGet, UpdateMix())
-    SYNC_PROP_ACTION(wet_gain, mWetGain, kPropSize|kPropGet, UpdateMix())
-    SYNC_PROP_ACTION(input_gain, mInputGain, kPropSize|kPropGet, UpdateMix())
-    SYNC_PROP_ACTION(reverb_mix_db, mReverbMixDb, kPropSize|kPropGet, UpdateMix())
-    SYNC_PROP_ACTION(reverb_enable, mReverbEnable, kPropSize|kPropGet, RebuildChain())
-    SYNC_PROP_ACTION(channels, (int&)mChannels, kPropSize|kPropGet, RebuildChain())
-    SYNC_PROP_ACTION(bypass, mBypass, kPropSize|kPropGet, UpdateMix())
+    SYNC_PROP_SET(next_send, mNextSend, SetNextSend(_val.Obj<FxSend>(0)))
+    SYNC_PROP_SET(stage, mStage, SetStage(_val.Int(0)))
+    SYNC_PROP_MODIFY(dry_gain, mDryGain, UpdateMix())
+    SYNC_PROP_MODIFY(wet_gain, mWetGain, UpdateMix())
+    SYNC_PROP_MODIFY(input_gain, mInputGain, UpdateMix())
+    SYNC_PROP_MODIFY(reverb_mix_db, mReverbMixDb, UpdateMix())
+    SYNC_PROP_MODIFY(reverb_enable, mReverbEnable, RebuildChain())
+    SYNC_PROP_MODIFY(channels, (int&)mChannels, RebuildChain())
+    SYNC_PROP_MODIFY(bypass, mBypass, UpdateMix())
 END_PROPSYNCS

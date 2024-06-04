@@ -30,8 +30,8 @@ void FxSendEQ::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendEQ)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendEQ)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendEQ)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mHighFreqCutoff)
         COPY_MEMBER(mHighFreqGain)
         COPY_MEMBER(mMidFreqCutoff)
@@ -43,7 +43,7 @@ BEGIN_COPYS(FxSendEQ)
         COPY_MEMBER(mLowPassReso)
         COPY_MEMBER(mHighPassCutoff)
         COPY_MEMBER(mHighPassReso)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendEQ)
@@ -52,16 +52,16 @@ BEGIN_HANDLERS(FxSendEQ)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendEQ)
-    SYNC_PROP_ACTION(high_frequency, mHighFreqCutoff, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(high_gain, mHighFreqGain, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(mid_frequency, mMidFreqCutoff, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(mid_bandwidth, mMidFreqBandwidth, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(mid_gain, mMidFreqGain, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(low_frequency, mLowFreqCutoff, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(low_gain, mLowFreqGain, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(low_pass_cutoff, mLowPassCutoff, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(low_pass_reso, mLowPassReso, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(high_pass_cutoff, mHighPassCutoff, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(high_pass_reso, mHighPassReso, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(high_frequency, mHighFreqCutoff, OnParametersChanged())
+    SYNC_PROP_MODIFY(high_gain, mHighFreqGain, OnParametersChanged())
+    SYNC_PROP_MODIFY(mid_frequency, mMidFreqCutoff, OnParametersChanged())
+    SYNC_PROP_MODIFY(mid_bandwidth, mMidFreqBandwidth, OnParametersChanged())
+    SYNC_PROP_MODIFY(mid_gain, mMidFreqGain, OnParametersChanged())
+    SYNC_PROP_MODIFY(low_frequency, mLowFreqCutoff, OnParametersChanged())
+    SYNC_PROP_MODIFY(low_gain, mLowFreqGain, OnParametersChanged())
+    SYNC_PROP_MODIFY(low_pass_cutoff, mLowPassCutoff, OnParametersChanged())
+    SYNC_PROP_MODIFY(low_pass_reso, mLowPassReso, OnParametersChanged())
+    SYNC_PROP_MODIFY(high_pass_cutoff, mHighPassCutoff, OnParametersChanged())
+    SYNC_PROP_MODIFY(high_pass_reso, mHighPassReso, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

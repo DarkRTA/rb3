@@ -402,8 +402,8 @@ void RndTex::PostLoad(BinStream& bs){
 
 BEGIN_COPYS(RndTex)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(RndTex)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndTex)
+    BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
             COPY_MEMBER(mMipMapK)
         }
@@ -420,7 +420,7 @@ BEGIN_COPYS(RndTex)
         COPY_MEMBER(mOptimizeForPS3)
         mBitmap.Create(c->mBitmap, c->mBitmap.mBpp, c->mBitmap.mOrder, 0);
         SyncBitmap();
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 // enum Type {

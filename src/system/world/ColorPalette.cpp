@@ -31,7 +31,8 @@ void ColorPalette::Load(BinStream& bs){
 }
 
 BEGIN_COPYS(ColorPalette)
-    GET_COPY_AND_ASSERT(ColorPalette, 0x4A);
+    CREATE_COPY(ColorPalette);
+    MILO_ASSERT(c, 0x4A);
     Hmx::Object::Copy(c, ty);
     COPY_MEMBER(mColors)
 END_COPYS

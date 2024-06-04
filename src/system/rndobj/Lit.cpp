@@ -14,7 +14,7 @@ RndLight::RndLight() : mColor(), mColorOwner(this, this), mRange(1000.0f), mFall
 SAVE_OBJ(RndLight, 0x33);
 
 BEGIN_COPYS(RndLight)
-    const RndLight* l = dynamic_cast<const RndLight*>(o);
+    CREATE_COPY_AS(RndLight, l)
     MILO_ASSERT(l, 0xD6);
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndTransformable)

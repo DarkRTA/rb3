@@ -33,8 +33,8 @@ void FxSendCompress::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendCompress)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendCompress)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendCompress)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mThresholdDB)
         COPY_MEMBER(mRatio)
         COPY_MEMBER(mOutputLevel)
@@ -44,7 +44,7 @@ BEGIN_COPYS(FxSendCompress)
         COPY_MEMBER(mExpAttack)
         COPY_MEMBER(mExpRelease)
         COPY_MEMBER(mGateThresholdDB)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendCompress)
@@ -53,14 +53,14 @@ BEGIN_HANDLERS(FxSendCompress)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendCompress)
-    SYNC_PROP_ACTION(threshold, mThresholdDB, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(comp_ratio, mRatio, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(output_level, mOutputLevel, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(attack, mAttack, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(release, mRelease, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(exp_ratio, mExpRatio, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(exp_attack, mExpAttack, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(exp_release, mExpRelease, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(gate_threshold, mGateThresholdDB, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(threshold, mThresholdDB, OnParametersChanged())
+    SYNC_PROP_MODIFY(comp_ratio, mRatio, OnParametersChanged())
+    SYNC_PROP_MODIFY(output_level, mOutputLevel, OnParametersChanged())
+    SYNC_PROP_MODIFY(attack, mAttack, OnParametersChanged())
+    SYNC_PROP_MODIFY(release, mRelease, OnParametersChanged())
+    SYNC_PROP_MODIFY(exp_ratio, mExpRatio, OnParametersChanged())
+    SYNC_PROP_MODIFY(exp_attack, mExpAttack, OnParametersChanged())
+    SYNC_PROP_MODIFY(exp_release, mExpRelease, OnParametersChanged())
+    SYNC_PROP_MODIFY(gate_threshold, mGateThresholdDB, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

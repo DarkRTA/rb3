@@ -21,7 +21,7 @@ void FxSendMeterEffect::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendMeterEffect)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendMeterEffect)
+    CREATE_COPY(FxSendMeterEffect)
 END_COPYS
 
 float FxSendMeterEffect::ChannelData(int idx){
@@ -37,6 +37,6 @@ BEGIN_HANDLERS(FxSendMeterEffect)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendMeterEffect)
-    SYNC_PROP_ACTION(reset_peaks, mResetPeaks, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(reset_peaks, mResetPeaks, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

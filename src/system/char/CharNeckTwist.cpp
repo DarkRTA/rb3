@@ -25,11 +25,11 @@ void CharNeckTwist::Load(BinStream& bs){
 
 BEGIN_COPYS(CharNeckTwist)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharNeckTwist)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharNeckTwist)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mHead)
         COPY_MEMBER(mTwist)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharNeckTwist)

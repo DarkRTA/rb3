@@ -28,8 +28,8 @@ void CharWeightable::Load(BinStream& bs){
 }
 
 BEGIN_COPYS(CharWeightable)
-    GET_COPY(CharWeightable)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharWeightable)
+    BEGIN_COPYING_MEMBERS
         if(ty == kCopyShallow){
             mWeightOwner = c->mWeightOwner.mPtr;
         }
@@ -37,7 +37,7 @@ BEGIN_COPYS(CharWeightable)
             mWeightOwner = this;
             mWeight = c->mWeightOwner->mWeight;
         }
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharWeightable)

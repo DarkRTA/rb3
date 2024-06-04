@@ -48,13 +48,13 @@ void CharIKSliderMidi::Load(BinStream& bs){
 BEGIN_COPYS(CharIKSliderMidi)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
-    GET_COPY(CharIKSliderMidi)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharIKSliderMidi)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mTarget)
         COPY_MEMBER(mFirstSpot)
         COPY_MEMBER(mSecondSpot)
         COPY_MEMBER(mTolerance)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharIKSliderMidi)
@@ -66,9 +66,9 @@ BEGIN_HANDLERS(CharIKSliderMidi)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharIKSliderMidi)
-    SYNC_PROP_ACTION(target, mTarget, kPropSize|kPropGet, SetupTransforms())
-    SYNC_PROP_ACTION(first_spot, mFirstSpot, kPropSize|kPropGet, SetupTransforms())
-    SYNC_PROP_ACTION(second_spot, mSecondSpot, kPropSize|kPropGet, SetupTransforms())
+    SYNC_PROP_MODIFY(target, mTarget, SetupTransforms())
+    SYNC_PROP_MODIFY(first_spot, mFirstSpot, SetupTransforms())
+    SYNC_PROP_MODIFY(second_spot, mSecondSpot, SetupTransforms())
     SYNC_PROP(tolerance, mTolerance)
     SYNC_SUPERCLASS(CharWeightable)
 END_PROPSYNCS

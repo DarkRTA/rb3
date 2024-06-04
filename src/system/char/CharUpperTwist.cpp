@@ -30,12 +30,12 @@ void CharUpperTwist::Load(BinStream& bs){
 
 BEGIN_COPYS(CharUpperTwist)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharUpperTwist)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharUpperTwist)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mTwist2)
         COPY_MEMBER(mUpperArm)
         COPY_MEMBER(mTwist1)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharUpperTwist)

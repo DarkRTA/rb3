@@ -75,8 +75,9 @@ void UIComponent::SetTypeDef(DataArray* da) {
 }
 
 BEGIN_COPYS(UIComponent)
-    GET_COPY_AND_ASSERT(UIComponent, 134)
-    COPY_MEMBER(mDir);
+    CREATE_COPY(UIComponent)
+    MILO_ASSERT(c, 134);
+    COPY_MEMBER(mDir)
     COPY_MEMBER(mResourcePath)
     COPY_SUPERCLASS(Hmx::Object);
     CopyMembers(c, ty);

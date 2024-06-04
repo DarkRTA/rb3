@@ -14,8 +14,8 @@ BEGIN_COPYS(SynthEmitter)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndTransformable)
     COPY_SUPERCLASS(RndDrawable)
-    GET_COPY(SynthEmitter)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(SynthEmitter)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mSfx)
         COPY_MEMBER(mListener)
         COPY_MEMBER(mSynthEmitterEnabled)
@@ -24,7 +24,7 @@ BEGIN_COPYS(SynthEmitter)
         COPY_MEMBER(mVolOuter)
         COPY_MEMBER(mVolInner)
         delete mInst;
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(SynthEmitter, 0x30)
@@ -92,8 +92,8 @@ BEGIN_HANDLERS(SynthEmitter)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(SynthEmitter)
-    SYNC_PROP_ACTION(sfx, mSfx, kPropSize|kPropGet, delete mInst)
-    SYNC_PROP_ACTION(listener, mListener, kPropSize|kPropGet, delete mInst)
+    SYNC_PROP_MODIFY_ALT(sfx, mSfx, delete mInst)
+    SYNC_PROP_MODIFY_ALT(listener, mListener, delete mInst)
     { 
         static Symbol _s("enabled"); 
         bool b = mSynthEmitterEnabled;
@@ -111,6 +111,6 @@ BEGIN_PROPSYNCS(SynthEmitter)
     SYNC_PROP(inner_radius, mRadInner)
     SYNC_PROP(outer_volume, mVolOuter)
     SYNC_PROP(inner_volume, mVolInner)
-    if(RndTransformable::SyncProperty(_val, _prop, _i, _op)) return true;
+    SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

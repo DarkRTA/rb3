@@ -32,8 +32,8 @@ void FxSendChorus::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendChorus)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendChorus)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendChorus)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mDelayMs)
         COPY_MEMBER(mRate)
         COPY_MEMBER(mDepth)
@@ -42,7 +42,7 @@ BEGIN_COPYS(FxSendChorus)
         COPY_MEMBER(mTempoSync)
         COPY_MEMBER(mSyncType)
         COPY_MEMBER(mTempo)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(FxSendChorus)
@@ -51,13 +51,13 @@ BEGIN_HANDLERS(FxSendChorus)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendChorus)
-    SYNC_PROP_ACTION(delay_ms, mDelayMs, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(rate, mRate, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(depth, mDepth, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(feedback_pct, mFeedbackPct, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(offset_pct, mOffsetPct, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo_sync, mTempoSync, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(sync_type, mSyncType, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(delay_ms, mDelayMs, OnParametersChanged())
+    SYNC_PROP_MODIFY(rate, mRate, OnParametersChanged())
+    SYNC_PROP_MODIFY(depth, mDepth, OnParametersChanged())
+    SYNC_PROP_MODIFY(feedback_pct, mFeedbackPct, OnParametersChanged())
+    SYNC_PROP_MODIFY(offset_pct, mOffsetPct, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo_sync, mTempoSync, OnParametersChanged())
+    SYNC_PROP_MODIFY(sync_type, mSyncType, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo, mTempo, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

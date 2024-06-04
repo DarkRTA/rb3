@@ -50,10 +50,10 @@ BEGIN_COPYS(RndText)
     COPY_SUPERCLASS(RndDrawable)
     COPY_SUPERCLASS(RndTransformable)
     if (ty == kCopyFromMax) return;
-    GET_COPY(RndText)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndText)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mFont)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
     UpdateText(true);
 END_COPYS
 

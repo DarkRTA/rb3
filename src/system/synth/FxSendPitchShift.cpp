@@ -16,7 +16,7 @@ BEGIN_HANDLERS(FxSendPitchShift)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendPitchShift)
-    SYNC_PROP_ACTION(pitch_ratio, mRatio, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(pitch_ratio, mRatio, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
 
@@ -36,8 +36,8 @@ void FxSendPitchShift::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendPitchShift)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendPitchShift)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendPitchShift)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mRatio)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS

@@ -26,13 +26,13 @@ void UIListArrow::Load(BinStream& bs) {
 
 BEGIN_COPYS(UIListArrow)
     COPY_SUPERCLASS(UIListWidget)
-    const UIListArrow* a = dynamic_cast<const UIListArrow*>(o);
+    CREATE_COPY_AS(UIListArrow, a);
     MILO_ASSERT(a, 0x5C);
-    mMesh = a->mMesh;
-    mPosition = a->mPosition;
-    mShowOnlyScroll = a->mShowOnlyScroll;
-    mOnHighlight = a->mOnHighlight;
-    mScrollAnim = a->mScrollAnim;
+    COPY_MEMBER_FROM(a, mMesh)
+    COPY_MEMBER_FROM(a, mPosition)
+    COPY_MEMBER_FROM(a, mShowOnlyScroll)
+    COPY_MEMBER_FROM(a, mOnHighlight)
+    COPY_MEMBER_FROM(a, mScrollAnim)
 END_COPYS
 
 void UIListArrow::StartScroll(int i, bool) { // holy fakematch
@@ -54,7 +54,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(UIListArrow)
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(scroll_anim, mScrollAnim)
-    SYNC_PROP_METHOD(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
+    SYNC_PROP_SET(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
     SYNC_PROP(show_only_scroll, mShowOnlyScroll)
     SYNC_PROP(on_highlight, mOnHighlight)
     SYNC_SUPERCLASS(UIListWidget)

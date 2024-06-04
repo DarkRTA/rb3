@@ -31,13 +31,13 @@ void CharForeTwist::Load(BinStream& bs){
 
 BEGIN_COPYS(CharForeTwist)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(CharForeTwist)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(CharForeTwist)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mOffset)
         COPY_MEMBER(mHand)
         COPY_MEMBER(mTwist2)
         COPY_MEMBER(mBias)
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
 END_COPYS
 
 BEGIN_HANDLERS(CharForeTwist)

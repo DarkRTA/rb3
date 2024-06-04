@@ -39,10 +39,10 @@ UIPicture::~UIPicture() {
 }
 
 BEGIN_COPYS(UIPicture)
-    const UIPicture* p = dynamic_cast<const UIPicture*>(o);
+    CREATE_COPY(UIPicture, p)
     MILO_ASSERT(p, 0x41);
     UIComponent::Copy(p, ty);
-    mMesh = p->mMesh;
+    COPY_MEM(p, mMesh)
     UITransitionHandler::CopyHandlerData(p);
 END_COPYS
 
@@ -163,6 +163,6 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(UIPicture)
     SYNC_PROP(tex_file, mTexFile)
-    SYNC_PROP_ACTION(mesh, mMesh, 0x11, HookupMesh())
+    SYNC_PROP_MODIFY(mesh, mMesh, HookupMesh())
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

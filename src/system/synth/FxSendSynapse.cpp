@@ -41,15 +41,15 @@ BEGIN_HANDLERS(FxSendSynapse)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendSynapse)
-    SYNC_PROP_ACTION(amount, mAmount, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(proximity_effect, mProximityEffect, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(proximity_focus, mProximityFocus, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(note1_hz, mNote1Hz, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(note2_hz, mNote2Hz, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(note3_hz, mNote3Hz, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(unison_trio, mUnisonTrio, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(attack_smoothing, mAttackSmoothing, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(release_smoothing, mReleaseSmoothing, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(amount, mAmount, OnParametersChanged())
+    SYNC_PROP_MODIFY(proximity_effect, mProximityEffect, OnParametersChanged())
+    SYNC_PROP_MODIFY(proximity_focus, mProximityFocus, OnParametersChanged())
+    SYNC_PROP_MODIFY(note1_hz, mNote1Hz, OnParametersChanged())
+    SYNC_PROP_MODIFY(note2_hz, mNote2Hz, OnParametersChanged())
+    SYNC_PROP_MODIFY(note3_hz, mNote3Hz, OnParametersChanged())
+    SYNC_PROP_MODIFY(unison_trio, mUnisonTrio, OnParametersChanged())
+    SYNC_PROP_MODIFY(attack_smoothing, mAttackSmoothing, OnParametersChanged())
+    SYNC_PROP_MODIFY(release_smoothing, mReleaseSmoothing, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
 
@@ -72,8 +72,8 @@ void FxSendSynapse::Load(BinStream& bs){
 
 BEGIN_COPYS(FxSendSynapse)
     COPY_SUPERCLASS(FxSend)
-    GET_COPY(FxSendSynapse)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(FxSendSynapse)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mAmount)
         COPY_MEMBER(mProximityEffect)
         COPY_MEMBER(mProximityFocus)
@@ -82,6 +82,6 @@ BEGIN_COPYS(FxSendSynapse)
         COPY_MEMBER(mNote3Hz)
         COPY_MEMBER(mUnisonTrio)
         COPY_MEMBER(mAttackSmoothing)
-        COPY_MEMBER(mReleaseSmoothing)
-    END_COPY_CHECKED
+        COPY_MEMBER(mReleaseSmoothing)   
+    END_COPYING_MEMBERS
 END_COPYS
