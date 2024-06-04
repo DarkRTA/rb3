@@ -128,6 +128,9 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 #define SYNC_PROP(symbol, member) \
         if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
 
+// make sync macros for objects and bitfields?
+
+// SYNC_PROP_SET
 #define SYNC_PROP_METHOD(symbol, member, method) \
         if(sym == symbol){ \
             if(_op == kPropSet) method; \
@@ -138,6 +141,19 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             return true; \
         }
 
+#define SYNC_PROP_SET(symbol, member, func) \
+        if(sym == symbol){ \
+            if(_op == kPropSet){ \
+                func; \
+            } \
+            else { \
+                if(_op == (PropOp)0x40) return false; \
+                _val = DataNode(member); \
+            } \
+            return true; \
+        }
+
+// !0x11 - set, insert, remove, handle, or NOT size and get
 #define SYNC_PROP_ACTION(symbol, member, opmask, action) \
         if(sym == symbol){ \
             bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
@@ -148,6 +164,30 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
                 } \
                 return true; \
             } \
+        }
+
+#define SYNC_PROP_MODIFY(symbol, member, func) \
+        if(sym == symbol){ \
+            bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
+            if(!synced) return false; \
+            else { \
+                if(!(_op & (kPropSize|kPropGet))){ \
+                    action; \
+                } \
+                return true; \
+            } \
+        }
+
+#define SYNC_PROP_MODIFY_ALT(symbol, member, func) \
+        if(sym == symbol){ \
+            bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
+            if(synced){ \
+                if(!(_op & (kPropSize|kPropGet))){ \
+                    action; \
+                } \
+                return true; \
+            } \
+            else return false; \
         }
 
 #define SYNC_PROP_STATIC(symbol, member) { \
@@ -161,7 +201,7 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 }
 
 #define SYNC_SUPERCLASS(parent) \
-        return parent::SyncProperty(_val, _prop, _i, _op);
+        if(parent::SyncProperty(_val, _prop, _i, _op)) return true;
 
 #define END_PROPSYNCS \
         return false; \
@@ -191,6 +231,8 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 
 #define COPY_SUPERCLASS(parent) \
     parent::Copy(o, ty);
+
+// new copy macro where you specify the variable name (used in asserts in some copy methods)
 
 #define GET_COPY(objType) \
     const objType* c = dynamic_cast<const objType*>(o);

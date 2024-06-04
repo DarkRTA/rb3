@@ -111,6 +111,6 @@ BEGIN_PROPSYNCS(SynthEmitter)
     SYNC_PROP(inner_radius, mRadInner)
     SYNC_PROP(outer_volume, mVolOuter)
     SYNC_PROP(inner_volume, mVolInner)
-    if(RndTransformable::SyncProperty(_val, _prop, _i, _op)) return true;
+    SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
