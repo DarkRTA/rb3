@@ -535,5 +535,18 @@ RandomIntervalGroupSeqInst::RandomIntervalGroupSeqInst(RandomIntervalGroupSeq* s
 }
 
 RandomIntervalGroupSeqInst::~RandomIntervalGroupSeqInst(){
-    
+
 }
+
+void Sequence::Init(){
+    SfxSeq::Init();
+    WaitSeq::Init();
+    RandomGroupSeq::Init();
+    SerialGroupSeq::Init();
+    ParallelGroupSeq::Init();
+    RandomIntervalGroupSeq::Init();
+}
+
+SfxSeq::SfxSeq(){}
+
+SAVE_OBJ(SfxSeq, 0x511)

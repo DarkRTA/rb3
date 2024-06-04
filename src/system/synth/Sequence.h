@@ -19,9 +19,11 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     
-    virtual const char* GetSoundDisplayName();
+    virtual const char* GetSoundDisplayName(){ return MakeString("Sequence: %s", Name()); }
     virtual SeqInst* MakeInstImpl() = 0;
     virtual void SynthPoll();
+
+    static void Init();
 
     SeqInst* MakeInst();
     SeqInst* Play(float, float, float);
@@ -52,6 +54,11 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual SeqInst* MakeInstImpl();
+
+    NEW_OBJ(WaitSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(WaitSeq)
+    }
 
     float mAvgWaitSecs;
     float mWaitSpread;
@@ -89,6 +96,11 @@ public:
     void ForceNextIndex(int);
     int GetNumSimul(){ return mNumSimul; }
 
+    NEW_OBJ(RandomGroupSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RandomGroupSeq)
+    }
+
     int mNumSimul; // 0x78
     bool mAllowRepeats; // 0x7c
     int mNextIndex; // 0x80
@@ -108,6 +120,11 @@ public:
     virtual void Load(BinStream&);
     virtual SeqInst* MakeInstImpl();
 
+    NEW_OBJ(RandomIntervalGroupSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(RandomIntervalGroupSeq)
+    }
+
     float mAvgIntervalSecs; // 0x78
     float mIntervalSpread; // 0x7c
     int mMaxSimultaneous; // 0x80
@@ -122,6 +139,11 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual SeqInst* MakeInstImpl();
+
+    NEW_OBJ(SerialGroupSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(SerialGroupSeq)
+    }
 };
 
 class ParallelGroupSeq : public GroupSeq {
@@ -133,6 +155,26 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual SeqInst* MakeInstImpl();
+
+    NEW_OBJ(ParallelGroupSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(ParallelGroupSeq)
+    }
+};
+
+class SfxSeq : public SerialGroupSeq {
+public:
+    SfxSeq();
+    virtual ~SfxSeq(){}
+    OBJ_CLASSNAME(SfxSeq);
+    OBJ_SET_TYPE(SfxSeq);
+    virtual void Save(BinStream&);
+    virtual void Load(BinStream&);
+
+    NEW_OBJ(SfxSeq)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(SfxSeq)
+    }
 };
 
 #endif

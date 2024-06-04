@@ -44,9 +44,9 @@ public:
     virtual ~WaitSeqInst(){}
     virtual void Stop();
     virtual bool IsRunning();
-    virtual void UpdateVolume();
-    virtual void SetPan(float);
-    virtual void SetTranspose(float);
+    virtual void UpdateVolume(){}
+    virtual void SetPan(float){}
+    virtual void SetTranspose(float){}
     virtual void StartImpl();
 
     NEW_POOL_OVERLOAD(WaitSeqInst);
