@@ -172,7 +172,7 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             if(!synced) return false; \
             else { \
                 if(!(_op & (kPropSize|kPropGet))){ \
-                    action; \
+                    func; \
                 } \
                 return true; \
             } \
@@ -183,7 +183,7 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             bool synced = PropSync(member, _val, _prop, _i + 1, _op); \
             if(synced){ \
                 if(!(_op & (kPropSize|kPropGet))){ \
-                    action; \
+                    func; \
                 } \
                 return true; \
             } \

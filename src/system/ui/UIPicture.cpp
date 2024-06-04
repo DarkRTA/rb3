@@ -163,6 +163,6 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(UIPicture)
     SYNC_PROP(tex_file, mTexFile)
-    SYNC_PROP_ACTION(mesh, mMesh, 0x11, HookupMesh())
+    SYNC_PROP_MODIFY(mesh, mMesh, HookupMesh())
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

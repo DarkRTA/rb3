@@ -16,7 +16,7 @@ BEGIN_HANDLERS(FxSendPitchShift)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendPitchShift)
-    SYNC_PROP_ACTION(pitch_ratio, mRatio, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(pitch_ratio, mRatio, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS
 

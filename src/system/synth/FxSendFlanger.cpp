@@ -59,13 +59,13 @@ END_HANDLERS
 
 
 BEGIN_PROPSYNCS(FxSendFlanger)
-    SYNC_PROP_ACTION(delay_ms, mDelayMs, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(rate, mRate, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(depth_pct, mDepthPct, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(feedback_pct, mFeedbackPct, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(offset_pct, mOffsetPct, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo_sync, mTempoSync, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(sync_type, mSyncType, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(delay_ms, mDelayMs, OnParametersChanged())
+    SYNC_PROP_MODIFY(rate, mRate, OnParametersChanged())
+    SYNC_PROP_MODIFY(depth_pct, mDepthPct, OnParametersChanged())
+    SYNC_PROP_MODIFY(feedback_pct, mFeedbackPct, OnParametersChanged())
+    SYNC_PROP_MODIFY(offset_pct, mOffsetPct, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo_sync, mTempoSync, OnParametersChanged())
+    SYNC_PROP_MODIFY(sync_type, mSyncType, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo, mTempo, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

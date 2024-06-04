@@ -92,8 +92,8 @@ BEGIN_HANDLERS(SynthEmitter)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(SynthEmitter)
-    SYNC_PROP_ACTION(sfx, mSfx, kPropSize|kPropGet, delete mInst)
-    SYNC_PROP_ACTION(listener, mListener, kPropSize|kPropGet, delete mInst)
+    SYNC_PROP_MODIFY_ALT(sfx, mSfx, delete mInst)
+    SYNC_PROP_MODIFY_ALT(listener, mListener, delete mInst)
     { 
         static Symbol _s("enabled"); 
         bool b = mSynthEmitterEnabled;

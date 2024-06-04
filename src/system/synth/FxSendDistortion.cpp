@@ -37,6 +37,6 @@ BEGIN_HANDLERS(FxSendDistortion)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendDistortion)
-    SYNC_PROP_ACTION(drive, mDrive, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(drive, mDrive, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

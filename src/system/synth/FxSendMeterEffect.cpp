@@ -37,6 +37,6 @@ BEGIN_HANDLERS(FxSendMeterEffect)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendMeterEffect)
-    SYNC_PROP_ACTION(reset_peaks, mResetPeaks, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(reset_peaks, mResetPeaks, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

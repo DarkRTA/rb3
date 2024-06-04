@@ -50,13 +50,13 @@ END_HANDLERS
 
 
 BEGIN_PROPSYNCS(FxSendReverb)
-    SYNC_PROP_ACTION(environment, mEnvironmentPreset, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(pre_delay_ms, mPreDelayMs, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(high_cut, mHighCut, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(low_cut, mLowCut, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(room_size, mRoomSize, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(damping, mDamping, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(diffusion, mDiffusion, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(early_late, mEarlyLate, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(environment, mEnvironmentPreset, OnParametersChanged())
+    SYNC_PROP_MODIFY(pre_delay_ms, mPreDelayMs, OnParametersChanged())
+    SYNC_PROP_MODIFY(high_cut, mHighCut, OnParametersChanged())
+    SYNC_PROP_MODIFY(low_cut, mLowCut, OnParametersChanged())
+    SYNC_PROP_MODIFY(room_size, mRoomSize, OnParametersChanged())
+    SYNC_PROP_MODIFY(damping, mDamping, OnParametersChanged())
+    SYNC_PROP_MODIFY(diffusion, mDiffusion, OnParametersChanged())
+    SYNC_PROP_MODIFY(early_late, mEarlyLate, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

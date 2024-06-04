@@ -49,11 +49,11 @@ BEGIN_HANDLERS(FxSendDelay)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSendDelay)
-    SYNC_PROP_ACTION(delay_time, mDelayTime, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(feedback, mGain, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo_sync, mTempoSync, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(sync_type, mSyncType, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(tempo, mTempo, kPropSize|kPropGet, OnParametersChanged())
-    SYNC_PROP_ACTION(ping_pong_pct, mPingPongPct, kPropSize|kPropGet, OnParametersChanged())
+    SYNC_PROP_MODIFY(delay_time, mDelayTime, OnParametersChanged())
+    SYNC_PROP_MODIFY(feedback, mGain, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo_sync, mTempoSync, OnParametersChanged())
+    SYNC_PROP_MODIFY(sync_type, mSyncType, OnParametersChanged())
+    SYNC_PROP_MODIFY(tempo, mTempo, OnParametersChanged())
+    SYNC_PROP_MODIFY(ping_pong_pct, mPingPongPct, OnParametersChanged())
     SYNC_SUPERCLASS(FxSend)
 END_PROPSYNCS

@@ -67,15 +67,6 @@ BEGIN_HANDLERS(Screenshot)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(Screenshot)
-    // SYNC_PROP_ACTION(tex_path, mTexPath, kPropSize|kPropGet, Sync())
-    // TODO: fix the SYNC_PROP_ACTION macro to incorporate this order of control flow, while not breaking the other SyncProps
-    if(sym == tex_path){ 
-        bool synced = PropSync(mTexPath, _val, _prop, _i + 1, _op);
-        if(synced) { 
-            if(!(_op & (kPropSize|kPropGet))){ Sync(); } 
-            return true; 
-        } 
-        else return false; 
-    }
+    SYNC_PROP_MODIFY_ALT(tex_path, mTexPath, Sync())
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
