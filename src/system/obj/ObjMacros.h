@@ -200,6 +200,11 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     SYNC_PROP_ACTION(_s, member, opmask, action) \
 }
 
+#define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_MODIFY(_s, member, func) \
+}
+
 #define SYNC_SUPERCLASS(parent) \
         if(parent::SyncProperty(_val, _prop, _i, _op)) return true;
 

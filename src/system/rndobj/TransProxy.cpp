@@ -81,16 +81,8 @@ BEGIN_HANDLERS(RndTransProxy)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndTransProxy)
-    // SYNC_PROP_ACTION(proxy, mProxy, kPropSize|kPropGet, Sync())
-    if(sym == proxy){
-        bool synced = PropSync(mProxy, _val, _prop, _i + 1, _op);
-        if(synced){
-            if(!(_op & (kPropSize|kPropGet))){ Sync(); }
-            return true;
-        }
-        else return false;
-    }
-    SYNC_PROP_ACTION(part, mPart, kPropSize|kPropGet, Sync())
+    SYNC_PROP_MODIFY_ALT(proxy, mProxy, Sync())
+    SYNC_PROP_MODIFY(part, mPart, Sync())
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
 

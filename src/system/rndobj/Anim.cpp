@@ -236,7 +236,7 @@ DataNode RndAnimatable::OnConvertFrames(DataArray* arr){
 
 BEGIN_PROPSYNCS(RndAnimatable);
     SYNC_PROP(rate, (int&)mRate);
-    SYNC_PROP_ACTION(frame, mFrame, kPropGet|kPropSize, SetFrame(mFrame, 1.0f));
+    SYNC_PROP_MODIFY(frame, mFrame, SetFrame(mFrame, 1.0f));
 END_PROPSYNCS;
 
 AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) : 

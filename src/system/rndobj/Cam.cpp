@@ -131,7 +131,7 @@ DataNode RndCam::OnFarPlane(const DataArray*){
 
 BEGIN_PROPSYNCS(RndCam)
     //SYNC_SUPERCLASS(RndTransformable)
-    SYNC_PROP_ACTION(near_plane, mNearPlane, 0x11, )
+    SYNC_PROP_MODIFY(near_plane, mNearPlane, )
     SYNC_PROP(z_range, mZRange)
-    SYNC_PROP_ACTION(screen_rect, mScreenRect, 0x11, UpdateLocal())
+    SYNC_PROP_MODIFY(screen_rect, mScreenRect, UpdateLocal())
 END_PROPSYNCS

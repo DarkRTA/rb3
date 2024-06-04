@@ -60,8 +60,8 @@ BEGIN_HANDLERS(RndTexBlendController)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndTexBlendController)
-    SYNC_PROP_ACTION(reference_object_1, mObject1, kPropSize|kPropGet, UpdateAllDistances())
-    SYNC_PROP_ACTION(reference_object_2, mObject2, kPropSize|kPropGet, UpdateAllDistances())
+    SYNC_PROP_MODIFY(reference_object_1, mObject1, UpdateAllDistances())
+    SYNC_PROP_MODIFY(reference_object_2, mObject2, UpdateAllDistances())
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(base_distance, mReferenceDistance)
     SYNC_PROP(min_distance, mMinDistance)

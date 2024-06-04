@@ -84,9 +84,9 @@ public:
 
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry){
-        for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
-        if(entry == mEntries + mSize) return 0;
-        else return entry;
+        // for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
+        // if(entry == mEntries + mSize) return 0;
+        // else return entry;
     }
 };
 

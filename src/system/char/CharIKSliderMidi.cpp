@@ -66,9 +66,9 @@ BEGIN_HANDLERS(CharIKSliderMidi)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharIKSliderMidi)
-    SYNC_PROP_ACTION(target, mTarget, kPropSize|kPropGet, SetupTransforms())
-    SYNC_PROP_ACTION(first_spot, mFirstSpot, kPropSize|kPropGet, SetupTransforms())
-    SYNC_PROP_ACTION(second_spot, mSecondSpot, kPropSize|kPropGet, SetupTransforms())
+    SYNC_PROP_MODIFY(target, mTarget, SetupTransforms())
+    SYNC_PROP_MODIFY(first_spot, mFirstSpot, SetupTransforms())
+    SYNC_PROP_MODIFY(second_spot, mSecondSpot, SetupTransforms())
     SYNC_PROP(tolerance, mTolerance)
     SYNC_SUPERCLASS(CharWeightable)
 END_PROPSYNCS

@@ -249,7 +249,7 @@ BEGIN_HANDLERS(EventTrigger)
 END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(EventTrigger::Anim)
-    SYNC_PROP_ACTION(anim, o.mAnim, kPropSize|kPropGet, ResetAnim(o))
+    SYNC_PROP_MODIFY_ALT(anim, o.mAnim, ResetAnim(o))
     SYNC_PROP(blend, o.mBlend)
     SYNC_PROP(wait, o.mWait)
     SYNC_PROP(delay, o.mDelay)
@@ -263,7 +263,7 @@ BEGIN_CUSTOM_PROPSYNC(EventTrigger::Anim)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(EventTrigger::ProxyCall)
-    SYNC_PROP_ACTION(proxy, o.mProxy, kPropSize|kPropGet, o.mCall = Symbol(""))
+    SYNC_PROP_MODIFY_ALT(proxy, o.mProxy, o.mCall = Symbol(""))
     SYNC_PROP(call, o.mCall)
     SYNC_PROP(event, o.mEvent)
 END_CUSTOM_PROPSYNC
@@ -275,13 +275,13 @@ BEGIN_CUSTOM_PROPSYNC(EventTrigger::HideDelay)
 END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(EventTrigger)
-    SYNC_PROP_ACTION_STATIC(trigger_events, mTriggerEvents, kPropSize|kPropGet, UnregisterEvents())
-    SYNC_PROP_ACTION(anims, mAnims, kPropSize|kPropGet, CheckAnims())
+    SYNC_PROP_MODIFY_STATIC(trigger_events, mTriggerEvents, UnregisterEvents())
+    SYNC_PROP_MODIFY(anims, mAnims, CheckAnims())
     SYNC_PROP(proxy_calls, mProxyCalls)
     SYNC_PROP(sounds, mSounds)
     SYNC_PROP(shows, mShows)
     SYNC_PROP(hide_delays, mHideDelays)
     SYNC_PROP(part_launchers, mPartLaunchers)
-    SYNC_PROP_ACTION_STATIC(enable_events, mEnableEvents, kPropSize|kPropGet, UnregisterEvents())
-    SYNC_PROP_ACTION_STATIC(disable_events, mDisableEvents, kPropSize|kPropGet, UnregisterEvents())
+    SYNC_PROP_MODIFY_STATIC(enable_events, mEnableEvents, UnregisterEvents())
+    SYNC_PROP_MODIFY_STATIC(disable_events, mDisableEvents, UnregisterEvents())
 END_PROPSYNCS
