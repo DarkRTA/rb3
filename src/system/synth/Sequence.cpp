@@ -243,6 +243,65 @@ RandomIntervalGroupSeq::RandomIntervalGroupSeq() : mAvgIntervalSecs(4.0f), mInte
 
 }
 
+SeqInst* RandomIntervalGroupSeq::MakeInstImpl(){
+    return new RandomIntervalGroupSeqInst(this);
+}
+
+BEGIN_COPYS(RandomIntervalGroupSeq)
+    COPY_SUPERCLASS(GroupSeq)
+    GET_COPY(RandomIntervalGroupSeq)
+    if(c && ty != kCopyFromMax){
+        COPY_MEMBER(mAvgIntervalSecs)
+        COPY_MEMBER(mIntervalSpread)
+        COPY_MEMBER(mMaxSimultaneous)
+    }
+END_COPYS
+
+SAVE_OBJ(RandomIntervalGroupSeq, 0x266)
+
+BEGIN_LOADS(RandomIntervalGroupSeq)
+    int rev;
+    bs >> rev;
+    if(rev > 1) MILO_WARN("Can't load new RandomGroupSeq");
+    else {
+        LOAD_SUPERCLASS(GroupSeq)
+        bs >> mAvgIntervalSecs >> mIntervalSpread >> mMaxSimultaneous;
+    }
+END_LOADS
+
+BEGIN_PROPSYNCS(RandomIntervalGroupSeq)
+    SYNC_PROP(max_simul, mMaxSimultaneous)
+    SYNC_PROP(avg_interval_secs, mAvgIntervalSecs)
+    SYNC_PROP(interval_spread, mIntervalSpread)
+    SYNC_SUPERCLASS(GroupSeq)
+END_PROPSYNCS
+
+SeqInst* SerialGroupSeq::MakeInstImpl(){
+    return new SerialGroupSeqInst(this);
+}
+
+SAVE_OBJ(SerialGroupSeq, 0x299)
+
+BEGIN_LOADS(SerialGroupSeq)
+    int rev;
+    bs >> rev;
+    if(rev > 1) MILO_WARN("Can't load new SerialGroupSeq");
+    else LOAD_SUPERCLASS(GroupSeq)
+END_LOADS
+
+SeqInst* ParallelGroupSeq::MakeInstImpl(){
+    return new ParallelGroupSeqInst(this);
+}
+
+SAVE_OBJ(ParallelGroupSeq, 0x2BC)
+
+BEGIN_LOADS(ParallelGroupSeq)
+    int rev;
+    bs >> rev;
+    if(rev > 1) MILO_WARN("Can't load new ParallelGroupSeq");
+    else LOAD_SUPERCLASS(GroupSeq)
+END_LOADS
+
 GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
 
 }
