@@ -320,6 +320,52 @@ void ObjectDir::SetProxyFile(const FilePath& fp, bool b){
     }
 }
 
+BEGIN_COPYS(ObjectDir)
+    COPY_SUPERCLASS(Hmx::Object)
+    if(ty != kCopyFromMax){
+        CREATE_COPY(ObjectDir)
+        BEGIN_COPYING_MEMBERS
+            if(this == Dir()){
+                for(int i = 0; i < mSubDirs.size(); i++){
+                    RemovingSubDir(mSubDirs[i]);
+                }
+                COPY_MEMBER(mSubDirs)
+                for(int i = 0; i < mSubDirs.size(); i++){
+                    AddedSubDir(mSubDirs[i]);
+                }
+            }
+            COPY_MEMBER(mInlineProxy)
+            COPY_MEMBER(mInlineSubDirType)
+        END_COPYING_MEMBERS
+    }
+END_COPYS
+
+Hmx::Object* ObjectDir::FindObject(const char* name, bool parentDirs){
+    Entry* entry = FindEntry(name, false);
+    if(entry && entry->obj) return entry->obj;
+    for(int i = 0; i < mSubDirs.size(); i++){
+        if(mSubDirs[i]){
+            Hmx::Object* found = mSubDirs[i]->FindObject(name, false);
+            if(found) return found;
+        }
+    }
+    if(strlen(name) != 0){
+        if(strcmp(name, Name()) == 0){
+            return this;
+        }
+    }
+    if(parentDirs){
+        ObjectDir* thisDir = Dir();
+        if(thisDir && thisDir != this){
+            return thisDir->FindObject(name, parentDirs);
+        }
+        if(this != sMainDir){
+            return sMainDir->FindObject(name, false);
+        }
+    }
+    return 0;
+}
+
 void ObjectDir::RemovingObject(Hmx::Object* obj){
     if(obj != mCurCam) return;
     else mCurCam = 0;
@@ -331,6 +377,52 @@ bool ObjectDir::InlineProxy(BinStream& bs){
         ret = true;
     }
     return ret;
+}
+
+#pragma push
+#pragma dont_inline on
+// the KeylessHash methods should NOT be inlined, but the Entry ctor should
+ObjectDir::Entry* ObjectDir::FindEntry(const char* name, bool add){
+    if(name == 0 || *name == '\0') return 0;
+    else {
+        Entry* entry = mHashTable.Find(name);
+        if(!entry && add){
+            Entry newEntry;
+            newEntry.name = SymbolCacheLookup(name);
+            if(!newEntry.name){
+                mStringTable.Add(newEntry.name);
+            }
+            entry = mHashTable.Insert(newEntry);
+        }
+        return entry;
+    }
+}
+#pragma pop
+
+ObjectDir* ObjectDir::NextSubDir(int& which){
+    MILO_ASSERT(which >= 0, 0x695);
+    ObjectDir* ret = this;
+    if(which == 0) return ret;
+    else {
+        which--;
+        ret = 0;
+        for(int i = 0; i < mSubDirs.size(); i++){
+            if(mSubDirs[i]){
+                ret = mSubDirs[i]->NextSubDir(which);
+                if(ret) break;
+            }
+        }
+    }
+    return ret;
+}
+
+bool ObjectDir::HasDirPtrs() const {
+    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+    for(; rit != ritEnd; ++rit){
+        if((*rit)->IsDirPtr()) return true;
+    }
+    return false;
 }
 
 DataNode ObjectDir::OnFind(DataArray* da){

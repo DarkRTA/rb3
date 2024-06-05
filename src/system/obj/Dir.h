@@ -108,6 +108,8 @@ public:
         // }
     }
 
+    operator bool() const { return mDir != 0; }
+
     T* mDir;
     class DirLoader* mLoader;
 };
@@ -181,7 +183,9 @@ public:
     void DeleteSubDirs();
     bool InlineProxy(BinStream&);
     void AddedSubDir(ObjDirPtr<ObjectDir>&);
+    void RemovingSubDir(ObjDirPtr<ObjectDir>&);
     ObjDirPtr<ObjectDir> PostLoadInlined();
+    ObjectDir* NextSubDir(int&);
 
     DataNode OnFind(DataArray*);
 

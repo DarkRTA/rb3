@@ -64,13 +64,13 @@ public:
     }
 
     T2* Insert(const T2& val){
-        MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
-        if(!mEntries){
-            MILO_ASSERT(mOwnEntries, 0x9E);
-            Resize(0x19, 0);
-        }
-        int i = HashString(val, mSize);
-        MILO_ASSERT(i >= 0, 0xA4);
+        // MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
+        // if(!mEntries){
+        //     MILO_ASSERT(mOwnEntries, 0x9E);
+        //     Resize(0x19, 0);
+        // }
+        // int i = HashString(val, mSize);
+        // MILO_ASSERT(i >= 0, 0xA4);
     }
 
     void Resize(int, T2*);
