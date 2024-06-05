@@ -34,22 +34,23 @@ public:
     RndMesh* BottomLeftHighlightBone() const;
     RndMesh* BottomRightHighlightBone() const;
     void SetColor(UIComponent::State, UIColor*);
+    void GetStateColor(UIComponent::State, Hmx::Color&) const;
 
     DECLARE_REVS;
 
-    ObjPtr<UIColor, ObjectDir> mDefaultColor;
-    std::vector<ObjPtr<UIColor,ObjectDir> > mColors;
-    ObjPtr<RndText, ObjectDir> mTextObj;
-    ObjPtr<RndAnimatable, ObjectDir> mFocusAnim;
-    ObjPtr<RndAnimatable, ObjectDir> mPulseAnim;
-    ObjPtr<RndMesh, ObjectDir> mTopLeftHighlightBone;
-    ObjPtr<RndMesh, ObjectDir> mTopRightHighlightBone;
-    ObjPtr<RndMesh, ObjectDir> mBottomLeftHighlightBone;
-    ObjPtr<RndMesh, ObjectDir> mBottomRightHighlightBone;
-    ObjPtr<RndGroup, ObjectDir> mHighlightMeshGroup;
-    ObjPtr<RndGroup, ObjectDir> mFocusedBackgroundGroup;
-    ObjPtr<RndGroup, ObjectDir> mUnfocusedBackgroundGroup;
-    bool mAllowEditText;
+    ObjPtr<UIColor, ObjectDir> mDefaultColor; // 0x26c
+    std::vector<ObjPtr<UIColor,ObjectDir> > mColors; // 0x278
+    ObjPtr<RndText, ObjectDir> mTextObj; // 0x280
+    ObjPtr<RndAnimatable, ObjectDir> mFocusAnim; // 0x28c
+    ObjPtr<RndAnimatable, ObjectDir> mPulseAnim; // 0x298
+    ObjPtr<RndMesh, ObjectDir> mTopLeftHighlightBone; // 0x2a4
+    ObjPtr<RndMesh, ObjectDir> mTopRightHighlightBone; // 0x2b0
+    ObjPtr<RndMesh, ObjectDir> mBottomLeftHighlightBone; // 0x2bc
+    ObjPtr<RndMesh, ObjectDir> mBottomRightHighlightBone; // 0x2c8
+    ObjPtr<RndGroup, ObjectDir> mHighlightMeshGroup; // 0x2d4
+    ObjPtr<RndGroup, ObjectDir> mFocusedBackgroundGroup; // 0x2e0
+    ObjPtr<RndGroup, ObjectDir> mUnfocusedBackgroundGroup; // 0x2ec
+    bool mAllowEditText; // 0x2f8
 };
 
 #endif

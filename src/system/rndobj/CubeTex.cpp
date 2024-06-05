@@ -164,15 +164,15 @@ void RndCubeTex::PostLoad(BinStream& bs){
 
 BEGIN_COPYS(RndCubeTex)
     COPY_SUPERCLASS(Hmx::Object)
-    GET_COPY(RndCubeTex)
-    BEGIN_COPY_CHECKED
+    CREATE_COPY(RndCubeTex)
+    BEGIN_COPYING_MEMBERS
         COPY_MEMBER(props)
         for(int i = 0; i < 6; i++){
             COPY_MEMBER(moreprops[i])
             COPY_MEMBER(mFile[i])
             mBitmap[i].Create(c->mBitmap[i], c->mBitmap[i].mBpp, c->mBitmap[i].mOrder, 0);
         }
-    END_COPY_CHECKED
+    END_COPYING_MEMBERS
     Update();
 END_COPYS
 

@@ -120,7 +120,7 @@ void Hmx::Object::SetTypeDef(DataArray* da){
 
 DataNode* Hmx::Object::Property(DataArray* prop, bool fail) const {
     static DataNode n(0);
-    // if(SyncProperty(n, prop, 0, kPropGet)) return &n; // fails because n needs to be a DataNode&...why tho?
+    if(const_cast<Hmx::Object*>(this)->SyncProperty(n, prop, 0, kPropGet)) return &n;
     Symbol name = prop->Sym(0);
     DataNode* kv = mTypeProps.KeyValue(name, false);
     if(!kv){

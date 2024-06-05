@@ -14,7 +14,7 @@ UILabel::UILabel() : mLabelDir(0), mText(Hmx::Object::New<RndText>()), unk114(),
 }
 
 UILabel::~UILabel() {
-
+    delete mText;
 }
 
 void UILabel::Init() {

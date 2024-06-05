@@ -3,14 +3,24 @@
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
 #include "obj/ObjPtr_p.h"
+#include "obj/Msg.h"
+#include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include <list>
 #include <vector>
 
 class UIComponent;
 class RndCam;
+class UITrigger;
 
 class PanelDir : public RndDir {
 public:
+    enum RequestFocus {
+        kNoFocus = 0,
+        kMaybeFocus = 1,
+        kAlwaysFocus = 2,
+    };
+
     PanelDir();
     OBJ_CLASSNAME(PanelDir)
     OBJ_SET_TYPE(PanelDir)
@@ -33,14 +43,26 @@ public:
     virtual UIComponent* FocusComponent();
     virtual UIComponent* FindComponent(const char*);
     virtual void SetFocusComponent(UIComponent*, Symbol);
-
+    void SendTransition(const Message&, Symbol, Symbol);
+    void AddComponent(UIComponent*);
+    void UpdateFocusComponentState();
+    void SetShowFocusComponent(bool);
     void SyncEditModePanels();
+    void EnableComponent(UIComponent*, RequestFocus);
+    void DisableComponent(UIComponent*, JoypadAction);
+    void PanelNav(JoypadAction, JoypadButton, Symbol);
+    void GetFocusableComponentList();
+    bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
 
-    UIComponent* mFocusComponent;
-    class UIPanel* mOwnerPanel;
-    ObjPtr<RndCam, ObjectDir> mCam;
-    std::list<void*> mTriggers;
-    std::list<void*> mComponents;
+    DataNode OnEnableComponent(const DataArray*);
+    DataNode OnDisableComponent(const DataArray*);
+    DataNode OnMsg(const ButtonDownMsg&);
+
+    UIComponent* mFocusComponent; // 0x18c
+    class UIPanel* mOwnerPanel; // 0x190
+    ObjPtr<RndCam, ObjectDir> mCam; // 0x194
+    std::list<UITrigger*> mTriggers; // 0x1a0
+    std::list<UIComponent*> mComponents; // 0x1a8
     bool mCanEndWorld; // 0x1b0
     bool mUseSpecifiedCam; // 0x1b1
     std::vector<PanelDir*> mBackPanels; // 0x1b4
