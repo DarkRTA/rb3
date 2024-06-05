@@ -22,7 +22,7 @@ public:
 
     void Cleanup(const char*);
     class ObjectDir* GetDir();
-    bool SaveObjects(const char*, class ObjectDir*);
+    static bool SaveObjects(const char*, class ObjectDir*);
     Symbol FixClassName(Symbol);
     bool SetupDir(Symbol);
 

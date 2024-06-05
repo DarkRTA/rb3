@@ -1,10 +1,20 @@
 #include "obj/Dir.h"
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
-
 #include "decomp.h"
+#include "utl/Messages.h"
+#include "utl/Symbols.h"
 
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
+
+namespace {
+    int gPreloadIdx = 0;
+    ObjDirPtr<ObjectDir> gPreloaded[128];
+
+    void DeleteShared(){
+
+    }
+}
 
 INIT_REVS(ObjectDir);
 
@@ -33,8 +43,22 @@ void ObjectDir::SetSubDir(bool b){
     }
 }
 
-bool ObjectDir::IsProxy() const {
-    return this != mDir;
+bool ObjectDir::HasSubDir(ObjectDir* dir){
+    ObjectDir* subdir;
+    int i = 0;
+    do {
+        subdir = NextSubDir(i);
+        if(!subdir) return false;
+    } while(subdir != dir);
+    return true;
+}
+
+bool ObjectDir::SaveSubdirs(){
+    bool ret = false;
+    if(!IsProxy() || mProxyFile.empty() || gLoadingProxyFromDisk){
+        ret = true;
+    }
+    return ret;
 }
 
 SAVE_OBJ(ObjectDir, 0x1A2)
@@ -181,33 +205,99 @@ bool ObjectDir::AllowsInlineProxy(){
 #pragma push
 #pragma dont_inline on
 void ObjectDir::PostLoad(BinStream& bs){
-    for(int i = mInlinedDirs.size(); i >= 0; i--){
-        ObjDirPtr<ObjectDir>& ptr = mInlinedDirs[i].dir;
-        ptr.IsLoaded();
-        ptr->Dir();
-        ptr.GetFile();
-        ptr.PostLoad(0);
-        ptr = ObjDirPtr<ObjectDir>();
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    for(int i = mInlinedDirs.size() - 1; i >= 0; i--){
+        InlinedDir& iDir = mInlinedDirs[i];
+        int tempgRev = gRev;
+        iDir.dir.PostLoad(mLoader);
+        gRev = tempgRev;
+        if(iDir.inlineDirType == (InlineDirType)3){
+            iDir.shared = true;
+        }
+        if(iDir.shared){
+            FilePath& fp = iDir.file;
+            DirLoader* last = DirLoader::FindLast(fp);
+            if(last){
+                if(last->IsLoaded()){
+                    iDir.dir = last->GetDir();
+                }
+                else {
+                    MILO_WARN("Can't share unloaded dir %s", fp);
+                }
+            }
+        }
+        else {
+            if(iDir.dir.IsLoaded()){
+                delete iDir.dir->mLoader;
+                iDir.dir->mLoader = 0;
+            }
+        }
+    }
+    if(gRev > 0x17){
+        int revs2 = bs.Cached() ? 0 : PopRev(this);
+        int offset = PopRev(this);
+        MILO_ASSERT(( 0) <= (offset) && (offset) <= ( mSubDirs.size()), 0x466);
+        if(revs2 != 2){
+            for(int i = mSubDirs.size() - offset - 1; i >= 0; i--){
+                bool bbb = false;
+                if(revs2 == 1){
+                    bbb = PopRev(this) != 0;
+                }
+                ObjDirPtr<ObjectDir> inlinedDirPtr = PostLoadInlined();
+                ObjDirPtr<ObjectDir>& curDirPtr = mSubDirs[i + offset];
+                if(revs2 == 0 || bbb){
+                    curDirPtr = inlinedDirPtr;
+                }
+                AddedSubDir(curDirPtr);
+            }
+            for(offset = offset - 1; offset >= 0; offset--){
+                ObjDirPtr<ObjectDir>& offsetPtr = mSubDirs[offset];
+                offsetPtr.PostLoad(mLoader);
+                AddedSubDir(offsetPtr);
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < mSubDirs.size(); i++){
+            ObjDirPtr<ObjectDir>& curDirPtr = mSubDirs[i];
+            curDirPtr.PostLoad(mLoader);
+            AddedSubDir(curDirPtr);
+            if(curDirPtr.IsLoaded()){
+                if(curDirPtr->InlineSubDirType() != kInlineNever){
+                    delete curDirPtr->mLoader;
+                    curDirPtr->mLoader = 0;
+                }
+            }
+        }
+    }
+    if(gRev > 10){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        bs.ReadString(buf, 0x80);
+        mCurCam = FindObject(buf, true);
+    }
+    if(gRev > 0x15) LoadRest(bs);
+    else if(gRev > 0x10) Hmx::Object::Load(bs);
+    HandleType(change_proxies_msg);
+    if(mProxyOverride){
+        bool overridden = false;
+        mProxyOverride = false;
+        if(TheLoadMgr.EditMode() || (IsProxy() && !AllowsInlineProxy())){
+            overridden = true;
+        }
+        if(!overridden) MILO_FAIL("You cannot override an inlined proxy!");
+    }
+    else {
+        if(IsProxy() && !mProxyFile.empty()){
+            DeleteObjects();
+            DeleteSubDirs();
+            DirLoader* dl = new DirLoader(mProxyFile, kLoadFront, 0, InlineProxy(bs) ? &bs : 0, this, false);
+        }
     }
 }
 #pragma pop
-
-extern std::vector<ObjVersion> sRevStack;
-
-int PopRev(Hmx::Object* o){
-    while(sRevStack.back().obj != 0){
-        sRevStack.pop_back();
-    }
-    ObjVersion& back = sRevStack.back();
-    if(o != back.obj){
-        TheDebug << MakeString("rev stack $this mismatch (%08x != %08x\n", o, &back.obj);
-        TheDebug << MakeString("curr obj: %s %s\n", o->ClassName(), PathName(o));
-        TheDebug << MakeString("stack obj: %s %s\n", back.obj->ClassName(), PathName(back.obj));
-        TheDebug << MakeString("rev stack (%08x %s %s != %08x %s %s)\n", o, o->ClassName(), PathName(o), &back.obj, back.obj->ClassName(), PathName(back.obj));
-    }
-    sRevStack.pop_back();
-    return back.revs;
-}
 
 void ObjectDir::TransferLoaderState(ObjectDir* otherDir){
     mProxyFile = otherDir->mProxyFile;
@@ -233,6 +323,52 @@ void ObjectDir::SetProxyFile(const FilePath& fp, bool b){
     }
 }
 
+BEGIN_COPYS(ObjectDir)
+    COPY_SUPERCLASS(Hmx::Object)
+    if(ty != kCopyFromMax){
+        CREATE_COPY(ObjectDir)
+        BEGIN_COPYING_MEMBERS
+            if(this == Dir()){
+                for(int i = 0; i < mSubDirs.size(); i++){
+                    RemovingSubDir(mSubDirs[i]);
+                }
+                COPY_MEMBER(mSubDirs)
+                for(int i = 0; i < mSubDirs.size(); i++){
+                    AddedSubDir(mSubDirs[i]);
+                }
+            }
+            COPY_MEMBER(mInlineProxy)
+            COPY_MEMBER(mInlineSubDirType)
+        END_COPYING_MEMBERS
+    }
+END_COPYS
+
+Hmx::Object* ObjectDir::FindObject(const char* name, bool parentDirs){
+    Entry* entry = FindEntry(name, false);
+    if(entry && entry->obj) return entry->obj;
+    for(int i = 0; i < mSubDirs.size(); i++){
+        if(mSubDirs[i]){
+            Hmx::Object* found = mSubDirs[i]->FindObject(name, false);
+            if(found) return found;
+        }
+    }
+    if(strlen(name) != 0){
+        if(strcmp(name, Name()) == 0){
+            return this;
+        }
+    }
+    if(parentDirs){
+        ObjectDir* thisDir = Dir();
+        if(thisDir && thisDir != this){
+            return thisDir->FindObject(name, parentDirs);
+        }
+        if(this != sMainDir){
+            return sMainDir->FindObject(name, false);
+        }
+    }
+    return 0;
+}
+
 void ObjectDir::RemovingObject(Hmx::Object* obj){
     if(obj != mCurCam) return;
     else mCurCam = 0;
@@ -244,6 +380,74 @@ bool ObjectDir::InlineProxy(BinStream& bs){
         ret = true;
     }
     return ret;
+}
+
+#pragma push
+#pragma dont_inline on
+// the KeylessHash methods should NOT be inlined, but the Entry ctor should
+ObjectDir::Entry* ObjectDir::FindEntry(const char* name, bool add){
+    if(name == 0 || *name == '\0') return 0;
+    else {
+        Entry* entry = mHashTable.Find(name);
+        if(!entry && add){
+            Entry newEntry;
+            newEntry.name = SymbolCacheLookup(name);
+            if(!newEntry.name){
+                mStringTable.Add(newEntry.name);
+            }
+            entry = mHashTable.Insert(newEntry);
+        }
+        return entry;
+    }
+}
+#pragma pop
+
+ObjectDir* ObjectDir::NextSubDir(int& which){
+    MILO_ASSERT(which >= 0, 0x695);
+    ObjectDir* ret = this;
+    if(which == 0) return ret;
+    else {
+        which--;
+        ret = 0;
+        for(int i = 0; i < mSubDirs.size(); i++){
+            if(mSubDirs[i]){
+                ret = mSubDirs[i]->NextSubDir(which);
+                if(ret) break;
+            }
+        }
+    }
+    return ret;
+}
+
+bool ObjectDir::HasDirPtrs() const {
+    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
+    for(; rit != ritEnd; ++rit){
+        if((*rit)->IsDirPtr()) return true;
+    }
+    return false;
+}
+
+BEGIN_HANDLERS(ObjectDir)
+    HANDLE_ACTION(iterate, Iterate(_msg, true))
+    HANDLE_ACTION(iterate_self, Iterate(_msg, false))
+    HANDLE_ACTION(save_objects, DirLoader::SaveObjects(_msg->Str(2), this))
+    HANDLE(find, OnFind)
+    HANDLE_EXPR(exists, FindObject(_msg->Str(2), false) != 0)
+    HANDLE_ACTION(sync_objects, SyncObjects())
+    HANDLE_EXPR(is_proxy, Dir() != this)
+    HANDLE_EXPR(proxy_dir, mLoader ? mLoader->mProxyDir : (Hmx::Object*)0)
+    HANDLE_EXPR(proxy_name, mLoader ? (mLoader->mProxyName ? mLoader->mProxyName : "") : "")
+END_HANDLERS
+
+DataNode ObjectDir::OnFind(DataArray* da){
+    Hmx::Object* found = FindObject(da->Str(2), false);
+    if(da->Size() > 3){
+        if(da->Int(3) != 0 && !found){
+            MILO_FAIL("Couldn't find %s in %s", da->Str(2), Name());
+        }
+    }
+    return DataNode(found);
 }
 
 #pragma push
