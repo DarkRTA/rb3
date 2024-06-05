@@ -15,6 +15,19 @@ inline void PushRev(int i, Hmx::Object* o){
     sRevStack.push_back(ObjVersion(o, i));
 }
 
-int PopRev(Hmx::Object* o);
+inline int PopRev(Hmx::Object* o){
+    while(sRevStack.back().obj != 0){
+        sRevStack.pop_back();
+    }
+    ObjVersion& back = sRevStack.back();
+    if(o != back.obj){
+        TheDebug << MakeString("rev stack $this mismatch (%08x != %08x\n", o, back.obj);
+        TheDebug << MakeString("curr obj: %s %s\n", o->ClassName(), PathName(o));
+        TheDebug << MakeString("stack obj: %s %s\n", back.obj->ClassName(), PathName(back.obj));
+        TheDebug << MakeString("rev stack (%08x %s %s != %08x %s %s)\n", o, o->ClassName(), PathName(o), back.obj, back.obj->ClassName(), PathName(back.obj));
+    }
+    sRevStack.pop_back();
+    return back.revs;
+}
 
 #endif
