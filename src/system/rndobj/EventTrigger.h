@@ -1,11 +1,10 @@
 #ifndef RNDOBJ_EVENTTRIGGER_H
 #define RNDOBJ_EVENTTRIGGER_H
 #include "rndobj/Anim.h"
+#include "rndobj/Draw.h"
+#include "rndobj/PartLauncher.h"
+#include "synth/Sequence.h"
 #include "obj/ObjVector.h"
-
-class Sequence;
-class RndPartLauncher;
-class RndDrawable;
 
 class EventTrigger : public virtual Hmx::Object, public RndAnimatable {
 public:
@@ -53,7 +52,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~EventTrigger();
+    virtual ~EventTrigger(){}
     virtual bool Loop();
     virtual void StartAnim();
     virtual void EndAnim();
@@ -66,6 +65,7 @@ public:
     virtual void CheckAnims(){}
 
     DECLARE_REVS
+    DELETE_OVERLOAD
     NEW_OBJ(EventTrigger)
     static void Init();
 

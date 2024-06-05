@@ -445,6 +445,7 @@
             "system/ui/UIResource.cpp": "NonMatching",
             "system/ui/UIScreen.cpp": "Equivalent",
             "system/ui/UITransitionHandler.cpp": "Matching",
+            "system/ui/UITrigger.cpp": "NonMatching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
