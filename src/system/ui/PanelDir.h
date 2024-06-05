@@ -3,11 +3,13 @@
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
 #include "obj/ObjPtr_p.h"
+#include "obj/Msg.h"
 #include <list>
 #include <vector>
 
 class UIComponent;
 class RndCam;
+class UITrigger;
 
 class PanelDir : public RndDir {
 public:
@@ -33,14 +35,15 @@ public:
     virtual UIComponent* FocusComponent();
     virtual UIComponent* FindComponent(const char*);
     virtual void SetFocusComponent(UIComponent*, Symbol);
+    void SendTransition(const Message&, Symbol, Symbol);
 
     void SyncEditModePanels();
 
-    UIComponent* mFocusComponent;
-    class UIPanel* mOwnerPanel;
-    ObjPtr<RndCam, ObjectDir> mCam;
-    std::list<void*> mTriggers;
-    std::list<void*> mComponents;
+    UIComponent* mFocusComponent; // 0x18c
+    class UIPanel* mOwnerPanel; // 0x190
+    ObjPtr<RndCam, ObjectDir> mCam; // 0x194
+    std::list<UITrigger*> mTriggers; // 0x1a0
+    std::list<void*> mComponents; // 0x1a8
     bool mCanEndWorld; // 0x1b0
     bool mUseSpecifiedCam; // 0x1b1
     std::vector<PanelDir*> mBackPanels; // 0x1b4

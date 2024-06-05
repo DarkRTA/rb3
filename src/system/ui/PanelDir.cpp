@@ -6,6 +6,7 @@
 #include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "rndobj/Cam.h"
+#include "utl/Messages.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(PanelDir)
@@ -30,9 +31,33 @@ SAVE_OBJ(PanelDir, 57)
 void PanelDir::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(8, 0)
-    PushRev(gAltRev << 16 | gRev, this);
-    
+    PushRev(packRevs(gAltRev, gRev), this);    
     RndDir::PreLoad(bs);
+}
+
+void PanelDir::PostLoad(BinStream& bs){
+    RndDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gAltRev = getAltRev(revs);
+    gRev = getHmxRev(revs);
+    if(this == Dir()){
+        if(gRev != 0) bs >> mCam;
+        if(gRev == 2){
+            Symbol s;
+            bs >> s;
+        }
+    }
+    if(gRev > 3) bs >> mCanEndWorld;
+    if(gRev > 4) bs >> mBackFilenames >> mFrontFilenames;
+    if(gRev > 5) bs >> mShowEditModePanels;
+    if(gRev > 7){
+        if(gLoadingProxyFromDisk){
+            bool b;
+            bs >> b;
+        }
+        else bs >> mUseSpecifiedCam;
+    }
+    SyncEditModePanels();
 }
 
 BEGIN_COPYS(PanelDir)
@@ -48,6 +73,17 @@ BEGIN_COPYS(PanelDir)
         SyncEditModePanels();
     END_COPYING_MEMBERS
 END_COPYS
+
+void PanelDir::Enter(){
+    RndDir::Enter();
+    // iterate through mTriggers
+    SendTransition(ui_enter_msg, ui_enter_forward, ui_enter_back);
+}
+
+void PanelDir::Exit(){
+    RndDir::Exit();
+    SendTransition(ui_exit_msg, ui_exit_forward, ui_exit_back);
+}
 
 BEGIN_PROPSYNCS(PanelDir)
     SYNC_PROP(cam, mCam)
