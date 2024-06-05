@@ -197,13 +197,14 @@ void ObjectDir::PostLoad(BinStream& bs){
             iDir.shared = true;
         }
         if(iDir.shared){
-            DirLoader* last = DirLoader::FindLast(iDir.file);
+            FilePath& fp = iDir.file;
+            DirLoader* last = DirLoader::FindLast(fp);
             if(last){
                 if(last->IsLoaded()){
                     iDir.dir = last->GetDir();
                 }
                 else {
-                    MILO_WARN("Can't share unloaded dir %s", iDir.file);
+                    MILO_WARN("Can't share unloaded dir %s", fp);
                 }
             }
         }
@@ -219,7 +220,7 @@ void ObjectDir::PostLoad(BinStream& bs){
         int offset = PopRev(this);
         MILO_ASSERT(( 0) <= (offset) && (offset) <= ( mSubDirs.size()), 0x466);
         if(revs2 != 2){
-            for(int i = mSubDirs.size() - offset; i >= 0; i--){
+            for(int i = mSubDirs.size() - offset - 1; i >= 0; i--){
                 bool bbb = false;
                 if(revs2 == 1){
                     bbb = PopRev(this) != 0;
@@ -231,7 +232,7 @@ void ObjectDir::PostLoad(BinStream& bs){
                 }
                 AddedSubDir(curDirPtr);
             }
-            for(; offset >= 0; offset--){
+            for(offset = offset - 1; offset >= 0; offset--){
                 ObjDirPtr<ObjectDir>& offsetPtr = mSubDirs[offset];
                 offsetPtr.PostLoad(mLoader);
                 AddedSubDir(offsetPtr);
