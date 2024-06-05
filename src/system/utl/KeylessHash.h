@@ -51,23 +51,14 @@ public:
             int i = HashString(key, mSize);
             MILO_ASSERT(i >= 0, 0x88);
 
-            T2* it = mEntries;
-            T2 end = mEmpty;
-            // while(it = &mEntries[i], *it != end){
-            //     if(*it != mRemoved){
-            //         bool matched = strcmp(*it, key) == 0;
-            //         if(matched) return it;
-            //     }
-            //     if(++i == mSize) i = 0;
-            // }
-
-            // for(T2* it = &mEntries[i]; *it != mEmpty; it = &mEntries[i]){
-            //     if(*it != mRemoved){
-            //         bool matched = strcmp(*it, key) == 0;
-            //         if(matched) return it;
-            //     }
-            //     if(++i == mSize) i = 0;
-            // }
+            T2* it;
+            while(it = &mEntries[i], *it != mEmpty){
+                if(*it != mRemoved){
+                    bool matched = strcmp(*it, key) == 0;
+                    if(matched) return it;
+                }
+                if(++i == mSize) i = 0;
+            }
         }
         return 0;
     }
@@ -84,9 +75,9 @@ public:
 
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry){
-        // for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
-        // if(entry == mEntries + mSize) return 0;
-        // else return entry;
+        for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
+        if(entry == mEntries + mSize) return 0;
+        else return entry;
     }
 };
 

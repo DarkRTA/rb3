@@ -1,10 +1,14 @@
 #include "obj/Dir.h"
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
-
 #include "decomp.h"
+#include "utl/Messages.h"
 
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
+
+namespace {
+    ObjDirPtr<ObjectDir> gPreloaded[128];
+}
 
 INIT_REVS(ObjectDir);
 
@@ -181,13 +185,95 @@ bool ObjectDir::AllowsInlineProxy(){
 #pragma push
 #pragma dont_inline on
 void ObjectDir::PostLoad(BinStream& bs){
-    for(int i = mInlinedDirs.size(); i >= 0; i--){
-        ObjDirPtr<ObjectDir>& ptr = mInlinedDirs[i].dir;
-        ptr.IsLoaded();
-        ptr->Dir();
-        ptr.GetFile();
-        ptr.PostLoad(0);
-        ptr = ObjDirPtr<ObjectDir>();
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    for(int i = mInlinedDirs.size() - 1; i >= 0; i--){
+        InlinedDir& iDir = mInlinedDirs[i];
+        int tempgRev = gRev;
+        iDir.dir.PostLoad(mLoader);
+        gRev = tempgRev;
+        if(iDir.inlineDirType == (InlineDirType)3){
+            iDir.shared = true;
+        }
+        if(iDir.shared){
+            DirLoader* last = DirLoader::FindLast(iDir.file);
+            if(last){
+                if(last->IsLoaded()){
+                    iDir.dir = last->GetDir();
+                }
+                else {
+                    MILO_WARN("Can't share unloaded dir %s", iDir.file);
+                }
+            }
+        }
+        else {
+            if(iDir.dir.IsLoaded()){
+                delete iDir.dir->mLoader;
+                iDir.dir->mLoader = 0;
+            }
+        }
+    }
+    if(gRev > 0x17){
+        int revs2 = bs.Cached() ? 0 : PopRev(this);
+        int offset = PopRev(this);
+        MILO_ASSERT(( 0) <= (offset) && (offset) <= ( mSubDirs.size()), 0x466);
+        if(revs2 != 2){
+            for(int i = mSubDirs.size() - offset; i >= 0; i--){
+                bool bbb = false;
+                if(revs2 == 1){
+                    bbb = PopRev(this) != 0;
+                }
+                ObjDirPtr<ObjectDir> inlinedDirPtr = PostLoadInlined();
+                ObjDirPtr<ObjectDir>& curDirPtr = mSubDirs[i + offset];
+                if(revs2 == 0 || bbb){
+                    curDirPtr = inlinedDirPtr;
+                }
+                AddedSubDir(curDirPtr);
+            }
+            for(; offset >= 0; offset--){
+                ObjDirPtr<ObjectDir>& offsetPtr = mSubDirs[offset];
+                offsetPtr.PostLoad(mLoader);
+                AddedSubDir(offsetPtr);
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < mSubDirs.size(); i++){
+            ObjDirPtr<ObjectDir>& curDirPtr = mSubDirs[i];
+            curDirPtr.PostLoad(mLoader);
+            AddedSubDir(curDirPtr);
+            if(curDirPtr.IsLoaded()){
+                if(curDirPtr->InlineSubDirType() != kInlineNever){
+                    delete curDirPtr->mLoader;
+                    curDirPtr->mLoader = 0;
+                }
+            }
+        }
+    }
+    if(gRev > 10){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        bs.ReadString(buf, 0x80);
+        mCurCam = FindObject(buf, true);
+    }
+    if(gRev > 0x15) LoadRest(bs);
+    else if(gRev > 0x10) Hmx::Object::Load(bs);
+    HandleType(change_proxies_msg);
+    if(mProxyOverride){
+        bool overridden = false;
+        mProxyOverride = false;
+        if(TheLoadMgr.EditMode() || (IsProxy() && !AllowsInlineProxy())){
+            overridden = true;
+        }
+        if(!overridden) MILO_FAIL("You cannot override an inlined proxy!");
+    }
+    else {
+        if(IsProxy() && !mProxyFile.empty()){
+            DeleteObjects();
+            DeleteSubDirs();
+            DirLoader* dl = new DirLoader(mProxyFile, kLoadFront, 0, InlineProxy(bs) ? &bs : 0, this, false);
+        }
     }
 }
 #pragma pop
@@ -244,6 +330,16 @@ bool ObjectDir::InlineProxy(BinStream& bs){
         ret = true;
     }
     return ret;
+}
+
+DataNode ObjectDir::OnFind(DataArray* da){
+    Hmx::Object* found = FindObject(da->Str(2), false);
+    if(da->Size() > 3){
+        if(da->Int(3) != 0 && !found){
+            MILO_FAIL("Couldn't find %s in %s", da->Str(2), Name());
+        }
+    }
+    return DataNode(found);
 }
 
 #pragma push

@@ -121,6 +121,7 @@ public:
             obj = entry.obj;
             return *this;
         }
+        operator const char*(){ return name; } // may not need this
 
         const char* name;
         Hmx::Object* obj;
@@ -128,10 +129,10 @@ public:
 
     struct InlinedDir {
         // Note: names are fabricated, no DWARF info
-        ObjDirPtr<ObjectDir> dir;
-        FilePath file;
-        bool shared;
-        InlineDirType inlineDirType;
+        ObjDirPtr<ObjectDir> dir; // 0x0
+        FilePath file; // 0xc
+        bool shared; // 0x18
+        InlineDirType inlineDirType; // 0x1c
     };
 
     class Viewport {
@@ -179,6 +180,10 @@ public:
     void DeleteObjects();
     void DeleteSubDirs();
     bool InlineProxy(BinStream&);
+    void AddedSubDir(ObjDirPtr<ObjectDir>&);
+    ObjDirPtr<ObjectDir> PostLoadInlined();
+
+    DataNode OnFind(DataArray*);
 
     Hmx::Object* FindObject(const char*, bool);
     template <class T> T* Find(const char* name, bool b) {
@@ -189,17 +194,17 @@ public:
 
     KeylessHash<const char*, Entry> mHashTable;
     StringTable mStringTable;
-    FilePath mProxyFile;
-    bool mProxyOverride;
+    FilePath mProxyFile; // 0x38
+    bool mProxyOverride; // 0x44
     bool mInlineProxy; // 0x45
     DirLoader* mLoader;
     std::vector<ObjDirPtr<ObjectDir> > mSubDirs; // 0x4c
-    bool mIsSubDir;
-    InlineDirType mInlineSubDirType;
+    bool mIsSubDir; // 0x54
+    InlineDirType mInlineSubDirType; // 0x58
     const char* mPathName; // 0x5c
-    FilePath mStoredFile;
-    std::vector<InlinedDir> mInlinedDirs;
-    Hmx::Object* mCurCam;
+    FilePath mStoredFile; // 0x60
+    std::vector<InlinedDir> mInlinedDirs; // 0x6c
+    Hmx::Object* mCurCam; // 0x74
     int mAlwaysInlined; // appears to be a word? - 0x78
     const char* mAlwaysInlineHash;
 };
