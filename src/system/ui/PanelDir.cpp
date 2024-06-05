@@ -8,6 +8,7 @@
 #include "rndobj/Cam.h"
 #include "ui/Utl.h"
 #include "ui/UITrigger.h"
+#include "ui/UI.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -91,7 +92,7 @@ void PanelDir::Exit(){
 
 void PanelDir::SendTransition(const Message& msg, Symbol s1, Symbol s2){
     static Message dirMsg = Message(Symbol(""));
-    Symbol symToUse = s1;
+    Symbol symToUse = TheUI->WentBack() ? s2 : s1;
     DataArray* msgData = dirMsg;
     msgData->Node(1) = DataNode(symToUse);
     RndDir::Handle(msg, false);
@@ -190,6 +191,20 @@ BEGIN_PROPSYNCS(PanelDir)
     SYNC_PROP(use_specified_cam, mUseSpecifiedCam)
     SYNC_PROP(focus_component, mFocusComponent) // ????
     SYNC_PROP(owner_panel, mOwnerPanel)
-
+    {
+        static Symbol _s("front_view_only_panels");
+        if(sym == _s){
+            PropSyncEditModePanels(mFrontFilenames, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("back_view_only_panels");
+        if(sym == _s){
+            PropSyncEditModePanels(mBackFilenames, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    SYNC_PROP_MODIFY(show_view_only_panels, mShowEditModePanels, SyncEditModePanels())
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS

@@ -52,6 +52,7 @@ public:
     void DisableComponent(UIComponent*, JoypadAction);
     void PanelNav(JoypadAction, JoypadButton, Symbol);
     void GetFocusableComponentList();
+    bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
 
     DataNode OnEnableComponent(const DataArray*);
     DataNode OnDisableComponent(const DataArray*);
