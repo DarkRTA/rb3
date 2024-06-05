@@ -3,11 +3,17 @@
 #include "obj/ObjVersion.h"
 #include "decomp.h"
 #include "utl/Messages.h"
+#include "utl/Symbols.h"
 
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
 
 namespace {
+    int gPreloadIdx = 0;
     ObjDirPtr<ObjectDir> gPreloaded[128];
+
+    void DeleteShared(){
+
+    }
 }
 
 INIT_REVS(ObjectDir);
@@ -37,8 +43,22 @@ void ObjectDir::SetSubDir(bool b){
     }
 }
 
-bool ObjectDir::IsProxy() const {
-    return this != mDir;
+bool ObjectDir::HasSubDir(ObjectDir* dir){
+    ObjectDir* subdir;
+    int i = 0;
+    do {
+        subdir = NextSubDir(i);
+        if(!subdir) return false;
+    } while(subdir != dir);
+    return true;
+}
+
+bool ObjectDir::SaveSubdirs(){
+    bool ret = false;
+    if(!IsProxy() || mProxyFile.empty() || gLoadingProxyFromDisk){
+        ret = true;
+    }
+    return ret;
 }
 
 SAVE_OBJ(ObjectDir, 0x1A2)
@@ -424,6 +444,18 @@ bool ObjectDir::HasDirPtrs() const {
     }
     return false;
 }
+
+BEGIN_HANDLERS(ObjectDir)
+    HANDLE_ACTION(iterate, Iterate(_msg, true))
+    HANDLE_ACTION(iterate_self, Iterate(_msg, false))
+    HANDLE_ACTION(save_objects, DirLoader::SaveObjects(_msg->Str(2), this))
+    HANDLE(find, OnFind)
+    HANDLE_EXPR(exists, FindObject(_msg->Str(2), false) != 0)
+    HANDLE_ACTION(sync_objects, SyncObjects())
+    HANDLE_EXPR(is_proxy, Dir() != this)
+    HANDLE_EXPR(proxy_dir, mLoader ? mLoader->mProxyDir : (Hmx::Object*)0)
+    HANDLE_EXPR(proxy_name, mLoader ? (mLoader->mProxyName ? mLoader->mProxyName : "") : "")
+END_HANDLERS
 
 DataNode ObjectDir::OnFind(DataArray* da){
     Hmx::Object* found = FindObject(da->Str(2), false);

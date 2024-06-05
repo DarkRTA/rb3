@@ -172,7 +172,7 @@ public:
     virtual void OldLoadProxies(BinStream&, int);
 
     void Reserve(int, int);
-    bool IsProxy() const;
+    bool IsProxy() const { return this != mDir; }
     bool HasSubDir(ObjectDir*);
     bool HasDirPtrs() const;
     Entry* FindEntry(const char*, bool);
@@ -186,6 +186,7 @@ public:
     void RemovingSubDir(ObjDirPtr<ObjectDir>&);
     ObjDirPtr<ObjectDir> PostLoadInlined();
     ObjectDir* NextSubDir(int&);
+    void Iterate(DataArray*, bool);
 
     DataNode OnFind(DataArray*);
 
@@ -196,12 +197,12 @@ public:
 
     DECLARE_REVS;
 
-    KeylessHash<const char*, Entry> mHashTable;
-    StringTable mStringTable;
+    KeylessHash<const char*, Entry> mHashTable; // 0x8
+    StringTable mStringTable; // 0x28
     FilePath mProxyFile; // 0x38
     bool mProxyOverride; // 0x44
     bool mInlineProxy; // 0x45
-    DirLoader* mLoader;
+    DirLoader* mLoader; // 0x48
     std::vector<ObjDirPtr<ObjectDir> > mSubDirs; // 0x4c
     bool mIsSubDir; // 0x54
     InlineDirType mInlineSubDirType; // 0x58
