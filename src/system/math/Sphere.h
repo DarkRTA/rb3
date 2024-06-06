@@ -7,14 +7,22 @@ class Sphere {
 public:
     Sphere(){ Zero(); }
     void Zero(){ radius = 0.0f; center.Zero(); }
-    float Radius() const { return radius; }
+    float GetRadius() const { return radius; }
+
+    void Set(const Vector3& vec, float f){
+        center = vec;
+        radius = f;
+    }
 
     Vector3 center;
     float radius;
 };
 
 inline BinStream& operator>>(BinStream& bs, Sphere& s){
-    bs >> s.center >> s.radius;
+    Vector3 vec;
+    float f;
+    bs >> vec >> f;
+    s.Set(vec, f);
     return bs;
 }
 

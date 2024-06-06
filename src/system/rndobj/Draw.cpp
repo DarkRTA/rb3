@@ -63,7 +63,7 @@ BEGIN_COPYS(RndDrawable)
             COPY_MEMBER(mSphere)
         }
         else {
-            if(mSphere.Radius() != 0.0f && c->mSphere.Radius() != 0.0f){
+            if(mSphere.GetRadius() != 0.0f && c->mSphere.GetRadius() != 0.0f){
                 COPY_MEMBER(mSphere)
             }
         }
@@ -215,7 +215,7 @@ DataNode RndDrawable::OnGetSphere(const DataArray* da){
     *da->Var(2) = DataNode(mSphere.center.X());
     *da->Var(3) = DataNode(mSphere.center.Y());
     *da->Var(4) = DataNode(mSphere.center.Z());
-    *da->Var(5) = DataNode(mSphere.Radius());
+    *da->Var(5) = DataNode(mSphere.GetRadius());
     return DataNode(0);
 }
 
