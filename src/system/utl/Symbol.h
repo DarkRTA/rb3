@@ -48,4 +48,6 @@ public:
     bool Null() const { return mStr == gNullStr; }
 };
 
+const char* SymbolCacheLookup(const char*);
+
 #endif

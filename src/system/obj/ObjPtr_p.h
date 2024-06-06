@@ -41,7 +41,6 @@ public:
     }
 
     void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
-    operator bool() const { return mPtr != 0; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;

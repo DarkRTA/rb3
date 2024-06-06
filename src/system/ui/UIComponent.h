@@ -76,7 +76,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
     class String mResourcePath; // 0xFC
     bool a; // 0x108
-    u8 mState; // 0x109
+    char mState; // 0x109
     bool c, d; // 0x10A, 0x10B
 
     NEW_OBJ(UIComponent)

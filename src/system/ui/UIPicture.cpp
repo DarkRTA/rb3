@@ -39,10 +39,10 @@ UIPicture::~UIPicture() {
 }
 
 BEGIN_COPYS(UIPicture)
-    CREATE_COPY(UIPicture, p)
+    CREATE_COPY_AS(UIPicture, p)
     MILO_ASSERT(p, 0x41);
     UIComponent::Copy(p, ty);
-    COPY_MEM(p, mMesh)
+    COPY_MEMBER_FROM(p, mMesh)
     UITransitionHandler::CopyHandlerData(p);
 END_COPYS
 
@@ -162,7 +162,9 @@ BEGIN_HANDLERS(UIPicture)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(UIPicture)
-    SYNC_PROP(tex_file, mTexFile)
-    SYNC_PROP_MODIFY(mesh, mMesh, HookupMesh())
+    SYNC_PROP_SET(tex_file, mTexFile, SetTex(FilePath(_val.Str(0))))
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_MODIFY_ALT(mesh, mMesh, HookupMesh())
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

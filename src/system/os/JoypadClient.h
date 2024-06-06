@@ -17,7 +17,7 @@ public:
     void Reset(JoypadButton);
 };
 
-class Joypad : public Hmx::Object {
+class JoypadClient : public Hmx::Object {
 public:
     int mUser;
     Hmx::Object* mSink;
@@ -26,6 +26,8 @@ public:
     float mRepeatMs;
     JoypadRepeat mRepeats[8];
     bool mVirtualDpad;
+
+    void SetVirtualDpad(bool);
 };
 
 #endif

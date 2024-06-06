@@ -68,7 +68,7 @@ void UITransitionHandler::StartValueChange(){
     }
     else if(theState == 1){
         RndAnimatable* in = (RndAnimatable*)mInAnim;
-        if(in && TheUI->unkc == 0){
+        if(in && TheUI->mTransitionState == 0){
             in->Animate(0.0f, false, 0.0f);
             mAnimationState = 2;
         }
@@ -92,7 +92,7 @@ void UITransitionHandler::FinishValueChange(){
     if(IsEmptyValue()) ClearAnimationState();
     else {
         RndAnimatable* out = (RndAnimatable*)mOutAnim;
-        if(out && TheUI->unkc == 0){
+        if(out && TheUI->mTransitionState == 0){
             b3 = true;
             out->Animate(0.0f, false, 0.0f);
             mAnimationState = 3;
