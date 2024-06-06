@@ -28,6 +28,7 @@ public:
     virtual bool DrawShowingBudget(float);
 
     NEW_OBJ(WorldDir)
+    static void Init();
 
     ObjList<int> mPresetOverrides; // 0x1d8 - WorldDir::PresetOverride
     ObjList<int> mBitmapOverrides; // 0x1e4 - WorldDir::BitmapOverride

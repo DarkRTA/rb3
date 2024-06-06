@@ -5,6 +5,10 @@
 #include "math/Vec.h"
 #include "math/Mtx.h"
 
+#define PI 3.14159265358979323846
+#define RAD2DEG 0.01745329238474369049f
+#define DEG2RAD 57.2957763671875f
+
 void Multiply(const Transform&, const Transform&, Transform&);
 void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
 void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);

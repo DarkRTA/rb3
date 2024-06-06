@@ -1,5 +1,6 @@
 #ifndef WORLD_LIGHTPRESET_H
 #define WORLD_LIGHTPRESET_H
+#include "obj/Object.h"
 #include "rndobj/Anim.h"
 #include "rndobj/EventTrigger.h"
 #include "obj/ObjVector.h"
@@ -73,6 +74,9 @@ public:
     float unk98;
     float unk9c;
     LightHue* mHue; // 0xa0
+
+    NEW_OVERLOAD
+    NEW_OBJ(LightPreset)
 };
 
 #endif

@@ -28,7 +28,9 @@ class WiiRnd : public Rnd { public:
     std::vector<Rnd::PointTest> unk_0x2B4;
     bool unk_0x2BC;
     int mFramesBuffered; // 0x2C0
+
     static bool mUseLockedCache, mShowParticle, mShowAssetName;
+    static void SyncFree(void*);
 };
 
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);

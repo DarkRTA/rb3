@@ -6,6 +6,7 @@
 #include "math/Vec.h"
 #include "math/Geo.h"
 #include "obj/ObjPtr_p.h"
+#include "rndobj/Rnd.h"
 #include "rndobj/Tex.h"
 
 class RndCam : public RndTransformable {
@@ -39,11 +40,11 @@ public:
         REGISTER_OBJ_FACTORY(RndCam)
     }
 
-    Transform mInvWorldXfm;
-    Transform mLocalProjectXfm;
-    Transform mInvLocalProjectXfm;
-    Transform mWorldProjectXfm;
-    Transform mInvWorldProjectXfm;
+    Transform mInvWorldXfm; // 0x90
+    Transform mLocalProjectXfm; // 0xC0
+    Transform mInvLocalProjectXfm; // 0xF0
+    Transform mWorldProjectXfm; // 0x120
+    Transform mInvWorldProjectXfm; // 0x150
     Frustum mLocalFrustum; // 0x180
     Frustum mWorldFrustum; // 0x1E0
     float mNearPlane; // 0x240
@@ -53,7 +54,7 @@ public:
     Vector2 mZRange; // 0x250
     Hmx::Rect mScreenRect; // 0x258
     ObjPtr<RndTex, class ObjectDir> mTargetTex; // 0x268
-    int asdf; // 0x274
+    Rnd::Aspect mAspect; // 0x274
 };
 
 #endif

@@ -215,6 +215,7 @@ public:
 };
 
 BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp);
+void PreloadSharedSubdirs(class Symbol);
 
 extern bool gLoadingProxyFromDisk;
 extern const char* kNotObjectMsg;

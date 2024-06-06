@@ -385,6 +385,7 @@
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
+            "system/rndwii/Mesh.cpp": "NonMatching",
             "system/rndwii/Rnd.cpp": "NonMatching",
 
             "system/synth/ADSR.cpp": "NonMatching",
@@ -518,7 +519,8 @@
             "system/world/LightPresetManager.cpp": "NonMatching",
             "system/world/Spotlight.cpp": "NonMatching",
             "system/world/SpotlightDrawer.cpp": "NonMatching",
-            "system/world/SpotlightEnder.cpp": "Matching"
+            "system/world/SpotlightEnder.cpp": "Matching",
+            "system/world/World.cpp": "NonMatching"
         }
     },
     "flex": {

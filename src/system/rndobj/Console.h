@@ -2,8 +2,9 @@
 #define RNDOBJ_CONSOLE_H
 
 #include "obj/Object.h"
-#include <list>
+#include "os/Keyboard.h"
 #include "utl/Str.h"
+#include <list>
 
 class RndOverlay;
 
@@ -32,6 +33,7 @@ public:
     void Continue();
     void Help(Symbol);
     void SetShowing(bool);
+    int OnMsg(const KeyboardKeyMsg&);
 
     void* operator new(size_t s){
         return _PoolAlloc(s, sizeof(RndConsole), FastPool);
