@@ -68,7 +68,7 @@ bool FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
             MILO_ASSERT(pArray->Size() == 1, 0x63);
             DataNode& indexNode = pArray->Node(0);
             int difficultyIndex = indexNode.Int(pArray);
-            // song = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
+            DataArray* arr = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
         } else {
             MILO_ASSERT(false, 0x6b);
         }

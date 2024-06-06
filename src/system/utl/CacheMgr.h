@@ -9,7 +9,7 @@ void CacheMgrInit();
 void CacheMgrTerminate();
 
 class CacheMgr {
-private:
+protected:
     enum OpType {};
 
     struct CacheIDStoreEntry {
@@ -34,9 +34,9 @@ public:
     void SetLastResult(CacheResult);
 private:
     std::vector<CacheMgr::CacheIDStoreEntry> mCacheIDStore;
-    CacheMgr::OpType mOp; // 0x0c
-    CacheResult mLastResult;      // 0x10
-    int mUnk; // 0x1c
+    CacheMgr::OpType mOp;       // 0x0c
+    CacheResult mLastResult;    // 0x10
+    int mUnk;                   // 0x1c
 };
 
 static CacheMgr* TheCacheMgr;
