@@ -4,6 +4,9 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
+HighlightStyle RndDrawable::sHighlightStyle;
+bool RndDrawable::sForceSubpartSelection;
+float RndDrawable::sNormalDisplayLength = 1.0f;
 int DRAW_REV = 3;
 
 RndDrawable::RndDrawable() : mShowing(1), mSphere(), mOrder(0.0f) {
@@ -68,14 +71,10 @@ END_COPYS
 
 SAVE_OBJ(RndDrawable, 0xAE)
 
-extern bool gLoadingProxyFromDisk;
-
 void RndDrawable::Load(BinStream& bs){
     int rev;
     bs >> rev;
-    if (rev > DRAW_REV){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, DRAW_REV);
-    }
+    ASSERT_GLOBAL_REV(rev, DRAW_REV);
     if(gLoadingProxyFromDisk){
         bool dummy;
         bs >> dummy;
@@ -85,7 +84,41 @@ void RndDrawable::Load(BinStream& bs){
         bs >> bs_showing;
         mShowing = bs_showing;
     }
-    // more stuff involving ObjectDir
+    if(rev < 2){
+        int count;
+        bs >> count;
+        RndGroup* grp = dynamic_cast<RndGroup*>(this);
+        if(count != 0){
+            for(; count != 0; count--){
+                char buf[0x80];
+                bs.ReadString(buf, 0x80);
+                if(grp){
+                    Hmx::Object* found = Dir()->Find<Hmx::Object>(buf, true);
+                    RndEnviron* env = dynamic_cast<RndEnviron*>(found);
+                    if(env){
+                        if(grp->mEnv) MILO_WARN("%s won't set %s", grp->Name(), buf);
+                        else grp->mEnv = env;
+                    }
+                    else {
+                        RndCam* cam = dynamic_cast<RndCam*>(found);
+                        if(!cam){
+                            grp->RemoveObject(found);
+                            grp->AddObject(found, 0);
+                        }
+                    }
+                }
+                else MILO_WARN("%s not in group", buf);
+            }
+        }
+    }
+    if(rev > 0) bs >> mSphere;
+    if(rev > 2){
+        if(gLoadingProxyFromDisk){
+            float dummy;
+            bs >> dummy;
+        }
+        else bs >> mOrder;
+    }
 }
 
 void RndDrawable::DumpLoad(BinStream& bs){

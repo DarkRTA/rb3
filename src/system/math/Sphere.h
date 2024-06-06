@@ -13,6 +13,11 @@ public:
     float radius;
 };
 
+inline BinStream& operator>>(BinStream& bs, Sphere& s){
+    bs >> s.center >> s.radius;
+    return bs;
+}
+
 bool operator>(const Sphere&, const Frustum&);
 
 #endif
