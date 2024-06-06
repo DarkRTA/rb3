@@ -29,7 +29,7 @@ public:
     virtual bool Loop(){ return 0; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
-    virtual void SetFrame(float, float); // weak
+    virtual void SetFrame(float frame, float blend); // weak
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
     virtual Hmx::Object* AnimTarget(){ return this; }
