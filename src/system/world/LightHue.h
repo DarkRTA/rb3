@@ -21,11 +21,14 @@ public:
 
     void Sync();
 
-    DECLARE_REVS;
+    DECLARE_REVS
 
     FileLoader* mLoader;
     FilePath mPath;
     Keys<Vector3, Vector3> mKeys;
+
+    NEW_OVERLOAD
+    NEW_OBJ(LightHue)
 
 };
 

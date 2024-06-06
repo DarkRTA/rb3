@@ -2,6 +2,7 @@
 #define WORLD_COLORPALETTE_H
 #include "obj/Object.h"
 #include "math/Color.h"
+#include "utl/MemMgr.h"
 #include <vector>
 
 class ColorSet {
@@ -11,6 +12,7 @@ public:
 };
 
 class ColorPalette : public Hmx::Object {
+    public:
     ColorPalette();
     virtual ~ColorPalette(){}
     OBJ_CLASSNAME(ColorPalette);
@@ -21,7 +23,9 @@ class ColorPalette : public Hmx::Object {
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     
-    DECLARE_REVS;
+    NEW_OVERLOAD
+    DECLARE_REVS
+    NEW_OBJ(ColorPalette)
 
     std::vector<Hmx::Color> mColors;
 };

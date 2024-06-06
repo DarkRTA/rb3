@@ -1,12 +1,15 @@
 #include "rndobj/Cam.h"
+#include "math/Rot.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Rnd.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 
 RndCam* RndCam::sCurrent = 0;
 int CAM_REV = 12;
@@ -16,6 +19,16 @@ ADD_NOTIFS
 
 void RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
     s = mZRange;
+}
+
+void RndCam::Select() {
+    if (sCurrent && sCurrent->mTargetTex.mPtr && sCurrent != this) {
+        sCurrent->mTargetTex->FinishDrawTarget();
+    }
+    if (mCache->mFlags & 1) WorldXfm_Force();
+    sCurrent = this;
+    Rnd::Aspect a = TheRnd->mAspect;
+    if (mAspect != a) UpdateLocal();
 }
 
 void RndCam::SetTargetTex(RndTex* tex){
@@ -101,13 +114,14 @@ BEGIN_HANDLERS(RndCam)
 END_HANDLERS
 
 DataNode RndCam::OnSetFrustum(const DataArray* da){
-    float nearPlane, farPlane, yFov;
+    float nearPlane, farPlane, yFov, temp;
     if(!da->FindData(near_plane, nearPlane, false))
         nearPlane = mNearPlane;
     if(!da->FindData(far_plane, farPlane, false))
         farPlane = mFarPlane;
-    if(da->FindData(y_fov, yFov, false)) yFov *= 0.017453292f;
-    else yFov = mYFov;
+    if(da->FindData(y_fov, yFov, false)) temp = 0.017453292f * yFov;
+    else temp = mYFov;
+    yFov = temp;
     SetFrustum(nearPlane, farPlane, yFov, 1.0f);
     return DataNode(0);
 }
@@ -132,8 +146,10 @@ DataNode RndCam::OnFarPlane(const DataArray*){
 }
 
 BEGIN_PROPSYNCS(RndCam)
-    //SYNC_SUPERCLASS(RndTransformable)
-    SYNC_PROP_MODIFY(near_plane, mNearPlane, )
+    SYNC_SUPERCLASS(RndTransformable)
+    SYNC_PROP_SET(near_plane, mNearPlane, SetFrustum(_val.Float(NULL), mFarPlane, mYFov, 1))
+    SYNC_PROP_SET(far_plane, mFarPlane, SetFrustum(mNearPlane, _val.Float(NULL), mYFov, 1))
+    SYNC_PROP_SET(y_fov, mYFov * DEG2RAD, SetFrustum(mNearPlane, mFarPlane, _val.Float(NULL) * RAD2DEG, 1))
     SYNC_PROP(z_range, mZRange)
-    SYNC_PROP_MODIFY(screen_rect, mScreenRect, UpdateLocal())
+    SYNC_PROP_MODIFY_ALT(screen_rect, mScreenRect, UpdateLocal())
 END_PROPSYNCS

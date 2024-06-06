@@ -1,7 +1,9 @@
 #include "rndobj/Console.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
+#include "os/File.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include <string.h>
@@ -110,6 +112,28 @@ void RndConsole::InsertBreak(DataArray* arr, int i){
     mBreakpoints.back().index = i;
 }
 
+void RndConsole::List() {
+    if (mDebugging) {
+        mOutput->Clear();
+        if (File* f = NewFile(mDebugging->File(), 2)) {
+            int i = 1;
+            int x = mOutput->mLines.size();
+            int y = mDebugging->Line();
+            int z = y - x / 2;
+            do {
+                char buf[4];
+                f->Read(buf, 1);
+                if (i > z) *mOutput << buf[0];
+                i++;
+                char brk = '>';
+                if (i == mDebugging->mLine) brk = ':';
+                *mOutput << MakeString("%3d%c", i, brk);
+            } while (i > y);
+
+            delete f;
+        }
+    } else MILO_FAIL("Can't list unless debugging");
+}
 
 // // declared/defined in DataArray.cpp
 extern DataArray* gCallStack[100];
@@ -136,7 +160,7 @@ void RndConsole::Step(int i) {
         mDebugging = 0;
         gPreExecuteFunc = *DataBreak;
 
-    } else MILO_FAIL("can't step unless debugging");
+    } else MILO_FAIL("Can't step unless debugging");
 }
 
 void RndConsole::Continue() {
@@ -224,4 +248,23 @@ RndConsole::RndConsole() : mShowing(0), mBuffer(),
 
 RndConsole::~RndConsole(){
     TheDebug.SetReflect(0);
+}
+
+BEGIN_HANDLERS(RndConsole)
+    HANDLE_MESSAGE(KeyboardKeyMsg)
+    HANDLE_CHECK(592)
+END_HANDLERS
+
+int RndConsole::OnMsg(const KeyboardKeyMsg& msg) {
+    if (!mShowing) return 0;
+    if (msg.mData->Int(2) == 302) SetShowing(false);
+    else {
+        if (msg.mData->Int(2) == 9) {
+            if (mTabLen == 0) mTabLen = strlen(mInput->CurrentLine()->c_str());
+        }
+    }
+
+    mTabLen = msg.mData->Int(2) == 10 ? mCursor : -1;
+    if (msg.mData->Int(2) != 9) mTabLen = 0;
+    return 0;
 }

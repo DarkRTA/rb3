@@ -27,6 +27,7 @@ public:
     void SetTimeout(float);
     void SetLines(int);
     void Clear();
+    String* CurrentLine();
     static void Init();
     static void Terminate();
     static void TogglePosition();

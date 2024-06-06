@@ -116,9 +116,9 @@ public:
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c
-    u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; }
-    bool mPreserveScale;
-    ObjPtr<RndTransformable, class ObjectDir> mTarget;
+    u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; } // 0x80
+    bool mPreserveScale; // 0x83
+    ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
 
     static ushort gRev;
     static ushort gAltRev;

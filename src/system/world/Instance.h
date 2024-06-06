@@ -34,6 +34,9 @@ public:
     ObjDirPtr<WorldInstance> unk18c;
     int unk198;
     int unk19c;
+
+    NEW_OVERLOAD
+    NEW_OBJ(WorldInstance)
 };
 
 class SharedGroup : public RndPollable {

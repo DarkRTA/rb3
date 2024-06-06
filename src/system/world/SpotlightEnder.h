@@ -1,5 +1,6 @@
 #ifndef WORLD_SPOTLIGHTENDER_H
 #define WORLD_SPOTLIGHTENDER_H
+#include "obj/Object.h"
 #include "rndobj/Draw.h"
 
 class SpotlightEnder : public RndDrawable {
@@ -15,8 +16,10 @@ public:
     virtual void DrawShowing();
     virtual ~SpotlightEnder();
 
-    DECLARE_REVS;
-    DELETE_OVERLOAD;
+    DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(SpotlightEnder)
 };
 
 #endif

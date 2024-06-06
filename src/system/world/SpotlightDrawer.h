@@ -71,6 +71,8 @@ public:
     static std::vector<SpotMeshEntry> sCans;
     static std::vector<class Spotlight*> sShadowSpots;
 
+    static void Init();
+
     SpotDrawParams mParams;
 };
 
