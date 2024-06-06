@@ -141,12 +141,47 @@ void RndAnimatable::StopAnimation(){
     }
 }
 
-AnimTask* RndAnimatable::Animate(float blend, bool b, float f2){
+Task* RndAnimatable::Animate(float blend, bool wait, float delay){
     AnimTask* task = new AnimTask(this, StartFrame(), EndFrame(), FramesPerUnit(), Loop(), blend);
-    if(b && task->mBlendTask){
-        f2 += task->mBlendTask->TimeUntilEnd();
+    if(wait && task->mBlendTask){
+        delay += task->mBlendTask->TimeUntilEnd();
     }
-    TheTaskMgr.Start(task, Units(), f2);
+    TheTaskMgr.Start(task, Units(), delay);
+    return task;
+}
+
+Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, float start, float end, float period, float scale, Symbol type){
+    float taskStart = start;
+    if(type == dest) taskStart = mFrame;
+    float fpu;
+    if(period){
+        fpu = __fabs(end - start);
+        fpu = fpu / period;
+    }
+    else fpu = scale * gRateFpu[rate];
+    AnimTask* task = new AnimTask(this, taskStart, end, fpu, loop == type, blend);
+    if(wait){
+        AnimTask* blendTask = task->mBlendTask;
+        if(blendTask){
+            delay += blendTask->TimeUntilEnd();
+        }
+    }
+    TheTaskMgr.Start(task, gRateUnits[rate], delay);
+    return task;
+}
+
+Task* RndAnimatable::Animate(float start, float end, TaskUnits units, float period, float blend){
+    float fpu;
+    if(period){
+        fpu = __fabs(end - start);
+        fpu = fpu / period;
+    }
+    else {
+        const float fpus[3] = { 30.0f, 480.0f, 30.0f };
+        fpu = fpus[units];
+    }
+    AnimTask* task = new AnimTask(this, start, end, fpu, false, blend);
+    TheTaskMgr.Start(task, units, 0.0f);
     return task;
 }
 
@@ -305,4 +340,8 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
             delete this;
         }
     }
+}
+
+void AnimTask::Poll(float time){
+    
 }

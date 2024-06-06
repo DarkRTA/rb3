@@ -45,8 +45,9 @@ public:
     Rate GetRate(){ return mRate; }
     DataNode OnConvertFrames(DataArray*);
 
-    AnimTask* Animate(float, bool, float);
-    void Animate(float, float, TaskUnits, float, float);
+    Task* Animate(float, bool, float);
+    Task* Animate(float, bool, float, Rate, float, float, float, float, Symbol);
+    Task* Animate(float, float, TaskUnits, float, float);
 
     static TaskUnits RateToTaskUnits(Rate);
     TaskUnits Units() const;
