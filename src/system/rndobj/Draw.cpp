@@ -181,7 +181,7 @@ int RndDrawable::CollidePlane(const Plane& plane){
             if(prod >= sphere.radius){
                 return 1;
             }
-            else return 2; // this isn't right, but idk how to make it right
+            else return sphere.radius < -prod ? -1 : 0;
         }
         else return -1;
     }
