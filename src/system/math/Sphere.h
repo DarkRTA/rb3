@@ -9,6 +9,11 @@ public:
     void Zero(){ radius = 0.0f; center.Zero(); }
     float GetRadius() const { return radius; }
 
+    Sphere& operator=(const Sphere& s){
+        center = s.center;
+        radius = s.radius;
+    }
+
     void Set(const Vector3& vec, float f){
         center = vec;
         radius = f;

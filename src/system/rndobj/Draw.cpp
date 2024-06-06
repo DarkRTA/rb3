@@ -63,8 +63,13 @@ BEGIN_COPYS(RndDrawable)
             COPY_MEMBER(mSphere)
         }
         else {
-            if(mSphere.GetRadius() != 0.0f && c->mSphere.GetRadius() != 0.0f){
-                COPY_MEMBER(mSphere)
+            float zero = 0.0f;
+            float rad = mSphere.GetRadius();
+            if(rad != zero){
+                rad = c->mSphere.GetRadius();
+                if(rad != zero){
+                    COPY_MEMBER(mSphere)
+                }
             }
         }
     END_COPYING_MEMBERS
