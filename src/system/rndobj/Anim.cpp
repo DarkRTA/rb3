@@ -61,20 +61,20 @@ BEGIN_LOADS(RndAnimatable)
         int count;
         bs >> count;
         bool theLoop = false;
-        float theScale = 0.0f;
+        float theScale = 1.0f;
         float theOffset = 0.0f;
         float theMin = 0.0f;
-        float theMax = 1.0f;
+        float theMax = 0.0f;
+        int read;
         int unused1, unused2, unused3, unused4, unused5, unused6, unused7;
         while(count-- != 0){
-            int read;
             bs >> read;
             switch(read){
                 case 0:
-                    bs >> theMax >> theMin;
+                    bs >> theScale >> theOffset;
                     break;
                 case 1:
-                    bs >> theOffset >> theScale >> theLoop;
+                    bs >> theMin >> theMax >> theLoop;
                     break;
                 case 2:
                     bs >> unused1 >> unused2;
@@ -88,16 +88,16 @@ BEGIN_LOADS(RndAnimatable)
                 default: break;
             }
         }
-        if(theMax != 1.0f || theMin != 0.0f || (theOffset != theScale)){
+        if(theScale != 1.0f || theOffset != 0.0f || (theMin != theMax)){
             const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
-            class ObjectDir* thisDir = mDir;
+            class ObjectDir* thisDir = Dir();
             RndAnimFilter* filtObj = Hmx::Object::New<RndAnimFilter>();
             if(filtObj) filtObj->SetName(filt, thisDir);
             filtObj->SetProperty("anim", DataNode(filtObj));
-            filtObj->SetProperty("scale", DataNode(theMax));
-            filtObj->SetProperty("offset", DataNode(theOffset));
+            filtObj->SetProperty("scale", DataNode(theScale));
+            filtObj->SetProperty("offset", DataNode(theOffset));            
             filtObj->SetProperty("min", DataNode(theMin));
-            filtObj->SetProperty("max", DataNode(theMax));
+            filtObj->SetProperty("max", DataNode(theMax));            
             filtObj->SetProperty("loop", DataNode(theLoop));
         }
         ObjPtrList<RndAnimatable, class ObjectDir> animList(this, kObjListNoNull);
