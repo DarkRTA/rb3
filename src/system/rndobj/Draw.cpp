@@ -128,13 +128,15 @@ void RndDrawable::Load(BinStream& bs){
 }
 
 void RndDrawable::DumpLoad(BinStream& bs){
+    unsigned char dummy;
+    int y, x, w;
     int rev;
+    int i, j;
+    int z;
     bs >> rev;
     MILO_ASSERT(rev < 4, 0xFD);
-    unsigned char dummy;
     bs >> dummy;
     if(rev < 2){
-        int i;
         char buf[0x80];
         bs >> i;
         for(; i != 0; i--){
@@ -142,11 +144,9 @@ void RndDrawable::DumpLoad(BinStream& bs){
         }
     }
     if(rev > 0){
-        int w, x, y, z;
         bs >> w >> x >> y >> z;
     }
     if(rev > 2){
-        int j;
         bs >> j;
     }
     if(rev > 3){
