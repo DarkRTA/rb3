@@ -1,8 +1,9 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Utl.h"
-#include "utl/Symbols.h"
+#include "math/Geo.h"
 #include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
 HighlightStyle RndDrawable::sHighlightStyle;
 bool RndDrawable::sForceSubpartSelection;
@@ -127,7 +128,7 @@ void RndDrawable::DumpLoad(BinStream& bs){
     MILO_ASSERT(rev < 4, 0xFD);
     unsigned char dummy;
     bs >> dummy;
-    if(rev < 3){
+    if(rev < 2){
         int i;
         char buf[0x80];
         bs >> i;
@@ -147,6 +148,22 @@ void RndDrawable::DumpLoad(BinStream& bs){
         ObjPtr<RndDrawable, class ObjectDir> ptr(0, 0);
         bs >> ptr;
     }
+}
+
+bool RndDrawable::CollideSphere(const Segment& seg){
+    if(!mShowing) return false;
+    else {
+        Sphere sphere;
+        if(MakeWorldSphere(sphere, false) && !Intersect(seg, sphere)) return false;
+        else return true;
+    }
+}
+
+RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
+    static Timer* _t = AutoTimer::GetTimer("collide");
+    AutoTimer t(_t, 50.0f, NULL, NULL);
+    if(!CollideSphere(seg)) return false;
+    else return CollideShowing(seg, f, plane);
 }
 
 BEGIN_HANDLERS(RndDrawable)

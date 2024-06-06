@@ -49,6 +49,8 @@ public:
     virtual ~RndDrawable(){}
 
     bool DrawBudget(float);
+    bool CollideSphere(const Segment&);
+    RndDrawable* Collide(const Segment&, float&, Plane&);
     static void DumpLoad(BinStream&);
     static HighlightStyle sHighlightStyle;
     static float sNormalDisplayLength;
