@@ -171,6 +171,8 @@ RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
     else return CollideShowing(seg, f, plane);
 }
 
+// retail: https://decomp.me/scratch/X3MyB
+// debug: https://decomp.me/scratch/rLOfM
 int RndDrawable::CollidePlane(const Plane& plane){
     if(!mShowing) return -1;
     else {
