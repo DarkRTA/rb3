@@ -166,6 +166,35 @@ RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
     else return CollideShowing(seg, f, plane);
 }
 
+int RndDrawable::CollidePlane(const Plane& plane){
+    if(!mShowing) return -1;
+    else {
+        Sphere sphere;
+        if(MakeWorldSphere(sphere, false)){
+            const Vector3& vec = sphere.center;
+            float prod = plane.Dot(vec);
+            if(prod >= sphere.radius){
+                return 1;
+            }
+            else return 2; // this isn't right, but idk how to make it right
+        }
+        else return -1;
+    }
+}
+
+void RndDrawable::CollideList(const Segment& seg, std::list<RndDrawable::Collision>& collisions){
+    float f;
+    Plane pl;
+    RndDrawable* draw = Collide(seg, f, pl);
+    if(draw){
+        RndDrawable::Collision coll;
+        coll.object = draw;
+        coll.distance = f;
+        coll.plane = pl;
+        collisions.push_back(coll);
+    }
+}
+
 BEGIN_HANDLERS(RndDrawable)
     HANDLE(set_showing, OnSetShowing)
     HANDLE(showing, OnShowing)

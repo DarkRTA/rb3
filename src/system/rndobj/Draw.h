@@ -18,6 +18,7 @@ enum HighlightStyle {
 class RndDrawable : public virtual RndHighlightable {
 public:
     struct Collision {
+        Collision(){}
         RndDrawable* object; // offset 0x0, size 0x4
         float distance; // offset 0x4, size 0x4
         Plane plane; // offset 0x10, size 0x10
