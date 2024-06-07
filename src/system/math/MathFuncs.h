@@ -141,7 +141,7 @@ inline float Modulo(float f1, float f2) {
     return tmp;
 }
 
-inline float somemodfunc(float f1, float f2, float f3){
+inline float ModRange(float f1, float f2, float f3){
     return Modulo(f3 - f1, f2 - f1) + f1;
 }
 

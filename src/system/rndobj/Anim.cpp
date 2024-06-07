@@ -368,7 +368,7 @@ void AnimTask::Poll(float time){
     }
     t = t * mScale + mOffset;
     if(mLoop){
-        frame = somemodfunc(mMin, mMax, t);
+        frame = ModRange(mMin, mMax, t);
     }
     else {
         frame = Clamp<float>(mMin, mMax, t);
