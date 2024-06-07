@@ -274,7 +274,7 @@ BEGIN_PROPSYNCS(RndAnimatable);
     SYNC_PROP_MODIFY(frame, mFrame, SetFrame(mFrame, 1.0f));
 END_PROPSYNCS;
 
-AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) : 
+AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) :
     mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(blend), mLoop(loop) {
     MILO_ASSERT(anim, 0x1DF);
     mMin = (end < start) ? end : start;
@@ -293,16 +293,13 @@ AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool 
         std::vector<ObjRef*>::const_reverse_iterator ritEnd = target->Refs().rend();
         for(; rit != ritEnd; ++rit){
             Hmx::Object* owner = (*rit)->RefOwner();
-            if(owner){
-                bool isananimtask = owner->ClassName() == AnimTask::StaticClassName();
-                if(isananimtask){
-                    mAnimTarget = owner;
-                    break;
-                }
+            if(owner != NULL && owner->ClassName() == AnimTask::StaticClassName()){
+                mBlendTask = (AnimTask*)owner;
+                break;
             }
         }
     }
-    if(mBlendPeriod != 0.0f && mBlendTask){
+    if(mBlendPeriod && mBlendTask){
         mBlendTask->mBlending = true;
     }
     mAnim = anim;
