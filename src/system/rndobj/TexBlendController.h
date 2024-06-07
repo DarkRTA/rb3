@@ -38,10 +38,10 @@ public:
     ObjPtr<RndMesh, ObjectDir> mMesh;
     ObjPtr<RndTransformable, ObjectDir> mObject1;
     ObjPtr<RndTransformable, ObjectDir> mObject2;
-    float mReferenceDistance;
-    float mMinDistance;
-    float mMaxDistance;
-    ObjPtr<RndTex, ObjectDir> mTex;
+    float mReferenceDistance; // 0x40
+    float mMinDistance; // 0x44
+    float mMaxDistance; // 0x48
+    ObjPtr<RndTex, ObjectDir> mTex; // 0x4c
 };
 
 #endif
