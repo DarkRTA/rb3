@@ -6,12 +6,18 @@ CacheIDWii::CacheIDWii() {
 
 CacheIDWii::~CacheIDWii() {}
 
-void CacheIDWii::GetCachePath(const char*) {}
+const char* CacheIDWii::GetCachePath(const char*) {
 
-void CacheIDWii::GetCacheSearchPath(const char*) {}
+}
+
+const char* CacheIDWii::GetCacheSearchPath(const char*) {
+
+}
 
 CacheWii::CacheWii(const CacheIDWii&) {}
+
 CacheWii::~CacheWii() {}
+
 const char* CacheWii::GetCacheName() {
     return mCacheName;
 }
@@ -29,7 +35,22 @@ bool CacheWii::GetDirectoryAsync(const char*, std::vector<CacheDirEntry>*, Hmx::
 bool CacheWii::GetFileSizeAsync(const char*, unsigned int*, Hmx::Object*) {}
 bool CacheWii::ReadAsync(const char*, void*, uint, Hmx::Object*) {}
 bool CacheWii::WriteAsync(const char*, void*, uint, Hmx::Object*) {}
-bool CacheWii::DeleteAsync(const char*, Hmx::Object*) {}
+
+bool CacheWii::DeleteAsync(const char* i, Hmx::Object*) {
+    bool isDone = IsDone();
+    if (!isDone) {
+        mLastResult = kCache_ErrorBusy;
+        return false;
+    } else if (i == NULL) {
+        mLastResult = kCache_ErrorBadParam;
+        return false;
+    } else {
+        
+        mLastResult = kCache_NoError;
+        return true;
+    }
+}
+
 void CacheWii::ThreadStart() {}
 void CacheWii::ThreadDone(int) {}
 void CacheWii::ThreadGetDir(String) {}

@@ -5,12 +5,16 @@
 
 #include "Cache.h"
 
-class CacheIDWii {
+class CacheIDWii : public CacheID {
 public: 
     CacheIDWii();
     ~CacheIDWii();
-    void GetCachePath(const char*);
-    void GetCacheSearchPath(const char*);
+    const char* GetCachePath(const char*);
+    const char* GetCacheSearchPath(const char*);
+private:
+    const char* unk1;  // 0x04
+    const char* unk2;  // 0x10
+    const char* unk3;  // 0x1c
 };
 
 class CacheWii : public Cache {

@@ -319,15 +319,22 @@ bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
     ControllerType controllerType = i_pUser->GetControllerType();
 
     std::set<ScoreType> scoreTypes;
+    ScoreType scoreType;
 
-    InqRequiredScoreTypes(scoreTypes);
-
-    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
-    ScoreType scoreType = *iterator;
-    TrackType trackType = ScoreTypeToTrackType(scoreType);
-    ControllerType c = TrackTypeToControllerType(trackType);
-
-    return controllerType == c;
+    bool hasScoreType = InqRequiredScoreTypes(scoreTypes);
+    if (hasScoreType) {
+        std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+        while (iterator != scoreTypes.end()) {
+            scoreType = *iterator;
+            TrackType trackType = ScoreTypeToTrackType(scoreType);
+            ControllerType c = TrackTypeToControllerType(trackType);
+        
+            if (controllerType != c) {
+                iterator++;
+            }
+        }
+    }
+    return false;
 }
 
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
@@ -336,15 +343,13 @@ bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
     ControllerType controllerType = i_pUser->GetControllerType();
     bool isValid = IsUserOnValidScoreType(i_pUser);
 
-    bool anyControllers = false;
-    if (mControllerTypes.size() == 0) {
-        anyControllers = true;
-    } else {
-
+    for (size_t i = 0; i < mControllerTypes.size(); i++) {
+        if (controllerType == mControllerTypes.at(i)) {
+            return true;
+        }
     }
-
-    bool returnValue = 0;
-    return returnValue;
+    
+    return false;
 }
 
 Difficulty Accomplishment::GetRequiredDifficulty() const {
@@ -355,12 +360,12 @@ ScoreType Accomplishment::GetRequiredScoreType() const {
     std::set<ScoreType> scoreTypes;
     ScoreType scoreType;
 
-    InqRequiredScoreTypes(scoreTypes);
-
-    std::set<ScoreType>::iterator iterator = scoreTypes.begin();
-    scoreType = *iterator;
-
-    return scoreType;
+    bool hasScoreType = InqRequiredScoreTypes(scoreTypes);
+    if (hasScoreType) {
+        std::set<ScoreType>::iterator iterator = scoreTypes.begin();
+        return *iterator;
+    } 
+    return (ScoreType)10;
 }
 
 bool Accomplishment::InqRequiredScoreTypes(std::set<ScoreType>& o_rScoreTypes) const {
