@@ -92,8 +92,8 @@ BEGIN_LOADS(RndAnimatable)
             const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
             class ObjectDir* thisDir = Dir();
             RndAnimFilter* filtObj = Hmx::Object::New<RndAnimFilter>();
-            if(filtObj) filtObj->SetName(filt, thisDir);
-            filtObj->SetProperty("anim", DataNode(filtObj));
+            if(filt) filtObj->SetName(filt, thisDir);
+            filtObj->SetProperty("anim", DataNode(this));
             filtObj->SetProperty("scale", DataNode(theScale));
             filtObj->SetProperty("offset", DataNode(theOffset));            
             filtObj->SetProperty("min", DataNode(theMin));
@@ -151,15 +151,16 @@ Task* RndAnimatable::Animate(float blend, bool wait, float delay){
 }
 
 Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, float start, float end, float period, float scale, Symbol type){
-    float taskStart = start;
-    if(type == dest) taskStart = mFrame;
     float fpu;
+    float taskStart = start;
+    if(type == dest) start = mFrame;
     if(period){
-        fpu = __fabs(end - start);
+        fpu = __fabs(end - taskStart);
         fpu = fpu / period;
     }
     else fpu = scale * gRateFpu[rate];
-    AnimTask* task = new AnimTask(this, taskStart, end, fpu, loop == type, blend);
+    
+    AnimTask* task = new AnimTask(this, start, end, fpu, type == loop, blend);
     if(wait){
         AnimTask* blendTask = task->mBlendTask;
         if(blendTask){

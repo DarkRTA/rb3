@@ -71,17 +71,17 @@ public:
     NEW_POOL_OVERLOAD(AnimTask);
     DELETE_POOL_OVERLOAD(AnimTask);
 
-    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
-    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;
-    ObjPtr<AnimTask, class ObjectDir> mBlendTask;
-    bool mBlending;
-    float mBlendTime;
-    float mBlendPeriod;
-    float mMin;
-    float mMax;
-    float mScale;
-    float mOffset;
-    bool mLoop;
+    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim; // 0x1c
+    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget; // 0x28
+    ObjPtr<AnimTask, class ObjectDir> mBlendTask; // 0x34
+    bool mBlending; // 0x40
+    float mBlendTime; // 0x44
+    float mBlendPeriod; // 0x48
+    float mMin; // 0x4c
+    float mMax; // 0x50
+    float mScale; // 0x54
+    float mOffset; // 0x58
+    bool mLoop; // 0x5c
 };
 
 #endif
