@@ -43,7 +43,7 @@ public:
     virtual void Compress() {}
     virtual bool TexelsLock(void*&) {return false;}
     virtual void TexelsUnlock() {}
-    virtual int TexelsPitch() const;
+    virtual int TexelsPitch() const { return 0; }
     virtual void Select(int) {}
     virtual void PresyncBitmap() {}
     virtual void SyncBitmap() {}

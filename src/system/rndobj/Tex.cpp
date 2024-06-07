@@ -440,20 +440,24 @@ DECOMP_FORCEACTIVE(Tex,
 )
 
 TextStream& operator<<(TextStream& ts, RndTex::Type ty){
-    if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
-    else if(ty < RndTex::RenderedNoZ){
-        if(ty == RndTex::Movie) ts << "Movie";
-        else if(ty < RndTex::Movie){
-            if(ty == RndTex::Rendered) ts << "Rendered";
-            else if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
+    if(ty <= RndTex::RenderedNoZ){
+        if(ty <= RndTex::Movie){
+            if(ty <= RndTex::Rendered){
+                if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
+                else if(ty == RndTex::Rendered) ts << "Rendered";
+            }
+            else if(ty == RndTex::Movie) ts << "Movie";
         }
-        else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
-        else if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
+        else if(ty <= RndTex::FrontBuffer){
+            if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
+            else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
+        }
+        else if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
     }
-    else if(ty == RndTex::DensityMap) ts << "DensityMap";
-    else if(ty < RndTex::DensityMap){
-        if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
-        else if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
+    else if(ty <= RndTex::DensityMap){
+        if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
+        else if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
+        else if(ty == RndTex::DensityMap) ts << "DensityMap";
     }
     else if(ty == RndTex::DeviceTexture) ts << "DeviceTexture";
     else if(ty < RndTex::DeviceTexture && ty == RndTex::Scratch) ts << "Scratch";
@@ -523,5 +527,3 @@ BEGIN_PROPSYNCS(RndTex)
     SYNC_PROP_MODIFY_ALT(file_path, mFilepath, SetBitmap(mFilepath))
 END_PROPSYNCS
 #pragma pop
-
-int RndTex::TexelsPitch() const { return 0; }
