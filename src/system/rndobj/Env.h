@@ -49,7 +49,7 @@ public:
     ObjPtrList<RndLight, class ObjectDir> mLightsApprox; // 0x2c
     ObjPtrList<RndLight, class ObjectDir> mLightsOld; // 0x3c
     Hmx::Color mAmbientColor; // 0x4c
-    int mAmbientAlpha; // 0x5c
+    int unk5c; // 0x5c
     // mNumLightsReal, mNumLightsApprox, mNumLightsPoint, mNumLightsProj
     int mNumLightsReal; // 0x60
     int mNumLightsApprox; // 0x64

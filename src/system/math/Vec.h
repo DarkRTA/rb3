@@ -97,6 +97,11 @@ public:
     // Vector4(const Vector4 &);
 };
 
+inline BinStream& operator>>(BinStream& bs, Vector4& vec){
+    bs >> vec.x >> vec.y >> vec.z >> vec.w;
+    return bs;
+}
+
 class Vector4_16_01 {
     public:
     //Vector4_16_01() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}

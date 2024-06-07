@@ -10,7 +10,7 @@ RndEnviron* RndEnviron::sCurrent;
 bool RndEnviron::sCurrentPosSet;
 Vector3 RndEnviron::sCurrentPos = Vector3(0,0,0);
 // BoxMapLighting RndEnviron::sGlobalLighting();
-static int ENVIRON_REV = 15;
+int ENVIRON_REV = 15;
 
 void RndEnviron::Select(const Vector3* v) {
     sCurrent = this;
@@ -27,12 +27,12 @@ void RndEnviron::Select(const Vector3* v) {
     mNumLightsPoint = 0;
     mNumLightsProj = 0;
     mHasPointCubeTex = false;
-    mAmbientAlpha = 0;
+    unk5c = 0;
     ReclassifyLights();
 }
 
 RndEnviron::RndEnviron() : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull), mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f),
-    mAmbientAlpha(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this), 
+    unk5c(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this), 
     mFogEnable(0), mFogStart(0.0f), mFogEnd(1.0f), mFogColor(), mFadeOut(0), mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f),
     mFadeRef(this, NULL), mLRFade(0.0f, 0.0f, 0.0f, 0.0f), mColorXfm(),
     mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(), mIntensityAverage(0.0f), 
@@ -44,21 +44,72 @@ RndEnviron::~RndEnviron() {
     if (sCurrent == this) {
         sCurrent = NULL;
         sCurrentPosSet = NULL;
-        sCurrentPos.z = 0;
-        sCurrentPos.y = 0;
-        sCurrentPos.x = 0;
+        sCurrentPos.Zero();
     }
 }
 
 SAVE_OBJ(RndEnviron, 119)
 
-/*void RndEnviron::Load(BinStream& bs) { // some weird shit goin on in here
-    LOAD_REVS(bs)
-    ASSERT_REVS(ENVIRON_REV, 0)
-    if (gRev > 1) Hmx::Object::Load(bs);
-    if (gRev < 3) RndDrawable::DumpLoad(bs);
-    bs >> mFadeRef;
-}*/
+BEGIN_LOADS(RndEnviron)
+    int rev;
+    bs >> rev;
+    ASSERT_GLOBAL_REV(rev, ENVIRON_REV)
+    if(rev > 1) LOAD_SUPERCLASS(Hmx::Object)
+    if(rev < 3) RndDrawable::DumpLoad(bs);
+    if(rev < 0xF) bs >> mLightsOld;
+    else {
+        bs >> mLightsReal;
+        bs >> mLightsApprox;
+    }
+    bs >> mAmbientColor >> mFogStart >> mFogEnd;
+    if(rev < 1){
+        int dummy;
+        bs >> dummy;
+    }
+    bs >> mFogColor;
+    if(rev < 1){
+        int enabled;
+        bs >> enabled;
+        mFogEnable = enabled;
+    }
+    else bs >> mFogEnable;
+    if(rev > 3) bs >> mAnimateFromPreset;
+    if(rev > 4){
+        bs >> mFadeOut >> mFadeStart >> mFadeEnd;
+        if(rev > 5) bs >> mFadeMax;
+    }
+    if(rev > 8){
+        bs >> mFadeRef >> mLRFade;
+    }
+    if(rev > 6){
+        bs >> mAmbientFogOwner;
+        if(!mAmbientFogOwner){
+            mAmbientFogOwner = this;
+        }
+    }
+    if(rev > 7){
+        bs >> mUseColorAdjust;
+        mColorXfm.Load(bs);
+    }
+    if(rev > 9){
+        if(rev < 0xD){
+            int dummy;
+            bs >> dummy;
+        }
+        bs >> mAOStrength;
+    }
+    if(rev > 10){
+        bs >> mIntensityRate >> mExposure >> mWhitePoint >> mUseToneMapping;
+    }
+    if(rev == 0xB){
+        int dummy;
+        bs >> dummy;
+    }
+    else if(rev - 0xC <= 1U){
+        int dummy;
+        bs >> dummy;
+    }
+END_LOADS
 
 BEGIN_COPYS(RndEnviron)
     COPY_SUPERCLASS(Hmx::Object)
@@ -108,8 +159,8 @@ bool RndEnviron::IsValidRealLight(const RndLight*) const {
 
 bool RndEnviron::IsLightInList(const RndLight* light, const ObjPtrList<RndLight, class ObjectDir>& pList) const {
     if(light == 0) return 0;
-    for(ObjPtrList<RndLight, class ObjectDir>::Node* it = pList.mNodes; it != 0; it = it->next){
-        RndLight* itLight = it->obj;
+    for(ObjPtrList<RndLight, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+        RndLight* itLight = *it;
         if(itLight == light) return itLight;
     }
     return 0;
@@ -156,41 +207,37 @@ void RndEnviron::ApplyApproxLighting(const _GXColor*) { }
 BEGIN_PROPSYNCS(RndEnviron)
     SYNC_PROP(lights_real, mLightsReal)
     SYNC_PROP(lights_approx, mLightsApprox)
-    SYNC_PROP(ambient_color, mAmbientFogOwner)
-
-    SYNC_PROP(contrast, mColorXfm.mContrast)
-    // SYNC_PROP(in_lo, mColorXfm.mLevelInLo)
-    if (sym == in_lo) {
-        if (PropSync(mColorXfm.mLevelInLo, _val, _prop, _i + 1, _op)) {
-            if (!(_op & 0x11)) mColorXfm.AdjustColorXfm();
-            return true;
-        }
-        return false;
-    }
-    // SYNC_PROP(in_hi, mColorXfm.mLevelInHi)
-    if (sym == in_hi) {
-        if (PropSync(mColorXfm.mLevelInHi, _val, _prop, _i + 1, _op)) {
-            if (!(_op & 0x11)) mColorXfm.AdjustColorXfm();
-            return true;
-        }
-        return false;
-    }
-    // SYNC_PROP_ACTION(out_lo, mColorXfm.mLevelOutLo, 0x11, mColorXfm.AdjustColorXfm())
-    if (sym == out_lo) {
-        if (PropSync(mColorXfm.mLevelOutLo, _val, _prop, _i + 1, _op)) {
-            if (!(_op & 0x11)) mColorXfm.AdjustColorXfm();
-            return true;
-        }
-        return false;
-    }
-    // SYNC_PROP_ACTION(out_hi, mColorXfm.mLevelOutHi, 0x11, mColorXfm.AdjustColorXfm())
-    if (sym == out_hi) {
-        if (PropSync(mColorXfm.mLevelOutHi, _val, _prop, _i + 1, _op)) {
-            if (!(_op & 0x11)) mColorXfm.AdjustColorXfm();
-            return true;
-        }
-        return false;
-    }
+    SYNC_PROP(ambient_color, mAmbientFogOwner->mAmbientColor)
+    SYNC_PROP(ambient_alpha, mAmbientFogOwner->mAmbientColor.alpha)
+    SYNC_PROP(fog_enable, mAmbientFogOwner->mFogEnable)
+    SYNC_PROP(fog_start, mAmbientFogOwner->mFogStart)
+    SYNC_PROP(fog_end, mAmbientFogOwner->mFogEnd)
+    SYNC_PROP(fog_color, mAmbientFogOwner->mFogColor)
+    SYNC_PROP(ambient_fog_owner, mAmbientFogOwner)
+    SYNC_PROP(fade_out, mFadeOut)
+    SYNC_PROP(fade_start, mFadeStart)
+    SYNC_PROP(fade_end, mFadeEnd)
+    SYNC_PROP(fade_max, mFadeMax)
+    SYNC_PROP(fade_ref, mFadeRef)
+    SYNC_PROP(left_out, mLRFade.x)
+    SYNC_PROP(left_opaque, mLRFade.y)
+    SYNC_PROP(right_opaque, mLRFade.z)
+    SYNC_PROP(right_out, mLRFade.w)
+    SYNC_PROP(ao_strength, mAOStrength)
+    SYNC_PROP(intensity_rate, mIntensityRate)
+    SYNC_PROP(exposure, mExposure)
+    SYNC_PROP(white_point, mWhitePoint)
+    SYNC_PROP(tone_map, mUseToneMapping)
+    SYNC_PROP(use_color_adjust, mUseColorAdjust)
+    SYNC_PROP_MODIFY(hue, mColorXfm.mHue, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY(saturation, mColorXfm.mSaturation, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY(lightness, mColorXfm.mLightness, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY(brightness, mColorXfm.mBrightness, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY(contrast, mColorXfm.mContrast, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(in_lo, mColorXfm.mLevelInLo, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(in_hi, mColorXfm.mLevelInHi, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(out_lo, mColorXfm.mLevelOutLo, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(out_hi, mColorXfm.mLevelOutHi, mColorXfm.AdjustColorXfm())
     SYNC_PROP(animate_from_preset, mAnimateFromPreset)
 END_PROPSYNCS
 
