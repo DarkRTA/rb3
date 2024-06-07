@@ -35,12 +35,11 @@ RndTex::~RndTex() {
 }
 
 void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
-    Platform plat = TheLoadMgr.mPlatform;
-    if(plat < kPlatformXBox || kPlatformPS3 < plat){
-        if(plat != kPlatformWii){
-            if(plat == kPlatformNone) order = 0;
-        }
-        else {
+    Platform plat = TheLoadMgr.GetPlatform();
+    bool bbb;
+
+    switch (TheLoadMgr.GetPlatform()) {
+        case kPlatformWii:
             order = 8;
             if(hasAlpha){
                 order |= 0x100;
@@ -48,25 +47,34 @@ void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlph
             }
             else bpp = 4;
             order |= 0x40;
-        }
-    }
-    else {
-        bool bbb = false;
-        if(cc && strstr(cc, "_norm")) bbb = true;
+            break;
+
+        case kPlatformPS2:
+            break;
         
-        if(bbb){
-            if(plat == kPlatformXBox) order = 0x20;
-            else if(plat == kPlatformPS3) order = 8;
-            else order = 0;
-        }
-        else {
-            order = hasAlpha ? 0x18 : 8;
-        }
-        if(order == 8) bpp = 4;
-        else if(order & 0x38U) bpp = 8;
-        else if(bbb) bpp = 0x18;
-        else if(bpp < 0x10) bpp = 0x10;
-        else order = 0;
+        case kPlatformXBox:
+        case kPlatformPC:
+        case kPlatformPS3:
+            bbb = cc && strstr(cc, "_norm");
+            
+            if(bbb){
+                if(plat == kPlatformXBox) order = 0x20;
+                else if(plat == kPlatformPS3) order = 8;
+                else order = 0;
+            }
+            else {
+                order = hasAlpha ? 0x18 : 8;
+            }
+            if(order == 8) bpp = 4;
+            else if(order & 0x38U) bpp = 8;
+            else if(bbb) bpp = 0x18;
+            else if(bpp < 0x10) bpp = 0x10;
+            break;
+
+        
+        case kPlatformNone:
+            order = 0;
+            break;
     }
 }
 
