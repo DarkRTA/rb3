@@ -79,3 +79,16 @@ BEGIN_HANDLERS(RndAnimFilter)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xE3)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(RndAnimFilter)
+    SYNC_PROP_SET(anim, mAnim, SetAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(scale, mScale, mScale = __fabs(_val.Float(0)))
+    SYNC_PROP(offset, mOffset)
+    SYNC_PROP(period, mPeriod)
+    SYNC_PROP(start, mStart)
+    SYNC_PROP(end, mEnd)
+    SYNC_PROP(snap, mSnap)
+    SYNC_PROP_MODIFY(jitter, mJitter, mJitterFrame = 0.0f)
+    SYNC_PROP(type, (int&)mType)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS
