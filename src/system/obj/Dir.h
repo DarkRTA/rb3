@@ -191,8 +191,12 @@ public:
     DataNode OnFind(DataArray*);
 
     Hmx::Object* FindObject(const char*, bool);
-    template <class T> T* Find(const char* name, bool b) {
-        return dynamic_cast<T*>(FindObject(name, b));
+    template <class T> T* Find(const char* name, bool parentDirs) {
+        T* castedObj = dynamic_cast<T*>(FindObject(name, false));
+        if(!castedObj && parentDirs){
+            MILO_FAIL(kNotObjectMsg, name, PathName(this) ? PathName(this) : "**no file**");
+        }
+        return castedObj;
     }
 
     DECLARE_REVS;

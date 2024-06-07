@@ -2,8 +2,9 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Tex.h"
 #include "rndobj/Trans.h"
-#include "utl/Symbols.h"
+#include "math/MathFuncs.h"
 #include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
 unsigned short RndTexBlendController::gRev = 0;
 
@@ -15,9 +16,30 @@ RndTexBlendController::~RndTexBlendController(){
     
 }
 
+bool RndTexBlendController::GetCurrentDistance(float& f) const {
+    
+}
+
+void RndTexBlendController::UpdateReferenceDistance(){
+    GetCurrentDistance(mReferenceDistance);
+    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+    mMaxDistance = Max(mMaxDistance, mReferenceDistance);
+}
+
 void RndTexBlendController::UpdateMinDistance(){
     GetCurrentDistance(mMinDistance);
-    mMinDistance = (mReferenceDistance < mMinDistance) ? mReferenceDistance : mMinDistance;
+    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+}
+
+void RndTexBlendController::UpdateMaxDistance(){
+    GetCurrentDistance(mMaxDistance);
+    mMaxDistance = Max(mMaxDistance, mReferenceDistance);
+}
+
+void RndTexBlendController::UpdateAllDistances(){
+    UpdateReferenceDistance();
+    mMinDistance = mReferenceDistance * 0.5f;
+    mMaxDistance = mReferenceDistance * 1.5f;
 }
 
 BEGIN_COPYS(RndTexBlendController)
@@ -60,8 +82,8 @@ BEGIN_HANDLERS(RndTexBlendController)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndTexBlendController)
-    SYNC_PROP_MODIFY(reference_object_1, mObject1, UpdateAllDistances())
-    SYNC_PROP_MODIFY(reference_object_2, mObject2, UpdateAllDistances())
+    SYNC_PROP_MODIFY_ALT(reference_object_1, mObject1, UpdateAllDistances())
+    SYNC_PROP_MODIFY_ALT(reference_object_2, mObject2, UpdateAllDistances())
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(base_distance, mReferenceDistance)
     SYNC_PROP(min_distance, mMinDistance)

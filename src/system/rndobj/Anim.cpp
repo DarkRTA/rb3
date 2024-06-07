@@ -4,6 +4,7 @@
 #include "rndobj/Group.h"
 #include "obj/DataUtl.h"
 #include "obj/PropSync_p.h"
+#include "math/MathFuncs.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndAnimatable)
@@ -61,20 +62,20 @@ BEGIN_LOADS(RndAnimatable)
         int count;
         bs >> count;
         bool theLoop = false;
-        float theScale = 0.0f;
+        float theScale = 1.0f;
         float theOffset = 0.0f;
         float theMin = 0.0f;
-        float theMax = 1.0f;
+        float theMax = 0.0f;
+        int read;
         int unused1, unused2, unused3, unused4, unused5, unused6, unused7;
         while(count-- != 0){
-            int read;
             bs >> read;
             switch(read){
                 case 0:
-                    bs >> theMax >> theMin;
+                    bs >> theScale >> theOffset;
                     break;
                 case 1:
-                    bs >> theOffset >> theScale >> theLoop;
+                    bs >> theMin >> theMax >> theLoop;
                     break;
                 case 2:
                     bs >> unused1 >> unused2;
@@ -88,16 +89,16 @@ BEGIN_LOADS(RndAnimatable)
                 default: break;
             }
         }
-        if(theMax != 1.0f || theMin != 0.0f || (theOffset != theScale)){
+        if(theScale != 1.0f || theOffset != 0.0f || (theMin != theMax)){
             const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
-            class ObjectDir* thisDir = mDir;
+            class ObjectDir* thisDir = Dir();
             RndAnimFilter* filtObj = Hmx::Object::New<RndAnimFilter>();
-            if(filtObj) filtObj->SetName(filt, thisDir);
-            filtObj->SetProperty("anim", DataNode(filtObj));
-            filtObj->SetProperty("scale", DataNode(theMax));
-            filtObj->SetProperty("offset", DataNode(theOffset));
+            if(filt) filtObj->SetName(filt, thisDir);
+            filtObj->SetProperty("anim", DataNode(this));
+            filtObj->SetProperty("scale", DataNode(theScale));
+            filtObj->SetProperty("offset", DataNode(theOffset));            
             filtObj->SetProperty("min", DataNode(theMin));
-            filtObj->SetProperty("max", DataNode(theMax));
+            filtObj->SetProperty("max", DataNode(theMax));            
             filtObj->SetProperty("loop", DataNode(theLoop));
         }
         ObjPtrList<RndAnimatable, class ObjectDir> animList(this, kObjListNoNull);
@@ -141,12 +142,48 @@ void RndAnimatable::StopAnimation(){
     }
 }
 
-AnimTask* RndAnimatable::Animate(float blend, bool b, float f2){
+Task* RndAnimatable::Animate(float blend, bool wait, float delay){
     AnimTask* task = new AnimTask(this, StartFrame(), EndFrame(), FramesPerUnit(), Loop(), blend);
-    if(b && task->mBlendTask){
-        f2 += task->mBlendTask->TimeUntilEnd();
+    if(wait && task->mBlendTask){
+        delay += task->mBlendTask->TimeUntilEnd();
     }
-    TheTaskMgr.Start(task, Units(), f2);
+    TheTaskMgr.Start(task, Units(), delay);
+    return task;
+}
+
+Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, float start, float end, float period, float scale, Symbol type){
+    float fpu;
+    float taskStart = start;
+    if(type == dest) start = mFrame;
+    if(period){
+        fpu = __fabs(end - taskStart);
+        fpu = fpu / period;
+    }
+    else fpu = scale * gRateFpu[rate];
+    
+    AnimTask* task = new AnimTask(this, start, end, fpu, type == loop, blend);
+    if(wait){
+        AnimTask* blendTask = task->mBlendTask;
+        if(blendTask){
+            delay += blendTask->TimeUntilEnd();
+        }
+    }
+    TheTaskMgr.Start(task, gRateUnits[rate], delay);
+    return task;
+}
+
+Task* RndAnimatable::Animate(float start, float end, TaskUnits units, float period, float blend){
+    float fpu;
+    if(period){
+        fpu = __fabs(end - start);
+        fpu = fpu / period;
+    }
+    else {
+        const float fpus[3] = { 30.0f, 480.0f, 30.0f };
+        fpu = fpus[units];
+    }
+    AnimTask* task = new AnimTask(this, start, end, fpu, false, blend);
+    TheTaskMgr.Start(task, units, 0.0f);
     return task;
 }
 
@@ -239,7 +276,7 @@ BEGIN_PROPSYNCS(RndAnimatable);
     SYNC_PROP_MODIFY(frame, mFrame, SetFrame(mFrame, 1.0f));
 END_PROPSYNCS;
 
-AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) : 
+AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) :
     mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(blend), mLoop(loop) {
     MILO_ASSERT(anim, 0x1DF);
     mMin = (end < start) ? end : start;
@@ -258,16 +295,13 @@ AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool 
         std::vector<ObjRef*>::const_reverse_iterator ritEnd = target->Refs().rend();
         for(; rit != ritEnd; ++rit){
             Hmx::Object* owner = (*rit)->RefOwner();
-            if(owner){
-                bool isananimtask = owner->ClassName() == AnimTask::StaticClassName();
-                if(isananimtask){
-                    mAnimTarget = owner;
-                    break;
-                }
+            if(owner != NULL && owner->ClassName() == AnimTask::StaticClassName()){
+                mBlendTask = (AnimTask*)owner;
+                break;
             }
         }
     }
-    if(mBlendPeriod != 0.0f && mBlendTask){
+    if(mBlendPeriod && mBlendTask){
         mBlendTask->mBlending = true;
     }
     mAnim = anim;
@@ -304,5 +338,43 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
             }
             delete this;
         }
+    }
+}
+
+// https://decomp.me/scratch/KmGP0
+void AnimTask::Poll(float time){
+    float frame;
+    float blend = 1.0f;
+    float t = time;
+    if(mBlendPeriod){
+        blend = t / mBlendPeriod;
+        if(blend >= 1.0f){
+            blend = 1.0f;
+            AnimTask* blendtask = mBlendTask;
+            delete blendtask;
+            mBlendPeriod = 0.0f;
+        }
+        else {
+            if(!mBlendTask){
+                float oldtime = mBlendTime;
+                mBlendTime = t;
+                blend = (t - oldtime) / (mBlendPeriod - oldtime);
+            }
+        }
+    }
+    else {
+        AnimTask* blendtask = mBlendTask;
+        if(blendtask) delete blendtask;
+    }
+    t = t * mScale + mOffset;
+    if(mLoop){
+        frame = ModRange(mMin, mMax, t);
+    }
+    else {
+        frame = Clamp<float>(mMin, mMax, t);
+    }
+    mAnim->SetFrame(frame, blend);
+    if(!mAnimTarget || !mLoop && !mBlending && mBlendPeriod == 0.0f && t > mMax || t < mMin || !mScale){
+        delete this;
     }
 }

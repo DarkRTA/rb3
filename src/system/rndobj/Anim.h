@@ -29,7 +29,7 @@ public:
     virtual bool Loop(){ return 0; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
-    virtual void SetFrame(float, float); // weak
+    virtual void SetFrame(float frame, float blend); // weak
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
     virtual Hmx::Object* AnimTarget(){ return this; }
@@ -45,8 +45,9 @@ public:
     Rate GetRate(){ return mRate; }
     DataNode OnConvertFrames(DataArray*);
 
-    AnimTask* Animate(float, bool, float);
-    void Animate(float, float, TaskUnits, float, float);
+    Task* Animate(float, bool, float);
+    Task* Animate(float, bool, float, Rate, float, float, float, float, Symbol);
+    Task* Animate(float, float, TaskUnits, float, float);
 
     static TaskUnits RateToTaskUnits(Rate);
     TaskUnits Units() const;
@@ -70,17 +71,17 @@ public:
     NEW_POOL_OVERLOAD(AnimTask);
     DELETE_POOL_OVERLOAD(AnimTask);
 
-    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim;
-    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget;
-    ObjPtr<AnimTask, class ObjectDir> mBlendTask;
-    bool mBlending;
-    float mBlendTime;
-    float mBlendPeriod;
-    float mMin;
-    float mMax;
-    float mScale;
-    float mOffset;
-    bool mLoop;
+    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim; // 0x1c
+    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget; // 0x28
+    ObjPtr<AnimTask, class ObjectDir> mBlendTask; // 0x34
+    bool mBlending; // 0x40
+    float mBlendTime; // 0x44
+    float mBlendPeriod; // 0x48
+    float mMin; // 0x4c
+    float mMax; // 0x50
+    float mScale; // 0x54
+    float mOffset; // 0x58
+    bool mLoop; // 0x5c
 };
 
 #endif

@@ -40,7 +40,7 @@ static DataNode OnSetLoaderPeriod(DataArray* da){
 }
 
 static DataNode OnSysPlatformSym(DataArray* da){
-    return DataNode(PlatformSymbol(TheLoadMgr.mPlatform));
+    return DataNode(PlatformSymbol(TheLoadMgr.GetPlatform()));
 }
 
 void LoadMgr::Init(){

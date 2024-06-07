@@ -19,9 +19,10 @@ bool UseBottomMip() {
 
 void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
     MILO_ASSERT(&src != &dst, 48);
-    const RndBitmap* dingus;
-    while (dingus->mMip) dingus = dingus->mMip;
-    dst.Create(src, dingus->mBpp, dingus->mOrder, NULL);
+    while (src.mMip) {
+        &src = src.mMip;
+    }
+    dst.Create(src, src.mBpp, src.mOrder, NULL);
 }
 
 RndTex::RndTex() : mMipMapK(-8.0f), mType(Regular), mWidth(0), mHeight(0), mBpp(32), mFilepath(), mNumMips(0), mOptimizeForPS3(0), mLoader(0) {
@@ -34,9 +35,11 @@ RndTex::~RndTex() {
 }
 
 void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
-    Platform plat = TheLoadMgr.mPlatform;
-    if(plat < kPlatformXBox || kPlatformPS3 < plat){
-        if(plat == kPlatformWii){
+    Platform plat = TheLoadMgr.GetPlatform();
+    bool bbb;
+
+    switch (TheLoadMgr.GetPlatform()) {
+        case kPlatformWii:
             order = 8;
             if(hasAlpha){
                 order |= 0x100;
@@ -44,26 +47,34 @@ void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlph
             }
             else bpp = 4;
             order |= 0x40;
-        }
-        else if(plat == kPlatformNone) order = 0;
-    }
-    else {
-        bool bbb = false;
-        if(strstr(cc, "_norm")) bbb = true;
+            break;
+
+        case kPlatformPS2:
+            break;
         
-        if(bbb){
-            if(plat == kPlatformXBox) order = 0x20;
-            else if(plat == kPlatformPS3) order = 8;
-            else order = 0;
-        }
-        else {
-            order = hasAlpha ? 0x18 : 8;
-        }
-        if(order == 8) bpp = 4;
-        else if(order & 0x38U) bpp = 8;
-        else if(bbb) bpp = 0x18;
-        else if(bpp < 0x10) bpp = 0x10;
-        else order = 0;
+        case kPlatformXBox:
+        case kPlatformPC:
+        case kPlatformPS3:
+            bbb = cc && strstr(cc, "_norm");
+            
+            if(bbb){
+                if(plat == kPlatformXBox) order = 0x20;
+                else if(plat == kPlatformPS3) order = 8;
+                else order = 0;
+            }
+            else {
+                order = hasAlpha ? 0x18 : 8;
+            }
+            if(order == 8) bpp = 4;
+            else if(order & 0x38U) bpp = 8;
+            else if(bbb) bpp = 0x18;
+            else if(bpp < 0x10) bpp = 0x10;
+            break;
+
+        
+        case kPlatformNone:
+            order = 0;
+            break;
     }
 }
 
@@ -326,7 +337,7 @@ void RndTex::PostLoad(BinStream& bs){
     else if(gRev > 3){
         int i;
         bs >> i;
-        mMipMapK = i;
+        mMipMapK = i / 16.0f;
     }
 
     if(gRev > 6){
@@ -372,7 +383,7 @@ void RndTex::PostLoad(BinStream& bs){
             mLoader = 0;
         }
         BufStream bufs(buffer, size, true);
-        if(buffer) bs = bufs;
+        if(buffer) &bs = &bufs;
         PresyncBitmap();
         if(UseBottomMip()){
             RndBitmap someotherbmap;
@@ -389,7 +400,7 @@ void RndTex::PostLoad(BinStream& bs){
         MILO_ASSERT(!mNumMips, 0x3BE);
         SetBitmap(mWidth, mHeight, mBpp, mType, false, 0);
     }
-    else if(TheLoadMgr.mPlatform != kPlatformNone){
+    else if(TheLoadMgr.GetPlatform() != kPlatformNone){
         MILO_ASSERT(!mNumMips, 0x3C7);
         SetBitmap(mLoader);
         mLoader = 0;
@@ -423,40 +434,30 @@ BEGIN_COPYS(RndTex)
     END_COPYING_MEMBERS
 END_COPYS
 
-// enum Type {
-//     Regular = 1,
-//     Rendered = 2,
-//     Movie = 4,
-//     BackBuffer = 8,
-//     FrontBuffer = 0x18,
-//     RenderedNoZ = 0x22,
-//     ShadowMap = 0x42,
-//     DepthVolumeMap = 0xA2,
-//     DensityMap = 0x122,
-//     Scratch = 0x200,
-//     DeviceTexture = 0x1000
-// };
-
 DECOMP_FORCEACTIVE(Tex,
     "Regular", "Rendered", "Movie", "BackBuffer", "FrontBuffer", "RenderedNoZ",
     "ShadowMap", "DepthVolumeMap", "DensityMap", "DeviceTexture", "Scratch"
 )
 
 TextStream& operator<<(TextStream& ts, RndTex::Type ty){
-    if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
-    else if(ty < RndTex::RenderedNoZ){
-        if(ty == RndTex::Movie) ts << "Movie";
-        else if(ty < RndTex::Movie){
-            if(ty == RndTex::Rendered) ts << "Rendered";
-            else if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
+    if(ty <= RndTex::RenderedNoZ){
+        if(ty <= RndTex::Movie){
+            if(ty <= RndTex::Rendered){
+                if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
+                else if(ty == RndTex::Rendered) ts << "Rendered";
+            }
+            else if(ty == RndTex::Movie) ts << "Movie";
         }
-        else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
-        else if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
+        else if(ty <= RndTex::FrontBuffer){
+            if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
+            else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
+        }
+        else if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
     }
-    else if(ty == RndTex::DensityMap) ts << "DensityMap";
-    else if(ty < RndTex::DensityMap){
-        if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
-        else if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
+    else if(ty <= RndTex::DensityMap){
+        if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
+        else if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
+        else if(ty == RndTex::DensityMap) ts << "DensityMap";
     }
     else if(ty == RndTex::DeviceTexture) ts << "DeviceTexture";
     else if(ty < RndTex::DeviceTexture && ty == RndTex::Scratch) ts << "Scratch";
@@ -502,7 +503,7 @@ DataNode RndTex::OnSetBitmap(const DataArray* da) {
 
 DataNode RndTex::OnSetRendered(const DataArray*) {
     MILO_ASSERT(IsRenderTarget(), 1101);
-    SetBitmap(mWidth, mHeight, mBpp, mType, mNumMips, NULL); // this is *almost* it... but the `or` needs to be an `andc`
+    SetBitmap(mWidth, mHeight, mBpp, mType, mNumMips > 0, NULL);
     return DataNode();
 }
 
@@ -523,18 +524,6 @@ BEGIN_PROPSYNCS(RndTex)
     }
     SYNC_PROP(mip_map_k, mMipMapK)
     SYNC_PROP(optimize_for_ps3, mOptimizeForPS3)
-    if (sym == file_path) { // mfw have to manually branch predict
-        bool synced = PropSync(mFilepath, _val, _prop, _i + 1, _op);
-        if (synced) {
-            if (!(_op & (0x11))) {
-                SetBitmap(mFilepath);
-                ;
-            }
-            return true;
-        }
-        return false;
-    }
+    SYNC_PROP_MODIFY_ALT(file_path, mFilepath, SetBitmap(mFilepath))
 END_PROPSYNCS
 #pragma pop
-
-int RndTex::TexelsPitch() const { return 0; }

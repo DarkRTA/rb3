@@ -51,12 +51,13 @@ public:
     void SetEditMode(bool);
     void Init();
     Loader* ForceGetLoader(const FilePath&);
-    bool EditMode() const { return mEditMode; }
+    inline bool EditMode() const { return mEditMode; }
+    inline Platform GetPlatform() const { return (Platform)mPlatform; }
 
     static const char* LoaderPosString(LoaderPos, bool);
 
     std::list<Loader*> mLoaders;
-    Platform mPlatform;
+    unsigned int mPlatform;
     bool mEditMode;
     bool mCacheMode;
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories;
