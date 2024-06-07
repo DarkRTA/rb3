@@ -4,6 +4,7 @@
 #include "rndobj/Group.h"
 #include "obj/DataUtl.h"
 #include "obj/PropSync_p.h"
+#include "math/MathFuncs.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndAnimatable)
@@ -340,22 +341,24 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
+// https://decomp.me/scratch/KmGP0
 void AnimTask::Poll(float time){
     float frame;
     float blend = 1.0f;
-    if(mBlendPeriod != 0.0f){
-        blend = time / mBlendPeriod;
+    float t = time;
+    if(mBlendPeriod){
+        blend = t / mBlendPeriod;
         if(blend >= 1.0f){
+            blend = 1.0f;
             AnimTask* blendtask = mBlendTask;
             delete blendtask;
             mBlendPeriod = 0.0f;
-            // blend = 1.0f;
         }
         else {
             if(!mBlendTask){
                 float oldtime = mBlendTime;
-                mBlendTime = time;
-                blend = (time - oldtime) / (mBlendPeriod - oldtime);
+                mBlendTime = t;
+                blend = (t - oldtime) / (mBlendPeriod - oldtime);
             }
         }
     }
@@ -363,29 +366,15 @@ void AnimTask::Poll(float time){
         AnimTask* blendtask = mBlendTask;
         if(blendtask) delete blendtask;
     }
-    time = time * mScale + mOffset;
+    t = t * mScale + mOffset;
     if(mLoop){
-        frame = 0.0f;
-        float diff = mMax - mMin;
-        if(diff != 0.0f){
-            frame = fmod(time - mMin, diff);
-            if(frame < 0.0f){
-                frame += diff;
-            }
-        }
-        frame += mMin;
+        frame = somemodfunc(mMin, mMax, t);
     }
     else {
-        frame = mMax;
-        if(time <= frame){
-            frame = time;
-            if(time < mMin){
-                frame = mMin;
-            }
-        }
+        frame = Clamp<float>(mMin, mMax, t);
     }
     mAnim->SetFrame(frame, blend);
-    if(!mAnimTarget || !mLoop && !mBlending && mBlendPeriod == 0.0f && mMax < time || time < mMin || mScale == 0.0f){
+    if(!mAnimTarget || !mLoop && !mBlending && mBlendPeriod == 0.0f && t > mMax || t < mMin || !mScale){
         delete this;
     }
 }
