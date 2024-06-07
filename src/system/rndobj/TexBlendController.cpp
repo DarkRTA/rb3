@@ -15,6 +15,10 @@ RndTexBlendController::~RndTexBlendController(){
     
 }
 
+bool RndTexBlendController::GetCurrentDistance(float& f) const {
+    
+}
+
 void RndTexBlendController::UpdateMinDistance(){
     GetCurrentDistance(mMinDistance);
     mMinDistance = (mReferenceDistance < mMinDistance) ? mReferenceDistance : mMinDistance;
@@ -60,8 +64,8 @@ BEGIN_HANDLERS(RndTexBlendController)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndTexBlendController)
-    SYNC_PROP_MODIFY(reference_object_1, mObject1, UpdateAllDistances())
-    SYNC_PROP_MODIFY(reference_object_2, mObject2, UpdateAllDistances())
+    SYNC_PROP_MODIFY_ALT(reference_object_1, mObject1, UpdateAllDistances())
+    SYNC_PROP_MODIFY_ALT(reference_object_2, mObject2, UpdateAllDistances())
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(base_distance, mReferenceDistance)
     SYNC_PROP(min_distance, mMinDistance)

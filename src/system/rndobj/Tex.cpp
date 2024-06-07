@@ -19,9 +19,10 @@ bool UseBottomMip() {
 
 void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
     MILO_ASSERT(&src != &dst, 48);
-    const RndBitmap* bm;
-    while (bm->mMip) bm = bm->mMip;
-    dst.Create(src, bm->mBpp, bm->mOrder, NULL);
+    while (src.mMip) {
+        &src = src.mMip;
+    }
+    dst.Create(src, src.mBpp, src.mOrder, NULL);
 }
 
 RndTex::RndTex() : mMipMapK(-8.0f), mType(Regular), mWidth(0), mHeight(0), mBpp(32), mFilepath(), mNumMips(0), mOptimizeForPS3(0), mLoader(0) {
@@ -425,20 +426,6 @@ BEGIN_COPYS(RndTex)
     END_COPYING_MEMBERS
 END_COPYS
 
-// enum Type {
-//     Regular = 1,
-//     Rendered = 2,
-//     Movie = 4,
-//     BackBuffer = 8,
-//     FrontBuffer = 0x18,
-//     RenderedNoZ = 0x22,
-//     ShadowMap = 0x42,
-//     DepthVolumeMap = 0xA2,
-//     DensityMap = 0x122,
-//     Scratch = 0x200,
-//     DeviceTexture = 0x1000
-// };
-
 DECOMP_FORCEACTIVE(Tex,
     "Regular", "Rendered", "Movie", "BackBuffer", "FrontBuffer", "RenderedNoZ",
     "ShadowMap", "DepthVolumeMap", "DensityMap", "DeviceTexture", "Scratch"
@@ -504,7 +491,7 @@ DataNode RndTex::OnSetBitmap(const DataArray* da) {
 
 DataNode RndTex::OnSetRendered(const DataArray*) {
     MILO_ASSERT(IsRenderTarget(), 1101);
-    SetBitmap(mWidth, mHeight, mBpp, mType, mNumMips, NULL); // this is *almost* it... but the `or` needs to be an `andc`
+    SetBitmap(mWidth, mHeight, mBpp, mType, mNumMips > 0, NULL);
     return DataNode();
 }
 
@@ -525,17 +512,7 @@ BEGIN_PROPSYNCS(RndTex)
     }
     SYNC_PROP(mip_map_k, mMipMapK)
     SYNC_PROP(optimize_for_ps3, mOptimizeForPS3)
-    if (sym == file_path) { // mfw have to manually branch predict
-        bool synced = PropSync(mFilepath, _val, _prop, _i + 1, _op);
-        if (synced) {
-            if (!(_op & (0x11))) {
-                SetBitmap(mFilepath);
-                ;
-            }
-            return true;
-        }
-        return false;
-    }
+    SYNC_PROP_MODIFY_ALT(file_path, mFilepath, SetBitmap(mFilepath))
 END_PROPSYNCS
 #pragma pop
 

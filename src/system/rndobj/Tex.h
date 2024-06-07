@@ -23,7 +23,6 @@ public:
         DeviceTexture = 0x1000
     };
 
-    // be prepared for virtual spew...
     RndTex();
     virtual ~RndTex();
     OBJ_CLASSNAME(RndTex)

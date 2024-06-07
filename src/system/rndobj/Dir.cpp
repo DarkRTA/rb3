@@ -8,7 +8,7 @@
 
 INIT_REVS(RndDir)
 
-static const char* rnddir_strs[] = { "", __FILE__ };
+DECOMP_FORCEACTIVE(Dir, "", __FILE__)
 
 RndDir::RndDir() : mEnv(this, 0) {
     
