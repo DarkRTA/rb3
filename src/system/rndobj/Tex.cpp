@@ -19,9 +19,9 @@ bool UseBottomMip() {
 
 void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
     MILO_ASSERT(&src != &dst, 48);
-    const RndBitmap* dingus;
-    while (dingus->mMip) dingus = dingus->mMip;
-    dst.Create(src, dingus->mBpp, dingus->mOrder, NULL);
+    const RndBitmap* bm;
+    while (bm->mMip) bm = bm->mMip;
+    dst.Create(src, bm->mBpp, bm->mOrder, NULL);
 }
 
 RndTex::RndTex() : mMipMapK(-8.0f), mType(Regular), mWidth(0), mHeight(0), mBpp(32), mFilepath(), mNumMips(0), mOptimizeForPS3(0), mLoader(0) {
@@ -36,7 +36,10 @@ RndTex::~RndTex() {
 void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
     Platform plat = TheLoadMgr.mPlatform;
     if(plat < kPlatformXBox || kPlatformPS3 < plat){
-        if(plat == kPlatformWii){
+        if(plat != kPlatformWii){
+            if(plat == kPlatformNone) order = 0;
+        }
+        else {
             order = 8;
             if(hasAlpha){
                 order |= 0x100;
@@ -45,11 +48,10 @@ void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlph
             else bpp = 4;
             order |= 0x40;
         }
-        else if(plat == kPlatformNone) order = 0;
     }
     else {
         bool bbb = false;
-        if(strstr(cc, "_norm")) bbb = true;
+        if(cc && strstr(cc, "_norm")) bbb = true;
         
         if(bbb){
             if(plat == kPlatformXBox) order = 0x20;
