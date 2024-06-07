@@ -36,7 +36,7 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
             unsigned int last = mFilename.find_last_of('_');
             bool met = last != String::npos;
             if(met){
-                Symbol plat = PlatformSymbol(TheLoadMgr.mPlatform);
+                Symbol plat = PlatformSymbol(TheLoadMgr.GetPlatform());
                 const char* strIdx = mFilename.c_str() + last + 1;
                 met = plat == strIdx;
             }

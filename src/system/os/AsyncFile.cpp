@@ -38,7 +38,7 @@ void PrintDiscFile(const char* cc){
     unsigned int last = fullPath.find_last_of('_');
     bool lastFound = last != String::npos;
     if(lastFound){
-        Symbol plat = PlatformSymbol(TheLoadMgr.mPlatform);
+        Symbol plat = PlatformSymbol(TheLoadMgr.GetPlatform());
         lastFound = plat == fullPath.c_str() + last + 1;
     }
     fullPath = (lastFound) ? fullPath.substr(0, last) : fullPath;

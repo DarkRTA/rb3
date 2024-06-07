@@ -337,7 +337,7 @@ void RndTex::PostLoad(BinStream& bs){
     else if(gRev > 3){
         int i;
         bs >> i;
-        mMipMapK = i;
+        mMipMapK = i / 16.0f;
     }
 
     if(gRev > 6){
@@ -383,7 +383,7 @@ void RndTex::PostLoad(BinStream& bs){
             mLoader = 0;
         }
         BufStream bufs(buffer, size, true);
-        if(buffer) bs = bufs;
+        if(buffer) &bs = &bufs;
         PresyncBitmap();
         if(UseBottomMip()){
             RndBitmap someotherbmap;
@@ -400,7 +400,7 @@ void RndTex::PostLoad(BinStream& bs){
         MILO_ASSERT(!mNumMips, 0x3BE);
         SetBitmap(mWidth, mHeight, mBpp, mType, false, 0);
     }
-    else if(TheLoadMgr.mPlatform != kPlatformNone){
+    else if(TheLoadMgr.GetPlatform() != kPlatformNone){
         MILO_ASSERT(!mNumMips, 0x3C7);
         SetBitmap(mLoader);
         mLoader = 0;
