@@ -31,6 +31,8 @@ void RndMotionBlur::Load(BinStream& bs){
     bs >> mDrawList;
 }
 
+void RndMotionBlur::DrawShowing(){}
+
 bool RndMotionBlur::CanMotionBlur(RndDrawable* draw){
     if(dynamic_cast<RndMesh*>(draw) || dynamic_cast<RndDir*>(draw) || dynamic_cast<RndGroup*>(draw)) return true;
     else return false;
@@ -62,3 +64,5 @@ BEGIN_PROPSYNCS(RndMotionBlur)
     SYNC_PROP(draw_list, mDrawList)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(MotionBlur, RndMotionBlur, SetType)
