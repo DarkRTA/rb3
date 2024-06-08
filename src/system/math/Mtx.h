@@ -38,10 +38,11 @@ namespace Hmx {
     public:
         Quat(){}
         Quat(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
+        Quat(const Matrix3& m){ Set(m); }
 
         void Reset(){ x = y = z = 0.0f; w = 1.0f; }
         void Zero(){ w = x = y = z = 0.0f; }
-        void Set(const Hmx::Matrix3&);
+        void Set(const Matrix3&);
 
         float x;
         float y;

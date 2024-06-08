@@ -15,7 +15,8 @@ void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);
 void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
 void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&);
 void Invert(const Transform&, Transform&);
-void Interp(const Vector3&, const Vector3&, float, Vector3);
+void Interp(const Vector3&, const Vector3&, float, Vector3&);
+void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);

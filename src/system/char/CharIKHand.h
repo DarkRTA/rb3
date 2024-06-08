@@ -32,6 +32,9 @@ public:
     virtual void Load(BinStream&);
 
     void UpdateHands();
+    void IKElbow(RndTransformable*, RndTransformable*);
+
+    DELETE_OVERLOAD;
     
     ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mFinger; // 0x34
