@@ -138,7 +138,7 @@ public:
 
         // RB2 says this returns an iterator rather than an iterator&
         // apparently this can return an iterator if inlining is off?
-        iterator& operator++(){
+        iterator operator++(){
             mNode = mNode->next;
             return *this;
         }
