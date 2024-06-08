@@ -21,7 +21,7 @@ void StreamPlayer::Delete(){
     delete mStream;
     mStream = 0;
     if(mSongBuf && mSongBuf){
-        delete mSongBuf;
+        _MemFree(mSongBuf);
         mSongBuf = 0;
     }
 }
@@ -63,7 +63,7 @@ void StreamPlayer::Init(){
     }
     else mStream->SetPan(0, 0.0f);
     if(mLoop){
-        mStream->SetJump(kStreamEndMs, 0.0f, 0);
+        mStream->SetJump(Stream::kStreamEndMs, 0.0f, 0);
     }
 }
 
