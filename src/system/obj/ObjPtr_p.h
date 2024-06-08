@@ -306,11 +306,12 @@ public:
     // fn_80453DC4 in retail
     // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
     // ObjPtrList::Set(iterator, T1*)
+    // https://decomp.me/scratch/OniGf - again, seems to check out?
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
-        if(*it) (*it)->Release(this);
+        if(it.mNode->obj) it.mNode->obj->Release(this);
         it.mNode->obj = obj;
-        if(*it) (*it)->AddRef(this);
+        if(obj) obj->AddRef(this);
     }
 
     // has one regswap somewhere in the first for loop
