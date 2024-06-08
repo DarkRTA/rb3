@@ -123,6 +123,7 @@ public:
             obj = entry.obj;
             return *this;
         }
+        bool operator!=(const Entry& e) const { return name != e.name; }
         operator const char*(){ return name; } // may not need this
 
         const char* name;

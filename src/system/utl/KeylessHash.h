@@ -24,7 +24,7 @@ public:
     T2* Insert(const T2& val);
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
-    
+
     // keep these in here so that they're inlined - needed for ObjDirItr    
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
@@ -89,7 +89,7 @@ T2* KeylessHash<T1, T2>::Find(const char* const& key){
 
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::Insert(const T2& val){
-    // MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
+    MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
     // if(!mEntries){
     //     MILO_ASSERT(mOwnEntries, 0x9E);
     //     Resize(0x19, 0);
