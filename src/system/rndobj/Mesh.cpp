@@ -143,6 +143,7 @@ void RndMesh::PreLoad(BinStream& bs) {
     PreLoadVertices(bs);
 }
 
+#pragma push
 #pragma dont_inline on
 void RndMesh::PostLoad(BinStream& bs) {
     PostLoadVertices(bs);
@@ -212,7 +213,10 @@ void RndMesh::PostLoad(BinStream& bs) {
     Sync(191);
     if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
 }
-#pragma dont_inline reset
+
+DECOMP_FORCEBLOCK(Mesh, (Hmx::Color32* c), { c->Clear(); c->fr(); c->fg(); c->fb(); c->fa(); })
+DECOMP_FORCEFUNC(Mesh, RndMesh, NumBones())
+#pragma pop
 
 BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
     bs >> v.x >> v.y >> v.z;

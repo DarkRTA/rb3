@@ -211,8 +211,8 @@ public:
     bool FindData(Symbol tag, int & ret, bool fail) const;
     bool FindData(Symbol tag, float & ret, bool fail) const;
     bool FindData(Symbol tag, bool & ret, bool fail) const;
-    bool FindData(Symbol tag, Vector2 & ret, bool fail) const;
-    bool FindData(Symbol tag, Vector3 & ret, bool fail) const;
+    bool FindData(Symbol tag, class Vector2 & ret, bool fail) const;
+    bool FindData(Symbol tag, class Vector3 & ret, bool fail) const;
     bool FindData(Symbol tag, class Plane & ret, bool fail) const;
     bool FindData(Symbol tag, Hmx::Color & ret, bool fail) const;
 

@@ -1,9 +1,11 @@
 #include "rndobj/Lit.h"
+#include "obj/ObjMacros.h"
+#include "rndobj/Trans.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 
-INIT_REVS(RndLight);
+INIT_REVS(RndLight)
 
 RndLight::RndLight() : mColor(), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0.0f), mType(kPoint), 
     mAnimateColorFromPreset(1), mAnimatePositionFromPreset(1), mAnimateRangeFromPreset(1), mShowing(1), mTexture(this, 0),
@@ -11,7 +13,34 @@ RndLight::RndLight() : mColor(), mColorOwner(this, this), mRange(1000.0f), mFall
         mTextureXfm.Reset();
 }
 
-SAVE_OBJ(RndLight, 0x33);
+SAVE_OBJ(RndLight, 0x33)
+
+BEGIN_LOADS(RndLight)
+    LOAD_REVS(bs)
+    ASSERT_REVS(16, 1)
+    if (gRev > 3) LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndTransformable)
+    bs >> mColor;
+    if (gRev < 2) {
+        float f, g, h, i, j, k, l, m;
+        j = k = l = m = f = g = h = i = 1;
+        bs >> i >> h >> g >> f >> m >> l >> k >> j;
+    }
+    if (gRev < 3) {
+
+    }
+    bs >> mRange;
+
+
+
+
+
+    if (gRev > 15) {
+        unsigned char x;
+        bs >> x;
+        mAnimateRangeFromPreset = x;
+    } else mAnimateRangeFromPreset = mAnimateColorFromPreset;
+END_LOADS
 
 BEGIN_COPYS(RndLight)
     CREATE_COPY_AS(RndLight, l)

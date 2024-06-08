@@ -1,5 +1,6 @@
 #ifndef MATH_COLOR_H
 #define MATH_COLOR_H
+#include "types.h"
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
 
@@ -64,8 +65,18 @@ namespace Hmx {
     };
 
     class Color32 {
-        uint x;
-        void Reset() { x = -1; }
+        union {
+            uint x;
+            struct {
+                u8 a, b, g, r;
+            };
+        };
+        public:
+        inline void Clear() { x = -1; }
+        float fr() const { return r * 0.0039215688593685627f;}
+        float fg() const { return g * 0.0039215688593685627f;}
+        float fb() const { return b * 0.0039215688593685627f;}
+        float fa() const { return a * 0.0039215688593685627f;}
     };
 }
 

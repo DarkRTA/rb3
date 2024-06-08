@@ -34,8 +34,8 @@ public:
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
 
     NEW_OVERLOAD;
-    DECLARE_REVS;
     DELETE_OVERLOAD;
+    DECLARE_REVS
     NEW_OBJ(RndLight)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndLight)
@@ -43,13 +43,13 @@ public:
 
     Hmx::Color mColor;
     ObjOwnerPtr<RndLight, class ObjectDir> mColorOwner;
-    float mRange;
-    float mFalloffStart;
-    Type mType;
-    bool mAnimateColorFromPreset;
-    bool mAnimatePositionFromPreset;
-    bool mAnimateRangeFromPreset;
-    bool mShowing;
+    float mRange; // 0xAC
+    float mFalloffStart; // 0xB0
+    Type mType; // 0xB4
+    bool mAnimateColorFromPreset; // 0xB8
+    bool mAnimatePositionFromPreset; // 0xB9
+    bool mAnimateRangeFromPreset; // 0xBA
+    bool mShowing; // 0xBB
     ObjPtr<RndTex, class ObjectDir> mTexture;
     int unknownint; // figure this out too
     ObjPtrList<RndDrawable, class ObjectDir> mShadowObjects;
