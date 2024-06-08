@@ -4,7 +4,7 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
-#include "math/Vec.h"
+//#include "math/Vec.h"
 #include "math/Color.h"
 
 // forward declarations
