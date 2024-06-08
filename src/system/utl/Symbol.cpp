@@ -6,9 +6,9 @@
 #include "utl/PoolAlloc.h"
 #include <new>
 
-extern bool gLiteralSymbolStaticInitialization;
-KeylessHash<const char*, const char*>* gHashTable;
-StringTable* gStringTable;
+bool gLiteralSymbolStaticInitialization = false;
+static KeylessHash<const char*, const char*>* gHashTable;
+static StringTable* gStringTable;
 
 Symbol::Symbol(const char* str){
     if(str == 0 || *str == '\0') mStr = gNullStr;

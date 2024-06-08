@@ -14,6 +14,7 @@ public:
     T2 mEmpty; // 0x10
     T2 mRemoved;
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     KeylessHash(int, const T2&, const T2&, T2*);
@@ -23,6 +24,7 @@ public:
     T2* Insert(const T2& val);
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
+    
     // keep these in here so that they're inlined - needed for ObjDirItr    
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
