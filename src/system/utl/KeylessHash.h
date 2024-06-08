@@ -14,80 +14,86 @@ public:
     T2 mEmpty; // 0x10
     T2 mRemoved;
 
-    KeylessHash(int, const T2&, const T2&, T2*);
-
-    ~KeylessHash(){
-        if(mOwnEntries){
-            delete [] mEntries;
-        }
-    }
-    
     DELETE_OVERLOAD;
 
-    T2* Find(const char* const& key){
-        if(mEntries){
-            int i = HashString(key, mSize);
-            MILO_ASSERT(i >= 0, 0x88);
+    KeylessHash(int, const T2&, const T2&, T2*);
+    ~KeylessHash();
 
-            T2* it;
-            while(it = &mEntries[i], *it != mEmpty){
-                if(*it != mRemoved){
-                    bool matched = strcmp(*it, key) == 0;
-                    if(matched) return it;
-                }
-                if(++i == mSize) i = 0;
-            }
-        }
-        return 0;
-    }
-
-    T2* Insert(const T2& val){
-        // MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
-        // if(!mEntries){
-        //     MILO_ASSERT(mOwnEntries, 0x9E);
-        //     Resize(0x19, 0);
-        // }
-        // int i = HashString(val, mSize);
-        // MILO_ASSERT(i >= 0, 0xA4);
-    }
-
+    T2* Find(const char* const& key);
+    T2* Insert(const T2& val);
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
-    
+    // keep these in here so that they're inlined - needed for ObjDirItr    
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
 };
 
 template <class T1, class T2>
 KeylessHash<T1, T2>::KeylessHash(int i, const T2& tmp1 , const T2& tmp2 , T2* tmp_ptr ){
-        mEmpty = tmp1;
-        mRemoved = tmp2;
-        if(tmp_ptr){
-            mSize = i;
-            mEntries = tmp_ptr;
-            mOwnEntries = false;
-        }
-        else if(i != 0){
-            mSize = NextHashPrime(i);
-            mEntries = new T2[mSize];
-            mOwnEntries = true;
-        }
-        else {
-            mSize = 0;
-            mEntries = 0;
-            mOwnEntries = true;
-        }
-        for(int i = 0; i < mSize; i++){
-            mEntries[i] = mEmpty;
-        }
-        mNumEntries = 0;
+    mEmpty = tmp1;
+    mRemoved = tmp2;
+    if(tmp_ptr){
+        mSize = i;
+        mEntries = tmp_ptr;
+        mOwnEntries = false;
     }
+    else if(i != 0){
+        mSize = NextHashPrime(i);
+        mEntries = new T2[mSize];
+        mOwnEntries = true;
+    }
+    else {
+        mSize = 0;
+        mEntries = 0;
+        mOwnEntries = true;
+    }
+    for(int i = 0; i < mSize; i++){
+        mEntries[i] = mEmpty;
+    }
+    mNumEntries = 0;
+}
+
+template <class T1, class T2>
+KeylessHash<T1, T2>::~KeylessHash(){
+    if(mOwnEntries){
+        delete [] mEntries;
+    }
+}
 
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
     for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
     if(entry == mEntries + mSize) return 0;
     else return entry;
+}
+
+template <class T1, class T2>
+T2* KeylessHash<T1, T2>::Find(const char* const& key){
+    if(mEntries){
+        int i = HashString(key, mSize);
+        MILO_ASSERT(i >= 0, 0x88);
+
+        T2* it;
+        while(it = &mEntries[i], *it != mEmpty){
+            if(*it != mRemoved){
+                bool matched = strcmp(*it, key) == 0;
+                if(matched) return it;
+            }
+            if(++i == mSize) i = 0;
+        }
+    }
+    return 0;
+}
+
+template <class T1, class T2>
+T2* KeylessHash<T1, T2>::Insert(const T2& val){
+    // MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
+    // if(!mEntries){
+    //     MILO_ASSERT(mOwnEntries, 0x9E);
+    //     Resize(0x19, 0);
+    // }
+    // int i = HashString(val, mSize);
+    // MILO_ASSERT(i >= 0, 0xA4);
 }
 
 #endif

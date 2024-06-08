@@ -71,6 +71,10 @@ ObjectDir::ObjectDir()
       mCurCam(0), mAlwaysInlined(false), mAlwaysInlineHash(gNullStr) {
 }
 
+ObjectDir::~ObjectDir(){
+    
+}
+
 void ObjectDir::PostSave(BinStream& bs){
     SyncObjects();
 }
