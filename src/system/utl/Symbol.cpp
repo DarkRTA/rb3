@@ -34,7 +34,6 @@ void Symbol::PreInit(int stringSize, int hashSize){
     KeylessHash<const char*, const char*>* tmp;
     if(!gStringTable){
         gStringTable = new StringTable(stringSize);
-        #pragma dont_inline on
         tmp = new KeylessHash<const char*, const char*>(hashSize, 0, 0, 0);
     }
     gHashTable = tmp;

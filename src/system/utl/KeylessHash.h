@@ -14,29 +14,7 @@ public:
     T2 mEmpty; // 0x10
     T2 mRemoved;
 
-    KeylessHash(int i, const T2& tmp1 = T2(), const T2& tmp2 = T2(), T2* tmp_ptr = NULL){
-        mEmpty = tmp1;
-        mRemoved = tmp2;
-        if(tmp_ptr){
-            mSize = i;
-            mEntries = tmp_ptr;
-            mOwnEntries = false;
-        }
-        else if(i != 0){
-            mSize = NextHashPrime(i);
-            mEntries = new T2[mSize];
-            mOwnEntries = true;
-        }
-        else {
-            mSize = 0;
-            mEntries = 0;
-            mOwnEntries = true;
-        }
-        for(int i = 0; i < mSize; i++){
-            mEntries[i] = mEmpty;
-        }
-        mNumEntries = 0;
-    }
+    KeylessHash(int, const T2&, const T2&, T2*);
 
     ~KeylessHash(){
         if(mOwnEntries){
@@ -79,6 +57,31 @@ public:
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
 };
+
+template <class T1, class T2>
+KeylessHash<T1, T2>::KeylessHash(int i, const T2& tmp1 , const T2& tmp2 , T2* tmp_ptr ){
+        mEmpty = tmp1;
+        mRemoved = tmp2;
+        if(tmp_ptr){
+            mSize = i;
+            mEntries = tmp_ptr;
+            mOwnEntries = false;
+        }
+        else if(i != 0){
+            mSize = NextHashPrime(i);
+            mEntries = new T2[mSize];
+            mOwnEntries = true;
+        }
+        else {
+            mSize = 0;
+            mEntries = 0;
+            mOwnEntries = true;
+        }
+        for(int i = 0; i < mSize; i++){
+            mEntries[i] = mEmpty;
+        }
+        mNumEntries = 0;
+    }
 
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){

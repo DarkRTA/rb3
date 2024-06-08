@@ -66,7 +66,7 @@ SAVE_OBJ(ObjectDir, 0x1A2)
 InlineDirType ObjectDir::InlineSubDirType(){ return mInlineSubDirType; }
 
 ObjectDir::ObjectDir()
-    : mHashTable(0), mStringTable(0), mProxyOverride(false), mInlineProxy(true),
+    : mHashTable(0, Entry(), Entry(), 0), mStringTable(0), mProxyOverride(false), mInlineProxy(true),
       mLoader(0), mIsSubDir(false), mInlineSubDirType(kInlineNever), mPathName(gNullStr),
       mCurCam(0), mAlwaysInlined(false), mAlwaysInlineHash(gNullStr) {
 }
