@@ -162,6 +162,9 @@ public:
 
 class TransformNoScale {
 public:
+    TransformNoScale(){}
+    void Set(const Transform&);
+
     ShortQuat q;
     class Vector3 v;
 };
