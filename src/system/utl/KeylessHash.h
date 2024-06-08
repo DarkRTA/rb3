@@ -74,14 +74,17 @@ public:
     }
 
     void Resize(int, T2*);
-    T2* FirstFrom(T2* entry){
-        for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
-        if(entry == mEntries + mSize) return 0;
-        else return entry;
-    }
+    T2* FirstFrom(T2* entry);
     
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
 };
+
+template <class T1, class T2>
+T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
+    for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
+    if(entry == mEntries + mSize) return 0;
+    else return entry;
+}
 
 #endif
