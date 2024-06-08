@@ -319,8 +319,9 @@ public:
         if(this == &x) return;
         while(size() > x.size()) pop_back();
         Node* otherNodes = x.mNodes;
-        for(Node* curNodes = mNodes; curNodes != 0; curNodes = curNodes->next){
+        for(Node* curNodes = mNodes; curNodes != 0;){
             Set(curNodes, otherNodes->obj);
+            curNodes = curNodes->next;
             otherNodes = otherNodes->next;
         }
         for(; otherNodes != 0; otherNodes = otherNodes->next){
