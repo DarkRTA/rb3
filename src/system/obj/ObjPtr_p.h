@@ -138,7 +138,7 @@ public:
 
         // RB2 says this returns an iterator rather than an iterator&
         // apparently this can return an iterator if inlining is off?
-        iterator& operator++(){
+        iterator operator++(){
             mNode = mNode->next;
             return *this;
         }
@@ -161,9 +161,10 @@ public:
         }
     }
 
+    // this also seems okay
     virtual ~ObjPtrList() { clear(); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-
+    // okay as well
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
         if(mMode == kObjListOwnerControl){
             mOwner->Replace(from, to);
@@ -195,12 +196,12 @@ public:
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // fn_8049C424 - push_back
+    // seems to be okay - shows as 100% in EventTrigger
     void push_back(T1* obj){
         insert(end(), obj);
     }
-
-    // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
-    // PLEASE FIX
+    
+    // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         erase(mNodes->prev);
@@ -305,19 +306,23 @@ public:
     // fn_80453DC4 in retail
     // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
     // ObjPtrList::Set(iterator, T1*)
+    // https://decomp.me/scratch/OniGf - again, seems to check out?
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
         if(it.mNode->obj) it.mNode->obj->Release(this);
         it.mNode->obj = obj;
-        if(it.mNode->obj) it.mNode->obj->AddRef(this);
+        if(obj) obj->AddRef(this);
     }
 
+    // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
-        while(size() > x.size()) pop_back();
+        while(mSize > x.mSize) pop_back();
+        Node* curNodes = mNodes;
         Node* otherNodes = x.mNodes;
-        for(Node* curNodes = mNodes; curNodes != 0; curNodes = curNodes->next){
+        while (curNodes){
             Set(curNodes, otherNodes->obj);
+            curNodes = curNodes->next;
             otherNodes = otherNodes->next;
         }
         for(; otherNodes != 0; otherNodes = otherNodes->next){
@@ -326,6 +331,7 @@ public:
     }
 
     // fn_8056349C in retail
+    // seems to be okay - shows as 100% in EventTrigger
     bool Load(BinStream& bs, bool b);
 
 };

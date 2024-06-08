@@ -2,8 +2,9 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Group.h"
-#include "utl/Symbols.h"
+#include "obj/DirItr.h"
 #include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(RndMotionBlur);
 
@@ -30,9 +31,26 @@ void RndMotionBlur::Load(BinStream& bs){
     bs >> mDrawList;
 }
 
+void RndMotionBlur::DrawShowing(){}
+
 bool RndMotionBlur::CanMotionBlur(RndDrawable* draw){
     if(dynamic_cast<RndMesh*>(draw) || dynamic_cast<RndDir*>(draw) || dynamic_cast<RndGroup*>(draw)) return true;
     else return false;
+}
+
+DataNode RndMotionBlur::OnAllowedDrawable(const DataArray* da){
+    int allowcount = 0;
+    for(ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it){
+        if(CanMotionBlur(it)) allowcount++;
+    }
+    DataArrayPtr ptr(new DataArray(allowcount));
+    allowcount = 0;
+    for(ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it){
+        if(CanMotionBlur(it)){
+            ptr.Node(allowcount++) = DataNode(it);
+        }
+    }
+    return DataNode(ptr);
 }
 
 BEGIN_HANDLERS(RndMotionBlur)
@@ -46,3 +64,5 @@ BEGIN_PROPSYNCS(RndMotionBlur)
     SYNC_PROP(draw_list, mDrawList)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(MotionBlur, RndMotionBlur, SetType)

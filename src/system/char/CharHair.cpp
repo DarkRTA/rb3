@@ -19,6 +19,15 @@ CharHair::~CharHair(){
 
 }
 
+#pragma push
+#pragma dont_inline on
+void CharHair::SimulateInternal(float f){
+    for(ObjPtrList<CharCollide, ObjectDir>::iterator it = mCollide.begin(); it != mCollide.end(); ++it){
+        (*it);
+    }
+}
+#pragma pop
+
 CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mShowPose(0), mRoot(o, 0), mAngle(0.0f), mPoints(o), mHookupFlags(0) {
     mBaseMat.Identity();
     mRootMat.Identity();

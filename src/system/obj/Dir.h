@@ -31,8 +31,7 @@ enum InlineDirType {
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
-    ObjDirPtr() : mDir(NULL), mLoader(NULL) {}
+    ObjDirPtr(T* dir = 0) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
     virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
@@ -70,6 +69,7 @@ public:
     }
 
     // PostLoad__21ObjDirPtr<9ObjectDir>FP6Loader
+    // https://decomp.me/scratch/qfnAI - seems to check out
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
@@ -80,6 +80,7 @@ public:
     }
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
+    // https://decomp.me/scratch/yVHtf - also seems to check out...maybe there's an inline depth setting somewhere?
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
@@ -114,6 +115,24 @@ public:
     class DirLoader* mLoader;
 };
 
+// template <class T>
+// ObjDirPtr<T>& ObjDirPtr<T>::operator=(T* dir){
+//     if(mLoader && mLoader->IsLoaded()) PostLoad(0);
+//     if((dir != mDir) || !dir){
+//         delete mLoader;
+//         mLoader = 0;
+//         if(mDir){
+//             mDir->Release(this);
+//             if(!mDir->HasDirPtrs()){
+//                 delete mDir;
+//             }
+//         }
+//         mDir = dir;
+//         if(mDir) mDir->AddRef(this);
+//     }
+//     return *this;
+// }
+
 class ObjectDir : public virtual Hmx::Object {
 public:
     struct Entry {
@@ -123,7 +142,9 @@ public:
             obj = entry.obj;
             return *this;
         }
-        operator const char*(){ return name; } // may not need this
+        bool operator!=(const Entry& e) const { return name != e.name; }
+
+        operator const char*() const { return name; } // may not need this
 
         const char* name;
         Hmx::Object* obj;
