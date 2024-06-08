@@ -317,9 +317,10 @@ public:
     // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
-        while(size() > x.size()) pop_back();
+        while(mSize > x.mSize) pop_back();
+        Node* curNodes = mNodes;
         Node* otherNodes = x.mNodes;
-        for(Node* curNodes = mNodes; curNodes != 0;){
+        while (curNodes){
             Set(curNodes, otherNodes->obj);
             curNodes = curNodes->next;
             otherNodes = otherNodes->next;
