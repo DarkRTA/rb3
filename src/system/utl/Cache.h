@@ -27,7 +27,9 @@ enum CacheResult {
     kCache_ErrorUnknown = -1,
 };
 
-struct CacheDirEntry;
+struct CacheDirEntry {
+
+};
 
 class CacheID {
 public:

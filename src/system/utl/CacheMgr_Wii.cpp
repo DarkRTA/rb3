@@ -1,5 +1,6 @@
 #include "CacheMgr_Wii.h"
 #include "Cache_Wii.h"
+#include "VF.h"
 
 const char* unusedStrings[] = {
     "A", 
@@ -16,7 +17,9 @@ CacheMgrWii::CacheMgrWii() : mVar1(), mVar2(0), mVar3(0), mVar4(0), mVar5(0) {
 }
 
 void CacheMgrWii::CreateVFCache() {
-
+    VFInitEx();
+    bool result = VFMountDriveNANDFlashEx("", "");
+    
 }
 
 CacheMgrWii::~CacheMgrWii() {
@@ -80,6 +83,9 @@ bool CacheMgrWii::CreateCacheID(const char* param_1, const char* param_2, const 
         return false;
     } else  {
         CacheIDWii* id = new CacheIDWii();
+        id->unk2 = param_2;
+        id->unk3 = param_4;
+        id->unk4 = param_6;
         return true;
     }
 }

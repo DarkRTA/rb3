@@ -4,22 +4,23 @@
 #define UTL_CACHEWII_H
 
 #include "Cache.h"
+#include <vector>
 
-class CacheIDWii : public CacheID {
+class CacheIDWii {
 public: 
     CacheIDWii();
-    ~CacheIDWii();
+    virtual ~CacheIDWii();
     const char* GetCachePath(const char*);
     const char* GetCacheSearchPath(const char*);
-private:
-    const char* unk1;  // 0x04
-    const char* unk2;  // 0x10
-    const char* unk3;  // 0x1c
+    String unk1;  // 0x04
+    String unk2;  // 0x10 
+    String unk3;  // 0x1c
+    int unk4;     // 0x28??
 };
 
 class CacheWii : public Cache {
     CacheWii(const CacheIDWii&);
-    ~CacheWii();
+    virtual ~CacheWii();
     const char* GetCacheName();
     void Poll();
     bool IsConnectedSync();
@@ -30,15 +31,25 @@ class CacheWii : public Cache {
     bool ReadAsync(const char*, void*, uint, Hmx::Object*);
     bool WriteAsync(const char*, void*, uint, Hmx::Object*);
     bool DeleteAsync(const char*, Hmx::Object*);
-    void ThreadStart();
+    int ThreadStart();
     void ThreadDone(int);
-    void ThreadGetDir(String);
-    void ThreadGetFileSize();
-    void ThreadRead();
-    void ThreadWrite();
-    void ThreadDelete();
+    int ThreadGetDir(String);
+    int ThreadGetFileSize();
+    int ThreadRead();
+    int ThreadWrite();
+    int ThreadDelete();
 
-    const char* mCacheName;     // 0x1c
+    String m0x14; // 0x14
+    String mCacheName; // 0x1c
+    String m0x2c;
+    int m0x38;
+    String s_mThreadStr;
+    String m0x48;
+    const char* m0x54;
+    int m0x58;
+    std::vector<CacheDirEntry>* s_mCacheDirList; // 0x5c
+    char* m0x68;
+    String m0x100;
 };
 
 #endif
