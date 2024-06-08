@@ -79,6 +79,9 @@ public:
         if(entry == mEntries + mSize) return 0;
         else return entry;
     }
+    
+    T2* FirstFromStart(){ return FirstFrom(mEntries); }
+    T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
 };
 
 #endif

@@ -7,14 +7,14 @@ template <class T> class ObjDirItr {
 public:
     // https://decomp.me/scratch/Qfa92
     ObjDirItr(ObjectDir* dir, bool b) : mDir(b ? dir : 0), mSubDir(dir), mWhich(0) {
-        if(!dir){
-            mObj = 0;
-            mEntry = 0;
+        if(dir){
+            // https://decomp.me/scratch/GNNj2 - KeylessHash::FirstFromStart?
+            mEntry = dir->mHashTable.FirstFromStart();
+            Advance();
         }
         else {
-            // https://decomp.me/scratch/GNNj2 - KeylessHash::FirstFromStart?
-            mEntry = dir->mHashTable.FirstFrom(dir->mHashTable.mEntries);
-            Advance();
+            mObj = 0;
+            mEntry = 0;
         }
     }
 
@@ -22,7 +22,7 @@ public:
     ObjDirItr& operator++(){
         if(mEntry){
             // https://decomp.me/scratch/oVgXk - KeylessHash::FirstFromNext?
-            mEntry = mSubDir->mHashTable.FirstFrom(&mEntry[1]);
+            mEntry = mSubDir->mHashTable.FirstFromNext(mEntry);
             Advance();
         }
         return *this;
@@ -32,7 +32,23 @@ public:
     T* operator->() { return mObj; }
 
     // https://decomp.me/scratch/1uXoZ
-    void Advance();
+    void Advance(){
+        while(mEntry){
+            mObj = dynamic_cast<T*>(mEntry->obj);
+            if(mObj) return;
+            mEntry = mSubDir->mHashTable.FirstFromNext(mEntry);
+        }
+        if(mDir){
+            int nextwhich = ++mWhich;
+            mSubDir = mDir->NextSubDir(nextwhich);
+            if(mSubDir){
+                mEntry = mSubDir->mHashTable.FirstFromStart();
+                Advance();
+                return;
+            }
+        }
+        mObj = 0;
+    }
 
     ObjectDir* mDir;
     ObjectDir* mSubDir;
