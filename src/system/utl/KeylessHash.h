@@ -5,6 +5,8 @@
 #include "os/Debug.h"
 #include <string.h>
 
+#define REINTERPRET_AS_STR(x) *reinterpret_cast<const char**>(&x)
+
 template <class T1, class T2> class KeylessHash {
 public:
     T2* mEntries; // 0x0
@@ -90,12 +92,12 @@ T2* KeylessHash<T1, T2>::Find(const char* const& key){
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::Insert(const T2& val){
     MILO_ASSERT(val != mEmpty && val != mRemoved, 0x9A);
-    // if(!mEntries){
-    //     MILO_ASSERT(mOwnEntries, 0x9E);
-    //     Resize(0x19, 0);
-    // }
-    // int i = HashString(val, mSize);
-    // MILO_ASSERT(i >= 0, 0xA4);
+    if(!mEntries){
+        MILO_ASSERT(mOwnEntries, 0x9E);
+        Resize(0x19, 0);
+    }
+    int i = HashString((const char*)val, mSize);
+    MILO_ASSERT(i >= 0, 0xA4);
 }
 
 #endif
