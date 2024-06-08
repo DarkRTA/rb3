@@ -1,4 +1,6 @@
 #include "rndobj/AnimFilter.h"
+#include "obj/DirItr.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndAnimFilter);
@@ -63,7 +65,7 @@ void RndAnimFilter::Load(BinStream& bs){
 
 float RndAnimFilter::Scale(){
     float ret;
-    if(mPeriod != 0.0f){
+    if(mPeriod){
         ret = (mEnd - mStart) / (mPeriod * FramesPerUnit());
     }
     else {
@@ -73,12 +75,57 @@ float RndAnimFilter::Scale(){
     return ret;
 }
 
+void RndAnimFilter::SetFrame(float f1, float f2){
+
+}
+
+float RndAnimFilter::StartFrame(){
+    if(!mAnim) return 0.0f;
+    else {
+        float denom = Scale();
+        if(denom == 0.0f) denom = 1.0f;
+        
+        return (mStart - FrameOffset()) / denom;
+    }
+}
+
+float RndAnimFilter::EndFrame(){
+    if(!mAnim) return 0.0f;
+    else {
+        float denom = Scale();
+        if(denom == 0.0f) denom = 1.0f;
+        
+        float ret = (mEnd - FrameOffset()) / denom;
+        if(mType == kShuttle){
+            ret *= 2.0f;
+        }
+        return ret;
+    }
+}
+
 BEGIN_HANDLERS(RndAnimFilter)
     HANDLE(safe_anims, OnSafeAnims)
     HANDLE_SUPERCLASS(RndAnimatable)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xE3)
 END_HANDLERS
+
+DataNode RndAnimFilter::OnSafeAnims(DataArray* da){
+    ObjectDir* dir = da->Obj<ObjectDir>(2);
+    int containsCount = 0;
+    for(ObjDirItr<RndAnimatable> it(dir, true); it != 0; ++it){
+        if(!AnimContains(it, this)) containsCount++;
+    }
+    DataArrayPtr ptr(new DataArray(containsCount + 1));
+    containsCount = 0;
+    for(ObjDirItr<RndAnimatable> it(dir, true); it != 0; ++it){
+        if(!AnimContains(it, this)){
+            ptr.Node(containsCount++) = DataNode(it);
+        }
+    }
+    ptr.Node(containsCount) = DataNode((Hmx::Object*)0);
+    return DataNode(ptr);
+}
 
 BEGIN_PROPSYNCS(RndAnimFilter)
     SYNC_PROP_SET(anim, mAnim, SetAnim(_val.Obj<RndAnimatable>(0)))

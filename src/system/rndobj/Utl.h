@@ -1,6 +1,6 @@
 #ifndef RNDOBJ_UTL_H
 #define RNDOBJ_UTL_H
-
+#include "rndobj/Anim.h"
 #include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
 
@@ -16,6 +16,7 @@ void TestTexturePaths(ObjectDir*);
 void TestMaterialTextures(ObjectDir*);
 void RndScaleObject(Hmx::Object*, float, float);
 const char* CacheResource(const char*, Hmx::Object*);
+bool AnimContains(const RndAnimatable*, const RndAnimatable*);
 
 void RndUtlPreInit();
 void RndUtlInit();

@@ -36,6 +36,12 @@ public:
     float Start(){ return mStart; }
     float End(){ return mEnd; }
     float Period(){ return mPeriod; }
+    float FrameOffset(){
+        float ret = mStart;
+        if(mEnd >= mStart) ret = 0.0f;
+        else ret -= mEnd;
+        return mOffset + ret;
+    }
 
     NEW_OVERLOAD;
     DECLARE_REVS;
