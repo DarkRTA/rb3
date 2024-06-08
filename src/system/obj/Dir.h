@@ -69,7 +69,7 @@ public:
     }
 
     // PostLoad__21ObjDirPtr<9ObjectDir>FP6Loader
-    // https://decomp.me/scratch/qfnAI
+    // https://decomp.me/scratch/qfnAI - seems to check out
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
@@ -80,7 +80,7 @@ public:
     }
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
-    // https://decomp.me/scratch/yVHtf
+    // https://decomp.me/scratch/yVHtf - also seems to check out...maybe there's an inline depth setting somewhere?
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){

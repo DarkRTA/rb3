@@ -2,6 +2,7 @@
 #include "ChecksumData_wii.h"
 #include "game/Game.h"
 #include "meta/Achievements.h"
+#include "obj/Dir.h"
 #include "os/ContentMgr_Wii.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
@@ -36,6 +37,7 @@ App::App(int argc, char** argv) {
     VISetBlack(true);
     VIFlush();
     OptionBool("fast", false);
+    ObjDirPtr<ObjectDir> oPtr(0);
 }
 
 App::~App() {
