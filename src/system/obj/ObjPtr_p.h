@@ -307,9 +307,9 @@ public:
     // ObjPtrList::Set(iterator, T1*)
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
-        if(it.mNode->obj) it.mNode->obj->Release(this);
+        if(*it) (*it)->Release(this);
         it.mNode->obj = obj;
-        if(it.mNode->obj) it.mNode->obj->AddRef(this);
+        if(*it) (*it)->AddRef(this);
     }
 
     void operator=(const ObjPtrList<T1, T2>& x){
