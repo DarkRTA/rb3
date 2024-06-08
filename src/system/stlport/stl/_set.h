@@ -34,7 +34,7 @@
 #  include <stl/_tree.h>
 #endif
 
-#if !defined (_STLP_USE_PTR_SPECIALIZATIONS)
+// #if !defined (_STLP_USE_PTR_SPECIALIZATIONS)
 
 namespace _STLP_STD {
 
@@ -282,10 +282,10 @@ public:
   pair<const_iterator, const_iterator> equal_range(const _KT& __x) const { return _M_t.equal_range(__x); }
 };
 
-#else
-#  include <stl/pointers/_set.h>
-namespace _STLP_STD {
-#endif /* _STLP_USE_PTR_SPECIALIZATIONS */
+// #else
+// #  include <stl/pointers/_set.h>
+// namespace _STLP_STD {
+// #endif /* _STLP_USE_PTR_SPECIALIZATIONS */
 
 #define _STLP_TEMPLATE_HEADER template <class _Key, class _Compare, class _Alloc>
 #define _STLP_TEMPLATE_CONTAINER set<_Key,_Compare,_Alloc>
