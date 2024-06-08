@@ -1,4 +1,5 @@
 #include "char/CharIKHand.h"
+#include "math/Rot.h"
 
 CharIKHand::CharIKHand() : mHand(this, 0), mFinger(this, 0), mTargets(this), mConstrainWrist(0), mWristRadians(0.0f), mElbowCollide(this, 0), mClockwise(0) {
 
@@ -20,8 +21,16 @@ void CharIKHand::Poll(){
         if(mTargets.size() == 1){
             RndTransformable* frontTrans = mTargets.front().mTarget;
             if(frontTrans){
-                
+                vec = frontTrans->WorldXfm().v;
+                if(mOrientation){
+                    Hmx::Matrix3 mtx;
+                    Normalize(frontTrans->WorldXfm().m, mtx);
+                    quat.Set(mtx);
+                }
             }
+        }
+        else {
+            
         }
     }
 }

@@ -41,6 +41,7 @@ namespace Hmx {
 
         void Reset(){ x = y = z = 0.0f; w = 1.0f; }
         void Zero(){ w = x = y = z = 0.0f; }
+        void Set(const Hmx::Matrix3&);
 
         float x;
         float y;

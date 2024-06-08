@@ -78,6 +78,10 @@ public:
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
 
+    Transform& WorldXfm(){
+        
+    }
+
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
         return mLocalXfm;
