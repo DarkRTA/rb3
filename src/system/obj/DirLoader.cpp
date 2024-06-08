@@ -4,6 +4,7 @@
 #include "os/File.h"
 #include "os/System.h"
 #include "types.h"
+#include "utl/BinStream.h"
 #include "utl/ChunkStream.h"
 #include "utl/Loader.h"
 #include "utl/LogFile.h"
@@ -167,6 +168,14 @@ const char* DirLoader::StateName() const {
     else return "INVALID";
 }
 
+void DirLoader::PollLoading() {
+    while (!IsLoaded()) { // wrong
+        (this->*mState)();
+        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.unk18) return;
+        if ((TheLoadMgr.unk20.empty() ? NULL : TheLoadMgr.unk20.front()) != this) return;
+    }
+}
+
 // this matches, but dear god i hope this isn't what HMX actually wrote
 Symbol DirLoader::FixClassName(Symbol sym){
     if(mRev < 0x1C){
@@ -295,6 +304,39 @@ bool DirLoader::SetupDir(Symbol sym){
     return true;
 }
 
+void DirLoader::LoadHeader() {
+    for (EofType i = NotEof; i != NotEof; i == mStream->Eof()) {
+        MILO_ASSERT(i == TempEof, 997);
+        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.unk18) return;
+    }
+    *mStream >> mRev;
+    ResolveEndianness();
+    if (mRev < 7) {
+        Cleanup(MakeString("Can't load old ObjectDir %s", mFile));
+        return;
+    }
+    Symbol s;
+    if (!Hmx::Object::RegisteredFactory("RndDir")) {
+        s = Symbol("ObjectDir");
+    }
+    Symbol s2;
+    if (mRev > 13) *mStream >> s2;
+    FixClassName(s2);
+    char test[0x80];
+    mStream->ReadString(test, 0x80);
+
+
+    {
+        if (SetupDir(s2) != 0) mDir->SetName(FileGetBase(mFile.c_str(), NULL), mDir);
+    }
+    mDir->mLoader = this;
+    *mStream >> mCounter;
+    if (mRev < 14) {
+        mDir->Reserve(mCounter * 2, mCounter * 25);
+    }
+    mState = CreateObjects;
+}
+
 void DirLoader::LoadResources(){
     if(mCounter-- != 0){
         FilePathTracker fpt(mRoot.c_str());
@@ -332,6 +374,13 @@ void ReadDead(BinStream& bs) {
 }
 
 void DirLoader::DoneLoading() { }
+
+void DirLoader::Replace(Hmx::Object* from, Hmx::Object* to) {
+    MILO_ASSERT(from == mProxyDir && !to, 1393);
+    mProxyDir = NULL;
+    mProxyName = NULL;
+    delete this; // uhhh.
+}
 
 DirLoader::~DirLoader() {
     mDeleteSelf = 0;

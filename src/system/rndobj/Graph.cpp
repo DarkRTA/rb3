@@ -1,9 +1,27 @@
 #include "rndobj/Graph.h"
 #include "obj/Data.h"
+#include "obj/DataFunc.h"
+#include <list>
+
+RndGraph* sOneFrame;
+std::list<RndGraph>* sGraphs;
 
 static DataNode OnGraphReset(DataArray*) {
     RndGraph::ResetAll();
     return DataNode();
+}
+
+void RndGraph::Init() {
+    sGraphs = new std::list<RndGraph>;
+    TheDebug.mExitCallbacks.push_back(RndGraph::Terminate);
+    DataRegisterFunc("graph_reset", OnGraphReset);
+}
+
+void RndGraph::Terminate() {
+    delete sGraphs;
+    sGraphs = 0;
+    delete sOneFrame;
+    sOneFrame = 0;
 }
 
 RndGraph::RndGraph(const void* cv) : mEnable(1), mDrawFixedZ(0), mZ(0.0f), mId((void*)cv) {

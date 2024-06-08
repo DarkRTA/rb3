@@ -63,7 +63,7 @@ public:
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories;
     float unk18; // mPeriod?
     float unk1c;
-    std::list<int> unk20; // mLoading?
+    std::list<Loader*> unk20; // mLoading?
     Timer mTimer;
     int unk58;
     int unk5c;
