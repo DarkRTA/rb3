@@ -48,12 +48,12 @@ public:
         REGISTER_OBJ_FACTORY(RndGroup)
     }
 
-    ObjPtrList<Hmx::Object, ObjectDir> mObjects;
-    ObjPtr<RndEnviron, ObjectDir> mEnv;
-    ObjPtr<RndDrawable, ObjectDir> mDrawOnly;
-    ObjPtr<RndDrawable, ObjectDir> mLod;
-    float mLodScreenSize;
-    bool unkf8;
+    ObjPtrList<Hmx::Object, ObjectDir> mObjects; // 0xc0
+    ObjPtr<RndEnviron, ObjectDir> mEnv; // 0xd0
+    ObjPtr<RndDrawable, ObjectDir> mDrawOnly; // 0xdc
+    ObjPtr<RndDrawable, ObjectDir> mLod; // 0xe8
+    float mLodScreenSize; // 0xf4
+    bool unkf8; // 0xf8
     std::vector<int> mAnims;
     std::vector<int> mDraws;
     int asdf;

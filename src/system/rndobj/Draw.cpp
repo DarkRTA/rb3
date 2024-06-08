@@ -1,9 +1,13 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Utl.h"
-#include "utl/Symbols.h"
+#include "math/Geo.h"
 #include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
+HighlightStyle RndDrawable::sHighlightStyle;
+bool RndDrawable::sForceSubpartSelection;
+float RndDrawable::sNormalDisplayLength = 1.0f;
 int DRAW_REV = 3;
 
 RndDrawable::RndDrawable() : mShowing(1), mSphere(), mOrder(0.0f) {
@@ -59,8 +63,13 @@ BEGIN_COPYS(RndDrawable)
             COPY_MEMBER(mSphere)
         }
         else {
-            if(mSphere.Radius() != 0.0f && c->mSphere.Radius() != 0.0f){
-                COPY_MEMBER(mSphere)
+            float zero = 0.0f;
+            float rad = mSphere.GetRadius();
+            if(rad != zero){
+                rad = c->mSphere.GetRadius();
+                if(rad != zero){
+                    COPY_MEMBER(mSphere)
+                }
             }
         }
     END_COPYING_MEMBERS
@@ -68,14 +77,10 @@ END_COPYS
 
 SAVE_OBJ(RndDrawable, 0xAE)
 
-extern bool gLoadingProxyFromDisk;
-
 void RndDrawable::Load(BinStream& bs){
     int rev;
     bs >> rev;
-    if (rev > DRAW_REV){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, DRAW_REV);
-    }
+    ASSERT_GLOBAL_REV(rev, DRAW_REV);
     if(gLoadingProxyFromDisk){
         bool dummy;
         bs >> dummy;
@@ -85,17 +90,53 @@ void RndDrawable::Load(BinStream& bs){
         bs >> bs_showing;
         mShowing = bs_showing;
     }
-    // more stuff involving ObjectDir
+    if(rev < 2){
+        int count;
+        bs >> count;
+        RndGroup* grp = dynamic_cast<RndGroup*>(this);
+        if(count != 0){
+            for(; count != 0; count--){
+                char buf[0x80];
+                bs.ReadString(buf, 0x80);
+                if(grp){
+                    Hmx::Object* found = Dir()->Find<Hmx::Object>(buf, true);
+                    RndEnviron* env = dynamic_cast<RndEnviron*>(found);
+                    if(env){
+                        if(grp->mEnv) MILO_WARN("%s won't set %s", grp->Name(), buf);
+                        else grp->mEnv = env;
+                    }
+                    else {
+                        RndCam* cam = dynamic_cast<RndCam*>(found);
+                        if(!cam){
+                            grp->RemoveObject(found);
+                            grp->AddObject(found, 0);
+                        }
+                    }
+                }
+                else MILO_WARN("%s not in group", buf);
+            }
+        }
+    }
+    if(rev > 0) bs >> mSphere;
+    if(rev > 2){
+        if(gLoadingProxyFromDisk){
+            float dummy;
+            bs >> dummy;
+        }
+        else bs >> mOrder;
+    }
 }
 
 void RndDrawable::DumpLoad(BinStream& bs){
+    unsigned char dummy;
+    int y, x, w;
     int rev;
+    int i, j;
+    int z;
     bs >> rev;
     MILO_ASSERT(rev < 4, 0xFD);
-    unsigned char dummy;
     bs >> dummy;
-    if(rev < 3){
-        int i;
+    if(rev < 2){
         char buf[0x80];
         bs >> i;
         for(; i != 0; i--){
@@ -103,16 +144,61 @@ void RndDrawable::DumpLoad(BinStream& bs){
         }
     }
     if(rev > 0){
-        int w, x, y, z;
         bs >> w >> x >> y >> z;
     }
     if(rev > 2){
-        int j;
         bs >> j;
     }
     if(rev > 3){
         ObjPtr<RndDrawable, class ObjectDir> ptr(0, 0);
         bs >> ptr;
+    }
+}
+
+bool RndDrawable::CollideSphere(const Segment& seg){
+    if(!mShowing) return false;
+    else {
+        Sphere sphere;
+        if(MakeWorldSphere(sphere, false) && !Intersect(seg, sphere)) return false;
+        else return true;
+    }
+}
+
+RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
+    static Timer* _t = AutoTimer::GetTimer("collide");
+    AutoTimer t(_t, 50.0f, NULL, NULL);
+    if(!CollideSphere(seg)) return false;
+    else return CollideShowing(seg, f, plane);
+}
+
+// retail: https://decomp.me/scratch/X3MyB
+// debug: https://decomp.me/scratch/rLOfM
+int RndDrawable::CollidePlane(const Plane& plane){
+    if(!mShowing) return -1;
+    else {
+        Sphere sphere;
+        if(MakeWorldSphere(sphere, false)){
+            const Vector3& vec = sphere.center;
+            float prod = plane.Dot(vec);
+            if(prod >= sphere.radius){
+                return 1;
+            }
+            else return sphere.radius < -prod ? -1 : 0;
+        }
+        else return -1;
+    }
+}
+
+void RndDrawable::CollideList(const Segment& seg, std::list<RndDrawable::Collision>& collisions){
+    float f;
+    Plane pl;
+    RndDrawable* draw = Collide(seg, f, pl);
+    if(draw){
+        RndDrawable::Collision coll;
+        coll.object = draw;
+        coll.distance = f;
+        coll.plane = pl;
+        collisions.push_back(coll);
     }
 }
 
@@ -136,7 +222,7 @@ DataNode RndDrawable::OnGetSphere(const DataArray* da){
     *da->Var(2) = DataNode(mSphere.center.X());
     *da->Var(3) = DataNode(mSphere.center.Y());
     *da->Var(4) = DataNode(mSphere.center.Z());
-    *da->Var(5) = DataNode(mSphere.Radius());
+    *da->Var(5) = DataNode(mSphere.GetRadius());
     return DataNode(0);
 }
 

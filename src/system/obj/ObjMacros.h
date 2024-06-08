@@ -279,7 +279,7 @@ void objType::Load(BinStream& bs){
 // for loading in a version number that isn't a class's gRev/gAltRev
 #define ASSERT_GLOBAL_REV(ver, rev_name) \
     if (ver > rev_name){ \
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev_name, ver); \
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ver, rev_name); \
     }
 
 #define LOAD_SUPERCLASS(parent) \

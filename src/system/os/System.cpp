@@ -52,7 +52,7 @@ namespace {
         SetUsingCD(true);
 
         FileStat stat;
-        if (FileGetStat(MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.mPlatform)), &stat) < 0) {
+        if (FileGetStat(MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.GetPlatform())), &stat) < 0) {
             SetUsingCD(false);
         }
     }

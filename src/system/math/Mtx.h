@@ -166,6 +166,12 @@ public:
 
 class Plane {
 public:
+    Plane(){}
+
+    float Dot(const Vector3& vec) const {
+        return a * vec.x + b * vec.y + c * vec.z + d;
+    }
+
     float a, b, c, d;
 };
 

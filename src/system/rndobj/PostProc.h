@@ -62,6 +62,7 @@ public:
     virtual void OnUnselect();
     
     void Interp(const RndPostProc*, const RndPostProc*, float);
+    void LoadRev(BinStream&, int);
     DataNode OnAllowedNormalMap(const DataArray*);
 
     static void Reset();

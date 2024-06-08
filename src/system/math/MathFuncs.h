@@ -132,6 +132,19 @@ inline float ceil_f(double d){
     return ceil(d);
 }
 
+inline float Modulo(float f1, float f2) {
+    if (f2 == 0.0f)
+        return 0.0f;
+    float tmp = fmod_f(f1, f2);
+    if (tmp < 0.0f)
+        tmp += f2;
+    return tmp;
+}
+
+inline float ModRange(float f1, float f2, float f3){
+    return Modulo(f3 - f1, f2 - f1) + f1;
+}
+
 inline float fmod_f(double x, double y){
     return fmod(x, y);
 }

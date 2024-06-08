@@ -168,12 +168,12 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
-inline unsigned short getHmxRev(int ui){
-    return ui;
+inline unsigned short getHmxRev(int packed){
+    return packed;
 }
 
-inline unsigned short getAltRev(int ui){
-    return (unsigned int)ui >> 0x10;
+inline unsigned short getAltRev(int packed){
+    return (unsigned int)packed >> 0x10;
 }
 
 inline int packRevs(unsigned short alt, unsigned short rev){

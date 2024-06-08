@@ -1,6 +1,7 @@
 #ifndef MATH_GEO_H
 #define MATH_GEO_H
 #include "math/Vec.h"
+#include "math/Sphere.h"
 #include "utl/BinStream.h"
 
 class Segment {
@@ -48,5 +49,6 @@ inline BinStream& operator>>(BinStream& bs, Box& box){
 }
 
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
+bool Intersect(const Segment&, const Sphere&);
 
 #endif

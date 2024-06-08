@@ -118,7 +118,7 @@ const char* DirLoader::CachedPath(const char* cc, bool b){
     if((sCacheMode || b) && ext){
         bool isMilo = strcmp(ext, "milo") == 0;
         if(isMilo){
-            return MakeString("%s/gen/%s.milo_%s", FileGetPath(cc, 0), FileGetBase(cc, 0), PlatformSymbol(TheLoadMgr.mPlatform));
+            return MakeString("%s/gen/%s.milo_%s", FileGetPath(cc, 0), FileGetBase(cc, 0), PlatformSymbol(TheLoadMgr.GetPlatform()));
         }
     }
     return cc;

@@ -51,12 +51,14 @@ public:
 
     DataNode OnShowObjects(DataArray*);
     DataNode OnSupportedEvents(DataArray*);
+
+    DECLARE_REVS
     
-    std::vector<RndDrawable*, u16> mDraws;
-    std::vector<RndAnimatable*> mAnims;
-    std::vector<RndPollable*, u16> mPolls;
-    ObjPtr<RndEnviron, ObjectDir> mEnv;
-    Symbol mTestEvent;
+    std::vector<RndDrawable*, u16> mDraws; // 0x164
+    std::vector<RndAnimatable*> mAnims; // 0x16c
+    std::vector<RndPollable*, u16> mPolls; // 0x174
+    ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x17c
+    Symbol mTestEvent; // 0x188
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
