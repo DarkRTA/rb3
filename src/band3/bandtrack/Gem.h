@@ -39,20 +39,27 @@ class Gem {
     void SetFretPos(int);
     void GetChordFretLabelInfo(String&, int&) const;
 
-    int unk_0x0;
-    const GameGem* unk_0x4;
-    std::set<TrackWidget*> unk_0x8;
-    float unk_0x20, unk_0x24, unk_0x28;
-    int unk_0x2C;
-    std::vector<Tail*> unk_0x30;
-    int unk_0x38;
+    // GemManager* mGemManager;
+    int mGemManager;
+    const GameGem* mGameGem;
+    std::set<TrackWidget*> mWidgets;
+    float mStart, mEnd, mTailStart;
+    int mSlots;
+    std::vector<Tail*> mTails;
+    int mBeardTick;
     float unk_0x3C, unk_0x40;
     int unk_0x44, unk_0x48;
     class String unk_0x4C;
     u8 unk_0x58;
-    int unk_0x5C, unk_0x60;
-    u8 unk_0x64, unk_0x65;
-    bool unk_0x66_0 : 1, unk_0x66_1 : 1, unk_0x66_2 : 1, unk_0x66_3 : 1, unk_0x66_4 : 1, unk_0x66_5 : 1, unk_0x66_6 : 1;
+    int mFirstFret, mFirstFretString;
+    u8 mFretPos, unk_0x65;
+    bool mHit : 1;
+    bool mMissed : 1;
+    bool mReleased : 1;
+    bool mHopo : 1;
+    bool mInvisible : 1;
+    bool mBeard : 1;
+    bool unk_0x66_6 : 1;
     bool unk_0x67;
 };
 
