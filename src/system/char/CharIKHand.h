@@ -11,6 +11,13 @@
 
 class CharIKHand : public RndHighlightable, public CharWeightable, public CharPollable {
 public:
+
+    class IKTarget {
+    public:
+        ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
+        float mExtent; // 0xc
+    };
+
     CharIKHand();
     virtual ~CharIKHand();
     virtual void Highlight();
@@ -23,23 +30,25 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    void UpdateHands();
     
-    ObjPtr<RndTransformable, ObjectDir> mHand;
-    ObjPtr<RndTransformable, ObjectDir> mFinger;
-    ObjVector<int> mTargets;
-    bool mOrientation;
-    bool mStretch;
-    bool mScalable;
-    bool mMoveElbow;
-    float mElbowSwing;
+    ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mFinger; // 0x34
+    ObjVector<IKTarget> mTargets; // 0x40
+    bool mOrientation; // 0x4c
+    bool mStretch; // 0x4d
+    bool mScalable; // 0x4e
+    bool mMoveElbow; // 0x4f
+    float mElbowSwing; // 0x50
     bool mAlwaysIKElbow; // 0x54
-    bool mHandChanged;
+    bool mHandChanged; // 0x55
 
     // this range of data is unknown, not referenced in SyncProperty or anything like that
-    int unk_filler;
-    Vector3 mWorldDst;
-    float mInv2ab;
-    float mAAPlusBB;
+    int unk_filler; // 0x58
+    Vector3 mWorldDst; // 0x5c
+    float mInv2ab; // 0x68
+    float mAAPlusBB; // 0x6c
     // end unknown data range
 
     bool mConstrainWrist; // 0x70
