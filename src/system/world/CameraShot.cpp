@@ -50,3 +50,10 @@ BEGIN_COPYS(CamShot)
     END_COPYING_MEMBERS
 END_COPYS
 #pragma pop
+
+#pragma push
+#pragma dont_inline on
+void testobjptrlistpushback(ObjPtrList<RndAnimatable, ObjectDir>& ptrList, RndAnimatable* anim){
+    ptrList.push_back(anim);
+}
+#pragma pop

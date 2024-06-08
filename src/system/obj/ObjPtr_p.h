@@ -161,9 +161,10 @@ public:
         }
     }
 
+    // this also seems okay
     virtual ~ObjPtrList() { clear(); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-
+    // okay as well
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
         if(mMode == kObjListOwnerControl){
             mOwner->Replace(from, to);
@@ -195,12 +196,12 @@ public:
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // fn_8049C424 - push_back
+    // seems to be okay - shows as 100% in EventTrigger
     void push_back(T1* obj){
         insert(end(), obj);
     }
-
-    // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
-    // PLEASE FIX
+    
+    // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         erase(mNodes->prev);
@@ -312,6 +313,7 @@ public:
         if(*it) (*it)->AddRef(this);
     }
 
+    // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
         while(size() > x.size()) pop_back();
@@ -326,6 +328,7 @@ public:
     }
 
     // fn_8056349C in retail
+    // seems to be okay - shows as 100% in EventTrigger
     bool Load(BinStream& bs, bool b);
 
 };
