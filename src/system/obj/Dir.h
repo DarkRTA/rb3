@@ -110,6 +110,7 @@ public:
     }
 
     operator bool() const { return mDir != 0; }
+    operator T*() const { return mDir; }
 
     T* mDir;
     class DirLoader* mLoader;

@@ -379,10 +379,26 @@ void ObjectDir::RemovingObject(Hmx::Object* obj){
     else mCurCam = 0;
 }
 
-#pragma push
-#pragma dont_inline on
-DECOMP_FORCEFUNC(Dir, ObjDirItr<Hmx::Object>, Advance())
-#pragma pop
+void ObjectDir::AddedSubDir(ObjDirPtr<ObjectDir>& dirPtr){
+    ObjectDir* dir = dirPtr;
+    if(dir){
+        dir->InlineSubDirType();
+        dir->SetSubDir(true);
+        for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
+            AddedObject(it);
+        }
+    }
+}
+
+void ObjectDir::RemovingSubDir(ObjDirPtr<ObjectDir>& dirPtr){
+    ObjectDir* dir = dirPtr;
+    if(dir){
+        dir->SetSubDir(false);
+        for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
+            RemovingObject(it);
+        }
+    }
+}
 
 bool ObjectDir::InlineProxy(BinStream& bs){
     bool ret = false;

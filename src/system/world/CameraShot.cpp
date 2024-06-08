@@ -204,5 +204,8 @@ BEGIN_LOADS(CamShot)
     }
     if(gRev == 0) LOAD_SUPERCLASS(RndAnimatable)
     CamShotCrowd csc(this);
+    if(gRev - 5 < 0x25){
+        
+    }
 END_LOADS
 #pragma pop
