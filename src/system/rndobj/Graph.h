@@ -4,6 +4,7 @@
 #include "math/Vec.h"
 #include "math/Color.h"
 #include "utl/Str.h"
+#include "obj/Object.h"
 
 class Drawable {
 public:
@@ -81,6 +82,7 @@ public:
     std::vector<Drawable*> mStuff;
 
     static void Init();
+    static void Terminate();
     static void ResetAll();
     static RndGraph* Get(const void*);
 };

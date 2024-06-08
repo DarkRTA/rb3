@@ -39,12 +39,12 @@ public:
     FormatString &operator<<(long);
     FormatString &operator<<(unsigned long long);
     FormatString &operator<<(int);
-    FormatString &operator<<(const DataNode &);
+    FormatString &operator<<(const class DataNode &);
     FormatString &operator<<(const char *);
     FormatString &operator<<(float);
     FormatString &operator<<(double);
     FormatString &operator<<(const class String &);
-    FormatString &operator<<(Symbol);
+    FormatString &operator<<(class Symbol);
 
     const char *Str();
 };

@@ -1,4 +1,5 @@
 #include "obj/Dir.h"
+#include "obj/DirItr.h"
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
 #include "decomp.h"
@@ -373,6 +374,11 @@ void ObjectDir::RemovingObject(Hmx::Object* obj){
     if(obj != mCurCam) return;
     else mCurCam = 0;
 }
+
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCEFUNC(Dir, ObjDirItr<Hmx::Object>, Advance())
+#pragma pop
 
 bool ObjectDir::InlineProxy(BinStream& bs){
     bool ret = false;

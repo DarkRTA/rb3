@@ -1,8 +1,8 @@
 #ifndef META_STREAMPLAYER_H
 #define META_STREAMPLAYER_H
 #include "obj/Object.h"
-
-class Stream;
+#include "synth/Stream.h"
+#include "utl/MemMgr.h"
 
 class StreamPlayer : public Hmx::Object {
 public:
@@ -17,8 +17,8 @@ public:
     void StopPlaying();
     void SetMasterVolume(float);
 
-    static float kStreamEndMs;
-    static int kStreamEndSamples;
+    // static float kStreamEndMs;
+    // static int kStreamEndSamples;
 
     float mMasterVol;
     float mStreamVol;
@@ -27,6 +27,10 @@ public:
     bool mPaused;
     Stream* mStream;
     void* mSongBuf;
+
 };
+
+// float StreamPlayer::kStreamEndMs = -1.1920929E-7f;
+// int StreamPlayer::kStreamEndSamples = -1;
 
 #endif

@@ -13,6 +13,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "band3",
         "objects": {
+            "band3/bandtrack/Gem.cpp": "NonMatching",
             "band3/bandtrack/GemSmasher.cpp": "Matching",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
             "band3/bandtrack/TrackConfig.cpp": "Matching",
@@ -40,6 +41,7 @@
             "band3/meta_band/GameplayOptions.cpp": "Matching",
             "band3/meta_band/NameGenerator.cpp": "NonMatching",
             "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
+            "band3/meta_band/VoiceMgr.cpp": "Matching",
 
             "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/GigFilter.cpp": "NonMatching",
@@ -260,7 +262,7 @@
             "system/meta/SongPreview.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
-            "system/meta/StreamPlayer.cpp": "NonMatching",
+            "system/meta/StreamPlayer.cpp": "Matching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
@@ -303,7 +305,7 @@
             "system/os/DateTime.cpp": "NonMatching",
             "system/os/Debug.cpp": "NonMatching",
             "system/os/File.cpp": "NonMatching",
-            "system/os/File_Wii.cpp": "NonMatching",
+            "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",
             "system/os/HDCache.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
