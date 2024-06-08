@@ -3,8 +3,8 @@
 #include "synth/Synth.h"
 #include "utl/Symbols.h"
 
-float StreamPlayer::kStreamEndMs = -1.1920929E-7f;
-int StreamPlayer::kStreamEndSamples = -1;
+// float StreamPlayer::kStreamEndMs = -1.1920929E-7f;
+// int StreamPlayer::kStreamEndSamples = -1;
 
 StreamPlayer::StreamPlayer() : mMasterVol(1.0f), mStreamVol(1.0f), mLoop(0), mStarted(0), mPaused(0), mStream(0), mSongBuf(0) {
 
@@ -20,7 +20,7 @@ void StreamPlayer::Delete(){
     }
     delete mStream;
     mStream = 0;
-    if(mSongBuf){
+    if(mSongBuf && mSongBuf){
         delete mSongBuf;
         mSongBuf = 0;
     }
@@ -36,7 +36,8 @@ void StreamPlayer::PlayFile(const char* cc, float f1, float f2, bool b){
 }
 
 void StreamPlayer::Poll(){
-    if(mStream && !mPaused && !mStream->IsPlaying()){
+    if(!mStream || mPaused) return; else
+    {if (!mStream->IsPlaying()){
         if(mStream->IsReady()){
             if(!mStarted){
                 Init();
@@ -50,7 +51,7 @@ void StreamPlayer::Poll(){
                 Delete();
             }
         }
-    }
+    }}
 }
 
 void StreamPlayer::Init(){

@@ -5,6 +5,7 @@ class Tail {
     public:
     void Hit();
     void Release();
+    void Done();
 };
 
 #endif // BANDTRACK_TAIL_H

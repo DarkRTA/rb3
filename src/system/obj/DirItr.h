@@ -27,21 +27,7 @@ public:
     operator T*(){ return mObj; }
     T* operator->() { return mObj; }
 
-    void Advance() {
-        while (mEntry) {
-            mObj = mEntry->obj;
-            if (mEntry->obj == NULL) return;
-            mEntry = mSubDir->mHashTable.FirstFrom(mEntry);
-        }
-        if (mDir != NULL) {
-            int x = ++mWhich;
-            mSubDir = mDir->NextSubDir(x);
-            if (mSubDir) {
-                mEntry = mSubDir->mHashTable.FirstFrom(mEntry);
-            }
-        }
-        mObj = NULL;
-    }
+    void Advance();
 
     ObjectDir* mDir;
     ObjectDir* mSubDir;

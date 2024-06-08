@@ -1,6 +1,7 @@
 #ifndef BANDTRACK_GEM_H
 #define BANDTRACK_GEM_H
 
+#include "bandtrack/GemManager.h"
 #include "bandtrack/Tail.h"
 #include "beatmatch/GameGem.h"
 #include "track/TrackWidget.h"
@@ -59,8 +60,8 @@ class Gem {
     bool mHopo : 1;
     bool mInvisible : 1;
     bool mBeard : 1;
-    bool unk_0x66_6 : 1;
-    bool unk_0x67;
+    bool unk_0x66_6 : 1, unk_0x66_7 : 1;
+    bool unk_0x67_0 : 1, unk_0x67_1 : 1, unk_0x67_2 : 1, unk_0x67_3 : 1, unk_0x67_4 : 1, unk_0x67_5 : 1, unk_0x67_6 : 1, unk_0x67_7 : 1;
 };
 
 #endif // BANDTRACK_GEM_H

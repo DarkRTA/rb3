@@ -29,4 +29,7 @@ public:
     void* mSongBuf;
 };
 
+float StreamPlayer::kStreamEndMs = -1.1920929E-7f;
+int StreamPlayer::kStreamEndSamples = -1;
+
 #endif
