@@ -30,8 +30,28 @@ void CharIKHand::Poll(){
             }
         }
         else {
-            
+            for(std::vector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); it++){
+                RndTransformable* itTrans = (*it).mTarget;
+                float itExtent = (*it).mExtent;
+                if(itTrans){
+                    Vector3 vec(itTrans->WorldXfm().v);
+                    // more stuff happens here
+                }
+            }
+            // more stuff also happens here
         }
+        if(mFinger){
+            Transform tf;
+            tf.v = vec;
+            MakeRotMatrix(quat, tf.m);
+            Transform tf2;
+            Invert(mFinger->WorldXfm(), tf2);
+            Multiply(mHand->WorldXfm(), tf2, tf2);
+            Multiply(tf2, tf, tf);
+            vec = tf.v;
+            quat.Set(tf.m);
+        }
+        Interp(mHand->WorldXfm().v, vec, charWeight, mWorldDst);
     }
 }
 #pragma pop

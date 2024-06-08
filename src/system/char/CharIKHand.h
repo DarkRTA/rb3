@@ -45,8 +45,8 @@ public:
     bool mHandChanged; // 0x55
 
     // this range of data is unknown, not referenced in SyncProperty or anything like that
-    int unk_filler; // 0x58
-    Vector3 mWorldDst; // 0x5c
+    Vector3 mWorldDst; // 0x58
+    int unk_filler; // 0x64
     float mInv2ab; // 0x68
     float mAAPlusBB; // 0x6c
     // end unknown data range
