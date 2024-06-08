@@ -5,8 +5,6 @@
 #include "os/Debug.h"
 #include <string.h>
 
-#define REINTERPRET_AS_STR(x) *reinterpret_cast<const char**>(&x)
-
 template <class T1, class T2> class KeylessHash {
 public:
     T2* mEntries; // 0x0

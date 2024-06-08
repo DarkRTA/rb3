@@ -31,8 +31,7 @@ enum InlineDirType {
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
-    ObjDirPtr() : mDir(NULL), mLoader(NULL) {}
+    ObjDirPtr(T* dir = 0) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
     virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
@@ -70,6 +69,7 @@ public:
     }
 
     // PostLoad__21ObjDirPtr<9ObjectDir>FP6Loader
+    // https://decomp.me/scratch/qfnAI
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
@@ -80,6 +80,7 @@ public:
     }
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
+    // https://decomp.me/scratch/yVHtf
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
@@ -113,6 +114,24 @@ public:
     T* mDir;
     class DirLoader* mLoader;
 };
+
+// template <class T>
+// ObjDirPtr<T>& ObjDirPtr<T>::operator=(T* dir){
+//     if(mLoader && mLoader->IsLoaded()) PostLoad(0);
+//     if((dir != mDir) || !dir){
+//         delete mLoader;
+//         mLoader = 0;
+//         if(mDir){
+//             mDir->Release(this);
+//             if(!mDir->HasDirPtrs()){
+//                 delete mDir;
+//             }
+//         }
+//         mDir = dir;
+//         if(mDir) mDir->AddRef(this);
+//     }
+//     return *this;
+// }
 
 class ObjectDir : public virtual Hmx::Object {
 public:
