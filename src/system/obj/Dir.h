@@ -113,6 +113,7 @@ public:
 
     operator bool() const { return mDir != 0; }
     operator T*() const { return mDir; }
+    T* Dir() const { return mDir; }
 
     T* mDir;
     class DirLoader* mLoader;
@@ -214,6 +215,7 @@ public:
     ObjectDir* NextSubDir(int&);
     void Iterate(DataArray*, bool);
     void AppendSubDir(const ObjDirPtr<ObjectDir>&);
+    void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
 
     DataNode OnFind(DataArray*);
 

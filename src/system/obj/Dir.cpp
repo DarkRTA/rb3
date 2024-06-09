@@ -2,7 +2,9 @@
 #include "obj/DirItr.h"
 #include "obj/DirUnloader.h"
 #include "obj/Object.h"
+#include "obj/DataFunc.h"
 #include "obj/ObjVersion.h"
+#include "obj/Utl.h"
 #include "decomp.h"
 #include "rndwii/Rnd.h"
 #include "utl/Messages.h"
@@ -37,6 +39,10 @@ void ObjectDir::Reserve(int i, int j){
     if(mHashTable.mSize < i)
         mHashTable.Resize(i, 0);
     mStringTable.Reserve(j);
+}
+
+void ObjectDir::SyncObjects(){
+    HandleType(sync_objects_msg);
 }
 
 void ObjectDir::SetSubDir(bool b){
@@ -454,7 +460,6 @@ ObjectDir::~ObjectDir(){
     }
 }
 
-// the KeylessHash methods should NOT be inlined, but the Entry ctor should
 ObjectDir::Entry* ObjectDir::FindEntry(const char* name, bool add){
     if(name == 0 || *name == '\0') return 0;
     else {
@@ -491,6 +496,44 @@ ObjectDir* ObjectDir::NextSubDir(int& which){
 void ObjectDir::AppendSubDir(const ObjDirPtr<ObjectDir>& dPtr){
     mSubDirs.push_back(dPtr);
     AddedSubDir(mSubDirs.back());
+}
+
+void ObjectDir::RemoveSubDir(const ObjDirPtr<ObjectDir>& dPtr){
+    std::vector<ObjDirPtr<ObjectDir> >::iterator it = mSubDirs.begin();
+    while(it != mSubDirs.end()){
+        if((*it).Dir() == dPtr.Dir()){
+            RemovingSubDir(*it);
+            it = mSubDirs.erase(it);
+        }
+        if(it == mSubDirs.end()) break;
+    }
+}
+
+static DataNode OnLoadObjects(DataArray* da){
+    return DataNode(DirLoader::LoadObjects(FilePath(da->Str(1)), 0, 0));
+}
+
+static DataNode OnPathName(DataArray* da){
+    return DataNode(PathName(da->GetObj(1)));
+}
+
+static DataNode OnReserveToFit(DataArray* da){
+    ReserveToFit(da->Obj<ObjectDir>(1), da->Obj<ObjectDir>(2), da->Int(3));
+    return DataNode(0);
+}
+
+static DataNode OnInitObject(DataArray* da){
+    InitObject(da->GetObj(1));
+    return DataNode(0);
+}
+
+void ObjectDir::PreInit(int i, int j){
+    sRevStack.reserve(0x80);
+    // ...
+    DataRegisterFunc("load_objects", OnLoadObjects);
+    DataRegisterFunc("init_object", OnInitObject);
+    DataRegisterFunc("path_name", OnPathName);
+    DataRegisterFunc("reserve_to_fit", OnReserveToFit);
 }
 
 bool ObjectDir::HasDirPtrs() const {
