@@ -228,11 +228,14 @@ public:
         return castedObj;
     }
 
+    static void Init();
+    static void Terminate();
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(ObjectDir)
-    static void Init(){
+    static void Register(){
         REGISTER_OBJ_FACTORY(ObjectDir)
     }
 

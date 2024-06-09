@@ -1,6 +1,7 @@
 #include "obj/Dir.h"
 #include "obj/DirItr.h"
 #include "obj/DirUnloader.h"
+#include "obj/MessageTimer.h"
 #include "obj/MsgSource.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
@@ -8,6 +9,7 @@
 #include "obj/Utl.h"
 #include "decomp.h"
 #include "rndwii/Rnd.h"
+#include "utl/Option.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -215,6 +217,10 @@ void ObjectDir::PreLoad(BinStream& bs){
     PushRev(packRevs(gAltRev, gRev), this);
 }
 #pragma pop
+
+// TODO: put these in their proper places in PreLoad
+DECOMP_FORCEACTIVE(Dir, "( kInlineCached) <= (b) && (b) <= ( kInlineCachedShared)", 
+    "inlineProxy != 1", "!inlineProxy", "mSubDirs.capacity() >= offset + inlinedSubDirs.size()")
 
 #pragma push
 #pragma dont_inline on
@@ -539,7 +545,7 @@ void CheckForDuplicates(){
 void ObjectDir::PreInit(int i, int j){
     sRevStack.reserve(0x80);
     Hmx::Object::Init();
-    ObjectDir::Init();
+    ObjectDir::Register();
     MsgSource::Init();
     sMainDir = new ObjectDir();
     sMainDir->Reserve(i, j);
@@ -560,6 +566,51 @@ void ObjectDir::PreInit(int i, int j){
     DataRegisterFunc("init_object", OnInitObject);
     DataRegisterFunc("path_name", OnPathName);
     DataRegisterFunc("reserve_to_fit", OnReserveToFit);
+}
+
+void ObjectDir::Init(){
+    MessageTimer::Init();
+    CheckForDuplicates();
+    DirLoader::sPrintTimes = OptionBool("loader_times", false);
+}
+
+void ObjectDir::Terminate(){ DeleteShared(); }
+
+void ObjectDir::Iterate(DataArray* da, bool b){
+    DataNode& eval = da->Evaluate(2);
+    Symbol sym1;
+    Symbol sym2;
+    if(eval.Type() == kDataSymbol){
+        sym1 = STR_TO_SYM(eval.mValue.symbol);
+    }
+    else {
+        sym1 = da->Sym(0);
+        sym2 = da->Sym(1);
+    }
+    static DataArray* objects = SystemConfig("objects");
+    objects->FindArray(sym1, true);
+    DataNode* var = da->Var(3);
+    DataNode node(*var);
+    bool b1 = false;
+    for(ObjDirItr<Hmx::Object> it(this, b); it != 0; ++it){
+        bool b2 = false;
+        if(IsASubclass(it->ClassName(), sym1)){
+            b1 = true;
+            if(!sym2.Null()){
+                if(it->Type() != sym2){
+                    b1 = false;
+                }
+            }
+            if(b1) b2 = true;
+        }
+        if(b2){
+            *var = DataNode(it);
+            for(int i = 4; i < da->Size(); i++){
+                da->Command(i)->Execute();
+            }
+        }
+    }
+    *var = node;
 }
 
 bool ObjectDir::HasDirPtrs() const {

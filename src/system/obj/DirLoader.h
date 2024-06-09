@@ -38,6 +38,7 @@ public:
     NEW_POOL_OVERLOAD(DirLoader);
     DELETE_POOL_OVERLOAD(DirLoader);
 
+    static bool sPrintTimes;
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);

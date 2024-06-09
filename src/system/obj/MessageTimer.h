@@ -18,6 +18,7 @@ public:
     }
     static bool Active(){ return sActive; }
     static void AddTime(Hmx::Object* o, Symbol msg, float ms);
+    static void Init();
 };
 
 #endif
