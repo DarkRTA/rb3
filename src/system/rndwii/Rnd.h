@@ -37,5 +37,6 @@ void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);
 void RndGXEnd();
 
 WiiRnd TheWiiRnd;
+extern int gSuppressPointTest;
 
 #endif // RNDWII_RND_H

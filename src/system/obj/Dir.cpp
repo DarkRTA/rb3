@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
 #include "decomp.h"
+#include "rndwii/Rnd.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -73,7 +74,7 @@ ObjectDir::ObjectDir()
 }
 
 ObjectDir::~ObjectDir(){
-    
+    mSubDirs.clear();
 }
 
 void ObjectDir::PostSave(BinStream& bs){
@@ -400,6 +401,25 @@ void ObjectDir::RemovingSubDir(ObjDirPtr<ObjectDir>& dirPtr){
     }
 }
 
+void ObjectDir::ResetEditorState(){ mCurCam = 0; }
+
+void ObjectDir::DeleteObjects(){
+    MILO_ASSERT(gSuppressPointTest>=0, 0x602);
+    gSuppressPointTest++;
+    for(ObjDirItr<Hmx::Object> it(this, true); it != 0; ++it){
+        if(it != this) delete it;
+    }
+    MILO_ASSERT(gSuppressPointTest>0, 0x60C);
+    gSuppressPointTest--;
+}
+
+void ObjectDir::DeleteSubDirs(){
+    for(int i = 0; i < mSubDirs.size(); i++){
+        RemovingSubDir(mSubDirs[i]);
+    }
+    mSubDirs.clear();
+}
+
 bool ObjectDir::InlineProxy(BinStream& bs){
     bool ret = false;
     if(AllowsInlineProxy() && bs.Cached()){
@@ -408,8 +428,6 @@ bool ObjectDir::InlineProxy(BinStream& bs){
     return ret;
 }
 
-#pragma push
-#pragma dont_inline on
 // the KeylessHash methods should NOT be inlined, but the Entry ctor should
 ObjectDir::Entry* ObjectDir::FindEntry(const char* name, bool add){
     if(name == 0 || *name == '\0') return 0;
@@ -426,7 +444,6 @@ ObjectDir::Entry* ObjectDir::FindEntry(const char* name, bool add){
         return entry;
     }
 }
-#pragma pop
 
 ObjectDir* ObjectDir::NextSubDir(int& which){
     MILO_ASSERT(which >= 0, 0x695);
