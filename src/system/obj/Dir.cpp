@@ -33,6 +33,8 @@ ObjectDir* ObjectDir::sMainDir;
 
 INIT_REVS(ObjectDir);
 
+inline ObjectDir::InlinedDir::InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty) : dir(d) { file = fp; shared = b; inlineDirType = ty; }
+
 BinStream& operator>>(BinStream& bs, InlineDirType& ty){
     unsigned char uc;
     bs >> uc;
@@ -611,6 +613,42 @@ void ObjectDir::Iterate(DataArray* da, bool b){
         }
     }
     *var = node;
+}
+
+FilePath ObjectDir::GetSubDirPath(const FilePath& fp, const BinStream& bs){
+    static Message msg("change_subdir", DataNode(gNullStr));
+    ((DataArray*)msg)->Node(2) = DataNode(fp.c_str());
+    DataNode handled = HandleType(msg);
+    FilePath localFP;
+    if(handled.Type() == kDataUnhandled) localFP = fp;
+    else {
+        const char* strcmp2 = "stream_cache";
+        const char* strcmp1 = handled.Str(0);
+        bool matched = strcmp(strcmp1, strcmp2) == 0;
+        if(matched){
+            bool bscached = bs.Cached();
+            const char* cached = DirLoader::CachedPath(fp.c_str(), bscached);
+            const char* pd = ".";
+            FilePath period;
+            period.Set(pd, cached);
+            localFP = period;
+        }
+        else {
+            const char* cc2 = handled.Str(0);
+            const char* cc1 = FileRoot();
+            FilePath root;
+            root.Set(cc1, cc2);
+            localFP = root;
+        }
+    }
+    return localFP;
+}
+
+void ObjectDir::LoadSubDir(int i, const FilePath& fp, BinStream& bs, bool b){
+    if(!IsProxy() || !mProxyFile.empty()){
+        mSubDirs[i].LoadFile(GetSubDirPath(fp, bs), true, b, kLoadFront, true);
+    }
+    else mSubDirs[i] = 0;
 }
 
 bool ObjectDir::HasDirPtrs() const {

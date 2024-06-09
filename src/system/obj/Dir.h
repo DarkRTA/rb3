@@ -52,6 +52,8 @@ public:
     }
 
     // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
+    void LoadFile(const FilePath&, bool, bool, LoaderPos, bool);
+
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
 
     T* operator->() const {
@@ -155,7 +157,7 @@ public:
     };
 
     struct InlinedDir {
-        InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty) : dir(d) { file = fp; shared = b; inlineDirType = ty; }
+        InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty);
         // Note: names are fabricated, no DWARF info
         ObjDirPtr<ObjectDir> dir; // 0x0
         FilePath file; // 0xc
@@ -216,6 +218,8 @@ public:
     void Iterate(DataArray*, bool);
     void AppendSubDir(const ObjDirPtr<ObjectDir>&);
     void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
+    FilePath GetSubDirPath(const FilePath&, const BinStream&);
+    void LoadSubDir(int, const FilePath&, BinStream&, bool);
 
     DataNode OnFind(DataArray*);
 
