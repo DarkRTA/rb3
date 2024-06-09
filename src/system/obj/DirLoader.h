@@ -45,7 +45,7 @@ public:
     static void SetCacheMode(bool);
     static Symbol GetDirClass(const char*);
     static const char* CachedPath(const char*, bool);
-    static DirLoader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
+    static Loader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
 
 
     DirLoaderStateFunc mState; // 0x1c

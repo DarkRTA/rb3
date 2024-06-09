@@ -27,6 +27,8 @@ namespace {
     }
 }
 
+ObjectDir* ObjectDir::sMainDir;
+
 INIT_REVS(ObjectDir);
 
 BinStream& operator>>(BinStream& bs, InlineDirType& ty){
@@ -528,6 +530,12 @@ static DataNode OnInitObject(DataArray* da){
     return DataNode(0);
 }
 
+void CheckForDuplicates(){
+    DataArray* cfg = SystemConfig("objects");
+    MILO_WARN("Duplicate object %s in config");
+    MILO_FAIL("duplicate objects found in configs, bailing");
+}
+
 void ObjectDir::PreInit(int i, int j){
     sRevStack.reserve(0x80);
     Hmx::Object::Init();
@@ -537,7 +545,17 @@ void ObjectDir::PreInit(int i, int j){
     sMainDir->Reserve(i, j);
     sMainDir->SetName("main", sMainDir);
     DataSetThis(sMainDir);
-    // ...
+    if(UsingCD()) DirLoader::SetCacheMode(true);
+    TheLoadMgr.RegisterFactory("milo", DirLoader::New);
+    TheLoadMgr.RegisterFactory("milo_xbox", DirLoader::New);
+    TheLoadMgr.RegisterFactory("milo_ps3", DirLoader::New);
+    TheLoadMgr.RegisterFactory("milo_pc", DirLoader::New);
+    TheLoadMgr.RegisterFactory("milo_ps2", DirLoader::New);
+    TheLoadMgr.RegisterFactory("milo_wii", DirLoader::New);
+    TheLoadMgr.RegisterFactory("rnd", DirLoader::New);
+    TheLoadMgr.RegisterFactory("m2", DirLoader::New);
+    TheLoadMgr.RegisterFactory("gh", DirLoader::New);
+    TheLoadMgr.RegisterFactory("kr", DirLoader::New);
     DataRegisterFunc("load_objects", OnLoadObjects);
     DataRegisterFunc("init_object", OnInitObject);
     DataRegisterFunc("path_name", OnPathName);

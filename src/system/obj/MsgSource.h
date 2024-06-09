@@ -45,8 +45,6 @@ public:
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
 
-    NEW_OVERLOAD;
-    DELETE_OVERLOAD;
     NEW_OBJ(MsgSource)
     static void Init(){
         REGISTER_OBJ_FACTORY(MsgSource)
