@@ -1,6 +1,7 @@
 #include "obj/Dir.h"
 #include "obj/DirItr.h"
 #include "obj/DirUnloader.h"
+#include "obj/MsgSource.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "obj/ObjVersion.h"
@@ -529,6 +530,13 @@ static DataNode OnInitObject(DataArray* da){
 
 void ObjectDir::PreInit(int i, int j){
     sRevStack.reserve(0x80);
+    Hmx::Object::Init();
+    ObjectDir::Init();
+    MsgSource::Init();
+    sMainDir = new ObjectDir();
+    sMainDir->Reserve(i, j);
+    sMainDir->SetName("main", sMainDir);
+    DataSetThis(sMainDir);
     // ...
     DataRegisterFunc("load_objects", OnLoadObjects);
     DataRegisterFunc("init_object", OnInitObject);

@@ -123,7 +123,12 @@ namespace Hmx {
         }
         class ObjectDir* Dir() const { return mDir; }
 
-        static Object* NewObject();
+        NEW_OVERLOAD;
+        DELETE_OVERLOAD;
+        NEW_OBJ(Object)
+        static void Init(){
+            REGISTER_OBJ_FACTORY(Object)
+        }
 
         static void RegisterFactory(Symbol, ObjectFunc*);
         static bool RegisteredFactory(Symbol);
@@ -179,11 +184,5 @@ inline unsigned short getAltRev(int packed){
 inline int packRevs(unsigned short alt, unsigned short rev){
     return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
-
-#define NEW_OBJ(objType) \
-    static Hmx::Object* NewObject() { return new objType; }
-
-#define REGISTER_OBJ_FACTORY(objType) \
-    Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
 
 #endif

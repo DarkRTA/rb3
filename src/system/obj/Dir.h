@@ -229,7 +229,12 @@ public:
     }
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(ObjectDir)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(ObjectDir)
+    }
 
     KeylessHash<const char*, Entry> mHashTable; // 0x8
     StringTable mStringTable; // 0x28
