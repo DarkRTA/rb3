@@ -7,6 +7,8 @@
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
+DECOMP_FORCEACTIVE(Dir, "%s: subdir %s included more than once", "uniq%x", __FILE__)
+
 const char* kNotObjectMsg = "Could not find %s in dir \"%s\"";
 
 namespace {
@@ -14,7 +16,10 @@ namespace {
     ObjDirPtr<ObjectDir> gPreloaded[128];
 
     void DeleteShared(){
-
+        for(; gPreloadIdx > 0; gPreloadIdx--){
+            delete gPreloaded[gPreloadIdx];
+            gPreloaded[gPreloadIdx] = 0;
+        }
     }
 }
 
@@ -25,10 +30,6 @@ BinStream& operator>>(BinStream& bs, InlineDirType& ty){
     bs >> uc;
     ty = (InlineDirType)uc;
     return bs;
-}
-
-Hmx::Object* Hmx::Object::NewObject(){
-    return new Hmx::Object();
 }
 
 void ObjectDir::Reserve(int i, int j){
@@ -67,18 +68,19 @@ SAVE_OBJ(ObjectDir, 0x1A2)
 
 InlineDirType ObjectDir::InlineSubDirType(){ return mInlineSubDirType; }
 
-ObjectDir::ObjectDir()
-    : mHashTable(0, Entry(), Entry(), 0), mStringTable(0), mProxyOverride(false), mInlineProxy(true),
-      mLoader(0), mIsSubDir(false), mInlineSubDirType(kInlineNever), mPathName(gNullStr),
-      mCurCam(0), mAlwaysInlined(false), mAlwaysInlineHash(gNullStr) {
-}
-
-ObjectDir::~ObjectDir(){
-    mSubDirs.clear();
-}
-
 void ObjectDir::PostSave(BinStream& bs){
     SyncObjects();
+}
+
+void ObjectDir::PreLoadInlined(const FilePath& fp, bool b, InlineDirType type){
+    MILO_ASSERT(type != kInlineNever, 0x285);
+    if(type == kInlineAlways && b) MILO_WARN("Can't share kInlineAlways Dirs");
+    mInlinedDirs.push_back(InlinedDir(0, fp, b, type));
+}
+
+ObjDirPtr<ObjectDir> ObjectDir::PostLoadInlined(){
+    MILO_ASSERT(mInlinedDirs.size() > 0, 0x296);
+    MILO_WARN("Couldn't load shared inlined file %s\n");
 }
 
 void ObjectDir::Load(BinStream& bs){
@@ -203,10 +205,6 @@ void ObjectDir::PreLoad(BinStream& bs){
     PushRev(packRevs(gAltRev, gRev), this);
 }
 #pragma pop
-
-bool ObjectDir::AllowsInlineProxy(){
-    return mInlineProxy;
-}
 
 #pragma push
 #pragma dont_inline on
@@ -401,6 +399,12 @@ void ObjectDir::RemovingSubDir(ObjDirPtr<ObjectDir>& dirPtr){
     }
 }
 
+ObjectDir::ObjectDir()
+    : mHashTable(0, Entry(), Entry(), 0), mStringTable(0), mProxyOverride(false), mInlineProxy(true),
+      mLoader(0), mIsSubDir(false), mInlineSubDirType(kInlineNever), mPathName(gNullStr),
+      mCurCam(0), mAlwaysInlined(false), mAlwaysInlineHash(gNullStr) {
+}
+
 void ObjectDir::ResetEditorState(){ mCurCam = 0; }
 
 void ObjectDir::DeleteObjects(){
@@ -426,6 +430,10 @@ bool ObjectDir::InlineProxy(BinStream& bs){
         ret = true;
     }
     return ret;
+}
+
+ObjectDir::~ObjectDir(){
+    mSubDirs.clear();
 }
 
 // the KeylessHash methods should NOT be inlined, but the Entry ctor should

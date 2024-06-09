@@ -152,6 +152,7 @@ public:
     };
 
     struct InlinedDir {
+        InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty) : dir(d) { file = fp; shared = b; inlineDirType = ty; }
         // Note: names are fabricated, no DWARF info
         ObjDirPtr<ObjectDir> dir; // 0x0
         FilePath file; // 0xc
@@ -187,7 +188,7 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
     virtual void ResetEditorState();
-    virtual bool AllowsInlineProxy();
+    virtual bool AllowsInlineProxy(){ return mInlineProxy; }
     virtual InlineDirType InlineSubDirType();
     virtual void AddedObject(Hmx::Object*){}
     virtual void RemovingObject(Hmx::Object*);
@@ -206,6 +207,7 @@ public:
     bool InlineProxy(BinStream&);
     void AddedSubDir(ObjDirPtr<ObjectDir>&);
     void RemovingSubDir(ObjDirPtr<ObjectDir>&);
+    void PreLoadInlined(const FilePath&, bool, InlineDirType);
     ObjDirPtr<ObjectDir> PostLoadInlined();
     ObjectDir* NextSubDir(int&);
     void Iterate(DataArray*, bool);
