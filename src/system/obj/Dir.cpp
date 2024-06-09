@@ -434,6 +434,7 @@ bool ObjectDir::InlineProxy(BinStream& bs){
 
 ObjectDir::~ObjectDir(){
     mSubDirs.clear();
+    delete mLoader;
 }
 
 // the KeylessHash methods should NOT be inlined, but the Entry ctor should
@@ -468,6 +469,11 @@ ObjectDir* ObjectDir::NextSubDir(int& which){
         }
     }
     return ret;
+}
+
+void ObjectDir::AppendSubDir(const ObjDirPtr<ObjectDir>& dPtr){
+    mSubDirs.push_back(dPtr);
+    AddedSubDir(mSubDirs.back());
 }
 
 bool ObjectDir::HasDirPtrs() const {

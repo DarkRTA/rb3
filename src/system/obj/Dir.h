@@ -33,6 +33,7 @@ public:
 
     ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(dir) mDir->AddRef(this); }
     ObjDirPtr() : mDir(0), mLoader(0) {}
+    ObjDirPtr(const ObjDirPtr& dPtr) : mDir(dPtr.mDir), mLoader(0) { if(mDir) mDir->AddRef(this); }
     virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
@@ -212,6 +213,7 @@ public:
     ObjDirPtr<ObjectDir> PostLoadInlined();
     ObjectDir* NextSubDir(int&);
     void Iterate(DataArray*, bool);
+    void AppendSubDir(const ObjDirPtr<ObjectDir>&);
 
     DataNode OnFind(DataArray*);
 
