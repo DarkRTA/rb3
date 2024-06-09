@@ -52,7 +52,16 @@ public:
     }
 
     // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
-    void LoadFile(const FilePath&, bool, bool, LoaderPos, bool);
+    void LoadFile(const FilePath& p, bool async, bool share, LoaderPos pos, bool b3){
+        *this = 0;
+        DirLoader* d = 0;
+        if(share){
+            d = DirLoader::Find(p);
+            if(d && !d->IsLoaded()){
+                d = 0;
+            }
+        }
+    }
 
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
 
@@ -186,7 +195,7 @@ public:
     virtual ~ObjectDir();
     virtual ObjectDir* DataDir(){ return this; }
     virtual void SetProxyFile(const FilePath&, bool);
-    virtual FilePath* ProxyFile();
+    virtual FilePath& ProxyFile(){ return mProxyFile; }
     virtual void PostSave(BinStream&);
     virtual void SetSubDir(bool);
     virtual void PreLoad(BinStream&);

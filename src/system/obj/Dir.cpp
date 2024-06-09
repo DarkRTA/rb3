@@ -764,10 +764,40 @@ void ObjectDir::SetPathName(const char* cc){
     else mPathName = gNullStr;
 }
 
-#pragma push
-#pragma dont_inline on
-// Here to test KeylessHash
-DECOMP_FORCEBLOCK(Dir, (KeylessHash<const char*, ObjectDir::Entry>* hash),
-    hash->Find(0);
-)
-#pragma pop
+BEGIN_PROPSYNCS(ObjectDir)
+    gDir = this;
+    {
+        static Symbol _s("subdirs");
+        if(sym == _s){
+            PropSyncSubDirs(mSubDirs, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    if(sym == proxy_file){
+        if(_op == kPropSet){
+            SetProxyFile(FilePath(_val.Str(0)), false);
+        }
+        else { 
+            if(_op == (PropOp)0x40) return false; 
+            _val = DataNode(ProxyFile().FilePathRelativeToRoot()); 
+        } 
+        return true; 
+    }
+    SYNC_PROP(inline_proxy, mInlineProxy)
+    SYNC_PROP_SET(path_name, mPathName, )
+END_PROPSYNCS
+
+void PreloadSharedSubdirs(Symbol sym){
+    DataArray* arr = SystemConfig("preload_subdirs")->FindArray(sym, false);
+    if(arr){
+        for(int i = 1; i < arr->Size(); i++){
+            DataArray* thisArr = arr->Array(i);
+            const char* thisStr = thisArr->Str(0);
+            if(thisArr->Size() > 1){
+                MemPushHeap(MemFindHeap(thisArr->Sym(1).Str()));
+            }
+            FilePath fp(thisStr);
+            // gPreloaded[gPreloadedIdx++]::LoadFile
+        }
+    }
+}
