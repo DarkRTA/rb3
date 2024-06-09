@@ -25,9 +25,6 @@ enum InlineDirType {
     kInlineAlways = 1 << 1,
 };
 
-// // Circular dependency moment
-// class DirLoader;
-
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
@@ -63,9 +60,10 @@ public:
             }
         }
         if(!d){
-            if(TheLoadMgr.unk5c == 3 || TheLoadMgr.unk5c == 2){
-                pos = kLoadFrontStayBack;
+            if(TheLoadMgr.unk5c != 3 && TheLoadMgr.unk5c != 2){
+            
             }
+            else pos = kLoadFrontStayBack;
             if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
         }
         mLoader = d;
@@ -105,7 +103,7 @@ public:
     }
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
-    // https://decomp.me/scratch/yVHtf - also seems to check out...maybe there's an inline depth setting somewhere?
+    // https://decomp.me/scratch/yVHtf - also seems to check out
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
@@ -141,24 +139,6 @@ public:
     T* mDir;
     class DirLoader* mLoader;
 };
-
-// template <class T>
-// ObjDirPtr<T>& ObjDirPtr<T>::operator=(T* dir){
-//     if(mLoader && mLoader->IsLoaded()) PostLoad(0);
-//     if((dir != mDir) || !dir){
-//         delete mLoader;
-//         mLoader = 0;
-//         if(mDir){
-//             mDir->Release(this);
-//             if(!mDir->HasDirPtrs()){
-//                 delete mDir;
-//             }
-//         }
-//         mDir = dir;
-//         if(mDir) mDir->AddRef(this);
-//     }
-//     return *this;
-// }
 
 class ObjectDir : public virtual Hmx::Object {
 public:
