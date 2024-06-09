@@ -654,10 +654,18 @@ FilePath ObjectDir::GetSubDirPath(const FilePath& fp, const BinStream& bs){
 }
 
 void ObjectDir::LoadSubDir(int i, const FilePath& fp, BinStream& bs, bool b){
-    if(!IsProxy() || !mProxyFile.empty()){
-        mSubDirs[i].LoadFile(GetSubDirPath(fp, bs), true, b, kLoadFront, true);
+    if(IsProxy() && !mProxyFile.empty()){
+        mSubDirs[i] = 0;
     }
-    else mSubDirs[i] = 0;
+    else {
+        FilePath subdirpath = GetSubDirPath(fp, bs);
+        bool matches = strcmp(mPathName, subdirpath.c_str()) == 0;
+        if(matches){
+            MILO_WARN("%s trying to subdir self in slot %d, setting NULL", PathName(this), i);
+            mSubDirs[i] = 0;
+        }
+        else mSubDirs[i].LoadFile(subdirpath, true, b, kLoadFront, true);
+    }
 }
 
 // TODO: put this in LoadSubDir in the right spot
