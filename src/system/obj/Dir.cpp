@@ -83,6 +83,14 @@ SAVE_OBJ(ObjectDir, 0x1A2)
 
 InlineDirType ObjectDir::InlineSubDirType(){ return mInlineSubDirType; }
 
+#pragma push
+#pragma dont_inline on
+FilePath& lol(ObjDirPtr<ObjectDir>& dptr, const FilePath& fp){
+    dptr.LoadFile(fp, 0, 0, kLoadFront, 0);
+    return dptr.GetFile();
+}
+#pragma pop
+
 void ObjectDir::PostSave(BinStream& bs){
     SyncObjects();
 }
@@ -787,17 +795,22 @@ BEGIN_PROPSYNCS(ObjectDir)
     SYNC_PROP_SET(path_name, mPathName, )
 END_PROPSYNCS
 
+#define DIM(x) 0x80U
+
 void PreloadSharedSubdirs(Symbol sym){
     DataArray* arr = SystemConfig("preload_subdirs")->FindArray(sym, false);
     if(arr){
         for(int i = 1; i < arr->Size(); i++){
             DataArray* thisArr = arr->Array(i);
             const char* thisStr = thisArr->Str(0);
+            bool mem = false;
             if(thisArr->Size() > 1){
                 MemPushHeap(MemFindHeap(thisArr->Sym(1).Str()));
+                mem = true;
             }
-            FilePath fp(thisStr);
-            // gPreloaded[gPreloadedIdx++]::LoadFile
+            MILO_ASSERT(gPreloadIdx < DIM(gPreloaded), 0x998);
+            gPreloaded[gPreloadIdx++].LoadFile(FilePath(thisStr), false, true, kLoadFront, false);
+            if(mem) MemPopHeap();
         }
     }
 }

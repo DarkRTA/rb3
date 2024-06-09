@@ -58,9 +58,21 @@ public:
         if(share){
             d = DirLoader::Find(p);
             if(d && !d->IsLoaded()){
+                MILO_WARN("Can't share unloaded dir %s", p.c_str());
                 d = 0;
             }
         }
+        if(!d){
+            if(TheLoadMgr.unk5c == 3 || TheLoadMgr.unk5c == 2){
+                pos = kLoadFrontStayBack;
+            }
+            if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
+        }
+        mLoader = d;
+        if(mLoader){
+            if(!async || mLoader->IsLoaded()) PostLoad(0);
+        }
+        else if(!p.empty()) MILO_WARN("Couldn't load %s", p);
     }
 
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
