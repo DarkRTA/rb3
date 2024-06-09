@@ -53,7 +53,7 @@ public:
     Loader* ForceGetLoader(const FilePath&);
     inline bool EditMode() const { return mEditMode; }
     inline Platform GetPlatform() const { return (Platform)mPlatform; }
-    int AsyncUnload();
+    int AsyncUnload() const;
 
     static const char* LoaderPosString(LoaderPos, bool);
 

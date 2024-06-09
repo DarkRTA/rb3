@@ -227,6 +227,7 @@ public:
     }
 
     DECLARE_REVS;
+    DELETE_OVERLOAD;
 
     KeylessHash<const char*, Entry> mHashTable; // 0x8
     StringTable mStringTable; // 0x28

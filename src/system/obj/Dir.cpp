@@ -1,5 +1,6 @@
 #include "obj/Dir.h"
 #include "obj/DirItr.h"
+#include "obj/DirUnloader.h"
 #include "obj/Object.h"
 #include "obj/ObjVersion.h"
 #include "decomp.h"
@@ -435,6 +436,22 @@ bool ObjectDir::InlineProxy(BinStream& bs){
 ObjectDir::~ObjectDir(){
     mSubDirs.clear();
     delete mLoader;
+    if(TheLoadMgr.AsyncUnload()){
+        new DirUnloader(this);
+    }
+    else {
+        DeleteObjects();
+        DeleteSubDirs();
+    }
+    if(this == Dir()){
+        SetName(0, 0);
+    }
+    if(mPathName != gNullStr){
+        _MemOrPoolFree(strlen(mPathName) + 1, FastPool, (void*)mPathName);
+    }
+    if(mAlwaysInlineHash != gNullStr){
+        _MemOrPoolFree(strlen(mAlwaysInlineHash) + 1, FastPool, (void*)mAlwaysInlineHash);
+    }
 }
 
 // the KeylessHash methods should NOT be inlined, but the Entry ctor should
