@@ -31,7 +31,8 @@ enum InlineDirType {
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
-    ObjDirPtr(T* dir = 0) : mDir(dir), mLoader(0) { if(dir) mDir->AddRef(this); }
+    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(dir) mDir->AddRef(this); }
+    ObjDirPtr() : mDir(0), mLoader(0) {}
     virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
