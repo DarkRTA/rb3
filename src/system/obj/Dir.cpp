@@ -30,6 +30,7 @@ namespace {
 }
 
 ObjectDir* ObjectDir::sMainDir;
+ObjectDir* gDir;
 
 INIT_REVS(ObjectDir);
 
@@ -651,6 +652,9 @@ void ObjectDir::LoadSubDir(int i, const FilePath& fp, BinStream& bs, bool b){
     else mSubDirs[i] = 0;
 }
 
+// TODO: put this in LoadSubDir in the right spot
+DECOMP_FORCEACTIVE(Dir, "%s trying to subdir self in slot %d, setting NULL")
+
 bool ObjectDir::HasDirPtrs() const {
     std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
     std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
@@ -667,10 +671,44 @@ BEGIN_HANDLERS(ObjectDir)
     HANDLE(find, OnFind)
     HANDLE_EXPR(exists, FindObject(_msg->Str(2), false) != 0)
     HANDLE_ACTION(sync_objects, SyncObjects())
-    HANDLE_EXPR(is_proxy, Dir() != this)
+    HANDLE_EXPR(is_proxy, IsProxy())
     HANDLE_EXPR(proxy_dir, mLoader ? mLoader->mProxyDir : (Hmx::Object*)0)
     HANDLE_EXPR(proxy_name, mLoader ? (mLoader->mProxyName ? mLoader->mProxyName : "") : "")
+    HANDLE_ACTION(add_names, Reserve(mHashTable.mSize + _msg->Int(2) * 2, mStringTable.Size() + _msg->Int(2) * 0x14))
+    HANDLE_ACTION(override_proxy, SetProxyFile(FilePath(_msg->Str(2)), true))
+    HANDLE_ACTION(delete_loader, delete mLoader; mLoader = 0;)
+    HANDLE_EXPR(get_path_name, mPathName)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x7FD)
 END_HANDLERS
+
+ObjectDir* SyncSubDir(const FilePath& fp, ObjectDir* dir){
+    Loader* ldr = TheLoadMgr.GetLoader(fp);
+    DirLoader* dirldr;
+    if(dir->IsProxy()) dirldr = dynamic_cast<DirLoader*>(ldr);
+    else dirldr = dynamic_cast<DirLoader*>(TheLoadMgr.ForceGetLoader(fp));
+    if(!dirldr) return 0;
+    else {
+        ObjectDir* odir = dirldr->GetDir();
+        if(odir){
+            for(ObjDirItr<Hmx::Object> it(dir, false); it != 0; ++it){
+                Hmx::Object* found = odir->FindObject(it->Name(), false);
+                if(found){
+                    if(found != odir){
+                        if(it != dir){
+                            MILO_WARN("%s exists in dir and subdir, so replacing %s with %s", it->Name(), PathName(it), PathName(found));
+                            while(!it->Refs().empty()){
+                                it->mRefs.back()->Replace(it, found);
+                            }
+                            delete it;
+                        }
+                    }
+                }
+            }
+        }
+        return odir;
+    }
+}
 
 DataNode ObjectDir::OnFind(DataArray* da){
     Hmx::Object* found = FindObject(da->Str(2), false);
@@ -680,6 +718,50 @@ DataNode ObjectDir::OnFind(DataArray* da){
         }
     }
     return DataNode(found);
+}
+
+bool PropSyncSubDirs(std::vector<ObjDirPtr<ObjectDir> >& vec, DataNode& val, DataArray* prop, int i, PropOp op){
+    ObjectDir* theGDir = gDir;
+    if(op == kPropSize){
+        MILO_ASSERT(i == prop->Size(), 0x8AE);
+        val = DataNode((int)vec.size());
+        return true;
+    }
+    MILO_ASSERT(i == prop->Size() - 1, 0x8B3);
+    std::vector<ObjDirPtr<ObjectDir> >::iterator vecIt = vec.begin() + prop->Int(i);
+    ObjDirPtr<ObjectDir>& ptr = *vecIt;
+    switch(op){
+        case kPropGet:
+            val = DataNode(ptr.GetFile().FilePathRelativeToRoot());
+            break;
+        case kPropSet:
+            theGDir->RemovingSubDir(ptr);
+            ptr = SyncSubDir(FilePath(val.Str(0)), theGDir);
+            theGDir->AddedSubDir(ptr);
+            break;
+        case kPropRemove:
+            theGDir->RemovingSubDir(ptr);
+            vec.erase(vecIt);
+            break;
+        case kPropInsert:
+            vecIt = vec.insert(vecIt, ObjDirPtr<ObjectDir>(SyncSubDir(FilePath(val.Str(0)), theGDir)));
+            theGDir->AddedSubDir(*vecIt);
+            break;
+        default: return false;
+    }
+    return true;
+}
+
+void ObjectDir::SetPathName(const char* cc){
+    if(mPathName != gNullStr){
+        _MemOrPoolFree(strlen(mPathName) + 1, FastPool, (void*)mPathName);
+    }
+    if(cc != 0 && *cc != '\0'){
+        mPathName = (char*)_MemOrPoolAlloc(strlen(cc) + 1, FastPool);
+        strcpy((char*)mPathName, cc);
+        mStoredFile.SetRoot(mPathName);
+    }
+    else mPathName = gNullStr;
 }
 
 #pragma push
