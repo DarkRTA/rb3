@@ -326,8 +326,8 @@ const char* Hmx::Object::FindPathName(){
         if(dataDir->mLoader){
             return MakeString("%s (%s)", name, FileLocalize(dataDir->mLoader->mFile.c_str(), 0));
         }
-        else if(!dataDir->ProxyFile()->empty()){
-            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile()->c_str(), 0));
+        else if(!dataDir->ProxyFile().empty()){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile().c_str(), 0));
         }
         else if(*dataDir->mPathName != '\0'){
             return MakeString("%s (%s)", name, FileLocalize(dataDir->mPathName, 0));
