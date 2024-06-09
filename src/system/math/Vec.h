@@ -8,6 +8,10 @@ public:
     Vector2(){}
     Vector2(float xx, float yy) : x(xx), y(yy) {}
     void Set(float xx, float yy){ x = xx; y = yy; }
+    Vector2& operator*(float f) { 
+        x *= f; y *= f; 
+        return *this;
+    }
     float x;
     float y;
 };
@@ -71,7 +75,7 @@ public:
         return *this;
     }
 
-    // float& operator[](int i){ return this + i; }
+    float& operator[](int i); // { return this + i; }
     // bool operator==(const Vector3 &) const;
     // bool operator!=(const Vector3 &) const;
 };

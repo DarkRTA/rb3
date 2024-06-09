@@ -60,15 +60,15 @@ struct MatPerfSettings {
 
 struct MatShaderOptions {
     MatShaderOptions();
-    int itop : 24;
-    int i7 : 1;
-    int i6 : 1;
-    int i5 : 1;
-    int i4 : 1;
-    int i3 : 1;
-    int i2 : 1;
-    int i1 : 1;
-    int i0 : 1;
+    uint itop : 24;
+    uint i7 : 1;
+    uint i6 : 1;
+    uint i5 : 1;
+    uint i4 : 1;
+    uint i3 : 1;
+    uint i2 : 1;
+    uint i1 : 1;
+    uint i0 : 1;
     bool b; 
 };
 
@@ -83,6 +83,8 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    bool IsNextPass(RndMat*);
 
     NEW_OVERLOAD
     NEW_OBJ(RndMat)
@@ -102,22 +104,23 @@ public:
     std::vector<int> unk98;
     MatPerfSettings unka0;
     MatShaderOptions unka4;
-    bool mIntensify : 1;
-    bool mUseEnviron : 1;
-    bool mPreLit : 1;
-    bool mAlphaCut : 1;
-    bool mAlphaWrite : 1;
-    bool mCull : 1;
-    bool mPerPixelLit : 1;
-    bool mScreenAligned : 1;
+    bool mIntensify : 1; // 0xa9?_0
+    bool mUseEnviron : 1; // 0xa9_1
+    bool mPreLit : 1; // 0xa9_2
+    bool mAlphaCut : 1; // 0xa9_3
+    bool mAlphaWrite : 1; // 0xa9_4
+    bool mCull : 1; // 0xa9_5
+    bool mPerPixelLit : 1; // 0xa9_6
+    bool mScreenAligned : 1; // 0xa9_7
 
-    bool mRefractEnabled : 1;
+    bool mRefractEnabled : 1; // 0xaa_0
     bool mPointLights : 1;
     bool mFog : 1;
     bool mFadeout : 1;
     bool mColorAdjust : 1;
+    bool unk_0xaa_5 : 3;
     
-    Blend mBlend : 8;
+    Blend mBlend : 8; // 0xac
     TexGen mTexGen : 8;
     // unkac also has mBlend, texgen but bit shifted?
     // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18

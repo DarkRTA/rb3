@@ -1,5 +1,6 @@
 #ifndef CHAR_CHARINTEREST_H
 #define CHAR_CHARINTEREST_H
+#include "obj/ObjMacros.h"
 #include "rndobj/Trans.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharEyeDartRuleset.h"
@@ -23,16 +24,18 @@ public:
 
     void SyncMaxViewAngle();
 
-    float mMaxViewAngle;
-    float mPriority;
-    float mMinLookTime;
-    float mMaxLookTime;
-    float mRefractoryPeriod;
-    ObjPtr<CharEyeDartRuleset, ObjectDir> mDartOverride;
-    int mCategoryFlags;
-    bool mOverrideMinTargetDistance;
-    float mMinTargetDistanceOverride;
-    float mMaxViewAngleCos;
+    float mMaxViewAngle; // 0x90
+    float mPriority; // 0x94
+    float mMinLookTime; // 0x98
+    float mMaxLookTime; // 0x9C
+    float mRefractoryPeriod; // 0xA0
+    ObjPtr<CharEyeDartRuleset, ObjectDir> mDartOverride; // 0xA4
+    int mCategoryFlags; // 0xB0
+    bool mOverrideMinTargetDistance; // 0xB4
+    float mMinTargetDistanceOverride; // 0xB8
+    float mMaxViewAngleCos; // 0xBC
+
+    DECLARE_REVS
 };
 
 #endif

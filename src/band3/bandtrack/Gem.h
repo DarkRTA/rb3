@@ -40,8 +40,7 @@ class Gem {
     void SetFretPos(int);
     void GetChordFretLabelInfo(String&, int&) const;
 
-    // GemManager* mGemManager;
-    int mGemManager;
+    GemManager* mGemManager;
     const GameGem* mGameGem;
     std::set<TrackWidget*> mWidgets;
     float mStart, mEnd, mTailStart;

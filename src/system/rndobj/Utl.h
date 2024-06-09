@@ -9,6 +9,7 @@ float ConvertFov(float a, float b);
 void SetLocalScale(RndTransformable*, const Vector3&);
 void AttachMesh(RndMesh*, RndMesh*);
 void UtilDrawSphere(const Vector3&, float, const Hmx::Color&);
+void UtilDrawString(const char*, const Vector3&, const Hmx::Color&);
 void UtilDrawAxes(const Transform&, float, const Hmx::Color&);
 void TransformKeys(class RndTransAnim*, const Transform&);
 void TestTextureSize(ObjectDir*, int, int, int, int, int);

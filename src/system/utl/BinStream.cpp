@@ -1,5 +1,7 @@
 #include "utl/BinStream.h"
+#include "decomp.h"
 #include "math/Rand.h"
+#include "types.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
@@ -123,92 +125,33 @@ void BinStream::Read(void* data, int bytes){
 }
 
 void BinStream::Write(const void* void_data, int bytes){
-    const unsigned char* data;
-    char crypt[512];
-    int buf_size, i;
-    unsigned char c;
     if(Fail()){
+        static char _dw[256];
         const char* str = MakeString("Stream error: Can't write to %s\n", Name());
-//     pcVar3 = (char *)(**(code **)((int)this->vtable + 0x1c))(this);
-//     pcVar3 = ::MakeString(s_Stream_error:_Can't_write_to_%s_80bba789,pcVar3);
-//     iVar2 = strcmp(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
-//     if (iVar2 != 0) {
-//       strcpy(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
-//       Debug::Print((Debug *)TheDebug,pcVar3);
-//     }
+        if (strcmp(_dw, str) != 0) {
+            strcpy(_dw, str);
+            TheDebug.Print(str);
+        }
+    } else {
+        const unsigned char* data = (u8*)void_data;
+        if (!mCrypto) {
+            WriteImpl(void_data, bytes);
+        } else {
+            u8 crypt[512];
+            while (bytes > 0) {
+                int x = bytes < 512 ? bytes : 512;
+                u8* crypt_p = crypt;
+                for (int i = 0; i < x; i++) {
+                    u8 bastard = mCrypto->Int();
+                    *crypt_p++ = data[i] ^ bastard;
+                }
+                WriteImpl(crypt, x);
+                bytes -= 512;
+                data += 512;
+            }
+        }
     }
 }
-
-// void __thiscall BinStream::Write(BinStream *this,void *param_1,int param_2)
-
-// {
-//   byte bVar1;
-//   int iVar2;
-//   char *pcVar3;
-//   byte bVar4;
-//   int iVar5;
-//   byte *pbVar6;
-//   byte *pbVar7;
-//   byte local_228 [524];
-  
-//   iVar2 = (**(code **)((int)this->vtable + 0x18))();
-//   if (iVar2 == 0) {
-//     if (this->mCrypto == (Rand2 *)0x0) {
-//       (**(code **)((int)this->vtable + 0x2c))(this,param_1,param_2);
-//     }
-//     else {
-//       for (; 0 < param_2; param_2 = param_2 + -0x200) {
-//         iVar2 = 0x200;
-//         if (param_2 < 0x200) {
-//           iVar2 = param_2;
-//         }
-//         pbVar6 = local_228;
-//         pbVar7 = (byte *)param_1;
-//         for (iVar5 = 0; iVar5 < iVar2; iVar5 = iVar5 + 1) {
-//           bVar4 = Rand2::Int(this->mCrypto);
-//           bVar1 = *pbVar7;
-//           pbVar7 = pbVar7 + 1;
-//           *pbVar6 = bVar4 ^ bVar1;
-//           pbVar6 = pbVar6 + 1;
-//         }
-//         (**(code **)((int)this->vtable + 0x2c))(this,local_228,iVar2);
-//         param_1 = (void *)((int)param_1 + 0x200);
-//       }
-//     }
-//   }
-//   else {
-//     pcVar3 = (char *)(**(code **)((int)this->vtable + 0x1c))(this);
-//     pcVar3 = ::MakeString(s_Stream_error:_Can't_write_to_%s_80bba789,pcVar3);
-//     iVar2 = strcmp(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
-//     if (iVar2 != 0) {
-//       strcpy(@LOCAL@Write__9BinStreamFPCvi@_dw,pcVar3);
-//       Debug::Print((Debug *)TheDebug,pcVar3);
-//     }
-//   }
-//   return;
-// }
-
-// void BinStream::Write(const void *v, int i) {
-//     unsigned char sp8[512];
-//     if (Fail() != 0) {
-//         Name();
-//         return;
-//     }
-//     if (mCrypto == nullptr) {
-//         WriteImpl((void *)v, i);
-//         return;
-//     }
-//     while (i > 0) {
-//         int temp_r29 = Minimum(0x200, i);
-//         for (int j = 0; j < temp_r29; j++) {
-//             unsigned char x = (unsigned char)mCrypto->Int();
-//             sp8[j] = x ^ ((const char *)v)[j];
-//         }
-//         WriteImpl(&sp8, temp_r29);
-//         i -= 0x200;
-//         (char *)v += 0x200;
-//     }
-// }
 
 void BinStream::Seek(int offset, SeekType type){
     MILO_ASSERT(!Fail(), 0xDF);
@@ -272,8 +215,11 @@ void BinStream::ReadEndian(void* data, int bytes){
 void BinStream::WriteEndian(const void* void_data, int bytes){
     char buf[16];
     if(mLittleEndian){
-        // SwapData((void*)void_data, buf, bytes);
+        SwapData((void*)void_data, buf, bytes);
         Write(buf, bytes);
     }
     else Write(void_data, bytes);
 }
+
+DECOMP_FORCEACTIVE(BinStream, "BinStream::AddSharedInlined is a PC dev tool only !!")
+//void BinStream::AddSharedInlined() {}

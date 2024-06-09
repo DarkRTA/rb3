@@ -6,11 +6,13 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Cam.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
 #include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/Rnd.h"
 #include "utl/Loader.h"
 #include <cmath>
 
@@ -42,6 +44,15 @@ void CalcBox(RndMesh* m, Box& b) {
     m->mOwner->mOwner;
     m->mOwner->mOwner;
     m->mOwner->mOwner;
+}
+
+void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
+    Vector2 v2;
+    if (RndCam::sCurrent->WorldToScreen(v, v2) > 0) {
+        v2.x *= (float)TheRnd->mWidth;
+        v2.y *= (float)TheRnd->mHeight;
+        TheRnd->DrawString(c, v2, col, true);
+    }
 }
 
 void SortXfms(RndMultiMesh*, const Vector3&) {

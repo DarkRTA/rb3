@@ -1,7 +1,8 @@
 #include "rndobj/Mat.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 
-MatShaderOptions::MatShaderOptions() : b(0), i4(1), i1(1) {
+MatShaderOptions::MatShaderOptions() : i4(1), i1(1), b(0) {
 
 }
 
@@ -17,3 +18,35 @@ RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mE
 }
 
 SAVE_OBJ(RndMat, 159)
+
+bool RndMat::IsNextPass(RndMat* m) {
+    RndMat* m2;
+    while (m2 != NULL){
+        if (m2 == m) return true;
+        m2 = m2->mNextPass;
+    }
+    return false;
+}
+
+BEGIN_LOADS(RndMat)
+    LOAD_REVS(bs)
+    ASSERT_REVS(68, 0) // SIXTY EIGHT???
+    ASSERT_OLD_REV(25)
+    Hmx::Object::Load(bs);
+    int x; bs >> x;
+    mBlend = (Blend)x;
+    bs >> mColor;
+    bool y; bs >> y;
+    mColorAdjust = y;
+
+
+    bs >> mRefractNormalMap;
+    if (gRev < 0x41) {
+        mRefractStrength *= 0.15;
+    } else mRefractStrength = 0;
+END_LOADS
+
+
+BEGIN_PROPSYNCS(RndMat)
+    if (sym == "intensify") { bool x = mIntensify; return PropSync(x, _val, _prop, _i + 1, _op); }
+END_PROPSYNCS

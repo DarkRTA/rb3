@@ -68,7 +68,7 @@ void UIComponent::SetTypeDef(DataArray* da) {
             }
         }
     }
-    if(mTypeDef != da){
+    if(typeDef != da){
         Hmx::Object::SetTypeDef(da);
         UpdateResource();
     }

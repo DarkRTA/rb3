@@ -1,11 +1,10 @@
 #ifndef OBJ_OBJMACROS_H
 #define OBJ_OBJMACROS_H
-#include "obj/Object.h"
 #include "os/System.h"
 #include "obj/PropSync_p.h"
 #include "obj/MessageTimer.h"
 
-const char* PathName(const Hmx::Object*);
+const char* PathName(const class Hmx::Object*);
 
 // BEGIN CLASSNAME MACRO -------------------------------------------------------------------------------
 
@@ -282,6 +281,16 @@ void objType::Load(BinStream& bs){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ver, rev_name); \
     }
 
+#define ASSERT_OLD_REV(ver) \
+    if (gRev < ver) { \
+        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, (unsigned short)ver); \
+    }
+
+#define ASSERT_OLD_ALTREV(ver) \
+    if (gRev < ver) { \
+        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
+    }
+
 #define LOAD_SUPERCLASS(parent) \
     parent::Load(bs);
 
@@ -295,14 +304,14 @@ void objType::Load(BinStream& bs){
 #define ADD_NOTIFS \
 namespace {\
     bool AddToNotifies(const char* str, std::list<class String>& list){\
-        if(list.size() > 0x10) return false;\
-        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){\
-            bool strFound = !strcmp(it->c_str(), str);\
-            if(strFound) return false;\
-        }\
-        list.push_back(str);\
-        return true;\
-    }\
+        if(list.size() > 0x10) return false; \
+        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){ \
+            bool found = strcmp(it->c_str(), str); \
+            if(!found) return false; \
+        } \
+        list.push_back(str); \
+        return true; \
+    } \
 }
 
 // END ADDTONOTIFIES MACRO -----------------------------------------------------------------------------

@@ -3,8 +3,9 @@
 #include <vector>
 #include "math/Vec.h"
 #include "math/Color.h"
-#include "utl/Str.h"
 #include "obj/Object.h"
+#include "rndobj/Cam.h"
+#include "utl/Str.h"
 
 class Drawable {
 public:
@@ -85,6 +86,13 @@ public:
     static void Terminate();
     static void ResetAll();
     static RndGraph* Get(const void*);
+    static void Free(const void*, bool);
+    static void SetCamera(RndCam*);
+    static RndGraph* GetOneFrame();
+};
+
+class FakeGraph {
+
 };
 
 #endif
