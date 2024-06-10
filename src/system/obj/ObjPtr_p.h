@@ -40,7 +40,7 @@ public:
         }
     }
 
-    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
+    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;
@@ -188,8 +188,6 @@ public:
             }
         }
     }
-
-    virtual bool IsDirPtr(){ return 0; }
 
     void clear(){ while(!empty()) pop_back(); }
 
