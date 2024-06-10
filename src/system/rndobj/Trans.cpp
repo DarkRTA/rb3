@@ -1,5 +1,12 @@
 #include "rndobj/Trans.h"
 #include "math/Rot.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/ObjPtr_p.h"
+#include "obj/Object.h"
+#include "obj/PropSync_p.h"
+#include "os/Debug.h"
 #include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
@@ -99,6 +106,28 @@ void RndTransformable::Highlight(){
 
 SAVE_OBJ(RndTransformable, 586)
 
+BEGIN_LOADS(RndTransformable)
+    LOAD_REVS(bs)
+    ASSERT_REVS(9, 0)
+    if (ClassName() == StaticClassName()) Hmx::Object::Load(bs);
+    if (gLoadingProxyFromDisk) {
+        Transform t;
+        bs >> t >> t;
+    } else {
+        bs >> mLocalXfm >> mWorldXfm;
+    }
+    if (gRev < 9) {
+        ObjPtrList<RndTransformable, ObjectDir> l(this, kObjListNoNull);
+        bs >> l;
+        for (ObjPtrList<RndTransformable, ObjectDir>::iterator it = l.begin(); it != l.end(); ++it) {
+            (*it)->SetTransParent(this, false);
+        }
+    }
+
+
+    if (TransConstraint() == kParentWorld) SetTransParent(mTarget, false);
+END_LOADS
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(RndTransformable)
@@ -132,6 +161,54 @@ BEGIN_HANDLERS(RndTransformable)
     HANDLE_CHECK(0x357)
 END_HANDLERS
 #pragma pop
+
+DataNode RndTransformable::OnGetWorldPos(const DataArray* da) {
+    Transform* t;
+    if (mCache->mFlags & 1) t = &WorldXfm_Force();
+    else t = &mWorldXfm;
+    *da->Var(2) = t->v.X();
+    if (mCache->mFlags & 1) t = &WorldXfm_Force();
+    else t = &mWorldXfm;
+    *da->Var(3) = t->v.Y();
+    if (mCache->mFlags & 1) t = &WorldXfm_Force();
+    else t = &mWorldXfm;
+    *da->Var(4) = t->v.Z();
+    return DataNode();
+}
+
+DataNode RndTransformable::OnGetLocalPos(const DataArray* da) {
+    *da->Var(2) = mLocalXfm.v.X();
+    *da->Var(3) = mLocalXfm.v.Y();
+    *da->Var(4) = mLocalXfm.v.Z();
+    return DataNode();
+}
+
+DataNode RndTransformable::OnGetLocalPosIndex(const DataArray* a) {
+    MILO_ASSERT(a->Int(2) < 3, 896);
+    return DataNode(mLocalXfm.v[a->Int(2)]);
+}
+
+DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {
+    mLocalXfm.v.Set(da->Float(2), da->Float(3), da->Float(4));
+    mCache->SetDirty();
+    return DataNode();
+}
+
+DataNode RndTransformable::OnSetLocalPosIndex(const DataArray* a) {
+    MILO_ASSERT(a->Int(2) < 3, 943);
+    mLocalXfm.v[a->Int(2)] = a->Float(3);
+    mCache->SetDirty();
+}
+
+void RndTransformable::SetLocalRot(Vector3) {
+
+}
+
+DataNode RndTransformable::OnSetLocalRot(const DataArray* da) {
+    Vector3 v(da->Float(2), da->Float(3), da->Float(4));
+    SetLocalRot(v);
+    return DataNode();
+}
 
 BEGIN_PROPSYNCS(RndTransformable)
     SYNC_PROP_SET(trans_parent, mParent, SetTransParent(_val.Obj<RndTransformable>(0), true))

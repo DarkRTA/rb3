@@ -65,6 +65,8 @@
 
             "network/net/JsonUtils.cpp": "NonMatching",
 
+            "network/ObjDup/DOFilter.cpp": "NonMatching",
+
             "network/Plugins/ZLibPlugin.cpp": "Matching",
 
             "network/Plugins/JobGetPublicURL.cpp": "Matching",
@@ -141,6 +143,7 @@
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
+            "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
@@ -444,6 +447,7 @@
             "system/ui/UILabelDir.cpp": "NonMatching",
             "system/ui/UIList.cpp": "NonMatching",
             "system/ui/UIListArrow.cpp": "NonMatching",
+            "system/ui/UIListCustom.cpp": "NonMatching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "NonMatching",

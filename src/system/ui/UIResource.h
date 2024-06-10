@@ -10,7 +10,7 @@ class UIResource {
     public:
     int mRefCount; // 0x0
     FilePath mResourcePath; // 0x4
-    ObjDirPtr<RndDir> mDir; // 0x10
+    ObjDirPtr<RndDir> mDir; RndDir* Dir() { return mDir.mDir; } // 0x10
 
     UIResource(const FilePath&);
     void Load(bool);

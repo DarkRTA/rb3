@@ -20,10 +20,10 @@ bool RndSet::AllowedObject(Hmx::Object* o){
 }
 
 void RndSet::SetTypeDef(DataArray* arr){
-    if(mTypeDef != arr){
+    if(typeDef != arr){
         Hmx::Object::SetTypeDef(arr);
         if(arr){
-            DataArray* cfg = mTypeDef->FindArray("editor", true);
+            DataArray* cfg = typeDef->FindArray("editor", true);
             mProps.resize(cfg->Size() - 1);
             for(int i = 1; i < cfg->Size(); i++){
                 const DataArray* thisArr = cfg->Array(i);

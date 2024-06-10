@@ -77,6 +77,7 @@ public:
     RndTransformable* TransParent() const;
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
+    void SetLocalRot(Vector3);
 
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
@@ -117,7 +118,7 @@ public:
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; } // 0x80
-    bool mPreserveScale; // 0x83
+    bool mPreserveScale; // 0x82
     ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
 
     static ushort gRev;

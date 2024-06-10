@@ -70,7 +70,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     ObjPtr<UIComponent, class ObjectDir> mNavDown;
     int test1; // 0xD0
     int unk_0xD4; // 0xD4
-    UIResource* mMesh; // 0xD8
+    UIResource* mResource; // 0xD8
     std::vector<int> unk_0xDC; // 0xDC
     class String mResourceName; // 0xE4
     ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
