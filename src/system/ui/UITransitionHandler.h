@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Anim.h"
+#include "types.h"
 
 enum UITransitionAnimationState {
     kUITransitionAnimationInvalid,
@@ -33,7 +34,7 @@ public:
 
     ObjPtr<RndAnimatable, ObjectDir> mInAnim;
     ObjPtr<RndAnimatable, ObjectDir> mOutAnim;
-    UITransitionAnimationState mAnimationState : 8; // make this the enum above but only take up 1 byte?
+    u8 mAnimationState; // make this the enum above but only take up 1 byte?
     bool mChangePending, b3; // mChangePending, mOutAnimStartedThisFrame
 };
 
