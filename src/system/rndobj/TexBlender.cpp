@@ -1,4 +1,5 @@
 #include "rndobj/TexBlender.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndTexBlender);
@@ -56,6 +57,12 @@ bool RndTexBlender::MakeWorldSphere(Sphere& sphere, bool b){
     else return 0;
 }
 
+void RndTexBlender::DrawShowing(){}
+
+DataNode RndTexBlender::OnGetRenderTextures(DataArray* arr){
+    return GetRenderTexturesNoZ(Dir());
+}
+
 BEGIN_HANDLERS(RndTexBlender)
     HANDLE(get_render_textures, OnGetRenderTextures)
     HANDLE_SUPERCLASS(RndDrawable)
@@ -73,3 +80,8 @@ BEGIN_PROPSYNCS(RndTexBlender)
     SYNC_PROP(controller_influence, mControllerInfluence)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(TexBlender, RndTexBlender, SetType)
+DECOMP_FORCEFUNC_TEMPL(TexBlender, ObjPtrList, Replace(0, 0), RndTexBlendController, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(TexBlender, ObjPtrList, RefOwner(), RndTexBlendController, ObjectDir)
+DECOMP_FORCEDTOR(TexBlender, RndTexBlender)
