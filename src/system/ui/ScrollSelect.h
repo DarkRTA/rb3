@@ -6,10 +6,11 @@
 #include "utl/PoolAlloc.h"
 
 class ScrollSelect {
+    public:
     ScrollSelect();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual ~ScrollSelect();
+    virtual ~ScrollSelect(){}
     virtual int SelectedAux() const = 0;
     virtual void SetSelectedAux(int) = 0;
 

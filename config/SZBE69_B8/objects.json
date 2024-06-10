@@ -447,6 +447,7 @@
             "system/ui/UILabelDir.cpp": "NonMatching",
             "system/ui/UIList.cpp": "NonMatching",
             "system/ui/UIListArrow.cpp": "NonMatching",
+            "system/ui/UIListCustom.cpp": "NonMatching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "NonMatching",

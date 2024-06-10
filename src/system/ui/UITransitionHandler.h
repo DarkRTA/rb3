@@ -33,7 +33,7 @@ public:
 
     ObjPtr<RndAnimatable, ObjectDir> mInAnim;
     ObjPtr<RndAnimatable, ObjectDir> mOutAnim;
-    unsigned char mAnimationState; // make this the enum above but only take up 1 byte?
+    UITransitionAnimationState mAnimationState : 8; // make this the enum above but only take up 1 byte?
     bool mChangePending, b3; // mChangePending, mOutAnimStartedThisFrame
 };
 
