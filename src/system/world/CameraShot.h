@@ -46,7 +46,7 @@ public:
     // mZoomFOV: 0x85
 };
 
-BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
+inline BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
     csf.Load(bs);
 }
 
