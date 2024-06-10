@@ -109,27 +109,27 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
         MILO_ASSERT(i == prop->Size(), 0x150);
         switch(op){
             case kPropGet:
-                return PropSync((T*&)(it), node, prop, i, kPropGet);
+                T* item = *it;
+                return PropSync(item, node, prop, i, op);
             case kPropSet:
                 T* objToSet = 0;
-                if(PropSync(objToSet, node, prop, i, kPropSet)){
+                if(PropSync(objToSet, node, prop, i, op)){
                     ptr.Set(it, objToSet);
                     return true;
                 }
-                else return false;
+                break;
             case kPropRemove:
                 ptr.erase(it);
                 return true;
             case kPropInsert:
                 T* objToInsert = 0;
-                if(PropSync(objToInsert, node, prop, i, kPropSet)){
+                if(PropSync(objToInsert, node, prop, i, op)){
                     ptr.insert(it, objToInsert);
                     return true;
                 }
-                else return false;
-            default:
-                return false;
+                break;
         }
+        return false;
     }
 }
 
