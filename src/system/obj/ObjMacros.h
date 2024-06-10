@@ -299,6 +299,16 @@ void objType::Load(BinStream& bs){
 
 // END LOAD MACROS -------------------------------------------------------------------------------------
 
+// BEGIN OBJ INITIALIZER MACROS ------------------------------------------------------------------------
+
+#define NEW_OBJ(objType) \
+    static Hmx::Object* NewObject() { return new objType; }
+
+#define REGISTER_OBJ_FACTORY(objType) \
+    Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
+
+// END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
+
 // BEGIN ADDTONOTIFIES MACRO ---------------------------------------------------------------------------
 
 #define ADD_NOTIFS \

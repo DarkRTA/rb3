@@ -12,7 +12,7 @@
 #include "revolution/OS.h"
 
 bool gInBegin, gBeginIntState;
-BOOL gSuppressPointTest;
+int gSuppressPointTest;
 void* sDispFB;
 OSThreadQueue drawDoneThreadQueue;
 

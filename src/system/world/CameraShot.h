@@ -14,6 +14,11 @@ class CamShotFrame {
 public:
     CamShotFrame(Hmx::Object*);
     CamShotFrame(Hmx::Object*, const CamShotFrame&);
+    void Load(BinStream&);
+    void SetFieldOfView(float);
+    void SetBlurDepth(float);
+    void SetMaxBlur(float);
+    void SetMinBlur(float);
 
     float mDuration; // 0x0
     float mBlend; // 0x4
@@ -40,6 +45,10 @@ public:
     // mFieldOfView: 0x84, lensMM, lensPreset
     // mZoomFOV: 0x85
 };
+
+BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
+    csf.Load(bs);
+}
 
 class CamShotCrowd {
 public:
@@ -77,6 +86,9 @@ public:
     virtual bool CheckShotOver(float);
 
     void CacheFrames();
+    void UnHide();
+
+    DECLARE_REVS;
 
     ObjVector<CamShotFrame> mKeyFrames; // 0x10
     int mLoopKeyframe; // 0x1c
@@ -114,6 +126,11 @@ public:
     bool mLooping : 1; // 0x120 >> 7
     bool mUseDepthOfField : 1; // 0x120 >> 6 & 1
     bool mPS3PerPixel : 1; // 0x120 >> 5 & 1
+    bool unk120p4 : 1;
+    bool unk120p3 : 1;
+    bool unk120p2 : 1;
+    bool unk120p1 : 1;
+    bool unk120p0 : 1;
 
     static void Init();
 };

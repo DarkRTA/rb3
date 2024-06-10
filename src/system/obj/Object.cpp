@@ -297,20 +297,23 @@ void Hmx::Object::LoadType(BinStream& bs) {
     Symbol s;
     bs >> s;
     SetType(s);
-    ObjVersion v(this, packRevs(gAltRev, gRev));
-    sRevStack.push_back(v);
+    PushRev(packRevs(gAltRev, gRev), this);
 }
 
 void Hmx::Object::LoadRest(BinStream& bs) {
-    // begin PopRev stuff
-    // this should pop_back and then return an int
-    // said int will represent packed revs
-    ObjVersion v = sRevStack.back();
-    sRevStack.pop_back();
-    // end PopRev stuff
-    gAltRev = getAltRev(v.revs);
-    gRev = getHmxRev(v.revs);
-    mTypeProps.Load(bs, packRevs(gAltRev, gRev), 0);
+    int revs = PopRev(this);
+    gAltRev = getAltRev(revs);
+    gRev = getHmxRev(revs);
+    mTypeProps.Load(bs, gRev, this);
+    if(gRev != 0){
+        int i;
+        bs >> i;
+        if(i != 0){
+            void* v = _MemAllocTemp(i + 1, 1);
+            bs.Read(v, i);
+            _MemFree(v);
+        }
+    }
 }
 
 void Hmx::Object::Load(BinStream& bs) {
@@ -326,8 +329,8 @@ const char* Hmx::Object::FindPathName(){
         if(dataDir->mLoader){
             return MakeString("%s (%s)", name, FileLocalize(dataDir->mLoader->mFile.c_str(), 0));
         }
-        else if(!dataDir->ProxyFile()->empty()){
-            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile()->c_str(), 0));
+        else if(!dataDir->ProxyFile().empty()){
+            return MakeString("%s (%s)", name, FileLocalize(dataDir->ProxyFile().c_str(), 0));
         }
         else if(*dataDir->mPathName != '\0'){
             return MakeString("%s (%s)", name, FileLocalize(dataDir->mPathName, 0));

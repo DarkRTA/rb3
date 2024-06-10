@@ -79,6 +79,10 @@ public:
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
 
+    Transform& WorldXfm(){
+        
+    }
+
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
         return mLocalXfm;

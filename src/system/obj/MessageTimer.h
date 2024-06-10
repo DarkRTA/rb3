@@ -16,7 +16,8 @@ public:
         AddTime(mObject, mMessage, mTimer.SplitMs());
     }
     static bool Active(){ return sActive; }
-    static void AddTime(class Hmx::Object* o, Symbol msg, float ms);
+    static void AddTime(Hmx::Object* o, Symbol msg, float ms);
+    static void Init();
 };
 
 #endif

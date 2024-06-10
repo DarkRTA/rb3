@@ -45,6 +45,11 @@ public:
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
 
+    NEW_OBJ(MsgSource)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(MsgSource)
+    }
+
     std::list<Sink> mSinks;
     std::list<EventSink> mEventSinks;
     int mExporting;

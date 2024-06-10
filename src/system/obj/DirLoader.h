@@ -38,6 +38,7 @@ public:
     NEW_POOL_OVERLOAD(DirLoader);
     DELETE_POOL_OVERLOAD(DirLoader);
 
+    static bool sPrintTimes;
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);
@@ -45,7 +46,7 @@ public:
     static void SetCacheMode(bool);
     static Symbol GetDirClass(const char*);
     static const char* CachedPath(const char*, bool);
-    static DirLoader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
+    static Loader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
 
 
     DirLoaderStateFunc mState; // 0x1c
