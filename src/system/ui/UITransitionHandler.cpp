@@ -9,7 +9,8 @@ DECOMP_FORCEACTIVE(UITransitionHandler,
     "0"
 )
 
-UITransitionHandler::UITransitionHandler(Hmx::Object* obj) : mInAnim(obj, 0), mOutAnim(obj, 0), mAnimationState(0), mChangePending(0), b3(0) {
+UITransitionHandler::UITransitionHandler(Hmx::Object* obj) : mInAnim(obj, 0), mOutAnim(obj, 0), 
+    mAnimationState(kUITransitionAnimationInvalid), mChangePending(0), b3(0) {
 
 }
 
