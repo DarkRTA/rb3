@@ -1,4 +1,5 @@
 #include "rndobj/TexBlender.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndTexBlender);
@@ -54,6 +55,10 @@ bool RndTexBlender::MakeWorldSphere(Sphere& sphere, bool b){
         return mOwner->MakeWorldSphere(sphere, b);
     }
     else return 0;
+}
+
+DataNode RndTexBlender::OnGetRenderTextures(DataArray* arr){
+    return GetRenderTexturesNoZ(Dir());
 }
 
 BEGIN_HANDLERS(RndTexBlender)
