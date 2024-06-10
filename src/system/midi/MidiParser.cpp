@@ -56,7 +56,7 @@ MidiParser::~MidiParser(){
 }
 
 void MidiParser::SetTypeDef(DataArray* arr){
-    if(mTypeDef != arr){
+    if(typeDef != arr){
         Hmx::Object::SetTypeDef(arr);
         mInverted = false;
         mTrackName = Symbol("");

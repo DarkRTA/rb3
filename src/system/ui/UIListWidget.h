@@ -5,9 +5,9 @@
 #include "math/Vec.h"
 #include "ui/UIComponent.h"
 #include "ui/UIListState.h"
-#include "ui/UIListProvider.h"
 #include "ui/UIEnums.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/MemMgr.h"
 #include <vector>
 
 class UIList;
@@ -37,7 +37,7 @@ public:
     virtual void ResourceCopy(const UIListWidget*);
     virtual void CreateElements(UIList*, int){}
     virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand){}
-    virtual void Fill(const UIListProvider&, int, int, int){}
+    virtual void Fill(const class UIListProvider&, int, int, int){}
     virtual void StartScroll(int, bool){}
     virtual void CompleteScroll(const UIListState&, int){}
     virtual void Poll(){}
@@ -51,7 +51,9 @@ public:
     void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
     void SetParentList(UIList*);
 
-    DECLARE_REVS;
+    NEW_OVERLOAD
+    DECLARE_REVS
+    NEW_OBJ(UIListWidget)
 
     float mDrawOrder; // 0x1c
     float mDisabledAlphaScale; // 0x20

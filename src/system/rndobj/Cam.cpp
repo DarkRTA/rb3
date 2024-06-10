@@ -17,7 +17,7 @@ Transform sFlipYZ;
 
 ADD_NOTIFS
 
-void RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
+float RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
     s = mZRange;
 }
 
