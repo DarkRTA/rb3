@@ -385,7 +385,10 @@
             "system/rndobj/SoftParticles.cpp": "Matching",
             "system/rndobj/Tex.cpp": "NonMatching",
             "system/rndobj/TexBlendController.cpp": "NonMatching",
-            "system/rndobj/TexBlender.cpp": "LinkIssues",
+            "system/rndobj/TexBlender.cpp": {
+                "status": "LinkIssues",
+                "comment": "The strings for SetType should be moved down in .data"
+            },
             "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/TransAnim.cpp": "NonMatching",
