@@ -154,36 +154,4 @@ public:
 
 #endif
 
-// class RndMat : public Object {
-//     // total size: 0x120
-// protected:
-//     unsigned char mIntensify; // offset 0x28, size 0x1
-//     enum Blend mBlend; // offset 0x2C, size 0x4
-//     class Color mColor; // offset 0x30, size 0x10
-//     unsigned char mUseEnviron; // offset 0x40, size 0x1
-//     enum ZMode mZMode; // offset 0x44, size 0x4
-//     enum StencilMode mStencilMode; // offset 0x48, size 0x4
-//     enum TexGen mTexGen; // offset 0x4C, size 0x4
-//     enum TexWrap mTexWrap; // offset 0x50, size 0x4
-//     class Transform mTexXfm; // offset 0x60, size 0x40
-//     class ObjPtr mDiffuseTex; // offset 0xA0, size 0xC
-//     unsigned char mPrelit; // offset 0xAC, size 0x1
-//     unsigned char mAlphaCut; // offset 0xAD, size 0x1
-//     int mAlphaThresh; // offset 0xB0, size 0x4
-//     unsigned char mAlphaWrite; // offset 0xB4, size 0x1
-//     class ObjPtr mNextPass; // offset 0xB8, size 0xC
-//     unsigned char mCull; // offset 0xC4, size 0x1
-//     unsigned char mNormalize; // offset 0xC5, size 0x1
-//     class ObjPtr mCustomDiffuseMap; // offset 0xC8, size 0xC
-//     unsigned char mTwoColor; // offset 0xD4, size 0x1
-//     class ObjPtr mTwoColorMask; // offset 0xD8, size 0xC
-//     class Color mColor1; // offset 0xF0, size 0x10
-//     class Color mColor2; // offset 0x100, size 0x10
-//     unsigned char mPointLights; // offset 0x110, size 0x1
-//     unsigned char mProjLights; // offset 0x111, size 0x1
-//     unsigned char mFog; // offset 0x112, size 0x1
-//     unsigned char mFadeout; // offset 0x113, size 0x1
-//     unsigned char mColorXfm; // offset 0x114, size 0x1
-//     struct MatShaderOptions mShaderOptions; // offset 0x118, size 0x4
-//     int mDirty; // offset 0x11C, size 0x4
-// };
+RndMat* LookupOrCreateMat(const char*, ObjectDir*);

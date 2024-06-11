@@ -14,6 +14,23 @@ MatShaderOptions::MatShaderOptions() : i4(1), i1(1), b(0) {
 
 DECOMP_FORCEACTIVE(Mat, "%s.mat")
 
+RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
+    RndMat* mat = dynamic_cast<RndMat*>(dir->FindObject(MakeString("%s.mat", FileGetBase(shader, 0)), false));
+    if(!mat){
+        mat = dynamic_cast<RndMat*>(dir->FindObject(FileGetBase(shader, 0), false));
+        if(!mat){
+            bool editmode = TheLoadMgr.EditMode();
+            TheLoadMgr.SetEditMode(true);
+            mat = Hmx::Object::New<RndMat>();
+            if(shader){
+                mat->SetName(shader, dir);
+            }
+            TheLoadMgr.SetEditMode(editmode);
+        }
+    }
+    return mat;
+}
+
 MatPerfSettings::MatPerfSettings() : mRecvProjLights(0), mRecvPointCubeTex(0), mPS3ForceTrilinear(0) {
 
 }
@@ -26,7 +43,8 @@ void MatPerfSettings::Load(BinStream& bs){
 
 RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mEmissiveMap(this, 0), mRefractStrength(0.0f), mRefractNormalMap(this, 0),
     mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
-    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kDest), mTexGen(kTexGenNone) {
+    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kSrc), mTexGen(kTexGenNone), mTexWrap(kRepeat),
+    mZMode(kNormal), mStencilMode(kIgnore), mShaderVariation(kShaderVariation_None), unkb0p2(0), mDirty(3) {
     mEmissiveMultiplier = 1.0f;
     mTexXfm.Reset();
     ResetColors(mColorMod, 3);
