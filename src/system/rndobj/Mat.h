@@ -86,6 +86,7 @@ public:
 
     bool IsNextPass(RndMat*);
 
+    DECLARE_REVS
     NEW_OVERLOAD
     NEW_OBJ(RndMat)
     static void Init(){
@@ -122,6 +123,8 @@ public:
     
     Blend mBlend : 8; // 0xac
     TexGen mTexGen : 8;
+    int unkacp2 : 8;
+    int unkacp3 : 8;
     // unkac also has mBlend, texgen but bit shifted?
     // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
     // texgen = (int)(*(uint *)(this + 0xac) << 0x18 | *(uint *)(this + 0xac) >> 8) >> 0x18;

@@ -3,6 +3,8 @@
 #include "obj/Object.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(RndMat)
+
 MatShaderOptions::MatShaderOptions() : i4(1), i1(1), b(0) {
 
 }
@@ -33,17 +35,55 @@ BEGIN_LOADS(RndMat)
     LOAD_REVS(bs)
     ASSERT_REVS(68, 0) // SIXTY EIGHT???
     ASSERT_OLD_REV(25)
-    Hmx::Object::Load(bs);
-    int x; bs >> x;
-    mBlend = (Blend)x;
+    LOAD_SUPERCLASS(Hmx::Object)
+    int bs_ac; bs >> bs_ac;
+    mBlend = (Blend)bs_ac;
     bs >> mColor;
-    bool y; bs >> y;
-    mColorAdjust = y;
+    bool bs_a9_1; bs >> bs_a9_1;
+    mUseEnviron = bs_a9_1;
+    bool bs_a9_2; bs >> bs_a9_2;
+    mPreLit = bs_a9_2;
+    int bs_b0_1; bs >> bs_b0_1;
+    unkb0p1 = bs_b0_1;
+    bool bs_a9_3; bs >> bs_a9_3;
+    mAlphaCut = bs_a9_3;
+    if(gRev > 0x25) bs >> mAlphaThresh;
+    bool bs_a9_4; bs >> bs_a9_4;
+    mAlphaWrite = bs_a9_4;
+    int bs_ac_2; bs >> bs_ac_2;
+    mTexGen = (TexGen)bs_ac_2;
+    int bs_b0_0; bs >> bs_b0_0;
+    unkb0p0 = bs_b0_0;
 
+    bs >> mTexXfm;
+    bs >> mDiffuseTex;
+    bs >> mNextPass;
+    bool bs_ac_3; bs >> bs_ac_3;
+    unkb4p1 = 3;
+    unkacp2 = bs_ac_3; // wrong
+
+    Hmx::Color loc_color;
+    bs >> mEmissiveMultiplier;
+    bs >> loc_color;
+    {
+        MemDoTempAllocations(true, false);
+        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        bs >> texPtr;
+    }
+    bs >> mEmissiveMap;
+    {
+        MemDoTempAllocations(true, false);
+        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        bs >> texPtr;
+    }
+    if(gRev < 0x33){
+        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        bs >> texPtr;
+    }
 
     bs >> mRefractNormalMap;
     if (gRev < 0x41) {
-        mRefractStrength *= 0.15;
+        mRefractStrength *= 0.15f;
     } else mRefractStrength = 0;
 END_LOADS
 
