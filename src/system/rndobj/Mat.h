@@ -107,48 +107,42 @@ public:
     ObjPtr<RndTex, class ObjectDir> mEmissiveMap; // 0x7c
     float mRefractStrength; // 0x88
     ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
-    std::vector<Hmx::Color> unk98;
-    MatPerfSettings unka0;
-    MatShaderOptions unka4;
-    bool mIntensify : 1; // 0xa9?_0
-    bool mUseEnviron : 1; // 0xa9_1
-    bool mPreLit : 1; // 0xa9_2
-    bool mAlphaCut : 1; // 0xa9_3
-    bool mAlphaWrite : 1; // 0xa9_4
-    bool mCull : 1; // 0xa9_5
-    bool mPerPixelLit : 1; // 0xa9_6
-    bool mScreenAligned : 1; // 0xa9_7
+    std::vector<Hmx::Color> mColorMod; // 0x98
+    MatPerfSettings mPerfSettings;
+    MatShaderOptions mShaderOptions;
 
-    bool mRefractEnabled : 1; // 0xaa_0
+    // 0xac
+    bool mIntensify : 1;
+    bool mUseEnviron : 1;
+    bool mPreLit : 1;
+    bool mAlphaCut : 1;
+    bool mAlphaWrite : 1;
+    bool mCull : 1;
+    bool mPerPixelLit : 1;
+    bool mScreenAligned : 1;
+
+    // 0xad
+    bool mRefractEnabled : 1;
     bool mPointLights : 1;
     bool mFog : 1;
     bool mFadeout : 1;
     bool mColorAdjust : 1;
-    bool unk_aa_1 : 1;
-    bool unk_aa_2 : 1;
-    bool unk_0xaa_5 : 1;
+    unsigned char unkbool : 3;
+    // bool unk_aa_1 : 1;
+    // bool unk_aa_2 : 1;
+    // bool unk_0xaa_5 : 1;
     
-    Blend mBlend : 8; // 0xac
+    // 0xb0
+    Blend mBlend : 8;
     TexGen mTexGen : 8;
-    TexWrap mTexWrap : 8; // actually 0xb0
-    ZMode mZMode : 8; // actually 0xb0
-    // unkac also has mBlend, texgen but bit shifted?
-    // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
-    // texgen = (int)(*(uint *)(this + 0xac) << 0x18 | *(uint *)(this + 0xac) >> 8) >> 0x18;
-
-    // b0 = zMode and stencil mode, texwrap, shader_variation
-    // zmode = (int)(*(uint *)(this + 0xb0) << 8 | *(uint *)(this + 0xb0) >> 0x18) >> 0x18;
-    // stencil mode = (int)(*(uint *)(this + 0xb0) << 0x10 | *(uint *)(this + 0xb0) >> 0x10) >> 0x18;
-    // texwrap = *(int *)(this + 0xb0) >> 0x18;
-    // shader variation = (int)(*(uint *)(this + 0xb0) << 0x18 | *(uint *)(this + 0xb0) >> 8) >> 0x18
+    TexWrap mTexWrap : 8;
+    ZMode mZMode : 8;
+    
+    // 0xb4
     StencilMode mStencilMode : 8;
     ShaderVariation mShaderVariation : 8;
     int unkb0p2 : 8;
-    int unkb0p3 : 8;
-    int unkb4p0 : 8;
-    int unkb4p1 : 8;
-    int unkb4p2 : 8;
-    int unkb4p3 : 8;
+    int mDirty : 8;
 };
 
 #endif

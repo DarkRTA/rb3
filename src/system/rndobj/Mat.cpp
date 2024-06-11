@@ -65,7 +65,7 @@ BEGIN_LOADS(RndMat)
     bs >> mDiffuseTex;
     bs >> mNextPass;
     LOAD_BITFIELD(bool, mIntensify)
-    unkb0p3 = 3;
+    mDirty = 3;
 
     Hmx::Color loc_color;
     LOAD_BITFIELD(bool, mCull)
@@ -212,7 +212,7 @@ BEGIN_LOADS(RndMat)
         Hmx::Color col32;
         bs >> col32;
     }
-    ResetColors(unk98, 3);
+    ResetColors(mColorMod, 3);
     if((u16)(gRev - 0x34) <= 0xF){
         std::vector<Hmx::Color> vec;
         Hmx::Color col34;
@@ -239,14 +239,14 @@ BEGIN_LOADS(RndMat)
     if((u16)(gRev - 0x37) <= 7){
         bool b;
         bs >> b;
-        unka0.mPS3ForceTrilinear = b;
+        mPerfSettings.mPS3ForceTrilinear = b;
     }
     if(gRev == 0x38){
         int i, j;
         bs >> i >> j;
     }
     if(gRev > 0x3E){
-        unka0.Load(bs);
+        mPerfSettings.Load(bs);
     }
     if(gRev > 0x3F){
         LOAD_BITFIELD(bool, mRefractEnabled)
@@ -272,13 +272,13 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mIntensify = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
     }
-    SYNC_PROP_MODIFY_ALT(color, mColor, unkb0p3 |= 1)
-    SYNC_PROP_MODIFY(alpha, mColor.alpha, unkb0p3 |= 1)
+    SYNC_PROP_MODIFY_ALT(color, mColor, mDirty |= 1)
+    SYNC_PROP_MODIFY(alpha, mColor.alpha, mDirty |= 1)
     {
         static Symbol _s("use_environ");
         bool bit = mUseEnviron;
@@ -286,7 +286,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mUseEnviron = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -298,7 +298,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mBlend = (Blend)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -310,7 +310,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mZMode = (ZMode)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -322,7 +322,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mStencilMode = (StencilMode)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -334,7 +334,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mTexGen = (TexGen)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -346,7 +346,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mTexWrap = (TexWrap)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -358,13 +358,13 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mShaderVariation = (ShaderVariation)bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
     }
-    SYNC_PROP_MODIFY_ALT(tex_xfm, mTexXfm, unkb0p3 |= 2)
-    SYNC_PROP_MODIFY_ALT(diffuse_tex, mDiffuseTex, unkb0p3 |= 2)
+    SYNC_PROP_MODIFY_ALT(tex_xfm, mTexXfm, mDirty |= 2)
+    SYNC_PROP_MODIFY_ALT(diffuse_tex, mDiffuseTex, mDirty |= 2)
     {
         static Symbol _s("prelit");
         bool bit = mPreLit;
@@ -372,7 +372,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mPreLit = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -384,12 +384,12 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mAlphaCut = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
     }
-    SYNC_PROP_MODIFY(alpha_threshold, mAlphaThresh, unkb0p3 |= 2)
+    SYNC_PROP_MODIFY(alpha_threshold, mAlphaThresh, mDirty |= 2)
     {
         static Symbol _s("alpha_write");
         bool bit = mAlphaWrite;
@@ -397,7 +397,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mAlphaWrite = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -410,7 +410,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mCull = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -422,13 +422,13 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mPerPixelLit = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
     }
-    SYNC_PROP_MODIFY(emissive_multiplier, mEmissiveMultiplier, unkb0p3 |= 2)
-    SYNC_PROP_MODIFY_ALT(emissive_map, mEmissiveMap, unkb0p3 |= 2)
+    SYNC_PROP_MODIFY(emissive_multiplier, mEmissiveMultiplier, mDirty |= 2)
+    SYNC_PROP_MODIFY_ALT(emissive_map, mEmissiveMap, mDirty |= 2)
     {
         static Symbol _s("refract_enabled");
         bool bit = mRefractEnabled;
@@ -436,13 +436,13 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mRefractEnabled = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
     }
-    SYNC_PROP_MODIFY(refract_strength, mRefractStrength, unkb0p3 |= 2)
-    SYNC_PROP_MODIFY_ALT(refract_normal_map, mRefractNormalMap, unkb0p3 |= 2)
+    SYNC_PROP_MODIFY(refract_strength, mRefractStrength, mDirty |= 2)
+    SYNC_PROP_MODIFY_ALT(refract_normal_map, mRefractNormalMap, mDirty |= 2)
     {
         static Symbol _s("screen_aligned");
         bool bit = mScreenAligned;
@@ -450,7 +450,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mScreenAligned = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb0p3 |= 2;
+                mDirty |= 2;
             }
             return ret;
         }
@@ -487,8 +487,8 @@ BEGIN_PROPSYNCS(RndMat)
             return true;
         }
     }
-    SYNC_PROP_SET(recv_proj_lights, unka0.mRecvProjLights, unka0.mRecvProjLights = _val.Int(0) > 0)
-    SYNC_PROP_SET(recv_point_cube_tex, unka0.mRecvPointCubeTex, unka0.mRecvPointCubeTex = _val.Int(0) > 0)
-    SYNC_PROP_SET(ps3_force_trilinear, unka0.mPS3ForceTrilinear, unka0.mPS3ForceTrilinear = _val.Int(0) > 0)
+    SYNC_PROP_SET(recv_proj_lights, mPerfSettings.mRecvProjLights, mPerfSettings.mRecvProjLights = _val.Int(0) > 0)
+    SYNC_PROP_SET(recv_point_cube_tex, mPerfSettings.mRecvPointCubeTex, mPerfSettings.mRecvPointCubeTex = _val.Int(0) > 0)
+    SYNC_PROP_SET(ps3_force_trilinear, mPerfSettings.mPS3ForceTrilinear, mPerfSettings.mPS3ForceTrilinear = _val.Int(0) > 0)
 END_PROPSYNCS
 #pragma pop
