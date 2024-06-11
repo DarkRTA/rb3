@@ -18,6 +18,7 @@ void TestMaterialTextures(ObjectDir*);
 void RndScaleObject(Hmx::Object*, float, float);
 const char* CacheResource(const char*, Hmx::Object*);
 bool AnimContains(const RndAnimatable*, const RndAnimatable*);
+void ResetColors(std::vector<Hmx::Color>&, int);
 
 void RndUtlPreInit();
 void RndUtlInit();

@@ -102,7 +102,7 @@ public:
     ObjPtr<RndTex, class ObjectDir> mEmissiveMap; // 0x7c
     float mRefractStrength; // 0x88
     ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
-    std::vector<int> unk98;
+    std::vector<Hmx::Color> unk98;
     MatPerfSettings unka0;
     MatShaderOptions unka4;
     bool mIntensify : 1; // 0xa9?_0

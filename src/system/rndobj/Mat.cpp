@@ -1,6 +1,7 @@
 #include "rndobj/Mat.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndMat)
@@ -66,13 +67,13 @@ BEGIN_LOADS(RndMat)
     bs >> mEmissiveMultiplier;
     bs >> loc_color;
     {
-        MemDoTempAllocations(true, false);
+        MemDoTempAllocations tmp(true, false);
         ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
         bs >> texPtr;
     }
     bs >> mEmissiveMap;
     {
-        MemDoTempAllocations(true, false);
+        MemDoTempAllocations tmp(true, false);
         ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
         bs >> texPtr;
     }
@@ -80,11 +81,169 @@ BEGIN_LOADS(RndMat)
         ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
         bs >> texPtr;
     }
+    {
+        MemDoTempAllocations tmp(true, false);
+        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        bs >> texPtr;
+    }
+    if(gRev > 0x3C){
+        bool b;
+        bs >> b;
+        if(gRev > 0x42){
+            bool b2;
+            bs >> b2;
+        }
+    }
+    if(gRev > 0x19){
+        bool b;
+        bs >> b;
+        unkacp2 = 1; // wrong
+    }
+    if(gRev - 0x1B < 0x17){
+        bool b;
+        bs >> b;
+    }
+    if(gRev > 0x1B){
+        int bs_b0_2;
+        bs >> bs_b0_2;
+        unkb0p2 = bs_b0_2;
+    }
+    if(gRev - 0x1D < 0xC){
+        Symbol sym;
+        bs >> sym;
+    }
+    {
+        MemDoTempAllocations tmp(true, false);
+        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        bs >> texPtr;
+    }
+    if(gRev - 0x22 < 0xF){
+        Hmx::Color color2;
+        bool b;
+        bs >> b >> color2;
+        if(gRev > 0x22){
+            MemDoTempAllocations tmp(true, false);
+            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            bs >> texPtr;
+        }
+    }
+    if(gRev > 0x23){
+        int i;
+        bs >> i >> i;
+    }
+    if(gRev > 0x26){
+        if(gRev < 0x2A){
+            bool b;
+            bs >> b;
+        }
+        int i;
+        bs >> i >> i;
+        if(gRev < 0x2A){
+            Hmx::Color color2;
+            bool b2;
+            bs >> b2 >> color2;
+        }
+        {
+            MemDoTempAllocations tmp(true, false);
+            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            bs >> texPtr;
+        }
+        if(gRev < 0x2A){
+            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            bs >> texPtr;
+        }
+    }
+    if(gRev > 0x2A){
+        if(gRev > 0x2C){
 
-    bs >> mRefractNormalMap;
-    if (gRev < 0x41) {
-        mRefractStrength *= 0.15f;
-    } else mRefractStrength = 0;
+        }
+        else {
+
+        }
+    }
+    if(gRev > 0x2F){
+        {
+            MemDoTempAllocations tmp(true, false);
+            Hmx::Color color2f;
+            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            bs >> color2f;
+            bs >> texPtr;
+            if(gRev > 0x3A){
+                bool b;
+                bs >> b;
+            }
+            else {
+                bool b;
+                bs >> b;
+            }
+        }
+    }
+    if(gRev > 0x30){
+        unsigned char uc;
+        bs >> uc;
+        unkacp3 = uc;
+    }
+    if(gRev == 0x32){
+        unsigned char uc;
+        bs >> uc;
+        if(uc != '\0'){
+            unkb0p3 = 1;
+        }
+    }
+    if(gRev > 0x32){
+        int i;
+        bs >> i;
+        unkb0p3 = i;
+        Hmx::Color col32;
+        bs >> col32;
+    }
+    ResetColors(unk98, 3);
+    if(gRev - 0x34 < 0x10){
+        std::vector<Hmx::Color> vec;
+        Hmx::Color col34;
+        if(gRev < 0x35){
+            bool b;
+            bs >> b;
+        }
+        else {
+            int i;
+            bs >> i;
+        }
+        if(gRev - 0x35 < 7){
+            bs >> col34;
+        }
+        if(gRev > 0x3B){
+            MemDoTempAllocations tmp(true, false);
+            bs >> vec;
+        }
+    }
+    if(gRev - 0x36 < 8){
+        ObjPtr<Hmx::Object, ObjectDir> objPtr(this, 0);
+        bs >> objPtr;
+    }
+    if(gRev - 0x37 < 8){
+        bool b;
+        bs >> b;
+        unka0.mRecvProjLights = b;
+    }
+    if(gRev == 0x38){
+        int i, j;
+        bs >> i >> j;
+    }
+    if(gRev > 0x3E){
+        unka0.Load(bs);
+    }
+    if(gRev > 0x3F){
+        bool b;
+        bs >> b;
+        unkacp3 = b;
+        bs >> mRefractStrength;
+        bs >> mRefractNormalMap;
+        if (gRev < 0x41) {
+            if(unkacp3) mRefractStrength *= 0.15f;
+            else mRefractStrength = 0;
+        } 
+    }
 END_LOADS
 
 #pragma push
