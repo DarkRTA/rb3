@@ -8,11 +8,9 @@
 
 INIT_REVS(RndMat)
 
-MatShaderOptions::MatShaderOptions() : i4(1), i1(1), b(0) {
-
+MatShaderOptions::MatShaderOptions() : mTempMat(0) {
+    pack = mTempMat | 0x12;
 }
-
-DECOMP_FORCEACTIVE(Mat, "%s.mat")
 
 RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
     RndMat* mat = dynamic_cast<RndMat*>(dir->FindObject(MakeString("%s.mat", FileGetBase(shader, 0)), false));
@@ -63,7 +61,7 @@ bool RndMat::IsNextPass(RndMat* m) {
 
 BEGIN_LOADS(RndMat)
     LOAD_REVS(bs)
-    ASSERT_REVS(68, 0) // SIXTY EIGHT???
+    ASSERT_REVS(68, 0)
     ASSERT_OLD_REV(25)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_BITFIELD_ENUM(int, mBlend, Blend)

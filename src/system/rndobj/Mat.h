@@ -63,18 +63,35 @@ struct MatPerfSettings {
     // bool b7 : 1;
 };
 
+struct bf {
+    uint val;
+};
+
 struct MatShaderOptions {
     MatShaderOptions();
-    uint itop : 24;
-    uint i7 : 1;
-    uint i6 : 1;
-    uint i5 : 1;
-    uint i4 : 1;
-    uint i3 : 1;
-    uint i2 : 1;
-    uint i1 : 1;
-    uint i0 : 1;
-    bool b; 
+    union {
+        struct {
+            int itop : 24;
+            int i7 : 1;
+            int i6 : 1;
+            int i5 : 1;
+            int i4 : 1;
+            int i3 : 1;
+            int i2 : 1;
+            int i1 : 1;
+            int i0 : 1;
+        } shader_struct;
+        u32 pack;
+
+        // from bank 5
+        uint value;
+        bf shaderType;
+        bf billboard;
+        bf skinned;
+        bf useAO;
+    };
+
+    bool mTempMat;
 };
 
 class RndMat : public Hmx::Object {
