@@ -126,7 +126,7 @@ public:
     Blend mBlend : 8; // 0xac
     TexGen mTexGen : 8;
     int unkacp2 : 8; // actually 0xb0
-    int unkacp3 : 8; // actually 0xb0
+    ZMode mZMode : 8; // actually 0xb0
     // unkac also has mBlend, texgen but bit shifted?
     // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
     // texgen = (int)(*(uint *)(this + 0xac) << 0x18 | *(uint *)(this + 0xac) >> 8) >> 0x18;
@@ -136,7 +136,7 @@ public:
     // stencil mode = (int)(*(uint *)(this + 0xb0) << 0x10 | *(uint *)(this + 0xb0) >> 0x10) >> 0x18;
     // texwrap = *(int *)(this + 0xb0) >> 0x18;
     // shader variation = (int)(*(uint *)(this + 0xb0) << 0x18 | *(uint *)(this + 0xb0) >> 8) >> 0x18
-    int unkb0p0 : 8;
+    StencilMode mStencilMode : 8;
     int unkb0p1 : 8;
     int unkb0p2 : 8;
     int unkb0p3 : 8;

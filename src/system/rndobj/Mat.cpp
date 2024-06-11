@@ -48,7 +48,10 @@ BEGIN_LOADS(RndMat)
     bs >> mColor;
     LOAD_BITFIELD(bool, mUseEnviron)
     LOAD_BITFIELD(bool, mPreLit)
-    LOAD_BITFIELD(int, unkacp3)
+    
+    int bs_acp3; bs >> bs_acp3;
+    mZMode = (ZMode)bs_acp3;
+
     LOAD_BITFIELD(bool, mAlphaCut)
     if(gRev > 0x25) bs >> mAlphaThresh;
     LOAD_BITFIELD(bool, mAlphaWrite)
@@ -104,7 +107,8 @@ BEGIN_LOADS(RndMat)
         bs >> b;
     }
     if(gRev > 0x1B){
-        LOAD_BITFIELD(int, unkb0p0)
+        int bs_b0p0; bs >> bs_b0p0;
+        mStencilMode = (StencilMode)bs_b0p0;
     }
     if((u16)(gRev - 0x1D) <= 0xB){
         Symbol sym;
@@ -251,6 +255,8 @@ BEGIN_LOADS(RndMat)
     }
 END_LOADS
 
+// temporary
+DECOMP_FORCEACTIVE(Mat, "m", "index >= 0 && index < kColorModNum", "%s(%d): %s unhandled msg: %s", "ffffff")
 
 #pragma push
 #pragma pool_data off
@@ -283,10 +289,10 @@ BEGIN_PROPSYNCS(RndMat)
     }
     {
         static Symbol _s("blend");
-        Blend bit = mBlend;
+        int bit = mBlend;
         if(sym == _s){
-            bool ret = PropSync((int&)bit, _val, _prop, _i + 1, _op);
-            mBlend = bit;
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mBlend = (Blend)bit;
             if(!(_op & (kPropSize|kPropGet))){
                 unkb0p3 |= 2;
             }
@@ -295,10 +301,10 @@ BEGIN_PROPSYNCS(RndMat)
     }
     {
         static Symbol _s("z_mode");
-        int bit = unkacp3;
+        int bit = mZMode;
         if(sym == _s){
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
-            unkacp3 = bit;
+            mZMode = (ZMode)bit;
             if(!(_op & (kPropSize|kPropGet))){
                 unkb0p3 |= 2;
             }
@@ -307,10 +313,10 @@ BEGIN_PROPSYNCS(RndMat)
     }
     {
         static Symbol _s("stencil_mode");
-        int bit = unkb0p0;
+        int bit = mStencilMode;
         if(sym == _s){
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
-            unkb0p0 = bit;
+            mStencilMode = (StencilMode)bit;
             if(!(_op & (kPropSize|kPropGet))){
                 unkb0p3 |= 2;
             }
