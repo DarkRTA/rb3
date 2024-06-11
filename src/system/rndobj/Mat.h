@@ -119,12 +119,14 @@ public:
     bool mFog : 1;
     bool mFadeout : 1;
     bool mColorAdjust : 1;
-    bool unk_0xaa_5 : 3;
+    bool unk_aa_1 : 1;
+    bool unk_aa_2 : 1;
+    bool unk_0xaa_5 : 1;
     
     Blend mBlend : 8; // 0xac
     TexGen mTexGen : 8;
-    int unkacp2 : 8;
-    int unkacp3 : 8;
+    int unkacp2 : 8; // actually 0xb0
+    int unkacp3 : 8; // actually 0xb0
     // unkac also has mBlend, texgen but bit shifted?
     // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
     // texgen = (int)(*(uint *)(this + 0xac) << 0x18 | *(uint *)(this + 0xac) >> 8) >> 0x18;

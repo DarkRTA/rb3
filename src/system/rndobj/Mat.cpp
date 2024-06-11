@@ -44,8 +44,10 @@ BEGIN_LOADS(RndMat)
     mUseEnviron = bs_a9_1;
     bool bs_a9_2; bs >> bs_a9_2;
     mPreLit = bs_a9_2;
+
     int bs_b0_1; bs >> bs_b0_1;
-    unkb0p1 = bs_b0_1;
+    unkacp3 = bs_b0_1;
+    
     bool bs_a9_3; bs >> bs_a9_3;
     mAlphaCut = bs_a9_3;
     if(gRev > 0x25) bs >> mAlphaThresh;
@@ -53,17 +55,20 @@ BEGIN_LOADS(RndMat)
     mAlphaWrite = bs_a9_4;
     int bs_ac_2; bs >> bs_ac_2;
     mTexGen = (TexGen)bs_ac_2;
+
     int bs_b0_0; bs >> bs_b0_0;
-    unkb0p0 = bs_b0_0;
+    unkacp2 = bs_b0_0;
 
     bs >> mTexXfm;
     bs >> mDiffuseTex;
     bs >> mNextPass;
     bool bs_ac_3; bs >> bs_ac_3;
-    unkb4p1 = 3;
-    unkacp2 = bs_ac_3; // wrong
+    mIntensify = bs_ac_3;
+    unkb0p3 = 3;
 
     Hmx::Color loc_color;
+    bool asdf; bs >> asdf;
+    mCull = asdf;
     bs >> mEmissiveMultiplier;
     bs >> loc_color;
     {
@@ -97,18 +102,19 @@ BEGIN_LOADS(RndMat)
     if(gRev > 0x19){
         bool b;
         bs >> b;
-        unkacp2 = 1; // wrong
+        mPerPixelLit = b;
+        mScreenAligned = b;
     }
-    if(gRev - 0x1B < 0x17){
+    if((unsigned short)(gRev - 0x1B) <= 0x16U){
         bool b;
         bs >> b;
     }
     if(gRev > 0x1B){
         int bs_b0_2;
         bs >> bs_b0_2;
-        unkb0p2 = bs_b0_2;
+        unkb0p0 = bs_b0_2;
     }
-    if(gRev - 0x1D < 0xC){
+    if((u16)(gRev - 0x1D) <= 0xB){
         Symbol sym;
         bs >> sym;
     }
@@ -117,7 +123,7 @@ BEGIN_LOADS(RndMat)
         ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
         bs >> texPtr;
     }
-    if(gRev - 0x22 < 0xF){
+    if((u16)(gRev - 0x22) <= 0xE){
         Hmx::Color color2;
         bool b;
         bs >> b >> color2;
@@ -140,7 +146,7 @@ BEGIN_LOADS(RndMat)
         bs >> i >> i;
         if(gRev < 0x2A){
             Hmx::Color color2;
-            bool b2;
+            int b2;
             bs >> b2 >> color2;
         }
         {
@@ -155,10 +161,31 @@ BEGIN_LOADS(RndMat)
     }
     if(gRev > 0x2A){
         if(gRev > 0x2C){
-
+            bool b;
+            bs >> b;
+            mPointLights = b;
         }
         else {
-
+            int i;
+            bs >> i;
+            mPointLights = i;
+        }
+        if(gRev < 0x3F){
+            bool b; bs >> b;
+        }
+        bool b2a_1;
+        bs >> b2a_1;
+        mFog = b2a_1;
+        bool b2a_2;
+        bs >> b2a_2;
+        mFadeout = b2a_2;
+        if((u16)(gRev - 0x2C) <= 1){
+            bool b; bs >> b;
+        }
+        if(gRev > 0x2E){
+            bool b;
+            bs >> b;
+            mColorAdjust = b;
         }
     }
     if(gRev > 0x2F){
@@ -168,7 +195,7 @@ BEGIN_LOADS(RndMat)
             ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
             bs >> color2f;
             bs >> texPtr;
-            if(gRev > 0x3A){
+            if(gRev > 0x39){
                 bool b;
                 bs >> b;
             }
@@ -179,26 +206,26 @@ BEGIN_LOADS(RndMat)
         }
     }
     if(gRev > 0x30){
-        unsigned char uc;
+        bool uc;
         bs >> uc;
-        unkacp3 = uc;
+        mScreenAligned = uc;
     }
     if(gRev == 0x32){
-        unsigned char uc;
+        bool uc;
         bs >> uc;
-        if(uc != '\0'){
-            unkb0p3 = 1;
+        if(uc){
+            unkb0p1 = 1;
         }
     }
     if(gRev > 0x32){
         int i;
         bs >> i;
-        unkb0p3 = i;
+        unkb0p1 = i;
         Hmx::Color col32;
         bs >> col32;
     }
     ResetColors(unk98, 3);
-    if(gRev - 0x34 < 0x10){
+    if((u16)(gRev - 0x34) <= 0xF){
         std::vector<Hmx::Color> vec;
         Hmx::Color col34;
         if(gRev < 0x35){
@@ -209,22 +236,22 @@ BEGIN_LOADS(RndMat)
             int i;
             bs >> i;
         }
-        if(gRev - 0x35 < 7){
+        if((u16)(gRev - 0x35) <= 6){
             bs >> col34;
         }
-        if(gRev > 0x3B){
+        if(gRev >= 0x3C){
             MemDoTempAllocations tmp(true, false);
             bs >> vec;
         }
     }
-    if(gRev - 0x36 < 8){
+    if((u16)(gRev - 0x36) <= 7){
         ObjPtr<Hmx::Object, ObjectDir> objPtr(this, 0);
         bs >> objPtr;
     }
-    if(gRev - 0x37 < 8){
+    if((u16)(gRev - 0x37) <= 7){
         bool b;
         bs >> b;
-        unka0.mRecvProjLights = b;
+        unka0.mPS3ForceTrilinear = b;
     }
     if(gRev == 0x38){
         int i, j;
@@ -236,11 +263,11 @@ BEGIN_LOADS(RndMat)
     if(gRev > 0x3F){
         bool b;
         bs >> b;
-        unkacp3 = b;
+        mRefractEnabled = b;
         bs >> mRefractStrength;
         bs >> mRefractNormalMap;
         if (gRev < 0x41) {
-            if(unkacp3) mRefractStrength *= 0.15f;
+            if(mRefractEnabled) mRefractStrength *= 0.15f;
             else mRefractStrength = 0;
         } 
     }
