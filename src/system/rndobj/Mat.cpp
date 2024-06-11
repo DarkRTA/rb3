@@ -2,6 +2,8 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "rndobj/Utl.h"
+#include "rndobj/Rnd.h"
+#include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndMat)
@@ -255,10 +257,59 @@ END_LOADS
 // temporary
 DECOMP_FORCEACTIVE(Mat, "m", "index >= 0 && index < kColorModNum", "%s(%d): %s unhandled msg: %s")
 
-#define kColorModNum 2 // hack
+#define kColorModNum 3 // hack
 
 void RndMat::SetColorMod(const Hmx::Color& col, int index){
     MILO_ASSERT(index >= 0 && index < kColorModNum, 0x2D4);
+    mColorMod[index] = col;
+    mDirty |= 2;
+}
+
+bool RndMat::GetRefractEnabled(bool b){
+    bool ret = false;
+    if(mRefractEnabled && mRefractStrength > 0.0f && mRefractNormalMap){
+        if(b){
+            if(TheRnd->GetCurrentFrameTex(false)){
+                ret = true;
+            }
+        }
+    }
+    return ret;
+}
+
+RndTex* RndMat::GetRefractNormalMap(){ return mRefractNormalMap; }
+float RndMat::GetRefractStrength(){ return mRefractStrength; }
+
+BEGIN_HANDLERS(RndMat)
+    HANDLE(allowed_next_pass, OnAllowedNextPass)
+    HANDLE(allowed_normal_map, OnAllowedNormalMap)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x305)
+END_HANDLERS
+
+DataNode RndMat::OnAllowedNextPass(const DataArray* da){
+    int matcount = 0;
+    for(ObjDirItr<RndMat> it(Dir(), true); it != 0; ++it){
+        matcount++;
+    }
+    DataArrayPtr ptr(new DataArray(matcount + 2));
+    int thiscount = 1;
+    ptr.Node(0) = DataNode((Hmx::Object*)0);
+    if(mNextPass){
+        thiscount = 2;
+        ptr.Node(1) = DataNode(mNextPass);
+    }
+    for(ObjDirItr<RndMat> it(Dir(), true); it != 0; ++it){
+        if(!IsNextPass(it)){
+            ptr.Node(thiscount++) = DataNode(it);
+        }
+    }
+    ((DataArray*)ptr)->Resize(thiscount);
+    return DataNode(ptr);
+}
+
+DataNode RndMat::OnAllowedNormalMap(const DataArray* da){
+    return GetNormalMapTextures(Dir());
 }
 
 #pragma push

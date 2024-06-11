@@ -80,7 +80,7 @@ struct MatShaderOptions {
 class RndMat : public Hmx::Object {
 public:
     RndMat();
-    virtual ~RndMat();
+    virtual ~RndMat(){}
     OBJ_CLASSNAME(Mat);
     OBJ_SET_TYPE(Mat);
     virtual DataNode Handle(DataArray*, bool);
@@ -91,6 +91,12 @@ public:
 
     bool IsNextPass(RndMat*);
     void SetColorMod(const Hmx::Color&, int);
+    bool GetRefractEnabled(bool);
+    RndTex* GetRefractNormalMap();
+    float GetRefractStrength();
+
+    DataNode OnAllowedNextPass(const DataArray*);
+    DataNode OnAllowedNormalMap(const DataArray*);
 
     DECLARE_REVS
     NEW_OVERLOAD

@@ -24,6 +24,7 @@ void RndUtlPreInit();
 void RndUtlInit();
 void RndUtlTerminate();
 
+DataNode GetNormalMapTextures(ObjectDir*);
 DataNode GetRenderTextures(ObjectDir*);
 DataNode GetRenderTexturesNoZ(ObjectDir*);
 
