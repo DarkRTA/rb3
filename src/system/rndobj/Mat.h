@@ -43,6 +43,11 @@ enum TexWrap {
     kBorderBlack = 2,
     kBorderWhite = 3,
 };
+enum ShaderVariation {
+    kShaderVariation_None,
+    kShaderVariation_Skin,
+    kShaderVariation_Hair
+};
 
 struct MatPerfSettings {
     MatPerfSettings();
@@ -125,7 +130,7 @@ public:
     
     Blend mBlend : 8; // 0xac
     TexGen mTexGen : 8;
-    int unkacp2 : 8; // actually 0xb0
+    TexWrap mTexWrap : 8; // actually 0xb0
     ZMode mZMode : 8; // actually 0xb0
     // unkac also has mBlend, texgen but bit shifted?
     // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
@@ -137,7 +142,7 @@ public:
     // texwrap = *(int *)(this + 0xb0) >> 0x18;
     // shader variation = (int)(*(uint *)(this + 0xb0) << 0x18 | *(uint *)(this + 0xb0) >> 8) >> 0x18
     StencilMode mStencilMode : 8;
-    int unkb0p1 : 8;
+    ShaderVariation mShaderVariation : 8;
     int unkb0p2 : 8;
     int unkb0p3 : 8;
     int unkb4p0 : 8;

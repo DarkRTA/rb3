@@ -57,7 +57,10 @@ BEGIN_LOADS(RndMat)
     LOAD_BITFIELD(bool, mAlphaWrite)
     int bs_ac_2; bs >> bs_ac_2;
     mTexGen = (TexGen)bs_ac_2;
-    LOAD_BITFIELD(int, unkacp2)
+
+    int bs_acp2; bs >> bs_acp2;
+    mTexWrap = (TexWrap)bs_acp2;
+
     bs >> mTexXfm;
     bs >> mDiffuseTex;
     bs >> mNextPass;
@@ -200,11 +203,12 @@ BEGIN_LOADS(RndMat)
         bool uc;
         bs >> uc;
         if(uc){
-            unkb0p1 = 1;
+            mShaderVariation = kShaderVariation_Skin;
         }
     }
     if(gRev > 0x32){
-        LOAD_BITFIELD(int, unkb0p1)
+        int bs_svar; bs >> bs_svar;
+        mShaderVariation = (ShaderVariation)bs_svar;
         Hmx::Color col32;
         bs >> col32;
     }
@@ -337,10 +341,10 @@ BEGIN_PROPSYNCS(RndMat)
     }
     {
         static Symbol _s("tex_wrap");
-        int bit = unkacp2;
+        int bit = mTexWrap;
         if(sym == _s){
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
-            unkacp2 = bit;
+            mTexWrap = (TexWrap)bit;
             if(!(_op & (kPropSize|kPropGet))){
                 unkb0p3 |= 2;
             }
@@ -349,10 +353,10 @@ BEGIN_PROPSYNCS(RndMat)
     }
     {
         static Symbol _s("shader_variation");
-        int bit = unkb0p1;
+        int bit = mShaderVariation;
         if(sym == _s){
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
-            unkb0p1 = bit;
+            mShaderVariation = (ShaderVariation)bit;
             if(!(_op & (kPropSize|kPropGet))){
                 unkb0p3 |= 2;
             }
