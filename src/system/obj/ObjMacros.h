@@ -305,6 +305,12 @@ void objType::Load(BinStream& bs){
     name = bs_name; \
 }
 
+#define LOAD_BITFIELD_ENUM(type, name, enum_name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = (enum_name)bs_name; \
+}
+
 #define END_LOADS \
 }
 

@@ -43,24 +43,16 @@ BEGIN_LOADS(RndMat)
     ASSERT_REVS(68, 0) // SIXTY EIGHT???
     ASSERT_OLD_REV(25)
     LOAD_SUPERCLASS(Hmx::Object)
-    int bs_ac; bs >> bs_ac;
-    mBlend = (Blend)bs_ac;
+    LOAD_BITFIELD_ENUM(int, mBlend, Blend)
     bs >> mColor;
     LOAD_BITFIELD(bool, mUseEnviron)
     LOAD_BITFIELD(bool, mPreLit)
-    
-    int bs_acp3; bs >> bs_acp3;
-    mZMode = (ZMode)bs_acp3;
-
+    LOAD_BITFIELD_ENUM(int, mZMode, ZMode)
     LOAD_BITFIELD(bool, mAlphaCut)
     if(gRev > 0x25) bs >> mAlphaThresh;
     LOAD_BITFIELD(bool, mAlphaWrite)
-    int bs_ac_2; bs >> bs_ac_2;
-    mTexGen = (TexGen)bs_ac_2;
-
-    int bs_acp2; bs >> bs_acp2;
-    mTexWrap = (TexWrap)bs_acp2;
-
+    LOAD_BITFIELD_ENUM(int, mTexGen, TexGen)
+    LOAD_BITFIELD_ENUM(int, mTexWrap, TexWrap)
     bs >> mTexXfm;
     bs >> mDiffuseTex;
     bs >> mNextPass;
@@ -110,8 +102,7 @@ BEGIN_LOADS(RndMat)
         bs >> b;
     }
     if(gRev > 0x1B){
-        int bs_b0p0; bs >> bs_b0p0;
-        mStencilMode = (StencilMode)bs_b0p0;
+        LOAD_BITFIELD_ENUM(int, mStencilMode, StencilMode)
     }
     if((u16)(gRev - 0x1D) <= 0xB){
         Symbol sym;
@@ -207,8 +198,7 @@ BEGIN_LOADS(RndMat)
         }
     }
     if(gRev > 0x32){
-        int bs_svar; bs >> bs_svar;
-        mShaderVariation = (ShaderVariation)bs_svar;
+        LOAD_BITFIELD_ENUM(int, mShaderVariation, ShaderVariation)
         Hmx::Color col32;
         bs >> col32;
     }
