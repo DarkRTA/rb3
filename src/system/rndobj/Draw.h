@@ -52,6 +52,7 @@ public:
     bool DrawBudget(float);
     bool CollideSphere(const Segment&);
     RndDrawable* Collide(const Segment&, float&, Plane&);
+    bool Showing() const { return mShowing; }
     static void DumpLoad(BinStream&);
     static HighlightStyle sHighlightStyle;
     static float sNormalDisplayLength;

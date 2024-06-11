@@ -31,6 +31,9 @@ public:
     virtual void DrawBefore(){}
     virtual void DrawAfter(){}
 
+    void DrawToTexture();
+    void InitTexture();
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
