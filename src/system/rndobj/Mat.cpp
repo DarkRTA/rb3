@@ -14,6 +14,12 @@ MatPerfSettings::MatPerfSettings() : mRecvProjLights(0), mRecvPointCubeTex(0), m
 
 }
 
+void MatPerfSettings::Load(BinStream& bs){
+    LOAD_BITFIELD(bool, mRecvProjLights)
+    LOAD_BITFIELD(bool, mPS3ForceTrilinear)
+    if(RndMat::gRev > 0x41) LOAD_BITFIELD(bool, mRecvPointCubeTex)
+}
+
 RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mEmissiveMap(this, 0), mRefractStrength(0.0f), mRefractNormalMap(this, 0),
     mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
     mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kDest), mTexGen(kTexGenNone) {
@@ -255,7 +261,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mIntensify = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb4p3 = 2;
+                unkb0p3 = 2;
             }
             return ret;
         }
