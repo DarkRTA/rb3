@@ -176,6 +176,11 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     SYNC_PROP(_s, member) \
 }
 
+#define SYNC_PROP_SET_STATIC(symbol, member, func) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_SET(_s, member, func) \
+}
+
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
     NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_MODIFY(_s, member, func) \

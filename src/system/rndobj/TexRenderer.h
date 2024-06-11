@@ -33,6 +33,7 @@ public:
 
     void DrawToTexture();
     void InitTexture();
+    DataNode OnGetRenderTextures(DataArray*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

@@ -23,6 +23,7 @@ void RndUtlPreInit();
 void RndUtlInit();
 void RndUtlTerminate();
 
+DataNode GetRenderTextures(ObjectDir*);
 DataNode GetRenderTexturesNoZ(ObjectDir*);
 
 #endif // RNDOBJ_UTL_H
