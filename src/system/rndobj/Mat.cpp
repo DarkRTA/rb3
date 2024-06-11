@@ -10,6 +10,8 @@ MatShaderOptions::MatShaderOptions() : i4(1), i1(1), b(0) {
 
 }
 
+DECOMP_FORCEACTIVE(Mat, "%s.mat")
+
 MatPerfSettings::MatPerfSettings() : mRecvProjLights(0), mRecvPointCubeTex(0), mPS3ForceTrilinear(0) {
 
 }
@@ -25,6 +27,7 @@ RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mE
     mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kDest), mTexGen(kTexGenNone) {
     mEmissiveMultiplier = 1.0f;
     mTexXfm.Reset();
+    ResetColors(mColorMod, 3);
 }
 
 SAVE_OBJ(RndMat, 159)
@@ -250,7 +253,13 @@ BEGIN_LOADS(RndMat)
 END_LOADS
 
 // temporary
-DECOMP_FORCEACTIVE(Mat, "m", "index >= 0 && index < kColorModNum", "%s(%d): %s unhandled msg: %s", "ffffff")
+DECOMP_FORCEACTIVE(Mat, "m", "index >= 0 && index < kColorModNum", "%s(%d): %s unhandled msg: %s")
+
+#define kColorModNum 2 // hack
+
+void RndMat::SetColorMod(const Hmx::Color& col, int index){
+    MILO_ASSERT(index >= 0 && index < kColorModNum, 0x2D4);
+}
 
 #pragma push
 #pragma pool_data off

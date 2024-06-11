@@ -90,6 +90,7 @@ public:
     virtual void Load(BinStream&);
 
     bool IsNextPass(RndMat*);
+    void SetColorMod(const Hmx::Color&, int);
 
     DECLARE_REVS
     NEW_OVERLOAD
@@ -108,8 +109,8 @@ public:
     float mRefractStrength; // 0x88
     ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
     std::vector<Hmx::Color> mColorMod; // 0x98
-    MatPerfSettings mPerfSettings;
-    MatShaderOptions mShaderOptions;
+    MatPerfSettings mPerfSettings; // 0xa0
+    MatShaderOptions mShaderOptions; // 0xa4
 
     // 0xac
     bool mIntensify : 1;
