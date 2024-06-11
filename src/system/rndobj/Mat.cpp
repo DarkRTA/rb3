@@ -304,5 +304,152 @@ BEGIN_PROPSYNCS(RndMat)
             return ret;
         }
     }
+    {
+        static Symbol _s("stencil_mode");
+        int bit = unkb0p2;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            unkb0p2 = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("tex_gen");
+        int bit = unkb0p2;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            unkb0p2 = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("tex_wrap");
+        int bit = unkb0p2;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            unkb0p2 = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("shader_variation");
+        int bit = unkb0p2;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            unkb0p2 = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP_MODIFY(tex_xfm, mTexXfm, unkb4p1 = 0)
+    SYNC_PROP_MODIFY(diffuse_tex, mDiffuseTex, unkb4p1 = 0)
+    {
+        static Symbol _s("prelit");
+        bool bit = mPreLit;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mPreLit = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("alpha_cut");
+        bool bit = mAlphaCut;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mAlphaCut = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP_MODIFY(alpha_threshold, mAlphaThresh, unkb4p1 = 0)
+    {
+        static Symbol _s("alpha_write");
+        bool bit = mAlphaWrite;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mAlphaWrite = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP(next_pass, mNextPass)
+    {
+        static Symbol _s("cull");
+        bool bit = mCull;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mCull = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("per_pixel_lit");
+        bool bit = mPerPixelLit;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mPerPixelLit = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP_MODIFY(emissive_multiplier, mEmissiveMultiplier, unkb4p1 = 0)
+    SYNC_PROP_MODIFY(emissive_map, mEmissiveMap, unkb4p1 = 0)
+    {
+        static Symbol _s("refract_enabled");
+        bool bit = mRefractEnabled;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mRefractEnabled = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP_MODIFY(refract_strength, mRefractStrength, unkb4p1 = 0)
+    SYNC_PROP_MODIFY(refract_normal_map, mRefractNormalMap, unkb4p1 = 0)
+    {
+        static Symbol _s("screen_aligned");
+        bool bit = mScreenAligned;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mScreenAligned = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                unkb4p1 = 0;
+            }
+            return ret;
+        }
+    }
+    SYNC_PROP_SET_STATIC(point_lights, mPointLights, mPointLights = _val.Int(0))
+    SYNC_PROP_SET_STATIC(fog, mFog, mFog = _val.Int(0))
+    SYNC_PROP_SET_STATIC(fade_out, mFadeout, mFadeout = _val.Int(0))
+    SYNC_PROP_SET_STATIC(color_adjust, mColorAdjust, mColorAdjust = _val.Int(0))
+    SYNC_PROP_SET(recv_proj_lights, unka0.mRecvProjLights, unka0.mRecvProjLights = _val.Int(0))
+    SYNC_PROP_SET(recv_point_cube_tex, unka0.mRecvPointCubeTex, unka0.mRecvPointCubeTex = _val.Int(0))
+    SYNC_PROP_SET(ps3_force_trilinear, unka0.mPS3ForceTrilinear, unka0.mPS3ForceTrilinear = _val.Int(0))
 END_PROPSYNCS
 #pragma pop
