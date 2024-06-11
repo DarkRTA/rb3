@@ -13,5 +13,30 @@ RndTexRenderer::~RndTexRenderer(){
 }
 
 void RndTexRenderer::ListAnimChildren(std::list<RndAnimatable*>& children) const {
-    // RndAnimatable* anim = dynamic_cast<RndAnimatable*>(mDraw); // ??? how is a cast like this even possible
+    RndDrawable* draw = mDraw;
+    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
+    if(anim) children.push_back(anim);
+}
+
+void RndTexRenderer::ListDrawChildren(std::list<RndDrawable*>& children){
+    if(mDraw && mDrawResponsible) children.push_back(mDraw);
+}
+
+void RndTexRenderer::ListPollChildren(std::list<RndPollable*>& children) const {
+    RndDrawable* draw = mDraw;
+    if(draw && mNoPoll){
+        RndPollable* poll = dynamic_cast<RndPollable*>(draw);
+        if(poll) children.push_back(poll);
+    }
+}
+
+void RndTexRenderer::Enter(){ RndPollable::Enter(); }
+
+float RndTexRenderer::StartFrame(){
+    RndDrawable* draw = mDraw;
+    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
+    if(anim){
+        return anim->StartFrame();
+    }
+    else return 0.0f;
 }
