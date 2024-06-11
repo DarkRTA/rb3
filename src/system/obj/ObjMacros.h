@@ -299,6 +299,12 @@ void objType::Load(BinStream& bs){
 #define LOAD_SUPERCLASS(parent) \
     parent::Load(bs);
 
+#define LOAD_BITFIELD(type, name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = bs_name; \
+}
+
 #define END_LOADS \
 }
 

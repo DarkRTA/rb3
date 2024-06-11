@@ -40,35 +40,23 @@ BEGIN_LOADS(RndMat)
     int bs_ac; bs >> bs_ac;
     mBlend = (Blend)bs_ac;
     bs >> mColor;
-    bool bs_a9_1; bs >> bs_a9_1;
-    mUseEnviron = bs_a9_1;
-    bool bs_a9_2; bs >> bs_a9_2;
-    mPreLit = bs_a9_2;
-
-    int bs_b0_1; bs >> bs_b0_1;
-    unkacp3 = bs_b0_1;
-    
-    bool bs_a9_3; bs >> bs_a9_3;
-    mAlphaCut = bs_a9_3;
+    LOAD_BITFIELD(bool, mUseEnviron)
+    LOAD_BITFIELD(bool, mPreLit)
+    LOAD_BITFIELD(int, unkacp3)
+    LOAD_BITFIELD(bool, mAlphaCut)
     if(gRev > 0x25) bs >> mAlphaThresh;
-    bool bs_a9_4; bs >> bs_a9_4;
-    mAlphaWrite = bs_a9_4;
+    LOAD_BITFIELD(bool, mAlphaWrite)
     int bs_ac_2; bs >> bs_ac_2;
     mTexGen = (TexGen)bs_ac_2;
-
-    int bs_b0_0; bs >> bs_b0_0;
-    unkacp2 = bs_b0_0;
-
+    LOAD_BITFIELD(int, unkacp2)
     bs >> mTexXfm;
     bs >> mDiffuseTex;
     bs >> mNextPass;
-    bool bs_ac_3; bs >> bs_ac_3;
-    mIntensify = bs_ac_3;
+    LOAD_BITFIELD(bool, mIntensify)
     unkb0p3 = 3;
 
     Hmx::Color loc_color;
-    bool asdf; bs >> asdf;
-    mCull = asdf;
+    LOAD_BITFIELD(bool, mCull)
     bs >> mEmissiveMultiplier;
     bs >> loc_color;
     {
@@ -110,9 +98,7 @@ BEGIN_LOADS(RndMat)
         bs >> b;
     }
     if(gRev > 0x1B){
-        int bs_b0_2;
-        bs >> bs_b0_2;
-        unkb0p0 = bs_b0_2;
+        LOAD_BITFIELD(int, unkb0p0)
     }
     if((u16)(gRev - 0x1D) <= 0xB){
         Symbol sym;
@@ -161,9 +147,7 @@ BEGIN_LOADS(RndMat)
     }
     if(gRev > 0x2A){
         if(gRev > 0x2C){
-            bool b;
-            bs >> b;
-            mPointLights = b;
+            LOAD_BITFIELD(bool, mPointLights)
         }
         else {
             int i;
@@ -173,19 +157,13 @@ BEGIN_LOADS(RndMat)
         if(gRev < 0x3F){
             bool b; bs >> b;
         }
-        bool b2a_1;
-        bs >> b2a_1;
-        mFog = b2a_1;
-        bool b2a_2;
-        bs >> b2a_2;
-        mFadeout = b2a_2;
+        LOAD_BITFIELD(bool, mFog)
+        LOAD_BITFIELD(bool, mFadeout)
         if((u16)(gRev - 0x2C) <= 1){
             bool b; bs >> b;
         }
         if(gRev > 0x2E){
-            bool b;
-            bs >> b;
-            mColorAdjust = b;
+            LOAD_BITFIELD(bool, mColorAdjust)
         }
     }
     if(gRev > 0x2F){
@@ -206,9 +184,7 @@ BEGIN_LOADS(RndMat)
         }
     }
     if(gRev > 0x30){
-        bool uc;
-        bs >> uc;
-        mScreenAligned = uc;
+        LOAD_BITFIELD(bool, mScreenAligned)
     }
     if(gRev == 0x32){
         bool uc;
@@ -218,9 +194,7 @@ BEGIN_LOADS(RndMat)
         }
     }
     if(gRev > 0x32){
-        int i;
-        bs >> i;
-        unkb0p1 = i;
+        LOAD_BITFIELD(int, unkb0p1)
         Hmx::Color col32;
         bs >> col32;
     }
@@ -261,15 +235,13 @@ BEGIN_LOADS(RndMat)
         unka0.Load(bs);
     }
     if(gRev > 0x3F){
-        bool b;
-        bs >> b;
-        mRefractEnabled = b;
+        LOAD_BITFIELD(bool, mRefractEnabled)
         bs >> mRefractStrength;
         bs >> mRefractNormalMap;
         if (gRev < 0x41) {
             if(mRefractEnabled) mRefractStrength *= 0.15f;
             else mRefractStrength = 0;
-        } 
+        }
     }
 END_LOADS
 
@@ -283,7 +255,7 @@ BEGIN_PROPSYNCS(RndMat)
             bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
             mIntensify = bit;
             if(!(_op & (kPropSize|kPropGet))){
-                unkb4p1 = 0;
+                unkb4p3 = 2;
             }
             return ret;
         }
