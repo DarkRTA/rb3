@@ -10,6 +10,14 @@
 #include "ui/UIListProvider.h"
 #include "ui/UIListSlot.h"
 
+class UIListCustomTemplate {
+public:
+    UIListCustomTemplate(){}
+    virtual ~UIListCustomTemplate(){}
+    virtual void SetAlphaColor(float, UIColor*) = 0;
+    virtual void GrowBoundingBox(Box&) const = 0;
+};
+
 class UIListCustomElement : public UIListSlotElement {
     public:
     UIListCustomElement(class UIListCustom* own, Hmx::Object* ptr) : mOwner(own), mPtr(ptr) {}
@@ -24,18 +32,18 @@ class UIListCustomElement : public UIListSlotElement {
 class UIListCustom : public UIListSlot {
 public:
     UIListCustom();
+    virtual ~UIListCustom() {}
+    OBJ_CLASSNAME(UIListCustom)
+    OBJ_SET_TYPE(UIListCustom)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    OBJ_CLASSNAME(UIListCustom)
-    virtual ~UIListCustom() {}
-    OBJ_SET_TYPE(UIListCustom)
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual void CreateElement(UIList*);
+    virtual RndTransformable* RootTrans();
 
     void SetObject(Hmx::Object*);
-    void CreateElement(UIList*);
-    RndTransformable* RootTrans();
 
     ObjPtr<Hmx::Object, ObjectDir> mObject;
 
