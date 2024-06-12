@@ -3,8 +3,9 @@
 #include "math/Vec.h"
 #include "obj/Data.h"
 #include "utl/BinStream.h"
-
 #include "decomp.h"
+
+#define PSQ_MOVE(dst, src) *(__vec2x32float__*)&dst = *(__vec2x32float__*)&src
 
 namespace Hmx {
     class Matrix3 {
@@ -71,62 +72,46 @@ public:
 
     // both of these use powerpc asm magic
     Transform(const register Transform& tf){
-        register Transform* other = this;
-        register float temp1;
-        register float temp2;
-        register float temp3;
-        register float temp4;
-        register float temp5;
-        register float temp6;
-        register float temp7;
-        register float temp8;
-        ASM_BLOCK(
-            psq_lx temp8,0,tf,0,0
-            lfs temp7, 8(tf);
-            psq_l temp6,0xc(tf),0,0
-            lfs temp5, 0x14(tf);
-            psq_l temp4,0x18(tf),0,0
-            lfs temp3, 0x20(tf);
-            psq_l temp2,0x24(tf),0,0
-            lfs temp1, 0x2C(tf);
-            psq_stx temp8,0,other,0,0
-            stfs temp7, 8(other);
-            psq_st temp6,0x0c(other),0,0
-            stfs temp5, 0x14(other);
-            psq_st temp4,0x18(other),0,0
-            stfs temp3, 0x20(other);
-            psq_st temp2,0x24(other),0,0
-            stfs temp1, 0x2C(other);
-        )
+        // m.x.x = tf.m.x.x;
+        // m.x.y = tf.m.x.y;
+        PSQ_MOVE(m.x.x, tf.m.x.x);
+        m.x.z = tf.m.x.z;
+
+        // m.y.x = tf.m.y.x;
+        // m.y.y = tf.m.y.y;
+        PSQ_MOVE(m.y.x, tf.m.y.x);
+        m.y.z = tf.m.y.z;
+
+        // m.z.x = tf.m.z.x;
+        // m.z.y = tf.m.z.y;
+        PSQ_MOVE(m.z.x, tf.m.z.x);
+        m.z.z = tf.m.z.z;
+
+        // v.x = tf.v.x;
+        // v.y = tf.v.y;
+        PSQ_MOVE(v.x, tf.v.x);
+        v.z = tf.v.z;
     }
-    Transform& operator=(const register Transform& tf){
-        register Transform* other = this;
-        register float temp1;
-        register float temp2;
-        register float temp3;
-        register float temp4;
-        register float temp5;
-        register float temp6;
-        register float temp7;
-        register float temp8;
-        ASM_BLOCK(
-            psq_lx temp8,0,tf,0,0
-            lfs temp7, 8(tf);
-            psq_l temp6,0xc(tf),0,0
-            lfs temp5, 0x14(tf);
-            psq_l temp4,0x18(tf),0,0
-            lfs temp3, 0x20(tf);
-            psq_l temp2,0x24(tf),0,0
-            lfs temp1, 0x2C(tf);
-            psq_stx temp8,0,other,0,0
-            stfs temp7, 8(other);
-            psq_st temp6,0x0c(other),0,0
-            stfs temp5, 0x14(other);
-            psq_st temp4,0x18(other),0,0
-            stfs temp3, 0x20(other);
-            psq_st temp2,0x24(other),0,0
-            stfs temp1, 0x2C(other);
-        )
+    Transform& operator=(const Transform& tf){
+        // m.x.x = tf.m.x.x;
+        // m.x.y = tf.m.x.y;
+        PSQ_MOVE(m.x.x, tf.m.x.x);
+        m.x.z = tf.m.x.z;
+
+        // m.y.x = tf.m.y.x;
+        // m.y.y = tf.m.y.y;
+        PSQ_MOVE(m.y.x, tf.m.y.x);
+        m.y.z = tf.m.y.z;
+
+        // m.z.x = tf.m.z.x;
+        // m.z.y = tf.m.z.y;
+        PSQ_MOVE(m.z.x, tf.m.z.x);
+        m.z.z = tf.m.z.z;
+
+        // v.x = tf.v.x;
+        // v.y = tf.v.y;
+        PSQ_MOVE(v.x, tf.v.x);
+        v.z = tf.v.z;
     }
 
     void Reset(){
