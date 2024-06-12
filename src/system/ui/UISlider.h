@@ -25,15 +25,21 @@ public:
     virtual int SelectedAux() const;
     virtual void SetSelectedAux(int);
 
+    void SyncSlider();
+    int Current() const;
+    float Frame() const;
+    void SetNumSteps(int);
+    void SetFrame(float);
+
     static void Init();
     NEW_OBJ(UISlider);
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    int unk118; // 0x118
-    int unk11c; // 0x11c
-    bool unk120; // 0x120
+    int mCurrent; // 0x118
+    int mNumSteps; // 0x11c
+    bool mVertical; // 0x120
 };
 
 #endif // UI_UISLIDER_H

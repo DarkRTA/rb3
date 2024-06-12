@@ -80,7 +80,8 @@ public:
     void SetLocalRot(Vector3);
 
     Transform& WorldXfm(){
-        
+        if(mCache->mFlags & 1) return WorldXfm_Force();
+        else return mWorldXfm;
     }
 
     void SetDirtyLocalXfm(Transform& tf){

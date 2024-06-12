@@ -3,7 +3,7 @@
 
 INIT_REVS(UISlider)
 
-UISlider::UISlider() : unk118(0), unk11c(10), unk120(0) {
+UISlider::UISlider() : mCurrent(0), mNumSteps(10), mVertical(0) {
 
 }
 
@@ -43,4 +43,63 @@ void UISlider::PostLoad(BinStream& bs){
 void UISlider::Enter(){
     UIComponent::Enter();
     Reset();
+}
+
+void UISlider::DrawShowing(){
+    SyncSlider();
+    UpdateMeshes(DrawState(this));
+    RndDir* dir = mResource->Dir();
+    dir->DrawShowing();
+}
+
+RndDrawable* UISlider::CollideShowing(const Segment& seg, float& f, Plane& pl){
+    SyncSlider();
+    RndDir* dir = mResource->Dir();
+    RndDrawable* draw = dir->CollideShowing(seg, f, pl);
+    return draw ? draw : 0;
+}
+
+int UISlider::CollidePlane(const Plane& pl){
+    SyncSlider();
+    RndDir* dir = mResource->Dir();
+    return dir->CollidePlane(pl);
+}
+
+int UISlider::Current() const { return mCurrent; }
+
+float UISlider::Frame() const {
+    if(mNumSteps == 1) return 0.0f;
+    else return (float)(mCurrent) / (float)(mNumSteps - 1);
+}
+
+void UISlider::SetCurrent(int i){
+    if(i < 0 || i >= mNumSteps){
+        MILO_FAIL("Can't set slider to %i (%i steps)", i, mNumSteps);
+    }
+    else mCurrent = i;
+}
+
+void UISlider::SetNumSteps(int i){
+    if(i < 1) MILO_FAIL("Can't set num steps to %i (must be >= 1)", i);
+    else mNumSteps = i;
+}
+
+void UISlider::Update(){
+    UIComponent::Update();
+    TypeDef()->FindData("vertical", mVertical, false);
+}
+
+void UISlider::SyncSlider(){
+    mResource->Dir()->SetFrame(Frame(), 1.0f);
+    mResource->Dir()->SetWorldXfm(WorldXfm());
+}
+
+void UISlider::SetFrame(float frame){
+    MILO_ASSERT(frame >= 0 && frame <= 1.0f, 0xAE);
+    mCurrent = frame * (mNumSteps - 1) + 0.5f;
+}
+
+int UISlider::SelectedAux() const { return mCurrent; }
+void UISlider::SetSelectedAux(int i){
+    SetCurrent(i);
 }

@@ -62,6 +62,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     DataNode OnGetResourcesPath(DataArray*);
     class ObjectDir* ResourceDir();
     void UpdateResource();
+    void UpdateMeshes(State);
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
