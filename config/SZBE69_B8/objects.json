@@ -370,7 +370,7 @@
             "system/rndobj/MotionBlur.cpp": "Matching",
             "system/rndobj/Movie.cpp": "Matching",
             "system/rndobj/MultiMesh.cpp": { "status": "NonMatching", "extra_cflags": [""] },
-            "system/rndobj/MultiMeshProxy.cpp": "NonMatching",
+            "system/rndobj/MultiMeshProxy.cpp": "Matching",
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
             "system/rndobj/PollAnim.cpp": "NonMatching",
