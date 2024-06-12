@@ -13,11 +13,8 @@ CharTransCopy::~CharTransCopy(){
 }
 
 void CharTransCopy::Poll(){
-    if(!mSrc) return;
-    if(mDest){
-        mDest->mLocalXfm = mSrc->mLocalXfm;
-        mDest->mCache->SetDirty();
-    }
+    if(!mSrc || !mDest) return;
+    mDest->SetDirtyLocalXfm(mSrc->mLocalXfm);
 }
 
 void CharTransCopy::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){

@@ -83,6 +83,11 @@ public:
         
     }
 
+    void SetDirtyLocalXfm(Transform& tf){
+        mLocalXfm = tf;
+        mCache->SetDirty();
+    }
+
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
         return mLocalXfm;
