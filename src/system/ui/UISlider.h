@@ -2,6 +2,7 @@
 #define UI_UISLIDER_H
 #include "ui/UIComponent.h"
 #include "ui/ScrollSelect.h"
+#include "os/JoypadMsgs.h"
 
 class UISlider : public UIComponent, public ScrollSelect {
 public:
@@ -24,6 +25,8 @@ public:
     virtual void SetCurrent(int);
     virtual int SelectedAux() const;
     virtual void SetSelectedAux(int);
+
+    DataNode OnMsg(const ButtonDownMsg&);
 
     void SyncSlider();
     int Current() const;

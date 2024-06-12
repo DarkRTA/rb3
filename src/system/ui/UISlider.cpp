@@ -1,5 +1,7 @@
 #include "ui/UISlider.h"
 #include "ui/UI.h"
+#include "ui/UIPanel.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(UISlider)
 
@@ -103,3 +105,29 @@ int UISlider::SelectedAux() const { return mCurrent; }
 void UISlider::SetSelectedAux(int i){
     SetCurrent(i);
 }
+
+BEGIN_HANDLERS(UISlider)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_EXPR(current, mCurrent)
+    HANDLE_EXPR(num_steps, mNumSteps)
+    HANDLE_EXPR(frame, Frame())
+    HANDLE_ACTION(set_num_steps, SetNumSteps(_msg->Int(2)))
+    HANDLE_ACTION(set_current, SetCurrent(_msg->Int(2)))
+    HANDLE_ACTION(set_frame, SetFrame(_msg->Float(2)))
+    HANDLE_ACTION(store, Store())
+    HANDLE_ACTION(undo, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), 0))
+    HANDLE_ACTION(undo_handled_by, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), _msg->Obj<UIPanel>(3)))
+    HANDLE_ACTION(confirm, Reset())
+    HANDLE_SUPERCLASS(ScrollSelect)
+    HANDLE_SUPERCLASS(UIComponent)
+    HANDLE_CHECK(0xDA)
+END_HANDLERS
+
+DataNode UISlider::OnMsg(const ButtonDownMsg& msg){
+
+}
+
+BEGIN_PROPSYNCS(UISlider)
+    SYNC_SUPERCLASS(ScrollSelect)
+    SYNC_SUPERCLASS(UIComponent)
+END_PROPSYNCS
