@@ -16,7 +16,7 @@ UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(
 }
 
 void UIPicture::SetTypeDef(DataArray* da) {
-    if(mTypeDef != da){
+    if(TypeDef() != da){
         UIComponent::SetTypeDef(da);
         if(da){
             DataArray* findtex = da->FindArray("tex_file", false);
@@ -145,7 +145,26 @@ void UIPicture::CancelLoading() {
 }
 
 void UIPicture::HookupMesh() {
-
+    if(mMesh && mHookTex){
+        RndMat* mat = mMesh->mMat;
+        if(mat){
+            RndTex* tex = mTex;
+            if(tex && tex->mWidth != 0 && tex->mHeight != 0){
+                mat->mDiffuseTex = tex;
+                mat->mDirty |= 2;
+            }
+            else {
+                mat->mDiffuseTex = 0;
+                mat->mDirty |= 2;
+            }
+        }
+        else {
+            if(mLoader || TheLoadMgr.EditMode()){
+                MILO_WARN("%s does not have material", mMesh->Name());
+            }
+        }
+        mMesh->mShowing = true;
+    }
 }
 
 void UIPicture::SetHookTex(bool b) {
