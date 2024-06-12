@@ -58,3 +58,7 @@ BEGIN_PROPSYNCS(CharTransDraw)
     SYNC_PROP(chars, mChars)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(CharTransDraw, CharTransDraw, SetType)
+DECOMP_FORCEFUNC_TEMPL(CharTransDraw, ObjPtrList, Replace(0, 0), Character, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(CharTransDraw, ObjPtrList, RefOwner(), Character, ObjectDir)
