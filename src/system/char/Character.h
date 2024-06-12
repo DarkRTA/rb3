@@ -65,7 +65,7 @@ public:
     int mPollState;
     CharacterTest* mTest;
     bool mFrozen;
-    int unk1f0;
+    DrawMode mDrawMode; // 0x1f0
     bool unk1f4;
     Symbol mInterestToForce;
     ObjPtr<RndEnviron, ObjectDir> unk1fc;

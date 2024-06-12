@@ -13,6 +13,12 @@ CharTransDraw::~CharTransDraw(){
 
 SAVE_OBJ(CharTransDraw, 0x23);
 
+void CharTransDraw::SetDrawModes(Character::DrawMode mode){
+    for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
+        (*it)->mDrawMode = mode;
+    }
+}
+
 void CharTransDraw::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
@@ -20,6 +26,25 @@ void CharTransDraw::Load(BinStream& bs){
     RndDrawable::Load(bs);
     bs >> mChars;
     SetDrawModes(Character::kCharDrawOpaque);
+}
+
+BEGIN_COPYS(CharTransDraw)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndDrawable)
+    CREATE_COPY(CharTransDraw)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mChars)
+    END_COPYING_MEMBERS
+END_COPYS
+
+void CharTransDraw::DrawShowing(){
+    for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
+        if((*it)->Showing()){
+            (*it)->mDrawMode = Character::kCharDrawTranslucent;
+            (*it)->Exit();
+            (*it)->mDrawMode = Character::kCharDrawOpaque;
+        }
+    }
 }
 
 BEGIN_HANDLERS(CharTransDraw)
