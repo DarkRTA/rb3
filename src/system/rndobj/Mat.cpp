@@ -270,8 +270,17 @@ BEGIN_LOADS(RndMat)
     }
 END_LOADS
 
-// temporary
-DECOMP_FORCEACTIVE(Mat, "m", "index >= 0 && index < kColorModNum", "%s(%d): %s unhandled msg: %s")
+BEGIN_COPYS(RndMat)
+    CREATE_COPY_AS(RndMat, m)
+    MILO_ASSERT(m, 0x287);
+    COPY_SUPERCLASS(Hmx::Object)
+    if(ty == kCopyFromMax){
+        COPY_MEMBER_FROM(m, mDiffuseTex)
+    }
+    else {
+        
+    }
+END_COPYS
 
 #define kColorModNum 3 // hack
 
@@ -283,11 +292,9 @@ void RndMat::SetColorMod(const Hmx::Color& col, int index){
 
 bool RndMat::GetRefractEnabled(bool b){
     bool ret = false;
-    if(mRefractEnabled && mRefractStrength > 0.0f && mRefractNormalMap){
-        if(b){
-            if(TheRnd->GetCurrentFrameTex(false)){
-                ret = true;
-            }
+    if(mRefractEnabled == 1 && mRefractStrength > 0.0f && mRefractNormalMap){
+        if(b || TheRnd->GetCurrentFrameTex(false)){
+            ret = true;
         }
     }
     return ret;

@@ -288,12 +288,12 @@ void objType::Load(BinStream& bs){
 
 #define ASSERT_OLD_REV(ver) \
     if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, (unsigned short)ver); \
+        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, ver); \
     }
 
 #define ASSERT_OLD_ALTREV(ver) \
     if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
+        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, ver); \
     }
 
 #define LOAD_SUPERCLASS(parent) \
