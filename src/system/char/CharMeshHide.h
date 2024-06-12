@@ -29,16 +29,18 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    DECLARE_REVS;
+    static void HideAll(const ObjPtrList<CharMeshHide, ObjectDir>&, int);
+    void HideDraws(int);
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     static void Init();
     NEW_OBJ(CharMeshHide);
 
-    ObjVector<Hide> mHides;
-    int mFlags;
+    ObjVector<Hide> mHides; // 0x1c
+    int mFlags; // 0x28
 };
 
 #endif
