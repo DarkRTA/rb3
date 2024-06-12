@@ -17,4 +17,3 @@ BEGIN_PROPSYNCS(ScrollSelect)
     SYNC_PROP(select_to_scroll, unk_0x4)
 END_PROPSYNCS
 
-ScrollSelect::~ScrollSelect() {}
