@@ -1,6 +1,8 @@
 #include "ui/UISlider.h"
 #include "ui/UI.h"
 #include "ui/UIPanel.h"
+#include "ui/Utl.h"
+#include "os/Joypad.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UISlider)
@@ -124,7 +126,36 @@ BEGIN_HANDLERS(UISlider)
 END_HANDLERS
 
 DataNode UISlider::OnMsg(const ButtonDownMsg& msg){
-
+    Symbol cnttype = JoypadControllerTypePadNum(UNCONST_ARRAY(msg)->Int(5));
+    if(CanScroll()){
+        JoypadAction act = ScrollDirection(msg, cnttype, mVertical, 1);
+        if(act != kAction_None){
+            if(mVertical) act = (JoypadAction)-act;
+            int step = mCurrent + act;
+            if(step >= 0 && step < mNumSteps){
+                SetCurrent(step);
+                UIComponentScrollMsg scroll_msg(this, msg.GetUser());
+                TheUI->Handle(scroll_msg, 0);
+            }
+            return DataNode(1);
+        }
+        if(CatchNavAction((JoypadAction)UNCONST_ARRAY(msg)->Int(4))){
+            return DataNode(1);
+        }
+    }
+    JoypadAction thisAct = (JoypadAction)UNCONST_ARRAY(msg)->Int(4);
+    LocalUser* user = msg.GetUser();
+    if(thisAct == kAction_Confirm){
+        if(SelectScrollSelect(this, user)){
+            return DataNode(1);
+        }
+    }
+    else if(thisAct == kAction_Cancel){
+        if(RevertScrollSelect(this, user, 0)){
+            return DataNode(1);
+        }
+    }
+    return DataNode(kDataUnhandled, 0);
 }
 
 BEGIN_PROPSYNCS(UISlider)
