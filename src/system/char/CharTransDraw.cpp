@@ -39,10 +39,11 @@ END_COPYS
 
 void CharTransDraw::DrawShowing(){
     for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
-        if((*it)->Showing()){
-            (*it)->mDrawMode = Character::kCharDrawTranslucent;
-            (*it)->Exit();
-            (*it)->mDrawMode = Character::kCharDrawOpaque;
+        Character* theChar = *it;
+        if(theChar->Showing()){
+            theChar->mDrawMode = Character::kCharDrawTranslucent;
+            theChar->Draw();
+            theChar->mDrawMode = Character::kCharDrawOpaque;
         }
     }
 }

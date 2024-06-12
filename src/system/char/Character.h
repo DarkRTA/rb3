@@ -6,6 +6,10 @@
 #include "math/Sphere.h"
 
 class CharacterTest; // forward dec
+class Waypoint;
+class RndCam;
+class CharInterest;
+class CharEyes;
 
 class Character : public RndDir {
 public:
@@ -30,23 +34,36 @@ public:
     };
 
     Character();
-    virtual ~Character();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(Character);
     OBJ_SET_TYPE(Character);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
+    virtual ~Character();
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
     virtual void AddedObject(Hmx::Object*);
     virtual void RemovingObject(Hmx::Object*);
+
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void UpdateSphere();
+    virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void DrawShowing();
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
+    virtual void Teleport(Waypoint*);
+    virtual void PreSave(BinStream&);
+    virtual void CalcBoundingSphere();
+    virtual float ComputeScreenSize(RndCam*);
+    virtual void DrawLodOrShadow(int, DrawMode);
+    virtual CharEyes* GetEyes();
+    virtual bool ValidateInterest(CharInterest*, ObjectDir*){ return true; }
+    virtual bool SetFocusInterest(CharInterest*, int);
+    virtual void SetInterestFilterFlags(int);
+    virtual void ClearInterestFilterFlags();
 
     void UnhookShadow();
 
