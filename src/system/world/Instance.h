@@ -18,7 +18,7 @@ public:
     virtual void Load(BinStream&);
     virtual ~WorldInstance();
     virtual void SetProxyFile(const FilePath&, bool);
-    virtual FilePath* ProxyFile();
+    virtual FilePath& ProxyFile();
     virtual void PostSave(BinStream&);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);

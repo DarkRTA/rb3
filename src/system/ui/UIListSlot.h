@@ -20,13 +20,22 @@ class UIListSlotElement {
 class UIListSlot : public UIListWidget {
 public:
     UIListSlot();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual ~UIListSlot();
     OBJ_CLASSNAME(UIListSlot)
     OBJ_SET_TYPE(UIListSlot)
-    virtual ~UIListSlot();
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual void ResourceCopy(const UIListWidget*);
+    virtual void CreateElements(UIList*, int);
+    virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
+    virtual void Fill(const class UIListProvider&, int, int, int);
+    virtual void StartScroll(int, bool);
+    virtual void CompleteScroll(const UIListState&, int);
+    virtual void Poll();
+    virtual void CreateElement(UIList*);
+    virtual RndTransformable* RootTrans();
 
     std::vector<int> unk_0x40;
     int unk_0x48, unk_0x4C;

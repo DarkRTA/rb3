@@ -106,6 +106,8 @@ public:
     bool ProcAndLock() const;
     void DrawRectScreen(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*);
     void ResetProcCounter();
+    int DrawMode() const { return unk_0xE4; }
+    void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);

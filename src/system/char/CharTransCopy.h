@@ -21,8 +21,8 @@ public:
     DELETE_OVERLOAD;
     DECLARE_REVS;
 
-    ObjPtr<RndTransformable, class ObjectDir> mSrc;
-    ObjPtr<RndTransformable, class ObjectDir> mDest;
+    ObjPtr<RndTransformable, class ObjectDir> mSrc; // 0x8
+    ObjPtr<RndTransformable, class ObjectDir> mDest; // 0x14
 };
 
 #endif

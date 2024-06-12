@@ -1,12 +1,14 @@
 #ifndef UI_SCROLLSELECT_H
 #define UI_SCROLLSELECT_H
-
 #include "obj/Data.h"
 #include "obj/Object.h"
-#include "utl/PoolAlloc.h"
+#include "ui/UIComponent.h"
+#include "os/Joypad.h"
+
+class LocalUser;
 
 class ScrollSelect {
-    public:
+public:
     ScrollSelect();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
@@ -16,11 +18,16 @@ class ScrollSelect {
 
     void Store();
     void Reset();
+    bool SelectScrollSelect(UIComponent*, LocalUser*);
+    DataNode SendScrollSelected(UIComponent*, LocalUser*);
+    bool CanScroll() const;
+    UIComponent::State DrawState(UIComponent*) const;
+    bool CatchNavAction(JoypadAction) const;
 
     bool unk_0x4;
     int unk_0x8;
 
-    void operator delete(void* v) { _PoolFree(sizeof(ScrollSelect), FastPool, v); }
+    DELETE_POOL_OVERLOAD(ScrollSelect);
 };
 
 #endif // UI_SCROLLSELECT_H

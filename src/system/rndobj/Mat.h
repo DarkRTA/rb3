@@ -43,6 +43,11 @@ enum TexWrap {
     kBorderBlack = 2,
     kBorderWhite = 3,
 };
+enum ShaderVariation {
+    kShaderVariation_None,
+    kShaderVariation_Skin,
+    kShaderVariation_Hair
+};
 
 struct MatPerfSettings {
     MatPerfSettings();
@@ -58,24 +63,41 @@ struct MatPerfSettings {
     // bool b7 : 1;
 };
 
+struct bf {
+    uint val;
+};
+
 struct MatShaderOptions {
     MatShaderOptions();
-    uint itop : 24;
-    uint i7 : 1;
-    uint i6 : 1;
-    uint i5 : 1;
-    uint i4 : 1;
-    uint i3 : 1;
-    uint i2 : 1;
-    uint i1 : 1;
-    uint i0 : 1;
-    bool b; 
+    union {
+        struct {
+            int itop : 24;
+            int i7 : 1;
+            int i6 : 1;
+            int i5 : 1;
+            int i4 : 1;
+            int i3 : 1;
+            int i2 : 1;
+            int i1 : 1;
+            int i0 : 1;
+        } shader_struct;
+        u32 pack;
+
+        // from bank 5
+        uint value;
+        bf shaderType;
+        bf billboard;
+        bf skinned;
+        bf useAO;
+    };
+
+    bool mTempMat;
 };
 
 class RndMat : public Hmx::Object {
 public:
     RndMat();
-    virtual ~RndMat();
+    virtual ~RndMat(){}
     OBJ_CLASSNAME(Mat);
     OBJ_SET_TYPE(Mat);
     virtual DataNode Handle(DataArray*, bool);
@@ -85,7 +107,15 @@ public:
     virtual void Load(BinStream&);
 
     bool IsNextPass(RndMat*);
+    void SetColorMod(const Hmx::Color&, int);
+    bool GetRefractEnabled(bool);
+    RndTex* GetRefractNormalMap();
+    float GetRefractStrength();
 
+    DataNode OnAllowedNextPass(const DataArray*);
+    DataNode OnAllowedNormalMap(const DataArray*);
+
+    DECLARE_REVS
     NEW_OVERLOAD
     NEW_OBJ(RndMat)
     static void Init(){
@@ -101,78 +131,44 @@ public:
     ObjPtr<RndTex, class ObjectDir> mEmissiveMap; // 0x7c
     float mRefractStrength; // 0x88
     ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
-    std::vector<int> unk98;
-    MatPerfSettings unka0;
-    MatShaderOptions unka4;
-    bool mIntensify : 1; // 0xa9?_0
-    bool mUseEnviron : 1; // 0xa9_1
-    bool mPreLit : 1; // 0xa9_2
-    bool mAlphaCut : 1; // 0xa9_3
-    bool mAlphaWrite : 1; // 0xa9_4
-    bool mCull : 1; // 0xa9_5
-    bool mPerPixelLit : 1; // 0xa9_6
-    bool mScreenAligned : 1; // 0xa9_7
+    std::vector<Hmx::Color> mColorMod; // 0x98
+    MatPerfSettings mPerfSettings; // 0xa0
+    MatShaderOptions mShaderOptions; // 0xa4
 
-    bool mRefractEnabled : 1; // 0xaa_0
+    // 0xac
+    bool mIntensify : 1;
+    bool mUseEnviron : 1;
+    bool mPreLit : 1;
+    bool mAlphaCut : 1;
+    bool mAlphaWrite : 1;
+    bool mCull : 1;
+    bool mPerPixelLit : 1;
+    bool mScreenAligned : 1;
+
+    // 0xad
+    bool mRefractEnabled : 1;
     bool mPointLights : 1;
     bool mFog : 1;
     bool mFadeout : 1;
     bool mColorAdjust : 1;
-    bool unk_0xaa_5 : 3;
+    unsigned char unkbool : 3;
+    // bool unk_aa_1 : 1;
+    // bool unk_aa_2 : 1;
+    // bool unk_0xaa_5 : 1;
     
-    Blend mBlend : 8; // 0xac
+    // 0xb0
+    Blend mBlend : 8;
     TexGen mTexGen : 8;
-    // unkac also has mBlend, texgen but bit shifted?
-    // blend = (int)(*(uint *)(this + 0xac) << 0x10 | *(uint *)(this + 0xac) >> 0x10) >> 0x18
-    // texgen = (int)(*(uint *)(this + 0xac) << 0x18 | *(uint *)(this + 0xac) >> 8) >> 0x18;
-
-    // b0 = zMode and stencil mode, texwrap, shader_variation
-    // zmode = (int)(*(uint *)(this + 0xb0) << 8 | *(uint *)(this + 0xb0) >> 0x18) >> 0x18;
-    // stencil mode = (int)(*(uint *)(this + 0xb0) << 0x10 | *(uint *)(this + 0xb0) >> 0x10) >> 0x18;
-    // texwrap = *(int *)(this + 0xb0) >> 0x18;
-    // shader variation = (int)(*(uint *)(this + 0xb0) << 0x18 | *(uint *)(this + 0xb0) >> 8) >> 0x18
-    int unkb0p0 : 8;
-    int unkb0p1 : 8;
+    TexWrap mTexWrap : 8;
+    ZMode mZMode : 8;
+    
+    // 0xb4
+    StencilMode mStencilMode : 8;
+    ShaderVariation mShaderVariation : 8;
     int unkb0p2 : 8;
-    int unkb0p3 : 8;
-    int unkb4p0 : 8;
-    int unkb4p1 : 8;
-    int unkb4p2 : 8;
-    int unkb4p3 : 8;
+    int mDirty : 8;
 };
 
 #endif
 
-// class RndMat : public Object {
-//     // total size: 0x120
-// protected:
-//     unsigned char mIntensify; // offset 0x28, size 0x1
-//     enum Blend mBlend; // offset 0x2C, size 0x4
-//     class Color mColor; // offset 0x30, size 0x10
-//     unsigned char mUseEnviron; // offset 0x40, size 0x1
-//     enum ZMode mZMode; // offset 0x44, size 0x4
-//     enum StencilMode mStencilMode; // offset 0x48, size 0x4
-//     enum TexGen mTexGen; // offset 0x4C, size 0x4
-//     enum TexWrap mTexWrap; // offset 0x50, size 0x4
-//     class Transform mTexXfm; // offset 0x60, size 0x40
-//     class ObjPtr mDiffuseTex; // offset 0xA0, size 0xC
-//     unsigned char mPrelit; // offset 0xAC, size 0x1
-//     unsigned char mAlphaCut; // offset 0xAD, size 0x1
-//     int mAlphaThresh; // offset 0xB0, size 0x4
-//     unsigned char mAlphaWrite; // offset 0xB4, size 0x1
-//     class ObjPtr mNextPass; // offset 0xB8, size 0xC
-//     unsigned char mCull; // offset 0xC4, size 0x1
-//     unsigned char mNormalize; // offset 0xC5, size 0x1
-//     class ObjPtr mCustomDiffuseMap; // offset 0xC8, size 0xC
-//     unsigned char mTwoColor; // offset 0xD4, size 0x1
-//     class ObjPtr mTwoColorMask; // offset 0xD8, size 0xC
-//     class Color mColor1; // offset 0xF0, size 0x10
-//     class Color mColor2; // offset 0x100, size 0x10
-//     unsigned char mPointLights; // offset 0x110, size 0x1
-//     unsigned char mProjLights; // offset 0x111, size 0x1
-//     unsigned char mFog; // offset 0x112, size 0x1
-//     unsigned char mFadeout; // offset 0x113, size 0x1
-//     unsigned char mColorXfm; // offset 0x114, size 0x1
-//     struct MatShaderOptions mShaderOptions; // offset 0x118, size 0x4
-//     int mDirty; // offset 0x11C, size 0x4
-// };
+RndMat* LookupOrCreateMat(const char*, ObjectDir*);

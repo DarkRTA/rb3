@@ -176,6 +176,11 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     SYNC_PROP(_s, member) \
 }
 
+#define SYNC_PROP_SET_STATIC(symbol, member, func) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_SET(_s, member, func) \
+}
+
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
     NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_MODIFY(_s, member, func) \
@@ -283,16 +288,28 @@ void objType::Load(BinStream& bs){
 
 #define ASSERT_OLD_REV(ver) \
     if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, (unsigned short)ver); \
+        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, ver); \
     }
 
 #define ASSERT_OLD_ALTREV(ver) \
     if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
+        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, ver); \
     }
 
 #define LOAD_SUPERCLASS(parent) \
     parent::Load(bs);
+
+#define LOAD_BITFIELD(type, name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = bs_name; \
+}
+
+#define LOAD_BITFIELD_ENUM(type, name, enum_name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = (enum_name)bs_name; \
+}
 
 #define END_LOADS \
 }

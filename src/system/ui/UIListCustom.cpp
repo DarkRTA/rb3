@@ -15,13 +15,20 @@ INIT_REVS(UIListCustom)
 
 DECOMP_FORCEACTIVE(UIListCustom, __FILE__, "( 0) <= (display) && (display) < ( mElements.size())", "le")
 
-inline void UIListCustomElement::Draw(const Transform& tf, float, UIColor*, Box*) {
+inline void UIListCustomElement::Draw(const Transform& tf, float f, UIColor* col, Box* box) {
     RndTransformable* t = dynamic_cast<RndTransformable*>(mPtr);
     MILO_ASSERT(t, 34);
     t->SetWorldXfm(tf);
-    RndDrawable* d = dynamic_cast<RndDrawable*>(mPtr);
-    MILO_ASSERT(d, 49);
-    d->Draw();
+    UIListCustomTemplate* temp = dynamic_cast<UIListCustomTemplate*>(mPtr);
+    if(box){
+        if(temp) temp->GrowBoundingBox(*box);
+    }
+    else {
+        if(temp) temp->SetAlphaColor(f, col);
+        RndDrawable* d = dynamic_cast<RndDrawable*>(mPtr);
+        MILO_ASSERT(d, 49);
+        d->Draw();
+    }
 }
 
 UIListCustom::UIListCustom() : mObject(this, NULL) {}
@@ -76,4 +83,4 @@ BEGIN_PROPSYNCS(UIListCustom)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 
-DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0, NULL, NULL); ce->Poll();)
+// DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0, NULL, NULL); ce->Poll();)
