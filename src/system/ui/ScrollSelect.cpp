@@ -1,5 +1,7 @@
 #include "ScrollSelect.h"
 #include "obj/Object.h"
+#include "os/User.h"
+#include "ui/Utl.h"
 #include "utl/Symbols.h"
 
 ScrollSelect::ScrollSelect() : unk_0x4(0) { Reset(); }
@@ -7,12 +9,46 @@ ScrollSelect::ScrollSelect() : unk_0x4(0) { Reset(); }
 void ScrollSelect::Store() { unk_0x8 = SelectedAux(); }
 
 void ScrollSelect::Reset() { unk_0x8 = -1; }
-/*
-BEGIN_HANDLERS(ScrollSelect)
-    HANDLE_EXPR(is_scroll_selected, unk_0x8)
+
+bool ScrollSelect::SelectScrollSelect(UIComponent* comp, LocalUser* user){
+    if(unk_0x4){
+        if(unk_0x8 == -1) Store();
+        else Reset();
+        SendScrollSelected(comp, user);
+        return true;
+    }
+    else return false;
+}
+
+bool ScrollSelect::CanScroll() const {
+    bool ret = false;
+    if(!unk_0x4 || unk_0x8 != -1) ret = true;
+    return ret;
+}
+
+UIComponent::State ScrollSelect::DrawState(UIComponent* comp) const {
+    bool ret = false;
+    if(!unk_0x4 || unk_0x8 == -1) ret = true;
+    if(ret) return (UIComponent::State)comp->mState;
+    return UIComponent::kSelected;
+}
+
+bool ScrollSelect::CatchNavAction(JoypadAction act) const {
+    bool ret = false;
+    if(unk_0x8 != -1 && IsNavAction(act)) ret = true;
+    return ret;
+}
+
+DataNode ScrollSelect::Handle(DataArray* _msg, bool _warn){ 
+    Symbol sym = _msg->Sym(1);
+    MessageTimer timer((MessageTimer::Active()) ? dynamic_cast<Hmx::Object*>(this) : 0, sym);
+    HANDLE_EXPR(is_scroll_selected, unk_0x8 != -1)
     HANDLE_ACTION(reset, Reset())
-END_HANDLERS
-*/
+    if(_warn)
+        TheDebugNotifier << MakeString("%s(%d): %s unhandled msg: %s", __FILE__, 0x85, PathName(dynamic_cast<Hmx::Object*>(this)), sym);
+    return DataNode(kDataUnhandled, 0);
+}
+
 BEGIN_PROPSYNCS(ScrollSelect)
     SYNC_PROP(select_to_scroll, unk_0x4)
 END_PROPSYNCS
