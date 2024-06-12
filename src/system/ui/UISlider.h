@@ -25,6 +25,10 @@ public:
     virtual int SelectedAux() const;
     virtual void SetSelectedAux(int);
 
+    static void Init();
+    NEW_OBJ(UISlider);
+
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
     int unk118; // 0x118
