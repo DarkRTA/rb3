@@ -18,17 +18,6 @@ public:
     virtual void GrowBoundingBox(Box&) const = 0;
 };
 
-class UIListCustomElement : public UIListSlotElement {
-    public:
-    UIListCustomElement(class UIListCustom* own, Hmx::Object* ptr) : mOwner(own), mPtr(ptr) {}
-    virtual ~UIListCustomElement() { delete mPtr; }
-    virtual void Fill(const UIListProvider& p, int i1, int i2) { p.Custom(i1, i2, mOwner, mPtr); }
-    virtual void Draw(const Transform&, float, UIColor*, Box*);
-
-    class UIListCustom* mOwner;
-    Hmx::Object* mPtr;
-};
-
 class UIListCustom : public UIListSlot {
 public:
     UIListCustom();
@@ -49,6 +38,17 @@ public:
 
     NEW_OBJ(UIListCustom)
     DECLARE_REVS
+};
+
+class UIListCustomElement : public UIListSlotElement {
+    public:
+    UIListCustomElement(class UIListCustom* own, Hmx::Object* ptr) : mOwner(own), mPtr(ptr) {}
+    virtual ~UIListCustomElement() { delete mPtr; }
+    virtual void Fill(const UIListProvider& p, int i1, int i2) { p.Custom(i1, i2, mOwner, mPtr); }
+    virtual void Draw(const Transform&, float, UIColor*, Box*);
+
+    class UIListCustom* mOwner;
+    Hmx::Object* mPtr;
 };
 
 #endif // UI_UILISTCUSTOM_H

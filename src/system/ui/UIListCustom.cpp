@@ -83,4 +83,4 @@ BEGIN_PROPSYNCS(UIListCustom)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 
-DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0, NULL, NULL); ce->Poll();)
+// DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0, NULL, NULL); ce->Poll();)
