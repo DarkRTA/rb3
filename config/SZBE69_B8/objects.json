@@ -456,6 +456,7 @@
             "system/ui/UIListHighlight.cpp": "Matching",
             "system/ui/UIListLabel.cpp": "Matching",
             "system/ui/UIListMesh.cpp": "NonMatching",
+            "system/ui/UIListSlot.cpp": "NonMatching",
             "system/ui/UIListState.cpp": "NonMatching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
