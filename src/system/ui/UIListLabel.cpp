@@ -79,6 +79,13 @@ inline void UIListLabelElement::Draw(const Transform& tf, float f, UIColor* col,
         box->GrowToContain(localbox.mMax, false);
     }
     else {
-
+        float oldalpha = mLabel->mAlpha;
+        float oldaltalpha = mLabel->mAltAlpha;
+        mLabel->SetColorOverride(col);
+        mLabel->mAlpha *= f;
+        mLabel->mAltAlpha *= f;
+        mLabel->DrawShowing();
+        mLabel->mAlpha = oldalpha;
+        mLabel->mAltAlpha = oldaltalpha;
     }
 }

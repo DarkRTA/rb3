@@ -59,6 +59,7 @@ public:
     void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
     RndText* TextObj();
+    void SetColorOverride(UIColor*);
 
     DataNode OnSetTokenFmt(const DataArray*);
     DataNode OnSetInt(const DataArray*);
