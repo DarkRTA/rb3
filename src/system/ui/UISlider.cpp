@@ -60,7 +60,7 @@ RndDrawable* UISlider::CollideShowing(const Segment& seg, float& f, Plane& pl){
     SyncSlider();
     RndDir* dir = mResource->Dir();
     RndDrawable* draw = dir->CollideShowing(seg, f, pl);
-    return draw ? draw : 0;
+    return this;
 }
 
 int UISlider::CollidePlane(const Plane& pl){
@@ -139,21 +139,17 @@ DataNode UISlider::OnMsg(const ButtonDownMsg& msg){
             }
             return DataNode(1);
         }
-        if(CatchNavAction((JoypadAction)UNCONST_ARRAY(msg)->Int(4))){
+        if(CatchNavAction(msg.GetAction())){
             return DataNode(1);
         }
     }
-    JoypadAction thisAct = (JoypadAction)UNCONST_ARRAY(msg)->Int(4);
+    JoypadAction thisAct = msg.GetAction();
     LocalUser* user = msg.GetUser();
-    if(thisAct == kAction_Confirm){
-        if(SelectScrollSelect(this, user)){
-            return DataNode(1);
-        }
+    if(thisAct == kAction_Confirm && SelectScrollSelect(this, user)){
+        return DataNode(1);
     }
-    else if(thisAct == kAction_Cancel){
-        if(RevertScrollSelect(this, user, 0)){
-            return DataNode(1);
-        }
+    else if(thisAct == kAction_Cancel && RevertScrollSelect(this, user, 0)){
+        return DataNode(1);
     }
     return DataNode(kDataUnhandled, 0);
 }
