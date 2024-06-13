@@ -39,6 +39,8 @@ class Box {
 public:
     Box(){}
     // Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
+    void GrowToContain(const Vector3&, bool);
+
     Vector3 mMin;
     Vector3 mMax;
 };

@@ -38,8 +38,10 @@ public:
 class UIListLabelElement : public UIListSlotElement {
 public:
     UIListLabelElement(UIListLabel* ll, UILabel* l) : mListLabel(ll), mLabel(l) {}
-    virtual ~UIListLabelElement(){}
-    virtual void Fill(const UIListProvider&, int, int);
+    virtual ~UIListLabelElement(){ delete mLabel; }
+    virtual void Fill(const UIListProvider& prov, int i, int j){
+        prov.Text(i, j, mListLabel, mLabel);
+    }
     virtual void Draw(const Transform&, float, UIColor*, Box*);
 
     UIListLabel* mListLabel;

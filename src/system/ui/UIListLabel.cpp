@@ -1,5 +1,6 @@
 #include "ui/UIListLabel.h"
 #include "ui/UIList.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListLabel)
@@ -61,3 +62,23 @@ BEGIN_PROPSYNCS(UIListLabel)
     SYNC_PROP(label, mLabel)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
+
+inline void UIListLabelElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
+    mLabel->SetWorldXfm(tf);
+    if(box){
+        Box localbox = *box;
+        std::vector<RndMesh*> vec;
+        mLabel->TextObj()->GetMeshes(vec);
+        for(int i = 0; i < vec.size(); i++){
+            Box vecbox;
+            CalcBox(vec[i], vecbox);
+            localbox.GrowToContain(vecbox.mMin, false);
+            localbox.GrowToContain(vecbox.mMax, false);
+        }
+        box->GrowToContain(localbox.mMin, false);
+        box->GrowToContain(localbox.mMax, false);
+    }
+    else {
+
+    }
+}

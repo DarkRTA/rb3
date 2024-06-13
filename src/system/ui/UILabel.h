@@ -58,6 +58,7 @@ public:
     void SetFloat(const char*, float);
     void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
+    RndText* TextObj();
 
     DataNode OnSetTokenFmt(const DataArray*);
     DataNode OnSetInt(const DataArray*);
