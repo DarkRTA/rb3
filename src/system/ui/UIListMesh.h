@@ -19,18 +19,21 @@ public:
     virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
     
+    RndMat* DefaultMat() const;
+
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x5c
     ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0x68
 };
 
 class UIListMeshElement : public UIListSlotElement {
 public:
-    UIListMeshElement(){}
+    UIListMeshElement(UIListMesh* lm, RndMat* m) : mListMesh(lm), mMat(m) {}
     virtual ~UIListMeshElement(){}
     virtual void Fill(const UIListProvider&, int, int);
     virtual void Draw(const Transform&, float, UIColor*, Box*);
     
-
+    UIListMesh* mListMesh;
+    RndMat* mMat;
 };
 
 #endif
