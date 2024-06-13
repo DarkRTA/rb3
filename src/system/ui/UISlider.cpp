@@ -4,6 +4,7 @@
 #include "ui/Utl.h"
 #include "os/Joypad.h"
 #include "utl/Symbols.h"
+#include "decomp.h"
 
 INIT_REVS(UISlider)
 
@@ -60,8 +61,7 @@ void UISlider::DrawShowing(){
 RndDrawable* UISlider::CollideShowing(const Segment& seg, float& f, Plane& pl){
     SyncSlider();
     RndDir* dir = mResource->Dir();
-    RndDrawable* draw = dir->CollideShowing(seg, f, pl);
-    return this;
+    return dir->CollideShowing(seg, f, pl) ? this : nullptr;
 }
 
 int UISlider::CollidePlane(const Plane& pl){
@@ -159,3 +159,5 @@ BEGIN_PROPSYNCS(UISlider)
     SYNC_SUPERCLASS(ScrollSelect)
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(UISlider, UISlider, SetType)
