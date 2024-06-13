@@ -25,7 +25,7 @@ public:
 class UIListWidget : public Hmx::Object {
 public:
     UIListWidget();
-    virtual ~UIListWidget();
+    virtual ~UIListWidget(){}
     OBJ_CLASSNAME(UIListWidget);
     OBJ_SET_TYPE(UIListWidget);
     virtual DataNode Handle(DataArray*, bool);
