@@ -21,6 +21,8 @@ public:
     
     RndMat* DefaultMat() const;
 
+    DECLARE_REVS
+
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x5c
     ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0x68
 };
