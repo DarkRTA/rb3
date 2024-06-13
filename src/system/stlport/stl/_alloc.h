@@ -410,8 +410,11 @@ template <class _T1, class _T2> inline bool  operator!=(const allocator<_T1>&, c
 // Allocates from either the heap or a pool depending on the allocation size.
 template <class _Tp> class StlNodeAlloc {
 public:
-  typedef _Tp value_type;
-  typedef size_t size_type;
+  typedef size_t     size_type;
+  typedef ptrdiff_t  difference_type;
+  typedef _Tp*       pointer;
+  typedef const _Tp* const_pointer;
+  typedef _Tp        value_type;
 
   template <class _Tp1> struct rebind {
     typedef StlNodeAlloc<_Tp1> other;
@@ -419,12 +422,17 @@ public:
 
 #ifdef VERSION_SZBE69_B8
   StlNodeAlloc() _STLP_NOTHROW {}
-  StlNodeAlloc(StlNodeAlloc const &) _STLP_NOTHROW {}
+  StlNodeAlloc(StlNodeAlloc<_Tp> const &) _STLP_NOTHROW {}
   template <class _Tp1>
   StlNodeAlloc(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW {}
 #endif
 
   ~StlNodeAlloc() _STLP_NOTHROW {}
+
+  template <class _Tp1>
+  bool operator==(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW { return true; }
+  template <class _Tp1>
+  bool operator!=(const StlNodeAlloc<_Tp1>&) _STLP_NOTHROW { return false; }
 
   size_type max_size() const _STLP_NOTHROW  {
     return size_type(-1) / sizeof(value_type);
