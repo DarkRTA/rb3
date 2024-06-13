@@ -8,6 +8,7 @@
 #include "ui/UIListArrow.h"
 #include "ui/UITransitionHandler.h"
 #include "utl/Loader.h"
+#include "ui/UIListCustom.h"
 #include <cstddef>
 
 #include "decomp.h"
@@ -19,7 +20,7 @@ INIT_REVS(UIList)
 
 UIList::UIList() : UITransitionHandler(this), unk_0x140(0), unk_0x14C(this, this), unk_0x194(0), 
     unk_0x198(100), unk_0x19C(0), unk_0x1A0(0), unk_0x1A4(this, kObjListNoNull), 
-    unk_0x1B4(this, kObjListNoNull), unk_0x1C4(this, kObjListNoNull), unk_0x1D4(0), unk_0x1D8(1), 
+    unk_0x1B4(this, kObjListNoNull), unk_0x1C4(this, kObjListNoNull), unk_0x1D4(2.0f), unk_0x1D8(1), 
     unk_0x1DC(-1), unk_0x1E1(0), unk_0x1E2(0), unk_0x1E3(0), unk_0x1E4(0), unk_0x1E5(0),
     unk_0x1E6(0), unk_0x1E7(0) {}
 
