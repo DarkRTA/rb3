@@ -23,7 +23,7 @@ public:
     virtual void UpdateExtendedCustom(int, int, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const { return Symbol(); }
     virtual int DataIndex(Symbol) const;
-    virtual short NumData() const = 0;
+    virtual int NumData() const = 0;
     virtual bool IsActive(int) const { return true; }
     virtual bool IsHidden(int) const { return false; }
     virtual void InitData(RndDir*){}

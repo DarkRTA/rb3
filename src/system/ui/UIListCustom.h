@@ -29,7 +29,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
-    virtual void CreateElement(UIList*);
+    virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
 
     void SetObject(Hmx::Object*);

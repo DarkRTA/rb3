@@ -9,7 +9,7 @@
 #include <vector>
 
 class UIListSlotElement {
-    public:
+public:
     UIListSlotElement() {}
     virtual ~UIListSlotElement() {}
     virtual void Fill(const UIListProvider&, int, int) = 0;
@@ -34,10 +34,10 @@ public:
     virtual void StartScroll(int, bool);
     virtual void CompleteScroll(const UIListState&, int);
     virtual void Poll();
-    virtual void CreateElement(UIList*);
+    virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
 
-    std::vector<int> unk_0x40;
+    std::vector<UIListSlotElement> mElements; // 0x40
     int unk_0x48, unk_0x4C;
     String unk_0x50;
 

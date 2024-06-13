@@ -51,10 +51,12 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
+    const char* GetDefaultText() const;
     void Terminate();
     void LabelUpdate(bool, bool);
     void AdjustHeight(bool);
     void SetFloat(const char*, float);
+    void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
 
     DataNode OnSetTokenFmt(const DataArray*);
