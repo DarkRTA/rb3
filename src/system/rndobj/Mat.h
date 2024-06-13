@@ -117,9 +117,7 @@ public:
         mDirty |= 1;
     }
     void SetColor(const Hmx::Color& col){
-        mColor.red = col.red;
-        mColor.green = col.green;
-        mColor.blue = col.blue;
+        mColor.Set(col.red, col.green, col.blue);
         mDirty |= 1;
     }
 
