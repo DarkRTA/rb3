@@ -1,4 +1,5 @@
 #include "ui/UIListMesh.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListMesh)
@@ -64,3 +65,27 @@ BEGIN_PROPSYNCS(UIListMesh)
     SYNC_PROP(default_mat, mDefaultMat)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
+
+inline void UIListMeshElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
+    RndMesh* mesh = mListMesh->mMesh;
+    MILO_ASSERT(mesh, 0x1B);
+    mesh->SetWorldXfm(tf);
+    if(box){
+        Box localbox = *box;
+        CalcBox(mesh, localbox);
+        box->GrowToContain(localbox.mMin, false);
+        box->GrowToContain(localbox.mMax, false);
+    }
+    else {
+        if(mMat){
+            float alpha = mMat->GetAlpha();
+            mesh->SetMat(mMat);
+            mMat->SetAlpha(f * alpha);
+            if(col){
+                mMat->SetColor(col->GetColor());
+            }
+            mesh->DrawShowing();
+            mMat->SetAlpha(alpha);
+        }
+    }
+}

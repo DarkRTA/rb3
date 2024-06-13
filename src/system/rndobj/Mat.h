@@ -111,6 +111,17 @@ public:
     bool GetRefractEnabled(bool);
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
+    float GetAlpha(){ return mColor.alpha; }
+    void SetAlpha(float f){
+        mColor.alpha = f;
+        mDirty |= 1;
+    }
+    void SetColor(const Hmx::Color& col){
+        mColor.red = col.red;
+        mColor.green = col.green;
+        mColor.blue = col.blue;
+        mDirty |= 1;
+    }
 
     DataNode OnAllowedNextPass(const DataArray*);
     DataNode OnAllowedNormalMap(const DataArray*);

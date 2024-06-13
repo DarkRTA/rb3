@@ -15,7 +15,7 @@ public:
     UIListProvider(){}
     virtual ~UIListProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual int Mat(int, int, UIListMesh*) const; // return type probably not an int, fix this
+    virtual RndMat* Mat(int, int, UIListMesh*) const; // return type probably not an int, fix this
     virtual int Provider(int, int, UIListSubList*) const { return 0; } // return type also probably not an int
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const {}
     virtual void UpdateExtendedText(int, int, UILabel*) const;

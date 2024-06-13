@@ -31,7 +31,9 @@ class UIListMeshElement : public UIListSlotElement {
 public:
     UIListMeshElement(UIListMesh* lm, RndMat* m) : mListMesh(lm), mMat(m) {}
     virtual ~UIListMeshElement(){}
-    virtual void Fill(const UIListProvider&, int, int);
+    virtual void Fill(const UIListProvider& prov, int i, int j){
+        mMat = prov.Mat(i, j, mListMesh);
+    }
     virtual void Draw(const Transform&, float, UIColor*, Box*);
     
     UIListMesh* mListMesh;
