@@ -16,14 +16,7 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
-    virtual void ResourceCopy(const UIListWidget*);
-    virtual void CreateElements(UIList*, int);
-    virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
-    virtual void Fill(const class UIListProvider&, int, int, int);
-    virtual void StartScroll(int, bool);
-    virtual void CompleteScroll(const UIListState&, int);
-    virtual void Poll();    
+    virtual void Load(BinStream&);   
     virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
 
