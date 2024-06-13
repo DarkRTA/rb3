@@ -60,6 +60,10 @@ public:
     void CenterWithLabel(UILabel*, bool, float);
     RndText* TextObj();
     void SetColorOverride(UIColor*);
+    float Alpha(){ return mAlpha; }
+    float AltAlpha(){ return mAltAlpha; }
+    void SetAlpha(float f){ mAlpha = f; }
+    void SetAltAlpha(float f){ mAltAlpha = f; }
 
     DataNode OnSetTokenFmt(const DataArray*);
     DataNode OnSetInt(const DataArray*);
