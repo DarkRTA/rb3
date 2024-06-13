@@ -56,6 +56,7 @@ void UISlider::DrawShowing(){
     dir->DrawShowing();
 }
 
+// fn_80578C5C
 RndDrawable* UISlider::CollideShowing(const Segment& seg, float& f, Plane& pl){
     SyncSlider();
     RndDir* dir = mResource->Dir();

@@ -13,6 +13,9 @@ class UIListState { // 0x48
 public:
     UIListState(class UIListProvider*, UIListStateCallback*);
 
+    bool CanScrollBack(bool) const;
+    bool CanScrollNext(bool) const;
+
     bool mCircular; // 0x0
     int mNumDisplay; // 0x4
     int mGridSpan; // 0x8

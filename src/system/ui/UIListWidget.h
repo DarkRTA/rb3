@@ -50,6 +50,7 @@ public:
     UIColor* DisplayColor(UIListWidgetState, UIComponent::State) const;
     void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
     void SetParentList(UIList*);
+    void CalcXfm(const Transform&, const Vector3&, Transform&);
 
     NEW_OVERLOAD
     DECLARE_REVS
