@@ -25,7 +25,7 @@ public:
 class UIListWidget : public Hmx::Object {
 public:
     UIListWidget();
-    virtual ~UIListWidget();
+    virtual ~UIListWidget(){}
     OBJ_CLASSNAME(UIListWidget);
     OBJ_SET_TYPE(UIListWidget);
     virtual DataNode Handle(DataArray*, bool);
@@ -50,6 +50,7 @@ public:
     UIColor* DisplayColor(UIListWidgetState, UIComponent::State) const;
     void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
     void SetParentList(UIList*);
+    void CalcXfm(const Transform&, const Vector3&, Transform&);
 
     NEW_OVERLOAD
     DECLARE_REVS

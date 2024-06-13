@@ -51,7 +51,7 @@ void LoadMgr::Init(){
     DataRegisterFunc("set_edit_mode", OnSetEditMode);
     DataRegisterFunc("set_loader_period", OnSetLoaderPeriod);
     DataRegisterFunc("sysplatform_sym", OnSysPlatformSym);
-    *DataVariable("sysplatform") = DataNode(mPlatform);
+    *DataVariable("sysplatform") = DataNode((int)mPlatform);
 }
 
 Loader* LoadMgr::ForceGetLoader(const FilePath& fp){

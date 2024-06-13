@@ -1,6 +1,5 @@
 #ifndef UI_UILIST_H
 #define UI_UILIST_H
-
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "types.h"
@@ -10,29 +9,38 @@
 #include "ui/UIListProvider.h"
 #include "ui/UIListState.h"
 #include "ui/UITransitionHandler.h"
+#include "ui/UIListElementDrawState.h"
 #include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 
 class UIList : public UIComponent, public UIListProvider, public ScrollSelect, public UIListStateCallback, public UITransitionHandler {
-    public:
+public:
     UIList();
-    virtual ~UIList();
     OBJ_CLASSNAME(UIList)
     OBJ_SET_TYPE(UIList)
+    virtual DataNode Handle(DataArray*, bool);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
+    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual void DrawShowing();
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
+    virtual int CollidePlane(const Plane&);
+    virtual ~UIList();
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-
+    virtual void Enter();
+    virtual void Poll();
     virtual void Update();
-
+    virtual void AdjustTrans(Transform&, const UIListElementDrawState&){}
+    virtual void AdjustTransSelected(Transform&){}
     virtual short NumData() const;
-
-    virtual bool IsEmptyValue() const;
-    
+    virtual void StartScroll(const UIListState&, int, bool);
+    virtual void CompleteScroll(const UIListState&);
     virtual int SelectedAux() const; 
     virtual void SetSelectedAux(int);
+    virtual bool IsEmptyValue() const;
+    virtual void FinishValueChange();    
 
     void PreLoadWithRev(BinStream&, int);
     void Refresh(bool);

@@ -10,9 +10,10 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
 #include "ui/UIResource.h"
+#include "obj/Msg.h"
+// #include "os/Joypad.h"
 #include "utl/FilePath.h"
 #include <vector>
-
 
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
@@ -62,6 +63,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     DataNode OnGetResourcesPath(DataArray*);
     class ObjectDir* ResourceDir();
     void UpdateResource();
+    void UpdateMeshes(State);
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
@@ -84,6 +86,14 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     static int sSelectFrames;
     DECLARE_REVS
 };
+
+
+BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*); // LocalUser*, JoypadButton, JoypadAction, int
+
+END_MESSAGE;
+
+inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
+    Message(Type(), DataNode(comp), DataNode(user)){ }
 
 Symbol UIComponentStateToSym(UIComponent::State);
 UIComponent::State SymToUIComponentState(Symbol);

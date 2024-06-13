@@ -69,6 +69,7 @@ void* Debug::SetModalCallback(ModalCallbackFunc* func){
         for(int i = 0; i < gNotifies.size(); i++){
             MILO_WARN("%s", gNotifies[i].c_str());
         }
+        gNotifies.clear();
     }
     return oldFunc;
 }

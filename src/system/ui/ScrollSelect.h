@@ -23,6 +23,7 @@ public:
     bool CanScroll() const;
     UIComponent::State DrawState(UIComponent*) const;
     bool CatchNavAction(JoypadAction) const;
+    bool RevertScrollSelect(UIComponent*, LocalUser*, Hmx::Object*);
 
     bool unk_0x4;
     int unk_0x8;

@@ -1,17 +1,16 @@
 #ifndef UI_UILISTSTATE_H
 #define UI_UILISTSTATE_H
-
 #include "types.h"
 #include <vector>
-class UIListStateCallback {
-    public:
-    UIListStateCallback() {}
-    virtual ~UIListStateCallback() {}
-};
+
+class UIListStateCallback;
 
 class UIListState { // 0x48
 public:
     UIListState(class UIListProvider*, UIListStateCallback*);
+
+    bool CanScrollBack(bool) const;
+    bool CanScrollNext(bool) const;
 
     bool mCircular; // 0x0
     int mNumDisplay; // 0x4
@@ -27,6 +26,14 @@ public:
     float unk_0x38, unk_0x3C;
     int unk_0x40;
     // TODO: fill out the rest
+};
+
+class UIListStateCallback {
+public:
+    UIListStateCallback() {}
+    virtual ~UIListStateCallback() {}
+    virtual void StartScroll(const UIListState&, int, bool) = 0;
+    virtual void CompleteScroll(const UIListState&) = 0;
 };
 
 #endif

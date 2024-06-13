@@ -11,6 +11,23 @@ CharIKScale::~CharIKScale(){
 
 }
 
+// fn_804E75B8 in retail
+void CharIKScale::Poll(){
+    if(mDest && Weight()){
+
+    }
+}
+
+void CharIKScale::CaptureBefore(){
+    if(!mDest) return;
+    mScale = mDest->mLocalXfm.v.z;
+}
+
+void CharIKScale::CaptureAfter(){
+    if(!mDest) return;
+    mScale = mDest->mLocalXfm.v.z / mScale;
+}
+
 void CharIKScale::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     change.push_back(mDest);
     for(ObjPtrList<RndTransformable, class ObjectDir>::iterator it = mSecondaryTargets.begin(); it != mSecondaryTargets.end(); ++it){
@@ -53,7 +70,7 @@ BEGIN_HANDLERS(CharIKScale)
     HANDLE_ACTION(capture_before, CaptureBefore())
     HANDLE_ACTION(capture_after, CaptureAfter())
     HANDLE_SUPERCLASS(Hmx::Object)
-    HANDLE_CHECK(0x99)
+    HANDLE_CHECK(0xCC)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharIKScale)

@@ -3,6 +3,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Anim.h"
 #include "ui/UIListWidget.h"
+#include "ui/UIList.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListArrow)
@@ -34,6 +35,27 @@ BEGIN_COPYS(UIListArrow)
     COPY_MEMBER_FROM(a, mOnHighlight)
     COPY_MEMBER_FROM(a, mScrollAnim)
 END_COPYS
+
+// fn_805681EC
+void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
+    if(!mMesh || cmd == kDrawFirst) return;
+    const Vector3* vec = mOnHighlight ? &drawstate.mHighlightPos : (mPosition == kUIListArrowBack ? &drawstate.mFirstPos : &drawstate.mLastPos);
+    bool onhighlight = mOnHighlight;
+
+    if(box || !mShowOnlyScroll || 
+        ((mPosition != kUIListArrowBack || liststate.CanScrollBack(onhighlight)) &&
+        (mPosition != kUIListArrowNext || liststate.CanScrollNext(mOnHighlight)))){
+        Transform& worldxfm = mMesh->WorldXfm();
+        Transform xfm1 = worldxfm;
+        Transform xfm2 = xfm1;
+        if(ParentList()){
+            ParentList()->AdjustTransSelected(xfm2);
+        }
+        CalcXfm(tf, *vec, xfm2);
+        DrawMesh(mMesh, drawstate.mHighlightElementState, compstate, xfm2, box);
+        mMesh->SetWorldXfm(xfm1);
+    }    
+}
 
 void UIListArrow::StartScroll(int i, bool) { // holy fakematch
     if (mScrollAnim == NULL) return;
