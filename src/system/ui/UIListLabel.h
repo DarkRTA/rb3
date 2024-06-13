@@ -9,11 +9,12 @@ class UIListLabelElement;
 class UIListLabel : public UIListSlot {
 public:
     UIListLabel();
-    virtual ~UIListLabel();
+    virtual ~UIListLabel(){}
     OBJ_CLASSNAME(UIListLabel)
     OBJ_SET_TYPE(UIListLabel)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
     virtual void ResourceCopy(const UIListWidget*);
@@ -27,6 +28,9 @@ public:
     virtual RndTransformable* RootTrans();
 
     const char* GetDefaultText() const;
+    UILabel* ElementLabel(int) const;
+
+    DECLARE_REVS
 
     ObjPtr<UILabel, ObjectDir> mLabel; // 0x5c
 };
@@ -38,7 +42,6 @@ public:
     virtual void Fill(const UIListProvider&, int, int);
     virtual void Draw(const Transform&, float, UIColor*, Box*);
 
-    // two word params
     UIListLabel* mListLabel;
     UILabel* mLabel;
 };

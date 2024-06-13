@@ -37,7 +37,7 @@ public:
     virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
 
-    std::vector<UIListSlotElement> mElements; // 0x40
+    std::vector<UIListSlotElement*> mElements; // 0x40
     int unk_0x48, unk_0x4C;
     String unk_0x50;
 
