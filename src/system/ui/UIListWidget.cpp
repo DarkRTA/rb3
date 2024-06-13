@@ -11,7 +11,7 @@ UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDef
         for(int j = 0; j < UIComponent::kNumStates; j++){
             vec.push_back(ObjPtr<UIColor, class ObjectDir>(this, 0));
         }
-        // mColors.push_back(vec); // this causes an error
+        mColors.push_back(vec);
     }
 }
 

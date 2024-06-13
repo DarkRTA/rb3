@@ -92,7 +92,9 @@ public:
     : _M_ptr(__move_source<_AllocProxy>(src.get()._M_ptr)),
       _M_finish_idx(src.get()._M_finish_idx), _M_data_size(src.get()._M_data_size) {
     //Set the source as empty:
-    src.get()._M_finish_idx = src.get()._M_data_size = src.get()._M_ptr._M_data = 0;
+    src.get()._M_ptr._M_data = 0;
+    src.get()._M_finish_idx = 0;
+    src.get()._M_data_size = 0;
   }
 
   ~_Vector_base() {
