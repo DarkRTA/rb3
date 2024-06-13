@@ -39,19 +39,8 @@ END_COPYS
 // fn_805681EC
 void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
     if(!mMesh || cmd == kDrawFirst) return;
-    Vector3& vec = Vector3::sX;
+    const Vector3* vec = mOnHighlight ? &drawstate.mHighlightPos : (mPosition == kUIListArrowBack ? &drawstate.mFirstPos : &drawstate.mLastPos);
     bool onhighlight = mOnHighlight;
-    if(onhighlight){
-        vec = drawstate.mHighlightPos;
-    }
-    else {
-        vec = drawstate.mFirstPos;
-        if(mPosition != kUIListArrowBack){
-            vec = drawstate.mLastPos;
-        }
-    }
-
-    // Vector3& vec2 = (mOnHighlight) ? drawstate.mHighlightPos : (mPosition != kUIListArrowBack ? drawstate.mLastPos : drawstate.mFirstPos);
 
     if(box || !mShowOnlyScroll || 
         ((mPosition != kUIListArrowBack || liststate.CanScrollBack(onhighlight)) &&
@@ -60,11 +49,11 @@ void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState
         Transform xfm1 = worldxfm;
         Transform xfm2 = xfm1;
         if(ParentList()){
-            ParentList()->CompleteScroll(liststate);
+            ParentList()->AdjustTransSelected(xfm2);
         }
-        CalcXfm(tf, vec, xfm1);
-        DrawMesh(mMesh, drawstate.mHighlightElementState, compstate, xfm1, box);
-        mMesh->SetWorldXfm(xfm2);
+        CalcXfm(tf, *vec, xfm2);
+        DrawMesh(mMesh, drawstate.mHighlightElementState, compstate, xfm2, box);
+        mMesh->SetWorldXfm(xfm1);
     }    
 }
 
