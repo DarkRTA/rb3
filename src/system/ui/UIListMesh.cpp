@@ -16,6 +16,27 @@ UIListSlotElement* UIListMesh::CreateElement(UIList* uilist){
 
 RndTransformable* UIListMesh::RootTrans(){ return mMesh; }
 
+void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
+    if(mMesh){
+        float somefloat = 1.0f;
+        RndMat* themat = 0;
+        if(TheLoadMgr.EditMode()){
+            themat = mMesh->mMat;
+            if(themat) somefloat = themat->mColor.alpha;
+        }
+        Transform xfm1 = mMesh->mLocalXfm;
+        UIListSlot::Draw(drawstate, liststate, tf, compstate, box, cmd);
+        mMesh->SetDirtyLocalXfm(xfm1);
+        if(TheLoadMgr.EditMode()){
+            mMesh->SetMat(themat);
+            if(themat){
+                themat->mColor.alpha = somefloat;
+                themat->mDirty |= 1;
+            }
+        }
+    }
+}
+
 SAVE_OBJ(UIListMesh, 0x8F)
 
 BEGIN_LOADS(UIListMesh)
