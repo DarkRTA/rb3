@@ -453,7 +453,7 @@
             "system/ui/UIList.cpp": "NonMatching",
             "system/ui/UIListArrow.cpp": "Matching",
             "system/ui/UIListCustom.cpp": "Matching",
-            "system/ui/UIListHighlight.cpp": "NonMatching",
+            "system/ui/UIListHighlight.cpp": "Matching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "Matching",
