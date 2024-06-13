@@ -230,16 +230,8 @@ public:
   reference at(size_type __n) { return reinterpret_cast<reference>(_M_impl.at(__n)); }
   const_reference at(size_type __n) const { return reinterpret_cast<const_reference>(_M_impl.at(__n)); }
 
-#ifdef VERSION_SZBE69
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
-#else
-  explicit vector()
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(allocator_type(), allocator_type, _StorageType)) {}
-
-  explicit vector(const allocator_type& __a)
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
-#endif
 
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
