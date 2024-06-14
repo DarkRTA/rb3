@@ -44,6 +44,7 @@ public:
 
     void PreLoadWithRev(BinStream&, int);
     void Refresh(bool);
+    void SetParent(UIList*);
 
     int unk_0x140;
     std::vector<int> unk_0x144;
