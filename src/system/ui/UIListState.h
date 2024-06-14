@@ -27,6 +27,10 @@ public:
     UIListProvider* Provider() const;
     int WrapShowing(int) const;
     int NumDisplayWithData() const;
+    void SetScrollPastMinDisplay(bool);
+    void SetScrollPastMaxDisplay(bool);
+    void SetMinDisplay(int);
+    void SetMaxDisplay(int);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

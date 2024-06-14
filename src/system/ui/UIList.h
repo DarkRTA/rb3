@@ -13,6 +13,8 @@
 #include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 
+class UIListDir;
+
 class UIList : public UIComponent, public UIListProvider, public ScrollSelect, public UIListStateCallback, public UITransitionHandler {
 public:
     UIList();
@@ -48,15 +50,21 @@ public:
     void CalcBoundingBox(Box&);
     void SetProvider(UIListProvider*);
     void SetSelected(int, int);
+    void SetNumDisplay(int);
+    void SetGridSpan(int);
+    void SetCircular(bool);
+    void SetSpeed(float);
 
-    int unk_0x140; // 0x140
-    std::vector<int> unk_0x144; // 0x144
+    static std::list<UIList*> sUIListSet;
+
+    UIListDir* mListDir; // 0x140
+    std::vector<int> mWidgets; // 0x144
     UIListState mListState; // 0x14c
     int mUIListRev; // 0x190
-    int unk_0x194; // 0x194
+    DataProvider* mDataProvider; // 0x194
     int mNumData; // 0x198
-    int unk_0x19C; // 0x19c
-    int unk_0x1A0; // 0x1a0
+    LocalUser* mUser; // 0x19c
+    UIList* mParent; // 0x1a0
     ObjPtrList<UILabel, ObjectDir> mExtendedLabelEntries; // 0x1a4
     ObjPtrList<RndMesh, ObjectDir> mExtendedMeshEntries; // 0x1b4
     ObjPtrList<Hmx::Object, ObjectDir> mExtendedCustomEntries; // 0x1c4
@@ -66,7 +74,8 @@ public:
     u8 unk_0x1E0; // 0x1e0
     bool mPaginate; // 0x1e1
     bool mAutoScrollSendMessages; // 0x1e2
-    u8 unk_0x1E3, unk_0x1E4, unk_0x1E5, unk_0x1E6, unk_0x1E7;
+    bool mAutoScrolling; // 0x1e3
+    bool unk_0x1E4, unk_0x1E5, unk_0x1E6, unk_0x1E7;
 
     DELETE_OVERLOAD
     DECLARE_REVS

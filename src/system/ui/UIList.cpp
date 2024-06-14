@@ -10,18 +10,18 @@
 #include "utl/Loader.h"
 #include "ui/UIListCustom.h"
 #include <cstddef>
-
 #include "decomp.h"
 
 static bool gGCNewLists = true;
 static bool gLoading = false;
+std::list<UIList*> UIList::sUIListSet;
 
 INIT_REVS(UIList)
 
-UIList::UIList() : UITransitionHandler(this), unk_0x140(0), mListState(this, this), unk_0x194(0), 
-    mNumData(100), unk_0x19C(0), unk_0x1A0(0), mExtendedLabelEntries(this, kObjListNoNull), 
+UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0), 
+    mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull), 
     mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
-    unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), unk_0x1E3(0), unk_0x1E4(0), unk_0x1E5(0),
+    unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), unk_0x1E5(0),
     unk_0x1E6(0), unk_0x1E7(0) {}
 
 UIList::~UIList() {}
@@ -70,13 +70,65 @@ void UIList::PreLoadWithRev(BinStream& bs, int rev) {
 void UIList::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     unk_0x1E7 = gGCNewLists;
-
-
+    bool local_circular;
+    float local_speed;
+    int local_numdisplay;
+    bool local_scrollpastmin = false;
+    bool local_scrollpastmax = true;
+    int local_gridspan = 1;
+    int local_mindisplay = 0;
+    int local_maxdisplay = -1;
+    if(mUIListRev < 0xF){
+        int i, j, k, x;
+        bool bb;
+        bs >> i >> j;
+        if(mUIListRev > 4){
+            if(mUIListRev > 6) bs >> k;
+            else bs >> bb;
+        }
+        if(mUIListRev > 6){
+            bool b; bs >> b;
+        }
+        if(mUIListRev > 8){
+            bool b; bs >> b;
+        }
+        if(mUIListRev > 10){
+            int b; bs >> b;
+        }
+        bs >> x;
+    }
+    bs >> local_numdisplay;
+    if(mUIListRev > 0x11) bs >> local_gridspan;
+    bs >> local_circular;
+    bs >> local_speed;
+    if(mUIListRev > 0xC){
+        bs >> local_scrollpastmin;
+    }
+    if(mUIListRev > 7){
+        bs >> local_scrollpastmax;
+    }
+    if(mUIListRev > 2) bs >> mPaginate;
+    if(mUIListRev > 3) bs >> unk_0x4; // from scroll select
+    if(mUIListRev >= 10) bs >> local_mindisplay;
+    if(mUIListRev >= 6) bs >> local_maxdisplay;
+    gLoading = true;
+    SetNumDisplay(local_numdisplay);
+    SetGridSpan(local_gridspan);
+    SetCircular(local_circular);
+    SetSpeed(local_speed);
+    mListState.SetScrollPastMinDisplay(local_scrollpastmin);
+    mListState.SetScrollPastMaxDisplay(local_scrollpastmax);
+    mListState.SetMinDisplay(local_mindisplay);
+    mListState.SetMaxDisplay(local_maxdisplay);
+    if(mUIListRev == 1){
+        int x, y;
+        bs >> x >> y;
+    }
     if (mUIListRev >= 12) bs >> mNumData;
     if (mUIListRev >= 14) bs >> mAutoScrollPause;
     if (mUIListRev < 19) mAutoScrollSendMessages = true;
     else bs >> mAutoScrollSendMessages;
-    if (mUIListRev >= 10) {
+    if (mUIListRev >= 0x10) {
         bs >> mExtendedLabelEntries;
         bs >> mExtendedMeshEntries;
         bs >> mExtendedCustomEntries;
