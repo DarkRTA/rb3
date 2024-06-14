@@ -14,22 +14,24 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
-    virtual int SubList(int);
+    virtual UIList* SubList(int);
     virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
     virtual UIListSlotElement* CreateElement(UIList*);
     virtual RndTransformable* RootTrans();
+
+    DECLARE_REVS;
     
     ObjPtr<UIList, ObjectDir> mList; // 0x5c
 };
 
 class UIListSubListElement : public UIListSlotElement {
 public:
-    UIListSubListElement(){}
+    UIListSubListElement(UIListSubList* sl, UIList* l) : mSlot(sl), mList(l) {}
     virtual ~UIListSubListElement(){}
     virtual void Fill(const UIListProvider&, int, int);
     virtual void Draw(const Transform&, float, UIColor*, Box*);
     virtual void Poll();
-    virtual UIList* List();
+    virtual UIList* List(){ return mList; }
 
     UIListSubList* mSlot;
     UIList* mList;

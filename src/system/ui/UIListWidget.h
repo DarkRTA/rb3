@@ -33,7 +33,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual int SubList(int){ return 0; }
+    virtual UIList* SubList(int){ return 0; }
     virtual void ResourceCopy(const UIListWidget*);
     virtual void CreateElements(UIList*, int){}
     virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand){}
