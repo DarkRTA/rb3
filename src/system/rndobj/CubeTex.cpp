@@ -99,10 +99,6 @@ void RndCubeTex::Update(){
     }
 }
 
-RndCubeTex::~RndCubeTex(){
-
-}
-
 SAVE_OBJ(RndCubeTex, 0x116);
 
 void RndCubeTex::Load(BinStream& bs){
