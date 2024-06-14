@@ -61,6 +61,7 @@ public:
     void SetEditText(const char*);
     RndText* TextObj();
     void SetColorOverride(UIColor*);
+    float GetDrawWidth();
     float Alpha(){ return mAlpha; }
     float AltAlpha(){ return mAltAlpha; }
     void SetAlpha(float f){ mAlpha = f; }

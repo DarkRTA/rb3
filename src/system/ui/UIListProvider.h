@@ -5,7 +5,9 @@
 #include "ui/UIColor.h"
 #include "ui/UIEnums.h"
 #include "ui/UILabel.h"
+#include <list>
 
+class UIList;
 class UIListLabel;
 class UIListMesh;
 class UIListSubList;
@@ -15,7 +17,7 @@ public:
     UIListProvider(){}
     virtual ~UIListProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual RndMat* Mat(int, int, UIListMesh*) const; // return type probably not an int, fix this
+    virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual int Provider(int, int, UIListSubList*) const { return 0; } // return type also probably not an int
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const {}
     virtual void UpdateExtendedText(int, int, UILabel*) const;
@@ -35,6 +37,30 @@ public:
     virtual void PreDraw(int, int, UIListSlot*) const {}
     virtual int SnappableAtOrBeforeData(int) const { return -1; }
     virtual bool IsSnappableAtData(int) const { return false; }
+};
+
+class DataProvider : public UIListProvider {
+public:
+    DataProvider(DataArray* arr, int i, bool b1, bool b2, UIList* ul) : mData(arr), mOffset(i), mFluidWidth(b1), unkd(b2), mList(ul) { SetData(arr); }
+    virtual ~DataProvider(){}
+    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    virtual RndMat* Mat(int, int, UIListMesh*) const;
+    virtual int NumData() const { return mData->Size() - mOffset; }
+    virtual bool IsActive(int) const;
+    virtual float GapSize(int, int, int, int) const;
+    virtual UIListWidgetState ElementStateOverride(int, int, UIListWidgetState) const;
+
+    void SetData(DataArray*);
+    void Disable(Symbol);
+
+    DataArray* mData; // 0x4
+    mutable int mOffset; // 0x8
+    bool mFluidWidth; // 0xc
+    bool unkd; // 0xd
+    std::list<Symbol> unk10; // 0x10
+    std::list<Symbol> unk18; // 0x18
+    std::vector<float> mWidths; // 0x20
+    UIList* mList; // 0x28
 };
 
 #endif
