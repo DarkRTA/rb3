@@ -33,6 +33,9 @@ public:
     void SetMaxDisplay(int);
     int Selected() const;
     int SelectedData() const;
+    void SetNumDisplay(int, bool);
+    void SetGridSpan(int, bool);
+    void SetSelected(int, int, bool);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

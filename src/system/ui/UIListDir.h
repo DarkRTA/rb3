@@ -30,6 +30,9 @@ public:
     virtual float GapSize(int, int, int, int) const;
     virtual bool IsActive(int) const;
 
+    UIListOrientation Orientation() const;
+    float ElementSpacing() const;
+
     UIListOrientation mOrientation; // 0x194
     int mFadeOffset; // 0x198
     float mElementSpacing; // 0x19c
@@ -38,7 +41,7 @@ public:
     UIListState mTestState; // 0x1a8
     int mTestNumData; // 0x1ec
     float mTestGapSize; // 0x1f0
-    int mTestComponentState; // 0x1f4 - enum State
+    UIComponent::State mTestComponentState; // 0x1f4
     bool mTestDisableElements; // 0x1f8
     std::vector<int> unk1fc; // 0x1fc
     int unk204; // 0x204
