@@ -190,8 +190,8 @@ template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1,
     return bs;
 }
 
-template <class T1> BinStream& operator>>(BinStream& bs, T1& t) {
-    t.Load(bs);
+template <class T1> BinStream& operator>>(BinStream& bs, T1* t) {
+    t->Load(bs);
 }
 
 #endif
