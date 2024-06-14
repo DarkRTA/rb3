@@ -65,8 +65,7 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class Object
 
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
-
-    ObjOwnerPtr(Hmx::Object* obj, T1* cls): mOwner(obj), mPtr(cls) {
+    ObjOwnerPtr(Hmx::Object* obj, T1* cls = nullptr): mOwner(obj), mPtr(cls) {
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
@@ -75,7 +74,7 @@ public:
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*){ 
+    virtual void Replace(Hmx::Object*, Hmx::Object*){
         MILO_FAIL("Should go to owner");
     }
 
@@ -131,7 +130,7 @@ public:
     public:
         // if you wanna check the iterator methods in objdiff, go to CharHair.cpp
         // CharHair.cpp has plenty of ObjPtr and ObjPtrList methods for you to double check
-        
+
         iterator() : mNode(0) {}
         iterator(Node* node) : mNode(node) {}
         T1* operator*(){ return mNode->obj; }
@@ -154,7 +153,7 @@ public:
     ObjListMode mMode : 8;
 
     // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
-    
+
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
@@ -198,7 +197,7 @@ public:
     void push_back(T1* obj){
         insert(end(), obj);
     }
-    
+
     // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
@@ -269,7 +268,7 @@ public:
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     void link(iterator it, Node* n) {
         Node*& itNode = it.mNode;
-        
+
         if (n->obj) {
             n->obj->AddRef(this);
         }

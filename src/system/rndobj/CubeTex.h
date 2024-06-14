@@ -28,7 +28,7 @@ public:
     };
 
     RndCubeTex();
-    virtual ~RndCubeTex();
+    virtual ~RndCubeTex() {}
     OBJ_CLASSNAME(CubeTex);
     OBJ_SET_TYPE(CubeTex);
     virtual DataNode Handle(DataArray*, bool);

@@ -119,7 +119,7 @@ int StarDisplay::GetStarCountForSymbol(Symbol s) {
 }
 
 void StarDisplay::DrawShowing() {
-    ObjectDir* dir = mMesh->mDir.mDir;
+    ObjectDir* dir = mResource->mDir.mDir;
     MILO_ASSERT(dir, 312);
     unk_0x10C->SetTransParent(this, false);
     unk_0x10C->Draw();
@@ -145,7 +145,7 @@ void StarDisplay::Update() {
     UIComponent::Update();
     DataArray* typeDef = mTypeDef;
     MILO_ASSERT(typeDef, 369);
-    ObjectDir* dir = mMesh->mDir.mDir;
+    ObjectDir* dir = mResource->mDir.mDir;
     MILO_ASSERT(dir, 372);
     unk_0x10C->ResourceCopy(dir->Find<BandLabel>(typeDef->FindArray(resource_stars_label, true)->Str(1), true));
     BandLabel* bl2 = dir->Find<BandLabel>(typeDef->FindArray(resource_stars_mixed_label, true)->Str(1), true);
