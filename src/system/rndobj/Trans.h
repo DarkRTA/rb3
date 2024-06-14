@@ -1,5 +1,6 @@
-#ifndef RNDOBJ_TRANS_H
-#define RNDOBJ_TRANS_H
+/*#ifndef RNDOBJ_TRANS_H
+#define RNDOBJ_TRANS_H*/
+#pragma once
 #include "milo_types.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
@@ -141,4 +142,4 @@ public:
 
 template <class T> void RemoveSwap(std::vector<T*>&, T*);
 
-#endif
+/*#endif*/

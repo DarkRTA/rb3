@@ -189,5 +189,6 @@ public:
 };
 
 extern Rnd* TheRnd;
+extern int gSuppressPointTest;
 
 #endif // RNDOBJ_RND_H
