@@ -41,13 +41,17 @@ public:
     virtual void ReadCachedMetadataFromStream(BinStream&, int) = 0;
     virtual void WriteCachedMetadataFromStream(BinStream&) const = 0;
 
-    // void HasSong(int) const;
+    bool HasSong(int) const;
     bool HasSong(Symbol, bool) const;
+
+    void SongAudioData(Symbol) const;
     
-    // void ContentName(int) const;
-    // void ContentName(Symbol, bool) const;
-    // void IsSongCacheWriteDone() const;
-    // void IsSongMounted(Symbol) const;
+    const char* ContentName(int) const;
+    const char* ContentName(Symbol, bool) const;
+    void IsSongCacheWriteDone() const;
+    void IsSongMounted(Symbol) const;
+
+    std::map<const int, Symbol> unk_0x9C; 
 };
 
 #endif // METABAND_SONGMGR_H

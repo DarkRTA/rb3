@@ -261,7 +261,7 @@
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "Matching",
-            "system/meta/SongMetadata.cpp": "NonMatching",
+            "system/meta/SongMetadata.cpp": "Equivalent",
             "system/meta/SongMgr.cpp": "NonMatching",
             "system/meta/SongPreview.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",
