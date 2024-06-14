@@ -133,7 +133,7 @@ if args.no_asm:
 # Tool versions
 config.binutils_tag = "2.41-1"
 config.compilers_tag = "20231018"
-config.dtk_tag = "v0.8.2"
+config.dtk_tag = "v0.9.1"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
