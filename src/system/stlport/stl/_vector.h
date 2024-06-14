@@ -84,8 +84,9 @@ public:
     : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(0) {}
 
   _Vector_base(size_t __n, const _Alloc& __a)
-    : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(__n) {
+    : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(0) {
     _M_ptr._M_data = _M_ptr.allocate(__n);
+    _M_set_data_size(__n);
   }
 
   _Vector_base(__move_source<_Self> src)
@@ -400,7 +401,7 @@ private:
   void _M_fill_insert (iterator __pos, size_type __n, const _Tp& __x);
 
   bool _M_is_inside(const value_type& __x) const {
-    return (&__x >= begin() && &__x < end());
+    return &__x >= begin() && (_Size)(&__x - begin()) < this->_M_finish_idx;
   }
 
   template <class _ForwardIterator>

@@ -5,7 +5,8 @@
 
 INIT_REVS(UIListWidget);
 
-UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0) {
+UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0),
+    mWidgetDrawType(kUIListWidgetDrawAlways), mParentList(nullptr) {
     for(int i = 0; i < kNumUIListWidgetStates; i++){
         std::vector<ObjPtr<UIColor, class ObjectDir> > vec;
         for(int j = 0; j < UIComponent::kNumStates; j++){

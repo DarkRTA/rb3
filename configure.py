@@ -178,6 +178,8 @@ base_flags = get_flags("base")
 base_flags.append(f"-d VERSION_{config.version}")
 if config.debug:
     base_flags.append("-sym dwarf-2,full")
+    # Causes code generation memes, use only in desperation
+    # base_flags.append("-pragma \"debuginline on\"")
 
 # Apply cflag inheritance
 def apply_base_flags(key: str):
