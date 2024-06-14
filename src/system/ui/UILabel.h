@@ -58,6 +58,7 @@ public:
     void SetFloat(const char*, float);
     void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
+    void SetEditText(const char*);
     RndText* TextObj();
     void SetColorOverride(UIColor*);
     float Alpha(){ return mAlpha; }
