@@ -92,6 +92,10 @@ public:
     bool mWarn;
     int mFlags;
     class String mFilename;
+
+    int unk1;
+    int unk2;
+    void (FileLoader::*mState)();
 };
 
 #endif

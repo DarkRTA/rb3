@@ -383,7 +383,11 @@
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
-            "system/rndobj/Tex.cpp": "NonMatching",
+            "system/rndobj/Tex.cpp": {
+                "status": "LinkIssues",
+                "extra_cflags": ["-ipa off"],
+                "comment": "Matches, but marking as matched opens Pandora's Box of Bad Relocations :fear:"
+            },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": {
                 "status": "LinkIssues",
