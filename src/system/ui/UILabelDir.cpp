@@ -30,7 +30,8 @@ void UILabelDir::GetStateColor(UIComponent::State state, Hmx::Color& col) const 
 }
 
 RndText* UILabelDir::TextObj(Symbol sym) const {
-    return (mGennedFonts.size() > 0) ? (RndText*)mTextObj : GetGennedText(sym);
+    if (mGennedFonts.size() > 0) return GetGennedText(sym);
+    else return mTextObj;
 }
 
 RndAnimatable* UILabelDir::FocusAnim() const { return mFocusAnim; }
@@ -72,7 +73,7 @@ void UILabelDir::PostLoad(BinStream& bs){
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
     bs >> mTextObj;
-    if(gRev - 3 <= 5U){
+    if(gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8){
         ObjPtr<RndFont, ObjectDir> oPtr(this, 0);
         bs >> oPtr;
     }
