@@ -11,6 +11,11 @@
 #include "ui/UIListCustom.h"
 #include "ui/UIListWidget.h"
 #include "ui/UIListDir.h"
+#include "ui/UIListHighlight.h"
+#include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
+#include "ui/UIListSlot.h"
+#include "ui/UIListSubList.h"
 #include <cstddef>
 #include "decomp.h"
 
@@ -35,16 +40,16 @@ UIList::~UIList(){
 
 void UIList::Init() {
     TheUI->InitResources("UIList");
-    REGISTER_OBJ_FACTORY(UIList)
-    REGISTER_OBJ_FACTORY(UIListArrow)
-    REGISTER_OBJ_FACTORY(UIListCustom)
-    // REGISTER_OBJ_FACTORY(UIListDir)
-    // REGISTER_OBJ_FACTORY(UIListHighlight)
-    // REGISTER_OBJ_FACTORY(UIListLabel)
-    // REGISTER_OBJ_FACTORY(UIListMesh)
-    REGISTER_OBJ_FACTORY(UIListSlot)
-    // REGISTER_OBJ_FACTORY(UIListSubList)
-    REGISTER_OBJ_FACTORY(UIListWidget)
+    UIList::Register();
+    UIListArrow::Init();
+    UIListCustom::Init();
+    UIListDir::Init();
+    UIListHighlight::Init();
+    UIListLabel::Init();
+    UIListMesh::Init();
+    UIListSlot::Init();
+    UIListSubList::Init();
+    UIListWidget::Init();
 }
 
 BEGIN_COPYS(UIList)

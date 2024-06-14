@@ -36,8 +36,13 @@ public:
 
     ObjPtr<Hmx::Object, ObjectDir> mObject;
 
-    NEW_OBJ(UIListCustom)
     DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListCustom)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListCustom)
+    }
 };
 
 class UIListCustomElement : public UIListSlotElement {

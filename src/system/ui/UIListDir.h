@@ -35,6 +35,13 @@ public:
     UIList* SubList(int, std::vector<UIListWidget*>&);
     void CompleteScroll(const UIListState&, std::vector<UIListWidget*>&);
 
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListDir)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListDir)
+    }
+
     UIListOrientation mOrientation; // 0x194
     int mFadeOffset; // 0x198
     float mElementSpacing; // 0x19c

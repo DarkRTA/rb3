@@ -53,9 +53,12 @@ public:
     String mMatchName; // 0x50
 
     DECLARE_REVS
+    NEW_OVERLOAD
     DELETE_OVERLOAD
-
     NEW_OBJ(UIListSlot)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListSlot)
+    }
 };
 
 #endif // UI_UILISTSLOT_H

@@ -100,6 +100,9 @@ public:
     DECLARE_REVS
 
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(UIList)
+    }
     NEW_OBJ(UIList)
 };
 

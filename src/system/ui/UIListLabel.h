@@ -24,6 +24,12 @@ public:
     UILabel* ElementLabel(int) const;
 
     DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListLabel)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListLabel)
+    }
 
     ObjPtr<UILabel, ObjectDir> mLabel; // 0x5c
 };

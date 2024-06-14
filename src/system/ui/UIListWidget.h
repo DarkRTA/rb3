@@ -53,10 +53,13 @@ public:
     void SetParentList(UIList*);
     void CalcXfm(const Transform&, const Vector3&, Transform&);
 
+    DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
-    DECLARE_REVS
     NEW_OBJ(UIListWidget)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListWidget)
+    }
 
     float mDrawOrder; // 0x1c
     float mDisabledAlphaScale; // 0x20

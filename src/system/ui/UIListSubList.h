@@ -20,6 +20,12 @@ public:
     virtual RndTransformable* RootTrans();
 
     DECLARE_REVS;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListSubList)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListSubList)
+    }
 
     static int sNextFillSelection;
     
