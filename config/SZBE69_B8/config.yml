@@ -11,3 +11,13 @@ block_relocations:
   end: .text:0x80A1AA3C
 - source: .text:0x80A1AA40 # ClampToS16AndInterleave
   end: .text:0x80A1AAF8
+  # False relocations in ChecksumData_wii
+- source: .data:0x80B585D4
+- source: .data:0x80B58EC4
+- source: .data:0x80B5ADB8
+- source: .data:0x80B5B3A0
+- source: .data:0x80B5B714
+- source: .data:0x80B5BCF8
+- source: .data:0x80B5BED4
+- source: .data:0x80B5C1F0
+- source: .data:0x80B5D0AC
