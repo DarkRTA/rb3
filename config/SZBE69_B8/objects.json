@@ -385,7 +385,6 @@
             "system/rndobj/SoftParticles.cpp": "Matching",
             "system/rndobj/Tex.cpp": {
                 "status": "LinkIssues",
-                "extra_cflags": ["-ipa off"],
                 "comment": "Matches, but marking as matched opens Pandora's Box of Bad Relocations :fear:"
             },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
