@@ -4,3 +4,10 @@ splits: config/SZBE69_B8/splits.txt
 selfile: orig/SZBE69_B8/files/band_r_wii.sel
 mw_comment_version: 14
 quick_analysis: true
+
+block_relocations:
+  # False relocations in binkacd due to funky bit arithmetic
+- source: .text:0x80A1A9D0 # ClampToS16
+  end: .text:0x80A1AA3C
+- source: .text:0x80A1AA40 # ClampToS16AndInterleave
+  end: .text:0x80A1AAF8
