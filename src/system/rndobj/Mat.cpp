@@ -13,15 +13,16 @@ MatShaderOptions::MatShaderOptions() : mTempMat(0) {
 }
 
 RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
-    RndMat* mat = dynamic_cast<RndMat*>(dir->FindObject(MakeString("%s.mat", FileGetBase(shader, 0)), false));
+    const char* c = MakeString("%s.mat", FileGetBase(shader, 0));
+    RndMat* mat = dynamic_cast<RndMat*>(dir->FindObject(c, false));
     if(!mat){
         mat = dynamic_cast<RndMat*>(dir->FindObject(FileGetBase(shader, 0), false));
         if(!mat){
             bool editmode = TheLoadMgr.EditMode();
             TheLoadMgr.SetEditMode(true);
             mat = Hmx::Object::New<RndMat>();
-            if(shader){
-                mat->SetName(shader, dir);
+            if(c){
+                mat->SetName(c, dir);
             }
             TheLoadMgr.SetEditMode(editmode);
         }
@@ -280,6 +281,7 @@ BEGIN_COPYS(RndMat)
     else {
         
     }
+    mDirty = 3;
 END_COPYS
 
 #define kColorModNum 3 // hack

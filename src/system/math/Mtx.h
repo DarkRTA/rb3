@@ -112,6 +112,7 @@ public:
         // v.y = tf.v.y;
         PSQ_MOVE(v.x, tf.v.x);
         v.z = tf.v.z;
+        return *this;
     }
 
     void Reset(){

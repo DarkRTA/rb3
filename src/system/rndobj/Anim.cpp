@@ -244,7 +244,7 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
     if(periodArr){
         p = periodArr->Float(1);
         MILO_ASSERT(p, 0x1A9);
-        p = __fabs((animTaskEnd - animTaskStart)) / p;
+        p = float(__fabs((animTaskEnd - animTaskStart))) / p;
     }
 
     AnimTask* theTask = new AnimTask(this, animTaskStart, animTaskEnd, p, animTaskLoop, local_blend);
@@ -256,7 +256,7 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
         AnimTask* blendtask = theTask->mBlendTask;
         if(blendtask){
             RndAnimatable* blendtaskanim = blendtask->mAnim;
-            if(blendtaskanim->GetRate() != mRate) MILO_WARN("%s: need same rate to wait", Name());
+            if(mRate != blendtaskanim->GetRate()) MILO_WARN("%s: need same rate to wait", Name());
             else local_delay = blendtask->TimeUntilEnd();
         }
     }

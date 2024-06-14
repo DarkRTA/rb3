@@ -173,9 +173,25 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1
     return bs;
 }
 
+template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::list<T1, T2>& list){
+    unsigned int length;
+    bs >> length;
+    list.resize(length);
+
+    for(std::list<T1, T2>::iterator it = list.begin(); it != list.end(); it++){
+        bs >> *it;
+    }
+
+    return bs;
+}
+
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2> p) {
     bs >> p.first >> p.second;
     return bs;
+}
+
+template <class T1> BinStream& operator>>(BinStream& bs, T1* t) {
+    t->Load(bs);
 }
 
 #endif

@@ -98,7 +98,7 @@ void Archive::GetGuid(HxGuid& g) const {
     g = mGuid;
 }
 
-const char* Archive::GetArkfileName(int i) const {
-    MILO_ASSERT(i < mArkfileNames.size(), 1227);
-    return mArkfileNames[i].c_str();
+const char* Archive::GetArkfileName(int filenum) const {
+    MILO_ASSERT(filenum < mArkfileNames.size(), 1227);
+    return mArkfileNames[filenum].c_str();
 }

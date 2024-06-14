@@ -12,6 +12,7 @@ void UtilDrawSphere(const Vector3&, float, const Hmx::Color&);
 void UtilDrawString(const char*, const Vector3&, const Hmx::Color&);
 void UtilDrawAxes(const Transform&, float, const Hmx::Color&);
 void TransformKeys(class RndTransAnim*, const Transform&);
+MatShaderOptions GetDefaultMatShaderOpts(const Hmx::Object*, RndMat*);
 void TestTextureSize(ObjectDir*, int, int, int, int, int);
 void TestTexturePaths(ObjectDir*);
 void TestMaterialTextures(ObjectDir*);
@@ -20,6 +21,8 @@ const char* CacheResource(const char*, Hmx::Object*);
 bool AnimContains(const RndAnimatable*, const RndAnimatable*);
 void ResetColors(std::vector<Hmx::Color>&, int);
 void CalcBox(RndMesh* m, Box& b);
+void MoveXfms(RndMultiMesh*, const Vector3&);
+void DistributeXfms(RndMultiMesh*, int, float);
 
 void RndUtlPreInit();
 void RndUtlInit();
