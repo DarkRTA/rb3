@@ -20,19 +20,19 @@ void UIListSubList::Draw(const UIListWidgetDrawState& drawstate, const UIListSta
         int size = drawstate.mElements.size();
         for(int i = 0; i < size; i++){
             UIList* uilist = SubList(i);
-            int el = drawstate.mElements[i]; // TODO: fix the vector type of drawstate's mElements
-            switch(el){
-                case 0:
-                    uilist->SetState((UIComponent::State)0);
+            UIComponent::State state = drawstate.mElements[i].mComponentState;
+            switch(state){
+                case UIComponent::kNormal:
+                    uilist->SetState(UIComponent::kNormal);
                     break;
-                case 1:
+                case UIComponent::kFocused:
                     if(compstate == UIComponent::kFocused){
-                        uilist->SetState((UIComponent::State)1);
+                        uilist->SetState(UIComponent::kFocused);
                     }
-                    else uilist->SetState((UIComponent::State)0);
+                    else uilist->SetState(UIComponent::kNormal);
                     break;
-                case 2:
-                    uilist->SetState((UIComponent::State)2);
+                case UIComponent::kDisabled:
+                    uilist->SetState(UIComponent::kDisabled);
                     break;
             }
         }

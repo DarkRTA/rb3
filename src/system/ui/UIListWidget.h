@@ -5,6 +5,7 @@
 #include "math/Vec.h"
 #include "ui/UIComponent.h"
 #include "ui/UIListState.h"
+#include "ui/UIListElementDrawState.h"
 #include "ui/UIEnums.h"
 #include "obj/ObjPtr_p.h"
 #include "utl/MemMgr.h"
@@ -14,12 +15,12 @@ class UIList;
 
 class UIListWidgetDrawState {
 public:
-    Vector3 mFirstPos;
-    Vector3 mLastPos;
-    Vector3 mHighlightPos;
-    int mHighlightDisplay;
-    UIListWidgetState mHighlightElementState;
-    std::vector<int> mElements;
+    Vector3 mFirstPos; // 0x0
+    Vector3 mLastPos; // 0xc
+    Vector3 mHighlightPos; // 0x18
+    int mHighlightDisplay; // 0x24
+    UIListWidgetState mHighlightElementState; // 0x28
+    std::vector<UIListElementDrawState> mElements; // 0x2c
 };
 
 class UIListWidget : public Hmx::Object {

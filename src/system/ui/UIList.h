@@ -21,8 +21,8 @@ public:
     OBJ_CLASSNAME(UIList)
     OBJ_SET_TYPE(UIList)
     virtual DataNode Handle(DataArray*, bool);
-    virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
     virtual void DrawShowing();
