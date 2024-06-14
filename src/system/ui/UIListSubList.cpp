@@ -3,6 +3,8 @@
 
 INIT_REVS(UIListSubList)
 
+int UIListSubList::sNextFillSelection = -1;
+
 UIListSubList::UIListSubList() : mList(this, 0) {
 
 }
@@ -80,3 +82,29 @@ BEGIN_PROPSYNCS(UIListSubList)
     SYNC_PROP(list, mList)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
+
+inline void UIListSubListElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
+    mList->SetWorldXfm(tf);
+    if(box){
+        Box localbox;
+        mList->CalcBoundingBox(localbox);
+        box->GrowToContain(localbox.mMin, false);
+        box->GrowToContain(localbox.mMax, false);
+    }
+    else mList->DrawShowing();
+}
+
+inline void UIListSubListElement::Fill(const UIListProvider& prov, int i, int j){
+    UIListProvider* theProvider;
+    if(TheLoadMgr.EditMode()) theProvider = mList;
+    else theProvider = prov.Provider(i, j, mSlot);
+    if(theProvider){
+        mList->SetProvider(theProvider);
+        int thefill = UIListSubList::sNextFillSelection;
+        if(-1 < UIListSubList::sNextFillSelection){
+
+        }
+        mList->SetSelected(thefill, -1);
+        UIListSubList::sNextFillSelection = -1;
+    }
+}

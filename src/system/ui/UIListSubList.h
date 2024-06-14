@@ -20,6 +20,8 @@ public:
     virtual RndTransformable* RootTrans();
 
     DECLARE_REVS;
+
+    static int sNextFillSelection;
     
     ObjPtr<UIList, ObjectDir> mList; // 0x5c
 };
@@ -27,10 +29,10 @@ public:
 class UIListSubListElement : public UIListSlotElement {
 public:
     UIListSubListElement(UIListSubList* sl, UIList* l) : mSlot(sl), mList(l) {}
-    virtual ~UIListSubListElement(){}
+    virtual ~UIListSubListElement(){ delete mList; }
     virtual void Fill(const UIListProvider&, int, int);
     virtual void Draw(const Transform&, float, UIColor*, Box*);
-    virtual void Poll();
+    virtual void Poll(){ mList->Poll(); }
     virtual UIList* List(){ return mList; }
 
     UIListSubList* mSlot;

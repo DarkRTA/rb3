@@ -45,6 +45,9 @@ public:
     void PreLoadWithRev(BinStream&, int);
     void Refresh(bool);
     void SetParent(UIList*);
+    void CalcBoundingBox(Box&);
+    void SetProvider(UIListProvider*);
+    void SetSelected(int, int);
 
     int unk_0x140;
     std::vector<int> unk_0x144;
