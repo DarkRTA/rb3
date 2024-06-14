@@ -49,21 +49,23 @@ public:
     void SetProvider(UIListProvider*);
     void SetSelected(int, int);
 
-    int unk_0x140;
-    std::vector<int> unk_0x144;
-    UIListState unk_0x14C;
-    int mRev; // 0x190
-    int unk_0x194, unk_0x198, unk_0x19C, unk_0x1A0;
-
-
-    ObjPtrList<UILabel, ObjectDir> unk_0x1A4;
-    ObjPtrList<RndMesh, ObjectDir> unk_0x1B4;
-    ObjPtrList<Hmx::Object, ObjectDir> unk_0x1C4;
-    float unk_0x1D4;
-    int unk_0x1D8;
-    float unk_0x1DC;
-    u8 unk_0x1E0, unk_0x1E1;
-    bool unk_0x1E2;
+    int unk_0x140; // 0x140
+    std::vector<int> unk_0x144; // 0x144
+    UIListState mListState; // 0x14c
+    int mUIListRev; // 0x190
+    int unk_0x194; // 0x194
+    int mNumData; // 0x198
+    int unk_0x19C; // 0x19c
+    int unk_0x1A0; // 0x1a0
+    ObjPtrList<UILabel, ObjectDir> mExtendedLabelEntries; // 0x1a4
+    ObjPtrList<RndMesh, ObjectDir> mExtendedMeshEntries; // 0x1b4
+    ObjPtrList<Hmx::Object, ObjectDir> mExtendedCustomEntries; // 0x1c4
+    float mAutoScrollPause; // 0x1d4
+    int unk_0x1D8; // 0x1d8
+    float unk_0x1DC; // 0x1dc
+    u8 unk_0x1E0; // 0x1e0
+    bool mPaginate; // 0x1e1
+    bool mAutoScrollSendMessages; // 0x1e2
     u8 unk_0x1E3, unk_0x1E4, unk_0x1E5, unk_0x1E6, unk_0x1E7;
 
     DELETE_OVERLOAD

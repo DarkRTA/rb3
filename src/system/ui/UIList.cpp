@@ -18,10 +18,10 @@ static bool gLoading = false;
 
 INIT_REVS(UIList)
 
-UIList::UIList() : UITransitionHandler(this), unk_0x140(0), unk_0x14C(this, this), unk_0x194(0), 
-    unk_0x198(100), unk_0x19C(0), unk_0x1A0(0), unk_0x1A4(this, kObjListNoNull), 
-    unk_0x1B4(this, kObjListNoNull), unk_0x1C4(this, kObjListNoNull), unk_0x1D4(2.0f), unk_0x1D8(1), 
-    unk_0x1DC(-1), unk_0x1E1(0), unk_0x1E2(0), unk_0x1E3(0), unk_0x1E4(0), unk_0x1E5(0),
+UIList::UIList() : UITransitionHandler(this), unk_0x140(0), mListState(this, this), unk_0x194(0), 
+    mNumData(100), unk_0x19C(0), unk_0x1A0(0), mExtendedLabelEntries(this, kObjListNoNull), 
+    mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
+    unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), unk_0x1E3(0), unk_0x1E4(0), unk_0x1E5(0),
     unk_0x1E6(0), unk_0x1E7(0) {}
 
 UIList::~UIList() {}
@@ -60,9 +60,9 @@ void UIList::PreLoad(BinStream& bs) {
 }
 
 void UIList::PreLoadWithRev(BinStream& bs, int rev) {
-    mRev = rev;
-    if (mRev > 19) {
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), mRev, (unsigned short)19);
+    mUIListRev = rev;
+    if (mUIListRev > 19) {
+        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), mUIListRev, (unsigned short)19);
     }
     UIComponent::PreLoad(bs);
 }
@@ -72,16 +72,16 @@ void UIList::PostLoad(BinStream& bs) {
     unk_0x1E7 = gGCNewLists;
 
 
-    if (mRev >= 12) bs >> unk_0x198;
-    if (mRev >= 14) bs >> unk_0x1D4;
-    if (mRev < 19) unk_0x1E2 = true;
-    else bs >> unk_0x1E2;
-    if (mRev >= 10) {
-        bs >> unk_0x1A4;
-        bs >> unk_0x1B4;
-        bs >> unk_0x1C4;
+    if (mUIListRev >= 12) bs >> mNumData;
+    if (mUIListRev >= 14) bs >> mAutoScrollPause;
+    if (mUIListRev < 19) mAutoScrollSendMessages = true;
+    else bs >> mAutoScrollSendMessages;
+    if (mUIListRev >= 10) {
+        bs >> mExtendedLabelEntries;
+        bs >> mExtendedMeshEntries;
+        bs >> mExtendedCustomEntries;
     }
-    if (mRev >= 17) UITransitionHandler::LoadHandlerData(bs);
+    if (mUIListRev >= 17) UITransitionHandler::LoadHandlerData(bs);
     gLoading = false;
     Update();
 }
