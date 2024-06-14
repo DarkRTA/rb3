@@ -4,6 +4,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Group.h"
 #include "obj/ObjVersion.h"
+#include "decomp.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UILabelDir)
@@ -25,7 +26,7 @@ void UILabelDir::GetStateColor(UIComponent::State state, Hmx::Color& col) const 
     else if(mDefaultColor){
         col = mDefaultColor->GetColor();
     }
-    else col = Hmx::Color(1.0f, 1.0f, 1.0f, 1.0f);
+    else col.Set(1.0f);
 }
 
 RndText* UILabelDir::TextObj(Symbol sym) const {
@@ -47,6 +48,8 @@ void UILabelDir::SetColor(UIComponent::State state, UIColor* color){
 
 SAVE_OBJ(UILabelDir, 0x9C)
 
+DECOMP_FORCEACTIVE(UILabelDir, "ObjPtr_p.h", "f.Owner()", "")
+
 void UILabelDir::SyncObjects(){
     RndDir::SyncObjects();
     UIFontImporter::FontImporterSyncObjects();
@@ -66,8 +69,8 @@ void UILabelDir::PreLoad(BinStream& bs){
 void UILabelDir::PostLoad(BinStream& bs){
     RndDir::PostLoad(bs);
     int revs = PopRev(this);
-    gAltRev = getAltRev(revs);
     gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
     bs >> mTextObj;
     if(gRev - 3 <= 5U){
         ObjPtr<RndFont, ObjectDir> oPtr(this, 0);
@@ -97,7 +100,7 @@ void UILabelDir::PostLoad(BinStream& bs){
         bs >> uiCol;
         mColors[i] = uiCol;
     }
-    if(gRev > 7){
+    if(gRev >= 8){
         UIFontImporter::Load(bs);
     }
 }
