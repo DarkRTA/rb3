@@ -9,6 +9,7 @@
 #include "ui/UITransitionHandler.h"
 #include "utl/Loader.h"
 #include "ui/UIListCustom.h"
+#include "ui/UIListWidget.h"
 #include <cstddef>
 #include "decomp.h"
 
@@ -24,7 +25,12 @@ UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this
     unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), unk_0x1E5(0),
     unk_0x1E6(0), unk_0x1E7(0) {}
 
-UIList::~UIList() {}
+UIList::~UIList(){
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++) delete *it;
+    sUIListSet.clear();
+    delete mDataProvider;
+    mDataProvider = 0;
+}
 
 void UIList::Init() {
     TheUI->InitResources("UIList");
@@ -70,9 +76,9 @@ void UIList::PreLoadWithRev(BinStream& bs, int rev) {
 void UIList::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     unk_0x1E7 = gGCNewLists;
-    bool local_circular;
-    float local_speed;
     int local_numdisplay;
+    float local_speed;
+    bool local_circular;
     bool local_scrollpastmin = false;
     bool local_scrollpastmax = true;
     int local_gridspan = 1;

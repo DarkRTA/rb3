@@ -53,6 +53,7 @@ public:
     void CalcXfm(const Transform&, const Vector3&, Transform&);
 
     NEW_OVERLOAD
+    DELETE_OVERLOAD
     DECLARE_REVS
     NEW_OBJ(UIListWidget)
 

@@ -68,7 +68,7 @@ public:
     static std::list<UIList*> sUIListSet;
 
     UIListDir* mListDir; // 0x140
-    std::vector<int> mWidgets; // 0x144
+    std::vector<UIListWidget*> mWidgets; // 0x144
     UIListState mListState; // 0x14c
     int mUIListRev; // 0x190
     DataProvider* mDataProvider; // 0x194
