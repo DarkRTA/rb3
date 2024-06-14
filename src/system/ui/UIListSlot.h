@@ -1,6 +1,5 @@
 #ifndef UI_UILISTSLOT_H
 #define UI_UILISTSLOT_H
-
 #include "UIListWidget.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -8,8 +7,14 @@
 #include "utl/Str.h"
 #include <vector>
 
+enum UIListSlotDrawType {
+    kUIListSlotDrawAlways,
+    kUIListSlotDrawHighlight,
+    kUIListSlotDrawNoHighlight
+};
+
 class UIListSlotElement {
-    public:
+public:
     UIListSlotElement() {}
     virtual ~UIListSlotElement() {}
     virtual void Fill(const UIListProvider&, int, int) = 0;
@@ -25,6 +30,7 @@ public:
     OBJ_SET_TYPE(UIListSlot)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
     virtual void ResourceCopy(const UIListWidget*);
@@ -34,12 +40,17 @@ public:
     virtual void StartScroll(int, bool);
     virtual void CompleteScroll(const UIListState&, int);
     virtual void Poll();
-    virtual void CreateElement(UIList*);
-    virtual RndTransformable* RootTrans();
+    virtual UIListSlotElement* CreateElement(UIList*){ return 0; }
+    virtual RndTransformable* RootTrans(){ return 0; }
 
-    std::vector<int> unk_0x40;
-    int unk_0x48, unk_0x4C;
-    String unk_0x50;
+    void ClearElements();
+    bool Matches(const char*) const;
+    const char* MatchName() const;
+
+    std::vector<UIListSlotElement*> mElements; // 0x40
+    UIListSlotDrawType mSlotDrawType; // 0x48
+    UIListSlotElement* mNextElement; // 0x4c
+    String mMatchName; // 0x50
 
     DECLARE_REVS
     DELETE_OVERLOAD

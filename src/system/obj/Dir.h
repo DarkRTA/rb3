@@ -28,7 +28,7 @@ enum InlineDirType {
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(dir) mDir->AddRef(this); }
+    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir) mDir->AddRef(this); }
     ObjDirPtr() : mDir(0), mLoader(0) {}
     ObjDirPtr(const ObjDirPtr& dPtr) : mDir(dPtr.mDir), mLoader(0) { if(mDir) mDir->AddRef(this); }
     virtual ~ObjDirPtr(){ *this = (T*)0; }

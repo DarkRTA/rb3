@@ -53,6 +53,10 @@ namespace Hmx {
         // bool operator!=(const Color &) const;
         // void Set(float, float, float, float);
 
+        void Set(float r, float g, float b){
+            red = r; green = g; blue = b;
+        }
+
         int Pack() const {
             return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }

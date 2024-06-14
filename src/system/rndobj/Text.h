@@ -62,6 +62,7 @@ public:
     void SetFont(RndFont*);
     String TextASCII() const; void SetTextASCII(const char*);
     float Size() const { return mSize; } void SetSize(float);
+    void GetMeshes(std::vector<RndMesh*>&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

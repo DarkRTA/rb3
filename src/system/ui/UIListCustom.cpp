@@ -44,7 +44,7 @@ void UIListCustom::SetObject(Hmx::Object* o) {
     mObject = o;
 }
 
-void UIListCustom::CreateElement(UIList*) {
+UIListSlotElement* UIListCustom::CreateElement(UIList*) {
     MILO_ASSERT(mObject, 105);
     Hmx::Object* c = Hmx::Object::NewObject(mObject->ClassName());
     if (UIComponent* d = dynamic_cast<UIComponent*>(c)) {
@@ -52,7 +52,7 @@ void UIListCustom::CreateElement(UIList*) {
     } else {
         c->Copy(mObject.mPtr, kCopyDeep);
     }
-    new UIListCustomElement(this, c);
+    return new UIListCustomElement(this, c);
 }
 
 RndTransformable* UIListCustom::RootTrans() { return dynamic_cast<RndTransformable*>(mObject.mPtr); }

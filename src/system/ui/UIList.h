@@ -34,7 +34,7 @@ public:
     virtual void Update();
     virtual void AdjustTrans(Transform&, const UIListElementDrawState&){}
     virtual void AdjustTransSelected(Transform&){}
-    virtual short NumData() const;
+    virtual int NumData() const;
     virtual void StartScroll(const UIListState&, int, bool);
     virtual void CompleteScroll(const UIListState&);
     virtual int SelectedAux() const; 
