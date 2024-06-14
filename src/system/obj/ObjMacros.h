@@ -326,21 +326,4 @@ void objType::Load(BinStream& bs){
 
 // END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
 
-// BEGIN ADDTONOTIFIES MACRO ---------------------------------------------------------------------------
-
-#define ADD_NOTIFS \
-namespace {\
-    bool AddToNotifies(const char* str, std::list<class String>& list){\
-        if(list.size() > 0x10) return false; \
-        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){ \
-            bool found = strcmp(it->c_str(), str); \
-            if(!found) return false; \
-        } \
-        list.push_back(str); \
-        return true; \
-    } \
-}
-
-// END ADDTONOTIFIES MACRO -----------------------------------------------------------------------------
-
 #endif

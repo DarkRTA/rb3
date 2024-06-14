@@ -15,8 +15,6 @@ RndCam* RndCam::sCurrent = 0;
 int CAM_REV = 12;
 Transform sFlipYZ; 
 
-ADD_NOTIFS
-
 float RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
     s = mZRange;
 }
@@ -92,10 +90,7 @@ RndCam::~RndCam(){
 
 void RndCam::SetFrustum(float f1, float f2, float f3, float f4) {
     if (f2 - 0.0001f > f1 * 1000) {
-        static DebugNotifyOncer _dw;
-        const char* s = MakeString("%s: %f/%f plane ratio exceeds 1000", mName, f2, f1);
-        if (::AddToNotifies(s, _dw.mNotifies))
-            TheDebugNotifier << s;
+        MILO_NOTIFY_ONCE("%s: %f/%f plane ratio exceeds 1000", mName, f2, f1);
         if (f2 == mFarPlane) f1 = f2 / 1000;
         if (f2 != mFarPlane) f2 = f1 * 1000;
     }
@@ -127,7 +122,7 @@ DataNode RndCam::OnSetFrustum(const DataArray* da){
 }
 
 void RndCam::UpdateLocal() {
-    
+
 }
 
 DataNode RndCam::OnSetZRange(const DataArray* da){

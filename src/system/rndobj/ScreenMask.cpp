@@ -9,8 +9,6 @@
 
 int SCREENMASK_REV = 2;
 
-ADD_NOTIFS
-
 RndScreenMask::RndScreenMask() : mMat(this, 0), mColor(), mRect(0.0f, 0.0f, 1.0f, 1.0f) {
     mUseCurrentRect = 0;
 }
@@ -49,14 +47,7 @@ void RndScreenMask::Load(BinStream& bs){
 }
 
 void RndScreenMask::DrawShowing() {
-    
-
-    {
-        static DebugNotifyOncer _dw;
-        const char* s = MakeString("%s: Overriding camera screen_rect not supported with render texture", mName);
-        if (::AddToNotifies(s, _dw.mNotifies))
-            TheDebugNotifier << s;
-    }
+    MILO_NOTIFY_ONCE("%s: Overriding camera screen_rect not supported with render texture", mName);
     if (!mUseCurrentRect && !RndCam::sCurrent->mTargetTex.mPtr) {
         //TheRnd->PostSave();
         TheHiResScreen->InvScreenRect();

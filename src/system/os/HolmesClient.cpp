@@ -9,7 +9,6 @@
 #include "utl/BinStream.h"
 #include <list>
 
-ADD_NOTIFS
 namespace {
     uint gRealMaxBufferSize;
     CriticalSection gCrit;
@@ -28,9 +27,7 @@ namespace {
     }
 
     void EndCmd(Holmes::Protocol) {
-        static DebugNotifyOncer _dw;
-        const char* s = MakeString("HolmesClient buffer exceeded %d < %d", 0x2000d, gRealMaxBufferSize);
-        WARN_ONCE(s)
+        MILO_NOTIFY_ONCE("HolmesClient buffer exceeded %d < %d", 0x2000d, gRealMaxBufferSize);
     }
 
     void HolmesFlushStreamBuffer() {

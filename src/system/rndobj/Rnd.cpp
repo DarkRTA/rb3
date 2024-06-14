@@ -70,8 +70,6 @@ bool gNotifyKeepGoing;
 bool gFailKeepGoing;
 bool gFailRestartConsole;
 
-ADD_NOTIFS;
-
 BEGIN_HANDLERS(ModalKeyListener)
     HANDLE_MESSAGE(KeyboardKeyMsg)
     HANDLE_CHECK(0xF8)
@@ -132,7 +130,7 @@ void Rnd::Modal(bool& b, char* c, bool bb){
     }
 }
 
-Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(), 
+Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(),
     mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
     unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), unkdc(0), mShowSafeArea(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
     unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
@@ -350,8 +348,8 @@ void Rnd::SetShowTimers(bool b1, bool b2){
 }
 
 float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
-    if (ovl == mRateOverlay) UpdateRate(); 
-    else if (ovl == mHeapOverlay) UpdateHeap(); 
+    if (ovl == mRateOverlay) UpdateRate();
+    else if (ovl == mHeapOverlay) UpdateHeap();
     else if (ovl == mTimersOverlay) f = DrawTimers(f);
     return f;
 }

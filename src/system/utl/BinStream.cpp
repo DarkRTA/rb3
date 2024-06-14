@@ -7,22 +7,8 @@
 #include "utl/TextStream.h"
 #include "os/Debug.h"
 #include "os/Endian.h"
-#include <string.h>
-#include <list>
 
 #define BIN_STREAM_BUF_SIZE 0x200U
-
-namespace {
-    bool AddToNotifies(const char* str, std::list<String>& list){
-        if(list.size() > 0x10) return false;
-        for(std::list<String>::iterator it = list.begin(); it != list.end(); it++){
-            bool strFound = !strcmp(it->c_str(), str);
-            if(strFound) return false;
-        }
-        list.push_back(str);
-        return true;
-    }
-}
 
 const char *BinStream::Name() const {
     return "<unnamed>";
@@ -106,11 +92,7 @@ void BinStream::Read(void* data, int bytes){
     unsigned char* ptr = (unsigned char*)data;
     unsigned char* end;
     if(Fail()){
-        static DebugNotifyOncer _dw;
-        const char* str = MakeString("Stream error: Can't read from %s", Name());
-        if(AddToNotifies(str, _dw.mNotifies)){
-            TheDebug.Notify(str);
-        }
+        MILO_NOTIFY_ONCE("Stream error: Can't read from %s", Name());
         memset(data, 0, bytes);
     }
     else {

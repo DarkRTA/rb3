@@ -1,10 +1,13 @@
 #ifndef OS_DEBUG_H
 #define OS_DEBUG_H
+
 #include "utl/TextStream.h"
 #include "utl/Str.h"
 #include "utl/MakeString.h"
 #include "utl/TextFileStream.h"
+
 #include <list>
+#include <string.h>
 
 typedef void ModalCallbackFunc(bool&, char*, bool);
 typedef void ExitCallbackFunc(void);
@@ -93,23 +96,41 @@ public:
 
 extern DebugFailer TheDebugFailer;
 
+namespace {
+    bool AddToNotifies(const char* name, std::list<String>& notifies){
+        if (notifies.size() > 16) {
+            return false;
+        }
+
+        for (std::list<String>::iterator it = notifies.begin(); it != notifies.end(); it++){ \
+            bool equal = !strcmp(it->c_str(), name);
+            if (equal) {
+                return false;
+            }
+        }
+
+        notifies.push_back(name);
+        return true;
+    }
+}
+
 class DebugNotifyOncer {
 public:
-    std::list<class String> mNotifies;
+    std::list<String> mNotifies;
     DebugNotifyOncer(){}
     ~DebugNotifyOncer(){}
 
-    //DebugNotifyOncer& operator<<(const char* cc){
-    //    if(AddToNotifies(cc, mNotifies)){
-    //        TheDebug.Notify(cc);
-    //    }
-    //    return *this;
-    //}
+    DebugNotifyOncer& operator<<(const char* cc){
+        if(AddToNotifies(cc, mNotifies)){
+            TheDebugNotifier << cc;
+        }
+        return *this;
+    }
 };
 
-#define WARN_ONCE(cc) \
-    if(AddToNotifies(cc, _dw.mNotifies)){\
-        TheDebug.Notify(cc);\
-    }
+#define MILO_NOTIFY_ONCE(...) { \
+        static DebugNotifyOncer _dw; \
+        _dw << MakeString(__VA_ARGS__); \
+    } \
 
 #endif
