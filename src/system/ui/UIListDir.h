@@ -32,6 +32,8 @@ public:
 
     UIListOrientation Orientation() const;
     float ElementSpacing() const;
+    UIList* SubList(int, std::vector<UIListWidget*>&);
+    void CompleteScroll(const UIListState&, std::vector<UIListWidget*>&);
 
     UIListOrientation mOrientation; // 0x194
     int mFadeOffset; // 0x198

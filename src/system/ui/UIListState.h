@@ -36,6 +36,11 @@ public:
     void SetNumDisplay(int, bool);
     void SetGridSpan(int, bool);
     void SetSelected(int, int, bool);
+    void SetCircular(bool, bool);
+    void SetSpeed(float);
+    void SetSelectedSimulateScroll(int);
+    void SetProvider(UIListProvider*, RndDir*);
+    void Scroll(int, bool);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

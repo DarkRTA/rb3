@@ -64,6 +64,14 @@ public:
     Symbol SelectedSym(bool) const;
     bool IsScrolling() const;
     UIListState& GetListState();
+    UIList* ChildList();
+    UIList* ParentList();
+    UIListDir* GetUIListDir() const;
+    bool SetSelected(Symbol, bool, int);
+    void SetSelectedSimulateScroll(int);
+    bool SetSelectedSimulateScroll(Symbol, bool);
+    void HandleSelectionUpdated();
+    void Scroll(int);
 
     static std::list<UIList*> sUIListSet;
 
@@ -85,7 +93,8 @@ public:
     bool mPaginate; // 0x1e1
     bool mAutoScrollSendMessages; // 0x1e2
     bool mAutoScrolling; // 0x1e3
-    bool unk_0x1E4, unk_0x1E5, unk_0x1E6, unk_0x1E7;
+    bool unk_0x1E4; // 0x1e4 - scroll related
+    bool unk_0x1E5, unk_0x1E6, unk_0x1E7;
 
     DELETE_OVERLOAD
     DECLARE_REVS

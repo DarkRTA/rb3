@@ -10,6 +10,7 @@
 #include "utl/Loader.h"
 #include "ui/UIListCustom.h"
 #include "ui/UIListWidget.h"
+#include "ui/UIListDir.h"
 #include <cstddef>
 #include "decomp.h"
 
@@ -163,6 +164,97 @@ Symbol UIList::SelectedSym(bool fail) const {
 bool UIList::IsScrolling() const { return mListState.IsScrolling(); }
 
 UIListState& UIList::GetListState(){ return mListState; }
+
+UIList* UIList::ChildList(){
+    return mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+}
+
+UIList* UIList::ParentList(){ return mParent; }
+UIListDir* UIList::GetUIListDir() const { return mListDir; }
+
+void UIList::SetNumDisplay(int i){
+    mListState.SetNumDisplay(i, gLoading == 0);
+    Update();
+}
+
+void UIList::SetGridSpan(int i){
+    mListState.SetGridSpan(i, gLoading == 0);
+    Update();
+}
+
+void UIList::SetCircular(bool b){
+    mListState.SetCircular(b, gLoading == 0);
+    Update();
+    if(!gLoading) Refresh(false);
+}
+
+void UIList::SetSpeed(float f){ mListState.SetSpeed(f); }
+
+void UIList::SetSelected(int i, int j){
+    mListDir->CompleteScroll(mListState, mWidgets);
+    mListState.SetSelected(i, j, true);
+    Refresh(false);
+    mListDir->Poll();
+    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+    if(uilist) Poll();
+    HandleSelectionUpdated();
+}
+
+bool UIList::SetSelected(Symbol sym, bool b, int i){
+    int index = mListState.Provider()->DataIndex(sym);
+    if(index == -1){
+        if(b){
+            MILO_WARN("Couldn't find %s in UIList provider", sym);
+        }
+        return false;
+    }
+    else {
+        SetSelected(index, i);
+        return true;
+    }
+}
+
+void UIList::SetSelectedSimulateScroll(int i){
+    mListDir->CompleteScroll(mListState, mWidgets);
+    mListState.SetSelectedSimulateScroll(i);
+    Refresh(false);
+    mListDir->Poll();
+    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+    if(uilist) Poll();
+}
+
+bool UIList::SetSelectedSimulateScroll(Symbol sym, bool b){
+    int index = mListState.Provider()->DataIndex(sym);
+    if(index == -1){
+        if(b){
+            MILO_WARN("Couldn't find %s in UIList provider", sym);
+        }
+        return false;
+    }
+    else {
+        SetSelectedSimulateScroll(index);
+        return true;
+    }
+}
+
+void UIList::SetProvider(UIListProvider* prov){
+    if(prov == mListState.Provider()){
+        Refresh(true);
+    }
+    else {
+        mListState.SetProvider(prov, mResource->Dir());
+        SetSelected(0, -1);
+    }
+    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+    if(uilist) Poll();
+}
+
+void UIList::Scroll(int i){
+    unk_0x1E4 = true;
+    mListState.Scroll(i, false);
+}
+
+void UIList::SetParent(UIList* uilist){ mParent = uilist; }
 
 void UIList::Update() {
     if (!gLoading) {
