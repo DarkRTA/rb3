@@ -138,6 +138,26 @@ void UIList::PostLoad(BinStream& bs) {
     Update();
 }
 
+int UIList::NumDisplay() const { return mListState.mNumDisplay; }
+float UIList::Speed() const { return mListState.Speed(); }
+int UIList::FirstShowing() const { return mListState.mFirstShowing; }
+int UIList::Selected() const { return mListState.Selected(); }
+int UIList::SelectedDisplay() const { return mListState.SelectedDisplay(); }
+int UIList::SelectedData() const { return mListState.SelectedData(); }
+int UIList::SelectedPos() const { return mListState.Selected(); }
+
+Symbol UIList::SelectedSym(bool fail) const {
+    Symbol sym = mListState.Provider()->DataSymbol(mListState.SelectedData());
+    if(fail){
+        if(sym == gNullStr) MILO_FAIL("DataSymbol() not implemented in UIList provider");
+    }
+    return sym;
+}
+
+bool UIList::IsScrolling() const { return mListState.IsScrolling(); }
+
+UIListState& UIList::GetListState(){ return mListState; }
+
 void UIList::Update() {
     if (!gLoading) {
         unk_0x1E6 = false;

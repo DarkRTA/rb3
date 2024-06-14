@@ -31,6 +31,8 @@ public:
     void SetScrollPastMaxDisplay(bool);
     void SetMinDisplay(int);
     void SetMaxDisplay(int);
+    int Selected() const;
+    int SelectedData() const;
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

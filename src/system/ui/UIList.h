@@ -54,6 +54,16 @@ public:
     void SetGridSpan(int);
     void SetCircular(bool);
     void SetSpeed(float);
+    int NumDisplay() const;
+    float Speed() const;
+    int FirstShowing() const;
+    int Selected() const;
+    int SelectedDisplay() const;
+    int SelectedData() const;
+    int SelectedPos() const;
+    Symbol SelectedSym(bool) const;
+    bool IsScrolling() const;
+    UIListState& GetListState();
 
     static std::list<UIList*> sUIListSet;
 
