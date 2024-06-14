@@ -148,6 +148,18 @@
                 "-inline auto"
             ]
         },
+        "soundtouch": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+                "-str reuse,pool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c++",
+                "-inline auto"
+            ]
+        },
         "libtomcrypt": {
             "base": "zlib",
             "flags": [

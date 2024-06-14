@@ -44,9 +44,10 @@
 #ifndef TDStretch_H
 #define TDStretch_H
 
-#include "STTypes.h"
+#include "synthwii/soundtouch/include/STTypes.h"
 #include "RateTransposer.h"
-#include "FIFOSamplePipe.h"
+#include "synthwii/soundtouch/include/FIFOSamplePipe.h"
+#include "utl/MemMgr.h"
 
 namespace soundtouch
 {
@@ -149,15 +150,10 @@ public:
     TDStretch();
     virtual ~TDStretch();
 
-    /// Operator 'new' is overloaded so that it automatically creates a suitable instance 
-    /// depending on if we've a MMX/SSE/etc-capable CPU available or not.
-    static void *operator new(size_t s);
+    void *operator new(size_t t) {
+        return _MemAlloc(t, 32);
+    }
 
-    /// Use this function instead of "new" operator to create a new instance of this class. 
-    /// This function automatically chooses a correct feature set depending on if the CPU
-    /// supports MMX/SSE/etc extensions.
-    static TDStretch *newInstance();
-    
     /// Returns the output buffer object
     FIFOSamplePipe *getOutput() { return &outputBuffer; };
 

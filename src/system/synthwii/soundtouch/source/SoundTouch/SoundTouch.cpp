@@ -69,14 +69,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "os/Debug.h"
 #include <assert.h>
+#include <string.h>
 #include <stdlib.h>
-#include <memory.h>
+//#include <memory.h>
 #include <math.h>
-#include <stdexcept>
 #include <stdio.h>
+#include <types.h>
 
-#include "SoundTouch.h"
+#include "sdk/Runtime/__mem.h"
+#include "synthwii/soundtouch/include/SoundTouch.h"
 #include "TDStretch.h"
 #include "RateTransposer.h"
 #include "cpu_detect.h"
@@ -98,10 +101,10 @@ SoundTouch::SoundTouch()
 {
     // Initialize rate transposer and tempo changer instances
 
-    pRateTransposer = RateTransposer::newInstance();
-    pTDStretch = TDStretch::newInstance();
+    pRateTransposer = new RateTransposerFloat;
+    pTDStretch = new TDStretch;
 
-    setOutPipe(pTDStretch);
+    //setOutPipe(pTDStretch);
 
     rate = tempo = 0;
 
@@ -146,7 +149,7 @@ void SoundTouch::setChannels(uint numChannels)
 {
     if (numChannels != 1 && numChannels != 2) 
     {
-        throw std::runtime_error("Illegal number of channels");
+        //throw std::runtime_error("Illegal number of channels");
     }
     channels = numChannels;
     pRateTransposer->setChannels(numChannels);
@@ -294,11 +297,11 @@ void SoundTouch::putSamples(const SAMPLETYPE *samples, uint nSamples)
 {
     if (bSrateSet == FALSE) 
     {
-        throw std::runtime_error("SoundTouch : Sample rate not defined");
+        MILO_FAIL("SoundTouch : Sample rate not defined");
     } 
     else if (channels == 0) 
     {
-        throw std::runtime_error("SoundTouch : Number of channels not defined");
+        MILO_FAIL("SoundTouch : Number of channels not defined");
     }
 
     // Transpose the rate of the new samples if necessary

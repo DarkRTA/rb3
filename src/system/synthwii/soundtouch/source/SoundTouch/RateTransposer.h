@@ -46,10 +46,11 @@
 #define RateTransposer_H
 
 #include "AAFilter.h"
-#include "FIFOSamplePipe.h"
-#include "FIFOSampleBuffer.h"
+#include "synthwii/soundtouch/include/FIFOSamplePipe.h"
+#include "synthwii/soundtouch/include/FIFOSampleBuffer.h"
 
-#include "STTypes.h"
+#include "synthwii/soundtouch/include/STTypes.h"
+#include "utl/MemMgr.h"
 
 namespace soundtouch
 {
@@ -111,14 +112,9 @@ public:
     RateTransposer();
     virtual ~RateTransposer();
 
-    /// Operator 'new' is overloaded so that it automatically creates a suitable instance 
-    /// depending on if we're to use integer or floating point arithmetics.
-    static void *operator new(size_t s);
-
-    /// Use this function instead of "new" operator to create a new instance of this class. 
-    /// This function automatically chooses a correct implementation, depending on if 
-    /// integer ot floating point arithmetics are to be used.
-    static RateTransposer *newInstance();
+    void *operator new(size_t t) {
+        return _MemAlloc(t, 0);
+    }
 
     /// Returns the output buffer object
     FIFOSamplePipe *getOutput() { return &outputBuffer; };
@@ -151,6 +147,26 @@ public:
 
     /// Returns nonzero if there aren't any samples available for outputting.
     int isEmpty() const;
+};
+
+class RateTransposerFloat : public RateTransposer
+{
+protected:
+    float fSlopeCount;
+    SAMPLETYPE sPrevSampleL, sPrevSampleR;
+
+    virtual void resetRegisters();
+
+    virtual uint transposeStereo(SAMPLETYPE *dest, 
+                         const SAMPLETYPE *src, 
+                         uint numSamples);
+    virtual uint transposeMono(SAMPLETYPE *dest, 
+                       const SAMPLETYPE *src, 
+                       uint numSamples);
+
+public:
+    RateTransposerFloat();
+    virtual ~RateTransposerFloat();
 };
 
 }

@@ -43,7 +43,7 @@
 #ifndef _CPU_DETECT_H_
 #define _CPU_DETECT_H_
 
-#include "STTypes.h"
+#include "synthwii/soundtouch/include/STTypes.h"
 
 #define SUPPORT_MMX         0x0001
 #define SUPPORT_3DNOW       0x0002

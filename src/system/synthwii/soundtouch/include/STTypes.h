@@ -82,10 +82,10 @@ namespace soundtouch
     ///   However, if you still prefer to select the sample format here 
     ///   also in GNU environment, then please #undef the INTEGER_SAMPLE
     ///   and FLOAT_SAMPLE defines first as in comments above.
-    //#define INTEGER_SAMPLES     1    //< 16bit integer samples
-    #define FLOAT_SAMPLES       1    //< 32bit float samples
+    #define INTEGER_SAMPLES     1    //< 16bit integer samples
+    //#define FLOAT_SAMPLES       1    //< 32bit float samples
  
- #endif
+#endif
 
     /// Define this to allow CPU-specific assembler optimizations. Notice that 
     /// having this enabled on non-x86 platforms doesn't matter; the compiler can 

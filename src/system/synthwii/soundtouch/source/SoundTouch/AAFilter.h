@@ -44,7 +44,7 @@
 #ifndef AAFilter_H
 #define AAFilter_H
 
-#include "STTypes.h"
+#include "synthwii/soundtouch/include/STTypes.h"
 
 namespace soundtouch
 {

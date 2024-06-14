@@ -588,7 +588,7 @@
     },
     "soundtouch": {
         "mw_version": "Wii/1.3",
-        "cflags": "base",
+        "cflags": "soundtouch",
         "objects": {
             "system/synthwii/soundtouch/source/SoundTouch/AAFilter.cpp": "NonMatching",
             "system/synthwii/soundtouch/source/SoundTouch/FIFOSampleBuffer.cpp": "NonMatching",
