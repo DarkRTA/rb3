@@ -6622,29 +6622,29 @@ system/synthwii/StreamReceiver.cpp:
 	.sbss       start:0x80C7AD98 end:0x80C7ADA0
 	.bss        start:0x80D1F588 end:0x80D1F598
 
-system/synthwii/soundtouch/AAFilter.cpp:
+system/synthwii/soundtouch/source/SoundTouch/AAFilter.cpp:
 	.text       start:0x80979FF0 end:0x8097A2F0
 	.rodata     start:0x80B38BE0 end:0x80B38C08
 
-system/synthwii/soundtouch/FIFOSampleBuffer.cpp:
+system/synthwii/soundtouch/source/SoundTouch/FIFOSampleBuffer.cpp:
 	.text       start:0x8097A2F0 end:0x8097A7F0
 	.data       start:0x80C2C230 end:0x80C2C2D8
 	.sbss       start:0x80C7ADA0 end:0x80C7ADA8
 	.bss        start:0x80D1F598 end:0x80D1F5A0
 
-system/synthwii/soundtouch/FIRFilter.cpp:
+system/synthwii/soundtouch/source/SoundTouch/FIRFilter.cpp:
 	.text       start:0x8097A7F0 end:0x8097ACE0
 	.data       start:0x80C2C2D8 end:0x80C2C338
 
-system/synthwii/soundtouch/RateTransposer.cpp:
+system/synthwii/soundtouch/source/SoundTouch/RateTransposer.cpp:
 	.text       start:0x8097ACE0 end:0x8097B8F0
 	.data       start:0x80C2C338 end:0x80C2C458
 
-system/synthwii/soundtouch/SoundTouch.cpp:
+system/synthwii/soundtouch/source/SoundTouch/SoundTouch.cpp:
 	.text       start:0x8097B8F0 end:0x8097C290
 	.data       start:0x80C2C458 end:0x80C2C548
 
-system/synthwii/soundtouch/TDStretch.cpp:
+system/synthwii/soundtouch/source/SoundTouch/TDStretch.cpp:
 	.text       start:0x8097C290 end:0x8097D590
 	.data       start:0x80C2C548 end:0x80C2C748
 

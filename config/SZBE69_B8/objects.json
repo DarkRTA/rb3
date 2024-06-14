@@ -141,6 +141,7 @@
         "cflags": "system",
         "objects": {
             "system/bandobj/BandCamShot.cpp": "NonMatching",
+            "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
@@ -583,6 +584,18 @@
             "system/speex/libspeex/vbr.c": "NonMatching",
             "system/speex/libspeex/window.c": "Matching",
             "system/speex/libspeex/vq.c": "Matching"
+        }
+    },
+    "soundtouch": {
+        "mw_version": "Wii/1.3",
+        "cflags": "base",
+        "objects": {
+            "system/synthwii/soundtouch/source/SoundTouch/AAFilter.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/FIFOSampleBuffer.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/FIRFilter.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/RateTransposer.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/SoundTouch.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/TDStretch.cpp": "NonMatching"
         }
     },
     "tomcrypt": {
