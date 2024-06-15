@@ -219,6 +219,14 @@ void FaderGroup::Load(BinStream& bs){
 // fn_80670F64
 bool PropSync(FaderGroup& grp, DataNode& node, DataArray* prop, int i, PropOp op){
     ObjPtrList<Fader, ObjectDir> pList(grp.mFaders);
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
+        Fader* f = *it++;
+        bool b = false;
+        if(f->Dir() && f->mLocalName.Null()){
+            b = true;
+        }
+        if(b) grp.Remove(f);
+    }
     bool sync = PropSync(pList, node, prop, i, op);
     for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
         Fader* f = *it++;
@@ -241,6 +249,25 @@ FaderTask::FaderTask() : mTimer(), mInterp(0), mFader(0), mDone(0) {
 FaderTask::~FaderTask(){
     delete mInterp;
     mInterp = 0;
+}
+
+void FaderTask::PollAll(){
+    for(std::list<FaderTask*>::iterator it = sTasks.begin(); it != sTasks.end(); it){
+        if((*it)->mDone){
+            delete *it;
+            it = sTasks.erase(it);
+        }
+        else {
+            (*it)->Poll();
+            it++;
+        }
+    }
+}
+
+void FaderTask::Poll(){
+    MILO_ASSERT(!mDone, 0x1DE);
+    MILO_ASSERT(mInterp != NULL, 0x1DF);
+    
 }
 
 void Fader::Check(){

@@ -165,8 +165,8 @@ public:
     }
 
     ObjPtrList(const ObjPtrList& pList) : mNodes(0), mOwner(pList.mOwner), mSize(0), mMode(pList.mMode) {
-        for(ObjPtrList::iterator it = pList.begin(); it != pList.end(); ++it){
-            push_back(*it);
+        for(Node* nodes = pList.mNodes; nodes != 0; nodes = nodes->next){
+            push_back(nodes->obj);
         }
     }
 

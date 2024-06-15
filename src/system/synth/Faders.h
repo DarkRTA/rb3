@@ -50,6 +50,8 @@ class FaderTask {
 public:
     FaderTask();
     ~FaderTask();
+    void PollAll();
+    void Poll();
 
     static std::list<FaderTask*> sTasks;
 
