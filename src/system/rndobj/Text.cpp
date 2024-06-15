@@ -8,7 +8,7 @@
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
 
-//static std::set<RndText*> RndText::mTextMeshSet;
+std::set<RndText*> RndText::mTextMeshSet;
 
 INIT_REVS(RndText)
 
