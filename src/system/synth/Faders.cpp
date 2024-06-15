@@ -122,3 +122,79 @@ FaderGroup::~FaderGroup(){
         }
     }
 }
+
+Fader* FaderGroup::AddLocal(Symbol name){
+    MILO_ASSERT(!name.Null(), 0xEA);
+    ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin();
+    for(; it != mFaders.end(); ++it){
+        if((*it)->mLocalName == name) return *it;
+    }
+    Fader* f = Hmx::Object::New<Fader>();
+    f->mLocalName = name;
+    f->AddClient(this);
+    mFaders.push_back(f);
+    mDirty = true;
+    return f;
+}
+
+void FaderGroup::Add(Fader* f){
+    ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin();
+    for(; it != mFaders.end(); ++it){
+        if(*it == f) return;
+    }
+    f->AddClient(this);
+    mFaders.push_back(f);
+    mDirty = true;
+}
+
+void FaderGroup::Remove(Fader* f){
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        if(*it == f){
+            f->RemoveClient(this);
+            mFaders.erase(it);
+            mDirty = true;
+            return;
+        }
+    }
+}
+
+float FaderGroup::GetVal(){
+    float sum = 0.0f;
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        sum += (*it)->mVal;
+    }
+    return sum;
+}
+
+bool FaderGroup::Dirty(){ return mDirty; }
+void FaderGroup::SetDirty(){ mDirty = true; }
+void FaderGroup::ClearDirty(){ mDirty = false; }
+
+Fader* FaderGroup::FindLocal(Symbol sym, bool fail){
+    if(!sym.Null()){
+        for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+            if((*it)->mLocalName == sym) return *it;
+        }
+    }
+    if(fail) MILO_FAIL("bad local fader: %s", sym);
+    return 0;
+}
+
+void FaderGroup::Print(TextStream& ts){
+    ts << "FaderGroup (size " << mFaders.size() << ")\n";
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        String str((*it)->mLocalName.Str());
+        if(str.empty()) str = (*it)->Name();
+        else str += "(local)";
+        if(str.empty()) str = "(anon)";
+        float val = (*it)->mVal;
+        ts << "  ";
+        ts.Print(str.c_str());
+        ts << ": " << val << "\n";
+    }
+}
+
+void Fader::Check(){
+    MILO_ASSERT(mFaderTask != (FaderTask*)0x01000000, 0x20C);
+    MILO_ASSERT(mFaderTask != NULL, 0x20D);
+}

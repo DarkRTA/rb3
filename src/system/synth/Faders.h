@@ -67,7 +67,10 @@ public:
     void Add(Fader*);
     void Remove(Fader*);
     bool Dirty();
+    void SetDirty();
+    void ClearDirty();
     float GetVal();
+    void Print(TextStream&);
 
     ObjPtrList<Fader, class ObjectDir> mFaders;
     bool mDirty;
