@@ -70,12 +70,13 @@ void Distribution::Report(TextStream& stream, const char* tag) {
 
     int acc = mCount;
     float start = mRes * (mDist.size() - 1);
-    for (int i = mDist.size() - 1; i >= 0; i--, start -= mRes) {
+    float res;
+    int i;
+    for (i = mDist.size() - 1, res = mRes; i >= 0; i--, res = mRes, start -= mRes) {
         int hitCount = mDist[i];
         if (hitCount == 0)
             continue;
 
-        float res = mRes;
         if (gUseSsv) {
             stream << MakeString("%s;[%.1f,%.1f);%d;%3.1f\n", tag, start, start + res, hitCount, (float)(acc * 100) / mCount);
         } else {
