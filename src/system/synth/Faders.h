@@ -31,6 +31,10 @@ public:
     void CancelFade();
     void UpdateValue(float);
     void SetMode(Mode);
+    bool IsFading() const;
+    void AddClient(FaderGroup*);
+    void RemoveClient(FaderGroup*);
+    void Check();
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

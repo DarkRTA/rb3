@@ -1,4 +1,5 @@
 #include "synth/Faders.h"
+#include "utl/Symbols.h"
 
 static std::vector<Fader*> sFaderList;
 std::list<FaderTask*> FaderTask::sTasks;
@@ -41,4 +42,68 @@ void Fader::DoFade(float targetDb, float duration){
             MILO_ASSERT(false, 0x54);
             break;
     }
+    mFaderTask->mTimer.Start();
+    mFaderTask->mFader = this;
+    mFaderTask->mDone = false;
+    FaderTask* thetask = mFaderTask;
+    FaderTask::sTasks.push_back(thetask);
 }
+
+bool Fader::IsFading() const { return mFaderTask; }
+
+float Fader::GetTargetDb() const {
+    if(mFaderTask) return mFaderTask->mInterp->mY1;
+    else return mVal;
+}
+
+void Fader::AddClient(FaderGroup* group){
+    mClients.insert(group);
+}
+
+void Fader::RemoveClient(FaderGroup* group){
+    mClients.erase(group);
+}
+
+void Fader::CancelFade(){
+    if(mFaderTask){
+        Check();
+        mFaderTask->mDone = true;
+        mFaderTask = 0;
+    }
+}
+
+void Fader::UpdateValue(float val){
+    mVal = val;
+    
+}
+
+SAVE_OBJ(Fader, 0x9B)
+
+BEGIN_LOADS(Fader)
+    int rev;
+    bs >> rev;
+    ASSERT_GLOBAL_REV(rev, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    float f;
+    bs >> f;
+    SetVal(f);
+END_LOADS
+
+BEGIN_COPYS(Fader)
+    COPY_SUPERCLASS(Hmx::Object)
+    CREATE_COPY(Fader)
+    if(c){
+        SetVal(c->mVal);
+    }
+END_COPYS
+
+BEGIN_PROPSYNCS(Fader)
+    SYNC_PROP_MODIFY(level, mVal, SetVal(mVal))
+END_PROPSYNCS
+
+BEGIN_HANDLERS(Fader)
+    HANDLE_ACTION(set_val, SetVal(_msg->Float(2)))
+    HANDLE_ACTION(fade, DoFade(_msg->Float(2), _msg->Float(3)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xCE)
+END_HANDLERS
