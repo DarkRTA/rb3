@@ -142,6 +142,12 @@ public:
             return *this;
         }
 
+        iterator operator++(int){
+            iterator tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
         bool operator!=(iterator it){ return mNode != it.mNode; }
 
         struct Node* mNode;
@@ -152,17 +158,20 @@ public:
     int mSize : 24;
     ObjListMode mMode : 8;
 
-    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
-
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
         }
     }
 
+    ObjPtrList(const ObjPtrList& pList) : mNodes(0), mOwner(pList.mOwner), mSize(0), mMode(pList.mMode) {
+        for(Node* nodes = pList.mNodes; nodes != 0; nodes = nodes->next){
+            push_back(nodes->obj);
+        }
+    }
+
     // this also seems okay
     virtual ~ObjPtrList() { clear(); }
-    virtual Hmx::Object* RefOwner(){ return mOwner; }
     // okay as well
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
         if(mMode == kObjListOwnerControl){
@@ -187,6 +196,8 @@ public:
             }
         }
     }
+    // refowner moved down here because that's how the weak funcs are ordered
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     void clear(){ while(!empty()) pop_back(); }
 
@@ -202,6 +213,12 @@ public:
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         erase(mNodes->prev);
+    }
+
+    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
+    void pop_front(){
+        MILO_ASSERT(mNodes, 0x16E);
+        erase(mNodes);
     }
 
     iterator erase(iterator it){
@@ -238,7 +255,7 @@ public:
     }
 
     T1* front() const {
-        MILO_ASSERT(mNodes, 0x167);
+        MILO_ASSERT(mNodes, 0x16B);
         return mNodes->obj;
     }
 

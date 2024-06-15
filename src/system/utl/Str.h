@@ -87,4 +87,9 @@ public:
 bool SearchReplace(const char *, const char *, const char *, char *);
 bool StrNCopy(char *, const char *, int);
 
+inline TextStream& operator<<(TextStream& ts, const String& str){
+    ts.Print(str.c_str());
+    return ts;
+}
+
 #endif
