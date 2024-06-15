@@ -450,6 +450,7 @@
             "system/ui/UIColor.cpp": "Matching",
             "system/ui/UIComponent.cpp": "NonMatching",
             "system/ui/UIFontImporter.cpp": "NonMatching",
+            "system/ui/UIGridProvider.cpp": "NonMatching",
             "system/ui/UIGuide.cpp": "Matching",
             "system/ui/UILabel.cpp": "NonMatching",
             "system/ui/UILabelDir.cpp": "NonMatching",
