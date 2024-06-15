@@ -4,10 +4,10 @@
 #include <vector>
 
 struct SampleMarker {
-    SampleMarker() : str(), i(-1) {}
+    SampleMarker() : name(), sample(-1) {}
 
-    String str;
-    int i;
+    String name;
+    int sample;
 };
 
 typedef void* (*SampleDataAllocFunc)(int, const char*);
@@ -26,8 +26,10 @@ public:
     };
 
     SampleData();
+    ~SampleData();
     void Reset();
     void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
+    void Load(BinStream&, const FilePath&);
 
     static SampleDataAllocFunc sAlloc;
     static SampleDataFreeFunc sFree;

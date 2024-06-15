@@ -27,6 +27,14 @@ enum CacheResult {
     kCache_ErrorUnknown = -1,
 };
 
+enum CacheResourceResult {
+    kCacheUnnecessary = 0,
+    kCacheUnknownExtension = 1,
+    kCacheMissingFile = 2,
+    kCacheFailed = 3,
+    kCacheSuccessful = -1
+};
+
 struct CacheDirEntry;
 
 class CacheID {
