@@ -107,3 +107,18 @@ BEGIN_HANDLERS(Fader)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xCE)
 END_HANDLERS
+
+FaderGroup::FaderGroup(Hmx::Object* o) : mFaders(o, kObjListNoNull), mDirty(true) {
+
+}
+
+FaderGroup::~FaderGroup(){
+    while(mFaders.size() != 0){
+        Fader* frontObj = mFaders.front();
+        mFaders.pop_front();
+        frontObj->RemoveClient(this);
+        if(!frontObj->mLocalName.Null()){
+            delete frontObj;
+        }
+    }
+}
