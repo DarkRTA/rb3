@@ -71,6 +71,7 @@ public:
     void ClearDirty();
     float GetVal();
     void Print(TextStream&);
+    void Load(BinStream&);
 
     ObjPtrList<Fader, class ObjectDir> mFaders;
     bool mDirty;

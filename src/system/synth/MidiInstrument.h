@@ -9,6 +9,7 @@
 
 class FxSend;
 class MidiInstrument;
+class SampleInst;
 
 class NoteVoiceInst : public Hmx::Object {
 public:
@@ -23,6 +24,27 @@ public:
     virtual void UpdateVolume();
     virtual void SetPan(float);
     virtual void SetVolume(float);
+
+    void Poll();
+
+    NEW_POOL_OVERLOAD(NoteVoiceInst)
+    DELETE_POOL_OVERLOAD(NoteVoiceInst)
+
+    SampleInst* mSample; // 0x1c
+    float mVolume; // 0x20
+    float mStartProgress; // 0x24
+    unsigned char mTriggerNote; // 0x28
+    unsigned char mCenterNote; // 0x29
+    bool mStarted; // 0x2a
+    bool mStopped; // 0x2b
+    int mGlideID; // 0x2c
+    int mGlideFrames; // 0x30
+    float mGlideToNote; // 0x34
+    float mGlideFromNote; // 0x38
+    int mGlideFramesLeft; // 0x3c
+    float mFineTune; // 0x40
+    int mDurationFramesLeft; // 0x44
+    MidiInstrument* mOwner; // 0x48
 };
 
 class MidiInstrument : public Hmx::Object {
@@ -36,6 +58,8 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    void Poll();
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28
