@@ -49,6 +49,7 @@ public:
 class FaderTask {
 public:
     FaderTask();
+    ~FaderTask();
 
     static std::list<FaderTask*> sTasks;
 

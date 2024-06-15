@@ -194,7 +194,43 @@ void FaderGroup::Print(TextStream& ts){
     }
 }
 
+DECOMP_FORCEACTIVE(Faders, "ObjPtr_p.h", "c.Owner()", "")
+
+#define kGroupRev 0
+
+void FaderGroup::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    MILO_ASSERT(rev <= kGroupRev, 0x187);
+    ObjPtrList<Fader, ObjectDir> pList(mFaders.mOwner, kObjListNoNull);
+    bs >> pList;
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        Fader* f = *it;
+        bool b = false;
+        if(f->Dir() && f->mLocalName.Null()){
+            b = true;
+        }
+        if(b) Remove(f);
+    }
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        Add(*it);
+    }
+}
+
+FaderTask::FaderTask() : mTimer(), mInterp(0), mFader(0), mDone(0) {
+
+}
+
+FaderTask::~FaderTask(){
+    delete mInterp;
+    mInterp = 0;
+}
+
 void Fader::Check(){
     MILO_ASSERT(mFaderTask != (FaderTask*)0x01000000, 0x20C);
     MILO_ASSERT(mFaderTask != NULL, 0x20D);
 }
+
+DECOMP_FORCEFUNC(Faders, Fader, SetType)
+DECOMP_FORCEFUNC_TEMPL(Faders, ObjPtrList, Replace(0, 0), Fader, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(Faders, ObjPtrList, RefOwner(), Fader, ObjectDir)
