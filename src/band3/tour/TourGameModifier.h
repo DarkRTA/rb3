@@ -2,12 +2,15 @@
 #define TOUR_TOURGAMEMODIFIER_H
 
 #include "obj/Data.h"
+#include <set>
 
 class TourGameModifier {
     public:
     TourGameModifier();
-    ~TourGameModifier();
+    virtual ~TourGameModifier();
     void Init(const DataArray*);
+
+    std::set<Symbol> mModifiers;
 };
 
 #endif // TOUR_TOURGAMEMODIFIER_H

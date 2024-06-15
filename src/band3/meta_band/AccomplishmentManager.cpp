@@ -1,6 +1,8 @@
 #include "AccomplishmentManager.h"
 #include "os/Debug.h"
 
+AccomplishmentManager* TheAccomplishmentMgr;
+
 AccomplishmentManager::AccomplishmentManager() {
 
 }
@@ -53,7 +55,7 @@ void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(DataArra
 void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(DataArray*){}
 void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray*){}
 
-DataArray* AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
+Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
     if (index) {
         TheDebug.Notify(MakeString("", 0));
     }

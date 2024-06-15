@@ -8,13 +8,21 @@ void Profiler::Start() {
     mTimer.Start();
 }
 
-extern char* FormatTime(float);
+extern const char* FormatTime(float);
 
 void Profiler::Stop() {
-    if (mCountMax == 1) {
-
+    if (--mTimer.mRunning == 1) {
+        mTimer.SplitMs();
     } else {
-        TheDebug << MakeString("%s: min %s max %s mean %s\n", mName, FormatTime(mMin), FormatTime(mMax), FormatTime(mSum));
+        if (mCount == 1) {
+            TheDebug << MakeString("%s: %s\n", mName, FormatTime(mMin));
+        } else {
+            TheDebug << MakeString("%s: min %s max %s mean %s\n", mName, FormatTime(mMin), FormatTime(mMax), FormatTime(mSum));
+        }
+
+        mCount = 0;
+        mMin = 3.4028235E+38f; mMax = 0; mSum = 0; 
     }
+    
     mTimer.Reset();
 }

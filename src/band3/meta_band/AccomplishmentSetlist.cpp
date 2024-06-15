@@ -4,7 +4,8 @@
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
 
-AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), mSetlist(""), mInstrument((ScoreType)10), mDifficulty((Difficulty)0), mMinStars(0) {
+AccomplishmentSetlist::AccomplishmentSetlist(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i), 
+    mSetlist(""), mInstrument((ScoreType)10), mDifficulty((Difficulty)0), mMinStars(0) {
     AccomplishmentSetlist::Configure(i_pConfig);
 }
 

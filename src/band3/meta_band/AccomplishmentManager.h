@@ -35,9 +35,9 @@ public:
     AccomplishmentManager();
     virtual ~AccomplishmentManager();
 
-    DataArray* GetTourSafeDiscSongAtDifficultyIndex(int index);
+    Symbol GetTourSafeDiscSongAtDifficultyIndex(int index);
     void AddAssetAward(Symbol, Symbol);
 };
 
-static AccomplishmentManager TheAccomplishmentMgr;
+extern AccomplishmentManager* TheAccomplishmentMgr;
 #endif // METABAND_ACCOMPLISHMENTMANAGER_H

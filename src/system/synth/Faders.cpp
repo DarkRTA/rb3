@@ -74,7 +74,11 @@ void Fader::CancelFade(){
 
 void Fader::UpdateValue(float val){
     mVal = val;
-    
+    //void (*ptmf)(void) = FaderGroup::SetDirty;
+    std::set<FaderGroup*>::iterator it = mClients.begin();
+    for (;it != mClients.end(); it++) {
+        (*it)->SetDirty();
+    }
 }
 
 SAVE_OBJ(Fader, 0x9B)
@@ -220,15 +224,18 @@ void FaderGroup::Load(BinStream& bs){
 bool PropSync(FaderGroup& grp, DataNode& node, DataArray* prop, int i, PropOp op){
     ObjPtrList<Fader, ObjectDir> pList(grp.mFaders);
     for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
-        Fader* f = *it++;
+        Fader* f = *it;
         bool b = false;
         if(f->Dir() && f->mLocalName.Null()){
             b = true;
         }
-        if(b) grp.Remove(f);
+        if(b) it++;
+        else it = pList.erase(it);
+        // else it++;
+        // pList.erase(it++);
     }
     bool sync = PropSync(pList, node, prop, i, op);
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = grp.mFaders.begin(); it != grp.mFaders.end(); it){
         Fader* f = *it++;
         bool b = false;
         if(f->Dir() && f->mLocalName.Null()){
@@ -267,7 +274,13 @@ void FaderTask::PollAll(){
 void FaderTask::Poll(){
     MILO_ASSERT(!mDone, 0x1DE);
     MILO_ASSERT(mInterp != NULL, 0x1DF);
-    
+    float f = mTimer.SplitMs();
+    if (f > mInterp->mX1) {
+        mFader->UpdateValue(mInterp->mY1);
+        mFader->CancelFade();
+    } else {
+        mFader->UpdateValue(mInterp->Eval(f));
+    }
 }
 
 void Fader::Check(){
