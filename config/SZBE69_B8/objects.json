@@ -5,6 +5,7 @@
         "objects": {
             "Main.cpp": "Matching",
             "App.cpp": "NonMatching",
+            "BudgetScreen.cpp": "NonMatching",
             "ChecksumData_wii.cpp": "Matching",
             "keygen_wii.cpp": { "status": "Matching", "extra_cflags": [ "-O2,p -sdata 4 -opt noschedule -func_align 4" ] }
         }

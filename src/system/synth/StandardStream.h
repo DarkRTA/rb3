@@ -34,6 +34,8 @@ public:
         bool mPitchShift; // 0x58
     };
 
+    static bool sReportLargeTimerErrors;
+
     StandardStream(File*, float, float, Symbol, bool, bool);
     virtual ~StandardStream();
     virtual bool Fail();
