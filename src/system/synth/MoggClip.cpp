@@ -4,7 +4,7 @@
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
 
-MoggClip::PanInfo::PanInfo(int i, float f) : unk0(i), unk4(f) {}
+MoggClip::PanInfo::PanInfo(int i, float f) : channel(i), panning(f) {}
 
 MoggClip::MoggClip() : mFilePath(), mVolume(0.0f), mLoop(0), mControllerVolume(0.0f), mStream(0), unk44(0.0f), unk48(0), unk4c(0), mFileLoader(0), mFaders(), mPanInfos() {
     Fader* f = Hmx::Object::New<Fader>();
@@ -155,11 +155,16 @@ void MoggClip::SetLoopEnd(int i){ mLoopEnd = i; }
 
 void MoggClip::SetPan(int chan, float pan){
     PanInfo pinfo(chan, pan);
+    bool here = false;
     for(std::vector<PanInfo>::iterator it = mPanInfos.begin(); it != mPanInfos.end(); it++){
-        if(it->unk0 == pinfo.unk0) return;
-        mPanInfos.push_back(pinfo);
-        mStream->SetPan(pinfo.unk0, pinfo.unk4);
+        if(it->channel == pinfo.channel){
+            here = true;
+            *it = pinfo;
+            break;
+        }
     }
+    if(!here) mPanInfos.push_back(pinfo);
+    if(mStream) mStream->SetPan(pinfo.channel, pinfo.panning);
 }
 
 void MoggClip::LoadFile(BinStream* bs){
@@ -200,7 +205,7 @@ void MoggClip::UpdateFaders(){
 void MoggClip::UpdatePanInfo(){
     if(mStream){
         for(std::vector<PanInfo>::iterator it = mPanInfos.begin(); it != mPanInfos.end(); it++){
-            mStream->SetPan(it->unk0, it->unk4);
+            mStream->SetPan(it->channel, it->panning);
         }
     }
 }
@@ -221,8 +226,8 @@ void MoggClip::UnloadData(){
 
 void MoggClip::SetupPanInfo(float f1, float f2, bool b){
     if(b){
-        SetPan(0, -f2 * 0.5f + f1);
-        SetPan(1, f2 * 0.5f + f1);
+        SetPan(0, -f2 / 2.0f + f1);
+        SetPan(1, f2 / 2.0f + f1);
     }
     else SetPan(0, f1);
 }

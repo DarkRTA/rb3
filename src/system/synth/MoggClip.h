@@ -13,8 +13,8 @@ public:
 
     struct PanInfo {
         PanInfo(int, float);
-        int unk0; // channel
-        float unk4; // panning
+        int channel;
+        float panning;
     };
 
     MoggClip();
