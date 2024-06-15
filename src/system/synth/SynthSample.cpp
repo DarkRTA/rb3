@@ -1,5 +1,6 @@
 #include "synth/SynthSample.h"
 #include "synth/Utl.h"
+#include "utl/BufStream.h"
 #include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
 
@@ -18,6 +19,38 @@ int SynthSample::GetSampleRate() const { return mSampleData.mSampleRate; }
 SampleData::Format SynthSample::GetFormat() const { return mSampleData.mFormat; }
 bool SynthSample::GetIsLooped() const { return mIsLooped; }
 int SynthSample::GetLoopStartSamp() const { return mLoopStartSamp; }
+
+void SynthSample::Sync(SynthSample::SyncType ty){
+    if(ty == sync3){
+        void* buf = (void*)mFileLoader->GetBuffer(0);
+        int size = mFileLoader->GetSize();
+        delete mFileLoader;
+        mFileLoader = 0;
+        BufStream bufs(buf, size, true);
+        mSampleData.Load(bufs, mFile);
+        if(buf) _MemFree(buf);
+    }
+    else if(ty == sync0){
+        mSampleData.Reset();
+        if(!mFile.empty()){
+            FileLoader* fl = dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(mFile));
+            void* buf;
+            int size;
+            if(fl){
+                buf = (void*)fl->GetBuffer(&size);
+                delete fl;
+            }
+            if(buf){
+                BufStream bufs(buf, size, true);
+                if(TheLoadMgr.GetPlatform() == kPlatformPC){
+                    mSampleData.LoadWAV(bufs, mFile);
+                }
+                else mSampleData.Load(bufs, mFile);
+                delete buf;
+            }
+        }
+    }
+}
 
 SAVE_OBJ(SynthSample, 0xB2)
 
@@ -100,3 +133,7 @@ BEGIN_PROPSYNCS(SynthSample)
     SYNC_PROP_SET(sample_rate, mSampleData.mSampleRate, MILO_WARN("can't set property %s", "sample_rate"))
     SYNC_PROP(markers, mSampleData.mMarkers)
 END_PROPSYNCS
+
+int SynthSample::GetPlatformSize(Platform plat){
+    return mSampleData.SizeAs(SampleData::kPCM);
+}

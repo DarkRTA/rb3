@@ -30,8 +30,10 @@ public:
     void Reset();
     void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
     void Load(BinStream&, const FilePath&);
+    void LoadWAV(BinStream&, const FilePath&);
     int NumMarkers() const;
     SampleMarker& GetMarker(int) const;
+    int SizeAs(Format) const;
 
     static SampleDataAllocFunc sAlloc;
     static SampleDataFreeFunc sFree;
