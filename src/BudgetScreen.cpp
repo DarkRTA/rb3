@@ -3,10 +3,13 @@
 #include "system/os/Debug.h"
 #include "system/os/Debug.h"
 #include "system/utl/Option.h"
+#include "system/rndobj/Rnd.h"
 #include "system/synth/StandardStream.h"
 
+#include "band3/game/SongDB.h"
 #include "band3/meta_band/BandSongMgr.h"
 
+#include <algorithm>
 #include "decomp.h"
 
 bool gUseSsv;
@@ -119,6 +122,23 @@ void Distribution::operator<<(float value) {
     mTotal += value;
 }
 
+float Average(std::vector<float>& items, bool partial) {
+    std::sort(items.begin(), items.end());
+
+    // for whatever reason this needs to be up here to match?
+    std::vector<float>::iterator it;
+
+    int size = items.size();
+    int endOffset = partial ? (int)(size * 0.3f) : 0;
+
+    float total = 0;
+    for (it = items.begin(); it != items.end() - endOffset; ++it) {
+        total += *it;
+    }
+
+    return total / (size - endOffset);
+}
+
 BudgetScreen::BudgetScreen() :
     mTestPanel(nullptr), mFrameInc(0.0), mLastCpu(0.0),
     mPollDist(0.1), mCpuDist(0.1), mGsDist(0.1), mUnk2(0.1),
@@ -135,11 +155,62 @@ BudgetScreen::BudgetScreen() :
     const char* logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
     mLog = new TextFileStream(logFile, false);
 
-    std::list<int> list(1000);
-    if (!list.empty())
-        list.clear();
+    // yes there's just a random list here lol
+    { std::list<int> list(10000); }
 
-    int useSsv = SystemConfig("dump_csv")->Int(1);
+    int useSsv = SystemConfig("dump_scsv")->Int(1);
     StandardStream::sReportLargeTimerErrors = false;
     gUseSsv = useSsv;
+}
+
+void BudgetScreen::Enter(UIScreen* screen) {
+    mPollDist.Reset();
+    mCpuDist.Reset();
+    mGsDist.Reset();
+    mUnk2.Reset();
+    TheTaskMgr.ClearTasks();
+
+    mTestPanel = nullptr;
+    UIScreen::Enter(screen);
+    mTestPanel = mTypeDef->FindArray("test_panel", true)->Obj<UIPanel>(1);
+
+    TheRnd->SetGSTiming(true);
+    TheRnd->BeginDrawing();
+    TheRnd->EndDrawing();
+
+    std::vector<float> cpuTimes;
+    std::vector<float> gsTimes;
+
+    for (int i = 0; i < 100; i++) {
+        TheRnd->BeginDrawing();
+        TheRnd->EndDrawing();
+
+        TheRnd->BeginDrawing();
+        cpuTimes.push_back(AutoTimer::GetTimer("cpu")->GetLastMs());
+        gsTimes.push_back(AutoTimer::GetTimer("gs")->GetLastMs());
+        TheRnd->EndDrawing();
+    }
+
+    mNullCpu = Average(cpuTimes, false);
+    mNullGs = Average(gsTimes, true);
+
+    TheTaskMgr.SetSeconds(0, false);
+
+    TheRnd->BeginDrawing();
+    mTestPanel->Draw();
+    TheRnd->EndDrawing();
+
+    // TODO: This doesn't seem quite right...
+    // Should probably be mEndTime and mFrameInc
+    mTime = TheSongDB->GetSongDurationMs() / 1000.0f;
+    mEndTime = Property("frame_inc", true)->Float(nullptr);
+
+    mLastCpu = 0;
+    mFrameInc = 0;
+    mUnk3 = 0;
+
+    DataArray* test = mTests->Array(mTestIdx)->FindArray("init", false);
+    if (test != nullptr) {
+        test->ExecuteScript(1, nullptr, nullptr, 1);
+    }
 }

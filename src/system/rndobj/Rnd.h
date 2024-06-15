@@ -60,7 +60,7 @@ public:
     virtual void ReleaseOwnership(){}
     virtual void AcquireOwnership(){}
     virtual void SetShadowMap(RndTex*, RndCam*, const Hmx::Color*){}
-    virtual void SetGSTiming(bool);
+    virtual void SetGSTiming(bool enabled) { mGsTiming = enabled; }
     virtual void CaptureNextGpuFrame(){}
     virtual void RemovePointTest(RndFlare*);
     virtual bool HasDeviceReset() const { return 0; }
@@ -157,7 +157,7 @@ public:
     const char* unkd0; // 0xd0
     DataArray* mFont; // 0xd4
     int mSync; // 0xd8
-    bool unkdc; // 0xdc
+    bool mGsTiming; // 0xdc
     bool mShowSafeArea; // 0xdd
     bool unkde; // 0xde
     bool unkdf; // 0xdf

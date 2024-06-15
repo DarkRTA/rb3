@@ -42,7 +42,7 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
 
     virtual void Poll();
-    virtual void Enter(UIScreen *);
+    virtual void Enter(UIScreen* screen);
 
 private:
     UIPanel* mTestPanel;
