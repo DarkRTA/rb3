@@ -4,7 +4,7 @@
 #include <vector>
 
 struct SampleMarker {
-    SampleMarker() : name(), sample(-1) {}
+    SampleMarker() : name(""), sample(-1) {}
 
     String name;
     int sample;
@@ -30,6 +30,8 @@ public:
     void Reset();
     void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
     void Load(BinStream&, const FilePath&);
+    int NumMarkers() const;
+    SampleMarker& GetMarker(int) const;
 
     static SampleDataAllocFunc sAlloc;
     static SampleDataFreeFunc sFree;

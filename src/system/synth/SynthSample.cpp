@@ -81,3 +81,22 @@ BEGIN_CUSTOM_PROPSYNC(SampleMarker)
     SYNC_PROP(sample, o.sample)
     SYNC_PROP(name, o.name)
 END_CUSTOM_PROPSYNC
+
+BEGIN_HANDLERS(SynthSample)
+    HANDLE_EXPR(platform_size_kb, GetPlatformSize(TheLoadMgr.GetPlatform()) / 1024)
+    HANDLE_EXPR(num_markers, mSampleData.NumMarkers())
+    HANDLE_EXPR(marker_name, mSampleData.GetMarker(_msg->Int(2)).name)
+    HANDLE_EXPR(marker_sample, mSampleData.GetMarker(_msg->Int(2)).sample)
+    HANDLE_EXPR(sample_length, LengthMs() / 1000.0f)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x121)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(SynthSample)
+    SYNC_PROP_MODIFY_ALT(file, mFile, Sync(sync0))
+    SYNC_PROP_MODIFY(looped, mIsLooped, Sync(sync1))
+    SYNC_PROP_MODIFY(loop_start_sample, mLoopStartSamp, Sync(sync1))
+    SYNC_PROP_MODIFY(loop_end_sample, mLoopEndSamp, Sync(sync1))
+    SYNC_PROP_SET(sample_rate, mSampleData.mSampleRate, MILO_WARN("can't set property %s", "sample_rate"))
+    SYNC_PROP(markers, mSampleData.mMarkers)
+END_PROPSYNCS

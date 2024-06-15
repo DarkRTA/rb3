@@ -31,6 +31,7 @@ public:
     SampleData::Format GetFormat() const;
     bool GetIsLooped() const;
     int GetLoopStartSamp() const;
+    int GetPlatformSize(Platform);
 
     DECLARE_REVS;
 

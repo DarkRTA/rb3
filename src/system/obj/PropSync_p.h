@@ -182,10 +182,12 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
         }
         else if(op == kPropInsert){
             T item;
-            if(PropSync(item, node, prop, i, op)) vec.insert(it, item);
-            return true;
+            if(PropSync(item, node, prop, i, op)){
+                vec.insert(it, item);
+                return true;
+            }
         }
-        else return false;
+        return false;
     }
 }
 
