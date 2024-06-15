@@ -188,9 +188,7 @@ void FaderGroup::Print(TextStream& ts){
         else str += "(local)";
         if(str.empty()) str = "(anon)";
         float val = (*it)->mVal;
-        ts << "  ";
-        ts.Print(str.c_str());
-        ts << ": " << val << "\n";
+        ts << "  " << str << ": " << val << "\n";
     }
 }
 
@@ -198,23 +196,42 @@ DECOMP_FORCEACTIVE(Faders, "ObjPtr_p.h", "c.Owner()", "")
 
 #define kGroupRev 0
 
+// fn_80670CA8
 void FaderGroup::Load(BinStream& bs){
     int rev;
     bs >> rev;
     MILO_ASSERT(rev <= kGroupRev, 0x187);
     ObjPtrList<Fader, ObjectDir> pList(mFaders.mOwner, kObjListNoNull);
     bs >> pList;
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
-        Fader* f = *it;
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); it){
+        Fader* f = *it++;
         bool b = false;
         if(f->Dir() && f->mLocalName.Null()){
             b = true;
         }
         if(b) Remove(f);
     }
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
         Add(*it);
     }
+}
+
+// fn_80670F64
+bool PropSync(FaderGroup& grp, DataNode& node, DataArray* prop, int i, PropOp op){
+    ObjPtrList<Fader, ObjectDir> pList(grp.mFaders);
+    bool sync = PropSync(pList, node, prop, i, op);
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
+        Fader* f = *it++;
+        bool b = false;
+        if(f->Dir() && f->mLocalName.Null()){
+            b = true;
+        }
+        if(b) grp.Remove(f);
+    }
+    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+        grp.Add(*it);
+    }
+    return sync;
 }
 
 FaderTask::FaderTask() : mTimer(), mInterp(0), mFader(0), mDone(0) {

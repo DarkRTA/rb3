@@ -78,4 +78,6 @@ public:
     bool mDirty;
 };
 
+bool PropSync(FaderGroup&, DataNode&, DataArray*, int, PropOp);
+
 #endif

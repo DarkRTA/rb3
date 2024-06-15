@@ -82,6 +82,13 @@ void SynthEmitter::CheckLoadResources(){
     }
 }
 
+// fn_8066E758 in retail
+void SynthEmitter::Poll(){
+    if(mSfx && mListener && mSynthEmitterEnabled){
+        Transform& xfm = mListener->WorldXfm();
+    }
+}
+
 SynthEmitter::~SynthEmitter(){
     delete mInst;
 }

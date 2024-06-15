@@ -142,6 +142,12 @@ public:
             return *this;
         }
 
+        iterator operator++(int){
+            iterator tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
         bool operator!=(iterator it){ return mNode != it.mNode; }
 
         struct Node* mNode;
@@ -155,6 +161,12 @@ public:
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
+        }
+    }
+
+    ObjPtrList(const ObjPtrList& pList) : mNodes(0), mOwner(pList.mOwner), mSize(0), mMode(pList.mMode) {
+        for(ObjPtrList::iterator it = pList.begin(); it != pList.end(); ++it){
+            push_back(*it);
         }
     }
 
