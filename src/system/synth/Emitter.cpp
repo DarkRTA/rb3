@@ -45,6 +45,15 @@ BEGIN_LOADS(SynthEmitter)
     delete mInst;
 END_LOADS
 
+void SynthEmitter::DrawShowing(){
+    if(TheLoadMgr.EditMode()){
+        CheckLoadResources();
+        Transform& xfm = WorldXfm();
+        gIconDir->SetDirtyLocalXfm(xfm);
+        gIconDir->DrawShowing();
+    }
+}
+
 RndDrawable* SynthEmitter::CollideShowing(const Segment& s, float& dist, Plane& plane){
     if(TheLoadMgr.EditMode()){
         CheckLoadResources();
@@ -67,10 +76,7 @@ int SynthEmitter::CollidePlane(const Plane& plane){
 void SynthEmitter::CheckLoadResources(){
     MILO_ASSERT(TheLoadMgr.EditMode(), 0x8B);
     if(!gIconDir){
-        const char* str = "milo/emitter.milo";
-        const char* root = FileSystemRoot();
-        FilePath fp;
-        fp.Set(root, str);
+        FilePath fp(FileSystemRoot(), "milo/emitter.milo");
         gIconDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp, 0, 0));
         MILO_ASSERT(gIconDir, 0x93);
     }
