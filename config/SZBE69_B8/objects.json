@@ -442,6 +442,7 @@
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
+            "system/ui/LocalePanel.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/ScrollSelect.cpp": "NonMatching",
