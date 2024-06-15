@@ -27,6 +27,20 @@ public:
     UIListProvider* Provider() const;
     int WrapShowing(int) const;
     int NumDisplayWithData() const;
+    void SetScrollPastMinDisplay(bool);
+    void SetScrollPastMaxDisplay(bool);
+    void SetMinDisplay(int);
+    void SetMaxDisplay(int);
+    int Selected() const;
+    int SelectedData() const;
+    void SetNumDisplay(int, bool);
+    void SetGridSpan(int, bool);
+    void SetSelected(int, int, bool);
+    void SetCircular(bool, bool);
+    void SetSpeed(float);
+    void SetSelectedSimulateScroll(int);
+    void SetProvider(UIListProvider*, RndDir*);
+    void Scroll(int, bool);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

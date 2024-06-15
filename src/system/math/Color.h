@@ -53,6 +53,8 @@ namespace Hmx {
         // bool operator!=(const Color &) const;
         // void Set(float, float, float, float);
 
+        void Set(float f){ red = green = blue = alpha = f; }
+
         void Set(float r, float g, float b){
             red = r; green = g; blue = b;
         }

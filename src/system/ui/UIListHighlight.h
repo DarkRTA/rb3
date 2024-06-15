@@ -17,8 +17,12 @@ public:
     virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
 
     DECLARE_REVS;
-    NEW_OVERLOAD;
-    DELETE_OVERLOAD;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListHighlight)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListHighlight)
+    }
 
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x40
 };

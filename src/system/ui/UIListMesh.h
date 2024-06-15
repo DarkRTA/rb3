@@ -22,6 +22,12 @@ public:
     RndMat* DefaultMat() const;
 
     DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    NEW_OBJ(UIListMesh)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListMesh)
+    }
 
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x5c
     ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0x68
