@@ -160,7 +160,6 @@ public:
 
     // this also seems okay
     virtual ~ObjPtrList() { clear(); }
-    virtual Hmx::Object* RefOwner(){ return mOwner; }
     // okay as well
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
         if(mMode == kObjListOwnerControl){
@@ -185,6 +184,8 @@ public:
             }
         }
     }
+    // refowner moved down here because that's how the weak funcs are ordered
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     void clear(){ while(!empty()) pop_back(); }
 

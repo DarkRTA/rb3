@@ -91,6 +91,7 @@ public:
     ObjDirPtr<class ObjectDir> unk40;
     Fader* unk4c;
     Fader* unk50;
+    Fader* unk54;
 };
 
 extern Synth* TheSynth;
