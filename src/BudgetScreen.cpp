@@ -5,6 +5,8 @@
 #include "system/utl/Option.h"
 #include "system/synth/StandardStream.h"
 
+#include "band3/meta_band/BandSongMgr.h"
+
 #include "decomp.h"
 
 bool gUseSsv;
@@ -126,8 +128,8 @@ BudgetScreen::BudgetScreen() :
     mWorstGsPctile(0.0),
     mUnk3(0)
 {
-    // TheSongMgr.AddSongs(SystemConfig("songs"))
-    // TheContentMgr.UnregisterCallback(TheSongMgr.field7_0x1c, false);
+    TheSongMgr->AddSongs(SystemConfig("songs"));
+    TheContentMgr->UnregisterCallback(TheSongMgr, false);
 
     const char* logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
     mLog = new TextFileStream(logFile, false);
