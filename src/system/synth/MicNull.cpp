@@ -8,8 +8,10 @@ MicNull::MicNull(){
     }
 }
 
-void MicNull::GetRecentBuf(int& i){
-
+char* MicNull::GetRecentBuf(int& i){
+    i = 0x600;
+    memcpy(filler, mBuf, 0xC00);
+    return filler;
 }
 
 void MicNull::GetContinuousBuf(int& i){

@@ -31,6 +31,7 @@ void MemPopHeap();
 int MemNumHeaps();
 int MemFindAddrHeap(void*);
 const char* MemHeapName(int);
+void MemFreeBlockStats(int, int&, int&, int&, int&);
 
 #define NEW_OVERLOAD \
     void* operator new(size_t t) {return _MemAlloc(t, 0);}

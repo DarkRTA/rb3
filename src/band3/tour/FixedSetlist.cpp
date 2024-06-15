@@ -2,7 +2,7 @@
 #include "os/Debug.h"
 #include "system/utl/Symbols.h"
 #include <vector>
-#include "band3/meta_band/AccomplishmentManager.h"
+#include "meta_band/AccomplishmentManager.h"
 
 FixedSetlist::FixedSetlist() : mWeight(1), m_pSongEntries(NULL), mName("") {
 }
@@ -30,12 +30,12 @@ Symbol FixedSetlist::GetName() const {
     return mName;
 }
 
-Symbol FixedSetlist::GetGroup() const {
-    return mGroup;
-}
-
 float FixedSetlist::GetWeight() const {
     return mWeight;
+}
+
+Symbol FixedSetlist::GetGroup() const {
+    return mGroup;
 }
 
 Symbol FixedSetlist::GetSongName(int i_iIndex) {
@@ -60,15 +60,14 @@ bool FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
 
     for (int i = 1; i < m_pSongEntries->Size(); i++) {
         Symbol song = gNullStr;
-        DataNode& songEntryNode = m_pSongEntries->Node(i);
+        const DataNode& songEntryNode = const_cast<const DataArray*>(m_pSongEntries)->Node(i);
         if (songEntryNode.Type() == kDataSymbol) {
             song = songEntryNode.Sym(0);
         } else if (songEntryNode.Type() == kDataArray) {
             DataArray* pArray = songEntryNode.Array(0);
             MILO_ASSERT(pArray->Size() == 1, 0x63);
-            DataNode& indexNode = pArray->Node(0);
-            int difficultyIndex = indexNode.Int(pArray);
-            DataArray* arr = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
+            int difficultyIndex = pArray->Int(0);
+            song = TheAccomplishmentMgr->GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
         } else {
             MILO_ASSERT(false, 0x6b);
         }

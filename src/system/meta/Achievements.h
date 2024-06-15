@@ -16,13 +16,13 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void Poll();
-    void Terminate();
 
     void Submit(LocalUser*, Symbol, int);
 
     void SetAllowAchievements(bool);
 
     static void Init();
+    static void Terminate();
 };
 
 extern Achievements* TheAchievements;

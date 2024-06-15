@@ -27,7 +27,7 @@ public:
     virtual bool GetCompressor() const { return false; }
     virtual void SetCompressorParam(float){}
     virtual float GetCompressorParam() const { return 0.0f; }
-    virtual void GetRecentBuf(int&);
+    virtual char* GetRecentBuf(int&);
     virtual void GetContinuousBuf(int&);
     virtual int GetSampleRate() const { return 48000; }
     virtual void SetEarpiece(bool){}

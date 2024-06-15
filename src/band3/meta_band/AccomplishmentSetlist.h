@@ -2,6 +2,7 @@
 #define METABAND_ACCOMPLISHMENTSETLIST_H
 
 #include "system/obj/Data.h"
+#include "utl/MemMgr.h"
 #include <set>
 #include "Accomplishment.h"
 
@@ -23,6 +24,8 @@ private:
     Difficulty GetRequiredDifficulty() const;
     bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
+
+    DELETE_OVERLOAD
 };
 
 #endif // METABAND_ACCOMPLISHMENTSETLIST_H
