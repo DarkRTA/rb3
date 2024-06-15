@@ -422,7 +422,7 @@
             "system/synth/FxSendWah.cpp": "Matching",
             "system/synth/Mic.cpp": "Matching",
             "system/synth/MicNull.cpp": "NonMatching",
-            "system/synth/MoggClip.cpp": "NonMatching",
+            "system/synth/MoggClip.cpp": "Matching",
             "system/synth/MoggClipMap.cpp": "Matching",
             "system/synth/OggMap.cpp": "NonMatching",
             "system/synth/Pollable.cpp": "NonMatching",

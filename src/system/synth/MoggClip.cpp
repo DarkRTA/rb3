@@ -157,7 +157,7 @@ void MoggClip::SetPan(int chan, float pan){
     PanInfo pinfo(chan, pan);
     bool here = false;
     for(std::vector<PanInfo>::iterator it = mPanInfos.begin(); it != mPanInfos.end(); it++){
-        if(it->channel == pinfo.channel){
+        if(it->channel == chan){
             here = true;
             *it = pinfo;
             break;
