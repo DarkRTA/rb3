@@ -426,6 +426,7 @@
             "system/synth/Mic.cpp": "Matching",
             "system/synth/MicNull.cpp": "NonMatching",
             "system/synth/MidiInstrument.cpp": "NonMatching",
+            "system/synth/MidiInstrumentMgr.cpp": "Matching",
             "system/synth/MoggClip.cpp": "Matching",
             "system/synth/MoggClipMap.cpp": "Matching",
             "system/synth/OggMap.cpp": "NonMatching",

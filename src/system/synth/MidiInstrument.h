@@ -60,6 +60,7 @@ public:
     virtual void Load(BinStream&);
 
     void Poll();
+    void KillAllVoices();
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28
