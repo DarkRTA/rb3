@@ -15,9 +15,7 @@ void SlipTrack::Init(Stream* stream){
     mStream = stream;
     mOffMs = 0.0f;
     mOn = false;
-    Symbol slip("max_slip");
-    DataArray* cfg = SystemConfig("synth", "iop");
-    mMaxSlip = cfg->FindArray(slip, true)->Float(1);
+    mMaxSlip = SystemConfig("synth", "iop")->FindFloat("max_slip");
     for(std::vector<int>::iterator it = mChannels.begin(); it != mChannels.end(); it++){
         mStream->EnableSlipStreaming(*it);
     }

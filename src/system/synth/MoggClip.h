@@ -49,6 +49,9 @@ public:
     void SetControllerVolume(float);
     void SetupPanInfo(float, float, bool);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     FilePath mFilePath;
     float mVolume;
     bool mLoop;

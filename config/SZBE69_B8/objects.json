@@ -432,7 +432,7 @@
             "system/synth/Sequence.cpp": "NonMatching",
             "system/synth/Sfx.cpp": "NonMatching",
             "system/synth/SfxMap.cpp": "Matching",
-            "system/synth/SlipTrack.cpp": "NonMatching",
+            "system/synth/SlipTrack.cpp": "Matching",
             "system/synth/StandardStream.cpp": "NonMatching",
             "system/synth/Stream.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
