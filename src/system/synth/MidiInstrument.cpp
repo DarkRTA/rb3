@@ -9,8 +9,8 @@ MidiInstrument::MidiInstrument() : mMultiSampleMap(this), mPatchNumber(0), mSend
 
 void MidiInstrument::Poll(){
     if(mActiveVoices.size() != 0){
-        for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
-            NoteVoiceInst* theinst = *it;
+        for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); it){
+            NoteVoiceInst* theinst = *it++;
             theinst->Poll();
             if(theinst->Started() && !theinst->IsRunning()){
                 delete theinst;
