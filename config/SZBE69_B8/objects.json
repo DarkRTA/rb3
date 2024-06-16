@@ -325,10 +325,7 @@
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
-            "system/os/Keyboard.cpp": {
-                "status": "LinkIssues",
-                "comment": "KeyboardKeyMsg vtable/RTTI swapped with ObjPtr<Hmx::Object, ObjectDir>'s"
-            },
+            "system/os/Keyboard.cpp": "Matching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
             "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
@@ -347,7 +344,10 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": "LinkIssues",
+            "system/os/VirtualKeyboard.cpp": {
+                "status": "LinkIssues",
+                "comment": "Something involving the placement of gKeyboardFontFile"
+            },            
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
@@ -395,15 +395,9 @@
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
-            "system/rndobj/Tex.cpp": {
-                "status": "LinkIssues",
-                "comment": ".bss ordering meme"
-            },
+            "system/rndobj/Tex.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
-            "system/rndobj/TexBlender.cpp": {
-                "status": "LinkIssues",
-                "comment": "The strings for SetType should be moved down in .data"
-            },
+            "system/rndobj/TexBlender.cpp": "Matching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
@@ -487,7 +481,10 @@
             "system/ui/UIPicture.cpp": "Matching",
             "system/ui/UIProxy.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
-            "system/ui/UIScreen.cpp": "Equivalent",
+            "system/ui/UIScreen.cpp": {
+                "status": "LinkIssues",
+                "comment": "SetType ordering in bss"
+            },
             "system/ui/UISlider.cpp": "Matching",
             "system/ui/UITransitionHandler.cpp": "Matching",
             "system/ui/UITrigger.cpp": "NonMatching",
@@ -497,7 +494,7 @@
             "system/utl/BufStream.cpp": "Matching",
             "system/utl/Cache.cpp": "Matching",
             "system/utl/Cache_Wii.cpp": "NonMatching",
-            "system/utl/CacheMgr.cpp": "NonMatching",
+            "system/utl/CacheMgr.cpp": "Matching",
             "system/utl/CacheMgr_Wii.cpp": "NonMatching",
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/ChunkIDs.cpp": "Matching",

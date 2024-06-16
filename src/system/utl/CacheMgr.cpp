@@ -1,6 +1,8 @@
 #include "CacheMgr.h"
 #include "CacheMgr_Wii.h"
 
+CacheMgr* TheCacheMgr;
+
 void CacheMgrInit() {
     MILO_ASSERT(TheCacheMgr == NULL, 0x12);
     TheCacheMgr = new CacheMgrWii();
@@ -17,34 +19,29 @@ CacheMgr::CacheMgr() : mOp((CacheMgr::OpType)0), mLastResult(kCache_NoError) {}
 CacheMgr::~CacheMgr() {}
 
 bool CacheMgr::SearchAsync(const char*, CacheID**) {
-    FormatString str = FormatString("CacheMgr::SearchAsync() not supported by this platform.\n");
-    TheDebug.Fail(str.Str());
+    MILO_FAIL("CacheMgr::SearchAsync() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
 bool CacheMgr::ShowUserSelectUIAsync(LocalUser*, unsigned long long, const char*, const char*, CacheID**) {
-    FormatString str = FormatString("CacheMgr::ShowUserSelectUIAsync() not supported by this platform.\n");
-    TheDebug.Fail(str.Str());
+    MILO_FAIL("CacheMgr::ShowUserSelectUIAsync() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
 bool CacheMgr::CreateCacheIDFromDeviceID(unsigned int, const char*, const char*, CacheID**) {
-    FormatString str = FormatString("CacheMgr::SetDeviceID() not supported by this platform.\n");
-    TheDebug.Fail(str.Str());
+    MILO_FAIL("CacheMgr::SetDeviceID() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
 bool CacheMgr::CreateCacheID(const char*, const char*, const char*, const char*, const char*, int, CacheID**) {
-    FormatString str = FormatString("CacheMgr::CreateCacheID() not supported by this platform.\n");
-    TheDebug.Fail(str.Str());
+    MILO_FAIL("CacheMgr::CreateCacheID() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
-
     return 0;
 }
 
@@ -67,9 +64,7 @@ void CacheMgr::AddCacheID(CacheID* id, Symbol symbol) {
         it++;
     }
     MILO_ASSERT(it == mCacheIDStore.end(), 0x8a);
-    CacheIDStoreEntry e;
-    e.symbol = symbol;
-    e.id = id;
+    CacheIDStoreEntry e(symbol, id);
     mCacheIDStore.push_back(e);
 }
 

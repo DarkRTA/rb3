@@ -9,7 +9,6 @@ class RndTexBlender : public RndDrawable {
 public:
     RndTexBlender();
     OBJ_CLASSNAME(TexBlender);
-    OBJ_SET_TYPE(TexBlender);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -38,6 +37,8 @@ public:
     ObjPtr<RndDrawable, class ObjectDir> mOwner; // 0x60
     float mControllerInfluence; // 0x6c
     int unk70; // 0x70
+
+    OBJ_SET_TYPE(TexBlender); // moved down here to get the TU to match
 };
 
 #endif

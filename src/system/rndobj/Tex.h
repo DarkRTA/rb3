@@ -45,8 +45,8 @@ public:
     virtual void TexelsUnlock() {}
     virtual int TexelsPitch() const { return 0; }
     virtual void Select(int) {}
-    virtual void PresyncBitmap() {}
-    virtual void SyncBitmap() {}
+    virtual void PresyncBitmap() ;
+    virtual void SyncBitmap() ;
 
     DataNode OnSetRendered(const DataArray*);
     DataNode OnSetBitmap(const DataArray*);
