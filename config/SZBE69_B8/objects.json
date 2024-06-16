@@ -395,10 +395,7 @@
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
-            "system/rndobj/Tex.cpp": {
-                "status": "LinkIssues",
-                "comment": ".bss ordering meme"
-            },
+            "system/rndobj/Tex.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": "Matching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
