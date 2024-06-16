@@ -5,6 +5,8 @@
 #include "synth/SampleData.h"
 #include "utl/Loader.h"
 
+class SampleInst;
+
 class SynthSample : public Hmx::Object {
 public:
 
@@ -23,8 +25,8 @@ public:
     virtual void Load(BinStream&);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-    virtual int NewInst() const;
-    virtual float LengthMs() const;
+    virtual SampleInst* NewInst() const { return 0; }
+    virtual float LengthMs() const { return 0.0f; }
     virtual void Sync(SyncType);
 
     static void* SampleAlloc(int, const char*);

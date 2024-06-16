@@ -13,10 +13,10 @@ public:
     static int sRev;
 
     ObjPtr<MoggClip, ObjectDir> mClipPtr;
-    float unk28;
-    float unk2c;
-    float unk30;
-    bool unk34;
+    float unk28; // something to do with panning
+    float unk2c; // something else to do with panning
+    float unk30; // volume?
+    bool unk34; // dual channel?
 };
 
 BinStream& operator>>(BinStream&, MoggClipMap&);
