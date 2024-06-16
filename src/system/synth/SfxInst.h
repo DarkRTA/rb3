@@ -18,6 +18,9 @@ public:
     virtual void StartImpl();
 
     void SetSend(FxSend*);
+    void SetReverbMixDb(float);
+    void SetReverbEnable(bool);
+    void SetSpeed(float);
 
     void Pause(bool);
 

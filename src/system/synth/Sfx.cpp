@@ -99,6 +99,46 @@ void SfxInst::SetSend(FxSend* send){
     }
 }
 
+void SfxInst::SetReverbMixDb(float f){
+    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+        (*it)->SetReverbMixDb(f);
+    }
+}
+
+void SfxInst::SetReverbEnable(bool b){
+    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+        (*it)->SetReverbEnable(b);
+    }
+}
+
+void SfxInst::SetSpeed(float f){
+    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+        (*it)->SetSpeed(f);
+    }
+}
+
+void SfxInst::SetTranspose(float f){
+    SetSpeed(CalcSpeedFromTranspose(f));
+}
+
+void SfxInst::UpdateVolume(){
+    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+        (*it)->SetVolume(mVolume + mOwner->mFaders.GetVal());
+    }
+    for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
+        MoggClipMap* moggClipMap = *it;
+        MILO_ASSERT(moggClipMap, 0xCB);
+        MoggClip* clp = moggClipMap->mClipPtr;
+        if(clp) clp->SetControllerVolume(mRandVol + mVolume + mOwner->mFaders.GetVal());
+    }
+}
+
+void SfxInst::SetPan(float f){
+    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+        (*it)->SetPan(f);
+    }
+}
+
 Sfx::Sfx() : mMaps(this), mMoggClipMaps(this), mSend(this), mReverbMixDb(-96.0f), mReverbEnable(0), mSfxInsts(this, kObjListNoNull) {
     mFaders.Add(TheSynth->unk4c);
     mFaders.Add(TheSynth->unk50);
@@ -118,8 +158,30 @@ SeqInst* Sfx::MakeInstImpl(){
     return inst;
 }
 
+DECOMP_FORCEFUNC(Sfx, SynthSample, LengthMs)
+
 BEGIN_HANDLERS(Sfx)
     HANDLE_ACTION(add_map, mMaps.push_back(SfxMap(this)))
     HANDLE_SUPERCLASS(Sequence)
     HANDLE_CHECK(0x147)
 END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(ADSR)
+    SYNC_PROP(attack_mode, (int&)o.mAttackMode)
+    SYNC_PROP(attack_rate, o.mAttackRate)
+    SYNC_PROP(decay_rate, o.mDecayRate)
+    SYNC_PROP(sustain_mode, (int&)o.mSustainMode)
+    SYNC_PROP(sustain_rate, o.mSustainRate)
+    SYNC_PROP(sustain_level, o.mSustainLevel)
+    SYNC_PROP(release_mode, (int&)o.mReleaseMode)
+    SYNC_PROP(release_rate, o.mReleaseRate)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(SfxMap)
+    SYNC_PROP(sample, o.mSynthPtr)
+    SYNC_PROP(volume, o.unkc)
+    SYNC_PROP(pan, o.unk10)
+    SYNC_PROP(transpose, o.unk14)
+    SYNC_PROP(fx_core, o.unk18)
+    SYNC_PROP(adsr, o.adsr)
+END_CUSTOM_PROPSYNC
