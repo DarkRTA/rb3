@@ -145,6 +145,10 @@
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/MiniLeaderboardDisplay.cpp": {
+                "status": "Equivalent", 
+                "comment": "Stack mismatches in MiniLeaderboardDisplay::Init()"
+            },
             "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
@@ -387,7 +391,7 @@
             "system/rndobj/PropKeys.cpp": "NonMatching",
             "system/rndobj/Rnd.cpp": "NonMatching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
-            "system/rndobj/Set.cpp": "NonMatching",
+            "system/rndobj/Set.cpp": "Equivalent",
             "system/rndobj/ShaderOptions.cpp": "Matching",
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
@@ -414,7 +418,7 @@
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
-            "system/synth/Faders.cpp": "NonMatching",
+            "system/synth/Faders.cpp": "Equivalent",
             "system/synth/FxSend.cpp": "Matching",
             "system/synth/FxSendChorus.cpp": "Matching",
             "system/synth/FxSendCompress.cpp": "Matching",
@@ -617,7 +621,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "libtomcrypt",
         "objects": {
-            "system/synth/tomcrypt/aes.c": "NonMatching",
+            "system/synth/tomcrypt/aes.c": "Matching",
             "system/synth/tomcrypt/crypt.c": "Matching",
             "system/synth/tomcrypt/ctr.c": "NonMatching"
         }

@@ -34,7 +34,26 @@ int ctr_start(int cipher, const unsigned char *count, const unsigned char *key, 
    return CRYPT_OK;
 }
 
-int ctr_encrypt_fast(const unsigned char*, unsigned char*, unsigned long len, symmetric_CTR* ctr){
+int ctr_reinit(int cipher, unsigned char* r4, symmetric_CTR* ctr) {
+   if (cipher_is_valid(cipher)) return 1;
+   else {
+      ctr->padlen = 0;
+      memcpy(ctr->ctr, r4, ctr->blocklen);
+      cipher_descriptor[ctr->cipher].ecb_encrypt(ctr->ctr, ctr->pad, &ctr->key);
+      return 0;
+   }
+}
+
+int ctr_encrypt_fast(const unsigned char* r3, unsigned char* r4, unsigned long len, symmetric_CTR* ctr){
+   while (len != 0) {
+      int i = 0;
+      while (i < ctr->blocklen) {
+         ctr[i].ctr[0]++;
+         if (ctr[i].ctr[0] != 0) break;
+         i++;
+      }
+      cipher_descriptor[ctr->cipher].ecb_encrypt(ctr->ctr, ctr->pad, &ctr->key);
+   }
    return 0;
 }
 
