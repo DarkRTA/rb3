@@ -18,8 +18,8 @@ DECOMP_FORCEACTIVE(Object,
 
 INIT_REVS(Hmx::Object)
 
-Hmx::Object* Hmx::Object::sDeleting = 0;
 std::map<Symbol, ObjectFunc*> Hmx::Object::sFactories;
+Hmx::Object* Hmx::Object::sDeleting = 0;
 bool gLoadingProxyFromDisk = 0;
 std::vector<ObjVersion> sRevStack;
 
