@@ -77,16 +77,16 @@ void SynthSample::PreLoad(BinStream& bs){
     bs >> mIsLooped;
     bs >> mLoopStartSamp;
     if(gRev >= 3) bs >> mLoopEndSamp;
-    if(bs.Cached() && gRev >= 5){
-        if(gAltRev == 0) mSampleData.Load(bs, mFile);
-        else {
-            CacheResourceResult res;
-            mFileLoader = new FileLoader(mFile, CacheWav(mFile.c_str(), res), kLoadFront, 0, false, true, &bs);
-        }
+    if(!bs.Cached() || gRev < 5){
+        if (gRev > 3) {
+            mFileLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(mFile, kLoadFront));
+        }    
     }
-    else if(gRev > 3){
-        mFileLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(mFile, kLoadFront));
-    }
+    else if (gAltRev != 0) {
+        CacheResourceResult res;
+        mFileLoader = new FileLoader(mFile, CacheWav(mFile.c_str(), res), kLoadFront, 0, false, true, &bs);
+    }    
+    else mSampleData.Load(bs, mFile);
     PushRev(packRevs(gAltRev, gRev), this);
 }
 

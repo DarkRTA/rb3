@@ -238,8 +238,8 @@ BEGIN_COPYS(Sfx)
     CREATE_COPY(Sfx)
     BEGIN_COPYING_MEMBERS
         if(ty != kCopyFromMax){
-            COPY_MEMBER(mMaps)
-            COPY_MEMBER(mMoggClipMaps)
+            if(&mMaps != &c->mMaps) COPY_MEMBER(mMaps)
+            if(&mMoggClipMaps != &c->mMoggClipMaps) COPY_MEMBER(mMoggClipMaps)
         }
         COPY_MEMBER(mSend)
         COPY_MEMBER(mReverbMixDb)

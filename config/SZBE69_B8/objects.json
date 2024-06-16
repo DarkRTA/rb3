@@ -442,7 +442,7 @@
             "system/synth/Stream.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
-            "system/synth/SynthSample.cpp": "NonMatching",
+            "system/synth/SynthSample.cpp": "Matching",
 
             "system/track/Track.cpp": "Matching",
             "system/track/TrackDir.cpp": "NonMatching",
