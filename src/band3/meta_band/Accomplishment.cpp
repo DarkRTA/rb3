@@ -13,10 +13,10 @@
 
 Accomplishment::Accomplishment(DataArray* i_pConfig, int index) : mName(gNullStr), mAccomplishmentType(0), mCategory(gNullStr),
     mAward(gNullStr), mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr),
-    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(0xffffffff),
-    mPlayerCountMin(0xffffffff), mPlayerCountMax(0xffffffff), mDynamicPrereqsNumSongs(0xffffffff), mDynamicPrereqsFilter(gNullStr), mProgressStep(0),
-    mIndex(index), mContextId(gNullStr), mMetaScoreValue(0), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false),
-    mShouldShowDenominator(true), mShowBestAfterEarn(true), mHideProgress(false), mCanBeEarnedWithNoFail(true) {
+    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(-1),
+    mPlayerCountMin(-1), mPlayerCountMax(-1), mDynamicPrereqsNumSongs(-1), mDynamicPrereqsFilter(gNullStr), mProgressStep(0),
+    mIndex(index), mContextId(0), mMetaScoreValue(gNullStr), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false),
+    mShouldShowDenominator(true), mShowBestAfterEarn(true), mHideProgress(false), mCanBeEarnedWithNoFail(true), mIsTrackedInLeaderboard(false) {
 
     Configure(i_pConfig);
 }
@@ -35,9 +35,9 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         mControllerTypes.reserve(controllerTypes->Size() - 1);
         for (int i = 1; i < controllerTypes->Size(); i++) {
             DataNode& node = controllerTypes->Node(i);
-            int controllerType = node.Int(controllerTypes);
+            ControllerType controllerType = (ControllerType)node.Int(controllerTypes);
 
-            mControllerTypes.push_back((ControllerType)controllerType);
+            mControllerTypes.push_back(controllerType);
         }
     }
 
@@ -196,7 +196,7 @@ Symbol Accomplishment::GetCategory() const {
     return mCategory;
 }
 
-Symbol Accomplishment::GetContextID() const {
+int Accomplishment::GetContextID() const {
     return mContextId;
 }
 
@@ -307,7 +307,7 @@ bool Accomplishment::HasAward() const {
     return !(mAward == "");
 }
 
-int Accomplishment::GetMetaScoreValue() const {
+Symbol Accomplishment::GetMetaScoreValue() const {
     return mMetaScoreValue;
 }
 

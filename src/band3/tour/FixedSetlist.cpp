@@ -59,21 +59,19 @@ bool FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
     MILO_ASSERT(o_rSongs.empty(), 0x56);
 
     for (int i = 1; i < m_pSongEntries->Size(); i++) {
-        Symbol song = gNullStr;
+        Symbol s = gNullStr;
         DataNode& songEntryNode = m_pSongEntries->Node(i);
         if (songEntryNode.Type() == kDataSymbol) {
-            song = songEntryNode.Sym(0);
+            s = songEntryNode.Sym(0);
         } else if (songEntryNode.Type() == kDataArray) {
             DataArray* pArray = songEntryNode.Array(0);
             MILO_ASSERT(pArray->Size() == 1, 0x63);
-            DataNode& indexNode = pArray->Node(0);
-            int difficultyIndex = indexNode.Int(pArray);
-            DataArray* arr = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
+            int difficultyIndex = pArray->Node(0).Int(pArray);
+            s = TheAccomplishmentMgr.GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);
         } else {
             MILO_ASSERT(false, 0x6b);
         }
-
-        o_rSongs.push_back(song);
+        o_rSongs.push_back(s);
     }
 
     return !o_rSongs.empty();

@@ -34,7 +34,7 @@ private:
     int GetDynamicPrereqsNumSongs() const;
     Symbol GetDynamicPrereqsFilter() const;
     Symbol GetCategory() const;
-    Symbol GetContextID() const;
+    int GetContextID() const;
     void GetIconArt() const;
     bool IsFulfilled(BandProfile*) const;
     bool IsRelevantForSong(Symbol) const;
@@ -46,7 +46,7 @@ private:
     virtual bool HasSpecificSongsToLaunch() const;
     Symbol GetAward() const;
     bool HasAward() const;
-    int GetMetaScoreValue() const;
+    Symbol GetMetaScoreValue() const;
     char* GetIconPath();
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
@@ -86,10 +86,10 @@ private:
     int mProgressStep; // 0x5c
 
     int mIndex; // 0x60
-    
-    Symbol mContextId;  // 0x64
 
-    int mMetaScoreValue; // 0x68
+    int mContextId;  // 0x64
+    Symbol mMetaScoreValue; // 0x68
+
     bool mRequiresUnison; // 0x6c
     bool mRequiresBre; // 0x6d
     bool mDynamicAlwaysVisible; // 0x6e
