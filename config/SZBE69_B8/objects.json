@@ -400,10 +400,7 @@
                 "comment": ".bss ordering meme"
             },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
-            "system/rndobj/TexBlender.cpp": {
-                "status": "Matching",
-                "comment": "The strings for SetType should be moved down in .data"
-            },
+            "system/rndobj/TexBlender.cpp": "Matching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
