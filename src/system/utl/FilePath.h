@@ -25,8 +25,8 @@ public:
 };
 
 inline TextStream& operator<<(TextStream& ts, FilePath& fp){
-    ts << fp.FilePathRelativeToRoot();
-    return ts; // commented out to get RndTex::Print to match
+    return ts << fp.FilePathRelativeToRoot();
+    // return ts; // commented out to get RndTex::Print to match
 }
 
 inline BinStream& operator>>(BinStream& bs, FilePath& fp){
