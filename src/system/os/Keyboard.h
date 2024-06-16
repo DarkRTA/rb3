@@ -2,6 +2,7 @@
 #define OS_KEYBOARD_H
 #include "obj/Msg.h"
 #include "obj/Object.h"
+#include "obj/ObjPtr_p.h"
 
 void KeyboardInitCommon();
 void KeyboardTerminateCommon();
@@ -14,6 +15,8 @@ void KeyboardSubscribe(Hmx::Object*);
 void KeyboardUnsubscribe(Hmx::Object*);
 Hmx::Object* KeyboardOverride(Hmx::Object*);
 void KeyboardSendMsg(int, bool, bool, bool);
+
+extern ObjPtr<Hmx::Object, ObjectDir> gObjOverride;
 
 BEGIN_MESSAGE(KeyboardKeyMsg, key, int, bool, bool, bool);
     MESSAGE_ARRAY_CTOR(KeyboardKeyMsg)

@@ -1,5 +1,4 @@
 #include "os/Keyboard.h"
-#include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/MsgSource.h"
 
@@ -31,7 +30,7 @@ void KeyboardUnsubscribe(Hmx::Object* o){
 }
 
 Hmx::Object* KeyboardOverride(Hmx::Object* o){
-    Hmx::Object* d = gObjOverride.mPtr;
+    Hmx::Object* d = gObjOverride;
     gObjOverride = o;
     return d;
 }

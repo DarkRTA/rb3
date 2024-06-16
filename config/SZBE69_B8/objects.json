@@ -325,10 +325,7 @@
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
-            "system/os/Keyboard.cpp": {
-                "status": "LinkIssues",
-                "comment": "KeyboardKeyMsg vtable/RTTI swapped with ObjPtr<Hmx::Object, ObjectDir>'s"
-            },
+            "system/os/Keyboard.cpp": "Matching",
             "system/os/MapFile_Wii.cpp": "NonMatching",
             "system/os/NetStream.cpp": "NonMatching",
             "system/os/NetworkSocket_Wii.cpp": "NonMatching",
