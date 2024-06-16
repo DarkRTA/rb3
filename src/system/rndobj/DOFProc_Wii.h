@@ -10,26 +10,30 @@ public:
     OBJ_CLASSNAME(DOFProc);
     OBJ_SET_TYPE(WiiDOFProc);
     virtual void SetTint(bool, Hmx::Color);
-    virtual void Set(RndCam*, float, float, float, float){}
+    virtual void Set(RndCam*, float, float, float, float);
     virtual void UnSet();
     virtual bool Enabled() const { return mEnabled; }
-    virtual int Blur();
-    virtual float FocalPlane();
-    virtual float BlurDepth();
-    virtual float MaxBlur();
-    virtual float MinBlur();
+    virtual int Blur(){ return 0; }
+    virtual float FocalPlane(){ return mFocalPlane; }
+    virtual float BlurDepth(){ return mBlurDepth; }
+    virtual float MaxBlur(){ return mMaxBlur; }
+    virtual float MinBlur(){ return mMinBlur; }
     virtual void EndWorld();
     virtual void OnGPHangRecover();
-    virtual void DoPost();
-    virtual float Priority();
+    virtual void DoPost(){}
+    virtual float Priority(){ return 1.1f; }
 
     bool mEnabled; // 0x20
-    char filler[0x24];
+    int unk24; // 0x24
+    float mFocalPlane; // 0x28
+    float mBlurDepth; // 0x2c
+    float mMinBlur; // 0x30
+    float mMaxBlur; // 0x34
+    int unk38; // 0x38
+    int unk3c; // 0x3c
+    int unk40; // 0x40
     bool unk44;
-    float unk48;
-    float unk4c;
-    float unk50;
-    float unk54;
+    Hmx::Color color; // 0x48
 };
 
 #endif

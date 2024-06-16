@@ -364,7 +364,7 @@
             },
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
-            "system/rndobj/DOFProc_Wii.cpp": "NonMatching",
+            "system/rndobj/DOFProc_Wii.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
