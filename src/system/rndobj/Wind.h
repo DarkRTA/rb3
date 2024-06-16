@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "math/Vec.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/MemMgr.h"
 
 class RndWind : public Hmx::Object {
 public:
@@ -21,11 +22,14 @@ public:
     void Zero();
     void SetDefaults();
     void SyncLoops();
+    float GetWind(float);
 
     static void Init();
+    NEW_OBJ(RndWind)
 
-    DECLARE_REVS;
-    DELETE_OVERLOAD;
+    DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 
     Vector3 mPrevailing; // 0x1c
     Vector3 mRandom; // 0x28

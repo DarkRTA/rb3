@@ -1,8 +1,30 @@
 #include "rndobj/Wind.h"
+#include "math/Rand.h"
+#include "obj/ObjMacros.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndWind)
+float sWindField[0x401] = {0}, sWhiteField[0x400] = {0};
+Rand* sRand;
 Vector3 sOffset(0.0f, 0.3384f, 0.66843998f);
+
+void SetWind(int, int, float, float, float) {
+
+}
+
+void RndWind::Init() {
+    REGISTER_OBJ_FACTORY(RndWind)
+    sRand = new Rand(0x7FEF8A);
+    SetWind(0, 0x400, 0, 0, 0.5f);
+    sWindField[0x400] = sWindField[0];
+    int i = 0;
+    do {
+        sWhiteField[i] = RandomFloat(0,1);
+        i++;
+    } while (i < 0x400);
+    delete sRand;
+    sRand = 0;
+}
 
 RndWind::RndWind() : mPrevailing(0.0f, 0.0f, 0.0f), mRandom(0.0f, 0.0f, 0.0f), mTimeLoop(100.0f), mSpaceLoop(100.0f), mWindOwner(this, this) {
     SyncLoops();

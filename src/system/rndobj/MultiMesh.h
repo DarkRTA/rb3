@@ -74,6 +74,8 @@ public:
     }
 };
 
+BinStream& operator>>(BinStream& bs, RndMultiMesh::Instance& i) { i.Load(bs); }
+
 TextStream& operator<<(TextStream& ts, const RndMultiMesh::Instance& i);
 
 #endif

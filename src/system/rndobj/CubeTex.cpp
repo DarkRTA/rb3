@@ -227,3 +227,8 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
 END_PROPSYNCS
+
+DECOMP_FORCEBLOCK(CubeTex, (std::vector<RndCubeTex::CubeFace>& cf, RndCubeTex* ct), {
+    cf.push_back(RndCubeTex::kCubeFaceBack);
+    
+})
