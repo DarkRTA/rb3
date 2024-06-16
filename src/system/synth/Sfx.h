@@ -23,6 +23,10 @@ public:
     virtual SeqInst* MakeInstImpl();
     virtual void SynthPoll();
 
+    void SetSend(FxSend*);
+    void SetReverbMixDb(float);
+    void SetReverbEnable(bool);
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 

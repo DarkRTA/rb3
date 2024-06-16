@@ -1,10 +1,9 @@
 #include "synth/MoggClipMap.h"
-
 #include "decomp.h"
 
 int MoggClipMap::sRev = 0;
 
-MoggClipMap::MoggClipMap(Hmx::Object* obj) : mClipPtr(obj, 0), unk28(0.0f), unk2c(0.0f), unk30(0.0f), unk34(false) {
+MoggClipMap::MoggClipMap(Hmx::Object* obj) : mMoggClip(obj, 0), mPan(0.0f), mPanWidth(0.0f), mVolume(0.0f), mIsStereo(false) {
 
 }
 
@@ -14,9 +13,9 @@ BinStream& operator>>(BinStream& bs, MoggClipMap& mcmap){
 }
 
 void MoggClipMap::myLoad(BinStream& bs){
-    bs >> mClipPtr;
+    bs >> mMoggClip;
     if(sRev >= 11){
-        bs >> unk30 >> unk28 >> unk2c >> unk34;
+        bs >> mVolume >> mPan >> mPanWidth >> mIsStereo;
     }
 }
 

@@ -167,7 +167,7 @@ template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray*
 template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
-        MILO_ASSERT(op == kPropSize, 146);
+        MILO_ASSERT(op == kPropSize, 0xB9);
         node = DataNode((int)vec.size());
         return true;
     }
@@ -182,10 +182,12 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
         }
         else if(op == kPropInsert){
             T item;
-            if(PropSync(item, node, prop, i, op)) vec.insert(it, item);
-            return true;
+            if(PropSync(item, node, prop, i, op)){
+                vec.insert(it, item);
+                return true;
+            }
         }
-        else return false;
+        return false;
     }
 }
 

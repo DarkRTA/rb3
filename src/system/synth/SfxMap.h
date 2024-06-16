@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "synth/SynthSample.h"
 #include "obj/ObjPtr_p.h"
+#include "synth/SampleInst.h"
 #include "synth/ADSR.h"
 
 class SfxMap {
@@ -12,12 +13,12 @@ public:
 
     static int gRev;
 
-    ObjPtr<SynthSample, ObjectDir> mSynthPtr;
-    float unkc;
-    float unk10;
-    float unk14;
-    int unk18;
-    ADSR adsr;
+    ObjPtr<SynthSample, ObjectDir> mSample; // 0x0
+    float mVolume; // 0xc
+    float mPan; // 0x10
+    float mTranspose; // 0x14
+    FXCore mFXCore; // 0x18
+    ADSR mADSR; // 0x1c
 };
 
 BinStream& operator>>(BinStream&, SfxMap&);

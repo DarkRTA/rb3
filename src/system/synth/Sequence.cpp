@@ -54,8 +54,8 @@ Sequence::~Sequence(){
 }
 
 void Sequence::SynthPoll(){
-    for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
-        SeqInst* curSeq = (*it);
+    for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); it){
+        SeqInst* curSeq = *it++;
         curSeq->Poll();
         if(curSeq->mStarted && !curSeq->IsRunning()){
             delete curSeq;
@@ -205,7 +205,18 @@ void RandomGroupSeq::PickNextIndex(){
 }
 
 void RandomGroupSeq::ForceNextIndex(int i){
-
+    MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1EE);
+    if(i < 0 || i > Children().size() - 1){
+        MILO_FAIL("index out of bounds for ForceNextIndex (index = %d)", i);
+    }
+    else {
+        for(std::list<int>::iterator it = mPlayHistory.begin(); it != mPlayHistory.end(); it){
+            if(mNextIndex == *it++){
+                it = mPlayHistory.erase(it);
+            }
+        }
+        mNextIndex = i;
+    }
 }
 
 BEGIN_COPYS(RandomGroupSeq)
