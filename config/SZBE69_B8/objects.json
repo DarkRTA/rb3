@@ -481,7 +481,10 @@
             "system/ui/UIPicture.cpp": "Matching",
             "system/ui/UIProxy.cpp": "NonMatching",
             "system/ui/UIResource.cpp": "NonMatching",
-            "system/ui/UIScreen.cpp": "Equivalent",
+            "system/ui/UIScreen.cpp": {
+                "status": "LinkIssues",
+                "comment": "SetType ordering in bss"
+            },
             "system/ui/UISlider.cpp": "Matching",
             "system/ui/UITransitionHandler.cpp": "Matching",
             "system/ui/UITrigger.cpp": "NonMatching",
