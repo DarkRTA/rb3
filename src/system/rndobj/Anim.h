@@ -43,6 +43,7 @@ public:
     void StopAnimation();
     bool IsAnimating();
     Rate GetRate(){ return mRate; }
+    void SetRate(Rate r){ mRate = r; }
     DataNode OnConvertFrames(DataArray*);
 
     Task* Animate(float, bool, float);

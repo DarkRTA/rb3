@@ -27,7 +27,7 @@ enum ProcessCmd {
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
     struct PointTest {
-        
+        int unk_0x0, unk_0x4, unk_0x8, unk_0xC;
     };
 
     enum Aspect {
@@ -106,6 +106,8 @@ public:
     bool ProcAndLock() const;
     void DrawRectScreen(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*);
     void ResetProcCounter();
+    int DrawMode() const { return unk_0xE4; }
+    void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -182,10 +184,11 @@ public:
     ProcCounter mProcCounter; // 0x134
     ProcessCmd mProcCmds; // 0x14c
     ProcessCmd mLastProcCmds; // 0x150
-    std::list<int> unk154; // 0x154
+    std::list<void*> unk154; // 0x154
     int mForceCharLod; // 0x15c
 };
 
 extern Rnd* TheRnd;
+extern int gSuppressPointTest;
 
 #endif // RNDOBJ_RND_H

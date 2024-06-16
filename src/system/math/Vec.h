@@ -1,5 +1,6 @@
 #ifndef MATH_VEC_H
 #define MATH_VEC_H
+#include "os/Debug.h"
 #include "utl/BinStream.h"
 
 class Vector2 {
@@ -7,6 +8,10 @@ public:
     Vector2(){}
     Vector2(float xx, float yy) : x(xx), y(yy) {}
     void Set(float xx, float yy){ x = xx; y = yy; }
+    Vector2& operator*(float f) { 
+        x *= f; y *= f; 
+        return *this;
+    }
     float x;
     float y;
 };
@@ -70,7 +75,7 @@ public:
         return *this;
     }
 
-    // float& operator[](int i){ return this + i; }
+    float& operator[](int i); // { return this + i; }
     // bool operator==(const Vector3 &) const;
     // bool operator!=(const Vector3 &) const;
 };
@@ -106,10 +111,20 @@ class Vector4_16_01 {
     public:
     //Vector4_16_01() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
     u16 x, y, z, w;
-    float GetX() const { return (1.0f - x) / 65535.0;}
-    float GetY() const; 
-    float GetZ() const;
-    void Set(float, float, float, float);
+    float GetX() const { return x / 65535.0f;}
+    float GetY() const { return y / 65535.0f;}
+    float GetZ() const { return z / 65535.0f;}
+    inline u16 ScaleFloat01ToUShort(float f) { 
+        MILO_ASSERT(f >= 0.0f, 543);
+        MILO_ASSERT(f <= 1.0f, 544);
+        return f * 65535.0f;
+    }
+    void Set(float f0, float f1, float f2, float f3) {
+        x = ScaleFloat01ToUShort(f0);
+        y = ScaleFloat01ToUShort(f1);
+        z = ScaleFloat01ToUShort(f2);
+        w = ScaleFloat01ToUShort(f3);
+    }
 };
 
 inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {

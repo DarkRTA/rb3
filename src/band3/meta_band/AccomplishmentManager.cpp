@@ -1,6 +1,8 @@
 #include "AccomplishmentManager.h"
 #include "os/Debug.h"
 
+AccomplishmentManager* TheAccomplishmentMgr;
+
 AccomplishmentManager::AccomplishmentManager() {
 
 }

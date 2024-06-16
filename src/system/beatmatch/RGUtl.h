@@ -14,5 +14,6 @@ bool HandleInterval(char*, int, const GameGem&, int, int&);
 void HandleNoThird(char*, int, const GameGem&, int, int&);
 void HandleNoSeventh(char*, int, const GameGem&, int, int&);
 void HandleNoSeventhMinor(char*, int, const GameGem&, int, int&);
+const char* RGFretNumberToString(int);
 
 #endif

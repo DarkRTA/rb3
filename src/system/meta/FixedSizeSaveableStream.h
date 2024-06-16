@@ -1,7 +1,7 @@
 #ifndef META_FIXEDSIZESAVEABLESTREAM_H
 #define META_FIXEDSIZESAVEABLESTREAM_H
 #include "utl/BufStream.h"
-#include <unordered_map>
+#include <hash_map>
 
 class FixedSizeSaveableStream : public BufStream {
 public:
@@ -15,8 +15,8 @@ public:
     int AddSymbol(Symbol);
     Symbol GetSymbol(int) const;
 
-    std::unordered_map<Symbol, int> m_mapSymbolToID;
-    std::unordered_map<int, Symbol> m_mapIDToSymbol;
+    std::hash_map<Symbol, int> m_mapSymbolToID;
+    std::hash_map<int, Symbol> m_mapIDToSymbol;
     int m_iCurrentID;
     int m_iTableOffset;
 };

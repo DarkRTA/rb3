@@ -13,6 +13,12 @@ class WorldCrowd;
 class CamShotFrame {
 public:
     CamShotFrame(Hmx::Object*);
+    CamShotFrame(Hmx::Object*, const CamShotFrame&);
+    void Load(BinStream&);
+    void SetFieldOfView(float);
+    void SetBlurDepth(float);
+    void SetMaxBlur(float);
+    void SetMinBlur(float);
 
     float mDuration; // 0x0
     float mBlend; // 0x4
@@ -40,9 +46,14 @@ public:
     // mZoomFOV: 0x85
 };
 
+inline BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
+    csf.Load(bs);
+}
+
 class CamShotCrowd {
 public:
     CamShotCrowd(Hmx::Object*);
+    CamShotCrowd(Hmx::Object*, const CamShotCrowd&);
 
     ObjPtr<WorldCrowd, ObjectDir> mCrowd;
     int mCrowdRotate;
@@ -74,6 +85,11 @@ public:
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);
 
+    void CacheFrames();
+    void UnHide();
+
+    DECLARE_REVS;
+
     ObjVector<CamShotFrame> mKeyFrames; // 0x10
     int mLoopKeyframe; // 0x1c
     float mNear; // 0x20
@@ -86,10 +102,10 @@ public:
     ObjPtr<RndTransAnim, ObjectDir> mPath; // 0x48
     float mPathFrame; // 0x54
     int mPlatformOnly; // 0x58 - enum Platform?
-    std::vector<int> unk5c;
-    std::vector<int> unk64;
-    std::vector<int> unk6c;
-    std::vector<int> unk74;
+    std::vector<RndDrawable*> unk5c;
+    std::vector<RndDrawable*> unk64;
+    std::vector<RndDrawable*> unk6c;
+    std::vector<RndDrawable*> unk74;
     ObjPtrList<RndDrawable, ObjectDir> mDrawOverrides; // 0x7c
     ObjPtrList<RndDrawable, ObjectDir> mPostProcOverrides; // 0x8c
     ObjVector<CamShotCrowd> mCrowds; // 0x9c
@@ -110,6 +126,11 @@ public:
     bool mLooping : 1; // 0x120 >> 7
     bool mUseDepthOfField : 1; // 0x120 >> 6 & 1
     bool mPS3PerPixel : 1; // 0x120 >> 5 & 1
+    bool unk120p4 : 1;
+    bool unk120p3 : 1;
+    bool unk120p2 : 1;
+    bool unk120p1 : 1;
+    bool unk120p0 : 1;
 
     static void Init();
 };

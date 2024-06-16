@@ -99,10 +99,6 @@ void RndCubeTex::Update(){
     }
 }
 
-RndCubeTex::~RndCubeTex(){
-
-}
-
 SAVE_OBJ(RndCubeTex, 0x116);
 
 void RndCubeTex::Load(BinStream& bs){
@@ -231,3 +227,8 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
 END_PROPSYNCS
+
+DECOMP_FORCEBLOCK(CubeTex, (std::vector<RndCubeTex::CubeFace>& cf, RndCubeTex* ct), {
+    cf.push_back(RndCubeTex::kCubeFaceBack);
+    
+})

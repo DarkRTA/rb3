@@ -12,6 +12,7 @@ public:
     Sphere& operator=(const Sphere& s){
         center = s.center;
         radius = s.radius;
+        return *this;
     }
 
     void Set(const Vector3& vec, float f){

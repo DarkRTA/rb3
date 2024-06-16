@@ -25,14 +25,12 @@ enum InlineDirType {
     kInlineAlways = 1 << 1,
 };
 
-// // Circular dependency moment
-// class DirLoader;
-
 template <class T> class ObjDirPtr : public ObjRef {
 public:
 
-    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir != 0) mDir->AddRef(this); }
-    ObjDirPtr() : mDir(NULL), mLoader(NULL) {}
+    ObjDirPtr(T* dir) : mDir(dir), mLoader(0) { if(mDir) mDir->AddRef(this); }
+    ObjDirPtr() : mDir(0), mLoader(0) {}
+    ObjDirPtr(const ObjDirPtr& dPtr) : mDir(dPtr.mDir), mLoader(0) { if(mDir) mDir->AddRef(this); }
     virtual ~ObjDirPtr(){ *this = (T*)0; }
     virtual Hmx::Object* RefOwner(){ return 0; }
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
@@ -51,6 +49,30 @@ public:
     }
 
     // LoadFile__21ObjDirPtr<9ObjectDir>FRC8FilePathbb9LoaderPosb
+    void LoadFile(const FilePath& p, bool async, bool share, LoaderPos pos, bool b3){
+        *this = 0;
+        DirLoader* d = 0;
+        if(share){
+            d = DirLoader::Find(p);
+            if(d && !d->IsLoaded()){
+                MILO_WARN("Can't share unloaded dir %s", p.c_str());
+                d = 0;
+            }
+        }
+        if(!d){
+            if(TheLoadMgr.unk5c != 3 && TheLoadMgr.unk5c != 2){
+            
+            }
+            else pos = kLoadFrontStayBack;
+            if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
+        }
+        mLoader = d;
+        if(mLoader){
+            if(!async || mLoader->IsLoaded()) PostLoad(0);
+        }
+        else if(!p.empty()) MILO_WARN("Couldn't load %s", p);
+    }
+
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
 
     T* operator->() const {
@@ -70,6 +92,7 @@ public:
     }
 
     // PostLoad__21ObjDirPtr<9ObjectDir>FP6Loader
+    // https://decomp.me/scratch/qfnAI - seems to check out
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
@@ -80,6 +103,7 @@ public:
     }
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
+    // https://decomp.me/scratch/yVHtf - also seems to check out
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
@@ -109,6 +133,8 @@ public:
     }
 
     operator bool() const { return mDir != 0; }
+    operator T*() const { return mDir; }
+    T* Dir() const { return mDir; }
 
     T* mDir;
     class DirLoader* mLoader;
@@ -123,13 +149,16 @@ public:
             obj = entry.obj;
             return *this;
         }
-        operator const char*(){ return name; } // may not need this
+        bool operator!=(const Entry& e) const { return name != e.name; }
+
+        operator const char*() const { return name; } // may not need this
 
         const char* name;
         Hmx::Object* obj;
     };
 
     struct InlinedDir {
+        InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty);
         // Note: names are fabricated, no DWARF info
         ObjDirPtr<ObjectDir> dir; // 0x0
         FilePath file; // 0xc
@@ -158,14 +187,14 @@ public:
     virtual ~ObjectDir();
     virtual ObjectDir* DataDir(){ return this; }
     virtual void SetProxyFile(const FilePath&, bool);
-    virtual FilePath* ProxyFile();
+    virtual FilePath& ProxyFile(){ return mProxyFile; }
     virtual void PostSave(BinStream&);
     virtual void SetSubDir(bool);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
     virtual void ResetEditorState();
-    virtual bool AllowsInlineProxy();
+    virtual bool AllowsInlineProxy(){ return mInlineProxy; }
     virtual InlineDirType InlineSubDirType();
     virtual void AddedObject(Hmx::Object*){}
     virtual void RemovingObject(Hmx::Object*);
@@ -184,9 +213,14 @@ public:
     bool InlineProxy(BinStream&);
     void AddedSubDir(ObjDirPtr<ObjectDir>&);
     void RemovingSubDir(ObjDirPtr<ObjectDir>&);
+    void PreLoadInlined(const FilePath&, bool, InlineDirType);
     ObjDirPtr<ObjectDir> PostLoadInlined();
     ObjectDir* NextSubDir(int&);
     void Iterate(DataArray*, bool);
+    void AppendSubDir(const ObjDirPtr<ObjectDir>&);
+    void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
+    FilePath GetSubDirPath(const FilePath&, const BinStream&);
+    void LoadSubDir(int, const FilePath&, BinStream&, bool);
 
     DataNode OnFind(DataArray*);
 
@@ -199,7 +233,16 @@ public:
         return castedObj;
     }
 
+    static void Init();
+    static void Terminate();
+
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(ObjectDir)
+    static void Register(){
+        REGISTER_OBJ_FACTORY(ObjectDir)
+    }
 
     KeylessHash<const char*, Entry> mHashTable; // 0x8
     StringTable mStringTable; // 0x28

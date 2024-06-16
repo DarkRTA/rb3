@@ -40,13 +40,13 @@ public:
     virtual void UnlockBitmap() {}
     virtual void MakeDrawTarget() {}
     virtual void FinishDrawTarget() {}
-    virtual void Compress() {}
+    virtual void Compress(bool) {}
     virtual bool TexelsLock(void*&) {return false;}
     virtual void TexelsUnlock() {}
     virtual int TexelsPitch() const { return 0; }
     virtual void Select(int) {}
-    virtual void PresyncBitmap() {}
-    virtual void SyncBitmap() {}
+    virtual void PresyncBitmap() ;
+    virtual void SyncBitmap() ;
 
     DataNode OnSetRendered(const DataArray*);
     DataNode OnSetBitmap(const DataArray*);

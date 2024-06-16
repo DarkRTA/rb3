@@ -4,6 +4,9 @@
 #include "rndobj/Anim.h"
 #include "rndobj/Poll.h"
 
+class RndTex;
+class RndCam;
+
 class RndTexRenderer : public RndDrawable, public RndAnimatable, public RndPollable {
 public:
     RndTexRenderer();
@@ -28,6 +31,10 @@ public:
     virtual void DrawBefore(){}
     virtual void DrawAfter(){}
 
+    void DrawToTexture();
+    void InitTexture();
+    DataNode OnGetRenderTextures(DataArray*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -35,6 +42,21 @@ public:
     static void Init(){
         REGISTER_OBJ_FACTORY(RndTexRenderer)
     }
+
+    bool mDirty; // 0x38
+    bool mForce; // 0x39
+    bool mDrawPreClear; // 0x3a
+    bool mDrawWorldOnly; // 0x3b
+    bool mDrawResponsible; // 0x3c
+    bool mNoPoll; // 0x3d
+    bool mPrimeDraw; // 0x3e
+    bool mFirstDraw; // 0x3f
+    bool mForceMips; // 0x40
+    float mImposterHeight; // 0x44
+    ObjPtr<RndTex, ObjectDir> mOutputTexture; // 0x48
+    ObjPtr<RndDrawable, ObjectDir> mDraw; // 0x54
+    ObjPtr<RndCam, ObjectDir> mCam; // 0x60
+    ObjPtr<RndCam, ObjectDir> mMirrorCam; // 0x6c
 };
 
 #endif

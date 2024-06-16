@@ -1,5 +1,6 @@
-#ifndef RNDOBJ_TRANS_H
-#define RNDOBJ_TRANS_H
+/*#ifndef RNDOBJ_TRANS_H
+#define RNDOBJ_TRANS_H*/
+#pragma once
 #include "milo_types.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
@@ -77,6 +78,17 @@ public:
     RndTransformable* TransParent() const;
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
+    void SetLocalRot(Vector3);
+
+    Transform& WorldXfm(){
+        if(mCache->mFlags & 1) return WorldXfm_Force();
+        else return mWorldXfm;
+    }
+
+    void SetDirtyLocalXfm(Transform& tf){
+        mLocalXfm = tf;
+        mCache->SetDirty();
+    }
 
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
@@ -117,7 +129,7 @@ public:
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; } // 0x80
-    bool mPreserveScale; // 0x83
+    bool mPreserveScale; // 0x82
     ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
 
     static ushort gRev;
@@ -130,4 +142,4 @@ public:
 
 template <class T> void RemoveSwap(std::vector<T*>&, T*);
 
-#endif
+/*#endif*/

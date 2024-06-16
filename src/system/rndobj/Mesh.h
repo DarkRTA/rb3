@@ -109,7 +109,7 @@ public:
     void CreateStrip(int, int, Striper&, STRIPERRESULT&, bool);
     int EstimatedSizeKb() const;
     bool IsSkinned() const;
-    int NumBones() const;
+    int NumBones() const { return mBones.size(); }
     void PreLoadVertices(BinStream&);
     void PostLoadVertices(BinStream&);
     void RemoveInvalidBones();

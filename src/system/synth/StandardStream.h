@@ -23,14 +23,15 @@ public:
     class ChannelParams {
     public:
         ChannelParams();
-        float mPan;
-        float mSlipSpeed;
-        bool mSlipEnabled;
-        ADSR mADSR;
-        FaderGroup mFaders;
-        ObjPtr<FxSend, ObjectDir> mFxSend;
-        FXCore mFXCore;
-        bool mPitchShift;
+
+        float mPan; // 0x0
+        float mSlipSpeed; // 0x4
+        bool mSlipEnabled; // 0x8
+        ADSR mADSR; // 0xc
+        FaderGroup mFaders; // 0x34
+        ObjPtr<FxSend, ObjectDir> mFxSend; // 0x48
+        FXCore mFXCore; // 0x54
+        bool mPitchShift; // 0x58
     };
 
     StandardStream(File*, float, float, Symbol, bool, bool);
@@ -96,19 +97,20 @@ public:
     void PollStream();
     void ClearLoopMarkers();
     void Init(float, float, Symbol, bool);
+    void Destroy();
 
-    State mState;
-    File* mFile;
-    StreamReader* mRdr;
-    std::vector<int> mChannels;
-    int mSampleRate;
-    float mBufSecs;
-    float mFileStartMs;
-    float mStartMs;
-    float mLastStreamTime;
-    int unk3c;
-    VarTimer mTimer;
-    std::vector<ChannelParams> mChanParams;
+    State mState; // 0x14
+    File* mFile; // 0x18
+    StreamReader* mRdr; // 0x1c
+    std::vector<int> mChannels; // 0x20 - change type to some class ptr
+    int mSampleRate; // 0x28
+    float mBufSecs; // 0x2c
+    float mFileStartMs; // 0x30
+    float mStartMs; // 0x34
+    float mLastStreamTime; // 0x38
+    int unk3c; // 0x3c
+    VarTimer mTimer; // 0x40
+    std::vector<ChannelParams*> mChanParams;
     int mJumpFromSamples;
     int mJumpToSamples;
     float mJumpFromMs;

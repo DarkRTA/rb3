@@ -2,6 +2,7 @@
 #define UTL_TEXTSTREAM_H
 #include "utl/Symbol.h"
 #include <vector>
+#include <list>
 
 /** A stream of text. */
 class TextStream {
@@ -34,6 +35,16 @@ template<class T1, class T2> TextStream& operator<<(TextStream& ts, const std::v
     ts << "(size:" << vec.size() << ")";
     for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
         ts << "\n" << it - vec.begin() << "\t" << *it;
+    }
+    return ts;
+}
+
+template<class T1, class T2> TextStream& operator<<(TextStream& ts, const std::list<T1, T2>& list){
+    ts << "(size:" << list.size() << ")";
+    int i = 0;
+    for(std::list<T1, T2>::const_iterator it = list.begin(); it != list.end(); it++){
+        ts << "\n" << i << "\t" << *it;
+        i++;
     }
     return ts;
 }

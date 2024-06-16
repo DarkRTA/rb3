@@ -1,17 +1,19 @@
 #include "ui/UIListWidget.h"
+#include "rndobj/Utl.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
-
 #include "decomp.h"
 
 INIT_REVS(UIListWidget);
 
-UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0) {
+UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0),
+    mWidgetDrawType(kUIListWidgetDrawAlways), mParentList(nullptr) {
     for(int i = 0; i < kNumUIListWidgetStates; i++){
         std::vector<ObjPtr<UIColor, class ObjectDir> > vec;
         for(int j = 0; j < UIComponent::kNumStates; j++){
             vec.push_back(ObjPtr<UIColor, class ObjectDir>(this, 0));
         }
-        // mColors.push_back(vec); // this causes an error
+        mColors.push_back(vec);
     }
 }
 
@@ -26,15 +28,37 @@ void UIListWidget::ResourceCopy(const UIListWidget* widget){
 
 void UIListWidget::SetParentList(UIList* list){ mParentList = list; }
 
-void UIListWidget::DrawMesh(RndMesh* mesh, UIListWidgetState, UIComponent::State, const Transform&, Box*){
+void UIListWidget::DrawMesh(RndMesh* mesh, UIListWidgetState wstate, UIComponent::State cstate, const Transform& tf, Box* box){
     MILO_ASSERT(mesh, 0x40);
+    mesh->SetWorldXfm(tf);
+    if(box){
+        Box localbox = *box;
+        CalcBox(mesh, localbox);
+        box->GrowToContain(localbox.mMin, false);
+        box->GrowToContain(localbox.mMax, false);
+    }
+    else {
+        UIColor* col = DisplayColor(wstate, cstate);
+        if(col){
+            RndMat* mat = mesh->mMat;
+            if(mat) mat->SetColor(col->GetColor());
+        }
+        mesh->DrawShowing();
+    }
+}
+
+void UIListWidget::CalcXfm(const Transform& tf1, const Vector3& vec, Transform& tf2){
+    tf2.v.x += vec.x;
+    tf2.v.z += vec.z;
+    Multiply(tf2, tf1, tf2);
 }
 
 UIColor* UIListWidget::DisplayColor(UIListWidgetState element_state, UIComponent::State list_state) const {
     MILO_ASSERT(element_state < kNumUIListWidgetStates, 99);
     MILO_ASSERT(list_state < UIComponent::kNumStates, 100);
     UIColor* theColor = mColors[element_state][list_state];
-    if(theColor && mDefaultColor) return theColor;
+    if(theColor) return theColor;
+    else if (mDefaultColor) return mDefaultColor;
     else return 0;
 }
 
@@ -47,26 +71,28 @@ void UIListWidget::SetColor(UIListWidgetState ws, UIComponent::State cs, UIColor
 
 SAVE_OBJ(UIListWidget, 0x97);
 
-DECOMP_FORCEACTIVE(UIListWidget,
-    "ObjPtr_p.h",
-    "f.Owner()",
-    ""
-)
+DECOMP_FORCEACTIVE(UIListWidget, "ObjPtr_p.h", "f.Owner()", "")
 
 BEGIN_LOADS(UIListWidget)
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     LOAD_SUPERCLASS(Hmx::Object)
     bs >> mDrawOrder;
+    int x;
     if(gRev < 1){
         int i, j;
         bs >> i >> j;
     }
-    bs >> mDefaultColor;
-    int x;
-    bs >> x;
+    bs >> mDefaultColor >> x;
     mWidgetDrawType = (UIListWidgetDrawType)x;
-    if(gRev > 1) bs >> mDisabledAlphaScale;
+    if(gRev >= 2) bs >> mDisabledAlphaScale;
+    for(int i = 0; i < kNumUIListWidgetStates; i++){
+        for(int j = 0; j < UIComponent::kNumStates; j++){
+            ObjPtr<UIColor, ObjectDir> colPtr(this, 0);
+            bs >> colPtr;
+            mColors[i][j] = colPtr;
+        }
+    }
 END_LOADS
 
 BEGIN_COPYS(UIListWidget)

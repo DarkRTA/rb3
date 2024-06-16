@@ -7,6 +7,7 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Dir.h"
 #include "char/CharClip.h"
+#include "utl/MemMgr.h"
 
 class CharClipSet : public ObjectDir, public RndDrawable, public RndAnimatable {
 public:
@@ -40,6 +41,8 @@ public:
     int mBpm;
     bool mPreviewWalk;
     ObjPtr<CharClip, ObjectDir> mStillClip;
+
+    DELETE_OVERLOAD
 };
 
 #endif

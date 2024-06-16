@@ -6,6 +6,7 @@
 #include "os/CDReader.h"
 #include "os/System.h"
 #include "utl/Loader.h"
+#include "utl/TextStream.h"
 
 ArkFile::ArkFile(const char* iFilename, int iMode) : mNumOutstandingTasks(0), mBytesRead(0), mTell(0), mFail(0), mReadAhead(true), mFilename(iFilename) {
     bool fileinfores = TheArchive->GetFileInfo(FileMakePath(".", iFilename, 0), mArkfileNum, mByteStart, mSize, mUCSize);
@@ -51,7 +52,10 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
             iBytes = mSize - mTell;
         }
         MILO_ASSERT(iBytes >= 0, 0x82);
-        // more crap goes here
+        int a = 0, b = 0, c = 0;
+        TheBlockMgr.GetAssociatedBlocks(mByteStart, iBytes, a, b, c);
+
+        TheBlockMgr.Poll();
         return true;
     }
 }

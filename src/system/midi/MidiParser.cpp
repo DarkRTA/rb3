@@ -41,10 +41,10 @@ void MidiParser::Init(){
 Hmx::Object* MidiParser::NewObject() { return new MidiParser(); }
 
 MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),
-            endOffset(0), minLength(0), maxLength(1e30), minGap(-1e30), 
+            endOffset(0), minLength(0), maxLength(1e30), minGap(-1e30),
             maxGap(1e30), useRealtimeGaps(false), variableBlendPct(0) { }
 
-MidiParser::MidiParser() : mTrackName(), mGemParser(0), mNoteParser(0), mTextParser(0), mLyricParser(0), mCurParser(0), 
+MidiParser::MidiParser() : mTrackName(), mGemParser(0), mNoteParser(0), mTextParser(0), mLyricParser(0), mCurParser(0),
     mVocalEvents(0), mNotes(), mGems(0), mInverted(0), mLastStart(-1e+30f), mLastEnd(-1e+30f), mFirstEnd(-1e+30f),
     mMessageType(), mAppendLength(false), mUseVariableBlending(false), mMessageSelf(false), mCompressed(false), mStart(0.0f), mBefore(0) {
     mEvents = new DataEventList();
@@ -71,6 +71,7 @@ void MidiParser::SetTypeDef(DataArray* arr){
             arr->FindData("append_length", mAppendLength, false);
             arr->FindData("use_variable_blending", mUseVariableBlending, false);
             arr->FindData("message_self", mMessageSelf, false);
+            arr->FindData("message_type", mMessageType, false);
             arr->FindData("compress", mCompressed, false);
             if(mCompressed){
                 DataArray* localArr = new DataArray(mAppendLength - mMessageType.Null() + 2);

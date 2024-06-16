@@ -1,11 +1,10 @@
 #ifndef OBJ_OBJMACROS_H
 #define OBJ_OBJMACROS_H
-#include "obj/Object.h"
 #include "os/System.h"
 #include "obj/PropSync_p.h"
 #include "obj/MessageTimer.h"
 
-const char* PathName(const Hmx::Object*);
+const char* PathName(const class Hmx::Object*);
 
 // BEGIN CLASSNAME MACRO -------------------------------------------------------------------------------
 
@@ -177,6 +176,11 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
     SYNC_PROP(_s, member) \
 }
 
+#define SYNC_PROP_SET_STATIC(symbol, member, func) { \
+    NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_SET(_s, member, func) \
+}
+
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
     NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_MODIFY(_s, member, func) \
@@ -282,27 +286,59 @@ void objType::Load(BinStream& bs){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ver, rev_name); \
     }
 
+#define ASSERT_OLD_REV(ver) \
+    if (gRev < ver) { \
+        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, ver); \
+    }
+
+#define ASSERT_OLD_ALTREV(ver) \
+    if (gRev < ver) { \
+        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, ver); \
+    }
+
 #define LOAD_SUPERCLASS(parent) \
     parent::Load(bs);
+
+#define LOAD_BITFIELD(type, name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = bs_name; \
+}
+
+#define LOAD_BITFIELD_ENUM(type, name, enum_name) { \
+    type bs_name; \
+    bs >> bs_name; \
+    name = (enum_name)bs_name; \
+}
 
 #define END_LOADS \
 }
 
 // END LOAD MACROS -------------------------------------------------------------------------------------
 
+// BEGIN OBJ INITIALIZER MACROS ------------------------------------------------------------------------
+
+#define NEW_OBJ(objType) \
+    static Hmx::Object* NewObject() { return new objType; }
+
+#define REGISTER_OBJ_FACTORY(objType) \
+    Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
+
+// END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
+
 // BEGIN ADDTONOTIFIES MACRO ---------------------------------------------------------------------------
 
 #define ADD_NOTIFS \
 namespace {\
     bool AddToNotifies(const char* str, std::list<class String>& list){\
-        if(list.size() > 0x10) return false;\
-        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){\
-            bool strFound = !strcmp(it->c_str(), str);\
-            if(strFound) return false;\
-        }\
-        list.push_back(str);\
-        return true;\
-    }\
+        if(list.size() > 0x10) return false; \
+        for(std::list<class String>::iterator it = list.begin(); it != list.end(); it++){ \
+            bool found = strcmp(it->c_str(), str); \
+            if(!found) return false; \
+        } \
+        list.push_back(str); \
+        return true; \
+    } \
 }
 
 // END ADDTONOTIFIES MACRO -----------------------------------------------------------------------------

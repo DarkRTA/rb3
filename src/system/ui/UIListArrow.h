@@ -34,7 +34,12 @@ public:
     bool mOnHighlight; // 0x5d
 
     DECLARE_REVS
+    NEW_OVERLOAD
     DELETE_OVERLOAD
+    NEW_OBJ(UIListArrow)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIListArrow)
+    }
 };
 
 

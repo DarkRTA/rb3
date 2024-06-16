@@ -51,11 +51,21 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
+    const char* GetDefaultText() const;
     void Terminate();
     void LabelUpdate(bool, bool);
     void AdjustHeight(bool);
     void SetFloat(const char*, float);
+    void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
+    void SetEditText(const char*);
+    RndText* TextObj();
+    void SetColorOverride(UIColor*);
+    float GetDrawWidth();
+    float Alpha(){ return mAlpha; }
+    float AltAlpha(){ return mAltAlpha; }
+    void SetAlpha(float f){ mAlpha = f; }
+    void SetAltAlpha(float f){ mAltAlpha = f; }
 
     DataNode OnSetTokenFmt(const DataArray*);
     DataNode OnSetInt(const DataArray*);

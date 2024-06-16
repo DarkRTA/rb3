@@ -15,27 +15,24 @@ UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(
     
 }
 
+UIPicture::~UIPicture() {
+    CancelLoading();
+    delete mTex;
+}
+
 void UIPicture::SetTypeDef(DataArray* da) {
-    if(mTypeDef != da){
+    if(TypeDef() != da){
         UIComponent::SetTypeDef(da);
         if(da){
             DataArray* findtex = da->FindArray("tex_file", false);
             if(findtex){
                 if(strlen(findtex->Str(1)) != 0){
-                    const char* str = findtex->Str(1);
-                    const char* path = FileGetPath(findtex->mFile.Str(), 0);
-                    FilePath fp;
-                    fp.Set(path, str);
+                    FilePath fp(FileGetPath(findtex->mFile.Str(), 0), findtex->Str(1));
                     SetTex(fp);
                 }
             }
         }
     }
-}
-
-UIPicture::~UIPicture() {
-    CancelLoading();
-    delete mTex;
 }
 
 BEGIN_COPYS(UIPicture)
@@ -101,20 +98,20 @@ bool UIPicture::IsEmptyValue() const {
     return mTexFile == "";
 }
 
-void UIPicture::SetTex(const FilePath& p) {
-    if (HasTransitions() || (!(p == mLoadedFile) || !(p == mTexFile))) {
-        if (TheLoadMgr.EditMode()) {
-            mDelayedTexFile = p;
-        } else UpdateTexture(p);
-    }
-}
-
 void UIPicture::FinishValueChange() {
     if(mLoader && mLoader->IsLoaded()){
         FinishLoading();
         UITransitionHandler::FinishValueChange();
     }
     else if(mMesh) mMesh->mShowing = false;
+}
+
+void UIPicture::SetTex(const FilePath& p) {
+    if (HasTransitions() || (!(p == mLoadedFile) || !(p == mTexFile))) {
+        if (TheLoadMgr.EditMode()) {
+            mDelayedTexFile = p;
+        } else UpdateTexture(p);
+    }
 }
 
 void UIPicture::UpdateTexture(const FilePath& p) {
@@ -145,7 +142,26 @@ void UIPicture::CancelLoading() {
 }
 
 void UIPicture::HookupMesh() {
-
+    if(mMesh && mHookTex){
+        RndMat* mat = mMesh->mMat;
+        if(mat){
+            RndTex* tex = mTex;
+            if(tex && tex->mWidth != 0 && tex->mHeight != 0){
+                mat->mDiffuseTex = tex;
+                mat->mDirty |= 2;
+            }
+            else {
+                mat->mDiffuseTex = 0;
+                mat->mDirty |= 2;
+            }
+        }
+        else {
+            if(mLoader || TheLoadMgr.EditMode()){
+                MILO_WARN("%s does not have material", mMesh->Name());
+            }
+        }
+        mMesh->mShowing = true;
+    }
 }
 
 void UIPicture::SetHookTex(bool b) {

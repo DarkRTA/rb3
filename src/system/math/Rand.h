@@ -1,6 +1,8 @@
 #ifndef MATH_RAND_H
 #define MATH_RAND_H
 
+#include "utl/MemMgr.h"
+
 class Rand {
 public:
     Rand(int);
@@ -16,6 +18,9 @@ public:
     unsigned int mRandTable[256];
     float mSpareGaussianValue;
     bool mSpareGaussianAvailable;
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 };
 
 void SeedRand(int);

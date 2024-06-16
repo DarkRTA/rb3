@@ -9,7 +9,6 @@ class RndTexBlender : public RndDrawable {
 public:
     RndTexBlender();
     OBJ_CLASSNAME(TexBlender);
-    OBJ_SET_TYPE(TexBlender);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -17,7 +16,7 @@ public:
     virtual void Load(BinStream&);
     virtual float GetDistanceToPlane(const Plane&, Vector3&);
     virtual bool MakeWorldSphere(Sphere&, bool);
-    virtual void DrawShowing(){}
+    virtual void DrawShowing();
     virtual ~RndTexBlender(){}
 
     DataNode OnGetRenderTextures(DataArray*);
@@ -30,14 +29,16 @@ public:
         REGISTER_OBJ_FACTORY(RndTexBlender)
     }
 
-    ObjPtr<RndTex, class ObjectDir> mBaseMap;
-    ObjPtr<RndTex, class ObjectDir> mNearMap;
-    ObjPtr<RndTex, class ObjectDir> mFarMap;
-    ObjPtr<RndTex, class ObjectDir> mOutputTextures;
-    ObjPtrList<RndTexBlendController, class ObjectDir> mControllerList;
-    ObjPtr<RndDrawable, class ObjectDir> mOwner;
-    float mControllerInfluence;
-    int unk70;
+    ObjPtr<RndTex, class ObjectDir> mBaseMap; // 0x20
+    ObjPtr<RndTex, class ObjectDir> mNearMap; // 0x2c
+    ObjPtr<RndTex, class ObjectDir> mFarMap; // 0x38
+    ObjPtr<RndTex, class ObjectDir> mOutputTextures; // 0x44
+    ObjPtrList<RndTexBlendController, class ObjectDir> mControllerList; // 0x50
+    ObjPtr<RndDrawable, class ObjectDir> mOwner; // 0x60
+    float mControllerInfluence; // 0x6c
+    int unk70; // 0x70
+
+    OBJ_SET_TYPE(TexBlender); // moved down here to get the TU to match
 };
 
 #endif

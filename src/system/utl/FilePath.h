@@ -13,6 +13,7 @@ public:
     FilePath(const char* str){
         Set(sRoot.c_str(), str);
     }
+    FilePath(const char* cc, const char* cc2){ Set(cc, cc2); }
     FilePath(){ }
     virtual ~FilePath(){ }
 
@@ -24,7 +25,7 @@ public:
 };
 
 inline TextStream& operator<<(TextStream& ts, FilePath& fp){
-    ts << fp.FilePathRelativeToRoot();
+    return ts << fp.FilePathRelativeToRoot();
     // return ts; // commented out to get RndTex::Print to match
 }
 

@@ -40,7 +40,7 @@ public:
         }
     }
 
-    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
+    void operator=(const ObjPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;
@@ -65,8 +65,7 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class Object
 
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
-
-    ObjOwnerPtr(Hmx::Object* obj, T1* cls): mOwner(obj), mPtr(cls) {
+    ObjOwnerPtr(Hmx::Object* obj, T1* cls = nullptr): mOwner(obj), mPtr(cls) {
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
@@ -75,7 +74,7 @@ public:
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*){ 
+    virtual void Replace(Hmx::Object*, Hmx::Object*){
         MILO_FAIL("Should go to owner");
     }
 
@@ -131,16 +130,22 @@ public:
     public:
         // if you wanna check the iterator methods in objdiff, go to CharHair.cpp
         // CharHair.cpp has plenty of ObjPtr and ObjPtrList methods for you to double check
-        
+
         iterator() : mNode(0) {}
         iterator(Node* node) : mNode(node) {}
         T1* operator*(){ return mNode->obj; }
 
         // RB2 says this returns an iterator rather than an iterator&
         // apparently this can return an iterator if inlining is off?
-        iterator& operator++(){
+        iterator operator++(){
             mNode = mNode->next;
             return *this;
+        }
+
+        iterator operator++(int){
+            iterator tmp = *this;
+            ++*this;
+            return tmp;
         }
 
         bool operator!=(iterator it){ return mNode != it.mNode; }
@@ -153,17 +158,21 @@ public:
     int mSize : 24;
     ObjListMode mMode : 8;
 
-    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
-    
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
         }
     }
 
-    virtual ~ObjPtrList() { clear(); }
-    virtual Hmx::Object* RefOwner(){ return mOwner; }
+    ObjPtrList(const ObjPtrList& pList) : mNodes(0), mOwner(pList.mOwner), mSize(0), mMode(pList.mMode) {
+        for(Node* nodes = pList.mNodes; nodes != 0; nodes = nodes->next){
+            push_back(nodes->obj);
+        }
+    }
 
+    // this also seems okay
+    virtual ~ObjPtrList() { clear(); }
+    // okay as well
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
         if(mMode == kObjListOwnerControl){
             mOwner->Replace(from, to);
@@ -187,23 +196,29 @@ public:
             }
         }
     }
-
-    virtual bool IsDirPtr(){ return 0; }
+    // refowner moved down here because that's how the weak funcs are ordered
+    virtual Hmx::Object* RefOwner(){ return mOwner; }
 
     void clear(){ while(!empty()) pop_back(); }
 
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // fn_8049C424 - push_back
+    // seems to be okay - shows as 100% in EventTrigger
     void push_back(T1* obj){
         insert(end(), obj);
     }
 
-    // THIS CURRENT IMPLEMENTATION IS CAUSING REGSWAPS IN LOAD
-    // PLEASE FIX
+    // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
         erase(mNodes->prev);
+    }
+
+    // RB3 apparently also has pop_front? gross // pop_front__36ObjPtrList<Q23Hmx6Object,9ObjectDir>Fv
+    void pop_front(){
+        MILO_ASSERT(mNodes, 0x16E);
+        erase(mNodes);
     }
 
     iterator erase(iterator it){
@@ -240,7 +255,7 @@ public:
     }
 
     T1* front() const {
-        MILO_ASSERT(mNodes, 0x167);
+        MILO_ASSERT(mNodes, 0x16B);
         return mNodes->obj;
     }
 
@@ -270,7 +285,7 @@ public:
     // link__36ObjPtrList<11RndDrawable,9ObjectDir>F Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 8iterator P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     void link(iterator it, Node* n) {
         Node*& itNode = it.mNode;
-        
+
         if (n->obj) {
             n->obj->AddRef(this);
         }
@@ -305,19 +320,23 @@ public:
     // fn_80453DC4 in retail
     // Set__37ObjPtrList<12EventTrigger,9ObjectDir> F Q2 37ObjPtrList<12EventTrigger,9ObjectDir> 8iterator P12EventTrigger
     // ObjPtrList::Set(iterator, T1*)
+    // https://decomp.me/scratch/OniGf - again, seems to check out?
     void Set(iterator it, T1* obj){
         if(mMode == kObjListNoNull) MILO_ASSERT(obj, 0x14E);
         if(it.mNode->obj) it.mNode->obj->Release(this);
         it.mNode->obj = obj;
-        if(it.mNode->obj) it.mNode->obj->AddRef(this);
+        if(obj) obj->AddRef(this);
     }
 
+    // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
-        while(size() > x.size()) pop_back();
+        while(mSize > x.mSize) pop_back();
+        Node* curNodes = mNodes;
         Node* otherNodes = x.mNodes;
-        for(Node* curNodes = mNodes; curNodes != 0; curNodes = curNodes->next){
+        while (curNodes){
             Set(curNodes, otherNodes->obj);
+            curNodes = curNodes->next;
             otherNodes = otherNodes->next;
         }
         for(; otherNodes != 0; otherNodes = otherNodes->next){
@@ -326,6 +345,7 @@ public:
     }
 
     // fn_8056349C in retail
+    // seems to be okay - shows as 100% in EventTrigger
     bool Load(BinStream& bs, bool b);
 
 };

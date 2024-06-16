@@ -42,6 +42,13 @@
         dummy->func;                                                           \
     }
 
+// Force referenced functions using templates
+#define DECOMP_FORCEFUNC_TEMPL(module, cls, func, ...)                         \
+    void CONCAT(FORCEFUNC##module, __LINE__) (cls<__VA_ARGS__>* dummy);        \
+    void CONCAT(FORCEFUNC##module, __LINE__) (cls<__VA_ARGS__>* dummy) {       \
+        dummy->func;                                                           \
+    }
+
 // Force referenced destructor
 #define DECOMP_FORCEDTOR(module, cls) DECOMP_FORCEFUNC(module, cls, ~cls())
 

@@ -68,6 +68,8 @@ public:
     virtual void Enter();
     virtual void SetName(const char*, class ObjectDir*);
 
+    void SimulateInternal(float);
+
     DECLARE_REVS;
 
     float mStiffness;

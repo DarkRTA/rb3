@@ -53,6 +53,7 @@ public:
     Loader* ForceGetLoader(const FilePath&);
     inline bool EditMode() const { return mEditMode; }
     inline Platform GetPlatform() const { return (Platform)mPlatform; }
+    int AsyncUnload() const { return unk58; }
 
     static const char* LoaderPosString(LoaderPos, bool);
 
@@ -63,7 +64,7 @@ public:
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories;
     float unk18; // mPeriod?
     float unk1c;
-    std::list<int> unk20; // mLoading?
+    std::list<Loader*> unk20; // mLoading?
     Timer mTimer;
     int unk58;
     int unk5c;
@@ -91,6 +92,10 @@ public:
     bool mWarn;
     int mFlags;
     class String mFilename;
+
+    int unk1;
+    int unk2;
+    void (FileLoader::*mState)();
 };
 
 #endif

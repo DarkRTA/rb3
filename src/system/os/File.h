@@ -68,6 +68,8 @@ const char* FileRoot();
 const char* FileExecRoot();
 const char* FileSystemRoot();
 
+void FileQualifiedFilename(String&, const char*);
+
 extern "C" void FileNormalizePath(const char*);
 extern "C" const char* FileMakePath(const char* root, const char* file, char*);
 extern "C" const char* FileRelativePath(const char* root, const char* filepath);

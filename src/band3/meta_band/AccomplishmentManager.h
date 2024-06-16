@@ -39,5 +39,5 @@ public:
     void AddAssetAward(Symbol, Symbol);
 };
 
-extern AccomplishmentManager TheAccomplishmentMgr;
+extern AccomplishmentManager* TheAccomplishmentMgr;
 #endif // METABAND_ACCOMPLISHMENTMANAGER_H

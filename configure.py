@@ -133,7 +133,7 @@ if args.no_asm:
 # Tool versions
 config.binutils_tag = "2.41-1"
 config.compilers_tag = "20231018"
-config.dtk_tag = "v0.8.2"
+config.dtk_tag = "v0.9.1"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
@@ -178,6 +178,8 @@ base_flags = get_flags("base")
 base_flags.append(f"-d VERSION_{config.version}")
 if config.debug:
     base_flags.append("-sym dwarf-2,full")
+    # Causes code generation memes, use only in desperation
+    # base_flags.append("-pragma \"debuginline on\"")
 
 # Apply cflag inheritance
 def apply_base_flags(key: str):

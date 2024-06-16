@@ -25,12 +25,12 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
     
-    ObjPtr<RndTransformable, ObjectDir> mDest;
-    float mScale;
-    ObjPtrList<RndTransformable, ObjectDir> mSecondaryTargets;
-    float mBottomHeight;
-    float mTopHeight;
-    bool mAutoWeight;
+    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x20
+    float mScale; // 0x2c
+    ObjPtrList<RndTransformable, ObjectDir> mSecondaryTargets; // 0x30
+    float mBottomHeight; // 0x40
+    float mTopHeight; // 0x44
+    bool mAutoWeight; // 0x48
 };
 
 #endif

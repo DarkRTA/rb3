@@ -121,6 +121,9 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
     SyncBitmap();
 }
 
+inline void RndTex::PresyncBitmap() {}
+inline void RndTex::SyncBitmap() {}
+
 void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
     PresyncBitmap();
     mWidth = bmap.Width();
@@ -527,3 +530,8 @@ BEGIN_PROPSYNCS(RndTex)
     SYNC_PROP_MODIFY_ALT(file_path, mFilepath, SetBitmap(mFilepath))
 END_PROPSYNCS
 #pragma pop
+
+DECOMP_FORCEFUNC(Tex, RndTex, Select)
+DECOMP_FORCEFUNC(Tex, RndTex, TexelsPitch)
+DECOMP_FORCEFUNC(Tex, RndTex, TexelsUnlock)
+DECOMP_FORCEFUNC(Tex, RndTex, TexelsLock)

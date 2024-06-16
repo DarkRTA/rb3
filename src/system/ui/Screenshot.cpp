@@ -40,10 +40,10 @@ void Screenshot::Sync(){
         mTex = Hmx::Object::New<RndTex>();
         mTex->SetBitmap(mTexPath);
         mMat = Hmx::Object::New<RndMat>();
-        mMat->unkb0p1 = 0;
-        mMat->unkb4p1 |= 2;
+        mMat->mZMode = (ZMode)0;
+        mMat->mDirty |= 2;
         mMat->mDiffuseTex = mTex;
-        mMat->unkb4p1 |= 2;
+        mMat->mDirty |= 2;
     }
 }
 

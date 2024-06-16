@@ -6,9 +6,6 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 INIT_REVS(UIComponent)
 int UIComponent::sSelectFrames = 0;
@@ -26,7 +23,7 @@ UIComponent::State SymToUIComponentState(Symbol s) {
     return UIComponent::kNumStates;
 }
 
-UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mMesh(NULL),
+UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mResource(NULL),
     mResourceName(), mObjDir(NULL), a(0), mState(kNormal), c(0), d(0) { }
 
 
@@ -68,7 +65,7 @@ void UIComponent::SetTypeDef(DataArray* da) {
             }
         }
     }
-    if(mTypeDef != da){
+    if(TypeDef() != da){
         Hmx::Object::SetTypeDef(da);
         UpdateResource();
     }
@@ -106,8 +103,8 @@ void UIComponent::PreLoad(BinStream& bs) {
 }
 
 void UIComponent::PostLoad(BinStream& bs) {
-    if (mMesh) {
-        mMesh->PostLoad();
+    if (mResource) {
+        mResource->PostLoad();
     }
 }
 
@@ -131,13 +128,13 @@ void UIComponent::Poll() {
     FinishSelecting();
 }
 
-class ObjectDir* UIComponent::ResourceDir() {
-    if (mObjDir.mDir) return mObjDir.mDir;
-    if (mMesh) {
-        return mMesh->mDir.mDir;
-    }
-    return NULL;
-}
+// class ObjectDir* UIComponent::ResourceDir() {
+//     if (mObjDir.mDir) return mObjDir.mDir;
+//     if (mMesh) {
+//         return mMesh->mDir.mDir;
+//     }
+//     return NULL;
+// }
 
 void UIComponent::ResourceFileUpdated(bool) {
 
@@ -150,8 +147,8 @@ DataNode UIComponent::OnGetResourcesPath(DataArray* da) {
 BEGIN_HANDLERS(UIComponent)
     HANDLE_EXPR(get_state, mState)
     HANDLE_ACTION(set_state, SetState((UIComponent::State)_msg->Int(2)))
-    HANDLE_ACTION(can_have_focus, CanHaveFocus())
-    HANDLE_ACTION(get_resource_dir, ResourceDir())
+    HANDLE_EXPR(can_have_focus, CanHaveFocus())
+    HANDLE_EXPR(get_resource_dir, ResourceDir())
     HANDLE(get_resources_path, OnGetResourcesPath)
     HANDLE_SUPERCLASS(RndTransformable)
     HANDLE_SUPERCLASS(RndDrawable)
@@ -170,6 +167,6 @@ BEGIN_PROPSYNCS(UIComponent)
         }
         return false;
     }
-    if (RndDrawable::SyncProperty(_val, _prop, _i, _op)) return true;
+    SYNC_SUPERCLASS(RndDrawable)
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS

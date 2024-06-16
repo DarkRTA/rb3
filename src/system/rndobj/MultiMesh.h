@@ -1,17 +1,23 @@
 #ifndef RNDOBJ_MULTIMESH_H
 #define RNDOBJ_MULTIMESH_H
+#include "math/Mtx.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Mesh.h"
+#include "utl/BinStream.h"
+#include "utl/TextStream.h"
 #include <list>
-#include "math/Mtx.h"
+#include <utility>
 
 class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {
         Instance();
         Instance(Transform t) : mXfm(t) {}
+        void LoadRev(BinStream&, int);
+        void Load(BinStream&);
         Transform mXfm;
     };
     RndMultiMesh();
@@ -57,13 +63,19 @@ public:
     std::list<RndMultiMesh::Instance> mInstances; // 0x2C
 
     static void Terminate();
+    static std::list<std::pair<class RndMultiMeshProxy*, int> > sProxyPool;
 
-    NEW_OVERLOAD;
-    DELETE_OVERLOAD;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    DECLARE_REVS
     NEW_OBJ(RndMultiMesh)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndMultiMesh)
     }
 };
+
+inline BinStream& operator>>(BinStream& bs, RndMultiMesh::Instance& i) { i.Load(bs); }
+
+TextStream& operator<<(TextStream& ts, const RndMultiMesh::Instance& i);
 
 #endif

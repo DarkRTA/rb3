@@ -27,7 +27,7 @@ public:
     virtual void SetPanImpl(float) = 0;
     virtual void SetSpeedImpl(float) = 0;
     virtual void SetSendImpl(FxSend*){}
-    virtual float SetReverbMixDbImpl(float f){ return f; }
+    virtual void SetReverbMixDbImpl(float f){}
     virtual void SetReverbEnableImpl(bool){}
     
     void Start();

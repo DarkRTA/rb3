@@ -4,6 +4,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Group.h"
 #include "obj/ObjVersion.h"
+#include "decomp.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UILabelDir)
@@ -25,11 +26,12 @@ void UILabelDir::GetStateColor(UIComponent::State state, Hmx::Color& col) const 
     else if(mDefaultColor){
         col = mDefaultColor->GetColor();
     }
-    else col = Hmx::Color(1.0f, 1.0f, 1.0f, 1.0f);
+    else col.Set(1.0f);
 }
 
 RndText* UILabelDir::TextObj(Symbol sym) const {
-    return (mGennedFonts.size() > 0) ? (RndText*)mTextObj : GetGennedText(sym);
+    if (mGennedFonts.size() > 0) return GetGennedText(sym);
+    else return mTextObj;
 }
 
 RndAnimatable* UILabelDir::FocusAnim() const { return mFocusAnim; }
@@ -46,6 +48,8 @@ void UILabelDir::SetColor(UIComponent::State state, UIColor* color){
 }
 
 SAVE_OBJ(UILabelDir, 0x9C)
+
+DECOMP_FORCEACTIVE(UILabelDir, "ObjPtr_p.h", "f.Owner()", "")
 
 void UILabelDir::SyncObjects(){
     RndDir::SyncObjects();
@@ -66,10 +70,10 @@ void UILabelDir::PreLoad(BinStream& bs){
 void UILabelDir::PostLoad(BinStream& bs){
     RndDir::PostLoad(bs);
     int revs = PopRev(this);
-    gAltRev = getAltRev(revs);
     gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
     bs >> mTextObj;
-    if(gRev - 3 <= 5U){
+    if(gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8){
         ObjPtr<RndFont, ObjectDir> oPtr(this, 0);
         bs >> oPtr;
     }
@@ -97,7 +101,7 @@ void UILabelDir::PostLoad(BinStream& bs){
         bs >> uiCol;
         mColors[i] = uiCol;
     }
-    if(gRev > 7){
+    if(gRev >= 8){
         UIFontImporter::Load(bs);
     }
 }

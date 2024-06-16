@@ -10,9 +10,10 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
 #include "ui/UIResource.h"
+#include "obj/Msg.h"
+// #include "os/Joypad.h"
 #include "utl/FilePath.h"
 #include <vector>
-
 
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
@@ -62,21 +63,22 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     DataNode OnGetResourcesPath(DataArray*);
     class ObjectDir* ResourceDir();
     void UpdateResource();
+    void UpdateMeshes(State);
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    ObjPtr<UIComponent, class ObjectDir> mNavRight;
-    ObjPtr<UIComponent, class ObjectDir> mNavDown;
+    ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
+    ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
     int test1; // 0xD0
     int unk_0xD4; // 0xD4
-    UIResource* mMesh; // 0xD8
+    UIResource* mResource; // 0xD8
     std::vector<int> unk_0xDC; // 0xDC
     class String mResourceName; // 0xE4
     ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
     class String mResourcePath; // 0xFC
     bool a; // 0x108
-    char mState; // 0x109
+    unsigned char mState; // 0x109
     bool c, d; // 0x10A, 0x10B
 
     NEW_OBJ(UIComponent)
@@ -84,6 +86,14 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     static int sSelectFrames;
     DECLARE_REVS
 };
+
+
+BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*); // LocalUser*, JoypadButton, JoypadAction, int
+
+END_MESSAGE;
+
+inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
+    Message(Type(), DataNode(comp), DataNode(user)){ }
 
 Symbol UIComponentStateToSym(UIComponent::State);
 UIComponent::State SymToUIComponentState(Symbol);

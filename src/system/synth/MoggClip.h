@@ -13,8 +13,8 @@ public:
 
     struct PanInfo {
         PanInfo(int, float);
-        int unk0; // channel
-        float unk4; // panning
+        int channel;
+        float panning;
     };
 
     MoggClip();
@@ -48,6 +48,9 @@ public:
     void SetFile(const char*);
     void SetControllerVolume(float);
     void SetupPanInfo(float, float, bool);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     FilePath mFilePath;
     float mVolume;

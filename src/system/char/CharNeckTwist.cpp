@@ -8,6 +8,12 @@ CharNeckTwist::CharNeckTwist() : mTwist(this, 0), mHead(this, 0) {
 
 }
 
+void CharNeckTwist::Poll() {
+    if (mTwist || mHead) return; else {
+        
+    }
+}
+
 void CharNeckTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mHead);
     change.push_back(mTwist);

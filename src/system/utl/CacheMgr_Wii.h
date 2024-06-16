@@ -6,15 +6,17 @@
 class CacheMgrWii : public CacheMgr {
 public:
     CacheMgrWii();
-private:
-    void CreateVFCache();
     virtual ~CacheMgrWii();
-    void Poll();
-    bool SearchAsync(const char*, CacheID**);
-    bool CreateCacheID(const char*, const char*, const char*, const char*, const char*, int, CacheID**);
-    void MountAsync(CacheID*, Cache**, Hmx::Object*);
-    void UnmountAsync(Cache**, Hmx::Object*);
-    void DeleteAsync(CacheID*);
+    virtual void Poll();
+    virtual bool SearchAsync(const char*, CacheID**);
+    virtual bool ShowUserSelectUIAsync(LocalUser*, unsigned long long, const char*, const char*, CacheID**);
+    virtual bool CreateCacheIDFromDeviceID(unsigned int, const char*, const char*, CacheID**);
+    virtual bool CreateCacheID(const char*, const char*, const char*, const char*, const char*, int, CacheID**);
+    virtual bool MountAsync(CacheID*, Cache*, Hmx::Object*);
+    virtual bool UnmountAsync(Cache**, Hmx::Object*);
+    virtual bool DeleteAsync(CacheID*);
+
+    void CreateVFCache();
     void PollSearch();
     void EndSearch(CacheResult);
     void PollMount();

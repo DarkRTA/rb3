@@ -1,6 +1,7 @@
 #include "rndobj/Set.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
+#include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndSet)
@@ -20,10 +21,10 @@ bool RndSet::AllowedObject(Hmx::Object* o){
 }
 
 void RndSet::SetTypeDef(DataArray* arr){
-    if(mTypeDef != arr){
+    if(TypeDef() != arr){
         Hmx::Object::SetTypeDef(arr);
         if(arr){
-            DataArray* cfg = mTypeDef->FindArray("editor", true);
+            DataArray* cfg = TypeDef()->FindArray("editor", true);
             mProps.resize(cfg->Size() - 1);
             for(int i = 1; i < cfg->Size(); i++){
                 const DataArray* thisArr = cfg->Array(i);
@@ -71,6 +72,19 @@ BEGIN_HANDLERS(RndSet)
     }
     HANDLE_CHECK(0x8C)
 END_HANDLERS
+
+DataNode RndSet::OnAllowedObjects(DataArray* da){
+    std::list<Hmx::Object*> objList;
+    for(ObjDirItr<Hmx::Object> it(Dir(), true); it != 0; ++it){
+        if(AllowedObject(it)) objList.push_back(it);
+    }
+    DataArrayPtr ptr(new DataArray(objList.size()));
+    int count = 0;
+    for(std::list<Hmx::Object*>::iterator it = objList.begin(); it != objList.end(); it++){
+        ptr.Node(count++) = DataNode(*it);
+    }
+    return DataNode(ptr);
+}
 
 #pragma push
 #pragma pool_data off
