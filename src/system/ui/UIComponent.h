@@ -68,8 +68,8 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    ObjPtr<UIComponent, class ObjectDir> mNavRight;
-    ObjPtr<UIComponent, class ObjectDir> mNavDown;
+    ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
+    ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
     int test1; // 0xD0
     int unk_0xD4; // 0xD4
     UIResource* mResource; // 0xD8

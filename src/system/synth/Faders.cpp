@@ -72,12 +72,17 @@ void Fader::CancelFade(){
     }
 }
 
+typedef void(FaderGroup::*FaderGroupFunc)(void);
+
 void Fader::UpdateValue(float val){
     mVal = val;
-    //void (*ptmf)(void) = FaderGroup::SetDirty;
+
+    FaderGroupFunc funcs[2];
+    funcs[0] = funcs[1] = FaderGroup::ClearDirty;
     std::set<FaderGroup*>::iterator it = mClients.begin();
+
     for (;it != mClients.end(); it++) {
-        (*it)->SetDirty();
+        ((*it)->*funcs[1])();
     }
 }
 

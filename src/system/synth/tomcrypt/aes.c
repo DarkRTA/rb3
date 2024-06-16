@@ -19,9 +19,11 @@
 
 #ifdef RIJNDAEL
 
+char e[9] = {'r','i','j','n','d','a','e','l',0};
+
 const struct _cipher_descriptor rijndael_desc =
 {
-    "rijndael",
+    e,
     6,
     16, 32, 16, 10,
     &rijndael_setup,

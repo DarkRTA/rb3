@@ -34,8 +34,49 @@ int ctr_start(int cipher, const unsigned char *count, const unsigned char *key, 
    return CRYPT_OK;
 }
 
-int ctr_encrypt_fast(const unsigned char*, unsigned char*, unsigned long len, symmetric_CTR* ctr){
-   return 0;
+int ctr_reinit(int cipher, unsigned char* r4, symmetric_CTR* ctr) {
+   if (cipher_is_valid(cipher)) return 1;
+   else {
+      ctr->padlen = 0;
+      memcpy(ctr->ctr, r4, ctr->blocklen);
+      cipher_descriptor[ctr->cipher].ecb_encrypt(ctr->ctr, ctr->pad, &ctr->key);
+      return 0;
+   }
+}
+
+int ctr_encrypt_fast(const unsigned char* src, unsigned char* dst, unsigned long len, symmetric_CTR* ctr){
+    unsigned long tmp;
+    
+    while (len != 0) {
+        int i = 0;
+        while (i < ctr->blocklen) {
+            ctr[0].ctr[i]++;
+            if (ctr[0].ctr[i] != 0) break;
+            i++;
+        }
+        
+        cipher_descriptor[ctr->cipher].ecb_encrypt(ctr->ctr, ctr->pad, &ctr->key);
+        // len -= 16;
+        for (i = 0; i < 4; i++, len -= 4) {
+            tmp = *(unsigned long*)src;
+            tmp ^= *(unsigned long*)(ctr->pad + i * 4);
+            *(unsigned long*)dst = tmp;
+            src += 4;
+            dst += 4;
+        }
+        // tmp = *(unsigned long*)(src + 4);
+        // tmp ^= *(unsigned long*)(ctr->pad + 4);
+        // *(unsigned long*)(dst + 4) = tmp;
+        // tmp = *(unsigned long*)(src + 8);
+        // tmp ^= *(unsigned long*)(ctr->pad + 8);
+        // *(unsigned long*)(dst + 8) = tmp;
+        // tmp = *(unsigned long*)(src + 0xC);
+        // tmp ^= *(unsigned long*)(ctr->pad + 0xC);
+        // *(unsigned long*)(dst + 0xC) = tmp;
+        // src += 16;
+        // dst += 16;
+    }
+    return 0;
 }
 
 int ctr_encrypt(const unsigned char *pt, unsigned char *ct, unsigned long len, symmetric_CTR *ctr)
