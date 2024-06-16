@@ -11,14 +11,14 @@
 SfxInst::SfxInst(Sfx* sfx) : SeqInst(sfx), mMoggClips(this, kObjListNoNull), mStartProgress(0.0f) {
     for(ObjVector<SfxMap>::iterator it = sfx->mMaps.begin(); it != sfx->mMaps.end(); it++){
         SampleInst* inst = 0;
-        SynthSample* smp = (*it).mSynthPtr;
+        SynthSample* smp = (*it).mSample;
         if(smp) inst = smp->NewInst();
         if(inst){
-            inst->SetBankVolume((*it).unkc + mRandVol);
-            inst->SetBankPan((*it).unk10 + mRandPan);
-            inst->SetBankSpeed(CalcSpeedFromTranspose((*it).unk14 + mRandTp));
-            inst->SetFXCore((FXCore)(*it).unk18);
-            inst->SetADSR((*it).adsr);
+            inst->SetBankVolume((*it).mVolume + mRandVol);
+            inst->SetBankPan((*it).mPan + mRandPan);
+            inst->SetBankSpeed(CalcSpeedFromTranspose((*it).mTranspose + mRandTp));
+            inst->SetFXCore((*it).mFXCore);
+            inst->SetADSR((*it).mADSR);
             inst->SetSend(sfx->mSend);
             inst->SetReverbMixDb(sfx->mReverbMixDb);
             inst->SetReverbEnable(sfx->mReverbEnable);
@@ -178,10 +178,10 @@ BEGIN_CUSTOM_PROPSYNC(ADSR)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(SfxMap)
-    SYNC_PROP(sample, o.mSynthPtr)
-    SYNC_PROP(volume, o.unkc)
-    SYNC_PROP(pan, o.unk10)
-    SYNC_PROP(transpose, o.unk14)
-    SYNC_PROP(fx_core, o.unk18)
-    SYNC_PROP(adsr, o.adsr)
+    SYNC_PROP(sample, o.mSample)
+    SYNC_PROP(volume, o.mVolume)
+    SYNC_PROP(pan, o.mPan)
+    SYNC_PROP(transpose, o.mTranspose)
+    SYNC_PROP(fx_core, (int&)o.mFXCore)
+    SYNC_PROP(adsr, o.mADSR)
 END_CUSTOM_PROPSYNC
