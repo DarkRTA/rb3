@@ -401,7 +401,7 @@
             },
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": {
-                "status": "LinkIssues",
+                "status": "Matching",
                 "comment": "The strings for SetType should be moved down in .data"
             },
             "system/rndobj/TexRenderer.cpp": "NonMatching",
