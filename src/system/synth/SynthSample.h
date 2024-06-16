@@ -27,6 +27,11 @@ public:
     virtual float LengthMs() const;
     virtual void Sync(SyncType);
 
+    static void* SampleAlloc(int, const char*);
+    static void SampleFree(void*);
+    static void Init();
+    NEW_OBJ(SynthSample);
+
     int GetSampleRate() const;
     SampleData::Format GetFormat() const;
     bool GetIsLooped() const;

@@ -6,6 +6,17 @@
 
 INIT_REVS(SynthSample)
 
+void* SynthSample::SampleAlloc(int i, const char*){
+    return _MemAlloc(i, 0x20);
+}
+
+void SynthSample::SampleFree(void* v){ _MemFree(v); }
+
+void SynthSample::Init(){
+    REGISTER_OBJ_FACTORY(SynthSample)
+    SampleData::SetAllocator(SampleAlloc, SampleFree);
+}
+
 SynthSample::SynthSample() : mIsLooped(0), mLoopStartSamp(0), mLoopEndSamp(-1), mFileLoader(0) {
 
 }
@@ -36,10 +47,9 @@ void SynthSample::Sync(SynthSample::SyncType ty){
             FileLoader* fl = dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(mFile));
             void* buf;
             int size;
-            if(fl){
-                buf = (void*)fl->GetBuffer(&size);
-                delete fl;
-            }
+            if(fl) buf = (void*)fl->GetBuffer(&size);
+            else buf = 0;
+            delete fl;
             if(buf){
                 BufStream bufs(buf, size, true);
                 if(TheLoadMgr.GetPlatform() == kPlatformPC){
@@ -137,3 +147,5 @@ END_PROPSYNCS
 int SynthSample::GetPlatformSize(Platform plat){
     return mSampleData.SizeAs(SampleData::kPCM);
 }
+
+DECOMP_FORCEACTIVE(SynthSample, "%i kB", "%i blocks")

@@ -1,6 +1,8 @@
 #ifndef SYNTH_SAMPLEDATA_H
 #define SYNTH_SAMPLEDATA_H
 #include "utl/Str.h"
+#include "utl/BinStream.h"
+#include "utl/FilePath.h"
 #include <vector>
 
 struct SampleMarker {
@@ -28,22 +30,23 @@ public:
     SampleData();
     ~SampleData();
     void Reset();
-    void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
     void Load(BinStream&, const FilePath&);
     void LoadWAV(BinStream&, const FilePath&);
-    int NumMarkers() const;
-    SampleMarker& GetMarker(int) const;
     int SizeAs(Format) const;
+    int NumMarkers() const;
+    const SampleMarker& GetMarker(int) const;
+
+    static void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
 
     static SampleDataAllocFunc sAlloc;
     static SampleDataFreeFunc sFree;
     
-    int mNumSamples;
-    int mSampleRate;
-    int mSizeBytes;
-    Format mFormat;
-    void* mData;
-    std::vector<SampleMarker> mMarkers;
+    int mNumSamples; // 0x0
+    int mSampleRate; // 0x4
+    int mSizeBytes; // 0x8
+    Format mFormat; // 0xc
+    void* mData; // 0x10
+    std::vector<SampleMarker> mMarkers; // 0x14
 };
 
 #endif
