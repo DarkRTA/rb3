@@ -45,10 +45,10 @@ void SfxInst::StartImpl(){
     for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
         MoggClipMap* moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x53);
-        MoggClip* clp = moggClipMap->mClipPtr;
+        MoggClip* clp = moggClipMap->mMoggClip;
         if(clp){
-            clp->SetVolume(moggClipMap->unk30);
-            clp->SetupPanInfo(moggClipMap->unk28, moggClipMap->unk2c, moggClipMap->unk34);
+            clp->SetVolume(moggClipMap->mVolume);
+            clp->SetupPanInfo(moggClipMap->mPan, moggClipMap->mPanWidth, moggClipMap->mIsStereo);
             clp->Play();
         }
     }
@@ -61,7 +61,7 @@ void SfxInst::Stop(){
     for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
         MoggClipMap* moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x68);
-        MoggClip* clp = moggClipMap->mClipPtr;
+        MoggClip* clp = moggClipMap->mMoggClip;
         if(clp) clp->Stop();
     }
 }
@@ -73,7 +73,7 @@ bool SfxInst::IsRunning(){
     for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
         MoggClipMap* moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x7F);
-        MoggClip* clp = moggClipMap->mClipPtr;
+        MoggClip* clp = moggClipMap->mMoggClip;
         if(clp){
             if(clp->mStream) return true;
         }
@@ -88,7 +88,7 @@ void SfxInst::Pause(bool b){
     for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
         MoggClipMap* moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x95);
-        MoggClip* clp = moggClipMap->mClipPtr;
+        MoggClip* clp = moggClipMap->mMoggClip;
         if(clp) clp->Pause(b);
     }
 }
@@ -128,7 +128,7 @@ void SfxInst::UpdateVolume(){
     for(ObjPtrList<MoggClipMap, ObjectDir>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
         MoggClipMap* moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0xCB);
-        MoggClip* clp = moggClipMap->mClipPtr;
+        MoggClip* clp = moggClipMap->mMoggClip;
         if(clp) clp->SetControllerVolume(mRandVol + mVolume + mOwner->mFaders.GetVal());
     }
 }
@@ -187,9 +187,9 @@ BEGIN_CUSTOM_PROPSYNC(SfxMap)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(MoggClipMap)
-    SYNC_PROP(moggclip, o.mClipPtr)
-    SYNC_PROP(volume, o.unk30)
-    SYNC_PROP(pan, o.unk28)
-    SYNC_PROP(pan_width, o.unk2c)
-    SYNC_PROP(is_stereo, o.unk34)
+    SYNC_PROP(moggclip, o.mMoggClip)
+    SYNC_PROP(volume, o.mVolume)
+    SYNC_PROP(pan, o.mPan)
+    SYNC_PROP(pan_width, o.mPanWidth)
+    SYNC_PROP(is_stereo, o.mIsStereo)
 END_CUSTOM_PROPSYNC

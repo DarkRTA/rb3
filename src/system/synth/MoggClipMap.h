@@ -12,11 +12,11 @@ public:
 
     static int sRev;
 
-    ObjPtr<MoggClip, ObjectDir> mClipPtr;
-    float unk28; // something to do with panning
-    float unk2c; // something else to do with panning
-    float unk30; // volume?
-    bool unk34; // dual channel?
+    ObjPtr<MoggClip, ObjectDir> mMoggClip;
+    float mPan;
+    float mPanWidth;
+    float mVolume;
+    bool mIsStereo;
 };
 
 BinStream& operator>>(BinStream&, MoggClipMap&);
