@@ -494,7 +494,7 @@
             "system/utl/BufStream.cpp": "Matching",
             "system/utl/Cache.cpp": "Matching",
             "system/utl/Cache_Wii.cpp": "NonMatching",
-            "system/utl/CacheMgr.cpp": "NonMatching",
+            "system/utl/CacheMgr.cpp": "Matching",
             "system/utl/CacheMgr_Wii.cpp": "NonMatching",
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/ChunkIDs.cpp": "Matching",
