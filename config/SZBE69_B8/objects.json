@@ -344,7 +344,10 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": "LinkIssues",
+            "system/os/VirtualKeyboard.cpp": {
+                "status": "LinkIssues",
+                "comment": "Something involving the placement of gKeyboardFontFile"
+            },            
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
