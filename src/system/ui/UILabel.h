@@ -52,6 +52,7 @@ public:
     DELETE_OVERLOAD
 
     const char* GetDefaultText() const;
+    int InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3&, Vector3&);
     void Terminate();
     void LabelUpdate(bool, bool);
     void AdjustHeight(bool);
@@ -62,6 +63,7 @@ public:
     RndText* TextObj();
     void SetColorOverride(UIColor*);
     float GetDrawWidth();
+    float GetDrawHeight();
     float Alpha(){ return mAlpha; }
     float AltAlpha(){ return mAltAlpha; }
     void SetAlpha(float f){ mAlpha = f; }

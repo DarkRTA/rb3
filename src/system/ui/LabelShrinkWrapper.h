@@ -23,6 +23,10 @@ public:
     virtual void Poll();
     virtual void Update();
 
+    void UpdateAndDrawWrapper();
+    void SetShouldShow(bool);
+    void SetLabel(UILabel*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -31,12 +35,12 @@ public:
 
     static void Register(){ REGISTER_OBJ_FACTORY(LabelShrinkWrapper); }
 
-    ObjPtr<UILabel, ObjectDir> mLabel; // 0x10c
-    bool mShow; // 0x118
-    int unk11c; // 0x11c
-    int unk120; // 0x120
-    int unk124; // 0x124
-    int unk128; // 0x128
+    ObjPtr<UILabel, ObjectDir> m_pLabel; // 0x10c
+    bool m_pShow; // 0x118
+    RndMesh* m_pTopLeftBone; // 0x11c
+    RndMesh* m_pTopRightBone; // 0x120
+    RndMesh* m_pBottomLeftBone; // 0x124
+    RndMesh* m_pBottomRightBone; // 0x128
 };
 
 #endif
