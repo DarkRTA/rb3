@@ -17,6 +17,8 @@ public:
     virtual void SetTranspose(float);
     virtual void StartImpl();
 
+    void SetSend(FxSend*);
+
     void Pause(bool);
 
     NEW_POOL_OVERLOAD(SfxInst);
