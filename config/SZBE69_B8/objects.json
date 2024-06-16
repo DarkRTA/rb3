@@ -453,6 +453,7 @@
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
+            "system/ui/LabelNumberTicker.cpp": "NonMatching",
             "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
             "system/ui/LocalePanel.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
@@ -490,6 +491,7 @@
             "system/ui/UISlider.cpp": "Matching",
             "system/ui/UITransitionHandler.cpp": "Matching",
             "system/ui/UITrigger.cpp": "NonMatching",
+            "system/ui/Utl.cpp": "NonMatching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
