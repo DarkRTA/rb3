@@ -193,3 +193,77 @@ BEGIN_CUSTOM_PROPSYNC(MoggClipMap)
     SYNC_PROP(pan_width, o.mPanWidth)
     SYNC_PROP(is_stereo, o.mIsStereo)
 END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(Sfx)
+    SYNC_PROP(sfxmaps, mMaps)
+    SYNC_PROP(moggclip_maps, mMoggClipMaps)
+    SYNC_PROP_SET(send, (Hmx::Object*)mSend, SetSend(_val.Obj<FxSend>(0)))
+    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float(0)))
+    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int(0)))
+    SYNC_PROP(faders, mFaders)
+    SYNC_SUPERCLASS(Sequence)
+END_PROPSYNCS
+
+SAVE_OBJ(Sfx, 0x17C)
+
+BEGIN_LOADS(Sfx)
+    int rev;
+    bs >> rev;
+    if(rev > 0xC) MILO_WARN("Can't load new Sfx");
+    else {
+        if(rev >= 6) LOAD_SUPERCLASS(Sequence)
+        else if(rev >= 2) LOAD_SUPERCLASS(Hmx::Object)
+        SfxMap::gRev = rev;
+        bs >> mMaps;
+        if(rev >= 10){
+            MoggClipMap::sRev = rev;
+            bs >> mMoggClipMaps;
+        }
+        if(rev > 4){
+            bs >> mSend;
+            if(rev <= 7){
+                int i;
+                bs >> i;
+            }
+        }
+        if(rev >= 9) mFaders.Load(bs);
+        if(rev >= 0xC){
+            bs >> mReverbMixDb >> mReverbEnable;
+        }
+    }
+END_LOADS
+
+BEGIN_COPYS(Sfx)
+    COPY_SUPERCLASS(Sequence)
+    CREATE_COPY(Sfx)
+    BEGIN_COPYING_MEMBERS
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mMaps)
+            COPY_MEMBER(mMoggClipMaps)
+        }
+        COPY_MEMBER(mSend)
+        COPY_MEMBER(mReverbMixDb)
+        COPY_MEMBER(mReverbEnable)
+    END_COPYING_MEMBERS
+END_COPYS
+
+void Sfx::SetSend(FxSend* send){
+    mSend = send;
+    for(ObjPtrList<SfxInst, ObjectDir>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+        (*it)->SetSend(mSend);
+    }
+}
+
+void Sfx::SetReverbMixDb(float f){
+    mReverbMixDb = f;
+    for(ObjPtrList<SfxInst, ObjectDir>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+        (*it)->SetReverbMixDb(mReverbMixDb);
+    }
+}
+
+void Sfx::SetReverbEnable(bool b){
+    mReverbEnable = b;
+    for(ObjPtrList<SfxInst, ObjectDir>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+        (*it)->SetReverbEnable(mReverbEnable);
+    }
+}
