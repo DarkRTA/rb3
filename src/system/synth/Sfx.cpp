@@ -185,3 +185,11 @@ BEGIN_CUSTOM_PROPSYNC(SfxMap)
     SYNC_PROP(fx_core, (int&)o.mFXCore)
     SYNC_PROP(adsr, o.mADSR)
 END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(MoggClipMap)
+    SYNC_PROP(moggclip, o.mClipPtr)
+    SYNC_PROP(volume, o.unk30)
+    SYNC_PROP(pan, o.unk28)
+    SYNC_PROP(pan_width, o.unk2c)
+    SYNC_PROP(is_stereo, o.unk34)
+END_CUSTOM_PROPSYNC
