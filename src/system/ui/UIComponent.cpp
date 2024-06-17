@@ -97,6 +97,16 @@ void UIComponent::ResourceCopy(const UIComponent* c){
     Update();
 }
 
+void UIComponent::CopyMembers(const UIComponent* c, Hmx::Object::CopyType ty){
+    RndTransformable::Copy(c, ty);
+    RndDrawable::Copy(c, ty);
+    mNavRight = c->mNavRight;
+    mNavDown = c->mNavDown;
+    mResourceName = c->mResourceName;
+    mResourceDir = c->mResourceDir;
+    mResourcePath = c->mResourcePath;
+}
+
 SAVE_OBJ(UIComponent, 182)
 
 void UIComponent::Load(BinStream& bs) {PreLoad(bs); PostLoad(bs);}
