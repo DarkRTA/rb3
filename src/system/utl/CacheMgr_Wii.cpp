@@ -90,9 +90,9 @@ bool CacheMgrWii::CreateCacheID(const char* param_1, const char* param_2, const 
     }
 }
 
-void CacheMgrWii::MountAsync(CacheID*, Cache**, Hmx::Object*) {}
-void CacheMgrWii::UnmountAsync(Cache**, Hmx::Object*) {}
-void CacheMgrWii::DeleteAsync(CacheID*) {}
+bool CacheMgrWii::MountAsync(CacheID*, Cache*, Hmx::Object*) {}
+bool CacheMgrWii::UnmountAsync(Cache**, Hmx::Object*) {}
+bool CacheMgrWii::DeleteAsync(CacheID*) {}
 void CacheMgrWii::PollSearch() {}
 void CacheMgrWii::EndSearch(CacheResult) {}
 

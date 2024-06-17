@@ -338,6 +338,7 @@
             "system/os/System.cpp": "NonMatching",
             "system/os/System_Wii.cpp": "Matching",
             "system/os/Timer.cpp": "NonMatching",
+            "system/os/ThreadCall_Wii.cpp": "NonMatching",
             "system/os/UsbMidiGuitar.cpp": "NonMatching",
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
             "system/os/UsbMidiKeyboard.cpp": "NonMatching",

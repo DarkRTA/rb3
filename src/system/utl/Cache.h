@@ -35,7 +35,7 @@ enum CacheResourceResult {
     kCacheSuccessful = -1
 };
 
-struct CacheDirEntry;
+struct CacheDirEntry {};
 
 class CacheID {
 public:
@@ -66,8 +66,8 @@ public:
     bool IsDone();
     CacheResult GetLastResult();
 
-    OpType mOpCur;
-    CacheResult mLastResult;
+    OpType mOpCur;            // 0x04
+    CacheResult mLastResult;  // 0x08
 };
 
 #endif

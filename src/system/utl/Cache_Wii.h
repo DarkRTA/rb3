@@ -10,45 +10,58 @@ class CacheIDWii {
 public: 
     CacheIDWii();
     virtual ~CacheIDWii();
-    const char* GetCachePath(const char*);
-    const char* GetCacheSearchPath(const char*);
-    String unk1;  // 0x04
-    String unk2;  // 0x10 
-    String unk3;  // 0x1c
-    int unk4;     // 0x28??
+    virtual const char* GetCachePath(const char*);
+    virtual const char* GetCacheSearchPath(const char*);
+    String mStrCacheName;  // 0x04
+    String m0x10;  // 0x10 
+    String m0x1c;  // 0x1c
+    int m0x28;     // 0x28
 };
 
 class CacheWii : public Cache {
     CacheWii(const CacheIDWii&);
     virtual ~CacheWii();
-    const char* GetCacheName();
-    void Poll();
-    bool IsConnectedSync();
-    int GetFreeSpaceSync(unsigned long long*);
-    bool DeleteSync(const char*);
-    bool GetDirectoryAsync(const char*, std::vector<CacheDirEntry>*, Hmx::Object*);  
-    bool GetFileSizeAsync(const char*, unsigned int*, Hmx::Object*);
-    bool ReadAsync(const char*, void*, uint, Hmx::Object*);
-    bool WriteAsync(const char*, void*, uint, Hmx::Object*);
-    bool DeleteAsync(const char*, Hmx::Object*);
-    int ThreadStart();
-    void ThreadDone(int);
-    int ThreadGetDir(String);
-    int ThreadGetFileSize();
-    int ThreadRead();
-    int ThreadWrite();
-    int ThreadDelete();
+    virtual const char* GetCacheName();
+    virtual void Poll();
+    virtual bool IsConnectedSync();
+    virtual int GetFreeSpaceSync(unsigned long long*);
+    virtual bool DeleteSync(const char*);
+    virtual bool GetDirectoryAsync(const char*, std::vector<CacheDirEntry>*, Hmx::Object*);  
+    virtual bool GetFileSizeAsync(const char*, unsigned int*, Hmx::Object*);
+    virtual bool ReadAsync(const char*, void*, uint, Hmx::Object*);
+    virtual bool WriteAsync(const char*, void*, uint, Hmx::Object*);
+    virtual bool DeleteAsync(const char*, Hmx::Object*);
+    virtual int ThreadStart();
+    virtual void ThreadDone(int);
+    virtual int ThreadGetDir(String);
+    virtual int ThreadGetFileSize();
+    virtual int ThreadRead();
+    virtual int ThreadWrite();
+    virtual int ThreadDelete();
 
-    String m0x14; // 0x14
-    String mCacheName; // 0x1c
+    int* m0x0c;
+    CacheIDWii* m0x10;
+    String m0x14;
+    String m0x20;
     String m0x2c;
     int m0x38;
-    String s_mThreadStr;
+    String s_mThreadStr; // 0x3c
     String m0x48;
-    const char* m0x54;
+    void* m0x54;
     int m0x58;
-    std::vector<CacheDirEntry>* s_mCacheDirList; // 0x5c
+    int m0x5c;
+    int m0x60;
+    char* m0x64;
     char* m0x68;
+    char* m0x6c;
+    int m0x70; // padding
+    int m0x74;
+
+
+    String mCacheName; // 0x1c
+
+    std::vector<CacheDirEntry>* s_mCacheDirList; // 0x5c
+    char* drive; // 0x68
     String m0x100;
 };
 
