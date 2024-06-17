@@ -1,4 +1,5 @@
 #include "char/CharPollGroup.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(CharPollGroup);
 
@@ -61,3 +62,16 @@ void CharPollGroup::Load(BinStream& bs){
         bs >> mChanges;
     }
 }
+
+BEGIN_HANDLERS(CharPollGroup)
+    HANDLE_ACTION(sort_polls, SortPolls())
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xA2)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(CharPollGroup)
+    SYNC_PROP(polls, mPolls)
+    SYNC_PROP(changed_by, mChangedBy)
+    SYNC_PROP(changes, mChanges)
+    SYNC_SUPERCLASS(CharWeightable)
+END_PROPSYNCS
