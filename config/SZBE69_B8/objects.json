@@ -228,7 +228,7 @@
             "system/char/CharTransCopy.cpp": "Matching",
             "system/char/CharTransDraw.cpp": "Matching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
-            "system/char/CharWeightable.cpp": "NonMatching",
+            "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "NonMatching",
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",

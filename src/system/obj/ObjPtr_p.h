@@ -89,7 +89,7 @@ public:
         if(t != mPtr){
             if(mPtr != 0) mPtr->Release(mOwner);
             mPtr = t;
-            if(mPtr != 0) mPtr->AddRef(mOwner);
+            if(mPtr != 0) t->AddRef(mOwner);
         }
     }
 
