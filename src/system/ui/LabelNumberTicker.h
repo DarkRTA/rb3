@@ -29,6 +29,11 @@ public:
     void CountUp();
     void SetDesiredValue(int);
 
+    UILabel* Label() const {
+        if(!mLabel) return 0;
+        else return mLabel;
+    }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
