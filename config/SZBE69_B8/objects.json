@@ -365,6 +365,7 @@
             },
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "Matching",
+            "system/rndobj/DOFProc_Wii.cpp": "Matching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
@@ -453,6 +454,8 @@
             "system/track/TrackWidget.cpp": "NonMatching",
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
+            "system/ui/LabelNumberTicker.cpp": "NonMatching",
+            "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
             "system/ui/LocalePanel.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
@@ -489,6 +492,7 @@
             "system/ui/UISlider.cpp": "Matching",
             "system/ui/UITransitionHandler.cpp": "Matching",
             "system/ui/UITrigger.cpp": "NonMatching",
+            "system/ui/Utl.cpp": "NonMatching",
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",

@@ -24,16 +24,16 @@ UIComponent::State SymToUIComponentState(Symbol s) {
 }
 
 UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mResource(NULL),
-    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), c(0), d(0) { }
-
+    mResourceName(), mResourceDir(NULL), unk108(0), mState(kNormal), mLoading(0), mMockSelect(0) { }
 
 void UIComponent::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
-    DataArray* cfg = SystemConfig("UIComponent", "objects")->FindArray("select_frames", true);
-    sSelectFrames = cfg->Int(1);
+    Register();
+    sSelectFrames = SystemConfig("objects", "UIComponent")->FindInt("select_frames");
 }
 
-UIComponent::~UIComponent() {}
+UIComponent::~UIComponent(){
+    if(mResource) mResource->Release();
+}
 
 Symbol UIComponent::StateSym() const {
     return UIComponentStateToSym((UIComponent::State)mState);
@@ -55,12 +55,12 @@ void UIComponent::SetTypeDef(DataArray* da) {
             DataArray* typesArr = cfg->FindArray("types", true);
             DataArray* defaultArr = typesArr->FindArray("default", false);
             if(defaultArr){
-                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(this));
+                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(Dir()));
                 SetTypeDef(defaultArr);
                 return;
             }
             else {
-                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->mFile, PathName(this));
+                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->File(), PathName(Dir()));
                 return;
             }
         }
@@ -74,11 +74,38 @@ void UIComponent::SetTypeDef(DataArray* da) {
 BEGIN_COPYS(UIComponent)
     CREATE_COPY(UIComponent)
     MILO_ASSERT(c, 134);
-    COPY_MEMBER(mDir)
+    COPY_MEMBER(mResourceName)
+    COPY_MEMBER(mResourceDir)
     COPY_MEMBER(mResourcePath)
-    COPY_SUPERCLASS(Hmx::Object);
+    Hmx::Object::Copy(c, ty);
     CopyMembers(c, ty);
 END_COPYS
+
+void UIComponent::ResourceCopy(const UIComponent* c){
+    MILO_ASSERT(c, 0x94);
+    Hmx::Object::SetTypeDef((DataArray*)c->TypeDef());
+    CopyMembers(c, kCopyShallow);
+    if(mResourcePath.length() != 0){
+        mResourceDir = c->mResourceDir;
+        MILO_ASSERT(mResourceDir.Ptr(), 0x9B);
+    }
+    else {
+        mResource = c->mResource;
+        mResource->PostLoad();
+        MILO_ASSERT(mResource->Dir(), 0xA1);
+    }
+    Update();
+}
+
+void UIComponent::CopyMembers(const UIComponent* c, Hmx::Object::CopyType ty){
+    RndTransformable::Copy(c, ty);
+    RndDrawable::Copy(c, ty);
+    mNavRight = c->mNavRight;
+    mNavDown = c->mNavDown;
+    mResourceName = c->mResourceName;
+    mResourceDir = c->mResourceDir;
+    mResourcePath = c->mResourcePath;
+}
 
 SAVE_OBJ(UIComponent, 182)
 
@@ -88,9 +115,9 @@ void UIComponent::PreLoad(BinStream& bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     mResourcePath = GetResourcesPath();
-    c = true;
+    mLoading = true;
     Hmx::Object::Load(bs);
-    c = false;
+    mLoading = false;
     RndTransformable::Load(bs);
     RndDrawable::Load(bs);
     if (gRev > 0) {
@@ -103,8 +130,21 @@ void UIComponent::PreLoad(BinStream& bs) {
 }
 
 void UIComponent::PostLoad(BinStream& bs) {
-    if (mResource) {
-        mResource->PostLoad();
+    if(mResource) mResource->PostLoad();
+    bool b1 = false;
+    bool b2 = false;
+    if(!Type().Null() && mResourcePath.length() != 0) b1 = true;
+    if(b1 && mResourceName.length() == 0) b2 = true;
+    if(b2){
+        mResourceName = Type().Str();
+        MILO_WARN("upgrading UIComponent %s to new resource loading system (Old type: %s). Please resave this file and checkin (%s).\n", Name(), mResourceName.c_str(), PathName(this));
+        ResourceFileUpdated(false);
+        SetType("");
+        mResource = 0;
+        *DataVariable("uicomponent.resource_upgrade") = DataNode(1);
+    }
+    if(mResourceName.length() != 0){
+        mResourceDir.PostLoad(0);
     }
 }
 
@@ -114,7 +154,7 @@ bool UIComponent::Exiting() const {
 
 void UIComponent::Enter() {
     RndPollable::Enter();
-    a = false;
+    unk108 = 0;
     if (mState == kSelecting) {
         SetState(kFocused);
     }
@@ -123,13 +163,27 @@ void UIComponent::Enter() {
 void UIComponent::Exit() {RndPollable::Exit();}
 
 void UIComponent::Poll() {
-    if (!a) return;
-    if (a -= 1) return; // fake"match" but it's as good as it gets
+    if(unk108 == 0) return;
+    if(--unk108 != 0) return;
     FinishSelecting();
 }
 
+void UIComponent::MockSelect(){
+    MILO_ASSERT(sSelectFrames < 255, 0x13F);
+    MILO_ASSERT(sSelectFrames >= 0, 0x140);
+    unk108 = sSelectFrames;
+    SetState(UIComponent::kSelecting);
+    mMockSelect = true;
+}
+
+ObjectDir* UIComponent::ResourceDir(){
+    if(mResourceDir) return mResourceDir;
+    else if(mResource) return mResource->Dir();
+    else return 0;
+}
+
 // class ObjectDir* UIComponent::ResourceDir() {
-//     if (mObjDir.mDir) return mObjDir.mDir;
+//     if (mResourceDir.mDir) return mResourceDir.mDir;
 //     if (mMesh) {
 //         return mMesh->mDir.mDir;
 //     }
@@ -141,7 +195,10 @@ void UIComponent::ResourceFileUpdated(bool) {
 }
 
 DataNode UIComponent::OnGetResourcesPath(DataArray* da) {
-
+    if(mResourcePath.length() != 0){
+        return DataNode(FileRelativePath(FileRoot(), mResourcePath.c_str()));
+    }
+    else return DataNode("");
 }
 
 BEGIN_HANDLERS(UIComponent)
@@ -160,13 +217,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(UIComponent)
     SYNC_PROP(nav_right, mNavRight)
     SYNC_PROP(nav_down, mNavDown)
-    if (sym == resource_name) {
-        if (PropSync(mResourceName, _val, _prop, _i + 1, _op)) {
-            if (!(_op & 0x11)) ResourceFileUpdated(false);
-            return true;
-        }
-        return false;
-    }
+    SYNC_PROP_MODIFY_ALT(resource_name, mResourceName, ResourceFileUpdated(false))
     SYNC_SUPERCLASS(RndDrawable)
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
