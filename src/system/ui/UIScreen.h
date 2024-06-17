@@ -24,17 +24,6 @@ public:
 };
 
 class UIScreen : public Hmx::Object {
-protected:
-    static int sMaxScreenId;
-    static UIScreen *sUnloadingScreen;
-
-    std::vector<PanelRef> mPanelList;
-    class UIPanel *mFocusPanel;
-    DataArray *mBack;
-    bool mClearVram;
-    bool mShowing;
-    int mScreenId;
-
 public:
     UIScreen();
     virtual ~UIScreen(){}
@@ -76,6 +65,16 @@ public:
 
     DataNode ForeachPanel(const DataArray *);
     DataNode OnMsg(const ButtonDownMsg &);
+
+    static int sMaxScreenId;
+    static UIScreen *sUnloadingScreen;
+
+    std::vector<PanelRef> mPanelList;
+    class UIPanel *mFocusPanel;
+    DataArray *mBack;
+    bool mClearVram;
+    bool mShowing;
+    int mScreenId;
 };
 
 #endif

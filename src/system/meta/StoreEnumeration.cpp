@@ -1,6 +1,6 @@
 #include "StoreEnumeration.h"
 
-WiiEnumeration::WiiEnumeration(int i) : mLoading(false) {
+WiiEnumeration::WiiEnumeration(int i) : mLoading(true) {
     if (i != 0) mState = kEnumWaiting;
     else mState = kPreSuccess;
 }
