@@ -14,7 +14,7 @@ class CharIKFoot : public CharIKHand {
 public:
     CharIKFoot();
     virtual ~CharIKFoot();
-    virtual void Highlight();
+    virtual void Highlight(){}
     virtual void Poll();
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     OBJ_CLASSNAME(CharIKHand);
@@ -27,13 +27,15 @@ public:
     virtual void Enter();
     virtual void SetName(const char*, class ObjectDir*);
 
+    DECLARE_REVS;
     DELETE_OVERLOAD;
     
     ObjPtr<RndTransformable, ObjectDir> unk88;
     int unk94;
-    ObjPtr<RndTransformable, ObjectDir> mData;
+    ObjPtr<RndTransformable, ObjectDir> mData; // 0x98
     int mDataIndex; // 0xa4
-    int unk[4];
+    int unk[3];
+    float unkb4; // 0xb4
     ObjPtr<Character, ObjectDir> mMe; // 0xb8
 };
 
