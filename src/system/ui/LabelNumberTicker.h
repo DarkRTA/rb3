@@ -46,7 +46,7 @@ public:
     int unk12c; // 0x12c
     int unk130; // 0x130
     int unk134; // 0x134
-    Timer unk138; // 0x138
+    Timer mTimer; // 0x138
     ObjPtr<EventTrigger, ObjectDir> mTickTrigger; // 0x168
     int mTickEvery; // 0x174
 };

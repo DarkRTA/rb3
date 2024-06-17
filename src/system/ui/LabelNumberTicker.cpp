@@ -2,6 +2,7 @@
 #include "ui/UILabel.h"
 #include "ui/UI.h"
 #include "utl/Locale.h"
+#include "math/MathFuncs.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(LabelNumberTicker)
@@ -71,8 +72,33 @@ void LabelNumberTicker::UpdateDisplay(){
     }
 }
 
+// fn_80549740
 void LabelNumberTicker::Poll(){
     UIComponent::Poll();
+    if(mTimer.Running()){
+        float split = mTimer.SplitMs();
+        float animdelay = mAnimDelay * 1000.0f;
+        float animtime = mAnimTime * 1000.0f;
+        float animsum = animdelay + animtime;
+        if(split >= animdelay){
+            float quotient = (split - animdelay) / animtime;
+            float powf = pow_f(animtime, mAcceleration);
+            int somenum = unk12c + (animtime*animdelay)*(mDesiredValue-unk12c);
+            if(mTickTrigger){
+                if(mTickEvery != 0){
+                    if((somenum / mTickEvery) > (unk130 / mTickEvery)){
+                        mTickTrigger->Trigger();
+                    }
+                }
+            }
+            unk130 = somenum;
+            if(unk130 == mDesiredValue || (split >= animsum)){
+                unk130 = mDesiredValue;
+                mTimer.fn_800A8898();
+            }
+        }
+        UpdateDisplay();
+    }
 }
 
 void LabelNumberTicker::SetLabel(UILabel* l){
@@ -81,7 +107,17 @@ void LabelNumberTicker::SetLabel(UILabel* l){
 }
 
 void LabelNumberTicker::SetDesiredValue(int i){
-
+    unk12c = unk130;
+    mDesiredValue = i;
+    if(mAnimTime + mAnimDelay <= 0.0f) unk130 = i;
+    else {
+        mTimer.Reset();
+        mTimer.Start();
+    }
+    if(mTickTrigger && i > 0){
+        mTickTrigger->Trigger();
+    }
+    UpdateDisplay();
 }
 
 void LabelNumberTicker::SnapToValue(int i){

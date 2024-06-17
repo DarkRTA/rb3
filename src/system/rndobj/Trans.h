@@ -90,6 +90,11 @@ public:
         mCache->SetDirty();
     }
 
+    void SetDirtyLocalXfmVec(const Vector3& v){
+        mLocalXfm.v = v;
+        mCache->SetDirty();
+    }
+
     Transform& DirtyLocalXfm(){
         mCache->SetDirty();
         return mLocalXfm;
