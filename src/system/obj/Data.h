@@ -282,6 +282,12 @@ public:
         mData->Node(0) = node;
     }
 
+    DataArrayPtr(const DataNode& node, const DataNode& node2){
+        mData = new DataArray(2);
+        mData->Node(0) = node;
+        mData->Node(1) = node2;
+    }
+
     DataArrayPtr(DataArray* arr){
         mData = arr;
         if(!mData) mData = new DataArray(0);

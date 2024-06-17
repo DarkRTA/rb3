@@ -14,7 +14,7 @@ public:
     virtual void SetTint(bool, Hmx::Color){ }
     virtual void Set(RndCam*, float, float, float, float){}
     virtual void UnSet(){ }
-    virtual int Enabled() const { return 0; }
+    virtual bool Enabled() const { return 0; }
     virtual int Blur(){ return 0; }
     virtual float FocalPlane(){ return 1.0f; }
     virtual float BlurDepth(){ return 1.0f; }

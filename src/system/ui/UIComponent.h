@@ -18,8 +18,9 @@
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
 
+    // size 0x18
     class UIMesh {
-        
+        int unk[6];
     };
 
     enum State {
@@ -64,25 +65,28 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     class ObjectDir* ResourceDir();
     void UpdateResource();
     void UpdateMeshes(State);
+    void MockSelect();
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
     ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
     ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
-    int test1; // 0xD0
+    LocalUser* mSelectingUser; // 0xD0
     int unk_0xD4; // 0xD4
     UIResource* mResource; // 0xD8
-    std::vector<int> unk_0xDC; // 0xDC
+    std::vector<UIMesh> mMeshes; // 0xDC
     class String mResourceName; // 0xE4
-    ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
+    ObjDirPtr<class ObjectDir> mResourceDir; // 0xF0
     class String mResourcePath; // 0xFC
-    bool a; // 0x108
+    unsigned char unk108; // 0x108
     unsigned char mState; // 0x109
-    bool c, d; // 0x10A, 0x10B
+    bool mLoading; // 0x10A
+    bool mMockSelect; // 0x10B
 
     NEW_OBJ(UIComponent)
     static void Init();
+    static void Register(){ REGISTER_OBJ_FACTORY(UIComponent); }
     static int sSelectFrames;
     DECLARE_REVS
 };
