@@ -23,9 +23,11 @@ public:
     virtual void Enter();
     virtual void Poll();
 
-    void UpdateAndDrawWrapper();
-    void SetShouldShow(bool);
+    void UpdateDisplay();
     void SetLabel(UILabel*);
+    void SnapToValue(int);
+    void CountUp();
+    void SetDesiredValue(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

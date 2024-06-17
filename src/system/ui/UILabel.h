@@ -68,6 +68,11 @@ public:
     float AltAlpha(){ return mAltAlpha; }
     void SetAlpha(float f){ mAlpha = f; }
     void SetAltAlpha(float f){ mAltAlpha = f; }
+    void SetTokenFmt(const DataArray*);
+
+    void SetTokenFmt(Symbol s, const char* cc){
+        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
+    }
 
     DataNode OnSetTokenFmt(const DataArray*);
     DataNode OnSetInt(const DataArray*);
