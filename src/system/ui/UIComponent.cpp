@@ -24,16 +24,16 @@ UIComponent::State SymToUIComponentState(Symbol s) {
 }
 
 UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mResource(NULL),
-    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), c(0), d(0) { }
-
+    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), mLoading(0), d(0) { }
 
 void UIComponent::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
-    DataArray* cfg = SystemConfig("UIComponent", "objects")->FindArray("select_frames", true);
-    sSelectFrames = cfg->Int(1);
+    Register();
+    sSelectFrames = SystemConfig("objects", "UIComponent")->FindInt("select_frames");
 }
 
-UIComponent::~UIComponent() {}
+UIComponent::~UIComponent(){
+    if(mResource) mResource->Release();
+}
 
 Symbol UIComponent::StateSym() const {
     return UIComponentStateToSym((UIComponent::State)mState);
@@ -55,12 +55,12 @@ void UIComponent::SetTypeDef(DataArray* da) {
             DataArray* typesArr = cfg->FindArray("types", true);
             DataArray* defaultArr = typesArr->FindArray("default", false);
             if(defaultArr){
-                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(this));
+                MILO_WARN("Resetting %s (%s) to default type (%s)", ClassName(), Name(), PathName(Dir()));
                 SetTypeDef(defaultArr);
                 return;
             }
             else {
-                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->mFile, PathName(this));
+                MILO_FAIL("No default type for %s, please add to %s (%s)", ClassName(), typesArr->File(), PathName(Dir()));
                 return;
             }
         }
@@ -74,9 +74,10 @@ void UIComponent::SetTypeDef(DataArray* da) {
 BEGIN_COPYS(UIComponent)
     CREATE_COPY(UIComponent)
     MILO_ASSERT(c, 134);
-    COPY_MEMBER(mDir)
+    COPY_MEMBER(mResourceName)
+    COPY_MEMBER(mObjDir)
     COPY_MEMBER(mResourcePath)
-    COPY_SUPERCLASS(Hmx::Object);
+    Hmx::Object::Copy(c, ty);
     CopyMembers(c, ty);
 END_COPYS
 
@@ -88,9 +89,9 @@ void UIComponent::PreLoad(BinStream& bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     mResourcePath = GetResourcesPath();
-    c = true;
+    mLoading = true;
     Hmx::Object::Load(bs);
-    c = false;
+    mLoading = false;
     RndTransformable::Load(bs);
     RndDrawable::Load(bs);
     if (gRev > 0) {
