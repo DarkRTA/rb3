@@ -24,7 +24,7 @@ UIComponent::State SymToUIComponentState(Symbol s) {
 }
 
 UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mResource(NULL),
-    mResourceName(), mObjDir(NULL), a(0), mState(kNormal), mLoading(0), d(0) { }
+    mResourceName(), mResourceDir(NULL), a(0), mState(kNormal), mLoading(0), d(0) { }
 
 void UIComponent::Init() {
     Register();
@@ -75,11 +75,27 @@ BEGIN_COPYS(UIComponent)
     CREATE_COPY(UIComponent)
     MILO_ASSERT(c, 134);
     COPY_MEMBER(mResourceName)
-    COPY_MEMBER(mObjDir)
+    COPY_MEMBER(mResourceDir)
     COPY_MEMBER(mResourcePath)
     Hmx::Object::Copy(c, ty);
     CopyMembers(c, ty);
 END_COPYS
+
+void UIComponent::ResourceCopy(const UIComponent* c){
+    MILO_ASSERT(c, 0x94);
+    Hmx::Object::SetTypeDef((DataArray*)c->TypeDef());
+    CopyMembers(c, kCopyShallow);
+    if(mResourcePath.length() != 0){
+        mResourceDir = c->mResourceDir;
+        MILO_ASSERT(mResourceDir.Ptr(), 0x9B);
+    }
+    else {
+        mResource = c->mResource;
+        mResource->PostLoad();
+        MILO_ASSERT(mResource->Dir(), 0xA1);
+    }
+    Update();
+}
 
 SAVE_OBJ(UIComponent, 182)
 
@@ -130,7 +146,7 @@ void UIComponent::Poll() {
 }
 
 // class ObjectDir* UIComponent::ResourceDir() {
-//     if (mObjDir.mDir) return mObjDir.mDir;
+//     if (mResourceDir.mDir) return mResourceDir.mDir;
 //     if (mMesh) {
 //         return mMesh->mDir.mDir;
 //     }

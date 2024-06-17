@@ -521,7 +521,7 @@ void ObjectDir::AppendSubDir(const ObjDirPtr<ObjectDir>& dPtr){
 void ObjectDir::RemoveSubDir(const ObjDirPtr<ObjectDir>& dPtr){
     std::vector<ObjDirPtr<ObjectDir> >::iterator it = mSubDirs.begin();
     while(it != mSubDirs.end()){
-        if((*it).Dir() == dPtr.Dir()){
+        if((*it).Ptr() == dPtr.Ptr()){
             RemovingSubDir(*it);
             it = mSubDirs.erase(it);
         }

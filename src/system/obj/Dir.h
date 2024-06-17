@@ -124,17 +124,11 @@ public:
     // __as__21ObjDirPtr<9ObjectDir>FRC21ObjDirPtr<9ObjectDir>
     ObjDirPtr& operator=(const ObjDirPtr& oPtr){
         *this = oPtr.mDir;
-        // if(mLoader && mLoader->IsLoaded()) PostLoad(0);
-        // if(oPtr.mDir != mDir || !oPtr.mDir){
-        //     delete mLoader;
-        //     mLoader = 0;
-
-        // }
     }
 
     operator bool() const { return mDir != 0; }
     operator T*() const { return mDir; }
-    T* Dir() const { return mDir; }
+    T* Ptr() const { return mDir; }
 
     T* mDir;
     class DirLoader* mLoader;

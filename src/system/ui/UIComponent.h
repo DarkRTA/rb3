@@ -76,7 +76,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     UIResource* mResource; // 0xD8
     std::vector<UIMesh> unk_0xDC; // 0xDC
     class String mResourceName; // 0xE4
-    ObjDirPtr<class ObjectDir> mObjDir; // 0xF0
+    ObjDirPtr<class ObjectDir> mResourceDir; // 0xF0
     class String mResourcePath; // 0xFC
     bool a; // 0x108
     unsigned char mState; // 0x109
