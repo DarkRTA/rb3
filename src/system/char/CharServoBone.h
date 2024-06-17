@@ -29,18 +29,23 @@ public:
     virtual void SetName(const char*, class ObjectDir*);
     virtual void ReallocateInternal();
 
+    void SetClipType(Symbol);
+    void SetMoveSelf(bool);
+    void ZeroDeltas();
+
+    DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    RndEnviron* mPelvis;
-    float* mFacingRotDelta;
-    Vector3* mFacingPosDelta;
-    float* mFacingRot;
-    Vector3* mFacingPos;
-    bool mMoveSelf;
-    bool mDeltaChanged;
-    Character* mMe;
-    Symbol mClipType;
-    ObjPtr<Waypoint, ObjectDir> mWay;
+    RndEnviron* mPelvis; // 0x74
+    float* mFacingRotDelta; // 0x78
+    Vector3* mFacingPosDelta; // 0x7c
+    float* mFacingRot; // 0x80
+    Vector3* mFacingPos; // 0x84
+    bool mMoveSelf; // 0x88
+    bool mDeltaChanged; // 0x89
+    Character* mMe; // 0x8c
+    Symbol mClipType; // 0x90
+    ObjPtr<Waypoint, ObjectDir> mRegulate; // 0x94
 };
 
 #endif
