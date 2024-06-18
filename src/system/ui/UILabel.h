@@ -11,6 +11,7 @@
 #include "ui/UIColor.h"
 #include "utl/MemMgr.h"
 #include "obj/Dir.h"
+#include "os/DateTime.h"
 
 class UILabelDir;
 
@@ -48,6 +49,7 @@ public:
     virtual void SetCreditsText(DataArray*, class UIListSlot*) {MILO_ASSERT(false, 78);}
     virtual void SetDisplayText(const char*, bool);
 
+    DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
@@ -56,6 +58,7 @@ public:
     static void Register(){
         REGISTER_OBJ_FACTORY(UILabel)
     }
+    static bool sDebugHighlight;
     static bool sDeferUpdate;
 
     const char* GetDefaultText() const;
@@ -67,6 +70,8 @@ public:
     void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
     void SetEditText(const char*);
+    void SetUseHighlightMesh(bool);
+    Symbol TextToken() const;
     RndText* TextObj();
     void SetColorOverride(UIColor*);
     float GetDrawWidth();
@@ -76,6 +81,12 @@ public:
     void SetAlpha(float f){ mAlpha = f; }
     void SetAltAlpha(float f){ mAltAlpha = f; }
     void SetTokenFmt(const DataArray*);
+    void SetTokenFmtImp(Symbol, const DataArray*, const DataArray*, int, bool);
+    void SetInt(int, bool);
+    void SetIcon(char);
+    void AppendIcon(char);
+    void SetDateTime(const DateTime&, Symbol);
+    void SetSubtitle(const DataArray*);
     RndText::Alignment Alignment() const { return (RndText::Alignment)mAlignment; }
 
     void SetTokenFmt(Symbol s, const char* cc){

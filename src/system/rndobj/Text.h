@@ -43,7 +43,7 @@ public:
 
     RndText();
     virtual ~RndText();
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -64,6 +64,7 @@ public:
     float Size() const { return mSize; } void SetSize(float);
     void GetMeshes(std::vector<RndMesh*>&);
     void SetFixedLength(int);
+    void GetCurrentStringDimensions(float&, float&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

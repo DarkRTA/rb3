@@ -57,6 +57,8 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
+    State GetState(){ return (State)mState; }
+
     void FinishSelecting();
     void SendSelect(LocalUser*);
     const char* GetResourcesPath();
