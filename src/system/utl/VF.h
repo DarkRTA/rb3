@@ -13,6 +13,7 @@ extern int VFFileSync(void* file);
 extern int VFWriteFile(void* file, const void* buf, unsigned int size); 	
 extern int VFDeleteFile(const char* path); 	
 extern int VFGetFileSizeByFd(void* file); 	
+extern int VFGetFileSize(const char* path);
 extern int VFGetLastError(); 	
 extern int VFGetLastDeviceError(const char* drive); 	
 extern int VFGetDriveFreeSize(const char* drive); 	

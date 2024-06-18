@@ -4,26 +4,24 @@
 
 
 CacheIDWii::CacheIDWii() {
-    // unk2 = String().c_str();
 }
 
 CacheIDWii::~CacheIDWii() {}
 
 const char* CacheIDWii::GetCachePath(const char* param_1) {
-    const char* pcVar1;
-
-    if (mStrCacheName == '\0') {
+    if (mStrCacheName.empty()) {
         TheDebug.Fail(FormatString("CacheID::GetCachePath() - mStrCacheName is empty.").Str());
     }
 
-    if (param_1 == 0x00) {
-        pcVar1 = MakeString(" ");
-        return pcVar1;
+    if (param_1 == NULL) {
+        return MakeString("%s/", mStrCacheName.c_str());
     } else {
-        String a = String(param_1);
+        String a = param_1;
         a.ReplaceAll('\\','/');
-        pcVar1 = (char*)a[0];
-        // return pcVar1;
+        if (a[0] == '/') {
+            a.erase(0, 1);
+        }
+        return a.c_str();
     }
 }
 
@@ -191,8 +189,9 @@ int CacheWii::ThreadStart() {
 
     switch (mOpCur) {
         case kOpDirectory: {
-            String file = m0x20 + s_mThreadStr + m0x2c + m0x64;
-            return ThreadGetDir(file);
+            m0x2c = m0x64;
+            m0x2c = m0x2c + "/" + m0x2c;
+            return ThreadGetDir(m0x2c);
         }
         break;
         case kOpFileSize:
@@ -253,7 +252,17 @@ void CacheWii::ThreadDone(int param_1) {
 }
 
 int CacheWii::ThreadGetDir(String) {}
-int CacheWii::ThreadGetFileSize() {}
+
+int CacheWii::ThreadGetFileSize() {
+    m0x20 = m0x64;
+    m0x20 = m0x20 + "/" + m0x2c;
+    int result = VFGetFileSize(m0x20.c_str());
+    if (result == -1) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
 
 int CacheWii::ThreadRead() {
     char* fileName = "";
