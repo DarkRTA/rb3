@@ -12,6 +12,7 @@ class UIScreen;
 class UIPanel;
 class UIResource;
 class RndOverlay;
+class RndCam;
 
 enum TransitionState {
     kTransitionNone = 0,
@@ -76,7 +77,7 @@ public:
     UIScreen* mTransitionScreen; // 0x24
     std::vector<UIResource*> mResources; // 0x28
     Hmx::Object* mSink; // 0x30
-    int unk34; // 0x34
+    RndCam* unk34; // 0x34
     int unk38; // 0x38
     int unk3c; // 0x3c
     Timer mTimer; // 0x40
