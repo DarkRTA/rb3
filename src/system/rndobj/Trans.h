@@ -80,6 +80,11 @@ public:
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
 
+    void SetDirty(){
+        if(mCache->mFlags & 1) return;
+        mCache->SetDirty_Force();
+    }
+
     Transform& WorldXfm(){
         if(mCache->mFlags & 1) return WorldXfm_Force();
         else return mWorldXfm;
@@ -87,16 +92,16 @@ public:
 
     void SetDirtyLocalXfm(Transform& tf){
         mLocalXfm = tf;
-        mCache->SetDirty();
+        SetDirty();
     }
 
     void SetDirtyLocalXfmVec(const Vector3& v){
         mLocalXfm.v = v;
-        mCache->SetDirty();
+        SetDirty();
     }
 
     Transform& DirtyLocalXfm(){
-        mCache->SetDirty();
+        SetDirty();
         return mLocalXfm;
     }
 

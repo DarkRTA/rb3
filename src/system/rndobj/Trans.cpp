@@ -59,7 +59,7 @@ void RndTransformable::SetWorldXfm(const Transform& tf){
     mCache->SetLastBit(0);
     UpdatedWorldXfm();
     for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
-        (*it)->mCache->SetDirty();
+        (*it)->SetDirty();
     }
 }
 
@@ -67,7 +67,7 @@ void RndTransformable::SetWorldPos(const Vector3& vec){
     mWorldXfm.v = vec;
     UpdatedWorldXfm();
     for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
-        (*it)->mCache->SetDirty();
+        (*it)->SetDirty();
     }
 }
 
