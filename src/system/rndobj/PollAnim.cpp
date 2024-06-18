@@ -17,7 +17,9 @@ float RndPollAnim::EndFrame(){
 }
 
 void RndPollAnim::ListAnimChildren(std::list<RndAnimatable*>& children) const {
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin();
+    ObjPtrList<RndAnimatable, class ObjectDir>::iterator itEnd = mAnims.end();
+    for(; it != itEnd; ++it){
         children.push_back(*it);
     }
 }
