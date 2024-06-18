@@ -24,6 +24,7 @@ public:
     void FontImporterSyncObjects();
     void SyncWithGennedFonts();
     void HandmadeFontChanged();
+    Symbol GetMatVariationName(unsigned int) const;
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);

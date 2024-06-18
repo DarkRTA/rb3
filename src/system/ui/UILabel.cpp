@@ -265,6 +265,40 @@ float GetPctHeightFromTextSize(float f){
 
 }
 
+DataNode UILabel::OnGetMaterialVariations(const DataArray* da){
+    int count = mLabelDir->mMatVariations.size();
+    DataArray* arr = new DataArray(count + 1);
+    arr->Node(0) = DataNode(Symbol());
+    for(int i = 1; i <= count; i++){
+        arr->Node(i) = DataNode(mLabelDir->GetMatVariationName(i - 1));
+    }
+    DataNode ret = DataNode(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
+DataNode UILabel::OnGetAltMaterialVariations(const DataArray* da){
+    if(mObjDirPtr){
+        UILabelDir* labeldir = dynamic_cast<UILabelDir*>(mObjDirPtr.Ptr());
+        int count = labeldir->mMatVariations.size();
+        DataArray* arr = new DataArray(count + 1);
+        arr->Node(0) = DataNode(Symbol());
+        for(int i = 1; i <= count; i++){
+            arr->Node(i) = DataNode(labeldir->GetMatVariationName(i - 1));
+        }
+        DataNode ret = DataNode(arr, kDataArray);
+        arr->Release();
+        return ret;
+    }
+    else {
+        DataArray* arr = new DataArray(1);
+        arr->Node(0) = DataNode(Symbol());
+        DataNode ret = DataNode(arr, kDataArray);
+        arr->Release();
+        return ret;
+    }
+}
+
 BEGIN_HANDLERS(UILabel)
     HANDLE_EXPR(get_string_width, mText->GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
     HANDLE_ACTION(adjust_height, AdjustHeight(true))
@@ -278,7 +312,6 @@ BEGIN_HANDLERS(UILabel)
     HANDLE_SUPERCLASS(UIComponent)
     HANDLE_CHECK(1554)
 END_HANDLERS
-
 
 BEGIN_PROPSYNCS(UILabel)
     SYNC_PROP_SET(text_token, mTextToken, SetTextToken(_val.ForceSym(0)))
