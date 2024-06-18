@@ -77,18 +77,16 @@ void LabelNumberTicker::Poll(){
     UIComponent::Poll();
     if(mTimer.Running()){
         float split = mTimer.SplitMs();
-        float animdelay = mAnimDelay * 1000.0f;
         float animtime = mAnimTime * 1000.0f;
+        float animdelay = mAnimDelay * 1000.0f;
         float animsum = animdelay + animtime;
         if(split >= animdelay){
             float quotient = (split - animdelay) / animtime;
-            float powf = pow_f(animtime, mAcceleration);
-            int somenum = unk12c + (animtime*animdelay)*(mDesiredValue-unk12c);
-            if(mTickTrigger){
-                if(mTickEvery != 0){
-                    if((somenum / mTickEvery) > (unk130 / mTickEvery)){
-                        mTickTrigger->Trigger();
-                    }
+            quotient *= pow_f(quotient, mAcceleration);
+            int somenum = unk12c + (int)(quotient * (mDesiredValue - unk12c));
+            if(mTickTrigger && mTickEvery != 0){
+                if((somenum / mTickEvery) > (unk130 / mTickEvery)){
+                    mTickTrigger->Trigger();
                 }
             }
             unk130 = somenum;

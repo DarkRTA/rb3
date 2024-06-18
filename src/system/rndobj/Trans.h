@@ -100,6 +100,10 @@ public:
         SetDirty();
     }
 
+    Transform& LocalXfm(){
+        return mLocalXfm;
+    }
+
     Transform& DirtyLocalXfm(){
         SetDirty();
         return mLocalXfm;
