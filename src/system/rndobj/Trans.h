@@ -138,7 +138,7 @@ public:
     }
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
-    std::vector<RndTransformable*> mChildren;
+    std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c

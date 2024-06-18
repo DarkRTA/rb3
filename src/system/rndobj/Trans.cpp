@@ -8,6 +8,7 @@
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 #include "rndobj/Utl.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 
 Plane RndTransformable::sShadowPlane;
@@ -84,7 +85,7 @@ void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, b
     mConstraint = cst;
     mPreserveScale = b;
     mTarget = t;
-    mCache->SetDirty();
+    SetDirty();
 }
 
 namespace {
@@ -94,6 +95,25 @@ namespace {
 
     bool VerticalCmp(const RndTransformable* t1, const RndTransformable* t2){
         return t1->mLocalXfm.v.z > t2->mLocalXfm.v.z;
+    }
+}
+
+void RndTransformable::DistributeChildren(bool b, float f){
+    std::vector<RndTransformable*> vec;
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); ++it){
+        vec.push_back(*it);
+    }
+    int count = vec.size();
+    if(count < 2) return;
+    else {
+        if(b) std::sort(vec.begin(), vec.end(), HorizontalCmp);
+        else std::sort(vec.begin(), vec.end(), VerticalCmp);
+    }
+    // some stuff happens here
+    for(int i = 0; i < count; i++){
+        Transform t = vec[i]->LocalXfm();
+        t.v[b] = f * i;
+        vec[i]->SetDirtyLocalXfm(t);
     }
 }
 
