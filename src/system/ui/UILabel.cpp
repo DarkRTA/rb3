@@ -201,6 +201,69 @@ void UILabel::LabelUpdate(bool b, bool c) {
     
 }
 
+void UILabel::SetAlignment(RndText::Alignment a){
+    mAlignment = a;
+    Update();
+}
+
+void UILabel::SetCapsMode(RndText::CapsMode c){
+    mCapsMode = c;
+    Update();
+}
+
+void UILabel::SetFitType(UILabel::FitType f){
+    mFitType = f;
+    Update();
+}
+
+void UILabel::OnSetIcon(const char* cc){
+    if(strlen(cc) > 1) MILO_WARN("%s is not a valid icon, must be one character", cc);
+    SetIcon(*cc);
+}
+
+DataNode UILabel::OnSetTokenFmt(const DataArray* da){
+    DataNode& n = da->Evaluate(2);
+    if(n.Type() == kDataArray){
+        DataArray* arr = n.Array(0);
+        bool b = false;
+        if(arr->Size() > 1){
+            if(arr->Evaluate(1).Type() == kDataArray) b = true;
+        }
+        if(b){
+            SetTokenFmtImp(arr->ForceSym(0), arr->Array(1), arr, 2, false);
+        }
+        else SetTokenFmtImp(arr->ForceSym(0), 0, arr, 1, false);
+    }
+    else {
+        bool b = false;
+        if(da->Size() > 3){
+            if(da->Evaluate(3).Type() == kDataArray) b = true;
+        }
+        if(b){
+            SetTokenFmtImp(da->ForceSym(2), da->Array(3), da, 4, false);
+        }
+        else {
+            SetTokenFmtImp(da->ForceSym(2), 0, da, 3, false);
+        }
+    }
+    return DataNode(1);
+}
+
+DataNode UILabel::OnSetInt(const DataArray* da){
+    int i = da->Int(2);
+    bool b = false;
+    if(da->Size() > 3) b = da->Int(3);
+    SetInt(i, b);
+    return DataNode(1);
+}
+
+float GetTextSizeFromPctHeight(float f){
+
+}
+
+float GetPctHeightFromTextSize(float f){
+
+}
 
 BEGIN_HANDLERS(UILabel)
     HANDLE_EXPR(get_string_width, mText->GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
@@ -218,6 +281,18 @@ END_HANDLERS
 
 
 BEGIN_PROPSYNCS(UILabel)
-    SYNC_PROP(leading, h);
+    SYNC_PROP_SET(text_token, mTextToken, SetTextToken(_val.ForceSym(0)))
+    SYNC_PROP_SET(icon, mIcon.c_str(), OnSetIcon(_val.Str(0)))
+    SYNC_PROP_SET(text_size, mTextSize, mTextSize = GetTextSizeFromPctHeight(_val.Float(0)); Update())
+    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int(0)))
+    SYNC_PROP_SET(caps_mode, mCapsMode, SetCapsMode((RndText::CapsMode)_val.Int(0)))
+    SYNC_PROP_SET(markup, mMarkup, mMarkup = _val.Int(0); Update())
+    SYNC_PROP_MODIFY(leading, mLeading, Update())
+    SYNC_PROP_MODIFY(kerning, mKerning, LabelUpdate(true, false))
+    SYNC_PROP_MODIFY(italics, mItalics, Update())
+    SYNC_PROP_SET(fit_type, mFitType, SetFitType((FitType)_val.Int(0)))
+    SYNC_PROP_MODIFY(width, mWidth, Update())
+    SYNC_PROP_MODIFY(height, mHeight, Update())
+    SYNC_PROP_MODIFY(fixed_length, (int&)mFixedLength, Update())
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

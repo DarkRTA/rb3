@@ -88,6 +88,10 @@ public:
     void SetDateTime(const DateTime&, Symbol);
     void SetSubtitle(const DataArray*);
     RndText::Alignment Alignment() const { return (RndText::Alignment)mAlignment; }
+    void SetAlignment(RndText::Alignment);
+    void SetCapsMode(RndText::CapsMode);
+    void SetFitType(FitType);
+    void OnSetIcon(const char*);
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
