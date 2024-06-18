@@ -51,6 +51,13 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
+    NEW_OBJ(UILabel)
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(UILabel)
+    }
+    static bool sDeferUpdate;
+
     const char* GetDefaultText() const;
     int InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3&, Vector3&);
     void Terminate();
@@ -114,10 +121,6 @@ public:
     bool mAltStyleEnabled : 1; // 0x1a3 >> 5 & 1
     class String mAltFontResourceName; // 0x1a4
     ObjDirPtr<class ObjectDir> mObjDirPtr; // 0x1b0, unknown var name
-
-    NEW_OBJ(UILabel)
-    static void Init();
-    static bool sDeferUpdate;
 };
 
 #endif // UI_UILABEL_H

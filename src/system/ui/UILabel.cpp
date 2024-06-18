@@ -1,9 +1,9 @@
 #include "UILabel.h"
 #include "obj/Object.h"
 #include "os/System.h"
+#include "ui/UILabelDir.h"
+#include "ui/UI.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
 
 UILabel::UILabel() : mLabelDir(0), mText(Hmx::Object::New<RndText>()), unk114(), mFont(this, 0), unk12c(), mTextToken(), mIcon(),
     mTextSize(30.0f), mLeading(1.0f), mKerning(0.0f), mItalics(0.0f), mWidth(0.0f), mHeight(0.0f), mFixedLength(0), mReservedLine(0),
@@ -17,20 +17,58 @@ UILabel::~UILabel() {
     delete mText;
 }
 
-void UILabel::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
-    // Hmx::Object::RegisterFactory(UILabelDir::StaticClassName(), UILabelDir::NewObject);
+void UILabel::Init(){
+    TheUI->InitResources("UILabel");
+    Register();
+    UILabelDir::Init();
 }
 
 void UILabel::Terminate() {}
 
 BEGIN_COPYS(UILabel)
-    CREATE_COPY(UILabel)
-    MILO_ASSERT(c, 96);
+    CREATE_COPY_AS(UILabel, f)
+    MILO_ASSERT(f, 96);
     COPY_SUPERCLASS(UIComponent)
-    // SetCreditsText();
+    Update();
 END_COPYS
 
+void UILabel::CopyMembers(const UIComponent* o, Hmx::Object::CopyType ty){
+    UIComponent::CopyMembers(o, ty);
+    CREATE_COPY_AS(UILabel, l)
+    MILO_ASSERT(l, 0x6A);
+    COPY_MEMBER_FROM(l, mTextToken)
+    COPY_MEMBER_FROM(l, mIcon)
+    COPY_MEMBER_FROM(l, mTextSize)
+    COPY_MEMBER_FROM(l, mCapsMode)
+    COPY_MEMBER_FROM(l, mAlignment)
+    COPY_MEMBER_FROM(l, mMarkup)
+    COPY_MEMBER_FROM(l, mLeading)
+    COPY_MEMBER_FROM(l, mKerning)
+    COPY_MEMBER_FROM(l, mItalics)
+    COPY_MEMBER_FROM(l, mFitType)
+    COPY_MEMBER_FROM(l, mWidth)
+    COPY_MEMBER_FROM(l, mHeight)
+    COPY_MEMBER_FROM(l, mFixedLength)
+    COPY_MEMBER_FROM(l, mAlpha)
+    COPY_MEMBER_FROM(l, mColorOverride)
+    COPY_MEMBER_FROM(l, mPreserveTruncText)
+    if(mFixedLength != 0) mText->SetFixedLength(mFixedLength);
+    COPY_MEMBER_FROM(l, mReservedLine)
+    if(mReservedLine != 0) mText->ReserveLines(mReservedLine);
+    COPY_MEMBER_FROM(l, unk114)
+    COPY_MEMBER_FROM(l, mUseHighlightMesh)
+    COPY_MEMBER_FROM(l, mAltTextSize)
+    COPY_MEMBER_FROM(l, mAltKerning)
+    COPY_MEMBER_FROM(l, mAltTextColor)
+    COPY_MEMBER_FROM(l, mAltZOffset)
+    COPY_MEMBER_FROM(l, mAltItalics)
+    COPY_MEMBER_FROM(l, mAltAlpha)
+    COPY_MEMBER_FROM(l, mAltStyleEnabled)
+    COPY_MEMBER_FROM(l, mFontMatVariation)
+    COPY_MEMBER_FROM(l, mAltMatVariation)
+    COPY_MEMBER_FROM(l, mAltFontResourceName)
+    COPY_MEMBER_FROM(l, mObjDirPtr)
+}
 
 SAVE_OBJ(UILabel, 173)
 
