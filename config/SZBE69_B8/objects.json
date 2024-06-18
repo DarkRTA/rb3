@@ -386,7 +386,7 @@
             "system/rndobj/MultiMeshProxy.cpp": "Matching",
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "Matching",
-            "system/rndobj/PollAnim.cpp": "NonMatching",
+            "system/rndobj/PollAnim.cpp": "Matching",
             "system/rndobj/PostProc.cpp": "NonMatching",
             "system/rndobj/PropAnim.cpp": "NonMatching",
             "system/rndobj/PropKeys.cpp": "NonMatching",

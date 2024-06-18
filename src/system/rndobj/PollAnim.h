@@ -14,9 +14,9 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void StartAnim(){}
-    virtual void EndAnim(){}
-    virtual void SetFrame(float, float){}
+    virtual void StartAnim();
+    virtual void EndAnim();
+    virtual void SetFrame(float, float);
     virtual float EndFrame();
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
     virtual void Poll();
