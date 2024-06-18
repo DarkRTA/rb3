@@ -95,8 +95,8 @@ public:
         SetDirty();
     }
 
-    void SetDirtyLocalXfmVec(const Vector3& v){
-        mLocalXfm.v = v;
+    void SetDirtyLocalXfmVec(float x, float y, float z){
+        mLocalXfm.v.Set(x, y, z);
         SetDirty();
     }
 

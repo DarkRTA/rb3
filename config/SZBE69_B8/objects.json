@@ -454,7 +454,7 @@
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
             "system/ui/LabelNumberTicker.cpp": "NonMatching",
-            "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
+            "system/ui/LabelShrinkWrapper.cpp": "Matching",
             "system/ui/LocalePanel.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
