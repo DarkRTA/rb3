@@ -31,13 +31,13 @@ class CacheWii : public Cache {
     virtual bool ReadAsync(const char*, void*, uint, Hmx::Object*);
     virtual bool WriteAsync(const char*, void*, uint, Hmx::Object*);
     virtual bool DeleteAsync(const char*, Hmx::Object*);
-    virtual int ThreadStart();
-    virtual void ThreadDone(int);
-    virtual int ThreadGetDir(String);
-    virtual int ThreadGetFileSize();
-    virtual int ThreadRead();
-    virtual int ThreadWrite();
-    virtual int ThreadDelete();
+    int ThreadStart();
+    void ThreadDone(int);
+    int ThreadGetDir(String);
+    int ThreadGetFileSize();
+    int ThreadRead();
+    int ThreadWrite();
+    int ThreadDelete();
 
     int* m0x0c;
     CacheIDWii* m0x10;

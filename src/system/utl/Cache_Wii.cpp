@@ -39,7 +39,6 @@ const char* CacheIDWii::GetCacheSearchPath(const char* param_1) {
 }
 
 CacheWii::CacheWii(const CacheIDWii& param_1) {
-    // m0x0c =  NULL; // possibly char*
     m0x14 = String(param_1.mStrCacheName);
     m0x20 = String(param_1.m0x10);
     m0x2c = String(param_1.m0x1c);
@@ -91,7 +90,7 @@ bool CacheWii::IsConnectedSync() {
 }
 
 int CacheWii::GetFreeSpaceSync(unsigned long long* param_1) {
-    mOpCur = (OpType)VFGetDriveFreeSize(s_mThreadStr.c_str());
+    *param_1 = VFGetDriveFreeSize(m0x6c);
     mLastResult = kCache_NoError;
     return true;
 }
@@ -101,18 +100,17 @@ bool CacheWii::DeleteSync(const char* param_1) {
     if (!isDone) {
         mLastResult = kCache_ErrorBusy;
         return false;
-    } else if (param_1) {
+    } else if (!param_1) {
         mLastResult = kCache_ErrorBadParam;
         return false;
-    } else {
-        String file = "";
-        file = file + "1" + "2";
-        int iVar1 = VFDeleteFile(file.c_str());
-        if (iVar1 != 0 && iVar1 != 2) {
-            TheDebug.Notify(MakeString("Couldn't delete file %s", file));
-        }
-        return true;
     }
+    m0x20 = String(m0x64) + "/" + m0x2c;
+    int iVar1 = VFDeleteFile(m0x20.c_str());
+    if (iVar1 != 0 && iVar1 != 2) {
+        TheDebug.Notify(MakeString("Couldn't delete file %s", m0x20.c_str()));
+    }
+    mOpCur = kOpNone;
+    return true;
 }
 
 bool CacheWii::GetDirectoryAsync(const char*, std::vector<CacheDirEntry>* param_2, Hmx::Object*) {
@@ -133,7 +131,7 @@ bool CacheWii::GetDirectoryAsync(const char*, std::vector<CacheDirEntry>* param_
     }
 }
 
-bool CacheWii::GetFileSizeAsync(const char*, unsigned int* param_2, Hmx::Object*) {
+bool CacheWii::GetFileSizeAsync(const char* param_1, unsigned int* param_2, Hmx::Object*) {
     bool isDone = IsDone();
     if (!isDone) {
         mLastResult = kCache_ErrorBusy;
@@ -142,11 +140,10 @@ bool CacheWii::GetFileSizeAsync(const char*, unsigned int* param_2, Hmx::Object*
         mLastResult = kCache_ErrorBadParam;
         return false;
     } else {
-        //m0x3c
+        s_mThreadStr = m0x10->GetCachePath(param_1);
         m0x54 = param_2;
         mLastResult = kCache_NoError;
         mOpCur = kOpFileSize;
-        // ThreadCall((ThreadCallback*)this);
         return true;
     }
 }
@@ -173,21 +170,18 @@ bool CacheWii::WriteAsync(const char*, void*, uint, Hmx::Object*) {
 
 }
 
-bool CacheWii::DeleteAsync(const char* i, Hmx::Object*) {
+bool CacheWii::DeleteAsync(const char* param_1, Hmx::Object*) {
     bool isDone = IsDone();
     if (!isDone) {
         mLastResult = kCache_ErrorBusy;
         return false;
-    } else if (i == NULL) {
+    } else if (param_1 == NULL) {
         mLastResult = kCache_ErrorBadParam;
         return false;
     } else {
-        s_mThreadStr = mCacheName;
+        s_mThreadStr = m0x10->GetCachePath(param_1);
         mLastResult = kCache_NoError;
         mOpCur = kOpDelete;
-        if (this != NULL) {
-            // ThreadCall((ThreadCallback)&ThreadDelete);
-        }
         return true;
     }
 }
@@ -196,7 +190,10 @@ int CacheWii::ThreadStart() {
     MILO_ASSERT(!IsDone(), 0x14b);
 
     switch (mOpCur) {
-        case kOpDirectory:
+        case kOpDirectory: {
+            String file = m0x20 + s_mThreadStr + m0x2c + m0x64;
+            return ThreadGetDir(file);
+        }
         break;
         case kOpFileSize:
         return ThreadGetFileSize();
@@ -219,24 +216,35 @@ void CacheWii::ThreadDone(int param_1) {
         case kOpDirectory:
         mLastResult = (CacheResult)param_1;
         s_mThreadStr = gNullStr;
+        m0x5c = 0;
+        m0x60 = 0;
         break;
         case kOpFileSize:
         mLastResult = (CacheResult)param_1;
         s_mThreadStr = gNullStr;
+        m0x54 = 0;
+        m0x60 = 0;
         break;
         case kOpRead:
         mLastResult = (CacheResult)param_1;
         s_mThreadStr = gNullStr;
+        m0x54 = 0;
+        m0x58 = 0;
+        m0x60 = 0;
         break;
         case kOpWrite:
         mLastResult = (CacheResult)param_1;
         s_mThreadStr = gNullStr;
+        m0x54 = 0;
+        m0x58 = 0;
+        if (m0x60 != 0) {
 
+        }
         break;
         case kOpDelete:
         mLastResult = (CacheResult)param_1;
         s_mThreadStr = gNullStr;
-        
+        m0x60 = 0;
         break;
         default:
         MILO_ASSERT(false, 0x110);
@@ -293,13 +301,13 @@ int CacheWii::ThreadWrite() {
 }
 
 int CacheWii::ThreadDelete() {
-    char* local_18;
-    int result = VFDeleteFile(local_18);
-    if ((result == 0) || (result == 2)) {
+    const char* file = (m0x20 + m0x38 + m0x2c + m0x64).c_str();
 
+    int result = VFDeleteFile(file);
+    if ((result == 0) || (result == 2)) {
         return 0;
     } else {
-        TheDebug.Notify(MakeString("Couldn't delete file %s", local_18));
+        TheDebug.Notify(MakeString("Couldn't delete file %s", file));
         return -1;
     }
 }
