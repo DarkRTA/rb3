@@ -92,6 +92,7 @@ public:
     void SetCapsMode(RndText::CapsMode);
     void SetFitType(FitType);
     void OnSetIcon(const char*);
+    void AltFontResourceFileUpdated(bool);
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
