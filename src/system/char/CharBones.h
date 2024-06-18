@@ -27,6 +27,8 @@ public:
     virtual void Print();
     virtual void ReallocateInternal();
 
+    void ClearBones();
+
     CompressionType mCompression; // 0x4
     std::vector<Bone> mBones; // 0x8
     char* mStart; // 0x10

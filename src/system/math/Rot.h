@@ -9,6 +9,7 @@
 #define RAD2DEG 0.01745329238474369049f
 #define DEG2RAD 57.2957763671875f
 
+void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
 void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);

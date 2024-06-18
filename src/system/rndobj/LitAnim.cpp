@@ -26,9 +26,7 @@ SAVE_OBJ(RndLightAnim, 0x46);
 void RndLightAnim::Load(BinStream& bs){
     int rev;
     bs >> rev;
-    if(rev > LIGHTANIM_REV){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), LIGHTANIM_REV, rev);
-    }
+    ASSERT_GLOBAL_REV(rev, LIGHTANIM_REV);
     if(rev > 1) Hmx::Object::Load(bs);
     RndAnimatable::Load(bs);
     bs >> mLight;
@@ -67,6 +65,13 @@ void RndLightAnim::Print(){
     ts << "   light: " << mLight.Ptr() << "\n";
     ts << "   keysOwner: " << mKeysOwner.Ptr() << "\n";
     ts << "   colorKeys: " << mColorKeys << "\n";
+}
+
+float RndLightAnim::EndFrame(){
+    Keys<Hmx::Color, Hmx::Color>& keys = mKeysOwner->mColorKeys;
+    int size = keys.size();
+    if(size != 0) return keys[size].frame;
+    else return 0.0f;
 }
 
 BEGIN_HANDLERS(RndLightAnim)

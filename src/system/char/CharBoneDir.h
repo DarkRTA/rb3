@@ -3,6 +3,7 @@
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharBone.h"
+#include "char/CharBones.h"
 #include <list>
 
 class CharBoneDir : public ObjectDir {
@@ -27,6 +28,8 @@ public:
     virtual ~CharBoneDir();
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
+
+    static void StuffBones(CharBones&, Symbol);
     
     Recenter mRecenter;
     int mMoveContext;

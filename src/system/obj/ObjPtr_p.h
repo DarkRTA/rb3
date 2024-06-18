@@ -78,7 +78,7 @@ public:
         MILO_FAIL("Should go to owner");
     }
 
-    T1* Ptr(){ return mPtr; }
+    T1* Ptr() const { return mPtr; }
     operator T1*() const { return mPtr; }
     T1* operator->() const {
         MILO_ASSERT(mPtr, 0xAB);
@@ -89,7 +89,7 @@ public:
         if(t != mPtr){
             if(mPtr != 0) mPtr->Release(mOwner);
             mPtr = t;
-            if(mPtr != 0) mPtr->AddRef(mOwner);
+            if(mPtr != 0) t->AddRef(mOwner);
         }
     }
 

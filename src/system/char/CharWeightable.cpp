@@ -31,11 +31,11 @@ BEGIN_COPYS(CharWeightable)
     CREATE_COPY(CharWeightable)
     BEGIN_COPYING_MEMBERS
         if(ty == kCopyShallow){
-            mWeightOwner = c->mWeightOwner.mPtr;
+            SetWeightOwner(c->mWeightOwner.Ptr());
         }
         else {
-            mWeightOwner = this;
-            mWeight = c->mWeightOwner->mWeight;
+            SetWeightOwner(this);
+            mWeight = c->Weight();
         }
     END_COPYING_MEMBERS
 END_COPYS
@@ -58,8 +58,7 @@ BEGIN_PROPSYNCS(CharWeightable)
     }
     if(sym == weight_owner){
         if(_op == kPropSet){
-            CharWeightable* w = _val.Obj<CharWeightable>(0);
-            if(w) mWeightOwner = w;
+            SetWeightOwner(_val.Obj<CharWeightable>(0));
         }
         else {
             if((int)_op == 0x40) return false;

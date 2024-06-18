@@ -69,6 +69,7 @@ public:
     void SetAlpha(float f){ mAlpha = f; }
     void SetAltAlpha(float f){ mAltAlpha = f; }
     void SetTokenFmt(const DataArray*);
+    RndText::Alignment Alignment() const { return (RndText::Alignment)mAlignment; }
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));

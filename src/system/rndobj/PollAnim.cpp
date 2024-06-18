@@ -7,6 +7,10 @@ RndPollAnim::RndPollAnim() : mAnims(this, kObjListNoNull) {
     
 }
 
+void RndPollAnim::StartAnim(){}
+void RndPollAnim::EndAnim(){}
+void RndPollAnim::SetFrame(float, float){}
+
 float RndPollAnim::EndFrame(){
     float frame = 0.0f;
     for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
@@ -17,7 +21,9 @@ float RndPollAnim::EndFrame(){
 }
 
 void RndPollAnim::ListAnimChildren(std::list<RndAnimatable*>& children) const {
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin();
+    ObjPtrList<RndAnimatable, class ObjectDir>::iterator itEnd = mAnims.end();
+    for(; it != itEnd; ++it){
         children.push_back(*it);
     }
 }
@@ -31,13 +37,14 @@ void RndPollAnim::Enter(){
 void RndPollAnim::Poll(){
     for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         RndAnimatable* thisAnim = *it;
+        float foureighty = 480.0f;
         float f = 0.0f;
         switch(thisAnim->GetRate()){
             case k30_fps:
                 f = 30.0f * TheTaskMgr.Seconds(TaskMgr::b);
                 break;
             case k480_fpb:
-                f = 480.0f * TheTaskMgr.Beat();
+                f = foureighty * TheTaskMgr.Beat();
                 break;
             case k30_fps_ui:
                 f = 30.0f * TheTaskMgr.UISeconds();
@@ -46,7 +53,7 @@ void RndPollAnim::Poll(){
                 f = TheTaskMgr.Beat();
                 break;
             case k30_fps_tutorial:
-                f = 480.0f * TheTaskMgr.TutorialSeconds();
+                f = 30.0f * TheTaskMgr.TutorialSeconds();
                 break;
             default: break;
         }
