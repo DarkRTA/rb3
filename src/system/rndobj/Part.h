@@ -42,6 +42,21 @@ struct RndFancyParticle : RndParticle {
     float swingArmVel;
 };
 
+struct PartOverride {
+    unsigned int mask; // 0x0
+    float life; // 0x4
+    float speed; // 0x8
+    float size; // 0xc
+    float deltaSize; // 0x10
+    Hmx::Color startColor; // 0x14
+    Hmx::Color midColor; // 0x24
+    Hmx::Color endColor; // 0x34
+    Vector2 pitch; // 0x44
+    Vector2 yaw; // 0x4c
+    RndMesh* mesh; // 0x54
+    Box box; // 0x58
+};
+
 class RndParticleSys : public RndAnimatable, public RndPollable, public RndTransformable, public RndDrawable {
 public:
     enum Type {
@@ -145,6 +160,8 @@ public:
     int unk2e4;
     float unk2e8;
 };
+
+extern PartOverride gNoPartOverride;
 
 void InitParticleSystem();
 
