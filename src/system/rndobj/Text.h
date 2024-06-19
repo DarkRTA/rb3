@@ -42,19 +42,28 @@ public:
     };
 
     RndText();
-    virtual ~RndText();
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    OBJ_CLASSNAME(RndText)
+    OBJ_SET_TYPE(RndText)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual void UpdateSphere();
+    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual bool MakeWorldSphere(Sphere&, bool);
+    virtual void Mats(std::list<class RndMat*>&, bool);
+    virtual void Draw();
+    virtual void DrawShowing();
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
+    virtual int CollidePlane(const Plane&);
+    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual ~RndText();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual const char* FindPathName();
     virtual void Print();
 
     NEW_OBJ(RndText)
-    OBJ_CLASSNAME(RndText)
-    OBJ_SET_TYPE(RndText)
 
     float GetStringWidthUTF8(const char*, const char*, bool, Style*) const;
     void ReserveLines(int);
