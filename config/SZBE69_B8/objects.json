@@ -381,6 +381,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/Mesh.cpp": "NonMatching",
             "system/rndobj/MeshDeform.cpp": "NonMatching",
+            "system/rndobj/Morph.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "Matching",
             "system/rndobj/Movie.cpp": "Matching",
             "system/rndobj/MultiMesh.cpp": { "status": "NonMatching", "extra_cflags": [""] },
