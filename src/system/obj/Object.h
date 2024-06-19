@@ -165,6 +165,11 @@ namespace Hmx {
     };
 }
 
+struct ObjMatchPr {
+    bool operator() (const Hmx::Object*& value) { return value == obj; }
+    Hmx::Object* obj;
+};
+
 inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     if(obj) ts << obj->Name();
     else ts << "<null>";

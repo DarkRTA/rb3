@@ -5,10 +5,13 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
+#include "ui/UIMessages.h"
+#include "ui/UI.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIComponent)
 int UIComponent::sSelectFrames = 0;
+bool gResettingType;
 
 Symbol UIComponentStateToSym(UIComponent::State s) {
     static Symbol syms[5] = {"normal", "focused", "disabled", "selecting", "selected"};
@@ -168,6 +171,27 @@ void UIComponent::Poll() {
     FinishSelecting();
 }
 
+#pragma push
+#pragma pool_data off
+void UIComponent::SendSelect(LocalUser* user){
+    if(mState == kFocused){
+        SetState(kSelecting);
+        static UIComponentSelectMsg select_msg(0, 0);
+        UNCONST_ARRAY(select_msg)->Node(2) = DataNode(this);
+        UNCONST_ARRAY(select_msg)->Node(3) = DataNode(user);
+        TheUI->Handle(select_msg, false);
+        if(mState != kSelecting) unk_0xD4 = 0;
+        else {
+            unk_0xD4 = TheUI->mCurrentScreen;
+            mSelectingUser = user;
+            MILO_ASSERT(sSelectFrames < 255, 0x137);
+            MILO_ASSERT(sSelectFrames >= 0, 0x138);
+            unk108 = sSelectFrames;
+        }
+    }
+}
+#pragma pop
+
 void UIComponent::MockSelect(){
     MILO_ASSERT(sSelectFrames < 255, 0x13F);
     MILO_ASSERT(sSelectFrames >= 0, 0x140);
@@ -176,19 +200,28 @@ void UIComponent::MockSelect(){
     mMockSelect = true;
 }
 
+void UIComponent::UpdateMeshes(State s){
+    for(std::vector<UIMesh>::iterator it = mMeshes.begin(); it != mMeshes.end(); ++it){
+        if((*it).mMesh->mMat != (*it).mMats[s]){
+            (*it).mMesh->SetMat((*it).mMats[s]);
+        }
+    }
+}
+
 ObjectDir* UIComponent::ResourceDir(){
     if(mResourceDir) return mResourceDir;
     else if(mResource) return mResource->Dir();
     else return 0;
 }
 
-// class ObjectDir* UIComponent::ResourceDir() {
-//     if (mResourceDir.mDir) return mResourceDir.mDir;
-//     if (mMesh) {
-//         return mMesh->mDir.mDir;
-//     }
-//     return NULL;
-// }
+void UIComponent::UpdateResource(){
+    if(mResource) mResource->Release();
+    mResource = TheUI->Resource(this);
+    if(mResource){
+        mResource->Load(mLoading);
+    }
+    if(!mLoading && !gResettingType) Update();
+}
 
 void UIComponent::ResourceFileUpdated(bool) {
 
@@ -200,6 +233,20 @@ DataNode UIComponent::OnGetResourcesPath(DataArray* da) {
     }
     else return DataNode("");
 }
+
+#pragma push
+#pragma pool_data off
+void UIComponent::FinishSelecting(){
+    if(mState != kDisabled && mState != kNormal) SetState(kFocused);
+    if(!mMockSelect && unk_0xD4 == TheUI->mCurrentScreen){
+        static UIComponentSelectDoneMsg select_msg(this, 0);
+        UNCONST_ARRAY(select_msg)->Node(2) = DataNode(this);
+        UNCONST_ARRAY(select_msg)->Node(3) = DataNode(mSelectingUser);
+        TheUI->Handle(select_msg, false);
+    }
+    else mMockSelect = false;
+}
+#pragma pop
 
 BEGIN_HANDLERS(UIComponent)
     HANDLE_EXPR(get_state, mState)

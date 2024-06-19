@@ -2,6 +2,8 @@
 #include "obj/Object.h"
 #include "os/User.h"
 #include "ui/Utl.h"
+#include "ui/UI.h"
+#include "ui/UIMessages.h"
 #include "utl/Symbols.h"
 
 ScrollSelect::ScrollSelect() : unk_0x4(0) { Reset(); }
@@ -15,6 +17,29 @@ bool ScrollSelect::SelectScrollSelect(UIComponent* comp, LocalUser* user){
         if(unk_0x8 == -1) Store();
         else Reset();
         SendScrollSelected(comp, user);
+        return true;
+    }
+    else return false;
+}
+
+bool ScrollSelect::RevertScrollSelect(UIComponent* comp, LocalUser* user, Hmx::Object* obj){
+    if(unk_0x8 != -1){
+        int aux = SelectedAux();
+        bool somenum = aux - unk_0x8 | unk_0x8 - aux;
+        SetSelectedAux(unk_0x8);
+        unk_0x8 = -1;
+        DataNode node(kDataUnhandled, 0);
+        if(somenum && obj){
+            node = obj->Handle(UIComponentScrollMsg(comp, user), false);
+        }
+        if(node.Type() == kDataUnhandled){
+            node = SendScrollSelected(comp, user);
+        }
+        if(somenum){
+            if(node.Type() == kDataUnhandled){
+                TheUI->Handle(UIComponentScrollMsg(comp, user), false);
+            }
+        }
         return true;
     }
     else return false;
@@ -38,6 +63,17 @@ bool ScrollSelect::CatchNavAction(JoypadAction act) const {
     if(unk_0x8 != -1 && IsNavAction(act)) ret = true;
     return ret;
 }
+
+#pragma push
+#pragma pool_data off
+DataNode ScrollSelect::SendScrollSelected(UIComponent* comp, LocalUser* user){
+    static UIComponentScrollSelectMsg scroll_select_msg(0, 0, 0);
+    scroll_select_msg->Node(2) = DataNode(comp);
+    scroll_select_msg->Node(3) = DataNode(user);
+    scroll_select_msg->Node(4) = DataNode(unk_0x8 != -1);
+    return TheUI->Handle(scroll_select_msg, false);
+}
+#pragma pop
 
 DataNode ScrollSelect::Handle(DataArray* _msg, bool _warn){ 
     Symbol sym = _msg->Sym(1);

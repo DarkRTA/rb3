@@ -4,11 +4,11 @@
 #include "os/User.h"
 #include "os/Joypad.h"
 
-BEGIN_MESSAGE(JoypadConnectionMsg, "joypad_connect", LocalUser*, bool, int);
+BEGIN_MESSAGE(JoypadConnectionMsg, joypad_connect, LocalUser*, bool, int);
     LocalUser* GetUser() const;
 END_MESSAGE;
 
-BEGIN_MESSAGE(ButtonUpMsg, "button_up", LocalUser*, JoypadButton, JoypadAction, int);
+BEGIN_MESSAGE(ButtonUpMsg, button_up, LocalUser*, JoypadButton, JoypadAction, int);
     MESSAGE_ARRAY_CTOR(ButtonUpMsg)
     LocalUser* GetUser() const;
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
@@ -16,7 +16,7 @@ BEGIN_MESSAGE(ButtonUpMsg, "button_up", LocalUser*, JoypadButton, JoypadAction, 
     int GetPadNum() const { return mData->Int(5); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(ButtonDownMsg, "button_down", LocalUser*, JoypadButton, JoypadAction, int);
+BEGIN_MESSAGE(ButtonDownMsg, button_down, LocalUser*, JoypadButton, JoypadAction, int);
     MESSAGE_ARRAY_CTOR(ButtonDownMsg)
     LocalUser* GetUser() const;
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
