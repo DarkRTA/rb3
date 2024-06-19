@@ -6,6 +6,7 @@
 #include "ui/UI.h"
 #include "rndobj/Cam.h"
 #include "math/MathFuncs.h"
+#include "utl/SuperFormatString.h"
 #include "utl/Symbols.h"
 
 bool UILabel::sDebugHighlight;
@@ -279,6 +280,8 @@ void UILabel::AppendIcon(char c){
     SetDisplayText(MakeString("%s%c", unk114, c), true);
 }
 
+DECOMP_FORCEACTIVE(UILabel, "LabelDir is not yet loaded, can't tell if edit text is allowed")
+
 void UILabel::SetDateTime(const DateTime& dt, Symbol s){
     String str(Localize(s, false));
     dt.Format(str);
@@ -319,6 +322,41 @@ void UILabel::Update() {
 
 void UILabel::LabelUpdate(bool b, bool c) {
     
+}
+
+RndFont* UILabel::AltFont(){
+    if(mObjDirPtr){
+        UILabelDir* ldir = dynamic_cast<UILabelDir*>(mObjDirPtr.Ptr());
+        if(!ldir) MILO_FAIL("bad UILabel alt font resource dir type!");
+        RndText* t = ldir->TextObj(mAltMatVariation);
+        if(!t){
+            MILO_WARN("Label %s's alt font is referencing a mat variation '%s' that no longer exists, setting to default...", Name(), mAltMatVariation.Str());
+            mAltMatVariation = Symbol();
+            t = ldir->TextObj(mAltMatVariation);
+        }
+        MILO_ASSERT(t, 0x430);
+        RndFont* font = t->mFont;
+        MILO_ASSERT(font, 0x432);
+        return font;
+    }
+    else return 0;
+}
+
+RndFont* UILabel::Font(){
+    MILO_ASSERT(mLabelDir, 0x43B);
+    if(mFont && mFontMatVariation == unk12c) return mFont;
+    RndText* t = mLabelDir->TextObj(mFontMatVariation);
+    if(!t){
+        MILO_WARN("Label %s is referencing a mat variation '%s' that no longer exists, setting to default...", Name(), mFontMatVariation.Str());
+        mFontMatVariation = Symbol();
+        t = mLabelDir->TextObj(mFontMatVariation);
+    }
+    MILO_ASSERT(t, 0x448);
+    RndFont* font = t->mFont;
+    MILO_ASSERT(font, 0x44A);
+    mFont = font;
+    unk12c = mFontMatVariation;
+    return mFont;
 }
 
 void UILabel::SetAlignment(RndText::Alignment a){
@@ -369,8 +407,30 @@ DataNode UILabel::OnSetTokenFmt(const DataArray* da){
     return DataNode(1);
 }
 
-void UILabel::SetTokenFmtImp(Symbol, const DataArray*, const DataArray*, int, bool){
-    
+void UILabel::SetTokenFmtImp(Symbol s, const DataArray* da1, const DataArray* da2, int i, bool b){
+    mTextToken = s;
+    if(mTextToken.Null()) SetDisplayText(gNullStr, true);
+    else {
+        bool* b2;
+        const char* localized = Localize(mTextToken, b2);
+        if(*b2){
+            SuperFormatString str(localized, da1, b);
+            if(da2){
+                for(; i < da2->Size(); i++){
+                    DataNode& n = da2->Evaluate(i);
+                    if(n.Type() == kDataSymbol){
+                        str << Localize(n.Sym(0), 0);
+                    }
+                    else str << n;
+                }
+            }
+            const char* text;
+            if(b) text = str.RawFmt();
+            else text = str.Str();
+            SetDisplayText(text, false);
+        }
+        else SetDisplayText(localized, false);
+    }
 }
 
 DataNode UILabel::OnSetInt(const DataArray* da){
@@ -379,6 +439,18 @@ DataNode UILabel::OnSetInt(const DataArray* da){
     if(da->Size() > 3) b = da->Int(3);
     SetInt(i, b);
     return DataNode(1);
+}
+
+void UILabel::CenterWithLabel(UILabel* label, bool b, float f){
+    MILO_ASSERT(TextObj()->GetAlignment() == RndText::kTopCenter || TextObj()->GetAlignment() == RndText::kMiddleCenter || TextObj()->GetAlignment() == RndText::kBottomCenter || label->TextObj()->GetAlignment() == RndText::kTopCenter || label->TextObj()->GetAlignment() == RndText::kMiddleCenter || label->TextObj()->GetAlignment() == RndText::kBottomCenter, 0x592);
+    int num = 1;
+    if(b) num = -1;
+    Transform xfm = LocalXfm();
+    float width = mText->MaxLineWidth();
+    Transform otherxfm = label->LocalXfm();
+    float otherwidth = label->mText->MaxLineWidth();
+    SetDirtyLocalXfm(xfm);
+    label->SetDirtyLocalXfm(otherxfm);
 }
 
 float GetTextSizeFromPctHeight(float f){

@@ -65,6 +65,8 @@ public:
     void GetMeshes(std::vector<RndMesh*>&);
     void SetFixedLength(int);
     void GetCurrentStringDimensions(float&, float&);
+    Alignment GetAlignment() const { return (Alignment)mAlign; }
+    float MaxLineWidth() const;
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -94,7 +96,7 @@ public:
     bool unk101;
     float unk104;
     std::map<unsigned int, MeshInfo> unk108;
-    Alignment mAlign : 8; // 0x120
+    unsigned char mAlign; // 0x120
     CapsMode mCapsMode : 8; // 0x121
     int unk122 : 8;
     int unk123 : 8;
