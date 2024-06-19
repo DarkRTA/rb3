@@ -13,6 +13,9 @@ END_MESSAGE;
 BEGIN_MESSAGE(UIComponentSelectDoneMsg, "component_select_done", UIComponent*, LocalUser*);
 END_MESSAGE;
 
+BEGIN_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select", UIComponent*, LocalUser*, bool);
+END_MESSAGE;
+
 BEGIN_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete", UITrigger*);
 END_MESSAGE;
 
@@ -24,6 +27,9 @@ inline UIComponentSelectMsg::UIComponentSelectMsg(UIComponent* comp, LocalUser* 
 
 inline UIComponentSelectDoneMsg::UIComponentSelectDoneMsg(UIComponent* comp, LocalUser* user) : 
     Message(Type(), DataNode(comp), DataNode(user)){}
+
+inline UIComponentScrollSelectMsg::UIComponentScrollSelectMsg(UIComponent* comp, LocalUser* user, bool b) : 
+    Message(Type(), DataNode(comp), DataNode(user), DataNode(b)){}
 
 inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) : 
     Message(Type(), DataNode(trig)){}
