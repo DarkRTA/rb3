@@ -372,6 +372,7 @@
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Font.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
+            "system/rndobj/Gen.cpp": "NonMatching",
             "system/rndobj/Graph.cpp": "NonMatching",
             "system/rndobj/Group.cpp": "NonMatching",
             "system/rndobj/HiResScreen.cpp": "NonMatching",
