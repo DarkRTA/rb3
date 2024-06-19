@@ -8,7 +8,7 @@ RndParticleSys::~RndParticleSys(){
 }
 
 RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), mMesh(this, 0),
-    mMat(this, 0), unk210(this, 0), mBounce(this, 0), mGrowRatio(0.0f) {
+    mMat(this, 0), mRelativeParent(this, 0), mBounce(this, 0), mGrowRatio(0.0f) {
 
 }
 
@@ -131,10 +131,10 @@ BEGIN_PROPSYNCS(RndParticleSys)
             return true;
         }
     }
-    SYNC_PROP_SET(relative_parent, unk210, SetRelativeMotion(mLastWorldXfm.v.z, _val.Obj<RndTransformable>(0)))
-    SYNC_PROP_SET(relative_motion, mLastWorldXfm.v.z, SetRelativeMotion(_val.Float(0), unk210))
+    SYNC_PROP_SET(relative_parent, mRelativeParent, SetRelativeMotion(mRelativeMotion, _val.Obj<RndTransformable>(0)))
+    SYNC_PROP_SET(relative_motion, mRelativeMotion, SetRelativeMotion(_val.Float(0), mRelativeParent))
     SYNC_PROP_SET(subsamples, mSubSamples, SetSubSamples(_val.Int(0)))
-    SYNC_PROP_SET(frame_drive, unk9p7, SetFrameDrive(_val.Int(0)))
+    SYNC_PROP_SET(frame_drive, mFrameDrive, SetFrameDrive(_val.Int(0)))
     {
         static Symbol _s("pre_spawn");
         if(sym == _s){

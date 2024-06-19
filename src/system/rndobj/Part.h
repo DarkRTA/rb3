@@ -95,10 +95,10 @@ public:
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x190
     ObjPtr<RndMat, ObjectDir> mMat; // 0x19c
     bool mPreserveParticles; // 0x1a8
-    int unk1ac;
-    Transform mRelativeXfm; // 0x1b0
-    Transform mLastWorldXfm; // 0x1f0
-    ObjOwnerPtr<RndTransformable, ObjectDir> unk210;
+    Transform mRelativeXfm; // 0x1ac
+    Transform mLastWorldXfm; // 0x1ec
+    float mRelativeMotion; // 0x20c
+    ObjOwnerPtr<RndTransformable, ObjectDir> mRelativeParent; // 0x210
     ObjPtr<RndTransformable, ObjectDir> mBounce; // 0x21c
     Vector3 mForceDir; // 0x228
     float mDrag; // 0x234
@@ -109,7 +109,7 @@ public:
     float mStretchScale; // 0x254
     float mScreenAspect; // 0x258
     int mSubSamples; // 0x25c
-    char unkrange2[0x30];
+    Transform mSubSampleXfm; // 0x260
     float mGrowRatio; // 0x290
     float mShrinkRatio; // 0x294
     float mMidColorRatio; // 0x298
