@@ -11,7 +11,7 @@
 #include "rndobj/Trans.h"
 #include "ui/UIResource.h"
 #include "obj/Msg.h"
-// #include "os/Joypad.h"
+#include "ui/UIScreen.h"
 #include "utl/FilePath.h"
 #include <vector>
 
@@ -75,7 +75,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
     ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
     LocalUser* mSelectingUser; // 0xD0
-    int unk_0xD4; // 0xD4
+    UIScreen* unk_0xD4; // 0xD4
     UIResource* mResource; // 0xD8
     std::vector<UIMesh> mMeshes; // 0xDC
     class String mResourceName; // 0xE4

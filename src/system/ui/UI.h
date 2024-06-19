@@ -44,7 +44,7 @@ public:
     void GotoScreenImpl(UIScreen*, bool, bool);
     class UIPanel* FocusPanel();
     UIComponent* FocusComponent();
-    void Resource(const UIComponent*);
+    UIResource* Resource(const UIComponent*);
     void InitResources(Symbol);
     void FindResource(const DataArray*);
     void UseJoypad(bool, bool);
