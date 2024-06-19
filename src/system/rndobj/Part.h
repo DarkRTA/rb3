@@ -54,6 +54,9 @@ public:
     virtual void SetPersistentPool(int, Type);
     virtual void Highlight();
 
+    void SetGrowRatio(float);
+    void SetShrinkRatio(float);
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)
