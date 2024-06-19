@@ -76,6 +76,12 @@ public:
     void GetCurrentStringDimensions(float&, float&);
     Alignment GetAlignment() const { return (Alignment)mAlign; }
     float MaxLineWidth() const;
+    void SetMarkup(bool);
+    void ResizeText(int);
+    void SetText(const char*);
+    void DeferUpdateText();
+    void ResolveUpdateText();
+    void SetWrapWidth(float);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -97,7 +103,7 @@ public:
     bool unke8;
     bool unke9;
     float unkec;
-    int unkf0;
+    RndFont* unkf0;
     float unkf4;
     float unkf8;
     int unkfc;
@@ -106,15 +112,15 @@ public:
     float unk104;
     std::map<unsigned int, MeshInfo> unk108;
     unsigned char mAlign; // 0x120
-    CapsMode mCapsMode : 8; // 0x121
-    int unk122 : 8;
-    int unk123 : 8;
+    unsigned char mCapsMode; // 0x121
+    int mFixedLength : 16; // 0x122
     int mDeferUpdate : 4; // 0x124
     int unk128;
     float unk12c;
     float unk130;
 
     static void Init();
+    static void Register(){ REGISTER_OBJ_FACTORY(RndText); }
     static std::set<RndText*> mTextMeshSet;
 
     DECLARE_REVS

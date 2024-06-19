@@ -91,6 +91,24 @@ public:
     bool unk9p6 : 1; // used in RndTexBlender
     bool unk9p7 : 1;
 
+    bool unkap0 : 1;
+    bool unkap1 : 1;
+    bool unkap2 : 1;
+    bool unkap3 : 1;
+    bool unkap4 : 1;
+    bool unkap5 : 1;
+    bool unkap6 : 1;
+    bool unkap7 : 1;
+
+    bool unkbp0 : 1;
+    bool unkbp1 : 1;
+    bool unkbp2 : 1;
+    bool unkbp3 : 1;
+    bool unkbp4 : 1;
+    bool unkbp5 : 1;
+    bool unkbp6 : 1;
+    bool unkbp7 : 1;
+
     Sphere mSphere;
     float mOrder;
 };
