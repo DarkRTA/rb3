@@ -25,10 +25,31 @@ struct RndParticle {
     RndParticle* next;
 };
 
+struct RndFancyParticle : RndParticle {
+    float growFrame;
+    float growVel;
+    float shrinkFrame;
+    float shrinkVel;
+    Hmx::Color midcolVel;
+    float midcolFrame;
+    float beginGrow;
+    float midGrow;
+    float endGrow;
+    Vector4 bubbleDir;
+    float bubbleFreq;
+    float bubblePhase;
+    float RPF;
+    float swingArmVel;
+};
+
 class RndParticleSys : public RndAnimatable, public RndPollable, public RndTransformable, public RndDrawable {
 public:
     enum Type {
         t0, t1, t2
+    };
+
+    struct Burst {
+
     };
 
     RndParticleSys();

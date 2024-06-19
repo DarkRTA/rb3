@@ -7,9 +7,15 @@ RndParticleSys::~RndParticleSys(){
 
 }
 
-RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), mMesh(this, 0),
-    mMat(this, 0), mRelativeParent(this, 0), mBounce(this, 0), mGrowRatio(0.0f) {
-
+RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), unke8(0), unkec(0.0f),
+    mBubblePeriod(10.0f, 10.0f), mBubbleSize(1.0f, 1.0f), mLife(100.0f, 100.0f), mBoxExtent1(0.0f, 0.0f, 0.0f), mBoxExtent2(0.0f, 0.0f, 0.0f),
+    mSpeed(1.0f, 1.0f), mPitch(0.0f, 0.0f), mYaw(0.0f, 0.0f), mEmitRate(1.0f, 1.0f), mStartSize(1.0f, 1.0f), mDeltaSize(0.0f, 0.0f),
+    mMesh(this, 0), mMat(this, 0), mPreserveParticles(0), mRelativeParent(this, 0), mBounce(this, 0), mForceDir(0.0f, 0.0f, 0.0f), mDrag(0.0f),
+    mRPM(0.0f, 0.0f), mRPMDrag(0.0f), mStartOffset(0.0f, 0.0f), mEndOffset(0.0f, 0.0f), mStretchScale(1.0f), mScreenAspect(1.0f), mSubSamples(0),
+    mGrowRatio(0.0f), mShrinkRatio(1.0f), mMidColorRatio(0.5f), mMaxBurst(0), unk2c8(0.0f), mTimeBetween(15.0f, 35.0f), mPeakRate(4.0f, 8.0f),
+    mDuration(20.0f, 30.0f), unk2e4(0), unk2e8(0.0f) {
+    SetRelativeMotion(0.0f, this);
+    SetSubSamples(0);
 }
 
 bool AngleVectorSync(Vector2&, DataNode&, DataArray*, int, PropOp){
