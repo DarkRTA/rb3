@@ -202,7 +202,9 @@ void UIComponent::MockSelect(){
 
 void UIComponent::UpdateMeshes(State s){
     for(std::vector<UIMesh>::iterator it = mMeshes.begin(); it != mMeshes.end(); ++it){
-
+        if((*it).mMesh->mMat != (*it).mMats[s]){
+            (*it).mMesh->SetMat((*it).mMats[s]);
+        }
     }
 }
 
@@ -231,6 +233,20 @@ DataNode UIComponent::OnGetResourcesPath(DataArray* da) {
     }
     else return DataNode("");
 }
+
+#pragma push
+#pragma pool_data off
+void UIComponent::FinishSelecting(){
+    if(mState != kDisabled && mState != kNormal) SetState(kFocused);
+    if(!mMockSelect && unk_0xD4 == TheUI->mCurrentScreen){
+        static UIComponentSelectDoneMsg select_msg(this, 0);
+        UNCONST_ARRAY(select_msg)->Node(2) = DataNode(this);
+        UNCONST_ARRAY(select_msg)->Node(3) = DataNode(mSelectingUser);
+        TheUI->Handle(select_msg, false);
+    }
+    else mMockSelect = false;
+}
+#pragma pop
 
 BEGIN_HANDLERS(UIComponent)
     HANDLE_EXPR(get_state, mState)

@@ -18,11 +18,6 @@
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
 
-    // size 0x18
-    class UIMesh {
-        int unk[6];
-    };
-
     enum State {
         kNormal = 0,
         kFocused = 1,
@@ -30,6 +25,13 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
         kSelecting = 3,
         kSelected = 4,
         kNumStates = 5,
+    };
+
+    // size 0x18
+    class UIMesh {
+    public:
+        RndMesh* mMesh;
+        RndMat* mMats[kNumStates];
     };
 
     UIComponent();
