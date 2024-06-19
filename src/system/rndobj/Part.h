@@ -28,7 +28,7 @@ struct RndParticle {
 class RndParticleSys : public RndAnimatable, public RndPollable, public RndTransformable, public RndDrawable {
 public:
     enum Type {
-
+        t0, t1, t2
     };
 
     RndParticleSys();
@@ -67,7 +67,7 @@ public:
     NEW_OBJ(RndParticleSys)
     static void Init(){ REGISTER_OBJ_FACTORY(RndParticleSys) }
 
-    int unkc8; // fancy?
+    Type mType; // fancy?
     int mMaxParticles; // 0xcc
     int unkd0;
     int unkd4;

@@ -91,17 +91,17 @@ public:
     bool unk9p6 : 1; // used in RndTexBlender
     bool unk9p7 : 1;
 
-    bool unkap0 : 1;
-    bool unkap1 : 1;
-    bool unkap2 : 1;
+    bool mPauseOffscreen : 1; // used in RndParticleSys
+    bool mBubble : 1; // used in RndParticleSys
+    bool mPreSpawn : 1; // used in RndParticleSys
     bool unkap3 : 1;
-    bool unkap4 : 1;
-    bool unkap5 : 1;
-    bool unkap6 : 1;
-    bool unkap7 : 1;
+    bool mSpin : 1; // used in RndParticleSys
+    bool mRandomDirection : 1; // used in RndParticleSys
+    bool mVelocityAlign : 1; // used in RndParticleSys
+    bool mStretchWithVelocity : 1; // used in RndParticleSys
 
-    bool unkbp0 : 1;
-    bool unkbp1 : 1;
+    bool mConstantArea : 1; // used in RndParticleSys
+    bool mPerspective : 1; // used in RndParticleSys
     bool unkbp2 : 1;
     bool mTextMarkup : 1; // used in RndText
     bool unkbp4 : 1; // used in RndText

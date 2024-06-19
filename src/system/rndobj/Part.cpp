@@ -7,7 +7,7 @@ RndParticleSys::~RndParticleSys(){
 
 }
 
-RndParticleSys::RndParticleSys() : unkc8(0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), mMesh(this, 0),
+RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), mMesh(this, 0),
     mMat(this, 0), unk210(this, 0), mBounce(this, 0), mGrowRatio(0.0f) {
 
 }
@@ -20,7 +20,7 @@ bool AngleVectorSync(Vector2&, DataNode&, DataArray*, int, PropOp){
 #pragma pool_data off
 BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(mat, mMat)
-    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), (Type)unkc8))
+    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), mType))
     SYNC_PROP(emit_rate, mEmitRate)
     SYNC_PROP(screen_aspect, mScreenAspect)
     SYNC_PROP(life, mLife)
@@ -38,7 +38,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(end_alpha_low, mEndColorLow.alpha)
     SYNC_PROP(end_alpha_high, mEndColorHigh.alpha)
     SYNC_PROP(preserve, mPreserveParticles)
-    SYNC_PROP_SET(fancy, unkc8, SetPool(mMaxParticles, (Type)_val.Int(0)))
+    SYNC_PROP_SET(fancy, mType, SetPool(mMaxParticles, (Type)_val.Int(0)))
     SYNC_PROP_SET(grow_ratio, mGrowRatio, SetGrowRatio(_val.Float(0)))
     SYNC_PROP_SET(shrink_ratio, mShrinkRatio, SetShrinkRatio(_val.Float(0)))
     SYNC_PROP(drag, mDrag)
@@ -50,8 +50,8 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("bubble");
         if(sym == _s){
-            if(_op == kPropSet){ unkap1 = _val.Int(0); }
-            else _val = DataNode(unkap1);
+            if(_op == kPropSet){ mBubble = _val.Int(0); }
+            else _val = DataNode(mBubble);
             return true;
         }
     }
@@ -64,8 +64,8 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("spin");
         if(sym == _s){
-            if(_op == kPropSet){ unkap4 = _val.Int(0); }
-            else _val = DataNode(unkap4);
+            if(_op == kPropSet){ mSpin = _val.Int(0); }
+            else _val = DataNode(mSpin);
             return true;
         }
     }
@@ -76,24 +76,24 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("random_direction");
         if(sym == _s){
-            if(_op == kPropSet){ unkap5 = _val.Int(0); }
-            else _val = DataNode(unkap5);
+            if(_op == kPropSet){ mRandomDirection = _val.Int(0); }
+            else _val = DataNode(mRandomDirection);
             return true;
         }
     }
     {
         static Symbol _s("velocity_align");
         if(sym == _s){
-            if(_op == kPropSet){ unkap6 = _val.Int(0); }
-            else _val = DataNode(unkap6);
+            if(_op == kPropSet){ mVelocityAlign = _val.Int(0); }
+            else _val = DataNode(mVelocityAlign);
             return true;
         }
     }
     {
         static Symbol _s("stretch_with_velocity");
         if(sym == _s){
-            if(_op == kPropSet){ unkap7 = _val.Int(0); }
-            else _val = DataNode(unkap7);
+            if(_op == kPropSet){ mStretchWithVelocity = _val.Int(0); }
+            else _val = DataNode(mStretchWithVelocity);
             return true;
         }
     }
@@ -101,16 +101,16 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("constant_area");
         if(sym == _s){
-            if(_op == kPropSet){ unkbp0 = _val.Int(0); }
-            else _val = DataNode(unkbp0);
+            if(_op == kPropSet){ mConstantArea = _val.Int(0); }
+            else _val = DataNode(mConstantArea);
             return true;
         }
     }
     {
         static Symbol _s("perspective");
         if(sym == _s){
-            if(_op == kPropSet){ unkbp1 = _val.Int(0); }
-            else _val = DataNode(unkbp1);
+            if(_op == kPropSet){ mPerspective = _val.Int(0); }
+            else _val = DataNode(mPerspective);
             return true;
         }
     }
@@ -138,12 +138,12 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("pre_spawn");
         if(sym == _s){
-            if(_op == kPropSet){ unkap2 = _val.Int(0); }
-            else _val = DataNode(unkap2);
+            if(_op == kPropSet){ mPreSpawn = _val.Int(0); }
+            else _val = DataNode(mPreSpawn);
             return true;
         }
     }
-    SYNC_PROP_SET(pause_offscreen, unkap0, SetPauseOffscreen(_val.Int(0)))
+    SYNC_PROP_SET(pause_offscreen, mPauseOffscreen, SetPauseOffscreen(_val.Int(0)))
     SYNC_SUPERCLASS(RndAnimatable)
     SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)
