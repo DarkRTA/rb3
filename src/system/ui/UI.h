@@ -49,7 +49,7 @@ public:
     void FindResource(const DataArray*);
     void UseJoypad(bool, bool);
     void OverloadHorizontalNav(JoypadAction, JoypadButton, Symbol) const;
-    void RequireFixedText() const;
+    bool RequireFixedText() const;
     void SetRequireFixedText(bool);
     void PushDepth() const;
     void ScreenAtDepth(int);

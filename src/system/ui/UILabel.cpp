@@ -81,6 +81,124 @@ SAVE_OBJ(UILabel, 173)
 
 void UILabel::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
 
+void UILabel::PreLoad(BinStream& bs){
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x18, 0)
+    UIComponent::PreLoad(bs);
+    if(gRev != 0 && gRev < 0xE){
+        bool b; bs >> b;
+    }
+    bs >> mTextToken;
+    if(gRev > 0xD){
+        String s; bs >> s;
+    }
+    if(gRev > 0xE) bs >> mIcon;
+    if(gRev > 1){
+        int alignment, capsMode;
+        bs >> mTextSize >> alignment >> capsMode;
+        MILO_ASSERT(alignment < 255, 0xFF);
+        MILO_ASSERT(capsMode < 255, 0x100);
+        mAlignment = alignment;
+        mCapsMode = capsMode;
+        if(gRev > 7){
+            LOAD_BITFIELD(bool, mMarkup)
+        }
+        bs >> mLeading >> mKerning;
+    }
+    if(gRev > 4) bs >> mItalics;
+    if(gRev > 2){
+        int fitType;
+        bs >> fitType;
+        MILO_ASSERT(fitType < 255, 0x113);
+        mFitType = fitType;
+        bs >> mWidth >> mHeight;
+    }
+    if(gRev < 4){
+        Transform xfm = LocalXfm();
+        if(mAlignment & 1){
+            xfm.v.x -= mWidth * 0.5f;
+        }
+        else if(mAlignment & 4){
+            xfm.v.x += mWidth * 0.5f;
+        }
+        if(mAlignment & 0x10){
+            xfm.v.z += mHeight * 0.5f;
+        }
+        else if(mAlignment & 0x40){
+            xfm.v.z -= mHeight * 0.5f;
+        }
+        SetDirtyLocalXfm(xfm);
+    }
+    if(gRev > 5){
+        int fixedLength;
+        bs >> fixedLength;
+        MILO_ASSERT(fixedLength < 32767, 0x12F);
+        MILO_ASSERT(fixedLength >= 0, 0x130);
+        mFixedLength = fixedLength;
+    }
+    if(gRev > 6){
+        int reserveLines;
+        bs >> reserveLines;
+        MILO_ASSERT(reserveLines < 32767, 0x138);
+        MILO_ASSERT(reserveLines >= 0, 0x139);
+        mReservedLine = reserveLines;
+    }
+    if(gRev - 9 < 7U){
+        bool b;
+        int a, c, d;
+        bs >> b >> a >> c >> d;
+    }
+    if(gRev > 9) bs >> mPreserveTruncText;
+    if(gRev > 10) bs >> mAlpha;
+    if(gRev > 0xC) bs >> mColorOverride;
+    if(gRev > 0x10){
+        LOAD_BITFIELD(bool, mUseHighlightMesh)
+    }
+    if(gRev > 0x11){
+        bs >> mAltTextSize >> mAltTextColor;
+        LOAD_BITFIELD(bool, mAltStyleEnabled)
+    }
+    if(gRev > 0x12) bs >> mAltKerning;
+    else mAltKerning = mKerning;
+    if(gRev > 0x13) bs >> mAltZOffset;
+    if(gRev > 0x14) bs >> mFontMatVariation;
+    if(gRev > 0x15){
+        bs >> mAltFontResourceName;
+        AltFontResourceFileUpdated(true);
+    }
+    if(gRev > 0x16) bs >> mAltMatVariation;
+    if(gRev > 0x17){
+        bs >> mAltItalics >> mAltAlpha;
+    }
+}
+
+void UILabel::PostLoad(BinStream& bs){
+    UIComponent::PostLoad(bs);
+    LabelUpdate(false, true);
+    sDeferUpdate = true;
+    if(!mIcon.empty()) unk114 = mIcon;
+    else SetTextToken(mTextToken);
+    if(TheUI->RequireFixedText()){
+        if(mFixedLength == 0){
+            MILO_WARN("%s: %s is preloaded, but doesn't have fixed length", PathName(Dir()), Name());
+        }
+        if(mReservedLine == 0){
+            MILO_WARN("%s: %s is preloaded, but doesn't have reserve lines", PathName(Dir()), Name());
+        }
+    }
+    sDeferUpdate = false;
+    if(mTextToken.Null()){
+        if(mIcon.empty()){
+            ObjectDir* rdir = ResourceDir();
+            if(rdir && mFixedLength == 0 && mReservedLine != 0){
+                mText->SetFont(0);
+            }
+            else Update();
+        }
+    }
+    if(!mAltFontResourceName.empty()) mObjDirPtr.PostLoad(0);
+}
+
 void UILabel::Poll(){
     RndGroup* grp = mLabelDir->HighlighMeshGroup();
     if(mUseHighlightMesh && grp && GetState() == UIComponent::kFocused){
@@ -249,6 +367,10 @@ DataNode UILabel::OnSetTokenFmt(const DataArray* da){
         }
     }
     return DataNode(1);
+}
+
+void UILabel::SetTokenFmtImp(Symbol, const DataArray*, const DataArray*, int, bool){
+    
 }
 
 DataNode UILabel::OnSetInt(const DataArray* da){
