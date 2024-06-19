@@ -12,6 +12,12 @@ RndParticleSys::RndParticleSys() : unkc8(0), mMaxParticles(0), unkd0(0), unkd4(0
 
 }
 
+bool AngleVectorSync(Vector2&, DataNode&, DataArray*, int, PropOp){
+
+}
+
+#pragma push
+#pragma pool_data off
 BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(mat, mMat)
     SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), (Type)unkc8))
@@ -41,4 +47,105 @@ BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(mid_color_high, mMidColorHigh)
     SYNC_PROP(mid_alpha_low, mMidColorLow.alpha)
     SYNC_PROP(mid_alpha_high, mMidColorHigh.alpha)
+    {
+        static Symbol _s("bubble");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap1 = _val.Int(0); }
+            else _val = DataNode(unkap1);
+            return true;
+        }
+    }
+    SYNC_PROP(bubble_period, mBubblePeriod)
+    SYNC_PROP(bubble_size, mBubbleSize)
+    SYNC_PROP(max_burst, mMaxBurst)
+    SYNC_PROP(time_between, mTimeBetween)
+    SYNC_PROP(peak_rate, mPeakRate)
+    SYNC_PROP(duration, mDuration)
+    {
+        static Symbol _s("spin");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap4 = _val.Int(0); }
+            else _val = DataNode(unkap4);
+            return true;
+        }
+    }
+    SYNC_PROP(rpm, mRPM)
+    SYNC_PROP(rpm_drag, mRPMDrag)
+    SYNC_PROP(start_offset, mStartOffset)
+    SYNC_PROP(end_offset, mEndOffset)
+    {
+        static Symbol _s("random_direction");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap5 = _val.Int(0); }
+            else _val = DataNode(unkap5);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("velocity_align");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap6 = _val.Int(0); }
+            else _val = DataNode(unkap6);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("stretch_with_velocity");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap7 = _val.Int(0); }
+            else _val = DataNode(unkap7);
+            return true;
+        }
+    }
+    SYNC_PROP(stretch_scale, mStretchScale)
+    {
+        static Symbol _s("constant_area");
+        if(sym == _s){
+            if(_op == kPropSet){ unkbp0 = _val.Int(0); }
+            else _val = DataNode(unkbp0);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("perspective");
+        if(sym == _s){
+            if(_op == kPropSet){ unkbp1 = _val.Int(0); }
+            else _val = DataNode(unkbp1);
+            return true;
+        }
+    }
+    SYNC_PROP_SET(mesh_emitter, mMesh, SetMesh(_val.Obj<RndMesh>(0)))
+    SYNC_PROP(box_extent_1, mBoxExtent1)
+    SYNC_PROP(box_extent_2, mBoxExtent2)
+    {
+        static Symbol _s("pitch");
+        if(sym == _s){
+            AngleVectorSync(mPitch, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("yaw");
+        if(sym == _s){
+            AngleVectorSync(mYaw, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    SYNC_PROP_SET(relative_parent, unk210, SetRelativeMotion(mLastWorldXfm.v.z, _val.Obj<RndTransformable>(0)))
+    SYNC_PROP_SET(relative_motion, mLastWorldXfm.v.z, SetRelativeMotion(_val.Float(0), unk210))
+    SYNC_PROP_SET(subsamples, mSubSamples, SetSubSamples(_val.Int(0)))
+    SYNC_PROP_SET(frame_drive, unk9p7, SetFrameDrive(_val.Int(0)))
+    {
+        static Symbol _s("pre_spawn");
+        if(sym == _s){
+            if(_op == kPropSet){ unkap2 = _val.Int(0); }
+            else _val = DataNode(unkap2);
+            return true;
+        }
+    }
+    SYNC_PROP_SET(pause_offscreen, unkap0, SetPauseOffscreen(_val.Int(0)))
+    SYNC_SUPERCLASS(RndAnimatable)
+    SYNC_SUPERCLASS(RndTransformable)
+    SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+#pragma pop

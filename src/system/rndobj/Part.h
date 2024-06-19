@@ -56,6 +56,11 @@ public:
 
     void SetGrowRatio(float);
     void SetShrinkRatio(float);
+    void SetMesh(RndMesh*);
+    void SetRelativeMotion(float, RndTransformable*);
+    void SetSubSamples(int);
+    void SetFrameDrive(bool);
+    void SetPauseOffscreen(bool);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

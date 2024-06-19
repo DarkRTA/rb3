@@ -104,10 +104,10 @@ public:
     bool unkbp1 : 1;
     bool unkbp2 : 1;
     bool mTextMarkup : 1; // used in RndText
-    bool unkbp4 : 1;
-    bool unkbp5 : 1;
-    bool unkbp6 : 1;
-    bool unkbp7 : 1;
+    bool unkbp4 : 1; // used in RndText
+    bool unkbp5 : 1; // used in RndText
+    bool unkbp6 : 1; // used in RndText
+    bool unkbp7 : 1; // used in RndText
 
     Sphere mSphere;
     float mOrder;
