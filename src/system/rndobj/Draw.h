@@ -7,6 +7,8 @@
 #include "math/Geo.h"
 #include <list>
 
+class RndCam;
+
 enum HighlightStyle {
     kHighlightWireframe,
     kHighlightSphere,
@@ -35,7 +37,7 @@ public:
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
     virtual bool MakeWorldSphere(Sphere&, bool){ return 0; }
-    virtual int CamOverride(){ return 0; }
+    virtual RndCam* CamOverride(){ return 0; }
     virtual void Mats(std::list<class RndMat*>&, bool){}
     virtual void Draw();
     virtual void DrawShowing(){}

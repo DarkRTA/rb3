@@ -78,7 +78,7 @@ public:
     std::vector<UIResource*> mResources; // 0x28
     Hmx::Object* mSink; // 0x30
     RndCam* unk34; // 0x34
-    int unk38; // 0x38
+    RndEnviron* unk38; // 0x38
     int unk3c; // 0x3c
     Timer mTimer; // 0x40
     bool unk70; // 0x70

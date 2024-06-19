@@ -16,6 +16,9 @@ END_MESSAGE;
 BEGIN_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select", UIComponent*, LocalUser*, bool);
 END_MESSAGE;
 
+BEGIN_MESSAGE(UIComponentFocusChangeMsg, "component_focus", UIComponent*, UIComponent*, PanelDir*, Symbol); // Message(Symbol type, const DataNode & arg1, const DataNode & arg2, const DataNode & arg3, const DataNode & arg4)
+END_MESSAGE;
+
 BEGIN_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete", UITrigger*);
 END_MESSAGE;
 
@@ -30,6 +33,9 @@ inline UIComponentSelectDoneMsg::UIComponentSelectDoneMsg(UIComponent* comp, Loc
 
 inline UIComponentScrollSelectMsg::UIComponentScrollSelectMsg(UIComponent* comp, LocalUser* user, bool b) : 
     Message(Type(), DataNode(comp), DataNode(user), DataNode(b)){}
+
+inline UIComponentFocusChangeMsg::UIComponentFocusChangeMsg(UIComponent* comp1, UIComponent* comp2, PanelDir* dir, Symbol s) : 
+    Message(Type(), DataNode(comp1), DataNode(comp2), DataNode(dir), DataNode(s)){}
 
 inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) : 
     Message(Type(), DataNode(trig)){}
