@@ -9,10 +9,13 @@
 #include "ui/Utl.h"
 #include "ui/UITrigger.h"
 #include "ui/UI.h"
+#include "obj/DirItr.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(PanelDir)
+bool gSendFocusMsg;
+bool PanelDir::sAlwaysNeedFocus;
 
 PanelDir::PanelDir() : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEndWorld(1), mUseSpecifiedCam(0), mShowEditModePanels(0), mShowFocusComponent(1) {
     if(TheLoadMgr.EditMode()) mShowEditModePanels = true;
@@ -76,6 +79,28 @@ BEGIN_COPYS(PanelDir)
         SyncEditModePanels();
     END_COPYING_MEMBERS
 END_COPYS
+
+// fn_8054B508
+void PanelDir::SyncObjects(){
+    RndDir::SyncObjects();
+    mComponents.clear();
+    for(ObjDirItr<UIComponent> it(this, true); it != 0; ++it){
+        AddComponent(it);
+    }
+    mTriggers.clear();
+    for(ObjDirItr<UITrigger> it(this, true); it != 0; ++it){
+        mTriggers.push_back(it);
+        it->CheckAnims();
+    }
+    if(sAlwaysNeedFocus){
+        UIComponent* comp = GetFirstFocusableComponent();
+        if(!mFocusComponent && comp){
+            gSendFocusMsg = false;
+            SetFocusComponent(comp, gNullStr);
+            gSendFocusMsg = true;
+        }
+    }
+}
 
 void PanelDir::Enter(){
     RndDir::Enter();

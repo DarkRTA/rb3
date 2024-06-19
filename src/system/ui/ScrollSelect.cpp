@@ -68,9 +68,9 @@ bool ScrollSelect::CatchNavAction(JoypadAction act) const {
 #pragma pool_data off
 DataNode ScrollSelect::SendScrollSelected(UIComponent* comp, LocalUser* user){
     static UIComponentScrollSelectMsg scroll_select_msg(0, 0, 0);
-    UNCONST_ARRAY(scroll_select_msg)->Node(2) = DataNode(comp);
-    UNCONST_ARRAY(scroll_select_msg)->Node(3) = DataNode(user);
-    UNCONST_ARRAY(scroll_select_msg)->Node(4) = DataNode(unk_0x8 != -1);
+    scroll_select_msg->Node(2) = DataNode(comp);
+    scroll_select_msg->Node(3) = DataNode(user);
+    scroll_select_msg->Node(4) = DataNode(unk_0x8 != -1);
     return TheUI->Handle(scroll_select_msg, false);
 }
 #pragma pop

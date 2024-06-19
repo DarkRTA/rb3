@@ -52,11 +52,15 @@ public:
     void DisableComponent(UIComponent*, JoypadAction);
     void PanelNav(JoypadAction, JoypadButton, Symbol);
     void GetFocusableComponentList();
+    UIComponent* GetFirstFocusableComponent();
     bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
 
     DataNode OnEnableComponent(const DataArray*);
     DataNode OnDisableComponent(const DataArray*);
     DataNode OnMsg(const ButtonDownMsg&);
+
+    DECLARE_REVS
+    static bool sAlwaysNeedFocus;
 
     UIComponent* mFocusComponent; // 0x18c
     class UIPanel* mOwnerPanel; // 0x190
@@ -71,8 +75,6 @@ public:
     std::vector<FilePath> mFrontFilenames; // 0x1cc
     bool mShowEditModePanels; // 0x1d4
     bool mShowFocusComponent; // 0x1d5
-
-    DECLARE_REVS
 };
 
 #endif
