@@ -103,7 +103,7 @@ public:
     bool unkbp0 : 1;
     bool unkbp1 : 1;
     bool unkbp2 : 1;
-    bool unkbp3 : 1;
+    bool mTextMarkup : 1; // used in RndText
     bool unkbp4 : 1;
     bool unkbp5 : 1;
     bool unkbp6 : 1;

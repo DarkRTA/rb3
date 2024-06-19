@@ -87,7 +87,7 @@ void RndText::Load(BinStream& bs) {
     if(gRev != 0){
         Hmx::Color col;
         bs >> col;
-        unke4 = col.Pack();
+        mColor = col.Pack();
     }
     if(gRev > 0xC) bs >> mWrapWidth;
     else if(gRev > 3){
@@ -136,7 +136,7 @@ void RndText::Load(BinStream& bs) {
         mItalicStrength /= mSize;
     }
     if(gRev > 0xD){
-        LOAD_BITFIELD(bool, unkbp3)
+        LOAD_BITFIELD(bool, mTextMarkup)
     }
     if(gRev > 0xE){
         int capsMode;
@@ -156,12 +156,12 @@ void RndText::Load(BinStream& bs) {
         SetText(unk_cc.c_str());
     }
     unkf0 = unkd8;
-    unkf4 = mSize;
-    unkf8 = mItalicStrength;
-    unkfc = unke4;
+    mAltSize = mSize;
+    mAltItalicStrength = mItalicStrength;
+    mAltColor = mColor;
     unk100 = unke8;
     unk101 = unke9;
-    unk104 = unkec;
+    mAltZOffset = mZOffset;
     UpdateText(true);
 }
 
@@ -209,9 +209,23 @@ void RndText::SetSize(float f) {
     UpdateText(true);
 }
 
+void RndText::SetItalics(float f){
+    if(mItalicStrength == f) return;
+    mItalicStrength = f;
+    UpdateText(true);
+}
+
 void RndText::SetMarkup(bool b){
-    if(unkbp3 == b) return;
-    unkbp3 = b;
+    if(mTextMarkup == b) return;
+    mTextMarkup = b;
+    UpdateText(true);
+}
+
+void RndText::SetAltSizeAndZOffset(float f1, float f2){
+    if(mAltSize == f1 && mAltZOffset == f2) return;
+    if(f1 == 0.0f) f1 = mSize;
+    mAltSize = f1;
+    mAltZOffset = f2;
     UpdateText(true);
 }
 
@@ -231,10 +245,13 @@ void RndText::Print() {
     TheDebug << "   font: " << mFont << "\n";
 }
 
-RndText::RndText() : mFont(this, NULL), mWrapWidth(0.0f), mLeading(1.0f), unkd8(mFont), mSize(1.0f), mItalicStrength(0.0f), unke4(-1), unke8(true), unke9(false),
-    unkec(0.0f), unkf0(0), unkf4(1.0f), unkf8(0.0f), unkfc(-1), unk100(true), unk101(false), unk104(0.0f), mAlign(kTopLeft), mCapsMode(kCapsModeNone),
-    mFixedLength(0), mDeferUpdate(0), unk128(0), unk12c(0.0f), unk130(0.0f) {
-    unkbp3 = true;
+RndText::RndText() : mFont(this, NULL), mWrapWidth(0.0f), mLeading(1.0f), unkd8(mFont), mSize(1.0f), mItalicStrength(0.0f), mColor(-1), unke8(true), unke9(false),
+    mZOffset(0.0f), unkf0(0), mAltSize(1.0f), mAltItalicStrength(0.0f), mAltColor(-1), unk100(true), unk101(false), mAltZOffset(0.0f), mAlign(kTopLeft), mCapsMode(kCapsModeNone),
+    mFixedLength(0), mDeferUpdate(0), unk124b4(0), unk128(0), unk12c(0.0f), unk130(0.0f) {
+    mTextMarkup = false;
+    unkbp4 = false;
+    unkbp5 = false;
+    unkbp6 = false;
     unkbp7 = false;
 }
 
@@ -247,6 +264,18 @@ void RndText::SetFont(RndFont* f) {
     UpdateText(true);
 }
 
+void RndText::SetAlignment(Alignment a){
+    if(mAlign == a) return;
+    mAlign = a;
+    UpdateText(true);
+}
+
+void RndText::SetLeading(float f){
+    if(mLeading == f) return;
+    mLeading = f;
+    UpdateText(true);
+}
+
 void RndText::ReserveLines(int i) { mLines.reserve(i); }
 
 class String RndText::TextASCII() const {
@@ -256,8 +285,12 @@ class String RndText::TextASCII() const {
     return s;
 }
 
-void RndText::SetTextASCII(const char*) {
+void RndText::SetTextASCII(const char* cc) {
     class String s;
+    std::vector<unsigned short> vec;
+    ASCIItoWideVector(vec, cc);
+    WideVectorToUTF8(vec, s);
+    SetText(s.c_str());
     
 }
 
@@ -280,3 +313,33 @@ BEGIN_HANDLERS(RndText)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(2789)
 END_HANDLERS
+
+DataNode RndText::OnSetFixedLength(DataArray* da){
+    SetFixedLength(da->Int(2));
+    return DataNode(0);
+}
+
+DataNode RndText::OnSetFont(DataArray* da){
+    SetFont(da->Obj<RndFont>(2));
+    return DataNode(0);
+}
+
+DataNode RndText::OnSetAlign(DataArray* da){
+    SetAlignment((Alignment)da->Int(2));
+    return DataNode(0);
+}
+
+DataNode RndText::OnSetText(DataArray* da){
+    SetText(da->Str(2));
+    return DataNode(0);
+}
+
+DataNode RndText::OnSetWrapWidth(DataArray* da){
+    SetWrapWidth(da->Float(2));
+    return DataNode(0);
+}
+
+DataNode RndText::OnSetSize(DataArray* da){
+    SetSize(da->Float(2));
+    return DataNode(0);
+}

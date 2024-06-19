@@ -82,6 +82,10 @@ public:
     void DeferUpdateText();
     void ResolveUpdateText();
     void SetWrapWidth(float);
+    void SetItalics(float);
+    void SetAltSizeAndZOffset(float, float);
+    void SetAlignment(Alignment);
+    void SetLeading(float);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -95,26 +99,27 @@ public:
     ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
     float mWrapWidth; // 0xc4
     float mLeading; // 0xc8
-    String unk_cc; // 0xcc
+    String unk_cc; // 0xcc - either ASCII or UTF8 text
     RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    int unke4; // packed color? Hmx::Color32?
+    int mColor; // packed color? Hmx::Color32?
     bool unke8;
     bool unke9;
-    float unkec;
+    float mZOffset;
     RndFont* unkf0;
-    float unkf4;
-    float unkf8;
-    int unkfc;
+    float mAltSize;
+    float mAltItalicStrength;
+    int mAltColor;
     bool unk100;
     bool unk101;
-    float unk104;
+    float mAltZOffset;
     std::map<unsigned int, MeshInfo> unk108;
     unsigned char mAlign; // 0x120
     unsigned char mCapsMode; // 0x121
     int mFixedLength : 16; // 0x122
     int mDeferUpdate : 4; // 0x124
+    int unk124b4 : 4;
     int unk128;
     float unk12c;
     float unk130;
