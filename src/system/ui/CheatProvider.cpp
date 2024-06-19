@@ -1,11 +1,27 @@
 #include "ui/CheatProvider.h"
 #include "ui/UIListLabel.h"
+#include "utl/Cheats.h"
 #include "utl/Symbols.h"
 
 CheatProvider::CheatProvider() : mFilterIdx(0) {
     SetName("cheat_provider", ObjectDir::Main());
     mFilters.push_back("all");
     DataArray* cfg = SystemConfig("quick_cheats");
+    if(cfg->Size() > 1){
+        for(int i = 1; i < cfg->Size(); i++){
+            DataArray* arr = cfg->Array(i);
+            Symbol sym = arr->Sym(0);
+            const char* strtext;
+            if(sym == "keyboard") strtext = "KEYBOARD CHEATS";
+            else if(sym == "right") strtext = "RIGHT CHEATS (R1 + R2)";
+            else if(sym == "left") strtext = "LEFT CHEATS (L1 + L2)";
+            mCheats.push_back(Cheat(strtext));
+            for(int j = 1; j < arr->Size(); j++){
+
+            }
+        }
+    }
+    ApplyFilter();
 }
 
 CheatProvider::~CheatProvider(){
@@ -55,3 +71,26 @@ int CheatProvider::NumData() const { return mFilterCheats.size(); }
 bool CheatProvider::IsActive(int i) const {
     return !mFilterCheats[i].mKey.empty();
 }
+
+void CheatProvider::Invoke(int i, LocalUser* user){
+    DataArray* arr = mFilterCheats[i].mScript;
+    if(!arr) return;
+    CallQuickCheat(arr, user);
+}
+
+void CheatProvider::NextFilter(){
+    mFilterIdx = (mFilterIdx + 1) % mFilters.size();
+    ApplyFilter();
+}
+
+void CheatProvider::ApplyFilter(){
+
+}
+
+BEGIN_HANDLERS(CheatProvider)
+    HANDLE_ACTION(invoke, Invoke(_msg->Int(2), _msg->Obj<LocalUser>(3)))
+    HANDLE_ACTION(next_filter, NextFilter())
+    HANDLE_EXPR(filter, mFilters[mFilterIdx])
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xFF)
+END_HANDLERS

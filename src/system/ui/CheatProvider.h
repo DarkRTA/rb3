@@ -7,6 +7,7 @@ class CheatProvider : public UIListProvider, public Hmx::Object {
 public:
     class Cheat {
     public:
+        Cheat(const char* desc) : mKey(), mDesc(desc), mScript(0) {}
         String mKey; // 0x0
         String mDesc; // 0xc
         DataArray* mScript; // 0x18
@@ -20,7 +21,13 @@ public:
     virtual void InitData(RndDir*);
     virtual DataNode Handle(DataArray*, bool);
 
+    void Invoke(int, LocalUser*);
+    void NextFilter();
     void ApplyFilter();
+
+    static void Init();
+    static void Terminate();
+    static CheatProvider* sInstance;
 
     std::vector<Cheat> mCheats; // 0x20
     std::vector<Cheat> mFilterCheats; // 0x28
