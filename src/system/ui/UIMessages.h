@@ -2,6 +2,7 @@
 #define UI_UIMESSAGES_H
 #include "obj/Msg.h"
 #include "ui/UIComponent.h"
+#include "ui/UITrigger.h"
 
 BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*);
 END_MESSAGE;
@@ -12,6 +13,9 @@ END_MESSAGE;
 BEGIN_MESSAGE(UIComponentSelectDoneMsg, "component_select_done", UIComponent*, LocalUser*);
 END_MESSAGE;
 
+BEGIN_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete", UITrigger*);
+END_MESSAGE;
+
 inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
     Message(Type(), DataNode(comp), DataNode(user)){}
 
@@ -20,5 +24,8 @@ inline UIComponentSelectMsg::UIComponentSelectMsg(UIComponent* comp, LocalUser* 
 
 inline UIComponentSelectDoneMsg::UIComponentSelectDoneMsg(UIComponent* comp, LocalUser* user) : 
     Message(Type(), DataNode(comp), DataNode(user)){}
+
+inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) : 
+    Message(Type(), DataNode(trig)){}
 
 #endif

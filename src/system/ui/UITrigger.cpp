@@ -1,6 +1,7 @@
 #include "ui/UITrigger.h"
 #include "ui/UIComponent.h"
 #include "obj/Task.h"
+#include "ui/UIMessages.h"
 #include "utl/Symbols.h"
 // #include "utl/ClassSymbols.h"
 
@@ -46,6 +47,19 @@ void UITrigger::Enter(){
     mEndTime = 0.0f;
 }
 
+bool UITrigger::IsBlocking() const {
+    if(TheTaskMgr.UISeconds() < mStartTime){
+        const_cast<UITrigger*>(this)->mEndTime = 0.0f;
+    }
+    bool ret = false;
+    bool b = false;
+    if(mBlockTransition && mEndTime != 0.0f) b = true;
+    if(b){
+        if(TheTaskMgr.UISeconds() < mEndTime) ret = true;
+    }
+    return ret;
+}
+
 void UITrigger::StopAnimations(){
     for(ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end(); it++){
         RndAnimatable* anim = (*it).mAnim;
@@ -56,6 +70,17 @@ void UITrigger::StopAnimations(){
 DataArray* UITrigger::SupportedEvents(){
     static DataArray* events = SystemConfig("objects", "UITrigger", "supported_events")->Array(1);
     return events;
+}
+
+void UITrigger::Poll(){
+    if(!unkfc){
+        if(mEndTime <= TheTaskMgr.UISeconds()){
+            unkfc = true;
+            if(mCallbackObject){
+                mCallbackObject->Handle(UITriggerCompleteMsg(this), true);
+            }
+        }
+    }
 }
 
 BEGIN_HANDLERS(UITrigger)
