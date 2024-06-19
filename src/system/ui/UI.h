@@ -4,6 +4,7 @@
 #include "utl/Symbol.h"
 #include "os/Joypad.h"
 #include "os/Timer.h"
+#include "rndobj/Cam.h"
 #include <vector>
 
 class JoypadClient;
@@ -12,7 +13,6 @@ class UIScreen;
 class UIPanel;
 class UIResource;
 class RndOverlay;
-class RndCam;
 
 enum TransitionState {
     kTransitionNone = 0,

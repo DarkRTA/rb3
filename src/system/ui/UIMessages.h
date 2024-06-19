@@ -4,22 +4,22 @@
 #include "ui/UIComponent.h"
 #include "ui/UITrigger.h"
 
-BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*);
+BEGIN_MESSAGE(UIComponentScrollMsg, component_scroll, UIComponent*, LocalUser*);
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentSelectMsg, "component_select", UIComponent*, LocalUser*);
+BEGIN_MESSAGE(UIComponentSelectMsg, component_select, UIComponent*, LocalUser*);
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentSelectDoneMsg, "component_select_done", UIComponent*, LocalUser*);
+BEGIN_MESSAGE(UIComponentSelectDoneMsg, component_select_done, UIComponent*, LocalUser*);
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select", UIComponent*, LocalUser*, bool);
+BEGIN_MESSAGE(UIComponentScrollSelectMsg, component_scroll_select, UIComponent*, LocalUser*, bool);
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentFocusChangeMsg, "component_focus", UIComponent*, UIComponent*, PanelDir*, Symbol); // Message(Symbol type, const DataNode & arg1, const DataNode & arg2, const DataNode & arg3, const DataNode & arg4)
+BEGIN_MESSAGE(UIComponentFocusChangeMsg, component_focus, UIComponent*, UIComponent*, PanelDir*, Symbol);
 END_MESSAGE;
 
-BEGIN_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete", UITrigger*);
+BEGIN_MESSAGE(UITriggerCompleteMsg, ui_trigger_complete, UITrigger*);
 END_MESSAGE;
 
 inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
