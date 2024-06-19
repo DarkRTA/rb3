@@ -93,14 +93,6 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     DECLARE_REVS
 };
 
-
-BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*); // LocalUser*, JoypadButton, JoypadAction, int
-
-END_MESSAGE;
-
-inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
-    Message(Type(), DataNode(comp), DataNode(user)){ }
-
 Symbol UIComponentStateToSym(UIComponent::State);
 UIComponent::State SymToUIComponentState(Symbol);
 

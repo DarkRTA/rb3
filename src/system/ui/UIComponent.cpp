@@ -182,14 +182,6 @@ ObjectDir* UIComponent::ResourceDir(){
     else return 0;
 }
 
-// class ObjectDir* UIComponent::ResourceDir() {
-//     if (mResourceDir.mDir) return mResourceDir.mDir;
-//     if (mMesh) {
-//         return mMesh->mDir.mDir;
-//     }
-//     return NULL;
-// }
-
 void UIComponent::ResourceFileUpdated(bool) {
 
 }

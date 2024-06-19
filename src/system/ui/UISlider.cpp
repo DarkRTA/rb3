@@ -3,6 +3,7 @@
 #include "ui/UIPanel.h"
 #include "ui/Utl.h"
 #include "os/Joypad.h"
+#include "ui/UIMessages.h"
 #include "utl/Symbols.h"
 #include "decomp.h"
 
