@@ -382,6 +382,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/MatAnim.cpp": "NonMatching",
             "system/rndobj/Mesh.cpp": "NonMatching",
+            "system/rndobj/MeshAnim.cpp": "NonMatching",
             "system/rndobj/MeshDeform.cpp": "NonMatching",
             "system/rndobj/Morph.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "Matching",
