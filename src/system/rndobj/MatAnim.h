@@ -34,6 +34,10 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    void SetMat(RndMat*);
+    void LoadStage(BinStream&);
+
+    DECLARE_REVS
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndMatAnim)
