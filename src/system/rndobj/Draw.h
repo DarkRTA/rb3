@@ -74,7 +74,7 @@ public:
     DataNode OnZeroSphere(const DataArray*);
     
     bool mShowing : 1;
-    bool unk8p1 : 1; // used in RndGroup
+    bool mSortInWorld : 1; // used in RndGroup
     bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare

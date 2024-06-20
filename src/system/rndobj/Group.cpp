@@ -1,9 +1,10 @@
 #include "rndobj/Group.h"
+#include "utl/Symbols.h"
 
 int GROUP_REV = 14;
 
 RndGroup::RndGroup() : mObjects(this, kObjListOwnerControl), mEnv(this, 0), mDrawOnly(this, 0), mLod(this, 0), mLodScreenSize(0.0f), unkf8(0) {
-    unk8p1 = 0;
+    mSortInWorld = 0;
 }
 
 SAVE_OBJ(RndGroup, 0x30);
@@ -28,7 +29,7 @@ void RndGroup::Load(BinStream& bs){
     if(rev > 13){
         bool read_in;
         bs >> read_in;
-        unk8p1 = read_in;
+        mSortInWorld = read_in;
     }
     UpdateLODState();
 }
@@ -44,9 +45,28 @@ BEGIN_COPYS(RndGroup)
         COPY_MEMBER(mDrawOnly)
         COPY_MEMBER(mLod)
         COPY_MEMBER(mLodScreenSize)
-        COPY_MEMBER(unk8p1)
+        COPY_MEMBER(mSortInWorld)
         if(ty == kCopyDeep) COPY_MEMBER(mObjects)
         else if(ty == kCopyFromMax) Merge(c);
     END_COPYING_MEMBERS
     Update();
 END_COPYS
+
+BEGIN_PROPSYNCS(RndGroup)
+    SYNC_PROP_MODIFY_ALT(objects, mObjects, Update())
+    SYNC_PROP_STATIC(environ, mEnv)
+    SYNC_PROP(draw_only, mDrawOnly)
+    SYNC_PROP_MODIFY_ALT(lod, mLod, Update())
+    SYNC_PROP_MODIFY(lod_screen_size, mLodScreenSize, UpdateLODState())
+    {
+        static Symbol _s("sort_in_world");
+        if(sym == _s){
+            if(_op == kPropSet) mSortInWorld = _val.Int(0);
+            else _val = DataNode(mSortInWorld);
+            return true;
+        }
+    }
+    SYNC_SUPERCLASS(RndDrawable)
+    SYNC_SUPERCLASS(RndTransformable)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS
