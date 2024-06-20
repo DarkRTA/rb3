@@ -29,7 +29,7 @@ void DataInit() {
     DataInitFuncs();
     TheLoadMgr.RegisterFactory("dta", DataFactory);
     TheLoadMgr.RegisterFactory("dtx", DataFactory);
-    Hmx::Object::RegisterFactory(TextFile::StaticClassName(), TextFile::NewObject);
+    TextFile::Init();
     gDataMacroWarning = OptionBool("no_macro_warn", true);
     ObjectDir::PreInit(0x4e1d, 0x249f0);
 }

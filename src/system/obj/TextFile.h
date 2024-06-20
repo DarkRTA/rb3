@@ -23,7 +23,7 @@ public:
     void GetAppendFile(const char*, const char*, int);
     
     NEW_OBJ(TextFile)
-    // static Init
+    static void Init(){ REGISTER_OBJ_FACTORY(TextFile); }
 
     DataNode OnPrint(DataArray*);
     DataNode OnPrintf(DataArray*);

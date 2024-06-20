@@ -4,7 +4,6 @@
 #include "os/HolmesClient.h"
 #include "os/System.h"
 #include "utl/MakeString.h"
-#include "obj/MessageTimer.h"
 #include "utl/Symbols.h"
 #include "obj/Dir.h"
 
@@ -88,12 +87,4 @@ DataNode TextFile::OnReflect(DataArray* array){
         TheDebug.SetReflect(idk);
     }
     return DataNode(0);
-}
-
-void MoveDtorUp(TextFile* tf){
-    delete tf;
-}
-
-void MoveSetTypeUp(TextFile* tf){
-    tf->SetType(Symbol());
 }
