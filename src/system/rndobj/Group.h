@@ -17,7 +17,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndGroup();
+    virtual ~RndGroup(){}
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
@@ -33,13 +33,16 @@ public:
     virtual int CollidePlane(const Plane&);
     virtual bool DrawShowingBudget(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
 
     void Update();
     void UpdateLODState();
     void Merge(const RndGroup*);
     void RemoveObject(Hmx::Object*);
     void AddObject(Hmx::Object*, Hmx::Object*);
+    void ClearObjects();
+    void SortDraws();
+    DataNode OnGetDraws(DataArray*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -54,9 +57,9 @@ public:
     ObjPtr<RndDrawable, ObjectDir> mLod; // 0xe8
     float mLodScreenSize; // 0xf4
     bool unkf8; // 0xf8
-    std::vector<int> mAnims;
-    std::vector<int> mDraws;
-    int asdf;
+    std::vector<RndAnimatable*> mAnims; // 0xfc
+    std::vector<RndDrawable*> mDraws; // 0x104
+    RndDrawable** mDrawItr; // 0x10c
 };
 
 #endif
