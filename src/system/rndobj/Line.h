@@ -3,8 +3,16 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 
+class RndMesh;
+
 class RndLine : public RndDrawable, public RndTransformable {
 public:
+    class Point {
+    public:
+        Vector3 v;
+        Hmx::Color c;
+    };
+
     RndLine();
     OBJ_CLASSNAME(Line);
     OBJ_SET_TYPE(Line);
@@ -25,12 +33,19 @@ public:
     virtual int Mesh() const; // fix return type
     virtual void Print();
 
+    void UpdateInternal();
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndLine)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndLine)
-    }
+    static void Init(){ REGISTER_OBJ_FACTORY(RndLine) }
+
+    float mWidth; // 0xb0
+    std::vector<Point> mPoints; // 0xb4
+    RndMesh* mMesh; // 0xbc
+    float mFoldAngle; // 0xc0
+    float mFoldCos; // 0xc4
+    ObjPtr<RndMat, ObjectDir> mMat; // 0xc8
 };
 
 #endif

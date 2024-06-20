@@ -78,9 +78,9 @@ public:
     bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare
-    bool unk8p5 : 1;
-    bool unk8p6 : 1;
-    bool unk8p7 : 1;
+    bool mLineHasCaps : 1; // used in RndLine
+    bool mLinePairs : 1; // used in RndLine
+    bool mLineUpdate : 1; // used in RndLine
 
     bool unk9p0 : 1;
     bool unk9p1 : 1;
