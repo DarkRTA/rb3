@@ -4,6 +4,8 @@
 #include "rndobj/Trans.h"
 #include "rndobj/TransProxy.h"
 #include "rndobj/Utl.h"
+#include "obj/PropSync_p.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(CamShot);
 
@@ -11,7 +13,7 @@ CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.
     mAnims(this, kObjListNoNull), mPath(this, 0), mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f), mPlatformOnly(0),
     mPostProcOverrides(this, kObjListNoNull), mCrowds(this), mGlowSpot(this, 0), unkc4(0.0f, 0.0f, 0.0f), unkd0(0.0f, 0.0f, 0.0f),
     unkdc(0.0f, 0.0f, 0.0f), unke8(0.0f, 0.0f, 0.0f), unkf4(0.0f, 0.0f, 0.0f), unk100(0.0f, 0.0f, 0.0f), unk10c(0), unk110(0),
-    mDuration(0.0f), mDisabled(0), unk11c(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
+    mDuration(0.0f), mDisabled(0), mFlags(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
 
 }
 
@@ -48,7 +50,7 @@ BEGIN_COPYS(CamShot)
         COPY_MEMBER(mDrawOverrides)
         COPY_MEMBER(mPostProcOverrides)
         COPY_MEMBER(mPS3PerPixel)
-        COPY_MEMBER(unk11c)
+        COPY_MEMBER(mFlags)
         COPY_MEMBER(mAnims)
         CacheFrames();
     END_COPYING_MEMBERS
@@ -208,4 +210,54 @@ BEGIN_LOADS(CamShot)
         
     }
 END_LOADS
+#pragma pop
+
+BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
+END_CUSTOM_PROPSYNC
+
+#pragma push
+#pragma pool_data off
+BEGIN_PROPSYNCS(CamShot)
+    SYNC_PROP_MODIFY_ALT(keyframes, mKeyFrames, CacheFrames())
+    {
+        static Symbol _s("looping");
+        bool bit = mLooping;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mLooping = bit;
+            return ret;
+        }
+    }
+    SYNC_PROP(loop_keyframe, mLoopKeyframe)
+    SYNC_PROP_SET(category, mCategory, mCategory = _val.ForceSym(0))
+    SYNC_PROP(filter, mFilter)
+    SYNC_PROP(clamp_height, mClampHeight)
+    SYNC_PROP(near_plane, mNear)
+    SYNC_PROP(far_plane, mFar)
+    SYNC_PROP_STATIC(duration, mDuration)
+    SYNC_PROP_SET(use_depth_of_field, mUseDepthOfField, mUseDepthOfField = _val.Int(0))
+    SYNC_PROP(path, mPath)
+    SYNC_PROP(path_frame, mPathFrame)
+    SYNC_PROP(platform_only, mPlatformOnly)
+    SYNC_PROP(draw_overrides, mDrawOverrides)
+    SYNC_PROP(postproc_overrides, mPostProcOverrides)
+    SYNC_PROP(glow_spot, mGlowSpot)
+    SYNC_PROP(crowds, mCrowds)
+    {
+        static Symbol _s("ps3_per_pixel");
+        bool bit = mPS3PerPixel;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mPS3PerPixel = bit;
+            return ret;
+        }
+    }
+    SYNC_PROP(flags, mFlags)
+    SYNC_PROP_SET(disabled, mDisabled, )
+    SYNC_PROP(anims, mAnims)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS
 #pragma pop
