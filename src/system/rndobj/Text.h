@@ -42,19 +42,28 @@ public:
     };
 
     RndText();
-    virtual ~RndText();
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    OBJ_CLASSNAME(RndText)
+    OBJ_SET_TYPE(RndText)
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
+    virtual void UpdateSphere();
+    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual bool MakeWorldSphere(Sphere&, bool);
+    virtual void Mats(std::list<class RndMat*>&, bool);
+    virtual void Draw();
+    virtual void DrawShowing();
+    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
+    virtual int CollidePlane(const Plane&);
+    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual ~RndText();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual const char* FindPathName();
     virtual void Print();
 
     NEW_OBJ(RndText)
-    OBJ_CLASSNAME(RndText)
-    OBJ_SET_TYPE(RndText)
 
     float GetStringWidthUTF8(const char*, const char*, bool, Style*) const;
     void ReserveLines(int);
@@ -67,6 +76,16 @@ public:
     void GetCurrentStringDimensions(float&, float&);
     Alignment GetAlignment() const { return (Alignment)mAlign; }
     float MaxLineWidth() const;
+    void SetMarkup(bool);
+    void ResizeText(int);
+    void SetText(const char*);
+    void DeferUpdateText();
+    void ResolveUpdateText();
+    void SetWrapWidth(float);
+    void SetItalics(float);
+    void SetAltSizeAndZOffset(float, float);
+    void SetAlignment(Alignment);
+    void SetLeading(float);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -80,32 +99,33 @@ public:
     ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
     float mWrapWidth; // 0xc4
     float mLeading; // 0xc8
-    String unk_cc; // 0xcc
+    String unk_cc; // 0xcc - either ASCII or UTF8 text
     RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    int unke4; // packed color? Hmx::Color32?
+    int mColor; // packed color? Hmx::Color32?
     bool unke8;
     bool unke9;
-    float unkec;
-    int unkf0;
-    float unkf4;
-    float unkf8;
-    int unkfc;
+    float mZOffset;
+    RndFont* unkf0;
+    float mAltSize;
+    float mAltItalicStrength;
+    int mAltColor;
     bool unk100;
     bool unk101;
-    float unk104;
+    float mAltZOffset;
     std::map<unsigned int, MeshInfo> unk108;
     unsigned char mAlign; // 0x120
-    CapsMode mCapsMode : 8; // 0x121
-    int unk122 : 8;
-    int unk123 : 8;
+    unsigned char mCapsMode; // 0x121
+    int mFixedLength : 16; // 0x122
     int mDeferUpdate : 4; // 0x124
+    int unk124b4 : 4;
     int unk128;
     float unk12c;
     float unk130;
 
     static void Init();
+    static void Register(){ REGISTER_OBJ_FACTORY(RndText); }
     static std::set<RndText*> mTextMeshSet;
 
     DECLARE_REVS
