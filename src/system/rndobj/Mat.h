@@ -111,6 +111,10 @@ public:
     bool GetRefractEnabled(bool);
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
+    const Transform& TexXfm() const { return mTexXfm; }
+    void SetTexXfm(const Transform&);
+    void SetDiffuseTex(RndTex*);
+    const Hmx::Color& GetColor() const;
     float GetAlpha(){ return mColor.alpha; }
     void SetAlpha(float f){
         mColor.alpha = f;

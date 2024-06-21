@@ -47,7 +47,7 @@ public:
     // }
 
     // this is what SymbolAt calls
-    int AtFrame(float frame, T1& val) const {
+    int AtFrame(float frame, T2& val) const {
         const Key<T1>* prev;
         const Key<T1>* next;
         float r;
