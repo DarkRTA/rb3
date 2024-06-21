@@ -129,6 +129,7 @@ Keys<Vector3, Vector3>& RndMatAnim::RotKeys(){ return mKeysOwner->mRotKeys; }
 Keys<float, float>& RndMatAnim::AlphaKeys(){ return mKeysOwner->mAlphaKeys; }
 Keys<Hmx::Color, Hmx::Color>& RndMatAnim::ColorKeys(){ return mKeysOwner->mColorKeys; }
 
+// fn_805FBA6C
 #pragma push
 #pragma dont_inline on
 void RndMatAnim::SetFrame(float f1, float f2){
@@ -179,7 +180,7 @@ void RndMatAnim::SetFrame(float f1, float f2){
         }
         if(!AlphaKeys().empty()){
             float alpha = mMat->Alpha();
-            AlphaKeys().AtFrame(f1, alpha);
+            AlphaKeys().AtFrame(f1, alpha); // fn_803B1308 - Keys<float, float>::AtFrame
             if(f2 != 1.0f){
                 Interp(mMat->Alpha(), alpha, f2, alpha);
             }
