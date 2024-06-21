@@ -2,7 +2,7 @@
 #define RNDOBJ_PARTANIM_H
 #include "rndobj/Anim.h"
 #include "rndobj/Part.h"
-#include "utl/Key.h"
+#include "math/Key.h"
 
 class RndParticleSysAnim : public RndAnimatable {
 public:

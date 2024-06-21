@@ -7,7 +7,7 @@
 #include "math/Mtx.h"
 #include "os/Debug.h"
 #include "obj/ObjectStage.h"
-#include "utl/Key.h"
+#include "math/Key.h"
 #include "obj/Msg.h"
 
 enum AnimKeysType {
