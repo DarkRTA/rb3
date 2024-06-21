@@ -3,7 +3,6 @@
 #include "synth/Sequence.h"
 #include "rndobj/PartLauncher.h"
 #include "rndobj/AnimFilter.h"
-#include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(EventTrigger)
