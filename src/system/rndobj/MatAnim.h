@@ -12,9 +12,10 @@ public:
         TexPtr(RndTex*);
     };
 
-    class TexKeys : public Keys<TexPtr, TexPtr> {
+    class TexKeys : public Keys<TexPtr, RndTex*> {
     public:
         TexKeys(Hmx::Object*);
+        TexKeys& operator=(const TexKeys&);
         Hmx::Object* mOwner;
     };
 
@@ -26,16 +27,17 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndMatAnim();
+    virtual ~RndMatAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget();
+    virtual Hmx::Object* AnimTarget(){ return mMat; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
     void SetMat(RndMat*);
     void LoadStage(BinStream&);
+    void LoadStages(BinStream&);
 
     DECLARE_REVS
     NEW_OVERLOAD;
