@@ -180,7 +180,7 @@ void RndMatAnim::SetFrame(float f1, float f2){
         }
         if(!AlphaKeys().empty()){
             float alpha = mMat->Alpha();
-            AlphaKeys().AtFrame(f1, alpha); // fn_803B1308 - Keys<float, float>::AtFrame
+            AlphaKeys().AtFrame(f1, alpha); // fn_803B1308 - Keys<float, float>::AtFrame, which calls another AtFrame method fn_803B1374
             if(f2 != 1.0f){
                 Interp(mMat->Alpha(), alpha, f2, alpha);
             }
@@ -189,6 +189,10 @@ void RndMatAnim::SetFrame(float f1, float f2){
     }
 }
 #pragma pop
+
+void Interp(const RndMatAnim::TexPtr& texPtr, const RndMatAnim::TexPtr&, float, RndTex*& tex){
+    tex = texPtr;
+}
 
 BEGIN_HANDLERS(RndMatAnim)
     HANDLE_SUPERCLASS(RndAnimatable)

@@ -62,4 +62,6 @@ public:
     TexKeys mTexKeys; // 0x50
 };
 
+void Interp(const RndMatAnim::TexPtr&, const RndMatAnim::TexPtr&, float, RndTex*&);
+
 #endif
