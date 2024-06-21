@@ -111,7 +111,9 @@ public:
                     int somethingidk = idunnolol(frame);
                     key1 = &this->operator[](somethingidk);
                     key2 = &this->operator[](somethingidk + 1);
-                    ref = (frame - key1->frame) / (key2->frame - key1->frame);
+                    float den = key2->frame - key1->frame;
+                    MILO_ASSERT(den != 0, 0xE9);
+                    ref = (frame - key1->frame) / den;
                     return somethingidk;
                 }
             }
@@ -125,19 +127,14 @@ public:
             int threshold = size();
             while(threshold > cnt + 1){
                 int newCnt = cnt + threshold >> 1;
-                const Key<T1>* keyHere = &this->operator[](newCnt);
+                const Key<T1>* keyHere = &(*this)[newCnt];
                 if(ff < keyHere->frame) threshold = newCnt;
-                if(ff <= keyHere->frame) cnt = newCnt;
+                if(!(ff < keyHere->frame)) cnt = newCnt;
             }
 
-            const Key<T1>* key1;
-            const Key<T1>* key2;
-            do {
+            while (cnt + 1 < size() && test2(&(*this)[cnt + 1], &(*this)[cnt])) {
                 cnt++;
-                if(cnt + 1 >= size()) break;
-                key1 = &this->operator[](cnt);
-                key2 = &this->operator[](cnt + 1);
-            } while(key2->frame == key1->frame);
+            }
             
             // while(cnt + 1 > size()){
             //     const Key<T1>* key1 = &this->operator[](cnt);
@@ -147,6 +144,10 @@ public:
             // }
             return cnt;
         }
+    }
+
+    bool test2(const Key<T1>* k1, const Key<T1>* k2) const {
+        return k1->frame == k2->frame ? true : false;
     }
 };
 
