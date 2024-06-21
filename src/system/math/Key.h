@@ -39,6 +39,17 @@ public:
     void Add(const T1&, float, bool);
     void Remove(int); // used in RemoveKey
 
+    int AtFrame(float frame, T2& val) const {
+        const Key<T1>* prev;
+        const Key<T1>* next;
+        float r;
+        int ret = AtFrame(frame, prev, next, r);
+        if(r != 0.0f){
+            Interp(prev->value, next->value, r, val);
+        }
+        return ret;
+    }
+
     // void SetVal(const T1& prevVal, const T1& nextVal, float r, T1& val){
     //     if(r < 1.0f){
     //         nextVal = prevVal;
@@ -46,28 +57,29 @@ public:
     //     val = nextVal;
     // }
 
-    // this is what SymbolAt calls
-    int AtFrame(float frame, T1& val) const {
-        const Key<T1>* prev;
-        const Key<T1>* next;
-        float r;
-        int idx = AtFrame(frame, prev, next, r);
-        // if(prev) // if prev is not null, call Interp for T1's type - for ObjectKeys, this'll call the Interp(ObjectStage&) method
-        if(prev){
-            // SetVal(&prev->value, &next->value, r, val);
-            if(r < 1.0f){
-                next = prev;
-            }
-            val = next->value;
-        }
-        return idx;
+    // // this is what SymbolAt calls
+    // int AtFrame(float frame, T2& val) const {
+    //     const Key<T1>* prev;
+    //     const Key<T1>* next;
+    //     float r;
+    //     int idx = AtFrame(frame, prev, next, r);
+    //     // if(prev) // if prev is not null, call Interp for T1's type - for ObjectKeys, this'll call the Interp(ObjectStage&) method
+    //     if(prev){
+    //         // SetVal(&prev->value, &next->value, r, val);
+    //         if(r < 1.0f){
+    //             next = prev;
+    //         }
+    //         val = next->value;
+    //     }
+    //     return idx;
         
-    }
+    // }
 
     int AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
 
     // fn_8039C750 in retail, for T1 = Symbol
     // scratch: https://decomp.me/scratch/R1SeP
+    // scratch for T1 = float: https://decomp.me/scratch/GXfNX
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
     int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
         if(empty()){
@@ -95,6 +107,7 @@ public:
                 }
                 else {
                     // scratch for this function: https://decomp.me/scratch/cPad6
+                    // scratch for this function when T1 = float: https://decomp.me/scratch/ZrNr0
                     int somethingidk = idunnolol(frame);
                     key1 = &this->operator[](somethingidk);
                     key2 = &this->operator[](somethingidk + 1);

@@ -2,7 +2,7 @@
 #define RNDOBJ_MATANIM_H
 #include "rndobj/Anim.h"
 #include "rndobj/Mat.h"
-#include "utl/Key.h"
+#include "math/Key.h"
 
 class RndMatAnim : public RndAnimatable {
 public:
@@ -12,9 +12,10 @@ public:
         TexPtr(RndTex*);
     };
 
-    class TexKeys : public Keys<TexPtr, TexPtr> {
+    class TexKeys : public Keys<TexPtr, RndTex*> {
     public:
         TexKeys(Hmx::Object*);
+        TexKeys& operator=(const TexKeys&);
         Hmx::Object* mOwner;
     };
 
@@ -26,16 +27,23 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndMatAnim();
+    virtual ~RndMatAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget();
+    virtual Hmx::Object* AnimTarget(){ return mMat; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
     void SetMat(RndMat*);
     void LoadStage(BinStream&);
+    void LoadStages(BinStream&);
+    Keys<Vector3, Vector3>& TransKeys();
+    Keys<Vector3, Vector3>& ScaleKeys();
+    TexKeys& GetTexKeys();
+    Keys<Vector3, Vector3>& RotKeys();
+    Keys<float, float>& AlphaKeys();
+    Keys<Hmx::Color, Hmx::Color>& ColorKeys();
 
     DECLARE_REVS
     NEW_OVERLOAD;
@@ -53,5 +61,7 @@ public:
     Keys<Vector3, Vector3> mRotKeys; // 0x48
     TexKeys mTexKeys; // 0x50
 };
+
+void Interp(const RndMatAnim::TexPtr&, const RndMatAnim::TexPtr&, float, RndTex*&);
 
 #endif

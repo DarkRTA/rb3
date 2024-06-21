@@ -1,5 +1,4 @@
 #include "obj/Dir.h"
-#include "obj/DirItr.h"
 #include "obj/DirUnloader.h"
 #include "obj/MessageTimer.h"
 #include "obj/MsgSource.h"

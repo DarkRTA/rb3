@@ -3,7 +3,6 @@
 #include "obj/Object.h"
 #include "rndobj/Utl.h"
 #include "rndobj/Rnd.h"
-#include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndMat)

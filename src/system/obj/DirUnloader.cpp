@@ -1,5 +1,5 @@
 #include "obj/DirUnloader.h"
-#include "obj/DirItr.h"
+#include "obj/Dir.h"
 
 DirUnloader::DirUnloader(ObjectDir* dir) : Loader(FilePath(dir->mPathName), kLoadFront), mObjects() {
     mObjects.reserve(dir->mHashTable.mSize / 2);

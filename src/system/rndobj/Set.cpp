@@ -1,7 +1,6 @@
 #include "rndobj/Set.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
-#include "obj/DirItr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndSet)

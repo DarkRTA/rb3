@@ -17,6 +17,11 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void LaunchParticles();
+    void SetBit(unsigned int, bool);
+    void CopyPropsFromPart();
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndPartLauncher)
@@ -28,7 +33,7 @@ public:
     int mNumParts; // 0x2c
     Vector2 mEmitRate; // 0x30
     float mEmitCount; // 0x38
-    PartOverride* mPartOverride; // 0x3c - actually a pointer to PartOverride*
+    PartOverride* mPartOverride; // 0x3c
 };
 
 #endif
