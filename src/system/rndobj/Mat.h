@@ -112,10 +112,16 @@ public:
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
     const Transform& TexXfm() const { return mTexXfm; }
-    void SetTexXfm(const Transform&);
-    void SetDiffuseTex(RndTex*);
-    const Hmx::Color& GetColor() const;
-    float GetAlpha(){ return mColor.alpha; }
+    void SetTexXfm(const Transform& tf){
+        mTexXfm = tf;
+        mDirty |= 2;
+    }
+    void SetDiffuseTex(RndTex* tex){
+        mDiffuseTex = tex;
+        mDirty |= 2;
+    }
+    const Hmx::Color& GetColor() const { return mColor; }
+    float Alpha() const { return mColor.alpha; }
     void SetAlpha(float f){
         mColor.alpha = f;
         mDirty |= 1;

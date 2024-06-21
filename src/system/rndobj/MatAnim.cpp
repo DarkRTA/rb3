@@ -178,7 +178,12 @@ void RndMatAnim::SetFrame(float f1, float f2){
             mMat->SetColor(col);
         }
         if(!AlphaKeys().empty()){
-            
+            float alpha = mMat->Alpha();
+            AlphaKeys().AtFrame(f1, alpha);
+            if(f2 != 1.0f){
+                Interp(mMat->Alpha(), alpha, f2, alpha);
+            }
+            mMat->SetAlpha(alpha);
         }
     }
 }

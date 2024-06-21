@@ -20,6 +20,7 @@ void Invert(const Transform&, Transform&);
 void Interp(const Vector3&, const Vector3&, float, Vector3&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Interp(const Hmx::Color&, const Hmx::Color&, float, Hmx::Color&);
+void Interp(float, float, float, float&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);
