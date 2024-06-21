@@ -40,12 +40,12 @@ public:
     void Remove(int); // used in RemoveKey
 
     int AtFrame(float frame, T2& val) const {
-        const T1* prev;
-        const T1* next;
+        const Key<T1>* prev;
+        const Key<T1>* next;
         float r;
         int ret = AtFrame(frame, prev, next, r);
         if(r != 0.0f){
-            Interp(*prev, *next, r, val);
+            Interp(prev->value, next->value, r, val);
         }
         return ret;
     }
@@ -79,6 +79,7 @@ public:
 
     // fn_8039C750 in retail, for T1 = Symbol
     // scratch: https://decomp.me/scratch/R1SeP
+    // scratch for T1 = float: https://decomp.me/scratch/GXfNX
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
     int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
         if(empty()){
@@ -106,6 +107,7 @@ public:
                 }
                 else {
                     // scratch for this function: https://decomp.me/scratch/cPad6
+                    // scratch for this function when T1 = float: https://decomp.me/scratch/ZrNr0
                     int somethingidk = idunnolol(frame);
                     key1 = &this->operator[](somethingidk);
                     key2 = &this->operator[](somethingidk + 1);
