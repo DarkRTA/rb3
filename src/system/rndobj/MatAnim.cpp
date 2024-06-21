@@ -122,6 +122,13 @@ void RndMatAnim::Print(){
     ts << "   alphaKeys: " << mAlphaKeys << "\n";
 }
 
+Keys<Vector3, Vector3>& RndMatAnim::TransKeys(){ return mKeysOwner->mTransKeys; }
+Keys<Vector3, Vector3>& RndMatAnim::ScaleKeys(){ return mKeysOwner->mScaleKeys; }
+RndMatAnim::TexKeys& RndMatAnim::GetTexKeys(){ return mKeysOwner->mTexKeys; }
+Keys<Vector3, Vector3>& RndMatAnim::RotKeys(){ return mKeysOwner->mRotKeys; }
+Keys<float, float>& RndMatAnim::AlphaKeys(){ return mKeysOwner->mAlphaKeys; }
+Keys<Hmx::Color, Hmx::Color>& RndMatAnim::ColorKeys(){ return mKeysOwner->mColorKeys; }
+
 BEGIN_HANDLERS(RndMatAnim)
     HANDLE_SUPERCLASS(RndAnimatable)
     HANDLE_SUPERCLASS(Hmx::Object)

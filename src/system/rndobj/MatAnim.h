@@ -38,6 +38,12 @@ public:
     void SetMat(RndMat*);
     void LoadStage(BinStream&);
     void LoadStages(BinStream&);
+    Keys<Vector3, Vector3>& TransKeys();
+    Keys<Vector3, Vector3>& ScaleKeys();
+    TexKeys& GetTexKeys();
+    Keys<Vector3, Vector3>& RotKeys();
+    Keys<float, float>& AlphaKeys();
+    Keys<Hmx::Color, Hmx::Color>& ColorKeys();
 
     DECLARE_REVS
     NEW_OVERLOAD;
