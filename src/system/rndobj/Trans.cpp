@@ -8,12 +8,13 @@
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 #include "rndobj/Utl.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 
 Plane RndTransformable::sShadowPlane;
 
 void RndTransformable::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    Register();
     DataArray* dingus_da = SystemConfig("rnd");
     dingus_da->FindData("shadow_plane", sShadowPlane, true);
 }
@@ -38,6 +39,10 @@ RndTransformable::~RndTransformable() {
     delete mCache;
 }
 
+void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){
+    MILO_ASSERT(newParent != this, 0xBB);
+}
+
 void RndTransformable::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
     if(mParent == from){
@@ -59,7 +64,7 @@ void RndTransformable::SetWorldXfm(const Transform& tf){
     mCache->SetLastBit(0);
     UpdatedWorldXfm();
     for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
-        (*it)->mCache->SetDirty();
+        (*it)->SetDirty();
     }
 }
 
@@ -67,8 +72,12 @@ void RndTransformable::SetWorldPos(const Vector3& vec){
     mWorldXfm.v = vec;
     UpdatedWorldXfm();
     for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
-        (*it)->mCache->SetDirty();
+        (*it)->SetDirty();
     }
+}
+
+Transform& RndTransformable::WorldXfm_Force(){
+    static Timer* t = AutoTimer::GetTimer("updateworldxfm");
 }
 
 void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, bool b){
@@ -76,7 +85,7 @@ void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, b
     mConstraint = cst;
     mPreserveScale = b;
     mTarget = t;
-    mCache->SetDirty();
+    SetDirty();
 }
 
 namespace {
@@ -88,6 +97,43 @@ namespace {
         return t1->mLocalXfm.v.z > t2->mLocalXfm.v.z;
     }
 }
+
+void RndTransformable::DistributeChildren(bool b, float f){
+    std::vector<RndTransformable*> vec;
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); ++it){
+        vec.push_back(*it);
+    }
+    int count = vec.size();
+    if(count < 2) return;
+    else {
+        if(b) std::sort(vec.begin(), vec.end(), HorizontalCmp);
+        else std::sort(vec.begin(), vec.end(), VerticalCmp);
+    }
+    // some stuff happens here
+    for(int i = 0; i < count; i++){
+        Transform t = vec[i]->LocalXfm();
+        t.v[b] = f * i;
+        vec[i]->SetDirtyLocalXfm(t);
+    }
+}
+
+BEGIN_COPYS(RndTransformable)
+    if(ClassName() == StaticClassName()) COPY_SUPERCLASS(Hmx::Object)
+    CREATE_COPY(RndTransformable)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mWorldXfm)
+        COPY_MEMBER(mLocalXfm)
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mPreserveScale)
+            COPY_MEMBER(mConstraint)
+            COPY_MEMBER(mTarget)
+        }
+        else if(mConstraint == c->mConstraint){
+            COPY_MEMBER(mTarget)
+        }
+        SetTransParent(c->mParent, false);
+    END_COPYING_MEMBERS
+END_COPYS
 
 void RndTransformable::Print() {
     TextStream* ts = &TheDebug;
@@ -162,30 +208,39 @@ BEGIN_HANDLERS(RndTransformable)
 END_HANDLERS
 #pragma pop
 
+DataNode RndTransformable::OnCopyLocalTo(const DataArray* da){
+    DataArray* arr = da->Array(2);
+    for(int i = arr->Size() - 1; i >= 0; i--){
+        RndTransformable* t = arr->Obj<RndTransformable>(i);
+        t->SetDirtyLocalXfm(LocalXfm());
+    }
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnGetWorldForward(const DataArray* da){
+    *da->Var(2) = DataNode(WorldXfm().m.y.X());
+    *da->Var(3) = DataNode(WorldXfm().m.y.Y());
+    *da->Var(4) = DataNode(WorldXfm().m.y.Z());
+    return DataNode(0);
+}
+
 DataNode RndTransformable::OnGetWorldPos(const DataArray* da) {
-    Transform* t;
-    if (mCache->mFlags & 1) t = &WorldXfm_Force();
-    else t = &mWorldXfm;
-    *da->Var(2) = t->v.X();
-    if (mCache->mFlags & 1) t = &WorldXfm_Force();
-    else t = &mWorldXfm;
-    *da->Var(3) = t->v.Y();
-    if (mCache->mFlags & 1) t = &WorldXfm_Force();
-    else t = &mWorldXfm;
-    *da->Var(4) = t->v.Z();
-    return DataNode();
+    *da->Var(2) = DataNode(WorldXfm().v.X());
+    *da->Var(3) = DataNode(WorldXfm().v.Y());
+    *da->Var(4) = DataNode(WorldXfm().v.Z());
+    return DataNode(0);
 }
 
 DataNode RndTransformable::OnGetLocalPos(const DataArray* da) {
-    *da->Var(2) = mLocalXfm.v.X();
-    *da->Var(3) = mLocalXfm.v.Y();
-    *da->Var(4) = mLocalXfm.v.Z();
+    *da->Var(2) = LocalXfm().v.X();
+    *da->Var(3) = LocalXfm().v.Y();
+    *da->Var(4) = LocalXfm().v.Z();
     return DataNode();
 }
 
 DataNode RndTransformable::OnGetLocalPosIndex(const DataArray* a) {
     MILO_ASSERT(a->Int(2) < 3, 896);
-    return DataNode(mLocalXfm.v[a->Int(2)]);
+    return DataNode(LocalXfm().v[a->Int(2)]);
 }
 
 DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {

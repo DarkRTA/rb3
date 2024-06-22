@@ -7,6 +7,8 @@
 #include "math/Geo.h"
 #include <list>
 
+class RndCam;
+
 enum HighlightStyle {
     kHighlightWireframe,
     kHighlightSphere,
@@ -35,7 +37,7 @@ public:
     virtual void UpdateSphere();
     virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
     virtual bool MakeWorldSphere(Sphere&, bool){ return 0; }
-    virtual int CamOverride(){ return 0; }
+    virtual RndCam* CamOverride(){ return 0; }
     virtual void Mats(std::list<class RndMat*>&, bool){}
     virtual void Draw();
     virtual void DrawShowing(){}
@@ -72,13 +74,13 @@ public:
     DataNode OnZeroSphere(const DataArray*);
     
     bool mShowing : 1;
-    bool unk8p1 : 1; // used in RndGroup
+    bool mSortInWorld : 1; // used in RndGroup
     bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare
-    bool unk8p5 : 1;
-    bool unk8p6 : 1;
-    bool unk8p7 : 1;
+    bool mLineHasCaps : 1; // used in RndLine
+    bool mLinePairs : 1; // used in RndLine
+    bool mLineUpdate : 1; // used in RndLine
 
     bool unk9p0 : 1;
     bool unk9p1 : 1;
@@ -87,7 +89,25 @@ public:
     bool unk9p4 : 1; // used in RndMultiMesh
     bool mUseCurrentRect : 1; // used in RndScreenMask
     bool unk9p6 : 1; // used in RndTexBlender
-    bool unk9p7 : 1;
+    bool mFrameDrive : 1; // used in RndParticleSys
+
+    bool mPauseOffscreen : 1; // used in RndParticleSys
+    bool mBubble : 1; // used in RndParticleSys
+    bool mPreSpawn : 1; // used in RndParticleSys
+    bool unkap3 : 1;
+    bool mSpin : 1; // used in RndParticleSys
+    bool mRandomDirection : 1; // used in RndParticleSys
+    bool mVelocityAlign : 1; // used in RndParticleSys
+    bool mStretchWithVelocity : 1; // used in RndParticleSys
+
+    bool mConstantArea : 1; // used in RndParticleSys
+    bool mPerspective : 1; // used in RndParticleSys
+    bool unkbp2 : 1;
+    bool mTextMarkup : 1; // used in RndText
+    bool unkbp4 : 1; // used in RndText
+    bool unkbp5 : 1; // used in RndText
+    bool unkbp6 : 1; // used in RndText
+    bool unkbp7 : 1; // used in RndText
 
     Sphere mSphere;
     float mOrder;

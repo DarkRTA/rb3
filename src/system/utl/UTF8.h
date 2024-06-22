@@ -11,7 +11,8 @@ const char* UTF8strchr(const char*, unsigned short);
 void UTF8ToLower(unsigned short, char*);
 void UTF8ToUpper(unsigned short, char*);
 void UTF8FilterString(char*, int, const char*, const char*, char);
-
+void ASCIItoWideVector(std::vector<unsigned short>& vec, const char* cc);
+int WideVectorToUTF8(std::vector<unsigned short>& vec, String& str);
 void UTF8FilterKeyboardString(char*, int, const char*); // defined in os/PlatformMgr.cpp for some reason
 
 #endif

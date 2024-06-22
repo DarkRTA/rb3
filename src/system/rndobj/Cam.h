@@ -26,7 +26,8 @@ public:
 
     void SetFrustum(float, float, float, float);
     void SetTargetTex(RndTex*);
-    float WorldToScreen(const Vector3&, Vector2&) const;  
+    float WorldToScreen(const Vector3&, Vector2&) const;
+    void ScreenToWorld(const Vector2&, float, Vector3&) const;
     void UpdateLocal();
     DataNode OnSetFrustum(const DataArray*);
     DataNode OnSetZRange(const DataArray*);

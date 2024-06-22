@@ -122,7 +122,7 @@ public:
     int unk110;
     float mDuration; // 0x114
     int mDisabled; // 0x118
-    int unk11c;
+    int mFlags; // 0x11c
     bool mLooping : 1; // 0x120 >> 7
     bool mUseDepthOfField : 1; // 0x120 >> 6 & 1
     bool mPS3PerPixel : 1; // 0x120 >> 5 & 1

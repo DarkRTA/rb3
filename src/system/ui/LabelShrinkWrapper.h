@@ -27,6 +27,11 @@ public:
     void SetShouldShow(bool);
     void SetLabel(UILabel*);
 
+    UILabel* Label() const {
+        if(!m_pLabel) return 0;
+        else return m_pLabel;
+    }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

@@ -1,8 +1,5 @@
 #include "ui/UILabelDir.h"
 #include "ui/UIColor.h"
-#include "rndobj/Text.h"
-#include "rndobj/Mesh.h"
-#include "rndobj/Group.h"
 #include "obj/ObjVersion.h"
 #include "decomp.h"
 #include "utl/Symbols.h"

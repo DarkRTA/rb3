@@ -4,6 +4,7 @@
 #include "utl/Symbol.h"
 #include "os/Joypad.h"
 #include "os/Timer.h"
+#include "rndobj/Cam.h"
 #include <vector>
 
 class JoypadClient;
@@ -43,12 +44,12 @@ public:
     void GotoScreenImpl(UIScreen*, bool, bool);
     class UIPanel* FocusPanel();
     UIComponent* FocusComponent();
-    void Resource(const UIComponent*);
+    UIResource* Resource(const UIComponent*);
     void InitResources(Symbol);
     void FindResource(const DataArray*);
     void UseJoypad(bool, bool);
     void OverloadHorizontalNav(JoypadAction, JoypadButton, Symbol) const;
-    void RequireFixedText() const;
+    bool RequireFixedText() const;
     void SetRequireFixedText(bool);
     void PushDepth() const;
     void ScreenAtDepth(int);
@@ -76,8 +77,8 @@ public:
     UIScreen* mTransitionScreen; // 0x24
     std::vector<UIResource*> mResources; // 0x28
     Hmx::Object* mSink; // 0x30
-    int unk34; // 0x34
-    int unk38; // 0x38
+    RndCam* unk34; // 0x34
+    RndEnviron* unk38; // 0x38
     int unk3c; // 0x3c
     Timer mTimer; // 0x40
     bool unk70; // 0x70

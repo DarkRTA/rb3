@@ -1,8 +1,12 @@
 #ifndef UI_UILABELDIR_H
 #define UI_UILABELDIR_H
 #include "rndobj/Dir.h"
+#include "ui/UIColor.h"
 #include "ui/UIFontImporter.h"
 #include "ui/UIComponent.h"
+#include "rndobj/Text.h"
+#include "rndobj/Mesh.h"
+#include "rndobj/Group.h"
 
 // forward decs
 class UIColor;
@@ -20,7 +24,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
-    virtual ~UILabelDir(); // defining this causes an ambiguity error
+    virtual ~UILabelDir(){}
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
@@ -37,6 +41,13 @@ public:
     void GetStateColor(UIComponent::State, Hmx::Color&) const;
 
     DECLARE_REVS;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+
+    NEW_OBJ(UILabelDir)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UILabelDir)
+    }
 
     ObjPtr<UIColor, ObjectDir> mDefaultColor; // 0x26c
     std::vector<ObjPtr<UIColor,ObjectDir> > mColors; // 0x278

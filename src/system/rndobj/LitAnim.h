@@ -33,9 +33,9 @@ public:
         REGISTER_OBJ_FACTORY(RndLightAnim)
     }
 
-    ObjPtr<RndLight, class ObjectDir> mLight;
-    Keys<Hmx::Color, Hmx::Color> mColorKeys;
-    ObjOwnerPtr<RndLightAnim, class ObjectDir> mKeysOwner;
+    ObjPtr<RndLight, class ObjectDir> mLight; // 0x10
+    Keys<Hmx::Color, Hmx::Color> mColorKeys; // 0x1c
+    ObjOwnerPtr<RndLightAnim, class ObjectDir> mKeysOwner; // 0x24
 };
 
 #endif

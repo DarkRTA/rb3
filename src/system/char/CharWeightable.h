@@ -17,13 +17,16 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharWeightable(){}
 
-    float Weight(){ return mWeightOwner->mWeight; }
+    float Weight() const { return mWeightOwner->mWeight; }
+    void SetWeightOwner(CharWeightable* o){
+        mWeightOwner = o ? o : this;
+    }
 
     static unsigned short gRev;
     static unsigned short gAltRev;
 
-    float mWeight;
-    ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner;
+    float mWeight; // 0x8
+    ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner; // 0xc
 };
 
 #endif

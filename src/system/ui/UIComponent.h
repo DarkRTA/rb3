@@ -11,17 +11,12 @@
 #include "rndobj/Trans.h"
 #include "ui/UIResource.h"
 #include "obj/Msg.h"
-// #include "os/Joypad.h"
+#include "ui/UIScreen.h"
 #include "utl/FilePath.h"
 #include <vector>
 
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
-
-    // size 0x18
-    class UIMesh {
-        int unk[6];
-    };
 
     enum State {
         kNormal = 0,
@@ -30,6 +25,13 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
         kSelecting = 3,
         kSelected = 4,
         kNumStates = 5,
+    };
+
+    // size 0x18
+    class UIMesh {
+    public:
+        RndMesh* mMesh;
+        RndMat* mMats[kNumStates];
     };
 
     UIComponent();
@@ -57,6 +59,8 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
+    State GetState(){ return (State)mState; }
+
     void FinishSelecting();
     void SendSelect(LocalUser*);
     const char* GetResourcesPath();
@@ -73,7 +77,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
     ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
     LocalUser* mSelectingUser; // 0xD0
-    int unk_0xD4; // 0xD4
+    UIScreen* unk_0xD4; // 0xD4
     UIResource* mResource; // 0xD8
     std::vector<UIMesh> mMeshes; // 0xDC
     class String mResourceName; // 0xE4
@@ -90,14 +94,6 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     static int sSelectFrames;
     DECLARE_REVS
 };
-
-
-BEGIN_MESSAGE(UIComponentScrollMsg, "component_scroll", UIComponent*, LocalUser*); // LocalUser*, JoypadButton, JoypadAction, int
-
-END_MESSAGE;
-
-inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
-    Message(Type(), DataNode(comp), DataNode(user)){ }
 
 Symbol UIComponentStateToSym(UIComponent::State);
 UIComponent::State SymToUIComponentState(Symbol);

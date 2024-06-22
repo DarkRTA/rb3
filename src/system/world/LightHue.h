@@ -1,7 +1,7 @@
 #ifndef WORLD_LIGHTHUE_H
 #define WORLD_LIGHTHUE_H
 #include "obj/Object.h"
-#include "utl/Key.h"
+#include "math/Key.h"
 
 class FileLoader;
 

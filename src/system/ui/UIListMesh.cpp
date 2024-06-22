@@ -78,7 +78,7 @@ inline void UIListMeshElement::Draw(const Transform& tf, float f, UIColor* col, 
     }
     else {
         if(mMat){
-            float alpha = mMat->GetAlpha();
+            float alpha = mMat->Alpha();
             mesh->SetMat(mMat);
             mMat->SetAlpha(f * alpha);
             if(col){

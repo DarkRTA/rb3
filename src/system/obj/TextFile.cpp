@@ -1,12 +1,7 @@
 #include "obj/TextFile.h"
-#include "obj/Utl.h"
 #include "os/Debug.h"
 #include "os/HolmesClient.h"
-#include "os/System.h"
-#include "utl/MakeString.h"
-#include "obj/MessageTimer.h"
 #include "utl/Symbols.h"
-#include "obj/Dir.h"
 
 inline void TextFile::GetAppendFile(const char* c, const char* tok, int tokLen) {
     const char* s = strstr(c, tok);
@@ -88,12 +83,4 @@ DataNode TextFile::OnReflect(DataArray* array){
         TheDebug.SetReflect(idk);
     }
     return DataNode(0);
-}
-
-void MoveDtorUp(TextFile* tf){
-    delete tf;
-}
-
-void MoveSetTypeUp(TextFile* tf){
-    tf->SetType(Symbol());
 }

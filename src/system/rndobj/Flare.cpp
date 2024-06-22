@@ -67,7 +67,7 @@ BEGIN_LOADS(RndFlare)
     }
     if (gRev > 6) bs >> mOffset;
     mTestDone = 0;
-    mLastDone = unk8p7;
+    mLastDone = mLineUpdate;
     CalcScale();
 END_LOADS
 

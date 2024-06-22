@@ -51,6 +51,13 @@ inline bool PropSync(int& iref, DataNode& node, DataArray* prop, int i, PropOp o
     return true;
 }
 
+inline bool PropSync(short& s, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x36);
+    if(op == kPropGet) node = DataNode(s);
+    else s = node.Int(0);
+    return true;
+}
+
 inline bool PropSync(bool& b, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x40);
     if(op == kPropGet) node = DataNode(b);

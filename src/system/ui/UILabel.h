@@ -11,6 +11,7 @@
 #include "ui/UIColor.h"
 #include "utl/MemMgr.h"
 #include "obj/Dir.h"
+#include "os/DateTime.h"
 
 class UILabelDir;
 
@@ -48,8 +49,17 @@ public:
     virtual void SetCreditsText(DataArray*, class UIListSlot*) {MILO_ASSERT(false, 78);}
     virtual void SetDisplayText(const char*, bool);
 
+    DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
+
+    NEW_OBJ(UILabel)
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(UILabel)
+    }
+    static bool sDebugHighlight;
+    static bool sDeferUpdate;
 
     const char* GetDefaultText() const;
     int InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3&, Vector3&);
@@ -60,6 +70,8 @@ public:
     void SetTextToken(Symbol);
     void CenterWithLabel(UILabel*, bool, float);
     void SetEditText(const char*);
+    void SetUseHighlightMesh(bool);
+    Symbol TextToken() const;
     RndText* TextObj();
     void SetColorOverride(UIColor*);
     float GetDrawWidth();
@@ -69,6 +81,20 @@ public:
     void SetAlpha(float f){ mAlpha = f; }
     void SetAltAlpha(float f){ mAltAlpha = f; }
     void SetTokenFmt(const DataArray*);
+    void SetTokenFmtImp(Symbol, const DataArray*, const DataArray*, int, bool);
+    void SetInt(int, bool);
+    void SetIcon(char);
+    void AppendIcon(char);
+    void SetDateTime(const DateTime&, Symbol);
+    void SetSubtitle(const DataArray*);
+    RndText::Alignment Alignment() const { return (RndText::Alignment)mAlignment; }
+    void SetAlignment(RndText::Alignment);
+    void SetCapsMode(RndText::CapsMode);
+    void SetFitType(FitType);
+    void OnSetIcon(const char*);
+    void AltFontResourceFileUpdated(bool);
+    RndFont* AltFont();
+    RndFont* Font();
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
@@ -113,10 +139,6 @@ public:
     bool mAltStyleEnabled : 1; // 0x1a3 >> 5 & 1
     class String mAltFontResourceName; // 0x1a4
     ObjDirPtr<class ObjectDir> mObjDirPtr; // 0x1b0, unknown var name
-
-    NEW_OBJ(UILabel)
-    static void Init();
-    static bool sDeferUpdate;
 };
 
 #endif // UI_UILABEL_H

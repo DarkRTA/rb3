@@ -21,12 +21,14 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void SortPolls();
+
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtrList<CharPollable, ObjectDir> mPolls;
-    ObjPtr<CharPollable, ObjectDir> mChangedBy;
-    ObjPtr<CharPollable, ObjectDir> mChanges;
+    ObjPtrList<CharPollable, ObjectDir> mPolls; // 0x20
+    ObjPtr<CharPollable, ObjectDir> mChangedBy; // 0x30
+    ObjPtr<CharPollable, ObjectDir> mChanges; // 0x3c
 };
 
 #endif

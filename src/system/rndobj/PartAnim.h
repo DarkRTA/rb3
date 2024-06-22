@@ -1,6 +1,8 @@
 #ifndef RNDOBJ_PARTANIM_H
 #define RNDOBJ_PARTANIM_H
 #include "rndobj/Anim.h"
+#include "rndobj/Part.h"
+#include "math/Key.h"
 
 class RndParticleSysAnim : public RndAnimatable {
 public:
@@ -26,6 +28,15 @@ public:
     static void Init(){
         REGISTER_OBJ_FACTORY(RndParticleSysAnim)
     }
+
+    ObjPtr<RndParticleSys, ObjectDir> mParticleSys; // 0x10
+    Keys<Hmx::Color, Hmx::Color> mStartColorKeys; // 0x1c
+    Keys<Hmx::Color, Hmx::Color> mEndColorKeys; // 0x24
+    Keys<Vector2, Vector2> mEmitRateKeys; // 0x2c
+    Keys<Vector2, Vector2> mSpeedKeys; // 0x34
+    Keys<Vector2, Vector2> mLifeKeys; // 0x3c
+    Keys<Vector2, Vector2> mStartSizeKeys; // 0x44
+    ObjOwnerPtr<RndParticleSysAnim, ObjectDir> mKeysOwner; // 0x4c
 };
 
 #endif

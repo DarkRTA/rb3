@@ -80,6 +80,11 @@ public:
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
 
+    void SetDirty(){
+        if(mCache->mFlags & 1) return;
+        mCache->SetDirty_Force();
+    }
+
     Transform& WorldXfm(){
         if(mCache->mFlags & 1) return WorldXfm_Force();
         else return mWorldXfm;
@@ -87,11 +92,20 @@ public:
 
     void SetDirtyLocalXfm(Transform& tf){
         mLocalXfm = tf;
-        mCache->SetDirty();
+        SetDirty();
+    }
+
+    void SetDirtyLocalXfmVec(float x, float y, float z){
+        mLocalXfm.v.Set(x, y, z);
+        SetDirty();
+    }
+
+    Transform& LocalXfm(){
+        return mLocalXfm;
     }
 
     Transform& DirtyLocalXfm(){
-        mCache->SetDirty();
+        SetDirty();
         return mLocalXfm;
     }
 
@@ -124,7 +138,7 @@ public:
     }
 
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
-    std::vector<RndTransformable*> mChildren;
+    std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c

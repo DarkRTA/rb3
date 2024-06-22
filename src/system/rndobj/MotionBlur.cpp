@@ -2,7 +2,6 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Group.h"
-#include "obj/DirItr.h"
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 

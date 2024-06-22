@@ -2,6 +2,7 @@
 #include "ui/UILabel.h"
 #include "ui/UI.h"
 #include "utl/Locale.h"
+#include "math/MathFuncs.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(LabelNumberTicker)
@@ -71,8 +72,31 @@ void LabelNumberTicker::UpdateDisplay(){
     }
 }
 
+// fn_80549740
 void LabelNumberTicker::Poll(){
     UIComponent::Poll();
+    if(mTimer.Running()){
+        float split = mTimer.SplitMs();
+        float animtime = mAnimTime * 1000.0f;
+        float animdelay = mAnimDelay * 1000.0f;
+        float animsum = animdelay + animtime;
+        if(split >= animdelay){
+            float quotient = (split - animdelay) / animtime;
+            quotient *= pow_f(quotient, mAcceleration);
+            int somenum = unk12c + (int)(quotient * (mDesiredValue - unk12c));
+            if(mTickTrigger && mTickEvery != 0){
+                if((somenum / mTickEvery) > (unk130 / mTickEvery)){
+                    mTickTrigger->Trigger();
+                }
+            }
+            unk130 = somenum;
+            if(unk130 == mDesiredValue || (split >= animsum)){
+                unk130 = mDesiredValue;
+                mTimer.fn_800A8898();
+            }
+        }
+        UpdateDisplay();
+    }
 }
 
 void LabelNumberTicker::SetLabel(UILabel* l){
@@ -81,7 +105,17 @@ void LabelNumberTicker::SetLabel(UILabel* l){
 }
 
 void LabelNumberTicker::SetDesiredValue(int i){
-
+    unk12c = unk130;
+    mDesiredValue = i;
+    if(mAnimTime + mAnimDelay <= 0.0f) unk130 = i;
+    else {
+        mTimer.Reset();
+        mTimer.Start();
+    }
+    if(mTickTrigger && i > 0){
+        mTickTrigger->Trigger();
+    }
+    UpdateDisplay();
 }
 
 void LabelNumberTicker::SnapToValue(int i){
@@ -104,7 +138,7 @@ BEGIN_HANDLERS(LabelNumberTicker)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(LabelNumberTicker)
-    SYNC_PROP_SET(label, (Hmx::Object*)mLabel, SetLabel(_val.Obj<UILabel>(0)))
+    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>(0)))
     SYNC_PROP_SET(desired_value, mDesiredValue, SetDesiredValue(_val.Int(0)))
     SYNC_PROP_MODIFY(wrapper_text, mWrapperText, UpdateDisplay())
     SYNC_PROP_MODIFY(anim_time, mAnimTime, UpdateDisplay())

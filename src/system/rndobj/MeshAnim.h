@@ -1,6 +1,8 @@
 #ifndef RNDOBJ_MESHANIM_H
 #define RNDOBJ_MESHANIM_H
 #include "rndobj/Anim.h"
+#include "rndobj/Mesh.h"
+#include "math/Key.h"
 
 class RndMeshAnim : public RndAnimatable {
 public:
@@ -23,9 +25,14 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndMeshAnim)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndMeshAnim)
-    }
+    static void Init(){ REGISTER_OBJ_FACTORY(RndMeshAnim) }
+
+    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x10
+    Keys<std::vector<Vector3>, std::vector<Vector3> > mVertPointsKeys; // 0x1c
+    Keys<std::vector<Vector3>, std::vector<Vector3> > mVertNormalsKeys; // 0x24
+    Keys<std::vector<Vector2>, std::vector<Vector2> > mVertTexsKeys; // 0x2c
+    Keys<std::vector<Hmx::Color32>, std::vector<Hmx::Color32> > mVertColorsKeys; // 0x34
+    ObjOwnerPtr<RndMeshAnim, ObjectDir> mKeysOwner; // 0x3c
 };
 
 #endif

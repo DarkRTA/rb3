@@ -47,8 +47,24 @@ void LabelShrinkWrapper::PostLoad(BinStream& bs){
     Update();
 }
 
+// fn_8054A614
 void LabelShrinkWrapper::UpdateAndDrawWrapper(){
     MILO_ASSERT(m_pLabel, 0x62);
+    Vector3 topleft, topright, bottomleft, bottomright;
+    Vector3 vec1, vec2;
+    float w = m_pLabel->GetDrawWidth();
+    float h = m_pLabel->GetDrawHeight();
+    m_pLabel->InqMinMaxFromWidthAndHeight(w, h, m_pLabel->Alignment(), vec1, vec2);
+    float v1x = vec1.x;
+    float v2x = vec2.x;
+    float v2z = vec2.z;
+    float v1z = vec1.z;
+    SetWorldXfm(m_pLabel->WorldXfm());
+
+    m_pTopLeftBone->SetDirtyLocalXfmVec(v1x, 0.0f, v2z);
+    m_pTopRightBone->SetDirtyLocalXfmVec(v2x, 0.0f, v2z);
+    m_pBottomLeftBone->SetDirtyLocalXfmVec(v1x, 0.0f, v1z);
+    m_pBottomRightBone->SetDirtyLocalXfmVec(v2x, 0.0f, v1z);
 }
 
 void LabelShrinkWrapper::DrawShowing(){
@@ -63,19 +79,20 @@ void LabelShrinkWrapper::DrawShowing(){
 
 void LabelShrinkWrapper::Poll(){ UIComponent::Poll(); }
 
+// fn_8054A82C
 void LabelShrinkWrapper::Update(){
     UIComponent::Update();
-    DataArray* pTypeDef = mTypeDef;
+    const DataArray* pTypeDef = TypeDef();
     MILO_ASSERT(pTypeDef, 0xA3);
     RndDir* pDir = mResource->Dir();
     MILO_ASSERT(pDir, 0xA6);
-    m_pTopLeftBone = pDir->Find<RndMesh>(pTypeDef->FindStr(topleft_bone), false);
+    m_pTopLeftBone = pDir->Find<RndMesh>(pTypeDef->FindStr(topleft_bone), true);
     MILO_ASSERT(m_pTopLeftBone, 0xAE);
-    m_pTopRightBone = pDir->Find<RndMesh>(pTypeDef->FindStr(topright_bone), false);
+    m_pTopRightBone = pDir->Find<RndMesh>(pTypeDef->FindStr(topright_bone), true);
     MILO_ASSERT(m_pTopRightBone, 0xB0);
-    m_pBottomLeftBone = pDir->Find<RndMesh>(pTypeDef->FindStr(bottomleft_bone), false);
+    m_pBottomLeftBone = pDir->Find<RndMesh>(pTypeDef->FindStr(bottomleft_bone), true);
     MILO_ASSERT(m_pBottomLeftBone, 0xB2);
-    m_pBottomRightBone = pDir->Find<RndMesh>(pTypeDef->FindStr(bottomright_bone), false);
+    m_pBottomRightBone = pDir->Find<RndMesh>(pTypeDef->FindStr(bottomright_bone), true);
     MILO_ASSERT(m_pBottomRightBone, 0xB4);
 }
 
@@ -88,7 +105,7 @@ BEGIN_HANDLERS(LabelShrinkWrapper)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(LabelShrinkWrapper)
-    SYNC_PROP_SET(label, (Hmx::Object*)m_pLabel, SetLabel(_val.Obj<UILabel>(0)))
+    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>(0)))
     SYNC_PROP_SET(show, m_pShow, SetShouldShow(_val.Int(0)))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS
