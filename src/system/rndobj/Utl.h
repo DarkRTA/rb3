@@ -23,6 +23,7 @@ void ResetColors(std::vector<Hmx::Color>&, int);
 void CalcBox(RndMesh* m, Box& b);
 void MoveXfms(RndMultiMesh*, const Vector3&);
 void DistributeXfms(RndMultiMesh*, int, float);
+void RndScaleObject(Hmx::Object*, float, float);
 
 void RndUtlPreInit();
 void RndUtlInit();

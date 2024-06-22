@@ -68,10 +68,7 @@ void RndLightAnim::Print(){
 }
 
 float RndLightAnim::EndFrame(){
-    Keys<Hmx::Color, Hmx::Color>& keys = mKeysOwner->mColorKeys;
-    int size = keys.size();
-    if(size != 0) return keys[size].frame;
-    else return 0.0f;
+    return mKeysOwner->mColorKeys.LastFrame();
 }
 
 BEGIN_HANDLERS(RndLightAnim)
