@@ -322,19 +322,24 @@ bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
     ScoreType scoreType;
 
     bool hasScoreType = InqRequiredScoreTypes(scoreTypes);
-    if (hasScoreType) {
+    bool returnValue;
+    if (scoreTypes.size() == 0) {
+        returnValue = false;
+    } else {
         std::set<ScoreType>::iterator iterator = scoreTypes.begin();
         while (iterator != scoreTypes.end()) {
             scoreType = *iterator;
             TrackType trackType = ScoreTypeToTrackType(scoreType);
             ControllerType c = TrackTypeToControllerType(trackType);
-        
-            if (controllerType != c) {
-                iterator++;
+
+            if (controllerType == c) {
+                returnValue = true;
+                break;
             }
+            iterator++;
         }
     }
-    return false;
+    return returnValue;
 }
 
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
@@ -342,6 +347,7 @@ bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
 
     ControllerType controllerType = i_pUser->GetControllerType();
     bool isValid = IsUserOnValidScoreType(i_pUser);
+    bool returnValue;
 
     for (size_t i = 0; i < mControllerTypes.size(); i++) {
         if (controllerType == mControllerTypes.at(i)) {
@@ -358,10 +364,9 @@ Difficulty Accomplishment::GetRequiredDifficulty() const {
 
 ScoreType Accomplishment::GetRequiredScoreType() const {
     std::set<ScoreType> scoreTypes;
-    ScoreType scoreType;
 
     bool hasScoreType = InqRequiredScoreTypes(scoreTypes);
-    if (hasScoreType) {
+    if ((int)scoreTypes.size() == 1) {
         std::set<ScoreType>::iterator iterator = scoreTypes.begin();
         return *iterator;
     } 
