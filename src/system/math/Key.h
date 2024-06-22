@@ -38,7 +38,10 @@ public:
     void LastFrame() const;
     void Add(const T1&, float, bool);
     void Remove(int); // used in RemoveKey
+    void Remove(float, float);
+    void FindBounds(float&, float&, int&, int&);
 
+    // full method scratch (debug): https://decomp.me/scratch/IXqzR
     int AtFrame(float frame, T2& val) const {
         const Key<T1>* prev;
         const Key<T1>* next;
@@ -50,76 +53,47 @@ public:
         return ret;
     }
 
-    // void SetVal(const T1& prevVal, const T1& nextVal, float r, T1& val){
-    //     if(r < 1.0f){
-    //         nextVal = prevVal;
-    //     }
-    //     val = nextVal;
-    // }
-
-    // // this is what SymbolAt calls
-    // int AtFrame(float frame, T2& val) const {
-    //     const Key<T1>* prev;
-    //     const Key<T1>* next;
-    //     float r;
-    //     int idx = AtFrame(frame, prev, next, r);
-    //     // if(prev) // if prev is not null, call Interp for T1's type - for ObjectKeys, this'll call the Interp(ObjectStage&) method
-    //     if(prev){
-    //         // SetVal(&prev->value, &next->value, r, val);
-    //         if(r < 1.0f){
-    //             next = prev;
-    //         }
-    //         val = next->value;
-    //     }
-    //     return idx;
-        
-    // }
-
     int AtFrame(float, const T1*&, const T1*&, float&) const; // very possible this went unused in RB3 in favor of the method directly below this one
 
     // fn_8039C750 in retail, for T1 = Symbol
     // scratch: https://decomp.me/scratch/R1SeP
     // scratch for T1 = float: https://decomp.me/scratch/GXfNX
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
-    int AtFrame(float frame, const Key<T1>*& key1, const Key<T1>*& key2, float& ref) const {
+    int AtFrame(float frame, const Key<T1>*& prev, const Key<T1>*& next, float& ref) const {
         if(empty()){
-            key2 = 0;
-            key1 = 0;
+            next = 0;
+            prev = 0;
             ref = 0.0f;
             return -1;
         }
         else {
-            const Key<T1>* key = &front();
-            if(frame < key->frame){
-                key2 = key;
-                key1 = key;
+            const Key<T1>* frontKey = &front();
+            if(frame < front().frame){
+                next = &front();
+                prev = &front();
                 ref = 0.0f;
                 return -1;
             }
+            else if(frame >= back().frame){
+                const Key<T1>* backKey = &back();
+                next = backKey;
+                prev = backKey;
+                ref = 0.0f;
+                return size() - 1;
+            }
             else {
-                const Key<T1>* otherKey = &back();
-                if(frame >= otherKey->frame){
-                    const Key<T1>* otherKeyToRet = &back();
-                    key2 = otherKeyToRet;
-                    key1 = otherKeyToRet;
-                    ref = 0.0f;
-                    return size() - 1;
-                }
-                else {
-                    // scratch for this function: https://decomp.me/scratch/cPad6
-                    // scratch for this function when T1 = float: https://decomp.me/scratch/ZrNr0
-                    int somethingidk = idunnolol(frame);
-                    key1 = &this->operator[](somethingidk);
-                    key2 = &this->operator[](somethingidk + 1);
-                    float den = key2->frame - key1->frame;
-                    MILO_ASSERT(den != 0, 0xE9);
-                    ref = (frame - key1->frame) / den;
-                    return somethingidk;
-                }
+                int frameIdx = idunnolol(frame);
+                prev = &this->operator[](frameIdx);
+                next = &this->operator[](frameIdx + 1);
+                float den = next->frame - prev->frame;
+                MILO_ASSERT(den != 0, 0xE9);
+                ref = (frame - prev->frame) / den;
+                return frameIdx;
             }
         }
     }
 
+    // looks like this gets the index in the Keys vector in which the frame ff is located?
     int idunnolol(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
@@ -131,22 +105,15 @@ public:
                 if(ff < keyHere->frame) threshold = newCnt;
                 if(!(ff < keyHere->frame)) cnt = newCnt;
             }
-
-            while (cnt + 1 < size() && test2(&(*this)[cnt + 1], &(*this)[cnt])) {
+            while (cnt + 1 < size() && SameFrame(&(*this)[cnt + 1], &(*this)[cnt])) {
                 cnt++;
             }
-            
-            // while(cnt + 1 > size()){
-            //     const Key<T1>* key1 = &this->operator[](cnt);
-            //     const Key<T1>* key2 = &this->operator[](cnt + 1);
-            //     if(key1->frame == key2->frame) break;
-            //     cnt++;
-            // }
+
             return cnt;
         }
     }
 
-    bool test2(const Key<T1>* k1, const Key<T1>* k2) const {
+    bool SameFrame(const Key<T1>* k1, const Key<T1>* k2) const {
         return k1->frame == k2->frame ? true : false;
     }
 };
