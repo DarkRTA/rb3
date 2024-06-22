@@ -44,7 +44,7 @@ public:
         const Key<T1>* next;
         float r;
         int ret = AtFrame(frame, prev, next, r);
-        if(r != 0.0f){
+        if(prev){
             Interp(prev->value, next->value, r, val);
         }
         return ret;
@@ -150,5 +150,11 @@ public:
         return k1->frame == k2->frame ? true : false;
     }
 };
+
+template <class T1, class T2> void ScaleFrame(Keys<T1, T2>& keys, float scale){
+    for(Keys<T1,T2>::iterator it = keys.begin(); it != keys.end(); ++it){
+        (*it).frame *= scale;
+    }
+}
 
 #endif
