@@ -68,6 +68,14 @@ namespace Hmx {
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
+
+        Color& operator *=(float f) {
+            red *= f;
+            green *= f;
+            blue *= f;
+            alpha *= f;
+            return *this;
+        }
     };
 
     class Color32 {

@@ -1,4 +1,5 @@
 #include "Platform/Result.h"
+#include "decomp.h"
 
 namespace Quazal {
 
@@ -13,11 +14,11 @@ namespace Quazal {
     bool qResult::Equals(const int& i) const { return m_iReturnCode == i; }
 
     bool qResult::Equals(const bool& b) const {
-        return (m_iReturnCode == 0) == b;
+        return (m_iReturnCode >> 31 == 0) == b;
     }
 
     qResult::operator bool() const {
-        return m_iReturnCode == 0;
+        return m_iReturnCode >> 31 == 0;
     }
 
     qResult& qResult::operator=(const int& i){
@@ -35,3 +36,5 @@ namespace Quazal {
     void qResult::Trace(unsigned int) const {}
 
 }
+
+DECOMP_FORCEACTIVE(Result, "ReturnCode ", " (origin ", ", line ", ")")

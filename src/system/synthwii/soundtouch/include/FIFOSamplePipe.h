@@ -206,7 +206,7 @@ public:
 
 
     /// Returns nonzero if there aren't any samples available for outputting.
-    virtual int isEmpty() const
+    int isEmpty() const
     {
         return output->isEmpty();
     }

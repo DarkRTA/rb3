@@ -1,7 +1,10 @@
 #include "ui/CheatProvider.h"
+#include "os/Debug.h"
 #include "ui/UIListLabel.h"
 #include "utl/Cheats.h"
 #include "utl/Symbols.h"
+
+CheatProvider* CheatProvider::sInstance;
 
 CheatProvider::CheatProvider() : mFilterIdx(0) {
     SetName("cheat_provider", ObjectDir::Main());
@@ -22,6 +25,21 @@ CheatProvider::CheatProvider() : mFilterIdx(0) {
         }
     }
     ApplyFilter();
+}
+
+extern bool CheatsInitialized();
+
+void CheatProvider::Init() {
+    if (CheatsInitialized()) {
+        MILO_ASSERT(!sInstance, 97);
+        sInstance = new CheatProvider;
+    }
+}
+
+void CheatProvider::Terminate() {
+    MILO_ASSERT(sInstance, 104);
+    delete sInstance;
+    sInstance = NULL;
 }
 
 CheatProvider::~CheatProvider(){

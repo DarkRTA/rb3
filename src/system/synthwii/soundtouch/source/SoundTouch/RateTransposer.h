@@ -145,7 +145,7 @@ public:
     void clear();
 
     /// Returns nonzero if there aren't any samples available for outputting.
-    int isEmpty() const;
+    int isEmpty() const; int isEmpty();
 };
 
 class RateTransposerFloat : public RateTransposer

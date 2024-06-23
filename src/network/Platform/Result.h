@@ -1,6 +1,7 @@
 #ifndef PLATFORM_RESULT_H
 #define PLATFORM_RESULT_H
 // #include "Platform/RootObject.h"
+#include "types.h"
 
 namespace Quazal {
     class qResult {
@@ -16,7 +17,7 @@ namespace Quazal {
         
         void Trace(unsigned int) const;
 
-        int m_iReturnCode;
+        uint m_iReturnCode;
         const char* m_cszFilename;
         int m_iLineNumber;    
     };
