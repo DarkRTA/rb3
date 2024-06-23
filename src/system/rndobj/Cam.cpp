@@ -13,7 +13,7 @@
 
 RndCam* RndCam::sCurrent = 0;
 int CAM_REV = 12;
-Transform sFlipYZ;
+Transform sFlipYZ; 
 
 ADD_NOTIFS
 

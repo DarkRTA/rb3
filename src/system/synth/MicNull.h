@@ -28,7 +28,7 @@ public:
     virtual void SetCompressorParam(float){}
     virtual float GetCompressorParam() const { return 0.0f; }
     virtual char* GetRecentBuf(int&);
-    virtual void GetContinuousBuf(int&);
+    virtual char* GetContinuousBuf(int&);
     virtual int GetSampleRate() const { return 48000; }
     virtual void SetEarpiece(bool){}
     virtual bool GetEarpiece() const { return false; }
@@ -37,8 +37,8 @@ public:
 
     // buf at 0xc, 0xc00 bytes long
     // another buf at 0x5a60
-
-    char filler[0x5a20]; // prolly a bunch of bufs
+    char buf_0xC[0xC00];
+    char filler[20000]; // prolly a bunch of bufs
     Timer mTimer; // 0x5a30
     short mBuf[10000];
 };

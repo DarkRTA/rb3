@@ -1,19 +1,20 @@
 #ifndef RNDOBJ_GENERATOR_H
 #define RNDOBJ_GENERATOR_H
+#include "math/Mtx.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Part.h"
-
-class RndTransAnim;
-class RndMesh;
-class RndMultiMesh;
+#include "rndobj/Mesh.h"
+#include "rndobj/MultiMesh.h"
+#include "rndobj/TransAnim.h"
 
 class RndGenerator : public RndAnimatable, public RndTransformable, public RndDrawable {
 public:
 
     class Instance {
     public:
+        int pad[16];
     };
 
     RndGenerator();
@@ -33,8 +34,25 @@ public:
     virtual void UpdateSphere();
     virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual void Highlight();
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual void Print();
+
+    void DrawMesh(Transform&, float);
+    void DrawMultiMesh(Transform&, float);
+    void DrawParticleSys(Transform&, float);
+    
+    void Generate(float);
+    void ResetInstances();
+    void SetPath(RndTransAnim*, float, float);
+    void SetRateVar(float lo, float hi) { mRateGenLow = lo; mRateGenHigh = hi; }
+    void SetScaleVar(float lo, float hi) { mScaleGenLow = lo; mScaleGenHigh = hi; }
+    void SetPathVar(float x, float y, float z) { mPathVarMaxX = x; mPathVarMaxY = y; mPathVarMaxZ = z; }
+
+    DataNode OnSetPath(const DataArray*);
+    DataNode OnSetRateVar(const DataArray*);
+    DataNode OnSetScaleVar(const DataArray*);
+    DataNode OnSetPathVar(const DataArray*);
+    DataNode OnGenerate(const DataArray*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

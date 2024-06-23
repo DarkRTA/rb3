@@ -46,6 +46,7 @@
 #define RateTransposer_H
 
 #include "AAFilter.h"
+#include "types.h"
 #include "synthwii/soundtouch/include/FIFOSamplePipe.h"
 #include "synthwii/soundtouch/include/FIFOSampleBuffer.h"
 
@@ -112,9 +113,7 @@ public:
     RateTransposer();
     virtual ~RateTransposer();
 
-    void *operator new(size_t t) {
-        return _MemAlloc(t, 0);
-    }
+    void *operator new(size_t t) { return _MemAlloc(t, 0x20); }
 
     /// Returns the output buffer object
     FIFOSamplePipe *getOutput() { return &outputBuffer; };
@@ -136,7 +135,7 @@ public:
     virtual void setRate(float newRate);
 
     /// Sets the number of channels, 1 = mono, 2 = stereo
-    void setChannels(int channels);
+    void setChannels(uint channels);
 
     /// Adds 'numSamples' pcs of samples from the 'samples' memory position into
     /// the input of the object.
@@ -153,6 +152,7 @@ class RateTransposerFloat : public RateTransposer
 {
 protected:
     float fSlopeCount;
+    int x;
     SAMPLETYPE sPrevSampleL, sPrevSampleR;
 
     virtual void resetRegisters();
@@ -167,6 +167,7 @@ protected:
 public:
     RateTransposerFloat();
     virtual ~RateTransposerFloat();
+    void operator delete(void* v) { _MemFree(v); }
 };
 
 }

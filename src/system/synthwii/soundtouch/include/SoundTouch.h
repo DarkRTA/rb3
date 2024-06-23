@@ -223,8 +223,8 @@ public:
     /// 'SETTING_...' defines for available setting ID's.
     /// 
     /// \return 'TRUE' if the setting was succesfully changed
-    BOOL setSetting(int settingId,   ///< Setting ID number. see SETTING_... defines.
-                    int value        ///< New setting value.
+    BOOL setSetting(uint settingId,   ///< Setting ID number. see SETTING_... defines.
+                    uint value        ///< New setting value.
                     );
 
     /// Reads a setting controlling the processing system behaviour. See the

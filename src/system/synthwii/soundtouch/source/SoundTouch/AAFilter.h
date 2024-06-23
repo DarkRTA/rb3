@@ -45,6 +45,7 @@
 #define AAFilter_H
 
 #include "synthwii/soundtouch/include/STTypes.h"
+#include "utl/MemMgr.h"
 
 namespace soundtouch
 {
@@ -63,6 +64,7 @@ protected:
     /// Calculate the FIR coefficients realizing the given cutoff-frequency
     void calculateCoeffs();
 public:
+    void* operator new(size_t s) { return _MemAlloc(s, 0x20); }
     AAFilter(uint length);
 
     ~AAFilter();

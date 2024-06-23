@@ -149,7 +149,7 @@ void SoundTouch::setChannels(uint numChannels)
 {
     if (numChannels != 1 && numChannels != 2) 
     {
-        //throw std::runtime_error("Illegal number of channels");
+        MILO_FAIL("Illegal number of channels");
     }
     channels = numChannels;
     pRateTransposer->setChannels(numChannels);
@@ -373,9 +373,9 @@ void SoundTouch::flush()
 
 // Changes a setting controlling the processing system behaviour. See the
 // 'SETTING_...' defines for available setting ID's.
-BOOL SoundTouch::setSetting(int settingId, int value)
+BOOL SoundTouch::setSetting(uint settingId, uint value)
 {
-    int sampleRate, sequenceMs, seekWindowMs, overlapMs;
+    uint sampleRate, sequenceMs, seekWindowMs, overlapMs;
 
     // read current tdstretch routine parameters
     pTDStretch->getParameters(&sampleRate, &sequenceMs, &seekWindowMs, &overlapMs);
@@ -424,7 +424,7 @@ BOOL SoundTouch::setSetting(int settingId, int value)
 // Returns the setting value.
 int SoundTouch::getSetting(int settingId) const
 {
-    int temp;
+    uint temp;
 
     switch (settingId) 
     {

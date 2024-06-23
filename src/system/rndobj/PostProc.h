@@ -1,11 +1,13 @@
 #ifndef RNDOBJ_POSTPROC_H
 #define RNDOBJ_POSTPROC_H
+#include "obj/ObjMacros.h"
 #include <revolution/OS.h>
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Tex.h"
 #include "rndobj/ColorXfm.h"
 #include "rndobj/DOFProc.h"
+#include "rndobj/Draw.h"
 #include "math/Vec.h"
 
 class ProcCounter {
@@ -34,8 +36,6 @@ public:
     virtual void OnGPHangRecover(){ OSReport("Base PostProcessor::OnGPHangRecover called.\n"); }
     virtual float Priority(){ return 1.0f; }
 };
-
-class RndDrawable; // forward dec
 
 class RndPostProc : public Hmx::Object, public PostProcessor {
 public:
@@ -71,22 +71,23 @@ public:
     static DOFOverrideParams sDOFOverride;
     static DOFOverrideParams& DOFOverrides(){ return sDOFOverride; }
 
-    NEW_OVERLOAD;
-    DELETE_OVERLOAD;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    DECLARE_REVS
     NEW_OBJ(RndPostProc)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndPostProc)
     }
 
-    float mPriority;
-    Hmx::Color mBloomColor;
-    float mBloomThreshold;
-    float mBloomIntensity;
-    bool mBloomGlare;
-    bool mBloomStreak;
-    float mBloomStreakAttenuation;
-    float mBloomStreakAngle;
-    ObjPtr<RndTex, ObjectDir> mLuminanceMap;
+    float mPriority; // 0x20
+    Hmx::Color mBloomColor; // 0x24
+    float mBloomThreshold; // 0x34
+    float mBloomIntensity; // 0x38
+    bool mBloomGlare; // 0x3C
+    bool mBloomStreak; // 0x3D
+    float mBloomStreakAttenuation; // 0x40
+    float mBloomStreakAngle; // 0x44
+    ObjPtr<RndTex, ObjectDir> mLuminanceMap; // 0x48
     bool mForceCurrentInterp;
     RndColorXfm mColorXfm;
     float mNumLevels;

@@ -93,7 +93,7 @@ private:
 public:
 
     /// Constructor
-    FIFOSampleBuffer(int numChannels = 2     ///< Number of channels, 1=mono, 2=stereo.
+    FIFOSampleBuffer(uint numChannels = 2     ///< Number of channels, 1=mono, 2=stereo.
                                               ///< Default is stereo.
                      );
 

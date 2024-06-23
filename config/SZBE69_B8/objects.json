@@ -321,6 +321,7 @@
             "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",
             "system/os/HDCache.cpp": "NonMatching",
+            "system/os/HolmesClient.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
@@ -344,10 +345,7 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": {
-                "status": "LinkIssues",
-                "comment": "Something involving the placement of gKeyboardFontFile"
-            },            
+            "system/os/VirtualKeyboard.cpp": "Matching",            
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",

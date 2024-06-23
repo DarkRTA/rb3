@@ -10,7 +10,7 @@ class DisplayList { // 0xC
 public:
     DisplayList();
     ~DisplayList();
-    void Init();
+    static void Init();
     void Clear();
     void Copy(const DisplayList&);
     void Draw(u32, _GXVtxFmt) const;
@@ -27,8 +27,10 @@ class WiiMesh : public RndMesh { // 0x198
     OBJ_CLASSNAME(WiiMesh)
     OBJ_SET_TYPE(WiiMesh)
 
+    static void Init();
     NEW_OBJ(WiiMesh)
 
+    u16 mNumVerts, mNumFaces;
     DisplayList mDisplays; // 0x158
 };
 

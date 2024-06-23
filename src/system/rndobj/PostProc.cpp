@@ -1,10 +1,15 @@
 #include "rndobj/PostProc.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
 #include "rndobj/Rnd.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
 RndPostProc* RndPostProc::sCurrent = 0;
 DOFOverrideParams RndPostProc::sDOFOverride;
+
+INIT_REVS(RndPostProc)
 
 RndPostProc::RndPostProc() : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f), mBloomThreshold(4.0f), mBloomIntensity(0.0f), 
     mBloomGlare(0), mBloomStreak(0), mBloomStreakAttenuation(0.9f), mBloomStreakAngle(0.0f), mLuminanceMap(this, 0), 
@@ -56,6 +61,45 @@ void RndPostProc::OnSelect(){
 void RndPostProc::OnUnselect(){
     TheRnd->UnregisterPostProcessor(this);
     Handle(unselected_msg, false);
+}
+
+SAVE_OBJ(RndPostProc, 524)
+
+BEGIN_LOADS(RndPostProc)
+    LOAD_REVS(bs)
+    ASSERT_REVS(37, 0)
+    if (gRev == 16) {
+        int dRev;
+        bs >> dRev;
+        MILO_ASSERT(dRev == 3, 667);
+        bool x; bs >> x;
+        int a,b,c,d,e;
+        bs >> a >> b >> c >> d >> e;
+    } else Hmx::Object::Load(bs);
+    LoadRev(bs, gRev);
+END_LOADS
+
+void RndPostProc::LoadRev(BinStream& bs, int rev) {
+    if (rev > 4) {
+        if (rev > 10) {
+            bs >> mBloomColor;
+            if (rev < 24) { int x; bs >> x; }
+            bs >> mBloomIntensity;
+            bs >> mBloomThreshold;
+        } else {
+            Hmx::Color c;
+            bs >> c;
+        }
+    }
+    if (rev > 5) bs >> mLuminanceMap;
+
+
+    if (rev > 32) bs >> mBloomGlare;
+    if (rev > 35) {
+        bs >> mBloomStreak;
+        bs >> mBloomStreakAttenuation;
+        bs >> mBloomStreakAngle;
+    }
 }
 
 BEGIN_HANDLERS(RndPostProc)

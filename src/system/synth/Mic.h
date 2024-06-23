@@ -40,7 +40,7 @@ public:
     virtual void SetCompressorParam(float) = 0;
     virtual float GetCompressorParam() const = 0;
     virtual char* GetRecentBuf(int&) = 0;
-    virtual void GetContinuousBuf(int&) = 0;
+    virtual char* GetContinuousBuf(int&) = 0;
     virtual int GetDroppedSamples(){ return 0; }
     virtual int GetSampleRate() const = 0;
     virtual float PercentTalking(){ return 0.0f; }

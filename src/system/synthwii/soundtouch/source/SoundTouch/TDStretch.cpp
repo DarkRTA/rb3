@@ -41,12 +41,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include <types.h>
 #include <string.h>
 #include <limits.h>
 #include <assert.h>
-#include <stdexcept>
 
-#include "STTypes.h"
+#include "synthwii/soundtouch/include/STTypes.h"
 #include "cpu_detect.h"
 #include "TDStretch.h"
 
@@ -120,8 +120,8 @@ TDStretch::~TDStretch()
 //      position (default = 28 ms)
 // 'overlapMS' = overlapping length (default = 12 ms)
 
-void TDStretch::setParameters(int aSampleRate, int aSequenceMS, 
-                              int aSeekWindowMS, int aOverlapMS)
+void TDStretch::setParameters(uint aSampleRate, uint aSequenceMS, 
+                              uint aSeekWindowMS, uint aOverlapMS)
 {
     assert(aSampleRate >= 0);
     assert(aSequenceMS >= 0);
@@ -150,7 +150,7 @@ void TDStretch::setParameters(int aSampleRate, int aSequenceMS,
 /// Get routine control parameters, see setParameters() function.
 /// Any of the parameters to this function can be NULL, in such case corresponding parameter
 /// value isn't returned.
-void TDStretch::getParameters(int *pSampleRate, int *pSequenceMs, int *pSeekWindowMs, int *pOverlapMs) const
+void TDStretch::getParameters(uint *pSampleRate, uint *pSequenceMs, uint *pSeekWindowMs, uint *pOverlapMs)
 {
     if (pSampleRate)
     {
@@ -503,7 +503,7 @@ void TDStretch::setTempo(float newTempo)
 
 
 // Sets the number of channels, 1 = mono, 2 = stereo
-void TDStretch::setChannels(int numChannels)
+void TDStretch::setChannels(uint numChannels)
 {
     assert(numChannels > 0);
     if (channels == numChannels) return;
@@ -658,56 +658,13 @@ void TDStretch::acceptNewOverlapLength(int newOverlapLength)
 
 // Operator 'new' is overloaded so that it automatically creates a suitable instance 
 // depending on if we've a MMX/SSE/etc-capable CPU available or not.
-void * TDStretch::operator new(size_t s)
-{
-    // Notice! don't use "new TDStretch" directly, use "newInstance" to create a new instance instead!
-    throw std::runtime_error("Error in TDStretch::new: Don't use 'new TDStretch' directly, use 'newInstance' member instead!");
-    return NULL;
-}
+// void * TDStretch::operator new(size_t s)
+// {
+//     // Notice! don't use "new TDStretch" directly, use "newInstance" to create a new instance instead!
+//     throw std::runtime_error("Error in TDStretch::new: Don't use 'new TDStretch' directly, use 'newInstance' member instead!");
+//     return NULL;
+// }
 
-
-TDStretch * TDStretch::newInstance()
-{
-    uint uExtensions;
-
-    uExtensions = detectCPUextensions();
-
-    // Check if MMX/SSE/3DNow! instruction set extensions supported by CPU
-
-#ifdef ALLOW_MMX
-    // MMX routines available only with integer sample types
-    if (uExtensions & SUPPORT_MMX)
-    {
-        return ::new TDStretchMMX;
-    }
-    else
-#endif // ALLOW_MMX
-
-
-#ifdef ALLOW_SSE
-    if (uExtensions & SUPPORT_SSE)
-    {
-        // SSE support
-        return ::new TDStretchSSE;
-    }
-    else
-#endif // ALLOW_SSE
-
-
-#ifdef ALLOW_3DNOW
-    if (uExtensions & SUPPORT_3DNOW)
-    {
-        // 3DNow! support
-        return ::new TDStretch3DNow;
-    }
-    else
-#endif // ALLOW_3DNOW
-
-    {
-        // ISA optimizations not supported, use plain C version
-        return ::new TDStretch;
-    }
-}
 
 
 //////////////////////////////////////////////////////////////////////////////

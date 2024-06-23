@@ -48,6 +48,9 @@ public:
 
     float SecondsToY(float) const;
     void AddActiveWidget(class TrackWidget*);
+    void AddTestWidget(class TrackWidget*, int);
+    void ClearAllWidgets();
+    void ToggleRunning();
     float CutOffY() const;
     NEW_OBJ(TrackDir)
 
