@@ -5,7 +5,7 @@
         "objects": {
             "Main.cpp": "Matching",
             "App.cpp": "NonMatching",
-            "BudgetScreen.cpp": "NonMatching",
+            "BudgetScreen.cpp": { "status": "NonMatching", "extra_cflags": ["-ipa function"] },
             "ChecksumData_wii.cpp": "Matching",
             "keygen_wii.cpp": { "status": "Matching", "extra_cflags": [ "-O2,p -sdata 4 -opt noschedule -func_align 4" ] }
         }
@@ -150,7 +150,7 @@
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": {
-                "status": "Equivalent", 
+                "status": "Equivalent",
                 "comment": "Stack mismatches in MiniLeaderboardDisplay::Init()"
             },
             "system/bandobj/NoteTube.cpp": "NonMatching",
@@ -350,7 +350,7 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": "Matching",            
+            "system/os/VirtualKeyboard.cpp": "Matching",
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
@@ -471,7 +471,7 @@
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
             "system/ui/LocalePanel.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
-            "system/ui/Screenshot.cpp": "NonMatching", 
+            "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/ScrollSelect.cpp": "NonMatching",
             "system/ui/UI.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "Matching",

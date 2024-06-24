@@ -17,6 +17,8 @@ public:
 
     float GetSongDurationMs();
 
+    SongData* GetSongData() { return mSongData; }
+
     SongData* mSongData;
     std::vector<int> mTrackData; // todo: type
     float mSongDurationMs;

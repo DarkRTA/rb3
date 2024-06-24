@@ -44,6 +44,11 @@ public:
     virtual void Poll();
     virtual void Enter(UIScreen* screen);
 
+    int HeapFreeSize(const char*);
+
+    void NextTest();
+    void EndTest();
+
 private:
     UIPanel* mTestPanel;
 
@@ -51,17 +56,18 @@ private:
     float mNullGs;
     float mTime;
     float mEndTime;
-    float mFrameInc;
-    float mLastCpu;
+
+    float mLastCpu; // TODO: was mFrameInc, but Poll indicates otherwise
     float mLastGpu;
-    float mUnk1;
+    float mLastHud;
+    float mLastEtc;
 
     TextFileStream* mLog;
 
-    Distribution mPollDist;
     Distribution mCpuDist;
     Distribution mGsDist;
-    Distribution mUnk2;
+    Distribution mHudDist;
+    Distribution mEtcDist;
 
     int mRecordStartTick;
     int mRecordEndTick;
@@ -75,7 +81,7 @@ private:
     float mWorstGsPctile;
     String mWorstGsName;
 
-    int mUnk3;
+    int mSampleCount;
 };
 
 #endif

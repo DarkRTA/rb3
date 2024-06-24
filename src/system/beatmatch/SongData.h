@@ -8,6 +8,7 @@
 #include "beatmatch/RGChords.h"
 #include "utl/RangedData.h"
 #include "utl/TickedInfo.h"
+#include "utl/TempoMap.h"
 #include <vector>
 #include <map>
 
@@ -19,7 +20,6 @@ class DrumMixDB;
 class GameGemDB;
 class PhraseDB;
 class VocalNoteList;
-class TempoMap;
 class MeasureMap;
 class BeatMap;
 class TuningOffsetList;
@@ -86,7 +86,9 @@ public:
     virtual void AddKeyboardRangeShift(int, int, float, int, int);
 
     virtual void CalcSongPos(float);
-    virtual TempoMap* GetTempoMap() const;
+    virtual TempoMap* GetTempoMap() const {
+        return mTempoMap;
+    }
     virtual BeatMap* GetBeatMap() const;
     virtual MeasureMap* GetMeasureMap() const;
 

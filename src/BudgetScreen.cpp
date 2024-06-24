@@ -1,7 +1,8 @@
 #include "BudgetScreen.h"
 
 #include "system/os/Debug.h"
-#include "system/os/Debug.h"
+#include "system/os/Timer.h"
+#include "system/ui/UI.h"
 #include "system/utl/Option.h"
 #include "system/rndobj/Rnd.h"
 #include "system/synth/StandardStream.h"
@@ -12,6 +13,7 @@
 #include <algorithm>
 #include "decomp.h"
 
+extern int gMainFree;
 bool gUseSsv;
 
 DECOMP_FORCEACTIVE(BudgetScreen,
@@ -140,14 +142,14 @@ float Average(std::vector<float>& items, bool partial) {
 }
 
 BudgetScreen::BudgetScreen() :
-    mTestPanel(nullptr), mFrameInc(0.0), mLastCpu(0.0),
-    mPollDist(0.1), mCpuDist(0.1), mGsDist(0.1), mUnk2(0.1),
+    mTestPanel(nullptr), mLastCpu(0.0), mLastGpu(0.0),
+    mCpuDist(0.1), mGsDist(0.1), mHudDist(0.1), mEtcDist(0.1),
     mRecordStartTick(0), mRecordEndTick(1000000),
     mTests(SystemConfig("tests")), mTestIdx(0),
     mWorstOnly(OptionBool("worst_only", false)),
     mWorstCpuPctile(0.0),
     mWorstGsPctile(0.0),
-    mUnk3(0)
+    mSampleCount(0)
 {
     TheSongMgr->AddSongs(SystemConfig("songs"));
     TheContentMgr->UnregisterCallback(TheSongMgr, false);
@@ -164,10 +166,10 @@ BudgetScreen::BudgetScreen() :
 }
 
 void BudgetScreen::Enter(UIScreen* screen) {
-    mPollDist.Reset();
     mCpuDist.Reset();
     mGsDist.Reset();
-    mUnk2.Reset();
+    mHudDist.Reset();
+    mEtcDist.Reset();
     TheTaskMgr.ClearTasks();
 
     mTestPanel = nullptr;
@@ -205,12 +207,107 @@ void BudgetScreen::Enter(UIScreen* screen) {
     mTime = TheSongDB->GetSongDurationMs() / 1000.0f;
     mEndTime = Property("frame_inc", true)->Float(nullptr);
 
+    mLastGpu = 0;
     mLastCpu = 0;
-    mFrameInc = 0;
-    mUnk3 = 0;
+    mSampleCount = 0;
 
     DataArray* test = mTests->Array(mTestIdx)->FindArray("init", false);
     if (test != nullptr) {
         test->ExecuteScript(1, nullptr, nullptr, 1);
     }
 }
+inline float GetLastTimerMs(const char* name) {
+    return AutoTimer::GetTimer(name)->GetLastMs();
+}
+
+void BudgetScreen::Poll() {
+    UIScreen::Poll();
+    START_AUTO_TIMER("budget_screen_poll");
+
+    static DataArray* timerScript = SystemConfig("rnd")->FindArray("timer_script", false);
+    if (timerScript)
+        timerScript->ExecuteScript(1, nullptr, nullptr, 1);
+
+    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+
+    // needs to be used as a local variable
+    Timer* slowFrameTimer = &Timer::sSlowFrameTimer;
+    float slowFrameTime = slowFrameTimer->SplitMs();
+
+    bool b = slowFrameTime > 0;
+    b |= tick < mRecordStartTick || tick >= mRecordEndTick;
+
+    float cpuMs = GetLastTimerMs("cpu") - mNullCpu;
+    float animMs = GetLastTimerMs("anim");
+    float worldMs = GetLastTimerMs("world");
+    float pollMs = GetLastTimerMs("budget_screen_poll");
+    float cpuDist = animMs + (cpuMs - worldMs - pollMs);
+
+    float gsMs = GetLastTimerMs("gs") - mNullGs;
+
+    float hudTrackMs = GetLastTimerMs("hud_track");
+    float hudDist = animMs + hudTrackMs;
+
+    float gameEtcMs = GetLastTimerMs("game_etc");
+
+    if (!b) {
+        if (mSampleCount > 0) {
+            mCpuDist << (cpuDist + mLastCpu) / 2;
+            mGsDist << (gsMs + mLastGpu) / 2;
+            mHudDist << (hudDist + mLastHud) / 2;
+            mEtcDist << (gameEtcMs + mLastEtc) / 2;
+        } else {
+            mCpuDist << cpuDist;
+            mGsDist << gsMs;
+            mHudDist << hudDist;
+            mEtcDist << gameEtcMs;
+        }
+
+        mLastCpu = cpuDist;
+        mLastGpu = gsMs;
+        mLastHud = hudDist;
+        mLastEtc = gameEtcMs;
+        mSampleCount++;
+    }
+
+    if (tick >= mRecordEndTick) {
+        if (!gUseSsv) {
+            const char* testName = mTests->Array(mTestIdx)->Str(0);
+            *mLog << "START TEST: " << testName;
+
+            float gpuPctile = mGsDist.Pctile(0.99f);
+            float cpuPctile = mCpuDist.Pctile(0.99f);
+            *mLog << " [cpu " << cpuPctile << "] [gpu " << gpuPctile << "]\n";
+
+            *mLog << "Cpu overhead: " << mNullCpu << "\n";
+            *mLog << "Gs overhead: " << mNullGs << "\n";
+
+            mLog->mFile.Flush();
+
+            *mLog << "\nCpu "; mCpuDist.Report(*mLog, nullptr);
+            *mLog << "\nGpu "; mGsDist.Report(*mLog, nullptr);
+            *mLog << "\nHUD/Track "; mHudDist.Report(*mLog, nullptr);
+            *mLog << "\nGame Etc. "; mEtcDist.Report(*mLog, nullptr);
+        }
+
+        gMainFree = HeapFreeSize("main");
+
+        float cpuPctile = mCpuDist.Pctile(0.99f);
+        if (cpuPctile > mWorstCpuPctile) {
+            mWorstCpuPctile = cpuPctile;
+            mWorstCpuName = mTests->Array(mTestIdx)->Str(0);
+        }
+
+        float gsPctile = mGsDist.Pctile(0.99f);
+        if (gsPctile > mWorstGsPctile) {
+            mWorstGsPctile = gsPctile;
+            mWorstGsName = mTests->Array(mTestIdx)->Str(0);
+        }
+
+        UIScreen* stopScreen = ObjectDir::Main()->Find<UIScreen>("stop_budget", true);
+        TheUI->GotoScreen(stopScreen, false, false);
+    }
+}
+
+// Must be down here to avoid data pooling in Poll
+int gMainFree;
