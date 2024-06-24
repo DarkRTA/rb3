@@ -97,9 +97,9 @@ BEGIN_LOADS(RndGenerator)
         bs >> mPathVarMaxY;
         bs >> mPathVarMaxZ;
         if (rev < 9) {
-            mPathVarMaxX *= RAD2DEG;
-            mPathVarMaxY *= RAD2DEG;
-            mPathVarMaxZ *= RAD2DEG;
+            mPathVarMaxX *= DEG2RAD;
+            mPathVarMaxY *= DEG2RAD;
+            mPathVarMaxZ *= DEG2RAD;
         }
     } else {
         mRateGenLow = mRateGenHigh;

@@ -20,6 +20,7 @@
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
+            "band3/game/Metronome.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",

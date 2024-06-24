@@ -24,6 +24,8 @@ void CalcBox(RndMesh* m, Box& b);
 void MoveXfms(RndMultiMesh*, const Vector3&);
 void DistributeXfms(RndMultiMesh*, int, float);
 void RndScaleObject(Hmx::Object*, float, float);
+void SpliceKeys(RndTransAnim*, RndTransAnim*, float, float);
+void LinearizeKeys(RndTransAnim*, float, float, float, float, float);
 
 void RndUtlPreInit();
 void RndUtlInit();

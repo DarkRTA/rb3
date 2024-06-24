@@ -119,7 +119,7 @@ DataNode RndCam::OnSetFrustum(const DataArray* da){
         nearPlane = mNearPlane;
     if(!da->FindData(far_plane, farPlane, false))
         farPlane = mFarPlane;
-    if(da->FindData(y_fov, yFov, false)) temp = 0.017453292f * yFov;
+    if(da->FindData(y_fov, yFov, false)) temp = yFov * DEG2RAD;
     else temp = mYFov;
     yFov = temp;
     SetFrustum(nearPlane, farPlane, yFov, 1.0f);
@@ -149,7 +149,7 @@ BEGIN_PROPSYNCS(RndCam)
     SYNC_SUPERCLASS(RndTransformable)
     SYNC_PROP_SET(near_plane, mNearPlane, SetFrustum(_val.Float(NULL), mFarPlane, mYFov, 1))
     SYNC_PROP_SET(far_plane, mFarPlane, SetFrustum(mNearPlane, _val.Float(NULL), mYFov, 1))
-    SYNC_PROP_SET(y_fov, mYFov * DEG2RAD, SetFrustum(mNearPlane, mFarPlane, _val.Float(NULL) * RAD2DEG, 1))
+    SYNC_PROP_SET(y_fov, mYFov * RAD2DEG, SetFrustum(mNearPlane, mFarPlane, _val.Float(NULL) * DEG2RAD, 1))
     SYNC_PROP(z_range, mZRange)
     SYNC_PROP_MODIFY_ALT(screen_rect, mScreenRect, UpdateLocal())
 END_PROPSYNCS

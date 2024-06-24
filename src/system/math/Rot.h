@@ -6,8 +6,8 @@
 #include "math/Mtx.h"
 
 #define PI 3.14159265358979323846
-#define RAD2DEG 0.01745329238474369049f
-#define DEG2RAD 57.2957763671875f
+#define RAD2DEG 57.2957763671875f
+#define DEG2RAD 0.01745329238474369049f
 
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);

@@ -35,7 +35,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("pitch");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(rotation.x, node, _prop, _i + 1, _op);
         }
     }
@@ -43,7 +43,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("roll");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(rotation.y, node, _prop, _i + 1, _op);
         }
     }
@@ -51,7 +51,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("yaw");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(rotation.z, node, _prop, _i + 1, _op);
         }
     }
@@ -59,7 +59,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("x_scale");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(scale.x, node, _prop, _i + 1, _op);
         }
     }
@@ -67,7 +67,7 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("y_scale");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(scale.y, node, _prop, _i + 1, _op);
         }
     }
@@ -75,12 +75,12 @@ bool PropSync(Hmx::Matrix3& mtx, DataNode& node, DataArray* _prop, int _i, PropO
         static Symbol _s("z_scale");
         if(sym == _s){
             MakeEulerScale(mtx, rotation, scale);
-            Scale(rotation, 57.295776f, rotation);
+            Scale(rotation, RAD2DEG, rotation);
             result = PropSync(scale.z, node, _prop, _i + 1, _op);
         }
     }
     if (result && _op != kPropGet) {
-        Scale(rotation, 0.0174532923847f, rotation);
+        Scale(rotation, DEG2RAD, rotation);
         MakeRotMatrix(rotation, mtx, true);
         Scale(scale, mtx, mtx);
     }
