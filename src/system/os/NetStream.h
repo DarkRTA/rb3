@@ -10,7 +10,7 @@ public:
     virtual void Flush(){}
     virtual int Tell(){ return 0; }
     virtual EofType Eof();
-    virtual bool Fail();
+    virtual bool Fail() { return mFail; }
     virtual const char* Name() const;
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int);

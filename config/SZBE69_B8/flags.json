@@ -155,7 +155,9 @@
                 "-sdata2 2",
                 "-str reuse,pool",
                 "-pragma \"merge_float_consts on\"",
+                "-fp_contract on",
 
+                "-O4,p",
                 "-lang=c++",
                 "-inline auto"
             ]

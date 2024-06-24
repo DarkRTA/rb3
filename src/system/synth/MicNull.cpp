@@ -10,10 +10,13 @@ MicNull::MicNull(){
 
 char* MicNull::GetRecentBuf(int& i){
     i = 0x600;
-    memcpy(filler, mBuf, 0xC00);
-    return filler;
+    memcpy(buf_0xC, mBuf, 0xC00);
+    return buf_0xC;
 }
 
-void MicNull::GetContinuousBuf(int& i){
-    
+char* MicNull::GetContinuousBuf(int& i){
+    mTimer.Restart();
+    float f = GetSampleRate();
+    memcpy(filler, mBuf, i * 2);
+    return filler;
 }

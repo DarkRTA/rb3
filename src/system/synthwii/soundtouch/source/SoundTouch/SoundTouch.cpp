@@ -70,7 +70,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "os/Debug.h"
-#include <assert.h>
 #include <string.h>
 #include <stdlib.h>
 //#include <memory.h>
@@ -104,7 +103,7 @@ SoundTouch::SoundTouch()
     pRateTransposer = new RateTransposerFloat;
     pTDStretch = new TDStretch;
 
-    //setOutPipe(pTDStretch);
+    output = pTDStretch;
 
     rate = tempo = 0;
 
@@ -149,7 +148,7 @@ void SoundTouch::setChannels(uint numChannels)
 {
     if (numChannels != 1 && numChannels != 2) 
     {
-        //throw std::runtime_error("Illegal number of channels");
+        MILO_FAIL("Illegal number of channels");
     }
     channels = numChannels;
     pRateTransposer->setChannels(numChannels);
@@ -243,8 +242,8 @@ void SoundTouch::calcEffectiveRateAndTempo()
     tempo = virtualTempo / virtualPitch;
     rate = virtualPitch * virtualRate;
 
-    if (!TEST_FLOAT_EQUAL(rate,oldRate)) pRateTransposer->setRate(rate);
-    if (!TEST_FLOAT_EQUAL(tempo, oldTempo)) pTDStretch->setTempo(tempo);
+    if (rate != oldRate) pRateTransposer->setRate(rate);
+    if (tempo != oldTempo) pTDStretch->setTempo(tempo);
 
     if (rate > 1.0f) 
     {
@@ -252,7 +251,7 @@ void SoundTouch::calcEffectiveRateAndTempo()
         {
             FIFOSamplePipe *transOut;
 
-            assert(output == pTDStretch);
+            //assert(output == pTDStretch);
             // move samples in the current output buffer to the output of pRateTransposer
             transOut = pRateTransposer->getOutput();
             transOut->moveSamples(*output);
@@ -268,7 +267,7 @@ void SoundTouch::calcEffectiveRateAndTempo()
         {
             FIFOSamplePipe *tempoOut;
 
-            assert(output == pRateTransposer);
+            //assert(output == pRateTransposer);
             // move samples in the current output buffer to the output of pTDStretch
             tempoOut = pTDStretch->getOutput();
             tempoOut->moveSamples(*output);
@@ -304,12 +303,11 @@ void SoundTouch::putSamples(const SAMPLETYPE *samples, uint nSamples)
         MILO_FAIL("SoundTouch : Number of channels not defined");
     }
 
-    // Transpose the rate of the new samples if necessary
-    /* Bypass the nominal setting - can introduce a click in sound when tempo/pitch control crosses the nominal value...
-    if (rate == 1.0f) 
+    register float r = rate;
+    if (r == 1.0f) 
     {
         // The rate value is same as the original, simply evaluate the tempo changer. 
-        assert(output == pTDStretch);
+        //assert(output == pTDStretch);
         if (pRateTransposer->isEmpty() == 0) 
         {
             // yet flush the last samples in the pitch transposer buffer
@@ -318,19 +316,19 @@ void SoundTouch::putSamples(const SAMPLETYPE *samples, uint nSamples)
         }
         pTDStretch->putSamples(samples, nSamples);
     } 
-    */
-    else if (rate <= 1.0f) 
+    
+    else if (r < 1.0f) 
     {
         // transpose the rate down, output the transposed sound to tempo changer buffer
-        assert(output == pTDStretch);
+        //assert(output == pTDStretch);
         pRateTransposer->putSamples(samples, nSamples);
         pTDStretch->moveSamples(*pRateTransposer);
     } 
     else 
     {
-        assert(rate > 1.0f);
+        //assert(rate > 1.0f);
         // evaluate the tempo changer, then transpose the rate up, 
-        assert(output == pRateTransposer);
+        //assert(output == pRateTransposer);
         pTDStretch->putSamples(samples, nSamples);
         pRateTransposer->moveSamples(*pTDStretch);
     }
@@ -373,9 +371,9 @@ void SoundTouch::flush()
 
 // Changes a setting controlling the processing system behaviour. See the
 // 'SETTING_...' defines for available setting ID's.
-BOOL SoundTouch::setSetting(int settingId, int value)
+BOOL SoundTouch::setSetting(uint settingId, uint value)
 {
-    int sampleRate, sequenceMs, seekWindowMs, overlapMs;
+    uint sampleRate, sequenceMs, seekWindowMs, overlapMs;
 
     // read current tdstretch routine parameters
     pTDStretch->getParameters(&sampleRate, &sequenceMs, &seekWindowMs, &overlapMs);
@@ -424,7 +422,7 @@ BOOL SoundTouch::setSetting(int settingId, int value)
 // Returns the setting value.
 int SoundTouch::getSetting(int settingId) const
 {
-    int temp;
+    uint temp;
 
     switch (settingId) 
     {

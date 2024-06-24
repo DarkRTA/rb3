@@ -19,13 +19,30 @@ public:
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget();
+    virtual Hmx::Object* AnimTarget() { return mTrans; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    void MakeTransform(float, Transform&, bool, float);
     void SetTrans(RndTransformable*);
     void SetKeysOwner(RndTransAnim*);
+
+    DataNode OnSetTransSpline(const DataArray*);
+    DataNode OnSetScaleSpline(const DataArray*);
+    DataNode OnSetRotSlerp(const DataArray*);
+    DataNode OnTrans(const DataArray*);
+    DataNode OnNumTransKeys(const DataArray*);
+    DataNode OnNumRotKeys(const DataArray*);
+    DataNode OnNumScaleKeys(const DataArray*);
+    DataNode OnAddTransKey(const DataArray*);
+    DataNode OnAddRotKey(const DataArray*);
+    DataNode OnAddScaleKey(const DataArray*);
+    DataNode OnSplice(const DataArray*);
+    DataNode OnRemoveRotKeys(const DataArray*);
+    DataNode OnRemoveTransKeys(const DataArray*);
+    DataNode OnLinearize(const DataArray*);
+    DataNode OnSetTrans(const DataArray*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -34,17 +51,17 @@ public:
         REGISTER_OBJ_FACTORY(RndTransAnim)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mTrans;
-    bool mTransSpline;
-    bool mScaleSpline;
-    bool mRotSlerp;
-    bool mRotSpline;
-    Keys<Hmx::Quat, Hmx::Quat> mRotKeys;
-    Keys<Vector3, Vector3> mTransKeys;
-    Keys<Vector3, Vector3> mScaleKeys;
-    ObjOwnerPtr<RndTransAnim, ObjectDir> mKeysOwner;
-    bool mRepeatTrans;
-    bool mFollowPath;
+    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x10
+    bool mTransSpline; // 0x1C
+    bool mScaleSpline; // 0x1D
+    bool mRotSlerp; // 0x1E
+    bool mRotSpline; // 0x1F
+    Keys<Hmx::Quat, Hmx::Quat> mRotKeys; // 0x20
+    Keys<Vector3, Vector3> mTransKeys; // ??
+    Keys<Vector3, Vector3> mScaleKeys; // ??
+    ObjOwnerPtr<RndTransAnim, ObjectDir> mKeysOwner; // 0x38
+    bool mRepeatTrans; // 0x44
+    bool mFollowPath; // 0x45
 };
 
 #endif

@@ -97,11 +97,13 @@ public:
     void SetSubSamples(int);
     void SetFrameDrive(bool);
     void SetPauseOffscreen(bool);
+    void InitParticle(RndParticle*, const Transform*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)
     static void Init(){ REGISTER_OBJ_FACTORY(RndParticleSys) }
+    static RndParticle* AllocParticle();
 
     Type mType; // fancy?
     int mMaxParticles; // 0xcc

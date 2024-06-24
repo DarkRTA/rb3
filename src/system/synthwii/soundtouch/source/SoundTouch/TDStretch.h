@@ -102,6 +102,8 @@ protected:
     SAMPLETYPE *pRefMidBuffer;
     SAMPLETYPE *pRefMidBufferUnaligned;
     int overlapLength;
+    int overlapDividerBits;
+    int slopingDivider;
     int seekLength;
     int seekWindowLength;
     int maxOffset;
@@ -171,7 +173,7 @@ public:
     void clearInput();
 
     /// Sets the number of channels, 1 = mono, 2 = stereo
-    void setChannels(int numChannels);
+    void setChannels(uint numChannels);
 
     /// Enables/disables the quick position seeking algorithm. Zero to disable, 
     /// nonzero to enable
@@ -188,16 +190,16 @@ public:
     /// 'seekwindowMS' = seeking window length for scanning the best overlapping 
     ///      position
     /// 'overlapMS' = overlapping length
-    void setParameters(int sampleRate,                             ///< Samplerate of sound being processed (Hz)
-                       int sequenceMS = DEFAULT_SEQUENCE_MS,       ///< Single processing sequence length (ms)
-                       int seekwindowMS = DEFAULT_SEEKWINDOW_MS,   ///< Offset seeking window length (ms)
-                       int overlapMS = DEFAULT_OVERLAP_MS          ///< Sequence overlapping length (ms)
+    void setParameters(uint sampleRate,                             ///< Samplerate of sound being processed (Hz)
+                       uint sequenceMS = DEFAULT_SEQUENCE_MS,       ///< Single processing sequence length (ms)
+                       uint seekwindowMS = DEFAULT_SEEKWINDOW_MS,   ///< Offset seeking window length (ms)
+                       uint overlapMS = DEFAULT_OVERLAP_MS          ///< Sequence overlapping length (ms)
                        );
 
     /// Get routine control parameters, see setParameters() function.
     /// Any of the parameters to this function can be NULL, in such case corresponding parameter
     /// value isn't returned.
-    void getParameters(int *pSampleRate, int *pSequenceMs, int *pSeekWindowMs, int *pOverlapMs) const;
+    void getParameters(uint *pSampleRate, uint *pSequenceMs, uint *pSeekWindowMs, uint *pOverlapMs);
 
     /// Adds 'numsamples' pcs of samples from the 'samples' memory position into
     /// the input of the object.

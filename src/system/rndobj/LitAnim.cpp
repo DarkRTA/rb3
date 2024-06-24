@@ -47,7 +47,7 @@ void RndLightAnim::Load(BinStream& bs){
 
 BEGIN_COPYS(RndLightAnim)
     CREATE_COPY_AS(RndLightAnim, l)
-    MILO_ASSERT(l, 0x6B);
+    MILO_ASSERT(l, 116);
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
     COPY_MEMBER_FROM(l, mLight)
@@ -77,6 +77,16 @@ BEGIN_HANDLERS(RndLightAnim)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xBF)
 END_HANDLERS
+
+DataNode RndLightAnim::OnCopyKeys(DataArray* da) {
+    SetKeysOwner(this);
+    mColorKeys = da->Obj<RndLightAnim>(2)->mKeysOwner->mColorKeys;
+    float f = da->Float(3);
+    for (std::vector<Key<Hmx::Color> >::iterator it = mColorKeys.begin(); it != mColorKeys.end(); it++) {
+        it->value *= f;
+    }
+    return DataNode();
+}
 
 BEGIN_PROPSYNCS(RndLightAnim)
     SYNC_SUPERCLASS(RndAnimatable)

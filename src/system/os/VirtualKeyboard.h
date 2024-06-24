@@ -24,6 +24,7 @@ public:
     bool mCallbackReady;
     bool mMsgOk;
     class String mCallbackMsg;
+    int pad[4];
 
     void Init();
     void ClearKeyboardCallback();

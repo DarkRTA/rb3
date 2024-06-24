@@ -99,12 +99,17 @@ public:
     DebugNotifyOncer(){}
     ~DebugNotifyOncer(){}
 
-    // DebugNotifyOncer& operator<<(const char* cc){
-    //     if(AddToNotifies(cc, mNotifies)){
-    //         TheDebug.Notify(cc);
-    //     }
-    //     return *this;
-    // }
+    //DebugNotifyOncer& operator<<(const char* cc){
+    //    if(AddToNotifies(cc, mNotifies)){
+    //        TheDebug.Notify(cc);
+    //    }
+    //    return *this;
+    //}
 };
+
+#define WARN_ONCE(cc) \
+    if(AddToNotifies(cc, _dw.mNotifies)){\
+        TheDebug.Notify(cc);\
+    }
 
 #endif

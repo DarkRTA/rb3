@@ -20,6 +20,7 @@
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
+            "band3/game/Metronome.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
@@ -50,7 +51,9 @@
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourProgress.cpp": "NonMatching",
-            "band3/tour/TourQuestGameRules.cpp": "Matching"
+            "band3/tour/TourProperty.cpp": "Matching",
+            "band3/tour/TourQuestGameRules.cpp": "Matching",
+            "band3/tour/TourReward.cpp": "NonMatching"
         }
     },
     "network": {
@@ -101,7 +104,7 @@
             "network/Platform/OutputFormat.cpp": "NonMatching",
             "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
-            "network/Platform/Result.cpp": "NonMatching",
+            "network/Platform/Result.cpp": "Matching",
             "network/Platform/RootObject.cpp": "Matching",
             "network/Platform/String.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
@@ -238,7 +241,8 @@
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
-            "system/math/strips/Striper.cpp": "NonMatching",
+            "system/math/strips/Striper.cpp": {"status": "Equivalent",
+                "comment": "Regswap in ComputeBestStrip__7StriperFUi"},
 
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "Matching",
@@ -321,6 +325,7 @@
             "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",
             "system/os/HDCache.cpp": "NonMatching",
+            "system/os/HolmesClient.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
@@ -344,10 +349,7 @@
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",
             "system/os/User.cpp": "Matching",
             "system/os/UserMgr.cpp": "Matching",
-            "system/os/VirtualKeyboard.cpp": {
-                "status": "LinkIssues",
-                "comment": "Something involving the placement of gKeyboardFontFile"
-            },            
+            "system/os/VirtualKeyboard.cpp": "Matching",            
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
@@ -454,6 +456,8 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
             "system/synth/SynthSample.cpp": "Matching",
+
+            "system/synthwii/WahEffect.cpp": "Matching",
 
             "system/track/Track.cpp": "Matching",
             "system/track/TrackDir.cpp": "NonMatching",
@@ -624,7 +628,7 @@
             "system/synthwii/soundtouch/source/SoundTouch/FIFOSampleBuffer.cpp": "NonMatching",
             "system/synthwii/soundtouch/source/SoundTouch/FIRFilter.cpp": "NonMatching",
             "system/synthwii/soundtouch/source/SoundTouch/RateTransposer.cpp": "NonMatching",
-            "system/synthwii/soundtouch/source/SoundTouch/SoundTouch.cpp": "NonMatching",
+            "system/synthwii/soundtouch/source/SoundTouch/SoundTouch.cpp": "Matching",
             "system/synthwii/soundtouch/source/SoundTouch/TDStretch.cpp": "NonMatching"
         }
     },

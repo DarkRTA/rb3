@@ -38,8 +38,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <memory.h>
-#include <assert.h>
+//#include <memory.h>
+//#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdexcept>
@@ -78,71 +78,22 @@ public:
 
 };
 
-
-/// A linear samplerate transposer class that uses floating point arithmetics
-/// for the transposing.
-class RateTransposerFloat : public RateTransposer
-{
-protected:
-    float fSlopeCount;
-    SAMPLETYPE sPrevSampleL, sPrevSampleR;
-
-    virtual void resetRegisters();
-
-    virtual uint transposeStereo(SAMPLETYPE *dest, 
-                         const SAMPLETYPE *src, 
-                         uint numSamples);
-    virtual uint transposeMono(SAMPLETYPE *dest, 
-                       const SAMPLETYPE *src, 
-                       uint numSamples);
-
-public:
-    RateTransposerFloat();
-    virtual ~RateTransposerFloat();
-};
-
-
-
-
-// Operator 'new' is overloaded so that it automatically creates a suitable instance 
-// depending on if we've a MMX/SSE/etc-capable CPU available or not.
-void * RateTransposer::operator new(size_t s)
-{
-    throw runtime_error("Error in RateTransoser::new: don't use \"new TDStretch\" directly, use \"newInstance\" to create a new instance instead!");
-    return NULL;
-}
-
-
-RateTransposer *RateTransposer::newInstance()
-{
-#ifdef INTEGER_SAMPLES
-    return ::new RateTransposerInteger;
-#else
-    return ::new RateTransposerFloat;
-#endif
-}
-
-
 // Constructor
 RateTransposer::RateTransposer() : FIFOProcessor(&outputBuffer)
 {
     numChannels = 2;
     bUseAAFilter = TRUE;
-    fRate = 0;
+    //fRate = 0;
 
     // Instantiates the anti-alias filter with default tap length
     // of 32
     pAAFilter = new AAFilter(32);
 }
 
-
-
 RateTransposer::~RateTransposer()
 {
     delete pAAFilter;
 }
-
-
 
 /// Enables/disables the anti-alias filter. Zero to disable, nonzero to enable
 void RateTransposer::enableAAFilter(const BOOL newMode)
@@ -322,7 +273,7 @@ inline uint RateTransposer::transpose(SAMPLETYPE *dest, const SAMPLETYPE *src, u
 
 
 // Sets the number of channels, 1 = mono, 2 = stereo
-void RateTransposer::setChannels(int nChannels)
+void RateTransposer::setChannels(uint nChannels)
 {
     assert(nChannels > 0);
     if (numChannels == nChannels) return;
@@ -506,18 +457,21 @@ void RateTransposerInteger::setRate(float newRate)
 //////////////////////////////////////////////////////////////////////////////
 
 // Constructor
+#pragma push
+#pragma dont_inline on
 RateTransposerFloat::RateTransposerFloat() : RateTransposer()
 {
     // Notice: use local function calling syntax for sake of clarity, 
     // to indicate the fact that C++ constructor can't call virtual functions.
-    RateTransposerFloat::resetRegisters();
-    RateTransposerFloat::setRate(1.0f);
+    // note: what is blud waffling about
+    resetRegisters();
+    setRate(1.0f);
 }
-
 
 RateTransposerFloat::~RateTransposerFloat()
 {
 }
+#pragma pop
 
 
 void RateTransposerFloat::resetRegisters()
