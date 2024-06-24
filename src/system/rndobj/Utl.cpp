@@ -14,6 +14,7 @@
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Rnd.h"
 #include "utl/Loader.h"
+#include "math/Key.h"
 #include <cmath>
 
 float gLimitUVRange;
@@ -105,4 +106,8 @@ void PreMultiplyAlpha(Hmx::Color& c) {
     c.red *= c.alpha;
     c.green *= c.alpha;
     c.blue *= c.alpha;
+}
+
+void RndScaleObject(Hmx::Object* o, float f1, float f2){
+    
 }
