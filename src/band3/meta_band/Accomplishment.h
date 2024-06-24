@@ -19,7 +19,9 @@ protected:
 private:
     void Configure(DataArray*);
     int GetType() const;
+protected:
     virtual Symbol GetName() const;
+private:
     virtual Symbol GetDescription() const;
     Symbol GetSecretDescription() const;
     Symbol GetFlavorText() const;
@@ -51,7 +53,10 @@ private:
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
+public:
     virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
+
+private:
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
@@ -64,6 +69,7 @@ private:
     Symbol GetPassiveMsgChannel() const;
     int GetPassiveMsgPriority() const;
 
+private:
     Symbol mName;                                   // 0x04
     std::vector<Symbol> mSecretPrereqs;             // 0x08
     int mAccomplishmentType;                        // 0x10
