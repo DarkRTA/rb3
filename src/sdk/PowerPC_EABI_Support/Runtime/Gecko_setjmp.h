@@ -10,10 +10,11 @@ struct __jmp_buf {
     unsigned long cr;
     unsigned long sp;
     unsigned long toc;
-    unsigned long _padding;
+    unsigned long _padding1;
     unsigned long gprs[32 - 13];
     double fprs[(32 - 14) * 2];
     double fpscr;
+    double _padding2;
 };
 
 int __setjmp(struct __jmp_buf* env);

@@ -8,6 +8,7 @@
 
 #include <list>
 #include <string.h>
+#include <setjmp.h>
 
 typedef void ModalCallbackFunc(bool&, char*, bool);
 typedef void ExitCallbackFunc(void);
@@ -59,6 +60,8 @@ public:
 };
 
 extern Debug TheDebug;
+extern jmp_buf TheDebugJump;
+
 extern const char* kAssertStr;
 extern int* gpDbgFrameID;
 

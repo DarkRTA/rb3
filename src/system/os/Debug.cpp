@@ -6,6 +6,7 @@
 #include "utl/MemMgr.h"
 #include "os/System.h"
 #include "os/Timer.h"
+
 #include <revolution/os.h>
 #include <cstdlib>
 #include <vector>
@@ -13,8 +14,10 @@
 #include "decomp.h"
 
 Debug TheDebug;
-std::vector<String> gNotifies;
+jmp_buf TheDebugJump;
+
 static int* gpDbgFrameID;
+std::vector<String> gNotifies;
 
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
 const GXColor DebugBGColor = { 0x80, 0, 0, 255 };
