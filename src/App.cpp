@@ -47,10 +47,10 @@ App::~App() {
 #pragma pool_data off // TODO this is wrong, but without it it uses ...bss.0
 void App::DrawRegular() {
     if (ThePlatformMgr.mConnected) ThePlatformMgr.Draw(); else {
-        TIMER_THING("begin_draw", TheRnd->BeginDrawing())
-        TIMER_THING("ui_draw", TheUI->Draw())
-        TIMER_THING("platform_draw", ThePlatformMgr.Draw())
-        TIMER_THING("end_draw", TheRnd->EndDrawing())
+        TIMER_ACTION("begin_draw", TheRnd->BeginDrawing())
+        TIMER_ACTION("ui_draw", TheUI->Draw())
+        TIMER_ACTION("platform_draw", ThePlatformMgr.Draw())
+        TIMER_ACTION("end_draw", TheRnd->EndDrawing())
     }
 }
 #pragma pool_data on
@@ -82,12 +82,12 @@ void App::RunWithoutDebugging() {
     int frameticker = 0;
     while (true) {
         frameticker++;
-        TIMER_THING("poll", ;)
-        TIMER_THING("system_poll", SystemPoll(false))
-        TIMER_THING("inclusive_ui_poll", {TheAchievements->Poll();})
-        TIMER_THING("synth_poll", TheSynth->Poll())
+        TIMER_ACTION("poll", ;)
+        TIMER_ACTION("system_poll", SystemPoll(false))
+        TIMER_ACTION("inclusive_ui_poll", {TheAchievements->Poll();})
+        TIMER_ACTION("synth_poll", TheSynth->Poll())
         // net_poll
-        TIMER_THING("inclusive_ui_poll", TheUI->Poll())
+        TIMER_ACTION("inclusive_ui_poll", TheUI->Poll())
         Draw();
 
 

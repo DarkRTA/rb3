@@ -69,6 +69,9 @@ public:
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;
     void Start(Task*, TaskUnits, float);
+
+    void ClearTasks();
+    void SetSeconds(float, bool);
 };
 
 extern TaskMgr TheTaskMgr;

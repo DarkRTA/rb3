@@ -152,16 +152,13 @@ public:
     static Timer* GetTimer(Symbol);
 };
 
-#define TIMER_THING(name, func) {\
+#define START_AUTO_TIMER(name) \
     static Timer* _t = AutoTimer::GetTimer(name); \
-    AutoTimer t(_t, 50.0f, NULL, NULL); \
-    func; \
-    }
+    AutoTimer t(_t, 50.0f, NULL, NULL)
 
-#define TIMER_THING_NODEL(name, func) \
-    static Timer* _t = AutoTimer::GetTimer(name); \
-    AutoTimer t(_t, 50.0f, NULL, NULL); \
-    func;
-
+#define TIMER_ACTION(name, action) { \
+    START_AUTO_TIMER(name); \
+    action; \
+}
 
 #endif

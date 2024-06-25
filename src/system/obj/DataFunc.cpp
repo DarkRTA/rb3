@@ -31,8 +31,6 @@ extern class ObjectDir* gDataDir;
 #define DefDataFunc(name, code) \
 static DataNode Data##name(DataArray* da) code
 
-ADD_NOTIFS
-
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
@@ -789,10 +787,8 @@ static DataNode DataNotifyOnce(DataArray *da) {
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(s, true);
     }
-    static DebugNotifyOncer _dw;
-    const char *ms = MakeString(s.c_str());
-    if (AddToNotifies(ms, _dw.mNotifies))
-        TheDebug.Notify(ms);
+
+    MILO_NOTIFY_ONCE(s.c_str())
     return DataNode();
 }
 
