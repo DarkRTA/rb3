@@ -18,18 +18,18 @@ protected:
 
 private:
     void Configure(DataArray*);
-    int GetType() const;
+    virtual int GetType() const;
 protected:
-    virtual Symbol GetName() const;
+    Symbol GetName() const;
 private:
-    virtual Symbol GetDescription() const;
+    Symbol GetDescription() const;
     Symbol GetSecretDescription() const;
     Symbol GetFlavorText() const;
     bool GetShouldShowDenominator() const;
-    bool ShowBestAfterEarn() const;
+    virtual bool ShowBestAfterEarn() const;
     bool HideProgress() const;
     Symbol GetSecretCampaignLevelPrereq() const;
-    virtual const std::vector<Symbol>& GetSecretPrereqs() const;
+    const std::vector<Symbol>& GetSecretPrereqs() const;
     bool IsDynamic() const;
     bool GetDynamicAlwaysVisible() const;
     const std::vector<Symbol>& GetDynamicPrereqsSongs() const;
@@ -38,12 +38,16 @@ private:
     Symbol GetCategory() const;
     int GetContextID() const;
     void GetIconArt() const;
-    bool IsFulfilled(BandProfile*) const;
-    bool IsRelevantForSong(Symbol) const;
-    bool InqProgressValues(BandProfile*, int&, int&);
-    Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
-    bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const;
-    bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
+    virtual bool IsFulfilled(BandProfile*) const;
+
+    virtual bool IsRelevantForSong(Symbol) const;
+    virtual bool InqProgressValues(BandProfile*, int&, int&);
+public:
+    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
+private:
+    virtual Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
+    virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const;
+    virtual bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
     virtual bool CanBeLaunched() const;
     virtual bool HasSpecificSongsToLaunch() const;
     Symbol GetAward() const;
@@ -53,15 +57,13 @@ private:
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
-public:
-    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
 
 private:
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
     bool GetRequiresBREAbility() const;
-    void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
+    virtual void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
     virtual void InitializeTrackerDesc(TrackerDesc&) const;
     bool CanBeEarnedWithNoFail() const;
     bool IsTrackedInLeaderboard() const;
