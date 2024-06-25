@@ -2,8 +2,8 @@
 #define _RVL_SDK_PPC_EABI_INIT_H
 
 #include "types.h"
-#include "Runtime/__ppc_eabi_linker.h"
-#include "Runtime/__ppc_eabi_init.h"
+#include "PowerPC_EABI_Support/Runtime/__ppc_eabi_linker.h"
+#include "PowerPC_EABI_Support/Runtime/__ppc_eabi_init.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -2,7 +2,7 @@
 #define _NMWEXCEPTION
 
 #include "types.h"
-#include "Runtime/__ppc_eabi_linker.h"
+#include "__ppc_eabi_linker.h"
 
 #ifdef __cplusplus
 extern "C" {
