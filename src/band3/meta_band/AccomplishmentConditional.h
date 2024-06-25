@@ -10,12 +10,12 @@ struct AccomplishmentCondition {
     Difficulty difficulty;  // 0x0c
 };
 
-class AccomplishmentConditional : public Accomplishment {
+class AccomplishmentConditional : private Accomplishment {
 public:
     AccomplishmentConditional(DataArray*, int);
     virtual ~AccomplishmentConditional();
     void UpdateConditionOptionalData(AccomplishmentCondition&, DataArray*);
-    virtual void Configure(DataArray*);
+    void Configure(DataArray*);
     virtual bool CanBeLaunched() const;
     virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     virtual Difficulty GetRequiredDifficulty() const;

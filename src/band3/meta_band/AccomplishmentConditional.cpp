@@ -36,7 +36,7 @@ void AccomplishmentConditional::Configure(DataArray* i_pConfig) {
     if (pConditionArray != NULL) {
         MILO_ASSERT(pConditionArray->Size() > 1, 0x4b);
         for (int i = 1; i < pConditionArray->Size(); i++) {
-            DataArray* pConditionEntryArray = pConditionArray->Node(i).Array(pConditionArray);
+            DataArray* pConditionEntryArray = pConditionArray->Node(i).Array(0);
             MILO_ASSERT(pConditionEntryArray, 0x50);
 
             AccomplishmentCondition condition;
