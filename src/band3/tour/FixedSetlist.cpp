@@ -71,7 +71,6 @@ bool FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
         } else {
             MILO_ASSERT(false, 0x6b);
         }
-
         o_rSongs.push_back(song);
     }
 

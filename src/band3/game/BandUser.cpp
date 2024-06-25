@@ -7,3 +7,7 @@ BandUser::BandUser() : unk_0x8(DefaultDifficulty()), unk_0xC(0), unk_0x10(10), u
     unk_0x85(0), unk_0x86(0) { unk_0x74 = none; }
 
 BandUser::~BandUser() { }
+
+ControllerType BandUser::GetControllerType() const {
+    return (ControllerType)unk_0x14;
+}
