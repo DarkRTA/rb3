@@ -316,20 +316,19 @@ char* Accomplishment::GetIconPath() {
  }
 
 bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
-    ControllerType controllerType = i_pUser->GetControllerType();
+    bool returnValue = false;
+    ControllerType controllerType = (*(BandUser**)i_pUser)->GetControllerType();
 
     std::set<ScoreType> scoreTypes;
-    ScoreType scoreType;
 
-    bool hasScoreType = InqRequiredScoreTypes(scoreTypes);
-    bool returnValue;
-    if (scoreTypes.size() == 0) {
-        returnValue = false;
+    InqRequiredScoreTypes(scoreTypes);
+
+    if (scoreTypes.empty()) {
+        returnValue = true;
     } else {
         std::set<ScoreType>::iterator iterator = scoreTypes.begin();
         while (iterator != scoreTypes.end()) {
-            scoreType = *iterator;
-            TrackType trackType = ScoreTypeToTrackType(scoreType);
+            TrackType trackType = ScoreTypeToTrackType(*iterator);
             ControllerType c = TrackTypeToControllerType(trackType);
 
             if (controllerType == c) {
@@ -345,17 +344,21 @@ bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
     MILO_ASSERT(i_pUser, 0x253);
 
-    ControllerType controllerType = i_pUser->GetControllerType();
+    bool returnValue = false;
+    ControllerType controllerType = (*(BandUser**)i_pUser)->GetControllerType();
     bool isValid = IsUserOnValidScoreType(i_pUser);
-    bool returnValue;
 
-    for (size_t i = 0; i < mControllerTypes.size(); i++) {
-        if (controllerType == mControllerTypes.at(i)) {
-            return true;
+    if (mControllerTypes.empty()) {
+        returnValue = true;
+    } else {
+        for (const ControllerType* i = mControllerTypes.begin(); i != mControllerTypes.end(); i++) {
+            if (controllerType == *i) {
+                returnValue = true;
+            }
         }
     }
-    
-    return false;
+
+    return (isValid && returnValue);
 }
 
 Difficulty Accomplishment::GetRequiredDifficulty() const {
