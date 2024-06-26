@@ -29,7 +29,11 @@ public:
 
     static float sLowCycles2Ms;
     static float sHighCycles2Ms;
+    static double sDoubleCycles2Ms;
+
     static Timer sSlowFrameTimer;
+    static float sSlowFrameWaiver;
+    static const char* sSlowFrameReason;
 
     static void Init();
     static void Sleep(int);
@@ -52,7 +56,7 @@ public:
     }
 
     // Function addresses from retail, not sure what these do yet
-    long long fn_800A8898() {
+    long long Stop() {
         long long cycles = 0;
 
         mRunning--; // Must be outside the if to match
@@ -65,18 +69,7 @@ public:
         return cycles;
     }
 
-    void fn_80306184() {
-        if (mRunning >= 0) {
-            return;
-        }
-
-        mRunning = -mRunning;
-
-        TIMER_GET_CYCLES(cycle);
-        mStart = cycle;
-    }
-
-    void fn_803061A4() {
+    void Pause() {
         if (mRunning <= 0) {
             return;
         }
@@ -87,7 +80,20 @@ public:
         mCycles += cycle - mStart;
     }
 
-    bool Running() { return mRunning > 0; }
+    void Resume() {
+        if (mRunning >= 0) {
+            return;
+        }
+
+        mRunning = -mRunning;
+
+        TIMER_GET_CYCLES(cycle);
+        mStart = cycle;
+    }
+
+    bool Running() {
+        return mRunning > 0;
+    }
 
     void Split() {
         if (mRunning <= 0)
@@ -112,9 +118,16 @@ public:
     void SetLastMs(float ms);
 };
 
+#define MAX_TOP_VALS 128
+
 class TimerStats {
 public:
     TimerStats(DataArray*);
+
+    void CollectStats(float, bool, int);
+    void PrintPctile(float);
+    void Dump(const char*, int);
+    void Clear();
 
     int mCount; // 0x0
     float mAvgMs; // 0x4
@@ -125,7 +138,7 @@ public:
     bool mCritical; // 0x18
     int mNumCritOverBudget; // 0x1c
     float mAvgMsInCrit; // 0x20
-    float mTopValues[128]; // 0x24
+    float mTopValues[MAX_TOP_VALS]; // 0x24
 };
 
 typedef void (*StupidAutoTimerFunc)(float, void*);
@@ -140,13 +153,14 @@ public:
         mTimer->Start();
     }
 
-    ~AutoTimer() { if (mTimer) mTimer->fn_800A8898(); }
+    ~AutoTimer() { if (mTimer) mTimer->Stop(); }
 
     Timer* mTimer; // 0x0
     float unk_0x4;
     StupidAutoTimerFunc unk_0x8; // ???
     void* unk_0xC;
 
+    static int sCritFrameCount;
     static std::vector<std::pair<Timer, TimerStats> > sTimers;
 
     static Timer* GetTimer(Symbol);

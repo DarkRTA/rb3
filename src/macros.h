@@ -6,6 +6,8 @@
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MINEQ(x, y) ((x) <= (y) ? (x) : (y))
 
+#define ABS(x) ((x) > 0 ? (x) : -(x))
+
 #define CLAMP(low, high, x) ((x) > (high) ? (high) : ((x) < (low) ? (low) : (x)))
 
 #define ROUND_UP(x, align) (((x) + (align)-1) & (-(align)))

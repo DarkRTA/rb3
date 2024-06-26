@@ -12,7 +12,7 @@ void LabelNumberTicker::Init(){
     TheUI->InitResources("LabelNumberTicker");
 }
 
-LabelNumberTicker::LabelNumberTicker() : mLabel(this, 0), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f), mWrapperText(gNullStr), 
+LabelNumberTicker::LabelNumberTicker() : mLabel(this, 0), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f), mWrapperText(gNullStr),
     mAcceleration(0.0f), unk12c(0), unk130(0), mTickTrigger(this, 0), mTickEvery(0) {
 
 }
@@ -92,7 +92,7 @@ void LabelNumberTicker::Poll(){
             unk130 = somenum;
             if(unk130 == mDesiredValue || (split >= animsum)){
                 unk130 = mDesiredValue;
-                mTimer.fn_800A8898();
+                mTimer.Stop();
             }
         }
         UpdateDisplay();

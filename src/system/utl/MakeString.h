@@ -32,7 +32,7 @@ public:
     FormatString(const char *);
     void InitializeWithFmt(const char*, bool);
     void UpdateType();
-    
+
     FormatString &operator<<(void*);
     FormatString &operator<<(unsigned int);
     FormatString &operator<<(unsigned long);
@@ -95,6 +95,27 @@ template <class T1, class T2, class T3, class T4, class T5, class T6>
 const char *MakeString(const char *c, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
     FormatString fs(c);
     fs << t1 << t2 << t3 << t4 << t5 << t6;
+    return fs.Str();
+}
+
+template <class T1, class T2, class T3, class T4, class T5, class T6, class T7>
+const char *MakeString(const char *c, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
+    FormatString fs(c);
+    fs << t1 << t2 << t3 << t4 << t5 << t6 << t7;
+    return fs.Str();
+}
+
+template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8>
+const char *MakeString(const char *c, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
+    FormatString fs(c);
+    fs << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
+    return fs.Str();
+}
+
+template <class T1, class T2, class T3, class T4, class T5, class T6, class T7, class T8, class T9>
+const char *MakeString(const char *c, T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
+    FormatString fs(c);
+    fs << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9;
     return fs.Str();
 }
 
