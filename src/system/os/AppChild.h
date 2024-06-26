@@ -18,4 +18,6 @@ public:
     static void Terminate();
 };
 
+extern AppChild* TheAppChild;
+
 #endif

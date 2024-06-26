@@ -23,4 +23,6 @@ void DataReplaceTags(DataArray*, DataArray*);
 void DataPushVar(DataNode*);
 void DataPopVar();
 
+void DataAppendStackTrace(char* msg);
+
 #endif

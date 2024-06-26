@@ -8,4 +8,6 @@ void EnableKeyCheats(bool);
 bool GetEnabledKeyCheats();
 void CallQuickCheat(DataArray*, LocalUser*);
 
+void AppendCheatsLog(char*);
+
 #endif // UTL_CHEATS_H

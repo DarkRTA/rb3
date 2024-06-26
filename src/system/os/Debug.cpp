@@ -1,9 +1,15 @@
 #include "os/Debug.h"
+#include "os/AppChild.h"
 #include "os/HolmesClient.h"
 #include "os/OSFuncs.h"
+#include "obj/DataUtl.h"
+#include "utl/Cheats.h"
+#include "utl/DataPointMgr.h"
 #include "utl/MakeString.h"
 #include "utl/Option.h"
 #include "utl/MemMgr.h"
+#include "utl/Loader.h"
+#include "os/NetworkSocket.h"
 #include "os/System.h"
 #include "os/Timer.h"
 
@@ -163,15 +169,114 @@ void Debug::Fail(const char* msg){
                 (*it)();
             }
             mFailCallbacks.clear();
-            bool asdf = true;
-            Modal(asdf, msg);
-            if(!asdf) mFailing = false;
+            bool fail = true;
+            Modal(fail, msg);
+            if(!fail) mFailing = false;
             else PlatformDebugBreak();
             MemPopHeap();
         }
     }
 }
 #pragma pop
+
+void Debug::Modal(bool& fail, const char* msg) {
+    char modalMsg[4096];
+    strcpy(modalMsg, msg);
+
+    if (fail) {
+        TheDebug << MakeString("FAIL-MSG: %s\n", msg);
+
+        char shortMsg[256];
+        int msgLen = strlen(msg);
+        int shortMsgLen = sizeof(shortMsg) - 1;
+        strcpy(shortMsg, gNullStr);
+        strncat(shortMsg, msg, MINEQ(msgLen, shortMsgLen));
+
+        char cheatsMsg[256];
+        char dataCallstack[512];
+        char callstack[2048];
+        strcpy(cheatsMsg, gNullStr);
+        strcpy(dataCallstack, gNullStr);
+        strcpy(callstack, gNullStr);
+
+        FormatString format("APP FAILED\n");
+        TheDebug << format.Str();
+
+        if (mModalCallback) {
+            mModalCallback(fail, modalMsg, false);
+        }
+
+        if (mFailThreadMsg) {
+            AppendThreadStackTrace(modalMsg, mFailThreadStack);
+        } else {
+            String sdk;
+            sdk = "n/a";
+
+            String config;
+            String version;
+            if (SystemConfig()) {
+                config = SystemConfig()->File();
+                SystemConfig()->FindData("version", version, false);
+            } else {
+                config = "<unknown>";
+            }
+
+            strcat(modalMsg, MakeString("\n\nConsoleName: %s   %s   Plat: %s   ",
+                NetworkSocket::GetHostName(),
+                version,
+                PlatformSymbol(TheLoadMgr.GetPlatform())
+            ));
+            strcat(modalMsg, MakeString("\nLang: %s   SystemConfig: %s",
+                SystemLanguage(),
+                config
+            ));
+            strcat(modalMsg, MakeString("\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
+                SystemMs() * (1 / 3600000.0),
+                UsingCD() ? "true" : "false",
+                sdk
+            ));
+
+            DataAppendStackTrace(dataCallstack);
+            strncat(modalMsg, dataCallstack, sizeof(dataCallstack));
+            AppendStackTrace(callstack);
+            strncat(modalMsg, callstack, sizeof(callstack));
+            AppendCheatsLog(cheatsMsg);
+            strncat(modalMsg, cheatsMsg, sizeof(cheatsMsg));
+        }
+
+        if (TheAppChild) {
+            TheAppChild->Sync(2);
+        }
+
+        if (UsingCD()) {
+            SendDataPoint("debug/fail",
+                "msg", shortMsg,
+                "callstack", callstack,
+                "dataCallstack", dataCallstack,
+                "cheatsMsg", cheatsMsg
+            );
+        }
+    }
+
+    if (mModalCallback) {
+        mModalCallback(fail, modalMsg, true);
+    } else {
+        if (fail)  {
+            TheDebug << MakeString("FAIL: %s\n", modalMsg);
+        } else {
+            if (!mNoDebug) {
+                TheDebug << MakeString("NOTIFY: %s\n", modalMsg);
+            }
+        }
+    }
+
+    if (fail) {
+        if (mModalCallback) {
+            PlatformDebugBreak();
+        }
+        Exit(1, true);
+    }
+}
 
 void Debug::Exit(int status, bool actually_exit) {
     mExiting = true;
