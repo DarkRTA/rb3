@@ -30,6 +30,26 @@ public:
     static MidiChunkID kMTrk;
 };
 
+class MidiReceiver {
+public:
+    MidiReceiver();
+    virtual ~MidiReceiver(){}
+    virtual void OnNewTrack(int) = 0;
+    virtual void OnEndOfTrack() = 0;
+    virtual void OnAllTracksRead() = 0;
+    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) = 0;
+    virtual void OnText(int, const char*, unsigned char) = 0;
+    virtual void OnTempo(int, int){}
+    virtual void OnTimeSig(int, int, int){}
+    virtual bool OnAcceptMaps(TempoMap*, MeasureMap*){ return false; }
+    virtual void SetMidiReader(MidiReader* mr){ mReader = mr; }
+
+    void Error(const char*, int);
+    void SkipCurrentTrack();
+
+    MidiReader* mReader;
+};
+
 class MidiReader {
 public:
     struct Midi {
@@ -52,6 +72,10 @@ public:
     void ReadTrackHeader(BinStream&);
     void ReadFileHeader(BinStream&);
 
+    void Error(const char* msg) {
+        mRcvr.Error(msg, mCurTick);
+    }
+
     static bool sVerify;
 
     class BinStream * mStream; // offset 0x0, size 0x4
@@ -68,33 +92,13 @@ public:
     unsigned char mPrevStatus; // offset 0x30, size 0x1
     class String mCurTrackName; // offset 0x34, size 0xC
     std::vector<String> mTrackNames;
-    std::vector<Midi> mMidiList; 
-    int mMidiListTick; 
-    bool (* mLessFunc)(const struct Midi &, const struct Midi &); 
+    std::vector<Midi> mMidiList;
+    int mMidiListTick;
+    bool (* mLessFunc)(const struct Midi &, const struct Midi &);
     bool mOwnMaps;
-    class MultiTempoTempoMap * mTempoMap; 
+    class MultiTempoTempoMap * mTempoMap;
     class MeasureMap * mMeasureMap;
     bool mFail;
-};
-
-class MidiReceiver {
-public:
-    MidiReceiver();
-    virtual ~MidiReceiver(){}
-    virtual void OnNewTrack(int) = 0;
-    virtual void OnEndOfTrack() = 0;
-    virtual void OnAllTracksRead() = 0;
-    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) = 0;
-    virtual void OnText(int, const char*, unsigned char) = 0;
-    virtual void OnTempo(int, int){}
-    virtual void OnTimeSig(int, int, int){}
-    virtual bool OnAcceptMaps(TempoMap*, MeasureMap*){ return false; }
-    virtual void SetMidiReader(MidiReader* mr){ mReader = mr; }
-
-    void Error(const char*, int);
-    void SkipCurrentTrack();
-
-    MidiReader* mReader;
 };
 
 #endif
