@@ -490,6 +490,7 @@
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": "NonMatching",
             "system/utl/Compress.cpp": "Matching",
+            "system/utl/DataPointMgr.cpp": "Matching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FakeSongMgr.cpp": "Matching",
             "system/utl/FilePath.cpp": "Matching",
