@@ -136,6 +136,8 @@ void Debug::Notify(const char* msg){
     }
 }
 
+#pragma push
+#pragma pool_data off
 void Debug::Fail(const char* msg){
     static int x = MemFindHeap("main");
     MemPushHeap(x);
@@ -152,14 +154,13 @@ void Debug::Fail(const char* msg){
         }
         if(mTry != 0){
             mTry--;
-            // jump happens here
+            longjmp(&TheDebugJump, (int)msg);
         }
         if(mFailing) MemPopHeap();
         else {
             mFailing = true;
-            for(std::list<ModalCallbackFunc*>::iterator it = mFailCallbacks.begin(); it != mFailCallbacks.end(); it++){
-                bool b;
-                (*it)(b, 0, 0);
+            for(std::list<ExitCallbackFunc*>::iterator it = mFailCallbacks.begin(); it != mFailCallbacks.end(); it++){
+                (*it)();
             }
             mFailCallbacks.clear();
             bool asdf = true;
@@ -170,6 +171,7 @@ void Debug::Fail(const char* msg){
         }
     }
 }
+#pragma pop
 
 void Debug::Exit(int status, bool actually_exit) {
     mExiting = true;
