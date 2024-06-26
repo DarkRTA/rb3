@@ -8,6 +8,7 @@
 
 #include <list>
 #include <string.h>
+#include <setjmp.h>
 
 typedef void ModalCallbackFunc(bool&, char*, bool);
 typedef void ExitCallbackFunc(void);
@@ -25,7 +26,7 @@ public:
     bool mAlwaysFlush; // 0x14
     TextStream* mReflect; // 0x18
     ModalCallbackFunc* mModalCallback; // 0x1c
-    std::list<ModalCallbackFunc*> mFailCallbacks;
+    std::list<ExitCallbackFunc*> mFailCallbacks;
     std::list<ExitCallbackFunc*> mExitCallbacks;
     unsigned int mFailThreadStack[50]; // starts at 0x30
     const char* mFailThreadMsg; // 0xf8
@@ -59,6 +60,8 @@ public:
 };
 
 extern Debug TheDebug;
+extern jmp_buf TheDebugJump;
+
 extern const char* kAssertStr;
 extern int* gpDbgFrameID;
 
@@ -67,6 +70,26 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebugFailer << (MakeString(__VA_ARGS__)), 0))
 #  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
 #  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
+
+// Usage:
+// MILO_TRY(errMsg) {
+//     // The code to try
+// } MILO_CATCH {
+//     // errMsg is valid here
+// }
+#  define MILO_TRY \
+    TheDebug.SetTry(true); \
+    /* Undefined behavior alert! \
+     * The return of setjmp should only be used in control flow, \
+     * but here it's used to propogate an error message. \
+     */ \
+    const char* _msg = (const char*)setjmp(TheDebugJump); \
+    if (_msg == nullptr) { \
+        do
+#  define MILO_CATCH(msgName) \
+        while (false); \
+        TheDebug.SetTry(false); \
+    } else if (const char* msgName = _msg)
 #else
    // The actual conditions for asserts appear to still be evaluated in retail,
    // various random calls are left over from asserts that exist in debug
@@ -74,6 +97,9 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
 #  define MILO_WARN(...) ((void)0)
+
+#  define MILO_TRY if (true)
+#  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)
 #endif
 
 class DebugNotifier {

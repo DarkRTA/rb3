@@ -31,8 +31,6 @@
         "runtime": {
             "base": "base",
             "flags": [
-                "-sdata 2",
-                "-sdata2 2",
                 "-str reuse,pool,readonly",
                 "-pragma \"merge_float_consts on\"",
 

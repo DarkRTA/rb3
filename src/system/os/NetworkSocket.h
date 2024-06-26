@@ -32,6 +32,7 @@ public:
     virtual NetworkSocket* GetSocket(){ return 0; }
 
     static NetworkSocket* Create(bool);
+    static String GetHostName();
     String ResolveHostName(String);
 };
 

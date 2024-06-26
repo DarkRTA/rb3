@@ -34,7 +34,7 @@ namespace {
     }
 }
 
-MidiReader::MidiReader(BinStream& bs, MidiReceiver& rec, const char* name) : mStream(&bs), mStreamCreatedHere(0), mStreamName(name), 
+MidiReader::MidiReader(BinStream& bs, MidiReceiver& rec, const char* name) : mStream(&bs), mStreamCreatedHere(0), mStreamName(name),
     mRcvr(rec), mState(kStart), mNumTracks(0), mTicksPerQuarter(0), mDesiredTPQ(480), mCurTrackIndex(0), mCurTick(0), mPrevStatus(0), mCurTrackName(),
     mMidiListTick(0), mLessFunc(DefaultMidiLess), mFail(0) {
         MILO_ASSERT(!mStream->LittleEndian(), 0xAA);
@@ -101,7 +101,16 @@ const char* MidiReader::GetFilename() const {
 }
 
 void MidiReader::ReadNextEvent(){
-
+    if (sVerify != 0) {
+        MILO_TRY {
+            ReadNextEventImpl();
+        } MILO_CATCH(errMsg) {
+            Error(errMsg);
+            mFail = true;
+        }
+    } else {
+        ReadNextEventImpl();
+    }
 }
 
 // fn_80533f70

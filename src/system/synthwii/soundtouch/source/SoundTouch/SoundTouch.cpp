@@ -72,13 +72,12 @@
 #include "os/Debug.h"
 #include <string.h>
 #include <stdlib.h>
-//#include <memory.h>
+#include <memory>
 #include <math.h>
 #include <stdio.h>
 #include <types.h>
 
-#include "sdk/Runtime/__mem.h"
-#include "synthwii/soundtouch/include/SoundTouch.h"
+#include "../../include/SoundTouch.h"
 #include "TDStretch.h"
 #include "RateTransposer.h"
 #include "cpu_detect.h"
