@@ -2,6 +2,7 @@
 #define OS_TIMER_H
 #include "utl/Symbol.h"
 #include "obj/Data.h"
+#include "os/OSFuncs.h"
 #include <vector>
 #include "decomp.h"
 
@@ -174,5 +175,30 @@ public:
     START_AUTO_TIMER(name); \
     action; \
 }
+
+class AutoSlowFrame {
+public:
+    static int sDepth;
+
+    AutoSlowFrame(const char* reason) {
+        if (!MainThread()) {
+            return;
+        }
+
+        sDepth++;
+        Timer::sSlowFrameReason = reason;
+        Timer::sSlowFrameWaiver += 10.0f;
+        Timer::sSlowFrameTimer.Start();
+    }
+
+    ~AutoSlowFrame() {
+        if (!MainThread()) {
+            return;
+        }
+
+        sDepth--;
+        Timer::sSlowFrameTimer.Stop();
+    }
+};
 
 #endif

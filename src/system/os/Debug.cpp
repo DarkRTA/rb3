@@ -294,6 +294,35 @@ void Debug::RemoveExitCallback(ExitCallbackFunc* func){
     if(!mExiting) mExitCallbacks.remove(func);
 }
 
+void Debug::Print(const char* msg) {
+    AutoSlowFrame asf("Debug::Print");
+
+    if (mLog && !mLog->mFile.Fail()) {
+        mLog->Print(msg);
+        if (mAlwaysFlush) {
+            mLog->mFile.Flush();
+        }
+    }
+
+    if (MainThread() && mReflect) {
+        mReflect->Print(msg);
+    }
+
+    if (!UsingCD()) {
+        HolmesClientPrint(msg);
+    }
+
+    char msgChunk[256];
+    size_t msglen = strlen(msg);
+    const char* msgEnd = msg + msglen;
+    for (; msg + ARRAY_LENGTH(msgChunk) < msgEnd; msg += ARRAY_LENGTH(msgChunk)) {
+        strncpy(msgChunk, msg, ARRAY_LENGTH(msgChunk));
+        msgChunk[ARRAY_LENGTH(msgChunk) - 1] = 0;
+        OSReport("%s", msgChunk);
+    }
+    OSReport("%s", msg);
+}
+
 void Debug::StartLog(const char* file, bool always_flush){
     delete mLog;
     mLog = 0;
