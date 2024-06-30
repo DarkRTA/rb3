@@ -14,10 +14,10 @@ class Asset {
     Symbol GetHint() const;
 
     Symbol mName; // 0x04
-    int unk_0x8, unk_0xC, unk_0x10;
+    int mType, mGender, mBoutique;
     std::vector<Symbol> mFinishes; // 0x14
-    u8 unk_0x1C, unk_0x1D;
-    int unk_0x20;
+    bool mPatchable, mHidden;
+    int mIndex;
 };
 
 #endif // METABAND_ASSET_H
