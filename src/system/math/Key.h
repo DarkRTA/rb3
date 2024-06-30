@@ -34,14 +34,20 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 // not sure how the second template gets incorporated yet
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
-    void Add(const T1&, float, bool);
     void Remove(int); // used in RemoveKey
-    void Remove(float, float);
     void FindBounds(float&, float&, int&, int&);
 
     float LastFrame() const {
         if(size() != 0) return back().frame;
         else return 0.0f;
+    }
+
+    void Add(const T1&, float, bool){
+
+    }
+
+    int Remove(float, float){
+
     }
 
     // full method scratch (debug): https://decomp.me/scratch/IXqzR

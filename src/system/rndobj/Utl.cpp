@@ -91,8 +91,9 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
             }
         }
         else if(trans){
-            anim1->RotKeys().Add(Hmx::Quat(trans->LocalXfm().m), 0.0f, false);
-            anim1->RotKeys().Add(Hmx::Quat(trans->LocalXfm().m), f2, false);
+            Hmx::Quat q(trans->LocalXfm().m);
+            anim1->RotKeys().Add(q, 0.0f, false);
+            anim1->RotKeys().Add(q, f2, false);
         }
         else {
             anim1->RotKeys().Add(Hmx::Quat(0.0f, 0.0f, 0.0f, 1.0f), 0.0f, false);
@@ -129,9 +130,13 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
         }
 
         float fsum = f1 + f2;
-        anim2->TransKeys().Remove(f1, fsum);
-        anim2->RotKeys().Remove(f1, fsum);
-        anim2->ScaleKeys().Remove(f1, fsum);
+        int transRemoved = anim2->TransKeys().Remove(f1, fsum);
+        int rotRemoved = anim2->RotKeys().Remove(f1, fsum);
+        int scaleRemoved = anim2->ScaleKeys().Remove(f1, fsum);
+
+        anim2->TransKeys().insert(anim2->TransKeys().begin() + transRemoved, anim1->TransKeys().begin(), anim1->TransKeys().end());
+        anim2->RotKeys().insert(anim2->RotKeys().begin() + rotRemoved, anim1->RotKeys().begin(), anim1->RotKeys().end());
+        anim2->ScaleKeys().insert(anim2->ScaleKeys().begin() + scaleRemoved, anim1->ScaleKeys().begin(), anim1->ScaleKeys().end());
     }
 }
 #pragma pop

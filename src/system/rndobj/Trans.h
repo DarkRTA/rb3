@@ -100,7 +100,7 @@ public:
         SetDirty();
     }
 
-    Transform& LocalXfm(){
+    const Transform& LocalXfm() const {
         return mLocalXfm;
     }
 
