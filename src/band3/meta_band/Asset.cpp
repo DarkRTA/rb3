@@ -2,16 +2,42 @@
 
 #include "system/os/Debug.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols3.h"
+#include "AssetTypes.h"
 
-Asset::Asset(DataArray* pConfig, int i) : mName(gNullStr), unk_0x8(0), unk_0xC(0), unk_0x10(0), unk_0x1C(0), 
-    unk_0x1D(0), unk_0x20(i) {
+Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false), 
+    mHidden(false), mIndex(index) {
     MILO_ASSERT(pConfig, 21);
-    mName = pConfig->Sym(0);
-    Symbol s(gNullStr);
-    pConfig->FindData(gender, s, false);
-    {
-        MILO_WARN("(%s) should not have \"finishes\" in ui/customize/assets.dta");
+    Symbol name = pConfig->Sym(0);
+    mName = name;
+
+    Symbol genderSymbol = gNullStr;
+    pConfig->FindData(gender, genderSymbol, false);
+    mGender = GetAssetGenderFromSymbol(genderSymbol);
+
+    Symbol typeSymbol = gNullStr;
+    pConfig->FindData(type, typeSymbol, true);
+    AssetType assetType = GetAssetTypeFromSymbol(typeSymbol);
+    mType = assetType;
+
+    Symbol boutiqueSymbol = gNullStr;
+    pConfig->FindData(boutique, boutiqueSymbol, false);
+    mBoutique = GetAssetBoutiqueFromSymbol(boutiqueSymbol);
+
+    pConfig->FindData(patchable, mPatchable, false);
+    pConfig->FindData(hidden, mHidden, false);
+
+    DataArray* finishesArray = pConfig->FindArray(finishes, false);
+    if (finishesArray != NULL) {
+        if (assetType == 10 || (unsigned long)(assetType - 2) <= 1) {
+            for (int i = 1; i < finishesArray->Size(); i++) {  
+                Symbol finish = finishesArray->Str(i);
+                mFinishes.push_back(finish);
+            }
+        } else {
+            MILO_WARN("(%s) should not have \"finishes\" in ui/customize/assets.dta", name.Str());
+        }
     }
 }
 

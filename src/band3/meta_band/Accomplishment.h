@@ -7,6 +7,7 @@
 #include "band3/game/BandUser.h"
 #include "band3/game/Tracker.h"
 #include "band3/meta_band/MusicLibrary.h"
+#include "system/ui/UILabel.h"
 
 class Accomplishment {
 public:
@@ -70,6 +71,8 @@ private:
     Symbol GetUnitsToken(int) const;
     Symbol GetPassiveMsgChannel() const;
     int GetPassiveMsgPriority() const;
+
+    virtual void UpdateIncrementalEntryName(UILabel*, Symbol) = 0;
 
 private:
     Symbol mName;                                   // 0x04
