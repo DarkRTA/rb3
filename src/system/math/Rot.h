@@ -12,6 +12,7 @@
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
+void MakeScale(const Hmx::Matrix3&, Vector3&);
 void MakeEuler(const Hmx::Matrix3&, Vector3&);
 void MakeEulerScale(const Hmx::Matrix3&, Vector3&, Vector3&);
 void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
