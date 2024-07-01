@@ -46,7 +46,9 @@
         "rvl_sdk": {
             "base": "base",
             "flags": [
-                "-func_align 16"
+                "-func_align 16",
+                "-O4,p",
+                "-Isrc/sdk/PowerPC_EABI_Support/MSL"
             ]
         },
         "main": {

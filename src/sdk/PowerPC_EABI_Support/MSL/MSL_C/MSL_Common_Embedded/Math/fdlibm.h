@@ -46,6 +46,7 @@ extern "C" {
 extern int signgam;
 
 #define MAXFLOAT ((float)3.40282346638528860e+38)
+#define M_PI ((float)3.14159274101257324219)
 
 enum fdversion { fdlibm_ieee = -1, fdlibm_svid, fdlibm_xopen, fdlibm_posix };
 
