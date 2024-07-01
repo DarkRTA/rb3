@@ -26,11 +26,15 @@
 #include <cmath>
 
 float gLimitUVRange;
+ObjectDir* sSphereDir;
+RndMesh* sSphereMesh;
 
 DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
 
 RndGroup* GroupOwner(Hmx::Object* o) {
-    for(std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin(); rit != o->Refs().rend(); rit++){
+    std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
+    for(; rit != ritEnd; rit++){
         RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
         if(grp){
             for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
@@ -45,8 +49,61 @@ static DataNode OnGroupOwner(DataArray* da) {
     return DataNode(GroupOwner(da->GetObj(1)));
 }
 
+bool GroupedUnder(RndGroup* grp, Hmx::Object* o){
+    for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
+        if(*pit == o) return true;
+        RndGroup* casted = dynamic_cast<RndGroup*>(*pit);
+        if(casted && GroupedUnder(casted, o)) return true;
+    }
+    return false;
+}
+
 RndEnviron* FindEnviron(RndDrawable*) {
 
+}
+
+bool AnimContains(const RndAnimatable* anim1, const RndAnimatable* anim2){
+    if(anim1 == anim2) return true;
+    else {
+        std::list<RndAnimatable*> children;
+        anim1->ListAnimChildren(children);
+        for(std::list<RndAnimatable*>::iterator it = children.begin(); it != children.end(); ++it){
+            if(AnimContains(*it, anim2)) return true;
+        }
+        return false;
+    }
+}
+
+RndAnimatable* AnimController(Hmx::Object* o){
+    std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
+    for(; rit != ritEnd; rit++){
+        RndAnimatable* a = dynamic_cast<RndAnimatable*>((*rit)->RefOwner());
+        if(a && a->AnimTarget() == o) return a;
+    }
+    return 0;
+}
+
+RndMat* GetMat(RndDrawable* draw){
+    std::list<RndMat*> mats;
+    draw->Mats(mats, false);
+    RndMat* ret;
+    if(mats.empty()) ret = 0;
+    else ret = mats.front();
+    return ret;
+}
+
+bool SortDraws(RndDrawable* draw1, RndDrawable* draw2){
+    if(draw1->mOrder != draw2->mOrder)
+        return draw1->mOrder < draw2->mOrder;
+    else {
+        RndMat* mat1 = GetMat(draw1);
+        RndMat* mat2 = GetMat(draw2);
+        if(mat1 != mat2){
+            return mat1 == mat2;
+        }
+        else return strcmp(draw1->Name(), draw2->Name()) == 0;
+    }
 }
 
 void CalcBox(RndMesh* m, Box& b) {
@@ -148,6 +205,7 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
     }
 }
 
+// fn_806571C0
 void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, float f6){
     int int1, int2;
     float bound2 = f5;
@@ -272,6 +330,21 @@ void RndUtlPreInit() {
     TheLoadMgr.RegisterFactory("tga", ResourceFactory);
     DataRegisterFunc("find_environ", DataFindEnviron);
     DataRegisterFunc("group_owner", OnGroupOwner);
+}
+
+void RndUtlInit(){
+    if(!UsingCD()){
+        sSphereDir = DirLoader::LoadObjects(FilePath(FileSystemRoot(), "rndobj/sphere.milo"), 0, 0);
+    }
+    if(sSphereDir){
+        sSphereMesh = sSphereDir->Find<RndMesh>("sphere.mesh", true);
+    }
+}
+
+void RndUtlTerminate(){
+    delete sSphereDir;
+    sSphereDir = 0;
+    sSphereMesh = 0;
 }
 
 // fn_806598A0

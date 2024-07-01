@@ -6,6 +6,9 @@
 #include "utl/Cache.h"
 
 RndGroup* GroupOwner(Hmx::Object*);
+bool GroupedUnder(RndGroup*, Hmx::Object*);
+RndAnimatable* AnimController(Hmx::Object*);
+RndMat* GetMat(RndDrawable*);
 float ConvertFov(float a, float b);
 void SetLocalScale(RndTransformable*, const Vector3&);
 void AttachMesh(RndMesh*, RndMesh*);

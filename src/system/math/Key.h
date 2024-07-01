@@ -1,6 +1,7 @@
 #ifndef UTL_KEY_H
 #define UTL_KEY_H
 #include <vector>
+#include "math/MathFuncs.h"
 #include "math/Rot.h" // so that Vector2 is textstream-able
 
 // thank god for the RB2 dump
@@ -39,6 +40,7 @@ public:
         erase(begin() + idx);
     }
 
+    // fn_806570E8 for Vector3, fn_8065783C for Quat
     void FindBounds(float& fstart, float& fend, int& istart, int& iend){
         MILO_ASSERT(size(), 0x199);
         if(!fstart && !fend){
@@ -48,22 +50,8 @@ public:
             iend = size() - 1;
         }
         else {
-            float frame_loc = fstart;
-            if(frame_loc < front().frame) frame_loc = front().frame;
-            int istart_loc;
-            if(empty() || frame_loc < front().frame) istart_loc = -1;
-            else {
-                istart_loc = 0;
-            }
-            istart = istart_loc;
-
-            frame_loc = fend;
-            if(frame_loc > back().frame) frame_loc = back().frame;
-            if(empty() || frame_loc <= front().frame) istart_loc = 0;
-            else {
-                istart_loc -= 1;
-            }
-            iend = istart_loc;
+            istart = AtFrame(Max(fstart, front().frame));
+            iend = AtFrame(Minimum(fend, back().frame)); // a different function gets called here, behaves similarly to AtFrame(float)
         }
     }
 
