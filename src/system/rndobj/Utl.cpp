@@ -226,12 +226,34 @@ void MoveXfms(RndMultiMesh* mm, const Vector3& v) {
 
 }
 
-const char* CacheResource(const char*, Hmx::Object*);
-
 Loader* ResourceFactory(const FilePath& f, LoaderPos p) {
     return new FileLoader(f, CacheResource(f.c_str(), NULL), p, 0, false, true, NULL);
 }
 
+const char* CacheResource(const char* cc, Hmx::Object* o){
+    if(!cc || (*cc == '\0')) return 0;
+    else {
+        CacheResourceResult res;
+        const char* ret = CacheResource(cc, res);
+        if(res > kCacheUnnecessary){
+            switch(res){
+                case kCacheUnknownExtension:
+                    if(o) MILO_WARN("%s: \"%s\" has unrecognized extension \"%s\"", PathName(o), cc, FileGetExt(cc));
+                    else MILO_WARN("Unrecognized extension \"%s\" to \"%s\"", FileGetExt(cc), cc);
+                    break;
+                case kCacheMissingFile:
+                    if(o) MILO_WARN("%s: couldn't find %s", PathName(o), cc);
+                    else MILO_WARN("Couldn't find %s", cc);
+                    break;
+                default:
+                    if(o) MILO_WARN("%s: unknown CacheResource error %s", PathName(o), cc);
+                    else MILO_WARN("Unknown CacheResource error %s", cc);
+                    break;
+            }
+        }
+        return ret;
+    }
+}
 
 DataNode DataFindEnviron(DataArray* da) {
     return DataNode(FindEnviron(da->Obj<RndDrawable>(1)));
@@ -252,9 +274,57 @@ void RndUtlPreInit() {
     DataRegisterFunc("group_owner", OnGroupOwner);
 }
 
+// fn_806598A0
 float ConvertFov(float a, float b) {
     float x = tan(0.5f * a);
     return atan(b * x) * 2;
+}
+
+// fn_806598F4
+void ListDrawGroups(RndDrawable* draw, ObjectDir* dir, std::list<RndGroup*>& gList){
+    for(ObjDirItr<RndGroup> it(dir, true); it != 0; ++it){
+        std::vector<RndDrawable*>& drawVec = it->mDraws;
+        std::vector<RndDrawable*>::iterator draw_it = std::find(drawVec.begin(), drawVec.end(), draw); // wonder if this is inlined?
+        if(draw_it != drawVec.end()){
+            gList.push_back(it);
+        }
+    }
+}
+
+DataNode OnTestDrawGroups(DataArray* da){
+    DataArray* arr = 0;
+    ObjectDir* dir = da->Obj<ObjectDir>(2);
+    if(da->Size() > 3) arr = da->Array(3);
+    for(ObjDirItr<RndDrawable> it(dir, true); it != 0; ++it){
+        std::list<RndGroup*> gList;
+        ListDrawGroups(it, dir, gList);
+        if(arr){
+            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt){
+                bool canerase = false;
+                for(int i = 0; i < arr->Size(); i++){
+                    bool namesmatch = strcmp((*gListIt)->Name(), arr->Str(i)) == 0;
+                    if(namesmatch){
+                        canerase = true;
+                        break;
+                    }
+                }
+                if(canerase) gListIt = gList.erase(gListIt);
+                else gListIt++;
+            }
+        }
+        unsigned long listcount = 0;
+        for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++) listcount++;
+        if(listcount > 1){
+            unsigned long listcountfr = 0;
+            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++) listcountfr++;
+            String str(MakeString("%s is in %d groups:", PathName(it), listcountfr));
+            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++){
+                str << " " << PathName(*gListIt);
+            }
+            MILO_WARN(str.c_str());
+        }
+    }
+    return DataNode(0);
 }
 
 void PreMultiplyAlpha(Hmx::Color& c) {
