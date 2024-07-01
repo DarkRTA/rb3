@@ -112,8 +112,8 @@ public:
             }
             else {
                 int frameIdx = AtFrame(frame);
-                prev = &this->operator[](frameIdx);
-                next = &this->operator[](frameIdx + 1);
+                prev = &(*this)[frameIdx];
+                next = &(*this)[frameIdx + 1];
                 float den = next->frame - prev->frame;
                 MILO_ASSERT(den != 0, 0xE9);
                 ref = (frame - prev->frame) / den;
