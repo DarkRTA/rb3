@@ -291,6 +291,7 @@ void ListDrawGroups(RndDrawable* draw, ObjectDir* dir, std::list<RndGroup*>& gLi
     }
 }
 
+// fn_806599A4
 DataNode OnTestDrawGroups(DataArray* da){
     DataArray* arr = 0;
     ObjectDir* dir = da->Obj<ObjectDir>(2);
@@ -325,6 +326,34 @@ DataNode OnTestDrawGroups(DataArray* da){
         }
     }
     return DataNode(0);
+}
+
+// fn_80659D74
+void TestTextureSize(ObjectDir* dir, int iType, int i3, int i4, int i5, int maxBpp){
+    bool rendered = false;
+    if(iType == RndTex::Rendered || iType == RndTex::RenderedNoZ) rendered = true;
+    bool b2 = false;
+    if(GetGfxMode() == 0 || rendered) b2 = true;
+    int ivar4 = 1;
+    if(b2) ivar4 = i5;
+    for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
+        if(iType == it->GetType()){
+            int local_bpp = b2 ? it->mBpp : 1;
+            if(rendered && GetGfxMode() == 1 && local_bpp == 0x10) local_bpp = 0x20;
+            int product = it->Width() * it->Height() * local_bpp;
+            if(product > i3 * i4 * ivar4){
+                MILO_WARN("%s is too big w:%d h:%d bpp:%d", PathName(it), it->Width(), it->Height(), local_bpp);
+            }
+            if(product != 0 && b2 && local_bpp > maxBpp){
+                MILO_WARN("%s is %d bpp > %d, too big", PathName(it), local_bpp, maxBpp);
+            }
+        }
+    }
+}
+
+// fn_80659E6C
+void TestTexturePaths(ObjectDir* dir){
+    
 }
 
 void PreMultiplyAlpha(Hmx::Color& c) {
