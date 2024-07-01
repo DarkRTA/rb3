@@ -99,17 +99,17 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
         MILO_ASSERT(mOwnEntries, 0x9E);
         Resize(0x19, 0);
     }
-    int i = HashString((const char*)val, mSize);
+    const char* valStr = (const char*)val;
+    int i = HashString(valStr, mSize);
     MILO_ASSERT(i >= 0, 0xA4);
-    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !KeysMatch((const char*)mEntries[i], (const char*)val)){
+    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !KeysMatch((const char*)mEntries[i], valStr)){
         Advance(i);
     }
     if(mEntries[i] == mEmpty){
         mNumEntries++;
-        if(mSize / 2 < mNumEntries && mOwnEntries){
+        if(mNumEntries > mSize / 2 && mOwnEntries){
             MILO_ASSERT(mSize, 0xB5);
             Resize(mSize * 2, 0);
-            // some label != 0 gets called here
             if(!TheLoadMgr.EditMode() && MakeStringInitted()){
                 MILO_WARN("Resizing hash table (%d)", mSize);
             }
@@ -121,6 +121,11 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
     }
     mEntries[i] = val;
     return &mEntries[i];
+}
+
+template <class T1, class T2>
+void KeylessHash<T1, T2>::Resize(int, T2* val){
+
 }
 
 #endif
