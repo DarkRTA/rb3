@@ -34,7 +34,10 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 // not sure how the second template gets incorporated yet
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
-    void Remove(int); // used in RemoveKey
+    // used in RemoveKey
+    void Remove(int idx){
+        erase(begin() + idx);
+    }
 
     void FindBounds(float& fstart, float& fend, int& istart, int& iend){
         MILO_ASSERT(size(), 0x199);
@@ -119,7 +122,7 @@ public:
                 return size() - 1;
             }
             else {
-                int frameIdx = idunnolol(frame);
+                int frameIdx = AtFrame(frame);
                 prev = &this->operator[](frameIdx);
                 next = &this->operator[](frameIdx + 1);
                 float den = next->frame - prev->frame;
@@ -130,8 +133,8 @@ public:
         }
     }
 
-    // looks like this gets the index in the Keys vector in which the frame ff is located?
-    int idunnolol(float ff) const {
+    // looks like this gets the index in the Keys vector in which the frame ff is located
+    int AtFrame(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
             int cnt = 0;
