@@ -2,18 +2,16 @@
 #define _MATH_H
 
 #include "MSL_Common/math_api.h"
+#include "MSL_Common/float.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern int __float_nan[];
-extern int __float_huge[];
-extern int __double_huge[];
+#define INFINITY (*(float*)&__float_huge)
+#define NAN (__float_nan)
+#define HUGE_VAL (__double_huge)
 
-#define INFINITY (*(float *)__float_huge)
-#define NAN (*(float *)__float_nan)
-#define HUGE_VAL (*(double *)__double_huge)
 /*
 #define HUGE_VALF
 #define HUGE_VALL
