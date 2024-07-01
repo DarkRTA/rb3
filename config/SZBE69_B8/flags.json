@@ -162,6 +162,14 @@
                 "-func_align 4"
             ]
         },
+        "sdk/MSL/fdlibm": {
+            "base": "sdk/MSL",
+            "flags": [
+                "-sdata 2",
+
+                "-d _IEEE_LIBM"
+            ]
+        },
         "sdk/RVL_SDK": {
             "base": "base",
             "flags": [

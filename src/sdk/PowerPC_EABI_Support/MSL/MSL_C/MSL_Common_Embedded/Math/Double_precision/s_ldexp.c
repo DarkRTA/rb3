@@ -1,5 +1,5 @@
 
-/* @(#)w_asin.c 1.3 95/01/18 */
+/* @(#)s_ldexp.c 1.3 95/01/18 */
 /*
  * ====================================================
  * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
@@ -9,32 +9,23 @@
  * software is freely granted, provided that this notice
  * is preserved.
  * ====================================================
- *
- */
-
-/*
- * wrapper asin(x)
  */
 
 #include "fdlibm.h"
+#include <errno.h>
 
 #if defined(__STDC__) || defined(__cplusplus)
-double asin(double x) /* wrapper asin */
+double ldexp(double value, int exp)
 #else
-double asin(x) /* wrapper asin */
-double x;
+double ldexp(value, exp)
+double value;
+int exp;
 #endif
 {
-#ifdef _IEEE_LIBM
-    return __ieee754_asin(x);
-#else
-    double z;
-    z = __ieee754_asin(x);
-    if (_LIB_VERSION == _IEEE_ || isnan(x))
-        return z;
-    if (fabs(x) > 1.0) {
-        return __kernel_standard(x, x, 2); /* asin(|x|>1) */
-    } else
-        return z;
-#endif
+    if (!finite(value) || value == 0.0)
+        return value;
+    value = scalbn(value, exp);
+    if (!finite(value) || value == 0.0)
+        errno = ERANGE;
+    return value;
 }
