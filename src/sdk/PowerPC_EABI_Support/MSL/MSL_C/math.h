@@ -15,10 +15,6 @@ extern "C" {
 #define __frsqrte(x) (x)
 #endif
 
-#define INFINITY (*(float *)&__float_huge)
-#define NAN (__float_nan)
-#define HUGE_VAL (__double_huge)
-
 /*
 #define HUGE_VALF
 #define HUGE_VALL

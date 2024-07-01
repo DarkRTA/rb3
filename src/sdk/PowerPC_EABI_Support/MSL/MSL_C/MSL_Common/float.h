@@ -9,6 +9,10 @@ extern int __float_nan;
 extern float __float_huge;
 extern double __double_huge;
 
+#define INFINITY (__float_huge)
+#define NAN (*(float *)&__float_nan)
+#define HUGE_VAL (__double_huge)
+
 #ifdef __cplusplus
 }
 #endif

@@ -63,6 +63,7 @@
  */
 
 #include "fdlibm.h"
+#include <errno.h>
 
 #if defined(__STDC__) || defined(__cplusplus)
 static const double
@@ -100,8 +101,10 @@ double x;
     if (hx < 0x00100000) { /* x < 2**-1022  */
         if (((hx & 0x7fffffff) | lx) == 0)
             return -two54 / zero; /* log(+-0)=-inf */
-        if (hx < 0)
+        if (hx < 0) {
+            errno = EDOM;
             return (x - x) / zero; /* log(-#) = NaN */
+        }
         k -= 54;
         x *= two54; /* subnormal number, scale up x */
         hx = __HI(x); /* high word of x */

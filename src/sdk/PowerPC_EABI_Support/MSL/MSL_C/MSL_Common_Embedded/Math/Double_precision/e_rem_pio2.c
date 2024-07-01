@@ -122,7 +122,7 @@ double x, y[];
         }
     }
     if (ix <= 0x413921fb) { /* |x| ~<= 2^19*(pi/2), medium size */
-        t = fabs(x);
+        t = __fabs(x);
         n = (int)(t * invpio2 + half);
         fn = (double)n;
         r = t - fn * pio2_1;

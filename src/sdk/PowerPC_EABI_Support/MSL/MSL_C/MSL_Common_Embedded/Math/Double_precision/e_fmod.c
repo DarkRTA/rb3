@@ -40,7 +40,7 @@ double __ieee754_fmod(x, y)
 double x, y;
 #endif
 {
-    int n, hx, hy, hz, ix, iy, sx, i;
+    int n, hx, hy, hz, ix, iy, sx, i, unk1;
     unsigned lx, ly, lz;
 
     hx = __HI(x); /* high word of x */
@@ -114,9 +114,14 @@ double x, y;
 
     /* fix point fmod */
     n = ix - iy;
+    unk1 = n + 2;
     while (n--) {
         hz = hx - hy;
         lz = lx - ly;
+
+        if (hz == 0 && (lx >> unk1 == ly >> unk1)) {
+            return Zero[(unsigned)sx >> 31];
+        }
         if (lx < ly)
             hz -= 1;
         if (hz < 0) {
@@ -131,6 +136,9 @@ double x, y;
     }
     hz = hx - hy;
     lz = lx - ly;
+    if (hz == 0 && (lx >> unk1 == ly >> unk1)) {
+        return Zero[(unsigned)sx >> 31];
+    }
     if (lx < ly)
         hz -= 1;
     if (hz >= 0) {

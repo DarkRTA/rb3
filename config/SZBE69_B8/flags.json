@@ -165,8 +165,6 @@
         "sdk/MSL/fdlibm": {
             "base": "sdk/MSL",
             "flags": [
-                "-sdata 2",
-
                 "-d _IEEE_LIBM"
             ]
         },
