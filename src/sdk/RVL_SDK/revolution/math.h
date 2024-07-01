@@ -2,8 +2,8 @@
 #define _REVOSDK_MATH_H
 
 #include "types.h"
-#include "MSL_C/MSL_Common_Embedded/Math/fdlibm.h"
-#include "MSL_C/MSL_Common/math_api.h"
+#include "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/fdlibm.h"
+#include "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/math_api.h"
 
 #ifdef __cplusplus
 extern "C" {
