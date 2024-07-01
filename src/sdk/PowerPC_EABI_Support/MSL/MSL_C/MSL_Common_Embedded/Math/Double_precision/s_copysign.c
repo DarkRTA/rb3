@@ -1,5 +1,5 @@
 
-/* @(#)w_asin.c 1.3 95/01/18 */
+/* @(#)s_copysign.c 1.3 95/01/18 */
 /*
  * ====================================================
  * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
@@ -9,32 +9,23 @@
  * software is freely granted, provided that this notice
  * is preserved.
  * ====================================================
- *
  */
 
 /*
- * wrapper asin(x)
+ * copysign(double x, double y)
+ * copysign(x,y) returns a value with the magnitude of x and
+ * with the sign bit of y.
  */
 
 #include "fdlibm.h"
 
 #if defined(__STDC__) || defined(__cplusplus)
-double asin(double x) /* wrapper asin */
+double copysign(double x, double y)
 #else
-double asin(x) /* wrapper asin */
-double x;
+double copysign(x, y)
+double x, y;
 #endif
 {
-#ifdef _IEEE_LIBM
-    return __ieee754_asin(x);
-#else
-    double z;
-    z = __ieee754_asin(x);
-    if (_LIB_VERSION == _IEEE_ || isnan(x))
-        return z;
-    if (fabs(x) > 1.0) {
-        return __kernel_standard(x, x, 2); /* asin(|x|>1) */
-    } else
-        return z;
-#endif
+    __HI(x) = (__HI(x) & 0x7fffffff) | (__HI(y) & 0x80000000);
+    return x;
 }

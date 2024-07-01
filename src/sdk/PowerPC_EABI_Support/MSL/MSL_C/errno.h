@@ -53,7 +53,7 @@ extern "C" {
 #define EUNKNOWN      99
 /* clang-format on */
 
-extern int errno;
+__declspec(section ".sdata") extern int errno;
 
 #ifdef __cplusplus
 }
