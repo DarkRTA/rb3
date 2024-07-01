@@ -25,6 +25,11 @@ public:
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
 
+    void Advance(int& idx){
+        idx++;
+        if(idx == mSize) idx = 0;
+    }
+
     // keep these in here so that they're inlined - needed for ObjDirItr    
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
@@ -69,19 +74,18 @@ T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
     else return entry;
 }
 
+inline bool KeysMatch(const char* k1, const char* k2){ return strcmp(k1, k2) == 0; }
+
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::Find(const char* const& key){
     if(mEntries){
         int i = HashString(key, mSize);
         MILO_ASSERT(i >= 0, 0x88);
 
-        T2* it;
-        while(it = &mEntries[i], *it != mEmpty){
-            if(*it != mRemoved){
-                bool matched = strcmp(*it, key) == 0;
-                if(matched) return it;
+        for(; mEntries[i] != mEmpty; Advance(i)){
+            if(mEntries[i] != mRemoved){
+                if(KeysMatch((const char *)mEntries[i], key)) return &mEntries[i];
             }
-            if(++i == mSize) i = 0;
         }
     }
     return 0;

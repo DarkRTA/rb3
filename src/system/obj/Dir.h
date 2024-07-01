@@ -144,8 +144,7 @@ public:
             return *this;
         }
         bool operator!=(const Entry& e) const { return name != e.name; }
-
-        operator const char*() const { return name; } // may not need this
+        operator const char*() const { return name; }
 
         const char* name;
         Hmx::Object* obj;
