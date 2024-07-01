@@ -139,6 +139,68 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
         anim2->ScaleKeys().insert(anim2->ScaleKeys().begin() + scaleRemoved, anim1->ScaleKeys().begin(), anim1->ScaleKeys().end());
     }
 }
+
+void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, float f6){
+    int int1, int2;
+    float bound2 = f5;
+    float bound1 = f6;
+    if(f2){
+        if(anim->TransKeys().size() > 2){
+            Keys<Vector3, Vector3> vecKeys;
+            anim->TransKeys().FindBounds(bound1, bound2, int1, int2);
+            for(int i = 1; i < int2 - vecKeys.size(); i++){
+                vecKeys.push_back(anim->TransKeys()[i]);
+                anim->TransKeys().Remove(i);
+                for(int j = 0; j < vecKeys.size(); j++){
+                    Vector3 vec;
+                    InterpVector(anim->TransKeys(), anim->TransSpline(), vecKeys[j].frame, vec, 0);
+                    Subtract(vec, vecKeys[j].value, vec);
+                    if(Length(vec) > f2){
+                        anim->TransKeys().insert(anim->TransKeys().begin() + i, vecKeys.back());
+                        vecKeys.pop_back();
+                    }
+                }
+            }
+        }
+    }
+    if(f3){
+        if(anim->RotKeys().size() > 2){
+            Keys<Hmx::Quat, Hmx::Quat> quatKeys;
+            anim->RotKeys().FindBounds(bound1, bound2, int1, int2);
+            for(int i = 1; i < int2 - quatKeys.size(); i++){
+                quatKeys.push_back(anim->RotKeys()[i]);
+                anim->RotKeys().Remove(i);
+                for(int j = 0; j < quatKeys.size(); j++){
+                    Hmx::Quat q;
+                    anim->RotKeys().AtFrame(quatKeys[j].frame, q);
+                    if(AngleBetween(q, quatKeys[j].value) > f3){
+                        anim->RotKeys().insert(anim->RotKeys().begin() + i, quatKeys.back());
+                        quatKeys.pop_back();
+                    }
+                }
+            }
+        }
+    }
+    if(f4){
+        if(anim->ScaleKeys().size() > 2){
+            Keys<Vector3, Vector3> vecKeys;
+            anim->ScaleKeys().FindBounds(bound1, bound2, int1, int2);
+            for(int i = 1; i < int2 - vecKeys.size(); i++){
+                vecKeys.push_back(anim->ScaleKeys()[i]);
+                anim->ScaleKeys().Remove(i);
+                for(int j = 0; j < vecKeys.size(); j++){
+                    Vector3 vec;
+                    InterpVector(anim->ScaleKeys(), anim->ScaleSpline(), vecKeys[j].frame, vec, 0);
+                    Subtract(vec, vecKeys[j].value, vec);
+                    if(Length(vec) > f4){
+                        anim->ScaleKeys().insert(anim->ScaleKeys().begin() + i, vecKeys.back());
+                        vecKeys.pop_back();
+                    }
+                }
+            }
+        }
+    }
+}
 #pragma pop
 
 void SortXfms(RndMultiMesh*, const Vector3&) {

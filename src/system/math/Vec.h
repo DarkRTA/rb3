@@ -131,4 +131,7 @@ inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
     dst.Set(v1.x * f, v1.y * f, v1.z * f);
 }
 
+void Subtract(const Vector3&, const Vector3&, Vector3&);
+float Length(const Vector3&);
+
 #endif

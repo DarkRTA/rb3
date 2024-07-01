@@ -32,6 +32,8 @@ public:
     Keys<Vector3, Vector3>& TransKeys(){ return mKeysOwner->mTransKeys; }
     Keys<Hmx::Quat, Hmx::Quat>& RotKeys(){ return mKeysOwner->mRotKeys; }
     Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
+    bool TransSpline() const { return mKeysOwner->mTransSpline; }
+    bool ScaleSpline() const { return mKeysOwner->mScaleSpline; }
 
     DataNode OnSetTransSpline(const DataArray*);
     DataNode OnSetScaleSpline(const DataArray*);
