@@ -215,6 +215,7 @@ public:
     void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
     FilePath GetSubDirPath(const FilePath&, const BinStream&);
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
+    DirLoader* Loader() const { return mLoader; }
 
     DataNode OnFind(DataArray*);
 

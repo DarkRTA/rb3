@@ -353,8 +353,38 @@ void TestTextureSize(ObjectDir* dir, int iType, int i3, int i4, int i5, int maxB
 
 // fn_80659E6C
 void TestTexturePaths(ObjectDir* dir){
-    
+    String str(FileRoot());
+    FileNormalizePath(str.c_str());
+    for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
+        FilePath fp(it->mFilepath);
+        if(fp.empty()) continue;
+        String relative(FileRelativePath(FileRoot(), fp.c_str()));
+        FileNormalizePath(relative.c_str());
+        if(strstr(relative.c_str(), "..") == relative.c_str()){
+            if(strstr(relative.c_str(), "../../system/run") != relative.c_str()){
+                MILO_WARN("%s: %s is outside project path", PathName(it), relative);
+            }
+        }
+        if(relative.length() > 2 && str.c_str()[1] == ':'){
+            MILO_WARN("%s: %s is outside project path", PathName(it), relative);
+        }
+    }
+    if(dir->Loader()){
+        const char* fpstr = dir->Loader()->mFile.c_str();
+        const char* ng = strstr(fpstr, "/ng/");
+        for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
+            const char* texStr = it->mFilepath.c_str();
+            if(ng == 0 && strstr(texStr, "/ng/") != 0){
+                MILO_WARN("og %s has ng texture %s", fpstr, texStr);
+            }
+            else if(ng && strstr(texStr, "/og/") != 0){
+                MILO_WARN("ng %s has og texture %s", fpstr, texStr);
+            }
+        }
+    }
 }
+
+void TestMaterialTextures(ObjectDir*){}
 
 void PreMultiplyAlpha(Hmx::Color& c) {
     c.red *= c.alpha;
