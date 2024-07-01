@@ -2,6 +2,7 @@
 #define UTL_KEYLESSHASH_H
 #include "math/Primes.h"
 #include "math/Sort.h"
+#include "utl/Loader.h"
 #include "os/Debug.h"
 #include <string.h>
 
@@ -100,6 +101,26 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
     }
     int i = HashString((const char*)val, mSize);
     MILO_ASSERT(i >= 0, 0xA4);
+    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !KeysMatch((const char*)mEntries[i], (const char*)val)){
+        Advance(i);
+    }
+    if(mEntries[i] == mEmpty){
+        mNumEntries++;
+        if(mSize / 2 < mNumEntries && mOwnEntries){
+            MILO_ASSERT(mSize, 0xB5);
+            Resize(mSize * 2, 0);
+            // some label != 0 gets called here
+            if(!TheLoadMgr.EditMode() && MakeStringInitted()){
+                MILO_WARN("Resizing hash table (%d)", mSize);
+            }
+            return Insert(val);
+        }
+        if(mNumEntries >= mSize){
+            MILO_FAIL("Hash table full (%d)", mSize);
+        }
+    }
+    mEntries[i] = val;
+    return &mEntries[i];
 }
 
 #endif

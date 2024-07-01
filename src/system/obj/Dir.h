@@ -143,6 +143,7 @@ public:
             obj = entry.obj;
             return *this;
         }
+        bool operator==(const Entry& e) const { return name == e.name; }
         bool operator!=(const Entry& e) const { return name != e.name; }
         operator const char*() const { return name; }
 
