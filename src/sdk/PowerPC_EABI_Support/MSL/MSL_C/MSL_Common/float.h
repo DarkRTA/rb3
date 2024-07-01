@@ -5,9 +5,9 @@
 extern "C" {
 #endif
 
-extern int __float_nan;
-extern float __float_huge;
-extern double __double_huge;
+__declspec(section ".data") extern int __float_nan;
+__declspec(section ".data") extern float __float_huge;
+__declspec(section ".data") extern double __double_huge;
 
 #define INFINITY (__float_huge)
 #define NAN (*(float *)&__float_nan)

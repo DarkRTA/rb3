@@ -46,7 +46,7 @@
 
 #include "fdlibm.h"
 
-static const double xxx[] = {
+static const double T[] = {
     3.33333333333334091986e-01, /* 3FD55555, 55555563 */
     1.33333333333201242699e-01, /* 3FC11111, 1110FE7A */
     5.39682539762260521377e-02, /* 3FABA1BA, 1BB341FE */
@@ -60,14 +60,11 @@ static const double xxx[] = {
     7.14072491382608190305e-05, /* 3F12B80F, 32F0A7E9 */
     -1.85586374855275456654e-05, /* BEF375CB, DB605373 */
     2.59073051863633712884e-05, /* 3EFB2A70, 74BF7AD4 */
-    /* one */ 1.00000000000000000000e+00, /* 3FF00000, 00000000 */
-    /* pio4 */ 7.85398163397448278999e-01, /* 3FE921FB, 54442D18 */
-    /* pio4lo */ 3.06161699786838301793e-17 /* 3C81A626, 33145C07 */
 };
-#define one xxx[13]
-#define pio4 xxx[14]
-#define pio4lo xxx[15]
-#define T xxx
+
+static const double one = 1.00000000000000000000e+00; /* 3FF00000, 00000000 */
+static const double pio4 = 7.85398163397448278999e-01; /* 3FE921FB, 54442D18 */
+static const double pio4lo = 3.06161699786838301793e-17; /* 3C81A626, 33145C07 */
 /* INDENT ON */
 
 double __kernel_tan(double x, double y, int iy) {
@@ -79,20 +76,12 @@ double __kernel_tan(double x, double y, int iy) {
     if (ix < 0x3e300000) { /* x < 2**-28 */
         if ((int)x == 0) { /* generate inexact */
             if (((ix | __LO(x)) | (iy + 1)) == 0)
-                return one / fabs(x);
+                return one / __fabs(x);
             else {
                 if (iy == 1)
                     return x;
-                else { /* compute -1 / (x+y) carefully */
-                    double a, t;
-
-                    z = w = x + y;
-                    __LO(z) = 0;
-                    v = y - (z - x);
-                    t = a = -one / w;
-                    __LO(t) = 0;
-                    s = one + t * z;
-                    return t + a * (s + t * v);
+                else {
+                    return -one / x;
                 }
             }
         }

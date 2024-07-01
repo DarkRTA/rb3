@@ -59,6 +59,8 @@ static char sccsid[] = "@(#)e_pow.c 1.5 04/04/22 SMI";
  */
 
 #include "fdlibm.h"
+#include <math.h>
+#include <errno.h>
 
 #if defined(__STDC__) || defined(__cplusplus)
 static const double
@@ -175,7 +177,7 @@ double x, y;
         }
     }
 
-    ax = fabs(x);
+    ax = __fabs(x);
     /* special value of x */
     if (lx == 0) {
         if (ix == 0x7ff00000 || ix == 0 || ix == 0x3ff00000) {
@@ -192,15 +194,10 @@ double x, y;
         }
     }
 
-    n = (hx >> 31) + 1;
-
-    /* (x<0)**(non-int) is NaN */
-    if ((n | yisint) == 0)
-        return (x - x) / (x - x);
-
-    s = one; /* s (sign of result -ve**odd) = -1 else = 1 */
-    if ((n | (yisint - 1)) == 0)
-        s = -one; /* (-ve)**(odd int) */
+    if (((((int)hx >> 31) + 1) | yisint) == 0) {
+        errno = EDOM;
+        return NAN;
+    };
 
     /* |y| is huge */
     if (iy > 0x41e00000) { /* if |y| > 2**31 */
@@ -212,12 +209,12 @@ double x, y;
         }
         /* over/underflow if x is not close to one */
         if (ix < 0x3fefffff)
-            return (hy < 0) ? s * huge * huge : s * tiny * tiny;
+            return (hy < 0) ? huge * huge : tiny * tiny;
         if (ix > 0x3ff00000)
-            return (hy > 0) ? s * huge * huge : s * tiny * tiny;
+            return (hy > 0) ? huge * huge : tiny * tiny;
         /* now |1-x| is tiny <= 2**-20, suffice to compute
            log(x) by x-x^2/2+x^3/3-x^4/4 */
-        t = ax - one; /* t has 20 trailing zeros */
+        t = x - 1; /* t has 20 trailing zeros */
         w = (t * t) * (0.5 - t * (0.3333333333333333333333 - t * 0.25));
         u = ivln2_h * t; /* ivln2_h has 21 sig. bits */
         v = t * ivln2_l - w * ivln2;
@@ -225,7 +222,7 @@ double x, y;
         __LO(t1) = 0;
         t2 = v - (t1 - u);
     } else {
-        double ss, s2, s_h, s_l, t_h, t_l;
+        double s2, s_h, s_l, t_h, t_l;
         n = 0;
         /* take care subnormal number */
         if (ix < 0x00100000) {
@@ -248,11 +245,11 @@ double x, y;
         }
         __HI(ax) = ix;
 
-        /* compute ss = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
+        /* compute s = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
         u = ax - bp[k]; /* bp[0]=1.0, bp[1]=1.5 */
         v = one / (ax + bp[k]);
-        ss = u * v;
-        s_h = ss;
+        s = u * v;
+        s_h = s;
         __LO(s_h) = 0;
         /* t_h=ax+bp[k] High */
         t_h = zero;
@@ -260,28 +257,32 @@ double x, y;
         t_l = ax - (t_h - bp[k]);
         s_l = v * ((u - s_h * t_h) - s_h * t_l);
         /* compute log(ax) */
-        s2 = ss * ss;
+        s2 = s * s;
         r = s2 * s2 * (L1 + s2 * (L2 + s2 * (L3 + s2 * (L4 + s2 * (L5 + s2 * L6)))));
-        r += s_l * (s_h + ss);
+        r += s_l * (s_h + s);
         s2 = s_h * s_h;
         t_h = 3.0 + s2 + r;
         __LO(t_h) = 0;
         t_l = r - ((t_h - 3.0) - s2);
-        /* u+v = ss*(1+...) */
+        /* u+v = s*(1+...) */
         u = s_h * t_h;
-        v = s_l * t_h + t_l * ss;
-        /* 2/(3log2)*(ss+...) */
+        v = s_l * t_h + t_l * s;
+        /* 2/(3log2)*(s+...) */
         p_h = u + v;
         __LO(p_h) = 0;
         p_l = v - (p_h - u);
         z_h = cp_h * p_h; /* cp_h+cp_l = 2/(3*log2) */
         z_l = cp_l * p_h + p_l * cp + dp_l[k];
-        /* log2(ax) = (ss+..)*2/(3*log2) = n + dp_h + z_h + z_l */
+        /* log2(ax) = (s+..)*2/(3*log2) = n + dp_h + z_h + z_l */
         t = (double)n;
         t1 = (((z_h + z_l) + dp_h[k]) + t);
         __LO(t1) = 0;
         t2 = z_l - (((t1 - t) - dp_h[k]) - z_h);
     }
+
+    s = one; /* s (sign of result -ve**odd) = -1 else = 1 */
+    if (((((int)hx >> 31) + 1) | (yisint - 1)) == 0)
+        s = -one; /* (-ve)**(odd int) */
 
     /* split up y into y1+y2 and compute (y1+y2)*(t1+t2) */
     y1 = y;
