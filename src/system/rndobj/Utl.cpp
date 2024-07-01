@@ -7,12 +7,19 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Cam.h"
+#include "rndobj/CamAnim.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
+#include "rndobj/EnvAnim.h"
+#include "rndobj/Gen.h"
 #include "rndobj/Group.h"
+#include "rndobj/Line.h"
+#include "rndobj/Lit.h"
+#include "rndobj/LitAnim.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Rnd.h"
+#include "rndobj/Text.h"
 #include "rndobj/TransAnim.h"
 #include "utl/Loader.h"
 #include "math/Key.h"
@@ -59,6 +66,7 @@ void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
 
 #pragma push
 #pragma dont_inline on
+// fn_806561EC
 void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
     float start = anim1->StartFrame();
     float end = anim1->EndFrame();
@@ -255,6 +263,65 @@ void PreMultiplyAlpha(Hmx::Color& c) {
     c.blue *= c.alpha;
 }
 
+// fn_80657B28
 void RndScaleObject(Hmx::Object* o, float f1, float f2){
-    
+    RndDrawable* draw = dynamic_cast<RndDrawable*>(o);
+    if(draw){
+        draw->mSphere.center *= f1;
+        draw->mSphere.radius *= f1;
+    }
+    RndTransformable* trans = dynamic_cast<RndTransformable*>(o);
+    if(trans){
+        Vector3 vec;
+        Scale(trans->mLocalXfm.v, f1, vec);
+        trans->SetDirtyLocalXfmVec(vec.x, vec.y, vec.z);
+    }
+    RndCam* cam = dynamic_cast<RndCam*>(o);
+    if(cam){
+        cam->SetFrustum(cam->mNearPlane, cam->mFarPlane, cam->mYFov, 1.0f);
+        return;
+    }
+    RndCamAnim* camanim = dynamic_cast<RndCamAnim*>(o);
+    if(camanim){
+        ScaleFrame(camanim->mKeysOwner->mFovKeys, f2);
+        return;
+    }
+    RndEnviron* env = dynamic_cast<RndEnviron*>(o);
+    if(env){
+        env->mAmbientFogOwner->mFogStart *= f1;
+        env->mAmbientFogOwner->mFogEnd *= f1;
+        return;
+    }
+    RndEnvAnim* envanim = dynamic_cast<RndEnvAnim*>(o);
+    if(envanim){
+        ScaleFrame(envanim->mKeysOwner->mFogColorKeys, f2);
+        ScaleFrame(envanim->mKeysOwner->mAmbientColorKeys, f2);
+        return;
+    }
+    RndText* text = dynamic_cast<RndText*>(o);
+    if(text){
+        text->SetSize(text->Size() * f1);
+        return;
+    }
+    RndGenerator* gen = dynamic_cast<RndGenerator*>(o);
+    if(gen){
+        float lo, hi;
+        gen->GetRateVar(lo, hi);
+        gen->SetRateVar(lo * f1, hi * f1);
+        return;
+    }
+    RndLight* lit = dynamic_cast<RndLight*>(o);
+    if(lit){
+        lit->SetRange(lit->Range() * f1);
+        return;
+    }
+    RndLightAnim* litanim = dynamic_cast<RndLightAnim*>(o);
+    if(litanim){
+        ScaleFrame(litanim->mKeysOwner->mColorKeys, f2);
+        return;
+    }
+    RndLine* line = dynamic_cast<RndLine*>(o);
+    if(line){
+
+    }
 }

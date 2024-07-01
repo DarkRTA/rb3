@@ -73,6 +73,7 @@ public:
 
     }
 
+    // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
     int Remove(float, float){
 
     }
