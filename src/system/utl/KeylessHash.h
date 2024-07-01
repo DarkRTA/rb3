@@ -37,16 +37,16 @@ public:
 };
 
 template <class T1, class T2>
-KeylessHash<T1, T2>::KeylessHash(int i, const T2& tmp1 , const T2& tmp2 , T2* tmp_ptr ){
-    mEmpty = tmp1;
-    mRemoved = tmp2;
-    if(tmp_ptr){
-        mSize = i;
-        mEntries = tmp_ptr;
+KeylessHash<T1, T2>::KeylessHash(int size, const T2& empty, const T2& removed, T2* entries){
+    mEmpty = empty;
+    mRemoved = removed;
+    if(entries){
+        mSize = size;
+        mEntries = entries;
         mOwnEntries = false;
     }
-    else if(i != 0){
-        mSize = NextHashPrime(i);
+    else if(size != 0){
+        mSize = NextHashPrime(size);
         mEntries = new T2[mSize];
         mOwnEntries = true;
     }
