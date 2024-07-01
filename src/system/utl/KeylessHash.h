@@ -124,8 +124,33 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
 }
 
 template <class T1, class T2>
-void KeylessHash<T1, T2>::Resize(int, T2* val){
-
+void KeylessHash<T1, T2>::Resize(int size, T2* val){
+    MILO_ASSERT(size > mNumEntries * 2, 0xF3);
+    bool owned;
+    if(val) owned = false;
+    else {
+        size = NextHashPrime(size);
+        val = new T2[size];
+        owned = true;
+    }
+    for(int i = 0; i < size; i++){
+        val[i] = mEmpty;
+    }
+    mNumEntries = 0;
+    for(T2* it = FirstFromStart(); it != 0; it = FirstFromNext(it)){
+        int i = HashString(*it, size);
+        MILO_ASSERT(i >= 0, 0x108);
+        while(val[i] != mEmpty){
+            i++;
+            if(i == size) i = 0;
+        }
+        mNumEntries++;
+        val[i] = *it;
+    }
+    if(mOwnEntries) delete [] mEntries;
+    mEntries = val;
+    mSize = size;
+    mOwnEntries = owned;
 }
 
 #endif
