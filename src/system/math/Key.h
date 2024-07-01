@@ -35,7 +35,34 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
     void Remove(int); // used in RemoveKey
-    void FindBounds(float&, float&, int&, int&);
+
+    void FindBounds(float& fstart, float& fend, int& istart, int& iend){
+        MILO_ASSERT(size(), 0x199);
+        if(!fstart && !fend){
+            fstart = front().frame;
+            fend = back().frame;
+            istart = 0;
+            iend = size() - 1;
+        }
+        else {
+            float frame_loc = fstart;
+            if(frame_loc < front().frame) frame_loc = front().frame;
+            int istart_loc;
+            if(empty() || frame_loc < front().frame) istart_loc = -1;
+            else {
+                istart_loc = 0;
+            }
+            istart = istart_loc;
+
+            frame_loc = fend;
+            if(frame_loc > back().frame) frame_loc = back().frame;
+            if(empty() || frame_loc <= front().frame) istart_loc = 0;
+            else {
+                istart_loc -= 1;
+            }
+            iend = istart_loc;
+        }
+    }
 
     float LastFrame() const {
         if(size() != 0) return back().frame;
