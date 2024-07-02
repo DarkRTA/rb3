@@ -57,13 +57,13 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float, float>* AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return 0; }
-    virtual Keys<Hmx::Color, Hmx::Color>* AsColorKeys(){ MILO_ASSERT(false, 0xA9); return 0; }
+    virtual Keys<float, float>& AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return *(Keys<float, float>*)0; }
+    virtual Keys<Hmx::Color, Hmx::Color>& AsColorKeys(){ MILO_ASSERT(false, 0xA9); return *(Keys<Hmx::Color, Hmx::Color>*)0; }
     virtual Keys<ObjectStage, Hmx::Object*>* AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return 0; }
     virtual Keys<bool, bool>* AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return 0; }
     virtual Keys<Hmx::Quat, Hmx::Quat>* AsQuatKeys(){ MILO_ASSERT(false, 0xAF); return 0; }
     virtual Keys<Vector3, Vector3>* AsVector3Keys(){ MILO_ASSERT(false, 0xB1); return 0; }
-    virtual Keys<Symbol, Symbol>* AsSymbolKeys(){ MILO_ASSERT(false, 0xB3); return 0; }
+    virtual Keys<Symbol, Symbol>& AsSymbolKeys(){ MILO_ASSERT(false, 0xB3); return *(Keys<Symbol, Symbol>*)0; }
     virtual int FloatAt(float, float&){ MILO_ASSERT(false, 0xB6); return -1; }
     virtual int ColorAt(float, Hmx::Color&){ MILO_ASSERT(false, 0xB8); return -1; }
     virtual int ObjectAt(float, Hmx::Object*&){ MILO_ASSERT(false, 0xBA); return -1; }
@@ -119,7 +119,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<float, float>* AsFloatKeys(){ return this; }
+    virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
     virtual int FloatAt(float, float&);
 
     NEW_OVERLOAD;
@@ -141,7 +141,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
     virtual void Copy(const PropKeys*);
-    virtual Keys<Symbol, Symbol>* AsSymbolKeys(){ return this; }
+    virtual Keys<Symbol, Symbol>& AsSymbolKeys(){ if(this) return *this; }
     virtual int SymbolAt(float, Symbol&);
 };
 

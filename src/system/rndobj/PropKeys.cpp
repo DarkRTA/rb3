@@ -88,10 +88,10 @@ void PropKeys::SetTarget(Hmx::Object* o){
 void PropKeys::ChangeFrame(int i, float f, bool b){
     switch(mKeysType){
         case kFloat:
-            (*AsFloatKeys())[i].frame = f;
+            (AsFloatKeys())[i].frame = f;
             break;
         case kColor:
-            (*AsColorKeys())[i].frame = f;
+            (AsColorKeys())[i].frame = f;
             break;
         case kObject:
             (*AsObjectKeys())[i].frame = f;
@@ -100,7 +100,7 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
             (*AsBoolKeys())[i].frame = f;
             break;
         case kSymbol:
-            (*AsSymbolKeys())[i].frame = f;
+            (AsSymbolKeys())[i].frame = f;
             break;
         case kVector3:
             (*AsVector3Keys())[i].frame = f;
@@ -214,10 +214,10 @@ void PropKeys::Print(){
         ts << "      " << frame << " -> ";
         switch(mKeysType){
             case kFloat:
-                ts << (*AsFloatKeys())[i].value;
+                ts << (AsFloatKeys())[i].value;
                 break;
             case kColor:
-                ts << (*AsColorKeys())[i].value;
+                ts << (AsColorKeys())[i].value;
                 break;
             case kObject:
                 ts << (Hmx::Object*)((*AsObjectKeys())[i].value);
@@ -232,7 +232,7 @@ void PropKeys::Print(){
                 ts << (*AsVector3Keys())[i].value;
                 break;
             case kSymbol:
-                ts << (*AsSymbolKeys())[i].value;
+                ts << (AsSymbolKeys())[i].value;
                 break;
         }
         ts << "\n";
