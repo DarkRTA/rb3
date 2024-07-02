@@ -1,6 +1,6 @@
 #include "BandProfile.h"
 
-BandProfile::BandProfile(int) {
+BandProfile::BandProfile(int i) : Profile(i) {
 
 }
 

@@ -31,9 +31,21 @@ void AccomplishmentManager::Init(DataArray* configure) {
     ConfigureAccomplishmentGroupData(configure);
     ConfigureAccomplishmentCategoryData(configure);
     ConfigureAccomplishmentData(configure);
-    ConfigureAccomplishmentCategoryGroupingData(configure);
-    ConfigureAccomplishmentGroupToCategoriesData(configure);
+    ConfigureAccomplishmentCategoryGroupingData();
+    ConfigureAccomplishmentGroupToCategoriesData();
     ConfigureAccomplishmentRewardData(configure);
+}
+
+void AccomplishmentManager::SanityCheckAwards() {
+
+}
+
+void AccomplishmentManager::Poll() {
+
+}
+
+void AccomplishmentManager::FactoryCreateAccomplishment(DataArray*, int) {
+
 }
 
 void AccomplishmentManager::InitializeDiscSongs(){
@@ -51,8 +63,8 @@ void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray*){}
 void AccomplishmentManager::ConfigureAccomplishmentGroupData(DataArray*){}
 void AccomplishmentManager::ConfigureAccomplishmentCategoryData(DataArray*){}
 void AccomplishmentManager::ConfigureAccomplishmentData(DataArray*){}
-void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(DataArray*){}
-void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(DataArray*){}
+void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(){}
+void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(){}
 void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray*){}
 
 Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
@@ -62,6 +74,28 @@ Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
 
     return NULL;
 }
+
+void AccomplishmentManager::GetCategoryListForGroup(Symbol) const {}
+void AccomplishmentManager::GetAccomplishmentSetForCategory(Symbol) const {}
+void AccomplishmentManager::GetNumAccomplishmentsInCategory(Symbol) const {}
+void AccomplishmentManager::GetNumAccomplishmentsInGroup(Symbol) const {}
+void AccomplishmentManager::HasFanValue(Symbol) {}
+void AccomplishmentManager::GetMetaScoreValue(Symbol) {}
+void AccomplishmentManager::GetScaledFanValue(int) {}
+bool AccomplishmentManager::HasAccomplishmentCategory(Symbol) const {}
+void AccomplishmentManager::GetAccomplishmentCategory(Symbol) const {}
+bool AccomplishmentManager::HasAccomplishmentGroup(Symbol) const {}
+void AccomplishmentManager::GetAccomplishmentGroup(Symbol) const {}
+void AccomplishmentManager::GetPrecachedFilterCount(Symbol) const {}
+void AccomplishmentManager::SetPrecachedFilterCount(Symbol, int) {}
+void AccomplishmentManager::GetPrecachedFilter(Symbol) const {}
+void AccomplishmentManager::HasAward(Symbol) const {}
+void AccomplishmentManager::GetAward(Symbol) const {}
+void AccomplishmentManager::GetAwardSource(Symbol) const {}
+void AccomplishmentManager::GetAwardSourceList(Symbol) const {}
+void AccomplishmentManager::AddAwardSource(Symbol, Symbol) {}
+
+bool AccomplishmentManager::DoesAssetHaveSource(Symbol) const {}
 
 void AccomplishmentManager::AddAssetAward(Symbol, Symbol) {
     Symbol s2 = gNullStr;
