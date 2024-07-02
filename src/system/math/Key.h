@@ -88,6 +88,7 @@ public:
     // scratch: https://decomp.me/scratch/R1SeP
     // scratch for T1 = float: https://decomp.me/scratch/GXfNX
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
+    // fn_805FBE14 in retail for T1, T2 = TexPtr, RndTex*
     int AtFrame(float frame, const Key<T1>*& prev, const Key<T1>*& next, float& ref) const {
         if(empty()){
             next = 0;
@@ -111,7 +112,7 @@ public:
                 return size() - 1;
             }
             else {
-                int frameIdx = AtFrame(frame);
+                int frameIdx = AtFrame(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
                 prev = &(*this)[frameIdx];
                 next = &(*this)[frameIdx + 1];
                 float den = next->frame - prev->frame;

@@ -167,7 +167,7 @@ void RndMatAnim::SetFrame(float f1, float f2){
         }
         if(!GetTexKeys().empty()){
             RndTex* tex;
-            GetTexKeys().AtFrame(f1, tex);
+            GetTexKeys().AtFrame(f1, tex); // fn_805FBDAC - AtFrame for TexPtr, RndTex*
             mMat->SetDiffuseTex(tex);
         }
         Hmx::Color col(mMat->GetColor());
