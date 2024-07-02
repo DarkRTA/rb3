@@ -94,19 +94,19 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
             (AsColorKeys())[i].frame = f;
             break;
         case kObject:
-            (*AsObjectKeys())[i].frame = f;
+            (AsObjectKeys())[i].frame = f;
             break;
         case kBool:
-            (*AsBoolKeys())[i].frame = f;
+            (AsBoolKeys())[i].frame = f;
             break;
         case kSymbol:
             (AsSymbolKeys())[i].frame = f;
             break;
         case kVector3:
-            (*AsVector3Keys())[i].frame = f;
+            (AsVector3Keys())[i].frame = f;
             break;
         case kQuat:
-            (*AsQuatKeys())[i].frame = f;
+            (AsQuatKeys())[i].frame = f;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
@@ -220,16 +220,16 @@ void PropKeys::Print(){
                 ts << (AsColorKeys())[i].value;
                 break;
             case kObject:
-                ts << (Hmx::Object*)((*AsObjectKeys())[i].value);
+                ts << (Hmx::Object*)((AsObjectKeys())[i].value);
                 break;
             case kBool:
-                ts << (*AsBoolKeys())[i].value;
+                ts << (AsBoolKeys())[i].value;
                 break;
             case kQuat:
-                ts << (*AsQuatKeys())[i].value;
+                ts << (AsQuatKeys())[i].value;
                 break;
             case kVector3:
-                ts << (*AsVector3Keys())[i].value;
+                ts << (AsVector3Keys())[i].value;
                 break;
             case kSymbol:
                 ts << (AsSymbolKeys())[i].value;
