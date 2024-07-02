@@ -51,6 +51,7 @@ public:
         }
         else {
             // TODO: once you have both functions called here matched, rename them
+            // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
             istart = AtFrame(Max(fstart, front().frame));
             iend = AtFrame(Minimum(fend, back().frame)); // a different function gets called here, behaves similarly to AtFrame(float) - fn_805FC2C4
         }
