@@ -121,6 +121,9 @@ public:
     virtual void Copy(const PropKeys*);
     virtual Keys<float, float>* AsFloatKeys(){ return this; }
     virtual int FloatAt(float, float&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 };
 
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {

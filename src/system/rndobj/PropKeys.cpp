@@ -347,22 +347,16 @@ void FloatKeys::Save(BinStream& bs){
 }
 
 int FloatKeys::RemoveKey(int i){
-    erase(begin() + i);
+    Remove(i);
     return size();
 }
 
 float FloatKeys::StartFrame(){
-    if(size() != 0){
-        return front().frame;
-    }
-    else return 0.0f;
+    return FirstFrame();
 }
 
 float FloatKeys::EndFrame(){
-    if(size() != 0){
-        return back().frame;
-    }
-    else return 0.0f;
+    return LastFrame();
 }
 
 bool FloatKeys::FrameFromIndex(int idx, float& f){

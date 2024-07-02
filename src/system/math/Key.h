@@ -57,6 +57,11 @@ public:
         }
     }
 
+    float FirstFrame() const {
+        if(size() != 0) return front().frame;
+        else return 0.0f;
+    }
+
     float LastFrame() const {
         if(size() != 0) return back().frame;
         else return 0.0f;
