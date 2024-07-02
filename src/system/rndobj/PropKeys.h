@@ -106,6 +106,7 @@ float CalcSpline(float, float*); // putting this here for now, maybe it's better
 
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
+    FloatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
     virtual ~FloatKeys(){}
     virtual float StartFrame();
     virtual float EndFrame();
@@ -128,6 +129,7 @@ public:
 
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
+    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
     virtual ~SymbolKeys(){}
     virtual float StartFrame();
     virtual float EndFrame();
