@@ -33,6 +33,10 @@ public:
     DataNode OnSetZRange(const DataArray*);
     DataNode OnSetScreenRect(const DataArray*);
     DataNode OnFarPlane(const DataArray*);
+    
+    float NearPlane() const { return mNearPlane; }
+    float FarPlane() const { return mFarPlane; }
+    float YFov() const { return mYFov; }
 
     static RndCam* sCurrent;
     NEW_OBJ(RndCam)

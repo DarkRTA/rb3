@@ -23,6 +23,8 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    Keys<float, float>& FovKeys() { return mKeysOwner->mFovKeys; }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -31,9 +33,9 @@ public:
         REGISTER_OBJ_FACTORY(RndCamAnim)
     }
 
-    ObjPtr<RndCam, ObjectDir> mCam;
-    Keys<float, float> mFovKeys;
-    ObjOwnerPtr<RndCamAnim, ObjectDir> mKeysOwner;
+    ObjPtr<RndCam, ObjectDir> mCam; // 0x10
+    Keys<float, float> mFovKeys; // 0x1c
+    ObjOwnerPtr<RndCamAnim, ObjectDir> mKeysOwner; // 0x24
 };
 
 #endif
