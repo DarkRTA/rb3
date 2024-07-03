@@ -56,10 +56,9 @@ public:
             iend = size() - 1;
         }
         else {
-            // TODO: once you have both functions called here matched, rename them
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
             istart = LowerBound(Max(fstart, front().frame));
-            iend = UpperBound(Minimum(fend, back().frame)); // a different function gets called here, behaves similarly to LowerBound(float) - fn_805FC2C4
+            iend = UpperBound(Minimum(fend, back().frame));
         }
     }
 
@@ -89,8 +88,11 @@ public:
     }
 
     // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
-    int Remove(float, float){
-
+    int Remove(float fstart, float fend){
+        int bound1 = UpperBound(fstart);
+        int bound2 = UpperBound(fend);
+        erase(&(*this)[bound1], &(*this)[bound2]);
+        return bound1;
     }
 
     // full method scratch (debug): https://decomp.me/scratch/IXqzR
