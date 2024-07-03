@@ -109,9 +109,9 @@ public:
         }
         else {
             const Key<T1>* frontKey = &front();
-            if(frame < front().frame){
-                next = &front();
-                prev = &front();
+            if(frame < frontKey->frame){
+                next = frontKey;
+                prev = frontKey;
                 ref = 0.0f;
                 return -1;
             }
