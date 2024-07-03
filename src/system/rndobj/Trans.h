@@ -90,7 +90,7 @@ public:
         else return mWorldXfm;
     }
 
-    void SetDirtyLocalXfm(Transform& tf){
+    void SetDirtyLocalXfm(const Transform& tf){
         mLocalXfm = tf;
         SetDirty();
     }
