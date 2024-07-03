@@ -109,8 +109,8 @@ public:
     bool unkbp6 : 1; // used in RndText
     bool unkbp7 : 1; // used in RndText
 
-    Sphere mSphere;
-    float mOrder;
+    Sphere mSphere; // 0xc
+    float mOrder; // 0x1c
 };
 
 #endif

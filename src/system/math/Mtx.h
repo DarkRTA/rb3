@@ -144,16 +144,22 @@ inline BinStream& operator>>(BinStream& bs, Transform& tf){
 class ShortQuat {
 public:
     short x, y, z, w;
+    void Reset() { x = y = z = 0; w = 32767; }
 };
 
 class TransformNoScale {
 public:
     TransformNoScale(){}
     void Set(const Transform&);
+    void Set(const TransformNoScale&);
+    void SetRot(const Hmx::Matrix3&);
+    void Reset();
 
     ShortQuat q;
     class Vector3 v;
 };
+
+BinStream& operator>>(BinStream&, TransformNoScale&);
 
 class Plane {
 public:
