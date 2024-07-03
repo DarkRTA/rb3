@@ -344,9 +344,16 @@ void FloatKeys::Save(BinStream& bs){
     bs << *this;
 }
 
-int FloatKeys::RemoveKey(int i){
-    Remove(i);
+int FloatKeys::RemoveKey(int idx){
+    Remove(idx);
     return size();
+}
+
+void FloatKeys::CloneKey(int idx){
+    if(!mProp || !mTarget) return;
+    if(idx >= 0 && idx < size()){
+        Add((*this)[idx].value, (*this)[idx].frame, false);
+    }
 }
 
 float FloatKeys::StartFrame(){
