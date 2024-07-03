@@ -11,6 +11,11 @@ public:
     T value;
     float frame;
 
+    bool SameFrame(const Key<T>& other) const {
+        if(frame == other.frame) return true;
+        else return false;
+    }
+
     // I found a weak copy ctor and weak operator=(const Key<T>&)
     // not sure if we need to explicitly write these or not
 };
@@ -52,8 +57,8 @@ public:
         else {
             // TODO: once you have both functions called here matched, rename them
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
-            istart = AtFrame(Max(fstart, front().frame));
-            iend = AtFrame(Minimum(fend, back().frame)); // a different function gets called here, behaves similarly to AtFrame(float) - fn_805FC2C4
+            istart = LowerBound(Max(fstart, front().frame));
+            iend = UpperBound(Minimum(fend, back().frame)); // a different function gets called here, behaves similarly to LowerBound(float) - fn_805FC2C4
         }
     }
 
@@ -118,7 +123,7 @@ public:
                 return size() - 1;
             }
             else {
-                int frameIdx = AtFrame(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
+                int frameIdx = LowerBound(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
                 prev = &(*this)[frameIdx];
                 next = &(*this)[frameIdx + 1];
                 float den = next->frame - prev->frame;
@@ -130,7 +135,7 @@ public:
     }
 
     // looks like this gets the index in the Keys vector in which the frame ff is located
-    int AtFrame(float ff) const {
+    int LowerBound(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
             int cnt = 0;
@@ -141,16 +146,34 @@ public:
                 if(ff < keyHere->frame) threshold = newCnt;
                 if(!(ff < keyHere->frame)) cnt = newCnt;
             }
-            while (cnt + 1 < size() && SameFrame(&(*this)[cnt + 1], &(*this)[cnt])) {
-                cnt++;
-            }
+            while (cnt + 1 < size() && (*this)[cnt + 1].SameFrame((*this)[cnt])) cnt++;
 
             return cnt;
         }
     }
 
-    bool SameFrame(const Key<T1>* k1, const Key<T1>* k2) const {
-        return k1->frame == k2->frame ? true : false;
+    // ditto, but it's comparing this frame to the back instead of the front
+    int UpperBound(float ff) const {
+        if(empty() || (ff <= front().frame)) return 0;
+        else {
+            const Key<T1>& backKey = back();
+            if(ff > backKey.frame){
+                return size();
+            }
+            else {
+                int cnt = 0;
+                int threshold = size() - 1;
+                while(threshold > cnt + 1){
+                    int newCnt = cnt + threshold >> 1;
+                    const Key<T1>* keyHere = &(*this)[newCnt];
+                    if(backKey.frame > ff) cnt = newCnt;
+                    if(!(backKey.frame > ff)) threshold = newCnt;
+                }
+                while (cnt > 1 && (*this)[cnt - 1].SameFrame((*this)[cnt])) cnt--;
+
+                return cnt;
+            }
+        }
     }
 };
 
