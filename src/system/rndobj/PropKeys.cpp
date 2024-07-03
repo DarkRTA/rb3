@@ -3,8 +3,6 @@
 #include "obj/Utl.h"
 #include "math/Rot.h"
 
-void Interp(const Symbol&, const Symbol&, float, Symbol&); // here temporarily to resolve Interp errors relating to Keys<Symbol,Symbol>
-
 unsigned short PropKeys::gRev = 0;
 Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
 
