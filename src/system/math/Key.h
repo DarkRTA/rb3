@@ -8,6 +8,7 @@
 template <class T> class Key {
 public:
     Key() : frame(0.0f) {}
+    Key(const T& v, float f) : value(v), frame(f) {}
     T value;
     float frame;
 
@@ -72,8 +73,19 @@ public:
         else return 0.0f;
     }
 
-    void Add(const T1&, float, bool){
-
+    // fn_805FC18C for Vector3
+    int Add(const T1& val, float f, bool b){
+        int bound = UpperBound(f);
+        if(b && bound != size() && f == (*this)[bound].frame){
+            (*this)[bound].value = val;
+        }
+        else {
+            while(bound < size() && f == (*this)[bound].frame){
+                bound++;
+            }
+            insert(&(*this)[bound], Key<T1>(val, f));
+        }
+        return bound;
     }
 
     // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
