@@ -80,9 +80,9 @@ END_HANDLERS
 
 DataNode RndLightAnim::OnCopyKeys(DataArray* da) {
     SetKeysOwner(this);
-    mColorKeys = da->Obj<RndLightAnim>(2)->mKeysOwner->mColorKeys;
+    mColorKeys = da->Obj<RndLightAnim>(2)->ColorKeys();
     float f = da->Float(3);
-    for (std::vector<Key<Hmx::Color> >::iterator it = mColorKeys.begin(); it != mColorKeys.end(); it++) {
+    for (Keys<Hmx::Color, Hmx::Color>::iterator it = mColorKeys.begin(); it != mColorKeys.end(); it++) {
         it->value *= f;
     }
     return DataNode();

@@ -165,8 +165,7 @@ bool RndDrawable::CollideSphere(const Segment& seg){
 }
 
 RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
-    static Timer* _t = AutoTimer::GetTimer("collide");
-    AutoTimer t(_t, 50.0f, NULL, NULL);
+    START_AUTO_TIMER("collide");
     if(!CollideSphere(seg)) return false;
     else return CollideShowing(seg, f, plane);
 }
