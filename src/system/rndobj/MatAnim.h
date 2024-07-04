@@ -16,6 +16,8 @@ public:
     public:
         TexKeys(Hmx::Object*);
         TexKeys& operator=(const TexKeys&);
+        int Add(RndTex*, float, bool);
+
         Hmx::Object* mOwner;
     };
 
