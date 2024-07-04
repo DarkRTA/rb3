@@ -71,6 +71,28 @@ float RndLightAnim::EndFrame(){
     return mKeysOwner->mColorKeys.LastFrame();
 }
 
+// fn_805F7188
+void RndLightAnim::SetFrame(float frame, float blend){
+    RndAnimatable::SetFrame(frame, blend);
+    if(mLight){
+        if(!ColorKeys().empty()){
+            Hmx::Color ref;
+            ColorKeys().AtFrame(frame, ref);
+            if(blend != 1.0f){
+                Interp(mLight->GetColor(), ref, blend, ref);
+            }
+            mLight->SetColor(ref);
+        }
+    }
+}
+
+// fn_805F7264
+void RndLightAnim::SetKey(float frame){
+    if(mLight){
+        ColorKeys().Add(mLight->GetColor(), frame, true);
+    }
+}
+
 BEGIN_HANDLERS(RndLightAnim)
     HANDLE(copy_keys, OnCopyKeys)
     HANDLE_SUPERCLASS(RndAnimatable)
