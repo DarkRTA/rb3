@@ -14,13 +14,15 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndParticleSysAnim();
+    virtual ~RndParticleSysAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget();
+    virtual Hmx::Object* AnimTarget(){ return mParticleSys; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
+
+    void SetParticleSys(RndParticleSys*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
