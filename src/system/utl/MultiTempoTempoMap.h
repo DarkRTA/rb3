@@ -23,6 +23,7 @@ public:
     virtual float GetTempoBPM(int) const;
     virtual int GetNumTempoChangePoints() const;
     virtual int GetTempoChangePoint(int) const;
+    virtual void Finalize();
     virtual void ClearLoopPoints();
     virtual void SetLoopPoints(int, int);
     virtual int GetLoopTick(int, int&) const;

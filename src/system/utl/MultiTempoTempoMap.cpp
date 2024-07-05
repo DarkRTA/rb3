@@ -79,7 +79,7 @@ int MultiTempoTempoMap::GetLoopTick(int i) const {
 }
 
 float MultiTempoTempoMap::GetTimeInLoop(float f){
-    
+
 }
 
 int MultiTempoTempoMap::GetNumTempoChangePoints() const { return mTempoPoints.size(); }
@@ -87,6 +87,10 @@ int MultiTempoTempoMap::GetNumTempoChangePoints() const { return mTempoPoints.si
 int MultiTempoTempoMap::GetTempoChangePoint(int index) const {
     MILO_ASSERT(index < mTempoPoints.size(), 0xF7);
     return mTempoPoints[index].mTick;
+}
+
+void MultiTempoTempoMap::Finalize(){
+    // one vector method, but i can't figure out what it is
 }
 
 MultiTempoTempoMap::TempoInfoPoint* MultiTempoTempoMap::PointForTick(float tick) const {
