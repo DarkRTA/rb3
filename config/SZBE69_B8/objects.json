@@ -529,7 +529,7 @@
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
             "system/utl/Str.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
-            "system/utl/StringTable.cpp": "NonMatching",
+            "system/utl/StringTable.cpp": "Matching",
             "system/utl/SuperFormatString.cpp": "NonMatching",
             "system/utl/Symbol.cpp": "NonMatching",
             "system/utl/Symbols.cpp": "Matching",
