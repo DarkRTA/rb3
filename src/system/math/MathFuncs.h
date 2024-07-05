@@ -47,6 +47,10 @@ template<class T> inline T Max(T x, T y){
     return (x < y) ? y : x;
 }
 
+template<class T> inline T Max(T x, T y, T z){
+    return Max(x, Max(y, z));
+}
+
 template<class T> inline T Clamp(T x, T y, T z){
     if(z > y) return y;
     if(!(z < x)) return z;

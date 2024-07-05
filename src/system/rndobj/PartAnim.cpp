@@ -46,6 +46,46 @@ BEGIN_LOADS(RndParticleSysAnim)
     if(rev > 1) bs >> mSpeedKeys >> mLifeKeys >> mStartSizeKeys;
 END_LOADS
 
+BEGIN_COPYS(RndParticleSysAnim)
+    CREATE_COPY_AS(RndParticleSysAnim, l);
+    MILO_ASSERT(l, 0x80);
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndAnimatable)
+    COPY_MEMBER_FROM(l, mParticleSys)
+    if(ty == kCopyShallow || (ty == kCopyFromMax && l->mKeysOwner != l)){
+        COPY_MEMBER_FROM(l, mKeysOwner)
+    }
+    else {
+        mKeysOwner = this;
+        mStartColorKeys = l->mKeysOwner->mStartColorKeys;
+        mEndColorKeys = l->mKeysOwner->mEndColorKeys;
+        mEmitRateKeys = l->mKeysOwner->mEmitRateKeys;
+        mSpeedKeys = l->mKeysOwner->mSpeedKeys;
+        mLifeKeys = l->mKeysOwner->mLifeKeys;
+        mStartSizeKeys = l->mKeysOwner->mStartSizeKeys;
+    }
+END_COPYS
+
+void RndParticleSysAnim::Print(){
+    TextStream& ts = TheDebug;
+    ts << "   particleSys: " << mParticleSys << "\n";
+    ts << "   framesOwner: " << mKeysOwner << "\n";
+    ts << "   startColorKeys: " << mStartColorKeys << "\n";
+    ts << "   endColorKeys: " << mEndColorKeys << "\n";
+    ts << "   emitRateKeys: " << mEmitRateKeys << "\n";
+    ts << "   speedKeys: " << mSpeedKeys << "\n";
+    ts << "   startSizeKeys: " << mStartSizeKeys << "\n";
+    ts << "   lifeKeys: " << mLifeKeys << "\n";
+}
+
+// fn_80620E00
+float RndParticleSysAnim::EndFrame(){
+    float last = Max(StartColorKeys().LastFrame(), EndColorKeys().LastFrame(), EmitRateKeys().LastFrame());
+    last = Max(last, SpeedKeys().LastFrame(), LifeKeys().LastFrame());
+    last = Max(last, StartSizeKeys().LastFrame());
+    return last;
+}
+
 BEGIN_HANDLERS(RndParticleSysAnim)
     HANDLE_ACTION(set_particle_sys, SetParticleSys(_msg->Obj<RndParticleSys>(2)))
     HANDLE_SUPERCLASS(RndAnimatable)
