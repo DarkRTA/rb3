@@ -27,6 +27,10 @@ public:
     virtual int GetLoopTick(int) const;
     virtual float GetTimeInLoop(float);
 
+    TempoInfoPoint* PointForTick(float) const;
+    static bool CompareTick(float, const TempoInfoPoint&);
+    static bool CompareTime(float, const TempoInfoPoint&);
+
     std::vector<TempoInfoPoint> mTempoPoints;
     float mStartLoopTick;
     float mEndLoopTick;
