@@ -69,6 +69,26 @@ void MultiTempoTempoMap::SetLoopPoints(int start, int end){
     mEndLoopTime = TickToTime(mEndLoopTick);
 }
 
+int MultiTempoTempoMap::GetLoopTick(int, int&) const {
+
+}
+
+int MultiTempoTempoMap::GetLoopTick(int i) const {
+    int ok;
+    return GetLoopTick(i, ok);
+}
+
+float MultiTempoTempoMap::GetTimeInLoop(float f){
+    
+}
+
+int MultiTempoTempoMap::GetNumTempoChangePoints() const { return mTempoPoints.size(); }
+
+int MultiTempoTempoMap::GetTempoChangePoint(int index) const {
+    MILO_ASSERT(index < mTempoPoints.size(), 0xF7);
+    return mTempoPoints[index].mTick;
+}
+
 MultiTempoTempoMap::TempoInfoPoint* MultiTempoTempoMap::PointForTick(float tick) const {
     TempoInfoPoint pt;
     pt.mMs = tick;
