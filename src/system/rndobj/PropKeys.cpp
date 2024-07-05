@@ -3,8 +3,6 @@
 #include "obj/Utl.h"
 #include "math/Rot.h"
 
-void Interp(const Symbol&, const Symbol&, float, Symbol&); // here temporarily to resolve Interp errors relating to Keys<Symbol,Symbol>
-
 unsigned short PropKeys::gRev = 0;
 Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
 
@@ -88,25 +86,25 @@ void PropKeys::SetTarget(Hmx::Object* o){
 void PropKeys::ChangeFrame(int i, float f, bool b){
     switch(mKeysType){
         case kFloat:
-            (*AsFloatKeys())[i].frame = f;
+            (AsFloatKeys())[i].frame = f;
             break;
         case kColor:
-            (*AsColorKeys())[i].frame = f;
+            (AsColorKeys())[i].frame = f;
             break;
         case kObject:
-            (*AsObjectKeys())[i].frame = f;
+            (AsObjectKeys())[i].frame = f;
             break;
         case kBool:
-            (*AsBoolKeys())[i].frame = f;
+            (AsBoolKeys())[i].frame = f;
             break;
         case kSymbol:
-            (*AsSymbolKeys())[i].frame = f;
+            (AsSymbolKeys())[i].frame = f;
             break;
         case kVector3:
-            (*AsVector3Keys())[i].frame = f;
+            (AsVector3Keys())[i].frame = f;
             break;
         case kQuat:
-            (*AsQuatKeys())[i].frame = f;
+            (AsQuatKeys())[i].frame = f;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
@@ -214,25 +212,25 @@ void PropKeys::Print(){
         ts << "      " << frame << " -> ";
         switch(mKeysType){
             case kFloat:
-                ts << (*AsFloatKeys())[i].value;
+                ts << (AsFloatKeys())[i].value;
                 break;
             case kColor:
-                ts << (*AsColorKeys())[i].value;
+                ts << (AsColorKeys())[i].value;
                 break;
             case kObject:
-                ts << (Hmx::Object*)((*AsObjectKeys())[i].value);
+                ts << (Hmx::Object*)((AsObjectKeys())[i].value);
                 break;
             case kBool:
-                ts << (*AsBoolKeys())[i].value;
+                ts << (AsBoolKeys())[i].value;
                 break;
             case kQuat:
-                ts << (*AsQuatKeys())[i].value;
+                ts << (AsQuatKeys())[i].value;
                 break;
             case kVector3:
-                ts << (*AsVector3Keys())[i].value;
+                ts << (AsVector3Keys())[i].value;
                 break;
             case kSymbol:
-                ts << (*AsSymbolKeys())[i].value;
+                ts << (AsSymbolKeys())[i].value;
                 break;
         }
         ts << "\n";
@@ -346,23 +344,24 @@ void FloatKeys::Save(BinStream& bs){
     bs << *this;
 }
 
-int FloatKeys::RemoveKey(int i){
-    erase(begin() + i);
+int FloatKeys::RemoveKey(int idx){
+    Remove(idx);
     return size();
 }
 
-float FloatKeys::StartFrame(){
-    if(size() != 0){
-        return front().frame;
+void FloatKeys::CloneKey(int idx){
+    if(!mProp || !mTarget) return;
+    if(idx >= 0 && idx < size()){
+        Add((*this)[idx].value, (*this)[idx].frame, false);
     }
-    else return 0.0f;
+}
+
+float FloatKeys::StartFrame(){
+    return FirstFrame();
 }
 
 float FloatKeys::EndFrame(){
-    if(size() != 0){
-        return back().frame;
-    }
-    else return 0.0f;
+    return LastFrame();
 }
 
 bool FloatKeys::FrameFromIndex(int idx, float& f){

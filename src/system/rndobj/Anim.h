@@ -29,7 +29,7 @@ public:
     virtual bool Loop(){ return 0; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
-    virtual void SetFrame(float frame, float blend); // weak
+    virtual void SetFrame(float frame, float blend){ mFrame = frame; }
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
     virtual Hmx::Object* AnimTarget(){ return this; }
@@ -55,8 +55,8 @@ public:
     float FramesPerUnit();
     bool ConvertFrames(float&);
 
-    float mFrame;
-    Rate mRate;
+    float mFrame; // 0x8
+    Rate mRate; // 0xc
 };
 
 class AnimTask : public Task {

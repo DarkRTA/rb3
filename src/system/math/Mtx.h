@@ -185,4 +185,6 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
     Scale(mtx.z, vec.z, res.z);
 }
 
+float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
+
 #endif

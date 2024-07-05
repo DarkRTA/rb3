@@ -4,6 +4,7 @@
 #include "utl/FilePath.h"
 #include "obj/ObjVersion.h"
 #include "rndobj/PostProc.h"
+#include "rndobj/EventTrigger.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndDir)
@@ -132,8 +133,22 @@ DataNode RndDir::OnShowObjects(DataArray* da) {
     return DataNode();
 }
 
-DataNode RndDir::OnSupportedEvents(DataArray*) {
-    
+DataNode RndDir::OnSupportedEvents(DataArray* da) {
+    DataArrayPtr ptr(new DataArray(0x400));
+    std::list<DataArray*> oList;
+    ptr.Node(0) = DataNode(Symbol());
+    int idx = 1;
+    for(ObjDirItr<EventTrigger> it(this, true); it != 0; ++it){
+        DataArray* events = it->SupportedEvents();
+        if(events){
+            oList.push_back(events);
+            for(int i = 0; i < events->Size(); i++){
+                ptr.Node(idx++) = events->Node(i);
+            }
+        }
+    }
+    ((DataArray*)ptr)->Resize(idx);
+    return DataNode(ptr);
 }
 
 BEGIN_PROPSYNCS(RndDir)

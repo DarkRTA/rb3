@@ -28,6 +28,13 @@ public:
     void SetTrans(RndTransformable*);
     void SetKeysOwner(RndTransAnim*);
 
+    RndTransformable* Trans() const { return mTrans; }
+    Keys<Vector3, Vector3>& TransKeys(){ return mKeysOwner->mTransKeys; }
+    Keys<Hmx::Quat, Hmx::Quat>& RotKeys(){ return mKeysOwner->mRotKeys; }
+    Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
+    bool TransSpline() const { return mKeysOwner->mTransSpline; }
+    bool ScaleSpline() const { return mKeysOwner->mScaleSpline; }
+
     DataNode OnSetTransSpline(const DataArray*);
     DataNode OnSetScaleSpline(const DataArray*);
     DataNode OnSetRotSlerp(const DataArray*);
@@ -57,8 +64,8 @@ public:
     bool mRotSlerp; // 0x1E
     bool mRotSpline; // 0x1F
     Keys<Hmx::Quat, Hmx::Quat> mRotKeys; // 0x20
-    Keys<Vector3, Vector3> mTransKeys; // ??
-    Keys<Vector3, Vector3> mScaleKeys; // ??
+    Keys<Vector3, Vector3> mTransKeys; // 0x28
+    Keys<Vector3, Vector3> mScaleKeys; // 0x30
     ObjOwnerPtr<RndTransAnim, ObjectDir> mKeysOwner; // 0x38
     bool mRepeatTrans; // 0x44
     bool mFollowPath; // 0x45

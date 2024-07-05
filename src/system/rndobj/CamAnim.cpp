@@ -51,10 +51,31 @@ void RndCamAnim::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
+// fn_805CE7DC
+void RndCamAnim::SetFrame(float frame, float blend){
+    RndAnimatable::SetFrame(frame, blend);
+    if(mCam){
+        if(!FovKeys().empty()){
+            float ref = mCam->YFov();
+            FovKeys().AtFrame(frame, ref);
+            if(blend != 1.0f){
+                Interp(mCam->YFov(), ref, blend, ref);
+            }
+            mCam->SetFrustum(mCam->NearPlane(), mCam->FarPlane(), ref, 1.0f);
+        }
+    }
+}
+
 float RndCamAnim::EndFrame(){
-    Keys<float, float>& theKeys = mKeysOwner->mFovKeys;
-    if(!theKeys.empty()) return theKeys.back().frame;
-    else return 0.0f;
+    return FovKeys().LastFrame();
+}
+
+// fn_805CE930
+void RndCamAnim::SetKey(float frame){
+    if(mCam){
+        const float& val = mCam->YFov();
+        FovKeys().Add(val, frame, true);
+    }
 }
 
 RndCamAnim::~RndCamAnim(){

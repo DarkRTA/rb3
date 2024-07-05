@@ -143,9 +143,9 @@ public:
             obj = entry.obj;
             return *this;
         }
+        bool operator==(const Entry& e) const { return name == e.name; }
         bool operator!=(const Entry& e) const { return name != e.name; }
-
-        operator const char*() const { return name; } // may not need this
+        operator const char*() const { return name; }
 
         const char* name;
         Hmx::Object* obj;
@@ -215,6 +215,7 @@ public:
     void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
     FilePath GetSubDirPath(const FilePath&, const BinStream&);
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
+    DirLoader* Loader() const { return mLoader; }
 
     DataNode OnFind(DataArray*);
 

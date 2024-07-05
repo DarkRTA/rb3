@@ -7,6 +7,7 @@ class Vector2 {
 public:
     Vector2(){}
     Vector2(float xx, float yy) : x(xx), y(yy) {}
+    Vector2(const Vector2& vec) : x(vec.x), y(vec.y) {}
     void Set(float xx, float yy){ x = xx; y = yy; }
     Vector2& operator*(float f) { 
         x *= f; y *= f; 
@@ -38,9 +39,9 @@ public:
     void Set(float f1, float f2, float f3){ x = f1; y = f2; z = f3; }
     void Zero(){ x = y = z = 0.0f; }
 
-    float X(){ return x; }
-    float Y(){ return y; }
-    float Z(){ return z; }
+    float X() const { return x; }
+    float Y() const { return y; }
+    float Z() const { return z; }
     
     Vector3& operator=(const Vector3& v){
         x = v.x; y = v.y; z = v.z;
@@ -75,6 +76,7 @@ public:
         return *this;
     }
 
+    const float& operator[](int i) const { return *(&x + i); }
     float& operator[](int i){ return *(&x + i); }
     // bool operator==(const Vector3 &) const;
     // bool operator!=(const Vector3 &) const;
@@ -130,5 +132,8 @@ class Vector4_16_01 {
 inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
     dst.Set(v1.x * f, v1.y * f, v1.z * f);
 }
+
+void Subtract(const Vector3&, const Vector3&, Vector3&);
+float Length(const Vector3&);
 
 #endif

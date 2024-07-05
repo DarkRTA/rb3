@@ -32,6 +32,8 @@ public:
     void SetTopRadius(float);
     void SetBotRadius(float);
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
+    float Range() const { return mRange; }
+    const Hmx::Color& GetColor() const { return mColorOwner->mColor; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

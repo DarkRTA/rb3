@@ -27,10 +27,10 @@ namespace Hmx {
             register float temp1;
             register float temp2;
             ASM_BLOCK(
-                psq_lx  temp2,0,color,0,0
-                psq_l   temp1,8(color),0,0
-                psq_st  temp2,0(theCol),0,0
-                psq_st  temp1,8(theCol),0,0
+                psq_lx temp2,0,color,0,0
+                psq_l temp1,8(color),0,0
+                psq_stx temp2,0,theCol,0,0
+                psq_st temp1,8(theCol),0,0
             )
         }
 
@@ -101,5 +101,8 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     bs >> color.red >> color.green >> color.blue >> color.alpha;
     return bs;
 }
+
+void Add(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
+void Subtract(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
 
 #endif

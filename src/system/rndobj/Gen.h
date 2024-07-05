@@ -40,6 +40,11 @@ public:
     void DrawMesh(Transform&, float);
     void DrawMultiMesh(Transform&, float);
     void DrawParticleSys(Transform&, float);
+
+    void GetRateVar(float& lo, float& hi){
+        lo = mRateGenLow;
+        hi = mRateGenHigh;
+    }
     
     void Generate(float);
     void ResetInstances();

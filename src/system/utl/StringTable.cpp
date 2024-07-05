@@ -20,7 +20,9 @@ StringTable::~StringTable(){
 }
 
 void StringTable::Clear(){
-    for(int i = 0; i < mBuffers.size(); i++){
+    int i = 0;
+    int size = mBuffers.size();
+    for(; i < size; i++){
         _MemFree(mBuffers[i].chars);
     }
     mBuffers.clear();
@@ -41,11 +43,17 @@ void StringTable::Reserve(int i){
     }
 }
 
+const char* StringTable::Add(const char*){
+    
+}
+
 int StringTable::UsedSize() const {
     int size = 0;
     for(int i = 0; i < mBuffers.size(); i++){
         if(i == mCurBuf) break;
-        size += mBuffers[i].size;
+        if(mBuffers[i].size != 0){
+            size += mBuffers[i].size;
+        }
     }
     return size;
 }
