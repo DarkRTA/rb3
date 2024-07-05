@@ -108,6 +108,7 @@ public:
     void ResetProcCounter();
     int DrawMode() const { return unk_0xE4; }
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
+    bool Unk130() const { return unk130; }
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -162,7 +163,7 @@ public:
     bool unkde; // 0xde
     bool unkdf; // 0xdf
     Aspect mAspect; // 0xE0
-    int unk_0xE4; // 0xe4
+    int unk_0xE4; // 0xe4 referenced in TexMovie
     bool unke8; // 0xe8
     bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA

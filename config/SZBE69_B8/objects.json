@@ -260,6 +260,8 @@
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
+            "system/movie/TexMovie.cpp": "NonMatching",
+
             "system/obj/DataArray.cpp": "NonMatching",
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
@@ -673,6 +675,7 @@
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/buffer_io.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/errno.c": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/float.c": "Matching",
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/mem.c": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/rand.c": "Matching",
 
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/time.dolphin.c": "Matching",
@@ -742,13 +745,13 @@
         "mw_version": "Wii/1.3",
         "cflags": "sdk/RVL_SDK",
         "objects": {
+            "sdk/RVL_SDK/revolution/base/PPCArch.c": "Matching",
+
             "sdk/RVL_SDK/revolution/gx/GXBump.c": "NonMatching",
             "sdk/RVL_SDK/revolution/gx/GXDisplayList.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXGeometry.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXLight.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXTransform.c": "Matching",
-
-
 
             "sdk/RVL_SDK/revolution/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c": "Matching"
@@ -756,10 +759,12 @@
     },
     "sdk/RevoEX": {
         "mw_version": "Wii/1.3",
-        "cflags": "base",
+        "cflags": "sdk/RevoEX",
         "objects": {
             "sdk/RevoEX/so/SOCommon.c": "NonMatching",
-            "sdk/RevoEX/so/SOBasic.c": "NonMatching"
+            "sdk/RevoEX/so/SOBasic.c": "NonMatching",
+
+            "sdk/RevoEX/ssl/ssl_mutex.c": "NonMatching"
         }
     },
     "sdk/DWC": {

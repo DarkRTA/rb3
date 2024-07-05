@@ -187,6 +187,13 @@
                 "-O4,p",
                 "-inline auto"
             ]
+        },
+        "sdk/RevoEX": {
+            "base": "base",
+            "flags": [
+                "-func_align 4",
+                "-O4,p"
+            ]
         }
     }
 }
