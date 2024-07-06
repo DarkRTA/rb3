@@ -4,6 +4,9 @@
 #include "os/Debug.h"
 #include "utl/StringTable.h"
 #include "utl/PoolAlloc.h"
+#include "utl/DataPointMgr.h"
+#include "obj/DataFunc.h"
+#include <algorithm>
 #include <new>
 
 static StringTable* gStringTable;
@@ -14,29 +17,6 @@ const char* SymbolCacheLookup(const char* cc){
     const char** found = gHashTable ? gHashTable->Find(cc) : 0;
     return found ? *found : 0;
 }
-
-// undefined4 SymbolCacheLookup(char *param_1)
-
-// {
-//   undefined4 *puVar1;
-//   undefined4 uVar2;
-//   char *local_8 [2];
-  
-//   if (gHashTable == (KeylessHash<> *)0x0) {
-//     puVar1 = (undefined4 *)0x0;
-//   }
-//   else {
-//     local_8[0] = param_1;
-//     puVar1 = (undefined4 *)KeylessHash<>::Find(gHashTable,local_8);
-//   }
-//   if (puVar1 == (undefined4 *)0x0) {
-//     uVar2 = 0;
-//   }
-//   else {
-//     uVar2 = *puVar1;
-//   }
-//   return uVar2;
-// }
 
 Symbol::Symbol(const char* str){
     if(str == 0 || *str == '\0') mStr = gNullStr;
@@ -58,6 +38,61 @@ Symbol::Symbol(const char* str){
     }
 }
 
+#pragma push
+#pragma pool_data off
+void Symbol::UploadDebugStats(){
+    static int gBigHashEntries;
+    static int gBigHashStrings;
+    static int gBigStringsUsed;
+    static int gBigStringTableSize;
+    if(UsingCD()){
+        int curHashNumEntries = gHashTable->mNumEntries;
+        int curHashSize = gHashTable->mSize;
+        int curStrUsed = gStringTable->UsedSize();
+        int curStrSize = gStringTable->Size();
+        if(curHashNumEntries > gBigHashEntries ||
+            curHashSize > gBigHashStrings ||
+            curStrUsed > gBigStringsUsed ||
+            curStrSize > gBigStringTableSize){
+            if(gBigHashEntries < curHashNumEntries) gBigHashEntries = curHashNumEntries;
+            gBigHashStrings = gBigHashEntries;
+            if(gBigHashEntries < curHashSize) gBigHashStrings = curHashSize;
+            gBigStringsUsed = gBigHashEntries;
+            if(gBigHashEntries < curStrUsed) gBigStringsUsed = curStrUsed;
+            gBigStringTableSize = gBigHashEntries;
+            if(gBigHashEntries < curStrSize) gBigStringTableSize = curStrSize;
+            DataArray* cfg = SystemConfig("rnd", "title");
+            SendDataPoint(MakeString("debug/%s/symbol", cfg->Str(1)),"hashEntries",gBigHashEntries,
+                "hashStrings", gBigHashStrings, "stringsUsed", gBigStringsUsed, "stringTableSize", gBigStringTableSize);
+        }
+    }
+}
+#pragma pop
+
+// not sure where else to put this, it's only used here
+struct Alpha {
+    bool operator()(const char* ci, const char* cj) { return strcmp(ci, cj) < 0; }
+} MyAlpha;
+
+static DataNode PrintSymbolTable(DataArray* da){
+    TheDebug << MakeString("Symbol table:\n");
+    TheDebug << MakeString("%d / %d hashes\n", gHashTable->mNumEntries, gHashTable->mSize);
+    TheDebug << MakeString("%d / %d strings\n", gStringTable->UsedSize(), gStringTable->Size());
+    TheDebug << MakeString("adding 30%%, suggest Symbol::PreInit(%d, %d)\n", (int)(gStringTable->UsedSize() * 1.3f), (int)((gHashTable->mNumEntries << 1) * 1.3f));
+    if(da->Size() > 1){
+        std::vector<const char*> strvec;
+        strvec.reserve(gHashTable->mNumEntries);
+        for(const char** it = gHashTable->FirstFromStart(); it != 0; it = gHashTable->FirstFromNext(it)){
+            // strvec.push_back(*it); // constness casted away?
+        }
+        std::sort(strvec.begin(), strvec.end(), MyAlpha);
+        for(int i = 0; i < strvec.size(); i++){
+            TheDebug << MakeString("%s\n", strvec[i]);
+        }
+    }
+    return DataNode(0);
+}
+
 void Symbol::PreInit(int stringSize, int hashSize){
     KeylessHash<const char*, const char*>* tmp;
     if(!gStringTable){
@@ -67,3 +102,10 @@ void Symbol::PreInit(int stringSize, int hashSize){
     gHashTable = tmp;
 
 }
+
+void Symbol::Init(){
+    if(!gStringTable) PreInit(560000, 80000);
+    DataRegisterFunc("print_symbol_table", PrintSymbolTable);
+}
+
+void Symbol::Terminate(){}

@@ -40,6 +40,7 @@ public:
     // }
     const char *Str() const { return mStr; }
 
+    static void UploadDebugStats();
     static void PreInit(int, int);
     static void Init();
     static void Terminate();
