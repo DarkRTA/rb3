@@ -17,17 +17,15 @@ public:
 
     static int sSaveVer;
 
-    void* operator new(size_t ul){
-        return _MemAlloc(ul, 0);
-    }
-
-    void operator delete(void* v){
-        return _MemFree(v);
-    }
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
 };
 
 BinStream& operator<<(BinStream& bs, const DataArraySongInfo& dinfo);
 BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo);
+
+#define FIND_WITH_BACKUP(sym) \
+    ((member_arr = main_arr->FindArray(sym, false), member_arr) || (backup_arr && (member_arr = backup_arr->FindArray(sym, false), member_arr)))
 
 #endif

@@ -20,61 +20,40 @@ SongMetadata::SongMetadata(){
     InitSongMetadata();
 }
 
-#define GET_MEMBER_ARRAY(sym) \
-    member_exists = true; \
-    existing_member_array = arr1->FindArray(sym, false); \
-    if(!existing_member_array){ \
-        bool exists_in_missing = false; \
-        if(arr2){ \
-            existing_member_array = arr2->FindArray(sym, false); \
-            if(existing_member_array) exists_in_missing = true; \
-        } \
-        if(!exists_in_missing) member_exists = false; \
-    }
-
-
-SongMetadata::SongMetadata(DataArray* arr1, DataArray* arr2, bool onDisc) : mShortName(), mGameOrigin() {
+SongMetadata::SongMetadata(DataArray* main_arr, DataArray* backup_arr, bool onDisc) : mShortName(), mGameOrigin() {
     InitSongMetadata();
     mIsOnDisc = onDisc;
-    bool member_exists;
-    DataArray* existing_member_array;
+    
+    DataArray* member_arr;
 
-    GET_MEMBER_ARRAY(song_id);
-    if(member_exists) mID = existing_member_array->Int(1);
-    else MILO_FAIL("song data for song '%s' has no song_id", arr1->Sym(0).Str());
-
-    GET_MEMBER_ARRAY(game_origin);
-    if(member_exists) mGameOrigin = existing_member_array->Sym(1);
+    if(FIND_WITH_BACKUP(song_id)) mID = member_arr->Int(1);
+    else MILO_FAIL("song data for song '%s' has no song_id", main_arr->Sym(0).Str());
+    
+    if(FIND_WITH_BACKUP(game_origin)) mGameOrigin = member_arr->Sym(1);
     if(mGameOrigin == rb2){
-        GET_MEMBER_ARRAY(ugc);
-        if(member_exists){
-            if(existing_member_array->Int(1) != 0){
+        if(FIND_WITH_BACKUP(ugc)){
+            if(member_arr->Int(1) != 0){
                 mGameOrigin = ugc;
             }
         }
     }
-
-    GET_MEMBER_ARRAY(preview);
-    if(member_exists){
-        mPreviewStartTime = existing_member_array->Float(1);
-        mPreviewEndTime = existing_member_array->Float(2);
+    if(FIND_WITH_BACKUP(preview)){
+        mPreviewStartTime = member_arr->Float(1);
+        mPreviewEndTime = member_arr->Float(2);
     }
-
-    GET_MEMBER_ARRAY(version);
-    if(member_exists){
-        mVersion = existing_member_array->Int(1);
+    if(FIND_WITH_BACKUP(version)){
+        mVersion = member_arr->Int(1);
     }
-
-    mShortName = arr1->Sym(0);
-    existing_member_array = arr1->FindArray(song, false);
-    DataArray* song_array = (!arr2) ? 0 : arr2->FindArray(song, false);
-
-    if(existing_member_array)
-        mSongInfo = new DataArraySongInfo(existing_member_array, song_array, mShortName);
-    else if(song_array)
-        mSongInfo = new DataArraySongInfo(song_array, 0, mShortName);
-    else MILO_FAIL("song data for song '%s' has no 'song' block", arr1->Sym(0).Str());
-
+    
+    mShortName = main_arr->Sym(0);
+    
+    DataArray* main_song_array = main_arr->FindArray(song, false);
+    DataArray* backup_song_array = (!backup_arr) ? 0 : backup_arr->FindArray(song, false);
+    if(main_song_array)
+        mSongInfo = new DataArraySongInfo(main_song_array, backup_song_array, mShortName);
+    else if(backup_song_array)
+        mSongInfo = new DataArraySongInfo(backup_song_array, 0, mShortName);
+    else MILO_FAIL("song data for song '%s' has no 'song' block", main_arr->Sym(0).Str());
 }
 
 SongMetadata::~SongMetadata(){

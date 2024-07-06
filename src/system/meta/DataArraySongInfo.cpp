@@ -4,28 +4,91 @@
 
 int DataArraySongInfo::sSaveVer = 1;
 
-// this big macro needs to evaluate to a bool for the purpose of a MILO_ASSERT
-// I think this ultimately needs to evaluate to a DataArray*
-// and it takes in a Symbol - see my shoddy attempt at it with FIND_WITH_BACKUP below
-#define GET_MEMBER_ARRAY(sym) \
-    member_exists = true; \
-    existing_member_array = arr1->FindArray(sym, false); \
-    if(!existing_member_array){ \
-        bool exists_in_missing = false; \
-        if(arr2){ \
-            existing_member_array = arr2->FindArray(sym, false); \
-            if(existing_member_array) exists_in_missing = true; \
-        } \
-        if(!exists_in_missing) member_exists = false; \
-    }
+// https://decomp.me/scratch/qGyeB
+DataArraySongInfo::DataArraySongInfo(DataArray* main_arr, DataArray* backup_arr, Symbol name_sym){
+    mName = name_sym;
 
-#define FIND_WITH_BACKUP(sym) \
-    arr1->FindArray(sym, false) ? arr1->FindArray(sym, false) : arr2->FindArray(sym, false)
-
-DataArraySongInfo::DataArraySongInfo(DataArray* arr1, DataArray* arr2, Symbol){
-    bool member_exists;
-    DataArray* existing_member_array;
+    // this part needs to be a macro, FIND_WITH_BACKUP(name)
+    DataArray* member_arr;
     MILO_ASSERT(FIND_WITH_BACKUP(name), 0x1C);
+    mBaseFileName = member_arr->Str(1);
+
+    if(FIND_WITH_BACKUP(pkg_name)){
+        mPackageName = member_arr->Str(1);
+    }
+    if(FIND_WITH_BACKUP(vocal_parts)){
+        mNumVocalParts = member_arr->Int(1);
+    }
+    if(FIND_WITH_BACKUP(hopo_threshold)){
+        mHopoThreshold = member_arr->Int(1);
+    }
+    if(FIND_WITH_BACKUP(mute_volume)){
+        mMuteVolume = member_arr->Float(1);
+    }
+    if(FIND_WITH_BACKUP(mute_volume_vocals)){
+        mVocalMuteVolume = member_arr->Float(1);
+    }
+    if(FIND_WITH_BACKUP(pans)){
+        DataArray* pan_arr = member_arr->Array(1);
+        mPans.reserve(pan_arr->Size());
+        for(int i = 0; i < pan_arr->Size(); i++){
+            mPans.push_back(pan_arr->Float(i));
+        }
+    }
+    if(FIND_WITH_BACKUP(vols)){
+        DataArray* vol_arr = member_arr->Array(1);
+        mVols.reserve(vol_arr->Size());
+        for(int i = 0; i < vol_arr->Size(); i++){
+            mVols.push_back(vol_arr->Float(i));
+        }
+    }    
+    if(FIND_WITH_BACKUP(cores)){
+        DataArray* core_arr = member_arr->Array(1);
+        mCores.reserve(core_arr->Size());
+        for(int i = 0; i < core_arr->Size(); i++){
+            mCores.push_back(core_arr->Int(i));
+        }
+    }
+    if(FIND_WITH_BACKUP(crowd_channels)){
+        mCrowdChannels.reserve(member_arr->Size() - 1);
+        for(int i = 1; i < member_arr->Size(); i++){
+            mCrowdChannels.push_back(member_arr->Int(i));
+        }
+    }
+    if(FIND_WITH_BACKUP(drum_solo)){
+        DataArray* solo_arr = member_arr->FindArray("seqs", true)->Array(1);
+        mDrumSoloSamples.reserve(solo_arr->Size());
+        for(int i = 0; i < solo_arr->Size(); i++){
+            mDrumSoloSamples.push_back(solo_arr->Sym(i));
+        }
+    }
+    if(FIND_WITH_BACKUP(drum_freestyle)){
+        DataArray* freestyle_arr = member_arr->FindArray("seqs", true)->Array(1);
+        mDrumFreestyleSamples.reserve(freestyle_arr->Size());
+        for(int i = 0; i < freestyle_arr->Size(); i++){
+            mDrumFreestyleSamples.push_back(freestyle_arr->Sym(i));
+        }
+    }
+    if(FIND_WITH_BACKUP(tracks)){
+        DataArray* track_arr = member_arr->Array(1);
+        mTrackChannels.reserve(track_arr->Size());
+        for(int i = 0; i < track_arr->Size(); i++){
+            DataArray* chan_arr = track_arr->Array(i);
+            mTrackChannels = std::vector<TrackChannels>();
+            mTrackChannels[i].mAudioType = SymbolToAudioType(chan_arr->Sym(0));
+            DataNode& chan_node = chan_arr->Node(1);
+            if(chan_node.Type() == kDataArray){
+                DataArray* chan_nums = chan_node.Array(0);
+                for(int j = 0; j < chan_nums->Size(); j++){
+                    mTrackChannels[i].mChannels.push_back(chan_nums->Int(j));
+                }
+            }
+            else {
+                mTrackChannels[i].mChannels.push_back(chan_node.Int(0));
+            }
+        }
+    }
+    
 }
 
 DataArraySongInfo::DataArraySongInfo(SongInfo* info) : SongInfoCopy(info) {
