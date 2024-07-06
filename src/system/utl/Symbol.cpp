@@ -12,7 +12,7 @@
 
 static StringTable* gStringTable;
 static KeylessHash<const char*, const char*>* gHashTable;
-bool gLiteralSymbolStaticInitialization = false;
+bool gLiteralSymbolStaticInitialization = true;
 
 const char* SymbolCacheLookup(const char* cc){
     const char** found = gHashTable ? gHashTable->Find(cc) : 0;
@@ -93,13 +93,10 @@ static DataNode PrintSymbolTable(DataArray* da){
 }
 
 void Symbol::PreInit(int stringSize, int hashSize){
-    KeylessHash<const char*, const char*>* tmp;
     if(!gStringTable){
         gStringTable = new StringTable(stringSize);
-        tmp = new KeylessHash<const char*, const char*>(hashSize, 0, 0, 0);
+        gHashTable = new KeylessHash<const char*, const char*>(hashSize, 0, (const char*)-1, 0);
     }
-    gHashTable = tmp;
-
 }
 
 void Symbol::Init(){
