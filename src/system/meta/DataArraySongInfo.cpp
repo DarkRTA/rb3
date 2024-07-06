@@ -4,15 +4,14 @@
 
 int DataArraySongInfo::sSaveVer = 1;
 
-// https://decomp.me/scratch/qGyeB
+// https://decomp.me/scratch/qGyeB - debug
+// https://decomp.me/scratch/nRLJp - retail
 DataArraySongInfo::DataArraySongInfo(DataArray* main_arr, DataArray* backup_arr, Symbol name_sym){
     mName = name_sym;
-
-    // this part needs to be a macro, FIND_WITH_BACKUP(name)
     DataArray* member_arr;
+
     MILO_ASSERT(FIND_WITH_BACKUP(name), 0x1C);
     mBaseFileName = member_arr->Str(1);
-
     if(FIND_WITH_BACKUP(pkg_name)){
         mPackageName = member_arr->Str(1);
     }
