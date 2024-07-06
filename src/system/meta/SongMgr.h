@@ -2,12 +2,12 @@
 #define METABAND_SONGMGR_H
 #include "obj/MsgSource.h"
 #include "os/ContentMgr.h"
+#include "meta/SongMetadata.h"
 #include "utl/Symbol.h"
 #include <vector>
 #include <map>
 
 class DataLoader;
-class SongMetadata;
 
 class SongMgr : public MsgSource, public ContentMgr::Callback {
 public:
@@ -17,7 +17,7 @@ public:
     virtual ~SongMgr();
     virtual void Init();
     virtual void Terminate();
-    virtual int Data(int) const; // fix return type
+    virtual SongMetadata& Data(int) const;
     virtual int SongAudioData(int) const = 0;
     virtual void ContentStarted();
     virtual bool ContentDiscovered(Symbol);
