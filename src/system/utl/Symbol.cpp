@@ -6,6 +6,7 @@
 #include "utl/PoolAlloc.h"
 #include "utl/DataPointMgr.h"
 #include "obj/DataFunc.h"
+#include "math/MathFuncs.h"
 #include <algorithm>
 #include <new>
 
@@ -54,15 +55,13 @@ void Symbol::UploadDebugStats(){
             curHashSize > gBigHashStrings ||
             curStrUsed > gBigStringsUsed ||
             curStrSize > gBigStringTableSize){
-            if(gBigHashEntries < curHashNumEntries) gBigHashEntries = curHashNumEntries;
-            gBigHashStrings = gBigHashEntries;
-            if(gBigHashEntries < curHashSize) gBigHashStrings = curHashSize;
-            gBigStringsUsed = gBigHashEntries;
-            if(gBigHashEntries < curStrUsed) gBigStringsUsed = curStrUsed;
-            gBigStringTableSize = gBigHashEntries;
-            if(gBigHashEntries < curStrSize) gBigStringTableSize = curStrSize;
-            DataArray* cfg = SystemConfig("rnd", "title");
-            SendDataPoint(MakeString("debug/%s/symbol", cfg->Str(1)),"hashEntries",gBigHashEntries,
+
+            gBigHashEntries = Max(gBigHashEntries, curHashNumEntries);
+            gBigHashStrings = Max(gBigHashEntries, curHashSize);
+            gBigStringsUsed = Max(gBigHashEntries, curStrUsed);
+            gBigStringTableSize = Max(gBigHashEntries, curStrSize);
+
+            SendDataPoint(MakeString("debug/%s/symbol", SystemConfig("rnd", "title")->Str(1)),"hashEntries",gBigHashEntries,
                 "hashStrings", gBigHashStrings, "stringsUsed", gBigStringsUsed, "stringTableSize", gBigStringTableSize);
         }
     }
