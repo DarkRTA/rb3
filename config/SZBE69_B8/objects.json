@@ -246,7 +246,7 @@
             "system/meta/Meta.cpp": "NonMatching",
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "Matching",
-            "system/meta/SongMetadata.cpp": "Equivalent",
+            "system/meta/SongMetadata.cpp": "Matching",
             "system/meta/SongMgr.cpp": "NonMatching",
             "system/meta/SongPreview.cpp": "NonMatching",
             "system/meta/Sorting.cpp": "Matching",

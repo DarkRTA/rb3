@@ -13,11 +13,12 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);
+    virtual bool IsVersionOK() const = 0;
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     void InitSongMetadata();
-    void operator delete(void* v){
-        _MemFree(v);
-    }
     int ID() const;
     bool IsOnDisc() const;
     Symbol GameOrigin() const;
