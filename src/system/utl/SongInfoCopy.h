@@ -28,7 +28,7 @@ public:
     // TODO: fix the return types of these methods below as you implement them
     virtual const std::vector<TrackChannels>& GetTracks() const = 0;
     virtual bool IsPlayTrackChannel(int) const = 0;
-    virtual const std::vector<int>& FindTrackChannel(SongInfoAudioType) const = 0;
+    virtual const TrackChannels& FindTrackChannel(SongInfoAudioType) const = 0;
     virtual int NumChannelsOfTrack(SongInfoAudioType) const = 0;
     virtual int TrackIndex(SongInfoAudioType) const = 0;
 

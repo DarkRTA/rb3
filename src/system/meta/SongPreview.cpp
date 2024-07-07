@@ -1,7 +1,10 @@
 #include "meta/SongPreview.h"
 #include "os/System.h"
 #include "obj/Task.h"
+#include "synth/Synth.h"
+#include "ui/UIPanel.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr(mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0),
     unk34(0), mAttenuation(0.0f), mState(kIdle), mStartMs(0.0f), mEndMs(0.0f), mStartPreviewMs(0.0f), mEndPreviewMs(0.0f),
@@ -240,6 +243,59 @@ void SongPreview::DetachFader(Fader* fader){
 void SongPreview::DetachFaders(){
     DetachFader(mMusicFader);
     DetachFader(mCrowdSingFader);
+}
+
+// fn_80517CFC
+void SongPreview::PrepareFaders(const SongInfo* info){
+    const std::vector<int>& crowdchans = info->GetCrowdChannels();
+    for(int i = 0; i < unk34; i++){
+        FaderGroup* grp = mStream->ChannelFaders(i);
+        if(std::find(crowdchans.begin(), crowdchans.end(), i) != crowdchans.end()) grp->Add(mCrowdSingFader);
+        else grp->Add(mMusicFader);
+    }
+}
+
+// fn_80517DC8
+void SongPreview::PrepareSong(Symbol s){
+    mState = kPreparingSong;
+    delete mStream;
+    mStream = 0;
+    SongInfo* data = mSongMgr.SongAudioData(s);
+    const char* filename = data->GetBaseFileName();
+    if(!unk71){
+        String str(filename);
+        if(str.find("dlc/") == 0){
+            str.erase(0xc, 5);
+            UIPanel* panel = ObjectDir::Main()->Find<UIPanel>("song_select_panel", false);
+            if(panel) panel->Handle(refresh_top_msg, false);
+        }
+        str = str + "_prev";
+        mStream = TheSynth->NewStream(str.c_str(), 0.0f, 0.0f, mSecurePreview);
+        if(mStream) mEndMs -= mStartMs;
+    }
+    else mStream = TheSynth->NewStream(filename, mStartMs, 0.0f, mSecurePreview);
+
+    if(!mStream) mState = kIdle;
+    else {
+        const std::vector<float>& pans = data->GetPans();
+        const std::vector<float>& vols = data->GetVols();
+        unk34 = pans.size();
+        for(int i = 0; i < unk34; i++){
+            mStream->SetVolume(i, vols[i]);
+            mStream->SetPan(i, pans[i]);
+        }
+
+        const TrackChannels& tracks = data->FindTrackChannel(kAudioTypeMulti);
+        if(&tracks != 0){
+            for(int i = 0; i < tracks.mChannels.size(); i++){
+                mStream->SetVolume(tracks.mChannels[i], -96.0f);
+            }
+        }
+        DetachFaders();
+        PrepareFaders(data);
+        mStream->SetVolume(-mAttenuation);
+        mStream->mFaders->Add(mFader);
+    }
 }
 
 BEGIN_HANDLERS(SongPreview)
