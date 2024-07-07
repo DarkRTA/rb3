@@ -42,7 +42,7 @@ public:
     virtual void GetContentNames(Symbol, std::vector<Symbol>&) const;
     virtual bool SongCacheNeedsWrite() const;
     virtual void ClearSongCacheNeedsWrite();
-    virtual void AllowCacheWrite(bool b){ unkbe = b; }
+    virtual void AllowCacheWrite(bool b){ mSongCacheWriteAllowed = b; }
     virtual void ClearCachedContent();
     virtual Symbol GetShortNameFromSongID(int, bool) const = 0;
     virtual int GetSongIDFromShortName(Symbol, bool) const = 0;
@@ -62,7 +62,7 @@ public:
     
     const char* ContentName(int) const;
     const char* ContentName(Symbol, bool) const;
-    void IsSongCacheWriteDone() const;
+    bool IsSongCacheWriteDone() const;
     bool IsSongMounted(Symbol) const;
     void ClearFromCache(Symbol);
     void OnCacheMountResult(int);
@@ -86,8 +86,8 @@ public:
     CacheID* mSongCacheID; // 0xb4
     Cache* mSongCache; // 0xb8
     bool unkbc; // 0xbc
-    bool unkbd; // 0xbd
-    bool unkbe; // 0xbe
+    bool mSongCacheNeedsWrite; // 0xbd
+    bool mSongCacheWriteAllowed; // 0xbe
 };
 
 int GetSongID(DataArray*, DataArray*);

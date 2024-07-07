@@ -14,8 +14,19 @@ int CountSongsInArray(DataArray* arr){
     return size - i;
 }
 
-SongMgr::~SongMgr() {}
-void SongMgr::Init() {}
+SongMgr::~SongMgr(){
+
+}
+
+void SongMgr::Init(){
+    mState = kSongMgr_Nil;
+    mSongCacheID = 0;
+    mSongCache = 0;
+    unkbc = false;
+    mSongCacheNeedsWrite = false;
+    mSongCacheWriteAllowed = true;
+}
+
 bool SongMgr::HasSong(int) const { return false; }
 bool SongMgr::HasSong(Symbol, bool) const { return false; }
 SongMetadata* SongMgr::Data(int) const { return 0; }
@@ -24,7 +35,7 @@ bool SongMgr::ContentDiscovered(Symbol) {}
 
 void SongMgr::ContentDone(){
     if(!unkbc) return;
-    unkbd = true;
+    mSongCacheNeedsWrite = true;
 }
 
 void SongMgr::ContentMounted(const char*, const char*) {}
@@ -64,9 +75,19 @@ void SongMgr::GetContentNames(Symbol s, std::vector<Symbol>& vec) const {
     }
 }
 
-bool SongMgr::SongCacheNeedsWrite() const {}
-void SongMgr::IsSongCacheWriteDone() const {}
-bool SongMgr::IsSongMounted(Symbol) const {}
+bool SongMgr::SongCacheNeedsWrite() const {
+    return mSongCacheWriteAllowed && mSongCacheNeedsWrite;
+}
+
+bool SongMgr::IsSongCacheWriteDone() const {
+    return mState == kSongMgr_Ready || mState == kSongMgr_Failure;
+}
+
+bool SongMgr::IsSongMounted(Symbol s) const {
+    const char* cntName = ContentName(s, true);
+    if(cntName) return TheContentMgr->IsMounted(cntName);
+    else return true;
+}
 
 void SongMgr::SetState(SongMgrState state){
     if(mState == state) return;

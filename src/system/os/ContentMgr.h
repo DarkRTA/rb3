@@ -8,6 +8,8 @@ enum ContentLocT {
     kLocationRoot
 };
 
+class Content;
+
 class ContentMgr : public Hmx::Object {
 public:
 
@@ -30,6 +32,31 @@ public:
         virtual const char* ContentAltDirs(){ return 0; }
         virtual bool HasContentAltDirs(){ return false; }
     };
+
+    ContentMgr(){}
+    virtual ~ContentMgr();
+    virtual DataNode Handle(DataArray*, bool);
+    virtual void PreInit(){}
+    virtual void Init();
+    virtual void Terminate(){}
+    virtual void StartRefresh(){}
+    virtual void PollRefresh();
+    virtual bool CanRefreshOnDone(){ return true; }
+    virtual bool ShowCurRefreshProgress();
+    virtual const char* TitleContentPath(){ return 0; } // possibly wrong ret type
+    virtual const char* ContentPath(int){ return 0; } // ditto
+    virtual bool MountContent(Symbol){ return true; }
+    virtual bool IsMounted(Symbol){ return true; }
+    virtual bool DeleteContent(Symbol){ return true; }
+    virtual bool IsDeleteDone(Symbol){ return true; }
+    virtual bool GetLicensedBits(Symbol, unsigned long& ul){ ul = 0; return true; }
+    virtual int GetCreationDate(Symbol){ return 0; } // ditto
+    virtual bool InDiscoveryState();
+    virtual void NotifyMounted(Content*){}
+    virtual void NotifyUnmounted(Content*){}
+    virtual void NotifyDeleted(Content*){}
+    virtual void NotifyFailed(Content*){}
+    virtual bool IsDirty();
 
     void RegisterCallback(Callback*, bool);
     void UnregisterCallback(Callback*, bool);
