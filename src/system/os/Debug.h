@@ -70,6 +70,7 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebugFailer << (MakeString(__VA_ARGS__)), 0))
 #  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
 #  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
+#  define MILO_LOG(...) TheDebug << MakeString(__VA_ARGS__)
 
 // Usage:
 // MILO_TRY(errMsg) {
@@ -97,6 +98,7 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
 #  define MILO_WARN(...) ((void)0)
+#  define MILO_LOG(...) ((void)0)
 
 #  define MILO_TRY if (true)
 #  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)

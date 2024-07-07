@@ -5,6 +5,7 @@
 #include "meta/SongMetadata.h"
 #include "utl/CacheMgr.h"
 #include "utl/Symbol.h"
+#include "utl/BufStream.h"
 #include <set>
 #include <vector>
 #include <hash_map>
@@ -71,17 +72,23 @@ public:
     int NumSongsInContent(int) const;
     void DumpSongMgrContents(bool);
     void SetState(SongMgrState);
+    void StartSongCacheWrite();
+    bool SaveCachedSongInfo(BufStream&);
+    bool LoadCachedSongInfo(BufStream&);
+    int GetCachedSongInfoSize() const;
+    const char* GetCachedSongInfoName() const;
+    void GetSongsInContent(Symbol, std::vector<int>&) const;
 
     void SaveWrite();
     void SaveMount();
     void SaveUnmount();
 
     std::set<int> mAvailableSongs; // 0x20
-    std::map<int, SongMetadata*> unkmap1; // 0x38
+    std::map<int, SongMetadata*> mUncachedSongMetadata; // 0x38
     SongMgrState mState; // 0x50
-    std::map<int, SongMetadata*> unkmap2; // 0x54
-    std::map<Symbol, std::vector<int> > unkmap3; // 0x6c
-    std::map<int, Symbol> unkmap4; // 0x84
+    std::map<int, SongMetadata*> mCachedSongMetadata; // 0x54
+    std::map<Symbol, std::vector<int> > mSongIDsInContent; // 0x6c
+    std::map<int, Symbol> mContentUsedForSong; // 0x84
     std::map<Symbol, String> unkmap5; // 0x9c
     CacheID* mSongCacheID; // 0xb4
     Cache* mSongCache; // 0xb8

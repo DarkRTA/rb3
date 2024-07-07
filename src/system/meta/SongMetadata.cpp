@@ -13,7 +13,7 @@ void SongMetadata::InitSongMetadata(){
     mVersion = -1;
     mSongInfo = 0;
     mShortName = gNullStr;
-    mSongVocalsBlock = 0;
+    mAge = 0;
 }
 
 SongMetadata::SongMetadata(){
@@ -95,7 +95,7 @@ void SongMetadata::Save(BinStream& d) {
     d << mPreviewStartTime;
     d << mPreviewEndTime;
     d << mShortName;
-    d << (int)mSongVocalsBlock; // could be a fake match
+    d << mAge;
     MILO_ASSERT(mSongInfo, 0x97);
     d << *mSongInfo;
 }
@@ -140,8 +140,7 @@ void SongMetadata::Load(BinStream& d){
         d >> mShortName;
     }
     if(4 <= version){
-        // d >> mSongVocalsBlock;
-        d.ReadEndian(&mSongVocalsBlock, sizeof(DataArray*));
+        d >> mAge;
     }
     if(5 <= version){
         MILO_ASSERT(!mSongInfo, 0xDB);
