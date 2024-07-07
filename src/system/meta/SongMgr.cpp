@@ -43,7 +43,21 @@ bool SongMgr::HasSong(Symbol s, bool b) const {
     return ret;
 }
 
-SongMetadata* SongMgr::Data(int) const { return 0; }
+SongMetadata* SongMgr::Data(int id) const {
+    if(mAvailableSongs.find(id) == mAvailableSongs.end()) return 0;
+    else {
+        std::map<int, SongMetadata*>::const_iterator it = mUncachedSongMetadata.find(id);
+        if(it != mUncachedSongMetadata.end()) return it->second;
+        else {
+            std::map<int, SongMetadata*>::const_iterator cit = mCachedSongMetadata.find(id);
+            if(cit != mCachedSongMetadata.end()) return cit->second;
+            else {
+                MILO_ASSERT(false, 0x98);
+                return 0;
+            }
+        }
+    }
+}
 
 void SongMgr::ContentStarted(){
     mAvailableSongs.clear();
@@ -53,7 +67,22 @@ void SongMgr::ContentStarted(){
     mContentUsedForSong.clear();
 }
 
-bool SongMgr::ContentDiscovered(Symbol) {}
+bool SongMgr::ContentDiscovered(Symbol s){
+    std::map<Symbol, std::vector<int> >::iterator it = mSongIDsInContent.find(s);
+    if(it == mSongIDsInContent.end()) return false;
+    else {
+        std::vector<int> vec;
+        GetSongsInContent(s, vec);
+        // wrong
+        for(std::vector<int>::iterator vit = vec.begin(); vit != vec.end(); ++vit){
+            std::map<int, SongMetadata*>::iterator found = mCachedSongMetadata.find(*vit);
+            if(found != mCachedSongMetadata.end()){
+                mAvailableSongs.insert(*vit);
+                mContentUsedForSong[*vit] = s;
+            }
+        }
+    }
+}
 
 void SongMgr::ContentDone(){
     if(!unkbc) return;
