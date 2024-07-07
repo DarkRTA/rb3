@@ -5,7 +5,7 @@
 
 SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr(mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0),
     unk34(0), mAttenuation(0.0f), mState(kIdle), mStartMs(0.0f), mEndMs(0.0f), mStartPreviewMs(0.0f), mEndPreviewMs(0.0f),
-    unk64(0), mPreviewRequestedMs(0.0f), unk70(0), unk71(0), unk72(0), unk73(0) {
+    unk64(0), mPreviewRequestedMs(0.0f), unk70(0), unk71(0), unk72(0), mSecurePreview(0) {
 
 }
 
@@ -58,7 +58,10 @@ void SongPreview::Start(Symbol sym){
     }
     if(!sym.Null()){
         if(!mSongMgr.HasSong(sym, true)) return;
-        mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true)); // this part is what needs fixing
+        SongMetadata& data = mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true)); // this part is what needs fixing
+        if(&data && !data.IsVersionOK()){
+            sym = gNullStr;
+        }
         if(!unk72){
             TheContentMgr->RegisterCallback(this, false);
             unk72 = true;
@@ -72,22 +75,22 @@ void SongPreview::Start(Symbol sym){
         if(unk64){
             mMusicFader->SetVal(0.0f);
             mCrowdSingFader->SetVal(-96.0f);
-            // switch(mState){
-            //     case 0:
-            //     case 1:
-            //         delete mStream;
-            //         mStream = 0;
-            //         mState = 0;
-            //         break;
-            //     case 2:
-            //         mState = 3;
-            //         break;
-            //     case 4:
-            //         mFader->DoFade(-48.0f, mFadeTime);
-            //         mState = 5;
-            //         break;
-            //     default: break;
-            // }
+            switch(mState){
+                case kIdle:
+                case kMountingSong:
+                    delete mStream;
+                    mStream = 0;
+                    mState = kIdle;
+                    break;
+                case kPreparingSong:
+                    mState = kDeletingSong;
+                    break;
+                case kPlayingSong:
+                    mFader->DoFade(-48.0f, mFadeTime);
+                    mState = kFadingOutSong;
+                    break;
+                default: break;
+            }
             unk64 = false;
         }
     }
@@ -98,22 +101,22 @@ void SongPreview::Start(Symbol sym){
         mRestart = true;
         mMusicFader->SetVal(0.0f);
         mCrowdSingFader->SetVal(-96.0f);
-        // switch(mState){
-        //     case 0:
-        //     case 1:
-        //         delete mStream;
-        //         mStream = 0;
-        //         mState = 0;
-        //         break;
-        //     case 2:
-        //         mState = 3;
-        //         break;
-        //     case 4:
-        //         mFader->DoFade(-48.0f, mFadeTime);
-        //         mState = 5;
-        //         break;
-        //     default: break;
-        // }
+        switch(mState){
+            case kIdle:
+            case kMountingSong:
+                delete mStream;
+                mStream = 0;
+                mState = kIdle;
+                break;
+            case kPreparingSong:
+                mState = kDeletingSong;
+                break;
+            case kPlayingSong:
+                mFader->DoFade(-48.0f, mFadeTime);
+                mState = kFadingOutSong;
+                break;
+            default: break;
+        }
     }
 }
 
@@ -154,8 +157,52 @@ void SongPreview::PreparePreview(){
     if(!mLoopForever) mRestart = false;
 }
 
+void SongPreview::Poll(){
+    if(unk70) Start(unk6c);
+    switch(mState){
+        case kIdle:
+            break;
+        case kMountingSong:
+            bool b = true;
+            if(!mSong.Null()){
+                // fix: needs to call TheContentMgr
+                if(ContentDiscovered(mSong))
+                b = false;
+            }
+            if(b) PreparePreview();
+            break;
+        case kPreparingSong:
+            if(mStream->IsReady()){
+                mFader->SetVal(-48.0f);
+                mFader->DoFade(0.0f, mFadeTime);
+                mStream->Play();
+                mState = kPlayingSong;
+            }
+            break;
+        case kDeletingSong:
+            delete mStream;
+            mStream = 0;
+            mState = kIdle;
+            break;
+        case kPlayingSong:
+            if(mStream->GetTime() >= mEndMs){
+                mState = kFadingOutSong;
+                mFader->DoFade(-48.0f, mFadeTime);
+            }
+            break;
+        case kFadingOutSong:
+            if(!mFader->IsFading()){
+                delete mStream;
+                mStream = 0;
+                mState = kIdle;
+            }
+            break;
+        default: break;
+    }
+}
+
 DataNode SongPreview::OnStart(DataArray* arr){
-    unk73 = 0;
+    mSecurePreview = false;
     if(arr->Size() == 3){
         mStartPreviewMs = 0.0f;
         mEndPreviewMs = 0.0f;
@@ -165,7 +212,7 @@ DataNode SongPreview::OnStart(DataArray* arr){
         mStartPreviewMs = arr->Float(3);
         mEndPreviewMs = arr->Float(4);
         if(arr->Size() >= 6){
-            unk73 = arr->Int(5);
+            mSecurePreview = arr->Int(5);
         }
         mSong = Symbol(gNullStr);
         Start(arr->ForceSym(2));

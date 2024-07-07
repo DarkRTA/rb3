@@ -31,6 +31,7 @@ public:
     void Start(Symbol);
     void PreparePreview();
     void Poll();
+    void PrepareFaders(const SongInfo*);
     void PrepareSong(Symbol);
 
     DataNode OnStart(DataArray*);
@@ -61,7 +62,7 @@ public:
     bool unk70; // 0x70
     bool unk71; // 0x71
     bool unk72; // 0x72
-    bool unk73; // 0x73
+    bool mSecurePreview; // 0x73
 };
 
 #endif
