@@ -164,10 +164,8 @@ void SongPreview::Poll(){
             break;
         case kMountingSong:
             bool b = true;
-            if(!mSong.Null()){
-                // fix: needs to call TheContentMgr
-                if(ContentDiscovered(mSong))
-                b = false;
+            if(!mSongContent.Null()){
+                if(!TheContentMgr->IsMounted(mSongContent)) b = false;
             }
             if(b) PreparePreview();
             break;
