@@ -58,8 +58,8 @@ void SongPreview::Start(Symbol sym){
     }
     if(!sym.Null()){
         if(!mSongMgr.HasSong(sym, true)) return;
-        SongMetadata& data = mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true)); // this part is what needs fixing
-        if(&data && !data.IsVersionOK()){
+        SongMetadata* data = mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true));
+        if(data && !data->IsVersionOK()){
             sym = gNullStr;
         }
         if(!unk72){
@@ -149,7 +149,7 @@ void SongPreview::PreparePreview(){
     }
     else {
         int songid = mSongMgr.GetSongIDFromShortName(mSong, true);
-        mSongMgr.Data(songid).PreviewTimes(previewstart, previewend);
+        mSongMgr.Data(songid)->PreviewTimes(previewstart, previewend);
     }
     mStartMs = previewstart;
     mEndMs = previewend;

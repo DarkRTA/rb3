@@ -4,7 +4,9 @@
 #include "os/ContentMgr.h"
 #include "meta/SongMetadata.h"
 #include "utl/Symbol.h"
+#include <set>
 #include <vector>
+#include <hash_map>
 #include <map>
 
 class DataLoader;
@@ -17,7 +19,7 @@ public:
     virtual ~SongMgr();
     virtual void Init();
     virtual void Terminate();
-    virtual SongMetadata& Data(int) const;
+    virtual SongMetadata* Data(int) const;
     virtual int SongAudioData(int) const = 0;
     virtual void ContentStarted();
     virtual bool ContentDiscovered(Symbol);
@@ -51,7 +53,11 @@ public:
     void IsSongCacheWriteDone() const;
     void IsSongMounted(Symbol) const;
 
-    std::map<const int, Symbol> unk_0x9C; 
+    std::set<int> mAvailableSongs; //
+    std::hash_map<const int, Symbol> mUncachedSongMetadata; 
 };
+
+int GetSongID(DataArray*, DataArray*);
+int CountSongsInArray(DataArray*);
 
 #endif // METABAND_SONGMGR_H
