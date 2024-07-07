@@ -40,7 +40,7 @@ public:
     SaveSizeMethodFunc* mSaveSizeMethod;
 };
 
-BinStream& operator<<(BinStream&, const FixedSizeSaveable&);
-BinStream& operator>>(BinStream&, FixedSizeSaveable&);
+FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream&, const FixedSizeSaveable&);
+FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream&, FixedSizeSaveable&);
 
 #endif

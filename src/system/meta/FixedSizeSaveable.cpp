@@ -1,6 +1,6 @@
 #include "meta/FixedSizeSaveable.h"
 #include "os/Debug.h"
-
+#include <typeinfo>
 #include "decomp.h"
 
 int FixedSizeSaveable::sCurrentMemcardLoadVer = -1;
@@ -178,3 +178,30 @@ void FixedSizeSaveable::LoadStd(FixedSizeSaveableStream& fs, std::set<Symbol>& s
 }
 
 void FixedSizeSaveable::EnablePrintouts(bool b){ sPrintoutsEnabled = b; }
+
+FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream& fs, const FixedSizeSaveable& saveable){
+    MILO_ASSERT(FixedSizeSaveable::sSaveVersion >= 0, 0xFF);
+    MILO_ASSERT(FixedSizeSaveable::sMaxSymbols >= 0, 0x100);
+    int oldtell = fs.Tell();
+    saveable.SaveFixed(fs);
+    int newtell = fs.Tell();
+    MILO_ASSERT_FMT(!fs.Fail(), "FixedSizeSaveableStream operator<< fixedStream failed!");
+    MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
+    if(newtell != oldtell + (saveable.mSaveSizeMethod)(FixedSizeSaveable::sSaveVersion)){
+        MILO_FAIL("Bad save file size!  %s wrote %d instead of the expected %d", newtell - oldtell, (saveable.mSaveSizeMethod)(FixedSizeSaveable::sSaveVersion));
+    }
+    return fs;
+}
+
+FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream& fs, FixedSizeSaveable& saveable){
+    MILO_ASSERT(FixedSizeSaveable::sSaveVersion >= 0, 0x125);
+    MILO_ASSERT(FixedSizeSaveable::sMaxSymbols >= 0, 0x126);
+    MILO_ASSERT(FixedSizeSaveable::sCurrentMemcardLoadVer > 0, 0x127);
+    int oldtell = fs.Tell();
+    saveable.LoadFixed(fs, FixedSizeSaveable::sCurrentMemcardLoadVer);
+    int newtell = fs.Tell();
+    MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
+    if(newtell != oldtell + (saveable.mSaveSizeMethod)(FixedSizeSaveable::sCurrentMemcardLoadVer)){
+        MILO_FAIL("Bad load!  %s read %d instead of the expected %d!", newtell - oldtell, (saveable.mSaveSizeMethod)(FixedSizeSaveable::sCurrentMemcardLoadVer));
+    }
+}
