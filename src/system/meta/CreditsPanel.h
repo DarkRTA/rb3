@@ -4,6 +4,7 @@
 #include "ui/UIPanel.h"
 #include "synth/Stream.h"
 #include "obj/DataFile.h"
+#include "os/JoypadMsgs.h"
 
 class CreditsPanel : public UIListProvider, public UIPanel {
 public:
@@ -25,6 +26,9 @@ public:
     virtual void Poll();
 
     void SetAutoScroll(bool);
+    void PausePanel(bool);
+    void DebugToggleAutoScroll();
+    DataNode OnMsg(const ButtonDownMsg&);
 
     bool mCheatOn; // 0x3c
     DataLoader* mLoader; // 0x40

@@ -3,7 +3,9 @@
 #include "synth/Faders.h"
 #include "synth/Synth.h"
 #include "ui/UI.h"
+#include "ui/UIListLabel.h"
 #include "utl/Messages.h"
+#include "utl/Symbols.h"
 
 CreditsPanel::CreditsPanel() : mLoader(0), mNames(0), mStream(0), mAutoScroll(1), mSavedSpeed(-1.0f), mPaused(0) {
 
@@ -100,3 +102,67 @@ void CreditsPanel::SetAutoScroll(bool b){
     if(mAutoScroll) mList->AutoScroll();
     else mList->StopAutoScroll();
 }
+
+void CreditsPanel::PausePanel(bool b){
+    if(mPaused != b){
+        mPaused = b;
+        if(mPaused){
+            SetAutoScroll(false);
+            if(mStream && !mStream->IsPaused()){
+                mStream->Stop();
+            }
+        }
+        else {
+            SetAutoScroll(true);
+            if(mStream && mStream->IsPaused()){
+                mStream->Play();
+            }
+        }
+    }
+}
+
+void CreditsPanel::DebugToggleAutoScroll(){
+    if(!mAutoScroll){
+        mList->SetSpeed(mSavedSpeed);
+        SetAutoScroll(true);
+        mCheatOn = false;
+    }
+    else {
+        mSavedSpeed = mList->Speed();
+        mList->SetSpeed(0.0f);
+        SetAutoScroll(false);
+        mCheatOn = true;
+    }
+}
+
+BEGIN_HANDLERS(CreditsPanel)
+    HANDLE_ACTION(pause_panel, PausePanel(_msg->Int(2)))
+    HANDLE_EXPR(is_cheat_on, mCheatOn)
+    HANDLE_ACTION(debug_toggle_autoscroll, DebugToggleAutoScroll())
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0xD5)
+END_HANDLERS
+
+DataNode CreditsPanel::OnMsg(const ButtonDownMsg& msg){
+    if(!mAutoScroll) return DataNode(kDataUnhandled, 0);
+    else return DataNode(1);
+}
+
+void CreditsPanel::Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
+    DataArray* arr = mNames->Array(j);
+    MILO_ASSERT(label, 0xE9);
+    label->SetCreditsText(arr, listlabel);
+}
+
+RndMat* CreditsPanel::Mat(int i, int j, UIListMesh* mesh) const {
+    DataArray* arr = mNames->Array(j);
+    Symbol s = blank;
+    if(arr->Size() != 0) s = arr->Sym(0);
+    if(s == image){
+        return mDir->Find<RndMat>(arr->Str(1), true);
+    }
+    else return 0;
+}
+
+int CreditsPanel::NumData() const { return mNames->Size(); }
