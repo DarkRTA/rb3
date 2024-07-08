@@ -238,7 +238,10 @@
             "system/meta/ButtonHolder.cpp": "NonMatching",
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
-            "system/meta/FixedSizeSaveable.cpp": "NonMatching",
+            "system/meta/FixedSizeSaveable.cpp": {
+                "status": "LinkIssues",
+                "comment": "Missing std::type_info usages"
+            },
             "system/meta/FixedSizeSaveableStream.cpp": "NonMatching",
             "system/meta/HAQManager.cpp": "NonMatching",
             "system/meta/HeldButtonPanel.cpp": "NonMatching",

@@ -137,8 +137,7 @@ void FixedSizeSaveable::LoadStd(FixedSizeSaveableStream& fs, std::vector<Symbol>
 }
 
 void FixedSizeSaveable::SaveStd(FixedSizeSaveableStream& fs, const std::list<Symbol>& list, int i){
-    int size = 0;
-    for(std::list<Symbol>::const_iterator it = list.begin(); it != list.end(); it++) size++;
+    int size = list.size();
     fs << size;
     for(std::list<Symbol>::const_iterator it = list.begin(); it != list.end(); it++){
         SaveSymbolID(fs, *it);
@@ -149,7 +148,7 @@ void FixedSizeSaveable::SaveStd(FixedSizeSaveableStream& fs, const std::list<Sym
 void FixedSizeSaveable::LoadStd(FixedSizeSaveableStream& fs, std::list<Symbol>& list, int i){
     int size;
     fs >> size;
-    for(int idx = 0; i < size; i++){
+    for(int idx = 0; idx < size; idx++){
         Symbol s;
         LoadSymbolFromID(fs, s);
         list.push_back(s);
@@ -169,7 +168,7 @@ void FixedSizeSaveable::SaveStd(FixedSizeSaveableStream& fs, const std::set<Symb
 void FixedSizeSaveable::LoadStd(FixedSizeSaveableStream& fs, std::set<Symbol>& set, int i){
     int size;
     fs >> size;
-    for(int idx = 0; i < size; i++){
+    for(int idx = 0; idx < size; idx++){
         Symbol s;
         LoadSymbolFromID(fs, s);
         set.insert(s);
@@ -182,14 +181,22 @@ void FixedSizeSaveable::EnablePrintouts(bool b){ sPrintoutsEnabled = b; }
 FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream& fs, const FixedSizeSaveable& saveable){
     MILO_ASSERT(FixedSizeSaveable::sSaveVersion >= 0, 0xFF);
     MILO_ASSERT(FixedSizeSaveable::sMaxSymbols >= 0, 0x100);
+
     int oldtell = fs.Tell();
     saveable.SaveFixed(fs);
     int newtell = fs.Tell();
+
     MILO_ASSERT_FMT(!fs.Fail(), "FixedSizeSaveableStream operator<< fixedStream failed!");
     MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
-    if(newtell != oldtell + (saveable.mSaveSizeMethod)(FixedSizeSaveable::sSaveVersion)){
-        MILO_FAIL("Bad save file size!  %s wrote %d instead of the expected %d", newtell - oldtell, (saveable.mSaveSizeMethod)(FixedSizeSaveable::sSaveVersion));
+
+    if(newtell != oldtell + saveable.mSaveSizeMethod(FixedSizeSaveable::GetSaveVersion())){
+        MILO_FAIL("Bad save file size!  %s wrote %d instead of the expected %d",
+            typeid(saveable).name(),
+            newtell - oldtell,
+            saveable.mSaveSizeMethod(FixedSizeSaveable::GetSaveVersion())
+        );
     }
+
     return fs;
 }
 
@@ -197,11 +204,22 @@ FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream& fs, FixedSizeSaveab
     MILO_ASSERT(FixedSizeSaveable::sSaveVersion >= 0, 0x125);
     MILO_ASSERT(FixedSizeSaveable::sMaxSymbols >= 0, 0x126);
     MILO_ASSERT(FixedSizeSaveable::sCurrentMemcardLoadVer > 0, 0x127);
+
+    int asdf = FixedSizeSaveable::sCurrentMemcardLoadVer;
+
     int oldtell = fs.Tell();
-    saveable.LoadFixed(fs, FixedSizeSaveable::sCurrentMemcardLoadVer);
+    saveable.LoadFixed(fs, asdf);
     int newtell = fs.Tell();
+
     MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
-    if(newtell != oldtell + (saveable.mSaveSizeMethod)(FixedSizeSaveable::sCurrentMemcardLoadVer)){
-        MILO_FAIL("Bad load!  %s read %d instead of the expected %d!", newtell - oldtell, (saveable.mSaveSizeMethod)(FixedSizeSaveable::sCurrentMemcardLoadVer));
+
+    if(newtell != oldtell + saveable.mSaveSizeMethod(asdf)){
+        MILO_FAIL("Bad load!  %s read %d instead of the expected %d!",
+            typeid(saveable).name(),
+            newtell - oldtell,
+            saveable.mSaveSizeMethod(asdf)
+        );
     }
+
+    return fs;
 }
