@@ -237,7 +237,7 @@
             "system/meta/Achievements.cpp": "Matching",
             "system/meta/ButtonHolder.cpp": "NonMatching",
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
-            "system/meta/CreditsPanel.cpp": "NonMatching",
+            "system/meta/CreditsPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/FixedSizeSaveableStream.cpp": "Matching",
