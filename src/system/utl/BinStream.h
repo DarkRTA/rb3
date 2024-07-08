@@ -6,6 +6,7 @@
 #include "utl/Symbol.h"
 #include <utility>
 #include <vector>
+#include <map>
 
 #define BS_WRITE_TYPE(var) \
     BinStream& operator<<(var x){ \
@@ -183,6 +184,15 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::list<T1, 
     }
 
     return bs;
+}
+
+// TODO: implement
+template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
+
+}
+
+template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
+
 }
 
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2> p) {

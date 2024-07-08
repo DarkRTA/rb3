@@ -1,6 +1,7 @@
 #include "utl/SongInfoCopy.h"
 #include "os/System.h"
 #include "os/File_Wii.h"
+#include <algorithm>
 
 SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPackageName() {
     mName = info->GetName();
@@ -39,17 +40,17 @@ SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPa
     }
 }
 
-SongInfoCopy::SongInfoCopy() : mName() {
-    mName = Symbol();
+SongInfoCopy::SongInfoCopy() : mName(), mBaseFileName(), mPackageName() {
+    mName = gNullStr;
     mNumVocalParts = 1;
     mHopoThreshold = 0;
     mMuteVolume = 0.0f;
     mVocalMuteVolume = 0.0f;
     DataArray* cfg = SystemConfig()->FindArray("beatmatcher", false);
     if(cfg){
-        mHopoThreshold = cfg->FindArray("parser", true)->FindArray("hopo_threshold", true)->Int(1);
-        mMuteVolume = cfg->FindArray("audio", true)->FindArray("mute_volume",true)->Float(1);
-        mVocalMuteVolume = cfg->FindArray("audio", true)->FindArray("mute_volume_vocals",true)->Float(1);
+        mHopoThreshold = cfg->FindArray("parser", true)->FindInt("hopo_threshold");
+        mMuteVolume = cfg->FindArray("audio", true)->FindFloat("mute_volume");
+        mVocalMuteVolume = cfg->FindArray("audio", true)->FindFloat("mute_volume_vocals");
     }
 }
 
@@ -74,6 +75,16 @@ const std::vector<TrackChannels>& SongInfoCopy::GetTracks() const {
     return mTrackChannels;
 }
 
+// fn_803612E0
+bool SongInfoCopy::IsPlayTrackChannel(int chan) const {
+    for(int i = 0; i < mTrackChannels.size(); i++){
+        if(std::find(mTrackChannels[i].mChannels.begin(), mTrackChannels[i].mChannels.end(), chan) != mTrackChannels[i].mChannels.end()){
+            return true;
+        }
+    }
+    return false;
+}
+
 // this is wrong
 const std::vector<int>& SongInfoCopy::FindTrackChannel(SongInfoAudioType ty) const {
     for(int i = 0; i < mTrackChannels.size(); i++){
@@ -81,6 +92,18 @@ const std::vector<int>& SongInfoCopy::FindTrackChannel(SongInfoAudioType ty) con
             return mTrackChannels[i].mChannels;
         }   
     }
+}
+
+// also wrong
+int SongInfoCopy::NumChannelsOfTrack(SongInfoAudioType ty) const {
+    const std::vector<int>& vec = FindTrackChannel(ty);
+}
+
+int SongInfoCopy::TrackIndex(SongInfoAudioType ty) const {
+    for(int i = 0; i < mTrackChannels.size(); i++){
+        if(mTrackChannels[i].mAudioType == ty) return i;
+    }
+    return -1;
 }
 
 int SongInfoCopy::GetNumVocalParts() const {
