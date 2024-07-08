@@ -12,7 +12,7 @@ BEGIN_MESSAGE(ProcessedButtonDownMsg, processed_button_down, LocalUser*, JoypadB
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
     JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }
     int GetPadNum() const { return mData->Int(5); }
-    bool GetMsgBool() const { return mData->Int(6) != 0; } // TODO: figure out what this bool represents
+    bool IsHeldDown() const { return mData->Int(6) != 0; } // TODO: figure out what this bool represents
 END_MESSAGE;
 
 struct PressRec {

@@ -19,7 +19,7 @@ void HeldButtonPanel::Poll(){
 #pragma push
 #pragma pool_data off
 DataNode HeldButtonPanel::OnMsg(const ProcessedButtonDownMsg& msg){
-    if(msg.GetMsgBool()){
+    if(msg.IsHeldDown()){
         static Message msgButtonHeld(on_button_held, DataNode(0), DataNode(0), DataNode(0), DataNode(0));
         msgButtonHeld->Node(2) = DataNode(msg.GetUser());
         msgButtonHeld->Node(3) = DataNode(msg.GetButton());
