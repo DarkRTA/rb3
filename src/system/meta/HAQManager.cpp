@@ -6,6 +6,7 @@
 #include "ui/UIComponent.h"
 #include "ui/UIList.h"
 #include "ui/UISlider.h"
+#include "utl/Symbols.h"
 
 HAQManager* TheHAQMgr;
 
@@ -109,10 +110,20 @@ UIComponent* HAQManager::GetUIFocusComponent() const {
 
 void HAQManager::PrintList(UIList* i_pList){
     MILO_ASSERT(i_pList, 0xC2);
+    int pos = i_pList->SelectedPos();
+    Print(kHAQType_List, i_pList, pos);
 }
 
 void HAQManager::PrintSlider(UISlider* slider){
+    Print(kHAQType_Slider, slider, slider->Current());
+}
 
+void HAQManager::PrintSongInfo(Symbol s, float f){
+    if(TheHAQMgr && TheHAQMgr->Enabled()){
+        String text = String(MakeString("%s %f", s, f / 1000.0f));
+        String label = TheHAQMgr->GetLabelForType(kHAQType_Song);
+        RawPrint(label.c_str(), text.c_str());
+    }
 }
 
 String HAQManager::GetButtonText() const {
@@ -142,3 +153,53 @@ String HAQManager::GetTextForType(HAQType ty) const {
     return ret;
 }
 
+void HAQManager::Print(HAQType ty, Hmx::Object* o, int i){
+    if(TheHAQMgr && TheHAQMgr->Enabled()){
+        String label = TheHAQMgr->GetLabelForType(ty);
+        String text = String(MakeString("%s %i", o->Name(), i));
+        RawPrint(label.c_str(), text.c_str());
+    }
+}
+
+void HAQManager::Print(HAQType ty){
+    if(TheHAQMgr && TheHAQMgr->Enabled()){
+        String label = TheHAQMgr->GetLabelForType(ty);
+        String text = TheHAQMgr->GetTextForType(ty);
+        RawPrint(label.c_str(), text.c_str());
+        if(ty == kHAQType_Focus){
+            UIComponent* comp = TheHAQMgr->GetUIFocusComponent();
+            if(comp) TheHAQMgr->PrintComponentInfo(comp);
+        }
+    }
+}
+
+void HAQManager::RawPrint(const char* c1, const char* c2){
+    if(TheHAQMgr && TheHAQMgr->Enabled()){
+        MILO_LOG("HAQ_%s: %s\n", c1, c2);
+    }
+}
+
+void HAQManager::ToggleEnabled(){
+    m_bEnabled = !m_bEnabled;
+}
+
+void HAQManager::DisplayAll(){
+    if(!m_bEnabled) ToggleEnabled();
+    Print(kHAQType_Screen);
+    Print(kHAQType_Focus);
+}
+
+void HAQManager::HandleComponentScroll(UIComponent* comp){
+    if(TheHAQMgr && TheHAQMgr->Enabled()){
+        TheHAQMgr->PrintComponentInfo(comp);
+    }
+}
+
+BEGIN_HANDLERS(HAQManager)
+    HANDLE_ACTION(toggle_enabled, ToggleEnabled())
+    HANDLE_EXPR(is_enabled, m_bEnabled)
+    HANDLE_ACTION(display_all, DisplayAll())
+    HANDLE_ACTION(raw_print, RawPrint(_msg->Str(2), _msg->Str(3)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x164)
+END_HANDLERS

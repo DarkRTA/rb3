@@ -35,10 +35,18 @@ public:
     void PrintComponentInfo(UIComponent*);
     String GetPressedStringForButton(int, JoypadButton, String) const;
     String GetButtonStatePressedString(int) const;
+    bool Enabled() const { return m_bEnabled; }
+    void ToggleEnabled();
+    void DisplayAll();
 
     static void Init();
+    static void PrintSongInfo(Symbol, float);
+    static void Print(HAQType, Hmx::Object*, int);
+    static void Print(HAQType);
+    static void RawPrint(const char*, const char*);
+    static void HandleComponentScroll(UIComponent*);
 
-    bool m_bEnabled;
+    bool m_bEnabled; // 0x1c
 };
 
 extern HAQManager* TheHAQMgr;
