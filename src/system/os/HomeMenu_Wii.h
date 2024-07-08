@@ -4,6 +4,16 @@
 
 class HomeMenu : public DiscErrorMgrWii::Callback {
 public:
+
+    class Callback {
+    public:
+        virtual void HomeMenuOpen(bool){}
+        virtual void HomeMenuClose(bool){}
+        virtual void HomeMenuDraw(){}
+        virtual void HomeMenuBannedDraw(short, void*){}
+        virtual void SDIconDraw(short, void*){}
+    };
+
     HomeMenu();
     virtual void DiscErrorStart();
     virtual void DiscErrorEnd();
