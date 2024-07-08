@@ -12,6 +12,9 @@ public:
 
     void Init(DataArray*);
     void Cleanup();
+    void ConfigureMetaMusicSceneData(DataArray*);
+    Symbol GetSceneForScreen(Symbol) const;
+    MetaMusicScene* GetScene(Symbol) const;
 
     std::map<Symbol, MetaMusicScene*> m_mapScenes; // 0x1c
     std::map<Symbol, Symbol> m_mapScreenToScene; // 0x34
