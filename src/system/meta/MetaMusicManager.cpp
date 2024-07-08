@@ -28,6 +28,7 @@ void MetaMusicManager::Init(DataArray* da){
     ConfigureMetaMusicSceneData(da->FindArray("scenes", true));
 }
 
+// fn_80511280
 void MetaMusicManager::ConfigureMetaMusicSceneData(DataArray* da){
     MILO_ASSERT(m_mapScenes.empty(), 0x38);
     for(int i = 1; i < da->Size(); i++){
@@ -35,20 +36,21 @@ void MetaMusicManager::ConfigureMetaMusicSceneData(DataArray* da){
         MILO_ASSERT(pSceneArray, 0x3E);
         MetaMusicScene* pScene = new MetaMusicScene(pSceneArray);
         MILO_ASSERT(pScene, 0x42);
-        Symbol scene_name = pScene->GetName();
-        bool scene_exists = GetScene(scene_name);
-        if(scene_exists){
+        Symbol scene_name = pScene->GetName(); 
+        if(SceneExists(scene_name)){
             MILO_WARN("%s scene already exists, skipping", scene_name.Str());
             delete pScene;
         }
         else {
             m_mapScenes[scene_name] = pScene;
-            for(std::list<Symbol>::const_iterator it = pScene->GetScreenList().begin(); !(*it).Null(); it++){
-                if(GetSceneForScreen(*it) != gNullStr){
-                    MILO_WARN("%s screen already referenced in a scene, skipping", (*it).Str());
+            const std::list<Symbol>& screenlist = pScene->GetScreenList();
+            for(std::list<Symbol>::const_iterator it = screenlist.begin(); it != screenlist.end(); it++){
+                Symbol theSymbol = *it;
+                if(SceneForScreenExists(theSymbol)){
+                    MILO_WARN("%s screen already referenced in a scene, skipping", theSymbol.Str());
                 }
                 else {
-                    m_mapScreenToScene[scene_name] = *it;
+                    m_mapScreenToScene[theSymbol] = scene_name;
                 }
             }
         }
