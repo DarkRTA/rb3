@@ -24,6 +24,8 @@ public:
     virtual bool Exiting() const;
     virtual void Poll();
 
+    void SetAutoScroll(bool);
+
     bool mCheatOn; // 0x3c
     DataLoader* mLoader; // 0x40
     DataArray* mNames; // 0x44

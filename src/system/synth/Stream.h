@@ -67,6 +67,7 @@ public:
     virtual void RemapChannel(int, int){}
 
     void SetVolume(float);
+    FaderGroup* Faders() const { return mFaders; }
 
     static const float kStreamEndMs;
     static const int kStreamEndSamples;

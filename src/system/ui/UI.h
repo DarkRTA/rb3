@@ -67,6 +67,7 @@ public:
     DataNode OnGoBackScreen(const DataArray*);
     DataNode OnIsResource(DataArray*);
     DataNode ForeachScreen(const DataArray*);
+    TransitionState GetTransitionState() const { return mTransitionState; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc
