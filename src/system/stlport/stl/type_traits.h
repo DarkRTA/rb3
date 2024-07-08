@@ -278,8 +278,9 @@ struct _TrivialUCopy {
   typedef typename _AreSameUnCVTypes<_Src, _Dst>::_Ret _Tr2;
   typedef typename _Land2<_Tr1, _Tr2>::_Ret _UserRet;
 
-  typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Ret;
-  static _Ret _Answer() { return _Ret(); }
+  typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Answer;
+//   typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Ret;
+//   static _Ret _Answer() { return _Ret(); }
 };
 
 template <class _Tp>
