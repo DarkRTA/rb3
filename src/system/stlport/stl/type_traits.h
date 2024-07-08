@@ -350,6 +350,17 @@ inline _OKToSwap<_Tp1, _Tp2, _IsRef1, _IsRef2>
 _IsOKToSwap(_Tp1*, _Tp2*, const _IsRef1&, const _IsRef2&)
 { return _OKToSwap<_Tp1, _Tp2, _IsRef1, _IsRef2>(); }
 
+template <class _Tp1, class _Tp2>
+struct _OKToMemCpy {
+  typedef typename _TrivialCopy<_Tp1, _Tp2>::_Ret _Ret;
+  static _Ret _Answer() { return _Ret(); }
+};
+
+template <class _Tp1, class _Tp2>
+inline _OKToMemCpy<_Tp1, _Tp2>
+_IsOKToMemCpy(_Tp1*, _Tp2*)
+{ return _OKToMemCpy<_Tp1, _Tp2>(); }
+
 template <class _Src, class _Dst>
 inline _TrivialCopy<_Src, _Dst> _UseTrivialCopy(_Src*, _Dst*)
 { return _TrivialCopy<_Src, _Dst>(); }
