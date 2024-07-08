@@ -245,6 +245,7 @@
             "system/meta/HeldButtonPanel.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/Meta.cpp": "NonMatching",
+            "system/meta/MetaMusicManager.cpp": "NonMatching",
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/Profile.cpp": "Matching",
             "system/meta/SongMetadata.cpp": "Matching",

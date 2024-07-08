@@ -42,14 +42,9 @@ void CreditsPanel::Exit(){
     UIPanel::Exit();
 }
 
+// fn_8050C398
 bool CreditsPanel::Exiting() const {
-    bool ret = true;
-    bool b = false;
-    if(mStream){
-        if(mStream->Faders()->FindLocal("fade", true)->IsFading()) b = true;
-    }
-    if(!b && !UIPanel::Exiting()) ret = false;
-    return ret;
+    return mStream && mStream->Faders()->FindLocal("fade", true)->IsFading() || UIPanel::Exiting();
 }
 
 void CreditsPanel::Unload(){
