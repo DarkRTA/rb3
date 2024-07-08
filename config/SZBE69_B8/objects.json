@@ -240,7 +240,7 @@
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": {
                 "status": "LinkIssues",
-                "comment": "Missing std::type_info usages"
+                "comment": "std::type_info issues"
             },
             "system/meta/FixedSizeSaveableStream.cpp": "NonMatching",
             "system/meta/HAQManager.cpp": "NonMatching",

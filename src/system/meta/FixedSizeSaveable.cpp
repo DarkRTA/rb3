@@ -1,3 +1,4 @@
+#define STL_NODE_ALLOC_DEBUG
 #include "meta/FixedSizeSaveable.h"
 #include "os/Debug.h"
 #include <typeinfo>
