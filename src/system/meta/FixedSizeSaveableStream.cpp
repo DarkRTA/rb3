@@ -9,6 +9,7 @@ FixedSizeSaveableStream::~FixedSizeSaveableStream(){
 
 }
 
+// fn_8050FAFC
 void FixedSizeSaveableStream::InitializeTable(){
     m_mapIDToSymbol.clear();
     m_mapSymbolToID.clear();
@@ -41,8 +42,10 @@ bool FixedSizeSaveableStream::HasSymbol(Symbol s) const {
     return GetID(s) != -1;
 }
 
+// fn_8050FC70
 bool FixedSizeSaveableStream::HasID(int i) const {
-    return GetSymbol(i) != "";
+    Symbol s = GetSymbol(i);
+    return s != "";
 }
 
 int FixedSizeSaveableStream::GetID(Symbol s) const {

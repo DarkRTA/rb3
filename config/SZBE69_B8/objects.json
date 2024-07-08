@@ -239,7 +239,7 @@
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
-            "system/meta/FixedSizeSaveableStream.cpp": "NonMatching",
+            "system/meta/FixedSizeSaveableStream.cpp": "Matching",
             "system/meta/HAQManager.cpp": "NonMatching",
             "system/meta/HeldButtonPanel.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
