@@ -24,48 +24,11 @@ jmp_buf TheDebugJump;
 DebugNotifier TheDebugNotifier;
 DebugFailer TheDebugFailer;
 
-static int* gpDbgFrameID = 0;
+int* gpDbgFrameID;
 std::vector<String> gNotifies;
 
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
 const GXColor DebugBGColor = { 0x80, 0, 0, 255 };
-
-DECOMP_FORCEACTIVE(Debug,
-    "%s",
-    "no_try",
-    "log",
-    "no_modal",
-    "no_notify",
-    __FILE__,
-    "MainThread()",
-
-    // Temp strings needed for string pooling to match
-    "TRY conditional not exited %d",
-    "\n\n-- Program ended --\n",
-    "%s\n",
-    "THREAD-NOTIFY not called in MainThread: %s\n",
-    "NOTIFY: %s\n",
-    "main",
-    "THREAD-FAIL: %s\n",
-    "FAIL-MSG: %s\n",
-    "APP FAILED\n",
-    "n/a",
-    "version",
-    "<unknown>",
-    "\n\nConsoleName: %s   %s   Plat: %s   ",
-    "\nLang: %s   SystemConfig: %s",
-    "true",
-    "false",
-    "\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
-    "debug/fail",
-    "msg",
-    "callstack",
-    "dataCallstack",
-    "cheatsMsg",
-    "FAIL: %s\n",
-    "APP EXITED, EXIT CODE %d\n",
-    "Debug::Print"
-)
 
 int DbgGetFrameID() {
     if (gpDbgFrameID) return *gpDbgFrameID;
