@@ -252,8 +252,10 @@ inline _OutputIter __copy_backward_aux(_InputIter __first, _InputIter __last, _O
 template <class _InputIter, class _OutputIter>
 inline _OutputIter __copy_backward_aux(_InputIter __first, _InputIter __last, _OutputIter __result, const __true_type&) {
   return __copy_backward_ptrs(__first, __last, __result,
-                              _UseTrivialCopy(_STLP_VALUE_TYPE(__first, _InputIter),
+                              _IsOKToMemCpy(_STLP_VALUE_TYPE(__first, _InputIter),
                                               _STLP_VALUE_TYPE(__result, _OutputIter))._Answer());
+                            //   _UseTrivialCopy(_STLP_VALUE_TYPE(__first, _InputIter),
+                            //                   _STLP_VALUE_TYPE(__result, _OutputIter))._Answer());
 }
 
 }

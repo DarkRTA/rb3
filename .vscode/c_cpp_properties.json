@@ -6,22 +6,26 @@
                 // Recursive paths are deliberately not used to
                 // make it easier to spot improper includes
 
-                // Top-level
-                "${workspaceFolder}/src",
-                "${workspaceFolder}/src/libs",
-                "${workspaceFolder}/src/band3",
-                "${workspaceFolder}/src/sdk",
-                "${workspaceFolder}/src/system",
+                // C/C++ stdlib
+                // STLport requires that it comes first in the include path list
+                "${workspaceFolder}/src/system/stlport",
+                "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C",
+                // Not included since it's all wrapped by stlport
+                // "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C++",
 
                 // SDK
+                "${workspaceFolder}/src/sdk",
                 "${workspaceFolder}/src/sdk/RVL_SDK",
-                // Note: MSL_C++ comes before STLport here,
-                // since it's generally more relevant to view/edit
-                "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C",
-                "${workspaceFolder}/src/sdk/PowerPC_EABI_Support/MSL/MSL_C++",
 
                 // Libraries
-                "${workspaceFolder}/src/system/stlport"
+                "${workspaceFolder}/src/libs",
+                "${workspaceFolder}/src/system/speex/include",
+
+                // Project source
+                "${workspaceFolder}/src",
+                "${workspaceFolder}/src/network",
+                "${workspaceFolder}/src/system",
+                "${workspaceFolder}/src/band3"
             ],
             "cStandard": "c99",
             "cppStandard": "c++98",

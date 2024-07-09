@@ -278,8 +278,9 @@ struct _TrivialUCopy {
   typedef typename _AreSameUnCVTypes<_Src, _Dst>::_Ret _Tr2;
   typedef typename _Land2<_Tr1, _Tr2>::_Ret _UserRet;
 
-  typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Ret;
-  static _Ret _Answer() { return _Ret(); }
+  typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Answer;
+//   typedef typename _Lor2<_NativeRet, _UserRet>::_Ret _Ret;
+//   static _Ret _Answer() { return _Ret(); }
 };
 
 template <class _Tp>
@@ -349,6 +350,17 @@ template <class _Tp1, class _Tp2, class _IsRef1, class _IsRef2>
 inline _OKToSwap<_Tp1, _Tp2, _IsRef1, _IsRef2>
 _IsOKToSwap(_Tp1*, _Tp2*, const _IsRef1&, const _IsRef2&)
 { return _OKToSwap<_Tp1, _Tp2, _IsRef1, _IsRef2>(); }
+
+template <class _Tp1, class _Tp2>
+struct _OKToMemCpy {
+  typedef typename _TrivialCopy<_Tp1, _Tp2>::_Ret _Ret;
+  static _Ret _Answer() { return _Ret(); }
+};
+
+template <class _Tp1, class _Tp2>
+inline _OKToMemCpy<_Tp1, _Tp2>
+_IsOKToMemCpy(_Tp1*, _Tp2*)
+{ return _OKToMemCpy<_Tp1, _Tp2>(); }
 
 template <class _Src, class _Dst>
 inline _TrivialCopy<_Src, _Dst> _UseTrivialCopy(_Src*, _Dst*)
