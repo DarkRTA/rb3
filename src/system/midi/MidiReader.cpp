@@ -267,19 +267,24 @@ void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
 // fn_80534568
 void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
     MidiVarLenNumber num(bs);
+    unsigned int numVal = num.mValue;
     int oldtell = bs.Tell();
-    switch((int)uc){
+
+    switch(uc){
+        case 0x1:
+        case 0x2:
+        case 0x3:
         case 0x5:
             char buf[0x100];
-            if(num.mValue >= 0x100){
+            if(numVal >= 0x100){
                 bs.Read(buf, 8);
                 buf[8] = 0;
                 MILO_WARN("%s (%s): Text event beginning with '%s' at %s exceeds maximum allowed length of %d characters",
-                    mStreamName.c_str(), mCurTrackName.c_str(), buf, TickFormat(0, *mMeasureMap), 0xFF);
+                    mStreamName.c_str(), mCurTrackName.c_str(), buf, TickFormat(0, *mMeasureMap), 0xFFul);
             }
             else {
-                bs.Read(buf, num.mValue);
-                buf[num.mValue] = 0;
+                bs.Read(buf, numVal);
+                buf[numVal] = 0;
                 if(uc == 3){
                     if(i != 0){
                         MILO_WARN("%s (%s): MIDI track name event must appear at %s; found track name '%s' at %s",
@@ -295,15 +300,15 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                         mFail = true;
                         return;
                     }
-                    str = buf;
+                    mCurTrackName = buf;
                 }
                 mRcvr.OnText(i, buf, uc);
             }
             break;
         case 0x51:
-            unsigned char a,b,c;
-            bs >> a >> b >> c;
-            int product = b * 0x100 + c + a * 0x10000;
+            unsigned char c,b,a;
+            bs >> c >> b >> a;
+            int product = a + c * 0x10000 + b * 0x100;
             if(product < 200000){
                 MILO_WARN("%s (%s): Tempo marker at %s (%f bpm) is too fast; maximum is 300 bpm",
                     mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
@@ -334,19 +339,20 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                 }
                 mRcvr.OnEndOfTrack();
             }
-            break; 
+            break;
         case 0x58:
             unsigned char ts_num, ts_den;
             bs >> ts_num >> ts_den;
-            if(ts_den >= 7){
+            if(ts_den > 6){
                 MILO_WARN("%s (%s): Time signature at %s has invalid denominator (2^%d); max is 64 (2^6)",
                     mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), ts_den);
             }
             else {
-                int powed = pow_f(2.0f, ts_den);
+                double base = 2;
+                int powed = pow_d(base, ts_den);
                 if(ts_num == 0){
                     MILO_WARN("%s (%s): Time signature %d/%d at %s has invalid numerator (%d)",
-                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap), 0);
+                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap), ts_num);
                 }
                 int ts_m, ts_b, ts_t;
                 mMeasureMap->TickToMeasureBeatTick(i, ts_m, ts_b, ts_t);
@@ -360,11 +366,19 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                 bs.Seek(2, BinStream::kSeekCur);
             }
             break;
+        case 4:
+        case 6:
+        case 7:
+        case 0x20:
+        case 0x21:
+        case 0x54:
+        case 0x59:
+            break;
         default:
             MILO_WARN("%s (%s): Cannot parse meta event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
             break;
     }
-    if(mState == kInTrack) bs.Seek(oldtell + num.mValue, BinStream::kSeekBegin);
+    if(mState == kInTrack) bs.Seek(oldtell + numVal, BinStream::kSeekBegin);
 }
 
 void MidiReader::QueueChannelMsg(int i, unsigned char uc1, unsigned char uc2, unsigned char uc3){
