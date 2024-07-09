@@ -164,8 +164,7 @@ void MidiReader::ReadFileHeader(BinStream& bs){
     if(mTicksPerQuarter != 480){
         MILO_WARN("%s: Time division must be 480 ticks per quarter; this file is %d ticks per quarter", mStreamName.c_str(), mTicksPerQuarter);
     }
-
-    if(mNumTracks != 0 && midiType == 1 && !(mTicksPerQuarter & 0x8000U) && mTicksPerQuarter != 480){
+    if(mNumTracks == 0 || midiType != 1 || (mTicksPerQuarter & 0x8000U) || mTicksPerQuarter != 480){
         mFail = true;
         return;
     }
@@ -181,7 +180,9 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
         mFail = true;
     }
     else {
-        mTrackEndPos = bs.Tell() + header.mLength;
+        int headerlen = header.mLength;
+        int tell = bs.Tell();
+        mTrackEndPos = tell + headerlen;
         mCurTrackIndex++;
         mPrevStatus = 0;
         mCurTick = 0;
