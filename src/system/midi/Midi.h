@@ -84,6 +84,10 @@ public:
     void ReadTrackHeader(BinStream&);
     void ReadFileHeader(BinStream&);
     void ProcessMidiList();
+    void ReadMidiEvent(int, unsigned char, unsigned char, BinStream&);
+    void ReadSystemEvent(int, unsigned char, BinStream&);
+    void QueueChannelMsg(int, unsigned char, unsigned char, unsigned char);
+    void ReadMetaEvent(int, unsigned char, BinStream&);
 
     void Error(const char* msg) {
         mRcvr.Error(msg, mCurTick);

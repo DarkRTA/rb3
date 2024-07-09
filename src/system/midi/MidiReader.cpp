@@ -3,6 +3,7 @@
 #include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
+#include "midi/MidiConstants.h"
 #include "midi/MidiVarLen.h"
 
 MidiChunkID MidiChunkID::kMThd("MThd");
@@ -197,5 +198,65 @@ void MidiReader::ReadEvent(BinStream& bs){
         ProcessMidiList();
         if(mState != kInTrack) return;
         mMidiListTick = tpq;
+    }
+    bool b;
+    unsigned char midichar;
+    unsigned char nextchar;
+    bs >> midichar;
+    if(MidiIsStatus(midichar)){
+        b = false;
+        if(!MidiIsSystem(midichar)) mPrevStatus = midichar;
+    }
+    else {
+        b = true;
+        nextchar = midichar;
+        midichar = mPrevStatus;
+    }
+
+    if(MidiIsSystem(midichar)){
+        ReadSystemEvent(tpq, midichar, bs);
+    }
+    else {
+        if(!b) bs >> nextchar;
+        ReadMidiEvent(tpq, midichar, nextchar, bs);
+    }
+}
+
+// fn_805343A4
+void MidiReader::ReadMidiEvent(int tick, unsigned char status, unsigned char data1, BinStream& bs){
+    int bit = status & 0xF0;
+    unsigned char uc;
+    bool queue = false;
+    switch(bit){
+        case 0x90: bs >> uc; queue = true;
+            if(uc == 0) status = status & 0xF | 0x80;
+            break;
+        case 0x80: bs >> uc; queue = true; break;
+        case 0xB0: bs >> uc; queue = true; break;
+        case 0xE0: case 0xA0: bs >> uc; break;
+        case 0xC0: case 0xD0: uc = 0; break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse event %i", mStreamName.c_str(), mCurTrackName.c_str(), bit);
+            break;
+    }
+    if(queue) QueueChannelMsg(tick, status, data1, uc);
+}
+
+// fn_805344C0
+void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
+    switch(uc){
+        case 0xF0:
+        case 0xF7:
+            MidiVarLenNumber num(bs);
+            bs.Seek(num.mValue, BinStream::kSeekCur);
+            break;
+        case 0xFF:
+            unsigned char read;
+            bs >> read;
+            ReadMetaEvent(i, read, bs);
+            break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse system event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
+            break;
     }
 }
