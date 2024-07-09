@@ -110,6 +110,7 @@ public:
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
     bool Unk130() const { return unk130; }
     int UnkE4() const { return unk_0xE4; }
+    RndCam* DefaultCam(){ return mDefaultCam; }
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -148,7 +149,7 @@ public:
     RndMat* unk84; // 0x84
     RndMat* unk88; // 0x88
     RndMat* unk8c; // 0x8c
-    RndCam* unk90; // 0x90
+    RndCam* mDefaultCam; // 0x90
     RndCam* unk94; // 0x94
     RndEnviron* unk98; // 0x98
     RndLight* unk9c; // 0x9c

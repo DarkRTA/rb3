@@ -37,6 +37,7 @@ public:
     float NearPlane() const { return mNearPlane; }
     float FarPlane() const { return mFarPlane; }
     float YFov() const { return mYFov; }
+    RndTex* TargetTex(){ return mTargetTex; }
 
     static RndCam* sCurrent;
     NEW_OBJ(RndCam)

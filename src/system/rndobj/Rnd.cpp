@@ -131,7 +131,7 @@ void Rnd::Modal(bool& b, char* c, bool bb){
 }
 
 Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(),
-    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), unk90(0), unk94(0), unk98(0), unk9c(0),
+    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), mDefaultCam(0), unk94(0), unk98(0), unk9c(0),
     unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), mGsTiming(0), mShowSafeArea(0), unkde(0), unkdf(1), mAspect(kWidescreen), unk_0xE4(0),
     unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
     unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll), mForceCharLod(-1) {
@@ -409,7 +409,7 @@ BEGIN_HANDLERS(Rnd)
     HANDLE_ACTION(test_texture_paths, TestTexturePaths(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(test_material_textures, TestMaterialTextures(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(set_gfx_mode, SetGfxMode((GfxMode)_msg->Int(2)))
-    HANDLE_EXPR(default_cam, unk90)
+    HANDLE_EXPR(default_cam, mDefaultCam)
     HANDLE_EXPR(last_proc_cmds, mLastProcCmds)
     HANDLE_EXPR(toggle_all_postprocs, mDisablePostProc = mDisablePostProc == 0)
     HANDLE_ACTION(recreate_defaults, CreateDefaults())
