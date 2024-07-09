@@ -11,6 +11,7 @@ public:
     virtual bool FinishStream(){ return 0; }
 
     bool HasSymbol(Symbol) const;
+    bool HasID(int) const;
     int GetID(Symbol) const;
     int AddSymbol(Symbol);
     Symbol GetSymbol(int) const;
@@ -18,6 +19,9 @@ public:
     int ReadInt();
     float ReadFloat();
     void SetSymbolID(Symbol, int);
+    void SaveTable();
+    int GetSymbolTableSize(int);
+    void LoadTable(int);
 
     std::map<Symbol, int>& GetSymbolToIDMap();
 

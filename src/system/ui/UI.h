@@ -60,13 +60,14 @@ public:
     void PrintLoadedDirs(const char*);
     void ShowNetError();
     bool WentBack() const { return mWentBack; }
-    UIScreen* CurrentScreen();
-    UIScreen* TransitionScreen() const;
+    UIScreen* CurrentScreen(){ return mCurrentScreen; }
+    UIScreen* TransitionScreen() const { return mTransitionScreen; }
     UIScreen* BottomScreen();
     DataNode OnGotoScreen(const DataArray*);
     DataNode OnGoBackScreen(const DataArray*);
     DataNode OnIsResource(DataArray*);
     DataNode ForeachScreen(const DataArray*);
+    TransitionState GetTransitionState() const { return mTransitionState; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc

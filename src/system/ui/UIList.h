@@ -72,6 +72,8 @@ public:
     bool SetSelectedSimulateScroll(Symbol, bool);
     void HandleSelectionUpdated();
     void Scroll(int);
+    void AutoScroll();
+    void StopAutoScroll();
 
     static std::list<UIList*> sUIListSet;
 

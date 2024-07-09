@@ -15,8 +15,10 @@ public:
     virtual void Exit();
     virtual void Poll();
 
-    ButtonHolder* mHolder;
-    bool mHandling;
+    DataNode OnMsg(const ProcessedButtonDownMsg&);
+
+    ButtonHolder* mHolder; // 0x38
+    bool mHandling; // 0x3c
 
     NEW_OBJ(HeldButtonPanel)
 };

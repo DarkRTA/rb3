@@ -129,6 +129,7 @@ public:
     DataNode OnReflect(const DataArray*);
     DataNode OnToggleHeap(const DataArray*);
     DataNode OnTestDrawGroups(const DataArray*);
+    Aspect GetAspect() const { return mAspect; }
 
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30

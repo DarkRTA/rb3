@@ -3,9 +3,14 @@
 #include "utl/BinStream.h"
 
 class Movie {
-    public:
+public:
     Movie();
     ~Movie();
+
+    int GetFrame() const;
+    bool Paused() const;
+    void SetAspect(float);
+    bool Ready();
     bool Poll();
     void End();
     void SetPaused(bool);
