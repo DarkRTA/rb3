@@ -83,6 +83,7 @@ public:
     void ReadEvent(BinStream&);
     void ReadTrackHeader(BinStream&);
     void ReadFileHeader(BinStream&);
+    void ProcessMidiList();
 
     void Error(const char* msg) {
         mRcvr.Error(msg, mCurTick);

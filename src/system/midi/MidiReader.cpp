@@ -3,6 +3,7 @@
 #include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
+#include "midi/MidiVarLen.h"
 
 MidiChunkID MidiChunkID::kMThd("MThd");
 MidiChunkID MidiChunkID::kMTrk("MTrk");
@@ -186,33 +187,15 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
     }
 }
 
-// void fn_805341B0(int param_1,int *param_2)
-
-// {
-//   int iVar1;
-//   int iVar2;
-//   int iVar3;
-//   JsonObject aJStack_18 [12];
-  
-//   fn_80534130(aJStack_18);
-//   iVar1 = fn_80534108(aJStack_18,&lbl_80987EA4);
-//   if (iVar1 == 0) {
-//     iVar1 = JsonObject::GetJsonObjectStruct(aJStack_18);
-//     iVar2 = (**(code **)(*param_2 + 0x10))(param_2);
-//     iVar3 = *(int *)(param_1 + 0x28);
-//     *(int *)(param_1 + 0x24) = iVar2 + iVar1;
-//     *(int *)(param_1 + 0x28) = iVar3 + 1;
-//     *(undefined *)(param_1 + 0x30) = 0;
-//     *(undefined4 *)(param_1 + 0x2c) = 0;
-//     *(undefined4 *)(param_1 + 0x50) = 0xffffffff;
-//     *(undefined4 *)(param_1 + 0x18) = 2;
-//     (**(code **)(**(int **)(param_1 + 0x14) + 0xc))(*(int **)(param_1 + 0x14),iVar3);
-//   }
-//   else {
-//     String::c_str((String *)(param_1 + 8));
-//     *(undefined *)(param_1 + 100) = 1;
-//   }
-//   return;
-// }
-
-// fn_80534280 - read event(binstream&)
+// fn_80534280
+void MidiReader::ReadEvent(BinStream& bs){
+    MILO_ASSERT(mState == kInTrack, 0x19E);
+    MidiVarLenNumber num(bs);
+    mCurTick += num.mValue;
+    int tpq = (mCurTick + mDesiredTPQ) / mTicksPerQuarter;
+    if(tpq != mMidiListTick){
+        ProcessMidiList();
+        if(mState != kInTrack) return;
+        mMidiListTick = tpq;
+    }
+}
