@@ -44,6 +44,8 @@ public:
     static int sMaxSymbols;
     static bool sPrintoutsEnabled;
     SaveSizeMethodFunc* mSaveSizeMethod;
+
+    static int GetSaveVersion(){ return sSaveVersion; }
 };
 
 FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream&, const FixedSizeSaveable&);

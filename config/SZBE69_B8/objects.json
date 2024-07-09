@@ -242,6 +242,10 @@
             "system/meta/FixedSizeSaveable.cpp": "NonMatching",
             "system/meta/FixedSizeSaveableStream.cpp": "Matching",
             "system/meta/HAQManager.cpp": "Matching",
+            "system/meta/FixedSizeSaveable.cpp": {
+                "status": "LinkIssues",
+                "comment": "std::type_info issues"
+            },
             "system/meta/HeldButtonPanel.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/Meta.cpp": "NonMatching",

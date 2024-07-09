@@ -47,6 +47,10 @@
 #  include <stl/_algobase.h>
 #endif
 
+#if defined(STL_NODE_ALLOC_DEBUG) && !defined(_STLP_INTERNAL_TYPEINFO)
+#  include <stl/_typeinfo.h>
+#endif
+
 #ifndef __THROW_BAD_ALLOC
 #  if !defined(_STLP_USE_EXCEPTIONS)
 #    ifndef _STLP_INTERNAL_CSTDIO
@@ -439,6 +443,11 @@ public:
   }
 
   value_type *allocate(const size_type count, const void* ptr = nullptr) const {
+#ifdef STL_NODE_ALLOC_DEBUG
+    // A leftover from the earlier prototype versions of RB3;
+    // bank 5/6 use type info for allocation tracing purposes
+    typeid(value_type *);
+#endif
     return reinterpret_cast<value_type *>(
       _MemOrPoolAllocSTL(count * sizeof(value_type), FastPool)
     );
