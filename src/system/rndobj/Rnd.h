@@ -109,6 +109,7 @@ public:
     int DrawMode() const { return unk_0xE4; }
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
     bool Unk130() const { return unk130; }
+    int UnkE4() const { return unk_0xE4; }
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -130,6 +131,8 @@ public:
     DataNode OnToggleHeap(const DataArray*);
     DataNode OnTestDrawGroups(const DataArray*);
     Aspect GetAspect() const { return mAspect; }
+    int Width() const { return mWidth; }
+    int Height() const { return mHeight; }
 
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30

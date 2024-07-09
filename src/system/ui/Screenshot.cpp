@@ -27,9 +27,7 @@ void Screenshot::Load(BinStream& bs){
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
-    char x[0x100];
-    bs.ReadString(x, 256);
-    mTexPath.Set(FilePath::sRoot.c_str(), x);
+    bs >> mTexPath;
     Sync();
 }
 
@@ -40,16 +38,14 @@ void Screenshot::Sync(){
         mTex = Hmx::Object::New<RndTex>();
         mTex->SetBitmap(mTexPath);
         mMat = Hmx::Object::New<RndMat>();
-        mMat->mZMode = (ZMode)0;
-        mMat->mDirty |= 2;
-        mMat->mDiffuseTex = mTex;
-        mMat->mDirty |= 2;
+        mMat->SetZMode(kDisable);
+        mMat->SetDiffuseTex(mTex);
     }
 }
 
 void Screenshot::DrawShowing() {
-    if (!TheRnd->unk_0xE4 && TheLoadMgr.EditMode() && mMat) {
-        TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->mWidth, TheRnd->mHeight), Hmx::Color(0, 0, 0), mMat, 0, 0);
+    if (!TheRnd->UnkE4() && TheLoadMgr.EditMode() && mMat) {
+        TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->Width(), TheRnd->Height()), Hmx::Color(0, 0, 0), mMat, 0, 0);
     }
 }
 
