@@ -1,10 +1,12 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
+#include "math/MathFuncs.h"
 #include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
 #include "midi/MidiConstants.h"
 #include "midi/MidiVarLen.h"
+#include "utl/MBT.h"
 #include <algorithm>
 
 MidiChunkID MidiChunkID::kMThd("MThd");
@@ -266,20 +268,101 @@ void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
 void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
     MidiVarLenNumber num(bs);
     int oldtell = bs.Tell();
-    if((int)uc == 0x2F){
-        ProcessMidiList();
-        if(mCurTrackIndex == mNumTracks){
-            mState = kEnd;
-            mRcvr.OnEndOfTrack();
-            mRcvr.OnAllTracksRead();
-        }
-        else {
-            mState = kNewTrack;
-            if(mCurTrackIndex == 1 && mOwnMaps){
-                mOwnMaps = mRcvr.OnAcceptMaps(mTempoMap, mMeasureMap) == 0;
+    switch((int)uc){
+        case 0x5:
+            char buf[0x100];
+            if(num.mValue >= 0x100){
+                bs.Read(buf, 8);
+                buf[8] = 0;
+                MILO_WARN("%s (%s): Text event beginning with '%s' at %s exceeds maximum allowed length of %d characters",
+                    mStreamName.c_str(), mCurTrackName.c_str(), buf, TickFormat(0, *mMeasureMap), 0xFF);
             }
-            mRcvr.OnEndOfTrack();
-        }
+            else {
+                bs.Read(buf, num.mValue);
+                buf[num.mValue] = 0;
+                if(uc == 3){
+                    if(i != 0){
+                        MILO_WARN("%s (%s): MIDI track name event must appear at %s; found track name '%s' at %s",
+                            mStreamName.c_str(), buf, TickFormat(0, *mMeasureMap), buf, TickFormat(i, *mMeasureMap));
+                        mFail = true;
+                        return;
+                    }
+                    String& str = mTrackNames[mCurTrackIndex - 1];
+                    if(str.empty()) str = buf;
+                    else if(str != buf){
+                        MILO_WARN("%s (%s): Track contains multiple track name events (%s and %s)",
+                            mStreamName.c_str(), str.c_str(), str.c_str(), buf);
+                        mFail = true;
+                        return;
+                    }
+                    str = buf;
+                }
+                mRcvr.OnText(i, buf, uc);
+            }
+            break;
+        case 0x51:
+            unsigned char a,b,c;
+            bs >> a >> b >> c;
+            int product = b * 0x100 + c + a * 0x10000;
+            if(product < 200000){
+                MILO_WARN("%s (%s): Tempo marker at %s (%f bpm) is too fast; maximum is 300 bpm",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            if(product > 1500000){
+                MILO_WARN("%s (%s): Tempo marker at %s (%f bpm) is too slow; minimum is 40 bpm",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            if(mTempoMap->AddTempoInfoPoint(i, product)){
+                mRcvr.OnTempo(i, product);
+            }
+            else {
+                MILO_WARN("%s (%s): Tempo marker at %s (%.f bpm) conflicts with other tempo markers",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            break;
+        case 0x2F:
+            ProcessMidiList();
+            if(mCurTrackIndex == mNumTracks){
+                mState = kEnd;
+                mRcvr.OnEndOfTrack();
+                mRcvr.OnAllTracksRead();
+            }
+            else {
+                mState = kNewTrack;
+                if(mCurTrackIndex == 1 && mOwnMaps){
+                    mOwnMaps = mRcvr.OnAcceptMaps(mTempoMap, mMeasureMap) == 0;
+                }
+                mRcvr.OnEndOfTrack();
+            }
+            break; 
+        case 0x58:
+            unsigned char ts_num, ts_den;
+            bs >> ts_num >> ts_den;
+            if(ts_den >= 7){
+                MILO_WARN("%s (%s): Time signature at %s has invalid denominator (2^%d); max is 64 (2^6)",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), ts_den);
+            }
+            else {
+                int powed = pow_f(2.0f, ts_den);
+                if(ts_num == 0){
+                    MILO_WARN("%s (%s): Time signature %d/%d at %s has invalid numerator (%d)",
+                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap), 0);
+                }
+                int ts_m, ts_b, ts_t;
+                mMeasureMap->TickToMeasureBeatTick(i, ts_m, ts_b, ts_t);
+                if(mMeasureMap->AddTimeSignature(ts_m, ts_num, powed, true)){
+                    mRcvr.OnTimeSig(i, ts_num, powed);
+                }
+                else {
+                    MILO_WARN("%s (%s): Time signature %d/%d at %s overlaps or conflicts with nearby time signatures",
+                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap));
+                }
+                bs.Seek(2, BinStream::kSeekCur);
+            }
+            break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse meta event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
+            break;
     }
     if(mState == kInTrack) bs.Seek(oldtell + num.mValue, BinStream::kSeekBegin);
 }

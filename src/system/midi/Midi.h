@@ -108,7 +108,7 @@ public:
     int mCurTick; // offset 0x2C, size 0x4
     unsigned char mPrevStatus; // offset 0x30, size 0x1
     class String mCurTrackName; // offset 0x34, size 0xC
-    std::vector<String> mTrackNames;
+    std::vector<String> mTrackNames; // 0x40
     std::vector<Midi> mMidiList;
     int mMidiListTick;
     bool (* mLessFunc)(const struct Midi &, const struct Midi &);
