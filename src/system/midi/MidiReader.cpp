@@ -194,16 +194,16 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
 
 // fn_80534280
 void MidiReader::ReadEvent(BinStream& bs){
+    bool b;
     MILO_ASSERT(mState == kInTrack, 0x19E);
     MidiVarLenNumber num(bs);
     mCurTick += num.mValue;
-    int tpq = (mCurTick + mDesiredTPQ) / mTicksPerQuarter;
+    int tpq = mCurTick * mDesiredTPQ / mTicksPerQuarter;
     if(tpq != mMidiListTick){
         ProcessMidiList();
         if(mState != kInTrack) return;
         mMidiListTick = tpq;
     }
-    bool b;
     unsigned char midichar;
     unsigned char nextchar;
     bs >> midichar;
@@ -216,7 +216,6 @@ void MidiReader::ReadEvent(BinStream& bs){
         nextchar = midichar;
         midichar = mPrevStatus;
     }
-
     if(MidiIsSystem(midichar)){
         ReadSystemEvent(tpq, midichar, bs);
     }
