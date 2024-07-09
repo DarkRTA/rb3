@@ -1,6 +1,5 @@
 #ifndef RNDOBJ_CONSOLE_H
 #define RNDOBJ_CONSOLE_H
-
 #include "obj/Object.h"
 #include "os/Keyboard.h"
 #include "utl/Str.h"
@@ -35,13 +34,8 @@ public:
     void SetShowing(bool);
     int OnMsg(const KeyboardKeyMsg&);
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(RndConsole), FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(RndConsole), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(RndConsole);
+    DELETE_POOL_OVERLOAD(RndConsole);
 
     bool mShowing; // 0x1c
     RndOverlay* mOutput; // 0x20

@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
+#include "rndobj/TransAnim.h"
 #include "rndobj/Utl.h"
 #include <algorithm>
 #include "utl/Symbols.h"
@@ -37,6 +38,17 @@ RndTransformable::~RndTransformable() {
         (*it)->mCache->SetDirty();
     }
     delete mCache;
+}
+
+void RndTransformable::TransformTransAnims(const Transform& tf){
+    std::vector<RndTransformable*>::const_reverse_iterator it = mChildren.rbegin();
+    std::vector<RndTransformable*>::const_reverse_iterator itEnd = mChildren.rend();
+    for(; it != itEnd; it++){
+        RndTransAnim* trans = dynamic_cast<RndTransAnim*>((*it)->RefOwner());
+        if(trans && trans->mTrans == this){
+            TransformKeys(trans,tf);
+        }
+    }
 }
 
 void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){

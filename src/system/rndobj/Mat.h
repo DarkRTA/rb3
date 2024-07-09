@@ -116,6 +116,10 @@ public:
         mTexXfm = tf;
         mDirty |= 2;
     }
+    void SetZMode(ZMode mode){
+        mZMode = mode;
+        mDirty |= 2;
+    }
     void SetDiffuseTex(RndTex* tex){
         mDiffuseTex = tex;
         mDirty |= 2;

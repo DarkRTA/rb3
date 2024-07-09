@@ -30,13 +30,8 @@ public:
         mFlags = mFlags & 0xfffffffe | ui;
     }
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(DirtyCache), FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(DirtyCache), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(DirtyCache);
+    DELETE_POOL_OVERLOAD(DirtyCache);
 
     std::vector<DirtyCache*> mChildren;
     unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
@@ -79,6 +74,7 @@ public:
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
+    void TransformTransAnims(const Transform&);
 
     void SetDirty(){
         if(mCache->mFlags & 1) return;

@@ -101,6 +101,9 @@ public:
 
     static Hmx::Object* NewObject();
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(MidiParser)
+    }
 
     static DataNode* mpStart;
     static DataNode* mpEnd;

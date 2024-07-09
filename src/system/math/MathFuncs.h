@@ -112,6 +112,10 @@ inline float pow_f(double x, double y){
     return pow(x, y);
 }
 
+inline double pow_d(double x, double y){
+    return pow(x, y);
+}
+
 inline float sin_f(double d){
     return sin(d);
 }

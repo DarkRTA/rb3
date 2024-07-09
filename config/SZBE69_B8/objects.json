@@ -220,7 +220,7 @@
 
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "Matching",
-            "system/math/FileChecksum.cpp": "NonMatching",
+            "system/math/FileChecksum.cpp": "Matching",
             "system/math/Geo.cpp": "NonMatching",
             "system/math/Interp.cpp": "Matching",
             "system/math/Primes.cpp": "Matching",
@@ -239,13 +239,12 @@
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/CreditsPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
-            "system/meta/FixedSizeSaveable.cpp": "NonMatching",
-            "system/meta/FixedSizeSaveableStream.cpp": "Matching",
-            "system/meta/HAQManager.cpp": "Matching",
             "system/meta/FixedSizeSaveable.cpp": {
                 "status": "LinkIssues",
                 "comment": "std::type_info issues"
             },
+            "system/meta/FixedSizeSaveableStream.cpp": "Matching",
+            "system/meta/HAQManager.cpp": "Matching",
             "system/meta/HeldButtonPanel.cpp": "NonMatching",
             "system/meta/MemcardAction.cpp": "Matching",
             "system/meta/Meta.cpp": "NonMatching",
@@ -263,7 +262,7 @@
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
             "system/midi/MidiParserMgr.cpp": "NonMatching",
-            "system/midi/MidiReader.cpp": "NonMatching",
+            "system/midi/MidiReader.cpp": "Matching",
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
@@ -304,7 +303,10 @@
             "system/os/ContentMgr.cpp": "NonMatching",
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",
-            "system/os/Debug.cpp": "NonMatching",
+            "system/os/Debug.cpp": {
+                "status": "Matching",
+                "comment": "kAssertStr's appearance relative to stlport stuff"
+            },
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",

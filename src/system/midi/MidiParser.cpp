@@ -21,7 +21,7 @@ DataNode* MidiParser::mpBeforeDeltaSec = 0;
 DataNode* MidiParser::mpAfterDeltaSec = 0;
 
 void MidiParser::Init(){
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    MidiParser::Register();
     MidiParser::mpStart = DataVariable("mp.start");
     MidiParser::mpEnd = DataVariable("mp.end");
     MidiParser::mpLength = DataVariable("mp.length");

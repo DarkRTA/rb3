@@ -20,17 +20,16 @@ public:
     virtual void DrawShowing();
     virtual ~Screenshot();
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     void Sync();
 
     DECLARE_REVS
 
-    FilePath mTexPath;
-    RndTex* mTex;
-    RndMat* mMat;
+    FilePath mTexPath; // 0x20
+    RndTex* mTex; // 0x2c
+    RndMat* mMat; // 0x30
 };
 
 #endif

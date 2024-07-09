@@ -3,7 +3,9 @@
 #include "rndobj/Cam.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/Utl.h"
+#include "rndobj/Dir.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(RndTexRenderer)
 
@@ -49,7 +51,30 @@ void RndTexRenderer::DrawToTexture(){
         RndDrawable* draw = mDraw;
         if((Hmx::Object*)Dir() != draw){
             if(Showing() && !mDrawWorldOnly){
-
+                if(mDirty && mDraw && mOutputTexture){
+                    if(mOutputTexture->GetType() & 2 == 0){
+                        static DebugNotifyOncer _dw;
+                        MILO_NOTIFY_ONCE("%s not renderable", mOutputTexture->Name());
+                        return;
+                    }
+                    Transform tf;
+                    float somefloat = 0.0f;
+                    if(!mDrawWorldOnly){
+                        HandleType(pre_render_msg);
+                    }
+                    RndDir* rdir = dynamic_cast<RndDir*>(mDraw.Ptr());
+                    if(!mImposterHeight || !rdir){
+                        RndCam* cam = mCam;
+                        if(!cam) cam = mDraw->CamOverride();
+                        if(rdir && !cam){
+                            cam = dynamic_cast<RndCam*>(rdir->CurCam());
+                        }
+                        if(!cam) cam = TheRnd->DefaultCam();
+                        if(cam == TheRnd->DefaultCam()){
+                            tf = cam->WorldXfm();
+                        }
+                    }
+                }
             }
         }
     }

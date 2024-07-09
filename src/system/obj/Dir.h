@@ -216,6 +216,7 @@ public:
     FilePath GetSubDirPath(const FilePath&, const BinStream&);
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
     DirLoader* Loader() const { return mLoader; }
+    Hmx::Object* CurCam(){ return mCurCam; }
 
     DataNode OnFind(DataArray*);
 

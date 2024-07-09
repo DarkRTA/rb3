@@ -1,7 +1,13 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
+#include "math/MathFuncs.h"
+#include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
+#include "midi/MidiConstants.h"
+#include "midi/MidiVarLen.h"
+#include "utl/MBT.h"
+#include <algorithm>
 
 MidiChunkID MidiChunkID::kMThd("MThd");
 MidiChunkID MidiChunkID::kMTrk("MTrk");
@@ -134,12 +140,9 @@ void MidiReader::ReadNextEventImpl(){
 // fn_80533FB8
 void MidiReader::ReadFileHeader(BinStream& bs){
     MILO_ASSERT(mState == kStart, 0x146);
-    char* someStr;
-    bs.Read(someStr, 4);
-    int anotherInt = 0;
-    bs >> anotherInt;
-    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
-    if(!kmthdcmp || anotherInt != 6U){
+    MidiChunkHeader header(bs);
+    bool kmthdcmp = strncmp(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) == 0;
+    if(!kmthdcmp || header.mLength != 6U){
         MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
     }
     short midiType;
@@ -152,7 +155,7 @@ void MidiReader::ReadFileHeader(BinStream& bs){
         MILO_WARN("%s: MIDI file has no tracks", mStreamName.c_str());
     }
     else {
-        mTrackNames.resize(mNumTracks);
+        mTrackNames.resize(mNumTracks, String(""));
     }
     bs >> mTicksPerQuarter;
     if(mTicksPerQuarter & 0x8000U){
@@ -161,27 +164,25 @@ void MidiReader::ReadFileHeader(BinStream& bs){
     if(mTicksPerQuarter != 480){
         MILO_WARN("%s: Time division must be 480 ticks per quarter; this file is %d ticks per quarter", mStreamName.c_str(), mTicksPerQuarter);
     }
-
-    if(mNumTracks != 0 && midiType == 1 && !(mTicksPerQuarter & 0x8000U) && mTicksPerQuarter != 480){
+    if(mNumTracks == 0 || midiType != 1 || (mTicksPerQuarter & 0x8000U) || mTicksPerQuarter != 480){
         mFail = true;
         return;
     }
     mState = kNewTrack;
 }
 
+// fn_805341B0
 void MidiReader::ReadTrackHeader(BinStream& bs){
     MILO_ASSERT(mState == kNewTrack, 0x180);
-    char* someStr;
-    bs.Read(someStr, 4);
-    int anotherInt = 0;
-    bs >> anotherInt;
-    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
-    if(!kmthdcmp){
+    MidiChunkHeader header(bs);
+    if(!CheckChunkID(header.mID.Str(), MidiChunkID::kMTrk.Str())){
         MILO_WARN("%s: MIDI track header for track %d is corrupt", mStreamName.c_str(), mCurTrackIndex);
         mFail = true;
     }
     else {
-        mTrackEndPos = bs.Tell() + anotherInt;
+        int headerlen = header.mLength;
+        int tell = bs.Tell();
+        mTrackEndPos = tell + headerlen;
         mCurTrackIndex++;
         mPrevStatus = 0;
         mCurTick = 0;
@@ -191,4 +192,213 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
     }
 }
 
-// fn_80534280 - read event(binstream&)
+// fn_80534280
+void MidiReader::ReadEvent(BinStream& bs){
+    bool b;
+    MILO_ASSERT(mState == kInTrack, 0x19E);
+    MidiVarLenNumber num(bs);
+    mCurTick += num.mValue;
+    int tpq = mCurTick * mDesiredTPQ / mTicksPerQuarter;
+    if(tpq != mMidiListTick){
+        ProcessMidiList();
+        if(mState != kInTrack) return;
+        mMidiListTick = tpq;
+    }
+    unsigned char midichar;
+    unsigned char nextchar;
+    bs >> midichar;
+    if(MidiIsStatus(midichar)){
+        b = false;
+        if(!MidiIsSystem(midichar)) mPrevStatus = midichar;
+    }
+    else {
+        b = true;
+        nextchar = midichar;
+        midichar = mPrevStatus;
+    }
+    if(MidiIsSystem(midichar)){
+        ReadSystemEvent(tpq, midichar, bs);
+    }
+    else {
+        if(!b) bs >> nextchar;
+        ReadMidiEvent(tpq, midichar, nextchar, bs);
+    }
+}
+
+// fn_805343A4
+void MidiReader::ReadMidiEvent(int tick, unsigned char status, unsigned char data1, BinStream& bs){
+    int bit = status & 0xF0;
+    unsigned char uc;
+    bool queue = false;
+    switch(bit){
+        case 0x90: bs >> uc; queue = true;
+            if(uc == 0) status = status & 0xF | 0x80;
+            break;
+        case 0x80: bs >> uc; queue = true; break;
+        case 0xB0: bs >> uc; queue = true; break;
+        case 0xE0: case 0xA0: bs >> uc; break;
+        case 0xC0: case 0xD0: uc = 0; break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse event %i", mStreamName.c_str(), mCurTrackName.c_str(), bit);
+            break;
+    }
+    if(queue) QueueChannelMsg(tick, status, data1, uc);
+}
+
+// fn_805344C0
+void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
+    switch(uc){
+        case 0xF0:
+        case 0xF7:
+            MidiVarLenNumber num(bs);
+            bs.Seek(num.mValue, BinStream::kSeekCur);
+            break;
+        case 0xFF:
+            unsigned char read;
+            bs >> read;
+            ReadMetaEvent(i, read, bs);
+            break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse system event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
+            break;
+    }
+}
+
+// fn_80534568
+void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
+    MidiVarLenNumber num(bs);
+    unsigned int numVal = num.mValue;
+    int oldtell = bs.Tell();
+
+    switch(uc){
+        case 0x1:
+        case 0x2:
+        case 0x3:
+        case 0x5:
+            char buf[0x100];
+            if(numVal >= 0x100){
+                bs.Read(buf, 8);
+                buf[8] = 0;
+                MILO_WARN("%s (%s): Text event beginning with '%s' at %s exceeds maximum allowed length of %d characters",
+                    mStreamName.c_str(), mCurTrackName.c_str(), buf, TickFormat(0, *mMeasureMap), 0xFFul);
+            }
+            else {
+                bs.Read(buf, numVal);
+                buf[numVal] = 0;
+                if(uc == 3){
+                    if(i != 0){
+                        MILO_WARN("%s (%s): MIDI track name event must appear at %s; found track name '%s' at %s",
+                            mStreamName.c_str(), buf, TickFormat(0, *mMeasureMap), buf, TickFormat(i, *mMeasureMap));
+                        mFail = true;
+                        return;
+                    }
+                    String& str = mTrackNames[mCurTrackIndex - 1];
+                    if(str.empty()) str = buf;
+                    else if(str != buf){
+                        MILO_WARN("%s (%s): Track contains multiple track name events (%s and %s)",
+                            mStreamName.c_str(), str.c_str(), str.c_str(), buf);
+                        mFail = true;
+                        return;
+                    }
+                    mCurTrackName = buf;
+                }
+                mRcvr.OnText(i, buf, uc);
+            }
+            break;
+        case 0x51:
+            unsigned char c,b,a;
+            bs >> c >> b >> a;
+            int product = a + c * 0x10000 + b * 0x100;
+            if(product < 200000){
+                MILO_WARN("%s (%s): Tempo marker at %s (%f bpm) is too fast; maximum is 300 bpm",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            if(product > 1500000){
+                MILO_WARN("%s (%s): Tempo marker at %s (%f bpm) is too slow; minimum is 40 bpm",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            if(mTempoMap->AddTempoInfoPoint(i, product)){
+                mRcvr.OnTempo(i, product);
+            }
+            else {
+                MILO_WARN("%s (%s): Tempo marker at %s (%.f bpm) conflicts with other tempo markers",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
+            }
+            break;
+        case 0x2F:
+            ProcessMidiList();
+            if(mCurTrackIndex == mNumTracks){
+                mState = kEnd;
+                mRcvr.OnEndOfTrack();
+                mRcvr.OnAllTracksRead();
+            }
+            else {
+                mState = kNewTrack;
+                if(mCurTrackIndex == 1 && mOwnMaps){
+                    mOwnMaps = mRcvr.OnAcceptMaps(mTempoMap, mMeasureMap) == 0;
+                }
+                mRcvr.OnEndOfTrack();
+            }
+            break;
+        case 0x58:
+            unsigned char ts_num, ts_den;
+            bs >> ts_num >> ts_den;
+            if(ts_den > 6){
+                MILO_WARN("%s (%s): Time signature at %s has invalid denominator (2^%d); max is 64 (2^6)",
+                    mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), ts_den);
+            }
+            else {
+                double base = 2;
+                int powed = pow_d(base, ts_den);
+                if(ts_num == 0){
+                    MILO_WARN("%s (%s): Time signature %d/%d at %s has invalid numerator (%d)",
+                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap), ts_num);
+                }
+                int ts_m, ts_b, ts_t;
+                mMeasureMap->TickToMeasureBeatTick(i, ts_m, ts_b, ts_t);
+                if(mMeasureMap->AddTimeSignature(ts_m, ts_num, powed, true)){
+                    mRcvr.OnTimeSig(i, ts_num, powed);
+                }
+                else {
+                    MILO_WARN("%s (%s): Time signature %d/%d at %s overlaps or conflicts with nearby time signatures",
+                        mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap));
+                }
+                bs.Seek(2, BinStream::kSeekCur);
+            }
+            break;
+        case 4:
+        case 6:
+        case 7:
+        case 0x20:
+        case 0x21:
+        case 0x54:
+        case 0x59:
+            break;
+        default:
+            MILO_WARN("%s (%s): Cannot parse meta event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
+            break;
+    }
+    if(mState == kInTrack) bs.Seek(oldtell + numVal, BinStream::kSeekBegin);
+}
+
+void MidiReader::QueueChannelMsg(int i, unsigned char uc1, unsigned char uc2, unsigned char uc3){
+    if(!mLessFunc){
+        mRcvr.OnMidiMessage(i, uc1, uc2, uc3);
+    }
+    else {
+        Midi mid;
+        mid.mStat = uc1;
+        mid.mD1 = uc2;
+        mid.mD2 = uc3;
+        mMidiList.push_back(mid);
+    }
+}
+
+void MidiReader::ProcessMidiList(){
+    std::sort(mMidiList.begin(), mMidiList.end(), mLessFunc);
+    for(std::vector<Midi>::iterator it = mMidiList.begin(); it != mMidiList.end(); it++){
+        mRcvr.OnMidiMessage(mMidiListTick, (*it).mStat, (*it).mD1, (*it).mD2);
+        if(mState != kInTrack) break;
+    }
+    mMidiList.clear();
+}
