@@ -19,6 +19,7 @@
 
 #include "decomp.h"
 
+const char* kAssertStr = "File: %s Line: %d Error: %s\n";
 Debug TheDebug;
 jmp_buf TheDebugJump;
 DebugNotifier TheDebugNotifier;
@@ -322,5 +323,3 @@ void std_vec_range_assert(size_t value, size_t max, const char *func) {
         MILO_FAIL("std::vector::%s: index range exceeded (0x%08x > 0x%08x)\n", func, value, (max / 4));
     }
 }
-
-const char* kAssertStr = "File: %s Line: %d Error: %s\n";
