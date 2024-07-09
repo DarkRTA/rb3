@@ -21,8 +21,10 @@
 
 Debug TheDebug;
 jmp_buf TheDebugJump;
+DebugNotifier TheDebugNotifier;
+DebugFailer TheDebugFailer;
 
-static int* gpDbgFrameID;
+static int* gpDbgFrameID = 0;
 std::vector<String> gNotifies;
 
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
@@ -291,7 +293,10 @@ void Debug::Exit(int status, bool actually_exit) {
 }
 
 void Debug::RemoveExitCallback(ExitCallbackFunc* func){
-    if(!mExiting) mExitCallbacks.remove(func);
+    if(!mExiting){
+        ExitCallbackFunc* toRemove = func;
+        mExitCallbacks.remove(toRemove);
+    }
 }
 
 void Debug::Print(const char* msg) {
