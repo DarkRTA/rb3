@@ -1,5 +1,6 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
+#include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
 
@@ -134,12 +135,9 @@ void MidiReader::ReadNextEventImpl(){
 // fn_80533FB8
 void MidiReader::ReadFileHeader(BinStream& bs){
     MILO_ASSERT(mState == kStart, 0x146);
-    char* someStr;
-    bs.Read(someStr, 4);
-    int anotherInt = 0;
-    bs >> anotherInt;
-    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
-    if(!kmthdcmp || anotherInt != 6U){
+    MidiChunkHeader header(bs);
+    bool kmthdcmp = strncmp(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) == 0;
+    if(!kmthdcmp || header.mLength != 6U){
         MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
     }
     short midiType;
@@ -152,7 +150,7 @@ void MidiReader::ReadFileHeader(BinStream& bs){
         MILO_WARN("%s: MIDI file has no tracks", mStreamName.c_str());
     }
     else {
-        mTrackNames.resize(mNumTracks);
+        mTrackNames.resize(mNumTracks, String(""));
     }
     bs >> mTicksPerQuarter;
     if(mTicksPerQuarter & 0x8000U){
@@ -169,19 +167,16 @@ void MidiReader::ReadFileHeader(BinStream& bs){
     mState = kNewTrack;
 }
 
+// fn_805341B0
 void MidiReader::ReadTrackHeader(BinStream& bs){
     MILO_ASSERT(mState == kNewTrack, 0x180);
-    char* someStr;
-    bs.Read(someStr, 4);
-    int anotherInt = 0;
-    bs >> anotherInt;
-    bool kmthdcmp = strncmp(someStr, MidiChunkID::kMThd.Str(), 4) == 0;
-    if(!kmthdcmp){
+    MidiChunkHeader header(bs);
+    if(!CheckChunkID(header.mID.Str(), MidiChunkID::kMTrk.Str())){
         MILO_WARN("%s: MIDI track header for track %d is corrupt", mStreamName.c_str(), mCurTrackIndex);
         mFail = true;
     }
     else {
-        mTrackEndPos = bs.Tell() + anotherInt;
+        mTrackEndPos = bs.Tell() + header.mLength;
         mCurTrackIndex++;
         mPrevStatus = 0;
         mCurTick = 0;
@@ -190,5 +185,34 @@ void MidiReader::ReadTrackHeader(BinStream& bs){
         mRcvr.OnNewTrack(mCurTrackIndex - 1);
     }
 }
+
+// void fn_805341B0(int param_1,int *param_2)
+
+// {
+//   int iVar1;
+//   int iVar2;
+//   int iVar3;
+//   JsonObject aJStack_18 [12];
+  
+//   fn_80534130(aJStack_18);
+//   iVar1 = fn_80534108(aJStack_18,&lbl_80987EA4);
+//   if (iVar1 == 0) {
+//     iVar1 = JsonObject::GetJsonObjectStruct(aJStack_18);
+//     iVar2 = (**(code **)(*param_2 + 0x10))(param_2);
+//     iVar3 = *(int *)(param_1 + 0x28);
+//     *(int *)(param_1 + 0x24) = iVar2 + iVar1;
+//     *(int *)(param_1 + 0x28) = iVar3 + 1;
+//     *(undefined *)(param_1 + 0x30) = 0;
+//     *(undefined4 *)(param_1 + 0x2c) = 0;
+//     *(undefined4 *)(param_1 + 0x50) = 0xffffffff;
+//     *(undefined4 *)(param_1 + 0x18) = 2;
+//     (**(code **)(**(int **)(param_1 + 0x14) + 0xc))(*(int **)(param_1 + 0x14),iVar3);
+//   }
+//   else {
+//     String::c_str((String *)(param_1 + 8));
+//     *(undefined *)(param_1 + 100) = 1;
+//   }
+//   return;
+// }
 
 // fn_80534280 - read event(binstream&)

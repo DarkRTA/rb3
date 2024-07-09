@@ -1,6 +1,7 @@
 #ifndef UTL_CHUNKIDS_H
 #define UTL_CHUNKIDS_H
 #include <string.h>
+#include "utl/BinStream.h"
 
 class ChunkID {
 public:
@@ -10,6 +11,9 @@ public:
     }
     ChunkID(const char* str){
         memcpy(mStr, str, 4);
+    }
+    ChunkID(BinStream& bs){
+        bs.Read(mStr, 4);
     }
 
     const char* Str() const { return mStr; }
