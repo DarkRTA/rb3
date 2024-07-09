@@ -5,6 +5,7 @@
 #include "utl/MeasureMap.h"
 #include "midi/MidiConstants.h"
 #include "midi/MidiVarLen.h"
+#include <algorithm>
 
 MidiChunkID MidiChunkID::kMThd("MThd");
 MidiChunkID MidiChunkID::kMTrk("MTrk");
@@ -259,4 +260,48 @@ void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
             MILO_WARN("%s (%s): Cannot parse system event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
             break;
     }
+}
+
+// fn_80534568
+void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
+    MidiVarLenNumber num(bs);
+    int oldtell = bs.Tell();
+    if((int)uc == 0x2F){
+        ProcessMidiList();
+        if(mCurTrackIndex == mNumTracks){
+            mState = kEnd;
+            mRcvr.OnEndOfTrack();
+            mRcvr.OnAllTracksRead();
+        }
+        else {
+            mState = kNewTrack;
+            if(mCurTrackIndex == 1 && mOwnMaps){
+                mOwnMaps = mRcvr.OnAcceptMaps(mTempoMap, mMeasureMap) == 0;
+            }
+            mRcvr.OnEndOfTrack();
+        }
+    }
+    if(mState == kInTrack) bs.Seek(oldtell + num.mValue, BinStream::kSeekBegin);
+}
+
+void MidiReader::QueueChannelMsg(int i, unsigned char uc1, unsigned char uc2, unsigned char uc3){
+    if(!mLessFunc){
+        mRcvr.OnMidiMessage(i, uc1, uc2, uc3);
+    }
+    else {
+        Midi mid;
+        mid.mStat = uc1;
+        mid.mD1 = uc2;
+        mid.mD2 = uc3;
+        mMidiList.push_back(mid);
+    }
+}
+
+void MidiReader::ProcessMidiList(){
+    std::sort(mMidiList.begin(), mMidiList.end(), mLessFunc);
+    for(std::vector<Midi>::iterator it = mMidiList.begin(); it != mMidiList.end(); it++){
+        mRcvr.OnMidiMessage(mMidiListTick, (*it).mStat, (*it).mD1, (*it).mD2);
+        if(mState != kInTrack) break;
+    }
+    mMidiList.clear();
 }
