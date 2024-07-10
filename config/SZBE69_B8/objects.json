@@ -251,6 +251,7 @@
             "system/meta/MetaMusicManager.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
             "system/meta/MoviePanel.cpp": "NonMatching",
+            "system/meta/PreloadPanel.cpp": "NonMatching",
             "system/meta/Profile.cpp": "Matching",
             "system/meta/SongMetadata.cpp": "Matching",
             "system/meta/SongMgr.cpp": "NonMatching",
