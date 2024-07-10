@@ -32,6 +32,7 @@ void SpliceKeys(RndTransAnim*, RndTransAnim*, float, float);
 void LinearizeKeys(RndTransAnim*, float, float, float, float, float);
 const char* CacheResource(const char*, Hmx::Object*);
 const char* CacheResource(const char*, CacheResourceResult&);
+bool SortDraws(RndDrawable*, RndDrawable*);
 bool SortPolls(const RndPollable*, const RndPollable*);
 
 void RndUtlPreInit();

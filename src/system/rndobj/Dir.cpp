@@ -73,11 +73,104 @@ void RndDir::SyncObjects(){
     }
 }
 
+// fn_805D33A4
+void RndDir::SyncDrawables(){
+    mDraws.clear();
+    if(!IsSubDir()){
+        std::list<RndDrawable*> drawchildren;
+        for(ObjDirItr<RndDrawable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mDraws.push_back(it);
+                it->ListDrawChildren(drawchildren);
+                it->UpdatePreClearState();
+            }
+        }
+        UpdatePreClearState();
+        for(std::list<RndDrawable*>::iterator it = drawchildren.begin(); it != drawchildren.end(); ++it){
+            VectorRemove(mDraws, *it);
+        }
+        std::sort(mDraws.begin(), mDraws.end(), SortDraws);
+    }
+}
+
+// fn_805D37CC - update sphere
+
+void RndDir::Poll(){
+    if(Showing()){
+        for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+            (*it)->Poll();
+        }
+    }
+}
+
+void RndDir::Enter(){
+    if(TheLoadMgr.EditMode()){
+        DataNode events = OnSupportedEvents(0);
+        DataArray* arr = events.Array(0);
+        if(!arr->Contains(DataNode(mTestEvent))){
+            mTestEvent = Symbol("");
+        }
+    }
+    for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        (*it)->Enter();
+    }
+    if(this != mDir){
+        MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+        if(src) ChainSourceSubdir(src, this);
+    }
+    RndPollable::Enter();
+}
+
+void RndDir::Exit(){
+    for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        (*it)->Exit();
+    }
+    RndPollable::Exit();
+}
+
+// fn_805D3C1C
+void RndDir::ListPollChildren(std::list<RndPollable*>& children) const {
+    if(IsProxy()){
+        // children.splice(children.begin(), children, mPolls.begin(), mPolls.end());
+        // for(std::vector<RndPollable*>::const_iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        // 
+        // }
+    }
+}
+
+void RndDir::SetFrame(float frame, float blend){
+    if(Showing()){
+        RndAnimatable::SetFrame(frame, blend);
+        for(std::vector<RndAnimatable*>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+            (*it)->SetFrame(frame, blend);
+        }
+    }
+}
+
+float RndDir::EndFrame(){
+    float frame = 0.0f;
+    for(std::vector<RndAnimatable*>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        float end = (*it)->EndFrame();
+        if(frame < end) frame = end;
+    }
+    return frame;
+}
+
 void RndDir::Export(DataArray* da, bool b){
     MsgSource::Export(da, b);
     for(int i = 0; i < mSubDirs.size(); i++){
         if(mSubDirs[i]){
             mSubDirs[i]->Export(da, false);
+        }
+    }
+}
+
+void RndDir::ChainSourceSubdir(MsgSource* src, ObjectDir* dir){
+    MsgSource* src2 = dynamic_cast<MsgSource*>(dir);
+    if(src2){
+        ChainSource(src, src2);
+        for(int i = 0; i < dir->mSubDirs.size(); i++){
+            ChainSourceSubdir(src, dir->mSubDirs[i].Ptr());
         }
     }
 }
@@ -98,6 +191,7 @@ BEGIN_COPYS(RndDir)
     END_COPYING_MEMBERS
 END_COPYS
 
+// fn_805D4CAC
 void RndDir::OldLoadProxies(BinStream& bs, int i) {
     int items;
     bs >> items;
