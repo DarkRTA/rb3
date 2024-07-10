@@ -69,36 +69,37 @@ public:
     DataNode OnHasSpace(DataArray*);
     DataNode OnRtComputeSpace(DataArray*);
 
-    DataEventList* mEvents;
-    Symbol mTrackName;
-    DataArray* mGemParser;
-    DataArray* mNoteParser;
-    DataArray* mTextParser;
-    DataArray* mLyricParser;
-    DataArray* mIdleParser;
-    DataArray* mCurParser;
-    DataArray* mAllowedNotes;
-    std::vector<VocalEvent>* mVocalEvents;
-    std::vector<Note, unsigned int> mNotes;
-    GemListInterface* mGems;
-    bool mInverted;
-    PostProcess mProcess;
-    float mLastStart;
-    float mLastEnd;
-    float mFirstEnd;
-    DataEvent* mEvent;
-    Symbol mMessageType;
-    bool mAppendLength;
-    bool mUseVariableBlending;
-    float mVariableBlendPct;
-    bool mMessageSelf;
-    bool mCompressed;
-    int mGemIndex;
-    int mNoteIndex;
-    int mVocalIndex;
-    float mStart;
-    int mBefore;
+    DataEventList* mEvents; // 0x1c
+    Symbol mTrackName; // 0x20
+    DataArray* mGemParser; // 0x24
+    DataArray* mNoteParser; // 0x28
+    DataArray* mTextParser; // 0x2c
+    DataArray* mLyricParser; // 0x30
+    DataArray* mIdleParser; // 0x34
+    DataArray* mCurParser; // 0x38
+    DataArray* mAllowedNotes; // 0x3c
+    std::vector<VocalEvent>* mVocalEvents; // 0x40
+    std::vector<Note, unsigned int> mNotes; // 0x48
+    GemListInterface* mGems; // 0x50
+    bool mInverted; // 0x54
+    PostProcess mProcess; // 0x58
+    float mLastStart; // 0x7c
+    float mLastEnd; // 0x80
+    float mFirstEnd; // 0x84
+    DataEvent* mEvent; // 0x88
+    Symbol mMessageType; // 0x8c
+    bool mAppendLength; // 0x90
+    bool mUseVariableBlending; // 0x91
+    float mVariableBlendPct; // 0x94
+    bool mMessageSelf; // 0x98
+    bool mCompressed; // 0x99
+    int mGemIndex; // 0x9c
+    int mNoteIndex; // 0xa0
+    int mVocalIndex; // 0xa4
+    float mStart; // 0xa8
+    int mBefore; // 0xac
 
+    static void ClearManagedParsers();
     static void Init();
     NEW_OBJ(MidiParser)
     static void Register(){
