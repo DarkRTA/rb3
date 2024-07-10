@@ -21,8 +21,9 @@ enum ViewportId {
 
 enum InlineDirType {
     kInlineNever = 0,
-    kInlineCached = 1 << 0,
-    kInlineAlways = 1 << 1,
+    kInlineCached = 1,
+    kInlineAlways = 2,
+    kInline3 = 3
 };
 
 template <class T> class ObjDirPtr : public ObjRef {
@@ -132,6 +133,12 @@ public:
     T* mDir;
     class DirLoader* mLoader;
 };
+
+// TODO: fill out
+template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
+    // ptr.Load(bs, true, 0);
+    return bs;
+}
 
 class ObjectDir : public virtual Hmx::Object {
 public:

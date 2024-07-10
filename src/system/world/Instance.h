@@ -36,6 +36,7 @@ public:
     SharedGroup* mSharedGroup; // 0x198
     SharedGroup* mSharedGroup2; // 0x19c
 
+    DECLARE_REVS;
     NEW_OVERLOAD
     NEW_OBJ(WorldInstance)
 };
@@ -55,7 +56,7 @@ public:
     void ClearPollMaster();
 
     RndGroup* mGroup; // 0x8
-    ObjPtr<WorldInstance, ObjectDir> unkc; // 0xc
+    ObjPtr<WorldInstance, ObjectDir> mPollMaster; // 0xc
     std::list<RndPollable*> mPolls; // 0x18
 };
 
