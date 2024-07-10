@@ -43,6 +43,7 @@ public:
     const DataEvent& Event(int) const;
     DataEvent* NextEvent(float);
     float* EndPtr(int);
+    void Invert(float);
 
     int mCurIndex; // 0x0
     int mSize; // 0x4

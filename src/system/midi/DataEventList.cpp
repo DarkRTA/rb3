@@ -79,15 +79,16 @@ void DataEventList::Reset(float f){
     }
 }
 
-const DataEvent& DataEventList::Event(int i) const {
+const DataEvent& DataEventList::Event(int idx) const {
     if(mElement >= 0){
-        const DataEventList::CompEv& compev = mComps[i];
-        // mTemplate.start = compev.start;
-        // mTemplate.end = compev.end;
+        const DataEventList::CompEv& compev = mComps[idx];
+        ((DataEvent&)mTemplate).start = compev.start;
+        ((DataEvent&)mTemplate).end = compev.end;
+        ((int*&)mValue) = (int*)&compev.value;
         // mValue = &compev.value;
         return mTemplate;
     }
-    else return mEvents[i];
+    else return mEvents[idx];
 }
 
 DataEvent* DataEventList::NextEvent(float f){
@@ -96,14 +97,32 @@ DataEvent* DataEventList::NextEvent(float f){
         if(f < mComps[mCurIndex].start) return 0;
     }
     else if(f < mEvents[mCurIndex].start) return 0;
-    mCurIndex++;
-    return &(DataEvent&)Event(mCurIndex);
+    return &(DataEvent&)Event(mCurIndex++);
 }
 
 float* DataEventList::EndPtr(int index){
     MILO_ASSERT(index < mSize, 0xC0);
     if(mElement < 0) return &mEvents[index].end;
     else return &mComps[index].end;
+}
+
+void DataEventList::Invert(float f){
+    if(mElement < 0){
+        for(int i = 0; i < mSize; i++){
+            float tmp = mEvents[i].end;
+            mEvents[i].end = mEvents[i].start;
+            mEvents[i].start = f;
+            f = tmp;
+        }
+    }
+    else {
+        for(int i = 0; i < mSize; i++){
+            float tmp = mComps[i].end;
+            mComps[i].end = mComps[i].start;
+            mComps[i].start = f;
+            f = tmp;
+        }
+    }
 }
 
 void DataEventList::Clear(){
