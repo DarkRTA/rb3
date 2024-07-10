@@ -223,6 +223,7 @@ public:
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
     DirLoader* Loader() const { return mLoader; }
     Hmx::Object* CurCam(){ return mCurCam; }
+    bool IsSubDir() const { return mIsSubDir; }
 
     DataNode OnFind(DataArray*);
 

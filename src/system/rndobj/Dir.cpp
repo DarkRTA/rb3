@@ -5,6 +5,8 @@
 #include "obj/ObjVersion.h"
 #include "rndobj/PostProc.h"
 #include "rndobj/EventTrigger.h"
+#include "rndobj/Utl.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 
 INIT_REVS(RndDir)
@@ -18,6 +20,57 @@ RndDir::RndDir() : mEnv(this, 0) {
 void RndDir::Replace(Hmx::Object* o1, Hmx::Object* o2){
     MsgSource::Replace(o1, o2);
     RndTransformable::Replace(o1, o2);
+}
+
+void RndDir::RemovingObject(Hmx::Object* o){
+    Hmx::Object* obj = o;
+    ObjectDir::RemovingObject(obj);
+    VectorRemove(mDraws, obj);
+    VectorRemove(mPolls, obj);
+    VectorRemove(mAnims, obj);
+}
+
+// fn_805D265C
+void RndDir::SetSubDir(bool b){
+    ObjectDir::SetSubDir(b);
+    mDraws.clear();
+    mPolls.clear();
+    mAnims.clear();
+}
+
+// fn_805D26A0
+void RndDir::SyncObjects(){
+    mAnims.clear();
+    mPolls.clear();
+    if(!IsSubDir()){
+        SyncDrawables();
+        std::list<RndAnimatable*> animchildren;
+        for(ObjDirItr<RndAnimatable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mAnims.push_back(it);
+                it->ListAnimChildren(animchildren);
+            }
+        }
+        for(std::list<RndAnimatable*>::iterator it = animchildren.begin(); it != animchildren.end(); ++it){
+            VectorRemove(mAnims, *it);
+        }
+        std::list<RndPollable*> pollchildren;
+        for(ObjDirItr<RndPollable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mPolls.push_back(it);
+                it->ListPollChildren(pollchildren);
+            }
+        }
+        for(std::list<RndPollable*>::iterator it = pollchildren.begin(); it != pollchildren.end(); ++it){
+            VectorRemove(mPolls, *it);
+        }
+        std::sort(mPolls.begin(), mPolls.end(), SortPolls);
+        if(this != mDir){
+            MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+            if(src) ChainSourceSubdir(src, this);
+        }
+        ObjectDir::SyncObjects();
+    }
 }
 
 void RndDir::Export(DataArray* da, bool b){
