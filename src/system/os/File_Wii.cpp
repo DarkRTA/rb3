@@ -41,7 +41,7 @@ int FileGetStat(const char* iFilename, FileStat* iBuffer) {
     }
 }
 
-int FileDelete(){ return -1; }
+int FileDelete(const char*){ return -1; }
 int FileMkDir(){ return -1; }
 
 void FileEnumerate(const char* c1, void(*v)(const char*, const char*), bool b1, const char* c2, bool b2) {

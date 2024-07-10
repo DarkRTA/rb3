@@ -30,6 +30,8 @@ bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     else return false;
 }
 
+#pragma push
+#pragma pool_data off
 void DataAppendStackTrace(char* msg){
     if(gCallStack > gCallStackPtr){
         strcat(msg, "\n\nData Stack Trace");
@@ -62,6 +64,7 @@ void DataAppendStackTrace(char* msg){
         }
     }
 }
+#pragma pop
 
 DataNode& DataArray::Node(int i) const {
     bool allgood = false;

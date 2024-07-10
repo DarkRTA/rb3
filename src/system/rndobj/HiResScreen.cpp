@@ -1,6 +1,8 @@
 #include "rndobj/HiResScreen.h"
 #include "rndobj/Rnd.h"
 #include "os/Debug.h"
+#include "os/File.h"
+#include "os/File_Wii.h"
 
 HiResScreen gHiResScreen;
 HiResScreen* TheHiResScreen;
@@ -25,6 +27,21 @@ HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2){
 
 HiResScreen::BmpCache::~BmpCache(){
     DeleteCache();
+    delete [] mFileNames;
+    mFileNames = 0;
+    delete mBuffer;
+    mBuffer = 0;
+}
+
+void HiResScreen::BmpCache::DeleteCache(){
+    for(unsigned int i = 0; i < mTotalNumCacheLines; i++){
+        FileDelete(mFileNames[i].c_str());
+    }
+}
+
+void HiResScreen::BmpCache::GetLoadedRange(unsigned int& ui1, unsigned int& ui2) const {
+    ui1 = mCurrLoadedIndex * mRowsPerCacheLine;
+    ui2 = ui1 + mRowsPerCacheLine - 1;
 }
 
 HiResScreen::HiResScreen() : mActive(0), mTiling(3), mFileBase("urhigh"), mAccumWidth(0), mAccumHeight(0), 
