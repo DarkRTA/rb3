@@ -99,8 +99,8 @@ public:
     float mStart;
     int mBefore;
 
-    static Hmx::Object* NewObject();
     static void Init();
+    NEW_OBJ(MidiParser)
     static void Register(){
         REGISTER_OBJ_FACTORY(MidiParser)
     }
