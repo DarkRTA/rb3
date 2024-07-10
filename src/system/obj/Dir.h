@@ -126,7 +126,6 @@ public:
         *this = oPtr.mDir;
     }
 
-    operator bool() const { return mDir != 0; }
     operator T*() const { return mDir; }
     T* Ptr() const { return mDir; }
 
