@@ -8,11 +8,19 @@ public:
     Vector2(){}
     Vector2(float xx, float yy) : x(xx), y(yy) {}
     Vector2(const Vector2& vec) : x(vec.x), y(vec.y) {}
+
     void Set(float xx, float yy){ x = xx; y = yy; }
+
     Vector2& operator*(float f) { 
         x *= f; y *= f; 
         return *this;
     }
+
+    Vector2& operator=(const Vector2& vec){
+        x = vec.x; y = vec.y;
+        return *this;
+    }
+
     float x;
     float y;
 };
@@ -135,5 +143,7 @@ inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
 
 void Subtract(const Vector3&, const Vector3&, Vector3&);
 float Length(const Vector3&);
+void Interp(const Vector2&, const Vector2&, float, Vector2&);
+void Interp(const Vector3&, const Vector3&, float, Vector3&);
 
 #endif

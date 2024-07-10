@@ -99,6 +99,40 @@ public:
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle*, const Transform*);
 
+    const Hmx::Color& StartColorLow() const { return mStartColorLow; }
+    const Hmx::Color& StartColorHigh() const { return mStartColorHigh; }
+    void SetStartColor(const Hmx::Color& low, const Hmx::Color& high){
+        mStartColorLow = low;
+        mStartColorHigh = high;
+    }
+
+    const Hmx::Color& EndColorLow() const { return mEndColorLow; }
+    const Hmx::Color& EndColorHigh() const { return mEndColorHigh; }
+    void SetEndColor(const Hmx::Color& low, const Hmx::Color& high){
+        mEndColorLow = low;
+        mEndColorHigh = high;
+    }
+
+    const Vector2& EmitRate() const { return mEmitRate; }
+    void SetEmitRate(float x, float y){
+        mEmitRate.Set(x, y);
+    }
+
+    const Vector2& Speed() const { return mSpeed; }
+    void SetSpeed(float x, float y){
+        mSpeed.Set(x, y);
+    }
+
+    const Vector2& Life() const { return mLife; }
+    void SetLife(float x, float y){
+        mLife.Set(x, y);
+    }
+
+    const Vector2& StartSize() const { return mStartSize; }
+    void SetStartSize(float x, float y){
+        mStartSize.Set(x, y);
+    }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)

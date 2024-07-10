@@ -102,7 +102,22 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     return bs;
 }
 
-void Add(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
-void Subtract(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
+inline void Add(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+    float alpha = c1.alpha + c2.alpha;
+    res.blue = c1.blue + c2.blue;
+    res.green = c1.green + c2.green;
+    res.red = c1.red + c2.red;
+    res.alpha = alpha;
+}
+
+inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+    float alpha = c1.alpha - c2.alpha;
+    res.blue = c1.blue - c2.blue;
+    res.green = c1.green - c2.green;
+    res.red = c1.red - c2.red;
+    res.alpha = alpha;
+}
+
+void Interp(const Hmx::Color&, const Hmx::Color&, float, Hmx::Color&);
 
 #endif
