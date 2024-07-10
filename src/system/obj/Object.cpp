@@ -29,8 +29,8 @@ ObjectDir* Hmx::Object::DataDir(){
 }
 
 Hmx::Object* Hmx::Object::NewObject(Symbol s) {
-    ObjectFunc* f = sFactories[s];
-    if (f) return (*f)();
+    std::map<Symbol, ObjectFunc*>::iterator it = sFactories.find(s);
+    if(it != sFactories.end()) return (it->second)();
     else {
         MILO_FAIL("Unknown class %s", s);
         return NULL;
@@ -470,7 +470,7 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
 DataNode Hmx::Object::OnGet(const DataArray* da){
     DataNode& node = da->Evaluate(2);
     if(node.Type() == kDataSymbol){
-        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() % 2);
+        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() < 4);
         if(prop) return DataNode(*prop);
     }
     else {
@@ -479,7 +479,7 @@ DataNode Hmx::Object::OnGet(const DataArray* da){
             node.Print(str, true);
             MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
         }
-        bool size = da->Size() % 2;
+        bool size = da->Size() < 4;
         DataNode* prop = Property(node.mValue.array, size);
         if(prop) return DataNode(*prop);
     }

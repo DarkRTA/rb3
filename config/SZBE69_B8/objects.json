@@ -303,10 +303,7 @@
             "system/os/ContentMgr.cpp": "NonMatching",
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",
-            "system/os/Debug.cpp": {
-                "status": "Matching",
-                "comment": "kAssertStr's appearance relative to stlport stuff"
-            },
+            "system/os/Debug.cpp": "Matching",
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",
