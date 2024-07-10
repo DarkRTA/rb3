@@ -141,6 +141,10 @@ inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {
     dst.Set(v1.x * f, v1.y * f, v1.z * f);
 }
 
+inline float Average(const Vector2& v){
+    return (v.x + v.y) / 2;
+}
+
 void Subtract(const Vector3&, const Vector3&, Vector3&);
 float Length(const Vector3&);
 void Interp(const Vector2&, const Vector2&, float, Vector2&);

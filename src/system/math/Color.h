@@ -118,6 +118,11 @@ inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res
     res.alpha = alpha;
 }
 
+inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){
+    res.Set((c1.red + c2.red) / 2, (c1.green + c2.green) / 2, (c1.blue + c2.blue) / 2, (c1.alpha + c2.alpha) / 2);
+    return res;
+}
+
 void Interp(const Hmx::Color&, const Hmx::Color&, float, Hmx::Color&);
 
 #endif

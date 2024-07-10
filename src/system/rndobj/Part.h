@@ -43,6 +43,21 @@ struct RndFancyParticle : RndParticle {
 };
 
 struct PartOverride {
+    PartOverride& operator=(const PartOverride& p){
+        mask = p.mask;
+        life = p.life;
+        speed = p.speed;
+        size = p.size;
+        deltaSize = p.deltaSize;
+        startColor = p.startColor;
+        midColor = p.midColor;
+        endColor = p.endColor;
+        pitch = p.pitch;
+        yaw = p.yaw;
+        mesh = p.mesh;
+        box = p.box;
+        return *this;
+    }
     unsigned int mask; // 0x0
     float life; // 0x4
     float speed; // 0x8
@@ -98,6 +113,7 @@ public:
     void SetFrameDrive(bool);
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle*, const Transform*);
+    void ExplicitParticles(int, bool, PartOverride&);
 
     const Hmx::Color& StartColorLow() const { return mStartColorLow; }
     const Hmx::Color& StartColorHigh() const { return mStartColorHigh; }
@@ -131,6 +147,11 @@ public:
     const Vector2& StartSize() const { return mStartSize; }
     void SetStartSize(float x, float y){
         mStartSize.Set(x, y);
+    }
+
+    void SetBoxExtent(const Vector3& v1, const Vector3& v2){
+        mBoxExtent1 = v1;
+        mBoxExtent2 = v2;
     }
 
     NEW_OVERLOAD;

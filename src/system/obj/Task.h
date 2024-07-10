@@ -65,6 +65,7 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     float UISeconds() const;
+    float DeltaSeconds() const;
     float Beat() const;
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;
