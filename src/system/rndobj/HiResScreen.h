@@ -39,6 +39,7 @@ public:
     Hmx::Rect CurrentTileRect(const Hmx::Rect&, Hmx::Rect&, Hmx::Rect&) const;
     Hmx::Rect ScreenRect(const RndCam*, const Hmx::Rect&) const; Hmx::Rect ScreenRect() const;
     void InvScreenRect() const;
+    bool IsActive() const { return mActive; }
 
     bool mActive; // 0x4
     int mTiling; // 0x8
