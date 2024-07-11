@@ -70,7 +70,7 @@ public:
     void SetWorldPos(const Vector3&);
     void SetTransParent(RndTransformable*, bool);
     void SetTransConstraint(Constraint, RndTransformable*, bool);
-    RndTransformable* TransParent() const;
+    RndTransformable* TransParent() const { return mParent; }
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
@@ -133,7 +133,7 @@ public:
         REGISTER_OBJ_FACTORY(RndTransformable)
     }
 
-    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
+    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent; // 0x8
     std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c

@@ -19,14 +19,16 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void Highlight(){}
+    virtual void Highlight();
+
+    void ApplyToLocal();
 
     DECLARE_REVS;
-
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mDest;
-    Vector3 mOffset;
+    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x10
+    Vector3 mOffset; // 0x1c
 };
 
 #endif

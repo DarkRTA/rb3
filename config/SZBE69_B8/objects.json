@@ -163,7 +163,7 @@
             "system/char/CharBlendBone.cpp": "NonMatching",
             "system/char/CharBone.cpp": "NonMatching",
             "system/char/CharBoneDir.cpp": "NonMatching",
-            "system/char/CharBoneOffset.cpp": "NonMatching",
+            "system/char/CharBoneOffset.cpp": "Matching",
             "system/char/CharBones.cpp": "NonMatching",
             "system/char/CharBonesBlender.cpp": "NonMatching",
             "system/char/CharBonesMeshes.cpp": "NonMatching",
