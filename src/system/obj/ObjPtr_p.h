@@ -218,6 +218,14 @@ public:
         }
     }
 
+    // fn_805D7F38 - used in RndEnviron::IsLightInList
+    iterator find(const Hmx::Object* target) const {
+        for(Node* it = mNodes; it != 0; it = it->next){
+            if(it->obj == target) return it;
+        }
+        return end();
+    }
+
     // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);

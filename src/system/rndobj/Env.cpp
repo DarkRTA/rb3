@@ -111,6 +111,8 @@ BEGIN_LOADS(RndEnviron)
     }
 END_LOADS
 
+DECOMP_FORCEACTIVE(Env, "e")
+
 BEGIN_COPYS(RndEnviron)
     COPY_SUPERCLASS(Hmx::Object)
     if(ty != kCopyFromMax){
@@ -158,12 +160,7 @@ bool RndEnviron::IsValidRealLight(const RndLight* l) const {
 // fn_805D7EB8 - actually calls ObjPtrList::find
 bool RndEnviron::IsLightInList(const RndLight* light, const ObjPtrList<RndLight, class ObjectDir>& pList) const {
     if(light == 0) return 0;
-    const Hmx::Object* target = light;
-    ObjPtrList<RndLight, ObjectDir>::iterator it = pList.begin();
-    for(; it != pList.end(); it++){
-        if((*it) == target) break;
-    }
-    return it != pList.end();
+    return pList.find(light) != pList.end();
 }
 
 bool RndEnviron::IsFake(RndLight* l) const {
