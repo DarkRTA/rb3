@@ -392,7 +392,7 @@
             "system/rndobj/SIVideo.cpp": "Matching",
             "system/rndobj/SoftParticles.cpp": "Matching",
             "system/rndobj/Tex.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
-            "system/rndobj/TexBlendController.cpp": "NonMatching",
+            "system/rndobj/TexBlendController.cpp": "Matching",
             "system/rndobj/TexBlender.cpp": "Matching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Text.cpp": "NonMatching",
