@@ -50,11 +50,11 @@ BEGIN_LOADS(TexMovie) // retail matches, still some clownery afoot
     Hmx::Object::Load(bs);
     RndDrawable::Load(bs);
     RndPollable::Load(bs);
-    
+
     if (gAltRev != 0) bs >> mFillWidth;
     bs >> mTex >> mLoop;
     if (gRev < 4) {
-        u8 ccc; bs >> ccc;
+        bs.ReadByte();
     }
     bs >> unk_0x38;
     DataNode dn = HandleType(change_file_msg);
@@ -62,7 +62,7 @@ BEGIN_LOADS(TexMovie) // retail matches, still some clownery afoot
         unk_0x38.SetRoot(dn.Str(NULL));
     }
     if (gRev > 1 && gRev < 3) {
-        u8 ccc; bs >> ccc;
+        bs.ReadByte();
     }
     FilePathTracker tracker(".");
     BeginMovie(gRev > 4 ? &bs : NULL);
