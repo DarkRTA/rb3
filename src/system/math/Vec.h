@@ -147,7 +147,11 @@ inline float Average(const Vector2& v){
 
 void Subtract(const Vector3&, const Vector3&, Vector3&);
 float Length(const Vector3&);
-void Interp(const Vector2&, const Vector2&, float, Vector2&);
+
+inline void Interp(const Vector2& v1, const Vector2& v2, float f, Vector2& res){
+    res.Set(Interp(v1.x,v2.x,f),Interp(v1.y,v2.y,f));
+}
+
 void Interp(const Vector3&, const Vector3&, float, Vector3&);
 
 #endif

@@ -157,4 +157,12 @@ inline float fmod_f(double x, double y){
     return fmod(x, y);
 }
 
+inline float Interp(float a, float b, float c){
+    return c * (b - a) + a;
+}
+
+inline void Interp(float f1, float f2, float f3, float& fres){
+    fres = f3 * (f2 - f1) + f1;
+}
+
 #endif

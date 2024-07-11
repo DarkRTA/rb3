@@ -3,7 +3,7 @@
 #include "types.h"
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
-
+#include "math/MathFuncs.h"
 #include "decomp.h"
 
 namespace Hmx {
@@ -123,6 +123,8 @@ inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Col
     return res;
 }
 
-void Interp(const Hmx::Color&, const Hmx::Color&, float, Hmx::Color&);
+inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Color& res){
+    res.Set(Interp(c1.red,c2.red,f), Interp(c1.green,c2.green,f), Interp(c1.blue,c2.blue,f), Interp(c1.alpha,c2.alpha,f));
+}
 
 #endif

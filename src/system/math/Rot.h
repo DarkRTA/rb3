@@ -20,10 +20,6 @@ void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&);
 void Invert(const Transform&, Transform&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 
-inline void Interp(float f1, float f2, float f3, float& fres){
-    fres = f3 * (f2 - f1) + f1;
-}
-
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);
 TextStream& operator<<(TextStream& ts, const Vector2& v);

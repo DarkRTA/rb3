@@ -39,6 +39,21 @@ public:
     bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
 
+    const Hmx::Color& AmbientColor() const { return mAmbientFogOwner->mAmbientColor; }
+    void SetAmbientColor(const Hmx::Color& col){
+        mAmbientFogOwner->mAmbientColor.Set(col.red, col.green, col.blue);
+    }
+
+    const Hmx::Color& FogColor() const { return mAmbientFogOwner->mFogColor; }
+    void SetFogColor(const Hmx::Color& col){ mAmbientFogOwner->mFogColor = col; }
+
+    float GetFogStart() const { return mAmbientFogOwner->mFogStart; }
+    float GetFogEnd() const { return mAmbientFogOwner->mFogEnd; }
+    void SetFogRange(float start, float end){
+        mAmbientFogOwner->mFogStart = start;
+        mAmbientFogOwner->mFogEnd = end;
+    }
+
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(RndEnviron)
