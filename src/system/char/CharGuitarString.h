@@ -25,11 +25,11 @@ public:
     static unsigned short gRev;
     static unsigned short gAltRev;
 
-    bool mOpen;
-    ObjPtr<RndTransformable, class ObjectDir> mNut;
-    ObjPtr<RndTransformable, class ObjectDir> mBridge;
-    ObjPtr<RndTransformable, class ObjectDir> mBend;
-    ObjPtr<RndTransformable, class ObjectDir> mTarget;
+    bool mOpen; // 0x8
+    ObjPtr<RndTransformable, class ObjectDir> mNut; // 0xc
+    ObjPtr<RndTransformable, class ObjectDir> mBridge; // 0x18
+    ObjPtr<RndTransformable, class ObjectDir> mBend; // 0x24
+    ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x30
 
 };
 
