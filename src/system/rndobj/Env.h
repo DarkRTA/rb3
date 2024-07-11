@@ -29,6 +29,7 @@ public:
     virtual bool IsFake(RndLight*) const;
     virtual bool IsReal(RndLight*) const;
 
+    void AddLight(RndLight*);
     void RemoveLight(RndLight*);
     void ReclassifyLights();
     void OnRemoveAllLights();

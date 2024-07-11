@@ -209,6 +209,15 @@ public:
         insert(end(), obj);
     }
 
+    // fn_805D8160 - used in RndEnviron::RemoveLight
+    void remove(T1* target){
+        for(Node* it = mNodes; it != 0; it){
+            Node* old = it;
+            it = it->next;
+            if(old->obj == target) erase(old);
+        }
+    }
+
     // seems to be okay - shows as 100% in EventTrigger
     void pop_back(){
         MILO_ASSERT(mNodes, 0x16D);
