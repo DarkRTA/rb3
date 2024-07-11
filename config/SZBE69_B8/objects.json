@@ -266,7 +266,7 @@
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
-            "system/movie/TexMovie.cpp": "NonMatching",
+            "system/movie/TexMovie.cpp": "Matching",
 
             "system/obj/DataArray.cpp": "NonMatching",
             "system/obj/DataFile.cpp": "NonMatching",
