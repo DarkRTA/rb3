@@ -3,6 +3,7 @@
 #include "rndobj/Trans.h"
 #include "utl/FilePath.h"
 #include "obj/ObjVersion.h"
+#include "obj/DirLoader.h"
 #include "rndobj/PostProc.h"
 #include "rndobj/EventTrigger.h"
 #include "rndobj/Utl.h"
@@ -192,27 +193,35 @@ BEGIN_COPYS(RndDir)
 END_COPYS
 
 // fn_805D4CAC
-void RndDir::OldLoadProxies(BinStream& bs, int i) {
+void RndDir::OldLoadProxies(BinStream& bs, int rev) {
     int items;
     bs >> items;
-    if (items <= 0) return;
     for (int i = 0; i < items; i++) {
-        FilePath a;
-        class String b, c, d;
-        char fpath[256];
-        bs.ReadString(fpath, 256);
-        a.Set(FilePath::sRoot.c_str(), fpath);
-        int h, o, l, y, j, e, s, u, S;
-        bs >> b;
-        bs >> h;
-        bs >> o;
-        bs >> l;
-        bs >> y;
-        bs >> j;
-        bs >> e;
-        bs >> s;
-        bs >> u;
-        bs >> S; // somehow, this still isn't enough
+        FilePath fp68;
+        String name;
+        Transform t58;
+        String s80;
+        String s8c;
+        bs >> fp68;
+        bs >> name;
+        bs >> t58;
+        if(rev > 0xB) bs >> s80;
+        else s80 = 0;
+        bs >> s8c;
+        float f94;
+        bs >> f94;
+        bool b98;
+        if(rev > 0xB) bs >> b98;
+        else b98 = true;
+        RndDir* loadedDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp68, 0, 0));
+        MILO_ASSERT(!name.empty(), 0x203);
+        loadedDir->SetName(name.c_str(), this);
+        loadedDir->SetDirtyLocalXfm(t58);
+        loadedDir->SetTransParent(Find<RndTransformable>(s80.c_str(), false), false);
+        loadedDir->SetOrder(f94);
+        loadedDir->SetShowing(b98);
+        loadedDir->SetEnv(Find<RndEnviron>(s8c.c_str(), false));
+        SetProxyFile(fp68, true);
     }
 }
 

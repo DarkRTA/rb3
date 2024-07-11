@@ -55,6 +55,8 @@ public:
     bool CollideSphere(const Segment&);
     RndDrawable* Collide(const Segment&, float&, Plane&);
     bool Showing() const { return mShowing; }
+    void SetShowing(bool b){ mShowing = b; }
+    void SetOrder(float f){ mOrder = f; }
     static void DumpLoad(BinStream&);
     static HighlightStyle sHighlightStyle;
     static float sNormalDisplayLength;

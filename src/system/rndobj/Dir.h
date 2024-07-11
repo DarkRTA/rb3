@@ -50,6 +50,7 @@ public:
     virtual void ChainSourceSubdir(MsgSource*, ObjectDir*);
 
     void SyncDrawables();
+    void SetEnv(RndEnviron* env){ mEnv = env; }
 
     DataNode OnShowObjects(DataArray*);
     DataNode OnSupportedEvents(DataArray*);
