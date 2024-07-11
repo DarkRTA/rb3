@@ -65,15 +65,20 @@ public:
     virtual void CheckAnims(){}
 
     DECLARE_REVS
+    NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(EventTrigger)
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(EventTrigger)
+    }
 
     void RegisterEvents();
     void UnregisterEvents();
     void CleanupHideShow();
     void CleanupEventCase(std::vector<Symbol>&);
     void ConvertParticleTriggerType();
+    void SetNextLink(EventTrigger*);
 
     DataNode OnTrigger(DataArray*);
     DataNode Cleanup(DataArray*);
@@ -99,10 +104,9 @@ public:
     unsigned char mTriggerOrder; // 0xdc
     unsigned char mAnimTrigger; // 0xdd
     unsigned char unkde; // 0xde
-    bool unkdf;
-    // unkdfp7
-    // mEnabled: 0xdf >> 6 & 1
-    // mEnabledAtStart: 0xdf >> 5 & 1
+    bool unkdf : 1; // 0xdf >> 7 & 1
+    bool mEnabled : 1; // 0xdf >> 6 & 1
+    bool mEnabledAtStart : 1; // 0xdf >> 5 & 1
 };
 
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);
