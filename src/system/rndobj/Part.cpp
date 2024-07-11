@@ -1,6 +1,7 @@
 #include "rndobj/Part.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Mat.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 RndParticleSys::~RndParticleSys(){
@@ -18,8 +19,98 @@ RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(
     SetSubSamples(0);
 }
 
-bool AngleVectorSync(Vector2&, DataNode&, DataArray*, int, PropOp){
+void RndParticleSys::Replace(Hmx::Object* from, Hmx::Object* to){
+    RndTransformable::Replace(from, to);
+    if(from == mRelativeParent){
+        RndTransformable* t = dynamic_cast<RndTransformable*>(to);
+        SetRelativeMotion(mRelativeMotion, t);
+    }
+}
 
+void RndParticleSys::SetMat(RndMat* mat){ mMat = mat; }
+
+void RndParticleSys::SetMesh(RndMesh* mesh){
+    if(mesh){
+        SetTransParent(mesh, false);
+        SetTransConstraint(RndTransformable::kParentWorld, 0, false);
+        if(!mesh->mKeepMeshData){
+            MILO_WARN("keep_mesh_data should be checked for %s.  It's the mesh emitter for %s.\n", PathName(mesh), PathName(this));
+        }
+    }
+    else if(mMesh){
+        SetTransParent(0, false);
+        SetTransConstraint(RndTransformable::kNone, 0, false);
+    }
+    mMesh = mesh;
+}
+
+void RndParticleSys::SetGrowRatio(float f){
+    if(f >= 0.0f && f <= mShrinkRatio) mGrowRatio = f;
+}
+
+void RndParticleSys::SetShrinkRatio(float f){
+    if(f >= mGrowRatio && f <= 1.0f) mShrinkRatio = f;
+}
+
+void RndParticleSys::Mats(std::list<class RndMat*>& mats, bool b){
+    if(mMat){
+        mMat->mShaderOptions = GetDefaultMatShaderOpts(this, mMat);
+        mats.push_back(mMat);
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(RndParticleSys)
+    HANDLE_EXPR(hi_emit_rate, Max(mEmitRate.x, mEmitRate.y))
+    HANDLE(set_start_color, OnSetStartColor)
+    HANDLE(set_end_color, OnSetEndColor)
+    HANDLE(set_start_color_int, OnSetStartColorInt)
+    HANDLE(set_end_color_int, OnSetEndColorInt)
+    HANDLE(set_emit_rate, OnSetEmitRate)
+    HANDLE(set_burst_interval, OnSetBurstInterval)
+    HANDLE(set_burst_peak, OnSetBurstPeak)
+    HANDLE(set_burst_length, OnSetBurstLength)
+    HANDLE(add_emit_rate, OnAddEmitRate)
+    HANDLE(launch_part, OnExplicitPart)
+    HANDLE(launch_parts, OnExplicitParts)
+    HANDLE(set_life, OnSetLife)
+    HANDLE(set_speed, OnSetSpeed)
+    HANDLE(set_rotate, OnSetRotate)
+    HANDLE(set_swing_arm, OnSetSwingArm)
+    HANDLE(set_drag, OnSetDrag)
+    HANDLE(set_alignment, OnSetAlignment)
+    HANDLE(set_start_size, OnSetStartSize)
+    HANDLE(set_mat, OnSetMat)
+    HANDLE(set_pos, OnSetPos)
+    HANDLE_ACTION(set_mesh, SetMesh(_msg->Obj<RndMesh>(2)))
+    HANDLE(active_particles, OnActiveParticles)
+    HANDLE_EXPR(max_particles, MaxParticles())
+    HANDLE_ACTION(set_relative_parent, SetRelativeMotion(mRelativeMotion, _msg->Obj<RndTransformable>(2)))
+    HANDLE_ACTION(clear_all_particles, FreeAllParticles())
+    HANDLE_SUPERCLASS(RndDrawable)
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(RndTransformable)
+    HANDLE_SUPERCLASS(RndPollable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x7B6)
+END_HANDLERS
+#pragma pop
+
+bool AngleVectorSync(Vector2& vec, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
+    if(_i == _prop->Size()) return true;
+    else {
+        Symbol sym = _prop->Sym(_i);
+        if(sym == x){
+            if(_op == kPropSet) vec.x = _val.Float(0) * 0.017453292f;
+            else if(_op == kPropGet) _val = DataNode(vec.x * 57.295776f);
+            else return false;
+        }
+        else if(sym == y){
+            vec.x = vec.y;
+        }
+        else return false;
+    }
 }
 
 #pragma push

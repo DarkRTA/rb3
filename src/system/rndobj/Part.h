@@ -100,13 +100,14 @@ public:
     virtual void UpdateSphere();
     virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void Mats(std::list<class RndMat*>&, bool);
-    virtual void SetPreserveParticles(bool);
+    virtual void SetPreserveParticles(bool b){ mPreserveParticles = b; }
     virtual void SetPool(int, Type);
     virtual void SetPersistentPool(int, Type);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
 
     void SetGrowRatio(float);
     void SetShrinkRatio(float);
+    void SetMat(RndMat*);
     void SetMesh(RndMesh*);
     void SetRelativeMotion(float, RndTransformable*);
     void SetSubSamples(int);
@@ -114,6 +115,30 @@ public:
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle*, const Transform*);
     void ExplicitParticles(int, bool, PartOverride&);
+    void FreeAllParticles();
+    int MaxParticles() const;
+
+    DataNode OnSetStartColor(const DataArray*);
+    DataNode OnSetStartColorInt(const DataArray*);
+    DataNode OnSetEndColor(const DataArray*);
+    DataNode OnSetEndColorInt(const DataArray*);
+    DataNode OnSetEmitRate(const DataArray*);
+    DataNode OnAddEmitRate(const DataArray*);
+    DataNode OnSetBurstInterval(const DataArray*);
+    DataNode OnSetBurstPeak(const DataArray*);
+    DataNode OnSetBurstLength(const DataArray*);
+    DataNode OnExplicitPart(const DataArray*);
+    DataNode OnExplicitParts(const DataArray*);
+    DataNode OnSetLife(const DataArray*);
+    DataNode OnSetSpeed(const DataArray*);
+    DataNode OnSetRotate(const DataArray*);
+    DataNode OnSetSwingArm(const DataArray*);
+    DataNode OnSetDrag(const DataArray*);
+    DataNode OnSetAlignment(const DataArray*);
+    DataNode OnSetStartSize(const DataArray*);
+    DataNode OnSetMat(const DataArray*);
+    DataNode OnSetPos(const DataArray*);
+    DataNode OnActiveParticles(const DataArray*);
 
     const Hmx::Color& StartColorLow() const { return mStartColorLow; }
     const Hmx::Color& StartColorHigh() const { return mStartColorHigh; }

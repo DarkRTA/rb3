@@ -85,7 +85,7 @@ public:
     bool mLineUpdate : 1; // used in RndLine
 
     bool unk9p0 : 1;
-    bool unk9p1 : 1;
+    bool mKeepMeshData : 1; // used in RndMesh
     bool unk9p2 : 1;
     bool unk9p3 : 1;
     bool unk9p4 : 1; // used in RndMultiMesh

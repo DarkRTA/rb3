@@ -200,9 +200,18 @@ void RndEnviron::RemoveLight(RndLight* l){
     mLightsApprox.remove(l);
 }
 
+// fn_805D81CC
+#pragma push
+#pragma pool_data off
 const Transform& RndEnviron::ColorXfm() const {
-    
+    static Vector3 x(1.0f,0.0f,0.0f);
+    static Vector3 y(0.0f,1.0f,0.0f);
+    static Vector3 z(0.0f,0.0f,1.0f);
+    static Transform ident(Hmx::Matrix3(x,y,z), Vector3(0.0f,0.0f,0.0f));
+    if(mUseColorAdjust) return mColorXfm.mColorXfm;
+    else return ident;
 }
+#pragma pop
 
 void RndEnviron::ReclassifyLights() {
     if(!mLightsOld.empty()){
