@@ -50,6 +50,7 @@ public:
     virtual void ChainSourceSubdir(MsgSource*, ObjectDir*);
 
     void SyncDrawables();
+    void CollideListSubParts(const Segment&, std::list<Collision>&);
     void SetEnv(RndEnviron* env){ mEnv = env; }
 
     DataNode OnShowObjects(DataArray*);

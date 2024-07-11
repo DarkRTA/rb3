@@ -139,6 +139,30 @@ void RndDir::ListPollChildren(std::list<RndPollable*>& children) const {
     }
 }
 
+int RndDir::CollidePlane(const Plane& pl){
+    int ret = -1;
+    for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+        if(it == mDraws.begin()) ret = (*it)->CollidePlane(pl);
+        else if(ret != (*it)->CollidePlane(pl)) return 0;
+    }
+    return ret;
+}
+
+void RndDir::CollideListSubParts(const Segment& seg, std::list<Collision>& colls){
+    if(CollideSphere(seg)){
+        for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+            (*it)->CollideList(seg, colls);
+        }
+    }
+}
+
+void RndDir::CollideList(const Segment& seg, std::list<Collision>& colls){
+    if(IsProxy() && !sForceSubpartSelection){
+        RndDrawable::CollideList(seg, colls);
+    }
+    else CollideListSubParts(seg, colls);
+}
+
 void RndDir::SetFrame(float frame, float blend){
     if(Showing()){
         RndAnimatable::SetFrame(frame, blend);
@@ -157,6 +181,7 @@ float RndDir::EndFrame(){
     return frame;
 }
 
+// fn_805D4A9C
 void RndDir::Export(DataArray* da, bool b){
     MsgSource::Export(da, b);
     for(int i = 0; i < mSubDirs.size(); i++){
@@ -234,6 +259,7 @@ void RndDir::PreLoad(BinStream& bs){
     ObjectDir::PreLoad(bs);
 }
 
+// fn_805D4F54
 void RndDir::PostLoad(BinStream& bs){
     ObjectDir::PostLoad(bs);
     int revs = PopRev(this);
@@ -245,22 +271,16 @@ void RndDir::PostLoad(BinStream& bs){
     if(gRev > 1){
         if(gLoadingProxyFromDisk){
             ObjPtr<RndEnviron, ObjectDir> envPtr(this, 0);
-            RndEnviron* envToSet = 0;
-            char buf[0x80];
-            bs.ReadString(buf, 0x80);
-            if(envPtr && envPtr->Dir()){
-                envPtr = dynamic_cast<RndEnviron*>(envPtr->Dir()->FindObject(buf, false));
-            }
-            else envPtr = 0;
+            envPtr.Load(bs, false, 0);
         }
         else bs >> mEnv;
     }
     if(gRev > 2 && gRev != 9) bs >> mTestEvent;
-    if(gRev - 4 < 5){
+    if(gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8){
         Symbol s;
         bs >> s >> s;
     }
-    if(gRev - 5 <= 2){
+    if(gRev == 5 || gRev == 6 || gRev == 7){
         RndPostProc* rpp = Hmx::Object::New<RndPostProc>();
         rpp->LoadRev(bs, gRev);
         delete rpp;
@@ -284,7 +304,7 @@ DataNode RndDir::OnShowObjects(DataArray* da) {
     bool show = da->Int(3);
     for (int i = 0; i < array->Size(); i++) {
         RndDrawable* d = array->Obj<RndDrawable>(i);
-        if (d) d->mShowing = show;
+        if (d) d->SetShowing(show);
     }
     return DataNode();
 }
