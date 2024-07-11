@@ -150,6 +150,85 @@ inline float Average(const Vector2& v){
     return (v.x + v.y) / 2;
 }
 
+inline float Distance(const Vector3& v1, const Vector3& v2){
+    register const Vector3* _v1 = &v1;
+    register const Vector3* _v2 = &v2;
+    
+    register double paired1, paired2;
+    register float single1, single2;
+
+    register float yz_sub;
+    register float x_sub;
+    register float yz_d_sq;
+    
+    register float total;
+    register float inv;
+    register float inv_half;
+    register float inv_sq;
+    
+    register float half = 0.5;
+    register float zero;
+
+    asm {
+        // load y and z into half register
+        psq_l paired1, Vector3.y(_v1), 0, 0
+        psq_l paired2, Vector3.y(_v2), 0, 0
+        
+        // (y1 - y2), (z1 - z2)
+        ps_sub yz_sub, paired1, paired2
+
+        // update register to hold (y1 - y2)^2, (z1 - z2)^2
+        ps_mul yz_d_sq, yz_sub, yz_sub
+
+        // load x (also loads y, but we can ignore that)
+        psq_l single1, Vector3.x(_v1), 0, 0
+        psq_l single2, Vector3.x(_v2), 0, 0
+
+        // (x1 - x2), (y1 - y2 (ignored))
+        ps_sub x_sub, single1, single2
+
+        // (x^2 + y^2), (x^2 + y^2 (ignored))
+        ps_madd total, x_sub, x_sub, yz_d_sq
+
+        // (x^2 + y^2 + z^2), (z^2 (ignored))
+        ps_sum0 total, total, yz_d_sq, yz_d_sq
+
+        // i guess make 0 out of a constant we already have loaded?
+        fsubs zero, half, half
+        // compare unordered, no negatives; if zero, return 0
+        fcmpu zero, total
+        beq _done
+    }
+    
+    register float three = 3;
+
+    asm {
+        // get 1/distance
+        frsqrte inv, total
+
+        // square the inverse, so 1/distance^2
+        fmuls inv_sq, inv, inv
+
+        // turn half into 1/2d
+        fmuls inv_half, inv, half
+
+        // multiply the distance^2 by 1/d^2, and then multiply by 3?
+        // my best guess is this would return 3?
+        fnmsubs inv_sq, inv_sq, total, three
+
+        // beyond this point, I'm not really sure what we're doing, 
+        // as a best guess, it would be a newton iteration?
+
+        fmuls inv, inv_sq, inv_half
+
+        fmuls total, total, inv
+
+        _done:
+    }
+    
+    return total;
+}
+
 void Subtract(const Vector3&, const Vector3&, Vector3&);
 float Length(const Vector3&);
 

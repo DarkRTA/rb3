@@ -35,9 +35,9 @@ public:
 
     static unsigned short gRev;
 
-    ObjPtr<RndMesh, ObjectDir> mMesh;
-    ObjPtr<RndTransformable, ObjectDir> mObject1;
-    ObjPtr<RndTransformable, ObjectDir> mObject2;
+    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x1c
+    ObjPtr<RndTransformable, ObjectDir> mObject1; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mObject2; // 0x34
     float mReferenceDistance; // 0x40
     float mMinDistance; // 0x44
     float mMaxDistance; // 0x48
