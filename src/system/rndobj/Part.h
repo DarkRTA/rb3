@@ -11,21 +11,25 @@ class RndMesh;
 class RndMat;
 
 struct RndParticle {
-    Hmx::Color col;
-    Hmx::Color colVel;
-    Vector4 pos;
-    Vector4 vel;
-    float deathFrame;
-    float birthFrame;
-    float size;
-    float sizeVel;
-    float angle;
-    float swingArm;
-    RndParticle* prev;
-    RndParticle* next;
+    RndParticle(){}
+
+    Hmx::Color col; // 0x0
+    Hmx::Color colVel; // 0x10
+    Vector4 pos; // 0x20
+    Vector4 vel; // 0x30
+    float deathFrame; // 0x40
+    float birthFrame; // 0x44
+    float size; // 0x48
+    float sizeVel; // 0x4c
+    float angle; // 0x50
+    float swingArm; // 0x54
+    RndParticle* prev; // 0x58
+    RndParticle* next; // 0x5c
 };
 
 struct RndFancyParticle : RndParticle {
+    RndFancyParticle(){}
+
     float growFrame;
     float growVel;
     float shrinkFrame;
@@ -40,6 +44,17 @@ struct RndFancyParticle : RndParticle {
     float bubblePhase;
     float RPF;
     float swingArmVel;
+};
+
+class ParticleCommonPool {
+public:
+    ParticleCommonPool() : mPoolParticles(0), mPoolFreeParticles(0), mNumActiveParticles(0), mHighWaterMark(0) {}
+    void InitPool();
+
+    RndFancyParticle* mPoolParticles; // 0x0
+    RndFancyParticle* mPoolFreeParticles; // 0x4
+    int mNumActiveParticles; // 0x8
+    int mHighWaterMark; // 0xc
 };
 
 struct PartOverride {
@@ -143,41 +158,43 @@ public:
     const Hmx::Color& StartColorLow() const { return mStartColorLow; }
     const Hmx::Color& StartColorHigh() const { return mStartColorHigh; }
     void SetStartColor(const Hmx::Color& low, const Hmx::Color& high){
-        mStartColorLow = low;
-        mStartColorHigh = high;
+        mStartColorLow = low; mStartColorHigh = high;
     }
 
     const Hmx::Color& EndColorLow() const { return mEndColorLow; }
     const Hmx::Color& EndColorHigh() const { return mEndColorHigh; }
     void SetEndColor(const Hmx::Color& low, const Hmx::Color& high){
-        mEndColorLow = low;
-        mEndColorHigh = high;
+        mEndColorLow = low; mEndColorHigh = high;
     }
 
     const Vector2& EmitRate() const { return mEmitRate; }
-    void SetEmitRate(float x, float y){
-        mEmitRate.Set(x, y);
-    }
-
+    void SetEmitRate(float x, float y){ mEmitRate.Set(x, y); }
     const Vector2& Speed() const { return mSpeed; }
-    void SetSpeed(float x, float y){
-        mSpeed.Set(x, y);
-    }
-
+    void SetSpeed(float x, float y){ mSpeed.Set(x, y); }
     const Vector2& Life() const { return mLife; }
-    void SetLife(float x, float y){
-        mLife.Set(x, y);
-    }
-
+    void SetLife(float x, float y){ mLife.Set(x, y); }
     const Vector2& StartSize() const { return mStartSize; }
-    void SetStartSize(float x, float y){
-        mStartSize.Set(x, y);
-    }
+    void SetStartSize(float x, float y){ mStartSize.Set(x, y); }
 
     void SetBoxExtent(const Vector3& v1, const Vector3& v2){
-        mBoxExtent1 = v1;
-        mBoxExtent2 = v2;
+        mBoxExtent1 = v1; mBoxExtent2 = v2;
     }
+
+    void SetSpin(bool b){ mSpin = b; }
+    void SetVelocityAlign(bool b){ mVelocityAlign = b; }
+    void SetStretchWithVelocity(bool b){ mStretchWithVelocity = b; }
+    void SetConstantArea(bool b){ mConstantArea = b; }
+
+    void SetMaxBurst(int i){ mMaxBurst = i; }
+    void SetTimeBetweenBursts(float f1, float f2){ mTimeBetween.Set(f1,f2); }
+    void SetPeakRate(float f1, float f2){ mPeakRate.Set(f1, f2); }
+    void SetDuration(float f1, float f2){ mDuration.Set(f1, f2); }
+    void SetRPM(float f1, float f2){ mRPM.Set(f1, f2); }
+    void SetRPMDrag(float f){ mRPMDrag = f; }
+    void SetStartOffset(float f1, float f2){ mStartOffset.Set(f1, f2); }
+    void SetEndOffset(float f1, float f2){ mEndOffset.Set(f1, f2); }
+    void SetDrag(float f){ mDrag = f; }
+    void SetStretchScale(float f){ mStretchScale = f; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -243,8 +260,10 @@ public:
     float unk2e8;
 };
 
+extern ParticleCommonPool* gParticlePool;
 extern PartOverride gNoPartOverride;
 
 void InitParticleSystem();
+int GetParticleHighWaterMark();
 
 #endif // RNDOBJ_PART_H

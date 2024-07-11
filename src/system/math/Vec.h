@@ -21,6 +21,10 @@ public:
         return *this;
     }
 
+    bool operator!() const {
+        return x == 0.0f && y == 0.0f;
+    }
+
     float x;
     float y;
 };
@@ -107,6 +111,7 @@ public:
     float z;
     float w;
 
+    Vector4(){}
     Vector4(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
 
     // Vector4(const Vector4 &);
