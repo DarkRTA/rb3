@@ -226,6 +226,46 @@ void RndEnviron::OnRemoveAllLights(){
     mLightsOld.clear();
 }
 
+// fn_805D86B8
+DataNode RndEnviron::OnAllowableLights_Real(const DataArray* da){
+    DataArrayPtr ptr;
+    for(ObjDirItr<RndLight> it(Dir(), true); it != 0; ++it){
+        if(!IsLightInList(it, mLightsReal) && !IsLightInList(it, mLightsApprox) && IsValidRealLight(it) == 1U){
+            ptr->Insert(ptr->Size(), DataNode(it));
+        }
+    }
+    static DataNode* milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path->Type() == kDataArray){
+        if(milo_prop_path->Array(0)->Size() == 2){
+            ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsReal.begin();
+            it += milo_prop_path->Array(0)->Int(1);
+            ptr->Insert(ptr->Size(), *it);
+        }
+    }
+    
+//   iVar2 = JsonObject::GetJsonObjectStruct((JsonObject *)lbl_8098AE58);
+//   if (iVar2 == 0x10) {
+//     pDVar3 = (DataArray *)DataNode::Array(lbl_8098AE58,(DataArray *)0x0);
+//     iVar2 = DataArray::Size(pDVar3);
+//     if (iVar2 == 2) {
+//       local_48 = fn_805A65F4(param_2 + 0x1c); // lights real list begin()
+//       pDVar3 = (DataArray *)DataNode::Array(lbl_8098AE58,(DataArray *)0x0);
+//       uVar1 = DataArray::Int(pDVar3,1);
+//       local_44 = fn_805D88C0(&local_48,uVar1); // advances iterator uVar1 times
+//       puVar4 = (undefined4 *)fn_8023B7B0(&local_44); // gets object inside iterator, *it
+//       if (puVar4 != (undefined4 *)0x0) {
+//         puVar4 = *(undefined4 **)*puVar4;
+//       }
+//       DataNode::DataNode(&DStack_38,(Object *)puVar4);
+//       iVar2 = DataArray::Size(local_3c);
+//       DataArray::Insert(local_3c,iVar2,&DStack_38);
+//       DataNode::~DataNode(&DStack_38);
+//     }
+//   }
+//   DataNode::DataNode(param_1,(DataArrayPtr *)&local_3c);
+    return DataNode(ptr);
+}
+
 void RndEnviron::ApplyApproxLighting(const _GXColor*) { }
 
 BEGIN_PROPSYNCS(RndEnviron)

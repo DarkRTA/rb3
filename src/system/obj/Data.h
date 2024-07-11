@@ -304,6 +304,7 @@ public:
     }
 
     operator DataArray*() const { return mData; }
+    DataArray* operator->() const { return mData; }
 
     DataArray* mData;
 

@@ -148,6 +148,12 @@ public:
             return tmp;
         }
 
+        // https://decomp.me/scratch/B6ylJ
+        iterator operator+=(int num){
+            while(num-- != 0) (*this)++;
+            return *this;
+        }
+
         bool operator!=(iterator it){ return mNode != it.mNode; }
 
         struct Node* mNode;
