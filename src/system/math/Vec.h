@@ -233,6 +233,8 @@ inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
 }
 
 float Length(const Vector3&);
+float LengthSquared(const Vector3&);
+float RecipSqrtAccurate(float);
 
 inline float Dot(const Vector3& v1, const Vector3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -253,5 +255,6 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
 }
 
 void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
+void ScaleAddEq(Vector3&, const Vector3&, float);
 
 #endif

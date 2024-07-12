@@ -32,7 +32,8 @@ public:
         float outerRadius; // 0x54
         float sideLength; // 0x58
         float collide; // 0x5c
-        float unk64;
+        float unk60; // 0x60
+        float unk64; // 0x64
     };
 
     class Strand {
@@ -42,6 +43,9 @@ public:
         void Load(BinStream&);
         void SetRoot(RndTransformable*);
         void SetAngle(float);
+        RndTransformable* Root(){ return mRoot; }
+        Hmx::Matrix3& RootMat(){ return mRootMat; }
+        ObjVector<Point>& Points(){ return mPoints; }
 
         bool mShowSpheres; // 0x0
         bool mShowCollide; // 0x1
@@ -50,7 +54,7 @@ public:
         float mAngle; // 0x10
         ObjVector<Point> mPoints; // 0x14
         Hmx::Matrix3 mBaseMat; // 0x20
-        Hmx::Matrix3 mRootMat;
+        Hmx::Matrix3 mRootMat; // 0x44
         int mHookupFlags;
     };
 
@@ -73,29 +77,29 @@ public:
 
     DECLARE_REVS;
 
-    float mStiffness;
-    float mTorsion;
-    float mInertia;
-    float mGravity;
-    float mWeight;
-    float mFriction;
-    float mMinSlack;
-    float mMaxSlack;
-    ObjVector<Strand> mStrands;
-    int mReset;
-    bool mSimulate;
-    bool mUsePostProc;
-    ObjPtr<Character, ObjectDir> mMe;
-    ObjPtr<RndWind, ObjectDir> mWind;
-    ObjPtrList<CharCollide, ObjectDir> mCollide;
-    bool unk6c;
+    float mStiffness; // 0x10
+    float mTorsion; // 0x14
+    float mInertia; // 0x18
+    float mGravity; // 0x1c
+    float mWeight; // 0x20
+    float mFriction; // 0x24
+    float mMinSlack; // 0x28
+    float mMaxSlack; // 0x2c
+    ObjVector<Strand> mStrands; // 0x30
+    int mReset; // 0x3c
+    bool mSimulate; // 0x40
+    bool mUsePostProc; // 0x41
+    ObjPtr<Character, ObjectDir> mMe; // 0x44
+    ObjPtr<RndWind, ObjectDir> mWind; // 0x50
+    ObjPtrList<CharCollide, ObjectDir> mCollide; // 0x5c
+    bool unk6c; // 0x6c
 };
 
-BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
+inline BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
     return bs;
 }
 
-BinStream& operator>>(BinStream& bs, CharHair::Strand& strand){
+inline BinStream& operator>>(BinStream& bs, CharHair::Strand& strand){
     strand.Load(bs);
 }
 

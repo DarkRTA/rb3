@@ -23,6 +23,7 @@ public:
     void SetDefaults();
     void SyncLoops();
     float GetWind(float);
+    void GetWind(const Vector3&, float, Vector3&);
 
     static void Init();
     NEW_OBJ(RndWind)
