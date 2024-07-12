@@ -233,7 +233,12 @@ inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
 }
 
 float Length(const Vector3&);
-float LengthSquared(const Vector3&);
+
+inline float LengthSquared(const Vector3& v){
+    return v.x * v.x + v.y * v.y + v.z * v.z;
+}
+
+
 float RecipSqrtAccurate(float);
 
 inline float Dot(const Vector3& v1, const Vector3& v2) {
@@ -256,7 +261,13 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
 
 void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
 void ScaleAddEq(Vector3&, const Vector3&, float);
-void Cross(const Vector3&, const Vector3&, Vector3&);
+
+inline void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
+    dst.Set(
+        v2.y * v1.x - v1.y * v2.x, v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z
+    );
+}
+
 void Normalize(const Vector3&, Vector3&);
 
 #endif

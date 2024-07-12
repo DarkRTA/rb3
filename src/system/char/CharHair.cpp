@@ -71,6 +71,12 @@ CharHair::~CharHair(){
 
 }
 
+void CharHair::Enter(){
+    mReset = 1;
+    RndPollable::Enter();
+    Hookup();
+}
+
 #pragma push
 #pragma dont_inline on
 void CharHair::SimulateInternal(float f){
@@ -219,6 +225,59 @@ CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mSh
     mRootMat.Identity();
 }
 
+BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
+    bs >> pt.pos;
+    bs >> pt.bone;
+    bs >> pt.length;
+    if(CharHair::gRev < 3){
+        int i;
+        char buf[0x100];
+        bs >> i;
+        bs.ReadString(buf, 0xff);
+    }
+    else if(CharHair::gRev == 3){
+        int i;
+        bs >> i;
+    }
+    bs >> pt.radius;
+    if(CharHair::gRev > 1) bs >> pt.outerRadius;
+    else pt.outerRadius = 0;
+    if(CharHair::gRev == 6 || CharHair::gRev == 7 || CharHair::gRev == 8){
+        float f;
+        bs >> f;
+        pt.radius += f;
+        pt.outerRadius += f;
+    }
+    if(CharHair::gRev == 6){
+        char buf[0x100];
+        bs.ReadString(buf, 0xff);
+    }
+    if(CharHair::gRev < 8){
+        pt.sideLength = -1.0f;
+        if(CharHair::gRev > 5){
+            int i;
+            bs >> i >> i;
+        }
+    }
+    else {
+        bool b = false;
+        if(CharHair::gRev < 9) bs >> b;
+        bs >> pt.sideLength;
+        if(CharHair::gRev < 9 && !b){
+            pt.sideLength = -1.0f;
+        }
+    }
+    if(CharHair::gRev > 9){
+        bs >> pt.collide;
+        bs >> pt.unk60;
+        bs >> pt.unk64;
+    }
+    pt.collides.clear();
+    pt.force.Zero();
+    pt.lastFriction.Zero();
+    pt.lastZ.Zero();
+}
+
 void CharHair::Strand::Load(BinStream& bs){
     bs >> mRoot;
     bs >> mAngle;
@@ -228,6 +287,10 @@ void CharHair::Strand::Load(BinStream& bs){
         bs >> mHookupFlags;
     }
     else mHookupFlags = 0;
+}
+
+BinStream& operator>>(BinStream& bs, CharHair::Strand& strand){
+    strand.Load(bs);
 }
 
 SAVE_OBJ(CharHair, 0x41B)

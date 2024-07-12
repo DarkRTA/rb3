@@ -74,6 +74,7 @@ public:
     virtual void SetName(const char*, class ObjectDir*);
 
     void SimulateInternal(float);
+    void Hookup();
 
     DECLARE_REVS;
 
@@ -95,12 +96,7 @@ public:
     bool unk6c; // 0x6c
 };
 
-inline BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
-    return bs;
-}
-
-inline BinStream& operator>>(BinStream& bs, CharHair::Strand& strand){
-    strand.Load(bs);
-}
+BinStream& operator>>(BinStream& bs, CharHair::Point& pt);
+BinStream& operator>>(BinStream& bs, CharHair::Strand& strand);
 
 #endif
