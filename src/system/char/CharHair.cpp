@@ -109,7 +109,7 @@ void CharHair::SimulateInternal(float f){
                     float lensq = LengthSquared(vRes);
                     float sidelen = thisPoint.sideLength - mMinSlack;
                     float sidelensq = sidelen * sidelen;
-                    if(sidelensq > lensq){
+                    if(lensq < sidelensq){
                         vRes *= (sidelensq / (sidelensq + lensq) - 0.5f);
                         thisPoint.pos += vRes;
                         modPoint.pos -= vRes;
@@ -117,7 +117,7 @@ void CharHair::SimulateInternal(float f){
                     else {
                         float maxslacklen = thisPoint.sideLength + mMaxSlack;
                         float maxslacklensq = maxslacklen * maxslacklen;
-                        if(maxslacklensq < maxslacklen){
+                        if(maxslacklen > maxslacklensq){
                             vRes *= (maxslacklensq / (maxslacklensq + lensq) - 0.5f);
                             thisPoint.pos += vRes;
                             modPoint.pos -= vRes;
@@ -144,7 +144,7 @@ void CharHair::SimulateInternal(float f){
                         float collideRad = thisCollide->GetRadius(thisPoint.pos, v164);
                         switch(thisCollide->GetShape()){
                             case CharCollide::kPlane: // 0
-                                if(collideRad < maxRad){
+                                if(maxRad > collideRad){
                                     ScaleAddEq(thisPoint.pos, thisCollide->Axis(), maxRad - collideRad);
                                 }
                                 break;
@@ -158,7 +158,7 @@ void CharHair::SimulateInternal(float f){
                                         float cluster = v164sq * v164sqrecip;
                                         float othersumRad = collideRad + thisPoint.radius;
                                         v164 *= -v164sqrecip;
-                                        if(othersumRad > cluster){
+                                        if(cluster < othersumRad){
                                             m128.z = v164;
                                             ScaleAddEq(thisPoint.pos, v164, cluster - othersumRad);
                                         }
@@ -171,7 +171,7 @@ void CharHair::SimulateInternal(float f){
                             case CharCollide::kInsideSphere: // 2
                                 float v164sq42 = LengthSquared(v164);
                                 float minusRad = collideRad - maxRad;
-                                if(minusRad * minusRad < v164sq42){
+                                if(v164sq42 > minusRad * minusRad){
                                     if(diffRad > 0.0f){
                                         float v164sqrecip = RecipSqrtAccurate(v164sq42);
                                         float cluster = v164sq42 * v164sqrecip;
