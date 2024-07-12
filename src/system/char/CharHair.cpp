@@ -16,15 +16,22 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
         mBaseMat = mRoot->LocalXfm().m;
         SetAngle(mAngle);
         
+        // i hate the way these are structured, i'd rather just make for loops but nooo
         int depth = 0;
-        for(RndTransformable* it = mRoot; !it->TransChildren().empty(); it = it->TransChildren().front()){
+        RndTransformable* it = mRoot;
+        while(true){
             depth++;
+            if(it->TransChildren().empty()) break;
+            it = it->TransChildren().front();
         }
         mPoints.resize(depth);
 
         depth = 0;
-        for(RndTransformable* it = mRoot; !it->TransChildren().empty(); it = it->TransChildren().front()){
+        it = mRoot;
+        while(true){
             mPoints[depth].bone = it;
+            if(it->TransChildren().empty()) break;
+            it = it->TransChildren().front();
             depth++;
         }
 
@@ -32,7 +39,7 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
         for(int i = 1; i < mPoints.size(); i++){
             pt = &mPoints[i - 1];
             RndTransformable* bone = mPoints[i].bone;
-            pt->length = bone->LocalXfm().v.x;
+            pt->length = bone->LocalXfm().v.y;
             pt->pos = bone->WorldXfm().v;
         }
         
@@ -43,7 +50,7 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
         }
         backpt->length = len;
 
-        ScaleAdd(mRoot->WorldXfm().v, mRoot->WorldXfm().m.y, backpt->length, backpt->pos);
+        ScaleAdd(backpt->bone->WorldXfm().v, backpt->bone->WorldXfm().m.y, backpt->length, backpt->pos);
     }
 }
 #pragma pop
