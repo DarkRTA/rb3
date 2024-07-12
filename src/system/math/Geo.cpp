@@ -2,11 +2,11 @@
 #include "math/Bsp.h"
 #include "obj/DataFunc.h"
 
-float gBSPPosTol = 0.01;
-float gBSPDirTol = 0.985;
+float gBSPPosTol = 0.01f;
+float gBSPDirTol = 0.985f;
 int gBSPMaxDepth = 20;
 int gBSPMaxCandidates = 40;
-float gBSPCheckScale = 1.1;
+float gBSPCheckScale = 1.1f;
 
 static DataNode SetBSPParams(DataArray* da) {
     SetBSPParams(da->Float(1), da->Float(2), da->Int(3), da->Int(4), da->Float(5));
@@ -14,11 +14,24 @@ static DataNode SetBSPParams(DataArray* da) {
 }
 
 void GeoInit() {
+    DataArray* cfg = SystemConfig("math");
+    float scale = cfg->FindArray("bsp_check_scale", true)->Float(1);
+    int candidates = cfg->FindArray("bsp_max_candidates", true)->Int(1);
+    int depth = cfg->FindArray("bsp_max_depth", true)->Int(1);
+    float dirtol = cfg->FindArray("bsp_dir_tol", true)->Float(1);
+    float postol = cfg->FindArray("bsp_pos_tol", true)->Float(1);
+    SetBSPParams(postol, dirtol, depth, candidates, scale);
     DataRegisterFunc("set_bsp_params", SetBSPParams);
 }
 
 BinStream& operator>>(BinStream& bs, BSPNode*& bsp) {
-
+    bool exists;
+    bs >> exists;
+    if(exists){
+        bsp = new BSPNode();
+        bs >> bsp->plane >> bsp->left >> bsp->right;
+    }
+    else bsp = 0;
     return bs;
 }
 
@@ -65,5 +78,81 @@ void SetBSPParams(float f1, float f2, int r3, int r4, float f3) {
     gBSPCheckScale = f3;
 }
 
+#pragma push
+#pragma dont_inline on
+bool CheckBSPTree(const BSPNode* node, const Box& box){
+    if(!gBSPCheckScale) return true;
+    Box box68;
+    Multiply(box, gBSPCheckScale, box68);
+    Hmx::Polygon polygon70;
+    polygon70.mPoints.resize(4);
+    Transform tf50;
+    polygon70.mPoints[0] = Vector2(box68.mMin.x, box68.mMin.y);
+    polygon70.mPoints[1] = Vector2(box68.mMax.x, box68.mMin.y);
+    polygon70.mPoints[2] = Vector2(box68.mMax.x, box68.mMax.y);
+    polygon70.mPoints[3] = Vector2(box68.mMin.x, box68.mMax.y);
+    tf50.m.Identity();
+    tf50.v.Set(0,0,box68.mMin.z);
+    if(Intersect(tf50, polygon70, node)) return false;
+    // first intersect check
+
+    polygon70.mPoints.clear();
+    polygon70.mPoints.resize(4);
+    polygon70.mPoints[0] = Vector2(box68.mMin.x, -box68.mMax.y);
+    polygon70.mPoints[1] = Vector2(box68.mMax.x, -box68.mMax.y);
+    polygon70.mPoints[2] = Vector2(box68.mMax.x, -box68.mMin.y);
+    polygon70.mPoints[3] = Vector2(box68.mMin.x, -box68.mMin.y);
+    float negone = -1.0f;
+    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,negone,0.0f,0.0f,0.0f,0.0f);
+    tf50.v.Set(0, 0, box68.mMax.z);
+    if(Intersect(tf50, polygon70, node)) return false;
+    // second intersect check
+
+    polygon70.mPoints.clear();
+    polygon70.mPoints.resize(4);
+    polygon70.mPoints[0] = Vector2(box68.mMin.y, box68.mMin.z);
+    polygon70.mPoints[1] = Vector2(box68.mMax.y, box68.mMin.z);
+    polygon70.mPoints[2] = Vector2(box68.mMax.y, box68.mMax.z);
+    polygon70.mPoints[3] = Vector2(box68.mMin.y, box68.mMax.z);
+    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.v.Set(box68.mMin.x, 0, 0);
+    if(Intersect(tf50, polygon70, node)) return false;
+    // third intersect check
+
+    polygon70.mPoints.clear();
+    polygon70.mPoints.resize(4);
+    polygon70.mPoints[0] = Vector2(-box68.mMax.y, box68.mMin.z);
+    polygon70.mPoints[1] = Vector2(-box68.mMin.y, box68.mMin.z);
+    polygon70.mPoints[2] = Vector2(-box68.mMin.y, box68.mMax.z);
+    polygon70.mPoints[3] = Vector2(-box68.mMax.y, box68.mMax.z);
+    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,-1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.v.Set(box68.mMax.x, 0, 0);
+    if(Intersect(tf50, polygon70, node)) return false;
+    // fourth intersect check
+
+    polygon70.mPoints.clear();
+    polygon70.mPoints.resize(4);
+    polygon70.mPoints[0] = Vector2(box68.mMin.x, box68.mMin.z);
+    polygon70.mPoints[1] = Vector2(box68.mMax.x, box68.mMin.z);
+    polygon70.mPoints[2] = Vector2(box68.mMax.x, box68.mMax.z);
+    polygon70.mPoints[3] = Vector2(box68.mMin.x, box68.mMax.z);
+    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.v.Set(0, box68.mMax.y, 0);
+    if(Intersect(tf50, polygon70, node)) return false;
+    // fifth intersect check
+
+    polygon70.mPoints.clear();
+    polygon70.mPoints.resize(4);
+    polygon70.mPoints[0] = Vector2(-box68.mMax.x, box68.mMin.z);
+    polygon70.mPoints[1] = Vector2(-box68.mMin.x, box68.mMin.z);
+    polygon70.mPoints[2] = Vector2(-box68.mMin.x, box68.mMax.z);
+    polygon70.mPoints[3] = Vector2(-box68.mMax.x, box68.mMax.z);
+    tf50.m.Set(-1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.v.Set(0, box68.mMin.y, 0);
+    if(Intersect(tf50, polygon70, node)) return false;
+    return true;
+    // sixth and final intersect check
+}
+#pragma pop
 
 void Clip(const Hmx::Polygon&, const Hmx::Ray&, Hmx::Polygon&) {}
