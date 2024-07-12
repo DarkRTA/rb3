@@ -21,17 +21,17 @@ public:
             lastZ.Zero();
         }
 
-        Vector3 pos;
-        Vector3 force;
-        Vector3 lastFriction;
-        Vector3 lastZ;
-        ObjPtr<RndTransformable, ObjectDir> bone;
-        float length;
-        ObjPtrList<CharCollide, ObjectDir> collides;
-        float radius;
-        float outerRadius;
-        float sideLength;
-        float collide;
+        Vector3 pos; // 0x0
+        Vector3 force; // 0xc
+        Vector3 lastFriction; // 0x18
+        Vector3 lastZ; // 0x24
+        ObjPtr<RndTransformable, ObjectDir> bone; // 0x30
+        float length; // 0x3c
+        ObjPtrList<CharCollide, ObjectDir> collides; // 0x40
+        float radius; // 0x50
+        float outerRadius; // 0x54
+        float sideLength; // 0x58
+        float collide; // 0x5c
         float unk64;
     };
 
@@ -41,14 +41,15 @@ public:
         ~Strand();
         void Load(BinStream&);
         void SetRoot(RndTransformable*);
+        void SetAngle(float);
 
-        bool mShowSpheres;
-        bool mShowCollide;
-        bool mShowPose;
-        ObjPtr<RndTransformable, ObjectDir> mRoot;
-        float mAngle;
-        ObjVector<Point> mPoints;
-        Hmx::Matrix3 mBaseMat;
+        bool mShowSpheres; // 0x0
+        bool mShowCollide; // 0x1
+        bool mShowPose; // 0x2
+        ObjPtr<RndTransformable, ObjectDir> mRoot; // 0x4
+        float mAngle; // 0x10
+        ObjVector<Point> mPoints; // 0x14
+        Hmx::Matrix3 mBaseMat; // 0x20
         Hmx::Matrix3 mRootMat;
         int mHookupFlags;
     };

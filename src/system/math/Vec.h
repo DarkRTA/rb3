@@ -252,4 +252,6 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
     }
 }
 
+void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
+
 #endif

@@ -6,6 +6,48 @@
 
 INIT_REVS(CharHair)
 
+#pragma push
+#pragma dont_inline on
+void CharHair::Strand::SetRoot(RndTransformable* trans){
+    mRoot = trans;
+    if(!mRoot) mPoints.resize(0);
+    else {
+        float len = mPoints.size() != 0 ? mPoints.back().length : 0;
+        mBaseMat = mRoot->LocalXfm().m;
+        SetAngle(mAngle);
+        
+        int depth = 0;
+        for(RndTransformable* it = mRoot; !it->TransChildren().empty(); it = it->TransChildren().front()){
+            depth++;
+        }
+        mPoints.resize(depth);
+
+        depth = 0;
+        for(RndTransformable* it = mRoot; !it->TransChildren().empty(); it = it->TransChildren().front()){
+            mPoints[depth].bone = it;
+            depth++;
+        }
+
+        Point* pt = 0;
+        for(int i = 1; i < mPoints.size(); i++){
+            pt = &mPoints[i - 1];
+            RndTransformable* bone = mPoints[i].bone;
+            pt->length = bone->LocalXfm().v.x;
+            pt->pos = bone->WorldXfm().v;
+        }
+        
+        Point* backpt = &mPoints.back();
+        if(!len){
+            if(pt) len = pt->length;
+            else len = 5.0f;
+        }
+        backpt->length = len;
+
+        ScaleAdd(mRoot->WorldXfm().v, mRoot->WorldXfm().m.y, backpt->length, backpt->pos);
+    }
+}
+#pragma pop
+
 CharHair::CharHair() : mStiffness(0.04f), mTorsion(0.1f), mInertia(0.7f), mGravity(1.0f), mWeight(0.5f), mFriction(0.3f), mMinSlack(0.0f), mMaxSlack(0.0f),
     mStrands(this), mReset(1), mSimulate(1), mUsePostProc(1), mMe(this, 0), mWind(this, 0), mCollide(this, kObjListNoNull), unk6c(0) {
 
