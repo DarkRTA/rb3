@@ -86,6 +86,82 @@ float RndParticleSysAnim::EndFrame(){
     return last;
 }
 
+#pragma push
+#pragma dont_inline on
+void RndParticleSysAnim::SetFrame(float frame, float blend){
+    RndAnimatable::SetFrame(frame, blend);
+    if(mParticleSys){
+        if(!StartColorKeys().empty()){
+            Hmx::Color colorlow(mParticleSys->StartColorLow());
+            Hmx::Color colorhigh(mParticleSys->StartColorHigh());
+            StartColorKeys().AtFrame(frame, colorlow);
+            Add(colorlow, mParticleSys->StartColorHigh(), colorhigh);
+            Subtract(colorhigh, mParticleSys->StartColorLow(), colorhigh);
+            if(blend != 1.0f){
+                Interp(mParticleSys->StartColorLow(), colorlow, blend, colorlow);
+                Interp(mParticleSys->StartColorHigh(), colorhigh, blend, colorhigh);
+            }
+            mParticleSys->SetStartColor(colorlow, colorhigh);
+        }
+        if(!EndColorKeys().empty()){
+            Hmx::Color colorlow(mParticleSys->EndColorLow());
+            Hmx::Color colorhigh(mParticleSys->EndColorHigh());
+            EndColorKeys().AtFrame(frame, colorlow);
+            Add(colorlow, mParticleSys->EndColorHigh(), colorhigh);
+            Subtract(colorhigh, mParticleSys->EndColorLow(), colorhigh);
+            if(blend != 1.0f){
+                Interp(mParticleSys->StartColorLow(), colorlow, blend, colorlow);
+                Interp(mParticleSys->StartColorHigh(), colorhigh, blend, colorhigh);
+            }
+            mParticleSys->SetEndColor(colorlow, colorhigh);
+        }
+        if(!EmitRateKeys().empty()){
+            Vector2 rate(mParticleSys->EmitRate());
+            EmitRateKeys().AtFrame(frame, rate);
+            if(blend != 1.0f){
+                Interp(mParticleSys->EmitRate(), rate, blend, rate);
+            }
+            mParticleSys->SetEmitRate(rate.x, rate.y);
+        }
+        if(!SpeedKeys().empty()){
+            Vector2 speed(mParticleSys->Speed());
+            SpeedKeys().AtFrame(frame, speed);
+            if(blend != 1.0f){
+                Interp(mParticleSys->Speed(), speed, blend, speed);
+            }
+            mParticleSys->SetSpeed(speed.x, speed.y);
+        }
+        if(!LifeKeys().empty()){
+            Vector2 life(mParticleSys->Life());
+            LifeKeys().AtFrame(frame, life);
+            if(blend != 1.0f){
+                Interp(mParticleSys->Life(), life, blend, life);
+            }
+            mParticleSys->SetLife(life.x, life.y);
+        }        
+        if(!StartSizeKeys().empty()){
+            Vector2 startsize(mParticleSys->StartSize());
+            StartSizeKeys().AtFrame(frame, startsize);
+            if(blend != 1.0f){
+                Interp(mParticleSys->StartSize(), startsize, blend, startsize);
+            }
+            mParticleSys->SetStartSize(startsize.x, startsize.y);
+        }
+    }
+}
+#pragma pop
+
+void RndParticleSysAnim::SetKey(float frame){
+    if(mParticleSys){
+        StartColorKeys().Add(mParticleSys->StartColorLow(), frame, true);
+        EndColorKeys().Add(mParticleSys->EndColorLow(), frame, true);
+        EmitRateKeys().Add(mParticleSys->EmitRate(), frame, true);
+        SpeedKeys().Add(mParticleSys->Speed(), frame, true);
+        LifeKeys().Add(mParticleSys->Life(), frame, true);
+        StartSizeKeys().Add(mParticleSys->StartSize(), frame, true);
+    }
+}
+
 BEGIN_HANDLERS(RndParticleSysAnim)
     HANDLE_ACTION(set_particle_sys, SetParticleSys(_msg->Obj<RndParticleSys>(2)))
     HANDLE_SUPERCLASS(RndAnimatable)

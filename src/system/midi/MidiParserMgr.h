@@ -18,6 +18,9 @@ public:
     virtual void SetMidiReader(MidiReader* mr);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
 
+    void Reset();
+    void Reset(int);
+
     int unk24, unk28, unk2c;
     int unk30, unk34, unk38;
     GemListInterface* mGems;

@@ -3,6 +3,10 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Rnd.h"
+#include "rndobj/HiResScreen.h"
+#include "math/MathFuncs.h"
+#include "math/Rand.h"
+#include "obj/Task.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -61,6 +65,45 @@ void RndPostProc::OnSelect(){
 void RndPostProc::OnUnselect(){
     TheRnd->UnregisterPostProcessor(this);
     Handle(unselected_msg, false);
+}
+
+RndPostProc* RndPostProc::Current(){ return sCurrent; }
+
+// fn_80624B04
+void RndPostProc::UpdateTimeDelta(){
+    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float val150 = secs - unk14c;
+    unk150 = val150;
+    unk150 = Clamp(0.0f, 1.0f, val150);
+    unk14c = secs;
+}
+
+void RndPostProc::DoPost(){
+    UpdateTimeDelta();
+    UpdateColorModulation();
+    UpdateBlendPrevious();
+}
+
+// fn_80624BB4
+void RndPostProc::UpdateColorModulation(){
+    if(mFlickerSecsRange.x > 0 && mFlickerSecsRange.y > 0 && mFlickerIntensity.y > 0){
+        if(unk108.x >= unk108.y){
+            float unk108diff = unk108.x - unk108.y;
+            unk108.x = unk108diff;
+            float maxed = Max(unk108diff, 0.0f);
+            unk108.x = maxed;
+            unk110 = 1.0f - RandomFloat(mFlickerIntensity.x, mFlickerIntensity.y);
+            unk108.y = RandomFloat(mFlickerSecsRange.x, mFlickerSecsRange.y);
+            float maxed2 = Max(unk108.x, unk108.y);
+            unk108.y = maxed2;
+        }
+        unk108.x += unk150;
+    }
+    else unk110 = 1.0f;
+}
+
+bool RndPostProc::BlendPrevious() const {
+    return mThreshold < 1.0f && mDuration > 0.0f && !TheHiResScreen->IsActive();
 }
 
 SAVE_OBJ(RndPostProc, 524)

@@ -2,6 +2,7 @@
 #include "os/Debug.h"
 #include "obj/Dir.h"
 #include "midi/MidiParser.h"
+#include "utl/TimeConversion.h"
 
 MidiParserMgr* TheMidiParserMgr = 0;
 
@@ -15,15 +16,28 @@ MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : unk24(0),
     DataArray* arr = SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
     if(arr){
         DataArray* initArr = arr->FindArray("init", false);
-        if(initArr){
-            initArr->ExecuteScript(1, this, 0, 1);
-        }
-        else {
-            MILO_WARN("Could not find init block in midi parser array, no parsers will be constructed");
-        }
+        if(initArr) initArr->ExecuteScript(1, this, 0, 1);
+        else MILO_WARN("Could not find init block in midi parser array, no parsers will be constructed");
     }
 }
 
 MidiParserMgr::~MidiParserMgr(){
 
+}
+
+void MidiParserMgr::Reset(int i){
+    if(mLoaded && unk59){
+        float beat = TickToBeat(i);
+        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
+            (*it)->Reset(beat);
+        }
+    }
+}
+
+void MidiParserMgr::Reset(){
+    if(mLoaded){
+        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
+            (*it)->Reset(-2e+30f);
+        }
+    }
 }

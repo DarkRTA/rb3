@@ -148,6 +148,12 @@ public:
             return tmp;
         }
 
+        // https://decomp.me/scratch/B6ylJ
+        iterator operator+=(int num){
+            while(num-- != 0) (*this)++;
+            return *this;
+        }
+
         bool operator!=(iterator it){ return mNode != it.mNode; }
 
         struct Node* mNode;
@@ -207,6 +213,23 @@ public:
     // seems to be okay - shows as 100% in EventTrigger
     void push_back(T1* obj){
         insert(end(), obj);
+    }
+
+    // fn_805D8160 - used in RndEnviron::RemoveLight
+    void remove(T1* target){
+        for(Node* it = mNodes; it != 0; it){
+            Node* old = it;
+            it = it->next;
+            if(old->obj == target) erase(old);
+        }
+    }
+
+    // fn_805D7F38 - used in RndEnviron::IsLightInList
+    iterator find(const Hmx::Object* target) const {
+        for(Node* it = mNodes; it != 0; it = it->next){
+            if(it->obj == target) return it;
+        }
+        return end();
     }
 
     // seems to be okay - shows as 100% in EventTrigger

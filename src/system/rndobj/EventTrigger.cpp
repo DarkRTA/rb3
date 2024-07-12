@@ -1,8 +1,10 @@
-#include "EventTrigger.h"
+#include "rndobj/EventTrigger.h"
 #include "rndobj/Draw.h"
 #include "synth/Sequence.h"
 #include "rndobj/PartLauncher.h"
 #include "rndobj/AnimFilter.h"
+#include "obj/DataFunc.h"
+#include "obj/MsgSource.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(EventTrigger)
@@ -84,6 +86,11 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
 }
 #pragma pop
 
+void EventTrigger::Init(){
+    Register();
+    // DataRegisterFunc("cleanup_triggers", Cleanup);
+}
+
 void EventTrigger::SetName(const char* cc, class ObjectDir* dir){
     UnregisterEvents();
     Hmx::Object::SetName(cc, dir);
@@ -132,12 +139,49 @@ EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) 
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this, 0), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
-    unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1) {
+    unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1) {
     RegisterEvents();
 }
 
 EventTrigger::HideDelay::HideDelay(Hmx::Object* o) : mHide(o, 0), mDelay(0.0f), mRate(0) {
 
+}
+
+void EventTrigger::RegisterEvents(){
+    MsgSource* src = dynamic_cast<MsgSource*>(Dir());
+    if(src){
+        for(std::vector<Symbol>::iterator it = mTriggerEvents.begin(); it != mTriggerEvents.end(); ++it){
+            src->AddSink(this, *it, trigger, MsgSource::kHandle);
+        }
+        for(std::vector<Symbol>::iterator it = mEnableEvents.begin(); it != mEnableEvents.end(); ++it){
+            src->AddSink(this, *it, enable, MsgSource::kHandle);
+        }
+        for(std::vector<Symbol>::iterator it = mDisableEvents.begin(); it != mDisableEvents.end(); ++it){
+            src->AddSink(this, *it, disable, MsgSource::kHandle);
+        }
+        for(std::vector<Symbol>::iterator it = mWaitForEvents.begin(); it != mWaitForEvents.end(); ++it){
+            src->AddSink(this, *it, wait_for, MsgSource::kHandle);
+        }
+        mEnabledAtStart = false;
+    }
+}
+
+void EventTrigger::UnregisterEvents(){
+    MsgSource* src = dynamic_cast<MsgSource*>(Dir());
+    if(src){
+        for(std::vector<Symbol>::iterator it = mTriggerEvents.begin(); it != mTriggerEvents.end(); ++it){
+            src->RemoveSink(this, *it);
+        }
+        for(std::vector<Symbol>::iterator it = mEnableEvents.begin(); it != mEnableEvents.end(); ++it){
+            src->RemoveSink(this, *it);
+        }
+        for(std::vector<Symbol>::iterator it = mDisableEvents.begin(); it != mDisableEvents.end(); ++it){
+            src->RemoveSink(this, *it);
+        }
+        for(std::vector<Symbol>::iterator it = mWaitForEvents.begin(); it != mWaitForEvents.end(); ++it){
+            src->RemoveSink(this, *it);
+        }
+    }
 }
 
 #pragma push
@@ -217,7 +261,7 @@ BEGIN_LOADS(EventTrigger)
         mTriggerOrder = i;
     }
     if(gRev > 0xD) bs >> mResetTriggers;
-    if(gRev > 0xE) bs >> unkdf;
+    if(gRev > 0xE) LOAD_BITFIELD(bool, unkdf)
     if(gRev > 0xF){
         int i;
         bs >> i;
@@ -273,14 +317,70 @@ BEGIN_CUSTOM_PROPSYNC(EventTrigger::HideDelay)
     SYNC_PROP(rate, o.mRate)
 END_CUSTOM_PROPSYNC
 
+#pragma push
+#pragma pool_data off
 BEGIN_PROPSYNCS(EventTrigger)
-    SYNC_PROP_MODIFY_STATIC(trigger_events, mTriggerEvents, UnregisterEvents())
-    SYNC_PROP_MODIFY(anims, mAnims, CheckAnims())
+    {
+        static Symbol _s("trigger_events");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) UnregisterEvents();
+            bool synced = PropSync(mTriggerEvents, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) RegisterEvents();
+                return true;
+            }
+            else return false;
+        }
+    }
+    SYNC_PROP_MODIFY_ALT(anims, mAnims, CheckAnims())
     SYNC_PROP(proxy_calls, mProxyCalls)
     SYNC_PROP(sounds, mSounds)
     SYNC_PROP(shows, mShows)
     SYNC_PROP(hide_delays, mHideDelays)
     SYNC_PROP(part_launchers, mPartLaunchers)
-    SYNC_PROP_MODIFY_STATIC(enable_events, mEnableEvents, UnregisterEvents())
-    SYNC_PROP_MODIFY_STATIC(disable_events, mDisableEvents, UnregisterEvents())
+    {
+        static Symbol _s("enable_events");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) UnregisterEvents();
+            bool synced = PropSync(mEnableEvents, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) RegisterEvents();
+                return true;
+            }
+            else return false;
+        }
+    }
+    {
+        static Symbol _s("disable_events");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) UnregisterEvents();
+            bool synced = PropSync(mDisableEvents, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) RegisterEvents();
+                return true;
+            }
+            else return false;
+        }
+    }
+    SYNC_PROP_SET(enabled, mEnabled, mEnabled = _val.Int(0))
+    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabledAtStart = _val.Int(0))
+    {
+        static Symbol _s("wait_for_events");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) UnregisterEvents();
+            bool synced = PropSync(mWaitForEvents, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) RegisterEvents();
+                return true;
+            }
+            else return false;
+        }
+    }
+    SYNC_PROP_SET(next_link, mNextLink, SetNextLink(_val.Obj<EventTrigger>(0)))
+    SYNC_PROP(trigger_order, mTriggerOrder)
+    SYNC_PROP(triggers_to_reset, mResetTriggers)
+    SYNC_PROP(anim_trigger, mAnimTrigger)
+    SYNC_PROP(anim_frame, mAnimFrame)
+    SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS
+#pragma pop

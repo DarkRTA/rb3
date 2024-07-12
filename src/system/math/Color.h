@@ -3,7 +3,7 @@
 #include "types.h"
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
-
+#include "math/MathFuncs.h"
 #include "decomp.h"
 
 namespace Hmx {
@@ -20,6 +20,7 @@ namespace Hmx {
         Color() : red(1.0f), green(1.0f), blue(1.0f), alpha(1.0f) {}
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
+        Color(int i) : alpha(1.0f) { Unpack(i); }
 
         // copy ctor uses asm magic
         Color(const register Color& color){
@@ -102,7 +103,29 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     return bs;
 }
 
-void Add(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
-void Subtract(const Hmx::Color&, const Hmx::Color&, Hmx::Color&);
+inline void Add(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+    float alpha = c1.alpha + c2.alpha;
+    res.blue = c1.blue + c2.blue;
+    res.green = c1.green + c2.green;
+    res.red = c1.red + c2.red;
+    res.alpha = alpha;
+}
+
+inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+    float alpha = c1.alpha - c2.alpha;
+    res.blue = c1.blue - c2.blue;
+    res.green = c1.green - c2.green;
+    res.red = c1.red - c2.red;
+    res.alpha = alpha;
+}
+
+inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){
+    res.Set((c1.red + c2.red) / 2, (c1.green + c2.green) / 2, (c1.blue + c2.blue) / 2, (c1.alpha + c2.alpha) / 2);
+    return res;
+}
+
+inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Color& res){
+    res.Set(Interp(c1.red,c2.red,f), Interp(c1.green,c2.green,f), Interp(c1.blue,c2.blue,f), Interp(c1.alpha,c2.alpha,f));
+}
 
 #endif

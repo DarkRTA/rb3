@@ -25,6 +25,9 @@ void CharHair::SimulateInternal(float f){
     for(ObjPtrList<CharCollide, ObjectDir>::iterator it = mCollide.begin(); it != mCollide.end(); ++it){
         (*it);
     }
+
+    Vector3 v1, v2, v3;
+    Interp(v1, v2, 0.0f, v3);
 }
 #pragma pop
 

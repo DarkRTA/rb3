@@ -46,6 +46,8 @@ public:
 
 class FileCache {
 public:
+    FileCache(int, LoaderPos, bool);
+
     int mMaxSize;
     bool mTryClear;
     // vector mEntries

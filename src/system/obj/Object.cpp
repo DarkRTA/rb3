@@ -29,8 +29,8 @@ ObjectDir* Hmx::Object::DataDir(){
 }
 
 Hmx::Object* Hmx::Object::NewObject(Symbol s) {
-    ObjectFunc* f = sFactories[s];
-    if (f) return (*f)();
+    std::map<Symbol, ObjectFunc*>::iterator it = sFactories.find(s);
+    if(it != sFactories.end()) return (it->second)();
     else {
         MILO_FAIL("Unknown class %s", s);
         return NULL;
@@ -60,18 +60,20 @@ Hmx::Object& Hmx::Object::operator=(const Hmx::Object& obj){
 Hmx::Object::~Object(){
     mTypeProps.ClearAll(this);
     MILO_ASSERT(MainThread(), 0xA7);
-    if(mTypeDef) mTypeDef->Release();
-    mTypeDef = 0;
+    if(mTypeDef){
+        mTypeDef->Release();
+        mTypeDef = 0;
+    }
     RemoveFromDir();
     Hmx::Object* tmp = sDeleting;
     sDeleting = this;
-    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
-    for(; rit != ritEnd; ++rit){
+    std::vector<ObjRef*>::reverse_iterator rit = mRefs.rbegin();
+    std::vector<ObjRef*>::reverse_iterator ritEnd = mRefs.rend();
+    for(; rit != ritEnd; rit++){
         (*rit)->Replace(this, 0);
     }
-    if(gDataThis == this) gDataThis = 0;
     sDeleting = tmp;
+    if(gDataThis == this) gDataThis = 0;
 }
 
 void Hmx::Object::SetName(const char* cc, class ObjectDir* dir){
@@ -280,14 +282,19 @@ void Hmx::Object::SaveRest(BinStream& bs){
 }
 
 void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
-    if(ty != kCopyFromMax){
-        if(ClassName() == obj->ClassName()){
-            SetTypeDef((DataArray*)obj->TypeDef());
-            mTypeProps.Copy(obj->mTypeProps, this);
-        }
-        else if(obj->TypeDef() || TypeDef()){
-            MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s", obj->Type(), Name(), obj->Name(), ClassName(), obj->ClassName());
-        }
+    if(ty == kCopyFromMax) return;
+    if(ClassName() == obj->ClassName()){
+        SetTypeDef((DataArray*)obj->TypeDef());
+        mTypeProps.Copy(obj->mTypeProps, this);
+    }
+    else if(obj->TypeDef() || TypeDef()){
+        const Symbol className = obj->ClassName();
+        const Symbol selfclass = ClassName();
+        const char* objname = obj->Name();
+        const char* selfname = Name();
+        const Symbol typ  = obj->Type();
+        
+        MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s",  typ, selfname, objname, selfclass, className);
     }
 }
 
@@ -304,7 +311,7 @@ void Hmx::Object::LoadRest(BinStream& bs) {
     int revs = PopRev(this);
     gAltRev = getAltRev(revs);
     gRev = getHmxRev(revs);
-    mTypeProps.Load(bs, gRev, this);
+    mTypeProps.Load(bs, gRev < 2, this);
     if(gRev != 0){
         int i;
         bs >> i;
@@ -424,7 +431,7 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
 DataNode Hmx::Object::OnIterateRefs(const DataArray* da){
     DataNode* var = da->Var(2);
     DataNode node(*var);
-    for(std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin(); it != Refs().rend(); it++){
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
         *var = DataNode((*it)->RefOwner());
         for(int i = 3; i < da->Size(); i++){
             da->Command(i)->Execute();
@@ -470,7 +477,7 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray* da){
 DataNode Hmx::Object::OnGet(const DataArray* da){
     DataNode& node = da->Evaluate(2);
     if(node.Type() == kDataSymbol){
-        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() % 2);
+        DataNode* prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() < 4);
         if(prop) return DataNode(*prop);
     }
     else {
@@ -479,7 +486,7 @@ DataNode Hmx::Object::OnGet(const DataArray* da){
             node.Print(str, true);
             MILO_FAIL("Data %s is not array or symbol (file %s, line %d)", str.c_str(), da->File(), da->Line());
         }
-        bool size = da->Size() % 2;
+        bool size = da->Size() < 4;
         DataNode* prop = Property(node.mValue.array, size);
         if(prop) return DataNode(*prop);
     }

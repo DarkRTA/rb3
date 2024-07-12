@@ -55,6 +55,8 @@ public:
     bool CollideSphere(const Segment&);
     RndDrawable* Collide(const Segment&, float&, Plane&);
     bool Showing() const { return mShowing; }
+    void SetShowing(bool b){ mShowing = b; }
+    void SetOrder(float f){ mOrder = f; }
     static void DumpLoad(BinStream&);
     static HighlightStyle sHighlightStyle;
     static float sNormalDisplayLength;
@@ -83,7 +85,7 @@ public:
     bool mLineUpdate : 1; // used in RndLine
 
     bool unk9p0 : 1;
-    bool unk9p1 : 1;
+    bool mKeepMeshData : 1; // used in RndMesh
     bool unk9p2 : 1;
     bool unk9p3 : 1;
     bool unk9p4 : 1; // used in RndMultiMesh

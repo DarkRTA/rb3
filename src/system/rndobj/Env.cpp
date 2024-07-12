@@ -111,6 +111,8 @@ BEGIN_LOADS(RndEnviron)
     }
 END_LOADS
 
+DECOMP_FORCEACTIVE(Env, "e")
+
 BEGIN_COPYS(RndEnviron)
     COPY_SUPERCLASS(Hmx::Object)
     if(ty != kCopyFromMax){
@@ -139,31 +141,26 @@ BEGIN_COPYS(RndEnviron)
             }
             else {
                 mAmbientFogOwner = this;
-                mAmbientColor = mAmbientFogOwner->mAmbientColor;
-                mFogColor = mAmbientFogOwner->mFogColor;
-                mFogStart = mAmbientFogOwner->mFogStart;
-                mFogEnd = mAmbientFogOwner->mFogEnd;
-                mFogEnable = mAmbientFogOwner->mFogEnable;
+                mAmbientColor = c->mAmbientFogOwner->mAmbientColor;
+                mFogColor = c->mAmbientFogOwner->mFogColor;
+                mFogStart = c->mAmbientFogOwner->mFogStart;
+                mFogEnd = c->mAmbientFogOwner->mFogEnd;
+                mFogEnable = c->mAmbientFogOwner->mFogEnable;
             }
         END_COPYING_MEMBERS
     }
 END_COPYS
 
-bool RndEnviron::IsValidRealLight(const RndLight*) const {
-    bool ret = false; if (mUpdateTimer.mRunning != 0) {
-        if (mUpdateTimer.mRunning != 2) return ret;
-    }
-    ret = true;
+bool RndEnviron::IsValidRealLight(const RndLight* l) const {
+    bool ret = false;
+    if(l->mType == RndLight::kPoint || l->mType == RndLight::kFakeSpot) ret = true;
     return ret;
 }
 
+// fn_805D7EB8 - actually calls ObjPtrList::find
 bool RndEnviron::IsLightInList(const RndLight* light, const ObjPtrList<RndLight, class ObjectDir>& pList) const {
     if(light == 0) return 0;
-    for(ObjPtrList<RndLight, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
-        RndLight* itLight = *it;
-        if(itLight == light) return itLight;
-    }
-    return 0;
+    return pList.find(light) != pList.end();
 }
 
 bool RndEnviron::IsFake(RndLight* l) const {
@@ -187,8 +184,42 @@ void RndEnviron::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
-void RndEnviron::ReclassifyLights() {
+void RndEnviron::AddLight(RndLight* l){
+    if(IsLightInList(l, mLightsReal) || IsLightInList(l, mLightsApprox)){
+        MILO_WARN("%s already in %s", l->Name(), Name());
+    }
+    else {
+        if(IsValidRealLight(l)) mLightsReal.push_back(l);
+        else mLightsApprox.push_back(l);
+    }
+}
 
+// fn_805D8118
+void RndEnviron::RemoveLight(RndLight* l){
+    mLightsReal.remove(l);
+    mLightsApprox.remove(l);
+}
+
+// fn_805D81CC
+#pragma push
+#pragma pool_data off
+const Transform& RndEnviron::ColorXfm() const {
+    static Vector3 x(1.0f,0.0f,0.0f);
+    static Vector3 y(0.0f,1.0f,0.0f);
+    static Vector3 z(0.0f,0.0f,1.0f);
+    static Transform ident(Hmx::Matrix3(x,y,z), Vector3(0.0f,0.0f,0.0f));
+    if(mUseColorAdjust) return mColorXfm.mColorXfm;
+    else return ident;
+}
+#pragma pop
+
+void RndEnviron::ReclassifyLights() {
+    if(!mLightsOld.empty()){
+        for(ObjPtrList<RndLight, ObjectDir>::iterator it = mLightsOld.begin(); it != mLightsOld.end(); ++it){
+            AddLight(*it);
+        }
+        mLightsOld.clear();
+    }
 }
 
 BEGIN_HANDLERS(RndEnviron)
@@ -201,6 +232,51 @@ BEGIN_HANDLERS(RndEnviron)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(582)
 END_HANDLERS
+
+void RndEnviron::OnRemoveAllLights(){
+    mLightsReal.clear();
+    mLightsApprox.clear();
+    mLightsOld.clear();
+}
+
+// fn_805D86B8
+DataNode RndEnviron::OnAllowableLights_Real(const DataArray* da){
+    DataArrayPtr ptr;
+    for(ObjDirItr<RndLight> it(Dir(), true); it != 0; ++it){
+        if(!IsLightInList(it, mLightsReal) && !IsLightInList(it, mLightsApprox) && IsValidRealLight(it) == 1U){
+            ptr->Insert(ptr->Size(), DataNode(it));
+        }
+    }
+    static DataNode* milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path->Type() == kDataArray){
+        if(milo_prop_path->Array(0)->Size() == 2){
+            int num = milo_prop_path->Array(0)->Int(1);
+            ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsReal.begin();
+            it += num;
+            ptr->Insert(ptr->Size(), *it);
+        }
+    }
+    return DataNode(ptr);
+}
+
+DataNode RndEnviron::OnAllowableLights_Approx(const DataArray* da){
+    DataArrayPtr ptr;
+    for(ObjDirItr<RndLight> it(Dir(), true); it != 0; ++it){
+        if(!IsLightInList(it, mLightsReal) && !IsLightInList(it, mLightsApprox)){
+            ptr->Insert(ptr->Size(), DataNode(it));
+        }
+    }
+    static DataNode* milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path->Type() == kDataArray){
+        if(milo_prop_path->Array(0)->Size() == 2){
+            int num = milo_prop_path->Array(0)->Int(1);
+            ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsApprox.begin();
+            it += num;
+            ptr->Insert(ptr->Size(), *it);
+        }
+    }
+    return DataNode(ptr);
+}
 
 void RndEnviron::ApplyApproxLighting(const _GXColor*) { }
 

@@ -49,14 +49,18 @@ public:
     virtual void Export(DataArray*, bool);
     virtual void ChainSourceSubdir(MsgSource*, ObjectDir*);
 
+    void SyncDrawables();
+    void CollideListSubParts(const Segment&, std::list<Collision>&);
+    void SetEnv(RndEnviron* env){ mEnv = env; }
+
     DataNode OnShowObjects(DataArray*);
     DataNode OnSupportedEvents(DataArray*);
 
     DECLARE_REVS
     
-    std::vector<RndDrawable*, u16> mDraws; // 0x164
+    std::vector<RndDrawable*> mDraws; // 0x164
     std::vector<RndAnimatable*> mAnims; // 0x16c
-    std::vector<RndPollable*, u16> mPolls; // 0x174
+    std::vector<RndPollable*> mPolls; // 0x174
     ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x17c
     Symbol mTestEvent; // 0x188
 

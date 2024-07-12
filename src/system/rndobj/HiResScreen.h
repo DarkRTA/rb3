@@ -17,16 +17,16 @@ public:
         void LoadCache(uint);
         void FlushCache();
 
-        String* mFileNames;
-        unsigned char* mBuffer;
-        unsigned int mPixelsPerRow;
-        unsigned int mRowsPerCacheLine;
-        unsigned int mTotalNumCacheLines;
-        unsigned int mTotalRows;
-        unsigned int mCurrLoadedIndex;
-        unsigned int mByteSize;
-        unsigned int mDirtyStart;
-        unsigned int mDirtyEnd;
+        String* mFileNames; // 0x4
+        unsigned char* mBuffer; // 0x8
+        unsigned int mPixelsPerRow; // 0xc
+        unsigned int mRowsPerCacheLine; // 0x10
+        unsigned int mTotalNumCacheLines; // 0x14
+        unsigned int mTotalRows; // 0x18
+        unsigned int mCurrLoadedIndex; // 0x1c
+        unsigned int mByteSize; // 0x20
+        unsigned int mDirtyStart; // 0x24
+        unsigned int mDirtyEnd; // 0x28
     };
 
     HiResScreen();
@@ -39,6 +39,7 @@ public:
     Hmx::Rect CurrentTileRect(const Hmx::Rect&, Hmx::Rect&, Hmx::Rect&) const;
     Hmx::Rect ScreenRect(const RndCam*, const Hmx::Rect&) const; Hmx::Rect ScreenRect() const;
     void InvScreenRect() const;
+    bool IsActive() const { return mActive; }
 
     bool mActive; // 0x4
     int mTiling; // 0x8

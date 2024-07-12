@@ -3,8 +3,11 @@
 #include "rndobj/Trans.h"
 #include "utl/FilePath.h"
 #include "obj/ObjVersion.h"
+#include "obj/DirLoader.h"
 #include "rndobj/PostProc.h"
 #include "rndobj/EventTrigger.h"
+#include "rndobj/Utl.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 
 INIT_REVS(RndDir)
@@ -20,11 +23,180 @@ void RndDir::Replace(Hmx::Object* o1, Hmx::Object* o2){
     RndTransformable::Replace(o1, o2);
 }
 
+void RndDir::RemovingObject(Hmx::Object* o){
+    Hmx::Object* obj = o;
+    ObjectDir::RemovingObject(obj);
+    VectorRemove(mDraws, obj);
+    VectorRemove(mPolls, obj);
+    VectorRemove(mAnims, obj);
+}
+
+// fn_805D265C
+void RndDir::SetSubDir(bool b){
+    ObjectDir::SetSubDir(b);
+    mDraws.clear();
+    mPolls.clear();
+    mAnims.clear();
+}
+
+// fn_805D26A0
+void RndDir::SyncObjects(){
+    mAnims.clear();
+    mPolls.clear();
+    if(!IsSubDir()){
+        SyncDrawables();
+        std::list<RndAnimatable*> animchildren;
+        for(ObjDirItr<RndAnimatable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mAnims.push_back(it);
+                it->ListAnimChildren(animchildren);
+            }
+        }
+        for(std::list<RndAnimatable*>::iterator it = animchildren.begin(); it != animchildren.end(); ++it){
+            VectorRemove(mAnims, *it);
+        }
+        std::list<RndPollable*> pollchildren;
+        for(ObjDirItr<RndPollable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mPolls.push_back(it);
+                it->ListPollChildren(pollchildren);
+            }
+        }
+        for(std::list<RndPollable*>::iterator it = pollchildren.begin(); it != pollchildren.end(); ++it){
+            VectorRemove(mPolls, *it);
+        }
+        std::sort(mPolls.begin(), mPolls.end(), SortPolls);
+        if(this != mDir){
+            MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+            if(src) ChainSourceSubdir(src, this);
+        }
+        ObjectDir::SyncObjects();
+    }
+}
+
+// fn_805D33A4
+void RndDir::SyncDrawables(){
+    mDraws.clear();
+    if(!IsSubDir()){
+        std::list<RndDrawable*> drawchildren;
+        for(ObjDirItr<RndDrawable> it(this, true); it != 0; ++it){
+            if(it != this){
+                mDraws.push_back(it);
+                it->ListDrawChildren(drawchildren);
+                it->UpdatePreClearState();
+            }
+        }
+        UpdatePreClearState();
+        for(std::list<RndDrawable*>::iterator it = drawchildren.begin(); it != drawchildren.end(); ++it){
+            VectorRemove(mDraws, *it);
+        }
+        std::sort(mDraws.begin(), mDraws.end(), SortDraws);
+    }
+}
+
+// fn_805D37CC - update sphere
+
+void RndDir::Poll(){
+    if(Showing()){
+        for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+            (*it)->Poll();
+        }
+    }
+}
+
+void RndDir::Enter(){
+    if(TheLoadMgr.EditMode()){
+        DataNode events = OnSupportedEvents(0);
+        DataArray* arr = events.Array(0);
+        if(!arr->Contains(DataNode(mTestEvent))){
+            mTestEvent = Symbol("");
+        }
+    }
+    for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        (*it)->Enter();
+    }
+    if(this != mDir){
+        MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+        if(src) ChainSourceSubdir(src, this);
+    }
+    RndPollable::Enter();
+}
+
+void RndDir::Exit(){
+    for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        (*it)->Exit();
+    }
+    RndPollable::Exit();
+}
+
+// fn_805D3C1C
+void RndDir::ListPollChildren(std::list<RndPollable*>& children) const {
+    if(IsProxy()){
+        // children.splice(children.begin(), children, mPolls.begin(), mPolls.end());
+        // for(std::vector<RndPollable*>::const_iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        // 
+        // }
+    }
+}
+
+int RndDir::CollidePlane(const Plane& pl){
+    int ret = -1;
+    for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+        if(it == mDraws.begin()) ret = (*it)->CollidePlane(pl);
+        else if(ret != (*it)->CollidePlane(pl)) return 0;
+    }
+    return ret;
+}
+
+void RndDir::CollideListSubParts(const Segment& seg, std::list<Collision>& colls){
+    if(CollideSphere(seg)){
+        for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+            (*it)->CollideList(seg, colls);
+        }
+    }
+}
+
+void RndDir::CollideList(const Segment& seg, std::list<Collision>& colls){
+    if(IsProxy() && !sForceSubpartSelection){
+        RndDrawable::CollideList(seg, colls);
+    }
+    else CollideListSubParts(seg, colls);
+}
+
+void RndDir::SetFrame(float frame, float blend){
+    if(Showing()){
+        RndAnimatable::SetFrame(frame, blend);
+        for(std::vector<RndAnimatable*>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+            (*it)->SetFrame(frame, blend);
+        }
+    }
+}
+
+float RndDir::EndFrame(){
+    float frame = 0.0f;
+    for(std::vector<RndAnimatable*>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        float end = (*it)->EndFrame();
+        if(frame < end) frame = end;
+    }
+    return frame;
+}
+
+// fn_805D4A9C
 void RndDir::Export(DataArray* da, bool b){
     MsgSource::Export(da, b);
     for(int i = 0; i < mSubDirs.size(); i++){
         if(mSubDirs[i]){
             mSubDirs[i]->Export(da, false);
+        }
+    }
+}
+
+void RndDir::ChainSourceSubdir(MsgSource* src, ObjectDir* dir){
+    MsgSource* src2 = dynamic_cast<MsgSource*>(dir);
+    if(src2){
+        ChainSource(src, src2);
+        for(int i = 0; i < dir->mSubDirs.size(); i++){
+            ChainSourceSubdir(src, dir->mSubDirs[i].Ptr());
         }
     }
 }
@@ -45,27 +217,36 @@ BEGIN_COPYS(RndDir)
     END_COPYING_MEMBERS
 END_COPYS
 
-void RndDir::OldLoadProxies(BinStream& bs, int i) {
+// fn_805D4CAC
+void RndDir::OldLoadProxies(BinStream& bs, int rev) {
     int items;
     bs >> items;
-    if (items <= 0) return;
     for (int i = 0; i < items; i++) {
-        FilePath a;
-        class String b, c, d;
-        char fpath[256];
-        bs.ReadString(fpath, 256);
-        a.Set(FilePath::sRoot.c_str(), fpath);
-        int h, o, l, y, j, e, s, u, S;
-        bs >> b;
-        bs >> h;
-        bs >> o;
-        bs >> l;
-        bs >> y;
-        bs >> j;
-        bs >> e;
-        bs >> s;
-        bs >> u;
-        bs >> S; // somehow, this still isn't enough
+        FilePath fp68;
+        String name;
+        Transform t58;
+        String s80;
+        String s8c;
+        bs >> fp68;
+        bs >> name;
+        bs >> t58;
+        if(rev > 0xB) bs >> s80;
+        else s80 = 0;
+        bs >> s8c;
+        float f94;
+        bs >> f94;
+        bool b98;
+        if(rev > 0xB) bs >> b98;
+        else b98 = true;
+        RndDir* loadedDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp68, 0, 0));
+        MILO_ASSERT(!name.empty(), 0x203);
+        loadedDir->SetName(name.c_str(), this);
+        loadedDir->SetDirtyLocalXfm(t58);
+        loadedDir->SetTransParent(Find<RndTransformable>(s80.c_str(), false), false);
+        loadedDir->SetOrder(f94);
+        loadedDir->SetShowing(b98);
+        loadedDir->SetEnv(Find<RndEnviron>(s8c.c_str(), false));
+        SetProxyFile(fp68, true);
     }
 }
 
@@ -78,6 +259,7 @@ void RndDir::PreLoad(BinStream& bs){
     ObjectDir::PreLoad(bs);
 }
 
+// fn_805D4F54
 void RndDir::PostLoad(BinStream& bs){
     ObjectDir::PostLoad(bs);
     int revs = PopRev(this);
@@ -89,22 +271,16 @@ void RndDir::PostLoad(BinStream& bs){
     if(gRev > 1){
         if(gLoadingProxyFromDisk){
             ObjPtr<RndEnviron, ObjectDir> envPtr(this, 0);
-            RndEnviron* envToSet = 0;
-            char buf[0x80];
-            bs.ReadString(buf, 0x80);
-            if(envPtr && envPtr->Dir()){
-                envPtr = dynamic_cast<RndEnviron*>(envPtr->Dir()->FindObject(buf, false));
-            }
-            else envPtr = 0;
+            envPtr.Load(bs, false, 0);
         }
         else bs >> mEnv;
     }
     if(gRev > 2 && gRev != 9) bs >> mTestEvent;
-    if(gRev - 4 < 5){
+    if(gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8){
         Symbol s;
         bs >> s >> s;
     }
-    if(gRev - 5 <= 2){
+    if(gRev == 5 || gRev == 6 || gRev == 7){
         RndPostProc* rpp = Hmx::Object::New<RndPostProc>();
         rpp->LoadRev(bs, gRev);
         delete rpp;
@@ -128,7 +304,7 @@ DataNode RndDir::OnShowObjects(DataArray* da) {
     bool show = da->Int(3);
     for (int i = 0; i < array->Size(); i++) {
         RndDrawable* d = array->Obj<RndDrawable>(i);
-        if (d) d->mShowing = show;
+        if (d) d->SetShowing(show);
     }
     return DataNode();
 }

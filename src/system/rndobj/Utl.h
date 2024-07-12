@@ -3,6 +3,7 @@
 #include "rndobj/Anim.h"
 #include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/Poll.h"
 #include "utl/Cache.h"
 
 RndGroup* GroupOwner(Hmx::Object*);
@@ -31,6 +32,8 @@ void SpliceKeys(RndTransAnim*, RndTransAnim*, float, float);
 void LinearizeKeys(RndTransAnim*, float, float, float, float, float);
 const char* CacheResource(const char*, Hmx::Object*);
 const char* CacheResource(const char*, CacheResourceResult&);
+bool SortDraws(RndDrawable*, RndDrawable*);
+bool SortPolls(const RndPollable*, const RndPollable*);
 
 void RndUtlPreInit();
 void RndUtlInit();
@@ -39,5 +42,16 @@ void RndUtlTerminate();
 DataNode GetNormalMapTextures(ObjectDir*);
 DataNode GetRenderTextures(ObjectDir*);
 DataNode GetRenderTexturesNoZ(ObjectDir*);
+
+// idk where else to put this
+template <class T1, class T2, class T3>
+void VectorRemove(std::vector<T1,T2>& vec, const T3& obj){
+    for(std::vector<T1,T2>::iterator it = vec.begin(); it != vec.end(); ++it){
+        if(*it == obj){
+            vec.erase(it);
+            return;
+        }
+    }
+}
 
 #endif // RNDOBJ_UTL_H

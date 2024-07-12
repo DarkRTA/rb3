@@ -1,10 +1,32 @@
 #include "char/CharBoneOffset.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharBoneOffset)
 
 CharBoneOffset::CharBoneOffset() : mDest(this, 0), mOffset(0.0f, 0.0f, 0.0f) {
     
+}
+
+// fn_804AF7B4
+void CharBoneOffset::Poll(){
+    if(!mDest || !mDest->TransParent()) return;
+    Transform tf(mDest->LocalXfm());
+    tf.v += mOffset;
+    Transform tRes;
+    Multiply(tf, mDest->TransParent()->WorldXfm(), tRes);
+    mDest->SetWorldXfm(tRes);
+}
+
+void CharBoneOffset::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    change.push_back(mDest);
+    if(mDest && mDest->mParent) changedBy.push_back(mDest->mParent);
+}
+
+void CharBoneOffset::Highlight(){}
+
+void CharBoneOffset::ApplyToLocal(){
+    if(mDest) mDest->DirtyLocalXfm().v += mOffset;
 }
 
 SAVE_OBJ(CharBoneOffset, 0x5E)
@@ -35,3 +57,5 @@ BEGIN_PROPSYNCS(CharBoneOffset)
     SYNC_PROP(dest, mDest)
     SYNC_PROP(offset, mOffset)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(CharBoneOffset, CharBoneOffset, SetType)

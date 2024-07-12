@@ -1,5 +1,6 @@
 #include "MidiParser.h"
 #include "obj/Data.h"
+#include "obj/Dir.h"
 #include "utl/Symbols.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/GemListInterface.h"
@@ -20,6 +21,24 @@ DataNode* MidiParser::mpOutOfBounds = 0;
 DataNode* MidiParser::mpBeforeDeltaSec = 0;
 DataNode* MidiParser::mpAfterDeltaSec = 0;
 
+void MidiParser::ClearManagedParsers(){
+    std::list<MidiParser*>& parsersPtr = sParsers;
+    for(std::list<MidiParser*>::iterator it = parsersPtr.begin(); it != parsersPtr.end(); it){
+        MidiParser* cur = *it;
+        if(cur){
+            MsgSource* src = ObjectDir::Main()->Find<MsgSource>(cur->Name(), false);
+            if(src){
+                
+            }
+            else cur->mEvents->Clear();
+        }
+    }
+    for(std::list<MidiParser*>::iterator it = parsersPtr.begin(); it != parsersPtr.end(); it){
+        delete *it;
+    }
+    parsersPtr.clear();
+}
+
 void MidiParser::Init(){
     MidiParser::Register();
     MidiParser::mpStart = DataVariable("mp.start");
@@ -37,8 +56,6 @@ void MidiParser::Init(){
     MidiParser::mpBeforeDeltaSec = DataVariable("mp.before_delta_sec");
     MidiParser::mpAfterDeltaSec = DataVariable("mp.after_delta_sec");
 }
-
-Hmx::Object* MidiParser::NewObject() { return new MidiParser(); }
 
 MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),
             endOffset(0), minLength(0), maxLength(1e30), minGap(-1e30),
@@ -358,13 +375,5 @@ BEGIN_PROPSYNCS(MidiParser)
     SYNC_PROP(max_gap, mProcess.maxGap)
     SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
     SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
-    if(sym == index){
-        if(_op == kPropSet) SetIndex(_val.Int(0));
-        else {
-            if(_op == (PropOp)0x40){
-                _val = DataNode(GetIndex());
-            }
-        }
-        return true;
-    }
+    SYNC_PROP_SET(index, GetIndex(), SetIndex(_val.Int(0)))
 END_PROPSYNCS

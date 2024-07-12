@@ -47,6 +47,10 @@ template<class T> inline T Max(T x, T y){
     return (x < y) ? y : x;
 }
 
+template<class T> inline T Minimum(T x, T y, T z){
+    return Minimum(x, Minimum(y, z));
+}
+
 template<class T> inline T Max(T x, T y, T z){
     return Max(x, Max(y, z));
 }
@@ -155,6 +159,15 @@ inline float ModRange(float f1, float f2, float f3){
 
 inline float fmod_f(double x, double y){
     return fmod(x, y);
+}
+
+inline float Interp(float a, float b, float c){
+    float delta = b - a;
+    return c * delta + a;
+}
+
+inline void Interp(float f1, float f2, float f3, float& fres){
+    fres = f3 * (f2 - f1) + f1;
 }
 
 #endif
