@@ -56,7 +56,10 @@ public:
 
     // fn_802D757C
     bool Clamp(Vector3& vec){
-        return ClampEq(vec.z, mMin.z, mMax.z) || ClampEq(vec.x, mMin.x, mMax.x) || ClampEq(vec.y, mMin.y, mMax.y);
+        bool clamp_z = ClampEq(vec.z, mMin.z, mMax.z);
+        bool clamp_x = ClampEq(vec.x, mMin.x, mMax.x);
+        bool clamp_y = ClampEq(vec.y, mMin.y, mMax.y);
+        return clamp_z || clamp_x || clamp_y;
     }
 
     Vector3 mMin;

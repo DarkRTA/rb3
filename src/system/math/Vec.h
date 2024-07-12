@@ -233,17 +233,38 @@ inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
 }
 
 float Length(const Vector3&);
-float LengthSquared(const Vector2&);
-float Cross(const Vector2&, const Vector2&);
 
-inline float LengthSquared(const Vector3& v){
-    return v.x * v.x + v.y * v.y + v.z * v.z;
+inline float LengthSquared(const Vector2& v){
+    float x = v.x;
+    float y = v.y;
+    return x * x + y * y;
 }
 
-float DistanceSquared(const Vector3&, const Vector3&);
+inline float Cross(const Vector2& v1, const Vector2& v2){
+    return v1.x * v2.y - v1.y * v2.x;
+}
+
+inline float LengthSquared(const Vector3& v){
+    float x = v.x;
+    float y = v.y;
+    float z = v.z;
+    return x * x + y * y + z * z;
+}
+
+inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
+    float zdiff = v1.z - v2.z;
+    float ydiff = v1.y - v2.y;
+    float xdiff = v1.x - v2.x;
+    return xdiff * xdiff + ydiff * ydiff + zdiff * zdiff;
+}
 
 float RecipSqrtAccurate(float);
-void Add(const Vector3&, const Vector3&, Vector3&);
+
+inline void Add(const Vector3& v1, const Vector3& v2, Vector3& vres){
+    vres.z = v1.z + v2.z;
+    vres.y = v1.y + v2.y;
+    vres.x = v1.x + v2.x;
+}
 
 inline float Dot(const Vector3& v1, const Vector3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -263,8 +284,17 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
     }
 }
 
-void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
-void ScaleAddEq(Vector3&, const Vector3&, float);
+inline void ScaleAdd(const Vector3& v1, const Vector3& v2, float f, Vector3& vres){
+    vres.x = v2.x * f + v1.x;
+    vres.y = v2.y * f + v1.y;
+    vres.z = v2.z * f + v1.z;
+}
+
+inline void ScaleAddEq(Vector3& v1, const Vector3& v2, float f){
+    v1.x += v2.x * f;
+    v1.y += v2.y * f;
+    v1.z += v2.z * f;
+}
 
 inline void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
     dst.Set(
