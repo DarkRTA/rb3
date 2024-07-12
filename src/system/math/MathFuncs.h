@@ -73,6 +73,10 @@ template<class T> inline bool ClampEq(T& x, const T& y, const T& z){
     return false;
 }
 
+template<class T> inline const T Abs(T x){
+
+}
+
 inline int Mod(int num, int modbase){
     if(modbase == 0) return 0;
     int div = num % modbase;

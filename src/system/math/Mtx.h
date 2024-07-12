@@ -50,6 +50,7 @@ namespace Hmx {
         void Zero(){ w = x = y = z = 0.0f; }
         void Set(const Matrix3&);
         void Set(const Vector3&);
+        void Set(const Vector3&, float);
 
         float x;
         float y;
@@ -205,5 +206,7 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
 }
 
 float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
+void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
+void Normalize(const Hmx::Quat&, Hmx::Quat&);
 
 #endif
