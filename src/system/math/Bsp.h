@@ -27,11 +27,12 @@ public:
 };
 */
 
-
 extern float gBSPPosTol;
 extern float gBSPDirTol;
 extern int gBSPMaxDepth;
 extern int gBSPMaxCandidates;
 extern float gBSPCheckScale;
+
+void NumNodes(const BSPNode*, int&, int&);
 
 #endif // MATH_BSP_H

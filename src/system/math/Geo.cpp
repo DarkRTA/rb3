@@ -1,6 +1,8 @@
 #include "Geo.h"
 #include "math/Bsp.h"
+#include "math/Rot.h"
 #include "obj/DataFunc.h"
+#include "decomp.h"
 
 float gBSPPosTol = 0.01f;
 float gBSPDirTol = 0.985f;
@@ -24,6 +26,12 @@ void GeoInit() {
     DataRegisterFunc("set_bsp_params", SetBSPParams);
 }
 
+DECOMP_FORCEACTIVE(Geo, "points:");
+
+TextStream& deadstrippedVec2Read(TextStream& ts, const std::vector<Vector2>& vec){
+    return ts << vec;
+}
+
 BinStream& operator>>(BinStream& bs, BSPNode*& bsp) {
     bool exists;
     bs >> exists;
@@ -34,6 +42,14 @@ BinStream& operator>>(BinStream& bs, BSPNode*& bsp) {
     else bsp = 0;
     return bs;
 }
+
+#pragma push
+#pragma dont_inline on
+bool deadstrippedboxgrowtocontain(Box& box, Vector3& vec, bool b){
+    box.GrowToContain(vec,b);
+    return box.Clamp(vec);
+}
+#pragma pop
 
 void Intersect(const Hmx::Ray& r1, const Hmx::Ray& r2, Vector2& out) {
       float fVar1;
@@ -154,5 +170,23 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     // sixth and final intersect check
 }
 #pragma pop
+
+void NumNodes(const BSPNode* node, int& num, int& maxDepth){
+    static int depth = 0;
+    if(node){
+        depth++;
+        if(depth == 1){
+            num = 0;
+            maxDepth = 1;
+        }
+        else if(depth > maxDepth){
+            maxDepth = depth;
+        }
+        NumNodes(node->left, num, maxDepth);
+        NumNodes(node->right, num, maxDepth);
+        num++;
+        depth--;
+    }
+}
 
 void Clip(const Hmx::Polygon&, const Hmx::Ray&, Hmx::Polygon&) {}
