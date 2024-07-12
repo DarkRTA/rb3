@@ -256,5 +256,7 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
 
 void ScaleAdd(const Vector3&, const Vector3&, float, Vector3&);
 void ScaleAddEq(Vector3&, const Vector3&, float);
+void Cross(const Vector3&, const Vector3&, Vector3&);
+void Normalize(const Vector3&, Vector3&);
 
 #endif
