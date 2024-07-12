@@ -74,6 +74,11 @@ template<class T> inline bool ClampEq(T& x, const T& y, const T& z){
 }
 
 template<class T> inline const T Abs(T x){
+    if(x > 0) return x;
+    else return -x;
+}
+
+inline bool IsNaN(float){
 
 }
 

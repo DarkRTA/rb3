@@ -233,13 +233,17 @@ inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
 }
 
 float Length(const Vector3&);
+float LengthSquared(const Vector2&);
+float Cross(const Vector2&, const Vector2&);
 
 inline float LengthSquared(const Vector3& v){
     return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
+float DistanceSquared(const Vector3&, const Vector3&);
 
 float RecipSqrtAccurate(float);
+void Add(const Vector3&, const Vector3&, Vector3&);
 
 inline float Dot(const Vector3& v1, const Vector3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;

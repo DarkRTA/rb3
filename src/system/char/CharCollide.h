@@ -26,6 +26,7 @@ public:
     virtual void Highlight();
 
     float GetRadius(const Vector3&, Vector3&) const;
+    float Radius() const;
     Shape GetShape() const { return mShape; }
     const Vector3& Axis() const;
 

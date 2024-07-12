@@ -29,7 +29,9 @@ namespace Hmx {
         void Set(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9){
             x.Set(f1,f2,f3); y.Set(f4,f5,f6); z.Set(f7,f8,f9);
         }
-        void Set(const Vector3&, const Vector3&, const Vector3&);
+        void Set(const Vector3& v1, const Vector3& v2, const Vector3& v3){
+            x = v1; y = v2; z = v3;
+        }
         void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
@@ -208,5 +210,6 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
 float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
 void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
 void Normalize(const Hmx::Quat&, Hmx::Quat&);
+void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
 
 #endif

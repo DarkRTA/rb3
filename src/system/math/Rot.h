@@ -11,6 +11,7 @@
 
 void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Vector3&, const Transform&, Vector3&);
+void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Hmx::Matrix3&, const Hmx::Matrix3&, Hmx::Matrix3&);
 void MakeRotMatrix(const Vector3&, Hmx::Matrix3&, bool);
@@ -21,6 +22,8 @@ void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
 void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&);
 void Invert(const Transform&, Transform&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
+void RotateAboutX(const Hmx::Matrix3&, float, Hmx::Matrix3&);
+void MakeRotQuat(const Vector3&, const Vector3&, Hmx::Quat&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);
