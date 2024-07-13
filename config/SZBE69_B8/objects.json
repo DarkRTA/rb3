@@ -740,16 +740,16 @@
         "cflags": "sdk/Runtime",
         "objects": {
             "sdk/PowerPC_EABI_Support/Runtime/__init_cpp_exceptions.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/Runtime/__mem.cpp": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/__mem.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/__va_arg.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.cpp": "Matching",
-            "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.cpp": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/New.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/Runtime/ptmf.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/Runtime/runtime.cpp": "NonMatching"
+            "sdk/PowerPC_EABI_Support/Runtime/ptmf.c": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "NonMatching"
         }
     },
     "sdk/MetroTRK": {
