@@ -66,6 +66,7 @@ public:
 
     float UISeconds() const;
     float DeltaSeconds() const;
+    float DeltaBeat() const;
     float Beat() const;
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;

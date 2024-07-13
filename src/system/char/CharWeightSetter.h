@@ -20,15 +20,17 @@ public:
     virtual void Poll();
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
 
-    ObjPtr<CharWeightable, ObjectDir> mBase;
-    ObjPtr<CharDriver, ObjectDir> mDriver;
-    ObjPtrList<CharWeightSetter, ObjectDir> mMinWeights;
-    ObjPtrList<CharWeightSetter, ObjectDir> mMaxWeights;
-    int mFlags;
-    float mOffset;
-    float mScale;
-    float mBaseWeight;
-    float mBeatsPerWeight;
+    DECLARE_REVS;
+
+    ObjPtr<CharWeightable, ObjectDir> mBase; // 0x20
+    ObjPtr<CharDriver, ObjectDir> mDriver; // 0x2c
+    ObjPtrList<CharWeightSetter, ObjectDir> mMinWeights; // 0x38
+    ObjPtrList<CharWeightSetter, ObjectDir> mMaxWeights; // 0x48
+    int mFlags; // 0x58
+    float mOffset; // 0x5c
+    float mScale; // 0x60
+    float mBaseWeight; // 0x64
+    float mBeatsPerWeight; // 0x68
 };
 
 #endif

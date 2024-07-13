@@ -211,5 +211,6 @@ float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
 void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
 void Normalize(const Hmx::Quat&, Hmx::Quat&);
 void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
+void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 
 #endif

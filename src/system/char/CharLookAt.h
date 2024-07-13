@@ -29,6 +29,8 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+
+    static bool sDisableJitter;
     
     ObjPtr<RndTransformable, ObjectDir> mSource; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mPivot; // 0x34

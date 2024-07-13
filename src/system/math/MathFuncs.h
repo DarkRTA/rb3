@@ -74,7 +74,19 @@ template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
 }
 
 template<class T> inline bool MinEq(T& x, const T& y){
+    if(y < x){
+        x = y;
+        return true;
+    }
+    return false;
+}
 
+template<class T> inline bool MaxEq(T& x, const T& y){
+    if(x < y){
+        x = y;
+        return true;
+    }
+    return false;
 }
 
 template<class T> inline const T Abs(T x){
