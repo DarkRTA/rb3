@@ -315,7 +315,7 @@ inline void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
 
 void Normalize(const Vector3&, Vector3&);
 
-float operator*(const Vector3& v1, const Vector3& v2){
+inline float operator*(const Vector3& v1, const Vector3& v2){
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 

@@ -21,6 +21,8 @@ public:
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     ObjPtr<CharWeightable, ObjectDir> mBase; // 0x20
     ObjPtr<CharDriver, ObjectDir> mDriver; // 0x2c

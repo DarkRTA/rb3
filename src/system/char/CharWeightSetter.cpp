@@ -1,5 +1,6 @@
 #include "char/CharWeightSetter.h"
 #include "obj/Task.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(CharWeightSetter)
 
@@ -60,9 +61,11 @@ void CharWeightSetter::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hm
     for(ObjPtrList<CharWeightSetter, ObjectDir>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
         changedBy.push_back(*it);
     }
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
+    std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
+    for(; it != itEnd; ++it){
         CharWeightable* weightowner = dynamic_cast<CharWeightable*>((*it)->RefOwner());
-        if(weightowner) change.push_back(weightowner);
+        if(weightowner && weightowner->mWeightOwner == this) change.push_back(weightowner);
     }
 }
 
@@ -126,3 +129,38 @@ BEGIN_LOADS(CharWeightSetter)
     }
     
 END_LOADS
+
+BEGIN_COPYS(CharWeightSetter)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(CharWeightable)
+    CREATE_COPY(CharWeightSetter)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mDriver)
+        COPY_MEMBER(mFlags)
+        COPY_MEMBER(mBase)
+        COPY_MEMBER(mOffset)
+        COPY_MEMBER(mScale)
+        COPY_MEMBER(mBaseWeight)
+        COPY_MEMBER(mBeatsPerWeight)
+        COPY_MEMBER(mMinWeights)
+        COPY_MEMBER(mMaxWeights)
+    END_COPYING_MEMBERS
+END_COPYS
+
+BEGIN_HANDLERS(CharWeightSetter)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xF4)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(CharWeightSetter)
+    SYNC_PROP(driver, mDriver)
+    SYNC_PROP(flags, mFlags)
+    SYNC_PROP(base, mBase)
+    SYNC_PROP(offset, mOffset)
+    SYNC_PROP(scale, mScale)
+    SYNC_PROP(base_weight, mBaseWeight)
+    SYNC_PROP(beats_per_weight, mBeatsPerWeight)
+    SYNC_PROP(min_weights, mMinWeights)
+    SYNC_PROP(max_weights, mMaxWeights)
+    SYNC_SUPERCLASS(CharWeightable)
+END_PROPSYNCS
