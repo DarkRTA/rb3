@@ -59,7 +59,7 @@ public:
         bool clamp_z = ClampEq(vec.z, mMin.z, mMax.z);
         bool clamp_x = ClampEq(vec.x, mMin.x, mMax.x);
         bool clamp_y = ClampEq(vec.y, mMin.y, mMax.y);
-        return clamp_z || clamp_x || clamp_y;
+        return clamp_x | clamp_y | clamp_z;
     }
 
     Vector3 mMin;

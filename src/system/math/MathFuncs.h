@@ -78,8 +78,8 @@ template<class T> inline const T Abs(T x){
     else return -x;
 }
 
-inline bool IsNaN(float){
-
+inline bool IsNaN(float f) {
+    return (f == f) ? false : true;
 }
 
 inline int Mod(int num, int modbase){
