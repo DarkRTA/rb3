@@ -180,9 +180,7 @@
         },
         "sdk/Runtime": {
             "base": "sdk/MSL",
-            "flags": [
-                "-Cpp_exceptions on"
-            ]
+            "flags": []
         },
         "sdk/RVL_SDK": {
             "base": "base",
