@@ -7546,7 +7546,7 @@ sdk/PowerPC_EABI_Support/Runtime/__mem.cpp:
 	.init       start:0x80004000 end:0x80004380
 	.text       start:0x80A38588 end:0x80A385A4
 
-sdk/PowerPC_EABI_Support/Runtime/__va_arg.cpp:
+sdk/PowerPC_EABI_Support/Runtime/__va_arg.c:
 	.text       start:0x80A385A4 end:0x80A3866C
 
 sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.cpp:
