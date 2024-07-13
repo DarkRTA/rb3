@@ -75,6 +75,7 @@ public:
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
     void TransformTransAnims(const Transform&);
+    std::vector<RndTransformable*>& TransChildren(){ return mChildren; }
 
     void SetDirty(){
         if(mCache->mFlags & 1) return;

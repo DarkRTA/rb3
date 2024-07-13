@@ -247,10 +247,10 @@ DataNode RndEnviron::OnAllowableLights_Real(const DataArray* da){
             ptr->Insert(ptr->Size(), DataNode(it));
         }
     }
-    static DataNode* milo_prop_path = DataVariable("milo_prop_path");
-    if(milo_prop_path->Type() == kDataArray){
-        if(milo_prop_path->Array(0)->Size() == 2){
-            int num = milo_prop_path->Array(0)->Int(1);
+    static DataNode& milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path.Type() == kDataArray){
+        if(milo_prop_path.Array(0)->Size() == 2){
+            int num = milo_prop_path.Array(0)->Int(1);
             ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsReal.begin();
             it += num;
             ptr->Insert(ptr->Size(), *it);
@@ -266,10 +266,10 @@ DataNode RndEnviron::OnAllowableLights_Approx(const DataArray* da){
             ptr->Insert(ptr->Size(), DataNode(it));
         }
     }
-    static DataNode* milo_prop_path = DataVariable("milo_prop_path");
-    if(milo_prop_path->Type() == kDataArray){
-        if(milo_prop_path->Array(0)->Size() == 2){
-            int num = milo_prop_path->Array(0)->Int(1);
+    static DataNode& milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path.Type() == kDataArray){
+        if(milo_prop_path.Array(0)->Size() == 2){
+            int num = milo_prop_path.Array(0)->Int(1);
             ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsApprox.begin();
             it += num;
             ptr->Insert(ptr->Size(), *it);

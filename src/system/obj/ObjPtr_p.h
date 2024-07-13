@@ -155,6 +155,7 @@ public:
         }
 
         bool operator!=(iterator it){ return mNode != it.mNode; }
+        bool operator!(){ return mNode == 0; }
 
         struct Node* mNode;
     };

@@ -6,15 +6,15 @@
 
 struct BSPNode {
 public:
-#pragma push
-#pragma inline_depth(3)
+    BSPNode() : left(0), right(0) {}
     ~BSPNode() { delete left; delete right; }
-#pragma pop
+    
     Plane plane; // 0x0
     BSPNode* left; // 0x10 yes they're called front/back but BSP works L/R, not F/B
     BSPNode* right; // 0x14
 
-    void operator delete(void* v) { _PoolFree(sizeof(BSPNode), FastPool, v); }
+    NEW_POOL_OVERLOAD(BSPNode)
+    DELETE_POOL_OVERLOAD(BSPNode)
 };
 
 /*
@@ -27,11 +27,12 @@ public:
 };
 */
 
-
 extern float gBSPPosTol;
 extern float gBSPDirTol;
 extern int gBSPMaxDepth;
 extern int gBSPMaxCandidates;
 extern float gBSPCheckScale;
+
+void NumNodes(const BSPNode*, int&, int&);
 
 #endif // MATH_BSP_H

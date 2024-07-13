@@ -263,7 +263,7 @@ inline DataNode::~DataNode(){
     if((mType & kDataArray) != 0) mValue.array->Release();
 }
 
-DataNode* DataVariable(Symbol);
+DataNode& DataVariable(Symbol);
 bool DataVarExists(Symbol);
 
 // to properly generate DataArray::Node const vs non-const

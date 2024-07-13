@@ -92,7 +92,7 @@ static DataNode DataSet(DataArray *da) {
 
 static DataNode DataSetVar(DataArray *da) {
     DataNode ret = da->Evaluate(2);
-    *DataVariable(da->ForceSym(1)) = ret;
+    DataVariable(da->ForceSym(1)) = ret;
     return ret;
 }
 
@@ -294,7 +294,7 @@ static DataNode DataWhile(DataArray* da){
 }
 
 static DataNode DataVar(DataArray* da){
-    return DataNode(DataVariable(da->ForceSym(1)));
+    return DataNode(&DataVariable(da->ForceSym(1)));
 }
 
 static DataNode DataPackColor(DataArray *da) {

@@ -54,11 +54,6 @@ public:
     float X() const { return x; }
     float Y() const { return y; }
     float Z() const { return z; }
-    
-    Vector3& operator=(const Vector3& v){
-        x = v.x; y = v.y; z = v.z;
-        return *this;
-    }
 
     Vector3& operator+=(const Vector3& v){
         x += v.x;
@@ -229,13 +224,61 @@ inline float Distance(const Vector3& v1, const Vector3& v2){
 }
 
 inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
+#ifdef VERSION_SZBE69_B8
+    dst.z = v1.z - v2.z;
+    dst.y = v1.y - v2.y;
+    dst.x = v1.x - v2.x;
+#else
     dst.Set(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+#endif
 }
 
 float Length(const Vector3&);
 
+inline float LengthSquared(const Vector2& v){
+    float x = v.x;
+    float y = v.y;
+    return x * x + y * y;
+}
+
 inline float Dot(const Vector3& v1, const Vector3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline float Cross(const Vector2& v1, const Vector2& v2){
+    return v1.x * v2.y - v1.y * v2.x;
+}
+
+inline float LengthSquared(const Vector3& v){
+    float x = v.x;
+    float y = v.y;
+    float z = v.z;
+    return x * x + y * y + z * z;
+}
+
+inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
+#ifdef VERSION_SZBE69_B8
+    float zdiff = v1.z - v2.z;
+    float ydiff = v1.y - v2.y;
+    float xdiff = v1.x - v2.x;
+    return xdiff * xdiff + ydiff * ydiff + zdiff * zdiff;
+#else
+    Vector3 res;
+    Subtract(v1, v2, res);
+    return Dot(res, res);
+#endif
+}
+
+float RecipSqrtAccurate(float);
+
+inline void Add(const Vector3& v1, const Vector3& v2, Vector3& dst){
+#ifdef VERSION_SZBE69_B8
+    dst.z = v1.z + v2.z;
+    dst.y = v1.y + v2.y;
+    dst.x = v1.x + v2.x;
+#else
+    dst.Set(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+#endif
 }
 
 inline void Interp(const Vector2& v1, const Vector2& v2, float f, Vector2& res){
@@ -250,6 +293,30 @@ inline void Interp(const Vector3 &v1, const Vector3 &v2, float f, Vector3 &dst) 
     } else {
         dst.Set(Interp(v1.x, v2.x, f), Interp(v1.y, v2.y, f), Interp(v1.z, v2.z, f));
     }
+}
+
+inline void ScaleAdd(const Vector3& v1, const Vector3& v2, float f, Vector3& vres){
+    vres.x = v2.x * f + v1.x;
+    vres.y = v2.y * f + v1.y;
+    vres.z = v2.z * f + v1.z;
+}
+
+inline void ScaleAddEq(Vector3& v1, const Vector3& v2, float f){
+    v1.x += v2.x * f;
+    v1.y += v2.y * f;
+    v1.z += v2.z * f;
+}
+
+inline void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
+    dst.Set(
+        v2.y * v1.x - v1.y * v2.x, v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z
+    );
+}
+
+void Normalize(const Vector3&, Vector3&);
+
+inline float operator*(const Vector3& v1, const Vector3& v2){
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 #endif

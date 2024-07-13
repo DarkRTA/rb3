@@ -20,6 +20,7 @@ namespace Hmx {
     };
 
     class Polygon {
+    public:
         Polygon() {}
         ~Polygon() {}
         std::vector<Vector2> mPoints;
@@ -38,8 +39,18 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Rect& rect){
 class Box {
 public:
     Box(){}
-    // Box() : mMin(1.0f, 1.0f, 1.0f), mMax(-1.0f, -1.0f, -1.0f) {}
-    void GrowToContain(const Vector3&, bool);
+    Box(const Vector3& min, const Vector3& max) : mMin(min), mMax(max) {}
+
+    // fn_802D7468
+    void GrowToContain(const Vector3& vec, bool b);
+
+    // fn_802D757C
+    bool Clamp(Vector3& vec){
+        bool clamp_z = ClampEq(vec.z, mMin.z, mMax.z);
+        bool clamp_x = ClampEq(vec.x, mMin.x, mMax.x);
+        bool clamp_y = ClampEq(vec.y, mMin.y, mMax.y);
+        return clamp_x | clamp_y | clamp_z;
+    }
 
     Vector3 mMin;
     Vector3 mMax;
@@ -52,5 +63,7 @@ inline BinStream& operator>>(BinStream& bs, Box& box){
 
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 bool Intersect(const Segment&, const Sphere&);
+bool Intersect(const Transform&, const Hmx::Polygon&, const class BSPNode*);
+void Multiply(const Box&, float, Box&);
 
 #endif

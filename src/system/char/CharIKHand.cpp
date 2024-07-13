@@ -12,6 +12,7 @@ CharIKHand::~CharIKHand(){
 
 #pragma push
 #pragma dont_inline on
+// fn_804E02E4
 void CharIKHand::Poll(){
     float charWeight = Weight();
     RndTransformable* trans = mHand;
@@ -31,15 +32,49 @@ void CharIKHand::Poll(){
         }
     }
     else {
+        float sumfloat = 0.0f;
+        float* locfloats;
+        float* startlocfloats = locfloats;
         for(std::vector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); it++){
             RndTransformable* itTrans = (*it).mTarget;
             float itExtent = (*it).mExtent;
             if(itTrans){
                 Vector3 vec(itTrans->WorldXfm().v);
-                // more stuff happens here
+                if(itExtent <= 0.0f){
+                    *locfloats = 144.0f / Max(0.001f, LengthSquared(vec));
+                }
+                else if(itExtent < -vec.z){
+                    *locfloats = 0.001f;
+                }
+                else {
+                    vec.z = 0.0f;
+                    *locfloats = 144.0f / Max(0.001f, LengthSquared(vec));
+                }
+
+                sumfloat += *locfloats++;
             }
         }
-        // more stuff also happens here
+        if(sumfloat < 1.0f){
+            charWeight = charWeight - (charWeight * (1.0f - sumfloat));
+        }
+
+        locfloats = startlocfloats;
+        for(std::vector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); it++){
+            RndTransformable* itTrans = (*it).mTarget;
+            if(itTrans){
+                float curFloat = *locfloats;
+                const Transform& worldtf = itTrans->WorldXfm();
+                ScaleAddEq(vec, worldtf.v, curFloat / sumfloat);
+                if(mOrientation){
+                    Hmx::Matrix3 m100;
+                    Normalize(worldtf.m, m100);
+                    Hmx::Quat q268(m100);
+                    ScaleAddEq(quat, q268, curFloat / sumfloat);
+                }
+            }
+            locfloats++;
+        }
+        if(mOrientation) Normalize(quat,quat);
     }
     if(mFinger){
         Transform tf;
@@ -56,14 +91,14 @@ void CharIKHand::Poll(){
     RndTransformable* parent2 = 0;
     RndTransformable* parent1 = mHand->TransParent();
     if(!mMoveElbow) parent1 = 0;
-    if(charWeight && mAlwaysIKElbow){
+    if(charWeight != 0 || mAlwaysIKElbow){
         if(parent1){
             parent2 = parent1->TransParent();
             if(!parent2) parent1 = 0;
         }
         IKElbow(parent1, parent2);
     }
-    if(charWeight && (!parent1 || mOrientation || mStretch)){
+    if(charWeight != 0 && (!parent1 || mOrientation || mStretch)){
         Transform tf(mHand->WorldXfm());
         if(!parent1 || mStretch){
             tf.v = mWorldDst;
@@ -77,5 +112,147 @@ void CharIKHand::Poll(){
         }
         mHand->SetWorldXfm(tf);
     }
+
+    if(mConstrainWrist && charWeight > 0.0f && parent1){
+        Vector3 v284(mFinger->WorldXfm().v);
+        Hmx::Matrix3 m1b4(parent1->WorldXfm().m);
+        Hmx::Matrix3 m1d8(mHand->WorldXfm().m);
+        Vector3 v290, v29c, v2a8;
+        v290 = m1d8.x;
+        v29c = m1d8.y;
+        v2a8 = m1d8.z;
+        float acosdot = std::acos(Dot(m1b4.x, v2a8)) - 1.570796370506287f;
+        float rads = mWristRadians;
+        if(Abs(acosdot) > rads){
+            if(acosdot > 0.0f) acosdot -= rads;
+            else acosdot += rads;
+            Hmx::Quat q2b8;
+            Transform tf208;
+            Hmx::Matrix3 m22c;
+            q2b8.Set(v29c, acosdot);
+            MakeRotMatrix(q2b8, m22c);
+            Multiply(v290, m22c, v290);
+            Cross(v290, v29c, v2a8);
+            tf208.m.Set(v290, v29c, v2a8);
+            tf208.v = mHand->WorldXfm().v;
+            mHand->SetWorldXfm(tf208);
+            Vector3 v2c8(mFinger->WorldXfm().v);
+            Subtract(v2c8, v284, v2c8);
+            Subtract(tf208.v, v2c8, tf208.v);
+            mHand->SetWorldXfm(tf208);
+            mWorldDst = tf208.v;
+            IKElbow(parent1, parent2);
+            mHand->SetWorldXfm(tf208);
+        }
+    }
+}
+
+// fn_804E09B4
+void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
+    if(!trans1 || !trans2) return;
+    Vector3 v100;
+    PullShoulder(v100, trans2->WorldXfm(), mWorldDst, mAAPlusBB);
+    Transform tf78(trans2->WorldXfm());
+    tf78.v += v100;
+    trans2->SetWorldXfm(tf78);
+    float loc210 = unk64 * (DistanceSquared(trans2->WorldXfm().v, mWorldDst) - mInv2ab);
+    ClampEq(loc210, -1.0f,1.0f);
+    float sqrted = std::sqrt(-(loc210 * loc210 - 1.0f));
+    trans1->DirtyLocalXfm().m.Set(0.0f, 0.0f, 0.0f, -sqrted, 0.0f, 0.0f, sqrted, 0.0f, 1.0f);
+    Vector3 v10c, v118;
+    Multiply(trans2->WorldXfm(), mHand->WorldXfm().v, v118);
+    Multiply(trans2->WorldXfm(), mWorldDst, v10c);
+    if(mElbowSwing > 0){
+        Vector2 v200(v118.y, v118.z);
+        Vector2 v208(v10c.y, v10c.z);
+        float max208 = Max(LengthSquared(v208), 16.0f);
+        float max200 = Max(LengthSquared(v200), 16.0f);
+        float sqrted2 = std::sqrt(max200 * max208);
+        float crossed = Cross(v208, v200);
+        float clamped = Clamp(-mElbowSwing, mElbowSwing, crossed / sqrted2);
+        Transform& dirty_temp = trans1->DirtyLocalXfm();
+        RotateAboutX(dirty_temp.m, -clamped, dirty_temp.m);
+        Multiply(trans2->WorldXfm(), mHand->WorldXfm().v, v118);
+    }
+    Hmx::Quat q128;
+    MakeRotQuat(v118, v10c, q128);
+    Hmx::Matrix3 ma0;
+    MakeRotMatrix(q128, ma0);
+    Multiply(ma0, trans2->LocalXfm().m, trans2->DirtyLocalXfm().m);
+    if(mElbowCollide){
+        PullShoulder(v100, trans2->WorldXfm(), mWorldDst, mAAPlusBB);
+        Transform tfd0(trans2->WorldXfm());
+        tfd0.v += v100;
+        trans2->SetWorldXfm(tfd0);
+        if(mElbowCollide->GetShape() != CharCollide::kSphere) MILO_WARN("%s: elbow collision object not sphere.\n", Name());
+        else {
+            Vector3 v134(mElbowCollide->WorldXfm().v);
+            float sphereRadius = mElbowCollide->Radius();
+            if(Distance(v134, trans1->WorldXfm().v) < sphereRadius){
+                Vector3 v140(trans2->WorldXfm().v);
+                v140 -= mWorldDst;
+                Vector3 v14c, v158;
+                Normalize(v140, v158);
+                Subtract(trans1->WorldXfm().v, mWorldDst, v14c);
+                Scale(v158, Dot(v14c, v158), v140);
+                Add(v140, mWorldDst, v140);
+                Vector3 v164(trans1->WorldXfm().v);
+                v164 -= v140;
+                float v164len = Length(v164);
+                Vector3 v170(trans2->WorldXfm().v);
+                v170 -= v140;
+                Normalize(v170, v170);
+                Vector3 v17c;
+                Add(v140, v170, v17c);
+                Subtract(v140, v134, v17c);
+                Scale(v170, Dot(v170, v17c), v17c);
+                Add(v134, v17c, v17c);
+                float a = Distance(v17c, v134);
+                MILO_ASSERT(a <= sphereRadius, 0x1A1);
+                float sqrted2 = std::sqrt(sphereRadius * sphereRadius - a * a);
+                v134.Set(v17c.x, v17c.y, v17c.z);
+                float dist134and140 = Distance(v134,v140);
+                float d10 = (dist134and140 * dist134and140 + -(a * a - sqrted2 * sqrted2)) / (dist134and140 * 2.0f);
+                float sqrted3 = std::sqrt(-(d10 * d10 - sqrted2 * sqrted2));
+                float asined = std::asin(sqrted3 / v164len);
+                if(IsNaN(asined)) return;
+                Vector3 v188(v134);
+                v188 -= v140;
+                Normalize(v188, v188);
+                Scale(v188, v164len, v188);
+                float sine = sin(asined / 2);
+                float cosine = cos(asined / 2);
+                Hmx::Quat q198(v188.x, v188.y, v188.z, 0.0f);
+                Hmx::Quat q1a8(v170.x * sine, v170.y * sine, v170.z* sine, cosine);
+                Hmx::Quat q1b8;
+                Multiply(q198, q1a8, q1b8);
+                Multiply(q1b8, q1a8, q1b8);
+                Vector3 v1c4(q1b8.x, q1b8.y, q1b8.z);
+                Add(v1c4, v140, v1c4);
+                Multiply(q1a8, q198, q1b8);
+                Multiply(q1a8, q1b8, q1b8);
+                Vector3 v1d0(q1b8.x, q1b8.y, q1b8.z);
+                Add(v1d0, v140, v1d0);
+                Vector3 v1dc, v1e8;
+                Multiply(trans2->WorldXfm(), trans1->WorldXfm().v, v1e8);
+                if(mClockwise) Multiply(trans2->WorldXfm(), v1d0, v1dc);
+                else Multiply(trans2->WorldXfm(), v1c4, v1dc);
+                Hmx::Quat q1f8;
+                MakeRotQuat(v1e8, v1dc, q1f8);
+                Hmx::Matrix3 mf4;
+                MakeRotMatrix(q1f8, mf4);
+                Multiply(mf4, trans2->LocalXfm().m, trans2->DirtyLocalXfm().m);
+                Multiply(trans1->WorldXfm(), mHand->WorldXfm().v, v1e8);
+                Multiply(trans1->WorldXfm(), mWorldDst, v1dc);
+                MakeRotQuat(v1e8, v1dc, q1f8);
+                MakeRotMatrix(q1f8, mf4);
+                Multiply(mf4, trans1->LocalXfm().m, trans1->DirtyLocalXfm().m);
+            }
+        }
+    }
+    PullShoulder(v100, trans2->WorldXfm(), mWorldDst, mAAPlusBB);
+    tf78 = trans2->WorldXfm();
+    tf78.v += v100;
+    trans2->SetWorldXfm(tf78);
 }
 #pragma pop

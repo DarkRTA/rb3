@@ -82,8 +82,8 @@ void LocalUser::UpdateOnlineID(){
 }
 
 bool LocalUser::IsJoypadConnected() const {
-    static DataNode* fake_controllers = DataVariable("fake_controllers");
-    int pad = fake_controllers->Int(0);
+    static DataNode& fake_controllers = DataVariable("fake_controllers");
+    int pad = fake_controllers.Int(0);
     if(pad) return true;
     else return JoypadIsConnectedPadNum(GetPadNum());
 }

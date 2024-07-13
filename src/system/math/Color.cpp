@@ -39,53 +39,6 @@ void MakeHSL(const Hmx::Color& color, float& f1, float& f2, float& f3){
     }
 }
 
-// void MakeHSL(Color *param_1,float *param_2,float *param_3,float *param_4)
-
-// {
-//   float fVar1;
-//   float fVar2;
-//   float fVar3;
-//   float fVar4;
-  
-//   fVar3 = Maximum(param_1->r,param_1->g,param_1->b);
-//   fVar4 = Minimum(param_1->r,param_1->g,param_1->b);
-//   fVar1 = (fVar3 + fVar4) * 0.5;
-//   *param_4 = fVar1;
-//   if (fVar3 == fVar4) {
-//     *param_2 = 0.0;
-//     *param_3 = 0.0;
-//   }
-
-//   else {
-//     fVar2 = fVar3 - fVar4;
-//     if (fVar1 >= 0.5) {
-//       *param_3 = fVar2 / ((2.0 - fVar3) - fVar4);
-//     }
-//     else {
-//       *param_3 = fVar2 / (fVar3 + fVar4);
-//     }
-
-//     fVar1 = param_1->r;
-//     if (fVar1 == fVar3) {
-//       *param_2 = (param_1->g - param_1->b) / fVar2;
-//     }
-//     else if (param_1->g == fVar3) {
-//       *param_2 = (param_1->b - fVar1) / fVar2 + 2.0;
-//     }
-//     else {
-//       *param_2 = (fVar1 - param_1->g) / fVar2 + 4.0;
-//     }
-
-//     fVar1 = *param_2 / 6.0;
-//     *param_2 = fVar1;
-//     if (fVar1 < 0.0) {
-//       *param_2 = fVar1 + 1.0;
-//     }
-
-//   }
-//   return;
-// }
-
 TextStream& operator<<(TextStream& ts, const Hmx::Color& color){
     ts << "(r:" << color.red << " g:" << color.green << " b:" << color.blue << " a:" << color.alpha << ")";
     return ts;

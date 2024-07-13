@@ -32,7 +32,9 @@ void CharPollGroup::Poll(){
 }
 
 void CharPollGroup::ListPollChildren(std::list<RndPollable*>& l) const {
-    for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+    ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin();
+    ObjPtrList<CharPollable, ObjectDir>::iterator itEnd = mPolls.end();
+    for(; it != itEnd; ++it){
         l.push_back(*it);
     }
 }
@@ -61,6 +63,31 @@ void CharPollGroup::Load(BinStream& bs){
         bs >> mChangedBy;
         bs >> mChanges;
     }
+}
+
+BEGIN_COPYS(CharPollGroup)
+    COPY_SUPERCLASS(Hmx:Object)
+    COPY_SUPERCLASS(CharWeightable)
+    CREATE_COPY(CharPollGroup)
+    BEGIN_COPYING_MEMBERS
+        if(ty == kCopyFromMax){
+            for(ObjPtrList<CharPollable, ObjectDir>::iterator it = c->mPolls.begin(); it != c->mPolls.end(); ++it){
+                if(!mPolls.find(*it)){
+                    mPolls.push_back(*it);
+                }
+            }
+        }
+        else {
+            COPY_MEMBER(mPolls)
+            COPY_MEMBER(mChangedBy)
+            COPY_MEMBER(mChanges)
+        }
+    END_COPYING_MEMBERS
+END_COPYS
+
+// fn_804F59EC - sortpolls
+void CharPollGroup::SortPolls(){
+    // requires another class, CharPollableSorter
 }
 
 BEGIN_HANDLERS(CharPollGroup)

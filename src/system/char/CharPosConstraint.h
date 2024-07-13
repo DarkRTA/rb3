@@ -22,9 +22,9 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mSrc;
-    ObjPtrList<RndTransformable, ObjectDir> mTargets;
-    Box mBox;
+    ObjPtr<RndTransformable, ObjectDir> mSrc; // 0x8
+    ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x14
+    Box mBox; // 0x24
 };
 
 #endif

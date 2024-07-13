@@ -61,16 +61,41 @@ template<class T> inline T Clamp(T x, T y, T z){
     return x;
 }
 
-template<class T> inline bool ClampEq(T& x, const T& y, const T& z){
-    if(x < y){
-        x = y;
+template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
+    T temp = y;
+    if (x < y) {
+        x = temp;
         return true;
-    }
-    if(z < x){
+    } else if (x > z) {
         x = z;
         return true;
     }
     return false;
+}
+
+template<class T> inline bool MinEq(T& x, const T& y){
+    if(y < x){
+        x = y;
+        return true;
+    }
+    return false;
+}
+
+template<class T> inline bool MaxEq(T& x, const T& y){
+    if(x < y){
+        x = y;
+        return true;
+    }
+    return false;
+}
+
+template<class T> inline const T Abs(T x){
+    if(x > 0) return x;
+    else return -x;
+}
+
+inline bool IsNaN(float f) {
+    return (f == f) ? false : true;
 }
 
 inline int Mod(int num, int modbase){

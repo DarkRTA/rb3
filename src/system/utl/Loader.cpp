@@ -12,8 +12,8 @@ LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMo
 
 void LoadMgr::SetEditMode(bool b){
     mEditMode = b;
-    static DataNode* edit_mode = DataVariable("edit_mode");
-    *edit_mode = DataNode(mEditMode);
+    static DataNode& edit_mode = DataVariable("edit_mode");
+    edit_mode = DataNode(mEditMode);
 }
 
 static DataNode OnLoadMgrPrint(DataArray* da){
@@ -51,7 +51,7 @@ void LoadMgr::Init(){
     DataRegisterFunc("set_edit_mode", OnSetEditMode);
     DataRegisterFunc("set_loader_period", OnSetLoaderPeriod);
     DataRegisterFunc("sysplatform_sym", OnSysPlatformSym);
-    *DataVariable("sysplatform") = DataNode((int)mPlatform);
+    DataVariable("sysplatform") = DataNode((int)mPlatform);
 }
 
 Loader* LoadMgr::ForceGetLoader(const FilePath& fp){

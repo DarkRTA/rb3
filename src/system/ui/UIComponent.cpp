@@ -144,7 +144,7 @@ void UIComponent::PostLoad(BinStream& bs) {
         ResourceFileUpdated(false);
         SetType("");
         mResource = 0;
-        *DataVariable("uicomponent.resource_upgrade") = DataNode(1);
+        DataVariable("uicomponent.resource_upgrade") = DataNode(1);
     }
     if(mResourceName.length() != 0){
         mResourceDir.PostLoad(0);

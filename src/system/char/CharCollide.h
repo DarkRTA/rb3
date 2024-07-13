@@ -25,8 +25,13 @@ public:
     virtual ~CharCollide();
     virtual void Highlight();
 
-    Shape mShape;
-    int mFlags;
+    float GetRadius(const Vector3&, Vector3&) const;
+    float Radius() const;
+    Shape GetShape() const { return mShape; }
+    const Vector3& Axis() const;
+
+    Shape mShape; // 0x90
+    int mFlags; // 0x94
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x98
     // float mRadius;
     // float mMaxLength;
