@@ -746,7 +746,7 @@
             "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.cpp": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/Runtime/New.cpp": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/New.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/ptmf.cpp": "NonMatching",
             "sdk/PowerPC_EABI_Support/Runtime/runtime.cpp": "NonMatching"
