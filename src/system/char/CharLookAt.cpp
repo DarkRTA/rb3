@@ -124,7 +124,7 @@ void CharLookAt::Poll(){
                         default: break;
                     }
                 }
-                static DataNode* disable = DataVariable("cheat.disable_eye_jitter");
+                static DataNode& disable = DataVariable("cheat.disable_eye_jitter");
             }
         }
     }
@@ -163,7 +163,7 @@ void CharLookAt::Poll(){
     //       Multiply(pMVar6,&VStack_108,&VStack_108);
     //       Vector3::operator_-=(&VStack_e4,&VStack_108);
     //     }
-    
+
     //     if (this[0xb0] == (CharLookAt)0x0) {
     //       pRVar1 = (RndTransformable *)ObjPtr<>::operator_->((ObjPtr<> *)(this + 0x34));
     //       pMVar6 = (Matrix3 *)RndTransformable::DirtyLocalXfm(pRVar1);

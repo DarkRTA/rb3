@@ -204,7 +204,7 @@ bool ParseNode() {
         case 7:
             break;
         case 0x12:
-            PushBack(DataNode(DataVariable(yytext + 1)));
+            PushBack(DataNode(&DataVariable(yytext + 1)));
             return true;
             break;
         case 0x13:

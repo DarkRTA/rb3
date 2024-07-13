@@ -65,7 +65,7 @@ bool gHostCached;
 void SetGfxMode(GfxMode mode) {
     gGfxMode = mode;
     HolmesClientReInit();
-    *DataVariable("gfx_mode") = DataNode((int)mode);
+    DataVariable("gfx_mode") = DataNode((int)mode);
 }
 
 GfxMode GetGfxMode(){ return gGfxMode; }
@@ -189,7 +189,7 @@ void PreInitSystem(const char* path) {
     BeginDataRead();
     gSystemConfig = ReadSystemConfig(path);
     MILO_ASSERT(gSystemConfig, 0x1AC);
-    *DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
+    DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
     DataArray* mem = gSystemConfig->FindArray("mem", true);
 
@@ -246,7 +246,7 @@ void InitSystem(const char* path) {
         DataReplaceTags(systemConfig, gSystemConfig);
         gSystemConfig->Release();
         gSystemConfig = systemConfig;
-        *DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
+        DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
         SetUsingCD(usingCD);
         TheArchive = archive;

@@ -41,20 +41,20 @@ void MidiParser::ClearManagedParsers(){
 
 void MidiParser::Init(){
     MidiParser::Register();
-    MidiParser::mpStart = DataVariable("mp.start");
-    MidiParser::mpEnd = DataVariable("mp.end");
-    MidiParser::mpLength = DataVariable("mp.length");
-    MidiParser::mpPrevStartDelta = DataVariable("mp.prev_start");
-    MidiParser::mpPrevEndDelta = DataVariable("mp.prev_end");
-    MidiParser::mpData = DataVariable("mp.data");
-    MidiParser::mpVal = DataVariable("mp.val");
-    MidiParser::mpSingleBit = DataVariable("mp.single_bit");
-    MidiParser::mpLowestBit = DataVariable("mp.lowest_bit");
-    MidiParser::mpLowestSlot = DataVariable("mp.lowest_slot");
-    MidiParser::mpHighestSlot = DataVariable("mp.highest_slot");
-    MidiParser::mpOutOfBounds = DataVariable("mp.out_of_bounds");
-    MidiParser::mpBeforeDeltaSec = DataVariable("mp.before_delta_sec");
-    MidiParser::mpAfterDeltaSec = DataVariable("mp.after_delta_sec");
+    *MidiParser::mpStart = DataVariable("mp.start");
+    *MidiParser::mpEnd = DataVariable("mp.end");
+    *MidiParser::mpLength = DataVariable("mp.length");
+    *MidiParser::mpPrevStartDelta = DataVariable("mp.prev_start");
+    *MidiParser::mpPrevEndDelta = DataVariable("mp.prev_end");
+    *MidiParser::mpData = DataVariable("mp.data");
+    *MidiParser::mpVal = DataVariable("mp.val");
+    *MidiParser::mpSingleBit = DataVariable("mp.single_bit");
+    *MidiParser::mpLowestBit = DataVariable("mp.lowest_bit");
+    *MidiParser::mpLowestSlot = DataVariable("mp.lowest_slot");
+    *MidiParser::mpHighestSlot = DataVariable("mp.highest_slot");
+    *MidiParser::mpOutOfBounds = DataVariable("mp.out_of_bounds");
+    *MidiParser::mpBeforeDeltaSec = DataVariable("mp.before_delta_sec");
+    *MidiParser::mpAfterDeltaSec = DataVariable("mp.after_delta_sec");
 }
 
 MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),

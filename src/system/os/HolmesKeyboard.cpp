@@ -54,11 +54,11 @@ void HolmesInput::SendKeyboardMessages(){
 }
 
 int HolmesInput::SendJoypadMessages(){
-    static DataNode* fake_controllers = DataVariable("fake_controllers");
+    static DataNode& fake_controllers = DataVariable("fake_controllers");
     int mask = 0;
     mJoypadBuffer->Seek(0, BinStream::kSeekBegin);
     while(!mJoypadBuffer->Eof()){
-        *fake_controllers = DataNode(1);
+        fake_controllers = DataNode(1);
         bool bbb = ThePlatformMgr.unk2b;
         ThePlatformMgr.SetScreenSaver(false);
         ThePlatformMgr.SetScreenSaver(bbb);

@@ -30,12 +30,12 @@ void MessageTask::Poll(float f){
 
 ScriptTask::ScriptTask(DataArray* arr1, bool b, DataArray* arr2) : mThis(this, DataThis()), mScript(arr1), mOnce(b) {
     arr1->AddRef();
-    static DataNode* task = DataVariable("task");
-    *task = DataNode(this);
-    mVars.push_back(Var(task, *task));
+    static DataNode& task = DataVariable("task");
+    task = DataNode(this);
+    mVars.push_back(Var(&task, task));
     if(!arr2) arr2 = arr1;
     UpdateVarsObjects(arr2);
-    *task = DataNode(*task);
+    task = DataNode(task);
 }
 
 ScriptTask::~ScriptTask(){

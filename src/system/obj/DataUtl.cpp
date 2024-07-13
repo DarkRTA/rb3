@@ -143,8 +143,8 @@ Hmx::Object* DataSetThis(Hmx::Object* o){
     gDataDir = dir;
     old = gDataThis;
     gDataThis = o;
-    static DataNode* thisVar = DataVariable("this");
-    *thisVar = DataNode(o);
+    static DataNode& thisVar = DataVariable("this");
+    thisVar = DataNode(o);
     o = old;
     return o;
 }

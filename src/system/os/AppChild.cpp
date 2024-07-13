@@ -29,7 +29,7 @@ void AppChild::Init(){
         MILO_ASSERT(!TheAppChild, 0x3B);
         TheAppChild = new AppChild(OptionStr("pipe_name", 0));
     }
-    *DataVariable("app_child") = DataNode(appchildbool);
+    DataVariable("app_child") = DataNode(appchildbool);
     DataRegisterFunc("enable_app_child", EnableAppChild);
     DataRegisterFunc("disable_app_child", DisableAppChild);
     DataRegisterFunc("sync_app_child", SyncAppChild);
