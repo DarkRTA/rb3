@@ -12,6 +12,7 @@ CharIKHand::~CharIKHand(){
 
 #pragma push
 #pragma dont_inline on
+// fn_804E02E4
 void CharIKHand::Poll(){
     float charWeight = Weight();
     RndTransformable* trans = mHand;

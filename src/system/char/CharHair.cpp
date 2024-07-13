@@ -11,6 +11,7 @@ INIT_REVS(CharHair)
 
 #pragma push
 #pragma dont_inline on
+// fn_804D49F8
 void CharHair::Strand::SetRoot(RndTransformable* trans){
     mRoot = trans;
     if(!mRoot) mPoints.resize(0);
@@ -79,6 +80,7 @@ void CharHair::Enter(){
 
 #pragma push
 #pragma dont_inline on
+// fn_804D6590
 void CharHair::SimulateInternal(float f){
     float sixtyover = 60.0f / f;
     float f19 = (1.0f / f) * sixtyover;

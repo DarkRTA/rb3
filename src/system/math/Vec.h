@@ -240,6 +240,10 @@ inline float LengthSquared(const Vector2& v){
     return x * x + y * y;
 }
 
+inline float Dot(const Vector3& v1, const Vector3& v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
 inline float Cross(const Vector2& v1, const Vector2& v2){
     return v1.x * v2.y - v1.y * v2.x;
 }
@@ -252,10 +256,16 @@ inline float LengthSquared(const Vector3& v){
 }
 
 inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
+#ifdef VERSION_SZBE69_B8
     float zdiff = v1.z - v2.z;
     float ydiff = v1.y - v2.y;
     float xdiff = v1.x - v2.x;
     return xdiff * xdiff + ydiff * ydiff + zdiff * zdiff;
+#else
+    Vector3 res;
+    Subtract(v1, v2, res);
+    return Dot(res, res);
+#endif
 }
 
 float RecipSqrtAccurate(float);
@@ -264,10 +274,6 @@ inline void Add(const Vector3& v1, const Vector3& v2, Vector3& vres){
     vres.z = v1.z + v2.z;
     vres.y = v1.y + v2.y;
     vres.x = v1.x + v2.x;
-}
-
-inline float Dot(const Vector3& v1, const Vector3& v2) {
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
 inline void Interp(const Vector2& v1, const Vector2& v2, float f, Vector2& res){
