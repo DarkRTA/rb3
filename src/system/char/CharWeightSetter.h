@@ -8,8 +8,6 @@
 class CharWeightSetter : public CharWeightable, public CharPollable {
 public:
     CharWeightSetter();
-    OBJ_CLASSNAME(CharWeightSetter);
-    OBJ_SET_TYPE(CharWeightSetter);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -33,6 +31,10 @@ public:
     float mScale; // 0x60
     float mBaseWeight; // 0x64
     float mBeatsPerWeight; // 0x68
+
+    // moved down here so this TU will link
+    OBJ_CLASSNAME(CharWeightSetter);
+    OBJ_SET_TYPE(CharWeightSetter);
 };
 
 #endif

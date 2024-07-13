@@ -164,3 +164,10 @@ BEGIN_PROPSYNCS(CharWeightSetter)
     SYNC_PROP(max_weights, mMaxWeights)
     SYNC_SUPERCLASS(CharWeightable)
 END_PROPSYNCS
+
+DECOMP_FORCEFUNC(CharWeightSetter, CharWeightSetter, SetType)
+DECOMP_FORCEFUNC_TEMPL(CharWeightSetter, ObjPtrList, Replace(0, 0), CharWeightable, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(CharWeightSetter, ObjPtrList, RefOwner(), CharWeightable, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(CharWeightSetter, ObjPtrList, Replace(0, 0), CharWeightSetter, ObjectDir)
+DECOMP_FORCEFUNC_TEMPL(CharWeightSetter, ObjPtrList, RefOwner(), CharWeightSetter, ObjectDir)
+DECOMP_FORCEDTOR(CharWeightSetter, CharWeightSetter)

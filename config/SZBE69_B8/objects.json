@@ -206,7 +206,7 @@
             "system/char/CharTransDraw.cpp": "Matching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "Matching",
-            "system/char/CharWeightSetter.cpp": "NonMatching",
+            "system/char/CharWeightSetter.cpp": "Matching",
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
