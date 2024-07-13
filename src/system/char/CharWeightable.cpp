@@ -35,7 +35,7 @@ BEGIN_COPYS(CharWeightable)
         }
         else {
             SetWeightOwner(this);
-            mWeight = c->Weight();
+            mWeight = c->mWeightOwner->mWeight;
         }
     END_COPYING_MEMBERS
 END_COPYS

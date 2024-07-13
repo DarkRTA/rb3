@@ -12,6 +12,8 @@ CharPosConstraint::~CharPosConstraint(){
     
 }
 
+// fn_804F43F4 - poll
+
 void CharPosConstraint::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mSrc);
     for(ObjPtrList<RndTransformable, class ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){

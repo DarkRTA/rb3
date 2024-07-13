@@ -39,20 +39,10 @@ inline BinStream& operator>>(BinStream& bs, Hmx::Rect& rect){
 class Box {
 public:
     Box(){}
+    Box(const Vector3& min, const Vector3& max) : mMin(min), mMax(max) {}
+
     // fn_802D7468
-    void GrowToContain(const Vector3& vec, bool b){
-        if(b){
-            mMin = mMax = vec;
-        }
-        else for(int i = 0; i < 3; i++){
-            if(vec[i] < mMin[i]){
-                mMin[i] = vec[i];
-            }
-            else if(vec[i] > mMax[i]){
-                mMax[i] = vec[i];
-            }
-        }
-    }
+    void GrowToContain(const Vector3& vec, bool b);
 
     // fn_802D757C
     bool Clamp(Vector3& vec){

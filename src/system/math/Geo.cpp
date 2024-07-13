@@ -43,13 +43,19 @@ BinStream& operator>>(BinStream& bs, BSPNode*& bsp) {
     return bs;
 }
 
-#pragma push
-#pragma dont_inline on
-bool deadstrippedboxgrowtocontain(Box& box, Vector3& vec, bool b){
-    box.GrowToContain(vec,b);
-    return box.Clamp(vec);
+void Box::GrowToContain(const Vector3& vec, bool b){
+    if(b){
+        mMin = mMax = vec;
+    }
+    else for(int i = 0; i < 3; i++){
+        if(vec[i] < mMin[i]){
+            mMin[i] = vec[i];
+        }
+        else if(vec[i] > mMax[i]){
+            mMax[i] = vec[i];
+        }
+    }
 }
-#pragma pop
 
 void Intersect(const Hmx::Ray& r1, const Hmx::Ray& r2, Vector2& out) {
       float fVar1;

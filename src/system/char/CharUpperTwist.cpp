@@ -11,6 +11,8 @@ CharUpperTwist::~CharUpperTwist(){
     
 }
 
+// fn_804FAB0C - poll
+
 void CharUpperTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mTwist2);
     change.push_back(mUpperArm);
