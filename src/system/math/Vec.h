@@ -229,7 +229,13 @@ inline float Distance(const Vector3& v1, const Vector3& v2){
 }
 
 inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
+#ifdef VERSION_SZBE69_B8
+    dst.z = v1.z - v2.z;
+    dst.y = v1.y - v2.y;
+    dst.x = v1.x - v2.x;
+#else
     dst.Set(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+#endif
 }
 
 float Length(const Vector3&);
@@ -270,10 +276,14 @@ inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
 
 float RecipSqrtAccurate(float);
 
-inline void Add(const Vector3& v1, const Vector3& v2, Vector3& vres){
-    vres.z = v1.z + v2.z;
-    vres.y = v1.y + v2.y;
-    vres.x = v1.x + v2.x;
+inline void Add(const Vector3& v1, const Vector3& v2, Vector3& dst){
+#ifdef VERSION_SZBE69_B8
+    dst.z = v1.z + v2.z;
+    dst.y = v1.y + v2.y;
+    dst.x = v1.x + v2.x;
+#else
+    dst.Set(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+#endif
 }
 
 inline void Interp(const Vector2& v1, const Vector2& v2, float f, Vector2& res){

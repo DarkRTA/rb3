@@ -7,6 +7,8 @@ CharBoneTwist::CharBoneTwist() : mBone(this, 0), mTargets(this, kObjListNoNull) 
 
 }
 
+// fn_804B42D0 - poll
+
 void CharBoneTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     change.push_back(mBone);
     for(ObjPtrList<RndTransformable, class ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
