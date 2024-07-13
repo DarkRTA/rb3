@@ -9,6 +9,7 @@
 #define RAD2DEG 57.2957763671875f
 #define DEG2RAD 0.01745329238474369049f
 
+void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Transform&, const Vector3&, Vector3&);

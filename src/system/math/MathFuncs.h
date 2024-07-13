@@ -73,6 +73,10 @@ template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
     return false;
 }
 
+template<class T> inline bool MinEq(T& x, const T& y){
+
+}
+
 template<class T> inline const T Abs(T x){
     if(x > 0) return x;
     else return -x;
