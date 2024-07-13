@@ -36,13 +36,13 @@ public:
     virtual void DrawShowing();
     virtual void Enter();
     virtual void Exit();
-
     virtual RndCam* CamOverride();
     virtual bool Entering() const;
     virtual bool Exiting() const;
     virtual UIComponent* FocusComponent();
     virtual UIComponent* FindComponent(const char*);
     virtual void SetFocusComponent(UIComponent*, Symbol);
+
     void SendTransition(const Message&, Symbol, Symbol);
     void AddComponent(UIComponent*);
     void UpdateFocusComponentState();
@@ -51,6 +51,7 @@ public:
     void EnableComponent(UIComponent*, RequestFocus);
     void DisableComponent(UIComponent*, JoypadAction);
     bool PanelNav(JoypadAction, JoypadButton, Symbol);
+    UIComponent* ComponentNav(UIComponent*, JoypadAction, JoypadButton, Symbol);
     UIComponent* GetFirstFocusableComponent();
     bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
 

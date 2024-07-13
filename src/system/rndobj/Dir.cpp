@@ -132,10 +132,7 @@ void RndDir::Exit(){
 // fn_805D3C1C
 void RndDir::ListPollChildren(std::list<RndPollable*>& children) const {
     if(IsProxy()){
-        // children.splice(children.begin(), children, mPolls.begin(), mPolls.end());
-        // for(std::vector<RndPollable*>::const_iterator it = mPolls.begin(); it != mPolls.end(); ++it){
-        // 
-        // }
+        children.insert(children.begin(), mPolls.begin(), mPolls.end());
     }
 }
 

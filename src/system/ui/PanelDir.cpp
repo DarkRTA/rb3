@@ -15,8 +15,8 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(PanelDir)
-bool gSendFocusMsg;
-bool PanelDir::sAlwaysNeedFocus;
+bool gSendFocusMsg = true;
+bool PanelDir::sAlwaysNeedFocus = true;
 
 PanelDir::PanelDir() : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEndWorld(1), mUseSpecifiedCam(0), mShowEditModePanels(0), mShowFocusComponent(1) {
     if(TheLoadMgr.EditMode()) mShowEditModePanels = true;
@@ -45,8 +45,8 @@ void PanelDir::PreLoad(BinStream& bs) {
 void PanelDir::PostLoad(BinStream& bs){
     RndDir::PostLoad(bs);
     int revs = PopRev(this);
-    gAltRev = getAltRev(revs);
     gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
     if(this == Dir()){
         if(gRev != 0) bs >> mCam;
         if(gRev == 2){
@@ -85,11 +85,11 @@ END_COPYS
 void PanelDir::SyncObjects(){
     RndDir::SyncObjects();
     mComponents.clear();
-    for(ObjDirItr<UIComponent> it(this, true); it != 0; ++it){
+    for(ObjDirItr<UIComponent> it(this, true); it; ++it){
         AddComponent(it);
     }
     mTriggers.clear();
-    for(ObjDirItr<UITrigger> it(this, true); it != 0; ++it){
+    for(ObjDirItr<UITrigger> it(this, true); it; ++it){
         mTriggers.push_back(it);
         it->CheckAnims();
     }
@@ -155,9 +155,10 @@ void PanelDir::Exit(){
 
 #pragma push
 #pragma pool_data off
+// fn_8054C070
 void PanelDir::SendTransition(const Message& msg, Symbol s1, Symbol s2){
     static Message dirMsg = Message("");
-    dirMsg->Node(1) = DataNode(TheUI->WentBack() ? s2 : s1);
+    dirMsg.SetType(TheUI->WentBack() ? s2 : s1);
     RndDir::Handle(msg, false);
     RndDir::Handle(dirMsg, false);
 }
@@ -249,8 +250,9 @@ DataNode PanelDir::GetFocusableComponentList(){
         }
     }
     DataArrayPtr ptr(new DataArray(components.size()));
+    std::vector<UIComponent*>::iterator it = components.begin();
     int i = 0;
-    for(std::vector<UIComponent*>::iterator it = components.begin(); it != components.end(); ++it, i++){
+    for(; it != components.end(); ++it, i++){
         ptr.Node(i) = DataNode(*it);
     }
     return DataNode(ptr);
@@ -281,6 +283,23 @@ BEGIN_HANDLERS(PanelDir)
     if(sym != "button_down") HANDLE_MEMBER_PTR(mFocusComponent)
     HANDLE_CHECK(0x1FC)
 END_HANDLERS
+
+// fn_8054CF34
+bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s){
+    UIComponent* comp = mFocusComponent;
+    if(comp){
+        do {
+            comp = ComponentNav(comp, act, btn, s);
+            if(!comp || comp == mFocusComponent) return false;
+        } while(comp->GetState() == UIComponent::kDisabled);
+        if(s != none){
+            TheUI->Handle(panel_navigated_msg, false);
+        }
+        SetFocusComponent(comp, s);
+        return true;
+    }
+    else return false;
+}
 
 DataNode PanelDir::OnMsg(const ButtonDownMsg& msg){
     DataNode node(kDataUnhandled, 0);
@@ -317,6 +336,11 @@ DataNode PanelDir::OnDisableComponent(const DataArray* da){
     }
     else MILO_WARN("wrong number of args to PanelDir disable");
     return DataNode(0);
+}
+
+// stubbed out in retail
+void PanelDir::SyncEditModePanels(){
+
 }
 
 BEGIN_PROPSYNCS(PanelDir)
