@@ -740,7 +740,7 @@
         "cflags": "sdk/Runtime",
         "objects": {
             "sdk/PowerPC_EABI_Support/Runtime/__init_cpp_exceptions.cpp": "Matching",
-            "sdk/PowerPC_EABI_Support/Runtime/__mem.c": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/__mem.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/__va_arg.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.c": "Matching",
