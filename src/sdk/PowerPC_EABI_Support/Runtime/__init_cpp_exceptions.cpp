@@ -3,6 +3,7 @@
 #include "__init_cpp_exceptions.h"
 
 #include "decomp.h"
+#include "MWCPlusLib.h"
 #include "NMWException.h"
 #include "__ppc_eabi_linker.h"
 

@@ -1,7 +1,7 @@
 /* https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/src/Runtime/global_destructor_chain.c
  */
 
-#include "global_destructor_chain.h"
+#include "MWCPlusLib.h"
 
 #ifdef __cplusplus
 extern "C" {
