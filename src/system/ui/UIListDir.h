@@ -34,7 +34,16 @@ public:
     float ElementSpacing() const;
     UIList* SubList(int, std::vector<UIListWidget*>&);
     void CompleteScroll(const UIListState&, std::vector<UIListWidget*>&);
+    void CreateElements(UIList*, std::vector<UIListWidget*>&, int);
+    void FillElements(const UIListState&, std::vector<UIListWidget*>&);
+    void FillElement(const UIListState&, std::vector<UIListWidget*>&, int);
+    void PollWidgets(std::vector<UIListWidget*>&);
+    void ListEntered();
+    void StartScroll(const UIListState&, std::vector<UIListWidget*>&, int, bool);
+    void Reset();
+    void DrawWidgets(const UIListState&, std::vector<UIListWidget*>&, const Transform&, UIComponent::State, Box*, bool);
 
+    DECLARE_REVS;
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(UIListDir)
@@ -52,8 +61,8 @@ public:
     float mTestGapSize; // 0x1f0
     UIComponent::State mTestComponentState; // 0x1f4
     bool mTestDisableElements; // 0x1f8
-    std::vector<int> unk1fc; // 0x1fc
-    int unk204; // 0x204
+    std::vector<UIListWidget*> unk1fc; // 0x1fc
+    int mDirection; // 0x204
 };
 
 #endif
