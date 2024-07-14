@@ -26,15 +26,15 @@ public:
     virtual void DrawShowing();
     virtual void Poll();
     virtual void SyncFingerFeedback();
-    virtual void SetDisplayRange(float);
-    virtual void SetDisplayOffset(float, bool);
+    virtual void SetDisplayRange(float){}
+    virtual void SetDisplayOffset(float, bool){}
     virtual int SmasherPlate(); // change return type
     virtual float GetFretPosOffset(int) const;
-    virtual int GetNumFretPosOffets() const;
+    virtual int GetNumFretPosOffsets() const { return 0; }
     virtual float GetCurrentChordLabelPosOffset() const;
     virtual int PrepareChordMesh(unsigned int);
     virtual int GetChordMesh(unsigned int, bool);
-    virtual void SetUnisonProgress(float);
+    virtual void SetUnisonProgress(float){}
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
     virtual void AddChordImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, class String);
@@ -55,6 +55,7 @@ public:
     void SetupKeyShifting(RndDir*);
     void ResetKeyShifting();
 
+    DECLARE_REVS;
     NEW_OBJ(TrackDir)
 
     bool mRunning; // 0x1d6
@@ -64,7 +65,7 @@ public:
     float mTopY; // 0x1f4
     float mBottomY; // 0x1f8
     std::vector<Transform> mSlots; // 0x1fc
-    std::vector<int> vec2; // 0x204
+    std::vector<Transform> vec2; // 0x204
     bool mWarnOnResort; // 0x20c
     std::vector<void*> vec3; // 0x210
     ObjPtr<RndGroup, ObjectDir> mShowingWhenEnabled; // 0x218

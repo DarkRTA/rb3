@@ -5,7 +5,10 @@
 #include "rndobj/Group.h"
 #include "track/TrackTest.h"
 #include "track/TrackWidget.h"
+#include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
+
+INIT_REVS(TrackDir)
 
 TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mAnimGroup(this, 0), mYPerSecond(10.0f), 
     mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), mShowingWhenEnabled(this, 0), mStationaryBack(this, 0), mKeyShiftStationaryBack(this, 0), 
@@ -20,7 +23,7 @@ TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mA
 }
 
 TrackDir::~TrackDir(){
-    
+    delete mTest;
 }
 
 // fn_8053E7D4
@@ -56,6 +59,69 @@ void TrackDir::ResetKeyShifting(){
     unk2d8.Reset();
     unk308.Reset();
     unk338.Reset();
+}
+
+BEGIN_COPYS(TrackDir)
+    COPY_SUPERCLASS(PanelDir)
+    CREATE_COPY(TrackDir)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mDrawGroup)
+        COPY_MEMBER(mAnimGroup)
+        COPY_MEMBER(mYPerSecond)
+        COPY_MEMBER(mTopY)
+        COPY_MEMBER(mBottomY)
+        COPY_MEMBER(mSlots)
+        COPY_MEMBER(mWarnOnResort)
+        COPY_MEMBER(mTest->mWidget)
+        COPY_MEMBER(mTest->mSlot)
+    END_COPYING_MEMBERS
+END_COPYS
+
+SAVE_OBJ(TrackDir, 0x90)
+
+BEGIN_LOADS(TrackDir)
+    PreLoad(bs);
+    PostLoad(bs);
+END_LOADS
+
+void TrackDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(6, 0);
+    PushRev(packRevs(gAltRev, gRev), this);
+    PanelDir::PreLoad(bs);
+}
+
+void TrackDir::PostLoad(BinStream& bs){
+    PanelDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    if(!IsProxy()){
+        if(gRev != 0){
+            bs >> mDrawGroup;
+            if(gRev > 1) bs >> mAnimGroup;
+            bs >> mYPerSecond >> mTopY >> mBottomY;
+        }
+        if(gRev > 2){
+            if(gRev > 5) bs >> mSlots;
+            else {
+                unsigned int num = 0;
+                bs >> num;
+                mSlots.resize(num, Transform());
+                for(int i = 0; i < num; i++){
+                    mSlots[i].Reset();
+                    bs >> mSlots[i].v.x >> mSlots[i].v.z;
+                }
+            }
+        }
+        if(gRev > 4) bs >> mWarnOnResort;
+        if(gRev > 3){
+            bs >> mTest->mWidget >> mTest->mSlot;
+        }
+    }
+    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+        it->SetTrackDir(this);
+    }
 }
 
 BEGIN_HANDLERS(TrackDir)
