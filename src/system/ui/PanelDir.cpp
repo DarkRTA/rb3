@@ -11,6 +11,7 @@
 #include "ui/UITrigger.h"
 #include "ui/UI.h"
 #include "ui/UIMessages.h"
+#include "obj/DirLoader.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -23,11 +24,11 @@ PanelDir::PanelDir() : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEn
 }
 
 PanelDir::~PanelDir() {
-    for (std::vector<class PanelDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); it++) {
+    for (std::vector<class RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); it++) {
         delete (*it);
         *it = NULL;
     }
-    for (std::vector<class PanelDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); it++) {
+    for (std::vector<class RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); it++) {
         delete (*it);
         *it = NULL;
     }
@@ -128,11 +129,11 @@ void PanelDir::DrawShowing(){
             curEnv->Select(0);
         }
     }
-    for(std::vector<PanelDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
+    for(std::vector<RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
         if(*it) (*it)->DrawShowing();
     }
     RndDir::DrawShowing();
-    for(std::vector<PanelDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
+    for(std::vector<RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
         if(*it) (*it)->DrawShowing();
     }
     if(curCam && curCam != RndCam::sCurrent){
@@ -288,17 +289,24 @@ END_HANDLERS
 bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s){
     UIComponent* comp = mFocusComponent;
     if(comp){
-        do {
-            comp = ComponentNav(comp, act, btn, s);
-            if(!comp || comp == mFocusComponent) return false;
-        } while(comp->GetState() == UIComponent::kDisabled);
-        if(s != none){
-            TheUI->Handle(panel_navigated_msg, false);
+        while (comp = ComponentNav(comp, act, btn, s)) {
+            if(comp == mFocusComponent) break;
+            if (comp->GetState() == UIComponent::kDisabled) {
+                continue;
+            }
+            if(s != none){
+                TheUI->Handle(panel_navigated_msg, false);
+            }
+            SetFocusComponent(comp, s);
+            return true;
         }
-        SetFocusComponent(comp, s);
-        return true;
     }
-    else return false;
+    return false;
+}
+
+// fn_8054D04C - componentnav
+UIComponent* PanelDir::ComponentNav(UIComponent*, JoypadAction, JoypadButton, Symbol){
+
 }
 
 DataNode PanelDir::OnMsg(const ButtonDownMsg& msg){
@@ -340,7 +348,70 @@ DataNode PanelDir::OnDisableComponent(const DataArray* da){
 
 // stubbed out in retail
 void PanelDir::SyncEditModePanels(){
+    if(TheLoadMgr.EditMode()){
+        for(std::vector<RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
+            delete *it;
+            *it = 0;
+        }
+        for(std::vector<RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
+            delete *it;
+            *it = 0;
+        }
+        if(mShowEditModePanels){
+            for(std::vector<FilePath>::iterator it = mBackFilenames.begin(); it != mBackFilenames.end(); ++it){
+                FilePath fp3c(*it);
+                if(fp3c.length() != 0){
+                    RndDir* curDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp3c, 0, 0));
+                    if(curDir){
+                        mBackPanels.push_back(curDir);
+                        curDir->Enter();
+                    }
+                }
+            }
+            for(std::vector<FilePath>::iterator it = mFrontFilenames.begin(); it != mFrontFilenames.end(); ++it){
+                FilePath fp48(*it);
+                if(fp48.length() != 0){
+                    RndDir* curDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp48, 0, 0));
+                    if(curDir){
+                        mFrontPanels.push_back(curDir);
+                        curDir->Enter();
+                    }
+                }
+            }
+        }
+    }
+}
 
+bool PanelDir::PropSyncEditModePanels(std::vector<FilePath>& panels, DataNode& val, DataArray* prop, int i, PropOp op){
+    if(op == kPropSize){
+        MILO_ASSERT(i == prop->Size(), 0x29F);
+        val = DataNode((int)panels.size());
+        return true;
+    }
+    else {
+        MILO_ASSERT(i == prop->Size() - 1, 0x2A4);
+        std::vector<FilePath>::iterator it = panels.begin() + prop->Int(i);
+        switch(op){
+            case kPropGet:
+                val = DataNode(*it);
+                break;
+            case kPropSet:
+                (*it).SetRoot(val.Str(0));
+                SyncEditModePanels();
+                break;
+            case kPropRemove:
+                panels.erase(it);
+                SyncEditModePanels();
+                break;
+            case kPropInsert:
+                panels.insert(it, FilePath(val.Str(0)));
+                SyncEditModePanels();
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
 }
 
 BEGIN_PROPSYNCS(PanelDir)
