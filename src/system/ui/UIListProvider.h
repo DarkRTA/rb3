@@ -51,6 +51,7 @@ public:
     virtual UIListWidgetState ElementStateOverride(int, int, UIListWidgetState) const;
 
     void SetData(DataArray*);
+    void Enable(Symbol);
     void Disable(Symbol);
 
     DataArray* mData; // 0x4

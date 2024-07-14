@@ -16,12 +16,13 @@
 #include "ui/UIListMesh.h"
 #include "ui/UIListSlot.h"
 #include "ui/UIListSubList.h"
+#include "utl/STLHelpers.h"
 #include <cstddef>
 #include "decomp.h"
 
 static bool gGCNewLists = true;
 static bool gLoading = false;
-std::list<UIList*> UIList::sUIListSet;
+std::list<UIList*> sUIListSet;
 
 INIT_REVS(UIList)
 
@@ -29,11 +30,16 @@ UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this
     mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull), 
     mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
     unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), unk_0x1E5(0),
-    unk_0x1E6(0), unk_0x1E7(0) {}
+    unk_0x1E6(0), mNeedsGarbageCollection(0) {}
 
 UIList::~UIList(){
-    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++) delete *it;
-    sUIListSet.clear();
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+        if(*it == this){
+            it = sUIListSet.erase(it);
+        }
+    }
+    DeleteRange(mWidgets.begin(), mWidgets.end());
+    mWidgets.clear();
     delete mDataProvider;
     mDataProvider = 0;
 }
@@ -81,7 +87,7 @@ void UIList::PreLoadWithRev(BinStream& bs, int rev) {
 
 void UIList::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
-    unk_0x1E7 = gGCNewLists;
+    mNeedsGarbageCollection = gGCNewLists;
     int local_numdisplay;
     float local_speed;
     bool local_circular;
@@ -261,15 +267,194 @@ void UIList::Scroll(int i){
 
 void UIList::SetParent(UIList* uilist){ mParent = uilist; }
 
+void UIList::AutoScroll(){
+    UIListProvider* prov = mListState.Provider();
+    if(!prov) prov = this;
+    int disp = mListState.mNumDisplay;
+    if(prov->NumData() <= disp){
+        StopAutoScroll();
+    }
+    else {
+        mAutoScrolling = true;
+        unk_0x1D8 = 1;
+        unk_0x1DC = mAutoScrollPause + TheTaskMgr.UISeconds();
+    }
+}
+
+void UIList::StopAutoScroll(){
+    mAutoScrolling = false;
+}
+
 void UIList::Update() {
     if (!gLoading) {
         unk_0x1E6 = false;
         UIComponent::Update();
         MILO_ASSERT(mResource && mResource->Dir(), 566);
-        if (unk_0x1E7) {
-
+        if (mNeedsGarbageCollection) {
+            for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+                if(*it == this){
+                    it = sUIListSet.erase(it);
+                }
+            }
+            sUIListSet.push_back(this);
         }
+        mListDir = dynamic_cast<UIListDir*>(mResource->Dir());
+        MILO_ASSERT(mListDir, 0x248);
+        mListDir->CreateElements(this, mWidgets, mListState.mNumDisplay);
 
         if (TheLoadMgr.EditMode()) Refresh(false);
     }
 }
+
+void UIList::CollectGarbage(){
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+        UIList* pList = *it;
+        pList->unk_0x1E0++;
+        MILO_ASSERT(pList->mNeedsGarbageCollection, 600);
+        if(pList->unk_0x1E0 > 4){
+            pList->unk_0x1E6 = true;
+        }
+    }
+}
+
+void UIList::Refresh(bool b){
+    if(unk_0x1E6) Poll();
+    else {
+        mListDir->FillElements(mListState, mWidgets);
+        if(b){
+            int nowrap = mListState.SelectedNoWrap();
+            if(nowrap >= NumProviderData() && nowrap != 0) SetSelected(NumProviderData() - 1, -1);
+            else {
+                if(!mListState.Provider()->IsActive(mListState.SelectedData()) && !mListState.IsScrolling()){
+                    SetSelected(nowrap, -1);
+                }
+            }
+        }
+    }
+}
+
+void UIList::Enter(){
+    UIComponent::Enter();
+    Reset();
+    mListDir->ListEntered();
+}
+
+void UIList::Poll(){
+    UIComponent::Poll();
+    if(Showing()){
+        if(mAutoScrolling){
+            if(unk_0x1DC >= 0.0f && TheTaskMgr.UISeconds() >= unk_0x1DC){
+                Scroll(unk_0x1D8);
+                unk_0x1DC = -1.0f;
+            }
+        }
+        mListState.Poll(TheTaskMgr.UISeconds());
+        unk_0x1E0 = 0;
+        if(unk_0x1E6){
+            Update();
+            Refresh(true);
+        }
+        mListDir->PollWidgets(mWidgets);
+        unk_0x1E4 = false;
+        UpdateHandler();
+    }
+}
+
+void UIList::DrawShowing(){
+    if(unk_0x1E4){
+        mListState.Poll(TheTaskMgr.UISeconds());
+        unk_0x1E4 = false;
+    }
+    bool b = unk_0x1E5;
+    UIList* parent = mParent;
+    if(parent){
+        if(parent->mListDir->SubList(parent->mListState.SelectedDisplay(), parent->mWidgets) == this) b = mParent->unk_0x1E5;
+    }
+    mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), 0, b);
+}
+
+void UIList::CalcBoundingBox(Box& box){
+    const Transform& tf1 = WorldXfm();
+    const Transform& tf2 = WorldXfm();
+    box.mMin = tf1.v;
+    box.mMax = tf2.v;
+    mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), &box, unk_0x1E5);
+}
+
+const std::vector<UIListWidget*>& UIList::GetWidgets() const { return mWidgets; }
+
+#pragma push
+#pragma dont_inline on
+void UIList::BoundingBoxTriangles(std::vector<std::vector<Vector3> >& vec){
+    vec.clear();
+    Box box;
+    CalcBoundingBox(box);
+    std::vector<Vector3> locVec;
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.x;
+        if(i != 0) f = box.mMin.x;
+        locVec.clear();
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMax.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMax.z));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMax.z));
+        vec.push_back(locVec);
+    }
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.y;
+        if(i != 0) f = box.mMin.y;
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMax.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMax.z));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMax.z));
+        vec.push_back(locVec);
+    }
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.z;
+        if(i != 0) f = box.mMin.z;
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMin.x, box.mMax.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMax.y, f));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMax.y, f));
+        vec.push_back(locVec);
+    }
+}
+#pragma pop
+
+int UIList::NumData() const { return mNumData; }
+
+int UIList::NumProviderData() const {
+    UIListProvider* p = mListState.Provider();
+    if(p) return p->NumData();
+    else return NumData();
+}
+
+void UIList::EnableData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x390);
+    mDataProvider->Enable(s);
+    Refresh(false);
+}
+
+void UIList::DisableData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x397);
+    mDataProvider->Disable(s);
+    Refresh(false);
+    if(!mDataProvider->IsActive(mListState.SelectedData())){
+        mListState.SetSelected(0, -1, true);
+    }
+}
+

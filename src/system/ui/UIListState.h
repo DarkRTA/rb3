@@ -43,6 +43,7 @@ public:
     void Scroll(int, bool);
     int SnappedDataForDisplay(int) const;
     void Poll(float);
+    int SelectedNoWrap() const;
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 
