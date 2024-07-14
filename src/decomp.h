@@ -72,9 +72,6 @@
 #else
 #define ASM_DECL
 #define ASM_BLOCK(...)
-#define __option(x)
-#define __declspec(x)
-#define __attribute__(x)
 #endif
 
 

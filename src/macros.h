@@ -21,6 +21,12 @@
 
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
+#ifndef __MWERKS__
+#define __option(x)
+#define __declspec(x)
+#define __attribute__(x)
+#endif
+
 #define ALIGN(x) __attribute__((aligned(x)))
 #define DONT_INLINE __attribute__((never_inline))
 

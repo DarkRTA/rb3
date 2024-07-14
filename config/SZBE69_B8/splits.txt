@@ -7542,14 +7542,14 @@ sdk/PowerPC_EABI_Support/MSL/MSL_C/PPC_EABI/math_ppc.c:
 sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/extras.c:
 	.text       start:0x80A383A4 end:0x80A38588
 
-sdk/PowerPC_EABI_Support/Runtime/__mem.cpp:
+sdk/PowerPC_EABI_Support/Runtime/__mem.c:
 	.init       start:0x80004000 end:0x80004380
 	.text       start:0x80A38588 end:0x80A385A4
 
-sdk/PowerPC_EABI_Support/Runtime/__va_arg.cpp:
+sdk/PowerPC_EABI_Support/Runtime/__va_arg.c:
 	.text       start:0x80A385A4 end:0x80A3866C
 
-sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.cpp:
+sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c:
 	.text       start:0x80A3866C end:0x80A386CC
 	.sbss       start:0x80C7AFC0 end:0x80C7AFC8
 
@@ -7570,7 +7570,7 @@ sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp:
 	.text       start:0x80A38718 end:0x80A38DD8
 	.sdata      start:0x80C790B0 end:0x80C790B8
 
-sdk/PowerPC_EABI_Support/Runtime/ptmf.cpp:
+sdk/PowerPC_EABI_Support/Runtime/ptmf.c:
 	.text       start:0x80A38DD8 end:0x80A38E94
 	.rodata     start:0x80B43C30 end:0x80B43C40
 
@@ -7582,7 +7582,7 @@ sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp:
 	.data       start:0x80C46168 end:0x80C461C0
 	.sdata      start:0x80C790B8 end:0x80C790D0
 
-sdk/PowerPC_EABI_Support/Runtime/runtime.cpp:
+sdk/PowerPC_EABI_Support/Runtime/runtime.c:
 	.text       start:0x80A39208 end:0x80A39B90
 	.rodata     start:0x80B43CA8 end:0x80B43CC0
 
@@ -7593,7 +7593,7 @@ sdk/PowerPC_EABI_Support/Runtime/__init_cpp_exceptions.cpp:
 	.dtors      start:0x80B34B64 end:0x80B34B68 rename:.dtors$15
 	.sdata      start:0x80C790D0 end:0x80C790D8
 
-sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.cpp:
+sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.c:
 	.text       start:0x80A39C00 end:0x80A39E14
 
 sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp:

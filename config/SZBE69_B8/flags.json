@@ -162,11 +162,25 @@
                 "-func_align 4"
             ]
         },
-        "sdk/MSL/fdlibm": {
+        "sdk/MSL_C": {
+            "base": "sdk/MSL",
+            "flags": []
+        },
+        "sdk/MSL_C/fdlibm": {
             "base": "sdk/MSL",
             "flags": [
                 "-d _IEEE_LIBM"
             ]
+        },
+        "sdk/MSL_C++": {
+            "base": "sdk/MSL",
+            "flags": [
+                "-Cpp_exceptions on"
+            ]
+        },
+        "sdk/Runtime": {
+            "base": "sdk/MSL",
+            "flags": []
         },
         "sdk/RVL_SDK": {
             "base": "base",

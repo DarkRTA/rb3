@@ -676,7 +676,7 @@
     },
     "sdk/MSL_C": {
         "mw_version": "Wii/1.3",
-        "cflags": "sdk/MSL",
+        "cflags": "sdk/MSL_C",
         "objects": {
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/alloc.c": "NonMatching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/arith.c": "Matching",
@@ -692,7 +692,7 @@
     },
     "sdk/MSL_C/fdlibm": {
         "mw_version": "Wii/1.3",
-        "cflags": "sdk/MSL/fdlibm",
+        "cflags": "sdk/MSL_C/fdlibm",
         "objects": {
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_acos.c": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C/MSL_Common_Embedded/Math/Double_precision/e_asin.c": "Matching",
@@ -730,16 +730,26 @@
     },
     "sdk/MSL_C++": {
         "mw_version": "Wii/1.3",
-        "cflags": "sdk/MSL",
+        "cflags": "sdk/MSL_C++",
         "objects": {
 
         }
     },
     "sdk/Runtime": {
         "mw_version": "Wii/1.3",
-        "cflags": "sdk/MSL",
+        "cflags": "sdk/Runtime",
         "objects": {
-            "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.cpp": "Matching"
+            "sdk/PowerPC_EABI_Support/Runtime/__init_cpp_exceptions.cpp": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/__mem.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/__va_arg.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/Gecko_setjmp.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/New.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
+            "sdk/PowerPC_EABI_Support/Runtime/ptmf.c": "Matching",
+            "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "Matching"
         }
     },
     "sdk/MetroTRK": {
