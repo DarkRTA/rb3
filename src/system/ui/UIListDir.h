@@ -3,6 +3,7 @@
 #include "rndobj/Dir.h"
 #include "ui/UIListProvider.h"
 #include "ui/UIListState.h"
+#include "ui/UIListWidget.h"
 
 enum UIListOrientation {
     kUIListVertical,
@@ -42,6 +43,8 @@ public:
     void StartScroll(const UIListState&, std::vector<UIListWidget*>&, int, bool);
     void Reset();
     void DrawWidgets(const UIListState&, std::vector<UIListWidget*>&, const Transform&, UIComponent::State, Box*, bool);
+    void BuildDrawState(UIListWidgetDrawState&, const UIListState&, UIComponent::State, float) const;
+    void SetElementPos(Vector3&, float, int, float, float) const;
 
     DECLARE_REVS;
     NEW_OVERLOAD

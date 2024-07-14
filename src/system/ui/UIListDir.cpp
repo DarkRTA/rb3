@@ -35,6 +35,15 @@ UIListDir::~UIListDir(){
 UIListOrientation UIListDir::Orientation() const { return mOrientation; }
 float UIListDir::ElementSpacing() const { return mElementSpacing; }
 
+// fn_805693B0
+void UIListDir::BuildDrawState(UIListWidgetDrawState&, const UIListState&, UIComponent::State, float) const {
+
+}
+
+void UIListDir::SetElementPos(Vector3&, float, int, float, float) const {
+
+}
+
 UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
     for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); it++){
         UIList* l = (*it)->SubList(i);
@@ -63,6 +72,18 @@ void UIListDir::FillElements(const UIListState& state, std::vector<UIListWidget*
     for(int i = 0; i < num; i++){
         FillElement(state, vec, i);
     }
+}
+
+// fn_8056AEBC
+void UIListDir::FillElement(const UIListState& state, std::vector<UIListWidget*>& vec, int i){
+    if(state.Display2Data(i) != -1){
+
+    }
+}
+
+// fn_8056B014
+void UIListDir::DrawWidgets(const UIListState&, std::vector<UIListWidget*>&, const Transform&, UIComponent::State, Box*, bool){
+
 }
 
 void UIListDir::PollWidgets(std::vector<UIListWidget*>& widgets){
