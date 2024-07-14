@@ -2,6 +2,7 @@
 #include "ui/UIListWidget.h"
 #include <algorithm>
 #include "obj/ObjVersion.h"
+#include "utl/STLHelpers.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
@@ -27,11 +28,7 @@ UIListDir::UIListDir() : mOrientation(kUIListVertical), mFadeOffset(0), mElement
 }
 
 UIListDir::~UIListDir(){
-    std::vector<UIListWidget*>::iterator it = unk1fc.begin();
-    std::vector<UIListWidget*>::iterator itEnd = unk1fc.end();
-    for(; it != itEnd; ++it){
-        delete *it;
-    }
+    DeleteRange(unk1fc.begin(), unk1fc.end());
     unk1fc.clear();
 }
 
@@ -47,9 +44,7 @@ UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
 }
 
 void UIListDir::CreateElements(UIList* uilist, std::vector<UIListWidget*>& vec, int i){
-    for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); it++){
-        delete *it;
-    }
+    DeleteRange(vec.begin(), vec.end());
     vec.clear();
     for(ObjDirItr<UIListWidget> it(this, true); it != 0; ++it){
         UIListWidget* widget = dynamic_cast<UIListWidget*>(Hmx::Object::NewObject(it->ClassName()));

@@ -9,6 +9,7 @@
 #include "os/Debug.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/Utl.h"
+#include "utl/STLHelpers.h"
 #include <algorithm>
 #include "utl/Symbols.h"
 
