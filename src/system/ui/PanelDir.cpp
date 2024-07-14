@@ -305,8 +305,30 @@ bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s){
 }
 
 // fn_8054D04C - componentnav
-UIComponent* PanelDir::ComponentNav(UIComponent*, JoypadAction, JoypadButton, Symbol){
-
+UIComponent* PanelDir::ComponentNav(UIComponent* comp, JoypadAction act, JoypadButton btn, Symbol s){
+    UIComponent* compIt = 0;
+    bool overloaded = TheUI->OverloadHorizontalNav(act, btn, s);
+    if(act == kAction_Down) compIt = comp->NavDown();
+    if(!compIt && act == kAction_Right || (overloaded && act == kAction_Down)){
+        compIt = comp->NavRight();
+    }
+    if(!compIt && act == kAction_Up){
+        for(std::list<UIComponent*>::iterator it = mComponents.begin(); it != mComponents.end(); ++it){
+            if((*it)->NavDown() == comp){
+                compIt = *it;
+                break;
+            }
+        }
+    }
+    if(!compIt && act == kAction_Left || (overloaded && act == kAction_Up)){
+        for(std::list<UIComponent*>::iterator it = mComponents.begin(); it != mComponents.end(); ++it){
+            if((*it)->NavRight() == comp){
+                compIt = *it;
+                break;
+            }
+        }
+    }
+    return compIt;
 }
 
 DataNode PanelDir::OnMsg(const ButtonDownMsg& msg){
