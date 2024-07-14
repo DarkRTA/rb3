@@ -749,7 +749,7 @@
             "sdk/PowerPC_EABI_Support/Runtime/New.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/ptmf.c": "Matching",
-            "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "NonMatching"
+            "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "Matching"
         }
     },
     "sdk/MetroTRK": {
