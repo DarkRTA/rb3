@@ -8,10 +8,11 @@
 #include "utl/Symbols.h"
 
 TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mAnimGroup(this, 0), mYPerSecond(10.0f), 
-    mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), unk218(this, 0), unk224(this, 0), unk230(this, 0), 
-    unk23c(this, 0), unk248(this, 0), unk254(this, 0), unk260(this, 0), unk26c(this, 0), unk278(this, 0), 
-    unk284(this, 0), unk290(this, 0),  unk29c(this, 0), unk2a8(this, 0), unk2b4(this, 0), unk2c0(this, 0), 
-    unk2cc(this, 0), unk368(1.0f), mTest(new TrackTest(this)) {
+    mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), mShowingWhenEnabled(this, 0), mStationaryBack(this, 0), mKeyShiftStationaryBack(this, 0), 
+    mStationaryBackAfterKeyShift(this, 0), mMovingBack(this, 0), mKeyShiftMovingBack(this, 0), mKeyShiftStationaryMiddle(this, 0),
+    mStationaryMiddle(this, 0), mMovingFront(this, 0), mKeyShiftMovingFront(this, 0), mKeyShiftStationaryFront(this, 0),
+    mStationaryFront(this, 0), mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), 
+    mTrackGems(this, 0), unk368(1.0f), mTest(new TrackTest(this)) {
     vec3.reserve(0x32);
     unk2d8.Reset();
     unk308.Reset();
@@ -29,21 +30,32 @@ void TrackDir::SyncObjects() {
         it->Init();
         it->Clear();
     }
-    if(!unk2c0) unk2c0 = Find<RndEnviron>("track.env", false);
-    if(!unk2cc) unk2cc = Find<RndEnviron>("track_gems.env", false);
-    if(!unk218) unk218 = Find<RndGroup>("showing_when_enabled.grp", false);
-    if(!unk224) unk224 = Find<RndGroup>("stationary_back.grp", false);
-    if(!unk230) unk230 = Find<RndGroup>("key_shift_stationary_back.grp", false);
-    if(!unk23c) unk23c = Find<RndGroup>("stationary_back_after_key_shift.grp", false);
-    if(!unk248) unk248 = Find<RndGroup>("moving_back.grp", false);
-    if(!unk254) unk254 = Find<RndGroup>("key_shift_moving_back.grp", false);
-    if(!unk260) unk260 = Find<RndGroup>("key_shift_stationary_middle.grp", false);
-    if(!unk26c) unk26c = Find<RndGroup>("stationary_middle.grp", false);
-    if(!unk278) unk278 = Find<RndGroup>("moving_front.grp", false);
-    if(!unk284) unk284 = Find<RndGroup>("key_shift_moving_front.grp", false);
-    if(!unk290) unk290 = Find<RndGroup>("key_shift_stationary_front.grp", false);
-    if(!unk29c) unk29c = Find<RndGroup>("stationary_front.grp", false);
-    if(!unk2a8) unk2a8 = Find<RndGroup>("always_showing.grp", false);
+    if(!mTrack) mTrack = Find<RndEnviron>("track.env", false);
+    if(!mTrackGems) mTrackGems = Find<RndEnviron>("track_gems.env", false);
+    if(!mShowingWhenEnabled) mShowingWhenEnabled = Find<RndGroup>("showing_when_enabled.grp", false);
+    if(!mStationaryBack) mStationaryBack = Find<RndGroup>("stationary_back.grp", false);
+    if(!mKeyShiftStationaryBack) mKeyShiftStationaryBack = Find<RndGroup>("key_shift_stationary_back.grp", false);
+    if(!mStationaryBackAfterKeyShift) mStationaryBackAfterKeyShift = Find<RndGroup>("stationary_back_after_key_shift.grp", false);
+    if(!mMovingBack) mMovingBack = Find<RndGroup>("moving_back.grp", false);
+    if(!mKeyShiftMovingBack) mKeyShiftMovingBack = Find<RndGroup>("key_shift_moving_back.grp", false);
+    if(!mKeyShiftStationaryMiddle) mKeyShiftStationaryMiddle = Find<RndGroup>("key_shift_stationary_middle.grp", false);
+    if(!mStationaryMiddle) mStationaryMiddle = Find<RndGroup>("stationary_middle.grp", false);
+    if(!mMovingFront) mMovingFront = Find<RndGroup>("moving_front.grp", false);
+    if(!mKeyShiftMovingFront) mKeyShiftMovingFront = Find<RndGroup>("key_shift_moving_front.grp", false);
+    if(!mKeyShiftStationaryFront) mKeyShiftStationaryFront = Find<RndGroup>("key_shift_stationary_front.grp", false);
+    if(!mStationaryFront) mStationaryFront = Find<RndGroup>("stationary_front.grp", false);
+    if(!mAlwaysShowing) mAlwaysShowing = Find<RndGroup>("always_showing.grp", false);
+}
+
+void TrackDir::SetupKeyShifting(RndDir* rnddir){
+    mRotatorCam = rnddir->Find<RndTransformable>("rotator_cam.trans", true);
+}
+
+void TrackDir::ResetKeyShifting(){
+    mRotatorCam = 0;
+    unk2d8.Reset();
+    unk308.Reset();
+    unk338.Reset();
 }
 
 BEGIN_HANDLERS(TrackDir)

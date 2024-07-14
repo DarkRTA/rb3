@@ -52,6 +52,9 @@ public:
     void ClearAllWidgets();
     void ToggleRunning();
     float CutOffY() const;
+    void SetupKeyShifting(RndDir*);
+    void ResetKeyShifting();
+
     NEW_OBJ(TrackDir)
 
     bool mRunning; // 0x1d6
@@ -64,27 +67,27 @@ public:
     std::vector<int> vec2; // 0x204
     bool mWarnOnResort; // 0x20c
     std::vector<void*> vec3; // 0x210
-    ObjPtr<RndGroup, ObjectDir> unk218;
-    ObjPtr<RndGroup, ObjectDir> unk224;
-    ObjPtr<RndGroup, ObjectDir> unk230;
-    ObjPtr<RndGroup, ObjectDir> unk23c;
-    ObjPtr<RndGroup, ObjectDir> unk248;
-    ObjPtr<RndGroup, ObjectDir> unk254;
-    ObjPtr<RndGroup, ObjectDir> unk260;
-    ObjPtr<RndGroup, ObjectDir> unk26c;
-    ObjPtr<RndGroup, ObjectDir> unk278;
-    ObjPtr<RndGroup, ObjectDir> unk284;
-    ObjPtr<RndGroup, ObjectDir> unk290;
-    ObjPtr<RndGroup, ObjectDir> unk29c;
-    ObjPtr<RndGroup, ObjectDir> unk2a8;
-    ObjPtr<RndTransformable, ObjectDir> unk2b4;
-    ObjPtr<RndEnviron, ObjectDir> unk2c0;
-    ObjPtr<RndEnviron, ObjectDir> unk2cc;
+    ObjPtr<RndGroup, ObjectDir> mShowingWhenEnabled; // 0x218
+    ObjPtr<RndGroup, ObjectDir> mStationaryBack; // 0x224
+    ObjPtr<RndGroup, ObjectDir> mKeyShiftStationaryBack; // 0x230
+    ObjPtr<RndGroup, ObjectDir> mStationaryBackAfterKeyShift; // 0x23c
+    ObjPtr<RndGroup, ObjectDir> mMovingBack; // 0x248
+    ObjPtr<RndGroup, ObjectDir> mKeyShiftMovingBack; // 0x254
+    ObjPtr<RndGroup, ObjectDir> mKeyShiftStationaryMiddle; // 0x260
+    ObjPtr<RndGroup, ObjectDir> mStationaryMiddle; // 0x26c
+    ObjPtr<RndGroup, ObjectDir> mMovingFront; // 0x278
+    ObjPtr<RndGroup, ObjectDir> mKeyShiftMovingFront; // 0x284
+    ObjPtr<RndGroup, ObjectDir> mKeyShiftStationaryFront; // 0x290
+    ObjPtr<RndGroup, ObjectDir> mStationaryFront; // 0x29c
+    ObjPtr<RndGroup, ObjectDir> mAlwaysShowing; // 0x2a8
+    ObjPtr<RndTransformable, ObjectDir> mRotatorCam; // 0x2b4
+    ObjPtr<RndEnviron, ObjectDir> mTrack; // 0x2c0
+    ObjPtr<RndEnviron, ObjectDir> mTrackGems; // 0x2cc
     Transform unk2d8;
     Transform unk308;
     Transform unk338;
     float unk368;
-    TrackTest* mTest;
+    TrackTest* mTest; // 0x36c
 };
 
 #endif // TRACK_TRACKDIR_H
