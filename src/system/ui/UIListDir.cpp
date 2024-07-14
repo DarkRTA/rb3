@@ -3,8 +3,11 @@
 #include <algorithm>
 #include "obj/ObjVersion.h"
 #include "utl/Messages.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(UIListDir)
+
+DECOMP_FORCEACTIVE(UIListDir, __FILE__, "( 0) <= (change) && (change) <= ( 1)")
 
 namespace {
 
@@ -26,7 +29,12 @@ UIListDir::UIListDir() : mOrientation(kUIListVertical), mFadeOffset(0), mElement
 }
 
 UIListDir::~UIListDir(){
-
+    std::vector<UIListWidget*>::iterator it = unk1fc.begin();
+    std::vector<UIListWidget*>::iterator itEnd = unk1fc.end();
+    for(; it != itEnd; ++it){
+        delete *it;
+    }
+    unk1fc.clear();
 }
 
 UIListOrientation UIListDir::Orientation() const { return mOrientation; }
@@ -170,3 +178,41 @@ void UIListDir::DrawShowing(){
     else RndDir::DrawShowing();
 }
 
+void UIListDir::Poll(){
+    if(TheLoadMgr.EditMode()){
+        RndDir::Poll();
+        if(mTestMode){
+            mTestState.Poll(TheTaskMgr.Seconds(TaskMgr::b));
+            PollWidgets(unk1fc);
+        }
+    }
+}
+
+int UIListDir::NumData() const { return mTestNumData; }
+float UIListDir::GapSize(int, int, int, int) const { return mTestGapSize; }
+bool UIListDir::IsActive(int i) const {
+    if(mTestDisableElements) return i == -1;
+    else return true;
+}
+
+BEGIN_PROPSYNCS(UIListDir)
+    SYNC_PROP_SET(orientation, mOrientation, mOrientation = (UIListOrientation)_val.Int(0))
+    SYNC_PROP(fade_offset, mFadeOffset)
+    SYNC_PROP(element_spacing, mElementSpacing)
+    SYNC_PROP(scroll_highlight_change, mScrollHighlightChange)
+    SYNC_PROP(test_mode, mTestMode)
+    SYNC_PROP(test_num_data, mTestNumData)
+    SYNC_PROP(test_gap_size, mTestGapSize)
+    SYNC_PROP_SET(test_num_display, mTestState.mNumDisplay, mTestState.SetNumDisplay(_val.Int(0), true))
+    SYNC_PROP_SET(test_grid_span, mTestState.mGridSpan, mTestState.SetGridSpan(_val.Int(0), true))
+    SYNC_PROP_SET(test_scroll_time, mTestState.Speed(), mTestState.SetSpeed(_val.Float(0)))
+    SYNC_PROP_SET(test_list_state, mTestComponentState, mTestComponentState = (UIComponent::State)_val.Int(0))
+    SYNC_PROP_MODIFY(test_disable_elements, mTestDisableElements, Reset())
+    SYNC_SUPERCLASS(RndDir)
+END_PROPSYNCS
+
+BEGIN_HANDLERS(UIListDir)
+    HANDLE_ACTION(test_scroll, mTestState.Scroll(_msg->Int(2), false))
+    HANDLE_SUPERCLASS(RndDir)
+    HANDLE_CHECK(0x2C2)
+END_HANDLERS
