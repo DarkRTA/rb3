@@ -42,18 +42,30 @@ public:
     virtual bool IsBlackKey(int) const;
     virtual void KeyMissLeft();
     virtual void KeyMissRight();
-    virtual bool IsActiveInSession() const;
+    virtual bool IsActiveInSession() const { return false; }
     virtual void PreDraw();
     virtual void PostDraw();
 
-    float SecondsToY(float) const;
     void AddActiveWidget(class TrackWidget*);
     void AddTestWidget(class TrackWidget*, int);
     void ClearAllWidgets();
+    void ClearAllGemWidgets();
     void ToggleRunning();
     float CutOffY() const;
     void SetupKeyShifting(RndDir*);
     void ResetKeyShifting();
+    void PollActiveWidgets();
+    float TopSeconds() const;
+    float BottomSeconds() const;
+    float SecondsToY(float) const;
+    float YToSeconds(float) const;
+    void SetSlotXfm(int, const Transform&);
+    void MakeSecondsXfm(float, Transform&) const;
+    void MakeWidgetXfm(int, float, Transform&) const;
+    void MakeSlotXfm(int, Transform&) const;
+    void SetScrollSpeed(float);
+    float ViewTimeSeconds() const;
+    void SetRunning(bool);
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
@@ -67,7 +79,7 @@ public:
     std::vector<Transform> mSlots; // 0x1fc
     std::vector<Transform> vec2; // 0x204
     bool mWarnOnResort; // 0x20c
-    std::vector<void*> vec3; // 0x210
+    std::vector<TrackWidget*> mActiveWidgets; // 0x210
     ObjPtr<RndGroup, ObjectDir> mShowingWhenEnabled; // 0x218
     ObjPtr<RndGroup, ObjectDir> mStationaryBack; // 0x224
     ObjPtr<RndGroup, ObjectDir> mKeyShiftStationaryBack; // 0x230

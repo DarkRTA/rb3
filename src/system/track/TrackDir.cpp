@@ -16,7 +16,7 @@ TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mA
     mStationaryMiddle(this, 0), mMovingFront(this, 0), mKeyShiftMovingFront(this, 0), mKeyShiftStationaryFront(this, 0),
     mStationaryFront(this, 0), mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), 
     mTrackGems(this, 0), unk368(1.0f), mTest(new TrackTest(this)) {
-    vec3.reserve(0x32);
+    mActiveWidgets.reserve(0x32);
     unk2d8.Reset();
     unk308.Reset();
     unk338.Reset();
@@ -124,6 +124,165 @@ void TrackDir::PostLoad(BinStream& bs){
     }
 }
 
+void TrackDir::DrawShowing(){
+    MILO_ASSERT(TheLoadMgr.EditMode(), 0x109);
+}
+
+void TrackDir::Poll(){
+    bool b = false;
+    if(IsActiveInSession() || mShowingWhenEnabled->Showing()){
+        b = true;
+    }
+    if(b){
+        RndDir::Poll();
+        float secs = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::b);
+        if(mAnimGroup && mRunning){
+            mAnimGroup->SetFrame(secs, 1.0f);
+        }
+        PollActiveWidgets();
+    }
+}
+
+void TrackDir::PollActiveWidgets(){
+    int count = 0;
+    for(int i = 0; i < mActiveWidgets.size(); i++){
+        TrackWidget* widget = mActiveWidgets[i];
+        MILO_ASSERT(widget, 0x1B3);
+        if(!widget->Empty()) widget->Poll();
+        if(widget->Empty()){
+            widget->SetInactive();
+            count++;
+            mActiveWidgets[i] = 0;
+        }
+        else {
+            if(count > 0){
+                mActiveWidgets[i - count] = widget;
+                mActiveWidgets[i] = 0;
+            }
+        }
+    }
+    if(count > 0){
+        mActiveWidgets.resize(mActiveWidgets.size() - count);
+    }
+}
+
+float TrackDir::TopSeconds() const {
+    return mTopY / mYPerSecond;
+}
+
+float TrackDir::BottomSeconds() const {
+    return mBottomY / mYPerSecond;
+}
+
+float TrackDir::SecondsToY(float f) const {
+    return f * mYPerSecond;
+}
+
+float TrackDir::YToSeconds(float f) const {
+    return f / mYPerSecond;
+}
+
+float TrackDir::CutOffY() const {
+    if(TheLoadMgr.EditMode()){
+        return mBottomY;
+    }
+    else return mBottomY + (TheTaskMgr.Seconds(TaskMgr::b) * mYPerSecond);
+}
+
+// fn_8053FC48
+void TrackDir::SetSlotXfm(int i, const Transform& tf){
+    if(i >= mSlots.size()){
+        Transform t48;
+        t48.Reset();
+        while(i >= mSlots.size()) mSlots.push_back(t48);
+    }
+    else {
+        if(i >= vec2.size()){
+            Transform t78;
+            t78.Reset();
+            while(i >= vec2.size()) vec2.push_back(t78);
+        }
+        vec2[i] = mSlots[i];
+    }
+    mSlots[i] = tf;
+}
+
+void TrackDir::MakeSecondsXfm(float f, Transform& tf) const {
+    tf.Reset();
+    tf.v.y = f * mYPerSecond;
+}
+
+void TrackDir::MakeWidgetXfm(int i, float f, Transform& tf) const {
+    MakeSlotXfm(i, tf);
+    tf.v.y = f * mYPerSecond;
+}
+
+void TrackDir::MakeSlotXfm(int slot, Transform& tf) const {
+    MILO_ASSERT(slot < mSlots.size(), 0x220);
+    tf = mSlots[slot];
+}
+
+DECOMP_FORCEACTIVE(TrackDir, "gem_mash", "drum_mash")
+
+void TrackDir::SetScrollSpeed(float f){
+    if(f > 0) mYPerSecond = mTopY / f;
+}
+
+float TrackDir::ViewTimeSeconds() const {
+    if(mYPerSecond > 0) return mTopY / mYPerSecond;
+    else return 0;
+}
+
+void TrackDir::ClearAllWidgets(){
+    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+        it->Clear();
+    }
+}
+
+// fn_8053FED4
+void TrackDir::ClearAllGemWidgets(){
+    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+        if(strncmp(it->Name(), "gem_", 4) == 0) it->Clear();
+        else if(strncmp(it->Name(), "drum_", 5) == 0) it->Clear();
+        else if(strncmp(it->Name(), "rg_", 3) == 0) it->Clear();
+        else if(strncmp(it->Name(), "real_", 5) == 0) it->Clear();
+        else if(strncmp(it->Name(), "fret_", 5) == 0) it->Clear();
+        else if(strncmp(it->Name(), "chord_", 5) == 0) it->Clear();
+    }
+}
+
+void TrackDir::ToggleRunning(){
+    SetRunning(mRunning == 0);
+}
+
+void TrackDir::SetRunning(bool b){
+    if(mRunning && !b){
+        mAnimGroup->SetFrame(0.0f, 1.0f);
+    }
+    mRunning = b;
+}
+
+void TrackDir::AddTestWidget(TrackWidget* widget, int i){
+    if(!mRunning) MILO_WARN("Track is not running");
+    else if(!widget) MILO_WARN("No test widget selected");
+    else if(i >= mSlots.size()) MILO_WARN("Can't add widget on slot %i, only %i slots", i, mSlots.size());
+    else {
+        Transform tf;
+        MakeWidgetXfm(i, TheTaskMgr.Seconds(TaskMgr::b), tf);
+        tf.v.y += mTopY;
+        widget->AddInstance(tf, 0.0f);
+    }
+}
+
+void TrackDir::AddActiveWidget(TrackWidget* widget){
+    std::vector<TrackWidget*>::iterator it = std::find(mActiveWidgets.begin(), mActiveWidgets.end(), widget);
+    MILO_ASSERT(it == mActiveWidgets.end(), 0x2A5);
+    if(mActiveWidgets.size() == mActiveWidgets.capacity()){
+        MILO_FAIL("Number of active widgets exceeds capacity %d", mActiveWidgets.capacity());
+    }
+    mActiveWidgets.push_back(widget);
+}
+
 BEGIN_HANDLERS(TrackDir)
     HANDLE_ACTION(toggle_running, ToggleRunning())
     HANDLE_ACTION(add_test_widget, AddTestWidget(_msg->Obj<TrackWidget>(2), _msg->Int(3)))
@@ -132,6 +291,16 @@ BEGIN_HANDLERS(TrackDir)
     HANDLE_CHECK(699)
 END_HANDLERS
 
-BEGIN_PROPSYNCS(TrackDir)
+#include "utl/ClassSymbols.h"
 
+BEGIN_PROPSYNCS(TrackDir)
+    SYNC_PROP(draw_group, mDrawGroup)
+    SYNC_PROP(anim_group, mAnimGroup)
+    SYNC_PROP(y_per_second, mYPerSecond)
+    SYNC_PROP(top_y, mTopY)
+    SYNC_PROP(bottom_y, mBottomY)
+    SYNC_PROP(slots, mSlots)
+    SYNC_PROP(warn_on_resort, mWarnOnResort)
+    SYNC_PROP(TrackTesting, *mTest)
+    SYNC_SUPERCLASS(PanelDir)
 END_PROPSYNCS
