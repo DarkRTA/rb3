@@ -41,6 +41,8 @@ public:
     void SetSelectedSimulateScroll(int);
     void SetProvider(UIListProvider*, RndDir*);
     void Scroll(int, bool);
+    int SnappedDataForDisplay(int) const;
+    void Poll(float);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

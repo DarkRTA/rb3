@@ -151,6 +151,4 @@ public:
     DELETE_OVERLOAD
 };
 
-template <class T> void RemoveSwap(std::vector<T*>&, T*);
-
 /*#endif*/

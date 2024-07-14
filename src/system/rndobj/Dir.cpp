@@ -7,6 +7,7 @@
 #include "rndobj/PostProc.h"
 #include "rndobj/EventTrigger.h"
 #include "rndobj/Utl.h"
+#include "utl/STLHelpers.h"
 #include <algorithm>
 #include "utl/Symbols.h"
 
