@@ -10,14 +10,12 @@ INIT_REVS(UIListDir)
 DECOMP_FORCEACTIVE(UIListDir, __FILE__, "( 0) <= (change) && (change) <= ( 1)")
 
 namespace {
-
-    // struct WidgetDrawSort {
-    //     bool operator(UIListWidget*, UIListWidget*){}
-    // };
-
-    // bool WidgetDrawSort(UIListWidget*, UIListWidget*){
-
-    // }
+    class WidgetDrawSort {
+    public:
+        bool operator()(UIListWidget* w1, UIListWidget* w2){
+            return w1->DrawOrder() < w2->DrawOrder();
+        }
+    };
 }
 
 UIListDir::UIListDir() : mOrientation(kUIListVertical), mFadeOffset(0), mElementSpacing(50.0f), mScrollHighlightChange(0.5f),
@@ -59,7 +57,7 @@ void UIListDir::CreateElements(UIList* uilist, std::vector<UIListWidget*>& vec, 
         widget->SetParentList(uilist);
         vec.push_back(widget);
     }
-    // std::sort(vec.begin(), vec.end(), WidgetDrawSort);
+    std::sort(vec.begin(), vec.end(), WidgetDrawSort());
     for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); ++it){
         (*it)->CreateElements(uilist, i);
     }
