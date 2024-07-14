@@ -11,23 +11,24 @@
 #include "ui/UITrigger.h"
 #include "ui/UI.h"
 #include "ui/UIMessages.h"
+#include "obj/DirLoader.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(PanelDir)
-bool gSendFocusMsg;
-bool PanelDir::sAlwaysNeedFocus;
+bool gSendFocusMsg = true;
+bool PanelDir::sAlwaysNeedFocus = true;
 
 PanelDir::PanelDir() : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEndWorld(1), mUseSpecifiedCam(0), mShowEditModePanels(0), mShowFocusComponent(1) {
     if(TheLoadMgr.EditMode()) mShowEditModePanels = true;
 }
 
 PanelDir::~PanelDir() {
-    for (std::vector<class PanelDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); it++) {
+    for (std::vector<class RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); it++) {
         delete (*it);
         *it = NULL;
     }
-    for (std::vector<class PanelDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); it++) {
+    for (std::vector<class RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); it++) {
         delete (*it);
         *it = NULL;
     }
@@ -45,8 +46,8 @@ void PanelDir::PreLoad(BinStream& bs) {
 void PanelDir::PostLoad(BinStream& bs){
     RndDir::PostLoad(bs);
     int revs = PopRev(this);
-    gAltRev = getAltRev(revs);
     gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
     if(this == Dir()){
         if(gRev != 0) bs >> mCam;
         if(gRev == 2){
@@ -85,11 +86,11 @@ END_COPYS
 void PanelDir::SyncObjects(){
     RndDir::SyncObjects();
     mComponents.clear();
-    for(ObjDirItr<UIComponent> it(this, true); it != 0; ++it){
+    for(ObjDirItr<UIComponent> it(this, true); it; ++it){
         AddComponent(it);
     }
     mTriggers.clear();
-    for(ObjDirItr<UITrigger> it(this, true); it != 0; ++it){
+    for(ObjDirItr<UITrigger> it(this, true); it; ++it){
         mTriggers.push_back(it);
         it->CheckAnims();
     }
@@ -128,11 +129,11 @@ void PanelDir::DrawShowing(){
             curEnv->Select(0);
         }
     }
-    for(std::vector<PanelDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
+    for(std::vector<RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
         if(*it) (*it)->DrawShowing();
     }
     RndDir::DrawShowing();
-    for(std::vector<PanelDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
+    for(std::vector<RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
         if(*it) (*it)->DrawShowing();
     }
     if(curCam && curCam != RndCam::sCurrent){
@@ -155,9 +156,10 @@ void PanelDir::Exit(){
 
 #pragma push
 #pragma pool_data off
+// fn_8054C070
 void PanelDir::SendTransition(const Message& msg, Symbol s1, Symbol s2){
     static Message dirMsg = Message("");
-    dirMsg->Node(1) = DataNode(TheUI->WentBack() ? s2 : s1);
+    dirMsg.SetType(TheUI->WentBack() ? s2 : s1);
     RndDir::Handle(msg, false);
     RndDir::Handle(dirMsg, false);
 }
@@ -249,8 +251,9 @@ DataNode PanelDir::GetFocusableComponentList(){
         }
     }
     DataArrayPtr ptr(new DataArray(components.size()));
+    std::vector<UIComponent*>::iterator it = components.begin();
     int i = 0;
-    for(std::vector<UIComponent*>::iterator it = components.begin(); it != components.end(); ++it, i++){
+    for(; it != components.end(); ++it, i++){
         ptr.Node(i) = DataNode(*it);
     }
     return DataNode(ptr);
@@ -281,6 +284,52 @@ BEGIN_HANDLERS(PanelDir)
     if(sym != "button_down") HANDLE_MEMBER_PTR(mFocusComponent)
     HANDLE_CHECK(0x1FC)
 END_HANDLERS
+
+// fn_8054CF34
+bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s){
+    UIComponent* comp = mFocusComponent;
+    if(comp){
+        while (comp = ComponentNav(comp, act, btn, s)) {
+            if(comp == mFocusComponent) break;
+            if (comp->GetState() == UIComponent::kDisabled) {
+                continue;
+            }
+            if(s != none){
+                TheUI->Handle(panel_navigated_msg, false);
+            }
+            SetFocusComponent(comp, s);
+            return true;
+        }
+    }
+    return false;
+}
+
+// fn_8054D04C - componentnav
+UIComponent* PanelDir::ComponentNav(UIComponent* comp, JoypadAction act, JoypadButton btn, Symbol s){
+    UIComponent* compIt = 0;
+    bool overloaded = TheUI->OverloadHorizontalNav(act, btn, s);
+    if(act == kAction_Down) compIt = comp->NavDown();
+    if(!compIt && act == kAction_Right || (overloaded && act == kAction_Down)){
+        compIt = comp->NavRight();
+    }
+    if(!compIt && act == kAction_Up){
+        for(std::list<UIComponent*>::iterator it = mComponents.begin(); it != mComponents.end(); ++it){
+            if((*it)->NavDown() == comp){
+                compIt = *it;
+                break;
+            }
+        }
+    }
+    if(!compIt && act == kAction_Left || (overloaded && act == kAction_Up)){
+        for(std::list<UIComponent*>::iterator it = mComponents.begin(); it != mComponents.end(); ++it){
+            if((*it)->NavRight() == comp){
+                compIt = *it;
+                break;
+            }
+        }
+    }
+    return compIt;
+}
 
 DataNode PanelDir::OnMsg(const ButtonDownMsg& msg){
     DataNode node(kDataUnhandled, 0);
@@ -317,6 +366,74 @@ DataNode PanelDir::OnDisableComponent(const DataArray* da){
     }
     else MILO_WARN("wrong number of args to PanelDir disable");
     return DataNode(0);
+}
+
+// stubbed out in retail
+void PanelDir::SyncEditModePanels(){
+    if(TheLoadMgr.EditMode()){
+        for(std::vector<RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
+            delete *it;
+            *it = 0;
+        }
+        for(std::vector<RndDir*>::iterator it = mFrontPanels.begin(); it != mFrontPanels.end(); ++it){
+            delete *it;
+            *it = 0;
+        }
+        if(mShowEditModePanels){
+            for(std::vector<FilePath>::iterator it = mBackFilenames.begin(); it != mBackFilenames.end(); ++it){
+                FilePath fp3c(*it);
+                if(fp3c.length() != 0){
+                    RndDir* curDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp3c, 0, 0));
+                    if(curDir){
+                        mBackPanels.push_back(curDir);
+                        curDir->Enter();
+                    }
+                }
+            }
+            for(std::vector<FilePath>::iterator it = mFrontFilenames.begin(); it != mFrontFilenames.end(); ++it){
+                FilePath fp48(*it);
+                if(fp48.length() != 0){
+                    RndDir* curDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp48, 0, 0));
+                    if(curDir){
+                        mFrontPanels.push_back(curDir);
+                        curDir->Enter();
+                    }
+                }
+            }
+        }
+    }
+}
+
+bool PanelDir::PropSyncEditModePanels(std::vector<FilePath>& panels, DataNode& val, DataArray* prop, int i, PropOp op){
+    if(op == kPropSize){
+        MILO_ASSERT(i == prop->Size(), 0x29F);
+        val = DataNode((int)panels.size());
+        return true;
+    }
+    else {
+        MILO_ASSERT(i == prop->Size() - 1, 0x2A4);
+        std::vector<FilePath>::iterator it = panels.begin() + prop->Int(i);
+        switch(op){
+            case kPropGet:
+                val = DataNode(*it);
+                break;
+            case kPropSet:
+                (*it).SetRoot(val.Str(0));
+                SyncEditModePanels();
+                break;
+            case kPropRemove:
+                panels.erase(it);
+                SyncEditModePanels();
+                break;
+            case kPropInsert:
+                panels.insert(it, FilePath(val.Str(0)));
+                SyncEditModePanels();
+                break;
+            default:
+                return false;
+        }
+        return true;
+    }
 }
 
 BEGIN_PROPSYNCS(PanelDir)
