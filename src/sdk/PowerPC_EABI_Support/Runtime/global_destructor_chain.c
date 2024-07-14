@@ -27,7 +27,6 @@ void __destroy_global_chain(void) {
     }
 }
 
-// unused
 int __register_atexit(void (*func)(void)) {}
 
 __declspec(section ".dtors") static void *const __destroy_global_chain_reference = __destroy_global_chain;
