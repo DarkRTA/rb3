@@ -747,7 +747,7 @@
             "sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/MWRTTI.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/New.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
-            "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": "NonMatching",
+            "sdk/PowerPC_EABI_Support/Runtime/NMWException.cpp": { "status": "Matching", "extra_cflags": ["-Cpp_exceptions on"] },
             "sdk/PowerPC_EABI_Support/Runtime/ptmf.c": "Matching",
             "sdk/PowerPC_EABI_Support/Runtime/runtime.c": "NonMatching"
         }

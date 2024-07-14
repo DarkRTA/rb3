@@ -38,8 +38,8 @@ extern void __destroy_arr(void *block, ConstructorDestructor *dtor, size_t size,
 
 extern void *__construct_new_array(void *block, ConstructorDestructor ctor, ConstructorDestructor dtor_arg, size_t size, size_t n);
 extern void __destroy_new_array(void *block, ConstructorDestructor dtor);
-extern void __destroy_new_array2();
-extern void __destroy_new_array3();
+extern void __destroy_new_array2(void *block, ConstructorDestructor dtor, ConstructorDestructor headerDtor);
+extern void __destroy_new_array3(void *block, ConstructorDestructor dtor, ConstructorDestructor headerDtor, int b);
 
 #ifdef __cplusplus
 }
