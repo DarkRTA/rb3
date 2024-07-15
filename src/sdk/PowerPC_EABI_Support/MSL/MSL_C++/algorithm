@@ -1,0 +1,34 @@
+#ifndef _STD_ALGORITHM_H
+#define _STD_ALGORITHM_H
+
+// Based on https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/algorithm
+
+#include <MSL_C++/iterator>
+
+namespace std {
+
+    template <typename InputIterator, typename Predicate>
+    inline InputIterator find_if(InputIterator first, InputIterator last, Predicate p) {
+        for (; first != last && !p(*first); ++first) {
+        }
+        return first;
+    }
+
+    template <typename ForwardIterator, typename Element, typename Predicate>
+    ForwardIterator upper_bound(
+        ForwardIterator first,
+        ForwardIterator last,
+        const Element &value,
+        Predicate predicate
+    );
+
+    template <class ForwardIt, class T>
+    inline void fill(ForwardIt first, ForwardIt last, const T &value) {
+        for (; first != last; ++first) {
+            *first = value;
+        }
+    }
+
+}
+
+#endif

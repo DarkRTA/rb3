@@ -1,8 +1,8 @@
-#ifndef _TYPEINFO
-#define _TYPEINFO
+#ifndef _STD_TYPEINFO
+#define _STD_TYPEINFO
 
-#include <cstddef>
-#include <exception>
+#include <MSL_C++/cstddef>
+#include <MSL_C++/exception>
 
 namespace std {
 
@@ -27,21 +27,16 @@ namespace std {
 
     class bad_cast : public exception {
     public:
-        virtual ~bad_cast() {
-        }
-        virtual const char *what() const {
-            return "bad_cast";
-        }
+        virtual ~bad_cast() {}
+        virtual const char *what() const { return "bad_cast"; }
     };
 
     class bad_typeid : public exception {
     public:
-        virtual ~bad_typeid() {
-        }
-        virtual const char *what() const {
-            return "bad_typeid";
-        }
+        virtual ~bad_typeid() {}
+        virtual const char *what() const { return "bad_typeid"; }
     };
+
 }
 
 #endif
