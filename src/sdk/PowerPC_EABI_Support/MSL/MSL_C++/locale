@@ -1,0 +1,145 @@
+#ifndef _STD_LOCALE
+#define _STD_LOCALE
+
+#include <MSL_C++/iosfwd>
+#include <MSL_C++/iterator>
+
+namespace std {
+
+    class locale {
+    public:
+        typedef int category;
+
+        class id {
+        public:
+            id() {}
+
+        private:
+            id(const id &);
+            id &operator=(const id &);
+        };
+
+        class facet {
+        protected:
+            facet(size_t refs = 0);
+            ~facet();
+
+        private:
+            facet(const facet &);
+            facet &operator=(const facet &);
+        };
+    };
+
+    template <class Facet>
+    const Facet &use_facet(const locale &);
+    template <class Facet>
+    bool has_facet(const locale &) throw();
+
+    template <class CharT>
+    bool isspace(CharT c, const locale &loc);
+    template <class CharT>
+    bool isprint(CharT c, const locale &loc);
+    template <class CharT>
+    bool iscntrl(CharT c, const locale &loc);
+    template <class CharT>
+    bool isupper(CharT c, const locale &loc);
+    template <class CharT>
+    bool islower(CharT c, const locale &loc);
+    template <class CharT>
+    bool isalpha(CharT c, const locale &loc);
+    template <class CharT>
+    bool isdigit(CharT c, const locale &loc);
+    template <class CharT>
+    bool ispunct(CharT c, const locale &loc);
+    template <class CharT>
+    bool isxdigit(CharT c, const locale &loc);
+    template <class CharT>
+    bool isalnum(CharT c, const locale &loc);
+    template <class CharT>
+    bool isgraph(CharT c, const locale &loc);
+    template <class CharT>
+    CharT toupper(CharT c, const locale &loc);
+    template <class CharT>
+    CharT tolower(CharT c, const locale &loc);
+
+    template <
+        class Codecvt,
+        class Elem = wchar_t,
+        class Wide_alloc = allocator<Elem>,
+        class Byte_alloc = allocator<char> >
+    class wstring_convert;
+    template <class Codecvt, class Elem = wchar_t, class Tr = char_traits<Elem> >
+    class wbuffer_convert;
+
+    class ctype_base;
+    template <class CharT>
+    class ctype;
+    template <class CharT>
+    class ctype_byname;
+
+    template <>
+    class ctype<char> {
+        static locale::id id;
+    };
+    template <>
+    class ctype<wchar_t> {
+        static locale::id id;
+    };
+
+    class codecvt_base;
+    template <class internT, class externT, class stateT>
+    class codecvt;
+    template <class internT, class externT, class stateT>
+    class codecvt_byname;
+
+    template <>
+    class codecvt<char, char, int> {
+        static locale::id id;
+    };
+    template <>
+    class codecvt<wchar_t, char, int> {
+        static locale::id id;
+    };
+
+    template <class CharT, class InputIter = istreambuf_iterator<CharT> >
+    class num_get;
+    template <class CharT, class OutputIter = ostreambuf_iterator<CharT> >
+    class num_put;
+    template <class CharT>
+    class numpunct;
+    template <class CharT>
+    class numpunct_byname;
+
+    template <class CharT>
+    class collate;
+    template <class CharT>
+    class collate_byname;
+
+    class time_base;
+    template <class CharT, class InputIter = istreambuf_iterator<CharT> >
+    class time_get;
+    template <class CharT, class InputIter = istreambuf_iterator<CharT> >
+    class time_get_byname;
+    template <class CharT, class OutputIter = ostreambuf_iterator<CharT> >
+    class time_put;
+    template <class CharT, class OutputIter = ostreambuf_iterator<CharT> >
+    class time_put_byname;
+
+    class money_base;
+    template <class CharT, class InputIter = istreambuf_iterator<CharT> >
+    class money_get;
+    template <class CharT, class OutputIter = ostreambuf_iterator<CharT> >
+    class money_put;
+    template <class CharT, bool Intl = false>
+    class moneypunct;
+    template <class CharT, bool Intl = false>
+    class moneypunct_byname;
+
+    class messages_base;
+    template <class CharT>
+    class messages;
+    template <class CharT>
+    class messages_byname;
+}
+
+#endif
