@@ -35,12 +35,6 @@ namespace Hmx {
             )
         }
 
-        // assignment operator does not
-        Color& operator=(const Color& c){
-            red = c.red; green = c.green; blue = c.blue; alpha = c.alpha;
-            return *this;
-        }
-
         void Set(float f1, float f2, float f3, float f4){
             red = f1; green = f2; blue = f3; alpha = f4;
         }

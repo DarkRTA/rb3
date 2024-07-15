@@ -116,8 +116,7 @@ public:
                     delete mDir;
                 }
             }
-            mDir = dir;
-            if(mDir) mDir->AddRef(this);
+            if(mDir = dir) mDir->AddRef(this);
         }
         return *this;
     }
