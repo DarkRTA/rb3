@@ -1,6 +1,7 @@
 #include "ui/UIListProvider.h"
 #include "ui/UIListLabel.h"
 #include "ui/UIListMesh.h"
+#include "ui/UIList.h"
 #include "utl/Locale.h"
 
 void UIListProvider::Text(int, int, UIListLabel* listlabel, UILabel* label) const {
@@ -71,13 +72,37 @@ void DataProvider::SetData(DataArray* arr){
     mData->AddRef();
     if(mFluidWidth){
         mWidths.clear();
-        mWidths.insert(mWidths.begin() + NumData(), 0.0f);
+        mWidths.resize(NumData());
     }
 }
 
 void DataProvider::Disable(Symbol sym){
+    // std::find goes here maybe?
     std::list<Symbol>::iterator it = unk10.begin();
     for(; it != unk10.end(); it++){
         if(*it == sym) break;
     }
+    if(it == unk10.end()) unk10.push_back(sym);
+}
+
+RndMat* DataProvider::Mat(int i, int j, UIListMesh* mesh) const {
+    if(!mList) return mesh->DefaultMat();
+    static Message msgMat("mat", DataNode(0));
+    msgMat->Node(2) = DataNode(j);
+    DataNode handled = mList->HandleType(msgMat);
+    if(handled.Type() == kDataUnhandled){
+        return mesh->DefaultMat();
+    }
+    else {
+        ObjectDir* pDir = mList->ResourceDir();
+        MILO_ASSERT(pDir, 0x9C);
+        RndMat* ret = pDir->Find<RndMat>(handled.Str(0), false);
+        if(!ret) return mesh->DefaultMat();
+        return ret;
+    }
+}
+
+float DataProvider::GapSize(int, int i, int, int) const {
+    if(mFluidWidth) return mWidths[i];
+    else return 0;
 }
