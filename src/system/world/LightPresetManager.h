@@ -11,6 +11,9 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~LightPresetManager();
 
+    void Enter();
+    void Poll();
+
     bool unk4;
     // std::hash_map<int, int> unk8;
     int unk8, unkc, unk10;

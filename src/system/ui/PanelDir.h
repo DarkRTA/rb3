@@ -2,6 +2,7 @@
 #define UI_PANELDIR_H
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
+#include "rndobj/Cam.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
@@ -10,7 +11,6 @@
 #include <vector>
 
 class UIComponent;
-class RndCam;
 class UITrigger;
 
 class PanelDir : public RndDir {
@@ -54,6 +54,7 @@ public:
     UIComponent* ComponentNav(UIComponent*, JoypadAction, JoypadButton, Symbol);
     UIComponent* GetFirstFocusableComponent();
     bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
+    void SetCam(RndCam* cam){ mCam = cam; }
 
     DataNode GetFocusableComponentList();
     DataNode OnEnableComponent(const DataArray*);

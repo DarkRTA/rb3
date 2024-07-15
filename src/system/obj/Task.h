@@ -70,10 +70,12 @@ public:
     float Beat() const;
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;
+    float DeltaTime(TaskUnits) const;
     void Start(Task*, TaskUnits, float);
 
     void ClearTasks();
     void SetSeconds(float, bool);
+    void SetDeltaTime(TaskUnits, float);
 };
 
 extern TaskMgr TheTaskMgr;

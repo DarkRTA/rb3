@@ -6,6 +6,7 @@
 #include "utl/KeylessHash.h"
 #include "utl/Loader.h"
 #include "obj/DirLoader.h"
+#include "rndobj/Tex.h"
 
 enum ViewportId {
     kPerspective = 0,
@@ -233,6 +234,12 @@ public:
             MILO_FAIL(kNotObjectMsg, name, PathName(this) ? PathName(this) : "**no file**");
         }
         return castedObj;
+    }
+
+    RndTex* NewTex(const char* name){
+        RndTex* tex = Hmx::Object::New<RndTex>();
+        if(name) tex->SetName(name, this);
+        return tex;
     }
 
     static void Init();
