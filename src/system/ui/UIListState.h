@@ -44,6 +44,7 @@ public:
     int SnappedDataForDisplay(int) const;
     void Poll(float);
     int SelectedNoWrap() const;
+    int MaxFirstShowing() const;
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
 

@@ -41,7 +41,7 @@ public:
 
 class DataProvider : public UIListProvider {
 public:
-    DataProvider(DataArray* arr, int i, bool b1, bool b2, UIList* ul) : mData(arr), mOffset(i), mFluidWidth(b1), unkd(b2), mList(ul) { SetData(arr); }
+    DataProvider(DataArray* arr, int i, bool b1, bool b2, UIList* ul) : mData(0), mOffset(i), mFluidWidth(b1), unkd(b2), mList(ul) { SetData(arr); }
     virtual ~DataProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual RndMat* Mat(int, int, UIListMesh*) const;
@@ -53,6 +53,8 @@ public:
     void SetData(DataArray*);
     void Enable(Symbol);
     void Disable(Symbol);
+    void Dim(Symbol);
+    void UnDim(Symbol);
 
     DataArray* mData; // 0x4
     mutable int mOffset; // 0x8
