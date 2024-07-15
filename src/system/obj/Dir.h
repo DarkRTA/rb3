@@ -97,9 +97,9 @@ public:
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
-            class ObjectDir* gotten = mLoader->GetDir();
+            T* gotten = dynamic_cast<T*>(mLoader->GetDir());
             mLoader = 0;
-            *this = dynamic_cast<T*>(gotten);
+            *this = gotten;
         }
     }
 
