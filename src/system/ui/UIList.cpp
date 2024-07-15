@@ -21,6 +21,7 @@
 #include "ui/Utl.h"
 #include <cstddef>
 #include "decomp.h"
+#include "utl/Symbols.h"
 
 static bool gGCNewLists = true;
 static bool gLoading = false;
@@ -63,7 +64,24 @@ void UIList::Init() {
 BEGIN_COPYS(UIList)
     CREATE_COPY_AS(UIList, l)
     MILO_ASSERT(l, 103);
-    COPY_SUPERCLASS(UIList)
+    COPY_SUPERCLASS(UIComponent)
+    SetCircular(l->mListState.mCircular);
+    SetNumDisplay(l->mListState.mNumDisplay);
+    SetGridSpan(l->mListState.mGridSpan);
+    SetSpeed(l->mListState.Speed());
+    COPY_MEMBER_FROM(l, mPaginate)
+    COPY_MEMBER_FROM(l, unk_0x4) // from ScrollSelect
+    mListState.SetMinDisplay(l->mListState.MinDisplay());
+    mListState.SetScrollPastMinDisplay(l->mListState.ScrollPastMinDisplay());
+    mListState.SetMaxDisplay(l->mListState.MaxDisplay());
+    mListState.SetScrollPastMaxDisplay(l->mListState.ScrollPastMaxDisplay());
+    COPY_MEMBER_FROM(l, mNumData)
+    COPY_MEMBER_FROM(l, mAutoScrollPause)
+    COPY_MEMBER_FROM(l, mAutoScrollSendMessages)
+    COPY_MEMBER_FROM(l, mExtendedLabelEntries)
+    COPY_MEMBER_FROM(l, mExtendedMeshEntries)
+    COPY_MEMBER_FROM(l, mExtendedCustomEntries)
+    CopyHandlerData(dynamic_cast<const UIList*>(o));
 END_COPYS
 
 SAVE_OBJ(UIList, 138)
@@ -570,6 +588,44 @@ DataNode UIList::OnMsg(const ButtonDownMsg& msg){
     }
 }
 
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(UIList)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE(selected_sym, OnSelectedSym)
+    HANDLE_EXPR(selected_pos, SelectedPos())
+    HANDLE_EXPR(selected_data, SelectedData())
+    HANDLE_EXPR(num_display, NumDisplay())
+    HANDLE_EXPR(first_showing, FirstShowing())
+    HANDLE_ACTION(set_provider, SetProvider(_msg->Obj<UIListProvider>(2)))
+    HANDLE(set_data, OnSetData)
+    HANDLE_EXPR(num_data, NumProviderData())
+    HANDLE_ACTION(disable_data, DisableData(_msg->Sym(2)))
+    HANDLE_ACTION(enable_data, EnableData(_msg->Sym(2)))
+    HANDLE_ACTION(dim_data, DimData(_msg->Sym(2)))
+    HANDLE_ACTION(undim_data, UnDimData(_msg->Sym(2)))
+    HANDLE(set_selected, OnSetSelected)
+    HANDLE(set_selected_simulate_scroll, OnSetSelectedSimulateScroll)
+    HANDLE_ACTION(set_scroll_user, SetScrollUser(_msg->Obj<LocalUser>(2)))
+    HANDLE_ACTION(refresh, Refresh(true))
+    HANDLE_ACTION(set_draw_manually_controlled_widgets, SetDrawManuallyControlledWidgets(_msg->Int(2)))
+    HANDLE(scroll, OnScroll)
+    HANDLE_EXPR(is_scrolling, IsScrolling())
+    HANDLE_EXPR(is_scrolling_down, mListState.CurrentScroll() != -1)
+    HANDLE_ACTION(store, Store())
+    HANDLE_ACTION(undo, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), 0))
+    HANDLE_ACTION(confirm, Reset())
+    HANDLE_ACTION(set_num_display, SetNumDisplay(_msg->Int(2)))
+    HANDLE_ACTION(set_grid_span, SetGridSpan(_msg->Int(2)))
+    HANDLE_ACTION(auto_scroll, AutoScroll())
+    HANDLE_ACTION(stop_auto_scroll, StopAutoScroll())
+    HANDLE_EXPR(parent_list, ParentList())
+    HANDLE_SUPERCLASS(ScrollSelect)
+    HANDLE_SUPERCLASS(UIComponent)
+    HANDLE_CHECK(0x4F0)
+END_HANDLERS
+#pragma pop
+
 DataNode UIList::OnSetData(DataArray* da){
     DataArray* arr = da->Array(2);
     int i3 = da->Size() > 3 ? da->Int(3) : 0;
@@ -642,3 +698,26 @@ void UIList::FinishValueChange(){
 }
 
 void UIList::SetDrawManuallyControlledWidgets(bool b){ mDrawManuallyControlledWidgets = b; }
+
+BEGIN_PROPSYNCS(UIList)
+    SYNC_PROP_SET(display_num, mListState.mNumDisplay, SetNumDisplay(_val.Int(0)))
+    SYNC_PROP_SET(grid_span, mListState.mGridSpan, SetGridSpan(_val.Int(0)))
+    SYNC_PROP_SET(circular, mListState.mCircular, SetCircular(_val.Int(0)))
+    SYNC_PROP_SET(scroll_time, mListState.Speed(), SetSpeed(_val.Float(0)))
+    SYNC_PROP(paginate, mPaginate)
+    SYNC_PROP_SET(min_display, mListState.MinDisplay(), mListState.SetMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(max_display, mListState.MaxDisplay(), mListState.SetMaxDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_max_display, mListState.ScrollPastMaxDisplay(), mListState.SetScrollPastMaxDisplay(_val.Int(0)))
+    SYNC_PROP_MODIFY(num_data, mNumData, Update())
+    SYNC_PROP(auto_scroll_pause, mAutoScrollPause)
+    SYNC_PROP(auto_scroll_send_messages, mAutoScrollSendMessages)
+    SYNC_PROP(extended_label_entries, mExtendedLabelEntries)
+    SYNC_PROP(extended_mesh_entries, mExtendedMeshEntries)
+    SYNC_PROP(extended_custom_entries, mExtendedCustomEntries)
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_SUPERCLASS(ScrollSelect)
+    SYNC_SUPERCLASS(UIComponent)
+END_PROPSYNCS
