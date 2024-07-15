@@ -14,6 +14,7 @@ public:
     void Enter();
     void PrePoll();
     void Poll();
+    void SyncObjects();
 
     WorldDir* mParent;
     int unk8, unkc, unk10;

@@ -24,6 +24,8 @@ public:
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
+
+    void CleanUpCrowdFloor();
 };
 
 #endif

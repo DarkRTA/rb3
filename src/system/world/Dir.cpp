@@ -7,6 +7,7 @@
 #include "rndobj/Rnd.h"
 #include "string.h"
 #include "obj/ObjVersion.h"
+#include "utl/STLHelpers.h"
 #include "utl/Messages.h"
 
 INIT_REVS(WorldDir)
@@ -274,4 +275,19 @@ void WorldDir::PostLoad(BinStream& bs){
     }
     if(gRev > 0x13) bs >> mHud;
     SyncHUD();
+}
+
+void WorldDir::SyncObjects(){
+    PanelDir::SyncObjects();
+    mCameraManager.SyncObjects();
+    mPresetManager.SyncObjects();
+    mCrowds.clear();
+    for(ObjDirItr<WorldCrowd> it(this, true); it; ++it){
+        mCrowds.push_back(it);
+    }
+    for(ObjPtrList<WorldCrowd, ObjectDir>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
+        (*it)->CleanUpCrowdFloor();
+    }
+    if(mHud) VectorRemove(mDraws, mHud);
+    mDrawItr = mDraws.begin();
 }

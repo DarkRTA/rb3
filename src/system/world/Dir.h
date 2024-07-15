@@ -14,6 +14,7 @@ public:
 
     class PresetOverride {
     public:
+        PresetOverride(Hmx::Object*);
     };
 
     class BitmapOverride {
@@ -25,6 +26,7 @@ public:
 
     class MatOverride {
     public:
+        MatOverride(Hmx::Object*);
     };
 
     WorldDir();
@@ -92,6 +94,8 @@ public:
 };
 
 BinStream& operator>>(BinStream&, WorldDir::BitmapOverride&);
+BinStream& operator>>(BinStream&, WorldDir::PresetOverride&);
+BinStream& operator>>(BinStream&, WorldDir::MatOverride&);
 
 extern WorldDir* TheWorld;
 void SetTheWorld(WorldDir*);

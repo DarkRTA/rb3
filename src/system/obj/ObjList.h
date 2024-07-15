@@ -14,15 +14,13 @@ public:
 };
 
 template <class T> BinStream& operator>>(BinStream& bs, ObjList<T>& oList) {
-    // unsigned int length;
-    // bs >> length;
-    // oList.resize(length); // TODO: implement the ObjVector::resize override
+    unsigned int length;
+    bs >> length;
+    oList.resize(length, T(oList.mOwner));
 
-    // for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
-    //     // it->Load(bs);
-    //     bs >> *it;
-    // }
-
+    for(std::list<T>::iterator it = oList.begin(); it != oList.end(); ++it){
+        bs >> *it;
+    }
     return bs;
 }
 

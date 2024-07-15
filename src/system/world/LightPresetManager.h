@@ -13,6 +13,7 @@ public:
 
     void Enter();
     void Poll();
+    void SyncObjects();
 
     bool unk4;
     // std::hash_map<int, int> unk8;
