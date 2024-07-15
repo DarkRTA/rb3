@@ -1,3 +1,6 @@
+#ifndef _MSL_DETAILS_MEMORY
+#define _MSL_DETAILS_MEMORY
+
 #include <MSL_C++/typeinfo>
 
 namespace std {
@@ -107,3 +110,5 @@ namespace std {
 
     }
 }
+
+#endif
