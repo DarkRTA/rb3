@@ -1,9 +1,12 @@
 #ifndef _STD_ITERATOR_H
 #define _STD_ITERATOR_H
 
+// clang-format off: too excessive with splitting things into multiple lines
+
 // Based on https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/iterator
 
 #include <MSL_C++/cstddef>
+#include <MSL_C++/string>
 
 namespace std {
 
@@ -22,12 +25,8 @@ namespace std {
         typedef typename Iterator::iterator_category iterator_category;
     };
 
-    template <
-        typename IteratorTag,
-        typename ValueType,
-        typename DifferenceType = ptrdiff_t,
-        typename Pointer = ValueType *,
-        typename Reference = ValueType &>
+    template <typename IteratorTag, typename ValueType, typename DifferenceType = ptrdiff_t,
+        typename Pointer = ValueType *, typename Reference = ValueType &>
     struct iterator {
         typedef IteratorTag iterator_category;
         typedef ValueType value_type;
@@ -36,29 +35,119 @@ namespace std {
         typedef Reference reference;
     };
 
-    template <class InputIterator>
-    typename iterator_traits<InputIterator>::difference_type
-    __distance(InputIterator first, InputIterator last, input_iterator_tag) {
-        iterator_traits<InputIterator>::difference_type result = 0;
+    template <class Iter>
+    class insert_iterator;
+    template <class Iterator1, class Iterator2>
+    bool operator==(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<=(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>=(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
+
+    template <class Iter>
+    class front_insert_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<=(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>=(const front_insert_iterator<Iterator1> &lhs, const front_insert_iterator<Iterator2> &rhs);
+
+    template <class Iter>
+    class back_insert_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<=(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>=(const back_insert_iterator<Iterator1> &lhs, const back_insert_iterator<Iterator2> &rhs);
+
+    template <class Iter>
+    class reverse_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator<=(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator>=(const reverse_iterator<Iterator1> &lhs, const reverse_iterator<Iterator2> &rhs);
+
+    template <class T, class CharT = char, class Traits = char_traits<CharT>, class Distance = ptrdiff_t>
+    class istream_iterator : public iterator<input_iterator_tag, T, Distance, const T *, const T &> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const istream_iterator<Iterator1> &lhs, const istream_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const istream_iterator<Iterator1> &lhs, const istream_iterator<Iterator2> &rhs);
+
+    template <class T, class CharT = char, class Traits = char_traits<CharT> >
+    class ostream_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const ostream_iterator<Iterator1> &lhs, const ostream_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const ostream_iterator<Iterator1> &lhs, const ostream_iterator<Iterator2> &rhs);
+
+    template <class CharT, class Traits = char_traits<CharT> >
+    class istreambuf_iterator : public iterator<input_iterator_tag, CharT, typename Traits::off_type, CharT *, CharT> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const istreambuf_iterator<Iterator1> &lhs, const istreambuf_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const istreambuf_iterator<Iterator1> &lhs, const istreambuf_iterator<Iterator2> &rhs);
+
+    template <class CharT, class Traits = char_traits<CharT> >
+    class ostreambuf_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
+    template <class Iterator1, class Iterator2>
+    bool operator==(const ostreambuf_iterator<Iterator1> &lhs, const ostreambuf_iterator<Iterator2> &rhs);
+    template <class Iterator1, class Iterator2>
+    bool operator!=(const ostreambuf_iterator<Iterator1> &lhs, const ostreambuf_iterator<Iterator2> &rhs);
+
+    template <class Iterator, class Distance>
+    void advance(Iterator &it, Distance n);
+
+    template <class Iterator>
+    typename iterator_traits<Iterator>::difference_type
+    __distance(Iterator first, Iterator last, input_iterator_tag) {
+        iterator_traits<Iterator>::difference_type result = 0;
         for (; first != last; ++first)
             ++result;
         return result;
     }
 
-    template <class InputIterator>
-    typename iterator_traits<InputIterator>::difference_type
-    __distance(InputIterator first, InputIterator last, random_access_iterator_tag) {
+    template <class Iterator>
+    typename iterator_traits<Iterator>::difference_type
+    __distance(Iterator first, Iterator last, random_access_iterator_tag) {
         return last - first;
     }
 
-    template <class InputIterator>
-    typename iterator_traits<InputIterator>::difference_type
-    distance(InputIterator first, InputIterator last) {
-        return __distance(
-            first, last, iterator_traits<InputIterator>::iterator_category()
-        );
+    template <class Iterator>
+    typename iterator_traits<Iterator>::difference_type
+    distance(Iterator first, Iterator last) {
+        return __distance(first, last, iterator_traits<Iterator>::iterator_category());
     }
 
 }
+// clang-format on
 
 #endif
