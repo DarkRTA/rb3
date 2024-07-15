@@ -734,7 +734,7 @@
         "objects": {
             "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/ios.cpp": "NonMatching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": "NonMatching",
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "NonMatching"
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "Matching"
         }
     },
     "sdk/Runtime": {
