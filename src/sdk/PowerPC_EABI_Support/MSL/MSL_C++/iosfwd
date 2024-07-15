@@ -1,9 +1,12 @@
 #ifndef _STD_IOSFWD
 #define _STD_IOSFWD
 
-#include "MSL_C++/MSL_Common/char_traits.h"
+#include <MSL_C++/cwchar>
 
 namespace std {
+
+    typedef mbstate_t __char_state_type;
+    typedef mbstate_t __wchar_state_type;
 
     template <class CharT>
     struct char_traits;
@@ -97,8 +100,8 @@ namespace std {
     template <class State>
     class fpos;
 
-    typedef fpos<char_traits<char>::state_type> streampos;
-    typedef fpos<char_traits<wchar_t>::state_type> wstreampos;
+    typedef fpos<__char_state_type /*char_traits<char>::state_type*/> streampos;
+    typedef fpos<__wchar_state_type /*char_traits<wchar_t>::state_type*/> wstreampos;
 
     class strstreambuf;
     class istrstream;
