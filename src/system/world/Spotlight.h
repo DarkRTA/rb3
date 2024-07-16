@@ -61,6 +61,8 @@ public:
     virtual void Poll();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
+    static void Init();
+
     ObjPtr<RndMat, ObjectDir> mDiscMat; // 0xb8
     RndFlare* mFlare; // 0xc4
     float mFlareOffset; // 0xc8

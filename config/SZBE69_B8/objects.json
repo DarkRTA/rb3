@@ -568,7 +568,7 @@
             "system/world/Spotlight.cpp": "NonMatching",
             "system/world/SpotlightDrawer.cpp": "NonMatching",
             "system/world/SpotlightEnder.cpp": "Matching",
-            "system/world/World.cpp": "NonMatching"
+            "system/world/World.cpp": "Matching"
         }
     },
     "system/flex": {
