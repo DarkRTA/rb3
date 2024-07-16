@@ -72,6 +72,8 @@ public:
     float TutorialSeconds() const;
     float DeltaTime(TaskUnits) const;
     void Start(Task*, TaskUnits, float);
+    float Time(TaskUnits) const;
+    const char* GetMBT();
 
     void ClearTasks();
     void SetSeconds(float, bool);

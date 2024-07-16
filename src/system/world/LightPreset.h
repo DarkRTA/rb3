@@ -49,6 +49,11 @@ public:
     virtual float EndFrame();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
+    bool PlatformOk() const;
+    Symbol Category() const { return mCategory; }
+    bool Manual() const { return mManual; }
+    int GetCurrentKeyframe() const;
+
     ObjVector<Keyframe> mKeyframes; // 0x10
     std::vector<Spotlight*> mSpotlights; // 0x1c
     std::vector<RndEnviron*> mEnvironments; // 0x24
