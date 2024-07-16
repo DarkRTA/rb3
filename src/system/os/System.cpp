@@ -44,13 +44,14 @@ const char* gHostFile;
 unsigned char* g_pRSOReserveBuf;
 unsigned char* g_pDefaultRSOBuf;
 
+DECOMP_FORCEACTIVE(System, "_unresolved func.\n", "gen/main_%s.hdr")
+
 namespace {
     bool gHasPreconfig = true;
     bool gPreconfigOverride;
 
     bool CheckForArchive() {
         SetUsingCD(true);
-
         FileStat stat;
         if (FileGetStat(MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.GetPlatform())), &stat) < 0) {
             SetUsingCD(false);
@@ -104,6 +105,8 @@ DataNode OnSwitchSystemLanguage(DataArray* da){
     SetSystemLanguage(languages->Sym(i), true);
     return DataNode(1);
 }
+
+DECOMP_FORCEACTIVE(System, "LanguageInit called, but region has not been initialized", "language", "system")
 
 void LanguageInit() {
     if (ThePlatformMgr.GetRegion() == kRegionNone) {
@@ -282,6 +285,11 @@ void SystemTerminate() {
     AppChild::Terminate();
     TheSystemArgs.clear();
     TerminateMakeString();
+}
+
+
+void SystemPreInit(const char* cc){
+    CheckForArchive();
 }
 
 int SystemMs() {

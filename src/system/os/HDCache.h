@@ -1,13 +1,12 @@
 #ifndef OS_HDCACHE_H
 #define OS_HDCACHE_H
-
 #include "os/CritSec.h"
 #include "utl/Str.h"
 #include <vector>
 #include <revolution/os.h>
 
 class HDCache {
-    public:
+public:
     int a;
     std::vector<int> b, c;
     int d[8];

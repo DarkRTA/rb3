@@ -23,16 +23,9 @@ namespace Hmx {
         Color(int i) : alpha(1.0f) { Unpack(i); }
 
         // copy ctor uses asm magic
-        Color(const register Color& color){
-            register Color* theCol = this;
-            register float temp1;
-            register float temp2;
-            ASM_BLOCK(
-                psq_lx temp2,0,color,0,0
-                psq_l temp1,8(color),0,0
-                psq_stx temp2,0,theCol,0,0
-                psq_st temp1,8(theCol),0,0
-            )
+        Color(const Color& color){
+            *(__vec2x32float__*) this = *(__vec2x32float__*) &color;
+            *(__vec2x32float__*) &this->blue = *(__vec2x32float__*) &color.blue;
         }
 
         void Set(float f1, float f2, float f3, float f4){
