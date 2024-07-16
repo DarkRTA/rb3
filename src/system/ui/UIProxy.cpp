@@ -136,7 +136,7 @@ void UIProxy::SyncDir(){
     if(mMainTrans) mMainTrans->SetWorldXfm(world);
     else {
         if(mDir->TransParent()) mDir->SetWorldXfm(world);
-        else mDir->SetDirtyLocalXfm(world);
+        else mDir->SetLocalXfm(world);
     }
     HandleType(sync_dir_msg);
 }

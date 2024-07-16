@@ -87,12 +87,12 @@ public:
         else return mWorldXfm;
     }
 
-    void SetDirtyLocalXfm(const Transform& tf){
+    void SetLocalXfm(const Transform& tf){
         mLocalXfm = tf;
         SetDirty();
     }
 
-    void SetDirtyLocalXfmVec(float x, float y, float z){
+    void SetLocalPos(float x, float y, float z){
         mLocalXfm.v.Set(x, y, z);
         SetDirty();
     }

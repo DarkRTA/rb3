@@ -49,7 +49,7 @@ void SynthEmitter::DrawShowing(){
     if(TheLoadMgr.EditMode()){
         CheckLoadResources();
         Transform& xfm = WorldXfm();
-        gIconDir->SetDirtyLocalXfm(xfm);
+        gIconDir->SetLocalXfm(xfm);
         gIconDir->DrawShowing();
     }
 }

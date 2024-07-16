@@ -239,7 +239,7 @@ void RndDir::OldLoadProxies(BinStream& bs, int rev) {
         RndDir* loadedDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp68, 0, 0));
         MILO_ASSERT(!name.empty(), 0x203);
         loadedDir->SetName(name.c_str(), this);
-        loadedDir->SetDirtyLocalXfm(t58);
+        loadedDir->SetLocalXfm(t58);
         loadedDir->SetTransParent(Find<RndTransformable>(s80.c_str(), false), false);
         loadedDir->SetOrder(f94);
         loadedDir->SetShowing(b98);
