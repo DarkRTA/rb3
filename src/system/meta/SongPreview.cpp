@@ -285,10 +285,10 @@ void SongPreview::PrepareSong(Symbol s){
             mStream->SetPan(i, pans[i]);
         }
 
-        const TrackChannels& tracks = data->FindTrackChannel(kAudioTypeMulti);
-        if(&tracks != 0){
-            for(int i = 0; i < tracks.mChannels.size(); i++){
-                mStream->SetVolume(tracks.mChannels[i], -96.0f);
+        const TrackChannels* tracks = data->FindTrackChannel(kAudioTypeMulti);
+        if(tracks != 0){
+            for(int i = 0; i < tracks->mChannels.size(); i++){
+                mStream->SetVolume(tracks->mChannels[i], -96.0f);
             }
         }
         DetachFaders();

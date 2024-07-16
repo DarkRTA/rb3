@@ -1,6 +1,5 @@
 #ifndef CHAR_CHARINTEREST_H
 #define CHAR_CHARINTEREST_H
-#include "obj/ObjMacros.h"
 #include "rndobj/Trans.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharEyeDartRuleset.h"

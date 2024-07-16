@@ -7,8 +7,6 @@
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
-#include "obj/ObjVector.h"
-#include "obj/ObjList.h"
 #include "math/Geo.h"
 #include <list>
 
@@ -220,6 +218,7 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
     }
 }
 
+#include "obj/ObjVector.h"
 template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
@@ -247,6 +246,7 @@ template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode
     }
 }
 
+#include "obj/ObjList.h"
 template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray* prop, int i, PropOp op){
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
