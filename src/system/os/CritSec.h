@@ -14,9 +14,8 @@ public:
     void Exit();
     void Abandon();
 
-    void operator delete(void* v){
-        _PoolFree(sizeof(CriticalSection), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(CriticalSection)
+    DELETE_POOL_OVERLOAD(CriticalSection)
 };
 
 class CritSecTracker {

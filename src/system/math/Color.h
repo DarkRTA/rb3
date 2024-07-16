@@ -24,8 +24,11 @@ namespace Hmx {
 
         // copy ctor uses asm magic
         Color(const Color& color){
-            *(__vec2x32float__*) this = *(__vec2x32float__*) &color;
-            *(__vec2x32float__*) &this->blue = *(__vec2x32float__*) &color.blue;
+            typedef struct{
+                __vec2x32float__ a, b;
+            } Color_psq;
+            
+            *(Color_psq *)this = *(Color_psq *)&color;
         }
 
         void Set(float f1, float f2, float f3, float f4){
@@ -33,13 +36,8 @@ namespace Hmx {
         }
 
         // all weak
-        // Color() {};
-        // Color(int);
-        // void operator=(const Color &);
-        // void Unpack(int);
         // bool operator==(const Color &) const;
         // bool operator!=(const Color &) const;
-        // void Set(float, float, float, float);
 
         void Set(float f){ red = green = blue = alpha = f; }
 
