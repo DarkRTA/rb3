@@ -1,6 +1,5 @@
 #ifndef RNDOBJ_POSTPROC_H
 #define RNDOBJ_POSTPROC_H
-#include "obj/ObjMacros.h"
 #include <revolution/OS.h>
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"

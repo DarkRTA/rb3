@@ -32,6 +32,8 @@ public:
     virtual void Enter();
     virtual void PreSave(BinStream&);
 
+    void SyncDir();
+
     ObjDirPtr<WorldInstance> mDir; // 0x18c
     SharedGroup* mSharedGroup; // 0x198
     SharedGroup* mSharedGroup2; // 0x19c

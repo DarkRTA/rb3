@@ -1,6 +1,7 @@
 #include "world/Instance.h"
 #include "rndobj/Group.h"
 #include "obj/ObjVersion.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(WorldInstance)
 
@@ -121,3 +122,22 @@ BEGIN_HANDLERS(WorldInstance)
     HANDLE_SUPERCLASS(RndDir)
     HANDLE_CHECK(0x308)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(WorldInstance)
+    SYNC_PROP_MODIFY(instance_file, mDir, SyncDir())
+    if(sym == shared_group){
+        if(_op != kPropSet){
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mSharedGroup ? mSharedGroup->mGroup : (Hmx::Object*)0);
+        }
+        return true;
+    }
+    if(sym == poll_master){
+        if(_op != kPropSet){
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(mSharedGroup ? mSharedGroup->mPollMaster == 0 : 0);
+        }
+        return true;
+    }
+    SYNC_SUPERCLASS(RndDir)
+END_PROPSYNCS

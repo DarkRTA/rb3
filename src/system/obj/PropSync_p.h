@@ -26,6 +26,7 @@ enum PropOp {
 template<class T1, class T2> class ObjPtr;
 template<class T1, class T2> class ObjOwnerPtr;
 template<class T1, class T2> class ObjPtrList;
+template<class T> class ObjDirPtr;
 template<class T1, class T2 = u16> class ObjVector;
 
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
@@ -148,6 +149,18 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
         }
         return false;
     }
+}
+
+// fn_805C3A80 - PropSync for ObjDirPtr
+template <class T> inline bool PropSync(ObjDirPtr<T>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(op == kPropGet){
+        node = DataNode(ptr.GetFile());
+    }
+    else {
+        FilePath fp(node.Str(0));
+        ptr.LoadFile(fp, false, true, kLoadFront, false);
+    }
+    return true;
 }
 
 template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray* prop, int i, PropOp op)  {

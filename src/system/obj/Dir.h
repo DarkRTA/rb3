@@ -134,9 +134,10 @@ public:
     class DirLoader* mLoader;
 };
 
-// TODO: fill out
 template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
-    // ptr.Load(bs, true, 0);
+    FilePath fp;
+    bs >> fp;
+    ptr.LoadFile(fp, true, true, kLoadFront, false);
     return bs;
 }
 

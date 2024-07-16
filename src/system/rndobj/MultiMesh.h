@@ -1,7 +1,6 @@
 #ifndef RNDOBJ_MULTIMESH_H
 #define RNDOBJ_MULTIMESH_H
 #include "math/Mtx.h"
-#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
