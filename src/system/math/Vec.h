@@ -16,11 +16,6 @@ public:
         return *this;
     }
 
-    Vector2& operator=(const Vector2& vec){
-        x = vec.x; y = vec.y;
-        return *this;
-    }
-
     bool operator!() const {
         return x == 0.0f && y == 0.0f;
     }

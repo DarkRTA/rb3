@@ -118,7 +118,7 @@ void RndTransAnim::SetFrame(float frame, float blend) {
     if(mTrans){
         Transform tf(mTrans->LocalXfm());
         MakeTransform(frame, tf, false, blend);
-        mTrans->SetDirtyLocalXfm(tf);
+        mTrans->SetLocalXfm(tf);
     }
 }
 

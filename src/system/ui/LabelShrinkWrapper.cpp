@@ -61,10 +61,10 @@ void LabelShrinkWrapper::UpdateAndDrawWrapper(){
     float v1z = vec1.z;
     SetWorldXfm(m_pLabel->WorldXfm());
 
-    m_pTopLeftBone->SetDirtyLocalXfmVec(v1x, 0.0f, v2z);
-    m_pTopRightBone->SetDirtyLocalXfmVec(v2x, 0.0f, v2z);
-    m_pBottomLeftBone->SetDirtyLocalXfmVec(v1x, 0.0f, v1z);
-    m_pBottomRightBone->SetDirtyLocalXfmVec(v2x, 0.0f, v1z);
+    m_pTopLeftBone->SetLocalPos(v1x, 0.0f, v2z);
+    m_pTopRightBone->SetLocalPos(v2x, 0.0f, v2z);
+    m_pBottomLeftBone->SetLocalPos(v1x, 0.0f, v1z);
+    m_pBottomRightBone->SetLocalPos(v2x, 0.0f, v1z);
 }
 
 void LabelShrinkWrapper::DrawShowing(){

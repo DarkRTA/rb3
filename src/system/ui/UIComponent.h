@@ -73,6 +73,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
 
     UIComponent* NavRight(){ return mNavRight; }
     UIComponent* NavDown(){ return mNavDown; }
+    bool Loading() const { return mLoading; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD

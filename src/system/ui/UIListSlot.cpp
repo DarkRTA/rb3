@@ -1,4 +1,5 @@
 #include "ui/UIListSlot.h"
+#include "ui/UIList.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListSlot)
@@ -38,11 +39,66 @@ void UIListSlot::CreateElements(UIList* uilist, int count){
     }
 }
 
+// fn_8056EA14 - draw
+void UIListSlot::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& ctf,
+    UIComponent::State compstate, Box* box, DrawCommand cmd){
+    RndTransformable* root = RootTrans();
+    if(root){
+        int thesize = drawstate.mElements.size();
+        if(thesize > mElements.size()){
+            MILO_FAIL("%i isn't enough elements (need %i)", mElements.size(), thesize);
+        }
+        Transform tf78(root->WorldXfm());
+        Transform tfa8;
+        UIListProvider* prov = liststate.Provider();
+        for(int i = 0; i < thesize; i++){
+            const UIListElementDrawState& curdrawstate = drawstate.mElements[i];
+            if(curdrawstate.unk0){
+                float d10 = 1.0f;
+                UIColor* uicolor = 0;
+                if(!box){
+                    if(mSlotDrawType == kUIListSlotDrawHighlight && curdrawstate.mDisplay != drawstate.mHighlightDisplay ||
+                        mSlotDrawType == kUIListSlotDrawNoHighlight && curdrawstate.mDisplay == drawstate.mHighlightDisplay){
+                        continue;
+                    }
+
+                    UIListWidgetState slotoverride = prov->SlotElementStateOverride(curdrawstate.mShowing, curdrawstate.mData, this, curdrawstate.mElementState);
+                    UIComponent::State curcompstate = curdrawstate.mComponentState;
+                    uicolor = DisplayColor(slotoverride, curcompstate);
+                    uicolor = prov->SlotColorOverride(curdrawstate.mShowing, curdrawstate.mData, this, uicolor);
+                    d10 = curdrawstate.mAlpha;
+                    if(curcompstate == UIComponent::kDisabled) d10 *= DisabledAlphaScale();
+                    prov->PreDraw(curdrawstate.mShowing, curdrawstate.mData, this);
+                }
+                tfa8 = tf78;
+                if(ParentList()) ParentList()->AdjustTrans(tfa8, curdrawstate);
+                CalcXfm(ctf, curdrawstate.mPos, tfa8);
+                if(cmd != kExcludeFirst || i > 0){
+                    mElements[i]->Draw(tfa8, d10, uicolor, box);
+                }
+                if(cmd == kDrawFirst) return;
+            }
+        }
+    }
+}
+
 void UIListSlot::Fill(const UIListProvider& prov, int display, int j, int k){
     if(RootTrans()){
         MILO_ASSERT(display < mElements.size(), 0x8F);
         mElements[display]->Fill(prov, j, k);
     }
+}
+
+void UIListSlot::StartScroll(int i, bool b){
+    if(b && RootTrans()){
+        UIListSlotElement* next = mNextElement;
+        mElements.insert(i < 0 ? mElements.begin() : mElements.end(), next);
+        mNextElement = 0;
+    }
+}
+
+void UIListSlot::CompleteScroll(const UIListState& liststate, int i){
+    
 }
 
 void UIListSlot::Poll(){

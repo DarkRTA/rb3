@@ -76,7 +76,7 @@ void RndText::Load(BinStream& bs) {
     if(gRev < 2){
         float new_x, new_z;
         bs >> new_x >> new_z;
-        SetDirtyLocalXfmVec(new_x, 0.0f, -new_z * 0.75f);
+        SetLocalPos(new_x, 0.0f, -new_z * 0.75f);
     }
     bs >> unk_cc;
     if(gRev < 0x14){

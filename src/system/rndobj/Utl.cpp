@@ -476,7 +476,7 @@ void RndScaleObject(Hmx::Object* o, float f1, float f2){
     if(trans){
         Vector3 vec;
         Scale(trans->mLocalXfm.v, f1, vec);
-        trans->SetDirtyLocalXfmVec(vec.x, vec.y, vec.z);
+        trans->SetLocalPos(vec.x, vec.y, vec.z);
     }
     RndCam* cam = dynamic_cast<RndCam*>(o);
     if(cam){

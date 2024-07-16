@@ -147,12 +147,10 @@ void UIPicture::HookupMesh() {
         if(mat){
             RndTex* tex = mTex;
             if(tex && tex->mWidth != 0 && tex->mHeight != 0){
-                mat->mDiffuseTex = tex;
-                mat->mDirty |= 2;
+                mat->SetDiffuseTex(tex);
             }
             else {
-                mat->mDiffuseTex = 0;
-                mat->mDirty |= 2;
+                mat->SetDiffuseTex(0);
             }
         }
         else {

@@ -128,7 +128,7 @@ void UILabel::PreLoad(BinStream& bs){
         else if(mAlignment & 0x40){
             xfm.v.z -= mHeight * 0.5f;
         }
-        SetDirtyLocalXfm(xfm);
+        SetLocalXfm(xfm);
     }
     if(gRev > 5){
         int fixedLength;
@@ -449,8 +449,8 @@ void UILabel::CenterWithLabel(UILabel* label, bool b, float f){
     float width = mText->MaxLineWidth();
     Transform otherxfm = label->LocalXfm();
     float otherwidth = label->mText->MaxLineWidth();
-    SetDirtyLocalXfm(xfm);
-    label->SetDirtyLocalXfm(otherxfm);
+    SetLocalXfm(xfm);
+    label->SetLocalXfm(otherxfm);
 }
 
 float GetTextSizeFromPctHeight(float f){

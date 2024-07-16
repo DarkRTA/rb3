@@ -21,10 +21,9 @@ void ColorPalette::Load(BinStream& bs){
     if(gRev < 1){
         std::vector<ColorSet> setvec;
         bs >> setvec;
-        mColors.resize(setvec.size());
-        for(std::vector<ColorSet>::iterator it = setvec.begin(); it != setvec.end(); it++){
+        mColors.clear();
+        for(std::vector<ColorSet>::iterator it = setvec.begin(); it != setvec.end(); ++it){
             mColors.push_back(it->mPrimary);
-            mColors.push_back(it->mSecondary);
         }
     }
     else bs >> mColors;

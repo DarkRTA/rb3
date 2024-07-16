@@ -16,24 +16,33 @@
 #include "ui/UIListMesh.h"
 #include "ui/UIListSlot.h"
 #include "ui/UIListSubList.h"
+#include "utl/STLHelpers.h"
+#include "ui/UIMessages.h"
+#include "ui/Utl.h"
 #include <cstddef>
 #include "decomp.h"
+#include "utl/Symbols.h"
 
 static bool gGCNewLists = true;
 static bool gLoading = false;
-std::list<UIList*> UIList::sUIListSet;
+std::list<UIList*> sUIListSet;
 
 INIT_REVS(UIList)
 
 UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0), 
     mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull), 
     mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
-    unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), unk_0x1E5(0),
-    unk_0x1E6(0), unk_0x1E7(0) {}
+    unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), mDrawManuallyControlledWidgets(0),
+    unk_0x1E6(0), mNeedsGarbageCollection(0) {}
 
 UIList::~UIList(){
-    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++) delete *it;
-    sUIListSet.clear();
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+        if(*it == this){
+            it = sUIListSet.erase(it);
+        }
+    }
+    DeleteRange(mWidgets.begin(), mWidgets.end());
+    mWidgets.clear();
     delete mDataProvider;
     mDataProvider = 0;
 }
@@ -55,7 +64,24 @@ void UIList::Init() {
 BEGIN_COPYS(UIList)
     CREATE_COPY_AS(UIList, l)
     MILO_ASSERT(l, 103);
-    COPY_SUPERCLASS(UIList)
+    COPY_SUPERCLASS(UIComponent)
+    SetCircular(l->mListState.mCircular);
+    SetNumDisplay(l->mListState.mNumDisplay);
+    SetGridSpan(l->mListState.mGridSpan);
+    SetSpeed(l->mListState.Speed());
+    COPY_MEMBER_FROM(l, mPaginate)
+    COPY_MEMBER_FROM(l, unk_0x4) // from ScrollSelect
+    mListState.SetMinDisplay(l->mListState.MinDisplay());
+    mListState.SetScrollPastMinDisplay(l->mListState.ScrollPastMinDisplay());
+    mListState.SetMaxDisplay(l->mListState.MaxDisplay());
+    mListState.SetScrollPastMaxDisplay(l->mListState.ScrollPastMaxDisplay());
+    COPY_MEMBER_FROM(l, mNumData)
+    COPY_MEMBER_FROM(l, mAutoScrollPause)
+    COPY_MEMBER_FROM(l, mAutoScrollSendMessages)
+    COPY_MEMBER_FROM(l, mExtendedLabelEntries)
+    COPY_MEMBER_FROM(l, mExtendedMeshEntries)
+    COPY_MEMBER_FROM(l, mExtendedCustomEntries)
+    CopyHandlerData(dynamic_cast<const UIList*>(o));
 END_COPYS
 
 SAVE_OBJ(UIList, 138)
@@ -81,7 +107,7 @@ void UIList::PreLoadWithRev(BinStream& bs, int rev) {
 
 void UIList::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
-    unk_0x1E7 = gGCNewLists;
+    mNeedsGarbageCollection = gGCNewLists;
     int local_numdisplay;
     float local_speed;
     bool local_circular;
@@ -219,6 +245,8 @@ bool UIList::SetSelected(Symbol sym, bool b, int i){
     }
 }
 
+DECOMP_FORCEACTIVE(UIList, "mParent")
+
 void UIList::SetSelectedSimulateScroll(int i){
     mListDir->CompleteScroll(mListState, mWidgets);
     mListState.SetSelectedSimulateScroll(i);
@@ -261,15 +289,435 @@ void UIList::Scroll(int i){
 
 void UIList::SetParent(UIList* uilist){ mParent = uilist; }
 
+void UIList::AutoScroll(){
+    UIListProvider* prov = mListState.Provider();
+    if(!prov) prov = this;
+    int disp = mListState.mNumDisplay;
+    if(prov->NumData() <= disp){
+        StopAutoScroll();
+    }
+    else {
+        mAutoScrolling = true;
+        unk_0x1D8 = 1;
+        unk_0x1DC = mAutoScrollPause + TheTaskMgr.UISeconds();
+    }
+}
+
+void UIList::StopAutoScroll(){
+    mAutoScrolling = false;
+}
+
 void UIList::Update() {
     if (!gLoading) {
         unk_0x1E6 = false;
         UIComponent::Update();
         MILO_ASSERT(mResource && mResource->Dir(), 566);
-        if (unk_0x1E7) {
-
+        if (mNeedsGarbageCollection) {
+            for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+                if(*it == this){
+                    it = sUIListSet.erase(it);
+                }
+            }
+            sUIListSet.push_back(this);
         }
+        mListDir = dynamic_cast<UIListDir*>(mResource->Dir());
+        MILO_ASSERT(mListDir, 0x248);
+        mListDir->CreateElements(this, mWidgets, mListState.mNumDisplay);
 
         if (TheLoadMgr.EditMode()) Refresh(false);
     }
 }
+
+void UIList::CollectGarbage(){
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+        UIList* pList = *it;
+        pList->unk_0x1E0++;
+        MILO_ASSERT(pList->mNeedsGarbageCollection, 600);
+        if(pList->unk_0x1E0 > 4){
+            pList->unk_0x1E6 = true;
+        }
+    }
+}
+
+void UIList::Refresh(bool b){
+    if(unk_0x1E6) Poll();
+    else {
+        mListDir->FillElements(mListState, mWidgets);
+        if(b){
+            int nowrap = mListState.SelectedNoWrap();
+            if(nowrap >= NumProviderData() && nowrap != 0) SetSelected(NumProviderData() - 1, -1);
+            else {
+                if(!mListState.Provider()->IsActive(mListState.SelectedData()) && !mListState.IsScrolling()){
+                    SetSelected(nowrap, -1);
+                }
+            }
+        }
+    }
+}
+
+void UIList::Enter(){
+    UIComponent::Enter();
+    Reset();
+    mListDir->ListEntered();
+}
+
+void UIList::Poll(){
+    UIComponent::Poll();
+    if(Showing()){
+        if(mAutoScrolling){
+            if(unk_0x1DC >= 0.0f && TheTaskMgr.UISeconds() >= unk_0x1DC){
+                Scroll(unk_0x1D8);
+                unk_0x1DC = -1.0f;
+            }
+        }
+        mListState.Poll(TheTaskMgr.UISeconds());
+        unk_0x1E0 = 0;
+        if(unk_0x1E6){
+            Update();
+            Refresh(true);
+        }
+        mListDir->PollWidgets(mWidgets);
+        unk_0x1E4 = false;
+        UpdateHandler();
+    }
+}
+
+void UIList::DrawShowing(){
+    if(unk_0x1E4){
+        mListState.Poll(TheTaskMgr.UISeconds());
+        unk_0x1E4 = false;
+    }
+    bool b = mDrawManuallyControlledWidgets;
+    UIList* parent = mParent;
+    if(parent){
+        if(parent->mListDir->SubList(parent->mListState.SelectedDisplay(), parent->mWidgets) == this) b = mParent->mDrawManuallyControlledWidgets;
+    }
+    mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), 0, b);
+}
+
+void UIList::CalcBoundingBox(Box& box){
+    const Transform& tf1 = WorldXfm();
+    const Transform& tf2 = WorldXfm();
+    box.mMin = tf1.v;
+    box.mMax = tf2.v;
+    mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), &box, mDrawManuallyControlledWidgets);
+}
+
+const std::vector<UIListWidget*>& UIList::GetWidgets() const { return mWidgets; }
+
+#pragma push
+#pragma dont_inline on
+void UIList::BoundingBoxTriangles(std::vector<std::vector<Vector3> >& vec){
+    vec.clear();
+    Box box;
+    CalcBoundingBox(box);
+    std::vector<Vector3> locVec;
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.x;
+        if(i != 0) f = box.mMin.x;
+        locVec.clear();
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMax.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMax.z));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(f, box.mMin.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMin.z));
+        locVec.push_back(Vector3(f, box.mMax.y, box.mMax.z));
+        vec.push_back(locVec);
+    }
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.y;
+        if(i != 0) f = box.mMin.y;
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMax.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMax.z));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMin.z));
+        locVec.push_back(Vector3(box.mMax.x, f, box.mMax.z));
+        vec.push_back(locVec);
+    }
+    for(int i = 0; i < 2; i++){
+        float f = box.mMax.z;
+        if(i != 0) f = box.mMin.z;
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMin.x, box.mMax.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMax.y, f));
+        vec.push_back(locVec);
+        locVec.clear();
+        locVec.push_back(Vector3(box.mMin.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMin.y, f));
+        locVec.push_back(Vector3(box.mMax.x, box.mMax.y, f));
+        vec.push_back(locVec);
+    }
+}
+#pragma pop
+
+int UIList::NumData() const { return mNumData; }
+
+int UIList::NumProviderData() const {
+    UIListProvider* p = mListState.Provider();
+    if(p) return p->NumData();
+    else return NumData();
+}
+
+void UIList::EnableData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x390);
+    mDataProvider->Enable(s);
+    Refresh(false);
+}
+
+void UIList::DisableData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x397);
+    mDataProvider->Disable(s);
+    Refresh(false);
+    if(!mDataProvider->IsActive(mListState.SelectedData())){
+        mListState.SetSelected(0, -1, true);
+    }
+}
+
+void UIList::DimData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x3A4);
+    mDataProvider->Dim(s);
+    Refresh(false);
+}
+
+void UIList::UnDimData(Symbol s){
+    MILO_ASSERT(mDataProvider, 0x3AB);
+    mDataProvider->UnDim(s);
+    Refresh(false);
+}
+
+int UIList::SelectedAux() const { return mListState.Selected(); }
+void UIList::SetSelectedAux(int i){ SetSelected(i, -1); }
+
+// fn_80565528
+void UIList::StartScroll(const UIListState& state, int i, bool b){
+    mListDir->StartScroll(state, mWidgets, i, b);
+    if(state.Provider()->IsActive(state.SelectedData()) && (!mAutoScrolling || mAutoScrollSendMessages)){
+        TheUI->Handle(UIComponentScrollStartMsg(this, mUser), false);
+    }
+}
+
+// fn_80565700
+void UIList::CompleteScroll(const UIListState& state){
+    mListDir->CompleteScroll(state, mWidgets);
+    if(mAutoScrolling){
+        int firstshowing = mListState.mFirstShowing;
+        state.Provider();
+        int i3 = unk_0x1D8 > 0 ? mListState.MaxFirstShowing() : 0;
+        if(firstshowing == i3){
+            unk_0x1D8 = -unk_0x1D8;
+            unk_0x1DC = mAutoScrollPause + TheTaskMgr.UISeconds();
+        }
+        else Scroll(unk_0x1D8);
+    }
+    if(state.Provider()->IsActive(state.SelectedData())){
+        if(!mAutoScrolling || mAutoScrollSendMessages){
+            TheUI->Handle(UIComponentScrollMsg(this, mUser), false);
+        }
+        HandleSelectionUpdated();
+    }
+}
+
+void UIList::HandleSelectionUpdated(){
+    UITransitionHandler::StartValueChange();
+    if(mListDir->SubList(mListState.SelectedDisplay(), mWidgets)){
+        mListDir->SubList(mListState.SelectedDisplay(), mWidgets)->HandleSelectionUpdated();
+    }
+}
+
+void UIList::UpdateExtendedEntries(const UIListState& state){
+    UIListProvider* prov = state.Provider();
+    if(prov && prov->NumData() > 0){
+        UIList* pMainList = mParent ? mParent : this;
+        MILO_ASSERT(pMainList, 0x3FD);
+        for(ObjPtrList<UILabel, ObjectDir>::iterator it = pMainList->mExtendedLabelEntries.begin(); it != pMainList->mExtendedLabelEntries.end(); ++it){
+            UILabel* label = *it;
+            MILO_ASSERT(label, 0x404);
+            prov->UpdateExtendedText(state.SelectedDisplay(), state.SelectedData(), label);
+        }
+        for(ObjPtrList<RndMesh, ObjectDir>::iterator it = pMainList->mExtendedMeshEntries.begin(); it != pMainList->mExtendedMeshEntries.end(); ++it){
+            RndMesh* mesh = *it;
+            MILO_ASSERT(mesh, 0x40F);
+            prov->UpdateExtendedMesh(state.SelectedDisplay(), state.SelectedData(), mesh);
+        }
+        for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = pMainList->mExtendedCustomEntries.begin(); it != pMainList->mExtendedCustomEntries.end(); ++it){
+            Hmx::Object* custom = *it;
+            MILO_ASSERT(custom, 0x41A);
+            prov->UpdateExtendedCustom(state.SelectedDisplay(), state.SelectedData(), custom);
+        }
+    }
+}
+
+DataNode UIList::OnMsg(const ButtonDownMsg& msg){
+    mUser = msg.GetUser();
+    Symbol cntType = JoypadControllerTypePadNum(msg.GetPadNum());
+    if(CanScroll()){
+        int gridspan = mListState.mGridSpan;
+        UIList* sub = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+        UIListOrientation o = mListDir->Orientation();
+        bool b = false;
+        if(sub){
+            if(sub->Handle(msg, false) != DataNode(kDataUnhandled, 0)){
+                return DataNode(1);
+            }
+            if(ScrollDirection(msg, cntType, sub->mListDir->Orientation() == kUIListVertical, sub->mListState.mGridSpan) == kAction_Confirm){
+            
+            }
+        }
+    }
+    else {
+        if(!mListState.IsScrolling()){
+            if(msg.GetAction() == kAction_Confirm){
+                if(SelectScrollSelect(this, mUser)) return DataNode(1);
+                SendSelect(mUser);
+                return DataNode(1);
+            }
+            if(msg.GetAction() == kAction_Cancel){
+                if(RevertScrollSelect(this, mUser, 0)){
+                    return DataNode(1);
+                }
+            }
+        }
+        return DataNode(kDataUnhandled, 0);
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(UIList)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE(selected_sym, OnSelectedSym)
+    HANDLE_EXPR(selected_pos, SelectedPos())
+    HANDLE_EXPR(selected_data, SelectedData())
+    HANDLE_EXPR(num_display, NumDisplay())
+    HANDLE_EXPR(first_showing, FirstShowing())
+    HANDLE_ACTION(set_provider, SetProvider(_msg->Obj<UIListProvider>(2)))
+    HANDLE(set_data, OnSetData)
+    HANDLE_EXPR(num_data, NumProviderData())
+    HANDLE_ACTION(disable_data, DisableData(_msg->Sym(2)))
+    HANDLE_ACTION(enable_data, EnableData(_msg->Sym(2)))
+    HANDLE_ACTION(dim_data, DimData(_msg->Sym(2)))
+    HANDLE_ACTION(undim_data, UnDimData(_msg->Sym(2)))
+    HANDLE(set_selected, OnSetSelected)
+    HANDLE(set_selected_simulate_scroll, OnSetSelectedSimulateScroll)
+    HANDLE_ACTION(set_scroll_user, SetScrollUser(_msg->Obj<LocalUser>(2)))
+    HANDLE_ACTION(refresh, Refresh(true))
+    HANDLE_ACTION(set_draw_manually_controlled_widgets, SetDrawManuallyControlledWidgets(_msg->Int(2)))
+    HANDLE(scroll, OnScroll)
+    HANDLE_EXPR(is_scrolling, IsScrolling())
+    HANDLE_EXPR(is_scrolling_down, mListState.CurrentScroll() != -1)
+    HANDLE_ACTION(store, Store())
+    HANDLE_ACTION(undo, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), 0))
+    HANDLE_ACTION(confirm, Reset())
+    HANDLE_ACTION(set_num_display, SetNumDisplay(_msg->Int(2)))
+    HANDLE_ACTION(set_grid_span, SetGridSpan(_msg->Int(2)))
+    HANDLE_ACTION(auto_scroll, AutoScroll())
+    HANDLE_ACTION(stop_auto_scroll, StopAutoScroll())
+    HANDLE_EXPR(parent_list, ParentList())
+    HANDLE_SUPERCLASS(ScrollSelect)
+    HANDLE_SUPERCLASS(UIComponent)
+    HANDLE_CHECK(0x4F0)
+END_HANDLERS
+#pragma pop
+
+DataNode UIList::OnSetData(DataArray* da){
+    DataArray* arr = da->Array(2);
+    int i3 = da->Size() > 3 ? da->Int(3) : 0;
+    bool i4 = da->Size() > 4 ? da->Int(4) : 0;
+    bool i5 = da->Size() > 5 ? da->Int(5) : 0;
+    if(mDataProvider) mDataProvider->SetData(arr);
+    else mDataProvider = new DataProvider(arr, i3, i4, i5, this);
+    SetProvider(mDataProvider);
+    return DataNode(1);
+}
+
+void UIList::SetScrollUser(LocalUser* user){
+    mUser = user;
+}
+
+DataNode UIList::OnSetSelected(DataArray* da){
+    DataNode node = da->Evaluate(2);
+    int i6 = -1;
+    if(node.Type() == kDataInt){
+        if(da->Size() == 4) i6 = da->Int(3);
+        SetSelected(node.Int(0), i6);
+        return DataNode(1);
+    }
+    else if(node.Type() == kDataSymbol || node.Type() == kDataString){
+        bool i3 = da->Size() == 4 ? da->Int(3) : true;
+        if(da->Size() == 5) i6 = da->Int(4);
+        return DataNode(SetSelected(node.ForceSym(0), i3, i6));
+    }
+    else {
+        MILO_FAIL("bad arg to set_selected");
+        return DataNode(0);
+    }
+}
+
+DataNode UIList::OnSetSelectedSimulateScroll(DataArray* da){
+    DataNode node = da->Evaluate(2);
+    if(node.Type() == kDataInt){
+        SetSelectedSimulateScroll(node.Int(0));
+        return DataNode(1);
+    }
+    else if(node.Type() == kDataSymbol || node.Type() == kDataString){
+        bool b3 = da->Size() == 4 ? da->Int(3) : true;
+        return DataNode(SetSelectedSimulateScroll(node.ForceSym(0), b3));
+    }
+    else {
+        MILO_FAIL("bad arg to set_selected_simulate_scroll");
+        return DataNode(0);
+    }
+}
+
+DataNode UIList::OnScroll(DataArray* da){
+    int scroll = da->Int(2);
+    mUser = da->Size() > 3 ? da->Obj<LocalUser>(3) : 0;
+    Scroll(scroll);
+    return DataNode(1);
+}
+
+DataNode UIList::OnSelectedSym(DataArray* da){
+    if(da->Size() > 2){
+        return DataNode(SelectedSym(da->Int(2)));
+    }
+    else return DataNode(SelectedSym(true));
+}
+
+bool UIList::IsEmptyValue() const { return mListState.SelectedData() == -1; }
+
+void UIList::FinishValueChange(){
+    UpdateExtendedEntries(mListState);
+    UITransitionHandler::FinishValueChange();
+}
+
+void UIList::SetDrawManuallyControlledWidgets(bool b){ mDrawManuallyControlledWidgets = b; }
+
+BEGIN_PROPSYNCS(UIList)
+    SYNC_PROP_SET(display_num, mListState.mNumDisplay, SetNumDisplay(_val.Int(0)))
+    SYNC_PROP_SET(grid_span, mListState.mGridSpan, SetGridSpan(_val.Int(0)))
+    SYNC_PROP_SET(circular, mListState.mCircular, SetCircular(_val.Int(0)))
+    SYNC_PROP_SET(scroll_time, mListState.Speed(), SetSpeed(_val.Float(0)))
+    SYNC_PROP(paginate, mPaginate)
+    SYNC_PROP_SET(min_display, mListState.MinDisplay(), mListState.SetMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
+    SYNC_PROP_SET(max_display, mListState.MaxDisplay(), mListState.SetMaxDisplay(_val.Int(0)))
+    SYNC_PROP_SET(scroll_past_max_display, mListState.ScrollPastMaxDisplay(), mListState.SetScrollPastMaxDisplay(_val.Int(0)))
+    SYNC_PROP_MODIFY(num_data, mNumData, Update())
+    SYNC_PROP(auto_scroll_pause, mAutoScrollPause)
+    SYNC_PROP(auto_scroll_send_messages, mAutoScrollSendMessages)
+    SYNC_PROP(extended_label_entries, mExtendedLabelEntries)
+    SYNC_PROP(extended_mesh_entries, mExtendedMeshEntries)
+    SYNC_PROP(extended_custom_entries, mExtendedCustomEntries)
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_SUPERCLASS(ScrollSelect)
+    SYNC_SUPERCLASS(UIComponent)
+END_PROPSYNCS

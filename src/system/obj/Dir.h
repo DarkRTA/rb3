@@ -6,6 +6,7 @@
 #include "utl/KeylessHash.h"
 #include "utl/Loader.h"
 #include "obj/DirLoader.h"
+#include "rndobj/Tex.h"
 
 enum ViewportId {
     kPerspective = 0,
@@ -97,9 +98,9 @@ public:
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
-            class ObjectDir* gotten = mLoader->GetDir();
+            T* gotten = dynamic_cast<T*>(mLoader->GetDir());
             mLoader = 0;
-            *this = dynamic_cast<T*>(gotten);
+            *this = gotten;
         }
     }
 
@@ -116,8 +117,7 @@ public:
                     delete mDir;
                 }
             }
-            mDir = dir;
-            if(mDir) mDir->AddRef(this);
+            if(mDir = dir) mDir->AddRef(this);
         }
         return *this;
     }
@@ -134,9 +134,10 @@ public:
     class DirLoader* mLoader;
 };
 
-// TODO: fill out
 template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
-    // ptr.Load(bs, true, 0);
+    FilePath fp;
+    bs >> fp;
+    ptr.LoadFile(fp, true, true, kLoadFront, false);
     return bs;
 }
 
@@ -234,6 +235,12 @@ public:
             MILO_FAIL(kNotObjectMsg, name, PathName(this) ? PathName(this) : "**no file**");
         }
         return castedObj;
+    }
+
+    RndTex* NewTex(const char* name){
+        RndTex* tex = Hmx::Object::New<RndTex>();
+        if(name) tex->SetName(name, this);
+        return tex;
     }
 
     static void Init();

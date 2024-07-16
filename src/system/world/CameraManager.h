@@ -11,6 +11,11 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~CameraManager();
 
+    void Enter();
+    void PrePoll();
+    void Poll();
+    void SyncObjects();
+
     WorldDir* mParent;
     int unk8, unkc, unk10;
     ObjPtr<CamShot, class ObjectDir> unk14;

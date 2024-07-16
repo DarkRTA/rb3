@@ -22,6 +22,9 @@ END_MESSAGE;
 BEGIN_MESSAGE(UITriggerCompleteMsg, ui_trigger_complete, UITrigger*);
 END_MESSAGE;
 
+BEGIN_MESSAGE(UIComponentScrollStartMsg, component_scroll_start, UIComponent*, LocalUser*);
+END_MESSAGE;
+
 inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
     Message(Type(), DataNode(comp), DataNode(user)){}
 
@@ -39,5 +42,8 @@ inline UIComponentFocusChangeMsg::UIComponentFocusChangeMsg(UIComponent* comp1, 
 
 inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) : 
     Message(Type(), DataNode(trig)){}
+
+inline UIComponentScrollStartMsg::UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
+    Message(Type(), DataNode(comp), DataNode(user)){}
 
 #endif

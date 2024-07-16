@@ -3,23 +3,28 @@
 #include "world/CameraShot.h"
 #include "world/ColorPalette.h"
 #include "world/Dir.h"
+#include "world/SpotlightEnder.h"
 #include "world/Instance.h"
 #include "world/LightHue.h"
 #include "world/LightPreset.h"
 #include "world/SpotlightDrawer.h"
-#include "world/SpotlightEnder.h"
+#include "world/Crowd.h"
+#include "world/Reflection.h"
+#include "world/EventAnim.h"
+#include "world/Spotlight.h"
 
 void WorldInit() {
     WorldDir::Init();
-    REGISTER_OBJ_FACTORY(ColorPalette)
-    //REGISTER_OBJ_FACTORY(EventAnim)
-    //REGISTER_OBJ_FACTORY(WorldCrowd)
+    ColorPalette::Init();
+    EventAnim::Init();
+    WorldCrowd::Init();
     CamShot::Init();
-    //REGISTER_OBJ_FACTORY(WorldReflection)
-    REGISTER_OBJ_FACTORY(LightPreset)
-    REGISTER_OBJ_FACTORY(LightHue)
+    WorldReflection::Init();
+    Spotlight::Init();
+    LightPreset::Init();
+    LightHue::Init();
     SpotlightDrawer::Init();
-    REGISTER_OBJ_FACTORY(SpotlightEnder)
-    REGISTER_OBJ_FACTORY(WorldInstance)
+    SpotlightEnder::Init();
+    WorldInstance::Init();
     PreloadSharedSubdirs("world");
 }

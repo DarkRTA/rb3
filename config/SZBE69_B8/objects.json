@@ -481,7 +481,7 @@
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "Matching",
             "system/ui/UIProxy.cpp": "NonMatching",
-            "system/ui/UIResource.cpp": "NonMatching",
+            "system/ui/UIResource.cpp": "Matching",
             "system/ui/UIScreen.cpp": {
                 "status": "LinkIssues",
                 "comment": "SetType ordering in bss"
@@ -557,6 +557,7 @@
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",
+            "system/world/Crowd.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
@@ -567,7 +568,7 @@
             "system/world/Spotlight.cpp": "NonMatching",
             "system/world/SpotlightDrawer.cpp": "NonMatching",
             "system/world/SpotlightEnder.cpp": "Matching",
-            "system/world/World.cpp": "NonMatching"
+            "system/world/World.cpp": "Matching"
         }
     },
     "system/flex": {

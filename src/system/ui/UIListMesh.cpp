@@ -27,7 +27,7 @@ void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState&
         }
         Transform xfm1 = mMesh->mLocalXfm;
         UIListSlot::Draw(drawstate, liststate, tf, compstate, box, cmd);
-        mMesh->SetDirtyLocalXfm(xfm1);
+        mMesh->SetLocalXfm(xfm1);
         if(TheLoadMgr.EditMode()){
             mMesh->SetMat(themat);
             if(themat){

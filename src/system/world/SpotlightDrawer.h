@@ -65,6 +65,7 @@ public:
     virtual void ClearPostProc(){}
 
     void UpdateBoxMap();
+    void ClearLights();
 
     static SpotlightDrawer* sCurrent;
     static std::vector<SpotlightEntry> sLights;

@@ -126,7 +126,7 @@ void RndTransformable::DistributeChildren(bool b, float f){
     for(int i = 0; i < count; i++){
         Transform t = vec[i]->LocalXfm();
         t.v[b] = f * i;
-        vec[i]->SetDirtyLocalXfm(t);
+        vec[i]->SetLocalXfm(t);
     }
 }
 
@@ -225,7 +225,7 @@ DataNode RndTransformable::OnCopyLocalTo(const DataArray* da){
     DataArray* arr = da->Array(2);
     for(int i = arr->Size() - 1; i >= 0; i--){
         RndTransformable* t = arr->Obj<RndTransformable>(i);
-        t->SetDirtyLocalXfm(LocalXfm());
+        t->SetLocalXfm(LocalXfm());
     }
     return DataNode(0);
 }

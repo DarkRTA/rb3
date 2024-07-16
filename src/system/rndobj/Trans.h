@@ -87,13 +87,24 @@ public:
         else return mWorldXfm;
     }
 
-    void SetDirtyLocalXfm(const Transform& tf){
+    void SetLocalXfm(const Transform& tf){
         mLocalXfm = tf;
         SetDirty();
     }
 
-    void SetDirtyLocalXfmVec(float x, float y, float z){
+    // TODO: at some point we need to replace calls to this SetLocalPos
+    // to the one that takes in a Vector3& - we're using this one
+    // because for whatever reason the Vector3& one doesn't inline nicely
+    // and results in a stack related mismatch
+    void SetLocalPos(float x, float y, float z){
         mLocalXfm.v.Set(x, y, z);
+        SetDirty();
+    }
+
+    void SetLocalPos(const Vector3& vec){
+        mLocalXfm.v.x = vec.x;
+        mLocalXfm.v.y = vec.y;
+        mLocalXfm.v.z = vec.z;
         SetDirty();
     }
 

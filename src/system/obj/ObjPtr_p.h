@@ -34,9 +34,8 @@ public:
 
     void operator=(T1* t){
         if(t != mPtr){
-            if(mPtr != 0) mPtr->Release(this);
-            mPtr = t;
-            if(mPtr != 0) mPtr->AddRef(this);
+            if(mPtr) mPtr->Release(this);
+            if(mPtr = t) t->AddRef(this);
         }
     }
 

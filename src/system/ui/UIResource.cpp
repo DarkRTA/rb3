@@ -7,15 +7,14 @@ UIResource::UIResource(const FilePath& f) : mRefCount(0), mResourcePath(f), mDir
 
 void UIResource::Load(bool b) {
     if (mRefCount == 0) {
-        if (mDir.mDir != NULL && mDir.mDir->IsDirPtr() && mDir.mDir != NULL) { // ?????
-            TheLoadMgr.PollUntilLoaded(NULL, NULL);
-        }
+        mDir.LoadFile(mResourcePath, b, true, kLoadFront, false);
     }
-    if (b) PostLoad();
+    if (!b) PostLoad();
 }
 
 void UIResource::PostLoad() {
-
+    if(!mRefCount) mDir.PostLoad(0);
+    mRefCount++;
 }
 
 void UIResource::Release() {
@@ -27,5 +26,6 @@ void UIResource::Release() {
 }
 
 void UIResource::ForceRelease() {
-
+    mRefCount = 0;
+    mDir = 0;
 }
