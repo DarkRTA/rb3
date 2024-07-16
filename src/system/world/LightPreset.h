@@ -80,8 +80,12 @@ public:
     float unk9c;
     LightHue* mHue; // 0xa0
 
-    NEW_OVERLOAD
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(LightPreset)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(LightPreset)
+    }
 };
 
 #endif

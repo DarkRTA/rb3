@@ -39,8 +39,12 @@ public:
     SharedGroup* mSharedGroup2; // 0x19c
 
     DECLARE_REVS;
-    NEW_OVERLOAD
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(WorldInstance)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(WorldInstance)
+    }
 };
 
 class SharedGroup : public RndPollable {

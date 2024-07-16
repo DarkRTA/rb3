@@ -17,9 +17,12 @@ public:
     virtual ~SpotlightEnder();
 
     DECLARE_REVS
-    NEW_OVERLOAD
-    DELETE_OVERLOAD
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(SpotlightEnder)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(SpotlightEnder)
+    }
 };
 
 #endif

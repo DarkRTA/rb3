@@ -557,6 +557,7 @@
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",
+            "system/world/Crowd.cpp": "NonMatching",
             "system/world/ColorPalette.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
