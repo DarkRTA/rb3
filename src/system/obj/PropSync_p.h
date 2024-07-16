@@ -7,6 +7,8 @@
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "os/Debug.h"
+#include "obj/ObjVector.h"
+#include "obj/ObjList.h"
 #include "math/Geo.h"
 #include <list>
 
@@ -225,6 +227,37 @@ template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode
             T item(objVec.Owner());
             if(PropSync(item, node, prop, i, kPropInsert)){
                 objVec.insert(it, item);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(op == kPropUnknown0x40) return false;
+    else if(i == prop->Size()){
+        MILO_ASSERT(op == kPropSize, 0x1A6);
+        node = DataNode((int)objList.size());
+        return true;
+    }
+    else {
+        int count = prop->Int(i++);
+        std::list<T>::iterator it = objList.begin();
+        for(; count != 0; count--){
+            it++;
+        }
+        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+            return PropSync(*it, node, prop, i, op);
+        }
+        else if(op == kPropRemove){
+            objList.erase(it);
+            return true;
+        }
+        else if(op == kPropInsert){
+            T item(objList.Owner());
+            if(PropSync(item, node, prop, i, kPropInsert)){
+                objList.insert(it, item);
                 return true;
             }
         }

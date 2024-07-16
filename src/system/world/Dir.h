@@ -4,29 +4,40 @@
 #include "obj/ObjList.h"
 #include "world/CameraManager.h"
 #include "world/LightPresetManager.h"
+#include "world/LightPreset.h"
+#include "world/LightHue.h"
 
 class CamShot;
 class WorldCrowd;
-class LightPreset;
 
 class WorldDir : public PanelDir {
 public:
 
     class PresetOverride {
     public:
-        PresetOverride(Hmx::Object*);
+        PresetOverride(Hmx::Object* o) : preset(o), hue(o) {}
+        void Sync(bool);
+
+        ObjPtr<LightPreset, ObjectDir> preset; // 0x0
+        ObjPtr<LightHue, ObjectDir> hue; // 0xc
     };
 
     class BitmapOverride {
     public:
         BitmapOverride(Hmx::Object* o) : original(o), replacement(o) {}
+        void Sync(bool);
+
         ObjPtr<RndTex, ObjectDir> original; // 0x0
         ObjPtr<RndTex, ObjectDir> replacement; // 0xc
     };
 
     class MatOverride {
     public:
-        MatOverride(Hmx::Object*);
+        MatOverride(Hmx::Object* o) : mesh(o), mat(o) {}
+        void Sync(bool);
+
+        ObjPtr<RndMesh, ObjectDir> mesh; // 0x0
+        ObjPtr<RndMat, ObjectDir> mat; // 0xc
     };
 
     WorldDir();
@@ -55,6 +66,7 @@ public:
     void SyncPresets(bool);
     void SyncCamShots(bool);
     void SyncHUD();
+    void SetCrowds(ObjVector<CamShotCrowd>&);
 
     DECLARE_REVS;
 
@@ -76,7 +88,7 @@ public:
     ObjPtrList<WorldCrowd, ObjectDir> mCrowds; // 0x23c
     RndMat* mGlowMat; // 0x24c
     FilePath mFakeHudFilename; // 0x250
-    int unk25c; // 0x25c - ptr to some class - RndDir* mFakeHudDir?
+    RndDir* mFakeHudDir; // 0x25c
     bool mShowFakeHud; // 0x260
     ObjPtr<RndDir, ObjectDir> mHud; // 0x264
     CameraManager mCameraManager; // 0x270

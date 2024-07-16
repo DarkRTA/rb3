@@ -18,7 +18,7 @@ std::vector<FilePath> gOldChars;
 ObjectDir* gOldTexDir;
 
 WorldDir::WorldDir() : mPresetOverrides(this), mBitmapOverrides(this), mMatOverrides(this), mHideOverrides(this, kObjListNoNull), mCamShotOverrides(this, kObjListNoNull),
-    mPS3PerPixelShows(this, kObjListNoNull), mPS3PerPixelHides(this, kObjListNoNull), mCrowds(this, kObjListNoNull), unk25c(0), mShowFakeHud(0), mHud(this, 0),
+    mPS3PerPixelShows(this, kObjListNoNull), mPS3PerPixelHides(this, kObjListNoNull), mCrowds(this, kObjListNoNull), mFakeHudDir(0), mShowFakeHud(0), mHud(this, 0),
     mCameraManager(this), mPresetManager(this), mEchoMsgs(0), unk308(0), unk309(1), mTestPreset1(this, 0), mTestPreset2(this, 0), mTestAnimationTime(10.0f) {
     mGlowMat = Hmx::Object::New<RndMat>();
 }
@@ -291,3 +291,169 @@ void WorldDir::SyncObjects(){
     if(mHud) VectorRemove(mDraws, mHud);
     mDrawItr = mDraws.begin();
 }
+
+void WorldDir::SetCrowds(ObjVector<CamShotCrowd>& crowdvec){
+    bool b = false;
+    // ObjPtrList<WorldCrowd, ObjectDir> mCrowds; // 0x23c
+    for(ObjPtrList<WorldCrowd, ObjectDir>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
+
+    }
+    if(!b){
+        MILO_FAIL("Crowd %s not found in world %s");
+    }
+}
+
+void WorldDir::DrawShowing(){
+    START_AUTO_TIMER("world_draw");
+    MILO_LOG("hud_draw");
+}
+
+void WorldDir::SyncHUD(){
+    delete mFakeHudDir;
+    mFakeHudDir = 0;
+    if(mShowFakeHud && !mFakeHudFilename.empty()){
+        mFakeHudDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(mFakeHudFilename, 0, 0));
+        if(mFakeHudDir) mFakeHudDir->Enter();
+    }
+}
+
+void WorldDir::SyncHides(bool b){
+    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = mHideOverrides.begin(); it != mHideOverrides.end(); it++){
+        (*it)->SetShowing(!b);
+    }
+}
+
+void WorldDir::SyncBitmaps(bool b){
+    for(ObjList<BitmapOverride>::iterator it = mBitmapOverrides.begin(); it != mBitmapOverrides.end(); ++it){
+        (*it).Sync(b);
+    }
+}
+
+BEGIN_HANDLERS(WorldDir)
+    if(mEchoMsgs && !_warn) MILO_LOG("World msg: %s\n", sym);
+    HANDLE_MEMBER(mCameraManager)
+    HANDLE_MEMBER(mPresetManager)
+    HANDLE_SUPERCLASS(PanelDir)
+    HANDLE_CHECK(0x3CB)
+END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(WorldDir::PresetOverride)
+    {
+        static Symbol _s("preset");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.preset, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+    {
+        static Symbol _s("hue");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.hue, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(WorldDir::BitmapOverride)
+    {
+        static Symbol _s("original");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.original, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+    {
+        static Symbol _s("replacement");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.replacement, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(WorldDir::MatOverride)
+    {
+        static Symbol _s("mesh");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.mesh, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+    {
+        static Symbol _s("mat");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) o.Sync(false);
+            bool synced = PropSync(o.mat, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) o.Sync(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(WorldDir)
+    SYNC_PROP_MODIFY_ALT(hud_filename, mFakeHudFilename, SyncHUD())
+    SYNC_PROP_MODIFY(show_hud, mShowFakeHud, SyncHUD())
+    SYNC_PROP(echo_msgs, mEchoMsgs)
+    {
+        static Symbol _s("hide_overrides");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) SyncHides(false);
+            bool synced = PropSync(mHideOverrides, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) SyncHides(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+    SYNC_PROP(bitmap_overrides, mBitmapOverrides)
+    SYNC_PROP(mat_overrides, mMatOverrides)
+    SYNC_PROP(preset_overrides, mPresetOverrides)
+    {
+        static Symbol _s("camshot_overrides");
+        if(sym == _s){
+            if(!(_op & (kPropSize|kPropGet))) SyncCamShots(false);
+            bool synced = PropSync(mCamShotOverrides, _val, _prop, _i + 1, _op);
+            if(synced){
+                if(!(_op & (kPropSize|kPropGet))) SyncCamShots(true);
+                return true;
+            }
+            else return false;
+        }
+    }
+    SYNC_PROP(ps3_per_pixel_hides, mPS3PerPixelHides)
+    SYNC_PROP(ps3_per_pixel_shows, mPS3PerPixelShows)
+    SYNC_PROP(test_light_preset_1, mTestPreset1)
+    SYNC_PROP(test_light_preset_2, mTestPreset2)
+    SYNC_PROP(test_animation_time, mTestAnimationTime)
+    SYNC_PROP_MODIFY_ALT(hud, mHud, SyncObjects())
+    SYNC_SUPERCLASS(PanelDir)
+END_PROPSYNCS
