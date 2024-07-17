@@ -214,8 +214,7 @@ void WorldDir::PostLoad(BinStream& bs){
             char buf[0x80];
             bs.ReadString(buf, 0x80);
             p->SetName(buf, this);
-            RndTransformable* tp = p;
-            tp->Load(bs);
+            p->RndTransformable::Load(bs);
             bool showing;
             bs >> showing;
             float fff;
@@ -237,7 +236,7 @@ void WorldDir::PostLoad(BinStream& bs){
             bs >> tf;
         }
         else if(gRev > 6 && mCam){
-            mCam->Load(bs);
+            mCam->RndTransformable::Load(bs);
         }
     }
     if(gRev > 0xB){
