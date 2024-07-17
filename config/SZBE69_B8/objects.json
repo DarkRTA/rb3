@@ -407,6 +407,7 @@
             "system/rndwii/Rnd.cpp": "NonMatching",
 
             "system/synth/ADSR.cpp": "NonMatching",
+            "system/synth/BinkClip.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
             "system/synth/Faders.cpp": "Equivalent",
@@ -481,7 +482,10 @@
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "Matching",
-            "system/ui/UIProxy.cpp": "NonMatching",
+            "system/ui/UIProxy.cpp": {
+                "status": "LinkIssues",
+                "comment": "SetType ordering in bss"
+            },
             "system/ui/UIResource.cpp": "Matching",
             "system/ui/UIScreen.cpp": {
                 "status": "LinkIssues",
