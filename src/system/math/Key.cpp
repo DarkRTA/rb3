@@ -32,4 +32,18 @@ void SplineTangent(const Keys<Vector3, Vector3>& keys, int i, Vector3& vout){
     }
 }
 
+// fn_802E35A8 - InterpTangent(const Vector3&, const Vector3&, const Vector3&, const Vector3&, float, Vector3&)
+// i absolutely hate inlines
+void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector3& v4, float f, Vector3& vout){
+    float scale = f * f;
+    Scale(v1, scale * 6.0f - f * 6.0f, vout);
+    Vector3 vtmp;
+    Scale(v2, -(f * 4.0f - scale * 3.0f) + 1.0f, vtmp);
+    Add(vout, vtmp, vout);
+    Scale(v3, scale * -6.0f + f * 6.0f, vtmp);
+    Add(vout, vtmp, vout);
+    Scale(v4, -(f * 2.0f - f * 3.0f), vtmp);
+    Add(vout, vtmp, vout);
+}
+
 // fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*)
