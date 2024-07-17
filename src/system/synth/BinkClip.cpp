@@ -1,5 +1,6 @@
 #include "synth/BinkClip.h"
 #include "synth/Synth.h"
+#include "utl/Symbols.h"
 
 BinkClip::PanInfo::PanInfo(int i, float f) : chan(i), pan(f) {}
 
@@ -164,3 +165,89 @@ void BinkClip::SetPan(int chan, float pan){
     if(mStream) mStream->SetPan(info.chan, info.pan);
 }
 
+void BinkClip::FadeOut(float f){
+    mFadeOutFader->DoFade(-96.0f, f);
+}
+
+void BinkClip::UnloadWhenFinishedPlaying(bool b){ mUnloadWhenFinishedPlaying = b; }
+
+void BinkClip::LoadFile(BinStream* bs){
+    delete mLoader;
+    mLoader = 0;
+    KillStream();
+    UnloadData();
+    if(mPreload){
+        BinStream* toUse = bs && bs->Cached() ? bs : 0;
+        mLoader = new FileLoader(mFile, FileLocalize(mFile.c_str(), 0), kLoadFront, 0, false, true, toUse);
+        if(!mLoader) MILO_WARN("Could not load bik file '%s'", mFile.c_str());
+    }
+}
+
+bool BinkClip::IsReadyToPlay() const {
+    if(!mPreload) return true;
+    if(mLoader) return mLoader->IsLoaded();
+    return mData && mSize > 0;
+}
+
+bool BinkClip::EnsureLoaded(){
+    if(mLoader){
+        if(!mLoader->IsLoaded()){
+            MILO_WARN("BinkClip blocked while loading '%s'", mFile.c_str());
+            TheLoadMgr.PollUntilLoaded(mLoader, 0);
+        }
+        mData = (void*)mLoader->GetBuffer(&mSize);
+        delete mLoader;
+        mLoader = 0;
+    }
+    return mData && mSize > 0;
+}
+
+void BinkClip::UpdateVolume(){
+    // if(mStream) mStream->SetVolume(mVolume + mPlaybackVolumeOffset);
+}
+
+void BinkClip::UpdateFaders(){
+    if(mStream){
+        for(std::vector<Fader*>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+            mStream->Faders()->Add(*it);
+        }
+    }
+}
+
+void BinkClip::UpdatePanInfo(){
+    if(mStream){
+        for(std::vector<PanInfo>::iterator it = mPanInfo.begin(); it != mPanInfo.end(); ++it){
+            mStream->SetPan((*it).chan, (*it).pan);
+        }
+    }
+}
+
+void BinkClip::KillStream(){
+    mPlaying = false;
+    delete mStream;
+    mStream = 0;
+}
+
+void BinkClip::UnloadData(){
+    if(mData){
+        _MemFree(mData);
+        mData = 0;
+        mSize = 0;
+    }
+}
+
+BEGIN_PROPSYNCS(BinkClip)
+    SYNC_PROP_SET(file, mFile, SetFile(_val.Str(0)))
+    SYNC_PROP_SET(volume, mVolume, SetVolume(_val.Float(0)))
+    SYNC_PROP_SET(loop, mLoop, SetLoop(_val.Int(0)))
+    SYNC_PROP_SET(preload, mPreload, mPreload = _val.Int(0))
+    SYNC_SUPERCLASS(Hmx::Object)
+END_PROPSYNCS
+
+BEGIN_HANDLERS(BinkClip)
+    HANDLE_ACTION(play, Play())
+    HANDLE_ACTION(stop, Stop())
+    HANDLE_ACTION(set_pan, SetPan(_msg->Int(2), _msg->Float(3)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x24A)
+END_HANDLERS

@@ -44,6 +44,9 @@ public:
     void AddFader(Fader*);
     void RemoveFader(Fader*);
     void SetPan(int, float);
+    void FadeOut(float);
+    void UnloadWhenFinishedPlaying(bool);
+    bool IsReadyToPlay() const;
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
