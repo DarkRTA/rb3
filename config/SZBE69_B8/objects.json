@@ -408,6 +408,7 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/BinkClip.cpp": "Matching",
+            "system/synth/BinkReader.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
             "system/synth/Faders.cpp": "Equivalent",

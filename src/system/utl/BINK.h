@@ -277,4 +277,15 @@ struct BINKSUMMARY {
     unsigned int Highest1SecFrame; // offset 0x78, size 0x4
 };
 
+struct BINKTRACK {
+    // total size: 0x1C
+    unsigned int Frequency; // offset 0x0, size 0x4
+    unsigned int Bits; // offset 0x4, size 0x4
+    unsigned int Channels; // offset 0x8, size 0x4
+    unsigned int MaxSize; // offset 0xC, size 0x4
+    struct BINK * bink; // offset 0x10, size 0x4
+    unsigned int sndcomp; // offset 0x14, size 0x4
+    int trackindex; // offset 0x18, size 0x4
+};
+
 #endif

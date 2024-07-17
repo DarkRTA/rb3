@@ -203,9 +203,7 @@ bool BinkClip::EnsureLoaded(){
 }
 
 void BinkClip::UpdateVolume(){
-    if(mStream){
-        ((Stream*)mStream)->SetVolume(mVolume + mPlaybackVolumeOffset);
-    }
+    if(mStream) static_cast<Stream*>(mStream)->SetVolume(mVolume + mPlaybackVolumeOffset);
 }
 
 void BinkClip::UpdateFaders(){
