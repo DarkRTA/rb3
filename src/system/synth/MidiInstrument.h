@@ -31,6 +31,9 @@ public:
     void SetReverbMixDb(float);
     void SetReverbEnable(bool);
     void SetSpeed(float);
+    void GlideToNote(unsigned char, int);
+    void SetFineTune(float);
+    void KillAllVoices();
 
     NEW_POOL_OVERLOAD(NoteVoiceInst)
     DELETE_POOL_OVERLOAD(NoteVoiceInst)
@@ -65,7 +68,20 @@ public:
     virtual void Load(BinStream&);
 
     void Poll();
+    void Pause(bool);
+    void SetFineTune(float);
     void KillAllVoices();
+    void SetSend(FxSend*);
+    void SetReverbMixDb(float);
+    void SetReverbEnable(bool);
+    void PressNote(unsigned char, unsigned char, int, int);
+    void StartSample(unsigned char, unsigned char, int, int);
+    void ReleaseNote(unsigned char);
+    void PlayNote(unsigned char, unsigned char, int);
+    NoteVoiceInst* MakeNoteInst(SampleZone*, unsigned char, unsigned char, int, int);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28
