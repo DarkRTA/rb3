@@ -80,7 +80,9 @@ public:
 
     const float& operator[](int i) const { return *(&x + i); }
     float& operator[](int i){ return *(&x + i); }
-    // bool operator==(const Vector3 &) const;
+    bool operator==(const Vector3& v) const {
+        return x == v.x && y == v.y && z == v.z;
+    }
     // bool operator!=(const Vector3 &) const;
 };
 

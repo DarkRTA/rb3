@@ -39,6 +39,11 @@ namespace Hmx {
         }
         Matrix3& operator=(const Matrix3 &);
         Vector3& operator[](int);
+
+        bool operator==(const Matrix3& mtx) const {
+            return x == mtx.x && y == mtx.y && z == mtx.z;
+        }
+
     };
 
     class Quat {
@@ -144,6 +149,10 @@ public:
         m.y.Zero();
         m.z.Zero();
         v.Zero();
+    }
+
+    bool operator==(const Transform& tf) const {
+        return m == tf.m && v == tf.v;
     }
 };
 

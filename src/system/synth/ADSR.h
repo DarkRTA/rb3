@@ -70,7 +70,9 @@ public:
 };
 
 BinStream& operator>>(BinStream&, ADSR&);
-bool PropSync(ADSR&, DataNode&, DataArray*, int, PropOp);
 static int FindNearestInTable(const float* table, int tableSize, float val);
+
+#include "obj/PropSync_p.h"
+bool PropSync(ADSR&, DataNode&, DataArray*, int, PropOp);
 
 #endif

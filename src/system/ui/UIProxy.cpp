@@ -19,10 +19,10 @@ void UIProxy::SetTypeDef(DataArray* da){
         if(da){
             da->FindData("sync_on_move", mSyncOnMove, false);
             DataArray* fileArr = da->FindArray("file", false);
-            if(TheLoadMgr.EditMode() && fileArr->Size() != 3 || fileArr->Int(2) != 0){
+            if(TheLoadMgr.EditMode() || fileArr->Size() != 3 || fileArr->Int(2) != 0){
                 bool shared = true;
                 da->FindData("share", shared, false);
-                FilePath fp(FileGetPath(da->File(), 0), da->Str(1));
+                FilePath fp(FileGetPath(da->File(), 0), fileArr->Str(1));
                 mDir.LoadFile(fp, Loading(), shared, kLoadFront, false);
                 mPolled = false;
                 if(!Loading()) UpdateDir();
@@ -98,9 +98,7 @@ RndDrawable* UIProxy::CollideShowing(const Segment& seg, float& f, Plane& pl){
     if(!mDir.Ptr()) return 0;
     else {
         SyncDir();
-        RndDrawable* d = mDir->CollideShowing(seg, f, pl);
-        if(d) return d;
-        else return 0;
+        return mDir->CollideShowing(seg, f, pl) ? this : 0;
     }
 }
 
@@ -129,8 +127,8 @@ void UIProxy::SetProxyDir(RndDir* dir){
 // fn_80575E54
 void UIProxy::SyncDir(){
     const Transform& world = WorldXfm();
-    if(mSyncOnMove){
-        // operator==/!= called here
+    if(mSyncOnMove && !TheLoadMgr.EditMode()){
+        if(world == mOldXfm) return;
         mOldXfm = world;
     }
     if(mMainTrans) mMainTrans->SetWorldXfm(world);
@@ -143,14 +141,17 @@ void UIProxy::SyncDir(){
 
 // fn_80576014
 void UIProxy::UpdateDir(){
-    DataArray* transArr = mTypeDef->FindArray("main_trans", false);
-    if(transArr && mDir.Ptr()){
-        mMainTrans = mDir->Find<RndTransformable>(transArr->Str(1), true);
+    DataArray* transArr = TypeDef()->FindArray("main_trans", false);
+    if(transArr){
+        if(mDir.Ptr()){
+            mMainTrans = mDir->Find<RndTransformable>(transArr->Str(1), true);
+        }
+        else {
+            MILO_WARN("%s Couldn't load main_trans", PathName(this));
+            mMainTrans = 0;
+        }
     }
-    else {
-        if(!mDir.Ptr()) MILO_WARN("%s Couldn't load main_trans", PathName(this));
-        mMainTrans = 0;
-    }
+    else mMainTrans = 0;
     UpdateSphere();
     if(mDir.Ptr()){
         mDir->Enter();
