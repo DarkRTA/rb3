@@ -51,8 +51,8 @@ public:
     void SetEditMode(bool);
     void Init();
     Loader* ForceGetLoader(const FilePath&);
-    inline bool EditMode() const { return mEditMode; }
-    inline Platform GetPlatform() const { return (Platform)mPlatform; }
+    bool EditMode() const { return mEditMode; }
+    Platform GetPlatform() const { return (Platform)mPlatform; }
     int AsyncUnload() const { return unk58; }
 
     static const char* LoaderPosString(LoaderPos, bool);

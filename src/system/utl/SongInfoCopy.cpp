@@ -33,10 +33,10 @@ SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPa
     mDrumSoloSamples = info->GetDrumSoloSamples();
     mDrumFreestyleSamples = info->GetDrumFreestyleSamples();
     mTrackChannels = info->GetTracks();
-    int midifilenum = NumExtraMidiFiles();
+    int midifilenum = info->NumExtraMidiFiles();
     mExtraMidiFiles.reserve(midifilenum);
     for(int i = 0; i < midifilenum; i++){
-        mExtraMidiFiles.push_back(String(GetExtraMidiFile(midifilenum)));
+        mExtraMidiFiles.push_back(info->GetExtraMidiFile(i));
     }
 }
 

@@ -215,10 +215,40 @@ void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 
-inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout){
-    vout.x = mtx.x.x * vin.x + mtx.y.x * vin.y + mtx.z.x * vin.z;
-    vout.y = mtx.x.y * vin.x + mtx.y.y * vin.y + mtx.z.y * vin.z;
-    vout.z = mtx.x.z * vin.x + mtx.y.z * vin.y + mtx.z.z * vin.z;
+inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout) {
+    register __vec2x32float__ i1, i2, m1, m2, o1, o2;
+    
+    register const Vector3 *_vin = &vin;
+    register       Vector3 *_vout = &vout;
+    register const Hmx::Matrix3 *_m = &mtx;
+
+    typedef Hmx::Matrix3 Matrix3;
+
+    ASM_BLOCK(
+        psq_l i1, Vector3.x(_vin), 0, 0
+        psq_l i2, Vector3.y(_vin), 0, 0
+
+        psq_l m1, Matrix3.z.x(_m), 0, 0
+        psq_l m2, Matrix3.z.z(_m), 1, 0
+
+        ps_muls1 o1, m1, i2
+        ps_muls1 o2, m2, i2
+
+        psq_l m1, Matrix3.y.x(_m), 0, 0
+        psq_l m2, Matrix3.y.z(_m), 1, 0
+
+        ps_madds0 o1, m1, i2, o1
+        ps_madds0 o2, m2, i2, o2
+
+        psq_l m1, Matrix3.x.x(_m), 0, 0
+        psq_l m2, Matrix3.x.z(_m), 1, 0
+
+        ps_madds0 o1, m1, i1, o1
+        ps_madds0 o2, m2, i1, o2
+
+        psq_st o1, Vector3.x(_vout), 0, 0
+        psq_st o2, Vector3.z(_vout), 1, 0
+    )
 }
 
 inline void Invert(const Transform& tfin, Transform& tfout){
