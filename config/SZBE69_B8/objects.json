@@ -407,7 +407,7 @@
             "system/rndwii/Rnd.cpp": "NonMatching",
 
             "system/synth/ADSR.cpp": "NonMatching",
-            "system/synth/BinkClip.cpp": "NonMatching",
+            "system/synth/BinkClip.cpp": "Matching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
             "system/synth/Faders.cpp": "Equivalent",
