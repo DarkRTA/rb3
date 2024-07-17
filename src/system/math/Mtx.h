@@ -212,5 +212,20 @@ void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
 void Normalize(const Hmx::Quat&, Hmx::Quat&);
 void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
 void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
+void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
+void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
+
+inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout){
+    vout.x = mtx.x.x * vin.x + mtx.y.x * vin.y + mtx.z.x * vin.z;
+    vout.y = mtx.x.y * vin.x + mtx.y.y * vin.y + mtx.z.y * vin.z;
+    vout.z = mtx.x.z * vin.x + mtx.y.z * vin.y + mtx.z.z * vin.z;
+}
+
+inline void Invert(const Transform& tfin, Transform& tfout){
+    Vector3 vtmp;
+    Negate(tfin.v, vtmp);
+    Invert(tfin.m, tfout.m);
+    Multiply(vtmp, tfout.m, tfout.v);
+}
 
 #endif

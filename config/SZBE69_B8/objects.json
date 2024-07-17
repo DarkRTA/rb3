@@ -223,6 +223,7 @@
             "system/math/FileChecksum.cpp": "Matching",
             "system/math/Geo.cpp": "NonMatching",
             "system/math/Interp.cpp": "Matching",
+            "system/math/Key.cpp": "NonMatching",
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
