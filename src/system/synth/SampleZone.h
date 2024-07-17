@@ -4,6 +4,7 @@
 #include "synth/SynthSample.h"
 #include "obj/ObjPtr_p.h"
 #include "synth/ADSR.h"
+#include "synth/SampleInst.h"
 
 class SampleZone {
 public:
@@ -21,10 +22,11 @@ public:
     int unk1c;
     int unk20;
     int unk24;
-    int unk28;
+    FXCore unk28;
     ADSR adsr;
 };
 
 BinStream& operator>>(BinStream&, SampleZone&);
+bool PropSync(SampleZone&, DataNode&, DataArray*, int, PropOp);
 
 #endif

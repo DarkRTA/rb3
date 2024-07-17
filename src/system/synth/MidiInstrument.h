@@ -18,14 +18,19 @@ public:
     virtual void Start();
     virtual void Stop();
     virtual bool IsRunning();
-    virtual bool Started();
-    virtual bool Stopped();
+    virtual bool Started(){ return mStarted; }
+    virtual bool Stopped(){ return mStopped; }
     virtual void SetTranspose(float);
     virtual void UpdateVolume();
     virtual void SetPan(float);
     virtual void SetVolume(float);
 
     void Poll();
+    void Pause(bool);
+    void SetSend(FxSend*);
+    void SetReverbMixDb(float);
+    void SetReverbEnable(bool);
+    void SetSpeed(float);
 
     NEW_POOL_OVERLOAD(NoteVoiceInst)
     DELETE_POOL_OVERLOAD(NoteVoiceInst)
