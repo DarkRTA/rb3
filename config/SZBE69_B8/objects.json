@@ -424,6 +424,7 @@
             "system/synth/FxSendPitchShift.cpp": "Matching",
             "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/FxSendWah.cpp": "Matching",
+            "system/synth/MetaMusic.cpp": "NonMatching",
             "system/synth/Mic.cpp": "Matching",
             "system/synth/MicNull.cpp": "NonMatching",
             "system/synth/MidiInstrument.cpp": "NonMatching",
