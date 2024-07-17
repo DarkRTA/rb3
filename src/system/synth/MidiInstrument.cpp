@@ -6,15 +6,15 @@
 #include "utl/Symbols.h"
 
 NoteVoiceInst::NoteVoiceInst(MidiInstrument* minst, SampleZone* zone, unsigned char uc1, unsigned char uc2, int i1, int i2, float f) : 
-    mSample(0), mVolume(0), mStartProgress(0), mTriggerNote(uc1), mCenterNote(zone->unk14), mStarted(0), mStopped(0), mGlideID(i2), mGlideFrames(0),
+    mSample(0), mVolume(0), mStartProgress(0), mTriggerNote(uc1), mCenterNote(zone->mCenterNote), mStarted(0), mStopped(0), mGlideID(i2), mGlideFrames(0),
     mGlideToNote(0), mGlideFromNote(0), mGlideFramesLeft(-1), mFineTune(f), mDurationFramesLeft(i1), mOwner(minst) {
-    if(zone->mSynthPtr){
-        mSample = zone->mSynthPtr->NewInst();
-        mSample->SetBankVolume(zone->unkc + RatioToDb(uc2 / 127.0f));
-        mSample->SetBankPan(zone->unk10);
+    if(zone->mSample){
+        mSample = zone->mSample->NewInst();
+        mSample->SetBankVolume(zone->mVolume + RatioToDb(uc2 / 127.0f));
+        mSample->SetBankPan(zone->mPan);
         mSample->SetBankSpeed(CalcSpeedFromTranspose(mFineTune / 100.0f + (mTriggerNote - mCenterNote)));
-        mSample->SetFXCore(zone->unk28);
-        mSample->SetADSR(zone->adsr);
+        mSample->SetFXCore(zone->mFXCore);
+        mSample->SetADSR(zone->mADSR);
         mSample->SetSend(minst->mSend);
     }
 }
@@ -106,16 +106,16 @@ BEGIN_HANDLERS(MidiInstrument)
 END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(SampleZone)
-    SYNC_PROP(sample, o.mSynthPtr)
-    SYNC_PROP(volume, o.unkc)
-    SYNC_PROP(pan, o.unk10)
-    SYNC_PROP(centernote, o.unk14)
-    SYNC_PROP(minnote, o.unk18)
-    SYNC_PROP(maxnote, o.unk1c)
-    SYNC_PROP(minvelo, o.unk20)
-    SYNC_PROP(maxvelo, o.unk24)
-    SYNC_PROP(fx_core, (int&)o.unk28)
-    SYNC_PROP(adsr, o.adsr)
+    SYNC_PROP(sample, o.mSample)
+    SYNC_PROP(volume, o.mVolume)
+    SYNC_PROP(pan, o.mPan)
+    SYNC_PROP(centernote, o.mCenterNote)
+    SYNC_PROP(minnote, o.mMinNote)
+    SYNC_PROP(maxnote, o.mMaxNote)
+    SYNC_PROP(minvelo, o.mMinVel)
+    SYNC_PROP(maxvelo, o.mMaxVel)
+    SYNC_PROP(fx_core, (int&)o.mFXCore)
+    SYNC_PROP(adsr, o.mADSR)
 END_CUSTOM_PROPSYNC
 
 SAVE_OBJ(MidiInstrument, 0x125)

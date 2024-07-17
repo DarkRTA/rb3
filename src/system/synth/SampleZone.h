@@ -14,16 +14,16 @@ public:
 
     static int gRev;
 
-    ObjPtr<SynthSample, ObjectDir> mSynthPtr;
-    float unkc;
-    float unk10;
-    int unk14;
-    int unk18;
-    int unk1c;
-    int unk20;
-    int unk24;
-    FXCore unk28;
-    ADSR adsr;
+    ObjPtr<SynthSample, ObjectDir> mSample; // 0x0
+    float mVolume; // 0xc
+    float mPan; // 0x10
+    int mCenterNote; // 0x14
+    int mMinNote; // 0x18
+    int mMaxNote; // 0x1c
+    int mMinVel; // 0x20
+    int mMaxVel; // 0x24
+    FXCore mFXCore; // 0x28
+    ADSR mADSR; // 0x2c
 };
 
 BinStream& operator>>(BinStream&, SampleZone&);
