@@ -57,13 +57,13 @@ void WaveFile::ReadMarkers(){
     std::vector<Label> labelvec;
     mRiffList.Reset();
     if(!mRiffList.Next(kWaveCueChunkID)) return;
-    int cuesize;
+    int cuesize, i;
     {
         IDataChunk iChunk(mRiffList);
         iChunk >> cuesize;
-        for(int i = 0; i < cuesize; i++){
-            int frame, id;
-            iChunk >> frame >> id;
+        for(i = 0; i < cuesize; i++){
+            int id, frame;
+            iChunk >> id >> frame;
             cuevec.push_back(CuePoint(frame,id));
             iChunk.Seek(0x10, BinStream::kSeekCur);
         }
@@ -72,7 +72,7 @@ void WaveFile::ReadMarkers(){
     mRiffList.Reset();
     if(mRiffList.Next(kWaveAdditionalChunkID)){
         IListChunk iChunk(mRiffList);
-        for(int i = 0; i < cuesize; i++){
+        for(i = 0; i < cuesize; i++){
             iChunk.Next(kWaveLabelChunkID);
             IDataChunk dataChunk(iChunk);
             int len = dataChunk.mHeader->Length() - 4;
@@ -85,7 +85,7 @@ void WaveFile::ReadMarkers(){
         }
     }
     std::sort(cuevec.begin(), cuevec.end(), CompareCuePoints);
-    for(int i = 0; i < cuesize; i++){
+    for(i = 0; i < cuesize; i++){
         String strc8;
         for(int j = 0; j < labelvec.size(); j++){
             if(labelvec[j].mID == cuevec[i].mID){
@@ -115,3 +115,5 @@ IListChunk& WaveFile::PrepareToProvideData(){
 WaveFileData::WaveFileData(WaveFile& wf) : IDataChunk(wf.PrepareToProvideData()), mWaveFile(&wf) {
     
 }
+
+DECOMP_FORCEACTIVE(WaveFile, "!IsCompressed()")
