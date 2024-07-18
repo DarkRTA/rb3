@@ -6,7 +6,8 @@
 #include "system/ui/UILabel.h"
 #include "system/ui/UIListLabel.h"
 
-class NewAssetProvider : public UIListProvider, public Hmx::Object {
+class NewAssetProvider : private UIListProvider, public Hmx::Object {
+public:
     NewAssetProvider(BandProfile*, AssetGender);
     virtual ~NewAssetProvider();
     void Update();
@@ -15,7 +16,8 @@ class NewAssetProvider : public UIListProvider, public Hmx::Object {
     Symbol DataSymbol(int) const;
     int NumData() const;
 
-    BandProfile* mProfile;    // 0x20
+private:
+    BandProfile* mProfile;        // 0x20
     AssetGender mGender;          // 0x24
     std::vector<Symbol> mSymbols; // 0x28
 };

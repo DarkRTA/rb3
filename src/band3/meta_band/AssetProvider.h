@@ -7,7 +7,7 @@
 #include "system/ui/UIListLabel.h"
 #include "system/ui/UIListMesh.h"
 
-class AssetProvider : public UIListProvider {
+class AssetProvider : public UIListProvider, public Hmx::Object {
     AssetProvider(BandProfile*, AssetGender);
     virtual ~AssetProvider();
     void SortAssetsByIndex(Symbol, Symbol);
@@ -19,6 +19,9 @@ class AssetProvider : public UIListProvider {
     Symbol DataSymbol(int) const;
     int NumData() const;
     void HasAsset(Symbol);
+
+    BandProfile* mProfile; // 0x20
+    AssetGender mGender;   // 0x2c
 };
 
 #endif // METABAND_ASSETPROVIDER_H

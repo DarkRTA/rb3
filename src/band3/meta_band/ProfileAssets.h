@@ -9,6 +9,7 @@
 #include <set>
 
 class ProfileAssets : public FixedSizeSaveable {
+public:
     ProfileAssets(BandProfile*);
     virtual ~ProfileAssets();
     void Clear();
@@ -23,9 +24,10 @@ class ProfileAssets : public FixedSizeSaveable {
     void LoadFixed(FixedSizeSaveableStream&, int);
     void FakeFill();
 
+private:
     BandProfile* mParentProfile;  // 0x04
     std::set<Symbol> mAssets;     // 0x08
-    std::set<Symbol> mAssets2; 
+    std::set<Symbol> mAssets2;    // 0x24
 };
 
 #endif // METABAND_PROFILEASSETS_H

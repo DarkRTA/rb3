@@ -3,6 +3,7 @@
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
 #include "meta/FixedSizeSaveableStream.h"
+#include <set>
 
 typedef int SaveSizeMethodFunc(int);
 
@@ -22,6 +23,14 @@ public:
     static void LoadFixedString(FixedSizeSaveableStream&, class String&);
     static void SaveSymbolID(FixedSizeSaveableStream&, Symbol);
     static void LoadSymbolFromID(FixedSizeSaveableStream&, Symbol&);
+    static void SaveSymbolTable(FixedSizeSaveableStream&, int, int);
+    static void LoadSymbolTable(FixedSizeSaveableStream&, int, int);
+    static void SaveStd(FixedSizeSaveableStream&, const std::vector<Symbol>&, int);
+    static void LoadStd(FixedSizeSaveableStream&, std::vector<Symbol>&, int);
+    static void SaveStd(FixedSizeSaveableStream&, const std::list<Symbol>&, int);
+    static void LoadStd(FixedSizeSaveableStream&, std::list<Symbol>&, int);
+    static void SaveStd(FixedSizeSaveableStream&, const std::set<Symbol>&, int);
+    static void LoadStd(FixedSizeSaveableStream&, std::set<Symbol>&, int);
 
     static int sCurrentMemcardLoadVer;
     static int sSaveVersion;

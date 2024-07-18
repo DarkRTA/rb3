@@ -7,6 +7,7 @@
 
 ProfileAssets::ProfileAssets(BandProfile* profile) : mParentProfile(profile) {
     Clear();
+    // profile->SaveSize = SaveSize;
 }
 
 ProfileAssets::~ProfileAssets() {
@@ -21,7 +22,7 @@ void ProfileAssets::AddAsset(Symbol asset) {
     AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
     MILO_ASSERT(pAssetMgr, 0x27);
     if (!pAssetMgr->HasAsset(asset)) {
-        MILO_WARN("Could not find asset %s", asset);
+        MILO_WARN("Could not find asset %s", asset.Str());
     } else {
         if (!HasAsset(asset)) {
             if (3000 <= (int)mAssets.size()) {
@@ -36,7 +37,16 @@ void ProfileAssets::AddAsset(Symbol asset) {
 }
 
 bool ProfileAssets::HasAsset(Symbol asset) const {
-    TheAccomplishmentMgr->DoesAssetHaveSource(asset);
+    bool hasSource = TheAccomplishmentMgr->DoesAssetHaveSource(asset);
+    if (!hasSource) {
+        return true;
+    }
+    std::set<Symbol>::const_iterator iter = mAssets.begin();
+    while (*iter != NULL) {
+
+    }
+
+    return true;
 }
 
 bool ProfileAssets::IsNew(Symbol name) const {
@@ -63,15 +73,17 @@ void ProfileAssets::SaveSize(int) {
 }
 
 void ProfileAssets::SaveFixed(FixedSizeSaveableStream& stream) const {
-
+    FixedSizeSaveable::SaveStd(stream, mAssets, 0xbb8);
+    FixedSizeSaveable::SaveStd(stream, mAssets2, 0xbb8);
 }
 
-void ProfileAssets::LoadFixed(FixedSizeSaveableStream& stream, int) {
-
+void ProfileAssets::LoadFixed(FixedSizeSaveableStream& stream, int param_2) {
+    FixedSizeSaveable::LoadStd(stream, mAssets, 0xbb8);
+    FixedSizeSaveable::LoadStd(stream, mAssets2, 0xbb8);
 }
 
 void ProfileAssets::FakeFill() {
-    for (int i = 0; i < 3000; i++) {
+    for (int i = mAssets.size(); i < 3000; i++) {
         Symbol s = MakeString("fake_asset_%i", i);
         mAssets.insert(s);
     }
