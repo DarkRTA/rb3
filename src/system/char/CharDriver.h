@@ -50,6 +50,7 @@ public:
     ApplyMode mApply;
     CharBonesAlloc* mInternalBones;
     bool mPlayMultipleClips;
+    bool unk89;
 };
 
 #endif

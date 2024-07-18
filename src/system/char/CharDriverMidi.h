@@ -18,10 +18,12 @@ public:
     virtual void Enter();
     virtual void Exit();
 
-    Symbol mParser;
-    Symbol mFlagParser;
-    int mClipFlags;
-    float mBlendOverridePct;
+    DECLARE_REVS;
+
+    Symbol mParser; // 0x8c
+    Symbol mFlagParser; // 0x90
+    int mClipFlags; // 0x94
+    float mBlendOverridePct; // 0x98
 };
 
 #endif
