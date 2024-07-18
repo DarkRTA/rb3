@@ -20,12 +20,13 @@ public:
 
     class WeightContext {
     public:
+        // WeightContext(int ctx, float wt) : mContext(ctx), mWeight(wt) {}
         int mContext;
         float mWeight;
     };
 
     CharBone();
-    virtual ~CharBone();
+    virtual ~CharBone(){}
     OBJ_CLASSNAME(CharBone);
     OBJ_SET_TYPE(CharBone);
     virtual DataNode Handle(DataArray*, bool);
@@ -33,15 +34,19 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+
+    DECLARE_REVS;
     
-    int mPositionContext;
-    int mScaleContext;
-    Type mRotation;
-    int mRotationContext;
-    ObjPtr<CharBone, ObjectDir> mTarget;
-    std::vector<WeightContext> mWeights;
-    ObjPtr<RndTransformable, ObjectDir> mTrans;
-    bool mBakeOutAsTopLevel;
+    int mPositionContext; // 0x1c
+    int mScaleContext; // 0x20
+    Type mRotation; // 0x24
+    int mRotationContext; // 0x28
+    ObjPtr<CharBone, ObjectDir> mTarget; // 0x2c
+    std::vector<WeightContext> mWeights; // 0x38
+    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x40
+    bool mBakeOutAsTopLevel; // 0x4c
 };
+
+BinStream& operator>>(BinStream&, CharBone::WeightContext&);
 
 #endif
