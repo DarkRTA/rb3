@@ -16,8 +16,16 @@ RndTexBlendController::~RndTexBlendController(){
     
 }
 
-bool RndTexBlendController::GetCurrentDistance(float& f) const {
-    
+// fn_806413C4
+bool RndTexBlendController::GetCurrentDistance(float& dist) const {
+    if(mObject1 && mObject2){
+        dist = Distance(mObject1->WorldXfm().v, mObject2->WorldXfm().v);
+        return true;
+    }
+    else {
+        dist = 0;
+        return false;
+    }
 }
 
 void RndTexBlendController::UpdateReferenceDistance(){

@@ -4,7 +4,6 @@
 #include <vector>
 #include "obj/Object.h"
 #include "utl/BinStream.h"
-#include "obj/ObjPtr_p.h"
 
 template <class T1, typename T2 = u16> class ObjVector : public std::vector<T1, T2> {
 public:

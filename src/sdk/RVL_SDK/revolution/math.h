@@ -2,18 +2,11 @@
 #define _REVOSDK_MATH_H
 
 #include "types.h"
-#include "MSL_C/MSL_Common_Embedded/Math/fdlibm.h"
-#include "MSL_C/MSL_Common/math_api.h"
+#include "PowerPC_EABI_Support/MSL/MSL_C/math.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif // ifdef __cplusplus
-
-#ifndef __MWERKS__
-// Get clangd to shut up about __fabs being undefined.
-#define __fabs(x)    (x)
-#define __frsqrte(x) (x)
-#endif
 
 #define FABS(x) (float)__fabs(x)
 #define fabs(x) __fabs(x)
@@ -26,6 +19,10 @@ extern "C" {
 #define HALF_PI 1.5707964f
 
 #define LONG_TAU 6.2831854820251465
+
+#ifndef M_PI
+#define M_PI ((float)3.14159274101257324219)
+#endif
 
 inline float cosf(float x){
     return (float)cos(x);

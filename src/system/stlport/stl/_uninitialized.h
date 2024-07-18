@@ -111,8 +111,9 @@ template <class _InputIter, class _OutputIter>
 inline _OutputIter __ucopy_aux(_InputIter __first, _InputIter __last, _OutputIter __result,
                                const __true_type& /*BothPtrType*/) {
   return __ucopy_ptrs(__first, __last, __result,
-                      _UseTrivialUCopy(_STLP_VALUE_TYPE(__first, _InputIter),
-                                       _STLP_VALUE_TYPE(__result, _OutputIter))._Answer());
+                    _TrivialUCopy<_InputIter, _OutputIter>::_Answer());
+                    //   _UseTrivialUCopy(_STLP_VALUE_TYPE(__first, _InputIter),
+                    //                    _STLP_VALUE_TYPE(__result, _OutputIter))._Answer());
 }
 
 template <class _InputIter, class _OutputIter>

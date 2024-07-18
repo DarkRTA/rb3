@@ -8,6 +8,7 @@
 #include "obj/Utl.h"
 #include "decomp.h"
 #include "rndwii/Rnd.h"
+#include "utl/Loader.h"
 #include "utl/Option.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
@@ -108,8 +109,8 @@ ObjDirPtr<ObjectDir> ObjectDir::PostLoadInlined(){
 void ObjectDir::Load(BinStream& bs){
     PreLoad(bs);
     PostLoad(bs);
-    if(this != mDir && !mProxyFile.empty()){
-        Loader* ldr = TheLoadMgr.GetLoader(mProxyFile);
+    if(IsProxy() && !mProxyFile.empty()){
+        class Loader* ldr = TheLoadMgr.GetLoader(mProxyFile);
         if(ldr) TheLoadMgr.PollUntilLoaded(ldr, 0);
     }
 }

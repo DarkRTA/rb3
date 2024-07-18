@@ -3,6 +3,7 @@
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
 #include "meta/FixedSizeSaveableStream.h"
+#include "os/Debug.h"
 #include <set>
 
 typedef int SaveSizeMethodFunc(int);
@@ -31,15 +32,23 @@ public:
     static void LoadStd(FixedSizeSaveableStream&, std::list<Symbol>&, int);
     static void SaveStd(FixedSizeSaveableStream&, const std::set<Symbol>&, int);
     static void LoadStd(FixedSizeSaveableStream&, std::set<Symbol>&, int);
+    static void EnablePrintouts(bool);
+
+    static int GetMaxSymbols(){
+        MILO_ASSERT(sMaxSymbols >= 0, 0x1C0);
+        return sMaxSymbols;
+    }
 
     static int sCurrentMemcardLoadVer;
     static int sSaveVersion;
     static int sMaxSymbols;
     static bool sPrintoutsEnabled;
     SaveSizeMethodFunc* mSaveSizeMethod;
+
+    static int GetSaveVersion(){ return sSaveVersion; }
 };
 
-BinStream& operator<<(BinStream&, const FixedSizeSaveable&);
-BinStream& operator>>(BinStream&, FixedSizeSaveable&);
+FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream&, const FixedSizeSaveable&);
+FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream&, FixedSizeSaveable&);
 
 #endif

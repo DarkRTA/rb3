@@ -17,15 +17,23 @@ public:
     virtual void DrawShowing();
     virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
-    virtual ~UIProxy();
+    virtual ~UIProxy(){}
     virtual void SetTypeDef(DataArray*);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void Poll();
 
+    void UpdateDir();
+    void SyncDir();
+    void SetProxyDir(const FilePath&, bool);
+    void SetProxyDir(RndDir*);
+    DataNode OnSetProxyDir(DataArray*);
+
+    DECLARE_REVS;
+
     ObjDirPtr<RndDir> mDir; // 0x10c
     ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x118
-    RndEnviron* mMainTrans; // 0x124
+    RndTransformable* mMainTrans; // 0x124
     Transform mOldXfm; // 0x128
     bool mSyncOnMove; // 0x158
     bool mPolled; // 0x159

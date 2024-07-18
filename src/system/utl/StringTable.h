@@ -9,9 +9,9 @@ public:
         char* chars;
     };
     
-    std::vector<Buf> mBuffers;
-    char* mCurChar;
-    int mCurBuf;
+    std::vector<Buf> mBuffers; // 0x0
+    char* mCurChar; // 0x8
+    int mCurBuf; // 0xc
 
     NEW_POOL_OVERLOAD(StringTable);
     DELETE_POOL_OVERLOAD(StringTable);

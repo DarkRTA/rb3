@@ -1,5 +1,7 @@
 #include "Gecko_setjmp.h"
 
+/* clang-format off *//* asm funcs */
+
 #define qr0 0
 
 #define SAVE_FPR(env, fpr) \
@@ -12,7 +14,11 @@
     addi r7, env, __jmp_buf.fprs[(fpr - 14) * 2 + 1]; \
     psq_lx f##fpr, 0, r7, 0, qr0;
 
-volatile asm int __setjmp(register struct __jmp_buf* env) {
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+asm int __setjmp(register struct __jmp_buf* env) {
     nofralloc
 
     // Link/condition registers
@@ -59,7 +65,7 @@ volatile asm int __setjmp(register struct __jmp_buf* env) {
     blr
 }
 
-volatile asm void longjmp(register struct __jmp_buf* env, register int status) {
+asm void longjmp(register struct __jmp_buf* env, register int status) {
     nofralloc
 
     // Link/condition registers
@@ -112,3 +118,7 @@ volatile asm void longjmp(register struct __jmp_buf* env, register int status) {
     li r3, 1
     blr
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -24,6 +24,7 @@ enum PropOp {
 template<class T1, class T2> class ObjPtr;
 template<class T1, class T2> class ObjOwnerPtr;
 template<class T1, class T2> class ObjPtrList;
+template<class T> class ObjDirPtr;
 template<class T1, class T2 = u16> class ObjVector;
 
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
@@ -41,6 +42,13 @@ inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x17);
     if(op == kPropGet) node = DataNode(f);
     else f = node.Float(0);
+    return true;
+}
+
+inline bool PropSync(unsigned char& uc, DataNode& node, DataArray* prop, int i, PropOp op){
+    MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x21);
+    if(op == kPropGet) node = DataNode(uc);
+    else uc = node.Int(0);
     return true;
 }
 
@@ -141,6 +149,18 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
     }
 }
 
+// fn_805C3A80 - PropSync for ObjDirPtr
+template <class T> inline bool PropSync(ObjDirPtr<T>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(op == kPropGet){
+        node = DataNode(ptr.GetFile());
+    }
+    else {
+        FilePath fp(node.Str(0));
+        ptr.LoadFile(fp, false, true, kLoadFront, false);
+    }
+    return true;
+}
+
 template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
@@ -198,6 +218,7 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
     }
 }
 
+#include "obj/ObjVector.h"
 template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
@@ -218,6 +239,38 @@ template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode
             T item(objVec.Owner());
             if(PropSync(item, node, prop, i, kPropInsert)){
                 objVec.insert(it, item);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+#include "obj/ObjList.h"
+template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray* prop, int i, PropOp op){
+    if(op == kPropUnknown0x40) return false;
+    else if(i == prop->Size()){
+        MILO_ASSERT(op == kPropSize, 0x1A6);
+        node = DataNode((int)objList.size());
+        return true;
+    }
+    else {
+        int count = prop->Int(i++);
+        std::list<T>::iterator it = objList.begin();
+        for(; count != 0; count--){
+            it++;
+        }
+        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+            return PropSync(*it, node, prop, i, op);
+        }
+        else if(op == kPropRemove){
+            objList.erase(it);
+            return true;
+        }
+        else if(op == kPropInsert){
+            T item(objList.Owner());
+            if(PropSync(item, node, prop, i, kPropInsert)){
+                objList.insert(it, item);
                 return true;
             }
         }

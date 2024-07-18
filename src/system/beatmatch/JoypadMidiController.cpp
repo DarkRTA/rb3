@@ -62,8 +62,8 @@ int JoypadMidiController::OnMsg(const KeyboardModMsg& msg){
 }
 
 JoypadButton JoypadMidiController::MidiNoteToButton(int note) const {
-    static DataNode* keyboard_wide_frets = DataVariable("keyboard_wide_frets");
-    if(keyboard_wide_frets->Int(0)){
+    static DataNode& keyboard_wide_frets = DataVariable("keyboard_wide_frets");
+    if(keyboard_wide_frets.Int(0)){
         int octave = note / 12;
         int pad = mLocalUser->GetPadNum();
         if (pad <= 1u && (octave % 2) != pad) {

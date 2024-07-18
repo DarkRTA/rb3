@@ -27,26 +27,30 @@ public:
     void SetTimeout(float);
     void SetLines(int);
     void Clear();
-    String* CurrentLine();
+    String& CurrentLine();
+    void Draw(float);
+
     static void Init();
     static void Terminate();
     static void TogglePosition();
+    static void DrawAll(bool);
 
     static RndOverlay* Find(Symbol, bool);
+    static bool sTopAligned;
     static std::list<RndOverlay*> sOverlays;
 
-    const char* mName;
-    bool mShowing;
-    std::list<String> mLines;
-    std::list<String>::iterator mLine;
-    Hmx::Color mBackColor;
-    Hmx::Color mTextColor;
-    int mCursorChar;
-    Callback* mCallback;
-    Timer mTimer;
-    float mTimeout;
-    bool mModal;
-    int mDumpCount;
+    const char* mName; // 0x4
+    bool mShowing; // 0x8
+    std::list<String> mLines; // 0xc
+    std::list<String>::iterator mLine; // 0x14
+    Hmx::Color mBackColor; // 0x18
+    Hmx::Color mTextColor; // 0x28
+    int mCursorChar; // 0x38
+    Callback* mCallback; // 0x3c
+    Timer mTimer; // 0x40
+    float mTimeout; // 0x70
+    bool mModal; // 0x74
+    int mDumpCount; // 0x78
 };
 
 #endif

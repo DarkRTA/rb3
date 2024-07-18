@@ -4,18 +4,26 @@
 #include "os/User.h"
 #include "os/UserMgr.h"
 #include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include <vector>
 
 BEGIN_MESSAGE(ProcessedButtonDownMsg, processed_button_down, LocalUser*, JoypadButton, JoypadAction, int, bool);
+    MESSAGE_ARRAY_CTOR(ProcessedButtonDownMsg)
     LocalUser* GetUser() const;
+    JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
+    JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }
+    int GetPadNum() const { return mData->Int(5); }
+    bool IsHeldDown() const { return mData->Int(6) != 0; }
 END_MESSAGE;
 
 struct PressRec {
-    PressRec() : a(0), iUser(0), c(0), d(0), e(0) {}
+    // PressRec(){}
 
-    int a;
-    User* iUser;
-    int c, d, e;
+    LocalUser* iUser;
+    int unk4;
+    int unk8;
+    float unkc;
+    int unk10;
 };
 
 // // RB2
@@ -34,18 +42,26 @@ public:
     ActionRec(JoypadAction, float, UserMgr*);
     PressRec& GetPressRec(int);
 
-    JoypadAction mAction;
-    float mHoldTime;
-    std::vector<PressRec> mPresses;
+    JoypadAction mAction; // 0x0
+    float mHoldTime; // 0x4
+    std::vector<PressRec> mPresses; // 0x8
 };
 
 class ButtonHolder : public Hmx::Object {
 public:
     ButtonHolder(Hmx::Object*, UserMgr*);
+    virtual ~ButtonHolder(){}
+    virtual DataNode Handle(DataArray*, bool);
 
-    Hmx::Object* mCallback;
-    UserMgr* mUserMgr;
-    std::vector<ActionRec> mActionRecs;
+    void Poll();
+    void ClearHeldButtons();
+    void SetHoldActions(std::vector<ActionRec>&);
+    DataNode OnSetHoldActions(DataArray*);
+    DataNode OnMsg(const ButtonDownMsg&);
+
+    Hmx::Object* mCallback; // 0x1c
+    UserMgr* mUserMgr; // 0x20
+    std::vector<ActionRec> mActionRecs; // 0x24
 };
 
 #endif

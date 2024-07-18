@@ -8,6 +8,8 @@ struct FileChecksum {
 };
 
 struct ChecksumData {
+    ChecksumData(){}
+    ChecksumData(FileChecksum* f1, FileChecksum* f2) : start(f1), end(f2) {}
     // total size: 0x8
     struct FileChecksum * start; // offset 0x0, size 0x4
     struct FileChecksum * end; // offset 0x4, size 0x4

@@ -12,7 +12,7 @@ typedef enum _va_arg_type {
     arg_ARGREAL
 } _va_arg_type;
 
-typedef struct {
+typedef struct __va_list_struct {
     char gpr;
     char fpr;
     char reserved[2];

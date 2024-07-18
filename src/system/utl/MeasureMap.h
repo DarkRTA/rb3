@@ -15,6 +15,7 @@ public:
     MeasureMap();
     void TickToMeasureBeatTick(int, int&, int&, int&) const;
     void TickToMeasureBeatTick(int, int&, int&, int&, int&) const;
+    bool AddTimeSignature(int, int, int, bool);
 
     std::vector<TimeSigChange> mTimeSigChanges; // offset 0x0, size 0xC
 };

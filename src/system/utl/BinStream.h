@@ -6,17 +6,25 @@
 #include "utl/Symbol.h"
 #include <utility>
 #include <vector>
+#include <map>
 
-#define BS_WRITE_TYPE(var) \
+#define BS_WRITE_OP(var) \
     BinStream& operator<<(var x){ \
         WriteEndian(&x, sizeof(var)); \
         return *this; \
     }
 
-#define BS_READ_TYPE(var) \
+#define BS_READ_OP(var) \
     BinStream& operator>>(var& x){ \
         ReadEndian(&x, sizeof(var)); \
         return *this; \
+    }
+
+#define BS_READ_FUNC(var, name) \
+    var Read##name(){ \
+        var val; \
+        *this >> val; \
+        return val; \
     }
 
 enum EofType {
@@ -112,11 +120,20 @@ public:
 
     bool LittleEndian() const { return mLittleEndian; }
 
-    BS_WRITE_TYPE(int);
-    BS_WRITE_TYPE(float);
-    BS_WRITE_TYPE(unsigned int);
-    BS_WRITE_TYPE(unsigned short);
-    BS_WRITE_TYPE(short);
+    BS_WRITE_OP(short);
+    BS_WRITE_OP(unsigned short);
+    BS_WRITE_OP(int);
+    BS_WRITE_OP(unsigned int);
+    BS_WRITE_OP(long);
+    BS_WRITE_OP(unsigned long);
+    BS_WRITE_OP(long long);
+    BS_WRITE_OP(unsigned long long);
+    BS_WRITE_OP(float);
+
+    BinStream& operator<<(char c){
+        Write(&c, 1);
+        return *this;
+    }
 
     BinStream& operator<<(unsigned char uc){
         Write(&uc, 1);
@@ -129,15 +146,20 @@ public:
         return *this;
     }
 
-    BS_READ_TYPE(int);
-    BS_READ_TYPE(float);
-    BS_READ_TYPE(unsigned int);
-    BS_READ_TYPE(short);
-    BS_READ_TYPE(u16);
-    BS_READ_TYPE(u32);
-    BS_READ_TYPE(u64);
-    BS_READ_TYPE(s32);
-    BS_READ_TYPE(s64);
+    BS_READ_OP(int);
+    BS_READ_OP(unsigned int);
+    BS_READ_OP(short);
+    BS_READ_OP(unsigned short);
+    BS_READ_OP(long);
+    BS_READ_OP(unsigned long);
+    BS_READ_OP(long long);
+    BS_READ_OP(unsigned long long);
+    BS_READ_OP(float);
+
+    BinStream& operator>>(char& out) {
+        Read(&out, 1);
+        return *this;
+    }
 
     BinStream& operator>>(unsigned char& out) {
         Read(&out, 1);
@@ -151,6 +173,18 @@ public:
         return *this;
     }
 
+    BS_READ_FUNC(char, Char);
+    BS_READ_FUNC(unsigned char, Byte);
+    BS_READ_FUNC(short, Short);
+    BS_READ_FUNC(unsigned short, UShort);
+    BS_READ_FUNC(int, Int);
+    BS_READ_FUNC(unsigned int, UInt);
+    BS_READ_FUNC(long, Long);
+    BS_READ_FUNC(unsigned long, ULong);
+    BS_READ_FUNC(long long, LongLong);
+    BS_READ_FUNC(unsigned long long, ULongLong);
+    BS_READ_FUNC(bool, Bool);
+    BS_READ_FUNC(float, Float);
 };
 
 template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vector<T1, T2>& vec){
@@ -183,6 +217,15 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::list<T1, 
     }
 
     return bs;
+}
+
+// TODO: implement
+template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
+
+}
+
+template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
+
 }
 
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2> p) {

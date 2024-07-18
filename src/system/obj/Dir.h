@@ -6,6 +6,7 @@
 #include "utl/KeylessHash.h"
 #include "utl/Loader.h"
 #include "obj/DirLoader.h"
+#include "rndobj/Tex.h"
 
 enum ViewportId {
     kPerspective = 0,
@@ -21,8 +22,9 @@ enum ViewportId {
 
 enum InlineDirType {
     kInlineNever = 0,
-    kInlineCached = 1 << 0,
-    kInlineAlways = 1 << 1,
+    kInlineCached = 1,
+    kInlineAlways = 2,
+    kInline3 = 3
 };
 
 template <class T> class ObjDirPtr : public ObjRef {
@@ -82,9 +84,10 @@ public:
 
     // IsLoaded__21ObjDirPtr<9ObjectDir>CFv
     bool IsLoaded() const {
+        bool b;
         bool ret = true;
         if(!mDir){
-            bool b = false;
+            b = false;
             if(mLoader && mLoader->IsLoaded()) b = true;
             if(!b) ret = false;
         }
@@ -96,9 +99,9 @@ public:
     void PostLoad(Loader* loader){
         if(mLoader){
             TheLoadMgr.PollUntilLoaded(mLoader, loader);
-            class ObjectDir* gotten = mLoader->GetDir();
+            T* gotten = dynamic_cast<T*>(mLoader->GetDir());
             mLoader = 0;
-            *this = dynamic_cast<T*>(gotten);
+            *this = gotten;
         }
     }
 
@@ -115,8 +118,7 @@ public:
                     delete mDir;
                 }
             }
-            mDir = dir;
-            if(mDir) mDir->AddRef(this);
+            if(mDir = dir) mDir->AddRef(this);
         }
         return *this;
     }
@@ -126,13 +128,19 @@ public:
         *this = oPtr.mDir;
     }
 
-    operator bool() const { return mDir != 0; }
     operator T*() const { return mDir; }
     T* Ptr() const { return mDir; }
 
     T* mDir;
     class DirLoader* mLoader;
 };
+
+template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
+    FilePath fp;
+    bs >> fp;
+    ptr.LoadFile(fp, true, true, kLoadFront, false);
+    return bs;
+}
 
 class ObjectDir : public virtual Hmx::Object {
 public:
@@ -143,9 +151,9 @@ public:
             obj = entry.obj;
             return *this;
         }
+        bool operator==(const Entry& e) const { return name == e.name; }
         bool operator!=(const Entry& e) const { return name != e.name; }
-
-        operator const char*() const { return name; } // may not need this
+        operator const char*() const { return name; }
 
         const char* name;
         Hmx::Object* obj;
@@ -215,6 +223,9 @@ public:
     void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
     FilePath GetSubDirPath(const FilePath&, const BinStream&);
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
+    DirLoader* Loader() const { return mLoader; }
+    Hmx::Object* CurCam(){ return mCurCam; }
+    bool IsSubDir() const { return mIsSubDir; }
 
     DataNode OnFind(DataArray*);
 
@@ -225,6 +236,12 @@ public:
             MILO_FAIL(kNotObjectMsg, name, PathName(this) ? PathName(this) : "**no file**");
         }
         return castedObj;
+    }
+
+    RndTex* NewTex(const char* name){
+        RndTex* tex = Hmx::Object::New<RndTex>();
+        if(name) tex->SetName(name, this);
+        return tex;
     }
 
     static void Init();

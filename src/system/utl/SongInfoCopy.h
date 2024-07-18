@@ -10,8 +10,8 @@ class TrackChannels {
 public:
     TrackChannels(){}
     ~TrackChannels(){}
-    SongInfoAudioType mAudioType; // SongInfoAudioType? maybe?
-    std::vector<int> mChannels;
+    SongInfoAudioType mAudioType; // 0x0 - SongInfoAudioType? maybe?
+    std::vector<int> mChannels; // 0x4
 };
 
 BinStream& operator<<(BinStream&, const TrackChannels&);
@@ -28,7 +28,7 @@ public:
     // TODO: fix the return types of these methods below as you implement them
     virtual const std::vector<TrackChannels>& GetTracks() const = 0;
     virtual bool IsPlayTrackChannel(int) const = 0;
-    virtual const std::vector<int>& FindTrackChannel(SongInfoAudioType) const = 0;
+    virtual const TrackChannels* FindTrackChannel(SongInfoAudioType) const = 0;
     virtual int NumChannelsOfTrack(SongInfoAudioType) const = 0;
     virtual int TrackIndex(SongInfoAudioType) const = 0;
 
@@ -58,7 +58,7 @@ public:
     // TODO: fix the return types of these methods below as you implement them
     virtual const std::vector<TrackChannels>& GetTracks() const;
     virtual bool IsPlayTrackChannel(int) const;
-    virtual const std::vector<int>& FindTrackChannel(SongInfoAudioType) const;
+    virtual const TrackChannels* FindTrackChannel(SongInfoAudioType) const;
     virtual int NumChannelsOfTrack(SongInfoAudioType) const;
     virtual int TrackIndex(SongInfoAudioType) const;
 
@@ -75,21 +75,21 @@ public:
     virtual int NumExtraMidiFiles() const;
     virtual const char* GetExtraMidiFile(int) const;
 
-    Symbol mName;
-    class String mBaseFileName;
-    class String mPackageName;
-    int mNumVocalParts;
-    int mHopoThreshold;
-    float mMuteVolume;
-    float mVocalMuteVolume;
-    std::vector<float> mPans;
-    std::vector<float> mVols;
-    std::vector<int> mCores;
-    std::vector<int> mCrowdChannels;
-    std::vector<Symbol> mDrumSoloSamples;
-    std::vector<Symbol> mDrumFreestyleSamples;
-    std::vector<TrackChannels> mTrackChannels;
-    std::vector<class String> mExtraMidiFiles;
+    Symbol mName; // 0x4
+    class String mBaseFileName; // 0x8
+    class String mPackageName; // 0x14
+    int mNumVocalParts; // 0x20
+    int mHopoThreshold; // 0x24
+    float mMuteVolume; // 0x28
+    float mVocalMuteVolume; // 0x2c
+    std::vector<float> mPans; // 0x30
+    std::vector<float> mVols; // 0x38
+    std::vector<int> mCores; // 0x40
+    std::vector<int> mCrowdChannels; // 0x48
+    std::vector<Symbol> mDrumSoloSamples; // 0x50
+    std::vector<Symbol> mDrumFreestyleSamples; // 0x58
+    std::vector<TrackChannels> mTrackChannels; // 0x60
+    std::vector<class String> mExtraMidiFiles; // 0x68
 };
 
 #endif

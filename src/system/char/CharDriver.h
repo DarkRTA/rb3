@@ -32,6 +32,8 @@ public:
     virtual void Exit();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
+    float EvaluateFlags(int);
+
     ObjPtr<CharBonesObject, ObjectDir> mBones;
     ObjPtr<ObjectDir, ObjectDir> mClips;
     CharClipDriver* mFirst;

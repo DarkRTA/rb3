@@ -64,25 +64,21 @@ inline float RadiansToDegrees(float rad) {
     return 57.295776f * rad;
 }
 
-inline bool IsNan(float f) {
-    return (f == f) ? false : true;
-}
-
 DataNode DataASin(DataArray *da) {
     float f = da->Float(1);
-    if(IsNan(f)) return DataNode(0.0f);
+    if(IsNaN(f)) return DataNode(0.0f);
     else return DataNode(RadiansToDegrees(asin_f(f)));
 }
 
 DataNode DataACos(DataArray *da) {
     float f = da->Float(1);
-    if(IsNan(f)) return DataNode(0.0f);
+    if(IsNaN(f)) return DataNode(0.0f);
     else return DataNode(RadiansToDegrees(acos_f(f)));
 }
 
 DataNode DataATan(DataArray *da) {
     float f = da->Float(1);
-    if(IsNan(f)) return DataNode(0.0f);
+    if(IsNaN(f)) return DataNode(0.0f);
     else return DataNode(RadiansToDegrees(atan_f(f)));
 }
 

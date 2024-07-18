@@ -260,7 +260,7 @@ int RndConsole::OnMsg(const KeyboardKeyMsg& msg) {
     if (msg.mData->Int(2) == 302) SetShowing(false);
     else {
         if (msg.mData->Int(2) == 9) {
-            if (mTabLen == 0) mTabLen = strlen(mInput->CurrentLine()->c_str());
+            if (mTabLen == 0) mTabLen = strlen(mInput->CurrentLine().c_str());
         }
     }
 

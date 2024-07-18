@@ -44,13 +44,14 @@ const char* gHostFile;
 unsigned char* g_pRSOReserveBuf;
 unsigned char* g_pDefaultRSOBuf;
 
+DECOMP_FORCEACTIVE(System, "_unresolved func.\n", "gen/main_%s.hdr")
+
 namespace {
     bool gHasPreconfig = true;
     bool gPreconfigOverride;
 
     bool CheckForArchive() {
         SetUsingCD(true);
-
         FileStat stat;
         if (FileGetStat(MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.GetPlatform())), &stat) < 0) {
             SetUsingCD(false);
@@ -65,7 +66,7 @@ bool gHostCached;
 void SetGfxMode(GfxMode mode) {
     gGfxMode = mode;
     HolmesClientReInit();
-    *DataVariable("gfx_mode") = DataNode((int)mode);
+    DataVariable("gfx_mode") = DataNode((int)mode);
 }
 
 GfxMode GetGfxMode(){ return gGfxMode; }
@@ -104,6 +105,8 @@ DataNode OnSwitchSystemLanguage(DataArray* da){
     SetSystemLanguage(languages->Sym(i), true);
     return DataNode(1);
 }
+
+DECOMP_FORCEACTIVE(System, "LanguageInit called, but region has not been initialized", "language", "system")
 
 void LanguageInit() {
     if (ThePlatformMgr.GetRegion() == kRegionNone) {
@@ -189,7 +192,7 @@ void PreInitSystem(const char* path) {
     BeginDataRead();
     gSystemConfig = ReadSystemConfig(path);
     MILO_ASSERT(gSystemConfig, 0x1AC);
-    *DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
+    DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
     DataArray* mem = gSystemConfig->FindArray("mem", true);
 
@@ -246,7 +249,7 @@ void InitSystem(const char* path) {
         DataReplaceTags(systemConfig, gSystemConfig);
         gSystemConfig->Release();
         gSystemConfig = systemConfig;
-        *DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
+        DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
         SetUsingCD(usingCD);
         TheArchive = archive;
@@ -282,6 +285,11 @@ void SystemTerminate() {
     AppChild::Terminate();
     TheSystemArgs.clear();
     TerminateMakeString();
+}
+
+
+void SystemPreInit(const char* cc){
+    CheckForArchive();
 }
 
 int SystemMs() {

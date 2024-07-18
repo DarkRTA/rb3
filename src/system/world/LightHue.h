@@ -27,8 +27,12 @@ public:
     FilePath mPath;
     Keys<Vector3, Vector3> mKeys;
 
-    NEW_OVERLOAD
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     NEW_OBJ(LightHue)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(LightHue)
+    }
 
 };
 

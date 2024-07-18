@@ -71,6 +71,10 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     void UpdateMeshes(State);
     void MockSelect();
 
+    UIComponent* NavRight(){ return mNavRight; }
+    UIComponent* NavDown(){ return mNavDown; }
+    bool Loading() const { return mLoading; }
+
     NEW_OVERLOAD
     DELETE_OVERLOAD
 

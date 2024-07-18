@@ -21,6 +21,7 @@ public:
     OBJ_CLASSNAME(UIList)
     OBJ_SET_TYPE(UIList)
     virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, CopyType);
     virtual void Load(BinStream&);
@@ -72,8 +73,26 @@ public:
     bool SetSelectedSimulateScroll(Symbol, bool);
     void HandleSelectionUpdated();
     void Scroll(int);
+    void AutoScroll();
+    void StopAutoScroll();
+    int NumProviderData() const;
+    void CollectGarbage();
+    void BoundingBoxTriangles(std::vector<std::vector<Vector3> >&);
+    const std::vector<UIListWidget*>& GetWidgets() const;
+    void EnableData(Symbol);
+    void DisableData(Symbol);
+    void DimData(Symbol);
+    void UnDimData(Symbol);
+    void UpdateExtendedEntries(const UIListState&);
+    void SetScrollUser(LocalUser*);
+    void SetDrawManuallyControlledWidgets(bool);
 
-    static std::list<UIList*> sUIListSet;
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnSetData(DataArray*);
+    DataNode OnSetSelected(DataArray*);
+    DataNode OnSetSelectedSimulateScroll(DataArray*);
+    DataNode OnScroll(DataArray*);
+    DataNode OnSelectedSym(DataArray*);
 
     UIListDir* mListDir; // 0x140
     std::vector<UIListWidget*> mWidgets; // 0x144
@@ -94,7 +113,9 @@ public:
     bool mAutoScrollSendMessages; // 0x1e2
     bool mAutoScrolling; // 0x1e3
     bool unk_0x1E4; // 0x1e4 - scroll related
-    bool unk_0x1E5, unk_0x1E6, unk_0x1E7;
+    bool mDrawManuallyControlledWidgets; // 0x1e5
+    bool unk_0x1E6;
+    bool mNeedsGarbageCollection; // 0x1e7
 
     DELETE_OVERLOAD
     DECLARE_REVS

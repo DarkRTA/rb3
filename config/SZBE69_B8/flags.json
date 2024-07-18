@@ -28,27 +28,6 @@
                 "-d MILO_DEBUG"
             ]
         },
-        "runtime": {
-            "base": "base",
-            "flags": [
-                "-str reuse,pool,readonly",
-                "-pragma \"merge_float_consts on\"",
-
-                "-use_lmw_stmw on",
-                "-common off",
-
-                "-lang=c99",
-                "-O4,p",
-                "-inline auto",
-                "-func_align 4"
-            ]
-        },
-        "rvl_sdk": {
-            "base": "base",
-            "flags": [
-                "-func_align 16"
-            ]
-        },
         "main": {
             "base": "base",
             "flags": [
@@ -80,15 +59,11 @@
                 "-ipa file"
             ]
         },
-        "system": {
-            "base": "band3",
-            "flags": []
-        },
         "network": {
             "base": "band3",
             "flags": []
         },
-        "json_c": {
+        "network/json_c": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -104,7 +79,7 @@
                 "-ipa file"
             ]
         },
-        "quazal": {
+        "network/Platform": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -118,37 +93,21 @@
                 "-inline auto"
             ]
         },
-        "zlib": {
-            "base": "base",
+        "system": {
+            "base": "band3",
+            "flags": []
+        },
+        "system/flex": {
+            "base": "system/zlib",
+            "flags": []
+        },
+        "system/speex": {
+            "base": "system/zlib",
             "flags": [
-                "-sdata 2",
-                "-sdata2 2",
-
-                "-pool on",
-                "-str reuse,pool",
-                "-pragma \"merge_float_consts on\"",
-
-                "-lang=c99",
-                "-O4,p",
-                "-inline auto"
+                "-fp_contract on"
             ]
         },
-        "zlib/zutil": {
-            "base": "base",
-            "flags": [
-                "-sdata 2",
-                "-sdata2 2",
-
-                "-pool on",
-                "-str nopool",
-                "-pragma \"merge_float_consts on\"",
-
-                "-lang=c99",
-                "-O4,p",
-                "-inline auto"
-            ]
-        },
-        "soundtouch": {
+        "system/soundtouch": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -162,29 +121,75 @@
                 "-inline auto"
             ]
         },
-        "libtomcrypt": {
-            "base": "zlib",
+        "system/tomcrypt": {
+            "base": "system/zlib",
             "flags": [
                 "-inline off"
             ]
         },
-        "speex": {
-            "base": "zlib",
+        "system/vorbis": {
+            "base": "system/zlib",
             "flags": [
                 "-fp_contract on"
             ]
         },
-        "flex": {
-            "base": "zlib",
+        "system/zlib": {
+            "base": "base",
+            "flags": [
+                "-sdata 2",
+                "-sdata2 2",
+
+                "-pool on",
+                "-str reuse,pool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-O4,p",
+                "-inline auto"
+            ]
+        },
+        "sdk/MSL": {
+            "base": "base",
+            "flags": [
+                "-str reuse,pool,readonly",
+
+                "-use_lmw_stmw on",
+                "-common off",
+
+                "-lang=c99",
+                "-O4,p",
+                "-inline auto",
+                "-func_align 4"
+            ]
+        },
+        "sdk/MSL_C": {
+            "base": "sdk/MSL",
             "flags": []
         },
-        "vorbis": {
-            "base": "zlib",
+        "sdk/MSL_C/fdlibm": {
+            "base": "sdk/MSL",
             "flags": [
-                "-fp_contract on"
+                "-d _IEEE_LIBM"
             ]
         },
-        "bt": {
+        "sdk/MSL_C++": {
+            "base": "sdk/MSL",
+            "flags": [
+                "-Cpp_exceptions on"
+            ]
+        },
+        "sdk/Runtime": {
+            "base": "sdk/MSL",
+            "flags": []
+        },
+        "sdk/RVL_SDK": {
+            "base": "base",
+            "flags": [
+                "-func_align 16",
+                "-O4,p"
+            ]
+        },
+        "sdk/RVL_SDK/bte": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -195,6 +200,13 @@
                 "-lang=c99",
                 "-O4,p",
                 "-inline auto"
+            ]
+        },
+        "sdk/RevoEX": {
+            "base": "base",
+            "flags": [
+                "-func_align 4",
+                "-O4,p"
             ]
         }
     }

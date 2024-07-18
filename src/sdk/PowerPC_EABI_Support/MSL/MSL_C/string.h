@@ -1,6 +1,7 @@
 #ifndef _STRING_H
 #define _STRING_H
 
+#include "PowerPC_EABI_Support/Runtime/__mem.h"
 #include "MSL_Common/restrict_def.h"
 #include "MSL_Common/string_api.h"
 #include "MSL_Common/extras.h"
@@ -37,9 +38,6 @@ char *strerror(int errnum);
 
 void *memchr(const void *ptr, int ch, size_t count);
 int memcmp(const void *lhs, const void *rhs, size_t count);
-
-void *memset(void *dest, int ch, size_t count);
-void *memcpy(void *RESTRICT dest, const void *RESTRICT src, size_t count);
 void *memmove(void *dest, const void *src, size_t count);
 
 #ifdef __cplusplus

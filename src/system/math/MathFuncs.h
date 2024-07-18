@@ -47,22 +47,55 @@ template<class T> inline T Max(T x, T y){
     return (x < y) ? y : x;
 }
 
+template<class T> inline T Minimum(T x, T y, T z){
+    return Minimum(x, Minimum(y, z));
+}
+
+template<class T> inline T Max(T x, T y, T z){
+    return Max(x, Max(y, z));
+}
+
 template<class T> inline T Clamp(T x, T y, T z){
     if(z > y) return y;
     if(!(z < x)) return z;
     return x;
 }
 
-template<class T> inline bool ClampEq(T& x, const T& y, const T& z){
-    if(x < y){
-        x = y;
+template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
+    T temp = y;
+    if (x < y) {
+        x = temp;
         return true;
-    }
-    if(z < x){
+    } else if (x > z) {
         x = z;
         return true;
     }
     return false;
+}
+
+template<class T> inline bool MinEq(T& x, const T& y){
+    if(y < x){
+        x = y;
+        return true;
+    }
+    return false;
+}
+
+template<class T> inline bool MaxEq(T& x, const T& y){
+    if(x < y){
+        x = y;
+        return true;
+    }
+    return false;
+}
+
+template<class T> inline const T Abs(T x){
+    if(x > 0) return x;
+    else return -x;
+}
+
+inline bool IsNaN(float f) {
+    return (f == f) ? false : true;
 }
 
 inline int Mod(int num, int modbase){
@@ -108,6 +141,10 @@ inline float pow_f(double x, double y){
     return pow(x, y);
 }
 
+inline double pow_d(double x, double y){
+    return pow(x, y);
+}
+
 inline float sin_f(double d){
     return sin(d);
 }
@@ -147,6 +184,15 @@ inline float ModRange(float f1, float f2, float f3){
 
 inline float fmod_f(double x, double y){
     return fmod(x, y);
+}
+
+inline float Interp(float a, float b, float c){
+    float delta = b - a;
+    return c * delta + a;
+}
+
+inline void Interp(float f1, float f2, float f3, float& fres){
+    fres = f3 * (f2 - f1) + f1;
 }
 
 #endif

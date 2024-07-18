@@ -30,13 +30,8 @@ public:
         mFlags = mFlags & 0xfffffffe | ui;
     }
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, sizeof(DirtyCache), FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(DirtyCache), FastPool, v);
-    }
+    NEW_POOL_OVERLOAD(DirtyCache);
+    DELETE_POOL_OVERLOAD(DirtyCache);
 
     std::vector<DirtyCache*> mChildren;
     unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
@@ -75,10 +70,12 @@ public:
     void SetWorldPos(const Vector3&);
     void SetTransParent(RndTransformable*, bool);
     void SetTransConstraint(Constraint, RndTransformable*, bool);
-    RndTransformable* TransParent() const;
+    RndTransformable* TransParent() const { return mParent; }
     void DistributeChildren(bool, float);
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
+    void TransformTransAnims(const Transform&);
+    std::vector<RndTransformable*>& TransChildren(){ return mChildren; }
 
     void SetDirty(){
         if(mCache->mFlags & 1) return;
@@ -90,17 +87,28 @@ public:
         else return mWorldXfm;
     }
 
-    void SetDirtyLocalXfm(Transform& tf){
+    void SetLocalXfm(const Transform& tf){
         mLocalXfm = tf;
         SetDirty();
     }
 
-    void SetDirtyLocalXfmVec(float x, float y, float z){
+    // TODO: at some point we need to replace calls to this SetLocalPos
+    // to the one that takes in a Vector3& - we're using this one
+    // because for whatever reason the Vector3& one doesn't inline nicely
+    // and results in a stack related mismatch
+    void SetLocalPos(float x, float y, float z){
         mLocalXfm.v.Set(x, y, z);
         SetDirty();
     }
 
-    Transform& LocalXfm(){
+    void SetLocalPos(const Vector3& vec){
+        mLocalXfm.v.x = vec.x;
+        mLocalXfm.v.y = vec.y;
+        mLocalXfm.v.z = vec.z;
+        SetDirty();
+    }
+
+    const Transform& LocalXfm() const {
         return mLocalXfm;
     }
 
@@ -137,7 +145,7 @@ public:
         REGISTER_OBJ_FACTORY(RndTransformable)
     }
 
-    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent;
+    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent; // 0x8
     std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
@@ -153,7 +161,5 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
-
-template <class T> void RemoveSwap(std::vector<T*>&, T*);
 
 /*#endif*/

@@ -34,7 +34,7 @@ RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
     unk_0xF0(0), unk_0xF4(1), unk_0xF8(0), unk_0xFC(0), unk_0x108(0), unk_0x10C(0), unk_0x110(0), unk_0x114(0),
     unk_0x118(0), unk_0x11C(0) {
     unk9p0 = false;
-    unk9p1 = false;
+    mKeepMeshData = false;
     unk9p2 = true;
     unk9p3 = false;
 }
@@ -254,7 +254,7 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
 }
 
 void RndMesh::Sync(int i) {
-    OnSync(unk9p1 ? i | 0x200 : i);
+    OnSync(mKeepMeshData ? i | 0x200 : i);
 }
 
 void RndMesh::ClearCompressedVerts() {

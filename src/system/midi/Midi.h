@@ -25,9 +25,21 @@ enum State {
 
 class MidiChunkID : public ChunkID {
 public:
+    MidiChunkID(BinStream& bs) : ChunkID(bs) {}
     MidiChunkID(const char* str) : ChunkID(str) {}
     static MidiChunkID kMThd;
     static MidiChunkID kMTrk;
+};
+
+class MidiChunkHeader {
+public:
+    MidiChunkHeader(BinStream& bs) : mID(bs) {
+        mLength = 0;
+        bs >> mLength;
+    }
+    // total size: 0x8
+    MidiChunkID mID; // offset 0x0, size 0x4
+    unsigned int mLength; // offset 0x4, size 0x4
 };
 
 class MidiReceiver {
@@ -71,6 +83,11 @@ public:
     void ReadEvent(BinStream&);
     void ReadTrackHeader(BinStream&);
     void ReadFileHeader(BinStream&);
+    void ProcessMidiList();
+    void ReadMidiEvent(int, unsigned char, unsigned char, BinStream&);
+    void ReadSystemEvent(int, unsigned char, BinStream&);
+    void QueueChannelMsg(int, unsigned char, unsigned char, unsigned char);
+    void ReadMetaEvent(int, unsigned char, BinStream&);
 
     void Error(const char* msg) {
         mRcvr.Error(msg, mCurTick);
@@ -91,7 +108,7 @@ public:
     int mCurTick; // offset 0x2C, size 0x4
     unsigned char mPrevStatus; // offset 0x30, size 0x1
     class String mCurTrackName; // offset 0x34, size 0xC
-    std::vector<String> mTrackNames;
+    std::vector<String> mTrackNames; // 0x40
     std::vector<Midi> mMidiList;
     int mMidiListTick;
     bool (* mLessFunc)(const struct Midi &, const struct Midi &);

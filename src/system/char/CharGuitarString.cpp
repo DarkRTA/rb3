@@ -13,6 +13,31 @@ CharGuitarString::~CharGuitarString(){
     
 }
 
+// fn_80507700 - poll
+void CharGuitarString::Poll(){
+    if(!mNut || !mBridge || !mBend || !mTarget) return;
+    Transform tf50(mBend->WorldXfm());
+    const Vector3& vec = mNut->WorldXfm().v;
+    const Transform& tf3(mBridge->WorldXfm());
+    const Transform& tf4(mTarget->WorldXfm());
+    Vector3 v1, v2;
+    Subtract(tf4.v, vec, v1); // subtract is right standalone (see CharHair)
+    Subtract(tf3.v, vec, v2);
+    float clamped = Clamp(0.0f, 1.0f, Dot(v1,v2) / Dot(v2,v2)); // so is Clamp and Dot (see MathFuncs and CharIKHand)
+    if(mOpen) clamped = 0.0f;
+    Vector3 res;
+    Interp(vec, tf3.v, clamped, res);
+    mBend->SetWorldXfm(tf50);
+}
+
+void CharGuitarString::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    changedBy.push_back(mNut);
+    changedBy.push_back(mBridge);
+    changedBy.push_back(mTarget);
+    change.push_back(mBend);
+}
+
+
 SAVE_OBJ(CharGuitarString, 0x47)
 
 void CharGuitarString::Load(BinStream& bs){

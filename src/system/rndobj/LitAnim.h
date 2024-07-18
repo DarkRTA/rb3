@@ -25,6 +25,7 @@ public:
 
     void SetKeysOwner(RndLightAnim*);
     DataNode OnCopyKeys(DataArray*);
+    Keys<Hmx::Color, Hmx::Color>& ColorKeys(){ return mKeysOwner->mColorKeys; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

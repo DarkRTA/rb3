@@ -23,6 +23,10 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    Keys<Hmx::Color, Hmx::Color>& AmbientColorKeys(){ return mKeysOwner->mAmbientColorKeys; }
+    Keys<Hmx::Color, Hmx::Color>& FogColorKeys(){ return mKeysOwner->mFogColorKeys; }
+    Keys<Vector2, Vector2>& FogRangeKeys(){ return mKeysOwner->mFogRangeKeys; }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndEnvAnim)
@@ -30,11 +34,11 @@ public:
         REGISTER_OBJ_FACTORY(RndEnvAnim)
     }
     
-    ObjPtr<RndEnviron, ObjectDir> mEnviron;
-    Keys<Hmx::Color, Hmx::Color> mFogColorKeys;
-    Keys<Vector2, Vector2> mFogRangeKeys;
-    Keys<Hmx::Color, Hmx::Color> mAmbientColorKeys;
-    ObjOwnerPtr<RndEnvAnim, ObjectDir> mKeysOwner;
+    ObjPtr<RndEnviron, ObjectDir> mEnviron; // 0x10
+    Keys<Hmx::Color, Hmx::Color> mFogColorKeys; // 0x1c
+    Keys<Vector2, Vector2> mFogRangeKeys; // 0x24
+    Keys<Hmx::Color, Hmx::Color> mAmbientColorKeys; // 0x2c
+    ObjOwnerPtr<RndEnvAnim, ObjectDir> mKeysOwner; // 0x34
 };
 
 #endif

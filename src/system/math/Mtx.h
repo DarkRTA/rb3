@@ -21,11 +21,17 @@ namespace Hmx {
             x = mtx.x; y = mtx.y; z = mtx.z;
         }
 
+        Matrix3(const Vector3& v1, const Vector3& v2, const Vector3& v3) : x(v1), y(v2), z(v3) {}
+
         Matrix3(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9) :
             x(f1, f2, f3), y(f4, f5, f6), z(f7, f8, f9) {}
 
-        void Set(float, float, float, float, float, float, float, float, float);
-        void Set(const Vector3&, const Vector3&, const Vector3&);
+        void Set(float f1, float f2, float f3, float f4, float f5, float f6, float f7, float f8, float f9){
+            x.Set(f1,f2,f3); y.Set(f4,f5,f6); z.Set(f7,f8,f9);
+        }
+        void Set(const Vector3& v1, const Vector3& v2, const Vector3& v3){
+            x = v1; y = v2; z = v3;
+        }
         void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
@@ -33,6 +39,11 @@ namespace Hmx {
         }
         Matrix3& operator=(const Matrix3 &);
         Vector3& operator[](int);
+
+        bool operator==(const Matrix3& mtx) const {
+            return x == mtx.x && y == mtx.y && z == mtx.z;
+        }
+
     };
 
     class Quat {
@@ -40,10 +51,13 @@ namespace Hmx {
         Quat(){}
         Quat(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
         Quat(const Matrix3& m){ Set(m); }
+        Quat(const Vector3& v){ Set(v); }
 
         void Reset(){ x = y = z = 0.0f; w = 1.0f; }
         void Zero(){ w = x = y = z = 0.0f; }
         void Set(const Matrix3&);
+        void Set(const Vector3&);
+        void Set(const Vector3&, float);
 
         float x;
         float y;
@@ -69,6 +83,8 @@ public:
 
     // all of these are weak
     Transform(){}
+
+    Transform(const Hmx::Matrix3& mtx, const Vector3& vec) : m(mtx), v(vec) {}
 
     // both of these use powerpc asm magic
     Transform(const register Transform& tf){
@@ -134,6 +150,10 @@ public:
         m.z.Zero();
         v.Zero();
     }
+
+    bool operator==(const Transform& tf) const {
+        return m == tf.m && v == tf.v;
+    }
 };
 
 inline BinStream& operator>>(BinStream& bs, Transform& tf){
@@ -144,16 +164,22 @@ inline BinStream& operator>>(BinStream& bs, Transform& tf){
 class ShortQuat {
 public:
     short x, y, z, w;
+    void Reset() { x = y = z = 0; w = 32767; }
 };
 
 class TransformNoScale {
 public:
     TransformNoScale(){}
     void Set(const Transform&);
+    void Set(const TransformNoScale&);
+    void SetRot(const Hmx::Matrix3&);
+    void Reset();
 
     ShortQuat q;
     class Vector3 v;
 };
+
+BinStream& operator>>(BinStream&, TransformNoScale&);
 
 class Plane {
 public:
@@ -165,6 +191,11 @@ public:
 
     float a, b, c, d;
 };
+
+inline BinStream& operator>>(BinStream& bs, Plane& pl){
+    bs >> pl.a >> pl.b >> pl.c >> pl.d;
+    return bs;
+}
 
 class Frustum {
     // total size: 0x60
@@ -183,6 +214,57 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
     Scale(mtx.x, vec.x, res.x);
     Scale(mtx.y, vec.y, res.y);
     Scale(mtx.z, vec.z, res.z);
+}
+
+float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
+void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
+void Normalize(const Hmx::Quat&, Hmx::Quat&);
+void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
+void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
+void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
+void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
+
+inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout) {
+    register __vec2x32float__ i1, i2, m1, m2, o1, o2;
+    
+    register const Vector3 *_vin = &vin;
+    register       Vector3 *_vout = &vout;
+    register const Hmx::Matrix3 *_m = &mtx;
+
+    typedef Hmx::Matrix3 Matrix3;
+
+    ASM_BLOCK(
+        psq_l i1, Vector3.x(_vin), 0, 0
+        psq_l i2, Vector3.y(_vin), 0, 0
+
+        psq_l m1, Matrix3.z.x(_m), 0, 0
+        psq_l m2, Matrix3.z.z(_m), 1, 0
+
+        ps_muls1 o1, m1, i2
+        ps_muls1 o2, m2, i2
+
+        psq_l m1, Matrix3.y.x(_m), 0, 0
+        psq_l m2, Matrix3.y.z(_m), 1, 0
+
+        ps_madds0 o1, m1, i2, o1
+        ps_madds0 o2, m2, i2, o2
+
+        psq_l m1, Matrix3.x.x(_m), 0, 0
+        psq_l m2, Matrix3.x.z(_m), 1, 0
+
+        ps_madds0 o1, m1, i1, o1
+        ps_madds0 o2, m2, i1, o2
+
+        psq_st o1, Vector3.x(_vout), 0, 0
+        psq_st o2, Vector3.z(_vout), 1, 0
+    )
+}
+
+inline void Invert(const Transform& tfin, Transform& tfout){
+    Vector3 vtmp;
+    Negate(tfin.v, vtmp);
+    Invert(tfin.m, tfout.m);
+    Multiply(vtmp, tfout.m, tfout.v);
 }
 
 #endif

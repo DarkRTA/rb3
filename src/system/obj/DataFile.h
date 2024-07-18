@@ -10,8 +10,10 @@ public:
     virtual bool IsLoaded() const;
     virtual void PollLoading();
 
+    DataArray* Data();
+
     String unk18;
-    int unk24;
+    DataArray* unk24;
     int unk28;
     int unk2c;
     int unk30;

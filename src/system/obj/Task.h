@@ -65,13 +65,19 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     float UISeconds() const;
+    float DeltaSeconds() const;
+    float DeltaBeat() const;
     float Beat() const;
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;
+    float DeltaTime(TaskUnits) const;
     void Start(Task*, TaskUnits, float);
+    float Time(TaskUnits) const;
+    const char* GetMBT();
 
     void ClearTasks();
     void SetSeconds(float, bool);
+    void SetDeltaTime(TaskUnits, float);
 };
 
 extern TaskMgr TheTaskMgr;

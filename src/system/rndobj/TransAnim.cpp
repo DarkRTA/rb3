@@ -101,11 +101,11 @@ void RndTransAnim::Print(){
 }
 
 float RndTransAnim::EndFrame() {
-
+    return Max(TransKeys().LastFrame(), RotKeys().LastFrame(), ScaleKeys().LastFrame());
 }
 
 float RndTransAnim::StartFrame() {
-
+    return Minimum(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
 }
 
 void RndTransAnim::MakeTransform(float, Transform&, bool, float) {
@@ -113,19 +113,25 @@ void RndTransAnim::MakeTransform(float, Transform&, bool, float) {
     MILO_ASSERT(prev, 50);
 }
 
-void RndTransAnim::SetFrame(float a, float b) {
-    mFrame = a;
-    if (mTrans) {
-        Transform t = mTrans->mWorldXfm;
-        MakeTransform(a, t, false, b);
-        mTrans->mWorldXfm = t;
-        mTrans->SetDirty();
+void RndTransAnim::SetFrame(float frame, float blend) {
+    RndAnimatable::SetFrame(frame, blend);
+    if(mTrans){
+        Transform tf(mTrans->LocalXfm());
+        MakeTransform(frame, tf, false, blend);
+        mTrans->SetLocalXfm(tf);
     }
 }
 
-void RndTransAnim::SetKey(float) {
-    if (mKeysOwner) {
-
+void RndTransAnim::SetKey(float frame) {
+    if(mTrans){
+        TransKeys().Add(mTrans->LocalXfm().v, frame, true);
+        Hmx::Matrix3 mtx;
+        Normalize(mTrans->LocalXfm().m, mtx);
+        Hmx::Quat q(mtx);
+        RotKeys().Add(q, frame, true);
+        Vector3 vec;
+        MakeScale(mTrans->LocalXfm().m, vec);
+        ScaleKeys().Add(vec, frame, true);
     }
 }
 
@@ -188,15 +194,26 @@ DataNode RndTransAnim::OnNumScaleKeys(const DataArray*) {
 }
 
 DataNode RndTransAnim::OnAddTransKey(const DataArray* da) {
-
-}
-
-DataNode RndTransAnim::OnAddRotKey(const DataArray* da) {
-
+    float frame = da->Float(5);
+    Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
+    TransKeys().Add(vec, frame, false);
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnAddScaleKey(const DataArray* da) {
+    float frame = da->Float(5);
+    Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
+    ScaleKeys().Add(vec, frame, false);
+    return DataNode(0);
+}
 
+DataNode RndTransAnim::OnAddRotKey(const DataArray* da) {
+    Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
+    vec *= DEG2RAD;
+    float frame = da->Float(5);
+    Hmx::Quat q(vec);
+    RotKeys().Add(q, frame, false);
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnSplice(const DataArray* da) {
@@ -204,13 +221,15 @@ DataNode RndTransAnim::OnSplice(const DataArray* da) {
     return DataNode();
 }
 
+// fn_80653C5C
 DataNode RndTransAnim::OnRemoveRotKeys(const DataArray* da) {
-
+    RotKeys().Remove(da->Float(2), da->Float(3));
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnRemoveTransKeys(const DataArray* da) {
-    da->Float(3);
-    da->Float(2);
+    TransKeys().Remove(da->Float(2), da->Float(3));
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnLinearize(const DataArray* da) {
@@ -225,7 +244,6 @@ DataNode RndTransAnim::OnSetTrans(const DataArray* da) {
     SetTrans(da->Obj<RndTransformable>(2));
     return DataNode();
 }
-
 
 BEGIN_PROPSYNCS(RndTransAnim)
     SYNC_PROP_SET(keys_owner, mKeysOwner, SetKeysOwner(_val.Obj<RndTransAnim>(NULL)))

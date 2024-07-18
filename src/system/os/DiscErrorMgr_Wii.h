@@ -15,6 +15,8 @@ public:
     };
 
     DiscErrorMgrWii();
+    void RegisterCallback(Callback*);
+    void UnregisterCallback(Callback*);
 
     bool mDiscError;
     bool mRetryError;

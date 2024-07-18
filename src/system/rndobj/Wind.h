@@ -23,6 +23,10 @@ public:
     void SetDefaults();
     void SyncLoops();
     float GetWind(float);
+    void GetWind(const Vector3& v, float f, Vector3& v2){
+        return mWindOwner->SelfGetWind(v,f,v2);
+    }
+    void SelfGetWind(const Vector3&, float, Vector3&);
 
     static void Init();
     NEW_OBJ(RndWind)

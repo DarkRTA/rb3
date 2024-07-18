@@ -11,21 +11,25 @@ class RndMesh;
 class RndMat;
 
 struct RndParticle {
-    Hmx::Color col;
-    Hmx::Color colVel;
-    Vector4 pos;
-    Vector4 vel;
-    float deathFrame;
-    float birthFrame;
-    float size;
-    float sizeVel;
-    float angle;
-    float swingArm;
-    RndParticle* prev;
-    RndParticle* next;
+    RndParticle(){}
+
+    Hmx::Color col; // 0x0
+    Hmx::Color colVel; // 0x10
+    Vector4 pos; // 0x20
+    Vector4 vel; // 0x30
+    float deathFrame; // 0x40
+    float birthFrame; // 0x44
+    float size; // 0x48
+    float sizeVel; // 0x4c
+    float angle; // 0x50
+    float swingArm; // 0x54
+    RndParticle* prev; // 0x58
+    RndParticle* next; // 0x5c
 };
 
 struct RndFancyParticle : RndParticle {
+    RndFancyParticle(){}
+
     float growFrame;
     float growVel;
     float shrinkFrame;
@@ -42,7 +46,33 @@ struct RndFancyParticle : RndParticle {
     float swingArmVel;
 };
 
+class ParticleCommonPool {
+public:
+    ParticleCommonPool() : mPoolParticles(0), mPoolFreeParticles(0), mNumActiveParticles(0), mHighWaterMark(0) {}
+    void InitPool();
+
+    RndFancyParticle* mPoolParticles; // 0x0
+    RndFancyParticle* mPoolFreeParticles; // 0x4
+    int mNumActiveParticles; // 0x8
+    int mHighWaterMark; // 0xc
+};
+
 struct PartOverride {
+    PartOverride& operator=(const PartOverride& p){
+        mask = p.mask;
+        life = p.life;
+        speed = p.speed;
+        size = p.size;
+        deltaSize = p.deltaSize;
+        startColor = p.startColor;
+        midColor = p.midColor;
+        endColor = p.endColor;
+        pitch = p.pitch;
+        yaw = p.yaw;
+        mesh = p.mesh;
+        box = p.box;
+        return *this;
+    }
     unsigned int mask; // 0x0
     float life; // 0x4
     float speed; // 0x8
@@ -85,19 +115,86 @@ public:
     virtual void UpdateSphere();
     virtual bool MakeWorldSphere(Sphere&, bool);
     virtual void Mats(std::list<class RndMat*>&, bool);
-    virtual void SetPreserveParticles(bool);
+    virtual void SetPreserveParticles(bool b){ mPreserveParticles = b; }
     virtual void SetPool(int, Type);
     virtual void SetPersistentPool(int, Type);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
 
     void SetGrowRatio(float);
     void SetShrinkRatio(float);
+    void SetMat(RndMat*);
     void SetMesh(RndMesh*);
     void SetRelativeMotion(float, RndTransformable*);
     void SetSubSamples(int);
     void SetFrameDrive(bool);
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle*, const Transform*);
+    void ExplicitParticles(int, bool, PartOverride&);
+    void FreeAllParticles();
+    int MaxParticles() const;
+
+    DataNode OnSetStartColor(const DataArray*);
+    DataNode OnSetStartColorInt(const DataArray*);
+    DataNode OnSetEndColor(const DataArray*);
+    DataNode OnSetEndColorInt(const DataArray*);
+    DataNode OnSetEmitRate(const DataArray*);
+    DataNode OnAddEmitRate(const DataArray*);
+    DataNode OnSetBurstInterval(const DataArray*);
+    DataNode OnSetBurstPeak(const DataArray*);
+    DataNode OnSetBurstLength(const DataArray*);
+    DataNode OnExplicitPart(const DataArray*);
+    DataNode OnExplicitParts(const DataArray*);
+    DataNode OnSetLife(const DataArray*);
+    DataNode OnSetSpeed(const DataArray*);
+    DataNode OnSetRotate(const DataArray*);
+    DataNode OnSetSwingArm(const DataArray*);
+    DataNode OnSetDrag(const DataArray*);
+    DataNode OnSetAlignment(const DataArray*);
+    DataNode OnSetStartSize(const DataArray*);
+    DataNode OnSetMat(const DataArray*);
+    DataNode OnSetPos(const DataArray*);
+    DataNode OnActiveParticles(const DataArray*);
+
+    const Hmx::Color& StartColorLow() const { return mStartColorLow; }
+    const Hmx::Color& StartColorHigh() const { return mStartColorHigh; }
+    void SetStartColor(const Hmx::Color& low, const Hmx::Color& high){
+        mStartColorLow = low; mStartColorHigh = high;
+    }
+
+    const Hmx::Color& EndColorLow() const { return mEndColorLow; }
+    const Hmx::Color& EndColorHigh() const { return mEndColorHigh; }
+    void SetEndColor(const Hmx::Color& low, const Hmx::Color& high){
+        mEndColorLow = low; mEndColorHigh = high;
+    }
+
+    const Vector2& EmitRate() const { return mEmitRate; }
+    void SetEmitRate(float x, float y){ mEmitRate.Set(x, y); }
+    const Vector2& Speed() const { return mSpeed; }
+    void SetSpeed(float x, float y){ mSpeed.Set(x, y); }
+    const Vector2& Life() const { return mLife; }
+    void SetLife(float x, float y){ mLife.Set(x, y); }
+    const Vector2& StartSize() const { return mStartSize; }
+    void SetStartSize(float x, float y){ mStartSize.Set(x, y); }
+
+    void SetBoxExtent(const Vector3& v1, const Vector3& v2){
+        mBoxExtent1 = v1; mBoxExtent2 = v2;
+    }
+
+    void SetSpin(bool b){ mSpin = b; }
+    void SetVelocityAlign(bool b){ mVelocityAlign = b; }
+    void SetStretchWithVelocity(bool b){ mStretchWithVelocity = b; }
+    void SetConstantArea(bool b){ mConstantArea = b; }
+
+    void SetMaxBurst(int i){ mMaxBurst = i; }
+    void SetTimeBetweenBursts(float f1, float f2){ mTimeBetween.Set(f1,f2); }
+    void SetPeakRate(float f1, float f2){ mPeakRate.Set(f1, f2); }
+    void SetDuration(float f1, float f2){ mDuration.Set(f1, f2); }
+    void SetRPM(float f1, float f2){ mRPM.Set(f1, f2); }
+    void SetRPMDrag(float f){ mRPMDrag = f; }
+    void SetStartOffset(float f1, float f2){ mStartOffset.Set(f1, f2); }
+    void SetEndOffset(float f1, float f2){ mEndOffset.Set(f1, f2); }
+    void SetDrag(float f){ mDrag = f; }
+    void SetStretchScale(float f){ mStretchScale = f; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -163,8 +260,10 @@ public:
     float unk2e8;
 };
 
+extern ParticleCommonPool* gParticlePool;
 extern PartOverride gNoPartOverride;
 
 void InitParticleSystem();
+int GetParticleHighWaterMark();
 
 #endif // RNDOBJ_PART_H

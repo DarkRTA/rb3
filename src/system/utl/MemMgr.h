@@ -9,6 +9,15 @@ public:
     ~MemDoTempAllocations();
 };
 
+class MemHandle {
+public:
+    MemHandle(void*);
+    void Lock();
+    void Unlock();
+};
+
+void MemFreeH(MemHandle*);
+
 void* operator new(size_t) throw();
 void operator delete(void*) throw();
 void* operator new[](size_t) throw();

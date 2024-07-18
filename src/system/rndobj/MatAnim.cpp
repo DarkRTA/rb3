@@ -10,6 +10,11 @@ RndMatAnim::TexPtr::TexPtr() : ObjPtr<RndTex, ObjectDir>(sOwner, 0) {}
 RndMatAnim::TexPtr::TexPtr(RndTex* tex) : ObjPtr<RndTex, ObjectDir>(sOwner, tex) {}
 RndMatAnim::TexKeys::TexKeys(Hmx::Object* o) : mOwner(o) {}
 
+int RndMatAnim::TexKeys::Add(RndTex* tex, float frame, bool b){
+    sOwner = mOwner;
+    return Keys<TexPtr, RndTex*>::Add(TexPtr(tex), frame, b);
+}
+
 RndMatAnim::TexKeys& RndMatAnim::TexKeys::operator=(const RndMatAnim::TexKeys& keys){
     if(this != &keys){
         sOwner = mOwner;
@@ -167,7 +172,7 @@ void RndMatAnim::SetFrame(float f1, float f2){
         }
         if(!GetTexKeys().empty()){
             RndTex* tex;
-            GetTexKeys().AtFrame(f1, tex);
+            GetTexKeys().AtFrame(f1, tex); // fn_805FBDAC - AtFrame for TexPtr, RndTex*
             mMat->SetDiffuseTex(tex);
         }
         Hmx::Color col(mMat->GetColor());

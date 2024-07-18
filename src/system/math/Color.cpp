@@ -1,90 +1,43 @@
 #include "math/Color.h"
+#include "math/MathFuncs.h"
 #include "utl/TextStream.h"
 
 Hmx::Color Hmx::Color::kWhite(1.0f, 1.0f, 1.0f, 1.0f);
 Hmx::Color Hmx::Color::kTransparent(0.0f, 0.0f, 0.0f, 0.0f);
 Hmx::Color Hmx::Color::kBlack(0.0f, 0.0f, 0.0f, 1.0f);
 
+DECOMP_FORCEACTIVE(Color, __FILE__, 
+    "( 0.f) <= (hue) && (hue) <= ( 360.f)",
+    "( 0.f) <= (sat) && (sat) <= ( 1.f)",
+    "( 0.f) <= (val) && (val) <= ( 1.f)");
+
 void MakeHSL(const Hmx::Color& color, float& f1, float& f2, float& f3){
-    float theGreen = color.green;
-    float theBlue = color.blue;
-    float theRed = color.red;
-    float tmpidk = theBlue;
-    if(theBlue < theGreen){
-        tmpidk = theGreen;
+    float b = color.blue;
+    float g = color.green;
+    float r = color.red;
+    float maxCol = Max(r, g, b);
+    float minCol = Minimum(r, g, b);
+    f3 = (minCol + maxCol) / 2.0f;
+    if(minCol == maxCol){
+        f1 = 0; f2 = 0;
     }
-    float tmp2idk = theRed;
-    if(theRed < tmpidk){
-        tmp2idk = tmpidk;
+    else {
+        float deltaCol = maxCol - minCol;
+        if(f3 < 0.5f) f2 = deltaCol / (minCol + maxCol);
+        else f2 = deltaCol / ((2.0f - maxCol) - minCol);
+        if(color.red == maxCol){
+            f1 = (color.green - color.blue) / deltaCol;
+        }
+        else if(color.green == maxCol){
+            f1 = (color.blue - color.red) / deltaCol + 2.0f;
+        }
+        else {
+            f1 = (color.red - color.green) / deltaCol + 4.0f;
+        }
+        f1 /= 6.0f;
+        if(f1 < 0.0f) f1 += 1.0f;
     }
-    if(theGreen < theBlue){
-        theBlue = theGreen;
-    }
-    if(theBlue < theRed){
-        theRed = theBlue;
-    }
-    
-
 }
-
-// void MakeHSL(Color *param_1,float *param_2,float *param_3,float *param_4)
-
-// {
-//   float fVar1;
-//   float fVar2;
-//   float fVar3;
-//   float fVar4;
-//   float fVar5;
-  
-//   fVar1 = *(float *)(param_1 + 8);
-//   fVar2 = *(float *)(param_1 + 4);
-//   fVar3 = *(float *)param_1;
-//   fVar5 = fVar2;
-//   if (fVar2 < fVar1) {
-//     fVar5 = fVar1;
-//   }
-//   fVar4 = fVar3;
-//   if (fVar3 < fVar5) {
-//     fVar4 = fVar5;
-//   }
-//   if (fVar1 < fVar2) {
-//     fVar2 = fVar1;
-//   }
-//   if (fVar2 < fVar3) {
-//     fVar3 = fVar2;
-//   }
-//   fVar1 = (fVar4 + fVar3) * 0.5;
-//   *param_4 = fVar1;
-//   if (fVar4 != fVar3) {
-//     fVar2 = fVar4 - fVar3;
-//     if (0.5 <= fVar1) {
-//       *param_3 = fVar2 / ((2.0 - fVar4) - fVar3);
-//     }
-//     else {
-//       *param_3 = fVar2 / (fVar4 + fVar3);
-//     }
-//     fVar1 = *(float *)param_1;
-//     if (fVar1 == fVar4) {
-//       *param_2 = (*(float *)(param_1 + 4) - *(float *)(param_1 + 8)) / fVar2;
-//     }
-//     else if (*(float *)(param_1 + 4) == fVar4) {
-//       *param_2 = (*(float *)(param_1 + 8) - fVar1) / fVar2 + 2.0;
-//     }
-//     else {
-//       *param_2 = (fVar1 - *(float *)(param_1 + 4)) / fVar2 + 4.0;
-//     }
-//     fVar1 = *param_2 / 6.0;
-//     *param_2 = fVar1;
-//     if (fVar1 < 0.0) {
-//       *param_2 = fVar1 + 1.0;
-//       return;
-//     }
-//     return;
-//   }
-//   *param_2 = 0.0;
-//   *param_3 = 0.0;
-//   return;
-// }
 
 TextStream& operator<<(TextStream& ts, const Hmx::Color& color){
     ts << "(r:" << color.red << " g:" << color.green << " b:" << color.blue << " a:" << color.alpha << ")";

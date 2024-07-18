@@ -20,15 +20,6 @@ typedef struct CatchInfo {
 	void* stacktop;
 } CatchInfo;
 
-typedef struct DestructorChain {
-  struct DestructorChain* next;
-  void* destructor;
-  void* object;
-} DestructorChain;
-
-extern void* __register_global_object(void* object, void* destructor, void* registration);
-extern void __destroy_global_chain(void);
-
 extern void	__end__catch(CatchInfo* catchinfo);
 extern void __throw(char* throwtype, void* location, void* dtor);
 extern char __throw_catch_compare(const char* throwtype, const char* catchtype, long* offset_result);

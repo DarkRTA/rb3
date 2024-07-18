@@ -17,7 +17,7 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharWeightable(){}
 
-    float Weight() const { return mWeightOwner->mWeight; }
+    float Weight() { return mWeightOwner->mWeight; }
     void SetWeightOwner(CharWeightable* o){
         mWeightOwner = o ? o : this;
     }

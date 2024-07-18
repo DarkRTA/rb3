@@ -40,6 +40,7 @@ public:
     // }
     const char *Str() const { return mStr; }
 
+    static void UploadDebugStats();
     static void PreInit(int, int);
     static void Init();
     static void Terminate();
@@ -49,5 +50,9 @@ public:
 };
 
 const char* SymbolCacheLookup(const char*);
+
+inline void Interp(const Symbol& s1, const Symbol& s2, float f, Symbol& s3){
+    s3 = (f < 1.0f) ? s1 : s2;
+}
 
 #endif

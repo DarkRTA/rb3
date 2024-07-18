@@ -8,15 +8,29 @@ extern "C" {
 #endif
 
 GX_DECL_PUBLIC_STRUCT(GXTexObj, 32);
+GX_DECL_PUBLIC_STRUCT(GXTlutObj, 32);
 
 void __GXSetSUTexRegs(void);
 
-void GXInitTexObj(GXTexObj*, void*, u16, u16, GXTexFmt, GXTexWrapMode,
-                  GXTexWrapMode, u8);
-void GXInitTexObjLOD(GXTexObj*, GXTexFilter, GXTexFilter, float, float, float, u8, u8,
-                     GXAnisotropy);
+void GXInitTexObj(GXTexObj* obj, void* image, u16 w, u16 h, GXTexFmt fmt,
+                  GXTexWrapMode wrap_s, GXTexWrapMode wrap_t, GXBool mipmap);
+void GXInitTexObjCI(GXTexObj*, void*, u16, u16, GXTexFmt, GXTexWrapMode,
+                    GXTexWrapMode, GXBool, u32);
+void GXInitTexObjLOD(GXTexObj* obj, GXTexFilter min_filt, GXTexFilter mag_filt,
+                     float min_lod, float max_lod, float lod_bias, GXBool bias_clamp,
+                     GXBool do_edge_lod, GXAnisotropy max_aniso);
 
 void GXLoadTexObj(GXTexObj*, GXTexMapID);
+
+u32 GXGetTexObjTlut(GXTexObj*);
+
+void GXInitTlutObj(GXTlutObj*, void*, GXTlutFmt, u16);
+
+void GXInvalidateTexAll(void);
+
+// TODO
+void GXSetTexCoordScaleManually(u32, u32, u32, u32);
+void GXSetTexCoordCylWrap(u32, u32, u32);
 
 #ifdef __cplusplus
 }

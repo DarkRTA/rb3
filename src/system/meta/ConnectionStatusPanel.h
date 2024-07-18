@@ -1,6 +1,5 @@
 #ifndef META_CONNECTIONSTATUSPANEL_H
 #define META_CONNECTIONSTATUSPANEL_H
-#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "ui/UIPanel.h"
 #include "obj/Msg.h"

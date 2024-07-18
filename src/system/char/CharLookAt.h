@@ -23,33 +23,39 @@ public:
     virtual void Enter();
 
     void SyncLimits();
+    RndTransformable* GetSource() const;
+    void SetMinYaw(float);
+    void SetMaxYaw(float);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    static bool sDisableJitter;
     
-    ObjPtr<RndTransformable, ObjectDir> mSource;
-    ObjPtr<RndTransformable, ObjectDir> mPivot;
-    ObjPtr<RndTransformable, ObjectDir> mDest;
+    ObjPtr<RndTransformable, ObjectDir> mSource; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mPivot; // 0x34
+    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x40
     float mHalfTime; // 0x4c
-    float mMinYaw;
-    float mMaxYaw;
-    float mMinPitch;
-    float mMaxPitch;
-    float mMinWeightYaw;
-    float mMaxWeightYaw;
+    float mMinYaw; // 0x50
+    float mMaxYaw; // 0x54
+    float mMinPitch; // 0x58
+    float mMaxPitch; // 0x5c
+    float mMinWeightYaw; // 0x60
+    float mMaxWeightYaw; // 0x64
     float mWeightYawSpeed; // 0x68
-    float unk6c;
-    float unk70;
-    float unk74;
-    float unk78;
-    float mSourceRadius;
-    Vector3 vec80;
-    Box mBounds;
-    bool mShowRange;
-    bool mTestRange;
-    float mTestRangePitch;
-    float mTestRangeYaw;
-    bool mAllowRoll;
-    bool unkb1;
-    bool mEnableJitter;
-    float mYawJitterLimit;
+    Vector3 unk6c; // 0x6c
+    float unk78; // 0x78
+    float mSourceRadius; // 0x7c
+    Vector3 vec80; // 0x80
+    Box mBounds; // 0x8c, 0x90, 0x94, 0x98, 0x9c, 0xa0
+    bool mShowRange; // 0xa4
+    bool mTestRange; // 0xa5
+    float mTestRangePitch; // 0xa8
+    float mTestRangeYaw; // 0xac
+    bool mAllowRoll; // 0xb0
+    bool unkb1; // 0xb1
+    bool mEnableJitter; // 0xb2
+    float mYawJitterLimit; // 0xb4
     float mPitchJitterLimit;
 
 };

@@ -2,7 +2,7 @@
 
 int SampleZone::gRev = 0;
 
-SampleZone::SampleZone(Hmx::Object* obj) : mSynthPtr(obj, 0), unkc(0.0f), unk10(0.0f), unk14(0x24), unk18(0), unk1c(0x7f), unk20(0), unk24(0x7f), unk28(-1) {
+SampleZone::SampleZone(Hmx::Object* obj) : mSample(obj, 0), mVolume(0.0f), mPan(0.0f), mCenterNote(0x24), mMinNote(0), mMaxNote(0x7f), mMinVel(0), mMaxVel(0x7f), mFXCore(kFXCoreNone) {
 
 }
 
@@ -12,19 +12,19 @@ BinStream& operator>>(BinStream& bs, SampleZone& zone){
 }
 
 void SampleZone::Load(BinStream& bs){
-    bs >> mSynthPtr;
-    bs >> unkc >> unk10 >> unk14 >> unk18 >> unk1c;
+    bs >> mSample;
+    bs >> mVolume >> mPan >> mCenterNote >> mMinNote >> mMaxNote;
     int num;
     bs >> num;
-    unk28 = num;
-    bs >> adsr;
+    mFXCore = (FXCore)num;
+    bs >> mADSR;
     if(gRev >= 2){
-        bs >> unk20 >> unk24;
+        bs >> mMinVel >> mMaxVel;
     }
 }
 
 bool SampleZone::Includes(unsigned char uc1, unsigned char uc2){
     bool ret = false;
-    if(unk18 <= uc1 && uc1 <= unk1c && unk20 <= uc2 && uc2 <= unk24) ret = true;
+    if(mMinNote <= uc1 && uc1 <= mMaxNote && mMinVel <= uc2 && uc2 <= mMaxVel) ret = true;
     return ret;
 }

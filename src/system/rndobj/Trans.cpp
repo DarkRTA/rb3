@@ -7,7 +7,9 @@
 #include "obj/Object.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
+#include "rndobj/TransAnim.h"
 #include "rndobj/Utl.h"
+#include "utl/STLHelpers.h"
 #include <algorithm>
 #include "utl/Symbols.h"
 
@@ -37,6 +39,17 @@ RndTransformable::~RndTransformable() {
         (*it)->mCache->SetDirty();
     }
     delete mCache;
+}
+
+void RndTransformable::TransformTransAnims(const Transform& tf){
+    std::vector<RndTransformable*>::const_reverse_iterator it = mChildren.rbegin();
+    std::vector<RndTransformable*>::const_reverse_iterator itEnd = mChildren.rend();
+    for(; it != itEnd; it++){
+        RndTransAnim* trans = dynamic_cast<RndTransAnim*>((*it)->RefOwner());
+        if(trans && trans->mTrans == this){
+            TransformKeys(trans,tf);
+        }
+    }
 }
 
 void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){
@@ -113,7 +126,7 @@ void RndTransformable::DistributeChildren(bool b, float f){
     for(int i = 0; i < count; i++){
         Transform t = vec[i]->LocalXfm();
         t.v[b] = f * i;
-        vec[i]->SetDirtyLocalXfm(t);
+        vec[i]->SetLocalXfm(t);
     }
 }
 
@@ -212,7 +225,7 @@ DataNode RndTransformable::OnCopyLocalTo(const DataArray* da){
     DataArray* arr = da->Array(2);
     for(int i = arr->Size() - 1; i >= 0; i--){
         RndTransformable* t = arr->Obj<RndTransformable>(i);
-        t->SetDirtyLocalXfm(LocalXfm());
+        t->SetLocalXfm(LocalXfm());
     }
     return DataNode(0);
 }

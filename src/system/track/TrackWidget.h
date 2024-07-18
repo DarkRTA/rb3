@@ -38,6 +38,7 @@ public:
     void AddInstance(Transform, float);
     void AddTextInstance(const Transform&, class String, bool);
     void AddMeshInstance(const Transform&, RndMesh*, float);
+    void SetTrackDir(TrackDir* dir){ mTrackDir = dir; }
 
     DataNode OnSetMeshes(const DataArray*);
     DataNode OnAddInstance(const DataArray*);

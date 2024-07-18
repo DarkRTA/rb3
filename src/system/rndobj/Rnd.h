@@ -108,6 +108,10 @@ public:
     void ResetProcCounter();
     int DrawMode() const { return unk_0xE4; }
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
+    bool Unk130() const { return unk130; }
+    int UnkE4() const { return unk_0xE4; }
+    RndCam* DefaultCam(){ return mDefaultCam; }
+    float DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);
@@ -128,6 +132,9 @@ public:
     DataNode OnReflect(const DataArray*);
     DataNode OnToggleHeap(const DataArray*);
     DataNode OnTestDrawGroups(const DataArray*);
+    Aspect GetAspect() const { return mAspect; }
+    int Width() const { return mWidth; }
+    int Height() const { return mHeight; }
 
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30
@@ -143,7 +150,7 @@ public:
     RndMat* unk84; // 0x84
     RndMat* unk88; // 0x88
     RndMat* unk8c; // 0x8c
-    RndCam* unk90; // 0x90
+    RndCam* mDefaultCam; // 0x90
     RndCam* unk94; // 0x94
     RndEnviron* unk98; // 0x98
     RndLight* unk9c; // 0x9c
@@ -162,7 +169,7 @@ public:
     bool unkde; // 0xde
     bool unkdf; // 0xdf
     Aspect mAspect; // 0xE0
-    int unk_0xE4; // 0xe4
+    int unk_0xE4; // 0xe4 referenced in TexMovie
     bool unke8; // 0xe8
     bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA

@@ -2,6 +2,7 @@
 #define UI_PANELDIR_H
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
+#include "rndobj/Cam.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
@@ -10,7 +11,6 @@
 #include <vector>
 
 class UIComponent;
-class RndCam;
 class UITrigger;
 
 class PanelDir : public RndDir {
@@ -36,13 +36,13 @@ public:
     virtual void DrawShowing();
     virtual void Enter();
     virtual void Exit();
-
     virtual RndCam* CamOverride();
     virtual bool Entering() const;
     virtual bool Exiting() const;
     virtual UIComponent* FocusComponent();
     virtual UIComponent* FindComponent(const char*);
     virtual void SetFocusComponent(UIComponent*, Symbol);
+
     void SendTransition(const Message&, Symbol, Symbol);
     void AddComponent(UIComponent*);
     void UpdateFocusComponentState();
@@ -51,8 +51,10 @@ public:
     void EnableComponent(UIComponent*, RequestFocus);
     void DisableComponent(UIComponent*, JoypadAction);
     bool PanelNav(JoypadAction, JoypadButton, Symbol);
+    UIComponent* ComponentNav(UIComponent*, JoypadAction, JoypadButton, Symbol);
     UIComponent* GetFirstFocusableComponent();
     bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
+    void SetCam(RndCam* cam){ mCam = cam; }
 
     DataNode GetFocusableComponentList();
     DataNode OnEnableComponent(const DataArray*);
@@ -69,9 +71,9 @@ public:
     std::list<UIComponent*> mComponents; // 0x1a8
     bool mCanEndWorld; // 0x1b0
     bool mUseSpecifiedCam; // 0x1b1
-    std::vector<PanelDir*> mBackPanels; // 0x1b4
+    std::vector<RndDir*> mBackPanels; // 0x1b4
     std::vector<FilePath> mBackFilenames; // 0x1bc
-    std::vector<PanelDir*> mFrontPanels; // 0x1c4
+    std::vector<RndDir*> mFrontPanels; // 0x1c4
     std::vector<FilePath> mFrontFilenames; // 0x1cc
     bool mShowEditModePanels; // 0x1d4
     bool mShowFocusComponent; // 0x1d5

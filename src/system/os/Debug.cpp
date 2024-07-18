@@ -19,51 +19,17 @@
 
 #include "decomp.h"
 
+const char* kAssertStr = "File: %s Line: %d Error: %s\n";
 Debug TheDebug;
 jmp_buf TheDebugJump;
+DebugNotifier TheDebugNotifier;
+DebugFailer TheDebugFailer;
 
-static int* gpDbgFrameID;
+int* gpDbgFrameID;
 std::vector<String> gNotifies;
 
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
 const GXColor DebugBGColor = { 0x80, 0, 0, 255 };
-
-DECOMP_FORCEACTIVE(Debug,
-    "%s",
-    "no_try",
-    "log",
-    "no_modal",
-    "no_notify",
-    __FILE__,
-    "MainThread()",
-
-    // Temp strings needed for string pooling to match
-    "TRY conditional not exited %d",
-    "\n\n-- Program ended --\n",
-    "%s\n",
-    "THREAD-NOTIFY not called in MainThread: %s\n",
-    "NOTIFY: %s\n",
-    "main",
-    "THREAD-FAIL: %s\n",
-    "FAIL-MSG: %s\n",
-    "APP FAILED\n",
-    "n/a",
-    "version",
-    "<unknown>",
-    "\n\nConsoleName: %s   %s   Plat: %s   ",
-    "\nLang: %s   SystemConfig: %s",
-    "true",
-    "false",
-    "\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
-    "debug/fail",
-    "msg",
-    "callstack",
-    "dataCallstack",
-    "cheatsMsg",
-    "FAIL: %s\n",
-    "APP EXITED, EXIT CODE %d\n",
-    "Debug::Print"
-)
 
 int DbgGetFrameID() {
     if (gpDbgFrameID) return *gpDbgFrameID;
@@ -291,7 +257,10 @@ void Debug::Exit(int status, bool actually_exit) {
 }
 
 void Debug::RemoveExitCallback(ExitCallbackFunc* func){
-    if(!mExiting) mExitCallbacks.remove(func);
+    if(!mExiting){
+        ExitCallbackFunc* toRemove = func;
+        mExitCallbacks.remove(toRemove);
+    }
 }
 
 void Debug::Print(const char* msg) {
@@ -354,5 +323,3 @@ void std_vec_range_assert(size_t value, size_t max, const char *func) {
         MILO_FAIL("std::vector::%s: index range exceeded (0x%08x > 0x%08x)\n", func, value, (max / 4));
     }
 }
-
-const char* kAssertStr = "File: %s Line: %d Error: %s\n";

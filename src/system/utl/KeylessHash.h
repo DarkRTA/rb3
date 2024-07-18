@@ -2,6 +2,7 @@
 #define UTL_KEYLESSHASH_H
 #include "math/Primes.h"
 #include "math/Sort.h"
+#include "utl/Loader.h"
 #include "os/Debug.h"
 #include <string.h>
 
@@ -25,22 +26,27 @@ public:
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
 
+    void Advance(int& idx){
+        idx++;
+        if(idx == mSize) idx = 0;
+    }
+
     // keep these in here so that they're inlined - needed for ObjDirItr    
     T2* FirstFromStart(){ return FirstFrom(mEntries); }
     T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
 };
 
 template <class T1, class T2>
-KeylessHash<T1, T2>::KeylessHash(int i, const T2& tmp1 , const T2& tmp2 , T2* tmp_ptr ){
-    mEmpty = tmp1;
-    mRemoved = tmp2;
-    if(tmp_ptr){
-        mSize = i;
-        mEntries = tmp_ptr;
+KeylessHash<T1, T2>::KeylessHash(int size, const T2& empty, const T2& removed, T2* entries){
+    mEmpty = empty;
+    mRemoved = removed;
+    if(entries){
+        mSize = size;
+        mEntries = entries;
         mOwnEntries = false;
     }
-    else if(i != 0){
-        mSize = NextHashPrime(i);
+    else if(size != 0){
+        mSize = NextHashPrime(size);
         mEntries = new T2[mSize];
         mOwnEntries = true;
     }
@@ -69,19 +75,18 @@ T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
     else return entry;
 }
 
+inline bool KeysMatch(const char* k1, const char* k2){ return strcmp(k1, k2) == 0; }
+
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::Find(const char* const& key){
     if(mEntries){
         int i = HashString(key, mSize);
         MILO_ASSERT(i >= 0, 0x88);
 
-        T2* it;
-        while(it = &mEntries[i], *it != mEmpty){
-            if(*it != mRemoved){
-                bool matched = strcmp(*it, key) == 0;
-                if(matched) return it;
+        for(; mEntries[i] != mEmpty; Advance(i)){
+            if(mEntries[i] != mRemoved){
+                if(KeysMatch((const char *)mEntries[i], key)) return &mEntries[i];
             }
-            if(++i == mSize) i = 0;
         }
     }
     return 0;
@@ -94,8 +99,58 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
         MILO_ASSERT(mOwnEntries, 0x9E);
         Resize(0x19, 0);
     }
-    int i = HashString((const char*)val, mSize);
+    const char* valStr = (const char*)val;
+    int i = HashString(valStr, mSize);
     MILO_ASSERT(i >= 0, 0xA4);
+    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !KeysMatch((const char*)mEntries[i], valStr)){
+        Advance(i);
+    }
+    if(mEntries[i] == mEmpty){
+        mNumEntries++;
+        if(mNumEntries > mSize / 2 && mOwnEntries){
+            MILO_ASSERT(mSize, 0xB5);
+            Resize(mSize * 2, 0);
+            if(!TheLoadMgr.EditMode() && MakeStringInitted()){
+                MILO_WARN("Resizing hash table (%d)", mSize);
+            }
+            return Insert(val);
+        }
+        if(mNumEntries >= mSize){
+            MILO_FAIL("Hash table full (%d)", mSize);
+        }
+    }
+    mEntries[i] = val;
+    return &mEntries[i];
+}
+
+template <class T1, class T2>
+void KeylessHash<T1, T2>::Resize(int size, T2* val){
+    MILO_ASSERT(size > mNumEntries * 2, 0xF3);
+    bool owned;
+    if(val) owned = false;
+    else {
+        size = NextHashPrime(size);
+        val = new T2[size];
+        owned = true;
+    }
+    for(int i = 0; i < size; i++){
+        val[i] = mEmpty;
+    }
+    mNumEntries = 0;
+    for(T2* it = FirstFromStart(); it != 0; it = FirstFromNext(it)){
+        int i = HashString(*it, size);
+        MILO_ASSERT(i >= 0, 0x108);
+        while(val[i] != mEmpty){
+            i++;
+            if(i == size) i = 0;
+        }
+        mNumEntries++;
+        val[i] = *it;
+    }
+    if(mOwnEntries) delete [] mEntries;
+    mEntries = val;
+    mSize = size;
+    mOwnEntries = owned;
 }
 
 #endif

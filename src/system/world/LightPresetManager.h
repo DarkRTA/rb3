@@ -1,7 +1,8 @@
 #ifndef WORLD_LIGHTPRESETMANAGER_H
 #define WORLD_LIGHTPRESETMANAGER_H
 #include "obj/Data.h"
-// #include <hash_map>
+#include "world/LightPreset.h"
+#include <map>
 
 class WorldDir;
 
@@ -11,24 +12,34 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~LightPresetManager();
 
-    bool unk4;
-    // std::hash_map<int, int> unk8;
-    int unk8, unkc, unk10;
-    int unk14;
-    int unk18;
-    Symbol unk1c;
+    void Enter();
+    void Reset();
+    void Poll();
+    void SyncObjects();
+    void SendLightingMessage(Symbol);
+    void UpdateOverlay();
+    void StartPreset(LightPreset*, bool);
+    void SetPresetsEquivalent(bool);
+    void GetPresets(LightPreset*&, LightPreset*&);
+    void ReportError();
+
+    NEW_POOL_OVERLOAD(LightPresetManager)
+    DELETE_POOL_OVERLOAD(LightPresetManager)
+
+    std::map<Symbol, std::vector<LightPreset*> > mPresets; // 0x4
+    Symbol mLastCategory; // 0x1c
     WorldDir* mParent; // 0x20
-    int unk24;
-    int unk28;
-    int unk2c;
-    float unk30;
-    float unk34;
-    float unk38;
-    bool unk3c;
-    float unk40;
-    float unk44;
-    int unk48;
-    bool unk4c;
+    LightPreset* mPresetOverride; // 0x24
+    LightPreset* mPresetNew; // 0x28
+    LightPreset* mPresetPrev; // 0x2c
+    float unk30; // 0x30
+    float unk34; // 0x34
+    float unk38; // 0x38
+    bool unk3c; // 0x3c
+    float mBlend; // 0x40
+    float unk44; // 0x44
+    int unk48; // 0x48
+    bool unk4c; // 0x4c
 };
 
 #endif

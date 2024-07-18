@@ -1,8 +1,7 @@
 #pragma once
-
-#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "utl/MemMgr.h"
+
 class BandSongPref : public Hmx::Object {
     BandSongPref();
     virtual ~BandSongPref() {}

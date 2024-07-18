@@ -165,6 +165,11 @@ namespace Hmx {
     };
 }
 
+struct ObjPair {
+    Hmx::Object* from;
+    Hmx::Object* to;
+};
+
 struct ObjMatchPr {
     bool operator() (const Hmx::Object*& value) { return value == obj; }
     Hmx::Object* obj;

@@ -1,6 +1,5 @@
 #ifndef RNDOBJ_POSTPROC_H
 #define RNDOBJ_POSTPROC_H
-#include "obj/ObjMacros.h"
 #include <revolution/OS.h>
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
@@ -61,13 +60,17 @@ public:
     virtual void OnSelect();
     virtual void OnUnselect();
     
+    void UpdateTimeDelta();
+    void UpdateColorModulation();
+    void UpdateBlendPrevious();
     void Interp(const RndPostProc*, const RndPostProc*, float);
     void LoadRev(BinStream&, int);
     DataNode OnAllowedNormalMap(const DataArray*);
+    bool BlendPrevious() const;
 
     static void Reset();
     static RndPostProc* sCurrent;
-    static RndPostProc* Current(){ return sCurrent; }
+    static RndPostProc* Current();
     static DOFOverrideParams sDOFOverride;
     static DOFOverrideParams& DOFOverrides(){ return sDOFOverride; }
 
@@ -97,8 +100,8 @@ public:
     float mKaleidoscopeAngle;
     float mKaleidoscopeRadius;
     bool mKaleidoscopeFlipUVs;
-    Vector2 mFlickerIntensity;
-    Vector2 mFlickerSecsRange;
+    Vector2 mFlickerIntensity; // 0xf8
+    Vector2 mFlickerSecsRange; // 0x100
 
     Vector2 unk108;
     float unk110;
@@ -111,13 +114,13 @@ public:
     bool mNoiseStationary;
     bool mNoiseMidtone;
     ObjPtr<RndTex, ObjectDir> mNoiseMap;
-    float mThreshold;
-    float mDuration;
+    float mThreshold; // 0x134
+    float mDuration; // 0x138
 
     Vector3 unk13c;
     float mEmulateFPS;
     float unk14c;
-    int unk150;
+    float unk150;
 
     int mHallOfTimeType;
     float mHallOfTimeRate;

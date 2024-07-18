@@ -66,8 +66,8 @@ BEGIN_LOADS(RndFlare)
         mPointTest = b;
     }
     if (gRev > 6) bs >> mOffset;
-    mTestDone = 0;
-    mLastDone = mLineUpdate;
+    mLastDone = 0;
+    mTestDone = mLastDone;
     CalcScale();
 END_LOADS
 

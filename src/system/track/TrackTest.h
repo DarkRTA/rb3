@@ -6,7 +6,7 @@
 #include "track/TrackWidget.h"
 
 class TrackTest {
-    public:
+public:
     TrackTest(TrackDir*);
 
     TrackDir* mDir;    
