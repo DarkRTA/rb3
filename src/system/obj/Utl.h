@@ -33,13 +33,19 @@ int GetPropSize(Hmx::Object*, DataArray*, int);
 bool IsPropPathValid(Hmx::Object*, DataArray*);
 bool PathCompare(DataArray*, DataArray*);
 DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
-void CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
+Hmx::Object* CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
+void CloneObject(Hmx::Object*, bool);
+void FileCallbackFullPath(const char*, const char*);
+
+void WalkProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);
+void EditorBlockProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);
+void ListProperties(std::list<Symbol>&, Symbol, Symbol, std::list<Symbol>*);
 
 // mergefilter classes go here
 class MergeFilter {
 public:
     enum Action { kMerge, kReplace, kKeep, kIgnore };
-    enum Subdirs { kNoSubdirs, kAllSubdirs, kInlineSubdirs };
+    enum Subdirs { kNoSubdirs, kAllSubdirs, kInlineSubdirs, kSubdir3, kSubdir4 };
 
     MergeFilter();
     MergeFilter(Action a, Subdirs s) : mAction(a), mSubdirs(s) {}
@@ -67,6 +73,9 @@ public:
     int mInt;
 };
 
+void MergeObject(Hmx::Object*, Hmx::Object*, ObjectDir*, MergeFilter::Action);
+void MergeObject(Hmx::Object*, Hmx::Object*, ObjectDir*, MergeFilter&);
+void MergeObjectsRecurse(ObjectDir*, ObjectDir*, MergeFilter&, bool);
 void MergeDirs(ObjectDir*, ObjectDir*, MergeFilter&);
 
 #endif
