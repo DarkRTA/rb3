@@ -1,6 +1,5 @@
 #ifndef META_HELDBUTTONPANEL_H
 #define META_HELDBUTTONPANEL_H
-#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 #include "meta/ButtonHolder.h"
 

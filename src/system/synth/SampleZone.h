@@ -4,6 +4,7 @@
 #include "synth/SynthSample.h"
 #include "obj/ObjPtr_p.h"
 #include "synth/ADSR.h"
+#include "synth/SampleInst.h"
 
 class SampleZone {
 public:
@@ -13,18 +14,19 @@ public:
 
     static int gRev;
 
-    ObjPtr<SynthSample, ObjectDir> mSynthPtr;
-    float unkc;
-    float unk10;
-    int unk14;
-    int unk18;
-    int unk1c;
-    int unk20;
-    int unk24;
-    int unk28;
-    ADSR adsr;
+    ObjPtr<SynthSample, ObjectDir> mSample; // 0x0
+    float mVolume; // 0xc
+    float mPan; // 0x10
+    int mCenterNote; // 0x14
+    int mMinNote; // 0x18
+    int mMaxNote; // 0x1c
+    int mMinVel; // 0x20
+    int mMaxVel; // 0x24
+    FXCore mFXCore; // 0x28
+    ADSR mADSR; // 0x2c
 };
 
 BinStream& operator>>(BinStream&, SampleZone&);
+bool PropSync(SampleZone&, DataNode&, DataArray*, int, PropOp);
 
 #endif

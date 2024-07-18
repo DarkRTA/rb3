@@ -223,6 +223,7 @@
             "system/math/FileChecksum.cpp": "Matching",
             "system/math/Geo.cpp": "NonMatching",
             "system/math/Interp.cpp": "Matching",
+            "system/math/Key.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
             "system/math/Primes.cpp": "Matching",
             "system/math/Rand.cpp": "Matching",
             "system/math/Rand2.cpp": "Matching",
@@ -406,6 +407,8 @@
             "system/rndwii/Rnd.cpp": "NonMatching",
 
             "system/synth/ADSR.cpp": "NonMatching",
+            "system/synth/BinkClip.cpp": "Matching",
+            "system/synth/BinkReader.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
             "system/synth/Faders.cpp": "Equivalent",
@@ -421,6 +424,7 @@
             "system/synth/FxSendPitchShift.cpp": "Matching",
             "system/synth/FxSendSynapse.cpp": "Matching",
             "system/synth/FxSendWah.cpp": "Matching",
+            "system/synth/MetaMusic.cpp": "NonMatching",
             "system/synth/Mic.cpp": "Matching",
             "system/synth/MicNull.cpp": "NonMatching",
             "system/synth/MidiInstrument.cpp": "NonMatching",
@@ -480,7 +484,10 @@
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "Matching",
             "system/ui/UIPicture.cpp": "Matching",
-            "system/ui/UIProxy.cpp": "NonMatching",
+            "system/ui/UIProxy.cpp": {
+                "status": "LinkIssues",
+                "comment": "SetType ordering in bss"
+            },
             "system/ui/UIResource.cpp": "Matching",
             "system/ui/UIScreen.cpp": {
                 "status": "LinkIssues",
@@ -553,7 +560,7 @@
             "system/utl/UTF8.cpp": "NonMatching",
             "system/utl/VarTimer.cpp": "NonMatching",
             "system/utl/Wav.cpp": "NonMatching",
-            "system/utl/WaveFile.cpp": "NonMatching",
+            "system/utl/WaveFile.cpp": "Matching",
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",

@@ -80,7 +80,9 @@ public:
 
     const float& operator[](int i) const { return *(&x + i); }
     float& operator[](int i){ return *(&x + i); }
-    // bool operator==(const Vector3 &) const;
+    bool operator==(const Vector3& v) const {
+        return x == v.x && y == v.y && z == v.z;
+    }
     // bool operator!=(const Vector3 &) const;
 };
 
@@ -219,13 +221,7 @@ inline float Distance(const Vector3& v1, const Vector3& v2){
 }
 
 inline void Subtract(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
-#ifdef VERSION_SZBE69_B8
-    dst.z = v1.z - v2.z;
-    dst.y = v1.y - v2.y;
-    dst.x = v1.x - v2.x;
-#else
     dst.Set(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
-#endif
 }
 
 float Length(const Vector3&);
@@ -251,6 +247,8 @@ inline float LengthSquared(const Vector3& v){
     return x * x + y * y + z * z;
 }
 
+// https://decomp.me/scratch/TWZ2T
+// why oh why does debug behave this way
 inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
 #ifdef VERSION_SZBE69_B8
     float zdiff = v1.z - v2.z;
@@ -267,13 +265,7 @@ inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
 float RecipSqrtAccurate(float);
 
 inline void Add(const Vector3& v1, const Vector3& v2, Vector3& dst){
-#ifdef VERSION_SZBE69_B8
-    dst.z = v1.z + v2.z;
-    dst.y = v1.y + v2.y;
-    dst.x = v1.x + v2.x;
-#else
     dst.Set(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
-#endif
 }
 
 inline void Interp(const Vector2& v1, const Vector2& v2, float f, Vector2& res){
@@ -312,6 +304,10 @@ void Normalize(const Vector3&, Vector3&);
 
 inline float operator*(const Vector3& v1, const Vector3& v2){
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+inline void Negate(const Vector3& v, Vector3& vres){
+    vres.Set(-v.x, -v.y, -v.z);
 }
 
 #endif

@@ -33,10 +33,10 @@ SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPa
     mDrumSoloSamples = info->GetDrumSoloSamples();
     mDrumFreestyleSamples = info->GetDrumFreestyleSamples();
     mTrackChannels = info->GetTracks();
-    int midifilenum = NumExtraMidiFiles();
+    int midifilenum = info->NumExtraMidiFiles();
     mExtraMidiFiles.reserve(midifilenum);
     for(int i = 0; i < midifilenum; i++){
-        mExtraMidiFiles.push_back(String(GetExtraMidiFile(midifilenum)));
+        mExtraMidiFiles.push_back(info->GetExtraMidiFile(i));
     }
 }
 
@@ -85,18 +85,19 @@ bool SongInfoCopy::IsPlayTrackChannel(int chan) const {
     return false;
 }
 
-// this is wrong
-const std::vector<int>& SongInfoCopy::FindTrackChannel(SongInfoAudioType ty) const {
+const TrackChannels* SongInfoCopy::FindTrackChannel(SongInfoAudioType ty) const {
     for(int i = 0; i < mTrackChannels.size(); i++){
-        if(i == (int)ty){
-            return mTrackChannels[i].mChannels;
-        }   
+        if(mTrackChannels[i].mAudioType == ty){
+            return &mTrackChannels[i];
+        }
     }
+    return 0;
 }
 
-// also wrong
 int SongInfoCopy::NumChannelsOfTrack(SongInfoAudioType ty) const {
-    const std::vector<int>& vec = FindTrackChannel(ty);
+    const TrackChannels* tc = FindTrackChannel(ty);
+    if(tc) return tc->mChannels.size();
+    else return 0;
 }
 
 int SongInfoCopy::TrackIndex(SongInfoAudioType ty) const {

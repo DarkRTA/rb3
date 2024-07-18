@@ -7,6 +7,7 @@
 
 struct SampleMarker {
     SampleMarker() : name(""), sample(-1) {}
+    SampleMarker(const String& str, int i) : name(str), sample(i) {}
 
     String name;
     int sample;

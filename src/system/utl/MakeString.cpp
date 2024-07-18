@@ -66,7 +66,7 @@ static char* NextBuf(){
 
 void InitMakeString(){
     if(gLock == 0){
-        gLock = new (_PoolAlloc(0x1C, 0x1C, FastPool)) CriticalSection();
+        gLock = new CriticalSection();
         gBuf = (char***)_MemAlloc(0x18, 0);
         for(int i3 = 0, i5 = 0; i3 < 6; i3++, i5++){
             gBuf[i5] = (char**)_MemAlloc(0x28, 0);
