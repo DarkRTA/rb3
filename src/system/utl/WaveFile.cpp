@@ -116,4 +116,8 @@ WaveFileData::WaveFileData(WaveFile& wf) : IDataChunk(wf.PrepareToProvideData())
     
 }
 
+WaveFileData::~WaveFileData(){
+    
+}
+
 DECOMP_FORCEACTIVE(WaveFile, "!IsCompressed()")

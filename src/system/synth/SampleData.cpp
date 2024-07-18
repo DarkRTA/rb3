@@ -63,22 +63,32 @@ void SampleData::Load(BinStream& bs, const FilePath& fp){
     }
 }
 
+// https://decomp.me/scratch/XPqxP
 void SampleData::LoadWAV(BinStream& bs, const FilePath& fp){
     Reset();
     WaveFile wav(bs);
-    if(wav.mNumChannels != 1) MILO_WARN("Wave file %s has multiple channels", fp);
-    else if(wav.mBitsPerSample != 0x10) MILO_WARN("Wave file %s is not 16-bit", fp);
-    else if(wav.mSamplesPerSec != 1) MILO_WARN("Wave file %s is compressed", fp);
+    if(wav.NumChannels() != 1){
+        MILO_WARN("Wave file %s has multiple channels", fp);
+        return;
+    }
+    else if(wav.BitsPerSample() != 0x10){
+        MILO_WARN("Wave file %s is not 16-bit", fp);
+        return;
+    }
+    else if(wav.Format() != 1){
+        MILO_WARN("Wave file %s is compressed", fp);
+        return;
+    }
     else {
         mFormat = kPCM;
-        mNumSamples = wav.mNumSamples;
-        mSampleRate = wav.mSamplesPerSec;
+        mNumSamples = wav.NumSamples();
+        mSampleRate = wav.SamplesPerSec();
         mSizeBytes = SizeAs(kPCM);
         mData = sAlloc(mSizeBytes, fp.c_str());
         WaveFileData wavdata(wav);
         wavdata.Read(mData, mSizeBytes);
-        for(int i = 0; i < wav.mMarkers.size(); i++){
-            // mMarkers.push_back(wav.mMarkers[i]);
+        for(int i = 0; i < wav.NumMarkers(); i++){
+            mMarkers.push_back(SampleMarker(wav.mMarkers[i].mName, wav.mMarkers[i].mFrame));
         }
     }
 }
