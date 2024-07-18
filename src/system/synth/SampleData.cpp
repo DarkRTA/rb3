@@ -78,7 +78,7 @@ void SampleData::LoadWAV(BinStream& bs, const FilePath& fp){
         WaveFileData wavdata(wav);
         wavdata.Read(mData, mSizeBytes);
         for(int i = 0; i < wav.mMarkers.size(); i++){
-            mMarkers.push_back(wav.mMarkers[i]);
+            // mMarkers.push_back(wav.mMarkers[i]);
         }
     }
 }

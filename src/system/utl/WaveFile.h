@@ -4,6 +4,15 @@
 #include "synth/SampleData.h"
 #include <vector>
 
+class WaveFileMarker {
+public:
+    WaveFileMarker(int frame, int id, const String& name) : mFrame(frame), mID(id), mName(name) {}
+    // total size: 0x14
+    int mFrame; // offset 0x0, size 0x4
+    int mID; // offset 0x4, size 0x4
+    class String mName; // offset 0x8, size 0xC
+};
+
 class WaveFile {
 public:
     WaveFile(BinStream&);
@@ -14,13 +23,13 @@ public:
     IListChunk& PrepareToProvideData();
 
     short mFormat; // 0x0
-    short mNumChannels; // 0x2
+    unsigned short mNumChannels; // 0x2
     unsigned int mSamplesPerSec; // 0x4
     unsigned int mAvgBytesPerSec; // 0x8
     unsigned short mBlockAlign; // 0xc
     unsigned short mBitsPerSample; // 0xe
     int mNumSamples; // 0x10
-    std::vector<SampleMarker> mMarkers; // 0x14
+    std::vector<WaveFileMarker> mMarkers; // 0x14 - TODO: verify vector type
     IListChunk mRiffList; // 0x1c
 };
 
