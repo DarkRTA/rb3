@@ -14,16 +14,21 @@ public:
     virtual void Enter();
     virtual ~CharBonesBlender();
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
-    virtual void ReallocateInternal();
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+    virtual void ReallocateInternal();
+    
+    void SetDest(CharBonesObject*);
+    void SetClipType(Symbol);
 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
     
-    ObjPtr<CharBonesObject, ObjectDir> mDest;
-    Symbol mClipType;
+    ObjPtr<CharBonesObject, ObjectDir> mDest; // 0x5c
+    Symbol mClipType; // 0x68
 };
 
 #endif

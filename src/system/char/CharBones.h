@@ -51,6 +51,7 @@ public:
     void SetCompression(CompressionType);
     const char* StringVal(Symbol);
     void ScaleAddIdentity();
+    void Blend(CharBones&) const;
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);
