@@ -50,6 +50,7 @@ public:
     void RecomputeSizes();
     void SetCompression(CompressionType);
     const char* StringVal(Symbol);
+    void ScaleAddIdentity();
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);

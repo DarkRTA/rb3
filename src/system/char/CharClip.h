@@ -66,6 +66,10 @@ public:
     virtual void SetTypeDef(DataArray*);
 
     float AverageBeatsPerSecond() const;
+    void ScaleDown(CharBones&, float);
+    void RotateBy(CharBones&, float);
+    void ScaleAdd(CharBones&, float, float, float);
+    float StartBeat() const { return mBeatTrack.front().value; }
     
     Transitions mTransitions;
     float mFramesPerSec;
