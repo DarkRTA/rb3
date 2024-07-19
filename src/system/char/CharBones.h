@@ -27,6 +27,8 @@ public:
     };
 
     struct Bone {
+        Bone(){}
+        Bone(Symbol s, float w) : name(s), weight(w) {}
         Symbol name;
         float weight;
     };

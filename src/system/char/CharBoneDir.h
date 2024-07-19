@@ -29,6 +29,8 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
 
+    DataNode GetContextFlags();
+
     static CharBoneDir* FindResource(const char*);
     static void StuffBones(CharBones&, Symbol);
     
