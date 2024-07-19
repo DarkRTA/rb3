@@ -1,5 +1,8 @@
 #include "char/CharClip.h"
 #include "char/CharBoneDir.h"
+#include "char/CharBonesMeshes.h"
+#include "char/CharClipGroup.h"
+#include "obj/DataUtl.h"
 #include "utl/Symbols.h"
 
 const char* CharClip::BeatAlignString(int mask){
@@ -80,6 +83,56 @@ CharBoneDir* CharClip::GetResource() const {
         MILO_WARN("%s has no resource", PathName(this));
     }
     return dir;
+}
+
+int CharClip::GetContext() const {
+    const DataArray* tdef = TypeDef();
+    if(tdef){
+        DataArray* found = tdef->FindArray("resource", false);
+        if(found){
+            return DataGetMacro(found->Str(2))->Int(0);
+        }
+    }
+    return 0;
+}
+
+void CharClip::StuffBones(CharBones& bones){
+    std::list<CharBones::Bone> blist;
+    ListBones(blist);
+    bones.AddBones(blist);
+}
+
+void CharClip::PoseMeshes(ObjectDir* dir, float f){
+    CharBonesMeshes meshes;
+    meshes.SetName("tmp_viseme_bones", dir);
+    StuffBones(meshes);
+    ScaleDown(meshes, 0.0f);
+    ScaleAdd(meshes, 1.0f, f, 0.0f);
+    meshes.PoseMeshes();
+}
+
+void CharClip::SetPlayFlags(int i){
+    if(i != mPlayFlags){
+        mPlayFlags = i;
+        mDirty = true;
+    }
+}
+
+void CharClip::SetFlags(int i){
+    if(i != mFlags){
+        mFlags = i;
+        mDirty = true;
+    }
+}
+
+bool CharClip::SharesGroups(CharClip* clip){
+    std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
+    for(; it != itEnd; it++){
+        CharClipGroup* grp = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
+        if(grp && grp->HasClip(clip)) return true;
+    }
+    return false;
 }
 
 BEGIN_CUSTOM_PROPSYNC(CharGraphNode)

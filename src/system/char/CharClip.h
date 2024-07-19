@@ -79,6 +79,12 @@ public:
     virtual void SetTypeDef(DataArray*);
 
     CharBoneDir* GetResource() const;
+    int GetContext() const;
+    void ListBones(std::list<CharBones::Bone>&);
+    void StuffBones(CharBones&);
+    void PoseMeshes(ObjectDir*, float);
+    void SetPlayFlags(int);
+    bool SharesGroups(CharClip*);
     float AverageBeatsPerSecond() const;
     void ScaleDown(CharBones&, float);
     void RotateBy(CharBones&, float);

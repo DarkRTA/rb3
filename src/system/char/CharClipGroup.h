@@ -19,6 +19,7 @@ public:
     virtual ~CharClipGroup(){}
     
     CharClip* GetClip(int);
+    bool HasClip(CharClip*) const;
 
     DECLARE_REVS;
 
