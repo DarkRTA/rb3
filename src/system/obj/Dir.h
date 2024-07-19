@@ -238,10 +238,10 @@ public:
         return castedObj;
     }
 
-    RndTex* NewTex(const char* name){
-        RndTex* tex = Hmx::Object::New<RndTex>();
-        if(name) tex->SetName(name, this);
-        return tex;
+    template <class T> T* New(const char* name){
+        T* obj = Hmx::Object::New<T>();
+        if(name) obj->SetName(name, this);
+        return obj;
     }
 
     static void Init();

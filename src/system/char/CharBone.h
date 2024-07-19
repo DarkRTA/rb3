@@ -30,6 +30,10 @@ public:
     void ClearContext(int);
     const WeightContext* FindWeight(int) const;
     DataNode OnGetContextFlags(DataArray*);
+    int PositionContext() const { return mPositionContext; }
+    int ScaleContext() const { return mScaleContext; }
+    CharBones::Type RotationType() const { return mRotation; }
+    int RotationContext() const { return mRotationContext; }
 
     static Symbol ChannelName(const char*, CharBones::Type);
 

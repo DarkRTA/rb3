@@ -4,5 +4,6 @@
 #include "rndobj/Trans.h"
 
 RndTransformable* CharUtlFindBoneTrans(const char*, ObjectDir*);
+bool CharUtlIsAnimatable(RndTransformable*);
 
 #endif
