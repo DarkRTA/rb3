@@ -5,7 +5,9 @@
 #include "char/CharPollable.h"
 #include "char/CharBones.h"
 
-class CharClipDriver; // forward dec
+// forward decs
+class CharClip;
+class CharClipDriver; 
 
 enum ApplyMode {
     kApplyBlend,
@@ -33,6 +35,9 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
     float EvaluateFlags(int);
+    CharClip* FindClip(const DataNode&, bool);
+    CharClip* FirstClip();
+    void Play(CharClip*, int, float, float, float);
 
     ObjPtr<CharBonesObject, ObjectDir> mBones;
     ObjPtr<ObjectDir, ObjectDir> mClips;

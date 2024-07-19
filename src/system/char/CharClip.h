@@ -64,6 +64,8 @@ public:
     virtual void Print();
     virtual void Export(DataArray*, bool);
     virtual void SetTypeDef(DataArray*);
+
+    float AverageBeatsPerSecond() const;
     
     Transitions mTransitions;
     float mFramesPerSec;

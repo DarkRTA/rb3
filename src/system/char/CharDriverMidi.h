@@ -18,7 +18,13 @@ public:
     virtual void Enter();
     virtual void Exit();
 
+    DataNode OnMidiParser(DataArray*);
+    DataNode OnMidiParserFlags(DataArray*);
+    DataNode OnMidiParserGroup(DataArray*);
+
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     Symbol mParser; // 0x8c
     Symbol mFlagParser; // 0x90
