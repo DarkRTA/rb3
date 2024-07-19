@@ -68,6 +68,10 @@ public:
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
+    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.Ptr()) {
+        if(mPtr != 0) mPtr->AddRef(mOwner);
+    }
+
     virtual ~ObjOwnerPtr(){
         if(mPtr != 0) mPtr->Release(mOwner);
     }
