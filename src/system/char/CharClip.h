@@ -6,6 +6,8 @@
 #include "char/CharBonesSamples.h"
 #include "math/Key.h"
 
+class CharBoneDir;
+
 struct CharGraphNode {
     float curBeat;
     float nextBeat;
@@ -76,11 +78,24 @@ public:
     virtual void Export(DataArray*, bool);
     virtual void SetTypeDef(DataArray*);
 
+    CharBoneDir* GetResource() const;
     float AverageBeatsPerSecond() const;
     void ScaleDown(CharBones&, float);
     void RotateBy(CharBones&, float);
     void ScaleAdd(CharBones&, float, float, float);
+    float LengthSeconds() const;
+    void SetFlags(int);
+    void SetDefaultBlend(int);
+    void SetDefaultLoop(int);
+    void SetBeatAlignMode(int);
+    void SetRelative(CharClip*);
+    int AllocSize();
     float StartBeat() const { return mBeatTrack.front().value; }
+    float EndBeat() const { return mBeatTrack.back().value; }
+    float LengthBeats() const { return EndBeat() - StartBeat(); }
+    int NumFrames() const {
+        return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
+    }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

@@ -29,6 +29,7 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
 
+    static CharBoneDir* FindResource(const char*);
     static void StuffBones(CharBones&, Symbol);
     
     Recenter mRecenter;
