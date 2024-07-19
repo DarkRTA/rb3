@@ -3,6 +3,7 @@
 
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
+#include <vector>
 
 class TourCharLocal;
 class PatchDir;
@@ -25,7 +26,7 @@ public:
     void GetAllChars(std::vector<TourCharLocal*>&) const;
     void GetAvailableCharacters(std::vector<TourCharLocal*>&) const;
     void GetCharFromGuid(const HxGuid&);
-    void GetMaxChars() const;
+    int GetMaxChars() const;
     void AddNewChar(TourCharLocal*);
     void DeleteChar(TourCharLocal*);
     void RenameCharacter(TourCharLocal*, const char*);
@@ -114,6 +115,9 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     void GetPictureTex();
     void AutoFakeFill(int);
+
+private:
+
 };
 
 #endif // METABAND_BANDPROFILE_H

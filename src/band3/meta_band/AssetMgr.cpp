@@ -34,12 +34,11 @@ AssetMgr* AssetMgr::GetAssetMgr() {
 }
 
 Asset* AssetMgr::GetAsset(Symbol asset) const {
-    AssetMgr* assetMgr = TheAssetMgr;
-    return NULL;
+    
 }
 
 bool AssetMgr::HasAsset(Symbol asset) const {
-    GetAsset(asset);
+    return GetAsset(asset) != NULL;
 }
 
 AssetType AssetMgr::GetTypeFromName(Symbol name) const {

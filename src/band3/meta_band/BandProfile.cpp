@@ -1,4 +1,5 @@
 #include "BandProfile.h"
+#include "ProfileMgr.h"
 
 BandProfile::BandProfile(int i) : Profile(i) {
 
@@ -15,7 +16,11 @@ void BandProfile::GetAvailableStandins(int, std::vector<TourCharLocal*>&) const 
 void BandProfile::GetAllChars(std::vector<TourCharLocal*>&) const {}
 void BandProfile::GetAvailableCharacters(std::vector<TourCharLocal*>&) const {}
 void BandProfile::GetCharFromGuid(const HxGuid&) {}
-void BandProfile::GetMaxChars() const {}
+
+int BandProfile::GetMaxChars() const {
+    return 10;
+}
+
 void BandProfile::AddNewChar(TourCharLocal*) {}
 void BandProfile::DeleteChar(TourCharLocal*) {}
 void BandProfile::RenameCharacter(TourCharLocal*, const char*) {}
@@ -47,7 +52,10 @@ void BandProfile::AddSavedSetlist(const char*, const char*, bool, const PatchDes
 void BandProfile::DeleteSavedSetlist(LocalSavedSetlist*) {}
 void BandProfile::SetlistChanged(LocalSavedSetlist*) {}
 void BandProfile::NumSavedSetlists() const {}
-bool BandProfile::HasCheated() const {}
+
+bool BandProfile::HasCheated() const {
+}
+
 void BandProfile::GetUploadFriendsToken() const {}
 void BandProfile::SetUploadFriendsToken(int) {}
 void BandProfile::SaveFixed(FixedSizeSaveableStream&) const {}

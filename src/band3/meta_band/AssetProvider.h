@@ -10,7 +10,7 @@
 class AssetProvider : public UIListProvider, public Hmx::Object {
     AssetProvider(BandProfile*, AssetGender);
     virtual ~AssetProvider();
-    void SortAssetsByIndex(Symbol, Symbol);
+    bool SortAssetsByIndex(Symbol, Symbol);
     void Update(AssetType, AssetBoutique);
     UIComponent::State ComponentStateOverride(int, int, UIComponent::State) const;
     void Text(int, int, UIListLabel*, UILabel*) const;
@@ -18,9 +18,10 @@ class AssetProvider : public UIListProvider, public Hmx::Object {
     void UpdateExtendedText(int, int, UILabel*) const;
     Symbol DataSymbol(int) const;
     int NumData() const;
-    void HasAsset(Symbol);
+    bool HasAsset(Symbol);
 
     BandProfile* mProfile; // 0x20
+    std::vector<Symbol> mAssets; // 0x28
     AssetGender mGender;   // 0x2c
 };
 

@@ -17,7 +17,7 @@ void NewAssetProvider::Update() {
 
     }
 
-    
+    //mProfile->GetAssets()->GetNewAssets();
 }
 
 void NewAssetProvider::Text(int param_1, int index, UIListLabel* slot, UILabel* label) const {
