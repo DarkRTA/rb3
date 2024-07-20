@@ -29,15 +29,27 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
 
+    void StuffBones(CharBones&, int);
+    void ListBones(std::list<CharBones::Bone>&, int, bool);
+    void MergeCharacter(const FilePath&);
+    void SyncFilter();
+    DataNode GetContextFlags();
+
+    static void Init();
+    static void Terminate();
+    static CharBoneDir* FindResource(const char*);
+    static CharBoneDir* FindResourceFromClipType(Symbol);
     static void StuffBones(CharBones&, Symbol);
+    static DataNode GetClipTypes();
+    static DataArray* sCharClipTypes;
     
-    Recenter mRecenter;
-    int mMoveContext;
-    bool mBakeOutFacing;
-    DataNode mContextFlags;
-    int mFilterContext;
-    ObjPtrList<CharBone, ObjectDir> mFilterBones;
-    std::list<String> mFilterNames;
+    Recenter mRecenter; // 0x80
+    int mMoveContext; // 0xa4
+    bool mBakeOutFacing; // 0xa8
+    DataNode mContextFlags; // 0xac
+    int mFilterContext; // 0xb4
+    ObjPtrList<CharBone, ObjectDir> mFilterBones; // 0xb8
+    std::list<String> mFilterNames; // 0xc8
 };
 
 #endif

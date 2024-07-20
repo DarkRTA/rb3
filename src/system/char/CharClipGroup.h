@@ -18,6 +18,9 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharClipGroup(){}
     
+    CharClip* GetClip(int);
+    bool HasClip(CharClip*) const;
+
     DECLARE_REVS;
 
     ObjVector<ObjOwnerPtr<CharClip, ObjectDir> > mClips;

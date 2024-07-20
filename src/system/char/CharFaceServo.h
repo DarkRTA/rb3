@@ -21,24 +21,32 @@ public:
     virtual void ScaleAdd(CharClip*, float, float, float);
     virtual void ReallocateInternal();
 
+    void TryScaleDown();
+    void SetClips(ObjectDir*);
+    void SetClipType(Symbol);
+    float BlinkWeightLeft() const;
+    void ApplyProceduralWeights();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<ObjectDir, ObjectDir> mClips;
-    Symbol mClipType;
-    ObjPtr<CharClip, ObjectDir> mBaseClip;
-    Symbol mBlinkClipLeftName;
-    Symbol mBlinkClipLeftName2;
-    Symbol mBlinkClipRightName;
-    Symbol mBlinkClipRightName2;
-    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft;
-    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft2;
-    ObjPtr<CharClip, ObjectDir> mBlinkClipRight;
-    ObjPtr<CharClip, ObjectDir> mBlinkClipRight2;
-    float mBlinkWeightLeft;
-    float mBlinkWeightRight;
-    bool mNeedScaleDown;
-    float mProceduralBlinkWeight;
-    bool mAppliedProceduralBlink;
+    ObjPtr<ObjectDir, ObjectDir> mClips; // 0x6c
+    Symbol mClipType; // 0x78
+    ObjPtr<CharClip, ObjectDir> mBaseClip; // 0x7c
+    Symbol mBlinkClipLeftName; // 0x88
+    Symbol mBlinkClipLeftName2; // 0x8c
+    Symbol mBlinkClipRightName; // 0x90
+    Symbol mBlinkClipRightName2; // 0x94
+    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft; // 0x98
+    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft2; // 0xa4
+    ObjPtr<CharClip, ObjectDir> mBlinkClipRight; // 0xb0
+    ObjPtr<CharClip, ObjectDir> mBlinkClipRight2; // 0xbc
+    float mBlinkWeightLeft; // 0xc8
+    float mBlinkWeightRight; // 0xcc
+    bool mNeedScaleDown; // 0xd0
+    float mProceduralBlinkWeight; // 0xd4
+    bool mAppliedProceduralBlink; // 0xd8
 };
 
 #endif
