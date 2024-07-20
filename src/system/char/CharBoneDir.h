@@ -12,9 +12,9 @@ public:
     class Recenter {
     public:
         Recenter(Hmx::Object* o) : mTargets(o, kObjListNoNull), mAverage(o, kObjListNoNull), mSlide(0) {}
-        ObjPtrList<CharBone, ObjectDir> mTargets;
-        ObjPtrList<CharBone, ObjectDir> mAverage;
-        bool mSlide;
+        ObjPtrList<CharBone, ObjectDir> mTargets; // 0x0
+        ObjPtrList<CharBone, ObjectDir> mAverage; // 0x10
+        bool mSlide; // 0x20
     };
 
     CharBoneDir();
@@ -34,6 +34,8 @@ public:
     void MergeCharacter(const FilePath&);
     void SyncFilter();
     DataNode GetContextFlags();
+
+    DECLARE_REVS;
 
     static void Init();
     static void Terminate();
