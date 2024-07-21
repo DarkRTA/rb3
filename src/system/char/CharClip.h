@@ -96,6 +96,7 @@ public:
     void SetBeatAlignMode(int);
     void SetRelative(CharClip*);
     int AllocSize();
+    void LockAndDelete(CharClip**, int, int);
     float StartBeat() const { return mBeatTrack.front().value; }
     float EndBeat() const { return mBeatTrack.back().value; }
     float LengthBeats() const { return EndBeat() - StartBeat(); }
