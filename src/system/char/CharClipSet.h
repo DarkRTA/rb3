@@ -33,14 +33,21 @@ public:
     virtual void PreSave(BinStream&);
 
     void ResetPreviewState();
+    void RandomizeGroups();
+    void SortGroups();
+    void RecenterAll();
+    void LoadCharacter();
+    DataNode OnListClips(DataArray*);
 
-    FilePath mCharFilePath;
-    ObjPtr<RndDir, ObjectDir> mPreviewChar;
-    ObjPtr<CharClip, ObjectDir> mPreviewClip;
-    int mFilterFlags;
-    int mBpm;
-    bool mPreviewWalk;
-    ObjPtr<CharClip, ObjectDir> mStillClip;
+    DECLARE_REVS;
+
+    FilePath mCharFilePath; // 0xb0
+    ObjPtr<RndDir, ObjectDir> mPreviewChar; // 0xbc
+    ObjPtr<CharClip, ObjectDir> mPreviewClip; // 0xc8
+    int mFilterFlags; // 0xd4
+    int mBpm; // 0xd8
+    bool mPreviewWalk; // 0xdc
+    ObjPtr<CharClip, ObjectDir> mStillClip; // 0xe0
 
     DELETE_OVERLOAD
 };

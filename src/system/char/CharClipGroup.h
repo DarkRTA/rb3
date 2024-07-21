@@ -26,7 +26,9 @@ public:
     void RemoveClip(CharClip*);
     bool HasClip(CharClip*) const;
     void SetClipFlags(int);
+    void Randomize();
     void RandomizeIndex();
+    void Sort();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
