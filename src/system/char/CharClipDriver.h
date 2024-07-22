@@ -7,11 +7,30 @@ class CharClipDriver {
 public:
     CharClipDriver(Hmx::Object*, const CharClipDriver&);
     CharClipDriver(Hmx::Object*, CharClip*, int, float, CharClipDriver*, float, float, bool);
+    ~CharClipDriver();
 
     void DeleteStack();
+    CharClipDriver* Exit(bool);
+    void ExecuteEvent(Symbol);
+    CharClipDriver* DeleteClip(Hmx::Object*);
 
     NEW_POOL_OVERLOAD(CharClipDriver)
     DELETE_POOL_OVERLOAD(CharClipDriver)
+
+    int mPlayFlags; // 0x0
+    float mBlendWidth; // 0x4
+    float mTimeScale; // 0x8
+    float mRampIn; // 0xc
+    float mBeat; // 0x10
+    float mDBeat; // 0x14
+    float mBlendFrac; // 0x18
+    float mAdvanceBeat; // 0x1c
+    float mWeight; // 0x20
+    ObjOwnerPtr<CharClip, ObjectDir> mClip; // 0x24
+    CharClipDriver* mNext; // 0x30
+    int mNextEvent; // 0x34
+    DataArray* mEventData; // 0x38
+    bool mPlayMultipleClips; // 0x3c
 };
 
 #endif

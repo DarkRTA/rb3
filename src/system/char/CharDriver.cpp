@@ -90,7 +90,11 @@ void CharDriver::SyncInternalBones(){
 }
 
 bool CharDriver::Starved(){
-
+    if(mFirst){
+        if(mFirst->mNext) return false;
+        if((mFirst->mPlayFlags & 0xF0) == 0x10) return false;
+    }
+    return true;
 }
 
 CharClipDriver* CharDriver::Play(CharClip* clip, int i, float f1, float f2, float f3){
@@ -102,7 +106,9 @@ CharClipDriver* CharDriver::Play(CharClip* clip, int i, float f1, float f2, floa
         mLastNode = DataNode(clip);
         if(f1 == -1.0f) f1 = mBlendWidth;
         if(mPlayMultipleClips){
-            // for loop iterating over mFirst
+            for(CharClipDriver* it = mFirst; it != 0; it = it->mNext){
+                if(clip == it->mClip) return 0;
+            }
         }
         mFirst = new CharClipDriver(this, clip, i, f1, mFirst, f2, f3, mPlayMultipleClips);
         return mFirst;
