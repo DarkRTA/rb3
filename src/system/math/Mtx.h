@@ -208,6 +208,12 @@ public:
     class Plane bottom; // offset 0x50, size 0x10
 };
 
+class Triangle {
+public:
+    Vector3 origin; // 0x0
+    Hmx::Matrix3 frame; // 0xc
+};
+
 // https://decomp.me/scratch/kGwAB
 // lol, regswaps galore
 inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res){
@@ -222,8 +228,11 @@ void Normalize(const Hmx::Quat&, Hmx::Quat&);
 void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
 void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
+void FastInvert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
+
+void Transpose(const Transform&, Transform&); // used in RndParticleSys::SetSubSamples
 
 inline void Normalize(const Hmx::Matrix3 &src, Hmx::Matrix3 &dst) {
     Normalize(src.y, dst.y);
@@ -272,6 +281,13 @@ inline void Invert(const Transform& tfin, Transform& tfout){
     Vector3 vtmp;
     Negate(tfin.v, vtmp);
     Invert(tfin.m, tfout.m);
+    Multiply(vtmp, tfout.m, tfout.v);
+}
+
+inline void FastInvert(const Transform& tfin, Transform& tfout){
+    Vector3 vtmp;
+    Negate(tfin.v, vtmp);
+    FastInvert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
 }
 
