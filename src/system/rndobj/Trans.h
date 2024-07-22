@@ -41,15 +41,15 @@ class RndTransformable : public virtual RndHighlightable {
 public:
 
     enum Constraint {
-        kNone,
-        kLocalRotate,
-        kParentWorld,
-        kLookAtTarget,
-        kShadowTarget,
-        kBillboardZ,
-        kBillboardXZ,
-        kBillboardXYZ,
-        kTargetWorld
+        kNone = 0,
+        kLocalRotate = 1,
+        kParentWorld = 2,
+        kLookAtTarget = 3,
+        kShadowTarget = 4,
+        kBillboardZ = 5,
+        kBillboardXZ = 6,
+        kBillboardXYZ = 7,
+        kTargetWorld = 8
     };
 
     RndTransformable();
@@ -75,6 +75,18 @@ public:
     Transform& WorldXfm_Force();
     void SetLocalRot(Vector3);
     void TransformTransAnims(const Transform&);
+    void ApplyDynamicConstraint();
+
+    bool HasDynamicConstraint(){
+        bool ret = true;
+        if(mConstraint < kBillboardZ){
+            bool ret2 = false;
+            if(mConstraint >= kLookAtTarget && mTarget) ret2 = true;
+            if(!ret2) ret = false;
+        }
+        return ret;
+    }
+
     std::vector<RndTransformable*>& TransChildren(){ return mChildren; }
 
     void SetDirty(){

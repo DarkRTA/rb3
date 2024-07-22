@@ -54,6 +54,33 @@ void RndTransformable::TransformTransAnims(const Transform& tf){
 
 void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){
     MILO_ASSERT(newParent != this, 0xBB);
+    if(mParent == newParent) SetDirty();
+    else {
+        if(b){
+            Transform tf48;
+            Transform tf78;
+            if(mParent) tf48 = mParent->WorldXfm();
+            else tf48.Reset();
+            if(newParent) tf78 = newParent->WorldXfm();
+            else tf78.Reset();
+            Invert(tf78, tf78);
+            Multiply(tf48, tf78, tf78);
+            Multiply(mLocalXfm, tf78, mLocalXfm);
+            TransformTransAnims(tf78);
+        }
+        if(mParent){
+            RemoveSwap(mParent->TransChildren(), this);
+            RemoveSwap(mParent->mCache->mChildren, mCache);
+        }
+        mParent = newParent;
+        unsigned int newflags = newParent ? (unsigned int)newParent->mCache : 0;
+        mCache->Set(newflags);
+        if(b){
+            newParent->mChildren.push_back(this);
+            newParent->mCache->mChildren.push_back(mCache);
+        }
+        SetDirty();
+    }
 }
 
 void RndTransformable::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -90,7 +117,24 @@ void RndTransformable::SetWorldPos(const Vector3& vec){
 }
 
 Transform& RndTransformable::WorldXfm_Force(){
-    static Timer* t = AutoTimer::GetTimer("updateworldxfm");
+    START_AUTO_TIMER("updateworldxfm");
+    mCache->SetLastBit(0);
+    if(!mParent){
+        mWorldXfm = mLocalXfm;
+    }
+    else if(mConstraint == kParentWorld){
+        mWorldXfm = mParent->WorldXfm();
+    }
+    else if(mConstraint == kLocalRotate){
+        Multiply(mLocalXfm.v, mParent->WorldXfm(), mWorldXfm.v);
+        mWorldXfm.m = mLocalXfm.m;
+    }
+    else {
+        Multiply(mLocalXfm, mParent->WorldXfm(), mWorldXfm);
+    }
+    if(HasDynamicConstraint()) ApplyDynamicConstraint();
+    else UpdatedWorldXfm();
+    return mWorldXfm;
 }
 
 void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, bool b){
@@ -254,6 +298,18 @@ DataNode RndTransformable::OnGetLocalPos(const DataArray* da) {
 DataNode RndTransformable::OnGetLocalPosIndex(const DataArray* a) {
     MILO_ASSERT(a->Int(2) < 3, 896);
     return DataNode(LocalXfm().v[a->Int(2)]);
+}
+
+DataNode RndTransformable::OnGetLocalRot(const DataArray* da){
+    Vector3 v40;
+    Hmx::Matrix3 m34(LocalXfm().m);
+    Normalize(m34, m34);
+    MakeEuler(m34, v40);
+    v40 *= RAD2DEG;
+    *da->Var(2) = DataNode(v40.x);
+    *da->Var(3) = DataNode(v40.y);
+    *da->Var(4) = DataNode(v40.z);
+    return DataNode(0);
 }
 
 DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {
