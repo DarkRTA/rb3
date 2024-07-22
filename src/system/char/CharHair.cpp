@@ -5,9 +5,13 @@
 #include "char/Character.h"
 #include "math/MathFuncs.h"
 #include "math/Rot.h"
+#include "world/Dir.h"
 #include <cmath>
+#include "utl/Symbols.h"
 
 INIT_REVS(CharHair)
+CharHair* gHair;
+CharHair::Strand* gStrand;
 
 #pragma push
 #pragma dont_inline on
@@ -76,6 +80,14 @@ void CharHair::Enter(){
     mReset = 1;
     RndPollable::Enter();
     Hookup();
+}
+
+void CharHair::SetName(const char* cc, ObjectDir* dir){
+    Hmx::Object::SetName(cc, dir);
+    mMe = dynamic_cast<Character*>(dir);
+    bool pp = false;
+    if(mMe || dynamic_cast<WorldDir*>(dir)) pp = true;
+    mUsePostProc = pp;
 }
 
 #pragma push
@@ -227,6 +239,15 @@ CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mSh
     mRootMat.Identity();
 }
 
+void CharHair::Hookup(){
+    if(unk6c) return;
+    ObjPtrList<CharCollide, ObjectDir> colList(this, kObjListNoNull);
+    for(ObjDirItr<CharCollide> it(Dir(), true); it != 0; ++it){
+        colList.push_back(it);
+    }
+    Hookup(colList);
+}
+
 BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
     bs >> pt.pos;
     bs >> pt.bone;
@@ -311,3 +332,48 @@ void CharHair::Load(BinStream& bs){
     bs >> mSimulate;
     if(gRev > 10) bs >> mWind;
 }
+
+BEGIN_HANDLERS(CharHair)
+    HANDLE_ACTION(reset, mReset = _msg->Int(2))
+    HANDLE_ACTION(hookup, Hookup())
+    HANDLE_ACTION(set_cloth, SetCloth(_msg->Int(2)))
+    HANDLE_ACTION(freeze_pose, FreezePose())
+    HANDLE_SUPERCLASS(RndPollable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x46F)
+END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(CharHair::Point)
+    SYNC_PROP(bone, o.bone)
+    SYNC_PROP(length, o.length)
+    SYNC_PROP(collides, o.collides)
+    SYNC_PROP(radius, o.radius)
+    SYNC_PROP(outer_radius, o.outerRadius)
+    SYNC_PROP(side_length, o.sideLength)
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(CharHair::Strand)
+    gStrand = &o;
+    SYNC_PROP_SET(root, o.mRoot, o.SetRoot(_val.Obj<RndTransformable>(0)))
+    SYNC_PROP_SET(angle, o.mAngle, o.SetAngle(_val.Float(0)))
+    SYNC_PROP(points, o.mPoints)
+    SYNC_PROP(hookup_flags, o.mHookupFlags)
+    SYNC_PROP(show_spheres, o.mShowSpheres)
+    SYNC_PROP(show_collide, o.mShowCollide)
+    SYNC_PROP(show_pose, o.mShowPose)
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(CharHair)
+    gHair = this;
+    SYNC_PROP(stiffness, mStiffness)
+    SYNC_PROP(torsion, mTorsion)
+    SYNC_PROP(inertia, mInertia)
+    SYNC_PROP(gravity, mGravity)
+    SYNC_PROP(weight, mWeight)
+    SYNC_PROP(friction, mFriction)
+    SYNC_PROP(min_slack, mMinSlack)
+    SYNC_PROP(max_slack, mMaxSlack)
+    SYNC_PROP(strands, mStrands)
+    SYNC_PROP(simulate, mSimulate)
+    SYNC_PROP(wind, mWind)
+END_PROPSYNCS
