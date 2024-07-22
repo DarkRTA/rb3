@@ -223,6 +223,14 @@ void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
 void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
+void Multiply(const Transform&, const Transform&, Transform&);
+
+inline void Normalize(const Hmx::Matrix3 &src, Hmx::Matrix3 &dst) {
+    Normalize(src.y, dst.y);
+    Cross(dst.y, src.z, dst.x);
+    Normalize(dst.x, dst.x);
+    Cross(dst.x, dst.y, dst.z);
+}
 
 inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout) {
     register __vec2x32float__ i1, i2, m1, m2, o1, o2;
