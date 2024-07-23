@@ -100,6 +100,11 @@ public:
         else return mWorldXfm;
     }
 
+    void ResetLocalXfm(){
+        SetDirty();
+        mLocalXfm.Reset();
+    }
+
     void SetLocalXfm(const Transform& tf){
         mLocalXfm = tf;
         SetDirty();

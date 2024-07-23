@@ -53,3 +53,18 @@ CharUtlBoneSaver::~CharUtlBoneSaver(){
         }
     }
 }
+
+void CharUtlResetTransform(ObjectDir* dir){
+    for(ObjDirItr<RndTransformable> it(dir, true); it != 0; ++it){
+        if(!it->TransParent()){
+            it->ResetLocalXfm();
+        }
+    }
+}
+
+ClipPredict::ClipPredict(CharClip* clip, const Vector3& pos, float ang) : mClip(0) {
+    SetClip(clip);
+    mPos = pos;
+    mAng = ang;
+    MILO_ASSERT(mAngChannel, 0x239);
+}
