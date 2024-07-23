@@ -301,15 +301,29 @@ inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout)
 }
 
 inline void Invert(const Transform& tfin, Transform& tfout){
+#ifdef VERSION_SZBE69_B8 // DEBUG
+    Vector3 vtmp(tfin.v.x, tfin.v.y, tfin.v.z);
+    vtmp.x = -vtmp.x;
+    vtmp.z = -vtmp.z;
+    vtmp.y = -vtmp.y;
+#else // RETAIL
     Vector3 vtmp;
     Negate(tfin.v, vtmp);
+#endif
     Invert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
 }
 
 inline void FastInvert(const Transform& tfin, Transform& tfout){
+#ifdef VERSION_SZBE69_B8 // DEBUG
+    Vector3 vtmp(tfin.v.x, tfin.v.y, tfin.v.z);
+    vtmp.x = -vtmp.x;
+    vtmp.z = -vtmp.z;
+    vtmp.y = -vtmp.y;
+#else // RETAIL
     Vector3 vtmp;
     Negate(tfin.v, vtmp);
+#endif
     FastInvert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
 }
