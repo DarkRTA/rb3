@@ -231,7 +231,7 @@ public:
   }
 
   size_type capacity() const    { return _M_data_size; }
-  bool empty() const            { return _M_finish_idx == 0; }
+  bool empty() const            { return !_M_finish_idx; }
 
   reference operator[](size_type __n) { return this->_M_ptr._M_data[__n]; }
   const_reference operator[](size_type __n) const { return this->_M_ptr._M_data[__n]; }

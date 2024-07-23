@@ -155,9 +155,9 @@ public:
             int cnt = 0;
             int threshold = size();
             while(threshold > cnt + 1){
-                int newCnt = cnt + threshold >> 1;
+                int newCnt = (cnt + threshold) >> 1;
                 if(ff < (*this)[newCnt].frame) threshold = newCnt;
-                if(!(ff < (*this)[threshold].frame)) cnt = newCnt; // threshold should be newCnt here, but doing so causes the slwi to not generate
+                if(!(ff < (*this)[(int)newCnt].frame)) cnt = newCnt; // threshold should be newCnt here, but doing so causes the slwi to not generate
             }
             while (cnt + 1 < size() && (*this)[cnt + 1].SameFrame((*this)[cnt])) cnt++;
             return cnt;
@@ -176,12 +176,12 @@ public:
                 int cnt = 0;
                 int threshold = size() - 1;
                 while(threshold > cnt + 1){
-                    int newCnt = cnt + threshold >> 1;
+                    int newCnt = (cnt + threshold) >> 1;
                     if(ff > (*this)[newCnt].frame) cnt = newCnt;
-                    if(!(ff > (*this)[cnt].frame)) threshold = newCnt; // same deal as above, cnt should be newCnt
+                    if(!(ff > (*this)[(int)newCnt].frame)) threshold = newCnt;
                 }
-                while (cnt > 1 && (*this)[cnt - 1].SameFrame((*this)[cnt])) cnt--;
-                return cnt;
+                while (threshold > 1 && (*this)[threshold - 1].SameFrame((*this)[threshold])) threshold--;
+                return threshold;
             }
         }
     }
