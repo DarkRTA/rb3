@@ -223,6 +223,8 @@ public:
     Hmx::Matrix3 frame; // 0xc
 };
 
+void Scale(const Hmx::Matrix3& mtx, const Vector3& vec, Hmx::Matrix3& res);
+
 // https://decomp.me/scratch/kGwAB
 // lol, regswaps galore
 inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res){

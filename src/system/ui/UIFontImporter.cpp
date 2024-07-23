@@ -92,8 +92,93 @@ BEGIN_LOADS(UIFontImporter)
     if(rev > 8) bs >> mLastGennedNG;
 END_LOADS
 
+// fn_8055B51C
+void UIFontImporter::FontImporterSyncObjects(){
+    if(!unkb4 && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
+        for(ObjPtrList<RndMat, ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end(); it){
+            RndMat* old = *it;
+            it = mMatVariations.erase(it);
+            delete old;
+        }
+        int idx = 0;
+        for(ObjPtrList<RndFont, ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end(); ++it){
+            RndFont* font = *it;
+            RndMat* mat = (*it)->mMat;
+            if(idx == 0){
+                String name = GetBaseName();
+                String matname = name + ".mat";
+                mat->SetName(matname.c_str(), Dir());
+                unkb4 = mat;
+                String fontname = name + ".font";
+                font->SetName(fontname.c_str(), Dir());
+                RndText* text = FindTextForFont(font);
+                if(text){
+                    String textname = name + ".txt";
+                    text->SetName(textname.c_str(), Dir());
+                    String textstr(text->unk_cc.c_str());
+                    if(textstr.find("_default") != String::npos){
+                        textstr = textstr.substr(0, textstr.find("_default"));
+                        text->SetText(textstr.c_str());
+                    }
+                }
+            }
+            else {
+                String name = GetBaseName();
+                String matname = mat->Name();
+                if(matname.find(name.c_str()) == 0){
+                    matname = matname.substr(name.length() + 1, matname.length() - name.length() - 1);
+                }
+                mat->SetName(matname.c_str(), Dir());
+                mMatVariations.push_back(mat);
+            }
+            idx++;
+        }
+        FormatString fstr(MakeString("Upgraded font resource to new material variation setup.  Please resave %s", Dir()->mPathName));
+        TheDebugNotifier << fstr.Str();
+    }
+}
+
+// fn_8055B9E4 - get genned font
+
 DataNode UIFontImporter::OnSyncWithResourceFile(DataArray* da){
-    // ObjDirPtr<UILabelDir> oPtr;
+    if(!mResourceName.empty()){
+        const char* milopath = MakeString("%s/%s.milo", GetResourcesPath(), mResourceName);
+        ObjDirPtr<UILabelDir> labelDir(0);
+        labelDir.LoadFile(FilePath(FileRoot(), milopath), false, true, kLoadFront, false);
+        labelDir.PostLoad(0);
+        if(labelDir.IsLoaded()){
+            mLowerCaseAthroughZ = labelDir->mLowerCaseAthroughZ;
+            mUpperCaseAthroughZ = labelDir->mUpperCaseAthroughZ;
+            mNumbers0through9 = labelDir->mNumbers0through9;
+            mPunctuation = labelDir->mPunctuation;
+            mUpperEuro = labelDir->mUpperEuro;
+            mLowerEuro = labelDir->mLowerEuro;
+            mPlus = labelDir->mPlus;
+            mMinus = labelDir->mMinus;
+            mFontName = labelDir->mFontName;
+            mFontPctSize = labelDir->mFontPctSize;
+            unk40 = labelDir->unk40;
+            mFontQuality = labelDir->mFontQuality;
+            mPitchAndFamily = labelDir->mPitchAndFamily;
+            mFontQuality = labelDir->mFontQuality;
+            mFontCharset = labelDir->mFontCharset;
+            mBitmapSavePath = labelDir->mBitmapSavePath;
+            mBitMapSaveName = labelDir->mBitMapSaveName;
+            mFontSupersample = labelDir->mFontSupersample;
+            mItalics = labelDir->mItalics;
+            mLeft = labelDir->mLeft;
+            mRight = labelDir->mRight;
+            mTop = labelDir->mTop;
+            mBottom = labelDir->mBottom;
+            mFillWithSafeWhite = labelDir->mFillWithSafeWhite;
+            if(mReferenceKerning && labelDir->mReferenceKerning){
+                std::vector<RndFont::KernInfo> kerninfo;
+                labelDir->mReferenceKerning->GetKerning(kerninfo);
+                mReferenceKerning->SetKerning(kerninfo);
+                mReferenceKerning->SetBaseKerning(labelDir->mReferenceKerning->mBaseKerning);
+            }
+        }
+    }
     return DataNode(0);
 }
 

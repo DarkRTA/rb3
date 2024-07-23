@@ -25,6 +25,9 @@ public:
     void SyncWithGennedFonts();
     void HandmadeFontChanged();
     Symbol GetMatVariationName(unsigned int) const;
+    const char* GetResourcesPath();
+    String GetBaseName() const;
+    RndText* FindTextForFont(RndFont*) const;
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);
