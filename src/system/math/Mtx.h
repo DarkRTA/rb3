@@ -37,7 +37,16 @@ namespace Hmx {
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        Matrix3& operator=(const Matrix3 &);
+        Matrix3& operator=(const Matrix3& mtx){
+            PSQ_MOVE(x.x, mtx.x.x);
+            x.z = mtx.x.z;
+
+            PSQ_MOVE(y.x, mtx.y.x);
+            y.z = mtx.y.z;
+
+            PSQ_MOVE(z.x, mtx.z.x);
+            z.z = mtx.z.z;
+        }
         Vector3& operator[](int);
 
         bool operator==(const Matrix3& mtx) const {
@@ -230,9 +239,23 @@ void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void FastInvert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
+void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 
-void Transpose(const Transform&, Transform&); // used in RndParticleSys::SetSubSamples
+inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
+    mout.Set(
+        min.x.x, min.y.x, min.z.x,
+        min.x.y, min.y.y, min.z.y,
+        min.x.z, min.y.z, min.z.z
+    );
+}
+
+inline void Transpose(const Transform& tfin, Transform& tfout){
+    Vector3 vtmp;
+    Transpose(tfin.m, tfout.m);
+    Negate(tfin.v, vtmp);
+    Multiply(vtmp, tfout.m, tfout.v);
+}
 
 inline void Normalize(const Hmx::Matrix3 &src, Hmx::Matrix3 &dst) {
     Normalize(src.y, dst.y);

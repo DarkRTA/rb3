@@ -47,3 +47,15 @@ void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, cons
 }
 
 // fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*)
+// https://decomp.me/scratch/PHQ02 - retail
+void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* key1, const Key<Vector3>* key2, float f, bool b, Vector3& vref, Vector3* vptr){
+    if(keys.size() < 3){
+        b = false;
+        if(keys.size() < 2){
+            if(vptr) vptr->Set(0.0f,1.0f,0.0f);
+            if(keys.size() != 0) vref = key1->value;
+            else vref.Set(0,0,0);
+            return;
+        }
+    }
+}

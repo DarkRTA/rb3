@@ -194,7 +194,10 @@ template <class T1, class T2> void ScaleFrame(Keys<T1, T2>& keys, float scale){
 }
 
 // math functions defined in math/Key.cpp:
+void SplineTangent(const Keys<Vector3, Vector3>&, int, Vector3&);
+void InterpTangent(const Vector3&, const Vector3&, const Vector3&, const Vector3&, float, Vector3&);
 void InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*);
 void InterpVector(const Keys<Vector3, Vector3>&, bool, float, Vector3&, Vector3*);
+void QuatSpline(const Keys<Hmx::Quat, Hmx::Quat>&, const Key<Hmx::Quat>*, const Key<Hmx::Quat>*, float, Hmx::Quat&);
 
 #endif

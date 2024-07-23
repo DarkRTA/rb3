@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
+#include "rndobj/Cam.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/Utl.h"
 #include "utl/STLHelpers.h"
@@ -137,6 +138,60 @@ Transform& RndTransformable::WorldXfm_Force(){
     return mWorldXfm;
 }
 
+void RndTransformable::ApplyDynamicConstraint(){
+    if(mConstraint == kTargetWorld){
+        mWorldXfm = mTarget->WorldXfm();
+    }
+    else if(mConstraint == kShadowTarget){
+        Transform tf40;
+        Transpose(mTarget->WorldXfm(), tf40);
+        Multiply(mWorldXfm, tf40, mWorldXfm);
+        Plane pl50;
+        Multiply(sShadowPlane, tf40, pl50);
+        tf40.m.Set(1.0f, 0,0,0,0,0,0,0,0);
+        tf40.v.Set(0, -pl50.d / pl50.b, 0);
+        Multiply(mWorldXfm, tf40, mWorldXfm);
+        Multiply(mWorldXfm, mTarget->WorldXfm(), mWorldXfm);
+    }
+    else if(RndCam::sCurrent){
+        Vector3 v60;
+        const Transform& currentWorld = RndCam::sCurrent->WorldXfm();
+        if(mPreserveScale){
+            MakeScale(mWorldXfm.m, v60);
+        }
+        switch(mConstraint){
+            case kFastBillboardXYZ:
+                mWorldXfm.m = currentWorld.m;
+                break;
+            case kBillboardXYZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                mWorldXfm.m.z = currentWorld.m.z;
+                Normalize(mWorldXfm.m, mWorldXfm.m);
+                break;
+            case kBillboardZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                if(mPreserveScale) Normalize(mWorldXfm.m.z, mWorldXfm.m.z);
+                Cross(mWorldXfm.m.y, mWorldXfm.m.z, mWorldXfm.m.x);
+                Normalize(mWorldXfm.m.x, mWorldXfm.m.x);
+                Cross(mWorldXfm.m.z, mWorldXfm.m.x, mWorldXfm.m.y);
+                break;
+            case kBillboardXZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                Normalize(mWorldXfm.m.y, mWorldXfm.m.y);
+                Cross(mWorldXfm.m.y, mWorldXfm.m.z, mWorldXfm.m.x);
+                Normalize(mWorldXfm.m.x, mWorldXfm.m.x);
+                Cross(mWorldXfm.m.x, mWorldXfm.m.y, mWorldXfm.m.z);
+                break;
+            case kLookAtTarget:
+                Subtract(mTarget->WorldXfm().v, mWorldXfm.v, mWorldXfm.m.y);
+                Normalize(mWorldXfm.m, mWorldXfm.m);
+                break;
+        }
+        if(mPreserveScale) Scale(v60, mWorldXfm.m, mWorldXfm.m);
+    }
+    mCache->SetLastBit(1);
+}
+
 void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, bool b){
     MILO_ASSERT(t != this, 0x1C1);
     mConstraint = cst;
@@ -166,10 +221,10 @@ void RndTransformable::DistributeChildren(bool b, float f){
         if(b) std::sort(vec.begin(), vec.end(), HorizontalCmp);
         else std::sort(vec.begin(), vec.end(), VerticalCmp);
     }
-    // some stuff happens here
-    for(int i = 0; i < count; i++){
+    float at = vec[0]->LocalXfm().v[~-b & 2];
+    for(int i = 1; i < count; i++){
         Transform t = vec[i]->LocalXfm();
-        t.v[b] = f * i;
+        t.v[~-b & 2] = f * i + at;
         vec[i]->SetLocalXfm(t);
     }
 }

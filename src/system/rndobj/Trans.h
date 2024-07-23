@@ -49,7 +49,8 @@ public:
         kBillboardZ = 5,
         kBillboardXZ = 6,
         kBillboardXYZ = 7,
-        kTargetWorld = 8
+        kFastBillboardXYZ = 8,
+        kTargetWorld = 9
     };
 
     RndTransformable();
