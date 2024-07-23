@@ -17,11 +17,12 @@ public:
     virtual ~CharInterest();
     virtual void Highlight();
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     void SyncMaxViewAngle();
+    CharEyeDartRuleset* GetDartRulesetOverride() const;
+    bool IsMatchingFilterFlags(int);
 
     float mMaxViewAngle; // 0x90
     float mPriority; // 0x94

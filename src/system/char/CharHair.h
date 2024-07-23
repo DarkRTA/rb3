@@ -60,7 +60,7 @@ public:
 
     CharHair();
     virtual ~CharHair();
-    virtual void Highlight();
+    virtual void Highlight(){}
     OBJ_CLASSNAME(CharHair);
     OBJ_SET_TYPE(CharHair);
     virtual DataNode Handle(DataArray*, bool);
@@ -75,6 +75,9 @@ public:
 
     void SimulateInternal(float);
     void Hookup();
+    void Hookup(ObjPtrList<CharCollide, ObjectDir>&);
+    void SetCloth(bool);
+    void FreezePose();
 
     DECLARE_REVS;
 

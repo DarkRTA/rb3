@@ -2,10 +2,12 @@
 #include "math/MathFuncs.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
+#include "obj/DataUtl.h"
 #include "obj/PropSync_p.h"
+#include "rndobj/Cam.h"
 #include "rndobj/Trans.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols4.h"
+#include "rndobj/Graph.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(CharInterest)
 
@@ -19,6 +21,25 @@ CharInterest::~CharInterest(){
 
 void CharInterest::SyncMaxViewAngle(){
     mMaxViewAngleCos = cos_f(mMaxViewAngle * 0.017453292f);
+}
+
+void CharInterest::Highlight(){
+    RndGraph* oneframe = RndGraph::GetOneFrame();
+    oneframe->AddSphere(WorldXfm().v, 1.0f, Hmx::Color(1.0f, 0.0f, 0.0f, 1.0f));
+    Vector2 vec2;
+    float wts = RndCam::sCurrent->WorldToScreen(WorldXfm().v, vec2);
+    if(wts > 0.0f){
+        // fix this part lol
+        oneframe->AddString(MakeString("%s", Name()), vec2, Hmx::Color());
+    }
+    if(mDartOverride){
+        DataNode* minrad = mDartOverride->Property("min_radius", false);
+        DataNode* maxrad = mDartOverride->Property("max_radius", false);
+        if(minrad && maxrad){
+            oneframe->AddSphere(WorldXfm().v, minrad->Float(0), Hmx::Color(0.7f, 0.7f, 0.7f));
+            oneframe->AddSphere(WorldXfm().v, maxrad->Float(0), Hmx::Color(1.0f, 1.0f, 1.0f));
+        }
+    }
 }
 
 SAVE_OBJ(CharInterest, 0x52);
@@ -70,6 +91,14 @@ BEGIN_COPYS(CharInterest)
     END_COPYING_MEMBERS
 END_COPYS
 
+CharEyeDartRuleset* CharInterest::GetDartRulesetOverride() const { return mDartOverride; }
+
+bool CharInterest::IsMatchingFilterFlags(int mask){
+    if(mCategoryFlags != (mCategoryFlags & mask)) return false;
+    if(mCategoryFlags == 0) return false;
+    return true;
+}
+
 BEGIN_PROPSYNCS(CharInterest)
     SYNC_PROP_MODIFY(max_view_angle, mMaxViewAngle, SyncMaxViewAngle())
     SYNC_PROP(priority, mPriority)
@@ -77,10 +106,49 @@ BEGIN_PROPSYNCS(CharInterest)
     SYNC_PROP(max_look_time, mMaxLookTime)
     SYNC_PROP(refractory_period, mRefractoryPeriod)
     SYNC_PROP(dart_ruleset_override, mDartOverride)
-    SYNC_PROP_STATIC("category_flags", mCategoryFlags)
+    {
+        static Symbol _s("category_flags");
+        if(sym == _s){
+            int plusone = _i + 1;
+            if(plusone < _prop->Size()){
+                DataNode& node = _prop->Node(plusone);
+                int flags = 0;
+                switch(node.Type()){
+                    case kDataInt:
+                        flags = node.Int(0);
+                        break;
+                    case kDataSymbol:
+                        const char* str = node.Sym(0).Str();
+                        if(strncmp("BIT_", str, 4) != 0){
+                            MILO_FAIL("%s does not begin with BIT_", str);
+                        }
+                        Symbol bitsym(str + 4);
+                        DataArray* macro = DataGetMacro(bitsym);
+                        if(!macro){
+                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
+                        }
+                        flags = macro->Int(0);
+                        break;
+                    default:
+                        MILO_ASSERT(0, 0x138);
+                        break;
+                }
+                MILO_ASSERT(_op <= kPropInsert, 0x138);
+                if(_op == kPropGet){
+                    _val = DataNode(mCategoryFlags & flags);
+                }
+                else {
+                    int themask = _val.Int(0);
+                    if(themask != 0) mCategoryFlags |= themask;
+                    else mCategoryFlags &= ~themask;
+                }
+                return true;
+            }
+            else return PropSync(mCategoryFlags, _val, _prop, _i + 1, _op);
+        }
+    }
     SYNC_PROP(overrides_min_target_dist, mOverrideMinTargetDistance)
     SYNC_PROP(min_target_dist_override, mMinTargetDistanceOverride)
-
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
 

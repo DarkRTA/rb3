@@ -13,16 +13,22 @@ public:
     };
 
     struct Sink {
+        Sink(){}
+        Sink(Hmx::Object* o, SinkMode m) : obj(o), mode(m) {}
         Hmx::Object* obj;
         SinkMode mode;
         void Export(DataArray*);
     };
 
     struct EventSinkElem : public Sink {
+        EventSinkElem(){}
+        EventSinkElem(Hmx::Object* o, SinkMode m, Symbol s) : Sink(o, m), handler(s) {}
         Symbol handler;
     };
 
     struct EventSink {
+        EventSink(){}
+        EventSink(Symbol s) : ev(s) {}
         Symbol ev;
         std::list<EventSinkElem> sinks;
 
@@ -42,6 +48,7 @@ public:
     void ChainSource(MsgSource*, MsgSource*);
     void AddSink(Hmx::Object*, Symbol, Symbol, SinkMode);
     void RemoveSink(Hmx::Object*, Symbol);
+    void MergeSinks(MsgSource*);
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);
 
@@ -50,9 +57,9 @@ public:
         REGISTER_OBJ_FACTORY(MsgSource)
     }
 
-    std::list<Sink> mSinks;
-    std::list<EventSink> mEventSinks;
-    int mExporting;
+    std::list<Sink> mSinks; // 0x8
+    std::list<EventSink> mEventSinks; // 0x10
+    int mExporting; // 0x18
 };
 
 #endif

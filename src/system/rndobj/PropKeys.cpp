@@ -300,14 +300,13 @@ int SymbolKeys::SymbolAt(float f, Symbol& sym){
 }
 
 int FloatKeys::SetKey(float frame){
-    int retVal;
-    if(!mProp || !mTarget.Ptr()) retVal = -1;
+    if(!mProp || !mTarget.Ptr()) return -1;
     else {
-        retVal = PropKeys::SetKey(frame);
-        // some vector method that takes in frame, a label that = 0, and 0
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) Add(0, frame, false);
         SetToCurrentVal(retVal);
+        return retVal;
     }
-    return retVal;
 }
 
 void FloatKeys::SetToCurrentVal(int i){

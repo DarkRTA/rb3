@@ -1,6 +1,10 @@
 #include "char/CharBoneDir.h"
 #include "obj/DataFunc.h"
 #include "char/CharUtl.h"
+#include "obj/ObjVersion.h"
+#include "utl/Symbols.h"
+
+INIT_REVS(CharBoneDir)
 
 ObjectDir* sResources;
 DataArray* CharBoneDir::sCharClipTypes;
@@ -184,3 +188,65 @@ void CharBoneDir::SyncFilter(){
     }
     // new objptrlist method called here - takes in a fn ptr too (gross)
 }
+
+BinStream& operator>>(BinStream& bs, CharBoneDir::Recenter& rc){
+    bs >> rc.mTargets;
+    bs >> rc.mAverage;
+    bs >> rc.mSlide;
+    return bs;
+}
+
+void CharBoneDir::Load(BinStream& bs){ ObjectDir::Load(bs); }
+SAVE_OBJ(CharBoneDir, 0x18C)
+
+void CharBoneDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(4, 0);
+    PushRev(packRevs(gAltRev, gRev), this);
+    ObjectDir::PreLoad(bs);
+}
+
+void CharBoneDir::PostLoad(BinStream& bs){
+    ObjectDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    if(gRev < 2) bs.ReadBool();
+    else bs >> mMoveContext;
+    if(gRev < 3) bs.ReadBool();
+    bs >> mRecenter;
+    if(gRev > 3) bs >> mBakeOutFacing;
+}
+
+BEGIN_COPYS(CharBoneDir)
+    COPY_SUPERCLASS(ObjectDir)
+    CREATE_COPY(CharBoneDir)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mMoveContext)
+        COPY_MEMBER(mRecenter)
+        COPY_MEMBER(mBakeOutFacing)
+    END_COPYING_MEMBERS
+END_COPYS
+
+BEGIN_HANDLERS(CharBoneDir)
+    if(sym == get_context_flags) return GetContextFlags();
+    HANDLE_SUPERCLASS(ObjectDir)
+    HANDLE_CHECK(0x1D1)
+END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(CharBoneDir::Recenter)
+    SYNC_PROP(targets, o.mTargets)
+    SYNC_PROP(average, o.mAverage)
+    SYNC_PROP(slide, o.mSlide)
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(CharBoneDir)
+    SYNC_PROP(recenter, mRecenter)
+    SYNC_PROP_SET(merge_character, "", MergeCharacter(FilePath(_val.Str(0))))
+    SYNC_PROP(move_context, mMoveContext)
+    SYNC_PROP(bake_out_facing, mBakeOutFacing)
+    SYNC_PROP_MODIFY(filter_context, mFilterContext, SyncFilter())
+    SYNC_PROP(filter_bones, mFilterBones)
+    SYNC_PROP(filter_names, mFilterNames)
+    SYNC_SUPERCLASS(ObjectDir)
+END_PROPSYNCS

@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
+#include "rndobj/Cam.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/Utl.h"
 #include "utl/STLHelpers.h"
@@ -54,6 +55,33 @@ void RndTransformable::TransformTransAnims(const Transform& tf){
 
 void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){
     MILO_ASSERT(newParent != this, 0xBB);
+    if(mParent == newParent) SetDirty();
+    else {
+        if(b){
+            Transform tf48;
+            Transform tf78;
+            if(mParent) tf48 = mParent->WorldXfm();
+            else tf48.Reset();
+            if(newParent) tf78 = newParent->WorldXfm();
+            else tf78.Reset();
+            Invert(tf78, tf78);
+            Multiply(tf48, tf78, tf78);
+            Multiply(mLocalXfm, tf78, mLocalXfm);
+            TransformTransAnims(tf78);
+        }
+        if(mParent){
+            RemoveSwap(mParent->TransChildren(), this);
+            RemoveSwap(mParent->mCache->mChildren, mCache);
+        }
+        mParent = newParent;
+        unsigned int newflags = newParent ? (unsigned int)newParent->mCache : 0;
+        mCache->Set(newflags);
+        if(b){
+            newParent->mChildren.push_back(this);
+            newParent->mCache->mChildren.push_back(mCache);
+        }
+        SetDirty();
+    }
 }
 
 void RndTransformable::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -90,7 +118,78 @@ void RndTransformable::SetWorldPos(const Vector3& vec){
 }
 
 Transform& RndTransformable::WorldXfm_Force(){
-    static Timer* t = AutoTimer::GetTimer("updateworldxfm");
+    START_AUTO_TIMER("updateworldxfm");
+    mCache->SetLastBit(0);
+    if(!mParent){
+        mWorldXfm = mLocalXfm;
+    }
+    else if(mConstraint == kParentWorld){
+        mWorldXfm = mParent->WorldXfm();
+    }
+    else if(mConstraint == kLocalRotate){
+        Multiply(mLocalXfm.v, mParent->WorldXfm(), mWorldXfm.v);
+        mWorldXfm.m = mLocalXfm.m;
+    }
+    else {
+        Multiply(mLocalXfm, mParent->WorldXfm(), mWorldXfm);
+    }
+    if(HasDynamicConstraint()) ApplyDynamicConstraint();
+    else UpdatedWorldXfm();
+    return mWorldXfm;
+}
+
+void RndTransformable::ApplyDynamicConstraint(){
+    if(mConstraint == kTargetWorld){
+        mWorldXfm = mTarget->WorldXfm();
+    }
+    else if(mConstraint == kShadowTarget){
+        Transform tf40;
+        Transpose(mTarget->WorldXfm(), tf40);
+        Multiply(mWorldXfm, tf40, mWorldXfm);
+        Plane pl50;
+        Multiply(sShadowPlane, tf40, pl50);
+        tf40.m.Set(1.0f, 0,0,0,0,0,0,0,0);
+        tf40.v.Set(0, -pl50.d / pl50.b, 0);
+        Multiply(mWorldXfm, tf40, mWorldXfm);
+        Multiply(mWorldXfm, mTarget->WorldXfm(), mWorldXfm);
+    }
+    else if(RndCam::sCurrent){
+        Vector3 v60;
+        const Transform& currentWorld = RndCam::sCurrent->WorldXfm();
+        if(mPreserveScale){
+            MakeScale(mWorldXfm.m, v60);
+        }
+        switch(mConstraint){
+            case kFastBillboardXYZ:
+                mWorldXfm.m = currentWorld.m;
+                break;
+            case kBillboardXYZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                mWorldXfm.m.z = currentWorld.m.z;
+                Normalize(mWorldXfm.m, mWorldXfm.m);
+                break;
+            case kBillboardZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                if(mPreserveScale) Normalize(mWorldXfm.m.z, mWorldXfm.m.z);
+                Cross(mWorldXfm.m.y, mWorldXfm.m.z, mWorldXfm.m.x);
+                Normalize(mWorldXfm.m.x, mWorldXfm.m.x);
+                Cross(mWorldXfm.m.z, mWorldXfm.m.x, mWorldXfm.m.y);
+                break;
+            case kBillboardXZ:
+                Subtract(mWorldXfm.v, currentWorld.v, mWorldXfm.m.y);
+                Normalize(mWorldXfm.m.y, mWorldXfm.m.y);
+                Cross(mWorldXfm.m.y, mWorldXfm.m.z, mWorldXfm.m.x);
+                Normalize(mWorldXfm.m.x, mWorldXfm.m.x);
+                Cross(mWorldXfm.m.x, mWorldXfm.m.y, mWorldXfm.m.z);
+                break;
+            case kLookAtTarget:
+                Subtract(mTarget->WorldXfm().v, mWorldXfm.v, mWorldXfm.m.y);
+                Normalize(mWorldXfm.m, mWorldXfm.m);
+                break;
+        }
+        if(mPreserveScale) Scale(v60, mWorldXfm.m, mWorldXfm.m);
+    }
+    mCache->SetLastBit(1);
 }
 
 void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, bool b){
@@ -122,10 +221,10 @@ void RndTransformable::DistributeChildren(bool b, float f){
         if(b) std::sort(vec.begin(), vec.end(), HorizontalCmp);
         else std::sort(vec.begin(), vec.end(), VerticalCmp);
     }
-    // some stuff happens here
-    for(int i = 0; i < count; i++){
+    float at = vec[0]->LocalXfm().v[~-b & 2];
+    for(int i = 1; i < count; i++){
         Transform t = vec[i]->LocalXfm();
-        t.v[b] = f * i;
+        t.v[~-b & 2] = f * i + at;
         vec[i]->SetLocalXfm(t);
     }
 }
@@ -254,6 +353,18 @@ DataNode RndTransformable::OnGetLocalPos(const DataArray* da) {
 DataNode RndTransformable::OnGetLocalPosIndex(const DataArray* a) {
     MILO_ASSERT(a->Int(2) < 3, 896);
     return DataNode(LocalXfm().v[a->Int(2)]);
+}
+
+DataNode RndTransformable::OnGetLocalRot(const DataArray* da){
+    Vector3 v40;
+    Hmx::Matrix3 m34(LocalXfm().m);
+    Normalize(m34, m34);
+    MakeEuler(m34, v40);
+    v40 *= RAD2DEG;
+    *da->Var(2) = DataNode(v40.x);
+    *da->Var(3) = DataNode(v40.y);
+    *da->Var(4) = DataNode(v40.z);
+    return DataNode(0);
 }
 
 DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {

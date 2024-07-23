@@ -18,15 +18,20 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    bool ComputeRod(Transform&);
+    void SyncBones();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mLeftEnd;
-    ObjPtr<RndTransformable, ObjectDir> mRightEnd;
-    float mDestPos;
-    ObjPtr<RndTransformable, ObjectDir> mSideAxis;
-    bool mVertical;
-    ObjPtr<RndTransformable, ObjectDir> mDest;
-    Transform mXfm;
+    ObjPtr<RndTransformable, ObjectDir> mLeftEnd; // 0x8
+    ObjPtr<RndTransformable, ObjectDir> mRightEnd; // 0x14
+    float mDestPos; // 0x20
+    ObjPtr<RndTransformable, ObjectDir> mSideAxis; // 0x24
+    bool mVertical; // 0x30
+    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x34
+    Transform mXfm; // 0x40
 };
 
 #endif

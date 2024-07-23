@@ -37,7 +37,16 @@ namespace Hmx {
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        Matrix3& operator=(const Matrix3 &);
+        Matrix3& operator=(const Matrix3& mtx){
+            PSQ_MOVE(x.x, mtx.x.x);
+            x.z = mtx.x.z;
+
+            PSQ_MOVE(y.x, mtx.y.x);
+            y.z = mtx.y.z;
+
+            PSQ_MOVE(z.x, mtx.z.x);
+            z.z = mtx.z.z;
+        }
         Vector3& operator[](int);
 
         bool operator==(const Matrix3& mtx) const {
@@ -208,6 +217,12 @@ public:
     class Plane bottom; // offset 0x50, size 0x10
 };
 
+class Triangle {
+public:
+    Vector3 origin; // 0x0
+    Hmx::Matrix3 frame; // 0xc
+};
+
 // https://decomp.me/scratch/kGwAB
 // lol, regswaps galore
 inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res){
@@ -222,7 +237,32 @@ void Normalize(const Hmx::Quat&, Hmx::Quat&);
 void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
 void FastInterp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void Invert(const Hmx::Matrix3&, Hmx::Matrix3&);
+void FastInvert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
+void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
+void Multiply(const Transform&, const Transform&, Transform&);
+
+inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
+    mout.Set(
+        min.x.x, min.y.x, min.z.x,
+        min.x.y, min.y.y, min.z.y,
+        min.x.z, min.y.z, min.z.z
+    );
+}
+
+inline void Transpose(const Transform& tfin, Transform& tfout){
+    Vector3 vtmp;
+    Transpose(tfin.m, tfout.m);
+    Negate(tfin.v, vtmp);
+    Multiply(vtmp, tfout.m, tfout.v);
+}
+
+inline void Normalize(const Hmx::Matrix3 &src, Hmx::Matrix3 &dst) {
+    Normalize(src.y, dst.y);
+    Cross(dst.y, src.z, dst.x);
+    Normalize(dst.x, dst.x);
+    Cross(dst.x, dst.y, dst.z);
+}
 
 inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout) {
     register __vec2x32float__ i1, i2, m1, m2, o1, o2;
@@ -261,9 +301,30 @@ inline void Multiply(const Vector3& vin, const Hmx::Matrix3& mtx, Vector3& vout)
 }
 
 inline void Invert(const Transform& tfin, Transform& tfout){
+#ifdef VERSION_SZBE69_B8 // DEBUG
+    Vector3 vtmp(tfin.v.x, tfin.v.y, tfin.v.z);
+    vtmp.x = -vtmp.x;
+    vtmp.z = -vtmp.z;
+    vtmp.y = -vtmp.y;
+#else // RETAIL
     Vector3 vtmp;
     Negate(tfin.v, vtmp);
+#endif
     Invert(tfin.m, tfout.m);
+    Multiply(vtmp, tfout.m, tfout.v);
+}
+
+inline void FastInvert(const Transform& tfin, Transform& tfout){
+#ifdef VERSION_SZBE69_B8 // DEBUG
+    Vector3 vtmp(tfin.v.x, tfin.v.y, tfin.v.z);
+    vtmp.x = -vtmp.x;
+    vtmp.z = -vtmp.z;
+    vtmp.y = -vtmp.y;
+#else // RETAIL
+    Vector3 vtmp;
+    Negate(tfin.v, vtmp);
+#endif
+    FastInvert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
 }
 
