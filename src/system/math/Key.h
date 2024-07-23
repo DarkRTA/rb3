@@ -157,7 +157,7 @@ public:
             while(threshold > cnt + 1){
                 int newCnt = (cnt + threshold) >> 1;
                 if(ff < (*this)[newCnt].frame) threshold = newCnt;
-                if(!(ff < (*this)[(int)newCnt].frame)) cnt = newCnt; // threshold should be newCnt here, but doing so causes the slwi to not generate
+                if(!(ff < (*this)[(int)newCnt].frame)) cnt = newCnt;
             }
             while (cnt + 1 < size() && (*this)[cnt + 1].SameFrame((*this)[cnt])) cnt++;
             return cnt;
