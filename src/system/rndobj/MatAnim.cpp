@@ -10,6 +10,7 @@ RndMatAnim::TexPtr::TexPtr() : ObjPtr<RndTex, ObjectDir>(sOwner, 0) {}
 RndMatAnim::TexPtr::TexPtr(RndTex* tex) : ObjPtr<RndTex, ObjectDir>(sOwner, tex) {}
 RndMatAnim::TexKeys::TexKeys(Hmx::Object* o) : mOwner(o) {}
 
+// fn_805FA384
 int RndMatAnim::TexKeys::Add(RndTex* tex, float frame, bool b){
     sOwner = mOwner;
     return Keys<TexPtr, RndTex*>::Add(TexPtr(tex), frame, b);
