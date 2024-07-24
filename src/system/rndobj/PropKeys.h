@@ -111,11 +111,23 @@ public:
     virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
     virtual float EndFrame(){ return LastFrame(); }
-    virtual bool FrameFromIndex(int, float&);
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
     virtual float SetFrame(float f1, float f2);
-    virtual void CloneKey(int);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
     virtual int SetKey(float);
-    virtual int RemoveKey(int);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
     virtual int NumKeys(){ return size(); }
     virtual void SetToCurrentVal(int);
     virtual void Save(BinStream& bs){
@@ -137,20 +149,41 @@ class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
     SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
     virtual ~SymbolKeys(){}
-    virtual float StartFrame();
-    virtual float EndFrame();
-    virtual bool FrameFromIndex(int, float&);
-    virtual float SetFrame(float f1, float f2);
-    virtual void CloneKey(int);
-    virtual int SetKey(float);
-    virtual int RemoveKey(int);
-    virtual int NumKeys();
-    virtual void SetToCurrentVal(int);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
-    virtual void Copy(const PropKeys*);
     virtual Keys<Symbol, Symbol>& AsSymbolKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
+    virtual void Copy(const PropKeys*);
     virtual int SymbolAt(float, Symbol&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 };
 
 #endif

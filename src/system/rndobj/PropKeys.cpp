@@ -285,20 +285,26 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
-void SymbolKeys::Load(BinStream& bs){
-    PropKeys::Load(bs);
-    bs >> *this;
+// WhateverAts, then SetFrames
+
+int FloatKeys::FloatAt(float, float&){
+
 }
 
-void SymbolKeys::Save(BinStream& bs){
-    PropKeys::Save(bs);
-    bs << *this;
+float FloatKeys::SetFrame(float, float){
+
 }
 
 int SymbolKeys::SymbolAt(float f, Symbol& sym){
     MILO_ASSERT(size(), 0x322);
     return AtFrame(f, sym);
 }
+
+float SymbolKeys::SetFrame(float, float){
+    
+}
+
+// SetKeys
 
 int FloatKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
@@ -309,6 +315,12 @@ int FloatKeys::SetKey(float frame){
         return retVal;
     }
 }
+
+int SymbolKeys::SetKey(float frame){
+
+}
+
+// SetToCurrentVals
 
 void FloatKeys::SetToCurrentVal(int i){
     (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
@@ -323,6 +335,12 @@ void SymbolKeys::SetToCurrentVal(int i){
     else (*this)[i].value = mTarget->Property(mProp, true)->Sym(0);
 }
 
+// then finally, Copys
+
+void FloatKeys::Copy(const PropKeys*){
+
+}
+
 void SymbolKeys::Copy(const PropKeys* keys){
     PropKeys::Copy(keys);
     clear();
@@ -332,22 +350,4 @@ void SymbolKeys::Copy(const PropKeys* keys){
         // not so sure that it's insert, or if it is, what its params are
         insert(begin(), newKeys->begin(), newKeys->end());
     }    
-}
-
-int FloatKeys::RemoveKey(int idx){
-    Remove(idx);
-    return size();
-}
-
-void FloatKeys::CloneKey(int idx){
-    if(!mProp || !mTarget) return;
-    if(idx >= 0 && idx < size()){
-        Add((*this)[idx].value, (*this)[idx].frame, false);
-    }
-}
-
-bool FloatKeys::FrameFromIndex(int idx, float& f){
-    if(idx >= size()) return false;
-    else f = (*this)[idx].frame;
-    return true;
 }
