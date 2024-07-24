@@ -58,4 +58,10 @@ inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) :
 inline UIComponentScrollStartMsg::UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
     Message(Type(), DataNode(comp), DataNode(user)){}
 
+inline UITransitionCompleteMsg::UITransitionCompleteMsg(UIScreen* s1, UIScreen* s2) :
+    Message(Type(), DataNode(s1), DataNode(s2)){}
+
+inline UIScreenChangeMsg::UIScreenChangeMsg(UIScreen* s1, UIScreen* s2, bool b) :
+    Message(Type(), DataNode(s1), DataNode(s2), DataNode(b)){}
+
 #endif

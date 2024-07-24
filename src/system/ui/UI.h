@@ -70,6 +70,8 @@ public:
         mCustomMsgs.push_back(s);
     }
 
+    void AddRecord(Symbol, DataArray*);
+
     DataNode OnMsg(const UITransitionCompleteMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
     DataNode OnMsg(const UIComponentSelectMsg&);

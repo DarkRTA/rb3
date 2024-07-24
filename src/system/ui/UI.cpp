@@ -89,6 +89,43 @@ UIManager::~UIManager(){
 
 }
 
+void UIManager::SendTransitionComplete(UIScreen* scr1, UIScreen* scr2){
+    Handle(UITransitionCompleteMsg(scr1, scr2), false);
+}
+
+void UIManager::Draw(){
+    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+        (*it)->Draw();
+    }
+    if(mCurrentScreen) mCurrentScreen->Draw();
+}
+
+void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
+    if(b1 || mTransitionState != kTransitionNone || mCurrentScreen != scr &&
+        (mTransitionState != kTransitionTo && mTransitionState != kTransitionPop) ||
+        mTransitionScreen != scr){
+        CancelTransition();
+        if(scr){
+            for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+                if(scr->SharesPanels(*it)){
+                    MILO_FAIL("%s shares panels with %s", scr->Name(), (*it)->Name());
+                }
+            }
+        }
+        mWentBack = b2;
+        UIScreenChangeMsg msg(scr, mCurrentScreen, b2);
+        Handle(msg, false);
+        mTransitionState = kTransitionTo;
+        mTransitionScreen = scr;
+        if(mCurrentScreen) mCurrentScreen->Exit(scr);
+        else if(scr) scr->LoadPanels();
+        if(mTransitionScreen){
+            mOverlay->CurrentLine() = gNullStr;
+            mLoadTimer.Restart();
+        }
+    }
+}
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(UIManager)
