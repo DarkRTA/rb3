@@ -27,7 +27,14 @@ public:
     Symbol GetMatVariationName(unsigned int) const;
     const char* GetResourcesPath();
     String GetBaseName() const;
+    RndFont* GetGennedFont(unsigned int) const;
     RndText* FindTextForFont(RndFont*) const;
+    RndFont* FindFontForMat(RndMat*) const;
+    void AttachImporterToFont(RndFont*);
+    void ImportSettingsFromFont(RndFont*);
+    RndFont* GetGennedFont(Symbol) const;
+    int GetMatVariationIdx(Symbol) const;
+    RndMat* GetMatVariation(unsigned int) const;
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);
