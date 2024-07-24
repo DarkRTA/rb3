@@ -150,7 +150,7 @@ void UIFontImporter::FontImporterSyncObjects(){
 RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
     if(ui >= mGennedFonts.size()) return 0;
     ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
-    while(ui-- > 0) it++;
+    for (int i = 0; i < ui; i++) it++;
     return *it;
 }
 
@@ -341,14 +341,14 @@ RndText* UIFontImporter::GetGennedText(Symbol s) const {
 RndMat* UIFontImporter::GetMatVariation(unsigned int ui) const {
     if(ui >= mMatVariations.size()) return 0;
     ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
-    while(ui-- > 0) it++;
+    for (int i = 0; i < ui; i++) it++;
     return *it;
 }
 
 Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
     if(ui >= mMatVariations.size()) return Symbol();
     ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
-    while(ui-- > 0) it++;
+    for (int i = 0; i < ui; i++) it++;
     class String s18((*it)->Name());
     if(s18.rfind(".") != String::npos){
         s18 = s18.substr(0, s18.rfind("."));
@@ -378,7 +378,7 @@ void UIFontImporter::HandmadeFontChanged(){
             ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
             it++;
             for(; it != mGennedFonts.end(); it){
-                if(mHandmadeFont == *it){
+                if(*it == mHandmadeFont){
                     mGennedFonts.erase(it);
                     break;
                 }
@@ -396,6 +396,39 @@ void UIFontImporter::HandmadeFontChanged(){
         mMinus = "";
         std::vector<unsigned short> thechars(mHandmadeFont->mChars);
         mPlus = WideVectorToASCII(thechars);
+    }
+}
+
+// fn_8055DA08
+void UIFontImporter::SyncWithGennedFonts(){
+    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end(); it){
+        RndFont* font = *it;
+        bool matfound = false;
+        for(ObjPtrList<RndMat, class ObjectDir>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
+            if(font->mMat == *mit) matfound = true;
+        }
+        if(font->mMat == unkb4) matfound = true;
+        if(!matfound){
+            font->mMat;
+            RndText* text = FindTextForFont(font);
+            it = mGennedFonts.erase(it);
+            delete font;
+            if(text) delete text;
+        }
+        else it++;
+    }
+}
+
+class String UIFontImporter::GetBaseName() const {
+    if(mHandmadeFont){
+        class String str(mHandmadeFont->Name());
+        if(str.find(".") != String::npos){
+            str = str.substr(0, str.rfind("."));
+        }
+        return str;
+    }
+    else {
+        return mBitMapSaveName.substr(0, mBitMapSaveName.rfind("."));
     }
 }
 
