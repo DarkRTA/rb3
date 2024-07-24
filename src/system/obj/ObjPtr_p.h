@@ -355,7 +355,6 @@ public:
         if(obj) obj->AddRef(this);
     }
 
-    // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
         while(mSize > x.mSize) pop_back();

@@ -286,7 +286,7 @@ public:
                                                         reinterpret_cast<_StorageType*>(__last)));
   }
 
-  void resize(size_type __new_size, const value_type& __x = value_type())
+  void resize(size_type __new_size, const value_type __x = value_type())
   { _M_impl.resize(__new_size, reinterpret_cast<_StorageType const&>(__x)); }
 
   void clear() { _M_impl.clear(); }

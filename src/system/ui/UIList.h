@@ -1,6 +1,5 @@
 #ifndef UI_UILIST_H
 #define UI_UILIST_H
-#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "types.h"
 #include "ui/ScrollSelect.h"

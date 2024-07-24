@@ -9,6 +9,19 @@ class RndText;
 
 class UIFontImporter : public virtual Hmx::Object {
 public:
+
+    enum FontQuality {
+        kFontQuality_AntiAliased,
+        kFontQuality_ClearType,
+        kFontQuality_Default
+    };
+
+    enum FontSuperSample {
+        kFontSuperSample_None,
+        kFontSuperSample_2x,
+        kFontSuperSample_4x
+    };
+
     UIFontImporter();
     OBJ_CLASSNAME(UIFontImporter);
     OBJ_SET_TYPE(UIFontImporter);
@@ -25,6 +38,16 @@ public:
     void SyncWithGennedFonts();
     void HandmadeFontChanged();
     Symbol GetMatVariationName(unsigned int) const;
+    const char* GetResourcesPath();
+    String GetBaseName() const;
+    RndFont* GetGennedFont(unsigned int) const;
+    RndText* FindTextForFont(RndFont*) const;
+    RndFont* FindFontForMat(RndMat*) const;
+    void AttachImporterToFont(RndFont*);
+    void ImportSettingsFromFont(RndFont*);
+    RndFont* GetGennedFont(Symbol) const;
+    int GetMatVariationIdx(Symbol) const;
+    RndMat* GetMatVariation(unsigned int) const;
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);
@@ -49,11 +72,11 @@ public:
     String mFontName; // 0x28
     float mFontPctSize; // 0x34
     bool mItalics; // 0x38
-    int mFontQuality; // 0x3c
-    int unk40; // 0x40
+    FontQuality mFontQuality; // 0x3c
+    int mFontWeight; // 0x40
     int mPitchAndFamily; // 0x44
     int mFontCharset; // 0x48
-    int mFontSupersample; // 0x4c
+    FontSuperSample mFontSupersample; // 0x4c
     int mLeft; // 0x50
     int mRight; // 0x54
     int mTop; // 0x58
@@ -65,11 +88,11 @@ public:
     ObjPtrList<RndFont, ObjectDir> mGennedFonts; // 0x88
     ObjPtr<RndFont, ObjectDir> mReferenceKerning; // 0x98
     ObjPtrList<RndMat, ObjectDir> mMatVariations; // 0xa4
-    ObjPtr<RndMat, ObjectDir> unkb4; // 0xb4
+    ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0xb4
     ObjPtr<RndFont, ObjectDir> mHandmadeFont; // 0xc0
-    bool unkcc; // 0xcc
-    String mResourceName; // 0xd0
-    bool mLastGennedNG; // 0xdc
+    bool mCheckNG; // 0xcc
+    String mSyncResource; // 0xd0
+    bool mLastGenWasNG; // 0xdc
 };
 
 #endif

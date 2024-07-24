@@ -6,6 +6,8 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
 #include "ui/UIMessages.h"
+#include "obj/Utl.h"
+#include "os/File_Wii.h"
 #include "ui/UI.h"
 #include "utl/Symbols.h"
 
@@ -200,6 +202,76 @@ void UIComponent::MockSelect(){
     mMockSelect = true;
 }
 
+void UIComponent::Update(){
+    if(mResourcePath.length() != 0){
+        if(!mResourceDir){
+            FileStat stat;
+            const char* default_str = "default";
+            const char* milo_str = MakeString("%s/%s.milo", mResourcePath.c_str(), default_str);
+            if(!default_str){
+                MILO_FAIL("No default_resource for %s, please add 'default_resource' block ", ClassName());
+                return;
+            }
+            int filestat = FileGetStat(milo_str, &stat);
+            if(filestat == -1){
+                MILO_FAIL("%s %s (%s) is missing default resource file %s, please fix", ClassName(), Name(), PathName(this), milo_str);
+            }
+            else {
+                MILO_ASSERT(!mLoading, 0x161);
+                MILO_WARN("Resetting %s (%s) resource to default because resource %s couldn't be found (%s)",
+                    ClassName(), Name(), mResourceName.c_str(), PathName(Dir()));
+                mResourceName = default_str;
+                ResourceFileUpdated(false);
+                UIComponent::Update();
+            }
+        }
+    }
+    else {
+        if(mResource){
+            RndDir* rdir = mResource->Dir();
+            if(rdir){
+                mMeshes.clear();
+                DataArray* mesharr = TypeDef()->FindArray(meshes, false);
+                if(mesharr){
+                    for(int i = 0; i < mesharr->Size(); i++){
+                        DataArray* innerarr = mesharr->Array(i);
+                        RndMesh* newmesh = rdir->Find<RndMesh>(innerarr->Str(0), true);
+                        UIMesh uimesh(newmesh);
+                        for(int j = 1; j < innerarr->Size(); j++){
+                            DataArray* anotherarr = innerarr->Array(j);
+                            State state = SymToUIComponentState(anotherarr->Sym(0));
+                            RndMat* mat = rdir->Find<RndMat>(anotherarr->Str(1), true);
+                            uimesh.mMats[state] = mat;
+                        }
+                        mMeshes.push_back(uimesh);
+                    }
+                }
+            }
+            else {
+                const DataArray* def = TypeDef();
+                MILO_WARN("Can't find %s (%s) resource file %s for type %s! (%s)",
+                    ClassName(), Name(), def->FindStr("resource_file"), Type(), PathName(this));
+                DataArray* cfg = SystemConfig("objects", ClassName(), "types");
+                DataArray* defaultarr = cfg->FindArray("default", false);
+                if(!defaultarr){
+                    MILO_FAIL("No default type for %s, please add to %s", ClassName(), cfg->File());
+                }
+                else if(defaultarr == def){
+                    MILO_FAIL("%s default type has invalid resource file, please fix %s", ClassName(), cfg->File());
+                }
+                else {
+                    MILO_ASSERT(!mLoading, 0x1A7);
+                    MILO_WARN("Resetting %s (%s) type to default (%s)", ClassName(), Name(), PathName(Dir()));
+                    gResettingType = true;
+                    SetTypeDef(defaultarr);
+                    gResettingType = false;
+                    UIComponent::Update();
+                }
+            }
+        }
+    }
+}
+
 void UIComponent::UpdateMeshes(State s){
     for(std::vector<UIMesh>::iterator it = mMeshes.begin(); it != mMeshes.end(); ++it){
         if((*it).mMesh->mMat != (*it).mMats[s]){
@@ -223,8 +295,32 @@ void UIComponent::UpdateResource(){
     if(!mLoading && !gResettingType) Update();
 }
 
-void UIComponent::ResourceFileUpdated(bool) {
+void UIComponent::ResourceFileUpdated(bool b) {
+    if(!mResourceName.empty()){
+        mResourcePath = GetResourcesPath();
+        const char* pathstr = MakeString("%s/%s.milo", mResourcePath.c_str(), mResourceName);
+        mResourceDir.LoadFile(FilePath(FileRoot(), pathstr), b, true, kLoadFront, false);
+        if(!b) mResourceDir.PostLoad(0);
+    }
+    else mResourceDir = 0;
+    if(!b) Update();
+}
 
+const char* UIComponent::GetResourcesPath(){
+    std::vector<Symbol> syms;
+    syms.push_back(ClassName());
+    ListSuperClasses(ClassName(), syms);
+    DataArray* arr = 0;
+    for(int i = 0; i < syms.size(); i++){
+        arr = SystemConfig(objects, syms[i])->FindArray(resources_path, false);
+        if(arr) break;
+    }
+    if(!arr) return 0;
+    else {
+        const char* str = arr->Str(1);
+        if(*str == '\0') return 0;
+        else return FileMakePath(FileGetPath(arr->File(), 0), str, 0);
+    }
 }
 
 DataNode UIComponent::OnGetResourcesPath(DataArray* da) {

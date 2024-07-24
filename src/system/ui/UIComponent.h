@@ -30,6 +30,10 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     // size 0x18
     class UIMesh {
     public:
+        UIMesh(){}
+        UIMesh(RndMesh* mesh) : mMesh(mesh) {
+            for(int i = 0; i < kNumStates; i++) mMats[i] = 0;
+        }
         RndMesh* mMesh;
         RndMat* mMats[kNumStates];
     };

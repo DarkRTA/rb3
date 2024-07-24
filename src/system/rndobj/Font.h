@@ -40,6 +40,10 @@ public:
     virtual void Load(BinStream&);
     virtual void Print();
 
+    void GetKerning(std::vector<KernInfo>&) const;
+    void SetKerning(const std::vector<KernInfo>&);
+    void SetBaseKerning(float);
+
     NEW_OVERLOAD;
     NEW_OBJ(RndFont)
     static void Init(){
