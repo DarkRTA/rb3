@@ -17,15 +17,20 @@ UIListProvider* UIGridProvider::Provider(int, int i, UIListSubList*) const {
 }
 
 int UIGridProvider::NumData() const {
-    return mMasterProvider->NumData() % mWidth;
+    int numData = mMasterProvider->NumData();
+    int n = (numData / mWidth);
+    return n + (numData % mWidth ? 1 : 0);
 }
 
 void UIGridProvider::InitData(RndDir* dir){ mMasterProvider->InitData(dir); }
 
 int UIGridProvider::NumDataForSublistIndex(int idx) const {
     int masternum = mMasterProvider->NumData();
-    int numData = mWidth;
-    if(masternum / mWidth <= idx) numData = masternum % mWidth;
+    int numData;
+    
+    if(idx < masternum / mWidth) numData = mWidth;
+    else numData = masternum % mWidth;
+    
     MILO_ASSERT(( 0) <= (numData) && (numData) <= ( mWidth), 0xB9);
     return numData;
 }
@@ -62,8 +67,11 @@ void UIGridProvider::SetListToSymbol(UIList* uilist, Symbol s){
 int UIGridProvider::GetDataFromList(UIList* uilist){
     UIList* child = uilist->ChildList();
     if(child){
-        int data = uilist->SelectedData();
-        return child->SelectedData() + data * mWidth;
+        int data2 = uilist->SelectedData();
+        int data = child->SelectedData();
+        
+        data += data2 * mWidth;
+        return data;
     }
     else return -1;
 }
