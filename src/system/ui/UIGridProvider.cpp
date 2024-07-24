@@ -30,6 +30,7 @@ int UIGridProvider::NumDataForSublistIndex(int idx) const {
     return numData;
 }
 
+// fn_8055F6B8
 void UIGridProvider::ResizeSubProviders() const {
     UIGridProvider* prov = const_cast<UIGridProvider*>(this);
     int data = NumData();

@@ -30,6 +30,7 @@ public:
 
 class UIGridSubProvider : public UIListProvider {
 public:
+    UIGridSubProvider(){}
     UIGridSubProvider(UIListProvider* lprov, UIGridProvider* gprov, int i) : mListProvider(lprov), mGridProvider(gprov), mIndex(i) {}
     virtual ~UIGridSubProvider(){}
     virtual void Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
