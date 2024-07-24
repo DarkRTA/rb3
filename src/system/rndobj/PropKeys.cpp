@@ -167,7 +167,7 @@ void PropKeys::Load(BinStream& bs){
         else iVal = (mKeysType == kObject || mKeysType == kBool) == 0;
 
         if(gRev < 0xB && iVal == 4){
-            mKeysType = kSymbol;
+            mPropExceptionID = kMacro;
             mInterpolation = kStep;
         }
         else mInterpolation = iVal;
@@ -195,9 +195,10 @@ void PropKeys::Load(BinStream& bs){
 }
 
 void PropKeys::Copy(const PropKeys* keys){
+    mInterpolation = keys->mInterpolation;
+    mPropExceptionID = keys->mPropExceptionID;
     mInterpHandler = keys->mInterpHandler;
-    mKeysType = keys->mKeysType;
-    mLastKeyFrameIndex = keys->mLastKeyFrameIndex;
+    unk18lastbit = keys->unk18lastbit;
 }
 
 void PropKeys::Print(){
@@ -333,16 +334,6 @@ void SymbolKeys::Copy(const PropKeys* keys){
     }    
 }
 
-void FloatKeys::Load(BinStream& bs){
-    PropKeys::Load(bs);
-    bs >> *this;
-}
-
-void FloatKeys::Save(BinStream& bs){
-    PropKeys::Save(bs);
-    bs << *this;
-}
-
 int FloatKeys::RemoveKey(int idx){
     Remove(idx);
     return size();
@@ -355,18 +346,8 @@ void FloatKeys::CloneKey(int idx){
     }
 }
 
-float FloatKeys::StartFrame(){
-    return FirstFrame();
-}
-
-float FloatKeys::EndFrame(){
-    return LastFrame();
-}
-
 bool FloatKeys::FrameFromIndex(int idx, float& f){
     if(idx >= size()) return false;
     else f = (*this)[idx].frame;
     return true;
 }
-
-int FloatKeys::NumKeys(){ return size(); }

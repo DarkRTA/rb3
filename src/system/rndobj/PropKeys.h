@@ -84,21 +84,21 @@ public:
     static unsigned short gRev;
     static Message sInterpMessage;
 
-    ObjOwnerPtr<Hmx::Object, ObjectDir> mTarget;
-    DataArray* mProp;
-    RndTransformable* mTrans;
-    Symbol mInterpHandler;
+    ObjOwnerPtr<Hmx::Object, ObjectDir> mTarget; // 0x4
+    DataArray* mProp; // 0x10
+    RndTransformable* mTrans; // 0x14
+    Symbol mInterpHandler; // 0x18
     
     // presumably, bits 10-31 of 0x1C would be mlastKeyFrameIndex?
     // mKeysType: bits 7-9 of 0x1C
     // interpolation: bits 4-6 of 0x1C
     // exception id is bits 1-3 of 0x1C
     // unknown is bit 0 of 0x1C
-    int mLastKeyFrameIndex : 22;
+    unsigned int mLastKeyFrameIndex : 22;
     unsigned int mKeysType : 3; // represents the enum AnimKeysType
     unsigned int mInterpolation : 3; // represents the enum Interpolation
     unsigned int mPropExceptionID : 3; // represents the enum ExceptionID
-    int unk18lastbit : 1;
+    unsigned int unk18lastbit : 1;
 };
 
 void SetPropKeysRev(int);
@@ -108,19 +108,25 @@ class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
     FloatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
     virtual ~FloatKeys(){}
-    virtual float StartFrame();
-    virtual float EndFrame();
+    virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
     virtual bool FrameFromIndex(int, float&);
     virtual float SetFrame(float f1, float f2);
     virtual void CloneKey(int);
     virtual int SetKey(float);
     virtual int RemoveKey(int);
-    virtual int NumKeys();
+    virtual int NumKeys(){ return size(); }
     virtual void SetToCurrentVal(int);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
     virtual void Copy(const PropKeys*);
-    virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
     virtual int FloatAt(float, float&);
 
     NEW_OVERLOAD;
