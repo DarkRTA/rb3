@@ -27,6 +27,7 @@ END_MESSAGE;
 
 BEGIN_MESSAGE(UITransitionCompleteMsg, transition_complete, UIScreen*, UIScreen*);
     MESSAGE_ARRAY_CTOR(UITransitionCompleteMsg)
+    UIScreen* GetScreen1() const { return mData->Obj<UIScreen>(2); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(UIComponentScrollStartMsg, component_scroll_start, UIComponent*, LocalUser*);

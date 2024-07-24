@@ -3,6 +3,7 @@
 #include "ui/UIScreen.h"
 #include "rndobj/Overlay.h"
 #include "obj/MsgSource.h"
+#include "obj/DataFile.h"
 #include "utl/Symbols.h"
 
 #pragma push
@@ -31,6 +32,54 @@ BEGIN_HANDLERS(Automator)
     HANDLE_CHECK(0x1B2)
 END_HANDLERS
 #pragma pop
+
+inline void Automator::FinishRecord(){
+    if(mRecord){
+        MILO_ASSERT(!mRecordPath.empty(), 0x166);
+        DataWriteFile(mRecordPath.c_str(), mRecord, 0);
+    }
+}
+
+inline const char* Automator::ToggleAuto(){
+    mCurScript = 0;
+    if(mScreenScripts){
+        mScreenScripts->Release();
+        mScreenScripts = 0;
+    }
+    else {
+        Loader* ldr = TheLoadMgr.AddLoader(FilePath(mAutoPath.c_str()), kLoadFront);
+        DataLoader* dl = dynamic_cast<DataLoader*>(ldr);
+        MILO_ASSERT(dl, 0x94);
+        TheLoadMgr.PollUntilLoaded(dl, 0);
+        mScreenScripts = dl->Data();
+        mCurScreenIndex = 0;
+        if(mScreenScripts){
+            StartAuto(TheUI->CurrentScreen());
+        }
+    }
+    return AutoScript();
+}
+
+inline void Automator::StartAuto(UIScreen* screen){
+    MILO_ASSERT(mScreenScripts, 0xC4);
+    mCurScript = 0;
+    if(screen){
+        mCurMsgIndex = 1;
+        for(int i = mCurScreenIndex; i < mScreenScripts->Size(); i++){
+            DataArray* arr = mScreenScripts->Array(i);
+            if(arr->Sym(0) == screen->Name()){
+                mCurScript = arr;
+                mCurScreenIndex++;
+                break;
+            }
+        }
+    }
+}
+
+DataNode Automator::OnMsg(const UITransitionCompleteMsg& msg){
+    if(mScreenScripts && !mRecord) StartAuto(msg.GetScreen1());
+    return DataNode(kDataUnhandled, 0);
+}
 
 UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), unk70(0), unk71(0), unk72(1), mOverlay(0), mRequireFixedText(0), unkb0(0), unkb5(0) {
 
