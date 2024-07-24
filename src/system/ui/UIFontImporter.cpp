@@ -12,6 +12,22 @@ inline float fabs720(int i){
     return fabs_f(i / 720.0f);
 }
 
+inline float fabs480(int i){
+    return fabs_f(i / 480.0f);
+}
+
+inline int round480(float f){
+    return -Round(f * 480.0f);
+}
+
+inline int round720(float f){
+    return -Round(f * 720.0f);
+}
+
+inline bool cmpthing(int i){
+    return i != 0;
+}
+
 UIFontImporter::UIFontImporter() : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1), mPunctuation(1), mUpperEuro(1), mLowerEuro(1),
     mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(fabs720(-0xc)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
     mPitchAndFamily(0x22), mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0), mTop(0), mBottom(0), mFillWithSafeWhite(0), 
@@ -457,90 +473,13 @@ BEGIN_PROPSYNCS(UIFontImporter)
     SYNC_PROP(minus, mMinus)
     SYNC_PROP(font_name, mFontName)
     SYNC_PROP_MODIFY(font_pct_size, mFontPctSize, GenerateBitmapFilename())
-    if(sym == font_point_size){
-    //     if (param_4 == 2) {
-    //     if (this[0xdc] == (UIFontImporter)0x0) {
-    //         iVar2 = DataNode::Int(param_1,(DataArray *)0x0);
-    //         dVar4 = (double)fn_8055A434(-iVar2);
-    //     }
-    //     else {
-    //         iVar2 = DataNode::Int(param_1,(DataArray *)0x0);
-    //         dVar4 = (double)fn_8055A388(-iVar2);
-    //     }
-    //     *(float *)(this + 0x34) = (float)dVar4;
-    //     }
-    //     else {
-    //     if (param_4 == 0x40) {
-    //         return 0;
-    //     }
-    //     if (this[0xdc] == (UIFontImporter)0x0) {
-    //         iVar2 = fn_8055A404((double)*(float *)(this + 0x34));
-    //     }
-    //     else {
-    //         iVar2 = fn_8055A3D4((double)*(float *)(this + 0x34));
-    //     }
-    //     DataNode::DataNode(&DStack_20,iVar2);
-    //     DataNode::operator=(param_1,&DStack_20);
-    //     DataNode::~DataNode(&DStack_20);
-    //     }
-    //     uVar3 = 1;
-    }
-    // font_pixel_size
-    if(sym == font_pixel_size){
-    //     if (param_4 == 2) {
-    //       if (this[0xdc] == (UIFontImporter)0x0) {
-    //         DataNode::Int(param_1,(DataArray *)0x0);
-    //         dVar4 = (double)fn_8055A434();
-    //       }
-    //       else {
-    //         DataNode::Int(param_1,(DataArray *)0x0);
-    //         dVar4 = (double)fn_8055A388();
-    //       }
-    //       *(float *)(this + 0x34) = (float)dVar4;
-    //     }
-    //     else {
-    //       if (param_4 == 0x40) {
-    //         return 0;
-    //       }
-    //       if (this[0xdc] == (UIFontImporter)0x0) {
-    //         fn_8055A404((double)*(float *)(this + 0x34));
-    //         iVar2 = fn_806E7014();
-    //       }
-    //       else {
-    //         fn_8055A3D4((double)*(float *)(this + 0x34));
-    //         iVar2 = fn_806E7014();
-    //       }
-    //       DataNode::DataNode(&DStack_28,iVar2);
-    //       DataNode::operator=(param_1,&DStack_28);
-    //       DataNode::~DataNode(&DStack_28);
-    //     }
-    //     uVar3 = 1;
-    }
-    // bold
-    if(sym == bold){
-    //   if (param_4 == 2) {
-    //     iVar2 = DataNode::Int(param_1,(DataArray *)0x0);
-    //     if (iVar2 == 0) {
-    //       *(undefined4 *)(this + 0x40) = 400;
-    //     }
-    //     else {
-    //       *(undefined4 *)(this + 0x40) = 800;
-    //     }
-    //     fn_8055CE48(this);
-    //   }
-    //   else {
-    //     if (param_4 == 0x40) {
-    //       return 0;
-    //     }
-    //     uVar1 = *(uint *)(this + 0x40) ^ 400;
-    //     DataNode::DataNode(&DStack_30,
-    //                        ((int)uVar1 >> 1) -
-    //                        (uVar1 & *(uint *)(this + 0x40)) >> 0x1f);
-    //     DataNode::operator=(param_1,&DStack_30);
-    //     DataNode::~DataNode(&DStack_30);
-    //   }
-    //   uVar3 = 1;
-    }
+    SYNC_PROP_SET(font_point_size,
+        mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize),
+        mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
+    SYNC_PROP_SET(font_pixel_size,
+        cmpthing(mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize)),
+        mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
+    SYNC_PROP_SET(bold, cmpthing(mFontWeight), mFontWeight = _val.Int(0) ? 800 : 400; GenerateBitmapFilename())
     SYNC_PROP_MODIFY(italics, mItalics, GenerateBitmapFilename())
     SYNC_PROP(font_quality, (int&)mFontQuality)
     SYNC_PROP(pitch_and_family, mPitchAndFamily)
