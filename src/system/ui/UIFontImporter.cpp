@@ -24,10 +24,6 @@ inline int round720(float f){
     return -Round(f * 720.0f);
 }
 
-inline bool cmpthing(int i){
-    return i != 0;
-}
-
 UIFontImporter::UIFontImporter() : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1), mPunctuation(1), mUpperEuro(1), mLowerEuro(1),
     mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(fabs720(-0xc)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
     mPitchAndFamily(0x22), mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0), mTop(0), mBottom(0), mFillWithSafeWhite(0), 
@@ -477,9 +473,9 @@ BEGIN_PROPSYNCS(UIFontImporter)
         mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize),
         mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
     SYNC_PROP_SET(font_pixel_size,
-        cmpthing(mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize)),
+        abs(mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize)),
         mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
-    SYNC_PROP_SET(bold, cmpthing(mFontWeight), mFontWeight = _val.Int(0) ? 800 : 400; GenerateBitmapFilename())
+    SYNC_PROP_SET(bold, abs(mFontWeight), mFontWeight = _val.Int(0) ? 800 : 400; GenerateBitmapFilename())
     SYNC_PROP_MODIFY(italics, mItalics, GenerateBitmapFilename())
     SYNC_PROP(font_quality, (int&)mFontQuality)
     SYNC_PROP(pitch_and_family, mPitchAndFamily)
