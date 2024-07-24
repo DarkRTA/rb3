@@ -303,7 +303,7 @@ int FloatKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
         int retVal = PropKeys::SetKey(frame);
-        if(retVal < 0) Add(0, frame, false);
+        if(retVal < 0) retVal = Add(0, frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
