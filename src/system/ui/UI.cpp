@@ -2,7 +2,35 @@
 #include "os/JoypadClient.h"
 #include "ui/UIScreen.h"
 #include "rndobj/Overlay.h"
+#include "obj/MsgSource.h"
 #include "utl/Symbols.h"
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(Automator)
+    HANDLE_EXPR(toggle_auto, ToggleAuto())
+    HANDLE_EXPR(auto_script, AutoScript())
+    HANDLE_EXPR(toggle_record, ToggleRecord())
+    HANDLE_EXPR(record_script, RecordScript())
+    HANDLE_ACTION(set_auto_script, mAutoPath = _msg->Str(2))
+    HANDLE_ACTION(set_record_script, mRecordPath = _msg->Str(2))
+    HANDLE_ACTION(add_message_type, AddMessageType(_msg->Obj<MsgSource>(2), _msg->Sym(3)))
+    if(!mScreenScripts && !mRecord) return DataNode(kDataUnhandled, 0);
+    HANDLE_MESSAGE(UITransitionCompleteMsg)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(UIComponentSelectMsg)
+    HANDLE_MESSAGE(UIComponentScrollMsg)
+    HANDLE_MESSAGE(UIComponentFocusChangeMsg)
+    HANDLE_MESSAGE(UIScreenChangeMsg)
+    HANDLE(cheat_invoked, OnCheatInvoked)
+    {
+        DataNode result = OnCustomMsg(Message(_msg));
+        if(result.Type() != kDataUnhandled) return DataNode(result);
+    }
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x1B2)
+END_HANDLERS
+#pragma pop
 
 UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), unk70(0), unk71(0), unk72(1), mOverlay(0), mRequireFixedText(0), unkb0(0), unkb5(0) {
 

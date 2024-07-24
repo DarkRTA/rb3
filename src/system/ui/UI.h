@@ -5,6 +5,8 @@
 #include "os/Joypad.h"
 #include "os/Timer.h"
 #include "rndobj/Cam.h"
+#include "ui/UIMessages.h"
+#include "os/JoypadMsgs.h"
 #include <vector>
 
 class JoypadClient;
@@ -13,6 +15,37 @@ class UIScreen;
 class UIPanel;
 class UIResource;
 class RndOverlay;
+class MsgSource;
+
+// size 0x58
+class Automator : public Hmx::Object {
+public:
+    Automator();
+    virtual ~Automator();
+    virtual DataNode Handle(DataArray*, bool);
+
+    const char* ToggleAuto();
+    const char* AutoScript();
+    const char* ToggleRecord();
+    const char* RecordScript();
+    void AddMessageType(MsgSource*, Symbol);
+
+    DataNode OnMsg(const UITransitionCompleteMsg&);
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const UIComponentSelectMsg&);
+    DataNode OnMsg(const UIComponentScrollMsg&);
+    DataNode OnMsg(const UIComponentFocusChangeMsg&);
+    DataNode OnMsg(const UIScreenChangeMsg&);
+    DataNode OnCheatInvoked(const DataArray*);
+    DataNode OnCustomMsg(const Message&);
+
+    DataArray* mScreenScripts; // 0x1c
+    DataArray* mRecord; // 0x20
+    String mRecordPath; // 0x24
+    String mAutoPath; // 0x30
+    DataArray* mCurScript; // 0x3c
+    int unk40; // 0x40
+};
 
 enum TransitionState {
     kTransitionNone = 0,
@@ -89,7 +122,7 @@ public:
     Timer mLoadTimer; // 0x78
     RndOverlay* mOverlay; // 0xa8
     bool mRequireFixedText; // 0xac
-    Hmx::Object* unkb0; // 0xb0 - should be class Automator*?
+    Automator* unkb0; // 0xb0 - should be class Automator*?
     bool unkb4; // 0xb4
     bool unkb5; // 0xb5
 };

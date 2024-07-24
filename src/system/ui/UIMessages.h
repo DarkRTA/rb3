@@ -5,9 +5,11 @@
 #include "ui/UITrigger.h"
 
 BEGIN_MESSAGE(UIComponentScrollMsg, component_scroll, UIComponent*, LocalUser*);
+    MESSAGE_ARRAY_CTOR(UIComponentScrollMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(UIComponentSelectMsg, component_select, UIComponent*, LocalUser*);
+    MESSAGE_ARRAY_CTOR(UIComponentSelectMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(UIComponentSelectDoneMsg, component_select_done, UIComponent*, LocalUser*);
@@ -17,12 +19,21 @@ BEGIN_MESSAGE(UIComponentScrollSelectMsg, component_scroll_select, UIComponent*,
 END_MESSAGE;
 
 BEGIN_MESSAGE(UIComponentFocusChangeMsg, component_focus, UIComponent*, UIComponent*, PanelDir*, Symbol);
+    MESSAGE_ARRAY_CTOR(UIComponentFocusChangeMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(UITriggerCompleteMsg, ui_trigger_complete, UITrigger*);
 END_MESSAGE;
 
+BEGIN_MESSAGE(UITransitionCompleteMsg, transition_complete, UIScreen*, UIScreen*);
+    MESSAGE_ARRAY_CTOR(UITransitionCompleteMsg)
+END_MESSAGE;
+
 BEGIN_MESSAGE(UIComponentScrollStartMsg, component_scroll_start, UIComponent*, LocalUser*);
+END_MESSAGE;
+
+BEGIN_MESSAGE(UIScreenChangeMsg, screen_change, UIScreen*, UIScreen*, bool);
+    MESSAGE_ARRAY_CTOR(UIScreenChangeMsg)
 END_MESSAGE;
 
 inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
