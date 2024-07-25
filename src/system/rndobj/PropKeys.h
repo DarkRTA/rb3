@@ -55,7 +55,7 @@ public:
     virtual float StartFrame(){ return 0.0f; }
     virtual float EndFrame(){ return 0.0f; }
     virtual bool FrameFromIndex(int, float&){ return 0; }
-    virtual float SetFrame(float f1, float f2){ return f1; }
+    virtual void SetFrame(float f1, float f2){}
     virtual void CloneKey(int){}
     virtual int SetKey(float);
     virtual int RemoveKey(int){ return 0; }
@@ -124,7 +124,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -165,7 +165,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -206,7 +206,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -251,7 +251,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -292,7 +292,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -333,7 +333,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
@@ -374,7 +374,7 @@ public:
         else f = (*this)[idx].frame;
         return true;
     }
-    virtual float SetFrame(float f1, float f2);
+    virtual void SetFrame(float f1, float f2);
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){

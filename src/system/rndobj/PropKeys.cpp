@@ -323,7 +323,7 @@ int FloatKeys::FloatAt(float frame, float& fl){
     return at;
 }
 
-float FloatKeys::SetFrame(float, float){
+void FloatKeys::SetFrame(float, float){
 
 }
 
@@ -356,7 +356,7 @@ int ColorKeys::ColorAt(float frame, Hmx::Color& color){
     return at;
 }
 
-float ColorKeys::SetFrame(float, float){
+void ColorKeys::SetFrame(float, float){
 
 }
 
@@ -365,7 +365,7 @@ int ObjectKeys::ObjectAt(float frame, Hmx::Object*& obj){
     return AtFrame(frame, obj);
 }
 
-float ObjectKeys::SetFrame(float, float){
+void ObjectKeys::SetFrame(float, float){
 
 }
 
@@ -374,15 +374,34 @@ int BoolKeys::BoolAt(float frame, bool& b){
     return AtFrame(frame, b);
 }
 
-float BoolKeys::SetFrame(float, float){
-
+void BoolKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int num = 0;
+    if(mPropExceptionID == kNoException){
+        bool b;
+        num = BoolAt(frame, b);
+        if(mInterpolation & 7 || mLastKeyFrameIndex != num){
+            mTarget->SetProperty(mProp, DataNode(b));
+        }
+    }
+    else if(mPropExceptionID == kHandleInterp) {
+        bool b;
+        num = BoolAt(frame, b);
+        if(mLastKeyFrameIndex != num){
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(b);
+            sInterpMessage[1] = DataNode(frame);
+            mTarget->Handle(sInterpMessage, true);
+        }
+    }
+    mLastKeyFrameIndex = num;
 }
 
 int QuatKeys::QuatAt(float, Hmx::Quat&){
 
 }
 
-float QuatKeys::SetFrame(float, float){
+void QuatKeys::SetFrame(float, float){
 
 }
 
@@ -390,7 +409,7 @@ int Vector3Keys::Vector3At(float, Vector3&){
 
 }
 
-float Vector3Keys::SetFrame(float, float){
+void Vector3Keys::SetFrame(float, float){
 
 }
 
@@ -399,7 +418,7 @@ int SymbolKeys::SymbolAt(float frame, Symbol& sym){
     return AtFrame(frame, sym);
 }
 
-float SymbolKeys::SetFrame(float, float){
+void SymbolKeys::SetFrame(float, float){
     
 }
 
