@@ -287,8 +287,6 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
-// WhateverAts, then SetFrames
-
 int FloatKeys::FloatAt(float frame, float& fl){
     MILO_ASSERT(size(), 0x188);
     fl = 0.0f;
@@ -616,8 +614,24 @@ int FloatKeys::SetKey(float frame){
     }
 }
 
-int SymbolKeys::SetKey(float frame){
+int ColorKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Hmx::Color(0), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
 
+int SymbolKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Symbol(), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
 }
 
 // SetToCurrentVals
