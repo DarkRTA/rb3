@@ -672,10 +672,55 @@ int SymbolKeys::SetKey(float frame){
     }
 }
 
-// SetToCurrentVals
-
 void FloatKeys::SetToCurrentVal(int i){
     (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
+}
+
+void ColorKeys::SetToCurrentVal(int i){
+    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int(0));
+}
+
+void ObjectKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID != kDirEvent){
+        (*this)[i].value = ObjectStage(mTarget->Property(mProp, true)->GetObj(0));
+    }
+}
+
+void BoolKeys::SetToCurrentVal(int i){
+    (*this)[i].value = mTarget->Property(mProp, true)->Int(0);
+}
+
+void QuatKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID == kTransQuat){
+        if(mTrans != mTarget){
+            mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+        }
+        Hmx::Matrix3 m38;
+        Normalize(mTrans->LocalXfm().m, m38);
+        Hmx::Quat q48;
+        Hmx::Quat q58(m38);
+        Normalize(q58, q48);
+        (*this)[i].value = q48;
+    }
+}
+
+void Vector3Keys::SetToCurrentVal(int i){
+    switch(mPropExceptionID){
+        case kTransScale:
+            if(mTrans != mTarget){
+                mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            }
+            Vector3 v28;
+            MakeScale(mTrans->LocalXfm().m, v28);
+            (*this)[i].value = v28;
+            break;
+        case kTransPos:
+            if(mTrans != mTarget){
+                mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            }
+            (*this)[i].value = mTrans->LocalXfm().v;
+            break;
+    }
 }
 
 void SymbolKeys::SetToCurrentVal(int i){
@@ -689,8 +734,13 @@ void SymbolKeys::SetToCurrentVal(int i){
 
 // then finally, Copys
 
-void FloatKeys::Copy(const PropKeys*){
-
+void FloatKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const FloatKeys* newKeys = dynamic_cast<const FloatKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
 }
 
 void SymbolKeys::Copy(const PropKeys* keys){
@@ -701,5 +751,5 @@ void SymbolKeys::Copy(const PropKeys* keys){
         // retail calls some function (this vector, this vector, newKeys' vector, newKeys' vector end)
         // not so sure that it's insert, or if it is, what its params are
         insert(begin(), newKeys->begin(), newKeys->end());
-    }    
+    }
 }
