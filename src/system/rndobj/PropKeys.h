@@ -38,6 +38,12 @@ enum ExceptionID {
     kMacro
 };
 
+class ObjKeys : public Keys<ObjectStage, Hmx::Object*> {
+public:
+    ObjKeys(Hmx::Object* o) : mOwner(o) {}
+    Hmx::Object* mOwner; // 0x8
+};
+
 class PropKeys : public ObjRef {
 public:
     PropKeys(Hmx::Object*, Hmx::Object*);
@@ -59,7 +65,7 @@ public:
     virtual void Copy(const PropKeys*);
     virtual Keys<float, float>& AsFloatKeys(){ MILO_ASSERT(false, 0xA7); return *(Keys<float, float>*)0; }
     virtual Keys<Hmx::Color, Hmx::Color>& AsColorKeys(){ MILO_ASSERT(false, 0xA9); return *(Keys<Hmx::Color, Hmx::Color>*)0; }
-    virtual Keys<ObjectStage, Hmx::Object*>& AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return *(Keys<ObjectStage, Hmx::Object*>*)0; }
+    virtual ObjKeys& AsObjectKeys(){ MILO_ASSERT(false, 0xAB); return *(ObjKeys*)0; }
     virtual Keys<bool, bool>& AsBoolKeys(){ MILO_ASSERT(false, 0xAD); return *(Keys<bool, bool>*)0; }
     virtual Keys<Hmx::Quat, Hmx::Quat>& AsQuatKeys(){ MILO_ASSERT(false, 0xAF); return *(Keys<Hmx::Quat, Hmx::Quat>*)0; }
     virtual Keys<Vector3, Vector3>& AsVector3Keys(){ MILO_ASSERT(false, 0xB1); return *(Keys<Vector3, Vector3>*)0; }
@@ -140,6 +146,47 @@ public:
     }
     virtual void Copy(const PropKeys*);
     virtual int FloatAt(float, float&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
+class ColorKeys : public PropKeys, public Keys<Hmx::Color, Hmx::Color> {
+public:
+    ColorKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    virtual ~ColorKeys(){}
+    virtual Keys<Hmx::Color, Hmx::Color>& AsColorKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
+    virtual void Copy(const PropKeys*);
+    virtual int ColorAt(float, Hmx::Color&);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

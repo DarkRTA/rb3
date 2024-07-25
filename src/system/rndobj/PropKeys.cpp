@@ -295,6 +295,14 @@ float FloatKeys::SetFrame(float, float){
 
 }
 
+int ColorKeys::ColorAt(float, Hmx::Color&){
+
+}
+
+float ColorKeys::SetFrame(float, float){
+
+}
+
 int SymbolKeys::SymbolAt(float f, Symbol& sym){
     MILO_ASSERT(size(), 0x322);
     return AtFrame(f, sym);
