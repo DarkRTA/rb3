@@ -1,6 +1,7 @@
 #include "rndobj/PropKeys.h"
 #include "obj/ObjectStage.h"
 #include "obj/Utl.h"
+#include "obj/DataUtl.h"
 #include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;
@@ -499,12 +500,62 @@ void QuatKeys::SetFrame(float frame, float blend){
     mLastKeyFrameIndex = idx;
 }
 
-int Vector3Keys::Vector3At(float, Vector3&){
-
+int Vector3Keys::Vector3At(float frame, Vector3& vec){
+    MILO_ASSERT(size(), 0x2D8);
+    float ref = 0.0f;
+    const Key<Vector3>* prev;
+    const Key<Vector3>* next;
+    int idx = AtFrame(frame, prev, next, ref);
+    switch(mInterpolation){
+        case kNoException:
+            vec = prev->value;
+            break;
+        case kTransQuat:
+            Interp(prev->value, next->value, ref, vec);
+            break;
+        case kTransScale:
+            InterpVector(*this, prev, next, ref, true, vec, 0);
+            break;
+        case kDirEvent:
+            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, vec);
+            break;
+        case kHandleInterp:
+            Interp(prev->value, next->value, ref * ref * ref, vec);
+            break;
+        case kMacro:
+            ref = 1.0f - ref;
+            Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), vec);
+            break;
+    }
+    return idx;
 }
 
-void Vector3Keys::SetFrame(float, float){
-
+void Vector3Keys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kTransScale:
+            if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            Vector3 v70;
+            Hmx::Matrix3 m40;
+            Normalize(mTrans->LocalXfm().m, m40);
+            MakeEuler(m40, v70);
+            Hmx::Matrix3 m64;
+            MakeRotMatrix(v70, m64, false);
+            Vector3 v7c;
+            idx = Vector3At(frame, v7c);
+            Scale(v7c, m64, m64);
+            mTrans->SetLocalRot(m64);
+            break;
+        case kTransPos:
+            if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            Vector3 v88;
+            idx = Vector3At(frame, v88);
+            mTrans->SetLocalPos(v88.x, v88.y, v88.z);
+            break;
+        default: break;
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 int SymbolKeys::SymbolAt(float frame, Symbol& sym){
@@ -512,8 +563,45 @@ int SymbolKeys::SymbolAt(float frame, Symbol& sym){
     return AtFrame(frame, sym);
 }
 
-void SymbolKeys::SetFrame(float, float){
-    
+void SymbolKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kHandleInterp:
+            float ref = 0.0f;
+            const Key<Symbol>* prev;
+            const Key<Symbol>* next;
+            idx = AtFrame(frame, prev, next, ref);
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(prev->value);
+            sInterpMessage[1] = DataNode(next->value);
+            sInterpMessage[2] = DataNode(ref);
+            sInterpMessage[3] = DataNode(next->frame);
+            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
+            else sInterpMessage[4] = DataNode(0);
+            mTarget->Handle(sInterpMessage, true);
+            break;
+        case kMacro:
+            Symbol s;
+            idx = SymbolAt(frame, s);
+            if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
+                mTarget->SetProperty(mProp, DataNode(DataGetMacro(s)->Int(0)));
+            }
+            break;
+        default: break;
+    }
+    switch(mInterpolation){
+        case kStep:
+            // more happens here
+            break;
+        case kLinear:
+            Symbol s;
+            idx = SymbolAt(frame, s);
+            mTarget->SetProperty(mProp, DataNode(s));
+            break;
+        default: break;
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 // SetKeys
