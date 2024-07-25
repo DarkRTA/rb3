@@ -192,6 +192,51 @@ public:
     DELETE_OVERLOAD;
 };
 
+class ObjectKeys : public PropKeys, public ObjKeys {
+public:
+    ObjectKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), ObjKeys(o1) {}
+    virtual ~ObjectKeys(){}
+    virtual ObjKeys& AsObjectKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        Hmx::Object* oldOwner = ObjectStage::sOwner;
+        ObjectStage::sOwner = mOwner;
+        bs >> *this;
+        ObjectStage::sOwner = oldOwner;
+
+    }
+    virtual void Copy(const PropKeys*);
+    virtual int ObjectAt(float, Hmx::Object*&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
     SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}

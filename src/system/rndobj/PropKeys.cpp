@@ -4,6 +4,7 @@
 #include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;
+Hmx::Object* ObjectStage::sOwner = 0;
 Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
 
 void SetPropKeysRev(int rev){
@@ -300,6 +301,14 @@ int ColorKeys::ColorAt(float, Hmx::Color&){
 }
 
 float ColorKeys::SetFrame(float, float){
+
+}
+
+int ObjectKeys::ObjectAt(float, Hmx::Object*&){
+
+}
+
+float ObjectKeys::SetFrame(float, float){
 
 }
 

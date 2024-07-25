@@ -5,7 +5,11 @@
 
 class ObjectStage : public ObjPtr<Hmx::Object, ObjectDir> {
 public:
-    ObjectStage(Hmx::Object* o) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
+    ObjectStage(Hmx::Object* o = 0) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
+    // TODO: fix this for ObjectKeys::CloneKey
+    ObjectStage(const ObjectStage& stage) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, stage.Ptr()) {
+
+    }
     virtual ~ObjectStage(){}
 
     static Hmx::Object* sOwner;
