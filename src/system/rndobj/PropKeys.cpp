@@ -743,13 +743,56 @@ void FloatKeys::Copy(const PropKeys* keys){
     }
 }
 
+void ColorKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const ColorKeys* newKeys = dynamic_cast<const ColorKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void ObjectKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const ObjectKeys* newKeys = dynamic_cast<const ObjectKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void BoolKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const BoolKeys* newKeys = dynamic_cast<const BoolKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void QuatKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const QuatKeys* newKeys = dynamic_cast<const QuatKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void Vector3Keys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const Vector3Keys* newKeys = dynamic_cast<const Vector3Keys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
 void SymbolKeys::Copy(const PropKeys* keys){
     PropKeys::Copy(keys);
     clear();
     if(keys->mKeysType == mKeysType){
         const SymbolKeys* newKeys = dynamic_cast<const SymbolKeys*>(keys);
-        // retail calls some function (this vector, this vector, newKeys' vector, newKeys' vector end)
-        // not so sure that it's insert, or if it is, what its params are
         insert(begin(), newKeys->begin(), newKeys->end());
     }
 }
