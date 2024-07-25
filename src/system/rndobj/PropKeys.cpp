@@ -323,8 +323,29 @@ int FloatKeys::FloatAt(float frame, float& fl){
     return at;
 }
 
-void FloatKeys::SetFrame(float, float){
-
+void FloatKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx;
+    if(mPropExceptionID == kHandleInterp){
+        float ref = 0.0f;
+        const Key<float>* prev;
+        const Key<float>* next;
+        idx = AtFrame(frame, prev, next, ref);
+        sInterpMessage.SetType(mInterpHandler);
+        sInterpMessage[0] = DataNode(prev->value);
+        sInterpMessage[1] = DataNode(next->value);
+        sInterpMessage[2] = DataNode(ref);
+        sInterpMessage[3] = DataNode(next->frame);
+        if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
+        else sInterpMessage[4] = DataNode(0);
+        mTarget->Handle(sInterpMessage, true);
+    }
+    else {
+        float val;
+        idx = FloatAt(frame, val);
+        mTarget->SetProperty(mProp, DataNode(val));
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 int ColorKeys::ColorAt(float frame, Hmx::Color& color){
@@ -392,7 +413,7 @@ void ObjectKeys::SetFrame(float frame, float blend){
         default:
             Hmx::Object* obj;
             idx = ObjectAt(frame, obj);
-            if(mInterpolation & 7 || mLastKeyFrameIndex != idx){
+            if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
                 mTarget->SetProperty(mProp, DataNode(obj));
             }
             break;
@@ -411,7 +432,7 @@ void BoolKeys::SetFrame(float frame, float blend){
     if(mPropExceptionID == kNoException){
         bool b;
         idx = BoolAt(frame, b);
-        if(mInterpolation & 7 || mLastKeyFrameIndex != idx){
+        if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
             mTarget->SetProperty(mProp, DataNode(b));
         }
     }
@@ -428,12 +449,54 @@ void BoolKeys::SetFrame(float frame, float blend){
     mLastKeyFrameIndex = idx;
 }
 
-int QuatKeys::QuatAt(float, Hmx::Quat&){
-
+int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
+    MILO_ASSERT(size(), 0x281);
+    float ref = 0.0f;
+    const Key<Hmx::Quat>* prev;
+    const Key<Hmx::Quat>* next;
+    int at = AtFrame(frame, prev, next, ref);
+    if(mInterpolation == kSpline) QuatSpline(*this, prev, next, ref, quat);
+    else switch(mInterpolation){
+        case kStep:
+            quat = prev->value;
+            break;
+        case kLinear:
+            FastInterp(prev->value, next->value, ref, quat);
+            break;
+        case kSlerp:
+            Interp(prev->value, next->value, ref, quat);
+            break;
+        case kInterp5:
+            FastInterp(prev->value, next->value, ref * ref * ref, quat);
+            break;
+        case kInterp6:
+            FastInterp(prev->value, next->value, -(ref * ref * ref - 1.0f), quat);
+            break;
+    }
+    return at;
 }
 
-void QuatKeys::SetFrame(float, float){
-
+void QuatKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    if(mPropExceptionID == kTransQuat){
+        if(mTrans != mTarget){
+            mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+        }
+        Vector3 v48;
+        MakeScale(mTrans->LocalXfm().m, v48);
+        if(v48.x){ // FIXME: this condition is wrong
+            mVec = v48;
+        }
+        else v48 = mVec;
+        Hmx::Quat quat;
+        Hmx::Matrix3 mtx;
+        idx = QuatAt(frame, quat);
+        MakeRotMatrix(quat, mtx);
+        Scale(v48, mtx, mtx);
+        mTrans->SetLocalRot(mtx);
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 int Vector3Keys::Vector3At(float, Vector3&){
