@@ -10,36 +10,6 @@
 #include "math/Key.h"
 #include "obj/Msg.h"
 
-enum AnimKeysType {
-    kFloat,
-    kColor,
-    kObject,
-    kBool,
-    kQuat,
-    kVector3,
-    kSymbol
-};
-
-enum Interpolation {
-    kStep,
-    kLinear,
-    kSpline,
-    kSlerp,
-    kHermite,
-    kInterp5,
-    kInterp6
-};
-
-enum ExceptionID {
-    kNoException,
-    kTransQuat,
-    kTransScale,
-    kTransPos,
-    kDirEvent,
-    kHandleInterp,
-    kMacro
-};
-
 class ObjKeys : public Keys<ObjectStage, Hmx::Object*> {
 public:
     ObjKeys(Hmx::Object* o) : mOwner(o) {}
@@ -56,6 +26,36 @@ public:
 
 class PropKeys : public ObjRef {
 public:
+    enum AnimKeysType {
+        kFloat,
+        kColor,
+        kObject,
+        kBool,
+        kQuat,
+        kVector3,
+        kSymbol
+    };
+
+    enum Interpolation {
+        kStep,
+        kLinear,
+        kSpline,
+        kSlerp,
+        kHermite,
+        kInterp5,
+        kInterp6
+    };
+
+    enum ExceptionID {
+        kNoException,
+        kTransQuat,
+        kTransScale,
+        kTransPos,
+        kDirEvent,
+        kHandleInterp,
+        kMacro
+    };
+
     PropKeys(Hmx::Object*, Hmx::Object*);
     virtual ~PropKeys();
     virtual Hmx::Object* RefOwner(){ return 0; }
@@ -122,7 +122,7 @@ float CalcSpline(float, float*); // putting this here for now, maybe it's better
 
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
-    FloatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    FloatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kFloat; }
     virtual ~FloatKeys(){}
     virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -163,7 +163,7 @@ public:
 
 class ColorKeys : public PropKeys, public Keys<Hmx::Color, Hmx::Color> {
 public:
-    ColorKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    ColorKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kColor; }
     virtual ~ColorKeys(){}
     virtual Keys<Hmx::Color, Hmx::Color>& AsColorKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -204,7 +204,9 @@ public:
 
 class ObjectKeys : public PropKeys, public ObjKeys {
 public:
-    ObjectKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), ObjKeys(o1) {}
+    ObjectKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), ObjKeys(o1) {
+        mKeysType = kObject; mInterpolation = kStep;
+    }
     virtual ~ObjectKeys(){}
     virtual ObjKeys& AsObjectKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -249,7 +251,9 @@ public:
 
 class BoolKeys : public PropKeys, public Keys<bool, bool> {
 public:
-    BoolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    BoolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {
+        mKeysType = kBool; mInterpolation = kStep;
+    }
     virtual ~BoolKeys(){}
     virtual Keys<bool, bool>& AsBoolKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -290,7 +294,7 @@ public:
 
 class QuatKeys : public PropKeys, public Keys<Hmx::Quat, Hmx::Quat> {
 public:
-    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), mVec(Vector3::sZero) {}
+    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), mVec(Vector3::sZero) { mKeysType = kQuat; }
     virtual ~QuatKeys(){}
     virtual Keys<Hmx::Quat, Hmx::Quat>& AsQuatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -333,7 +337,7 @@ public:
 
 class Vector3Keys : public PropKeys, public Keys<Vector3, Vector3> {
 public:
-    Vector3Keys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    Vector3Keys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kVector3; }
     virtual ~Vector3Keys(){}
     virtual Keys<Vector3, Vector3>& AsVector3Keys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -374,7 +378,9 @@ public:
 
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
-    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), unk28(-1), unk2c(-1), unk30(0) {}
+    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {
+        mKeysType = kSymbol; mInterpolation = kStep; unk28 = -1; unk2c = -1; unk30 = 0;
+    }
     virtual ~SymbolKeys(){}
     virtual Keys<Symbol, Symbol>& AsSymbolKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
