@@ -25,7 +25,9 @@ enum Interpolation {
     kLinear,
     kSpline,
     kSlerp,
-    kHermite
+    kHermite,
+    kInterp5,
+    kInterp6
 };
 
 enum ExceptionID {

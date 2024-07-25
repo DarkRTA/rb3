@@ -195,4 +195,8 @@ inline void Interp(float f1, float f2, float f3, float& fres){
     fres = f3 * (f2 - f1) + f1;
 }
 
+inline void Interp(bool b1, bool b2, float f, bool& bres){
+    bres = f < 1.0f ? b1 : b2;
+}
+
 #endif

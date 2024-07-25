@@ -149,8 +149,8 @@ void PropKeys::ReSort(){
 }
 
 void Interp(const ObjectStage& stage1, const ObjectStage& stage2, float f, Hmx::Object*& obj){
-    if(f < 1.0f) &stage2 = &stage1;
-    obj = stage2.Ptr();
+    const ObjectStage& out = f < 1.0f ? stage1 : stage2;
+    obj = out.Ptr();
 }
 
 SAVE_OBJ(PropKeys, 0xCF);
@@ -288,33 +288,90 @@ void PropKeys::SetInterpHandler(Symbol sym){
 
 // WhateverAts, then SetFrames
 
-int FloatKeys::FloatAt(float, float&){
-
+int FloatKeys::FloatAt(float frame, float& fl){
+    MILO_ASSERT(size(), 0x188);
+    fl = 0.0f;
+    float ref = 0.0f;
+    const Key<float>* prev;
+    const Key<float>* next;
+    int at = AtFrame(frame, prev, next, ref);
+    switch(mInterpolation){
+        case kStep:
+            fl = prev->value;
+            break;
+        case kLinear:
+            Interp(prev->value, next->value, ref, fl);
+            break;
+        case kSpline:
+            if(size() < 3 || prev == next){
+                Interp(prev->value, next->value, ref, fl);
+            }
+            else {
+                // more stuff happens here
+            }
+            break;
+        case kHermite:
+            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, fl);
+            break;
+        case kInterp5:
+            Interp(prev->value, next->value, ref * ref * ref, fl);
+            break;
+        case kInterp6:
+            Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), fl);
+            break;
+    }
+    return at;
 }
 
 float FloatKeys::SetFrame(float, float){
 
 }
 
-int ColorKeys::ColorAt(float, Hmx::Color&){
-
+int ColorKeys::ColorAt(float frame, Hmx::Color& color){
+    MILO_ASSERT(size(), 0x1E8);
+    color.Set(0,0,0);
+    int at = 0;
+    const Key<Hmx::Color>* prev;
+    const Key<Hmx::Color>* next;
+    float ref;
+    switch(mInterpolation){
+        case kStep:
+            at = AtFrame(frame, prev, next, ref);
+            color = prev->value;
+            break;
+        case kLinear:
+            at = AtFrame(frame, color);
+            break;
+        case kInterp5:
+            at = AtFrame(frame, prev, next, ref);
+            if(prev) Interp(prev->value, next->value, ref * ref * ref, color);
+            break;
+        case kInterp6:
+            at = AtFrame(frame, prev, next, ref);
+            ref = 1.0f - ref;
+            if(prev) Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), color);
+            break;
+        default: break;
+    }
+    return at;
 }
 
 float ColorKeys::SetFrame(float, float){
 
 }
 
-int ObjectKeys::ObjectAt(float f, Hmx::Object*& obj){
+int ObjectKeys::ObjectAt(float frame, Hmx::Object*& obj){
     MILO_ASSERT(size(), 0x22A);
-    return AtFrame(f, obj);
+    return AtFrame(frame, obj);
 }
 
 float ObjectKeys::SetFrame(float, float){
 
 }
 
-int BoolKeys::BoolAt(float, bool&){
-
+int BoolKeys::BoolAt(float frame, bool& b){
+    MILO_ASSERT(size(), 0x25C);
+    return AtFrame(frame, b);
 }
 
 float BoolKeys::SetFrame(float, float){
@@ -337,9 +394,9 @@ float Vector3Keys::SetFrame(float, float){
 
 }
 
-int SymbolKeys::SymbolAt(float f, Symbol& sym){
+int SymbolKeys::SymbolAt(float frame, Symbol& sym){
     MILO_ASSERT(size(), 0x322);
-    return AtFrame(f, sym);
+    return AtFrame(frame, sym);
 }
 
 float SymbolKeys::SetFrame(float, float){
