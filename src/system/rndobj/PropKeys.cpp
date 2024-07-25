@@ -624,6 +624,16 @@ int ColorKeys::SetKey(float frame){
     }
 }
 
+int ObjectKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = ObjKeys::Add(0, frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
 int SymbolKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {

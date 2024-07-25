@@ -44,6 +44,14 @@ class ObjKeys : public Keys<ObjectStage, Hmx::Object*> {
 public:
     ObjKeys(Hmx::Object* o) : mOwner(o) {}
     Hmx::Object* mOwner; // 0x8
+
+    int Add(Hmx::Object* obj, float f, bool b){
+        Hmx::Object* oldOwner = ObjectStage::sOwner;
+        ObjectStage::sOwner = mOwner;
+        int add = Keys<ObjectStage, Hmx::Object*>::Add(ObjectStage(obj), f, b);
+        ObjectStage::sOwner = oldOwner;
+        return add;
+    }
 };
 
 class PropKeys : public ObjRef {
@@ -210,7 +218,7 @@ public:
     virtual void CloneKey(int idx){
         if(!mProp || !mTarget) return;
         if(idx >= 0 && idx < size()){
-            Add((*this)[idx].value, (*this)[idx].frame, false);
+            ObjKeys::Add((*this)[idx].value.Ptr(), (*this)[idx].frame, false);
         }
     }
     virtual int SetKey(float);
