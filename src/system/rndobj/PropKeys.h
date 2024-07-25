@@ -237,6 +237,129 @@ public:
     DELETE_OVERLOAD;
 };
 
+class BoolKeys : public PropKeys, public Keys<bool, bool> {
+public:
+    BoolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    virtual ~BoolKeys(){}
+    virtual Keys<bool, bool>& AsBoolKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
+    virtual void Copy(const PropKeys*);
+    virtual int BoolAt(float, bool&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
+class QuatKeys : public PropKeys, public Keys<Hmx::Quat, Hmx::Quat> {
+public:
+    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    virtual ~QuatKeys(){}
+    virtual Keys<Hmx::Quat, Hmx::Quat>& AsQuatKeys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
+    virtual void Copy(const PropKeys*);
+    virtual int QuatAt(float, Hmx::Quat&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
+class Vector3Keys : public PropKeys, public Keys<Vector3, Vector3> {
+public:
+    Vector3Keys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    virtual ~Vector3Keys(){}
+    virtual Keys<Vector3, Vector3>& AsVector3Keys(){ if(this) return *this; }
+    virtual float StartFrame(){ return FirstFrame(); }
+    virtual float EndFrame(){ return LastFrame(); }
+    virtual bool FrameFromIndex(int idx, float& f){
+        if(idx >= size()) return false;
+        else f = (*this)[idx].frame;
+        return true;
+    }
+    virtual float SetFrame(float f1, float f2);
+    virtual void CloneKey(int idx){
+        if(!mProp || !mTarget) return;
+        if(idx >= 0 && idx < size()){
+            Add((*this)[idx].value, (*this)[idx].frame, false);
+        }
+    }
+    virtual int SetKey(float);
+    virtual int RemoveKey(int idx){
+        Remove(idx);
+        return size();
+    }
+    virtual int NumKeys(){ return size(); }
+    virtual void SetToCurrentVal(int);
+    virtual void Save(BinStream& bs){
+        PropKeys::Save(bs);
+        bs << *this;
+    }
+    virtual void Load(BinStream& bs){
+        PropKeys::Load(bs);
+        bs >> *this;
+    }
+    virtual void Copy(const PropKeys*);
+    virtual int Vector3At(float, Vector3&);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
     SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}

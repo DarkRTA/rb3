@@ -304,11 +304,36 @@ float ColorKeys::SetFrame(float, float){
 
 }
 
-int ObjectKeys::ObjectAt(float, Hmx::Object*&){
-
+int ObjectKeys::ObjectAt(float f, Hmx::Object*& obj){
+    MILO_ASSERT(size(), 0x22A);
+    return AtFrame(f, obj);
 }
 
 float ObjectKeys::SetFrame(float, float){
+
+}
+
+int BoolKeys::BoolAt(float, bool&){
+
+}
+
+float BoolKeys::SetFrame(float, float){
+
+}
+
+int QuatKeys::QuatAt(float, Hmx::Quat&){
+
+}
+
+float QuatKeys::SetFrame(float, float){
+
+}
+
+int Vector3Keys::Vector3At(float, Vector3&){
+
+}
+
+float Vector3Keys::SetFrame(float, float){
 
 }
 
