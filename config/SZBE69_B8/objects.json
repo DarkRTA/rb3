@@ -26,7 +26,7 @@
             "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
-            "band3/meta_band/Accomplishment.cpp": "NonMatching",
+            "band3/meta_band/Accomplishment.cpp": "Matching",
             "band3/meta_band/AccomplishmentOneShot.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "Matching",
             "band3/meta_band/AccomplishmentConditional.cpp": "NonMatching",
@@ -35,6 +35,8 @@
             "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSetlist.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSongConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentTrainerConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp": "NonMatching",
             "band3/meta_band/Asset.cpp": "Matching",
             "band3/meta_band/AssetOffer.cpp": "LinkIssues",
             "band3/meta_band/AssetStore.cpp": "Matching",

@@ -24,9 +24,9 @@ class AccomplishmentSongConditional : public AccomplishmentConditional {
     void CheckFullComboCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const;
     void CheckConditionsForSong(SongStatusMgr*, Symbol) const;
     void UpdateIncrementalEntryName(UILabel*, Symbol);
-    void InqProgressValues(BandProfile*, int&, int&);
-    void IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
-    void ShowBestAfterEarn() const;
+    bool InqProgressValues(BandProfile*, int&, int&);
+    bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
+    bool ShowBestAfterEarn() const;
     void InitializeTrackerDesc(TrackerDesc&) const;
 };
 
