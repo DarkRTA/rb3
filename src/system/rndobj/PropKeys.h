@@ -282,7 +282,7 @@ public:
 
 class QuatKeys : public PropKeys, public Keys<Hmx::Quat, Hmx::Quat> {
 public:
-    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), mVec(Vector3::sZero) {}
     virtual ~QuatKeys(){}
     virtual Keys<Hmx::Quat, Hmx::Quat>& AsQuatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -319,6 +319,8 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+
+    Vector3 mVec; // 0x28
 };
 
 class Vector3Keys : public PropKeys, public Keys<Vector3, Vector3> {
@@ -364,7 +366,7 @@ public:
 
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
-    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {}
+    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), unk28(-1), unk2c(-1), unk30(0) {}
     virtual ~SymbolKeys(){}
     virtual Keys<Symbol, Symbol>& AsSymbolKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -401,6 +403,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+
+    int unk28; // 0x28
+    int unk2c; // 0x2c
+    bool unk30; // 0x30
 };
 
 #endif

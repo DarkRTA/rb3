@@ -356,8 +356,12 @@ int ColorKeys::ColorAt(float frame, Hmx::Color& color){
     return at;
 }
 
-void ColorKeys::SetFrame(float, float){
-
+void ColorKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    Hmx::Color col;
+    int idx = ColorAt(frame, col);
+    mTarget->SetProperty(mProp, DataNode(col.Pack()));
+    mLastKeyFrameIndex = idx;
 }
 
 int ObjectKeys::ObjectAt(float frame, Hmx::Object*& obj){
@@ -365,8 +369,35 @@ int ObjectKeys::ObjectAt(float frame, Hmx::Object*& obj){
     return AtFrame(frame, obj);
 }
 
-void ObjectKeys::SetFrame(float, float){
-
+void ObjectKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kDirEvent:
+            break;
+        case kHandleInterp:
+            float ref = 0.0f;
+            const Key<ObjectStage>* prev;
+            const Key<ObjectStage>* next;
+            idx = AtFrame(frame, prev, next, ref);
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(prev->value.Ptr());
+            sInterpMessage[1] = DataNode(next->value.Ptr());
+            sInterpMessage[2] = DataNode(ref);
+            sInterpMessage[3] = DataNode(next->frame);
+            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value.Ptr());
+            else sInterpMessage[4] = DataNode(0);
+            mTarget->Handle(sInterpMessage, true);
+            break;
+        default:
+            Hmx::Object* obj;
+            idx = ObjectAt(frame, obj);
+            if(mInterpolation & 7 || mLastKeyFrameIndex != idx){
+                mTarget->SetProperty(mProp, DataNode(obj));
+            }
+            break;
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 int BoolKeys::BoolAt(float frame, bool& b){
@@ -376,25 +407,25 @@ int BoolKeys::BoolAt(float frame, bool& b){
 
 void BoolKeys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
-    int num = 0;
+    int idx = 0;
     if(mPropExceptionID == kNoException){
         bool b;
-        num = BoolAt(frame, b);
-        if(mInterpolation & 7 || mLastKeyFrameIndex != num){
+        idx = BoolAt(frame, b);
+        if(mInterpolation & 7 || mLastKeyFrameIndex != idx){
             mTarget->SetProperty(mProp, DataNode(b));
         }
     }
     else if(mPropExceptionID == kHandleInterp) {
         bool b;
-        num = BoolAt(frame, b);
-        if(mLastKeyFrameIndex != num){
+        idx = BoolAt(frame, b);
+        if(mLastKeyFrameIndex != idx){
             sInterpMessage.SetType(mInterpHandler);
             sInterpMessage[0] = DataNode(b);
             sInterpMessage[1] = DataNode(frame);
             mTarget->Handle(sInterpMessage, true);
         }
     }
-    mLastKeyFrameIndex = num;
+    mLastKeyFrameIndex = idx;
 }
 
 int QuatKeys::QuatAt(float, Hmx::Quat&){
