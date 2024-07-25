@@ -602,8 +602,6 @@ void SymbolKeys::SetFrame(float frame, float blend){
     mLastKeyFrameIndex = idx;
 }
 
-// SetKeys
-
 int FloatKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
@@ -629,6 +627,36 @@ int ObjectKeys::SetKey(float frame){
     else {
         int retVal = PropKeys::SetKey(frame);
         if(retVal < 0) retVal = ObjKeys::Add(0, frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int BoolKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(true, frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int QuatKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Hmx::Quat(), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int Vector3Keys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Vector3(), frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
