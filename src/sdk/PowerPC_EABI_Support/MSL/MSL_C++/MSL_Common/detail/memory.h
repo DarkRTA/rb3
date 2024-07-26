@@ -2,6 +2,7 @@
 #define _MSL_DETAILS_MEMORY
 
 #include <MSL_C++/typeinfo>
+#include "MSL_C++/MSL_Common/detail/pair.h"
 
 namespace std {
 
@@ -14,15 +15,6 @@ namespace std {
         template <typename T>
         struct default_delete<T[]> {
             void operator()(T ptr[]) { delete[] ptr; }
-        };
-
-        template <typename T, typename Deleter>
-        class deleter_wrapper : public Deleter {
-        public:
-            deleter_wrapper(T *ptr) { this->ptr = ptr; }
-            void dispose() { this->operator()(ptr); }
-
-            T *ptr;
         };
     }
 
@@ -60,17 +52,17 @@ namespace std {
 
                 void *get_deleter(const std::type_info &info) {
                     if (info == typeid(Deleter)) {
-                        return m_Ptr.ptr;
+                        return &m_Ptr.second();
                     }
 
                     return nullptr;
                 }
 
             protected:
-                void dispose() { m_Ptr.dispose(); }
+                void dispose() { m_Ptr.second()(m_Ptr.first()); }
 
             private:
-                std::detail::deleter_wrapper<T, Deleter> m_Ptr;
+                Metrowerks::compressed_pair<T *, Deleter> m_Ptr;
             };
 
         }
