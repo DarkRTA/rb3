@@ -104,7 +104,7 @@ inline _OutputIter __ucopy_ptrs(_InputIter __first, _InputIter __last, _OutputIt
                                 const __true_type& /*TrivialUCopy*/) {
   // we know they all pointers, so this cast is OK
   //  return (_OutputIter)__copy_trivial(&(*__first), &(*__last), &(*__result));
-  return __ucopy(__first, __last, __result, input_iterator_tag(), (ptrdiff_t*)0);
+  return (_OutputIter)__ucopy_trivial(__first, __last, __result);
 }
 
 template <class _InputIter, class _OutputIter>
