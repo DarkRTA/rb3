@@ -5,7 +5,7 @@
 
 class ObjectStage : public ObjPtr<Hmx::Object, ObjectDir> {
 public:
-    ObjectStage(Hmx::Object* o) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
+    ObjectStage(Hmx::Object* o = 0) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
     virtual ~ObjectStage(){}
 
     static Hmx::Object* sOwner;

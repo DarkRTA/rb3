@@ -27,6 +27,8 @@ public:
     virtual void Print();
 
     void RemoveKeys();
+    PropKeys* GetKeys(const Hmx::Object*, DataArray*);
+    PropKeys* AddKeys(Hmx::Object*, DataArray*, PropKeys::AnimKeysType);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -35,10 +37,10 @@ public:
         REGISTER_OBJ_FACTORY(RndPropAnim)
     }
     
-    std::vector<PropKeys*> mPropKeys;
-    float mLastFrame;
-    bool mInSetFrame;
-    bool mLoop;
+    std::vector<PropKeys*> mPropKeys; // 0x10
+    float mLastFrame; // 0x18
+    bool mInSetFrame; // 0x1c
+    bool mLoop; // 0x1d
 };
 
 #endif

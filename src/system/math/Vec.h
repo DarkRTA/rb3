@@ -86,6 +86,11 @@ public:
     // bool operator!=(const Vector3 &) const;
 };
 
+inline BinStream& operator<<(BinStream& bs, const Vector3& vec){
+    bs << vec.x << vec.y << vec.z;
+    return bs;
+}
+
 inline BinStream& operator>>(BinStream& bs, Vector3& vec){
     bs >> vec.x >> vec.y >> vec.z;
     return bs;

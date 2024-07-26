@@ -110,6 +110,11 @@ public:
         SetDirty();
     }
 
+    void SetLocalRot(const Hmx::Matrix3& mtx){
+        mLocalXfm.m = mtx;
+        SetDirty();
+    }
+
     // TODO: at some point we need to replace calls to this SetLocalPos
     // to the one that takes in a Vector3& - we're using this one
     // because for whatever reason the Vector3& one doesn't inline nicely
