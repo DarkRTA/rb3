@@ -1,0 +1,6 @@
+#ifndef _MSL_UTILITY_H
+#define _MSL_UTILITY_H
+
+#include "MSL_C++/MSL_Common/detail/type_traits/intrinsics.h"
+
+#endif

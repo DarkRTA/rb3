@@ -31,3 +31,12 @@
 #define _STLP_NATIVE_C_INCLUDE_PATH            sdk/PowerPC_EABI_Support/MSL/MSL_C
 #define _STLP_NATIVE_CPP_C_INCLUDE_PATH        sdk/PowerPC_EABI_Support/MSL/MSL_C++
 #define _STLP_NATIVE_CPP_RUNTIME_INCLUDE_PATH  sdk/PowerPC_EABI_Support/MSL/MSL_C++
+
+// Needs investigation before enabling for sure
+// #include <sdk/PowerPC_EABI_Support/MSL/MSL_C++/msl_utility>
+// #define _STLP_HAS_TRIVIAL_CONSTRUCTOR(T) Metrowerks::has_trivial_default_ctor<T>::value
+// #define _STLP_HAS_TRIVIAL_COPY(T) Metrowerks::has_trivial_copy_ctor<T>::value
+// #define _STLP_HAS_TRIVIAL_ASSIGN(T) Metrowerks::has_trivial_assignment<T>::value
+// #define _STLP_HAS_TRIVIAL_DESTRUCTOR(T) Metrowerks::has_trivial_dtor<T>::value
+// #define _STLP_IS_POD(T) Metrowerks::is_POD<T>::value
+// #define _STLP_HAS_TYPE_TRAITS_INTRINSICS
