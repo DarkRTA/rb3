@@ -2,7 +2,8 @@
 #define OBJ_OBJLIST_H
 #include <list>
 #include "utl/BinStream.h"
-#include "obj/Object.h"
+
+namespace Hmx { class Object; }
 
 template <class T> class ObjList : public std::list<T> {
 public:

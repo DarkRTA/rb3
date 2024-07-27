@@ -2,8 +2,9 @@
 #define OBJ_OBJVECTOR_H
 #include "types.h"
 #include <vector>
-#include "obj/Object.h"
 #include "utl/BinStream.h"
+
+namespace Hmx { class Object; }
 
 template <class T1, typename T2 = u16> class ObjVector : public std::vector<T1, T2> {
 public:

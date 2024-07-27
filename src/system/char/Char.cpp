@@ -8,7 +8,7 @@ void CharInit() {
     CharBonesObject::Init();
     CharBoneOffset::Init();
 
-    PreloadSharedSubdirs("char");       
+    PreloadSharedSubdirs("char");
     CharBoneDir::Init();
     CharUtlInit();
     TheDebug.AddExitCallback(CharTerminate);
