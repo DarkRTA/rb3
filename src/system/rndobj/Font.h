@@ -1,9 +1,11 @@
 #ifndef RNDOBJ_FONT_H
 #define RNDOBJ_FONT_H
 #include "obj/Object.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "utl/MemMgr.h"
-#include <map>
+#include <string.h>
+#include <map>  
 
 class RndMat;
 
@@ -15,14 +17,14 @@ struct MatChar {
 class RndFont : public Hmx::Object {
 public:
 
-    class CharInfo {
+    struct CharInfo {
         float unk0;
         float unk4;
         float charWidth;
         float unkc;
     };
 
-    class KernInfo {
+    struct KernInfo { public:
         short unk0;
         short unk2;
         int unk4;
@@ -40,15 +42,26 @@ public:
     virtual void Load(BinStream&);
     virtual void Print();
 
+    void GetTexCoords(unsigned short, Vector2&, Vector2&) const;
     void GetKerning(std::vector<KernInfo>&) const;
     void SetKerning(const std::vector<KernInfo>&);
     void SetBaseKerning(float);
+    void SetCellSize(float, float);
+    void SetBitmapSize(const Vector2&, unsigned int, unsigned int);
+    RndTex* ValidTexture() const;
+    void UpdateChars();
+    void BleedTest();
+    int NonTransparentColumn(RndBitmap&, int, int, int, int);
+    bool HasChar(char c) const { // fak
 
-    NEW_OVERLOAD;
+    } 
+
+    NEW_OVERLOAD
     NEW_OBJ(RndFont)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndFont)
     }
+    DECLARE_REVS
 
     ObjPtr<RndMat, ObjectDir> mMat; // 0x1c
     ObjOwnerPtr<RndFont, ObjectDir> mTextureOwner; // 0x28
@@ -63,5 +76,24 @@ public:
     bool mPacked; // 0x74
     ObjPtr<RndFont, ObjectDir> unk78; // 0x78
 }; 
+
+class BitmapLocker {
+public:
+    BitmapLocker(RndFont* f) {
+        RndBitmap bmp;
+        RndTex* t = f->ValidTexture();
+        if (t) {
+            const char* c = t->File().c_str();
+            int len = strlen(c);
+            if (len >= 4 && UsingCD() && stricmp(c + len - 4, ".bmp")) {
+                t->LockBitmap(bmp, 3);
+            }
+            bmp.LoadBmp("", false, false);
+        }
+    }
+};
+
+BinStream& operator>>(BinStream&, MatChar&);
+BinStream& operator>>(BinStream&, RndFont::KernInfo&);
 
 #endif // RNDOBJ_FONT_H

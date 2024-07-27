@@ -66,6 +66,8 @@ public:
     virtual void ClearInterestFilterFlags();
 
     void UnhookShadow();
+    static void Init();
+    static void Terminate();
 
     ObjVector<Lod> mLods; // 0x18c
     int mLastLod;

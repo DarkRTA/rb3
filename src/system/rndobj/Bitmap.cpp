@@ -191,7 +191,7 @@ bool RndBitmap::SamePixelFormat(const RndBitmap& bm) const {
     } else return true;
 }
 
-bool RndBitmap::ColumnNonTransparent(int x, int y, int h, int* d) {
+int RndBitmap::ColumnNonTransparent(int x, int y, int h, int* d) {
     for (int i; i < h; i++) {
         u8 r, g, b, a;
         PixelColor(x, y, r, g, b, a);

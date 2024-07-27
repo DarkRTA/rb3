@@ -23,9 +23,13 @@ public:
 
     void ApplyToLocal();
 
-    DECLARE_REVS;
+    DECLARE_REVS
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharBoneOffset)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBoneOffset)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mDest; // 0x10
     Vector3 mOffset; // 0x1c
