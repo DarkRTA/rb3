@@ -1,0 +1,6 @@
+#ifndef _MSL_UTILITY_H
+#define _MSL_UTILITY_H
+
+#include "MSL_C++/Metrowerks/type_traits.h"
+
+#endif

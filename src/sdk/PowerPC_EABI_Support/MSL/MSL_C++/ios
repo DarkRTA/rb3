@@ -1,0 +1,15 @@
+#ifndef _STD_IOS
+#define _STD_IOS
+
+#include <MSL_C++/iosfwd>
+
+namespace std {
+
+    template <class State>
+    class fpos;
+
+    typedef long streamoff;
+
+}
+
+#endif

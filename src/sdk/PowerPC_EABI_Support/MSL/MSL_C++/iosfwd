@@ -1,0 +1,113 @@
+#ifndef _STD_IOSFWD
+#define _STD_IOSFWD
+
+#include <MSL_C++/cwchar>
+
+namespace std {
+
+    typedef mbstate_t __char_state_type;
+    typedef mbstate_t __wchar_state_type;
+
+    template <class CharT>
+    struct char_traits;
+    template <>
+    struct char_traits<char>;
+    template <>
+    struct char_traits<wchar_t>;
+
+    template <class T>
+    class allocator;
+
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_ios;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_streambuf;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_istream;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_ostream;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_iostream;
+
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_filebuf;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_ifstream;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_ofstream;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class basic_fstream;
+
+    template <
+        class CharT,
+        class Traits = char_traits<CharT>,
+        class Allocator = allocator<CharT> >
+    class basic_stringbuf;
+    template <
+        class CharT,
+        class Traits = char_traits<CharT>,
+        class Allocator = allocator<CharT> >
+    class basic_istringstream;
+    template <
+        class CharT,
+        class Traits = char_traits<CharT>,
+        class Allocator = allocator<CharT> >
+    class basic_ostringstream;
+    template <
+        class CharT,
+        class Traits = char_traits<CharT>,
+        class Allocator = allocator<CharT> >
+    class basic_stringstream;
+
+    template <class CharT, class Traits = char_traits<CharT> >
+    class istreambuf_iterator;
+    template <class CharT, class Traits = char_traits<CharT> >
+    class ostreambuf_iterator;
+
+    typedef basic_ios<char> ios;
+    typedef basic_ios<wchar_t> wios;
+
+    typedef basic_streambuf<char> streambuf;
+    typedef basic_istream<char> istream;
+    typedef basic_ostream<char> ostream;
+    typedef basic_iostream<char> iostream;
+
+    typedef basic_stringbuf<char> stringbuf;
+    typedef basic_istringstream<char> istringstream;
+    typedef basic_ostringstream<char> ostringstream;
+    typedef basic_stringstream<char> stringstream;
+
+    typedef basic_filebuf<char> filebuf;
+    typedef basic_ifstream<char> ifstream;
+    typedef basic_ofstream<char> ofstream;
+    typedef basic_fstream<char> fstream;
+
+    typedef basic_streambuf<wchar_t> wstreambuf;
+    typedef basic_istream<wchar_t> wistream;
+    typedef basic_ostream<wchar_t> wostream;
+    typedef basic_iostream<wchar_t> wiostream;
+
+    typedef basic_stringbuf<wchar_t> wstringbuf;
+    typedef basic_istringstream<wchar_t> wistringstream;
+    typedef basic_ostringstream<wchar_t> wostringstream;
+    typedef basic_stringstream<wchar_t> wstringstream;
+
+    typedef basic_filebuf<wchar_t> wfilebuf;
+    typedef basic_ifstream<wchar_t> wifstream;
+    typedef basic_ofstream<wchar_t> wofstream;
+    typedef basic_fstream<wchar_t> wfstream;
+
+    template <class State>
+    class fpos;
+
+    typedef fpos<__char_state_type /*char_traits<char>::state_type*/> streampos;
+    typedef fpos<__wchar_state_type /*char_traits<wchar_t>::state_type*/> wstreampos;
+
+    class strstreambuf;
+    class istrstream;
+    class ostrstream;
+    class strstream;
+
+}
+
+#endif

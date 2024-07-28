@@ -1,27 +1,25 @@
-#ifndef _NEW
-#define _NEW
+#ifndef _STD_NEW
+#define _STD_NEW
 
-#include <cstddef>
-#include <exception>
+#include <MSL_C++/cstddef>
+#include <MSL_C++/exception>
 
 namespace std {
+
     class bad_alloc : public exception {
     public:
-        virtual ~bad_alloc() {
-        }
-        virtual const char *what() const {
-            return "bad_alloc";
-        }
+        virtual ~bad_alloc() {}
+        virtual const char *what() const { return "bad_alloc"; }
     };
 
     struct nothrow_t {
-        explicit nothrow_t() {
-        }
+        explicit nothrow_t() {}
     };
     extern const nothrow_t nothrow;
 
     typedef void (*new_handler)();
     new_handler set_new_handler(new_handler new_p) throw();
+
 }
 
 void *operator new(std::size_t size);
@@ -38,10 +36,8 @@ inline void *operator new[](std::size_t size, void *place) throw() {
     return place;
 }
 
-inline void operator delete(void *ptr, void *place) throw() {
-}
+inline void operator delete(void *ptr, void *place) throw() {}
 
-inline void operator delete[](void *ptr, void *place) throw() {
-}
+inline void operator delete[](void *ptr, void *place) throw() {}
 
 #endif

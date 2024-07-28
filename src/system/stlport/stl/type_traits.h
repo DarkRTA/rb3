@@ -182,12 +182,19 @@ struct __type_traits {
           - Members you add will be treated like regular members unless
 
             you add the appropriate support in the compiler. */
-
+#  if !defined (_STLP_HAS_TYPE_TRAITS_INTRINSICS)
    typedef __false_type    has_trivial_default_constructor;
    typedef __false_type    has_trivial_copy_constructor;
    typedef __false_type    has_trivial_assignment_operator;
    typedef __false_type    has_trivial_destructor;
    typedef __false_type    is_POD_type;
+#  else
+   typedef typename __bool2type<_STLP_HAS_TRIVIAL_CONSTRUCTOR(_Tp)>::_Ret has_trivial_default_constructor;
+   typedef typename __bool2type<_STLP_HAS_TRIVIAL_COPY(_Tp)>::_Ret has_trivial_copy_constructor;
+   typedef typename __bool2type<_STLP_HAS_TRIVIAL_ASSIGN(_Tp)>::_Ret has_trivial_assignment_operator;
+   typedef typename __bool2type<_STLP_HAS_TRIVIAL_DESTRUCTOR(_Tp)>::_Ret has_trivial_destructor;
+   typedef typename __bool2type<_STLP_IS_POD(_Tp)>::_Ret is_POD_type;
+#  endif
 };
 
 template <class _Tp> struct _IsPtr<_Tp*>

@@ -1,0 +1,144 @@
+#ifndef _STD_STRING
+#define _STD_STRING
+
+#include <MSL_C++/ios>
+
+namespace std {
+
+    template <class CharT>
+    struct char_traits {};
+
+    template <>
+    struct char_traits<char> {
+        typedef char char_type;
+        typedef int int_type;
+        typedef streamoff off_type;
+        typedef streampos pos_type;
+        typedef __char_state_type state_type;
+    };
+
+    template <>
+    struct char_traits<wchar_t> {
+        typedef wchar_t char_type;
+        typedef wint_t int_type;
+        typedef streamoff off_type;
+        typedef wstreampos pos_type;
+        typedef __wchar_state_type state_type;
+    };
+
+    template <
+        class CharT,
+        class Traits = char_traits<CharT>,
+        class Allocator = allocator<CharT> >
+    class basic_string;
+
+    typedef basic_string<char> string;
+    typedef basic_string<wchar_t> wstring;
+
+    template <class CharT, class Traits, class Allocator>
+    basic_string<CharT, Traits, Allocator> operator+(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    );
+
+    template <class CharT, class Traits, class Allocator>
+    basic_string<CharT, Traits, Allocator>
+    operator+(const CharT *lhs, const basic_string<CharT, Traits, Allocator> &rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    basic_string<CharT, Traits, Allocator>
+    operator+(CharT lhs, const basic_string<CharT, Traits, Allocator> &rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    basic_string<CharT, Traits, Allocator>
+    operator+(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    basic_string<CharT, Traits, Allocator>
+    operator+(const basic_string<CharT, Traits, Allocator> &lhs, CharT rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator==(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator==(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator!=(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator!=(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator<(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator<(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator<=(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator<=(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator>(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator>(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator>=(
+        const basic_string<CharT, Traits, Allocator> &lhs,
+        const basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    bool operator>=(const basic_string<CharT, Traits, Allocator> &lhs, const CharT *rhs);
+
+    // swap
+    template <class CharT, class Traits, class Allocator>
+    void swap(
+        basic_string<CharT, Traits, Allocator> &lhs,
+        basic_string<CharT, Traits, Allocator> &rhs
+    ) throw();
+
+    template <class CharT, class Traits, class Allocator>
+    basic_istream<CharT, Traits> &operator>>(
+        basic_istream<CharT, Traits> &is, basic_string<CharT, Traits, Allocator> &str
+    );
+
+    template <class CharT, class Traits, class Allocator>
+    basic_ostream<CharT, Traits> &operator<<(
+        basic_ostream<CharT, Traits> &os,
+        const basic_string<CharT, Traits, Allocator> &str
+    );
+
+    template <class CharT, class Traits, class Allocator>
+    basic_istream<CharT, Traits> &getline(
+        basic_istream<CharT, Traits> &is,
+        basic_string<CharT, Traits, Allocator> &str,
+        CharT delim
+    );
+
+    template <class CharT, class Traits, class Allocator>
+    basic_istream<CharT, Traits> &
+    getline(basic_istream<CharT, Traits> &is, basic_string<CharT, Traits, Allocator> &str);
+}
+
+#endif

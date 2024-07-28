@@ -2,7 +2,7 @@
 #define _REVOSDK_MATH_H
 
 #include "types.h"
-#include "PowerPC_EABI_Support/MSL/MSL_C/math.h"
+#include "MSL_C/math.h"
 
 #ifdef __cplusplus
 extern "C" {
