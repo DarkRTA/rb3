@@ -160,7 +160,7 @@ public:
     virtual uint numSamples() const;
 
     /// Sets number of channels, 1 = mono, 2 = stereo.
-    void setChannels(int numChannels);
+    void setChannels(uint numChannels);
 
     /// Returns nonzero if there aren't any samples available for outputting.
     virtual int isEmpty() const;

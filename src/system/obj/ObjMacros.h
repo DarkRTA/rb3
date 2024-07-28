@@ -218,6 +218,9 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 #define COPY_SUPERCLASS(parent) \
     parent::Copy(o, ty);
 
+#define COPY_SUPERCLASS_FROM(parent, obj) \
+    parent::Copy(obj, ty);
+
 #define CREATE_COPY(objType) \
     const objType* c = dynamic_cast<const objType*>(o);
 

@@ -160,20 +160,33 @@ void RateTransposer::putSamples(const SAMPLETYPE *samples, uint nSamples)
     processSamples(samples, nSamples);
 }
 
-
+// Transposes the sample rate of the given samples using linear interpolation. 
+// Returns the number of samples returned in the "dest" buffer
+inline uint RateTransposer::transpose(SAMPLETYPE *dest, const SAMPLETYPE *src, uint nSamples)
+{
+    if (numChannels == 2) 
+    {
+        return transposeStereo(dest, src, nSamples);
+    } 
+    else 
+    {
+        return transposeMono(dest, src, nSamples);
+    }
+}
 
 // Transposes up the sample rate, causing the observed playback 'rate' of the
 // sound to decrease
 void RateTransposer::upsample(const SAMPLETYPE *src, uint nSamples)
 {
-    uint count, sizeTemp, num;
+    uint count, num;
+    int sizeTemp;
 
     // If the parameter 'uRate' value is smaller than 'SCALE', first transpose
     // the samples and then apply the anti-alias filter to remove aliasing.
 
     // First check that there's enough room in 'storeBuffer' 
     // (+16 is to reserve some slack in the destination buffer)
-    sizeTemp = (uint)((float)nSamples / fRate + 16.0f);
+    sizeTemp = ((float)nSamples / fRate + 16.0f);
 
     // Transpose the samples, store the result into the end of "storeBuffer"
     count = transpose(storeBuffer.ptrEnd(sizeTemp), src, nSamples);
@@ -195,7 +208,7 @@ void RateTransposer::upsample(const SAMPLETYPE *src, uint nSamples)
 // sound to increase
 void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
 {
-    uint count, sizeTemp;
+    uint count; int sizeTemp;
 
     // If the parameter 'uRate' value is larger than 'SCALE', first apply the
     // anti-alias filter to remove high frequencies (prevent them from folding
@@ -207,7 +220,7 @@ void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
     // Anti-alias filter the samples to prevent folding and output the filtered 
     // data to tempBuffer. Note : because of the FIR filter length, the
     // filtering routine takes in 'filter_length' more samples than it outputs.
-    assert(tempBuffer.isEmpty());
+    //assert(tempBuffer.isEmpty());
     sizeTemp = storeBuffer.numSamples();
 
     count = pAAFilter->evaluate(tempBuffer.ptrEnd(sizeTemp), 
@@ -217,7 +230,7 @@ void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
     storeBuffer.receiveSamples(count);
 
     // Transpose the samples (+16 is to reserve some slack in the destination buffer)
-    sizeTemp = (uint)((float)nSamples / fRate + 16.0f);
+    sizeTemp = ((float)nSamples / fRate + 16.0f);
     count = transpose(outputBuffer.ptrEnd(sizeTemp), tempBuffer.ptrBegin(), count);
     outputBuffer.putSamples(count);
 }
@@ -230,21 +243,23 @@ void RateTransposer::downsample(const SAMPLETYPE *src, uint nSamples)
 void RateTransposer::processSamples(const SAMPLETYPE *src, uint nSamples)
 {
     uint count;
-    uint sizeReq;
+    int sizeReq;
 
     if (nSamples == 0) return;
-    assert(pAAFilter);
+    //assert(pAAFilter);
 
     // If anti-alias filter is turned off, simply transpose without applying
     // the filter
     if (bUseAAFilter == FALSE) 
     {
-        sizeReq = (uint)((float)nSamples / fRate + 1.0f);
+        sizeReq = ((float)nSamples / fRate + 1.0f);
         count = transpose(outputBuffer.ptrEnd(sizeReq), src, nSamples);
         outputBuffer.putSamples(count);
         return;
     }
 
+#pragma push
+#pragma inline_depth 0
     // Transpose with anti-alias filter
     if (fRate < 1.0f) 
     {
@@ -254,31 +269,17 @@ void RateTransposer::processSamples(const SAMPLETYPE *src, uint nSamples)
     {
         downsample(src, nSamples);
     }
-}
-
-
-// Transposes the sample rate of the given samples using linear interpolation. 
-// Returns the number of samples returned in the "dest" buffer
-inline uint RateTransposer::transpose(SAMPLETYPE *dest, const SAMPLETYPE *src, uint nSamples)
-{
-    if (numChannels == 2) 
-    {
-        return transposeStereo(dest, src, nSamples);
-    } 
-    else 
-    {
-        return transposeMono(dest, src, nSamples);
-    }
+#pragma pop
 }
 
 
 // Sets the number of channels, 1 = mono, 2 = stereo
 void RateTransposer::setChannels(uint nChannels)
 {
-    assert(nChannels > 0);
+    //assert(nChannels > 0);
     if (numChannels == nChannels) return;
 
-    assert(nChannels == 1 || nChannels == 2);
+    //assert(nChannels == 1 || nChannels == 2);
     numChannels = nChannels;
 
     storeBuffer.setChannels(numChannels);
@@ -470,9 +471,8 @@ RateTransposerFloat::RateTransposerFloat() : RateTransposer()
 
 RateTransposerFloat::~RateTransposerFloat()
 {
-}
+}   
 #pragma pop
-
 
 void RateTransposerFloat::resetRegisters()
 {
@@ -502,7 +502,7 @@ uint RateTransposerFloat::transposeMono(SAMPLETYPE *dest, const SAMPLETYPE *src,
     }
     fSlopeCount -= 1.0f;
 
-    if (nSamples == 1) goto end;
+    //  if (nSamples == 1) goto end;
 
     while (1)
     {
@@ -547,7 +547,7 @@ uint RateTransposerFloat::transposeStereo(SAMPLETYPE *dest, const SAMPLETYPE *sr
     // now always (iSlopeCount > 1.0f)
     fSlopeCount -= 1.0f;
 
-    if (nSamples == 1) goto end;
+    //if (nSamples == 1) goto end;
 
     while (1)
     {

@@ -1,5 +1,6 @@
 #ifndef CHAR_CHARBONES_H
 #define CHAR_CHARBONES_H
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include <vector>
 
@@ -99,6 +100,11 @@ public:
     OBJ_CLASSNAME(CharBonesObject);
     OBJ_SET_TYPE(CharBonesObject);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+
+    NEW_OBJ(CharBonesObject)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBonesObject)
+    }
 };
 
 class CharBonesAlloc : public CharBonesObject {

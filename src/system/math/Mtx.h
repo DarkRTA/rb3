@@ -46,6 +46,7 @@ namespace Hmx {
 
             PSQ_MOVE(z.x, mtx.z.x);
             z.z = mtx.z.z;
+            return *this;
         }
         Vector3& operator[](int);
 
