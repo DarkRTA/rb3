@@ -36,6 +36,12 @@ public:
     bool HasKeys(Hmx::Object*, DataArray*);
     PropKeys** FindKeys(Hmx::Object*, DataArray*);
     void SetKey(Hmx::Object*, DataArray*, float);
+    void SetKeyVal(Hmx::Object*, DataArray*, float, const DataNode&, bool);
+    PropKeys::AnimKeysType AnimKeysType(Hmx::Object*, DataArray*);
+    PropKeys::Interpolation InterpType(Hmx::Object*, DataArray*);
+    void SetInterpType(Hmx::Object*, DataArray*, PropKeys::Interpolation);
+    Symbol InterpHandler(Hmx::Object*, DataArray*);
+    void SetInterpHandler(Hmx::Object*, DataArray*, Symbol);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

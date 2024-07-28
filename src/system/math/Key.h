@@ -73,9 +73,9 @@ public:
     }
 
     // fn_805FC18C for Vector3
-    int Add(const T1& val, float f, bool b){
+    int Add(const T1& val, float f, bool unique){
         int bound = UpperBound(f);
-        if(b && bound != size() && f == (*this)[bound].frame){
+        if(unique && bound != size() && f == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
         else {
