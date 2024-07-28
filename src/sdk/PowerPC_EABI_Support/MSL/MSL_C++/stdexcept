@@ -18,7 +18,7 @@ namespace std {
         virtual const char *what() const { return m_What.get(); }
 
     private:
-        detail::shared_ptr<char> m_What;
+        detail::shared_ptr<char[]> m_What;
     };
 
     class runtime_error : public exception {
@@ -30,7 +30,7 @@ namespace std {
         virtual const char *what() const { return m_What.get(); }
 
     private:
-        detail::shared_ptr<char> m_What;
+        detail::shared_ptr<char[]> m_What;
     };
 
     class domain_error : public logic_error {

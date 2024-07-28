@@ -10,7 +10,7 @@ namespace std {
     class type_info {
     public:
         /*virtual*/ ~type_info();
-        bool operator==(const type_info &rhs) const throw() {
+        bool operator==(const type_info &rhs) const {
             return strcmp(this->m_Name, rhs.m_Name) == 0;
         }
 
