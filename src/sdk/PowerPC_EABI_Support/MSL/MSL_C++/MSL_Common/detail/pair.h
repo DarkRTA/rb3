@@ -1,42 +1,13 @@
 #ifndef _MSL_DETAILS_PAIR
 #define _MSL_DETAILS_PAIR
 
-#include "MSL_C++/MSL_Common/detail/type_traits.h"
-#include "MSL_C++/MSL_Common/detail/type_manips.h"
+#include "MSL_C++/MSL_Common/type_traits.h"
 
 namespace Metrowerks {
 
     namespace details {
 
-        template <bool T1Empty, bool T2Empty, bool BothAreValue>
-        struct compressed_pair_switch {
-            static const int value = 0;
-        };
-
-        template <>
-        struct compressed_pair_switch<true, false, true> {
-            static const int value = 1;
-        };
-
-        template <>
-        struct compressed_pair_switch<false, true, true> {
-            static const int value = 2;
-        };
-
-        template <typename T1, typename T2>
-        struct compressed_pair_selector {
-            static const int value = compressed_pair_switch<
-                is_empty<T1>::result,
-                is_empty<T2>::result,
-                is_value_type<T1>::result | is_value_type<T2>::result>::value;
-        };
-
-        template <bool T1Empty, bool T2Empty, bool BothAreValue>
-        struct compressed_pair_ctor_args {
-            static const int value = 0;
-        };
-
-        template <typename T1, typename T2, int C>
+        template <typename T1, typename T2, bool T1Empty, bool T2Empty>
         class compressed_pair_imp {
         public:
             compressed_pair_imp(const T1 &first, const T2 &second)
@@ -52,8 +23,8 @@ namespace Metrowerks {
             T2 m_Second;
         };
 
-        template <typename T1, typename T2, int C>
-        class compressed_pair_imp<T1, T2, 1> : public T1 {
+        template <typename T1, typename T2, bool T2Empty>
+        class compressed_pair_imp<T1, T2, true, T2Empty> : public T1 {
         public:
             compressed_pair_imp(const T1 &first, const T2 &second)
                 : T1(first), m_Second(second) {}
@@ -67,8 +38,8 @@ namespace Metrowerks {
             T2 m_Second;
         };
 
-        template <typename T1, typename T2, int C>
-        class compressed_pair_imp<T1, T2, 2> : public T2 {
+        template <typename T1, typename T2, bool T1Empty>
+        class compressed_pair_imp<T1, T2, T1Empty, true> : public T2 {
         public:
             compressed_pair_imp(const T1 &first, const T2 &second)
                 : m_First(first), T2(second) {}
@@ -87,7 +58,7 @@ namespace Metrowerks {
     // clang-format off: wastes space here
     template <typename T1, typename T2>
     struct compressed_pair
-        : public details::compressed_pair_imp<T1, T2, details::compressed_pair_selector<T1, T2>::value>
+        : public details::compressed_pair_imp<T1, T2, std::is_empty<T1>::value, std::is_empty<T2>::value>
     {
         // clang-format on
         compressed_pair(const T1 &first, const T2 &second)

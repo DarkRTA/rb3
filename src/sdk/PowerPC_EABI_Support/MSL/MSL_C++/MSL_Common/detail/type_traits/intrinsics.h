@@ -1,6 +1,8 @@
 #ifndef _MSL_DETAILS_TYPE_TRAITS_INTRINSICS
 #define _MSL_DETAILS_TYPE_TRAITS_INTRINSICS
 
+#include <MSL_C++/cstddef>
+
 // Builtins reference: https://decomp.me/scratch/k4ZpJ
 
 namespace Metrowerks {
@@ -115,6 +117,11 @@ namespace Metrowerks {
         // clang-format on
 
     }
+
+    template <class T>
+    struct alignment_of {
+        static const std::size_t value = __builtin_align(T);
+    };
 
     template <typename T>
     struct is_integral {
