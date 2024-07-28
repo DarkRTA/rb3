@@ -17,7 +17,7 @@ public:
     virtual void Load(BinStream&);
     virtual ~RndPropAnim();
     virtual bool Loop(){ return mLoop; }
-    virtual void StartAnim(){}
+    virtual void StartAnim();
     virtual void EndAnim(){}
     virtual void SetFrame(float, float);
     virtual float StartFrame();
@@ -26,10 +26,18 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    void LoadPre7(BinStream&);
+    void AdvanceFrame(float);
     void RemoveKeys();
     PropKeys* GetKeys(const Hmx::Object*, DataArray*);
     PropKeys* AddKeys(Hmx::Object*, DataArray*, PropKeys::AnimKeysType);
+    bool ChangePropPath(Hmx::Object*, DataArray*, DataArray*);
+    bool RemoveKeys(Hmx::Object*, DataArray*);
+    bool HasKeys(Hmx::Object*, DataArray*);
+    PropKeys** FindKeys(Hmx::Object*, DataArray*);
+    void SetKey(Hmx::Object*, DataArray*, float);
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndPropAnim)
