@@ -114,6 +114,27 @@ namespace Metrowerks {
             bool(N & ntype_flag_floating)
         > {};
 
+        // __builtin_ntype doesn't respect ref types correctly
+        template <typename T, ntype NType>
+        struct ntype_ref_helper {
+            static const bool value = __builtin_ntype(T) == NType;
+        };
+
+        template <typename T, ntype NType>
+        struct ntype_ref_helper<T&, NType> {
+            static const bool value = false;
+        };
+
+        template <typename T, ntype Flag>
+        struct ntype_ref_helper_flag {
+            static const bool value = (__builtin_ntype(T) & Flag) == Flag;
+        };
+
+        template <typename T, ntype Flag>
+        struct ntype_ref_helper_flag<T&, Flag> {
+            static const bool value = false;
+        };
+
         // clang-format on
 
     }
@@ -125,28 +146,31 @@ namespace Metrowerks {
 
     template <typename T>
     struct is_integral {
-        static const bool value = __builtin_ntype(T) & detail::ntype_flag_integral;
+        static const bool value =
+            detail::ntype_ref_helper_flag<T, detail::ntype_flag_integral>::value;
     };
 
     template <typename T>
     struct is_floating_point {
-        static const bool value = __builtin_ntype(T) & detail::ntype_flag_floating;
+        static const bool value =
+            detail::ntype_ref_helper_flag<T, detail::ntype_flag_floating>::value;
     };
 
     template <typename T>
     struct is_enum {
-        static const bool value = __builtin_ntype(T) & detail::ntype_flag_enum;
+        static const bool value =
+            detail::ntype_ref_helper_flag<T, detail::ntype_flag_enum>::value;
     };
 
     template <typename T>
     struct is_class {
-        static const bool value = __builtin_ntype(T) == detail::ntype_class;
+        static const bool value = detail::ntype_ref_helper<T, detail::ntype_class>::value;
     };
 
     // name known; boost
     template <typename T>
     struct is_union {
-        static const bool value = __builtin_ntype(T) == detail::ntype_union;
+        static const bool value = detail::ntype_ref_helper<T, detail::ntype_union>::value;
     };
 
     // name known; boost/STLport
