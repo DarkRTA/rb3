@@ -3,12 +3,12 @@
 
 #include <MSL_C++/cstddef>
 
+#include "MSL_C++/Metrowerks/type_traits.h"
+
 #include "MSL_C++/MSL_Common/type_traits/integral_constant.h"
 #include "MSL_C++/MSL_Common/type_traits/manip.h"
 #include "MSL_C++/MSL_Common/type_traits/operation.h"
 #include "MSL_C++/MSL_Common/type_traits/relationship.h"
-
-#include "MSL_C++/MSL_Common/detail/type_traits.h"
 
 // clang-format off: conciseness
 namespace std {

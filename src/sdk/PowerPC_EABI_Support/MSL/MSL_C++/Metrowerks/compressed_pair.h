@@ -1,5 +1,5 @@
-#ifndef _MSL_DETAILS_PAIR
-#define _MSL_DETAILS_PAIR
+#ifndef _METROWERKS_PAIR
+#define _METROWERKS_PAIR
 
 #include "MSL_C++/MSL_Common/type_traits.h"
 

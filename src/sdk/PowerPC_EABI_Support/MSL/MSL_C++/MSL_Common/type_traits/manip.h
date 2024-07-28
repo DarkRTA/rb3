@@ -3,7 +3,7 @@
 
 #include <MSL_C++/cstddef>
 
-#include "MSL_C++/MSL_Common/detail/type_traits.h"
+#include "MSL_C++/Metrowerks/type_traits.h"
 
 // clang-format off: conciseness
 namespace std {

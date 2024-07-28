@@ -5,7 +5,7 @@
 #include <MSL_C++/string>
 
 #include <MSL_C++/cstring>
-#include <MSL_C++/MSL_Common/detail/memory.h>
+#include "MSL_C++/MSL_Common/detail/shared_ptr.h"
 
 namespace std {
 
