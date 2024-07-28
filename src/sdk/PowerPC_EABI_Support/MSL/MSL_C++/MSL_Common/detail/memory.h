@@ -1,8 +1,11 @@
 #ifndef _MSL_DETAILS_MEMORY
 #define _MSL_DETAILS_MEMORY
 
+#include <MSL_C++/cstddef>
 #include <MSL_C++/typeinfo>
+
 #include "MSL_C++/MSL_Common/detail/pair.h"
+#include "MSL_C++/MSL_Common/type_traits.h"
 
 namespace std {
 
@@ -19,13 +22,14 @@ namespace std {
     }
 
     namespace tr1 {
+
         namespace detail {
 
             class shared_ptr_deleter_common {
             public:
-                virtual ~shared_ptr_deleter_common() = 0;
+                virtual ~shared_ptr_deleter_common() {}
                 // Return type is most definitely not correct
-                virtual void *get_deleter(const std::type_info &info) = 0;
+                virtual const void *get_deleter(const std::type_info &info) const = 0;
 
             protected:
                 virtual void dispose() = 0;
@@ -34,14 +38,14 @@ namespace std {
                 __attribute__((never_inline)) void release() {
                     if (--m_RefCount == 0) {
                         dispose();
-                        if (--m_ActiveCount == 0) {
+                        if (--m_WeakCount == 0) {
                             delete this;
                         }
                     }
                 }
 
                 int m_RefCount;
-                int m_ActiveCount;
+                int m_WeakCount;
             };
 
             template <typename T, typename Deleter = std::detail::default_delete<T> >
@@ -50,7 +54,7 @@ namespace std {
                 shared_ptr_deleter(T *ptr) : m_Ptr(ptr) {}
                 ~shared_ptr_deleter() {}
 
-                void *get_deleter(const std::type_info &info) {
+                const void *get_deleter(const std::type_info &info) const {
                     if (info == typeid(Deleter)) {
                         return &m_Ptr.second();
                     }
@@ -66,6 +70,7 @@ namespace std {
             };
 
         }
+
     }
 
     namespace detail {
@@ -73,8 +78,10 @@ namespace std {
         template <typename T>
         class __ptr_base {
         protected:
-            __ptr_base(T *ptr, tr1::detail::shared_ptr_deleter_common *deleter)
-                : m_Ptr(ptr), m_Deleter(deleter) {}
+            void __set(T *ptr, tr1::detail::shared_ptr_deleter_common *deleter) {
+                m_Ptr = ptr;
+                m_Deleter = deleter;
+            }
 
         public:
             ~__ptr_base() throw() {
@@ -95,9 +102,19 @@ namespace std {
         public:
             shared_ptr() throw();
 
-            template <typename Y>
-            explicit shared_ptr(Y *ptr)
-                : __ptr_base(ptr, new tr1::detail::shared_ptr_deleter<Y>(ptr)) {}
+            explicit shared_ptr(T *ptr) {
+                __set(ptr, new tr1::detail::shared_ptr_deleter<T>(ptr));
+            }
+        };
+
+        template <typename T>
+        class shared_ptr<T[]> : public __ptr_base<T> {
+        public:
+            shared_ptr() throw();
+
+            explicit shared_ptr(T ptr[]) {
+                __set(ptr, new tr1::detail::shared_ptr_deleter<T, std::detail::default_delete<T[]> >(ptr));
+            }
         };
 
     }

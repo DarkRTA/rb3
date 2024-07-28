@@ -16,7 +16,10 @@ namespace Metrowerks {
             compressed_pair_imp(const T2 &second) : m_Second(second) {}
 
             T1 &first() { return m_First; }
+            const T1 &first() const { return m_First; }
+
             T2 &second() { return m_Second; }
+            const T2 &second() const { return m_Second; }
 
         private:
             T1 m_First;
@@ -32,7 +35,10 @@ namespace Metrowerks {
             compressed_pair_imp(const T2 &second) : m_Second(second) {}
 
             T1 &first() { return *this; }
+            const T1 &first() const { return *this; }
+
             T2 &second() { return m_Second; }
+            const T2 &second() const { return m_Second; }
 
         private:
             T2 m_Second;
@@ -47,7 +53,10 @@ namespace Metrowerks {
             compressed_pair_imp(const T2 &second) : T2(second) {}
 
             T1 &first() { return m_First; }
+            const T1 &first() const { return m_First; }
+
             T2 &second() { return *this; }
+            const T2 &second() const { return *this; }
 
         private:
             T1 m_First;
