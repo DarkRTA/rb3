@@ -42,6 +42,19 @@ public:
     void SetInterpType(Hmx::Object*, DataArray*, PropKeys::Interpolation);
     Symbol InterpHandler(Hmx::Object*, DataArray*);
     void SetInterpHandler(Hmx::Object*, DataArray*, Symbol);
+    int ValueFromFrame(PropKeys*, float, DataNode*);
+    int ValueFromIndex(PropKeys*, int, DataNode*);
+
+    DataNode OnReplaceKeyframe(DataArray*);
+    DataNode OnReplaceFrame(DataArray*);
+    DataNode OnGetIndexFromFrame(const DataArray*);
+    DataNode OnGetFrameFromIndex(const DataArray*);
+    DataNode OnGetValueFromIndex(const DataArray*);
+    DataNode OnGetValueFromFrame(const DataArray*);
+    DataNode ForEachTarget(const DataArray*);
+    DataNode ForAllKeyframes(const DataArray*);
+    DataNode ForeachKeyframe(const DataArray*);
+    DataNode ForeachFrame(const DataArray*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

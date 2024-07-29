@@ -2,6 +2,7 @@
 #include "rndobj/EventTrigger.h"
 #include "utl/STLHelpers.h"
 #include "obj/Utl.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(RndPropAnim)
 DataNode sKeyReplace(0);
@@ -387,3 +388,142 @@ void RndPropAnim::Print(){
         idx++;
     }
 }
+
+DataNode RndPropAnim::OnReplaceKeyframe(DataArray* da){
+    sReplaceKey = true;
+    sKeyReplace = da->Evaluate(2);
+    return DataNode(0);
+}
+
+DataNode RndPropAnim::OnReplaceFrame(DataArray* da){
+    sReplaceFrame = true;
+    sFrameReplace = da->Float(2);
+    return DataNode(0);
+}
+
+DataNode RndPropAnim::OnGetIndexFromFrame(const DataArray* da){
+    Hmx::Object* obj = da->GetObj(2);
+    DataArray* prop = da->Array(3);
+    float f = da->Float(4);
+    PropKeys* keys = GetKeys(obj, prop);
+    if(!keys) return DataNode(-1);
+    else return ValueFromFrame(keys, f, &DataNode(0));
+}
+
+DataNode RndPropAnim::OnGetFrameFromIndex(const DataArray* da){
+    Hmx::Object* obj = da->GetObj(2);
+    DataArray* prop = da->Array(3);
+    int i = da->Int(4);
+    float frame = -1.0f;
+    PropKeys* keys = GetKeys(obj, prop);
+    if(!keys) return DataNode(frame);
+    else {
+        keys->FrameFromIndex(i, frame);
+        return DataNode(frame);
+    }
+}
+
+DataNode RndPropAnim::OnGetValueFromIndex(const DataArray* da){
+    Hmx::Object* obj = da->GetObj(2);
+    DataArray* prop = da->Array(3);
+    PropKeys* keys = GetKeys(obj, prop);
+    if(!keys) return DataNode(-1);
+    else return DataNode(ValueFromIndex(keys, da->Int(4), da->Var(5)));
+}
+
+DataNode RndPropAnim::OnGetValueFromFrame(const DataArray* da){
+    Hmx::Object* obj = da->GetObj(2);
+    DataArray* prop = da->Array(3);
+    float f = da->Float(4);
+    PropKeys* keys = GetKeys(obj, prop);
+    if(!keys) return DataNode(-1);
+    else {
+        DataNode node(0);
+        ValueFromFrame(keys, f, &node);
+        return DataNode(node);
+    }
+}
+
+int RndPropAnim::ValueFromFrame(PropKeys* keys, float frame, DataNode* node){
+    int ret = -1;
+    if(!keys) return -1;
+    else {
+        switch(keys->mKeysType){
+            case PropKeys::kFloat:
+                float fval = 0.0f;
+                ret = keys->FloatAt(frame, fval);
+                *node = DataNode(fval);
+                break;
+            case PropKeys::kColor:
+                Hmx::Color col;
+                ret = keys->ColorAt(frame, col);
+                *node = DataNode(col.Pack());
+                break;
+            case PropKeys::kObject:
+                Hmx::Object* obj = 0;
+                ret = keys->ObjectAt(frame, obj);
+                *node = DataNode(obj);
+                break;
+            case PropKeys::kBool:
+                bool bval = false;
+                ret = keys->BoolAt(frame, bval);
+                *node = DataNode(bval);
+                break;
+            case PropKeys::kQuat:
+                Hmx::Quat quatval;
+                ret = keys->QuatAt(frame, quatval);
+                *node = DataNode(DataArrayPtr(DataNode(quatval.x), DataNode(quatval.y), DataNode(quatval.z), DataNode(quatval.w)));
+                break;
+            case PropKeys::kVector3:
+                Vector3 vecval;
+                ret = keys->Vector3At(frame, vecval);
+                *node = DataNode(DataArrayPtr(DataNode(vecval.x), DataNode(vecval.y), DataNode(vecval.z)));
+                break;
+            case PropKeys::kSymbol:
+                Symbol symval;
+                ret = keys->SymbolAt(frame, symval);
+                *node = DataNode(symval);
+                break;
+            default:
+                *node = DataNode(0);
+                break;
+        }
+        return ret;
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(RndPropAnim)
+    HANDLE_EXPR(remove_keys, RemoveKeys(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
+    HANDLE_EXPR(has_keys, HasKeys(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
+    HANDLE_ACTION(add_keys, AddKeys(_msg->Obj<Hmx::Object>(2), _msg->Array(3), (PropKeys::AnimKeysType)_msg->Int(4)))
+    HANDLE_ACTION(set_key, SetKey(_msg->Obj<Hmx::Object>(2), _msg->Array(3), _msg->Float(4)))
+    HANDLE_ACTION(set_key_val, SetKeyVal(_msg->Obj<Hmx::Object>(2), _msg->Array(3), _msg->Float(4), _msg->Node(5), _msg->Size() > 6 ? _msg->Int(6) : true))
+    HANDLE_EXPR(keys_type, AnimKeysType(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
+    HANDLE_EXPR(interp_type, InterpType(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
+    HANDLE_ACTION(set_interp_type, SetInterpType(_msg->Obj<Hmx::Object>(2), _msg->Array(3), (PropKeys::Interpolation)_msg->Int(4)))
+    HANDLE_EXPR(interp_handler, InterpHandler(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
+    HANDLE_ACTION(set_interp_handler, SetInterpHandler(_msg->Obj<Hmx::Object>(2), _msg->Array(3), _msg->Sym(4)))
+    HANDLE_ACTION(replace_target, Replace(_msg->Obj<Hmx::Object>(2), _msg->Obj<Hmx::Object>(3)))
+    if(sym == foreach_target) return ForEachTarget(_msg);
+    HANDLE(forall_keyframes, ForAllKeyframes)
+    HANDLE(foreach_keyframe, ForeachKeyframe)
+    HANDLE(foreach_frame, ForeachFrame)
+    HANDLE_EXPR(change_prop_path, ChangePropPath(_msg->Obj<Hmx::Object>(2), _msg->Array(3), _msg->Array(4)))
+    HANDLE(replace_keyframe, OnReplaceKeyframe)
+    HANDLE(replace_frame, OnReplaceFrame)
+    HANDLE(index_from_frame, OnGetIndexFromFrame)
+    HANDLE(frame_from_index, OnGetFrameFromIndex)
+    HANDLE(value_from_index, OnGetValueFromIndex)
+    HANDLE(value_from_frame, OnGetValueFromFrame)
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x43C)
+END_HANDLERS
+#pragma pop
+
+BEGIN_PROPSYNCS(RndPropAnim)
+    SYNC_PROP(loop, mLoop)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS
