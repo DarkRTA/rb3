@@ -62,6 +62,19 @@ public:
         }
     }
 
+    void Sort(){
+        int vecSize = size();
+        for(int i = 1; i < vecSize; i++){
+            Key<T1> key = (*this)[i];
+            int j = i;
+            while(0 < j && (*this)[j-1].frame < key.frame){
+                (*this)[j] = (*this)[j-1];
+                j--;
+            }
+            if(j != i) (*this)[j] = key;
+        }
+    }
+
     float FirstFrame() const {
         if(size() != 0) return front().frame;
         else return 0.0f;
