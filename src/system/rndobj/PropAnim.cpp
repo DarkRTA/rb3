@@ -154,11 +154,12 @@ float RndPropAnim::EndFrame(){
     return frame;
 }
 
+// fn_806326EC
 void RndPropAnim::AdvanceFrame(float frame){
     if(mLoop){
-        float diff = EndFrame() - StartFrame();
-        float f1 = 0.0f;
+        frame = ModRange(StartFrame(), EndFrame(), frame);
     }
+    RndAnimatable::SetFrame(frame, 1.0f);
 }
 
 // fn_80632790
@@ -366,16 +367,15 @@ Symbol RndPropAnim::InterpHandler(Hmx::Object* obj, DataArray* prop){
     if(keys != mPropKeys.end()){
         PropKeys* cur = *keys;
         if(cur->mPropExceptionID == PropKeys::kHandleInterp)
-        return cur->mInterpHandler;
+        return cur->InterpHandler();
     }
-    else return Symbol();
+    return Symbol();
 }
 
 void RndPropAnim::SetInterpHandler(Hmx::Object* obj, DataArray* prop, Symbol handler){
     PropKeys** keys = FindKeys(obj, prop);
     if(keys != mPropKeys.end()){
-        PropKeys* cur = *keys;
-        cur->SetInterpHandler(handler);
+        (*keys)->SetInterpHandler(handler);
     }
 }
 
@@ -387,6 +387,31 @@ void RndPropAnim::Print(){
         (*it)->Print();
         idx++;
     }
+}
+
+DataNode RndPropAnim::ForEachTarget(const DataArray* da){
+    ObjPtrList<Hmx::Object, ObjectDir> objList(this, kObjListNoNull);
+    const char* arrstr = da->Str(2);
+    for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); ++it){
+        bool b = true;
+        PropKeys* cur = *it;
+        if(arrstr != gNullStr){
+            if(cur->mTarget->ClassName() != arrstr) b = false;
+        }
+        if(b){
+            objList.push_back(cur->mTarget);
+        }
+    }
+    DataNode* var = da->Var(3);
+    DataNode node(*var);
+    for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = objList.begin(); it != objList.end(); ++it){
+        *var = DataNode(*it);
+        for(int i = 4; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+    }
+    *var = node;
+    return DataNode(0);
 }
 
 DataNode RndPropAnim::OnReplaceKeyframe(DataArray* da){
@@ -490,6 +515,42 @@ int RndPropAnim::ValueFromFrame(PropKeys* keys, float frame, DataNode* node){
         }
         return ret;
     }
+}
+
+// fn_80636048
+bool RndPropAnim::ValueFromIndex(PropKeys* keys, int index, DataNode* node){
+    if(index >= 0 && index < keys->NumKeys()){
+        switch(keys->mKeysType){
+            case PropKeys::kFloat:
+                *node = DataNode(keys->AsFloatKeys()[index].value);
+                break;
+            case PropKeys::kColor:
+                *node = DataNode(keys->AsColorKeys()[index].value.Pack());
+                break;
+            case PropKeys::kObject:
+                *node = DataNode(keys->AsObjectKeys()[index].value.Ptr());
+                break;
+            case PropKeys::kBool:
+                *node = DataNode(keys->AsBoolKeys()[index].value);
+                break;
+            case PropKeys::kQuat:
+                Hmx::Quat q(keys->AsQuatKeys()[index].value);
+                *node = DataNode(DataArrayPtr(DataNode(q.x), DataNode(q.y), DataNode(q.z), DataNode(q.w)));
+                break;
+            case PropKeys::kVector3:
+                Vector3 vec(keys->AsVector3Keys()[index].value);
+                *node = DataNode(DataArrayPtr(DataNode(vec.x), DataNode(vec.y), DataNode(vec.z)));
+                break;
+            case PropKeys::kSymbol:
+                *node = DataNode(keys->AsSymbolKeys()[index].value);
+                break;
+            default:
+                *node = DataNode(0);
+                break;
+        }
+        return true;
+    }
+    return false;
 }
 
 #pragma push

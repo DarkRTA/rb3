@@ -43,7 +43,7 @@ public:
     Symbol InterpHandler(Hmx::Object*, DataArray*);
     void SetInterpHandler(Hmx::Object*, DataArray*, Symbol);
     int ValueFromFrame(PropKeys*, float, DataNode*);
-    int ValueFromIndex(PropKeys*, int, DataNode*);
+    bool ValueFromIndex(PropKeys*, int, DataNode*);
 
     DataNode OnReplaceKeyframe(DataArray*);
     DataNode OnReplaceFrame(DataArray*);

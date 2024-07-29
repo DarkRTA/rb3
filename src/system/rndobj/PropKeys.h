@@ -15,6 +15,19 @@ public:
     ObjKeys(Hmx::Object* o) : mOwner(o) {}
     Hmx::Object* mOwner; // 0x8
 
+    // fn_80632140
+    ObjKeys& operator=(const ObjKeys& keys){
+        Hmx::Object* oldowner = ObjectStage::sOwner;
+        if(this != &keys){
+            resize(keys.size());
+            ObjKeys::const_iterator keysit = keys.begin();
+            for(ObjKeys::iterator it = begin(); it != end(); it++, keysit++){
+                *it = *keysit;
+            }
+        }
+        ObjectStage::sOwner = oldowner;
+    }
+
     int Add(Hmx::Object* obj, float f, bool b){
         Hmx::Object* oldOwner = ObjectStage::sOwner;
         ObjectStage::sOwner = mOwner;
@@ -95,6 +108,7 @@ public:
     void ReSort();
     void SetInterpHandler(Symbol);
     void Print();
+    Symbol InterpHandler() const { return mInterpHandler; }
     static unsigned int PropExceptionID(Hmx::Object*, DataArray*);
 
     static unsigned short gRev;
