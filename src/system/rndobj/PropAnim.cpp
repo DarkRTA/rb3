@@ -519,38 +519,36 @@ int RndPropAnim::ValueFromFrame(PropKeys* keys, float frame, DataNode* node){
 
 // fn_80636048
 bool RndPropAnim::ValueFromIndex(PropKeys* keys, int index, DataNode* node){
-    if(index >= 0 && index < keys->NumKeys()){
-        switch(keys->mKeysType){
-            case PropKeys::kFloat:
-                *node = DataNode(keys->AsFloatKeys()[index].value);
-                break;
-            case PropKeys::kColor:
-                *node = DataNode(keys->AsColorKeys()[index].value.Pack());
-                break;
-            case PropKeys::kObject:
-                *node = DataNode(keys->AsObjectKeys()[index].value.Ptr());
-                break;
-            case PropKeys::kBool:
-                *node = DataNode(keys->AsBoolKeys()[index].value);
-                break;
-            case PropKeys::kQuat:
-                Hmx::Quat q(keys->AsQuatKeys()[index].value);
-                *node = DataNode(DataArrayPtr(DataNode(q.x), DataNode(q.y), DataNode(q.z), DataNode(q.w)));
-                break;
-            case PropKeys::kVector3:
-                Vector3 vec(keys->AsVector3Keys()[index].value);
-                *node = DataNode(DataArrayPtr(DataNode(vec.x), DataNode(vec.y), DataNode(vec.z)));
-                break;
-            case PropKeys::kSymbol:
-                *node = DataNode(keys->AsSymbolKeys()[index].value);
-                break;
-            default:
-                *node = DataNode(0);
-                break;
-        }
-        return true;
+    if(index < 0 || index >= keys->NumKeys()) return false;
+    switch(keys->mKeysType){
+        case PropKeys::kFloat:
+            *node = DataNode(keys->AsFloatKeys()[index].value);
+            break;
+        case PropKeys::kColor:
+            *node = DataNode(keys->AsColorKeys()[index].value.Pack());
+            break;
+        case PropKeys::kObject:
+            *node = DataNode(keys->AsObjectKeys()[index].value.Ptr());
+            break;
+        case PropKeys::kBool:
+            *node = DataNode(keys->AsBoolKeys()[index].value);
+            break;
+        case PropKeys::kQuat:
+            Hmx::Quat q(keys->AsQuatKeys()[index].value);
+            *node = DataNode(DataArrayPtr(DataNode(q.x), DataNode(q.y), DataNode(q.z), DataNode(q.w)));
+            break;
+        case PropKeys::kVector3:
+            Vector3 vec(keys->AsVector3Keys()[index].value);
+            *node = DataNode(DataArrayPtr(DataNode(vec.x), DataNode(vec.y), DataNode(vec.z)));
+            break;
+        case PropKeys::kSymbol:
+            *node = DataNode(keys->AsSymbolKeys()[index].value);
+            break;
+        default:
+            *node = DataNode(0);
+            break;
     }
-    return false;
+    return true;
 }
 
 #pragma push

@@ -112,7 +112,7 @@ BEGIN_LOADS(UIFontImporter)
     if(rev > 8) bs >> mLastGenWasNG;
 END_LOADS
 
-// fn_8055B51C
+// fn_8055B51C - https://decomp.me/scratch/NAYDg
 void UIFontImporter::FontImporterSyncObjects(){
     if(!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
         for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end(); it){
