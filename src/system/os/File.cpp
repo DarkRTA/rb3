@@ -9,13 +9,15 @@
 #include "obj/DataFunc.h"
 #include "utl/Option.h"
 
-
+int File::sOpenCount[4];
 std::vector<File*> gFiles;
 File* gOpenCaptureFile;
+int gCaptureFileMode;
 static char gRoot[256];
 static char gExecRoot[256];
 static char gSystemRoot[256];
 std::vector<String> gDirList;
+int kNoHandle;
 DataArray* gFrameRateArray;
 bool gNullFiles;
 

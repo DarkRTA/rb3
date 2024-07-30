@@ -10,6 +10,7 @@
 #include "char/CharCuff.h"
 #include "char/CharBone.h"
 #include "char/CharBones.h"
+#include "char/CharHair.h"
 
 static DataNode OnResetHair(DataArray* da){
     CharUtlResetHair(da->Obj<Character>(1));
@@ -63,6 +64,48 @@ CharBone* GrabBone(CharBone* bone, ObjectDir* dir){
     return found;
 }
 
+// fn_804FB9C4
+void CharUtlMergeBones(ObjectDir* dir1, ObjectDir* dir2, int i){
+    for(ObjDirItr<CharBone> it(dir1, true); it != 0; ++it){
+        if(it->mTarget){
+            CharBone* bone = GrabBone(it, dir2);
+            if(bone){
+                if(!bone->mTarget){
+                    const char* name = it->mTarget->Name();
+                    CharBone* findbone = CharUtlFindBone(name, dir2);
+                    if(!findbone) MILO_WARN("could not find target %s in dest, must merge", name);
+                    bone->mTarget = findbone;
+                }
+                else {
+                    const char* name = bone->mTarget->Name();
+                    bool strsmatch = strcmp(it->mTarget->Name(), name) == 0;
+                    if(!strsmatch){
+                        MILO_WARN("%s has different targets %s v %s, must resolve", it->Name(), it->mTarget->Name(), name);
+                    }
+                }
+            }
+            if(it->mPositionContext != 0){
+                CharBone* bone = GrabBone(it, dir2);
+                if(bone) it->mPositionContext |= i;
+            }
+            if(it->mScaleContext != 0){
+                CharBone* bone = GrabBone(it, dir2);
+                if(bone) it->mScaleContext |= i;
+            }
+            if(it->mRotationContext != 0){
+                CharBone* bone = GrabBone(it, dir2);
+                if(bone->mRotation != CharBones::TYPE_END && bone->mRotation != it->mRotation){
+                    MILO_WARN("bones %s have different rotations, must hand resolve", it->Name());
+                }                    
+                else {
+                    bone->mRotation = it->mRotation;
+                    bone->mRotationContext |= i;
+                }
+            }
+        }
+    }
+}
+
 void CharUtlResetTransform(ObjectDir* dir){
     for(ObjDirItr<RndTransformable> it(dir, true); it != 0; ++it){
         if(!it->TransParent()){
@@ -86,6 +129,8 @@ void ClipPredict::SetClip(CharClip* clip){
         MILO_ASSERT(mAngChannel, 0x245);
     }
 }
+
+DECOMP_FORCEACTIVE(CharUtl, "tmp_bones")
 
 CharBone* CharUtlFindBone(const char* cc, ObjectDir* dir){
     if(!dir) return 0;
@@ -119,5 +164,13 @@ RndTransformable* CharUtlFindBoneTrans(const char* cc, ObjectDir* dir){
                 return mesh;
             }
         }
+    }
+}
+
+DECOMP_FORCEACTIVE(CharUtl, "vector")
+
+void CharUtlResetHair(Character* c){
+    for(ObjDirItr<CharHair> it(c, true); it != 0; ++it){
+        it->Enter();
     }
 }
