@@ -1,5 +1,6 @@
 #include "char/CharUtl.h"
 #include "char/Character.h"
+#include "char/CharClip.h"
 #include "obj/DirLoader.h"
 #include "obj/DataFunc.h"
 #include "rndobj/Mesh.h"
@@ -7,6 +8,8 @@
 #include "rndobj/Dir.h"
 #include "char/CharCollide.h"
 #include "char/CharCuff.h"
+#include "char/CharBone.h"
+#include "char/CharBones.h"
 
 static DataNode OnResetHair(DataArray* da){
     CharUtlResetHair(da->Obj<Character>(1));
@@ -54,6 +57,12 @@ CharUtlBoneSaver::~CharUtlBoneSaver(){
     }
 }
 
+CharBone* GrabBone(CharBone* bone, ObjectDir* dir){
+    CharBone* found = CharUtlFindBone(bone->Name(), dir);
+    if(!found) MILO_WARN("Could not find %s must hand merge", bone->Name());
+    return found;
+}
+
 void CharUtlResetTransform(ObjectDir* dir){
     for(ObjDirItr<RndTransformable> it(dir, true); it != 0; ++it){
         if(!it->TransParent()){
@@ -67,4 +76,48 @@ ClipPredict::ClipPredict(CharClip* clip, const Vector3& pos, float ang) : mClip(
     mPos = pos;
     mAng = ang;
     MILO_ASSERT(mAngChannel, 0x239);
+}
+
+void ClipPredict::SetClip(CharClip* clip){
+    if(clip != mClip){
+        mClip = clip;
+        mAngChannel = clip->GetChannel("bone_facing.rotz");
+        mPosChannel = clip->GetChannel("bone_facing.pos");
+        MILO_ASSERT(mAngChannel, 0x245);
+    }
+}
+
+CharBone* CharUtlFindBone(const char* cc, ObjectDir* dir){
+    if(!dir) return 0;
+    else {
+        char buf[256];
+        strcpy(buf, cc);
+        char* dst = strrchr(buf, 0x2E);
+        if(!dst) dst = buf + strlen(buf);
+        strcpy(dst, ".cb");
+        return dir->Find<CharBone>(buf, false);
+    }
+}
+
+RndTransformable* CharUtlFindBoneTrans(const char* cc, ObjectDir* dir){
+    if(!dir) return 0;
+    else {
+        char buf[256];
+        strcpy(buf, cc);
+        char* dst = strrchr(buf, 0x2E);
+        if(!dst) dst = buf + strlen(buf);
+        strcpy(dst, ".cb");
+        CharBone* bone = dir->Find<CharBone>(buf, false);
+        if(bone) return bone->mTrans;
+        else {
+            strcpy(dst, ".trans");
+            RndTransformable* trans = dir->Find<RndTransformable>(buf, false);
+            if(trans) return trans;
+            else {
+                strcpy(dst, ".mesh");
+                RndTransformable* mesh = dir->Find<RndTransformable>(buf, false);
+                return mesh;
+            }
+        }
+    }
 }
