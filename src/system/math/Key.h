@@ -62,6 +62,19 @@ public:
         }
     }
 
+    void Sort(){
+        int vecSize = size();
+        for(int i = 1; i < vecSize; i++){
+            Key<T1> key = (*this)[i];
+            int j = i;
+            while(0 < j && (*this)[j-1].frame < key.frame){
+                (*this)[j] = (*this)[j-1];
+                j--;
+            }
+            if(j != i) (*this)[j] = key;
+        }
+    }
+
     float FirstFrame() const {
         if(size() != 0) return front().frame;
         else return 0.0f;
@@ -73,9 +86,9 @@ public:
     }
 
     // fn_805FC18C for Vector3
-    int Add(const T1& val, float f, bool b){
+    int Add(const T1& val, float f, bool unique){
         int bound = UpperBound(f);
-        if(b && bound != size() && f == (*this)[bound].frame){
+        if(unique && bound != size() && f == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
         else {

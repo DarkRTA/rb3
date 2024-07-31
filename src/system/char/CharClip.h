@@ -103,6 +103,7 @@ public:
     int NumFrames() const {
         return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
     }
+    char* GetChannel(Symbol);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

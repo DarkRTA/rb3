@@ -119,32 +119,32 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
 void PropKeys::ReSort(){
     switch(mKeysType){
         case kFloat:
-            AsFloatKeys();
             // mystery vector method - fn_806280C0 in retail, scratch: https://decomp.me/scratch/5Vpiu
+            AsFloatKeys().Sort();
             break;
         case kColor:
-            AsColorKeys();
             // mystery vector method - fn_80627FEC in retail
+            AsColorKeys().Sort();
             break;
         case kObject:
-            AsObjectKeys();
             // mystery vector method - fn_80627F0C in retail
+            AsObjectKeys().Sort();
             break;
         case kBool:
-            AsBoolKeys();
-            // mystery vector method - fn_80627E24 in retail
+            // mystery vector method - fn_80627E24 in retail, scratch: https://decomp.me/scratch/7TOeo
+            AsBoolKeys().Sort();
             break;
         case kSymbol:
-            AsSymbolKeys();
             // mystery vector method - fn_80627D50 in retail
+            AsSymbolKeys().Sort();
             break;
         case kVector3:
-            AsVector3Keys();
             // mystery vector method - fn_80627C7C in retail
+            AsVector3Keys().Sort();
             break;
         case kQuat:
-            AsQuatKeys();
             // mystery vector method - fn_80627B64 in retail
+            AsQuatKeys().Sort();
             break;
     }
 }

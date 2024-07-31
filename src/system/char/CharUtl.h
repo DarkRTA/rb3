@@ -5,6 +5,7 @@
 
 class Character;
 class CharClip;
+class CharBone;
 
 void CharUtlResetHair(Character*);
 void CharUtlInit();
@@ -12,6 +13,8 @@ void CharUtlMergeBones(ObjectDir*, ObjectDir*, int);
 RndTransformable* CharUtlFindBoneTrans(const char*, ObjectDir*);
 bool CharUtlIsAnimatable(RndTransformable*);
 void CharUtlResetTransform(ObjectDir*);
+CharBone* CharUtlFindBone(const char*, ObjectDir*);
+CharBone* GrabBone(CharBone*, ObjectDir*);
 
 class CharUtlBoneSaver {
 public:
