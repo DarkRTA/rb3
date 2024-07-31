@@ -57,6 +57,7 @@ public:
     bool Showing() const { return mShowing; }
     void SetShowing(bool b){ mShowing = b; }
     void SetOrder(float f){ mOrder = f; }
+    const Sphere& GetSphere() const { return mSphere; }
     static void DumpLoad(BinStream&);
     static HighlightStyle sHighlightStyle;
     static float sNormalDisplayLength;

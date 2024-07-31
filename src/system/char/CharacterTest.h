@@ -18,6 +18,7 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void Load(BinStream&);
+    void Poll();
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)

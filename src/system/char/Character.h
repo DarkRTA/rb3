@@ -10,6 +10,15 @@ class Waypoint;
 class RndCam;
 class CharInterest;
 class CharEyes;
+class CharDriver;
+
+class ShadowBone : public RndTransformable {
+public:
+    ShadowBone() : mParent(this, 0) {}
+    virtual ~ShadowBone(){}
+
+    ObjPtr<RndTransformable, ObjectDir> mParent;
+};
 
 class Character : public RndDir {
 public:
@@ -21,6 +30,14 @@ public:
         kCharDrawAll
     };
 
+    enum PollState {
+        kCharCreated = 0,
+        kCharSyncObject = 1,
+        kCharEntered = 2,
+        kCharPolled = 3,
+        kCharExited = 4,
+    };
+
     class Lod {
     public:
         Lod(Hmx::Object*);
@@ -28,9 +45,12 @@ public:
         Lod& operator=(const Lod&);
         ~Lod(){}
 
-        float mScreenSize;
-        ObjPtr<RndGroup, ObjectDir> mGroup;
-        ObjPtr<RndGroup, ObjectDir> mGroup2;
+        RndGroup* Group(){ return mGroup; }
+        float ScreenSize() const { return mScreenSize; }
+
+        float mScreenSize; // 0x0
+        ObjPtr<RndGroup, ObjectDir> mGroup; // 0x4
+        ObjPtr<RndGroup, ObjectDir> mGroup2; // 0x10
     };
 
     Character();
@@ -66,30 +86,34 @@ public:
     virtual void ClearInterestFilterFlags();
 
     void UnhookShadow();
+    ShadowBone* AddShadowBone(RndTransformable*);
+    void SyncShadow();
+    void RemoveFromPoll(RndPollable*);
+
     static void Init();
     static void Terminate();
 
     ObjVector<Lod> mLods; // 0x18c
-    int mLastLod;
-    int mMinLod;
-    ObjPtr<RndGroup, ObjectDir> mShadow;
-    ObjPtr<RndGroup, ObjectDir> mTransGroup;
-    int mDriver; // CharDriver*
-    bool mSelfShadow;
-    bool mSpotCutout;
-    bool mFloorShadow;
-    ObjOwnerPtr<RndTransformable, ObjectDir> mSphereBase;
-    Sphere mBounding;
-    std::vector<int> mShadowBones;
-    int mPollState;
-    CharacterTest* mTest;
-    bool mFrozen;
+    int mLastLod; // 0x198
+    int mMinLod; // 0x19c
+    ObjPtr<RndGroup, ObjectDir> mShadow; // 0x1a0
+    ObjPtr<RndGroup, ObjectDir> mTransGroup; // 0x1ac
+    CharDriver* mDriver; // 0x1b8
+    bool mSelfShadow; // 0x1bc
+    bool mSpotCutout; // 0x1bd
+    bool mFloorShadow; // 0x1be
+    ObjOwnerPtr<RndTransformable, ObjectDir> mSphereBase; // 0x1c0
+    Sphere mBounding; // 0x1cc
+    std::vector<ShadowBone*> mShadowBones; // 0x1dc
+    PollState mPollState; // 0x1e4
+    CharacterTest* mTest; // 0x1e8
+    bool mFrozen; // 0x1ec
     DrawMode mDrawMode; // 0x1f0
-    bool unk1f4;
-    Symbol mInterestToForce;
-    ObjPtr<RndEnviron, ObjectDir> unk1fc;
-    int unk208;
-    bool mDebugDrawInterestObjects;
+    bool unk1f4; // 0x1f4
+    Symbol mInterestToForce; // 0x1f8
+    ObjPtr<RndEnviron, ObjectDir> unk1fc; // 0x1fc
+    int unk208; // 0x208
+    bool mDebugDrawInterestObjects; // 0x20c
 };
 
 #endif
