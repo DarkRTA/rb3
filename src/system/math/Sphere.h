@@ -33,5 +33,6 @@ inline BinStream& operator>>(BinStream& bs, Sphere& s){
 }
 
 bool operator>(const Sphere&, const Frustum&);
+void Multiply(const Sphere&, const Transform&, Sphere&);
 
 #endif

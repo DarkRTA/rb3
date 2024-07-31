@@ -24,8 +24,10 @@ public:
     }
 
     void operator=(const ObjVector<T1, T2>& vec){
-        resize(vec.size());
-        std::vector<T1,T2>::operator=((std::vector<T1,T2>&)vec);
+        if(this != &vec){
+            resize(vec.size());
+            std::vector<T1,T2>::operator=((std::vector<T1,T2>&)vec);
+        }
     }
 
 };

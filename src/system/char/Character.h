@@ -47,6 +47,7 @@ public:
 
         RndGroup* Group(){ return mGroup; }
         float ScreenSize() const { return mScreenSize; }
+        void SetScreenSize(float size){ mScreenSize = size; }
 
         float mScreenSize; // 0x0
         ObjPtr<RndGroup, ObjectDir> mGroup; // 0x4
@@ -89,9 +90,17 @@ public:
     ShadowBone* AddShadowBone(RndTransformable*);
     void SyncShadow();
     void RemoveFromPoll(RndPollable*);
+    void CopyBoundingSphere(Character*);
+    void RepointSphereBase(ObjectDir*);
 
     static void Init();
     static void Terminate();
+    static void Register(){ REGISTER_OBJ_FACTORY(Character); }
+
+    NEW_OBJ(Character);
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     ObjVector<Lod> mLods; // 0x18c
     int mLastLod; // 0x198

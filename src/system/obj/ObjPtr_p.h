@@ -28,6 +28,7 @@ public:
     }
 
     Hmx::Object* Owner() const { return mOwner; }
+    T1* Ptr(){ return mPtr; }
     T1* Ptr() const { return mPtr; }
     operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
