@@ -9,8 +9,10 @@ public:
 
     class ConstraintSystem {
     public:
-        ObjPtr<RndTransformable, ObjectDir> mTarget;
-        float mWeight;
+        ConstraintSystem();
+        ConstraintSystem(Hmx::Object*);
+        ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
+        float mWeight; // 0xc
     };
 
     CharBlendBone();
@@ -25,13 +27,19 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    ObjList<ConstraintSystem> mTargets;
-    ObjPtr<RndTransformable, ObjectDir> mSrc1;
-    ObjPtr<RndTransformable, ObjectDir> mSrc2;
-    bool mTransX;
-    bool mTransY;
-    bool mTransZ;
-    bool mRotation;
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    ObjList<ConstraintSystem> mTargets; // 0x8
+    ObjPtr<RndTransformable, ObjectDir> mSrc1; // 0x14
+    ObjPtr<RndTransformable, ObjectDir> mSrc2; // 0x20
+    bool mTransX; // 0x2c
+    bool mTransY; // 0x2d
+    bool mTransZ; // 0x2e
+    bool mRotation; // 0x2f
 };
+
+BinStream& operator>>(BinStream&, CharBlendBone::ConstraintSystem&);
 
 #endif
