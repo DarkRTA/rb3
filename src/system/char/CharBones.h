@@ -55,6 +55,9 @@ public:
     const char* StringVal(Symbol);
     void ScaleAddIdentity();
     void Blend(CharBones&) const;
+    void RotateBy(CharBones&) const;
+    void RotateTo(CharBones&, float) const;
+    void ScaleAdd(CharBones&, float) const;
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);
@@ -113,5 +116,8 @@ public:
     virtual ~CharBonesAlloc();
     virtual void ReallocateInternal();
 };
+
+extern CharBones* gPropBones;
+bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
 
 #endif
