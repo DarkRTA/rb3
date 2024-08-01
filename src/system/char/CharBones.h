@@ -28,7 +28,7 @@ public:
     };
 
     struct Bone {
-        Bone(){}
+        Bone() : name(), weight(1.0f) {}
         Bone(Symbol s, float w) : name(s), weight(w) {}
         Symbol name;
         float weight;
@@ -99,7 +99,7 @@ public:
 class CharBonesObject : public CharBones, public virtual Hmx::Object {
 public:
     CharBonesObject(){}
-    virtual ~CharBonesObject();
+    virtual ~CharBonesObject(){}
     OBJ_CLASSNAME(CharBonesObject);
     OBJ_SET_TYPE(CharBonesObject);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);

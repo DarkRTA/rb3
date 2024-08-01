@@ -1,4 +1,6 @@
 #include "char/CharBones.h"
+#include "char/CharClip.h"
+#include "utl/Symbols.h"
 
 void TestDstComplain(Symbol s){
     MILO_NOTIFY_ONCE("src %s not in dst, punting animation", s);
@@ -143,6 +145,15 @@ void* CharBones::FindPtr(Symbol s) const {
     else return (void*)&mStart[offset];
 }
 
+void CharBones::RecomputeSizes(){
+    mPosOffset = 0;
+    for(int i = 0; i < NUM_TYPES; i++){
+        int diff = mCounts[i + 1] - mCounts[i];
+        mOffsets[i + 1] = mOffsets[i] + diff * TypeSize(i);
+    }
+    mTotalSize = mEndOffset + 0xFU & 0xFFFFFFF0;
+}
+
 void CharBones::SetCompression(CompressionType ty){
     if(ty != mCompression){
         mCompression = ty;
@@ -156,10 +167,32 @@ void CharBones::Print(){
     }
 }
 
+void CharBones::ScaleAdd(CharClip* clip, float f1, float f2, float f3){
+    clip->ScaleAdd(*this, f1, f2, f3);
+}
+
 CharBonesAlloc::~CharBonesAlloc(){
-
+    _MemFree(mStart);
 }
 
-CharBonesObject::~CharBonesObject(){
-
+void CharBonesAlloc::ReallocateInternal(){
+    _MemFree(mStart);
+    mStart = (char*)_MemAlloc(mTotalSize, 0);
 }
+
+BinStream& operator>>(BinStream& bs, CharBones::Bone& bone){
+    bs >> bone.name;
+    bs >> bone.weight;
+    return bs;
+}
+
+BEGIN_CUSTOM_PROPSYNC(CharBones::Bone)
+    SYNC_PROP(name, o.name)
+    SYNC_PROP(weight, o.weight)
+    SYNC_PROP_SET(preview_val, gPropBones->StringVal(o.name), )
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(CharBonesObject)
+    gPropBones = this;
+    if(sym == bones) return PropSync(mBones, _val, _prop, _i + 1, _op);
+END_PROPSYNCS
