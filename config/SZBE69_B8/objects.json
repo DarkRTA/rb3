@@ -179,6 +179,7 @@
             "system/char/CharDriver.cpp": "NonMatching",
             "system/char/CharDriverMidi.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
+            "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
             "system/char/CharForeTwist.cpp": "NonMatching",
             "system/char/CharGuitarString.cpp": "NonMatching",

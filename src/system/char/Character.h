@@ -11,6 +11,7 @@ class RndCam;
 class CharInterest;
 class CharEyes;
 class CharDriver;
+class CharServoBone;
 
 class ShadowBone : public RndTransformable {
 public:
@@ -51,7 +52,7 @@ public:
 
         float mScreenSize; // 0x0
         ObjPtr<RndGroup, ObjectDir> mGroup; // 0x4
-        ObjPtr<RndGroup, ObjectDir> mGroup2; // 0x10
+        ObjPtr<RndGroup, ObjectDir> mTransGroup; // 0x10
     };
 
     Character();
@@ -92,6 +93,17 @@ public:
     void RemoveFromPoll(RndPollable*);
     void CopyBoundingSphere(Character*);
     void RepointSphereBase(ObjectDir*);
+    void FindInterestObjects(ObjectDir*);
+    void SetFocusInterest(Symbol, int);
+    void EnableBlinks(bool, bool);
+    void SetDebugDrawInterestObjects(bool);
+    void SetSphereBase(RndTransformable*);
+    void SetShadow(RndGroup*);
+    CharServoBone* BoneServo();
+
+    DataNode OnPlayClip(DataArray*);
+    DataNode OnCopyBoundingSphere(DataArray*);
+    DataNode OnGetCurrentInterests(DataArray*);
 
     static void Init();
     static void Terminate();
@@ -126,29 +138,3 @@ public:
 };
 
 #endif
-
-// enum PollState {
-//     kCharCreated = 0,
-//     kCharSyncObject = 1,
-//     kCharEntered = 2,
-//     kCharPolled = 3,
-//     kCharExited = 4,
-// };
-// class Character : public RndDir {
-//     // total size: 0x2A0
-// protected:
-//     class ObjVector mLods; // offset 0x1F4, size 0x10
-//     int mLastLod; // offset 0x204, size 0x4
-//     int mMinLod; // offset 0x208, size 0x4
-//     class ObjPtr mShadow; // offset 0x20C, size 0xC
-//     class CharDriver * mDriver; // offset 0x218, size 0x4
-//     class CharWalk * mWalk; // offset 0x21C, size 0x4
-//     unsigned char mSelfShadow; // offset 0x220, size 0x1
-//     unsigned char mSpotCutout; // offset 0x221, size 0x1
-//     unsigned char mFloorShadow; // offset 0x222, size 0x1
-//     class ObjOwnerPtr mSphereBase; // offset 0x224, size 0xC
-//     class Sphere mBounding; // offset 0x230, size 0x20
-//     class vector mShadowBones; // offset 0x250, size 0xC
-//     enum PollState mPollState; // offset 0x25C, size 0x4
-//     class CharacterTest * mTest; // offset 0x260, size 0x4
-// };

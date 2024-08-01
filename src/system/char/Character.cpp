@@ -6,7 +6,11 @@
 #include "rndobj/Utl.h"
 #include "char/CharDriver.h"
 #include "obj/ObjVersion.h"
+#include "char/Waypoint.h"
+#include "char/CharInterest.h"
+#include "char/CharServoBone.h"
 // #include "char/CharEyes.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(Character)
 
@@ -14,18 +18,18 @@ Character* gCharMe;
 
 BinStream& operator>>(BinStream&, Character::Lod&);
 
-Character::Lod::Lod(Hmx::Object* obj) : mScreenSize(0.0f), mGroup(obj, 0), mGroup2(obj, 0) {
+Character::Lod::Lod(Hmx::Object* obj) : mScreenSize(0.0f), mGroup(obj, 0), mTransGroup(obj, 0) {
 
 }
 
-Character::Lod::Lod(const Character::Lod& lod) : mScreenSize(lod.mScreenSize), mGroup(lod.mGroup), mGroup2(lod.mGroup2) {
+Character::Lod::Lod(const Character::Lod& lod) : mScreenSize(lod.mScreenSize), mGroup(lod.mGroup), mTransGroup(lod.mTransGroup) {
     
 }
 
 Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
     mScreenSize = lod.mScreenSize;
     mGroup = lod.mGroup;
-    mGroup2 = lod.mGroup2;
+    mTransGroup = lod.mTransGroup;
     return *this;
 }
 
@@ -70,6 +74,11 @@ void Character::Poll(){
 
 CharEyes* Character::GetEyes(){
     // return Find<CharEyes>("CharEyes.eyes", false);
+}
+
+CharServoBone* Character::BoneServo(){
+    if(mDriver) return dynamic_cast<CharServoBone*>(mDriver->mBones.Ptr());
+    else return 0;
 }
 
 ShadowBone* Character::AddShadowBone(RndTransformable* trans){
@@ -130,7 +139,7 @@ void Character::SyncObjects(){
     for(int i = 0; i < mLods.size(); i++){
         RndGroup* grp = mLods[i].mGroup;
         VectorRemove(mDraws, grp);
-        RndGroup* grp2 = mLods[i].mGroup2;
+        RndGroup* grp2 = mLods[i].mTransGroup;
         VectorRemove(mDraws, grp2);
     }
     SyncShadow();
@@ -274,3 +283,81 @@ void Character::PostLoad(BinStream& bs){
     }
 }
 #pragma pop
+
+BEGIN_COPYS(Character)
+    COPY_SUPERCLASS(RndDir)
+    CREATE_COPY(Character)
+    BEGIN_COPYING_MEMBERS
+        if(ty != kCopyFromMax){
+            COPY_MEMBER(mLods)
+            COPY_MEMBER(mLastLod)
+            COPY_MEMBER(mMinLod)
+            COPY_MEMBER(mShadow)
+            COPY_MEMBER(mDriver)
+            COPY_MEMBER(mSelfShadow)
+            COPY_MEMBER(mSphereBase)
+            COPY_MEMBER(mFrozen)
+            COPY_MEMBER(mMinLod)
+            COPY_MEMBER(mTransGroup)
+        }
+    END_COPYING_MEMBERS
+END_COPYS
+
+BEGIN_HANDLERS(Character)
+    HANDLE_ACTION(teleport, Teleport(_msg->Obj<Waypoint>(2)))
+    HANDLE(play_clip, OnPlayClip)
+    HANDLE_ACTION(calc_bounding_sphere, CalcBoundingSphere())
+    HANDLE(copy_bounding_sphere, OnCopyBoundingSphere)
+    HANDLE_ACTION(find_interest_objects, FindInterestObjects(_msg->Obj<ObjectDir>(2)))
+    HANDLE_ACTION(force_interest, SetFocusInterest(_msg->Obj<CharInterest>(2), false))
+    HANDLE_ACTION(force_interest_named, SetFocusInterest(_msg->Sym(2), 0))
+    HANDLE_ACTION(enable_blink, if(_msg->Size() > 3) EnableBlinks(_msg->Int(2), _msg->Int(3)); else EnableBlinks(_msg->Int(2), false))
+    HANDLE(list_interest_objects, OnGetCurrentInterests)
+    HANDLE_MEMBER_PTR(mTest)
+    HANDLE_SUPERCLASS(RndDir)
+    HANDLE_CHECK(0x57B)
+END_HANDLERS
+
+DataNode Character::OnCopyBoundingSphere(DataArray* da){
+    Character* c = da->Obj<Character>(2);
+    if(c) CopyBoundingSphere(c);
+    return DataNode(0);
+}
+
+DataNode Character::OnPlayClip(DataArray* msg){
+    if(mDriver){
+        int playint = msg->Size() > 3 ? msg->Int(3) : 4;
+        MILO_ASSERT(msg->Size()<=4, 0x58B);
+        return DataNode(mDriver->Play(msg->Node(2), playint, -1.0f, 1e+30f, 0.0f) != 0);
+    }
+    else return DataNode(0);
+}
+
+void Character::SetDebugDrawInterestObjects(bool b){ mDebugDrawInterestObjects = b; }
+
+DataNode Character::OnGetCurrentInterests(DataArray* da){
+    GetEyes();
+}
+
+BEGIN_CUSTOM_PROPSYNC(Character::Lod)
+    SYNC_PROP(screen_size, o.mScreenSize)
+    SYNC_PROP(group, o.mGroup)
+    SYNC_PROP(trans_group, o.mTransGroup)
+END_CUSTOM_PROPSYNC
+
+#include "utl/ClassSymbols.h"
+BEGIN_PROPSYNCS(Character)
+    SYNC_PROP_SET(sphere_base, mSphereBase, SetSphereBase(_val.Obj<RndTransformable>(0)))
+    SYNC_PROP(lods, mLods)
+    SYNC_PROP(force_lod, mMinLod)
+    SYNC_PROP(trans_group, mTransGroup)
+    SYNC_PROP(self_shadow, mSelfShadow)
+    SYNC_PROP(bounding, mBounding)
+    SYNC_PROP(frozen, mFrozen)
+    SYNC_PROP_SET(shadow, mShadow, SetShadow(_val.Obj<RndGroup>(0)))
+    SYNC_PROP_SET(driver, mDriver, )
+    SYNC_PROP_MODIFY(interest_to_force, mInterestToForce, SetFocusInterest(mInterestToForce, 0))
+    SYNC_PROP(debug_draw_interest_objects, mDebugDrawInterestObjects)
+    SYNC_PROP(CharacterTesting, *mTest)
+    SYNC_SUPERCLASS(RndDir)
+END_PROPSYNCS

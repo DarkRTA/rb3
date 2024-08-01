@@ -44,4 +44,6 @@ public:
     RndOverlay* mOverlay; // 0x70
 };
 
+bool PropSync(CharacterTest&, DataNode&, DataArray*, int, PropOp);
+
 #endif
