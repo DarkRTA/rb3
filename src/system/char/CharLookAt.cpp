@@ -25,11 +25,6 @@ void CharLookAt::Enter(){
     RndPollable::Enter();
 }
 
-RndTransformable* CharLookAt::GetSource() const {
-    const ObjPtr<RndTransformable, ObjectDir>& ptr = mSource ? mSource : mPivot;
-    return ptr;
-}
-
 #pragma push
 #pragma dont_inline on
 void CharLookAt::Poll(){

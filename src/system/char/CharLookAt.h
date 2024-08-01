@@ -23,9 +23,12 @@ public:
     virtual void Enter();
 
     void SyncLimits();
-    RndTransformable* GetSource() const;
     void SetMinYaw(float);
     void SetMaxYaw(float);
+    RndTransformable* GetSource() const {
+        const ObjPtr<RndTransformable, ObjectDir>& ptr = mSource ? mSource : mPivot;
+        return ptr;
+    }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

@@ -66,6 +66,12 @@ public:
     void ForceBlink();
     void SetEnableBlinks(bool, bool);
     bool SetFocusInterest(CharInterest*, int);
+    void ToggleInterestsDebugOverlay();
+    CharInterest* GetCurrentInterest();
+
+    DataNode OnToggleForceFocus(DataArray*);
+    DataNode OnToggleInterestOverlay(DataArray*);
+    DataNode OnAddInterest(DataArray*);
 
     static bool sDisableEyeDart;
     static bool sDisableEyeJitter;

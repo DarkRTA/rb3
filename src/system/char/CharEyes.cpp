@@ -79,6 +79,40 @@ CharEyes::~CharEyes(){
 
 }
 
+void CharEyes::Exit(){
+    unkd4 = 0;
+    unke0 = -1;
+    mInterests.clear();
+    for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+        it->mEye->Exit();
+    }
+    RndPollable::Exit();
+}
+
+void CharEyes::ClearAllInterestObjects(){ mInterests.clear(); }
+
+// fn_804CCF70
+RndTransformable* CharEyes::GetHead(){
+    if(mViewDirection) return mViewDirection;
+    else if(!mEyes.empty() && mEyes[0].mEye){
+        RndTransformable* src = mEyes[0].mEye->GetSource();
+        if(src) return src->TransParent();
+    }
+    return 0;
+}
+
+CharInterest* CharEyes::GetCurrentInterest(){
+    if(unkd4) return unkd4;
+    if(unkc8) return unkc8;
+    return 0;
+}
+
+void CharEyes::ForceBlink(){
+    unk13c = true;
+    unk140 = TheTaskMgr.Seconds(TaskMgr::b);
+    unk144++;
+}
+
 void CharEyes::ListPollChildren(std::list<RndPollable*>& plist) const {
     for(ObjVector<EyeDesc>::const_iterator it = mEyes.begin(); it != mEyes.end(); ++it){
         plist.push_back((*it).mEye);
@@ -200,6 +234,33 @@ BEGIN_COPYS(CharEyes)
         COPY_MEMBER(mLowerLidTrackRotate)
     END_COPYING_MEMBERS
 END_COPYS
+
+DataNode CharEyes::OnToggleForceFocus(DataArray* da){
+    if(unkd4) SetFocusInterest(0, 0);
+    else SetFocusInterest(unkc8, 0);
+    return DataNode(0);
+}
+
+DataNode CharEyes::OnToggleInterestOverlay(DataArray* da){
+    ToggleInterestsDebugOverlay();
+    return DataNode(0);
+}
+
+void CharEyes::ToggleInterestsDebugOverlay(){
+    RndOverlay* o = unk9c;
+    if(!o) return;
+    o->mShowing = o->mShowing == false;
+    o->mTimer.Restart();
+}
+
+BEGIN_HANDLERS(CharEyes)
+    HANDLE(add_interest, OnAddInterest)
+    HANDLE_ACTION(force_blink, ForceBlink())
+    HANDLE(toggle_force_focus, OnToggleForceFocus)
+    HANDLE(toggle_interest_overlay, OnToggleInterestOverlay)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x660)
+END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(CharEyes::EyeDesc)
     SYNC_PROP(eye, o.mEye)
