@@ -15,6 +15,7 @@
 INIT_REVS(Character)
 
 Character* gCharMe;
+int CharPollableSorter::sSearchID;
 
 BinStream& operator>>(BinStream&, Character::Lod&);
 
@@ -34,6 +35,55 @@ Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
 }
 
 // fn_8049C858 - charpollablesorter::sort
+void CharPollableSorter::Sort(std::vector<RndPollable*>& polls){
+    std::vector<Dep*> deps;
+    deps.reserve(polls.size());
+    int i = polls.size() - 1;
+    int old_i = i;
+    for(; i >= 0; i--){
+        CharPollable* cpoll = dynamic_cast<CharPollable*>(polls[i]);
+        if(cpoll){
+            Dep dep;
+            deps.push_back(&dep);
+        }
+        else {
+            polls[old_i--] = polls[i];
+        }
+    }
+    if(deps.empty()) return;
+    else {
+
+    }
+}
+
+bool CharPollableSorter::ChangedBy(Dep* d1, Dep* d2){
+    if(d1 == d2) return false;
+    sSearchID++;
+    mTarget = d1;
+    return ChangedByRecurse(d2);
+}
+
+bool CharPollableSorter::ChangedByRecurse(Dep* d){
+    if(!d) return false;
+    else if(d == mTarget) return true;
+    else if(d->searchID == sSearchID) return false;
+    else {
+        d->searchID = sSearchID;
+        for(std::list<Dep*>::iterator it = d->changedBy.begin(); it != d->changedBy.end(); ++it){
+            if(ChangedByRecurse(*it)) return true;
+        }
+        return false;
+    }
+}
+
+// fn_8049DD04
+void CharPollableSorter::AddDeps(Dep* me, const std::list<Hmx::Object*>& odeps, std::list<Dep*>& toDo, bool changedBy){
+    for(std::list<Hmx::Object*>::const_iterator it = odeps.begin(); it != odeps.end(); ++it){
+        if(*it){
+
+        }
+    }
+}
 
 void Character::Init(){ Register(); }
 void Character::Terminate(){}

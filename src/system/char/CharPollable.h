@@ -15,7 +15,7 @@ public:
     class Dep {
     public:
         Hmx::Object* obj; // 0x0
-        std::list<Hmx::Object*> changedBy; // 0x4 - is the list type different?
+        std::list<Dep*> changedBy; // 0x4
         RndPollable* poll; // 0xc
         int searchID; // 0x10
     };
@@ -26,6 +26,8 @@ public:
     bool ChangedBy(Dep*, Dep*);
     bool ChangedByRecurse(Dep*);
     void AddDeps(Dep*, const std::list<Hmx::Object*>&, std::list<Dep*>&, bool);
+
+    static int sSearchID;
 
     std::map<Hmx::Object*, Dep> mDeps;
     Dep* mTarget;
