@@ -3,8 +3,8 @@
 #include "char/CharWeightSetter.h"
 #include "char/CharLookAt.h"
 #include "char/CharInterest.h"
-#include "obj/DataFile.h"
 #include "obj/DataUtl.h"
+#include "obj/Task.h"
 #include "utl/Symbols.h"
 
 bool CharEyes::sDisableEyeDart;
@@ -13,10 +13,193 @@ bool CharEyes::sDisableInterestObjects;
 bool CharEyes::sDisableProceduralBlink;
 bool CharEyes::sDisableEyeClamping;
 
+INIT_REVS(CharEyes)
+
+CharEyes::EyeDesc::EyeDesc(Hmx::Object* o) : mEye(o, 0), mUpperLid(o, 0), mLowerLid(o, 0), mLowerLidBlink(o, 0), mUpperLidBlink(o, 0) {
+
+}
+
+CharEyes::EyeDesc::EyeDesc(const CharEyes::EyeDesc& desc) : mEye(desc.mEye), mUpperLid(desc.mUpperLid), mLowerLid(desc.mLowerLid),
+    mLowerLidBlink(desc.mLowerLidBlink), mUpperLidBlink(desc.mUpperLidBlink) {
+
+}
+
+CharEyes::EyeDesc& CharEyes::EyeDesc::operator=(const CharEyes::EyeDesc& desc){
+    mEye = desc.mEye;
+    mUpperLid = desc.mUpperLid;
+    mLowerLid = desc.mLowerLid;
+    mUpperLidBlink = desc.mUpperLidBlink;
+    mLowerLidBlink = desc.mLowerLidBlink;
+    return *this;
+}
+
+void CharEyes::CharInterestState::ResetState(){ unkc = -1.0f; }
+
+CharEyes::CharInterestState::CharInterestState(Hmx::Object* o) : mInterest(o, 0) {
+    ResetState();
+}
+
+CharEyes::CharInterestState::CharInterestState(const CharEyes::CharInterestState& state) : mInterest(state.mInterest) {
+    ResetState();
+}
+
+CharEyes::CharInterestState& CharEyes::CharInterestState::operator=(const CharEyes::CharInterestState& state){
+    mInterest = state.mInterest;
+    return *this;
+}
+
+void CharEyes::CharInterestState::BeginRefractoryPeriod(){
+    unkc = TheTaskMgr.Seconds(TaskMgr::b);
+}
+
+bool CharEyes::CharInterestState::IsInRefractoryPeriod(){
+    if(!mInterest || unkc < 0.0) return false;
+    else {
+        float secs = TheTaskMgr.Seconds(TaskMgr::b) - unkc;
+        if(secs < mInterest->mRefractoryPeriod) return true;
+        else return false;
+    }
+}
+
+float CharEyes::CharInterestState::RefractoryTimeRemaining(){
+    if(!mInterest || unkc < 0.0) return 0.0f;
+    else {
+        float secs = TheTaskMgr.Seconds(TaskMgr::b) - unkc;
+        if(secs < mInterest->mRefractoryPeriod) return mInterest->mRefractoryPeriod - secs;
+        else return 0.0f;
+    }
+}
+
 CharEyes::CharEyes() : mEyes(this), mInterests(this), mFaceServo(this, 0), mCamWeight(this, 0), mViewDirection(this, 0), mHeadLookAt(this, 0),
     unkc8(this, 0), unkd4(this, 0) {
 
 }
+
+CharEyes::~CharEyes(){
+
+}
+
+void CharEyes::ListPollChildren(std::list<RndPollable*>& plist) const {
+    for(ObjVector<EyeDesc>::const_iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+        plist.push_back((*it).mEye);
+    }
+}
+
+void CharEyes::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    for(ObjVector<CharInterestState>::iterator it = mInterests.begin(); it != mInterests.end(); ++it){
+        ObjectDir* dir = (*it).mInterest->Dir();
+        if(dir == Dir()){
+            changedBy.push_back((*it).mInterest);
+        }
+    }
+    if(!mEyes.empty()){
+        changedBy.push_back(GetHead());
+        change.push_back(GetTarget());
+    }
+    if(mHeadLookAt) changedBy.push_back(mHeadLookAt);
+    if(mFaceServo) changedBy.push_back(mFaceServo);
+}
+
+SAVE_OBJ(CharEyes, 0x575)
+
+BinStream& operator>>(BinStream& bs, CharEyes::EyeDesc& desc){
+    bs >> desc.mEye;
+    bs >> desc.mUpperLid;
+    if(CharEyes::gRev > 6) bs >> desc.mLowerLid;
+    if(CharEyes::gRev > 0xF){
+        bs >> desc.mUpperLidBlink;
+        bs >> desc.mLowerLidBlink;
+    }
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, CharEyes::CharInterestState& state){
+    bs >> state.mInterest;
+    return bs;
+}
+
+BEGIN_LOADS(CharEyes)
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x12, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev > 5) LOAD_SUPERCLASS(CharWeightable)
+    if(gRev > 4) bs >> mEyes;
+    else {
+        ObjPtrList<CharLookAt, ObjectDir> pList(this, kObjListNoNull);
+        bs >> pList;
+        mEyes.resize(pList.size());
+        int idx = 0;
+        for(ObjPtrList<CharLookAt, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+            mEyes[idx].mEye = *it;
+            mEyes[idx].mUpperLid = 0;
+            mEyes[idx].mLowerLid = 0;
+            mEyes[idx].mLowerLidBlink = 0;
+            mEyes[idx].mUpperLidBlink = 0;
+            idx++;
+        }
+    }
+    if(gRev - 3 <= 1U){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        bs >> tPtr;
+    }
+    mInterests.clear();
+    if(gRev - 4 < 5U){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        int cnt;
+        bs >> cnt;
+        for(int i = 0; i < cnt; i++){
+            bs >> tPtr;
+            bs.ReadInt();
+        }
+    }
+    else if(gRev > 8) bs >> mInterests;
+    if(gRev > 4) bs >> mFaceServo;
+    else mFaceServo = 0;
+    if(gRev > 7) bs >> mCamWeight;
+    if(gRev > 9) bs >> unk64;
+    if(gRev > 10) bs >> mViewDirection;
+    if(gRev > 0xB) bs >> mHeadLookAt;
+    if(gRev > 0xC) bs >> mMaxExtrapolation;
+    if(gRev > 0xD) bs >> mMinTargetDist;
+    if(gRev > 0xE){
+        bs >> mUpperLidTrackUp;
+        bs >> mUpperLidTrackDown;
+        bs >> mLowerLidTrackUp;
+        if(gRev < 0x11){
+            bs.ReadInt();
+            bs >> mLowerLidTrackDown;
+            bs.ReadInt();
+        }
+        else bs >> mLowerLidTrackDown;
+    }
+    if(gRev > 0x11) bs >> mLowerLidTrackRotate;
+END_LOADS
+
+BEGIN_COPYS(CharEyes)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(CharWeightable)
+    CREATE_COPY(CharEyes)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mEyes)
+        COPY_MEMBER(mInterests)
+        COPY_MEMBER(mFaceServo)
+        COPY_MEMBER(unka4)
+        COPY_MEMBER(unka8)
+        COPY_MEMBER(unkac)
+        COPY_MEMBER(unkb4)
+        COPY_MEMBER(mCamWeight)
+        COPY_MEMBER(unk64)
+        COPY_MEMBER(mViewDirection)
+        COPY_MEMBER(mHeadLookAt)
+        COPY_MEMBER(mMaxExtrapolation)
+        COPY_MEMBER(mMinTargetDist)
+        COPY_MEMBER(mUpperLidTrackUp)
+        COPY_MEMBER(mUpperLidTrackDown)
+        COPY_MEMBER(mLowerLidTrackUp)
+        COPY_MEMBER(mLowerLidTrackDown)
+        COPY_MEMBER(mLowerLidTrackRotate)
+    END_COPYING_MEMBERS
+END_COPYS
 
 BEGIN_CUSTOM_PROPSYNC(CharEyes::EyeDesc)
     SYNC_PROP(eye, o.mEye)
@@ -30,7 +213,6 @@ BEGIN_CUSTOM_PROPSYNC(CharEyes::CharInterestState)
     SYNC_PROP(interest, o.mInterest)
 END_CUSTOM_PROPSYNC
 
-// (DataNode& _val, DataArray* _prop, int _i, PropOp _op)
 BEGIN_PROPSYNCS(CharEyes)
     SYNC_PROP(eyes, mEyes)
     SYNC_PROP(view_direction, mViewDirection)
@@ -124,11 +306,11 @@ BEGIN_PROPSYNCS(CharEyes)
             return PropSync(unka0, _val, _prop, _i, _op);
         }
     }
-    SYNC_PROP(min_target_dist, unk84)
-    SYNC_PROP(ulid_track_up, unk88)
-    SYNC_PROP(ulid_track_down, unk8c)
-    SYNC_PROP(llid_track_up, unk90)
-    SYNC_PROP(llid_track_down, unk94)
-    SYNC_PROP(llid_track_rotate, unk98)
+    SYNC_PROP(min_target_dist, mMinTargetDist)
+    SYNC_PROP(ulid_track_up, mUpperLidTrackUp)
+    SYNC_PROP(ulid_track_down, mUpperLidTrackDown)
+    SYNC_PROP(llid_track_up, mLowerLidTrackUp)
+    SYNC_PROP(llid_track_down, mLowerLidTrackDown)
+    SYNC_PROP(llid_track_rotate, mLowerLidTrackRotate)
     SYNC_SUPERCLASS(CharWeightable)
 END_PROPSYNCS

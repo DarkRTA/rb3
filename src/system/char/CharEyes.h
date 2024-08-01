@@ -33,8 +33,13 @@ public:
         CharInterestState(Hmx::Object*);
         CharInterestState(const CharInterestState&);
         CharInterestState& operator=(const CharInterestState&);
+        void ResetState();
+        void BeginRefractoryPeriod();
+        bool IsInRefractoryPeriod();
+        float RefractoryTimeRemaining();
 
         ObjOwnerPtr<CharInterest, ObjectDir> mInterest; // 0x0
+        float unkc; // 0xc
     };
 
     CharEyes();
@@ -54,25 +59,37 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void ListPollChildren(std::list<RndPollable*>&) const;
 
+    RndTransformable* GetHead();
+    RndTransformable* GetTarget();
+
     static bool sDisableEyeDart;
     static bool sDisableEyeJitter;
     static bool sDisableInterestObjects;
     static bool sDisableProceduralBlink;
     static bool sDisableEyeClamping;
 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     ObjVector<EyeDesc> mEyes; // 0x28
     ObjVector<CharInterestState> mInterests; // 0x34
     ObjPtr<CharFaceServo, ObjectDir> mFaceServo; // 0x40
     ObjPtr<CharWeightSetter, ObjectDir> mCamWeight; // 0x4c
     float unk58, unk5c, unk60;
-    int unk64;
+    int unk64; // 0x64 - mask
     ObjPtr<RndTransformable, ObjectDir> mViewDirection; // 0x68
     ObjPtr<CharLookAt, ObjectDir> mHeadLookAt; // 0x74
-    float mMaxExtrapolation, unk84, unk88, unk8c, unk90, unk94;
-    bool unk98;
+    float mMaxExtrapolation; // 0x80
+    float mMinTargetDist; // 0x84
+    float mUpperLidTrackUp; // 0x88
+    float mUpperLidTrackDown; // 0x8c
+    float mLowerLidTrackUp; // 0x90
+    float mLowerLidTrackDown; // 0x94
+    bool mLowerLidTrackRotate; // 0x98
     RndOverlay* unk9c;
-    int unka0;
-    float unka4, unka8, unkac, unkb4, unkb8, unkbc, unkc0;
+    int unka0; // 0xa0 - also a mask
+    float unka4, unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
     bool unkc4, unkc5;
     ObjPtr<CharInterest, ObjectDir> unkc8; // 0xc8
     ObjPtr<CharInterest, ObjectDir> unkd4; // 0xd4
