@@ -3,8 +3,11 @@
 #include "math/Rot.h"
 #include "math/Rand.h"
 #include "obj/Task.h"
+#include "utl/Symbols.h"
 
 bool CharLookAt::sDisableJitter;
+
+INIT_REVS(CharLookAt);
 
 CharLookAt::CharLookAt() : mSource(this, 0), mPivot(this, 0), mDest(this, 0), mHalfTime(0.0f), mMinYaw(-80.0f), mMaxYaw(80.0f), mMinPitch(-80.0f), mMaxPitch(80.0f),
     mMinWeightYaw(-1.0f), mMaxWeightYaw(1.0f), mWeightYawSpeed(10000.0f), unk6c(1e+29f,0.0f,0.0f), unk78(1.0f), mSourceRadius(0.0f), vec80(0.0f, 0.0f, 0.0f),
@@ -174,3 +177,127 @@ void CharLookAt::SetMaxYaw(float yaw){
     mMaxYaw = yaw;
     SyncLimits();
 }
+
+void CharLookAt::SetMinPitch(float pitch){
+    mMinPitch = pitch;
+    SyncLimits();
+}
+
+void CharLookAt::SetMaxPitch(float pitch){
+    mMaxPitch = pitch;
+    SyncLimits();
+}
+
+// fn_804EDB34 - sync limits
+void CharLookAt::SyncLimits(){
+    ClampEq(mMinYaw, -80.0f, 80.0f);
+    ClampEq(mMaxYaw, -80.0f, 80.0f);
+    ClampEq(mMinPitch, -80.0f, 80.0f);
+    ClampEq(mMaxPitch, -80.0f, 80.0f);
+    float max_yaw = Max(fabs_f(mMinYaw), fabs_f(mMaxYaw));
+    float max_pitch = Max(fabs_f(mMinPitch), fabs_f(mMaxPitch));
+    float max_overall = Max(max_yaw, max_pitch);
+    mBounds.mMin.y = cos(max_overall * DEG2RAD);
+    mBounds.mMax.y = 1.0E+29f;
+    mBounds.mMin.z = mBounds.mMin.y * tan(mMinYaw * DEG2RAD);
+    mBounds.mMax.z = mBounds.mMin.y * tan(mMaxYaw * DEG2RAD);
+    mBounds.mMin.x = mBounds.mMin.y * tan(mMinPitch * DEG2RAD);
+    mBounds.mMax.x = mBounds.mMin.y * tan(mMaxPitch * DEG2RAD);
+}
+
+void CharLookAt::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    changedBy.push_back(GetSource());
+    changedBy.push_back(mDest);
+    change.push_back(mPivot);
+}
+
+SAVE_OBJ(CharLookAt, 0x178)
+
+BEGIN_LOADS(CharLookAt)
+    LOAD_REVS(bs)
+    ASSERT_REVS(5, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(CharWeightable)
+    bs >> mSource;
+    bs >> mPivot;
+    bs >> mDest;
+    bs >> mHalfTime;
+    bs >> mMinYaw;
+    bs >> mMaxYaw;
+    bs >> mMinPitch;
+    bs >> mMaxPitch;
+    if(gRev > 1){
+        bs >> mMinWeightYaw;
+        bs >> mMaxWeightYaw;
+        bs >> mWeightYawSpeed;
+    }
+    if(gRev < 3) mAllowRoll = true;
+    else bs >> mAllowRoll;
+    if(gRev < 4){
+        mEnableJitter = false;
+        mPitchJitterLimit = 0;
+        mYawJitterLimit = 0;
+    }
+    else {
+        bs >> mEnableJitter;
+        bs >> mPitchJitterLimit;
+        bs >> mYawJitterLimit;
+    }
+    if(gRev > 4) bs >> mSourceRadius;
+    SyncLimits();
+END_LOADS
+
+BEGIN_COPYS(CharLookAt)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(CharWeightable)
+    CREATE_COPY(CharLookAt)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mSource)
+        COPY_MEMBER(mPivot)
+        COPY_MEMBER(mDest)
+        COPY_MEMBER(mHalfTime)
+        COPY_MEMBER(mMinYaw)
+        COPY_MEMBER(mMaxYaw)
+        COPY_MEMBER(mMinPitch)
+        COPY_MEMBER(mMaxPitch)
+        COPY_MEMBER(mMinWeightYaw)
+        COPY_MEMBER(mMaxWeightYaw)
+        COPY_MEMBER(mWeightYawSpeed)
+        COPY_MEMBER(mAllowRoll)
+        COPY_MEMBER(mSourceRadius)
+        COPY_MEMBER(mEnableJitter)
+        COPY_MEMBER(mYawJitterLimit)
+        COPY_MEMBER(mPitchJitterLimit)
+    END_COPYING_MEMBERS
+    SyncLimits();
+END_COPYS
+
+BEGIN_HANDLERS(CharLookAt)
+    HANDLE_SUPERCLASS(CharPollable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x1DF)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(CharLookAt)
+    SYNC_PROP(source, mSource)
+    SYNC_PROP(pivot, mPivot)
+    SYNC_PROP(target, mDest)
+    SYNC_PROP(half_time, mHalfTime)
+    SYNC_PROP_SET(min_yaw, mMinYaw, SetMinYaw(_val.Float(0)))
+    SYNC_PROP_SET(max_yaw, mMaxYaw, SetMaxYaw(_val.Float(0)))
+    SYNC_PROP_SET(min_pitch, mMinPitch, SetMinPitch(_val.Float(0)))
+    SYNC_PROP_SET(max_pitch, mMaxPitch, SetMaxPitch(_val.Float(0)))
+    SYNC_PROP(min_weight_yaw, mMinWeightYaw)
+    SYNC_PROP(max_weight_yaw, mMaxWeightYaw)
+    SYNC_PROP(weight_yaw_speed, mWeightYawSpeed)
+    SYNC_PROP(allow_roll, mAllowRoll)
+    SYNC_PROP(show_range, mShowRange)
+    SYNC_PROP(source_radius, mSourceRadius)
+    SYNC_PROP(enable_jitter, mEnableJitter)
+    SYNC_PROP(yaw_jitter_limit, mYawJitterLimit)
+    SYNC_PROP(pitch_jitter_limit, mPitchJitterLimit)
+    SYNC_PROP(test_range, mTestRange)
+    SYNC_PROP(test_range_pitch, mTestRangePitch)
+    SYNC_PROP(test_range_yaw, mTestRangeYaw)
+    SYNC_SUPERCLASS(CharWeightable)
+END_PROPSYNCS
