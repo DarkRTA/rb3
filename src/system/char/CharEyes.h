@@ -61,6 +61,11 @@ public:
 
     RndTransformable* GetHead();
     RndTransformable* GetTarget();
+    void ClearAllInterestObjects();
+    void AddInterestObject(CharInterest*);
+    void ForceBlink();
+    void SetEnableBlinks(bool, bool);
+    bool SetFocusInterest(CharInterest*, int);
 
     static bool sDisableEyeDart;
     static bool sDisableEyeJitter;
@@ -77,7 +82,7 @@ public:
     ObjPtr<CharFaceServo, ObjectDir> mFaceServo; // 0x40
     ObjPtr<CharWeightSetter, ObjectDir> mCamWeight; // 0x4c
     float unk58, unk5c, unk60;
-    int unk64; // 0x64 - mask
+    int mDefaultFilterFlags; // 0x64 - mask
     ObjPtr<RndTransformable, ObjectDir> mViewDirection; // 0x68
     ObjPtr<CharLookAt, ObjectDir> mHeadLookAt; // 0x74
     float mMaxExtrapolation; // 0x80
@@ -88,7 +93,7 @@ public:
     float mLowerLidTrackDown; // 0x94
     bool mLowerLidTrackRotate; // 0x98
     RndOverlay* unk9c;
-    int unka0; // 0xa0 - also a mask
+    int mInterestFilterFlags; // 0xa0 - also a mask
     float unka4, unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
     bool unkc4, unkc5;
     ObjPtr<CharInterest, ObjectDir> unkc8; // 0xc8

@@ -100,6 +100,8 @@ public:
     void SetSphereBase(RndTransformable*);
     void SetShadow(RndGroup*);
     CharServoBone* BoneServo();
+    void SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>&, ObjectDir*);
+    void ForceBlink();
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);

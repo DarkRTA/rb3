@@ -9,7 +9,7 @@
 #include "char/Waypoint.h"
 #include "char/CharInterest.h"
 #include "char/CharServoBone.h"
-// #include "char/CharEyes.h"
+#include "char/CharEyes.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(Character)
@@ -32,6 +32,8 @@ Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
     mTransGroup = lod.mTransGroup;
     return *this;
 }
+
+// fn_8049C858 - charpollablesorter::sort
 
 void Character::Init(){ Register(); }
 void Character::Terminate(){}
@@ -73,12 +75,53 @@ void Character::Poll(){
 }
 
 CharEyes* Character::GetEyes(){
-    // return Find<CharEyes>("CharEyes.eyes", false);
+    return Find<CharEyes>("CharEyes.eyes", false);
 }
 
 CharServoBone* Character::BoneServo(){
     if(mDriver) return dynamic_cast<CharServoBone*>(mDriver->mBones.Ptr());
     else return 0;
+}
+
+void Character::SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>& oList, ObjectDir* dir){
+    CharEyes* eyes = GetEyes();
+    if(eyes){
+        eyes->ClearAllInterestObjects();
+        for(ObjPtrList<CharInterest, ObjectDir>::iterator it = oList.begin(); it != oList.end(); ++it){
+            if(ValidateInterest(*it, dir ? dir : (*it)->Dir())) eyes->AddInterestObject(*it);
+        }
+    }
+}
+
+void Character::ForceBlink(){
+    CharEyes* eyes = GetEyes();
+    if(eyes) eyes->ForceBlink();
+}
+
+void Character::EnableBlinks(bool b1, bool b2){
+    CharEyes* eyes = GetEyes();
+    if(eyes) eyes->SetEnableBlinks(b1, b2);
+}
+
+bool Character::SetFocusInterest(CharInterest* interest, int i){
+    CharEyes* eyes = GetEyes();
+    if(eyes) return eyes->SetFocusInterest(interest, i);
+    else return false;
+}
+
+void Character::SetInterestFilterFlags(int flags){
+    CharEyes* eyes = GetEyes();
+    if(eyes){
+        eyes->mInterestFilterFlags = flags;
+        eyes->unk15c = true;
+    }
+}
+
+void Character::ClearInterestFilterFlags(){
+    CharEyes* eyes = GetEyes();
+    if(eyes){
+        eyes->mInterestFilterFlags = eyes->mDefaultFilterFlags;
+    }
 }
 
 ShadowBone* Character::AddShadowBone(RndTransformable* trans){
@@ -336,7 +379,24 @@ DataNode Character::OnPlayClip(DataArray* msg){
 void Character::SetDebugDrawInterestObjects(bool b){ mDebugDrawInterestObjects = b; }
 
 DataNode Character::OnGetCurrentInterests(DataArray* da){
-    GetEyes();
+    int size = 0;
+    CharEyes* eyes = GetEyes();
+    if(eyes) size = eyes->mInterests.size();
+    DataArrayPtr ptr;
+    ptr->Resize(size + 1);
+    ptr->Node(0) = DataNode(Symbol());
+    for(int i = 0; i < size; i++){
+        bool within = i < eyes->mInterests.size();
+        CharInterest* interest;
+        if(!within){
+            interest = ObjOwnerPtr<CharInterest, ObjectDir>(0, 0);
+        }
+        else {
+            interest = eyes->mInterests[i].mInterest;
+        }
+        ptr->Node(i + 1) = DataNode(Symbol(interest->Name()));
+    }
+    return DataNode(ptr);
 }
 
 BEGIN_CUSTOM_PROPSYNC(Character::Lod)

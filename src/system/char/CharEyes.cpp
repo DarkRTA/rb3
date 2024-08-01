@@ -156,7 +156,7 @@ BEGIN_LOADS(CharEyes)
     if(gRev > 4) bs >> mFaceServo;
     else mFaceServo = 0;
     if(gRev > 7) bs >> mCamWeight;
-    if(gRev > 9) bs >> unk64;
+    if(gRev > 9) bs >> mDefaultFilterFlags;
     if(gRev > 10) bs >> mViewDirection;
     if(gRev > 0xB) bs >> mHeadLookAt;
     if(gRev > 0xC) bs >> mMaxExtrapolation;
@@ -188,7 +188,7 @@ BEGIN_COPYS(CharEyes)
         COPY_MEMBER(unkac)
         COPY_MEMBER(unkb4)
         COPY_MEMBER(mCamWeight)
-        COPY_MEMBER(unk64)
+        COPY_MEMBER(mDefaultFilterFlags)
         COPY_MEMBER(mViewDirection)
         COPY_MEMBER(mHeadLookAt)
         COPY_MEMBER(mMaxExtrapolation)
@@ -247,16 +247,16 @@ BEGIN_PROPSYNCS(CharEyes)
                 }
                 MILO_ASSERT(_op <= kPropInsert, 0x67B);
                 if(_op == kPropGet){
-                    int final = unk64 & res;
+                    int final = mDefaultFilterFlags & res;
                     _val = DataNode(final > 0);
                 }
                 else {
-                    if(_val.Int(0) != 0) unk64 |= res;
-                    else unk64 &= ~res;
+                    if(_val.Int(0) != 0) mDefaultFilterFlags |= res;
+                    else mDefaultFilterFlags &= ~res;
                 }
                 return true;
             }
-            return PropSync(unk64, _val, _prop, _i, _op);
+            return PropSync(mDefaultFilterFlags, _val, _prop, _i, _op);
         }
     }
     SYNC_PROP(head_lookat, mHeadLookAt)
@@ -294,16 +294,16 @@ BEGIN_PROPSYNCS(CharEyes)
                 }
                 MILO_ASSERT(_op <= kPropInsert, 0x684);
                 if(_op == kPropGet){
-                    int final = unka0 & res;
+                    int final = mInterestFilterFlags & res;
                     _val = DataNode(final > 0);
                 }
                 else {
-                    if(_val.Int(0) != 0) unka0 |= res;
-                    else unka0 &= ~res;
+                    if(_val.Int(0) != 0) mInterestFilterFlags |= res;
+                    else mInterestFilterFlags &= ~res;
                 }
                 return true;
             }
-            return PropSync(unka0, _val, _prop, _i, _op);
+            return PropSync(mInterestFilterFlags, _val, _prop, _i, _op);
         }
     }
     SYNC_PROP(min_target_dist, mMinTargetDist)
