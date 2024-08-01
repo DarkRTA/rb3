@@ -40,9 +40,9 @@ BEGIN_PROPSYNCS(CharEyes)
     {
         static Symbol _s("default_interest_categories");
         if(sym == _s){
-            if(_i++ < _prop->Size()){
-                int res = 0;
+            if(++_i < _prop->Size()){
                 DataNode& node = _prop->Node(_i);
+                int res = 0;
                 switch(node.Type()){
                     case kDataInt:
                         res = node.Int(0);
@@ -52,7 +52,7 @@ BEGIN_PROPSYNCS(CharEyes)
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
                         }
-                        Symbol bitsym(bitstr);
+                        Symbol bitsym(bitstr + 4);
                         DataArray* macro = DataGetMacro(bitsym);
                         if(!macro){
                             MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
@@ -63,15 +63,18 @@ BEGIN_PROPSYNCS(CharEyes)
                         MILO_ASSERT(0, 0x67B);
                         break;
                 }
+                MILO_ASSERT(_op <= kPropInsert, 0x67B);
                 if(_op == kPropGet){
-                    _val = DataNode(unk64 & res);
+                    int final = unk64 & res;
+                    _val = DataNode(final > 0);
                 }
                 else {
                     if(_val.Int(0) != 0) unk64 |= res;
                     else unk64 &= ~res;
                 }
+                return true;
             }
-            else return PropSync(unk64, _val, _prop, _i, _op);
+            return PropSync(unk64, _val, _prop, _i, _op);
         }
     }
     SYNC_PROP(head_lookat, mHeadLookAt)
@@ -84,9 +87,9 @@ BEGIN_PROPSYNCS(CharEyes)
     {
         static Symbol _s("interest_filter_testing");
         if(sym == _s){
-            if(_i++ < _prop->Size()){
-                int res = 0;
+            if(++_i < _prop->Size()){
                 DataNode& node = _prop->Node(_i);
+                int res = 0;
                 switch(node.Type()){
                     case kDataInt:
                         res = node.Int(0);
@@ -96,7 +99,7 @@ BEGIN_PROPSYNCS(CharEyes)
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
                         }
-                        Symbol bitsym(bitstr);
+                        Symbol bitsym(bitstr + 4);
                         DataArray* macro = DataGetMacro(bitsym);
                         if(!macro){
                             MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
@@ -104,11 +107,13 @@ BEGIN_PROPSYNCS(CharEyes)
                         res = macro->Int(0);
                         break;
                     default:
-                        MILO_ASSERT(0, 0x67B);
+                        MILO_ASSERT(0, 0x684);
                         break;
                 }
+                MILO_ASSERT(_op <= kPropInsert, 0x684);
                 if(_op == kPropGet){
-                    _val = DataNode(unka0 & res);
+                    int final = unka0 & res;
+                    _val = DataNode(final > 0);
                 }
                 else {
                     if(_val.Int(0) != 0) unka0 |= res;
@@ -116,7 +121,7 @@ BEGIN_PROPSYNCS(CharEyes)
                 }
                 return true;
             }
-            else return PropSync(unka0, _val, _prop, _i, _op);
+            return PropSync(unka0, _val, _prop, _i, _op);
         }
     }
     SYNC_PROP(min_target_dist, unk84)
