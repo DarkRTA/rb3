@@ -1,5 +1,6 @@
 #ifndef META_PRELOADPANEL_H
 #define META_PRELOADPANEL_H
+#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 #include "os/ContentMgr.h"
 #include "os/FileCache.h"
@@ -25,6 +26,7 @@ public:
     Symbol CurrentSong() const;
     
     static FileCache* sCache;
+    NEW_OBJ(PreloadPanel)
 
     int unk3c; // some kind of state?
     std::vector<String> unk40;
@@ -34,6 +36,7 @@ public:
     bool unk58;
     String unk5c;
     bool unk68;
+
 };
 
 #endif

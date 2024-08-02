@@ -2,5 +2,6 @@
 #define OS_JOYPAD_WII_H
 
 int GetWiiJoypadType(int);
+int JoypadPollWiiRemotes();
 
 #endif
