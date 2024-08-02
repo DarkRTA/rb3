@@ -1,4 +1,5 @@
 #include "char/CharClipDriver.h"
+#include "obj/Msg.h"
 
 CharClipDriver::CharClipDriver(Hmx::Object* owner, CharClip* clip, int mask, float blendwidth, CharClipDriver* next, float f2, float f3, bool multclips) :
     mPlayFlags(clip->mPlayFlags), mBlendWidth(blendwidth), mTimeScale(1.0f), mDBeat(0), mAdvanceBeat(0),
@@ -34,3 +35,18 @@ CharClipDriver* CharClipDriver::DeleteClip(Hmx::Object* obj){
     else if(mNext) mNext = mNext->DeleteClip(obj);
     return this;
 }
+
+#pragma push
+#pragma pool_data off
+void CharClipDriver::ExecuteEvent(Symbol s){
+    if(!s.Null()){
+        if(mClip->TypeDef()){
+            static DataNode& dude(DataVariable("clip.dude"));
+            dude = DataNode(mClip.RefOwner()->Dir());
+            static Message h(s);
+            h.SetType(s);
+            mClip->HandleType(h);
+        }
+    }
+}
+#pragma pop
