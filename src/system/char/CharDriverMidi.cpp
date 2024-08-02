@@ -38,23 +38,13 @@ void CharDriverMidi::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx:
 
 SAVE_OBJ(CharDriverMidi, 0x58)
 
+// fn_804C90E0
 BEGIN_LOADS(CharDriverMidi)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
     LOAD_SUPERCLASS(CharDriver)
     if(gRev < 7){
-        ObjectDir* dir = mClips;
-        char buf[0x80];
-        bs.ReadString(buf, 0x80);
-        if(!dir && mDefaultClip){
-            dir = mDefaultClip->Dir();
-        }
-        if(mDefaultClip && dir){
-            mDefaultClip = dir->FindObject(buf, false);
-        }
-        else {
-            mDefaultClip = 0;
-        }
+        mDefaultClip.Load(bs, false, mClips);
     }
     if(gRev == 2){
         String str; bs >> str;
