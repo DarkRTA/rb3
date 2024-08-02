@@ -2,6 +2,7 @@
 #include "obj/MsgSource.h"
 #include "char/CharClip.h"
 #include "char/CharClipGroup.h"
+#include "char/CharClipDriver.h"
 #include "utl/TimeConversion.h"
 #include "obj/Task.h"
 #include "utl/Symbols.h"
@@ -82,27 +83,22 @@ BEGIN_HANDLERS(CharDriverMidi)
     HANDLE_CHECK(0x99)
 END_HANDLERS
 
-float minblendWidth = 0.0f;
-
 // fn_804C945C
 DataNode CharDriverMidi::OnMidiParser(DataArray* da){
     CharClip* clip;
     bool b = false;
     if(!unk89 && mDefaultClip) b = true;
-    if(b){
-        clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
-    }
+    if(b) clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
     else clip = FindClip(da->Node(2), false);
     if(!clip) return DataNode(0);
     if(clip || clip != FirstClip()){
         float somefloat = da->Float(3);
         if(clip->mPlayFlags & 0x200){
             float secs = TheTaskMgr.Seconds(TaskMgr::b);
-            float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat());
-            float sub = (clip->AverageBeatsPerSecond() - secs);
-            somefloat = sub * bts;
+            float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat()) - secs;
+            somefloat = bts * clip->AverageBeatsPerSecond();
         }
-        MaxEq(somefloat, minblendWidth);
+        MaxEq(somefloat, 0.0f);
         Play(clip, 0, somefloat * mBlendOverridePct, -somefloat, 0.0f);
     }
     return DataNode(0);
@@ -136,8 +132,8 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
                 if(clip->mPlayFlags & 0x200){
                     somefloat *= clip->AverageBeatsPerSecond();
                 }
-                MaxEq(somefloat, minblendWidth);
-                Play(clip, 0, -somefloat, 1e+30f, 0.0f); // returns something, which you then modify
+                MaxEq(somefloat, 0.0f);
+                Play(clip, 0, -somefloat, 1e+30f, 0.0f)->mBlendWidth = somefloat * mBlendOverridePct;
             }
             return DataNode(0);
         }
