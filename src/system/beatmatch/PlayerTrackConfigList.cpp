@@ -5,7 +5,7 @@
 
 // fn_80472568
 PlayerTrackConfigList::PlayerTrackConfigList(int reserve_num_players) : mAutoVocals(0), mUseVocalHarmony(0), mUseRealDrums(0), mDiscoUnflip(0), unk2c(0),
-    mGameCymbalLanes(0), unk34(0), unk38(0), unk3c(1), unk3d(0) {
+    mGameCymbalLanes(0), unk34(0), unk38(0), unk3c(1), mProcessed(0) {
     MILO_ASSERT(kMorePlayersThanWeWillEverNeed > reserve_num_players, 0x21);
     mTrackDiffs.reserve(kMorePlayersThanWeWillEverNeed);
     mTrackNums.reserve(kMorePlayersThanWeWillEverNeed);
@@ -20,7 +20,7 @@ void PlayerTrackConfigList::Reset(){
     mTrackTypes.clear();
     mTrackOccupied.clear();
     mConfigs.clear();
-    unk3d = false;
+    mProcessed = false;
     unk38 = 0;
     mAutoVocals = false;
     mUseRealDrums = false;
@@ -42,10 +42,36 @@ void PlayerTrackConfigList::UpdateConfig(const UserGuid& u, TrackType ty, int i,
     GetConfigByUserGuid(u).Update(ty, i, j, b);
 }
 
+void PlayerTrackConfigList::ProcessConfig(const UserGuid& u){
+    ProcessConfig(GetConfigByUserGuid(u));
+}
+
+void PlayerTrackConfigList::RemoveConfig(const UserGuid& u){
+    
+}
+
+bool PlayerTrackConfigList::UserPresent(const UserGuid& u){
+    for(int i = 0; i < mConfigs.size(); i++){
+        if(mConfigs[i].mUserGuid == u) return true;
+    }
+    return false;
+}
+
+const UserGuid& PlayerTrackConfigList::TrackPlayer(int trk) const {
+    for(int i = 0; i < mConfigs.size(); i++){
+        if(trk == mConfigs[i].mTrackNum) return mConfigs[i].mUserGuid;
+    }
+    return gNullUserGuid;
+}
+
+bool PlayerTrackConfigList::TrackUsed(int trk) const {
+    return !TrackPlayer(trk).IsNull();
+}
+
 void PlayerTrackConfigList::ChangeDifficulty(const UserGuid& u, int i){
     PlayerTrackConfig& cfg = GetConfigByUserGuid(u);
     cfg.Update(cfg.mTrackType, i, cfg.mSlot, cfg.mRemote);
-    mTrackDiffs[cfg.unk20] = i;
+    mTrackDiffs[cfg.mTrackNum] = i;
 }
 
 const UserGuid& PlayerTrackConfigList::GetUserGuidByIndex(int idx) const {
@@ -89,4 +115,69 @@ UserGuid& PlayerTrackConfigList::InstrumentPlayer(SongInfoAudioType ty, int i) c
         }
     }
     return gNullUserGuid;
+}
+
+void PlayerTrackConfigList::Process(std::vector<TrackType>& tracktypes){
+    MILO_ASSERT(!mProcessed, 0x14D);
+    MILO_ASSERT(mTrackTypes.empty(), 0x14E);
+    mTrackTypes = tracktypes;
+    int size = mTrackTypes.size();
+    mTrackDiffs.reserve(size);
+    mTrackNums.reserve(size);
+    mTrackOccupied.reserve(size);
+    for(int i = 0; i < size; i++){
+        mTrackDiffs.push_back(unk38);
+        mTrackNums.push_back(i);
+        mTrackOccupied.push_back(0);
+    }
+    if(unk3c){
+        for(int i = 0; i < mConfigs.size(); i++){
+            ProcessConfig(mConfigs[i]);
+        }
+        mProcessed = true;
+    }
+}
+
+int PlayerTrackConfigList::TrackNumOfExactType(TrackType ty){
+    for(int i = 0; i < mTrackTypes.size(); i++){
+        if(ty == mTrackTypes[i] && mTrackOccupied[i] == 0) return i;
+    }
+    return -1;
+}
+
+int PlayerTrackConfigList::TrackNumOfType(TrackType ty){
+    if(mTrackTypes.empty()){
+        MILO_FAIL("Attempt to call PlayerTrackConfigList::TrackNumOfType before song is loaded");
+    }
+    int num = TrackNumOfExactType(ty);
+    if(num == -1){
+        switch(ty){
+            case kTrackRealGuitar22Fret:
+                num = TrackNumOfExactType(kTrackRealGuitar);
+                break;
+            case kTrackRealBass22Fret:
+                num = TrackNumOfExactType(kTrackRealBass);
+                break;
+            default:
+                num = -1;
+                break;
+        }
+    }
+    return num;
+}
+
+void PlayerTrackConfigList::ProcessConfig(PlayerTrackConfig& cfg){
+    TrackType ty = cfg.mTrackType;
+    if(ty != kTrackNone){
+        int diff = cfg.mDifficulty;
+        int num = TrackNumOfType(ty);
+        if(num != -1){
+            cfg.mTrackNum = num;
+            mTrackDiffs[num] = diff;
+            mTrackOccupied[num] = 1;
+        }
+        else {
+            MILO_FAIL("Couldn't create track of type %s. Either songs.dta claims it exists but it doesn't, or you're trying to play head-to-head, which is obsolete.", TrackTypeToSym(ty));
+        }
+    }
 }

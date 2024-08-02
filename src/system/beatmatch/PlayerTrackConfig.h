@@ -9,7 +9,7 @@
 class PlayerTrackConfig {
 public:
     PlayerTrackConfig(const UserGuid& u, TrackType ty, int i, int j, bool b) : 
-        mUserGuid(u), mTrackType(ty), mDifficulty(i), mSlot(j), mRemote(b), unk20(-1) {}
+        mUserGuid(u), mTrackType(ty), mDifficulty(i), mSlot(j), mRemote(b), mTrackNum(-1) {}
 
     void Update(TrackType ty, int i, int slot, bool remote){
         mTrackType = ty;
@@ -23,7 +23,7 @@ public:
     int mDifficulty; // 0x14
     int mSlot; // 0x18
     bool mRemote; // 0x1c
-    int unk20;
+    int mTrackNum; // 0x20
 };
 
 class PlayerTrackConfigList {
@@ -47,6 +47,15 @@ public:
     void SetGameCymbalLanes(unsigned int);
     unsigned int GetGameCymbalLanes() const;
     UserGuid& InstrumentPlayer(SongInfoAudioType, int) const;
+    void Process(std::vector<TrackType>&);
+    void ProcessConfig(PlayerTrackConfig&);
+    void ProcessConfig(const UserGuid&);
+    int TrackNumOfExactType(TrackType);
+    int TrackNumOfType(TrackType);
+    bool TrackUsed(int) const;
+    const UserGuid& TrackPlayer(int) const;
+    bool UserPresent(const UserGuid&);
+    void RemoveConfig(const UserGuid&);
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8
@@ -62,7 +71,7 @@ public:
     bool unk34; // 0x34
     int unk38; // 0x38
     bool unk3c; // 0x3c
-    bool unk3d; // 0x3d
+    bool mProcessed; // 0x3d
 };
 
 #endif
