@@ -28,15 +28,16 @@ MsgSource::~MsgSource(){
     }
 }
 
+// fn_8033252C
 void MsgSource::ChainSource(MsgSource* source, MsgSource* othersource){
     MILO_ASSERT(source, 0x3D);
     if(!othersource) othersource = this;
     if(!mSinks.empty()){
-        source->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+        source->AddSink(this);
     }
     else {
         for(std::list<EventSink>::iterator it = othersource->mEventSinks.begin(); it != othersource->mEventSinks.end(); it++){
-            source->AddSink(this, it->ev, Symbol(), MsgSource::kHandle);
+            source->AddSink(this, it->ev);
         }
     }
 }

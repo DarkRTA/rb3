@@ -1,4 +1,5 @@
 #include "char/CharBone.h"
+#include "char/CharBones.h"
 #include "char/CharBoneDir.h"
 #include "rndobj/TransRemover.h"
 #include "utl/Symbols.h"
@@ -11,13 +12,13 @@ CharBone::CharBone() : mPositionContext(0), mScaleContext(0), mRotation(CharBone
 
 void CharBone::StuffBones(std::list<CharBones::Bone>& bonelist, int i) const {
     if(mPositionContext & i){
-        bonelist.push_back(CharBones::Bone(ChannelName(Name(), CharBones::TYPE_POS), GetWeight(i)));
+        bonelist.push_back(CharBones::Bone(CharBones::ChannelName(Name(), CharBones::TYPE_POS), GetWeight(i)));
     }
     if(mScaleContext & i){
-        bonelist.push_back(CharBones::Bone(ChannelName(Name(), CharBones::TYPE_SCALE), GetWeight(i)));
+        bonelist.push_back(CharBones::Bone(CharBones::ChannelName(Name(), CharBones::TYPE_SCALE), GetWeight(i)));
     }
     if(mRotation != CharBones::TYPE_END && mRotationContext & i){
-        bonelist.push_back(CharBones::Bone(ChannelName(Name(), mRotation), GetWeight(i)));
+        bonelist.push_back(CharBones::Bone(CharBones::ChannelName(Name(), mRotation), GetWeight(i)));
     }
 }
 

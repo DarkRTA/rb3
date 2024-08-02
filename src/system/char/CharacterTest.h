@@ -18,6 +18,7 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void Load(BinStream&);
+    void Poll();
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)
@@ -42,5 +43,7 @@ public:
     int unk6c; // 0x6c
     RndOverlay* mOverlay; // 0x70
 };
+
+bool PropSync(CharacterTest&, DataNode&, DataArray*, int, PropOp);
 
 #endif

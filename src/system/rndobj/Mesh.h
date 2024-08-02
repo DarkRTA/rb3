@@ -117,6 +117,7 @@ public:
     void SetMat(RndMat*);
     void SetGeomOwner(RndMesh*);
     void Sync(int);
+    void SetBone(int, RndTransformable*, bool);
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)

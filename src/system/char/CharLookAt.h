@@ -23,10 +23,16 @@ public:
     virtual void Enter();
 
     void SyncLimits();
-    RndTransformable* GetSource() const;
     void SetMinYaw(float);
     void SetMaxYaw(float);
+    void SetMinPitch(float);
+    void SetMaxPitch(float);
+    RndTransformable* GetSource() const {
+        const ObjPtr<RndTransformable, ObjectDir>& ptr = mSource ? mSource : mPivot;
+        return ptr;
+    }
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
@@ -56,7 +62,7 @@ public:
     bool unkb1; // 0xb1
     bool mEnableJitter; // 0xb2
     float mYawJitterLimit; // 0xb4
-    float mPitchJitterLimit;
+    float mPitchJitterLimit; // 0xb8
 
 };
 

@@ -153,9 +153,10 @@ void Rnd::DrawRectScreen(const Hmx::Rect& r, const Hmx::Color& c1, RndMat* m, co
     DrawRect(r, c1, m, c2, c3);
 }
 
-void Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool){
+Vector2& Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool){
     static Vector2 s;
     s = v;
+    return s;
 }
 
 void Rnd::SetupFont(){

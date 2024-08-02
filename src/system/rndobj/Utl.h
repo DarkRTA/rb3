@@ -34,6 +34,8 @@ const char* CacheResource(const char*, Hmx::Object*);
 const char* CacheResource(const char*, CacheResourceResult&);
 bool SortDraws(RndDrawable*, RndDrawable*);
 bool SortPolls(const RndPollable*, const RndPollable*);
+void ConvertBonesToTranses(ObjectDir*, bool);
+int GenerationCount(RndTransformable*, RndTransformable*);
 
 void RndUtlPreInit();
 void RndUtlInit();

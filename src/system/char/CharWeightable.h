@@ -1,5 +1,5 @@
-#ifndef CHAR_CHARTASKMGR_H
-#define CHAR_CHARTASKMGR_H
+#ifndef CHAR_CHARWEIGHTABLE_H
+#define CHAR_CHARWEIGHTABLE_H
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 
