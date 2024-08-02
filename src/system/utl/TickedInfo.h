@@ -13,8 +13,11 @@ template <class T> class TickedInfoCollection {
 public:
     TickedInfoCollection() : mInfos() {}
     bool AddInfo(int, T);
+    bool Cmp(int tick, const TickedInfo<T>& info){
+        return tick < info.mTick;
+    }
 
-    std::vector<TickedInfo<T>*> mInfos;
+    std::vector<TickedInfo<T> > mInfos;
 };
 
 #endif
