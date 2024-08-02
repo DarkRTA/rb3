@@ -16,17 +16,17 @@ void CharDriverMidi::Enter(){
     unk89 = true;
     CharDriver::Enter();
     MsgSource* msgParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mParser.Str(), true));
-    if(msgParser) msgParser->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+    if(msgParser) msgParser->AddSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mFlagParser.Str(), true));
-    if(msgFlagParser) msgFlagParser->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+    if(msgFlagParser) msgFlagParser->AddSink(this);
 }
 
 void CharDriverMidi::Exit(){
     CharDriver::Exit();
     MsgSource* msgParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mParser.Str(), false));
-    if(msgParser) msgParser->RemoveSink(this, Symbol());
+    if(msgParser) msgParser->RemoveSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mFlagParser.Str(), false));
-    if(msgFlagParser) msgFlagParser->RemoveSink(this, Symbol());
+    if(msgFlagParser) msgFlagParser->RemoveSink(this);
 }
 
 void CharDriverMidi::Poll(){ CharDriver::Poll(); }
