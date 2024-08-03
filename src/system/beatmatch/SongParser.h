@@ -5,6 +5,7 @@
 #include "obj/Data.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
+#include "beatmatch/RGChords.h"
 
 enum ReadingState {
     kReadingBeat,
@@ -15,6 +16,11 @@ enum ReadingState {
 
 class SongParser : public MidiReceiver {
 public:
+
+    class DifficultyInfo {
+    public:
+    };
+
     SongParser(InternalSongParserSink&, int, TempoMap*&, MeasureMap*&, int);
     virtual ~SongParser();
     virtual void OnNewTrack(int);
@@ -24,6 +30,15 @@ public:
     virtual void OnText(int, const char*, unsigned char);
     virtual bool OnAcceptMaps(TempoMap*, MeasureMap*);
     virtual void SetMidiReader(MidiReader*);
+
+    void AddReceiver(MidiReceiver*);
+    void CheckDrumSubmixes();
+    bool TrackAllowsOverlappingNotes(TrackType) const;
+
+    void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageBeat(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageRealGuitar(int, unsigned char, unsigned char, unsigned char);
 
     int mNumSlots; // 0x8
     int mPlayerSlot; // 0xc
@@ -35,7 +50,7 @@ public:
     BinStream* mFile; // 0x24
     String mFilename; // 0x28
     bool mMerging; // 0x34
-    std::vector<int> mReceivers; // 0x38 - MidiReceiver*?
+    std::vector<MidiReceiver*> mReceivers; // 0x38
     InternalSongParserSink* mSink; // 0x40
     SongInfo* mSongInfo; // 0x44
     DataArray* mTrackNameMapping; // 0x48
@@ -50,7 +65,7 @@ public:
     DataArray* mRollIntervals; // 0x6c
     DataArray* mTrillIntervals; // 0x70
     std::vector<int> mParts; // 0x74
-    std::vector<int> mDifficultyInfos; // 0x7c
+    std::vector<DifficultyInfo> mDifficultyInfos; // 0x7c
     int mCommonPhraseInProgress; // 0x84
     int mSoloPhraseInProgress; // 0x88
     int mDrumFillInProgress; // 0x8c
@@ -58,15 +73,22 @@ public:
     int mTrillInProgress; // 0x94
     int mPlayerFocusInProgress[2]; // 0x98, 0x9c
     int unka0; // 0xa0
-    std::vector<int> mRollSlotsArray; // 0xa4
-    std::vector<int> mTrillSlotsArray; // 0xac
-    std::vector<int> mRGRollArray; // 0xb4
-    std::vector<int> mRGTrillArray; // 0xbc
+    std::vector<unsigned int> mRollSlotsArray; // 0xa4
+    std::vector<std::pair<int, int> > mTrillSlotsArray; // 0xac
+    std::vector<RGRollChord> mRGRollArray; // 0xb4
+    std::vector<RGTrill> mRGTrillArray; // 0xbc
     int mVocalRangeShiftStartTick; // 0xc4
     int mSoloPhraseEndTick; // 0xc8
     int mDrumFillEndTick; // 0xcc
     int mNumSoloPhrases; // 0xd0
-    int mState; // 0xd4 - should be an enum
+    enum {
+        kIgnore = 0,
+        kGems = 1,
+        kVocalNotes = 2,
+        kBeat = 3,
+        kUnk4 = 4,
+        kRealGuitar = 5
+    } mState; // 0xd4
     Symbol mTrackName; // 0xd8
     TrackType mTrackType; // 0xdc
     int mTrackPart; // 0xe0 - PartInfo*
@@ -78,8 +100,8 @@ public:
     float mKeyboardRangeShiftDuration; // 0xf8
     unsigned int mCurrentFillLanes; // 0xfc
     unsigned int mCurrentCymbalSlots; // 0x100
-    bool mSeparateParts; // 0x104
-    bool mIgnoreGemDurations; // 0x105
+    bool mIgnoreGemDurations; // 0x104
+    bool mSeparateParts; // 0x105
     std::list<int> mDrumStyleInstruments; // 0x108
     std::list<int> mVocalStyleInstruments; // 0x110
     bool mDrumStyleGems; // 0x118
