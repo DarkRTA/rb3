@@ -34,20 +34,41 @@ public:
     void AddReceiver(MidiReceiver*);
     void CheckDrumSubmixes();
     bool TrackAllowsOverlappingNotes(TrackType) const;
+    bool CheckDrumMapMarker(int, int, bool);
+    bool CheckDrumFillMarker(int, bool);
+    bool CheckDrumCymbalMarker(int, int, bool);
+    bool CheckForceHopoMarker(int, int, bool);
+    bool CheckKeyboardRangeMarker(int, int, bool);
+    void OnFillStart(int, unsigned char);
+    bool HandlePhraseEnd(int, unsigned char);
+    bool HandleFillEnd(int, unsigned char);
+    bool HandleRollEnd(int, unsigned char);
+    bool HandleTrillEnd(int, unsigned char);
+    void OnGemEnd(int, unsigned char);
+    void OnCommonPhraseEnd(int);
+    void OnSoloPhraseEnd(int);
+    void AddPhrase(BeatmatchPhraseType, int, int&, int);
+    TempoMap* GetTempoMap();
+    void OnFillEnd(int, unsigned char);
+    bool CheckFillMarker(int, bool);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageBeat(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageRealGuitar(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageGemOn(int, unsigned char, unsigned char);
+    void OnMidiMessageGemOff(int, unsigned char);
+    bool OnMidiMessageCommonOn(int, unsigned char);
+    bool OnMidiMessageCommonOff(int, unsigned char);
 
     int mNumSlots; // 0x8
     int mPlayerSlot; // 0xc
     int mLowVocalPitch; // 0x10
     int mHighVocalPitch; // 0x14
-    TempoMap** mTempoMap; // 0x18
-    MeasureMap** mMeasureMap; // 0x1c
+    TempoMap*& mTempoMap; // 0x18
+    MeasureMap*& mMeasureMap; // 0x1c
     MidiReader* mMidiReader; // 0x20
-    BinStream* mFile; // 0x24
+    BinStream* mFile; // 0x24 - ref instead of ptr?
     String mFilename; // 0x28
     bool mMerging; // 0x34
     std::vector<MidiReceiver*> mReceivers; // 0x38
