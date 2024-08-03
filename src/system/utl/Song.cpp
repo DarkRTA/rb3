@@ -5,14 +5,17 @@
 #include "rndobj/Poll.h"
 #include "beatmatch/HxAudio.h"
 #include "synth/Synth.h"
+#include "midi/MidiParser.h"
+#include "midi/MidiParserMgr.h"
 #include "utl/Symbols.h"
 
-Hmx::Object* Song::sCallback;
+Hmx::Object* Song::sCallback; // almost definitely some derivative of an Object, rather than an Object itself
 
 // (**(code **)(*sCallback + 0xc))((double)fVar1,sCallback,this);
 // (**(code **)(*sCallback + 0x10))(); - returns an ObjectDir*
 // (**(code **)(*sCallback + 0x14))(sCallback,1); - presumably the dtor
-//   (**(code **)(*sCallback + 0x1c))(); - returns void
+// (**(code **)(*sCallback + 0x18))(sCallback,this,this_00);
+// (**(code **)(*sCallback + 0x1c))(); - returns void
 
 Song::Song() : mHxMaster(0), mHxSongData(0), mDebugParsers(this, kObjListNoNull), mSongEndFrame(0), mSpeed(1.0f), unk5c(0), unk60(0), unk7c(1) {
     SetName("Song", ObjectDir::Main());
@@ -223,3 +226,80 @@ BEGIN_HANDLERS(Song)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x239)
 END_HANDLERS
+
+DataNode Song::GetBookmarks(){
+    DataArrayPtr ptr(new DataArray(unk24.size() + 1));
+    ptr->Node(0) = DataNode("song_begin");
+    int idx = 1;
+    for(std::map<int, Symbol>::iterator it = unk24.begin(); it != unk24.end(); ++it){
+        ptr->Node(idx) = DataNode(it->second);
+        idx++;
+    }  
+    return DataNode(ptr);
+}
+
+DataNode Song::GetMidiParsers(){
+    DataArrayPtr ptr(new DataArray(0));
+    if(TheMidiParserMgr){
+        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); ++it){
+            String str((*it)->Name());
+            if(str != "events_parser"){
+                ptr->Insert(ptr->Size(), DataNode(*it));
+            }
+        }
+    }
+    return DataNode(ptr);
+}
+
+void Song::UpdateDebugParsers(){
+    RndOverlay* o = RndOverlay::Find("song", true);
+    if(o) o->mCallback = this;
+    o->mShowing = mDebugParsers.size() > 0;
+    o->mTimer.Restart();
+}
+
+void Song::SetLoopStart(float f){
+    unk5c = f;
+    mLoopStart = GetMBTFromFrame(f, 0);
+    if(unk60 < f) SetLoopEnd(f);
+}
+
+void Song::SetLoopEnd(float f){
+    unk60 = f;
+    mLoopEnd = GetMBTFromFrame(f, 0);
+    if(unk5c > f) SetLoopStart(f);
+}
+
+// fn_8035FC14
+void Song::SetStateDirty(bool dirty){
+    unk7c = dirty;
+    DataArrayPtr ptr(DataNode(Symbol(Name())));
+//   (**(code **)(*sCallback + 0x18))(sCallback,this,this_00); sCallback->SomeMethod(this, (DataArray*)ptr);
+}
+
+void Song::SetSpeed(){
+    if(mHxMaster){
+        mHxMaster->GetHxAudio()->GetSongStream();
+    }
+}
+
+void Song::AddSection(Symbol s, float f){
+    int idx = GetBeatMap()->BeatToTick(f);
+    unk24[idx] = s;
+}
+
+BEGIN_CUSTOM_PROPSYNC(MBT)
+    SYNC_PROP(m, o.measure)
+    SYNC_PROP(b, o.beat)
+    SYNC_PROP(t, o.tick)
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(Song)
+    SYNC_PROP_SET(song, mSongName, SetSong(_val.Sym(0)))
+    SYNC_PROP_MODIFY(speed, mSpeed, SetSpeed())
+    SYNC_PROP_MODIFY_ALT(debug_parsers, mDebugParsers, UpdateDebugParsers())
+    SYNC_PROP(loop_start, mLoopStart)
+    SYNC_PROP(loop_end, mLoopEnd)
+    SYNC_PROP(song_end_frame, mSongEndFrame)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS

@@ -26,10 +26,10 @@ public:
     virtual float EndFrame();
 
     virtual float UpdateOverlay(RndOverlay*, float);
-    virtual void OnNewTrack(int);
-    virtual void OnEndOfTrack();
-    virtual void OnAllTracksRead();
-    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char);
+    virtual void OnNewTrack(int){}
+    virtual void OnEndOfTrack(){}
+    virtual void OnAllTracksRead(){}
+    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char){}
     virtual void OnText(int, const char*, unsigned char);
     virtual DataNode OnMBTFromSeconds(const DataArray*);
     virtual void CreateSong(Symbol, DataArray*, HxSongData**, HxMaster**);
@@ -45,7 +45,7 @@ public:
     void SetStateDirty(bool);
     MBT GetMBTFromFrame(float, int*);
     MBT GetMBTFromTick(int, int*);
-    ObjectDir* MainDir();
+    ObjectDir* MainDir() const;
     void SetLoopStart(float);
     void SetLoopEnd(float);
     void JumpTo(int);
@@ -54,6 +54,8 @@ public:
     void Pause();
     void SetSong(Symbol);
     void AddSection(Symbol, float);
+    void UpdateDebugParsers();
+    void SetSpeed();
 
     DataNode GetBookmarks();
     DataNode GetMidiParsers();
