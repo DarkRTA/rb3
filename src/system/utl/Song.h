@@ -41,11 +41,21 @@ public:
     TempoMap* GetTempoMap();
     BeatMap* GetBeatMap();
     MeasureMap* GetMeasureMap();
+    void SyncState();
+    void SetStateDirty(bool);
+    MBT GetMBTFromFrame(float, int*);
+    MBT GetMBTFromTick(int, int*);
+    ObjectDir* MainDir();
+    void SetLoopStart(float);
+    void SetLoopEnd(float);
+    void JumpTo(int);
+
+    DataNode GetBookmarks();
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    HxMaster* unk1c; // 0x1c
+    HxMaster* mHxMaster; // 0x1c
     HxSongData* mHxSongData; // 0x20
     std::map<int, Symbol> unk24; // 0x24
     ObjPtrList<Hmx::Object, ObjectDir> mDebugParsers; // 0x3c
