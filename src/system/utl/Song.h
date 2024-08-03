@@ -49,11 +49,18 @@ public:
     void SetLoopStart(float);
     void SetLoopEnd(float);
     void JumpTo(int);
+    void JumpTo(Symbol);
+    void Play();
+    void Pause();
+    void SetSong(Symbol);
+    void AddSection(Symbol, float);
 
     DataNode GetBookmarks();
+    DataNode GetMidiParsers();
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    static Hmx::Object* sCallback;
 
     HxMaster* mHxMaster; // 0x1c
     HxSongData* mHxSongData; // 0x20

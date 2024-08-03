@@ -3,6 +3,16 @@
 #include "utl/BeatMap.h"
 #include "obj/Msg.h"
 #include "rndobj/Poll.h"
+#include "beatmatch/HxAudio.h"
+#include "synth/Synth.h"
+#include "utl/Symbols.h"
+
+Hmx::Object* Song::sCallback;
+
+// (**(code **)(*sCallback + 0xc))((double)fVar1,sCallback,this);
+// (**(code **)(*sCallback + 0x10))(); - returns an ObjectDir*
+// (**(code **)(*sCallback + 0x14))(sCallback,1); - presumably the dtor
+//   (**(code **)(*sCallback + 0x1c))(); - returns void
 
 Song::Song() : mHxMaster(0), mHxSongData(0), mDebugParsers(this, kObjListNoNull), mSongEndFrame(0), mSpeed(1.0f), unk5c(0), unk60(0), unk7c(1) {
     SetName("Song", ObjectDir::Main());
@@ -94,10 +104,7 @@ void Song::Load(){
     for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mDebugParsers.begin(); it != mDebugParsers.end(); ++it){
         vec.push_back((*it)->Name());
     }
-//   if (sCallback == (int *)0x0) {
-//     pcVar2 = ::MakeString(kAssertStr,s_Song.cpp_80bbf8b7,0xf8,s_sCallback_80bbf8cd);
-//     Debug::Fail((Debug *)TheDebug,pcVar2);
-//   }
+    MILO_ASSERT(sCallback, 0xF8);
 //   (**(code **)(*sCallback + 0x1c))();
     Unload();
     if(mSongName.Null()) return;
@@ -130,3 +137,89 @@ void Song::Unload(){
     mHxSongData = 0;
     unk24.clear();
 }
+
+void Song::Play(){
+    if(mHxMaster){
+        mHxMaster->Jump(mFrame * 1000.0f);
+        while(!mHxMaster->GetHxAudio()->IsReady()){
+            TheSynth->Poll();
+            mHxMaster->GetHxAudio()->Poll();
+        }
+        mHxMaster->GetHxAudio()->SetPaused(false);
+    }
+}
+
+void Song::Pause(){
+    if(mHxMaster){
+        if(mHxMaster){
+            mHxMaster->GetHxAudio()->SetPaused(true);
+        }
+    }
+}
+
+void Song::SetSong(Symbol s){
+    mSongName = s;
+    Load();
+}
+
+void Song::OnText(int i, const char* cc, unsigned char uc){
+    static bool sListening;
+    if(uc == 3){
+        sListening = strcmp(cc, "EVENTS") == 0;
+    }
+    if(sListening){
+        bool insection = strncmp(cc, "[section ", 9) == 0;
+        if(insection){
+            String str(cc);
+            str = str.substr(9, strlen(str.c_str()) - 10);
+            Symbol s(str.c_str());
+            AddSection(s, GetBeatMap()->Beat(i));
+        }
+    }
+}
+
+DataNode Song::OnMBTFromSeconds(const DataArray* da){
+    MBT mbt = GetMBTFromFrame(da->Float(2), 0);
+    *da->Var(3) = DataNode(mbt.measure);
+    *da->Var(4) = DataNode(mbt.beat);
+    *da->Var(5) = DataNode(mbt.tick);
+    return DataNode(0);
+}
+
+void Song::JumpTo(Symbol s){
+    int jump = 0;
+    for(std::map<int, Symbol>::iterator it = unk24.begin(); it != unk24.end(); ++it){
+        if(s == it->second){
+            jump = it->first;
+            break;
+        }
+    }
+    JumpTo(jump);
+}
+
+void Song::JumpTo(int i){
+    float f = 0;
+    if(mHxSongData){
+        f = mHxSongData->GetTempoMap()->TickToTime(i) / 1000.0f;
+    }
+    MILO_ASSERT(sCallback, 0x19A);
+    // (**(code **)(*sCallback + 0xc))((double)fVar1,sCallback,this);
+    SyncState();
+}
+
+BEGIN_HANDLERS(Song)
+    if(sym == get_bookmarkers) return GetBookmarks();
+    if(sym == get_midi_parsers) return GetMidiParsers();
+    HANDLE_ACTION(jump_to, _msg->Type(2) == kDataSymbol ? JumpTo(_msg->Sym(2)) : JumpTo(_msg->Int(2)))
+    HANDLE_ACTION(sync_state, SyncState())
+    HANDLE_ACTION(set_loop_start, SetLoopStart(_msg->Float(2)))
+    HANDLE_ACTION(set_loop_end, SetLoopEnd(_msg->Float(2)))
+    HANDLE_ACTION(play, Play())
+    HANDLE_ACTION(pause, Pause())
+    HANDLE_EXPR(song_name, mSongName)
+    HANDLE(mbt_from_seconds, OnMBTFromSeconds)
+    HANDLE_ACTION(add_section, AddSection(_msg->Sym(2), _msg->Float(3)))
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x239)
+END_HANDLERS
