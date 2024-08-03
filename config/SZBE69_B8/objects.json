@@ -548,6 +548,7 @@
             "system/utl/PoolAlloc.cpp": "NonMatching",
             "system/utl/Profiler.cpp": "NonMatching",
             "system/utl/Rso_Utl.cpp": "NonMatching",
+            "system/utl/Song.cpp": "NonMatching",
             "system/utl/SongInfoAudioType.cpp": "Matching",
             "system/utl/SongInfoCopy.cpp": "NonMatching",
             "system/utl/Spew.cpp": "Matching",
