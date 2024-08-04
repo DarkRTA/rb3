@@ -27,19 +27,30 @@ struct PartInfo {
     bool overwritten; // 0x18
 };
 
+// struct GemInProgress {
+//     // total size: 0xC
+//     int mTick; // offset 0x0, size 0x4
+//     int mNoStrum; // offset 0x4, size 0x4
+//     int mPlayers; // offset 0x8, size 0x4
+// };
+
 class SongParser : public MidiReceiver {
 public:
     class GemInProgress {
     public:
-        int unk0, unk4, unk8, unkc;
+        GemInProgress(int tick, int numslots, int cymbalslots) :
+            unk0(tick), unk8(numslots), unkc(cymbalslots) {}
+        int unk0;
+        int unk4;
+        int unk8;
+        int unkc;
     };
 
     // size: 0x13C holy moly
     class DifficultyInfo {
     public:
-        int unk0; // 0x0
-        int unk4; // 0x4
-        int unk8; // 0x8
+        std::vector<GemInProgress> mGemsInProgress; // 0x0
+        bool mActivePlayers; // 0x8
         int mForceHopoOnStart; // 0xc
         int mForceHopoOnEnd; // 0x10
         int mForceHopoOffStart; // 0x14
@@ -76,7 +87,7 @@ public:
     };
 
     SongParser(InternalSongParserSink&, int, TempoMap*&, MeasureMap*&, int);
-    virtual ~SongParser();
+    virtual ~SongParser(){}
     virtual void OnNewTrack(int);
     virtual void OnEndOfTrack();
     virtual void OnAllTracksRead();

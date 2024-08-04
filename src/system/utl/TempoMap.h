@@ -18,6 +18,10 @@ public:
     virtual int GetLoopTick(int, int&) const = 0;
     virtual int GetLoopTick(int) const = 0;
     virtual float GetTimeInLoop(float) = 0;
+
+    float TickToTime(int i) const {
+        return TickToTime((float)i);
+    }
 };
 
 void SetTheTempoMap(TempoMap*);

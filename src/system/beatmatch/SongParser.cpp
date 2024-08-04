@@ -8,6 +8,8 @@
 
 Timer gSongLoadTimer;
 
+#define NULL_TICK 0x10000000
+
 // fn_80488788
 SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& tmap, MeasureMap*& mmap, int j) : mNumSlots(32), mPlayerSlot(9),
     mLowVocalPitch(36), mHighVocalPitch(84), mTempoMap(tmap), mMeasureMap(mmap), mMidiReader(0), mFile(0), mFilename(0), mMerging(0),
@@ -89,7 +91,7 @@ void SongParser::MergeMidiFile(BinStream& bs, const char* cc){
     FillTrackList(mTrackNames, bs);
     AnalyzeTrackList();
     for(int i = 0; i < mParts.size(); i++){
-        // mParts[i].unk18 = 0;
+        mParts[i].overwritten = false;
     }
     mReadingState = kReadingNonParts;
     mMidiReader = new MidiReader(bs, *this, cc);
@@ -118,8 +120,64 @@ void SongParser::SetNumPlayers(int num){ mNumPlayers = num; }
 
 void SongParser::Reset(){
     for(int i = 0; i < mDifficultyInfos.size(); i++){
-
+        mDifficultyInfos[i].mForceHopoOnStart = NULL_TICK;
+        mDifficultyInfos[i].mForceHopoOnEnd = NULL_TICK;
+        mDifficultyInfos[i].mForceHopoOffStart = NULL_TICK;
+        mDifficultyInfos[i].mForceHopoOffEnd = NULL_TICK;
+        mDifficultyInfos[i].mRGChordNumsStartTick = NULL_TICK;
+        mDifficultyInfos[i].mRGChordNumsEndTick = NULL_TICK;
+        mDifficultyInfos[i].mRGLeftHandSlideStartTick = NULL_TICK;
+        mDifficultyInfos[i].mRGLeftHandSlideEndTick = NULL_TICK;
+        mDifficultyInfos[i].mRGFlipSlideDirection = false;
+        mDifficultyInfos[i].mRGArpeggioStartTick = -1;
+        mDifficultyInfos[i].unkc8 = -1;
+        mDifficultyInfos[i].unkcc = 0;
+        mDifficultyInfos[i].mRGAreaStrumType = kRGNoStrum;
+        mDifficultyInfos[i].mRGAreaStrumStartTick = NULL_TICK;
+        mDifficultyInfos[i].mRGAreaStrumEndTick = NULL_TICK;
+        mDifficultyInfos[i].mRGLooseStrumStartTick = NULL_TICK;
+        mDifficultyInfos[i].mRGLooseStrumEndTick = NULL_TICK;
+        mDifficultyInfos[i].unk124 = NULL_TICK;
     }
+
+    mCommonPhraseInProgress = -1;
+    mSoloPhraseInProgress = -1;
+    mDrumFillInProgress = -1;
+    mRollInProgress = -1;
+    mTrillInProgress = -1;
+    mSoloPhraseEndTick = -1;
+    mDrumFillEndTick = -1;
+    mNumSoloPhrases = 0;
+    mPlayerFocusInProgress[0] = -1;
+    mPlayerFocusInProgress[1] = -1;
+    mVocalRangeShiftStartTick = -1;
+    mRollSlotsArray.resize(mNumDifficulties);
+    mTrillSlotsArray.resize(mNumDifficulties);
+    mRGRollArray.resize(mNumDifficulties);
+    mRGTrillArray.resize(mNumDifficulties);
+    mState = kIgnore;
+    mKeyboardDifficulty = -1;
+    mCurrentFillLanes = 0;
+    mCurrentCymbalSlots = 28;
+    mDrumStyleGems = false;
+    mTrackName = Symbol(0);
+    mTrackType = kTrackNone;
+    mTrackPart = 0;
+    mCurTrackIndex = -1;
+    mDrumSubmixDifficultyMask = 0;
+    mSoloGemDifficultyMask = 0;
+    mVocalPhraseStartTick = -1;
+    mLastTambourineGemTick = -1;
+    mLastTambourineAutoTick = -1;
+    memset(mReportedMissingDrumSubmix, 0, 4);
+    mRGHandPos = -1;
+    mRGRootNote = -1;
+    mRGChordNamingStartTick = -1;
+    mRGChordNamingEndTick = -1;
+    mRGSlashesStartTick = -1;
+    mRGSlashesEndTick = -1;
+    mRGEnharmonicStartTick = -1;
+    mRGEnharmonicEndTick = -1;
 }
 
 void SongParser::AddReceiver(MidiReceiver* rcvr){
@@ -201,15 +259,15 @@ bool SongParser::OnMidiMessageCommonOff(int tick, unsigned char uc){
     else return HandleFillEnd(tick, uc);
 }
 
-void SongParser::OnMidiMessageGemOn(int tick, unsigned char uc1, unsigned char uc2){
+void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char uc2){
     MILO_ASSERT(mTrack != -1, 500);
-    if(!OnMidiMessageCommonOn(tick, uc1)){
+    if(!OnMidiMessageCommonOn(tick, pitch)){
         int num = -1;
-        if(!CheckForceHopoMarker(tick, uc1, true)){
-            if(CheckDrumMapMarker(tick, uc1, true)){
-                CheckDrumCymbalMarker(tick, uc1, true);
+        if(!CheckForceHopoMarker(tick, pitch, true)){
+            if(CheckDrumMapMarker(tick, pitch, true)){
+                CheckDrumCymbalMarker(tick, pitch, true);
             }
-            else if(CheckRollMarker(tick, uc1, true)){
+            else if(CheckRollMarker(tick, pitch, true)){
                 mRollInProgress = tick;
                 unka1 = 0;
                 for(int i = 0; i < 4; i++){
@@ -218,7 +276,7 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char uc1, unsigned char u
                     }
                 }
             }
-            else if(CheckTrillMarker(uc1, true)){
+            else if(CheckTrillMarker(pitch, true)){
                 mTrillInProgress = tick;
                 unka0 = 0;
                 for(int i = 0; i < 4; i++){
@@ -227,33 +285,31 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char uc1, unsigned char u
                     }
                 }
             }
-            else if(!CheckKeyboardRangeMarker(tick, uc1, true) && PitchToSlot(uc1, num, tick) != -1){
-                //   iVar7 = *(int *)(this + 0x100);
-                //   bVar1 = *(byte *)(*(int *)(this + 0x7c) + local_50 * 0x13c + 8);
-                //   piVar2 = (int *)(*(int *)(*(int *)(this + 0x7c) + local_50 * 0x13c) + iVar5 * 0x10);
-                //   *piVar2 = param_1;
-                //   piVar2[1] = unaff_r28;
-                //   piVar2[2] = (uint)bVar1;
-                //   piVar2[3] = iVar7;
-                if(mSoloPhraseInProgress != -1){
-                    mSoloGemDifficultyMask |= (1 << (num & 0x3F));
-                }
-                if(mDrumStyleGems){
-                    if((mDrumSubmixDifficultyMask & 1 << (num & 0x3F) == 0) && !mReportedMissingDrumSubmix[num]){
-                        MILO_WARN("%s (%s): No drum submix specified for difficulty %d before first gem at %s",
-                            mFilename, mTrackName, num, PrintTick(tick));
+            else if(!CheckKeyboardRangeMarker(tick, pitch, true)){
+                int slot = PitchToSlot(pitch, num, tick);
+                if(slot != -1){
+                    mDifficultyInfos[num].mGemsInProgress[slot] = GemInProgress(tick, mDifficultyInfos[num].mActivePlayers, mCurrentCymbalSlots);
+                    if(mSoloPhraseInProgress != -1){
+                        mSoloGemDifficultyMask |= (1 << (num & 0x3F));
                     }
-                    int count = 0;
-                    if(mNumSlots > 1){
-                        for(int i = 0; i < mNumSlots - 1; i++){
-                            // fix this
-                            count++;
+                    if(mDrumStyleGems){
+                        if((mDrumSubmixDifficultyMask & 1 << (num & 0x3F) == 0) && !mReportedMissingDrumSubmix[num]){
+                            MILO_WARN("%s (%s): No drum submix specified for difficulty %d before first gem at %s",
+                                mFilename, mTrackName, num, PrintTick(tick));
                         }
-                    }
+                        int count = 0;
+                        if(mNumSlots > 1){
+                            for(int i = 1; i < mNumSlots; i++){
+                                if(mDifficultyInfos[num].mGemsInProgress[i].unk0 >= 0){
+                                    count++;
+                                }
+                            }
+                        }
 
-                    if(count > 2){
-                        MILO_WARN("%s (%s): %d simultaneous drum pad hits at %s; maximum is 2 pads plus kick",
-                            mFilename, mTrackName, count, PrintTick(tick));
+                        if(count > 2){
+                            MILO_WARN("%s (%s): %d simultaneous drum pad hits at %s; maximum is 2 pads plus kick",
+                                mFilename, mTrackName, count, PrintTick(tick));
+                        }
                     }
                 }
             }
@@ -274,7 +330,7 @@ void SongParser::OnMidiMessageGemOff(int tick, unsigned char pitch){
 
 // fn_8048ADD0
 bool SongParser::HandlePhraseEnd(int tick, unsigned char pitch){
-    if(pitch == 0x74){
+    if(pitch == 116){
         if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
             MILO_WARN("%s (%s): Real keys overdrive phrases should only authored in expert difficulty, but found at pitch %d at %s.",
                 mFilename, mTrackName, pitch, PrintTick(tick));
@@ -642,6 +698,7 @@ void SongParser::OnMidiMessageRealGuitar(int tick, unsigned char status, unsigne
     }
 }
 
+// fn_8048DC18
 void SongParser::OnMidiMessageRealGuitarOn(int tick, unsigned char pitch, unsigned char data2, unsigned char channel){
     if(!OnMidiMessageCommonOn(tick, pitch) && !HandleRGHandPos(pitch, data2) && !HandleRGRootNote(pitch) &&
         !HandleRGChordNaming(tick, pitch) && !HandleRGEnharmonic(tick, pitch) && !HandleRGSlashes(tick, pitch) &&
@@ -897,6 +954,46 @@ bool SongParser::TrackAllowsOverlappingNotes(TrackType ty) const {
     return ty == kTrackVocals || ty == kTrackKeys || ty == kTrackRealKeys;
 }
 
+// fn_8048F728
+bool SongParser::HandleRGGemStart(int tick, DifficultyInfo& info, unsigned char uc, unsigned char data, unsigned char channel, int difflevel){
+    if((uc + 0xE8 & 0xFF) < 6){
+        unsigned char newuc = uc - 24;
+    }
+}
+
+// HandleRGGemStart(tick, info, uc1, data2, channel, difflevel)
+// undefined4 __thiscall
+// SongParser::HandleRGGemStart
+//           (SongParser *this,int param_1,DifficultyInfo *param_2,uchar param_3,uchar param_4,
+//           uchar param_5,int param_6)
+
+// {
+//   DifficultyInfo DVar1;
+//   undefined4 uVar2;
+//   undefined *puVar3;
+//   undefined4 local_24;
+  
+//   if ((param_3 + 0xe8 & 0xff) < 6) {
+//     puVar3 = &DAT_ffffffe8 + param_3;
+//     DVar1 = param_2[8];
+//     *(int *)(param_2 + (int)puVar3 * 0x1c + 0x1c) = param_1;
+//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x20) = local_24;
+//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x24) = (uint)(byte)DVar1;
+//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x28) = 0x1c;
+//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x2c) = (uint)(&DAT_ffffff9c + param_4) & 0xff;
+//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x30) = (uint)param_5;
+//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x34) = 0xffffffff;
+//     if (*(int *)(this + 0x88) != -1) {
+//       *(uint *)(this + 0x1c0) = *(uint *)(this + 0x1c0) | 1 << (param_6 & 0x3fU);
+//     }
+//     uVar2 = 1;
+//   }
+//   else {
+//     uVar2 = 0;
+//   }
+//   return uVar2;
+// }
+
 bool SongParser::HandleRGHandPos(unsigned char pitch, unsigned char uc2){
     if(pitch == 108){
         mRGHandPos = (uc2 - 100) & 0xFF;
@@ -921,7 +1018,7 @@ bool SongParser::HandleRGAreaStrumStart(int tick, DifficultyInfo& info, unsigned
         else if(channel == 13) state = kRGStrumHigh;
         info.mRGAreaStrumType = state;
         info.mRGAreaStrumStartTick = tick;
-        info.mRGAreaStrumEndTick = 0x10000000;
+        info.mRGAreaStrumEndTick = NULL_TICK;
         return true;
     }
     else return false;
@@ -930,7 +1027,7 @@ bool SongParser::HandleRGAreaStrumStart(int tick, DifficultyInfo& info, unsigned
 bool SongParser::HandleRGChordNumsStart(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 35){
         info.mRGChordNumsStartTick = tick;
-        info.mRGChordNumsEndTick = 0x10000000;
+        info.mRGChordNumsEndTick = NULL_TICK;
         return true;
     }
     else return false;
@@ -939,7 +1036,7 @@ bool SongParser::HandleRGChordNumsStart(int tick, DifficultyInfo& info, unsigned
 bool SongParser::HandleRGLooseStrumStart(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 34){
         info.mRGLooseStrumStartTick = tick;
-        info.mRGLooseStrumEndTick = 0x10000000;
+        info.mRGLooseStrumEndTick = NULL_TICK;
         return true;
     }
     return false;
@@ -972,7 +1069,7 @@ bool SongParser::HandleRGGemStop(int tick, DifficultyInfo& info, unsigned char u
 bool SongParser::HandleRGChordNaming(int tick, unsigned char pitch){
     if(pitch == 17){
         mRGChordNamingStartTick = tick;
-        mRGChordNamingEndTick = 0x10000000;
+        mRGChordNamingEndTick = NULL_TICK;
         return true;
     }
     else return false;
@@ -981,7 +1078,7 @@ bool SongParser::HandleRGChordNaming(int tick, unsigned char pitch){
 bool SongParser::HandleRGEnharmonic(int tick, unsigned char pitch){
     if(pitch == 18){
         mRGEnharmonicStartTick = tick;
-        mRGEnharmonicEndTick = 0x10000000;
+        mRGEnharmonicEndTick = NULL_TICK;
         return true;
     }
     else return false;
@@ -990,7 +1087,7 @@ bool SongParser::HandleRGEnharmonic(int tick, unsigned char pitch){
 bool SongParser::HandleRGSlashes(int tick, unsigned char pitch){
     if(pitch == 16){
         mRGSlashesStartTick = tick;
-        mRGSlashesEndTick = 0x10000000;
+        mRGSlashesEndTick = NULL_TICK;
         return true;
     }
     else return false;
@@ -1043,7 +1140,7 @@ bool SongParser::HandleRGChordMarkupStop(int tick, unsigned char pitch){
 bool SongParser::HandleRGLeftHandSlide(int tick, DifficultyInfo& info, unsigned char uc1, unsigned char channel){
     if(uc1 == 31){
         info.mRGLeftHandSlideStartTick = tick;
-        info.mRGLeftHandSlideEndTick = 0x10000000;
+        info.mRGLeftHandSlideEndTick = NULL_TICK;
         info.mRGFlipSlideDirection = (channel == 11);
         return true;
     }
@@ -1071,11 +1168,11 @@ bool SongParser::HandleRGHopoStart(int tick, DifficultyInfo& info, unsigned char
     if(uc1 == 30){
         if(channel != 12){
             info.mForceHopoOnStart = tick;
-            info.mForceHopoOnEnd = 0x10000000;
+            info.mForceHopoOnEnd = NULL_TICK;
         }
         else {
             info.mForceHopoOffStart = tick;
-            info.mForceHopoOffEnd = 0x10000000;
+            info.mForceHopoOffEnd = NULL_TICK;
         }
         return true;
     }
@@ -1159,7 +1256,7 @@ bool SongParser::HandleRGRollStart(int tick, unsigned char pitch, unsigned char 
 
 int SongParser::RGGetDifficultyLevel(unsigned char pitch){
     if(pitch < 24) return -1;
-    int diff = (pitch - 24) / 24 + (pitch - 24) >> 0x1F;
+    int diff = (pitch - 24) / 24;
     if(diff > 3) return -1;
     else return diff;
 }
