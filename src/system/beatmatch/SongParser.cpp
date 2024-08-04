@@ -17,7 +17,8 @@ SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& t
     mLyricTextSet(0), mLyricBends(0), mNextLyricTextTick(-1), mReadingState(kReadingBeat), mNumDrumChannels(j), mDrumSubmixDifficultyMask(0),
     mCodaStartTick(-1), mCodaEndTick(-1), mSoloGemDifficultyMask(0), mVocalPhraseStartTick(-1), mLastTambourineGemTick(-1),
     mLastTambourineAutoTick(-1), mLastBeatTick(-1), mLastBeatType(-1), mHaveBeatFailure(0), mSoloPitch(0),
-    unk1e4(-1), unk1e8(-1), unk1ec(-1), unk1f0(-1), unk1f4(-1), unk1f8(-1), unk1fc(-1), unk200(-1), unk204(-1), unk208(-1), unk20c(-1) {
+    mRGHandPos(-1), mRGRootNote(-1), unk1ec(-1), unk1f0(-1), unk1f4(-1), mRGSlashesStartTick(-1), mRGSlashesEndTick(-1),
+    mRGChordNamingStartTick(-1), mRGChordNamingEndTick(-1), mRGEnharmonicStartTick(-1), mRGEnharmonicEndTick(-1) {
 
     DataArray* cfg = SystemConfig()->FindArray("beatmatcher", true);
     DataArray* watcherArr = cfg->FindArray("watcher", false);
@@ -896,9 +897,9 @@ bool SongParser::TrackAllowsOverlappingNotes(TrackType ty) const {
     return ty == kTrackVocals || ty == kTrackKeys || ty == kTrackRealKeys;
 }
 
-bool SongParser::HandleRGHandPos(unsigned char uc1, unsigned char uc2){
-    if(uc1 == 108){
-        unk1e4 = (uc2 - 100) & 0xFF;
+bool SongParser::HandleRGHandPos(unsigned char pitch, unsigned char uc2){
+    if(pitch == 108){
+        mRGHandPos = (uc2 - 100) & 0xFF;
         return true;
     }
     else return false;
@@ -906,7 +907,7 @@ bool SongParser::HandleRGHandPos(unsigned char uc1, unsigned char uc2){
 
 bool SongParser::HandleRGArpeggioStart(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 32){
-        info.unkc4 = tick;
+        info.mRGArpeggioStartTick = tick;
         return true;
     }
     else return false;
@@ -928,8 +929,8 @@ bool SongParser::HandleRGAreaStrumStart(int tick, DifficultyInfo& info, unsigned
 
 bool SongParser::HandleRGChordNumsStart(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 35){
-        info.unk128 = tick;
-        info.unk12c = 0x10000000;
+        info.mRGChordNumsStartTick = tick;
+        info.mRGChordNumsEndTick = 0x10000000;
         return true;
     }
     else return false;
@@ -937,8 +938,8 @@ bool SongParser::HandleRGChordNumsStart(int tick, DifficultyInfo& info, unsigned
 
 bool SongParser::HandleRGLooseStrumStart(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 34){
-        info.unkdc = tick;
-        info.unke0 = 0x10000000;
+        info.mRGLooseStrumStartTick = tick;
+        info.mRGLooseStrumEndTick = 0x10000000;
         return true;
     }
     return false;
@@ -946,7 +947,7 @@ bool SongParser::HandleRGLooseStrumStart(int tick, DifficultyInfo& info, unsigne
 
 bool SongParser::HandleRGRootNote(unsigned char uc){
     if((uc + 0xFC & 0xFF) <= 0xB){
-        unk1e8 = uc % 12;
+        mRGRootNote = uc % 12;
         return true;
     }
     return false;
@@ -970,8 +971,8 @@ bool SongParser::HandleRGGemStop(int tick, DifficultyInfo& info, unsigned char u
 
 bool SongParser::HandleRGChordNaming(int tick, unsigned char pitch){
     if(pitch == 17){
-        unk200 = tick;
-        unk204 = 0x10000000;
+        mRGChordNamingStartTick = tick;
+        mRGChordNamingEndTick = 0x10000000;
         return true;
     }
     else return false;
@@ -979,8 +980,8 @@ bool SongParser::HandleRGChordNaming(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGEnharmonic(int tick, unsigned char pitch){
     if(pitch == 18){
-        unk208 = tick;
-        unk20c = 0x10000000;
+        mRGEnharmonicStartTick = tick;
+        mRGEnharmonicEndTick = 0x10000000;
         return true;
     }
     else return false;
@@ -988,8 +989,8 @@ bool SongParser::HandleRGEnharmonic(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGSlashes(int tick, unsigned char pitch){
     if(pitch == 16){
-        unk1f8 = tick;
-        unk1fc = 0x10000000;
+        mRGSlashesStartTick = tick;
+        mRGSlashesEndTick = 0x10000000;
         return true;
     }
     else return false;
@@ -1041,9 +1042,9 @@ bool SongParser::HandleRGChordMarkupStop(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGLeftHandSlide(int tick, DifficultyInfo& info, unsigned char uc1, unsigned char channel){
     if(uc1 == 31){
-        info.unk130 = tick;
-        info.unk134 = 0x10000000;
-        info.unk138 = (channel == 11);
+        info.mRGLeftHandSlideStartTick = tick;
+        info.mRGLeftHandSlideEndTick = 0x10000000;
+        info.mRGFlipSlideDirection = (channel == 11);
         return true;
     }
     else return false;
@@ -1051,7 +1052,7 @@ bool SongParser::HandleRGLeftHandSlide(int tick, DifficultyInfo& info, unsigned 
 
 bool SongParser::HandleRGLeftHandSlideStop(int tick, DifficultyInfo& info, unsigned char uc1){
     if(uc1 == 31){
-        info.unk134 = tick;
+        info.mRGLeftHandSlideEndTick = tick;
         return true;
     }
     else return false;
@@ -1059,8 +1060,8 @@ bool SongParser::HandleRGLeftHandSlideStop(int tick, DifficultyInfo& info, unsig
 
 bool SongParser::HandleRGArpeggioStop(int tick, DifficultyInfo& info, unsigned char uc1, int difflevel){
     if(uc1 == 32){
-        AddPhrase(kArpeggioPhrase, difflevel, info.unkc4, tick);
-        info.unkc4 = -1;
+        AddPhrase(kArpeggioPhrase, difflevel, info.mRGArpeggioStartTick, tick);
+        info.mRGArpeggioStartTick = -1;
         return true;
     }
     else return false;
@@ -1096,7 +1097,7 @@ bool SongParser::HandleRGHopoStop(int tick, DifficultyInfo& info, unsigned char 
 
 bool SongParser::HandleRGChordNamingStop(int tick, unsigned char pitch){
     if(pitch == 17){
-        unk204 = tick;
+        mRGChordNamingEndTick = tick;
         return true;
     }
     else return false;
@@ -1104,7 +1105,7 @@ bool SongParser::HandleRGChordNamingStop(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGEnharmonicStop(int tick, unsigned char pitch){
     if(pitch == 18){
-        unk20c = tick;
+        mRGEnharmonicEndTick = tick;
         return true;
     }
     else return false;
@@ -1112,7 +1113,7 @@ bool SongParser::HandleRGEnharmonicStop(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGSlashesStop(int tick, unsigned char pitch){
     if(pitch == 16){
-        unk1fc = tick;
+        mRGSlashesEndTick = tick;
         return true;
     }
     else return false;
@@ -1120,7 +1121,7 @@ bool SongParser::HandleRGSlashesStop(int tick, unsigned char pitch){
 
 bool SongParser::HandleRGLooseStrumStop(int tick, DifficultyInfo& info, unsigned char pitch){
     if(pitch == 34){
-        info.unke0 = tick;
+        info.mRGLooseStrumEndTick = tick;
         return true;
     }
     else return false;
@@ -1132,4 +1133,33 @@ bool SongParser::HandleRGAreaStrumStop(int tick, DifficultyInfo& info, unsigned 
         return true;
     }
     else return false;
+}
+
+bool SongParser::HandleRGChordNumsStop(int tick, DifficultyInfo& info, unsigned char pitch){
+    if(pitch == 35){
+        info.mRGChordNumsEndTick = tick;
+        return true;
+    }
+    else return false;
+}
+
+bool SongParser::HandleRGRollStart(int tick, unsigned char pitch, unsigned char data){
+    if(pitch == 126){
+        mRollInProgress = tick;
+        unka1 = 0;
+        for(int i = 0; i < mNumDifficulties; i++){
+            if(GetRollIntervalMs(mRollIntervals, mTrackType, i, false) > 0.0f && (i != 2 || data <= 0x32)){
+                unka1 |= (1 << (i & 0x3F));
+            }
+        }
+        return true;
+    }
+    else return false;
+}
+
+int SongParser::RGGetDifficultyLevel(unsigned char pitch){
+    if(pitch < 24) return -1;
+    int diff = (pitch - 24) / 24 + (pitch - 24) >> 0x1F;
+    if(diff > 3) return -1;
+    else return diff;
 }

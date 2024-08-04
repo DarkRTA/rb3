@@ -53,22 +53,26 @@ public:
         int unk8c, unk90, unk94, unk98, unk9c, unka0, unka4;
         int unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
 
-        int unkc4, unkc8, unkcc; // 0xc4 might be an arpeggio start tick for RG?
+        int mRGArpeggioStartTick; // 0xc4
+        int unkc8, unkcc;
 
         RGStrumType mRGAreaStrumType; // 0xd0
         int mRGAreaStrumStartTick; // 0xd4
         int mRGAreaStrumEndTick; // 0xd8
-        int unkdc;
+        int mRGLooseStrumStartTick; // 0xdc
+        int mRGLooseStrumEndTick; // 0xe0
 
-        int unke0, unke4, unke8, unkec;
+        int unke4, unke8, unkec;
         int unkf0, unkf4, unkf8, unkfc;
         int unk100, unk104, unk108, unk10c;
         int unk110, unk114, unk118, unk11c;
-        int unk120, unk124, unk128, unk12c;
-
-        int unk130;
-        int unk134;
-        bool unk138;
+        int unk120, unk124;
+        
+        int mRGChordNumsStartTick; // 0x128
+        int mRGChordNumsEndTick; // 0x12c
+        int mRGLeftHandSlideStartTick; // 0x130
+        int mRGLeftHandSlideEndTick; // 0x134
+        bool mRGFlipSlideDirection; // 0x138
     };
 
     SongParser(InternalSongParserSink&, int, TempoMap*&, MeasureMap*&, int);
@@ -258,17 +262,17 @@ public:
     bool mHaveBeatFailure; // 0x1d8
     int mPartToReadIdx; // 0x1dc
     unsigned char mSoloPitch; // 0x1e0
-    int unk1e4; // 0x1e4
-    int unk1e8; // 0x1e8 - RG root note?
+    int mRGHandPos; // 0x1e4
+    int mRGRootNote; // 0x1e8
     int unk1ec; // 0x1ec
     int unk1f0; // 0x1f0
     int unk1f4; // 0x1f4
-    int unk1f8; // 0x1f8
-    int unk1fc; // 0x1fc
-    int unk200; // 0x200
-    int unk204; // 0x204
-    int unk208; // 0x208
-    int unk20c; // 0x20c
+    int mRGSlashesStartTick; // 0x1f8
+    int mRGSlashesEndTick; // 0x1fc
+    int mRGChordNamingStartTick; // 0x200
+    int mRGChordNamingEndTick; // 0x204
+    int mRGEnharmonicStartTick; // 0x208
+    int mRGEnharmonicEndTick; // 0x20c
 };
 
 void FillTrackList(std::vector<Symbol>&, BinStream&);
