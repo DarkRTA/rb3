@@ -60,7 +60,7 @@ _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
   const size_t* __first = _list;
   const size_t* __last =  _list + (sizeof(_list)/sizeof(_list[0]));
   const size_t* pos = __lower_bound(__first, __last, __n,
-                                    __less((size_t*)0), __less((size_t*)0), (ptrdiff_t*)0);
+                                    __less((size_t*)0), (ptrdiff_t*)0);
   return (pos == __last ? *(__last - 1) : *pos);
 }
 
