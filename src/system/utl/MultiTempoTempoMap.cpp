@@ -5,21 +5,21 @@
 #include <algorithm>
 
 MultiTempoTempoMap::MultiTempoTempoMap() : mStartLoopTick(-1.0f), mEndLoopTick(-1.0f) {
-    
+
 }
 
 MultiTempoTempoMap::~MultiTempoTempoMap(){
-    
+
 }
 
 float MultiTempoTempoMap::GetTempo(int tick) const {
-    TempoInfoPoint* pt = PointForTick(tick);
+    const TempoInfoPoint* pt = PointForTick(tick);
     if(pt != mTempoPoints.end()) return (float)pt->mTempo / 1000.0f;
     else return 800.0f;
 }
 
 int MultiTempoTempoMap::GetTempoInMicroseconds(int tick) const {
-    TempoInfoPoint* pt = PointForTick(tick);
+    const TempoInfoPoint* pt = PointForTick(tick);
     if(pt != mTempoPoints.end()) return pt->mTempo;
     else return 800000;
 }
@@ -32,7 +32,7 @@ float MultiTempoTempoMap::TickToTime(float tick) const {
     if(!tick) return 0.0f;
     float ret = 0.0f;
     if(mStartLoopTick < 0.0f || tick <= mEndLoopTick){
-        TempoInfoPoint* pt = PointForTick(tick);
+        const TempoInfoPoint* pt = PointForTick(tick);
         if(pt == mTempoPoints.end()) ret = 0.0f;
         else ret = pt->mMs + (pt->mTempo * ((tick - (float)pt->mTick) / 480.0f) / 1000.0f);
     }
@@ -93,16 +93,20 @@ void MultiTempoTempoMap::Finalize(){
     // one vector method, but i can't figure out what it is
 }
 
-MultiTempoTempoMap::TempoInfoPoint* MultiTempoTempoMap::PointForTick(float tick) const {
+const MultiTempoTempoMap::TempoInfoPoint* MultiTempoTempoMap::PointForTick(float tick) const {
     TempoInfoPoint pt;
     pt.mMs = tick;
     if(mTempoPoints.empty()){
         MILO_WARN("Tempo map is empty; at least one tempo map entry is required");
-        return (TempoInfoPoint*)mTempoPoints.end();
+        return mTempoPoints.end();
     }
-    else {
-        // const TempoInfoPoint* pt2 = std::upper_bound(mTempoPoints.begin(), mTempoPoints.end(), pt, CompareTick);
+
+    const TempoInfoPoint* pt2 = std::upper_bound(mTempoPoints.begin(), mTempoPoints.end(), pt.mMs, CompareTick);
+    if (pt2 != mTempoPoints.begin()) {
+        pt2--;
     }
+
+    return pt2;
 }
 
 bool MultiTempoTempoMap::CompareTick(float tick, const MultiTempoTempoMap::TempoInfoPoint& pt){
