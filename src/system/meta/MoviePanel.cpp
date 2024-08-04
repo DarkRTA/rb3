@@ -26,7 +26,7 @@ void MoviePanel::Load(){
     mMovies.clear();
     DataArray* arr = SystemConfig("videos", Property("videos", true)->Str(0))->FindArray("files", true);
     for(int i = 1; i < arr->Size(); i++){
-        // mMovies.push_back(arr->Str(i)); constness casted away error
+        mMovies.push_back(arr->Str(i));
     }
 }
 

@@ -47,6 +47,8 @@ class vector
   typedef _STLP_PRIV::VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
 
+  typedef _STLP_PRIV::_CastTraits<_StorageType, _Tp> cast_traits;
+
 public:
   typedef _Tp value_type;
   typedef value_type* pointer;
@@ -65,10 +67,10 @@ public:
   allocator_type get_allocator() const
   { return _M_impl.get_allocator(); }
 
-  iterator begin()             { return _M_impl.begin(); }
-  const_iterator begin() const { return _M_impl.begin(); }
-  iterator end()               { return _M_impl.end(); }
-  const_iterator end() const   { return _M_impl.end(); }
+  iterator begin()             { return cast_traits::to_value_type_ptr(_M_impl.begin()); }
+  const_iterator begin() const { return cast_traits::to_value_type_cptr(_M_impl.begin()); }
+  iterator end()               { return cast_traits::to_value_type_ptr(_M_impl.end()); }
+  const_iterator end() const   { return cast_traits::to_value_type_cptr(_M_impl.end()); }
 
   reverse_iterator rbegin()              { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const  { return const_reverse_iterator(end()); }
@@ -81,156 +83,31 @@ public:
   size_type capacity() const    { return _M_impl.capacity(); }
   bool empty() const            { return _M_impl.empty(); }
 
-  reference operator[](size_type __n) { return _M_impl[__n]; }
-  const_reference operator[](size_type __n) const { return _M_impl[__n]; }
+  reference operator[](size_type __n) { return cast_traits::to_value_type_ref(_M_impl[__n]); }
+  const_reference operator[](size_type __n) const { return cast_traits::to_value_type_cref(_M_impl[__n]); }
 
-  reference front()             { return _M_impl.front(); }
-  const_reference front() const { return _M_impl.front(); }
-  reference back()              { return _M_impl.back(); }
-  const_reference back() const  { return _M_impl.back(); }
+  reference front()             { return cast_traits::to_value_type_ref(_M_impl.front()); }
+  const_reference front() const { return cast_traits::to_value_type_cref(_M_impl.front()); }
+  reference back()              { return cast_traits::to_value_type_ref(_M_impl.back()); }
+  const_reference back() const  { return cast_traits::to_value_type_cref(_M_impl.back()); }
 
-  reference at(size_type __n) { return _M_impl.at(__n); }
-  const_reference at(size_type __n) const { return _M_impl.at(__n); }
+  reference at(size_type __n) { return cast_traits::to_value_type_ref(_M_impl.at(__n)); }
+  const_reference at(size_type __n) const { return cast_traits::to_value_type_cref(_M_impl.at(__n)); }
 
-#ifdef VERSION_SZBE69
+// #ifdef VERSION_SZBE69
   explicit vector(const allocator_type& __a = allocator_type())
     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
-#else
-  explicit vector()
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(allocator_type(), allocator_type, _StorageType)) {}
+// #else
+//   explicit vector()
+//     : _M_impl(_STLP_CONVERT_ALLOCATOR(allocator_type(), allocator_type, _StorageType)) {}
 
-  explicit vector(const allocator_type& __a)
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
-#endif
+//   explicit vector(const allocator_type& __a)
+//     : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
+// #endif
 
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
-    : _M_impl(__n, __val, __a) {}
-
-  vector(const _Self& __x)
-    : _M_impl(__x._M_impl) {}
-
-  explicit vector(__move_source<_Self> src)
-    : _M_impl(__move_source<_Base>(src.get()._M_impl)) {}
-
-  template <class _InputIterator>
-  vector(_InputIterator __first, _InputIterator __last,
-         const allocator_type& __a = allocator_type() )
-  : _M_impl(__first, __last,
-            __a) {}
-
-  _Self& operator=(const _Self& __x) { _M_impl = __x._M_impl; return *this; }
-
-  void reserve(size_type __n) {_M_impl.reserve(__n);}
-  void assign(size_type __n, const value_type& __val)
-  { _M_impl.assign(__n, __val); }
-
-  template <class _InputIterator>
-  void assign(_InputIterator __first, _InputIterator __last)
-  { _M_impl.assign(__first, __last); }
-
-#if !defined(_STLP_NO_ANACHRONISMS)
-  void push_back(const value_type& __x = value_type())
-#else
-  void push_back(const value_type& __x)
-#endif
-  { _M_impl.push_back(__x); }
-
-#if !defined(_STLP_NO_ANACHRONISMS)
-  iterator insert(iterator __pos, const value_type& __x = value_type())
-#else
-  iterator insert(iterator __pos, const value_type& __x)
-#endif
-  { return _M_impl.insert(__pos, __x); }
-
-  void swap(_Self& __x) { _M_impl.swap(__x._M_impl); }
-
-  template <class _InputIterator>
-  void insert(iterator __pos, _InputIterator __first, _InputIterator __last)
-  { _M_impl.insert(__pos, __first, __last); }
-
-  void insert (iterator __pos, size_type __n, const value_type& __x) {
-    _M_impl.insert(__pos, __n, __x);
-  }
-
-  void pop_back() {_M_impl.pop_back();}
-  iterator erase(iterator __pos)
-  {return _M_impl.erase(__pos); }
-  iterator erase(iterator __first, iterator __last) {
-    return _M_impl.erase(__first, __last);
-  }
-
-  void resize(size_type __new_size, const value_type& __x = value_type())
-  { _M_impl.resize(__new_size, __x); }
-
-  void clear() { _M_impl.clear(); }
-
-private:
-  _Base _M_impl;
-};
-
-// Pointer wrapper
-// Necessary due to differences specific to vectors containing pointers.
-// The original implementation above is left unmodified to prevent making new issues.
-template <class _Tp, class _Size, class _Alloc>
-class vector<_Tp*, _Size, _Alloc>
-{
-  typedef void* _StorageType;
-  typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
-  typedef _STLP_PRIV::VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
-  typedef vector<_Tp, _Size, _Alloc> _Self;
-
-public:
-  typedef _Tp* value_type;
-  typedef value_type* pointer;
-  typedef const value_type* const_pointer;
-  typedef value_type* iterator;
-  typedef const value_type* const_iterator;
-  typedef value_type& reference;
-  typedef const value_type& const_reference;
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
-  typedef random_access_iterator_tag _Iterator_category;
-
-  _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
-  typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
-
-  allocator_type get_allocator() const
-  { return _M_impl.get_allocator(); }
-
-  iterator begin()             { return reinterpret_cast<iterator>(_M_impl.begin()); }
-  const_iterator begin() const { return reinterpret_cast<const_iterator>(_M_impl.begin()); }
-  iterator end()               { return reinterpret_cast<iterator>(_M_impl.end()); }
-  const_iterator end() const   { return reinterpret_cast<const_iterator>(_M_impl.end()); }
-
-  reverse_iterator rbegin()              { return reverse_iterator(end()); }
-  const_reverse_iterator rbegin() const  { return const_reverse_iterator(end()); }
-  reverse_iterator rend()                { return reverse_iterator(begin()); }
-  const_reverse_iterator rend() const    { return const_reverse_iterator(begin()); }
-
-  size_type size() const        { return _M_impl.size(); }
-  size_type max_size() const    { return _M_impl.max_size(); }
-
-  size_type capacity() const    { return _M_impl.capacity(); }
-  bool empty() const            { return _M_impl.empty(); }
-
-  reference operator[](size_type __n) { return reinterpret_cast<reference>(_M_impl[__n]); }
-  const_reference operator[](size_type __n) const { return reinterpret_cast<const_reference>(_M_impl[__n]); }
-
-  reference front()             { return reinterpret_cast<reference>(_M_impl.front()); }
-  const_reference front() const { return reinterpret_cast<const_reference>(_M_impl.front()); }
-  reference back()              { return reinterpret_cast<reference>(_M_impl.back()); }
-  const_reference back() const  { return reinterpret_cast<const_reference>(_M_impl.back()); }
-
-  reference at(size_type __n) { return reinterpret_cast<reference>(_M_impl.at(__n)); }
-  const_reference at(size_type __n) const { return reinterpret_cast<const_reference>(_M_impl.at(__n)); }
-
-  explicit vector(const allocator_type& __a = allocator_type())
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
-
-  explicit vector(size_type __n, const value_type& __val = value_type(),
-         const allocator_type& __a = allocator_type())
-    : _M_impl(__n, reinterpret_cast<_StorageType const&>(__val),
+    : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
       __a) {}
 
   vector(const _Self& __x)
@@ -249,45 +126,51 @@ public:
 
   void reserve(size_type __n) {_M_impl.reserve(__n);}
   void assign(size_type __n, const value_type& __val)
-  { _M_impl.assign(__n, reinterpret_cast<_StorageType const&>(__val)); }
+  { _M_impl.assign(__n, cast_traits::to_storage_type_cref(__val)); }
 
   template <class _InputIterator>
   void assign(_InputIterator __first, _InputIterator __last)
   { _M_impl.assign(__first, __last); }
 
-  void push_back(value_type __x) {
-    _Tp& __y = *__x; // Necessary to match correctly
-    _M_impl.push_back(reinterpret_cast<_StorageType*>(&__y));
-  }
+#if !defined(_STLP_NO_ANACHRONISMS)
+  // void push_back(const value_type& __x = value_type())
+  void push_back(_VectorPointerHelper<_Tp>::arg_type __x = value_type())
+#else
+  // void push_back(const value_type& __x)
+  void push_back(_VectorPointerHelper<_Tp>::arg_type __x)
+#endif
+//   { _M_impl.push_back(cast_traits::to_storage_type_cref(__x)); }
+  { _M_impl.push_back(__x); }
 
 #if !defined(_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const value_type& __x = value_type())
 #else
   iterator insert(iterator __pos, const value_type& __x)
 #endif
-  { return reinterpret_cast<iterator>(_M_impl.insert(reinterpret_cast<_StorageType*>(__pos),
-                                                         reinterpret_cast<_StorageType const&>(__x))); }
+  { return cast_traits::to_value_type_ptr(_M_impl.insert(cast_traits::to_storage_type_ptr(__pos),
+                                                         cast_traits::to_storage_type_cref(__x))); }
 
   void swap(_Self& __x) { _M_impl.swap(__x._M_impl); }
 
   template <class _InputIterator>
   void insert(iterator __pos, _InputIterator __first, _InputIterator __last)
-  { _M_impl.insert(reinterpret_cast<_StorageType*>(__pos), __first, __last); }
+  { _M_impl.insert(cast_traits::to_storage_type_ptr(__pos), __first, __last); }
 
   void insert (iterator __pos, size_type __n, const value_type& __x) {
-    _M_impl.insert(reinterpret_cast<_StorageType*>(__pos), __n, reinterpret_cast<_StorageType const&>(__x));
+    _M_impl.insert(cast_traits::to_storage_type_ptr(__pos), __n, cast_traits::to_storage_type_cref(__x));
   }
 
   void pop_back() {_M_impl.pop_back();}
   iterator erase(iterator __pos)
-  {return reinterpret_cast<iterator>(_M_impl.erase(reinterpret_cast<_StorageType*>(__pos)));}
+  {return cast_traits::to_value_type_ptr(_M_impl.erase(cast_traits::to_storage_type_ptr(__pos)));}
   iterator erase(iterator __first, iterator __last) {
-    return reinterpret_cast<iterator>(_M_impl.erase(reinterpret_cast<_StorageType*>(__first),
-                                                        reinterpret_cast<_StorageType*>(__last)));
+    return cast_traits::to_value_type_ptr(_M_impl.erase(cast_traits::to_storage_type_ptr(__first),
+                                                        cast_traits::to_storage_type_ptr(__last)));
   }
 
-  void resize(size_type __new_size, const value_type __x = value_type())
-  { _M_impl.resize(__new_size, reinterpret_cast<_StorageType const&>(__x)); }
+  // void resize(size_type __new_size, const value_type& __x = value_type())
+  void resize(size_type __new_size, _VectorPointerHelper<_Tp>::arg_type __x = value_type())
+  { _M_impl.resize(__new_size, __x); }
 
   void clear() { _M_impl.clear(); }
 
