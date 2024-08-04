@@ -33,6 +33,37 @@ namespace _STLP_PRIV {
 namespace _STLP_STD {
 #endif
 
+// Manual cast traits to ensure correct behavior
+template <class _Tp>
+struct _VectorCastTraits {
+    typedef _Tp _StorageType;
+    typedef _Tp& _UnCVType;
+};
+
+template <class _Tp>
+struct _VectorCastTraits<_Tp*> {
+    typedef void* _StorageType;
+    typedef _Tp* _UnCVType;
+};
+
+template <class _Tp>
+struct _VectorCastTraits<const _Tp*> {
+    typedef void* _StorageType;
+    typedef _Tp* _UnCVType;
+};
+
+template <class _Tp>
+struct _VectorCastTraits<volatile _Tp*> {
+    typedef void* _StorageType;
+    typedef _Tp* _UnCVType;
+};
+
+template <class _Tp>
+struct _VectorCastTraits<const volatile _Tp*> {
+    typedef void* _StorageType;
+    typedef _Tp* _UnCVType;
+};
+
 template <class _Tp, class _Size = unsigned short, class _Alloc = _STLP_DEFAULT_ALLOCATOR(_Tp) >
 class vector
 {
@@ -42,7 +73,9 @@ class vector
    * So vector implementation will always use a qualified void pointer type and
    * won't use iterator wrapping.
    */
-  typedef typename _STLP_PRIV::_StorageType<_Tp>::_QualifiedType _StorageType;
+  typedef _VectorCastTraits<_Tp> vector_traits;
+
+  typedef typename vector_traits::_StorageType _StorageType;
   typedef typename _Alloc_traits<_StorageType, _Alloc>::allocator_type _StorageTypeAlloc;
   typedef _STLP_PRIV::VECTOR_IMPL<_StorageType, _Size, _StorageTypeAlloc> _Base;
   typedef vector<_Tp, _Size, _Alloc> _Self;
@@ -140,7 +173,7 @@ public:
   void push_back(_VectorPointerHelper<_Tp>::arg_type __x)
 #endif
 //   { _M_impl.push_back(cast_traits::to_storage_type_cref(__x)); }
-  { _M_impl.push_back(__x); }
+  { _M_impl.push_back(const_cast<vector_traits::_UnCVType>(__x)); }
 
 #if !defined(_STLP_NO_ANACHRONISMS)
   iterator insert(iterator __pos, const value_type& __x = value_type())
@@ -170,7 +203,7 @@ public:
 
   // void resize(size_type __new_size, const value_type& __x = value_type())
   void resize(size_type __new_size, _VectorPointerHelper<_Tp>::arg_type __x = value_type())
-  { _M_impl.resize(__new_size, __x); }
+  { _M_impl.resize(__new_size, const_cast<vector_traits::_UnCVType>(__x)); }
 
   void clear() { _M_impl.clear(); }
 
