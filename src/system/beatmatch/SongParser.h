@@ -6,6 +6,7 @@
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/RGChords.h"
+#include "utl/MBT.h"
 
 enum ReadingState {
     kReadingBeat,
@@ -60,6 +61,9 @@ public:
     void OnMidiMessageGemOff(int, unsigned char);
     bool OnMidiMessageCommonOn(int, unsigned char);
     bool OnMidiMessageCommonOff(int, unsigned char);
+    const char* PrintTick(int tick) {
+        return TickFormat(tick, *mMeasureMap);
+    }
 
     int mNumSlots; // 0x8
     int mPlayerSlot; // 0xc
