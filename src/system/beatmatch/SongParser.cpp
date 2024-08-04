@@ -1,6 +1,12 @@
 #include "beatmatch/SongParser.h"
 #include "os/System.h"
 #include "midi/MidiConstants.h"
+#include "utl/FilePath.h"
+#include "beatmatch/BeatMatchUtl.h"
+#include "beatmatch/GameGem.h"
+#include "os/Timer.h"
+
+Timer gSongLoadTimer;
 
 // fn_80488788
 SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& tmap, MeasureMap*& mmap, int j) : mNumSlots(32), mPlayerSlot(9),
@@ -53,6 +59,66 @@ SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& t
 TempoMap* SongParser::GetTempoMap(){
     MILO_ASSERT(mTempoMap, 0xAD);
     return mTempoMap;
+}
+
+DECOMP_FORCEACTIVE(SongParser, "mMeasureMap")
+
+// fn_8048987C
+void SongParser::ReadMidiFile(BinStream& bs, const char* cc, SongInfo* info){
+    mMerging = false;
+    mSongInfo = info;
+    mFilename = FilePath(FileRoot(), cc);
+    MILO_ASSERT(mTrackNames.empty(), 0xC6);
+    FillTrackList(mTrackNames, bs);
+    AnalyzeTrackList();
+    mTrack = -1;
+    mNextRealTrack = 0;
+    mNextFakeTrack = 0;
+    mTrackPartNum = -1;
+    InitReadingState();
+    mMidiReader = new MidiReader(bs, *this, cc);
+    mFile = &bs;
+    mForceDrumStyleGems = strstr(cc, "drum_trainer");
+}
+
+void SongParser::MergeMidiFile(BinStream& bs, const char* cc){
+    mMerging = true;
+    mFilename = FilePath(FileRoot(), cc);
+    MILO_ASSERT(!mTrackNames.empty(), 0xDD);
+    FillTrackList(mTrackNames, bs);
+    AnalyzeTrackList();
+    for(int i = 0; i < mParts.size(); i++){
+        // mParts[i].unk18 = 0;
+    }
+    mReadingState = kReadingNonParts;
+    mMidiReader = new MidiReader(bs, *this, cc);
+    mFile = &bs;
+}
+
+void SongParser::Poll(){
+    if(mMidiReader && mMidiReader->ReadSomeEvents(20)){
+        UpdateReadingState();
+        bool failed = mMidiReader->mFail;
+        delete mMidiReader;
+        mMidiReader = 0;
+        if(mReadingState == kDoneReading || failed){
+            mFile = 0;
+            mFilename = 0;
+        }
+        else {
+            Reset();
+            mFile->Seek(0, BinStream::kSeekBegin);
+            mMidiReader = new MidiReader(*mFile, *this, mFilename.c_str());
+        }
+    }
+}
+
+void SongParser::SetNumPlayers(int num){ mNumPlayers = num; }
+
+void SongParser::Reset(){
+    for(int i = 0; i < mDifficultyInfos.size(); i++){
+
+    }
 }
 
 void SongParser::AddReceiver(MidiReceiver* rcvr){
@@ -132,6 +198,66 @@ bool SongParser::OnMidiMessageCommonOn(int tick, unsigned char uc){
 bool SongParser::OnMidiMessageCommonOff(int tick, unsigned char uc){
     if(HandlePhraseEnd(tick, uc)) return true;
     else return HandleFillEnd(tick, uc);
+}
+
+void SongParser::OnMidiMessageGemOn(int tick, unsigned char uc1, unsigned char uc2){
+    MILO_ASSERT(mTrack != -1, 500);
+    if(!OnMidiMessageCommonOn(tick, uc1)){
+        int num = -1;
+        if(!CheckForceHopoMarker(tick, uc1, true)){
+            if(CheckDrumMapMarker(tick, uc1, true)){
+                CheckDrumCymbalMarker(tick, uc1, true);
+            }
+            else if(CheckRollMarker(tick, uc1, true)){
+                mRollInProgress = tick;
+                unka1 = 0;
+                for(int i = 0; i < 4; i++){
+                    if(GetRollIntervalMs(mRollIntervals, mTrackType, i, false) > 0 && (i != 2 || uc2 <= 0x32)){
+                        unka1 |= (1 << (i & 0x3F));
+                    }
+                }
+            }
+            else if(CheckTrillMarker(uc1, true)){
+                mTrillInProgress = tick;
+                unka0 = 0;
+                for(int i = 0; i < 4; i++){
+                    if(mTrillIntervals->Int(i) > 0 && (i != 2 || uc2 <= 0x32)){
+                        unka0 |= (1 << (i & 0x3F));
+                    }
+                }
+            }
+            else if(!CheckKeyboardRangeMarker(tick, uc1, true) && PitchToSlot(uc1, num, tick) != -1){
+                //   iVar7 = *(int *)(this + 0x100);
+                //   bVar1 = *(byte *)(*(int *)(this + 0x7c) + local_50 * 0x13c + 8);
+                //   piVar2 = (int *)(*(int *)(*(int *)(this + 0x7c) + local_50 * 0x13c) + iVar5 * 0x10);
+                //   *piVar2 = param_1;
+                //   piVar2[1] = unaff_r28;
+                //   piVar2[2] = (uint)bVar1;
+                //   piVar2[3] = iVar7;
+                if(mSoloPhraseInProgress != -1){
+                    mSoloGemDifficultyMask |= (1 << (num & 0x3F));
+                }
+                if(mDrumStyleGems){
+                    if((mDrumSubmixDifficultyMask & 1 << (num & 0x3F) == 0) && !mReportedMissingDrumSubmix[num]){
+                        MILO_WARN("%s (%s): No drum submix specified for difficulty %d before first gem at %s",
+                            mFilename, mTrackName, num, PrintTick(tick));
+                    }
+                    int count = 0;
+                    if(mNumSlots > 1){
+                        for(int i = 0; i < mNumSlots - 1; i++){
+                            // fix this
+                            count++;
+                        }
+                    }
+
+                    if(count > 2){
+                        MILO_WARN("%s (%s): %d simultaneous drum pad hits at %s; maximum is 2 pads plus kick",
+                            mFilename, mTrackName, count, PrintTick(tick));
+                    }
+                }
+            }
+        }
+    }
 }
 
 void SongParser::OnMidiMessageGemOff(int tick, unsigned char pitch){
@@ -307,5 +433,48 @@ void SongParser::OnFillEnd(int tick, unsigned char uc){
                     mFilename, mTrackName, PrintTick(mDrumFillEndTick), uc - 0x77, PrintTick(tick));
             }
         }
+    }
+}
+
+void SongParser::CheckDrumSubmixes(){
+    for(int i = 0; i < 4; i++){
+        int curmask = 1 << (i & 0x3F);
+        if(curmask & mDrumSubmixDifficultyMask){
+            MILO_WARN("%s (%s): No drum submix specified for difficulty %d", mFilename, mTrackName, i);
+        }
+    }
+}
+
+bool SongParser::HandleRollEnd(int tick, unsigned char uc){
+    if(!CheckRollMarker(tick, uc, false)){
+        return false;
+    }
+    else if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
+        return true;
+    }
+    else {
+        MILO_ASSERT(mRollInProgress != -1, 0x3C6);
+        bool b2 = true;
+        if(mSectionStartTick != -1){
+            bool b1 = false;
+            if(mSectionStartTick <= mRollInProgress && mRollInProgress < mSectionEndTick){
+                b1 = true;
+            }
+            if(!b1) b2 = false;
+        }
+        if(b2){
+            for(int i = 0; i < mNumDifficulties; i++){
+                unsigned int u6 = mRollSlotsArray[i];
+                if(mTrackType == kTrackRealKeys) u6 = 1;
+                int bits = GameGem::CountBitsInSlotType(u6);
+                if(unka1 & (1 << (i & 0x3F))){
+                    mSink->AddRoll(mTrack, i, u6, mRollInProgress, tick);
+                }
+            }
+        }
+        mRollInProgress = -1;
+        mRollSlotsArray.clear();
+        mRollSlotsArray.resize(mNumDifficulties);
+        return true;
     }
 }

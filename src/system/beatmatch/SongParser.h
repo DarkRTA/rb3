@@ -17,7 +17,11 @@ enum ReadingState {
 
 class SongParser : public MidiReceiver {
 public:
+    class GemInProgress {
+    public:
+    };
 
+    // size: 0x13C holy moly
     class DifficultyInfo {
     public:
     };
@@ -32,6 +36,8 @@ public:
     virtual bool OnAcceptMaps(TempoMap*, MeasureMap*);
     virtual void SetMidiReader(MidiReader*);
 
+    void ReadMidiFile(BinStream&, const char*, SongInfo*);
+    void MergeMidiFile(BinStream&, const char*);
     void AddReceiver(MidiReceiver*);
     void CheckDrumSubmixes();
     bool TrackAllowsOverlappingNotes(TrackType) const;
@@ -52,6 +58,15 @@ public:
     TempoMap* GetTempoMap();
     void OnFillEnd(int, unsigned char);
     bool CheckFillMarker(int, bool);
+    void AnalyzeTrackList();
+    void InitReadingState();
+    void UpdateReadingState();
+    void Poll();
+    void Reset();
+    void SetNumPlayers(int);
+    bool CheckRollMarker(int, int, bool);
+    bool CheckTrillMarker(int, bool);
+    int PitchToSlot(int, int&, int) const;
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
@@ -72,7 +87,7 @@ public:
     TempoMap*& mTempoMap; // 0x18
     MeasureMap*& mMeasureMap; // 0x1c
     MidiReader* mMidiReader; // 0x20
-    BinStream* mFile; // 0x24 - ref instead of ptr?
+    BinStream* mFile; // 0x24
     String mFilename; // 0x28
     bool mMerging; // 0x34
     std::vector<MidiReceiver*> mReceivers; // 0x38
@@ -89,7 +104,7 @@ public:
     DataArray* mSubMixes; // 0x68
     DataArray* mRollIntervals; // 0x6c
     DataArray* mTrillIntervals; // 0x70
-    std::vector<int> mParts; // 0x74
+    std::vector<int> mParts; // 0x74 - fix vector type
     std::vector<DifficultyInfo> mDifficultyInfos; // 0x7c
     int mCommonPhraseInProgress; // 0x84
     int mSoloPhraseInProgress; // 0x88
@@ -97,7 +112,8 @@ public:
     int mRollInProgress; // 0x90
     int mTrillInProgress; // 0x94
     int mPlayerFocusInProgress[2]; // 0x98, 0x9c
-    int unka0; // 0xa0
+    unsigned char unka0; // 0xa0 - trill mask?
+    unsigned char unka1; // 0xa1 - roll mask?
     std::vector<unsigned int> mRollSlotsArray; // 0xa4
     std::vector<std::pair<int, int> > mTrillSlotsArray; // 0xac
     std::vector<RGRollChord> mRGRollArray; // 0xb4
@@ -133,7 +149,7 @@ public:
     bool mForceDrumStyleGems; // 0x119
     int mSectionStartTick; // 0x11c
     int mSectionEndTick; // 0x120
-    std::vector<int> mTrackNames; // 0x124
+    std::vector<Symbol> mTrackNames; // 0x124
     bool mLyricPitchSet; // 0x12c
     bool mLyricTextSet; // 0x12d
     bool mLyricBends; // 0x12e
@@ -168,5 +184,7 @@ public:
     int unk208; // 0x208
     int unk20c; // 0x20c
 };
+
+void FillTrackList(std::vector<Symbol>&, BinStream&);
 
 #endif
