@@ -7,6 +7,7 @@
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/RGChords.h"
+#include "beatmatch/GemInfo.h"
 #include "utl/MBT.h"
 
 enum ReadingState {
@@ -30,11 +31,44 @@ class SongParser : public MidiReceiver {
 public:
     class GemInProgress {
     public:
+        int unk0, unk4, unk8, unkc;
     };
 
     // size: 0x13C holy moly
     class DifficultyInfo {
     public:
+        int unk0; // 0x0
+        int unk4; // 0x4
+        int unk8; // 0x8
+        int mForceHopoOnStart; // 0xc
+        int mForceHopoOnEnd; // 0x10
+        int mForceHopoOffStart; // 0x14
+        int mForceHopoOffEnd; // 0x18
+
+        // RG string info?
+        int unk1c, unk20, unk24, unk28, unk2c, unk30, unk34;
+        int unk38, unk3c, unk40, unk44, unk48, unk4c, unk50;
+        int unk54, unk58, unk5c, unk60, unk64, unk68, unk6c;
+        int unk70, unk74, unk78, unk7c, unk80, unk84, unk88;
+        int unk8c, unk90, unk94, unk98, unk9c, unka0, unka4;
+        int unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
+
+        int unkc4, unkc8, unkcc; // 0xc4 might be an arpeggio start tick for RG?
+
+        RGStrumType mRGAreaStrumType; // 0xd0
+        int mRGAreaStrumStartTick; // 0xd4
+        int mRGAreaStrumEndTick; // 0xd8
+        int unkdc;
+
+        int unke0, unke4, unke8, unkec;
+        int unkf0, unkf4, unkf8, unkfc;
+        int unk100, unk104, unk108, unk10c;
+        int unk110, unk114, unk118, unk11c;
+        int unk120, unk124, unk128, unk12c;
+
+        int unk130;
+        int unk134;
+        bool unk138;
     };
 
     SongParser(InternalSongParserSink&, int, TempoMap*&, MeasureMap*&, int);
@@ -85,6 +119,7 @@ public:
     PartInfo* UsePartTrack(const char*);
     int PartNumThatMatchesTrackName(const char*) const;
     void SetSectionBounds(int, int);
+    NoStrumState GetNoStrumState(int, DifficultyInfo&);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
@@ -224,7 +259,7 @@ public:
     int mPartToReadIdx; // 0x1dc
     unsigned char mSoloPitch; // 0x1e0
     int unk1e4; // 0x1e4
-    int unk1e8; // 0x1e8
+    int unk1e8; // 0x1e8 - RG root note?
     int unk1ec; // 0x1ec
     int unk1f0; // 0x1f0
     int unk1f4; // 0x1f4
