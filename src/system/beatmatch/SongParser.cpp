@@ -2,8 +2,8 @@
 #include "os/System.h"
 #include "midi/MidiConstants.h"
 #include "utl/FilePath.h"
-#include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/GameGem.h"
+#include "utl/TempoMap.h"
 #include "os/Timer.h"
 
 Timer gSongLoadTimer;
@@ -35,14 +35,14 @@ SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& t
     DataArray* drumInstArr = parserArr->FindArray("drum_style_instruments", false);
     if(drumInstArr){
         for(int i = 0; i < drumInstArr->Array(1)->Size(); i++){
-            mDrumStyleInstruments.push_back(drumInstArr->Array(1)->Int(i));
+            mDrumStyleInstruments.push_back((TrackType)drumInstArr->Array(1)->Int(i));
         }
     }
 
     DataArray* vocalInstArr = parserArr->FindArray("vocal_style_instruments", false);
     if(vocalInstArr){
         for(int i = 0; i < vocalInstArr->Array(1)->Size(); i++){
-            mVocalStyleInstruments.push_back(vocalInstArr->Array(1)->Int(i));
+            mVocalStyleInstruments.push_back((TrackType)vocalInstArr->Array(1)->Int(i));
         }
     }
 
@@ -477,4 +477,225 @@ bool SongParser::HandleRollEnd(int tick, unsigned char uc){
         mRollSlotsArray.resize(mNumDifficulties);
         return true;
     }
+}
+
+void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char data1, unsigned char data2){
+    if(MidiGetType(status) == 0x90){
+        if((data1 + 0xF4 & 0xFF) <= 1){
+            mSink->AddBeat(tick, data1 == 0xC);
+            if(mLastBeatTick != -1 && !mHaveBeatFailure){
+                if(tick - mLastBeatTick < 0xF0){
+                    MILO_WARN("%s (%s): Beat track cannot be faster than double time; less than 240 ticks between beats at %s and %s",
+                        mFilename, mTrackName, PrintTick(mLastBeatTick), PrintTick(tick));
+                    mHaveBeatFailure = true;
+                }
+                if(mLastBeatType == 0xC && data1 == 0xC){
+                    MILO_WARN("%s (%s): Two downbeats occur back to back at %s and %s",
+                        mFilename, mTrackName, PrintTick(mLastBeatTick), PrintTick(tick));
+                    mHaveBeatFailure = true;
+                }
+            }
+            mLastBeatTick = tick;
+            mLastBeatType = data1;
+        }
+        else if(data1 == 0xB){
+            mSink->SetDetailedGrid(true);
+        }
+    }
+}
+
+bool SongParser::OnTrackName(int tick, const char* name){
+    mState = kIgnore;
+    if(ShouldReadTrack(name)){
+        if(IsPartTrackName(name, 0)){
+            PartInfo* info = UsePartTrack(name);
+            if(info) PrepareTrack(name, info);
+            else {
+                SkipCurrentTrack();
+                return false;
+            }
+        }
+        else {
+            mTrackName = name;
+            if(strcmp(name, "BEAT") == 0) mState = kBeat;
+            else if(strcmp(name, "EVENTS") == 0) mState = kEvents;
+        }
+        for(int i = 0; i < mReceivers.size(); i++){
+            mReceivers[i]->OnNewTrack(mTrack);
+        }
+        return true;
+    }
+    else {
+        SkipCurrentTrack();
+        return false;
+    }
+}
+
+void SongParser::PrepareTrack(const char* track_name, PartInfo* info){
+    Reset();
+    bool b2 = false;
+    for(std::vector<PartInfo>::iterator it = mParts.begin(); it != mParts.end(); ++it){
+        int original_name_len = strlen(it->original_name.Str());
+        bool b3;
+        if(original_name_len + 2 < strlen(track_name)) b3 = false;
+        else b3 = strncmp(it->original_name.Str(), track_name, original_name_len) == 0;
+        if(b3){
+            if(it->song_data_track == -1){
+                if(it->audio_type == kAudioFake){
+                    mTrack = mNextFakeTrack++ + 100;
+                }
+                else {
+                    mTrack = mNextRealTrack;
+                    mNextRealTrack++;
+                }
+                b2 = true;
+                mTrackPartNum++;
+                it->song_data_track = mTrack;
+            }
+            else {
+                mTrack = it->song_data_track;
+                if(mMerging && !it->overwritten){
+                    mSink->ClearTrack(mTrack);
+                    it->overwritten = true;
+                }
+            }
+            break;
+        }
+    }
+    mTrackName = track_name;
+    mTrackType = info->type;
+    mTrackPart = info;
+    if(info->type == kTrackRealKeys){
+        if(info->audio_type == kAudioFake){
+            mKeyboardDifficulty = 3;
+        }
+        else {
+            switch(track_name[strlen(track_name) - 1]){
+                case 'E': mKeyboardDifficulty = 0; break;
+                case 'M': mKeyboardDifficulty = 1; break;
+                case 'H': mKeyboardDifficulty = 2; break;
+                case 'X': mKeyboardDifficulty = 3; break;
+                default:
+                    MILO_WARN("%s (%s): Couldn't find difficulty character in track %s!",
+                        mFilename, mTrackName, track_name);
+                    break;
+            }
+        }
+        mNumSlots = 25;
+        mSoloPitch = 115;
+    }
+    else if(info->type == kTrackRealGuitar || info->type == kTrackRealGuitar22Fret){
+        mSoloPitch = 115;
+        mNumSlots = 6;
+    }
+    else if(info->type == kTrackRealBass || info->type == kTrackRealBass22Fret){
+        mSoloPitch = 115;
+        mNumSlots = 4;
+    }
+    else {
+        mSoloPitch = 103;
+        mNumSlots = 5;
+    }
+
+    std::list<TrackType>::iterator it;
+    for(it = mVocalStyleInstruments.begin(); it != mVocalStyleInstruments.end(); ++it){
+        if(*it == info->type) break;
+    }
+    if(it != mVocalStyleInstruments.end()){
+        mState = kVocalNotes;
+    }
+    else if(strstr(track_name, "REAL_GUITAR")) mState = kRealGuitar;
+    else if(strstr(track_name, "REAL_BASS")) mState = kRealGuitar;
+    else mState = kGems;
+
+    bool drumstyle = mForceDrumStyleGems;
+    if(!drumstyle){
+        for(it = mDrumStyleInstruments.begin(); it != mDrumStyleInstruments.end(); ++it){
+            if(*it == info->type) break;
+        }
+        drumstyle = it != mDrumStyleInstruments.end();
+    }
+    bool s9 = false;
+    mDrumStyleGems = drumstyle;
+    TrackType newty = (TrackType)(mTrackType - 1);
+    mIgnoreGemDurations = mTrackType == kTrackDrum;
+    if(newty < kTrackRealBass22Fret && ((1 << (newty & 0x3F) & 0x1EBU) != 0)){
+        s9 = true;
+    }
+    mTrackAllowsHopos = s9;
+    if(b2){
+        mSink->AddTrack(mTrack, info->audio_track_num, mTrackName, (SongInfoAudioType)info->audio_type, mTrackPart->type, mDrumStyleGems);
+    }
+}
+
+// fn_8048DB10
+void SongParser::OnMidiMessageRealGuitar(int tick, unsigned char status, unsigned char data1, unsigned char data2){
+    unsigned char chan = MidiGetChannel(status);
+    switch(MidiGetType(status)){
+        case 0x90:
+            OnMidiMessageRealGuitarOn(tick, data1, data2, chan);
+            break;
+        case 0x80:
+            OnMidiMessageRealGuitarOff(tick, data1, data2, chan);
+            break;
+    }
+}
+
+void SongParser::OnMidiMessageRealGuitarOn(int tick, unsigned char pitch, unsigned char data2, unsigned char channel){
+    if(!OnMidiMessageCommonOn(tick, pitch) && !HandleRGHandPos(pitch, data2) && !HandleRGRootNote(pitch) &&
+        !HandleRGChordNaming(tick, pitch) && !HandleRGEnharmonic(tick, pitch) && !HandleRGSlashes(tick, pitch) &&
+        !HandleRGChordMarkup(tick, pitch) && !HandleRGRollStart(tick, pitch, data2) && !HandleRGTrillStart(tick, pitch, data2)){
+        int difflevel = RGGetDifficultyLevel(pitch);
+        if(difflevel == -1){
+            MILO_WARN("%s (%s): Real Guitar On Midi Message out of range at tick %s with pitch %d",
+                mFilename, mTrackName, PrintTick(tick), pitch);
+        }
+        else {
+            unsigned char uc1 = pitch + difflevel * -0x18;
+            DifficultyInfo& info = mDifficultyInfos[difflevel];
+            if(uc1 < 0 ||
+                (!HandleRGHopoStart(tick, info, uc1, channel) && !HandleRGGemStart(tick, info, uc1, data2, channel, difflevel) &&
+                !HandleRGArpeggioStart(tick, info, uc1) && !HandleRGAreaStrumStart(tick, info, uc1, channel) &&
+                !HandleRGLooseStrumStart(tick, info, uc1) && !HandleRGChordNumsStart(tick, info, uc1) &&
+                !HandleRGLeftHandSlide(tick, info, uc1, channel))){
+                MILO_WARN("%s (%s): Bad Real Guitar On Midi Message at tick %s with pitch %d",
+                    mFilename, mTrackName, PrintTick(tick), pitch);
+            }
+        }
+    }
+}
+
+void SongParser::OnMidiMessageRealGuitarOff(int tick, unsigned char pitch, unsigned char data2, unsigned char channel){
+    if(!OnMidiMessageCommonOff(tick, pitch) && pitch != 108 && (pitch - 4 > 11U) &&
+        !HandleRGChordNamingStop(tick, pitch) && !HandleRGEnharmonicStop(tick, pitch) && !HandleRGSlashesStop(tick, pitch) &&
+        !HandleRGChordMarkupStop(tick, pitch) && !HandleRGRollStop(tick, pitch) && !HandleRGTrillStop(tick, pitch)){
+        int difflevel = RGGetDifficultyLevel(pitch);
+        if(difflevel == -1){
+            MILO_WARN("%s (%s): Real Guitar Off Midi Message out of range at tick %s with pitch %d",
+                mFilename, mTrackName, PrintTick(tick), pitch);
+        }
+        else {
+            unsigned char uc1 = pitch + difflevel * -0x18;
+            DifficultyInfo& info = mDifficultyInfos[difflevel];
+            if(uc1 < 0 ||
+                (!HandleRGLooseStrumStop(tick, info, uc1) && !HandleRGAreaStrumStop(tick, info, uc1, channel) &&
+                !HandleRGHopoStop(tick, info, uc1, channel) && !HandleRGGemStop(tick, info, uc1, difflevel) &&
+                !HandleRGArpeggioStop(tick, info, uc1, difflevel) && !HandleRGChordNumsStop(tick, info, uc1) &&
+                !HandleRGLeftHandSlideStop(tick, info, uc1))){
+                MILO_WARN("%s (%s): Bad Real Guitar Off Midi Message at tick %s with pitch %d",
+                    mFilename, mTrackName, PrintTick(tick), pitch);
+            }            
+        }
+    }
+}
+
+bool SongParser::OnAcceptMaps(TempoMap* tmap, MeasureMap* mmap){
+    delete mTempoMap;
+    mTempoMap = 0;
+    delete mMeasureMap;
+    mMeasureMap = 0;
+    mTempoMap = tmap;
+    mMeasureMap = mmap;
+    SetTheTempoMap(mTempoMap);
+    return true;
 }

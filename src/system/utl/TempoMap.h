@@ -20,6 +20,9 @@ public:
     virtual float GetTimeInLoop(float) = 0;
 };
 
+void SetTheTempoMap(TempoMap*);
+void ResetTheTempoMap();
+
 extern TempoMap* TheTempoMap;
 
 #endif

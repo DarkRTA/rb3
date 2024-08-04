@@ -2,6 +2,7 @@
 #define BEATMATCH_SONGPARSER_H
 #include "midi/Midi.h"
 #include "beatmatch/InternalSongParserSink.h"
+#include "beatmatch/BeatMatchUtl.h"
 #include "obj/Data.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
@@ -13,6 +14,16 @@ enum ReadingState {
     kReadingNonParts,
     kReadingParts,
     kDoneReading
+};
+
+struct PartInfo {
+    Symbol part; // 0x0
+    BeatmatchAudioType audio_type; // 0x4
+    Symbol original_name; // 0x8
+    AudioTrackNum audio_track_num; // 0xc
+    TrackType type; // 0x10
+    int song_data_track; // 0x14
+    bool overwritten; // 0x18
 };
 
 class SongParser : public MidiReceiver {
@@ -67,15 +78,53 @@ public:
     bool CheckRollMarker(int, int, bool);
     bool CheckTrillMarker(int, bool);
     int PitchToSlot(int, int&, int) const;
+    bool OnTrackName(int, const char*);
+    bool ShouldReadTrack(Symbol);
+    bool IsPartTrackName(const char*, const char**) const;
+    void PrepareTrack(const char*, PartInfo*);
+    PartInfo* UsePartTrack(const char*);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageBeat(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageRealGuitar(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageRealGuitarOn(int, unsigned char, unsigned char, unsigned char);
+    void OnMidiMessageRealGuitarOff(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageGemOn(int, unsigned char, unsigned char);
     void OnMidiMessageGemOff(int, unsigned char);
     bool OnMidiMessageCommonOn(int, unsigned char);
     bool OnMidiMessageCommonOff(int, unsigned char);
+
+    int RGGetDifficultyLevel(unsigned char);
+    bool HandleRGHandPos(unsigned char, unsigned char);
+    bool HandleRGRootNote(unsigned char);
+    bool HandleRGChordNaming(int, unsigned char);
+    bool HandleRGEnharmonic(int, unsigned char);
+    bool HandleRGSlashes(int, unsigned char);
+    bool HandleRGChordMarkup(int, unsigned char);
+    bool HandleRGRollStart(int, unsigned char, unsigned char);
+    bool HandleRGTrillStart(int, unsigned char, unsigned char);
+    bool HandleRGHopoStart(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGGemStart(int, DifficultyInfo&, unsigned char, unsigned char, unsigned char, int);
+    bool HandleRGArpeggioStart(int, DifficultyInfo&, unsigned char);
+    bool HandleRGAreaStrumStart(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGLooseStrumStart(int, DifficultyInfo&, unsigned char);
+    bool HandleRGChordNumsStart(int, DifficultyInfo&, unsigned char);
+    bool HandleRGLeftHandSlide(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGChordNamingStop(int, unsigned char);
+    bool HandleRGEnharmonicStop(int, unsigned char);
+    bool HandleRGSlashesStop(int, unsigned char);
+    bool HandleRGChordMarkupStop(int, unsigned char);
+    bool HandleRGRollStop(int, unsigned char);
+    bool HandleRGTrillStop(int, unsigned char);
+    bool HandleRGLooseStrumStop(int, DifficultyInfo&, unsigned char);
+    bool HandleRGAreaStrumStop(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGHopoStop(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGGemStop(int, DifficultyInfo&, unsigned char, int);
+    bool HandleRGArpeggioStop(int, DifficultyInfo&, unsigned char, int);
+    bool HandleRGChordNumsStop(int, DifficultyInfo&, unsigned char);
+    bool HandleRGLeftHandSlideStop(int, DifficultyInfo&, unsigned char);
+
     const char* PrintTick(int tick) {
         return TickFormat(tick, *mMeasureMap);
     }
@@ -104,7 +153,7 @@ public:
     DataArray* mSubMixes; // 0x68
     DataArray* mRollIntervals; // 0x6c
     DataArray* mTrillIntervals; // 0x70
-    std::vector<int> mParts; // 0x74 - fix vector type
+    std::vector<PartInfo> mParts; // 0x74
     std::vector<DifficultyInfo> mDifficultyInfos; // 0x7c
     int mCommonPhraseInProgress; // 0x84
     int mSoloPhraseInProgress; // 0x88
@@ -127,12 +176,12 @@ public:
         kGems = 1,
         kVocalNotes = 2,
         kBeat = 3,
-        kUnk4 = 4,
+        kEvents = 4,
         kRealGuitar = 5
     } mState; // 0xd4
     Symbol mTrackName; // 0xd8
     TrackType mTrackType; // 0xdc
-    int mTrackPart; // 0xe0 - PartInfo*
+    PartInfo* mTrackPart; // 0xe0
     bool mTrackAllowsHopos; // 0xe4
     int mKeyboardDifficulty; // 0xe8
     int mKeyboardRangeFirstPitch; // 0xec
@@ -143,8 +192,8 @@ public:
     unsigned int mCurrentCymbalSlots; // 0x100
     bool mIgnoreGemDurations; // 0x104
     bool mSeparateParts; // 0x105
-    std::list<int> mDrumStyleInstruments; // 0x108
-    std::list<int> mVocalStyleInstruments; // 0x110
+    std::list<TrackType> mDrumStyleInstruments; // 0x108
+    std::list<TrackType> mVocalStyleInstruments; // 0x110
     bool mDrumStyleGems; // 0x118
     bool mForceDrumStyleGems; // 0x119
     int mSectionStartTick; // 0x11c
