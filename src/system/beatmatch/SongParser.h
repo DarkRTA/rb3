@@ -83,6 +83,8 @@ public:
     bool IsPartTrackName(const char*, const char**) const;
     void PrepareTrack(const char*, PartInfo*);
     PartInfo* UsePartTrack(const char*);
+    int PartNumThatMatchesTrackName(const char*) const;
+    void SetSectionBounds(int, int);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
@@ -125,7 +127,7 @@ public:
     bool HandleRGChordNumsStop(int, DifficultyInfo&, unsigned char);
     bool HandleRGLeftHandSlideStop(int, DifficultyInfo&, unsigned char);
 
-    const char* PrintTick(int tick) {
+    const char* PrintTick(int tick) const {
         return TickFormat(tick, *mMeasureMap);
     }
 

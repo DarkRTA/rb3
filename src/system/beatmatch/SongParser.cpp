@@ -176,20 +176,20 @@ void SongParser::OnMidiMessageGem(int tick, unsigned char status, unsigned char 
     }
 }
 
-bool SongParser::OnMidiMessageCommonOn(int tick, unsigned char uc){
-    if(uc == 0x74){
+bool SongParser::OnMidiMessageCommonOn(int tick, unsigned char pitch){
+    if((int)pitch == 116){
         mCommonPhraseInProgress = tick;
         return true;
     }
-    else if(uc == mSoloPitch){
+    else if((int)pitch == mSoloPitch){
         mSoloPhraseInProgress = tick;
         mSoloPhraseEndTick = -1;
         mSoloGemDifficultyMask = 0;
         mNumSoloPhrases++;
         return true;
     }
-    else if(CheckDrumFillMarker(uc, true)){
-        OnFillStart(tick, uc);
+    else if(CheckDrumFillMarker(pitch, true)){
+        OnFillStart(tick, pitch);
         return true;
     }
     else return false;
@@ -341,7 +341,7 @@ bool SongParser::HandleFillEnd(int tick, unsigned char uc){
     return marker;
 }
 
-void SongParser::OnFillStart(int tick, unsigned char uc){
+void SongParser::OnFillStart(int tick, unsigned char pitch){
     bool b = false;
     if(mCodaStartTick != -1 && tick >= mCodaStartTick) b = true;
     if(mDrumFillInProgress == -1){
@@ -360,7 +360,7 @@ void SongParser::OnFillStart(int tick, unsigned char uc){
         if(b && tick != mCodaStartTick){
             MILO_WARN("%s (%s): Big Rock Ending %s-%s: lanes do not all begin at [coda]; [coda] is at %s, lane %d begins at %s",
                 mFilename, mTrackName, PrintTick(mCodaStartTick), PrintTick(mCodaEndTick),
-                PrintTick(mCodaStartTick), uc - 0x77, PrintTick(tick));
+                PrintTick(mCodaStartTick), pitch - 0x77, PrintTick(tick));
             mDrumFillInProgress = mCodaStartTick;
         }
     }
@@ -368,11 +368,11 @@ void SongParser::OnFillStart(int tick, unsigned char uc){
         if(b){
             MILO_WARN("%s (%s): Big Rock Ending %s-%s: lanes do not all begin at [coda]; [coda] is at %s, lane %d begins at %s",
                 mFilename, mTrackName, PrintTick(mCodaStartTick), PrintTick(mCodaEndTick),
-                PrintTick(mCodaStartTick), uc - 0x77, PrintTick(tick));
+                PrintTick(mCodaStartTick), pitch - 0x77, PrintTick(tick));
         }
         else if(mDrumStyleGems){
             MILO_WARN("%s (%s): Drum fill beginning at %s: lanes do not all begin at the same tick; lane %d begins at %s",
-                mFilename, mTrackName, PrintTick(mDrumFillInProgress), uc - 0x77, PrintTick(tick));
+                mFilename, mTrackName, PrintTick(mDrumFillInProgress), pitch - 0x77, PrintTick(tick));
         }
     }
 }
@@ -698,4 +698,189 @@ bool SongParser::OnAcceptMaps(TempoMap* tmap, MeasureMap* mmap){
     mMeasureMap = mmap;
     SetTheTempoMap(mTempoMap);
     return true;
+}
+
+void SongParser::SetMidiReader(MidiReader* reader){
+    mReader = reader;
+    for(int i = 0; i < mReceivers.size(); i++){
+        mReceivers[i]->SetMidiReader(reader);
+    }
+}
+
+int SongParser::PitchToSlot(int pitch, int& diff, int tick) const {
+    int i3;
+    if(mTrackType == kTrackRealKeys){
+        i3 = pitch - 0x30;
+        if(i3 < 0){
+            MILO_WARN("%s (%s): Keyboard gem pitch of %d is too low at %s.",
+                mFilename, mTrackName, pitch, PrintTick(tick));
+            i3 = -1;
+        }
+        else if(i3 >= mNumSlots){
+            MILO_WARN("%s (%s): Keyboard gem pitch of %d is too high at %s.",
+                mFilename, mTrackName, pitch, PrintTick(tick));
+            i3 = -1;
+        }
+        else diff = mKeyboardDifficulty;
+    }
+    else {
+        diff = 0;
+        while(diff < mNumDifficulties){
+            i3 = pitch - (diff * 0xC + 0x3C);
+            if(i3 >= 0 && i3 < mNumSlots) return i3;
+            diff++;
+        }
+        i3 = -1;
+    }
+    return i3;
+}
+
+bool SongParser::CheckDrumFillMarker(int pitch, bool b){
+    int slots = mNumSlots;
+    bool ret;
+    if(mTrackType == kTrackRealKeys){
+        slots = 5;
+    }
+    if(pitch < 120 || pitch >= slots + 120){
+        ret = false;
+    }
+    else {
+        if(b){
+            if(mTrackType == kTrackRealKeys){
+                if(pitch != 120){
+                    MILO_WARN("%s (%s): Keyboards only use pitch 120 (C8) for BREs, but pitch %d is authored.",
+                        mFilename, mTrackName, pitch);
+                    mCurrentFillLanes = 0x1ffffff;
+                }
+            }
+            else if(mTrackType == kTrackRealGuitar || mTrackType == kTrackRealGuitar22Fret){
+                mCurrentFillLanes = 0x3F;
+            }
+            else {
+                mCurrentFillLanes |= (1 << (pitch - 120)) & 0x3F;
+            }
+        }
+        return true;
+    }
+    return ret;
+}
+
+bool SongParser::CheckFillMarker(int pitch, bool b){ return CheckDrumFillMarker(pitch, b); }
+
+bool SongParser::CheckDrumCymbalMarker(int, int, bool){
+
+}
+
+bool SongParser::CheckRollMarker(int, int pitch, bool){ return pitch == 126; }
+bool SongParser::CheckTrillMarker(int pitch, bool){ return pitch == 127; }
+
+bool SongParser::CheckDrumMapMarker(int i, int j, bool b){
+    if(!mDrumStyleGems) return false;
+    else if(j > 108 && j < 113){
+        mSink->DrumMapLane(mTrack, i, j - 108, b);
+        return true;
+    }
+    else return false;
+}
+
+bool SongParser::CheckKeyboardRangeMarker(int tick, int pitch, bool b){
+    if(mTrackType != kTrackRealKeys) return false;
+    if(pitch > 24U) return false;
+    if(b){
+        if(mKeyboardRangeFirstPitch == -1){
+            MILO_ASSERT(mKeyboardRangeSecondPitch == -1, 0x934);
+            MILO_ASSERT(mKeyboardRangeStartTick == -1, 0x935);
+            mKeyboardRangeFirstPitch = pitch;
+            mKeyboardRangeStartTick = tick;
+        }
+        else {
+            MILO_ASSERT(mKeyboardRangeSecondPitch == -1, 0x93C);
+            mKeyboardRangeSecondPitch = pitch;
+            if(mKeyboardRangeStartTick != tick){
+                MILO_WARN("%s (%s): Keyboard range markers don't begin at same time! %s vs. %s",
+                    mFilename, mTrackName, PrintTick(mKeyboardRangeStartTick), PrintTick(tick));
+            }
+        }
+    }
+    else if(mKeyboardRangeStartTick != -1){
+        MILO_ASSERT(mKeyboardRangeFirstPitch != -1, 0x951);
+        int old_2nd = mKeyboardRangeSecondPitch;
+        if(old_2nd != -1){
+            int old_1st = mKeyboardRangeFirstPitch;
+            if(old_2nd < old_1st){
+                mKeyboardRangeFirstPitch = old_2nd;
+                mKeyboardRangeSecondPitch = old_1st;
+            }
+            mKeyboardRangeSecondPitch++;
+        }
+        if(mTrack < 100){
+            mSink->AddKeyboardRangeShift(mKeyboardDifficulty, mKeyboardRangeStartTick,
+                mKeyboardRangeShiftDuration, mKeyboardRangeFirstPitch, mKeyboardRangeSecondPitch);
+        }
+        mKeyboardRangeSecondPitch = -1;
+        mKeyboardRangeFirstPitch = -1;
+        mKeyboardRangeStartTick = -1;
+    }
+    return true;
+}
+
+void SongParser::InitReadingState(){ mReadingState = kReadingBeat; }
+
+void SongParser::UpdateReadingState(){
+    switch(mReadingState){
+        case kReadingBeat:
+            mReadingState = kReadingNonParts;
+            break;
+        case kReadingNonParts:
+            mReadingState = kReadingParts;
+            break;
+        case kReadingParts:
+            mReadingState = kDoneReading;
+            break;
+        case kDoneReading:
+            MILO_FAIL("SongParser::UpdateReadingState in wrong state");
+            break;
+    }
+}
+
+int SongParser::PartNumThatMatchesTrackName(const char* name) const {
+    int i;
+    for(i = 0; i < mParts.size(); i++){
+        const char* curname = mParts[i].original_name.Str();
+        int curnamelen = strlen(curname);
+        bool b2;
+        if(curnamelen + 2 < strlen(name)) b2 = false;
+        else b2 = strncmp(curname, name, curnamelen) == 0;
+        if(b2) return i;
+    }
+    return -1;
+}
+
+bool SongParser::ShouldReadTrack(Symbol s){
+    if(mCurTrackIndex == 0) return !mMerging;
+    else {
+        bool isparttrackname = IsPartTrackName(s.Str(), 0);
+        switch(mReadingState){
+            case kReadingBeat:
+                return strcmp(s.Str(), "BEAT") == 0;
+            case kReadingNonParts:
+                bool nottrackname = !isparttrackname;
+                if(nottrackname){
+                    return strcmp(s.Str(), "BEAT") == 0;
+                }
+                else return nottrackname;
+            case kReadingParts:
+                if(isparttrackname) return false;
+                else return PartNumThatMatchesTrackName(s.Str()) != -1;
+            case kDoneReading:
+                MILO_FAIL("SongParser::ShouldReadTrack in wrong state");
+                return false;
+        }
+    }
+    return false;
+}
+
+void SongParser::SetSectionBounds(int start, int end){
+    mSectionStartTick = start;
+    mSectionEndTick = end;
 }
