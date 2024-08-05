@@ -233,7 +233,7 @@ void UIComponent::Update(){
                 mMeshes.clear();
                 DataArray* mesharr = TypeDef()->FindArray(meshes, false);
                 if(mesharr){
-                    for(int i = 0; i < mesharr->Size(); i++){
+                    for(int i = 1; i < mesharr->Size(); i++){
                         DataArray* innerarr = mesharr->Array(i);
                         RndMesh* newmesh = rdir->Find<RndMesh>(innerarr->Str(0), true);
                         UIMesh uimesh(newmesh);

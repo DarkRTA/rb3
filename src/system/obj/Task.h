@@ -78,6 +78,8 @@ public:
     void ClearTasks();
     void SetSeconds(float, bool);
     void SetDeltaTime(TaskUnits, float);
+    void SetTimeAndDelta(TaskUnits, float, float);
+    void Poll();
 };
 
 extern TaskMgr TheTaskMgr;

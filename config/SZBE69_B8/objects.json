@@ -244,6 +244,7 @@
             "system/meta/ButtonHolder.cpp": "NonMatching",
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/CreditsPanel.cpp": "Matching",
+            "system/meta/DeJitterPanel.cpp": "NonMatching",
             "system/meta/DataArraySongInfo.cpp": "NonMatching",
             "system/meta/FixedSizeSaveable.cpp": {
                 "status": "LinkIssues",
@@ -273,6 +274,7 @@
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
+            "system/movie/Splash.cpp": "NonMatching",
             "system/movie/TexMovie.cpp": "Matching",
 
             "system/obj/DataArray.cpp": "NonMatching",
@@ -318,6 +320,7 @@
             "system/os/HDCache.cpp": "NonMatching",
             "system/os/HolmesClient.cpp": "NonMatching",
             "system/os/HolmesKeyboard.cpp": "NonMatching",
+            "system/os/HomeMenu_Wii.cpp": "NonMatching",
             "system/os/Joypad.cpp": "NonMatching",
             "system/os/JoypadClient.cpp": "NonMatching",
             "system/os/JoypadMsgs.cpp": "Matching",
@@ -516,6 +519,7 @@
             "system/utl/ChunkStream.cpp": "NonMatching",
             "system/utl/Compress.cpp": "Matching",
             "system/utl/DataPointMgr.cpp": "Matching",
+            "system/utl/DeJitter.cpp": "NonMatching",
             "system/utl/EncryptXTEA.cpp": "NonMatching",
             "system/utl/FakeSongMgr.cpp": "Matching",
             "system/utl/FilePath.cpp": "Matching",

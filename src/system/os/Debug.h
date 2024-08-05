@@ -26,8 +26,8 @@ public:
     bool mAlwaysFlush; // 0x14
     TextStream* mReflect; // 0x18
     ModalCallbackFunc* mModalCallback; // 0x1c
-    std::list<ExitCallbackFunc*> mFailCallbacks;
-    std::list<ExitCallbackFunc*> mExitCallbacks;
+    std::list<ExitCallbackFunc*> mFailCallbacks; // 0x20
+    std::list<ExitCallbackFunc*> mExitCallbacks; // 0x28
     unsigned int mFailThreadStack[50]; // starts at 0x30
     const char* mFailThreadMsg; // 0xf8
     const char* mNotifyThreadMsg; // 0xfc
