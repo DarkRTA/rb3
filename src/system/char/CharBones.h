@@ -1,5 +1,6 @@
 #ifndef CHAR_CHARBONES_H
 #define CHAR_CHARBONES_H
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include <vector>
 
@@ -7,6 +8,16 @@ class CharClip;
 
 class CharBones {
 public:
+    enum Type {
+        TYPE_POS = 0,
+        TYPE_SCALE = 1,
+        TYPE_QUAT = 2,
+        TYPE_ROTX = 3,
+        TYPE_ROTY = 4,
+        TYPE_ROTZ = 5,
+        TYPE_END = 6,
+        NUM_TYPES = 7,
+    };
 
     enum CompressionType {
         kCompressNone,
@@ -17,6 +28,8 @@ public:
     };
 
     struct Bone {
+        Bone() : name(), weight(1.0f) {}
+        Bone(Symbol s, float w) : name(s), weight(w) {}
         Symbol name;
         float weight;
     };
@@ -28,6 +41,28 @@ public:
     virtual void ReallocateInternal();
 
     void ClearBones();
+    void Zero();
+    void SetWeights(float);
+    void AddBoneInternal(const Bone&);
+    void AddBones(const std::vector<Bone>&);
+    void AddBones(const std::list<Bone>&);
+    void ListBones(std::list<Bone>&) const;
+    int TypeSize(int) const;
+    int FindOffset(Symbol) const;
+    void* FindPtr(Symbol) const;
+    void RecomputeSizes();
+    void SetCompression(CompressionType);
+    const char* StringVal(Symbol);
+    void ScaleAddIdentity();
+    void Blend(CharBones&) const;
+    void RotateBy(CharBones&) const;
+    void RotateTo(CharBones&, float) const;
+    void ScaleAdd(CharBones&, float) const;
+
+    static Type TypeOf(Symbol);
+    static const char* SuffixOf(Type);
+    static Symbol ChannelName(const char*, Type);
+    static void SetWeights(float, std::vector<Bone>&);
 
     CompressionType mCompression; // 0x4
     std::vector<Bone> mBones; // 0x8
@@ -68,13 +103,21 @@ public:
     OBJ_CLASSNAME(CharBonesObject);
     OBJ_SET_TYPE(CharBonesObject);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+
+    NEW_OBJ(CharBonesObject)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBonesObject)
+    }
 };
 
 class CharBonesAlloc : public CharBonesObject {
 public:
     CharBonesAlloc(){}
-    virtual ~CharBonesAlloc(){}
+    virtual ~CharBonesAlloc();
     virtual void ReallocateInternal();
 };
+
+extern CharBones* gPropBones;
+bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
 
 #endif

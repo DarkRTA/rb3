@@ -76,8 +76,9 @@ public:
     void GenerateMips();
     RndBitmap* DetachMip();
     void SetMip(RndBitmap*);
-    bool ColumnNonTransparent(int, int, int, int*);
+    int ColumnNonTransparent(int, int, int, int*);
     bool LoadSafely(BinStream&, int, int);
+    void LoadBmp(const char*, bool, bool);
     void Blt(const RndBitmap&, int, int, int, int, int, int);
     bool SamePixelFormat(const RndBitmap&) const;
     bool SamePaletteColors(const RndBitmap&) const;

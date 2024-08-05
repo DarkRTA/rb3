@@ -13,8 +13,12 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
-    ObjVector<ObjOwnerPtr<RndTransformable, ObjectDir> > mMeshes;
-    RndTransformable* mDummyMesh;
+    void AcquirePose();
+    void PoseMeshes();
+    void StuffMeshes(std::list<Hmx::Object*>&);
+
+    ObjVector<ObjOwnerPtr<RndTransformable, ObjectDir> > mMeshes; // 0x54
+    RndTransformable* mDummyMesh; // 0x60
 };
 
 #endif

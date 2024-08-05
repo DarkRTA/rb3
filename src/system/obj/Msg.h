@@ -121,6 +121,10 @@ public:
         mData->Node(1) = DataNode(type);
     }
 
+    DataNode& operator[](int idx){
+        return mData->Node(idx + 2);
+    }
+
 };
 
 #define BEGIN_MESSAGE(classname, type, ...) \

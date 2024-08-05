@@ -1,0 +1,16 @@
+#ifndef _STD_PAIR_H
+#define _STD_PAIR_H
+
+// https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/utility
+
+namespace std {
+
+    template <typename T1, typename T2>
+    struct pair {
+        T1 first;
+        T2 second;
+    };
+
+}
+
+#endif

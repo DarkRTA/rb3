@@ -159,7 +159,7 @@ BinStream& operator>>(BinStream& bs, WorldDir::BitmapOverride& c){
             c.replacement = gOldTexDir->Find<RndTex>(chr, false);
             if(!c.replacement){
                 MILO_WARN("Loading %s synchronously, please resave %s", chr, gOldTexDir->mLoader->mFile);
-                c.replacement = gOldTexDir->NewTex(chr);
+                c.replacement = gOldTexDir->New<RndTex>(chr);
                 c.replacement->SetBitmap(bitmap);
             }
             else {

@@ -83,6 +83,11 @@ namespace Hmx {
 void MakeHSL(const Hmx::Color&, float&, float&, float&);
 TextStream& operator<<(TextStream&, const Hmx::Color&);
 
+inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
+    bs << color.red << color.green << color.blue << color.alpha;
+    return bs;
+}
+
 inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     bs >> color.red >> color.green >> color.blue >> color.alpha;
     return bs;

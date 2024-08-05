@@ -1,0 +1,129 @@
+#ifndef _STD_LIMITS_H
+#define _STD_LIMITS_H
+
+// Based on https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/limits
+
+namespace std {
+
+    template <typename T>
+    class numeric_limits {
+    public:
+        static T min();
+        static T max();
+    };
+
+    template <>
+    class numeric_limits<bool> {
+    public:
+        static bool min() { return false; }
+        static bool max() { return true; }
+    };
+
+    template <>
+    class numeric_limits<char> {
+    public:
+        static char min() { return -0x80; }
+        static char max() { return 0x7F; }
+    };
+
+    template <>
+    class numeric_limits<signed char> {
+    public:
+        static signed char min() { return -0x80; }
+        static signed char max() { return 0x7F; }
+    };
+
+    template <>
+    class numeric_limits<unsigned char> {
+    public:
+        static unsigned char min() { return 0x0; }
+        static unsigned char max() { return 0xFF; }
+    };
+
+    template <>
+    class numeric_limits<short> {
+    public:
+        static short min() { return -0x8000; }
+        static short max() { return 0x7FFF; }
+    };
+
+    template <>
+    class numeric_limits<signed short> {
+    public:
+        static signed short min() { return -0x8000; }
+        static signed short max() { return 0x7FFF; }
+    };
+
+    template <>
+    class numeric_limits<unsigned short> {
+    public:
+        static unsigned short min() { return 0x0; }
+        static unsigned short max() { return 0xFFFF; }
+    };
+
+    template <>
+    class numeric_limits<int> {
+    public:
+        static int min() { return -0x80000000; }
+        static int max() { return 0x7FFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<signed int> {
+    public:
+        static signed int min() { return -0x80000000; }
+        static signed int max() { return 0x7FFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<unsigned int> {
+    public:
+        static unsigned int min() { return 0x0; }
+        static unsigned int max() { return 0xFFFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<long> {
+    public:
+        static long min() { return -0x80000000; }
+        static long max() { return 0x7FFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<signed long> {
+    public:
+        static signed long min() { return -0x80000000; }
+        static signed long max() { return 0x7FFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<unsigned long> {
+    public:
+        static unsigned long min() { return 0x0; }
+        static unsigned long max() { return 0xFFFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<long long> {
+    public:
+        static long long min() { return -0x8000000000000000; }
+        static long long max() { return 0x7FFFFFFFFFFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<signed long long> {
+    public:
+        static signed long long min() { return -0x8000000000000000; }
+        static signed long long max() { return 0x7FFFFFFFFFFFFFFF; }
+    };
+
+    template <>
+    class numeric_limits<unsigned long long> {
+    public:
+        static unsigned long long min() { return 0x0; }
+        static unsigned long long max() { return 0xFFFFFFFFFFFFFFFF; }
+    };
+
+}
+
+#endif

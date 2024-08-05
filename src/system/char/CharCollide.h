@@ -38,10 +38,15 @@ public:
     // float mMinLength;
     // float mCurRadius;
 
+    // float mRadius[2]; // 0x138
+    // float mLength[2]; // 0x140
     // radius0 at 0x138
     // radius1 at 0x13c
     // length0 at 0x140
     // length1 at 0x144
+
+    
+    // transform at 0x148
     // mesh y bias at 0x188
 };
 

@@ -82,8 +82,9 @@ template<class T> inline bool MinEq(T& x, const T& y){
 }
 
 template<class T> inline bool MaxEq(T& x, const T& y){
+    T temp = y;
     if(x < y){
-        x = y;
+        x = temp;
         return true;
     }
     return false;
@@ -193,6 +194,10 @@ inline float Interp(float a, float b, float c){
 
 inline void Interp(float f1, float f2, float f3, float& fres){
     fres = f3 * (f2 - f1) + f1;
+}
+
+inline void Interp(bool b1, bool b2, float f, bool& bres){
+    bres = f < 1.0f ? b1 : b2;
 }
 
 #endif

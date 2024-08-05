@@ -183,6 +183,8 @@ BEGIN_LOADS(CamShot)
             // more
         }
         // more
+        Vector2 v;
+        Interp(v, v, 0, v);
     }
     bs >> mPath;
     if(gRev - 2 < 0x2B){

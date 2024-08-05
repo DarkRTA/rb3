@@ -6,6 +6,8 @@
 #include "char/CharBonesSamples.h"
 #include "math/Key.h"
 
+class CharBoneDir;
+
 struct CharGraphNode {
     float curBeat;
     float nextBeat;
@@ -16,22 +18,31 @@ public:
 
     class NodeVector {
     public:
-        CharClip* clip;
-        int size;
-        CharGraphNode nodes[1];
+        CharClip* clip; // 0x0
+        int size; // 0x4
+        CharGraphNode nodes[1]; // 0x8
     };
 
     class Transitions {
     public:
         Transitions(Hmx::Object*);
-        
-        NodeVector* mNodeStart;
-        NodeVector* mNodeEnd;
-        Hmx::Object* mOwner;
+        ~Transitions();
+        void Clear();
+        void Resize(int, const CharClip::NodeVector*);
+        int Size() const;
+
+        NodeVector* mNodeStart; // 0x0
+        NodeVector* mNodeEnd; // 0x4
+        Hmx::Object* mOwner; // 0x8
     };
 
     class BeatEvent {
     public:
+        BeatEvent();
+        BeatEvent(const BeatEvent&);
+        BeatEvent& operator=(const BeatEvent&);
+        void Load(BinStream&);
+
         Symbol event;
         float beat;
     };
@@ -43,11 +54,13 @@ public:
 
     struct FacingSet {
         FacingSet();
+
+        static void Init();
         
-        short mFullRot;
-        short mFullPos;
-        FacingBones* mFacingBones;
-        float mWeight;
+        short mFullRot; // 0x0
+        short mFullPos; // 0x2
+        FacingBones* mFacingBones; // 0x4
+        float mWeight; // 0x8
     };
 
     CharClip();
@@ -64,23 +77,56 @@ public:
     virtual void Print();
     virtual void Export(DataArray*, bool);
     virtual void SetTypeDef(DataArray*);
+
+    CharBoneDir* GetResource() const;
+    int GetContext() const;
+    void ListBones(std::list<CharBones::Bone>&);
+    void StuffBones(CharBones&);
+    void PoseMeshes(ObjectDir*, float);
+    void SetPlayFlags(int);
+    bool SharesGroups(CharClip*);
+    float AverageBeatsPerSecond() const;
+    void ScaleDown(CharBones&, float);
+    void RotateBy(CharBones&, float);
+    void ScaleAdd(CharBones&, float, float, float);
+    float LengthSeconds() const;
+    void SetFlags(int);
+    void SetDefaultBlend(int);
+    void SetDefaultLoop(int);
+    void SetBeatAlignMode(int);
+    void SetRelative(CharClip*);
+    int AllocSize();
+    void LockAndDelete(CharClip**, int, int);
+    float StartBeat() const { return mBeatTrack.front().value; }
+    float EndBeat() const { return mBeatTrack.back().value; }
+    float LengthBeats() const { return EndBeat() - StartBeat(); }
+    int NumFrames() const {
+        return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
+    }
+    char* GetChannel(Symbol);
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(CharClip)
+    static void Init();
+    static const char* BeatAlignString(int);
     
-    Transitions mTransitions;
-    float mFramesPerSec;
-    Keys<float, float> mBeatTrack;
-    int mFlags;
-    int mPlayFlags;
-    float mRange;
-    bool mDirty;
-    bool mDoNotCompress;
-    short unk42;
-    ObjPtr<CharClip, ObjectDir> mRelative;
-    std::vector<BeatEvent> mBeatEvents;
-    ObjPtr<RndAnimatable, ObjectDir> mSyncAnim;
-    CharBonesSamples mFull;
-    CharBonesSamples mOne;
-    FacingSet mFacing;
-    std::vector<int> mZeros; // change vector type
+    Transitions mTransitions; // 0x1c
+    float mFramesPerSec; // 0x28
+    Keys<float, float> mBeatTrack; // 0x2c
+    int mFlags; // 0x34
+    int mPlayFlags; // 0x38
+    float mRange; // 0x3c
+    bool mDirty; // 0x40
+    bool mDoNotCompress; // 0x41
+    short unk42; // 0x42
+    ObjPtr<CharClip, ObjectDir> mRelative; // 0x44
+    std::vector<BeatEvent> mBeatEvents; // 0x50
+    ObjPtr<RndAnimatable, ObjectDir> mSyncAnim; // 0x58
+    CharBonesSamples mFull; // 0x64
+    CharBonesSamples mOne; // 0xc4
+    FacingSet mFacing; // 0x124
+    std::vector<int> mZeros; // 0x130 - change vector type
 };
 
 #endif

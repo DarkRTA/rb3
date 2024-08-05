@@ -159,7 +159,10 @@
                 "-lang=c99",
                 "-O4,p",
                 "-inline auto",
-                "-func_align 4"
+                "-func_align 4",
+
+                "-d _STLP_WHOLE_NATIVE_STD",
+                "-d _STLP_DONT_REDEFINE_STD"
             ]
         },
         "sdk/MSL_C": {

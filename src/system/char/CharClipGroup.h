@@ -18,11 +18,25 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharClipGroup(){}
     
-    DECLARE_REVS;
+    CharClip* GetClip();
+    CharClip* GetClip(int);
+    int NumFlagDuplicates(CharClip*, int);
+    void DeleteRemaining(int);
+    void AddClip(CharClip*);
+    void RemoveClip(CharClip*);
+    bool HasClip(CharClip*) const;
+    void SetClipFlags(int);
+    void Randomize();
+    void RandomizeIndex();
+    void Sort();
 
-    ObjVector<ObjOwnerPtr<CharClip, ObjectDir> > mClips;
-    int mWhich;
-    int mFlags; 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    ObjVector<ObjOwnerPtr<CharClip, ObjectDir> > mClips; // 0x8
+    int mWhich; // 0x14
+    int mFlags; // 0x18
 };
 
 #endif

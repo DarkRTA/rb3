@@ -163,17 +163,20 @@
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
 
+            "system/char/Char.cpp": "NonMatching",
             "system/char/Character.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "NonMatching",
             "system/char/CharBone.cpp": "NonMatching",
             "system/char/CharBoneDir.cpp": "NonMatching",
             "system/char/CharBoneOffset.cpp": "Matching",
             "system/char/CharBones.cpp": "NonMatching",
-            "system/char/CharBonesBlender.cpp": "NonMatching",
+            "system/char/CharBonesBlender.cpp": "Matching",
             "system/char/CharBonesMeshes.cpp": "NonMatching",
             "system/char/CharBonesSamples.cpp": "NonMatching",
             "system/char/CharBoneTwist.cpp": "NonMatching",
             "system/char/CharClip.cpp": "NonMatching",
+            "system/char/CharClipDisplay.cpp": "NonMatching",
+            "system/char/CharClipDriver.cpp": "NonMatching",
             "system/char/CharClipGroup.cpp": "NonMatching",
             "system/char/CharClipSet.cpp": "NonMatching",
             "system/char/CharCollide.cpp": "NonMatching",
@@ -181,6 +184,7 @@
             "system/char/CharDriver.cpp": "NonMatching",
             "system/char/CharDriverMidi.cpp": "NonMatching",
             "system/char/CharEyeDartRuleset.cpp": "Matching",
+            "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
             "system/char/CharForeTwist.cpp": "NonMatching",
             "system/char/CharGuitarString.cpp": "NonMatching",
@@ -209,6 +213,7 @@
             "system/char/CharTransCopy.cpp": "Matching",
             "system/char/CharTransDraw.cpp": "Matching",
             "system/char/CharUpperTwist.cpp": "NonMatching",
+            "system/char/CharUtl.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "Matching",
             "system/char/CharacterTest.cpp": "NonMatching",
@@ -285,6 +290,7 @@
             "system/obj/Dir.cpp": "NonMatching",
             "system/obj/DirLoader.cpp": "NonMatching",
             "system/obj/DirUnloader.cpp": "NonMatching",
+            "system/obj/MessageTimer.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
@@ -470,7 +476,7 @@
             "system/ui/UIColor.cpp": "Matching",
             "system/ui/UIComponent.cpp": "NonMatching",
             "system/ui/UIFontImporter.cpp": "NonMatching",
-            "system/ui/UIGridProvider.cpp": "NonMatching",
+            "system/ui/UIGridProvider.cpp": "Matching",
             "system/ui/UIGuide.cpp": "Matching",
             "system/ui/UILabel.cpp": "NonMatching",
             "system/ui/UILabelDir.cpp": "NonMatching",
@@ -744,7 +750,15 @@
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL_C++",
         "objects": {
-
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/ios.cpp": {
+                "status": "Equivalent",
+                "comment": "Weak method ordering issues"
+            },
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": {
+                "status": "LinkIssues",
+                "comment": "Weak method link ordering issues relating with msl_thread"
+            },
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "Matching"
         }
     },
     "sdk/Runtime": {

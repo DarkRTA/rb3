@@ -5,6 +5,8 @@
 #include "os/Joypad.h"
 #include "os/Timer.h"
 #include "rndobj/Cam.h"
+#include "ui/UIMessages.h"
+#include "os/JoypadMsgs.h"
 #include <vector>
 
 class JoypadClient;
@@ -13,6 +15,86 @@ class UIScreen;
 class UIPanel;
 class UIResource;
 class RndOverlay;
+class MsgSource;
+
+// size 0x58
+class Automator : public Hmx::Object {
+public:
+    Automator() : mScreenScripts(0), mRecord(0), mRecordPath("automator.dta"), mAutoPath("automator.dta"),
+        mCurScript(0), mCurScreenIndex(0), mCurMsgIndex(0), mFramesSinceAdvance(0), mSkipNextQuickCheat(0) {}
+    virtual ~Automator(){
+        if(mScreenScripts){
+            mScreenScripts->Release();
+            mScreenScripts = 0;
+        }
+        FinishRecord();
+        if(mRecord){
+            mRecord->Release();
+            mRecord = 0;
+        }
+    }
+    virtual DataNode Handle(DataArray*, bool);
+
+    void StartAuto(UIScreen*);
+    const char* ToggleAuto();
+
+    const char* AutoScript(){
+        if(mScreenScripts && !mRecord) return mAutoPath.c_str();
+        else return "OFF";
+    }
+
+    void FinishRecord();
+
+    const char* ToggleRecord(){
+        if(mRecord){
+            FinishRecord();
+            if(mRecord){
+                mRecord->Release();
+                mRecord = 0;
+            }
+        }
+        else {
+            mSkipNextQuickCheat = true;
+            mRecord = new DataArray(0);
+        }
+        return RecordScript();
+    }
+
+    const char* RecordScript(){
+        if(mRecord) return mRecordPath.c_str();
+        else return "OFF";
+    }
+
+    void AddMessageType(MsgSource* src, Symbol s){
+        src->AddSink(this, s, Symbol(), MsgSource::kHandle);
+        mCustomMsgs.push_back(s);
+    }
+
+    void AddRecord(Symbol, DataArray*);
+
+    DataNode OnMsg(const UITransitionCompleteMsg&);
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const UIComponentSelectMsg&);
+    DataNode OnMsg(const UIComponentScrollMsg&);
+    DataNode OnMsg(const UIComponentFocusChangeMsg&);
+    DataNode OnMsg(const UIScreenChangeMsg&);
+    DataNode OnCheatInvoked(const DataArray*);
+    DataNode OnCustomMsg(const Message&);
+
+    NEW_POOL_OVERLOAD(Automator)
+    DELETE_POOL_OVERLOAD(Automator)
+
+    DataArray* mScreenScripts; // 0x1c
+    DataArray* mRecord; // 0x20
+    String mRecordPath; // 0x24
+    String mAutoPath; // 0x30
+    DataArray* mCurScript; // 0x3c
+    int mCurScreenIndex; // 0x40
+    int mCurMsgIndex; // 0x44
+    int mFramesSinceAdvance; // 0x48
+    bool mSkipNextQuickCheat; // 0x4c
+    std::list<Symbol> mCustomMsgs; // 0x50
+};
 
 enum TransitionState {
     kTransitionNone = 0,
@@ -89,7 +171,7 @@ public:
     Timer mLoadTimer; // 0x78
     RndOverlay* mOverlay; // 0xa8
     bool mRequireFixedText; // 0xac
-    Hmx::Object* unkb0; // 0xb0 - should be class Automator*?
+    Automator* unkb0; // 0xb0
     bool unkb4; // 0xb4
     bool unkb5; // 0xb5
 };

@@ -23,18 +23,16 @@ public:
 
     class FingerDesc {
     public:
+        FingerDesc() : unk0(0), unk8(0,0,0), unk14(0,0,0), mFinger01(0), mFinger02(0), mFinger03(0), mFingertip(0), unk60(0), unk64(0), unk68(1) {}
+        ~FingerDesc(){}
         bool unk0;
         float unk4;
-        float unk8;
-        float unkc;
-        float unk10;
-        float unk14;
-        float unk18;
-        float unk1c;
-        ObjPtr<RndTransformable, ObjectDir> unk20;
-        ObjPtr<RndTransformable, ObjectDir> unk2c;
-        ObjPtr<RndTransformable, ObjectDir> unk38;
-        ObjPtr<RndTransformable, ObjectDir> unk44;
+        Vector3 unk8; // 0x8
+        Vector3 unk14; // 0x14
+        ObjPtr<RndTransformable, ObjectDir> mFinger01; // 0x20
+        ObjPtr<RndTransformable, ObjectDir> mFinger02; // 0x2c
+        ObjPtr<RndTransformable, ObjectDir> mFinger03; // 0x38
+        ObjPtr<RndTransformable, ObjectDir> mFingertip; // 0x44
         float unk50;
         float unk54;
         float unk58;
@@ -42,12 +40,8 @@ public:
         int unk60;
         int unk64;
         bool unk68;
-        float unk6c;
-        float unk70;
-        float unk74;
-        float unk78;
-        float unk7c;
-        float unk80;
+        Vector3 unk6c; // 0x6c
+        Vector3 unk78; // 0x78
         bool unk84;
     };
 
@@ -65,22 +59,28 @@ public:
     virtual void Load(BinStream&);
     virtual void SetName(const char*, class ObjectDir*);
 
-    ObjPtr<RndTransformable, ObjectDir> mHand;
-    ObjPtr<RndTransformable, ObjectDir> mElbow;
-    ObjPtr<RndTransformable, ObjectDir> mShoulder;
-    int mBlendInFrames;
-    int mBlendOutFrames;
-    bool mResetHandDest;
-    bool mResetCurHandTrans;
+    void MeasureLengths();
+    void SetFinger(Vector3, Vector3, FingerNum);
+    void ReleaseFinger(FingerNum);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mForeArm; // 0x34
+    ObjPtr<RndTransformable, ObjectDir> mUpperArm; // 0x40
+    int mBlendInFrames; // 0x4c
+    int mBlendOutFrames; // 0x50
+    bool mResetHandDest; // 0x54
+    bool mResetCurHandTrans; // 0x55
     Transform mCurHandTrans; // 0x58
     Transform mDestHandTrans; // 0x88
     float mFingerCurledLength; // 0xb8
     Vector3 mDestForwardVector; // 0xbc
     Vector3 mCurForwardVector; // 0xc8
     Vector3 mHandKeyboardOffset; // 0xd4
-
-    int unk[8]; // 0xe0 - 0x100
-
+    Hmx::Matrix3 mtx; // 0xe0
     float mHandMoveForward; // 0x104
     float mHandPinkyRotation; // 0x108
     float mHandThumbRotation; // 0x10c

@@ -5,8 +5,11 @@
 
 class ObjectStage : public ObjPtr<Hmx::Object, ObjectDir> {
 public:
+    ObjectStage() : ObjPtr<Hmx::Object, ObjectDir>(sOwner, 0) {}
     ObjectStage(Hmx::Object* o) : ObjPtr<Hmx::Object, ObjectDir>(sOwner, o) {}
     virtual ~ObjectStage(){}
+
+    // copy ctor - calls ObjPtr copy ctor
 
     static Hmx::Object* sOwner;
 };

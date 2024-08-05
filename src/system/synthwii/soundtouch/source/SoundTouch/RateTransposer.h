@@ -114,6 +114,7 @@ public:
     virtual ~RateTransposer();
 
     void *operator new(size_t t) { return _MemAlloc(t, 0x20); }
+    void operator delete(void* v) { _MemFree(v); }
 
     /// Returns the output buffer object
     FIFOSamplePipe *getOutput() { return &outputBuffer; };
@@ -167,7 +168,6 @@ protected:
 public:
     RateTransposerFloat();
     virtual ~RateTransposerFloat();
-    void operator delete(void* v) { _MemFree(v); }
 };
 
 }

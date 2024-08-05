@@ -6,11 +6,6 @@
 #include <stdlib.h>
 #include <exception>
 
-// Prevent conflict with STLport
-#ifdef std
-#undef std
-#endif
-
 #define ARRAY_HEADER_SIZE 16
 
 namespace std {
@@ -45,7 +40,6 @@ namespace std {
     extern void unexpected() {
         uhandler();
     }
-
 }
 
 extern char

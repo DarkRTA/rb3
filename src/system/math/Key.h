@@ -62,6 +62,19 @@ public:
         }
     }
 
+    void Sort(){
+        int vecSize = size();
+        for(int i = 1; i < vecSize; i++){
+            Key<T1> key = (*this)[i];
+            int j = i;
+            while(0 < j && (*this)[j-1].frame < key.frame){
+                (*this)[j] = (*this)[j-1];
+                j--;
+            }
+            if(j != i) (*this)[j] = key;
+        }
+    }
+
     float FirstFrame() const {
         if(size() != 0) return front().frame;
         else return 0.0f;
@@ -73,9 +86,9 @@ public:
     }
 
     // fn_805FC18C for Vector3
-    int Add(const T1& val, float f, bool b){
+    int Add(const T1& val, float f, bool unique){
         int bound = UpperBound(f);
-        if(b && bound != size() && f == (*this)[bound].frame){
+        if(unique && bound != size() && f == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
         else {
@@ -155,9 +168,9 @@ public:
             int cnt = 0;
             int threshold = size();
             while(threshold > cnt + 1){
-                int newCnt = cnt + threshold >> 1;
+                int newCnt = (cnt + threshold) >> 1;
                 if(ff < (*this)[newCnt].frame) threshold = newCnt;
-                if(!(ff < (*this)[threshold].frame)) cnt = newCnt; // threshold should be newCnt here, but doing so causes the slwi to not generate
+                if(!(ff < (*this)[(int)newCnt].frame)) cnt = newCnt;
             }
             while (cnt + 1 < size() && (*this)[cnt + 1].SameFrame((*this)[cnt])) cnt++;
             return cnt;
@@ -176,12 +189,12 @@ public:
                 int cnt = 0;
                 int threshold = size() - 1;
                 while(threshold > cnt + 1){
-                    int newCnt = cnt + threshold >> 1;
+                    int newCnt = (cnt + threshold) >> 1;
                     if(ff > (*this)[newCnt].frame) cnt = newCnt;
-                    if(!(ff > (*this)[cnt].frame)) threshold = newCnt; // same deal as above, cnt should be newCnt
+                    if(!(ff > (*this)[(int)newCnt].frame)) threshold = newCnt;
                 }
-                while (cnt > 1 && (*this)[cnt - 1].SameFrame((*this)[cnt])) cnt--;
-                return cnt;
+                while (threshold > 1 && (*this)[threshold - 1].SameFrame((*this)[threshold])) threshold--;
+                return threshold;
             }
         }
     }
@@ -194,7 +207,10 @@ template <class T1, class T2> void ScaleFrame(Keys<T1, T2>& keys, float scale){
 }
 
 // math functions defined in math/Key.cpp:
+void SplineTangent(const Keys<Vector3, Vector3>&, int, Vector3&);
+void InterpTangent(const Vector3&, const Vector3&, const Vector3&, const Vector3&, float, Vector3&);
 void InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*);
 void InterpVector(const Keys<Vector3, Vector3>&, bool, float, Vector3&, Vector3*);
+void QuatSpline(const Keys<Hmx::Quat, Hmx::Quat>&, const Key<Hmx::Quat>*, const Key<Hmx::Quat>*, float, Hmx::Quat&);
 
 #endif

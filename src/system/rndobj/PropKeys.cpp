@@ -1,9 +1,11 @@
 #include "rndobj/PropKeys.h"
 #include "obj/ObjectStage.h"
 #include "obj/Utl.h"
+#include "obj/DataUtl.h"
 #include "math/Rot.h"
 
 unsigned short PropKeys::gRev = 0;
+Hmx::Object* ObjectStage::sOwner = 0;
 Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
 
 void SetPropKeysRev(int rev){
@@ -117,39 +119,39 @@ void PropKeys::ChangeFrame(int i, float f, bool b){
 void PropKeys::ReSort(){
     switch(mKeysType){
         case kFloat:
-            AsFloatKeys();
             // mystery vector method - fn_806280C0 in retail, scratch: https://decomp.me/scratch/5Vpiu
+            AsFloatKeys().Sort();
             break;
         case kColor:
-            AsColorKeys();
             // mystery vector method - fn_80627FEC in retail
+            AsColorKeys().Sort();
             break;
         case kObject:
-            AsObjectKeys();
             // mystery vector method - fn_80627F0C in retail
+            AsObjectKeys().Sort();
             break;
         case kBool:
-            AsBoolKeys();
-            // mystery vector method - fn_80627E24 in retail
+            // mystery vector method - fn_80627E24 in retail, scratch: https://decomp.me/scratch/7TOeo
+            AsBoolKeys().Sort();
             break;
         case kSymbol:
-            AsSymbolKeys();
             // mystery vector method - fn_80627D50 in retail
+            AsSymbolKeys().Sort();
             break;
         case kVector3:
-            AsVector3Keys();
             // mystery vector method - fn_80627C7C in retail
+            AsVector3Keys().Sort();
             break;
         case kQuat:
-            AsQuatKeys();
             // mystery vector method - fn_80627B64 in retail
+            AsQuatKeys().Sort();
             break;
     }
 }
 
 void Interp(const ObjectStage& stage1, const ObjectStage& stage2, float f, Hmx::Object*& obj){
-    if(f < 1.0f) &stage2 = &stage1;
-    obj = stage2.Ptr();
+    const ObjectStage& out = f < 1.0f ? stage1 : stage2;
+    obj = out.Ptr();
 }
 
 SAVE_OBJ(PropKeys, 0xCF);
@@ -167,7 +169,7 @@ void PropKeys::Load(BinStream& bs){
         else iVal = (mKeysType == kObject || mKeysType == kBool) == 0;
 
         if(gRev < 0xB && iVal == 4){
-            mKeysType = kSymbol;
+            mPropExceptionID = kMacro;
             mInterpolation = kStep;
         }
         else mInterpolation = iVal;
@@ -195,9 +197,10 @@ void PropKeys::Load(BinStream& bs){
 }
 
 void PropKeys::Copy(const PropKeys* keys){
+    mInterpolation = keys->mInterpolation;
+    mPropExceptionID = keys->mPropExceptionID;
     mInterpHandler = keys->mInterpHandler;
-    mKeysType = keys->mKeysType;
-    mLastKeyFrameIndex = keys->mLastKeyFrameIndex;
+    unk18lastbit = keys->unk18lastbit;
 }
 
 void PropKeys::Print(){
@@ -284,34 +287,440 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
-void SymbolKeys::Load(BinStream& bs){
-    PropKeys::Load(bs);
-    bs >> *this;
+int FloatKeys::FloatAt(float frame, float& fl){
+    MILO_ASSERT(size(), 0x188);
+    fl = 0.0f;
+    float ref = 0.0f;
+    const Key<float>* prev;
+    const Key<float>* next;
+    int at = AtFrame(frame, prev, next, ref);
+    switch(mInterpolation){
+        case kStep:
+            fl = prev->value;
+            break;
+        case kLinear:
+            Interp(prev->value, next->value, ref, fl);
+            break;
+        case kSpline:
+            if(size() < 3 || prev == next){
+                Interp(prev->value, next->value, ref, fl);
+            }
+            else {
+                // more stuff happens here
+            }
+            break;
+        case kHermite:
+            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, fl);
+            break;
+        case kInterp5:
+            Interp(prev->value, next->value, ref * ref * ref, fl);
+            break;
+        case kInterp6:
+            Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), fl);
+            break;
+    }
+    return at;
 }
 
-void SymbolKeys::Save(BinStream& bs){
-    PropKeys::Save(bs);
-    bs << *this;
+void FloatKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx;
+    if(mPropExceptionID == kHandleInterp){
+        float ref = 0.0f;
+        const Key<float>* prev;
+        const Key<float>* next;
+        idx = AtFrame(frame, prev, next, ref);
+        sInterpMessage.SetType(mInterpHandler);
+        sInterpMessage[0] = DataNode(prev->value);
+        sInterpMessage[1] = DataNode(next->value);
+        sInterpMessage[2] = DataNode(ref);
+        sInterpMessage[3] = DataNode(next->frame);
+        if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
+        else sInterpMessage[4] = DataNode(0);
+        mTarget->Handle(sInterpMessage, true);
+    }
+    else {
+        float val;
+        idx = FloatAt(frame, val);
+        mTarget->SetProperty(mProp, DataNode(val));
+    }
+    mLastKeyFrameIndex = idx;
 }
 
-int SymbolKeys::SymbolAt(float f, Symbol& sym){
+int ColorKeys::ColorAt(float frame, Hmx::Color& color){
+    MILO_ASSERT(size(), 0x1E8);
+    color.Set(0,0,0);
+    int at = 0;
+    const Key<Hmx::Color>* prev;
+    const Key<Hmx::Color>* next;
+    float ref;
+    switch(mInterpolation){
+        case kStep:
+            at = AtFrame(frame, prev, next, ref);
+            color = prev->value;
+            break;
+        case kLinear:
+            at = AtFrame(frame, color);
+            break;
+        case kInterp5:
+            at = AtFrame(frame, prev, next, ref);
+            if(prev) Interp(prev->value, next->value, ref * ref * ref, color);
+            break;
+        case kInterp6:
+            at = AtFrame(frame, prev, next, ref);
+            ref = 1.0f - ref;
+            if(prev) Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), color);
+            break;
+        default: break;
+    }
+    return at;
+}
+
+void ColorKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    Hmx::Color col;
+    int idx = ColorAt(frame, col);
+    mTarget->SetProperty(mProp, DataNode(col.Pack()));
+    mLastKeyFrameIndex = idx;
+}
+
+int ObjectKeys::ObjectAt(float frame, Hmx::Object*& obj){
+    MILO_ASSERT(size(), 0x22A);
+    return AtFrame(frame, obj);
+}
+
+void ObjectKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kDirEvent:
+            break;
+        case kHandleInterp:
+            float ref = 0.0f;
+            const Key<ObjectStage>* prev;
+            const Key<ObjectStage>* next;
+            idx = AtFrame(frame, prev, next, ref);
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(prev->value.Ptr());
+            sInterpMessage[1] = DataNode(next->value.Ptr());
+            sInterpMessage[2] = DataNode(ref);
+            sInterpMessage[3] = DataNode(next->frame);
+            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value.Ptr());
+            else sInterpMessage[4] = DataNode(0);
+            mTarget->Handle(sInterpMessage, true);
+            break;
+        default:
+            Hmx::Object* obj;
+            idx = ObjectAt(frame, obj);
+            if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
+                mTarget->SetProperty(mProp, DataNode(obj));
+            }
+            break;
+    }
+    mLastKeyFrameIndex = idx;
+}
+
+int BoolKeys::BoolAt(float frame, bool& b){
+    MILO_ASSERT(size(), 0x25C);
+    return AtFrame(frame, b);
+}
+
+void BoolKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    if(mPropExceptionID == kNoException){
+        bool b;
+        idx = BoolAt(frame, b);
+        if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
+            mTarget->SetProperty(mProp, DataNode(b));
+        }
+    }
+    else if(mPropExceptionID == kHandleInterp) {
+        bool b;
+        idx = BoolAt(frame, b);
+        if(mLastKeyFrameIndex != idx){
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(b);
+            sInterpMessage[1] = DataNode(frame);
+            mTarget->Handle(sInterpMessage, true);
+        }
+    }
+    mLastKeyFrameIndex = idx;
+}
+
+int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
+    MILO_ASSERT(size(), 0x281);
+    float ref = 0.0f;
+    const Key<Hmx::Quat>* prev;
+    const Key<Hmx::Quat>* next;
+    int at = AtFrame(frame, prev, next, ref);
+    if(mInterpolation == kSpline) QuatSpline(*this, prev, next, ref, quat);
+    else switch(mInterpolation){
+        case kStep:
+            quat = prev->value;
+            break;
+        case kLinear:
+            FastInterp(prev->value, next->value, ref, quat);
+            break;
+        case kSlerp:
+            Interp(prev->value, next->value, ref, quat);
+            break;
+        case kInterp5:
+            FastInterp(prev->value, next->value, ref * ref * ref, quat);
+            break;
+        case kInterp6:
+            FastInterp(prev->value, next->value, -(ref * ref * ref - 1.0f), quat);
+            break;
+    }
+    return at;
+}
+
+void QuatKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    if(mPropExceptionID == kTransQuat){
+        if(mTrans != mTarget){
+            mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+        }
+        Vector3 v48;
+        MakeScale(mTrans->LocalXfm().m, v48);
+        if(v48.x){ // FIXME: this condition is wrong
+            mVec = v48;
+        }
+        else v48 = mVec;
+        Hmx::Quat quat;
+        Hmx::Matrix3 mtx;
+        idx = QuatAt(frame, quat);
+        MakeRotMatrix(quat, mtx);
+        Scale(v48, mtx, mtx);
+        mTrans->SetLocalRot(mtx);
+    }
+    mLastKeyFrameIndex = idx;
+}
+
+int Vector3Keys::Vector3At(float frame, Vector3& vec){
+    MILO_ASSERT(size(), 0x2D8);
+    float ref = 0.0f;
+    const Key<Vector3>* prev;
+    const Key<Vector3>* next;
+    int idx = AtFrame(frame, prev, next, ref);
+    switch(mInterpolation){
+        case kNoException:
+            vec = prev->value;
+            break;
+        case kTransQuat:
+            Interp(prev->value, next->value, ref, vec);
+            break;
+        case kTransScale:
+            InterpVector(*this, prev, next, ref, true, vec, 0);
+            break;
+        case kDirEvent:
+            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, vec);
+            break;
+        case kHandleInterp:
+            Interp(prev->value, next->value, ref * ref * ref, vec);
+            break;
+        case kMacro:
+            ref = 1.0f - ref;
+            Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), vec);
+            break;
+    }
+    return idx;
+}
+
+void Vector3Keys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kTransScale:
+            if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            Vector3 v70;
+            Hmx::Matrix3 m40;
+            Normalize(mTrans->LocalXfm().m, m40);
+            MakeEuler(m40, v70);
+            Hmx::Matrix3 m64;
+            MakeRotMatrix(v70, m64, false);
+            Vector3 v7c;
+            idx = Vector3At(frame, v7c);
+            Scale(v7c, m64, m64);
+            mTrans->SetLocalRot(m64);
+            break;
+        case kTransPos:
+            if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            Vector3 v88;
+            idx = Vector3At(frame, v88);
+            mTrans->SetLocalPos(v88.x, v88.y, v88.z);
+            break;
+        default: break;
+    }
+    mLastKeyFrameIndex = idx;
+}
+
+int SymbolKeys::SymbolAt(float frame, Symbol& sym){
     MILO_ASSERT(size(), 0x322);
-    return AtFrame(f, sym);
+    return AtFrame(frame, sym);
+}
+
+void SymbolKeys::SetFrame(float frame, float blend){
+    if(!mProp || !mTarget || !size()) return;
+    int idx = 0;
+    switch(mPropExceptionID){
+        case kHandleInterp:
+            float ref = 0.0f;
+            const Key<Symbol>* prev;
+            const Key<Symbol>* next;
+            idx = AtFrame(frame, prev, next, ref);
+            sInterpMessage.SetType(mInterpHandler);
+            sInterpMessage[0] = DataNode(prev->value);
+            sInterpMessage[1] = DataNode(next->value);
+            sInterpMessage[2] = DataNode(ref);
+            sInterpMessage[3] = DataNode(next->frame);
+            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
+            else sInterpMessage[4] = DataNode(0);
+            mTarget->Handle(sInterpMessage, true);
+            break;
+        case kMacro:
+            Symbol s;
+            idx = SymbolAt(frame, s);
+            if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
+                mTarget->SetProperty(mProp, DataNode(DataGetMacro(s)->Int(0)));
+            }
+            break;
+        default: break;
+    }
+    switch(mInterpolation){
+        case kStep:
+            // more happens here
+            break;
+        case kLinear:
+            Symbol s;
+            idx = SymbolAt(frame, s);
+            mTarget->SetProperty(mProp, DataNode(s));
+            break;
+        default: break;
+    }
+    mLastKeyFrameIndex = idx;
 }
 
 int FloatKeys::SetKey(float frame){
-    int retVal;
-    if(!mProp || !mTarget.Ptr()) retVal = -1;
+    if(!mProp || !mTarget.Ptr()) return -1;
     else {
-        retVal = PropKeys::SetKey(frame);
-        // some vector method that takes in frame, a label that = 0, and 0
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(0, frame, false);
         SetToCurrentVal(retVal);
+        return retVal;
     }
-    return retVal;
+}
+
+int ColorKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Hmx::Color(0), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int ObjectKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = ObjKeys::Add(0, frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int BoolKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(true, frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int QuatKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Hmx::Quat(), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int Vector3Keys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Vector3(), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
+}
+
+int SymbolKeys::SetKey(float frame){
+    if(!mProp || !mTarget.Ptr()) return -1;
+    else {
+        int retVal = PropKeys::SetKey(frame);
+        if(retVal < 0) retVal = Add(Symbol(), frame, false);
+        SetToCurrentVal(retVal);
+        return retVal;
+    }
 }
 
 void FloatKeys::SetToCurrentVal(int i){
     (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
+}
+
+void ColorKeys::SetToCurrentVal(int i){
+    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int(0));
+}
+
+void ObjectKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID != kDirEvent){
+        (*this)[i].value = ObjectStage(mTarget->Property(mProp, true)->GetObj(0));
+    }
+}
+
+void BoolKeys::SetToCurrentVal(int i){
+    (*this)[i].value = mTarget->Property(mProp, true)->Int(0);
+}
+
+void QuatKeys::SetToCurrentVal(int i){
+    if(mPropExceptionID == kTransQuat){
+        if(mTrans != mTarget){
+            mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+        }
+        Hmx::Matrix3 m38;
+        Normalize(mTrans->LocalXfm().m, m38);
+        Hmx::Quat q48;
+        Hmx::Quat q58(m38);
+        Normalize(q58, q48);
+        (*this)[i].value = q48;
+    }
+}
+
+void Vector3Keys::SetToCurrentVal(int i){
+    switch(mPropExceptionID){
+        case kTransScale:
+            if(mTrans != mTarget){
+                mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            }
+            Vector3 v28;
+            MakeScale(mTrans->LocalXfm().m, v28);
+            (*this)[i].value = v28;
+            break;
+        case kTransPos:
+            if(mTrans != mTarget){
+                mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
+            }
+            (*this)[i].value = mTrans->LocalXfm().v;
+            break;
+    }
 }
 
 void SymbolKeys::SetToCurrentVal(int i){
@@ -323,51 +732,67 @@ void SymbolKeys::SetToCurrentVal(int i){
     else (*this)[i].value = mTarget->Property(mProp, true)->Sym(0);
 }
 
+// then finally, Copys
+
+void FloatKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const FloatKeys* newKeys = dynamic_cast<const FloatKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void ColorKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const ColorKeys* newKeys = dynamic_cast<const ColorKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void ObjectKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const ObjectKeys* newKeys = dynamic_cast<const ObjectKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void BoolKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const BoolKeys* newKeys = dynamic_cast<const BoolKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void QuatKeys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const QuatKeys* newKeys = dynamic_cast<const QuatKeys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
+void Vector3Keys::Copy(const PropKeys* keys){
+    PropKeys::Copy(keys);
+    clear();
+    if(keys->mKeysType == mKeysType){
+        const Vector3Keys* newKeys = dynamic_cast<const Vector3Keys*>(keys);
+        insert(begin(), newKeys->begin(), newKeys->end());
+    }
+}
+
 void SymbolKeys::Copy(const PropKeys* keys){
     PropKeys::Copy(keys);
     clear();
     if(keys->mKeysType == mKeysType){
         const SymbolKeys* newKeys = dynamic_cast<const SymbolKeys*>(keys);
-        // retail calls some function (this vector, this vector, newKeys' vector, newKeys' vector end)
-        // not so sure that it's insert, or if it is, what its params are
         insert(begin(), newKeys->begin(), newKeys->end());
-    }    
-}
-
-void FloatKeys::Load(BinStream& bs){
-    PropKeys::Load(bs);
-    bs >> *this;
-}
-
-void FloatKeys::Save(BinStream& bs){
-    PropKeys::Save(bs);
-    bs << *this;
-}
-
-int FloatKeys::RemoveKey(int idx){
-    Remove(idx);
-    return size();
-}
-
-void FloatKeys::CloneKey(int idx){
-    if(!mProp || !mTarget) return;
-    if(idx >= 0 && idx < size()){
-        Add((*this)[idx].value, (*this)[idx].frame, false);
     }
 }
-
-float FloatKeys::StartFrame(){
-    return FirstFrame();
-}
-
-float FloatKeys::EndFrame(){
-    return LastFrame();
-}
-
-bool FloatKeys::FrameFromIndex(int idx, float& f){
-    if(idx >= size()) return false;
-    else f = (*this)[idx].frame;
-    return true;
-}
-
-int FloatKeys::NumKeys(){ return size(); }

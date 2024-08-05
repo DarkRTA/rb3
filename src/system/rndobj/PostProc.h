@@ -40,8 +40,8 @@ class RndPostProc : public Hmx::Object, public PostProcessor {
 public:
     RndPostProc();
     virtual ~RndPostProc();
-    OBJ_CLASSNAME(Object);
-    OBJ_SET_TYPE(Object);
+    OBJ_CLASSNAME(PostProc);
+    OBJ_SET_TYPE(PostProc);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);

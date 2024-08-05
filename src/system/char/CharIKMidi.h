@@ -23,21 +23,23 @@ public:
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual void Enter();
 
+    void NewSpot(RndTransformable*, float);
+
     DECLARE_REVS;
     DELETE_OVERLOAD;
     
-    ObjPtr<RndTransformable, ObjectDir> mBone;
-    ObjPtr<RndTransformable, ObjectDir> mCurSpot;
-    ObjPtr<RndTransformable, ObjectDir> mNewSpot;
-    Transform mLocalXfm;
-    Transform mOldLocalXfm;
-    float mFrac;
-    float mFracPerBeat;
-    bool mSpotChanged;
-    ObjPtr<CharWeightable, ObjectDir> mAnimBlender;
-    float mMaxAnimBlend;
-    float mAnimFracPerBeat;
-    float mAnimFrac;
+    ObjPtr<RndTransformable, ObjectDir> mBone; // 0x10
+    ObjPtr<RndTransformable, ObjectDir> mCurSpot; // 0x1c
+    ObjPtr<RndTransformable, ObjectDir> mNewSpot; // 0x28
+    Transform mLocalXfm; // 0x34
+    Transform mOldLocalXfm; // 0x64
+    float mFrac; // 0x94
+    float mFracPerBeat; // 0x98
+    bool mSpotChanged; // 0x9c
+    ObjPtr<CharWeightable, ObjectDir> mAnimBlender; // 0xa0
+    float mMaxAnimBlend; // 0xac
+    float mAnimFracPerBeat; // 0xb0
+    float mAnimFrac; // 0xb4
 };
 
 #endif

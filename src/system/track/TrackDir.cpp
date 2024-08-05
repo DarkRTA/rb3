@@ -52,6 +52,13 @@ void TrackDir::SyncObjects() {
 
 void TrackDir::SetupKeyShifting(RndDir* rnddir){
     mRotatorCam = rnddir->Find<RndTransformable>("rotator_cam.trans", true);
+    unk2d8.Reset();
+    Vector3 v38(1.0f / rnddir->mOrder, 1.0f, 1.0f);
+    Scale(unk2d8.m, v38, unk2d8.m);
+    unk308.Reset();
+    unk308.v = mRotatorCam->WorldXfm().v;
+    unk338.Reset();
+    Invert(unk338, unk338);
 }
 
 void TrackDir::ResetKeyShifting(){

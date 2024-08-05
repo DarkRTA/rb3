@@ -10,6 +10,17 @@
 
 class CharIKHead : public RndHighlightable, public CharWeightable, public CharPollable {
 public:
+    class Point {
+    public:
+        Point(Hmx::Object* o) : unk0(o, 0), unkc(0,0,0), unk18(0), unk1c(0) {}
+
+        ObjPtr<RndTransformable, ObjectDir> unk0; // 0x0
+        Vector3 unkc; // 0xc
+        float unk18; // 0x18
+        float unk1c; // 0x1c
+        int unk20, unk24, unk28;
+    };
+
     CharIKHead();
     virtual ~CharIKHead();
     virtual void Highlight();
@@ -24,22 +35,26 @@ public:
     virtual void Load(BinStream&);
     virtual void SetName(const char*, class ObjectDir*);
 
+    void UpdatePoints(bool);
+
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     
-    ObjVector<int> mPoints; // change vector type
-    ObjPtr<RndTransformable, ObjectDir> mHead;
-    ObjPtr<RndTransformable, ObjectDir> mSpine;
-    ObjPtr<RndTransformable, ObjectDir> mMouth;
-    ObjPtr<RndTransformable, ObjectDir> mTarget;
-    Vector3 mHeadFilter;
-    float mTargetRadius;
-    float mHeadMat;
-    ObjPtr<RndTransformable, ObjectDir> mOffset;
-    Vector3 mOffsetScale;
-    float mSpineLength;
-    bool mUpdatePoints;
-    ObjPtr<Character, ObjectDir> mMe;
-    Vector3 mDebugTarget;
+    ObjVector<Point> mPoints; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mHead; // 0x34
+    ObjPtr<RndTransformable, ObjectDir> mSpine; // 0x40
+    ObjPtr<RndTransformable, ObjectDir> mMouth; // 0x4c
+    ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x58
+    Vector3 mHeadFilter; // 0x64
+    float mTargetRadius; // 0x70
+    float mHeadMat; // 0x74
+    ObjPtr<RndTransformable, ObjectDir> mOffset; // 0x78
+    Vector3 mOffsetScale; // 0x84
+    float mSpineLength; // 0x90
+    bool mUpdatePoints; // 0x94
+    ObjPtr<Character, ObjectDir> mMe; // 0x98
+    Vector3 mDebugTarget; // 0xa4
 };
 
 #endif

@@ -22,14 +22,18 @@ public:
     virtual ~CharCuff();
     virtual void Highlight();
 
-    Shape mShape[3];
-    float mOuterRadius;
+    float Eccentricity(const Vector2&) const;
+
+    DECLARE_REVS;
+
     // offset0, radius0, offset1, radius1, offset2, radius2, outer_radius
-    bool mOpenEnd;
-    ObjPtrList<RndMesh, ObjectDir> mIgnore;
-    ObjPtr<RndTransformable, ObjectDir> mBone;
-    float mEccentricity;
-    Symbol mCategory;
+    Shape mShape[3]; // 0x90, 0x98, 0xa0
+    float mOuterRadius; // 0xa8
+    bool mOpenEnd; // 0xac
+    ObjPtrList<RndMesh, ObjectDir> mIgnore; // 0xb0
+    ObjPtr<RndTransformable, ObjectDir> mBone; // 0xc0
+    float mEccentricity; // 0xcc
+    Symbol mCategory; // 0xd0
 };
 
 #endif

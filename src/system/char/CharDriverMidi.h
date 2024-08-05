@@ -18,10 +18,18 @@ public:
     virtual void Enter();
     virtual void Exit();
 
-    Symbol mParser;
-    Symbol mFlagParser;
-    int mClipFlags;
-    float mBlendOverridePct;
+    DataNode OnMidiParser(DataArray*);
+    DataNode OnMidiParserFlags(DataArray*);
+    DataNode OnMidiParserGroup(DataArray*);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    Symbol mParser; // 0x8c
+    Symbol mFlagParser; // 0x90
+    int mClipFlags; // 0x94
+    float mBlendOverridePct; // 0x98
 };
 
 #endif

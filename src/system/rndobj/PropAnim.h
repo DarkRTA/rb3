@@ -17,7 +17,7 @@ public:
     virtual void Load(BinStream&);
     virtual ~RndPropAnim();
     virtual bool Loop(){ return mLoop; }
-    virtual void StartAnim(){}
+    virtual void StartAnim();
     virtual void EndAnim(){}
     virtual void SetFrame(float, float);
     virtual float StartFrame();
@@ -26,8 +26,37 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    void LoadPre7(BinStream&);
+    void AdvanceFrame(float);
     void RemoveKeys();
+    PropKeys* GetKeys(const Hmx::Object*, DataArray*);
+    PropKeys* AddKeys(Hmx::Object*, DataArray*, PropKeys::AnimKeysType);
+    bool ChangePropPath(Hmx::Object*, DataArray*, DataArray*);
+    bool RemoveKeys(Hmx::Object*, DataArray*);
+    bool HasKeys(Hmx::Object*, DataArray*);
+    PropKeys** FindKeys(Hmx::Object*, DataArray*);
+    void SetKey(Hmx::Object*, DataArray*, float);
+    void SetKeyVal(Hmx::Object*, DataArray*, float, const DataNode&, bool);
+    PropKeys::AnimKeysType AnimKeysType(Hmx::Object*, DataArray*);
+    PropKeys::Interpolation InterpType(Hmx::Object*, DataArray*);
+    void SetInterpType(Hmx::Object*, DataArray*, PropKeys::Interpolation);
+    Symbol InterpHandler(Hmx::Object*, DataArray*);
+    void SetInterpHandler(Hmx::Object*, DataArray*, Symbol);
+    int ValueFromFrame(PropKeys*, float, DataNode*);
+    bool ValueFromIndex(PropKeys*, int, DataNode*);
 
+    DataNode OnReplaceKeyframe(DataArray*);
+    DataNode OnReplaceFrame(DataArray*);
+    DataNode OnGetIndexFromFrame(const DataArray*);
+    DataNode OnGetFrameFromIndex(const DataArray*);
+    DataNode OnGetValueFromIndex(const DataArray*);
+    DataNode OnGetValueFromFrame(const DataArray*);
+    DataNode ForEachTarget(const DataArray*);
+    DataNode ForAllKeyframes(const DataArray*);
+    DataNode ForeachKeyframe(const DataArray*);
+    DataNode ForeachFrame(const DataArray*);
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndPropAnim)
@@ -35,10 +64,10 @@ public:
         REGISTER_OBJ_FACTORY(RndPropAnim)
     }
     
-    std::vector<PropKeys*> mPropKeys;
-    float mLastFrame;
-    bool mInSetFrame;
-    bool mLoop;
+    std::vector<PropKeys*> mPropKeys; // 0x10
+    float mLastFrame; // 0x18
+    bool mInSetFrame; // 0x1c
+    bool mLoop; // 0x1d
 };
 
 #endif

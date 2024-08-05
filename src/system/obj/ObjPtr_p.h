@@ -28,6 +28,7 @@ public:
     }
 
     Hmx::Object* Owner() const { return mOwner; }
+    T1* Ptr(){ return mPtr; }
     T1* Ptr() const { return mPtr; }
     operator T1*() const { return mPtr; }
     T1* operator->() const { return mPtr; }
@@ -65,6 +66,10 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class Object
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
     ObjOwnerPtr(Hmx::Object* obj, T1* cls = nullptr): mOwner(obj), mPtr(cls) {
+        if(mPtr != 0) mPtr->AddRef(mOwner);
+    }
+
+    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.Ptr()) {
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
@@ -351,7 +356,6 @@ public:
         if(obj) obj->AddRef(this);
     }
 
-    // has one regswap somewhere in the first for loop
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
         while(mSize > x.mSize) pop_back();

@@ -1,8 +1,8 @@
 #ifndef RUNTIME_MEM_H
 #define RUNTIME_MEM_H
 
-#include "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/size_def.h"
-#include "PowerPC_EABI_Support/MSL/MSL_C/MSL_Common/restrict_def.h"
+#include "MSL_C/MSL_Common/size_def.h"
+#include "MSL_C/MSL_Common/restrict_def.h"
 
 #ifdef __cplusplus
 extern "C" {
