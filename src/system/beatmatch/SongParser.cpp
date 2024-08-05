@@ -395,8 +395,7 @@ bool SongParser::HandleFillEnd(int tick, unsigned char uc){
 }
 
 void SongParser::OnFillStart(int tick, unsigned char pitch){
-    bool b = false;
-    if(mCodaStartTick != -1 && tick >= mCodaStartTick) b = true;
+    bool b = mCodaStartTick != -1 && tick >= mCodaStartTick;
     if(mDrumFillInProgress == -1){
         if(!b && !mDrumStyleGems){
             if(mCodaStartTick == -1){
@@ -431,19 +430,19 @@ void SongParser::OnFillStart(int tick, unsigned char pitch){
 }
 
 void SongParser::OnFillEnd(int tick, unsigned char uc){
-    bool b = false;
-    if(mCodaStartTick != -1 && tick >= mCodaStartTick) b = true;
-    if(mDrumFillInProgress != -1){
-        if(mDrumStyleGems && (mSoloPhraseInProgress != -1 || (mDrumFillInProgress <= mSoloPhraseEndTick))){
+    bool b = mCodaStartTick != -1 && tick >= mCodaStartTick;
+    int fill = mDrumFillInProgress;
+    if(fill != -1){
+        if(mDrumStyleGems && (mSoloPhraseInProgress != -1 || (mSoloPhraseEndTick >= fill))){
             MILO_WARN("%s (%s): Drum fill %s-%s overlaps solo",
                 mFilename, mTrackName, PrintTick(mDrumFillInProgress), PrintTick(tick));
         }
-        if(mCurrentFillLanes != (1 << (mNumSlots & 0x3F)) - 1){
+        if(mCurrentFillLanes != (1 << mNumSlots) - 1){
             if(b){
                 MILO_WARN("%s (%s): Big Rock Ending %s-%s is not authored for all lanes",
                     mFilename, mTrackName, PrintTick(mDrumFillInProgress), PrintTick(tick));
             }
-            else {
+            else if(mDrumStyleGems) {
                 MILO_WARN("%s (%s): Drum fill %s-%s is not authored for all lanes",
                     mFilename, mTrackName, PrintTick(mDrumFillInProgress), PrintTick(tick));
             }
@@ -452,10 +451,11 @@ void SongParser::OnFillEnd(int tick, unsigned char uc){
             MILO_WARN("%s (%s): Drum fill %s-%s straddles [coda] event at %s",
                 mFilename, mTrackName, PrintTick(mDrumFillInProgress), PrintTick(tick), PrintTick(mCodaStartTick));
         }
-        if(IsInSection(mDrumFillInProgress)){
+        if(IsInSection(fill)){
             if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
                 MILO_WARN("%s: Real keys BREs should only authored in expert difficulty, but found in track %s.", mFilename, mTrackName);
             }
+            else mSink->AddDrumFill(mTrack, mCurrentFillLanes, fill, tick, b);
         }
         mDrumFillInProgress = -1;
         mDrumFillEndTick = tick;
@@ -465,11 +465,12 @@ void SongParser::OnFillEnd(int tick, unsigned char uc){
             else if(tick != mCodaEndTick){
                 MILO_WARN("%s (%s): Big Rock Ending %s-%s: all lanes in all tracks must end at the same tick; lane %d ends at %s",
                     mFilename, mTrackName, PrintTick(mCodaStartTick), PrintTick(mCodaEndTick), uc - 0x77, PrintTick(tick));
+                mDrumFillEndTick = mCodaEndTick;
             }
         }
     }
     else {
-        if(uc > 0x77 && uc < mNumSlots + 0x78 && tick != mDrumFillEndTick){
+        if(uc >= 0x78 && uc < mNumSlots + 0x78 && tick != mDrumFillEndTick){
             if(b){
                 MILO_WARN("%s (%s): Big Rock Ending %s-%s: all lanes in all tracks must end at the same tick; lane %d ends at %s",
                     mFilename, mTrackName, PrintTick(mCodaStartTick), PrintTick(mCodaEndTick), uc - 0x77, PrintTick(tick));
