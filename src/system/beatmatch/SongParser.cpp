@@ -236,11 +236,11 @@ void SongParser::OnMidiMessageGem(int tick, unsigned char status, unsigned char 
 }
 
 bool SongParser::OnMidiMessageCommonOn(int tick, unsigned char pitch){
-    if((int)pitch == 116){
+    if(IsOverdrive(pitch)){
         mCommonPhraseInProgress = tick;
         return true;
     }
-    else if((int)pitch == mSoloPitch){
+    else if(IsSolo(pitch)){
         mSoloPhraseInProgress = tick;
         mSoloPhraseEndTick = -1;
         mSoloGemDifficultyMask = 0;
@@ -300,7 +300,7 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char
                         int count = 0;
                         if(mNumSlots > 1){
                             for(int i = 1; i < mNumSlots; i++){
-                                if(mDifficultyInfos[num].mGemsInProgress[i].unk0 >= 0){
+                                if(mDifficultyInfos[num].mGemsInProgress[i].mTick >= 0){
                                     count++;
                                 }
                             }
@@ -330,7 +330,7 @@ void SongParser::OnMidiMessageGemOff(int tick, unsigned char pitch){
 
 // fn_8048ADD0
 bool SongParser::HandlePhraseEnd(int tick, unsigned char pitch){
-    if(pitch == 116){
+    if(IsOverdrive(pitch)){
         if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
             MILO_WARN("%s (%s): Real keys overdrive phrases should only authored in expert difficulty, but found at pitch %d at %s.",
                 mFilename, mTrackName, pitch, PrintTick(tick));
@@ -341,7 +341,7 @@ bool SongParser::HandlePhraseEnd(int tick, unsigned char pitch){
             return true;
         }
     }
-    else if(pitch == mSoloPitch){
+    else if(IsSolo(pitch)){
         if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
             MILO_WARN("%s (%s): Real keys solo phrases should only authored in expert difficulty, but found at pitch %d at %s.",
                 mFilename, mTrackName, pitch, PrintTick(tick));
@@ -377,15 +377,7 @@ void SongParser::AddPhrase(BeatmatchPhraseType type, int diff, int& on_tick, int
     float on_time = GetTempoMap()->TickToTime(on_tick);
     float off_time = GetTempoMap()->TickToTime(off_tick);
     if(on_tick != -1){
-        bool b2 = true;
-        if(mSectionStartTick != -1){
-            bool b1 = false;
-            if(on_tick >= mSectionStartTick && on_tick < mSectionEndTick){
-                b1 = true;
-            }
-            if(!b1) b2 = false;
-        }
-        if(b2){
+        if(IsInSection(on_tick)){
             mSink->AddPhrase(type, diff, mTrack, on_time, on_tick, off_time - on_time, off_tick - on_tick);
         }
         on_tick = -1;
@@ -456,14 +448,7 @@ void SongParser::OnFillEnd(int tick, unsigned char uc){
             MILO_WARN("%s (%s): Drum fill %s-%s straddles [coda] event at %s",
                 mFilename, mTrackName, PrintTick(mDrumFillInProgress), PrintTick(tick), PrintTick(mCodaStartTick));
         }
-
-        bool b2 = false;
-        if(mSectionStartTick != -1){
-            bool b1 = false;
-            if(mSectionStartTick <= mDrumFillInProgress && mDrumFillInProgress < mSectionEndTick) b1 = true;
-            if(!b1) b2 = false;
-        }
-        if(b2){
+        if(IsInSection(mDrumFillInProgress)){
             if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
                 MILO_WARN("%s: Real keys BREs should only authored in expert difficulty, but found in track %s.", mFilename, mTrackName);
             }
@@ -511,15 +496,7 @@ bool SongParser::HandleRollEnd(int tick, unsigned char uc){
     }
     else {
         MILO_ASSERT(mRollInProgress != -1, 0x3C6);
-        bool b2 = true;
-        if(mSectionStartTick != -1){
-            bool b1 = false;
-            if(mSectionStartTick <= mRollInProgress && mRollInProgress < mSectionEndTick){
-                b1 = true;
-            }
-            if(!b1) b2 = false;
-        }
-        if(b2){
+        if(IsInSection(mRollInProgress)){
             for(int i = 0; i < mNumDifficulties; i++){
                 unsigned int u6 = mRollSlotsArray[i];
                 if(mTrackType == kTrackRealKeys) u6 = 1;
@@ -994,9 +971,9 @@ bool SongParser::HandleRGGemStart(int tick, DifficultyInfo& info, unsigned char 
 //   return uVar2;
 // }
 
-bool SongParser::HandleRGHandPos(unsigned char pitch, unsigned char uc2){
+bool SongParser::HandleRGHandPos(unsigned char pitch, unsigned char velocity){
     if(pitch == 108){
-        mRGHandPos = (uc2 - 100) & 0xFF;
+        mRGHandPos = GetFret(velocity) & 0xFF;
         return true;
     }
     else return false;
@@ -1057,7 +1034,7 @@ bool SongParser::HandleRGGemStop(int tick, DifficultyInfo& info, unsigned char u
         bool b2 = true;
         if(!b1){
             unsigned char stringnum = uc1 - 24;
-            if(info.unk1c == -1){
+            if(info.mRGGemsInfo[0].mGem.mTick == -1){
                 MILO_WARN("%s (%s): RG Gem on string %d ended but never started at tick %s",
                     mFilename, mTrackName, stringnum, PrintTick(tick));
                 return true;

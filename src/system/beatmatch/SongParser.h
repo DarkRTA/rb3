@@ -39,11 +39,19 @@ public:
     class GemInProgress {
     public:
         GemInProgress(int tick, int numslots, int cymbalslots) :
-            unk0(tick), unk8(numslots), unkc(cymbalslots) {}
-        int unk0;
+            mTick(tick), unk8(numslots), unkc(cymbalslots) {}
+        int mTick; // 0x0
         int unk4;
         int unk8;
         int unkc;
+    };
+
+    class RGGemInfo {
+    public:
+        GemInProgress mGem; // 0x0
+        int unk10; // 0x10
+        int unk14; // 0x14
+        int unk18; // 0x18
     };
 
     // size: 0x13C holy moly
@@ -57,12 +65,7 @@ public:
         int mForceHopoOffEnd; // 0x18
 
         // RG string info?
-        int unk1c, unk20, unk24, unk28, unk2c, unk30, unk34;
-        int unk38, unk3c, unk40, unk44, unk48, unk4c, unk50;
-        int unk54, unk58, unk5c, unk60, unk64, unk68, unk6c;
-        int unk70, unk74, unk78, unk7c, unk80, unk84, unk88;
-        int unk8c, unk90, unk94, unk98, unk9c, unka0, unka4;
-        int unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
+        RGGemInfo mRGGemsInfo[6]; // 0x1c, 0x38, 0x54, 0x70, 0x8c, 0xa8
 
         int mRGArpeggioStartTick; // 0xc4
         int unkc8, unkcc;
@@ -179,6 +182,22 @@ public:
 
     const char* PrintTick(int tick) const {
         return TickFormat(tick, *mMeasureMap);
+    }
+
+    unsigned char GetFret(unsigned char pitch) const { return pitch - 100; }
+
+    bool IsOverdrive(int pitch) const { return pitch == 116; }
+    bool IsSolo(int pitch) const { return pitch == mSoloPitch; }
+    bool IsInSection(int tick) const {
+        bool b2 = true;
+        if(mSectionStartTick != -1){
+            bool b1 = false;
+            if(tick >= mSectionStartTick && tick < mSectionEndTick){
+                b1 = true;
+            }
+            if(!b1) b2 = false;
+        }
+        return b2;
     }
 
     int mNumSlots; // 0x8
