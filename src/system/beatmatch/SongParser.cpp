@@ -4,6 +4,7 @@
 #include "utl/FilePath.h"
 #include "beatmatch/GameGem.h"
 #include "utl/TempoMap.h"
+#include "utl/TimeConversion.h"
 #include "os/Timer.h"
 
 Timer gSongLoadTimer;
@@ -273,19 +274,19 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char
             }
             else if(CheckRollMarker(tick, pitch, true)){
                 mRollInProgress = tick;
-                unka1 = 0;
+                mRollMask = 0;
                 for(int i = 0; i < 4; i++){
                     if(GetRollIntervalMs(mRollIntervals, mTrackType, i, false) > 0 && (i != 2 || uc2 <= 0x32)){
-                        unka1 |= (1 << (i & 0x3F));
+                        mRollMask |= (1 << i);
                     }
                 }
             }
             else if(CheckTrillMarker(pitch, true)){
                 mTrillInProgress = tick;
-                unka0 = 0;
+                mTrillMask = 0;
                 for(int i = 0; i < 4; i++){
                     if(mTrillIntervals->Int(i) > 0 && (i != 2 || uc2 <= 0x32)){
-                        unka0 |= (1 << (i & 0x3F));
+                        mTrillMask |= (1 << i);
                     }
                 }
             }
@@ -294,10 +295,10 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char
                 if(slot != -1){
                     mDifficultyInfos[num].mGemsInProgress[slot] = GemInProgress(tick, mDifficultyInfos[num].mActivePlayers, mCurrentCymbalSlots);
                     if(mSoloPhraseInProgress != -1){
-                        mSoloGemDifficultyMask |= (1 << (num & 0x3F));
+                        mSoloGemDifficultyMask |= (1 << num);
                     }
                     if(mDrumStyleGems){
-                        if((mDrumSubmixDifficultyMask & 1 << (num & 0x3F) == 0) && !mReportedMissingDrumSubmix[num]){
+                        if((mDrumSubmixDifficultyMask & (1 << num)) && !mReportedMissingDrumSubmix[num]){
                             MILO_WARN("%s (%s): No drum submix specified for difficulty %d before first gem at %s",
                                 mFilename, mTrackName, num, PrintTick(tick));
                         }
@@ -506,7 +507,7 @@ bool SongParser::HandleRollEnd(int tick, unsigned char pitch){
                 unsigned int u6 = mRollSlotsArray[i];
                 if(mTrackType == kTrackRealKeys) u6 = 1;
                 int bits = GameGem::CountBitsInSlotType(u6);
-                if(unka1 & (1 << i)){
+                if(mRollMask & (1 << i)){
                     mSink->AddRoll(mTrack, i, u6, mRollInProgress, tick);
                 }
             }
@@ -523,7 +524,7 @@ bool SongParser::HandleTrillEnd(int tick, unsigned char pitch){
     if(mTrillInProgress == -1) return true;
     else if(IsInSection(mTrillInProgress)){
         for(int i = 0; i < mNumDifficulties; i++){
-            if(unka0 & (1 << i)){
+            if(mTrillMask & (1 << i)){
                 std::pair<int,int>& curpair = mTrillSlotsArray[i];
                 if(curpair.first != -1 || curpair.second != -1){
                     if(mTrackType == kTrackDrum)
@@ -537,6 +538,170 @@ bool SongParser::HandleTrillEnd(int tick, unsigned char pitch){
     mTrillSlotsArray.clear(); // some vector method is called here but i can't tell which one it is
     mTrillSlotsArray.resize(mNumDifficulties);
     return true;
+}
+
+void SongParser::OnGemEnd(int tick, unsigned char pitch){
+    int num = -1;
+    int slot = PitchToSlot(pitch, num, tick);
+    if(slot != -1){
+        DifficultyInfo& info = mDifficultyInfos[num];
+        int infotick = info.mGemsInProgress[slot].mTick;
+        if(IsInSection(infotick)){
+            if(infotick >= 0){
+                MultiGemInfo geminfo;
+                float ticktime = GetTempoMap()->TickToTime(tick);
+                geminfo.track = mTrack;
+                geminfo.ms = GetTempoMap()->TickToTime(infotick);
+                geminfo.duration_ticks = tick - infotick;
+                geminfo.ignore_duration = false;
+                geminfo.duration_ms = ticktime - geminfo.ms;
+                if(mIgnoreGemDurations || geminfo.duration_ticks <= 160) geminfo.ignore_duration = true;
+                geminfo.tick = infotick;
+                geminfo.players = info.mGemsInProgress[slot].mPlayers;
+                geminfo.slots = ComputeSlots(slot, infotick, tick, info.mGemsInProgress);
+                geminfo.no_strum = GetNoStrumState(infotick, info);
+                geminfo.is_cymbal = (info.mGemsInProgress[slot].unkc & geminfo.slots) == geminfo.slots;
+                mSink->AddMultiGem(0, geminfo);
+                if(mRollInProgress != -1 && abs(mRollInProgress - infotick) < 10 &&
+                    mRollMask & (1 << num) && !mDrumStyleGems || slot != 0){
+                        mRollSlotsArray.front() |= geminfo.slots;
+                }
+                if(mTrillInProgress != -1 && mTrillMask & (1 << num)){
+                    MILO_ASSERT(!mTrillSlotsArray.empty(), 0x46A);
+                    std::pair<int,int>& curpair = mTrillSlotsArray[num];
+                    if(curpair.first == -1){
+                        if(abs(mTrillInProgress - infotick) < 10) curpair.first = slot;
+                        else {
+                            MILO_WARN("%s (%s): trill start at %s doesn't have a matching gem.",
+                                mFilename, mTrackName, PrintTick(mTrillInProgress));
+                        }
+                    }
+                    else if(curpair.second == -1){
+                        curpair.second = slot;
+                        if(curpair.first == slot){
+                            MILO_WARN("%s (%s %d): trill start at %s doesn't have a two alternating slots. Both are %d.",
+                                mFilename, mTrackName, num, PrintTick(mTrillInProgress), infotick);
+                            mTrillInProgress = -1;
+                        }
+                    }
+                }
+                if(mSoloPhraseInProgress != -1 && mSoloPhraseInProgress <= infotick){
+                    mSoloGemDifficultyMask |= (1 << num);
+                }
+                float tickms = TickToMs(infotick);
+                if(tickms < 2450.0f){
+                    MILO_WARN("%s (%s): Gem at %s is only %.02f seconds into the song; gems cannot appear before %.02f seconds into the song",
+                        mFilename, mTrackName, PrintTick(tick), tickms / 1000.0f, 2.45f);
+                }
+            }
+            else {
+                if(!TrackAllowsOverlappingNotes(mTrackType)){
+                    if(abs(-(info.mGemsInProgress[slot].mTick + tick)) > 10){
+                        MILO_WARN("%s (%s): chord gems don't end simultaneously at %s",
+                            mFilename, mTrackName, PrintTick(tick));
+                    }
+                }        
+            }
+        }
+    }
+}
+
+// fn_8048C0D4
+unsigned int SongParser::ComputeSlots(int slot, int t1, int t2, std::vector<GemInProgress>& gems){
+    if(mDrumStyleGems || TrackAllowsOverlappingNotes(mTrackType)){
+        gems[slot].SetNegTick(t2);
+        return 1 << slot;
+    }
+    else {
+        unsigned int mask = 0;
+        for(int i = 0; i < 32; i++){
+            if(gems[i].mTick >= 0){
+                if(abs(gems[i].mTick - t1) <= 10){
+                    gems[i].SetNegTick(t2);
+                    mask |= (1 << i);
+                }
+                else if(gems[i].mTick < t2 && !TrackAllowsOverlappingNotes(mTrackType)){
+                    MILO_WARN("%s (%s): Chord gems do not start simultaneously at %s",
+                        mFilename, mTrackName, PrintTick(t1));
+                }
+            }
+        }
+        return mask;
+    }
+}
+
+void SongParser::OnMidiMessageVocals(int tick, unsigned char status, unsigned char data1, unsigned char data2){
+    switch(MidiGetType(status)){
+        case 0xB0:
+            if(data1 == 8 && data2 <= 100)
+                HandlePitchOffsetCC(tick, data2);
+            break;
+        case 0x90:
+            int num = data1 - (mPlayerSlot + (mNumDifficulties - 1) * 12 + 60);
+            if(0 <= num && num <= 1){
+                mSink->StartVocalPlayerPhrase(tick,num);
+                mVocalPhraseStartTick = tick;
+            }
+            else {
+                if(mLowVocalPitch <= data1 && data1 <= mHighVocalPitch) StartVocalNote(tick, data1, 0);
+                else {
+                    if(data1 == 116) mCommonPhraseInProgress = tick;
+                    else if(data1 == 96){
+                        if(mLastTambourineGemTick != -1 && tick < mLastTambourineGemTick + 120){
+                            MILO_WARN("%s (%s): Percussion gems at %s and %s are less than one 16th note (120 ticks) apart",
+                                mFilename, mTrackName, PrintTick(mLastTambourineGemTick), PrintTick(tick));
+                        }
+                        if(mLastTambourineAutoTick != -1 && tick < mLastTambourineAutoTick + 60){
+                            MILO_WARN("%s (%s): Percussion gem at %s is less than one 32nd note (60 ticks) after the automatic percussion hit at %s",
+                                mFilename, mTrackName, PrintTick(tick), PrintTick(mLastTambourineAutoTick));
+                        }
+                        mSink->OnTambourineGem(tick);
+                        mLastTambourineAutoTick = tick;
+                    }
+                    else if(data1 == 97){
+                        if(mLastTambourineGemTick != -1 && tick < mLastTambourineGemTick + 60){
+                            MILO_WARN("%s (%s): Automatic percussion hit at %s is less than one 32nd note (60 ticks) after the percussion gem at %s",
+                                mFilename, mTrackName, PrintTick(tick), PrintTick(mLastTambourineGemTick));
+                        }
+                        if(mLastTambourineAutoTick != 1 && tick < mLastTambourineAutoTick + 60){
+                            MILO_WARN("%s (%s): Automatic percussion hits at %s and %s are less than one 32nd note (60 ticks) apart",
+                                mFilename, mTrackName, PrintTick(mLastTambourineAutoTick), PrintTick(tick));
+                        }
+                        mLastTambourineAutoTick = tick;
+                    }
+                    else if(data1 == 1) mSink->AddLyricShift(tick);
+                    else if(data1 == 0){
+                        if(mVocalRangeShiftStartTick != -1){
+                            MILO_WARN("%s (%s): Multiple note-ons for vocal range shift!", mFilename, mTrackName);
+                        }
+                        mVocalRangeShiftStartTick = tick;
+                    }
+                }
+            }
+            break;
+        case 0x80:
+            int num80 = data1 - (mPlayerSlot + (mNumDifficulties - 1) * 12 + 60);
+            if(0 <= num80 && num80 <= 1){
+                MILO_WARN("%s (%s): Vocal phrase %s-%s is past [coda] event at %s",
+                    mFilename, mTrackName, PrintTick(mVocalPhraseStartTick), PrintTick(tick), PrintTick(mCodaStartTick));
+                mSink->EndVocalPlayerPhrase(tick, num80);
+                mVocalPhraseStartTick = -1;
+            }
+            else {
+                if(mLowVocalPitch <= data1 && data1 <= mHighVocalPitch) EndVocalNote(tick);
+                else {
+                    if(data1 == 116) OnCommonPhraseEnd(tick);
+                    else if(data1 == 0){
+                        MILO_ASSERT(mVocalRangeShiftStartTick != -1, 0x55C);
+                        mSink->AddRangeShift(mVocalRangeShiftStartTick,
+                            GetTempoMap()->TickToTime(tick) - GetTempoMap()->TickToTime(mVocalRangeShiftStartTick));
+                        mVocalRangeShiftStartTick = -1;
+                    }
+                }
+            }
+            break;
+        default: break;
+    }
 }
 
 void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char data1, unsigned char data2){
@@ -1219,10 +1384,10 @@ bool SongParser::HandleRGChordNumsStop(int tick, DifficultyInfo& info, unsigned 
 bool SongParser::HandleRGRollStart(int tick, unsigned char pitch, unsigned char data){
     if(pitch == 126){
         mRollInProgress = tick;
-        unka1 = 0;
+        mRollMask = 0;
         for(int i = 0; i < mNumDifficulties; i++){
             if(GetRollIntervalMs(mRollIntervals, mTrackType, i, false) > 0.0f && (i != 2 || data <= 0x32)){
-                unka1 |= (1 << (i & 0x3F));
+                mRollMask |= (1 << (i & 0x3F));
             }
         }
         return true;

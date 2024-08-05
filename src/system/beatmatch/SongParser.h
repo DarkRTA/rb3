@@ -40,6 +40,12 @@ public:
     public:
         GemInProgress(int tick = -1, int players = 0, int cymbalslots = 28) :
             mTick(tick), mPlayers(players), unkc(cymbalslots) {}
+
+        void SetNegTick(int tick){
+            mTick = -tick;
+            mPlayers = 0;
+        }
+
         int mTick; // 0x0
         int unk4; // 0x4
         int mPlayers; // 0x8
@@ -149,6 +155,11 @@ public:
     int PartNumThatMatchesTrackName(const char*) const;
     void SetSectionBounds(int, int);
     NoStrumState GetNoStrumState(int, DifficultyInfo&);
+    unsigned int ComputeSlots(int, int, int, std::vector<GemInProgress>&);
+
+    void HandlePitchOffsetCC(int, unsigned char);
+    void StartVocalNote(int, unsigned char, const char*);
+    void EndVocalNote(int);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
     void OnMidiMessageVocals(int, unsigned char, unsigned char, unsigned char);
@@ -243,8 +254,8 @@ public:
     int mRollInProgress; // 0x90
     int mTrillInProgress; // 0x94
     int mPlayerFocusInProgress[2]; // 0x98, 0x9c
-    unsigned char unka0; // 0xa0 - trill mask?
-    unsigned char unka1; // 0xa1 - roll mask?
+    unsigned char mTrillMask; // 0xa0
+    unsigned char mRollMask; // 0xa1
     std::vector<unsigned int> mRollSlotsArray; // 0xa4
     std::vector<std::pair<int, int> > mTrillSlotsArray; // 0xac
     std::vector<RGRollChord> mRGRollArray; // 0xb4
