@@ -5,6 +5,8 @@
 #include "beatmatch/GameGem.h"
 #include "utl/TempoMap.h"
 #include "utl/TimeConversion.h"
+#include "utl/UTF8.h"
+#include <ctype.h>
 #include "os/Timer.h"
 
 Timer gSongLoadTimer;
@@ -777,6 +779,49 @@ void SongParser::StartVocalNote(int tick, unsigned char data, const char* lyric)
     }
 }
 
+void SongParser::EndVocalNote(int tick){
+    float ticktime = GetTempoMap()->TickToTime(tick);
+    if(!mLyricPitchSet){
+        MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'",
+            mFilename, mTrackName, PrintTick(mCurVocalNote.GetTick()), mNextLyric);
+    }
+    if(!mLyricTextSet){
+        MILO_WARN("%s (%s): missing lyric at %s",
+            mFilename, mTrackName, PrintTick(mCurVocalNote.GetTick()));
+    }
+    mCurVocalNote.SetDurationTime(ticktime - mCurVocalNote.GetMs(), tick - mCurVocalNote.GetTick());
+    mSink->AddVocalNote(mCurVocalNote);
+    mPrevVocalNote = mCurVocalNote;
+    mCurVocalNote = VocalNote();
+    mLyricPitchSet = false;
+    mLyricTextSet = false;
+    mLyricBends = false;
+}
+
+void SongParser::HandlePitchOffsetCC(int tick, unsigned char uc){
+    mSink->AddPitchOffset(tick, uc - 50.0f);
+}
+
+// fn_8048CEE4 - parse and strip lyric text
+bool SongParser::ParseAndStripLyricText(const char* text, VocalNote& note){
+    char c = *((char*)text);
+    bool ret = false;
+    if(c == '+'){
+        ret = true;
+        note.SetBends(ret);
+        text++;
+    }
+    const char* p = text + strlen(text);
+    // gross while loop
+    String str;
+    str.reserve((int)(p + (1 - (int)text)));
+    strncpy((char*)str.c_str(), text, (int)(p + (1 - (int)text)));
+    char buf[0x100];
+    ASCIItoUTF8(buf, 0x100, str.c_str());
+    note.SetText(buf);
+    return ret;
+}
+
 void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char data1, unsigned char data2){
     if(MidiGetType(status) == 0x90){
         if((data1 + 0xF4 & 0xFF) <= 1){
@@ -802,6 +847,47 @@ void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char
     }
 }
 
+void SongParser::OnText(int tick, const char* text, unsigned char pitch){
+    while(isspace(*text)) text++;
+    if(pitch == 3){
+        if(!OnTrackName(tick, text)) return;
+    }
+    else {
+        switch(mState){
+            case kGems:
+            case kVocalNotes:
+                if(*text == 0x5B){
+                    ParseText(tick, text + 1);
+                }
+                else {
+                    if(IsInSection(tick)){
+                        mSink->AddLyricEvent(mTrack, tick, text);
+                        if(mState == kVocalNotes) StartVocalNote(tick, 0, text);
+                    }
+                }
+                break;
+            case kEvents:
+                if(streq(text, "[coda]")){
+                    if(mCodaStartTick != -1){
+                        MILO_WARN("%s (%s): duplicate [coda] event at %s; first [coda] is at %s",
+                            mFilename, mTrackName, PrintTick(tick), PrintTick(mCodaStartTick));
+                    }
+                    if(mCodaStartTick == -1) mCodaStartTick = tick;
+                }
+                // break;
+            case kRealGuitar:
+                if(*text == 0x5B){
+                    ParseRGText(tick, text + 1);
+                }
+                break;
+            default: break;
+        }
+    }
+    for(int i = 0; i < mReceivers.size(); i++){
+        mReceivers[i]->OnText(tick, text, pitch);
+    }
+}
+
 bool SongParser::OnTrackName(int tick, const char* name){
     mState = kIgnore;
     if(ShouldReadTrack(name)){
@@ -815,8 +901,8 @@ bool SongParser::OnTrackName(int tick, const char* name){
         }
         else {
             mTrackName = name;
-            if(strcmp(name, "BEAT") == 0) mState = kBeat;
-            else if(strcmp(name, "EVENTS") == 0) mState = kEvents;
+            if(streq(name, "BEAT")) mState = kBeat;
+            else if(streq(name, "EVENTS")) mState = kEvents;
         }
         for(int i = 0; i < mReceivers.size(); i++){
             mReceivers[i]->OnNewTrack(mTrack);
@@ -829,16 +915,13 @@ bool SongParser::OnTrackName(int tick, const char* name){
     }
 }
 
+// TODO: check out retail and add inlines where appropriate
 void SongParser::PrepareTrack(const char* track_name, PartInfo* info){
     Reset();
     bool b2 = false;
     for(std::vector<PartInfo>::iterator it = mParts.begin(); it != mParts.end(); ++it){
-        int original_name_len = strlen(it->original_name.Str());
-        bool b3;
-        if(original_name_len + 2 < strlen(track_name)) b3 = false;
-        else b3 = strncmp(it->original_name.Str(), track_name, original_name_len) == 0;
-        if(b3){
-            if(it->song_data_track == -1){
+        if(it->ContainsTrackName(track_name)){
+            if(it->NoSongDataTrack()){
                 if(it->audio_type == kAudioFake){
                     mTrack = mNextFakeTrack++ + 100;
                 }
@@ -864,7 +947,7 @@ void SongParser::PrepareTrack(const char* track_name, PartInfo* info){
     mTrackType = info->type;
     mTrackPart = info;
     if(info->type == kTrackRealKeys){
-        if(info->audio_type == kAudioFake){
+        if(info->FakeAudio()){
             mKeyboardDifficulty = 3;
         }
         else {
@@ -917,7 +1000,7 @@ void SongParser::PrepareTrack(const char* track_name, PartInfo* info){
     mDrumStyleGems = drumstyle;
     TrackType newty = (TrackType)(mTrackType - 1);
     mIgnoreGemDurations = mTrackType == kTrackDrum;
-    if(newty < kTrackRealBass22Fret && ((1 << (newty & 0x3F) & 0x1EBU) != 0)){
+    if(newty <= kTrackRealBass && ((1 << (newty) & 0x1EBU) != 0)){
         s9 = true;
     }
     mTrackAllowsHopos = s9;

@@ -10,6 +10,15 @@ inline bool IsAsciiNum(char c){
     return c >= 0x30 && c <= 0x39;
 }
 
+// ditto
+inline bool streq(const char* s1, const char* s2){
+    return strcmp(s1, s2) == 0;
+}
+
+inline bool strneq(const char* s1, const char* s2, int n){
+    return strncmp(s1, s2, n) == 0;
+}
+
 class String : public TextStream {
 public:
     unsigned int mCap;

@@ -18,6 +18,17 @@ enum ReadingState {
 };
 
 struct PartInfo {
+
+    bool ContainsTrackName(const char* track_name){
+        const char* orig = original_name.Str();
+        int origlen = strlen(orig);
+        if(strlen(track_name) > origlen + 2) return false;
+        else return strneq(orig, track_name, origlen);
+    }
+
+    bool NoSongDataTrack() const { return song_data_track == -1; }
+    bool FakeAudio() const { return audio_type == kAudioFake; }
+
     Symbol part; // 0x0
     BeatmatchAudioType audio_type; // 0x4
     Symbol original_name; // 0x8
@@ -157,6 +168,8 @@ public:
     NoStrumState GetNoStrumState(int, DifficultyInfo&);
     unsigned int ComputeSlots(int, int, int, std::vector<GemInProgress>&);
     bool ParseAndStripLyricText(const char*, VocalNote&);
+    void ParseText(int, const char*);
+    void ParseRGText(int, const char*);
 
     void HandlePitchOffsetCC(int, unsigned char);
     void StartVocalNote(int, unsigned char, const char*);
