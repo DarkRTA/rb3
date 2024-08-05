@@ -49,8 +49,8 @@ class SongParser : public MidiReceiver {
 public:
     class GemInProgress {
     public:
-        GemInProgress(int tick = -1, int players = 0, int cymbalslots = 28) :
-            mTick(tick), mPlayers(players), unkc(cymbalslots) {}
+        GemInProgress(int tick = -1, int players = 0, unsigned int cymbalslots = 28) :
+            mTick(tick), mPlayers(players), mCymbalSlots(cymbalslots) {}
 
         void SetNegTick(int tick){
             mTick = -tick;
@@ -60,7 +60,7 @@ public:
         int mTick; // 0x0
         int unk4; // 0x4
         int mPlayers; // 0x8
-        int unkc; // 0xc
+        unsigned int mCymbalSlots; // 0xc
     };
 
     class RGGemInfo {

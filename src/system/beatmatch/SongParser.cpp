@@ -562,7 +562,7 @@ void SongParser::OnGemEnd(int tick, unsigned char pitch){
                 geminfo.players = info.mGemsInProgress[slot].mPlayers;
                 geminfo.slots = ComputeSlots(slot, infotick, tick, info.mGemsInProgress);
                 geminfo.no_strum = GetNoStrumState(infotick, info);
-                geminfo.is_cymbal = (info.mGemsInProgress[slot].unkc & geminfo.slots) == geminfo.slots;
+                geminfo.is_cymbal = (info.mGemsInProgress[slot].mCymbalSlots & geminfo.slots) == geminfo.slots;
                 mSink->AddMultiGem(0, geminfo);
                 if(mRollInProgress != -1 && abs(mRollInProgress - infotick) < 10 &&
                     mRollMask & (1 << num) && !mDrumStyleGems || slot != 0){
@@ -1132,14 +1132,14 @@ bool SongParser::CheckDrumFillMarker(int pitch, bool b){
                 if(pitch != 120){
                     MILO_WARN("%s (%s): Keyboards only use pitch 120 (C8) for BREs, but pitch %d is authored.",
                         mFilename, mTrackName, pitch);
-                    mCurrentFillLanes = 0x1ffffff;
                 }
+                mCurrentFillLanes = 0x1ffffff;
             }
             else if(mTrackType == kTrackRealGuitar || mTrackType == kTrackRealGuitar22Fret){
                 mCurrentFillLanes = 0x3F;
             }
             else {
-                mCurrentFillLanes |= 1 << (pitch - 120 & 0x3F);
+                mCurrentFillLanes |= 1 << (pitch - 120);
             }
         }
         return true;
@@ -1149,16 +1149,61 @@ bool SongParser::CheckDrumFillMarker(int pitch, bool b){
 
 bool SongParser::CheckFillMarker(int pitch, bool b){ return CheckDrumFillMarker(pitch, b); }
 
-bool SongParser::CheckDrumCymbalMarker(int, int, bool){
-
+bool SongParser::CheckDrumCymbalMarker(int tick, int pitch, bool b){
+    if(mTrackType != kTrackDrum) return false;
+    if(pitch == 110 || pitch == 111 || pitch == 112){
+        unsigned int u7 = 1 << (pitch - 108);
+        if(b){
+            float tickms = TickToMs(tick);
+            u7 = ~u7;
+            mCurrentCymbalSlots &= u7;
+            for(int i = 0; i < mNumDifficulties; i++){
+                for(int j = 0; j < mNumSlots; j++){
+                    GemInProgress& gip = mDifficultyInfos[i].mGemsInProgress[j];
+                    if(gip.mTick > 0 && abs(gip.mTick - tick) < 10){
+                        gip.mCymbalSlots &= u7;
+                    }
+                }
+            }
+        }
+        else mCurrentCymbalSlots |= u7;
+        return true;
+    }
+    else return false;
 }
 
 bool SongParser::CheckRollMarker(int, int pitch, bool){ return pitch == 126; }
 bool SongParser::CheckTrillMarker(int pitch, bool){ return pitch == 127; }
 
+bool SongParser::CheckForceHopoMarker(int tick, int pitch, bool b){
+    if(mTrackType == kTrackRealKeys) return false;
+    int note = pitch / 12 - 5;
+    if(note >= 0 && note < mNumDifficulties){
+        if(pitch % 12 == 5){
+            DifficultyInfo& info = mDifficultyInfos[pitch];
+            if(b){
+                info.mForceHopoOnStart = tick;
+                info.mForceHopoOnEnd = NULL_TICK;
+            }
+            else info.mForceHopoOnEnd = tick;
+            return true;
+        }
+        if(pitch % 12 == 6){
+            DifficultyInfo& info = mDifficultyInfos[pitch];
+            if(b){
+                info.mForceHopoOffStart = tick;
+                info.mForceHopoOffEnd = NULL_TICK;
+            }
+            else info.mForceHopoOffEnd = tick;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool SongParser::CheckDrumMapMarker(int i, int j, bool b){
     if(!mDrumStyleGems) return false;
-    else if(j > 108 && j < 113){
+    else if(j >= 108U && j < 113U){
         mSink->DrumMapLane(mTrack, i, j - 108, b);
         return true;
     }
@@ -1186,6 +1231,7 @@ bool SongParser::CheckKeyboardRangeMarker(int tick, int pitch, bool b){
     }
     else if(mKeyboardRangeStartTick != -1){
         MILO_ASSERT(mKeyboardRangeFirstPitch != -1, 0x951);
+        // inline here that swaps elements
         int old_2nd = mKeyboardRangeSecondPitch;
         if(old_2nd != -1){
             int old_1st = mKeyboardRangeFirstPitch;
@@ -1205,6 +1251,101 @@ bool SongParser::CheckKeyboardRangeMarker(int tick, int pitch, bool b){
     }
     return true;
 }
+
+void SongParser::ParseText(int tick, const char* text){
+    if(strneq(text, "mix", 3)){
+        const char* t4 = text + 4;
+    }
+}
+
+//   iVar5 = StrSlicesAreEqual(text,s_mix_808863ed,3);
+//   if (iVar5 == 0) {
+//     iVar5 = StrSlicesAreEqual(text,s_weights_808864b9,7);
+//     if (iVar5 != 0) {
+//       for (pcVar6 = text + 8; pcVar9 = pcVar6, *pcVar6 == ' '; pcVar6 = pcVar6 + 1) {
+//       }
+//       for (; ((cVar1 = *pcVar9, cVar1 != '\0' && (cVar1 != ']')) && (cVar1 != ' '));
+//           pcVar9 = pcVar9 + 1) {
+//       }
+//       strncpy(local_a0,pcVar6,(int)pcVar9 - (int)pcVar6);
+//       local_a0[(int)pcVar9 - (int)pcVar6] = '\0';
+//     }
+//   }
+//   else {
+//     local_ec = text + 4;
+//     if ((byte)(text[4] - 0x30U) < 10) {
+//       uVar7 = fn_80459608(&local_ec);
+//       local_ec = local_ec + 1;
+//       for (pcVar6 = local_ec; (*pcVar6 != '\0' && (*pcVar6 != ']')); pcVar6 = pcVar6 + 1) {
+//       }
+//       __n = (int)pcVar6 - (int)local_ec;
+//       strncpy((char *)((int)register0x00000004 + -0x60),local_ec,__n);
+//       ((char *)((int)register0x00000004 + -0x60))[__n] = '\0';
+//       if (*(int *)(this + 0x68) != 0) {
+//         uVar8 = Symbol::Symbol(aSStack_f4,(char *)((int)register0x00000004 + -0x60));
+//         iVar5 = DataArray::FindArray(*(DataArray **)(this + 0x68),uVar8,0);
+//         if (iVar5 != 0) {
+//           (**(code **)(**(int **)(this + 0x40) + 0x50))
+//                     (*(int **)(this + 0x40),*(undefined4 *)(this + 0x54),tick,uVar7,
+//                      (char *)((int)register0x00000004 + -0x60));
+//           *(uint *)(this + 0x1b0) = *(uint *)(this + 0x1b0) | 1 << (uVar7 & 0x3f);
+//           iVar5 = 2;
+//           pfVar2 = &lbl_807F3A74;
+//           pfVar3 = &fStack_bc;
+//           do {
+//             pfVar11 = pfVar3;
+//             pfVar10 = pfVar2;
+//             fVar4 = pfVar10[2];
+//             pfVar11[1] = pfVar10[1];
+//             pfVar11[2] = fVar4;
+//             iVar5 = iVar5 + -1;
+//             pfVar2 = pfVar10 + 2;
+//             pfVar3 = pfVar11 + 2;
+//           } while (iVar5 != 0);
+//           pfVar11[3] = pfVar10[3];
+//           if (&DAT_ffffffd0 + local_5b > (undefined *)0x4) {
+//             String::String(aSStack_d0,(String *)(this + 0x28));
+//             local_f8 = *(undefined4 *)(this + 0xd8);
+//             pcVar6 = PrintTick(this,tick);
+//             RSONotifyModuleLoaded
+//                       (s_%s_(%s):_bad_mix_'%s'_at_%s_80886425,aSStack_d0,&local_f8,
+//                        (char *)((int)register0x00000004 + -0x60),pcVar6);
+//             String::~String(aSStack_d0);
+//             return;
+//           }
+//           fVar4 = local_b8[(int)(&DAT_ffffffd0 + local_5b)];
+//           if (*(float *)(this + 0x1ac) == fVar4) {
+//             return;
+//           }
+//           String::String(aSStack_dc,(String *)(this + 0x28));
+//           local_fc = *(undefined4 *)(this + 0xd8);
+//           pcVar6 = PrintTick(this,tick);
+//           RSONotifyModuleLoaded
+//                     (s_%s_(%s):_drum_mix_'%s'_at_%s_sup_80886441,aSStack_dc,&local_fc,
+//                      (char *)((int)register0x00000004 + -0x60),pcVar6,fVar4,s_(total)_drum_808864ac,
+//                      *(undefined4 *)(this + 0x1ac),s_(total)_drum_808864ac);
+//           String::~String(aSStack_dc);
+//           return;
+//         }
+//       }
+//       String::String(aSStack_e8,(String *)(this + 0x28));
+//       local_100 = *(undefined4 *)(this + 0xd8);
+//       pcVar6 = PrintTick(this,tick);
+//       RSONotifyModuleLoaded
+//                 (s_%s_(%s):_bad_mix_'%s'_at_%s_80886425,aSStack_e8,&local_100,
+//                  (char *)((int)register0x00000004 + -0x60),pcVar6);
+//       String::~String(aSStack_e8);
+//     }
+
+//     else {
+//       String::String(aSStack_c4,(String *)(this + 0x28));
+//       local_f0 = *(undefined4 *)(this + 0xd8);
+//       pcVar6 = PrintTick(this,tick);
+//       RSONotifyModuleLoaded
+//                 (s_%s_(%s):_improperly_formatted_mi_808863f1,aSStack_c4,&local_f0,text,pcVar6);
+//       String::~String(aSStack_c4);
+//     }
+//   }
 
 void SongParser::InitReadingState(){ mReadingState = kReadingBeat; }
 
