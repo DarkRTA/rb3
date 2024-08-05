@@ -52,9 +52,7 @@ SongParser::SongParser(InternalSongParserSink& sink, int diff_nums, TempoMap*& t
     mKeyboardRangeShiftDuration = parserArr->FindFloat("keyboard_range_shift_duration_ms");
     mSubMixes = cfg->FindArray("audio", true)->FindArray("submixes", false);
     for(int i = 0; i < diff_nums; i++){
-//     fn_804890C4(auStack_15c,0x20);
-//     fn_80488CE4(param_1 + 0x1f,auStack_15c);
-//     fn_8047E1BC(auStack_15c,0xffffffff);
+        mDifficultyInfos.push_back(32);
     }
     memset(mReportedMissingDrumSubmix, 0, 4);
 }
@@ -138,6 +136,12 @@ void SongParser::Reset(){
         mDifficultyInfos[i].mRGLooseStrumStartTick = NULL_TICK;
         mDifficultyInfos[i].mRGLooseStrumEndTick = NULL_TICK;
         mDifficultyInfos[i].unk124 = NULL_TICK;
+        for(int j = 0; j < 32; j++){
+            mDifficultyInfos[i].mGemsInProgress[j] = GemInProgress();
+        }
+        for(int j = 0; j < 6; j++){
+            mDifficultyInfos[i].mRGGemsInfo[j] = RGGemInfo();
+        }
     }
 
     mCommonPhraseInProgress = -1;
@@ -792,7 +796,7 @@ bool SongParser::CheckDrumFillMarker(int pitch, bool b){
                 mCurrentFillLanes = 0x3F;
             }
             else {
-                mCurrentFillLanes |= (1 << (pitch - 120)) & 0x3F;
+                mCurrentFillLanes |= 1 << (pitch - 120 & 0x3F);
             }
         }
         return true;
@@ -933,43 +937,16 @@ bool SongParser::TrackAllowsOverlappingNotes(TrackType ty) const {
 
 // fn_8048F728
 bool SongParser::HandleRGGemStart(int tick, DifficultyInfo& info, unsigned char uc, unsigned char data, unsigned char channel, int difflevel){
-    if((uc + 0xE8 & 0xFF) < 6){
+    if((uc + 0xE8 & 0xFF) <= 5){
         unsigned char newuc = uc - 24;
+        info.mRGGemsInfo[newuc] = RGGemInfo(tick, info.mActivePlayers, GetFret(data), channel);
+        if(mSoloPhraseInProgress != -1){
+            mSoloGemDifficultyMask |= (1 << (difflevel & 0x3FU));
+        }
+        return true;
     }
+    else return false;
 }
-
-// HandleRGGemStart(tick, info, uc1, data2, channel, difflevel)
-// undefined4 __thiscall
-// SongParser::HandleRGGemStart
-//           (SongParser *this,int param_1,DifficultyInfo *param_2,uchar param_3,uchar param_4,
-//           uchar param_5,int param_6)
-
-// {
-//   DifficultyInfo DVar1;
-//   undefined4 uVar2;
-//   undefined *puVar3;
-//   undefined4 local_24;
-  
-//   if ((param_3 + 0xe8 & 0xff) < 6) {
-//     puVar3 = &DAT_ffffffe8 + param_3;
-//     DVar1 = param_2[8];
-//     *(int *)(param_2 + (int)puVar3 * 0x1c + 0x1c) = param_1;
-//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x20) = local_24;
-//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x24) = (uint)(byte)DVar1;
-//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x28) = 0x1c;
-//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x2c) = (uint)(&DAT_ffffff9c + param_4) & 0xff;
-//     *(uint *)(param_2 + (int)puVar3 * 0x1c + 0x30) = (uint)param_5;
-//     *(undefined4 *)(param_2 + (int)puVar3 * 0x1c + 0x34) = 0xffffffff;
-//     if (*(int *)(this + 0x88) != -1) {
-//       *(uint *)(this + 0x1c0) = *(uint *)(this + 0x1c0) | 1 << (param_6 & 0x3fU);
-//     }
-//     uVar2 = 1;
-//   }
-//   else {
-//     uVar2 = 0;
-//   }
-//   return uVar2;
-// }
 
 bool SongParser::HandleRGHandPos(unsigned char pitch, unsigned char velocity){
     if(pitch == 108){

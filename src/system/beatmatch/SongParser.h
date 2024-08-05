@@ -38,25 +38,36 @@ class SongParser : public MidiReceiver {
 public:
     class GemInProgress {
     public:
-        GemInProgress(int tick, int numslots, int cymbalslots) :
-            mTick(tick), unk8(numslots), unkc(cymbalslots) {}
+        GemInProgress(int tick = -1, int players = 0, int cymbalslots = 28) :
+            mTick(tick), mPlayers(players), unkc(cymbalslots) {}
         int mTick; // 0x0
-        int unk4;
-        int unk8;
-        int unkc;
+        int unk4; // 0x4
+        int mPlayers; // 0x8
+        int unkc; // 0xc
     };
 
     class RGGemInfo {
     public:
+        RGGemInfo(int tick = -1, int players = 0, int fret = 0, int channel = 0) :
+            mGem(tick, players, 28), mFret(fret), mChannel(channel), unk18(-1) {}
+
         GemInProgress mGem; // 0x0
-        int unk10; // 0x10
-        int unk14; // 0x14
+        int mFret; // 0x10
+        int mChannel; // 0x14
         int unk18; // 0x18
     };
 
     // size: 0x13C holy moly
     class DifficultyInfo {
     public:
+        DifficultyInfo(int num_gems) : mActivePlayers(0), mForceHopoOnStart(-1), mForceHopoOnEnd(-1),
+            mForceHopoOffStart(-1), mForceHopoOffEnd(-1), mRGArpeggioStartTick(-1), unkc8(-1), mRGAreaStrumType(kRGNoStrum),
+            mRGAreaStrumStartTick(-1), mRGAreaStrumEndTick(-1), mRGLooseStrumStartTick(-1), mRGLooseStrumEndTick(-1),
+            unk124(-1), mRGChordNumsStartTick(-1), mRGChordNumsEndTick(-1), mRGLeftHandSlideStartTick(-1), mRGLeftHandSlideEndTick(-1) {
+            mGemsInProgress.reserve(num_gems);
+            for(int i = 0; i < num_gems; i++) mGemsInProgress.push_back(GemInProgress());
+        }
+
         std::vector<GemInProgress> mGemsInProgress; // 0x0
         bool mActivePlayers; // 0x8
         int mForceHopoOnStart; // 0xc
