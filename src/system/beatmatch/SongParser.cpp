@@ -485,15 +485,15 @@ void SongParser::OnFillEnd(int tick, unsigned char uc){
 
 void SongParser::CheckDrumSubmixes(){
     for(int i = 0; i < 4; i++){
-        int curmask = 1 << (i & 0x3F);
-        if(curmask & mDrumSubmixDifficultyMask){
+        int mask = (1 << i);
+        if((mDrumSubmixDifficultyMask & mask) != mask){
             MILO_WARN("%s (%s): No drum submix specified for difficulty %d", mFilename, mTrackName, i);
         }
     }
 }
 
-bool SongParser::HandleRollEnd(int tick, unsigned char uc){
-    if(!CheckRollMarker(tick, uc, false)){
+bool SongParser::HandleRollEnd(int tick, unsigned char pitch){
+    if(!CheckRollMarker(tick, pitch, false)){
         return false;
     }
     else if(mTrackType == kTrackRealKeys && mKeyboardDifficulty != 3){
@@ -506,7 +506,7 @@ bool SongParser::HandleRollEnd(int tick, unsigned char uc){
                 unsigned int u6 = mRollSlotsArray[i];
                 if(mTrackType == kTrackRealKeys) u6 = 1;
                 int bits = GameGem::CountBitsInSlotType(u6);
-                if(unka1 & (1 << (i & 0x3F))){
+                if(unka1 & (1 << i)){
                     mSink->AddRoll(mTrack, i, u6, mRollInProgress, tick);
                 }
             }
@@ -516,6 +516,27 @@ bool SongParser::HandleRollEnd(int tick, unsigned char uc){
         mRollSlotsArray.resize(mNumDifficulties);
         return true;
     }
+}
+
+bool SongParser::HandleTrillEnd(int tick, unsigned char pitch){
+    if(!CheckTrillMarker(pitch, false)) return false;
+    if(mTrillInProgress == -1) return true;
+    else if(IsInSection(mTrillInProgress)){
+        for(int i = 0; i < mNumDifficulties; i++){
+            if(unka0 & (1 << i)){
+                std::pair<int,int>& curpair = mTrillSlotsArray[i];
+                if(curpair.first != -1 || curpair.second != -1){
+                    if(mTrackType == kTrackDrum)
+                        mSink->AddRoll(mTrack, i, (1 << curpair.first) | (1 << curpair.second), mTrillInProgress, tick);
+                    else mSink->AddTrill(mTrack, i, curpair.first, curpair.second, mTrillInProgress, tick);
+                }
+            }            
+        }
+    }
+    mTrillInProgress = -1;
+    mTrillSlotsArray.clear(); // some vector method is called here but i can't tell which one it is
+    mTrillSlotsArray.resize(mNumDifficulties);
+    return true;
 }
 
 void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char data1, unsigned char data2){
