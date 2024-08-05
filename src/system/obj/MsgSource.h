@@ -46,8 +46,8 @@ public:
     virtual void Export(DataArray*, bool);
 
     void ChainSource(MsgSource*, MsgSource*);
-    void AddSink(Hmx::Object*, Symbol, Symbol, SinkMode);
-    void RemoveSink(Hmx::Object*, Symbol);
+    void AddSink(Hmx::Object*, Symbol = Symbol(), Symbol = Symbol(), SinkMode = kHandle);
+    void RemoveSink(Hmx::Object*, Symbol = Symbol());
     void MergeSinks(MsgSource*);
     DataNode OnAddSink(DataArray*);
     DataNode OnRemoveSink(DataArray*);

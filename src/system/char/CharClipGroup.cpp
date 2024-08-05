@@ -1,4 +1,5 @@
 #include "char/CharClipGroup.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 
 INIT_REVS(CharClipGroup)
@@ -47,6 +48,14 @@ void CharClipGroup::RemoveClip(CharClip* clip){
     }
 }
 
+struct Alphabetically {
+    bool operator()(Hmx::Object* i, Hmx::Object* j) const { return strcmp(i->Name(), j->Name()) < 0; }
+};
+
+void CharClipGroup::Sort(){
+    std::sort(mClips.begin(), mClips.end(), Alphabetically());
+}
+
 SAVE_OBJ(CharClipGroup, 0x127)
 
 void CharClipGroup::Load(BinStream& bs){
@@ -71,3 +80,8 @@ BEGIN_HANDLERS(CharClipGroup)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x179)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(CharClipGroup)
+    SYNC_PROP(clips, mClips)
+    SYNC_PROP(flags, mFlags)
+END_PROPSYNCS

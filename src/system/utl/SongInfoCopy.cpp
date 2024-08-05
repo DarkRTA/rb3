@@ -1,6 +1,6 @@
 #include "utl/SongInfoCopy.h"
 #include "os/System.h"
-#include "os/File_Wii.h"
+#include "os/File.h"
 #include <algorithm>
 
 SongInfoCopy::SongInfoCopy(const SongInfo* info) : mName(), mBaseFileName(), mPackageName() {

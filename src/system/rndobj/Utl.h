@@ -35,6 +35,8 @@ const char* CacheResource(const char*, CacheResourceResult&);
 bool SortDraws(RndDrawable*, RndDrawable*);
 bool SortPolls(const RndPollable*, const RndPollable*);
 void SetRndSplasherCallback(void (*)(void), void (*)(void), void (*)(void));
+void ConvertBonesToTranses(ObjectDir*, bool);
+int GenerationCount(RndTransformable*, RndTransformable*);
 
 void RndUtlPreInit();
 void RndUtlInit();

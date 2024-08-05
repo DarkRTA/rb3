@@ -2,6 +2,7 @@
 #include "obj/MsgSource.h"
 #include "char/CharClip.h"
 #include "char/CharClipGroup.h"
+#include "char/CharClipDriver.h"
 #include "utl/TimeConversion.h"
 #include "obj/Task.h"
 #include "utl/Symbols.h"
@@ -16,17 +17,17 @@ void CharDriverMidi::Enter(){
     unk89 = true;
     CharDriver::Enter();
     MsgSource* msgParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mParser.Str(), true));
-    if(msgParser) msgParser->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+    if(msgParser) msgParser->AddSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mFlagParser.Str(), true));
-    if(msgFlagParser) msgFlagParser->AddSink(this, Symbol(), Symbol(), MsgSource::kHandle);
+    if(msgFlagParser) msgFlagParser->AddSink(this);
 }
 
 void CharDriverMidi::Exit(){
     CharDriver::Exit();
     MsgSource* msgParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mParser.Str(), false));
-    if(msgParser) msgParser->RemoveSink(this, Symbol());
+    if(msgParser) msgParser->RemoveSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mFlagParser.Str(), false));
-    if(msgFlagParser) msgFlagParser->RemoveSink(this, Symbol());
+    if(msgFlagParser) msgFlagParser->RemoveSink(this);
 }
 
 void CharDriverMidi::Poll(){ CharDriver::Poll(); }
@@ -37,23 +38,13 @@ void CharDriverMidi::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx:
 
 SAVE_OBJ(CharDriverMidi, 0x58)
 
+// fn_804C90E0
 BEGIN_LOADS(CharDriverMidi)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
     LOAD_SUPERCLASS(CharDriver)
     if(gRev < 7){
-        ObjectDir* dir = mClips;
-        char buf[0x80];
-        bs.ReadString(buf, 0x80);
-        if(!dir && mDefaultClip){
-            dir = mDefaultClip->Dir();
-        }
-        if(mDefaultClip && dir){
-            mDefaultClip = dir->FindObject(buf, false);
-        }
-        else {
-            mDefaultClip = 0;
-        }
+        mDefaultClip.Load(bs, false, mClips);
     }
     if(gRev == 2){
         String str; bs >> str;
@@ -82,27 +73,22 @@ BEGIN_HANDLERS(CharDriverMidi)
     HANDLE_CHECK(0x99)
 END_HANDLERS
 
-float minblendWidth = 0.0f;
-
 // fn_804C945C
 DataNode CharDriverMidi::OnMidiParser(DataArray* da){
     CharClip* clip;
     bool b = false;
     if(!unk89 && mDefaultClip) b = true;
-    if(b){
-        clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
-    }
+    if(b) clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
     else clip = FindClip(da->Node(2), false);
     if(!clip) return DataNode(0);
     if(clip || clip != FirstClip()){
         float somefloat = da->Float(3);
         if(clip->mPlayFlags & 0x200){
             float secs = TheTaskMgr.Seconds(TaskMgr::b);
-            float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat());
-            float sub = (clip->AverageBeatsPerSecond() - secs);
-            somefloat = sub * bts;
+            float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat()) - secs;
+            somefloat = bts * clip->AverageBeatsPerSecond();
         }
-        MaxEq(somefloat, minblendWidth);
+        MaxEq(somefloat, 0.0f);
         Play(clip, 0, somefloat * mBlendOverridePct, -somefloat, 0.0f);
     }
     return DataNode(0);
@@ -136,8 +122,8 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
                 if(clip->mPlayFlags & 0x200){
                     somefloat *= clip->AverageBeatsPerSecond();
                 }
-                MaxEq(somefloat, minblendWidth);
-                Play(clip, 0, -somefloat, 1e+30f, 0.0f); // returns something, which you then modify
+                MaxEq(somefloat, 0.0f);
+                Play(clip, 0, -somefloat, 1e+30f, 0.0f)->mBlendWidth = somefloat * mBlendOverridePct;
             }
             return DataNode(0);
         }

@@ -71,7 +71,7 @@ void Symbol::UploadDebugStats(){
 // not sure where else to put this, it's only used here
 struct Alpha {
     bool operator()(const char* ci, const char* cj) { return strcmp(ci, cj) < 0; }
-} MyAlpha;
+};
 
 static DataNode PrintSymbolTable(DataArray* da){
     TheDebug << MakeString("Symbol table:\n");
@@ -82,9 +82,9 @@ static DataNode PrintSymbolTable(DataArray* da){
         std::vector<const char*> strvec;
         strvec.reserve(gHashTable->mNumEntries);
         for(const char** it = gHashTable->FirstFromStart(); it != 0; it = gHashTable->FirstFromNext(it)){
-            // strvec.push_back(*it); // constness casted away?
+            strvec.push_back(*it);
         }
-        std::sort(strvec.begin(), strvec.end(), MyAlpha);
+        std::sort(strvec.begin(), strvec.end(), Alpha());
         for(int i = 0; i < strvec.size(); i++){
             TheDebug << MakeString("%s\n", strvec[i]);
         }

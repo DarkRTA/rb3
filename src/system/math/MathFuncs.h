@@ -82,8 +82,9 @@ template<class T> inline bool MinEq(T& x, const T& y){
 }
 
 template<class T> inline bool MaxEq(T& x, const T& y){
+    T temp = y;
     if(x < y){
-        x = y;
+        x = temp;
         return true;
     }
     return false;

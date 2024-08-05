@@ -49,7 +49,7 @@ public:
     virtual void ScreenDump(const char*);
     virtual void ScreenDumpUnique(const char*);
     virtual void DrawRect(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*){}
-    virtual void DrawString(const char*, const Vector2&, const Hmx::Color&, bool);
+    virtual Vector2& DrawString(const char*, const Vector2&, const Hmx::Color&, bool);
     virtual void DrawLine(const Vector3&, const Vector3&, const Hmx::Color&, bool){}
     virtual void BeginDrawing();
     virtual void EndDrawing();

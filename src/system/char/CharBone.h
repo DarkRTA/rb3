@@ -35,9 +35,9 @@ public:
     CharBones::Type RotationType() const { return mRotation; }
     int RotationContext() const { return mRotationContext; }
 
-    static Symbol ChannelName(const char*, CharBones::Type);
-
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     
     int mPositionContext; // 0x1c
     int mScaleContext; // 0x20

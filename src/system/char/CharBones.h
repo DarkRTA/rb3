@@ -28,7 +28,7 @@ public:
     };
 
     struct Bone {
-        Bone(){}
+        Bone() : name(), weight(1.0f) {}
         Bone(Symbol s, float w) : name(s), weight(w) {}
         Symbol name;
         float weight;
@@ -55,6 +55,9 @@ public:
     const char* StringVal(Symbol);
     void ScaleAddIdentity();
     void Blend(CharBones&) const;
+    void RotateBy(CharBones&) const;
+    void RotateTo(CharBones&, float) const;
+    void ScaleAdd(CharBones&, float) const;
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);
@@ -96,7 +99,7 @@ public:
 class CharBonesObject : public CharBones, public virtual Hmx::Object {
 public:
     CharBonesObject(){}
-    virtual ~CharBonesObject();
+    virtual ~CharBonesObject(){}
     OBJ_CLASSNAME(CharBonesObject);
     OBJ_SET_TYPE(CharBonesObject);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
@@ -113,5 +116,8 @@ public:
     virtual ~CharBonesAlloc();
     virtual void ReallocateInternal();
 };
+
+extern CharBones* gPropBones;
+bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
 
 #endif

@@ -36,22 +36,24 @@ public:
     void ChooseMovie();
     void ShowMenu(bool);
 
+    static bool sUseSubtitles;
+
     bool mPreload; // 0x40
     bool mAudio; // 0x41
     bool mLoop; // 0x42
     bool mFillWidth; // 0x43
-    int unk44; // 0x44
-    const char* unk48; // 0x48
+    int mLanguage; // 0x44
+    const char* mCurrentMovie; // 0x48
     std::vector<const char*> mMovies; // 0x4c
-    std::list<int> list; // 0x54
+    std::list<const char*> mRecent; // 0x54
     Movie mMovie; // 0x5c
     DataLoader* mSubtitlesLoader; // 0x60
     DataArray* mSubtitles; // 0x64
-    int unk68; // 0x68
-    bool unk6c; // 0x6c
+    int mCurrentSubtitleIndex; // 0x68
+    bool mSubtitleCleared; // 0x6c
     UILabel* mSubtitleLabel; // 0x70
     RndAnimatable* mPauseHintAnim; // 0x74
-    bool unk78; // 0x78
+    bool mShowHint; // 0x78
     float mTimeShowHintStarted; // 0x7c
     bool mShowMenu; // 0x80
     bool unk81; // 0x81

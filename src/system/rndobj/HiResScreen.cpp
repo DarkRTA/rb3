@@ -2,7 +2,6 @@
 #include "rndobj/Rnd.h"
 #include "os/Debug.h"
 #include "os/File.h"
-#include "os/File_Wii.h"
 
 HiResScreen gHiResScreen;
 HiResScreen* TheHiResScreen;
@@ -44,7 +43,7 @@ void HiResScreen::BmpCache::GetLoadedRange(unsigned int& ui1, unsigned int& ui2)
     ui2 = ui1 + mRowsPerCacheLine - 1;
 }
 
-HiResScreen::HiResScreen() : mActive(0), mTiling(3), mFileBase("urhigh"), mAccumWidth(0), mAccumHeight(0), 
+HiResScreen::HiResScreen() : mActive(0), mTiling(3), mFileBase("urhigh"), mAccumWidth(0), mAccumHeight(0),
     mCurrTile(0), mEvenOddDisabled(0), mShrinkToSafe(1), mConsoleShowing(0), mCache(NULL) { }
 
 HiResScreen::~HiResScreen(){
@@ -61,7 +60,7 @@ void HiResScreen::TakeShot(const char* c, int i) {
     mAccumHeight = TheRnd->mHeight * i;
     mAccumHeight -= x;
     mCache = new BmpCache(mAccumWidth, mAccumHeight);
-    
+
     mEvenOddDisabled = TheRnd->GetEvenOddDisabled();
     mShrinkToSafe = TheRnd->ShrinkToSafeArea();
     mConsoleShowing = TheRnd->ConsoleShowing();

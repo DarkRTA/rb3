@@ -1,13 +1,13 @@
 #include "utl/LogFile.h"
-#include "os/File_Wii.h"
+#include "os/File.h"
 #include "utl/MakeString.h"
 
 LogFile::LogFile(const char* file_pattern) : mFilePattern(file_pattern), mSerialNumber(0), mDirty(0), mFile(0), mActive(0){
 
 }
 
-LogFile::~LogFile(){ 
-    delete mFile; 
+LogFile::~LogFile(){
+    delete mFile;
     mFile = 0;
 }
 

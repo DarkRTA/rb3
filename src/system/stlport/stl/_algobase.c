@@ -373,9 +373,9 @@ find_end(_ForwardIter1 __first1, _ForwardIter1 __last1,
 
 namespace _STLP_PRIV {
 
-template <class _ForwardIter, class _Tp, class _Compare1, class _Compare2, class _Distance>
+template <class _ForwardIter, class _Tp, class _Compare, class _Distance>
 _ForwardIter __lower_bound(_ForwardIter __first, _ForwardIter __last, const _Tp& __val,
-                           _Compare1 __comp1, _Compare2 __comp2, _Distance*) {
+                           _Compare __comp, _Distance*) {
   _Distance __len = distance(__first, __last);
   _Distance __half;
   _ForwardIter __middle;
@@ -384,7 +384,7 @@ _ForwardIter __lower_bound(_ForwardIter __first, _ForwardIter __last, const _Tp&
     __half = __len >> 1;
     __middle = __first;
     advance(__middle, __half);
-    if (__comp1(*__middle, __val)) {
+    if (__comp(*__middle, __val)) {
       _STLP_VERBOSE_ASSERT(!__comp2(__val, *__middle), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
       __first = __middle;
       ++__first;

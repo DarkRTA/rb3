@@ -1335,9 +1335,9 @@ void nth_element(_RandomAccessIter __first, _RandomAccessIter __nth,
 namespace _STLP_PRIV {
 
 template <class _ForwardIter, class _Tp,
-          class _Compare1, class _Compare2, class _Distance>
+          class _Compare, class _Distance>
 _ForwardIter __upper_bound(_ForwardIter __first, _ForwardIter __last, const _Tp& __val,
-                           _Compare1 __comp1, _Compare2 __comp2, _Distance*) {
+                           _Compare __comp, _Distance*) {
   _Distance __len = distance(__first, __last);
   _Distance __half;
 
@@ -1345,8 +1345,8 @@ _ForwardIter __upper_bound(_ForwardIter __first, _ForwardIter __last, const _Tp&
     __half = __len >> 1;
     _ForwardIter __middle = __first;
     advance(__middle, __half);
-    if (__comp2(__val, *__middle)) {
-      _STLP_VERBOSE_ASSERT(!__comp1(*__middle, __val), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
+    if (__comp(__val, *__middle)) {
+      _STLP_VERBOSE_ASSERT(!__comp(*__middle, __val), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
       __len = __half;
     }
     else {
@@ -1359,10 +1359,10 @@ _ForwardIter __upper_bound(_ForwardIter __first, _ForwardIter __last, const _Tp&
 }
 
 template <class _ForwardIter, class _Tp,
-          class _Compare1, class _Compare2, class _Distance>
+          class _Compare, class _Distance>
 pair<_ForwardIter, _ForwardIter>
 __equal_range(_ForwardIter __first, _ForwardIter __last, const _Tp& __val,
-              _Compare1 __comp1, _Compare2 __comp2, _Distance* __dist) {
+              _Compare __comp, _Distance* __dist) {
   _Distance __len = distance(__first, __last);
   _Distance __half;
 
@@ -1370,26 +1370,20 @@ __equal_range(_ForwardIter __first, _ForwardIter __last, const _Tp& __val,
     __half = __len >> 1;
     _ForwardIter __middle = __first;
     advance(__middle, __half);
-    if (__comp1(*__middle, __val)) {
-      _STLP_VERBOSE_ASSERT(!__comp2(__val, *__middle), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
+    if (__comp(*__middle, __val)) {
+      _STLP_VERBOSE_ASSERT(!__comp(__val, *__middle), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
       __first = __middle;
       ++__first;
       __len = __len - __half - 1;
     }
-    else if (__comp2(__val, *__middle)) {
-      _STLP_VERBOSE_ASSERT(!__comp1(*__middle, __val), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
+    else if (__comp(__val, *__middle)) {
+      _STLP_VERBOSE_ASSERT(!__comp(*__middle, __val), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
       __len = __half;
     }
     else {
-      _ForwardIter __left = __lower_bound(__first, __middle, __val, __comp1, __comp2, __dist);
-      //Small optim: If lower_bound haven't found an equivalent value
-      //there is no need to call upper_bound.
-      if (__comp1(*__left, __val)) {
-        _STLP_VERBOSE_ASSERT(!__comp2(__val, *__left), _StlMsg_INVALID_STRICT_WEAK_PREDICATE)
-        return pair<_ForwardIter, _ForwardIter>(__left, __left);
-      }
+      _ForwardIter __left = __lower_bound(__first, __middle, __val, __comp, (_Distance*)0);
       advance(__first, __len);
-      _ForwardIter __right = __upper_bound(++__middle, __first, __val, __comp1, __comp2, __dist);
+      _ForwardIter __right = __upper_bound(++__middle, __first, __val, __comp, (_Distance*)0);
       return pair<_ForwardIter, _ForwardIter>(__left, __right);
     }
   }
