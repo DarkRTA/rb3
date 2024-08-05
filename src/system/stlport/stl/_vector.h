@@ -61,6 +61,16 @@ void std_vec_range_assert(size_t value, size_t max, const char *func);
 
 namespace _STLP_PRIV {
 
+template <class T>
+struct _VectorPointerHelper {
+  typedef const T& arg_type;
+};
+
+template <class T>
+struct _VectorPointerHelper<T*> {
+  typedef T* arg_type;
+};
+
 template <class _Tp, class _Size, class _Alloc>
 class _Vector_base {
 public:
@@ -371,9 +381,11 @@ public:
   }
 
 #if !defined (_STLP_NO_ANACHRONISMS)
-  void push_back(const _Tp& __x = _Tp()) {
+  // void push_back(_VectorPointerHelper<_Tp>::arg_type __x = _Tp()) {
+  void push_back(_VectorPointerHelper<_Tp>::arg_type __x = _Tp()) {
 #else
-  void push_back(const _Tp& __x) {
+  // void push_back(_VectorPointerHelper<_Tp>::arg_type __x) {
+  void push_back(_VectorPointerHelper<_Tp>::arg_type __x) {
 #endif
     if (this->_M_finish_idx != this->_M_data_size) {
       _Copy_Construct(_M_finish(), __x);
@@ -578,7 +590,8 @@ public:
     return _M_erase(__first, __last, _Movable());
   }
 
-  void resize(size_type __new_size, const _Tp& __x = _Tp()) {
+  // void resize(size_type __new_size, const _Tp& __x = _Tp()) {
+  void resize(size_type __new_size, _VectorPointerHelper<_Tp>::arg_type __x = _Tp()) {
     if (__new_size < size())
       erase(begin() + __new_size, end());
     else

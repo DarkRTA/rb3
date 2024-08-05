@@ -1,16 +1,20 @@
 #include "meta/MoviePanel.h"
+
+#include "math/Rand.h"
+#include "obj/Task.h"
+#include "os/File.h"
 #include "os/PlatformMgr.h"
 #include "rndobj/Rnd.h"
 #include "ui/UI.h"
-#include "obj/Task.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
-float gTempBS = 0.55263156f;
+bool MoviePanel::sUseSubtitles;
 
-MoviePanel::MoviePanel() : mSubtitlesLoader(0), mSubtitles(0), unk68(0), unk6c(1), mSubtitleLabel(0), mPauseHintAnim(0), unk78(0), mTimeShowHintStarted(0.0f), mShowMenu(0), unk81(0) {
-
-}
+MoviePanel::MoviePanel()
+    : mSubtitlesLoader(0), mSubtitles(0), mCurrentSubtitleIndex(0),
+      mSubtitleCleared(true), mSubtitleLabel(0), mPauseHintAnim(0), mShowHint(false),
+      mTimeShowHintStarted(0.0f), mShowMenu(0), unk81(0) {}
 
 void MoviePanel::SetTypeDef(DataArray* da){
     if(TypeDef() != da){
@@ -24,16 +28,71 @@ void MoviePanel::SetTypeDef(DataArray* da){
 void MoviePanel::Load(){
     UIPanel::Load();
     mMovies.clear();
-    DataArray* arr = SystemConfig("videos", Property("videos", true)->Str(0))->FindArray("files", true);
-    for(int i = 1; i < arr->Size(); i++){
-        // mMovies.push_back(arr->Str(i)); constness casted away error
+
+    DataArray* config = SystemConfig("videos", Property("videos", true)->Str(0));
+
+    DataArray* files = config->FindArray("files", true);
+    for(int i = 1; i < files->Size(); i++){
+        mMovies.push_back(files->Str(i));
     }
+
+    mFillWidth = false;
+    config->FindData("fill_width", mFillWidth, false);
+
+    bool localize = false;
+    config->FindData("localize", localize, false);
+    if (localize) {
+        Symbol language = SystemLanguage();
+        DataArray* supported = SupportedLanguages(false);
+
+        int i = 0;
+        for (; i < supported->Size(); i++) {
+            if (supported->Sym(i) == language) {
+                break;
+            }
+        }
+
+        if (i >= supported->Size()) {
+            i = 0;
+        }
+
+        mLanguage = i + 1;
+    } else {
+        mLanguage = 0;
+    }
+
+    if (sUseSubtitles && mMovies.size() == 1) {
+        char pathBuffer[256];
+        sprintf(pathBuffer, "ui/subtitles/eng/%s_keep.dta", FileGetBase(mMovies[0], nullptr));
+
+        const char *subtitlesPath;
+        bool local = FileIsLocal(pathBuffer);
+        bool cd = UsingCD();
+        if (cd && !local) {
+            subtitlesPath = MakeString("%s/gen/%s.dtb", FileGetPath(pathBuffer, nullptr), FileGetBase(pathBuffer, nullptr));
+        } else {
+            subtitlesPath = pathBuffer;
+        }
+
+        if (FileExists(subtitlesPath, 0)) {
+            // bug? pathBuffer should probably be subtitlesPath
+            mSubtitlesLoader = new DataLoader(FilePath(pathBuffer), kLoadFront, true);
+        }
+    }
+
+    ChooseMovie();
 }
 
 bool MoviePanel::IsLoaded() const {
-    if(!mMovie.Ready()) return false;
-    else if(!mSubtitlesLoader || mSubtitlesLoader->IsLoaded()) return UIPanel::IsLoaded();
-    else return false;
+    if (!mMovie.Ready()) {
+        return false;
+    }
+
+    if (mSubtitlesLoader && !mSubtitlesLoader->IsLoaded()) {
+        return false;
+    }
+
+    return UIPanel::IsLoaded();
 }
 
 void MoviePanel::FinishLoad(){
@@ -87,34 +146,34 @@ void MoviePanel::Poll(){
     }
     else if(mSubtitles && mSubtitleLabel){
         int frame = mMovie.GetFrame();
-        DataArray* arr = mSubtitles->Array(unk68);
-        if(unk6c){
+        DataArray* arr = mSubtitles->Array(mCurrentSubtitleIndex);
+        if(mSubtitleCleared){
             if(arr->Int(0) <= frame){
                 mSubtitleLabel->SetSubtitle(arr);
-                unk6c = false;
+                mSubtitleCleared = false;
             }
         }
         if(arr->Int(1) < frame){
             DataArray* thisarr = 0;
-            if(mSubtitles->Size() > unk68 + 1){
-                thisarr = mSubtitles->Array(unk68 + 1);
+            if(mSubtitles->Size() > mCurrentSubtitleIndex + 1){
+                thisarr = mSubtitles->Array(mCurrentSubtitleIndex + 1);
             }
             if(thisarr){
                 if(thisarr->Int(0) <= frame){
                     mSubtitleLabel->SetSubtitle(thisarr);
-                    unk6c = false;
-                    unk68++;
+                    mSubtitleCleared = false;
+                    mCurrentSubtitleIndex++;
                     goto lol;
                 }
             }
-            if(!unk6c){
+            if(!mSubtitleCleared){
                 mSubtitleLabel->SetTextToken(gNullStr);
-                unk6c = true;
+                mSubtitleCleared = true;
             }
         }
     }
 lol:
-    if(unk78){
+    if(mShowHint){
         float secs = TheTaskMgr.UISeconds();
         if(secs < mTimeShowHintStarted){
             mTimeShowHintStarted = secs;
@@ -125,6 +184,8 @@ lol:
     }
     return;
 }
+
+float gTempBS = 0.55263156f;
 
 void MoviePanel::Draw(){
     if(mState != kUnloaded){
@@ -138,15 +199,33 @@ void MoviePanel::Draw(){
 
 void MoviePanel::ChooseMovie(){
     MILO_ASSERT(!mMovies.empty(), 0x13A);
+
+    std::list<const char*>::iterator it;
+    do {
+        int random = RandomInt(0, mMovies.size());
+        mCurrentMovie = mMovies[random];
+        for (it = mRecent.begin(); (it != mRecent.end() && (*it != mCurrentMovie)); ++it) {}
+    } while (it != mRecent.end());
+
+    const char* current = mCurrentMovie;
+    mRecent.push_back(current);
+
+    if (mRecent.size() == mMovies.size()) {
+        while (mRecent.size() > (mMovies.size() / 2)) {
+            mRecent.pop_front();
+        }
+    }
+
+    PlayMovie();
 }
 
 void MoviePanel::PlayMovie(){
-    unk68 = 0;
-    unk6c = true;
+    mCurrentSubtitleIndex = 0;
+    mSubtitleCleared = true;
     if(TheRnd->GetAspect() != Rnd::kWidescreen){
         TheRnd->SetAspect(Rnd::kRegular);
     }
-    mMovie.Begin(MakeString("videos/%s", unk48), 0.0f, mAudio == 0, mLoop, mPreload, mFillWidth, unk44, 0);
+    mMovie.Begin(MakeString("videos/%s", mCurrentMovie), 0.0f, mAudio == 0, mLoop, mPreload, mFillWidth, mLanguage, 0);
 }
 
 void MoviePanel::SetPaused(bool b){ mMovie.SetPaused(b); }
@@ -157,14 +236,14 @@ void MoviePanel::ShowMenu(bool b){
 }
 
 void MoviePanel::HideHint(){
-    unk78 = false;
+    mShowHint = false;
     float frame = mPauseHintAnim->mFrame;
     mPauseHintAnim->Animate(frame, mPauseHintAnim->StartFrame(), mPauseHintAnim->Units(), 0.0f, 0.0f);
 }
 
 void MoviePanel::ShowHint(){
     if(mPauseHintAnim){
-        unk78 = true;
+        mShowHint = true;
         float secs = TheTaskMgr.UISeconds();
         mTimeShowHintStarted = secs;
         float frame = mPauseHintAnim->mFrame;

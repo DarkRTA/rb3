@@ -2,7 +2,6 @@
 #define OS_HOLMESCLIENT_H
 
 #include "os/File.h"
-#include "os/File_Wii.h"
 #include "types.h"
 #include "utl/Str.h"
 

@@ -8,7 +8,6 @@
 #include "utl/BufStream.h"
 #include "utl/MemMgr.h"
 #include "utl/TextFileStream.h"
-#include "os/File_Wii.h"
 #include "obj/DataUtl.h"
 #include <cstddef>
 #include <cstdlib>
@@ -46,7 +45,7 @@ DataArray* ReadEmbeddedFile(const char* c, bool b) {
     yyrestart(NULL);
     ret = DataReadFile(x, b);
     if (b && !ret) MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", x, f->File(), f->Line());
-    
+
     gNode = a;
     gBinStream = bs;
     gDataLine = d;
@@ -65,7 +64,7 @@ void PushBack(const DataNode& n) {
         }
         MemDoTempAllocations m(true, false);
         int x = gNode << 1;
-        gArray->Resize(x <= 0x7FFF ? x : 0x7FFF); 
+        gArray->Resize(x <= 0x7FFF ? x : 0x7FFF);
     }
     gArray->Node(gNode++) = n;
 }
