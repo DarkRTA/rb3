@@ -156,6 +156,7 @@ public:
     void SetSectionBounds(int, int);
     NoStrumState GetNoStrumState(int, DifficultyInfo&);
     unsigned int ComputeSlots(int, int, int, std::vector<GemInProgress>&);
+    bool ParseAndStripLyricText(const char*, VocalNote&);
 
     void HandlePitchOffsetCC(int, unsigned char);
     void StartVocalNote(int, unsigned char, const char*);

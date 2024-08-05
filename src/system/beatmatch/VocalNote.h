@@ -8,6 +8,27 @@ public:
         mPhraseEnd(0), mUnpitchedPhrase(0), mUnpitchedNote(0), mUnpitchedEasy(0), mPitchRangeEnd(0), mPlayerMask(0),
         mBends(0), mLyricShift(0), mAllowCombine(1) {}
 
+    int GetTick() const { return mTick; }
+    void SetNoteTime(float ms, int tick){
+        mMs = ms;
+        mTick = tick;
+    }
+    void SetStartPitch(int pitch){ mBeginPitch = pitch; }
+    void SetEndPitch(int pitch){ mEndPitch = pitch; }
+    float GetDurationMs() const { return mDurationMs; }
+    float GetMs() const { return mMs; }
+    unsigned short GetDurationTicks() const { return mDurationTicks; }
+
+    void SetDurationTime(float ms, int tick){
+        mDurationMs = ms;
+        mDurationTicks = tick;
+    }
+    void SetBends(bool bends){ mBends = bends; }
+    void SetText(const char* text){ mText = text; }
+
+    int StartPitch() const { return mBeginPitch; }
+    int EndPitch() const { return mEndPitch; }
+
     int mPhrase; // 0x0
     int mBeginPitch; // 0x4
     int mEndPitch; // 0x8

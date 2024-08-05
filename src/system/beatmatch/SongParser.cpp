@@ -704,6 +704,79 @@ void SongParser::OnMidiMessageVocals(int tick, unsigned char status, unsigned ch
     }
 }
 
+void SongParser::StartVocalNote(int tick, unsigned char data, const char* lyric){
+    if(IsInSection(tick)){
+        float tickms = TickToMs(tick);
+        if(tickms < 2450.0f){
+            MILO_WARN("%s (%s): Vocal note at %s is only %.02f seconds into the song; vocal notes cannot appear before %.02f seconds into the song",
+                mFilename, mTrackName, PrintTick(tick), tickms / 1000.0f, 2.45f);
+        }
+        if(mLyricTextSet && lyric){
+            if(mNextLyricTextTick != -1){
+                MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'", 
+                    mFilename, mTrackName, PrintTick(tick), mNextLyric);
+                mNextLyricTextTick = tick;
+                mNextLyric = lyric;
+            }
+        }
+        else {
+            float ticktime = GetTempoMap()->TickToTime(tick);
+            if(mLyricPitchSet || mLyricTextSet && mCurVocalNote.GetTick() != tick){
+                if(data != 0){
+                    MILO_WARN("%s (%s): misaligned note at %s (expected at %s)",
+                        mFilename, mTrackName, PrintTick(tick), PrintTick(mCurVocalNote.GetTick()));
+                }
+                else {
+                    MILO_WARN("%s (%s): misaligned lyric at %s (expected at %s)",
+                        mFilename, mTrackName, PrintTick(tick), PrintTick(mCurVocalNote.GetTick()));
+                }
+            }
+            mCurVocalNote.SetNoteTime(tickms, tick);
+            if(data != 0){
+                if(mLyricPitchSet){
+                    MILO_WARN("%s (%s): missing lyric at %s", mFilename, mTrackName, PrintTick(tick));
+                }
+                mLyricPitchSet = true;
+                mCurVocalNote.SetStartPitch(data);
+                mCurVocalNote.SetEndPitch(data);
+            }
+            if(mNextLyricTextTick != -1){
+                if(lyric || mLyricTextSet || tick != mNextLyricTextTick){
+                    MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'",
+                        mFilename, mTrackName, PrintTick(mNextLyricTextTick), mNextLyric);
+                }
+                mLyricTextSet = true;
+                mNextLyricTextTick = -1;
+                mLyricBends = ParseAndStripLyricText(mNextLyric.c_str(), mCurVocalNote);
+            }
+            if(lyric){
+                if(mLyricTextSet){
+                    MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'",
+                        mFilename, mTrackName, PrintTick(tick), mNextLyric);
+                }
+                mLyricTextSet = true;
+                mLyricBends = ParseAndStripLyricText(lyric, mCurVocalNote);
+            }
+            if(mLyricPitchSet && mLyricTextSet && mLyricBends){
+                float ms_sum = mPrevVocalNote.GetMs() + mPrevVocalNote.GetDurationMs();
+                unsigned short ticks = mPrevVocalNote.GetDurationTicks();
+                int prevticks = mPrevVocalNote.GetTick();
+                int curticks = mCurVocalNote.GetTick();
+                if(prevticks + ticks < curticks){
+                    VocalNote note(mPrevVocalNote);
+                    note.SetNoteTime(ms_sum, prevticks + ticks);
+                    note.SetDurationTime(mCurVocalNote.GetMs() - note.GetMs(), mCurVocalNote.GetTick() - note.GetTick());
+                    note.SetStartPitch(mPrevVocalNote.EndPitch());
+                    note.SetEndPitch(mCurVocalNote.StartPitch());
+                    note.SetText("");
+                    note.SetBends(true);
+                    mSink->AddVocalNote(note);
+                }
+            }
+        }
+    }
+}
+
 void SongParser::OnMidiMessageBeat(int tick, unsigned char status, unsigned char data1, unsigned char data2){
     if(MidiGetType(status) == 0x90){
         if((data1 + 0xF4 & 0xFF) <= 1){
