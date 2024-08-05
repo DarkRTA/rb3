@@ -4,6 +4,7 @@
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
 #include <vector>
+#include "StandIn.h"
 
 class TourCharLocal;
 class PatchDir;
@@ -30,16 +31,16 @@ public:
     void AddNewChar(TourCharLocal*);
     void DeleteChar(TourCharLocal*);
     void RenameCharacter(TourCharLocal*, const char*);
-    void NumChars() const;
-    void HasChar(const TourCharLocal*);
+    int NumChars() const;
+    bool HasChar(const TourCharLocal*);
     void GetFirstEmptyPatch();
     void GetTexAtPatchIndex(int) const;
     void GetPatchIndex(const PatchDir*) const;
     void PotentiallyDeleteStandin(HxGuid);
     void GetCharacterStandinIndex(CharData*) const;
-    void GetStandIn(int) const;
-    void AccessStandIn(int);
-    void GetNumStandins() const;
+    StandIn* GetStandIn(int) const;
+    StandIn* AccessStandIn(int);
+    int GetNumStandins() const;
     void GetTourProgress();
     void OwnsTourProgress(const TourProgress*);
     void UpdateScore(int, const PerformerStatsInfo&, bool);
@@ -69,7 +70,7 @@ public:
     virtual void SaveLoadComplete(ProfileSaveState);
     virtual bool HasSomethingToUpload();
     virtual void DeleteAll();
-    void GetAssociatedLocalBandUser() const;
+    LocalBandUser* GetAssociatedLocalBandUser() const;
     void CheckForFinishedTrainerAccomplishments();
     void SetProGuitarSongLessonComplete(int, Difficulty);
     void SetProBassSongLessonComplete(int, Difficulty);
@@ -117,7 +118,24 @@ public:
     void AutoFakeFill(int);
 
 private:
+    int padding;
+    int padding2;
+    std::vector<CharData*> mChars; // 0x24
+    // tour progress 0x2c
+    // Gameplay options 0x2e
+    // AccomplishmentProgress* 0x3d
+    // song status mgr 0x48
+    // saved song lists 0x4c
+    std::vector<StandIn*> mStandIns; // 0x54
+    // accomplishment progress 0xf4
 
+    // something involving performance data 0x6f70
+    // 0x6f74
+    // upload friends token 0x6fb4
+    // hardcore icon level 0x6fb8
+    // profile picture 0x6fbc
+    // tour band 0x6fc0
+ 
 };
 
 #endif // METABAND_BANDPROFILE_H

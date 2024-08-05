@@ -4,10 +4,11 @@
 #include "AssetMgr.h"
 #include "os/Debug.h"
 #include "AccomplishmentManager.h"
+#include "MetaPanel.h"
 
 ProfileAssets::ProfileAssets(BandProfile* profile) : mParentProfile(profile) {
     Clear();
-    // profile->SaveSize = SaveSize;
+    mSaveSizeMethod = SaveSize;
 }
 
 ProfileAssets::~ProfileAssets() {
@@ -29,7 +30,7 @@ void ProfileAssets::AddAsset(Symbol asset) {
                 TheDebug.Fail(MakeString(kAssertStr, __FILE__, 0x32, "GetNumAssets() < kMaxSymbols_Assets"));
             }
             mAssets.insert(asset);
-            mAssets2.insert(asset);
+            mNewAssets.insert(asset);
             MILO_ASSERT(mParentProfile, 0x37);
             mParentProfile->MakeDirty();
         }
@@ -37,49 +38,68 @@ void ProfileAssets::AddAsset(Symbol asset) {
 }
 
 bool ProfileAssets::HasAsset(Symbol asset) const {
+    bool returnValue;
+
+    if (MetaPanel::sUnlockAll) {
+        return true;
+    }
+
     bool hasSource = TheAccomplishmentMgr->DoesAssetHaveSource(asset);
     if (!hasSource) {
         return true;
     }
-    std::set<Symbol>::const_iterator iter = mAssets.begin();
-    while (*iter != NULL) {
 
-    }
-
-    return true;
+    return mAssets.find(asset) != mAssets.end();    
 }
 
 bool ProfileAssets::IsNew(Symbol name) const {
     MILO_ASSERT(HasAsset(name), 0x53);
+
+    return mNewAssets.find(name) != mNewAssets.end();
 }
 
-void ProfileAssets::SetOld(Symbol) {
-
+void ProfileAssets::SetOld(Symbol name) {
+    mNewAssets.erase(name);
+    MILO_ASSERT(mParentProfile, 0x66);
+    mParentProfile->MakeDirty();
 }
 
-void ProfileAssets::GetNewAssets(std::vector<Symbol>&, AssetGender) const {
-
-}
-
-void ProfileAssets::GetNumNewAssets(AssetGender) const {
-
-}
-
-void ProfileAssets::SaveSize(int) {
-    if (sPrintoutsEnabled != '\0') {
-        TheDebug << "* %s = %i\n";
+void ProfileAssets::GetNewAssets(std::vector<Symbol>& assets, AssetGender gender) const {
+    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    MILO_ASSERT(pAssetMgr, 0x6e);
+    for (std::set<Symbol>::const_iterator it = mNewAssets.begin(); it != mNewAssets.end(); it++) {
+        Symbol assetName = *it;
+        Asset* pAsset = pAssetMgr->GetAsset(assetName);
+        MILO_ASSERT(pAsset, 0x75);
+        AssetGender assetGender = (AssetGender)pAsset->mGender;
+        if (assetGender == gender || assetGender == 0) {
+            assets.push_back(assetName);
+        }
     }
-    // return 0x5dc8;
+    
+}
+
+int ProfileAssets::GetNumNewAssets(AssetGender gender) const {
+    std::vector<Symbol> assets;
+    GetNewAssets(assets, gender);
+    return assets.size();
+}
+
+int ProfileAssets::SaveSize(int) {
+    if (sPrintoutsEnabled != '\0') {
+        TheDebug << MakeString("* %s = %i\n", "ProfileAssets", 0x5dc8);
+    }
+    return 0x5dc8;
 }
 
 void ProfileAssets::SaveFixed(FixedSizeSaveableStream& stream) const {
     FixedSizeSaveable::SaveStd(stream, mAssets, 0xbb8);
-    FixedSizeSaveable::SaveStd(stream, mAssets2, 0xbb8);
+    FixedSizeSaveable::SaveStd(stream, mNewAssets, 0xbb8);
 }
 
 void ProfileAssets::LoadFixed(FixedSizeSaveableStream& stream, int param_2) {
     FixedSizeSaveable::LoadStd(stream, mAssets, 0xbb8);
-    FixedSizeSaveable::LoadStd(stream, mAssets2, 0xbb8);
+    FixedSizeSaveable::LoadStd(stream, mNewAssets, 0xbb8);
 }
 
 void ProfileAssets::FakeFill() {

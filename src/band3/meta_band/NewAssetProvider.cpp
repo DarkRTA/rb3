@@ -13,11 +13,7 @@ NewAssetProvider::~NewAssetProvider() {
 }
 
 void NewAssetProvider::Update() {
-    for (std::vector<Symbol>::const_iterator iter = mSymbols.begin(); iter != mSymbols.end(); iter++) {
 
-    }
-
-    //mProfile->GetAssets()->GetNewAssets();
 }
 
 void NewAssetProvider::Text(int param_1, int index, UIListLabel* slot, UILabel* label) const {
@@ -42,7 +38,7 @@ void NewAssetProvider::Text(int param_1, int index, UIListLabel* slot, UILabel* 
     }
 }
 
-void NewAssetProvider::UpdateExtendedText(int, int i_iData, UILabel* label) const {
+void NewAssetProvider::UpdateExtendedText(int i, int i_iData, UILabel* label) const {
     MILO_ASSERT(i_iData < NumData(), 0x4f);
 
     Symbol symbol = DataSymbol(i_iData);
@@ -57,17 +53,21 @@ void NewAssetProvider::UpdateExtendedText(int, int i_iData, UILabel* label) cons
             Symbol description = pAsset->GetDescription();
             label->SetTextToken(description);
         } else if (strcmp(name, "asset_progress_new.lbl") == 0) {
+            int numData = NumData();
+
             DataNode node0 = customize_asset_progress;
             DataNode node1 = i_iData + 1;
-            DataNode node2 = i_iData; 
+            DataNode node2 = numData; 
 
             DataArray* array = new DataArray(3);
+
             array->Node(0) = node0;
             array->Node(1) = node1;
             array->Node(2) = node2;
             
             label->SetTokenFmt(array);
-            delete array;
+
+            array->Release();
         } else {
             label->SetTextToken(gNullStr);
         }

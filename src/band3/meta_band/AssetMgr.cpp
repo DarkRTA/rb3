@@ -33,8 +33,12 @@ AssetMgr* AssetMgr::GetAssetMgr() {
     return TheAssetMgr;
 }
 
-Asset* AssetMgr::GetAsset(Symbol asset) const {
-    
+Asset* AssetMgr::GetAsset(Symbol name) const {
+    for (std::set<Asset*>::const_iterator it = m_2.begin(); it != m_2.end(); it++) {
+        Asset* asset = *it;
+
+    }
+    return NULL;
 }
 
 bool AssetMgr::HasAsset(Symbol asset) const {
@@ -110,5 +114,14 @@ void AssetMgr::VerifyAssets(const char*) {
 }
 
 void AssetMgr::VerifyAssets(const char*, const char*) {
+
+}
+
+
+void AssetMgr::EquipAsset(BandCharDesc*, Symbol) {
+
+}
+
+void AssetMgr::EquipAssets(LocalBandUser*, const std::vector<Symbol>&) {
 
 }

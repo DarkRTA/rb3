@@ -65,6 +65,10 @@ public:
     Symbol GetTourSafeDiscSongAtDifficultyIndex(int index);
     void AddAssetAward(Symbol, Symbol);
 
+
+
+    void CheckForFinishedTrainerAccomplishmentsForUser(LocalBandUser*);
+
 private:
 
 };

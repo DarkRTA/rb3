@@ -7,6 +7,9 @@
 #include "system/obj/Object.h"
 #include "AssetTypes.h"
 #include "Asset.h"
+#include "band3/game/BandUser.h"
+
+class BandCharDesc;
 
 class AssetMgr : public Hmx::Object {
     AssetMgr();
@@ -24,12 +27,13 @@ public:
     void AddAssets();
     void VerifyAssets(const char*);
     void VerifyAssets(const char*, const char*);
-    // void EquipAsset(BandCharDesc*, Symbol);
-    // void EquipAssets(LocalBandUser*, std::vector<Symbol>&);
+    void EquipAsset(BandCharDesc*, Symbol);
+    void EquipAssets(LocalBandUser*, const std::vector<Symbol>&);
 
 private:
-    std::set<int> m_1;      // 0x0
-    std::set<Symbol> m_2;   // 0x00
+    std::set<int> m_1;      
+    public:
+    std::set<Asset*> m_2;  
 };
 
 static AssetMgr* TheAssetMgr;
