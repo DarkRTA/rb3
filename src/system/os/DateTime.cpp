@@ -6,7 +6,7 @@
 #include "utl/Symbols.h"
 #include "utl/Locale.h"
 #include "utl/LocaleOrdinal.h"
-#include <revolution/os.h>
+#include <revolution/OS.h>
 
 #include "decomp.h"
 

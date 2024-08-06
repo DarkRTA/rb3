@@ -37,7 +37,7 @@ namespace Quazal {
 
         static void *Allocate(unsigned long size, _InstructionType inst) {
             MemoryManager* memMgr = MemoryManager::GetDefaultMemoryManager();
-            Allocate(memMgr, size, "Unknown", 0, inst);
+            return Allocate(memMgr, size, "Unknown", 0, inst);
         }
 
         int GetHeaderSize();

@@ -1,7 +1,7 @@
 #include "utl/Cache.h"
 #include "os/Debug.h"
 #include "os/Timer.h"
-#include "os/ThreadCall_Wii.h"
+#include "os/ThreadCall.h"
 
 int CacheID::GetDeviceID() const {
     MILO_FAIL("CacheID::GetDeviceID() not supported on this platform.\n");
@@ -9,11 +9,11 @@ int CacheID::GetDeviceID() const {
 }
 
 Cache::Cache() : mOpCur(kOpNone), mLastResult(kCache_NoError) {
-    
+
 }
 
 Cache::~Cache(){
-    
+
 }
 
 bool Cache::IsDone(){

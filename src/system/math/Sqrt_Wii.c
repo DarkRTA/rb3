@@ -1,15 +1,17 @@
 #include "decomp.h"
-double sqrt(register double f1) {
-    register float f0 = f1;
-    register float f2 = 0.5f, f3 = 3.0f, f4;
+double sqrt(register double value) {
+    register float fValue = value; // f0
+    register float f_1, half = 0.5f, three = 3.0f, f_4;
+
     ASM_BLOCK (
-        frsqrte f1, f0 // f1 = 1/sqrt(f0)
-        fmuls f4, f1, f1 // f4 = f1 * f1
-        fmuls f1, f1, f2 // f1 *= f2
-        fnmsubs f4, f4, f0, f3 // f4 = -((f4 * f0) - f3)
-        fmuls f1, f4, f1 // f1 *= f4
-        fsel f1, f1, f1, f0 // f1 = f0 > 0 ? f1 : f1
-        fmuls f1, f0, f1 // f1 *= f0
+        frsqrte  f_1, fValue              // f_1 = 1/sqrt(fValue)
+        fmuls    f_4, f_1, f_1            // f_4 = f_1 * f_1
+        fmuls    f_1, f_1, half           // f_1 *= half
+        fnmsubs  f_4, f_4, fValue, three  // f_4 = -((f_4 * fValue) - three)
+        fmuls    f_1, f_4, f_1            // f_1 *= f_4
+        fsel     f_1, f_1, f_1, fValue    // f_1 = fValue > 0 ? f_1 : f_1
+        fmuls    value, fValue, f_1       // f_1 *= fValue
     )
-    return f1;
+
+    return value;
 }

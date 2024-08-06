@@ -50,12 +50,12 @@ void CaptureStackTrace(int depth, unsigned int* trace) {
 
 bool PlatformDebugBreak() {
     if (OSGetConsoleType() & OS_CONSOLE_MASK_EMU) {
-        register int r0, r3;
-        ASM_BLOCK(mfmsr r3) // ??????
-        r0 = r3 | 0x400;
+        register int breakState, ogState;
+        ASM_BLOCK(mfmsr ogState) // Move from Machine State Register
+        breakState = ogState | 0x400;
         ASM_BLOCK(
-            mtmsr r0
-            mtmsr r3
+            mtmsr breakState
+            mtmsr ogState
         )
         return true;
     }

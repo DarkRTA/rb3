@@ -1,6 +1,6 @@
 #include "Cache_Wii.h"
 #include "VF.h"
-#include "system/os/ThreadCall_Wii.h"
+#include "system/os/ThreadCall.h"
 
 
 CacheIDWii::CacheIDWii() {
@@ -60,7 +60,7 @@ CacheWii::CacheWii(const CacheIDWii& param_1) {
             const char* error = VFGetApiErrorString();
             OSReport("VFCreateDir vfErr %s Line %d\n", error, 0x5d);
         }
-        dirResult = VFChangeDir(m0x64); 
+        dirResult = VFChangeDir(m0x64);
         if (dirResult != 0) {
             const char* error = VFGetApiErrorString();
             OSReport("VFChangeDir vfErr %s Line %d\n", error, 0x67);

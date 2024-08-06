@@ -73,7 +73,10 @@ public:
     }
 };
 
-inline BinStream& operator>>(BinStream& bs, RndMultiMesh::Instance& i) { i.Load(bs); }
+inline BinStream& operator>>(BinStream& bs, RndMultiMesh::Instance& i) {
+    i.Load(bs);
+    return bs;
+}
 
 TextStream& operator<<(TextStream& ts, const RndMultiMesh::Instance& i);
 

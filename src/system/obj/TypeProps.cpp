@@ -183,7 +183,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
         return;
     }
     d << potentialArr;
-    
+
 }
 
 void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
@@ -217,7 +217,6 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
 
     if(def){
         if(mMap && TheLoadMgr.EditMode()){
-            
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
                 DataArray* found = def->FindArray(mMap->Sym(i), false);
                 if(!found || (CONST_ARRAY(found)->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
@@ -309,7 +308,7 @@ void TypeProps::AddRefObjects(Hmx::Object* ref){
     }
 }
 
-TypeProps& TypeProps::Copy(const TypeProps& prop, Hmx::Object* ref){
+void TypeProps::Copy(const TypeProps& prop, Hmx::Object* ref){
     ClearAll(ref);
     if(prop.mMap != 0){
         mMap = prop.mMap->Clone(true, false, 0);

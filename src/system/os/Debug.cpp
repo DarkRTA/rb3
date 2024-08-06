@@ -13,7 +13,7 @@
 #include "os/System.h"
 #include "os/Timer.h"
 
-#include <revolution/os.h>
+#include <revolution/OS.h>
 #include <cstdlib>
 #include <vector>
 

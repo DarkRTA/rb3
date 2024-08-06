@@ -1,6 +1,6 @@
 #ifndef OS_CRITSEC_H
 #define OS_CRITSEC_H
-#include <revolution/os.h>
+#include <revolution/OS.h>
 #include "utl/PoolAlloc.h"
 
 class CriticalSection {
