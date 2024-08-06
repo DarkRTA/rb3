@@ -25,12 +25,14 @@ namespace Quazal {
         m_iReturnCode = i;
         m_cszFilename = __FILE__;
         m_iLineNumber = 0x59;
+        return *this;
     }
 
     qResult& qResult::operator=(const qResult& q){
         m_iReturnCode = q.m_iReturnCode;
         m_cszFilename = q.m_cszFilename;
         m_iLineNumber = q.m_iLineNumber;
+        return *this;
     }
 
     void qResult::Trace(unsigned int) const {}

@@ -45,13 +45,13 @@ void SynthSample::Sync(SynthSample::SyncType ty){
         mSampleData.Reset();
         if(!mFile.empty()){
             FileLoader* fl = dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(mFile));
-            void* buf;
+            const char* buf;
             int size;
-            if(fl) buf = (void*)fl->GetBuffer(&size);
+            if(fl) buf = fl->GetBuffer(&size);
             else buf = 0;
             delete fl;
             if(buf){
-                BufStream bufs(buf, size, true);
+                BufStream bufs((void*)buf, size, true);
                 if(TheLoadMgr.GetPlatform() == kPlatformPC){
                     mSampleData.LoadWAV(bufs, mFile);
                 }
@@ -80,12 +80,12 @@ void SynthSample::PreLoad(BinStream& bs){
     if(!bs.Cached() || gRev < 5){
         if (gRev > 3) {
             mFileLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(mFile, kLoadFront));
-        }    
+        }
     }
     else if (gAltRev != 0) {
         CacheResourceResult res;
         mFileLoader = new FileLoader(mFile, CacheWav(mFile.c_str(), res), kLoadFront, 0, false, true, &bs);
-    }    
+    }
     else mSampleData.Load(bs, mFile);
     PushRev(packRevs(gAltRev, gRev), this);
 }

@@ -25,7 +25,6 @@ template<class T1, class T2> class ObjPtr;
 template<class T1, class T2> class ObjOwnerPtr;
 template<class T1, class T2> class ObjPtrList;
 template<class T> class ObjDirPtr;
-template<class T1, class T2 = u16> class ObjVector;
 
 bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
 bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
@@ -124,26 +123,30 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
         for(int cnt = prop->Int(i++); cnt > 0; cnt--) ++it;
         MILO_ASSERT(i == prop->Size(), 0x150);
         switch(op){
-            case kPropGet:
+            case kPropGet: {
                 T* item = *it;
                 return PropSync(item, node, prop, i, op);
-            case kPropSet:
+            }
+            case kPropSet: {
                 T* objToSet = 0;
                 if(PropSync(objToSet, node, prop, i, op)){
                     ptr.Set(it, objToSet);
                     return true;
                 }
                 break;
-            case kPropRemove:
+            }
+            case kPropRemove: {
                 ptr.erase(it);
                 return true;
-            case kPropInsert:
+            }
+            case kPropInsert: {
                 T* objToInsert = 0;
                 if(PropSync(objToInsert, node, prop, i, op)){
                     ptr.insert(it, objToInsert);
                     return true;
                 }
                 break;
+            }
         }
         return false;
     }

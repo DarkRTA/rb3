@@ -48,7 +48,7 @@ public:
     void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, Hmx::Object*);
     void Replace(Hmx::Object*, Hmx::Object*, Hmx::Object*);
     int Size() const;
-    TypeProps& Copy(const TypeProps&, Hmx::Object*);
+    void Copy(const TypeProps&, Hmx::Object*);
     Symbol Key(int) const;
     DataNode& Value(int) const;
 };

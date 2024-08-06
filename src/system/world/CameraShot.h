@@ -48,6 +48,7 @@ public:
 
 inline BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
     csf.Load(bs);
+    return bs;
 }
 
 class CamShotCrowd {
@@ -72,7 +73,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~CamShot();
-    
+
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);

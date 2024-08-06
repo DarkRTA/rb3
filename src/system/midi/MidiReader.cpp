@@ -249,15 +249,17 @@ void MidiReader::ReadMidiEvent(int tick, unsigned char status, unsigned char dat
 void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream& bs){
     switch(uc){
         case 0xF0:
-        case 0xF7:
+        case 0xF7: {
             MidiVarLenNumber num(bs);
             bs.Seek(num.mValue, BinStream::kSeekCur);
             break;
-        case 0xFF:
+        }
+        case 0xFF: {
             unsigned char read;
             bs >> read;
             ReadMetaEvent(i, read, bs);
             break;
+        }
         default:
             MILO_WARN("%s (%s): Cannot parse system event %i", mStreamName.c_str(), mCurTrackName.c_str(), uc);
             break;
@@ -274,7 +276,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
         case 0x1:
         case 0x2:
         case 0x3:
-        case 0x5:
+        case 0x5: {
             char buf[0x100];
             if(numVal >= 0x100){
                 bs.Read(buf, 8);
@@ -305,7 +307,8 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                 mRcvr.OnText(i, buf, uc);
             }
             break;
-        case 0x51:
+        }
+        case 0x51: {
             unsigned char c,b,a;
             bs >> c >> b >> a;
             int product = a + c * 0x10000 + b * 0x100;
@@ -325,7 +328,8 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                     mStreamName.c_str(), mCurTrackName.c_str(), TickFormat(i, *mMeasureMap), 6e+07f / (float)product);
             }
             break;
-        case 0x2F:
+        }
+        case 0x2F: {
             ProcessMidiList();
             if(mCurTrackIndex == mNumTracks){
                 mState = kEnd;
@@ -340,7 +344,8 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                 mRcvr.OnEndOfTrack();
             }
             break;
-        case 0x58:
+        }
+        case 0x58: {
             unsigned char ts_num, ts_den;
             bs >> ts_num >> ts_den;
             if(ts_den > 6){
@@ -366,6 +371,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
                 bs.Seek(2, BinStream::kSeekCur);
             }
             break;
+        }
         case 4:
         case 6:
         case 7:
