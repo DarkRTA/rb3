@@ -80,7 +80,7 @@ public:
         DifficultyInfo(int num_gems) : mActivePlayers(0), mForceHopoOnStart(-1), mForceHopoOnEnd(-1),
             mForceHopoOffStart(-1), mForceHopoOffEnd(-1), mRGArpeggioStartTick(-1), unkc8(-1), mRGAreaStrumType(kRGNoStrum),
             mRGAreaStrumStartTick(-1), mRGAreaStrumEndTick(-1), mRGLooseStrumStartTick(-1), mRGLooseStrumEndTick(-1),
-            unk124(-1), mRGChordNumsStartTick(-1), mRGChordNumsEndTick(-1), mRGLeftHandSlideStartTick(-1), mRGLeftHandSlideEndTick(-1) {
+            mRGChordTextTick(-1), mRGChordNumsStartTick(-1), mRGChordNumsEndTick(-1), mRGLeftHandSlideStartTick(-1), mRGLeftHandSlideEndTick(-1) {
             mGemsInProgress.reserve(num_gems);
             for(int i = 0; i < num_gems; i++) mGemsInProgress.push_back(GemInProgress());
         }
@@ -103,13 +103,15 @@ public:
         int mRGAreaStrumEndTick; // 0xd8
         int mRGLooseStrumStartTick; // 0xdc
         int mRGLooseStrumEndTick; // 0xe0
+        const char* mRGChordText; // 0xe4
 
-        int unke4, unke8, unkec;
+        int unke8, unkec;
         int unkf0, unkf4, unkf8, unkfc;
         int unk100, unk104, unk108, unk10c;
         int unk110, unk114, unk118, unk11c;
-        int unk120, unk124;
-        
+        int unk120;
+
+        int mRGChordTextTick; // 0x124        
         int mRGChordNumsStartTick; // 0x128
         int mRGChordNumsEndTick; // 0x12c
         int mRGLeftHandSlideStartTick; // 0x130

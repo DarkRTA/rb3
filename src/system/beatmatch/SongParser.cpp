@@ -138,7 +138,7 @@ void SongParser::Reset(){
         mDifficultyInfos[i].mRGAreaStrumEndTick = NULL_TICK;
         mDifficultyInfos[i].mRGLooseStrumStartTick = NULL_TICK;
         mDifficultyInfos[i].mRGLooseStrumEndTick = NULL_TICK;
-        mDifficultyInfos[i].unk124 = NULL_TICK;
+        mDifficultyInfos[i].mRGChordTextTick = NULL_TICK;
         for(int j = 0; j < 32; j++){
             mDifficultyInfos[i].mGemsInProgress[j] = GemInProgress();
         }
@@ -1252,100 +1252,71 @@ bool SongParser::CheckKeyboardRangeMarker(int tick, int pitch, bool b){
     return true;
 }
 
+#define MAX_MIX_LEN 0x40
+#define MAX_WEIGHT_LEN 0x40
+
 void SongParser::ParseText(int tick, const char* text){
     if(strneq(text, "mix", 3)){
         const char* t4 = text + 4;
+        if(text[4] - 0x30U >= 10){
+            MILO_WARN("%s (%s): improperly formatted mix event '[%s' at %s",
+                mFilename, mTrackName, text, PrintTick(tick));
+        }
+        else {
+            int consumed = ConsumeNumber(t4);
+            t4++;
+            const char* p;
+            for(p = t4; *p != '\0' && *p != ']'; p++);
+            int len = (int)p - (int)t4;
+            char buf[MAX_MIX_LEN];
+            MILO_ASSERT(len < MAX_MIX_LEN - 1, 0x98F);
+            strncpy(buf, t4, len);
+            buf[len] = '\0';
+            if(mSubMixes){
+                DataArray* mixArr = mSubMixes->FindArray(buf, false);
+                if(mixArr){
+                    mSink->AddMix(mTrack, tick, consumed, buf);
+                    mDrumSubmixDifficultyMask |= (1 << consumed);
+                    for(int i = 0; i < 2; i++){
+
+                    }
+                    if(consumed - 0x30 > 4){ // fix
+                        MILO_WARN("%s (%s): bad mix '%s' at %s",
+                            mFilename, mTrackName, buf, PrintTick(tick));
+                        return;
+                    }
+                    MILO_WARN("%s (%s): drum mix '%s' at %s supports exactly %d %s channels; this song's configuration has %d %s channels",
+                        mFilename, mTrackName, buf, PrintTick(tick), 0, "(total) drum", mNumDrumChannels, "(total) drum");
+                    return;
+                }
+            }
+            MILO_WARN("%s (%s): bad mix '%s' at %s", mFilename, mTrackName, buf, PrintTick(tick));
+        }
+    }
+    else if(strneq(text, "weights", 7)){
+        const char* p6;
+        for(p6 = text + 8; *p6 == ' '; p6++);
+        const char* p9;
+        for(p9 = p6; *p9 != '\0' && *p9 != ']' && *p9 != ' '; p9++);
+        int len = (int)p9 - (int)p6;
+        MILO_ASSERT(len < MAX_WEIGHT_LEN - 1, 0x9D1);
+        char buf[MAX_WEIGHT_LEN];
+        strncpy(buf, p6, len);
+        buf[len] = '\0';
     }
 }
 
-//   iVar5 = StrSlicesAreEqual(text,s_mix_808863ed,3);
-//   if (iVar5 == 0) {
-//     iVar5 = StrSlicesAreEqual(text,s_weights_808864b9,7);
-//     if (iVar5 != 0) {
-//       for (pcVar6 = text + 8; pcVar9 = pcVar6, *pcVar6 == ' '; pcVar6 = pcVar6 + 1) {
-//       }
-//       for (; ((cVar1 = *pcVar9, cVar1 != '\0' && (cVar1 != ']')) && (cVar1 != ' '));
-//           pcVar9 = pcVar9 + 1) {
-//       }
-//       strncpy(local_a0,pcVar6,(int)pcVar9 - (int)pcVar6);
-//       local_a0[(int)pcVar9 - (int)pcVar6] = '\0';
-//     }
-//   }
-//   else {
-//     local_ec = text + 4;
-//     if ((byte)(text[4] - 0x30U) < 10) {
-//       uVar7 = fn_80459608(&local_ec);
-//       local_ec = local_ec + 1;
-//       for (pcVar6 = local_ec; (*pcVar6 != '\0' && (*pcVar6 != ']')); pcVar6 = pcVar6 + 1) {
-//       }
-//       __n = (int)pcVar6 - (int)local_ec;
-//       strncpy((char *)((int)register0x00000004 + -0x60),local_ec,__n);
-//       ((char *)((int)register0x00000004 + -0x60))[__n] = '\0';
-//       if (*(int *)(this + 0x68) != 0) {
-//         uVar8 = Symbol::Symbol(aSStack_f4,(char *)((int)register0x00000004 + -0x60));
-//         iVar5 = DataArray::FindArray(*(DataArray **)(this + 0x68),uVar8,0);
-//         if (iVar5 != 0) {
-//           (**(code **)(**(int **)(this + 0x40) + 0x50))
-//                     (*(int **)(this + 0x40),*(undefined4 *)(this + 0x54),tick,uVar7,
-//                      (char *)((int)register0x00000004 + -0x60));
-//           *(uint *)(this + 0x1b0) = *(uint *)(this + 0x1b0) | 1 << (uVar7 & 0x3f);
-//           iVar5 = 2;
-//           pfVar2 = &lbl_807F3A74;
-//           pfVar3 = &fStack_bc;
-//           do {
-//             pfVar11 = pfVar3;
-//             pfVar10 = pfVar2;
-//             fVar4 = pfVar10[2];
-//             pfVar11[1] = pfVar10[1];
-//             pfVar11[2] = fVar4;
-//             iVar5 = iVar5 + -1;
-//             pfVar2 = pfVar10 + 2;
-//             pfVar3 = pfVar11 + 2;
-//           } while (iVar5 != 0);
-//           pfVar11[3] = pfVar10[3];
-//           if (&DAT_ffffffd0 + local_5b > (undefined *)0x4) {
-//             String::String(aSStack_d0,(String *)(this + 0x28));
-//             local_f8 = *(undefined4 *)(this + 0xd8);
-//             pcVar6 = PrintTick(this,tick);
-//             RSONotifyModuleLoaded
-//                       (s_%s_(%s):_bad_mix_'%s'_at_%s_80886425,aSStack_d0,&local_f8,
-//                        (char *)((int)register0x00000004 + -0x60),pcVar6);
-//             String::~String(aSStack_d0);
-//             return;
-//           }
-//           fVar4 = local_b8[(int)(&DAT_ffffffd0 + local_5b)];
-//           if (*(float *)(this + 0x1ac) == fVar4) {
-//             return;
-//           }
-//           String::String(aSStack_dc,(String *)(this + 0x28));
-//           local_fc = *(undefined4 *)(this + 0xd8);
-//           pcVar6 = PrintTick(this,tick);
-//           RSONotifyModuleLoaded
-//                     (s_%s_(%s):_drum_mix_'%s'_at_%s_sup_80886441,aSStack_dc,&local_fc,
-//                      (char *)((int)register0x00000004 + -0x60),pcVar6,fVar4,s_(total)_drum_808864ac,
-//                      *(undefined4 *)(this + 0x1ac),s_(total)_drum_808864ac);
-//           String::~String(aSStack_dc);
-//           return;
-//         }
-//       }
-//       String::String(aSStack_e8,(String *)(this + 0x28));
-//       local_100 = *(undefined4 *)(this + 0xd8);
-//       pcVar6 = PrintTick(this,tick);
-//       RSONotifyModuleLoaded
-//                 (s_%s_(%s):_bad_mix_'%s'_at_%s_80886425,aSStack_e8,&local_100,
-//                  (char *)((int)register0x00000004 + -0x60),pcVar6);
-//       String::~String(aSStack_e8);
-//     }
-
-//     else {
-//       String::String(aSStack_c4,(String *)(this + 0x28));
-//       local_f0 = *(undefined4 *)(this + 0xd8);
-//       pcVar6 = PrintTick(this,tick);
-//       RSONotifyModuleLoaded
-//                 (s_%s_(%s):_improperly_formatted_mi_808863f1,aSStack_c4,&local_f0,text,pcVar6);
-//       String::~String(aSStack_c4);
-//     }
-//   }
+void SongParser::ParseRGText(int tick, const char* text){
+    if(strneq(text, "chrd", 4)){
+        int idx = atoi(text + 4);
+        mDifficultyInfos[idx].mRGChordTextTick = tick;
+        strcpy((char*)mDifficultyInfos[idx].mRGChordText, text + 6);
+        int len = strlen(mDifficultyInfos[idx].mRGChordText);
+        if(mDifficultyInfos[idx].mRGChordText[len - 1] == ']'){
+           ((char*)mDifficultyInfos[idx].mRGChordText)[len - 1] = 0;
+        }
+    }
+}
 
 void SongParser::InitReadingState(){ mReadingState = kReadingBeat; }
 
