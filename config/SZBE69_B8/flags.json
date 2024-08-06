@@ -20,6 +20,8 @@
                 "-fp hardware",
 
                 "-pragma \"cats off\"",
+
+                "-pragma \"warning off (10184)\"",
                 "-pragma \"warn_notinlined off\"",
 
                 "-RTTI on",
