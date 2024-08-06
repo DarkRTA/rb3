@@ -23,6 +23,8 @@
 
                 "-pragma \"warning off (10184)\"",
                 "-pragma \"warn_notinlined off\"",
+                "-pragma \"warn_filenamecaps on\"",
+                "-pragma \"warn_filenamecaps_system on\"",
 
                 "-RTTI on",
                 "-Cpp_exceptions off",
