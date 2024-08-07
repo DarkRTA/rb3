@@ -98,6 +98,7 @@ public:
     bool GetTrillSlotsAtTick(int, int, std::pair<int, int>&) const;
     int GetRollingSlotsAtTick(int, int) const;
     bool GetNextRoll(int, int, unsigned int&, int&) const;
+    const char* SongFullPath() const;
 
     GameGemList* GetGemList(int);
 
@@ -124,14 +125,14 @@ public:
     std::vector<GameGemDB*> mGemDBs;
     std::vector<PhraseDB*> mPhraseDBs;
     int unk94; // actually a PhraseAnalyzer
-    int unk98;
-    std::vector<VocalNoteList*> mVocalNoteLists;
-    std::vector<BackupTrack*> mBackupTracks;
-    std::vector<FakeTrack*> mFakeTracks;
-    TempoMap* mTempoMap;
-    MeasureMap* mMeasureMap;
-    BeatMap* mBeatMap;
-    TuningOffsetList* mTuningOffsetList;
+    int unk98; // 0x98
+    std::vector<VocalNoteList*> mVocalNoteLists; // 0x9c
+    std::vector<BackupTrack*> mBackupTracks; // 0xa4
+    std::vector<FakeTrack*> mFakeTracks; // 0xac
+    TempoMap* mTempoMap; // 0xb4
+    MeasureMap* mMeasureMap; // 0xb8
+    BeatMap* mBeatMap; // 0xbc
+    TuningOffsetList* mTuningOffsetList; // 0xc0
     std::vector<float> vecc4; // float
     std::vector<float> veccc; // float
     float unkd4;
