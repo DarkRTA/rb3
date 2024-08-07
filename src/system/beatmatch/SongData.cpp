@@ -1,6 +1,8 @@
 #include "beatmatch/SongData.h"
 #include "beatmatch/GameGemDB.h"
 #include "beatmatch/VocalNote.h"
+#include "beatmatch/SongParserSink.h"
+#include "beatmatch/PlayerTrackConfig.h"
 #include "utl/BeatMap.h"
 
 SongData::TrackInfo::TrackInfo(Symbol sym, SongInfoAudioType audioty, AudioTrackNum num, TrackType trackty, bool bb) :
@@ -23,6 +25,34 @@ SongData::SongData() : unk10(0), unk14(0), unk18(0), unk1c(0), unk20(-1), unk24(
 SongData::~SongData(){
     ResetTheTempoMap();
     ResetTheBeatMap();
+}
+
+void SongData::AddSink(SongParserSink* sink){
+    mSongParserSinks.push_back(sink);
+}
+
+void SongData::FixUpTrackConfig(PlayerTrackConfigList* plist){
+    std::vector<TrackType> types;
+    types.reserve(unk10);
+    for(int i = 0; i < unk10; i++){
+        types.push_back(mTrackInfos[i]->mType);
+    }
+    plist->Process(types);
+}
+
+void SongData::SetUpTrackDifficulties(PlayerTrackConfigList* plist){
+    mTrackDifficulties.clear();
+    mTrackDifficulties.reserve(plist->mTrackDiffs.size());
+    for(int i = 0; i < plist->mTrackDiffs.size(); i++){
+        int topush = plist->mTrackDiffs[i];
+        if(topush == -1) topush = 0;
+        mTrackDifficulties.push_back(topush);
+    }
+}
+
+void SongData::UpdatePlayerTrackConfigList(PlayerTrackConfigList* plist){
+    SetUpTrackDifficulties(plist);
+    ComputeVocalRangeData();
 }
 
 SongData::BackupTrack::~BackupTrack(){
