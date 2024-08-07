@@ -34,4 +34,6 @@ public:
     }
 };
 
+extern UserGuid gNullUserGuid;
+
 #endif

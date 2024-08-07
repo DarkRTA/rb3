@@ -4,23 +4,48 @@
 
 class VocalNote {
 public:
-    int mPhrase;
-    int mBeginPitch;
-    int mEndPitch;
-    float mMs;
-    int mTick;
-    float mDurationMs;
-    unsigned short mDurationTicks;
-    String mText;
-    bool mPhraseEnd;
-    bool mUnpitchedPhrase;
-    bool mUnpitchedNote;
-    bool mUnpitchedEasy;
-    bool mPitchRangeEnd;
-    unsigned char mPlayerMask;
-    bool mBends;
-    bool mLyricShift;
-    bool mAllowCombine;
+    VocalNote() : mPhrase(-1), mBeginPitch(0), mEndPitch(0), mMs(0), mTick(0), mDurationMs(0), mDurationTicks(0),
+        mPhraseEnd(0), mUnpitchedPhrase(0), mUnpitchedNote(0), mUnpitchedEasy(0), mPitchRangeEnd(0), mPlayerMask(0),
+        mBends(0), mLyricShift(0), mAllowCombine(1) {}
+
+    int GetTick() const { return mTick; }
+    void SetNoteTime(float ms, int tick){
+        mMs = ms;
+        mTick = tick;
+    }
+    void SetStartPitch(int pitch){ mBeginPitch = pitch; }
+    void SetEndPitch(int pitch){ mEndPitch = pitch; }
+    float GetDurationMs() const { return mDurationMs; }
+    float GetMs() const { return mMs; }
+    unsigned short GetDurationTicks() const { return mDurationTicks; }
+
+    void SetDurationTime(float ms, int tick){
+        mDurationMs = ms;
+        mDurationTicks = tick;
+    }
+    void SetBends(bool bends){ mBends = bends; }
+    void SetText(const char* text){ mText = text; }
+
+    int StartPitch() const { return mBeginPitch; }
+    int EndPitch() const { return mEndPitch; }
+
+    int mPhrase; // 0x0
+    int mBeginPitch; // 0x4
+    int mEndPitch; // 0x8
+    float mMs; // 0xc
+    int mTick; // 0x10
+    float mDurationMs; // 0x14
+    unsigned short mDurationTicks; // 0x18
+    String mText; // 0x1c
+    bool mPhraseEnd; // 0x28
+    bool mUnpitchedPhrase; // 0x29
+    bool mUnpitchedNote; // 0x2a
+    bool mUnpitchedEasy; // 0x2b
+    bool mPitchRangeEnd; // 0x2c
+    unsigned char mPlayerMask; // 0x2d
+    bool mBends; // 0x2e
+    bool mLyricShift; // 0x2f
+    bool mAllowCombine; // 0x30
 };
 
 #endif
