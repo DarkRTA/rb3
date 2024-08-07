@@ -161,6 +161,7 @@
             "system/beatmatch/TrackType.cpp": "Matching",
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
+            "system/beatmatch/VocalNoteList.cpp": "NonMatching",
 
             "system/char/Char.cpp": "NonMatching",
             "system/char/Character.cpp": "NonMatching",

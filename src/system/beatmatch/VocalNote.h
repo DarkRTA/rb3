@@ -1,6 +1,9 @@
 #ifndef BEATMATCH_VOCALNOTE_H
 #define BEATMATCH_VOCALNOTE_H
 #include "utl/Str.h"
+#include "obj/Data.h"
+
+class SongData;
 
 class VocalNote {
 public:
@@ -46,6 +49,45 @@ public:
     bool mBends; // 0x2e
     bool mLyricShift; // 0x2f
     bool mAllowCombine; // 0x30
+};
+
+class VocalPhrase {
+public:
+    VocalPhrase();
+    VocalPhrase(const VocalPhrase&);
+
+    float unk0;
+    float unk4;
+    int unk8;
+    int unkc;
+    int unk10;
+    int unk14;
+    bool unk18;
+    bool unk19;
+    bool unk1a;
+    int unk1c;
+    float unk20;
+    float unk24;
+    float unk28;
+    bool unk2c;
+    bool unk2d;
+    float unk30;
+    float unk34;
+};
+
+class VocalNoteList {
+public:
+    VocalNoteList(SongData*);
+
+    std::vector<int> mPhrases; // 0x0
+    std::vector<int> mLyricPhrases; // 0x8
+    std::vector<int> mNotes; // 0x10
+    std::vector<int> mTambourineGems; // 0x18
+    std::vector<int> mFreestyleSections; // 0x20
+    Symbol mTrackName; // 0x28
+    SongData* mSongData; // 0x2c
+    DataArray* mFreestyleMinDuration; // 0x30
+    DataArray* mFreestylePad; // 0x34
 };
 
 #endif
