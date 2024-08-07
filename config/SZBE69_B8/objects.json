@@ -418,7 +418,10 @@
             "system/rndwii/Mesh.cpp": "NonMatching",
             "system/rndwii/Rnd.cpp": "NonMatching",
 
-            "system/synth/ADSR.cpp": "NonMatching",
+            "system/synth/ADSR.cpp": {
+                "status": "LinkIssues",
+                "comment": "Mysterious 60.0f rodata"
+            },
             "system/synth/BinkClip.cpp": "Matching",
             "system/synth/BinkReader.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
