@@ -3,6 +3,7 @@
 #include "utl/Str.h"
 #include "obj/Data.h"
 #include "utl/MBT.h"
+#include "utl/TempoMap.h"
 
 class VocalNote {
 public:
@@ -83,7 +84,7 @@ public:
     float unk34;
 };
 
-#include "beatmatch/SongData.h"
+class SongData;
 
 class VocalNoteList {
 public:
@@ -94,10 +95,9 @@ public:
     void AddNote(const VocalNote&);
     void NotesDone(const TempoMap&, bool);
     void AddTambourineGem(int);
+    void SetFreestyleSections(const std::vector<std::pair<float, float> >&);
 
-    const char* PrintTick(int tick) const {
-        return TickFormat(tick, *mSongData->GetMeasureMap());
-    }
+    const char* PrintTick(int tick) const ;
 
     std::vector<VocalPhrase> mPhrases; // 0x0
     std::vector<VocalPhrase> mLyricPhrases; // 0x8
