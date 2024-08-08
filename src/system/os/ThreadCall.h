@@ -1,5 +1,5 @@
-#ifndef OS_THREADCALLWII_H
-#define OS_THREADCALLWII_H
+#ifndef OS_THREADCALL_H
+#define OS_THREADCALL_H
 
 class ThreadCallback;
 
@@ -10,4 +10,4 @@ void ThreadCall(int(*)(void), void (*)(int));
 void ThreadCall(ThreadCallback*);
 void ThreadCallPoll();
 
-#endif // OS_THREADCALLWII_H
+#endif // OS_THREADCALL_H

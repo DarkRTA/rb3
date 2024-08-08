@@ -1,6 +1,6 @@
 #ifndef OS_SYNCHRONIZATIONEVENT_H
 #define OS_SYNCHRONIZATIONEVENT_H
-#include <revolution/os.h>
+#include <revolution/OS.h>
 
 class SynchronizationEvent {
 public:

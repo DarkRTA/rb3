@@ -4,15 +4,17 @@
 void ProfilePicture::Update(){
 
     switch(mState){
-        case kComplete:
+        case kComplete: {
             OnlineID id;
             ThePlatformMgr.GetOnlineID(mPadNum, &id);
             if(id == mUserID) return;
             mUserID = id;
-        case kIdle:
+        }
+        case kIdle: {
             mState = kFetchingUserData;
             FetchUserData();
             break;
+        }
         default: break;
     }
 }

@@ -31,7 +31,8 @@ public:
     virtual float GetTimeInLoop(float);
 
     bool AddTempoInfoPoint(int, int);
-    TempoInfoPoint* PointForTick(float) const;
+    const TempoInfoPoint* PointForTick(float) const;
+    const TempoInfoPoint* PointForTime(float) const;
     static bool CompareTick(float, const TempoInfoPoint&);
     static bool CompareTime(float, const TempoInfoPoint&);
 

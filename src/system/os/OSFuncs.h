@@ -1,6 +1,6 @@
 #ifndef OS_OSFUNCS_H
 #define OS_OSFUNCS_H
-#include <revolution/os.h>
+#include <revolution/OS.h>
 
 extern OSThread* gMainThreadID;
 

@@ -6,6 +6,8 @@
 #include "obj/DataFile.h"
 #include "utl/Symbols.h"
 
+#include <algorithm>
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(Automator)
@@ -124,6 +126,29 @@ void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
             mLoadTimer.Restart();
         }
     }
+}
+
+UIResource* UIManager::FindResource(const DataArray* array) {
+    if (!array) {
+        return nullptr;
+    }
+
+    DataArray* fileArray = array->FindArray(resource_file, false);
+    if (fileArray) {
+        FilePath path(FileGetPath(fileArray->mFile.Str(), nullptr), fileArray->Str(1));
+
+        std::pair<UIResource**, UIResource**> asdf = std::equal_range(
+            mResources.begin(),
+            mResources.end(),
+            path.c_str(), UIResource::Compare()
+        );
+
+        if (asdf.first != asdf.second) {
+            return *asdf.first;
+        }
+    }
+
+    return nullptr;
 }
 
 #pragma push

@@ -128,7 +128,7 @@ public:
     UIComponent* FocusComponent();
     UIResource* Resource(const UIComponent*);
     void InitResources(Symbol);
-    void FindResource(const DataArray*);
+    UIResource* FindResource(const DataArray*);
     void UseJoypad(bool, bool);
     bool OverloadHorizontalNav(JoypadAction, JoypadButton, Symbol) const;
     bool RequireFixedText() const;

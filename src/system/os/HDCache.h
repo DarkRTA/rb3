@@ -5,7 +5,7 @@
 #include "utl/FileStream.h"
 #include "utl/MemStream.h"
 #include <vector>
-#include <revolution/os.h>
+#include <revolution/OS.h>
 
 class HDCache {
 public:

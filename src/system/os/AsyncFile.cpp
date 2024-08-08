@@ -5,7 +5,6 @@
 #include "utl/Loader.h"
 #include "os/System.h"
 #include "os/Archive.h"
-#include "os/File_Wii.h"
 
 static int gBufferSize = 0x20000;
 
@@ -170,7 +169,7 @@ bool AsyncFile::WriteAsync(const void* v, int i){
                     if(mSize < mTell) mSize = mTell;
                     goto okthen;
                 }
-                
+
             } while(!mFail);
             return false;
         }

@@ -1,7 +1,6 @@
-#include "os/File_Wii.h"
+#include "os/File.h"
 #include "os/Archive.h"
 #include "os/Debug.h"
-#include "os/File.h"
 #include "os/HolmesClient.h"
 #include "os/System.h"
 #include "revolution/dvd/dvd.h"

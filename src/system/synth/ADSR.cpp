@@ -106,15 +106,18 @@ static int FindNearestInTable(const float* table, int tableSize, float val) {
     MILO_ASSERT(val >= 0.0f, 139);
 
     const float* end;
-    for(end = &table[tableSize]; table[-1] <= 0.0f; end--);
+    for(end = &table[tableSize]; end[-1] <= 0.0f; end--);
+
     const float* lbound = std::lower_bound(table, end, val);
-    if(lbound == table) return 0;
-    else if(lbound == end){
-
+    if(lbound == table) {
+        return 0;
     }
-    else {
 
+    if(lbound == end || (val - lbound[-1]) < (lbound[0] - val)){
+        return (lbound - table) - 1;
     }
+
+    return (lbound - table);
 }
 
 // int FindNearestInTable(float *param_1,int param_2,float param_3)
@@ -127,7 +130,7 @@ static int FindNearestInTable(const float* table, int tableSize, float val) {
 //   float *pfVar5;
 //   float local_18;
 //   undefined local_14 [12];
-  
+
 //   local_18 = param_3;
 //   if (param_3 < 0.0) {
 //     pcVar2 = MakeString(kAssertStr,&@stringBase0,0x108,s_val_>=_0.0f_80c2c7d3);
