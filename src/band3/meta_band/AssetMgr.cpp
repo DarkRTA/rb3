@@ -1,6 +1,9 @@
 #include "AssetMgr.h"
 
+#include <algorithm>
+#include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
+#include "system/obj/Utl.h"
 
 AssetMgr::AssetMgr() {
     AddAssets();
@@ -33,12 +36,25 @@ AssetMgr* AssetMgr::GetAssetMgr() {
     return TheAssetMgr;
 }
 
-Asset* AssetMgr::GetAsset(Symbol name) const {
-    for (std::set<Asset*>::const_iterator it = m_2.begin(); it != m_2.end(); it++) {
-        Asset* asset = *it;
+bool search(Asset* a) {
+    return false;
+}
 
-    }
+Asset* AssetMgr::GetAsset(Symbol name) const {
+    std::map<Symbol, Asset*>::const_iterator asset = mAssets.find(name);
+    if (asset != mAssets.end()) {
+        return asset->second;
+    }  
     return NULL;
+    // m_1.find(name);
+
+    // for (std::set<Asset*>::const_iterator it = m_2.begin(); it != m_2.end(); it++) {
+    //     Asset* asset = *it;
+    //     if (asset->mName == name) {
+    //         return asset;
+    //     }
+    // }
+    // return NULL;
 }
 
 bool AssetMgr::HasAsset(Symbol asset) const {
@@ -83,16 +99,41 @@ AssetType AssetMgr::GetTypeFromName(Symbol name) const {
     return (AssetType)pAsset->mType;
 }
 
-void AssetMgr::GetEyebrows(std::vector<Symbol>&, Symbol) const {
+void AssetMgr::GetEyebrows(std::vector<Symbol>& eyebrows, Symbol symbol) const {
+    AssetGender gender = GetAssetGenderFromSymbol(symbol);
 
+    std::map<Symbol, Asset*>::const_iterator it = mAssets.begin();
+    while (it != mAssets.end()) {
+        Asset* pAsset = it->second;
+        MILO_ASSERT(pAsset, 0xaf);
+        if (pAsset->mType == 5 && pAsset->mGender == gender) {
+            eyebrows.push_back(pAsset->mName);
+        }
+        it++;
+    }
+    std::sort(eyebrows.begin(), eyebrows.end());
 }
 
-void AssetMgr::GetEyebrowsCount(Symbol) const {
-
+int AssetMgr::GetEyebrowsCount(Symbol symbol) const {
+    std::vector<Symbol> eyebrows;
+    GetEyebrows(eyebrows, symbol);
+    return eyebrows.size();
 }
 
-void AssetMgr::StripFinish(Symbol) {
-
+Symbol AssetMgr::StripFinish(Symbol symbol) {
+    Asset* pAsset = GetAsset(symbol);
+    
+    if (pAsset == NULL) {
+        String string = symbol;
+        std::vector<String> subStrings;
+        string.split("_", subStrings);
+        Symbol s = Symbol(subStrings[0].c_str());
+        pAsset = GetAsset(s);
+        MILO_ASSERT(pAsset, 0xd9);
+        return s;
+    }
+    
+    return symbol;
 }
 
 void AssetMgr::ConfigureAssetTypeToIconPathMap() {
@@ -109,12 +150,45 @@ void AssetMgr::AddAssets() {
     }
 }
 
-void AssetMgr::VerifyAssets(const char*) {
-
+void AssetMgr::VerifyAssets(const char* param1) {
+    VerifyAssets(param1, gNullStr);
+    VerifyAssets(param1, "male");
+    VerifyAssets(param1, "female");
 }
 
-void AssetMgr::VerifyAssets(const char*, const char*) {
+void AssetMgr::VerifyAssets(const char* param1, const char* param2) {
+    String dir = MakeString("char/main/%s", param1);
+    if (param2 != gNullStr) {
+        dir += MakeString("/%s");
+    }
 
+    if (!UsingCD()) {
+        dir += "/*.milo";
+    } else {
+        dir += "/gen/*.milo_wii";
+    }
+
+    // MakeFileList(); param1 is DataArray* -> Char*
+    DataArray* pFiles = new DataArray(0); // temp
+
+    MILO_ASSERT(pFiles, 0x152);
+
+    if (1 < pFiles->Size()) {
+        for (int i = 1; i < pFiles->Size(); i++) {
+            Symbol s = pFiles->Sym(i);
+
+            if (s != "female_torso_naked" 
+                && s != "male_legs_naked" 
+                && s != "female_legs_naked" 
+                && s != "male_feet_naked" 
+                && s != "female_feet_naked") {
+
+                // if (mTest.find(s) == mTest.end()) {
+                //     TheDebug.Notify(MakeString("(%s/%s.milo) needs an entry in ui/customize/assets", param1, param2));
+                // }
+            }
+        }
+    }
 }
 
 

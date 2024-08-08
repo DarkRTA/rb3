@@ -1,12 +1,13 @@
 #ifndef METABAND_PROFILEASSETS_H
 #define METABAND_PROFILEASSETS_H
 
-#include "BandProfile.h"
 #include "system/utl/Symbol.h"
 #include "AssetTypes.h"
 #include "system/meta/FixedSizeSaveableStream.h"
 #include "system/meta/FixedSizeSaveable.h"
 #include <set>
+
+class BandProfile;
 
 class ProfileAssets : public FixedSizeSaveable {
 public:

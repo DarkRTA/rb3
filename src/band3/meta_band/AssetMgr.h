@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <set>
+#include <map>
 #include "system/utl/Symbol.h"
 #include "system/obj/Object.h"
 #include "AssetTypes.h"
@@ -21,8 +22,8 @@ public:
     bool HasAsset(Symbol) const;
     AssetType GetTypeFromName(Symbol) const;
     void GetEyebrows(std::vector<Symbol>&, Symbol) const;
-    void GetEyebrowsCount(Symbol) const;
-    void StripFinish(Symbol);
+    int GetEyebrowsCount(Symbol) const;
+    Symbol StripFinish(Symbol);
     void ConfigureAssetTypeToIconPathMap();
     void AddAssets();
     void VerifyAssets(const char*);
@@ -30,10 +31,8 @@ public:
     void EquipAsset(BandCharDesc*, Symbol);
     void EquipAssets(LocalBandUser*, const std::vector<Symbol>&);
 
-private:
-    std::set<int> m_1;      
-    public:
-    std::set<Asset*> m_2;  
+public:  
+    std::map<Symbol, Asset*> mAssets;  
 };
 
 static AssetMgr* TheAssetMgr;

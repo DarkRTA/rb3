@@ -5,6 +5,7 @@
 #include "game/Defines.h"
 #include <vector>
 #include "StandIn.h"
+#include "ProfileAssets.h"
 
 class TourCharLocal;
 class PatchDir;
@@ -131,11 +132,17 @@ private:
 
     // something involving performance data 0x6f70
     // 0x6f74
+
+ 
+
+public:
+    ProfileAssets* mProfileAssets; // 0x6f78
+
     // upload friends token 0x6fb4
     // hardcore icon level 0x6fb8
     // profile picture 0x6fbc
     // tour band 0x6fc0
- 
+
 };
 
 #endif // METABAND_BANDPROFILE_H

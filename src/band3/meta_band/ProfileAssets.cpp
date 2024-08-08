@@ -59,9 +59,12 @@ bool ProfileAssets::IsNew(Symbol name) const {
 }
 
 void ProfileAssets::SetOld(Symbol name) {
-    mNewAssets.erase(name);
-    MILO_ASSERT(mParentProfile, 0x66);
-    mParentProfile->MakeDirty();
+    std::set<Symbol>::iterator it = mNewAssets.find(name);
+    if (it != mNewAssets.end()) {
+        mNewAssets.erase(it);
+        MILO_ASSERT(mParentProfile, 0x66);
+        mParentProfile->MakeDirty();
+    }
 }
 
 void ProfileAssets::GetNewAssets(std::vector<Symbol>& assets, AssetGender gender) const {

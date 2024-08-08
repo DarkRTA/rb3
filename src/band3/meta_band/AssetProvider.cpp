@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "system/rndwii/Rnd.h"
 #include "AccomplishmentManager.h"
+#include "system/ui/UIComponent.h"
 
 AssetProvider::AssetProvider(BandProfile* profile, AssetGender gender) : mProfile(profile), mGender(gender) {
     MILO_ASSERT(mProfile, 0x1d);
@@ -37,20 +38,35 @@ void AssetProvider::Update(AssetType, AssetBoutique) {
 
     std::vector<Symbol> symbols;
 
-    for (std::set<Asset*>::const_iterator it = pAssetMgr->m_2.begin(); it != pAssetMgr->m_2.end(); it++) {
-        Asset* pAsset = *it;
+    for (std::map<Symbol, Asset*>::const_iterator it = pAssetMgr->mAssets.begin(); it != pAssetMgr->mAssets.end(); it++) {
+        Asset* pAsset = it->second;
         MILO_ASSERT(pAsset, 0x46);
     }
     
     std::sort(symbols.begin(), symbols.end());
 }
 
-UIComponent::State AssetProvider::ComponentStateOverride(int, int, UIComponent::State) const {
-    
+UIComponent::State AssetProvider::ComponentStateOverride(int param_1, int param_2, UIComponent::State param_3) const {
+    Symbol s; // TODO: Get symbol from profile, don't know which method is being used
+    bool hasAsset = mProfile->mProfileAssets->HasAsset(s);
+
+    if (!hasAsset) {
+        param_3 = UIComponent::kDisabled;
+    }
+
+    return param_3;
 }
 
-void AssetProvider::Text(int, int, UIListLabel*, UILabel*) const {
+void AssetProvider::Text(int, int, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(slot, 200);
+    MILO_ASSERT(label, 0xc9);
 
+    ProfileAssets* profileAssets = mProfile->mProfileAssets;
+    
+    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    MILO_ASSERT(pAssetMgr, 0xd0);
+
+    
 }
 
 RndMat* AssetProvider::Mat(int, int, UIListMesh*) const {
