@@ -150,6 +150,7 @@
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/PhraseAnalyzer.cpp": "NonMatching",
+            "system/beatmatch/PhraseDB.cpp": "Matching",
             "system/beatmatch/PhraseList.cpp": "NonMatching",
             "system/beatmatch/Playback.cpp": "NonMatching",
             "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",

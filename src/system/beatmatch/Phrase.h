@@ -83,4 +83,15 @@ public:
     std::vector<PhraseList*> mPhraseLists; // 0x0
 };
 
+class PhraseDB {
+public:
+    PhraseDB(int);
+    ~PhraseDB();
+    void Clear();
+    void AddPhrase(BeatmatchPhraseType, int, float, int, float, int);
+    const PhraseList& GetPhraseList(int, BeatmatchPhraseType) const;
+
+    std::vector<PhraseListCollection*> mPhraseListCollections; // 0x0
+};
+
 #endif
