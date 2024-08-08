@@ -151,7 +151,7 @@
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/PhraseAnalyzer.cpp": "NonMatching",
             "system/beatmatch/PhraseDB.cpp": "Matching",
-            "system/beatmatch/PhraseList.cpp": "NonMatching",
+            "system/beatmatch/PhraseList.cpp": "Matching",
             "system/beatmatch/Playback.cpp": "NonMatching",
             "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
