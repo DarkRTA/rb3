@@ -194,9 +194,6 @@ static int FindNearestInTable(const float* table, int tableSize, float val) {
     return (lbound - table);
 }
 
-DECOMP_FORCEACTIVE(ADSR, "( 0) <= (ar) && (ar) <= ( 60.0f)", "( 0) <= (dr) && (dr) <= ( 60.0f)",
-    "( 0) <= (sr) && (sr) <= ( 60.0f)", "( 0.0f) <= (sl) && (sl) <= ( 1.0f)", "( 0) <= (rr) && (rr) <= ( 60.0f)", "0")
-
 int Ps2ADSR::NearestAttackRate(float f) const {
     const float* table;
     int size;
@@ -209,7 +206,7 @@ int Ps2ADSR::NearestAttackRate(float f) const {
         table = gExpInc;
         size = 0x80;
     }
-    
+
     return FindNearestInTable(table, size, f);
 }
 
@@ -257,6 +254,16 @@ ADSR::ADSR() : mAttackRate(0.001f), mDecayRate(0.0001f), mSustainRate(0.001f), m
     mAttackMode(Ps2ADSR::kAttackExp), mSustainMode(Ps2ADSR::kSustainLinInc), mReleaseMode(Ps2ADSR::kReleaseLinear), mPacked(), mSynced(0) {
 
 }
+
+DECOMP_FORCELITERAL(ADSR, 60.0f)
+DECOMP_FORCEACTIVE(ADSR,
+    "( 0) <= (ar) && (ar) <= ( 60.0f)",
+    "( 0) <= (dr) && (dr) <= ( 60.0f)",
+    "( 0) <= (sr) && (sr) <= ( 60.0f)",
+    "( 0.0f) <= (sl) && (sl) <= ( 1.0f)",
+    "( 0) <= (rr) && (rr) <= ( 60.0f)",
+    "0"
+)
 
 float ADSR::GetAttackRate() const { return mAttackRate; }
 float ADSR::GetReleaseRate() const { return mReleaseRate; }
