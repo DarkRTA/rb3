@@ -136,6 +136,7 @@
             "system/beatmatch/BeatMatchUtl.cpp": "Matching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
             "system/beatmatch/DrumPlayer.cpp": "Matching",
+            "system/beatmatch/DrumTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/FillInfo.cpp": "NonMatching",
             "system/beatmatch/GameGem.cpp": "Matching",
             "system/beatmatch/GameGemDB.cpp": "Matching",

@@ -16,7 +16,8 @@ public:
     virtual void JumpHook(float);
     virtual int NextGemAfter(int, bool);
     
-
+    int mNextKickGemToAutoplay; // 0xc0
+    unsigned int mGameCymbalLanes; // 0xc4
 
 };
 

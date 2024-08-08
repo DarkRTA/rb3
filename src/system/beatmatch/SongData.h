@@ -104,6 +104,7 @@ public:
     void SetUpTrackDifficulties(PlayerTrackConfigList*);
     void UpdatePlayerTrackConfigList(PlayerTrackConfigList*);
     void ComputeVocalRangeData();
+    unsigned int GetGameCymbalLanes() const;
 
     GameGemList* GetGemList(int);
 

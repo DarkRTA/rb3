@@ -143,36 +143,36 @@ public:
     bool mSucceeding;
     bool mEnabled;
     std::vector<BeatMatchSink*> mSinks;
-    SongData* mSongData;
-    bool mTrillSucceeding;
-    int mTrillNextSlot;
-    float mTrillLastFretMs;
-    float mTrillIntervalMs;
-    DataArray* mRollIntervalsConfig;
-    int mTrack;
-    bool mButtonMashingMode;
-    int mLastGemPassed;
-    int mLastGemSeen;
-    float mLastMiss;
-    bool mCheating;
-    bool mAutoplayCoda;
-    int mCheatError;
-    int mNextCheatError;
-    float mLastCheatCodaSwing;
-    int mNextGemToAutoplay;
-    float mAutoplayAccuracy;
-    int mCymbalAutoplayMs;
-    GemHitFlags mLastPlayedHitFlags;
-    bool mPitchBendReady;
-    int mPitchBendRange;
-    int mPitchBendMsToFull;
-    float mPitchBendMsHit;
-    float mBiggestWhammy;
-    std::vector<float> mRollSlotsLastSwingMs;
-    int mRollActiveSlots;
-    float mRollIntervalMs;
-    int mRollEndTick;
-    DataArray* mTrillIntervalsConfig;
+    SongData* mSongData; // 0x48
+    bool mTrillSucceeding; // 0x4c
+    int mTrillNextSlot; // 0x50
+    float mTrillLastFretMs; // 0x54
+    float mTrillIntervalMs; // 0x58
+    DataArray* mRollIntervalsConfig; // 0x5c
+    int mTrack; // 0x60
+    bool mButtonMashingMode; // 0x64
+    int mLastGemPassed; // 0x68
+    int mLastGemSeen; // 0x6c
+    float mLastMiss; // 0x70
+    bool mCheating; // 0x74
+    bool mAutoplayCoda; // 0x75
+    int mCheatError; // 0x78
+    int mNextCheatError; // 0x7c
+    float mLastCheatCodaSwing; // 0x80
+    int mNextGemToAutoplay; // 0x84
+    float mAutoplayAccuracy; // 0x88
+    int mCymbalAutoplayMs; // 0x8c
+    GemHitFlags mLastPlayedHitFlags; // 0x90
+    bool mPitchBendReady; // 0x94
+    int mPitchBendRange; // 0x98
+    int mPitchBendMsToFull; // 0x9c
+    float mPitchBendMsHit; // 0xa0
+    float mBiggestWhammy; // 0xa4
+    std::vector<float> mRollSlotsLastSwingMs; // 0xa8
+    int mRollActiveSlots; // 0xb0
+    float mRollIntervalMs; // 0xb4
+    int mRollEndTick; // 0xb8
+    DataArray* mTrillIntervalsConfig; // 0xbc
 
 };
 
