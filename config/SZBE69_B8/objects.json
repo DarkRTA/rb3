@@ -148,6 +148,7 @@
             "system/beatmatch/KeyboardController.cpp": "Matching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
+            "system/beatmatch/PhraseAnalyzer.cpp": "NonMatching",
             "system/beatmatch/Playback.cpp": "NonMatching",
             "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
