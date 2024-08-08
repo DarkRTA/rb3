@@ -65,6 +65,7 @@ public:
 
 class PhraseList {
 public:
+    PhraseList(){}
     void Clear();
     void AddPhrase(float, int, float, int);
     bool IsTickInPhrase(int) const;
@@ -79,7 +80,7 @@ public:
     void Clear();
     void AddPhrase(BeatmatchPhraseType, float, int, float, int);
 
-    std::vector<PhraseList> mPhraseLists; // 0x0
+    std::vector<PhraseList*> mPhraseLists; // 0x0
 };
 
 #endif
