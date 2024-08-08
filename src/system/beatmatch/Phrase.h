@@ -3,18 +3,23 @@
 #include <vector>
 #include "utl/Str.h"
 #include "beatmatch/TrackType.h"
+#include "beatmatch/InternalSongParserSink.h"
 
 struct Phrase {
-    float mMs;
-    float mDurationMs;
-    int mTick;
-    int mDurationTicks;
+    Phrase(float ms, float durms, int tick, int durticks) : mMs(ms), mDurationMs(durms), mTick(tick), mDurationTicks(durticks) {}
+
+    float GetMs() const { return mMs; }
+    int GetTick() const { return mTick; }
+    int GetDurationTicks() const { return mDurationTicks; }
+
+    float mMs; // 0x0
+    float mDurationMs; // 0x4
+    int mTick; // 0x8
+    int mDurationTicks; // 0xc
 };
 
 struct RawPhrase {
-    RawPhrase(int trk, TrackType type, int start, int end, int ind, int the_id) : track(trk), track_type(type), start_tick(start), end_tick(end), independent(ind), id(the_id) {
-
-    }
+    RawPhrase(int trk, TrackType type, int start, int end, int ind, int the_id) : track(trk), track_type(type), start_tick(start), end_tick(end), independent(ind), id(the_id) {}
     
     int track; // 0x0
     TrackType track_type; // 0x4
@@ -56,6 +61,25 @@ public:
     class SongData* mSongData; // 0x18
     String mSong; // 0x1c
     bool mNotify; // 0x28
+};
+
+class PhraseList {
+public:
+    void Clear();
+    void AddPhrase(float, int, float, int);
+    bool IsTickInPhrase(int) const;
+
+    std::vector<Phrase> mPhrases; // 0x0
+};
+
+class PhraseListCollection {
+public:
+    PhraseListCollection();
+    ~PhraseListCollection();
+    void Clear();
+    void AddPhrase(BeatmatchPhraseType, float, int, float, int);
+
+    std::vector<PhraseList> mPhraseLists; // 0x0
 };
 
 #endif
