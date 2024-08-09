@@ -15,6 +15,10 @@ public:
     virtual void PollHook(float);
     virtual void JumpHook(float);
     virtual int NextGemAfter(int, bool);
+
+    int RelevantGem(int, int, int);
+    bool CheckCymbal(const GameGem&, GemHitFlags) const;
+    void CheckForKickAutoplay(float);
     
     int mNextKickGemToAutoplay; // 0xc0
     unsigned int mGameCymbalLanes; // 0xc4

@@ -130,19 +130,19 @@ public:
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
 
-    UserGuid mUserGuid;
-    bool mIsLocalUser;
-    int mPlayerSlot;
-    GameGemList* mGemList;
-    TrackWatcherParent* mParent;
-    float mSlop;
-    int mLastGemHit;
-    bool mIsCurrentTrack;
-    std::vector<GemInProgress> mGemsInProgress;
-    float mSyncOffset;
-    bool mSucceeding;
-    bool mEnabled;
-    std::vector<BeatMatchSink*> mSinks;
+    UserGuid mUserGuid; // 0x4
+    bool mIsLocalUser; // 0x14
+    int mPlayerSlot; // 0x18
+    GameGemList* mGemList; // 0x1c
+    TrackWatcherParent* mParent; // 0x20
+    float mSlop; // 0x24
+    int mLastGemHit; // 0x28
+    bool mIsCurrentTrack; // 0x2c
+    std::vector<GemInProgress> mGemsInProgress; // 0x30
+    float mSyncOffset; // 0x38
+    bool mSucceeding; // 0x3c
+    bool mEnabled; // 0x3d
+    std::vector<BeatMatchSink*> mSinks; // 0x40
     SongData* mSongData; // 0x48
     bool mTrillSucceeding; // 0x4c
     int mTrillNextSlot; // 0x50
