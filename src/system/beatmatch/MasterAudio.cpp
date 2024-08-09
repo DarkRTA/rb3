@@ -53,6 +53,9 @@ MasterAudio::MasterAudio(DataArray* da, int num_players, BeatMaster* master, Son
 }
 
 MasterAudio::~MasterAudio(){
+    for(std::vector<ChannelData*>::iterator it = mChannelData.begin(); it != mChannelData.end(); it++){
+        RELEASE(*it);
+    }
     RELEASE(mBackgroundFader);
     RELEASE(mBackgroundAttenFader);
     RELEASE(mMasterFader);
@@ -68,4 +71,73 @@ MasterAudio::~MasterAudio(){
     RELEASE(mBaseCrowdFader);
     RELEASE(mSubmixes);
     RELEASE(mPitchMucker);
+}
+
+ChannelData::ChannelData(Stream* stream, int chan, float vol, float pan, FXCore core) : mStream(stream), mChannel(chan), mSlipTrack(0), mIsTrackChannel(0),
+    mPan(pan), mOriginalPan(pan), mCore(core), mOverallSpeed(1.0f), mSpeed(1.0f), mDirty(0), mVolume(vol) {
+    mBaseFader = stream->ChannelFaders(chan)->AddLocal("base");
+    mBaseFader->SetVal(vol);
+    stream->SetPan(chan, mPan);
+    stream->SetFXCore(chan, mCore);
+}
+
+ChannelData::~ChannelData(){
+    RELEASE(mSlipTrack);
+}
+
+void ChannelData::SetSlippable(bool b){
+    if(b){
+        if(!mSlipTrack){
+            mSlipTrack = new SlipTrack(mStream, mChannel);
+        }
+    }
+    else if(mSlipTrack) RELEASE(mSlipTrack);
+}
+
+void ChannelData::ForceOn(){
+    if(mSlipTrack) mSlipTrack->ForceOn();
+}
+
+void ChannelData::Reset(bool b){
+    if(mOverallSpeed != 1.0f || mDirty || b){
+        mSlipTrack->SetOffset(0);
+        SetSlipTrackSpeed(1.0f);
+        mDirty = false;
+    }
+}
+
+void ChannelData::Poll(){
+    if(mSlipTrack) mSlipTrack->Poll();
+}
+
+void ChannelData::SetSlipTrackSpeed(float f){
+    if(mSlipTrack){
+        if(mSlipTrack->mMaxSlip * 0.9f < __fabs(mSlipTrack->GetCurrentOffset())){
+            f = 1.0f;
+        }
+        if(mSpeed != f || mOverallSpeed != 1.0f){
+            mSlipTrack->SetSpeed(f * mOverallSpeed);
+            mSpeed = f;
+            mDirty = true;
+        }
+    }
+}
+
+void ChannelData::SetFX(FXCore core, bool b){
+    if(mCore == core){
+        mStream->SetFX(mChannel, b);
+    }
+}
+
+void ChannelData::SetStereo(bool b){
+    mStream->SetPan(mChannel, b ? mPan : 0);
+}
+
+void ChannelData::SetFaderVal(float val){
+    mBaseFader->SetVal(val);
+}
+
+void ChannelData::SetPan(float pan){
+    mPan = pan;
+    mStream->SetPan(mChannel, mPan);
 }

@@ -10,6 +10,36 @@
 #include "beatmatch/Submix.h"
 #include "obj/Object.h"
 #include "synth/Faders.h"
+#include "synth/Stream.h"
+#include "synth/SlipTrack.h"
+
+class ChannelData {
+public:
+    ChannelData(Stream*, int, float, float, FXCore);
+    ~ChannelData();
+    void SetSlippable(bool);
+    void ForceOn();
+    void Reset(bool);
+    void SetSlipTrackSpeed(float);
+    void Poll();
+    void SetFX(FXCore, bool);
+    void SetStereo(bool);
+    void SetFaderVal(float);
+    void SetPan(float);
+
+    Stream* mStream; // 0x0
+    int mChannel; // 0x4
+    SlipTrack* mSlipTrack; // 0x8
+    Fader* mBaseFader; // 0xc
+    bool mIsTrackChannel; // 0x10
+    float mPan; // 0x14
+    float mOriginalPan; // 0x18
+    FXCore mCore; // 0x1c
+    float mOverallSpeed; // 0x20
+    float mSpeed; // 0x24
+    bool mDirty; // 0x28
+    float mVolume; // 0x2c
+};
 
 class TrackDataCollection {
 public:
@@ -21,8 +51,8 @@ class MasterAudio : public BeatMasterSink, public BeatMatchSink, public Hmx::Obj
 public:
     MasterAudio(DataArray*, int, BeatMaster*, SongData*);
     virtual ~MasterAudio();
-    virtual void Beat(int, int);
-    virtual void UpdateSongPos(const SongPos&);
+    virtual void Beat(int, int){}
+    virtual void UpdateSongPos(const SongPos&){}
     virtual void HandleSubmix(int, const char*);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool IsReady();
@@ -36,25 +66,25 @@ public:
     virtual void Hit(int, float, int, unsigned int, GemHitFlags);
     virtual void ReleaseGem(int, float, int, float);
     virtual void Miss(int, int, float, int, int, GemHitFlags);
-    virtual void SpuriousMiss(int, int, float, int);
+    virtual void SpuriousMiss(int, int, float, int){}
     virtual void Pass(int, float, int, bool);
     virtual void Ignore(int, float, int, const UserGuid&);
     virtual void ImplicitGem(int, float, int, const UserGuid&);
     virtual void SeeGem(int, float, int);
     virtual void FillSwing(int, int, int, int, bool);
     virtual void SetTrack(const UserGuid&, int);
-    virtual void Swing(int, int, float, bool, bool);
-    virtual void FretButtonDown(int, float);
-    virtual void FretButtonUp(int, float);
-    virtual void MercurySwitch(bool, float);
+    virtual void Swing(int, int, float, bool, bool){}
+    virtual void FretButtonDown(int, float){}
+    virtual void FretButtonUp(int, float){}
+    virtual void MercurySwitch(bool, float){}
     virtual void WhammyBar(float){}
-    virtual void FilteredWhammyBar(float);
-    virtual void SwingAtHopo(int, float, int);
-    virtual void Hopo(int, float, int);
-    virtual void SetCurrentPhrase(int, const PhraseInfo&);
-    virtual void NoCurrentPhrase(int);
-    virtual void FillReset();
-    virtual void FillComplete(int, int);
+    virtual void FilteredWhammyBar(float){}
+    virtual void SwingAtHopo(int, float, int){}
+    virtual void Hopo(int, float, int){}
+    virtual void SetCurrentPhrase(int, const PhraseInfo&){}
+    virtual void NoCurrentPhrase(int){}
+    virtual void FillReset(){}
+    virtual void FillComplete(int, int){}
 
     int mNumPlayers; // 0x28
     int mSongStream; // 0x2c
@@ -74,7 +104,7 @@ public:
     Fader* mCrowdFader; // 0x64
     Fader* mBaseCrowdFader; // 0x68
     SubmixCollection* mSubmixes; // 0x6c
-    std::vector<int> mChannelData; // 0x70
+    std::vector<ChannelData*> mChannelData; // 0x70
     TrackDataCollection mTrackData; // 0x78
     bool mPlayingInCommon; // 0x80
     float mMultiplayerStereoScale; // 0x84
