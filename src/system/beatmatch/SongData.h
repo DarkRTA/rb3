@@ -107,6 +107,7 @@ public:
     unsigned int GetGameCymbalLanes() const;
 
     GameGemList* GetGemList(int);
+    AudioTrackNum GetAudioTrackNum(int) const;
 
     int unkc; // 0xc
     int unk10; // 0x10

@@ -12,6 +12,7 @@
 #include "synth/Faders.h"
 #include "synth/Stream.h"
 #include "synth/SlipTrack.h"
+#include "beatmatch/SlotChannelMapping.h"
 
 class ChannelData {
 public:
@@ -41,10 +42,41 @@ public:
     float mVolume; // 0x2c
 };
 
+class TrackData {
+public:
+    TrackData();
+    TrackData(SubmixCollection*, const std::vector<int>&, bool, bool);
+    ~TrackData();
+    void Init(SubmixCollection*, bool);
+    void SetMapping(const std::vector<int>&);
+    void SetSucceeding(bool, int, float);
+    void SetMapping(const char*);
+    void FillChannelList(std::list<int>&) const;
+    void Reset();
+
+    bool mSucceeding; // 0x0
+    std::vector<int> mSucceedingVec; // 0x4 - needs to be bool but errors out for some reason
+    std::vector<float> mLastGemTimes; // 0xc
+    bool mMultiSlot; // 0x14
+    int mLastPlayedGem; // 0x18
+    SlotChannelMapping* mChannelMapping; // 0x1c
+    SubmixCollection* mSubmixes; // 0x20
+    UserGuid mUserGuid; // 0x24
+    bool mIndieSlots; // 0x34
+    bool mNonmutable; // 0x35
+    bool mButtonMashingMode; // 0x36
+    float mLastMashTime; // 0x38
+    bool mInFill; // 0x3c
+    bool mAutoOn; // 0x3d
+    bool mVocals; // 0x3e
+    std::vector<int> mOriginalChannels; // 0x40
+    float unk48; // 0x48
+};
+
 class TrackDataCollection {
 public:
     TrackDataCollection(){}
-    std::vector<int> mTrackData; // 0x0
+    std::vector<TrackData*> mTrackData; // 0x0
 };
 
 class MasterAudio : public BeatMasterSink, public BeatMatchSink, public Hmx::Object, public HxAudio {
@@ -86,8 +118,25 @@ public:
     virtual void FillReset(){}
     virtual void FillComplete(int, int){}
 
+    void Load(SongInfo*, PlayerTrackConfigList*);
+    void SetupChannels(SongInfo*);
+    void SetupTracks(SongInfo*, PlayerTrackConfigList*);
+    bool IsLoaded();
+    void ResetTrack(int, bool);
+    void ResetTrack(AudioTrackNum, bool);
+    void SetAutoOn(AudioTrackNum, int);
+    void SetupTrackChannel(int, bool, float, bool, bool);
+    void SetupBackgroundChannel(int, bool, float, bool, bool);
+    void ConfigureVocalFaders(int, bool);
+    bool Fail();
+    bool IsFinished() const;
+    void Play();
+    void Jump(float);
+    void UnmuteAllTracks();
+    void ResetSlipTrack(AudioTrackNum, bool);
+
     int mNumPlayers; // 0x28
-    int mSongStream; // 0x2c
+    Stream* mSongStream; // 0x2c
     SongData* mSongData; // 0x30
     bool mStreamEnabled; // 0x34
     Fader* mMasterFader; // 0x38

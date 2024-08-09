@@ -1,4 +1,11 @@
 #include "beatmatch/MasterAudio.h"
+#include "synth/Synth.h"
+#include "utl/SongInfoCopy.h"
+#include "beatmatch/PlayerTrackConfig.h"
+
+namespace {
+    int kMaxSlots = 8;
+}
 
 MasterAudio::MasterAudio(DataArray* da, int num_players, BeatMaster* master, SongData* data) : mNumPlayers(num_players), mSongStream(0), mSongData(data), mStreamEnabled(0),
     mMasterFader(Hmx::Object::New<Fader>()), mForegroundFader(Hmx::Object::New<Fader>()), mMultiplayerFader(Hmx::Object::New<Fader>()),
@@ -56,6 +63,9 @@ MasterAudio::~MasterAudio(){
     for(std::vector<ChannelData*>::iterator it = mChannelData.begin(); it != mChannelData.end(); it++){
         RELEASE(*it);
     }
+    for(std::vector<TrackData*>::iterator it = mTrackData.mTrackData.begin(); it != mTrackData.mTrackData.end(); it++){
+        RELEASE(*it);
+    }
     RELEASE(mBackgroundFader);
     RELEASE(mBackgroundAttenFader);
     RELEASE(mMasterFader);
@@ -71,6 +81,132 @@ MasterAudio::~MasterAudio(){
     RELEASE(mBaseCrowdFader);
     RELEASE(mSubmixes);
     RELEASE(mPitchMucker);
+}
+
+void MasterAudio::Load(SongInfo* info, PlayerTrackConfigList* player_track_config_list){
+    MILO_ASSERT(mSongData, 0x186);
+    MILO_ASSERT(player_track_config_list, 0x187);
+    mSongStream = TheSynth->NewStream(info->GetBaseFileName(), 0, 0, false);
+    int count = 1;
+    mStreamEnabled = true;
+    mSongStream->Faders()->Add(mMasterFader);
+    float vol = info->GetMuteVolume();
+    mPassVolume = mMuteVolume = vol;
+    mVocalMuteVolume = info->GetVocalMuteVolume();
+
+    info->GetTracks(); // why tho
+
+    SetupChannels(info);
+    SetupTracks(info, player_track_config_list);
+    if(player_track_config_list->UseVocalHarmony()){
+        count = info->GetNumVocalParts();
+    }
+
+    for(int i = 1; i < count; i++){
+        mTrackData.mTrackData.push_back(new TrackData());
+    }
+}
+
+bool MasterAudio::IsLoaded(){
+    return mSongStream->IsReady();
+}
+
+void MasterAudio::SetupChannels(SongInfo* info){
+    info->GetTracks();
+    const std::vector<float>& pans = info->GetPans();
+    const std::vector<float>& vols = info->GetVols();
+    const std::vector<int>& cores = info->GetCores();
+    const std::vector<int>& crowd_channels = info->GetCrowdChannels();
+    MILO_ASSERT(pans.size() == vols.size(), 0x1BE);
+    MILO_ASSERT(cores.size() == vols.size(), 0x1BF);
+    
+    int i9 = 0;
+    for(int i = 0; i < vols.size(); i++){
+        if(!info->IsPlayTrackChannel(i)){
+
+        }
+        float voltouse = vols[i];
+        if(voltouse < -40.0f){
+            i9++;
+            if(3 < i9) voltouse = -40.0f;
+        }
+        mChannelData.push_back(new ChannelData(mSongStream, i, voltouse, (float)pans[i], (FXCore)cores[i]));
+    }
+}
+
+void MasterAudio::ResetTrack(int i, bool b){
+    ResetTrack(mSongData->GetAudioTrackNum(i), b);
+}
+
+void MasterAudio::ResetTrack(AudioTrackNum num, bool b){
+    std::list<int> iList;
+    mTrackData.mTrackData[num.mVal]->FillChannelList(iList);
+    mTrackData.mTrackData[num.mVal]->Reset();
+    SetAutoOn(num, 0);
+    for(std::list<int>::iterator it = iList.begin(); it != iList.end(); it++){
+        int idx = *it;
+        FaderGroup* grp = mSongStream->ChannelFaders(idx);
+        grp->Remove(mBackgroundAttenFader);
+        grp->Remove(mBackgroundFader);
+        grp->Remove(mCommonFader);
+        grp->Remove(mForegroundFader);
+        grp->Remove(mMultiplayerFader);
+        grp->Remove(mPracticeFader);
+        grp->Remove(mRemoteFader);
+        grp->Remove(mVocalCueFader);
+
+        bool b3 = false;
+        bool b1 = mTrackData.mTrackData[num.mVal]->mVocals;
+        if(b1 && b) b3 = true;
+        float f2 = b3 ? mCueVolume : 0;
+        if(b) SetupTrackChannel(idx, b1, f2, b3, false);
+        else SetupBackgroundChannel(idx, b1, f2, b3, false);
+    }
+}
+
+void MasterAudio::ConfigureVocalFaders(int i, bool b){
+    FaderGroup* grp = mSongStream->ChannelFaders(i);
+    if(b) grp->Add(mVocalDuckFader);
+    else grp->Add(mVocalFailFader);
+}
+
+bool MasterAudio::Fail(){
+    if(mSongStream) return mSongStream->Fail();
+    else return true;
+}
+
+bool MasterAudio::IsReady(){
+    bool b = false;
+    if(mSongStream && mSongStream->IsReady()) b = true;
+    mStreamEnabled = b;
+    return b;
+}
+
+bool MasterAudio::IsFinished() const {
+    bool b = false;
+    if(mSongStream && mSongStream->IsFinished()) b = true;
+    return b;
+}
+
+void MasterAudio::Play(){
+    MILO_ASSERT(mSongStream, 0x334);
+    mSongStream->Play();
+    for(int i = 0; i < mChannelData.size(); i++){
+        mChannelData[i]->ForceOn();
+    }
+}
+
+void MasterAudio::Jump(float f){
+    mSongStream->Stop();
+    mStreamEnabled = false;
+    mSongStream->Resync(f);
+    UnmuteAllTracks();
+    for(int i = 0; i < mTrackData.mTrackData.size(); i++){
+        mTrackData.mTrackData[i]->Reset();
+        AudioTrackNum num;
+        num.mVal = i;
+        ResetSlipTrack(num, true);
+    }
 }
 
 ChannelData::ChannelData(Stream* stream, int chan, float vol, float pan, FXCore core) : mStream(stream), mChannel(chan), mSlipTrack(0), mIsTrackChannel(0),
@@ -140,4 +276,34 @@ void ChannelData::SetFaderVal(float val){
 void ChannelData::SetPan(float pan){
     mPan = pan;
     mStream->SetPan(mChannel, mPan);
+}
+
+TrackData::TrackData(){
+    Init(0, false);
+}
+
+TrackData::TrackData(SubmixCollection* submixes, const std::vector<int>& vec, bool b1, bool b2){
+    Init(submixes, b1);
+    SetMapping(vec);
+    mVocals = b2;
+}
+
+void TrackData::Init(SubmixCollection* submixes, bool b){
+    mSubmixes = submixes;
+    mMultiSlot = false;
+    mSucceeding = false;
+    mSucceedingVec.reserve(kMaxSlots);
+    mLastGemTimes.reserve(kMaxSlots);
+    SetSucceeding(true, -1, -10000.0f);
+    mLastPlayedGem = -1;
+    mChannelMapping = 0;
+    mIndieSlots = false;
+    mOriginalChannels.clear();
+    mNonmutable = false;
+    mButtonMashingMode = false;
+    mInFill = false;
+    mAutoOn = false;
+    mVocals = false;
+    unk48 = 99.0f;
+    mUserGuid.Clear();
 }
