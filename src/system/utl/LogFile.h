@@ -18,6 +18,7 @@ public:
     void Reset();
     void AdvanceFile();
     bool IsActive(){ return mActive; }
+    void SetActive(bool b){ mActive = b; }
 };
 
 #endif

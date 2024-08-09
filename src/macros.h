@@ -33,4 +33,8 @@
 #define DECL_SECTION(x) __declspec(section x)
 #define DECL_WEAK __declspec(weak)
 
+#define	null	0
+#define RELEASE(x)		{ delete x;		x = null; }
+#define RELEASEARRAY(x)	{ delete[] (ubyte*)x;	x = null; }
+
 #endif

@@ -131,6 +131,7 @@
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
+            "system/beatmatch/BeatMaster.cpp": "NonMatching",
             "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "Matching",
             "system/beatmatch/BeatMatchUtl.cpp": "Matching",
@@ -148,6 +149,7 @@
             "system/beatmatch/JoypadMidiController.cpp": "Matching",
             "system/beatmatch/JoypadTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/KeyboardController.cpp": "Matching",
+            "system/beatmatch/MasterAudio.cpp": "NonMatching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
             "system/beatmatch/PhraseAnalyzer.cpp": "NonMatching",
