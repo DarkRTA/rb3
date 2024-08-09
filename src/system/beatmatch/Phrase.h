@@ -5,6 +5,10 @@
 #include "beatmatch/TrackType.h"
 #include "beatmatch/InternalSongParserSink.h"
 
+struct PhraseInfo {
+
+};
+
 struct Phrase {
     Phrase(float ms, float durms, int tick, int durticks) : mMs(ms), mDurationMs(durms), mTick(tick), mDurationTicks(durticks) {}
 
