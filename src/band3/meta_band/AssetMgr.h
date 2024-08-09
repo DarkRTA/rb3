@@ -33,6 +33,7 @@ public:
 
 public:  
     std::map<Symbol, Asset*> mAssets;  
+    std::map<String, String> mPadding;
 };
 
 static AssetMgr* TheAssetMgr;

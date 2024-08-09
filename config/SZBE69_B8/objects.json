@@ -35,6 +35,8 @@
             "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSetlist.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSongConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentTrainerConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp": "NonMatching",
             "band3/meta_band/Asset.cpp": "Matching",
             "band3/meta_band/AssetMgr.cpp": "NonMatching",
             "band3/meta_band/AssetOffer.cpp": "LinkIssues",

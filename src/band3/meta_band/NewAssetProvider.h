@@ -5,6 +5,7 @@
 #include "BandProfile.h"
 #include "system/ui/UILabel.h"
 #include "system/ui/UIListLabel.h"
+#include "system/ui/UIListProvider.h"
 
 class NewAssetProvider : private UIListProvider, public Hmx::Object {
 public:

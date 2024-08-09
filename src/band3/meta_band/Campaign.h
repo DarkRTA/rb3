@@ -5,6 +5,7 @@
 
 class Campaign {
 public:
+    LocalUser* GetUser() const;
     Symbol GetLaunchUser() const;
 };
 

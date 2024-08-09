@@ -10,7 +10,7 @@ struct AccomplishmentCondition {
     Difficulty difficulty;  // 0x0c
 };
 
-class AccomplishmentConditional : private Accomplishment {
+class AccomplishmentConditional : public Accomplishment {
 public:
     AccomplishmentConditional(DataArray*, int);
     virtual ~AccomplishmentConditional();
@@ -20,9 +20,8 @@ public:
     virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     virtual Difficulty GetRequiredDifficulty() const;
 
-private:
-    // starts at 0x74
-    std::vector<AccomplishmentCondition> m_lConditions; 
+protected:
+    std::vector<AccomplishmentCondition> m_lConditions; // 0x74
 };
 
 #endif // METABAND_ACCOMPLISHMENTCONDITIONAL_H
