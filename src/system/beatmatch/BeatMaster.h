@@ -4,12 +4,16 @@
 #include "beatmatch/SongParserSink.h"
 #include "beatmatch/HxMaster.h"
 #include "beatmatch/SongPos.h"
+#include "beatmatch/SongData.h"
+#include "beatmatch/MasterAudio.h"
+#include "utl/Loader.h"
 
 class MasterAudio;
 class MidiParserMgr;
 class SongInfo;
 class PlayerTrackConfigList;
 class BeatMasterLoader;
+class MidiReceiver;
 
 class BeatMaster : public SongParserSink, public HxMaster {
 public:
@@ -21,11 +25,16 @@ public:
     virtual void Poll(float);
     virtual void Jump(float);
     virtual void Reset();
-    virtual class HxAudio* GetHxAudio();
+    virtual class HxAudio* GetHxAudio(){ return mAudio; }
     virtual float SongDurationMs();
 
     void RegisterSink(BeatMasterSink&);
     void HandleBeatCallback(Symbol);
+    void LoaderPoll();
+    void Load(SongInfo*, int, PlayerTrackConfigList*, bool, SongDataValidate, std::vector<MidiReceiver*>*);
+    bool IsLoaded();
+    void CheckBeat();
+    void CheckSubmixes(int);
 
     bool mRecording; // 0x8
     SongData* mSongData; // 0xc
@@ -41,6 +50,17 @@ public:
     SongPos mLastSongPos; // 0x44
     std::vector<int> mSubmixIdxs; // 0x58
     DataArray* mHandlers; // 0x60
+};
+
+class BeatMasterLoader : public Loader {
+public:
+    BeatMasterLoader(BeatMaster* bm) : Loader(FilePath(""), kLoadFrontStayBack), mBeatMaster(bm) {}
+    virtual ~BeatMasterLoader(){}
+    virtual bool IsLoaded() const { return false; }
+    virtual const char* StateName() const { return "BeatMasterLoader"; }
+    virtual void PollLoading(){ mBeatMaster->LoaderPoll(); }
+
+    BeatMaster* mBeatMaster; // 0x18
 };
 
 #endif

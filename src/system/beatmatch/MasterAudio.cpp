@@ -2,6 +2,7 @@
 #include "synth/Synth.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/PlayerTrackConfig.h"
+#include "beatmatch/BeatMaster.h"
 
 namespace {
     int kMaxSlots = 8;

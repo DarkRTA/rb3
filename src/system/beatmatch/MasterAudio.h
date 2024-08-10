@@ -1,7 +1,6 @@
 #ifndef BEATMATCH_MASTERAUDIO_H
 #define BEATMATCH_MASTERAUDIO_H
 #include "obj/Data.h"
-#include "beatmatch/BeatMaster.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/BeatMasterSink.h"
 #include "beatmatch/BeatMatchSink.h"
@@ -13,6 +12,9 @@
 #include "synth/Stream.h"
 #include "synth/SlipTrack.h"
 #include "beatmatch/SlotChannelMapping.h"
+
+class BeatMaster;
+class SongInfo;
 
 class ChannelData {
 public:

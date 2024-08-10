@@ -13,6 +13,7 @@
 #include <map>
 
 // forward decs
+class SongInfo;
 class SongParserSink;
 class BeatMatcher;
 class DrumMap;
@@ -26,6 +27,13 @@ class TuningOffsetList;
 class DrumFillInfo;
 class PlayerTrackConfigList;
 class PhraseAnalyzer;
+class MidiReceiver;
+
+enum SongDataValidate {
+    kSongData_NoValidation,
+    kSongData_ValidateUsingNameOnly,
+    kSongData_Validate
+};
 
 class SongData : public InternalSongParserSink, public GemListInterface, public HxSongData {
 public:
@@ -86,7 +94,7 @@ public:
     virtual void SetDetailedGrid(bool);
     virtual void AddRangeShift(int, float);
     virtual void AddKeyboardRangeShift(int, int, float, int, int);
-    virtual void CalcSongPos(float);
+    virtual SongPos CalcSongPos(float);
     virtual TempoMap* GetTempoMap() const {
         return mTempoMap;
     }
@@ -108,6 +116,8 @@ public:
 
     GameGemList* GetGemList(int);
     AudioTrackNum GetAudioTrackNum(int) const;
+    void Load(SongInfo*, int, PlayerTrackConfigList*, std::vector<MidiReceiver*>&, bool, SongDataValidate);
+    bool Poll();
 
     int unkc; // 0xc
     int unk10; // 0x10
