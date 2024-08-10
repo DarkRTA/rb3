@@ -1,4 +1,5 @@
 #include "beatmatch/GameGemDB.h"
+#include "utl/STLHelpers.h"
 
 GameGemDB::GameGemDB(int count, int thresh) : mHopoThreshold(thresh) {
     mGameGemLists.reserve(count);
@@ -7,11 +8,11 @@ GameGemDB::GameGemDB(int count, int thresh) : mHopoThreshold(thresh) {
     }
 }
 
+// fn_80461000
 GameGemDB::~GameGemDB(){
     for(int i = 0; i < mGameGemLists.size(); i++){
-        for(std::vector<GameGem>::iterator it = mGameGemLists[i]->mGems.begin(); it != mGameGemLists[i]->mGems.end(); it++){
-            delete it;
-        }
+        delete mGameGemLists[i];
+        mGameGemLists[i] = 0;
     }
 }
 

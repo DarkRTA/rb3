@@ -31,9 +31,9 @@ public:
     virtual const char* StateName() const { return "Unknown"; }
     virtual void PollLoading() = 0;
 
-    LoaderPos mPos;
-    FilePath mFile;
-    int mHeap;
+    LoaderPos mPos; // 0x4
+    FilePath mFile; // 0x8
+    int mHeap; // 0x14
 };
 
 typedef Loader* LoaderFactoryFunc(const FilePath&, LoaderPos);

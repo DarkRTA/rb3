@@ -20,5 +20,7 @@ public:
 };
 
 extern BeatMap* TheBeatMap;
+void SetTheBeatMap(BeatMap*);
+void ResetTheBeatMap();
 
 #endif

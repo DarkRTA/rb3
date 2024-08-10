@@ -130,49 +130,49 @@ public:
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
 
-    UserGuid mUserGuid;
-    bool mIsLocalUser;
-    int mPlayerSlot;
-    GameGemList* mGemList;
-    TrackWatcherParent* mParent;
-    float mSlop;
-    int mLastGemHit;
-    bool mIsCurrentTrack;
-    std::vector<GemInProgress> mGemsInProgress;
-    float mSyncOffset;
-    bool mSucceeding;
-    bool mEnabled;
-    std::vector<BeatMatchSink*> mSinks;
-    SongData* mSongData;
-    bool mTrillSucceeding;
-    int mTrillNextSlot;
-    float mTrillLastFretMs;
-    float mTrillIntervalMs;
-    DataArray* mRollIntervalsConfig;
-    int mTrack;
-    bool mButtonMashingMode;
-    int mLastGemPassed;
-    int mLastGemSeen;
-    float mLastMiss;
-    bool mCheating;
-    bool mAutoplayCoda;
-    int mCheatError;
-    int mNextCheatError;
-    float mLastCheatCodaSwing;
-    int mNextGemToAutoplay;
-    float mAutoplayAccuracy;
-    int mCymbalAutoplayMs;
-    GemHitFlags mLastPlayedHitFlags;
-    bool mPitchBendReady;
-    int mPitchBendRange;
-    int mPitchBendMsToFull;
-    float mPitchBendMsHit;
-    float mBiggestWhammy;
-    std::vector<float> mRollSlotsLastSwingMs;
-    int mRollActiveSlots;
-    float mRollIntervalMs;
-    int mRollEndTick;
-    DataArray* mTrillIntervalsConfig;
+    UserGuid mUserGuid; // 0x4
+    bool mIsLocalUser; // 0x14
+    int mPlayerSlot; // 0x18
+    GameGemList* mGemList; // 0x1c
+    TrackWatcherParent* mParent; // 0x20
+    float mSlop; // 0x24
+    int mLastGemHit; // 0x28
+    bool mIsCurrentTrack; // 0x2c
+    std::vector<GemInProgress> mGemsInProgress; // 0x30
+    float mSyncOffset; // 0x38
+    bool mSucceeding; // 0x3c
+    bool mEnabled; // 0x3d
+    std::vector<BeatMatchSink*> mSinks; // 0x40
+    SongData* mSongData; // 0x48
+    bool mTrillSucceeding; // 0x4c
+    int mTrillNextSlot; // 0x50
+    float mTrillLastFretMs; // 0x54
+    float mTrillIntervalMs; // 0x58
+    DataArray* mRollIntervalsConfig; // 0x5c
+    int mTrack; // 0x60
+    bool mButtonMashingMode; // 0x64
+    int mLastGemPassed; // 0x68
+    int mLastGemSeen; // 0x6c
+    float mLastMiss; // 0x70
+    bool mCheating; // 0x74
+    bool mAutoplayCoda; // 0x75
+    int mCheatError; // 0x78
+    int mNextCheatError; // 0x7c
+    float mLastCheatCodaSwing; // 0x80
+    int mNextGemToAutoplay; // 0x84
+    float mAutoplayAccuracy; // 0x88
+    int mCymbalAutoplayMs; // 0x8c
+    GemHitFlags mLastPlayedHitFlags; // 0x90
+    bool mPitchBendReady; // 0x94
+    int mPitchBendRange; // 0x98
+    int mPitchBendMsToFull; // 0x9c
+    float mPitchBendMsHit; // 0xa0
+    float mBiggestWhammy; // 0xa4
+    std::vector<float> mRollSlotsLastSwingMs; // 0xa8
+    int mRollActiveSlots; // 0xb0
+    float mRollIntervalMs; // 0xb4
+    int mRollEndTick; // 0xb8
+    DataArray* mTrillIntervalsConfig; // 0xbc
 
 };
 
