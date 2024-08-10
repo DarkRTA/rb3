@@ -35,6 +35,8 @@ public:
     bool IsLoaded();
     void CheckBeat();
     void CheckSubmixes(int);
+    void ResetAudio();
+    void ExportInitialSubmixes();
 
     bool mRecording; // 0x8
     SongData* mSongData; // 0xc

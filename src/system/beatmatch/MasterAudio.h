@@ -136,6 +136,7 @@ public:
     void Jump(float);
     void UnmuteAllTracks();
     void ResetSlipTrack(AudioTrackNum, bool);
+    void SetTimeOffset(float);
 
     int mNumPlayers; // 0x28
     Stream* mSongStream; // 0x2c

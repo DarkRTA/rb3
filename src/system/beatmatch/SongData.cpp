@@ -55,6 +55,18 @@ void SongData::UpdatePlayerTrackConfigList(PlayerTrackConfigList* plist){
     ComputeVocalRangeData();
 }
 
+// fn_804855E4
+SongPos SongData::CalcSongPos(float f){
+    MILO_ASSERT(mTempoMap, 0x6BA);
+    MILO_ASSERT(mMeasureMap, 0x6BB);
+    MILO_ASSERT(mBeatMap, 0x6BC);
+    float tick = mTempoMap->TimeToTick(f);
+    int itick = tick;
+    int m, b, t;
+    mMeasureMap->TickToMeasureBeatTick(itick, m, b, t);
+    return SongPos(tick, mBeatMap->Beat(itick), m, b, t);
+}
+
 SongData::BackupTrack::~BackupTrack(){
     delete mGems;
 }

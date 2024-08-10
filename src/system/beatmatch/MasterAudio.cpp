@@ -67,6 +67,13 @@ MasterAudio::~MasterAudio(){
     for(std::vector<TrackData*>::iterator it = mTrackData.mTrackData.begin(); it != mTrackData.mTrackData.end(); it++){
         RELEASE(*it);
     }
+    if(mSongStream){
+        for(int i = 0; i < 2; i++){
+            mSongStream->SetFX(i, false);
+        }
+    }
+    RELEASE(mSongStream);
+
     RELEASE(mBackgroundFader);
     RELEASE(mBackgroundAttenFader);
     RELEASE(mMasterFader);
