@@ -8763,39 +8763,39 @@ sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c:
 	.data       start:0x80C6B4F0 end:0x80C6B540
 	.sdata      start:0x80C797B8 end:0x80C797C8
 
-sdk/ec/ec_md5c.c:
+sdk/ec/src/ec_md5c.c:
 	.text       start:0x80AD6610 end:0x80AD7220
 	.data       start:0x80C6B540 end:0x80C6B580
 
-sdk/ec/shr_th_bw.cpp:
+sdk/ec/src/shr_th_bw.cpp:
 	.text       start:0x80AD7220 end:0x80AD7590
 	.data       start:0x80C6B580 end:0x80C6B5E8
 
-sdk/ec/shr_time_bw.cpp:
+sdk/ec/src/shr_time_bw.cpp:
 	.text       start:0x80AD7590 end:0x80AD75C0
 
-sdk/ec/ec_asyncOp.cpp:
+sdk/ec/src/ec_asyncOp.cpp:
 	extab       start:0x800068CC end:0x8000886C
 	extabindex  start:0x8000CB18 end:0x8000CECC
 	.text       start:0x80AD75C0 end:0x80ADB7D0
 	.data       start:0x80C6B5E8 end:0x80C6C058
 	.bss        start:0x80D8ADE8 end:0x80D8B188
 
-sdk/ec/ec_misc.cpp:
+sdk/ec/src/ec_misc.cpp:
 	extab       start:0x8000886C end:0x8000897C
 	extabindex  start:0x8000CECC end:0x8000CF74
 	.text       start:0x80ADB7D0 end:0x80ADC800
 	.data       start:0x80C6C058 end:0x80C6C968
 	.bss        start:0x80D8B188 end:0x80D8B198
 
-sdk/ec/ec_getTitle.cpp:
+sdk/ec/src/ec_getTitle.cpp:
 	extab       start:0x8000897C end:0x80008A8C
 	extabindex  start:0x8000CF74 end:0x8000CFBC
 	.text       start:0x80ADC800 end:0x80ADD9E0
 	.data       start:0x80C6C968 end:0x80C6D080
 	.bss        start:0x80D8B198 end:0x80D8BDA0
 
-sdk/ec/ec_purchaseTitle.cpp:
+sdk/ec/src/ec_purchaseTitle.cpp:
 	extab       start:0x80008A8C end:0x800094F4
 	extabindex  start:0x8000CFBC end:0x8000D0E8
 	.text       start:0x80ADD9E0 end:0x80ADF700
@@ -8803,45 +8803,45 @@ sdk/ec/ec_purchaseTitle.cpp:
 	.data       start:0x80C6D080 end:0x80C6D818
 	.bss        start:0x80D8BDA0 end:0x80D8BDA8
 
-sdk/ec/ec_checkReg.cpp:
+sdk/ec/src/ec_checkReg.cpp:
 	extab       start:0x800094F4 end:0x80009650
 	extabindex  start:0x8000D0E8 end:0x8000D10C
 	.text       start:0x80ADF700 end:0x80ADFAC0
 	.data       start:0x80C6D818 end:0x80C6D8B0
 	.bss        start:0x80D8BDA8 end:0x80D8BDB0
 
-sdk/ec/ec_mem.cpp:
+sdk/ec/src/ec_mem.cpp:
 	extab       start:0x80009650 end:0x800096B4
 	extabindex  start:0x8000D10C end:0x8000D154
 	.text       start:0x80ADFAC0 end:0x80ADFE90
 	.data       start:0x80C6D8B0 end:0x80C6DA50
 	.bss        start:0x80D8BDB0 end:0x80D8BDE0
 
-sdk/ec/ec_soap.cpp:
+sdk/ec/src/ec_soap.cpp:
 	extab       start:0x800096B4 end:0x8000A44C
 	extabindex  start:0x8000D154 end:0x8000D4A8
 	.text       start:0x80ADFE90 end:0x80AE5FC0
 	.rodata     start:0x80B459C8 end:0x80B45C00
 	.data       start:0x80C6DA50 end:0x80C6E678
 
-sdk/ec/ec_base64.cpp:
+sdk/ec/src/ec_base64.cpp:
 	.text       start:0x80AE5FC0 end:0x80AE64D0
 	.data       start:0x80C6E678 end:0x80C6E680
 	.bss        start:0x80D8BDE0 end:0x80D8BF28
 
-sdk/ec/ec_string.cpp:
+sdk/ec/src/ec_string.cpp:
 	extab       start:0x8000A44C end:0x8000A61C
 	extabindex  start:0x8000D4A8 end:0x8000D604
 	.text       start:0x80AE64D0 end:0x80AE7F50
 	.data       start:0x80C6E680 end:0x80C6EB38
 	.bss        start:0x80D8BF28 end:0x80D8BF40
 
-sdk/ec/ec_md5.cpp:
+sdk/ec/src/ec_md5.cpp:
 	extab       start:0x8000A61C end:0x8000A624
 	extabindex  start:0x8000D604 end:0x8000D610
 	.text       start:0x80AE7F50 end:0x80AE8010
 
-sdk/ec/ec_content.cpp:
+sdk/ec/src/ec_content.cpp:
 	extab       start:0x8000A624 end:0x8000AB38
 	extabindex  start:0x8000D610 end:0x8000D6F4
 	.text       start:0x80AE8010 end:0x80AE9EB0
@@ -8849,172 +8849,172 @@ sdk/ec/ec_content.cpp:
 	.data       start:0x80C6EB38 end:0x80C6F1D8
 	.bss        start:0x80D8BF40 end:0x80D984B0
 
-sdk/ec/ec_chkDevStat.cpp:
+sdk/ec/src/ec_chkDevStat.cpp:
 	extab       start:0x8000AB38 end:0x8000AD44
 	extabindex  start:0x8000D6F4 end:0x8000D730
 	.text       start:0x80AE9EB0 end:0x80AEA750
 	.data       start:0x80C6F1D8 end:0x80C6F820
 	.bss        start:0x80D984B0 end:0x80D984B8
 
-sdk/ec/ec_register.cpp:
+sdk/ec/src/ec_register.cpp:
 	extab       start:0x8000AD44 end:0x8000B328
 	extabindex  start:0x8000D730 end:0x8000D7C0
 	.text       start:0x80AEA750 end:0x80AEBBE0
 	.data       start:0x80C6F820 end:0x80C700A0
 	.bss        start:0x80D984B8 end:0x80D984C0
 
-sdk/ec/ec_csup.cpp:
+sdk/ec/src/ec_csup.cpp:
 	.text       start:0x80AEBBE0 end:0x80AEBD50
 
-sdk/ec/ec_connect.cpp:
+sdk/ec/src/ec_connect.cpp:
 	extab       start:0x8000B328 end:0x8000B548
 	extabindex  start:0x8000D7C0 end:0x8000D7E4
 	.text       start:0x80AEBD50 end:0x80AEC4D0
 	.data       start:0x80C700A0 end:0x80C70660
 	.bss        start:0x80D984C0 end:0x80D984C8
 
-sdk/ec/ec_api.cpp:
+sdk/ec/src/ec_api.cpp:
 	extab       start:0x8000B548 end:0x8000B78C
 	extabindex  start:0x8000D7E4 end:0x8000D868
 	.text       start:0x80AEC4D0 end:0x80AEDD40
 	.data       start:0x80C70660 end:0x80C70CA0
 
-sdk/ec/ec_dk.cpp:
+sdk/ec/src/ec_dk.cpp:
 	extab       start:0x8000B78C end:0x8000B9A0
 	extabindex  start:0x8000D868 end:0x8000D934
 	.text       start:0x80AEDD40 end:0x80AEEF00
 	.data       start:0x80C70CA0 end:0x80C71260
 	.bss        start:0x80D984C8 end:0x80DA04C8
 
-sdk/ec/ec_downloadContents.cpp:
+sdk/ec/src/ec_downloadContents.cpp:
 	extab       start:0x8000B9A0 end:0x8000BA88
 	extabindex  start:0x8000D934 end:0x8000D988
 	.text       start:0x80AEEF00 end:0x80AEF5D0
 	.data       start:0x80C71260 end:0x80C717B8
 	.bss        start:0x80DA04C8 end:0x80DA04D0
 
-sdk/ec/ec_deleteContents.cpp:
+sdk/ec/src/ec_deleteContents.cpp:
 	extab       start:0x8000BA88 end:0x8000BAC4
 	extabindex  start:0x8000D988 end:0x8000D994
 	.text       start:0x80AEF5D0 end:0x80AEF880
 	.data       start:0x80C717B8 end:0x80C71978
 	.bss        start:0x80DA04D0 end:0x80DA04D8
 
-sdk/ec/ec_listTitleContents.cpp:
+sdk/ec/src/ec_listTitleContents.cpp:
 	extab       start:0x8000BAC4 end:0x8000BBB8
 	extabindex  start:0x8000D994 end:0x8000D9DC
 	.text       start:0x80AEF880 end:0x80AF01A0
 	.data       start:0x80C71978 end:0x80C71EE8
 	.bss        start:0x80DA04D8 end:0x80DA04E0
 
-sdk/ec/ec_list.cpp:
+sdk/ec/src/ec_list.cpp:
 	extab       start:0x8000BBB8 end:0x8000BBC0
 	extabindex  start:0x8000D9DC end:0x8000D9E8
 	.text       start:0x80AF01A0 end:0x80AF0240
 	.data       start:0x80C71EE8 end:0x80C71F10
 
-sdk/ec/ec_listCatalog.cpp:
+sdk/ec/src/ec_listCatalog.cpp:
 	extab       start:0x8000BBC0 end:0x8000BD78
 	extabindex  start:0x8000D9E8 end:0x8000DA24
 	.text       start:0x80AF0240 end:0x80AF0D30
 	.data       start:0x80C71F10 end:0x80C724F0
 
-sdk/ec/ec_listTitles.cpp:
+sdk/ec/src/ec_listTitles.cpp:
 	extab       start:0x8000BD78 end:0x8000BD80
 	extabindex  start:0x8000DA24 end:0x8000DA30
 	.text       start:0x80AF0D30 end:0x80AF0DA0
 	.data       start:0x80C724F0 end:0x80C72710
 	.bss        start:0x80DA04E0 end:0x80DA04E8
 
-sdk/ec/ec_listContentSets.cpp:
+sdk/ec/src/ec_listContentSets.cpp:
 	extab       start:0x8000BD80 end:0x8000BDC4
 	extabindex  start:0x8000DA30 end:0x8000DA48
 	.text       start:0x80AF0DA0 end:0x80AF0FA0
 	.data       start:0x80C72710 end:0x80C72950
 	.bss        start:0x80DA04E8 end:0x80DA04F0
 
-sdk/ec/ec_getTitleResReq.cpp:
+sdk/ec/src/ec_getTitleResReq.cpp:
 	extab       start:0x8000BDC4 end:0x8000BE88
 	extabindex  start:0x8000DA48 end:0x8000DA84
 	.text       start:0x80AF0FA0 end:0x80AF1500
 	.data       start:0x80C72950 end:0x80C72EB0
 	.bss        start:0x80DA04F0 end:0x80DA04F8
 
-sdk/ec/ec_getContentsResReq.cpp:
+sdk/ec/src/ec_getContentsResReq.cpp:
 	extab       start:0x8000BE88 end:0x8000BEFC
 	extabindex  start:0x8000DA84 end:0x8000DAC0
 	.text       start:0x80AF1500 end:0x80AF1850
 	.data       start:0x80C72EB0 end:0x80C73000
 	.bss        start:0x80DA04F8 end:0x80DA0500
 
-sdk/ec/ec_listServiceItems.cpp:
+sdk/ec/src/ec_listServiceItems.cpp:
 	extab       start:0x8000BEFC end:0x8000BF0C
 	extabindex  start:0x8000DAC0 end:0x8000DAD8
 	.text       start:0x80AF1850 end:0x80AF1900
 	.data       start:0x80C73000 end:0x80C73278
 	.bss        start:0x80DA0500 end:0x80DA0508
 
-sdk/ec/ec_listPurchaseHistory.cpp:
+sdk/ec/src/ec_listPurchaseHistory.cpp:
 	extab       start:0x8000BF0C end:0x8000C3A4
 	extabindex  start:0x8000DAD8 end:0x8000DB14
 	.text       start:0x80AF1900 end:0x80AF2E40
 	.data       start:0x80C73278 end:0x80C73B00
 	.bss        start:0x80DA0508 end:0x80DA0530
 
-sdk/ec/ec_listContentSetGroups.cpp:
+sdk/ec/src/ec_listContentSetGroups.cpp:
 	extab       start:0x8000C3A4 end:0x8000C5D8
 	extabindex  start:0x8000DB14 end:0x8000DB44
 	.text       start:0x80AF2E40 end:0x80AF3600
 	.data       start:0x80C73B00 end:0x80C74130
 	.bss        start:0x80DA0530 end:0x80DA0538
 
-sdk/ec/ec_listContentDownloadInfos.cpp:
+sdk/ec/src/ec_listContentDownloadInfos.cpp:
 	extab       start:0x8000C5D8 end:0x8000C624
 	extabindex  start:0x8000DB44 end:0x8000DB68
 	.text       start:0x80AF3600 end:0x80AF3C30
 	.data       start:0x80C74130 end:0x80C746C8
 	.bss        start:0x80DA0538 end:0x80DA0540
 
-sdk/ec/ec_checkECard.cpp:
+sdk/ec/src/ec_checkECard.cpp:
 	extab       start:0x8000C624 end:0x8000C744
 	extabindex  start:0x8000DB68 end:0x8000DB98
 	.text       start:0x80AF3C30 end:0x80AF4160
 	.data       start:0x80C746C8 end:0x80C74C38
 	.bss        start:0x80DA0540 end:0x80DA0548
 
-sdk/ec/ec_listECardItems.cpp:
+sdk/ec/src/ec_listECardItems.cpp:
 	extab       start:0x8000C744 end:0x8000C754
 	extabindex  start:0x8000DB98 end:0x8000DBB0
 	.text       start:0x80AF4160 end:0x80AF4230
 	.data       start:0x80C74C38 end:0x80C74EB0
 	.bss        start:0x80DA0548 end:0x80DA0550
 
-sdk/ec/ec_file_bw.cpp:
+sdk/ec/src/ec_file_bw.cpp:
 	extab       start:0x8000C754 end:0x8000C7DC
 	extabindex  start:0x8000DBB0 end:0x8000DC7C
 	.text       start:0x80AF4230 end:0x80AF5180
 	.data       start:0x80C74EB0 end:0x80C75678
 
-sdk/ec/ec_shoplog_bw.cpp:
+sdk/ec/src/ec_shoplog_bw.cpp:
 	extab       start:0x8000C7DC end:0x8000C814
 	extabindex  start:0x8000DC7C end:0x8000DCD0
 	.text       start:0x80AF5180 end:0x80AF5740
 	.data       start:0x80C75678 end:0x80C758A8
 
-sdk/ec/ec_sysconfig_bw.cpp:
+sdk/ec/src/ec_sysconfig_bw.cpp:
 	extab       start:0x8000C814 end:0x8000C85C
 	extabindex  start:0x8000DCD0 end:0x8000DD3C
 	.text       start:0x80AF5740 end:0x80AF5C40
 	.data       start:0x80C758A8 end:0x80C75C98
 	.bss        start:0x80DA0550 end:0x80DA0558
 
-sdk/ec/ec_chkDownload_bw.cpp:
+sdk/ec/src/ec_chkDownload_bw.cpp:
 	extab       start:0x8000C85C end:0x8000C894
 	extabindex  start:0x8000DD3C end:0x8000DD78
 	.text       start:0x80AF5C40 end:0x80AF6120
 	.data       start:0x80C75C98 end:0x80C75DF0
 
-sdk/ec/ec_http_bw.cpp:
+sdk/ec/src/ec_http_bw.cpp:
 	extab       start:0x8000C894 end:0x8000C9D0
 	extabindex  start:0x8000DD78 end:0x8000DDFC
 	.text       start:0x80AF6120 end:0x80AF81FC

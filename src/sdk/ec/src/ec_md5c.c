@@ -57,8 +57,8 @@
  */
 
 // #include <stdio.h>
-#include "internal/md5.h"
-#include "internal/md5_locl.h"
+#include <ec/internal/md5.h>
+#include <ec/internal/md5_locl.h>
 // #include <openssl/opensslv.h>
 
 // const char MD5_version[] = "MD5" OPENSSL_VERSION_PTEXT;
