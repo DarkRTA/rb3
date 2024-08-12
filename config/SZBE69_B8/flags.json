@@ -216,6 +216,13 @@
                 "-func_align 4",
                 "-O4,p"
             ]
+        },
+        "sdk/ec": {
+            "base": "base",
+            "flags": [
+                "-func_align 4",
+                "-O4,p"
+            ]
         }
     }
 }
