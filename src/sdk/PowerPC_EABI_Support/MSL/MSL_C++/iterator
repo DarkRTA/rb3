@@ -109,14 +109,14 @@ namespace std {
     template <class Iterator1, class Iterator2>
     bool operator!=(const ostream_iterator<Iterator1> &lhs, const ostream_iterator<Iterator2> &rhs);
 
-    template <class CharT, class Traits = char_traits<CharT> >
+    template <class CharT, class Traits /*= char_traits<CharT>*/ >
     class istreambuf_iterator : public iterator<input_iterator_tag, CharT, typename Traits::off_type, CharT *, CharT> {};
     template <class Iterator1, class Iterator2>
     bool operator==(const istreambuf_iterator<Iterator1> &lhs, const istreambuf_iterator<Iterator2> &rhs);
     template <class Iterator1, class Iterator2>
     bool operator!=(const istreambuf_iterator<Iterator1> &lhs, const istreambuf_iterator<Iterator2> &rhs);
 
-    template <class CharT, class Traits = char_traits<CharT> >
+    template <class CharT, class Traits /*= char_traits<CharT>*/ >
     class ostreambuf_iterator : public iterator<output_iterator_tag, void, void, void, void> {};
     template <class Iterator1, class Iterator2>
     bool operator==(const ostreambuf_iterator<Iterator1> &lhs, const ostreambuf_iterator<Iterator2> &rhs);
