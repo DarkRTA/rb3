@@ -13,6 +13,7 @@
                 "-gccinc",
 
                 "-maxerrors 1",
+                "-nowraplines",
 
                 "-proc gekko",
                 "-align powerpc",
