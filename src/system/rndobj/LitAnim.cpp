@@ -17,7 +17,7 @@ void RndLightAnim::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
     if(mKeysOwner.Ptr() == from){
         if(!to) mKeysOwner = this;
-        else mKeysOwner = dynamic_cast<RndLightAnim*>(to)->mKeysOwner.Ptr();
+        else mKeysOwner = dynamic_cast<RndLightAnim*>(to)->mKeysOwner;
     }
 }
 
@@ -68,7 +68,7 @@ void RndLightAnim::Print(){
 }
 
 float RndLightAnim::EndFrame(){
-    return mKeysOwner->mColorKeys.LastFrame();
+    return ColorKeys().LastFrame();
 }
 
 // fn_805F7188
