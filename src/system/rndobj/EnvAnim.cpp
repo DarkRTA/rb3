@@ -17,7 +17,7 @@ void RndEnvAnim::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
     if(mKeysOwner.Ptr() == from){
         if(!to) mKeysOwner = this;
-        else mKeysOwner = dynamic_cast<RndEnvAnim*>(to)->mKeysOwner.Ptr();
+        else mKeysOwner = dynamic_cast<RndEnvAnim*>(to)->mKeysOwner;
     }
 }
 
