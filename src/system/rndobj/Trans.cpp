@@ -37,7 +37,7 @@ RndTransformable::~RndTransformable() {
     for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
         (*it)->mParent = 0;
         (*it)->mCache->Set(0);
-        (*it)->mCache->SetDirty();
+        (*it)->SetDirty();
     }
     delete mCache;
 }
@@ -202,11 +202,11 @@ void RndTransformable::SetTransConstraint(Constraint cst, RndTransformable* t, b
 
 namespace {
     bool HorizontalCmp(const RndTransformable* t1, const RndTransformable* t2){
-        return t1->mLocalXfm.v.x < t2->mLocalXfm.v.x;
+        return t1->mLocalXfm.v[0] < t2->mLocalXfm.v[0];
     }
 
     bool VerticalCmp(const RndTransformable* t1, const RndTransformable* t2){
-        return t1->mLocalXfm.v.z > t2->mLocalXfm.v.z;
+        return t1->mLocalXfm.v[2] > t2->mLocalXfm.v[2];
     }
 }
 
