@@ -23,14 +23,7 @@ namespace std {
                 virtual void dispose() = 0;
 
             public:
-                __attribute__((never_inline)) void release() {
-                    if (--m_RefCount == 0) {
-                        dispose();
-                        if (--m_WeakCount == 0) {
-                            delete this;
-                        }
-                    }
-                }
+                void release();
 
                 int m_RefCount;
                 int m_WeakCount;

@@ -770,10 +770,7 @@
                 "status": "Equivalent",
                 "comment": "Weak method ordering issues"
             },
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": {
-                "status": "LinkIssues",
-                "comment": "Weak method link ordering issues relating with msl_thread"
-            },
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "Matching"
         }
     },
