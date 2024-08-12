@@ -221,7 +221,10 @@
             "base": "base",
             "flags": [
                 "-func_align 4",
-                "-O4,p"
+                "-O4,p",
+
+                "-d _STLP_WHOLE_NATIVE_STD",
+                "-d _STLP_DONT_REDEFINE_STD"
             ]
         }
     }
