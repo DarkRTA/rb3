@@ -101,7 +101,7 @@ typedef struct MD5state_st {
     MD5_LONG A, B, C, D;
     MD5_LONG Nl, Nh;
     MD5_LONG data[MD5_LBLOCK];
-    unsigned int num;
+    // unsigned int num; // incurs too much stack usage
 } MD5_CTX;
 
 void MD5_Init(MD5_CTX *c);

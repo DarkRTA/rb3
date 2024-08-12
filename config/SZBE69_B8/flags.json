@@ -221,7 +221,11 @@
             "base": "base",
             "flags": [
                 "-func_align 4",
-                "-O4,p",
+                "-Cpp_exceptions on",
+
+                "-O4,s",
+                "-inline noauto",
+                "-ipa file",
 
                 "-d _STLP_WHOLE_NATIVE_STD",
                 "-d _STLP_DONT_REDEFINE_STD"

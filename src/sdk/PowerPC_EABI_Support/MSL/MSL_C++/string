@@ -30,7 +30,38 @@ namespace std {
         class CharT,
         class Traits = char_traits<CharT>,
         class Allocator = allocator<CharT> >
-    class basic_string;
+    class basic_string {
+        struct __longbuf {
+            size_t capacity;
+            size_t length;
+            CharT* buffer;
+        };
+
+        struct __shortbuf {
+            CharT length;
+            CharT buffer[sizeof(__longbuf) - sizeof(CharT)];
+        };
+
+        union {
+            size_t m_ShortFlag;
+            __longbuf m_LongBuf;
+            __shortbuf m_ShortBuf;
+        };
+
+        bool is_short() const { return m_ShortFlag >> 31; }
+
+    public:
+
+        void clear() {
+            if (!is_short()) {
+                m_ShortBuf.buffer[0] = '\0';
+                m_ShortBuf.length &= 0x80;
+            } else {
+                *m_LongBuf.buffer = '\0';
+                m_LongBuf.length = 0;
+            }
+        }
+    };
 
     typedef basic_string<char> string;
     typedef basic_string<wchar_t> wstring;
