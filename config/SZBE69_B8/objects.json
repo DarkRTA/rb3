@@ -867,7 +867,7 @@
             "sdk/ec/ec_listTitles.cpp": "NonMatching",
 
             "sdk/ec/ec_md5.cpp": "NonMatching",
-            "sdk/ec/ec_md5c.cpp": "NonMatching",
+            "sdk/ec/ec_md5c.c": { "status": "NonMatching", "extra_cflags": ["-O4,s"] },
             "sdk/ec/ec_mem.cpp": "NonMatching",
             "sdk/ec/ec_misc.cpp": "NonMatching",
             "sdk/ec/ec_purchaseTitle.cpp": "NonMatching",

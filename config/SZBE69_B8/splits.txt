@@ -8763,7 +8763,7 @@ sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c:
 	.data       start:0x80C6B4F0 end:0x80C6B540
 	.sdata      start:0x80C797B8 end:0x80C797C8
 
-sdk/ec/ec_md5c.cpp:
+sdk/ec/ec_md5c.c:
 	.text       start:0x80AD6610 end:0x80AD7220
 	.data       start:0x80C6B540 end:0x80C6B580
 
