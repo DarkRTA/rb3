@@ -91,9 +91,7 @@ BEGIN_LOADS(RndAnimatable)
         }
         if(theScale != 1.0f || theOffset != 0.0f || (theMin != theMax)){
             const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
-            class ObjectDir* thisDir = Dir();
-            RndAnimFilter* filtObj = Hmx::Object::New<RndAnimFilter>();
-            if(filt) filtObj->SetName(filt, thisDir);
+            RndAnimFilter* filtObj = Dir()->New<RndAnimFilter>(filt);
             filtObj->SetProperty("anim", DataNode(this));
             filtObj->SetProperty("scale", DataNode(theScale));
             filtObj->SetProperty("offset", DataNode(theOffset));            
@@ -144,8 +142,8 @@ void RndAnimatable::StopAnimation(){
 
 Task* RndAnimatable::Animate(float blend, bool wait, float delay){
     AnimTask* task = new AnimTask(this, StartFrame(), EndFrame(), FramesPerUnit(), Loop(), blend);
-    if(wait && task->mBlendTask){
-        delay += task->mBlendTask->TimeUntilEnd();
+    if(wait && task->BlendTask()){
+        delay += task->BlendTask()->TimeUntilEnd();
     }
     TheTaskMgr.Start(task, Units(), delay);
     return task;
@@ -163,7 +161,7 @@ Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, flo
     
     AnimTask* task = new AnimTask(this, start, end, fpu, type == loop, blend);
     if(wait){
-        AnimTask* blendTask = task->mBlendTask;
+        AnimTask* blendTask = task->BlendTask();
         if(blendTask){
             delay += blendTask->TimeUntilEnd();
         }
@@ -253,10 +251,9 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
         theTask->SetName(local_name, DataThis()->DataDir());
     }
     if(local_wait){
-        AnimTask* blendtask = theTask->mBlendTask;
+        AnimTask* blendtask = theTask->BlendTask();
         if(blendtask){
-            RndAnimatable* blendtaskanim = blendtask->mAnim;
-            if(mRate != blendtaskanim->GetRate()) MILO_WARN("%s: need same rate to wait", Name());
+            if(mRate != blendtask->Anim()->GetRate()) MILO_WARN("%s: need same rate to wait", Name());
             else local_delay = blendtask->TimeUntilEnd();
         }
     }
@@ -313,18 +310,17 @@ float AnimTask::TimeUntilEnd(){
     float time;
     if(mScale > 0.0f){
         float fpu = mAnim->FramesPerUnit();
-        time = (mMax - mAnim->mFrame) / fpu;
+        time = (mMax - mAnim->GetFrame()) / fpu;
     }
     else {
         float fpu = mAnim->FramesPerUnit();
-        time = (mAnim->mFrame - mMin) / fpu;
+        time = (mAnim->GetFrame() - mMin) / fpu;
     }
     return time;
 }
 
 AnimTask::~AnimTask(){
-    AnimTask* blendPtr = mBlendTask.Ptr();
-    delete blendPtr;
+    delete mBlendTask;
 }
 
 void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
