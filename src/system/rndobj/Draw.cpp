@@ -102,8 +102,8 @@ void RndDrawable::Load(BinStream& bs){
                     Hmx::Object* found = Dir()->Find<Hmx::Object>(buf, true);
                     RndEnviron* env = dynamic_cast<RndEnviron*>(found);
                     if(env){
-                        if(grp->mEnv) MILO_WARN("%s won't set %s", grp->Name(), buf);
-                        else grp->mEnv = env;
+                        if(grp->GetEnv()) MILO_WARN("%s won't set %s", grp->Name(), buf);
+                        else grp->SetEnv(env);
                     }
                     else {
                         RndCam* cam = dynamic_cast<RndCam*>(found);
