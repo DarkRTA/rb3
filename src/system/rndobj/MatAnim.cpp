@@ -59,8 +59,7 @@ void RndMatAnim::LoadStages(BinStream& bs){
             if(EndFrame() != f){
                 const char* mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
                 MILO_WARN("Splitting out %s from %s", mnm, PathName(this));
-                RndMatAnim* mAnim = Hmx::Object::New<RndMatAnim>();
-                if(mnm) mAnim->SetName(mnm, Dir());
+                RndMatAnim* mAnim = Dir()->New<RndMatAnim>(mnm);
                 mAnim->SetMat(LookupOrCreateMat(MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()));
             }
         }
