@@ -1,11 +1,32 @@
 #ifndef _STD_ALGORITHM_H
 #define _STD_ALGORITHM_H
 
-// Based on https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/algorithm
+// Based on
+// https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/algorithm
 
 #include <MSL_C++/iterator>
 
 namespace std {
+
+    template <class T>
+    inline const T &min(const T &a, const T &b) {
+        return b < a ? b : a;
+    }
+
+    template <class T>
+    inline const T &max(const T &a, const T &b) {
+        return a < b ? b : a;
+    }
+
+    template <class T, class _Compare>
+    inline const T &min(const T &a, const T &b, _Compare comp) {
+        return comp(b, a) ? b : a;
+    }
+
+    template <class T, class _Compare>
+    inline const T &max(const T &a, const T &b, _Compare comp) {
+        return comp(a, b) ? b : a;
+    }
 
     template <typename InputIterator, typename Predicate>
     inline InputIterator find_if(InputIterator first, InputIterator last, Predicate p) {

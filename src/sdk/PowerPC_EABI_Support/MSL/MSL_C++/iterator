@@ -6,7 +6,7 @@
 // Based on https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/include/iterator
 
 #include <MSL_C++/cstddef>
-#include <MSL_C++/string>
+#include <MSL_C++/iosfwd>
 
 namespace std {
 

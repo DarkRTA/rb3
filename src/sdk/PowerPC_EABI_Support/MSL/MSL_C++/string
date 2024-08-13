@@ -1,7 +1,16 @@
 #ifndef _STD_STRING
 #define _STD_STRING
 
+#include <MSL_C++/algorithm>
+#include <MSL_C++/cstring>
+#include <MSL_C++/climits>
+#include <MSL_C++/cwchar>
 #include <MSL_C++/ios>
+#include <MSL_C++/iterator>
+#include <MSL_C++/memory>
+#include <MSL_C++/stdexcept>
+
+#include "MSL_C++/Metrowerks/compressed_pair.h"
 
 namespace std {
 
@@ -15,6 +24,8 @@ namespace std {
         typedef streamoff off_type;
         typedef streampos pos_type;
         typedef __char_state_type state_type;
+
+        static inline size_t length(const char *str) { return strlen(str); }
     };
 
     template <>
@@ -24,6 +35,8 @@ namespace std {
         typedef streamoff off_type;
         typedef wstreampos pos_type;
         typedef __wchar_state_type state_type;
+
+        static inline size_t length(const wchar_t *str) { return wcslen(str); }
     };
 
     template <
@@ -34,7 +47,7 @@ namespace std {
         struct __longbuf {
             size_t capacity;
             size_t length;
-            CharT* buffer;
+            CharT *buffer;
         };
 
         struct __shortbuf {
@@ -42,23 +55,221 @@ namespace std {
             CharT buffer[sizeof(__longbuf) - sizeof(CharT)];
         };
 
-        union {
-            size_t m_ShortFlag;
-            __longbuf m_LongBuf;
-            __shortbuf m_ShortBuf;
+        union rep_s {
+            size_t shortFlag;
+            __longbuf longBuf;
+            __shortbuf shortBuf;
+
+            bool is_short() const { return shortFlag >> 31; }
         };
 
-        bool is_short() const { return m_ShortFlag >> 31; }
+        Metrowerks::compressed_pair<basic_string::rep_s, Allocator> m;
+
+        CharT *get_pointer() const {
+            const rep_s &rep = m.first();
+            if (rep.is_short()) {
+                return const_cast<CharT *>(rep.shortBuf.buffer);
+            } else {
+                return rep.longBuf.buffer;
+            }
+        }
+
+        void pointer_size(CharT *&ptr, size_t &size) const {
+            const rep_s &rep = m.first();
+            if (rep.is_short()) {
+                ptr = const_cast<CharT *>(rep.shortBuf.buffer);
+                size = rep.shortBuf.length;
+            } else {
+                ptr = rep.longBuf.buffer;
+                size = rep.longBuf.length;
+            }
+        }
+
+        void zero() {
+            rep_s *buf = &m.first();
+            __static_assert(
+                sizeof(*buf) % sizeof(size_t) == 0,
+                "string buffer size must be word-aligned"
+            );
+            for (size_t i = sizeof(*buf) / sizeof(size_t); i != 0; i--) {
+                ((size_t *)&buf)[i] = 0;
+            }
+        }
 
     public:
+        basic_string(const Allocator &alloc = Allocator()) : m(alloc) { zero(); }
+
+        basic_string(const basic_string &other) : m(other.m.second()) {
+            const rep_s &other_rep = other.m.first();
+            if (other_rep.is_short()) {
+                m.first() = other_rep;
+            } else {
+                zero();
+
+                const __longbuf &buf = other_rep.longBuf;
+                reserve(buf.length);
+                do_replace(
+                    0, 0, buf.buffer, buf.buffer + buf.length, random_access_iterator_tag()
+                );
+            }
+        }
+
+        basic_string(const CharT *str) {
+            zero();
+
+            size_t length = Traits::length(str);
+            reserve(length);
+            do_replace(0, 0, str, str + length, random_access_iterator_tag());
+        }
+
+        ~basic_string() {
+            rep_s &rep = m.first();
+            if (!rep.is_short()) {
+                m.second().deallocate(rep.longBuf.buffer, rep.longBuf.length);
+            }
+        }
+
+        size_t size() const {
+            const rep_s &rep = m.first();
+            return rep.is_short() ? rep.shortBuf.length : rep.longBuf.length;
+        }
 
         void clear() {
-            if (!is_short()) {
-                m_ShortBuf.buffer[0] = '\0';
-                m_ShortBuf.length &= 0x80;
+            rep_s &rep = m.first();
+            if (!rep.is_short()) {
+                rep.shortBuf.buffer[0] = '\0';
+                rep.shortBuf.length &= 0x80;
             } else {
-                *m_LongBuf.buffer = '\0';
-                m_LongBuf.length = 0;
+                *rep.longBuf.buffer = '\0';
+                rep.longBuf.length = 0;
+            }
+        }
+
+        void append(const basic_string &str) {
+            random_access_iterator_tag tag; // required to be here to match
+
+            size_t cur_size = size();
+
+            CharT *src;
+            size_t size;
+            str.pointer_size(src, size);
+
+            do_replace(cur_size, 0, src, src + size, tag);
+        }
+
+        void append(const CharT *str) {
+            random_access_iterator_tag tag; // required to be here to match
+
+            size_t cur_size = size();
+            do_replace(cur_size, 0, str, str + Traits::length(str), tag);
+        }
+
+        void append(CharT c) {
+            CharT buf[2];
+            buf[0] = c;
+            size_t cur_size = size();
+            do_replace(cur_size, 0, buf, buf + 1, random_access_iterator_tag());
+        }
+
+        void operator+=(const basic_string &str) { append(str); }
+        void operator+=(const char *str) { append(str); }
+        void operator+=(CharT c) { append(c); }
+
+        void reserve(size_t size) {}
+
+    private:
+        void do_replace(
+            size_t min_size,
+            size_t append_size,
+            const CharT *start,
+            const CharT *end,
+            random_access_iterator_tag
+        ) {
+            CharT *buffer;
+            size_t length;
+            size_t capacity;
+
+            rep_s &rep = m.first();
+            if (rep.is_short()) {
+                buffer = rep.shortBuf.buffer;
+                capacity = sizeof(rep.shortBuf.buffer);
+                length = rep.shortBuf.length & 0x80;
+            } else {
+                buffer = rep.longBuf.buffer;
+                capacity = rep.longBuf.capacity;
+                length = rep.longBuf.length;
+            }
+
+            if (length < min_size) {
+                throw out_of_range("basic_string: out_of_range");
+            }
+
+            size_t remaining = min(length - min_size, append_size);
+            size_t dist = end - start;
+            if (dist > (INT_MAX - 1) || (INT_MAX - dist) < (length - remaining)) {
+                throw length_error("basic_string: length_error");
+            }
+
+            size_t final_size = dist + (length - remaining);
+            size_t n = length - (min_size + remaining);
+            if (final_size >= capacity) {
+                length = capacity;
+
+                int new_size;
+                while (new_size = (length + 0xF) & 0xFFFFFFF0,
+                       final_size + 1 <= new_size) {
+                    length = new_size << 1;
+                }
+
+                CharT *new_buf = m.second().allocate(new_size);
+                if (min_size != 0) {
+                    std::memcpy(new_buf, buffer, min_size);
+                }
+                std::memmove(new_buf + min_size, start, end - start);
+                if (n != 0) {
+                    std::memcpy(
+                        new_buf + min_size + dist, buffer + remaining + min_size, n
+                    );
+                }
+                new_buf[final_size] = *"";
+
+                if (!rep.is_short()) {
+                    m.second().deallocate(buffer, capacity);
+                } else {
+                    rep.shortFlag |= 0x80000000;
+                }
+
+                rep.longBuf.buffer = new_buf;
+                rep.longBuf.length = final_size;
+                rep.longBuf.capacity =
+                    ((length + 0xF) & 0x7FFFFFF0) | (rep.longBuf.capacity & 0x80000000);
+            } else {
+                basic_string copy(m.second());
+
+                if (n != 0 && buffer + dist + min_size < end && end <= buffer + length) {
+                    copy.do_replace(
+                        0, append_size, start, end, random_access_iterator_tag()
+                    );
+                    CharT *new_start;
+                    size_t dummy;
+                    copy.pointer_size(new_start, dummy);
+                    start = new_start;
+                }
+
+                if (n != 0) {
+                    std::memmove(
+                        buffer + dist + min_size, buffer + remaining + min_size, n
+                    );
+                }
+                memmove(buffer + min_size, start, dist);
+                buffer[final_size] = *"";
+
+                if (!rep.is_short()) {
+                    rep.longBuf.length = final_size;
+                } else {
+                    rep.shortBuf.length =
+                        (final_size & 0x7F) | (rep.shortBuf.length & 0x80);
+                }
             }
         }
     };

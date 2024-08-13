@@ -37,7 +37,7 @@ namespace std {
             }
             return reinterpret_cast<pointer>(operator new(count * sizeof(T)));
         }
-        void deallocate(pointer p, size_t n) { operator delete(p); }
+        void deallocate(pointer p, size_type n) { operator delete(p); }
 
         void construct(pointer p, const_reference val) { new (p) T(val); }
         void destroy(pointer p) { __destroy_aux(p, is_trivially_destructible<T>()); }

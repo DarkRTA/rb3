@@ -220,6 +220,9 @@
         "sdk/ec": {
             "base": "base",
             "flags": [
+                "-sdata 0",
+                "-sdata2 0",
+
                 "-func_align 4",
                 "-Cpp_exceptions on",
 
