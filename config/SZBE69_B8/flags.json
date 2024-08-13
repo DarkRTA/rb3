@@ -233,6 +233,17 @@
                 "-d _STLP_WHOLE_NATIVE_STD",
                 "-d _STLP_DONT_REDEFINE_STD"
             ]
+        },
+        "sdk/ec_c": {
+            "base": "base",
+            "flags": [
+                "-lang=c99",
+                "-O4,s",
+                "-inline noauto",
+
+                "-d _STLP_WHOLE_NATIVE_STD",
+                "-d _STLP_DONT_REDEFINE_STD"
+            ]
         }
     }
 }

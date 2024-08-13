@@ -8767,11 +8767,11 @@ sdk/ec/src/ec_md5c.c:
 	.text       start:0x80AD6610 end:0x80AD7220
 	.data       start:0x80C6B540 end:0x80C6B580
 
-sdk/ec/src/shr_th_bw.cpp:
+sdk/ec/src/shr_th_bw.c:
 	.text       start:0x80AD7220 end:0x80AD7590
 	.data       start:0x80C6B580 end:0x80C6B5E8
 
-sdk/ec/src/shr_time_bw.cpp:
+sdk/ec/src/shr_time_bw.c:
 	.text       start:0x80AD7590 end:0x80AD75C0
 
 sdk/ec/src/ec_asyncOp.cpp:
