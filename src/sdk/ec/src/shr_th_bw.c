@@ -104,8 +104,8 @@ int _SHR_thread_join(_SHRThread* thread, void* context) {
     return 0;
 }
 
-int _SHR_thread_sleep(s64 ms) {
-    OSSleepTicks(OSMillisecondsToTicks(ms));
+int _SHR_thread_sleep(u32 ms) {
+    OSSleepTicks(OSMillisecondsToTicks((s64)ms));
     return 0;
 }
 

@@ -883,7 +883,7 @@
         "objects": {
             "sdk/ec/src/ec_md5c.c": "NonMatching",
 
-            "sdk/ec/src/shr_th_bw.c": "NonMatching",
+            "sdk/ec/src/shr_th_bw.c": "Matching",
             "sdk/ec/src/shr_time_bw.c": "Matching"
         }
     },

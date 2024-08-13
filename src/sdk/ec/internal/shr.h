@@ -43,7 +43,7 @@ int _SHR_message_receive(_SHRMessageQueue* queue, OSMessage* message, u32 flags)
 
 int _SHR_thread_create(_SHRThread* thread, _SHRThreadAttr* attr, OSThreadFunc func, void* context);
 int _SHR_thread_join(_SHRThread* thread, void* context);
-int _SHR_thread_sleep(s64 ms);
+int _SHR_thread_sleep(u32 ms);
 
 s64 _SHR_tick_get(void);
 s64 _SHR_ticks_to_milliseconds(u64 ticks);
