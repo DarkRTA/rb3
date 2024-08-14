@@ -280,9 +280,54 @@ BEGIN_LOADS(RndTransformable)
             (*it)->SetTransParent(this, false);
         }
     }
+    if(gRev == 6){
+        bs >> (int&)mConstraint;
+        mPreserveScale = mConstraint == kTargetWorld;
+        // what else is happening here?
+    }
 
-
-    if (TransConstraint() == kParentWorld) SetTransParent(mTarget, false);
+    if(gRev != 0 && gRev < 7){
+        Vector3 v;
+        bs >> v;
+        MILO_ASSERT(v, 0);
+    }
+    if(gRev == 2 || gRev == 3 || gRev == 4){
+        bool b3u;
+        bs >> b3u;
+    }
+    if(gRev == 6 || gRev == 7){
+        Sphere s;
+        bs >> s;
+        RndDrawable* d = dynamic_cast<RndDrawable*>(this);
+        if(d) d->SetSphere(s);
+    }
+    if(gRev > 5){
+        if(gLoadingProxyFromDisk){
+            ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+            tPtr.Load(bs, false, 0);
+        }
+        else bs >> mTarget;
+    }
+    if(gRev > 6) bs >> mPreserveScale;
+    if(gRev > 8){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        if(!gLoadingProxyFromDisk){
+            bs >> tPtr;
+            SetTransParent(tPtr, false);
+        }
+        else tPtr.Load(bs, false, 0); 
+    }
+    else if(gRev > 6){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        bs >> tPtr;
+        if(tPtr != this){
+            SetTransParent(tPtr, false);
+            mConstraint = 2;
+        }
+    }
+    else if(gRev == 6 && mConstraint == 2){
+        SetTransParent(mTarget, false);
+    }
 END_LOADS
 
 DECOMP_FORCEACTIVE(Trans, "Transform origin no longer supported\n")
