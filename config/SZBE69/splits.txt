@@ -1082,6 +1082,7 @@ system/ui/UIListWidget.cpp:
 system/ui/UIPanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
+	.bss        start:0x80988298 end:0x8098829C
 
 system/ui/UIPicture.cpp:
 	.text       start:0x8057464C end:0x80575698

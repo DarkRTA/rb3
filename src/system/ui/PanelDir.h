@@ -55,6 +55,7 @@ public:
     UIComponent* GetFirstFocusableComponent();
     bool PropSyncEditModePanels(std::vector<FilePath>&, DataNode&, DataArray*, int, PropOp);
     void SetCam(RndCam* cam){ mCam = cam; }
+    void SetOwnerPanel(class UIPanel* p){ mOwnerPanel = p; }
 
     DataNode GetFocusableComponentList();
     DataNode OnEnableComponent(const DataArray*);
