@@ -100,13 +100,12 @@ extern "C" {
 typedef struct MD5state_st {
     MD5_LONG A, B, C, D;
     MD5_LONG Nl, Nh;
-    MD5_LONG data[MD5_LBLOCK];
-    // unsigned int num; // incurs too much stack usage
+    unsigned char data[MD5_CBLOCK];
 } MD5_CTX;
 
 void MD5_Init(MD5_CTX *c);
-int MD5_Update(MD5_CTX *c, const void *data, size_t len);
-int MD5_Final(unsigned char *md, MD5_CTX *c);
+void MD5_Update(MD5_CTX *c, const void *data, size_t len);
+void MD5_Final(unsigned char *md, MD5_CTX *c);
 unsigned char *MD5(const unsigned char *d, size_t n, unsigned char *md);
 void MD5_Transform(MD5_CTX *c, const unsigned char *b);
 
