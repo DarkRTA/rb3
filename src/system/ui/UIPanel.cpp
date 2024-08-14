@@ -64,21 +64,21 @@ void UIPanel::UnsetLoadedDir() {
 void UIPanel::Load(){
     if(mState != kUnloaded) MILO_FAIL("Can't load a panel already in state %i", mState);
     HandleType(load_msg);
-    if(mTypeDef){
+    if(TypeDef()){
         static Symbol fileSym("file");
         FilePath fp;
         LoaderPos pos = kLoadBack;
-        DataArray* found = mTypeDef->FindArray(fileSym, false);
+        DataArray* found = TypeDef()->FindArray(fileSym, false);
         if(found){
             Hmx::Object* thisObj = DataSetThis(this);
-            fp.Set(FileGetPath(found->mFile.Str(), 0), found->Str(1));
+            fp.Set(FileGetPath(found->File(), 0), found->Str(1));
             if(found->Size() == 3){
                 pos = (LoaderPos)found->Int(2);
             }
             DataSetThis(thisObj);
         }
         int heapInt = GetCurrentHeapNum();
-        DataArray* heapArr = mTypeDef->FindArray(heap, false);
+        DataArray* heapArr = TypeDef()->FindArray(heap, false);
         if(heapArr){
             heapInt = MemFindHeap(heapArr->Str(1));
         }
