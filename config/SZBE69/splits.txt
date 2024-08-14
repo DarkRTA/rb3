@@ -1186,7 +1186,10 @@ system/rndobj/PartLauncher.cpp:
 	.text       start:0x80621C44 end:0x806236B0
 
 system/rndobj/Poll.cpp:
-	.text		start:0x806236B0 end:0x806238C0
+	.text       start:0x806236B0 end:0x806238C0
+	.data       start:0x80898148 end:0x808981D8
+	.sbss       start:0x808E4CD0 end:0x808E4CD8
+	.bss        start:0x8098D130 end:0x8098D138
 
 system/rndobj/Rnd.cpp:
 	.text       start:0x80637BD0 end:0x8063DD48

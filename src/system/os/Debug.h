@@ -97,7 +97,7 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT(cond, line) (void)(cond)
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
-#  define MILO_WARN(...) ((void)0)
+#  define MILO_WARN(...) (void)(__VA_ARGS__)
 #  define MILO_LOG(...) ((void)0)
 
 #  define MILO_TRY if (true)
