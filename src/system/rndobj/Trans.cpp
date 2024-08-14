@@ -43,11 +43,11 @@ RndTransformable::~RndTransformable() {
 }
 
 void RndTransformable::TransformTransAnims(const Transform& tf){
-    std::vector<RndTransformable*>::const_reverse_iterator it = mChildren.rbegin();
-    std::vector<RndTransformable*>::const_reverse_iterator itEnd = mChildren.rend();
-    for(; it != itEnd; it++){
+    std::vector<ObjRef*>::const_reverse_iterator it = mRefs.rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = mRefs.rend();
+    for(; it != itEnd; ++it){
         RndTransAnim* trans = dynamic_cast<RndTransAnim*>((*it)->RefOwner());
-        if(trans && trans->mTrans == this){
+        if(trans && trans->Trans() == this){
             TransformKeys(trans,tf);
         }
     }
@@ -70,13 +70,13 @@ void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){
             TransformTransAnims(tf78);
         }
         if(mParent){
-            RemoveSwap(mParent->TransChildren(), this);
+            RemoveSwap(mParent->mChildren, this);
             RemoveSwap(mParent->mCache->mChildren, mCache);
         }
         mParent = newParent;
         unsigned int newflags = newParent ? (unsigned int)newParent->mCache : 0;
         mCache->Set(newflags);
-        if(b){
+        if(newParent){
             newParent->mChildren.push_back(this);
             newParent->mCache->mChildren.push_back(mCache);
         }
@@ -328,24 +328,24 @@ DataNode RndTransformable::OnCopyLocalTo(const DataArray* da){
 }
 
 DataNode RndTransformable::OnGetWorldForward(const DataArray* da){
-    *da->Var(2) = DataNode(WorldXfm().m.y.X());
-    *da->Var(3) = DataNode(WorldXfm().m.y.Y());
-    *da->Var(4) = DataNode(WorldXfm().m.y.Z());
+    *da->Var(2) = DataNode(WorldXfm().m.y.x);
+    *da->Var(3) = DataNode(WorldXfm().m.y.y);
+    *da->Var(4) = DataNode(WorldXfm().m.y.z);
     return DataNode(0);
 }
 
 DataNode RndTransformable::OnGetWorldPos(const DataArray* da) {
-    *da->Var(2) = DataNode(WorldXfm().v.X());
-    *da->Var(3) = DataNode(WorldXfm().v.Y());
-    *da->Var(4) = DataNode(WorldXfm().v.Z());
+    *da->Var(2) = DataNode(WorldXfm().v.x);
+    *da->Var(3) = DataNode(WorldXfm().v.y);
+    *da->Var(4) = DataNode(WorldXfm().v.z);
     return DataNode(0);
 }
 
 DataNode RndTransformable::OnGetLocalPos(const DataArray* da) {
-    *da->Var(2) = LocalXfm().v.X();
-    *da->Var(3) = LocalXfm().v.Y();
-    *da->Var(4) = LocalXfm().v.Z();
-    return DataNode();
+    *da->Var(2) = LocalXfm().v.x;
+    *da->Var(3) = LocalXfm().v.y;
+    *da->Var(4) = LocalXfm().v.z;
+    return DataNode(0);
 }
 
 DataNode RndTransformable::OnGetLocalPosIndex(const DataArray* a) {
@@ -365,26 +365,124 @@ DataNode RndTransformable::OnGetLocalRot(const DataArray* da){
     return DataNode(0);
 }
 
+DataNode RndTransformable::OnGetLocalRotIndex(const DataArray* a){
+    MILO_ASSERT(a->Int(2) < 3, 0x395);
+    Vector3 v1c;
+    Vector3 v28;
+    MakeEulerScale(LocalXfm().m, v1c, v28);
+    v1c *= RAD2DEG;
+    return DataNode(v1c[a->Int(2)]);
+}
+
+DataNode RndTransformable::OnGetWorldRot(const DataArray* da){
+    Vector3 v20;
+    MakeEuler(WorldXfm().m, v20);
+    v20 *= RAD2DEG;
+    *da->Var(2) = DataNode(v20.x);
+    *da->Var(3) = DataNode(v20.y);
+    *da->Var(4) = DataNode(v20.z);
+    return DataNode(0);
+}
+
 DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {
-    mLocalXfm.v.Set(da->Float(2), da->Float(3), da->Float(4));
-    mCache->SetDirty();
-    return DataNode();
+#ifdef MILO_DEBUG
+    SetLocalPos(da->Float(2), da->Float(3), da->Float(4));
+#else
+    SetLocalPos(Vector3(da->Float(2), da->Float(3), da->Float(4)));
+#endif
+    return DataNode(0);
 }
 
 DataNode RndTransformable::OnSetLocalPosIndex(const DataArray* a) {
     MILO_ASSERT(a->Int(2) < 3, 943);
-    mLocalXfm.v[a->Int(2)] = a->Float(3);
-    mCache->SetDirty();
+    Vector3 v28(LocalXfm().v);
+    v28[a->Int(2)] = a->Float(3);
+    SetLocalPos(v28);
+    return DataNode(0);
 }
 
-void RndTransformable::SetLocalRot(Vector3) {
-
+void RndTransformable::SetLocalRot(Vector3 v) {
+    v *= DEG2RAD;
+    Hmx::Matrix3 m;
+    MakeRotMatrix(v, m, true);
+    SetLocalRot(m);
 }
 
 DataNode RndTransformable::OnSetLocalRot(const DataArray* da) {
     Vector3 v(da->Float(2), da->Float(3), da->Float(4));
     SetLocalRot(v);
-    return DataNode();
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnSetLocalRotIndex(const DataArray* a){
+    MILO_ASSERT(a->Int(2) < 3, 0x3C8);
+    Vector3 v5c;
+    Vector3 v68;
+    MakeEulerScale(LocalXfm().m, v5c, v68);
+    v5c[a->Int(2)] = a->Float(3) * DEG2RAD;
+    Hmx::Matrix3 m50;
+    MakeRotMatrix(v5c, m50, true);
+    Scale(v68, m50, m50);
+    SetLocalRot(m50);
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnSetLocalRotMat(const DataArray* da){
+    Hmx::Matrix3 m(
+        da->Float(2), da->Float(3), da->Float(4),
+        da->Float(5), da->Float(6), da->Float(7),
+        da->Float(8), da->Float(9), da->Float(10)
+    );
+    SetLocalRot(m);
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnSetLocalScale(const DataArray* da){
+    SetLocalScale(this, Vector3(da->Float(2), da->Float(3), da->Float(4)));
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnSetLocalScaleIndex(const DataArray* a){
+    MILO_ASSERT(a->Int(2) < 3, 0x3E6);
+    Vector3 v28;
+    MakeScale(LocalXfm().m, v28);
+    v28[a->Int(2)] = a->Float(3);
+    SetLocalScale(this, v28);
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnGetLocalScale(const DataArray* da){
+    Vector3 v20;
+    MakeScale(LocalXfm().m, v20);
+    *da->Var(2) = DataNode(v20.x);
+    *da->Var(3) = DataNode(v20.y);
+    *da->Var(4) = DataNode(v20.z);
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnGetLocalScaleIndex(const DataArray* a){
+    MILO_ASSERT(a->Int(2) < 3, 0x3FE);
+    Vector3 v28;
+    MakeScale(LocalXfm().m, v28);
+    return DataNode(v28[a->Int(2)]);
+}
+
+DataNode RndTransformable::OnSetTransConstraint(const DataArray* da){
+    RndTransformable* trans = 0;
+    if(da->Size() > 3) trans = da->Obj<RndTransformable>(3);
+    SetTransConstraint((Constraint)da->Int(2), trans, false);
+    return DataNode(0);
+}
+
+DataNode RndTransformable::OnGetChildren(const DataArray* da){
+    DataArray* arr = new DataArray((int)mChildren.size());
+    int idx = 0;
+    for(std::vector<RndTransformable*>::iterator it = mChildren.begin(); it != mChildren.end(); it++){
+        arr->Node(idx++) = DataNode(*it);
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
 }
 
 BEGIN_PROPSYNCS(RndTransformable)

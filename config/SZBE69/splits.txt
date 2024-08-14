@@ -1228,6 +1228,7 @@ system/rndobj/Text.cpp:
 system/rndobj/Trans.cpp:
 	.text       start:0x8064D808 end:0x806513DC
 	.ctors      start:0x807F0014 end:0x807F0018
+	.bss        start:0x8098D6C8 end:0x8098D6D8
 
 system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
