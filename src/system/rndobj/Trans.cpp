@@ -257,9 +257,7 @@ void RndTransformable::Print() {
 }
 
 void RndTransformable::Highlight(){
-    Transform& tf = (mCache->mFlags & 1) ? WorldXfm_Force() : mWorldXfm;
-    Hmx::Color col;
-    UtilDrawAxes(tf, 3.0f, col);
+    UtilDrawAxes(WorldXfm(), 3.0f, Hmx::Color(1.0f,1.0f,1.0f,1.0f));
 }
 
 SAVE_OBJ(RndTransformable, 586)

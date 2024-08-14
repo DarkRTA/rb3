@@ -76,8 +76,7 @@ BEGIN_COPYS(RndDrawable)
                 }
             }
         #else
-            float rad = mSphere.GetRadius();
-            if(rad && c->mSphere.GetRadius()){
+            if(mSphere.GetRadius() && c->mSphere.GetRadius()){
                 COPY_MEMBER(mSphere);
             }
         #endif
