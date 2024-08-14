@@ -1129,6 +1129,7 @@ system/rndobj/DOFProc.cpp:
 system/rndobj/Draw.cpp:
 	.text       start:0x805D6130 end:0x805D7408
 	.data       start:0x808954D8 end:0x808955C8
+	.bss        start:0x809891C0 end:0x809891C8
 
 system/rndobj/Env.cpp:
 	.text       start:0x805D7408 end:0x805D9A64

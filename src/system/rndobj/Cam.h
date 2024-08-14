@@ -38,6 +38,10 @@ public:
     float FarPlane() const { return mFarPlane; }
     float YFov() const { return mYFov; }
     RndTex* TargetTex(){ return mTargetTex; }
+    
+    bool CompareSphereToWorld(const Sphere& s) const {
+        return s > mWorldFrustum;
+    }
 
     static RndCam* sCurrent;
     NEW_OBJ(RndCam)
