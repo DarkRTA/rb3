@@ -35,8 +35,32 @@ namespace std {
         typedef Reference reference;
     };
 
-    template <class Iter>
-    class insert_iterator;
+    template <class Container>
+    struct insert_iterator : public iterator<output_iterator_tag, void, void, void, void> {
+        typedef Container container_type;
+
+        insert_iterator(Container& c, typename Container::iterator i) : container(&c), iter(i) { }
+
+        insert_iterator& operator=(typename Container::const_reference value) {
+            iter = container->insert(iter, value);
+            ++iter;
+            return *this;
+        }
+
+        insert_iterator& operator*() { return *this; }
+        insert_iterator& operator++() { return *this; }
+        insert_iterator& operator++(int) { return *this; }
+
+    protected:
+        Container* container;
+        typename Container::iterator iter;
+    };
+
+    template <class Container>
+    insert_iterator<Container> inserter(Container& c, typename Container::iterator i) {
+        return insert_iterator<Container>(c, i);
+    }
+
     template <class Iterator1, class Iterator2>
     bool operator==(const insert_iterator<Iterator1> &lhs, const insert_iterator<Iterator2> &rhs);
     template <class Iterator1, class Iterator2>

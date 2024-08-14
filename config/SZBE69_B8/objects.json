@@ -838,7 +838,7 @@
         "objects": {
             "sdk/ec/src/ec_api.cpp": "NonMatching",
             "sdk/ec/src/ec_asyncOp.cpp": "NonMatching",
-            "sdk/ec/src/ec_base64.cpp": "NonMatching",
+            "sdk/ec/src/ec_base64.cpp": "Equivalent",
             "sdk/ec/src/ec_checkECard.cpp": "NonMatching",
             "sdk/ec/src/ec_checkReg.cpp": "NonMatching",
             "sdk/ec/src/ec_chkDevStat.cpp": "NonMatching",

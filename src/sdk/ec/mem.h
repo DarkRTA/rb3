@@ -9,6 +9,20 @@
 template <typename T>
 class ECAllocator {
 public:
+    typedef T *pointer;
+    typedef const T *const_pointer;
+    typedef void *void_pointer;
+    typedef const void *const_void_pointer;
+
+    typedef T value_type;
+    typedef std::size_t size_type;
+    typedef std::ptrdiff_t difference_type;
+
+    template <typename U>
+    class rebind {
+        typedef ECAllocator<U> other;
+    };
+
     T *allocate(std::size_t count, const void *hint = 0);
     void deallocate(T *p, std::size_t n);
 
