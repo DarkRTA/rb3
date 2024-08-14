@@ -79,9 +79,10 @@
 
             "network/ObjDup/DOFilter.cpp": "NonMatching",
 
+            "network/Plugins/JobGetPublicURL.cpp": "Matching",
+            "network/Plugins/MD5.cpp": "NonMatching",
             "network/Plugins/ZLibPlugin.cpp": "Matching",
 
-            "network/Plugins/JobGetPublicURL.cpp": "Matching",
             "network/Services/UserMessage.cpp": "Matching"
         }
     },
