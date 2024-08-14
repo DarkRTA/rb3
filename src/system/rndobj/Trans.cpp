@@ -262,6 +262,7 @@ void RndTransformable::Highlight(){
 
 SAVE_OBJ(RndTransformable, 586)
 
+// retail: https://decomp.me/scratch/gAIGj
 BEGIN_LOADS(RndTransformable)
     LOAD_REVS(bs)
     ASSERT_REVS(9, 0)
@@ -283,6 +284,8 @@ BEGIN_LOADS(RndTransformable)
 
     if (TransConstraint() == kParentWorld) SetTransParent(mTarget, false);
 END_LOADS
+
+DECOMP_FORCEACTIVE(Trans, "Transform origin no longer supported\n")
 
 #pragma push
 #pragma dont_inline on
