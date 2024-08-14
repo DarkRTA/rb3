@@ -61,11 +61,11 @@ BEGIN_LOADS(RndAnimatable)
     if(gRev < 1){
         int count;
         bs >> count;
-        bool theLoop = false;
         float theScale = 1.0f;
         float theOffset = 0.0f;
         float theMin = 0.0f;
         float theMax = 0.0f;
+        bool theLoop = false;
         int read;
         int unused1, unused2, unused3, unused4, unused5, unused6, unused7;
         while(count-- != 0){
