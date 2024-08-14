@@ -3,7 +3,7 @@
 
 namespace ec {
 
-    int ec::md5_sum(const void* data, size_t length, ECString& dest) {
+    ECResult ec::md5_sum(const void* data, size_t length, ECString& dest) {
         MD5_CTX md5;
         unsigned char hash[16];
         MD5_Init(&md5);
@@ -11,11 +11,11 @@ namespace ec {
         MD5_Final(hash, &md5);
 
         dest.clear();
-        if (ec::hex_encode(hash, sizeof(hash), dest) < 0) {
-            return -1;
+        if (EC_FAIL(ec::hex_encode(hash, sizeof(hash), dest))) {
+            return ECResult_Failure;
         }
 
-        return 0;
+        return ECResult_Success;
     }
 
 }

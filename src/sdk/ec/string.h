@@ -3,6 +3,7 @@
 
 #include <MSL_C++/string>
 #include <ec/mem.h>
+#include <ec/result.h>
 
 typedef std::basic_string<char, std::char_traits<char>, ECAllocator<char> > ECString;
 
@@ -30,11 +31,11 @@ namespace ec {
 
     ECString toHexString(unsigned long long value, int digits);
 
-    int hex_encode(const unsigned char* data, size_t length, ECString& dest);
-    int hex_decode(const ECString& data, unsigned char* dest, size_t length);
+    ECResult hex_encode(const unsigned char* data, size_t length, ECString& dest);
+    ECResult hex_decode(const ECString& data, unsigned char* dest, size_t length);
 
-    int xml_escape(const ECString &src, ECString &dest);
-    int xml_unescape(const ECString &src, ECString &dest);
+    ECResult xml_escape(const ECString &src, ECString &dest);
+    ECResult xml_unescape(const ECString &src, ECString &dest);
 
 }
 
