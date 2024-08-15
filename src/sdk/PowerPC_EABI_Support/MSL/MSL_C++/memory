@@ -10,6 +10,7 @@ namespace std {
 
     template <class T>
     class allocator {
+    public:
         typedef T value_type;
         typedef T *pointer;
         typedef const T *const_pointer;
@@ -32,7 +33,7 @@ namespace std {
         size_type max_size() const throw() { return 0x3FFFFFFF; } // guessed number
 
         pointer allocate(size_type count, const void *hint = 0) {
-            if (__n > max_size()) {
+            if (count > max_size()) {
                 throw bad_alloc();
             }
             return reinterpret_cast<pointer>(operator new(count * sizeof(T)));
