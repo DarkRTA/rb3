@@ -31,6 +31,7 @@
             "system/rndobj/Anim.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
 

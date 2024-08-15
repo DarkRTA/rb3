@@ -97,7 +97,7 @@ public:
         }
     }
 
-    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
+    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;

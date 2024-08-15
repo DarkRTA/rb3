@@ -107,7 +107,7 @@ DataNode RndLightAnim::OnCopyKeys(DataArray* da) {
     for (Keys<Hmx::Color, Hmx::Color>::iterator it = mColorKeys.begin(); it != mColorKeys.end(); it++) {
         it->value *= f;
     }
-    return DataNode();
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(RndLightAnim)
