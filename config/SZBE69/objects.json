@@ -29,6 +29,7 @@
             "system/math/Key.cpp": "NonMatching",
 
             "system/rndobj/Anim.cpp": "NonMatching",
+            "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",
