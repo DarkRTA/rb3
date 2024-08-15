@@ -83,6 +83,7 @@ public:
     bool operator==(const Vector3& v) const {
         return x == v.x && y == v.y && z == v.z;
     }
+    operator bool() const { return x && y && z; }
     // bool operator!=(const Vector3 &) const;
 };
 
