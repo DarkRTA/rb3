@@ -19,7 +19,7 @@ void CharIKHand::Poll(){
     if(!trans || mTargets.empty()) return;
     Vector3 vec(0.0f, 0.0f, 0.0f);
     Hmx::Quat quat(0.0f, 0.0f, 0.0f, 0.0f);
-    UpdateHands();
+    UpdateHand();
     if(mTargets.size() == 1){
         RndTransformable* frontTrans = mTargets.front().mTarget;
         if(frontTrans){

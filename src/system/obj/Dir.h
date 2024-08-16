@@ -226,6 +226,7 @@ public:
     DirLoader* Loader() const { return mLoader; }
     Hmx::Object* CurCam(){ return mCurCam; }
     bool IsSubDir() const { return mIsSubDir; }
+    const char* GetPathName() const { return mPathName; }
 
     DataNode OnFind(DataArray*);
 

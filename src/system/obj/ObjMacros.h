@@ -37,10 +37,16 @@ const char* PathName(const class Hmx::Object*);
 
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
-#define BEGIN_HANDLERS(objType) \
-DataNode objType::Handle(DataArray* _msg, bool _warn){ \
-    Symbol sym = _msg->Sym(1); \
-    MessageTimer timer((MessageTimer::Active()) ? static_cast<Hmx::Object*>(this) : 0, sym);
+#ifdef MILO_DEBUG
+    #define BEGIN_HANDLERS(objType) \
+    DataNode objType::Handle(DataArray* _msg, bool _warn){ \
+        Symbol sym = _msg->Sym(1); \
+        MessageTimer timer((MessageTimer::Active()) ? static_cast<Hmx::Object*>(this) : 0, sym);
+#else
+    #define BEGIN_HANDLERS(objType) \
+    DataNode objType::Handle(DataArray* _msg, bool _warn){ \
+        Symbol sym = _msg->Sym(1);
+#endif
 
 #define HANDLE(symbol, func) \
     if(sym == symbol){ \

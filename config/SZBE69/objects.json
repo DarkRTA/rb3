@@ -25,6 +25,21 @@
     "system": {
         "mw_version": "Wii/1.3",
         "cflags": "system",
-        "objects": {}
+        "objects": {
+            "system/math/Key.cpp": "NonMatching",
+
+            "system/rndobj/Anim.cpp": "NonMatching",
+            "system/rndobj/AnimFilter.cpp": "NonMatching",
+            "system/rndobj/Cam.cpp": "NonMatching",
+            "system/rndobj/CamAnim.cpp": "NonMatching",
+            "system/rndobj/Dir.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "NonMatching",
+            "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/LitAnim.cpp": "NonMatching",
+            "system/rndobj/Poll.cpp": "NonMatching",
+            "system/rndobj/Trans.cpp": "NonMatching",
+
+            "system/ui/UIPanel.cpp": "NonMatching"
+        }
     }
 }

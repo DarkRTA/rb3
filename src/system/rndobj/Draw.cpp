@@ -18,7 +18,7 @@ void RndDrawable::Draw(){
     if(mShowing){
         Sphere sphere;
         int worldSphere = MakeWorldSphere(sphere, false);
-        if(worldSphere == 0 || !(sphere > RndCam::sCurrent->mWorldFrustum)){
+        if(worldSphere == 0 || !RndCam::sCurrent->CompareSphereToWorld(sphere)){
             DrawShowing();
         }
     }
@@ -29,7 +29,7 @@ bool RndDrawable::DrawBudget(float f){
     else {
         Sphere sphere;
         int worldSphere = MakeWorldSphere(sphere, false);
-        if(worldSphere != 0 && (sphere > RndCam::sCurrent->mWorldFrustum)){
+        if(worldSphere != 0 && RndCam::sCurrent->CompareSphereToWorld(sphere)){
             return true;
         }
         else return DrawShowingBudget(f);
@@ -44,11 +44,14 @@ bool RndDrawable::DrawShowingBudget(float f){
 void RndDrawable::Highlight(){
     if(sHighlightStyle != kHighlightNone){
         Sphere s;
-        if(!MakeWorldSphere(s, false) || !(s > RndCam::sCurrent->mWorldFrustum)){
+        if(!MakeWorldSphere(s, false) || !RndCam::sCurrent->CompareSphereToWorld(s)){
             bool showing = mShowing;
             mShowing = true;
-            Hmx::Color col(1.0f, 1.0f, 0.0f);
-            UtilDrawSphere(s.center, s.radius, col);
+            #ifdef MILO_DEBUG
+                UtilDrawSphere(s.center, s.radius, Hmx::Color(1.0f, 1.0f, 0.0f));
+            #else
+                UtilDrawSphere(s.center, s.GetRadius(), Hmx::Color(1.0f, 1.0f, 0.0f));
+            #endif
             mShowing = showing;
         }
     }
@@ -63,6 +66,7 @@ BEGIN_COPYS(RndDrawable)
             COPY_MEMBER(mSphere)
         }
         else {
+        #ifdef MILO_DEBUG
             float zero = 0.0f;
             float rad = mSphere.GetRadius();
             if(rad != zero){
@@ -71,6 +75,11 @@ BEGIN_COPYS(RndDrawable)
                     COPY_MEMBER(mSphere)
                 }
             }
+        #else
+            if(mSphere.GetRadius() && c->mSphere.GetRadius()){
+                COPY_MEMBER(mSphere);
+            }
+        #endif
         }
     END_COPYING_MEMBERS
 END_COPYS
@@ -102,8 +111,8 @@ void RndDrawable::Load(BinStream& bs){
                     Hmx::Object* found = Dir()->Find<Hmx::Object>(buf, true);
                     RndEnviron* env = dynamic_cast<RndEnviron*>(found);
                     if(env){
-                        if(grp->mEnv) MILO_WARN("%s won't set %s", grp->Name(), buf);
-                        else grp->mEnv = env;
+                        if(grp->GetEnv()) MILO_WARN("%s won't set %s", grp->Name(), buf);
+                        else grp->SetEnv(env);
                     }
                     else {
                         RndCam* cam = dynamic_cast<RndCam*>(found);
@@ -144,7 +153,12 @@ void RndDrawable::DumpLoad(BinStream& bs){
         }
     }
     if(rev > 0){
+    #ifdef MILO_DEBUG
         bs >> w >> x >> y >> z;
+    #else
+        Sphere s;
+        bs >> s;
+    #endif
     }
     if(rev > 2){
         bs >> j;
@@ -226,7 +240,7 @@ DataNode RndDrawable::OnGetSphere(const DataArray* da){
 }
 
 DataNode RndDrawable::OnSetShowing(const DataArray* da){
-    mShowing = da->Int(2) != 0;
+    SetShowing(da->Int(2));
     return DataNode(0);
 }
 

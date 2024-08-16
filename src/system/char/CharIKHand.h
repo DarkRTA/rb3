@@ -31,7 +31,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    void UpdateHands();
+    void UpdateHand();
     void IKElbow(RndTransformable*, RndTransformable*);
     void PullShoulder(Vector3&, const Transform&, const Vector3&, float);
 

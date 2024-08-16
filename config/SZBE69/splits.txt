@@ -1,17 +1,17 @@
 Sections:
-	.init       type:code
-	extab       type:rodata
-	extabindex  type:rodata
-	.text       type:code
-	.ctors      type:rodata
-	.dtors      type:rodata
-	.rodata     type:rodata
-	.data       type:data
-	.sdata      type:data
-	.sbss       type:bss
-	.sdata2     type:rodata
-	.sbss2      type:bss
-	.bss        type:bss
+	.init       type:code align:4
+	extab       type:rodata align:32
+	extabindex  type:rodata align:4
+	.text       type:code align:32
+	.ctors      type:rodata align:8
+	.dtors      type:rodata align:32
+	.rodata     type:rodata align:32
+	.data       type:data align:32
+	.sdata      type:data align:32
+	.sbss       type:bss align:16
+	.sdata2     type:rodata align:32
+	.sbss2      type:bss align:16
+	.bss        type:bss align:64
 
 rb3/unknown/800/unk_8000D980.cpp:
 	.text       start:0x8000D980 end:0x8000F364
@@ -531,6 +531,9 @@ system/math/Trig.cpp:
 	.text       start:0x802E2E28 end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
+
+system/math/Key.cpp:
+	.text       start:0x802E33CC end:0x802E40D0
 
 system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
@@ -1082,6 +1085,7 @@ system/ui/UIListWidget.cpp:
 system/ui/UIPanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
+	.bss        start:0x80988298 end:0x8098829C
 
 system/ui/UIPicture.cpp:
 	.text       start:0x8057464C end:0x80575698
@@ -1098,141 +1102,159 @@ rb3/colorpalette.cpp:
 rb3/stubs/stubonef.cpp:
 	.text       start:0x8059FF1C end:0x8059FF28
 
-rb3/Rnd/rndanimatable.cpp:
+system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738
+	.sbss       start:0x808E4BC0 end:0x808E4BC8
 
-rb3/Rnd/rndanimfilter.cpp:
+system/rndobj/AnimFilter.cpp:
 	.text       start:0x805C8850 end:0x805C9A68
+	.data       start:0x80894738 end:0x808947F0
+	.sbss       start:0x808E4BC8 end:0x808E4BD0
 
-rb3/Rnd/rndbitmap.cpp:
+system/rndobj/Bitmap.cpp:
 	.text       start:0x805C9A68 end:0x805CAC4C
 
-rb3/Rnd/rndcam.cpp:
-	.text       start:0x805CCF80 end:0x805CD410
+system/rndobj/Cam.cpp:
+	.text       start:0x805CCF80 end:0x805CE230
+	.ctors      start:0x807EFFE0 end:0x807EFFE4
+	.data       start:0x80894A18 end:0x80894AD8
+
+system/rndobj/CamAnim.cpp:
+	.text       start:0x805CE230 end:0x805CF280
+	.data       start:0x80894AD8 end:0x80894C68
+	.sbss       start:0x808E4BD0 end:0x808E4BD8
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805CFD34
+	.text       start:0x805CF280 end:0x805CFD34
 
-rb3/Rnd/rndconsole.cpp:
+system/rndobj/Console.cpp:
 	.text       start:0x805CFD34 end:0x805D22A8
 
-rb3/Rnd/rnddir.cpp:
+system/rndobj/Dir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
 
-rb3/Rnd/dofproc.cpp:
+system/rndobj/DOFProc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
 	.data       start:0x80895410 end:0x808954B8
 	.bss        start:0x809891B8 end:0x809891C0
 
-rb3/Rnd/rnddrawable.cpp:
+system/rndobj/Draw.cpp:
 	.text       start:0x805D6130 end:0x805D7408
 	.data       start:0x808954D8 end:0x808955C8
+	.bss        start:0x809891C0 end:0x809891C8
 
-rb3/Rnd/rndenviron.cpp:
+system/rndobj/Env.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
 	.ctors      start:0x807EFFE4 end:0x807EFFE8
 
-rb3/Rnd/rndflare.cpp:
+system/rndobj/Flare.cpp:
 	.text       start:0x805E5A84 end:0x805E70D4
 
-rb3/Rnd/rndfont.cpp:
+system/rndobj/Font.cpp:
 	.text       start:0x805E70D4 end:0x805EC3E8
 
-rb3/Rnd/rndgenerator.cpp:
+system/rndobj/Gen.cpp:
 	.text       start:0x805EC3E8 end:0x805EF00C
 
-rb3/Rnd/rndgroup.cpp:
+system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C
 
-rb3/Rnd/rndlight.cpp:
+system/rndobj/Lit.cpp:
 	.text       start:0x805F5224 end:0x805F68BC
 
-rb3/Rnd/rndlightanim.cpp:
+system/rndobj/LitAnim.cpp:
 	.text       start:0x805F68BC end:0x805F7990
 
-rb3/Rnd/rndmesh.cpp:
+system/rndobj/Mesh.cpp:
 	.text       start:0x805FCEC8 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
-rb3/Rnd/rndmeshanim.cpp:
+system/rndobj/MeshAnim.cpp:
 	.text       start:0x80606C98 end:0x8060DD84
 
-rb3/Rnd/rndmotionblur.cpp:
+system/rndobj/MotionBlur.cpp:
 	.text       start:0x80613A80 end:0x806143BC
 
-rb3/Rnd/rndmovie.cpp:
+system/rndobj/Movie.cpp:
 	.text       start:0x806143BC end:0x80614E30
 
-rb3/Rnd/rndmultimesh.cpp:
+system/rndobj/MultiMesh.cpp:
 	.text       start:0x80614E30 end:0x8061740C
 	.ctors      start:0x807EFFF4 end:0x807EFFF8
 
-rb3/Rnd/rndmultimeshproxy.cpp:
+system/rndobj/MultiMeshProxy.cpp:
 	.text       start:0x8061740C end:0x806179C4
 
-rb3/Rnd/rndoverlay.cpp:
+system/rndobj/Overlay.cpp:
 	.text       start:0x806179C4 end:0x80618780
 	.ctors      start:0x807EFFF8 end:0x807EFFFC
 
-rb3/Rnd/rndparticlesys.cpp:
+system/rndobj/Part.cpp:
 	.text       start:0x80618780 end:0x80620524
 	.ctors      start:0x807EFFFC end:0x807F0000
 
-rb3/Rnd/rndparticlesysanim.cpp:
+system/rndobj/PartAnim.cpp:
 	.text       start:0x80620524 end:0x80621C44
 
-rb3/Rnd/rndpartlauncher.cpp:
+system/rndobj/PartLauncher.cpp:
 	.text       start:0x80621C44 end:0x806236B0
 
-rb3/Rnd/rnd.cpp:
+system/rndobj/Poll.cpp:
+	.text       start:0x806236B0 end:0x806238C0
+	.data       start:0x80898148 end:0x808981D8
+	.sbss       start:0x808E4CD0 end:0x808E4CD8
+	.bss        start:0x8098D130 end:0x8098D138
+
+system/rndobj/Rnd.cpp:
 	.text       start:0x80637BD0 end:0x8063DD48
 
-rb3/Rnd/rndscreenmask.cpp:
+system/rndobj/ScreenMask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
 
-rb3/Rnd/rndset.cpp:
+system/rndobj/Set.cpp:
 	.text       start:0x8063E82C end:0x8063F1B0
 
-rb3/Rnd/shaderoptions.cpp:
+system/rndobj/ShaderOptions.cpp:
 	.text       start:0x8063F1B0 end:0x8063F464
 	.ctors      start:0x807F000C end:0x807F0010
 	.data       start:0x80899360 end:0x80899860
 	.bss        start:0x8098D4F8 end:0x8098D560
 
-rb3/Rnd/rndtex.cpp:
+system/rndobj/Tex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
 	.data       start:0x80899860 end:0x80899B30
 
-rb3/Rnd/rndtexblendcontroller.cpp:
+system/rndobj/TexBlendController.cpp:
 	.text       start:0x806412A8 end:0x80641BB8
 
-rb3/Rnd/rndtexblender.cpp:
+system/rndobj/TexBlender.cpp:
 	.text       start:0x80641BB8 end:0x80642F64
 
-rb3/Rnd/rndtexrenderer.cpp:
+system/rndobj/TexRenderer.cpp:
 	.text       start:0x80642F64 end:0x80644F3C
 
-rb3/Rnd/rndtext.cpp:
+system/rndobj/Text.cpp:
 	.text       start:0x80644F3C end:0x8064D808
 	.ctors      start:0x807F0010 end:0x807F0014
 
-rb3/Rnd/rndtransformable.cpp:
+system/rndobj/Trans.cpp:
 	.text       start:0x8064D808 end:0x806513DC
 	.ctors      start:0x807F0014 end:0x807F0018
+	.bss        start:0x8098D6C8 end:0x8098D6D8
 
-rb3/Rnd/rndtransproxy.cpp:
+system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
 
-rb3/Rnd/rndcubetex.cpp:
+system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4
 	.data       start:0x8089ABC8 end:0x8089AC68
 
-rb3/Rnd/rndfur.cpp:
+system/rndobj/Fur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
 	.data       start:0x8089AC68 end:0x8089ACF8
 
-rb3/Rnd/rndambientocclusion.cpp:
+system/rndobj/AmbientOcclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
 	.data       start:0x8089ACF8 end:0x8089AD98
 

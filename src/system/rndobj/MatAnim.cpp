@@ -59,8 +59,7 @@ void RndMatAnim::LoadStages(BinStream& bs){
             if(EndFrame() != f){
                 const char* mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
                 MILO_WARN("Splitting out %s from %s", mnm, PathName(this));
-                RndMatAnim* mAnim = Hmx::Object::New<RndMatAnim>();
-                if(mnm) mAnim->SetName(mnm, Dir());
+                RndMatAnim* mAnim = Dir()->New<RndMatAnim>(mnm);
                 mAnim->SetMat(LookupOrCreateMat(MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()));
             }
         }
@@ -128,12 +127,13 @@ void RndMatAnim::Print(){
     ts << "   alphaKeys: " << mAlphaKeys << "\n";
 }
 
-Keys<Vector3, Vector3>& RndMatAnim::TransKeys(){ return mKeysOwner->mTransKeys; }
-Keys<Vector3, Vector3>& RndMatAnim::ScaleKeys(){ return mKeysOwner->mScaleKeys; }
-RndMatAnim::TexKeys& RndMatAnim::GetTexKeys(){ return mKeysOwner->mTexKeys; }
-Keys<Vector3, Vector3>& RndMatAnim::RotKeys(){ return mKeysOwner->mRotKeys; }
-Keys<float, float>& RndMatAnim::AlphaKeys(){ return mKeysOwner->mAlphaKeys; }
-Keys<Hmx::Color, Hmx::Color>& RndMatAnim::ColorKeys(){ return mKeysOwner->mColorKeys; }
+// fn_805FB82C
+float RndMatAnim::EndFrame(){
+    float end = Max(TransKeys().LastFrame(), ScaleKeys().LastFrame());
+    end = Max(end, GetTexKeys().LastFrame(), RotKeys().LastFrame());
+    end = Max(end, AlphaKeys().LastFrame(), ColorKeys().LastFrame());
+    return end;
+}
 
 // fn_805FBA6C
 #pragma push

@@ -7,7 +7,7 @@ INIT_REVS(RndAnimFilter);
 void RndAnimFilter::SetAnim(RndAnimatable* anim){
     mAnim = anim;
     if(mAnim.operator->()){
-        mRate = mAnim->mRate;
+        SetRate(mAnim->GetRate());
         mStart = mAnim->StartFrame();
         mEnd = mAnim->EndFrame();
     }
