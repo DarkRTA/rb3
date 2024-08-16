@@ -155,10 +155,13 @@ public:
         return *this;
     }
 };
-
-#define MILO_NOTIFY_ONCE(...) { \
-        static DebugNotifyOncer _dw; \
-        _dw << MakeString(__VA_ARGS__); \
-    } \
+#ifdef MILO_DEBUG
+    #define MILO_NOTIFY_ONCE(...) { \
+            static DebugNotifyOncer _dw; \
+            _dw << MakeString(__VA_ARGS__); \
+        }
+#else
+    #define MILO_NOTIFY_ONCE(...){}
+#endif
 
 #endif

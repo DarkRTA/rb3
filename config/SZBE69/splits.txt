@@ -1116,10 +1116,12 @@ system/rndobj/Bitmap.cpp:
 	.text       start:0x805C9A68 end:0x805CAC4C
 
 system/rndobj/Cam.cpp:
-	.text       start:0x805CCF80 end:0x805CD410
+	.text       start:0x805CCF80 end:0x805CE230
+	.ctors      start:0x807EFFE0 end:0x807EFFE4
+	.data       start:0x80894A18 end:0x80894AD8
 
 rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805CFD34
+	.text       start:0x805CE230 end:0x805CFD34
 
 system/rndobj/Console.cpp:
 	.text       start:0x805CFD34 end:0x805D22A8

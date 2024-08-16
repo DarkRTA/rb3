@@ -126,13 +126,13 @@ void RndCam::UpdateLocal() {
 }
 
 DataNode RndCam::OnSetZRange(const DataArray* da){
-    mZRange.Set(da->Float(2), da->Float(3));
+    SetZRange(da->Float(2), da->Float(3));
     return DataNode(0);
 }
 
 DataNode RndCam::OnSetScreenRect(const DataArray* da){
-    mScreenRect.Set(da->Float(2), da->Float(3), da->Float(4), da->Float(5));
-    UpdateLocal();
+    Hmx::Rect r(da->Float(2), da->Float(3), da->Float(4), da->Float(5));
+    SetScreenRect(r);
     return DataNode(0);
 }
 
