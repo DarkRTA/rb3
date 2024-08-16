@@ -105,7 +105,7 @@ DataNode RndLightAnim::OnCopyKeys(DataArray* da) {
     mColorKeys = da->Obj<RndLightAnim>(2)->ColorKeys();
     float f = da->Float(3);
     for (Keys<Hmx::Color, Hmx::Color>::iterator it = mColorKeys.begin(); it != mColorKeys.end(); it++) {
-        it->value *= f;
+        Multiply(it->value, f, it->value);
     }
     return DataNode(0);
 }

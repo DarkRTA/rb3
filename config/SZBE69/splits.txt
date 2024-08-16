@@ -1178,6 +1178,15 @@ system/rndobj/Lit.cpp:
 system/rndobj/LitAnim.cpp:
 	.text       start:0x805F68BC end:0x805F7990
 
+system/rndobj/Mat.cpp:
+	.text       start:0x805F7990 end:0x805FA1D4
+
+system/rndobj/MatAnim.cpp:
+	.text       start:0x805FA1D4 end:0x805FCEC0
+	.data       start:0x80896ED8 end:0x80897080
+	.sbss       start:0x808E4C68 end:0x808E4C70
+	.bss        start:0x8098CEE8 end:0x8098CEF0
+
 system/rndobj/Mesh.cpp:
 	.text       start:0x805FCEC8 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4

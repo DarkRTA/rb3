@@ -43,6 +43,8 @@
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
+            "system/rndobj/Mat.cpp": "NonMatching",
+            "system/rndobj/MatAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/PollAnim.cpp": "NonMatching",
             "system/rndobj/PropAnim.cpp": "NonMatching",

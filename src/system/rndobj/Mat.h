@@ -124,6 +124,7 @@ public:
         mDiffuseTex = tex;
         mDirty |= 2;
     }
+    RndTex* GetDiffuseTex() const { return mDiffuseTex; }
     const Hmx::Color& GetColor() const { return mColor; }
     float Alpha() const { return mColor.alpha; }
     void SetAlpha(float f){

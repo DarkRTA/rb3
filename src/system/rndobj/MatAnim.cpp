@@ -196,6 +196,19 @@ void RndMatAnim::SetFrame(float f1, float f2){
 }
 #pragma pop
 
+void RndMatAnim::SetKey(float frame){
+    if(mMat){
+        Vector3 v28, v34;
+        MakeEulerScale(mMat->mTexXfm.m, v28, v34);
+        TransKeys().Add(mMat->mTexXfm.v, frame, true);
+        RotKeys().Add(v28, frame, true);
+        ScaleKeys().Add(v34, frame, true);
+        GetTexKeys().Add(mMat->GetDiffuseTex(), frame, true);
+        ColorKeys().Add(mMat->mColor, frame, true);
+        AlphaKeys().Add(mMat->Alpha(), frame, true);
+    }
+}
+
 void Interp(const RndMatAnim::TexPtr& texPtr, const RndMatAnim::TexPtr&, float, RndTex*& tex){
     tex = texPtr;
 }
