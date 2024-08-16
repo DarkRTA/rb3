@@ -38,6 +38,9 @@
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
+            "system/rndobj/PollAnim.cpp": "NonMatching",
+            "system/rndobj/PropKeys.cpp": "NonMatching",
+            "system/rndobj/PropAnim.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
 
             "system/ui/UIPanel.cpp": "NonMatching"
