@@ -2,6 +2,7 @@
 #define _METROWERKS_PAIR
 
 #include "MSL_C++/MSL_Common/type_traits.h"
+#include "MSL_C++/Metrowerks/type_traits.h"
 
 namespace Metrowerks {
 
@@ -48,11 +49,14 @@ namespace Metrowerks {
             int Selector = compressed_pair_selector<T1, T2>::value>
         class compressed_pair_imp {
         public:
+            typedef typename Metrowerks::call_traits<T1>::param_type first_param;
+            typedef typename Metrowerks::call_traits<T2>::param_type second_param;
+
             compressed_pair_imp() {}
-            compressed_pair_imp(const T1 &first, const T2 &second)
+            compressed_pair_imp(first_param first, second_param second)
                 : m_First(first), m_Second(second) {}
-            compressed_pair_imp(const T1 &first) : m_First(first) {}
-            compressed_pair_imp(const T2 &second) : m_Second(second) {}
+            compressed_pair_imp(first_param first) : m_First(first) {}
+            compressed_pair_imp(second_param second) : m_Second(second) {}
 
             T1 &first() { return m_First; }
             const T1 &first() const { return m_First; }
@@ -68,11 +72,14 @@ namespace Metrowerks {
         template <typename T1, typename T2>
         class compressed_pair_imp<T1, T2, 1> : private T1 {
         public:
+            typedef typename Metrowerks::call_traits<T1>::param_type first_param;
+            typedef typename Metrowerks::call_traits<T2>::param_type second_param;
+
             compressed_pair_imp() {}
-            compressed_pair_imp(const T1 &first, const T2 &second)
+            compressed_pair_imp(first_param first, second_param second)
                 : T1(first), m_Second(second) {}
-            compressed_pair_imp(const T1 &first) : T1(first) {}
-            compressed_pair_imp(const T2 &second) : m_Second(second) {}
+            compressed_pair_imp(first_param first) : T1(first) {}
+            compressed_pair_imp(second_param second) : m_Second(second) {}
 
             T1 &first() { return *this; }
             const T1 &first() const { return *this; }
@@ -87,11 +94,14 @@ namespace Metrowerks {
         template <typename T1, typename T2>
         class compressed_pair_imp<T1, T2, 2> : private T2 {
         public:
+            typedef typename Metrowerks::call_traits<T1>::param_type first_param;
+            typedef typename Metrowerks::call_traits<T2>::param_type second_param;
+
             compressed_pair_imp() {}
-            compressed_pair_imp(const T1 &first, const T2 &second)
+            compressed_pair_imp(first_param first, second_param second)
                 : m_First(first), T2(second) {}
-            compressed_pair_imp(const T1 &first) : m_First(first) {}
-            compressed_pair_imp(const T2 &second) : T2(second) {}
+            compressed_pair_imp(first_param first) : m_First(first) {}
+            compressed_pair_imp(second_param second) : T2(second) {}
 
             T1 &first() { return m_First; }
             const T1 &first() const { return m_First; }
@@ -107,10 +117,13 @@ namespace Metrowerks {
 
     template <typename T1, typename T2>
     struct compressed_pair : public details::compressed_pair_imp<T1, T2> {
+        typedef typename details::compressed_pair_imp<T1, T2>::first_param first_param;
+        typedef typename details::compressed_pair_imp<T1, T2>::second_param second_param;
+
         compressed_pair() {}
-        compressed_pair(const T1 &first) : compressed_pair_imp(first) {}
-        compressed_pair(const T2 &second) : compressed_pair_imp(second) {}
-        compressed_pair(const T1 &first, const T2 &second)
+        compressed_pair(first_param first) : compressed_pair_imp(first) {}
+        compressed_pair(second_param second) : compressed_pair_imp(second) {}
+        compressed_pair(first_param first, second_param second)
             : compressed_pair_imp(first, second) {}
     };
 
