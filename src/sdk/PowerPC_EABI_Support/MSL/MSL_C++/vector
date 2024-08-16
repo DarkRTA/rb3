@@ -1,0 +1,222 @@
+#ifndef _STD_VECTOR
+#define _STD_VECTOR
+
+#include <MSL_C++/algorithm>
+#include <MSL_C++/cstddef>
+#include <MSL_C++/memory>
+#include <MSL_C++/stdexcept>
+
+#include <MSL_C++/Metrowerks/compressed_pair.h>
+
+namespace std {
+
+    template <typename T, typename Allocator>
+    class __vec_deleter_helper;
+
+    template <typename T, typename Allocator>
+    class __vec_deleter {
+    protected:
+        typedef typename Metrowerks::compressed_pair<size_t, Allocator>::second_param allocator_param;
+
+    public:
+        typedef T value_type;
+        typedef Allocator allocator_type;
+
+        typedef size_t size_type;
+        typedef ptrdiff_t difference_type;
+
+        typedef value_type &reference;
+        typedef const value_type &const_reference;
+
+        typedef T *iterator;
+        typedef const T *const_iterator;
+        typedef std::reverse_iterator<iterator> reverse_iterator;
+        typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+
+        __vec_deleter() : m_Ptr(nullptr), m_Count(0), m_Capacity(0) {}
+        explicit __vec_deleter(allocator_param alloc)
+            : m_Ptr(nullptr), m_Count(0), m_Capacity(0, alloc) {}
+
+        ~__vec_deleter() {
+            if (m_Ptr) {
+                clear();
+                m_Capacity.second().deallocate(m_Ptr, m_Capacity.first());
+            }
+        }
+
+        void clear() {
+            size_type n = m_Count;
+            m_Count = 0;
+
+            T* end = m_Ptr + n;
+            for (; n != 0; n--) {
+                end--;
+                end->~T();
+            }
+        }
+
+        size_type grow_by(size_type n) {
+            size_type capacity = m_Capacity.first();
+            if (-capacity - 1 < n) {
+                throw std::length_error("vector length error");
+            }
+
+            if (capacity < 0x55555555) {
+                return capacity + std::max((capacity + 1) * 3 / 5, n);
+            } else if (capacity < 0xAAAAAAAA) {
+                return capacity + std::max((capacity + 1) / 2, n);
+            } else {
+                return -1;
+            }
+        }
+
+    protected:
+        T *m_Ptr;
+        size_t m_Count;
+        Metrowerks::compressed_pair<size_t, Allocator> m_Capacity;
+    };
+
+    template <typename T, typename Allocator, int I /* we will never know what this is */>
+    class __vec_constructor : protected __vec_deleter<T, Allocator> {
+        typedef __vec_deleter<T, Allocator> _Base;
+
+    public:
+        typedef _Base::value_type value_type;
+        typedef _Base::allocator_type allocator_type;
+
+        typedef _Base::size_type size_type;
+        typedef _Base::difference_type difference_type;
+
+        typedef _Base::reference reference;
+        typedef _Base::const_reference const_reference;
+        typedef typename Allocator::pointer pointer;
+        typedef typename Allocator::const_pointer const_pointer;
+
+        typedef _Base::iterator iterator;
+        typedef _Base::const_iterator const_iterator;
+        typedef _Base::reverse_iterator reverse_iterator;
+        typedef _Base::const_reverse_iterator const_reverse_iterator;
+
+        __vec_constructor() {}
+        ~__vec_constructor() {}
+
+        iterator existing_insert(iterator pos, const_reference value) {
+            const T* valuePtr = &value;
+            T* end = m_Ptr + m_Count;
+
+            // ? checks if the address of `value` is within the vector's storage
+            if (pos <= valuePtr && valuePtr < end) {
+                valuePtr++;
+            }
+
+            m_Count++;
+            size_type moveSize = end - pos;
+            std::memmove(end + 1 - moveSize, pos, moveSize);
+            *pos = *valuePtr;
+            return pos;
+        }
+
+        iterator reallocate_insert(iterator pos, const_reference value) {
+            // Retain old values for later
+            T* oldPtr = m_Ptr;
+            size_type oldCapacity = m_Capacity.first();
+            size_type posDist = pos - oldPtr;
+
+            // Reallocate with a larger storage area
+            size_type newCapacity = _Base::grow_by(1);
+            m_Ptr = m_Capacity.second().allocate(newCapacity);
+            m_Capacity.first() = newCapacity;
+
+            // Insert new element
+            m_Ptr[posDist] = value;
+
+            // Transfer old elements over
+            if (oldPtr) {
+                // Move elements before inserted one
+                T* ptr = m_Ptr;
+                std::memmove(ptr, oldPtr, posDist);
+
+                // Move elements after inserted one
+                T* oldAfterPos = oldPtr + posDist;
+                T* newAfterPos = ptr + posDist;
+                size_type moveSize = (size_type)((oldPtr + m_Count) - (size_type)oldAfterPos);
+                std::memmove(newAfterPos + 1, oldAfterPos, moveSize);
+
+                // Free old storage
+                // Old elements are not destroyed, as
+                m_Capacity.second().deallocate(oldPtr, oldCapacity);
+            }
+
+            m_Count++;
+            return m_Ptr + posDist;
+        }
+    };
+
+    template <typename T, typename Allocator = allocator<T> >
+    class vector : private __vec_constructor<T, Allocator, 1> {
+        typedef __vec_constructor<T, Allocator, 1> _Base;
+
+    public:
+        typedef _Base::value_type value_type;
+        typedef _Base::allocator_type allocator_type;
+
+        typedef _Base::size_type size_type;
+        typedef _Base::difference_type difference_type;
+
+        typedef _Base::reference reference;
+        typedef _Base::const_reference const_reference;
+        typedef _Base::pointer pointer;
+        typedef _Base::const_pointer const_pointer;
+
+        typedef _Base::iterator iterator;
+        typedef _Base::const_iterator const_iterator;
+        typedef _Base::reverse_iterator reverse_iterator;
+        typedef _Base::const_reverse_iterator const_reverse_iterator;
+
+        vector() {}
+        vector(const vector &other);
+        vector(const vector &other, const Allocator &alloc);
+
+        explicit vector(size_type count);
+        explicit vector(const Allocator &alloc);
+
+        vector(size_type count, const T &value, const Allocator &alloc = Allocator());
+
+        template <class InputIter>
+        vector(InputIter first, InputIter last, const Allocator &alloc = Allocator());
+
+        iterator begin() { return m_Ptr; }
+        const_iterator begin() const { return m_Ptr; }
+        iterator end() { return m_Ptr + m_Count; }
+        const_iterator end() const { return m_Ptr + m_Count; }
+
+        reverse_iterator rbegin() { return reverse_iterator(end()); }
+        const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+        reverse_iterator rend() { return reverse_iterator(begin()); }
+        const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+
+        pointer data() { return m_Ptr; }
+        const_pointer data() const { return m_Ptr; }
+
+        size_type size() const { return m_Count; }
+        size_type capacity() const { return m_Capacity.first(); }
+
+        void push_back(const_reference value) {
+            _Base::push_back(value);
+        }
+
+        iterator insert(iterator pos, const_reference value) {
+            if (m_Count >= m_Capacity.first()) {
+                // ? ends up doing nothing, grow_by has no side-effects
+                _Base::grow_by(1);
+            } else {
+                return existing_insert(pos, value);
+            }
+
+            return reallocate_insert(pos, value);
+        }
+    };
+
+}
+
+#endif

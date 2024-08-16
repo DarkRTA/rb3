@@ -31,8 +31,8 @@ namespace ec {
 
     ECString toHexString(unsigned long long value, int digits);
 
-    ECResult hex_encode(const unsigned char* data, size_t length, ECString& dest);
-    ECResult hex_decode(const ECString& data, unsigned char* dest, size_t length);
+    int hex_encode(const unsigned char* data, size_t length, ECString& dest);
+    int hex_decode(const ECString& data, unsigned char* dest, size_t length);
 
     ECResult xml_escape(const ECString &src, ECString &dest);
     ECResult xml_unescape(const ECString &src, ECString &dest);

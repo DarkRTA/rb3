@@ -14,6 +14,11 @@
 
 #include "compiler_macros.h"
 
+// hack
+namespace ec {
+    void FORCEFUNC_string_get_pointer();
+}
+
 namespace std {
 
     template <class CharT>
@@ -64,6 +69,9 @@ namespace std {
         typedef std::reverse_iterator<iterator> reverse_iterator;
         typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+        // hack
+        friend void ec::FORCEFUNC_string_get_pointer();
+
     private:
         struct __longbuf {
             size_t capacity;
@@ -83,8 +91,6 @@ namespace std {
 
             bool is_short() const { return !(shortFlag >> 31); }
         };
-
-        Metrowerks::compressed_pair<basic_string::rep_s, Allocator> m;
 
         CharT *get_pointer() {
             rep_s &rep = m.first();
@@ -167,21 +173,28 @@ namespace std {
         ~basic_string() {
             rep_s &rep = m.first();
             if (!rep.is_short()) {
-                m.second().deallocate(rep.longBuf.buffer, rep.longBuf.length);
+                m.second().deallocate(
+                    rep.longBuf.buffer, rep.longBuf.capacity & 0x7FFFFFFF
+                );
             }
         }
 
-        DONT_INLINE_CLASS CharT *begin() { return get_pointer(); }
-        DONT_INLINE_CLASS const CharT *begin() const { return get_pointer(); }
+        allocator_type get_allocator() const { return m.second(); }
 
-        DONT_INLINE_CLASS CharT *end() {
+        // The usage of DONT_INLINE_CLASS here is a crutch/fakematch,
+        // much easier to analyze things when you can force the right inlining lol
+
+        DONT_INLINE_CLASS iterator begin() { return get_pointer(); }
+        DONT_INLINE_CLASS const_iterator begin() const { return get_pointer(); }
+
+        DONT_INLINE_CLASS iterator end() {
             CharT *ptr;
             size_t size;
             pointer_size(ptr, size);
             return ptr + size;
         }
 
-        DONT_INLINE_CLASS const CharT *end() const {
+        DONT_INLINE_CLASS const_iterator end() const {
             const CharT *ptr;
             size_t size;
             pointer_size(ptr, size);
@@ -217,7 +230,8 @@ namespace std {
         }
 
         void append(const CharT *str) {
-            random_access_iterator_tag tag; // required to be here to match
+            // required to be here to match; probably an inline missing
+            random_access_iterator_tag tag;
 
             size_t cur_size = size();
             do_replace(cur_size, 0, str, str + Traits::length(str), tag);
@@ -234,18 +248,19 @@ namespace std {
             return begin() + dist;
         }
 
-        void reserve(size_t size) {}
+        DONT_INLINE_CLASS void reserve(size_t size) {}
 
-        void operator=(const CharT *str) {
-            random_access_iterator_tag tag; // required to be here to match
+        DONT_INLINE_CLASS void operator=(const CharT *str) {
+            // required to be here to match; probably an inline missing
+            random_access_iterator_tag tag;
 
             size_t cur_size = size();
             do_replace(0, cur_size, str, str + Traits::length(str), tag);
         }
 
-        void operator+=(const basic_string &str) { append(str); }
-        void operator+=(const char *str) { append(str); }
-        void operator+=(CharT c) { append(c); }
+        DONT_INLINE_CLASS void operator+=(const basic_string &str) { append(str); }
+        DONT_INLINE_CLASS void operator+=(const char *str) { append(str); }
+        DONT_INLINE_CLASS void operator+=(CharT c) { append(c); }
 
     private:
         void do_replace(
@@ -342,6 +357,9 @@ namespace std {
                 }
             }
         }
+
+    private:
+        Metrowerks::compressed_pair<basic_string::rep_s, Allocator> m;
     };
 
     typedef basic_string<char> string;
