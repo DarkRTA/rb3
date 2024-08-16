@@ -41,6 +41,9 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 // not sure how the second template gets incorporated yet
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
+
+    int NumKeys() const { return size(); }
+
     // used in RemoveKey
     void Remove(int idx){
         erase(begin() + idx);

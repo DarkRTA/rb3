@@ -1113,7 +1113,7 @@ system/rndobj/AnimFilter.cpp:
 	.sbss       start:0x808E4BC8 end:0x808E4BD0
 
 system/rndobj/Bitmap.cpp:
-	.text       start:0x805C9A68 end:0x805CAC4C
+	.text       start:0x805C9A68 end:0x805CC018
 
 system/rndobj/Cam.cpp:
 	.text       start:0x805CCF80 end:0x805CE230
@@ -1269,6 +1269,9 @@ system/rndobj/Trans.cpp:
 
 system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
+
+system/rndobj/TransAnim.cpp:
+	.text       start:0x80651D08 end:0x806543C4
 
 system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4

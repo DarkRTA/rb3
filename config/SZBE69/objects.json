@@ -39,6 +39,7 @@
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
+            "system/rndobj/EventTrigger.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
@@ -53,6 +54,8 @@
             "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
+            "system/rndobj/TransAnim.cpp": "NonMatching",
+            "system/rndobj/TransProxy.cpp": "NonMatching",
 
             "system/ui/UIPanel.cpp": "NonMatching"
         }
