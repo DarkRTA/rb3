@@ -32,6 +32,7 @@
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
             "system/rndobj/CamAnim.cpp": "NonMatching",
+            "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",

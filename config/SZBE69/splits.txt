@@ -1125,7 +1125,7 @@ system/rndobj/CamAnim.cpp:
 	.data       start:0x80894AD8 end:0x80894C68
 	.sbss       start:0x808E4BD0 end:0x808E4BD8
 
-rb3/unknown/805/unk_805CE140.cpp:
+system/rndobj/ColorXfm.cpp:
 	.text       start:0x805CF280 end:0x805CFD34
 
 system/rndobj/Console.cpp:
