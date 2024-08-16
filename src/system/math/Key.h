@@ -7,7 +7,7 @@
 // thank god for the RB2 dump
 template <class T> class Key {
 public:
-    Key() : frame(0.0f) {}
+    Key() : value(T()), frame(0.0f) {}
     Key(const T& v, float f) : value(v), frame(f) {}
     T value;
     float frame;

@@ -38,6 +38,7 @@
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Env.cpp": "NonMatching",
+            "system/rndobj/EnvAnim.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
