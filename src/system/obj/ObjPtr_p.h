@@ -154,7 +154,7 @@ public:
 
         // https://decomp.me/scratch/B6ylJ
         iterator operator+=(int num){
-            while(num-- != 0) (*this)++;
+            while(num-- != 0) ++(*this);
             return *this;
         }
 
