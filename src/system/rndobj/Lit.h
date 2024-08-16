@@ -35,6 +35,7 @@ public:
     float Range() const { return mRange; }
     const Hmx::Color& GetColor() const { return mColorOwner->mColor; }
     Type GetType() const { return mType; }
+    void SetShowing(bool b){ mShowing = b; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

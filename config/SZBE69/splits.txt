@@ -1172,6 +1172,8 @@ system/rndobj/Group.cpp:
 
 system/rndobj/Lit.cpp:
 	.text       start:0x805F5224 end:0x805F68BC
+	.data       start:0x80896A60 end:0x80896BA8
+	.sbss       start:0x808E4C38 end:0x808E4C40
 
 system/rndobj/LitAnim.cpp:
 	.text       start:0x805F68BC end:0x805F7990

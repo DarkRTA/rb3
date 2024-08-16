@@ -7,7 +7,7 @@
 
 INIT_REVS(RndLight)
 
-RndLight::RndLight() : mColor(), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0.0f), mType(kPoint), 
+RndLight::RndLight() : mColor(1.0f,1.0f,1.0f), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0.0f), mType(kPoint), 
     mAnimateColorFromPreset(1), mAnimatePositionFromPreset(1), mAnimateRangeFromPreset(1), mShowing(1), mTexture(this, 0),
     mShadowOverride(0), mShadowObjects(this, kObjListNoNull), mTopRadius(0.0f), mBotRadius(30.0f), mProjectedBlend(0), mOnlyProjection(0) {
         mTextureXfm.Reset();
@@ -128,7 +128,7 @@ void RndLight::SetTopRadius(float rad){ mTopRadius = rad; }
 void RndLight::SetBotRadius(float rad){ mBotRadius = rad; }
 
 BEGIN_HANDLERS(RndLight)
-    HANDLE_ACTION(set_showing, mShowing = _msg->Int(2) != 0)
+    HANDLE_ACTION(set_showing, SetShowing(_msg->Int(2)))
     HANDLE_SUPERCLASS(RndTransformable)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x186)
