@@ -39,13 +39,13 @@ namespace ec {
         } catch (std::bad_alloc &ex) {
             logmsg(
                 ECLogLevel_Error,
-                "Caught bad_alloc exception at  FILE: ec_mem.cpp  LINE: %d  COMPILED: Feb  8 2010  20:10:22 \n",
+                "Caught bad_alloc exception at  FILE: " __FILE__ "  LINE: %d  COMPILED: Feb  8 2010  20:10:22 \n",
                 0x56
             );
         } catch (...) {
             logmsg(
                 ECLogLevel_Error,
-                "Caught exception at  FILE: ec_mem.cpp  LINE: %d  COMPILED: Feb  8 2010  20:10:22 \n",
+                "Caught exception at  FILE: " __FILE__ "  LINE: %d  COMPILED: Feb  8 2010  20:10:22 \n",
                 0x56
             );
         }
