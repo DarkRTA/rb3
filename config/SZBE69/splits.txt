@@ -1269,6 +1269,8 @@ system/rndobj/Trans.cpp:
 
 system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
+	.data       start:0x8089A658 end:0x8089A718
+	.sbss       start:0x808E4D48 end:0x808E4D50
 
 system/rndobj/TransAnim.cpp:
 	.text       start:0x80651D08 end:0x806543C4
