@@ -124,8 +124,27 @@ void RndLight::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
+void RndLight::SetPackedColor(int packed, float scalar){
+    Hmx::Color col;
+    col.Unpack(packed);
+    Multiply(col, scalar, col);
+    SetColor(col);
+}
+
+int RndLight::PackedColor() const {
+    Hmx::Color col;
+    Multiply(GetColor(), 1.0f / Intensity(), col);
+    return col.Pack();
+}
+
+float RndLight::Intensity() const {
+    Hmx::Color col(GetColor());
+    return Max(1.0f, Max(col.red, col.green, col.blue));
+}
+
 void RndLight::SetTopRadius(float rad){ mTopRadius = rad; }
 void RndLight::SetBotRadius(float rad){ mBotRadius = rad; }
+void RndLight::SetShadowOverride(ObjPtrList<RndDrawable, ObjectDir>* l){ mShadowOverride = l; }
 
 BEGIN_HANDLERS(RndLight)
     HANDLE_ACTION(set_showing, SetShowing(_msg->Int(2)))
@@ -138,9 +157,20 @@ BEGIN_PROPSYNCS(RndLight)
     SYNC_PROP(animate_color_from_preset, mAnimateColorFromPreset)
     SYNC_PROP(animate_position_from_preset, mAnimatePositionFromPreset)
     SYNC_PROP(animate_range_from_preset, mAnimateRangeFromPreset)
-    // SYNC_PROP(type, mType)
-    SYNC_PROP(range, mRange)
-    SYNC_PROP(falloff_start, mFalloffStart)
+    SYNC_PROP_SET(type, mType, SetLightType((Type)_val.Int(0)))
+    SYNC_PROP_SET(range, mRange, SetRange(_val.Float(0)))
+    SYNC_PROP_SET(falloff_start, mFalloffStart, SetFalloffStart(_val.Float(0)))
+    SYNC_PROP_SET(color, PackedColor(), SetPackedColor(_val.Int(0), Intensity()))
+    SYNC_PROP_SET(intensity, Intensity(), SetPackedColor(PackedColor(), _val.Float(0)))
+    SYNC_PROP_SET(topradius, mTopRadius, SetTopRadius(_val.Float(0)))
+    SYNC_PROP_SET(botradius, mBotRadius, SetBotRadius(_val.Float(0)))
+    SYNC_PROP(color_owner, mColorOwner)
+    SYNC_PROP(texture, mTexture)
+    SYNC_PROP(texture_xfm, mTextureXfm)
+    SYNC_PROP(only_projection, mOnlyProjection)
+    SYNC_PROP_SET(projected_blend, mProjectedBlend, SetProjectedBlend(_val.Int(0)))
+    SYNC_PROP(shadow_objects, mShadowObjects)
+    SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
 
 void RndLight::SetLightType(RndLight::Type ty){ mType = ty; }
