@@ -1180,6 +1180,8 @@ system/rndobj/LitAnim.cpp:
 
 system/rndobj/Mat.cpp:
 	.text       start:0x805F7990 end:0x805FA1D4
+	.data       start:0x80896D98 end:0x80896ED8
+	.sbss       start:0x808E4C48 end:0x808E4C68
 
 system/rndobj/MatAnim.cpp:
 	.text       start:0x805FA1D4 end:0x805FCEC0
