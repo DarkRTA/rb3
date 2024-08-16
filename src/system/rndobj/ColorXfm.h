@@ -29,4 +29,9 @@ public:
     bool Load(BinStream&);
 };
 
+inline BinStream& operator>>(BinStream& bs, RndColorXfm& xfm){
+    xfm.Load(bs);
+    return bs;
+}
+
 #endif

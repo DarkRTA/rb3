@@ -63,7 +63,8 @@
                 "-pragma \"merge_float_consts on\"",
 
                 "-O4,s",
-                "-inline off"
+                "-inline off",
+                "-ipa file"
             ]
         },
         "system": {

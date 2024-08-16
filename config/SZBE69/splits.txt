@@ -1147,6 +1147,9 @@ system/rndobj/Draw.cpp:
 system/rndobj/Env.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
 	.ctors      start:0x807EFFE4 end:0x807EFFE8
+	.data       start:0x808955C8 end:0x808956A8
+	.sbss       start:0x808E4BE8 end:0x808E4C00
+	.bss        start:0x809891C8 end:0x809891D8
 
 system/rndobj/EnvAnim.cpp:
 	.text       start:0x805D9A64 end:0x805DD534
