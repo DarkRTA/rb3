@@ -28,6 +28,7 @@
         "objects": {
             "system/math/Key.cpp": "NonMatching",
 
+            "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
             "system/rndobj/Anim.cpp": "NonMatching",
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
@@ -36,11 +37,19 @@
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Poll.cpp": "NonMatching",
             "system/rndobj/PollAnim.cpp": "NonMatching",
-            "system/rndobj/PropKeys.cpp": "NonMatching",
             "system/rndobj/PropAnim.cpp": "NonMatching",
+            "system/rndobj/PropKeys.cpp": "NonMatching",
+            "system/rndobj/ScreenMask.cpp": "NonMatching",
+            "system/rndobj/Set.cpp": "NonMatching",
+            "system/rndobj/ShaderOptions.cpp": "NonMatching",
+            "system/rndobj/Tex.cpp": "NonMatching",
+            "system/rndobj/TexBlendController.cpp": "NonMatching",
+            "system/rndobj/TexBlender.cpp": "NonMatching",
+            "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
 
             "system/ui/UIPanel.cpp": "NonMatching"

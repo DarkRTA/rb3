@@ -9,7 +9,7 @@
 
 int SCREENMASK_REV = 2;
 
-RndScreenMask::RndScreenMask() : mMat(this, 0), mColor(), mRect(0.0f, 0.0f, 1.0f, 1.0f) {
+RndScreenMask::RndScreenMask() : mMat(this, 0), mColor(1.0f,1.0f,1.0f,1.0f), mRect(0.0f, 0.0f, 1.0f, 1.0f) {
     mUseCurrentRect = 0;
 }
 
