@@ -1201,6 +1201,8 @@ system/rndobj/Morph.cpp:
 
 system/rndobj/MotionBlur.cpp:
 	.text       start:0x80613A80 end:0x806143BC
+	.data       start:0x808976C0 end:0x808977F0
+	.sbss       start:0x808E4C98 end:0x808E4CA0
 
 system/rndobj/Movie.cpp:
 	.text       start:0x806143BC end:0x80614E30
