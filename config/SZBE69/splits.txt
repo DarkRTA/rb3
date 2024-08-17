@@ -1175,6 +1175,8 @@ system/rndobj/Gen.cpp:
 system/rndobj/Graph.cpp:
 	.text       start:0x805EF00C end:0x805EFA68
 	.ctors      start:0x807EFFE8 end:0x807EFFEC
+	.data       start:0x80896610 end:0x808966B8
+	.bss        start:0x8098CC90 end:0x8098CD48
 
 system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C
