@@ -1300,9 +1300,13 @@ system/rndobj/Utl.cpp:
 system/rndobj/Wind.cpp:
 	.text       start:0x8065ABF8 end:0x8065BB84
 	.ctors      start:0x807F001C end:0x807F0020
+	.data       start:0x8089A9E0 end:0x8089AAA8
+	.sbss       start:0x808E4D50 end:0x808E4D58
 
 system/rndobj/SoftParticles.cpp:
 	.text       start:0x8065BB84 end:0x8065C18C
+	.data       start:0x8089AAA8 end:0x8089ABC8
+	.sbss       start:0x808E4D58 end:0x808E4D60
 
 system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4

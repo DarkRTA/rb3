@@ -13,7 +13,7 @@ void SetWind(int, int, float, float, float) {
 }
 
 void RndWind::Init() {
-    REGISTER_OBJ_FACTORY(RndWind)
+    Register();
     sRand = new Rand(0x7FEF8A);
     SetWind(0, 0x400, 0, 0, 0.5f);
     sWindField[0x400] = sWindField[0];
