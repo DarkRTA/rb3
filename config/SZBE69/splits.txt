@@ -1007,6 +1007,148 @@ system/char/CharBlendBone.cpp:
 	.data       start:0x808871D0 end:0x808872B8
 	.sbss       start:0x808E47F0 end:0x808E47F8
 
+system/char/CharBone.cpp:
+	.text       start:0x804A66A0 end:0x804A8BEC
+
+system/char/CharBoneDir.cpp:
+	.text       start:0x804A8BEC end:0x804AB478
+
+system/char/CharBones.cpp:
+	.text       start:0x804AB478 end:0x804AF6F0
+
+system/char/CharBoneOffset.cpp:
+	.text       start:0x804AF6F0 end:0x804AFE8C
+
+system/char/CharBonesMeshes.cpp:
+	.text       start:0x804AFE8C end:0x804B1B20
+
+system/char/CharBonesSamples.cpp:
+	.text       start:0x804B1B20 end:0x804B351C
+
+system/char/CharBonesBlender.cpp:
+	.text       start:0x804B351C end:0x804B4208
+
+system/char/CharBoneTwist.cpp:
+	.text       start:0x804B4208 end:0x804B4B68
+
+system/char/CharClip.cpp:
+	.text       start:0x804B4B68 end:0x804BCCD8
+	.ctors      start:0x807EFFA8 end:0x807EFFAC
+
+system/char/CharClipGroup.cpp:
+	.text       start:0x804BCCD8 end:0x804C0210
+
+system/char/CharClipSet.cpp:
+	.text       start:0x804C0210 end:0x804C2A04
+
+system/char/CharCollide.cpp:
+	.text       start:0x804C2A04 end:0x804C3B40
+
+system/char/CharCuff.cpp:
+	.text       start:0x804C3B40 end:0x804C5DE0
+
+system/char/CharDriver.cpp:
+	.text       start:0x804C5DE0 end:0x804C8D70
+
+system/char/CharDriverMidi.cpp:
+	.text       start:0x804C8D70 end:0x804CA154
+
+system/char/CharEyes.cpp:
+	.text       start:0x804CA154 end:0x804D1568
+
+system/char/CharInterest.cpp:
+	.text       start:0x804D1568 end:0x804D2984
+
+system/char/CharEyeDartRuleset.cpp:
+	.text       start:0x804D2984 end:0x804D30E4
+
+system/char/CharFaceServo.cpp:
+	.text       start:0x804D30E4 end:0x804D4090
+
+system/char/CharForeTwist.cpp:
+	.text       start:0x804D4090 end:0x804D49F8
+
+system/char/CharHair.cpp:
+	.text       start:0x804D49F8 end:0x804DAB54
+
+system/char/CharIKFingers.cpp:
+	.text       start:0x804DAB54 end:0x804DE54C
+
+system/char/CharIKFoot.cpp:
+	.text       start:0x804DE54C end:0x804DFC90
+
+system/char/CharIKHand.cpp:
+	.text       start:0x804DFC90 end:0x804E2A08
+
+system/char/CharIKHead.cpp:
+	.text       start:0x804E2A08 end:0x804E4BCC
+
+system/char/CharIKMidi.cpp:
+	.text       start:0x804E4BCC end:0x804E68AC
+
+system/char/CharIKRod.cpp:
+	.text       start:0x804E68AC end:0x804E7428
+
+system/char/CharIKScale.cpp:
+	.text       start:0x804E7428 end:0x804E8054
+
+system/char/CharIKSliderMidi.cpp:
+	.text       start:0x804E8054 end:0x804E8E14
+
+system/char/CharLipSync.cpp:
+	.text       start:0x804E8E14 end:0x804EB538
+
+system/char/CharLipSyncDriver.cpp:
+	.text       start:0x804EB538 end:0x804ED1AC
+
+system/char/CharLookAt.cpp:
+	.text       start:0x804ED1AC end:0x804EE7E0
+
+system/char/CharMeshHide.cpp:
+	.text       start:0x804EE7E0 end:0x804F1E7C
+
+system/char/CharMirror.cpp:
+	.text       start:0x804F1E7C end:0x804F3A94
+
+system/char/CharNeckTwist.cpp:
+	.text       start:0x804F3A94 end:0x804F4218
+
+system/char/CharPosConstraint.cpp:
+	.text       start:0x804F4218 end:0x804F4BB4
+
+system/char/CharPollGroup.cpp:
+	.text       start:0x804F4BB4 end:0x804F64A8
+
+system/char/CharServoBone.cpp:
+	.text       start:0x804F64A8 end:0x804F75FC
+
+system/char/CharSleeve.cpp:
+	.text       start:0x804F75FC end:0x804F84AC
+
+system/char/CharTaskMgr.cpp:
+	.text       start:0x804F84AC end:0x804F84B0
+
+system/char/CharTransCopy.cpp:
+	.text       start:0x804F84B0 end:0x804F8BBC
+
+system/char/CharTransDraw.cpp:
+	.text       start:0x804F8BBC end:0x804F9C94
+
+system/char/CharacterTest.cpp:
+	.text       start:0x804F9C94 end:0x804FA99C
+
+system/char/CharUpperTwist.cpp:
+	.text       start:0x804FA99C end:0x804FB228
+
+system/char/CharUtl.cpp:
+	.text       start:0x804FB228 end:0x804FC4E4
+
+system/char/CharWeightable.cpp:
+	.text       start:0x804FC4E4 end:0x804FCD7C
+
+system/char/CharWeightSetter.cpp:
+	.text       start:0x804FCD7C end:0x804FEA7C
+
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x8050EA88
 
