@@ -1300,10 +1300,12 @@ system/rndobj/CubeTex.cpp:
 system/rndobj/Fur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
 	.data       start:0x8089AC68 end:0x8089ACF8
+	.sbss       start:0x808E4D68 end:0x808E4D70
 
 system/rndobj/AmbientOcclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
 	.data       start:0x8089ACF8 end:0x8089AD98
+	.sbss       start:0x808E4D70 end:0x808E4D78
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18
