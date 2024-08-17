@@ -84,7 +84,7 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
         if(op == kPropGet) node = DataNode((Hmx::Object*)obj);
-        else obj = node.Obj<T>(0);
+        else obj = dynamic_cast<T*>(node.GetObj(0));
         return true;
     }
 }
@@ -112,7 +112,7 @@ template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode&
 // fn_805E3988 - PropSync(ObjPtrList<Sequence>&) - used in EventTrigger.cpp
 // fn_80642860 - PropSync(ObjPtrList&, ...)
 template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return ptr.mMode == kObjListNoNull;
+    if(op == kPropUnknown0x40) return ptr.Mode() == kObjListNoNull;
     else if(i == prop->Size()){
         MILO_ASSERT(op == kPropSize, 0x146);
         node = DataNode(ptr.size());
@@ -120,7 +120,7 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
     }
     else {
         ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
-        for(int cnt = prop->Int(i++); cnt > 0; cnt--) ++it;
+        for(int cnt = prop->Int(i++); cnt > 0; cnt--) it++;
         MILO_ASSERT(i == prop->Size(), 0x150);
         switch(op){
             case kPropGet: {

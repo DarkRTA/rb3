@@ -1274,6 +1274,8 @@ system/rndobj/TexBlendController.cpp:
 
 system/rndobj/TexBlender.cpp:
 	.text       start:0x80641BB8 end:0x80642F64
+	.data       start:0x80899BA0 end:0x80899CE0
+	.sbss       start:0x808E4D28 end:0x808E4D30
 
 system/rndobj/TexRenderer.cpp:
 	.text       start:0x80642F64 end:0x80644F3C

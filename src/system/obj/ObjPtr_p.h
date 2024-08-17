@@ -209,8 +209,9 @@ public:
     }
     // refowner moved down here because that's how the weak funcs are ordered
     virtual Hmx::Object* RefOwner(){ return mOwner; }
+    ObjListMode Mode() const { return mMode; }
 
-    void clear(){ while(!empty()) pop_back(); }
+    void clear(){ while(mSize != 0) pop_back(); }
 
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable

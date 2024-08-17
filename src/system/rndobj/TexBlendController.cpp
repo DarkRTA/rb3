@@ -76,7 +76,13 @@ void RndTexBlendController::Load(BinStream& bs){
     bs >> mMesh;
     bs >> mObject1;
     bs >> mObject2;
+#ifdef VERSION_SZBE69_B8
     bs >> mReferenceDistance >> mMinDistance >> mMaxDistance;
+#else
+    bs >> mReferenceDistance;
+    bs >> mMinDistance;
+    bs >> mMaxDistance;
+#endif
     if(gRev > 1) bs >> mTex;
 }
 
