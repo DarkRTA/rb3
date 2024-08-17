@@ -79,9 +79,10 @@
 
             "network/ObjDup/DOFilter.cpp": "NonMatching",
 
+            "network/Plugins/JobGetPublicURL.cpp": "Matching",
+            "network/Plugins/MD5.cpp": "NonMatching",
             "network/Plugins/ZLibPlugin.cpp": "Matching",
 
-            "network/Plugins/JobGetPublicURL.cpp": "Matching",
             "network/Services/UserMessage.cpp": "Matching"
         }
     },
@@ -770,10 +771,7 @@
                 "status": "Equivalent",
                 "comment": "Weak method ordering issues"
             },
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": {
-                "status": "LinkIssues",
-                "comment": "Weak method link ordering issues relating with msl_thread"
-            },
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "Matching"
         }
     },
@@ -836,9 +834,58 @@
     },
     "sdk/ec": {
         "mw_version": "Wii/1.3",
-        "cflags": "base",
+        "cflags": "sdk/ec",
         "objects": {
+            "sdk/ec/src/ec_api.cpp": "NonMatching",
+            "sdk/ec/src/ec_asyncOp.cpp": "NonMatching",
+            "sdk/ec/src/ec_base64.cpp": "Equivalent",
+            "sdk/ec/src/ec_checkECard.cpp": "NonMatching",
+            "sdk/ec/src/ec_checkReg.cpp": "NonMatching",
+            "sdk/ec/src/ec_chkDevStat.cpp": "NonMatching",
+            "sdk/ec/src/ec_chkDownload_bw.cpp": "NonMatching",
 
+            "sdk/ec/src/ec_connect.cpp": "NonMatching",
+            "sdk/ec/src/ec_content.cpp": "NonMatching",
+            "sdk/ec/src/ec_csup.cpp": "NonMatching",
+            "sdk/ec/src/ec_deleteContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_dk.cpp": "NonMatching",
+            "sdk/ec/src/ec_downloadContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_file_bw.cpp": "NonMatching",
+            "sdk/ec/src/ec_getContentsResReq.cpp": "NonMatching",
+            "sdk/ec/src/ec_getTitle.cpp": "NonMatching",
+            "sdk/ec/src/ec_getTitleResReq.cpp": "NonMatching",
+            "sdk/ec/src/ec_http_bw.cpp": "NonMatching",
+
+            "sdk/ec/src/ec_list.cpp": "NonMatching",
+            "sdk/ec/src/ec_listCatalog.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentDownloadInfos.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentSetGroups.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentSets.cpp": "NonMatching",
+            "sdk/ec/src/ec_listECardItems.cpp": "NonMatching",
+            "sdk/ec/src/ec_listPurchaseHistory.cpp": "NonMatching",
+            "sdk/ec/src/ec_listServiceItems.cpp": "NonMatching",
+            "sdk/ec/src/ec_listTitleContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_listTitles.cpp": "NonMatching",
+
+            "sdk/ec/src/ec_md5.cpp": "Matching",
+            "sdk/ec/src/ec_mem.cpp": "Matching",
+            "sdk/ec/src/ec_misc.cpp": "NonMatching",
+            "sdk/ec/src/ec_purchaseTitle.cpp": "NonMatching",
+            "sdk/ec/src/ec_register.cpp": "NonMatching",
+            "sdk/ec/src/ec_shoplog_bw.cpp": "NonMatching",
+            "sdk/ec/src/ec_soap.cpp": "NonMatching",
+            "sdk/ec/src/ec_string.cpp": "NonMatching",
+            "sdk/ec/src/ec_sysconfig_bw.cpp": "NonMatching"
+        }
+    },
+    "sdk/ec_c": {
+        "mw_version": "Wii/1.3",
+        "cflags": "sdk/ec_c",
+        "objects": {
+            "sdk/ec/src/ec_md5c.c": "NonMatching",
+
+            "sdk/ec/src/shr_th_bw.c": "Matching",
+            "sdk/ec/src/shr_time_bw.c": "Matching"
         }
     },
     "sdk/NdevExi2A": {

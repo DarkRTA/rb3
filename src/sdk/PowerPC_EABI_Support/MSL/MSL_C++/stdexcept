@@ -1,17 +1,17 @@
 #ifndef _STD_STDEXCEPT
 #define _STD_STDEXCEPT
 
-#include <MSL_C++/exception>
-#include <MSL_C++/string>
-
 #include <MSL_C++/cstring>
+#include <MSL_C++/exception>
+// #include <MSL_C++/string>
+
 #include "MSL_C++/MSL_Common/detail/shared_ptr.h"
 
 namespace std {
 
     class logic_error : public exception {
     public:
-        explicit logic_error(const string &what_arg);
+        // explicit logic_error(const string &what_arg);
         explicit logic_error(const char *what_arg)
             : m_What(new char[strlen(what_arg) + 1]) {}
 
@@ -23,7 +23,7 @@ namespace std {
 
     class runtime_error : public exception {
     public:
-        explicit runtime_error(const string &what_arg);
+        // explicit runtime_error(const string &what_arg);
         explicit runtime_error(const char *what_arg)
             : m_What(new char[strlen(what_arg) + 1]) {}
 
@@ -35,43 +35,43 @@ namespace std {
 
     class domain_error : public logic_error {
     public:
-        explicit domain_error(const string &what_arg) : logic_error(what_arg) {}
+        // explicit domain_error(const string &what_arg) : logic_error(what_arg) {}
         explicit domain_error(const char *what_arg) : logic_error(what_arg) {}
     };
 
     class invalid_argument : public logic_error {
     public:
-        explicit invalid_argument(const string &what_arg) : logic_error(what_arg) {}
+        // explicit invalid_argument(const string &what_arg) : logic_error(what_arg) {}
         explicit invalid_argument(const char *what_arg) : logic_error(what_arg) {}
     };
 
     class length_error : public logic_error {
     public:
-        explicit length_error(const string &what_arg) : logic_error(what_arg) {}
+        // explicit length_error(const string &what_arg) : logic_error(what_arg) {}
         explicit length_error(const char *what_arg) : logic_error(what_arg) {}
     };
 
     class out_of_range : public logic_error {
     public:
-        explicit out_of_range(const string &what_arg) : logic_error(what_arg) {}
+        // explicit out_of_range(const string &what_arg) : logic_error(what_arg) {}
         explicit out_of_range(const char *what_arg) : logic_error(what_arg) {}
     };
 
     class range_error : public runtime_error {
     public:
-        explicit range_error(const string &what_arg) : runtime_error(what_arg) {}
+        // explicit range_error(const string &what_arg) : runtime_error(what_arg) {}
         explicit range_error(const char *what_arg) : runtime_error(what_arg) {}
     };
 
     class overflow_error : public runtime_error {
     public:
-        explicit overflow_error(const string &what_arg) : runtime_error(what_arg) {}
+        // explicit overflow_error(const string &what_arg) : runtime_error(what_arg) {}
         explicit overflow_error(const char *what_arg) : runtime_error(what_arg) {}
     };
 
     class underflow_error : public runtime_error {
     public:
-        explicit underflow_error(const string &what_arg) : runtime_error(what_arg) {}
+        // explicit underflow_error(const string &what_arg) : runtime_error(what_arg) {}
         explicit underflow_error(const char *what_arg) : runtime_error(what_arg) {}
     };
 

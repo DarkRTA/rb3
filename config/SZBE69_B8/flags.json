@@ -13,6 +13,7 @@
                 "-gccinc",
 
                 "-maxerrors 1",
+                "-nowraplines",
 
                 "-proc gekko",
                 "-align powerpc",
@@ -214,6 +215,34 @@
             "flags": [
                 "-func_align 4",
                 "-O4,p"
+            ]
+        },
+        "sdk/ec": {
+            "base": "base",
+            "flags": [
+                "-sdata 0",
+                "-sdata2 0",
+
+                "-func_align 4",
+                "-Cpp_exceptions on",
+
+                "-O4,s",
+                "-inline noauto",
+                "-ipa file",
+
+                "-d _STLP_WHOLE_NATIVE_STD",
+                "-d _STLP_DONT_REDEFINE_STD"
+            ]
+        },
+        "sdk/ec_c": {
+            "base": "base",
+            "flags": [
+                "-lang=c99",
+                "-O4,s",
+                "-inline noauto",
+
+                "-d _STLP_WHOLE_NATIVE_STD",
+                "-d _STLP_DONT_REDEFINE_STD"
             ]
         }
     }
