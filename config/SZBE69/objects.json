@@ -53,6 +53,7 @@
             "system/rndobj/PollAnim.cpp": "NonMatching",
             "system/rndobj/PropAnim.cpp": "NonMatching",
             "system/rndobj/PropKeys.cpp": "NonMatching",
+            "system/rndobj/Rnd.cpp": "NonMatching",
             "system/rndobj/ScreenMask.cpp": "NonMatching",
             "system/rndobj/Set.cpp": "NonMatching",
             "system/rndobj/ShaderOptions.cpp": "NonMatching",

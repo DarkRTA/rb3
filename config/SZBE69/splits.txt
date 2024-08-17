@@ -1249,7 +1249,7 @@ system/rndobj/PropAnim.cpp:
 	.ctors      start:0x807F0008 end:0x807F000C
 
 system/rndobj/Rnd.cpp:
-	.text       start:0x80637BD0 end:0x8063DD48
+	.text       start:0x8063765C end:0x8063DD48
 
 system/rndobj/ScreenMask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
