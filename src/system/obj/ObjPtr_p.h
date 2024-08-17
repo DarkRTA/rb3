@@ -69,7 +69,7 @@ public:
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
-    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.Ptr()) {
+    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
