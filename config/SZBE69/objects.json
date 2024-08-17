@@ -79,6 +79,7 @@
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
             "system/rndobj/EventTrigger.cpp": "NonMatching",
+            "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
             "system/rndobj/Gen.cpp": "NonMatching",
             "system/rndobj/Graph.cpp": "NonMatching",

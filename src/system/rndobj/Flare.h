@@ -27,6 +27,8 @@ public:
     void SetPointTest(bool);
     void SetSteps(int);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     DECLARE_REVS
     NEW_OBJ(RndFlare)
     static void Init(){

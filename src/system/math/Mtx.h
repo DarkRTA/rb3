@@ -54,6 +54,10 @@ namespace Hmx {
             return x == mtx.x && y == mtx.y && z == mtx.z;
         }
 
+        bool operator!=(const Matrix3& mtx) const {
+            return x != mtx.x || y != mtx.y || z != mtx.z;
+        }
+
     };
 
     class Quat {

@@ -1182,6 +1182,7 @@ system/rndobj/EventTrigger.cpp:
 
 system/rndobj/Flare.cpp:
 	.text       start:0x805E5A84 end:0x805E70D4
+	.sbss       start:0x808E4C10 end:0x808E4C18
 
 system/rndobj/Font.cpp:
 	.text       start:0x805E70D4 end:0x805EC3E8
