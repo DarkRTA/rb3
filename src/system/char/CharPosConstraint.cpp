@@ -3,9 +3,9 @@
 
 INIT_REVS(CharPosConstraint)
 
-CharPosConstraint::CharPosConstraint() : mSrc(this, 0), mTargets(this, kObjListNoNull) {
-    mBox.mMin.Set(1.0f, 1.0f, 1.0f);
-    mBox.mMax.Set(-1.0f, -1.0f, -1.0f);
+CharPosConstraint::CharPosConstraint() : mSrc(this, 0), mTargets(this, kObjListNoNull), mBox(Vector3(1.0f, 1.0f, 1.0f), Vector3(-1.0f, -1.0f, -1.0f)) {
+    // mBox.mMin.Set(1.0f, 1.0f, 1.0f);
+    // mBox.mMax.Set(-1.0f, -1.0f, -1.0f);
 }
 
 CharPosConstraint::~CharPosConstraint(){
@@ -56,8 +56,9 @@ void CharPosConstraint::Load(BinStream& bs){
         bs >> mBox;
     }
     else {
-        mBox.mMin.Set(1.0f, 1.0f, 0.0f);
-        mBox.mMax.Set(-1.0f, -1.0f, 1000.0f);
+        mBox.Set(Vector3(1.0f, 1.0f, 0.0f), Vector3(-1.0f, -1.0f, 1000.0f));
+        // mBox.mMin.Set(1.0f, 1.0f, 0.0f);
+        // mBox.mMax.Set(-1.0f, -1.0f, 1000.0f);
     }
 }
 

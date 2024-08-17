@@ -41,6 +41,11 @@ public:
     Box(){}
     Box(const Vector3& min, const Vector3& max) : mMin(min), mMax(max) {}
 
+    void Set(const Vector3& min, const Vector3& max){
+        mMin = min;
+        mMax = max;
+    }
+
     // fn_802D7468
     void GrowToContain(const Vector3& vec, bool b);
 
