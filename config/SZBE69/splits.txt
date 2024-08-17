@@ -1293,6 +1293,17 @@ system/rndobj/TransProxy.cpp:
 system/rndobj/TransAnim.cpp:
 	.text       start:0x80651D08 end:0x806543C4
 
+system/rndobj/Utl.cpp:
+	.text       start:0x806543C4 end:0x8065ABF8
+	.ctors      start:0x807F0018 end:0x807F001C
+
+system/rndobj/Wind.cpp:
+	.text       start:0x8065ABF8 end:0x8065BB84
+	.ctors      start:0x807F001C end:0x807F0020
+
+system/rndobj/SoftParticles.cpp:
+	.text       start:0x8065BB84 end:0x8065C18C
+
 system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4
 	.data       start:0x8089ABC8 end:0x8089AC68
