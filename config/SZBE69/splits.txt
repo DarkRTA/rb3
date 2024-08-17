@@ -16,16 +16,16 @@ Sections:
 rb3/unknown/800/unk_8000D980.cpp:
 	.text       start:0x8000D980 end:0x8000F364
 
-rb3/app.cpp:
-	.text       start:0x8000F364 end:0x8000F804
-
 sdk/MSL_C/sdata_1.c:
 	.sdata      start:0x808E3270 end:0x808E3280
+
+App.cpp:
+	.text       start:0x8000F364 end:0x8000F804
 
 rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914
 
-rb3/main.cpp:
+Main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
 rb3/unknown/800/unk_8000F9B0.cpp:
@@ -591,7 +591,7 @@ system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
-rb3/netstream.cpp:
+system/meta/NetStream.cpp:
 	.text       start:0x80308638 end:0x80308ACC
 
 rb3/wiinetworksocket.cpp:
@@ -798,28 +798,28 @@ rb3/unknown/803/unk_80354A30.cpp:
 system/utl/MemStream.cpp:
 	.text       start:0x80354E6C end:0x80355190
 
-rb3/symbols/messageset1.cpp:
+system/utl/Messages.cpp:
 	.text       start:0x80355190 end:0x80355E18
 	.ctors      start:0x807EFF5C end:0x807EFF60
 	.data       start:0x808572C8 end:0x808577C8
 	.sbss       start:0x808E4528 end:0x808E4530
 	.bss        start:0x8097CE08 end:0x8097D570
 
-rb3/symbols/messageset2.cpp:
+system/utl/Messages2.cpp:
 	.text       start:0x80355E18 end:0x80356848
 	.ctors      start:0x807EFF60 end:0x807EFF64
 	.data       start:0x808577C8 end:0x80857C68
 	.sbss       start:0x808E4530 end:0x808E4538
 	.bss        start:0x8097D570 end:0x8097DB70
 
-rb3/symbols/messageset3.cpp:
+system/utl/Messages3.cpp:
 	.text       start:0x80356848 end:0x803572F0
 	.ctors      start:0x807EFF64 end:0x807EFF68
 	.data       start:0x80857C68 end:0x80858080
 	.sbss       start:0x808E4538 end:0x808E4540
 	.bss        start:0x8097DB70 end:0x8097E1B8
 
-rb3/symbols/messageset4.cpp:
+system/utl/Messages4.cpp:
 	.text       start:0x803572F0 end:0x80357E10
 	.ctors      start:0x807EFF68 end:0x807EFF6C
 	.data       start:0x80858080 end:0x80858470
@@ -849,31 +849,28 @@ system/utl/StringTable.cpp:
 system/utl/Symbol.cpp:
 	.text       start:0x80363F60 end:0x803651B0
 
-rb3/stringtablelocks.cpp:
-	.text       start:0x803651B0 end:0x80365214
-
-rb3/symbols/symbolset1.cpp:
-	.text       start:0x80365214 end:0x8036B5A0
+system/utl/Symbols.cpp:
+	.text       start:0x803651B0 end:0x8036B5A0
 	.ctors      start:0x807EFF6C end:0x807EFF70
 	.data       start:0x80858D28 end:0x80861278
 	.sbss       start:0x808E4568 end:0x808E4570
 	.bss        start:0x8097E948 end:0x809809F8
 
-rb3/symbols/symbolset2.cpp:
+system/utl/Symbols2.cpp:
 	.text       start:0x8036B5A0 end:0x803704DC
 	.ctors      start:0x807EFF70 end:0x807EFF74
 	.data       start:0x80861278 end:0x80867580
 	.sbss       start:0x808E4570 end:0x808E4578
 	.bss        start:0x809809F8 end:0x80982448
 
-rb3/symbols/symbolset3.cpp:
+system/utl/Symbols3.cpp:
 	.text       start:0x803704DC end:0x8037546C
 	.ctors      start:0x807EFF74 end:0x807EFF78
 	.data       start:0x80867580 end:0x8086DE50
 	.sbss       start:0x808E4578 end:0x808E4580
 	.bss        start:0x80982448 end:0x80983EB8
 
-rb3/symbols/symbolset4.cpp:
+system/utl/Symbols4.cpp:
 	.text       start:0x8037546C end:0x8037A3D8
 	.ctors      start:0x807EFF78 end:0x807EFF7C
 	.data       start:0x8086DE50 end:0x80874468
@@ -903,37 +900,37 @@ system/utl/UTF8.cpp:
 rb3/unknown/803/unk_8037AD40.cpp:
 	.text       start:0x8037BE50 end:0x8037EB94
 
-libs/zlib/adler32.c:
+system/zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
 
-libs/zlib/crc32.c:
+system/zlib/crc32.c:
 	.text       start:0x8037ED1C end:0x8037EE64
 	.rodata     start:0x807F1E00 end:0x807F2200
 
-libs/zlib/deflate.c:
+system/zlib/deflate.c:
 	.text       start:0x8037EE64 end:0x80380B78
 	.rodata     start:0x807F2200 end:0x807F2280
 
-libs/zlib/trees.c:
+system/zlib/trees.c:
 	.text       start:0x80380B78 end:0x80382960
 	.rodata     start:0x807F2280 end:0x807F2CB8
 	.data       start:0x80874690 end:0x808746D0
 
-libs/zlib/zutil.c:
+system/zlib/zutil.c:
 	.text       start:0x80382960 end:0x80382998
 	.rodata     start:0x807F2CB8 end:0x807F2CE0
 	.data       start:0x808746D0 end:0x80874750
 
-libs/zlib/inflate.c:
+system/zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248
 	.rodata     start:0x807F2CE0 end:0x807F3588
 	.data       start:0x80874750 end:0x80874978
 
-libs/zlib/inftrees.c:
+system/zlib/inftrees.c:
 	.text       start:0x80384248 end:0x803846EC
 	.rodata     start:0x807F3588 end:0x807F36B8
 
-libs/zlib/inffast.c:
+system/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
 
@@ -1017,14 +1014,14 @@ rb3/panels/storepanel.cpp:
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C
 
-rb3/midiparser.cpp:
+system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
-rb3/labelnumberticker.cpp:
+system/ui/LabelNumberTicker.cpp:
 	.text       start:0x80549150 end:0x8054A190
 
-rb3/labelshrinkwrapper.cpp:
+system/ui/LabelShrinkWrapper.cpp:
 	.text       start:0x8054A190 end:0x8054AE78
 
 system/ui/PanelDir.cpp:
@@ -1038,6 +1035,7 @@ system/ui/UI.cpp:
 
 system/ui/UIButton.cpp:
 	.text       start:0x80552668 end:0x80552E80
+	.sbss       start:0x808E4A68 end:0x808E4A6C
 
 system/ui/UIColor.cpp:
 	.text       start:0x80552E80 end:0x80553260
@@ -1478,7 +1476,7 @@ libs/speex/libspeex/vbr.c:
 libs/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
-rb3/Rnd/wii/wiirnd.cpp:
+system/wiirnd/WiiRnd.cpp:
 	.text       start:0x806B8438 end:0x806BDD84
 	.ctors      start:0x807F0040 end:0x807F0044
 	.sbss       start:0x808E4E70 end:0x808E4E74
@@ -1587,8 +1585,14 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-sdk/Dolphin/pad/pad.c:
+sdk/RVL_SDK/revolution/pad/Pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540
 
-sdk/Dolphin/rso/RSOLink.c:
+sdk/RVL_SDK/revolution/rso/RSOLink.c:
 	.text       start:0x8076F540 end:0x807713F0
+
+sdk/RVL_SDK/revolution/sc/scsystem.c:
+	.text       start:0x807713F0 end:0x80772E80
+	.data       start:0x808D2AF8 end:0x808D2CF0
+	.sdata      start:0x808E35F8 end:0x808E3708
+	.bss        start:0x809ECC20 end:0x809F4DC0

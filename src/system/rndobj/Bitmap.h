@@ -64,8 +64,8 @@ public:
     void Create(const RndBitmap&, int, int, void*);
     void AllocateBuffer();
     void Create(int, int, int, int, int, void*, void*, void*);
-    void Create(void*);
-    void PixelColor(int, int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
+    void Create(void*); 
+    void PixelColor(int x, int y, u8& r, u8& g, u8& b, u8& a) const;
     int PixelOffset(int, int, bool&) const;
     int PixelIndex(int, int) const;
     void SetPixelIndex(int, int, unsigned char);

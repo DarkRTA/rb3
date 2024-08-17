@@ -1,4 +1,12 @@
 {
+    "main": {
+        "mw_version": "Wii/1.3",
+        "cflags": "main",
+        "objects": {
+            "Main.cpp": "Matching",
+            "App.cpp": "NonMatching"
+        }
+    },
     "band3": {
         "mw_version": "Wii/1.3",
         "cflags": "band3",
@@ -22,15 +30,33 @@
             "network/net/json-c/printbuf.c": "Matching"
         }
     },
+    "zlib": {
+        "mw_version": "Wii/1.3",
+        "cflags": "zlib",
+        "objects": {
+            "system/zlib/adler32.c": "Matching",
+            "system/zlib/crc32.c": "Matching",
+            "system/zlib/deflate.c": "NonMatching",
+            "system/zlib/trees.c": "NonMatching",
+            "system/zlib/zutil.c": "Matching",
+            "system/zlib/inflate.c": "Matching",
+            "system/zlib/inftrees.c": "NonMatching",
+            "system/zlib/inffast.c": "Matching"
+        }
+    },
     "system": {
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
             "system/math/Key.cpp": "NonMatching",
+            "system/math/Rand2.cpp": "Matching",
+
+            "system/midi/MidiParser.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
             "system/rndobj/Anim.cpp": "NonMatching",
             "system/rndobj/AnimFilter.cpp": "NonMatching",
+            "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
             "system/rndobj/CamAnim.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
@@ -75,7 +101,17 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
 
-            "system/ui/UIPanel.cpp": "NonMatching"
+            "system/ui/UIButton.cpp": "NonMatching",
+            "system/ui/UIPanel.cpp": "NonMatching",
+            
+            "system/utl/Messages.cpp": "NonMatching",
+            "system/utl/Messages2.cpp": "NonMatching",
+            "system/utl/Messages3.cpp": "NonMatching",
+            "system/utl/Messages4.cpp": "NonMatching",
+            "system/utl/Symbols.cpp": "NonMatching",
+            "system/utl/Symbols2.cpp": "NonMatching",
+            "system/utl/Symbols3.cpp": "NonMatching",
+            "system/utl/Symbols4.cpp": "NonMatching"
         }
     }
 }

@@ -1,12 +1,14 @@
-#ifndef RVL_SDK_PUBLIC_WPAD_H
-#define RVL_SDK_PUBLIC_WPAD_H
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef RVL_SDK_LIB_WPAD_H
+#define RVL_SDK_LIB_WPAD_H
 
-#include "revolution/wpad/debug_msg.h"
+/*******************************************************************************
+ * headers
+ */
 
-#ifdef __cplusplus
-}
-#endif
-#endif
+#include <revolution/WPAD/WPAD.h>
+#include <revolution/WPAD/WPADMem.h>
+
+// i don't think this was public? so commented out
+// #include <revolution/WPAD/WUD.h>
+
+#endif // RVL_SDK_LIB_WPAD_H
