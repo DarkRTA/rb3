@@ -433,7 +433,7 @@ DataNode RndTransformable::OnGetWorldRot(const DataArray* da){
 }
 
 DataNode RndTransformable::OnSetLocalPos(const DataArray* da) {
-#ifdef MILO_DEBUG
+#ifdef VERSION_SZBE69_B8
     SetLocalPos(da->Float(2), da->Float(3), da->Float(4));
 #else
     SetLocalPos(Vector3(da->Float(2), da->Float(3), da->Float(4)));

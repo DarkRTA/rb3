@@ -37,7 +37,7 @@ const char* PathName(const class Hmx::Object*);
 
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
-#ifdef MILO_DEBUG
+#ifdef VERSION_SZBE69_B8
     #define BEGIN_HANDLERS(objType) \
     DataNode objType::Handle(DataArray* _msg, bool _warn){ \
         Symbol sym = _msg->Sym(1); \

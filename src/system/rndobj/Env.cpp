@@ -18,7 +18,7 @@ void RndEnviron::Select(const Vector3* v) {
     if (v) {
         sCurrentPos = *v;
     } else {
-    #ifdef MILO_DEBUG
+    #ifdef VERSION_SZBE69_B8
         sCurrentPos.z = 0;
         sCurrentPos.y = 0;
         sCurrentPos.x = 0;

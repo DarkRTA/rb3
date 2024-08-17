@@ -23,7 +23,7 @@ void RndMultiMeshProxy::DrawShowing(){
 }
 
 void RndMultiMeshProxy::UpdatedWorldXfm(){
-#ifdef MILO_DEBUG
+#ifdef VERSION_SZBE69_B8
     if(mMultiMesh){
         Transform& tfm = WorldXfm();
         mIndex->mXfm = tfm;
