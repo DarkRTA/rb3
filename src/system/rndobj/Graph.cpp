@@ -12,7 +12,7 @@ ObjPtr<RndCam, ObjectDir> sCam(NULL, NULL);
 
 static DataNode OnGraphReset(DataArray*) {
     RndGraph::ResetAll();
-    return DataNode();
+    return DataNode(0);
 }
 
 void RndGraph::Init() {

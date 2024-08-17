@@ -1115,6 +1115,10 @@ system/rndobj/AnimFilter.cpp:
 system/rndobj/Bitmap.cpp:
 	.text       start:0x805C9A68 end:0x805CC018
 
+system/rndobj/BoxMap.cpp:
+	.text       start:0x805CC018 end:0x805CCF80
+	.ctors      start:0x807EFFDC end:0x807EFFE0
+
 system/rndobj/Cam.cpp:
 	.text       start:0x805CCF80 end:0x805CE230
 	.ctors      start:0x807EFFE0 end:0x807EFFE4
@@ -1166,6 +1170,11 @@ system/rndobj/Font.cpp:
 
 system/rndobj/Gen.cpp:
 	.text       start:0x805EC3E8 end:0x805EF00C
+	.data       start:0x80895F08 end:0x80896110
+
+system/rndobj/Graph.cpp:
+	.text       start:0x805EF00C end:0x805EFA68
+	.ctors      start:0x807EFFE8 end:0x807EFFEC
 
 system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C

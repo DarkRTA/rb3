@@ -42,6 +42,8 @@
             "system/rndobj/EnvAnim.cpp": "NonMatching",
             "system/rndobj/EventTrigger.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "NonMatching",
+            "system/rndobj/Gen.cpp": "NonMatching",
+            "system/rndobj/Graph.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
