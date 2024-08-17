@@ -185,7 +185,7 @@ public:
   _STLP_DECLARE_RANDOM_ACCESS_REVERSE_ITERATORS;
 
   allocator_type get_allocator() const
-  { return (const allocator_type&)this->_M_ptr; }
+  { return _STLP_CONVERT_ALLOCATOR((const allocator_type&)this->_M_end_of_storage, _Tp); }
 
 private:
   typedef typename __type_traits<_Tp>::has_trivial_assignment_operator _TrivialCopy;

@@ -199,9 +199,11 @@ public:
 #ifdef VERSION_SZBE69
    // Note: does not preserve state! This is fine since StlNodeAlloc has no state,
    // and no other allocators are used as far as we've seen
-#  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) _Alloc_traits<_Tp, _Alloc>::allocator_type()
+#  define _STLP_CONVERT_ALLOCATOR(__a, _Tp) \
+    /* __typeof__ used instead of __decltype__ to remove references */ \
+    _Alloc_traits<_Tp, __typeof__(__a)>::allocator_type()
 #else
-#  define _STLP_CONVERT_ALLOCATOR(__a, _Alloc, _Tp) __a
+#  define _STLP_CONVERT_ALLOCATOR(__a, _Tp) __a
 #endif
 
 // Another allocator adaptor: _Alloc_traits.  This serves two
@@ -215,7 +217,7 @@ struct _Alloc_traits {
   typedef typename _Allocator::template rebind<_Tp> _Rebind_type;
   typedef typename _Rebind_type::other  allocator_type;
   static allocator_type create_allocator(const _Orig& __a)
-  { return _STLP_CONVERT_ALLOCATOR(__a, _Orig, _Tp); }
+  { return allocator_type(_STLP_CONVERT_ALLOCATOR(__a, _Tp)); }
 };
 
 #if defined (_STLP_USE_PERTHREAD_ALLOC)

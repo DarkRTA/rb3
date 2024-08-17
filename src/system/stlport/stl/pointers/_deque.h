@@ -140,16 +140,16 @@ public:                         // Basic accessors
   size_type size() const     { return _M_impl.size(); }
   size_type max_size() const { return _M_impl.max_size(); }
   bool empty() const         { return _M_impl.empty(); }
-  allocator_type get_allocator() const { return _M_impl.get_allocator(); }
+  allocator_type get_allocator() const { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
 
   explicit deque(const allocator_type& __a = allocator_type())
-    : _M_impl(__a) {}
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
   deque(const _Self& __x) : _M_impl(__x._M_impl) {}
 
   explicit deque(size_type __n, const value_type& __val = value_type(),
         const allocator_type& __a = allocator_type())
-    : _M_impl(__n, cast_traits::to_storage_type_cref(__val), __a) {}
+    : _M_impl(__n, cast_traits::to_storage_type_cref(__val), _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
   // int,long variants may be needed
 
   template <class _InputIterator>
@@ -157,9 +157,9 @@ public:                         // Basic accessors
         const allocator_type& __a = allocator_type())
 #if !defined (_STLP_USE_ITERATOR_WRAPPER)
   : _M_impl(__first, __last,
-            __a) {
+            _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
 #else
-  : _M_impl(__a) {
+  : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
 #endif
 #if defined (_STLP_USE_ITERATOR_WRAPPER)
     insert(end(), __first, __last);
