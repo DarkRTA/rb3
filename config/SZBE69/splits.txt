@@ -1153,6 +1153,7 @@ system/rndobj/Console.cpp:
 
 system/rndobj/Dir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
+	.sbss       start:0x808E4BD8 end:0x808E4BDC
 
 system/rndobj/DOFProc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130

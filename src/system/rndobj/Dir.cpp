@@ -106,6 +106,7 @@ void RndDir::Poll(){
 }
 
 void RndDir::Enter(){
+#ifdef VERSION_SZBE69_B8
     if(TheLoadMgr.EditMode()){
         DataNode events = OnSupportedEvents(0);
         DataArray* arr = events.Array(0);
@@ -113,11 +114,12 @@ void RndDir::Enter(){
             mTestEvent = Symbol("");
         }
     }
+#endif
     for(std::vector<RndPollable*>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
         (*it)->Enter();
     }
-    if(this != mDir){
-        MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+    if(IsProxy()){
+        MsgSource* src = dynamic_cast<MsgSource*>(Dir());
         if(src) ChainSourceSubdir(src, this);
     }
     RndPollable::Enter();
