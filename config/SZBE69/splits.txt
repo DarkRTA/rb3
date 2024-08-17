@@ -996,6 +996,12 @@ rb3/songsectioncontroller.cpp:
 system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
+system/char/Char.cpp:
+	.text       start:0x80499BAC end:0x8049C168
+
+system/char/Character.cpp:
+	.text       start:0x8049C168 end:0x804A498C
+
 system/char/CharBlendBone.cpp:
 	.text       start:0x804A498C end:0x804A66A0
 	.data       start:0x808871D0 end:0x808872B8
