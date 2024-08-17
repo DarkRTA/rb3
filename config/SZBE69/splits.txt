@@ -1181,6 +1181,15 @@ system/rndobj/Graph.cpp:
 system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C
 
+system/rndobj/HiResScreen.cpp:
+	.text       start:0x805F1B2C end:0x805F1C60
+	.ctors      start:0x807EFFEC end:0x807EFFF0
+	.data       start:0x80896860 end:0x808968A0
+	.bss        start:0x8098CD50 end:0x8098CD88
+
+system/rndobj/Line.cpp:
+	.text       start:0x805F1C60 end:0x805F5224
+
 system/rndobj/Lit.cpp:
 	.text       start:0x805F5224 end:0x805F68BC
 	.data       start:0x80896A60 end:0x80896BA8
