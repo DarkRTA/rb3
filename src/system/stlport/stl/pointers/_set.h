@@ -97,7 +97,7 @@ public:
   set() : _M_t(_CompareStorageType(), _StorageTypeAlloc()) {}
   explicit set(const _Compare& __comp,
                const allocator_type& __a = allocator_type())
-    : _M_t(__comp, __a) {}
+    : _M_t(__comp, _STLP_CONVERT_ALLOCATOR(__a, _KeyStorageType)) {}
 
   template <class _InputIterator>
   set(_InputIterator __first, _InputIterator __last)
@@ -113,7 +113,7 @@ public:
   template <class _InputIterator>
   set(_InputIterator __first, _InputIterator __last, const _Compare& __comp,
       const allocator_type& __a = allocator_type())
-    : _M_t(__comp, __a) {
+    : _M_t(__comp, _STLP_CONVERT_ALLOCATOR(__a, _KeyStorageType)) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
     _M_t.insert_unique(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
                        typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
@@ -136,7 +136,7 @@ public:
   key_compare key_comp() const { return _M_t.key_comp(); }
   value_compare value_comp() const { return _M_t.key_comp(); }
   allocator_type get_allocator() const
-  { return _M_t.get_allocator(); }
+  { return _STLP_CONVERT_ALLOCATOR(_M_t.get_allocator(), value_type); }
 
   iterator begin() { return _S_to_value_ite(_M_t.begin()); }
   iterator end() { return _S_to_value_ite(_M_t.end()); }
@@ -294,7 +294,7 @@ public:
   multiset() : _M_t(_Compare(), _StorageTypeAlloc()) {}
   explicit multiset(const _Compare& __comp,
                     const allocator_type& __a = allocator_type())
-    : _M_t(__comp, __a) {}
+    : _M_t(__comp, _STLP_CONVERT_ALLOCATOR(__a, _KeyStorageType)) {}
 
   template <class _InputIterator>
   multiset(_InputIterator __first, _InputIterator __last)
@@ -311,7 +311,7 @@ public:
   multiset(_InputIterator __first, _InputIterator __last,
            const _Compare& __comp,
            const allocator_type& __a = allocator_type())
-    : _M_t(__comp, __a) {
+    : _M_t(__comp, _STLP_CONVERT_ALLOCATOR(__a, _KeyStorageType)) {
 #  if defined (_STLP_USE_ITERATOR_WRAPPER)
     _M_t.insert_equal(typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__first),
                       typename _STLP_PRIV::_IteWrapper<_KeyStorageType, _Key, _InputIterator>::_Ite(__last));
@@ -335,7 +335,7 @@ public:
   key_compare key_comp() const { return _M_t.key_comp(); }
   value_compare value_comp() const { return _M_t.key_comp(); }
   allocator_type get_allocator() const
-  { return _M_t.get_allocator(); }
+  { return _STLP_CONVERT_ALLOCATOR(_M_t.get_allocator(), value_type); }
 
   iterator begin() { return _S_to_value_ite(_M_t.begin()); }
   iterator end() { return _S_to_value_ite(_M_t.end()); }

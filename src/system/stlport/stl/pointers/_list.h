@@ -61,23 +61,23 @@ public:
   _STLP_DECLARE_BIDIRECTIONAL_REVERSE_ITERATORS;
 
   allocator_type get_allocator() const
-  { return _M_impl.get_allocator(); }
+  { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
 
   explicit list(const allocator_type& __a = allocator_type())
-    : _M_impl(__a) {}
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
   explicit list(size_type __n, const value_type& __val = value_type(),
        const allocator_type& __a = allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
-              __a) {}
+              _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
   template <class _InputIterator>
   list(_InputIterator __first, _InputIterator __last,
        const allocator_type& __a = allocator_type())
 #  if !defined (_STLP_USE_ITERATOR_WRAPPER)
-    : _M_impl(__first, __last, __a) {}
+    : _M_impl(__first, __last, _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 #  else
-    : _M_impl(__a) {
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {
     insert(begin(), __first, __last);
   }
 #  endif

@@ -140,7 +140,7 @@ public:                         // Constructor, destructor, assignment.
   typedef typename _Base::allocator_type allocator_type;
 
   allocator_type get_allocator() const
-  { return (const allocator_type&)this->_M_end_of_storage; }
+  { return _STLP_CONVERT_ALLOCATOR((const allocator_type&)this->_M_end_of_storage, _CharT); }
 
   explicit basic_string(const allocator_type& __a = allocator_type())
       : _STLP_PRIV::_String_base<_CharT,_Alloc>(__a, _Base::_DEFAULT_SIZE)

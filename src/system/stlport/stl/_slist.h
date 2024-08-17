@@ -146,7 +146,7 @@ public:
   typedef typename _Alloc_traits<_Tp,_Alloc>::allocator_type allocator_type;
 
   _Slist_base(const allocator_type& __a) :
-    _M_head(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _Node), _Slist_node_base() ) {
+    _M_head(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Slist_node_base() ) {
     _M_head._M_data._M_next = 0;
   }
   _Slist_base(__move_source<_Self> src) :
@@ -168,7 +168,7 @@ protected:
 
 public:
   allocator_type get_allocator() const
-  { return (const _M_node_allocator_type&)_M_head; }
+  { return _STLP_CONVERT_ALLOCATOR((const _M_node_allocator_type&)_M_head, _Tp); }
   _AllocProxy _M_head;
 };
 

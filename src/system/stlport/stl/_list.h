@@ -168,9 +168,9 @@ public:
   typedef typename _Alloc_traits<_Tp, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const
-  { return (const _Node_allocator_type&)_M_node; }
+  { return _STLP_CONVERT_ALLOCATOR((const _Node_allocator_type&)_M_node, _Tp); }
 
-  _List_base(const allocator_type& __a) : _M_node(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _Node), _Node_base())
+  _List_base(const allocator_type& __a) : _M_node(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Node_base())
   { _M_empty_initialize(); }
   _List_base(__move_source<_Self> src) :
     _M_node(__move_source<_AllocProxy>(src.get()._M_node)) {
