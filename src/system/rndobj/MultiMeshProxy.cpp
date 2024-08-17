@@ -7,10 +7,7 @@ RndMultiMeshProxy::RndMultiMeshProxy() : mMultiMesh(this, 0), mIndex(0) {
 
 void RndMultiMeshProxy::SetMultiMesh(RndMultiMesh* mesh, const std::list<RndMultiMesh::Instance>::iterator& it){
     mMultiMesh = 0;
-    if(mesh){
-        mLocalXfm = (*it).mXfm;
-        mCache->SetDirty();
-    }
+    if(mesh) SetLocalXfm(it->mXfm);
     mMultiMesh = mesh;
     mIndex = it;
 }
@@ -26,10 +23,17 @@ void RndMultiMeshProxy::DrawShowing(){
 }
 
 void RndMultiMeshProxy::UpdatedWorldXfm(){
+#ifdef MILO_DEBUG
     if(mMultiMesh){
-        Transform& tfm = (mCache->mFlags & 1) ? WorldXfm_Force() : mWorldXfm;
+        Transform& tfm = WorldXfm();
         mIndex->mXfm = tfm;
     }
+#else
+    if(mMultiMesh){
+        Transform& tfm = mIndex->mXfm;
+        tfm = WorldXfm();
+    }
+#endif
 }
 
 BEGIN_LOADS(RndMultiMeshProxy)

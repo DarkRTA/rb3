@@ -1211,6 +1211,7 @@ system/rndobj/MultiMesh.cpp:
 
 system/rndobj/MultiMeshProxy.cpp:
 	.text       start:0x8061740C end:0x806179C4
+	.data       start:0x80897A68 end:0x80897B88
 
 system/rndobj/Overlay.cpp:
 	.text       start:0x806179C4 end:0x80618780
