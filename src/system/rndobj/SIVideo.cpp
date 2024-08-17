@@ -41,8 +41,13 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
         mData = 0;
     }
     if (!load_data) {
+    #ifdef VERSION_SZBE69_B8
+        mData = (char*)_MemAlloc(mHeight * (mMagic * mWidth * Bpp() >> 3), 0);
+        bs.Read(mData, mHeight * (mMagic * mWidth * Bpp() >> 3));
+    #else
         mData = (char*)_MemAlloc(mHeight * FrameSize(), 0);
         bs.Read(mData, mHeight * FrameSize());
+    #endif
     }
 }
 
