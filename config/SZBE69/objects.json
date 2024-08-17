@@ -45,6 +45,7 @@
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/MatAnim.cpp": "NonMatching",
+            "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "NonMatching",
             "system/rndobj/MultiMeshProxy.cpp": "NonMatching",
             "system/rndobj/Overlay.cpp": "NonMatching",

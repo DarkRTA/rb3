@@ -1204,6 +1204,8 @@ system/rndobj/MotionBlur.cpp:
 
 system/rndobj/Movie.cpp:
 	.text       start:0x806143BC end:0x80614E30
+	.data       start:0x808977F0 end:0x808978F8
+	.sbss       start:0x808E4CA0 end:0x808E4CA8
 
 system/rndobj/MultiMesh.cpp:
 	.text       start:0x80614E30 end:0x8061740C
