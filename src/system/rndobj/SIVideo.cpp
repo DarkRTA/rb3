@@ -41,8 +41,8 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
         mData = 0;
     }
     if (!load_data) {
-        mData = (char*)_MemAlloc(mHeight * (mMagic * mWidth * Bpp() >> 3), 0);
-        bs.Read(mData, mHeight * (mMagic * mWidth * Bpp() >> 3));
+        mData = (char*)_MemAlloc(mHeight * FrameSize(), 0);
+        bs.Read(mData, mHeight * FrameSize());
     }
 }
 
@@ -53,7 +53,7 @@ DECOMP_FORCEBLOCK(SIVideo, (const SIVideo* s), s->Bpp(); s->FrameSize();)
 
 char* SIVideo::Frame(int i) {
     if (mData) {
-        return &mData[((mMagic * mWidth * Bpp()) >> 3) * i];
+        return &mData[FrameSize() * i];
     }
     else return NULL;
 }

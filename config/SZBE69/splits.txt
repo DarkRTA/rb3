@@ -1210,11 +1210,14 @@ system/rndobj/MatAnim.cpp:
 	.bss        start:0x8098CEE8 end:0x8098CEF0
 
 system/rndobj/Mesh.cpp:
-	.text       start:0x805FCEC8 end:0x80606C98
+	.text       start:0x805FCEC0 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
 system/rndobj/MeshAnim.cpp:
-	.text       start:0x80606C98 end:0x8060DD84
+	.text       start:0x80606C98 end:0x8060DD24
+
+system/rndobj/MeshDeform.cpp:
+	.text       start:0x8060DD24 end:0x80610528
 
 system/rndobj/Morph.cpp:
 	.text       start:0x80610528 end:0x80613A80
@@ -1260,6 +1263,10 @@ system/rndobj/Poll.cpp:
 system/rndobj/PollAnim.cpp:
 	.text       start:0x806238C0 end:0x80624574
 
+system/rndobj/PostProc.cpp:
+	.text       start:0x80624574 end:0x806273E0
+	.ctors      start:0x807F0000 end:0x807F0004
+
 system/rndobj/PropKeys.cpp:
 	.text       start:0x806273E0 end:0x806319D0
 	.ctors      start:0x807F0004 end:0x807F0008
@@ -1282,6 +1289,12 @@ system/rndobj/ShaderOptions.cpp:
 	.ctors      start:0x807F000C end:0x807F0010
 	.data       start:0x80899360 end:0x80899860
 	.bss        start:0x8098D4F8 end:0x8098D560
+
+system/rndobj/ShadowMap.cpp:
+	.text       start:0x8063F464 end:0x8063F490
+
+system/rndobj/SIVideo.cpp:
+	.text       start:0x8063F490 end:0x8063F6C4
 
 system/rndobj/Tex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
