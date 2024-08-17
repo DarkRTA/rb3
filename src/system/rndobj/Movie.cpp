@@ -19,13 +19,11 @@ void RndMovie::Load(BinStream& bs){
 }
 
 void RndMovie::PreLoad(BinStream& bs){
-    char buf[0x100];
     LOAD_REVS(bs);
     ASSERT_REVS(8, 0);
     if(gRev > 6) Hmx::Object::Load(bs);
     RndAnimatable::Load(bs);
-    bs.ReadString(buf, 0x100);
-    mFile.Set(FilePath::sRoot.c_str(), buf);
+    bs >> mFile;
     if(gRev > 3) bs >> mTex;
     if(gRev > 4) bs >> mStream;
     if(gRev > 7 && !mStream){

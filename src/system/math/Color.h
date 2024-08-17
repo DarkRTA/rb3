@@ -54,14 +54,6 @@ namespace Hmx {
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
-
-        Color& operator *=(float f) {
-            red *= f;
-            green *= f;
-            blue *= f;
-            alpha *= f;
-            return *this;
-        }
     };
 
     class Color32 {
@@ -107,6 +99,13 @@ inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res
     res.green = c1.green - c2.green;
     res.red = c1.red - c2.red;
     res.alpha = alpha;
+}
+
+inline void Multiply(const Hmx::Color& c1, float f, Hmx::Color& res){
+    res.red = c1.red * f;
+    res.green = c1.green * f;
+    res.blue = c1.blue * f;
+    res.alpha = c1.alpha * f;
 }
 
 inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){

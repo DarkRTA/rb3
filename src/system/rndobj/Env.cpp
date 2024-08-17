@@ -18,9 +18,13 @@ void RndEnviron::Select(const Vector3* v) {
     if (v) {
         sCurrentPos = *v;
     } else {
+    #ifdef VERSION_SZBE69_B8
         sCurrentPos.z = 0;
         sCurrentPos.y = 0;
         sCurrentPos.x = 0;
+    #else
+        sCurrentPos.Zero();
+    #endif
     }
     mNumLightsReal = 0;
     mNumLightsApprox = 0;
@@ -31,9 +35,9 @@ void RndEnviron::Select(const Vector3* v) {
     ReclassifyLights();
 }
 
-RndEnviron::RndEnviron() : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull), mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f),
+RndEnviron::RndEnviron() : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull), mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f, 1.0f),
     unk5c(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this), 
-    mFogEnable(0), mFogStart(0.0f), mFogEnd(1.0f), mFogColor(), mFadeOut(0), mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f),
+    mFogEnable(0), mFogStart(0.0f), mFogEnd(1.0f), mFogColor(1.0f,1.0f,1.0f), mFadeOut(0), mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f),
     mFadeRef(this, NULL), mLRFade(0.0f, 0.0f, 0.0f, 0.0f), mColorXfm(),
     mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(), mIntensityAverage(0.0f), 
     mIntensityRate(0.1f), mExposure(1.0f), mWhitePoint(1.0f), mUseToneMapping(0), mUseApprox_Local(1), mUseApprox_Global(1) {
@@ -89,7 +93,7 @@ BEGIN_LOADS(RndEnviron)
     }
     if(rev > 7){
         bs >> mUseColorAdjust;
-        mColorXfm.Load(bs);
+        bs >> mColorXfm;
     }
     if(rev > 9){
         if(rev < 0xD){
@@ -153,7 +157,8 @@ END_COPYS
 
 bool RndEnviron::IsValidRealLight(const RndLight* l) const {
     bool ret = false;
-    if(l->mType == RndLight::kPoint || l->mType == RndLight::kFakeSpot) ret = true;
+    RndLight::Type ty = l->GetType();
+    if(ty == RndLight::kPoint || ty == RndLight::kFakeSpot) ret = true;
     return ret;
 }
 

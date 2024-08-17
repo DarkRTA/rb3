@@ -167,7 +167,7 @@ public:
     static Timer* GetTimer(Symbol);
 };
 
-#ifdef MILO_DEBUG
+#ifdef VERSION_SZBE69_B8
 #define START_AUTO_TIMER(name) \
     static Timer* _t = AutoTimer::GetTimer(name); \
     AutoTimer t(_t, 50.0f, NULL, NULL)

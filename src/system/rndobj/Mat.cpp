@@ -13,16 +13,13 @@ MatShaderOptions::MatShaderOptions() : mTempMat(0) {
 
 RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
     const char* c = MakeString("%s.mat", FileGetBase(shader, 0));
-    RndMat* mat = dynamic_cast<RndMat*>(dir->FindObject(c, false));
+    RndMat* mat = dir->Find<RndMat>(c, false);
     if(!mat){
-        mat = dynamic_cast<RndMat*>(dir->FindObject(FileGetBase(shader, 0), false));
+        mat = dir->Find<RndMat>(FileGetBase(shader, 0), false);
         if(!mat){
             bool editmode = TheLoadMgr.EditMode();
             TheLoadMgr.SetEditMode(true);
-            mat = Hmx::Object::New<RndMat>();
-            if(c){
-                mat->SetName(c, dir);
-            }
+            mat = dir->New<RndMat>(c);
             TheLoadMgr.SetEditMode(editmode);
         }
     }
@@ -39,7 +36,7 @@ void MatPerfSettings::Load(BinStream& bs){
     if(RndMat::gRev > 0x41) LOAD_BITFIELD(bool, mRecvPointCubeTex)
 }
 
-RndMat::RndMat() : mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mEmissiveMap(this, 0), mRefractStrength(0.0f), mRefractNormalMap(this, 0),
+RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mEmissiveMap(this, 0), mRefractStrength(0.0f), mRefractNormalMap(this, 0),
     mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
     mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kSrc), mTexGen(kTexGenNone), mTexWrap(kRepeat),
     mZMode(kNormal), mStencilMode(kIgnore), mShaderVariation(kShaderVariation_None), unkb0p2(0), mDirty(3) {
@@ -54,7 +51,7 @@ bool RndMat::IsNextPass(RndMat* m) {
     RndMat* m2;
     while (m2 != NULL){
         if (m2 == m) return true;
-        m2 = m2->mNextPass;
+        m2 = m2->NextPass();
     }
     return false;
 }
@@ -319,16 +316,16 @@ DataNode RndMat::OnAllowedNextPass(const DataArray* da){
     DataArrayPtr ptr(new DataArray(matcount + 2));
     int thiscount = 1;
     ptr.Node(0) = DataNode((Hmx::Object*)0);
-    if(mNextPass){
+    if(NextPass()){
         thiscount = 2;
-        ptr.Node(1) = DataNode(mNextPass);
+        ptr.Node(1) = DataNode(NextPass());
     }
     for(ObjDirItr<RndMat> it(Dir(), true); it != 0; ++it){
         if(!IsNextPass(it)){
             ptr.Node(thiscount++) = DataNode(it);
         }
     }
-    ((DataArray*)ptr)->Resize(thiscount);
+    ptr->Resize(thiscount);
     return DataNode(ptr);
 }
 

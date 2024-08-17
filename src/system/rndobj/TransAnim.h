@@ -34,6 +34,9 @@ public:
     Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
     bool TransSpline() const { return mKeysOwner->mTransSpline; }
     bool ScaleSpline() const { return mKeysOwner->mScaleSpline; }
+    void SetTransSpline(bool b){ mKeysOwner->mTransSpline = b; }
+    void SetScaleSpline(bool b){ mKeysOwner->mScaleSpline = b; }
+    void SetRotSlerp(bool b){ mKeysOwner->mRotSlerp = b; }
 
     DataNode OnSetTransSpline(const DataArray*);
     DataNode OnSetScaleSpline(const DataArray*);

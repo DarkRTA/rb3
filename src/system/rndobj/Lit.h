@@ -34,6 +34,12 @@ public:
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
     float Range() const { return mRange; }
     const Hmx::Color& GetColor() const { return mColorOwner->mColor; }
+    Type GetType() const { return mType; }
+    void SetShowing(bool b){ mShowing = b; }
+    void SetPackedColor(int, float);
+    int PackedColor() const;
+    float Intensity() const;
+    void SetProjectedBlend(int i){ mProjectedBlend = i; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

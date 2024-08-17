@@ -28,7 +28,7 @@ public:
     }
 
     bool operator!=(const Symbol & s) const {
-        return !(*this == s);
+        return mStr != s.mStr;
     }
 
     bool operator!=(const char * cc) const {

@@ -12,12 +12,12 @@ ObjPtr<RndCam, ObjectDir> sCam(NULL, NULL);
 
 static DataNode OnGraphReset(DataArray*) {
     RndGraph::ResetAll();
-    return DataNode();
+    return DataNode(0);
 }
 
 void RndGraph::Init() {
     sGraphs = new std::list<RndGraph>;
-    TheDebug.mExitCallbacks.push_back(RndGraph::Terminate); 
+    TheDebug.AddExitCallback(RndGraph::Terminate);
     DataRegisterFunc("graph_reset", OnGraphReset);
 }
 
@@ -107,7 +107,7 @@ void DrawString::DrawFixedZ(float) { Draw(); }
 
 void DrawString::Draw() { TheRnd->DrawString(mText.c_str(), mPos, mCol, true); }
 
-void DrawSphere::DrawFixedZ(float f) { UtilDrawSphere(Vector3(mCenter.X(), mCenter.Z(), f), mRadius, mCol); }
+void DrawSphere::DrawFixedZ(float f) { UtilDrawSphere(Vector3(mCenter.x, mCenter.z, f), mRadius, mCol); }
 
 void DrawSphere::Draw() { UtilDrawSphere(mCenter, mRadius, mCol); }
 

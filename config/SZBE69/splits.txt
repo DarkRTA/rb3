@@ -1113,7 +1113,11 @@ system/rndobj/AnimFilter.cpp:
 	.sbss       start:0x808E4BC8 end:0x808E4BD0
 
 system/rndobj/Bitmap.cpp:
-	.text       start:0x805C9A68 end:0x805CAC4C
+	.text       start:0x805C9A68 end:0x805CC018
+
+system/rndobj/BoxMap.cpp:
+	.text       start:0x805CC018 end:0x805CCF80
+	.ctors      start:0x807EFFDC end:0x807EFFE0
 
 system/rndobj/Cam.cpp:
 	.text       start:0x805CCF80 end:0x805CE230
@@ -1125,7 +1129,7 @@ system/rndobj/CamAnim.cpp:
 	.data       start:0x80894AD8 end:0x80894C68
 	.sbss       start:0x808E4BD0 end:0x808E4BD8
 
-rb3/unknown/805/unk_805CE140.cpp:
+system/rndobj/ColorXfm.cpp:
 	.text       start:0x805CF280 end:0x805CFD34
 
 system/rndobj/Console.cpp:
@@ -1147,6 +1151,16 @@ system/rndobj/Draw.cpp:
 system/rndobj/Env.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
 	.ctors      start:0x807EFFE4 end:0x807EFFE8
+	.data       start:0x808955C8 end:0x808956A8
+	.sbss       start:0x808E4BE8 end:0x808E4C00
+	.bss        start:0x809891C8 end:0x809891D8
+
+system/rndobj/EnvAnim.cpp:
+	.text       start:0x805D9A64 end:0x805DD534
+	.data       start:0x808956A8 end:0x80895868
+
+system/rndobj/EventTrigger.cpp:
+	.text       start:0x805DD534 end:0x805E5A84
 
 system/rndobj/Flare.cpp:
 	.text       start:0x805E5A84 end:0x805E70D4
@@ -1156,28 +1170,67 @@ system/rndobj/Font.cpp:
 
 system/rndobj/Gen.cpp:
 	.text       start:0x805EC3E8 end:0x805EF00C
+	.data       start:0x80895F08 end:0x80896110
+
+system/rndobj/Graph.cpp:
+	.text       start:0x805EF00C end:0x805EFA68
+	.ctors      start:0x807EFFE8 end:0x807EFFEC
+	.data       start:0x80896610 end:0x808966B8
+	.bss        start:0x8098CC90 end:0x8098CD48
 
 system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C
 
+system/rndobj/HiResScreen.cpp:
+	.text       start:0x805F1B2C end:0x805F1C60
+	.ctors      start:0x807EFFEC end:0x807EFFF0
+	.data       start:0x80896860 end:0x808968A0
+	.bss        start:0x8098CD50 end:0x8098CD88
+
+system/rndobj/Line.cpp:
+	.text       start:0x805F1C60 end:0x805F5224
+
 system/rndobj/Lit.cpp:
 	.text       start:0x805F5224 end:0x805F68BC
+	.data       start:0x80896A60 end:0x80896BA8
+	.sbss       start:0x808E4C38 end:0x808E4C40
 
 system/rndobj/LitAnim.cpp:
 	.text       start:0x805F68BC end:0x805F7990
 
+system/rndobj/Mat.cpp:
+	.text       start:0x805F7990 end:0x805FA1D4
+	.data       start:0x80896D98 end:0x80896ED8
+	.sbss       start:0x808E4C48 end:0x808E4C68
+
+system/rndobj/MatAnim.cpp:
+	.text       start:0x805FA1D4 end:0x805FCEC0
+	.data       start:0x80896ED8 end:0x80897080
+	.sbss       start:0x808E4C68 end:0x808E4C70
+	.bss        start:0x8098CEE8 end:0x8098CEF0
+
 system/rndobj/Mesh.cpp:
-	.text       start:0x805FCEC8 end:0x80606C98
+	.text       start:0x805FCEC0 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
 system/rndobj/MeshAnim.cpp:
-	.text       start:0x80606C98 end:0x8060DD84
+	.text       start:0x80606C98 end:0x8060DD24
+
+system/rndobj/MeshDeform.cpp:
+	.text       start:0x8060DD24 end:0x80610528
+
+system/rndobj/Morph.cpp:
+	.text       start:0x80610528 end:0x80613A80
 
 system/rndobj/MotionBlur.cpp:
 	.text       start:0x80613A80 end:0x806143BC
+	.data       start:0x808976C0 end:0x808977F0
+	.sbss       start:0x808E4C98 end:0x808E4CA0
 
 system/rndobj/Movie.cpp:
 	.text       start:0x806143BC end:0x80614E30
+	.data       start:0x808977F0 end:0x808978F8
+	.sbss       start:0x808E4CA0 end:0x808E4CA8
 
 system/rndobj/MultiMesh.cpp:
 	.text       start:0x80614E30 end:0x8061740C
@@ -1185,6 +1238,7 @@ system/rndobj/MultiMesh.cpp:
 
 system/rndobj/MultiMeshProxy.cpp:
 	.text       start:0x8061740C end:0x806179C4
+	.data       start:0x80897A68 end:0x80897B88
 
 system/rndobj/Overlay.cpp:
 	.text       start:0x806179C4 end:0x80618780
@@ -1206,8 +1260,23 @@ system/rndobj/Poll.cpp:
 	.sbss       start:0x808E4CD0 end:0x808E4CD8
 	.bss        start:0x8098D130 end:0x8098D138
 
+system/rndobj/PollAnim.cpp:
+	.text       start:0x806238C0 end:0x80624574
+
+system/rndobj/PostProc.cpp:
+	.text       start:0x80624574 end:0x806273E0
+	.ctors      start:0x807F0000 end:0x807F0004
+
+system/rndobj/PropKeys.cpp:
+	.text       start:0x806273E0 end:0x806319D0
+	.ctors      start:0x807F0004 end:0x807F0008
+
+system/rndobj/PropAnim.cpp:
+	.text       start:0x806319D0 end:0x8063765C
+	.ctors      start:0x807F0008 end:0x807F000C
+
 system/rndobj/Rnd.cpp:
-	.text       start:0x80637BD0 end:0x8063DD48
+	.text       start:0x8063765C end:0x8063DD48
 
 system/rndobj/ScreenMask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
@@ -1221,15 +1290,25 @@ system/rndobj/ShaderOptions.cpp:
 	.data       start:0x80899360 end:0x80899860
 	.bss        start:0x8098D4F8 end:0x8098D560
 
+system/rndobj/ShadowMap.cpp:
+	.text       start:0x8063F464 end:0x8063F490
+
+system/rndobj/SIVideo.cpp:
+	.text       start:0x8063F490 end:0x8063F6C4
+
 system/rndobj/Tex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
 	.data       start:0x80899860 end:0x80899B30
 
 system/rndobj/TexBlendController.cpp:
 	.text       start:0x806412A8 end:0x80641BB8
+	.data       start:0x80899B30 end:0x80899BA0
+	.sbss       start:0x808E4D20 end:0x808E4D28
 
 system/rndobj/TexBlender.cpp:
 	.text       start:0x80641BB8 end:0x80642F64
+	.data       start:0x80899BA0 end:0x80899CE0
+	.sbss       start:0x808E4D28 end:0x808E4D30
 
 system/rndobj/TexRenderer.cpp:
 	.text       start:0x80642F64 end:0x80644F3C
@@ -1245,6 +1324,26 @@ system/rndobj/Trans.cpp:
 
 system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
+	.data       start:0x8089A658 end:0x8089A718
+	.sbss       start:0x808E4D48 end:0x808E4D50
+
+system/rndobj/TransAnim.cpp:
+	.text       start:0x80651D08 end:0x806543C4
+
+system/rndobj/Utl.cpp:
+	.text       start:0x806543C4 end:0x8065ABF8
+	.ctors      start:0x807F0018 end:0x807F001C
+
+system/rndobj/Wind.cpp:
+	.text       start:0x8065ABF8 end:0x8065BB84
+	.ctors      start:0x807F001C end:0x807F0020
+	.data       start:0x8089A9E0 end:0x8089AAA8
+	.sbss       start:0x808E4D50 end:0x808E4D58
+
+system/rndobj/SoftParticles.cpp:
+	.text       start:0x8065BB84 end:0x8065C18C
+	.data       start:0x8089AAA8 end:0x8089ABC8
+	.sbss       start:0x808E4D58 end:0x808E4D60
 
 system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4
@@ -1253,10 +1352,12 @@ system/rndobj/CubeTex.cpp:
 system/rndobj/Fur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
 	.data       start:0x8089AC68 end:0x8089ACF8
+	.sbss       start:0x808E4D68 end:0x808E4D70
 
 system/rndobj/AmbientOcclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
 	.data       start:0x8089ACF8 end:0x8089AD98
+	.sbss       start:0x808E4D70 end:0x808E4D78
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18

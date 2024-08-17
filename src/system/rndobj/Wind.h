@@ -29,6 +29,9 @@ public:
     void SelfGetWind(const Vector3&, float, Vector3&);
 
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(RndWind);
+    }
     NEW_OBJ(RndWind)
 
     DECLARE_REVS
