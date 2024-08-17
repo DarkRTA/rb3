@@ -276,7 +276,7 @@ END_PROPSYNCS;
 AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) :
     mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(blend), mLoop(loop) {
     MILO_ASSERT(anim, 0x1DF);
-    mMin = Minimum(start, end);
+    mMin = Min(start, end);
     mMax = Max(start, end);
     if(start < end){
         mScale = fpu;

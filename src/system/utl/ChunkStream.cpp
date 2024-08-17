@@ -22,7 +22,7 @@ BinStream& MarkChunk(BinStream& bs) {
 BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_size) {
     int curr_size = 0;
     while(curr_size != total_len){
-        int len_left = Minimum(total_len - curr_size, max_chunk_size);
+        int len_left = Min(total_len - curr_size, max_chunk_size);
         char* dataAsChars = (char*)data;
         bs.Read(&dataAsChars[curr_size], len_left);
         curr_size += len_left;
@@ -34,7 +34,7 @@ BinStream& ReadChunks(BinStream& bs, void* data, int total_len, int max_chunk_si
 BinStream& WriteChunks(BinStream& bs, const void* data, int total_len, int max_chunk_size) {
     int curr_size = 0;
     while (curr_size != total_len) {
-        int len_left = Minimum(total_len - curr_size, max_chunk_size);
+        int len_left = Min(total_len - curr_size, max_chunk_size);
         const char* dataChars = (const char*)data;
         bs.Write(&dataChars[curr_size], len_left);
         curr_size += len_left;

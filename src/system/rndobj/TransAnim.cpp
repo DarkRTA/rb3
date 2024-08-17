@@ -105,7 +105,7 @@ float RndTransAnim::EndFrame() {
 }
 
 float RndTransAnim::StartFrame() {
-    return Minimum(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
+    return Min(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
 }
 
 void RndTransAnim::MakeTransform(float, Transform&, bool, float) {

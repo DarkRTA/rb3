@@ -339,10 +339,10 @@ static DataNode DataMin(DataArray* da){
     DataNode& n1 = da->Evaluate(1);
     DataNode& n2 = da->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
-        return DataNode(Minimum<float>(n1.LiteralFloat(da), n2.LiteralFloat(da)));
+        return DataNode(Min<float>(n1.LiteralFloat(da), n2.LiteralFloat(da)));
     }
     else {
-        return DataNode(Minimum<int>(n2.LiteralInt(da), n1.LiteralInt(da)));
+        return DataNode(Min<int>(n2.LiteralInt(da), n1.LiteralInt(da)));
     }
 }
 

@@ -61,7 +61,7 @@ public:
         else {
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
             istart = LowerBound(Max(fstart, front().frame));
-            iend = UpperBound(Minimum(fend, back().frame));
+            iend = UpperBound(Min(fend, back().frame));
         }
     }
 

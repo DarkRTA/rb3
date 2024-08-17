@@ -31,7 +31,7 @@ public:
     virtual bool Poll(float f1, float f2){
         float loc = f1 - mLastPoll;
         float& loc2 = f2;
-        float& res = Minimum<float&>(LowPassFloat, loc);
+        float& res = Min<float&>(LowPassFloat, loc);
         ClampEq<float>(loc2, 0.0f, 1.0f);
 
         for(; res > 0.0f; res -= 17.0f){

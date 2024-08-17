@@ -26,7 +26,7 @@ END_COPYS
 
 float FxSendMeterEffect::ChannelData(int idx){
     if(mChannels.empty()) return 0.0f;
-    return mChannels[Minimum<int>(idx, mChannels.size() - 1)].unk4;
+    return mChannels[Min<int>(idx, mChannels.size() - 1)].unk4;
 }
 
 BEGIN_HANDLERS(FxSendMeterEffect)

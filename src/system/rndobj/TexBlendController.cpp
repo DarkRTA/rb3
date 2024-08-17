@@ -30,13 +30,13 @@ bool RndTexBlendController::GetCurrentDistance(float& dist) const {
 
 void RndTexBlendController::UpdateReferenceDistance(){
     GetCurrentDistance(mReferenceDistance);
-    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+    mMinDistance = Min(mMinDistance, mReferenceDistance);
     mMaxDistance = Max(mMaxDistance, mReferenceDistance);
 }
 
 void RndTexBlendController::UpdateMinDistance(){
     GetCurrentDistance(mMinDistance);
-    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+    mMinDistance = Min(mMinDistance, mReferenceDistance);
 }
 
 void RndTexBlendController::UpdateMaxDistance(){

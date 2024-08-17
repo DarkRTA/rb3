@@ -16,7 +16,7 @@ void MakeHSL(const Hmx::Color& color, float& f1, float& f2, float& f3){
     float g = color.green;
     float r = color.red;
     float maxCol = Max(r, g, b);
-    float minCol = Minimum(r, g, b);
+    float minCol = Min(r, g, b);
     f3 = (minCol + maxCol) / 2.0f;
     if(minCol == maxCol){
         f1 = 0; f2 = 0;
