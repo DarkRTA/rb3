@@ -1087,6 +1087,8 @@ system/char/CharIKHand.cpp:
 
 system/char/CharIKHead.cpp:
 	.text       start:0x804E2A08 end:0x804E4BCC
+	.data       start:0x80889748 end:0x80889890
+	.sbss       start:0x808E48B0 end:0x808E48B8
 
 system/char/CharIKMidi.cpp:
 	.text       start:0x804E4BCC end:0x804E68AC
