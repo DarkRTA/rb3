@@ -1121,9 +1121,13 @@ system/char/CharPollGroup.cpp:
 
 system/char/CharServoBone.cpp:
 	.text       start:0x804F64A8 end:0x804F75FC
+	.data       start:0x8088A978 end:0x8088AAD8
+	.sbss       start:0x808E4918 end:0x808E4920
 
 system/char/CharSleeve.cpp:
 	.text       start:0x804F75FC end:0x804F84AC
+	.data       start:0x8088AAD8 end:0x8088ABE8
+	.sbss       start:0x808E4920 end:0x808E4928
 
 system/char/CharTaskMgr.cpp:
 	.text       start:0x804F84AC end:0x804F84B0
