@@ -1119,12 +1119,12 @@ system/char/CharLookAt.cpp:
 	.text       start:0x804ED1AC end:0x804EE7E0
 
 system/char/CharMeshHide.cpp:
-	.text       start:0x804EE7E0 end:0x804F0744
+	.text       start:0x804EE7E0 end:0x804F0798
 	.data       start:0x8088A410 end:0x8088A490
 	.sbss       start:0x808E48F0 end:0x808E48F8
 
 system/char/CharMeshCacheMgr.cpp:
-	.text       start:0x804F0744 end:0x804F1E7C
+	.text       start:0x804F0798 end:0x804F1E7C
 
 system/char/CharMirror.cpp:
 	.text       start:0x804F1E7C end:0x804F3A94
