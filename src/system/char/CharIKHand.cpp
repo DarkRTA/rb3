@@ -272,6 +272,21 @@ void CharIKHand::UpdateHand(){
     }
 }
 
+void CharIKHand::MeasureLengths(){
+    if(mHand){
+        if(mHand->TransParent()){
+            if(mHand->TransParent()->TransParent()){
+                float len = Length(mHand->mLocalXfm.v);
+                float parentlen = Length(mHand->TransParent()->mLocalXfm.v);
+                unk64 = len * 2.0f * parentlen;
+                mInv2ab = parentlen * parentlen + (len * len + 0.0f);
+                if(unk64 != 0.0f) unk64 = 1.0f / unk64;
+                mAAPlusBB = len + parentlen;        
+            }
+        }
+    }
+}
+
 SAVE_OBJ(CharIKHand, 0x2A8)
 
 BEGIN_LOADS(CharIKHand)
