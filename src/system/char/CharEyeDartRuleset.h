@@ -5,6 +5,7 @@
 class CharEyeDartRuleset : public Hmx::Object {
 public:
     struct EyeDartRulesetData {
+        EyeDartRulesetData(){ ClearToDefaults(); }
         float mMinRadius;
         float mMaxRadius;
         float mOnTargetAngleThresh;
