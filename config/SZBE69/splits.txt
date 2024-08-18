@@ -1130,6 +1130,8 @@ system/char/CharTaskMgr.cpp:
 
 system/char/CharTransCopy.cpp:
 	.text       start:0x804F84B0 end:0x804F8BBC
+	.data       start:0x8088ABE8 end:0x8088ACD0
+	.sbss       start:0x808E4928 end:0x808E4930
 
 system/char/CharTransDraw.cpp:
 	.text       start:0x804F8BBC end:0x804F9C94
