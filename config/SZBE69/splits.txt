@@ -1069,6 +1069,8 @@ system/char/CharFaceServo.cpp:
 
 system/char/CharForeTwist.cpp:
 	.text       start:0x804D4090 end:0x804D49F8
+	.data       start:0x80888E00 end:0x80888EC0
+	.sbss       start:0x808E4888 end:0x808E4890
 
 system/char/CharHair.cpp:
 	.text       start:0x804D49F8 end:0x804DAB54
