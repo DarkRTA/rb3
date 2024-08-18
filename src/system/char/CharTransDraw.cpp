@@ -15,7 +15,7 @@ SAVE_OBJ(CharTransDraw, 0x23);
 
 void CharTransDraw::SetDrawModes(Character::DrawMode mode){
     for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
-        (*it)->mDrawMode = mode;
+        (*it)->SetDrawMode(mode);
     }
 }
 
@@ -41,9 +41,9 @@ void CharTransDraw::DrawShowing(){
     for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
         Character* theChar = *it;
         if(theChar->Showing()){
-            theChar->mDrawMode = Character::kCharDrawTranslucent;
+            theChar->SetDrawMode(Character::kCharDrawTranslucent);
             theChar->Draw();
-            theChar->mDrawMode = Character::kCharDrawOpaque;
+            theChar->SetDrawMode(Character::kCharDrawOpaque);
         }
     }
 }
