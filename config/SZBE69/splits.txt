@@ -31,6 +31,10 @@ Main.cpp:
 rb3/unknown/800/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x80011714
 
+network/Platform/BadEvents.cpp:
+	.text       start:0x80011754 end:0x80011778
+	.bss        start:0x808F0950 end:0x808F0954
+
 libs/quazal/datetime.cpp:
 	.text       start:0x800127E4 end:0x800129F4
 
@@ -78,8 +82,12 @@ libs/quazal/unknown/8007/unk_8007BF84.cpp:
 	.text       start:0x8007BF84 end:0x8007CA94
 
 libs/quazal/unknown/800A/unk_800A515C.cpp:
-	.text       start:0x800A515C end:0x800A5368
-	.data       start:0x8082A5C0 end:0x8082A678
+	.text       start:0x800A515C end:0x800A51AC
+	.data       start:0x8082A5C0 end:0x8082A608
+
+network/Products/NetZ.cpp:
+	.text       start:0x800A51AC end:0x800A5278
+	.data       start:0x8082A608 end:0x8082A660
 
 network/net/JsonUtils.cpp:
 	.text       start:0x800A6360 end:0x800A71BC
@@ -128,7 +136,11 @@ rb3/unknown/800/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800DB158
 
 rb3/unknown/800/unk_800DB160.cpp:
-	.text       start:0x800DB160 end:0x800F6DE4
+	.text       start:0x800DB160 end:0x800E4020
+
+band3/bandtrack/TrackConfig.cpp:
+	.text       start:0x800E4020 end:0x800E43A0
+	.data       start:0x8082F9F8 end:0x8082FA28
 
 rb3/unknown/800/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x800FF880
@@ -591,7 +603,7 @@ system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
-system/meta/NetStream.cpp:
+system/os/NetStream.cpp:
 	.text       start:0x80308638 end:0x80308ACC
 
 rb3/wiinetworksocket.cpp:
@@ -1584,6 +1596,9 @@ libs/bt/stack/l2cap/l2c_utils.c:
 
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
+
+sdk/RVL_SDK/revolution/os/OSSemaphore.c:
+	.text       start:0x8076B2A0 end:0x8076B3D0
 
 sdk/RVL_SDK/revolution/pad/Pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540

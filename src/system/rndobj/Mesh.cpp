@@ -279,7 +279,9 @@ BEGIN_HANDLERS(RndMesh)
     HANDLE(unitize_normals, OnUnitizeNormals)
     HANDLE(point_collide, OnPointCollide)
     HANDLE(configure_mesh, OnConfigureMesh)
+#ifdef MILO_DEBUG
     HANDLE_EXPR(estimated_size_kb, EstimatedSizeKb())
+#endif
     HANDLE_ACTION(clear_bones, CopyBones(NULL))
     HANDLE_ACTION(copy_geom_from_owner, CopyGeometryFromOwner())
     HANDLE_SUPERCLASS(RndDrawable)

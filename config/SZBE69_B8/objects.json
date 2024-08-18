@@ -803,7 +803,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL",
         "objects": {
-
+            "sdk/PowerPC_EABI_Support/MetroTRK/custconn/MWCriticalSection_gc.c": "Matching"
         }
     },
     "sdk/RVL_SDK": {
@@ -817,6 +817,9 @@
             "sdk/RVL_SDK/revolution/gx/GXGeometry.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXLight.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXTransform.c": "Matching",
+
+            "sdk/RVL_SDK/revolution/os/OSCrc.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
 
             "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
 
@@ -839,7 +842,7 @@
             "sdk/RevoEX/so/SOCommon.c": "NonMatching",
             "sdk/RevoEX/so/SOBasic.c": "NonMatching",
 
-            "sdk/RevoEX/ssl/ssl_mutex.c": "NonMatching"
+            "sdk/RevoEX/ssl/ssl_mutex.c": {"status": "Matching", "extra_cflags": ["-func_align 4"]}
         }
     },
     "sdk/DWC": {

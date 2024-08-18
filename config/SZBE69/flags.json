@@ -63,7 +63,9 @@
         "rvl_sdk": {
             "base": "base",
             "flags": [
-                "-func_align 16"
+                "-func_align 16",
+                "-lang=c",
+                "-O4"
             ]
         },
         "band3": {
