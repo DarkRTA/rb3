@@ -1092,6 +1092,7 @@ system/char/CharIKHead.cpp:
 
 system/char/CharIKMidi.cpp:
 	.text       start:0x804E4BCC end:0x804E68AC
+	.sbss       start:0x808E48B8 end:0x808E48C0
 
 system/char/CharIKRod.cpp:
 	.text       start:0x804E68AC end:0x804E7428
