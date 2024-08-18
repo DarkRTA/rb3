@@ -1096,6 +1096,8 @@ system/char/CharIKMidi.cpp:
 
 system/char/CharIKRod.cpp:
 	.text       start:0x804E68AC end:0x804E7428
+	.data       start:0x80889D78 end:0x80889E58
+	.sbss       start:0x808E48C0 end:0x808E48C8
 
 system/char/CharIKScale.cpp:
 	.text       start:0x804E7428 end:0x804E8054
