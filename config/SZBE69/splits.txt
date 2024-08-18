@@ -1073,6 +1073,7 @@ system/char/CharHair.cpp:
 
 system/char/CharIKFingers.cpp:
 	.text       start:0x804DAB54 end:0x804DE54C
+	.sbss       start:0x808E4898 end:0x808E48A0
 
 system/char/CharIKFoot.cpp:
 	.text       start:0x804DE54C end:0x804DFC90
