@@ -1118,6 +1118,8 @@ system/char/CharPosConstraint.cpp:
 
 system/char/CharPollGroup.cpp:
 	.text       start:0x804F4BB4 end:0x804F64A8
+	.data       start:0x8088A800 end:0x8088A978
+	.sbss       start:0x808E4910 end:0x808E4918
 
 system/char/CharServoBone.cpp:
 	.text       start:0x804F64A8 end:0x804F75FC
