@@ -111,6 +111,7 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
+    DataNodeValue RawVal() { return mValue; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
 

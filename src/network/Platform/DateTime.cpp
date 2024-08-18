@@ -1,7 +1,7 @@
 #include "Platform/DateTime.h"
 
 namespace Quazal {
-    DateTime DateTime::Never;
+    DateTime* DateTime::Never;
 
     DateTime::DateTime() : m_ui64Value(0) {
 
@@ -24,7 +24,7 @@ namespace Quazal {
     }
 
     unsigned int DateTime::GetYear() const {
-        return (m_ui64Value) >> 26; // years: bits 26-63
+        return (m_ui64Value & 0xFFFC000000) >> 26; // years: bits 26-39
     }
 
     unsigned int DateTime::GetMonth() const {
@@ -45,5 +45,9 @@ namespace Quazal {
 
     unsigned int DateTime::GetSecond() const {
         return m_ui64Value & 0x3F; // seconds: bits 0-5
+    }
+
+    void DateTime::GetSystemTime(DateTime&) {
+        
     }
 }

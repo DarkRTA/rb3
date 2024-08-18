@@ -69,11 +69,13 @@ UsbMidiGuitar::UsbMidiGuitar(){
 
 UsbMidiGuitar::~UsbMidiGuitar(){
     CritSecTracker tracker(&gCritSection);
+    mTimer.Stop();
 }
 
 void UsbMidiGuitar::Init(){
     MILO_ASSERT(TheGuitar == NULL, 0x64);
     TheGuitar = new UsbMidiGuitar();
+    TheDebug.AddExitCallback(UsbMidiGuitar::Terminate);
 }
 
 void UsbMidiGuitar::Terminate(){

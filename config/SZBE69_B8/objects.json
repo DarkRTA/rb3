@@ -81,9 +81,12 @@
 
             "network/Plugins/JobGetPublicURL.cpp": "Matching",
             "network/Plugins/MD5.cpp": "NonMatching",
+            "network/Plugins/RTT.cpp": "NonMatching",
             "network/Plugins/ZLibPlugin.cpp": "Matching",
 
-            "network/Services/UserMessage.cpp": "Matching"
+            "network/Services/UserMessage.cpp": "Matching",
+
+            "network/Utility/Statistics.cpp": "Matching"
         }
     },
     "network/json_c": {
@@ -102,11 +105,15 @@
         "mw_version": "Wii/1.3",
         "cflags": "network/Platform",
         "objects": {
+            "network/Platform/BadEvents.cpp": "Matching",
+            "network/Platform/CIDLogFilter.cpp": "Matching",
             "network/Platform/CriticalSection.cpp": "Matching",
             "network/Platform/DateTime.cpp": "NonMatching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/Inet.cpp": "Matching",
             "network/Platform/LockChecker.cpp": "Matching",
+            "network/Platform/Log.cpp": "NonMatching",
+            "network/Platform/LogDeviceDebugOutput.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
             "network/Platform/MutexPrimitive.cpp": "NonMatching",
             "network/Platform/OutputFormat.cpp": "NonMatching",
@@ -796,7 +803,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL",
         "objects": {
-
+            "sdk/PowerPC_EABI_Support/MetroTRK/custconn/MWCriticalSection_gc.c": "Matching"
         }
     },
     "sdk/RVL_SDK": {
@@ -811,6 +818,19 @@
             "sdk/RVL_SDK/revolution/gx/GXLight.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXTransform.c": "Matching",
 
+            "sdk/RVL_SDK/revolution/os/OSCrc.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
+
+            "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
+
+            "sdk/RVL_SDK/revolution/wpad/WPAD.c": "NonMatching",    
+            "sdk/RVL_SDK/revolution/wpad/WPADHIDParser.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/lint.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WUD.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WUDHidHost.c": "NonMatching",
+
             "sdk/RVL_SDK/revolution/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c": "Matching"
         }
@@ -822,7 +842,7 @@
             "sdk/RevoEX/so/SOCommon.c": "NonMatching",
             "sdk/RevoEX/so/SOBasic.c": "NonMatching",
 
-            "sdk/RevoEX/ssl/ssl_mutex.c": "NonMatching"
+            "sdk/RevoEX/ssl/ssl_mutex.c": {"status": "Matching", "extra_cflags": ["-func_align 4"]}
         }
     },
     "sdk/DWC": {

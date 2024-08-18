@@ -5,7 +5,7 @@
 #include "decomp.h"
 
 TrackConfig::TrackConfig(BandUser* bu) : mUser(bu), unk_0x4(true), mTrackNum(0), mMaxSlots(0), unk_0x10(0),
-    unk_0x14(gNullStr), mLefty(false), mCymbalLanes(0), mDisableHopos(0) {}
+    unk_0x14(), mLefty(false), mCymbalLanes(0), mDisableHopos(0) {}
 
 const BandUser* TrackConfig::GetBandUser() const { return mUser; }
 
@@ -44,10 +44,15 @@ bool TrackConfig::IsRealGuitarTrack() const {
 
 const char* TrackConfig::GetSlotColor(int slot) const {
     MILO_ASSERT(slot >= 0 && slot <= GetMaxSlots(), 156);
-    DataArray* syscfg = SystemConfig("track_graphics", "slot_colors", TrackTypeToSym(mUser->GetTrackType()));
+    Symbol s = TrackTypeToSym(mUser->GetTrackType());
+    DataArray* syscfg = SystemConfig("track_graphics", "slot_colors", s);
     int i = slot;
+#ifdef MILO_DEBUG
     bool b = (mUser->GetTrackType() == kTrackDrum);
     if (b && mLefty && i != 0) i = mMaxSlots - i;
+#else
+    if (IsDrumTrack() && UseLeftyGems() && i != 0) i = mMaxSlots - i;
+#endif
     return syscfg->Str(i + 1);
 }
 
@@ -56,7 +61,12 @@ void TrackConfig::SetLefty(bool b) { mLefty = b; }
 void TrackConfig::SetGameCymbalLanes(uint ui) { mCymbalLanes = ui; }
 void TrackConfig::SetDisableHopos(bool b) { mDisableHopos = b; }
 void TrackConfig::SetTrackNum(int i) { mTrackNum = i; }
-
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(TrackConfig,
     "slot >= 0 && slot <= mMaxSlots\0\0R\0L\0numSlots <= mMaxSlots\0left\0right"
 )
+#else
+DECOMP_FORCEACTIVE(TrackConfig,
+    "\0R\0L\0left\0right"
+)
+#endif

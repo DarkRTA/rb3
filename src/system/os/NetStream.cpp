@@ -17,6 +17,12 @@ void NetStream::ClientConnect(const NetAddress& addr){
     MILO_ASSERT(mSocket, 0x37);
     Timer timer;
     timer.Restart();
+    mSocket->Connect(addr.mIP, addr.mPort);
+    if (mSocket->Fail()) {
+        mFail = true;
+    } else {
+
+    }
 }
 
 EofType NetStream::Eof(){

@@ -16,3 +16,9 @@ bool WiiEnumeration::IsSuccess() const {
 int WiiEnumeration::IsEnumerating() const {
     return (mState != kSuccess && mState != kFail) ? true : false;
 }
+
+void WiiEnumeration::Poll() {
+    if (mState == kEnumWaiting) {
+        
+    }
+}
