@@ -66,9 +66,7 @@
         },
         "network": {
             "base": "band3",
-            "flags": [
-                "-func_align 4"
-            ]
+            "flags": []
         },
         "network/json_c": {
             "base": "base",

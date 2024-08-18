@@ -18,7 +18,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "network",
         "objects": {
-            "network/Platform/BadEvents.cpp": {"status": "Matching", "extra_cflags": ["-func_align 4"]},
+            "network/Platform/BadEvents.cpp": "Matching",
 
             "network/net/JsonUtils.cpp": "NonMatching"
         }
