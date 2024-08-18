@@ -78,43 +78,51 @@ DataNode& DataNode::Evaluate() const {
 
 int DataNode::Int(const DataArray* a) const {
     DataNode& n = Evaluate();
+#ifdef MILO_DEBUG
     if(n.mType != kDataInt){
         String s;
         n.Print(s, true);
         if(a) MILO_FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Int", String(s));
     }
+#endif
     return n.mValue.integer;
 }
 
 int DataNode::LiteralInt(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataInt){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Int (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Int", String(s));
     }
+#endif
     return mValue.integer;
 }
 
 Symbol DataNode::Sym(const DataArray* a) const {
     DataNode& n = Evaluate();
+#ifdef MILO_DEBUG
     if(n.mType != kDataSymbol){
         String s;
         n.Print(s, true);
         if(a) MILO_FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Symbol", String(s));
     }
+#endif
     return STR_TO_SYM(n.mValue.symbol);
 }
 
 Symbol DataNode::LiteralSym(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataSymbol){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Symbol (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Symbol", String(s));
     }
+#endif
     return STR_TO_SYM((char*)mValue.symbol);
 }
 
@@ -124,12 +132,14 @@ Symbol DataNode::ForceSym(const DataArray* a) const {
         return STR_TO_SYM(n.mValue.symbol);
     }
     else {
+#ifdef MILO_DEBUG
         if(n.mType != kDataString){
             String s;
             n.Print(s, true);
             if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
             else MILO_FAIL("Data %s is not String", String(s));
         }
+#endif
         return Symbol(n.mValue.var->mValue.symbol);
     }
 }
@@ -140,12 +150,14 @@ const char* DataNode::Str(const DataArray* a) const {
         return n.mValue.symbol;
     }
     else {
+#ifdef MILO_DEBUG
         if(n.mType != kDataString){
             String s;
             n.Print(s, true);
             if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
             else MILO_FAIL("Data %s is not String", String(s));
         }
+#endif
         return n.mValue.var->mValue.symbol;
     }
 }
@@ -155,20 +167,24 @@ const char* DataNode::LiteralStr(const DataArray* a) const {
         return mValue.symbol;
     }
     else {
+#ifdef MILO_DEBUG
         if(mType != kDataString){
             String s;
             Print(s, true);
             if(a) MILO_FAIL("Data %s is not String (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
             else MILO_FAIL("Data %s is not String", String(s));
         }
+#endif
         return mValue.var->mValue.symbol;
     }
 }
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(DataNode,
     "Data %s is not Glob (file %s, line %d)",
     "Data %s is not Glob"
 )
+#endif
 
 float DataNode::Float(const DataArray* a) const {
     DataNode& n = Evaluate();
@@ -176,12 +192,14 @@ float DataNode::Float(const DataArray* a) const {
         return n.mValue.integer;
     }
     else {
+#ifdef MILO_DEBUG
         if(n.mType != kDataFloat){
             String s;
             n.Print(s, true);
             if(a) MILO_FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
             else MILO_FAIL("Data %s is not Float", String(s));
         }
+#endif
         return n.mValue.real;
     }
 }
@@ -191,40 +209,46 @@ float DataNode::LiteralFloat(const DataArray* a) const {
         return mValue.integer;
     }
     else {
+#ifdef MILO_DEBUG
         if(mType != kDataFloat){
             String s;
             Print(s, true);
             if(a) MILO_FAIL("Data %s is not Float (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
             else MILO_FAIL("Data %s is not Float", String(s));
         }
+#endif
         return mValue.real;
     }
 }
 
 DataFunc* DataNode::Func(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataFunc){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Func (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Func", String(s));
     }
+#endif  
     return mValue.func;
 }
 
 Hmx::Object* DataNode::GetObj(const DataArray* da) const {
     DataNode& n = Evaluate();
-    if(n.Type() == kDataObject) return n.mValue.object;
+    if(n.mType == kDataObject) return n.mValue.object;
     else {
         const char* str = n.LiteralStr(da);
         Hmx::Object* ret = 0;
         if(*str != '\0'){
             ret = gDataDir->FindObject(str, true);
+#ifdef MILO_DEBUG
             if(ret == 0){
                 const char* msg;
                 if(PathName(gDataDir) != 0) msg = PathName(gDataDir);
                 else msg = "**no file**";
                 TheDebug.Fail(MakeString(kNotObjectMsg, str, msg));
             }
+#endif
 
         }
         return ret;
@@ -233,47 +257,57 @@ Hmx::Object* DataNode::GetObj(const DataArray* da) const {
 
 DataArray* DataNode::Array(const DataArray* a) const {
     DataNode& n = Evaluate();
+#ifdef MILO_DEBUG
     if(n.mType != kDataArray){
         String s;
         n.Print(s, true);
         if(a) MILO_FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Array", String(s));
     }
+#endif
     return n.mValue.array;
 }
 
 DataArray* DataNode::LiteralArray(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataArray){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Array (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Array", String(s));
     }
+#endif
     return mValue.array;
 }
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(DataNode,
     "Data %s is not Property (file %s, line %d)",
     "Data %s is not Property"
 )
+#endif
 
 DataArray* DataNode::Command(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataCommand){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Command (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Command", String(s));
     }
+#endif
     return mValue.array;
 }
 
 DataNode* DataNode::Var(const DataArray* a) const {
+#ifdef MILO_DEBUG
     if(mType != kDataVar){
         String s;
         Print(s, true);
         if(a) MILO_FAIL("Data %s is not Var (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Var", String(s));
     }
+#endif
     return mValue.var;
 }
 
@@ -534,7 +568,9 @@ void DataNode::Load(BinStream& d){
             d >> sym;
             const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym);
             if(it == gDataFuncs.end()){
+            #ifdef MILO_DEBUG
                 TheDebug.Fail(MakeString("Couldn't bind %s", sym));
+            #endif
             }
             mValue.func = it->second;
             break;
@@ -568,9 +604,11 @@ void DataNode::Load(BinStream& d){
         case kDataObject:
             d.ReadString(buf, 0x80);
             mValue.object = gDataDir->FindObject(buf, true);
+            #ifdef MILO_DEBUG
             if(mValue.object == 0 && *buf){
                 TheDebug.Notify(MakeString("Couldn't find %s from %s", buf, gDataDir->Name()));
             }
+            #endif
             break;
         case kDataVar: {
             Symbol sym;
@@ -592,7 +630,9 @@ void DataNode::Load(BinStream& d){
             d >> mValue.integer;
             break;
         default:
+        #ifdef MILO_DEBUG
             TheDebug.Fail(MakeString("Unrecognized node type: %x", mType));
+        #endif
             break;
     }
 }

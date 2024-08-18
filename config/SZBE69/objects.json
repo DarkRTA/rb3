@@ -53,9 +53,17 @@
         "cflags": "system",
         "objects": {
             "system/math/Key.cpp": "NonMatching",
+            "system/math/Rand.cpp": "NonMatching",
             "system/math/Rand2.cpp": "Matching",
 
             "system/midi/MidiParser.cpp": "NonMatching",
+
+            "system/obj/DataArray.cpp": "NonMatching",
+            "system/obj/DataFile.cpp": "NonMatching",
+            "system/obj/DataFunc.cpp": "NonMatching",
+            "system/obj/DataNode.cpp": "NonMatching",
+            "system/obj/TextFile.cpp": "NonMatching",
+            "system/obj/TypeProps.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
             "system/rndobj/Anim.cpp": "NonMatching",

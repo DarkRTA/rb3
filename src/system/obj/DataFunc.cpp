@@ -35,9 +35,11 @@ static DataNode Data##name(DataArray* da) code
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
 void DataRegisterFunc(Symbol s, DataFunc* func){
+#ifdef MILO_DEBUG
     const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
     if(it != gDataFuncs.end() && it->second != func)
         MILO_FAIL("Can't register different func %s", s);
+#endif
     gDataFuncs[s] = func;
 }
 
@@ -720,21 +722,27 @@ static DataNode DataRandomSeed(DataArray *da) {
 }
 
 static DataNode DataNotify(DataArray* da){
+#ifdef MILO_DEBUG
     class String str;
     for(int i = 1; i < da->Size(); i++){
         da->Evaluate(i).Print(str, true);
     }
     TheDebug.Notify(str.c_str());
+#endif
     return DataNode(0);
 }
 
 static DataNode DataNotifyBeta(DataArray* da) {
+#ifdef MILO_DEBUG
     class String s;
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(s, true);
     }
     TheDebug << MakeString(s.c_str());
     return DataNode();
+#else
+    return DataNode(0);
+#endif
 }
 
 // DataNode DataNotifyBeta(DataArray *da)
@@ -773,16 +781,19 @@ static DataNode DataNotifyBeta(DataArray* da) {
 // }
 
 static DataNode DataFail(DataArray* da){
+#ifdef MILO_DEBUG
     class String str;
     for(int i = 1; i < da->Size(); i++){
         da->Evaluate(i).Print(str, true);
     }
     TheDebug << MakeString("%d\n", da->Line());
     TheDebug.Fail(str.c_str());
+#endif
     return DataNode(0);
 }
 
 static DataNode DataNotifyOnce(DataArray *da) {
+#ifdef MILO_DEBUG
     class String s;
     for (int i = 1; i < da->Size(); i++) {
         da->Evaluate(i).Print(s, true);
@@ -790,6 +801,9 @@ static DataNode DataNotifyOnce(DataArray *da) {
 
     MILO_NOTIFY_ONCE(s.c_str())
     return DataNode();
+#else
+    return DataNode(0);
+#endif
 }
 
 static DataNode DataCond(DataArray* da){
@@ -994,7 +1008,7 @@ static DataNode DataHandle(DataArray* da) {
         DataArray* handlo = da->Array(i);
         DataNode& n = handlo->Evaluate(0);
         Hmx::Object* obj;
-        if (n.Type() == kDataObject) obj = n.mValue.object;
+        if (n.Type() == kDataObject) obj = n.RawVal().object;
         else if (n.Type() == kDataInt) obj = NULL;
         else obj = gDataDir->FindObject(n.LiteralStr(da), true);
         if (obj) obj->Handle(handlo, false);
@@ -1003,19 +1017,21 @@ static DataNode DataHandle(DataArray* da) {
     return DataNode(0);
 }
 
-DefDataFunc(HandleRet, {
-    DataArray* a = da->Array(1);
-    Hmx::Object* o;
-    DataNode& n = a->Evaluate(0);
-    if (n.Type() == kDataObject) o = n.mValue.object;
+static DataNode DataHandleRet(DataArray *da) {
+    DataArray *a = da->Array(1);
+    Hmx ::Object *o;
+    DataNode &n = a->Evaluate(0);
+    if (n.Type() == kDataObject) o = n.RawVal().object;
     else o = gDataDir->FindObject(n.LiteralStr(da), true);
+#ifdef MILO_DEBUG
     if (!o) {
         class String str;
         n.Print(str, true);
         MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), da->File(), da->Line());
     }
+#endif
     return o->Handle(a, false);
-})
+}
 
 static DataNode DataRun(DataArray* da) {
     const char* e = FileMakePath(FileExecRoot(), da->Str(1), NULL);
@@ -1023,7 +1039,7 @@ static DataNode DataRun(DataArray* da) {
     DataNode ret;
     if (read) {
         ret = read->ExecuteScript(0, gDataThis, NULL, 1);
-        read->mRefs -= 1; if (read->mRefs == 0) delete read;
+        read->Release();
     }
     return ret;
 }

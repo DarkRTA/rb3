@@ -386,7 +386,7 @@ rb3/unknown/802/unk_8022CD04.cpp:
 rb3/providers/outfitprovider.cpp:
 	.text       start:0x8023F918 end:0x8023FAF4
 
-rb3/panels/overshellpanel.cpp:
+band3/meta_band/OvershellPanel.cpp:
 	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
@@ -658,6 +658,8 @@ system/obj/DataFunc.cpp:
 	.text       start:0x8031B2B8 end:0x80322958
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
+	.sbss       start:0x808E4478 end:0x808E447C
+	.bss        start:0x8091A518 end:0x8091A588
 
 system/obj/DataNode.cpp:
 	.text       start:0x80322958 end:0x80324278
@@ -679,11 +681,15 @@ system/obj/DataFlex.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-rb3/objectdir.cpp:
+system/obj/ObjectDir.cpp:
 	.text       start:0x8032553C end:0x8032DA70
 	.ctors      start:0x807EFF18 end:0x807EFF1C
 
-rb3/dirunloader.cpp:
+system/obj/DirLoader.cpp:
+	.text       start:0x8032DA70 end:0x8033106C
+	.ctors      start:0x807EFF1C end:0x807EFF20
+
+system/obj/DirUnloader.cpp:
 	.text       start:0x8033106C end:0x80331D40
 
 rb3/msgsource.cpp:
@@ -987,7 +993,7 @@ rb3/unisonicon.cpp:
 rb3/songsectioncontroller.cpp:
 	.text       start:0x8044FAF4 end:0x8045593C
 
-rb3/overshelldir.cpp:
+system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
 rb3/unknown/805/unk_8050FA30.cpp:
