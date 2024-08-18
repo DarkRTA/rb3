@@ -1,5 +1,8 @@
 #include "char/CharIKHand.h"
 #include "math/Rot.h"
+#include "utl/Symbols.h"
+
+INIT_REVS(CharIKHand)
 
 CharIKHand::CharIKHand() : mHand(this, 0), mFinger(this, 0), mTargets(this), mOrientation(1), mStretch(1), mScalable(0), mMoveElbow(1),
     mElbowSwing(0.0f), mAlwaysIKElbow(0), mAAPlusBB(0.0f), mConstrainWrist(0), mWristRadians(0.0f), mElbowCollide(this, 0), mClockwise(0) {
@@ -256,3 +259,127 @@ void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
     trans2->SetWorldXfm(tf78);
 }
 #pragma pop
+
+void CharIKHand::SetHand(RndTransformable* t){
+    mHand = t;
+    mHandChanged = true;
+}
+
+void CharIKHand::UpdateHand(){
+    if(mScalable || mHandChanged){
+        MeasureLengths();
+        mHandChanged = false;
+    }
+}
+
+SAVE_OBJ(CharIKHand, 0x2A8)
+
+BEGIN_LOADS(CharIKHand)
+    LOAD_REVS(bs)
+    ASSERT_REVS(0xC, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(CharWeightable)
+    bs >> mHand;
+    if(gRev > 4) bs >> mFinger;
+    else mFinger = 0;
+    if(gRev < 3){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        bs >> tPtr;
+        mTargets.clear();
+        mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(tPtr), 0));
+    }
+    else if(gRev < 0xB){
+        ObjPtrList<RndTransformable, ObjectDir> tList(this, kObjListNoNull);
+        bs >> tList;
+        mTargets.clear();
+        for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = tList.begin(); it != tList.end(); ++it){
+            ObjPtr<RndTransformable, ObjectDir> tPtr(this, *it);
+            mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(tPtr), 0));
+        }
+    }
+    else bs >> mTargets;
+
+    bs >> mOrientation;
+    bs >> mStretch;
+    if(gRev > 1) bs >> mScalable;
+    else mScalable = false;
+    
+    if(gRev > 3) bs >> mMoveElbow;
+    else mMoveElbow = true;
+
+    if(gRev > 5) bs >> mElbowSwing;
+    else mElbowSwing = 0.0f;
+    
+    if(gRev > 6) bs >> mAlwaysIKElbow;
+    if(gRev > 7){
+        bs >> mConstrainWrist;
+        bs >> mWristRadians;
+    }
+    if(gRev == 9){
+        String s;
+        bs >> s;
+        bool b;
+        bs >> b;
+    }
+    if(gRev > 0xB){
+        bs >> mElbowCollide;
+        bs >> mClockwise;
+    }
+    SetHand(mHand);
+END_LOADS
+
+BEGIN_COPYS(CharIKHand)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(CharWeightable)
+    CREATE_COPY(CharIKHand)
+    BEGIN_COPYING_MEMBERS
+        SetHand(c->mHand);
+        COPY_MEMBER(mHand)
+        COPY_MEMBER(mTargets)
+        COPY_MEMBER(mOrientation)
+        COPY_MEMBER(mStretch)
+        COPY_MEMBER(mScalable)
+        COPY_MEMBER(mMoveElbow)
+        COPY_MEMBER(mElbowSwing)
+        COPY_MEMBER(mAlwaysIKElbow)
+        COPY_MEMBER(mConstrainWrist)
+        COPY_MEMBER(mTargets)
+        COPY_MEMBER(mElbowCollide)
+        COPY_MEMBER(mClockwise)
+    END_COPYING_MEMBERS
+END_COPYS
+
+BinStream& operator>>(BinStream& bs, CharIKHand::IKTarget& t){
+    bs >> t.mTarget;
+    bs >> t.mExtent;
+    return bs;
+}
+
+BEGIN_HANDLERS(CharIKHand)
+    HANDLE_ACTION(measure_lengths, MeasureLengths())
+    HANDLE_SUPERCLASS(CharWeightable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x33D)
+END_HANDLERS
+
+BEGIN_CUSTOM_PROPSYNC(CharIKHand::IKTarget)
+    SYNC_PROP(target, o.mTarget)
+    SYNC_PROP(extent, o.mExtent)
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(CharIKHand)
+    SYNC_PROP_SET(hand, mHand, SetHand(_val.Obj<RndTransformable>(0)))
+    SYNC_PROP(finger, mFinger)
+    SYNC_PROP(targets, mTargets)
+    SYNC_PROP(orientation, mOrientation)
+    SYNC_PROP(stretch, mStretch)
+    SYNC_PROP(scalable, mScalable)
+    SYNC_PROP(move_elbow, mMoveElbow)
+    SYNC_PROP(elbow_swing, mElbowSwing)
+    SYNC_PROP(always_ik_elbow, mAlwaysIKElbow)
+    SYNC_PROP(constrain_wrist, mConstrainWrist)
+    SYNC_PROP(wrist_radians, mWristRadians)
+    SYNC_PROP(elbow_collide, mElbowCollide)
+    SYNC_PROP(clockwise, mClockwise)
+    SYNC_SUPERCLASS(CharWeightable)
+END_PROPSYNCS

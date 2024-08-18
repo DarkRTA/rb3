@@ -1082,6 +1082,8 @@ system/char/CharIKFoot.cpp:
 
 system/char/CharIKHand.cpp:
 	.text       start:0x804DFC90 end:0x804E2A08
+	.data       start:0x808895F8 end:0x80889748
+	.sbss       start:0x808E48A8 end:0x808E48B0
 
 system/char/CharIKHead.cpp:
 	.text       start:0x804E2A08 end:0x804E4BCC
