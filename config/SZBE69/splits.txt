@@ -1139,12 +1139,16 @@ system/char/CharacterTest.cpp:
 
 system/char/CharUpperTwist.cpp:
 	.text       start:0x804FA99C end:0x804FB228
+	.data       start:0x8088AF30 end:0x8088AFD8
+	.sbss       start:0x808E4940 end:0x808E4948
 
 system/char/CharUtl.cpp:
 	.text       start:0x804FB228 end:0x804FC4E4
 
 system/char/CharWeightable.cpp:
 	.text       start:0x804FC4E4 end:0x804FCD7C
+	.data       start:0x8088B048 end:0x8088B0E8
+	.sbss       start:0x808E4948 end:0x808E4950
 
 system/char/CharWeightSetter.cpp:
 	.text       start:0x804FCD7C end:0x804FEA7C
