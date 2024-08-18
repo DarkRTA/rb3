@@ -1077,6 +1077,8 @@ system/char/CharIKFingers.cpp:
 
 system/char/CharIKFoot.cpp:
 	.text       start:0x804DE54C end:0x804DFC90
+	.data       start:0x808894E8 end:0x808895F0
+	.sbss       start:0x808E48A0 end:0x808E48A8
 
 system/char/CharIKHand.cpp:
 	.text       start:0x804DFC90 end:0x804E2A08
