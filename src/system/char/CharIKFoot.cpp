@@ -22,6 +22,15 @@ void CharIKFoot::SetName(const char* cc, ObjectDir* dir){
     mMe = dynamic_cast<Character*>(dir);
 }
 
+void CharIKFoot::Poll(){
+    if(!mFinger || !mHand || !mData) return;
+    mTargets.clear();
+    mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(unk88), 0));
+    DoFSM(unk88->DirtyLocalXfm());
+    CharIKHand::Poll();
+    mTargets.clear();
+}
+
 void CharIKFoot::PollDeps(std::list<Hmx::Object*>& l1, std::list<Hmx::Object*>& l2){
     CharIKHand::PollDeps(l1, l2);
 }

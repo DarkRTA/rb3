@@ -27,6 +27,8 @@ public:
     virtual void Enter();
     virtual void SetName(const char*, class ObjectDir*);
 
+    void DoFSM(Transform&);
+
     DECLARE_REVS;
     DELETE_OVERLOAD;
     
