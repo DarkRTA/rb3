@@ -8,7 +8,7 @@ unsigned short CharEyeDartRuleset::gRev = 0;
 unsigned short CharEyeDartRuleset::gAltRev = 0;
 
 CharEyeDartRuleset::CharEyeDartRuleset(){
-    mData.ClearToDefaults();
+    
 }
 
 CharEyeDartRuleset::~CharEyeDartRuleset(){

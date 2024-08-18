@@ -94,7 +94,7 @@ template <class T> bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x125);
         if(op == kPropGet) node = DataNode(ptr.Ptr());
-        else ptr = node.Obj<T>(0);
+        else ptr = dynamic_cast<T*>(node.GetObj(0));
         return true;
     }
 }

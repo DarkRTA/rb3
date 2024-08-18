@@ -32,6 +32,11 @@ namespace Hmx {
         void Set(const Vector3& v1, const Vector3& v2, const Vector3& v3){
             x = v1; y = v2; z = v3;
         }
+        void Zero(){
+            x.Zero();
+            y.Zero();
+            z.Zero();
+        }
         void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
@@ -52,6 +57,10 @@ namespace Hmx {
 
         bool operator==(const Matrix3& mtx) const {
             return x == mtx.x && y == mtx.y && z == mtx.z;
+        }
+
+        bool operator!=(const Matrix3& mtx) const {
+            return x != mtx.x || y != mtx.y || z != mtx.z;
         }
 
     };
@@ -151,6 +160,10 @@ public:
         v.Zero();
     }
 
+    void Set(const Hmx::Matrix3& mtx, const Vector3& vec){
+        m = mtx; v = vec;
+    }
+
     void SetFromDA(const class DataArray* da) {
         Reset();
         v.x = da->Float(2);
@@ -160,9 +173,7 @@ public:
 
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
-        m.x.Zero();
-        m.y.Zero();
-        m.z.Zero();
+        m.Zero();
         v.Zero();
     }
 

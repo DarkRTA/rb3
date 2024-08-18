@@ -102,6 +102,7 @@ public:
     CharServoBone* BoneServo();
     void SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>&, ObjectDir*);
     void ForceBlink();
+    void SetDrawMode(DrawMode m){ mDrawMode = m; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);

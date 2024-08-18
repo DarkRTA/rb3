@@ -996,6 +996,196 @@ rb3/songsectioncontroller.cpp:
 system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
+system/char/Char.cpp:
+	.text       start:0x80499BAC end:0x8049C168
+
+system/char/Character.cpp:
+	.text       start:0x8049C168 end:0x804A498C
+
+system/char/CharBlendBone.cpp:
+	.text       start:0x804A498C end:0x804A66A0
+	.data       start:0x808871D0 end:0x808872B8
+	.sbss       start:0x808E47F0 end:0x808E47F8
+
+system/char/CharBone.cpp:
+	.text       start:0x804A66A0 end:0x804A8BEC
+
+system/char/CharBoneDir.cpp:
+	.text       start:0x804A8BEC end:0x804AB478
+
+system/char/CharBones.cpp:
+	.text       start:0x804AB478 end:0x804AF6F0
+
+system/char/CharBoneOffset.cpp:
+	.text       start:0x804AF6F0 end:0x804AFE8C
+
+system/char/CharBonesMeshes.cpp:
+	.text       start:0x804AFE8C end:0x804B1B20
+
+system/char/CharBonesSamples.cpp:
+	.text       start:0x804B1B20 end:0x804B351C
+
+system/char/CharBonesBlender.cpp:
+	.text       start:0x804B351C end:0x804B4208
+
+system/char/CharBoneTwist.cpp:
+	.text       start:0x804B4208 end:0x804B4B68
+
+system/char/CharClip.cpp:
+	.text       start:0x804B4B68 end:0x804BCCD8
+	.ctors      start:0x807EFFA8 end:0x807EFFAC
+
+system/char/CharClipGroup.cpp:
+	.text       start:0x804BCCD8 end:0x804C0210
+
+system/char/CharClipSet.cpp:
+	.text       start:0x804C0210 end:0x804C2A04
+
+system/char/CharCollide.cpp:
+	.text       start:0x804C2A04 end:0x804C3B40
+
+system/char/CharCuff.cpp:
+	.text       start:0x804C3B40 end:0x804C5DE0
+
+system/char/CharDriver.cpp:
+	.text       start:0x804C5DE0 end:0x804C8D70
+
+system/char/CharDriverMidi.cpp:
+	.text       start:0x804C8D70 end:0x804CA154
+
+system/char/CharEyes.cpp:
+	.text       start:0x804CA154 end:0x804D1568
+
+system/char/CharInterest.cpp:
+	.text       start:0x804D1568 end:0x804D2984
+
+system/char/CharEyeDartRuleset.cpp:
+	.text       start:0x804D2984 end:0x804D30E4
+	.data       start:0x80888CB0 end:0x80888D20
+	.sbss       start:0x808E4878 end:0x808E4880
+
+system/char/CharFaceServo.cpp:
+	.text       start:0x804D30E4 end:0x804D4090
+
+system/char/CharForeTwist.cpp:
+	.text       start:0x804D4090 end:0x804D49F8
+	.data       start:0x80888E00 end:0x80888EC0
+	.sbss       start:0x808E4888 end:0x808E4890
+
+system/char/CharHair.cpp:
+	.text       start:0x804D49F8 end:0x804DAB54
+
+system/char/CharIKFingers.cpp:
+	.text       start:0x804DAB54 end:0x804DE54C
+	.sbss       start:0x808E4898 end:0x808E48A0
+
+system/char/CharIKFoot.cpp:
+	.text       start:0x804DE54C end:0x804DFC90
+	.data       start:0x808894E8 end:0x808895F0
+	.sbss       start:0x808E48A0 end:0x808E48A8
+
+system/char/CharIKHand.cpp:
+	.text       start:0x804DFC90 end:0x804E2A08
+	.data       start:0x808895F8 end:0x80889748
+	.sbss       start:0x808E48A8 end:0x808E48B0
+
+system/char/CharIKHead.cpp:
+	.text       start:0x804E2A08 end:0x804E4BCC
+	.data       start:0x80889748 end:0x80889890
+	.sbss       start:0x808E48B0 end:0x808E48B8
+
+system/char/CharIKMidi.cpp:
+	.text       start:0x804E4BCC end:0x804E68AC
+	.sbss       start:0x808E48B8 end:0x808E48C0
+
+system/char/CharIKRod.cpp:
+	.text       start:0x804E68AC end:0x804E7428
+	.data       start:0x80889D78 end:0x80889E58
+	.sbss       start:0x808E48C0 end:0x808E48C8
+
+system/char/CharIKScale.cpp:
+	.text       start:0x804E7428 end:0x804E8054
+	.data       start:0x80889E58 end:0x80889F28
+	.sbss       start:0x808E48C8 end:0x808E48D0
+
+system/char/CharIKSliderMidi.cpp:
+	.text       start:0x804E8054 end:0x804E8E14
+	.data       start:0x80889F34 end:0x8088A088
+	.sbss       start:0x808E48D0 end:0x808E48D8
+
+system/char/CharLipSync.cpp:
+	.text       start:0x804E8E14 end:0x804EB538
+
+system/char/CharLipSyncDriver.cpp:
+	.text       start:0x804EB538 end:0x804ED1AC
+
+system/char/CharLookAt.cpp:
+	.text       start:0x804ED1AC end:0x804EE7E0
+
+system/char/CharMeshHide.cpp:
+	.text       start:0x804EE7E0 end:0x804F0798
+	.data       start:0x8088A410 end:0x8088A490
+	.sbss       start:0x808E48F0 end:0x808E48F8
+
+system/char/CharMeshCacheMgr.cpp:
+	.text       start:0x804F0798 end:0x804F1E7C
+
+system/char/CharMirror.cpp:
+	.text       start:0x804F1E7C end:0x804F3A94
+
+system/char/CharNeckTwist.cpp:
+	.text       start:0x804F3A94 end:0x804F4218
+
+system/char/CharPosConstraint.cpp:
+	.text       start:0x804F4218 end:0x804F4BB4
+
+system/char/CharPollGroup.cpp:
+	.text       start:0x804F4BB4 end:0x804F64A8
+	.data       start:0x8088A800 end:0x8088A978
+	.sbss       start:0x808E4910 end:0x808E4918
+
+system/char/CharServoBone.cpp:
+	.text       start:0x804F64A8 end:0x804F75FC
+	.data       start:0x8088A978 end:0x8088AAD8
+	.sbss       start:0x808E4918 end:0x808E4920
+
+system/char/CharSleeve.cpp:
+	.text       start:0x804F75FC end:0x804F84AC
+	.data       start:0x8088AAD8 end:0x8088ABE8
+	.sbss       start:0x808E4920 end:0x808E4928
+
+system/char/CharTaskMgr.cpp:
+	.text       start:0x804F84AC end:0x804F84B0
+
+system/char/CharTransCopy.cpp:
+	.text       start:0x804F84B0 end:0x804F8BBC
+	.data       start:0x8088ABE8 end:0x8088ACD0
+	.sbss       start:0x808E4928 end:0x808E4930
+
+system/char/CharTransDraw.cpp:
+	.text       start:0x804F8BBC end:0x804F9C94
+	.data       start:0x8088ACD0 end:0x8088AE40
+	.sbss       start:0x808E4930 end:0x808E4938
+
+system/char/CharacterTest.cpp:
+	.text       start:0x804F9C94 end:0x804FA99C
+
+system/char/CharUpperTwist.cpp:
+	.text       start:0x804FA99C end:0x804FB228
+	.data       start:0x8088AF30 end:0x8088AFD8
+	.sbss       start:0x808E4940 end:0x808E4948
+
+system/char/CharUtl.cpp:
+	.text       start:0x804FB228 end:0x804FC4E4
+
+system/char/CharWeightable.cpp:
+	.text       start:0x804FC4E4 end:0x804FCD7C
+	.data       start:0x8088B048 end:0x8088B0E8
+	.sbss       start:0x808E4948 end:0x808E4950
+
+system/char/CharWeightSetter.cpp:
+	.text       start:0x804FCD7C end:0x804FEA7C
+
 rb3/unknown/805/unk_8050FA30.cpp:
 	.text       start:0x8050472C end:0x8050EA88
 
@@ -1153,6 +1343,7 @@ system/rndobj/Console.cpp:
 
 system/rndobj/Dir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
+	.sbss       start:0x808E4BD8 end:0x808E4BDC
 
 system/rndobj/DOFProc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
@@ -1177,9 +1368,11 @@ system/rndobj/EnvAnim.cpp:
 
 system/rndobj/EventTrigger.cpp:
 	.text       start:0x805DD534 end:0x805E5A84
+	.data       start:0x80895868 end:0x80895A48
 
 system/rndobj/Flare.cpp:
 	.text       start:0x805E5A84 end:0x805E70D4
+	.sbss       start:0x808E4C10 end:0x808E4C18
 
 system/rndobj/Font.cpp:
 	.text       start:0x805E70D4 end:0x805EC3E8

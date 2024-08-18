@@ -20,7 +20,7 @@ void CharServoBone::Highlight(){}
 
 void CharServoBone::SetName(const char* cc, ObjectDir* dir){
     Hmx::Object::SetName(cc, dir);
-    mMe = dynamic_cast<Character*>(mDir);
+    mMe = dynamic_cast<Character*>(Dir());
 }
 
 void CharServoBone::SetClipType(Symbol sym){
