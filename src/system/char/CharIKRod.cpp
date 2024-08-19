@@ -21,6 +21,21 @@ void CharIKRod::Poll(){
 }
 
 // fn_804E6ACC - compute rod
+bool CharIKRod::ComputeRod(Transform& tf){
+    if(mDest == 0 || mLeftEnd == 0 || mRightEnd == 0) return false;
+    Interp(mLeftEnd->WorldXfm().v, mRightEnd->WorldXfm().v, mDestPos, tf.v);
+    if(mVertical) tf.m.x.Set(0.0f, 0.0f, -1.0f);
+    else {
+        Interp(mLeftEnd->WorldXfm().m.x, mRightEnd->WorldXfm().m.x, mDestPos, tf.m.x);
+        Normalize(tf.m.x, tf.m.x);
+    }
+    if(mSideAxis) tf.m.z = mSideAxis->WorldXfm().m.z;
+    else Subtract(mLeftEnd->WorldXfm().v, mRightEnd->WorldXfm().v, tf.m.z);
+    Cross(tf.m.z, tf.m.x, tf.m.y);
+    Normalize(tf.m.y, tf.m.y);
+    Cross(tf.m.x, tf.m.y, tf.m.z);
+    return true;
+}
 
 void CharIKRod::SyncBones(){
     Transform tf38;

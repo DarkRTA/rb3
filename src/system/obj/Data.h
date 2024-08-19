@@ -241,14 +241,8 @@ public:
         return Node(i).Evaluate();
     }
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, 0x10, FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(DataArray), FastPool, v);
-    }
-    
+    NEW_POOL_OVERLOAD(DataArray);
+    DELETE_POOL_OVERLOAD(DataArray);    
 };
 
 inline BinStream& operator<<(BinStream &bs, const DataNode& node) {

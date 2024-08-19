@@ -6,10 +6,10 @@
 class Vector2 {
 public:
     Vector2(){}
-    Vector2(float xx, float yy) : x(xx), y(yy) {}
+    Vector2(float xx, float yy);
     Vector2(const Vector2& vec) : x(vec.x), y(vec.y) {}
 
-    void Set(float xx, float yy){ x = xx; y = yy; }
+    RETAIL_DONT_INLINE_CLASS void Set(float xx, float yy){ x = xx; y = yy; }
 
     Vector2& operator*(float f) { 
         x *= f; y *= f; 
@@ -24,7 +24,9 @@ public:
     float y;
 };
 
-inline BinStream& operator>>(BinStream& bs, Vector2& vec){
+RETAIL_DONT_INLINE_FUNC Vector2::Vector2(float xx, float yy) : x(xx), y(yy) {}
+
+RETAIL_DONT_INLINE_FUNC BinStream& operator>>(BinStream& bs, Vector2& vec){
     bs >> vec.x >> vec.y;
     return bs;
 }
@@ -312,7 +314,7 @@ inline float LengthSquared(const Vector2& v){
     return x * x + y * y;
 }
 
-inline float Dot(const Vector3& v1, const Vector3& v2) {
+RETAIL_DONT_INLINE_FUNC float Dot(const Vector3& v1, const Vector3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
@@ -374,7 +376,7 @@ inline void ScaleAddEq(Vector3& v1, const Vector3& v2, float f){
     v1.z += v2.z * f;
 }
 
-inline void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
+RETAIL_DONT_INLINE_FUNC void Cross(const Vector3 &v1, const Vector3 &v2, Vector3 &dst) {
     float x1, x2, y2, z1, z2, y1;
     
     x2 = v2.x;

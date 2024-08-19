@@ -15,7 +15,7 @@ namespace Hmx {
         Vector3 z;
 
         // all of these are weak
-        Matrix3(){}
+        Matrix3();
 
         Matrix3(const Matrix3& mtx){
             x = mtx.x; y = mtx.y; z = mtx.z;
@@ -37,12 +37,12 @@ namespace Hmx {
             y.Zero();
             z.Zero();
         }
-        void Identity(){
+        RETAIL_DONT_INLINE_CLASS void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        Matrix3& operator=(const Matrix3& mtx){
+        RETAIL_DONT_INLINE_CLASS Matrix3& operator=(const Matrix3& mtx){
             PSQ_MOVE(x.x, mtx.x.x);
             x.z = mtx.x.z;
 
@@ -59,11 +59,13 @@ namespace Hmx {
             return x == mtx.x && y == mtx.y && z == mtx.z;
         }
 
-        bool operator!=(const Matrix3& mtx) const {
+        RETAIL_DONT_INLINE_CLASS bool operator!=(const Matrix3& mtx) const {
             return x != mtx.x || y != mtx.y || z != mtx.z;
         }
 
     };
+
+    RETAIL_DONT_INLINE_FUNC Matrix3::Matrix3(){}
 
     class Quat {
     public:

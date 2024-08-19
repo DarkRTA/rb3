@@ -181,15 +181,15 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
-inline unsigned short getHmxRev(int packed){
+RETAIL_DONT_INLINE_FUNC unsigned short getHmxRev(int packed){
     return packed;
 }
 
-inline unsigned short getAltRev(int packed){
+RETAIL_DONT_INLINE_FUNC unsigned short getAltRev(int packed){
     return (unsigned int)packed >> 0x10;
 }
 
-inline int packRevs(unsigned short alt, unsigned short rev){
+RETAIL_DONT_INLINE_FUNC int packRevs(unsigned short alt, unsigned short rev){
     return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
 
