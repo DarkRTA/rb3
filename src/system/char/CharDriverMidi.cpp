@@ -24,7 +24,7 @@ void CharDriverMidi::Enter(){
 
 void CharDriverMidi::Exit(){
     CharDriver::Exit();
-    MsgSource* msgParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mParser.Str(), false));
+    MsgSource* msgParser = ObjectDir::Main()->Find<MsgSource>(mParser.Str(), false);
     if(msgParser) msgParser->RemoveSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mFlagParser.Str(), false));
     if(msgFlagParser) msgFlagParser->RemoveSink(this);
