@@ -120,7 +120,7 @@ class ContextArguments:
         parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true")
         parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true")
         parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true")
-        parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
+        parser.add_argument("--eval-code-macros", dest="eval_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true")
         parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true")
         parser.add_argument("-d", dest = "deps_path", help="Path to output list of included files to", action="store", default=None)
 
@@ -142,7 +142,7 @@ class ContextArguments:
         self.strip_at_address = known_args.strip_at_address or known_args.ghidra or known_args.m2c
         self.strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
         self.convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
-        self.preserve_macros = known_args.preserve_code_macros and not known_args.m2c and not known_args.ghidra
+        self.eval_macros = known_args.eval_code_macros or known_args.m2c or known_args.ghidra
         self.eval_mwcc_options = known_args.eval_mwcc_options or known_args.ghidra or known_args.m2c
 
         if known_args.help or not known_args.c_file:
@@ -192,7 +192,7 @@ class ContextArguments:
             self.preprocessor_arguments.extend(("-D", define))
 
         # Preserve macros in code if desired
-        if self.preserve_macros:
+        if not self.eval_macros:
             self.preprocessor_arguments.append("--passthru-defines")
 
         # Add other default arguments
@@ -261,7 +261,7 @@ class ContextPreprocessor(CmdPreprocessor):
 
     def expand_macros(self, tokens, expanding_from=[]):
         # Don't expand outside of directives
-        if self.context_args.preserve_macros and not self.in_directive:
+        if not self.context_args.eval_macros and not self.in_directive:
             return tokens
 
         # Expand first before exiting the directive, since this is called recursively
