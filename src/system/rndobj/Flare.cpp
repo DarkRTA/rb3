@@ -89,8 +89,7 @@ void RndFlare::CalcScale(){
         mMatrix = WorldXfm().m;
         float len = Length(mMatrix.z);
         Cross(mMatrix.x, mMatrix.y, v28);
-        if(Dot(v28, mMatrix.z) <= 0.0f) len = -len;
-        unk114.Set(Length(mMatrix.x), len);
+        unk114.Set(Length(mMatrix.x), Dot(v28, mMatrix.z) > 0.0f ? len : -len);
     }
 }
 
