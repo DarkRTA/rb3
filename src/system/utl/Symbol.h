@@ -46,7 +46,7 @@ public:
     static void Terminate();
 
     int GetIntVal(); // https://decomp.me/scratch/sxK01
-    bool Null() const { return mStr == gNullStr; }
+    RETAIL_DONT_INLINE_CLASS bool Null() const { return mStr == gNullStr; }
 };
 
 const char* SymbolCacheLookup(const char*);

@@ -6,7 +6,7 @@
 class Vector2 {
 public:
     Vector2(){}
-    Vector2(float xx, float yy) : x(xx), y(yy) {}
+    Vector2(float xx, float yy);
     Vector2(const Vector2& vec) : x(vec.x), y(vec.y) {}
 
     RETAIL_DONT_INLINE_CLASS void Set(float xx, float yy){ x = xx; y = yy; }
@@ -24,7 +24,9 @@ public:
     float y;
 };
 
-inline BinStream& operator>>(BinStream& bs, Vector2& vec){
+RETAIL_DONT_INLINE_FUNC Vector2::Vector2(float xx, float yy) : x(xx), y(yy) {}
+
+RETAIL_DONT_INLINE_FUNC BinStream& operator>>(BinStream& bs, Vector2& vec){
     bs >> vec.x >> vec.y;
     return bs;
 }

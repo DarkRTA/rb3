@@ -8,21 +8,11 @@
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
+    ObjPtr(Hmx::Object* obj, T1* cls = 0);
+    ObjPtr(const ObjPtr& oPtr);
 
-    ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
-        if(mPtr != 0) mPtr->AddRef(this);
-    }
-
-    ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
-        if(mPtr != 0) mPtr->AddRef(this);
-    }
-
-    virtual ~ObjPtr(){
-        if(mPtr != 0) mPtr->Release(this);
-    }
-
+    virtual ~ObjPtr(){ if(mPtr != 0) mPtr->Release(this); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
         if (mPtr == o1) *this = dynamic_cast<T1*>(o2);
     }
@@ -47,14 +37,26 @@ public:
     T1* mPtr;
 };
 
-template <class T1> BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
+template <class T1, class T2>
+RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
+    if(mPtr != 0) mPtr->AddRef(this);
+}
+
+template <class T1, class T2>
+RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
+    if(mPtr != 0) mPtr->AddRef(this);
+}
+
+template <class T1>
+DONT_INLINE BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
     MILO_ASSERT(f.Owner(), 0x2D1);
     const char* objName = (f.Ptr()) ? f.Ptr()->Name() : "";
     bs << objName;
     return bs;
 }
 
-template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
+template <class T1>
+DONT_INLINE BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true, 0);
     return bs;
 }

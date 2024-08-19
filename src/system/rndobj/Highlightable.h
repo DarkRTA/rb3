@@ -4,9 +4,11 @@
 
 class RndHighlightable : public virtual Hmx::Object {
 public:
-    RndHighlightable(){}
+    RndHighlightable();
     virtual ~RndHighlightable(){}
     virtual void Highlight() = 0;
 };
+
+RETAIL_DONT_INLINE_FUNC RndHighlightable::RndHighlightable(){}
 
 #endif

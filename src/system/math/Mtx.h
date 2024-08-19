@@ -15,7 +15,7 @@ namespace Hmx {
         Vector3 z;
 
         // all of these are weak
-        Matrix3(){}
+        Matrix3();
 
         Matrix3(const Matrix3& mtx){
             x = mtx.x; y = mtx.y; z = mtx.z;
@@ -64,6 +64,8 @@ namespace Hmx {
         }
 
     };
+
+    RETAIL_DONT_INLINE_FUNC Matrix3::Matrix3(){}
 
     class Quat {
     public:
