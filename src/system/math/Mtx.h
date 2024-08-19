@@ -37,7 +37,7 @@ namespace Hmx {
             y.Zero();
             z.Zero();
         }
-        void Identity(){
+        RETAIL_DONT_INLINE_CLASS void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
