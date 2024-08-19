@@ -104,6 +104,7 @@ public:
         return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
     }
     char* GetChannel(Symbol);
+    int PlayFlags() const { return mPlayFlags; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
