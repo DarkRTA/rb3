@@ -117,11 +117,11 @@ class ContextArguments:
         parser.add_argument("c_file", nargs="?", help="File from which to create context")
         parser.add_argument("-h", "-help", "--help", dest="help", action="store_true")
         parser.add_argument('-D', dest = 'defines', metavar = 'macro[=val]', nargs = 1, action = 'append', help = 'Predefine name as a macro [with value]')
-        parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true", default=True)
-        parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
-        parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
+        parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true")
+        parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true")
+        parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true")
         parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
-        parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true", default=False)
+        parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true")
         parser.add_argument("-d", dest = "deps_path", help="Path to output list of included files to", action="store", default=None)
 
         # For the output path, we either want to be explicit or relative, but not both
