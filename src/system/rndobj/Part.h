@@ -195,6 +195,7 @@ public:
     void SetEndOffset(float f1, float f2){ mEndOffset.Set(f1, f2); }
     void SetDrag(float f){ mDrag = f; }
     void SetStretchScale(float f){ mStretchScale = f; }
+    RndMesh* GetMesh() const { return mMesh; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
