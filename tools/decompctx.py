@@ -35,14 +35,14 @@ default_arguments: list[str] = [
 ]
 
 default_defines: dict[str, str] = {
-    "__MWERKS__" : "0x4302",
+    "__MWERKS__": "0x4302",
 }
 
 mwcc_options: dict[str, bool] = {
-    "little_endian" : False,
-    "wchar_type" : True,
-    "exceptions" : False,
-    "longlong" : True,
+    "little_endian": False,
+    "wchar_type": True,
+    "exceptions": False,
+    "longlong": True,
 }
 
 passthrough_defines: list[str] = [
@@ -113,26 +113,30 @@ class ContextArguments:
         self.eval_mwcc_options: bool = False
 
         # Write initial parser
-        parser = argparse.ArgumentParser(prog="Decomp Context", description="Wrapper around pcpp that can create a context file which can be used for decompilation", add_help=False)
-        parser.add_argument("c_file", nargs="?", help="File from which to create context")
+        parser = argparse.ArgumentParser(
+            prog="Decomp Context Generator",
+            description="Wrapper around pcpp which generates a context file usable with decomp.me, m2c, or Ghidra",
+            add_help=False
+        )
+        parser.add_argument("c_file", dest="c_file", nargs="?", help="File from which to create context")
         parser.add_argument("-h", "-help", "--help", dest="help", action="store_true")
-        parser.add_argument('-D', dest = 'defines', metavar = 'macro[=val]', nargs = 1, action = 'append', help = 'Predefine name as a macro [with value]')
-        parser.add_argument("--strip-attributes", dest="strip_attributes", help="If __attribute__(()) string should be stripped", action="store_true", default=True)
-        parser.add_argument("--strip-at-address", dest="strip_at_address", help="If AT_ADDRESS or : formatted string should be stripped", action="store_true", default=True)
-        parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", help="If binary literals (0bxxxx) should be converted to decimal", action="store_true", default=True)
-        parser.add_argument("--preserve-code-macros", dest="preserve_code_macros", help="Keep macro definitions and leave macros outside of preprocessor directives unexpanded", action="store_true", default=True)
-        parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)", action="store_true", default=False)
-        parser.add_argument("-d", dest = "deps_path", help="Path to output list of included files to", action="store", default=None)
+        parser.add_argument('-D', dest='defines', metavar='macro[=val]', nargs=1, action='append', help='Predefine a macro [with the given value]')
+        parser.add_argument("--strip-attributes", dest="strip_attributes", action="store_true", help="Strip __attribute__(()) directives")
+        parser.add_argument("--strip-at-address", dest="strip_at_address", action="store_true", help="Strip AT_ADDRESS or `: 0x12345678` directives")
+        parser.add_argument("--convert-binary-literals", dest="convert_binary_literals", action="store_true", help="Convert binary literals (0bxxxx) to decimal")
+        parser.add_argument("--eval-code-macros", dest="eval_code_macros", action="store_true", help="Evaluate macros outside of preprocessor directives, and strip their definitions")
+        parser.add_argument("--eval-mwcc-options", dest="eval_mwcc_options", action="store_true", help="Evaluate __option() macros, such as __option(longlong) or __option(wchar_type)")
+        parser.add_argument("-d", dest = "deps_path", action="store", help="Path to output list of included files to")
 
         # For the output path, we either want to be explicit or relative, but not both
         output_target_group = parser.add_mutually_exclusive_group()
-        output_target_group.add_argument("-o", dest="output_path", help="Explicit path to output the context file to", action="store")
-        output_target_group.add_argument("-r", "--relative", dest="relative", help="Generate context relative to the source file", action="store_true")
+        output_target_group.add_argument("-o", dest="output_path", action="store", help="Explicit path to output the context file to")
+        output_target_group.add_argument("-r", "--relative", dest="relative", action="store_true", help="Generate context relative to the source file")
 
         # When targeting a specific platform we want to only do one thing or another
         platform_target_group = parser.add_mutually_exclusive_group()
-        platform_target_group.add_argument("--m2c", dest="m2c", help="Generates an m2c-friendly file", action="store_true")
-        platform_target_group.add_argument("--ghidra", dest="ghidra", help="Generates an Ghidra-friendly file", action="store_true")
+        platform_target_group.add_argument("--m2c", dest="m2c", action="store_true", help="Generates an m2c-friendly file")
+        platform_target_group.add_argument("--ghidra", dest="ghidra", action="store_true", help="Generates a Ghidra-friendly file")
 
         # Parse the arguments
         parsed_args = parser.parse_known_args()
@@ -142,7 +146,7 @@ class ContextArguments:
         self.strip_at_address = known_args.strip_at_address or known_args.ghidra or known_args.m2c
         self.strip_attributes = known_args.strip_attributes or known_args.ghidra or known_args.m2c
         self.convert_binary_literals = known_args.convert_binary_literals or known_args.ghidra
-        self.preserve_macros = known_args.preserve_code_macros and not known_args.m2c and not known_args.ghidra
+        self.eval_macros = known_args.eval_code_macros or known_args.m2c or known_args.ghidra
         self.eval_mwcc_options = known_args.eval_mwcc_options or known_args.ghidra or known_args.m2c
 
         if known_args.help or not known_args.c_file:
@@ -192,7 +196,7 @@ class ContextArguments:
             self.preprocessor_arguments.extend(("-D", define))
 
         # Preserve macros in code if desired
-        if self.preserve_macros:
+        if not self.eval_macros:
             self.preprocessor_arguments.append("--passthru-defines")
 
         # Add other default arguments
@@ -261,7 +265,7 @@ class ContextPreprocessor(CmdPreprocessor):
 
     def expand_macros(self, tokens, expanding_from=[]):
         # Don't expand outside of directives
-        if self.context_args.preserve_macros and not self.in_directive:
+        if not self.context_args.eval_macros and not self.in_directive:
             return tokens
 
         # Expand first before exiting the directive, since this is called recursively
@@ -288,7 +292,7 @@ class ContextPreprocessor(CmdPreprocessor):
 #endregion
 
 #region Attribute Stripping
-def strip_attributes(text_to_strip: str)->str:
+def strip_attributes(text_to_strip: str) -> str:
     if not text_to_strip:
         return text_to_strip
 
