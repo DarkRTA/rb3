@@ -81,7 +81,7 @@
 
                 "-O4,s",
                 "-ipa file",
-                "-inline noauto"
+                "-inline off"
             ]
         },
         "system": {

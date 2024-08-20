@@ -63,6 +63,20 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
 }
 #pragma pop
 
+void CharHair::SetCloth(bool b){
+    for(int i = 0; i < mStrands.size(); i++){
+        Strand& strand = mStrands[i];
+        int mod = Mod(i + 1, mStrands.size());
+        Strand& modidx = mStrands[mod];
+        for(int j = 0; j < strand.mPoints.size(); j++){
+            Point& point = strand.mPoints[j];
+            bool b1 = false;
+            if(b && j < modidx.mPoints.size()) b1 = true;
+            point.sideLength = b1 ? Distance(point.pos, modidx.mPoints[j].pos) : -1.0f;
+        }
+    }
+}
+
 CharHair::CharHair() : mStiffness(0.04f), mTorsion(0.1f), mInertia(0.7f), mGravity(1.0f), mWeight(0.5f), mFriction(0.3f), mMinSlack(0.0f), mMaxSlack(0.0f),
     mStrands(this), mReset(1), mSimulate(1), mUsePostProc(1), mMe(this, 0), mWind(this, 0), mCollide(this, kObjListNoNull), unk6c(0) {
 
@@ -291,9 +305,7 @@ BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
         }
     }
     if(CharHair::gRev > 9){
-        bs >> pt.collide;
-        bs >> pt.unk60;
-        bs >> pt.unk64;
+        bs >> pt.unk5c;
     }
     pt.collides.clear();
     pt.force.Zero();
