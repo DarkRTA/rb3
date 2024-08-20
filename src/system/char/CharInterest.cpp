@@ -25,7 +25,7 @@ void CharInterest::SyncMaxViewAngle(){
 
 void CharInterest::Highlight(){
     RndGraph* oneframe = RndGraph::GetOneFrame();
-    oneframe->AddSphere(WorldXfm().v, 1.0f, Hmx::Color(1.0f, 0.0f, 0.0f, 1.0f));
+    oneframe->AddSphere(WorldXfm().v, 1.0f, Hmx::Color(1.0f, 0.0f, 0.0f));
     Vector2 vec2;
     float wts = RndCam::sCurrent->WorldToScreen(WorldXfm().v, vec2);
     if(wts > 0.0f){
