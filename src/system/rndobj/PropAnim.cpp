@@ -5,7 +5,7 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(RndPropAnim)
-DataNode sKeyReplace(0);
+DataNode sKeyReplace;
 float sFrameReplace;
 bool sReplaceKey;
 bool sReplaceFrame;
@@ -126,13 +126,13 @@ void RndPropAnim::LoadPre7(BinStream& bs){
 BEGIN_COPYS(RndPropAnim)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    mLastFrame = mFrame;
+    mLastFrame = GetFrame();
     RemoveKeys();
     CREATE_COPY(RndPropAnim)
     BEGIN_COPYING_MEMBERS
         for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); it++){
             PropKeys* cur = *it;
-            AddKeys(cur->mTarget.Ptr(), cur->mProp, (PropKeys::AnimKeysType)cur->mKeysType)->Copy(cur);
+            AddKeys(cur->mTarget.Ptr(), cur->mProp, (PropKeys::AnimKeysType)cur->mKeysType)->Copy(*it);
         }
         COPY_MEMBER(mLoop)
     END_COPYING_MEMBERS
@@ -194,7 +194,7 @@ void RndPropAnim::SetKey(float frame){
 
 void RndPropAnim::StartAnim(){
     for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); it++){
-        (*it)->mLastKeyFrameIndex = -2;
+        (*it)->ResetLastKeyFrameIndex();
     }
 }
 
