@@ -45,7 +45,7 @@ void CharBoneDir::Init(){
 void CharBoneDir::Terminate(){ delete sResources; }
 
 CharBoneDir* CharBoneDir::FindResource(const char* cc){
-    return dynamic_cast<CharBoneDir*>(sResources->FindObject(cc, false));
+    return sResources->Find<CharBoneDir>(cc, false);
 }
 
 CharBoneDir* CharBoneDir::FindResourceFromClipType(Symbol cliptype){
@@ -61,7 +61,7 @@ CharBoneDir* CharBoneDir::FindResourceFromClipType(Symbol cliptype){
             return 0;
         }
         else {
-            CharBoneDir* dir = dynamic_cast<CharBoneDir*>(sResources->FindObject(resources->Str(1), false));
+            CharBoneDir* dir = FindResource(resources->Str(1));
             if(!dir) MILO_WARN("CharClip %s has no resource", cliptype);
             return dir;
         }
@@ -89,7 +89,7 @@ void CharBoneDir::StuffBones(CharBones& bones, Symbol sym){
         DataArray* resource = found->FindArray("resource", false);
         if(!resource) MILO_WARN("CharClip %s has no (resource ...) field", sym);
         else {
-            CharBoneDir* dir = dynamic_cast<CharBoneDir*>(sResources->FindObject(resource->Str(1), false));
+            CharBoneDir* dir = FindResource(resource->Str(1));
             if(!dir) MILO_WARN("CharClip %s has no resource", sym);
             else {
                 dir->StuffBones(bones, DataGetMacro(resource->Str(2))->Int(0));

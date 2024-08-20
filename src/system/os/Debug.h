@@ -96,7 +96,7 @@ extern int* gpDbgFrameID;
    // various random calls are left over from asserts that exist in debug
 #  define MILO_ASSERT(cond, line) (void)(cond)
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
-#  define MILO_FAIL(...) ((void)0)
+#  define MILO_FAIL(...) (void)(__VA_ARGS__)
 #  define MILO_WARN(...) (void)(__VA_ARGS__)
 #  define MILO_LOG(...) (void)(__VA_ARGS__)
 
