@@ -117,7 +117,9 @@ void Character::Exit(){
 void Character::Poll(){
     START_AUTO_TIMER("char_poll");
     if(!mFrozen){
+#ifdef VERSION_SZBE69_B8
         if(TheLoadMgr.EditMode()) mTest->Poll();
+#endif
         RndDir::Poll();
         unk1f4 = false;
         mPollState = kCharPolled;
@@ -131,6 +133,15 @@ CharEyes* Character::GetEyes(){
 CharServoBone* Character::BoneServo(){
     if(mDriver) return dynamic_cast<CharServoBone*>(mDriver->mBones.Ptr());
     else return 0;
+}
+
+void Character::SetSphereBase(RndTransformable* trans){
+    if(!trans) trans = this;
+    Sphere s18;
+    MakeWorldSphere(s18, false);
+    Multiply(trans->WorldXfm(), s18.center, s18.center);
+    SetSphere(s18);
+    mSphereBase = trans;
 }
 
 void Character::SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>& oList, ObjectDir* dir){
@@ -262,7 +273,7 @@ void Character::RemovingObject(Hmx::Object* o){
 }
 
 void Character::CopyBoundingSphere(Character* c){
-    mSphere = c->mSphere;
+    SetSphere(c->mSphere);
     mBounding = c->mBounding;
     if(c->mSphereBase) mSphereBase = c->mSphereBase;
     else mSphereBase = 0;
@@ -405,8 +416,10 @@ BEGIN_HANDLERS(Character)
     HANDLE_ACTION(force_interest, SetFocusInterest(_msg->Obj<CharInterest>(2), false))
     HANDLE_ACTION(force_interest_named, SetFocusInterest(_msg->Sym(2), 0))
     HANDLE_ACTION(enable_blink, if(_msg->Size() > 3) EnableBlinks(_msg->Int(2), _msg->Int(3)); else EnableBlinks(_msg->Int(2), false))
+#ifdef VERSION_SZBE69_B8
     HANDLE(list_interest_objects, OnGetCurrentInterests)
     HANDLE_MEMBER_PTR(mTest)
+#endif
     HANDLE_SUPERCLASS(RndDir)
     HANDLE_CHECK(0x57B)
 END_HANDLERS
@@ -467,7 +480,9 @@ BEGIN_PROPSYNCS(Character)
     SYNC_PROP_SET(shadow, mShadow, SetShadow(_val.Obj<RndGroup>(0)))
     SYNC_PROP_SET(driver, mDriver, )
     SYNC_PROP_MODIFY(interest_to_force, mInterestToForce, SetFocusInterest(mInterestToForce, 0))
+#ifdef VERSION_SZBE69_B8
     SYNC_PROP(debug_draw_interest_objects, mDebugDrawInterestObjects)
     SYNC_PROP(CharacterTesting, *mTest)
+#endif
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS
