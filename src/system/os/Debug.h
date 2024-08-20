@@ -98,7 +98,7 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
 #  define MILO_FAIL(...) ((void)0)
 #  define MILO_WARN(...) (void)(__VA_ARGS__)
-#  define MILO_LOG(...) ((void)0)
+#  define MILO_LOG(...) (void)(__VA_ARGS__)
 
 #  define MILO_TRY if (true)
 #  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)
