@@ -47,6 +47,12 @@ void CharBonesMeshes::ReallocateInternal(){
 }
 
 // fn_804B0C60 - pose meshes
+void CharBonesMeshes::PoseMeshes(){
+    float angle;
+    Hmx::Matrix3 m;
+    m.RotateAboutY(angle);
+    m.RotateAboutX(angle);
+}
 
 void CharBonesMeshes::StuffMeshes(std::list<Hmx::Object*>& oList){
     for(int i = 0; i < mMeshes.size(); i++){

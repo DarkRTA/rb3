@@ -38,6 +38,16 @@ namespace Hmx {
             y.Zero();
             z.Zero();
         }
+        void RotateAboutZ(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f);
+        }
+        void RotateAboutY(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, 0.0f, -s, 0.0f, 1.0f, 0.0f, s, 0.0f, c);
+        }
         void RotateAboutX(float angle){
             float c = Cosine(angle);
             float s = Sine(angle);
