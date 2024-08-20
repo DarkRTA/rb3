@@ -118,6 +118,7 @@ public:
     void SetGeomOwner(RndMesh*);
     void Sync(int);
     void SetBone(int, RndTransformable*, bool);
+    bool KeepMeshData() const { return mKeepMeshData; }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)

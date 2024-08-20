@@ -77,7 +77,7 @@ void RndParticleSys::SetMesh(RndMesh* mesh){
     if(mesh){
         SetTransParent(mesh, false);
         SetTransConstraint(RndTransformable::kParentWorld, 0, false);
-        if(!mesh->mKeepMeshData){
+        if(!mesh->KeepMeshData()){
             MILO_WARN("keep_mesh_data should be checked for %s.  It's the mesh emitter for %s.\n", PathName(mesh), PathName(this));
         }
     }
@@ -263,8 +263,8 @@ bool AngleVectorSync(Vector2& vec, DataNode& _val, DataArray* _prop, int _i, Pro
     else {
         Symbol sym = _prop->Sym(_i);
         if(sym == x){
-            if(_op == kPropSet) vec.x = _val.Float(0) * 0.017453292f;
-            else if(_op == kPropGet) _val = DataNode(vec.x * 57.295776f);
+            if(_op == kPropSet) vec.x = DegreesToRadians(_val.Float(0));
+            else if(_op == kPropGet) _val = DataNode(RadiansToDegrees(vec.x));
             else return false;
         }
         else if(sym == y){
@@ -278,7 +278,7 @@ bool AngleVectorSync(Vector2& vec, DataNode& _val, DataArray* _prop, int _i, Pro
 #pragma pool_data off
 BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(mat, mMat)
-    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), mType))
+    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), GetType()))
     SYNC_PROP(emit_rate, mEmitRate)
     SYNC_PROP(screen_aspect, mScreenAspect)
     SYNC_PROP(life, mLife)

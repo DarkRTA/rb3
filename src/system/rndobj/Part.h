@@ -58,6 +58,8 @@ public:
 };
 
 struct PartOverride {
+    PartOverride() : mask(0), life(0), speed(0), deltaSize(0), startColor(0), midColor(0), endColor(0),
+        pitch(0,0), yaw(0,0), mesh(0), box(Vector3(0,0,0),Vector3(0,0,0)) {}
     PartOverride& operator=(const PartOverride& p){
         mask = p.mask;
         life = p.life;
@@ -196,6 +198,7 @@ public:
     void SetDrag(float f){ mDrag = f; }
     void SetStretchScale(float f){ mStretchScale = f; }
     RndMesh* GetMesh() const { return mMesh; }
+    Type GetType() const { return mType; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
