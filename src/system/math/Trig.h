@@ -9,6 +9,8 @@ float Sine(float); // fn_802E2F38
 float FastSin(float); // fn_802E2FE8
 float Cosine(float); // fn_802DE4D4
 
+float NormalizeAngle(float);
+
 DataNode DataSin(DataArray*);
 DataNode DataCos(DataArray*);
 DataNode DataTan(DataArray*);
