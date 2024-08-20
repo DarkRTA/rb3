@@ -1024,6 +1024,7 @@ system/char/CharBonesMeshes.cpp:
 
 system/char/CharBonesSamples.cpp:
 	.text       start:0x804B1B20 end:0x804B351C
+	.bss        start:0x80987188 end:0x80987198
 
 system/char/CharBonesBlender.cpp:
 	.text       start:0x804B351C end:0x804B4208
