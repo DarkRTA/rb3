@@ -1187,6 +1187,13 @@ system/char/CharWeightable.cpp:
 system/char/CharWeightSetter.cpp:
 	.text       start:0x804FCD7C end:0x804FEA7C
 
+system/char/FileMerger.cpp:
+	.text       start:0x804FF03C end:0x80502984
+
+system/char/FileMergerOrganizer.cpp:
+	.text       start:0x80502984 end:0x80504A84
+	.ctors      start:0x807EFFAC end:0x807EFFB0
+
 system/char/Waypoint.cpp:
 	.text       start:0x80504A84 end:0x80507560
 
