@@ -5,7 +5,7 @@ AccomplishmentSongConditional::AccomplishmentSongConditional(DataArray* i_pConfi
 }
 
 AccomplishmentSongConditional::~AccomplishmentSongConditional() {
-    
+
 }
 
 void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr* songManager, Symbol, const AccomplishmentCondition&) const {
@@ -13,7 +13,7 @@ void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr* songManag
 }
 
 void AccomplishmentSongConditional::CheckScoreCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
-    
+
 }
 
 void AccomplishmentSongConditional::CheckAccuracyCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
@@ -39,7 +39,7 @@ void AccomplishmentSongConditional::CheckPerfectDrumRollsCondition(SongStatusMgr
 void AccomplishmentSongConditional::CheckFullComboCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {}
 void AccomplishmentSongConditional::CheckConditionsForSong(SongStatusMgr*, Symbol) const {}
 void AccomplishmentSongConditional::UpdateIncrementalEntryName(UILabel*, Symbol) {}
-void AccomplishmentSongConditional::InqProgressValues(BandProfile*, int&, int&) {}
-void AccomplishmentSongConditional::IsSymbolEntryFulfilled(BandProfile*, Symbol) const {}
-void AccomplishmentSongConditional::ShowBestAfterEarn() const {}
+bool AccomplishmentSongConditional::InqProgressValues(BandProfile*, int&, int&) {}
+bool AccomplishmentSongConditional::IsSymbolEntryFulfilled(BandProfile*, Symbol) const {}
+bool AccomplishmentSongConditional::ShowBestAfterEarn() const {}
 void AccomplishmentSongConditional::InitializeTrackerDesc(TrackerDesc&) const {}

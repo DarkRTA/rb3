@@ -1,5 +1,5 @@
 #include <revolution/wpad/WPAD.h>
-
+#if 0
 /*******************************************************************************
  * headers
  */
@@ -323,7 +323,7 @@ static BOOL OnShutdown(OSShutdownPass pass, OSShutdownEvent event)
 	}
 
 	BOOL isCleanup;
-	
+
 	switch (event)
 	{
 	case OS_SD_EVENT_FATAL:
@@ -4259,3 +4259,4 @@ static void __wpadCertWork(WPADChannel chan)
 		__wpadCertFailed(chan);
 	}
 }
+#endif

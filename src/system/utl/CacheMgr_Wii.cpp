@@ -3,13 +3,13 @@
 #include "VF.h"
 
 const char* unusedStrings[] = {
-    "A", 
-    "Can't delete system file.", 
-    "Not enough NAND available for VF.", 
+    "A",
+    "Can't delete system file.",
+    "Not enough NAND available for VF.",
     "Can't create sytem file.", // Intentional typo
-    "Can't mount nand drive.", 
-    "Can't format nand drive", 
-    "Can't unmount nand drive.", 
+    "Can't mount nand drive.",
+    "Can't format nand drive",
+    "Can't unmount nand drive.",
 };
 
 CacheMgrWii::CacheMgrWii() : mVar1(), mVar2(0), mVar3(0), mVar4(0), mVar5(0) {
@@ -19,11 +19,11 @@ CacheMgrWii::CacheMgrWii() : mVar1(), mVar2(0), mVar3(0), mVar4(0), mVar5(0) {
 void CacheMgrWii::CreateVFCache() {
     VFInitEx();
     bool result = VFMountDriveNANDFlashEx("", "");
-    
+
 }
 
 CacheMgrWii::~CacheMgrWii() {
-    
+
 }
 
 void CacheMgrWii::Poll() {
@@ -48,7 +48,7 @@ void CacheMgrWii::Poll() {
 
 const char* unusedStrings2[] = {
     "\n"
-    
+
 };
 
 bool CacheMgrWii::SearchAsync(const char* param_1, CacheID** param_2) {
@@ -77,6 +77,7 @@ bool CacheMgrWii::SearchAsync(const char* param_1, CacheID** param_2) {
     return false;
 }
 
+/*
 bool CacheMgrWii::CreateCacheID(const char* param_1, const char* param_2, const char* param_3, const char* param_4, const char* param_5, int param_6, CacheID** param_7) {
     if (param_2 == 0 || param_4 == 0) {
         SetLastResult(kCache_ErrorBadParam);
@@ -89,8 +90,11 @@ bool CacheMgrWii::CreateCacheID(const char* param_1, const char* param_2, const 
         return true;
     }
 }
+*/
 
+/*
 bool CacheMgrWii::MountAsync(CacheID*, Cache*, Hmx::Object*) {}
+*/
 bool CacheMgrWii::UnmountAsync(Cache**, Hmx::Object*) {}
 bool CacheMgrWii::DeleteAsync(CacheID*) {}
 void CacheMgrWii::PollSearch() {}

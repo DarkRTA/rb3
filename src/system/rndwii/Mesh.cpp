@@ -26,8 +26,8 @@ void DisplayList::Init() {
 
 }
 
-void DisplayList::Clear() { 
-    WiiRnd::SyncFree(mData); 
+void DisplayList::Clear() {
+    WiiRnd::SyncFree(mData);
     mData = NULL;
     mSize = 0;
     unk_0x8 = 0;
@@ -54,6 +54,7 @@ BEGIN_COPYS(WiiMesh)
     END_COPYING_MEMBERS
 END_COPYS
 
+/*
 void WiiMesh::Init() {
     REGISTER_OBJ_FACTORY(WiiMesh)
     GXSetVtxAttrFmt(0, GX_VA_POS, 1, 4, 0);
@@ -72,3 +73,4 @@ void WiiMesh::Init() {
     DisplayList::Init();
     DataRegisterFunc("toggle_ao", OnToggleAO);
 }
+*/

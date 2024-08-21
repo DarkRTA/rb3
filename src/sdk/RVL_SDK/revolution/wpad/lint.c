@@ -1,4 +1,5 @@
 #include "lint.h"
+#if 0
 
 /*******************************************************************************
  * headers
@@ -210,3 +211,4 @@ void LINTMul(ULONG *dst, const ULONG *lhs, const ULONG *rhs)
 	else
 		a = *dst = lhsSize + rhsSize;
 }
+#endif

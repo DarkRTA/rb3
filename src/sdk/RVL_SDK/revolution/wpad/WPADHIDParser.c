@@ -1,5 +1,6 @@
 #include "WPADHIDParser.h"
 
+#if 0
 /*******************************************************************************
  * headers
  */
@@ -2791,3 +2792,4 @@ static void __wpadCertReset(WPADChannel chan)
 
 	p_wpd->wmParamOffset = 0;
 }
+#endif

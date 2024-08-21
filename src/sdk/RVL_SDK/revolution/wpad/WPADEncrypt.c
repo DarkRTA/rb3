@@ -1,4 +1,5 @@
 #include "WPADEncrypt.h"
+#if 0
 
 /*******************************************************************************
  * headers
@@ -1015,3 +1016,4 @@ void WPADiDecode(WPADChannel chan, byte_t *data, u16 length, u16 startIndex)
 		}
 	}
 }
+#endif

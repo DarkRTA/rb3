@@ -1,5 +1,6 @@
 #include "Platform/String.h"
 #include "Platform/MemoryManager.h"
+/*
 #include <string.h>
 
 namespace Quazal {
@@ -10,3 +11,4 @@ namespace Quazal {
     }
 
 }
+*/

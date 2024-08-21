@@ -25,9 +25,10 @@ jobs:
       run: cp -R /orig .
     - name: Build
       run: |
-        python configure.py --map --version ${{matrix.version}} \
-          --binutils /binutils --compilers /compilers --wrapper wibo
-        ninja
+        python configure.py --map --version ${{ matrix.version }} \
+            --binutils /binutils --compilers /compilers
+        ninja all_source build/${{ matrix.version }}/progress.json \
+            build/${{ matrix.version }}/report.json
     - name: Upload progress
       if: github.ref == 'refs/heads/master' && matrix.version == 'SZBE69_B8'
       continue-on-error: true
@@ -41,6 +42,12 @@ jobs:
       with:
         name: ${{matrix.version}}_maps
         path: build/${{matrix.version}}/**/*.MAP
+    - name: Upload report
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.version }}_report
+        path: build/${{ matrix.version }}/report.json
+
   build-nonmatching:
     runs-on: ubuntu-latest
     container: ghcr.io/darkrta/rb3-build:main

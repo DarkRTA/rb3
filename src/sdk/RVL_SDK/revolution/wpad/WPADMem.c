@@ -1,5 +1,6 @@
 #include <revolution/WPAD/WPADMem.h>
 #include "WPADMem.h"
+#if 0
 
 /*******************************************************************************
  * headers
@@ -69,3 +70,4 @@ end:
 
 	return status;
 }
+#endif

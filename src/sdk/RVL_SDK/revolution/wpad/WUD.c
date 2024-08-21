@@ -1,5 +1,6 @@
 #include <revolution/WPAD/WUD.h>
 #include "WUD.h"
+#if 0
 
 /* References:
  * Bluetooth Assigned Numbers
@@ -10,7 +11,7 @@
  * headers
  */
 
-#include <string.h>	
+#include <string.h>
 
 #include <macros.h>
 #include <types.h>
@@ -4118,3 +4119,4 @@ void WUDiShowFatalErrorMessage(void)
 {
 	return;
 }
+#endif

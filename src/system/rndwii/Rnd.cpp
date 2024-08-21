@@ -27,11 +27,13 @@ void OnDrawSync(u16 s) {
     TheWiiRnd.DoPointTests();
 }
 
-WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false), unk_0x2BC(false), 
-    mFramesBuffered(2) { 
+/*
+WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false), unk_0x2BC(false),
+    mFramesBuffered(2) {
     mColor.Set(0, 0, 0, 0);
-    unk_0x2B4.reserve(0x20); 
+    unk_0x2B4.reserve(0x20);
 }
+*/
 
 WiiRnd::~WiiRnd() {}
 
@@ -44,6 +46,7 @@ void WiiRnd::WiiPreInit() {
 
 bool WiiRnd::GetProgressiveScan() { return mProgScan; }
 
+/*
 void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, bool) { // ????·
     int col;
     GXLoadPosMtxImm(unk_0x23C, 0);
@@ -58,6 +61,7 @@ void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, boo
     GXColor1u32(col);
     RndGXEnd();
 }
+*/
 
 BEGIN_HANDLERS(WiiRnd)
     HANDLE_ACTION(tri_frame, SetTriFrameRendering(_msg->Int(2)))
@@ -75,7 +79,7 @@ void WiiRnd::SetOrthoProj() {
     GXLoadPosMtxImm(unk_0x23C, 0);
     GXSetCurrentMtx(0);
 }
-
+/*
 void WiiRnd::DrawQuad(const Hmx::Rect& r) {
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
@@ -94,6 +98,7 @@ void WiiRnd::DrawQuad(const Hmx::Rect& r) {
     GXTexCoord2u8(1, 0);
     RndGXEnd();
 }
+*/
 
 void* WiiRnd::GetCurrXFB() { return sDispFB; }
 
@@ -111,6 +116,7 @@ void RndGXEnd() { // this never calls GXEnd but it's ok because it's a nothing b
 
 void RndGXDrawDoneCallback() { OSWakeupThread(&drawDoneThreadQueue); }
 
+/*
 void RndGxDrawDone() {
     int x = OSDisableInterrupts();
     GXSetDrawDoneCallback(RndGXDrawDoneCallback);
@@ -118,3 +124,4 @@ void RndGxDrawDone() {
     OSSleepThread(&drawDoneThreadQueue);
     OSRestoreInterrupts(x);
 }
+*/
