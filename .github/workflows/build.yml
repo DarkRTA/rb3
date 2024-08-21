@@ -69,6 +69,7 @@ jobs:
       env:
         PROGRESS_API_KEY: ${{secrets.PROGRESS_API_KEY}}
       run: |
+        python configure.py progress --version SZBE69_B8 --non-matching
         python tools/upload_progress.py -b https://progress.decomp.club/ -p rb3 -v Equivalent \
           build/SZBE69_B8/progress.json
     - name: Upload map
