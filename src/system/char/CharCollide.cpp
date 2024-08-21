@@ -75,3 +75,5 @@ CharCollide::CharCollide() : mShape(kSphere), mFlags(0), mMesh(this, 0) {
 CharCollide::~CharCollide(){
     
 }
+
+SAVE_OBJ(CharCollide, 0x58)
