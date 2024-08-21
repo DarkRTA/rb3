@@ -213,7 +213,10 @@
             "system/char/CharIKHand.cpp": "NonMatching",
             "system/char/CharIKHead.cpp": "NonMatching",
             "system/char/CharIKMidi.cpp": "NonMatching",
-            "system/char/CharIKRod.cpp": "NonMatching",
+            "system/char/CharIKRod.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps in ComputeRod and SyncBones on debug, both check out in retail"
+            },
             "system/char/CharIKScale.cpp": "NonMatching",
             "system/char/CharIKSliderMidi.cpp": "NonMatching",
             "system/char/CharInterest.cpp": "NonMatching",

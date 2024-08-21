@@ -22,12 +22,13 @@ public:
     virtual void Highlight(){}
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
     
-    ObjPtr<RndTransformable, ObjectDir> mHand;
-    ObjPtr<RndTransformable, ObjectDir> mTwist2;
-    float mOffset;
-    float mBias;
+    ObjPtr<RndTransformable, ObjectDir> mHand; // 0x10
+    ObjPtr<RndTransformable, ObjectDir> mTwist2; // 0x1c
+    float mOffset; // 0x28
+    float mBias; // 0x2c
 };
 
 #endif

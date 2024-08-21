@@ -19,6 +19,7 @@ public:
             force.Zero();
             lastFriction.Zero();
             lastZ.Zero();
+            unk5c.Zero();
         }
 
         Vector3 pos; // 0x0
@@ -31,9 +32,7 @@ public:
         float radius; // 0x50
         float outerRadius; // 0x54
         float sideLength; // 0x58
-        float collide; // 0x5c
-        float unk60; // 0x60
-        float unk64; // 0x64
+        Vector3 unk5c; // 0x5c
     };
 
     class Strand {

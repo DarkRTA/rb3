@@ -256,8 +256,10 @@ void CharEyes::ToggleInterestsDebugOverlay(){
 BEGIN_HANDLERS(CharEyes)
     HANDLE(add_interest, OnAddInterest)
     HANDLE_ACTION(force_blink, ForceBlink())
+#ifdef VERSION_SZBE69_B8
     HANDLE(toggle_force_focus, OnToggleForceFocus)
     HANDLE(toggle_interest_overlay, OnToggleInterestOverlay)
+#endif
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x660)
 END_HANDLERS
@@ -322,6 +324,7 @@ BEGIN_PROPSYNCS(CharEyes)
     }
     SYNC_PROP(head_lookat, mHeadLookAt)
     SYNC_PROP(max_extrapolation, mMaxExtrapolation)
+#ifdef VERSION_SZBE69_B8
     SYNC_PROP(disable_eye_dart, sDisableEyeDart)
     SYNC_PROP(disable_eye_jitter, sDisableEyeJitter)
     SYNC_PROP(disable_interest_objects, sDisableInterestObjects)
@@ -367,6 +370,7 @@ BEGIN_PROPSYNCS(CharEyes)
             return PropSync(mInterestFilterFlags, _val, _prop, _i, _op);
         }
     }
+#endif
     SYNC_PROP(min_target_dist, mMinTargetDist)
     SYNC_PROP(ulid_track_up, mUpperLidTrackUp)
     SYNC_PROP(ulid_track_down, mUpperLidTrackDown)

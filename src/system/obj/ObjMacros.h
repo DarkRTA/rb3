@@ -285,9 +285,13 @@ void objType::Load(BinStream& bs){
         MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
     }
 
-#define ASSERT_REVS(rev1, rev2) \
-    ASSERT_REV(rev1) \
-    ASSERT_ALTREV(rev2)
+#ifdef VERSION_SZBE69_B8
+    #define ASSERT_REVS(rev1, rev2) \
+        ASSERT_REV(rev1) \
+        ASSERT_ALTREV(rev2)
+#else
+    #define ASSERT_REVS(rev1, rev2)
+#endif
 
 // for loading in a version number that isn't a class's gRev/gAltRev
 #define ASSERT_GLOBAL_REV(ver, rev_name) \

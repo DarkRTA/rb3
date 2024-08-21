@@ -11,7 +11,7 @@ public:
 
     void Set(const std::vector<CharBones::Bone>&, int, CharBones::CompressionType);
     void Clone(const CharBonesSamples&);
-    int AllocateSize();
+    int AllocateSize(){ return mTotalSize * mNumSamples; }
     void RotateBy(CharBones&, int);
     void RotateTo(CharBones&, float, int, float);
     void ScaleAddSample(CharBones&, float, int, float);

@@ -1,6 +1,7 @@
 #ifndef MATH_MTX_H
 #define MATH_MTX_H
 #include "math/Vec.h"
+#include "math/Trig.h"
 #include "obj/Data.h"
 #include "utl/BinStream.h"
 #include "decomp.h"
@@ -15,7 +16,7 @@ namespace Hmx {
         Vector3 z;
 
         // all of these are weak
-        Matrix3();
+        Matrix3(){}
 
         Matrix3(const Matrix3& mtx){
             x = mtx.x; y = mtx.y; z = mtx.z;
@@ -36,6 +37,21 @@ namespace Hmx {
             x.Zero();
             y.Zero();
             z.Zero();
+        }
+        void RotateAboutZ(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f);
+        }
+        void RotateAboutY(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, 0.0f, -s, 0.0f, 1.0f, 0.0f, s, 0.0f, c);
+        }
+        void RotateAboutX(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(1.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, -s, c);
         }
         RETAIL_DONT_INLINE_CLASS void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
@@ -64,8 +80,6 @@ namespace Hmx {
         }
 
     };
-
-    RETAIL_DONT_INLINE_FUNC Matrix3::Matrix3(){}
 
     class Quat {
     public:
@@ -262,6 +276,7 @@ void FastInvert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
+void Multiply(const Transform&, const Vector3&, Vector3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(

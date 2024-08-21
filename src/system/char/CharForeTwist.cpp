@@ -1,10 +1,37 @@
 #include "char/CharForeTwist.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharForeTwist)
 
 CharForeTwist::CharForeTwist() : mHand(this, 0), mTwist2(this, 0), mOffset(0.0f), mBias(0.0f) {
 
+}
+
+void CharForeTwist::Poll(){
+    if(!mHand || !mTwist2 || !mHand->TransParent() || !mTwist2->TransParent()) return;
+    Transform& parentxfm = mHand->TransParent()->WorldXfm();
+    Transform& handxfm = mHand->WorldXfm();
+    float clamped = Clamp(-1.0f, 1.0f, Dot(handxfm.m.z, parentxfm.m.y));
+    Vector3 v98;
+    Cross(parentxfm.m.y, handxfm.m.z, v98);
+    float clamp2 = Clamp(-1.0f, 1.0f, Dot(parentxfm.m.x, v98));
+    float newbias = mBias * DEG2RAD;
+    float tan2res = std::atan2(clamp2, clamped);
+    float angle = NormalizeAngle(newbias + mOffset * DEG2RAD + tan2res);
+    float finalfloat = angle - newbias;
+    Hmx::Matrix3 m58;
+    m58.RotateAboutX(finalfloat * 0.33333f);
+    RndTransformable* twistparent = mTwist2->TransParent();
+    Transform tf88;
+    tf88.v = parentxfm.v;
+    Multiply(m58, parentxfm.m, tf88.m);
+    twistparent->SetWorldXfm(tf88);
+    RndTransformable* hand = mHand;
+    RndTransformable* twist2 = mTwist2;
+    Interp(tf88.v, handxfm.v, twist2->mLocalXfm.v.x / hand->mLocalXfm.v.x, tf88.v);
+    Multiply(m58, tf88.m, tf88.m);
+    mTwist2->SetWorldXfm(tf88);
 }
 
 void CharForeTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){

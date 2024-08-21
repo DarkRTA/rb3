@@ -20,17 +20,15 @@ void CharBonesSamples::Set(const std::vector<CharBones::Bone>& bones, int i, Cha
     mNumSamples = i;
     AddBones(bones);
     _MemFree(mRawData);
-    mRawData = (char*)_MemAlloc(mTotalSize * mNumSamples, 0);
+    mRawData = (char*)_MemAlloc(AllocateSize(), 0);
     mFrames.clear();
 }
 
 void CharBonesSamples::Clone(const CharBonesSamples& samp){
     Set(samp.mBones, samp.mNumSamples, samp.mCompression);
-    memcpy(mRawData, samp.mRawData, mTotalSize * mNumSamples);
+    memcpy(mRawData, samp.mRawData, AllocateSize());
     mFrames = samp.mFrames;
 }
-
-int CharBonesSamples::AllocateSize(){ return mTotalSize * mNumSamples; }
 
 void CharBonesSamples::RotateBy(CharBones& bones, int i){
     mStart = &mRawData[mTotalSize * i];
@@ -56,7 +54,7 @@ void CharBonesSamples::ScaleAddSample(CharBones& bones, float f1, int i, float f
 }
 
 void CharBonesSamples::Print(){
-    MILO_LOG("samples: %d size: %d address: %x compression %d\n", mNumSamples, mTotalSize * mNumSamples, (int)mRawData, mCompression);
+    MILO_LOG("samples: %d size: %d address: %x compression %d\n", mNumSamples, AllocateSize(), (int)mRawData, mCompression);
     if(mNumSamples == 0){
         TheDebug << "Bones:\n";
         for(int i = 0; i < mBones.size(); i++){
@@ -90,10 +88,7 @@ void CharBonesSamples::Load(BinStream& bs){
 }
 
 void CharBonesSamples::SetPreview(int i){
-    int tmp = mNumSamples - 1;
-    if(i <= tmp){
-        tmp = i & ~(i >> 0x1F);
-    }
+    int tmp = Clamp(0, mNumSamples - 1, i);
     MILO_ASSERT(mPreviewSample < 32767, 0x38B);
     mPreviewSample = tmp;
     mStart = &mRawData[mTotalSize * tmp];
