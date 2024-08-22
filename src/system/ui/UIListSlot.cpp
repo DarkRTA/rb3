@@ -1,5 +1,6 @@
 #include "ui/UIListSlot.h"
 #include "ui/UIList.h"
+#include "utl/STLHelpers.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListSlot)
@@ -13,12 +14,13 @@ UIListSlot::~UIListSlot(){
 }
 
 void UIListSlot::ClearElements(){
-    std::vector<UIListSlotElement*>::iterator it = mElements.begin();
-    std::vector<UIListSlotElement*>::iterator itEnd = mElements.end();
-    for(; it != itEnd; it++){
-        delete *it;
-    }
-    mElements.clear();
+    // std::vector<UIListSlotElement*>::iterator it = mElements.begin();
+    // std::vector<UIListSlotElement*>::iterator itEnd = mElements.end();
+    // for(; it != itEnd; it++){
+    //     delete *it;
+    // }
+    // mElements.clear();
+    VectorClear(mElements);
     delete mNextElement;
     mNextElement = 0;
 }

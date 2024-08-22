@@ -2,6 +2,12 @@
 #define UTL_STLHELPERS_H
 #include <vector>
 
+template <class T1, class T2>
+inline void VectorClear(std::vector<T1, T2>& vec){
+    DeleteRange(vec.begin(), vec.end());
+    vec.clear();
+}
+
 template <class Iter>
 inline void DeleteRange(Iter begin, Iter end) {
     for (; begin != end; begin++) {
