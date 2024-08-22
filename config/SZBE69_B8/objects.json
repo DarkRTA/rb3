@@ -829,8 +829,7 @@
             "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
 
             "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
-
-            "sdk/RVL_SDK/revolution/wpad/WPAD.c": "NonMatching",    
+    
             "sdk/RVL_SDK/revolution/wpad/WPADHIDParser.c": "NonMatching",
             "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "Matching",
             "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "Matching",
