@@ -1339,8 +1339,11 @@ system/ui/UIScreen.cpp:
 system/ui/UISlider.cpp:
 	.text       start:0x80578834 end:0x80579944
 
+system/ui/UITransitionHandler.cpp:
+	.text       start:0x80579944 end:0x80579F10
+
 rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x80579944 end:0x80581A8C
+	.text       start:0x80579F10 end:0x80581A8C
 
 system/world/Crowd.cpp:
 	.text       start:0x8058D868 end:0x80597134
