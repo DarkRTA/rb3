@@ -53,7 +53,7 @@ void UIComponent::SetState(UIComponent::State s) {
 }
 
 void UIComponent::SetTypeDef(DataArray* da) {
-    if(!da && strlen(mResourcePath.c_str()) == 0){
+    if(!da && mResourcePath.length() == 0){
         DataArray* cfg = SystemConfig("objects", ClassName());
         DataArray* found = cfg->FindArray("init", false);
         if(found){
@@ -179,8 +179,8 @@ void UIComponent::SendSelect(LocalUser* user){
     if(mState == kFocused){
         SetState(kSelecting);
         static UIComponentSelectMsg select_msg(0, 0);
-        UNCONST_ARRAY(select_msg)->Node(2) = DataNode(this);
-        UNCONST_ARRAY(select_msg)->Node(3) = DataNode(user);
+        select_msg[0] = DataNode(this);
+        select_msg[1] = DataNode(user);
         TheUI->Handle(select_msg, false);
         if(mState != kSelecting) unk_0xD4 = 0;
         else {
@@ -336,8 +336,8 @@ void UIComponent::FinishSelecting(){
     if(mState != kDisabled && mState != kNormal) SetState(kFocused);
     if(!mMockSelect && unk_0xD4 == TheUI->mCurrentScreen){
         static UIComponentSelectDoneMsg select_msg(this, 0);
-        UNCONST_ARRAY(select_msg)->Node(2) = DataNode(this);
-        UNCONST_ARRAY(select_msg)->Node(3) = DataNode(mSelectingUser);
+        select_msg[0] = DataNode(this);
+        select_msg[1] = DataNode(mSelectingUser);
         TheUI->Handle(select_msg, false);
     }
     else mMockSelect = false;
@@ -345,7 +345,7 @@ void UIComponent::FinishSelecting(){
 #pragma pop
 
 BEGIN_HANDLERS(UIComponent)
-    HANDLE_EXPR(get_state, mState)
+    HANDLE_EXPR(get_state, GetState())
     HANDLE_ACTION(set_state, SetState((UIComponent::State)_msg->Int(2)))
     HANDLE_EXPR(can_have_focus, CanHaveFocus())
     HANDLE_EXPR(get_resource_dir, ResourceDir())
