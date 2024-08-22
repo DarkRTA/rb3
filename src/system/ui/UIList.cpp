@@ -39,6 +39,7 @@ UIList::~UIList(){
     for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
         if(*it == this){
             it = sUIListSet.erase(it);
+            break;
         }
     }
     DeleteAll(mWidgets);

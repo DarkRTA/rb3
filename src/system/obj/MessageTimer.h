@@ -3,6 +3,7 @@
 #include "os/Timer.h"
 #include "os/Debug.h"
 #include "utl/Symbol.h"
+#include "utl/STLHelpers.h"
 
 class ObjEntry {
 public:
@@ -20,6 +21,12 @@ class EventEntry {
 public:
     Symbol msgs; // 0x0
     std::vector<ObjEntry*> objs; // 0x4
+
+    ~EventEntry() {
+        for (int i = 0; i < objs.size(); i++) {
+            delete objs[i];
+        }
+    }
 
     void Dump(){
         float total = 0.0f;
