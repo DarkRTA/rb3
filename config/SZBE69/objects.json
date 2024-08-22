@@ -116,7 +116,7 @@
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp": "NonMatching",
 
-            "system/os/AppChild.cpp": "Matching",
+            "system/os/AppChild.cpp": "Equivalent",
             "system/os/ArkFile.cpp": {"status": "NonMatching", "extra_cflags": ["-ipa function"]},
             "system/os/NetStream.cpp": "NonMatching",
 
