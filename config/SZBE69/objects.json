@@ -175,6 +175,8 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
 
+            "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
+            "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
