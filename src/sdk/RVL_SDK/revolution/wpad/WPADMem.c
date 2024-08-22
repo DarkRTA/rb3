@@ -1,6 +1,5 @@
 #include <revolution/WPAD/WPADMem.h>
 #include "WPADMem.h"
-#if 0
 
 /*******************************************************************************
  * headers
@@ -9,12 +8,9 @@
 #include <types.h>
 
 #include "WPAD.h"
+#include "WPAD2.h"
 
-#if 0
 #include <revolution/OS/OSInterrupt.h>
-#endif
-
-#include "context_rvl.h"
 
 /*******************************************************************************
  * functions
@@ -70,4 +66,3 @@ end:
 
 	return status;
 }
-#endif

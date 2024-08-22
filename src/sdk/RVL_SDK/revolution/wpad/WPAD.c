@@ -1,5 +1,5 @@
 #include <revolution/wpad/WPAD.h>
-#if 0
+
 /*******************************************************************************
  * headers
  */
@@ -4259,4 +4259,3 @@ static void __wpadCertWork(WPADChannel chan)
 		__wpadCertFailed(chan);
 	}
 }
-#endif

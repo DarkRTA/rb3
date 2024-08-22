@@ -12,6 +12,7 @@
 #include "lint.h" // ULONG
 #include "WPADHIDParser.h" // RPT_MAX_SIZE
 #include "WPADMem.h"
+#include "WPADMem2.h"
 
 
 #include <revolution/OS/OSTime.h>

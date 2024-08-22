@@ -8,17 +8,18 @@
 
 AppChild* TheAppChild;
 
-static DataNode EnableAppChild(DataArray* array){
-    if(TheAppChild) TheAppChild->mEnabled = true;
+
+static DataNode EnableAppChild(DataArray*){
+    if(TheAppChild) TheAppChild->SetEnabled(true);
     return DataNode(0);
 }
 
-static DataNode DisableAppChild(DataArray* array){
-    if(TheAppChild) TheAppChild->mEnabled = false;
+static DataNode DisableAppChild(DataArray*){
+    if(TheAppChild) TheAppChild->SetEnabled(false);
     return DataNode(0);
 }
 
-static DataNode SyncAppChild(DataArray* array){
+static DataNode SyncAppChild(DataArray*){
     if(TheAppChild) TheAppChild->Sync();
     return DataNode(0);
 }
@@ -41,20 +42,25 @@ void AppChild::Terminate(){
 }
 
 AppChild::AppChild(const char* str) : mEnabled(1), mStream(0), mSync(0) {
-    unsigned int theIP = HolmesResolveIP();
-    NetAddress addr(theIP, 0x11BF);
+    NetAddress addr(HolmesResolveIP().mIP, 0x11BF);
     NetStream* net = new NetStream();
     net->ClientConnect(addr);
     mStream = net;
-    TheDebug << MakeString("AppChild::Connect\n");
+    MILO_LOG("AppChild::Connect\n");
 }
+
+#ifndef MILO_DEBUG
+NetAddress HolmesResolveIP() { // why
+    return NetAddress();
+}
+#endif
 
 AppChild::~AppChild(){
     delete mStream;
 }
 
 void AppChild::Sync(){
-    unsigned short lol = 1;
+    short lol = 1;
     *mStream << lol;
     mStream->Flush();
     mSync = true;
@@ -70,7 +76,7 @@ void AppChild::Poll(){
     if(!mStream) return;
     while(mEnabled && !mSync){
         DataArrayPtr cmd;
-        cmd.mData->Load(*mStream);
+        *mStream >> cmd;
         cmd.mData->Execute();
     }
     mSync = false;

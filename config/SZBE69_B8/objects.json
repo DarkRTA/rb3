@@ -55,6 +55,7 @@
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
+            "band3/tour/QuestJournal.cpp": "Matching",
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourProgress.cpp": "NonMatching",
@@ -115,9 +116,9 @@
             "network/Platform/Log.cpp": "NonMatching",
             "network/Platform/LogDeviceDebugOutput.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
-            "network/Platform/MutexPrimitive.cpp": "NonMatching",
+            "network/Platform/MutexPrimitive.cpp": "Matching",
             "network/Platform/OutputFormat.cpp": "NonMatching",
-            "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
+            "network/Platform/RandomNumberGenerator.cpp": "Matching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
             "network/Platform/Result.cpp": "Matching",
             "network/Platform/RootObject.cpp": "Matching",
@@ -134,6 +135,7 @@
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": {
                 "status": "Equivalent",
                 "comment": "Stack mismatches in MiniLeaderboardDisplay::Init()"
@@ -323,12 +325,12 @@
                 "status": "LinkIssues",
                 "comment": "TextFile::SetType(Symbol)::types swapped with TextFile::Handle(DataArray*, bool)::_s"
             },
-            "system/obj/TypeProps.cpp":  "Matching",
+            "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
             "system/oggvorbis/VorbisMem.cpp": "NonMatching",
 
-            "system/os/AppChild.cpp": "NonMatching",
+            "system/os/AppChild.cpp": "Matching",
             "system/os/Archive.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncFile.cpp": "NonMatching",
@@ -815,6 +817,8 @@
         "objects": {
             "sdk/RVL_SDK/revolution/base/PPCArch.c": "Matching",
 
+            "sdk/RVL_SDK/revolution/dsp/dsp_debug.c": "Matching",
+
             "sdk/RVL_SDK/revolution/gx/GXBump.c": "NonMatching",
             "sdk/RVL_SDK/revolution/gx/GXDisplayList.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXGeometry.c": "Matching",
@@ -825,14 +829,11 @@
             "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
 
             "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
-
-            "sdk/RVL_SDK/revolution/wpad/WPAD.c": "NonMatching",    
+    
             "sdk/RVL_SDK/revolution/wpad/WPADHIDParser.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "Matching",
+            "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "Matching",
             "sdk/RVL_SDK/revolution/wpad/lint.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WUD.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WUDHidHost.c": "NonMatching",
 
             "sdk/RVL_SDK/revolution/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c": "Matching"

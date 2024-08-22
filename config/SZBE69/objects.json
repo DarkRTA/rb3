@@ -116,6 +116,10 @@
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp": "NonMatching",
 
+            "system/os/AppChild.cpp": "Matching",
+            "system/os/ArkFile.cpp": {"status": "NonMatching", "extra_cflags": ["-ipa function"]},
+            "system/os/NetStream.cpp": "NonMatching",
+
             "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
             "system/rndobj/Anim.cpp": "NonMatching",
             "system/rndobj/AnimFilter.cpp": "NonMatching",
@@ -167,11 +171,16 @@
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
+            "system/rndwii/Rnd.cpp": "NonMatching",
+
             "system/synth/ADSR.cpp": "NonMatching",
 
             "system/ui/UIButton.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
             
+            "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
+            "system/utl/ChunkIDs.cpp": "Matching",
+            "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/Messages.cpp": "NonMatching",
             "system/utl/Messages2.cpp": "NonMatching",
             "system/utl/Messages3.cpp": "NonMatching",

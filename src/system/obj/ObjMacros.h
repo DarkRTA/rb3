@@ -337,6 +337,11 @@ void objType::Load(BinStream& bs){
 #define REGISTER_OBJ_FACTORY(objType) \
     Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
 
+#define REGISTER_OBJ_FACTORY_FUNC(objType) \
+    void objType::Register() { \
+        REGISTER_OBJ_FACTORY(objType)\
+    }
+
 // END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
 
 #endif

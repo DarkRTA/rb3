@@ -1,6 +1,6 @@
 #include "WPADHIDParser.h"
 
-#if 0
+
 /*******************************************************************************
  * headers
  */
@@ -12,17 +12,15 @@
 #include <types.h>
 
 #include "WPAD.h"
+#include "WPAD2.h"
 #include "WPADEncrypt.h"
 #include <revolution/WPAD/WUD.h> // WUDIsLinkedWBC
 
-#if 0
 #include <revolution/OS/OS.h> // __OSInIPL
 #include <revolution/OS/OSCrc.h> // OSCalcCRC32
 #include <revolution/OS/OSInterrupt.h>
-#endif
 
 #include "context_bte.h" // UINT8
-#include "context_rvl.h"
 
 /*******************************************************************************
  * constants
@@ -2792,4 +2790,3 @@ static void __wpadCertReset(WPADChannel chan)
 
 	p_wpd->wmParamOffset = 0;
 }
-#endif

@@ -160,8 +160,17 @@ public:
             static DebugNotifyOncer _dw; \
             _dw << MakeString(__VA_ARGS__); \
         }
+    #define MILO_LOG_ONCE(...){\
+        static char _dw[256];\
+        const char* str = MakeString(__VA_ARGS__);\
+        if (strcmp(_dw, str) != 0) {\
+            strcpy(_dw, str);\
+            TheDebug.Print(str);\
+        }\
+    }
 #else
-    #define MILO_NOTIFY_ONCE(...){}
+    #define MILO_NOTIFY_ONCE(...) (void)(__VA_ARGS__)
+    #define MILO_LOG_ONCE(...) (void)(__VA_ARGS__)
 #endif
 
 #endif

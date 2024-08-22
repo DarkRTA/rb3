@@ -549,6 +549,8 @@ system/math/Key.cpp:
 
 system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
+	.data       start:0x80851620 end:0x80851668
+	.bss        start:0x80902228 end:0x8090222C
 
 system/os/Archive.cpp:
 	.text       start:0x802E4984 end:0x802E72CC
@@ -1701,7 +1703,7 @@ libs/speex/libspeex/vbr.c:
 libs/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
-system/wiirnd/WiiRnd.cpp:
+system/rndwii/Rnd.cpp:
 	.text       start:0x806B8438 end:0x806BDD84
 	.ctors      start:0x807F0040 end:0x807F0044
 	.sbss       start:0x808E4E70 end:0x808E4E74

@@ -194,7 +194,8 @@
             "base": "base",
             "flags": [
                 "-func_align 16",
-                "-O4,p"
+                "-O4,p",
+                "-lang=c99"
             ]
         },
         "sdk/RVL_SDK/bte": {
