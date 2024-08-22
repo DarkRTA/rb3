@@ -190,6 +190,8 @@
             "system/ui/UIListArrow.cpp": "NonMatching",
             "system/ui/UIListCustom.cpp": "NonMatching",
             "system/ui/UIListDir.cpp": "NonMatching",
+            "system/ui/UIListHighlight.cpp": "NonMatching",
+            "system/ui/UIListLabel.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
             
             "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
