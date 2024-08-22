@@ -29,9 +29,9 @@ std::list<UIList*> sUIListSet;
 
 INIT_REVS(UIList)
 
-UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0), 
-    mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull), 
-    mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
+UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0),
+    mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull),
+    mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1),
     unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), mDrawManuallyControlledWidgets(0),
     unk_0x1E6(0), mNeedsGarbageCollection(0) {}
 
@@ -41,8 +41,7 @@ UIList::~UIList(){
             it = sUIListSet.erase(it);
         }
     }
-    DeleteRange(mWidgets.begin(), mWidgets.end());
-    mWidgets.clear();
+    DeleteAll(mWidgets);
     delete mDataProvider;
     mDataProvider = 0;
 }
@@ -567,7 +566,7 @@ DataNode UIList::OnMsg(const ButtonDownMsg& msg){
                 return DataNode(1);
             }
             if(ScrollDirection(msg, cntType, sub->mListDir->Orientation() == kUIListVertical, sub->mListState.mGridSpan) == kAction_Confirm){
-            
+
             }
         }
     }
