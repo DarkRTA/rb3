@@ -1345,8 +1345,14 @@ system/ui/UITransitionHandler.cpp:
 system/ui/UITrigger.cpp:
 	.text       start:0x80579F10 end:0x8057CDBC
 
+system/ui/UIGuide.cpp:
+	.text       start:0x8057CDBC end:0x8057D224
+
+system/ui/Utl.cpp:
+	.text       start:0x8057D224 end:0x8057D398
+
 rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x8057CDBC end:0x80581A8C
+	.text       start:0x8057D398 end:0x80581A8C
 
 system/world/Crowd.cpp:
 	.text       start:0x8058D868 end:0x80597134

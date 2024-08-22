@@ -206,6 +206,7 @@
             "system/ui/UISlider.cpp": "NonMatching",
             "system/ui/UITransitionHandler.cpp": "NonMatching",
             "system/ui/UITrigger.cpp": "NonMatching",
+            "system/ui/UIGuide.cpp": "NonMatching",
             
             "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
             "system/utl/ChunkIDs.cpp": "Matching",
