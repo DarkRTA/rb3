@@ -24,6 +24,7 @@ public:
     void PlayEndOfAnims();
     void StopAnimations();
     bool IsBlocking() const;
+    bool IsDone() const { return mEndTime <= TheTaskMgr.UISeconds(); }
 
     DECLARE_REVS;
 
