@@ -1273,6 +1273,9 @@ system/ui/UILabel.cpp:
 system/ui/UIFontImporter.cpp:
 	.text       start:0x8055A388 end:0x8055F3A8
 
+system/ui/UIGridProvider.cpp:
+	.text       start:0x8055F3A8 end:0x8055FE3C
+
 system/ui/UILabelDir.cpp:
 	.text       start:0x8055FE3C end:0x805618F0
 
