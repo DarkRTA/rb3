@@ -199,6 +199,7 @@
             "system/ui/UIListSubList.cpp": "NonMatching",
             "system/ui/UIListWidget.cpp": "NonMatching",
             "system/ui/UIPanel.cpp": "NonMatching",
+            "system/ui/UIPicture.cpp": "NonMatching",
             
             "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
             "system/utl/ChunkIDs.cpp": "Matching",

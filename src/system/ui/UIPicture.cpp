@@ -27,7 +27,7 @@ void UIPicture::SetTypeDef(DataArray* da) {
             DataArray* findtex = da->FindArray("tex_file", false);
             if(findtex){
                 if(strlen(findtex->Str(1)) != 0){
-                    FilePath fp(FileGetPath(findtex->mFile.Str(), 0), findtex->Str(1));
+                    FilePath fp(FileGetPath(findtex->File(), 0), findtex->Str(1));
                     SetTex(fp);
                 }
             }
@@ -103,7 +103,7 @@ void UIPicture::FinishValueChange() {
         FinishLoading();
         UITransitionHandler::FinishValueChange();
     }
-    else if(mMesh) mMesh->mShowing = false;
+    else if(mMesh) mMesh->SetShowing(false);
 }
 
 void UIPicture::SetTex(const FilePath& p) {
@@ -158,14 +158,14 @@ void UIPicture::HookupMesh() {
                 MILO_WARN("%s does not have material", mMesh->Name());
             }
         }
-        mMesh->mShowing = true;
+        mMesh->SetShowing(true);
     }
 }
 
 void UIPicture::SetHookTex(bool b) {
     mHookTex = b;
     if (b == 0) return;
-    mLoadedFile.Set(FilePath::sRoot.c_str(), "");
+    mLoadedFile.SetRoot("");
 }
 
 BEGIN_HANDLERS(UIPicture)
