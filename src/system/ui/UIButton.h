@@ -25,6 +25,9 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
+    static void Register(){
+        REGISTER_OBJ_FACTORY(UIButton);
+    }
     static void Init();
     static Hmx::Object* NewObject();
 
