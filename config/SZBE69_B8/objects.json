@@ -835,8 +835,6 @@
             "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "Matching",
             "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "Matching",
             "sdk/RVL_SDK/revolution/wpad/lint.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WUD.c": "NonMatching",
-            "sdk/RVL_SDK/revolution/wpad/WUDHidHost.c": "NonMatching",
 
             "sdk/RVL_SDK/revolution/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c": "Matching"
