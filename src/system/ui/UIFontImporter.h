@@ -49,6 +49,8 @@ public:
     int GetMatVariationIdx(Symbol) const;
     RndMat* GetMatVariation(unsigned int) const;
     int NumMatVariations() const { return mMatVariations.size(); }
+    int NumGennedFonts() const { return mGennedFonts.size(); }
+    bool HandMadeFontExists() const { return mHandmadeFont; }
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);
