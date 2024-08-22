@@ -77,7 +77,7 @@ BEGIN_HANDLERS(UIScreen)
     HANDLE_ACTION(foreach_panel, ForeachPanel(_msg))
     HANDLE_EXPR(exiting, Exiting())
     HANDLE_SUPERCLASS(Hmx::Object)
-    HANDLE_MEMBER_PTR(mFocusPanel)
+    HANDLE_MEMBER_PTR(FocusPanel())
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_CHECK(0x75)
 END_HANDLERS
@@ -121,7 +121,7 @@ void UIScreen::Poll() {
     HandleType(poll_msg);
 
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && !it->mPanel->mPaused) {
+        if (it->Active() && !it->mPanel->Paused()) {
             it->mPanel->Poll();
         }
     }
@@ -137,13 +137,13 @@ void UIScreen::Enter(UIScreen* from) {
     }
 
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState == UIPanel::kDown) {
+        if (it->Active() && it->mPanel->GetState() == UIPanel::kDown) {
             it->mPanel->Enter();
         }
     }
 
     static Message msg("enter", 0);
-    msg.mData->Node(2) = from;
+    msg[0] = from;
     HandleType(msg);
     Poll();
 }
@@ -155,7 +155,7 @@ void UIScreen::Draw() {
     }
 
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mShowing) {
+        if (it->Active() && it->mPanel->Showing()) {
             it->mPanel->Draw();
         }
     }
@@ -174,7 +174,7 @@ void UIScreen::SetFocusPanel(class UIPanel* panel) {
 bool UIScreen::InComponentSelect() const {
     UIComponent* component = TheUI->FocusComponent();
     if (component != NULL) {
-        return component->mState == UIComponent::kSelecting;
+        return component->GetState() == UIComponent::kSelecting;
     }
 
     return false;
@@ -217,7 +217,7 @@ bool UIScreen::AddPanel(class UIPanel* panel, bool alwaysLoad) {
 
 void UIScreen::Exit(UIScreen* to) {
     static Message msg("exit", 0);
-    msg.mData->Node(2) = to;
+    msg[0] = to;
     HandleType(msg);
 
     if (to != NULL) {
@@ -229,8 +229,8 @@ void UIScreen::Exit(UIScreen* to) {
             continue;
         }
 
-        if ((it->mPanel->mForceExit || to == NULL || !to->HasPanel(it->mPanel))
-            && it->mPanel->mState == UIPanel::kUp) {
+        if ((it->mPanel->ForceExit() || to == NULL || !to->HasPanel(it->mPanel))
+            && it->mPanel->GetState() == UIPanel::kUp) {
             it->mPanel->Exit();
         }
     }
@@ -270,7 +270,7 @@ void UIScreen::SetShowing(bool show) {
 
 void UIScreen::LoadPanels() {
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->mAlwaysLoad || it->mPanel->mLoadRefs != 0) {
+        if (it->mAlwaysLoad || it->mPanel->IsReferenced()) {
             it->mPanel->CheckLoad();
             it->mLoaded = true;
         } else {
@@ -301,7 +301,7 @@ bool UIScreen::CheckIsLoaded() {
 
 bool UIScreen::IsLoaded() const {
     for (const_iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState == UIPanel::kUnloaded) {
+        if (it->Active() && it->mPanel->GetState() == UIPanel::kUnloaded) {
             return false;
         }
     }
@@ -317,7 +317,7 @@ bool UIScreen::IsLoaded() const {
 
 bool UIScreen::AllPanelsDown() {
     for (const_iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
-        if (it->Active() && it->mPanel->mState != UIPanel::kDown) {
+        if (it->Active() && it->mPanel->GetState() != UIPanel::kDown) {
             return false;
         }
     }

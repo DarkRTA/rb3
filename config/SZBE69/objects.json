@@ -201,6 +201,8 @@
             "system/ui/UIPanel.cpp": "NonMatching",
             "system/ui/UIPicture.cpp": "NonMatching",
             "system/ui/UIProxy.cpp": "NonMatching",
+            "system/ui/UIResource.cpp": "NonMatching",
+            "system/ui/UIScreen.cpp": "NonMatching",
             
             "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
             "system/utl/ChunkIDs.cpp": "Matching",
