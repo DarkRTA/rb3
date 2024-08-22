@@ -1327,8 +1327,11 @@ system/ui/UIPanel.cpp:
 system/ui/UIPicture.cpp:
 	.text       start:0x8057464C end:0x80575698
 
+system/ui/UIProxy.cpp:
+	.text       start:0x80575698 end:0x80576798
+
 rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x80575698 end:0x80581A8C
+	.text       start:0x80576798 end:0x80581A8C
 
 system/world/Crowd.cpp:
 	.text       start:0x8058D868 end:0x80597134
