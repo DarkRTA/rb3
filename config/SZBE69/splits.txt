@@ -1307,8 +1307,11 @@ system/ui/UIListMesh.cpp:
 system/ui/UIListProvider.cpp:
 	.text       start:0x8056E024 end:0x8056E734
 
+system/ui/UIListSlot.cpp:
+	.text       start:0x8056E734 end:0x8056F2EC
+
 rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x8056E734 end:0x805715CC
+	.text       start:0x8056F2EC end:0x805715CC
 
 system/ui/UIListWidget.cpp:
 	.text       start:0x805715CC end:0x805732E0
