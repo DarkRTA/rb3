@@ -29,12 +29,20 @@ public:
     DataNode OnMsg(const ButtonDownMsg&);
 
     void SyncSlider();
-    int Current() const;
     float Frame() const;
     void SetNumSteps(int);
     void SetFrame(float);
 
+#ifdef VERSION_SZBE69_B8
+    int Current() const;
+#else
+    int Current() const { return mCurrent; }
+#endif
+
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(UISlider);
+    }
     NEW_OBJ(UISlider);
 
     DECLARE_REVS;

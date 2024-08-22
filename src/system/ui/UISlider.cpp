@@ -15,7 +15,7 @@ UISlider::UISlider() : mCurrent(0), mNumSteps(10), mVertical(0) {
 
 void UISlider::Init(){
     TheUI->InitResources("UISlider");
-    REGISTER_OBJ_FACTORY(UISlider);
+    Register();
 }
 
 BEGIN_COPYS(UISlider)
@@ -71,7 +71,9 @@ int UISlider::CollidePlane(const Plane& pl){
     return dir->CollidePlane(pl);
 }
 
+#ifdef VERSION_SZBE69_B8
 int UISlider::Current() const { return mCurrent; }
+#endif
 
 float UISlider::Frame() const {
     if(mNumSteps == 1) return 0.0f;
@@ -105,7 +107,13 @@ void UISlider::SetFrame(float frame){
     mCurrent = frame * (mNumSteps - 1) + 0.5f;
 }
 
-int UISlider::SelectedAux() const { return mCurrent; }
+int UISlider::SelectedAux() const {
+#ifdef VERSION_SZBE69_B8
+    return mCurrent;
+#else
+    return Current();
+#endif
+}
 void UISlider::SetSelectedAux(int i){
     SetCurrent(i);
 }
@@ -128,7 +136,7 @@ BEGIN_HANDLERS(UISlider)
 END_HANDLERS
 
 DataNode UISlider::OnMsg(const ButtonDownMsg& msg){
-    Symbol cnttype = JoypadControllerTypePadNum(UNCONST_ARRAY(msg)->Int(5));
+    Symbol cnttype = JoypadControllerTypePadNum(msg.GetPadNum());
     if(CanScroll()){
         JoypadAction act = ScrollDirection(msg, cnttype, mVertical, 1);
         if(act != kAction_None){
