@@ -36,8 +36,10 @@ BEGIN_LOADS(UITrigger)
         RegisterEvents();
         ObjPtr<RndAnimatable, ObjectDir> animPtr(this, 0);
         bs >> animPtr;
-        // mAnims.push_back(EventTrigger::Anim(this));
         mAnims.clear();
+        mAnims.alloc_back();
+        EventTrigger::Anim& anim = mAnims.back();
+        anim.mAnim = animPtr;
     }
     else LOAD_SUPERCLASS(EventTrigger);
     bs >> mBlockTransition;
