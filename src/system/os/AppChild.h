@@ -13,6 +13,7 @@ public:
     void Sync();
     void Sync(unsigned short);
     void Poll();
+    void SetEnabled(bool b) { mEnabled = b; }
 
     static void Init();
     static void Terminate();

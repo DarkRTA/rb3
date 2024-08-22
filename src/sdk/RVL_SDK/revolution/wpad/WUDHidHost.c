@@ -1,5 +1,4 @@
 #include "WUDHidHost.h"
-#if 0
 
 /*******************************************************************************
  * headers
@@ -9,12 +8,9 @@
 
 #include "WUD.h"
 
-#if 0
-#include <revolution/OS/OSAssert.h>
-#endif
+#include <revolution/os/OSAssert.h>
 
 #include "context_bte.h"
-#include "context_rvl.h"
 
 /*******************************************************************************
  * macros
@@ -261,4 +257,3 @@ extern BOOLEAN bta_dm_co_get_compress_memory(tBTA_SYS_ID id
 
 	return ret;
 }
-#endif

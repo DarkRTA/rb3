@@ -322,4 +322,6 @@ public:
     DataNode& Node(int i) const { return mData->Node(i); }
 };
 
+inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
+
 #endif

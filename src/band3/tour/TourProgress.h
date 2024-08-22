@@ -9,12 +9,12 @@
 class TourProgress : public TourSavable, public FixedSizeSaveable {
     public:
     TourProgress();
-    virtual ~TourProgress();
     virtual DataNode Handle(DataArray*, bool);
+    virtual ~TourProgress();
+    virtual int SecBetweenUploads() const;
 
     void HandleTourRewardApplied();
     void SetOnTour(bool);
-    int SecBetweenUploads() const;
 
     QuestJournal mQuests;
 };

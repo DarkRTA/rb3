@@ -89,13 +89,13 @@ void BinStream::DisableEncryption() {
 }
 
 void BinStream::Read(void* data, int bytes){
-    unsigned char* ptr = (unsigned char*)data;
-    unsigned char* end;
     if(Fail()){
         MILO_NOTIFY_ONCE("Stream error: Can't read from %s", Name());
         memset(data, 0, bytes);
     }
     else {
+        unsigned char* ptr = (unsigned char*)data;
+        unsigned char* end;
         ReadImpl(data, bytes);
         if(mCrypto){
             end = ptr + bytes;
@@ -108,12 +108,7 @@ void BinStream::Read(void* data, int bytes){
 
 void BinStream::Write(const void* void_data, int bytes){
     if(Fail()){
-        static char _dw[256];
-        const char* str = MakeString("Stream error: Can't write to %s\n", Name());
-        if (strcmp(_dw, str) != 0) {
-            strcpy(_dw, str);
-            TheDebug.Print(str);
-        }
+        MILO_LOG_ONCE("Stream error: Can't write to %s\n", Name());
     } else {
         const unsigned char* data = (u8*)void_data;
         if (!mCrypto) {
@@ -121,11 +116,10 @@ void BinStream::Write(const void* void_data, int bytes){
         } else {
             u8 crypt[512];
             while (bytes > 0) {
-                int x = bytes < 512 ? bytes : 512;
-                u8* crypt_p = crypt;
+                int x = Min(512,bytes);
                 for (int i = 0; i < x; i++) {
                     u8 bastard = mCrypto->Int();
-                    *crypt_p++ = data[i] ^ bastard;
+                    crypt[i] = data[i] ^ bastard;
                 }
                 WriteImpl(crypt, x);
                 bytes -= 512;
@@ -203,5 +197,7 @@ void BinStream::WriteEndian(const void* void_data, int bytes){
     else Write(void_data, bytes);
 }
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(BinStream, "BinStream::AddSharedInlined is a PC dev tool only !!")
+#endif
 //void BinStream::AddSharedInlined() {}
