@@ -48,6 +48,7 @@ public:
     RndFont* GetGennedFont(Symbol) const;
     int GetMatVariationIdx(Symbol) const;
     RndMat* GetMatVariation(unsigned int) const;
+    int NumMatVariations() const { return mMatVariations.size(); }
 
     DataNode OnShowFontPicker(DataArray*);
     DataNode OnGenerate(DataArray*);

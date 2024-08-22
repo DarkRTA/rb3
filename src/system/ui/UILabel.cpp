@@ -481,7 +481,7 @@ float GetPctHeightFromTextSize(float f){
 }
 
 DataNode UILabel::OnGetMaterialVariations(const DataArray* da){
-    int count = mLabelDir->mMatVariations.size();
+    int count = mLabelDir->NumMatVariations();
     DataArray* arr = new DataArray(count + 1);
     arr->Node(0) = DataNode(Symbol());
     for(int i = 1; i <= count; i++){
@@ -495,7 +495,7 @@ DataNode UILabel::OnGetMaterialVariations(const DataArray* da){
 DataNode UILabel::OnGetAltMaterialVariations(const DataArray* da){
     if(mObjDirPtr){
         UILabelDir* labeldir = dynamic_cast<UILabelDir*>(mObjDirPtr.Ptr());
-        int count = labeldir->mMatVariations.size();
+        int count = labeldir->NumMatVariations();
         DataArray* arr = new DataArray(count + 1);
         arr->Node(0) = DataNode(Symbol());
         for(int i = 1; i <= count; i++){
@@ -521,7 +521,7 @@ BEGIN_HANDLERS(UILabel)
     HANDLE(set_int, OnSetInt)
     HANDLE_ACTION(set_float, SetFloat(_msg->Str(2), _msg->Float(3)))
     HANDLE_ACTION(center_with_label, CenterWithLabel(_msg->Obj<UILabel>(2), _msg->Int(3), _msg->Float(4)))
-    HANDLE_EXPR(has_highlight_mesh, mLabelDir->HighlighMeshGroup() != 0)
+    HANDLE_EXPR(has_highlight_mesh, HasHighlightMesh())
     HANDLE(get_material_variations, OnGetMaterialVariations)
     HANDLE(get_altmaterial_variations, OnGetAltMaterialVariations)
     HANDLE_SUPERCLASS(UIComponent)

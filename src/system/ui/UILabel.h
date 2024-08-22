@@ -12,6 +12,7 @@
 #include "utl/MemMgr.h"
 #include "obj/Dir.h"
 #include "os/DateTime.h"
+#include "ui/UILabelDir.h"
 
 class UILabelDir;
 
@@ -98,6 +99,10 @@ public:
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
+    }
+
+    bool HasHighlightMesh() const {
+        return mLabelDir->HighlighMeshGroup() != 0;
     }
 
     DataNode OnSetTokenFmt(const DataArray*);
