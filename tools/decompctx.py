@@ -118,7 +118,7 @@ class ContextArguments:
             description="Wrapper around pcpp which generates a context file usable with decomp.me, m2c, or Ghidra",
             add_help=False
         )
-        parser.add_argument("c_file", dest="c_file", nargs="?", help="File from which to create context")
+        parser.add_argument("c_file", nargs="?", help="File from which to create context")
         parser.add_argument("-h", "-help", "--help", dest="help", action="store_true")
         parser.add_argument('-D', dest='defines', metavar='macro[=val]', nargs=1, action='append', help='Predefine a macro [with the given value]')
         parser.add_argument("--strip-attributes", dest="strip_attributes", action="store_true", help="Strip __attribute__(()) directives")
