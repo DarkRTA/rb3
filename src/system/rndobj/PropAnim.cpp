@@ -259,8 +259,7 @@ bool RndPropAnim::ChangePropPath(Hmx::Object* o, DataArray* a1, DataArray* a2){
 }
 
 void RndPropAnim::RemoveKeys(){
-    DeleteRange(mPropKeys.begin(), mPropKeys.end());
-    mPropKeys.clear();
+    DeleteAll(mPropKeys);
 }
 
 PropKeys** RndPropAnim::FindKeys(Hmx::Object* o, DataArray* da){
@@ -321,7 +320,7 @@ void RndPropAnim::SetKeyVal(Hmx::Object* o, DataArray* da, float frame, const Da
                 break;
             case PropKeys::kQuat:
                 cur->AsQuatKeys().Add(
-                    Hmx::Quat(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2), node.Array(0)->Float(3)), 
+                    Hmx::Quat(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2), node.Array(0)->Float(3)),
                     frame, unique);
                 break;
             default:
