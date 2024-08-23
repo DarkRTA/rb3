@@ -23,6 +23,8 @@ public:
     void SyncMaxViewAngle();
     CharEyeDartRuleset* GetDartRulesetOverride() const;
     bool IsMatchingFilterFlags(int);
+    bool IsWithinViewCone(const Vector3&, const Vector3&);
+    float ComputeScore(const Vector3&, const Vector3&, const Vector3&, float, int, bool);
 
     float mMaxViewAngle; // 0x90
     float mPriority; // 0x94
