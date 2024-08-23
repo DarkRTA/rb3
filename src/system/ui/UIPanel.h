@@ -55,6 +55,7 @@ public:
     bool Showing() const { return mShowing; }
     void SetShowing(bool b){ mShowing = b; }
     bool IsReferenced() const { return mLoadRefs != 0; }
+    bool ForceExit() const { return mForceExit; }
 
     class PanelDir* mDir; // 0x8
     DirLoader* mLoader; // 0xc

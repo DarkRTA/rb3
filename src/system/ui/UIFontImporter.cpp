@@ -114,7 +114,7 @@ END_LOADS
 
 // fn_8055B51C - https://decomp.me/scratch/NAYDg
 void UIFontImporter::FontImporterSyncObjects(){
-    if(!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
+    if(!mDefaultMat && NumMatVariations() > 0 && mGennedFonts.size() > 0){
         for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end(); it){
             RndMat* old = *it;
             it = mMatVariations.erase(it);
@@ -160,7 +160,7 @@ void UIFontImporter::FontImporterSyncObjects(){
 
 // fn_8055B9E4 - get genned font
 RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
-    if(ui >= mGennedFonts.size()) return 0;
+    if(ui >= NumGennedFonts()) return 0;
     ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
     for (int i = 0; i < ui; i++) it++;
     return *it;
@@ -351,14 +351,14 @@ RndText* UIFontImporter::GetGennedText(Symbol s) const {
 }
 
 RndMat* UIFontImporter::GetMatVariation(unsigned int ui) const {
-    if(ui >= mMatVariations.size()) return 0;
+    if(ui >= NumMatVariations()) return 0;
     ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
     for (int i = 0; i < ui; i++) it++;
     return *it;
 }
 
 Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
-    if(ui >= mMatVariations.size()) return Symbol();
+    if(ui >= NumMatVariations()) return Symbol();
     ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
     for (int i = 0; i < ui; i++) it++;
     class String s18((*it)->Name());
@@ -369,7 +369,7 @@ Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
 }
 
 int UIFontImporter::GetMatVariationIdx(Symbol s) const {
-    int size = mMatVariations.size();
+    int size = NumMatVariations();
     for(int ret = 0; ret < size; ret++){
         if(GetMatVariationName(ret) == s) return ret;
     }
@@ -432,7 +432,7 @@ void UIFontImporter::SyncWithGennedFonts(){
 }
 
 class String UIFontImporter::GetBaseName() const {
-    if(mHandmadeFont){
+    if(HandMadeFontExists()){
         class String str(mHandmadeFont->Name());
         if(str.find(".") != String::npos){
             str = str.substr(0, str.rfind("."));

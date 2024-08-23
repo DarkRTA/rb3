@@ -6,7 +6,7 @@
 unsigned short UIColor::gRev = 0;
 unsigned short UIColor::gAltRev = 0;
 
-UIColor::UIColor() : mColor() {
+UIColor::UIColor() : mColor(1.0f,1.0f,1.0f,1.0f) {
     
 }
 

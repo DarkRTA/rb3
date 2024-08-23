@@ -65,8 +65,8 @@ void LabelNumberTicker::PostLoad(BinStream& bs){
 
 void LabelNumberTicker::UpdateDisplay(){
     if(mLabel){
-        bool textIsNull = mWrapperText == gNullStr;
-        if(!textIsNull){
+        bool textIsNull = mWrapperText != gNullStr;
+        if(textIsNull){
             mLabel->SetTokenFmt(mWrapperText, LocalizeSeparatedInt(unk130));
         }
     }

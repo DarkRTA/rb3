@@ -11,7 +11,7 @@ UIButton::UIButton() { }
 
 void UIButton::Init() {
     TheUI->InitResources("UIButton");
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    Register();
 }
 
 Hmx::Object* UIButton::NewObject() {return new UIButton;}
@@ -44,7 +44,7 @@ BEGIN_HANDLERS(UIButton)
 END_HANDLERS
 
 DataNode UIButton::OnMsg(const ButtonDownMsg& msg) {
-    if (msg.mData->Int(4) == 1 && (int)mState == UIComponent::kFocused) {
+    if (msg.GetAction() == 1 && GetState() == UIComponent::kFocused) {
         SendSelect(msg.GetUser());
         return DataNode(1);
     }

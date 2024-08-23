@@ -110,7 +110,9 @@ namespace Hmx {
 
         template <class T> static T* New(){
             T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+        #ifdef VERSION_SZBE69_B8
             if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
+        #endif
             return obj;
         }
 

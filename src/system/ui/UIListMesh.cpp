@@ -12,7 +12,7 @@ RndMat* UIListMesh::DefaultMat() const { return mDefaultMat; }
 
 UIListSlotElement* UIListMesh::CreateElement(UIList* uilist){
     MILO_ASSERT(mMesh, 0x5B);
-    return new UIListMeshElement(this, 0);
+    return new UIListMeshElement(this);
 }
 
 RndTransformable* UIListMesh::RootTrans(){ return mMesh; }
@@ -21,13 +21,16 @@ void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState&
     if(mMesh){
         float somefloat = 1.0f;
         RndMat* themat = 0;
+#ifdef VERSION_SZBE69_B8
         if(TheLoadMgr.EditMode()){
             themat = mMesh->mMat;
             if(themat) somefloat = themat->mColor.alpha;
         }
+#endif
         Transform xfm1 = mMesh->mLocalXfm;
         UIListSlot::Draw(drawstate, liststate, tf, compstate, box, cmd);
         mMesh->SetLocalXfm(xfm1);
+#ifdef VERSION_SZBE69_B8
         if(TheLoadMgr.EditMode()){
             mMesh->SetMat(themat);
             if(themat){
@@ -35,6 +38,7 @@ void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState&
                 themat->mDirty |= 1;
             }
         }
+#endif
     }
 }
 
@@ -67,7 +71,7 @@ BEGIN_PROPSYNCS(UIListMesh)
 END_PROPSYNCS
 
 inline void UIListMeshElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
-    RndMesh* mesh = mListMesh->mMesh;
+    RndMesh* mesh = mListMesh->Mesh();
     MILO_ASSERT(mesh, 0x1B);
     mesh->SetWorldXfm(tf);
     if(box){

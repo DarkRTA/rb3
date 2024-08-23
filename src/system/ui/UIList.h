@@ -93,6 +93,9 @@ public:
     DataNode OnScroll(DataArray*);
     DataNode OnSelectedSym(DataArray*);
 
+    bool Circular() const { return mListState.mCircular; }
+    int GridSpan() const { return mListState.GridSpan(); }
+
     UIListDir* mListDir; // 0x140
     std::vector<UIListWidget*> mWidgets; // 0x144
     UIListState mListState; // 0x14c

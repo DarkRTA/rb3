@@ -23,11 +23,11 @@ void UILabelDir::GetStateColor(UIComponent::State state, Hmx::Color& col) const 
     else if(mDefaultColor){
         col = mDefaultColor->GetColor();
     }
-    else col.Set(1.0f);
+    else col.Reset();
 }
 
 RndText* UILabelDir::TextObj(Symbol sym) const {
-    if (mGennedFonts.size() > 0) return GetGennedText(sym);
+    if (NumGennedFonts() > 0) return GetGennedText(sym);
     else return mTextObj;
 }
 

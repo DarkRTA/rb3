@@ -1,5 +1,6 @@
 #include "ui/UIListSlot.h"
 #include "ui/UIList.h"
+#include "utl/STLHelpers.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(UIListSlot)

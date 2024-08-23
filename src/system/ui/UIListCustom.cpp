@@ -55,7 +55,7 @@ UIListSlotElement* UIListCustom::CreateElement(UIList*) {
     return new UIListCustomElement(this, c);
 }
 
-RndTransformable* UIListCustom::RootTrans() { return dynamic_cast<RndTransformable*>(mObject.mPtr); }
+RndTransformable* UIListCustom::RootTrans() { return dynamic_cast<RndTransformable*>(mObject.Ptr()); }
 
 SAVE_OBJ(UIListCustom, 127)
 

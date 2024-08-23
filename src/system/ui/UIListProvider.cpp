@@ -5,12 +5,13 @@
 #include "utl/Locale.h"
 
 void UIListProvider::Text(int, int, UIListLabel* listlabel, UILabel* label) const {
+#ifdef VERSION_SZBE69_B8
     if(TheLoadMgr.EditMode()){
         label->SetEditText(listlabel->GetDefaultText());
     }
-    else {
+    else
+#endif
         label->SetTextToken(gNullStr);
-    }
 }
 
 RndMat* UIListProvider::Mat(int, int, UIListMesh* mesh) const {
@@ -18,23 +19,32 @@ RndMat* UIListProvider::Mat(int, int, UIListMesh* mesh) const {
 }
 
 void UIListProvider::UpdateExtendedText(int, int, UILabel* label) const {
+#ifdef VERSION_SZBE69_B8
     if(!TheLoadMgr.EditMode()){
+#endif
         MILO_WARN("Trying to update extended text without an override provider method. Label = %s", label->Name());
         label->SetTextToken(gNullStr);
+#ifdef VERSION_SZBE69_B8
     }
+#endif
 }
 
 void UIListProvider::UpdateExtendedMesh(int, int, RndMesh* mesh) const {
+#ifdef VERSION_SZBE69_B8
     if(!TheLoadMgr.EditMode()){
+#endif
         MILO_WARN("Trying to update extended mesh without an override provider method. Mesh = %s", mesh->Name());
         mesh->SetMat(0);
+#ifdef VERSION_SZBE69_B8
     }
+#endif
 }
 
 void UIListProvider::UpdateExtendedCustom(int, int, Hmx::Object* obj) const {
-    if(!TheLoadMgr.EditMode()){
+#ifdef VERSION_SZBE69_B8
+    if(!TheLoadMgr.EditMode())
+#endif
         MILO_WARN("Trying to update extended custom object without an override provider method. object = %s", obj->Name());
-    }
 }
 
 void DataProvider::Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
@@ -88,7 +98,7 @@ void DataProvider::Disable(Symbol sym){
 RndMat* DataProvider::Mat(int i, int j, UIListMesh* mesh) const {
     if(!mList) return mesh->DefaultMat();
     static Message msgMat("mat", DataNode(0));
-    msgMat->Node(2) = DataNode(j);
+    msgMat[0] = DataNode(j);
     DataNode handled = mList->HandleType(msgMat);
     if(handled.Type() == kDataUnhandled){
         return mesh->DefaultMat();

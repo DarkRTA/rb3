@@ -150,6 +150,7 @@ public:
     DataNode OnIsResource(DataArray*);
     DataNode ForeachScreen(const DataArray*);
     TransitionState GetTransitionState() const { return mTransitionState; }
+    bool IsTransitioning() const { return mTransitionState != kTransitionNone; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc

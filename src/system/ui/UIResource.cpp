@@ -18,7 +18,7 @@ void UIResource::PostLoad() {
 }
 
 void UIResource::Release() {
-    if (mDir.mDir) {
+    if (mDir.Ptr()) {
         MILO_ASSERT(mRefCount > 0, 47);
         if (--mRefCount == 0) ForceRelease();
     }

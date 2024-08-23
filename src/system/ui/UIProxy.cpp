@@ -169,7 +169,7 @@ DataNode UIProxy::OnSetProxyDir(DataArray* da){
 }
 
 BEGIN_HANDLERS(UIProxy)
-    HANDLE_EXPR(proxy_dir, mDir)
+    HANDLE_EXPR(proxy_dir, ProxyDir())
     HANDLE(set_proxy_dir, OnSetProxyDir)
     HANDLE_SUPERCLASS(UIComponent)
     HANDLE_CHECK(0x10F)
