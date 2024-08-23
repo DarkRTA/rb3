@@ -4,6 +4,7 @@
 #include "system/obj/Data.h"
 
 class GigFilter {
+    public:
     GigFilter();
     virtual ~GigFilter();
     void Init(const DataArray*);

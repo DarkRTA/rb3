@@ -112,6 +112,14 @@ void CalcBox(RndMesh* m, Box& b) {
     m->mOwner->mOwner;
 }
 
+int GenerationCount(RndTransformable* t1, RndTransformable* t2) {
+    if (t1 == NULL || t2 == NULL) return 0; else for (int i = 0; t2 != NULL; i++) {
+        if (t2 == t1) return i;
+        t2 = t2->mParent.mPtr;
+    }
+    return 0;
+}
+
 void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
     Vector2 v2;
     if (RndCam::sCurrent->WorldToScreen(v, v2) > 0) {
