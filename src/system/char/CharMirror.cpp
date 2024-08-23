@@ -7,6 +7,13 @@ CharMirror::CharMirror() : mServo(this, 0), mMirrorServo(this, 0), mBones(), mOp
 
 }
 
+void CharMirror::Poll(){
+    float weight = Weight();
+    if(weight && mBones.TotalSize() != 0){
+        mBones.ScaleDown(*mServo.Ptr(), 1.0f - weight);
+    }
+}
+
 void CharMirror::SetServo(CharServoBone* bone){
     if(bone != mServo){
         mServo = bone;
