@@ -14,13 +14,12 @@ UIListSlot::~UIListSlot(){
 }
 
 void UIListSlot::ClearElements(){
-    // std::vector<UIListSlotElement*>::iterator it = mElements.begin();
-    // std::vector<UIListSlotElement*>::iterator itEnd = mElements.end();
-    // for(; it != itEnd; it++){
-    //     delete *it;
-    // }
-    // mElements.clear();
-    VectorClear(mElements);
+    std::vector<UIListSlotElement*>::iterator it = mElements.begin();
+    std::vector<UIListSlotElement*>::iterator itEnd = mElements.end();
+    for(; it != itEnd; it++){
+        delete *it;
+    }
+    mElements.clear();
     delete mNextElement;
     mNextElement = 0;
 }
