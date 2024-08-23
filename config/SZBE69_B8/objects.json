@@ -133,6 +133,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
+            "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
