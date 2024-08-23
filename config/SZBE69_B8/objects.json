@@ -24,6 +24,7 @@
             "band3/game/Metronome.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
+            "band3/game/TrainerGemTab.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
