@@ -1,6 +1,7 @@
 #ifndef MATH_VEC_H
 #define MATH_VEC_H
 #include "os/Debug.h"
+#include "math/Trig.h"
 #include "utl/BinStream.h"
 
 class Vector2 {
@@ -454,6 +455,12 @@ inline void ScaleToMagnitude(const Vector3& vec, float fl, Vector3& res){
         Scale(vec, fl / Length(vec), res);
     }
     else res.Set(0,0,0);
+}
+
+inline void RotateAboutZ(const Vector3& v, float f, Vector3& res){
+    float c = Cosine(f);
+    float s = Sine(f);
+    res.Set(v.x * c - v.y * s, v.x * s + v.y * c, v.z);
 }
 
 #endif

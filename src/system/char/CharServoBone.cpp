@@ -2,6 +2,8 @@
 #include "char/Character.h"
 #include "char/CharBoneDir.h"
 #include "char/Waypoint.h"
+#include "char/CharUtl.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
 
 DECOMP_FORCEACTIVE(CharServoBone, ".cb", "bone_facing_delta.pos", "bone_facing.pos", "bone_pelvis")
@@ -31,6 +33,19 @@ void CharServoBone::SetClipType(Symbol sym){
     }
 }
 
+void CharServoBone::ReallocateInternal(){
+    CharBonesMeshes::ReallocateInternal();
+    mFacingRotDelta = 0;
+    mFacingPosDelta = (Vector3*)FindPtr("bone_facing_delta.pos");
+    if(mFacingPosDelta){
+        mFacingPos = (Vector3*)FindPtr("bone_facing.pos");
+        mPelvis = CharUtlFindBoneTrans("bone_pelvis", Dir());
+        MILO_ASSERT(mFacingPos && mPelvis, 0xB3);
+        mFacingRot = (float*)FindPtr("bone_facing.rotz");
+        mFacingRotDelta = (float*)FindPtr("bone_facing_delta.rotz");
+    }
+}
+
 void CharServoBone::Enter(){
     ZeroDeltas();
     mRegulate = 0;
@@ -48,6 +63,25 @@ void CharServoBone::SetMoveSelf(bool b){
     if(mMoveSelf == b) return;
     mMoveSelf = b;
     mDeltaChanged = true;
+}
+
+void CharServoBone::MoveToFacing(Transform& tf){
+    if(*mFacingRot){
+        RotateAboutZ(tf.m, *mFacingRot, tf.m);
+        RotateAboutZ(tf.v, *mFacingRot, tf.v);
+        Normalize(tf.m, tf.m);
+    }
+    tf.v += *mFacingPos;
+}
+
+void CharServoBone::MoveToDeltaFacing(Transform& tf){
+    Vector3 v18;
+    Multiply(*mFacingPosDelta, tf.m, v18);
+    tf.v += v18;
+    if(*mFacingRotDelta){
+        RotateAboutZ(tf.m, *mFacingRotDelta, tf.m);
+        Normalize(tf.m, tf.m);
+    }
 }
 
 SAVE_OBJ(CharServoBone, 0x14A)

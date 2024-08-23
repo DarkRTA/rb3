@@ -21,6 +21,7 @@ void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
 void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void RotateAboutX(const Hmx::Matrix3&, float, Hmx::Matrix3&);
+void RotateAboutZ(const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void MakeRotQuat(const Vector3&, const Vector3&, Hmx::Quat&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
