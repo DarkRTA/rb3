@@ -19,6 +19,7 @@ void CharSleeve::SetName(const char* cc, class ObjectDir* dir){
     mMe = dynamic_cast<class Character*>(dir);
 }
 
+// https://decomp.me/scratch/vVQkq (retail)
 void CharSleeve::Poll(){
     if(mSleeve && mSleeve->TransParent()){
         float deltasecs = TheTaskMgr.DeltaSeconds();

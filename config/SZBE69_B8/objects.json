@@ -214,7 +214,10 @@
             "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
             "system/char/CharForeTwist.cpp": "NonMatching",
-            "system/char/CharGuitarString.cpp": "NonMatching",
+            "system/char/CharGuitarString.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharHair.cpp": "NonMatching",
             "system/char/CharIKFingers.cpp": "NonMatching",
             "system/char/CharIKFoot.cpp": "NonMatching",
