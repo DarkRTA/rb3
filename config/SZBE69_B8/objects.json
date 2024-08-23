@@ -24,6 +24,7 @@
             "band3/game/Metronome.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
+            "band3/game/TrainerGemTab.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
@@ -133,6 +134,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
+            "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
