@@ -24,7 +24,7 @@ Character::Lod::Lod(Hmx::Object* obj) : mScreenSize(0.0f), mGroup(obj, 0), mTran
 }
 
 Character::Lod::Lod(const Character::Lod& lod) : mScreenSize(lod.mScreenSize), mGroup(lod.mGroup), mTransGroup(lod.mTransGroup) {
-    
+
 }
 
 Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
@@ -88,8 +88,8 @@ void CharPollableSorter::AddDeps(Dep* me, const std::list<Hmx::Object*>& odeps, 
 void Character::Init(){ Register(); }
 void Character::Terminate(){}
 
-Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0), 
-    mSelfShadow(0), mSpotCutout(0), mFloorShadow(1), mSphereBase(this, this), mBounding(), mPollState(kCharCreated), mTest(new CharacterTest(this)), 
+Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0),
+    mSelfShadow(0), mSpotCutout(0), mFloorShadow(1), mSphereBase(this, this), mBounding(), mPollState(kCharCreated), mTest(new CharacterTest(this)),
     mFrozen(0), mDrawMode(kCharDrawAll), unk1f4(1), mInterestToForce(), unk1fc(this, 0), mDebugDrawInterestObjects(0) {
 
 }
@@ -201,8 +201,7 @@ void Character::UnhookShadow(){
     for(int i = 0; i < mShadowBones.size(); i++){
 
     }
-    DeleteRange(mShadowBones.begin(), mShadowBones.end());
-    mShadowBones.clear();
+    DeleteAll(mShadowBones);
 }
 
 void Character::Replace(Hmx::Object* from, Hmx::Object* to){

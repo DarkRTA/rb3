@@ -2,17 +2,22 @@
 #define UTL_STLHELPERS_H
 #include <vector>
 
-template <class T1, class T2>
-inline void VectorClear(std::vector<T1, T2>& vec){
-    DeleteRange(vec.begin(), vec.end());
-    vec.clear();
+template <class T>
+inline void DeleteInstance(const int& /* purpose not known yet */, T* t) {
+    delete t;
 }
 
 template <class Iter>
-inline void DeleteRange(Iter begin, Iter end) {
+inline void DeleteRange(Iter begin, Iter end, const int& asdf = int() /* purpose not known yet */) {
     for (; begin != end; begin++) {
-        delete *begin;
+        DeleteInstance(asdf, *begin);
     }
+}
+
+template <typename Container>
+inline void DeleteAll(Container &container) {
+    DeleteRange(container.begin(), container.end());
+    container.clear();
 }
 
 template <class T1, class T2, class T3>

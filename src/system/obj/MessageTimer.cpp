@@ -34,15 +34,7 @@ void MessageTimer::Init(){
 
 void MessageTimer::Start(){
     sActive = true;
-    DeleteRange(gEntries.begin(), gEntries.end());
-    // for(std::vector<EventEntry*>::iterator it = gEntries.begin(); it != gEntries.end(); ++it){
-    //     EventEntry* ev = *it;
-    //     if(ev){
-    //         DeleteRange(ev->objs.begin(), ev->objs.end());
-    //     }
-    //     delete ev;
-    // }
-    gEntries.clear();
+    DeleteAll(gEntries);
 }
 
 void MessageTimer::Stop(){ sActive = false; }

@@ -28,8 +28,7 @@ UIListDir::UIListDir() : mOrientation(kUIListVertical), mFadeOffset(0), mElement
 }
 
 UIListDir::~UIListDir(){
-    DeleteRange(unk1fc.begin(), unk1fc.end());
-    unk1fc.clear();
+    DeleteAll(unk1fc);
 }
 
 UIListOrientation UIListDir::Orientation() const { return mOrientation; }
@@ -53,8 +52,7 @@ UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
 }
 
 void UIListDir::CreateElements(UIList* uilist, std::vector<UIListWidget*>& vec, int i){
-    DeleteRange(vec.begin(), vec.end());
-    vec.clear();
+    DeleteAll(vec);
     for(ObjDirItr<UIListWidget> it(this, true); it != 0; ++it){
         UIListWidget* widget = dynamic_cast<UIListWidget*>(Hmx::Object::NewObject(it->ClassName()));
         widget->ResourceCopy(it);
