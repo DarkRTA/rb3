@@ -239,7 +239,10 @@
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "Matching",
             "system/char/CharTransDraw.cpp": "Matching",
-            "system/char/CharUpperTwist.cpp": "NonMatching",
+            "system/char/CharUpperTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharUtl.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "Matching",

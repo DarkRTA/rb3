@@ -277,6 +277,7 @@ void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Transform&, const Vector3&, Vector3&);
+void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(
@@ -362,6 +363,15 @@ inline void FastInvert(const Transform& tfin, Transform& tfout){
 #endif
     FastInvert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
+}
+
+// https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
+// https://gamedev.stackexchange.com/questions/139703/compute-up-and-right-from-a-direction
+// Looks similar to C_MTXLookAt from the dolphin SDK.
+inline void LookAt(Hmx::Matrix3& mtx){
+    Cross(mtx.x, mtx.y, mtx.z);
+    Normalize(mtx.z, mtx.z);
+    Cross(mtx.z, mtx.x, mtx.y);
 }
 
 #endif
