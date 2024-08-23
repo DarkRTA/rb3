@@ -285,7 +285,8 @@ bool DirLoader::SetupDir(Symbol sym){
     BeginTrackObjMem(sym.Str(), mFile.c_str());
     if(mDir){
         if(mDir->ClassName() != sym){
-            MILO_WARN("%s: Proxy class %s not %s, converting", mFile.c_str(), mDir->ClassName(), sym);
+            TheDebugNotifier << MakeString(MakeString("%s: Proxy class %s not %s, converting", mFile.c_str(), 
+                mDir->ClassName(), sym)); // for some reason
             class ObjectDir* newDir = dynamic_cast<class ObjectDir*>(Hmx::Object::NewObject(sym));
             if(!newDir){
                 Cleanup(MakeString("%s: Trying to make non ObjectDir proxy class %s s", mFile.c_str(), mDir->ClassName(), sym));
@@ -382,6 +383,27 @@ void DirLoader::Replace(Hmx::Object* from, Hmx::Object* to) {
     delete this; // uhhh.
 }
 
+void DirLoader::Cleanup(const char* s) {
+    if (s) MILO_WARN(s);
+    mObjects.clear();
+    if (mOwnStream) {
+        delete mStream;
+        mStream = NULL;
+    }
+    if (mDir) {
+        if (!IsLoaded()) {
+            mDir->mLoader = NULL;
+            if (mProxyName == NULL) {
+                if (mDir) delete mDir;
+                mDir = NULL;
+            }
+            if (mProxyName != NULL) {
+                if (mDir->IsProxy()) mDir->ResetEditorState();
+            }
+        }
+    }
+}
+
 DirLoader::~DirLoader() {
     mDeleteSelf = 0;
     if (!IsLoaded()) {
@@ -400,3 +422,5 @@ DirLoader::~DirLoader() {
         mCallback = 0;
     }
 }
+
+Hmx::Object* DirLoader::RefOwner() { return NULL; }

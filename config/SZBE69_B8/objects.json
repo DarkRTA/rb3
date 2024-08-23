@@ -56,6 +56,7 @@
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
             "band3/tour/QuestJournal.cpp": "Matching",
+            "band3/tour/QuestManager.cpp": "NonMatching",
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourProgress.cpp": "NonMatching",
