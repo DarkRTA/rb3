@@ -38,6 +38,7 @@ public:
     const Vector3& Axis() const;
     void SyncShape();
     int NumSpheres();
+    void Deform();
 
     float GetRadius(const Vector3& v1, Vector3& vout) const {
         Subtract(v1, unk1a0, vout);

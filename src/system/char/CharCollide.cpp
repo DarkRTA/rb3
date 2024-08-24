@@ -44,22 +44,9 @@ void CharCollide::Highlight(){
     if(mMesh){
         int numspheres = NumSpheres();
         for(int i = 0; i < numspheres * 2; i++){
-
+            UtilDrawSphere(mMesh->VertPos(unk_structs[i].unk0), 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f));
         }
     }
-    
-//   iVar1 = MergedGet0x8(this + 0x98);
-//   if (iVar1 != 0) {
-//     iVar1 = NumSpheres(this);
-//     iVar7 = 0;
-//     for (iVar6 = 0; iVar6 < iVar1 << 2; iVar6 = iVar6 + 1) {
-//       pCVar4 = (Color *)Hmx::Color::Color(aCStack_68,0.0,0.0,1.0);
-//       uVar2 = MergedGet0x8(this + 0x98); mMesh
-//       pVVar5 = (Vector3 *)fn_800DEE80(uVar2,*(undefined4 *)(this + iVar7 + 0xb8));
-//       UtilDrawSphere(pVVar5,0.1,pCVar4);
-//       iVar7 = iVar7 + 0x10;
-//     }
-//   }
 }
 
 SAVE_OBJ(CharCollide, 0x58)
@@ -116,13 +103,25 @@ BEGIN_COPYS(CharCollide)
     END_COPYING_MEMBERS
 END_COPYS
 
+void CharCollide::Deform(){
+
+}
+
+int CharCollide::NumSpheres(){
+    if(mShape == kCigar || mShape == kInsideCigar) return 2;
+    else if (mShape == kSphere || mShape == kInsideSphere) return 1;
+    else return 0;
+}
+
 void CharCollide::CopyOriginalToCur(){
     memcpy(mCurRadius, mOrigRadius, 8);
     memcpy(mCurLength, mOrigLength, 8);
 }
 
+
 void CharCollide::SyncShape(){
-    if(mCurLength[1] < mCurLength[0]){
+    f32 t = mCurLength[1];
+    if(mCurLength[0] > t){
         mCurLength[0] = mCurLength[1];
     }
     CopyOriginalToCur();

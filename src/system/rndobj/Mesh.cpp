@@ -46,8 +46,10 @@ RndMesh::~RndMesh() {
     
 }
 
-RndMesh::Vert::Vert() : x(0), y(0), z(0), nx(0), ny(1), nz(0), why(),
-    unk_0x20(-1), u(0), v(0), unk_0x2C(0), unk_0x2E(0), unk_0x30(0), unk_0x32(0) {}
+RndMesh::Vert::Vert() : pos(0,0,0), norm(0,1.0f,0), boneWeights(),
+    color(), uv(0,0) {
+    for(int i = 0; i < 4; i++) boneIndices[i] = 0;
+}
 
 void RndMesh::PreLoadVertices(BinStream& bs) {
     if (gAltRev > 4) {
@@ -183,8 +185,8 @@ void RndMesh::PostLoad(BinStream& bs) {
                     bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
                     if (gRev < 25) { // incoming headache
                         for (std::vector<Vert>::iterator it = mVerts.begin(); it != mVerts.end(); it++) {
-                            it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
-                                it->why.GetX(), it->why.GetY(), it->why.GetZ());
+                            // it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
+                            //     it->why.GetX(), it->why.GetY(), it->why.GetZ());
                         }
                     }
                 } else {
@@ -219,13 +221,13 @@ DECOMP_FORCEFUNC(Mesh, RndMesh, NumBones())
 #pragma pop
 
 BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
-    bs >> v.x >> v.y >> v.z;
+    bs >> v.pos;
     if (RndMesh::gRev != 10 && RndMesh::gRev < 23) { int a,b; bs >> a >> b; }
-    bs >> v.nx >> v.ny >> v.nz;
+    bs >> v.norm;
 
 
     if (RndMesh::gRev < 20) { int a,b; bs >> b >> a; }
-    if (RndMesh::gRev > 28) bs >> v.unk_0x2C >> v.unk_0x2E >> v.unk_0x30 >> v.unk_0x32;
+    if (RndMesh::gRev > 28) bs >> v.boneIndices[0] >> v.boneIndices[1] >> v.boneIndices[2] >> v.boneIndices[3];
     if (RndMesh::gRev > 29) {
         int a,b,c,d;
         bs >> d >> c >> b >> a;
@@ -303,9 +305,9 @@ DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2446);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->nx);
-    *da->Var(4) = DataNode(v->ny);
-    *da->Var(5) = DataNode(v->nz);
+    *da->Var(3) = DataNode(v->norm.x);
+    *da->Var(4) = DataNode(v->norm.y);
+    *da->Var(5) = DataNode(v->norm.z);
     return DataNode();
 }
 
@@ -314,9 +316,9 @@ DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2457);
     v = &mVerts[index];
-    v->nx = da->Float(3);
-    v->ny = da->Float(4);
-    v->nz = da->Float(5);
+    v->norm.x = da->Float(3);
+    v->norm.y = da->Float(4);
+    v->norm.z = da->Float(5);
     Sync(31);
     return DataNode();
 }
@@ -326,9 +328,9 @@ DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2469);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->x);
-    *da->Var(4) = DataNode(v->y);
-    *da->Var(5) = DataNode(v->z);
+    *da->Var(3) = DataNode(v->pos.x);
+    *da->Var(4) = DataNode(v->pos.y);
+    *da->Var(5) = DataNode(v->pos.z);
     return DataNode();
 }
 
@@ -337,9 +339,9 @@ DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2480);
     v = &mVerts[index];
-    v->x = da->Float(3);
-    v->y = da->Float(4);
-    v->z = da->Float(5);
+    v->pos.x = da->Float(3);
+    v->pos.y = da->Float(4);
+    v->pos.z = da->Float(5);
     Sync(31);
     return DataNode();
 }
@@ -349,8 +351,8 @@ DataNode RndMesh::OnGetVertUV(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2492);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->u);
-    *da->Var(4) = DataNode(v->v);
+    *da->Var(3) = DataNode(v->uv.x);
+    *da->Var(4) = DataNode(v->uv.y);
     return DataNode();
 }
 
@@ -359,8 +361,8 @@ DataNode RndMesh::OnSetVertUV(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2502);
     v = &mVerts[index];
-    v->u = da->Float(3);
-    v->v = da->Float(4);
+    v->uv.x = da->Float(3);
+    v->uv.y = da->Float(4);
     Sync(31);
     return DataNode();
 }

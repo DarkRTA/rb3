@@ -31,19 +31,12 @@ public:
     class Vert {
     public:
         Vert();
-        // Vector3 p; // 0x0
-        // Vector3 n; // 0xc - norm
-        // Vector4 boneWeights; // 0x18
-        // Hmx::Color color; // 0x28
-        // Vector2 t; // 0x38
-        // short boneIndices[4]; // 0x40
-
-        float x, y, z; // 0x0, 0x4, 0x8
-        float nx, ny, nz; // 0xC, 0x10, 0x14 W component gets shadowrealmed on wii
-        Vector4_16_01 why; // 0x18 the hate format
-        int unk_0x20; // ????
-        float u, v; // 0x24, 0x28 WHY ARE THEY OUT HERE
-        u16 unk_0x2C, unk_0x2E, unk_0x30, unk_0x32;
+        Vector3 pos; // 0x0
+        Vector3 norm; // 0xc
+        Vector4_16_01 boneWeights; // 0x18 the hate format
+        Hmx::Color32 color; // 0x20
+        Vector2 uv; // 0x24
+        short boneIndices[4]; // 0x28
     };
 
     class Face {
@@ -59,7 +52,7 @@ public:
     };
 
     class VertVector : public std::vector<Vert, s32> { // ???????
-        public:
+    public:
         void resize(int, bool);
         void reserve(int, bool);
         std::vector<Vert>::iterator begin() { return std::vector<Vert, s32>::begin(); }
@@ -91,6 +84,10 @@ public:
     virtual int NumVerts() const;
     virtual void Print();
     virtual void OnSync(int);
+
+    const Vector3& VertPos(int idx) const {
+        return mOwner->mVerts[idx].pos;
+    }
 
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
