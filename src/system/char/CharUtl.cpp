@@ -130,6 +130,21 @@ void ClipPredict::SetClip(CharClip* clip){
     }
 }
 
+void ClipPredict::Predict(float f1, float f2){
+    Vector3 v34;
+    float locf;
+    mClip->EvaluateChannel(&v34, mPosChannel, f1);
+    mClip->EvaluateChannel(&mLastPos, mPosChannel, f2);
+    mClip->EvaluateChannel(&locf, mAngChannel, f1);
+    mClip->EvaluateChannel(&mLastAng, mAngChannel, f2);
+    float norm = NormalizeAngle(mAng - locf);
+    Subtract(mLastPos, v34, v34);
+    RotateAboutZ(v34, norm, v34);
+    mPos += v34;
+    float norm1 = NormalizeAngle(mLastAng - locf);
+    mAng = NormalizeAngle(mAng + norm1);
+}
+
 DECOMP_FORCEACTIVE(CharUtl, "tmp_bones")
 
 CharBone* CharUtlFindBone(const char* cc, ObjectDir* dir){

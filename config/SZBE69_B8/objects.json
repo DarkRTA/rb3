@@ -252,7 +252,10 @@
                 "status": "Equivalent",
                 "comment": "Poll checks out in retail"
             },
-            "system/char/CharUtl.cpp": "NonMatching",
+            "system/char/CharUtl.cpp": {
+                "status": "Equivalent",
+                "comment": "ClipPredict::Predict checks out in retail"
+            },
             "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "Matching",
             "system/char/CharacterTest.cpp": "NonMatching",
