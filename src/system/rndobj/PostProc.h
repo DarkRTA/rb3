@@ -67,6 +67,7 @@ public:
     void LoadRev(BinStream&, int);
     DataNode OnAllowedNormalMap(const DataArray*);
     bool BlendPrevious() const;
+    float EmulateFPS() const { return mEmulateFPS; }
 
     static void Reset();
     static RndPostProc* sCurrent;
@@ -118,7 +119,7 @@ public:
     float mDuration; // 0x138
 
     Vector3 unk13c;
-    float mEmulateFPS;
+    float mEmulateFPS; // 0x148
     float unk14c;
     float unk150;
 

@@ -77,6 +77,11 @@ public:
     void Hookup(ObjPtrList<CharCollide, ObjectDir>&);
     void SetCloth(bool);
     void FreezePose();
+    void FreezePoseRaw();
+    void SimulateLoops(int, float);
+    void DoReset(int);
+    float GetFPS();
+    void SimulateZeroTime();
 
     DECLARE_REVS;
 

@@ -104,6 +104,8 @@ public:
     void ForceBlink();
     void SetDrawMode(DrawMode m){ mDrawMode = m; }
     bool Teleported() const { return mTeleported; }
+    PollState GetPollState() const { return mPollState; }
+    int MinLod() const { return mMinLod; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);
