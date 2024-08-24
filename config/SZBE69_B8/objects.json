@@ -213,7 +213,10 @@
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
-            "system/char/CharForeTwist.cpp": "NonMatching",
+            "system/char/CharForeTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharGuitarString.cpp": {
                 "status": "Equivalent",
                 "comment": "Poll checks out in retail"

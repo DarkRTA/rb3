@@ -18,7 +18,7 @@ void CharForeTwist::Poll(){
     float clamp2 = Clamp(-1.0f, 1.0f, Dot(parentxfm.m.x, v98));
     float newbias = mBias * DEG2RAD;
     float tan2res = std::atan2(clamp2, clamped);
-    float angle = NormalizeAngle(newbias + mOffset * DEG2RAD + tan2res);
+    float angle = NormalizeAngle(mOffset * DEG2RAD + tan2res + newbias);
     float finalfloat = angle - newbias;
     Hmx::Matrix3 m58;
     m58.RotateAboutX(finalfloat * 0.33333f);
