@@ -155,6 +155,27 @@ void CharacterTest::TeleportTo(Waypoint* wp){
     if(wp) mMe->Teleport(wp);
 }
 
+void CharacterTest::SetStartEndBeat(float f1, float f2, int bpm){
+    Hmx::Object* miloObj = ObjectDir::Main()->FindObject("milo", false);
+    if(miloObj){
+        DataNode milohandled = miloObj->Handle(Message("cur_anim"), true);
+        if(milohandled.Type() == kDataObject){
+            Hmx::Object* handledObj = milohandled.GetObj(0);
+            if(handledObj == mMe){
+                mMe->mFrozen = 0; // i know this is wrong, just can't figure out the right member atm
+                miloObj->SetProperty("bpm", DataNode(bpm));
+                miloObj->Handle(Message("set_anim_frame", DataNode((f1 * 30.0f) / (bpm / 60.0f)), DataNode((f2 * 30.0f) / (bpm / 60.0f)), DataNode((float)bpm)), true);
+            }
+        }
+    }
+}
+
+void CharacterTest::SetMoveSelf(bool b){
+    if(mMe->BoneServo()){
+        mMe->BoneServo()->SetMoveSelf(b);
+    }
+}
+
 BEGIN_LOADS(CharacterTest)
     LOAD_REVS(bs)
     if(gRev > 0xF){

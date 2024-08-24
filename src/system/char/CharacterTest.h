@@ -26,6 +26,8 @@ public:
     void AddDefaults();
     void Walk();
     void TeleportTo(Waypoint*);
+    void SetStartEndBeat(float, float, int);
+    void SetMoveSelf(bool);
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)
