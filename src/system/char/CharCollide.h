@@ -40,11 +40,11 @@ public:
 
     float GetRadius(const Vector3& v1, Vector3& vout) const {
         Subtract(v1, unk1a0, vout);
-        float ret = unk_arr[0];
+        float ret = mCurRadius[0];
         if(mShape >= kCigar){
-            float clamped = Clamp(unk_arr2[0], unk_arr2[1], unk190 * Dot(vout, unk194));
+            float clamped = Clamp(mCurLength[0], mCurLength[1], unk190 * Dot(vout, unk194));
             ScaleAddEq(vout, unk194, -clamped);
-            Interp(ret, unk_arr[1], unk18c * (clamped - unk_arr2[0]), ret);
+            Interp(ret, mCurRadius[1], unk18c * (clamped - mCurLength[0]), ret);
         }
         else if(mShape == kPlane){
             ret = Dot(vout, unk194);
@@ -62,11 +62,11 @@ public:
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x98
     CSHA1::Digest mDigest; // 0xa4
     CharCollideStruct unk_structs[8]; // 0xb8 - 0x134, inclusive
-    float mRadius[2]; // 0x138 - radius0 at 0x138, radius1 at 0x13c
-    float mLength[2]; // 0x140 - length0 at 0x140, length1 at 0x144
+    float mOrigRadius[2]; // 0x138 - radius0 at 0x138, radius1 at 0x13c
+    float mOrigLength[2]; // 0x140 - length0 at 0x140, length1 at 0x144
     Transform unk148; // 0x148
-    float unk_arr[2]; // 0x178
-    float unk_arr2[2]; // 0x180
+    float mCurRadius[2]; // 0x178
+    float mCurLength[2]; // 0x180
     bool mMeshYBias; // 0x188
     float unk18c;
     float unk190;

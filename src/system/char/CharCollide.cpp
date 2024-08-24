@@ -5,8 +5,8 @@ INIT_REVS(CharCollide)
 
 CharCollide::CharCollide() : mShape(kSphere), mFlags(0), mMesh(this, 0), mMeshYBias(0) {
     for(int i = 0; i < 2; i++){
-        mLength[i] = 0;
-        mRadius[i] = 0;
+        mOrigLength[i] = 0;
+        mOrigRadius[i] = 0;
     }
     CopyOriginalToCur();
     for(int i = 0; i < 8; i++){
@@ -28,19 +28,19 @@ BEGIN_LOADS(CharCollide)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(RndTransformable)
     bs >> (int&)mShape;
-    bs >> mRadius[0];
-    if(gRev > 4) bs >> mLength[0];
-    if(gRev > 2) bs >> mLength[1];
+    bs >> mOrigRadius[0];
+    if(gRev > 4) bs >> mOrigLength[0];
+    if(gRev > 2) bs >> mOrigLength[1];
     if(gRev > 1) bs >> mFlags;
     else mFlags = 0;
-    if(gRev > 3) bs >> unk_arr[0];
-    else unk_arr[0] = mRadius[0];
+    if(gRev > 3) bs >> mCurRadius[0];
+    else mCurRadius[0] = mOrigRadius[0];
 
     if(gRev > 5){
-        bs >> mRadius[1];
-        bs >> unk_arr[1];
-        bs >> unk_arr2[0];
-        bs >> unk_arr2[1];
+        bs >> mOrigRadius[1];
+        bs >> mCurRadius[1];
+        bs >> mCurLength[0];
+        bs >> mCurLength[1];
         bs >> unk148;
         bs >> mMesh;
         for(int i = 0; i < 8; i++){
@@ -52,7 +52,7 @@ BEGIN_LOADS(CharCollide)
         if(gRev < 7) CopyOriginalToCur();
     }
     else {
-        mRadius[1] = mRadius[0];
+        mOrigRadius[1] = mOrigRadius[0];
         CopyOriginalToCur();
     }
 END_LOADS
@@ -64,10 +64,10 @@ BEGIN_COPYS(CharCollide)
     BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mShape)
         COPY_MEMBER(mFlags)
-        memcpy(mRadius, c->mRadius, 8);
-        memcpy(mLength, c->mLength, 8);
-        memcpy(unk_arr, c->unk_arr, 8);
-        memcpy(unk_arr2, c->unk_arr2, 8);
+        memcpy(mOrigRadius, c->mOrigRadius, 8);
+        memcpy(mOrigLength, c->mOrigLength, 8);
+        memcpy(mCurRadius, c->mCurRadius, 8);
+        memcpy(mCurLength, c->mCurLength, 8);
         COPY_MEMBER(unk148)
         COPY_MEMBER(mMeshYBias)
         COPY_MEMBER(mMesh)
@@ -75,13 +75,13 @@ BEGIN_COPYS(CharCollide)
 END_COPYS
 
 void CharCollide::CopyOriginalToCur(){
-    memcpy(unk_arr, mRadius, 8);
-    memcpy(unk_arr2, mLength, 8);
+    memcpy(mCurRadius, mOrigRadius, 8);
+    memcpy(mCurLength, mOrigLength, 8);
 }
 
 void CharCollide::SyncShape(){
-    if(unk_arr2[1] < unk_arr2[0]){
-        unk_arr2[0] = unk_arr2[1];
+    if(mCurLength[1] < mCurLength[0]){
+        mCurLength[0] = mCurLength[1];
     }
     CopyOriginalToCur();
 }
@@ -95,10 +95,10 @@ END_HANDLERS
 BEGIN_PROPSYNCS(CharCollide)
     SYNC_PROP_MODIFY(shape, (int&)mShape, SyncShape())
     SYNC_PROP(flags, mFlags)
-    SYNC_PROP_MODIFY(radius0, mRadius[0], SyncShape())
-    SYNC_PROP_MODIFY(radius1, mRadius[1], SyncShape())
-    SYNC_PROP_MODIFY(length0, mLength[0], SyncShape())
-    SYNC_PROP_MODIFY(length1, mLength[1], SyncShape())
+    SYNC_PROP_MODIFY(radius0, mOrigRadius[0], SyncShape())
+    SYNC_PROP_MODIFY(radius1, mOrigRadius[1], SyncShape())
+    SYNC_PROP_MODIFY(length0, mOrigLength[0], SyncShape())
+    SYNC_PROP_MODIFY(length1, mOrigLength[1], SyncShape())
     SYNC_PROP_MODIFY_ALT(mesh, mMesh, SyncShape())
     SYNC_PROP_MODIFY(mesh_y_bias, mMeshYBias, SyncShape())
     SYNC_SUPERCLASS(RndTransformable)
