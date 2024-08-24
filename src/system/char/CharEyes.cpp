@@ -128,6 +128,7 @@ void CharEyes::Exit(){
 }
 
 void CharEyes::Highlight(){
+#ifdef VERSION_SZBE69_B8
     if(GetHead()){
         RndGraph* oneframe = RndGraph::GetOneFrame();
         RndTransformable* trans = 0;
@@ -182,9 +183,75 @@ void CharEyes::Highlight(){
             // more happens here
         }
     }
+#endif
+}
+
+DECOMP_FORCEACTIVE(CharEyes, "%s", "r=%f")
+
+void CharEyes::UpdateOverlay(){
+    if(unk9c && unk9c->Showing()){
+        *unk9c << Dir()->Name() << ": ";
+        if(unkc8){
+            if(unkd4){
+                if(streq(unkc8->Name(), unkd4->Name())){
+                    *unk9c << "Look(FOC) ";
+                    goto lol;
+                }
+            }
+            *unk9c << "Look(" << unkc8->Name() << ") ";
+        }
+        else *unk9c << "Look(GEN) ";
+    lol:
+        if(unkd4){
+            Transform& headxfm = GetHead()->WorldXfm();
+            Vector3 v34(headxfm.m.y);
+            Normalize(v34, v34);
+            const char* str = unkd4->IsWithinViewCone(headxfm.v, v34) ? "t" : "f";
+            *unk9c << "Foc(" << unkd4->Name() << " p(" << unke0 << ") v(" << str << ")) ";
+        }
+        else *unk9c << "Foc(NA) ";
+        *unk9c << "t(" << unkb4 << ") ";
+        Vector3 v40(GetHead()->WorldXfm().v);
+        Vector3 v4c;
+        Vector3 v58(unk58);
+        RndTransformable* target = GetTarget();
+        if(target) v58 = target->WorldXfm().v;
+        Subtract(v58, v40, v4c);
+        float len = Length(v4c);
+        *unk9c << "Dist(" << len << ") ";
+        if(unk13c) *unk9c << "P Blink! ";
+        if(unk124) *unk9c << "Dart! ";
+        if(unkc5) *unk9c << "Close! ";
+        *unk9c << "\n";
+    }
+}
+
+bool CharEyes::EitherEyeClamped(){
+    for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+        if(it->mEye && it->mEye->unkb1) return true;
+    }
+    return false;
 }
 
 void CharEyes::ClearAllInterestObjects(){ mInterests.clear(); }
+
+void CharEyes::AddInterestObject(CharInterest* interest){
+    if(interest){
+        CharInterestState state(this);
+        state.mInterest = interest;
+        mInterests.push_back(state);
+    }
+}
+
+bool CharEyes::SetFocusInterest(CharInterest* interest, int i){
+    if(unkd4 && unke0 > i) return false;
+    CharInterest* loc_interest = interest;
+    unkd4 = interest;
+    unke0 = i;
+    if(loc_interest != interest) unke4 = true;
+    if(!unkd4) unke0 = -1;
+    return true;
+}
 
 // fn_804CCF70
 RndTransformable* CharEyes::GetHead(){

@@ -69,6 +69,8 @@ public:
     void ToggleInterestsDebugOverlay();
     CharInterest* GetCurrentInterest();
     void EnforceMinimumTargetDistance(const Vector3&, const Vector3&, Vector3&);
+    void UpdateOverlay();
+    bool EitherEyeClamped();
 
     DataNode OnToggleForceFocus(DataArray*);
     DataNode OnToggleInterestOverlay(DataArray*);
