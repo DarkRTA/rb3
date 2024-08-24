@@ -21,7 +21,7 @@ inline float RadiansToDegrees(float rad) {
     return 57.295776f * rad;
 }
 
-float NormalizeAngle(float);
+float LimitAng(float);
 
 DataNode DataSin(DataArray*);
 DataNode DataCos(DataArray*);

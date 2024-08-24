@@ -137,12 +137,12 @@ void ClipPredict::Predict(float f1, float f2){
     mClip->EvaluateChannel(&mLastPos, mPosChannel, f2);
     mClip->EvaluateChannel(&locf, mAngChannel, f1);
     mClip->EvaluateChannel(&mLastAng, mAngChannel, f2);
-    float norm = NormalizeAngle(mAng - locf);
+    float norm = LimitAng(mAng - locf);
     Subtract(mLastPos, v34, v34);
     RotateAboutZ(v34, norm, v34);
     mPos += v34;
-    float norm1 = NormalizeAngle(mLastAng - locf);
-    mAng = NormalizeAngle(mAng + norm1);
+    float norm1 = LimitAng(mLastAng - locf);
+    mAng = LimitAng(mAng + norm1);
 }
 
 DECOMP_FORCEACTIVE(CharUtl, "tmp_bones")
