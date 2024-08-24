@@ -29,8 +29,15 @@ class RndBone : public ObjPtr<RndTransformable, class ObjectDir> {
 class RndMesh : public RndDrawable, public RndTransformable {
 public:
     class Vert {
-        public:
+    public:
         Vert();
+        // Vector3 p; // 0x0
+        // Vector3 n; // 0xc - norm
+        // Vector4 boneWeights; // 0x18
+        // Hmx::Color color; // 0x28
+        // Vector2 t; // 0x38
+        // short boneIndices[4]; // 0x40
+
         float x, y, z; // 0x0, 0x4, 0x8
         float nx, ny, nz; // 0xC, 0x10, 0x14 W component gets shadowrealmed on wii
         Vector4_16_01 why; // 0x18 the hate format

@@ -1,4 +1,5 @@
 #include "char/CharCollide.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharCollide)
@@ -18,6 +19,47 @@ CharCollide::CharCollide() : mShape(kSphere), mFlags(0), mMesh(this, 0), mMeshYB
 
 CharCollide::~CharCollide(){
     
+}
+
+void CharCollide::Highlight(){
+    Hmx::Color black(1.0f, 1.0f, 1.0f);
+    Hmx::Color red(1.0f, 0.0f, 0.0f);
+    switch(mShape){
+        case kPlane:
+            Plane p(WorldXfm().v, WorldXfm().m.x);
+            UtilDrawPlane(p, WorldXfm().v, red, 1, 12.0f);
+            break;
+        case kSphere:
+        case kInsideSphere:
+            UtilDrawSphere(WorldXfm().v, mOrigRadius[0], red);
+            UtilDrawSphere(WorldXfm().v, mCurRadius[0], black);
+            break;
+        case kCigar:
+        case kInsideCigar:
+            UtilDrawCigar(WorldXfm(), mOrigRadius, mOrigLength, red, 8);
+            UtilDrawCigar(WorldXfm(), mCurRadius, mCurLength, black, 8);
+            break;
+        default: break;
+    }
+    if(mMesh){
+        int numspheres = NumSpheres();
+        for(int i = 0; i < numspheres * 2; i++){
+
+        }
+    }
+    
+//   iVar1 = MergedGet0x8(this + 0x98);
+//   if (iVar1 != 0) {
+//     iVar1 = NumSpheres(this);
+//     iVar7 = 0;
+//     for (iVar6 = 0; iVar6 < iVar1 << 2; iVar6 = iVar6 + 1) {
+//       pCVar4 = (Color *)Hmx::Color::Color(aCStack_68,0.0,0.0,1.0);
+//       uVar2 = MergedGet0x8(this + 0x98); mMesh
+//       pVVar5 = (Vector3 *)fn_800DEE80(uVar2,*(undefined4 *)(this + iVar7 + 0xb8));
+//       UtilDrawSphere(pVVar5,0.1,pCVar4);
+//       iVar7 = iVar7 + 0x10;
+//     }
+//   }
 }
 
 SAVE_OBJ(CharCollide, 0x58)

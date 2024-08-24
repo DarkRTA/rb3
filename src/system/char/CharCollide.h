@@ -37,6 +37,7 @@ public:
     Shape GetShape() const { return mShape; }
     const Vector3& Axis() const;
     void SyncShape();
+    int NumSpheres();
 
     float GetRadius(const Vector3& v1, Vector3& vout) const {
         Subtract(v1, unk1a0, vout);
