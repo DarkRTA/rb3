@@ -5,6 +5,7 @@
 #include "char/CharInterest.h"
 #include "obj/DataUtl.h"
 #include "obj/Task.h"
+#include "rndobj/Graph.h"
 #include "utl/Symbols.h"
 
 bool CharEyes::sDisableEyeDart;
@@ -70,13 +71,50 @@ float CharEyes::CharInterestState::RefractoryTimeRemaining(){
     }
 }
 
-CharEyes::CharEyes() : mEyes(this), mInterests(this), mFaceServo(this, 0), mCamWeight(this, 0), mViewDirection(this, 0), mHeadLookAt(this, 0),
-    unkc8(this, 0), unkd4(this, 0) {
-
+CharEyes::CharEyes() : mEyes(this), mInterests(this), mFaceServo(this, 0), mCamWeight(this, 0), unk58(0,0,0), mDefaultFilterFlags(0), mViewDirection(this, 0), mHeadLookAt(this, 0), mMaxExtrapolation(19.5f),
+    mMinTargetDist(35.0f), mUpperLidTrackUp(1.0f), mUpperLidTrackDown(1.0f), mLowerLidTrackUp(0.75f), mLowerLidTrackDown(0.75f), mLowerLidTrackRotate(0), mInterestFilterFlags(0),
+    unka4(0,0,0), unkb4(0), unkc0(0), unkc4(0), unkc5(0), unkc8(this, 0), unkd4(this, 0), unke0(-1), unke4(0), unke8(0), unkec(1.0F), unkf0(0), unkf4(0), unk124(0), unk128(-1.0f), unk12c(-1),
+    unk13c(0), unk140(-1.0f), unk144(0), unk148(-1.0f), unk14c(-1.0f), unk15c(0), unk15d(1) {
+    unkb8 = std::cos(0.52359879f);
+    unk9c = RndOverlay::Find("eye_status", false);
 }
 
 CharEyes::~CharEyes(){
 
+}
+
+void CharEyes::Enter(){
+    unka4.Zero();
+    unkb4 = 0;
+    unkbc = 0;
+    unkb0 = 1.0f;
+    unkc0 = -1.0f;
+    unkc4 = 0;
+    unk124 = 0;
+    unk128 = -1.0f;
+    unk12c = -1;
+    unk13c = 0;
+    unk140 = -1.0f;
+    unk144 = 0;
+    unk148 = -1.0f;
+    unk14c = -1.0f;
+    unkc5 = 0;
+    mInterestFilterFlags = mDefaultFilterFlags;
+    unk15c = 0;
+    unke4 = 0;
+    unkf4 = 0;
+    RndTransformable* head = GetHead();
+    if(head){
+        unka4 = head->WorldXfm().m.y;
+        Normalize(unka4, unka4);
+    }
+    for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+        it->mEye->Enter();
+    }
+    for(ObjVector<CharInterestState>::iterator it = mInterests.begin(); it != mInterests.end(); ++it){
+        it->ResetState();
+    }
+    RndPollable::Enter();
 }
 
 void CharEyes::Exit(){
@@ -87,6 +125,63 @@ void CharEyes::Exit(){
         it->mEye->Exit();
     }
     RndPollable::Exit();
+}
+
+void CharEyes::Highlight(){
+    if(GetHead()){
+        RndGraph* oneframe = RndGraph::GetOneFrame();
+        RndTransformable* trans = 0;
+        for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+            trans = it->mEye->GetSource();
+            if(trans){
+                const Transform& tf1 = trans->WorldXfm();
+                const Transform& tf2 = trans->WorldXfm();
+                Vector3 v100(
+                    tf1.m.y.x * 3.0f + tf2.v.x,
+                    tf1.m.y.y * 3.0f + tf2.v.y,
+                    tf1.m.y.z * 3.0f + tf2.v.z                
+                );
+                if(it->mEye->unkb1)
+                    oneframe->AddLine(trans->WorldXfm().v, v100, Hmx::Color(1.0f, 0.0f, 0.0f), true);
+                else oneframe->AddLine(trans->WorldXfm().v, v100, Hmx::Color(0.0f, 1.0f, 0.0f), true);
+            }
+        }
+        Vector3 v10c(GetHead()->WorldXfm().v);
+        if(trans){
+            float f1 = unkc8 ? unkc8->mMaxViewAngleCos : unkb8;
+            float f2 = unkb0;
+            if(unk124){
+                oneframe->AddSphere(unk58, unkf8.mMaxRadius, Hmx::Color(0.9f, 0.9f, 0.9f));
+                Vector3 v118(unk58.x + unk130.x, unk58.y + unk130.y, unk58.z + unk130.z);
+                EnforceMinimumTargetDistance(v10c, v118, v118);
+                oneframe->AddSphere(v118, 0.5f, Hmx::Color(0.0f, 0.0f, 1.0f));
+                oneframe->AddLine(trans->WorldXfm().v, v118, f2 < f1 ? Hmx::Color(1.0f, 0.0f, 0.0f) : Hmx::Color(0.2f, 0.2f, 1.0f), true);
+            }
+            else {
+                oneframe->AddLine(trans->WorldXfm().v, unk58, f2 < f1 ? Hmx::Color(1.0f, 0.0f, 0.0f) : Hmx::Color(1.0f, 1.0f, 1.0f), true);
+            }
+            if(unk13c){
+                oneframe->AddString3D("p blink!", trans->WorldXfm().v, Hmx::Color(1.0f, 1.0f, 1.0f));
+            }
+        }
+        if(unkd4){
+            if(unkd4 != unkc8){
+                const char* nametouse = unkc8 ? unkc8->Name() : "GENERATED";
+                oneframe->AddString3D(MakeString("focus = '%s' (looking at %s)", unkd4->Name(), nametouse), v10c, Hmx::Color(1.0f, 0.0f, 0.0f));
+            }
+            else {
+                oneframe->AddString3D(MakeString("focus = '%s'", unkd4->Name()), v10c, Hmx::Color(0.0f, 1.0f, 0.0f));
+            }
+        }
+        else {
+            if(unkc8){
+                oneframe->AddString3D(MakeString("interest = '%s'", unkc8->Name()), v10c, Hmx::Color(0.0f, 1.0f, 0.0f));
+            }     
+        }
+        if(mInterests.size() != 0){
+            // more happens here
+        }
+    }
 }
 
 void CharEyes::ClearAllInterestObjects(){ mInterests.clear(); }
@@ -218,8 +313,6 @@ BEGIN_COPYS(CharEyes)
         COPY_MEMBER(mInterests)
         COPY_MEMBER(mFaceServo)
         COPY_MEMBER(unka4)
-        COPY_MEMBER(unka8)
-        COPY_MEMBER(unkac)
         COPY_MEMBER(unkb4)
         COPY_MEMBER(mCamWeight)
         COPY_MEMBER(mDefaultFilterFlags)
