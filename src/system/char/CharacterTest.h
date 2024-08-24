@@ -8,6 +8,7 @@ class Character;
 class CharDriver;
 class CharClip;
 class CharClipGroup;
+class ClipDistMap;
 class Waypoint;
 
 class CharacterTest : public RndOverlay::Callback {
@@ -19,6 +20,12 @@ public:
 
     void Load(BinStream&);
     void Poll();
+    void Draw();
+    void PlayNew();
+    void Recenter();
+    void AddDefaults();
+    void Walk();
+    void TeleportTo(Waypoint*);
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)
@@ -38,9 +45,9 @@ public:
     bool mZeroTravel; // 0x5e
     bool mShowScreenSize; // 0x5f
     bool mShowFootExtents; // 0x60
-    int unk64; // 0x64
+    float unk64; // 0x64
     int unk68; // 0x68
-    int unk6c; // 0x6c
+    ClipDistMap* unk6c; // 0x6c
     RndOverlay* mOverlay; // 0x70
 };
 

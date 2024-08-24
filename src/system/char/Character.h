@@ -106,6 +106,7 @@ public:
     bool Teleported() const { return mTeleported; }
     PollState GetPollState() const { return mPollState; }
     int MinLod() const { return mMinLod; }
+    int LastLod() const { return mLastLod; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);
