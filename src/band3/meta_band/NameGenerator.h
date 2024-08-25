@@ -22,6 +22,12 @@ public:
     std::map<Symbol, DataArray*> m_mapNameLists;
 };
 
-static NameGenerator* TheNameGenerator = 0;
+// NOTE(AndrewB):
+// Marking this as static like all(?) the other singletons
+// causes linking errors w/ a TU (CharacterCreatorPanel.o)
+// that hasn't been matched yet, no idea if this could cause
+// issues in the future when that TU *is* matched
+// but it links fine like this right now, so...
+extern NameGenerator *TheNameGenerator;
 
 #endif // METABAND_NAMEGEN_H
