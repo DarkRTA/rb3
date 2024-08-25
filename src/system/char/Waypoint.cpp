@@ -3,19 +3,21 @@
 #include "obj/Object.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
+#include "math/Rand.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
 
 INIT_REVS(Waypoint)
 
 std::list<Waypoint*>* Waypoint::sWaypoints;
 
 void Waypoint::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    Register();
     DataRegisterFunc("waypoint_find", &OnWaypointFind);
     DataRegisterFunc("waypoint_nearest", &OnWaypointNearest);
     DataRegisterFunc("waypoint_last", &OnWaypointLast);
     sWaypoints = new std::list<Waypoint*>;
+    TheDebug.AddExitCallback(Waypoint::Terminate);
 }
 
 void Waypoint::Terminate() {
@@ -33,8 +35,11 @@ DataNode Waypoint::OnWaypointFind(DataArray* da) {
     return DataNode(Waypoint::Find(da->Int(1)));
 }
 
-Waypoint::Waypoint() : mConnections(this) {
-
+Waypoint::Waypoint() : mFlags(0), mRadius(12.0f), mYRadius(0), mAngRadius(0), pad(0), mStrictAngDelta(0), mStrictRadiusDelta(0), mConnections(this) {
+    if(RandomFloat() < 0.5f){
+        sWaypoints->push_back(this);
+    }
+    else sWaypoints->push_back(this);
 }
 
 Waypoint::~Waypoint() {
@@ -58,11 +63,11 @@ void Waypoint::Load(BinStream& bs) {
     } else mRadius = 12;
     if (gRev > 2) {
         bs >> mYRadius;
-        bs >> d;
+        bs >> mAngRadius;
     }
     if (gRev > 3) {
         bs >> mStrictRadiusDelta;
-        bs >> e;
+        bs >> mStrictAngDelta;
     }
 }
 
@@ -70,8 +75,9 @@ BEGIN_PROPSYNCS(Waypoint)
     SYNC_PROP(flags, mFlags)
     SYNC_PROP(radius, mRadius)
     SYNC_PROP(y_radius, mYRadius)
-
+    SYNC_PROP_SET(ang_radius, mAngRadius * RAD2DEG, mAngRadius = _val.Float(0) * DEG2RAD)
     SYNC_PROP(strict_radius_delta, mStrictRadiusDelta)
+    SYNC_PROP_SET(strict_ang_delta, mStrictAngDelta * RAD2DEG, mStrictAngDelta = _val.Float(0) * DEG2RAD)
     SYNC_PROP(connections, mConnections)
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS
