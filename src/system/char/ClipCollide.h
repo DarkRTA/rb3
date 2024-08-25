@@ -35,20 +35,39 @@ public:
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray*);
 
+    void SyncChar();
+    void SyncWaypoint();
+    void ClearReport();
+    void SyncMode();
+    void Demonstrate();
+    bool ValidWaypoint(Waypoint*);
+    bool ValidClip(CharClip*);
+    void TestChars();
+    void TestWaypoints();
+    void TestClips();
+    ObjectDir* Clips();
+    void Collide();
+
+    DataNode OnVenueName(DataArray*);
+    DataNode OnListClips(DataArray*);
+    DataNode OnListWaypoints(DataArray*);
+    DataNode OnListReport(DataArray*);
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::vector<Report> mReports;
-    RndGraph* mGraph;
-    ObjPtr<Character, ObjectDir> mChar;
-    String mCharPath;
-    ObjPtr<Waypoint, ObjectDir> mWaypoint;
-    Symbol mPosition;
-    ObjPtr<CharClip, ObjectDir> mClip;
-    String mReportString;
-    bool mWorldLines;
-    bool mMoveCamera;
-    Symbol mMode;
+    std::vector<Report> mReports; // 0x1c
+    RndGraph* mGraph; // 0x24
+    ObjPtr<Character, ObjectDir> mChar; // 0x28
+    String mCharPath; // 0x34
+    ObjPtr<Waypoint, ObjectDir> mWaypoint; // 0x40
+    Symbol mPosition; // 0x4c
+    ObjPtr<CharClip, ObjectDir> mClip; // 0x50
+    String mReportString; // 0x5c
+    bool mWorldLines; // 0x68
+    bool mMoveCamera; // 0x69
+    Symbol mMode; // 0x6c
 };
 
 #endif
