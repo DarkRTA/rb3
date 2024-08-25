@@ -29,6 +29,7 @@ public:
         ~Transitions();
         void Clear();
         void Resize(int, const CharClip::NodeVector*);
+        void RemoveNodes(CharClip*);
         int Size() const;
 
         NodeVector* mNodeStart; // 0x0

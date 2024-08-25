@@ -261,6 +261,7 @@
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
+            "system/char/ClipGraphGen.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
