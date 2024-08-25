@@ -39,8 +39,11 @@ public:
     float CalcFrame();
     void FirstShotOk(Symbol);
 
+    bool ShotMatches(CamShot*, const std::vector<PropertyFilter>&);
     Symbol MakeCategoryAndFilters(DataArray*, std::vector<PropertyFilter>&);
     CamShot* PickCameraShot(Symbol, const std::vector<PropertyFilter>&);
+    CamShot* FindCameraShot(Symbol, const std::vector<PropertyFilter>&);
+    int NumCameraShots(Symbol, const std::vector<PropertyFilter>&);
 
     CamShot* NextShot() const { return mNextShot; }
     CamShot* CurrentShot() const { return mCurrentShot; }
@@ -62,7 +65,7 @@ public:
     std::vector<int, u32> unk8; // 0x8
     ObjPtr<CamShot, class ObjectDir> mNextShot; // 0x14
     ObjPtr<CamShot, class ObjectDir> mCurrentShot; // 0x20
-    float unk2c; // 0x2c
+    float mCamStartTime; // 0x2c
     FreeCamera* mFreeCam; // 0x30
 };
 

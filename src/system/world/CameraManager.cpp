@@ -8,7 +8,7 @@ Rand CameraManager::sRand(0);
 int CameraManager::sSeed;
 int gCooldown; // might need to change type
 
-CameraManager::CameraManager(WorldDir* dir) : mParent(dir), mNextShot(dir, 0), mCurrentShot(dir, 0), unk2c(0.0f), mFreeCam(0) {
+CameraManager::CameraManager(WorldDir* dir) : mParent(dir), mNextShot(dir, 0), mCurrentShot(dir, 0), mCamStartTime(0.0f), mFreeCam(0) {
     MILO_ASSERT(mParent, 0x28);
     DOFProc::Init();
 }
@@ -71,6 +71,18 @@ DataNode CameraManager::OnPickCameraShot(DataArray* da){
     return DataNode(PickCameraShot(MakeCategoryAndFilters(da, pvec), pvec));
 }
 
+DataNode CameraManager::OnFindCameraShot(DataArray* da){
+    std::vector<PropertyFilter> pvec;
+    pvec.reserve(20);
+    return DataNode(FindCameraShot(MakeCategoryAndFilters(da, pvec), pvec));
+}
+
+DataNode CameraManager::OnNumCameraShots(DataArray* da){
+    std::vector<PropertyFilter> pvec;
+    pvec.reserve(20);
+    return DataNode(NumCameraShots(MakeCategoryAndFilters(da, pvec), pvec));
+}
+
 void CameraManager::ForceCameraShot(CamShot* shot){
     mNextShot = shot;
 }
@@ -80,7 +92,7 @@ void CameraManager::StartShot_(CamShot* shot){
     mCurrentShot = shot;
     if(mCurrentShot){
         mCurrentShot->StartAnim();
-        unk2c = TheTaskMgr.Time(shot->Units());
+        mCamStartTime = TheTaskMgr.Time(shot->Units());
     }
     static DataNode& venue_test = DataVariable("venue_test");
     if(venue_test != DataNode(1)){
@@ -141,7 +153,7 @@ void CameraManager::PrePoll(){
 float CameraManager::CalcFrame(){
     float ttime = TheTaskMgr.Time(mCurrentShot->Units());
     float fpu = mCurrentShot->FramesPerUnit();
-    return (ttime - unk2c) * fpu;
+    return (ttime - mCamStartTime) * fpu;
 }
 
 void CameraManager::Enter(){
