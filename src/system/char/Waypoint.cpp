@@ -46,7 +46,74 @@ Waypoint::~Waypoint() {
 
 }
 
-void Waypoint::Highlight() { }
+void Waypoint::Highlight(){}
+
+// https://decomp.me/scratch/jaExl - retail scratch
+void Waypoint::Constrain(Transform& tf){
+    float f1 = 0.0f;
+    float f2 = mStrictRadiusDelta;
+    if(f2 > 0.0f){
+        if(mYRadius > 0.0f){
+            f1 = mYRadius + f2;
+        }
+        Vector3 v18;
+        ShapeDeltaBox(tf.v, mRadius + f2, f1, v18);
+        tf.v += v18;
+    }
+    if(mStrictAngDelta > 0.0f){
+        float ang = ShapeDeltaAng(mAngRadius + mStrictAngDelta, GetZAngle(tf.m));
+        RotateAboutZ(tf.m, ang, tf.m);
+    }
+}
+
+void Waypoint::ShapeDelta(const Vector3& v, Vector3& vout){
+    ShapeDeltaBox(v, mRadius, mYRadius, vout);
+}
+
+float Waypoint::ShapeDelta(float f){
+    return ShapeDeltaAng(mAngRadius, f);
+}
+
+void Waypoint::ShapeDeltaBox(const Vector3& v1, float f1, float f2, Vector3& res){
+    Transform& world = WorldXfm();
+    if(f2 > 0.0f){
+        Subtract(v1, WorldXfm().v, res);
+        float dotx = Dot(res, world.m.x);
+        float doty = Dot(res, world.m.y);
+        float clamped1 = Clamp(-f1, f1, dotx);
+        float clamped2 = Clamp(-f2, f2, doty);
+        Scale(world.m.x, clamped1 - dotx, res);
+        ScaleAddEq(res, world.m.y, clamped2 - doty);
+    }
+    else {
+        Subtract(WorldXfm().v, v1, res);
+        res.z = 0;
+        float lensq = LengthSquared(res);
+        if(lensq <= f1 * f1) res.Zero();
+        else res *= 1.0f - (f1 / std::sqrt(lensq));
+    }
+}
+
+float Waypoint::ShapeDeltaAng(float f1, float f2){
+    float limited = LimitAng(GetZAngle(WorldXfm().m) - f2);
+    float clamped = Clamp(-f1, f1, limited);
+    return limited - clamped;
+}
+
+BEGIN_COPYS(Waypoint)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndTransformable)
+    CREATE_COPY(Waypoint)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mFlags)
+        COPY_MEMBER(mConnections)
+        COPY_MEMBER(mRadius)
+        COPY_MEMBER(mYRadius)
+        COPY_MEMBER(mAngRadius)
+        COPY_MEMBER(mStrictRadiusDelta)
+        COPY_MEMBER(mStrictAngDelta)
+    END_COPYING_MEMBERS
+END_COPYS
 
 SAVE_OBJ(Waypoint, 460)
 

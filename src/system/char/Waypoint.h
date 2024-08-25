@@ -11,10 +11,17 @@ public:
     OBJ_CLASSNAME(Waypoint)
     OBJ_SET_TYPE(Waypoint)
     virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Highlight();
+
+    void Constrain(Transform&);
+    void ShapeDelta(const Vector3&, Vector3&);
+    float ShapeDelta(float);
+    void ShapeDeltaBox(const Vector3&, float, float, Vector3&);
+    float ShapeDeltaAng(float, float);
 
     static DataNode OnWaypointFind(DataArray*);
     static DataNode OnWaypointNearest(DataArray*);
