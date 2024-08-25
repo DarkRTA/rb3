@@ -47,6 +47,7 @@ public:
     void TestClips();
     ObjectDir* Clips();
     void Collide();
+    void PickReport(const char*);
 
     DataNode OnVenueName(DataArray*);
     DataNode OnListClips(DataArray*);

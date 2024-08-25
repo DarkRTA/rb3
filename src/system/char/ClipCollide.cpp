@@ -206,3 +206,68 @@ BEGIN_HANDLERS(ClipCollide)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x1DC)
 END_HANDLERS
+
+DataNode ClipCollide::OnListClips(DataArray* da){
+    std::list<CharClip*> cliplist;
+    ObjectDir* clipDir = Clips();
+    if(clipDir){
+        for(ObjDirItr<CharClip> it(clipDir, true); it != 0; ++it){
+            if(ValidClip(it)) cliplist.push_back(it);
+        }
+        // sort
+    }
+    int listsize = 0;
+    for(std::list<CharClip*>::iterator it = cliplist.begin(); it != cliplist.end(); it++) listsize++;
+    DataArray* arr = new DataArray(listsize);
+    arr->Node(0) = DataNode((Hmx::Object*)0);
+    int idx = 1;
+    for(std::list<CharClip*>::iterator it = cliplist.begin(); it != cliplist.end(); it++){
+        arr->Node(idx++) = DataNode(*it);
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
+DataNode ClipCollide::OnListWaypoints(DataArray* da){
+    std::list<Waypoint*> waylist;
+    for(ObjDirItr<Waypoint> it(Dir(), true); it != 0; ++it){
+        if(ValidWaypoint(it)) waylist.push_back(it);
+    }
+    // sort
+    int listsize = 0;
+    for(std::list<Waypoint*>::iterator it = waylist.begin(); it != waylist.end(); it++) listsize++;
+    DataArray* arr = new DataArray(listsize);
+    arr->Node(0) = DataNode((Hmx::Object*)0);
+    int idx = 1;
+    for(std::list<Waypoint*>::iterator it = waylist.begin(); it != waylist.end(); it++){
+        arr->Node(idx++) = DataNode(*it);
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
+DataNode ClipCollide::OnListReport(DataArray* da){
+    DataArray* arr = new DataArray(mReports.size() + 1);
+    arr->Node(0) = DataNode("");
+    for(int i = 0; i < mReports.size(); i++){
+        arr->Node(i + 1) = DataNode(MakeString("%d %s %s %s", i + 1, mReports[i].clip, mReports[i].waypoint->Name(), mReports[i].name));
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
+BEGIN_PROPSYNCS(ClipCollide)
+    SYNC_PROP_MODIFY_ALT(character, mChar, SyncChar())
+    SYNC_PROP_MODIFY_ALT(pick_character, mCharPath, SyncChar())
+    SYNC_PROP_MODIFY_ALT(waypoint, mWaypoint, SyncWaypoint())
+    SYNC_PROP_MODIFY(position, mPosition, SyncWaypoint())
+    SYNC_PROP_MODIFY(mode, mMode, SyncMode())
+    SYNC_PROP(clip, mClip)
+    SYNC_PROP_SET(clips, Clips(), )
+    SYNC_PROP_SET(pick_report, mReportString, PickReport(_val.Str(0)))
+    SYNC_PROP(world_lines, mWorldLines)
+    SYNC_PROP(move_camera, mMoveCamera)
+END_PROPSYNCS
