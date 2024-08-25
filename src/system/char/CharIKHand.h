@@ -15,7 +15,7 @@ public:
     class IKTarget {
     public:
         IKTarget(Hmx::Object* o) : mTarget(o, 0), mExtent(0) {}
-        IKTarget(const ObjPtr<RndTransformable, ObjectDir>& o, float f) : mTarget(o), mExtent(f) {}
+        IKTarget(ObjPtr<RndTransformable, ObjectDir> o, float f) ;
         ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
         float mExtent; // 0xc
     };

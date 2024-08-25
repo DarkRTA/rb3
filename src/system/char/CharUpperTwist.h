@@ -21,9 +21,9 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mUpperArm;
-    ObjPtr<RndTransformable, ObjectDir> mTwist1;
-    ObjPtr<RndTransformable, ObjectDir> mTwist2;
+    ObjPtr<RndTransformable, ObjectDir> mUpperArm; // 0x8
+    ObjPtr<RndTransformable, ObjectDir> mTwist1; // 0x14
+    ObjPtr<RndTransformable, ObjectDir> mTwist2; // 0x20
 };
 
 #endif

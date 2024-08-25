@@ -62,6 +62,8 @@ public:
         Zero();
         SetWeights(0);
     }
+    int TotalSize() const { return mTotalSize; }
+    void ScaleDown(CharBones&, float) const;
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);

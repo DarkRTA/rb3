@@ -190,7 +190,10 @@
             "system/char/Char.cpp": "NonMatching",
             "system/char/Character.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "NonMatching",
-            "system/char/CharBone.cpp": "NonMatching",
+            "system/char/CharBone.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps in standalone stlport functions"
+            },
             "system/char/CharBoneDir.cpp": "NonMatching",
             "system/char/CharBoneOffset.cpp": "Matching",
             "system/char/CharBones.cpp": "NonMatching",
@@ -210,8 +213,14 @@
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
-            "system/char/CharForeTwist.cpp": "NonMatching",
-            "system/char/CharGuitarString.cpp": "NonMatching",
+            "system/char/CharForeTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
+            "system/char/CharGuitarString.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharHair.cpp": "NonMatching",
             "system/char/CharIKFingers.cpp": "NonMatching",
             "system/char/CharIKFoot.cpp": "NonMatching",
@@ -232,28 +241,36 @@
             "system/char/CharMeshHide.cpp": "NonMatching",
             "system/char/CharMirror.cpp": "NonMatching",
             "system/char/CharNeckTwist.cpp": "NonMatching",
-            "system/char/CharPollGroup.cpp": "NonMatching",
+            "system/char/CharPollGroup.cpp": "Matching",
             "system/char/CharPosConstraint.cpp": "NonMatching",
             "system/char/CharServoBone.cpp": "NonMatching",
             "system/char/CharSleeve.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "Matching",
             "system/char/CharTransDraw.cpp": "Matching",
-            "system/char/CharUpperTwist.cpp": "NonMatching",
-            "system/char/CharUtl.cpp": "NonMatching",
+            "system/char/CharUpperTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
+            "system/char/CharUtl.cpp": {
+                "status": "Equivalent",
+                "comment": "ClipPredict::Predict checks out in retail"
+            },
             "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "Matching",
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
+            "system/char/ClipGraphGen.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
-            "system/math/strips/Striper.cpp": {"status": "Equivalent",
-                "comment": "Regswap in ComputeBestStrip__7StriperFUi"},
-
+            "system/math/strips/Striper.cpp": {
+                "status": "Equivalent",
+                "comment": "Regswap in ComputeBestStrip__7StriperFUi"
+            },
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "Matching",
             "system/math/FileChecksum.cpp": "Matching",

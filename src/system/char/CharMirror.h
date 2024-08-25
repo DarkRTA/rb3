@@ -35,10 +35,10 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtr<CharServoBone, class ObjectDir> mServo;
-    ObjPtr<CharServoBone, class ObjectDir> mMirrorServo;
-    CharBonesAlloc mBones;
-    std::vector<MirrorOp> mOps;
+    ObjPtr<CharServoBone, class ObjectDir> mServo; // 0x20
+    ObjPtr<CharServoBone, class ObjectDir> mMirrorServo; // 0x2c
+    CharBonesAlloc mBones; // 0x38
+    std::vector<MirrorOp> mOps; // 0xac
 };
 
 #endif

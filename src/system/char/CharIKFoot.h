@@ -36,7 +36,7 @@ public:
     int unk94;
     ObjPtr<RndTransformable, ObjectDir> mData; // 0x98
     int mDataIndex; // 0xa4
-    int unk[3];
+    Vector3 unka8; // 0xa8
     float unkb4; // 0xb4
     ObjPtr<Character, ObjectDir> mMe; // 0xb8
 };

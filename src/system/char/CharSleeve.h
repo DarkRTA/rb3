@@ -25,18 +25,18 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mSleeve;
-    ObjPtr<RndTransformable, ObjectDir> mTopSleeve;
-    Vector3 mPos;
-    Vector3 mLastPos;
-    float mLastDT;
-    float mInertia;
-    float mGravity;
-    float mRange;
-    float mNegLength;
-    float mPosLength;
-    float mStiffness;
-    ObjPtr<Character, ObjectDir> mMe;
+    ObjPtr<RndTransformable, ObjectDir> mSleeve; // 0x10
+    ObjPtr<RndTransformable, ObjectDir> mTopSleeve; // 0x1c
+    Vector3 mPos; // 0x28
+    Vector3 mLastPos; // 0x34
+    float mLastDT; // 0x40
+    float mInertia; // 0x44
+    float mGravity; // 0x48
+    float mRange; // 0x4c
+    float mNegLength; // 0x50
+    float mPosLength; // 0x54
+    float mStiffness; // 0x58
+    ObjPtr<Character, ObjectDir> mMe; // 0x5c
 };
 
 #endif

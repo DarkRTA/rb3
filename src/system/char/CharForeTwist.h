@@ -12,7 +12,6 @@ public:
     OBJ_SET_TYPE(CharForeTwist);
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
-    virtual void Enter();
     virtual ~CharForeTwist(){}
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);

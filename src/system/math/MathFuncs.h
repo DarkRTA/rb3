@@ -138,6 +138,10 @@ inline float fabs_f(double d){
     return __fabs(d);
 }
 
+inline bool IsFloatZero(float f){
+    return fabs_f(f) < 0.0001f;
+}
+
 inline float pow_f(double x, double y){
     return pow(x, y);
 }

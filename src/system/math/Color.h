@@ -64,7 +64,8 @@ namespace Hmx {
                 u8 a, b, g, r;
             };
         };
-        public:
+    public:
+        Color32(){ Clear(); }
         inline void Clear() { x = -1; }
         float fr() const { return r * 0.0039215688593685627f;}
         float fg() const { return g * 0.0039215688593685627f;}

@@ -14,19 +14,20 @@ CharGuitarString::~CharGuitarString(){
 }
 
 // fn_80507700 - poll
+// checks out in retail: https://decomp.me/scratch/Bxu4k
 void CharGuitarString::Poll(){
     if(!mNut || !mBridge || !mBend || !mTarget) return;
     Transform tf50(mBend->WorldXfm());
-    const Vector3& vec = mNut->WorldXfm().v;
-    const Transform& tf3(mBridge->WorldXfm());
-    const Transform& tf4(mTarget->WorldXfm());
-    Vector3 v1, v2;
-    Subtract(tf4.v, vec, v1); // subtract is right standalone (see CharHair)
-    Subtract(tf3.v, vec, v2);
-    float clamped = Clamp(0.0f, 1.0f, Dot(v1,v2) / Dot(v2,v2)); // so is Clamp and Dot (see MathFuncs and CharIKHand)
+    const Vector3& nutvec = mNut->WorldXfm().v;
+    const Vector3& bridgevec = mBridge->WorldXfm().v;
+    Transform& tf4(mTarget->WorldXfm());
+    Vector3 tmp;
+    Subtract(tf4.v, nutvec, tmp);
+    Vector3 tmp2;
+    Subtract(bridgevec, nutvec, tmp2);
+    float clamped = Clamp(0.0f, 1.0f, Dot(tmp,tmp2) / Dot(tmp2,tmp2));
     if(mOpen) clamped = 0.0f;
-    Vector3 res;
-    Interp(vec, tf3.v, clamped, res);
+    Interp(nutvec, bridgevec, clamped, tf50.v);
     mBend->SetWorldXfm(tf50);
 }
 

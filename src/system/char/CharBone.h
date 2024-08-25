@@ -34,6 +34,12 @@ public:
     int ScaleContext() const { return mScaleContext; }
     CharBones::Type RotationType() const { return mRotation; }
     int RotationContext() const { return mRotationContext; }
+    CharBone* Target() const { return mTarget; }
+    void SetTarget(CharBone* b){ mTarget = b; }
+    void SetPositionContext(int c){ mPositionContext = c; }
+    void SetScaleContext(int c){ mScaleContext = c; }
+    void SetRotationContext(int c){ mRotationContext = c; }
+    void SetRotationType(CharBones::Type ty){ mRotation = ty; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

@@ -21,7 +21,10 @@ void Normalize(const Hmx::Matrix3&, Hmx::Matrix3&);
 void MakeRotMatrix(const Hmx::Quat&, Hmx::Matrix3&);
 void Interp(const Hmx::Quat&, const Hmx::Quat&, float, Hmx::Quat&);
 void RotateAboutX(const Hmx::Matrix3&, float, Hmx::Matrix3&);
+void RotateAboutZ(const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void MakeRotQuat(const Vector3&, const Vector3&, Hmx::Quat&);
+void MakeRotQuatUnitX(const Vector3&, Hmx::Quat&);
+float GetZAngle(const Hmx::Matrix3&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
 TextStream& operator<<(TextStream& ts, const Vector3& v);

@@ -90,7 +90,7 @@ void Character::Terminate(){}
 
 Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0),
     mSelfShadow(0), mSpotCutout(0), mFloorShadow(1), mSphereBase(this, this), mBounding(), mPollState(kCharCreated), mTest(new CharacterTest(this)),
-    mFrozen(0), mDrawMode(kCharDrawAll), unk1f4(1), mInterestToForce(), unk1fc(this, 0), mDebugDrawInterestObjects(0) {
+    mFrozen(0), mDrawMode(kCharDrawAll), mTeleported(1), mInterestToForce(), unk1fc(this, 0), mDebugDrawInterestObjects(0) {
 
 }
 
@@ -104,7 +104,7 @@ void Character::Enter(){
     mMinLod = -1;
     mFrozen = false;
     mLastLod = 0;
-    unk1f4 = true;
+    mTeleported = true;
     mInterestToForce = Symbol();
     RndDir::Enter();
 }
@@ -121,7 +121,7 @@ void Character::Poll(){
         if(TheLoadMgr.EditMode()) mTest->Poll();
 #endif
         RndDir::Poll();
-        unk1f4 = false;
+        mTeleported = false;
         mPollState = kCharPolled;
     }
 }
