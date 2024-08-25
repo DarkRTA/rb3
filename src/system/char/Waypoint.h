@@ -28,7 +28,7 @@ public:
     int pad; // 0xa0
     float mStrictAngDelta; // 0xa4
     float mStrictRadiusDelta; // 0xa8
-    ObjVector<ObjOwnerPtr<Waypoint, ObjectDir>, u16> mConnections; // 0xac
+    ObjVector<ObjOwnerPtr<Waypoint, ObjectDir> > mConnections; // 0xac
 
     static void Init();
     static void Terminate();

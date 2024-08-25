@@ -102,6 +102,7 @@
             "system/char/CharUtl.cpp": "NonMatching",
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/CharWeightSetter.cpp": "NonMatching",
+            "system/char/Waypoint.cpp": "NonMatching",
 
             "system/math/Key.cpp": "NonMatching",
             "system/math/Rand.cpp": "NonMatching",

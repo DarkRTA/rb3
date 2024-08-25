@@ -35,6 +35,9 @@ public:
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray*);
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     std::vector<Report> mReports;
     RndGraph* mGraph;
     ObjPtr<Character, ObjectDir> mChar;

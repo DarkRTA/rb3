@@ -9,5 +9,5 @@ ClipCollide::ClipCollide() : mReports(), mGraph(0), mChar(this, 0), mCharPath(""
 }
 
 ClipCollide::~ClipCollide(){
-    
+    RndGraph::Free(this, false);
 }
