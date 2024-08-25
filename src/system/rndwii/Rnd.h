@@ -6,7 +6,8 @@
 #include "rndobj/Rnd.h"
 #include <vector>
 
-class WiiRnd : public Rnd { public:
+class WiiRnd : public Rnd {
+public:
     WiiRnd();
     virtual ~WiiRnd();
     virtual DataNode Handle(DataArray*, bool);

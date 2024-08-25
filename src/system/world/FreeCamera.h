@@ -14,6 +14,7 @@ public:
     void UpdateFromCamera();
     void SetParentDof(bool, bool, bool);
     void Poll();
+    void SetPadNum(int p){ mPadNum = p; }
 
     RndTransformable* mParent; // 0x1c
     Vector3 mRot; // 0x20

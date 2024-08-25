@@ -3,6 +3,7 @@
 #include "obj/ObjPtr_p.h"
 #include "world/CameraShot.h"
 #include "world/FreeCamera.h"
+#include "math/Rand.h"
 
 class WorldDir;
 
@@ -10,6 +11,15 @@ class CameraManager {
 public:
     class Category {
     public:
+    };
+
+    // size 0x14
+    class PropertyFilter {
+    public:
+        PropertyFilter(){}
+        DataNode n1; // 0x0
+        DataNode n2; // 0x8
+        int unk10; // 0x10
     };
 
     CameraManager(WorldDir*);
@@ -27,6 +37,14 @@ public:
     CamShot* ShotAfter(CamShot*);
     CamShot* MiloCamera();
     float CalcFrame();
+    void FirstShotOk(Symbol);
+
+    Symbol MakeCategoryAndFilters(DataArray*, std::vector<PropertyFilter>&);
+    CamShot* PickCameraShot(Symbol, const std::vector<PropertyFilter>&);
+
+    CamShot* NextShot() const { return mNextShot; }
+    CamShot* CurrentShot() const { return mCurrentShot; }
+    bool HasFreeCam() const { return mFreeCam; }
 
     DataNode OnPickCameraShot(DataArray*);
     DataNode OnFindCameraShot(DataArray*);
@@ -37,6 +55,7 @@ public:
 
     NEW_POOL_OVERLOAD(CameraManager)
     DELETE_POOL_OVERLOAD(CameraManager)
+    static Rand sRand;
     static int sSeed;
 
     WorldDir* mParent; // 0x4
