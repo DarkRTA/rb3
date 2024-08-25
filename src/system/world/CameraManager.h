@@ -25,6 +25,8 @@ public:
     FreeCamera* GetFreeCam(int);
     void DeleteFreeCam();
     CamShot* ShotAfter(CamShot*);
+    CamShot* MiloCamera();
+    float CalcFrame();
 
     DataNode OnPickCameraShot(DataArray*);
     DataNode OnFindCameraShot(DataArray*);
@@ -35,12 +37,13 @@ public:
 
     NEW_POOL_OVERLOAD(CameraManager)
     DELETE_POOL_OVERLOAD(CameraManager)
+    static int sSeed;
 
-    WorldDir* mParent;
-    int unk8, unkc, unk10;
+    WorldDir* mParent; // 0x4
+    std::vector<int, u32> unk8; // 0x8
     ObjPtr<CamShot, class ObjectDir> mNextShot; // 0x14
     ObjPtr<CamShot, class ObjectDir> mCurrentShot; // 0x20
-    float unk2c;
+    float unk2c; // 0x2c
     FreeCamera* mFreeCam; // 0x30
 };
 
