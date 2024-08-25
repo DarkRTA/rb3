@@ -46,7 +46,7 @@
             "band3/meta_band/BandProfile.cpp": "NonMatching",
             "band3/meta_band/CampaignKey.cpp": "Matching",
             "band3/meta_band/GameplayOptions.cpp": "Matching",
-            "band3/meta_band/NameGenerator.cpp": "NonMatching",
+            "band3/meta_band/NameGenerator.cpp": "Matching",
             "band3/meta_band/NewAssetProvider.cpp": "NonMatching",
             "band3/meta_band/ProfileAssets.cpp": "Matching",
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
