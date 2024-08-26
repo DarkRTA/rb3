@@ -424,13 +424,68 @@ next:
 END_LOADS
 #pragma pop
 
-CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(0), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
+CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
     mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
-    unk84(0x63), unk85(0), mBlurDepth(0x59), mMaxBlur(0xFF), mMinBlur(0), mMaxAngularOffsetX(0), mMaxAngularOffsetY(0),
-    unk8bp7(0), unk8bp6(0), unk8bp5(0), unk8bp4(0), unk8bp3(1), mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
+    unk85(0), mMaxBlur(0xFF), mMinBlur(0),
+    unk8bp7(0), unk8bp6(0), unk8bp5(0), unk8bp4(0), unk8bp3(0), mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
+    mMaxAngularOffsetY = 0;
+    mMaxAngularOffsetX = 0;
+    SetBlurDepth(0.34999999f);
+    SetFieldOfView(1.2217305f);
     unk10.Reset();
     mScreenOffset.Zero();
-    unk34 = 1e+30f;
+    unk34.x = 1e+30f;
+}
+
+float CamShotFrame::ZoomFieldOfView() const { return unk85 * 0.012319971f; }
+
+void CamShotFrame::UpdateTarget() const {
+    // GetCurrentTargetPosition(unk34);
+    // if(mParent){
+    //     unk44.Set(mParent->WorldXfm());
+    // }
+}
+
+void CamShotFrame::GetCurrentTargetPosition(Vector3& v) const {
+    v.Zero();
+    int count = 0;
+    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        RndTransformable* cur = *it;
+        if(cur){
+            count++;
+            Add(v, cur->WorldXfm().v, v);
+        }
+    }
+    if(count > 0) v *= (1.0f / (float)count);
+}
+
+bool CamShotFrame::HasTargets() const {
+    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        if(*it) return true;
+    }
+    return false;
+}
+
+DataNode CamShot::OnGetOccluded(DataArray* da){
+    return DataNode(0);
+}
+
+DataNode CamShot::OnSetAllCrowdChars3D(DataArray* da){
+    return DataNode(0);
+}
+
+CamShotCrowd::CamShotCrowd(Hmx::Object* o) : mCrowd(o, 0), mCrowdRotate(0), unk18(dynamic_cast<CamShot*>(o)) {}
+CamShotCrowd::CamShotCrowd(Hmx::Object* o, const CamShotCrowd& crowd) : mCrowd(crowd.mCrowd),
+    mCrowdRotate(crowd.mCrowdRotate), unk10(crowd.unk10), unk18(dynamic_cast<CamShot*>(o)) {}\
+
+void CamShotCrowd::Load(BinStream& bs){
+    bs >> mCrowd;
+    bs >> mCrowdRotate;
+    bs >> unk10;
+    int num;
+    bs >> num;
+    if(!mCrowd || num == mCrowd->unk88) unk10.resize(num);
+    else unk10.clear();
 }
 
 BEGIN_HANDLERS(CamShot)
@@ -456,7 +511,8 @@ DataNode CamShot::OnHasTargets(DataArray* da){
 }
 
 DataNode CamShot::OnSetPos(DataArray* da){
-    return DataNode(SetPos(mKeyFrames[da->Int(2)], RndCam::sCurrent));
+    int idx = da->Int(2);
+    return DataNode(SetPos(mKeyFrames[idx], RndCam::Current()));
 }
 
 DataNode CamShot::OnClearCrowdChars(DataArray* da){
@@ -489,32 +545,9 @@ DataNode CamShot::OnRadio(DataArray* da){
     return DataNode(0);
 }
 
-// void __thiscall CamShot::OnRadio(CamShot *this,DataArray *param_1)
-
-// {
-//   DataNode *pDVar1;
-//   uint uVar2;
-//   uint uVar3;
-//   uint uVar4;
-//   DataArray *in_r5;
-  
-//   pDVar1 = (DataNode *)DataArray::Node(in_r5,2);
-//   uVar2 = DataNode::Int(pDVar1,in_r5);
-//   pDVar1 = (DataNode *)DataArray::Node(in_r5,3);
-//   uVar3 = DataNode::Int(pDVar1,in_r5);
-//   uVar4._0_2_ = param_1[0x11].mLine;
-//   uVar4._2_2_ = param_1[0x11].mDeprecated;
-//   if ((uVar4 & uVar2) != 0) {
-//     uVar2 = uVar4 & ~uVar3 | uVar2;
-//     param_1[0x11].mLine = (short)(uVar2 >> 0x10);
-//     param_1[0x11].mDeprecated = (short)uVar2;
-//   }
-//   *(undefined4 *)this = 0;
-//   *(undefined4 *)(this + 4) = 6;
-//   return;
-// }
-
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
+    SYNC_PROP_MODIFY_ALT(crowd, o.mCrowd, o.OnCrowdChanged())
+    SYNC_PROP(crowd_rotate, o.mCrowdRotate)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
@@ -540,7 +573,7 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
     SYNC_PROP(focal_target, o.mFocusTarget)
     SYNC_PROP_SET(use_parent_rotation, o.unk8bp1, o.unk8bp1 = _val.Int(0))
     SYNC_PROP_SET(parent_first_frame, o.unk8bp0, o.unk8bp0 = _val.Int(0))
-    SYNC_PROP_SET(field_of_view, o.unk84 * 57.295776f, o.unk84 = _val.Float(0) * 81.16902f)
+    SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float(0) * DEG2RAD))
 END_CUSTOM_PROPSYNC
 
 #pragma push

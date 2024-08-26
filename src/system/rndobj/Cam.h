@@ -50,6 +50,8 @@ public:
     }
 
     static RndCam* sCurrent;
+    static RndCam* Current(){ return sCurrent; }
+
     NEW_OBJ(RndCam)
     DELETE_OVERLOAD;
     static void Init(){

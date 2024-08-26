@@ -20,6 +20,11 @@ public:
     bool OnSyncParent(ObjPtr<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
     bool HasTargets() const;
     void SetFieldOfView(float);
+    float ZoomFieldOfView() const;
+    float FieldOfView() const;
+    void GetCurrentTargetPosition(Vector3&) const;
+    void UpdateTarget() const;
+
     void SetBlurDepth(float f){ mBlurDepth = f * 255.0f; }
     void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
     void SetMinBlur(float f){ mMinBlur = f * 255.0f; }
@@ -36,15 +41,16 @@ public:
     Vector2 mScreenOffset; // 0x24
     float mShakeNoiseAmp; // 0x2c
     float mShakeNoiseFreq; // 0x30
-    float unk34, unk38, unk3c;
+    Vector3 unk34;
     float mFocusBlurMultiplier; // 0x40
     TransformNoScale unk44;
     ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x58
     CamShot* unk68;
     ObjPtr<RndTransformable, ObjectDir> mParent; // 0x6c
     ObjPtr<RndTransformable, ObjectDir> mFocusTarget; // 0x78
-    unsigned char unk84, unk85;
-    unsigned char mBlurDepth; // 0x86
+    char unk84;
+    char unk85;
+    char mBlurDepth; // 0x86
     unsigned char mMaxBlur; // 0x87
     unsigned char mMinBlur; // 0x88
     unsigned char mMaxAngularOffsetX; // 0x89
@@ -79,15 +85,17 @@ public:
     void ClearCrowdChars();
     void AddCrowdChars();
     void SetCrowdChars();
+    void OnCrowdChanged();
 
-    ObjPtr<WorldCrowd, ObjectDir> mCrowd;
-    int mCrowdRotate;
+    ObjPtr<WorldCrowd, ObjectDir> mCrowd; // 0x0
+    int mCrowdRotate; // 0xc
     std::vector<std::pair<int, int> > unk10; // 0x10
     CamShot* unk18; // 0x18
 };
 
 inline BinStream& operator>>(BinStream& bs, CamShotCrowd& csc){
     csc.Load(bs);
+    return bs;
 }
 
 class CamShot : public RndAnimatable {
@@ -109,7 +117,7 @@ public:
     virtual float EndFrame();
     virtual Hmx::Object* AnimTarget();
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
-    virtual void SetPreFrame(float, float);
+    virtual void SetPreFrame(float, float){}
     virtual void CurrentShot(){}
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);

@@ -1355,8 +1355,11 @@ system/world/CameraManager.cpp:
 	.text       start:0x8057D398 end:0x80581A9C
 	.ctors      start:0x807EFFCC end:0x807EFFD0
 
+system/world/CameraShot.cpp:
+	.text       start:0x80581A9C end:0x8058CD34
+
 system/world/Crowd.cpp:
-	.text       start:0x8058D868 end:0x80597134
+	.text       start:0x8058CD34 end:0x80597134
 
 rb3/colorpalette.cpp:
 	.text       start:0x80597134 end:0x80598310
