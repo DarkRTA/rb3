@@ -210,7 +210,9 @@ SAVE_OBJ(CamShot, 0x409);
 BEGIN_LOADS(CamShot)
     LOAD_REVS(bs)
     ASSERT_REVS(0x32, 1)
-    if(mHidden) UnHide();
+    bool bitfield_bool;
+    bool hidden = mHidden;
+    if(hidden) UnHide();
     float somefloat = 0.0f;
     if(gRev != 0){
         LOAD_SUPERCLASS(Hmx::Object)
@@ -218,29 +220,27 @@ BEGIN_LOADS(CamShot)
     }
     if(gRev > 0xC){
         bs >> mKeyFrames;
-        bool b;
-        bs >> b;
-        mLooping = b;
+        bs >> bitfield_bool;
+        mLooping = bitfield_bool;
         if(gRev > 0x1E) bs >> mLoopKeyframe;
         else mLoopKeyframe = 0;
         if(gRev < 0x28) bs >> somefloat;
         bs >> mNear;
         bs >> mFar;
-        bool bb;
-        bs >> bb;
-        mUseDepthOfField = bb;
+        bs >> bitfield_bool;
+        mUseDepthOfField = bitfield_bool;
         bs >> mFilter;
         bs >> mClampHeight;
     }
     else {
         mLoopKeyframe = 0;
         mLooping = false;
-        float f1, f2;
-        bs >> f1;
-        bs >> f2;
+        float fov1, fov2;
+        bs >> fov1;
+        bs >> fov2;
         if(gRev < 9){
-            f1 = ConvertFov(f1, 0.75f);
-            f2 = ConvertFov(f2, 0.75f);
+            fov1 = ConvertFov(fov1, 0.75f);
+            fov2 = ConvertFov(fov2, 0.75f);
         }
         Transform tf1;
         Transform tf2;
@@ -252,23 +252,25 @@ BEGIN_LOADS(CamShot)
         bs >> vec2;
         if(gRev < 0x28) bs >> somefloat;
         float fdummy1;
-        bool b;
+        bool usedof;
         bs >> fdummy1;
         bs >> mNear;
         bs >> mFar;
-        bs >> b;
-        mUseDepthOfField = b;
+        bs >> usedof;
+        mUseDepthOfField = usedof;
         float someotherfloat = 1.0f;
         if(gRev > 9){
-            float f;
+            float newblurdepth;
             float ff, ff2;
-            bs >> f >> ff >> ff2;
-            someotherfloat = someotherfloat - f;
+            bs >> newblurdepth;
+            bs >> ff;
+            bs >> ff2;
+            someotherfloat = 1.0f - newblurdepth;
         }
         if(gRev < 4){
-            bool bbb;
-            bs >> bbb;
-            SetRate((Rate)!bbb);
+            bool ratebool;
+            bs >> ratebool;
+            SetRate((Rate)!ratebool);
         }
         bs >> mFilter;
         if(gRev < 7) mFilter = 0.9f;
@@ -287,20 +289,34 @@ BEGIN_LOADS(CamShot)
         CamShotFrame csf1(this);
         CamShotFrame csf2(this);
         if(fdummy1 > 0.0f){
-            float locf1 = 0.0f;
-            float locf2 = fdummy1;
-            TransformNoScale tns;
-            tns.Set(tf1);
-            Vector2 locv;
-            locv = vec1;
-            // more
+            csf1.mDuration = 0.0f;
+            csf1.mBlend = fdummy1;
+            csf1.unk10.Set(tf1);
+            csf1.mScreenOffset = vec1;
+            csf1.SetFieldOfView(fov1);
+            csf1.SetBlurDepth(someotherfloat);
+            csf1.SetMaxBlur(1.0f);
+            csf1.SetMinBlur(0.0f);
+            csf1.mFocusBlurMultiplier = 0.0f;
+            csf1.mTargets = pList;
+            csf1.mParent = ptr;
+            mKeyFrames.push_back(csf1);
         }
-        // more
-        Vector2 v;
-        Interp(v, v, 0, v);
+        csf2.mDuration = 0.0f;
+        csf2.mBlend = 0.0f;
+        csf2.unk10.Set(tf2);
+        csf2.mScreenOffset = vec2;
+        csf2.SetFieldOfView(fov2);
+        csf2.SetBlurDepth(someotherfloat);
+        csf2.SetMaxBlur(1.0f);
+        csf2.SetMinBlur(0.0f);
+        csf2.mFocusBlurMultiplier = 0.0f;
+        csf2.mTargets = pList;
+        csf2.mParent = ptr;
+        mKeyFrames.push_back(csf2);
     }
     bs >> mPath;
-    if(gRev - 2 < 0x2B){
+    if(gRev - 2 <= 42U){
         float f2b;
         bs >> f2b;
     }
@@ -311,19 +327,100 @@ BEGIN_LOADS(CamShot)
             bs >> f26;
         }
     }
-    if(gRev >= 0x23) bs >> mPlatformOnly;
-    if(gRev > 0x21){
+    if(gRev > 0x22) bs >> mPlatformOnly;
+    else if(gRev > 0x21){
         int state;
         bs >> state;
         if(state == 1) mPlatformOnly = 2;
         else if(state == 2) mPlatformOnly = 4;
         else mPlatformOnly = 0;
     }
-    if(gRev == 0) LOAD_SUPERCLASS(RndAnimatable)
+    if(gRev < 1) LOAD_SUPERCLASS(RndAnimatable)
     CamShotCrowd csc(this);
-    if(gRev - 5 < 0x25){
-        
+    if(gRev - 5 < 0x25U){
+        bs >> csc.unk10;
     }
+    int loc240 = -1;
+    if(gRev - 8 < 0x22U){
+        bs >> loc240;
+    }
+    if(gRev > 5){
+        unk6c.clear();
+        unk6c.clear();
+        unk5c.clear();
+        if(gRev <= 0x2F || (bs.Cached() && gRev < 0x32)){
+            LoadDrawables(bs, unk5c, Dir());
+        }
+        else {
+            LoadDrawables(bs, unk5c, Dir());
+            LoadDrawables(bs, unk6c, Dir());
+        }
+    }
+    if(gRev > 0x1B) LoadDrawables(bs, unk64, Dir());
+    if(gRev <= 0xB){
+        DataNode* prop = Property("hide_crowd", false);
+        if(!prop || prop->Int(0) == 0){
+            ObjDirItr<WorldCrowd> iter(Dir(), true);
+            if(iter){
+                csc.mCrowd = iter;
+            }
+        }
+    }
+    else if(gRev < 0x2A) bs >> csc.mCrowd;
+    if(gRev - 0x21 < 9) bs >> csc.mCrowdRotate;
+    if(gRev - 8 < 0x22){
+        if(csc.mCrowd){
+            if(loc240 != csc.mCrowd->GetModifyStamp()){
+                csc.unk10.clear();
+                goto next;
+            }
+        }
+        if(!csc.mCrowd && loc240 != -1) csc.unk10.clear();
+    }
+next:
+    if(gRev == 0xE){
+        float f244, f248, f24c;
+        bs >> f244;
+        bs >> f248;
+        bs >> f24c;
+    }
+    if(gRev - 0x10 < 2){
+        float f250, f254;
+        bs >> f250;
+        bs >> f254;
+        for(int i = 0; i != mKeyFrames.size(); i++){
+            mKeyFrames[i].mShakeNoiseAmp = f254;
+            mKeyFrames[i].mShakeNoiseFreq = f250;
+        }
+    }
+    if(gRev > 0x10 && gRev < 0x12){
+        Vector2 v210;
+        bs >> v210;
+        for(int i = 0; i < mKeyFrames.size(); i++){
+            mKeyFrames[i].SetMaxAngularOffset(v210);
+        }
+    }
+    if(gRev > 0x13) bs >> mGlowSpot;
+    if(gRev > 0x1D) bs >> mDrawOverrides;
+    if(gRev > 0x1F) bs >> mPostProcOverrides;
+    if(gRev > 0x23 && gRev - 0x2F > 1){
+        bs >> bitfield_bool;
+        mPS3PerPixel = bitfield_bool;
+    }
+    if(gRev > 0x24) bs >> mFlags;
+    Symbol s258;
+    if(gRev - 0x28 < 3) bs >> s258;
+    if(gRev < 0x2A){
+        if(csc.mCrowd) mCrowds.push_back(csc);
+    }
+    else bs >> mCrowds;
+    if(gRev > 0x2A) bs >> mAnims;
+    if(gAltRev != 0) bs >> unk74;
+    if(!s258.Null()){
+        mAnims.push_back(Dir()->Find<RndAnimatable>(s258.Str(), false));
+    }
+    CacheFrames();
+    if(hidden) DoHide();
 END_LOADS
 #pragma pop
 

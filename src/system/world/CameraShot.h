@@ -10,15 +10,19 @@ class CamShot;
 class Spotlight;
 class WorldCrowd;
 
+// size 0x8c
 class CamShotFrame {
 public:
     CamShotFrame(Hmx::Object*);
     CamShotFrame(Hmx::Object*, const CamShotFrame&);
     void Load(BinStream&);
     void SetFieldOfView(float);
-    void SetBlurDepth(float);
+    void SetBlurDepth(float f){
+        unk86 = f * 255.0f;
+    }
     void SetMaxBlur(float);
     void SetMinBlur(float);
+    void SetMaxAngularOffset(const Vector2&);
 
     float mDuration; // 0x0
     float mBlend; // 0x4
@@ -58,12 +62,17 @@ public:
     CamShotCrowd(Hmx::Object*, const CamShotCrowd&);
 
     void Set3DCrowd();
+    void Load(BinStream&);
 
     ObjPtr<WorldCrowd, ObjectDir> mCrowd;
     int mCrowdRotate;
     std::vector<std::pair<int, int> > unk10; // 0x10
     CamShot* unk18; // 0x18
 };
+
+inline BinStream& operator>>(BinStream& bs, CamShotCrowd& csc){
+    csc.Load(bs);
+}
 
 class CamShot : public RndAnimatable {
 public:
@@ -162,5 +171,7 @@ public:
     bool unk120p1 : 1;
     bool unk120p0 : 1;
 };
+
+void LoadDrawables(BinStream&, std::vector<RndDrawable*>&, ObjectDir*);
 
 #endif

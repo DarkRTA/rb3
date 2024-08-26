@@ -217,8 +217,8 @@ public:
     void SetRot(const Hmx::Matrix3&);
     void Reset();
 
-    ShortQuat q;
-    class Vector3 v;
+    ShortQuat q; // 0x0/2/4/6
+    class Vector3 v; // 0x8
 };
 
 BinStream& operator>>(BinStream&, TransformNoScale&);

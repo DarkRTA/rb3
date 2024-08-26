@@ -29,6 +29,7 @@ public:
     virtual void Exit();
 
     void CleanUpCrowdFloor();
+    int GetModifyStamp() const { return unk88; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
