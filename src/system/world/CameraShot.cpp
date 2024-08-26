@@ -68,7 +68,7 @@ void CamShot::EndAnim(){
 }
 
 void CamShot::DoHide(){
-    if(!unk120p2){
+    if(!mHidden){
         unkb4.clear();
         unkbc.clear();
         unkbc.reserve(unk5c.size() + unk6c.size() + 3);
@@ -85,11 +85,12 @@ void CamShot::DoHide(){
                 unkbc.push_back(*it);
             }
         }
+        mHidden = true;
     }
 }
 
 void CamShot::UnHide(){
-    if(unk120p2){
+    if(mHidden){
         for(std::vector<RndDrawable*>::iterator it = unkb4.begin(); it != unkb4.end(); ++it){
             (*it)->SetShowing(false);
         }
@@ -98,8 +99,35 @@ void CamShot::UnHide(){
         }
         unkb4.clear();
         unkbc.clear();
-        unk120p2 = false;
+        mHidden = false;
     }
+}
+
+#pragma push
+#pragma pool_data off
+RndCam* CamShot::GetCam(){
+    RndCam* ret = 0;
+    PanelDir* pdir = dynamic_cast<PanelDir*>(Dir());
+    if(pdir){
+        ret = pdir->mCam;
+        if(!ret) MILO_NOTIFY_ONCE("%s: paneldir but no cam", PathName(pdir));
+    }
+    else {
+        MILO_NOTIFY_ONCE("%s: no world, or paneldir so no cam", PathName(this));
+    }
+    return ret;
+}
+#pragma pop
+
+void CamShot::SetShotOver(){
+    HandleType(shot_over_msg);
+    mShotOver = true;
+}
+
+bool CamShot::CheckShotStarted(){ return unk120p4; }
+
+bool CamShot::CheckShotOver(float f){
+    return !mShotOver && !mLooping && f >= mDuration;
 }
 
 #pragma push
@@ -182,7 +210,7 @@ SAVE_OBJ(CamShot, 0x409);
 BEGIN_LOADS(CamShot)
     LOAD_REVS(bs)
     ASSERT_REVS(0x32, 1)
-    if(unk120p2) UnHide();
+    if(mHidden) UnHide();
     float somefloat = 0.0f;
     if(gRev != 0){
         LOAD_SUPERCLASS(Hmx::Object)

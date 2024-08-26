@@ -97,6 +97,8 @@ public:
     int Disabled() const { return mDisabled; }
     int Flags() const { return mFlags; }
     float GetDurationSeconds() const;
+    RndCam* GetCam();
+    void SetShotOver();
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);
@@ -155,8 +157,8 @@ public:
     bool mUseDepthOfField : 1; // 0x120 >> 6 & 1
     bool mPS3PerPixel : 1; // 0x120 >> 5 & 1
     bool unk120p4 : 1;
-    bool unk120p3 : 1;
-    bool unk120p2 : 1;
+    bool mShotOver : 1; // 0x120 >> 3 & 1
+    bool mHidden : 1; // 0x120 >> 2 & 1
     bool unk120p1 : 1;
     bool unk120p0 : 1;
 };
