@@ -51,10 +51,13 @@ inline BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
     return bs;
 }
 
+// size 0x1c
 class CamShotCrowd {
 public:
     CamShotCrowd(Hmx::Object*);
     CamShotCrowd(Hmx::Object*, const CamShotCrowd&);
+
+    void Set3DCrowd();
 
     ObjPtr<WorldCrowd, ObjectDir> mCrowd;
     int mCrowdRotate;
@@ -87,13 +90,33 @@ public:
     virtual bool CheckShotOver(float);
 
     void CacheFrames();
+    void DoHide();
     void UnHide();
     bool ShotOk(CamShot*);
     bool PlatformOk() const;
     int Disabled() const { return mDisabled; }
     int Flags() const { return mFlags; }
+    float GetDurationSeconds() const;
+
+    DataNode OnHasTargets(DataArray*);
+    DataNode OnSetPos(DataArray*);
+    DataNode OnSetCrowdChars(DataArray*);
+    DataNode OnAddCrowdChars(DataArray*);
+    DataNode OnClearCrowdChars(DataArray*);
+    DataNode OnGetOccluded(DataArray*);
+    DataNode OnSetAllCrowdChars3D(DataArray*);
+    DataNode OnRadio(DataArray*);
 
     DECLARE_REVS;
+    NEW_OBJ(CamShot);
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(CamShot)
+    }
+    static Hmx::Object* sAnimTarget;
 
     ObjVector<CamShotFrame> mKeyFrames; // 0x10
     int mLoopKeyframe; // 0x1c
@@ -115,8 +138,8 @@ public:
     ObjPtrList<RndDrawable, ObjectDir> mPostProcOverrides; // 0x8c
     ObjVector<CamShotCrowd> mCrowds; // 0x9c
     ObjPtr<Spotlight, ObjectDir> mGlowSpot; // 0xa8
-    std::vector<int> unkb4;
-    std::vector<int> unkbc;
+    std::vector<RndDrawable*> unkb4;
+    std::vector<RndDrawable*> unkbc;
     Vector3 unkc4;
     Vector3 unkd0;
     Vector3 unkdc;
@@ -136,8 +159,6 @@ public:
     bool unk120p2 : 1;
     bool unk120p1 : 1;
     bool unk120p0 : 1;
-
-    static void Init();
 };
 
 #endif

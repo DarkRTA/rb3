@@ -5,7 +5,11 @@
 #include "rndobj/TransProxy.h"
 #include "rndobj/Utl.h"
 #include "obj/PropSync_p.h"
+#include "world/Dir.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
+
+Hmx::Object* CamShot::sAnimTarget;
 
 INIT_REVS(CamShot);
 
@@ -15,6 +19,87 @@ CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.
     unkdc(0.0f, 0.0f, 0.0f), unke8(0.0f, 0.0f, 0.0f), unkf4(0.0f, 0.0f, 0.0f), unk100(0.0f, 0.0f, 0.0f), unk10c(0), unk110(0),
     mDuration(0.0f), mDisabled(0), mFlags(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
 
+}
+
+CamShot::~CamShot(){
+
+}
+
+void CamShot::Init(){
+    Register();
+    sAnimTarget = Hmx::Object::New<Hmx::Object>();
+}
+
+void CamShot::ListAnimChildren(std::list<RndAnimatable*>& animlist) const {
+    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        animlist.push_back(*it);
+    }
+}
+
+Hmx::Object* CamShot::AnimTarget(){ return sAnimTarget; }
+
+void CamShot::StartAnim(){
+    START_AUTO_TIMER("cam_switch");
+    HandleType(start_shot_msg);
+    WorldDir* wdir = dynamic_cast<WorldDir*>(Dir());
+    if(wdir) wdir->SetCrowds(mCrowds);
+    unk10c = 0;
+    unk110 = 0;
+    unkc4.Zero();
+    unkdc.Zero();
+    unkf4.Zero();
+    unkd0.Zero();
+    unke8.Zero();
+    unk100.Zero();
+    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        (*it)->StartAnim();
+    }
+    for(int i = 0; i != mCrowds.size(); i++){
+        mCrowds[i].Set3DCrowd();
+    }
+}
+
+void CamShot::EndAnim(){
+    UnHide();
+    HandleType(stop_shot_msg);
+    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        (*it)->EndAnim();
+    }
+}
+
+void CamShot::DoHide(){
+    if(!unk120p2){
+        unkb4.clear();
+        unkbc.clear();
+        unkbc.reserve(unk5c.size() + unk6c.size() + 3);
+        unkb4.reserve(unk64.size());
+        for(std::vector<RndDrawable*>::iterator it = unk5c.begin(); it != unk5c.end(); ++it){
+            if((*it)->Showing()){
+                (*it)->SetShowing(false);
+                unkbc.push_back(*it);
+            }
+        }
+        for(std::vector<RndDrawable*>::iterator it = unk6c.begin(); it != unk6c.end(); ++it){
+            if((*it)->Showing()){
+                (*it)->SetShowing(false);
+                unkbc.push_back(*it);
+            }
+        }
+    }
+}
+
+void CamShot::UnHide(){
+    if(unk120p2){
+        for(std::vector<RndDrawable*>::iterator it = unkb4.begin(); it != unkb4.end(); ++it){
+            (*it)->SetShowing(false);
+        }
+        for(std::vector<RndDrawable*>::iterator it = unkbc.begin(); it != unkbc.end(); ++it){
+            (*it)->SetShowing(true);
+        }
+        unkb4.clear();
+        unkbc.clear();
+        unk120p2 = false;
+    }
 }
 
 #pragma push
@@ -84,7 +169,7 @@ RndTransformable* LoadSubPart(BinStream& bs, CamShot* shot){
     if(!proxy){
         proxy = Hmx::Object::New<RndTransProxy>();
         proxy->SetName(search, shot->Dir());
-        // proxy->SetProxy(dynamic_cast<ObjectDir>(foundTrans));
+        proxy->SetProxy(dynamic_cast<ObjectDir*>(foundTrans));
         proxy->SetPart(sym);
     }
     return proxy;
@@ -213,6 +298,24 @@ BEGIN_LOADS(CamShot)
     }
 END_LOADS
 #pragma pop
+
+BEGIN_HANDLERS(CamShot)
+    HANDLE(has_targets, OnHasTargets)
+    HANDLE(set_pos, OnSetPos)
+    HANDLE_EXPR(duration_seconds, GetDurationSeconds())
+    HANDLE(set_3d_crowd, OnSetCrowdChars)
+    HANDLE(add_3d_crowd, OnAddCrowdChars)
+    HANDLE(clear_3d_crowd, OnClearCrowdChars)
+    HANDLE_EXPR(gen_hide_list, 0)
+    HANDLE_EXPR(clear_hide_list, 0)
+    HANDLE(get_occluded, OnGetOccluded)
+    HANDLE_EXPR(platform_ok, PlatformOk())
+    HANDLE(set_all_to_3D, OnSetAllCrowdChars3D)
+    HANDLE(radio, OnRadio)
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xC6F)
+END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
 END_CUSTOM_PROPSYNC
