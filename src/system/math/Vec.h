@@ -16,6 +16,7 @@ public:
         x *= f; y *= f; 
         return *this;
     }
+    void Zero(){ x = y = 0.0f; }
 
     bool operator!() const {
         return x == 0.0f && y == 0.0f;

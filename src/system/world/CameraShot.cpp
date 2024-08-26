@@ -424,6 +424,15 @@ next:
 END_LOADS
 #pragma pop
 
+CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(0), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
+    mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
+    unk84(0x63), unk85(0), mBlurDepth(0x59), mMaxBlur(0xFF), mMinBlur(0), mMaxAngularOffsetX(0), mMaxAngularOffsetY(0),
+    unk8bp7(0), unk8bp6(0), unk8bp5(0), unk8bp4(0), unk8bp3(1), mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
+    unk10.Reset();
+    mScreenOffset.Zero();
+    unk34 = 1e+30f;
+}
+
 BEGIN_HANDLERS(CamShot)
     HANDLE(has_targets, OnHasTargets)
     HANDLE(set_pos, OnSetPos)
@@ -442,10 +451,96 @@ BEGIN_HANDLERS(CamShot)
     HANDLE_CHECK(0xC6F)
 END_HANDLERS
 
+DataNode CamShot::OnHasTargets(DataArray* da){
+    return DataNode(mKeyFrames[da->Int(2)].HasTargets());
+}
+
+DataNode CamShot::OnSetPos(DataArray* da){
+    return DataNode(SetPos(mKeyFrames[da->Int(2)], RndCam::sCurrent));
+}
+
+DataNode CamShot::OnClearCrowdChars(DataArray* da){
+    int idx = da->Int(2);
+    MILO_ASSERT(idx < mCrowds.size(), 0xC82);
+    mCrowds[idx].ClearCrowdChars();
+    return DataNode(0);
+}
+
+DataNode CamShot::OnAddCrowdChars(DataArray* da){
+    int idx = da->Int(2);
+    MILO_ASSERT(idx < mCrowds.size(), 0xC8A);
+    mCrowds[idx].AddCrowdChars();
+    return DataNode(0);
+}
+
+DataNode CamShot::OnSetCrowdChars(DataArray* da){
+    int idx = da->Int(2);
+    MILO_ASSERT(idx < mCrowds.size(), 0xC92);
+    mCrowds[idx].SetCrowdChars();
+    return DataNode(0);
+}
+
+DataNode CamShot::OnRadio(DataArray* da){
+    int i2 = da->Int(2);
+    int i3 = da->Int(3);
+    if(mFlags & i2){
+        mFlags = mFlags & ~i3 | i2;
+    }
+    return DataNode(0);
+}
+
+// void __thiscall CamShot::OnRadio(CamShot *this,DataArray *param_1)
+
+// {
+//   DataNode *pDVar1;
+//   uint uVar2;
+//   uint uVar3;
+//   uint uVar4;
+//   DataArray *in_r5;
+  
+//   pDVar1 = (DataNode *)DataArray::Node(in_r5,2);
+//   uVar2 = DataNode::Int(pDVar1,in_r5);
+//   pDVar1 = (DataNode *)DataArray::Node(in_r5,3);
+//   uVar3 = DataNode::Int(pDVar1,in_r5);
+//   uVar4._0_2_ = param_1[0x11].mLine;
+//   uVar4._2_2_ = param_1[0x11].mDeprecated;
+//   if ((uVar4 & uVar2) != 0) {
+//     uVar2 = uVar4 & ~uVar3 | uVar2;
+//     param_1[0x11].mLine = (short)(uVar2 >> 0x10);
+//     param_1[0x11].mDeprecated = (short)uVar2;
+//   }
+//   *(undefined4 *)this = 0;
+//   *(undefined4 *)(this + 4) = 6;
+//   return;
+// }
+
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
+    SYNC_PROP(duration, o.mDuration)
+    SYNC_PROP(blend, o.mBlend)
+    SYNC_PROP(blend_ease, o.mBlendEase)
+    SYNC_PROP_SET(blend_ease_mode, o.mBlendEaseMode, o.mBlendEaseMode = _val.Int(0))
+    SYNC_PROP(screen_offset, o.mScreenOffset)
+    {
+        static Symbol _s("targets");
+        if(sym == _s){
+            o.OnSyncTargets(o.mTargets, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("parent");
+        if(sym == _s){
+            o.OnSyncParent(o.mParent, _val, _prop, _i + 1, _op);
+            return true;
+        }
+    }
+    SYNC_PROP(focal_target, o.mFocusTarget)
+    SYNC_PROP_SET(use_parent_rotation, o.unk8bp1, o.unk8bp1 = _val.Int(0))
+    SYNC_PROP_SET(parent_first_frame, o.unk8bp0, o.unk8bp0 = _val.Int(0))
+    SYNC_PROP_SET(field_of_view, o.unk84 * 57.295776f, o.unk84 = _val.Float(0) * 81.16902f)
 END_CUSTOM_PROPSYNC
 
 #pragma push

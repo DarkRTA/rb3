@@ -16,13 +16,17 @@ public:
     CamShotFrame(Hmx::Object*);
     CamShotFrame(Hmx::Object*, const CamShotFrame&);
     void Load(BinStream&);
+    bool OnSyncTargets(ObjPtrList<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
+    bool OnSyncParent(ObjPtr<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
+    bool HasTargets() const;
     void SetFieldOfView(float);
-    void SetBlurDepth(float f){
-        unk86 = f * 255.0f;
+    void SetBlurDepth(float f){ mBlurDepth = f * 255.0f; }
+    void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
+    void SetMinBlur(float f){ mMinBlur = f * 255.0f; }
+    void SetMaxAngularOffset(const Vector2& v){
+        mMaxAngularOffsetX = v.x * 81.16902f;
+        mMaxAngularOffsetY = v.y * 81.16902f;
     }
-    void SetMaxBlur(float);
-    void SetMinBlur(float);
-    void SetMaxAngularOffset(const Vector2&);
 
     float mDuration; // 0x0
     float mBlend; // 0x4
@@ -38,12 +42,21 @@ public:
     ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x58
     CamShot* unk68;
     ObjPtr<RndTransformable, ObjectDir> mParent; // 0x6c
-    int unk74;
     ObjPtr<RndTransformable, ObjectDir> mFocusTarget; // 0x78
-    char unk84, unk85, unk86, unk87, unk88;
-    short unk89;
-    char unk8a, unk8b;
-    // mBlendEaseMode: 0x8b >> 2
+    unsigned char unk84, unk85;
+    unsigned char mBlurDepth; // 0x86
+    unsigned char mMaxBlur; // 0x87
+    unsigned char mMinBlur; // 0x88
+    unsigned char mMaxAngularOffsetX; // 0x89
+    unsigned char mMaxAngularOffsetY; // 0x8a
+    unsigned char unk8bp7 : 1;
+    unsigned char unk8bp6 : 1;
+    unsigned char unk8bp5 : 1;
+    unsigned char unk8bp4 : 1;
+    unsigned char unk8bp3 : 1;
+    unsigned char mBlendEaseMode : 1; // 0x8b >> 2 & 1
+    unsigned char unk8bp1 : 1;
+    unsigned char unk8bp0 : 1;
     // mUseParentNotation: 0x8b >> 1 & 1
     // mParentFirstFrame: 0x8b & 1
     // mFieldOfView: 0x84, lensMM, lensPreset
@@ -63,6 +76,9 @@ public:
 
     void Set3DCrowd();
     void Load(BinStream&);
+    void ClearCrowdChars();
+    void AddCrowdChars();
+    void SetCrowdChars();
 
     ObjPtr<WorldCrowd, ObjectDir> mCrowd;
     int mCrowdRotate;
@@ -108,6 +124,7 @@ public:
     float GetDurationSeconds() const;
     RndCam* GetCam();
     void SetShotOver();
+    bool SetPos(CamShotFrame&, RndCam*);
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);
