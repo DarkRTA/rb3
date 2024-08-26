@@ -40,6 +40,8 @@ public:
     CamShot* MiloCamera();
     float CalcFrame();
     void FirstShotOk(Symbol);
+    void Randomize();
+    void RandomizeCategory(ObjPtrList<CamShot, ObjectDir>&);
 
     bool ShotMatches(CamShot*, const std::vector<PropertyFilter>&);
     Symbol MakeCategoryAndFilters(DataArray*, std::vector<PropertyFilter>&);
@@ -65,7 +67,7 @@ public:
     static int sSeed;
 
     WorldDir* mParent; // 0x4
-    std::vector<Category, u32> mCameraShotCategories; // 0x8
+    std::vector<Category, unsigned int> mCameraShotCategories; // 0x8
     ObjPtr<CamShot, class ObjectDir> mNextShot; // 0x14
     ObjPtr<CamShot, class ObjectDir> mCurrentShot; // 0x20
     float mCamStartTime; // 0x2c

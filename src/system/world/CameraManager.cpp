@@ -20,13 +20,28 @@ CameraManager::~CameraManager(){
     for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
         delete it->unk4;
     }
-    //     for (iVar3 = *(int *)(this + 8); iVar2 = fn_8039870C(this + 8), iVar3 != iVar2;
-    //     iVar3 = iVar3 + 8) {
-    //   piVar1 = *(int **)(iVar3 + 4);
-    //   if (piVar1 != (int *)0x0) {
-    //     (**(code **)(*piVar1 + 8))(piVar1,1);
-    //   }
-    // }
+}
+
+void CameraManager::RandomizeCategory(ObjPtrList<CamShot, ObjectDir>& camlist){
+
+}
+
+void CameraManager::Randomize(){
+    sRand.Seed(sSeed);
+    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+        RandomizeCategory(*it->unk4);
+    }
+}
+
+void CameraManager::SyncObjects(){
+    mCameraShotCategories.clear();
+    mCameraShotCategories.reserve(100);
+    for(ObjDirItr<CamShot> it(mParent, true); it != 0; ++it){
+        if(it->PlatformOk()){
+            FindOrAddCategory(it->mCategory)->push_back(it);
+        }
+    }
+    Randomize();
 }
 
 bool CameraManager::ShotMatches(CamShot* shot, const std::vector<PropertyFilter>& filts){
@@ -76,6 +91,21 @@ CamShot* CameraManager::PickCameraShot(Symbol s, const std::vector<PropertyFilte
     }
     else mNextShot = shot;
     return shot;
+}
+
+CamShot* CameraManager::FindCameraShot(Symbol s, const std::vector<PropertyFilter>& filts){
+    FirstShotOk(s);
+    ObjPtrList<CamShot, ObjectDir>* camlist = FindOrAddCategory(s);
+    for(ObjPtrList<CamShot, ObjectDir>::iterator it = camlist->begin(); it != camlist->end(); ++it){
+        CamShot* cur = *it;
+        if(!cur->Disabled() && ShotMatches(cur, filts)){
+            if(cur->ShotOk(mCurrentShot)){
+                camlist->MoveItem(camlist->end(), *camlist, it);
+                return cur;
+            }
+        }
+    }
+    return 0;
 }
 
 int CameraManager::NumCameraShots(Symbol s, const std::vector<PropertyFilter>& filts){

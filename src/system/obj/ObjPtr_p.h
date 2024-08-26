@@ -359,6 +359,15 @@ public:
         if(obj) obj->AddRef(this);
     }
 
+    // remove a particular item inside iterator otherIt, from list otherList,
+    // and insert it into this list at the position indicated by thisIt
+    void MoveItem(iterator thisIt, ObjPtrList<T1, T2>& otherList, iterator otherIt){
+        if(otherIt != thisIt){
+            otherList.unlink(otherIt.mNode);
+            link(thisIt, otherIt.mNode);
+        }
+    }
+
     void operator=(const ObjPtrList<T1, T2>& x){
         if(this == &x) return;
         while(mSize > x.mSize) pop_back();

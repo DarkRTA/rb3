@@ -89,6 +89,7 @@ public:
     void CacheFrames();
     void UnHide();
     bool ShotOk(CamShot*);
+    bool PlatformOk() const;
     int Disabled() const { return mDisabled; }
     int Flags() const { return mFlags; }
 
