@@ -218,6 +218,14 @@
                 "-O4,p"
             ]
         },
+        "sdk/DWC": {
+            "base": "base",
+            "flags": [
+                "-func_align 4",
+                "-O4,p",
+                "-Isrc/sdk/DWC"
+            ]
+        },
         "sdk/ec": {
             "base": "base",
             "flags": [
