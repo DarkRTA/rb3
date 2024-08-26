@@ -135,7 +135,7 @@ namespace Hmx {
         Object& operator=(const Object&);
         void RemoveFromDir();
 
-        DataNode *Property(DataArray *, bool) const;
+        DataNode* Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool) const;
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);

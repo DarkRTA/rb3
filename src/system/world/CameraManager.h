@@ -11,15 +11,17 @@ class CameraManager {
 public:
     class Category {
     public:
+        Symbol unk0;
+        ObjPtrList<CamShot, ObjectDir>* unk4;
     };
 
     // size 0x14
     class PropertyFilter {
     public:
         PropertyFilter(){}
-        DataNode n1; // 0x0
-        DataNode n2; // 0x8
-        int unk10; // 0x10
+        DataNode prop; // 0x0
+        DataNode match; // 0x8
+        int mask; // 0x10
     };
 
     CameraManager(WorldDir*);
@@ -44,6 +46,7 @@ public:
     CamShot* PickCameraShot(Symbol, const std::vector<PropertyFilter>&);
     CamShot* FindCameraShot(Symbol, const std::vector<PropertyFilter>&);
     int NumCameraShots(Symbol, const std::vector<PropertyFilter>&);
+    ObjPtrList<CamShot, ObjectDir>* FindOrAddCategory(Symbol);
 
     CamShot* NextShot() const { return mNextShot; }
     CamShot* CurrentShot() const { return mCurrentShot; }
@@ -62,7 +65,7 @@ public:
     static int sSeed;
 
     WorldDir* mParent; // 0x4
-    std::vector<int, u32> unk8; // 0x8
+    std::vector<Category, u32> mCameraShotCategories; // 0x8
     ObjPtr<CamShot, class ObjectDir> mNextShot; // 0x14
     ObjPtr<CamShot, class ObjectDir> mCurrentShot; // 0x20
     float mCamStartTime; // 0x2c

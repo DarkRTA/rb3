@@ -17,6 +17,76 @@ CameraManager::~CameraManager(){
     StartShot_(0);
     if(TheDOFProc) TheDOFProc->UnSet();
     RELEASE(mFreeCam);
+    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+        delete it->unk4;
+    }
+    //     for (iVar3 = *(int *)(this + 8); iVar2 = fn_8039870C(this + 8), iVar3 != iVar2;
+    //     iVar3 = iVar3 + 8) {
+    //   piVar1 = *(int **)(iVar3 + 4);
+    //   if (piVar1 != (int *)0x0) {
+    //     (**(code **)(*piVar1 + 8))(piVar1,1);
+    //   }
+    // }
+}
+
+bool CameraManager::ShotMatches(CamShot* shot, const std::vector<PropertyFilter>& filts){
+    int flags = shot->Flags();
+    for(std::vector<PropertyFilter>::const_iterator it = filts.begin(); it != filts.end(); ++it){
+        DataNode d28;
+        if(it->prop.Type() == kDataArray){
+            d28 = shot->Property(it->prop.Array(0), true)->Evaluate();
+        }
+        else {
+            Symbol sym = it->prop.Sym(0);
+            if(sym == flags_exact) d28 = DataNode(flags & it->mask);
+            else if(sym == flags_any) d28 = DataNode((flags & it->mask) != 0);
+            else d28 = shot->Property(sym, true)->Evaluate();
+        }
+
+        if(it->match.Type() == kDataArray){
+            DataArray* arr = it->match.Array(0);
+            int idx;
+            for(idx = 0; idx != arr->Size(); idx++){
+                if(d28 == arr->Node(idx)) break;
+            }
+            if(idx == arr->Size()) return false;
+        }
+        else if(d28 != it->match) return false;
+    }
+    return true;
+}
+
+CamShot* CameraManager::PickCameraShot(Symbol s, const std::vector<PropertyFilter>& filts){
+    CamShot* shot = FindCameraShot(s, filts);
+    if(!shot){
+        String str("No acceptable camera shot:");
+        str << " cat: " << s;
+        for(std::vector<PropertyFilter>::const_iterator it = filts.begin(); it != filts.end(); ++it){
+            str << " (";
+            it->prop.Print(str, false);
+            str << " ";
+            it->match.Print(str, false);
+            if(it->prop == DataNode(flags_any) || it->prop == DataNode(flags_exact)){
+                str << MakeString(" 0x%x", it->mask);
+            } 
+            str << ")";
+        }
+        MILO_WARN(str.c_str());
+        return 0;
+    }
+    else mNextShot = shot;
+    return shot;
+}
+
+int CameraManager::NumCameraShots(Symbol s, const std::vector<PropertyFilter>& filts){
+    FirstShotOk(s);
+    ObjPtrList<CamShot, ObjectDir>* camlist = FindOrAddCategory(s);
+    int num = 0;
+    for(ObjPtrList<CamShot, ObjectDir>::iterator it = camlist->begin(); it != camlist->end(); ++it){
+        CamShot* cur = *it;
+        if(cur->Disabled() == 0 && ShotMatches(cur, filts) && cur->ShotOk(mCurrentShot)) num++;
+    }
+    return num;
 }
 
 void CameraManager::FirstShotOk(Symbol s){
@@ -32,31 +102,31 @@ Symbol CameraManager::MakeCategoryAndFilters(DataArray* da, std::vector<Property
         for(int i = 0; i < arr->Size(); i++){
             DataArray* currArr = arr->Array(i);
             PropertyFilter filt;
-            filt.n1 = currArr->Evaluate(0);
+            filt.prop = currArr->Evaluate(0);
             bool b1 = false;
-            if(filt.n1.Type() == kDataSymbol){
-                if(filt.n1.Sym(0) == flags_exact){
+            if(filt.prop.Type() == kDataSymbol){
+                if(filt.prop.Sym(0) == flags_exact){
                     b1 = true;
                 }
             }
             if(b1){
-                filt.unk10 = currArr->Int(1);
-                filt.n2 = DataNode(currArr->Int(2));
+                filt.mask = currArr->Int(1);
+                filt.match = DataNode(currArr->Int(2));
             }
             else {
                 b1 = false;
-                if(filt.n1.Type() == kDataSymbol){
-                    if(filt.n1.Sym(0) == flags_any){
+                if(filt.prop.Type() == kDataSymbol){
+                    if(filt.prop.Sym(0) == flags_any){
                         b1 = true;
                     }
                 }
                 if(b1){
-                    filt.unk10 = currArr->Int(1);
-                    filt.n2 = DataNode(1);
+                    filt.mask = currArr->Int(1);
+                    filt.match = DataNode(1);
                 }
                 else {
-                    filt.n2 = currArr->Evaluate(1);
-                    filt.unk10 = -1;
+                    filt.match = currArr->Evaluate(1);
+                    filt.mask = -1;
                 }
             }
             filts.push_back(filt);
@@ -68,19 +138,22 @@ Symbol CameraManager::MakeCategoryAndFilters(DataArray* da, std::vector<Property
 DataNode CameraManager::OnPickCameraShot(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
-    return DataNode(PickCameraShot(MakeCategoryAndFilters(da, pvec), pvec));
+    Symbol sym = MakeCategoryAndFilters(da, pvec);
+    return DataNode(PickCameraShot(sym, pvec));
 }
 
 DataNode CameraManager::OnFindCameraShot(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
-    return DataNode(FindCameraShot(MakeCategoryAndFilters(da, pvec), pvec));
+    Symbol sym = MakeCategoryAndFilters(da, pvec);
+    return DataNode(FindCameraShot(sym, pvec));
 }
 
 DataNode CameraManager::OnNumCameraShots(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
-    return DataNode(NumCameraShots(MakeCategoryAndFilters(da, pvec), pvec));
+    Symbol sym = MakeCategoryAndFilters(da, pvec);
+    return DataNode(NumCameraShots(sym, pvec));
 }
 
 void CameraManager::ForceCameraShot(CamShot* shot){
@@ -193,5 +266,20 @@ END_HANDLERS
 
 DataNode CameraManager::OnRandomSeed(DataArray* da){
     sSeed = da->Int(2);
+    return DataNode(0);
+}
+
+DataNode CameraManager::OnIterateShot(DataArray* da){
+    DataNode* var = da->Var(2);
+    DataNode d28(*var);
+    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+        for(ObjPtrList<CamShot, ObjectDir>::iterator lit = it->unk4->begin(); lit != it->unk4->end(); ++lit){
+            *var = DataNode(*lit);
+            for(int i = 3; i < da->Size(); i++){
+                da->Command(i)->Execute();
+            }
+        }
+    }
+    *var = d28;
     return DataNode(0);
 }

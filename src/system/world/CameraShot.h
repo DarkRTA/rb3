@@ -88,6 +88,9 @@ public:
 
     void CacheFrames();
     void UnHide();
+    bool ShotOk(CamShot*);
+    int Disabled() const { return mDisabled; }
+    int Flags() const { return mFlags; }
 
     DECLARE_REVS;
 
