@@ -10,7 +10,7 @@
 static u32 dwci_gamecode = 0;
 static BOOL s_initialized = FALSE;
 
-BOOL DWC_Init(int id, const char* name, int gamecode, DWCAllocFunc alloc, DWCFreeFunc free) {
+BOOL DWC_Init(int id, const char* name, int gamecode, DWCAllocExFunc alloc, DWCFreeFunc free) {
     OSRegisterVersion("<< RVL_SDK - DWCDL \trelease build: Apr 22 2010 18:57:59 (0x4302_162) >>");
     DWCi_SetMemFunc(alloc, free);
     DWC_SetReportLevel(-1);
