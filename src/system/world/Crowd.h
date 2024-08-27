@@ -4,9 +4,36 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Env.h"
+#include "char/Character.h"
 
 class WorldCrowd : public RndDrawable, public RndPollable {
 public:
+
+    class CharDef {
+    public:
+        CharDef(Hmx::Object*);
+        void Load(BinStream&);
+
+        ObjPtr<Character, ObjectDir> mChar; // 0x0
+        float mHeight; // 0xc
+        float mDensity; // 0x10
+        float mRadius; // 0x14
+        bool unk18; // 0x18 - use random color?
+        ObjPtrList<RndMat, ObjectDir> unk1c; // 0x1c
+    };
+
+    class CharData {
+    public:
+        CharData(Hmx::Object*);
+        void Load(BinStream&);
+
+        CharDef mDef; // 0x0
+        RndMultiMesh* mMMesh; // 0x2c
+        std::list<int> mBackup; // 0x30
+        std::vector<int> m3DChars; // 0x38
+        std::vector<int> m3DCharsCreated; // 0x40
+    };
+
     WorldCrowd();
     OBJ_CLASSNAME(WorldCrowd);
     OBJ_SET_TYPE(WorldCrowd);
@@ -31,7 +58,13 @@ public:
     void CleanUpCrowdFloor();
     int GetModifyStamp() const { return unk88; }
     void Set3DCharList(const std::vector<std::pair<int, int> >&, Hmx::Object*);
+    void AssignRandomColors();
+    void SetFullness(float, float);
 
+    DataNode OnRebuild(DataArray*);
+    DataNode OnIterateFrac(DataArray*);
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(WorldCrowd)
@@ -39,22 +72,22 @@ public:
         REGISTER_OBJ_FACTORY(WorldCrowd)
     }
 
-    ObjPtr<RndMesh, ObjectDir> unk28;
-    ObjList<int> unk34;
-    int unk40;
-    int unk44;
-    int unk48;
-    int unk4c;
-    int unk50;
-    bool unk54;
-    bool unk55;
-    float unk58;
-    float unk5c;
-    int unk60;
-    ObjPtr<RndEnviron, ObjectDir> unk64;
-    ObjPtr<RndEnviron, ObjectDir> unk70;
-    ObjPtr<RndTransformable, ObjectDir> unk7c;
-    int unk88;
+    ObjPtr<RndMesh, ObjectDir> mPlacementMesh; // 0x28
+    ObjList<int> mCharacters; // 0x34
+    int mNum; // 0x40
+    int unk44; // 0x44
+    int unk48; // 0x48
+    int unk4c; // 0x4c
+    int unk50; // 0x50
+    bool mForce3DCrowd; // 0x54
+    bool mShow3DOnly; // 0x55
+    float unk58; // 0x58
+    float unk5c; // 0x5c
+    int mLod; // 0x60
+    ObjPtr<RndEnviron, ObjectDir> mEnviron; // 0x64
+    ObjPtr<RndEnviron, ObjectDir> mEnviron3D; // 0x70
+    ObjPtr<RndTransformable, ObjectDir> mFocus; // 0x7c
+    int unk88; // 0x88
 };
 
 #endif
