@@ -40,6 +40,7 @@ public:
     int PackedColor() const;
     float Intensity() const;
     void SetProjectedBlend(int i){ mProjectedBlend = i; }
+    bool GetAnimateFromPreset() const;
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

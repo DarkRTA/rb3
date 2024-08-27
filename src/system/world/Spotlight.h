@@ -60,6 +60,8 @@ public:
     virtual void UpdateBounds();
     virtual void Poll();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
+    
+    bool GetAnimateFromPreset() const;
 
     static void Init();
 
