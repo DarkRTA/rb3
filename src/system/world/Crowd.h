@@ -30,6 +30,7 @@ public:
 
     void CleanUpCrowdFloor();
     int GetModifyStamp() const { return unk88; }
+    void Set3DCharList(const std::vector<std::pair<int, int> >&, Hmx::Object*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

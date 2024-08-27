@@ -121,6 +121,8 @@ RndCam* CamShot::GetCam(){
 }
 #pragma pop
 
+float CamShot::EndFrame(){ return mDuration; }
+
 void CamShot::SetShotOver(){
     HandleType(shot_over_msg);
     mShotOver = true;
@@ -130,6 +132,43 @@ bool CamShot::CheckShotStarted(){ return unk120p4; }
 
 bool CamShot::CheckShotOver(float f){
     return !mShotOver && !mLooping && f >= mDuration;
+}
+
+void CamShot::CacheFrames(){
+    float frames = 0.0f;
+    for(int i = 0; i != mKeyFrames.size(); i++){
+        CamShotFrame& curframe = mKeyFrames[i];
+        curframe.unkc = frames;
+        frames += curframe.mDuration + curframe.mBlend;
+    }
+    mDuration = frames;
+}
+
+bool CamShot::ShotOk(CamShot* shot){
+    static Message msg("shot_ok", DataNode(0));
+    msg[0] = DataNode(shot);
+    DataNode handled = HandleType(msg);
+    switch(handled.Type()){
+        case kDataUnhandled:
+            break;
+        case kDataString:
+            if(DataVariable("camera_spew") != DataNode(0)){
+                MILO_LOG("Shot %s rejected: %s.\n", Name(), handled.Str(0));
+            }
+            return false;
+        default:
+            if(handled.Int(0)){
+                break;
+            }
+            else {
+                if(DataVariable("camera_spew") != DataNode(0)){
+                    MILO_LOG("Shot %s rejected: not ok.\n", Name());
+                }
+                return false;
+            }
+            break;
+    }
+    return true;
 }
 
 #pragma push
@@ -203,6 +242,20 @@ RndTransformable* LoadSubPart(BinStream& bs, CamShot* shot){
         proxy->SetPart(sym);
     }
     return proxy;
+}
+
+void LoadDrawables(BinStream& bs, std::vector<RndDrawable*>& vec, ObjectDir* dir){
+    MILO_ASSERT(dir, 0x3F9);
+    vec.clear();
+    int count;
+    bs >> count;
+    vec.reserve(count);
+    for(; count != 0; count--){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        RndDrawable* draw = dir->Find<RndDrawable>(buf, false);
+        if(draw) vec.push_back(draw);
+    }
 }
 
 SAVE_OBJ(CamShot, 0x409);
@@ -302,6 +355,7 @@ BEGIN_LOADS(CamShot)
             csf1.mFocusBlurMultiplier = 0.0f;
             csf1.mTargets = pList;
             csf1.mParent = ptr;
+            csf1.unk8bp1 = somebool;
             mKeyFrames.push_back(csf1);
         }
         csf2.mDuration = 0.0f;
@@ -315,10 +369,17 @@ BEGIN_LOADS(CamShot)
         csf2.mFocusBlurMultiplier = 0.0f;
         csf2.mTargets = pList;
         csf2.mParent = ptr;
+        csf2.unk8bp1 = somebool;
         mKeyFrames.push_back(csf2);
     }
     bs >> mPath;
-    if(gRev - 2 <= 42U){
+    if(
+        gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 ||
+        gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 ||
+        gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 || gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 ||
+        gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 || gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41 ||
+        gRev == 42 || gRev == 43 || gRev == 44
+    ){
         float f2b;
         bs >> f2b;
     }
@@ -339,13 +400,22 @@ BEGIN_LOADS(CamShot)
     }
     if(gRev < 1) LOAD_SUPERCLASS(RndAnimatable)
     CamShotCrowd csc(this);
-    if(gRev - 5 < 0x25U){
+    if(
+        gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 ||
+        gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 ||
+        gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 || gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 ||
+        gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 || gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
+    ){
         bs >> csc.unk10;
     }
     int loc240 = -1;
-    if(gRev - 8 < 0x22U){
+    if(
+        gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 ||
+        gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 ||
+        gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 || gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
+        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
+    )
         bs >> loc240;
-    }
     if(gRev > 5){
         unk6c.clear();
         unk6c.clear();
@@ -359,7 +429,10 @@ BEGIN_LOADS(CamShot)
         }
     }
     if(gRev > 0x1B) LoadDrawables(bs, unk64, Dir());
-    if(gRev <= 0xB){
+    if(gRev > 0xB){
+        if(gRev < 0x2A) bs >> csc.mCrowd;
+    }
+    else {
         DataNode* prop = Property("hide_crowd", false);
         if(!prop || prop->Int(0) == 0){
             ObjDirItr<WorldCrowd> iter(Dir(), true);
@@ -368,9 +441,17 @@ BEGIN_LOADS(CamShot)
             }
         }
     }
-    else if(gRev < 0x2A) bs >> csc.mCrowd;
-    if(gRev - 0x21 < 9) bs >> csc.mCrowdRotate;
-    if(gRev - 8 < 0x22){
+    if(
+        gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
+        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
+    )
+        bs >> csc.mCrowdRotate;
+    if(
+        gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 ||
+        gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 ||
+        gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 || gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
+        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
+    ){
         if(csc.mCrowd){
             if(loc240 != csc.mCrowd->GetModifyStamp()){
                 csc.unk10.clear();
@@ -386,7 +467,7 @@ next:
         bs >> f248;
         bs >> f24c;
     }
-    if(gRev - 0x10 < 2){
+    if(gRev == 16 || gRev == 17){
         float f250, f254;
         bs >> f250;
         bs >> f254;
@@ -398,20 +479,20 @@ next:
     if(gRev > 0x10 && gRev < 0x12){
         Vector2 v210;
         bs >> v210;
-        for(int i = 0; i < mKeyFrames.size(); i++){
+        for(int i = 0; i != mKeyFrames.size(); i++){
             mKeyFrames[i].SetMaxAngularOffset(v210);
         }
     }
     if(gRev > 0x13) bs >> mGlowSpot;
     if(gRev > 0x1D) bs >> mDrawOverrides;
     if(gRev > 0x1F) bs >> mPostProcOverrides;
-    if(gRev > 0x23 && gRev - 0x2F > 1){
+    if(gRev > 0x23 && (gRev - 47 > 1U)){
         bs >> bitfield_bool;
         mPS3PerPixel = bitfield_bool;
     }
     if(gRev > 0x24) bs >> mFlags;
     Symbol s258;
-    if(gRev - 0x28 < 3) bs >> s258;
+    if(gRev == 40 || gRev == 41 || gRev == 42) bs >> s258;
     if(gRev < 0x2A){
         if(csc.mCrowd) mCrowds.push_back(csc);
     }
@@ -443,7 +524,7 @@ void CamShot::Disable(bool b, int i){
 
 CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
     mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
-    unk85(0), mMaxBlur(0xFF), mMinBlur(0),
+    mZoomFOV(0), mMaxBlur(0xFF), mMinBlur(0),
     mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
     mMaxAngularOffsetY = 0;
     mMaxAngularOffsetX = 0;
@@ -456,7 +537,7 @@ CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase
 
 CamShotFrame::CamShotFrame(Hmx::Object* o, const CamShotFrame& frame) : mDuration(frame.mDuration), mBlend(frame.mBlend), mBlendEase(frame.mBlendEase),
     unk10(frame.unk10), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
-    mTargets(frame.mTargets), unk68(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), unk84(frame.unk84), unk85(frame.unk85),
+    mTargets(frame.mTargets), unk68(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), mFOV(frame.mFOV), mZoomFOV(frame.mZoomFOV),
     mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), unk8bp1(frame.unk8bp1), unk8bp0(0) {
     mMaxAngularOffsetX = frame.mMaxAngularOffsetX;
     mMaxAngularOffsetY = frame.mMaxAngularOffsetY;
@@ -703,7 +784,7 @@ DataNode CamShot::OnSetAllCrowdChars3D(DataArray* da){
 
 CamShotCrowd::CamShotCrowd(Hmx::Object* o) : mCrowd(o, 0), mCrowdRotate(0), unk18(dynamic_cast<CamShot*>(o)) {}
 CamShotCrowd::CamShotCrowd(Hmx::Object* o, const CamShotCrowd& crowd) : mCrowd(crowd.mCrowd),
-    mCrowdRotate(crowd.mCrowdRotate), unk10(crowd.unk10), unk18(dynamic_cast<CamShot*>(o)) {}\
+    mCrowdRotate(crowd.mCrowdRotate), unk10(crowd.unk10), unk18(dynamic_cast<CamShot*>(o)) {}
 
 void CamShotCrowd::Load(BinStream& bs){
     bs >> mCrowd;
@@ -713,6 +794,42 @@ void CamShotCrowd::Load(BinStream& bs){
     bs >> num;
     if(!mCrowd || num == mCrowd->unk88) unk10.resize(num);
     else unk10.clear();
+}
+
+void CamShotCrowd::Set3DCrowd(){
+    if(mCrowd){
+        mCrowd->Set3DCharList(unk10, unk18);
+    }
+}
+
+void CamShotCrowd::ClearCrowdList(){ unk10.clear(); }
+void CamShotCrowd::OnCrowdChanged(){ ClearCrowdList(); }
+
+void CamShotCrowd::ClearCrowdChars(){
+    ClearCrowdList();
+    if(!mCrowd) MILO_WARN("No crowd selected");
+    mCrowd->Set3DCharList(unk10, unk18);
+}
+
+void CamShotCrowd::SetCrowdChars(){
+    std::list<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> > meshlist;
+    GetSelectedCrowd(meshlist);
+    if(meshlist.begin() == meshlist.end()){
+        MILO_WARN("No selected crowd members in this crowd");
+    }
+    else {
+        ClearCrowdChars();
+        AddCrowdChars(meshlist);
+    }
+}
+
+void CamShotCrowd::AddCrowdChars(){
+    std::list<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> > meshlist;
+    GetSelectedCrowd(meshlist);
+    if(meshlist.begin() == meshlist.end()){
+        MILO_WARN("No selected crowd members in this crowd");
+    }
+    else AddCrowdChars(meshlist);
 }
 
 BEGIN_HANDLERS(CamShot)

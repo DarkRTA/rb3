@@ -2,6 +2,7 @@
 #define WORLD_CAMERASHOT_H
 #include "rndobj/Anim.h"
 #include "rndobj/TransAnim.h"
+#include "rndobj/MultiMesh.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
@@ -24,15 +25,15 @@ public:
     void Interp(const CamShotFrame&, float, float, RndCam*);
     bool SameTargets(const CamShotFrame&) const;
     void BuildTransform(RndCam*, Transform&, bool) const;
-    float BlurDepth() const;
-    float MaxBlur() const;
-    float MinBlur() const;
     const Vector2 MaxAngularOffset() const;
 
-    float ZoomFieldOfView() const { return unk85 * 0.012319971f; }
-    float FieldOfView() const { return unk84 * 0.012319971f; }
-    void SetZoomFieldOfView(float f){ unk85 = f * 81.16902f; }
-    void SetFieldOfView(float f){ unk84 = f * 81.16902f; }
+    float BlurDepth() const { return mBlurDepth * 0.0039215689f; }
+    float MaxBlur() const { return mMaxBlur * 0.0039215689f; }
+    float MinBlur() const { return mMinBlur * 0.0039215689f; }
+    float ZoomFieldOfView() const { return mZoomFOV * 0.012319971f; }
+    float FieldOfView() const { return mFOV * 0.012319971f; }
+    void SetZoomFieldOfView(float f){ mZoomFOV = f * 81.16902f; }
+    void SetFieldOfView(float f){ mFOV = f * 81.16902f; }
     void SetBlurDepth(float f){ mBlurDepth = f * 255.0f; }
     void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
     void SetMinBlur(float f){ mMinBlur = f * 255.0f; }
@@ -56,9 +57,9 @@ public:
     CamShot* unk68;
     ObjPtr<RndTransformable, ObjectDir> mParent; // 0x6c
     ObjPtr<RndTransformable, ObjectDir> mFocusTarget; // 0x78
-    char unk84;
-    char unk85;
-    char mBlurDepth; // 0x86
+    mutable unsigned char mFOV; // 0x84
+    mutable char mZoomFOV; // 0x85
+    mutable unsigned char mBlurDepth; // 0x86
     unsigned char mMaxBlur; // 0x87
     unsigned char mMinBlur; // 0x88
     unsigned char mMaxAngularOffsetX; // 0x89
@@ -89,7 +90,10 @@ public:
     void AddCrowdChars();
     void SetCrowdChars();
     void OnCrowdChanged();
-
+    void ClearCrowdList();
+    void GetSelectedCrowd(std::list<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> >&);
+    void AddCrowdChars(std::list<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> >&);
+    
     ObjPtr<WorldCrowd, ObjectDir> mCrowd; // 0x0
     int mCrowdRotate; // 0xc
     std::vector<std::pair<int, int> > unk10; // 0x10
