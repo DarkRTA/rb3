@@ -280,6 +280,7 @@ void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
+void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(

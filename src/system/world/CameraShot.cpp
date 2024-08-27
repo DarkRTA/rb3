@@ -6,6 +6,8 @@
 #include "rndobj/Utl.h"
 #include "obj/PropSync_p.h"
 #include "world/Dir.h"
+#include "math/Interp.h"
+#include "math/MathFuncs.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -424,10 +426,25 @@ next:
 END_LOADS
 #pragma pop
 
+float CamShot::GetDurationSeconds() const {
+    if(Units() == kTaskBeats){
+        return 0.0f;
+    }
+    else {
+        MILO_ASSERT(Units() == kTaskSeconds, 0x613);
+        return mDuration / 30.0f;
+    }
+}
+
+void CamShot::Disable(bool b, int i){
+    if(b) mDisabled |= i;
+    else mDisabled &= ~i;
+}
+
 CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
     mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
     unk85(0), mMaxBlur(0xFF), mMinBlur(0),
-    unk8bp7(0), unk8bp6(0), unk8bp5(0), unk8bp4(0), unk8bp3(0), mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
+    mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
     mMaxAngularOffsetY = 0;
     mMaxAngularOffsetX = 0;
     SetBlurDepth(0.34999999f);
@@ -437,7 +454,140 @@ CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase
     unk34.x = 1e+30f;
 }
 
-float CamShotFrame::ZoomFieldOfView() const { return unk85 * 0.012319971f; }
+#pragma push
+#pragma dont_inline on
+void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam* cam){
+    float d11 = f1;
+    float fvar1 = 0;
+    if(mBlendEase){
+        float fvar2 = 1.0f;
+        if(mBlendEaseMode){
+            switch(mBlendEaseMode){
+                case 1: fvar2 = 2.0f; break;
+                case 2: fvar1 = -1.0f; break;
+                default:
+                    MILO_WARN("Invalid mBlendEaseMode: %d\n", mBlendEaseMode);
+                    break;
+            }
+        }
+        ATanInterpolator aint(fvar1, fvar2, fvar1, fvar2, mBlendEase);
+        d11 = aint.Eval(f1);
+    }
+    float interp1 = ::Interp(FieldOfView(), frame.FieldOfView(), d11);
+    float interp2 = ::Interp(cam->YFov(), interp1, f2);
+    cam->SetFrustum(unk68->mNear, unk68->mFar, interp2, 1.0f);
+    bool hasTarget = HasTargets();
+    bool thasTarget = frame.HasTargets();
+    bool sameTargets = SameTargets(frame);
+    Transform tfd0;
+    BuildTransform(cam, tfd0, !sameTargets);
+    Transform tf100;
+    BuildTransform(cam, tf100, !sameTargets);
+    Transform tf130;
+    ::Interp(tfd0.v, tf100.v, d11, tf130.v);
+    ::Interp(tfd0.m, tf100.m, d11, tf130.m);
+    float f1fc;
+    if(hasTarget || thasTarget){
+        if(sameTargets){
+            Transform tf160(tf130);
+            Transform tf190(tf130);
+            if(hasTarget){
+                tf160.LookAt(unk34, tf130.m.z);
+            }
+            if(thasTarget){
+                tf190.LookAt(frame.unk34, tf130.m.z);
+            }
+            ::Interp(tf160.m, tf190.m, d11, tf130.m);
+        }
+        Vector2 v1e0;
+        if(hasTarget && !thasTarget){
+            f1fc = Distance(unk34, tf130.v);
+            v1e0 = mScreenOffset;
+        }
+        else if(!hasTarget && thasTarget){
+            f1fc = Distance(frame.unk34, tf130.v);
+            v1e0 = frame.mScreenOffset;
+        }
+        else {
+            float dist13 = Distance(frame.unk34, tf130.v);
+            float dist14 = Distance(unk34, tf130.v);
+            ::Interp(dist14, dist13, d11, f1fc);
+            ::Interp(mScreenOffset, frame.mScreenOffset, d11, v1e0);
+        }
+        
+        if(sameTargets){
+            Vector3 v1c0;
+            v1c0.x = (-v1e0.x * f1fc) / cam->LocalProjectXfm().m.x.x;
+            v1c0.y = 0.0f;
+            v1c0.z = (v1e0.y * f1fc) / cam->LocalProjectXfm().m.z.x;
+
+            Multiply(v1c0, tf130, tf130.v);
+        }
+    
+
+    }
+    float f200;
+    ::Interp(ZoomFieldOfView(), frame.ZoomFieldOfView(), d11, f200);
+    cam->SetFrustum(unk68->mNear, unk68->mFar, interp2 + f200, 1.0f);
+    RndTransformable* focus = mFocusTarget;
+    RndTransformable* towardFocus = frame.mFocusTarget;
+    bool b10 = false;
+    if(unk68->mUseDepthOfField && (focus || hasTarget || towardFocus || thasTarget)){
+        b10 = true;
+    }
+    if(b10){
+        float f204;
+        float f208;
+        ::Interp(BlurDepth(), frame.BlurDepth(), d11, f204);
+        float f20c;
+        ::Interp(MaxBlur(), frame.MaxBlur(), d11, f20c);
+        float f210;
+        ::Interp(MinBlur(), frame.MinBlur(), d11, f210);
+        ::Interp(mFocusBlurMultiplier, frame.mFocusBlurMultiplier, d11, f208);
+        float d9 = 0;
+        float d10;
+        if(focus){
+            d10 = Distance(focus->WorldXfm().v, tf130.v);
+        }
+        else {
+            d10 = d9;
+            if(hasTarget) d10 = Distance(unk34, tf130.v);
+        }
+        if(towardFocus){
+            d9 = Distance(towardFocus->WorldXfm().v, tf130.v);
+        }
+        else {
+            if(thasTarget) d9 = Distance(frame.unk34, tf130.v);
+        }
+        if(!focus && !hasTarget){
+            MILO_ASSERT(towardFocus || thasTarget, 0x7D8);
+            d10 = d9;
+        }
+        if(!towardFocus && !thasTarget){
+            MILO_ASSERT(focus || hasTarget, 0x7DE);
+            d9 = d10;
+        }
+        float interp9 = ::Interp(d10, d9, d11);
+        TheDOFProc->Set(cam, f208 * d9 + d9, f204, f20c, f210);
+    }
+    else TheDOFProc->UnSet();
+    float f214, f218;
+    ::Interp(cam->WorldXfm().v, tf130.v, f2, tf130.v);
+    ::Interp(cam->WorldXfm().m, tf130.m, f2, tf130.m);
+    ::Interp(mShakeNoiseAmp, frame.mShakeNoiseAmp, d11, f214);
+    ::Interp(mShakeNoiseFreq, frame.mShakeNoiseFreq, d11, f218);
+    Vector2 v1e8;
+    ::Interp(MaxAngularOffset(), frame.MaxAngularOffset(), d11, v1e8);
+    Vector3 v1cc;
+    Vector3 v1d8;
+    unk68->Shake(f218, f214, v1e8, v1cc, v1d8);
+    Multiply(v1cc, tf130, tf130.v);
+    Hmx::Matrix3 m1b4;
+    MakeRotMatrix(v1d8, m1b4, true);
+    Multiply(tf130.m, m1b4, tf130.m);
+    cam->SetLocalXfm(tf130);
+}
+#pragma pop
 
 void CamShotFrame::UpdateTarget() const {
     // GetCurrentTargetPosition(unk34);

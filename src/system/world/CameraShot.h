@@ -19,12 +19,19 @@ public:
     bool OnSyncTargets(ObjPtrList<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
     bool OnSyncParent(ObjPtr<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
     bool HasTargets() const;
-    void SetFieldOfView(float);
-    float ZoomFieldOfView() const;
     float FieldOfView() const;
     void GetCurrentTargetPosition(Vector3&) const;
     void UpdateTarget() const;
+    void Interp(const CamShotFrame&, float, float, RndCam*);
+    bool SameTargets(const CamShotFrame&) const;
+    void BuildTransform(RndCam*, Transform&, bool) const;
+    float BlurDepth() const;
+    float MaxBlur() const;
+    float MinBlur() const;
+    const Vector2 MaxAngularOffset() const;
 
+    float ZoomFieldOfView() const { return unk85 * 0.012319971f; }
+    void SetFieldOfView(float f){ unk84 = f * 81.16902f; }
     void SetBlurDepth(float f){ mBlurDepth = f * 255.0f; }
     void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
     void SetMinBlur(float f){ mMinBlur = f * 255.0f; }
@@ -55,12 +62,7 @@ public:
     unsigned char mMinBlur; // 0x88
     unsigned char mMaxAngularOffsetX; // 0x89
     unsigned char mMaxAngularOffsetY; // 0x8a
-    unsigned char unk8bp7 : 1;
-    unsigned char unk8bp6 : 1;
-    unsigned char unk8bp5 : 1;
-    unsigned char unk8bp4 : 1;
-    unsigned char unk8bp3 : 1;
-    unsigned char mBlendEaseMode : 1; // 0x8b >> 2 & 1
+    unsigned char mBlendEaseMode : 6; // 0x8b >> 2 & 1
     unsigned char unk8bp1 : 1;
     unsigned char unk8bp0 : 1;
     // mUseParentNotation: 0x8b >> 1 & 1
@@ -133,6 +135,8 @@ public:
     RndCam* GetCam();
     void SetShotOver();
     bool SetPos(CamShotFrame&, RndCam*);
+    void Shake(float, float, const Vector2&, Vector3&, Vector3&);
+    void Disable(bool, int);
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);
