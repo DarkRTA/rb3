@@ -2,11 +2,13 @@
 #include "world/Spotlight.h"
 #include "world/SpotlightDrawer.h"
 #include "rndobj/Env.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(LightPreset)
+LightPreset* gEditPreset;
 
 LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
-    unk5c(this), unk80(0), unk84(-1.0f), unk88(0.0f), unk8c(0.0f), unk90(0), unk94(-1), unk98(0.0f), unk9c(0.0f), mHue(0) {
+    mSpotlightState(this), unk80(0), unk84(-1.0f), unk88(0.0f), unk8c(0.0f), unk90(0), unk94(-1), unk98(0.0f), mEndFrame(0.0f), mHue(0) {
 
 }
 
@@ -14,6 +16,47 @@ LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers
 #pragma dont_inline on
 LightPreset::~LightPreset(){ Clear(); }
 #pragma pop
+
+#pragma push
+#pragma dont_inline on
+void LightPreset::Clear(){
+    mKeyframes.clear();
+    for(int i = 0; i != mSpotlights.size(); i++) mSpotlights[i]->Release(this);
+    mSpotlights.clear();
+    for(int i = 0; i != mEnvironments.size(); i++) mEnvironments[i]->Release(this);
+    mEnvironments.clear();
+    for(int i = 0; i != mLights.size(); i++) mLights[i]->Release(this);
+    for(int i = 0; i != mSpotlightDrawers.size(); i++) mSpotlightDrawers[i]->Release(this);
+    mLights.clear();
+}
+#pragma pop
+
+BEGIN_COPYS(LightPreset)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndAnimatable)
+    CREATE_COPY(LightPreset)
+    BEGIN_COPYING_MEMBERS
+        Clear();
+        COPY_MEMBER(mKeyframes)
+        COPY_MEMBER(mSpotlights)
+        for(int i = 0; i != mSpotlights.size(); i++){
+            mSpotlights[i]->AddRef(this);
+        }
+        COPY_MEMBER(mEnvironments)
+        for(int i = 0; i != mEnvironments.size(); i++){
+            mEnvironments[i]->AddRef(this);
+        }
+        COPY_MEMBER(mLights)
+        for(int i = 0; i != mLights.size(); i++){
+            mLights[i]->AddRef(this);
+        }
+        COPY_MEMBER(mSpotlightDrawers)
+        for(int i = 0; i != mSpotlightDrawers.size(); i++){
+            mSpotlightDrawers[i]->AddRef(this);
+        }
+        mSpotlightState.resize(mSpotlights.size());
+    END_COPYING_MEMBERS
+END_COPYS
 
 void LightPreset::Save(BinStream& bs){
     MILO_FAIL("Attempting to save in Wii");
@@ -123,10 +166,10 @@ BEGIN_LOADS(LightPreset)
         int dummy;
         for(int i = 0; i < 8; i++) bs >> dummy;
     }
-    unk5c.resize(mSpotlights.size());
-    unk68.resize(mEnvironments.size(), EnvironmentEntry());
-    unk70.resize(mLights.size(), EnvLightEntry());
-    unk78.resize(mSpotlightDrawers.size(), SpotlightDrawerEntry());
+    mSpotlightState.resize(mSpotlights.size());
+    mEnvironmentState.resize(mEnvironments.size(), EnvironmentEntry());
+    mLightState.resize(mLights.size(), EnvLightEntry());
+    mSpotlightDrawerState.resize(mSpotlightDrawers.size(), SpotlightDrawerEntry());
     for(int i = 0; i < mSpotlights.size(); i++){
         if(!mSpotlights[i] || !mSpotlights[i]->GetAnimateFromPreset()){
             RemoveSpotlight(i);
@@ -157,45 +200,121 @@ BEGIN_LOADS(LightPreset)
 END_LOADS
 #pragma pop
 
-void LightPreset::Keyframe::Load(BinStream& bs){
-    MILO_ASSERT(gRev != 14, 0x64A);
+void LightPreset::Keyframe::LoadStageKit(BinStream& bs){
+    int x;
+    for(int i = 0; i < 9; i++) bs >> x;
 }
 
-// void __thiscall LightPreset::Keyframe::Load(Keyframe *this,BinStream *param_1)
+void LightPreset::Keyframe::LoadP9(BinStream& bs){
+    MILO_ASSERT(gRev == 14, 0x638);
+    String str;
+    bs >> str;
+    bs >> mSpotlightEntries;
+    bs >> mEnvironmentEntries;
+    bs >> mLightEntries;
+    bs >> mSpotlightDrawerEntries;
+    LoadStageKit(bs);
+}
 
-// {
-//   char *pcVar1;
-//   String SStack_18;
-  
-//   if (LightPreset::gRev == 0xe) {
-//     pcVar1 = ::MakeString(kAssertStr,s_LightPreset.cpp_80c1b7ae,0x64a,s_gRev_!=_14_80c1ba46);
-//     Debug::Fail((Debug *)TheDebug,pcVar1);
-//   }
-//   BinStream::ReadEndian(param_1,this + 0x60,4);
-//   BinStream::ReadEndian(param_1,this + 100,4);
-//   ::__rs(param_1,(ObjVector<> *)this);
-//   ::__rs(param_1,(vector<> *)(this + 0xc));
-//   ::__rs(param_1,(vector<> *)(this + 0x14));
-//   if (LightPreset::gRev > 5) {
-//     String::String(&SStack_18);
-//     BinStream::operator_>>(param_1,(String *)&SStack_18);
-//     String::~String(&SStack_18);
-//   }
-//   if (LightPreset::gRev > 9) {
-//     ::__rs(param_1,(vector<> *)(this + 0x1c));
-//   }
-//   if (LightPreset::gRev > 0x11) {
-//     ::__rs(param_1,(ObjPtr *)(this + 0x24));
-//   }
-//   if (LightPreset::gRev > 0x13) {
-//     ::__rs(param_1,(ObjPtrList *)(this + 0x30));
-//   }
-//   if (LightPreset::gRev > 0xb) {
-//     LoadStageKit(this,param_1);
-//   }
-//   return;
-// }
+void LightPreset::Keyframe::Load(BinStream& bs){
+    MILO_ASSERT(gRev != 14, 0x64A);
+    bs >> mDuration;
+    bs >> mFadeOutTime;
+    bs >> mSpotlightEntries;
+    bs >> mEnvironmentEntries;
+    bs >> mLightEntries;
+    if(gRev > 5){
+        String str; bs >> str;
+    }
+    if(gRev > 9) bs >> mSpotlightDrawerEntries;
+    if(gRev > 0x11) bs >> mVideoVenuePostProc;
+    if(gRev > 0x13) bs >> mTriggers;
+    if(gRev > 0xB) LoadStageKit(bs);
+}
 
 LightPreset::SpotlightEntry::SpotlightEntry(Hmx::Object* o) : mIntensity(0), mColor(0), mFlareEnabled(1), mTarget(0) {
     unk10.Reset();
 }
+
+template <class T>
+const char* GetObjName(const std::vector<T*>& vec, int idx){
+    if(idx >= vec.size()) return "<obj index out of bounds>";
+    else if(vec[idx]) return vec[idx]->Name();
+    else return "<obj not found>";
+}
+
+const char* GetName(LightPreset* preset, int idx, LightPreset::PresetObject obj){
+    switch(obj){
+        case LightPreset::kPresetSpotlight:
+            return GetObjName(preset->mSpotlights, idx);
+        case LightPreset::kPresetSpotlightDrawer:
+            return GetObjName(preset->mSpotlightDrawers, idx);
+        case LightPreset::kPresetEnv:
+            return GetObjName(preset->mEnvironments, idx);
+        case LightPreset::kPresetLight:
+            return GetObjName(preset->mLights, idx);
+        default:
+            return "<invalid preset object>";
+    }
+}
+
+BEGIN_CUSTOM_PROPSYNC(LightPreset::SpotlightEntry)
+    SYNC_PROP_SET(spotlight, GetName(gEditPreset, _prop->Int(_i - 1), LightPreset::kPresetSpotlight), )
+    SYNC_PROP_SET(intensity, o.mIntensity, )
+    SYNC_PROP_SET(color, o.mColor, )
+    SYNC_PROP(target, o.mTarget)
+    SYNC_PROP_SET(flare_enabled, o.mFlareEnabled, )
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(LightPreset::SpotlightDrawerEntry)
+    SYNC_PROP_SET(spotlight_drawer, GetName(gEditPreset, _prop->Int(_i - 1), LightPreset::kPresetSpotlightDrawer), )
+    SYNC_PROP_SET(total, o.mTotal, )
+    SYNC_PROP_SET(base_intensity, o.mBaseIntensity, )
+    SYNC_PROP_SET(smoke_intensity, o.mSmokeIntensity, )
+    SYNC_PROP_SET(light_influence, o.mLightInfluence, )
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(LightPreset::EnvironmentEntry)
+    SYNC_PROP_SET(environment, GetName(gEditPreset, _prop->Int(_i - 1), LightPreset::kPresetEnv), )
+    SYNC_PROP_SET(fog_enable, o.mFogEnable, )
+    SYNC_PROP_SET(fog_start, o.mFogStart, )
+    SYNC_PROP_SET(fog_end, o.mFogEnd, )
+    SYNC_PROP_SET(ambient_color, o.mColor, )
+    SYNC_PROP_SET(fog_color, o.mColor, )
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(LightPreset::EnvLightEntry)
+    SYNC_PROP_SET(light, GetName(gEditPreset, _prop->Int(_i - 1), LightPreset::kPresetLight), )
+    SYNC_PROP(position, o.mPosition)
+    SYNC_PROP_SET(range, o.mRange, )
+    SYNC_PROP_SET(type, RndLight::TypeToStr(o.mLightType), )
+    SYNC_PROP_SET(color, o.mColor, )
+END_CUSTOM_PROPSYNC
+
+BEGIN_CUSTOM_PROPSYNC(LightPreset::Keyframe)
+    SYNC_PROP(duration, o.mDuration)
+    SYNC_PROP(fade_out, o.mFadeOutTime)
+    SYNC_PROP(spotlight_entries, o.mSpotlightEntries)
+    SYNC_PROP(spotlight_drawer_entries, o.mSpotlightDrawerEntries)
+    SYNC_PROP(environment_entries, o.mEnvironmentEntries)
+    SYNC_PROP(light_entries, o.mLightEntries)
+    SYNC_PROP(video_venue_postproc, o.mVideoVenuePostProc)
+    SYNC_PROP(triggers, o.mTriggers)
+END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(LightPreset)
+    gEditPreset = this;
+    // SYNC_PROP_MODIFY(keyframes, mKeyframes, CacheFrames())
+END_PROPSYNCS
+
+BEGIN_HANDLERS(LightPreset)
+    HANDLE(set_keyframe, OnSetKeyframe)
+    HANDLE(view_keyframe, OnViewKeyframe)
+    HANDLE_ACTION(next, OnKeyframeCmd(kPresetKeyframeNext))
+    HANDLE_ACTION(prev, OnKeyframeCmd(kPresetKeyframePrev))
+    HANDLE_ACTION(first, OnKeyframeCmd(kPresetKeyframeFirst))
+    HANDLE_ACTION(reset_events, ResetEvents())
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x85A)
+END_HANDLERS

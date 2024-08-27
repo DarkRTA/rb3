@@ -42,6 +42,8 @@ public:
     void SetProjectedBlend(int i){ mProjectedBlend = i; }
     bool GetAnimateFromPreset() const;
 
+    static const char* TypeToStr(Type);
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS

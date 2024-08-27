@@ -4,11 +4,11 @@
 #include "rndobj/Anim.h"
 #include "rndobj/EventTrigger.h"
 #include "rndobj/PostProc.h"
+#include "rndobj/Lit.h"
 #include "obj/ObjVector.h"
 
 class LightHue;
 class RndEnviron;
-class RndLight;
 class Spotlight;
 class SpotlightDrawer;
 
@@ -22,25 +22,41 @@ public:
 
 class LightPreset : public RndAnimatable {
 public:
-
+    // size 0x14
     class EnvironmentEntry {
     public:
         EnvironmentEntry();
-        EnvironmentEntry(Hmx::Object*);
+
+        int mColor; // 0x0 - packed
+        int unk4; // 0x4
+        bool mFogEnable; // 0x8
+        float mFogStart; // 0xc
+        float mFogEnd; // 0x10
     };
 
+    // size 0x28
     class EnvLightEntry {
     public:
         EnvLightEntry();
-        EnvLightEntry(Hmx::Object*);
+
+        int unk0;
+        int unk4;
+        int unk8;
+        int unkc;
+        Vector3 mPosition; // 0x10
+        int mColor; // 0x1c
+        float mRange; // 0x20
+        RndLight::Type mLightType; // 0x24
     };
 
+    // size 0x20
     class SpotlightEntry {
     public:
         SpotlightEntry(Hmx::Object*);
+        void Load(BinStream&);
 
         float mIntensity; // 0x0
-        int mColor; // 0x4 - could be a Color32?
+        int mColor; // 0x4 - packed color
         unsigned char unk8p7 : 1;
         unsigned char unk8p6 : 1;
         unsigned char unk8p5 : 1;
@@ -53,9 +69,15 @@ public:
         Hmx::Quat unk10;
     };
 
+    // 0x10
     class SpotlightDrawerEntry {
     public:
         SpotlightDrawerEntry();
+    
+        float mTotal; // 0x0
+        float mBaseIntensity; // 0x4
+        float mSmokeIntensity; // 0x8
+        float mLightInfluence; // 0xc
     };
 
     class Keyframe {
@@ -65,10 +87,11 @@ public:
 
         void Load(BinStream&);
         void LoadP9(BinStream&);
+        void LoadStageKit(BinStream&);
 
         ObjVector<SpotlightEntry> mSpotlightEntries; // 0x0
-        ObjVector<EnvironmentEntry> mEnvironmentEntries; // 0xc
-        ObjVector<EnvLightEntry> mLightEntries; // 0x14
+        std::vector<EnvironmentEntry> mEnvironmentEntries; // 0xc
+        std::vector<EnvLightEntry> mLightEntries; // 0x14
         std::vector<SpotlightDrawerEntry> mSpotlightDrawerEntries; // 0x1c
         ObjPtr<RndPostProc, ObjectDir> mVideoVenuePostProc; // 0x24
         ObjPtrList<EventTrigger,ObjectDir> mTriggers; // 0x30
@@ -82,6 +105,20 @@ public:
 
     };
 
+    enum KeyframeCmd {
+        kPresetKeyframeFirst,
+        kPresetKeyframeNext,
+        kPresetKeyframePrev,
+        kPresetKeyframeNum
+    };
+
+    enum PresetObject {
+        kPresetSpotlight,
+        kPresetSpotlightDrawer,
+        kPresetEnv,
+        kPresetLight
+    };
+
     LightPreset();
     OBJ_CLASSNAME(LightPreset);
     OBJ_SET_TYPE(LightPreset);
@@ -93,7 +130,7 @@ public:
     virtual ~LightPreset();
     virtual void StartAnim();
     virtual void SetFrame(float, float);
-    virtual float EndFrame();
+    virtual float EndFrame(){ return mEndFrame; }
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
     bool PlatformOk() const;
@@ -107,6 +144,12 @@ public:
     void RemoveSpotlightDrawer(int);
     void SyncNewSpotlights();
     void CacheFrames();
+    void OnKeyframeCmd(KeyframeCmd);
+
+    static void ResetEvents();
+
+    DataNode OnSetKeyframe(DataArray*);
+    DataNode OnViewKeyframe(DataArray*);
 
     ObjVector<Keyframe> mKeyframes; // 0x10
     std::vector<Spotlight*> mSpotlights; // 0x1c
@@ -120,10 +163,10 @@ public:
     bool mLooping; // 0x58
     bool mManual; // 0x59
     bool mLocked; // 0x5a
-    ObjVector<SpotlightEntry> unk5c;
-    std::vector<EnvironmentEntry> unk68;
-    std::vector<EnvLightEntry> unk70;
-    std::vector<SpotlightDrawerEntry> unk78;
+    ObjVector<SpotlightEntry> mSpotlightState; // 0x5c
+    std::vector<EnvironmentEntry> mEnvironmentState; // 0x68
+    std::vector<EnvLightEntry> mLightState; // 0x70
+    std::vector<SpotlightDrawerEntry> mSpotlightDrawerState; // 0x78
     int unk80;
     float unk84;
     float unk88;
@@ -131,7 +174,7 @@ public:
     int unk90;
     int unk94;
     float unk98;
-    float unk9c;
+    float mEndFrame; // 0x9c
     LightHue* mHue; // 0xa0
 
     DECLARE_REVS
@@ -145,6 +188,24 @@ public:
 
 inline BinStream& operator>>(BinStream& bs, LightPreset::Keyframe& k){
     k.Load(bs);
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, LightPreset::EnvLightEntry& l){
+
+}
+
+inline BinStream& operator>>(BinStream& bs, LightPreset::EnvironmentEntry& e){
+
+}
+
+inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightEntry& e){
+    e.Load(bs);
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightDrawerEntry& e){
+
 }
 
 #endif
