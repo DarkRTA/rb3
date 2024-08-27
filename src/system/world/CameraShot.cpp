@@ -454,6 +454,83 @@ CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase
     unk34.x = 1e+30f;
 }
 
+CamShotFrame::CamShotFrame(Hmx::Object* o, const CamShotFrame& frame) : mDuration(frame.mDuration), mBlend(frame.mBlend), mBlendEase(frame.mBlendEase),
+    unk10(frame.unk10), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
+    mTargets(frame.mTargets), unk68(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), unk84(frame.unk84), unk85(frame.unk85),
+    mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), unk8bp1(frame.unk8bp1), unk8bp0(0) {
+    mMaxAngularOffsetX = frame.mMaxAngularOffsetX;
+    mMaxAngularOffsetY = frame.mMaxAngularOffsetY;
+}
+
+void CamShotFrame::Load(BinStream& bs){
+    bs >> mDuration;
+    bs >> mBlend;
+    bs >> mBlendEase;
+    if(CamShot::gRev > 0x2D){
+        bool b; bs >> b;
+        mBlendEaseMode = b;
+    }
+    float fov; bs >> fov;
+    SetFieldOfView(fov);
+    Transform tf40;
+    tf40.Zero();
+    Transform tf70;
+    bs >> tf70;
+    if(tf40 == tf70) unk10.Reset();
+    else unk10.Set(tf70);
+    bs >> mScreenOffset;
+    float blurdepth; bs >> blurdepth;
+    if(CamShot::gRev < 0x17){
+        SetBlurDepth(1.0f - blurdepth);
+        int i; bs >> i;
+    }
+    else SetBlurDepth(blurdepth);
+    if(CamShot::gRev > 0x17){
+        float b; bs >> b;
+        SetMaxBlur(b);
+    }
+    else mMaxBlur = 0xff;
+    if(CamShot::gRev > 0x1C){
+        float b; bs >> b;
+        SetMinBlur(b);
+    }
+    else mMinBlur = 0;
+    if(CamShot::gRev > 0x14) bs >> mFocusBlurMultiplier;
+    else mFocusBlurMultiplier = 0;
+    if(CamShot::gRev < 0x17){ int i; bs >> i; }
+    if(CamShot::gRev > 0x2B) bs >> mTargets;
+    else {
+        int count; bs >> count;
+        mTargets.clear();
+        for(int i = 0; i < count; i++){
+            RndTransformable* part = LoadSubPart(bs, unk68);
+            if(part) mTargets.push_back(part);
+        }
+    }
+    if(CamShot::gRev > 0x1A){
+        if(CamShot::gRev > 0x2B) bs >> mFocusTarget;
+        else mFocusTarget = LoadSubPart(bs, unk68);
+    }
+    if(CamShot::gRev > 0x2B) bs >> mParent;
+    else mParent = LoadSubPart(bs, unk68);
+    bool b1; bs >> b1;
+    unk8bp1 = b1;
+    if(CamShot::gRev > 0x11){
+        bs >> mShakeNoiseAmp;
+        bs >> mShakeNoiseFreq;
+        Vector2 v; bs >> v;
+        SetMaxAngularOffset(v);
+    }
+    if(CamShot::gRev > 0x15){
+        float zoomfov; bs >> zoomfov;
+        SetZoomFieldOfView(zoomfov);
+    }
+    if(CamShot::gRev > 0x28){
+        bool b0; bs >> b0;
+        unk8bp0 = b0;
+    }
+}
+
 #pragma push
 #pragma dont_inline on
 void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam* cam){

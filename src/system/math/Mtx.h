@@ -212,6 +212,7 @@ public:
 class TransformNoScale {
 public:
     TransformNoScale(){}
+    TransformNoScale(const TransformNoScale& t){ Set(t); }
     void Set(const Transform&);
     void Set(const TransformNoScale&);
     void SetRot(const Hmx::Matrix3&);

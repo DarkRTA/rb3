@@ -19,7 +19,6 @@ public:
     bool OnSyncTargets(ObjPtrList<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
     bool OnSyncParent(ObjPtr<RndTransformable, ObjectDir>&, DataNode&, DataArray*, int, PropOp);
     bool HasTargets() const;
-    float FieldOfView() const;
     void GetCurrentTargetPosition(Vector3&) const;
     void UpdateTarget() const;
     void Interp(const CamShotFrame&, float, float, RndCam*);
@@ -31,6 +30,8 @@ public:
     const Vector2 MaxAngularOffset() const;
 
     float ZoomFieldOfView() const { return unk85 * 0.012319971f; }
+    float FieldOfView() const { return unk84 * 0.012319971f; }
+    void SetZoomFieldOfView(float f){ unk85 = f * 81.16902f; }
     void SetFieldOfView(float f){ unk84 = f * 81.16902f; }
     void SetBlurDepth(float f){ mBlurDepth = f * 255.0f; }
     void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
