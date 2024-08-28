@@ -21,12 +21,13 @@ public:
 
     void Sync();
     void TranslateColor(const Hmx::Color&, Hmx::Color&);
+    DataNode OnSaveDefault(DataArray*);
 
     DECLARE_REVS
 
-    FileLoader* mLoader;
-    FilePath mPath;
-    Keys<Vector3, Vector3> mKeys;
+    FileLoader* mLoader; // 0x1c
+    FilePath mPath; // 0x20
+    Keys<Vector3, Vector3> mKeys; // 0x2c
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

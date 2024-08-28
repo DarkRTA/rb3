@@ -75,6 +75,7 @@ namespace Hmx {
 }
 
 void MakeHSL(const Hmx::Color&, float&, float&, float&);
+void MakeColor(float, float, float, Hmx::Color&);
 TextStream& operator<<(TextStream&, const Hmx::Color&);
 
 inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
@@ -104,10 +105,14 @@ inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res
 }
 
 inline void Multiply(const Hmx::Color& c1, float f, Hmx::Color& res){
+#ifdef VERSION_SZBE69_B8
     res.red = c1.red * f;
     res.green = c1.green * f;
     res.blue = c1.blue * f;
     res.alpha = c1.alpha * f;
+#else
+    res.Set(c1.red * f, c1.green * f, c1.blue * f, c1.alpha * f);
+#endif
 }
 
 inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){

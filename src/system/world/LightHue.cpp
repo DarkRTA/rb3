@@ -1,5 +1,6 @@
 #include "world/LightHue.h"
 #include "utl/Loader.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(LightHue)
 
@@ -8,7 +9,7 @@ LightHue::LightHue() : mLoader(0), mPath(), mKeys() {
 }
 
 LightHue::~LightHue(){
-
+    delete mLoader;
 }
 
 BEGIN_COPYS(LightHue)
@@ -28,12 +29,10 @@ BEGIN_LOADS(LightHue)
 END_LOADS
 
 void LightHue::PreLoad(BinStream& bs){
-    char buf[0x100];
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0);
     LOAD_SUPERCLASS(Hmx::Object)
-    bs.ReadString(buf, 0x100);
-    mPath.SetRoot(buf);
+    bs >> mPath;
     if(bs.Cached()){
         bs >> mKeys;
     }
@@ -45,3 +44,29 @@ void LightHue::PreLoad(BinStream& bs){
 void LightHue::PostLoad(BinStream& bs){
     if(!bs.Cached()) Sync();
 }
+
+void LightHue::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
+    if(!mKeys.empty()){
+        float maxcol = Max(1.0f, Max(col.red, col.green, col.blue));
+        Hmx::Color col30;
+        Multiply(col, 1.0f / maxcol, col30);
+        float h, s, l;
+        MakeHSL(col30, h, s, l);
+        Vector3 vec;
+        mKeys.AtFrame(h, vec);
+        float clamped = Clamp(0.0f, 1.0f, l * vec.z * 2.0f);
+        MakeColor(vec.x, s * vec.y, clamped, res);
+        Multiply(res, maxcol, res);
+    }
+    else res = col;
+}
+
+BEGIN_HANDLERS(LightHue)
+    HANDLE(save_default, OnSaveDefault)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x97)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(LightHue)
+    SYNC_PROP_MODIFY_ALT(path, mPath, Sync())
+END_PROPSYNCS
