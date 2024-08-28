@@ -3,6 +3,7 @@
 #include "world/SpotlightDrawer.h"
 #include "world/LightHue.h"
 #include "rndobj/Env.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -10,8 +11,13 @@ INIT_REVS(LightPreset)
 LightPreset* gEditPreset;
 std::deque<std::pair<LightPreset::KeyframeCmd, float> > LightPreset::sManualEvents;
 
-float ComputeSpotBlend(int, float){
-
+float ComputeSpotBlend(int i, float f){
+    int min = Min<int>(f * 5.0f, 4);
+    if(i % 5 < min) return 1.0f;
+    else if(min < i % 5) return 0.0f;
+    else {
+        return Min(Max((f - i / 5.0f) * 5.0f, 0.0f), 1.0f);
+    }
 }
 
 LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s){
@@ -345,12 +351,39 @@ void LightPreset::AdvanceManual(LightPreset::KeyframeCmd cmd){
 }
 
 void LightPreset::ApplyState(const LightPreset::Keyframe& k){
-    if(mSpotlightState[0].mIntensity != k.mSpotlightEntries[0].mIntensity){
-
-    }
+    mSpotlightState = k.mSpotlightEntries;
     mEnvironmentState = k.mEnvironmentEntries;
     mLightState = k.mLightEntries;
     mSpotlightDrawerState = k.mSpotlightDrawerEntries;
+}
+
+void LightPreset::Animate(float f){
+    if(f < 1.1920929E-7f) return;
+    MILO_ASSERT(mSpotlights.size() == mSpotlightState.size(), 0x3CD);
+    for(int i = 0; i != mSpotlights.size(); i++){
+        if(mSpotlights[i]->GetAnimateFromPreset()){
+            float blend = ComputeSpotBlend(i, f);
+            if(blend >= 1.1920929E-7f){
+                AnimateSpotFromPreset(mSpotlights[i], mSpotlightState[i], blend);
+            }
+        }
+    }
+    MILO_ASSERT(mEnvironments.size() == mEnvironmentState.size(), 0x3DF);
+    for(int i = 0; i != mEnvironments.size(); i++){
+        if(mEnvironments[i]->GetAnimateFromPreset()){
+            AnimateEnvFromPreset(mEnvironments[i], mEnvironmentState[i], f);
+        }
+    }
+    MILO_ASSERT(mLights.size() == mLightState.size(), 1000);
+    for(int i = 0; i != mLights.size(); i++){
+        if(mLights[i]->GetAnimateFromPreset()){
+            AnimateLightFromPreset(mLights[i], mLightState[i], f);
+        }
+    }
+    MILO_ASSERT(mSpotlightDrawers.size() == mSpotlightDrawerState.size(), 0x3F1);
+    for(int i = 0; i != mSpotlightDrawers.size(); i++){
+        AnimateSpotlightDrawerFromPreset(mSpotlightDrawers[i], mSpotlightDrawerState[i], f);
+    }
 }
 
 void LightPreset::SetKeyframe(LightPreset::Keyframe& k){
@@ -366,6 +399,24 @@ void LightPreset::SetKeyframe(LightPreset::Keyframe& k){
     for(int i = 0; i != k.mSpotlightDrawerEntries.size(); i++){
         FillSpotlightDrawerPresetData(mSpotlightDrawers[i], k.mSpotlightDrawerEntries[i]);
     }
+}
+
+void LightPreset::SyncNewSpotlights(){
+    for(ObjDirItr<Spotlight> it(Dir(), true); it != 0; ++it){
+        Spotlight* key = it;
+        std::vector<Spotlight*>::iterator found = std::find(mSpotlights.begin(), mSpotlights.end(), key);
+        if(found == mSpotlights.end()){
+            AddSpotlight(key, true);
+        }
+    }
+}
+
+void LightPreset::FillEnvPresetData(RndEnviron* env, LightPreset::EnvironmentEntry& e){
+    e.mColor = env->AmbientColor().Pack();
+    e.mFogColor = env->FogColor().Pack();
+    e.mFogEnable = env->FogEnable();
+    e.mFogStart = env->GetFogStart();
+    e.mFogEnd = env->GetFogEnd();
 }
 
 DataNode LightPreset::OnSetKeyframe(DataArray* da){
@@ -440,9 +491,10 @@ void LightPreset::SpotlightEntry::Load(BinStream& bs){
     bs >> unk10;
     Hmx::Color col;
     bs >> col;
+    col.alpha = 1.0f;
     mColor = col.Pack();
     ObjPtr<RndTransformable, ObjectDir> tPtr(0, 0);
-    if(tPtr.Load(bs, false, 0)) unk8p1 = 0;
+    if(!tPtr.Load(bs, false, 0)) unk8p1 = 0;
     if(gRev < 0x13){
         Symbol s; bs >> s;
     }
@@ -454,7 +506,7 @@ void LightPreset::SpotlightEntry::Load(BinStream& bs){
         if(gRev < 9){ int i; bs >> i; }
     }
     if(mTarget || !unk8p1){
-        unk10.Zero();
+        unk10.Set(0,0,0,0);
     }
 }
 
@@ -470,7 +522,7 @@ void LightPreset::SpotlightEntry::CalculateDirection(Spotlight* s, Hmx::Quat& q)
 
 LightPreset::EnvironmentEntry::EnvironmentEntry() : mFogEnable(0), mFogStart(0), mFogEnd(0) {
     mColor = 0;
-    unk4 = 0;
+    mFogColor = 0;
 }
 
 void LightPreset::EnvironmentEntry::Load(BinStream& bs){
@@ -481,7 +533,7 @@ void LightPreset::EnvironmentEntry::Load(BinStream& bs){
     bs >> mFogStart;
     bs >> mFogEnd;
     bs >> col;
-    unk4 = col.Pack();
+    mFogColor = col.Pack();
 }
 
 bool LightPreset::EnvironmentEntry::operator!=(const LightPreset::EnvironmentEntry& e) const {
@@ -489,7 +541,7 @@ bool LightPreset::EnvironmentEntry::operator!=(const LightPreset::EnvironmentEnt
     else if(mFogStart != e.mFogStart) return true;
     else if(mFogEnd != e.mFogEnd) return true;
     else if((unsigned int)mColor != (unsigned int)e.mColor) return true;
-    else return unk4 != e.unk4;
+    else return mFogColor != e.mFogColor;
 }
 
 LightPreset::EnvLightEntry::EnvLightEntry() : mRange(0), mLightType(RndLight::kPoint) {
@@ -508,6 +560,14 @@ void LightPreset::EnvLightEntry::Load(BinStream& bs){
     bs >> (int&)mLightType;
 }
 
+bool LightPreset::EnvLightEntry::operator!=(const LightPreset::EnvLightEntry& e) const {
+    if(mRange != e.mRange) return true;
+    else if(mLightType != e.mLightType) return true;
+    else if(unk0 != e.unk0) return true;
+    else if(mPosition != e.mPosition) return true;
+    else return mColor != e.mColor;
+}
+
 LightPreset::SpotlightDrawerEntry::SpotlightDrawerEntry() : mTotal(0), mBaseIntensity(0), mSmokeIntensity(0), mLightInfluence(0) {}
 
 void LightPreset::SpotlightDrawerEntry::Load(BinStream& bs){
@@ -516,6 +576,13 @@ void LightPreset::SpotlightDrawerEntry::Load(BinStream& bs){
     bs >> mTotal;
     if(gRev > 0xF) bs >> mLightInfluence;
     else mLightInfluence = 1.0f;
+}
+
+void LightPreset::SpotlightDrawerEntry::Animate(const LightPreset::SpotlightDrawerEntry& e, float f){
+    Interp(mBaseIntensity, e.mBaseIntensity, f, mBaseIntensity);
+    Interp(mSmokeIntensity, e.mSmokeIntensity, f, mSmokeIntensity);
+    Interp(mLightInfluence, e.mLightInfluence, f, mLightInfluence);
+    Interp(mTotal, e.mTotal, f, mTotal);
 }
 
 bool LightPreset::SpotlightDrawerEntry::operator!=(const LightPreset::SpotlightDrawerEntry& e) const {

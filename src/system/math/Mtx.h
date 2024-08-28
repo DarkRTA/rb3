@@ -93,6 +93,13 @@ namespace Hmx {
         void Set(const Matrix3&);
         void Set(const Vector3&);
         void Set(const Vector3&, float);
+        void Set(float f1, float f2, float f3, float f4){
+            x = f1; y = f2; z = f3; w = f4;
+        }
+
+        bool operator!=(const Quat& q) const {
+            return x != q.x || y != q.y || z != q.z || w != q.w;
+        }
 
         float x;
         float y;

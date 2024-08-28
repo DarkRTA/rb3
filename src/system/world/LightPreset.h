@@ -30,8 +30,8 @@ public:
         void Load(BinStream&);
         bool operator!=(const EnvironmentEntry&) const;
 
-        int mColor; // 0x0 - packed
-        int unk4; // 0x4 - another color
+        int mColor; // 0x0 - ambient color
+        int mFogColor; // 0x4 - fog color
         bool mFogEnable; // 0x8
         float mFogStart; // 0xc
         float mFogEnd; // 0x10
@@ -42,6 +42,8 @@ public:
     public:
         EnvLightEntry();
         void Load(BinStream&);
+        void Animate(const EnvLightEntry&, float);
+        bool operator!=(const EnvLightEntry&) const;
 
         Hmx::Quat unk0; // 0x0
         Vector3 mPosition; // 0x10
@@ -77,6 +79,7 @@ public:
     public:
         SpotlightDrawerEntry();
         void Load(BinStream&);
+        void Animate(const SpotlightDrawerEntry&, float);
         bool operator!=(const SpotlightDrawerEntry&) const;
     
         float mTotal; // 0x0
@@ -162,6 +165,11 @@ public:
     void FillEnvPresetData(RndEnviron*, EnvironmentEntry&);
     void FillLightPresetData(RndLight*, EnvLightEntry&);
     void FillSpotlightDrawerPresetData(SpotlightDrawer*, SpotlightDrawerEntry&);
+    void AddSpotlight(Spotlight*, bool);
+    void AnimateSpotFromPreset(Spotlight*, const SpotlightEntry&, float);
+    void AnimateEnvFromPreset(RndEnviron*, const EnvironmentEntry&, float);
+    void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);
+    void AnimateSpotlightDrawerFromPreset(SpotlightDrawer*, const SpotlightDrawerEntry&, float);
 
     static void ResetEvents();
     static std::deque<std::pair<KeyframeCmd, float> > sManualEvents;
