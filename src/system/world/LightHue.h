@@ -20,6 +20,7 @@ public:
     virtual void PostLoad(BinStream&);
 
     void Sync();
+    void TranslateColor(const Hmx::Color&, Hmx::Color&);
 
     DECLARE_REVS
 

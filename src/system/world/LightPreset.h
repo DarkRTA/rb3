@@ -82,7 +82,7 @@ public:
         void Animate(const SpotlightDrawerEntry&, float);
         bool operator!=(const SpotlightDrawerEntry&) const;
     
-        float mTotal; // 0x0
+        float mTotalIntensity; // 0x0
         float mBaseIntensity; // 0x4
         float mSmokeIntensity; // 0x8
         float mLightInfluence; // 0xc
@@ -103,10 +103,11 @@ public:
         std::vector<SpotlightDrawerEntry> mSpotlightDrawerEntries; // 0x1c
         ObjPtr<RndPostProc, ObjectDir> mVideoVenuePostProc; // 0x24
         ObjPtrList<EventTrigger,ObjectDir> mTriggers; // 0x30
-        std::vector<int> mSpotlightChanges; // 0x40
-        std::vector<int> mEnvironmentChanges; // 0x48
-        std::vector<int> mLightChanges; // 0x50
-        std::vector<int> mSpotlightDrawerChanges; // 0x58
+        // FIXME: the vector types need to be bools
+        std::vector<unsigned char> mSpotlightChanges; // 0x40
+        std::vector<unsigned char> mEnvironmentChanges; // 0x48
+        std::vector<unsigned char> mLightChanges; // 0x50
+        std::vector<unsigned char> mSpotlightDrawerChanges; // 0x58
         float mDuration; // 0x60
         float mFadeOutTime; // 0x64
         float mFrame; // 0x68
@@ -156,6 +157,7 @@ public:
     void ApplyState(const Keyframe&);
     void Animate(float);
     void SyncKeyframeTargets();
+    void TranslateColor(const Hmx::Color&, Hmx::Color&);
     void GetKey(float, int&, int&, float&) const;
     RndPostProc* GetCurrentPostProc() const;
     void SetFrameEx(float, float, bool);
@@ -165,7 +167,11 @@ public:
     void FillEnvPresetData(RndEnviron*, EnvironmentEntry&);
     void FillLightPresetData(RndLight*, EnvLightEntry&);
     void FillSpotlightDrawerPresetData(SpotlightDrawer*, SpotlightDrawerEntry&);
+    void SetSpotlight(Spotlight*, int);
     void AddSpotlight(Spotlight*, bool);
+    void AddEnvironment(RndEnviron*);
+    void AddLight(RndLight*);
+    void AddSpotlightDrawer(SpotlightDrawer*);
     void AnimateSpotFromPreset(Spotlight*, const SpotlightEntry&, float);
     void AnimateEnvFromPreset(RndEnviron*, const EnvironmentEntry&, float);
     void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);

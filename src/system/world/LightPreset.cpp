@@ -341,12 +341,99 @@ void LightPreset::OnKeyframeCmd(LightPreset::KeyframeCmd cmd){
     sManualEvents.push_back(std::pair<KeyframeCmd, float>(cmd, TheTaskMgr.Beat() + 4.0f));
 }
 
+int LightPreset::NextManualFrame(LightPreset::KeyframeCmd cmd) const {
+    int frame;
+    if(cmd == kPresetKeyframeFirst){
+        frame = 0;
+    }
+    else {
+        frame = mManualFrame + (cmd == kPresetKeyframeNext ? 1 : -1);
+    }
+    if(mLooping){
+        return frame % mKeyframes.size();
+    }
+    else {
+        return Max<int>(0, Min<int>(frame, mKeyframes.size() - 1));
+    }
+}
+
 void LightPreset::AdvanceManual(LightPreset::KeyframeCmd cmd){
     MILO_ASSERT(mManual, 0x330);
     if(cmd != kPresetKeyframeFirst || mManualFrame){
-        mManualFrameStart = mFrame;
+        mManualFrameStart = GetFrame();
         mLastManualFrame = mManualFrame;
         mManualFrame = NextManualFrame(cmd);
+    }
+}
+
+void LightPreset::GetKey(float frame, int& iref1, int& iref2, float& fref) const {
+    float theframe = frame;
+    if(theframe <= 0.0f || mCachedDuration <= 0.0f){
+        iref1 = -1;
+        iref2 = 0;
+        fref = 1.0f;
+        return;
+    }
+    else {
+        if(mLooping){
+            float theframe = std::fmod(frame, mCachedDuration);
+            if(mKeyframes.back().mFrame <= frame){
+                if(mKeyframes.back().mFadeOutTime <= 0.0f){
+                    iref1 = -1;
+                    iref2 = mKeyframes.size() - 1;
+                    fref = 1.0f;
+                    return;
+                }
+                float framedur = mKeyframes.back().mFrame + mKeyframes.back().mDuration;
+                if(framedur < theframe){
+                    MILO_ASSERT(mKeyframes.back().mFadeOutTime > 0, 0x358);
+                    iref1 = mKeyframes.size() - 1;
+                    iref2 = 0;
+                    fref = (theframe - framedur) / mKeyframes.back().mFadeOutTime;
+                    return;
+                }
+                iref1 = -1;
+                iref2 = mKeyframes.size() - 1;
+                fref = 1.0f;
+                return;
+            }
+        }
+        else if(mKeyframes.back().mFrame <= frame){
+            iref1 = -1;
+            iref2 = mKeyframes.size() - 1;
+            fref = 1.0f;
+            return;
+        }
+        int cap = mKeyframes.size() - 1;
+        int i;
+        for(i = 0; i + 1 < cap - 1; i){
+            i = (i + cap) >> 1;
+            const Keyframe& kf = mKeyframes[i];
+            if(theframe == kf.mFrame){
+                iref1 = -1;
+                iref2 = i;
+                fref = 1.0f;
+                return;
+            }
+            if(theframe <= kf.mFrame){
+                cap = i;
+            }
+        }
+        if(mKeyframes[i].mFrame <= theframe){
+            mKeyframes[cap];
+        }
+        float dur = mKeyframes[i].mFrame + mKeyframes[i].mDuration;
+        if(theframe > dur){
+            mKeyframes[i];
+            iref1 = i;
+            iref2 = cap;
+            fref = (theframe - dur) / mKeyframes[i].mFadeOutTime;
+        }
+        else {
+            iref1 = -1;
+            iref2 = i;
+            fref = 1.0f;
+        }
     }
 }
 
@@ -411,12 +498,128 @@ void LightPreset::SyncNewSpotlights(){
     }
 }
 
+void LightPreset::SyncKeyframeTargets(){
+    for(ObjDirItr<Spotlight> it(Dir(), true); it != 0; ++it){
+        Spotlight* key = it;
+        std::vector<Spotlight*>::iterator found = std::find(mSpotlights.begin(), mSpotlights.end(), key);
+        if(found == mSpotlights.end()) AddSpotlight(key, true);
+    }
+    for(ObjDirItr<RndEnviron> it(Dir(), true); it != 0; ++it){
+        RndEnviron* key = it;
+        std::vector<RndEnviron*>::iterator found = std::find(mEnvironments.begin(), mEnvironments.end(), key);
+        if(found == mEnvironments.end()) AddEnvironment(key);
+        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsReal.begin(); lit != key->mLightsReal.end(); ++it){
+            RndLight* lkey = *lit;
+            std::vector<RndLight*>::iterator lfound = std::find(mLights.begin(), mLights.end(), lkey);
+            if(lfound == mLights.end()) AddLight(lkey);
+        }
+        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsApprox.begin(); lit != key->mLightsApprox.end(); ++it){
+            RndLight* lkey = *lit;
+            std::vector<RndLight*>::iterator lfound = std::find(mLights.begin(), mLights.end(), lkey);
+            if(lfound == mLights.end()) AddLight(lkey);
+        }
+    }
+    for(ObjDirItr<SpotlightDrawer> it(Dir(), true); it != 0; ++it){
+        SpotlightDrawer* key = it;
+        std::vector<SpotlightDrawer*>::iterator found = std::find(mSpotlightDrawers.begin(), mSpotlightDrawers.end(), key);
+        if(found == mSpotlightDrawers.end()) AddSpotlightDrawer(key);
+    }
+    CacheFrames();
+}
+
+void LightPreset::AddSpotlight(Spotlight* s, bool b){
+    s->AddRef(this);
+    mSpotlights.push_back(s);
+    SpotlightEntry e(this);
+    FillSpotPresetData(s, e, -1);
+    if(b){
+        e.mIntensity = 0;
+        e.mColor = 0;
+    }
+    for(int i = 0; i != mKeyframes.size(); i++){
+        mKeyframes[i].mSpotlightEntries.push_back(e);
+        MILO_ASSERT(mKeyframes[i].mSpotlightEntries.size() == mSpotlights.size(), 0x46E);
+    }
+    mSpotlightState.push_back(e);
+}
+
+void LightPreset::AddEnvironment(RndEnviron* env){
+    env->AddRef(this);
+    mEnvironments.push_back(env);
+    EnvironmentEntry e;
+    FillEnvPresetData(env, e);
+    for(int i = 0; i != mKeyframes.size(); i++){
+        mKeyframes[i].mEnvironmentEntries.push_back(e);
+        MILO_ASSERT(mKeyframes[i].mEnvironmentEntries.size() == mEnvironments.size(), 0x47F);
+    }
+    mEnvironmentState.push_back(e);
+}
+
+void LightPreset::AddLight(RndLight* lit){
+    lit->AddRef(this);
+    mLights.push_back(lit);
+    EnvLightEntry e;
+    FillLightPresetData(lit, e);
+    for(int i = 0; i != mKeyframes.size(); i++){
+        mKeyframes[i].mLightEntries.push_back(e);
+        MILO_ASSERT(mKeyframes[i].mLightEntries.size() == mLights.size(), 0x490);
+    }
+    mLightState.push_back(e);
+}
+
+void LightPreset::AddSpotlightDrawer(SpotlightDrawer* sd){
+    sd->AddRef(this);
+    mSpotlightDrawers.push_back(sd);
+    SpotlightDrawerEntry e;
+    FillSpotlightDrawerPresetData(sd, e);
+    for(int i = 0; i != mKeyframes.size(); i++){
+        mKeyframes[i].mSpotlightDrawerEntries.push_back(e);
+        MILO_ASSERT(mKeyframes[i].mSpotlightDrawerEntries.size() == mSpotlightDrawers.size(), 0x4A1);
+    }
+    mSpotlightDrawerState.push_back(e);
+}
+
+void LightPreset::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
+    if(mHue) mHue->TranslateColor(col, res);
+    else res = col;
+}
+
 void LightPreset::FillEnvPresetData(RndEnviron* env, LightPreset::EnvironmentEntry& e){
     e.mColor = env->AmbientColor().Pack();
     e.mFogColor = env->FogColor().Pack();
     e.mFogEnable = env->FogEnable();
     e.mFogStart = env->GetFogStart();
     e.mFogEnd = env->GetFogEnd();
+}
+
+void LightPreset::FillSpotlightDrawerPresetData(SpotlightDrawer* sd, LightPreset::SpotlightDrawerEntry& e){
+    e.mBaseIntensity = sd->mParams.mBaseIntensity;
+    e.mSmokeIntensity = sd->mParams.mSmokeIntensity;
+    e.mLightInfluence = sd->mParams.mLightingInfluence;
+    e.mTotalIntensity = sd->mParams.mIntensity;
+}
+
+void LightPreset::AnimateSpotlightDrawerFromPreset(SpotlightDrawer* sd, const LightPreset::SpotlightDrawerEntry& e, float f){
+    float val;
+    Interp(sd->mParams.mBaseIntensity, e.mBaseIntensity, f, val);
+    sd->mParams.mBaseIntensity = val;
+    Interp(sd->mParams.mSmokeIntensity, e.mSmokeIntensity, f, val);
+    sd->mParams.mSmokeIntensity = val;
+    Interp(sd->mParams.mLightingInfluence, e.mLightInfluence, f, val);
+    sd->mParams.mLightingInfluence = val;
+    Interp(sd->mParams.mIntensity, e.mTotalIntensity, f, val);
+    sd->mParams.mIntensity = val;
+}
+
+void LightPreset::SetSpotlight(Spotlight* s, int data){
+    int idx;
+    for(idx = 0; idx != mSpotlights.size(); idx++){
+        if(mSpotlights[idx] == s) break;
+    }
+    if(idx == mSpotlights.size()) AddSpotlight(s, false);
+    for(int i = 0; i != mKeyframes.size(); i++){
+        FillSpotPresetData(s, mKeyframes[i].mSpotlightEntries[idx], data);
+    }
 }
 
 DataNode LightPreset::OnSetKeyframe(DataArray* da){
@@ -562,18 +765,18 @@ void LightPreset::EnvLightEntry::Load(BinStream& bs){
 
 bool LightPreset::EnvLightEntry::operator!=(const LightPreset::EnvLightEntry& e) const {
     if(mRange != e.mRange) return true;
-    else if(mLightType != e.mLightType) return true;
+    else if((unsigned int)mLightType != e.mLightType) return true;
     else if(unk0 != e.unk0) return true;
     else if(mPosition != e.mPosition) return true;
     else return mColor != e.mColor;
 }
 
-LightPreset::SpotlightDrawerEntry::SpotlightDrawerEntry() : mTotal(0), mBaseIntensity(0), mSmokeIntensity(0), mLightInfluence(0) {}
+LightPreset::SpotlightDrawerEntry::SpotlightDrawerEntry() : mTotalIntensity(0), mBaseIntensity(0), mSmokeIntensity(0), mLightInfluence(0) {}
 
 void LightPreset::SpotlightDrawerEntry::Load(BinStream& bs){
     bs >> mBaseIntensity;
     bs >> mSmokeIntensity;
-    bs >> mTotal;
+    bs >> mTotalIntensity;
     if(gRev > 0xF) bs >> mLightInfluence;
     else mLightInfluence = 1.0f;
 }
@@ -582,14 +785,14 @@ void LightPreset::SpotlightDrawerEntry::Animate(const LightPreset::SpotlightDraw
     Interp(mBaseIntensity, e.mBaseIntensity, f, mBaseIntensity);
     Interp(mSmokeIntensity, e.mSmokeIntensity, f, mSmokeIntensity);
     Interp(mLightInfluence, e.mLightInfluence, f, mLightInfluence);
-    Interp(mTotal, e.mTotal, f, mTotal);
+    Interp(mTotalIntensity, e.mTotalIntensity, f, mTotalIntensity);
 }
 
 bool LightPreset::SpotlightDrawerEntry::operator!=(const LightPreset::SpotlightDrawerEntry& e) const {
     if(mBaseIntensity != e.mBaseIntensity) return true;
     else if(mSmokeIntensity != e.mSmokeIntensity) return true;
     else if(mLightInfluence != e.mLightInfluence) return true;
-    else return mTotal != e.mTotal;
+    else return mTotalIntensity != e.mTotalIntensity;
 }
 
 template <class T>
@@ -624,7 +827,7 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(LightPreset::SpotlightDrawerEntry)
     SYNC_PROP_SET(spotlight_drawer, GetName(gEditPreset, _prop->Int(_i - 1), LightPreset::kPresetSpotlightDrawer), )
-    SYNC_PROP_SET(total, o.mTotal, )
+    SYNC_PROP_SET(total, o.mTotalIntensity, )
     SYNC_PROP_SET(base_intensity, o.mBaseIntensity, )
     SYNC_PROP_SET(smoke_intensity, o.mSmokeIntensity, )
     SYNC_PROP_SET(light_influence, o.mLightInfluence, )
