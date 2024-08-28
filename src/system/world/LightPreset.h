@@ -26,9 +26,11 @@ public:
     class EnvironmentEntry {
     public:
         EnvironmentEntry();
+        void Load(BinStream&);
+        bool operator!=(const EnvironmentEntry&) const;
 
         int mColor; // 0x0 - packed
-        int unk4; // 0x4
+        int unk4; // 0x4 - another color
         bool mFogEnable; // 0x8
         float mFogStart; // 0xc
         float mFogEnd; // 0x10
@@ -38,11 +40,9 @@ public:
     class EnvLightEntry {
     public:
         EnvLightEntry();
+        void Load(BinStream&);
 
-        int unk0;
-        int unk4;
-        int unk8;
-        int unkc;
+        Hmx::Quat unk0; // 0x0
         Vector3 mPosition; // 0x10
         int mColor; // 0x1c
         float mRange; // 0x20
@@ -54,17 +54,19 @@ public:
     public:
         SpotlightEntry(Hmx::Object*);
         void Load(BinStream&);
+        void CalculateDirection(Spotlight*, Hmx::Quat&) const;
+        void Animate(Spotlight*, const SpotlightEntry&, float);
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
-        unsigned char unk8p7 : 1;
-        unsigned char unk8p6 : 1;
-        unsigned char unk8p5 : 1;
-        unsigned char unk8p4 : 1;
-        unsigned char unk8p3 : 1;
-        unsigned char unk8p2 : 1;
-        unsigned char unk8p1 : 1;
-        unsigned char mFlareEnabled : 1; // 0x8 & 1
+        bool unk8p7 : 1;
+        bool unk8p6 : 1;
+        bool unk8p5 : 1;
+        bool unk8p4 : 1;
+        bool unk8p3 : 1;
+        bool unk8p2 : 1;
+        bool unk8p1 : 1;
+        bool mFlareEnabled : 1; // 0x8 & 1
         RndTransformable* mTarget; // 0xc
         Hmx::Quat unk10;
     };
@@ -73,6 +75,8 @@ public:
     class SpotlightDrawerEntry {
     public:
         SpotlightDrawerEntry();
+        void Load(BinStream&);
+        bool operator!=(const SpotlightDrawerEntry&) const;
     
         float mTotal; // 0x0
         float mBaseIntensity; // 0x4
@@ -83,7 +87,7 @@ public:
     class Keyframe {
     public:
         Keyframe(Hmx::Object*);
-        ~Keyframe();
+        ~Keyframe(){}
 
         void Load(BinStream&);
         void LoadP9(BinStream&);
@@ -102,7 +106,6 @@ public:
         float mDuration; // 0x60
         float mFadeOutTime; // 0x64
         float mFrame; // 0x68
-
     };
 
     enum KeyframeCmd {
@@ -145,6 +148,12 @@ public:
     void SyncNewSpotlights();
     void CacheFrames();
     void OnKeyframeCmd(KeyframeCmd);
+    void SetKeyframe(Keyframe&);
+    void ApplyState(const Keyframe&);
+    void Animate(float);
+    void SyncKeyframeTargets();
+    void GetKey(float, int&, int&, float&) const;
+    RndPostProc* GetCurrentPostProc() const;
 
     static void ResetEvents();
 
@@ -192,11 +201,13 @@ inline BinStream& operator>>(BinStream& bs, LightPreset::Keyframe& k){
 }
 
 inline BinStream& operator>>(BinStream& bs, LightPreset::EnvLightEntry& l){
-
+    l.Load(bs);
+    return bs;
 }
 
 inline BinStream& operator>>(BinStream& bs, LightPreset::EnvironmentEntry& e){
-
+    e.Load(bs);
+    return bs;
 }
 
 inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightEntry& e){
@@ -205,7 +216,8 @@ inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightEntry& e){
 }
 
 inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightDrawerEntry& e){
-
+    e.Load(bs);
+    return bs;
 }
 
 #endif

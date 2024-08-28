@@ -62,6 +62,7 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     
     bool GetAnimateFromPreset() const;
+    void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
 
     static void Init();
 
