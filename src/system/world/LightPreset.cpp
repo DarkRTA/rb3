@@ -4,9 +4,15 @@
 #include "world/LightHue.h"
 #include "rndobj/Env.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(LightPreset)
 LightPreset* gEditPreset;
+std::deque<std::pair<LightPreset::KeyframeCmd, float> > LightPreset::sManualEvents;
+
+float ComputeSpotBlend(int, float){
+
+}
 
 LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s){
     if(s == next) return LightPreset::kPresetKeyframeNext;
@@ -16,14 +22,31 @@ LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s){
 }
 
 LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
-    mSpotlightState(this), unk80(0), unk84(-1.0f), unk88(0.0f), unk8c(0.0f), unk90(0), unk94(-1), unk98(0.0f), mEndFrame(0.0f), mHue(0) {
+    mSpotlightState(this), mLastKeyframe(0), mLastBlend(-1.0f), mStartBeat(0.0f), mManualFrameStart(0.0f), mManualFrame(0), mLastManualFrame(-1), mManualFadeTime(0.0f), mCachedDuration(0.0f), mHue(0) {
 
+}
+
+bool LightPreset::PlatformOk() const {
+    if(TheLoadMgr.EditMode() || !mPlatformOnly || TheLoadMgr.GetPlatform() == kPlatformNone){
+        return true;
+    }
+    else {
+        Platform plat = TheLoadMgr.GetPlatform();
+        if(TheLoadMgr.GetPlatform() == kPlatformPC){
+            plat = kPlatformXBox;
+        }
+        return plat == mPlatformOnly;
+    }
 }
 
 #pragma push
 #pragma dont_inline on
 LightPreset::~LightPreset(){ Clear(); }
 #pragma pop
+
+void LightPreset::ResetEvents(){
+    sManualEvents.clear();
+}
 
 #pragma push
 #pragma dont_inline on
@@ -65,6 +88,7 @@ BEGIN_COPYS(LightPreset)
         mSpotlightState.resize(mSpotlights.size());
         mEnvironmentState.resize(mEnvironments.size());
         mLightState.resize(mLights.size());
+        mSpotlightDrawers.resize(mSpotlightDrawers.size());
         COPY_MEMBER(mLooping)
         COPY_MEMBER(mCategory)
         COPY_MEMBER(mSelectTriggers)
@@ -97,7 +121,7 @@ BEGIN_LOADS(LightPreset)
         mKeyframes[0].LoadP9(bs);
     }
     char buf[0x80];
-    int spotlightcount;
+    unsigned int spotlightcount;
     bs >> spotlightcount;
     mSpotlights.resize(spotlightcount);
     for(int i = 0; i != mSpotlights.size(); i++){
@@ -105,7 +129,7 @@ BEGIN_LOADS(LightPreset)
         mSpotlights[i] = Dir()->Find<Spotlight>(buf, false);
         if(mSpotlights[i]) mSpotlights[i]->AddRef(this);
     }
-    int envcount;
+    unsigned int envcount;
     bs >> envcount;
     mEnvironments.resize(envcount);
     for(int i = 0; i != mEnvironments.size(); i++){
@@ -113,7 +137,7 @@ BEGIN_LOADS(LightPreset)
         mEnvironments[i] = Dir()->Find<RndEnviron>(buf, false);
         if(mEnvironments[i]) mEnvironments[i]->AddRef(this);
     }
-    int lightcount;
+    unsigned int lightcount;
     bs >> lightcount;
     mLights.resize(lightcount);
     for(int i = 0; i != mLights.size(); i++){
@@ -171,10 +195,10 @@ BEGIN_LOADS(LightPreset)
     }
     if(gRev > 0xC) bs >> mPlatformOnly;
     if(gRev > 9){
-        int sdrawercount;
+        unsigned int sdrawercount;
         bs >> sdrawercount;
         mSpotlightDrawers.resize(sdrawercount);
-        for(int i = 0; i < mSpotlightDrawers.size(); i++){
+        for(int i = 0; i != mSpotlightDrawers.size(); i++){
             bs.ReadString(buf, 0x80);
             mSpotlightDrawers[i] = Dir()->Find<SpotlightDrawer>(buf, false);
             if(mSpotlightDrawers[i]) mSpotlightDrawers[i]->AddRef(this);
@@ -188,25 +212,25 @@ BEGIN_LOADS(LightPreset)
     mEnvironmentState.resize(mEnvironments.size(), EnvironmentEntry());
     mLightState.resize(mLights.size(), EnvLightEntry());
     mSpotlightDrawerState.resize(mSpotlightDrawers.size(), SpotlightDrawerEntry());
-    for(int i = 0; i < mSpotlights.size(); i++){
+    for(int i = 0; i != mSpotlights.size(); i++){
         if(!mSpotlights[i] || !mSpotlights[i]->GetAnimateFromPreset()){
             RemoveSpotlight(i);
             i--;
         }
     }
-    for(int i = 0; i < mEnvironments.size(); i++){
+    for(int i = 0; i != mEnvironments.size(); i++){
         if(!mEnvironments[i] || !mEnvironments[i]->GetAnimateFromPreset()){
             RemoveEnvironment(i);
             i--;
         }
     }
-    for(int i = 0; i < mLights.size(); i++){
+    for(int i = 0; i != mLights.size(); i++){
         if(!mLights[i] || !mLights[i]->GetAnimateFromPreset()){
             RemoveLight(i);
             i--;
         }
     }
-    for(int i = 0; i < mSpotlightDrawers.size(); i++){
+    for(int i = 0; i != mSpotlightDrawers.size(); i++){
         if(!mSpotlightDrawers[i]){
             RemoveSpotlightDrawer(i);
             i--;
@@ -219,7 +243,7 @@ END_LOADS
 #pragma pop
 
 int LightPreset::GetCurrentKeyframe() const {
-    if(mManual) return unk90;
+    if(mManual) return mManualFrame;
     else if(mKeyframes.empty()) return -1;
     else {
         int i;
@@ -235,6 +259,113 @@ RndPostProc* LightPreset::GetCurrentPostProc() const {
     int frame = GetCurrentKeyframe();
     if(frame >= 0) ret = mKeyframes[frame].mVideoVenuePostProc;
     return ret;
+}
+
+void LightPreset::RemoveSpotlight(int idx){
+    for(int i = 0; i != mKeyframes.size(); i++){
+        Keyframe& cur = mKeyframes[i];
+        cur.mSpotlightEntries.erase(cur.mSpotlightEntries.begin() + idx);
+    }
+    mSpotlightState.erase(mSpotlightState.begin() + idx);
+    if(mSpotlights[idx]){
+        mSpotlights[idx]->Release(this);
+    }
+    mSpotlights.erase(mSpotlights.begin() + idx);
+}
+
+void LightPreset::RemoveEnvironment(int idx){
+    for(int i = 0; i != mKeyframes.size(); i++){
+        Keyframe& cur = mKeyframes[i];
+        cur.mEnvironmentEntries.erase(cur.mEnvironmentEntries.begin() + idx);
+    }
+    mEnvironmentState.erase(mEnvironmentState.begin() + idx);
+    if(mEnvironments[idx]){
+        mEnvironments[idx]->Release(this);
+    }
+    mEnvironments.erase(mEnvironments.begin() + idx);
+}
+
+void LightPreset::RemoveLight(int idx){
+    for(int i = 0; i != mKeyframes.size(); i++){
+        Keyframe& cur = mKeyframes[i];
+        cur.mLightEntries.erase(cur.mLightEntries.begin() + idx);
+    }
+    mLightState.erase(mLightState.begin() + idx);
+    if(mLights[idx]){
+        mLights[idx]->Release(this);
+    }
+    mLights.erase(mLights.begin() + idx);
+}
+
+void LightPreset::RemoveSpotlightDrawer(int idx){
+    for(int i = 0; i != mKeyframes.size(); i++){
+        Keyframe& cur = mKeyframes[i];
+        cur.mSpotlightDrawerEntries.erase(cur.mSpotlightDrawerEntries.begin() + idx);
+    }
+    mSpotlightDrawerState.erase(mSpotlightDrawerState.begin() + idx);
+    if(mSpotlightDrawers[idx]){
+        mSpotlightDrawers[idx]->Release(this);
+    }
+    mSpotlightDrawers.erase(mSpotlightDrawers.begin() + idx);
+}
+
+void LightPreset::StartAnim(){
+    mManualFrame = 0;
+    mLastManualFrame = -1;
+    mManualFrameStart = 0;
+    mManualFadeTime = 0;
+    mStartBeat = TheTaskMgr.Beat();
+    mLastKeyframe = 0;
+    mLastBlend = -1.0f;
+    Handle(start_anim_msg, false);
+    for(ObjPtrList<EventTrigger, ObjectDir>::iterator it = mSelectTriggers.begin(); it != mSelectTriggers.end(); ++it){
+        (*it)->Trigger();
+    }
+}
+
+void LightPreset::SetFrame(float frame, float blend){
+    SetFrameEx(frame, blend, false);
+}
+
+void LightPreset::SetFrameEx(float frame, float blend, bool b){
+    START_AUTO_TIMER("light");
+}
+
+void LightPreset::OnKeyframeCmd(LightPreset::KeyframeCmd cmd){
+    sManualEvents.push_back(std::pair<KeyframeCmd, float>(cmd, TheTaskMgr.Beat() + 4.0f));
+}
+
+void LightPreset::AdvanceManual(LightPreset::KeyframeCmd cmd){
+    MILO_ASSERT(mManual, 0x330);
+    if(cmd != kPresetKeyframeFirst || mManualFrame){
+        mManualFrameStart = mFrame;
+        mLastManualFrame = mManualFrame;
+        mManualFrame = NextManualFrame(cmd);
+    }
+}
+
+void LightPreset::ApplyState(const LightPreset::Keyframe& k){
+    if(mSpotlightState[0].mIntensity != k.mSpotlightEntries[0].mIntensity){
+
+    }
+    mEnvironmentState = k.mEnvironmentEntries;
+    mLightState = k.mLightEntries;
+    mSpotlightDrawerState = k.mSpotlightDrawerEntries;
+}
+
+void LightPreset::SetKeyframe(LightPreset::Keyframe& k){
+    for(int i = 0; i != k.mSpotlightEntries.size(); i++){
+        FillSpotPresetData(mSpotlights[i], k.mSpotlightEntries[i], -1);
+    }
+    for(int i = 0; i != k.mEnvironmentEntries.size(); i++){
+        FillEnvPresetData(mEnvironments[i], k.mEnvironmentEntries[i]);
+    }
+    for(int i = 0; i != k.mLightEntries.size(); i++){
+        FillLightPresetData(mLights[i], k.mLightEntries[i]);
+    }
+    for(int i = 0; i != k.mSpotlightDrawerEntries.size(); i++){
+        FillSpotlightDrawerPresetData(mSpotlightDrawers[i], k.mSpotlightDrawerEntries[i]);
+    }
 }
 
 DataNode LightPreset::OnSetKeyframe(DataArray* da){

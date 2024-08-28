@@ -6,6 +6,7 @@
 #include "rndobj/PostProc.h"
 #include "rndobj/Lit.h"
 #include "obj/ObjVector.h"
+#include <deque>
 
 class LightHue;
 class RndEnviron;
@@ -133,7 +134,7 @@ public:
     virtual ~LightPreset();
     virtual void StartAnim();
     virtual void SetFrame(float, float);
-    virtual float EndFrame(){ return mEndFrame; }
+    virtual float EndFrame(){ return mCachedDuration; }
     virtual void Replace(Hmx::Object*, Hmx::Object*);
 
     bool PlatformOk() const;
@@ -154,8 +155,16 @@ public:
     void SyncKeyframeTargets();
     void GetKey(float, int&, int&, float&) const;
     RndPostProc* GetCurrentPostProc() const;
+    void SetFrameEx(float, float, bool);
+    int NextManualFrame(KeyframeCmd) const;
+    void AdvanceManual(KeyframeCmd);
+    void FillSpotPresetData(Spotlight*, SpotlightEntry&, int);
+    void FillEnvPresetData(RndEnviron*, EnvironmentEntry&);
+    void FillLightPresetData(RndLight*, EnvLightEntry&);
+    void FillSpotlightDrawerPresetData(SpotlightDrawer*, SpotlightDrawerEntry&);
 
     static void ResetEvents();
+    static std::deque<std::pair<KeyframeCmd, float> > sManualEvents;
 
     DataNode OnSetKeyframe(DataArray*);
     DataNode OnViewKeyframe(DataArray*);
@@ -176,14 +185,14 @@ public:
     std::vector<EnvironmentEntry> mEnvironmentState; // 0x68
     std::vector<EnvLightEntry> mLightState; // 0x70
     std::vector<SpotlightDrawerEntry> mSpotlightDrawerState; // 0x78
-    int unk80;
-    float unk84;
-    float unk88;
-    float unk8c;
-    int unk90;
-    int unk94;
-    float unk98;
-    float mEndFrame; // 0x9c
+    Keyframe* mLastKeyframe; // 0x80
+    float mLastBlend; // 0x84
+    float mStartBeat; // 0x88
+    float mManualFrameStart; // 0x8c
+    int mManualFrame; // 0x90
+    int mLastManualFrame; // 0x94
+    float mManualFadeTime; // 0x98
+    float mCachedDuration; // 0x9c
     LightHue* mHue; // 0xa0
 
     DECLARE_REVS
