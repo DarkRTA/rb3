@@ -61,7 +61,9 @@ public:
     virtual void Poll();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     
-    bool GetAnimateFromPreset() const;
+    bool GetAnimateFromPreset() const {
+        return mAnimateColorFromPreset || mAnimateOrientationFromPreset;
+    }
     void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
 
     static void Init();

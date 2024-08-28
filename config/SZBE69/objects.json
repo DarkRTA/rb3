@@ -222,7 +222,8 @@
             "system/utl/Symbols4.cpp": "NonMatching",
 
             "system/world/CameraManager.cpp": "NonMatching",
-            "system/world/CameraShot.cpp": "NonMatching"
+            "system/world/CameraShot.cpp": "NonMatching",
+            "system/world/LightPreset.cpp": "NonMatching"
         }
     },
     "RVL_SDK": {

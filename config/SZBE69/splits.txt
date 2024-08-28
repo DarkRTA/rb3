@@ -1367,6 +1367,10 @@ rb3/colorpalette.cpp:
 rb3/stubs/stubonef.cpp:
 	.text       start:0x8059FF1C end:0x8059FF28
 
+system/world/LightPreset.cpp:
+	.text       start:0x805A0734 end:0x805AECCC
+	.ctors      start:0x807EFFD4 end:0x807EFFD8
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738

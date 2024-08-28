@@ -63,6 +63,16 @@ BEGIN_COPYS(LightPreset)
             mSpotlightDrawers[i]->AddRef(this);
         }
         mSpotlightState.resize(mSpotlights.size());
+        mEnvironmentState.resize(mEnvironments.size());
+        mLightState.resize(mLights.size());
+        COPY_MEMBER(mLooping)
+        COPY_MEMBER(mCategory)
+        COPY_MEMBER(mSelectTriggers)
+        COPY_MEMBER(mLegacyFadeIn)
+        COPY_MEMBER(mManual)
+        COPY_MEMBER(mLocked)
+        COPY_MEMBER(mPlatformOnly)
+        CacheFrames();
     END_COPYING_MEMBERS
 END_COPYS
 
@@ -215,7 +225,7 @@ int LightPreset::GetCurrentKeyframe() const {
         int i;
         int ret;
         float f;
-        GetKey(mFrame, i, ret, f);
+        GetKey(GetFrame(), i, ret, f);
         return ret;
     }
 }

@@ -40,7 +40,9 @@ public:
     int PackedColor() const;
     float Intensity() const;
     void SetProjectedBlend(int i){ mProjectedBlend = i; }
-    bool GetAnimateFromPreset() const;
+    bool GetAnimateFromPreset() const {
+        return mAnimateColorFromPreset || mAnimatePositionFromPreset || mAnimateRangeFromPreset;
+    }
 
     static const char* TypeToStr(Type);
 
