@@ -1361,11 +1361,11 @@ system/world/CameraShot.cpp:
 system/world/Crowd.cpp:
 	.text       start:0x8058CD34 end:0x80597134
 
-rb3/colorpalette.cpp:
+system/world/ColorPalette.cpp:
 	.text       start:0x80597134 end:0x80598310
 
-rb3/stubs/stubonef.cpp:
-	.text       start:0x8059FF1C end:0x8059FF28
+system/world/FreeCamera.cpp:
+	.text       start:0x8059FD9C end:0x805A0734
 
 system/world/LightPreset.cpp:
 	.text       start:0x805A0734 end:0x805AECCC
