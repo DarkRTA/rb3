@@ -176,6 +176,7 @@ public:
     void AnimateEnvFromPreset(RndEnviron*, const EnvironmentEntry&, float);
     void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);
     void AnimateSpotlightDrawerFromPreset(SpotlightDrawer*, const SpotlightDrawerEntry&, float);
+    void SetHue(LightHue* hue){ mHue = hue; }
 
     static void ResetEvents();
     static std::deque<std::pair<KeyframeCmd, float> > sManualEvents;
