@@ -11,13 +11,23 @@ public:
     Hmx::Object* mOwner;
 
     Hmx::Object* Owner(){ return mOwner; }
-    void operator=(const ObjList<T>& oList);
+
+    void resize(unsigned long ul){
+        std::list<T>::resize(ul, T(mOwner));
+    }
+
+    void operator=(const ObjList<T>& oList){
+        if(this != &oList){
+            resize(oList.size());
+            std::list<T>::operator=((std::list<T>&)oList);
+        }
+    }
 };
 
 template <class T> BinStream& operator>>(BinStream& bs, ObjList<T>& oList) {
     unsigned int length;
     bs >> length;
-    oList.resize(length, T(oList.mOwner));
+    oList.resize(length);
 
     for(std::list<T>::iterator it = oList.begin(); it != oList.end(); ++it){
         bs >> *it;

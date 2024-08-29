@@ -93,6 +93,13 @@ namespace Hmx {
         void Set(const Matrix3&);
         void Set(const Vector3&);
         void Set(const Vector3&, float);
+        void Set(float f1, float f2, float f3, float f4){
+            x = f1; y = f2; z = f3; w = f4;
+        }
+
+        bool operator!=(const Quat& q) const {
+            return x != q.x || y != q.y || z != q.z || w != q.w;
+        }
 
         float x;
         float y;
@@ -212,13 +219,14 @@ public:
 class TransformNoScale {
 public:
     TransformNoScale(){}
+    TransformNoScale(const TransformNoScale& t){ Set(t); }
     void Set(const Transform&);
     void Set(const TransformNoScale&);
     void SetRot(const Hmx::Matrix3&);
     void Reset();
 
-    ShortQuat q;
-    class Vector3 v;
+    ShortQuat q; // 0x0/2/4/6
+    class Vector3 v; // 0x8
 };
 
 BinStream& operator>>(BinStream&, TransformNoScale&);
@@ -280,6 +288,7 @@ void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
+void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(

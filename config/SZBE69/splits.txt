@@ -1351,17 +1351,32 @@ system/ui/UIGuide.cpp:
 system/ui/Utl.cpp:
 	.text       start:0x8057D224 end:0x8057D398
 
-rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x8057D398 end:0x80581A8C
+system/world/CameraManager.cpp:
+	.text       start:0x8057D398 end:0x80581A9C
+	.ctors      start:0x807EFFCC end:0x807EFFD0
+
+system/world/CameraShot.cpp:
+	.text       start:0x80581A9C end:0x8058CD34
 
 system/world/Crowd.cpp:
-	.text       start:0x8058D868 end:0x80597134
+	.text       start:0x8058CD34 end:0x80597134
 
-rb3/colorpalette.cpp:
+system/world/ColorPalette.cpp:
 	.text       start:0x80597134 end:0x80598310
 
-rb3/stubs/stubonef.cpp:
-	.text       start:0x8059FF1C end:0x8059FF28
+system/world/Dir.cpp:
+	.text       start:0x80598310 end:0x8059FD9C
+	.ctors      start:0x807EFFD0 end:0x807EFFD4
+
+system/world/FreeCamera.cpp:
+	.text       start:0x8059FD9C end:0x805A0734
+
+system/world/LightPreset.cpp:
+	.text       start:0x805A0734 end:0x805AECCC
+	.ctors      start:0x807EFFD4 end:0x807EFFD8
+
+system/world/LightHue.cpp:
+	.text       start:0x805AECCC end:0x805B04EC
 
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850

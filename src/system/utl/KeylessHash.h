@@ -32,8 +32,8 @@ public:
     }
 
     // keep these in here so that they're inlined - needed for ObjDirItr    
-    T2* FirstFromStart(){ return FirstFrom(mEntries); }
-    T2* FirstFromNext(T2* entry){ return FirstFrom(&entry[1]); }
+    T2* Begin(){ return FirstFrom(mEntries); }
+    T2* Next(T2* entry){ return FirstFrom(&entry[1]); }
 };
 
 template <class T1, class T2>
@@ -137,7 +137,7 @@ void KeylessHash<T1, T2>::Resize(int size, T2* val){
         val[i] = mEmpty;
     }
     mNumEntries = 0;
-    for(T2* it = FirstFromStart(); it != 0; it = FirstFromNext(it)){
+    for(T2* it = Begin(); it != 0; it = Next(it)){
         int i = HashString(*it, size);
         MILO_ASSERT(i >= 0, 0x108);
         while(val[i] != mEmpty){

@@ -39,6 +39,7 @@ public:
     bool FogEnable() const;
     bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
+    bool GetAnimateFromPreset() const { return mAnimateFromPreset; }
 
     const Hmx::Color& AmbientColor() const { return mAmbientFogOwner->mAmbientColor; }
     void SetAmbientColor(const Hmx::Color& col){
