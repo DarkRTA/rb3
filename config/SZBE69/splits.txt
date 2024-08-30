@@ -1384,6 +1384,12 @@ system/world/LightPresetManager.cpp:
 system/world/Reflection.cpp:
 	.text       start:0x805B22D8 end:0x805B31E8
 
+system/world/World.cpp:
+	.text       start:0x805B31E8 end:0x805B368C
+
+system/world/Spotlight.cpp:
+	.text       start:0x805B368C end:0x805BB3BC
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738

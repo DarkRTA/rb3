@@ -50,6 +50,14 @@ namespace Hmx {
             return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }
 
+        int PackAlpha() const {
+            return 
+                ((int)(alpha * 255.0f) & 0xFF) << 24 | 
+                ((int)(blue * 255.0f) & 0xFF) << 16 |
+                ((int)(green * 255.0f) & 0xFF) << 8 |
+                ((int)(red * 255.0f) & 0xFF);
+        }
+
         void Unpack(int packed){
             red = (packed & 255) / 255.0f;
             green = ((packed >> 8) & 255) / 255.0f;
@@ -58,15 +66,22 @@ namespace Hmx {
     };
 
     class Color32 {
+    public:
         union {
             uint x;
             struct {
                 u8 a, b, g, r;
             };
         };
-    public:
+
         Color32(){ Clear(); }
-        inline void Clear() { x = -1; }
+        Color32(const Hmx::Color& col){ x = col.PackAlpha(); }
+        void Clear() { x = -1; }
+        void Set(Hmx::Color& col){
+            x = col.PackAlpha();
+        }
+        void SetAlpha(float f){ a = f * 255.0f; }
+
         float fr() const { return r * 0.0039215688593685627f;}
         float fg() const { return g * 0.0039215688593685627f;}
         float fb() const { return b * 0.0039215688593685627f;}
@@ -85,6 +100,13 @@ inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
 
 inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     bs >> color.red >> color.green >> color.blue >> color.alpha;
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, Hmx::Color32& color){
+    Hmx::Color regcolor;
+    bs >> regcolor;
+    color.Set(regcolor);
     return bs;
 }
 

@@ -3,7 +3,9 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Poll.h"
+#include "rndobj/Env.h"
 
+class RndGroup;
 class RndFlare;
 class RndMesh;
 class RndTex;
@@ -18,6 +20,7 @@ public:
         BeamDef(const BeamDef&);
         ~BeamDef();
         void OnSetMat(RndMat*);
+        void Load(BinStream&);
         
         RndMesh* mBeam; // 0x0
         bool mIsCone; // 0x4
@@ -65,17 +68,33 @@ public:
         return mAnimateColorFromPreset || mAnimateOrientationFromPreset;
     }
     void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
+    void CloseSlaves();
+    void SetFlareEnabled(bool);
+    void UpdateFlare();
+    void SetFlareIsBillboard(bool);
+    void ConvertGroupToMesh(RndGroup*);
+    void Generate();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(Spotlight)
+    static void Register(){
+        REGISTER_OBJ_FACTORY(Spotlight)
+    }
 
     static void Init();
+    static void BuildBoard();
+    static RndEnviron* sEnviron;
 
     ObjPtr<RndMat, ObjectDir> mDiscMat; // 0xb8
     RndFlare* mFlare; // 0xc4
     float mFlareOffset; // 0xc8
     float mSpotScale; // 0xcc
     float mSpotHeight; // 0xd0
-    Transform unkd4;
-    Transform unk104;
-    int unk134;
+    Transform mFloorSpotXfm; // 0xd4
+    Transform mLensXfm; // 0x104
+    Hmx::Color32 mColor; // 0x134 - packed color
     float unk138;
     ObjOwnerPtr<Spotlight, ObjectDir> mColorOwner; // 0x13c
     float mLensSize; // 0x148
@@ -83,8 +102,8 @@ public:
     ObjPtr<RndMat, ObjectDir> mLensMaterial; // 0x150
     BeamDef mBeam; // 0x15c
     ObjPtrList<RndLight, ObjectDir> mSlaves; // 0x1c4
-    ObjPtr<RndMesh, ObjectDir> mLightCanMesh;
-    Transform mLightCanXfm;
+    ObjPtr<RndMesh, ObjectDir> mLightCanMesh; // 0x1d4
+    Transform mLightCanXfm; // 0x1e0
     float mLightCanOffset; // 0x210
     ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x214
     ObjPtr<RndTransformable, ObjectDir> mSpotTarget; // 0x220
@@ -104,5 +123,10 @@ public:
     bool mAnimateOrientationFromPreset; // 0x28b
     bool unk28c;
 };
+
+inline BinStream& operator>>(BinStream& bs, Spotlight::BeamDef& bd){
+    bd.Load(bs);
+    return bs;
+}
 
 #endif

@@ -230,7 +230,9 @@
             "system/world/LightHue.cpp": "NonMatching",
             "system/world/LightPreset.cpp": "NonMatching",
             "system/world/LightPresetManager.cpp": "NonMatching",
-            "system/world/Reflection.cpp": "NonMatching"
+            "system/world/Reflection.cpp": "NonMatching",
+            "system/world/Spotlight.cpp": "NonMatching",
+            "system/world/World.cpp": "NonMatching"
         }
     },
     "RVL_SDK": {

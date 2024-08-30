@@ -73,6 +73,7 @@ public:
     static std::vector<class Spotlight*> sShadowSpots;
 
     static void Init();
+    static void RemoveFromLists(Spotlight*);
 
     SpotDrawParams mParams;
 };

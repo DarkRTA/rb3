@@ -26,6 +26,12 @@ public:
     void SetMat(RndMat*);
     void SetPointTest(bool);
     void SetSteps(int);
+    void SetTestDone(){ mTestDone = true; }
+
+    void SetVisible(bool b){
+        SetTestDone();
+        mVisible = b;
+    }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
