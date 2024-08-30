@@ -5,6 +5,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Group.h"
 #include "world/SpotlightDrawer.h"
+#include "utl/Symbols.h"
 
 RndEnviron* Spotlight::sEnviron;
 
@@ -173,6 +174,111 @@ BEGIN_LOADS(Spotlight)
     Generate();
 END_LOADS
 
+void Spotlight::Replace(Hmx::Object* from, Hmx::Object* to){
+    RndTransformable::Replace(from, to);
+    if(mColorOwner == from){
+        mColorOwner = dynamic_cast<Spotlight*>(to);
+    }
+    if(!mColorOwner){
+        mColorOwner = this;
+    }
+}
+
+SAVE_OBJ(Spotlight, 0x16D)
+
+void Spotlight::BeamDef::Load(BinStream& bs){
+    bs >> mIsCone;
+    bs >> mLength;
+    bs >> mRadius;
+    bs >> mTopRadius;
+    bs >> mTopSideBorder;
+    bs >> mBottomSideBorder;
+    bs >> mBottomBorder;
+    bs >> mMat;
+    if(gRev == 0x12){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+    }
+    bs >> mOffset;
+    if(gRev < 10){
+        Hmx::Color col; bs >> col;
+    }
+    bs >> mTargetOffset;
+    if(gRev > 0x14){
+        bs >> mBrighten;
+        bs >> mXSection;
+    }
+    if(gRev > 0x17) bs >> mExpand;
+    if(gRev > 0x1A) bs >> mShape;
+    if(gRev > 0x18) bs >> mCutouts;
+    if(gRev > 0x1F){
+        bs >> mNumSections;
+        bs >> mNumSegments;
+    }
+}
+
+BEGIN_COPYS(Spotlight)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndTransformable)
+    COPY_SUPERCLASS(RndDrawable)
+    CREATE_COPY(Spotlight)
+    BEGIN_COPYING_MEMBERS
+        if(ty != kCopyFromMax){
+            mFlare->Copy(this, kCopyDeep);
+            COPY_MEMBER(mFlareOffset)
+            COPY_MEMBER(mLightCanMesh)
+            COPY_MEMBER(mTarget)
+            COPY_MEMBER(mSpotTarget)
+            COPY_MEMBER(mSpotScale)
+            COPY_MEMBER(mSpotHeight)
+            // ...
+            COPY_MEMBER(mDiscMat)
+            COPY_MEMBER(mDampingConstant)
+            COPY_MEMBER(mLensSize)
+            COPY_MEMBER(mLensOffset)
+            COPY_MEMBER(mLensMaterial)
+            COPY_MEMBER(mLightCanOffset)
+            COPY_MEMBER(mLightCanSort)
+            COPY_MEMBER(mFlareEnabled)
+            COPY_MEMBER(mFlareVisibilityTest)
+            UpdateFlare();
+            COPY_MEMBER(mTargetShadow)
+            COPY_MEMBER(mAnimateColorFromPreset)
+            COPY_MEMBER(mAnimateOrientationFromPreset)
+            COPY_MEMBER(mAdditionalObjects)
+            COPY_MEMBER(mSlaves)
+            COPY_MEMBER(mBeam.mIsCone)
+            COPY_MEMBER(mBeam.mLength)
+            COPY_MEMBER(mBeam.mRadius)
+            COPY_MEMBER(mBeam.mTopRadius)
+            COPY_MEMBER(mBeam.mTopSideBorder)
+            COPY_MEMBER(mBeam.mBottomSideBorder)
+            COPY_MEMBER(mBeam.mBottomBorder)
+            COPY_MEMBER(mBeam.mMat)
+            COPY_MEMBER(mBeam.mTargetOffset)
+            COPY_MEMBER(mBeam.mBrighten)
+            COPY_MEMBER(mBeam.mExpand)
+            COPY_MEMBER(mBeam.mShape)
+            COPY_MEMBER(mBeam.mXSection)
+            COPY_MEMBER(mBeam.mCutouts)
+            COPY_MEMBER(mBeam.mOffset)
+            COPY_MEMBER(mBeam.mNumSections)
+            COPY_MEMBER(mBeam.mNumSegments)
+            if(c->mBeam.mBeam){
+                mBeam.mBeam = Hmx::Object::New<RndMesh>();
+                mBeam.mBeam->Copy(c->mBeam.mBeam, kCopyDeep);
+            }
+        }
+    END_COPYING_MEMBERS
+END_COPYS
+
+void Spotlight::ListDrawChildren(std::list<RndDrawable*>& draws){
+    if(mLightCanMesh) draws.push_back(mLightCanMesh);
+    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = mAdditionalObjects.begin(); it != mAdditionalObjects.end(); ++it){
+        draws.push_back(*it);
+    }
+}
+
 Spotlight::BeamDef::BeamDef(Hmx::Object* obj) : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mRadius(30.0f), mTopSideBorder(0.1f), mBottomSideBorder(0.3f),
     mBottomBorder(0.5f), mOffset(0.0f), mTargetOffset(0.0f, 0.0f), mBrighten(1.0f), mExpand(1.0f), mShape(0), mNumSections(0), mNumSegments(0),
     mXSection(obj, 0), mCutouts(obj, kObjListNoNull), mMat(obj, 0) {
@@ -188,3 +294,13 @@ void Spotlight::BeamDef::OnSetMat(RndMat* mat){
     mMat = mat;
     if(mBeam) mBeam->SetMat(mMat);
 }
+
+BEGIN_HANDLERS(Spotlight)
+    HANDLE_ACTION(propogate_targeting_to_presets, PropogateToPresets(2))
+    HANDLE_ACTION(propogate_coloring_to_presets, PropogateToPresets(1))
+    HANDLE_SUPERCLASS(RndDrawable)
+    HANDLE_SUPERCLASS(RndTransformable)
+    HANDLE_SUPERCLASS(RndPollable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x71D)
+END_HANDLERS

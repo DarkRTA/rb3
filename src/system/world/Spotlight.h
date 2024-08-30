@@ -57,7 +57,7 @@ public:
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual ~Spotlight();
 
     virtual void UpdateBounds();
@@ -74,6 +74,7 @@ public:
     void SetFlareIsBillboard(bool);
     void ConvertGroupToMesh(RndGroup*);
     void Generate();
+    void PropogateToPresets(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
