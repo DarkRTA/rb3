@@ -75,6 +75,7 @@ namespace Hmx {
         };
 
         Color32(){ Clear(); }
+        Color32(int i){ x = i; }
         Color32(const Hmx::Color& col){ x = col.PackAlpha(); }
         void Clear() { x = -1; }
         void Set(Hmx::Color& col){
