@@ -26,16 +26,16 @@ public:
         REGISTER_OBJ_FACTORY(WorldReflection)
     }
     
-    ObjPtrList<RndDrawable, ObjectDir> unkb0;
-    ObjPtrList<Character, ObjectDir> unkc0;
-    float unkd0;
-    std::list<int> unkd4;
-    const char* unkdc;
-    bool unke0;
-    ObjPtrList<RndDrawable, ObjectDir> unke4;
-    ObjPtrList<RndDrawable, ObjectDir> unkf4;
-    ObjPtrList<RndDrawable, ObjectDir> unk104;
-    ObjPtrList<RndDrawable, ObjectDir> unk114;
+    ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0xb0
+    ObjPtrList<Character, ObjectDir> mLodChars; // 0xc0
+    float mVerticalStretch; // 0xd0
+    std::list<int> unkd4; // 0xd4
+    RndCam* unkdc; // 0xdc
+    bool unke0; // 0xe0
+    ObjPtrList<RndDrawable, ObjectDir> mHideList; // 0xe4
+    ObjPtrList<RndDrawable, ObjectDir> mShowList; // 0xf4
+    ObjPtrList<RndDrawable, ObjectDir> unk104; // 0x104
+    ObjPtrList<RndDrawable, ObjectDir> unk114; // 0x114
 };
 
 #endif
