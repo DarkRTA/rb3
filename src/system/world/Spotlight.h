@@ -75,6 +75,10 @@ public:
     void ConvertGroupToMesh(RndGroup*);
     void Generate();
     void PropogateToPresets(int);
+    void UpdateTransforms();
+    void SetColor(int);
+    void SetIntensity(float);
+    RndTransformable* ResolveTarget();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -96,7 +100,7 @@ public:
     Transform mFloorSpotXfm; // 0xd4
     Transform mLensXfm; // 0x104
     Hmx::Color32 mColor; // 0x134 - packed color
-    float unk138;
+    float mIntensity; // 0x138
     ObjOwnerPtr<Spotlight, ObjectDir> mColorOwner; // 0x13c
     float mLensSize; // 0x148
     float mLensOffset; // 0x14c
