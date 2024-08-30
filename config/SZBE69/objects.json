@@ -228,7 +228,8 @@
             "system/world/Dir.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
-            "system/world/LightPreset.cpp": "NonMatching"
+            "system/world/LightPreset.cpp": "NonMatching",
+            "system/world/LightPresetManager.cpp": "NonMatching"
         }
     },
     "RVL_SDK": {
