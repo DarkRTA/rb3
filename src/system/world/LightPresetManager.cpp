@@ -1,5 +1,6 @@
 #include "world/LightPresetManager.h"
 #include "world/Dir.h"
+#include "math/Rand.h"
 #include "utl/Symbols.h"
 
 // fn_805B04EC
@@ -247,6 +248,14 @@ void LightPresetManager::SetLighting(Symbol s, bool b){
         mLastCategory = thes;
         SelectPreset(PickRandomPreset(thes), b);
     }
+}
+
+LightPreset* LightPresetManager::PickRandomPreset(Symbol s){
+    int count = mPresets[s].size();
+    if(count != 0){
+        return mPresets[s][RandomInt(0, count)];
+    }
+    else return 0;
 }
 
 void LightPresetManager::ReportError(){
