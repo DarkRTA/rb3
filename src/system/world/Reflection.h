@@ -16,8 +16,14 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual void DrawShowing();
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual ~WorldReflection();
+
+    void DoHide();
+    void UnHide();
+    void DoLOD(int);
+
+    DECLARE_REVS;
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -29,7 +35,7 @@ public:
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0xb0
     ObjPtrList<Character, ObjectDir> mLodChars; // 0xc0
     float mVerticalStretch; // 0xd0
-    std::list<int> unkd4; // 0xd4
+    std::list<void*> unkd4; // 0xd4
     RndCam* unkdc; // 0xdc
     bool unke0; // 0xe0
     ObjPtrList<RndDrawable, ObjectDir> mHideList; // 0xe4

@@ -1381,6 +1381,9 @@ system/world/LightHue.cpp:
 system/world/LightPresetManager.cpp:
 	.text       start:0x805B04EC end:0x805B22D8
 
+system/world/Reflection.cpp:
+	.text       start:0x805B22D8 end:0x805B31E8
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738
