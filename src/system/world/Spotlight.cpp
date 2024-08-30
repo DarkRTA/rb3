@@ -337,7 +337,7 @@ Spotlight::BeamDef::BeamDef(Hmx::Object* obj) : mBeam(0), mIsCone(0), mLength(10
 Spotlight::BeamDef::BeamDef(const Spotlight::BeamDef& def) : mBeam(0), mIsCone(def.mIsCone), mLength(def.mLength), mTopRadius(def.mTopRadius), mRadius(def.mRadius),
     mTopSideBorder(def.mTopSideBorder), mBottomSideBorder(def.mBottomSideBorder), mBottomBorder(def.mBottomBorder), mOffset(def.mOffset), mTargetOffset(def.mTargetOffset),
     mBrighten(def.mBrighten), mExpand(def.mExpand), mShape(def.mShape), mNumSections(def.mNumSections), mNumSegments(def.mNumSegments),
-    mXSection(def.mXSection.Owner(), def.mXSection.Ptr()), mCutouts(def.mCutouts), mMat(def.mMat) {
+    mXSection(def.mXSection.Owner(), def.mXSection.Ptr()), mCutouts(def.mCutouts), mMat(def.mMat.Owner(), def.mMat.Ptr()) {
     if(def.mBeam){
         mBeam = Hmx::Object::New<RndMesh>();
         mBeam->Copy(def.mBeam, kCopyDeep);
@@ -398,10 +398,10 @@ BEGIN_PROPSYNCS(Spotlight)
     SYNC_PROP(light_can_sort, mLightCanSort)
     SYNC_PROP_MODIFY_ALT(target, mTarget, UpdateTransforms())
     SYNC_PROP(target_shadow, mTargetShadow)
-    SYNC_PROP_SET(flare_material, mFlare->mMat, mFlare->SetMat(_val.Obj<RndMat>(0)))
+    SYNC_PROP_SET(flare_material, mFlare->GetMat(), mFlare->SetMat(_val.Obj<RndMat>(0)))
     SYNC_PROP(flare_size, mFlare->mSizes)
     SYNC_PROP(flare_range, mFlare->mRange)
-    SYNC_PROP_SET(flare_steps, mFlare->mSteps, mFlare->SetSteps(_val.Int(0)))
+    SYNC_PROP_SET(flare_steps, mFlare->GetSteps(), mFlare->SetSteps(_val.Int(0)))
     SYNC_PROP_MODIFY(flare_offset, mFlareOffset, UpdateBounds())
     SYNC_PROP_MODIFY(flare_enabled, mFlareEnabled, UpdateFlare())
     SYNC_PROP_SET(flare_visibility_test, mFlareVisibilityTest == 0, SetFlareIsBillboard(_val.Int(0) == 0))
@@ -409,8 +409,8 @@ BEGIN_PROPSYNCS(Spotlight)
     SYNC_PROP_MODIFY(spot_scale, mSpotScale, UpdateBounds())
     SYNC_PROP_MODIFY(spot_height, mSpotHeight, UpdateBounds())
     SYNC_PROP_MODIFY_ALT(spot_material, mDiscMat, UpdateBounds())
-    SYNC_PROP_SET(color, (int&)mColorOwner->mColor.x, SetColor(_val.Int(0))) // there are color32 inlines here - fix!
-    SYNC_PROP_SET(intensity, mColorOwner->mIntensity, SetIntensity(_val.Float(0)))
+    SYNC_PROP_SET(color, Color().Opaque(), SetColor(_val.Int(0))) // there are color32 inlines here - fix!
+    SYNC_PROP_SET(intensity, Intensity(), SetIntensity(_val.Float(0)))
     SYNC_PROP(color_owner, mColorOwner)
     SYNC_PROP(damping_constant, mDampingConstant)
     SYNC_PROP_MODIFY(lens_size, mLensSize, UpdateBounds())

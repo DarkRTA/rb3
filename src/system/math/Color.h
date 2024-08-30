@@ -68,20 +68,22 @@ namespace Hmx {
     class Color32 {
     public:
         union {
-            uint x;
+            uint color;
             struct {
                 u8 a, b, g, r;
             };
         };
 
         Color32(){ Clear(); }
-        Color32(int i){ x = i; }
-        Color32(const Hmx::Color& col){ x = col.PackAlpha(); }
-        void Clear() { x = -1; }
+        Color32(int i){ color = i; }
+        Color32(const Hmx::Color& col){ color = col.PackAlpha(); }
+        void Clear() { color = -1; }
         void Set(Hmx::Color& col){
-            x = col.PackAlpha();
+            color = col.PackAlpha();
         }
         void SetAlpha(float f){ a = f * 255.0f; }
+        int FullColor() const { return color; }
+        int Opaque() const { return color | 0xFF000000; }
 
         float fr() const { return r * 0.0039215688593685627f;}
         float fg() const { return g * 0.0039215688593685627f;}
