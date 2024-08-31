@@ -159,6 +159,11 @@ void WorldInstance::LoadPersistentObjects(BinStream* bs){
             *bs >> sym;
             char buf[0x80];
             bs->ReadString(buf, 0x80);
+            if(!Hmx::Object::RegisteredFactory(sym)){
+                MILO_WARN("%s: Can't make %s", mStoredFile.c_str(), sym);
+                DeleteObjects();
+                return;
+            }
             Hmx::Object* obj = Hmx::Object::NewObject(sym);
             obj->SetName(buf, this);
             objlist.push_back(obj);
@@ -183,6 +188,29 @@ void WorldInstance::LoadPersistentObjects(BinStream* bs){
             RemoveSubDir(dirPtr);
             mDir->SetName(strac.c_str(), dir1);
             mDir->SetTypeDef(defarr);
+        }
+    }
+}
+
+void WorldInstance::DeleteTransientObjects(){
+    if(!Dir() || Dir() == DirLoader::sTopSaveDir || Dir()->InlineSubDirType() != kInlineAlways){
+        DeleteObjects();
+    }
+    else for(ObjDirItr<Hmx::Object> obj(this, false); obj != 0; ++obj){
+        if(obj != this){
+            Hmx::Object* to = mDir->Find<Hmx::Object>(obj->Name(), true);
+            MILO_ASSERT(obj->ClassName() == to->ClassName(), 0x1CB);
+            std::vector<ObjRef*> refs;
+            {
+                MemDoTempAllocations m(true, false);
+                refs = obj->mRefs;
+            }
+            for(std::vector<ObjRef*>::reverse_iterator it = refs.rbegin(); it != refs.rend(); ++it){
+                if((*it)->RefOwner() && (*it)->RefOwner()->Dir() == this){
+                    (*it)->Replace(obj, to);
+                }
+            }
+            delete obj;
         }
     }
 }
@@ -217,6 +245,43 @@ void WorldInstance::PreLoad(BinStream& bs){
 
 void WorldInstance::Replace(Hmx::Object* from, Hmx::Object* to){
     RndDir::Replace(from, to);
+}
+
+void WorldInstance::PostLoad(BinStream& bs){
+    RndDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    if(gRev != 0){
+        mDir = dynamic_cast<WorldInstance*>(PostLoadInlined().Ptr());
+    }
+    else mDir.PostLoad(0);
+    if(gRev > 1) LoadPersistentObjects(&bs);
+    SyncDir();
+}
+
+void WorldInstance::SetProxyFile(const FilePath& fp, bool override){
+    MILO_ASSERT(!override, 599);
+    DeleteObjects();
+    mDir.LoadFile(fp, false, true, kLoadFront, false);
+    SyncDir();
+    if(mDir){
+        Hmx::Object::Copy(mDir, kCopyShallow);
+    }
+}
+
+void WorldInstance::SyncDir(){
+    if(IsProxy()){
+        DeleteTransientObjects();
+        mSharedGroup = 0;
+        if(mDir){
+            RndGroup* grp = mDir->Find<RndGroup>("shared.grp", 0);
+            if(!mDir->mSharedGroup2 && grp){
+                mDir->mSharedGroup2 = new SharedGroup(grp);
+            }
+            // more...
+        }
+    }
 }
 
 BEGIN_HANDLERS(WorldInstance)
