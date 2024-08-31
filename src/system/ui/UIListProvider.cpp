@@ -1,4 +1,5 @@
 #include "ui/UIListProvider.h"
+#include "UIListProvider.h"
 #include "ui/UIListLabel.h"
 #include "ui/UIListMesh.h"
 #include "ui/UIList.h"
@@ -86,13 +87,29 @@ void DataProvider::SetData(DataArray* arr){
     }
 }
 
+typedef std::list<Symbol>::iterator SymListIt;
 void DataProvider::Disable(Symbol sym){
-    // std::find goes here maybe?
-    std::list<Symbol>::iterator it = unk10.begin();
-    for(; it != unk10.end(); it++){
-        if(*it == sym) break;
-    }
-    if(it == unk10.end()) unk10.push_back(sym);
+    SymListIt it = std::find(mDisabled.begin(), mDisabled.end(), sym);
+    if (it == mDisabled.end())
+        mDisabled.push_back(sym);
+}
+
+void DataProvider::Enable(Symbol sym) {
+    SymListIt it = std::find(mDisabled.begin(), mDisabled.end(), sym);
+    if (it != mDisabled.end())
+        mDisabled.erase(it);
+}
+
+void DataProvider::Dim(Symbol sym) {
+    SymListIt it = std::find(mDimmed.begin(), mDimmed.end(), sym);
+    if (it == mDimmed.end())
+        mDimmed.push_back(sym);
+}
+
+void DataProvider::UnDim(Symbol sym) {
+    SymListIt it = std::find(mDimmed.begin(), mDimmed.end(), sym);
+    if (it != mDimmed.end())
+        mDimmed.erase(it);
 }
 
 RndMat* DataProvider::Mat(int i, int j, UIListMesh* mesh) const {
@@ -114,5 +131,5 @@ RndMat* DataProvider::Mat(int i, int j, UIListMesh* mesh) const {
 
 float DataProvider::GapSize(int, int i, int, int) const {
     if(mFluidWidth) return mWidths[i];
-    else return 0;
+    else return 0.0f;
 }
