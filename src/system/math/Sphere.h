@@ -20,6 +20,8 @@ public:
         radius = f;
     }
 
+    void GrowToContain(const Sphere&);
+
     Vector3 center;
     float radius;
 };

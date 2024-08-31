@@ -13,6 +13,17 @@ RndEnviron* Spotlight::sEnviron;
 
 INIT_REVS(Spotlight)
 
+const Vector2& Spotlight::BeamDef::NGRadii() const {
+    float exp = mExpand;
+    float f1 = mTopRadius * exp;
+    float f2 = mBottomRadius * exp;
+    if(!mIsCone){
+        f2 = f2 * -(mBottomSideBorder * 0.7f - 1.0f);
+        f1 = f1 * -(mTopSideBorder * 0.7f - 1.0f);
+    }
+    return Vector2(f1, f2);
+}
+
 void Spotlight::Init(){
     Register();
     sEnviron = Hmx::Object::New<RndEnviron>();
@@ -191,7 +202,7 @@ SAVE_OBJ(Spotlight, 0x16D)
 void Spotlight::BeamDef::Load(BinStream& bs){
     bs >> mIsCone;
     bs >> mLength;
-    bs >> mRadius;
+    bs >> mBottomRadius;
     bs >> mTopRadius;
     bs >> mTopSideBorder;
     bs >> mBottomSideBorder;
@@ -251,7 +262,7 @@ BEGIN_COPYS(Spotlight)
             COPY_MEMBER(mSlaves)
             COPY_MEMBER(mBeam.mIsCone)
             COPY_MEMBER(mBeam.mLength)
-            COPY_MEMBER(mBeam.mRadius)
+            COPY_MEMBER(mBeam.mBottomRadius)
             COPY_MEMBER(mBeam.mTopRadius)
             COPY_MEMBER(mBeam.mTopSideBorder)
             COPY_MEMBER(mBeam.mBottomSideBorder)
@@ -318,6 +329,32 @@ void Spotlight::CloseSlaves(){
     }
 }
 
+void Spotlight::UpdateSlaves(){
+    if(!mSlaves.empty()){
+        for(ObjPtrList<RndLight, ObjectDir>::iterator it = mSlaves.begin(); it != mSlaves.end(); ++it){
+            RndLight* lit = *it;
+            Transform tf40(WorldXfm());
+            if(lit->TransParent()){
+                Transform tf70;
+                Invert(lit->TransParent()->WorldXfm(), tf70);
+                Multiply(WorldXfm(), tf70, tf40);
+            }
+            lit->SetLocalXfm(tf40);
+            lit->SetShadowOverride(&mBeam.mCutouts);
+            lit->SetShowing(Showing());
+        }
+    }
+}
+
+void Spotlight::CalculateDirection(RndTransformable* trans, Hmx::Matrix3& mtx){
+    Vector3 v20;
+    Subtract(trans->WorldXfm().v, WorldXfm().v, v20);
+    Vector3 v2c;
+    Cross(v20, Vector3(1.0f, 0.0f, 0.0f), v2c);
+    Normalize(v2c, v2c);
+    MakeRotMatrix(v20, v2c, mtx);
+}
+
 void Spotlight::UpdateSphere(){
     Sphere s48;
     MakeWorldSphere(s48, true);
@@ -325,6 +362,46 @@ void Spotlight::UpdateSphere(){
     FastInvert(WorldXfm(), tf38);
     Multiply(s48, tf38, s48);
     SetSphere(s48);
+}
+
+bool Spotlight::MakeWorldSphere(Sphere& s, bool b){
+    if(b){
+        s.Zero();
+        if(mBeam.mBeam){
+            Sphere s28;
+            if(mBeam.mBeam->MakeWorldSphere(s28, true)){
+                s.GrowToContain(s28);
+            }
+        }
+        if(DoFloorSpot()){
+            Sphere s38;
+            sDiskMesh->SetWorldXfm(mFloorSpotXfm);
+            if(sDiskMesh->MakeWorldSphere(s38, true)){
+                s.GrowToContain(s38);
+            }
+        }
+        if(mFlare){
+            Sphere s48;
+            if(mFlare->MakeWorldSphere(s48, true)){
+                s.GrowToContain(s48);
+            }
+        }
+        if(mLightCanMesh){
+            Sphere s58;
+            mLightCanMesh->SetWorldXfm(mLightCanXfm);
+            if(mLightCanMesh->MakeWorldSphere(s58, true)){
+                s.GrowToContain(s58);
+            }
+        }
+        return true;
+    }
+    else {
+        if(&mSphere){ // fix this line
+            Multiply(mSphere, WorldXfm(), s);
+            return true;
+        }
+        else return false;
+    }
 }
 
 void Spotlight::SetColorIntensity(const Hmx::Color& col, float f){
@@ -354,6 +431,38 @@ void Spotlight::UpdateBounds(){
 
 void Spotlight::UpdateTransforms(){
     START_AUTO_TIMER("spotlight_xfm");
+    Transform& thetf = WorldXfm();
+    mLightCanXfm = thetf;
+    Vector3 vcc(mLightCanXfm.m.y);
+    vcc *= mLightCanOffset;
+    ::Add(mLightCanXfm.v, vcc, mLightCanXfm.v);
+    static Hmx::Matrix3 ident(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f));
+    static Hmx::Matrix3 rot(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, -1.0f, 0.0f));
+    if(mLensMaterial){
+        Vector3 vd8(0.0f, mLensOffset, 0.0f);
+        Multiply(vd8, thetf.m, vd8);
+        ::Add(vd8, thetf.v, vd8);
+        Hmx::Matrix3 m48;
+        m48.Set(Vector3(-mLensSize, 0.0f, 0.0f), Vector3(0.0f, 0.0f, mLensSize), Vector3(0.0f, mLensSize, 0.0f));
+        Multiply(m48, thetf.m, m48);
+        mLensXfm = Transform(m48, vd8);
+    }
+    if(mBeam.mBeam){
+        Vector3 ve4(0.0f, mBeam.mOffset, 0.0f);
+        mBeam.mBeam->SetLocalPos(ve4);
+        Hmx::Matrix3 m6c(mBeam.mIsCone ? rot : ident);
+        Hmx::Matrix3 m90;
+        MakeRotMatrix(Vector3(mBeam.mTargetOffset.x * DEG2RAD, 0.0f, mBeam.mTargetOffset.y * DEG2RAD), m90, true);
+        Multiply(m6c, m90, m6c);
+        mBeam.mBeam->SetLocalRot(m6c);
+    }
+    if(mFlare && mFlare->GetMat()){
+        Vector3 vf0(0.0f, mFlareOffset, 0.0f);
+        mFlare->SetLocalPos(vf0);
+        mFlare->SetLocalRot(ident);
+    }
+    UpdateFloorSpotTransform(thetf);
+    UpdateSlaves();
 }
 
 void Spotlight::CheckFloorSpotTransform(){
@@ -390,13 +499,18 @@ void Spotlight::UpdateFloorSpotTransform(const Transform& tf){
     }
 }
 
-Spotlight::BeamDef::BeamDef(Hmx::Object* obj) : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mRadius(30.0f), mTopSideBorder(0.1f), mBottomSideBorder(0.3f),
+void Spotlight::BuildShaft(Spotlight::BeamDef& def){
+    if(def.mIsCone) BuildCone(def);
+    else BuildBeam(def);
+}
+
+Spotlight::BeamDef::BeamDef(Hmx::Object* obj) : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mBottomRadius(30.0f), mTopSideBorder(0.1f), mBottomSideBorder(0.3f),
     mBottomBorder(0.5f), mOffset(0.0f), mTargetOffset(0.0f, 0.0f), mBrighten(1.0f), mExpand(1.0f), mShape(0), mNumSections(0), mNumSegments(0),
     mXSection(obj, 0), mCutouts(obj, kObjListNoNull), mMat(obj, 0) {
 
 }
 
-Spotlight::BeamDef::BeamDef(const Spotlight::BeamDef& def) : mBeam(0), mIsCone(def.mIsCone), mLength(def.mLength), mTopRadius(def.mTopRadius), mRadius(def.mRadius),
+Spotlight::BeamDef::BeamDef(const Spotlight::BeamDef& def) : mBeam(0), mIsCone(def.mIsCone), mLength(def.mLength), mTopRadius(def.mTopRadius), mBottomRadius(def.mBottomRadius),
     mTopSideBorder(def.mTopSideBorder), mBottomSideBorder(def.mBottomSideBorder), mBottomBorder(def.mBottomBorder), mOffset(def.mOffset), mTargetOffset(def.mTargetOffset),
     mBrighten(def.mBrighten), mExpand(def.mExpand), mShape(def.mShape), mNumSections(def.mNumSections), mNumSegments(def.mNumSegments),
     mXSection(def.mXSection.Owner(), def.mXSection.Ptr()), mCutouts(def.mCutouts), mMat(def.mMat.Owner(), def.mMat.Ptr()) {
@@ -440,7 +554,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(Spotlight)
     SYNC_PROP_MODIFY(length, mBeam.mLength, Generate())
     SYNC_PROP_MODIFY(top_radius, mBeam.mTopRadius, Generate())
-    SYNC_PROP_MODIFY(bottom_radius, mBeam.mRadius, Generate())
+    SYNC_PROP_MODIFY(bottom_radius, mBeam.mBottomRadius, Generate())
     SYNC_PROP_MODIFY(top_side_border, mBeam.mTopSideBorder, Generate())
     SYNC_PROP_MODIFY(bottom_side_border, mBeam.mBottomSideBorder, Generate())
     SYNC_PROP_MODIFY(bottom_border, mBeam.mBottomBorder, Generate())

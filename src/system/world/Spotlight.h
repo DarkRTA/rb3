@@ -21,12 +21,13 @@ public:
         ~BeamDef();
         void OnSetMat(RndMat*);
         void Load(BinStream&);
+        const Vector2& NGRadii() const;
         
         RndMesh* mBeam; // 0x0
         bool mIsCone; // 0x4
         float mLength; // 0x8
         float mTopRadius; // 0xc
-        float mRadius; // 0x10
+        float mBottomRadius; // 0x10
         float mTopSideBorder; // 0x14
         float mBottomSideBorder; // 0x18
         float mBottomBorder; // 0x1c
@@ -64,11 +65,20 @@ public:
     virtual void Poll();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     
+    void BuildNGCone(BeamDef&, int);
+    void BuildNGSheet(BeamDef&);
+    void BuildNGQuad(BeamDef&, RndTransformable::Constraint);
+    void BuildNGShaft(BeamDef&);
+    void BuildShaft(BeamDef&);
+    void BuildCone(BeamDef&);
+    void BuildBeam(BeamDef&);
+
     bool GetAnimateFromPreset() const {
         return mAnimateColorFromPreset || mAnimateOrientationFromPreset;
     }
     void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
     void CloseSlaves();
+    void UpdateSlaves();
     void SetFlareEnabled(bool);
     void UpdateFlare();
     void SetFlareIsBillboard(bool);
@@ -109,6 +119,7 @@ public:
     static void Init();
     static void BuildBoard();
     static RndEnviron* sEnviron;
+    static RndMesh* sDiskMesh;
 
     ObjPtr<RndMat, ObjectDir> mDiscMat; // 0xb8
     RndFlare* mFlare; // 0xc4
