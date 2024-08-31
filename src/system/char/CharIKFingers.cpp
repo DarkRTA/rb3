@@ -116,6 +116,12 @@ void CharIKFingers::SetName(const char* name, ObjectDir* dir){
 }
 #pragma pop
 
+void CharIKFingers::Poll(){
+    Hmx::Matrix3 m;
+    Vector3 v;
+    mCurHandTrans.Set(m, v);
+}
+
 SAVE_OBJ(CharIKFingers, 0x36A)
 
 BEGIN_LOADS(CharIKFingers)

@@ -87,7 +87,17 @@ END_COPYS
 
 // fn_804F59EC - sortpolls
 void CharPollGroup::SortPolls(){
-    // requires another class, CharPollableSorter
+    CharPollableSorter sorter;
+    std::vector<RndPollable*> polls;
+    polls.reserve(mPolls.size());
+    for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        polls.push_back(*it);
+    }
+    sorter.Sort(polls);
+    mPolls.clear();
+    for(int i = 0; i < polls.size(); i++){
+        mPolls.push_back(dynamic_cast<CharPollable*>(polls[i]));
+    }
 }
 
 BEGIN_HANDLERS(CharPollGroup)

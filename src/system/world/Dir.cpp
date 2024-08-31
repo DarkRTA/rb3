@@ -39,6 +39,7 @@ void WorldDir::Init(){
 }
 
 WorldDir::~WorldDir(){
+    delete mFakeHudDir;
     delete mGlowMat;
     SpotlightDrawer::sCurrent->ClearLights();
     if(TheWorld == this) SetTheWorld(0);
@@ -62,10 +63,7 @@ void WorldDir::Enter(){
 }
 
 void WorldDir::ClearDeltas(){
-    mDeltaSincePoll[0] = 0;
-    mDeltaSincePoll[1] = 0;
-    mDeltaSincePoll[2] = 0;
-    mDeltaSincePoll[3] = 0;
+    for(int i = 0; i < 4; i++) mDeltaSincePoll[i] = 0;
 }
 
 void WorldDir::AccumulateDeltas(float* f){
@@ -291,9 +289,15 @@ void WorldDir::SyncObjects(){
     mDrawItr = mDraws.begin();
 }
 
+CamShotCrowd* FindCrowd(ObjVector<CamShotCrowd>& vec, WorldCrowd* crowd){
+    for(ObjVector<CamShotCrowd>::iterator it = vec.begin(); it != vec.end(); it++){
+        if(crowd == (*it).mCrowd) return it;
+    }
+    return vec.end();
+}
+
 void WorldDir::SetCrowds(ObjVector<CamShotCrowd>& crowdvec){
     bool b = false;
-    // ObjPtrList<WorldCrowd, ObjectDir> mCrowds; // 0x23c
     for(ObjPtrList<WorldCrowd, ObjectDir>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
 
     }
@@ -325,6 +329,81 @@ void WorldDir::SyncHides(bool b){
 void WorldDir::SyncBitmaps(bool b){
     for(ObjList<BitmapOverride>::iterator it = mBitmapOverrides.begin(); it != mBitmapOverrides.end(); ++it){
         (*it).Sync(b);
+    }
+}
+
+void WorldDir::SyncMats(bool b){
+    for(ObjList<MatOverride>::iterator it = mMatOverrides.begin(); it != mMatOverrides.end(); it++){
+        (*it).Sync(b);
+    }
+}
+
+void WorldDir::SyncPresets(bool b){
+    for(ObjList<PresetOverride>::iterator it = mPresetOverrides.begin(); it != mPresetOverrides.end(); it++){
+        (*it).Sync(b);
+    }
+}
+
+void WorldDir::SyncCamShots(bool b){
+    for(ObjPtrList<CamShot, ObjectDir>::iterator it = mCamShotOverrides.begin(); it != mCamShotOverrides.end(); it++){
+        (*it)->Disable(b, 1);
+    }
+}
+
+void WorldDir::BitmapOverride::Sync(bool b){
+    if(original && replacement){
+        if(b){
+            std::vector<ObjRef*> texrefs;
+            {
+                MemDoTempAllocations m(true, false);
+                texrefs = replacement->Refs();
+            }
+            for(std::vector<ObjRef*>::reverse_iterator rit = texrefs.rbegin(); rit != texrefs.rend(); rit++){
+                ObjRef* ref = *rit;
+                Hmx::Object* owner = ref->RefOwner();
+                if(owner){
+                    if(owner->Dir() != replacement->Dir()){
+                        ref->Replace(original, replacement);
+                    }
+                }
+            }
+        }
+        else {
+            std::vector<ObjRef*> texrefs;
+            {
+                MemDoTempAllocations m(true, false);
+                texrefs = replacement->Refs();
+            }
+            for(std::vector<ObjRef*>::reverse_iterator rit = texrefs.rbegin(); rit != texrefs.rend(); rit++){
+                ObjRef* ref = *rit;
+                if(ref->RefOwner()){
+                    if(ref->RefOwner()->Dir() != replacement->Dir()){
+                        ref->Replace(replacement, original);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WorldDir::MatOverride::Sync(bool b){
+    if(mat && mesh){
+        if(b){
+            mat2 = mesh->mMat;
+            mesh->SetMat(mat);
+        }
+        else if(mat2){
+            mesh->SetMat(mat2);
+        }
+    }
+}
+
+void WorldDir::PresetOverride::Sync(bool b){
+    if(preset){
+        LightHue* thehue;
+        if(b) thehue = hue;
+        else thehue = 0;
+        preset->SetHue(thehue);
     }
 }
 

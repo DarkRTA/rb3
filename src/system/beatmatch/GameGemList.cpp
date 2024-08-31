@@ -44,7 +44,7 @@ void GameGemList::RecalculateGemTimes(TempoMap* tmap){
     for(std::vector<GameGem>::iterator it = mGems.begin(); it != mGems.end(); it++){
         it->RecalculateTimes(tmap);
     }
-    // std::sort(mGems.begin(), mGems.end());
+    std::sort(mGems.begin(), mGems.end());
 }
 
 void GameGemList::Reset(){

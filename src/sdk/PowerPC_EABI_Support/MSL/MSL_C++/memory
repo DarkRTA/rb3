@@ -1,0 +1,53 @@
+#ifndef _STD_MEMORY
+#define _STD_MEMORY
+
+#include <MSL_C++/iosfwd>
+#include <MSL_C++/new>
+
+#include <MSL_C++/MSL_Common/type_traits.h>
+
+namespace std {
+
+    template <class T>
+    class allocator {
+    public:
+        typedef T value_type;
+        typedef T *pointer;
+        typedef const T *const_pointer;
+        typedef T &reference;
+        typedef const T &const_reference;
+        typedef size_t size_type;
+        typedef ptrdiff_t difference_type;
+
+        template <class U>
+        struct rebind {
+            typedef allocator<U> other;
+        };
+
+        allocator() throw() {}
+        allocator(const allocator<T> &) throw() {}
+        template <class U>
+        allocator(const allocator<U> &) throw() {}
+        ~allocator() {}
+
+        size_type max_size() const throw() { return 0x3FFFFFFF; } // guessed number
+
+        pointer allocate(size_type count, const void *hint = 0) {
+            if (count > max_size()) {
+                throw bad_alloc();
+            }
+            return reinterpret_cast<pointer>(operator new(count * sizeof(T)));
+        }
+        void deallocate(pointer p, size_type n) { operator delete(p); }
+
+        void construct(pointer p, const_reference val) { new (p) T(val); }
+        void destroy(pointer p) { __destroy_aux(p, is_trivially_destructible<T>()); }
+
+    private:
+        void destroy(pointer p, const true_type &) {}
+        void destroy(pointer p, const false_type &) { p->~T(); }
+    };
+
+};
+
+#endif

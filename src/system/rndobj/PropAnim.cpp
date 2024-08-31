@@ -5,7 +5,7 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(RndPropAnim)
-DataNode sKeyReplace(0);
+DataNode sKeyReplace;
 float sFrameReplace;
 bool sReplaceKey;
 bool sReplaceFrame;
@@ -126,13 +126,13 @@ void RndPropAnim::LoadPre7(BinStream& bs){
 BEGIN_COPYS(RndPropAnim)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
-    mLastFrame = mFrame;
+    mLastFrame = GetFrame();
     RemoveKeys();
     CREATE_COPY(RndPropAnim)
     BEGIN_COPYING_MEMBERS
         for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); it++){
             PropKeys* cur = *it;
-            AddKeys(cur->mTarget.Ptr(), cur->mProp, (PropKeys::AnimKeysType)cur->mKeysType)->Copy(cur);
+            AddKeys(cur->mTarget.Ptr(), cur->mProp, (PropKeys::AnimKeysType)cur->mKeysType)->Copy(*it);
         }
         COPY_MEMBER(mLoop)
     END_COPYING_MEMBERS
@@ -194,7 +194,7 @@ void RndPropAnim::SetKey(float frame){
 
 void RndPropAnim::StartAnim(){
     for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); it++){
-        (*it)->mLastKeyFrameIndex = -2;
+        (*it)->ResetLastKeyFrameIndex();
     }
 }
 
@@ -259,8 +259,7 @@ bool RndPropAnim::ChangePropPath(Hmx::Object* o, DataArray* a1, DataArray* a2){
 }
 
 void RndPropAnim::RemoveKeys(){
-    DeleteRange(mPropKeys.begin(), mPropKeys.end());
-    mPropKeys.clear();
+    DeleteAll(mPropKeys);
 }
 
 PropKeys** RndPropAnim::FindKeys(Hmx::Object* o, DataArray* da){
@@ -321,7 +320,7 @@ void RndPropAnim::SetKeyVal(Hmx::Object* o, DataArray* da, float frame, const Da
                 break;
             case PropKeys::kQuat:
                 cur->AsQuatKeys().Add(
-                    Hmx::Quat(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2), node.Array(0)->Float(3)), 
+                    Hmx::Quat(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2), node.Array(0)->Float(3)),
                     frame, unique);
                 break;
             default:

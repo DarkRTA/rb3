@@ -19,9 +19,10 @@ void RndTransProxy::SetProxy(class ObjectDir* dir){
 }
 
 void RndTransProxy::SetPart(Symbol sym){
-    if(mPart == sym) return;
-    mPart = sym;
-    Sync();
+    if(mPart != sym){
+        mPart = sym;
+        Sync();
+    }
 }
 
 void RndTransProxy::Sync(){
@@ -34,7 +35,7 @@ void RndTransProxy::Sync(){
         }
     }
     if(mProxy.Ptr()){
-        RndTransformable* trans = dynamic_cast<RndTransformable*>(mProxy.Ptr()->FindObject(mPart.Str(), false));
+        RndTransformable* trans = mProxy->Find<RndTransformable>(mPart.mStr, false);
         if(trans){
             SetTransParent(dynamic_cast<RndTransformable*>(trans), false);
             return;

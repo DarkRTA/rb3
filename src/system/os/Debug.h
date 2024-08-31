@@ -96,9 +96,9 @@ extern int* gpDbgFrameID;
    // various random calls are left over from asserts that exist in debug
 #  define MILO_ASSERT(cond, line) (void)(cond)
 #  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
-#  define MILO_FAIL(...) ((void)0)
-#  define MILO_WARN(...) ((void)0)
-#  define MILO_LOG(...) ((void)0)
+#  define MILO_FAIL(...) (void)(__VA_ARGS__)
+#  define MILO_WARN(...) (void)(__VA_ARGS__)
+#  define MILO_LOG(...) (void)(__VA_ARGS__)
 
 #  define MILO_TRY if (true)
 #  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)
@@ -155,10 +155,22 @@ public:
         return *this;
     }
 };
-
-#define MILO_NOTIFY_ONCE(...) { \
-        static DebugNotifyOncer _dw; \
-        _dw << MakeString(__VA_ARGS__); \
-    } \
+#ifdef MILO_DEBUG
+    #define MILO_NOTIFY_ONCE(...) { \
+            static DebugNotifyOncer _dw; \
+            _dw << MakeString(__VA_ARGS__); \
+        }
+    #define MILO_LOG_ONCE(...){\
+        static char _dw[256];\
+        const char* str = MakeString(__VA_ARGS__);\
+        if (strcmp(_dw, str) != 0) {\
+            strcpy(_dw, str);\
+            TheDebug.Print(str);\
+        }\
+    }
+#else
+    #define MILO_NOTIFY_ONCE(...) (void)(__VA_ARGS__)
+    #define MILO_LOG_ONCE(...) (void)(__VA_ARGS__)
+#endif
 
 #endif

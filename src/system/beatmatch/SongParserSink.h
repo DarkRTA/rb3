@@ -9,7 +9,7 @@ class SongParserSink {
 public:
     SongParserSink(){}
     virtual ~SongParserSink(){}
-    virtual void SetNumTracks(int) = 0;
+    virtual void SetNumTracks(int){}
     virtual void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool) = 0;
     virtual void AddMultiGem(int, const GameGem&) = 0;
     virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase&) = 0;

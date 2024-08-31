@@ -22,8 +22,8 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    ObjPtr<RndTransformable, ObjectDir> mBone;
-    ObjPtrList<RndTransformable, ObjectDir> mTargets;
+    ObjPtr<RndTransformable, ObjectDir> mBone; // 0x20
+    ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x2c
 };
 
 #endif

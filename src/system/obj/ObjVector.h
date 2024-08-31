@@ -17,8 +17,12 @@ public:
         std::vector<T1, T2>::resize(ul, T1(mOwner));
     }
 
-    void push_back(const T1& t){
+    void alloc_back(){
         resize(size() + 1);
+    }
+
+    void push_back(const T1& t){
+        alloc_back();
         T1* last = &back();
         *last = t;
     }

@@ -263,12 +263,12 @@ public:
   typedef typename _Alloc_traits<__chunk_type,
           _Alloc>::allocator_type __chunk_allocator_type;
   allocator_type get_allocator() const {
-    return (const __chunk_allocator_type&)_M_end_of_storage;
+    return _STLP_CONVERT_ALLOCATOR((const __chunk_allocator_type&)_M_end_of_storage, bool);
   }
   static allocator_type __get_dfl_allocator() { return allocator_type(); }
 
   _Bvector_base(const allocator_type& __a)
-    : _M_start(), _M_finish(), _M_end_of_storage(__a,
+    : _M_start(), _M_finish(), _M_end_of_storage(_STLP_CONVERT_ALLOCATOR(__a, __chunk_type),
                                                  (__chunk_type*)0)
   {}
   _Bvector_base(__move_source<_Self> src)

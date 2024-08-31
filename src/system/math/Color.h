@@ -39,7 +39,8 @@ namespace Hmx {
         // bool operator==(const Color &) const;
         // bool operator!=(const Color &) const;
 
-        void Set(float f){ red = green = blue = alpha = f; }
+        void Set(float f){ red = green = blue = alpha = f; } // may go unused
+        void Reset(){ red = green = blue = alpha = 1.0f; }
 
         void Set(float r, float g, float b){
             red = r; green = g; blue = b;
@@ -54,14 +55,6 @@ namespace Hmx {
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
-
-        Color& operator *=(float f) {
-            red *= f;
-            green *= f;
-            blue *= f;
-            alpha *= f;
-            return *this;
-        }
     };
 
     class Color32 {
@@ -71,7 +64,8 @@ namespace Hmx {
                 u8 a, b, g, r;
             };
         };
-        public:
+    public:
+        Color32(){ Clear(); }
         inline void Clear() { x = -1; }
         float fr() const { return r * 0.0039215688593685627f;}
         float fg() const { return g * 0.0039215688593685627f;}
@@ -81,6 +75,7 @@ namespace Hmx {
 }
 
 void MakeHSL(const Hmx::Color&, float&, float&, float&);
+void MakeColor(float, float, float, Hmx::Color&);
 TextStream& operator<<(TextStream&, const Hmx::Color&);
 
 inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
@@ -107,6 +102,17 @@ inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res
     res.green = c1.green - c2.green;
     res.red = c1.red - c2.red;
     res.alpha = alpha;
+}
+
+inline void Multiply(const Hmx::Color& c1, float f, Hmx::Color& res){
+#ifdef VERSION_SZBE69_B8
+    res.red = c1.red * f;
+    res.green = c1.green * f;
+    res.blue = c1.blue * f;
+    res.alpha = c1.alpha * f;
+#else
+    res.Set(c1.red * f, c1.green * f, c1.blue * f, c1.alpha * f);
+#endif
 }
 
 inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){

@@ -29,6 +29,7 @@ class ClipPredict {
 public:
     ClipPredict(CharClip*, const Vector3&, float);
     void SetClip(CharClip*);
+    void Predict(float, float);
 
     CharClip* mClip; // 0x0
     void* mAngChannel; // 0x4

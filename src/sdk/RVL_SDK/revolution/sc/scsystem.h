@@ -56,7 +56,7 @@ typedef enum {
     SC_ITEM_DEV_CTC,
     SC_ITEM_DEV_DSM,
     SC_ITEM_BT_DINF,
-    SC_ITEM_BT_CINF, //unconfirmed name
+    SC_ITEM_BT_CDIF,
     SC_ITEM_BT_SENS,
     SC_ITEM_BT_SPKV,
     SC_ITEM_BT_MOT,

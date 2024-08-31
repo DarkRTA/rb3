@@ -21,11 +21,12 @@ void TextFile::SetName(const char* c, class ObjectDir* dir){
     Hmx::Object::SetName(c, dir);
     delete mFile;
     mFile = 0;
-
+#ifdef MILO_DEBUG
     bool holmes = UsingHolmes(4);
     if(c != 0 && *c != '\0' && holmes){
         GetAppendFile(c, "_append", sizeof("_append") - 1);
     }
+#endif
 }
 
 void TextFile::Print(const char* str){

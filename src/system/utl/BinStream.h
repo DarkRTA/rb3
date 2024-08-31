@@ -228,7 +228,7 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T
 
 }
 
-template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2> p) {
+template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2>& p) {
     bs >> p.first >> p.second;
     return bs;
 }

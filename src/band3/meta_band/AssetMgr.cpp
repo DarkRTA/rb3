@@ -109,6 +109,7 @@ void AssetMgr::GetEyebrows(std::vector<Symbol>& eyebrows, Symbol symbol) const {
         if (pAsset->mType == 5 && pAsset->mGender == gender) {
             eyebrows.push_back(pAsset->mName);
         }
+        it++;
     }
     std::sort(eyebrows.begin(), eyebrows.end());
 }
@@ -126,7 +127,7 @@ Symbol AssetMgr::StripFinish(Symbol symbol) {
         String string = symbol;
         std::vector<String> subStrings;
         string.split("_", subStrings);
-        Symbol s = subStrings[0].c_str();
+        Symbol s = Symbol(subStrings[0].c_str());
         pAsset = GetAsset(s);
         MILO_ASSERT(pAsset, 0xd9);
         return s;
@@ -149,11 +150,6 @@ void AssetMgr::ConfigureAssetTypeToIconPathMap() {
             Symbol symbol = pEntry->Sym(0);
             AssetType type = GetAssetTypeFromSymbol(symbol);
             String str = pEntry->Str(1);
-
-            std::map<String, String>::iterator it = mPadding.find(str);
-            if (it != mPadding.end()) {
-
-            }
         }
     }
 }

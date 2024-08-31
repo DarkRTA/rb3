@@ -13,14 +13,23 @@ CharCuff::CharCuff() : mOpenEnd(0), mIgnore(this, kObjListNoNull), mBone(this, 0
     mShape[2].offset = 2.0f;
     mShape[2].radius = 3.5f;
 
-    mOuterRadius = 2.6f + 0.5f;
+    mOuterRadius = mShape[1].radius + 0.5f;
 }
 
 CharCuff::~CharCuff(){
     
 }
 
+float CharCuff::Eccentricity(const Vector2& v) const {
+    float f1 = v.y * v.y;
+    float f2 = v.x * v.x;
+    return std::sqrt((f1 + f2) / (f1 * (1.0f / (mEccentricity * mEccentricity)) + f2));
+}
+
 // fn_804C3D90 - highlight
+void CharCuff::Highlight(){
+    
+}
 
 unsigned int BoneMask(std::list<RndTransformable*>& tlist, RndMesh* mesh){
     for(int i = 0; i < mesh->mBones.size(); i++){

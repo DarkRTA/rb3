@@ -43,6 +43,8 @@ public:
     void ClearObjects();
     void SortDraws();
     DataNode OnGetDraws(DataArray*);
+    RndEnviron* GetEnv() const { return mEnv; }
+    void SetEnv(RndEnviron* env){ mEnv = env; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

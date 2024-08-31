@@ -8,21 +8,11 @@
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
+    ObjPtr(Hmx::Object* obj, T1* cls = 0);
+    ObjPtr(const ObjPtr& oPtr);
 
-    ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
-        if(mPtr != 0) mPtr->AddRef(this);
-    }
-
-    ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.Owner()), mPtr(oPtr.Ptr()) {
-        if(mPtr != 0) mPtr->AddRef(this);
-    }
-
-    virtual ~ObjPtr(){
-        if(mPtr != 0) mPtr->Release(this);
-    }
-
+    virtual ~ObjPtr(){ if(mPtr != 0) mPtr->Release(this); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
-
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
         if (mPtr == o1) *this = dynamic_cast<T1*>(o2);
     }
@@ -47,14 +37,26 @@ public:
     T1* mPtr;
 };
 
-template <class T1> BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
+template <class T1, class T2>
+RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
+    if(mPtr != 0) mPtr->AddRef(this);
+}
+
+template <class T1, class T2>
+RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
+    if(mPtr != 0) mPtr->AddRef(this);
+}
+
+template <class T1>
+DONT_INLINE BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
     MILO_ASSERT(f.Owner(), 0x2D1);
     const char* objName = (f.Ptr()) ? f.Ptr()->Name() : "";
     bs << objName;
     return bs;
 }
 
-template <class T1> BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
+template <class T1>
+DONT_INLINE BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& ptr){
     ptr.Load(bs, true, 0);
     return bs;
 }
@@ -69,7 +71,7 @@ public:
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
-    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.Ptr()) {
+    ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
         if(mPtr != 0) mPtr->AddRef(mOwner);
     }
 
@@ -97,7 +99,7 @@ public:
         }
     }
 
-    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = (T1*)oPtr; }
+    void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
     Hmx::Object* mOwner;
@@ -154,7 +156,7 @@ public:
 
         // https://decomp.me/scratch/B6ylJ
         iterator operator+=(int num){
-            while(num-- != 0) (*this)++;
+            while(num-- != 0) ++(*this);
             return *this;
         }
 
@@ -209,8 +211,9 @@ public:
     }
     // refowner moved down here because that's how the weak funcs are ordered
     virtual Hmx::Object* RefOwner(){ return mOwner; }
+    ObjListMode Mode() const { return mMode; }
 
-    void clear(){ while(!empty()) pop_back(); }
+    void clear(){ while(mSize != 0) pop_back(); }
 
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
@@ -354,6 +357,15 @@ public:
         if(it.mNode->obj) it.mNode->obj->Release(this);
         it.mNode->obj = obj;
         if(obj) obj->AddRef(this);
+    }
+
+    // remove a particular item inside iterator otherIt, from list otherList,
+    // and insert it into this list at the position indicated by thisIt
+    void MoveItem(iterator thisIt, ObjPtrList<T1, T2>& otherList, iterator otherIt){
+        if(otherIt != thisIt){
+            otherList.unlink(otherIt.mNode);
+            link(thisIt, otherIt.mNode);
+        }
     }
 
     void operator=(const ObjPtrList<T1, T2>& x){

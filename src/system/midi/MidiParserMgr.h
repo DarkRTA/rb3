@@ -20,6 +20,8 @@ public:
 
     void Reset();
     void Reset(int);
+    void FinishLoad();
+    void Poll();
 
     int unk24, unk28, unk2c;
     int unk30, unk34, unk38;

@@ -22,6 +22,72 @@ void CharIKFoot::SetName(const char* cc, ObjectDir* dir){
     mMe = dynamic_cast<Character*>(dir);
 }
 
+// https://decomp.me/scratch/G9HMd retail scratch
+void CharIKFoot::DoFSM(Transform& tf){
+    if(mMe && mMe->Teleported()) unk94 = 0;
+    float deltasecs = TheTaskMgr.DeltaSeconds();
+    if(deltasecs < 0.0f) deltasecs = 0.0f;
+    tf.m = mFinger->WorldXfm().m;
+    tf.v.z = mFinger->WorldXfm().v.z;
+    bool b2 = false;
+    unka8.z = tf.v.z;
+    float vecat = mData->mLocalXfm.v[mDataIndex];
+    float f10;
+    if(vecat >= 1.0f) {
+        if(vecat > 0.0f){
+            if(unk94 == 1) f10 = 0.6f;
+            else f10 = 0.5f;
+        }
+        if(f10 > tf.v.z) b2 = true;
+    }
+    else b2 = true;
+    if(unk94 == 0){
+        tf.v = mFinger->WorldXfm().v;
+        if(b2){
+            unka8 = tf.v;
+            unk94 = 1;
+        }
+    }
+    if(unk94 == 1){
+        if(!b2){
+            unk94 = 2;
+            unkb4 = Distance(mFinger->WorldXfm().v, tf.v);
+        }
+        else {
+            Vector3 v3c;
+            Subtract(mFinger->WorldXfm().v, unka8, v3c);
+            float len = Length(v3c);
+            if(len > 0.125f) v3c *= 0.125f / len;
+            Add(unka8, v3c, tf.v);
+            return;
+        }
+    }
+    if(unk94 == 2){
+        Vector3 v48;
+        Subtract(mFinger->WorldXfm().v, tf.v, v48);
+        float len = Length(v48);
+        unkb4 = Min(-(deltasecs * 25.0f - unkb4), len);
+        if(unkb4 <= 0.0f) unk94 = 0;
+        else v48 *= (len - unkb4) / len;
+        tf.v += v48;
+        if(b2){
+            unka8 = tf.v;
+            unk94 = 1;
+        }
+    }
+}
+
+void CharIKFoot::Poll(){
+    if(!mFinger || !mHand || !mData) return;
+    mTargets.clear();
+    mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(unk88), 0));
+    DoFSM(unk88->DirtyLocalXfm());
+    CharIKHand::Poll();
+    mTargets.clear();
+}
+
+CharIKHand::IKTarget::IKTarget(ObjPtr<RndTransformable, ObjectDir> o, float f) : mTarget(o), mExtent(f) {}
+
 void CharIKFoot::PollDeps(std::list<Hmx::Object*>& l1, std::list<Hmx::Object*>& l2){
     CharIKHand::PollDeps(l1, l2);
 }

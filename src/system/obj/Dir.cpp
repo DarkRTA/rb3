@@ -64,11 +64,23 @@ void ObjectDir::SetSubDir(bool b){
 bool ObjectDir::HasSubDir(ObjectDir* dir){
     ObjectDir* subdir;
     int i = 0;
-    do {
-        subdir = NextSubDir(i);
-        if(!subdir) return false;
-    } while(subdir != dir);
-    return true;
+    int j = 0;
+
+    while(1) {
+        j = i;
+        i = j + 1;
+
+        subdir = NextSubDir(j);
+        if(subdir) {
+            if (subdir == dir) {
+                return true;
+            }
+        } else {
+            break;
+        }
+    }
+
+    return false;
 }
 
 bool ObjectDir::SaveSubdirs(){

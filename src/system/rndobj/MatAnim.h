@@ -40,12 +40,12 @@ public:
     void SetMat(RndMat*);
     void LoadStage(BinStream&);
     void LoadStages(BinStream&);
-    Keys<Vector3, Vector3>& TransKeys();
-    Keys<Vector3, Vector3>& ScaleKeys();
-    TexKeys& GetTexKeys();
-    Keys<Vector3, Vector3>& RotKeys();
-    Keys<float, float>& AlphaKeys();
-    Keys<Hmx::Color, Hmx::Color>& ColorKeys();
+    Keys<Vector3, Vector3>& TransKeys(){ return mKeysOwner->mTransKeys; }
+    Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
+    TexKeys& GetTexKeys(){ return mKeysOwner->mTexKeys; }
+    Keys<Vector3, Vector3>& RotKeys(){ return mKeysOwner->mRotKeys; }
+    Keys<float, float>& AlphaKeys(){ return mKeysOwner->mAlphaKeys; }
+    Keys<Hmx::Color, Hmx::Color>& ColorKeys(){ return mKeysOwner->mColorKeys; }
 
     DECLARE_REVS
     NEW_OVERLOAD;

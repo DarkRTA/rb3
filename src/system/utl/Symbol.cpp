@@ -81,7 +81,7 @@ static DataNode PrintSymbolTable(DataArray* da){
     if(da->Size() > 1){
         std::vector<const char*> strvec;
         strvec.reserve(gHashTable->mNumEntries);
-        for(const char** it = gHashTable->FirstFromStart(); it != 0; it = gHashTable->FirstFromNext(it)){
+        for(const char** it = gHashTable->Begin(); it != 0; it = gHashTable->Next(it)){
             strvec.push_back(*it);
         }
         std::sort(strvec.begin(), strvec.end(), Alpha());

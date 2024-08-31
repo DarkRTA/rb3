@@ -2,6 +2,7 @@
 #define OS_HOLMESCLIENT_H
 
 #include "os/File.h"
+#include "os/NetworkSocket.h"
 #include "types.h"
 #include "utl/Str.h"
 
@@ -102,6 +103,5 @@ void HolmesClientPoll();
 bool HolmesClientPollJoypad();
 void HolmesClientPollKeyboard();
 
-unsigned int HolmesResolveIP();
-
+NetAddress HolmesResolveIP();
 #endif

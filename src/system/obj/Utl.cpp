@@ -142,7 +142,7 @@ void MergeObjectsRecurse(ObjectDir* fromDir, ObjectDir* toDir, MergeFilter& filt
             }
         }
     }
-    for(ObjectDir::Entry* entry = fromDir->mHashTable.FirstFromStart(); entry != 0; entry = fromDir->mHashTable.FirstFromNext(entry)){
+    for(ObjectDir::Entry* entry = fromDir->mHashTable.Begin(); entry != 0; entry = fromDir->mHashTable.Next(entry)){
         Hmx::Object* curObj = entry->obj;
         if(curObj) MergeObject(curObj, toDir->FindObject(curObj->Name(), false), toDir, filt);
     }

@@ -68,6 +68,9 @@ public:
     bool SetFocusInterest(CharInterest*, int);
     void ToggleInterestsDebugOverlay();
     CharInterest* GetCurrentInterest();
+    void EnforceMinimumTargetDistance(const Vector3&, const Vector3&, Vector3&);
+    void UpdateOverlay();
+    bool EitherEyeClamped();
 
     DataNode OnToggleForceFocus(DataArray*);
     DataNode OnToggleInterestOverlay(DataArray*);
@@ -87,7 +90,7 @@ public:
     ObjVector<CharInterestState> mInterests; // 0x34
     ObjPtr<CharFaceServo, ObjectDir> mFaceServo; // 0x40
     ObjPtr<CharWeightSetter, ObjectDir> mCamWeight; // 0x4c
-    float unk58, unk5c, unk60;
+    Vector3 unk58;
     int mDefaultFilterFlags; // 0x64 - mask
     ObjPtr<RndTransformable, ObjectDir> mViewDirection; // 0x68
     ObjPtr<CharLookAt, ObjectDir> mHeadLookAt; // 0x74
@@ -100,7 +103,8 @@ public:
     bool mLowerLidTrackRotate; // 0x98
     RndOverlay* unk9c;
     int mInterestFilterFlags; // 0xa0 - also a mask
-    float unka4, unka8, unkac, unkb0, unkb4, unkb8, unkbc, unkc0;
+    Vector3 unka4; // 0xa4
+    float unkb0, unkb4, unkb8, unkbc, unkc0;
     bool unkc4, unkc5;
     ObjPtr<CharInterest, ObjectDir> unkc8; // 0xc8
     ObjPtr<CharInterest, ObjectDir> unkd4; // 0xd4
@@ -110,7 +114,8 @@ public:
     CharEyeDartRuleset::EyeDartRulesetData unkf8;
     bool unk124;
     float unk128;
-    int unk12c, unk130, unk134, unk138;
+    int unk12c;
+    Vector3 unk130;
     bool unk13c;
     float unk140;
     int unk144;

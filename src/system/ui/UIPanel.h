@@ -50,17 +50,24 @@ public:
     void SetFocusComponent(UIComponent*);
     DataNode OnLoad(DataArray*);
 
-    class PanelDir* mDir;
-    DirLoader* mLoader;
-    class String mFocusName;
-    mutable State mState;
-    bool mLoaded;
-    bool mPaused;
-    bool mShowing;
-    bool mForceExit;
-    int mLoadRefs;
-    FilePath mFilePath;
-    int mPanelId;
+    State GetState() const { return mState; }
+    bool Paused() const { return mPaused; }
+    bool Showing() const { return mShowing; }
+    void SetShowing(bool b){ mShowing = b; }
+    bool IsReferenced() const { return mLoadRefs != 0; }
+    bool ForceExit() const { return mForceExit; }
+
+    class PanelDir* mDir; // 0x8
+    DirLoader* mLoader; // 0xc
+    class String mFocusName; // 0x10
+    mutable State mState; // 0x1c
+    bool mLoaded; // 0x20
+    bool mPaused; // 0x21
+    bool mShowing; // 0x22
+    bool mForceExit; // 0x23
+    int mLoadRefs; // 0x24
+    FilePath mFilePath; // 0x28
+    int mPanelId; // 0x34
 
     static int sMaxPanelId;
 };

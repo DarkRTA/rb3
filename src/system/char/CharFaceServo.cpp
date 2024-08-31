@@ -35,11 +35,11 @@ void CharFaceServo::TryScaleDown(){
 void CharFaceServo::SetClips(ObjectDir* dir){
     mClips = dir;
     if(mClips){
-        mBaseClip = dynamic_cast<CharClip*>(mClips->FindObject("Base", false));
-        mBlinkClipLeft = dynamic_cast<CharClip*>(mClips->FindObject(mBlinkClipLeftName.Str(), false));
-        mBlinkClipLeft2 = dynamic_cast<CharClip*>(mClips->FindObject(mBlinkClipLeftName2.Str(), false));
-        mBlinkClipRight = dynamic_cast<CharClip*>(mClips->FindObject(mBlinkClipRightName.Str(), false));
-        mBlinkClipRight2 = dynamic_cast<CharClip*>(mClips->FindObject(mBlinkClipRightName2.Str(), false));
+        mBaseClip = mClips->Find<CharClip>("Base", false);
+        mBlinkClipLeft = mClips->Find<CharClip>(mBlinkClipLeftName.mStr, false);
+        mBlinkClipLeft2 = mClips->Find<CharClip>(mBlinkClipLeftName2.mStr, false);
+        mBlinkClipRight = mClips->Find<CharClip>(mBlinkClipRightName.mStr, false);
+        mBlinkClipRight2 = mClips->Find<CharClip>(mBlinkClipRightName2.mStr, false);
     }
 }
 

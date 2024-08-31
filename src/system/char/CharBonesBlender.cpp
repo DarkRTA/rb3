@@ -13,15 +13,13 @@ CharBonesBlender::~CharBonesBlender(){
 }
 
 void CharBonesBlender::Enter(){
-    Zero();
-    SetWeights(0.0f);
+    CharBones::Enter();
 }
 
 void CharBonesBlender::Poll(){
     if(mBones.empty() || !mDest) return;
     Blend(*mDest);
-    Zero();
-    SetWeights(0.0f);
+    CharBones::Enter();
 }
 
 void CharBonesBlender::SetDest(CharBonesObject* obj){
@@ -42,8 +40,7 @@ void CharBonesBlender::SetClipType(Symbol s){
 void CharBonesBlender::ReallocateInternal(){
     CharBonesAlloc::ReallocateInternal();
     if(mDest) mDest->AddBones(mBones);
-    Zero();
-    SetWeights(0.0f);
+    CharBones::Enter();
 }
 
 void CharBonesBlender::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){

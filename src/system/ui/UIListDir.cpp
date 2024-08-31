@@ -28,8 +28,7 @@ UIListDir::UIListDir() : mOrientation(kUIListVertical), mFadeOffset(0), mElement
 }
 
 UIListDir::~UIListDir(){
-    DeleteRange(unk1fc.begin(), unk1fc.end());
-    unk1fc.clear();
+    DeleteAll(unk1fc);
 }
 
 UIListOrientation UIListDir::Orientation() const { return mOrientation; }
@@ -53,8 +52,7 @@ UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
 }
 
 void UIListDir::CreateElements(UIList* uilist, std::vector<UIListWidget*>& vec, int i){
-    DeleteRange(vec.begin(), vec.end());
-    vec.clear();
+    DeleteAll(vec);
     for(ObjDirItr<UIListWidget> it(this, true); it != 0; ++it){
         UIListWidget* widget = dynamic_cast<UIListWidget*>(Hmx::Object::NewObject(it->ClassName()));
         widget->ResourceCopy(it);
@@ -179,20 +177,26 @@ END_COPYS
 
 void UIListDir::SyncObjects(){
     RndDir::SyncObjects();
+#ifdef VERSION_SZBE69_B8
     if(TheLoadMgr.EditMode()){
         CreateElements(0, unk1fc, mTestState.mNumDisplay);
         FillElements(mTestState, unk1fc);
     }
+#endif
 }
 
 void UIListDir::DrawShowing(){
+#ifdef VERSION_SZBE69_B8
     if(mTestMode && TheLoadMgr.EditMode()){
         DrawWidgets(mTestState, unk1fc, WorldXfm(), mTestComponentState, 0, false);
     }
-    else RndDir::DrawShowing();
+    else
+#endif 
+        RndDir::DrawShowing();
 }
 
 void UIListDir::Poll(){
+#ifdef VERSION_SZBE69_B8
     if(TheLoadMgr.EditMode()){
         RndDir::Poll();
         if(mTestMode){
@@ -200,6 +204,7 @@ void UIListDir::Poll(){
             PollWidgets(unk1fc);
         }
     }
+#endif
 }
 
 int UIListDir::NumData() const { return mTestNumData; }

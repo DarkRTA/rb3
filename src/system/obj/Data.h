@@ -111,6 +111,7 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
+    DataNodeValue RawVal() { return mValue; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
 
@@ -240,14 +241,8 @@ public:
         return Node(i).Evaluate();
     }
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, 0x10, FastPool);
-    }
-
-    void operator delete(void* v){
-        _PoolFree(sizeof(DataArray), FastPool, v);
-    }
-    
+    NEW_POOL_OVERLOAD(DataArray);
+    DELETE_POOL_OVERLOAD(DataArray);    
 };
 
 inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
@@ -326,5 +321,7 @@ public:
     ~DataArrayPtr(){ mData->Release(); }
     DataNode& Node(int i) const { return mData->Node(i); }
 };
+
+inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
 
 #endif

@@ -7,8 +7,7 @@ UIGridProvider::UIGridProvider(UIListProvider* prov, int i) : mMasterProvider(pr
 }
 
 UIGridProvider::~UIGridProvider(){
-    DeleteRange(mSubProviders.begin(), mSubProviders.end());
-    mSubProviders.clear();
+    DeleteAll(mSubProviders);
 }
 
 UIListProvider* UIGridProvider::Provider(int, int i, UIListSubList*) const {
@@ -27,10 +26,10 @@ void UIGridProvider::InitData(RndDir* dir){ mMasterProvider->InitData(dir); }
 int UIGridProvider::NumDataForSublistIndex(int idx) const {
     int masternum = mMasterProvider->NumData();
     int numData;
-    
+
     if(idx < masternum / mWidth) numData = mWidth;
     else numData = masternum % mWidth;
-    
+
     MILO_ASSERT(( 0) <= (numData) && (numData) <= ( mWidth), 0xB9);
     return numData;
 }
@@ -69,7 +68,7 @@ int UIGridProvider::GetDataFromList(UIList* uilist){
     if(child){
         int data2 = uilist->SelectedData();
         int data = child->SelectedData();
-        
+
         data += data2 * mWidth;
         return data;
     }

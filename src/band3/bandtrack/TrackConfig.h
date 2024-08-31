@@ -12,7 +12,7 @@ public:
     int mTrackNum; int TrackNum() const; void SetTrackNum(int); // 0x8
     int mMaxSlots; int GetMaxSlots() const; void SetMaxSlots(int); // 0xC
     int unk_0x10; // 0x10
-    const char* unk_0x14; // 0x14
+    Symbol unk_0x14; // 0x14
     bool mLefty; bool IsLefty() const; bool UseLeftyGems() const; void SetLefty(bool); // 0x18
     uint mCymbalLanes; uint GetGameCymbalLanes() const; void SetGameCymbalLanes(uint); // 0x1c
     bool mDisableHopos; bool GetDisableHopos() const; void SetDisableHopos(bool); // 0x20

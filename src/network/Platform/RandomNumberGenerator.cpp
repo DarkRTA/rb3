@@ -6,7 +6,12 @@ namespace Quazal {
         m_mag01[0] = 0;
         m_mag01[1] = 0x9908B0DF;
         m_mti = 0x271;
-        SetRandomNumberSeed(1);
+        //SetRandomNumberSeed(1);
+        m_mt[0] = 1;
+        m_mti = 1;
+        for(; m_mti < 0x270; m_mti++){
+            m_mt[m_mti] = m_mt[m_mti - 1] * 0x10DCD;
+        }
     }
 
     RandomNumberGenerator::~RandomNumberGenerator(){

@@ -13,8 +13,8 @@ public:
     virtual void Init();
     virtual void Terminate();
 
-    virtual int Data(int) const; // fix return type
-    virtual int SongAudioData(int) const;
+    virtual SongMetadata* Data(int) const; // fix return type
+    virtual SongInfo* SongAudioData(int) const = 0;
 
     virtual void ContentDone();
     virtual void ContentMounted(const char*, const char*);

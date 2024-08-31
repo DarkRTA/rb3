@@ -20,6 +20,7 @@ public:
     virtual RndTransformable* RootTrans();
     
     RndMat* DefaultMat() const;
+    RndMesh* Mesh() const { return mMesh; }
 
     DECLARE_REVS
     NEW_OVERLOAD
@@ -35,7 +36,7 @@ public:
 
 class UIListMeshElement : public UIListSlotElement {
 public:
-    UIListMeshElement(UIListMesh* lm, RndMat* m) : mListMesh(lm), mMat(m) {}
+    UIListMeshElement(UIListMesh* lm) : mListMesh(lm), mMat(0) {}
     virtual ~UIListMeshElement(){}
     virtual void Fill(const UIListProvider& prov, int i, int j){
         mMat = prov.Mat(i, j, mListMesh);

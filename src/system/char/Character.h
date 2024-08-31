@@ -102,6 +102,11 @@ public:
     CharServoBone* BoneServo();
     void SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>&, ObjectDir*);
     void ForceBlink();
+    void SetDrawMode(DrawMode m){ mDrawMode = m; }
+    bool Teleported() const { return mTeleported; }
+    PollState GetPollState() const { return mPollState; }
+    int MinLod() const { return mMinLod; }
+    int LastLod() const { return mLastLod; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);
@@ -132,7 +137,7 @@ public:
     CharacterTest* mTest; // 0x1e8
     bool mFrozen; // 0x1ec
     DrawMode mDrawMode; // 0x1f0
-    bool unk1f4; // 0x1f4
+    bool mTeleported; // 0x1f4
     Symbol mInterestToForce; // 0x1f8
     ObjPtr<RndEnviron, ObjectDir> unk1fc; // 0x1fc
     int unk208; // 0x208

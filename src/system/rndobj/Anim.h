@@ -44,6 +44,7 @@ public:
     bool IsAnimating();
     Rate GetRate(){ return mRate; }
     void SetRate(Rate r){ mRate = r; }
+    float GetFrame() const { return mFrame; }
     DataNode OnConvertFrames(DataArray*);
 
     Task* Animate(float, bool, float);
@@ -68,6 +69,8 @@ public:
     virtual void Poll(float);
 
     float TimeUntilEnd();
+    AnimTask* BlendTask() const { return mBlendTask; }
+    RndAnimatable* Anim() const { return mAnim; }
 
     NEW_POOL_OVERLOAD(AnimTask);
     DELETE_POOL_OVERLOAD(AnimTask);

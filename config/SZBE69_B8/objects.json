@@ -25,6 +25,7 @@
             "band3/game/Performer.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
+            "band3/game/TrainerGemTab.cpp": "NonMatching",
             "band3/game/Shuttle.cpp": "NonMatching",
             "band3/game/Stats.cpp": "NonMatching",
 
@@ -49,7 +50,7 @@
             "band3/meta_band/BandProfile.cpp": "NonMatching",
             "band3/meta_band/CampaignKey.cpp": "Matching",
             "band3/meta_band/GameplayOptions.cpp": "Matching",
-            "band3/meta_band/NameGenerator.cpp": "NonMatching",
+            "band3/meta_band/NameGenerator.cpp": "Matching",
             "band3/meta_band/NewAssetProvider.cpp": "NonMatching",
             "band3/meta_band/PerformanceData.cpp": "NonMatching",
             "band3/meta_band/ProfileAssets.cpp": "Matching",
@@ -60,6 +61,8 @@
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
+            "band3/tour/QuestJournal.cpp": "Matching",
+            "band3/tour/QuestManager.cpp": "NonMatching",
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourProgress.cpp": "NonMatching",
@@ -84,10 +87,14 @@
 
             "network/ObjDup/DOFilter.cpp": "NonMatching",
 
+            "network/Plugins/JobGetPublicURL.cpp": "Matching",
+            "network/Plugins/MD5.cpp": "NonMatching",
+            "network/Plugins/RTT.cpp": "NonMatching",
             "network/Plugins/ZLibPlugin.cpp": "Matching",
 
-            "network/Plugins/JobGetPublicURL.cpp": "Matching",
-            "network/Services/UserMessage.cpp": "Matching"
+            "network/Services/UserMessage.cpp": "Matching",
+
+            "network/Utility/Statistics.cpp": "Matching"
         }
     },
     "network/json_c": {
@@ -106,15 +113,19 @@
         "mw_version": "Wii/1.3",
         "cflags": "network/Platform",
         "objects": {
+            "network/Platform/BadEvents.cpp": "Matching",
+            "network/Platform/CIDLogFilter.cpp": "Matching",
             "network/Platform/CriticalSection.cpp": "Matching",
             "network/Platform/DateTime.cpp": "NonMatching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/Inet.cpp": "Matching",
             "network/Platform/LockChecker.cpp": "Matching",
+            "network/Platform/Log.cpp": "NonMatching",
+            "network/Platform/LogDeviceDebugOutput.cpp": "Matching",
             "network/Platform/MemoryManager.cpp": "NonMatching",
-            "network/Platform/MutexPrimitive.cpp": "NonMatching",
+            "network/Platform/MutexPrimitive.cpp": "Matching",
             "network/Platform/OutputFormat.cpp": "NonMatching",
-            "network/Platform/RandomNumberGenerator.cpp": "NonMatching",
+            "network/Platform/RandomNumberGenerator.cpp": "Matching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
             "network/Platform/Result.cpp": "Matching",
             "network/Platform/RootObject.cpp": "Matching",
@@ -128,9 +139,11 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
+            "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": {
                 "status": "Equivalent",
                 "comment": "Stack mismatches in MiniLeaderboardDisplay::Init()"
@@ -140,13 +153,16 @@
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
+            "system/beatmatch/BeatMaster.cpp": "NonMatching",
             "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "Matching",
             "system/beatmatch/BeatMatchUtl.cpp": "Matching",
             "system/beatmatch/ButtonGuitarController.cpp": "Matching",
+            "system/beatmatch/DrumPlayer.cpp": "Matching",
+            "system/beatmatch/DrumTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/FillInfo.cpp": "NonMatching",
             "system/beatmatch/GameGem.cpp": "Matching",
-            "system/beatmatch/GameGemDB.cpp": "NonMatching",
+            "system/beatmatch/GameGemDB.cpp": "Matching",
             "system/beatmatch/GameGemList.cpp": "NonMatching",
             "system/beatmatch/GuitarController.cpp": "NonMatching",
             "system/beatmatch/GuitarTrackWatcherImpl.cpp": "NonMatching",
@@ -155,8 +171,12 @@
             "system/beatmatch/JoypadMidiController.cpp": "Matching",
             "system/beatmatch/JoypadTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/KeyboardController.cpp": "Matching",
+            "system/beatmatch/MasterAudio.cpp": "NonMatching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
+            "system/beatmatch/PhraseAnalyzer.cpp": "NonMatching",
+            "system/beatmatch/PhraseDB.cpp": "Matching",
+            "system/beatmatch/PhraseList.cpp": "Matching",
             "system/beatmatch/Playback.cpp": "NonMatching",
             "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
@@ -170,11 +190,15 @@
             "system/beatmatch/TrackType.cpp": "Matching",
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
+            "system/beatmatch/VocalNoteList.cpp": "NonMatching",
 
             "system/char/Char.cpp": "NonMatching",
             "system/char/Character.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "NonMatching",
-            "system/char/CharBone.cpp": "NonMatching",
+            "system/char/CharBone.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps in standalone stlport functions"
+            },
             "system/char/CharBoneDir.cpp": "NonMatching",
             "system/char/CharBoneOffset.cpp": "Matching",
             "system/char/CharBones.cpp": "NonMatching",
@@ -194,15 +218,24 @@
             "system/char/CharEyeDartRuleset.cpp": "Matching",
             "system/char/CharEyes.cpp": "NonMatching",
             "system/char/CharFaceServo.cpp": "NonMatching",
-            "system/char/CharForeTwist.cpp": "NonMatching",
-            "system/char/CharGuitarString.cpp": "NonMatching",
+            "system/char/CharForeTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
+            "system/char/CharGuitarString.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharHair.cpp": "NonMatching",
             "system/char/CharIKFingers.cpp": "NonMatching",
             "system/char/CharIKFoot.cpp": "NonMatching",
             "system/char/CharIKHand.cpp": "NonMatching",
             "system/char/CharIKHead.cpp": "NonMatching",
             "system/char/CharIKMidi.cpp": "NonMatching",
-            "system/char/CharIKRod.cpp": "NonMatching",
+            "system/char/CharIKRod.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps in ComputeRod and SyncBones on debug, both check out in retail"
+            },
             "system/char/CharIKScale.cpp": "NonMatching",
             "system/char/CharIKSliderMidi.cpp": "NonMatching",
             "system/char/CharInterest.cpp": "NonMatching",
@@ -213,28 +246,36 @@
             "system/char/CharMeshHide.cpp": "NonMatching",
             "system/char/CharMirror.cpp": "NonMatching",
             "system/char/CharNeckTwist.cpp": "NonMatching",
-            "system/char/CharPollGroup.cpp": "NonMatching",
+            "system/char/CharPollGroup.cpp": "Matching",
             "system/char/CharPosConstraint.cpp": "NonMatching",
             "system/char/CharServoBone.cpp": "NonMatching",
             "system/char/CharSleeve.cpp": "NonMatching",
             "system/char/CharTaskMgr.cpp": "Matching",
             "system/char/CharTransCopy.cpp": "Matching",
             "system/char/CharTransDraw.cpp": "Matching",
-            "system/char/CharUpperTwist.cpp": "NonMatching",
-            "system/char/CharUtl.cpp": "NonMatching",
+            "system/char/CharUpperTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
+            "system/char/CharUtl.cpp": {
+                "status": "Equivalent",
+                "comment": "ClipPredict::Predict checks out in retail"
+            },
             "system/char/CharWeightable.cpp": "Matching",
             "system/char/CharWeightSetter.cpp": "Matching",
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
+            "system/char/ClipGraphGen.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
             "system/math/strips/Adjacency.cpp": "Matching",
             "system/math/strips/CustomArray.cpp": "Matching",
             "system/math/strips/RevisitedRadix.cpp": "NonMatching",
-            "system/math/strips/Striper.cpp": {"status": "Equivalent",
-                "comment": "Regswap in ComputeBestStrip__7StriperFUi"},
-
+            "system/math/strips/Striper.cpp": {
+                "status": "Equivalent",
+                "comment": "Regswap in ComputeBestStrip__7StriperFUi"
+            },
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "Matching",
             "system/math/FileChecksum.cpp": "Matching",
@@ -309,12 +350,12 @@
                 "status": "LinkIssues",
                 "comment": "TextFile::SetType(Symbol)::types swapped with TextFile::Handle(DataArray*, bool)::_s"
             },
-            "system/obj/TypeProps.cpp":  "Matching",
+            "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
             "system/oggvorbis/VorbisMem.cpp": "NonMatching",
 
-            "system/os/AppChild.cpp": "NonMatching",
+            "system/os/AppChild.cpp": "Matching",
             "system/os/Archive.cpp": "NonMatching",
             "system/os/ArkFile.cpp": "NonMatching",
             "system/os/AsyncFile.cpp": "NonMatching",
@@ -427,7 +468,7 @@
             "system/rndwii/Mesh.cpp": "NonMatching",
             "system/rndwii/Rnd.cpp": "NonMatching",
 
-            "system/synth/ADSR.cpp": "NonMatching",
+            "system/synth/ADSR.cpp": "Matching",
             "system/synth/BinkClip.cpp": "Matching",
             "system/synth/BinkReader.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
@@ -767,10 +808,7 @@
                 "status": "Equivalent",
                 "comment": "Weak method ordering issues"
             },
-            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": {
-                "status": "LinkIssues",
-                "comment": "Weak method link ordering issues relating with msl_thread"
-            },
+            "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/locale.cpp": "Matching",
             "sdk/PowerPC_EABI_Support/MSL/MSL_C++/MSL_Common/msl_thread.cpp": "Matching"
         }
     },
@@ -795,7 +833,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL",
         "objects": {
-
+            "sdk/PowerPC_EABI_Support/MetroTRK/custconn/MWCriticalSection_gc.c": "Matching"
         }
     },
     "sdk/RVL_SDK": {
@@ -804,11 +842,24 @@
         "objects": {
             "sdk/RVL_SDK/revolution/base/PPCArch.c": "Matching",
 
+            "sdk/RVL_SDK/revolution/dsp/dsp_debug.c": "Matching",
+
             "sdk/RVL_SDK/revolution/gx/GXBump.c": "NonMatching",
             "sdk/RVL_SDK/revolution/gx/GXDisplayList.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXGeometry.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXLight.c": "Matching",
             "sdk/RVL_SDK/revolution/gx/GXTransform.c": "Matching",
+
+            "sdk/RVL_SDK/revolution/os/OSCrc.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/os/OSReboot.c": "Matching",
+            "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
+
+            "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
+    
+            "sdk/RVL_SDK/revolution/wpad/WPADHIDParser.c": "NonMatching",
+            "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "Matching",
+            "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "Matching",
+            "sdk/RVL_SDK/revolution/wpad/lint.c": "NonMatching",
 
             "sdk/RVL_SDK/revolution/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/revolution/wpadGtr/WPADGtr.c": "Matching"
@@ -821,21 +872,75 @@
             "sdk/RevoEX/so/SOCommon.c": "NonMatching",
             "sdk/RevoEX/so/SOBasic.c": "NonMatching",
 
-            "sdk/RevoEX/ssl/ssl_mutex.c": "NonMatching"
+            "sdk/RevoEX/ssl/ssl_mutex.c": {"status": "Matching", "extra_cflags": ["-func_align 4"]}
         }
     },
     "sdk/DWC": {
         "mw_version": "Wii/1.3",
-        "cflags": "base",
+        "cflags": "sdk/DWC",
         "objects": {
+            "sdk/DWC/dwc_common/dwc_error.c": "Matching",
+            "sdk/DWC/dwc_common/dwc_init.c": "Matching",
+            "sdk/DWC/dwc_common/dwc_memfunc.c": "Matching",
+            "sdk/DWC/dwc_common/dwc_report.c": "Matching",
 
+            "sdk/DWC/dwcsec_nas/dwc_naslogin.c": "Matching"
         }
     },
     "sdk/ec": {
         "mw_version": "Wii/1.3",
-        "cflags": "base",
+        "cflags": "sdk/ec",
         "objects": {
+            "sdk/ec/src/ec_api.cpp": "NonMatching",
+            "sdk/ec/src/ec_asyncOp.cpp": "NonMatching",
+            "sdk/ec/src/ec_base64.cpp": "Equivalent",
+            "sdk/ec/src/ec_checkECard.cpp": "NonMatching",
+            "sdk/ec/src/ec_checkReg.cpp": "NonMatching",
+            "sdk/ec/src/ec_chkDevStat.cpp": "NonMatching",
+            "sdk/ec/src/ec_chkDownload_bw.cpp": "NonMatching",
 
+            "sdk/ec/src/ec_connect.cpp": "NonMatching",
+            "sdk/ec/src/ec_content.cpp": "NonMatching",
+            "sdk/ec/src/ec_csup.cpp": "NonMatching",
+            "sdk/ec/src/ec_deleteContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_dk.cpp": "NonMatching",
+            "sdk/ec/src/ec_downloadContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_file_bw.cpp": "NonMatching",
+            "sdk/ec/src/ec_getContentsResReq.cpp": "NonMatching",
+            "sdk/ec/src/ec_getTitle.cpp": "NonMatching",
+            "sdk/ec/src/ec_getTitleResReq.cpp": "NonMatching",
+            "sdk/ec/src/ec_http_bw.cpp": "NonMatching",
+
+            "sdk/ec/src/ec_list.cpp": "NonMatching",
+            "sdk/ec/src/ec_listCatalog.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentDownloadInfos.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentSetGroups.cpp": "NonMatching",
+            "sdk/ec/src/ec_listContentSets.cpp": "NonMatching",
+            "sdk/ec/src/ec_listECardItems.cpp": "NonMatching",
+            "sdk/ec/src/ec_listPurchaseHistory.cpp": "NonMatching",
+            "sdk/ec/src/ec_listServiceItems.cpp": "NonMatching",
+            "sdk/ec/src/ec_listTitleContents.cpp": "NonMatching",
+            "sdk/ec/src/ec_listTitles.cpp": "NonMatching",
+
+            "sdk/ec/src/ec_md5.cpp": "Matching",
+            "sdk/ec/src/ec_mem.cpp": "Matching",
+            "sdk/ec/src/ec_misc.cpp": "NonMatching",
+            "sdk/ec/src/ec_purchaseTitle.cpp": "NonMatching",
+            "sdk/ec/src/ec_register.cpp": "NonMatching",
+            "sdk/ec/src/ec_shoplog_bw.cpp": "NonMatching",
+            "sdk/ec/src/ec_soap.cpp": "NonMatching",
+            "sdk/ec/src/ec_string.cpp": "NonMatching",
+            "sdk/ec/src/ec_sysconfig_bw.cpp": "NonMatching"
+        }
+    },
+    "sdk/ec_c": {
+        "mw_version": "Wii/1.3",
+        "cflags": "sdk/ec_c",
+        "objects": {
+            "sdk/ec/src/ec_md5c.c": "NonMatching",
+
+            "sdk/ec/src/shr_th_bw.c": "Matching",
+            "sdk/ec/src/shr_time_bw.c": "Matching"
         }
     },
     "sdk/NdevExi2A": {

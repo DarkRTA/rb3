@@ -95,6 +95,12 @@ parser.add_argument(
     help="path to decomp-toolkit binary or source (optional)",
 )
 parser.add_argument(
+    "--objdiff",
+    metavar="BINARY | DIR",
+    type=Path,
+    help="path to objdiff-cli binary or source (optional)",
+)
+parser.add_argument(
     "--sjiswrap",
     metavar="EXE",
     type=Path,
@@ -119,6 +125,7 @@ config.version = str(args.version)
 # Apply arguments
 config.build_dir = args.build_dir
 config.dtk_path = args.dtk
+config.objdiff_path = args.objdiff
 config.binutils_path = args.binutils
 config.compilers_path = args.compilers
 config.debug = args.debug
@@ -134,6 +141,7 @@ if args.no_asm:
 config.binutils_tag = "2.41-1"
 config.compilers_tag = "20231018"
 config.dtk_tag = "v0.9.1"
+config.objdiff_tag = "v2.0.0-beta.4"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 

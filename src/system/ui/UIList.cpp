@@ -29,9 +29,9 @@ std::list<UIList*> sUIListSet;
 
 INIT_REVS(UIList)
 
-UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0), 
-    mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull), 
-    mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1), 
+UIList::UIList() : UITransitionHandler(this), mListDir(0), mListState(this, this), mDataProvider(0),
+    mNumData(100), mUser(0), mParent(0), mExtendedLabelEntries(this, kObjListNoNull),
+    mExtendedMeshEntries(this, kObjListNoNull), mExtendedCustomEntries(this, kObjListNoNull), mAutoScrollPause(2.0f), unk_0x1D8(1),
     unk_0x1DC(-1), mPaginate(0), mAutoScrollSendMessages(0), mAutoScrolling(0), unk_0x1E4(0), mDrawManuallyControlledWidgets(0),
     unk_0x1E6(0), mNeedsGarbageCollection(0) {}
 
@@ -39,10 +39,10 @@ UIList::~UIList(){
     for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
         if(*it == this){
             it = sUIListSet.erase(it);
+            break;
         }
     }
-    DeleteRange(mWidgets.begin(), mWidgets.end());
-    mWidgets.clear();
+    DeleteAll(mWidgets);
     delete mDataProvider;
     mDataProvider = 0;
 }
@@ -65,10 +65,10 @@ BEGIN_COPYS(UIList)
     CREATE_COPY_AS(UIList, l)
     MILO_ASSERT(l, 103);
     COPY_SUPERCLASS(UIComponent)
-    SetCircular(l->mListState.mCircular);
-    SetNumDisplay(l->mListState.mNumDisplay);
-    SetGridSpan(l->mListState.mGridSpan);
-    SetSpeed(l->mListState.Speed());
+    SetCircular(l->Circular());
+    SetNumDisplay(l->NumDisplay());
+    SetGridSpan(l->GridSpan());
+    SetSpeed(l->Speed());
     COPY_MEMBER_FROM(l, mPaginate)
     COPY_MEMBER_FROM(l, unk_0x4) // from ScrollSelect
     mListState.SetMinDisplay(l->mListState.MinDisplay());
@@ -99,9 +99,11 @@ void UIList::PreLoad(BinStream& bs) {
 
 void UIList::PreLoadWithRev(BinStream& bs, int rev) {
     mUIListRev = rev;
+#ifdef VERSION_SZBE69_B8
     if (mUIListRev > 19) {
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), mUIListRev, (unsigned short)19);
     }
+#endif
     UIComponent::PreLoad(bs);
 }
 
@@ -176,9 +178,9 @@ void UIList::PostLoad(BinStream& bs) {
     Update();
 }
 
-int UIList::NumDisplay() const { return mListState.mNumDisplay; }
+int UIList::NumDisplay() const { return mListState.NumDisplay(); }
 float UIList::Speed() const { return mListState.Speed(); }
-int UIList::FirstShowing() const { return mListState.mFirstShowing; }
+int UIList::FirstShowing() const { return mListState.FirstShowing(); }
 int UIList::Selected() const { return mListState.Selected(); }
 int UIList::SelectedDisplay() const { return mListState.SelectedDisplay(); }
 int UIList::SelectedData() const { return mListState.SelectedData(); }
@@ -226,8 +228,7 @@ void UIList::SetSelected(int i, int j){
     mListState.SetSelected(i, j, true);
     Refresh(false);
     mListDir->Poll();
-    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
-    if(uilist) Poll();
+    if(ChildList()) Poll();
     HandleSelectionUpdated();
 }
 
@@ -252,8 +253,7 @@ void UIList::SetSelectedSimulateScroll(int i){
     mListState.SetSelectedSimulateScroll(i);
     Refresh(false);
     mListDir->Poll();
-    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
-    if(uilist) Poll();
+    if(ChildList()) Poll();
 }
 
 bool UIList::SetSelectedSimulateScroll(Symbol sym, bool b){
@@ -278,8 +278,7 @@ void UIList::SetProvider(UIListProvider* prov){
         mListState.SetProvider(prov, mResource->Dir());
         SetSelected(0, -1);
     }
-    UIList* uilist = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
-    if(uilist) Poll();
+    if(ChildList()) Poll();
 }
 
 void UIList::Scroll(int i){
@@ -292,8 +291,7 @@ void UIList::SetParent(UIList* uilist){ mParent = uilist; }
 void UIList::AutoScroll(){
     UIListProvider* prov = mListState.Provider();
     if(!prov) prov = this;
-    int disp = mListState.mNumDisplay;
-    if(prov->NumData() <= disp){
+    if(prov->NumData() <= NumDisplay()){
         StopAutoScroll();
     }
     else {
@@ -388,9 +386,8 @@ void UIList::DrawShowing(){
         unk_0x1E4 = false;
     }
     bool b = mDrawManuallyControlledWidgets;
-    UIList* parent = mParent;
-    if(parent){
-        if(parent->mListDir->SubList(parent->mListState.SelectedDisplay(), parent->mWidgets) == this) b = mParent->mDrawManuallyControlledWidgets;
+    if(ParentList()){
+        if(ParentList()->ChildList() == this) b = ParentList()->mDrawManuallyControlledWidgets;
     }
     mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), 0, b);
 }
@@ -475,7 +472,7 @@ void UIList::DisableData(Symbol s){
     MILO_ASSERT(mDataProvider, 0x397);
     mDataProvider->Disable(s);
     Refresh(false);
-    if(!mDataProvider->IsActive(mListState.SelectedData())){
+    if(!mDataProvider->IsActive(SelectedData())){
         mListState.SetSelected(0, -1, true);
     }
 }
@@ -507,7 +504,7 @@ void UIList::StartScroll(const UIListState& state, int i, bool b){
 void UIList::CompleteScroll(const UIListState& state){
     mListDir->CompleteScroll(state, mWidgets);
     if(mAutoScrolling){
-        int firstshowing = mListState.mFirstShowing;
+        int firstshowing = FirstShowing();
         state.Provider();
         int i3 = unk_0x1D8 > 0 ? mListState.MaxFirstShowing() : 0;
         if(firstshowing == i3){
@@ -526,8 +523,8 @@ void UIList::CompleteScroll(const UIListState& state){
 
 void UIList::HandleSelectionUpdated(){
     UITransitionHandler::StartValueChange();
-    if(mListDir->SubList(mListState.SelectedDisplay(), mWidgets)){
-        mListDir->SubList(mListState.SelectedDisplay(), mWidgets)->HandleSelectionUpdated();
+    if(ChildList()){
+        ChildList()->HandleSelectionUpdated();
     }
 }
 
@@ -558,8 +555,8 @@ DataNode UIList::OnMsg(const ButtonDownMsg& msg){
     mUser = msg.GetUser();
     Symbol cntType = JoypadControllerTypePadNum(msg.GetPadNum());
     if(CanScroll()){
-        int gridspan = mListState.mGridSpan;
-        UIList* sub = mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
+        int gridspan = mListState.GridSpan();
+        UIList* sub = ChildList();
         UIListOrientation o = mListDir->Orientation();
         bool b = false;
         if(sub){
@@ -567,7 +564,7 @@ DataNode UIList::OnMsg(const ButtonDownMsg& msg){
                 return DataNode(1);
             }
             if(ScrollDirection(msg, cntType, sub->mListDir->Orientation() == kUIListVertical, sub->mListState.mGridSpan) == kAction_Confirm){
-            
+
             }
         }
     }

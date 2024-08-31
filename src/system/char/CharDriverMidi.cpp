@@ -24,7 +24,7 @@ void CharDriverMidi::Enter(){
 
 void CharDriverMidi::Exit(){
     CharDriver::Exit();
-    MsgSource* msgParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mParser.Str(), false));
+    MsgSource* msgParser = ObjectDir::Main()->Find<MsgSource>(mParser.Str(), false);
     if(msgParser) msgParser->RemoveSink(this);
     MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mFlagParser.Str(), false));
     if(msgFlagParser) msgFlagParser->RemoveSink(this);
@@ -101,9 +101,9 @@ DataNode CharDriverMidi::OnMidiParserFlags(DataArray* da){
 
 DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
     const char* name = da->Str(2);
-    CharClipGroup* grp = dynamic_cast<CharClipGroup*>(mClips->FindObject(name, false));
+    CharClipGroup* grp = mClips->Find<CharClipGroup>(name, false);
     if(!grp){
-        MILO_WARN("%s could not find group %s in %s", PathName(this), name, mClips->Name());
+        MILO_WARN("%s could not find group %s in %s", PathName(this), name, grp->Name());
         return DataNode(0);
     }
     else {
@@ -119,7 +119,7 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
         else {
             if(clip || clip != FirstClip()){
                 float somefloat = da->Float(3);
-                if(clip->mPlayFlags & 0x200){
+                if(clip->PlayFlags() & 0x200){
                     somefloat *= clip->AverageBeatsPerSecond();
                 }
                 MaxEq(somefloat, 0.0f);

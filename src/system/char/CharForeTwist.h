@@ -12,7 +12,6 @@ public:
     OBJ_SET_TYPE(CharForeTwist);
     virtual DataNode Handle(DataArray*, bool);
     virtual void Poll();
-    virtual void Enter();
     virtual ~CharForeTwist(){}
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
@@ -22,12 +21,13 @@ public:
     virtual void Highlight(){}
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
     
-    ObjPtr<RndTransformable, ObjectDir> mHand;
-    ObjPtr<RndTransformable, ObjectDir> mTwist2;
-    float mOffset;
-    float mBias;
+    ObjPtr<RndTransformable, ObjectDir> mHand; // 0x10
+    ObjPtr<RndTransformable, ObjectDir> mTwist2; // 0x1c
+    float mOffset; // 0x28
+    float mBias; // 0x2c
 };
 
 #endif

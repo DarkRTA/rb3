@@ -50,13 +50,10 @@ public:
     bool IsRealGuitarChord() const;
     void CopyGem(GameGem*, int);
 
-    void* operator new(size_t s){
-        return _PoolAlloc(s, 0x10, FastPool);
-    }
+    NEW_POOL_OVERLOAD(GameGem);
+    DELETE_POOL_OVERLOAD(GameGem);
 
-    void operator delete(void* v){
-        _PoolFree(sizeof(GameGem), FastPool, v);
-    }
+    bool operator<(const GameGem& g) const { return mMs < g.mMs; }
 
     int GetTick() const { return mTick; }
     bool IgnoreDuration() const { return mIgnoreDuration; }

@@ -32,11 +32,13 @@ public:
     void SetClipType(Symbol);
     void SetMoveSelf(bool);
     void ZeroDeltas();
+    void MoveToFacing(Transform&);
+    void MoveToDeltaFacing(Transform&);
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    RndEnviron* mPelvis; // 0x74
+    RndTransformable* mPelvis; // 0x74
     float* mFacingRotDelta; // 0x78
     Vector3* mFacingPosDelta; // 0x7c
     float* mFacingRot; // 0x80

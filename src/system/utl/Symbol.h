@@ -28,7 +28,7 @@ public:
     }
 
     bool operator!=(const Symbol & s) const {
-        return !(*this == s);
+        return mStr != s.mStr;
     }
 
     bool operator!=(const char * cc) const {
@@ -46,7 +46,7 @@ public:
     static void Terminate();
 
     int GetIntVal(); // https://decomp.me/scratch/sxK01
-    bool Null() const { return mStr == gNullStr; }
+    RETAIL_DONT_INLINE_CLASS bool Null() const { return mStr == gNullStr; }
 };
 
 const char* SymbolCacheLookup(const char*);

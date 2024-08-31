@@ -10,6 +10,11 @@ class AccomplishmentSetlist : private Accomplishment {
 public:
     AccomplishmentSetlist(DataArray*, int);
     virtual ~AccomplishmentSetlist();
+    virtual int GetType() const;
+    virtual Difficulty GetRequiredDifficulty() const;
+    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    virtual bool CanBeLaunched() const;
+    virtual bool HasSpecificSongsToLaunch() const;
 
 private:
     Symbol mSetlist;       // 0x74
@@ -18,11 +23,6 @@ private:
     int mMinStars;         // 0x80
 
     void Configure(DataArray*);
-    int GetType() const;
-    bool CanBeLaunched() const;
-    bool HasSpecificSongsToLaunch() const;
-    Difficulty GetRequiredDifficulty() const;
-    bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     bool CheckRequirements(ScoreType, Difficulty, int);
 
     DELETE_OVERLOAD

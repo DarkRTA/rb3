@@ -1,35 +1,39 @@
 Sections:
-	.init       type:code
-	extab       type:rodata
-	extabindex  type:rodata
-	.text       type:code
-	.ctors      type:rodata
-	.dtors      type:rodata
-	.rodata     type:rodata
-	.data       type:data
-	.sdata      type:data
-	.sbss       type:bss
-	.sdata2     type:rodata
-	.sbss2      type:bss
-	.bss        type:bss
+	.init       type:code align:4
+	extab       type:rodata align:32
+	extabindex  type:rodata align:4
+	.text       type:code align:32
+	.ctors      type:rodata align:8
+	.dtors      type:rodata align:32
+	.rodata     type:rodata align:32
+	.data       type:data align:32
+	.sdata      type:data align:32
+	.sbss       type:bss align:16
+	.sdata2     type:rodata align:32
+	.sbss2      type:bss align:16
+	.bss        type:bss align:64
 
 rb3/unknown/800/unk_8000D980.cpp:
 	.text       start:0x8000D980 end:0x8000F364
 
-rb3/app.cpp:
-	.text       start:0x8000F364 end:0x8000F804
-
 sdk/MSL_C/sdata_1.c:
 	.sdata      start:0x808E3270 end:0x808E3280
+
+App.cpp:
+	.text       start:0x8000F364 end:0x8000F804
 
 rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914
 
-rb3/main.cpp:
+Main.cpp:
 	.text       start:0x8000F96C end:0x8000F9B0
 
 rb3/unknown/800/unk_8000F9B0.cpp:
 	.text       start:0x8000F9B0 end:0x80011714
+
+network/Platform/BadEvents.cpp:
+	.text       start:0x80011754 end:0x80011778
+	.bss        start:0x808F0950 end:0x808F0954
 
 libs/quazal/datetime.cpp:
 	.text       start:0x800127E4 end:0x800129F4
@@ -78,8 +82,12 @@ libs/quazal/unknown/8007/unk_8007BF84.cpp:
 	.text       start:0x8007BF84 end:0x8007CA94
 
 libs/quazal/unknown/800A/unk_800A515C.cpp:
-	.text       start:0x800A515C end:0x800A5368
-	.data       start:0x8082A5C0 end:0x8082A678
+	.text       start:0x800A515C end:0x800A51AC
+	.data       start:0x8082A5C0 end:0x8082A608
+
+network/Products/NetZ.cpp:
+	.text       start:0x800A51AC end:0x800A5278
+	.data       start:0x8082A608 end:0x8082A660
 
 network/net/JsonUtils.cpp:
 	.text       start:0x800A6360 end:0x800A71BC
@@ -128,7 +136,11 @@ rb3/unknown/800/unk_800C9D04.cpp:
 	.text       start:0x800C9D04 end:0x800DB158
 
 rb3/unknown/800/unk_800DB160.cpp:
-	.text       start:0x800DB160 end:0x800F6DE4
+	.text       start:0x800DB160 end:0x800E4020
+
+band3/bandtrack/TrackConfig.cpp:
+	.text       start:0x800E4020 end:0x800E43A0
+	.data       start:0x8082F9F8 end:0x8082FA28
 
 rb3/unknown/800/unk_800F6DF8.cpp:
 	.text       start:0x800F6DF8 end:0x800FF880
@@ -374,7 +386,7 @@ rb3/unknown/802/unk_8022CD04.cpp:
 rb3/providers/outfitprovider.cpp:
 	.text       start:0x8023F918 end:0x8023FAF4
 
-rb3/panels/overshellpanel.cpp:
+band3/meta_band/OvershellPanel.cpp:
 	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
@@ -532,8 +544,13 @@ system/math/Trig.cpp:
 	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
 
+system/math/Key.cpp:
+	.text       start:0x802E33CC end:0x802E40D0
+
 system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
+	.data       start:0x80851620 end:0x80851668
+	.bss        start:0x80902228 end:0x8090222C
 
 system/os/Archive.cpp:
 	.text       start:0x802E4984 end:0x802E72CC
@@ -588,7 +605,7 @@ system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
-rb3/netstream.cpp:
+system/os/NetStream.cpp:
 	.text       start:0x80308638 end:0x80308ACC
 
 rb3/wiinetworksocket.cpp:
@@ -643,6 +660,8 @@ system/obj/DataFunc.cpp:
 	.text       start:0x8031B2B8 end:0x80322958
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
+	.sbss       start:0x808E4478 end:0x808E447C
+	.bss        start:0x8091A518 end:0x8091A588
 
 system/obj/DataNode.cpp:
 	.text       start:0x80322958 end:0x80324278
@@ -664,11 +683,15 @@ system/obj/DataFlex.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-rb3/objectdir.cpp:
+system/obj/ObjectDir.cpp:
 	.text       start:0x8032553C end:0x8032DA70
 	.ctors      start:0x807EFF18 end:0x807EFF1C
 
-rb3/dirunloader.cpp:
+system/obj/DirLoader.cpp:
+	.text       start:0x8032DA70 end:0x8033106C
+	.ctors      start:0x807EFF1C end:0x807EFF20
+
+system/obj/DirUnloader.cpp:
 	.text       start:0x8033106C end:0x80331D40
 
 rb3/msgsource.cpp:
@@ -795,28 +818,28 @@ rb3/unknown/803/unk_80354A30.cpp:
 system/utl/MemStream.cpp:
 	.text       start:0x80354E6C end:0x80355190
 
-rb3/symbols/messageset1.cpp:
+system/utl/Messages.cpp:
 	.text       start:0x80355190 end:0x80355E18
 	.ctors      start:0x807EFF5C end:0x807EFF60
 	.data       start:0x808572C8 end:0x808577C8
 	.sbss       start:0x808E4528 end:0x808E4530
 	.bss        start:0x8097CE08 end:0x8097D570
 
-rb3/symbols/messageset2.cpp:
+system/utl/Messages2.cpp:
 	.text       start:0x80355E18 end:0x80356848
 	.ctors      start:0x807EFF60 end:0x807EFF64
 	.data       start:0x808577C8 end:0x80857C68
 	.sbss       start:0x808E4530 end:0x808E4538
 	.bss        start:0x8097D570 end:0x8097DB70
 
-rb3/symbols/messageset3.cpp:
+system/utl/Messages3.cpp:
 	.text       start:0x80356848 end:0x803572F0
 	.ctors      start:0x807EFF64 end:0x807EFF68
 	.data       start:0x80857C68 end:0x80858080
 	.sbss       start:0x808E4538 end:0x808E4540
 	.bss        start:0x8097DB70 end:0x8097E1B8
 
-rb3/symbols/messageset4.cpp:
+system/utl/Messages4.cpp:
 	.text       start:0x803572F0 end:0x80357E10
 	.ctors      start:0x807EFF68 end:0x807EFF6C
 	.data       start:0x80858080 end:0x80858470
@@ -846,31 +869,28 @@ system/utl/StringTable.cpp:
 system/utl/Symbol.cpp:
 	.text       start:0x80363F60 end:0x803651B0
 
-rb3/stringtablelocks.cpp:
-	.text       start:0x803651B0 end:0x80365214
-
-rb3/symbols/symbolset1.cpp:
-	.text       start:0x80365214 end:0x8036B5A0
+system/utl/Symbols.cpp:
+	.text       start:0x803651B0 end:0x8036B5A0
 	.ctors      start:0x807EFF6C end:0x807EFF70
 	.data       start:0x80858D28 end:0x80861278
 	.sbss       start:0x808E4568 end:0x808E4570
 	.bss        start:0x8097E948 end:0x809809F8
 
-rb3/symbols/symbolset2.cpp:
+system/utl/Symbols2.cpp:
 	.text       start:0x8036B5A0 end:0x803704DC
 	.ctors      start:0x807EFF70 end:0x807EFF74
 	.data       start:0x80861278 end:0x80867580
 	.sbss       start:0x808E4570 end:0x808E4578
 	.bss        start:0x809809F8 end:0x80982448
 
-rb3/symbols/symbolset3.cpp:
+system/utl/Symbols3.cpp:
 	.text       start:0x803704DC end:0x8037546C
 	.ctors      start:0x807EFF74 end:0x807EFF78
 	.data       start:0x80867580 end:0x8086DE50
 	.sbss       start:0x808E4578 end:0x808E4580
 	.bss        start:0x80982448 end:0x80983EB8
 
-rb3/symbols/symbolset4.cpp:
+system/utl/Symbols4.cpp:
 	.text       start:0x8037546C end:0x8037A3D8
 	.ctors      start:0x807EFF78 end:0x807EFF7C
 	.data       start:0x8086DE50 end:0x80874468
@@ -900,37 +920,37 @@ system/utl/UTF8.cpp:
 rb3/unknown/803/unk_8037AD40.cpp:
 	.text       start:0x8037BE50 end:0x8037EB94
 
-libs/zlib/adler32.c:
+system/zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
 
-libs/zlib/crc32.c:
+system/zlib/crc32.c:
 	.text       start:0x8037ED1C end:0x8037EE64
 	.rodata     start:0x807F1E00 end:0x807F2200
 
-libs/zlib/deflate.c:
+system/zlib/deflate.c:
 	.text       start:0x8037EE64 end:0x80380B78
 	.rodata     start:0x807F2200 end:0x807F2280
 
-libs/zlib/trees.c:
+system/zlib/trees.c:
 	.text       start:0x80380B78 end:0x80382960
 	.rodata     start:0x807F2280 end:0x807F2CB8
 	.data       start:0x80874690 end:0x808746D0
 
-libs/zlib/zutil.c:
+system/zlib/zutil.c:
 	.text       start:0x80382960 end:0x80382998
 	.rodata     start:0x807F2CB8 end:0x807F2CE0
 	.data       start:0x808746D0 end:0x80874750
 
-libs/zlib/inflate.c:
+system/zlib/inflate.c:
 	.text       start:0x80382998 end:0x80384248
 	.rodata     start:0x807F2CE0 end:0x807F3588
 	.data       start:0x80874750 end:0x80874978
 
-libs/zlib/inftrees.c:
+system/zlib/inftrees.c:
 	.text       start:0x80384248 end:0x803846EC
 	.rodata     start:0x807F3588 end:0x807F36B8
 
-libs/zlib/inffast.c:
+system/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
 
@@ -975,11 +995,215 @@ rb3/unisonicon.cpp:
 rb3/songsectioncontroller.cpp:
 	.text       start:0x8044FAF4 end:0x8045593C
 
-rb3/overshelldir.cpp:
+system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
+system/char/Char.cpp:
+	.text       start:0x80499BAC end:0x8049C168
+
+system/char/Character.cpp:
+	.text       start:0x8049C168 end:0x804A498C
+
+system/char/CharBlendBone.cpp:
+	.text       start:0x804A498C end:0x804A66A0
+	.data       start:0x808871D0 end:0x808872B8
+	.sbss       start:0x808E47F0 end:0x808E47F8
+
+system/char/CharBone.cpp:
+	.text       start:0x804A66A0 end:0x804A8BEC
+
+system/char/CharBoneDir.cpp:
+	.text       start:0x804A8BEC end:0x804AB478
+
+system/char/CharBones.cpp:
+	.text       start:0x804AB478 end:0x804AF6F0
+
+system/char/CharBoneOffset.cpp:
+	.text       start:0x804AF6F0 end:0x804AFE8C
+
+system/char/CharBonesMeshes.cpp:
+	.text       start:0x804AFE8C end:0x804B1B20
+
+system/char/CharBonesSamples.cpp:
+	.text       start:0x804B1B20 end:0x804B351C
+	.bss        start:0x80987188 end:0x80987198
+
+system/char/CharBonesBlender.cpp:
+	.text       start:0x804B351C end:0x804B4208
+
+system/char/CharBoneTwist.cpp:
+	.text       start:0x804B4208 end:0x804B4B68
+
+system/char/CharClip.cpp:
+	.text       start:0x804B4B68 end:0x804BCCD8
+	.ctors      start:0x807EFFA8 end:0x807EFFAC
+
+system/char/CharClipGroup.cpp:
+	.text       start:0x804BCCD8 end:0x804C0210
+
+system/char/CharClipSet.cpp:
+	.text       start:0x804C0210 end:0x804C2A04
+
+system/char/CharCollide.cpp:
+	.text       start:0x804C2A04 end:0x804C3B40
+
+system/char/CharCuff.cpp:
+	.text       start:0x804C3B40 end:0x804C5DE0
+
+system/char/CharDriver.cpp:
+	.text       start:0x804C5DE0 end:0x804C8D70
+
+system/char/CharDriverMidi.cpp:
+	.text       start:0x804C8D70 end:0x804C9C3C
+
+system/char/CharEyes.cpp:
+	.text       start:0x804C9C3C end:0x804D1568
+
+system/char/CharInterest.cpp:
+	.text       start:0x804D1568 end:0x804D2984
+
+system/char/CharEyeDartRuleset.cpp:
+	.text       start:0x804D2984 end:0x804D30E4
+	.data       start:0x80888CB0 end:0x80888D20
+	.sbss       start:0x808E4878 end:0x808E4880
+
+system/char/CharFaceServo.cpp:
+	.text       start:0x804D30E4 end:0x804D4090
+
+system/char/CharForeTwist.cpp:
+	.text       start:0x804D4090 end:0x804D49F8
+	.data       start:0x80888E00 end:0x80888EC0
+	.sbss       start:0x808E4888 end:0x808E4890
+
+system/char/CharHair.cpp:
+	.text       start:0x804D49F8 end:0x804DAB54
+
+system/char/CharIKFingers.cpp:
+	.text       start:0x804DAB54 end:0x804DE54C
+	.sbss       start:0x808E4898 end:0x808E48A0
+
+system/char/CharIKFoot.cpp:
+	.text       start:0x804DE54C end:0x804DFC90
+	.data       start:0x808894E8 end:0x808895F0
+	.sbss       start:0x808E48A0 end:0x808E48A8
+
+system/char/CharIKHand.cpp:
+	.text       start:0x804DFC90 end:0x804E2A08
+	.data       start:0x808895F8 end:0x80889748
+	.sbss       start:0x808E48A8 end:0x808E48B0
+
+system/char/CharIKHead.cpp:
+	.text       start:0x804E2A08 end:0x804E4BCC
+	.data       start:0x80889748 end:0x80889890
+	.sbss       start:0x808E48B0 end:0x808E48B8
+
+system/char/CharIKMidi.cpp:
+	.text       start:0x804E4BCC end:0x804E68AC
+	.sbss       start:0x808E48B8 end:0x808E48C0
+
+system/char/CharIKRod.cpp:
+	.text       start:0x804E68AC end:0x804E7428
+	.data       start:0x80889D78 end:0x80889E58
+	.sbss       start:0x808E48C0 end:0x808E48C8
+
+system/char/CharIKScale.cpp:
+	.text       start:0x804E7428 end:0x804E8054
+	.data       start:0x80889E58 end:0x80889F28
+	.sbss       start:0x808E48C8 end:0x808E48D0
+
+system/char/CharIKSliderMidi.cpp:
+	.text       start:0x804E8054 end:0x804E8E14
+	.data       start:0x80889F34 end:0x8088A088
+	.sbss       start:0x808E48D0 end:0x808E48D8
+
+system/char/CharLipSync.cpp:
+	.text       start:0x804E8E14 end:0x804EB538
+
+system/char/CharLipSyncDriver.cpp:
+	.text       start:0x804EB538 end:0x804ED1AC
+
+system/char/CharLookAt.cpp:
+	.text       start:0x804ED1AC end:0x804EE7E0
+
+system/char/CharMeshHide.cpp:
+	.text       start:0x804EE7E0 end:0x804F0798
+	.data       start:0x8088A410 end:0x8088A490
+	.sbss       start:0x808E48F0 end:0x808E48F8
+
+system/char/CharMeshCacheMgr.cpp:
+	.text       start:0x804F0798 end:0x804F1E7C
+
+system/char/CharMirror.cpp:
+	.text       start:0x804F1E7C end:0x804F3A94
+
+system/char/CharNeckTwist.cpp:
+	.text       start:0x804F3A94 end:0x804F4218
+
+system/char/CharPosConstraint.cpp:
+	.text       start:0x804F4218 end:0x804F4BB4
+
+system/char/CharPollGroup.cpp:
+	.text       start:0x804F4BB4 end:0x804F64A8
+	.data       start:0x8088A800 end:0x8088A978
+	.sbss       start:0x808E4910 end:0x808E4918
+
+system/char/CharServoBone.cpp:
+	.text       start:0x804F64A8 end:0x804F75FC
+	.data       start:0x8088A978 end:0x8088AAD8
+	.sbss       start:0x808E4918 end:0x808E4920
+
+system/char/CharSleeve.cpp:
+	.text       start:0x804F75FC end:0x804F84AC
+	.data       start:0x8088AAD8 end:0x8088ABE8
+	.sbss       start:0x808E4920 end:0x808E4928
+
+system/char/CharTaskMgr.cpp:
+	.text       start:0x804F84AC end:0x804F84B0
+
+system/char/CharTransCopy.cpp:
+	.text       start:0x804F84B0 end:0x804F8BBC
+	.data       start:0x8088ABE8 end:0x8088ACD0
+	.sbss       start:0x808E4928 end:0x808E4930
+
+system/char/CharTransDraw.cpp:
+	.text       start:0x804F8BBC end:0x804F9C94
+	.data       start:0x8088ACD0 end:0x8088AE40
+	.sbss       start:0x808E4930 end:0x808E4938
+
+system/char/CharacterTest.cpp:
+	.text       start:0x804F9C94 end:0x804FA99C
+
+system/char/CharUpperTwist.cpp:
+	.text       start:0x804FA99C end:0x804FB228
+	.data       start:0x8088AF30 end:0x8088AFD8
+	.sbss       start:0x808E4940 end:0x808E4948
+
+system/char/CharUtl.cpp:
+	.text       start:0x804FB228 end:0x804FC4E4
+
+system/char/CharWeightable.cpp:
+	.text       start:0x804FC4E4 end:0x804FCD7C
+	.data       start:0x8088B048 end:0x8088B0E8
+	.sbss       start:0x808E4948 end:0x808E4950
+
+system/char/CharWeightSetter.cpp:
+	.text       start:0x804FCD7C end:0x804FEA7C
+
+system/char/FileMerger.cpp:
+	.text       start:0x804FF03C end:0x80502984
+
+system/char/FileMergerOrganizer.cpp:
+	.text       start:0x80502984 end:0x80504A84
+	.ctors      start:0x807EFFAC end:0x807EFFB0
+
+system/char/Waypoint.cpp:
+	.text       start:0x80504A84 end:0x80507560
+
+system/char/CharGuitarString.cpp:
+	.text       start:0x80507560 end:0x80507E74
+
 rb3/unknown/805/unk_8050FA30.cpp:
-	.text       start:0x8050472C end:0x8050EA88
+	.text       start:0x80507E74 end:0x8050EA88
 
 rb3/panels/dejitterpanel.cpp:
 	.text       start:0x8050EA88 end:0x8050EF80
@@ -1014,14 +1238,14 @@ rb3/panels/storepanel.cpp:
 rb3/unknown/805/unk_8052A44C.cpp:
 	.text       start:0x8052A44C end:0x8052D22C
 
-rb3/midiparser.cpp:
+system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
-rb3/labelnumberticker.cpp:
+system/ui/LabelNumberTicker.cpp:
 	.text       start:0x80549150 end:0x8054A190
 
-rb3/labelshrinkwrapper.cpp:
+system/ui/LabelShrinkWrapper.cpp:
 	.text       start:0x8054A190 end:0x8054AE78
 
 system/ui/PanelDir.cpp:
@@ -1030,11 +1254,15 @@ system/ui/PanelDir.cpp:
 system/ui/Screenshot.cpp:
 	.text       start:0x8054DBBC end:0x8054E330
 
+system/ui/ScrollSelect.cpp:
+	.text       start:0x8054E330 end:0x8054EB14
+
 system/ui/UI.cpp:
 	.text       start:0x8054EB14 end:0x80552668
 
 system/ui/UIButton.cpp:
 	.text       start:0x80552668 end:0x80552E80
+	.sbss       start:0x808E4A68 end:0x808E4A6C
 
 system/ui/UIColor.cpp:
 	.text       start:0x80552E80 end:0x80553260
@@ -1047,6 +1275,9 @@ system/ui/UILabel.cpp:
 
 system/ui/UIFontImporter.cpp:
 	.text       start:0x8055A388 end:0x8055F3A8
+
+system/ui/UIGridProvider.cpp:
+	.text       start:0x8055F3A8 end:0x8055FE3C
 
 system/ui/UILabelDir.cpp:
 	.text       start:0x8055FE3C end:0x805618F0
@@ -1073,8 +1304,17 @@ system/ui/UIListLabel.cpp:
 system/ui/UIListMesh.cpp:
 	.text       start:0x8056D844 end:0x8056E024
 
-rb3/unknown/805/unk_80567E84.cpp:
-	.text       start:0x8056E024 end:0x805715CC
+system/ui/UIListProvider.cpp:
+	.text       start:0x8056E024 end:0x8056E734
+
+system/ui/UIListSlot.cpp:
+	.text       start:0x8056E734 end:0x8056F2EC
+
+system/ui/UIListState.cpp:
+	.text       start:0x8056F2EC end:0x805708E4
+
+system/ui/UIListSubList.cpp:
+	.text       start:0x805708E4 end:0x805715CC
 
 system/ui/UIListWidget.cpp:
 	.text       start:0x805715CC end:0x805732E0
@@ -1082,159 +1322,321 @@ system/ui/UIListWidget.cpp:
 system/ui/UIPanel.cpp:
 	.text       start:0x805732E0 end:0x8057464C
 	.data       start:0x80892058 end:0x80892130
+	.bss        start:0x80988298 end:0x8098829C
 
 system/ui/UIPicture.cpp:
 	.text       start:0x8057464C end:0x80575698
 
-rb3/unknown/805/unk_8057464C.cpp:
-	.text       start:0x80575698 end:0x80581A8C
+system/ui/UIProxy.cpp:
+	.text       start:0x80575698 end:0x80576798
+
+system/ui/UIResource.cpp:
+	.text       start:0x80576798 end:0x805768F8
+
+system/ui/UIScreen.cpp:
+	.text       start:0x805768F8 end:0x80578834
+
+system/ui/UISlider.cpp:
+	.text       start:0x80578834 end:0x80579944
+
+system/ui/UITransitionHandler.cpp:
+	.text       start:0x80579944 end:0x80579F10
+
+system/ui/UITrigger.cpp:
+	.text       start:0x80579F10 end:0x8057CDBC
+
+system/ui/UIGuide.cpp:
+	.text       start:0x8057CDBC end:0x8057D224
+
+system/ui/Utl.cpp:
+	.text       start:0x8057D224 end:0x8057D398
+
+system/world/CameraManager.cpp:
+	.text       start:0x8057D398 end:0x80581A9C
+	.ctors      start:0x807EFFCC end:0x807EFFD0
+
+system/world/CameraShot.cpp:
+	.text       start:0x80581A9C end:0x8058CD34
 
 system/world/Crowd.cpp:
-	.text       start:0x8058D868 end:0x80597134
+	.text       start:0x8058CD34 end:0x80597134
 
-rb3/colorpalette.cpp:
+system/world/ColorPalette.cpp:
 	.text       start:0x80597134 end:0x80598310
 
-rb3/stubs/stubonef.cpp:
-	.text       start:0x8059FF1C end:0x8059FF28
+system/world/Dir.cpp:
+	.text       start:0x80598310 end:0x8059FD9C
+	.ctors      start:0x807EFFD0 end:0x807EFFD4
 
-rb3/Rnd/rndanimatable.cpp:
+system/world/FreeCamera.cpp:
+	.text       start:0x8059FD9C end:0x805A0734
+
+system/world/LightPreset.cpp:
+	.text       start:0x805A0734 end:0x805AECCC
+	.ctors      start:0x807EFFD4 end:0x807EFFD8
+
+system/world/LightHue.cpp:
+	.text       start:0x805AECCC end:0x805B04EC
+
+system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738
+	.sbss       start:0x808E4BC0 end:0x808E4BC8
 
-rb3/Rnd/rndanimfilter.cpp:
+system/rndobj/AnimFilter.cpp:
 	.text       start:0x805C8850 end:0x805C9A68
+	.data       start:0x80894738 end:0x808947F0
+	.sbss       start:0x808E4BC8 end:0x808E4BD0
 
-rb3/Rnd/rndbitmap.cpp:
-	.text       start:0x805C9A68 end:0x805CAC4C
+system/rndobj/Bitmap.cpp:
+	.text       start:0x805C9A68 end:0x805CC018
 
-rb3/Rnd/rndcam.cpp:
-	.text       start:0x805CCF80 end:0x805CD410
+system/rndobj/BoxMap.cpp:
+	.text       start:0x805CC018 end:0x805CCF80
+	.ctors      start:0x807EFFDC end:0x807EFFE0
 
-rb3/unknown/805/unk_805CE140.cpp:
-	.text       start:0x805CE140 end:0x805CFD34
+system/rndobj/Cam.cpp:
+	.text       start:0x805CCF80 end:0x805CE230
+	.ctors      start:0x807EFFE0 end:0x807EFFE4
+	.data       start:0x80894A18 end:0x80894AD8
 
-rb3/Rnd/rndconsole.cpp:
+system/rndobj/CamAnim.cpp:
+	.text       start:0x805CE230 end:0x805CF280
+	.data       start:0x80894AD8 end:0x80894C68
+	.sbss       start:0x808E4BD0 end:0x808E4BD8
+
+system/rndobj/ColorXfm.cpp:
+	.text       start:0x805CF280 end:0x805CFD34
+
+system/rndobj/Console.cpp:
 	.text       start:0x805CFD34 end:0x805D22A8
 
-rb3/Rnd/rnddir.cpp:
+system/rndobj/Dir.cpp:
 	.text       start:0x805D22A8 end:0x805D5E48
+	.sbss       start:0x808E4BD8 end:0x808E4BDC
 
-rb3/Rnd/dofproc.cpp:
+system/rndobj/DOFProc.cpp:
 	.text       start:0x805D5E48 end:0x805D6130
 	.data       start:0x80895410 end:0x808954B8
 	.bss        start:0x809891B8 end:0x809891C0
 
-rb3/Rnd/rnddrawable.cpp:
+system/rndobj/Draw.cpp:
 	.text       start:0x805D6130 end:0x805D7408
 	.data       start:0x808954D8 end:0x808955C8
+	.bss        start:0x809891C0 end:0x809891C8
 
-rb3/Rnd/rndenviron.cpp:
+system/rndobj/Env.cpp:
 	.text       start:0x805D7408 end:0x805D9A64
 	.ctors      start:0x807EFFE4 end:0x807EFFE8
+	.data       start:0x808955C8 end:0x808956A8
+	.sbss       start:0x808E4BE8 end:0x808E4C00
+	.bss        start:0x809891C8 end:0x809891D8
 
-rb3/Rnd/rndflare.cpp:
+system/rndobj/EnvAnim.cpp:
+	.text       start:0x805D9A64 end:0x805DD534
+	.data       start:0x808956A8 end:0x80895868
+
+system/rndobj/EventTrigger.cpp:
+	.text       start:0x805DD534 end:0x805E5A84
+	.data       start:0x80895868 end:0x80895A48
+
+system/rndobj/Flare.cpp:
 	.text       start:0x805E5A84 end:0x805E70D4
+	.sbss       start:0x808E4C10 end:0x808E4C18
 
-rb3/Rnd/rndfont.cpp:
+system/rndobj/Font.cpp:
 	.text       start:0x805E70D4 end:0x805EC3E8
 
-rb3/Rnd/rndgenerator.cpp:
+system/rndobj/Gen.cpp:
 	.text       start:0x805EC3E8 end:0x805EF00C
+	.data       start:0x80895F08 end:0x80896110
 
-rb3/Rnd/rndgroup.cpp:
+system/rndobj/Graph.cpp:
+	.text       start:0x805EF00C end:0x805EFA68
+	.ctors      start:0x807EFFE8 end:0x807EFFEC
+	.data       start:0x80896610 end:0x808966B8
+	.bss        start:0x8098CC90 end:0x8098CD48
+
+system/rndobj/Group.cpp:
 	.text       start:0x805EFA68 end:0x805F1B2C
 
-rb3/Rnd/rndlight.cpp:
-	.text       start:0x805F5224 end:0x805F68BC
+system/rndobj/HiResScreen.cpp:
+	.text       start:0x805F1B2C end:0x805F1C60
+	.ctors      start:0x807EFFEC end:0x807EFFF0
+	.data       start:0x80896860 end:0x808968A0
+	.bss        start:0x8098CD50 end:0x8098CD88
 
-rb3/Rnd/rndlightanim.cpp:
+system/rndobj/Line.cpp:
+	.text       start:0x805F1C60 end:0x805F5224
+
+system/rndobj/Lit.cpp:
+	.text       start:0x805F5224 end:0x805F68BC
+	.data       start:0x80896A60 end:0x80896BA8
+	.sbss       start:0x808E4C38 end:0x808E4C40
+
+system/rndobj/LitAnim.cpp:
 	.text       start:0x805F68BC end:0x805F7990
 
-rb3/Rnd/rndmesh.cpp:
-	.text       start:0x805FCEC8 end:0x80606C98
+system/rndobj/Mat.cpp:
+	.text       start:0x805F7990 end:0x805FA1D4
+	.data       start:0x80896D98 end:0x80896ED8
+	.sbss       start:0x808E4C48 end:0x808E4C68
+
+system/rndobj/MatAnim.cpp:
+	.text       start:0x805FA1D4 end:0x805FCEC0
+	.data       start:0x80896ED8 end:0x80897080
+	.sbss       start:0x808E4C68 end:0x808E4C70
+	.bss        start:0x8098CEE8 end:0x8098CEF0
+
+system/rndobj/Mesh.cpp:
+	.text       start:0x805FCEC0 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
-rb3/Rnd/rndmeshanim.cpp:
-	.text       start:0x80606C98 end:0x8060DD84
+system/rndobj/MeshAnim.cpp:
+	.text       start:0x80606C98 end:0x8060DD24
 
-rb3/Rnd/rndmotionblur.cpp:
+system/rndobj/MeshDeform.cpp:
+	.text       start:0x8060DD24 end:0x80610528
+
+system/rndobj/Morph.cpp:
+	.text       start:0x80610528 end:0x80613A80
+
+system/rndobj/MotionBlur.cpp:
 	.text       start:0x80613A80 end:0x806143BC
+	.data       start:0x808976C0 end:0x808977F0
+	.sbss       start:0x808E4C98 end:0x808E4CA0
 
-rb3/Rnd/rndmovie.cpp:
+system/rndobj/Movie.cpp:
 	.text       start:0x806143BC end:0x80614E30
+	.data       start:0x808977F0 end:0x808978F8
+	.sbss       start:0x808E4CA0 end:0x808E4CA8
 
-rb3/Rnd/rndmultimesh.cpp:
+system/rndobj/MultiMesh.cpp:
 	.text       start:0x80614E30 end:0x8061740C
 	.ctors      start:0x807EFFF4 end:0x807EFFF8
 
-rb3/Rnd/rndmultimeshproxy.cpp:
+system/rndobj/MultiMeshProxy.cpp:
 	.text       start:0x8061740C end:0x806179C4
+	.data       start:0x80897A68 end:0x80897B88
 
-rb3/Rnd/rndoverlay.cpp:
+system/rndobj/Overlay.cpp:
 	.text       start:0x806179C4 end:0x80618780
 	.ctors      start:0x807EFFF8 end:0x807EFFFC
 
-rb3/Rnd/rndparticlesys.cpp:
+system/rndobj/Part.cpp:
 	.text       start:0x80618780 end:0x80620524
 	.ctors      start:0x807EFFFC end:0x807F0000
 
-rb3/Rnd/rndparticlesysanim.cpp:
+system/rndobj/PartAnim.cpp:
 	.text       start:0x80620524 end:0x80621C44
 
-rb3/Rnd/rndpartlauncher.cpp:
+system/rndobj/PartLauncher.cpp:
 	.text       start:0x80621C44 end:0x806236B0
 
-rb3/Rnd/rnd.cpp:
-	.text       start:0x80637BD0 end:0x8063DD48
+system/rndobj/Poll.cpp:
+	.text       start:0x806236B0 end:0x806238C0
+	.data       start:0x80898148 end:0x808981D8
+	.sbss       start:0x808E4CD0 end:0x808E4CD8
+	.bss        start:0x8098D130 end:0x8098D138
 
-rb3/Rnd/rndscreenmask.cpp:
+system/rndobj/PollAnim.cpp:
+	.text       start:0x806238C0 end:0x80624574
+
+system/rndobj/PostProc.cpp:
+	.text       start:0x80624574 end:0x806273E0
+	.ctors      start:0x807F0000 end:0x807F0004
+
+system/rndobj/PropKeys.cpp:
+	.text       start:0x806273E0 end:0x806319D0
+	.ctors      start:0x807F0004 end:0x807F0008
+
+system/rndobj/PropAnim.cpp:
+	.text       start:0x806319D0 end:0x8063765C
+	.ctors      start:0x807F0008 end:0x807F000C
+
+system/rndobj/Rnd.cpp:
+	.text       start:0x8063765C end:0x8063DD48
+
+system/rndobj/ScreenMask.cpp:
 	.text       start:0x8063DD48 end:0x8063E82C
 
-rb3/Rnd/rndset.cpp:
+system/rndobj/Set.cpp:
 	.text       start:0x8063E82C end:0x8063F1B0
 
-rb3/Rnd/shaderoptions.cpp:
+system/rndobj/ShaderOptions.cpp:
 	.text       start:0x8063F1B0 end:0x8063F464
 	.ctors      start:0x807F000C end:0x807F0010
 	.data       start:0x80899360 end:0x80899860
 	.bss        start:0x8098D4F8 end:0x8098D560
 
-rb3/Rnd/rndtex.cpp:
+system/rndobj/ShadowMap.cpp:
+	.text       start:0x8063F464 end:0x8063F490
+
+system/rndobj/SIVideo.cpp:
+	.text       start:0x8063F490 end:0x8063F6C4
+
+system/rndobj/Tex.cpp:
 	.text       start:0x8063F6C4 end:0x806412A8
 	.data       start:0x80899860 end:0x80899B30
 
-rb3/Rnd/rndtexblendcontroller.cpp:
+system/rndobj/TexBlendController.cpp:
 	.text       start:0x806412A8 end:0x80641BB8
+	.data       start:0x80899B30 end:0x80899BA0
+	.sbss       start:0x808E4D20 end:0x808E4D28
 
-rb3/Rnd/rndtexblender.cpp:
+system/rndobj/TexBlender.cpp:
 	.text       start:0x80641BB8 end:0x80642F64
+	.data       start:0x80899BA0 end:0x80899CE0
+	.sbss       start:0x808E4D28 end:0x808E4D30
 
-rb3/Rnd/rndtexrenderer.cpp:
+system/rndobj/TexRenderer.cpp:
 	.text       start:0x80642F64 end:0x80644F3C
 
-rb3/Rnd/rndtext.cpp:
+system/rndobj/Text.cpp:
 	.text       start:0x80644F3C end:0x8064D808
 	.ctors      start:0x807F0010 end:0x807F0014
 
-rb3/Rnd/rndtransformable.cpp:
+system/rndobj/Trans.cpp:
 	.text       start:0x8064D808 end:0x806513DC
 	.ctors      start:0x807F0014 end:0x807F0018
+	.bss        start:0x8098D6C8 end:0x8098D6D8
 
-rb3/Rnd/rndtransproxy.cpp:
+system/rndobj/TransProxy.cpp:
 	.text       start:0x806513DC end:0x80651D08
+	.data       start:0x8089A658 end:0x8089A718
+	.sbss       start:0x808E4D48 end:0x808E4D50
 
-rb3/Rnd/rndcubetex.cpp:
+system/rndobj/TransAnim.cpp:
+	.text       start:0x80651D08 end:0x806543C4
+
+system/rndobj/Utl.cpp:
+	.text       start:0x806543C4 end:0x8065ABF8
+	.ctors      start:0x807F0018 end:0x807F001C
+
+system/rndobj/Wind.cpp:
+	.text       start:0x8065ABF8 end:0x8065BB84
+	.ctors      start:0x807F001C end:0x807F0020
+	.data       start:0x8089A9E0 end:0x8089AAA8
+	.sbss       start:0x808E4D50 end:0x808E4D58
+
+system/rndobj/SoftParticles.cpp:
+	.text       start:0x8065BB84 end:0x8065C18C
+	.data       start:0x8089AAA8 end:0x8089ABC8
+	.sbss       start:0x808E4D58 end:0x808E4D60
+
+system/rndobj/CubeTex.cpp:
 	.text       start:0x8065C18C end:0x8065D8E4
 	.data       start:0x8089ABC8 end:0x8089AC68
 
-rb3/Rnd/rndfur.cpp:
+system/rndobj/Fur.cpp:
 	.text       start:0x8065D8E4 end:0x8065DD84
 	.data       start:0x8089AC68 end:0x8089ACF8
+	.sbss       start:0x808E4D68 end:0x808E4D70
 
-rb3/Rnd/rndambientocclusion.cpp:
+system/rndobj/AmbientOcclusion.cpp:
 	.text       start:0x8065DD84 end:0x8065E1A4
 	.data       start:0x8089ACF8 end:0x8089AD98
+	.sbss       start:0x808E4D70 end:0x808E4D78
 
 rb3/unknown/806/unk_80660D18.cpp:
 	.text       start:0x80660D18 end:0x80668D18
@@ -1355,7 +1757,7 @@ libs/speex/libspeex/vbr.c:
 libs/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
-rb3/Rnd/wii/wiirnd.cpp:
+system/rndwii/Rnd.cpp:
 	.text       start:0x806B8438 end:0x806BDD84
 	.ctors      start:0x807F0040 end:0x807F0044
 	.sbss       start:0x808E4E70 end:0x808E4E74
@@ -1464,8 +1866,17 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-sdk/Dolphin/pad/pad.c:
+sdk/RVL_SDK/revolution/os/OSSemaphore.c:
+	.text       start:0x8076B2A0 end:0x8076B3D0
+
+sdk/RVL_SDK/revolution/pad/Pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540
 
-sdk/Dolphin/rso/RSOLink.c:
+sdk/RVL_SDK/revolution/rso/RSOLink.c:
 	.text       start:0x8076F540 end:0x807713F0
+
+sdk/RVL_SDK/revolution/sc/scsystem.c:
+	.text       start:0x807713F0 end:0x80772E80
+	.data       start:0x808D2AF8 end:0x808D2CF0
+	.sdata      start:0x808E35F8 end:0x808E3708
+	.bss        start:0x809ECC20 end:0x809F4DC0

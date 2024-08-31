@@ -110,7 +110,9 @@ namespace Hmx {
 
         template <class T> static T* New(){
             T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
+        #ifdef VERSION_SZBE69_B8
             if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
+        #endif
             return obj;
         }
 
@@ -133,7 +135,7 @@ namespace Hmx {
         Object& operator=(const Object&);
         void RemoveFromDir();
 
-        DataNode *Property(DataArray *, bool) const;
+        DataNode* Property(DataArray *, bool) const;
         DataNode* Property(Symbol, bool) const;
         void SetProperty(DataArray *, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
@@ -181,15 +183,15 @@ inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     return ts;
 }
 
-inline unsigned short getHmxRev(int packed){
+RETAIL_DONT_INLINE_FUNC unsigned short getHmxRev(int packed){
     return packed;
 }
 
-inline unsigned short getAltRev(int packed){
+RETAIL_DONT_INLINE_FUNC unsigned short getAltRev(int packed){
     return (unsigned int)packed >> 0x10;
 }
 
-inline int packRevs(unsigned short alt, unsigned short rev){
+RETAIL_DONT_INLINE_FUNC int packRevs(unsigned short alt, unsigned short rev){
     return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
 

@@ -14,6 +14,7 @@ public:
     void UpdateFromCamera();
     void SetParentDof(bool, bool, bool);
     void Poll();
+    void SetPadNum(int p){ mPadNum = p; }
 
     RndTransformable* mParent; // 0x1c
     Vector3 mRot; // 0x20
@@ -23,7 +24,7 @@ public:
     int mPadNum; // 0x64
     float mRotateRate; // 0x68
     float mSlewRate; // 0x6c
-    int mFocalPlane; // 0x70
+    float mFocalPlane; // 0x70
     bool mUseParentRotateX; // 0x74
     bool mUseParentRotateY; // 0x75
     bool mUseParentRotateZ; // 0x76

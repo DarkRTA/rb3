@@ -51,6 +51,7 @@ public:
     void SetClipType(Symbol);
     bool Starved();
     void SetStarved(Symbol);
+    ObjectDir* ClipDir() const { return mClips; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

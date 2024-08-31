@@ -8,7 +8,9 @@
 #include "system/obj/Object.h"
 #include "AssetTypes.h"
 #include "Asset.h"
-#include "band3/game/BandUser.h" 
+#include "band3/game/BandUser.h"
+
+class BandCharDesc;
 
 class AssetMgr : public Hmx::Object {
     AssetMgr();
@@ -31,7 +33,6 @@ public:
 
 public:  
     std::map<Symbol, Asset*> mAssets;  
-    std::map<String, String> mPadding;
 };
 
 static AssetMgr* TheAssetMgr;

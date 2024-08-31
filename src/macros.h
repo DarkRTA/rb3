@@ -1,6 +1,8 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+#include "compiler_macros.h"
+
 // Useful macros
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
@@ -21,16 +23,9 @@
 
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
-#ifndef __MWERKS__
-#define __option(x)
-#define __declspec(x)
-#define __attribute__(x)
-#endif
+#define	null	0
 
-#define ALIGN(x) __attribute__((aligned(x)))
-#define DONT_INLINE __attribute__((never_inline))
-
-#define DECL_SECTION(x) __declspec(section x)
-#define DECL_WEAK __declspec(weak)
+#define RELEASE(x)		{ delete x;		x = null; }
+#define RELEASEARRAY(x)	{ delete[] (ubyte*)x;	x = null; }
 
 #endif

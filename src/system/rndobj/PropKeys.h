@@ -108,6 +108,7 @@ public:
     void ReSort();
     void SetInterpHandler(Symbol);
     void Print();
+    void ResetLastKeyFrameIndex(){ mLastKeyFrameIndex = -2; }
     Symbol InterpHandler() const { return mInterpHandler; }
     static unsigned int PropExceptionID(Hmx::Object*, DataArray*);
 

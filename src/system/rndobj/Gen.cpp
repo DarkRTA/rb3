@@ -66,9 +66,7 @@ SAVE_OBJ(RndGenerator, 98)
 BEGIN_LOADS(RndGenerator)
     int rev;
     bs >> rev;
-    if ((rev > GENERATOR_REV)) {
-        TheDebugFailer << MakeString("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, GENERATOR_REV);
-    };
+    ASSERT_GLOBAL_REV(rev, GENERATOR_REV);
     if (rev > 9) Hmx::Object::Load(bs);
     if (rev > 1) {
         RndTransformable::Load(bs);
@@ -205,27 +203,27 @@ END_HANDLERS
 
 DataNode RndGenerator::OnSetPath(const DataArray* da) {
     SetPath(da->Obj<RndTransAnim>(2), -1, -1);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndGenerator::OnSetRateVar(const DataArray* da) {
     SetRateVar(da->Float(2), da->Float(3));
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndGenerator::OnSetScaleVar(const DataArray* da) {
     SetScaleVar(da->Float(2), da->Float(3));
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndGenerator::OnSetPathVar(const DataArray* da) {
     SetPathVar(da->Float(2), da->Float(3), da->Float(4));
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndGenerator::OnGenerate(const DataArray* da) {
-    Generate(mFrame);
-    return DataNode();
+    Generate(GetFrame());
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(RndGenerator)

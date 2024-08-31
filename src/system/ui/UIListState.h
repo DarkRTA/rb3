@@ -48,6 +48,9 @@ public:
     int CurrentScroll() const;
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
+    int NumDisplay() const { return mNumDisplay; }
+    int FirstShowing() const { return mFirstShowing; }
+    int GridSpan() const { return mGridSpan; }
 
     bool mCircular; // 0x0
     int mNumDisplay; // 0x4

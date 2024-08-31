@@ -30,13 +30,13 @@ bool RndTexBlendController::GetCurrentDistance(float& dist) const {
 
 void RndTexBlendController::UpdateReferenceDistance(){
     GetCurrentDistance(mReferenceDistance);
-    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+    mMinDistance = Min(mMinDistance, mReferenceDistance);
     mMaxDistance = Max(mMaxDistance, mReferenceDistance);
 }
 
 void RndTexBlendController::UpdateMinDistance(){
     GetCurrentDistance(mMinDistance);
-    mMinDistance = Minimum(mMinDistance, mReferenceDistance);
+    mMinDistance = Min(mMinDistance, mReferenceDistance);
 }
 
 void RndTexBlendController::UpdateMaxDistance(){
@@ -76,7 +76,13 @@ void RndTexBlendController::Load(BinStream& bs){
     bs >> mMesh;
     bs >> mObject1;
     bs >> mObject2;
+#ifdef VERSION_SZBE69_B8
     bs >> mReferenceDistance >> mMinDistance >> mMaxDistance;
+#else
+    bs >> mReferenceDistance;
+    bs >> mMinDistance;
+    bs >> mMaxDistance;
+#endif
     if(gRev > 1) bs >> mTex;
 }
 

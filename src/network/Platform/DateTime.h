@@ -1,6 +1,5 @@
 #ifndef PLATFORM_DATETIME_H
 #define PLATFORM_DATETIME_H
-// #include "Platform/RootObject.h"
 
 namespace Quazal {
     class DateTime {
@@ -18,7 +17,8 @@ namespace Quazal {
         unsigned int GetMinute() const;
         unsigned int GetSecond() const;
 
-        static DateTime Never;
+        static DateTime* Never;
+        static void GetSystemTime(Quazal::DateTime&);
 
         unsigned long long m_ui64Value;
     };

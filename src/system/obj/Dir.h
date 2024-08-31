@@ -226,6 +226,7 @@ public:
     DirLoader* Loader() const { return mLoader; }
     Hmx::Object* CurCam(){ return mCurCam; }
     bool IsSubDir() const { return mIsSubDir; }
+    const char* GetPathName() const { return mPathName; }
 
     DataNode OnFind(DataArray*);
 
@@ -284,7 +285,7 @@ public:
     ObjDirItr(ObjectDir* dir, bool b) : mDir(b ? dir : 0), mSubDir(dir), mWhich(0) {
         if(dir){
             // https://decomp.me/scratch/GNNj2 - KeylessHash::FirstFromStart?
-            mEntry = dir->mHashTable.FirstFromStart();
+            mEntry = dir->mHashTable.Begin();
             Advance();
         }
         else {
@@ -297,7 +298,7 @@ public:
     ObjDirItr& operator++(){
         if(mEntry){
             // https://decomp.me/scratch/oVgXk - KeylessHash::FirstFromNext?
-            mEntry = mSubDir->mHashTable.FirstFromNext(mEntry);
+            mEntry = mSubDir->mHashTable.Next(mEntry);
             Advance();
         }
         return *this;
@@ -311,13 +312,13 @@ public:
         while(mEntry){
             mObj = dynamic_cast<T*>(mEntry->obj);
             if(mObj) return;
-            mEntry = mSubDir->mHashTable.FirstFromNext(mEntry);
+            mEntry = mSubDir->mHashTable.Next(mEntry);
         }
         if(mDir){
             int nextwhich = ++mWhich;
             mSubDir = mDir->NextSubDir(nextwhich);
             if(mSubDir){
-                mEntry = mSubDir->mHashTable.FirstFromStart();
+                mEntry = mSubDir->mHashTable.Begin();
                 Advance();
                 return;
             }

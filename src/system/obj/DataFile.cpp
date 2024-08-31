@@ -1,11 +1,16 @@
 #include "DataFile.h"
+#include "macros.h"
 #include "obj/Data.h"
 #include "obj/DataFlex.h"
 #include "os/CritSec.h"
 #include "os/Debug.h"
 #include "os/File.h"
+#include "os/ThreadCall.h"
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
+#include "utl/ChunkStream.h"
+#include "utl/Compress.h"
+#include "utl/Loader.h"
 #include "utl/MemMgr.h"
 #include "utl/TextFileStream.h"
 #include "obj/DataUtl.h"
@@ -341,15 +346,113 @@ DataArray* DataReadStream(BinStream* bs) {
     gBinStream = bs;
     gFile = Symbol(gBinStream->Name());
     gDataLine = 1;
+    gOpenArray = NULL;
     int old_cond_size = gConditional.size();
     DataArray* ret = ParseArray();
 
-    if (gConditional.size() != old_cond_size) MILO_FAIL("DataReadFile: conditional block not closed (file %s (%s:%d)", gFile);
+    if (gConditional.size() != old_cond_size) MILO_FAIL("DataReadFile: conditional block not closed (file %s (%s:%d)", gFile, "", gDataLine);
     return ret;
 }
 
-DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18("") {
+DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18(""), unk24(NULL), 
+    fileobj(NULL), filesize(0), unk30(0), unk34(b), unk38(0) {
+    const char* new_str = fp.c_str();
+    if (!fp.contains("dlc/")) {
+        if (fp.contains("nand/")) {
+            unk34 = false;
+        }
+        new_str = CachedDataFile(new_str, unk34);
+    }
+    unk18 = new_str;
+    ptmf = NULL;
+}
 
+void DataLoader::OpenFile() {
+    if ((fileobj = NewFile(unk18.c_str(), 2)) && !fileobj->Fail()) {
+        unk30 = _MemAlloc((filesize = fileobj->Size()), 0);
+        fileobj->ReadAsync(unk30, filesize);
+        ptmf = LoadFile;
+    } else {
+        if (*unk18.c_str()) MILO_WARN("Could not load: %s", FileLocalize(mFile.c_str(), NULL));
+        ptmf = DoneLoading;
+    }
+}
+
+void DataLoader::LoadFile() {
+    if (unk38 != 0) {
+        Timer::Sleep(0);
+        ThreadCallPoll();
+    } else {
+        int x;
+        if (fileobj->ReadDone(x)) {
+            if (fileobj->Fail()) {
+                ThreadDone(NULL);
+                return;
+            }
+        unk38 = new DataLoaderThreadObj(this, NULL, fileobj, filesize, unk18.c_str(), unk30, unk34);
+        ThreadCall(unk38);
+        }
+    }
+}
+
+void DataLoader::DoneLoading() { }
+
+DataLoader::~DataLoader() {
+    if (unk38) TheLoadMgr.PollUntilLoaded(this, NULL);
+    if (!IsLoaded()) {
+        delete fileobj;
+        _MemFree(unk30);
+    } else if (unk24) unk24->Release();
+}
+
+DataArray* DataLoader::Data() {
+    MILO_ASSERT(IsLoaded(), 981);
+    return unk24;
+}
+
+bool DataLoader::IsLoaded() const {
+    return ptmf == DoneLoading;
+}
+
+void DataLoader::ThreadDone(DataArray* da) {
+    MILO_ASSERT(MainThread(), 1001);
+    unk24 = da;
+    delete unk38;
+    unk38 = NULL;
+    if (unk30) {
+        _MemFree(unk30);
+        unk30 = NULL;
+    }
+    delete fileobj;
+    fileobj = NULL;
+    ptmf = DoneLoading;
+}
+
+union __bastard {
+    int big;
+    struct {
+        u8 s1, s2, s3, s4;
+    };
+};
+
+void* LoadDtz(const char* c, int i) {
+    char* cc = const_cast<char*>(c + i);
+    __bastard evil; evil.big = 0;
+    evil.s1 = cc[-1];
+    evil.s2 = cc[-2];
+    evil.s3 = cc[-3];
+    evil.s4 = cc[-4];
+    int decompSize = evil.big;
+    MILO_ASSERT(decompSize > 0, 1176);    
+    void* pDecompBuf = _MemAlloc(decompSize, 0);  
+    MILO_ASSERT(pDecompBuf, 1190);  
+    DecompressMem(c, i - 4, pDecompBuf, decompSize, false, NULL);
+    BufStream bfs(pDecompBuf, decompSize, true);
+    DataArray* da = NULL;
+    bfs >> da;
+    if (pDecompBuf) _MemFree(pDecompBuf);
+    pDecompBuf = (void*)da;
+    return pDecompBuf;
 }
 
 void DataWriteFile(const char* c, const DataArray* da, int i) {

@@ -1,6 +1,7 @@
 #ifndef PLATFORM_OUTPUTFORMAT_H
 #define PLATFORM_OUTPUTFORMAT_H
 #include "Platform/RootObject.h"
+#include <stdarg.h>
 
 namespace Quazal {
     class OutputFormat : public RootObject {
@@ -12,7 +13,7 @@ namespace Quazal {
         virtual void AddPrefixes(char*, unsigned int);
         virtual void EndPrefixes(char*, unsigned int);
         virtual void AddIndent(char*, unsigned int);
-        virtual int AddMessage(char*, unsigned int, const char*, ...); // that last input param should be a __va_list_struct*
+        virtual int AddMessage(char*, unsigned int, const char*, va_list);
         virtual void EndString(char*, unsigned int);
 
         unsigned int m_uiIndent;

@@ -230,7 +230,7 @@ void DataArray::InsertNodes(int count, const DataArray *da) {
 void DataArray::Resize(int i) {
     DataNode *oldNodes = mNodes;
     mNodes = (DataNode*)NodesAlloc(i * sizeof(DataNode));
-    int min = Minimum<int>(mSize, i);
+    int min = Min<int>(mSize, i);
     int cnt = 0;
     for (cnt = 0; cnt < min; cnt++) {
         new (&mNodes[cnt]) DataNode(oldNodes[cnt]);

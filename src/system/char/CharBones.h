@@ -58,6 +58,12 @@ public:
     void RotateBy(CharBones&) const;
     void RotateTo(CharBones&, float) const;
     void ScaleAdd(CharBones&, float) const;
+    void Enter(){
+        Zero();
+        SetWeights(0);
+    }
+    int TotalSize() const { return mTotalSize; }
+    void ScaleDown(CharBones&, float) const;
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);

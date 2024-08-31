@@ -83,6 +83,16 @@ RndFlare::~RndFlare() {
     TheRnd->RemovePointTest(this);
 }
 
+void RndFlare::CalcScale(){
+    if(mMatrix != WorldXfm().m){
+        Vector3 v28;
+        mMatrix = WorldXfm().m;
+        float len = Length(mMatrix.z);
+        Cross(mMatrix.x, mMatrix.y, v28);
+        unk114.Set(Length(mMatrix.x), Dot(v28, mMatrix.z) > 0.0f ? len : -len);
+    }
+}
+
 void RndFlare::SetPointTest(bool b) {
     if (!b && mPointTest) TheRnd->RemovePointTest(this);
     mPointTest = b; 

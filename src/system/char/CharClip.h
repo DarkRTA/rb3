@@ -29,6 +29,7 @@ public:
         ~Transitions();
         void Clear();
         void Resize(int, const CharClip::NodeVector*);
+        void RemoveNodes(CharClip*);
         int Size() const;
 
         NodeVector* mNodeStart; // 0x0
@@ -96,6 +97,7 @@ public:
     void SetBeatAlignMode(int);
     void SetRelative(CharClip*);
     int AllocSize();
+    void EvaluateChannel(void*, const void*, float);
     void LockAndDelete(CharClip**, int, int);
     float StartBeat() const { return mBeatTrack.front().value; }
     float EndBeat() const { return mBeatTrack.back().value; }
@@ -104,6 +106,7 @@ public:
         return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
     }
     char* GetChannel(Symbol);
+    int PlayFlags() const { return mPlayFlags; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

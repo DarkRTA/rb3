@@ -24,7 +24,7 @@ SAVE_OBJ(UITrigger, 0x2A)
 BEGIN_LOADS(UITrigger)
     LOAD_REVS(bs)
     ASSERT_REVS(1, 0)
-    if(gRev >= 1){
+    if(gRev < 1){
         UIComponent* uiCom = Hmx::Object::New<UIComponent>();
         uiCom->Load(bs);
         delete uiCom;
@@ -36,7 +36,10 @@ BEGIN_LOADS(UITrigger)
         RegisterEvents();
         ObjPtr<RndAnimatable, ObjectDir> animPtr(this, 0);
         bs >> animPtr;
-        mAnims.push_back(EventTrigger::Anim(this));
+        mAnims.clear();
+        mAnims.alloc_back();
+        EventTrigger::Anim& anim = mAnims.back();
+        anim.mAnim = animPtr;
     }
     else LOAD_SUPERCLASS(EventTrigger);
     bs >> mBlockTransition;
@@ -48,16 +51,10 @@ void UITrigger::Enter(){
 }
 
 bool UITrigger::IsBlocking() const {
-    if(TheTaskMgr.UISeconds() < mStartTime){
+    if(mStartTime > TheTaskMgr.UISeconds()){
         const_cast<UITrigger*>(this)->mEndTime = 0.0f;
     }
-    bool ret = false;
-    bool b = false;
-    if(mBlockTransition && mEndTime != 0.0f) b = true;
-    if(b){
-        if(TheTaskMgr.UISeconds() < mEndTime) ret = true;
-    }
-    return ret;
+    return mBlockTransition && mEndTime && !IsDone();
 }
 
 void UITrigger::StopAnimations(){
@@ -74,7 +71,7 @@ DataArray* UITrigger::SupportedEvents(){
 
 void UITrigger::Poll(){
     if(!unkfc){
-        if(mEndTime <= TheTaskMgr.UISeconds()){
+        if(IsDone()){
             unkfc = true;
             if(mCallbackObject){
                 mCallbackObject->Handle(UITriggerCompleteMsg(this), true);
@@ -88,7 +85,7 @@ BEGIN_HANDLERS(UITrigger)
     HANDLE_ACTION(play_start_of_anims, PlayStartOfAnims())
     HANDLE_ACTION(play_end_of_anims, PlayEndOfAnims())
     HANDLE_ACTION(stop_anims, StopAnimations())
-    HANDLE_EXPR(is_done, mEndTime <= TheTaskMgr.UISeconds())
+    HANDLE_EXPR(is_done, IsDone())
     HANDLE_EXPR(is_blocking, IsBlocking())
     HANDLE_SUPERCLASS(EventTrigger)
     HANDLE_CHECK(0x10C)

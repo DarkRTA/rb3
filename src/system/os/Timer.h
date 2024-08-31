@@ -167,9 +167,13 @@ public:
     static Timer* GetTimer(Symbol);
 };
 
+#ifdef VERSION_SZBE69_B8
 #define START_AUTO_TIMER(name) \
     static Timer* _t = AutoTimer::GetTimer(name); \
     AutoTimer t(_t, 50.0f, NULL, NULL)
+#else
+#define START_AUTO_TIMER(name) (void)0
+#endif
 
 #define TIMER_ACTION(name, action) { \
     START_AUTO_TIMER(name); \

@@ -38,8 +38,21 @@ public:
     float FarPlane() const { return mFarPlane; }
     float YFov() const { return mYFov; }
     RndTex* TargetTex(){ return mTargetTex; }
+    void SetZRange(float f1, float f2){ mZRange.Set(f1, f2); }
+    const Transform& LocalProjectXfm() const { return mLocalProjectXfm; }
+    
+    bool CompareSphereToWorld(const Sphere& s) const {
+        return s > mWorldFrustum;
+    }
+
+    void SetScreenRect(const Hmx::Rect& rect){
+        mScreenRect = rect;
+        UpdateLocal();
+    }
 
     static RndCam* sCurrent;
+    static RndCam* Current(){ return sCurrent; }
+
     NEW_OBJ(RndCam)
     DELETE_OVERLOAD;
     static void Init(){

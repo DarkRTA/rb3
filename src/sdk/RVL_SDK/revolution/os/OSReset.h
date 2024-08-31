@@ -5,16 +5,20 @@
 extern "C" {
 #endif
 
-typedef BOOL (*OSShutdownFunction)(u32 pass, u32 event);
 
-typedef enum { OS_SD_PASS_FIRST, OS_SD_PASS_SECOND } OSShutdownPass;
+typedef enum _OSShutdownPass { OS_SD_PASS_FIRST, OS_SD_PASS_SECOND } OSShutdownPass;
 
-typedef enum {
+typedef enum _OSShutdownEvent {
+    OS_SD_EVENT_FATAL = 0,
+    OS_SD_EVENT_1 = 1,
     OS_SD_EVENT_SHUTDOWN = 2,
+    OS_SD_EVENT_3 = 3,
     OS_SD_EVENT_RESTART = 4,
     OS_SD_EVENT_RETURN_TO_MENU = 5,
     OS_SD_EVENT_LAUNCH_APP = 6,
 } OSShutdownEvent;
+
+typedef BOOL (*OSShutdownFunction)(OSShutdownPass pass, OSShutdownEvent event);
 
 typedef struct OSShutdownFunctionInfo {
     OSShutdownFunction func;             // at 0x0
@@ -27,6 +31,8 @@ typedef struct OSShutdownFunctionQueue {
     OSShutdownFunctionInfo* head; // at 0x0
     OSShutdownFunctionInfo* tail; // at 0x4
 } OSShutdownFunctionQueue;
+
+extern BOOL __OSIsReturnToIdle;
 
 void OSRegisterShutdownFunction(OSShutdownFunctionInfo* info);
 BOOL __OSCallShutdownFunctions(u32 pass, u32 event);

@@ -105,7 +105,7 @@ float RndTransAnim::EndFrame() {
 }
 
 float RndTransAnim::StartFrame() {
-    return Minimum(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
+    return Min(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
 }
 
 void RndTransAnim::MakeTransform(float, Transform&, bool, float) {
@@ -160,21 +160,18 @@ END_HANDLERS
 #pragma pop
 
 DataNode RndTransAnim::OnSetTransSpline(const DataArray* da) {
-    bool x = da->Int(2);
-    mKeysOwner->mTransSpline = x;
-    return DataNode();
+    SetTransSpline(da->Int(2));
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnSetScaleSpline(const DataArray* da) {
-    bool x = da->Int(2);
-    mKeysOwner->mScaleSpline = x;
-    return DataNode();
+    SetScaleSpline(da->Int(2));
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnSetRotSlerp(const DataArray* da) {
-    bool x = da->Int(2);
-    mKeysOwner->mRotSlerp = x;
-    return DataNode();
+    SetRotSlerp(da->Int(2));
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnTrans(const DataArray*) {
@@ -182,28 +179,28 @@ DataNode RndTransAnim::OnTrans(const DataArray*) {
 }
 
 DataNode RndTransAnim::OnNumTransKeys(const DataArray*) {
-    return DataNode((int)mKeysOwner->mTransKeys.size());
+    return DataNode(TransKeys().NumKeys());
 }
 
 DataNode RndTransAnim::OnNumRotKeys(const DataArray*) {
-    return DataNode((int)mKeysOwner->mRotKeys.size());
+    return DataNode(RotKeys().NumKeys());
 }
 
 DataNode RndTransAnim::OnNumScaleKeys(const DataArray*) {
-    return DataNode((int)mKeysOwner->mScaleKeys.size());
+    return DataNode(ScaleKeys().NumKeys());
 }
 
 DataNode RndTransAnim::OnAddTransKey(const DataArray* da) {
-    float frame = da->Float(5);
-    Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
-    TransKeys().Add(vec, frame, false);
+    // float frame = da->Float(5);
+    // Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
+    TransKeys().Add(Vector3(da->Float(2), da->Float(3), da->Float(4)), da->Float(5), false);
     return DataNode(0);
 }
 
 DataNode RndTransAnim::OnAddScaleKey(const DataArray* da) {
-    float frame = da->Float(5);
-    Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
-    ScaleKeys().Add(vec, frame, false);
+    // float frame = da->Float(5);
+    // Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
+    ScaleKeys().Add(Vector3(da->Float(2), da->Float(3), da->Float(4)), da->Float(5), false);
     return DataNode(0);
 }
 
@@ -218,7 +215,7 @@ DataNode RndTransAnim::OnAddRotKey(const DataArray* da) {
 
 DataNode RndTransAnim::OnSplice(const DataArray* da) {
     SpliceKeys(da->Obj<RndTransAnim>(2), this, da->Float(3), da->Float(4));
-    return DataNode();
+    return DataNode(0);
 }
 
 // fn_80653C5C
@@ -237,12 +234,12 @@ DataNode RndTransAnim::OnLinearize(const DataArray* da) {
     if (da->Size() > 7) { a = da->Float(6); b = da->Float(7); }
     else { a = b = 0; }
     LinearizeKeys(this, da->Float(2), da->Float(3) * DEG2RAD, da->Float(4), a, b);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndTransAnim::OnSetTrans(const DataArray* da) {
     SetTrans(da->Obj<RndTransformable>(2));
-    return DataNode();
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(RndTransAnim)

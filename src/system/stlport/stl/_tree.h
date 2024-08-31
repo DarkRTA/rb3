@@ -223,12 +223,12 @@ private:
 
 public:
   allocator_type get_allocator() const {
-    return _M_header;
+    return _STLP_CONVERT_ALLOCATOR(_M_header, _Tp);
   }
 
 protected:
   _Rb_tree_base(const allocator_type& __a) :
-    _M_header(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _Node), _Node_base() ) {
+    _M_header(_STLP_CONVERT_ALLOCATOR(__a, _Node), _Node_base() ) {
     _M_empty_initialize();
   }
   _Rb_tree_base(__move_source<_Self> src) :

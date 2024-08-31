@@ -90,7 +90,7 @@ void RndPartLauncher::CopyPropsFromPart(){
             mPartOverride->yaw = mPart->mYaw;
         }
         if(!(mPartOverride->mask & 0x100)){
-            mPartOverride->mesh = mPart->mMesh;
+            mPartOverride->mesh = mPart->GetMesh();
         }
         if(!(mPartOverride->mask & 0x200)){
             mPartOverride->box.mMin = mPart->mBoxExtent1;
@@ -188,7 +188,7 @@ BEGIN_PROPSYNCS(RndPartLauncher)
     SYNC_PROP(trans, mTrans)
     SYNC_PROP(num_parts, mNumParts)
     SYNC_PROP(emit_rate, mEmitRate)
-    SYNC_PROP_SET(override_life, int(mPartOverride->mask & 1), SetBit(1, _val.Int(0)))
+    SYNC_PROP_SET(override_life, CheckPartBit(0), SetBit(1, _val.Int(0)))
     SYNC_PROP(life, mPartOverride->life)
     SYNC_PROP_SET(override_speed, int(mPartOverride->mask >> 1 & 1), SetBit(2, _val.Int(0)))
     SYNC_PROP(speed, mPartOverride->speed)

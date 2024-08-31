@@ -186,7 +186,7 @@ bool PanelDir::Exiting() const {
 }
 
 UIComponent* PanelDir::FindComponent(const char* cc){
-    return dynamic_cast<UIComponent*>(FindObject(cc, false));
+    return Find<UIComponent>(cc, false);
 }
 
 void PanelDir::AddComponent(UIComponent* c){

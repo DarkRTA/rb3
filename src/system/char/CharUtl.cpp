@@ -28,7 +28,7 @@ static DataNode OnCharMergeBones(DataArray* da){
 
 bool CharUtlIsAnimatable(RndTransformable* trans){
     RndMesh* mesh = dynamic_cast<RndMesh*>(trans);
-    if(mesh && !mesh->mBones.empty()) return false;
+    if(mesh && mesh->NumBones() != 0) return false;
     if(dynamic_cast<RndCam*>(trans)) return false;
     if(dynamic_cast<CharCollide*>(trans)) return false;
     if(dynamic_cast<CharCuff*>(trans)) return false;
@@ -67,39 +67,39 @@ CharBone* GrabBone(CharBone* bone, ObjectDir* dir){
 // fn_804FB9C4
 void CharUtlMergeBones(ObjectDir* dir1, ObjectDir* dir2, int i){
     for(ObjDirItr<CharBone> it(dir1, true); it != 0; ++it){
-        if(it->mTarget){
+        if(it->Target()){
             CharBone* bone = GrabBone(it, dir2);
             if(bone){
-                if(!bone->mTarget){
-                    const char* name = it->mTarget->Name();
+                if(!bone->Target()){
+                    const char* name = it->Target()->Name();
                     CharBone* findbone = CharUtlFindBone(name, dir2);
                     if(!findbone) MILO_WARN("could not find target %s in dest, must merge", name);
-                    bone->mTarget = findbone;
+                    bone->SetTarget(findbone);
                 }
                 else {
-                    const char* name = bone->mTarget->Name();
-                    bool strsmatch = strcmp(it->mTarget->Name(), name) == 0;
-                    if(!strsmatch){
-                        MILO_WARN("%s has different targets %s v %s, must resolve", it->Name(), it->mTarget->Name(), name);
+                    if(!streq(it->Target()->Name(), bone->Target()->Name())){
+                        MILO_WARN("%s has different targets %s v %s, must resolve", it->Name(), it->Target()->Name(), bone->Target()->Name());
                     }
                 }
             }
-            if(it->mPositionContext != 0){
-                CharBone* bone = GrabBone(it, dir2);
-                if(bone) it->mPositionContext |= i;
-            }
-            if(it->mScaleContext != 0){
-                CharBone* bone = GrabBone(it, dir2);
-                if(bone) it->mScaleContext |= i;
-            }
-            if(it->mRotationContext != 0){
-                CharBone* bone = GrabBone(it, dir2);
-                if(bone->mRotation != CharBones::TYPE_END && bone->mRotation != it->mRotation){
+        }
+        if(it->PositionContext() != 0){
+            CharBone* bone = GrabBone(it, dir2);
+            if(bone) bone->SetPositionContext(bone->PositionContext() | i);
+        }
+        if(it->ScaleContext() != 0){
+            CharBone* bone = GrabBone(it, dir2);
+            if(bone) bone->SetPositionContext(bone->ScaleContext() | i);
+        }
+        if(it->RotationContext() != 0 && it->RotationType() != CharBones::TYPE_END){
+            CharBone* bone = GrabBone(it, dir2);
+            if(bone){
+                if(bone->RotationType() != CharBones::TYPE_END && bone->RotationType() != it->RotationType()){
                     MILO_WARN("bones %s have different rotations, must hand resolve", it->Name());
                 }                    
                 else {
-                    bone->mRotation = it->mRotation;
-                    bone->mRotationContext |= i;
+                    bone->SetRotationType(it->RotationType());
+                    bone->SetRotationContext(bone->RotationContext() | i);
                 }
             }
         }
@@ -128,6 +128,21 @@ void ClipPredict::SetClip(CharClip* clip){
         mPosChannel = clip->GetChannel("bone_facing.pos");
         MILO_ASSERT(mAngChannel, 0x245);
     }
+}
+
+void ClipPredict::Predict(float f1, float f2){
+    Vector3 v34;
+    float locf;
+    mClip->EvaluateChannel(&v34, mPosChannel, f1);
+    mClip->EvaluateChannel(&mLastPos, mPosChannel, f2);
+    mClip->EvaluateChannel(&locf, mAngChannel, f1);
+    mClip->EvaluateChannel(&mLastAng, mAngChannel, f2);
+    float norm = LimitAng(mAng - locf);
+    Subtract(mLastPos, v34, v34);
+    RotateAboutZ(v34, norm, v34);
+    mPos += v34;
+    float norm1 = LimitAng(mLastAng - locf);
+    mAng = LimitAng(mAng + norm1);
 }
 
 DECOMP_FORCEACTIVE(CharUtl, "tmp_bones")

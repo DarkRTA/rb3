@@ -30,11 +30,12 @@ bool Metronome::Enabled() const { return mEnabled; }
 
 void Metronome::SetVolume(int v, int steps) {
     MILO_ASSERT(v >= 0 && v <= steps, 105);
-    mFader->SetVal(20.0f * (steps - 1 / v) + (-20.0f));
+    float d = (float)v / (steps + -1);
+    mFader->SetVal(d * 20.0f + -20.0f);
 }
 
 int Metronome::GetVolume(int steps) const {
     if (mFader) {
-        return (steps * 20.0f) * mFader->mVal;
+        return (mFader->mVal - -20.0f) / 20.0f * (steps + -1);
     } else return 0;
 }

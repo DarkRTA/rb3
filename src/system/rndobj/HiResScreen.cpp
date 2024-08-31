@@ -51,6 +51,7 @@ HiResScreen::~HiResScreen(){
 }
 
 void HiResScreen::TakeShot(const char* c, int i) {
+#ifdef VERSION_SZBE69_B8
     mFileBase = c;
     mTiling = i;
     mActive = 1;
@@ -67,6 +68,7 @@ void HiResScreen::TakeShot(const char* c, int i) {
     TheRnd->SetEvenOddDisabled(true);
     TheRnd->SetShrinkToSafeArea(false);
     TheRnd->ShowConsole(false);
+#endif
 }
 
 int HiResScreen::GetPaddingX() const { return 480; }

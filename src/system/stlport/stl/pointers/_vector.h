@@ -98,7 +98,7 @@ public:
   typedef typename _Alloc_traits<value_type, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const
-  { return _M_impl.get_allocator(); }
+  { return _STLP_CONVERT_ALLOCATOR(_M_impl.get_allocator(), value_type); }
 
   iterator begin()             { return cast_traits::to_value_type_ptr(_M_impl.begin()); }
   const_iterator begin() const { return cast_traits::to_value_type_cptr(_M_impl.begin()); }
@@ -129,7 +129,7 @@ public:
 
 // #ifdef VERSION_SZBE69
   explicit vector(const allocator_type& __a = allocator_type())
-    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, allocator_type, _StorageType)) {}
+    : _M_impl(_STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 // #else
 //   explicit vector()
 //     : _M_impl(_STLP_CONVERT_ALLOCATOR(allocator_type(), allocator_type, _StorageType)) {}
@@ -141,7 +141,7 @@ public:
   explicit vector(size_type __n, const value_type& __val = value_type(),
          const allocator_type& __a = allocator_type())
     : _M_impl(__n, cast_traits::to_storage_type_cref(__val),
-      __a) {}
+      _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
   vector(const _Self& __x)
     : _M_impl(__x._M_impl) {}
@@ -153,7 +153,7 @@ public:
   vector(_InputIterator __first, _InputIterator __last,
          const allocator_type& __a = allocator_type() )
   : _M_impl(__first, __last,
-            __a) {}
+            _STLP_CONVERT_ALLOCATOR(__a, _StorageType)) {}
 
   _Self& operator=(const _Self& __x) { _M_impl = __x._M_impl; return *this; }
 

@@ -1,4 +1,5 @@
 #include "char/CharNeckTwist.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
@@ -9,8 +10,22 @@ CharNeckTwist::CharNeckTwist() : mTwist(this, 0), mHead(this, 0) {
 }
 
 void CharNeckTwist::Poll() {
-    if (mTwist || mHead) return; else {
-        
+    if(mHead && mTwist){
+        if(mTwist->TransParent()){
+            RndTransformable* parent = mTwist->TransParent();
+            Transform tf58(mHead->mLocalXfm);
+            RndTransformable* trans;
+            for(trans = mHead->TransParent(); trans && trans != parent; trans = trans->TransParent()){
+                Multiply(tf58, trans->mLocalXfm, tf58);
+            }
+            if(trans){
+                Hmx::Quat q68;
+                Vector3 v78;
+                MakeRotQuatUnitX(tf58.m.x, q68);
+                Multiply(tf58.m.y, q68, v78);
+                mTwist->DirtyLocalXfm().m.RotateAboutX(LimitAng(std::atan2(v78.z, v78.y)) * 0.5f);
+            }
+        }
     }
 }
 

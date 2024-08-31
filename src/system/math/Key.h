@@ -7,7 +7,7 @@
 // thank god for the RB2 dump
 template <class T> class Key {
 public:
-    Key() : frame(0.0f) {}
+    Key() : value(T()), frame(0.0f) {}
     Key(const T& v, float f) : value(v), frame(f) {}
     T value;
     float frame;
@@ -41,6 +41,9 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 // not sure how the second template gets incorporated yet
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
+
+    int NumKeys() const { return size(); }
+
     // used in RemoveKey
     void Remove(int idx){
         erase(begin() + idx);
@@ -58,7 +61,7 @@ public:
         else {
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
             istart = LowerBound(Max(fstart, front().frame));
-            iend = UpperBound(Minimum(fend, back().frame));
+            iend = UpperBound(Min(fend, back().frame));
         }
     }
 

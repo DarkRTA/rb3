@@ -53,19 +53,18 @@ void NewAssetProvider::UpdateExtendedText(int i, int i_iData, UILabel* label) co
             Symbol description = pAsset->GetDescription();
             label->SetTextToken(description);
         } else if (strcmp(name, "asset_progress_new.lbl") == 0) {
-            i = NumData();
-            i_iData = i_iData + 1;
+            int numData = NumData();
 
             DataNode node0 = customize_asset_progress;
-            DataNode node1 = i_iData;
-            DataNode node2 = i; 
+            DataNode node1 = i_iData + 1;
+            DataNode node2 = numData; 
 
             DataArray* array = new DataArray(3);
 
-            array->Node(2) = node2;
-            array->Node(1) = node1;
             array->Node(0) = node0;
-
+            array->Node(1) = node1;
+            array->Node(2) = node2;
+            
             label->SetTokenFmt(array);
 
             array->Release();

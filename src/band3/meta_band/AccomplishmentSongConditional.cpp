@@ -5,7 +5,7 @@ AccomplishmentSongConditional::AccomplishmentSongConditional(DataArray* i_pConfi
 }
 
 AccomplishmentSongConditional::~AccomplishmentSongConditional() {
-    
+
 }
 
 void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr* songManager, Symbol, const AccomplishmentCondition&) const {
@@ -13,7 +13,7 @@ void AccomplishmentSongConditional::CheckStarsCondition(SongStatusMgr* songManag
 }
 
 void AccomplishmentSongConditional::CheckScoreCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {
-    
+
 }
 
 void AccomplishmentSongConditional::CheckAccuracyCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const {

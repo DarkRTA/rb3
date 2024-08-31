@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "macros.h"
 
 	typedef char			sbyte;
 	typedef unsigned char		ubyte;
@@ -14,10 +15,6 @@
 	typedef long long		sqword;
 	typedef unsigned long long	uqword;
 	typedef float				sfloat;
-
-	#define	null	0
-	#define RELEASE(x)		{ delete x;		x = null; }
-	#define RELEASEARRAY(x)	{ delete[] (ubyte*)x;	x = null; }
 
 	inline void ZeroMemory(void* addr, udword size)
 	{

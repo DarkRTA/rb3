@@ -2,6 +2,7 @@
 #include "char/CharCollide.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Wind.h"
+#include "rndobj/PostProc.h"
 #include "char/Character.h"
 #include "math/MathFuncs.h"
 #include "math/Rot.h"
@@ -63,6 +64,27 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
 }
 #pragma pop
 
+void CharHair::SetCloth(bool b){
+    for(int i = 0; i < mStrands.size(); i++){
+        Strand& strand = mStrands[i];
+        int mod = Mod(i + 1, mStrands.size());
+        Strand& modidx = mStrands[mod];
+        for(int j = 0; j < strand.mPoints.size(); j++){
+            Point& point = strand.mPoints[j];
+            bool b1 = false;
+            if(b && j < modidx.mPoints.size()) b1 = true;
+            point.sideLength = b1 ? Distance(point.pos, modidx.mPoints[j].pos) : -1.0f;
+        }
+    }
+}
+
+void CharHair::Strand::SetAngle(float angle){
+    mAngle = angle;
+    Hmx::Matrix3 m38;
+    m38.RotateAboutX(mAngle * DEG2RAD);
+    Multiply(m38, mBaseMat, mRootMat);
+}
+
 CharHair::CharHair() : mStiffness(0.04f), mTorsion(0.1f), mInertia(0.7f), mGravity(1.0f), mWeight(0.5f), mFriction(0.3f), mMinSlack(0.0f), mMaxSlack(0.0f),
     mStrands(this), mReset(1), mSimulate(1), mUsePostProc(1), mMe(this, 0), mWind(this, 0), mCollide(this, kObjListNoNull), unk6c(0) {
 
@@ -82,6 +104,65 @@ void CharHair::Enter(){
     Hookup();
 }
 
+void CharHair::FreezePoseRaw(){
+    for(int i = 0; i < mStrands.size(); i++){
+        Strand& strand = mStrands[i];
+        if(strand.Root() && strand.Root()->TransParent()){
+            ObjVector<Point>& pts = strand.mPoints;
+            Transform tf48(strand.Root()->TransParent()->WorldXfm());
+            Invert(tf48, tf48);
+            for(int j = 0; j < pts.size(); j++){
+                pts[j];
+                Multiply(pts[j].pos, tf48, pts[j].unk5c);
+            }
+        }
+    }
+}
+
+void CharHair::FreezePose(){
+    bool tmpsim = mSimulate;
+    Hookup();
+    SimulateLoops(200, 60.0f);
+    mSimulate = tmpsim;
+    FreezePoseRaw();
+}
+
+// https://decomp.me/scratch/zTOLT (retail scratch)
+void CharHair::DoReset(int reset){
+    for(int i = 0; i < mStrands.size(); i++){
+        Strand& strand = mStrands[i];
+        if(strand.Root() && strand.Root()->TransParent()){
+            ObjVector<Point>& pts = strand.mPoints;
+            Transform tf70(strand.Root()->TransParent()->WorldXfm());
+            Vector3 v80(strand.Root()->WorldXfm().v);
+            Vector3 v8c(strand.Root()->WorldXfm().m.x);
+            for(int j = 0; j < pts.size(); j++){
+                Point& pt = pts[j];
+                Multiply(pt.unk5c, tf70, pt.pos);
+                Vector3 v98;
+                Subtract(pt.pos, v80, v98);
+                v80 = pt.pos;
+                Cross(v8c, v98, pt.lastZ);
+                Normalize(pt.lastZ, pt.lastZ);
+                Cross(v98, pt.lastZ, v8c);
+                pt.force.Zero();
+                pt.lastFriction.Zero();
+            }
+        }
+    }
+    bool tmpsim = mSimulate;
+    float tmpinert = mInertia;
+    float tmpfric = mFriction;
+    mSimulate = true;
+    mInertia = 0;
+    mFriction = 0;
+    SimulateLoops(reset, GetFPS());
+    mSimulate = tmpsim;
+    mFriction = tmpfric;
+    mInertia = tmpinert;
+    mReset = 0;
+}
+
 void CharHair::SetName(const char* cc, ObjectDir* dir){
     Hmx::Object::SetName(cc, dir);
     mMe = dynamic_cast<Character*>(dir);
@@ -89,6 +170,69 @@ void CharHair::SetName(const char* cc, ObjectDir* dir){
     if(mMe || dynamic_cast<WorldDir*>(dir)) pp = true;
     mUsePostProc = pp;
 }
+
+void CharHair::Poll(){
+    if(mMe){
+        if(mMe->GetPollState() == Character::kCharSyncObject) Hookup();
+        if(mMe->Teleported()) mReset = 1;
+        if(mMe->MinLod() > 0){
+            DoReset(0);
+            return;
+        }
+    }
+    if(mReset > 0) DoReset(mReset);
+    if(TheTaskMgr.DeltaSeconds() != 0.0f){
+        SimulateLoops(1, GetFPS());
+    }
+    else SimulateZeroTime();
+}
+
+float CharHair::GetFPS(){
+    if(mUsePostProc && RndPostProc::Current() && RndPostProc::Current()->EmulateFPS() > 0){
+        float ret = RndPostProc::Current()->EmulateFPS();
+        if(ret != 60.0f) ret = 60.0f - ret;
+        return ret;
+    }
+    else return 60.0f;
+}
+
+void CharHair::SimulateLoops(int count, float f){
+    if(mSimulate && mStrands.size() != 0){
+        for(ObjPtrList<CharCollide, ObjectDir>::iterator it = mCollide.begin(); it != mCollide.end(); ++it){
+            // mystery inlined CharCollide method
+        }
+        for(int n = 0; n < count; n++){
+            SimulateInternal(f);
+        }
+    }
+}
+
+// void __thiscall CharHair::SimulateLoops(CharHair *this,int param_1,float param_2)
+
+// {
+//   int iVar1;
+//   undefined4 local_28;
+//   undefined4 local_24;
+//   Symbol aSStack_20 [12];
+  
+//   if ((this[0x40] != (CharHair)0x0) &&
+//      (iVar1 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x30)), iVar1 != 0)) {
+//     local_24 = ObjPtrList<>::begin((ObjPtrList<> *)(this + 0x5c));
+//     Symbol::Symbol(aSStack_20,(Symbol *)&local_24);
+//     while( true ) {
+//       local_28 = fn_803D0224(this + 0x5c);
+//       iVar1 = ObjPtrList<>::iterator::operator_!=((iterator *)aSStack_20,&local_28);
+//       if (iVar1 == 0) break;
+//       ObjPtrList<>::iterator::operator*((iterator *)aSStack_20);
+//       fn_804D64EC();
+//       ObjPtrList<>::iterator::operator_++((iterator *)aSStack_20);
+//     }
+//     for (iVar1 = 0; iVar1 < param_1; iVar1 = iVar1 + 1) {
+//       fn_804D6590((double)param_2,this);
+//     }
+//   }
+//   return;
+// }
 
 #pragma push
 #pragma dont_inline on
@@ -291,9 +435,7 @@ BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
         }
     }
     if(CharHair::gRev > 9){
-        bs >> pt.collide;
-        bs >> pt.unk60;
-        bs >> pt.unk64;
+        bs >> pt.unk5c;
     }
     pt.collides.clear();
     pt.force.Zero();

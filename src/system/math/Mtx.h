@@ -1,6 +1,7 @@
 #ifndef MATH_MTX_H
 #define MATH_MTX_H
 #include "math/Vec.h"
+#include "math/Trig.h"
 #include "obj/Data.h"
 #include "utl/BinStream.h"
 #include "decomp.h"
@@ -32,12 +33,32 @@ namespace Hmx {
         void Set(const Vector3& v1, const Vector3& v2, const Vector3& v3){
             x = v1; y = v2; z = v3;
         }
-        void Identity(){
+        void Zero(){
+            x.Zero();
+            y.Zero();
+            z.Zero();
+        }
+        void RotateAboutZ(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f);
+        }
+        void RotateAboutY(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(c, 0.0f, -s, 0.0f, 1.0f, 0.0f, s, 0.0f, c);
+        }
+        void RotateAboutX(float angle){
+            float c = Cosine(angle);
+            float s = Sine(angle);
+            Set(1.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, -s, c);
+        }
+        RETAIL_DONT_INLINE_CLASS void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        Matrix3& operator=(const Matrix3& mtx){
+        RETAIL_DONT_INLINE_CLASS Matrix3& operator=(const Matrix3& mtx){
             PSQ_MOVE(x.x, mtx.x.x);
             x.z = mtx.x.z;
 
@@ -54,6 +75,10 @@ namespace Hmx {
             return x == mtx.x && y == mtx.y && z == mtx.z;
         }
 
+        RETAIL_DONT_INLINE_CLASS bool operator!=(const Matrix3& mtx) const {
+            return x != mtx.x || y != mtx.y || z != mtx.z;
+        }
+
     };
 
     class Quat {
@@ -68,6 +93,13 @@ namespace Hmx {
         void Set(const Matrix3&);
         void Set(const Vector3&);
         void Set(const Vector3&, float);
+        void Set(float f1, float f2, float f3, float f4){
+            x = f1; y = f2; z = f3; w = f4;
+        }
+
+        bool operator!=(const Quat& q) const {
+            return x != q.x || y != q.y || z != q.z || w != q.w;
+        }
 
         float x;
         float y;
@@ -151,6 +183,10 @@ public:
         v.Zero();
     }
 
+    void Set(const Hmx::Matrix3& mtx, const Vector3& vec){
+        m = mtx; v = vec;
+    }
+
     void SetFromDA(const class DataArray* da) {
         Reset();
         v.x = da->Float(2);
@@ -160,9 +196,7 @@ public:
 
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
-        m.x.Zero();
-        m.y.Zero();
-        m.z.Zero();
+        m.Zero();
         v.Zero();
     }
 
@@ -185,13 +219,14 @@ public:
 class TransformNoScale {
 public:
     TransformNoScale(){}
+    TransformNoScale(const TransformNoScale& t){ Set(t); }
     void Set(const Transform&);
     void Set(const TransformNoScale&);
     void SetRot(const Hmx::Matrix3&);
     void Reset();
 
-    ShortQuat q;
-    class Vector3 v;
+    ShortQuat q; // 0x0/2/4/6
+    class Vector3 v; // 0x8
 };
 
 BinStream& operator>>(BinStream&, TransformNoScale&);
@@ -199,7 +234,9 @@ BinStream& operator>>(BinStream&, TransformNoScale&);
 class Plane {
 public:
     Plane(){}
+    Plane(const Vector3& v1, const Vector3& v2){ Set(v1, v2); }
 
+    void Set(const Vector3&, const Vector3&);
     float Dot(const Vector3& vec) const {
         return a * vec.x + b * vec.y + c * vec.z + d;
     }
@@ -249,6 +286,9 @@ void FastInvert(const Hmx::Matrix3&, Hmx::Matrix3&);
 void Multiply(const Hmx::Matrix3&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
+void Multiply(const Transform&, const Vector3&, Vector3&);
+void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
+void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(
@@ -334,6 +374,15 @@ inline void FastInvert(const Transform& tfin, Transform& tfout){
 #endif
     FastInvert(tfin.m, tfout.m);
     Multiply(vtmp, tfout.m, tfout.v);
+}
+
+// https://en.wikipedia.org/wiki/Gram%E2%80%93Schmidt_process
+// https://gamedev.stackexchange.com/questions/139703/compute-up-and-right-from-a-direction
+// Looks similar to C_MTXLookAt from the dolphin SDK.
+inline void LookAt(Hmx::Matrix3& mtx){
+    Cross(mtx.x, mtx.y, mtx.z);
+    Normalize(mtx.z, mtx.z);
+    Cross(mtx.z, mtx.x, mtx.y);
 }
 
 #endif

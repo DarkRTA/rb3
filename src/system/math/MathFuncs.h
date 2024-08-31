@@ -39,7 +39,7 @@ inline int Round(float f) {
     }
 }
 
-template<class T> inline T Minimum(T x, T y){
+template<class T> inline T Min(T x, T y){
     return (y < x) ? y : x;
 }
 
@@ -47,8 +47,8 @@ template<class T> inline T Max(T x, T y){
     return (x < y) ? y : x;
 }
 
-template<class T> inline T Minimum(T x, T y, T z){
-    return Minimum(x, Minimum(y, z));
+template<class T> inline T Min(T x, T y, T z){
+    return Min(x, Min(y, z));
 }
 
 template<class T> inline T Max(T x, T y, T z){
@@ -136,6 +136,10 @@ inline float atan_f(double d){
 
 inline float fabs_f(double d){
     return __fabs(d);
+}
+
+inline bool IsFloatZero(float f){
+    return fabs_f(f) < 0.0001f;
 }
 
 inline float pow_f(double x, double y){

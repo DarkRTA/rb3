@@ -9,6 +9,7 @@
 #include "utl/Symbol.h"
 
 class Quest {
+    public:
     Quest(DataArray*);
     virtual ~Quest();
     virtual void Configure(DataArray*);

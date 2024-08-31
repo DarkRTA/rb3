@@ -33,11 +33,12 @@ public:
 
     class MatOverride {
     public:
-        MatOverride(Hmx::Object* o) : mesh(o), mat(o) {}
+        MatOverride(Hmx::Object* o) : mesh(o), mat(o), mat2(o) {}
         void Sync(bool);
 
         ObjPtr<RndMesh, ObjectDir> mesh; // 0x0
         ObjPtr<RndMat, ObjectDir> mat; // 0xc
+        ObjPtr<RndMat, ObjectDir> mat2; // 0x18
     };
 
     WorldDir();
@@ -106,8 +107,16 @@ public:
 };
 
 BinStream& operator>>(BinStream&, WorldDir::BitmapOverride&);
-BinStream& operator>>(BinStream&, WorldDir::PresetOverride&);
-BinStream& operator>>(BinStream&, WorldDir::MatOverride&);
+
+inline BinStream& operator>>(BinStream& bs, WorldDir::MatOverride& o){
+    bs >> o.mesh >> o.mat;
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, WorldDir::PresetOverride& o){
+    bs >> o.preset >> o.hue;
+    return bs;
+}
 
 extern WorldDir* TheWorld;
 void SetTheWorld(WorldDir*);

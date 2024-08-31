@@ -37,10 +37,16 @@ const char* PathName(const class Hmx::Object*);
 
 // BEGIN HANDLE MACROS ---------------------------------------------------------------------------------
 
-#define BEGIN_HANDLERS(objType) \
-DataNode objType::Handle(DataArray* _msg, bool _warn){ \
-    Symbol sym = _msg->Sym(1); \
-    MessageTimer timer((MessageTimer::Active()) ? static_cast<Hmx::Object*>(this) : 0, sym);
+#ifdef VERSION_SZBE69_B8
+    #define BEGIN_HANDLERS(objType) \
+    DataNode objType::Handle(DataArray* _msg, bool _warn){ \
+        Symbol sym = _msg->Sym(1); \
+        MessageTimer timer((MessageTimer::Active()) ? static_cast<Hmx::Object*>(this) : 0, sym);
+#else
+    #define BEGIN_HANDLERS(objType) \
+    DataNode objType::Handle(DataArray* _msg, bool _warn){ \
+        Symbol sym = _msg->Sym(1);
+#endif
 
 #define HANDLE(symbol, func) \
     if(sym == symbol){ \
@@ -279,9 +285,13 @@ void objType::Load(BinStream& bs){
         MILO_FAIL("%s can't load new %s alt version %d > %d", PathName(this), ClassName(), gAltRev, (unsigned short)ver); \
     }
 
-#define ASSERT_REVS(rev1, rev2) \
-    ASSERT_REV(rev1) \
-    ASSERT_ALTREV(rev2)
+#ifdef VERSION_SZBE69_B8
+    #define ASSERT_REVS(rev1, rev2) \
+        ASSERT_REV(rev1) \
+        ASSERT_ALTREV(rev2)
+#else
+    #define ASSERT_REVS(rev1, rev2)
+#endif
 
 // for loading in a version number that isn't a class's gRev/gAltRev
 #define ASSERT_GLOBAL_REV(ver, rev_name) \
@@ -326,6 +336,11 @@ void objType::Load(BinStream& bs){
 
 #define REGISTER_OBJ_FACTORY(objType) \
     Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
+
+#define REGISTER_OBJ_FACTORY_FUNC(objType) \
+    void objType::Register() { \
+        REGISTER_OBJ_FACTORY(objType)\
+    }
 
 // END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
 

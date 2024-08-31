@@ -1,7 +1,7 @@
 #include "rndobj/ColorXfm.h"
 
 RndColorXfm::RndColorXfm() : mHue(0.0f), mSaturation(0.0f), mLightness(0.0f), mContrast(0.0f), mBrightness(0.0f),
-    mLevelInLo(0.0f, 0.0f, 0.0f), mLevelInHi(1.0f, 1.0f, 1.0f), mLevelOutLo(0.0f, 0.0f, 0.0f), mLevelOutHi(1.0f, 1.0f, 1.0f) {
+    mLevelInLo(0.0f, 0.0f, 0.0f, 1.0f), mLevelInHi(1.0f, 1.0f, 1.0f, 1.0f), mLevelOutLo(0.0f, 0.0f, 0.0f, 1.0f), mLevelOutHi(1.0f, 1.0f, 1.0f, 1.0f) {
       Reset();
 }
 

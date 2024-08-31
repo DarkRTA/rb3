@@ -14,6 +14,8 @@ public:
 
     class IKTarget {
     public:
+        IKTarget(Hmx::Object* o) : mTarget(o, 0), mExtent(0) {}
+        IKTarget(ObjPtr<RndTransformable, ObjectDir> o, float f) ;
         ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
         float mExtent; // 0xc
     };
@@ -31,11 +33,15 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    void UpdateHands();
+    void UpdateHand();
     void IKElbow(RndTransformable*, RndTransformable*);
     void PullShoulder(Vector3&, const Transform&, const Vector3&, float);
+    void SetHand(RndTransformable*);
+    void MeasureLengths();
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    DECLARE_REVS;
     
     ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mFinger; // 0x34
@@ -60,5 +66,7 @@ public:
     ObjPtr<CharCollide, ObjectDir> mElbowCollide; // 0x78
     bool mClockwise; // 0x84
 };
+
+BinStream& operator>>(BinStream&, CharIKHand::IKTarget&);
 
 #endif

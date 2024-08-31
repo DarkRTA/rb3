@@ -28,6 +28,7 @@ public:
     void SetProxyDir(const FilePath&, bool);
     void SetProxyDir(RndDir*);
     DataNode OnSetProxyDir(DataArray*);
+    RndDir* ProxyDir() const { return mDir; }
 
     DECLARE_REVS;
 

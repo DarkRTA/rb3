@@ -15,10 +15,8 @@ UITransitionHandler::UITransitionHandler(Hmx::Object* obj) : mInAnim(obj, 0), mO
 }
 
 UITransitionHandler::~UITransitionHandler(){
-    RndAnimatable* inPtr = mInAnim.operator->();
-    if(inPtr) inPtr->StopAnimation();
-    RndAnimatable* outPtr = mOutAnim.operator->();
-    if(outPtr) outPtr->StopAnimation();
+    if(mInAnim) mInAnim->StopAnimation();
+    if(mOutAnim) mOutAnim->StopAnimation();
 }
 
 void UITransitionHandler::CopyHandlerData(const UITransitionHandler* ui){
@@ -68,9 +66,8 @@ void UITransitionHandler::StartValueChange(){
         FinishValueChange();
     }
     else if(theState == 1){
-        RndAnimatable* in = (RndAnimatable*)mInAnim;
-        if(in && TheUI->mTransitionState == 0){
-            in->Animate(0.0f, false, 0.0f);
+        if(mInAnim && !TheUI->IsTransitioning()){
+            mInAnim->Animate(0.0f, false, 0.0f);
             mAnimationState = 2;
         }
         else {
@@ -81,9 +78,7 @@ void UITransitionHandler::StartValueChange(){
         MILO_ASSERT(mOutAnim, 0x8B);
         if(b3) FinishValueChange();
         else {
-            RndAnimatable* out = (RndAnimatable*)mOutAnim;
-            float frame = out->mFrame;
-            out->Animate(frame, out->StartFrame(), (TaskUnits)out->Units(), 0.0f, 0.0f);
+            mOutAnim->Animate(mOutAnim->GetFrame(), mOutAnim->StartFrame(), mOutAnim->Units(), 0.0f, 0.0f);
             mAnimationState = 4;
         }
     }
@@ -92,10 +87,9 @@ void UITransitionHandler::StartValueChange(){
 void UITransitionHandler::FinishValueChange(){
     if(IsEmptyValue()) ClearAnimationState();
     else {
-        RndAnimatable* out = (RndAnimatable*)mOutAnim;
-        if(out && TheUI->mTransitionState == 0){
+        if(mOutAnim && !TheUI->IsTransitioning()){
             b3 = true;
-            out->Animate(0.0f, false, 0.0f);
+            mOutAnim->Animate(0.0f, false, 0.0f);
             mAnimationState = 3;
         }
         else mAnimationState = 1;
@@ -113,13 +107,13 @@ void UITransitionHandler::SetOutAnim(RndAnimatable* anim){
 
 
 RndAnimatable* UITransitionHandler::GetInAnim() const {
-    RndAnimatable* inPtr = mInAnim.operator->();
-    return (inPtr) ? inPtr : 0;
+    if(mInAnim) return mInAnim;
+    else return 0;
 }
 
 RndAnimatable* UITransitionHandler::GetOutAnim() const {
-    RndAnimatable* outPtr = mOutAnim.operator->();
-    return (outPtr) ? outPtr : 0;
+    if(mOutAnim) return mOutAnim;
+    else return 0;
 }
 
 void UITransitionHandler::ClearAnimationState(){

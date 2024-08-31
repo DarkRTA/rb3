@@ -44,10 +44,6 @@ float FastSin(float f) {
         return gBigSinTable[((int)(40.743664f * f + 0.49998999f) & 0xFF) * 2];
 }
 
-inline float DegreesToRadians(float deg) {
-    return 0.017453292f * deg;
-}
-
 DataNode DataSin(DataArray *da) {
     return DataNode(sin_f(DegreesToRadians(da->Float(1))));
 }
@@ -58,10 +54,6 @@ DataNode DataCos(DataArray *da) {
 
 DataNode DataTan(DataArray *da) {
     return DataNode(tan_f(DegreesToRadians(da->Float(1))));
-}
-
-inline float RadiansToDegrees(float rad) {
-    return 57.295776f * rad;
 }
 
 DataNode DataASin(DataArray *da) {
