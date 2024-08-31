@@ -1400,6 +1400,9 @@ system/world/SpotlightEnder.cpp:
 system/world/Instance.cpp:
 	.text       start:0x805C13F8 end:0x805C40C4
 
+system/world/EventAnim.cpp:
+	.text       start:0x805C40C4 end:0x805C6814
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738
