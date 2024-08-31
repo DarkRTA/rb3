@@ -1,0 +1,8 @@
+#ifndef BANDOBJ_BANDCHARACTER_H
+#define BANDOBJ_BANDCHARACTER_H
+
+class BandCharacter {
+
+};
+
+#endif // BANDOBJ_BANDCHARACTER_H

@@ -214,6 +214,13 @@ void AssetMgr::EquipAsset(BandCharDesc*, Symbol) {
 
 }
 
-void AssetMgr::EquipAssets(LocalBandUser*, const std::vector<Symbol>&) {
+void AssetMgr::EquipAssets(LocalBandUser* user, const std::vector<Symbol>& assets) {
+    BandCharacter* pChar = user->GetCharLocal();
+    MILO_ASSERT(pChar, 0x1cb);
+    BandCharDesc* pBandCharDesc;
+    MILO_ASSERT(pBandCharDesc, 0x1cf);
 
+    for (std::vector<Symbol>::const_iterator it = assets.begin(); it != assets.end(); it++) {
+        EquipAsset(pBandCharDesc, *it);
+    }
 }

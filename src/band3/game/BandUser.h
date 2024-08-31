@@ -5,6 +5,9 @@
 #include "meta_band/GameplayOptions.h"
 #include "os/User.h"
 #include "types.h"
+#include "system/bandobj/BandCharacter.h"
+
+class BandCharDesc;
 
 class BandUser : public virtual User {
     BandUser();
@@ -15,6 +18,7 @@ public:
     ControllerType GetControllerType() const;
     TrackType GetTrackType() const;
     Symbol GetTrackSym() const;
+    BandCharacter* GetCharLocal();
 
 private:
     Difficulty unk_0x8;

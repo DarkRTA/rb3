@@ -1,0 +1,8 @@
+#ifndef BANDOBJ_BANDCHARDESC_H
+#define BANDOBJ_BANDCHARDESC_H
+
+class BandCharDesc {
+
+};
+
+#endif // BANDOBJ_BANDCHARDESC_H

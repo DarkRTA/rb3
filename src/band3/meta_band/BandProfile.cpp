@@ -1,6 +1,8 @@
 #include "BandProfile.h"
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
+#include "system/utl/Symbols.h"
+#include "system/utl/Symbols3.h"
 
 BandProfile::BandProfile(int i) : Profile(i) {
 
@@ -11,7 +13,6 @@ BandProfile::~BandProfile() {
 }
 
 void BandProfile::Poll() {
-
 }
 
 void BandProfile::GetAvailableStandins(int, std::vector<TourCharLocal*>&) const {
@@ -60,7 +61,9 @@ bool BandProfile::HasChar(const TourCharLocal* character) {
 }
 
 void BandProfile::GetFirstEmptyPatch() {}
+
 void BandProfile::GetTexAtPatchIndex(int) const {}
+
 void BandProfile::GetPatchIndex(const PatchDir*) const {}
 
 void BandProfile::PotentiallyDeleteStandin(HxGuid guid) {
@@ -92,8 +95,14 @@ int BandProfile::GetNumStandins() const {
     return standIns;
 }
 
-void BandProfile::GetTourProgress() {}
-void BandProfile::OwnsTourProgress(const TourProgress*) {}
+TourProgress* BandProfile::GetTourProgress() {
+    return mTourProgress;
+}
+
+bool BandProfile::OwnsTourProgress(const TourProgress* tourProgress) {
+    return mTourProgress == tourProgress;
+}
+
 void BandProfile::UpdateScore(int, const PerformerStatsInfo&, bool) {}
 void BandProfile::UploadPerformance(PerformanceData*) {}
 void BandProfile::GetNumDirtyPerformanceData() {}
@@ -128,7 +137,11 @@ bool BandProfile::IsUnsaved() const {}
 void BandProfile::SaveLoadComplete(ProfileSaveState) {}
 bool BandProfile::HasSomethingToUpload() {}
 void BandProfile::DeleteAll() {}
-LocalBandUser* BandProfile::GetAssociatedLocalBandUser() const {}
+
+LocalBandUser* BandProfile::GetAssociatedLocalBandUser() const {
+    int num = GetPadNum();
+    // TheBandUserMgr->GetUserFromPad(num);
+}
 
 void BandProfile::CheckForFinishedTrainerAccomplishments() {
     bool validSaveData = HasValidSaveData();
@@ -148,7 +161,11 @@ void BandProfile::SetProKeyboardSongLessonSectionComplete(int, Difficulty, int) 
 void BandProfile::IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const {}
 void BandProfile::IsProBassSongLessonSectionComplete(int, Difficulty, int) const {}
 void BandProfile::IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const {}
-void BandProfile::IsLessonComplete(const Symbol&, float) const {}
+
+bool BandProfile::IsLessonComplete(const Symbol& symbol, float) const {
+    GetLessonCompleteSpeed(symbol);
+}
+
 void BandProfile::GetLessonComplete(const Symbol&) const {}
 void BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
 void BandProfile::SetLessonComplete(const Symbol&, float) {}
@@ -160,15 +177,26 @@ void BandProfile::AccessAccomplishmentProgress() {}
 void BandProfile::GetHardcoreIconLevel() const {}
 
 void BandProfile::SetHardcoreIconLevel(int) {}
+
 void BandProfile::GetTourBand() {}
+
 void BandProfile::GetBandName() const {}
-void BandProfile::HasBandNameBeenSet() const {}
+
+void BandProfile::HasBandNameBeenSet() const {
+
+}
 void BandProfile::IsBandNameProfanityChecked() const {}
+
 void BandProfile::GetBandLogoTex() {}
+
 void BandProfile::SendBandLogo() {}
+
 void BandProfile::GrantCampaignKey(Symbol) {}
+
 bool BandProfile::HasCampaignKey(Symbol) {}
+
 void BandProfile::UnlockModifier(Symbol) {}
+
 bool BandProfile::HasUnlockedModifier(Symbol) {}
 void BandProfile::HandlePerformanceDataUploadSuccess() {}
 void BandProfile::UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool) {}
@@ -183,6 +211,115 @@ void BandProfile::GetLastCharUsed() const {}
 void BandProfile::SetLastCharUsed(CharData*) {}
 void BandProfile::SetLastPrefabCharUsed(Symbol) {}
 void BandProfile::FakeProfileFill() {}
-DataNode BandProfile::Handle(DataArray*, bool) {}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(BandProfile)
+    HANDLE_ACTION(get_associated_user, GetAssociatedLocalBandUser())
+    HANDLE_ACTION(is_lesson_complete, IsLessonComplete(_msg->Sym(2), _msg->Float(3)))
+    HANDLE_ACTION(set_lesson_complete, SetLessonComplete(_msg->Sym(2), _msg->Float(3)))
+    HANDLE_ACTION(unlock_modifier, UnlockModifier(_msg->Sym(2)))
+    HANDLE_ACTION(has_unlocked_modifier, HasUnlockedModifier(_msg->Sym(2)))
+    HANDLE_ACTION(get_accomplishment_progress, AccessAccomplishmentProgress())
+    HANDLE_ACTION(get_hardcore_icon_level, GetHardcoreIconLevel())
+    HANDLE_ACTION(set_hardcore_icon_level, SetHardcoreIconLevel(_msg->Int(2)))
+    HANDLE_ACTION(set_song_review, SetSongReview(_msg->Int(2), _msg->Int(3)))
+    // HANDLE_ACTION(setlist_changed, SetlistChanged(_msg->Obj<LocalSavedSetlist>(2)))
+    HANDLE_ACTION(max_chars, GetMaxChars())
+    HANDLE_ACTION(get_picture_tex, GetPictureTex())
+    HANDLE_ACTION(get_band_logo_tex, GetBandLogoTex())
+    HANDLE_ACTION(get_first_empty_patch, GetFirstEmptyPatch())
+    HANDLE_ACTION(get_band_name, GetBandName())
+    // HANDLE_ACTION(set_band_name, SetBandName(_msg->Str(2)))
+    HANDLE_ACTION(has_band_name_been_set, HasBandNameBeenSet())
+    HANDLE_ACTION(get_num_chars, NumChars())
+    HANDLE_ACTION(has_seen_hint, HasSeenHint(_msg->Sym(2)))
+    HANDLE_ACTION(set_has_seen_hint, SetHasSeenHint(_msg->Sym(2)))
+    HANDLE_ACTION(access_accomplishment_progress, AccessAccomplishmentProgress())
+    HANDLE_ACTION(auto_fake_fill, AutoFakeFill(_msg->Int(2)))
+
+    HANDLE_CHECK(0x67a)
+END_HANDLERS
+#pragma pop
+
+
+
+//   local_d4 = RockCentralOpCompleteMsg::Type
+//                        ((RockCentralOpCompleteMsg *)0x0 )
+//   ;
+//   iVar1 = Symbol::operator_==((Symbol *)local_b0,
+//                               (Symbol *)&local_d4);
+//   if (iVar1 != 0) {
+//     RockCentralOpCompleteMsg::RockCentralOpCompleteMsg
+//               (aRStack_7c,this_02);
+//     OnMsg(aBStack_90,(RockCentralOpCompleteMsg *)this_ 03
+//          );
+//     RockCentralOpCompleteMsg::~RockCentralOpCompleteMsg
+//               (aRStack_7c);
+//     iVar1 = DataNode::Type((DataNode *)aBStack_90);
+//     if (iVar1 != 0) {
+//       DataNode::DataNode(this_00,(DataNode *)aBStack_90 )
+//       ;
+//       DataNode::~DataNode((DataNode *)aBStack_90);
+//       MessageTimer::~MessageTimer(aMStack_58);
+//       goto LAB_80268a74;
+//     }
+//     DataNode::~DataNode((DataNode *)aBStack_90);
+//   }
+//   piVar8 = (int *)(this_03 + 0xb8);
+//   if (piVar8 != (int *)0x0) {
+//     (**(code **)(*piVar8 + 0x14))
+//               (aDStack_98,piVar8,this_02,0);
+//     iVar1 = DataNode::Type(aDStack_98);
+//     if (iVar1 != 0) {
+//       DataNode::DataNode(this_00,aDStack_98);
+//       DataNode::~DataNode(aDStack_98);
+//       MessageTimer::~MessageTimer(aMStack_58);
+//       goto LAB_80268a74;
+//     }
+//     DataNode::~DataNode(aDStack_98);
+//   }
+//   piVar8 = *(int **)(this_03 + 0x48);
+//   if (piVar8 != (int *)0x0) {
+//     (**(code **)(*piVar8 + 0x20))
+//               (aDStack_a0,piVar8,this_02,0);
+//     iVar1 = DataNode::Type(aDStack_a0);
+//     if (iVar1 != 0) {
+//       DataNode::DataNode(this_00,aDStack_a0);
+//       DataNode::~DataNode(aDStack_a0);
+//       MessageTimer::~MessageTimer(aMStack_58);
+//       goto LAB_80268a74;
+//     }
+//     DataNode::~DataNode(aDStack_a0);
+//   }
+//   Profile::Handle(aPStack_a8,(DataArray *)this_03,
+//                   SUB41(this_02,0));
+//   iVar1 = DataNode::Type((DataNode *)aPStack_a8);
+//   if (iVar1 == 0) {
+//     DataNode::~DataNode((DataNode *)aPStack_a8);
+//     if (in_r6 != 0) {
+//       local_d8 = local_b0[0];
+//       if (this_03 != (BandProfile *)0x0) {
+//         this_03 = *(BandProfile **)(this_03 + 8);
+//       }
+//       pcVar6 = (char *)PathName((Object *)this_03);
+//       pcVar6 = ::MakeString(
+//       s_%s(%d):_%s_unhandled_msg:_%s_80b8d61f,
+//       ::@stringBase0,0x67a,pcVar6,(Symbol)&local_d8);
+//       DebugNotifier::operator_<<
+//                 ((DebugNotifier *)&TheDebugNotifier,
+//                  pcVar6);
+//     }
+//     DataNode::DataNode(this_00,0,0);
+//     MessageTimer::~MessageTimer(aMStack_58);
+//   }
+//   else {
+//     DataNode::DataNode(this_00,(DataNode *)aPStack_a8) ;
+//     DataNode::~DataNode((DataNode *)aPStack_a8);
+//     MessageTimer::~MessageTimer(aMStack_58);
+//   }
+
+
+
 void BandProfile::GetPictureTex() {}
 void BandProfile::AutoFakeFill(int) {}

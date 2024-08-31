@@ -8,9 +8,7 @@
 #include "system/obj/Object.h"
 #include "AssetTypes.h"
 #include "Asset.h"
-#include "band3/game/BandUser.h"
-
-class BandCharDesc;
+#include "band3/game/BandUser.h" 
 
 class AssetMgr : public Hmx::Object {
     AssetMgr();
