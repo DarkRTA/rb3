@@ -33,6 +33,7 @@ public:
     virtual void PreSave(BinStream&);
 
     void SyncDir();
+    void LoadPersistentObjects(BinStream*);
 
     ObjDirPtr<WorldInstance> mDir; // 0x18c
     SharedGroup* mSharedGroup; // 0x198

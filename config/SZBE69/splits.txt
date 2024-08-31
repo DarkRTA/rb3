@@ -1390,6 +1390,16 @@ system/world/World.cpp:
 system/world/Spotlight.cpp:
 	.text       start:0x805B368C end:0x805BB3BC
 
+system/world/SpotlightDrawer.cpp:
+	.text       start:0x805BB3BC end:0x805C0E04
+	.ctors      start:0x807EFFD8 end:0x807EFFDC
+
+system/world/SpotlightEnder.cpp:
+	.text       start:0x805C0E04 end:0x805C13F8
+
+system/world/Instance.cpp:
+	.text       start:0x805C13F8 end:0x805C40C4
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738

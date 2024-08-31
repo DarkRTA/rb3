@@ -35,6 +35,8 @@ public:
     // size: 0x8
     class SpotlightEntry {
     public:
+        int unk0;
+        int unk4;
     };
 
     SpotlightDrawer();

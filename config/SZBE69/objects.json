@@ -227,11 +227,14 @@
             "system/world/Crowd.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
+            "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
             "system/world/LightPreset.cpp": "NonMatching",
             "system/world/LightPresetManager.cpp": "NonMatching",
             "system/world/Reflection.cpp": "NonMatching",
             "system/world/Spotlight.cpp": "NonMatching",
+            "system/world/SpotlightDrawer.cpp": "NonMatching",
+            "system/world/SpotlightEnder.cpp": "NonMatching",
             "system/world/World.cpp": "NonMatching"
         }
     },
