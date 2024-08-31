@@ -4,6 +4,7 @@
 #include "rndobj/Poll.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Env.h"
+#include "rndobj/MultiMesh.h"
 #include "char/Character.h"
 
 class WorldCrowd : public RndDrawable, public RndPollable {
@@ -24,14 +25,18 @@ public:
 
     class CharData {
     public:
+        class Char3D {
+        public:
+        };
+
         CharData(Hmx::Object*);
         void Load(BinStream&);
 
         CharDef mDef; // 0x0
         RndMultiMesh* mMMesh; // 0x2c
-        std::list<int> mBackup; // 0x30
-        std::vector<int> m3DChars; // 0x38
-        std::vector<int> m3DCharsCreated; // 0x40
+        std::list<RndMultiMesh::Instance> mBackup; // 0x30
+        std::vector<Char3D> m3DChars; // 0x38
+        std::vector<Char3D> m3DCharsCreated; // 0x40
     };
 
     WorldCrowd();
@@ -60,6 +65,11 @@ public:
     void Set3DCharList(const std::vector<std::pair<int, int> >&, Hmx::Object*);
     void AssignRandomColors();
     void SetFullness(float, float);
+    void SetMatAndCameraLod();
+    void CreateMeshes();
+    RndMesh* BuildBillboard(Character*, float);
+    void SetLod(int);
+    void Force3DCrowd(bool);
 
     DataNode OnRebuild(DataArray*);
     DataNode OnIterateFrac(DataArray*);
@@ -73,7 +83,7 @@ public:
     }
 
     ObjPtr<RndMesh, ObjectDir> mPlacementMesh; // 0x28
-    ObjList<int> mCharacters; // 0x34
+    ObjList<CharData> mCharacters; // 0x34
     int mNum; // 0x40
     int unk44; // 0x44
     int unk48; // 0x48
@@ -89,5 +99,10 @@ public:
     ObjPtr<RndTransformable, ObjectDir> mFocus; // 0x7c
     int unk88; // 0x88
 };
+
+inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
+    cd.Load(bs);
+    return bs;
+}
 
 #endif
