@@ -534,7 +534,7 @@
             "system/ui/UIListHighlight.cpp": "Matching",
             "system/ui/UIListLabel.cpp": "Matching",
             "system/ui/UIListMesh.cpp": "NonMatching",
-            "system/ui/UIListProvider.cpp": "NonMatching",
+            "system/ui/UIListProvider.cpp": "LinkIssues",
             "system/ui/UIListSlot.cpp": "NonMatching",
             "system/ui/UIListState.cpp": "NonMatching",
             "system/ui/UIListSubList.cpp": "NonMatching",
