@@ -310,6 +310,13 @@ int Spotlight::CollidePlane(const Plane& pl){
     return -1;
 }
 
+void Spotlight::CloseSlaves(){
+    for(ObjPtrList<RndLight, ObjectDir>::iterator it = mSlaves.begin(); it != mSlaves.end(); ++it){
+        RndLight* lit = *it;
+        if(lit) lit->SetShadowOverride(0);
+    }
+}
+
 void Spotlight::UpdateSphere(){
     Sphere s48;
     MakeWorldSphere(s48, true);
@@ -317,6 +324,26 @@ void Spotlight::UpdateSphere(){
     FastInvert(WorldXfm(), tf38);
     Multiply(s48, tf38, s48);
     SetSphere(s48);
+}
+
+void Spotlight::SetColorIntensity(const Hmx::Color& col, float f){
+    Hmx::Color c20(col);
+    Multiply(c20, f, c20);
+    Hmx::Color c30(Color());
+    Multiply(c30, Intensity(), c30);
+    mColorOwner->mColor = Hmx::Color32(col.Pack());
+    mColorOwner->mIntensity = f;
+}
+
+void Spotlight::SetColor(int packed){
+    Hmx::Color color;
+    color.Unpack(packed);
+    color.alpha = 1.0f;
+    SetColorIntensity(color, Intensity());
+}
+
+void Spotlight::SetIntensity(float f){
+    SetColorIntensity(Hmx::Color(Color()), f);
 }
 
 void Spotlight::UpdateBounds(){

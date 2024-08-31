@@ -7,6 +7,10 @@
 #include "decomp.h"
 
 namespace Hmx {
+    class Color32; // forward dec
+}
+
+namespace Hmx {
     class Color {
     public:
         static Color kWhite;
@@ -21,6 +25,7 @@ namespace Hmx {
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
         Color(int i) : alpha(1.0f) { Unpack(i); }
+        Color(const Color32&);
 
         // copy ctor uses asm magic
         Color(const Color& color){
@@ -76,10 +81,17 @@ namespace Hmx {
 
         Color32(){ Clear(); }
         Color32(int i){ color = i; }
+        Color32(const Color32& other) {
+            color = other.color;
+        }
         Color32(const Hmx::Color& col){ color = col.PackAlpha(); }
         void Clear() { color = -1; }
         void Set(Hmx::Color& col){
             color = col.PackAlpha();
+        }
+        Color32& operator=(const Color32& other) {
+            color = other.color;
+            return *this;
         }
         void SetAlpha(float f){ a = f * 255.0f; }
         int FullColor() const { return color; }

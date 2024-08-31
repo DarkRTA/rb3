@@ -78,6 +78,7 @@ public:
     void UpdateTransforms();
     void SetColor(int);
     void SetIntensity(float);
+    void SetColorIntensity(const Hmx::Color&, float);
     RndTransformable* ResolveTarget();
     Hmx::Color32 Color() const { return mColorOwner->mColor; }
     float Intensity() const { return mColorOwner->mIntensity; }
