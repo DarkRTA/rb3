@@ -1,5 +1,6 @@
 #include "world/Crowd.h"
 #include "rndobj/Cam.h"
+#include "rndwii/Rnd.h"
 #include "utl/Symbols.h"
 
 RndCam* gImpostorCamera;
@@ -26,6 +27,12 @@ WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), unk
         gImpostorCamera = Hmx::Object::New<RndCam>();
         SetMatAndCameraLod();
     }
+}
+
+void WorldCrowd::SetMatAndCameraLod(){
+    RndTex* tex = TheWiiRnd.GetSharedTex((WiiRnd::SharedTexType)5, true);
+    gImpostorCamera->SetTargetTex(tex);
+    gImpostorMat->SetDiffuseTex(tex);
 }
 
 WorldCrowd::~WorldCrowd(){
@@ -63,6 +70,27 @@ void WorldCrowd::CreateMeshes(){
 DataNode WorldCrowd::OnRebuild(DataArray* da){
     return DataNode(0);
 }
+
+BEGIN_COPYS(WorldCrowd)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_SUPERCLASS(Hmx::Object)
+    CREATE_COPY(WorldCrowd)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mPlacementMesh)
+        COPY_MEMBER(mNum)
+        COPY_MEMBER(unk48)
+        COPY_MEMBER(unk58)
+        COPY_MEMBER(unk5c)
+        COPY_MEMBER(mLod)
+        COPY_MEMBER(mEnviron)
+        COPY_MEMBER(mEnviron3D)
+        COPY_MEMBER(mForce3DCrowd)
+        COPY_MEMBER(mShow3DOnly)
+        COPY_MEMBER(mFocus)
+        mCharacters.clear();
+        mCharacters.resize(c->mCharacters.size());
+    END_COPYING_MEMBERS
+END_COPYS
 
 void WorldCrowd::SetLod(int lod){
     mLod = Clamp(0, 2, lod);

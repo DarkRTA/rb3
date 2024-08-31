@@ -86,9 +86,7 @@ public:
     ObjList<CharData> mCharacters; // 0x34
     int mNum; // 0x40
     int unk44; // 0x44
-    int unk48; // 0x48
-    int unk4c; // 0x4c
-    int unk50; // 0x50
+    Vector3 unk48; // 0x48
     bool mForce3DCrowd; // 0x54
     bool mShow3DOnly; // 0x55
     float unk58; // 0x58
