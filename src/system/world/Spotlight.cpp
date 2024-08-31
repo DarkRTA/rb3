@@ -6,6 +6,7 @@
 #include "rndobj/Group.h"
 #include "world/SpotlightDrawer.h"
 #include "world/LightPreset.h"
+#include "math/Rot.h"
 #include "utl/Symbols.h"
 
 RndEnviron* Spotlight::sEnviron;
@@ -353,6 +354,40 @@ void Spotlight::UpdateBounds(){
 
 void Spotlight::UpdateTransforms(){
     START_AUTO_TIMER("spotlight_xfm");
+}
+
+void Spotlight::CheckFloorSpotTransform(){
+    if(DoFloorSpot()){
+        if(GetFloorSpotTarget()->WorldXfm().v.z != unk22c){
+            UpdateFloorSpotTransform(WorldXfm());
+        }
+    }
+}
+
+void Spotlight::UpdateFloorSpotTransform(const Transform& tf){
+    mFloorSpotXfm.Reset();
+    if(DoFloorSpot()){
+        float f1 = GetFloorSpotTarget()->WorldXfm().v.z;
+        Vector3 vac(tf.m.y);
+        if(vac.x != 0){
+            float absed = std::fabs(((f1 - tf.v.z) / vac.x) / (f1 - tf.v.z));
+            vac = tf.m.y;
+            float curx = vac.x;
+            vac.x = 0;
+            Hmx::Matrix3 m70;
+            if(curx > -0.9999999f && curx < 0.9999999f)
+                MakeRotMatrix(vac, Vector3(0.0f, 0.0f, 1.0f), m70);
+            else m70.Identity();
+            vac.Set(mSpotScale, mSpotScale * absed, 1.0f);
+            Scale(vac, m70, m70);
+            float scalar = (f1 + mSpotHeight - tf.v.z) / curx;
+            vac = tf.m.y;
+            vac *= scalar;
+            ::Add(vac, tf.v, vac);
+            mFloorSpotXfm = Transform(m70, vac);
+        }
+        unk22c = f1;
+    }
 }
 
 Spotlight::BeamDef::BeamDef(Hmx::Object* obj) : mBeam(0), mIsCone(0), mLength(100.0f), mTopRadius(4.0f), mRadius(30.0f), mTopSideBorder(0.1f), mBottomSideBorder(0.3f),

@@ -80,8 +80,23 @@ public:
     void SetIntensity(float);
     void SetColorIntensity(const Hmx::Color&, float);
     RndTransformable* ResolveTarget();
+    void CheckFloorSpotTransform();
+    void UpdateFloorSpotTransform(const Transform&);
     Hmx::Color32 Color() const { return mColorOwner->mColor; }
     float Intensity() const { return mColorOwner->mIntensity; }
+    bool LightCanSort() const { return mLightCanSort; }
+
+    RndTransformable* GetFloorSpotTarget() const {
+        return mSpotTarget ? mSpotTarget : mTarget;
+    }
+
+    bool DoFloorSpot() const {
+        bool ret = false;
+        if(mDiscMat && GetFloorSpotTarget()){
+            if(GetFloorSpotTarget()->WorldXfm().m.y.z != 0.0f) ret = true;
+        }
+        return ret;
+    }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
