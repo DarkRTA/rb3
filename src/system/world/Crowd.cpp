@@ -8,7 +8,16 @@ int gNumCrowd;
 INIT_REVS(WorldCrowd)
 
 WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mEnviron(this), mEnviron3D(this), mFocus(this) {
-
+    gImpostorMat = Hmx::Object::New<RndMat>();
+    gImpostorMat->SetUseEnv(true);
+    gImpostorMat->SetPreLit(false);
+    gImpostorMat->SetBlend(kSrc);
+    gImpostorMat->SetZMode(kNormal);
+    gImpostorMat->SetAlphaCut(true);
+    gImpostorMat->SetAlphaThreshold(0x80);
+    gImpostorMat->SetTexWrap(kClamp);
+    gImpostorMat->SetPerPixelLit(false);
+    gImpostorMat->SetPointLights(true);
 }
 
 WorldCrowd::CharData::CharData(Hmx::Object* o) : mDef(o), mMMesh(0) {
