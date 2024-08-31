@@ -50,6 +50,10 @@ public:
     DELETE_OVERLOAD
     DECLARE_REVS
 
+    static void Register(){
+        REGISTER_OBJ_FACTORY(TrackWidget);
+    }
+
     ObjPtrList<RndMesh, class ObjectDir> mMeshes; // 0x20
     ObjPtrList<RndMesh, class ObjectDir> mMeshesLeft; // 0x30
     ObjPtrList<RndMesh, class ObjectDir> mMeshesSpan; // 0x40

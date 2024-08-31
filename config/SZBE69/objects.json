@@ -176,6 +176,11 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
 
+            "system/track/Track.cpp": "NonMatching",
+            "system/track/TrackDir.cpp": "NonMatching",
+            "system/track/TrackWidget.cpp": "NonMatching",
+            "system/track/TrackWidgetImp.cpp": "NonMatching",
+
             "system/ui/LabelNumberTicker.cpp": "NonMatching",
             "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",

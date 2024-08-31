@@ -70,6 +70,10 @@ public:
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
 
+    static void Register(){
+        REGISTER_OBJ_FACTORY(TrackDir);
+    }
+
     bool mRunning; // 0x1d6
     ObjPtr<RndGroup, ObjectDir> mDrawGroup; // 0x1d8
     ObjPtr<RndGroup, ObjectDir> mAnimGroup; // 0x1e4
