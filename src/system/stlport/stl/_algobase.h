@@ -538,7 +538,7 @@ count(_InputIter __first, _InputIter __last, const _Tp& __val) {
 
 // find and find_if. Note find may be expressed in terms of find_if if appropriate binder was available.
 template <class _InputIter, class _Tp>
-_InputIter find(_InputIter __first, _InputIter __last, const _Tp& __val);
+inline _InputIter find(_InputIter __first, _InputIter __last, const _Tp& __val);
 
 template <class _InputIter, class _Predicate>
 _InputIter find_if(_InputIter __first, _InputIter __last, _Predicate __pred);
