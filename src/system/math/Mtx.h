@@ -187,13 +187,6 @@ public:
         m = mtx; v = vec;
     }
 
-    void SetFromDA(const class DataArray* da) {
-        Reset();
-        v.x = da->Float(2);
-        v.y = da->Float(3);
-        v.z = da->Float(4);
-    }
-
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
         m.Zero();

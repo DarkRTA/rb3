@@ -14,7 +14,7 @@
 INIT_REVS(TrackWidget)
 
 TrackWidget::TrackWidget() : mMeshes(this, kObjListNoNull), mMeshesLeft(this, kObjListNoNull), mMeshesSpan(this, kObjListNoNull), mMeshesRight(this, kObjListNoNull),
-    mEnviron(this, 0), mBaseLength(1.0f), mBaseWidth(1.0f), mOffset(0.0f, 0.0f, 0.0f), mTrackDir(0), mImp(0), mFont(this, 0), mTextObj(this, 0), mTextAlignment(RndText::kMiddleCenter),
+    mEnviron(this, 0), mBaseLength(1.0f), mBaseWidth(1.0f), mXOffset(0), mYOffset(0), mZOffset(0), mTrackDir(0), mImp(0), mFont(this, 0), mTextObj(this, 0), mTextAlignment(RndText::kMiddleCenter),
     mTextColor(1.0f, 1.0f, 1.0f), mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), mActive(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), mMaxTextInstances(0) {
     SyncImp();
 }
@@ -47,7 +47,9 @@ BEGIN_COPYS(TrackWidget)
     COPY_MEMBER_FROM(tw, mMat)
     COPY_MEMBER_FROM(tw, mTextColor)
     COPY_MEMBER_FROM(tw, mAltTextColor)
-    COPY_MEMBER_FROM(tw, mOffset)
+    COPY_MEMBER_FROM(tw, mXOffset)
+    COPY_MEMBER_FROM(tw, mYOffset)
+    COPY_MEMBER_FROM(tw, mZOffset)
     COPY_MEMBER_FROM(tw, mAllowShift)
     COPY_MEMBER_FROM(tw, mAllowLineRotation)
 END_COPYS
@@ -107,10 +109,10 @@ BEGIN_LOADS(TrackWidget)
         bs >> mTextColor;
         bs >> mAltTextColor;
     }
-    if(gRev > 0xB) bs >> mOffset.y;
+    if(gRev > 0xB) bs >> mYOffset;
     if(gRev > 0xC){
-        bs >> mOffset.x;
-        bs >> mOffset.z;
+        bs >> mXOffset;
+        bs >> mZOffset;
     }
     if(gRev > 0xD){
         LOAD_BITFIELD(bool, mAllowShift)
@@ -142,6 +144,7 @@ void TrackWidget::Poll(){
 }
 
 bool TrackWidget::Empty(){ return mImp->Empty(); }
+int TrackWidget::Size() const { return mImp->Size(); }
 float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 
 // void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Transform::operator= is inlined psq nonsense
@@ -153,17 +156,17 @@ float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 //     UpdateActiveStatus();
 // }
 
-// void TrackWidget::AddTextInstance(const Transform& Ct, class String s, bool b) {
-//     Transform t = Ct;
-//     ApplyOffsets(t);
-//     if (unk_0x84->AddTextInstance(t, s, b) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
-//     UpdateActiveStatus();
-// }
+void TrackWidget::AddTextInstance(const Transform& Ct, class String s, bool b) {
+    Transform t = Ct;
+    ApplyOffsets(t);
+    if (mImp->AddTextInstance(t, s, b) && mTrackDir->WarnOnResort()) MILO_WARN("%s instances resorted", mName);
+    UpdateActiveStatus();
+}
 
-// void TrackWidget::AddMeshInstance(const Transform& Ct, RndMesh* m, float f) {
-//     if (unk_0x84->AddMeshInstance(Ct, m, f) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
-//     UpdateActiveStatus();
-// }
+void TrackWidget::AddMeshInstance(const Transform& Ct, RndMesh* m, float f) {
+    if (mImp->AddMeshInstance(Ct, m, f) && mTrackDir->WarnOnResort()) MILO_WARN("%s instances resorted", mName);
+    UpdateActiveStatus();
+}
 
 // void TrackWidget::RemoveAt(float f) {
 //     unk_0x84->RemoveAt(unk_0x80->SecondsToY(f) + unk_0x74.y, unk_0x74.x, -1);
@@ -173,13 +176,13 @@ float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 //     t.v += unk_0x74; 
 // }
 
-// void TrackWidget::Clear() { unk_0x84->Clear(); }
+void TrackWidget::Clear() { mImp->Clear(); }
 
-// void TrackWidget::SetTextAlignment(RndText::Alignment a) {
-//     if (a == mAlignment) return;
-//     mAlignment = a;
-//     SyncImp();
-// }
+void TrackWidget::SetTextAlignment(RndText::Alignment a) {
+    if (a == mTextAlignment) return;
+    mTextAlignment = a;
+    SyncImp();
+}
 
 // void TrackWidget::Mats(std::list<class RndMat*>& mats, bool) {
 //     for (std::list<class RndMat*>::iterator i = mats.begin(); *i != NULL; i++) {
@@ -204,37 +207,47 @@ float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 //     if (TheLoadMgr.mEditMode) Init();
 // }
 
-// DataNode TrackWidget::OnSetMeshes(const DataArray* da) {
-//     unk_0x20.clear();
-//     for (int i = 2; i < da->Size(); i++)
-//         unk_0x20.push_back(da->Obj<RndMesh>(i));
-//     return DataNode();
-// }
+DataNode TrackWidget::OnSetMeshes(const DataArray* da){
+    mMeshes.clear();
+    for(int i = 2; i < da->Size(); i++){
+        mMeshes.push_back(da->Obj<RndMesh>(i));
+    }
+    return DataNode(0);
+}
 
-// DataNode TrackWidget::OnAddInstance(const DataArray* da) {
-//     Transform t;
-//     t.SetFromDA(da);
-//     AddInstance(t, 0);
-//     return DataNode();
-// }
+DataNode TrackWidget::OnAddInstance(const DataArray* da) {
+    Transform t;
+    t.Reset();
+    t.v.x = da->Float(2);
+    t.v.y = da->Float(3);
+    t.v.z = da->Float(4);
+    AddInstance(t, 0);
+    return DataNode(0);
+}
 
-// DataNode TrackWidget::OnAddTextInstance(const DataArray* da) {
-//     Transform t;
-//     t.SetFromDA(da);
-//     class String s(da->Str(5));
-//     AddTextInstance(t, s, false);
-//     return DataNode();
-// }
+DataNode TrackWidget::OnAddTextInstance(const DataArray* da) {
+    Transform t;
+    t.Reset();
+    t.v.x = da->Float(2);
+    t.v.y = da->Float(3);
+    t.v.z = da->Float(4);
+    class String s(da->Str(5));
+    AddTextInstance(t, s, false);
+    return DataNode(0);
+}
 
-// DataNode TrackWidget::OnAddMeshInstance(const DataArray* da) {
-//     Transform t;
-//     t.SetFromDA(da);
-//     AddMeshInstance(t, da->Obj<RndMesh>(5), 0);
-//     return DataNode();
-// }
+DataNode TrackWidget::OnAddMeshInstance(const DataArray* da) {
+    Transform t;
+    t.Reset();
+    t.v.x = da->Float(2);
+    t.v.y = da->Float(3);
+    t.v.z = da->Float(4);
+    AddMeshInstance(t, da->Obj<RndMesh>(5), 0);
+    return DataNode(0);
+}
 
 void TrackWidget::UpdateActiveStatus() {
-    if (!mActive && !mImp->Empty()) {
+    if (!mActive && !Empty()) {
         mTrackDir->AddActiveWidget(this);
         mActive = true;
     }
@@ -248,7 +261,7 @@ BEGIN_HANDLERS(TrackWidget)
     HANDLE(add_instance, OnAddInstance)
     HANDLE(add_text_instance, OnAddTextInstance)
     HANDLE(add_mesh_instance, OnAddMeshInstance)
-    HANDLE_EXPR(size, mImp->Size())
+    HANDLE_EXPR(size, Size())
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(575)
@@ -286,9 +299,9 @@ BEGIN_PROPSYNCS(TrackWidget)
     SYNC_PROP_MODIFY_ALT(text_color, mTextColor, SyncImp())
     SYNC_PROP_MODIFY_ALT(alt_text_color, mAltTextColor, SyncImp())
     SYNC_PROP_MODIFY_ALT(mat, mMat, SyncImp())
-    SYNC_PROP(x_offset, mOffset.x)
-    SYNC_PROP(y_offset, mOffset.y)
-    SYNC_PROP(z_offset, mOffset.z)
+    SYNC_PROP(x_offset, mXOffset)
+    SYNC_PROP(y_offset, mYOffset)
+    SYNC_PROP(z_offset, mZOffset)
     {
         static Symbol _s("allow_shift");
         if(sym == _s){

@@ -66,6 +66,7 @@ public:
     void SetScrollSpeed(float);
     float ViewTimeSeconds() const;
     void SetRunning(bool);
+    bool WarnOnResort() const { return mWarnOnResort; }
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)

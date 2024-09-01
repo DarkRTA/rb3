@@ -31,6 +31,7 @@ public:
     void SetInactive();
     void SetTextAlignment(RndText::Alignment);
     bool Empty();
+    int Size() const;
     void ApplyOffsets(Transform&);
     void UpdateActiveStatus();
     void RemoveAt(float);
@@ -61,7 +62,9 @@ public:
     ObjPtr<RndEnviron, class ObjectDir> mEnviron; // 0x60
     float mBaseLength; // 0x6c
     float mBaseWidth; // 0x70
-    Vector3 mOffset; // 0x74
+    float mXOffset; // 0x74
+    float mYOffset; // 0x78
+    float mZOffset; // 0x7c
     TrackDir* mTrackDir; // 0x80
     TrackWidgetImpBase* mImp; // 0x84
     ObjPtr<RndFont, class ObjectDir> mFont; // 0x88

@@ -1248,6 +1248,9 @@ system/track/Track.cpp:
 system/track/TrackDir.cpp:
 	.text       start:0x8053E2A4 end:0x80541078
 
+system/track/TrackWidget.cpp:
+	.text       start:0x80541078 end:0x80546394
+
 system/ui/LabelNumberTicker.cpp:
 	.text       start:0x80549150 end:0x8054A190
 
