@@ -15,7 +15,7 @@ INIT_REVS(TrackWidget)
 
 TrackWidget::TrackWidget() : mMeshes(this, kObjListNoNull), mMeshesLeft(this, kObjListNoNull), mMeshesSpan(this, kObjListNoNull), mMeshesRight(this, kObjListNoNull),
     mEnviron(this, 0), mBaseLength(1.0f), mBaseWidth(1.0f), mOffset(0.0f, 0.0f, 0.0f), mTrackDir(0), mImp(0), mFont(this, 0), mTextObj(this, 0), mTextAlignment(RndText::kMiddleCenter),
-    mTextColor(1.0f, 1.0f, 1.0f), mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), unkd0b7(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), unkd4(0) {
+    mTextColor(1.0f, 1.0f, 1.0f), mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), unkd0b7(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), mMaxTextInstances(0) {
 
 }
 
@@ -259,40 +259,109 @@ SAVE_OBJ(TrackWidget, 0x64)
 //     HANDLE_CHECK(575)
 // END_HANDLERS
 
-// BEGIN_PROPSYNCS(TrackWidget)
-//     SYNC_PROP_ACTION(meshes, unk_0x20, 0x11, CheckScales())
-//     SYNC_PROP((Symbol)"wide_widget", unk_0xD4)
-//     SYNC_PROP(meshes_left, unk_0x30)
-//     SYNC_PROP(meshes_span, unk_0x40)
-//     SYNC_PROP(meshes_right, unk_0x50)
-//     SYNC_PROP((Symbol)"environ", unk_0x60)
-//     SYNC_PROP(base_length, unk_0x6C)
-//     SYNC_PROP(base_width, unk_0x70)
-//     // SYNC_PROP((Symbol)"max_meshes", ) // part of the bitfield... 
-//     SYNC_PROP_ACTION(font, unk_0x88, 0x11, SyncImp())
-//     SYNC_PROP_ACTION(text_obj, unk_0x94, 0x11, SyncImp())
-//     SYNC_PROP_ACTION(text_alignment, *(int*)&mAlignment, 0x11, SyncImp()) // compiler complains if you don't do the dirty variant
-//     SYNC_PROP_ACTION(text_color, unk_0xA4, 0x11, SyncImp())
-//     SYNC_PROP_ACTION(alt_text_color, unk_0xB4, 0x11, SyncImp())
-//     SYNC_PROP_ACTION(mat, unk_0xC4, 0x11, SyncImp())
-//     SYNC_PROP(x_offset, unk_0x74.x)
-//     SYNC_PROP(y_offset, unk_0x74.y)
-//     SYNC_PROP(z_offset, unk_0x74.z)
-//     // SYNC_PROP_ACTION((Symbol)"allow_shift", *(bool*)&unk_0xD0_7, 0x11, SyncImp()) // bitfield
-
-//     if (sym == (Symbol) "widget_type") {
-//         int x = mWidgetType;
-//         bool synced = PropSync(x, _val, _prop, _i + 1, _op);
-//         mWidgetType = x;
-//         if (!synced)
-//             return false;
-//         else {
-//             if (!(_op & (0x11))) {
-//                 SyncImp();
-//             }
-//             return true;
-//         }
-//     }
-
-//     SYNC_SUPERCLASS(RndDrawable)
-// END_PROPSYNCS
+#pragma push
+#pragma pool_data off
+BEGIN_PROPSYNCS(TrackWidget)
+    SYNC_PROP_MODIFY_ALT(meshes, mMeshes, CheckScales())
+    {
+        static Symbol _s("wide_widget");
+        if(sym == _s){
+            if(_op == kPropSet){ mWideWidget = _val.Int(0); }
+            else _val = DataNode(mWideWidget);
+            return true;
+        }
+    }
+    SYNC_PROP(meshes_left, mMeshesLeft)
+    SYNC_PROP(meshes_span, mMeshesSpan)
+    SYNC_PROP(meshes_right, mMeshesRight)
+    SYNC_PROP_STATIC(environ, mEnviron)
+    SYNC_PROP(base_length, mBaseLength)
+    SYNC_PROP(base_width, mBaseWidth)
+    {
+        static Symbol _s("max_meshes");
+        if(sym == _s){
+            if(_op == kPropSet){ mMaxMeshes = _val.Int(0); }
+            else _val = DataNode(mMaxMeshes);
+            return true;
+        }
+    }
+    SYNC_PROP_MODIFY_ALT(font, mFont, SyncImp())
+    SYNC_PROP_MODIFY_ALT(text_obj, mTextObj, SyncImp())
+    SYNC_PROP_MODIFY(text_alignment, (int&)mTextAlignment, SyncImp())
+    SYNC_PROP_MODIFY_ALT(text_color, mTextColor, SyncImp())
+    SYNC_PROP_MODIFY_ALT(alt_text_color, mAltTextColor, SyncImp())
+    SYNC_PROP_MODIFY_ALT(mat, mMat, SyncImp())
+    SYNC_PROP(x_offset, mOffset.x)
+    SYNC_PROP(y_offset, mOffset.y)
+    SYNC_PROP(z_offset, mOffset.z)
+    {
+        static Symbol _s("allow_shift");
+        if(sym == _s){
+            if(_op == kPropSet){ mAllowShift = _val.Int(0); }
+            else _val = DataNode(mAllowShift);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("allow_line_rotation");
+        bool bit = mAllowLineRotation;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mAllowLineRotation = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                SyncImp();
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("allow_rotation");
+        int bit = mAllowRotation;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mAllowRotation = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                SyncImp();
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("chars_per_inst");
+        int bit = mCharsPerInst;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mCharsPerInst = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                SyncImp();
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("max_text_instances");
+        int bit = mMaxTextInstances;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mMaxTextInstances = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                SyncImp();
+            }
+            return ret;
+        }
+    }
+    {
+        static Symbol _s("widget_type");
+        int bit = mWidgetType;
+        if(sym == _s){
+            bool ret = PropSync(bit, _val, _prop, _i + 1, _op);
+            mWidgetType = bit;
+            if(!(_op & (kPropSize|kPropGet))){
+                SyncImp();
+            }
+            return ret;
+        }
+    }
+    SYNC_SUPERCLASS(RndDrawable)
+END_PROPSYNCS
+#pragma pop
