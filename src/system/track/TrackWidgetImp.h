@@ -13,7 +13,8 @@
 #include <vector>
 
 class TrackWidgetImpBase {
-    public:
+public:
+    TrackWidgetImpBase(){}
     virtual ~TrackWidgetImpBase(){} // 0x8
     virtual bool Empty() = 0; // 0xC
     virtual int Size() = 0; // 0x10
@@ -32,9 +33,6 @@ class TrackWidgetImpBase {
     virtual void Init() {} // 0x44
     virtual void SetScale(float) {} // 0x48
     virtual void CheckValid(const char*) const {} // 0x4C
-    // virtual int Instances() = 0; // 0x50
-    // virtual void RemoveInstances() = 0; // 0x54
-    //  virtual int PushInstance() = 0; // 0x58
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
@@ -42,7 +40,9 @@ class TrackWidgetImpBase {
 
 template <typename T>
 class TrackWidgetImp : public TrackWidgetImpBase {
-    public:
+public:
+    TrackWidgetImp(){}
+    virtual ~TrackWidgetImp(){}
     virtual bool Empty();
     virtual int Size();
     virtual float GetFirstInstanceY();
