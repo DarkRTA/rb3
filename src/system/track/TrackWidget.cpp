@@ -15,8 +15,8 @@ INIT_REVS(TrackWidget)
 
 TrackWidget::TrackWidget() : mMeshes(this, kObjListNoNull), mMeshesLeft(this, kObjListNoNull), mMeshesSpan(this, kObjListNoNull), mMeshesRight(this, kObjListNoNull),
     mEnviron(this, 0), mBaseLength(1.0f), mBaseWidth(1.0f), mOffset(0.0f, 0.0f, 0.0f), mTrackDir(0), mImp(0), mFont(this, 0), mTextObj(this, 0), mTextAlignment(RndText::kMiddleCenter),
-    mTextColor(1.0f, 1.0f, 1.0f), mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), unkd0b7(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), mMaxTextInstances(0) {
-
+    mTextColor(1.0f, 1.0f, 1.0f), mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), mActive(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), mMaxTextInstances(0) {
+    SyncImp();
 }
 
 TrackWidget::~TrackWidget(){
@@ -24,30 +24,33 @@ TrackWidget::~TrackWidget(){
     mImp = 0;
 }
 
-// BEGIN_COPYS(TrackWidget)
-//     GET_COPY_AND_ASSERT(TrackWidget, 66)
-//     COPY_SUPERCLASS(Hmx::Object)
-//     COPY_SUPERCLASS(RndDrawable)
-//     COPY_MEMBER(unk_0x20)
-//     COPY_MEMBER(unk_0xD0_1)
-//     COPY_MEMBER(unk_0x30)
-//     COPY_MEMBER(unk_0x40)
-//     COPY_MEMBER(unk_0x50)
-//     COPY_MEMBER(unk_0x60)
-//     COPY_MEMBER(unk_0x6C)
-//     COPY_MEMBER(unk_0x70)
-//     COPY_MEMBER(unk_0xD0_2)
-//     COPY_MEMBER(unk_0x88)
-//     COPY_MEMBER(unk_0x94)
-//     COPY_MEMBER(mAlignment)
-    
-//     COPY_MEMBER(unk_0xC4)
-//     COPY_MEMBER(unk_0xA4)
-//     COPY_MEMBER(unk_0xB4)
-//     COPY_MEMBER(unk_0x74)
-//     COPY_MEMBER(unk_0xD0_3)
-//     COPY_MEMBER(mWidgetType)
-// END_COPYS
+BEGIN_COPYS(TrackWidget)
+    CREATE_COPY_AS(TrackWidget, tw)
+    MILO_ASSERT(tw, 66);
+    COPY_SUPERCLASS_FROM(Hmx::Object, tw)
+    COPY_SUPERCLASS_FROM(RndDrawable, tw)
+    COPY_MEMBER_FROM(tw, mMeshes)
+    COPY_MEMBER_FROM(tw, mWideWidget)
+    COPY_MEMBER_FROM(tw, mMeshesLeft)
+    COPY_MEMBER_FROM(tw, mMeshesSpan)
+    COPY_MEMBER_FROM(tw, mMeshesRight)
+    COPY_MEMBER_FROM(tw, mEnviron)
+    COPY_MEMBER_FROM(tw, mBaseLength)
+    COPY_MEMBER_FROM(tw, mBaseWidth)
+    COPY_MEMBER_FROM(tw, mAllowRotation)
+    COPY_MEMBER_FROM(tw, mFont)
+    COPY_MEMBER_FROM(tw, mTextObj)
+    COPY_MEMBER_FROM(tw, mTextAlignment)
+    COPY_MEMBER_FROM(tw, mCharsPerInst)
+    COPY_MEMBER_FROM(tw, mMaxTextInstances)
+    COPY_MEMBER_FROM(tw, mWidgetType)
+    COPY_MEMBER_FROM(tw, mMat)
+    COPY_MEMBER_FROM(tw, mTextColor)
+    COPY_MEMBER_FROM(tw, mAltTextColor)
+    COPY_MEMBER_FROM(tw, mOffset)
+    COPY_MEMBER_FROM(tw, mAllowShift)
+    COPY_MEMBER_FROM(tw, mAllowLineRotation)
+END_COPYS
 
 SAVE_OBJ(TrackWidget, 0x64)
 
@@ -238,26 +241,26 @@ SAVE_OBJ(TrackWidget, 0x64)
 //     return DataNode();
 // }
 
-// void TrackWidget::UpdateActiveStatus() {
-//     if (!mActive && !unk_0x84->Empty()) {
-//         unk_0x80->AddActiveWidget(this);
-//         mActive = true;
-//     }
-// }
+void TrackWidget::UpdateActiveStatus() {
+    if (!mActive && !mImp->Empty()) {
+        mTrackDir->AddActiveWidget(this);
+        mActive = true;
+    }
+}
 
-// void TrackWidget::SetInactive() {mActive = 0;}
+void TrackWidget::SetInactive() { mActive = false; }
 
-// BEGIN_HANDLERS(TrackWidget)
-//     HANDLE_ACTION(clear, Clear())
-//     HANDLE(set_meshes, OnSetMeshes)
-//     HANDLE(add_instance, OnAddInstance)
-//     HANDLE(add_text_instance, OnAddTextInstance)
-//     HANDLE(add_mesh_instance, OnAddMeshInstance)
-//     HANDLE_EXPR(size, unk_0x84->Size())
-//     HANDLE_SUPERCLASS(RndDrawable)
-//     HANDLE_SUPERCLASS(Hmx::Object)
-//     HANDLE_CHECK(575)
-// END_HANDLERS
+BEGIN_HANDLERS(TrackWidget)
+    HANDLE_ACTION(clear, Clear())
+    HANDLE(set_meshes, OnSetMeshes)
+    HANDLE(add_instance, OnAddInstance)
+    HANDLE(add_text_instance, OnAddTextInstance)
+    HANDLE(add_mesh_instance, OnAddMeshInstance)
+    HANDLE_EXPR(size, mImp->Size())
+    HANDLE_SUPERCLASS(RndDrawable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(575)
+END_HANDLERS
 
 #pragma push
 #pragma pool_data off

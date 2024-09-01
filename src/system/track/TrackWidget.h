@@ -71,7 +71,7 @@ public:
     Hmx::Color mAltTextColor; // 0xb4
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xc4
     // 0xd0
-    bool unkd0b7 : 1; // 0xd0 >> 7 & 1
+    bool mActive : 1; // 0xd0 >> 7 & 1
     bool mWideWidget : 1; // 0xd0 >> 6 & 1
     bool mAllowRotation : 1; // 0xd0 >> 5 & 1
     bool mAllowShift : 1; // 0xd0 >> 4 & 1
