@@ -54,85 +54,78 @@ END_COPYS
 
 SAVE_OBJ(TrackWidget, 0x64)
 
-// void TrackWidget::Load(BinStream& bs) { // bitfield and stack nonsense abound
-//     bool x, y, z, a;
-//     int i, u____;
-//     LOAD_REVS(bs)
-//     ASSERT_REVS(15, 0)
-//     Hmx::Object::Load(bs);
-//     if (gRev > 0) RndDrawable::Load(bs);
-//     bs >> unk_0x20;
-//     if (gRev > 4) {
-//         bs >> x;
-//         unk_0xD0_1 = x;
-//         bs >> unk_0x30;
-//         bs >> unk_0x40;
-//         bs >> unk_0x50;
-//     }
-//     bs >> unk_0x60;
-//     if (gRev > 2) bs >> unk_0x6C;
-//     if (gRev > 8) bs >> unk_0x70;
-//     if ((u16)(gRev + 0xFFFE) <= 5) { // ?
-//         bs >> y;
-//         if (!y) {
-//             //mWidgetType = y;
-//         }
-//     }
-//     if (gRev > 3) {
-//         bs >> z;
-//         unk_0xD0_2 = z;
-//     }
-//     if (gRev > 5) {
-//         bs >> unk_0x88;
-//         if (gRev < 8) {
-//             bs >> x;
-//             if (x) ; // i have no idea
-//         }
-//     }
-//     if (gRev > 6) {
-//         bs >> unk_0x94;
-//         bs >> u____;
-//         MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 175);
-//         bs >> i;
-//         MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 176);
-//     }
-//     if (gRev > 7) {
+BEGIN_LOADS(TrackWidget)
+    LOAD_REVS(bs)
+    ASSERT_REVS(15, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev != 0) LOAD_SUPERCLASS(RndDrawable)
+    bs >> mMeshes;
+    if(gRev > 4){
+        LOAD_BITFIELD(bool, mWideWidget)
+        bs >> mMeshesLeft;
+        bs >> mMeshesSpan;
+        bs >> mMeshesRight;
+    }
+    bs >> mEnviron;
+    if(gRev > 2) bs >> mBaseLength;
+    if(gRev > 8) bs >> mBaseWidth;
+    if(gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7){
+        bool bbb;
+        bs >> bbb;
+        if(bbb) mWidgetType = 1;
+    }
+    if(gRev > 3){
+        LOAD_BITFIELD(bool, mAllowRotation)
+    }
+    if(gRev > 5){
+        bs >> mFont;
+        if(gRev < 8){
+            bool bbb;
+            bs >> bbb;
+            if(bbb) mWidgetType = 2;
+        }
+    }
+    if(gRev > 6){
+        bs >> mTextObj;
+        int u____;
+        bs >> u____;
+        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xAF);
+        mCharsPerInst = u____;
+        bs >> u____;
+        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xB0);
+        mMaxTextInstances = u____;
+    }
+    if(gRev > 7){
+        int u____;
+        bs >> u____;
+        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 3 - 1)) - 1), 0xB4);
+        mWidgetType = u____;
+        bs >> mMat;
+    }
+    if(gRev > 9) bs >> (int&)mTextAlignment;
+    if(gRev > 10){
+        bs >> mTextColor;
+        bs >> mAltTextColor;
+    }
+    if(gRev > 0xB) bs >> mOffset.y;
+    if(gRev > 0xC){
+        bs >> mOffset.x;
+        bs >> mOffset.z;
+    }
+    if(gRev > 0xD){
+        LOAD_BITFIELD(bool, mAllowShift)
+    }
+    if(gRev > 0xE){
+        LOAD_BITFIELD(bool, mAllowLineRotation)
+    }
+    SyncImp();
+END_LOADS
 
+void TrackWidget::CheckValid() const {
+    if(TheLoadMgr.EditMode() && mImp) mImp->CheckValid(mName);
+}
 
-//         bs >> unk_0xC4;
-//     }
-//     if (gRev > 9) {
-//         bs >> i;
-//         mAlignment = (RndText::Alignment)i;
-//     }
-//     if (gRev > 10) {
-//         bs >> unk_0xA4;
-//         bs >> unk_0xB4;
-//     }
-//     if (gRev > 11) bs >> unk_0x74.y;
-//     if (gRev > 12) {
-//         bs >> unk_0x74.x;
-//         bs >> unk_0x74.z;
-//     }
-//     if (gRev > 13) {
-//         bs >> y;
-//         unk_0xD0_3 = y;
-//     }
-//     if (gRev > 14) {
-//         bs >> x;
-//         mWidgetType = x;
-//     }
-
-//     SyncImp();
-// }
-
-// void TrackWidget::CheckValid() const {
-//     if (!TheLoadMgr.EditMode()) return;
-//     if (unk_0x84 == NULL) return;
-//     unk_0x84->CheckValid(mName);
-// }
-
-// void TrackWidget::Init() { unk_0x84->Init(); }
+void TrackWidget::Init(){ mImp->Init(); }
 
 // void TrackWidget::DrawShowing() {
 //     if (!unk_0x84->Empty()) {
