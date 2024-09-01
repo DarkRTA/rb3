@@ -43,19 +43,24 @@ class TrackWidgetImp : public TrackWidgetImpBase {
 public:
     TrackWidgetImp(){}
     virtual ~TrackWidgetImp(){}
-    virtual bool Empty();
-    virtual int Size();
+    virtual bool Empty(){ return Instances().empty(); }
+    virtual int Size(){ return Instances().size(); }
     virtual float GetFirstInstanceY();
     virtual float GetLastInstanceY();
     virtual void Sort();
-    virtual void Clear();
+    virtual void Clear(){ DoClear(Instances()); }
     virtual void RemoveAt(float, float, float);
     virtual void RemoveUntil(float, float);
     virtual int AddInstance(Transform, float);
     virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir>&, int);
-    virtual std::list<T>* Instances();
+    virtual std::list<T>& Instances();
     virtual void RemoveInstances(std::list<T>&, std::list<T>::iterator, std::list<T>::iterator);
     virtual int PushInstance(T&);
+
+    void DoClear(std::list<T>& insts){
+        insts.clear();
+        SetDirty(true);
+    }
 };
 
 class TextInstance {
@@ -70,8 +75,7 @@ class CharWidgetImp : public TrackWidgetImp<TextInstance> {
     virtual void Clear();
     virtual int AddTextInstance(Transform, String, bool);
     virtual void SetDirty(bool);
-    virtual std::list<TextInstance>* Instances();
-    // CharWidgetImp::RemoveInstances(std::list<TextInstance>&, std::list<TextInstance>::iterator, std::list<TextInstance>::iterator)
+    virtual std::list<TextInstance>& Instances();
     virtual void RemoveInstances(std::list<TextInstance>&, std::list<TextInstance>::iterator, std::list<TextInstance>::iterator);
     virtual int PushInstance(TextInstance&);
 
@@ -91,18 +95,14 @@ class MeshInstance {
 };
 
 class MatWidgetImp : public TrackWidgetImp<MeshInstance> {
-    public:
+public:
+    virtual std::list<MeshInstance>& Instances();
 
     std::list<MeshInstance> mInstances;
-
-    virtual std::list<MeshInstance>* Instances();
 };
 
 class MultiMeshWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> { 
 public:
-
-    std::vector<RndMultiMesh*> mMeshes;
-
     MultiMeshWidgetImp(const ObjPtrList<RndMesh, ObjectDir>&, bool);
     virtual ~MultiMeshWidgetImp();
     virtual bool Empty();
@@ -111,8 +111,12 @@ public:
     virtual float GetLastInstanceY();
     virtual int AddInstance(Transform, float);
     virtual void Init();
-    virtual std::list<RndMultiMesh::Instance>* Instances();
+    virtual std::list<RndMultiMesh::Instance>& Instances();
     virtual int PushInstance(RndMultiMesh::Instance&);
+
+    std::vector<RndMultiMesh*> mMultiMeshes; // 0x4
+    const ObjPtrList<RndMesh,ObjectDir>& mMeshes; // 0xc
+    bool unk10; // 0x10
 };
 
 class ImmediateWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
@@ -123,7 +127,7 @@ public:
 
     ImmediateWidgetImp(bool b) : unk_0xC(b) {} 
     virtual int AddInstance(Transform, float);
-    virtual std::list<RndMultiMesh::Instance>* Instances();
+    virtual std::list<RndMultiMesh::Instance>& Instances();
     virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir>&, int);
     virtual int PushInstance(RndMultiMesh::Instance&);
 };
