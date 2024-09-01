@@ -127,23 +127,22 @@ void TrackWidget::CheckValid() const {
 
 void TrackWidget::Init(){ mImp->Init(); }
 
-// void TrackWidget::DrawShowing() {
-//     if (!unk_0x84->Empty()) {
-//         if (&(*unk_0x60) != NULL && &(*unk_0x60) != RndEnviron::sCurrent) unk_0x60->Select(NULL);
+void TrackWidget::DrawShowing(){
+    if(!mImp->Empty()){
+        if(mEnviron && mEnviron != RndEnviron::sCurrent) mEnviron->Select(0);
+        mImp->DrawInstances(mMeshes, mMaxMeshes);
+    }
+}
 
-//         unk_0x84->DrawInstances(unk_0x20, unk_0xD0_7);
-//     }
-// }
+void TrackWidget::Poll(){
+    if(mTrackDir){
+        mImp->RemoveUntil(mTrackDir->CutOffY(), mBaseLength);
+        mImp->Poll();
+    }
+}
 
-// void TrackWidget::Poll() {
-//     if (unk_0x80) {
-//         unk_0x84->RemoveUntil(unk_0x80->CutOffY(), unk_0x6C);
-//         unk_0x84->Poll();
-//     }
-// }
-
-// bool TrackWidget::Empty() { return unk_0x84->Empty(); }
-// float TrackWidget::GetFirstInstanceY() { return unk_0x84->GetFirstInstanceY(); }
+bool TrackWidget::Empty(){ return mImp->Empty(); }
+float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 
 // void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Transform::operator= is inlined psq nonsense
 //     if (f != 0) {
