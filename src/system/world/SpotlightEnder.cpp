@@ -4,7 +4,7 @@
 INIT_REVS(SpotlightEnder)
 
 SpotlightEnder::SpotlightEnder(){
-    mOrder = -900.0f;
+    SetOrder(-900.0f);
 }
 
 SpotlightEnder::~SpotlightEnder(){

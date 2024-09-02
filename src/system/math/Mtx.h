@@ -53,12 +53,12 @@ namespace Hmx {
             float s = Sine(angle);
             Set(1.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, -s, c);
         }
-        RETAIL_DONT_INLINE_CLASS void Identity(){
+        void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        RETAIL_DONT_INLINE_CLASS Matrix3& operator=(const Matrix3& mtx){
+        Matrix3& operator=(const Matrix3& mtx){
             PSQ_MOVE(x.x, mtx.x.x);
             x.z = mtx.x.z;
 
@@ -75,7 +75,7 @@ namespace Hmx {
             return x == mtx.x && y == mtx.y && z == mtx.z;
         }
 
-        RETAIL_DONT_INLINE_CLASS bool operator!=(const Matrix3& mtx) const {
+        bool operator!=(const Matrix3& mtx) const {
             return x != mtx.x || y != mtx.y || z != mtx.z;
         }
 
@@ -185,13 +185,6 @@ public:
 
     void Set(const Hmx::Matrix3& mtx, const Vector3& vec){
         m = mtx; v = vec;
-    }
-
-    void SetFromDA(const class DataArray* da) {
-        Reset();
-        v.x = da->Float(2);
-        v.y = da->Float(3);
-        v.z = da->Float(4);
     }
 
     void LookAt(const Vector3&, const Vector3&);

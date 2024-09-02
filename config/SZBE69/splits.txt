@@ -1242,6 +1242,18 @@ system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
+system/track/Track.cpp:
+	.text       start:0x8053E0F4 end:0x8053E2A4
+
+system/track/TrackDir.cpp:
+	.text       start:0x8053E2A4 end:0x80541078
+
+system/track/TrackWidget.cpp:
+	.text       start:0x80541078 end:0x80546394
+
+system/track/TrackWidgetImp.cpp:
+	.text       start:0x80546394 end:0x80549150
+
 system/ui/LabelNumberTicker.cpp:
 	.text       start:0x80549150 end:0x8054A190
 
@@ -1377,6 +1389,31 @@ system/world/LightPreset.cpp:
 
 system/world/LightHue.cpp:
 	.text       start:0x805AECCC end:0x805B04EC
+
+system/world/LightPresetManager.cpp:
+	.text       start:0x805B04EC end:0x805B22D8
+
+system/world/Reflection.cpp:
+	.text       start:0x805B22D8 end:0x805B31E8
+
+system/world/World.cpp:
+	.text       start:0x805B31E8 end:0x805B368C
+
+system/world/Spotlight.cpp:
+	.text       start:0x805B368C end:0x805BB3BC
+
+system/world/SpotlightDrawer.cpp:
+	.text       start:0x805BB3BC end:0x805C0E04
+	.ctors      start:0x807EFFD8 end:0x807EFFDC
+
+system/world/SpotlightEnder.cpp:
+	.text       start:0x805C0E04 end:0x805C13F8
+
+system/world/Instance.cpp:
+	.text       start:0x805C13F8 end:0x805C40C4
+
+system/world/EventAnim.cpp:
+	.text       start:0x805C40C4 end:0x805C6814
 
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850

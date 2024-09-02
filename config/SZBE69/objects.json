@@ -176,6 +176,11 @@
 
             "system/synth/ADSR.cpp": "NonMatching",
 
+            "system/track/Track.cpp": "NonMatching",
+            "system/track/TrackDir.cpp": "NonMatching",
+            "system/track/TrackWidget.cpp": "NonMatching",
+            "system/track/TrackWidgetImp.cpp": "NonMatching",
+
             "system/ui/LabelNumberTicker.cpp": "NonMatching",
             "system/ui/LabelShrinkWrapper.cpp": "NonMatching",
             "system/ui/PanelDir.cpp": "NonMatching",
@@ -226,9 +231,17 @@
             "system/world/ColorPalette.cpp": "NonMatching",
             "system/world/Crowd.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
+            "system/world/EventAnim.cpp": "NonMatching",
             "system/world/FreeCamera.cpp": "NonMatching",
+            "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
-            "system/world/LightPreset.cpp": "NonMatching"
+            "system/world/LightPreset.cpp": "NonMatching",
+            "system/world/LightPresetManager.cpp": "NonMatching",
+            "system/world/Reflection.cpp": "NonMatching",
+            "system/world/Spotlight.cpp": "NonMatching",
+            "system/world/SpotlightDrawer.cpp": "NonMatching",
+            "system/world/SpotlightEnder.cpp": "NonMatching",
+            "system/world/World.cpp": "NonMatching"
         }
     },
     "RVL_SDK": {

@@ -7,6 +7,10 @@
 #include "decomp.h"
 
 namespace Hmx {
+    class Color32; // forward dec
+}
+
+namespace Hmx {
     class Color {
     public:
         static Color kWhite;
@@ -21,6 +25,7 @@ namespace Hmx {
         Color(float f1, float f2, float f3) : red(f1), green(f2), blue(f3), alpha(1.0f) {}
         Color(float f1, float f2, float f3, float f4) : red(f1), green(f2), blue(f3), alpha(f4) {}
         Color(int i) : alpha(1.0f) { Unpack(i); }
+        Color(const Color32&);
 
         // copy ctor uses asm magic
         Color(const Color& color){
@@ -50,6 +55,14 @@ namespace Hmx {
             return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }
 
+        int PackAlpha() const {
+            return 
+                ((int)(alpha * 255.0f) & 0xFF) << 24 | 
+                ((int)(blue * 255.0f) & 0xFF) << 16 |
+                ((int)(green * 255.0f) & 0xFF) << 8 |
+                ((int)(red * 255.0f) & 0xFF);
+        }
+
         void Unpack(int packed){
             red = (packed & 255) / 255.0f;
             green = ((packed >> 8) & 255) / 255.0f;
@@ -58,15 +71,32 @@ namespace Hmx {
     };
 
     class Color32 {
+    public:
         union {
-            uint x;
+            uint color;
             struct {
                 u8 a, b, g, r;
             };
         };
-    public:
+
         Color32(){ Clear(); }
-        inline void Clear() { x = -1; }
+        Color32(int i){ color = i; }
+        Color32(const Color32& other) {
+            color = other.color;
+        }
+        Color32(const Hmx::Color& col){ color = col.PackAlpha(); }
+        void Clear() { color = -1; }
+        void Set(Hmx::Color& col){
+            color = col.PackAlpha();
+        }
+        Color32& operator=(const Color32& other) {
+            color = other.color;
+            return *this;
+        }
+        void SetAlpha(float f){ a = f * 255.0f; }
+        int FullColor() const { return color; }
+        int Opaque() const { return color | 0xFF000000; }
+
         float fr() const { return r * 0.0039215688593685627f;}
         float fg() const { return g * 0.0039215688593685627f;}
         float fb() const { return b * 0.0039215688593685627f;}
@@ -85,6 +115,13 @@ inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
 
 inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
     bs >> color.red >> color.green >> color.blue >> color.alpha;
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, Hmx::Color32& color){
+    Hmx::Color regcolor;
+    bs >> regcolor;
+    color.Set(regcolor);
     return bs;
 }
 

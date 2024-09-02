@@ -107,6 +107,7 @@ public:
     PollState GetPollState() const { return mPollState; }
     int MinLod() const { return mMinLod; }
     int LastLod() const { return mLastLod; }
+    void SetMinLod(int lod){ mMinLod = lod; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);

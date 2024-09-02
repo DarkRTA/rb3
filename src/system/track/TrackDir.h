@@ -66,9 +66,15 @@ public:
     void SetScrollSpeed(float);
     float ViewTimeSeconds() const;
     void SetRunning(bool);
+    bool WarnOnResort() const { return mWarnOnResort; }
+    const Transform& SlotAt(int idx) const { return mSlots[idx]; }
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
+
+    static void Register(){
+        REGISTER_OBJ_FACTORY(TrackDir);
+    }
 
     bool mRunning; // 0x1d6
     ObjPtr<RndGroup, ObjectDir> mDrawGroup; // 0x1d8
