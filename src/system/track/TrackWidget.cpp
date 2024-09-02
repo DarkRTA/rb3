@@ -9,6 +9,7 @@
 #include "utl/Symbols.h"
 #include "utl/BinStream.h"
 #include "track/TrackDir.h"
+#include "track/TrackWidgetImp.h"
 #include <list>
 
 INIT_REVS(TrackWidget)
@@ -190,6 +191,24 @@ void TrackWidget::SetTextAlignment(RndText::Alignment a) {
         
 //     }
 // }
+
+void TrackWidget::SyncImp(){
+    RELEASE(mImp);
+    switch(mWidgetType){
+        case 2:
+            mImp = new CharWidgetImp(mFont, mTextObj, mCharsPerInst, mMaxTextInstances, mTextAlignment, Hmx::Color32(mTextColor), Hmx::Color32(mAltTextColor), mAllowLineRotation);
+            break;
+        case 3:
+            mImp = new MatWidgetImp(mMat);
+            break;
+        case 1:
+            mImp = new MultiMeshWidgetImp(mMeshes, mAllowRotation);
+            break;
+        default:
+            mImp = new ImmediateWidgetImp(mAllowRotation);
+            break;
+    }
+}
 
 // void TrackWidget::SyncImp() {
 //     delete unk_0x84; // genius move; can't have an out-of-sync widget if you just Make A New One
