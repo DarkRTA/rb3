@@ -144,7 +144,10 @@ void TrackWidget::Poll(){
     }
 }
 
-bool TrackWidget::Empty(){ return mImp->Empty(); }
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCEFUNC(TrackWidget, TrackWidget, Empty())
+#pragma pop
 int TrackWidget::Size() const { return mImp->Size(); }
 float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 
@@ -208,23 +211,11 @@ void TrackWidget::SyncImp(){
             mImp = new ImmediateWidgetImp(mAllowRotation);
             break;
     }
+    CheckValid();
+    if(TheLoadMgr.EditMode()) Init();
 }
 
-// void TrackWidget::SyncImp() {
-//     delete unk_0x84; // genius move; can't have an out-of-sync widget if you just Make A New One
-//     unk_0x84 = 0;
-//     switch (mWidgetType) {
-//         case 2:
-//             //unk_0x84 = new CharWidgetImp/*(NULL, NULL, 0, 0, RndText::kAlignCenterRight)*/;
-//         case 3:
-//             unk_0x84 = new MultiMeshWidgetImp(unk_0x20, unk_0xD0_2);
-//         case 1:
-//         default:
-//             unk_0x84 = new ImmediateWidgetImp(!unk_0xD0_2);
-//     }
-//     CheckValid();
-//     if (TheLoadMgr.mEditMode) Init();
-// }
+void TrackWidget::SetScale(float f){ mImp->SetScale(f); }
 
 DataNode TrackWidget::OnSetMeshes(const DataArray* da){
     mMeshes.clear();

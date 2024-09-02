@@ -52,17 +52,23 @@ public:
     virtual bool Empty(){ return Instances().empty(); }
     virtual int Size(){ return Instances().size(); }
     virtual float GetFirstInstanceY(){ return DoGetFirstInstanceY(Instances()); }
-    virtual float GetLastInstanceY();
+    virtual float GetLastInstanceY(){ return DoGetLastInstanceY(Instances()); }
     virtual void Sort(){ DoSort(Instances()); }
     virtual void Clear(){ DoClear(Instances()); }
-    virtual void RemoveAt(float, float, float);
-    virtual void RemoveUntil(float, float);
+    virtual void RemoveAt(float f1, float f2, float f3){
+        DoRemoveAt(Instances(), f1, f2, f3);
+    }
+    virtual void RemoveUntil(float f1, float f2){
+        DoRemoveUntil(Instances(), f1, f2);
+    }
     virtual std::list<T>& Instances() = 0;
     virtual void RemoveInstances(std::list<T>& list, std::list<T>::iterator start, std::list<T>::iterator end){
         list.erase(start, end);
         SetDirty(true);
     }
-    virtual void PushInstance(T&);
+    virtual void PushInstance(T& inst){
+        DoPushInstance(Instances(), inst);
+    }
 
     void DoClear(std::list<T>& insts){
         insts.clear();
@@ -74,8 +80,26 @@ public:
         return list.front().mXfm.v.y;
     }
 
+    float DoGetLastInstanceY(std::list<T>& list){
+        MILO_ASSERT(!list.empty(), 0x95);
+        return list.back().mXfm.v.y;
+    }
+
+    void DoRemoveAt(std::list<T>& insts, float f1, float f2, float f3){
+
+    }
+
+    void DoRemoveUntil(std::list<T>& insts, float f1, float f2){
+
+    }
+
     void DoSort(std::list<T>& insts){
         insts.sort(WidgetInstanceCmp<T>());
+    }
+
+    void DoPushInstance(std::list<T>& insts, T& instance){
+        insts.push_back(instance);
+        SetDirty(true);
     }
 
     NEW_OVERLOAD

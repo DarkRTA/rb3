@@ -57,6 +57,11 @@ float MultiMeshWidgetImp::GetFirstInstanceY(){
     else return DoGetFirstInstanceY(mMultiMeshes.front()->mInstances);
 }
 
+float MultiMeshWidgetImp::GetLastInstanceY(){
+    if(mMultiMeshes.empty()) return 0;
+    else return DoGetLastInstanceY(mMultiMeshes.front()->mInstances);
+}
+
 // CharWidgetImp::CharWidgetImp(RndFont* f, RndText* t, int i1, int i2, RndText::Alignment, Hmx::Color32, Hmx::Color32, bool) 
 //     : mDirty(false), unk_0x5(true), unk_0x8(i1), unk_0xC(i2), unk_0x10(t), unk_0x1C(f) {}
 

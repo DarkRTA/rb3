@@ -22,6 +22,7 @@ public:
     virtual void DrawShowing();
     virtual ~TrackWidget();
 
+    void SetScale(float);
     void Clear();
     void SyncImp();
     void Init();
@@ -30,7 +31,6 @@ public:
     void CheckScales() const;
     void SetInactive();
     void SetTextAlignment(RndText::Alignment);
-    bool Empty();
     int Size() const;
     void ApplyOffsets(Transform&);
     void UpdateActiveStatus();
@@ -40,6 +40,7 @@ public:
     void AddTextInstance(const Transform&, class String, bool);
     void AddMeshInstance(const Transform&, RndMesh*, float);
     void SetTrackDir(TrackDir* dir){ mTrackDir = dir; }
+    bool Empty(){ return mImp->Empty(); }
 
     DataNode OnSetMeshes(const DataArray*);
     DataNode OnAddInstance(const DataArray*);
