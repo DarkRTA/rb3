@@ -4,9 +4,9 @@
 #include "rndobj/Text.h"
 #include "obj/ObjPtr_p.h"
 #include "track/TrackWidgetImp.h"
+#include "track/TrackDir.h"
 
 class RndEnviron;
-class TrackDir;
 
 class TrackWidget : public RndDrawable {
 public:
@@ -35,12 +35,17 @@ public:
     void ApplyOffsets(Transform&);
     void UpdateActiveStatus();
     void RemoveAt(float);
+    void RemoveAt(float, int);
     float GetFirstInstanceY();
     void AddInstance(Transform, float);
     void AddTextInstance(const Transform&, class String, bool);
     void AddMeshInstance(const Transform&, RndMesh*, float);
     void SetTrackDir(TrackDir* dir){ mTrackDir = dir; }
     bool Empty(){ return mImp->Empty(); }
+
+    float NewYOffset(float secs) const {
+        return mYOffset + mTrackDir->SecondsToY(secs);
+    }
 
     DataNode OnSetMeshes(const DataArray*);
     DataNode OnAddInstance(const DataArray*);

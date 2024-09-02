@@ -151,14 +151,14 @@ DECOMP_FORCEFUNC(TrackWidget, TrackWidget, Empty())
 int TrackWidget::Size() const { return mImp->Size(); }
 float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 
-// void TrackWidget::AddInstance(Transform t, float f) { // these are all boned because Transform::operator= is inlined psq nonsense
-//     if (f != 0) {
-//         t.m.y.y = (unk_0x80->SecondsToY(f) + unk_0x74.y) / unk_0x6C;
-//     }
-//     ApplyOffsets(t);
-//     if (unk_0x84->AddInstance(t, f) && unk_0x80->unk_0x20C) MILO_WARN("%s instances resorted", mName);
-//     UpdateActiveStatus();
-// }
+void TrackWidget::AddInstance(Transform tf, float f){
+    if(f) tf.m.y.y = NewYOffset(f) / mBaseLength;
+    ApplyOffsets(tf);
+    if(mImp->AddInstance(Transform(tf), 0) && mTrackDir->WarnOnResort()){
+        MILO_WARN("%s instances resorted", mName);
+    }
+    UpdateActiveStatus();
+}
 
 void TrackWidget::AddTextInstance(const Transform& Ct, class String s, bool b) {
     Transform t = Ct;
@@ -172,13 +172,24 @@ void TrackWidget::AddMeshInstance(const Transform& Ct, RndMesh* m, float f) {
     UpdateActiveStatus();
 }
 
-// void TrackWidget::RemoveAt(float f) {
-//     unk_0x84->RemoveAt(unk_0x80->SecondsToY(f) + unk_0x74.y, unk_0x74.x, -1);
-// }
+void TrackWidget::RemoveAt(float f){
+    mImp->RemoveAt(NewYOffset(f), mXOffset, -1.0f);
+}
 
-// void TrackWidget::ApplyOffsets(Transform& t) {
-//     t.v += unk_0x74; 
-// }
+void TrackWidget::RemoveAt(float f, int i){
+    float y = NewYOffset(f);
+    float x_added = mXOffset + mTrackDir->SlotAt(i).v.x;
+    float f4;
+    if(i > 0) f4 = Abs(x_added - mTrackDir->SlotAt(i - 1).v.x) / 2.0f;
+    else f4 = Abs(mTrackDir->SlotAt(i + 1).v.x - x_added) / 2.0f;
+    mImp->RemoveAt(y, x_added, f4);
+}
+
+void TrackWidget::ApplyOffsets(Transform& t) {
+    t.v.x += mXOffset;
+    t.v.y += mYOffset;
+    t.v.z += mZOffset;
+}
 
 void TrackWidget::Clear() { mImp->Clear(); }
 
