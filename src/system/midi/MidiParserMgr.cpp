@@ -8,6 +8,8 @@
 
 MidiParserMgr* TheMidiParserMgr = 0;
 
+DECOMP_FORCEACTIVE(MidiParserMgr, "beatmatcher", "midi_parsers")
+
 inline DataArray* MidiParserArray(){
     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
 }

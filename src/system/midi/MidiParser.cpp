@@ -4,6 +4,8 @@
 #include "utl/Symbols.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/GemListInterface.h"
+#include "obj/Task.h"
+#include "midi/MidiParserMgr.h"
 
 std::list<MidiParser*> MidiParser::sParsers;
 DataNode* MidiParser::mpStart = 0;
@@ -41,20 +43,20 @@ void MidiParser::ClearManagedParsers(){
 
 void MidiParser::Init(){
     MidiParser::Register();
-    *MidiParser::mpStart = DataVariable("mp.start");
-    *MidiParser::mpEnd = DataVariable("mp.end");
-    *MidiParser::mpLength = DataVariable("mp.length");
-    *MidiParser::mpPrevStartDelta = DataVariable("mp.prev_start");
-    *MidiParser::mpPrevEndDelta = DataVariable("mp.prev_end");
-    *MidiParser::mpData = DataVariable("mp.data");
-    *MidiParser::mpVal = DataVariable("mp.val");
-    *MidiParser::mpSingleBit = DataVariable("mp.single_bit");
-    *MidiParser::mpLowestBit = DataVariable("mp.lowest_bit");
-    *MidiParser::mpLowestSlot = DataVariable("mp.lowest_slot");
-    *MidiParser::mpHighestSlot = DataVariable("mp.highest_slot");
-    *MidiParser::mpOutOfBounds = DataVariable("mp.out_of_bounds");
-    *MidiParser::mpBeforeDeltaSec = DataVariable("mp.before_delta_sec");
-    *MidiParser::mpAfterDeltaSec = DataVariable("mp.after_delta_sec");
+    MidiParser::mpStart = &DataVariable("mp.start");
+    MidiParser::mpEnd = &DataVariable("mp.end");
+    MidiParser::mpLength = &DataVariable("mp.length");
+    MidiParser::mpPrevStartDelta = &DataVariable("mp.prev_start");
+    MidiParser::mpPrevEndDelta = &DataVariable("mp.prev_end");
+    MidiParser::mpData = &DataVariable("mp.data");
+    MidiParser::mpVal = &DataVariable("mp.val");
+    MidiParser::mpSingleBit = &DataVariable("mp.single_bit");
+    MidiParser::mpLowestBit = &DataVariable("mp.lowest_bit");
+    MidiParser::mpLowestSlot = &DataVariable("mp.lowest_slot");
+    MidiParser::mpHighestSlot = &DataVariable("mp.highest_slot");
+    MidiParser::mpOutOfBounds = &DataVariable("mp.out_of_bounds");
+    MidiParser::mpBeforeDeltaSec = &DataVariable("mp.before_delta_sec");
+    MidiParser::mpAfterDeltaSec = &DataVariable("mp.after_delta_sec");
 }
 
 MidiParser::PostProcess::PostProcess() : zeroLength(false), startOffset(0),
@@ -69,7 +71,8 @@ MidiParser::MidiParser() : mTrackName(), mGemParser(0), mNoteParser(0), mTextPar
 }
 
 MidiParser::~MidiParser(){
-
+    DeleteAll(sParsers);
+    RELEASE(mEvents);
 }
 
 void MidiParser::SetTypeDef(DataArray* arr){
@@ -95,8 +98,7 @@ void MidiParser::SetTypeDef(DataArray* arr){
                 localArr->Node(0) = DataNode(0);
                 int i = 1;
                 if(!mMessageType.Null()){
-                    localArr->Node(1) = DataNode(mMessageType);
-                    i = 2;
+                    localArr->Node(i++) = DataNode(mMessageType);
                 }
                 localArr->Node(i) = DataNode(0);
                 mEvents->Compress(localArr, i);
@@ -310,6 +312,13 @@ DataNode MidiParser::OnGetEnd(DataArray* arr){
     return DataNode(GetEnd(arr->Int(2)));
 }
 
+DataNode MidiParser::OnBeatToSecLength(DataArray* arr){
+    float f2 = arr->Float(2);
+    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float bts = BeatToSeconds(TheTaskMgr.Beat() + f2);
+    return DataNode(bts - secs);
+}
+
 DataNode MidiParser::OnSecOffsetAll(DataArray* arr){
     mEvents->SecOffset(arr->Float(2));
     return DataNode(0);
@@ -376,4 +385,5 @@ BEGIN_PROPSYNCS(MidiParser)
     SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
     SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
     SYNC_PROP_SET(index, GetIndex(), SetIndex(_val.Int(0)))
+    SYNC_PROP_SET(song_name, TheMidiParserMgr->mSongName.Str(), )
 END_PROPSYNCS
