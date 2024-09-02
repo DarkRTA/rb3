@@ -25,10 +25,12 @@ public:
     void Poll();
     void ClearManagedParsers();
     void FreeAllData();
+    DataEventList* GetEventsList();
+    MidiParser* GetParser(Symbol);
 
-    static DataArray* MidiParserArray(){
-        return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
-    }
+    // static DataArray* MidiParserArray(){
+    //     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+    // }
 
     std::vector<int, unsigned int> unk24; // 0x24
     std::vector<MidiParser::VocalEvent, unsigned int> unk30; // 0x30

@@ -8,6 +8,10 @@
 
 MidiParserMgr* TheMidiParserMgr = 0;
 
+inline DataArray* MidiParserArray(){
+    return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+}
+
 MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gListInt),
     mLoaded(0), mFilename(0), mTrackName(), mSongName(), unk50(), unk58(true), unk59(true) {
     MILO_ASSERT(!TheMidiParserMgr, 0x27);
@@ -75,9 +79,9 @@ void MidiParserMgr::OnEndOfTrack(){
         if(mGems) mGems->SetTrack(mTrackName);
         for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
             if((*it)->mTrackName == mTrackName){
-                int size = (*it)->ParseAll(mGems, unk30);
-                if(size > 20000){
-                    MILO_WARN("%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize", mFilename, mTrackName, size, 20000);
+                int numnotes = (*it)->ParseAll(mGems, unk30);
+                if(numnotes > 20000){
+                    MILO_WARN("%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize", mFilename, mTrackName, numnotes, 20000);
                 }
             }
         }
@@ -97,6 +101,17 @@ void MidiParserMgr::FinishLoad(){
         }
     }
     mLoaded = true;
+}
+
+void MidiParserMgr::SetMidiReader(MidiReader* mr){
+    MidiReceiver::SetMidiReader(mr);
+    mFilename = mr->GetFilename();
+}
+
+DataEventList* MidiParserMgr::GetEventsList(){
+    MidiParser* evParser = GetParser("events_parser");
+    MILO_ASSERT(evParser, 0x17E);
+    return evParser->Events();
 }
 
 BEGIN_PROPSYNCS(MidiParserMgr)

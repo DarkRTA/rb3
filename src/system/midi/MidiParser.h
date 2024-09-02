@@ -56,6 +56,7 @@ public:
     void HandleEvent(int, int, const DataNode&);
     void Poll();
     int ParseAll(GemListInterface*, std::vector<VocalEvent, unsigned int>&);
+    DataEventList* Events() const { return mEvents; }
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
