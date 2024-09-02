@@ -1235,8 +1235,8 @@ rb3/storeoffer.cpp:
 rb3/panels/storepanel.cpp:
 	.text       start:0x80525830 end:0x8052901C
 
-rb3/unknown/805/unk_8052A44C.cpp:
-	.text       start:0x8052A44C end:0x8052D22C
+system/midi/DataEventList.cpp:
+	.text       start:0x8052A508 end:0x8052CD54
 
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574

@@ -17,6 +17,7 @@ public:
         mMsg = da;
         if(mMsg) mMsg->AddRef();
     }
+    DataArray* Msg() const { return mMsg; }
 
     float start; // 0x0
     float end; // 0x4
