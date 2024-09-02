@@ -39,22 +39,29 @@ public:
 };
 
 template <typename T>
+class WidgetInstanceCmp {
+public:
+    bool operator()(const T&, const T&) const { return false; }
+};
+
+template <typename T>
 class TrackWidgetImp : public TrackWidgetImpBase {
 public:
     TrackWidgetImp(){}
     virtual ~TrackWidgetImp(){}
     virtual bool Empty(){ return Instances().empty(); }
     virtual int Size(){ return Instances().size(); }
-    virtual float GetFirstInstanceY(){
-        return DoGetFirstInstanceY(Instances());
-    }
+    virtual float GetFirstInstanceY(){ return DoGetFirstInstanceY(Instances()); }
     virtual float GetLastInstanceY();
-    virtual void Sort();
+    virtual void Sort(){ DoSort(Instances()); }
     virtual void Clear(){ DoClear(Instances()); }
     virtual void RemoveAt(float, float, float);
     virtual void RemoveUntil(float, float);
     virtual std::list<T>& Instances() = 0;
-    virtual void RemoveInstances(std::list<T>&, std::list<T>::iterator, std::list<T>::iterator);
+    virtual void RemoveInstances(std::list<T>& list, std::list<T>::iterator start, std::list<T>::iterator end){
+        list.erase(start, end);
+        SetDirty(true);
+    }
     virtual void PushInstance(T&);
 
     void DoClear(std::list<T>& insts){
@@ -66,6 +73,13 @@ public:
         MILO_ASSERT(!list.empty(), 0x8F);
         return list.front().mXfm.v.y;
     }
+
+    void DoSort(std::list<T>& insts){
+        insts.sort(WidgetInstanceCmp<T>());
+    }
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 };
 
 class TextInstance {
@@ -77,7 +91,7 @@ class TextInstance {
 class CharWidgetImp : public TrackWidgetImp<TextInstance> {
 public:
     CharWidgetImp(RndFont*, RndText*, int, int, RndText::Alignment, Hmx::Color32, Hmx::Color32, bool);
-    virtual ~CharWidgetImp();
+    virtual ~CharWidgetImp(){}
     virtual void Clear();
     virtual int AddTextInstance(Transform, String, bool);
     virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir>&, int);
@@ -88,6 +102,9 @@ public:
     virtual std::list<TextInstance>& Instances();
     virtual void RemoveInstances(std::list<TextInstance>&, std::list<TextInstance>::iterator, std::list<TextInstance>::iterator);
     virtual void PushInstance(TextInstance&);
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 
     bool mDirty; // 0x4
     bool unk_0x5; 
@@ -101,17 +118,22 @@ public:
 class MeshInstance {
 public:
     Transform mXfm;
+    int unk;
 };
 
 class MatWidgetImp : public TrackWidgetImp<MeshInstance> {
 public:
-    MatWidgetImp(RndMat*);
-    virtual ~MatWidgetImp();
+    MatWidgetImp(RndMat* m) : mMat(m) {}
+    virtual ~MatWidgetImp(){}
     virtual int AddMeshInstance(Transform, RndMesh*, float);
     virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir>&, int);
     virtual std::list<MeshInstance>& Instances();
 
-    std::list<MeshInstance> mInstances;
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+
+    std::list<MeshInstance> mInstances; // 0x4
+    RndMat* mMat; // 0xc
 };
 
 class MultiMeshWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> { 
@@ -132,6 +154,9 @@ public:
     virtual std::list<RndMultiMesh::Instance>& Instances();
     virtual void PushInstance(RndMultiMesh::Instance&);
 
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+
     std::vector<RndMultiMesh*> mMultiMeshes; // 0x4
     const ObjPtrList<RndMesh,ObjectDir>& mMeshes; // 0xc
     bool unk10; // 0x10
@@ -139,11 +164,14 @@ public:
 
 class ImmediateWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
 public:
-    ImmediateWidgetImp(bool b) : unk_0xC(b) {} 
-    virtual ~ImmediateWidgetImp();
+    ImmediateWidgetImp(bool b) : unk_0xC(b) {}
+    virtual ~ImmediateWidgetImp(){}
     virtual int AddInstance(Transform, float);
     virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir>&, int);
     virtual std::list<RndMultiMesh::Instance>& Instances();
+
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 
     std::list<RndMultiMesh::Instance> mInstances;
     bool unk_0xC;
