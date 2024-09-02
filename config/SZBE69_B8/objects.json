@@ -139,10 +139,7 @@
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
-            "system/bandobj/MiniLeaderboardDisplay.cpp": {
-                "status": "Equivalent",
-                "comment": "Stack mismatches in MiniLeaderboardDisplay::Init()"
-            },
+            "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
