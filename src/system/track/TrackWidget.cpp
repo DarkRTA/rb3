@@ -228,6 +228,17 @@ void TrackWidget::SyncImp(){
 
 void TrackWidget::SetScale(float f){ mImp->SetScale(f); }
 
+void TrackWidget::CheckScales() const {
+    if(!mAllowRotation){
+        for(ObjPtrList<RndMesh, ObjectDir>::iterator it = mMeshes.begin(); it != mMeshes.end(); ++it){
+            RndMesh* cur = *it;
+            if(!IsFloatOne(cur->mLocalXfm.m.x.x) || !IsFloatOne(cur->mLocalXfm.m.y.y) || !IsFloatOne(cur->mLocalXfm.m.z.z)){
+                MILO_WARN("TrackWidget: %s does not have unit scale, but will be drawn on track with unit scale!", cur->Name());
+            }
+        }
+    }
+}
+
 DataNode TrackWidget::OnSetMeshes(const DataArray* da){
     mMeshes.clear();
     for(int i = 2; i < da->Size(); i++){
