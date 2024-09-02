@@ -110,6 +110,7 @@
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
+            "system/midi/MidiParserMgr.cpp": "NonMatching",
 
             "system/obj/DataArray.cpp": "NonMatching",
             "system/obj/DataFile.cpp": "NonMatching",

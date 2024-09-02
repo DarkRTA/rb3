@@ -1,6 +1,7 @@
 #ifndef MIDI_MIDIPARSERMGR_H
 #define MIDI_MIDIPARSERMGR_H
 #include "midi/Midi.h"
+#include "midi/MidiParser.h"
 #include "obj/Object.h"
 #include <vector>
 
@@ -22,15 +23,21 @@ public:
     void Reset(int);
     void FinishLoad();
     void Poll();
+    void ClearManagedParsers();
+    void FreeAllData();
 
-    int unk24, unk28, unk2c;
-    int unk30, unk34, unk38;
-    GemListInterface* mGems;
-    bool mLoaded;
-    const char* mFilename;
-    Symbol unk48;
-    Symbol mSongName;
-    std::vector<int> unk50;
+    static DataArray* MidiParserArray(){
+        return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+    }
+
+    std::vector<int, unsigned int> unk24; // 0x24
+    std::vector<MidiParser::VocalEvent, unsigned int> unk30; // 0x30
+    GemListInterface* mGems; // 0x3c
+    bool mLoaded; // 0x40
+    const char* mFilename; // 0x44
+    Symbol mTrackName; // 0x48
+    Symbol mSongName; // 0x4c
+    std::vector<int> unk50; // 0x50
     bool unk58, unk59;
 };
 

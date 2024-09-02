@@ -54,6 +54,8 @@ public:
     int GetIndex();
     void SetGlobalVars(int, int, const DataNode&);
     void HandleEvent(int, int, const DataNode&);
+    void Poll();
+    int ParseAll(GemListInterface*, std::vector<VocalEvent, unsigned int>&);
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
