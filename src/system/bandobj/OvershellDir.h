@@ -1,6 +1,8 @@
 #pragma once
 #include "ui/PanelDir.h"
 
+class BandList;
+
 class OvershellDir : public PanelDir {
 public:
     OvershellDir();
@@ -16,6 +18,7 @@ public:
 
     void CacheLists();
     void ConcealAllLists(bool);
+    void ViewChanged();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -28,7 +31,7 @@ public:
     bool mIsLocal; // 0x1e5
     int mPadNum; // 0x1e8
     Symbol mPlatform; // 0x1ec
-    std::vector<int> unk1f0; // 0x1f0 - vector of BandLists?
+    std::vector<BandList*> mBandLists; // 0x1f0
     Symbol mDefaultOption; // 0x1f8
     int mDefaultOptionIndex; // 0x1fc
 };

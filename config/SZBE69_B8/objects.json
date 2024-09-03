@@ -134,14 +134,18 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
-            "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
+            "system/bandobj/BandLabel.cpp": "NonMatching",
+            "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
-            "system/bandobj/OvershellDir.cpp": "NonMatching",
+            "system/bandobj/OvershellDir.cpp": {
+                "status": "LinkIssues",
+                "comment": "bss meme"
+            },
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
