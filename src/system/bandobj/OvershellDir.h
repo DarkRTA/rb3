@@ -19,6 +19,8 @@ public:
     void CacheLists();
     void ConcealAllLists(bool);
     void ViewChanged();
+    void SetDefaultOption(Symbol o){ mDefaultOption = o; }
+    void SetDefaultOptionIndex(int idx){ mDefaultOptionIndex = idx; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

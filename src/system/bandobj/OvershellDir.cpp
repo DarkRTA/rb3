@@ -57,8 +57,8 @@ void OvershellDir::ViewChanged(){
 
 BEGIN_HANDLERS(OvershellDir)
     HANDLE_SUPERCLASS(PanelDir)
-    HANDLE_ACTION(set_default_option, mDefaultOption = _msg->Sym(2))
-    HANDLE_ACTION(set_default_option_index, mDefaultOptionIndex = _msg->Int(2))
+    HANDLE_ACTION(set_default_option, SetDefaultOption(_msg->Sym(2)))
+    HANDLE_ACTION(set_default_option_index, SetDefaultOptionIndex(_msg->Int(2)))
     HANDLE_ACTION(cache_lists, CacheLists())
     HANDLE_ACTION(conceal_all_lists, ConcealAllLists(_msg->Int(2)))
     HANDLE_CHECK(0x64)
