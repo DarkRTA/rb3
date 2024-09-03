@@ -1,27 +1,54 @@
 #include "PerformanceData.h"
+#include "MetaPanel.h"
 
-PerformanceData::PerformanceData() {
-
+PerformanceData::PerformanceData() : m0x28(false), mIsOnline(false), mIsPlaytest(false), mIsCheating(false), 
+mScoreType((ScoreType)0), mDifficulty(kDifficultyEasy), mStars(0), mBattleId(0), mTimestamp(0), mStats() {
+    mSaveSizeMethod = SaveSize;
+    InitializeStatsVectors();
 }
 
 PerformanceData::~PerformanceData() {
 
 }
 
-void PerformanceData::Initialize(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool) {
+void PerformanceData::Initialize(const Stats& stats, int songId, ScoreType scoreType, Difficulty difficulty, Symbol mode, int stars, int battleId, bool) {
+    if (MetaPanel::sIsPlaytest != '\0') {
+        mIsPlaytest = true;
+    }
+
+    mMode = mode;
+    mSongId = songId;
+    mScoreType = scoreType;
+    mDifficulty = difficulty;
+    mStars = stars;
+    mBattleId = battleId;
+}
+
+void PerformanceData::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << m0x24;
+    stream << m0x28;
+    stream << mIsOnline;
+    stream << mIsPlaytest;
+    stream << mIsCheating;
+    stream << mSongId;
+    stream << mScoreType;
+    stream << mDifficulty;
+    stream << mStars;
+    stream << mBattleId;
+    stream << mTimestamp;
+    stream << mMode;
+
+    // stream.WriteEndian();
+}
+
+int PerformanceData::SaveSize(int) {
 
 }
 
-void PerformanceData::SaveFixed(FixedSizeSaveableStream&) const {
-
-}
-
-void PerformanceData::SaveSize(int) {
-
-}
-
-void PerformanceData::LoadFixed(FixedSizeSaveableStream&, int) {
-
+void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int) {
+    stream >> m0x24;
+    stream >> m0x28;
+    stream >> mIsPlaytest;
 }
 
 void PerformanceData::Prune(Stats&) {}
@@ -32,8 +59,6 @@ BEGIN_HANDLERS(PerformanceData)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x2a8);
 END_HANDLERS
-
-
 
 void Stats::AccessPerformanceAwards() {
 

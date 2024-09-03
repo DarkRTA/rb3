@@ -18,6 +18,7 @@ class Stats {
         SectionInfo();
     };
 
+public:
     Stats();
     Stats(const Stats&);
     void BuildHitStreak(int, float);

@@ -58,6 +58,8 @@
             "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
             "band3/meta_band/VoiceMgr.cpp": "Matching",
 
+            "band3/net_band/RockCentral.cpp": "NonMatching",
+
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
