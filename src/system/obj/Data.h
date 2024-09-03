@@ -152,12 +152,12 @@ public:
 
 class DataArray {
 public:
-    DataNode* mNodes;
-    Symbol mFile;
-    short mSize;
-    short mRefs;
-    short mLine;
-    short mDeprecated;
+    DataNode* mNodes;   // 0x0
+    Symbol mFile;       // 0x4
+    short mSize;        // 0x8
+    short mRefs;        // 0xA
+    short mLine;        // 0xC
+    short mDeprecated;  // 0xE
     static Symbol gFile;
     static DataFunc* sDefaultHandler;
 
@@ -260,6 +260,7 @@ inline DataNode::~DataNode(){
 
 DataNode& DataVariable(Symbol);
 bool DataVarExists(Symbol);
+bool DataArrayDefined();
 
 // to properly generate DataArray::Node const vs non-const
 #define CONST_ARRAY(array) ((const DataArray*)(array))

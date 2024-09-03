@@ -184,7 +184,7 @@ void RndMesh::PostLoad(BinStream& bs) {
                     bs >> mBones[1] >> mBones[2] >> mBones[3];
                     bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
                     if (gRev < 25) { // incoming headache
-                        for (std::vector<Vert>::iterator it = mVerts.begin(); it != mVerts.end(); it++) {
+                        for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
                             // it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
                             //     it->why.GetX(), it->why.GetY(), it->why.GetZ());
                         }
@@ -206,7 +206,7 @@ void RndMesh::PostLoad(BinStream& bs) {
     RemoveInvalidBones();
 
 
-    for (std::vector<Vert>::iterator it = mVerts.begin(); it != mVerts.end(); it++) {
+    for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
                             
     }
     if (gRev > 37) { bool b; bs >> b; unk9p0 = b;}
@@ -304,7 +304,7 @@ DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2446);
-    v = &mVerts[index];
+    v = mVerts[index];
     *da->Var(3) = DataNode(v->norm.x);
     *da->Var(4) = DataNode(v->norm.y);
     *da->Var(5) = DataNode(v->norm.z);
@@ -315,7 +315,7 @@ DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2457);
-    v = &mVerts[index];
+    v = mVerts[index];
     v->norm.x = da->Float(3);
     v->norm.y = da->Float(4);
     v->norm.z = da->Float(5);
@@ -327,7 +327,7 @@ DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2469);
-    v = &mVerts[index];
+    v = mVerts[index];
     *da->Var(3) = DataNode(v->pos.x);
     *da->Var(4) = DataNode(v->pos.y);
     *da->Var(5) = DataNode(v->pos.z);
@@ -338,7 +338,7 @@ DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2480);
-    v = &mVerts[index];
+    v = mVerts[index];
     v->pos.x = da->Float(3);
     v->pos.y = da->Float(4);
     v->pos.z = da->Float(5);
@@ -350,7 +350,7 @@ DataNode RndMesh::OnGetVertUV(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2492);
-    v = &mVerts[index];
+    v = mVerts[index];
     *da->Var(3) = DataNode(v->uv.x);
     *da->Var(4) = DataNode(v->uv.y);
     return DataNode();
@@ -360,7 +360,7 @@ DataNode RndMesh::OnSetVertUV(const DataArray* da) {
     Vert* v;
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2502);
-    v = &mVerts[index];
+    v = mVerts[index];
     v->uv.x = da->Float(3);
     v->uv.y = da->Float(4);
     Sync(31);

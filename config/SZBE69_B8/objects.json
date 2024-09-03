@@ -15,6 +15,7 @@
         "cflags": "band3",
         "objects": {
             "band3/bandtrack/Gem.cpp": "NonMatching",
+            "band3/bandtrack/GemRepTemplate.cpp": "NonMatching",
             "band3/bandtrack/GemSmasher.cpp": "Matching",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
             "band3/bandtrack/TrackConfig.cpp": "Matching",

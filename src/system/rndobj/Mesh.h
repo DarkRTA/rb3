@@ -51,12 +51,22 @@ public:
         kVolumeBox
     };
 
-    class VertVector : public std::vector<Vert, s32> { // ???????
-    public:
+    class VertVector { // more custom STL! woohoo!!!! i crave death
+        public:
+        VertVector() { mVerts = NULL; mSize = 0; mCapacity = 0;}
+        ~VertVector() { mCapacity = 0; resize(0, true); }
+        u32 size() const { return mSize; };
         void resize(int, bool);
         void reserve(int, bool);
-        std::vector<Vert>::iterator begin() { return std::vector<Vert, s32>::begin(); }
-        std::vector<Vert>::iterator end() { return std::vector<Vert, s32>::end(); }
+        Vert* operator[](int);
+        Vert* operator[](int) const;
+        VertVector& operator=(const VertVector&);
+        Vert* begin();
+        Vert* end();
+
+        Vert* mVerts;
+        u32 mSize;
+        u16 mCapacity;
     };
 
     RndMesh();
@@ -86,7 +96,7 @@ public:
     virtual void OnSync(int);
 
     const Vector3& VertPos(int idx) const {
-        return mOwner->mVerts[idx].pos;
+        return mOwner->mVerts[idx]->pos;
     }
 
     // TODO: figure out what RndMesh's members do
