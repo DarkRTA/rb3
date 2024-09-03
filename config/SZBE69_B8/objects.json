@@ -147,6 +147,7 @@
                 "comment": "bss meme"
             },
             "system/bandobj/StarDisplay.cpp": "NonMatching",
+            "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
