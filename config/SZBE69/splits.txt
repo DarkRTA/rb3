@@ -989,7 +989,7 @@ rb3/crowdmetericon.cpp:
 rb3/crowdaudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
 
-rb3/unisonicon.cpp:
+system/bandobj/UnisonIcon.cpp:
 	.text       start:0x8044EFF4 end:0x8044FAF4
 
 rb3/songsectioncontroller.cpp:
