@@ -1,11 +1,13 @@
 #include "MidiParser.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "utl/Symbols.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/GemListInterface.h"
 #include "obj/Task.h"
 #include "midi/MidiParserMgr.h"
+#include "rndobj/Rnd.h"
+#include "midi/DisplayEvents.h"
+#include "utl/Symbols.h"
 
 std::list<MidiParser*> MidiParser::sParsers;
 DataNode* MidiParser::mpStart = 0;
@@ -229,6 +231,49 @@ void MidiParser::HandleEvent(int start, int end, const DataNode& data){
     *mpData = DataNode(0);
 }
 
+bool MidiParser::AddMessage(float f1, float f2, DataArray* arr, int idx){
+    DataNode node(arr->Evaluate(idx));
+    if(node.Type() == kDataUnhandled) return false;
+    if(!mCompressed){
+        int arr_size;
+        if(node.Type() == kDataArray){
+            arr = node.Array(0);
+            idx = 0;
+            arr_size = arr->Size();
+            arr_size++;
+            if(arr_size == 1) return false;
+            node = arr->Evaluate(0);
+            if(node.Type() == kDataUnhandled) return false;
+        }
+        else {
+            arr_size = arr->Size();
+            arr_size = (arr_size - idx) + 1;
+        }
+        int i4 = 1;
+        if(!mMessageType.Null()){
+            i4 = 2;
+            arr_size++;
+        }
+        DataArray* new_arr = new DataArray(arr_size + mAppendLength);
+        new_arr->Node(0) = DataNode(0);
+        if(!mMessageType.Null()){
+            new_arr->Node(1) = DataNode(mMessageType);
+        }
+        new_arr->Node(i4) = node;
+        int i3;
+        for(i3 = 1; i3 < arr_size - i4; i3++){
+            new_arr->Node(i3 + i4) = arr->Evaluate(i3 + idx);
+        }
+        if(mAppendLength){
+            new_arr->Node(i3 + i4) = DataNode(0.0f);
+        }
+        node = DataNode(new_arr, kDataArray);
+        new_arr->Release();
+    }
+    InsertDataEvent(f1, f2, node);
+    return true;
+}
+
 float MidiParser::GetStart(int i){
     if(i < 0) return -1e30f;
     else {
@@ -254,7 +299,7 @@ float MidiParser::GetStart(int i){
 float MidiParser::GetEnd(int i){
     if(i < 0) return -1e30f;
     else {
-        MILO_ASSERT(mCurParser, 0x307);
+        MILO_ASSERT(mCurParser, 0x321);
         if(mCurParser == mGemParser){
             int x, y, z;
             if(mGems->GetGem(i, x, y, z)){
@@ -299,9 +344,75 @@ BEGIN_HANDLERS(MidiParser)
 END_HANDLERS
 #pragma dont_inline reset
 
+DataNode MidiParser::OnInsertIdle(DataArray* arr){
+    Symbol sym = arr->Sym(2);
+    float f3 = arr->Float(3);
+    float f4 = arr->Float(4);
+    float f5 = arr->Float(5);
+    float maxgap = mProcess.maxGap;
+    float mingap = mProcess.minGap;
+
+    if(mProcess.useRealtimeGaps){
+        maxgap = ConvertToBeats(mProcess.maxGap, mStart);
+        mingap = ConvertToBeats(mProcess.minGap, mStart);
+    }
+    float* fp;
+    if(mBefore < 0) fp = &mFirstEnd;
+    else fp = mEvents->EndPtr(mBefore);
+    MILO_ASSERT(mIdleParser, 0x38C);
+    f4 = *fp + f4;
+    float sub = mStart - f5;
+    if(sub - f4 >= f3){
+        if(mUseVariableBlending){
+            float f10 = -1e+30f;
+            if(mBefore >= 0){
+                f10 = mEvents->Event(mBefore).start;
+            }
+            *fp = f4 - mProcess.variableBlendPct * (f4 - f10);
+        }
+        else {
+            *fp = f4 - Clamp(mingap, maxgap, f4 - *fp);
+        }
+        mBefore++;
+        PushIdle(f4, sub, mBefore, sym);
+        return DataNode(1);
+    }
+    else {
+        FixGap(fp);
+        return DataNode(0);
+    }
+}
+
 float MidiParser::ConvertToBeats(float f1, float f2){
     float secs = BeatToSeconds(f2);
     return SecondsToBeat(secs + f1) - f2;
+}
+
+void MidiParser::FixGap(float* fp){
+    if(mUseVariableBlending){
+        float f4 = -1e+30f;
+        if(mBefore >= 0){
+            f4 = mEvents->Event(mBefore).start;
+        }
+        *fp = mStart - mProcess.variableBlendPct * (mStart - f4);
+    }
+    else {
+        float f4;
+        if(mProcess.useRealtimeGaps){
+            float start = mStart;
+            f4 = Clamp(ConvertToBeats(mProcess.minGap, mStart), ConvertToBeats(mProcess.maxGap, start), mStart - *fp);
+        }
+        else f4 = Clamp(mProcess.minGap, mProcess.maxGap, mStart - *fp);
+        *fp = mStart - f4;
+    }
+}
+
+DataNode MidiParser::OnNextStartDelta(DataArray* arr){
+    int curidx = mEvents->CurIndex();
+    float f;
+    if(curidx >= mEvents->Size()) f = 1e+30f;
+    else f = mEvents->Event(curidx).start;
+    return DataNode(f - mEvent->start);
 }
 
 DataNode MidiParser::OnGetStart(DataArray* arr){
@@ -310,6 +421,13 @@ DataNode MidiParser::OnGetStart(DataArray* arr){
 
 DataNode MidiParser::OnGetEnd(DataArray* arr){
     return DataNode(GetEnd(arr->Int(2)));
+}
+
+DataNode MidiParser::OnDebugDraw(DataArray* arr){
+    float f2 = arr->Float(2);
+    float f3 = arr->Float(3);
+    TheRnd->DrawString(Name(), Vector2(0.0f, f2), Hmx::Color(1.0f, 1.0f, 1.0f), true);
+    return DataNode(DisplayEvents(mEvents, f2 + 12.0f, f3));
 }
 
 DataNode MidiParser::OnBeatToSecLength(DataArray* arr){
@@ -326,8 +444,8 @@ DataNode MidiParser::OnSecOffsetAll(DataArray* arr){
 
 DataNode MidiParser::OnSecOffset(DataArray* arr){
     float f2 = arr->Float(2);
-    float f3 = arr->Float(3);
-    return DataNode(MsToBeat(1000.0f * f3 + BeatToMs(f2)));
+    float f3 = arr->Float(3) * 1000.0f;
+    return DataNode(MsToBeat(f3 + BeatToMs(f2)));
 }
 
 DataNode MidiParser::OnNextVal(DataArray* arr){
@@ -385,5 +503,5 @@ BEGIN_PROPSYNCS(MidiParser)
     SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
     SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
     SYNC_PROP_SET(index, GetIndex(), SetIndex(_val.Int(0)))
-    SYNC_PROP_SET(song_name, TheMidiParserMgr->mSongName.Str(), )
+    SYNC_PROP_SET(song_name, TheMidiParserMgr->GetSongName(), )
 END_PROPSYNCS

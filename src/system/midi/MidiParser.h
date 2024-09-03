@@ -55,7 +55,10 @@ public:
     void SetGlobalVars(int, int, const DataNode&);
     void HandleEvent(int, int, const DataNode&);
     void Poll();
+    void FixGap(float*);
+    void InsertDataEvent(float, float, const DataNode&);
     int ParseAll(GemListInterface*, std::vector<VocalEvent, unsigned int>&);
+    void PushIdle(float, float, int, Symbol);
     DataEventList* Events() const { return mEvents; }
 
     DataNode OnGetStart(DataArray*);

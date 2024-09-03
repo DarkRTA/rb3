@@ -45,6 +45,7 @@ public:
     DataEvent* NextEvent(float);
     float* EndPtr(int);
     void Invert(float);
+    int CurIndex() const { return mCurIndex; }
 
     int mCurIndex; // 0x0
     int mSize; // 0x4

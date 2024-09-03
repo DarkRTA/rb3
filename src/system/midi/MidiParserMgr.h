@@ -27,6 +27,7 @@ public:
     void FreeAllData();
     DataEventList* GetEventsList();
     MidiParser* GetParser(Symbol);
+    const char* GetSongName() const { return mSongName.Str(); }
 
     // static DataArray* MidiParserArray(){
     //     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
