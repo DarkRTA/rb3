@@ -992,7 +992,7 @@ rb3/crowdaudio.cpp:
 system/bandobj/UnisonIcon.cpp:
 	.text       start:0x8044EFF4 end:0x8044FAF4
 
-rb3/songsectioncontroller.cpp:
+system/bandobj/SongSectionController.cpp:
 	.text       start:0x8044FAF4 end:0x8045593C
 
 system/bandobj/OvershellDir.cpp:
