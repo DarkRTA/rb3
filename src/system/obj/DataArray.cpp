@@ -1,12 +1,14 @@
 #include "obj/Data.h"
+#include "types.h"
 #include <stdlib.h>
 #include <string.h>
 #include <list>
-#include "utl/MemMgr.h"
-#include "obj/Object.h"
-#include "utl/Symbol.h"
-#include "os/Debug.h"
 #include "math/MathFuncs.h"
+#include "obj/Object.h"
+#include "obj/DataUtl.h"
+#include "os/Debug.h"
+#include "utl/MemMgr.h"
+#include "utl/Symbol.h"
 
 std::list<bool> gDataArrayConditional;
 Symbol DataArray::gFile;
@@ -457,6 +459,48 @@ void DataArray::Save(BinStream &bs) const {
     bs << mSize << mLine << mDeprecated;
     for (int i = 0; i < mSize; i++) {
         bs << mNodes[i];
+    }
+}
+
+bool DataArrayDefined() {
+    for (std::list<bool>::iterator it = gDataArrayConditional.begin(); it != gDataArrayConditional.end(); it++) {
+        if (*it == false) return false;
+    }
+    return true;
+}
+
+void DataArray::Load(BinStream& bs) {
+    mFile = gFile;
+    u16 num_root_nodes;
+    bs >> num_root_nodes;
+    {
+        MemDoTempAllocations mem(true, false);
+        Resize(num_root_nodes);
+    }
+    bs >> mLine;
+    bs >> mDeprecated;
+    int i = 0;
+    while (i != num_root_nodes) {
+        DataNode& n = mNodes[i];
+        n.Load(bs);
+        if (!DataArrayDefined() && n.Type() < kDataIfdef) {
+            if (n.Type() != kDataIfndef) {
+                num_root_nodes--;
+            }
+        } else {
+            DataArray* da;
+            bool b = n.Type() == kDataSymbol && (da = DataGetMacro(STR_TO_SYM(n.mValue.symbol))) != 0;
+            if (b) {
+                {
+                    num_root_nodes += (da->mSize - 1);
+                    MemDoTempAllocations mem(true, false);
+                    Resize(num_root_nodes);
+                }
+            }
+        }
+
+
+        i++;
     }
 }
 
