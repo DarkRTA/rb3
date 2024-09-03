@@ -146,6 +146,7 @@
                 "status": "LinkIssues",
                 "comment": "bss meme"
             },
+            "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
