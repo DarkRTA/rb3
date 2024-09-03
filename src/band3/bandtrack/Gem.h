@@ -5,6 +5,7 @@
 #include "bandtrack/Tail.h"
 #include "beatmatch/GameGem.h"
 #include "track/TrackWidget.h"
+#include "system/utl/TimeConversion.h"
 #include "types.h"
 #include <functional>
 
