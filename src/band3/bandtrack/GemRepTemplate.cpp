@@ -20,7 +20,7 @@ GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("tr
     kTailFrequencyRange(mConfig->FindArray("tail_min_freq", true)->Float(1), mConfig->FindArray("tail_max_freq", true)->Float(1)),
     kTailAmplitudeRange(mConfig->FindArray("tail_min_amp", true)->Float(1), mConfig->FindArray("tail_max_amp", true)->Float(1)),
     mTrackCfg(tc), unk_0x3C(0), unk_0x40(1.0f), objectDir(NULL) {
-    mSlots = (RndMat**)new void*[tc.GetMaxSlots()];
+    mSlots = (RndMat**)new void*[tc.GetMaxSlots()]; // it doesn't call the ctors, so i have to do This to just alloc
 }
 
 GemRepTemplate::~GemRepTemplate() {
@@ -74,10 +74,10 @@ RndMat* GemRepTemplate::GetMatByTag(const char* c, int slot) {
 }
 
 bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
-    if ((float)__fabs(v1.y - v2.y) < 0.1f) { // nonsense regswap
-        return v1.x < v2.x;
+    if ((float)__fabs(v1.pos.y - v2.pos.y) < 0.1f) { // nonsense regswap
+        return v1.pos.x < v2.pos.x;
     }
-    return v1.y < v2.y;
+    return v1.pos.y < v2.pos.y;
 }
 
 void GemRepTemplate::SetupTailVerts() {
