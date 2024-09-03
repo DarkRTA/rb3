@@ -29,10 +29,6 @@ public:
     MidiParser* GetParser(Symbol);
     const char* GetSongName() const { return mSongName.Str(); }
 
-    // static DataArray* MidiParserArray(){
-    //     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
-    // }
-
     std::vector<int, unsigned int> unk24; // 0x24
     std::vector<MidiParser::VocalEvent, unsigned int> unk30; // 0x30
     GemListInterface* mGems; // 0x3c

@@ -10,9 +10,9 @@ MidiParserMgr* TheMidiParserMgr = 0;
 
 DECOMP_FORCEACTIVE(MidiParserMgr, "beatmatcher", "midi_parsers")
 
-inline DataArray* MidiParserArray(){
-    return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
-}
+// inline DataArray* MidiParserArray(){
+//     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+// }
 
 MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gListInt),
     mLoaded(0), mFilename(0), mTrackName(), mSongName(), unk50(), unk58(true), unk59(true) {
@@ -21,7 +21,7 @@ MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gLi
     SetName("midiparsermgr", ObjectDir::sMainDir);
     mSongName = sym;
     MidiParser::Init();
-    DataArray* arr = MidiParserArray();
+    DataArray* arr = SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
     if(arr){
         DataArray* initArr = arr->FindArray("init", false);
         if(initArr) initArr->ExecuteScript(1, this, 0, 1);
@@ -95,7 +95,7 @@ void MidiParserMgr::OnEndOfTrack(){
 void MidiParserMgr::OnAllTracksRead(){}
 
 void MidiParserMgr::FinishLoad(){
-    DataArray* arr = MidiParserArray();
+    DataArray* arr = SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
     if(arr){
         DataArray* finishArr = arr->FindArray("finish_loading", false);
         if(finishArr){

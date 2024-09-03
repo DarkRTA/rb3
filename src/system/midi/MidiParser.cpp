@@ -138,8 +138,8 @@ bool MidiParser::InsertIdle(float f, int i){
     mStart = f;
     mBefore = i;
     if(mIdleParser){
-        int theInt = mIdleParser->ExecuteScript(1, this, 0, 1).Int(0);
-        if(theInt != 0) return true;
+        DataNode node = mIdleParser->ExecuteScript(1, this, 0, 1);
+        if(node.Int(0) != 0) return true;
     }
     return false;
 }
@@ -217,7 +217,21 @@ void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data)
     else {
         *mpVal = data;
         if(mCurParser == mGemParser){
-
+            int gemval = data.Int(0);
+            int i6 = 0x1000000;
+            int d8 = 0;
+            int d7 = 0x17;
+            int d9;
+            for(d9 = 1; d9 <= 0x1000001 && (gemval & d9) == 0; d9 <<= 1);
+            if(d9 >= 0x1000001) MILO_WARN("Bad gem, value 0x%x", gemval);
+            else for(; i6 > 0; i6 >>= 1){
+                if(gemval & i6) break;
+                d7--;
+            }
+            *mpSingleBit = DataNode((gemval & ~d9) == 0);
+            *mpLowestBit = DataNode(d9);
+            *mpLowestSlot = DataNode(d8);
+            *mpHighestSlot = DataNode(d7);
         }
     }
     mLastStart = beat1;
@@ -229,6 +243,24 @@ void MidiParser::HandleEvent(int start, int end, const DataNode& data){
     SetGlobalVars(start, end, data);
     mCurParser->ExecuteScript(1, this, 0, 1);
     *mpData = DataNode(0);
+}
+
+void MidiParser::InsertDataEvent(float f1, float f2, const DataNode& node){
+    float f7 = f1 + mProcess.startOffset;
+    if(mProcess.zeroLength) f2 = f7;
+    int back = mEvents->FindStartFromBack(f7);
+    if(InsertIdle(f7, back)){
+        back++;
+    }
+    else {
+        float* fp;
+        if(mBefore >= 0) fp = mEvents->EndPtr(mBefore);
+        else fp = &mFirstEnd;
+        FixGap(fp);
+    }
+    float clamped = Clamp(mProcess.minLength, mProcess.maxLength, f2 + mProcess.endOffset - f7);
+    MemDoTempAllocations m(true, false);
+    mEvents->InsertEvent(f7, f7 + clamped, node, back + 1);
 }
 
 bool MidiParser::AddMessage(float f1, float f2, DataArray* arr, int idx){
