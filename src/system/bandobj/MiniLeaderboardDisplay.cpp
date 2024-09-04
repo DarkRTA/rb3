@@ -8,8 +8,7 @@
 INIT_REVS(MiniLeaderboardDisplay)
 
 void MiniLeaderboardDisplay::Init() {
-    Symbol s = MiniLeaderboardDisplay::StaticClassName(), s2;
-    Hmx::Object::RegisterFactory(s, MiniLeaderboardDisplay::NewObject);
+    Register();
     TheUI->InitResources("MiniLeaderboardDisplay");
 }
 

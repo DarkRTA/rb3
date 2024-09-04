@@ -16,6 +16,16 @@ public:
         std::list<T>::resize(ul, T(mOwner));
     }
 
+    void alloc_back(){
+        resize(size() + 1);
+    }
+
+    void push_back(const T& t){
+        alloc_back();
+        T* last = &back();
+        *last = t;
+    }
+
     void operator=(const ObjList<T>& oList){
         if(this != &oList){
             resize(oList.size());

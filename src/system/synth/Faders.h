@@ -35,6 +35,7 @@ public:
     void AddClient(FaderGroup*);
     void RemoveClient(FaderGroup*);
     void Check();
+    float GetVal() const { return mVal; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

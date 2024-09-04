@@ -986,13 +986,13 @@ rb3/trackpaneldir.cpp:
 rb3/crowdmetericon.cpp:
 	.text       start:0x80448CD0 end:0x80449EC8
 
-rb3/crowdaudio.cpp:
+system/bandobj/CrowdAudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
 
-rb3/unisonicon.cpp:
+system/bandobj/UnisonIcon.cpp:
 	.text       start:0x8044EFF4 end:0x8044FAF4
 
-rb3/songsectioncontroller.cpp:
+system/bandobj/SongSectionController.cpp:
 	.text       start:0x8044FAF4 end:0x8045593C
 
 system/bandobj/OvershellDir.cpp:
@@ -1235,12 +1235,15 @@ rb3/storeoffer.cpp:
 rb3/panels/storepanel.cpp:
 	.text       start:0x80525830 end:0x8052901C
 
-rb3/unknown/805/unk_8052A44C.cpp:
-	.text       start:0x8052A44C end:0x8052D22C
+system/midi/DataEventList.cpp:
+	.text       start:0x8052A508 end:0x8052CD54
 
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
+
+system/midi/MidiParserMgr.cpp:
+	.text       start:0x80531574 end:0x80533670
 
 system/track/Track.cpp:
 	.text       start:0x8053E0F4 end:0x8053E2A4
