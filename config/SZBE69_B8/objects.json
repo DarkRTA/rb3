@@ -138,7 +138,10 @@
             "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
-            "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/CrowdAudio.cpp": {
+                "status": "LinkIssues",
+                "comment": "bss meme"
+            },
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",

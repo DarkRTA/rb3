@@ -74,7 +74,7 @@ void CrowdAudio::Poll(){
         float secs = TheTaskMgr.Seconds(TaskMgr::a);
         float othersecs = secs * 1000.0f;
         if(secs > mLoopChangeTime) PlayExcitementLoop();
-        if(mOldMogg && mReleaseFader->GetVal() == -96.0f){
+        if(mOldMogg && mReleaseFader->mVal == -96.0f){
             mOldMogg->Stop();
             mOldMogg = 0;
         }
@@ -83,7 +83,7 @@ void CrowdAudio::Poll(){
             mReleaseFader->SetMode(Fader::kInvExp);
             mReleaseFader->DoFade(-96.0f, mReleaseTime);
         }
-        if(mFadingMogg && mOtherBankFader->GetVal() == -96.0f){
+        if(mFadingMogg && mOtherBankFader->mVal == -96.0f){
             mFadingMogg->Stop();
             mFadingMogg = 0;
         }
@@ -151,26 +151,27 @@ bool CrowdAudio::PlayLoop(const DataArray* loopInfo, bool force){
     else {
         bool b2 = false;
         if(clip != mCurrentMogg){
-            if(clip == mOldMogg){
+            if(clip != mOldMogg){
+                b2 = true;
+            } else {
                 if(mCurrentMogg) mCurrentMogg->Stop();
                 mOldMogg->RemoveFader(mReleaseFader);
                 mCurrentMogg = mOldMogg;
                 mOldMogg = 0;
             }
-            else b2 = true;
         }
         if(b2 || force){
-            if(mCurrentMogg) mCurrentMogg->Stop();
-            else if(!mOldMogg){
-                if(clip == mCurrentMogg){
-                    MILO_ASSERT(force, 0x1AA);
-                }
-                else {
-                    mOldMogg = mCurrentMogg;
-                    if(mOldMogg){
-                        mOldMogg->AddFader(mReleaseFader);
-                        mReleaseFader->SetVal(0.0f);
-                    }
+            if(mOldMogg) {
+                if(mCurrentMogg) mCurrentMogg->Stop();
+            }
+            else if(clip == mCurrentMogg){
+                MILO_ASSERT(force, 0x1AA);
+            }
+            else {
+                mOldMogg = mCurrentMogg;
+                if(mOldMogg){
+                    mOldMogg->AddFader(mReleaseFader);
+                    mReleaseFader->SetVal(0.0f);
                 }
             }
             mCurrentMogg = clip;
