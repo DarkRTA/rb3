@@ -52,6 +52,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
+            "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/OvershellDir.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",

@@ -1,10 +1,10 @@
 #ifndef BANDOBJ_CROWDAUDIO_H
 #define BANDOBJ_CROWDAUDIO_H
-
 #include "obj/Object.h"
 #include "rndobj/Poll.h"
 #include "synth/BinkClip.h"
 #include "synth/Faders.h"
+#include "utl/TimeConversion.h"
 
 enum ExcitementLevel {
     kExcitementBoot,
@@ -36,14 +36,27 @@ class CrowdAudio : public RndPollable {
     void PlaySequence(const char*);
     void StopSequence(const char*);
     void SetExcitement(ExcitementLevel);
-    void PlayExcitementLoop();
+    bool PlayExcitementLoop();
     void MaybeClap(float);
     void UpdateVolume();
     bool PlayLoop(const DataArray*, bool);
     void PlayCloseupAudio();
     void StopCloseupAudio();
+    void OnIntro();
+    void OnLose();
+    void OnOutro();
+    void OnMusicStart();
+    void OnWin();
+    void OnEnd();
+    void SetBank(ObjectDir*);
 
+    int MsToLastClapBeat(float f){ return MsToBeat(f); }
+
+    DECLARE_REVS;
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(CrowdAudio)
+    }
     NEW_OBJ(CrowdAudio);
 
     ObjPtr<BinkClip, ObjectDir> mCurrentMogg; // 0x8
@@ -54,31 +67,31 @@ class CrowdAudio : public RndPollable {
     float mResultsDuck; // 0x34
     float mResultsFadeDuration; // 0x38
     Fader* mResultsFader; // 0x3c
-    float unk40; // 0x40
+    float mFadeInFromLoadingDuration; // 0x40
     Fader* mEntryFader; // 0x44
-    float unk48; // 0x48
+    float mVenueChangeFadeDuration; // 0x48
     ExcitementLevel mLevel; // 0x4c
     ExcitementLevel mOverrideExcitementLevel; // 0x50
-    int unk54; // 0x54
+    ExcitementLevel mOverrideExcitementLevelPrev; // 0x54
     float mLoopChangeTime; // 0x58
     DataArray* mIntro; // 0x5c
     DataArray* mVenueIntro; // 0x60
-    DataArray* unk64; // 0x64
+    DataArray* mLevels; // 0x64
     DataArray* mVenueOutro; // 0x68
     int mState; // 0x6c - should be enum State?
-    float unk70; // 0x70
-    float unk74; // 0x74
-    float unk78; // 0x78
+    float mCrowdVol; // 0x70
+    float mCamShotVol; // 0x74
+    float mClapOffsetMs; // 0x78
     bool mEnabled; // 0x7c
     bool mCrowdReacts; // 0x7d
-    int unk80; // 0x80
-    bool unk84; // 0x84
-    ObjPtr<ObjectDir, ObjectDir> unk88; // 0x88
+    int mLastClapBeat; // 0x80
+    bool mClapAllowed; // 0x84
+    ObjPtr<ObjectDir, ObjectDir> mBank; // 0x88
     Fader* mCurrentBankFader; // 0x94
     Fader* mOtherBankFader; // 0x98
     Fader* mReleaseFader; // 0x9c
-    float unka0; // 0xa0
-    float unka4; // 0xa4
+    float mCrossfadeDuration; // 0xa0
+    float mReleaseTime; // 0xa4
     bool mPaused; // 0xa8
     bool mShouldPlayVenueIntro; // 0xa9
     bool mShouldPlayVenueOutro; // 0xaa

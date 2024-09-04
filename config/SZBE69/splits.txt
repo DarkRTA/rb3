@@ -986,7 +986,7 @@ rb3/trackpaneldir.cpp:
 rb3/crowdmetericon.cpp:
 	.text       start:0x80448CD0 end:0x80449EC8
 
-rb3/crowdaudio.cpp:
+system/bandobj/CrowdAudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
 
 system/bandobj/UnisonIcon.cpp:
