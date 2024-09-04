@@ -8,14 +8,16 @@
 #include <vector>
 
 class InlineHelp : public UIComponent {
+public:
+    class ActionElement {
     public:
-    class ActionElement { public:
-        int unk_0x0;
-        Symbol unk_0x4, unk_0x8;
-        String unk_0xC;
-        String unk_0x18;
+        int mAction; // 0x0
+        Symbol mPrimaryToken; // 0x4
+        Symbol mSecondaryToken; // 0x8
+        String mPrimaryStr; // 0xc
+        String mSecondaryStr; // 0x18
 
-        ActionElement() : unk_0x0(0), unk_0x4(gNullStr), unk_0x8(gNullStr) {}
+        ActionElement() : mAction(0), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
 
         void SetToken(Symbol, bool);
         void SetString(const char*, bool);
@@ -25,27 +27,42 @@ class InlineHelp : public UIComponent {
     };
 
     InlineHelp();
-    virtual ~InlineHelp();
     OBJ_CLASSNAME(InlineHelp)
     OBJ_SET_TYPE(InlineHelp)
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void CopyMembers(const UIComponent*, Hmx::Object::CopyType);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
+    virtual void DrawShowing();
+    virtual ~InlineHelp();
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
+    virtual void Enter();
+    virtual void Poll();
+    virtual void CopyMembers(const UIComponent*, Hmx::Object::CopyType);
+    virtual void Update();
+    virtual void SyncLabelsToConfig();
+    virtual void UpdateIconTypes(bool);
+    virtual String GetIconStringFromAction(int);
 
-    std::vector<Symbol> unk_0x10C;
-    std::vector<ActionElement> unk_0x114;
-    std::vector<UIComponent*> unk_0x11C;
-    bool unk_0x124, unk_0x125;
-    float unk_0x128;
-    u32 unk_0x12C;
-    ObjPtr<UIColor, ObjectDir> unk_0x130;
+    std::vector<Symbol> unk_0x10C; // 0x10c
+    std::vector<ActionElement> mConfig; // 0x114
+    std::vector<UIComponent*> unk_0x11C; // 0x11c
+    bool mUseConnectedControllers; // 0x124
+    bool mHorizontal; // 0x125
+    float mSpacing; // 0x128
+    u32 unk_0x12C; // 0x12c
+    ObjPtr<UIColor, ObjectDir> mTextColor; // 0x130
 
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(InlineHelp)
+    }
     NEW_OBJ(InlineHelp)
     DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 
     static bool sHasFlippedTextThisRotation;
     static bool sNeedsTextUpdate;
