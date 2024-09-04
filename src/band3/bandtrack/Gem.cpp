@@ -79,8 +79,15 @@ void Gem::Reset() {
 }
 
 float Gem::GetStart() const {
-    if (mBeard);
-    else return mStart;
+    float val;
+
+    if (!mBeard) {
+        val = mStart;
+    } else {
+        val = TickToSeconds(mBeardTick);
+    }
+
+    return val;
 }
 
 void Gem::SetFretPos(int i) {
