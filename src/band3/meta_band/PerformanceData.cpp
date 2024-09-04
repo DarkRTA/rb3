@@ -60,77 +60,54 @@ BEGIN_HANDLERS(PerformanceData)
     HANDLE_CHECK(0x2a8);
 END_HANDLERS
 
+
+
 void Stats::AccessPerformanceAwards() {
 
 }
 
-void Stats::SetEndGameScore(int endGameScore) {
-    mEndGameScore = endGameScore;
-}
-
-void Stats::SetNotesHitFraction(float notesHitFraction) {
-    mNotesHitFraction = notesHitFraction;
-}
-
-void Stats::SetHitCount(int hitCount) {
-    mHitCount = hitCount;
-}
-
-void Stats::SetMissCount(int missCount) {
-    mMissCount = missCount;
-}
-
+void Stats::SetEndGameScore(int endGameScore) { mEndGameScore = endGameScore; }
+void Stats::SetNotesHitFraction(float notesHitFraction) { mNotesHitFraction = notesHitFraction; }
+void Stats::SetHitCount(int hitCount) { mHitCount = hitCount; }
+void Stats::SetMissCount(int missCount) { mMissCount = missCount; }
 void Stats::AccessFailurePoints() {}
 void Stats::AccessSavedPoints() {}
 void Stats::AccessClosestTimesSaved() {}
 void Stats::AccessClosestPlayersSaved() {}
-void Stats::SetTimesSaved(int) {}
-void Stats::SetPlayersSaved(int) {}
+void Stats::SetTimesSaved(int timesSaved) { mTimesSaved = timesSaved; }
+void Stats::SetPlayersSaved(int playersSaved) { mPlayersSaved = playersSaved; }
 void Stats::AccessCurrentStreakInfo() {}
-void Stats::SetEndGameOverdrive(float) {}
-void Stats::SetEndGameCrowdLevel(float) {}
-void Stats::SetCodaPoints(int) {}
-void Stats::SetOverdrivePhrasesCompleted(int) {}
-void Stats::SetOverdrivePhraseCount(int) {}
-void Stats::SetUnisonPhrasesCompleted(int) {}
-void Stats::SetUnisonPhraseCount(int) {}
+void Stats::SetEndGameOverdrive(float endGameOverdrive) { mEndGameOverdrive = endGameOverdrive; }
+void Stats::SetEndGameCrowdLevel(float endGameCrowdLevel) { mEndGameCrowdLevel = endGameCrowdLevel; }
+void Stats::SetCodaPoints(int codaPoints) { mCodaPoints = codaPoints; }
+void Stats::SetOverdrivePhrasesCompleted(int overdrivePhrasesCompleted) { mOverdrivePhrasesCompleted = overdrivePhrasesCompleted; }
+void Stats::SetOverdrivePhraseCount(int overdrivePhraseCount) { mOverdrivePhraseCount = overdrivePhraseCount; }
+void Stats::SetUnisonPhrasesCompleted(int unisonPhrasesCompleted) { mUnisonPhraseCompleted = unisonPhrasesCompleted; }
+void Stats::SetUnisonPhraseCount(int unisonPhraseCount) { mUnisonPhraseCount = unisonPhraseCount; }
 void Stats::AccessBestSolos() {}
-void Stats::SetHitStreakCount(int) {}
+void Stats::SetHitStreakCount(int hitStreakCount) { }
 void Stats::AccessHitStreak(int) {}
-void Stats::SetMissStreakCount(int) {}
+void Stats::SetMissStreakCount(int missStreakCount) { }
 void Stats::AccessMissStreak(int) {}
-void Stats::SetBestOverdriveDeploymentsCount(int) {}
+void Stats::SetBestOverdriveDeploymentsCount(int bestOverdriveDeploymentsCount) { }
 void Stats::AccessBestOverdriveDeployment(int) {}
-void Stats::SetBestStreakMultipliersCount(int) {}
+void Stats::SetBestStreakMultipliersCount(int bestStreakMultipliersCount) {}
 void Stats::AccessBestStreakMultiplier(int) {}
-void Stats::SetTotalOverdriveDuration(float) {}
-void Stats::SetTotalMultiplierDuration(float) {}
-void Stats::SetRollsHitCompletely(int) {}
-void Stats::SetRollCount(int) {}
-void Stats::SetHighGemsHitHigh(int) {}
-void Stats::SetHighGemsHitLow(int) {}
-void Stats::SetHighFretGemCount(int) {}
-void Stats::SetSustainGemsHitCompletely(int) {}
-void Stats::SetSustainGemsHitPartially(int) {}
-void Stats::SetSustainGemCount(int) {}
-void Stats::SetTrillsHitCompletely(int) {}
-void Stats::SetTrillsHitPartially(int) {}
-void Stats::SetTrillCount(int) {}
-
-void Stats::SetDoubleHarmonyHit(int doubleHarmonyHit) {
-    mDoubleHarmonyHit = doubleHarmonyHit;
-}
-
-void Stats::SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) {
-    mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount;
-}
-
-void Stats::SetTripleHarmonyHit(int tripleHarmonyHit) {
-    mTripleHarmonyHit = tripleHarmonyHit;
-}
-
-void Stats::SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) {
-    mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount;
-}
-
+void Stats::SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDuration = totalOverdriveDuration; }
+void Stats::SetTotalMultiplierDuration(float totalMultiplierDuration) { mTotalMultiplierDuration = totalMultiplierDuration; }
+void Stats::SetRollsHitCompletely(int rollsHitCompletely) { mRollsHitCompletely = rollsHitCompletely; }
+void Stats::SetRollCount(int rollCount) { mRollCount = rollCount; }
+void Stats::SetHighGemsHitHigh(int highGemsHitHigh) { mHighGemsHitHigh = highGemsHitHigh; }
+void Stats::SetHighGemsHitLow(int highGemsHitLow) { mHighGemsHitLow = highGemsHitLow; }
+void Stats::SetHighFretGemCount(int highFretGemCount) { mHighFretGemCount = highFretGemCount; }
+void Stats::SetSustainGemsHitCompletely(int sustainGemsHitCompletely) { mSustainGemsHitCompletely = sustainGemsHitCompletely; }
+void Stats::SetSustainGemsHitPartially(int sustainGemsHitPartially) { mSustainGemsHitPartially = sustainGemsHitPartially; }
+void Stats::SetSustainGemCount(int sustainGemCount) { mSustainGemCount = sustainGemCount; }
+void Stats::SetTrillsHitCompletely(int trillsHitCompletely) { mTrillsHitCompletely = trillsHitCompletely; }
+void Stats::SetTrillsHitPartially(int trillsHitPartially) { mTrillsHitPartially = trillsHitPartially; }
+void Stats::SetTrillCount(int trillCount) { mTrillCount = trillCount; }
+void Stats::SetDoubleHarmonyHit(int doubleHarmonyHit) { mDoubleHarmonyHit = doubleHarmonyHit; }
+void Stats::SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
+void Stats::SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
+void Stats::SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
 void Stats::AccessSingerStats(int) {}
