@@ -53,9 +53,16 @@ public:
     virtual void SetupSmasherPlate();
     virtual void ReleaseSmasherPlate();
     virtual void TutorialReset();
-    virtual ~BandTrack();
+    virtual ~BandTrack(){}
 
     void Init(Hmx::Object*);
+    void LoadTrack(BinStream&, bool, bool, bool);
+    void CopyTrack(const BandTrack*);
+    void ResetStreakMeter();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     bool mDisabled; // 0x8
     bool mSimulatedNet; // 0x9

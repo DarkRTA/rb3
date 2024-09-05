@@ -18,6 +18,8 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
+    
+    void Reset();
 
     int mStreakMultiplier; // 0x18c
     int mBandMultiplier; // 0x190
