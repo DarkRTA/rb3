@@ -983,7 +983,7 @@ rb3/unknown/804/unk_80421240.cpp:
 rb3/trackpaneldir.cpp:
 	.text       start:0x804431F4 end:0x80448CD0
 
-rb3/crowdmetericon.cpp:
+system/bandobj/CrowdMeterIcon.cpp:
 	.text       start:0x80448CD0 end:0x80449EC8
 
 system/bandobj/CrowdAudio.cpp:

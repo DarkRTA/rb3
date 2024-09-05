@@ -143,6 +143,7 @@
                 "status": "LinkIssues",
                 "comment": "bss meme"
             },
+            "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
