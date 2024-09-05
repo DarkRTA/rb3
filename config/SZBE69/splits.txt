@@ -989,6 +989,9 @@ rb3/crowdmetericon.cpp:
 system/bandobj/CrowdAudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
 
+system/bandobj/InlineHelp.cpp:
+	.text       start:0x8044C194 end:0x8044EFF4
+
 system/bandobj/UnisonIcon.cpp:
 	.text       start:0x8044EFF4 end:0x8044FAF4
 

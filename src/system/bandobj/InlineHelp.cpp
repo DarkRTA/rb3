@@ -8,6 +8,9 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(InlineHelp)
+float InlineHelp::sLastUpdatedTime;
+float InlineHelp::sRotationTime;
+float InlineHelp::sLabelRot;
 bool InlineHelp::sHasFlippedTextThisRotation = 0;
 bool InlineHelp::sNeedsTextUpdate = 0;
 bool InlineHelp::sRotated = 0;
@@ -69,9 +72,9 @@ void InlineHelp::Init() {
 InlineHelp::InlineHelp() : mUseConnectedControllers(0), mHorizontal(1), mSpacing(0), unk_0x12C(0), mTextColor(this, NULL) { }
 
 InlineHelp::~InlineHelp() {
-    int siz = unk_0x11C.size();
+    int siz = mTextLabels.size();
     for (int i = 0; i < siz; i++) {
-        delete unk_0x11C[i];
+        delete mTextLabels[i];
     }
 }
 
@@ -120,19 +123,184 @@ void InlineHelp::PostLoad(BinStream& bs) {
     Update();
 }
 
-// void InlineHelp::Enter(){
+void InlineHelp::Enter(){
+    UIComponent::Enter();
+    UpdateIconTypes(true);
+    SyncLabelsToConfig();
+}
 
-// }
+void InlineHelp::Poll(){
+    UIComponent::Poll();
+    float uisecs = TheTaskMgr.UISeconds();
+    if(uisecs != sLastUpdatedTime){
+        sNeedsTextUpdate = false;
+        if(uisecs > sRotationTime){
+            float f1 = uisecs - sRotationTime;
+            if(f1 >= 1.0f){
+                sHasFlippedTextThisRotation = false;
+                sRotationTime = uisecs + 5.0f;
+                SetLabelRotationPcts(0.0f);
+            }
+            else {
+                if(!sHasFlippedTextThisRotation && f1 >= 0.5f){
+                    sHasFlippedTextThisRotation = true;
+                    sRotated = sRotated == 0;
+                    sNeedsTextUpdate = true;
+                }
+                SetLabelRotationPcts(f1);
+            }
+        }
+        sLastUpdatedTime = uisecs;
+    }
+    if(sNeedsTextUpdate) UpdateLabelText();
+}
+
+void InlineHelp::SetActionToken(JoypadAction a, DataNode& node){
+    bool found = false;
+    for(std::vector<ActionElement>::iterator it = mConfig.begin(); it != mConfig.end(); ++it){
+        if((*it).mAction == a){
+            (*it).SetConfig(node, false);
+            found = true;
+            break;
+        }
+    }
+    if(!found){
+        ActionElement el(a);
+        el.SetConfig(node, false);
+        mConfig.push_back(el);
+    }
+    SyncLabelsToConfig();
+}
+
+void InlineHelp::ClearActionToken(JoypadAction a){
+    for(std::vector<ActionElement>::iterator it = mConfig.begin(); it != mConfig.end(); ++it){
+        if((*it).mAction == a){
+            mConfig.erase(it);
+            SyncLabelsToConfig();
+            return;
+        }
+    }
+}
 
 BinStream& operator>>(BinStream& bs, InlineHelp::ActionElement& ae) {
-    { int x; bs >> x; ae.mAction = x; }
+    { int x; bs >> x; ae.mAction = (JoypadAction)x; }
     Symbol s; bs >> s; ae.SetToken(s, false);
     if (InlineHelp::gRev >= 2)  { bs >> s; ae.SetToken(s, true); }
     return bs;
 }
 
+void InlineHelp::UpdateTextColors(){
+    for(std::vector<UILabel*>::iterator it = mTextLabels.begin(); it != mTextLabels.end(); ++it){
+        (*it)->SetColorOverride(mTextColor);
+    }
+}
+
+void InlineHelp::Update(){
+    UIComponent::Update();
+    const DataArray* t = TypeDef();
+    MILO_ASSERT(t, 0x187);
+    RndDir* dir = mResource->Dir();
+    MILO_ASSERT(dir, 0x18A);
+    unk_0x12C = dir->Find<BandLabel>(t->FindStr(text_label), true);
+    SyncLabelsToConfig();
+}
+
+void InlineHelp::UpdateIconTypes(bool b){
+    mIconTypes.clear();
+    mIconTypes.push_back(vocals);
+    mIconTypes.push_back(guitar);
+    mIconTypes.push_back(drums);
+    mIconTypes.push_back(keys);
+}
+
+void InlineHelp::SyncLabelsToConfig(){
+    ResetRotation();
+    int cfg_size = mConfig.size();
+    int labels_size = mTextLabels.size();
+    if(cfg_size > labels_size){
+        for(; labels_size < cfg_size; labels_size++){
+            BandLabel* lbl = Hmx::Object::New<BandLabel>();
+            lbl->ResourceCopy(unk_0x12C);
+            lbl->SetColorOverride(mTextColor);
+            mTextLabels.push_back(lbl);
+        }
+    }
+    else {
+        if(labels_size > cfg_size){
+            for(; cfg_size < labels_size; cfg_size++){
+                delete mTextLabels[cfg_size];
+            }
+            mTextLabels.resize(cfg_size);
+        }
+    }
+    UpdateLabelText();
+}
+
+String InlineHelp::GetIconStringFromAction(int idx){
+    String ret;
+    const DataArray* t = TypeDef();
+    MILO_ASSERT(t, 0x1C4);
+    DataArray* actionArr = t->FindArray(action_chars, true);
+    for(std::vector<Symbol>::iterator it = mIconTypes.begin(); it != mIconTypes.end(); ++it){
+        const char* str = actionArr->FindArray(*it, true)->Str(idx + 1);
+        char c = *str;
+        if(ret.find(c) == String::npos) ret += c;
+    }
+    return ret;
+}
+
+void InlineHelp::ResetRotation(){
+    sRotated = 0;
+    sHasFlippedTextThisRotation = 0;
+    sRotationTime = TheTaskMgr.UISeconds() + 5.0f;
+    SetLabelRotationPcts(0.0f);
+}
+
+void InlineHelp::SetLabelRotationPcts(float f){
+    if(f < 0.5f) sLabelRot = f * -240.0f;
+    else sLabelRot = f * -240.0f - 120.0f;
+}
+
+void InlineHelp::UpdateLabelText(){
+    int size = mConfig.size();
+    for(int i = 0; i < size; i++){
+        String icon = GetIconStringFromAction(mConfig[i].mAction);
+        if(icon.empty()) mTextLabels[i]->SetTextToken(gNullStr);
+        else {
+            const char* text = mConfig[i].GetText(sRotated);
+            UILabel* curlabel = mTextLabels[i];
+            DataNode symnode(inline_help_fmt);
+            DataNode strnode(icon.c_str());
+            DataNode textnode(text);
+            DataArray* arr = new DataArray(3);
+            arr->Node(0) = symnode;
+            arr->Node(1) = strnode;
+            arr->Node(2) = textnode;
+            curlabel->SetTokenFmt(arr);
+            arr->Release();
+        }
+    }
+}
+
+BEGIN_HANDLERS(InlineHelp)
+    HANDLE_ACTION(set_action_token, SetActionToken((JoypadAction)_msg->Int(2), _msg->Node(3)))
+    HANDLE_ACTION(clear_action_token, ClearActionToken((JoypadAction)_msg->Int(2)))
+    HANDLE(set_config, OnSetConfig)
+    HANDLE_SUPERCLASS(UIComponent)
+    HANDLE_CHECK(0x201)
+END_HANDLERS
+
 BEGIN_CUSTOM_PROPSYNC(InlineHelp::ActionElement)
-    SYNC_PROP(action, o.mAction)
+    SYNC_PROP(action, (int&)o.mAction)
     SYNC_PROP_SET(text_token, o.GetToken(false), o.SetToken(_val.Sym(0), false))
     SYNC_PROP_SET(secondary_token, o.GetToken(true), o.SetToken(_val.Sym(0), true))
 END_CUSTOM_PROPSYNC
+
+BEGIN_PROPSYNCS(InlineHelp)
+    SYNC_PROP_MODIFY_ALT(config, mConfig, SyncLabelsToConfig())
+    SYNC_PROP(horizontal, mHorizontal)
+    SYNC_PROP(spacing, mSpacing)
+    SYNC_PROP_MODIFY_ALT(text_color, mTextColor, UpdateTextColors())
+    SYNC_PROP(use_connected_controllers, mUseConnectedControllers)
+    SYNC_SUPERCLASS(UIComponent)
+END_PROPSYNCS

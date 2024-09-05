@@ -5,19 +5,21 @@
 #include "types.h"
 #include "ui/UIColor.h"
 #include "ui/UIComponent.h"
+#include "bandobj/BandLabel.h"
 #include <vector>
 
 class InlineHelp : public UIComponent {
 public:
     class ActionElement {
     public:
-        int mAction; // 0x0
+        JoypadAction mAction; // 0x0
         Symbol mPrimaryToken; // 0x4
         Symbol mSecondaryToken; // 0x8
         String mPrimaryStr; // 0xc
         String mSecondaryStr; // 0x18
 
-        ActionElement() : mAction(0), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
+        ActionElement() : mAction(kAction_None), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
+        ActionElement(JoypadAction a) : mAction(a), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
 
         void SetToken(Symbol, bool);
         void SetString(const char*, bool);
@@ -46,13 +48,20 @@ public:
     virtual void UpdateIconTypes(bool);
     virtual String GetIconStringFromAction(int);
 
-    std::vector<Symbol> unk_0x10C; // 0x10c
+    void SetActionToken(JoypadAction, DataNode&);
+    void ClearActionToken(JoypadAction);
+    void UpdateTextColors();
+    void UpdateLabelText();
+
+    DataNode OnSetConfig(const DataArray*);
+
+    std::vector<Symbol> mIconTypes; // 0x10c
     std::vector<ActionElement> mConfig; // 0x114
-    std::vector<UIComponent*> unk_0x11C; // 0x11c
+    std::vector<UILabel*> mTextLabels; // 0x11c
     bool mUseConnectedControllers; // 0x124
     bool mHorizontal; // 0x125
     float mSpacing; // 0x128
-    u32 unk_0x12C; // 0x12c
+    BandLabel* unk_0x12C; // 0x12c
     ObjPtr<UIColor, ObjectDir> mTextColor; // 0x130
 
     static void Init();
@@ -64,9 +73,15 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
+    static void SetLabelRotationPcts(float);
+    static void ResetRotation();
+    
     static bool sHasFlippedTextThisRotation;
     static bool sNeedsTextUpdate;
     static bool sRotated;
+    static float sLastUpdatedTime;
+    static float sRotationTime;
+    static float sLabelRot;
 };
 
 BinStream& operator>>(BinStream&, InlineHelp::ActionElement&);
