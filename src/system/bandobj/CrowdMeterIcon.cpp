@@ -30,6 +30,41 @@ void CrowdMeterIcon::SyncObjects(){
     if(!mIconStateAnim) mIconStateAnim = Find<RndAnimatable>("icon_state.anim", true);
 }
 
+void CrowdMeterIcon::SetState(CrowdMeterState state, bool b){
+    if(state != mState || b){
+        mState = state;
+        if(!mQuarantined){
+            switch(state){
+                case kCrowdMeterNormal:
+                    mStateNormalTrig->Trigger();
+                    break;
+                case kCrowdMeterWarning:
+                    float delay = unk240->GetPulseAnimStartDelay(false);
+                    mIconStateAnim->Animate(0.0f, false, delay, RndAnimatable::k1_fpb, 0.0f, 1.0f, 0.0f, 1.0f, loop);
+                    break;
+                case kCrowdMeterFailed:
+                    mStateFailedTrig->Trigger();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+}
+
+void CrowdMeterIcon::SetGlowing(bool glow){
+    if(glow) mGlowTrig->Trigger();
+    else mGlowStopTrig->Trigger();
+}
+
+void CrowdMeterIcon::SetIcon(const char* cc){
+    mIconLabel->SetIcon(*cc);
+}
+
+bool CrowdMeterIcon::HasIcon() const {
+    return strcmp(mIconLabel->GetDefaultText(), gNullStr) != 0;
+}
+
 void CrowdMeterIcon::ArrowShow(bool show){
     if(show) mArrowShowTrig->Trigger();
     else mArrowHideTrig->Trigger();
@@ -80,3 +115,9 @@ void CrowdMeterIcon::PreLoad(BinStream& bs){
     ASSERT_REVS(0, 0)
     RndDir::PreLoad(bs);
 }
+
+void CrowdMeterIcon::PostLoad(BinStream& bs){ RndDir::PostLoad(bs); }
+
+BEGIN_COPYS(CrowdMeterIcon)
+    COPY_SUPERCLASS(RndDir)
+END_COPYS

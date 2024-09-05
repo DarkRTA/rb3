@@ -2,6 +2,7 @@
 #include "rndobj/Dir.h"
 #include "rndobj/EventTrigger.h"
 #include "bandobj/BandLabel.h"
+#include "bandobj/TrackPanelDirBase.h"
 
 enum CrowdMeterState {
     kCrowdMeterNormal = 0,
@@ -18,10 +19,10 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){ COPY_SUPERCLASS(RndDir); }
+    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual ~CrowdMeterIcon(){}
     virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream& bs){ RndDir::PostLoad(bs); }
+    virtual void PostLoad(BinStream& bs);
     virtual void SyncObjects();
 
     void Deploy();
@@ -34,6 +35,7 @@ public:
     void ArrowShow(bool);
     void SetGlowing(bool);
     void SetIcon(const char*);
+    bool HasIcon() const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -54,7 +56,7 @@ public:
     ObjPtr<EventTrigger, ObjectDir> mDropOutTrig; // 0x21c
     ObjPtr<BandLabel, ObjectDir> mIconLabel; // 0x228
     ObjPtr<RndAnimatable, ObjectDir> mIconStateAnim; // 0x234
-    int unk240; // 0x240
+    TrackPanelDirBase* unk240; // 0x240
     CrowdMeterState mState; // 0x244
     bool mQuarantined; // 0x248
 };
