@@ -148,6 +148,7 @@
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
+            "system/bandobj/OverdriveMeter.cpp": "Matching",
             "system/bandobj/OvershellDir.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
