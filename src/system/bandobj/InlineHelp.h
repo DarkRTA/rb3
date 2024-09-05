@@ -21,6 +21,7 @@ public:
         ActionElement() : mAction(kAction_None), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
         ActionElement(JoypadAction a) : mAction(a), mPrimaryToken(gNullStr), mSecondaryToken(gNullStr) {}
 
+        bool HasSecondaryStr() const { return !mSecondaryStr.empty(); }
         void SetToken(Symbol, bool);
         void SetString(const char*, bool);
         Symbol GetToken(bool) const;
@@ -75,7 +76,7 @@ public:
 
     static void SetLabelRotationPcts(float);
     static void ResetRotation();
-    
+
     static bool sHasFlippedTextThisRotation;
     static bool sNeedsTextUpdate;
     static bool sRotated;

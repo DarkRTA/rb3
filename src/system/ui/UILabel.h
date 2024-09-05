@@ -101,6 +101,10 @@ public:
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
     }
 
+    void SetTokenFmt(Symbol s, const char* cc1, const char* cc2){
+        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc1), DataNode(cc2)));
+    }
+
     bool HasHighlightMesh() const {
         return mLabelDir->HighlighMeshGroup() != 0;
     }

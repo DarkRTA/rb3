@@ -41,7 +41,7 @@ Symbol InlineHelp::ActionElement::GetToken(bool b) const {
 }
 
 const char* InlineHelp::ActionElement::GetText(bool b) const {
-    if (b && !mSecondaryStr.empty()) return mSecondaryStr.c_str();
+    if (b && HasSecondaryStr()) return mSecondaryStr.c_str();
     return mPrimaryStr.c_str();
 }
 
@@ -189,6 +189,20 @@ BinStream& operator>>(BinStream& bs, InlineHelp::ActionElement& ae) {
     return bs;
 }
 
+DataNode InlineHelp::OnSetConfig(const DataArray* da){
+    mConfig.clear();
+    DataArray* arr = da->Array(2);
+    for(int i = 0; i < arr->Size(); i++){
+        DataArray* loopArr = arr->Array(i);
+        ActionElement el((JoypadAction)loopArr->Int(0));
+        el.SetConfig(arr->Node(1), false);
+        if(loopArr->Size() > 2) el.SetConfig(arr->Node(2), true);
+        mConfig.push_back(el);
+    }
+    SyncLabelsToConfig();
+    return DataNode(1);
+}
+
 void InlineHelp::UpdateTextColors(){
     for(std::vector<UILabel*>::iterator it = mTextLabels.begin(); it != mTextLabels.end(); ++it){
         (*it)->SetColorOverride(mTextColor);
@@ -266,19 +280,7 @@ void InlineHelp::UpdateLabelText(){
     for(int i = 0; i < size; i++){
         String icon = GetIconStringFromAction(mConfig[i].mAction);
         if(icon.empty()) mTextLabels[i]->SetTextToken(gNullStr);
-        else {
-            const char* text = mConfig[i].GetText(sRotated);
-            UILabel* curlabel = mTextLabels[i];
-            DataNode symnode(inline_help_fmt);
-            DataNode strnode(icon.c_str());
-            DataNode textnode(text);
-            DataArray* arr = new DataArray(3);
-            arr->Node(0) = symnode;
-            arr->Node(1) = strnode;
-            arr->Node(2) = textnode;
-            curlabel->SetTokenFmt(arr);
-            arr->Release();
-        }
+        else mTextLabels[i]->SetTokenFmt(inline_help_fmt, icon.c_str(), mConfig[i].GetText(sRotated));
     }
 }
 
