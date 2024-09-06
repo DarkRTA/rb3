@@ -225,7 +225,7 @@ def generate_build_ninja(
     if config.generate_map:
         ldflags += " -mapunused"
     if config.debug:
-        ldflags += " -g"
+        ldflags += " -gdwarf-2"
     n.variable("ldflags", ldflags)
     if not config.linker_version:
         sys.exit("ProjectConfig.linker_version missing")
