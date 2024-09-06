@@ -7,10 +7,10 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Font.h"
-#include "track/TrackWidget.h"
-
 #include <float.h>
 #include <set>
+
+class TrackWidget;
 
 class RndText : public RndDrawable, public RndTransformable {
 public:
