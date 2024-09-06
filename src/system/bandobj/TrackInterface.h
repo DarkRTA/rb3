@@ -2,7 +2,12 @@
 #include "obj/Object.h"
 
 enum VocalParam {
-
+    kVocalParamAny,
+    kVocalParamMicVolume,
+    kVocalParamMic1Gain,
+    kVocalParamMic2Gain,
+    kVocalParamMic3Gain,
+    kVocalParamCueVolume
 };
 
 class TrackInterface : public Hmx::Object {

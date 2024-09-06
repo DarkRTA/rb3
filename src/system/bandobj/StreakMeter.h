@@ -20,6 +20,8 @@ public:
     virtual void SyncObjects();
     
     void Reset();
+    void SetBandMultiplier(int);
+    void EndOverdrive() const;
 
     int mStreakMultiplier; // 0x18c
     int mBandMultiplier; // 0x190

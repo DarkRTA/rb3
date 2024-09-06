@@ -7,6 +7,7 @@
 #include "bandobj/StreakMeter.h"
 #include "bandobj/UnisonIcon.h"
 #include "bandobj/TrackInterface.h"
+#include "bandobj/BandCrowdMeter.h"
 
 class BandTrack : public virtual Hmx::Object {
 public:
@@ -19,7 +20,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual void Reset();
-    virtual void TrackReset();
+    virtual void TrackReset(){}
     virtual void ResetSmashers(bool);
     virtual void Retract(bool);
     virtual void Extend(bool);
@@ -36,8 +37,8 @@ public:
     virtual void SetTambourine(bool);
     virtual void SetPlayerLocal(float);
     virtual void SetHasTrackerFocus(bool);
-    virtual int ThisDir(); // fix ptr
-    virtual int ThisDir() const; // fix ptr
+    virtual ObjectDir* ThisDir(){ MILO_ASSERT(0, 0x8A); return 0; }
+    virtual ObjectDir* ThisDir() const; // fix ptr
     virtual int AsGemTrackDir();
     virtual int AsVocalTrackDir();
     virtual int AsRndDir();
@@ -59,6 +60,20 @@ public:
     void LoadTrack(BinStream&, bool, bool, bool);
     void CopyTrack(const BandTrack*);
     void ResetStreakMeter();
+    void SendTrackerDisplayMessage(const Message&) const;
+    void ClearFinaleHelp();
+    void FillReset();
+    void ResetPopup();
+    void SetupPlayerIntro();
+    void SetupCrowdMeter();
+    void PracticeReset();
+    void ShowOverdriveMeter(bool);
+    void SetMaxMultiplier(int);
+    BandCrowdMeter* GetCrowdMeter();
+    void StartFinale(unsigned int);
+    void GameWon();
+    void GameOver();
+    void SpotlightFail(bool);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -67,7 +82,7 @@ public:
     bool mDisabled; // 0x8
     bool mSimulatedNet; // 0x9
     Symbol mInstrument; // 0xc
-    int unk10; // 0x10
+    unsigned int unk10; // 0x10
     int unk14; // 0x14
     bool unk18; // 0x18
     bool unk19; // 0x19
@@ -83,11 +98,11 @@ public:
     ObjPtr<RndDir, ObjectDir> mPopupObject; // 0x44
     ObjPtr<RndDir, ObjectDir> mPlayerFeedback; // 0x50
     ObjPtr<RndDir, ObjectDir> mFailedFeedback; // 0x5c
-    ObjPtr<UnisonIcon, ObjectDir> unk68; // 0x68
+    ObjPtr<UnisonIcon, ObjectDir> mUnisonIcon; // 0x68
     Symbol unk74; // 0x74
     bool unk78; // 0x78
     ObjPtr<RndDir, ObjectDir> mEndgameFeedback; // 0x7c
-    int unk88; // 0x88
+    unsigned int unk88; // 0x88
     bool unk8c; // 0x8c
     ObjPtr<TrackInterface, ObjectDir> mParent; // 0x90
     ObjPtr<EventTrigger, ObjectDir> mRetractTrig; // 0x9c
