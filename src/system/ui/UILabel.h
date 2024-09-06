@@ -96,6 +96,7 @@ public:
     void AltFontResourceFileUpdated(bool);
     RndFont* AltFont();
     RndFont* Font();
+    void UpdateAndDrawHighlightMesh();
 
     void SetTokenFmt(Symbol s, const char* cc){
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));

@@ -21,6 +21,8 @@ public:
     virtual bool IsEmptyValue() const;
     virtual void FinishValueChange();
 
+    static void LoadOldBandTextComp(BinStream&);
+
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandLabel);

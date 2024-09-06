@@ -1,5 +1,8 @@
 #include "bandobj/BandButton.h"
+#include "bandobj/BandLabel.h"
+#include "rndobj/PropAnim.h"
 #include "ui/UI.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(BandButton);
 
@@ -116,7 +119,7 @@ void BandButton::PreLoad(BinStream& bs){
         mCapsMode = c;
     }
     if(gRev == 0xE){
-        LoadOldBandTextComp(bs);
+        BandLabel::LoadOldBandTextComp(bs);
     }
 }
 
@@ -128,3 +131,89 @@ void BandButton::PostLoad(BinStream& bs){
     }
 }
 
+void BandButton::DrawShowing(){
+    bool focusanimating = false;
+    if(mFocusAnim && mFocusAnim->IsAnimating()) focusanimating = true;
+    if(mState == kFocused && (focusanimating || mPulseAnim)){
+        if(!focusanimating && !mPulseAnim->IsAnimating()) StartPulseAnim();
+        if(focusanimating){
+            if(!mText->GetFont()) Update();
+            mAnimTask->Poll(TheTaskMgr.UISeconds() - mStartTime);
+            UpdateAndDrawHighlightMesh();
+            mText->DrawShowing();
+            if(UILabel::sDebugHighlight) Highlight();
+        }
+        else UILabel::DrawShowing();
+    }
+    else UILabel::DrawShowing();
+}
+
+void BandButton::SetState(UIComponent::State state){
+    if(state != mState){
+        UIComponent::State curstate = GetState();
+        UIComponent::SetState(state);
+        if(mState == kFocused && mFocusAnim){
+            if(TheUI->IsTransitioning()) SkipToFocused();
+            else {
+                mAnimTask = mFocusAnim->Animate(mFocusAnim->StartFrame(), mFocusAnim->EndFrame(), kTaskUISeconds, 0.0f, 0.05f);
+                mStartTime = TheTaskMgr.UISeconds();
+            }
+        }
+        else if(curstate == kFocused){
+            if(mPulseAnim && mPulseAnim->IsAnimating()) mPulseAnim->StopAnimation();
+            if(mFocusAnim){
+                if(TheUI->IsTransitioning()) SkipToUnfocused();
+                else {
+                    mAnimTask = mFocusAnim->Animate(mFocusAnim->EndFrame(), mFocusAnim->StartFrame(), kTaskUISeconds, 0.0f, 0.05f);
+                    mStartTime = TheTaskMgr.UISeconds();
+                }
+            }
+        }
+    }
+}
+
+void BandButton::SkipToFocused(){
+    if(mFocusAnim){
+        mAnimTask = mFocusAnim->Animate(mFocusAnim->EndFrame() - 1.0f, mFocusAnim->EndFrame(), kTaskUISeconds, 0.0f, 0.0f);
+        mStartTime = TheTaskMgr.UISeconds();
+    }
+}
+
+void BandButton::SkipToUnfocused(){
+    if(mFocusAnim){
+        mAnimTask = mFocusAnim->Animate(mFocusAnim->StartFrame() + 1.0f, mFocusAnim->StartFrame(), kTaskUISeconds, 0.0f, 0.0f);
+        mStartTime = TheTaskMgr.UISeconds();
+    }
+}
+
+void BandButton::StartPulseAnim(){
+    if(mPulseAnim){
+        mAnimTask = mPulseAnim->Animate(0.05f, false, 0.0f, RndAnimatable::k30_fps_ui, mPulseAnim->StartFrame(), mPulseAnim->EndFrame(), 0.0f, 1.0f, loop);
+        mStartTime = TheTaskMgr.UISeconds();
+    }
+}
+
+void BandButton::Update(){
+    UILabel::Update();
+    if(mLabelDir->FocusAnim()){
+        if(!mFocusAnim) mFocusAnim = Hmx::Object::New<RndPropAnim>();
+        mFocusAnim->Copy(mLabelDir->FocusAnim(), kCopyShallow);
+        mFocusAnim->Replace(mLabelDir->TextObj(mFontMatVariation), mText);
+    }
+    if(mLabelDir->PulseAnim()){
+        if(!mPulseAnim) mPulseAnim = Hmx::Object::New<RndPropAnim>();
+        mPulseAnim->Copy(mLabelDir->PulseAnim(), kCopyShallow);
+        mPulseAnim->Replace(mLabelDir->TextObj(mFontMatVariation), mText);
+    }
+}
+
+BEGIN_HANDLERS(BandButton)
+    HANDLE_ACTION(skip_to_focused, SkipToFocused())
+    HANDLE_ACTION(skip_to_unfocused, SkipToUnfocused())
+    HANDLE_SUPERCLASS(UIButton)
+    HANDLE_CHECK(0x171)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(BandButton)
+    SYNC_SUPERCLASS(UIButton)
+END_PROPSYNCS
