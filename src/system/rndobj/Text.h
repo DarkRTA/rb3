@@ -7,12 +7,35 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Font.h"
+#include <float.h>
 #include <set>
+
+class TrackWidget;
 
 class RndText : public RndDrawable, public RndTransformable {
 public:
-    enum Style {
+    class Style {
+    public:
+        Style()
+            : font(0), size(0.0), italics(-1), unk_c(true), unk_d(false),
+              color(0, 0, 0, 0), unk_28(0), unk_2c(FLT_MAX), brk(true), pre(true) {}
 
+        TrackWidget *font;
+        float size;
+        float italics;
+
+        bool unk_c;
+        bool unk_d;
+
+        Hmx::Color color;
+
+        bool brk;
+        bool pre;
+
+        float zOffset;
+
+        float unk_28;
+        float unk_2c;
     };
 
     enum Alignment {
