@@ -139,19 +139,24 @@
             "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
+            "system/bandobj/BandTrack.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
             },
+            "system/bandobj/CrowdMeterIcon.cpp": "Matching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
+            "system/bandobj/OverdriveMeter.cpp": "Matching",
             "system/bandobj/OvershellDir.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
             },
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
+            "system/bandobj/StreakMeter.cpp": "NonMatching",
+            "system/bandobj/TrackPanelDirBase.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 

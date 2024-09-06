@@ -53,6 +53,8 @@
         "cflags": "system",
         "objects": {
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
+            "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",
+            "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/OvershellDir.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
