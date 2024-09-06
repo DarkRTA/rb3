@@ -7,6 +7,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Font.h"
+#include "track/TrackWidget.h"
 
 #include <float.h>
 #include <set>
@@ -19,8 +20,7 @@ public:
             : font(0), size(0.0), italics(-1), unk_c(true), unk_d(false),
               color(0, 0, 0, 0), unk_28(0), unk_2c(FLT_MAX), brk(true), pre(true) {}
 
-        // TrackWidget
-        void *font;
+        TrackWidget *font;
         float size;
         float italics;
 

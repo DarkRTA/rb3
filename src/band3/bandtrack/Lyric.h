@@ -6,6 +6,7 @@
 #include "rndobj/Text.h"
 #include "obj/Object.h"
 #include "utl/Str.h"
+#include "track/TrackWidget.h"
 #include "beatmatch/VocalNote.h"
 
 class LyricPlate : public Hmx::Object {
@@ -22,8 +23,7 @@ public:
     float mWidthX; // 0x1c
     int mNumCharsUsed; // 0x20
 
-    // TrackWidget
-    void *mText; // 0x24
+    RndText *mText; // 0x24
 
     // Need syllable type
     std::vector<void *> mSyllables; // 0x28
