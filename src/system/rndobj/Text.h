@@ -99,6 +99,7 @@ public:
     void SetFixedLength(int);
     void GetCurrentStringDimensions(float&, float&);
     Alignment GetAlignment() const { return (Alignment)mAlign; }
+    RndFont* GetFont() const { return mFont; }
     float MaxLineWidth() const;
     void SetMarkup(bool);
     void ResizeText(int);
