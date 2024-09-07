@@ -957,6 +957,10 @@ system/zlib/inffast.c:
 system/bandobj/BandButton.cpp:
 	.text       start:0x80387FF4 end:0x80389678
 
+system/bandobj/BandCamShot.cpp:
+	.text       start:0x80389678 end:0x80392CF0
+	.ctors      start:0x807EFF84 end:0x807EFF88
+
 rb3/chordshapegenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94

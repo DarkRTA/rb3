@@ -1,6 +1,9 @@
 #include "bandobj/BandCamShot.h"
 #include "obj/Msg.h"
+#include "obj/Utl.h"
+#include "world/EventAnim.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(BandCamShot)
 
@@ -11,10 +14,11 @@ BandCamShot::BandCamShot() : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime
     unk15c(0), unk160(0), unk164(0), unk168(0), unk169(0), unk16a(0), mAnimsDuringNextShots(0) {
     SetNear(10.0f);
     SetFar(10000.0f);
+    mShotIter = mNextShots.end();
 }
 
 RndTransformable* BandCamShot::FindTarget(Symbol s, bool b){
-    static Message msg("find_target", DataNode(0), DataNode(0));
+    static Message msg("find_target", DataNode(0), DataNode(1));
     msg[0] = DataNode(s);
     msg[1] = DataNode(b);
     DataNode handled = HandleType(msg);
@@ -132,6 +136,69 @@ BinStream& operator>>(BinStream& bs, BandCamShot::Target& tgt){
 
 SAVE_OBJ(BandCamShot, 0x14A)
 
+BinStream& operator>>(BinStream& bs, OldTrigger& o){
+    bs >> o.frame;
+    bs >> o.trigger;
+    return bs;
+}
+
+EventAnim* MakeEventAnim(BandCamShot* shot){
+    EventAnim* anim = Hmx::Object::New<EventAnim>();
+    anim->SetName(MakeString("%s_trigs.evntanm", FileGetBase(shot->Name(), 0)), shot->Dir());
+    return anim;
+}
+
+bool BandCamShot::IterateNextShot(){
+    bool ret = true;
+    MILO_ASSERT(!mNextShots.empty(), 0x278);
+    if(mShotIter == mNextShots.end()){
+        mShotIter = mNextShots.begin();
+    }
+    else {
+        ObjPtrList<BandCamShot, ObjectDir>::iterator curItr = mShotIter;
+        ++mShotIter;
+        if(mShotIter == mNextShots.end()){
+            ret = false;
+            mShotIter = curItr;
+        }
+    }
+    return ret;
+}
+
+void BandCamShot::ResetNextShot(){
+    mShotIter = mNextShots.end();
+    mCurShot = this;
+    unk15c = 0;
+    unk160 = 0;
+}
+
+void BandCamShot::SetFrameEx(float frame, float blend){
+    unk168 = true;
+    SetFrame(frame, blend);
+    unk168 = false;
+}
+
+void BandCamShot::AnimateShot(float frame, float blend){
+    for(ObjVector<Target>::iterator it = mTargets.begin(); it != mTargets.end(); ++it);
+    CamShot::SetFrame(frame, blend);
+}
+
+DataNode BandCamShot::AddTarget(DataArray* target){
+    MILO_ASSERT(target->Size() != 2, 0x3AD);
+    mTargets.push_back(Target(this));
+    mTargets.back().mTarget = target->Sym(2);
+    mTargets.back().Store(this);
+    return DataNode(0);
+}
+
+bool BandCamShot::CheckShotStarted(){
+    return !unk168 && CamShot::CheckShotStarted();
+}
+
+bool BandCamShot::CheckShotOver(float f){
+    return !unk168 && unk164 <= f && CamShot::CheckShotOver(f);
+}
+
 #pragma push
 #pragma pool_data off
 BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
@@ -213,3 +280,11 @@ BEGIN_HANDLERS(BandCamShot)
     HANDLE_SUPERCLASS(CamShot)
     HANDLE_CHECK(0x4A4)
 END_HANDLERS
+
+DataNode BandCamShot::OnListTargets(const DataArray* da){
+    DataNode handled = HandleType(list_targets_msg);
+    if(handled.Type() != kDataUnhandled){
+        return DataNode(handled.Array(0), kDataArray);
+    }
+    else return ObjectList(Dir(), "Trans", true);
+}

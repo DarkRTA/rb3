@@ -3,11 +3,21 @@
 #include "rndobj/Env.h"
 #include "math/Mtx.h"
 
+class OldTrigger {
+public:
+    float frame; // 0x0
+    Symbol trigger; // 0x4
+};
+
 class BandCamShot : public CamShot {
 public:
     class Target {
     public:
-        Target(Hmx::Object*);
+        Target(Hmx::Object* o) : mFastForward(0), mEnvOverride(o, 0), mForceLod(-1), mTeleport(1),
+            mReturn(1), mSelfShadow(1), unk1(0), unk2(1), mHide(0) {
+            mXfm.Reset();
+        }
+        void Store(BandCamShot*);
         void UpdateTarget(Symbol, BandCamShot*);
 
         Symbol mTarget; // 0x0
@@ -59,6 +69,9 @@ public:
     void ViewFreeze();
     BandCamShot* InitialShot();
     int GetNumShots();
+    bool IterateNextShot();
+    void SetFrameEx(float, float);
+    void AnimateShot(float, float);
 
     DataNode OnTestDelta(DataArray*);
     DataNode AddTarget(DataArray*);
@@ -77,7 +90,7 @@ public:
     int mMaxTime; // 0x134
     float mZeroTime; // 0x138
     ObjPtrList<BandCamShot, ObjectDir> mNextShots; // 0x13c
-    int unk14c; // 0x14c - some struct
+    ObjPtrList<BandCamShot, ObjectDir>::iterator mShotIter; // 0x14c
     ObjPtr<BandCamShot, ObjectDir> mCurShot; // 0x150
     float unk15c;
     float unk160;
