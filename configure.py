@@ -16,14 +16,8 @@ import argparse
 import json
 import sys
 from pathlib import Path
-
-from tools.project import (
-    Object,
-    ProjectConfig,
-    calculate_progress,
-    generate_build,
-    is_windows,
-)
+from typing import Any, Dict, List
+from tools.project import *
 
 from tools.defines_common import (
     cflags_includes,
@@ -72,11 +66,6 @@ parser.add_argument(
     help="generate map file(s)",
 )
 parser.add_argument(
-    "--no-asm",
-    action="store_true",
-    help="don't incorporate .s files from asm directory",
-)
-parser.add_argument(
     "--debug",
     action="store_true",
     help="build with debug info (non-matching)",
@@ -115,12 +104,14 @@ parser.add_argument(
     "--non-matching",
     dest="non_matching",
     action="store_true",
-    help="builds equivalent (but not matching) files",
+    help="builds equivalent (but non-matching) or modded objects",
 )
 args = parser.parse_args()
 
 config = ProjectConfig()
 config.version = str(args.version)
+
+debug = args.debug
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -128,20 +119,20 @@ config.dtk_path = args.dtk
 config.objdiff_path = args.objdiff
 config.binutils_path = args.binutils
 config.compilers_path = args.compilers
-config.debug = args.debug
 config.generate_map = args.map
 config.non_matching = args.non_matching
 config.sjiswrap_path = args.sjiswrap
 if not is_windows():
     config.wrapper = args.wrapper
-if args.no_asm:
+# Don't build asm unless we're --non-matching
+if not config.non_matching:
     config.asm_dir = None
 
 # Tool versions
-config.binutils_tag = "2.41-1"
-config.compilers_tag = "20231018"
-config.dtk_tag = "v0.9.1"
-config.objdiff_tag = "v2.0.0-beta.4"
+config.binutils_tag = "2.42-1"
+config.compilers_tag = "20240706"
+config.dtk_tag = "v0.9.5"
+config.objdiff_tag = "v2.0.0-beta.5"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
@@ -162,7 +153,9 @@ flags = json.load(open(flags_path, "r", encoding="utf-8"))
 config.asflags = [
     "-mgekko",
     "--strip-local-absolute",
+    "-I include",
     f"-I build/{config.version}/include",
+    f"--defsym VERSION_{config.version}",
 ]
 config.ldflags = flags["ldflags"]
 
@@ -181,13 +174,24 @@ def are_flags_inherited(name: str) -> bool:
 def set_flags_inherited(name: str):
     cflags[name]["inherited"] = True
 
-# Additional base flags
+# Set up base flags
 base_flags = get_flags("base")
 base_flags.append(f"-d VERSION_{config.version}")
-if config.debug:
+
+# Set conditionally-added flags
+if config.generate_map:
+    # List unused symbols when generating a map file
+    config.ldflags.append("-mapunused")
+
+if debug:
+    # Debug flags
     base_flags.append("-sym dwarf-2,full")
+    config.ldflags.append("-gdwarf-2")
     # Causes code generation memes, use only in desperation
     # base_flags.append("-pragma \"debuginline on\"")
+else:
+    # Non-debug flags
+    base_flags.append("-DNDEBUG=1")
 
 # Apply cflag inheritance
 def apply_base_flags(key: str):
@@ -271,12 +275,15 @@ for (lib, lib_config) in objects.items():
 
 config.libs = libs
 
+# Progress tracking categories
+config.progress_categories = [] # TODO
+config.progress_each_module = args.verbose
+
 if args.mode == "configure":
     # Write build.ninja and objdiff.json
     generate_build(config)
 elif args.mode == "progress":
     # Print progress and write progress.json
-    config.progress_each_module = args.verbose
     calculate_progress(config)
 else:
     sys.exit("Unknown mode: " + args.mode)
