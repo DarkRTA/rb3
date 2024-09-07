@@ -3,6 +3,8 @@
 #include "rndobj/Env.h"
 #include "math/Mtx.h"
 
+class Character;
+
 class OldTrigger {
 public:
     float frame; // 0x0
@@ -36,8 +38,13 @@ public:
         int mHide : 2;
     };
 
+    // size 0x20
     class TargetCache {
     public:
+        Symbol unk0;
+        RndTransformable* unk4;
+        int unk8;
+        TransformNoScale unkc;
     };
 
     BandCamShot();
@@ -66,16 +73,20 @@ public:
     void Store();
     void View();
     void Freeze();
+    void FreezeChar(Character*, bool);
     void ViewFreeze();
     BandCamShot* InitialShot();
     int GetNumShots();
     bool IterateNextShot();
     void SetFrameEx(float, float);
     void AnimateShot(float, float);
+    void ListNextShots(std::list<BandCamShot*>&);
+    static void DeleteTargetCache(std::list<TargetCache>::iterator);
+    std::list<TargetCache>::iterator CreateTargetCache(Symbol);
 
     DataNode OnTestDelta(DataArray*);
     DataNode AddTarget(DataArray*);
-    DataNode OnAllowableNextShots(DataArray*);
+    DataNode OnAllowableNextShots(const DataArray*);
     DataNode OnListAllNextShots(const DataArray*);
     DataNode OnListTargets(const DataArray*);
     DataNode OnListAnimGroups(const DataArray*);

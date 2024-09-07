@@ -108,6 +108,7 @@ public:
     int MinLod() const { return mMinLod; }
     int LastLod() const { return mLastLod; }
     void SetMinLod(int lod){ mMinLod = lod; }
+    CharDriver* GetDriver() const { return mDriver; }
 
     DataNode OnPlayClip(DataArray*);
     DataNode OnCopyBoundingSphere(DataArray*);

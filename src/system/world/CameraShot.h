@@ -144,6 +144,7 @@ public:
     void Disable(bool, int);
     void SetNear(float n){ mNear = n; }
     void SetFar(float f){ mFar = f; }
+    float Duration() const { return mDuration; }
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);

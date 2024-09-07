@@ -1,4 +1,6 @@
 #include "bandobj/BandCamShot.h"
+#include "char/Character.h"
+#include "char/CharDriver.h"
 #include "obj/Msg.h"
 #include "obj/Utl.h"
 #include "world/EventAnim.h"
@@ -9,6 +11,16 @@ INIT_REVS(BandCamShot)
 
 std::list<BandCamShot::TargetCache> BandCamShot::sCache;
 BandCamShot* gBandCamShotOwner;
+
+std::list<BandCamShot::TargetCache>::iterator BandCamShot::CreateTargetCache(Symbol s){
+    sCache.push_back(TargetCache());
+    sCache.back().unk4 = FindTarget(s, true);
+    return sCache.begin();
+}
+
+void BandCamShot::DeleteTargetCache(std::list<TargetCache>::iterator it){
+    sCache.erase(it);
+}
 
 BandCamShot::BandCamShot() : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime(0), mNextShots(this, kObjListNoNull), mCurShot(this, 0),
     unk15c(0), unk160(0), unk164(0), unk168(0), unk169(0), unk16a(0), mAnimsDuringNextShots(0) {
@@ -148,6 +160,69 @@ EventAnim* MakeEventAnim(BandCamShot* shot){
     return anim;
 }
 
+BEGIN_LOADS(BandCamShot)
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x20, 0)
+    if(gRev > 4) LOAD_SUPERCLASS(CamShot)
+    bs >> mTargets;
+    if(
+        BandCamShot::gRev == 2 || BandCamShot::gRev == 3 || BandCamShot::gRev == 4 || BandCamShot::gRev == 5 || BandCamShot::gRev == 6 || BandCamShot::gRev == 7 ||
+        BandCamShot::gRev == 8 || BandCamShot::gRev == 9 || BandCamShot::gRev == 10 || BandCamShot::gRev == 11 || BandCamShot::gRev == 12 || BandCamShot::gRev == 13 ||
+        BandCamShot::gRev == 14 || BandCamShot::gRev == 15 || BandCamShot::gRev == 16 || BandCamShot::gRev == 17 || BandCamShot::gRev == 18
+    ){
+        ObjPtr<BandCamShot, ObjectDir> shotPtr(this, 0);
+        bs >> shotPtr;
+        if(shotPtr) mNextShots.push_back(shotPtr);
+    }
+    if(gRev > 3) bs >> mZeroTime;
+    if(gRev <= 4) LOAD_SUPERCLASS(CamShot)
+    if(gRev == 0xD){
+        bool b; bs >> b;
+        mPS3PerPixel = b;
+    }
+    EventAnim* anim = 0;
+    if(gRev - 0xF <= 0xDU){
+        std::vector<OldTrigger> trigs;
+        bs >> trigs;
+        if(!trigs.empty()){
+            anim = MakeEventAnim(this);
+        }
+    }
+    if(gRev - 0x10 <= 0xCU){
+        ObjPtr<EventTrigger, ObjectDir> trig1(this, 0);
+        ObjPtr<EventTrigger, ObjectDir> trig2(this, 0);
+        bs >> trig1;
+        bs >> trig2;
+    }
+    if(gRev > 0x11){
+        bs >> mMinTime;
+        bs >> mMaxTime;
+    }
+    if(gRev > 0x12) bs >> mNextShots;
+    if(gRev - 0x14 < 0xBU){
+        int i; bs >> i;
+    }
+    if(gRev - 0x17 < 6){
+        bs >> anim->mResetStart;
+    }
+    if(gRev == 0x1C) bs >> mAnims;
+    if(anim) mAnims.push_back(anim);
+    ResetNextShot();
+END_LOADS
+
+BEGIN_COPYS(BandCamShot)
+    COPY_SUPERCLASS(CamShot)
+    CREATE_COPY(BandCamShot)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mTargets)
+        COPY_MEMBER(mZeroTime)
+        COPY_MEMBER(mMinTime)
+        COPY_MEMBER(mMaxTime)
+        COPY_MEMBER(mNextShots)
+        ResetNextShot();
+    END_COPYING_MEMBERS
+END_COPYS
+
 bool BandCamShot::IterateNextShot(){
     bool ret = true;
     MILO_ASSERT(!mNextShots.empty(), 0x278);
@@ -183,6 +258,16 @@ void BandCamShot::AnimateShot(float frame, float blend){
     CamShot::SetFrame(frame, blend);
 }
 
+void BandCamShot::Store(){
+    for(ObjVector<Target>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        (*it).Store(this);
+    }
+}
+
+void BandCamShot::FreezeChar(Character* c, bool b){
+    c->mFrozen = b;
+}
+
 DataNode BandCamShot::AddTarget(DataArray* target){
     MILO_ASSERT(target->Size() != 2, 0x3AD);
     mTargets.push_back(Target(this));
@@ -191,12 +276,67 @@ DataNode BandCamShot::AddTarget(DataArray* target){
     return DataNode(0);
 }
 
+float BandCamShot::GetTotalDuration(){
+    float sum = Duration();
+    std::list<BandCamShot*> shots;
+    ListNextShots(shots);
+    for(std::list<BandCamShot*>::iterator it = shots.begin(); it != shots.end(); ++it){
+        sum += (*it)->Duration();
+    }
+    return sum;
+}
+
+int BandCamShot::GetNumShots(){
+    int size;
+    {
+        std::list<BandCamShot*> shots;
+        ListNextShots(shots);
+        size = shots.size();
+    }
+    return size + 1;
+}
+
+float BandCamShot::GetTotalDurationSeconds(){
+    float secs = CamShot::GetDurationSeconds();
+    std::list<BandCamShot*> shots;
+    ListNextShots(shots);
+    for(std::list<BandCamShot*>::iterator it = shots.begin(); it != shots.end(); ++it){
+        secs += (*it)->CamShot::GetDurationSeconds();
+    }
+    return secs;
+}
+
+void BandCamShot::CheckNextShots(){
+    std::list<BandCamShot*> shots;
+    ListNextShots(shots);
+}
+
+float BandCamShot::EndFrame(){ return GetTotalDuration(); }
+
 bool BandCamShot::CheckShotStarted(){
     return !unk168 && CamShot::CheckShotStarted();
 }
 
 bool BandCamShot::CheckShotOver(float f){
-    return !unk168 && unk164 <= f && CamShot::CheckShotOver(f);
+    return !unk168 && f >= unk164 && CamShot::CheckShotOver(f);
+}
+
+void BandCamShot::Target::Store(BandCamShot* shot){
+    if(!mTarget.Null()){
+        std::list<BandCamShot::TargetCache>::iterator it = shot->CreateTargetCache(mTarget);
+        if(it->unk4){
+            mXfm.Set(it->unkc);
+            shot->DeleteTargetCache(it);
+        }
+    }
+}
+
+void BandCamShot::Target::UpdateTarget(Symbol s, BandCamShot* shot){
+    if(mTarget != s){
+        mTarget = s;
+        mAnimGroup = Symbol("");
+    }
+    Store(shot);
 }
 
 #pragma push
@@ -287,4 +427,62 @@ DataNode BandCamShot::OnListTargets(const DataArray* da){
         return DataNode(handled.Array(0), kDataArray);
     }
     else return ObjectList(Dir(), "Trans", true);
+}
+
+DataNode BandCamShot::OnListAnimGroups(const DataArray* da){
+    Symbol sym = da->Sym(2);
+    static Message m("list_anim_groups", DataNode(0));
+    m[0] = DataNode(sym);
+    DataNode handled = HandleType(m);
+    if(handled.Type() != kDataUnhandled){
+        return DataNode(handled.Array(0), kDataArray);
+    }
+    else {
+        Character* c = dynamic_cast<Character*>(FindTarget(sym, false));
+        if(c){
+            bool usechardir = false;
+            if(c->GetDriver() && c->GetDriver()->ClipDir()) usechardir = true;
+            ObjectDir* thedir;
+            if(usechardir){
+                thedir = c->GetDriver()->ClipDir();
+            }
+            else thedir = Dir();
+            return ObjectList(thedir, "CharClipGroup", true);
+        }
+        else {
+            handled = DataNode(new DataArray(1), kDataArray);
+            handled.Array(0)->Node(0) = DataNode(Symbol());
+            return DataNode(handled);
+        }
+    }
+}
+
+DataNode BandCamShot::OnAllowableNextShots(const DataArray* da){
+    DataArrayPtr ptr;
+    for(ObjDirItr<BandCamShot> it(Dir(), true); it != 0; ++it){
+        if(mNextShots.find(it) != mNextShots.end()){
+            std::list<BandCamShot*> shots;
+            ListNextShots(shots);
+            // more
+        }
+    }
+    static DataNode& milo_prop_path = DataVariable("milo_prop_path");
+    if(milo_prop_path.Type() == kDataArray){
+        if(milo_prop_path.Array(0)->Size() == 2){
+            ObjPtrList<BandCamShot, ObjectDir>::iterator it = mNextShots.begin();
+            it += milo_prop_path.Array(0)->Int(1);
+            ptr->Insert(ptr->Size(), DataNode(*it));
+        }
+    }
+    return DataNode(ptr);
+}
+
+DataNode BandCamShot::OnListAllNextShots(const DataArray* da){
+    std::list<BandCamShot*> shots;
+    ListNextShots(shots);
+    DataArrayPtr ptr;
+    for(std::list<BandCamShot*>::iterator it = shots.begin(); it != shots.end(); ++it){
+        ptr->Insert(ptr->Size(), DataNode(*it));
+    }
+    return DataNode(ptr);
 }
