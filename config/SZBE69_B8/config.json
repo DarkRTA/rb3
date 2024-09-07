@@ -1,4 +1,8 @@
 {
+    "asflags": [
+        "-mgekko",
+        "--strip-local-absolute"
+    ],
     "ldflags": [
         "-fp hardware",
         "-nodefaults",

@@ -4,6 +4,14 @@
   "description": "Version-specific settings for building a DTK project.",
   "type": "object",
   "properties": {
+    "asflags": {
+      "description": "The assembler flags to use for this version.",
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
     "ldflags": {
       "description": "The linker flags to use for this version.",
       "type": "array",

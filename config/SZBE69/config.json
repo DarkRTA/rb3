@@ -1,4 +1,8 @@
 {
+    "asflags": [
+        "-mgekko",
+        "--strip-local-absolute"
+    ],
     "ldflags": [
         "-fp hardware",
         "-nodefaults",
@@ -42,7 +46,7 @@
 
                 "-O4,p",
                 "-inline noauto",
-                "-func_align 4" 
+                "-func_align 4"
             ]
         },
         "runtime": {

@@ -138,17 +138,18 @@ config.wibo_tag = "0.6.11"
 
 # Project
 config_dir = Path("config") / config.version
-flags_path = config_dir / "flags.json"
+config_json_path = config_dir / "config.json"
 objects_path = config_dir / "objects.json"
 config.config_path = config_dir / "config.yml"
 config.check_sha_path = config_dir / "build.sha1"
 config.reconfig_deps = [
-    flags_path,
+    config_json_path,
     objects_path,
 ]
 
 # Build flags
-flags = json.load(open(flags_path, "r", encoding="utf-8"))
+flags = json.load(open(config_json_path, "r", encoding="utf-8"))
+asflags: list[str] = flags["asflags"]
 ldflags: list[str] = flags["ldflags"]
 cflags: dict[str, dict] = flags["cflags"]
 
@@ -202,10 +203,7 @@ for key in cflags.keys():
     apply_base_cflags(key)
 
 config.asflags = [
-    "-mgekko",
-    "--strip-local-absolute",
-    "-I include",
-    f"-I build/{config.version}/include",
+    *asflags,
     f"--defsym VERSION_{config.version}",
 ]
 config.ldflags = ldflags
