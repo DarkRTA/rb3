@@ -26,6 +26,7 @@
                 "-RTTI on",
                 "-Cpp_exceptions off",
 
+                "-Isrc/",
                 "-d NDEBUG"
             ]
         },
@@ -63,9 +64,9 @@
         "rvl_sdk": {
             "base": "base",
             "flags": [
-                "-func_align 16",
-                "-lang=c",
-                "-O4"
+                "-lang=c99",
+                "-O4",
+                "-func_align 16"
             ]
         },
         "band3": {
@@ -155,6 +156,14 @@
                 "-lang=c99",
                 "-O4,p",
                 "-inline auto"
+            ]
+        },
+        "sdk/DWC": {
+            "base": "base",
+            "flags": [
+                "-O4,p",
+                "-func_align 16",
+                "-Isrc/sdk/DWC"
             ]
         }
     }

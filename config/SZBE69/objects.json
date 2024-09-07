@@ -19,6 +19,8 @@
         "cflags": "network",
         "objects": {
             "network/Platform/BadEvents.cpp": "Matching",
+            "network/Platform/Result.cpp": "Matching",
+            "network/Platform/RootObject.cpp": {"status": "Matching", "extra_cflags": ["-inline on"]},
 
             "network/net/JsonUtils.cpp": "NonMatching"
         }
@@ -111,9 +113,17 @@
             "system/char/CharWeightSetter.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
-            "system/math/Key.cpp": "NonMatching",
             "system/math/Rand.cpp": "NonMatching",
             "system/math/Rand2.cpp": "Matching",
+            "system/math/Rot.cpp": "NonMatching",
+            "system/math/strips/Adjacency.cpp": "Matching",
+            "system/math/strips/CustomArray.cpp": "Matching",
+            "system/math/strips/RevisitedRadix.cpp": "Matching",
+            "system/math/strips/Striper.cpp": "Matching",
+            "system/math/Decibels.cpp": "NonMatching",
+            "system/math/StreamChecksum.cpp": "NonMatching",
+            "system/math/Trig.cpp": "NonMatching",
+            "system/math/Key.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
@@ -128,7 +138,11 @@
 
             "system/os/AppChild.cpp": "Equivalent",
             "system/os/ArkFile.cpp": {"status": "NonMatching", "extra_cflags": ["-ipa function"]},
+            "system/os/DateTime.cpp": "NonMatching",
+            "system/os/Debug.cpp": "NonMatching",
             "system/os/NetStream.cpp": "NonMatching",
+            "system/os/System.cpp": "NonMatching",
+            "system/os/User.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "NonMatching",
             "system/rndobj/Anim.cpp": "NonMatching",
@@ -257,7 +271,15 @@
         "mw_version": "Wii/1.3",
         "cflags": "rvl_sdk",
         "objects": {
+            "sdk/RVL_SDK/revolution/os/OSReboot.c": {"status": "LinkIssues", "comment": "refuses to acknowledge func_align"},
             "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching"
+        }
+    },
+    "DWC": {
+        "mw_version": "Wii/1.3",
+        "cflags": "sdk/DWC",
+        "objects": {
+            "sdk/DWC/dwc_common/dwc_init.c": {"status": "LinkIssues", "comment": "refuses to acknowledge func_align"}
         }
     }
 }
