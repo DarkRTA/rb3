@@ -149,6 +149,57 @@ config.reconfig_deps = [
 
 # Build flags
 flags = json.load(open(flags_path, "r", encoding="utf-8"))
+ldflags: list[str] = flags["ldflags"]
+cflags: dict[str, dict] = flags["cflags"]
+
+def get_cflags(name: str) -> list[str]:
+    return cflags[name]["flags"]
+def add_cflags(name: str, flags: list[str]):
+    cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
+
+def get_cflags_base(name: str) -> str:
+    return cflags[name]["base"]
+
+def are_cflags_inherited(name: str) -> bool:
+    return "inherited" in cflags[name]
+def set_cflags_inherited(name: str):
+    cflags[name]["inherited"] = True
+
+def apply_base_cflags(key: str):
+    if are_cflags_inherited(key):
+        return
+
+    base = get_cflags_base(key)
+    if base is None:
+        add_cflags(key, cflags_includes)
+    else:
+        apply_base_cflags(base)
+        add_cflags(key, get_cflags(base))
+
+    set_cflags_inherited(key)
+
+# Set up base flags
+base_cflags = get_cflags("base")
+base_cflags.append(f"-d VERSION_{config.version}")
+
+# Set conditionally-added flags
+if config.generate_map:
+    # List unused symbols when generating a map file
+    ldflags.append("-mapunused")
+
+if debug:
+    # Debug flags
+    base_cflags.append("-sym dwarf-2,full")
+    ldflags.append("-gdwarf-2")
+    # Causes code generation memes, use only in desperation
+    # base_cflags.append("-pragma \"debuginline on\"")
+else:
+    # Non-debug flags
+    base_cflags.append("-DNDEBUG=1")
+
+# Apply cflag inheritance
+for key in cflags.keys():
+    apply_base_cflags(key)
 
 config.asflags = [
     "-mgekko",
@@ -157,58 +208,7 @@ config.asflags = [
     f"-I build/{config.version}/include",
     f"--defsym VERSION_{config.version}",
 ]
-config.ldflags = flags["ldflags"]
-
-cflags: dict[str, dict] = flags["cflags"]
-
-def get_flags(name: str) -> list[str]:
-    return cflags[name]["flags"]
-def add_flags(name: str, flags: list[str]):
-    cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
-
-def get_flags_base(name: str) -> str:
-    return cflags[name]["base"]
-
-def are_flags_inherited(name: str) -> bool:
-    return "inherited" in cflags[name]
-def set_flags_inherited(name: str):
-    cflags[name]["inherited"] = True
-
-# Set up base flags
-base_flags = get_flags("base")
-base_flags.append(f"-d VERSION_{config.version}")
-
-# Set conditionally-added flags
-if config.generate_map:
-    # List unused symbols when generating a map file
-    config.ldflags.append("-mapunused")
-
-if debug:
-    # Debug flags
-    base_flags.append("-sym dwarf-2,full")
-    config.ldflags.append("-gdwarf-2")
-    # Causes code generation memes, use only in desperation
-    # base_flags.append("-pragma \"debuginline on\"")
-else:
-    # Non-debug flags
-    base_flags.append("-DNDEBUG=1")
-
-# Apply cflag inheritance
-def apply_base_flags(key: str):
-    if are_flags_inherited(key):
-        return
-
-    base = get_flags_base(key)
-    if base is None:
-        add_flags(key, cflags_includes)
-    else:
-        apply_base_flags(base)
-        add_flags(key, get_flags(base))
-
-    set_flags_inherited(key)
-
-for key in cflags.keys():
-    apply_base_flags(key)
+config.ldflags = ldflags
 
 config.linker_version = "Wii/1.3"
 
@@ -242,7 +242,7 @@ for (lib, lib_config) in objects.items():
 
     # config_cflags: str | list[str]
     config_cflags: list[str] = lib_config["cflags"]
-    lib_cflags = get_flags(config_cflags) if type(config_cflags) is str else config_cflags
+    lib_cflags = get_cflags(config_cflags) if type(config_cflags) is str else config_cflags
 
     lib_objects: list[Object] = []
     # config_objects: dict[str, str | dict]
@@ -260,7 +260,7 @@ for (lib, lib_config) in objects.items():
             if "cflags" in obj_config:
                 object_cflags = obj_config["cflags"]
                 if type(object_cflags) is str:
-                    obj_config["cflags"] = get_flags(object_cflags)
+                    obj_config["cflags"] = get_cflags(object_cflags)
 
             lib_objects.append(Object(completed, path, **obj_config))
         pass
