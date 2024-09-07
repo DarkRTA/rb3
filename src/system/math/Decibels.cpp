@@ -12,7 +12,7 @@ float DbToRatio(float db){
 float RatioToDb(float ratio){
     if(ratio < 0.0f){
         ratio = 0.0f;
-        TheDebug << MakeString("Got a BAD Decibel ratio\n");
+        MILO_LOG("Got a BAD Decibel ratio\n");
     }
     return (ratio <= 0.0f) ? -96.0f : log10_f(ratio) * 20.0f;
 }

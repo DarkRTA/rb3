@@ -55,11 +55,11 @@ libs/quazal/refcountedobject.cpp:
 	.text       start:0x800176FC end:0x8001784C
 	.data       start:0x80818510 end:0x80818558
 
-libs/quazal/qresult.cpp:
+network/Platform/Result.cpp:
 	.text       start:0x80017898 end:0x80017964
 	.data       start:0x80818558 end:0x80818588
 
-libs/quazal/rootobject.cpp:
+network/Platform/RootObject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
 
 libs/quazal/string.cpp:
@@ -531,10 +531,10 @@ system/math/strips/RevisitedRadix.cpp:
 	.text       start:0x802E1614 end:0x802E1AC8
 
 system/math/StreamChecksum.cpp:
-	.text       start:0x802E1AC8 end:0x802E1FE8
+	.text       start:0x802E1AC8 end:0x802E1DDC
 
 system/math/strips/Striper.cpp:
-	.text       start:0x802E1FE8 end:0x802E2D24
+	.text       start:0x802E1DDC end:0x802E2D24
 
 rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E2D24 end:0x802E2E28
@@ -1909,6 +1909,10 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
+sdk/RVL_SDK/revolution/os/OSReboot.c:
+	.text       start:0x80769E30 end:0x80769EC0
+	.sbss       start:0x808E5498 end:0x808E54A0
+
 sdk/RVL_SDK/revolution/os/OSSemaphore.c:
 	.text       start:0x8076B2A0 end:0x8076B3D0
 
@@ -1923,3 +1927,8 @@ sdk/RVL_SDK/revolution/sc/scsystem.c:
 	.data       start:0x808D2AF8 end:0x808D2CF0
 	.sdata      start:0x808E35F8 end:0x808E3708
 	.bss        start:0x809ECC20 end:0x809F4DC0
+
+sdk/DWC/dwc_common/dwc_init.c:
+	.text       start:0x807E7480 end:0x807E7540
+	.data       start:0x808E1FA8 end:0x808E2018
+	.sbss       start:0x808E57D8 end:0x808E57E0

@@ -11,8 +11,13 @@ static u32 dwci_gamecode = 0;
 static BOOL s_initialized = FALSE;
 
 BOOL DWC_Init(int id, const char* name, int gamecode, DWCAllocExFunc alloc, DWCFreeFunc free) {
+    #ifdef MILO_DEBUG
     OSRegisterVersion("<< RVL_SDK - DWCDL \trelease build: Apr 22 2010 18:57:59 (0x4302_162) >>");
+    #else
+    OSRegisterVersion("<< RVL_SDK - DWCDL \trelease build: Apr 22 2010 18:58:19 (0x4302_162) >>");
+    #endif
     DWCi_SetMemFunc(alloc, free);
+    #ifdef MILO_DEBUG
     DWC_SetReportLevel(-1);
     DWC_Printf(8, "================================\n");
     DWC_Printf(8, "- %s\n", "2_1_14");
@@ -61,6 +66,7 @@ BOOL DWC_Init(int id, const char* name, int gamecode, DWCAllocExFunc alloc, DWCF
         DWC_Printf(8, "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
         DWC_Printf(8, "\n");
     }
+    #endif
 
     if (!DWCi_Auth_InitInterface(id)) {
         DWC_Printf(8, "Failed to initialize auth interface.\n");
