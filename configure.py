@@ -160,7 +160,7 @@ def add_cflags(name: str, flags: list[str]):
     cflags[name]["flags"] = [*flags, *cflags[name]["flags"]]
 
 def get_cflags_base(name: str) -> str:
-    return cflags[name]["base"]
+    return cflags[name].get("base", None)
 
 def are_cflags_inherited(name: str) -> bool:
     return "inherited" in cflags[name]

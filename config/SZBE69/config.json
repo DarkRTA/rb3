@@ -19,7 +19,6 @@
     ],
     "cflags": {
         "base": {
-            "base": null,
             "flags": [
                 "-nodefaults",
                 "-nosyspath",

@@ -34,7 +34,7 @@
         "properties": {
           "base": {
             "description": "Another set of cflags which should be copied into this set, or null to just add include paths.\nThis inheritance is evaluated in a lowest-to-highest depth order, with includes coming first.",
-            "type": ["string", "null"],
+            "type": "string",
             "if": {
               "type": "string"
             },
@@ -51,9 +51,18 @@
             }
           }
         },
+        "required": [
+          "flags"
+        ],
         "additionalProperties": false
       }
     }
   },
+  "required": [
+    "progress_categories",
+    "asflags",
+    "ldflags",
+    "cflags"
+  ],
   "additionalProperties": false
 }

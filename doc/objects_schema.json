@@ -27,12 +27,21 @@
                 "extra_cflags": { "$ref": "#/$defs/extra_cflags" },
                 "comment": { "$ref": "#/$defs/comment" }
               },
+              "required": [
+                "status"
+              ],
               "additionalProperties": false
             }
           ]
         }
       }
     },
+    "required": [
+      "progress_category",
+      "mw_version",
+      "cflags",
+      "objects"
+    ],
     "additionalProperties": false
   },
   "$defs": {
