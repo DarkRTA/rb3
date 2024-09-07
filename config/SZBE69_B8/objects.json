@@ -1,5 +1,6 @@
 {
     "main": {
+        "progress_category": "main",
         "mw_version": "Wii/1.3",
         "cflags": "main",
         "objects": {
@@ -11,6 +12,7 @@
         }
     },
     "band3": {
+        "progress_category": "band3",
         "mw_version": "Wii/1.3",
         "cflags": "band3",
         "objects": {
@@ -69,6 +71,7 @@
         }
     },
     "network": {
+        "progress_category": "network",
         "mw_version": "Wii/1.3",
         "cflags": "network",
         "objects": {
@@ -95,6 +98,7 @@
         }
     },
     "network/json_c": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "network/json_c",
         "objects": {
@@ -107,6 +111,7 @@
         }
     },
     "network/Platform": {
+        "progress_category": "network",
         "mw_version": "Wii/1.3",
         "cflags": "network/Platform",
         "objects": {
@@ -133,6 +138,7 @@
         }
     },
     "system": {
+        "progress_category": "system",
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
@@ -655,6 +661,7 @@
         }
     },
     "system/flex": {
+        "progress_category": "system",
         "mw_version": "Wii/1.3",
         "cflags": "system/flex",
         "objects": {
@@ -662,6 +669,7 @@
         }
     },
     "system/speex": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "system/speex",
         "objects": {
@@ -691,6 +699,7 @@
         }
     },
     "system/soundtouch": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "system/soundtouch",
         "objects": {
@@ -703,6 +712,7 @@
         }
     },
     "system/tomcrypt": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "system/tomcrypt",
         "objects": {
@@ -712,6 +722,7 @@
         }
     },
     "system/vorbis": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "system/vorbis",
         "objects": {
@@ -738,6 +749,7 @@
         }
     },
     "system/zlib": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "system/zlib",
         "objects": {
@@ -752,6 +764,7 @@
         }
     },
     "lib/binkwii": {
+        "progress_category": "lib",
         "mw_version": "Wii/1.3",
         "cflags": "base",
         "objects": {
@@ -759,6 +772,7 @@
         }
     },
     "sdk/MSL_C": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL_C",
         "objects": {
@@ -775,6 +789,7 @@
         }
     },
     "sdk/MSL_C/fdlibm": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL_C/fdlibm",
         "objects": {
@@ -813,6 +828,7 @@
         }
     },
     "sdk/MSL_C++": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL_C++",
         "objects": {
@@ -825,6 +841,7 @@
         }
     },
     "sdk/Runtime": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/Runtime",
         "objects": {
@@ -842,6 +859,7 @@
         }
     },
     "sdk/MetroTRK": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/MSL",
         "objects": {
@@ -849,6 +867,7 @@
         }
     },
     "sdk/RVL_SDK": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/RVL_SDK",
         "objects": {
@@ -867,7 +886,7 @@
             "sdk/RVL_SDK/revolution/os/OSSemaphore.c": "Matching",
 
             "sdk/RVL_SDK/revolution/sc/scsystem.c": "NonMatching",
-    
+
             "sdk/RVL_SDK/revolution/wpad/WPADHIDParser.c": "NonMatching",
             "sdk/RVL_SDK/revolution/wpad/WPADEncrypt.c": "Matching",
             "sdk/RVL_SDK/revolution/wpad/WPADMem.c": "Matching",
@@ -878,6 +897,7 @@
         }
     },
     "sdk/RevoEX": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/RevoEX",
         "objects": {
@@ -888,6 +908,7 @@
         }
     },
     "sdk/ec": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/ec",
         "objects": {
@@ -934,6 +955,7 @@
         }
     },
     "sdk/ec_c": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/ec_c",
         "objects": {
@@ -944,6 +966,7 @@
         }
     },
     "sdk/NdevExi2A": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "base",
         "objects": {
@@ -951,6 +974,7 @@
         }
     },
     "sdk/DWC": {
+        "progress_category": "sdk",
         "mw_version": "Wii/1.3",
         "cflags": "sdk/DWC",
         "objects": {

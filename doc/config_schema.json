@@ -4,6 +4,13 @@
   "description": "Version-specific settings for building a DTK project.",
   "type": "object",
   "properties": {
+    "progress_categories": {
+      "description": "The progress categories to use for this version.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "asflags": {
       "description": "The assembler flags to use for this version.",
       "type": "array",

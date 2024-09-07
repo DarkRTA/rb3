@@ -1,4 +1,12 @@
 {
+    "progress_categories": {
+        "main": "Start-up",
+        "band3": "Band3",
+        "network": "Networking",
+        "system": "Milo System",
+        "lib": "Library",
+        "sdk": "SDK"
+    },
     "asflags": [
         "-mgekko",
         "--strip-local-absolute"

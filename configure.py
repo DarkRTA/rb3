@@ -149,6 +149,7 @@ config.reconfig_deps = [
 
 # Build flags
 flags = json.load(open(config_json_path, "r", encoding="utf-8"))
+progress_categories: dict[str, str] = flags["progress_categories"]
 asflags: list[str] = flags["asflags"]
 ldflags: list[str] = flags["ldflags"]
 cflags: dict[str, dict] = flags["cflags"]
@@ -236,15 +237,13 @@ def get_object_completed(status: str) -> bool:
 libs: list[dict] = []
 objects: dict[str, dict] = json.load(open(objects_path, "r", encoding="utf-8"))
 for (lib, lib_config) in objects.items():
-    lib_mw_version: str = lib_config["mw_version"]
-
     # config_cflags: str | list[str]
-    config_cflags: list[str] = lib_config["cflags"]
+    config_cflags: list[str] = lib_config.pop("cflags")
     lib_cflags = get_cflags(config_cflags) if type(config_cflags) is str else config_cflags
 
     lib_objects: list[Object] = []
     # config_objects: dict[str, str | dict]
-    config_objects: dict[str, dict] = lib_config["objects"]
+    config_objects: dict[str, dict] = lib_config.pop("objects")
     if len(config_objects) < 1:
         continue
 
@@ -265,16 +264,16 @@ for (lib, lib_config) in objects.items():
 
     libs.append({
         "lib": lib,
-        "mw_version": lib_mw_version,
         "cflags": lib_cflags,
         "host": False,
         "objects": lib_objects,
+        **lib_config
     })
 
 config.libs = libs
 
 # Progress tracking categories
-config.progress_categories = [] # TODO
+config.progress_categories = [ProgressCategory(name, desc) for (name, desc) in progress_categories.items()]
 config.progress_each_module = args.verbose
 
 if args.mode == "configure":
