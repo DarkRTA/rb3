@@ -9,43 +9,6 @@
 #include "track/TrackWidget.h"
 #include "beatmatch/VocalNote.h"
 
-class LyricPlate : public Hmx::Object {
-public:
-    LyricPlate(RndText *, const RndText *, const RndText *);
-
-    void SetShowing(bool);
-
-    float CurrentStartX(float) const;
-    float CurrentEndX(float) const;
-
-    // void Poll(float);
-
-    float mWidthX; // 0x1c
-    int mNumCharsUsed; // 0x20
-
-    RndText *mText; // 0x24
-
-    // Need syllable type
-    std::vector<void *> mSyllables; // 0x28
-
-    Hmx::Color mPreviewColor; // 0x34
-    Hmx::Color mActiveColor; // 0x44
-    Hmx::Color mNowColor; // 0x54
-    Hmx::Color mPastColor; // 0x64
-    Hmx::Color mPreviewPhonemeColor; // 0x74
-    Hmx::Color mActivePhonemeColor; // 0x84
-    Hmx::Color mNowPhonemeColor; // 0x94
-    Hmx::Color mPastPhonemeColor; // 0xa4
-
-    RndText::Style mPitchedStyle; // 0xb4
-    RndText::Style mUnpitchedStyle; // 0xe4
-
-    float mInvalidateMs; // 0x114
-    bool mBaked; // 0x118
-    bool mNeedSync; // 0x119
-    bool mPastNow; // 0x11a
-};
-
 class Lyric : public Hmx::Object {
 public:
     Lyric(const VocalNote *, bool, String, bool);
@@ -86,7 +49,61 @@ public:
 
     bool mPhraseEnd; // 0x68
 
-    Hmx::Color mLastColor; // 0x69
+    Hmx::Color mLastColor; // 0x6c
+};
+
+class LyricPlate : public Hmx::Object {
+public:
+    LyricPlate(RndText *, const RndText *, const RndText *);
+
+    void SetShowing(bool);
+
+    float CurrentStartX(float) const;
+    float CurrentEndX(float) const;
+
+    void CheckSync();
+
+    void Reset();
+
+    Lyric *LatestLyric();
+
+    void AddLyric(Lyric *);
+    void EstimateLyricWidth(const Lyric *);
+
+    void HookUpParents(RndGroup *, RndTransformable *);
+
+    bool Empty() const;
+
+    float GetBeginMs() const;
+
+    float GetLastLyricXBeforeMS(float) const;
+
+    // void Poll(float);
+
+    float mWidthX; // 0x1c
+    int mNumCharsUsed; // 0x20
+
+    RndText *mText; // 0x24
+
+    // Need syllable type
+    std::vector<Lyric *> mSyllables; // 0x28
+
+    Hmx::Color mPreviewColor; // 0x34
+    Hmx::Color mActiveColor; // 0x44
+    Hmx::Color mNowColor; // 0x54
+    Hmx::Color mPastColor; // 0x64
+    Hmx::Color mPreviewPhonemeColor; // 0x74
+    Hmx::Color mActivePhonemeColor; // 0x84
+    Hmx::Color mNowPhonemeColor; // 0x94
+    Hmx::Color mPastPhonemeColor; // 0xa4
+
+    RndText::Style mPitchedStyle; // 0xb4
+    RndText::Style mUnpitchedStyle; // 0xe4
+
+    float mInvalidateMs; // 0x114
+    bool mBaked; // 0x118
+    bool mNeedSync; // 0x119
+    bool mPastNow; // 0x11a
 };
 
 #endif // BANDTRACK_LYRIC_H

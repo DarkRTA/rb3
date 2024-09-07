@@ -89,6 +89,7 @@ public:
     NEW_OBJ(RndText)
 
     float GetStringWidthUTF8(const char*, const char*, bool, Style*) const;
+    void SyncMeshes();
     void ReserveLines(int);
     void UpdateText(bool);
     void SetFont(RndFont*);
