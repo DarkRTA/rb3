@@ -1,6 +1,6 @@
 {
     "main": {
-        "progress_category": "main",
+        "progress_category": "game",
         "mw_version": "Wii/1.3",
         "cflags": "main",
         "objects": {
@@ -12,7 +12,7 @@
         }
     },
     "band3": {
-        "progress_category": "band3",
+        "progress_category": "game",
         "mw_version": "Wii/1.3",
         "cflags": "band3",
         "objects": {
@@ -138,7 +138,7 @@
         }
     },
     "system": {
-        "progress_category": "system",
+        "progress_category": "engine",
         "mw_version": "Wii/1.3",
         "cflags": "system",
         "objects": {
@@ -661,7 +661,7 @@
         }
     },
     "system/flex": {
-        "progress_category": "system",
+        "progress_category": "engine",
         "mw_version": "Wii/1.3",
         "cflags": "system/flex",
         "objects": {

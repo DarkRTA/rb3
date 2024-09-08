@@ -1,11 +1,10 @@
 {
     "progress_categories": {
-        "main": "Start-up",
-        "band3": "Band3",
-        "network": "Networking",
-        "system": "Milo System",
-        "lib": "Library",
-        "sdk": "SDK"
+        "game": "Game Code",
+        "network": "Networking Code",
+        "engine": "Milo Engine Code",
+        "lib": "Third-Party Libraries",
+        "sdk": "SDK Code"
     },
     "asflags": [
         "-mgekko",
