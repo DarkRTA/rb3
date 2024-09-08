@@ -7605,7 +7605,7 @@ sdk/PowerPC_EABI_Support/Runtime/Gecko_ExceptionPPC.cpp:
 	.sdata      start:0x80C790D8 end:0x80C790E0
 	.bss        start:0x80D22430 end:0x80D225B0
 
-sdk/PowerPC_EABI_Support/MetroTRK/targsupp.c:
+sdk/PowerPC_EABI_Support/MetroTRK/targsupp.s:
 	.text       start:0x80A3B560 end:0x80A3B580
 
 sdk/PowerPC_EABI_Support/MetroTRK/custconn/cc_gdev.c:

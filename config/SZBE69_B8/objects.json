@@ -1706,7 +1706,7 @@
             "sdk/PowerPC_EABI_Support/MetroTRK/targcont.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/target_options.c": "MISSING",
             "sdk/PowerPC_EABI_Support/MetroTRK/targimpl.c": "MISSING",
-            "sdk/PowerPC_EABI_Support/MetroTRK/targsupp.c": "MISSING"
+            "sdk/PowerPC_EABI_Support/MetroTRK/targsupp.s": "MISSING"
         }
     },
     "sdk/RVL_SDK": {
