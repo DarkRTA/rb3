@@ -6,6 +6,7 @@
   "additionalProperties": {
     "type": "object",
     "properties": {
+      "progress_category": { "$ref": "#/$defs/progress_category" },
       "mw_version": { "$ref": "#/$defs/mw_version" },
       "cflags": { "$ref": "#/$defs/cflags" },
       "objects": {
@@ -18,6 +19,7 @@
               "type": "object",
               "properties": {
                 "status": { "$ref": "#/$defs/status" },
+                "progress_category": { "$ref": "#/$defs/progress_category" },
                 "mw_version": { "$ref": "#/$defs/mw_version" },
                 "asflags": { "$ref": "#/$defs/asflags" },
                 "cflags": { "$ref": "#/$defs/cflags" },
@@ -25,12 +27,21 @@
                 "extra_cflags": { "$ref": "#/$defs/extra_cflags" },
                 "comment": { "$ref": "#/$defs/comment" }
               },
+              "required": [
+                "status"
+              ],
               "additionalProperties": false
             }
           ]
         }
       }
     },
+    "required": [
+      "progress_category",
+      "mw_version",
+      "cflags",
+      "objects"
+    ],
     "additionalProperties": false
   },
   "$defs": {
@@ -58,6 +69,16 @@
       "description": "Additional flags to pass to the compiler.",
       "type": "array",
       "items": { "type": "string" }
+    },
+    "progress_category": {
+      "description": "The progress-tracking category (or categories) to use.",
+      "oneOf": [
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      ]
     },
     "mw_version": {
       "description": "The version of MWCC to use, for example \"Wii/1.3\".",

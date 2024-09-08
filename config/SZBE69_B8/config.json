@@ -1,4 +1,15 @@
 {
+    "progress_categories": {
+        "game": "Game Code",
+        "network": "Networking Code",
+        "engine": "Milo Engine Code",
+        "lib": "Third-Party Libraries",
+        "sdk": "SDK Code"
+    },
+    "asflags": [
+        "-mgekko",
+        "--strip-local-absolute"
+    ],
     "ldflags": [
         "-fp hardware",
         "-nodefaults",
@@ -6,7 +17,6 @@
     ],
     "cflags": {
         "base": {
-            "base": null,
             "flags": [
                 "-nodefaults",
                 "-nosyspath",
