@@ -7553,7 +7553,7 @@ sdk/PowerPC_EABI_Support/Runtime/global_destructor_chain.c:
 	.text       start:0x80A3866C end:0x80A386CC
 	.sbss       start:0x80C7AFC0 end:0x80C7AFC8
 
-sdk/PowerPC_EABI_Support/MetroTRK/__exception.c:
+sdk/PowerPC_EABI_Support/MetroTRK/__exception.s:
 	.init       start:0x80004380 end:0x800062C0
 
 sdk/PowerPC_EABI_Support/Runtime/New.cpp:
@@ -7715,7 +7715,7 @@ sdk/NdevExi2A/DebuggerDriver.c:
 sdk/NdevExi2A/exi2.c:
 	.text       start:0x80A4095C end:0x80A410F0
 
-sdk/RVL_SDK/revolution/ESP/esp.c:
+sdk/RVL_SDK/revolution/esp/esp.c:
 	.text       start:0x80A410F0 end:0x80A42A40
 	.sdata      start:0x80C790E8 end:0x80C790F8
 

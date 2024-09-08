@@ -219,11 +219,13 @@ Matching = True
 Equivalent = config.non_matching
 NonMatching = False
 
-config.warn_missing_config = False
+config.warn_missing_config = True
 config.warn_missing_source = False
 
 def get_object_completed(status: str) -> bool:
-    if status == "Matching":
+    if status == "MISSING":
+        return NonMatching
+    elif status == "Matching":
         return Matching
     elif status == "NonMatching":
         return NonMatching
