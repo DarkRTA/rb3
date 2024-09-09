@@ -5,12 +5,15 @@
 
 /* %option nounistd - not supported on the version of flex used */
 %option never-interactive
+%option noyywrap
 
 %{
 #include "DataFlex.h"
 
 #define YY_INPUT(buf, result, max_size) \
-    (result) = (DataInput((buf), (max_size)) != 0)
+    (result) = (DataInput((buf), 1) != 0)
+
+#define ECHO /* don't echo unmatched characters */
 %}
 
 %%

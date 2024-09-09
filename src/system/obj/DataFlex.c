@@ -313,6 +313,9 @@ static void yy_flex_free YY_PROTO(( void * YY_LAST_ARG ));
 
 #define YY_AT_BOL() (YY_G(yy_current_buffer)->yy_at_bol)
 
+
+#define yywrap(n) 1
+#define YY_SKIP_YYWRAP
 typedef unsigned char YY_CHAR;
 #ifndef YY_REENTRANT
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
@@ -426,12 +429,14 @@ char *yytext;
  */
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
-#line 10 "src/system/obj/DataFlex.l"
+#line 11 "src/system/obj/DataFlex.l"
 #include "DataFlex.h"
 
 #define YY_INPUT(buf, result, max_size) \
-    (result) = (DataInput((buf), (max_size)) != 0)
-#line 435 "src/system/obj/DataFlex.c"
+    (result) = (DataInput((buf), 1) != 0)
+
+#define ECHO /* don't echo unmatched characters */
+#line 440 "src/system/obj/DataFlex.c"
 
 
 #ifndef YY_EXTRA_TYPE
@@ -733,9 +738,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 16 "src/system/obj/DataFlex.l"
+#line 19 "src/system/obj/DataFlex.l"
 
-#line 739 "src/system/obj/DataFlex.c"
+#line 744 "src/system/obj/DataFlex.c"
 
 #ifdef YY_REENTRANT_BISON_PURE
     YY_G(yylval) = yylvalp;
@@ -827,20 +832,20 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 17 "src/system/obj/DataFlex.l"
+#line 20 "src/system/obj/DataFlex.l"
 { printf("asdf"); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 18 "src/system/obj/DataFlex.l"
+#line 21 "src/system/obj/DataFlex.l"
 { gDataLine++; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 19 "src/system/obj/DataFlex.l"
+#line 22 "src/system/obj/DataFlex.l"
 ECHO;
 	YY_BREAK
-#line 844 "src/system/obj/DataFlex.c"
+#line 849 "src/system/obj/DataFlex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2026,5 +2031,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 19 "src/system/obj/DataFlex.l"
+#line 22 "src/system/obj/DataFlex.l"
 
