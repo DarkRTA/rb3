@@ -1,11 +1,16 @@
 #include "bandobj/BandDirector.h"
+#include "bandobj/BandWardrobe.h"
 #include "rndobj/Group.h"
+#include "bandobj/CrowdAudio.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(BandDirector)
 
 DataArray* BandDirector::sPropArr;
 BandDirector* TheBandDirector;
+
+const char* gVenues[5] = { "arena", "big_club", "festival", "small_club", "video" };
 
 BandDirector::VenueLoader::VenueLoader() : mDir(0), mLoader(0) {}
 
@@ -125,7 +130,13 @@ void BandDirector::Enter(){
             unkd0 = 0;
         }
         else FindNextShot();
-        // bandwardrobe get play mode call and symbol loop
+        Symbol hidden = HiddenInstrument(TheBandWardrobe->GetPlayMode());
+        static const char* modes[3] = { "keyboard", "guitar", "bass" };
+        for(int i = 0; i < 3U; i++){
+            Symbol thismode = modes[i];
+            RndGroup* grp = GetWorld()->Find<RndGroup>(MakeString("%s_spot.grp", modes[i]), false);
+            if(grp) grp->SetShowing(thismode != hidden);
+        }
         if(mPropAnim && unk110){
             DataArrayPtr ptr(DataNode(Symbol("stagekit_fog")));
             SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
@@ -314,7 +325,7 @@ void BandDirector::FindNextShot(){
             CameraManager::PropertyFilter curfilt;
             BandCamShot* shot = unkb8;
             if(!FacingCamera(unkdc)) shot = 0;
-            if(shot && !BehindCamera(shot->mCategory)){
+            if(shot && !BehindCamera(shot->Category())){
                 curfilt.prop = DataNode(flags_any);
                 curfilt.match = DataNode(1);
                 curfilt.mask = ~shot->Flags() & 0x7000;
@@ -325,6 +336,62 @@ void BandDirector::FindNextShot(){
                 MILO_LOG("NOTIFY could not find BandCamShot %s in %s at %s, ignoring\n", unkdc, dir->mPathName, TheTaskMgr.GetMBT());
             }
         }
+    }
+}
+
+void BandDirector::EnterVenue(){
+    if(TheBandWardrobe){
+        WorldDir* dir = mVenue.Dir();
+        if(dir){
+            dir->SetName(dir->Name(), GetWorld());
+            dir->Enter();
+            if(dir != mCurWorld){
+                TheBandWardrobe->SetVenueDir(dir);
+                if(mCurWorld) mCurWorld->Handle(remove_midi_parsers_msg, false);
+                mCurWorld = dir;
+                unk58 = true;
+                if(mCurWorld){
+                    if(TheCrowdAudio) TheCrowdAudio->SetBank(mCurWorld);
+                    if(TheLoadMgr.EditMode()){
+                        GetWorld()->mSphere = mCurWorld->mSphere;
+                    }
+                    mCurWorld->Handle(setup_midi_parsers_msg, false);
+                    ClearLighting();
+                }
+            }
+        }
+    }
+}
+
+void BandDirector::ClearLighting(){
+    if(mCurWorld) mCurWorld->Handle(clear_lighting_msg, false);
+}
+
+void GetVenuePath(FilePath& fp, const char* cc){
+    FilePathTracker tracker(FileRoot());
+    fp.SetRoot("none");
+    if(*cc == '\0' || streq(cc, "none")){
+        return;
+    }
+    else {
+        for(int i = 0; gVenues[i] != 0; i++){
+            char* str = strstr(cc, gVenues[i]);
+            if(str){
+                fp.SetRoot(MakeString("world/venue/%s/%s/%s.milo", gVenues[i], cc, cc));
+                return;
+            }
+        }
+        MILO_WARN("BandDirector unknown venue %s", cc);
+    }
+}
+
+void BandDirector::SetShot(Symbol cat, Symbol s2){
+    bool b1 = true;
+    if(TheBandWardrobe){
+        if(!IsDirected(s2)) b1 = false;
+    }
+    if(!b1){
+        MILO_ASSERT(!BFTB(cat), 0x326);
     }
 }
 

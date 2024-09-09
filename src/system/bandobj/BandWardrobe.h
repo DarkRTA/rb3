@@ -20,6 +20,9 @@ public:
     virtual void Load(BinStream&);
     virtual ~BandWardrobe();
 
+    Symbol GetPlayMode();
+    void SetVenueDir(ObjectDir*);
+
     ObjDirPtr<ObjectDir> unk8; // 0x8
     ObjDirPtr<ObjectDir> unk14; // 0x14
     ObjPtr<FileMerger, ObjectDir> unk20; // 0x20

@@ -66,6 +66,7 @@ public:
     void EnterVenue();
     void PickIntroShot();
     void FindNextShot();
+    void ClearLighting();
     bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
     void UpdatePostProcOverlay(const char*, const RndPostProc*, const RndPostProc*, float);
 
@@ -75,6 +76,9 @@ public:
     LightPresetManager* LightPresetMgr(){
         return mCurWorld ? &mCurWorld->mPresetManager : 0;
     }
+
+    bool IsDirected(Symbol s) const { return strncmp(s.Str(), "directed_", 9) == 0; }
+    bool BFTB(Symbol s) const { return strncmp(s.Str(), "BFTB_", 5) == 0; }
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);
