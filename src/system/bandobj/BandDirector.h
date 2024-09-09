@@ -64,6 +64,10 @@ public:
     void SetCharSpot(Symbol, Symbol);
     void SetFog(Symbol);
     WorldDir* GetWorld();
+    void EnterVenue();
+    void PickIntroShot();
+    void FindNextShot();
+    bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);
@@ -98,6 +102,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     static DataArray* sPropArr;
+    static float sMotionBlurBlendAmount;
 
     ObjDirPtr<RndDir> mChars; // 0x28
     ObjPtr<RndPropAnim, ObjectDir> mPropAnim; // 0x34

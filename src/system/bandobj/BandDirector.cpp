@@ -90,7 +90,88 @@ void BandDirector::Enter(){
         unke0 = -1e+30f;
         unkdc = "";
         unk74 = GetWorld()->Find<RndPostProc>("world.pp", true);
+        RndPostProc* profilm = GetWorld()->Find<RndPostProc>("ProFilm_a.pp", true);
+        if(profilm) unk74->Copy(profilm, kCopyDeep);
+        unk74->Select();
+        unk8c = unk74;
+        unk98 = unk74;
+        unka4 = 0;
+        sMotionBlurBlendAmount = SystemConfig("rnd", "motion_blur")->Float(1);
+        unk80 = 0;
+        unka8 = unkac = gNullStr;
+        unkb0 = 0;
+        unk108 = -1.0f;
+        unkb5 = 0;
+        mCurWorld = 0;
+        if(mPropAnim){
+            mPropAnim->StartAnim();
+            mPropAnim->SetFrame(-1e+30f, 1.0f);
+        }
+        EnterVenue();
+        unke4 = 0;
+        unkc4 = 0;
+        static Message allowMsg("allow_intro_shot", DataNode(0));
+        int handled = HandleType(allowMsg).Int(0);
+        if(handled && !unkd0) PickIntroShot();
+        if(handled && unkd0){
+            static Message msg("set_intro_shot", DataNode(0));
+            msg[0] = DataNode(unkd0);
+            DataNode handled = HandleType(msg);
+            unkc4 = unkd0;
+            unkd0 = 0;
+        }
+        else FindNextShot();
+        // bandwardrobe get play mode call and symbol loop
+        if(mPropAnim && unk110){
+            DataArrayPtr ptr(DataNode(Symbol("stagekit_fog")));
+            SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
+            if(!skeys){
+                AddStageKitKeys(mPropAnim, this);
+                skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
+            }
+            if(skeys && skeys->empty()){
+                float cap = Min(unk10c, 241.0f);
+                for(float f = 0.0f; f + 60.0f < cap; f += 60.0f){
+                    skeys->Add(on, (f + 15.0f) * 30.0f, false);
+                    skeys->Add(off, (f + 30.0f) * 30.0f, false);
+                }
+            }
+        }
     }
+}
+
+void BandDirector::Exit(){
+    RndPollable::Exit();
+    if(mPropAnim) mPropAnim->EndAnim();
+    if(mVenue.Dir()) mVenue.Dir()->Exit();
+}
+
+bool BandDirector::PostProcsFromPresets(const RndPostProc*& p1, const RndPostProc*& p2, float& fref){
+    MILO_ASSERT(IsMusicVideo() && LightPresetMgr(), 0x161);
+    LightPreset* mgr1 = 0;
+    LightPreset* mgr2 = 0;
+    LightPresetMgr()->GetPresets(mgr1, mgr2);
+    if(!mgr1) mgr1 = mgr2;
+    if(mgr1){
+        RndPostProc* proc1 = mgr1->GetCurrentPostProc();
+        if(proc1){
+            RndPostProc* proc2 = mgr2 ? mgr2->GetCurrentPostProc() : 0;
+            if(proc2){
+                unk74->Interp(proc1, proc2, unkb0);
+                p1 = proc1;
+                p2 = proc2;
+                fref = unkb0;
+            }
+            else {
+                unk74->Copy(proc1, kCopyDeep);
+                p1 = proc1;
+                p2 = 0;
+                fref = 1.0f;
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
 #pragma push
@@ -143,6 +224,23 @@ BEGIN_HANDLERS(BandDirector)
     HANDLE_CHECK(0x513)
 END_HANDLERS
 #pragma pop
+
+DataNode BandDirector::OnPostProcs(DataArray* da){
+    DataNode* v2 = da->Var(2);
+    DataNode* v3 = da->Var(3);
+    DataNode* v4 = da->Var(4);
+    *v2 = DataNode(unk8c);
+    *v3 = DataNode(unk98);
+    *v4 = DataNode(unka4);
+    return DataNode(0);
+}
+
+DataNode BandDirector::OnPostProcInterp(DataArray* da){
+    unk8c = da->Obj<RndPostProc>(2);
+    unk98 = da->Obj<RndPostProc>(3);
+    unka4 = da->Float(4);
+    return DataNode(0);
+}
 
 BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP_SET(shot_5, unkdc, SetShot(_val.Sym(0), "shot_5"))
