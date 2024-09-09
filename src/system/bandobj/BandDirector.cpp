@@ -103,9 +103,11 @@ BEGIN_HANDLERS(BandDirector)
     HANDLE_EXPR(facing_camera, FacingCamera(_msg->Sym(2)))
     HANDLE_ACTION(load_venue, LoadVenue(_msg->Sym(2), kLoadStayBack))
     HANDLE_ACTION(set_character_hide_hack_enabled, SetCharacterHideHackEnabled(_msg->Int(2)))
+#ifdef VERSION_SZBE69_B8
     HANDLE(debug_char_interests, OnDebugInterestsForNextCharacter)
     HANDLE(toggle_interests_overlay, OnToggleInterestDebugOverlay)
     HANDLE(shot_annotate, OnShotAnnotate)
+#endif
     HANDLE(cur_postprocs, OnPostProcs)
     HANDLE_EXPR(get_curworld, mCurWorld.Ptr())
     HANDLE_EXPR(get_world, mMerger ? mMerger->Dir() : (Hmx::Object*)0)
