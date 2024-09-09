@@ -18,9 +18,12 @@ public:
         virtual void FinishLoading(Loader*);
         virtual const char* StateName(){ return "VenueLoader"; }
 
-        int unk4;
-        int unk8;
-        Symbol unkc;
+        void Unload(bool);
+        void Load(const FilePath&, LoaderPos, bool);
+
+        WorldDir* mDir; // 0x4
+        DirLoader* mLoader; // 0x8
+        Symbol mName; // 0xc
     };
     BandDirector();
     OBJ_CLASSNAME(BandDirector);
@@ -39,6 +42,18 @@ public:
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
+
+    void VenueLoaded(WorldDir*);
+
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(BandDirector);
+    }
+    static void Terminate();
+    NEW_OBJ(BandDirector);
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    static DataArray* sPropArr;
 
     ObjDirPtr<RndDir> unk28; // 0x28
     ObjPtr<RndPropAnim, ObjectDir> unk34; // 0x34
