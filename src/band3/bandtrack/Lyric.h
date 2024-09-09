@@ -74,6 +74,8 @@ public:
 
     bool Empty() const;
 
+    void UpdateStaticTiming(float);
+
     float GetBeginMs() const;
 
     float GetLastLyricXBeforeMS(float) const;
