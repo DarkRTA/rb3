@@ -20,7 +20,7 @@ public:
 
         void Unload(bool);
         void Load(const FilePath&, LoaderPos, bool);
-        WorldDir* Dir() const;
+        WorldDir* Dir() const { return mDir; }
 
         WorldDir* mDir; // 0x4
         DirLoader* mLoader; // 0x8
@@ -44,11 +44,10 @@ public:
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
 
-    LightPresetManager* LightPresetMgr();
     void VenueLoaded(WorldDir*);
     void OnMidiAddPostProc(Symbol, float, float);
-    bool IsMusicVideo();
     bool FacingCamera(Symbol) const;
+    bool BehindCamera(Symbol) const;
     void LoadVenue(Symbol, LoaderPos);
     void SetCharacterHideHackEnabled(bool);
     void OnMidiPresetCleanup();
@@ -68,6 +67,14 @@ public:
     void PickIntroShot();
     void FindNextShot();
     bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
+    void UpdatePostProcOverlay(const char*, const RndPostProc*, const RndPostProc*, float);
+
+    bool IsMusicVideo(){
+        return strstr(mVenue.mName.Str(), "video");
+    }
+    LightPresetManager* LightPresetMgr(){
+        return mCurWorld ? &mCurWorld->mPresetManager : 0;
+    }
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);
@@ -98,6 +105,8 @@ public:
         REGISTER_OBJ_FACTORY(BandDirector);
     }
     static void Terminate();
+
+    DECLARE_REVS;
     NEW_OBJ(BandDirector);
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

@@ -2,6 +2,8 @@
 #include "rndobj/Group.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(BandDirector)
+
 DataArray* BandDirector::sPropArr;
 BandDirector* TheBandDirector;
 
@@ -82,6 +84,8 @@ Symbol HiddenInstrument(Symbol s){
     else return gNullStr;
 }
 
+#pragma push
+#pragma pool_data off
 void BandDirector::Enter(){
     RndPollable::Enter();
     if(mMerger){
@@ -139,6 +143,7 @@ void BandDirector::Enter(){
         }
     }
 }
+#pragma pop
 
 void BandDirector::Exit(){
     RndPollable::Exit();
@@ -172,6 +177,155 @@ bool BandDirector::PostProcsFromPresets(const RndPostProc*& p1, const RndPostPro
         }
     }
     return false;
+}
+
+void BandDirector::Poll(){
+    if(unke5){
+        if(mCurWorld){
+            mCurWorld->Poll();
+            if(unkb4 && (unka8 != gNullStr || unkac != gNullStr)){
+                LightPresetMgr()->Interp(unka8, unkac, unkb0);
+            }
+            LightPresetMgr()->Poll();
+        }
+    }
+    if(unk74){
+        const RndPostProc* p1 = 0;
+        const RndPostProc* p2 = 0;
+        float fref = 1.0f;
+        const char* presets = "";
+        if(unk80){
+            unk74->Copy(unk80, kCopyDeep);
+            presets = "camera";
+            p1 = unk80;
+        }
+        else {
+            bool ppfp = false;
+            if(IsMusicVideo() && LightPresetMgr()){
+                ppfp = PostProcsFromPresets(p1, p2, fref);
+                if(ppfp) presets = "music video light presets";
+            }
+            if(!ppfp){
+                unk74->Interp(unk8c, unk98, unka4);
+                fref = unka4;
+                presets = "song authoring";
+                p1 = unk8c;
+                p2 = unk98;
+            }
+        }
+        UpdatePostProcOverlay(presets, p1, p2, fref);
+        DataNode& fps_var = DataVariable("cheat.emulate_fps");
+        if(fps_var.Int(0) > 0){
+            int ifps = fps_var.Int(0);
+            unk74->mEmulateFPS = ifps;
+        }
+    }
+}
+
+void BandDirector::UpdatePostProcOverlay(const char* cc, const RndPostProc* p1, const RndPostProc* p2, float f){
+    RndOverlay* o = RndOverlay::Find("postproc", true);
+    if(o->Showing()){
+        TextStream* ts = TheDebug.mReflect;
+        if(p1 && !p2){
+            MILO_LOG("Post Proc %s is not blended\n", p1->Name());
+        }
+        else {
+            if(p1) MILO_LOG("Post Proc A %s\n", p1->Name());
+            if(p2) MILO_LOG("Post Proc B %s\n", p2->Name());
+        }
+        MILO_LOG("PostProc set by %s, blend is %.2f%%\n", cc ? cc : "", f * 100.0f);
+        TheDebug.SetReflect(ts);
+    }
+}
+
+void BandDirector::ListPollChildren(std::list<RndPollable*>& polls) const {
+    polls.push_back(mVenue.Dir());
+}
+
+void BandDirector::DrawShowing(){
+    if(mCurWorld) mCurWorld->DrawShowing();
+}
+
+void BandDirector::ListDrawChildren(std::list<RndDrawable*>& draws){
+    draws.push_back(mVenue.Dir());
+}
+
+void BandDirector::CollideList(const Segment& seg, std::list<Collision>& colls){
+    if(mCurWorld) mCurWorld->CollideListSubParts(seg, colls);
+    RndDrawable::CollideList(seg, colls);
+}
+
+SAVE_OBJ(BandDirector, 0x1FA)
+
+BEGIN_LOADS(BandDirector)
+    LOAD_REVS(bs)
+    ASSERT_REVS(6, 0)
+    MILO_ASSERT(gRev > 2, 0x204);
+    LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndPollable)
+    LOAD_SUPERCLASS(RndDrawable)
+    if(gRev < 5) LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev < 6){
+        Symbol s; bs >> s;
+    }
+    if(gRev < 4){
+        char buf[0x100];
+        bs.ReadString(buf, 0x100);
+    }
+END_LOADS
+
+BEGIN_COPYS(BandDirector)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndPollable)
+    CREATE_COPY(BandDirector)
+END_COPYS
+
+void BandDirector::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    RndDrawable::Replace(from, to);
+}
+
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCEFUNC(BandDirector, BandDirector, LightPresetMgr())
+#pragma pop
+
+WorldDir* BandDirector::GetWorld(){
+    if(mMerger) return dynamic_cast<WorldDir*>(mMerger->Dir());
+    else return 0;
+}
+
+bool BandDirector::FacingCamera(Symbol s) const {
+    return (strnicmp(s.Str(), "coop_", 5) == 0 && !BehindCamera(s));
+}
+
+bool BandDirector::BehindCamera(Symbol s) const {
+    const char* str = s.Str();
+    int len = strlen(str);
+    return (len > 7 && strcmp(str + (len - 7), "_behind") == 0);
+}
+
+void BandDirector::FindNextShot(){
+    unkc4 = 0;
+    if(!unkdc.Null()){
+        WorldDir* dir = mVenue.Dir();
+        if(dir){
+            std::vector<CameraManager::PropertyFilter> filts;
+            CameraManager::PropertyFilter curfilt;
+            BandCamShot* shot = unkb8;
+            if(!FacingCamera(unkdc)) shot = 0;
+            if(shot && !BehindCamera(shot->mCategory)){
+                curfilt.prop = DataNode(flags_any);
+                curfilt.match = DataNode(1);
+                curfilt.mask = ~shot->Flags() & 0x7000;
+                filts.push_back(curfilt);
+            }
+            unkc4 = dynamic_cast<BandCamShot*>(dir->mCameraManager.FindCameraShot(unkdc, filts));
+            if(!unkc4){
+                MILO_LOG("NOTIFY could not find BandCamShot %s in %s at %s, ignoring\n", unkdc, dir->mPathName, TheTaskMgr.GetMBT());
+            }
+        }
+    }
 }
 
 #pragma push
