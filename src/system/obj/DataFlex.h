@@ -9,6 +9,34 @@
 extern "C" {
 #endif
 
+enum DataToken {
+    kDataTokenFinished,
+    kDataTokenHex,
+    kDataTokenFloat,
+    kDataTokenInt,
+    kDataTokenString,
+    kDataTokenSymbol,
+    kDataTokenQuotedSymbol,
+    kDataTokenArrayOpen,
+    kDataTokenArrayClose,
+    kDataTokenPropertyOpen,
+    kDataTokenPropertyClose,
+    kDataTokenCommandOpen,
+    kDataTokenCommandClose,
+    kDataTokenDefine,
+    kDataTokenAutorun,
+    kDataTokenInclude,
+    kDataTokenIncludeOptional,
+    kDataTokenMerge,
+    kDataTokenVar,
+    kDataTokenUnhandled,
+    kDataTokenIfdef,
+    kDataTokenIfndef,
+    kDataTokenUndef,
+    kDataTokenElse,
+    kDataTokenEndif,
+};
+
 extern void yyrestart(FILE*);
 extern int yylex();
 

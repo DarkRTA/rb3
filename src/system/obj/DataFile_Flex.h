@@ -1,5 +1,5 @@
-#ifndef OBJ_DATAFILE_VARS_H
-#define OBJ_DATAFILE_VARS_H
+#ifndef OBJ_DATAFILE_FLEX_H
+#define OBJ_DATAFILE_FLEX_H
 
 #ifdef __cplusplus
 extern "C" {

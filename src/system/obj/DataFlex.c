@@ -344,29 +344,39 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 	YY_G(yy_c_buf_p) = yy_cp;
 
 
-#define YY_NUM_RULES 3
-#define YY_END_OF_BUFFER 4
-static yyconst short int yy_accept[9] =
+#define YY_NUM_RULES 35
+#define YY_END_OF_BUFFER 36
+static yyconst short int yy_accept[100] =
     {   0,
-        0,    0,    4,    3,    2,    1,    1,    0
+        0,    0,    0,    0,   36,   28,    2,   28,   26,   28,
+       28,   29,   30,   28,   13,   13,   33,   34,   28,   28,
+       10,   31,   32,   28,    8,   28,   28,   28,   28,   28,
+       28,   27,   28,   15,   28,   13,   28,    0,    1,    5,
+        6,    7,    9,   28,   28,   28,   28,   28,   28,   28,
+       28,   28,    4,   14,   12,    0,   17,   28,   28,   28,
+        0,   28,   28,   28,   28,   28,   28,    3,   28,   28,
+       28,   22,   28,   28,   28,   28,   28,   28,   28,   28,
+       28,   23,   19,   28,   28,   18,   21,   28,   28,   24,
+       20,   28,   28,   25,   16,   28,   28,   11,    0
+
     } ;
 
 static yyconst int yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
+        1,    1,    3,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    4,    5,    1,    1,    6,    7,
+        8,    1,    1,    1,    1,    9,    1,   10,   11,   12,
+       12,   12,   13,   14,   15,   12,   16,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,   17,    1,    1,    1,    1,    1,
+       18,    1,   19,   20,   21,    1,   22,    1,   23,   24,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+       25,   26,   27,   28,   29,    1,   30,   31,   32,   33,
+       34,    1,    1,   35,   36,   37,   38,    1,    1,   39,
+        1,    1,   40,    1,   41,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -383,29 +393,93 @@ static yyconst int yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst int yy_meta[4] =
+static yyconst int yy_meta[42] =
     {   0,
-        1,    1,    2
+        1,    1,    1,    1,    1,    1,    2,    2,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    2,    2,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    2,    1,    1,    1,    2,
+        2
     } ;
 
-static yyconst short int yy_base[10] =
+static yyconst short int yy_base[103] =
     {   0,
-        0,    0,    5,    6,    6,    0,    0,    6,    2
+        0,    0,    0,    0,  144,    0,    0,  141,   20,    0,
+        0,  145,  145,   49,   57,  103,  121,  145,   40,  123,
+      145,  145,  145,    0,    0,  101,  113,   15,   17,  112,
+      103,    0,  129,    0,   87,   95,   94,  131,  117,    0,
+        0,    0,    0,   98,   93,  103,   92,  103,   50,  103,
+       90,  100,  117,    0,    0,  103,    0,   93,   86,   90,
+       93,   88,   91,   91,   83,   86,   87,  145,   89,   60,
+       61,  145,   67,   66,   66,   52,   64,   62,   54,   48,
+       60,    0,    0,   58,   58,    0,    0,   57,   47,    0,
+        0,   54,   47,    0,    0,   52,   52,    0,  145,   74,
+
+       56,   46
     } ;
 
-static yyconst short int yy_def[10] =
+static yyconst short int yy_def[103] =
     {   0,
-        8,    1,    8,    8,    8,    9,    9,    0,    8
+       99,    1,    1,    1,   99,  100,  100,  100,  100,  101,
+      102,   99,   99,  100,  100,   15,   99,   99,  100,  100,
+       99,   99,   99,  100,  100,  100,  100,  100,  100,  100,
+      100,  101,  102,   14,   14,   15,   14,   99,  100,  100,
+      100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+      100,  100,  102,   35,   37,   99,  100,  100,  100,  100,
+       99,  100,  100,  100,  100,  100,  100,   99,  100,  100,
+      100,   99,  100,  100,  100,  100,  100,  100,  100,  100,
+      100,  100,  100,  100,  100,  100,  100,  100,  100,  100,
+      100,  100,  100,  100,  100,  100,  100,  100,    0,   99,
+
+       99,   99
     } ;
 
-static yyconst short int yy_nxt[10] =
+static yyconst short int yy_nxt[187] =
     {   0,
-        4,    5,    6,    7,    8,    3,    8,    8,    8
+        6,    7,    8,    9,   10,   11,   12,   13,   14,   15,
+       16,   16,   16,   16,   16,   16,    6,   17,   18,    6,
+       19,    6,    6,    6,    6,    6,    6,    6,    6,   20,
+        6,    6,    6,    6,    6,   21,    6,    6,    6,   22,
+       23,   26,   49,   27,   28,   47,   33,   48,   29,   50,
+       39,   30,   40,   41,   42,   43,   32,   31,   34,   34,
+       34,   34,   34,   34,   34,   35,   36,   36,   36,   36,
+       36,   36,   36,   63,   24,   98,   97,   96,   95,   94,
+       93,   92,   64,   91,   90,   89,   88,   87,   86,   85,
+       84,   83,   82,   81,   80,   37,   54,   54,   54,   54,
+
+       54,   54,   54,   55,   55,   55,   55,   55,   55,   55,
+       79,   78,   77,   76,   75,   74,   73,   72,   71,   70,
+       69,   68,   53,   67,   66,   65,   62,   61,   60,   59,
+       58,   57,   56,   24,   53,   52,   51,   46,   45,   44,
+       38,   24,   25,   99,    5,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99
     } ;
 
-static yyconst short int yy_chk[10] =
+static yyconst short int yy_chk[187] =
     {   0,
-        1,    1,    1,    9,    3,    8,    8,    8,    8
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    9,   29,    9,    9,   28,  102,   28,    9,   29,
+       19,    9,   19,   19,   19,   19,  101,    9,   14,   14,
+       14,   14,   14,   14,   14,   15,   15,   15,   15,   15,
+       15,   15,   15,   49,  100,   97,   96,   93,   92,   89,
+       88,   85,   49,   84,   81,   80,   79,   78,   77,   76,
+       75,   74,   73,   71,   70,   15,   35,   35,   35,   35,
+
+       35,   35,   35,   37,   37,   37,   37,   37,   37,   37,
+       69,   67,   66,   65,   64,   63,   62,   61,   60,   59,
+       58,   56,   53,   52,   51,   50,   48,   47,   46,   45,
+       44,   39,   38,   36,   33,   31,   30,   27,   26,   20,
+       17,   16,    8,    5,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99,   99,   99,   99,   99,
+       99,   99,   99,   99,   99,   99
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -436,7 +510,9 @@ char *yytext;
     (result) = (DataInput((buf), 1) != 0)
 
 #define ECHO /* don't echo unmatched characters */
-#line 440 "src/system/obj/DataFlex.c"
+#define state1 1
+
+#line 516 "src/system/obj/DataFlex.c"
 
 
 #ifndef YY_EXTRA_TYPE
@@ -738,9 +814,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 19 "src/system/obj/DataFlex.l"
+#line 30 "src/system/obj/DataFlex.l"
 
-#line 744 "src/system/obj/DataFlex.c"
+#line 820 "src/system/obj/DataFlex.c"
 
 #ifdef YY_REENTRANT_BISON_PURE
     YY_G(yylval) = yylvalp;
@@ -798,13 +874,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 9 )
+				if ( yy_current_state >= 100 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 6 );
+		while ( yy_base[yy_current_state] != 145 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -832,21 +908,182 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 20 "src/system/obj/DataFlex.l"
-{ printf("asdf"); }
+#line 31 "src/system/obj/DataFlex.l"
+{ /* do nothing */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 21 "src/system/obj/DataFlex.l"
+#line 32 "src/system/obj/DataFlex.l"
 { gDataLine++; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 22 "src/system/obj/DataFlex.l"
+#line 33 "src/system/obj/DataFlex.l"
+{ return kDataTokenString; }
+	YY_BREAK
+case 4:
+YY_RULE_SETUP
+#line 34 "src/system/obj/DataFlex.l"
+{ return kDataTokenQuotedSymbol; }
+	YY_BREAK
+case 5:
+YY_RULE_SETUP
+#line 35 "src/system/obj/DataFlex.l"
+{ BEGIN(state1); }
+	YY_BREAK
+case 6:
+YY_RULE_SETUP
+#line 36 "src/system/obj/DataFlex.l"
+{ /* do nothing */ }
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+#line 37 "src/system/obj/DataFlex.l"
+{ /* do nothing */ }
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 38 "src/system/obj/DataFlex.l"
+{ gDataLine++; }
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+#line 39 "src/system/obj/DataFlex.l"
+{ BEGIN(INITIAL); }
+	YY_BREAK
+case 10:
+YY_RULE_SETUP
+#line 40 "src/system/obj/DataFlex.l"
+{ /* do nothing */ }
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 41 "src/system/obj/DataFlex.l"
+{ return kDataTokenUnhandled; }
+	YY_BREAK
+case 12:
+YY_RULE_SETUP
+#line 43 "src/system/obj/DataFlex.l"
+{ return kDataTokenHex; }
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 44 "src/system/obj/DataFlex.l"
+{ return kDataTokenInt; }
+	YY_BREAK
+case 14:
+YY_RULE_SETUP
+#line 45 "src/system/obj/DataFlex.l"
+{ return kDataTokenFloat; }
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+#line 46 "src/system/obj/DataFlex.l"
+{ return kDataTokenFloat; }
+	YY_BREAK
+case 16:
+YY_RULE_SETUP
+#line 48 "src/system/obj/DataFlex.l"
+{ return kDataTokenInclude; }
+	YY_BREAK
+case 17:
+YY_RULE_SETUP
+#line 49 "src/system/obj/DataFlex.l"
+{ return kDataTokenIncludeOptional; }
+	YY_BREAK
+case 18:
+YY_RULE_SETUP
+#line 50 "src/system/obj/DataFlex.l"
+{ return kDataTokenMerge; }
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
+#line 51 "src/system/obj/DataFlex.l"
+{ return kDataTokenIfdef; }
+	YY_BREAK
+case 20:
+YY_RULE_SETUP
+#line 52 "src/system/obj/DataFlex.l"
+{ return kDataTokenIfndef; }
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+#line 53 "src/system/obj/DataFlex.l"
+{ return kDataTokenUndef; }
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+#line 54 "src/system/obj/DataFlex.l"
+{ return kDataTokenElse; }
+	YY_BREAK
+case 23:
+YY_RULE_SETUP
+#line 55 "src/system/obj/DataFlex.l"
+{ return kDataTokenEndif; }
+	YY_BREAK
+case 24:
+YY_RULE_SETUP
+#line 56 "src/system/obj/DataFlex.l"
+{ return kDataTokenDefine; }
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 57 "src/system/obj/DataFlex.l"
+{ return kDataTokenAutorun; }
+	YY_BREAK
+case 26:
+YY_RULE_SETUP
+#line 58 "src/system/obj/DataFlex.l"
+{ DataFail("bad # directive"); }
+	YY_BREAK
+case 27:
+YY_RULE_SETUP
+#line 60 "src/system/obj/DataFlex.l"
+{ return kDataTokenVar; }
+	YY_BREAK
+case 28:
+YY_RULE_SETUP
+#line 61 "src/system/obj/DataFlex.l"
+{ return kDataTokenSymbol; }
+	YY_BREAK
+case 29:
+YY_RULE_SETUP
+#line 63 "src/system/obj/DataFlex.l"
+{ return kDataTokenArrayOpen; }
+	YY_BREAK
+case 30:
+YY_RULE_SETUP
+#line 64 "src/system/obj/DataFlex.l"
+{ return kDataTokenArrayClose; }
+	YY_BREAK
+case 31:
+YY_RULE_SETUP
+#line 65 "src/system/obj/DataFlex.l"
+{ return kDataTokenPropertyOpen; }
+	YY_BREAK
+case 32:
+YY_RULE_SETUP
+#line 66 "src/system/obj/DataFlex.l"
+{ return kDataTokenPropertyClose; }
+	YY_BREAK
+case 33:
+YY_RULE_SETUP
+#line 67 "src/system/obj/DataFlex.l"
+{ return kDataTokenCommandOpen; }
+	YY_BREAK
+case 34:
+YY_RULE_SETUP
+#line 68 "src/system/obj/DataFlex.l"
+{ return kDataTokenCommandClose; }
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
+#line 69 "src/system/obj/DataFlex.l"
 ECHO;
 	YY_BREAK
-#line 849 "src/system/obj/DataFlex.c"
+#line 1085 "src/system/obj/DataFlex.c"
 case YY_STATE_EOF(INITIAL):
+case YY_STATE_EOF(state1):
 	yyterminate();
 
 	case YY_END_OF_BUFFER:
@@ -1147,7 +1384,7 @@ YY_DECL_LAST_ARG
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 9 )
+			if ( yy_current_state >= 100 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1183,11 +1420,11 @@ YY_DECL_LAST_ARG
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 9 )
+		if ( yy_current_state >= 100 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 8);
+	yy_is_jam = (yy_current_state == 99);
 
 	return yy_is_jam ? 0 : yy_current_state;
 	}
@@ -2031,5 +2268,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 22 "src/system/obj/DataFlex.l"
+#line 69 "src/system/obj/DataFlex.l"
 

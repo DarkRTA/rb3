@@ -23,7 +23,7 @@ static DataArray* gArray; // 0x28
 static int gNode; // 0x2c
 static Symbol gFile; // 0x30
 static BinStream* gBinStream; // 0x34
-static int gOpenArray; // 0x38 ?
+static int gOpenArray = kDataTokenFinished; // 0x38 ?
 static std::list<bool> gConditional; // 0x48 - actually a list of ConditionalInfo structs
 int gDataLine; // 0x50
 static std::map<String, DataNode> gReadFiles; // 0x60
@@ -82,83 +82,85 @@ bool Defined() {
 }
 
 bool ParseNode() {
-    int lex = yylex();
-    bool defined = Defined();
-    if(!defined && (lex - 0x16U > 2) && lex != 0x14) return true;
-    short ss = 0xEFBB; // some ro data
-    char cc = 0xBF; // some other ro data
-    if(gNode == 0 && strncmp(yytext, (char*)&ss, 3) == 0){
+    int token = yylex();
+    if (!Defined() && token != kDataTokenIfdef && token != kDataTokenUndef
+        && token != kDataTokenElse && token != kDataTokenEndif) {
+        return true;
+    }
+
+    char bom[3] = { 0xEF, 0xBB, 0xBF };
+    if(gNode == 0 && strncmp(yytext, bom, ARRAY_LENGTH(bom)) == 0){
         if(yyleng > 3) MILO_FAIL("%s starts with a ByteOrderMark, put a line return at the top of its file", gFile);
         else return true;
     }
-    int i7 = gOpenArray;
-    if(lex == 0){
+
+    if(token == kDataTokenFinished){
         switch(gOpenArray){
-            case 7:
+            case kDataTokenArrayOpen:
                 MILO_FAIL("Array closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
-            case 0xB:
+            case kDataTokenCommandOpen:
                 MILO_FAIL("Command closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
-            case 9:
+            case kDataTokenPropertyOpen:
                 MILO_FAIL("Property closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
             default: break;
         }
         return false;
     }
-    else if(lex == 8){
+    else if(token == kDataTokenArrayClose){
         switch(gOpenArray){
-            case 0:
+            case kDataTokenFinished:
                 MILO_FAIL("File %s ends with open array", gFile);
                 break;
-            case 0xB:
+            case kDataTokenCommandOpen:
                 MILO_FAIL("Command closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
-            case 9:
+            case kDataTokenPropertyOpen:
                 MILO_FAIL("Property closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
             default: break;
         }
         return false;
     }
-    else if(lex == 10){
+    else if(token == kDataTokenPropertyClose){
         switch(gOpenArray){
-            case 0:
+            case kDataTokenFinished:
                 MILO_FAIL("File %s ends with open array", gFile);
                 break;
-            case 7:
+            case kDataTokenArrayOpen:
                 MILO_FAIL("Array closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
-            case 0xB:
+            case kDataTokenCommandOpen:
                 MILO_FAIL("Command closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
             default: break;
         }
         return false;
     }
-    else if(lex == 0xC){
+    else if(token == kDataTokenCommandClose){
         switch(gOpenArray){
-            case 0:
+            case kDataTokenFinished:
                 MILO_FAIL("File %s ends with open array", gFile);
                 break;
-            case 7:
+            case kDataTokenArrayOpen:
                 MILO_FAIL("Array closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
-            case 9:
+            case kDataTokenPropertyOpen:
                 MILO_FAIL("Property closed incorrectly (file %s, line %d)", gFile, gDataLine);
                 break;
             default: break;
         }
         return false;
     }
-    else if(lex == 0x11){
-        if(yylex() != 5){
+    else if(token == kDataTokenMerge){
+        if(yylex() != kDataTokenSymbol){
             MILO_FAIL("DataReadFile: merging a non-symbol (file %s, line %d)", gFile, gDataLine);
         }
         if(gCachingFile){
             Symbol sym(yytext);
-            PushBack(DataNode(kDataMerge, (int)&sym));
+            PushBack(DataNode(kDataMerge, (int)sym.Str()));
         }
         else {
             DataArray* fileArr = DataGetMacro(yytext);
@@ -173,71 +175,72 @@ bool ParseNode() {
         }
         return true;
     }
-    else switch(lex){
+
+    switch(token){
         default:
-            if(yylex() != 5){
+            if(yylex() != kDataTokenSymbol){
                 MILO_FAIL("DataReadFile: including a non-symbol (file %s, line %d)", gFile, gDataLine);
             }
             if(gCachingFile){
                 Symbol sym(yytext);
-                PushBack(DataNode(kDataInclude, (int)&sym));
+                PushBack(DataNode(kDataInclude, (int)sym.Str()));
             }
             return true;
-        case 0x14:
-        case 0x16:
+        case kDataTokenIfdef:
+        case kDataTokenUndef:
             MILO_FAIL("DataReadFile: not macro symbol (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 0x17:
+        case kDataTokenElse:
             MILO_FAIL("DataReadFile: #else not in conditional (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 0x18:
+        case kDataTokenEndif:
             MILO_FAIL("DataReadFile: #endif not in conditional (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 0xE:
+        case kDataTokenAutorun:
             MILO_FAIL("DataReadFile: not command (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 0xD:
+        case kDataTokenDefine:
             MILO_FAIL("DataReadFile: not symbol (file %s, line %d)", gFile, gDataLine);
             MILO_FAIL("DataReadFile: not array (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 0x15:
+        case kDataTokenIfndef:
             MILO_FAIL("DataReadFile: not synbol (file %s, line %d)", gFile, gDataLine);
             return true;
-        case 9:
-        case 0xB:
-        case 7:
+        case kDataTokenPropertyOpen:
+        case kDataTokenCommandOpen:
+        case kDataTokenArrayOpen:
             break;
-        case 0x12:
+        case kDataTokenVar:
             PushBack(DataNode(&DataVariable(yytext + 1)));
             return true;
             break;
-        case 0x13:
+        case kDataTokenUnhandled:
             PushBack(DataNode(kDataUnhandled, 0));
             return true;
             break;
-        case 3:
+        case kDataTokenInt:
             PushBack(DataNode(atoi(yytext)));
             return true;
             break;
-        case 1:
+        case kDataTokenHex:
             break;
-        case 2:
+        case kDataTokenFloat:
             PushBack(DataNode((float)atof(yytext)));
             return true;
             break;
-        case 0:
-        case 4:
-        case 5:
-        case 6:
-        case 8:
-        case 10:
-        case 0xc:
-        case 0xf:
-        case 0x10:
-        case 0x11:
-            if(lex - 5U < 2){
+        case kDataTokenFinished:
+        case kDataTokenString:
+        case kDataTokenSymbol:
+        case kDataTokenQuotedSymbol:
+        case kDataTokenArrayClose:
+        case kDataTokenPropertyClose:
+        case kDataTokenCommandClose:
+        case kDataTokenInclude:
+        case kDataTokenInclude_Unknown:
+        case kDataTokenMerge:
+            if(token - 5U < 2){
                 char* p = yytext;
-                if(lex == 6){
+                if(token == 6){
                     yytext[yyleng - 1] = '\0';
                     p = yytext + 1;
                 }
@@ -251,7 +254,7 @@ bool ParseNode() {
                 else PushBack(DataNode(psym));
                 return true;
             }
-            else if(lex == 4){
+            else if(token == kDataTokenString){
                 yytext[yyleng - 1] = '\0';
                 char* p = yytext + 1;
                 for(char* pp = p; *pp != '\0'; pp++){
@@ -278,7 +281,7 @@ bool ParseNode() {
                 return true;
             }
             else {
-                MILO_FAIL("DataReadFile: Unrecognized token %d (file %s, line %d)", lex, gFile, gDataLine);
+                MILO_FAIL("DataReadFile: Unrecognized token %d (file %s, line %d)", token, gFile, gDataLine);
                 return false;
             }
             break;
