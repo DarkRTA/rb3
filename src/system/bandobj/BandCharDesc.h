@@ -41,7 +41,7 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
-        int SaveSize(int);
+        static int SaveSize(int);
 
         bool mHide; // 0x8
         int mEyeColor; // 0xc
