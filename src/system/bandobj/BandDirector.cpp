@@ -1,4 +1,5 @@
 #include "bandobj/BandDirector.h"
+#include "rndobj/Group.h"
 #include "utl/Symbols.h"
 
 DataArray* BandDirector::sPropArr;
@@ -56,7 +57,7 @@ BandDirector::BandDirector() : mPropAnim(this, 0), mMerger(this, 0), mCurWorld(t
         MILO_WARN("Trying to make > 1 BandDirector, which should be single");
     }
     else TheBandDirector = this;
-    unke8.reserve(100);
+    mDircuts.reserve(100);
 }
 
 BandDirector::~BandDirector(){
@@ -70,10 +71,8 @@ BandDirector::~BandDirector(){
 
 void AddStageKitKeys(RndPropAnim* anim, BandDirector* dir){
     DataNode fognode(Symbol("stagekit_fog"));
-    DataArray* arr = new DataArray(1);
-    arr->Node(0) = fognode;
-    anim->AddKeys(dir, arr, PropKeys::kSymbol);
-    arr->Release();
+    DataArrayPtr ptr(fognode);
+    anim->AddKeys(dir, ptr, PropKeys::kSymbol);
 }
 
 Symbol HiddenInstrument(Symbol s){
@@ -81,6 +80,17 @@ Symbol HiddenInstrument(Symbol s){
     else if(s == coop_bk) return guitar;
     else if(s == coop_gk) return bass;
     else return gNullStr;
+}
+
+void BandDirector::Enter(){
+    RndPollable::Enter();
+    if(mMerger){
+        unk5c = 0;
+        unk60 = 3;
+        unke0 = -1e+30f;
+        unkdc = "";
+        unk74 = GetWorld()->Find<RndPostProc>("world.pp", true);
+    }
 }
 
 #pragma push
@@ -98,7 +108,7 @@ BEGIN_HANDLERS(BandDirector)
     HANDLE(lightpreset_keyframe_interp, OnLightPresetKeyframeInterp)
     HANDLE(cycle_shot, OnCycleShot)
     HANDLE(force_shot, OnForceShot)
-    HANDLE_EXPR(camera_source, unkf0.Dir())
+    HANDLE_EXPR(camera_source, mVenue.Dir())
     HANDLE(get_face_overrides, OnGetFaceOverrideClips)
     HANDLE_EXPR(facing_camera, FacingCamera(_msg->Sym(2)))
     HANDLE_ACTION(load_venue, LoadVenue(_msg->Sym(2), kLoadStayBack))

@@ -63,6 +63,7 @@ public:
     void SetCrowd(Symbol);
     void SetCharSpot(Symbol, Symbol);
     void SetFog(Symbol);
+    WorldDir* GetWorld();
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);
@@ -124,9 +125,9 @@ public:
     float unke0; // 0xe0
     bool unke4; // 0xe4
     bool unke5; // 0xe5
-    Keys<BandCamShot*, BandCamShot*> unke8; // 0xe8 - Keys<BandCamShot*>
-    VenueLoader unkf0; // 0xf0
-    std::vector<int> unk100; // 0x100
+    Keys<BandCamShot*, BandCamShot*> mDircuts; // 0xe8 - Keys<BandCamShot*>
+    VenueLoader mVenue; // 0xf0
+    Keys<Symbol, Symbol> unk100; // 0x100
     float unk108; // 0x108
     float unk10c; // 0x10c
     bool unk110; // 0x110
