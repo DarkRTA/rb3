@@ -23,10 +23,14 @@ public:
     Symbol GetPlayMode();
     void SetVenueDir(ObjectDir*);
 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     ObjDirPtr<ObjectDir> unk8; // 0x8
     ObjDirPtr<ObjectDir> unk14; // 0x14
     ObjPtr<FileMerger, ObjectDir> unk20; // 0x20
-    std::list<int> unk2c; // 0x2c
+    std::list<Symbol> unk2c; // 0x2c
     TargetNames unk34; // 0x34
     TargetNames unk44; // 0x44
     TargetNames unk54; // 0x54
@@ -37,16 +41,16 @@ public:
     int unk74; // 0x74
     Symbol unk78; // 0x78
     int unk7c; // 0x7c
-    int unk80; // 0x80
-    Symbol unk84; // 0x84
-    Symbol unk88; // 0x88
-    Symbol unk8c; // 0x8c
+    ObjectDir* mVenueDir; // 0x80 - dir
+    Symbol mGenre; // 0x84
+    Symbol mTempo; // 0x88
+    Symbol mVocalGender; // 0x8c
     ObjPtr<Hmx::Object, ObjectDir> unk90; // 0x90
-    bool unk9c; // 0x9c
-    bool unk9d; // 0x9d
-    Symbol unka0; // 0xa0
-    Symbol unka4[4]; // 0xa4
-    int unkb4; // 0xb4
+    bool mShotSetPlayMode; // 0x9c
+    bool mPlayShot5; // 0x9d
+    Symbol mDemandLoad; // 0xa0
+    Symbol mPlayerForcedFocuses[4]; // 0xa4
+    bool mPlayerEnableBlinks[4]; // 0xb4
 };
 
 extern BandWardrobe* TheBandWardrobe;
