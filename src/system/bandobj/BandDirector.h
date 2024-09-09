@@ -20,6 +20,7 @@ public:
 
         void Unload(bool);
         void Load(const FilePath&, LoaderPos, bool);
+        WorldDir* Dir() const;
 
         WorldDir* mDir; // 0x4
         DirLoader* mLoader; // 0x8
@@ -43,7 +44,43 @@ public:
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual void CollideList(const Segment&, std::list<Collision>&);
 
+    LightPresetManager* LightPresetMgr();
     void VenueLoaded(WorldDir*);
+    void OnMidiAddPostProc(Symbol, float, float);
+    bool IsMusicVideo();
+    bool FacingCamera(Symbol) const;
+    void LoadVenue(Symbol, LoaderPos);
+    void SetCharacterHideHackEnabled(bool);
+    void OnMidiPresetCleanup();
+    void AddSymbolKey(Symbol, Symbol, float);
+    void ClearSymbolKeys(Symbol);
+    void ClearSymbolKeysFrameRange(Symbol, float, float);
+    void HarvestDircuts();
+    void SetSongEnd(float);
+
+    DataNode OnFirstShotOK(DataArray*);
+    DataNode OnShotOver(DataArray*);
+    DataNode OnPostProcInterp(DataArray*);
+    DataNode OnSaveSong(DataArray*);
+    DataNode OnFileLoaded(DataArray*);
+    DataNode OnSelectCamera(DataArray*);
+    DataNode OnLightPresetInterp(DataArray*);
+    DataNode OnLightPresetKeyframeInterp(DataArray*);
+    DataNode OnCycleShot(DataArray*);
+    DataNode OnForceShot(DataArray*);
+    DataNode OnGetFaceOverrideClips(DataArray*);
+    DataNode OnDebugInterestsForNextCharacter(DataArray*);
+    DataNode OnToggleInterestDebugOverlay(DataArray*);
+    DataNode OnShotAnnotate(DataArray*);
+    DataNode OnPostProcs(DataArray*);
+    DataNode OnSetDircut(DataArray*);
+    DataNode OnForcePreset(DataArray*);
+    DataNode OnStompPresets(DataArray*);
+    DataNode OnMidiAddPreset(DataArray*);
+    DataNode OnGetCatList(DataArray*);
+    DataNode OnCopyCats(DataArray*);
+    DataNode OnLoadSong(DataArray*);
+    DataNode OnMidiShotCategory(DataArray*);
 
     static void Init();
     static void Register(){
@@ -55,10 +92,10 @@ public:
     DELETE_OVERLOAD;
     static DataArray* sPropArr;
 
-    ObjDirPtr<RndDir> unk28; // 0x28
-    ObjPtr<RndPropAnim, ObjectDir> unk34; // 0x34
-    ObjPtr<FileMerger, ObjectDir> unk40; // 0x40
-    ObjPtr<WorldDir, ObjectDir> unk4c; // 0x4c
+    ObjDirPtr<RndDir> mChars; // 0x28
+    ObjPtr<RndPropAnim, ObjectDir> mPropAnim; // 0x34
+    ObjPtr<FileMerger, ObjectDir> mMerger; // 0x40
+    ObjPtr<WorldDir, ObjectDir> mCurWorld; // 0x4c
     bool unk58; // 0x58
     int unk5c; // 0x5c
     int unk60; // 0x60
