@@ -16,7 +16,7 @@ public:
         VenueLoader();
         virtual ~VenueLoader();
         virtual void FinishLoading(Loader*);
-        virtual const char* StateName(){ return "VenueLoader"; }
+        virtual const char* StateName() const { return "VenueLoader"; }
 
         void Unload(bool);
         void Load(const FilePath&, LoaderPos, bool);
@@ -57,6 +57,12 @@ public:
     void ClearSymbolKeysFrameRange(Symbol, float, float);
     void HarvestDircuts();
     void SetSongEnd(float);
+    void SetShot(Symbol, Symbol);
+    void ExportWorldEvent(Symbol);
+    void SendMessage(Symbol, Symbol);
+    void SetCrowd(Symbol);
+    void SetCharSpot(Symbol, Symbol);
+    void SetFog(Symbol);
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);

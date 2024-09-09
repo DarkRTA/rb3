@@ -133,4 +133,38 @@ END_HANDLERS
 #pragma pop
 
 BEGIN_PROPSYNCS(BandDirector)
+    SYNC_PROP_SET(shot_5, unkdc, SetShot(_val.Sym(0), "shot_5"))
+    SYNC_PROP_SET(shot_bg, unkdc, SetShot(_val.Sym(0), coop_bg))
+    SYNC_PROP_SET(shot_bk, unkdc, SetShot(_val.Sym(0), coop_bk))
+    SYNC_PROP_SET(shot_gk, unkdc, SetShot(_val.Sym(0), coop_gk))
+    SYNC_PROP_SET(postproc, (Hmx::Object*)0, )
+    SYNC_PROP_SET(lightpreset, verse, )
+    SYNC_PROP_SET(lightpreset_keyframe, next, )
+    SYNC_PROP_SET(world_event, none, ExportWorldEvent(_val.Sym(0)))
+    SYNC_PROP(merger, mMerger)
+    SYNC_PROP(disable_picking, unke4)
+    SYNC_PROP(disabled, unkb5)
+    SYNC_PROP(lightpreset_interp_enabled, unkb4)
+    SYNC_PROP(excitement, unk60)
+    SYNC_PROP(num_players_failed, unk5c)
+    SYNC_PROP(cam_postproc, unk80)
+    SYNC_PROP_SET(cur_shot, unkb8, )
+    SYNC_PROP_SET(cur_world, mCurWorld, )
+    SYNC_PROP_SET(bass_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "bass"))
+    SYNC_PROP_SET(drum_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "drum"))
+    SYNC_PROP_SET(guitar_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "guitar"))
+    SYNC_PROP_SET(mic_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "mic"))
+    SYNC_PROP_SET(keyboard_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "keyboard"))
+    SYNC_PROP_SET(part2_sing, Symbol("singalong_off"), ) // fix set part
+    SYNC_PROP_SET(part3_sing, Symbol("singalong_off"), ) // fix set part
+    SYNC_PROP_SET(part4_sing, Symbol("singalong_off"), ) // fix set part
+    SYNC_PROP_SET(crowd, Symbol("crowd_realtime"), SetCrowd(_val.Sym(0)))
+    SYNC_PROP(propanim, mPropAnim)
+    SYNC_PROP_SET(spot_bass, Symbol("off"), SetCharSpot("bass", _val.Sym(0)))
+    SYNC_PROP_SET(spot_drums, Symbol("off"), SetCharSpot("drums", _val.Sym(0)))
+    SYNC_PROP_SET(spot_guitar, Symbol("off"), SetCharSpot("guitar", _val.Sym(0)))
+    SYNC_PROP_SET(spot_keyboard, Symbol("off"), SetCharSpot("keyboard", _val.Sym(0)))
+    SYNC_PROP_SET(spot_vocal, Symbol("off"), SetCharSpot("vocal", _val.Sym(0)))
+    SYNC_PROP_SET(stagekit_fog, Symbol("off"), SetFog(_val.Sym(0)))
+    SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
