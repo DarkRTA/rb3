@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 
+
 /* cfront 1.2 defines "c_plusplus" instead of "__cplusplus" */
 #ifdef c_plusplus
 #ifndef __cplusplus
@@ -18,6 +19,7 @@
 #ifdef __cplusplus
 
 #include <stdlib.h>
+#include <unistd.h>
 
 /* Use prototypes in function declarations. */
 #define YY_USE_PROTOS
@@ -425,8 +427,11 @@ char *yytext;
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
 #line 10 "src/system/obj/DataFlex.l"
-#include "DataFile.h"
-#line 432 "src/system/obj/DataFlex.c"
+#include "DataFlex.h"
+
+#define YY_INPUT(buf, result, max_size) \
+    (result) = (DataInput((buf), (max_size)) != 0)
+#line 435 "src/system/obj/DataFlex.c"
 
 
 #ifndef YY_EXTRA_TYPE
@@ -681,7 +686,7 @@ YY_MALLOC_DECL
    one or two additional arguments. */
 
 #ifdef YY_REENTRANT_BISON_PURE
-#  ifdef YYLTYPE
+#  ifdef YYLTYPE 
 #    ifdef YY_USE_PROTOS
 #        define YY_LEX_ARGS (YYSTYPE * yylvalp, YYLTYPE * yyllocp YY_LAST_ARG)
 #    else
@@ -728,9 +733,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 13 "src/system/obj/DataFlex.l"
+#line 16 "src/system/obj/DataFlex.l"
 
-#line 736 "src/system/obj/DataFlex.c"
+#line 739 "src/system/obj/DataFlex.c"
 
 #ifdef YY_REENTRANT_BISON_PURE
     YY_G(yylval) = yylvalp;
@@ -822,20 +827,20 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 14 "src/system/obj/DataFlex.l"
+#line 17 "src/system/obj/DataFlex.l"
 { printf("asdf"); }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "src/system/obj/DataFlex.l"
+#line 18 "src/system/obj/DataFlex.l"
 { gDataLine++; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "src/system/obj/DataFlex.l"
+#line 19 "src/system/obj/DataFlex.l"
 ECHO;
 	YY_BREAK
-#line 841 "src/system/obj/DataFlex.c"
+#line 844 "src/system/obj/DataFlex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2021,5 +2026,5 @@ int main()
 	return 0;
 	}
 #endif
-#line 16 "src/system/obj/DataFlex.l"
+#line 19 "src/system/obj/DataFlex.l"
 

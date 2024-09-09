@@ -7,7 +7,10 @@
 %option never-interactive
 
 %{
-#include "DataFile.h"
+#include "DataFlex.h"
+
+#define YY_INPUT(buf, result, max_size) \
+    (result) = (DataInput((buf), (max_size)) != 0)
 %}
 
 %%

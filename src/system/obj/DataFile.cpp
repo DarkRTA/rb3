@@ -25,13 +25,13 @@ static Symbol gFile; // 0x30
 static BinStream* gBinStream; // 0x34
 static int gOpenArray; // 0x38 ?
 static std::list<bool> gConditional; // 0x48 - actually a list of ConditionalInfo structs
-static int gDataLine; // 0x50
+int gDataLine; // 0x50
 static std::map<String, DataNode> gReadFiles; // 0x60
 
 static bool gCachingFile;
 static bool gReadingFile;
 
-extern "C" void DataFail(const char* x) {
+void DataFail(const char* x) {
     MILO_FAIL("%s (file %s, line %d)", x, gFile, gDataLine);
 }
 
@@ -299,8 +299,12 @@ DataArray* ParseArray() {
     return da;
 }
 
-extern "C" int DataInput(void* v, int x) {
-    if (gBinStream->Fail()) return false; else if (gBinStream->Eof()) return false; else {
+int DataInput(void* v, int x) {
+    if (gBinStream->Fail()) {
+        return 0;
+    } else if (gBinStream->Eof()) {
+        return 0;
+    } else {
         gBinStream->Read(v, x);
         MILO_ASSERT(!gBinStream->Fail(), 630);
         return x;
@@ -354,7 +358,7 @@ DataArray* DataReadStream(BinStream* bs) {
     return ret;
 }
 
-DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18(""), unk24(NULL), 
+DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18(""), unk24(NULL),
     fileobj(NULL), filesize(0), unk30(0), unk34(b), unk38(0) {
     const char* new_str = fp.c_str();
     if (!fp.contains("dlc/")) {
@@ -443,9 +447,9 @@ void* LoadDtz(const char* c, int i) {
     evil.s3 = cc[-3];
     evil.s4 = cc[-4];
     int decompSize = evil.big;
-    MILO_ASSERT(decompSize > 0, 1176);    
-    void* pDecompBuf = _MemAlloc(decompSize, 0);  
-    MILO_ASSERT(pDecompBuf, 1190);  
+    MILO_ASSERT(decompSize > 0, 1176);
+    void* pDecompBuf = _MemAlloc(decompSize, 0);
+    MILO_ASSERT(pDecompBuf, 1190);
     DecompressMem(c, i - 4, pDecompBuf, decompSize, false, NULL);
     BufStream bfs(pDecompBuf, decompSize, true);
     DataArray* da = NULL;

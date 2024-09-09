@@ -5,6 +5,8 @@
 #include "os/ThreadCall.h"
 #include "utl/Loader.h"
 
+#include "obj/DataFile_Flex.h"
+
 class DataLoader : public Loader {
 public:
     DataLoader(const FilePath&, LoaderPos, bool);
@@ -30,7 +32,7 @@ public:
 
 class DataLoaderThreadObj : public ThreadCallback {
     public:
-    DataLoaderThreadObj(DataLoader* dl, DataArray* da, File* fi, int sz, const char* s, void* _mem, bool b) : unk4(dl), 
+    DataLoaderThreadObj(DataLoader* dl, DataArray* da, File* fi, int sz, const char* s, void* _mem, bool b) : unk4(dl),
         unk8(da), unkc(fi), mem(_mem), fsize(sz), unk18(s), unk1c(b) {}
     virtual ~DataLoaderThreadObj();
     virtual void ThreadStart();
@@ -45,8 +47,6 @@ class DataLoaderThreadObj : public ThreadCallback {
     bool unk1c;
 };
 
-extern "C" void DataFail(const char*);
-extern "C" int DataInput(void*, int);
 DataArray* ReadCacheStream(BinStream&, const char*);
 DataArray* ReadEmbeddedFile(const char*, bool);
 DataArray* DataReadFile(const char*, bool);
