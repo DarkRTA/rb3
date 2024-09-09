@@ -143,6 +143,7 @@
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/BandTrack.cpp": "NonMatching",
+            "system/bandobj/BandWardrobe.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
