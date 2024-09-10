@@ -119,6 +119,7 @@ public:
     int UnkE4() const { return unk_0xE4; }
     RndCam* DefaultCam(){ return mDefaultCam; }
     float DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
+    void CompressTextureCancel(CompressTextureCallback*);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);

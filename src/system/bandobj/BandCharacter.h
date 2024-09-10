@@ -16,12 +16,17 @@
 #include "char/CharBoneOffset.h"
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/OutfitConfig.h"
+#include "bandobj/CharKeyHandMidi.h"
 #include "obj/Utl.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/MeshDeform.h"
 
 class BandCharacter : public Character, public BandCharDesc, public MergeFilter, public Rnd::CompressTextureCallback {
 public:
+    class BoneState {
+    public:
+    };
+
     BandCharacter();
     OBJ_CLASSNAME(BandCharacter);
     OBJ_SET_TYPE(BandCharacter);
@@ -86,7 +91,7 @@ public:
     ObjPtr<Character, ObjectDir> unk538; // 0x538
     Symbol unk544; // 0x544
     int unk548; // 0x548
-    int unk54c; // 0x54c
+    RndOverlay* unk54c; // 0x54c
     ObjPtr<CharLookAt, ObjectDir> unk550; // 0x550
     ObjPtr<CharLookAt, ObjectDir> unk55c; // 0x55c
     ObjPtr<CharEyes, ObjectDir> unk568; // 0x568
@@ -114,5 +119,23 @@ public:
     ObjPtrList<CharBoneOffset, ObjectDir> unk640; // 0x640
     ObjPtrList<CharIKMidi, ObjectDir> unk650; // 0x650
     ObjPtrList<CharDriverMidi, ObjectDir> unk660; // 0x660
-    // ObjPtrList<CharKeyHandMidi, ObjectDir> unk670; // 0x670
+    ObjPtrList<CharKeyHandMidi, ObjectDir> unk670; // 0x670
+    ObjPtr<RndMesh, ObjectDir> unk680; // 0x680
+    ObjPtr<RndMesh, ObjectDir> unk68c; // 0x68c
+    ObjPtr<RndMesh, ObjectDir> unk698; // 0x698
+    ObjPtr<RndMesh, ObjectDir> unk6a4; // 0x6a4
+    ObjPtr<CharWeightable, ObjectDir> unk6b0; // 0x6b0
+    bool unk6bc; // 0x6bc
+    bool unk6bd; // 0x6bd
+    ObjPtr<BandCharacter, ObjectDir> unk6c0; // 0x6c0
+    std::list<String> unk6cc; // 0x6cc
+    bool unk6d4; // 0x6d4
+    float unk6d8; // 0x6d8
+    std::list<int> unk6dc; // 0x6dc
+    std::list<BoneState> unk6e4; // 0x6e4
+    int unk6ec; // 0x6ec
+    char filler2[0x48];
+    int unk738; // 0x738
+    ObjPtrList<RndMesh, ObjectDir> unk73c; // 0x73c
+    ObjPtrList<RndMesh, ObjectDir> unk74c; // 0x74c
 };
