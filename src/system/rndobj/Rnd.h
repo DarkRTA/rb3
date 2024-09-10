@@ -26,6 +26,13 @@ enum ProcessCmd {
 
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
+    class CompressTextureCallback {
+    public:
+        CompressTextureCallback(){}
+        virtual ~CompressTextureCallback(){}
+        virtual void TextureCompressed(int) = 0;
+    };
+
     struct PointTest {
         int unk_0x0, unk_0x4, unk_0x8, unk_0xC;
     };
@@ -112,6 +119,7 @@ public:
     int UnkE4() const { return unk_0xE4; }
     RndCam* DefaultCam(){ return mDefaultCam; }
     float DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
+    void CompressTextureCancel(CompressTextureCallback*);
 
     DataNode OnShowConsole(const DataArray*);
     DataNode OnToggleTimers(const DataArray*);

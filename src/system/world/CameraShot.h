@@ -145,6 +145,7 @@ public:
     void SetNear(float n){ mNear = n; }
     void SetFar(float f){ mFar = f; }
     float Duration() const { return mDuration; }
+    Symbol Category() const { return mCategory; }
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);

@@ -16,6 +16,7 @@ enum ExcitementLevel {
 };
 
 class CrowdAudio : public RndPollable {
+public:
     CrowdAudio();
     OBJ_CLASSNAME(CrowdAudio)
     OBJ_SET_TYPE(CrowdAudio)

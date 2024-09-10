@@ -144,10 +144,15 @@
         "objects": {
             "system/bandobj/BandButton.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
+            "system/bandobj/BandCharacter.cpp": "NonMatching",
+            "system/bandobj/BandCharDesc.cpp": "NonMatching",
+            "system/bandobj/BandDirector.cpp": "NonMatching",
             "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/BandTrack.cpp": "NonMatching",
+            "system/bandobj/BandWardrobe.cpp": "NonMatching",
+            "system/bandobj/CharKeyHandMidi.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
@@ -156,6 +161,7 @@
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
+            "system/bandobj/OutfitConfig.cpp": "NonMatching",
             "system/bandobj/OverdriveMeter.cpp": "Matching",
             "system/bandobj/OvershellDir.cpp": {
                 "status": "LinkIssues",
