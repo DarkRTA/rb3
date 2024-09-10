@@ -39,6 +39,8 @@ public:
     virtual void PreSave(BinStream&);
     virtual void PostSave(BinStream&);
 
+    unsigned int OverlayFlags() const;
+
     int mColors[3]; // 0x20, 0x24, 0x28
     ObjVector<MatSwap> mMats; // 0x2c
     int unk38;

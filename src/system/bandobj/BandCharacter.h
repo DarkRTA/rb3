@@ -8,6 +8,7 @@
 #include "char/CharHair.h"
 #include "char/CharLookAt.h"
 #include "char/CharMeshHide.h"
+#include "char/FileMerger.h"
 #include "char/Waypoint.h"
 #include "char/CharIKScale.h"
 #include "char/CharIKHand.h"
@@ -71,6 +72,8 @@ public:
     virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);
     virtual Action FilterSubdir(ObjectDir* o1, ObjectDir*);
 
+    void AddObject(Hmx::Object*);
+
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandCharacter);
@@ -84,25 +87,26 @@ public:
     ObjPtr<CharDriver, ObjectDir> unk454; // 0x454
     int unk460; // 0x460
     int unk464; // 0x464
-    char filler[192];
+    char mGroupName[0x40]; // 0x468
+    char filler[0x80];
     bool unk528; // 0x528
-    bool unk529; // 0x529
+    bool mForceVertical; // 0x529
     ObjPtr<Character, ObjectDir> unk52c; // 0x52c
     ObjPtr<Character, ObjectDir> unk538; // 0x538
-    Symbol unk544; // 0x544
-    int unk548; // 0x548
+    Symbol mTempo; // 0x544
+    FileMerger* unk548; // 0x548
     RndOverlay* unk54c; // 0x54c
     ObjPtr<CharLookAt, ObjectDir> unk550; // 0x550
     ObjPtr<CharLookAt, ObjectDir> unk55c; // 0x55c
     ObjPtr<CharEyes, ObjectDir> unk568; // 0x568
     bool unk574; // 0x574
-    ObjOwnerPtr<BandCharDesc, ObjectDir> unk578; // 0x578
-    Symbol unk584; // 0x584
-    Symbol unk588; // 0x588
-    Symbol unk58c; // 0x58c
-    Symbol unk590; // 0x590
+    ObjOwnerPtr<BandCharDesc, ObjectDir> mTestPrefab; // 0x578
+    Symbol mGenre; // 0x584
+    Symbol mDrumVenue; // 0x588
+    Symbol mTestTourEndingVenue; // 0x58c
+    Symbol mInstrumentType; // 0x590
     ObjPtr<Waypoint, ObjectDir> unk594; // 0x594
-    bool unk5a0; // 0x5a0
+    bool mInCloset; // 0x5a0
     bool unk5a1; // 0x5a1
     bool unk5a2; // 0x5a2
     bool unk5a3; // 0x5a3
@@ -125,17 +129,17 @@ public:
     ObjPtr<RndMesh, ObjectDir> unk698; // 0x698
     ObjPtr<RndMesh, ObjectDir> unk6a4; // 0x6a4
     ObjPtr<CharWeightable, ObjectDir> unk6b0; // 0x6b0
-    bool unk6bc; // 0x6bc
+    bool mUseMicStandClips; // 0x6bc
     bool unk6bd; // 0x6bd
     ObjPtr<BandCharacter, ObjectDir> unk6c0; // 0x6c0
     std::list<String> unk6cc; // 0x6cc
-    bool unk6d4; // 0x6d4
+    bool mInTourEnding; // 0x6d4
     float unk6d8; // 0x6d8
     std::list<int> unk6dc; // 0x6dc
     std::list<BoneState> unk6e4; // 0x6e4
     int unk6ec; // 0x6ec
     char filler2[0x48];
-    int unk738; // 0x738
+    unsigned int unk738; // 0x738
     ObjPtrList<RndMesh, ObjectDir> unk73c; // 0x73c
     ObjPtrList<RndMesh, ObjectDir> unk74c; // 0x74c
 };
