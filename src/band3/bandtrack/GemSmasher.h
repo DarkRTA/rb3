@@ -7,6 +7,7 @@
 #include <vector>
 
 class GemSmasher {
+public:
     GemSmasher(int, RndDir*, bool);
     ~GemSmasher();
     void Reset(bool);

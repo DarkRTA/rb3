@@ -39,7 +39,8 @@ bool Gem::UseRGChordStyle() const {
 }
 
 void Gem::AddStrumInstance(Symbol s1, Symbol s2) {
-    if (mGemManager == NULL || mGemManager->unk_0x0 == 0) return;
+    if (mGemManager == NULL || mGemManager->mTrackConfig == 0)
+        return;
     int lowString = mGameGem->GetLowestString();
     int highString = mGameGem->GetHighestString();
     MILO_ASSERT(lowString != -1, 572);
@@ -49,6 +50,29 @@ void Gem::AddStrumInstance(Symbol s1, Symbol s2) {
         MILO_WARN("could not find widget for %s for %s chord gem in %s", t0, s1, s2);
         return;
     } 
+}
+
+void Gem::AddHopoTails(Symbol s1) {
+    if (mGemManager != 0 && mGemManager->mTrackDir != 0) {
+        bool isRealGuitar = mGemManager->mTrackConfig->IsRealGuitarTrack();
+
+        if (isRealGuitar && mHit) {
+            if (s1.mStr == "miss") {
+            }
+
+            Symbol s2("");
+            mGemManager->GetWidgetName(s2, 0, 0);
+            TrackWidget *widget = mGemManager->GetWidgetByName(s2);
+
+            int maxSlots = mGemManager->GetMaxSlots();
+
+            for (int i = 0; i < maxSlots; i++) {
+                if (mSlots & (1 << i) != 0) {
+                    AddWidgetInstanceImpl(widget, i);
+                }
+            }
+        }
+    }
 }
 
 void Gem::Miss() { }
