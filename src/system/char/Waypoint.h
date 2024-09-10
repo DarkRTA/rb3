@@ -23,6 +23,11 @@ public:
     void ShapeDeltaBox(const Vector3&, float, float, Vector3&);
     float ShapeDeltaAng(float, float);
 
+    void SetRadius(float r){ mRadius = r; }
+    void SetStrictRadiusDelta(float r){ mStrictRadiusDelta = r; }
+    void SetAngRadius(float r){ mAngRadius = r; }
+    void SetStrictAngDelta(float d){ mStrictAngDelta = d; }
+
     static DataNode OnWaypointFind(DataArray*);
     static DataNode OnWaypointNearest(DataArray*);
     static DataNode OnWaypointLast(DataArray*);

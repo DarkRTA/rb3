@@ -113,11 +113,11 @@ public:
     virtual void Load(BinStream&);
     virtual int GetPatchTex(Patch&);
     virtual int GetPatchMesh(Patch&);
-    virtual int GetBandLogo();
+    virtual int GetBandLogo(){ return 0; }
     virtual void Compress(RndTex*, bool);
     virtual int GetPatchDir();
     virtual void AddOverlays(BandPatchMesh&);
-    virtual void MiloReload();
+    virtual void MiloReload(){}
 
     static void Init();
     static void Register(){
@@ -139,4 +139,11 @@ public:
     int unk224; // 0x224
     std::vector<Patch> mPatches; // 0x228
     int unk230; // 0x230
+};
+
+class BandCharDescTest : public BandCharDesc {
+public:
+    BandCharDescTest(){}
+    virtual ~BandCharDescTest(){}
+    virtual Symbol ClassName() const { return ""; }
 };

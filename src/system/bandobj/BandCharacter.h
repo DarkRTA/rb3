@@ -40,7 +40,7 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
-    virtual bool AllowsInlineProxy();
+    virtual bool AllowsInlineProxy(){ return false; }
     virtual void AddedObject(Hmx::Object*);
     virtual void RemovingObject(Hmx::Object*);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
@@ -54,41 +54,74 @@ public:
     virtual void CalcBoundingSphere();
     virtual float ComputeScreenSize(RndCam*);
     virtual void DrawLodOrShadow(int, DrawMode);
-    virtual CharEyes* GetEyes();
+    virtual CharEyes* GetEyes(){ return unk568; }
     virtual bool ValidateInterest(CharInterest*, ObjectDir*);
     virtual bool SetFocusInterest(CharInterest*, int);
     virtual void SetInterestFilterFlags(int);
     virtual void ClearInterestFilterFlags();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
     virtual void TextureCompressed(int);
     virtual int GetPatchTex(Patch&);
     virtual int GetPatchMesh(Patch&);
     virtual int GetBandLogo();
     virtual void Compress(RndTex*, bool);
-    virtual int GetPatchDir();
+    virtual int GetPatchDir(){}
     virtual void AddOverlays(BandPatchMesh&);
     virtual void MiloReload();
     virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);
     virtual Action FilterSubdir(ObjectDir* o1, ObjectDir*);
 
     void AddObject(Hmx::Object*);
+    void ClearGroup();
+    void StartLoad(bool, bool, bool);
+    bool IsLoading();
+    const char* FlagString(int);
+    void SetContext(Symbol);
+    void SavePrefabFromCloset();
+    void SetSingalong(float);
+    void GameOver();
+    void ClearDircuts();
+    void SetInstrumentType(Symbol);
+    void SetGroupName(const char*);
+    void SetHeadLookatWeight(float);
+
+    DataNode OnListDircuts();
+    DataNode OnPlayGroup(DataArray*);
+    DataNode OnGroupOverride(DataArray*);
+    DataNode OnChangeFaceGroup(DataArray*);
+    DataNode OnSetPlay(DataArray*);
+    DataNode OnCamTeleport(DataArray*);
+    DataNode OnClosetTeleport(DataArray*);
+    DataNode OnInstallFilter(DataArray*);
+    DataNode OnPreClear(DataArray*);
+    DataNode OnCopyPrefab(DataArray*);
+    DataNode OnSavePrefab(DataArray*);
+    DataNode OnSetFileMerger(DataArray*);
+    DataNode OnLoadDircut(DataArray*);
+    DataNode OnPostMerge(DataArray*);
+    DataNode OnHideCategories(DataArray*);
+    DataNode OnRestoreCategories(DataArray*);
+    DataNode OnToggleInterestDebugOverlay(DataArray*);
+    DataNode OnListDrumVenues(DataArray*);
+    DataNode OnPortraitBegin(DataArray*);
+    DataNode OnPortraitEnd(DataArray*);
 
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandCharacter);
     }
     static void Terminate();
+    DECLARE_REVS;
     NEW_OBJ(BandCharacter);
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     int unk450; // 0x450
     ObjPtr<CharDriver, ObjectDir> unk454; // 0x454
-    int unk460; // 0x460
-    int unk464; // 0x464
+    CharDriver* unk460; // 0x460
+    CharDriver* unk464; // 0x464
     char mGroupName[0x40]; // 0x468
-    char filler[0x80];
+    char unk4a8[0x40]; // 0x4a8
+    char unk4e8[0x40]; // 0x4e8
     bool unk528; // 0x528
     bool mForceVertical; // 0x529
     ObjPtr<Character, ObjectDir> unk52c; // 0x52c
@@ -132,13 +165,14 @@ public:
     bool mUseMicStandClips; // 0x6bc
     bool unk6bd; // 0x6bd
     ObjPtr<BandCharacter, ObjectDir> unk6c0; // 0x6c0
-    std::list<String> unk6cc; // 0x6cc
+    std::list<String> mDircuts; // 0x6cc
     bool mInTourEnding; // 0x6d4
     float unk6d8; // 0x6d8
-    std::list<int> unk6dc; // 0x6dc
+    std::list<int> mCompressedTextureIDs; // 0x6dc
     std::list<BoneState> unk6e4; // 0x6e4
     int unk6ec; // 0x6ec
-    char filler2[0x48];
+    char filler2[0x44];
+    Waypoint* unk734; // 0x734
     unsigned int unk738; // 0x738
     ObjPtrList<RndMesh, ObjectDir> unk73c; // 0x73c
     ObjPtrList<RndMesh, ObjectDir> unk74c; // 0x74c
