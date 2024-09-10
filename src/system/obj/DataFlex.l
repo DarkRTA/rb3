@@ -45,12 +45,12 @@ kUnhandled          { return kDataTokenUnhandled; }
 {FLOAT_LITERAL}     { return kDataTokenFloat; }
 {DECIMAL_LITERAL}   { return kDataTokenFloat; }
 
-#include            { return kDataTokenInclude; }
 _17                 { return kDataTokenIncludeOptional; }
+#include            { return kDataTokenInclude; }
 #merge              { return kDataTokenMerge; }
 #ifdef              { return kDataTokenIfdef; }
-#ifndef             { return kDataTokenIfndef; }
 #undef              { return kDataTokenUndef; }
+#ifndef             { return kDataTokenIfndef; }
 #else               { return kDataTokenElse; }
 #endif              { return kDataTokenEndif; }
 #define             { return kDataTokenDefine; }
@@ -62,8 +62,8 @@ _17                 { return kDataTokenIncludeOptional; }
 
 \(                  { return kDataTokenArrayOpen; }
 \)                  { return kDataTokenArrayClose; }
-\{                  { return kDataTokenPropertyOpen; }
-\}                  { return kDataTokenPropertyClose; }
-\[                  { return kDataTokenCommandOpen; }
-\]                  { return kDataTokenCommandClose; }
+\{                  { return kDataTokenCommandOpen; }
+\}                  { return kDataTokenCommandClose; }
+\[                  { return kDataTokenPropertyOpen; }
+\]                  { return kDataTokenPropertyClose; }
 %%

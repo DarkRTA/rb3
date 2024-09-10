@@ -31,8 +31,8 @@ enum DataToken {
     kDataTokenVar,
     kDataTokenUnhandled,
     kDataTokenIfdef,
-    kDataTokenIfndef,
     kDataTokenUndef,
+    kDataTokenIfndef,
     kDataTokenElse,
     kDataTokenEndif,
 };
