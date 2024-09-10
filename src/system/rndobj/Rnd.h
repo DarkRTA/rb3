@@ -26,6 +26,13 @@ enum ProcessCmd {
 
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
+    class CompressTextureCallback {
+    public:
+        CompressTextureCallback(){}
+        virtual ~CompressTextureCallback(){}
+        virtual void TextureCompressed(int) = 0;
+    };
+
     struct PointTest {
         int unk_0x0, unk_0x4, unk_0x8, unk_0xC;
     };

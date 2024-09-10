@@ -119,6 +119,14 @@ public:
     virtual void AddOverlays(BandPatchMesh&);
     virtual void MiloReload();
 
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(BandCharDesc);
+    }
+    NEW_OBJ(BandCharDesc);
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     Symbol mPrefab; // 0xc
     Symbol mGender; // 0x10
     int mSkinColor; // 0x14
@@ -130,4 +138,5 @@ public:
     float mMuscle; // 0x220
     int unk224; // 0x224
     std::vector<Patch> mPatches; // 0x228
+    int unk230; // 0x230
 };

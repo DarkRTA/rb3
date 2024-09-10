@@ -1,5 +1,9 @@
 #include "bandobj/BandCharDesc.h"
 
+void BandCharDesc::Init(){
+    Register();
+}
+
 BandCharDesc::Outfit::Outfit(){
     
 }

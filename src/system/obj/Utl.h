@@ -47,7 +47,7 @@ public:
     enum Action { kMerge, kReplace, kKeep, kIgnore };
     enum Subdirs { kNoSubdirs, kAllSubdirs, kInlineSubdirs, kSubdir3, kSubdir4 };
 
-    MergeFilter();
+    MergeFilter() : mAction(kMerge), mSubdirs(kNoSubdirs) {}
     MergeFilter(Action a, Subdirs s) : mAction(a), mSubdirs(s) {}
     virtual ~MergeFilter(){}
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*){ return mAction; }

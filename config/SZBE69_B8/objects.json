@@ -138,6 +138,7 @@
         "objects": {
             "system/bandobj/BandButton.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
+            "system/bandobj/BandCharacter.cpp": "NonMatching",
             "system/bandobj/BandCharDesc.cpp": "NonMatching",
             "system/bandobj/BandDirector.cpp": "NonMatching",
             "system/bandobj/BandLabel.cpp": "NonMatching",
