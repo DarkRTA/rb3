@@ -180,6 +180,7 @@
             "system/bandobj/InstrumentDifficultyDisplay.cpp": "NonMatching",
             "system/bandobj/LayerDir.cpp": "NonMatching",
             "system/bandobj/MeterDisplay.cpp": "NonMatching",
+            "system/bandobj/MicInputArrow.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/OutfitConfig.cpp": "NonMatching",
