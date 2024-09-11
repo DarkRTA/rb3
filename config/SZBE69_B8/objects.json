@@ -176,6 +176,7 @@
             "system/bandobj/EndingBonus.cpp": "NonMatching",
             "system/bandobj/FingerShape.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
+            "system/bandobj/LayerDir.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
             "system/bandobj/OutfitConfig.cpp": "NonMatching",
@@ -184,6 +185,8 @@
                 "status": "LinkIssues",
                 "comment": "bss meme"
             },
+            "system/bandobj/PatchDir.cpp": "NonMatching",
+            "system/bandobj/PatchRenderer.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/StreakMeter.cpp": "NonMatching",
