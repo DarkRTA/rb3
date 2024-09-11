@@ -172,6 +172,8 @@
                 "comment": "bss meme"
             },
             "system/bandobj/CrowdMeterIcon.cpp": "Matching",
+            "system/bandobj/DialogDisplay.cpp": "NonMatching",
+            "system/bandobj/EndingBonus.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/MiniLeaderboardDisplay.cpp": "Matching",
             "system/bandobj/NoteTube.cpp": "NonMatching",
