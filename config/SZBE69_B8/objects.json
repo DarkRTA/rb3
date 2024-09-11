@@ -176,6 +176,7 @@
             "system/bandobj/DialogDisplay.cpp": "NonMatching",
             "system/bandobj/EndingBonus.cpp": "NonMatching",
             "system/bandobj/FingerShape.cpp": "NonMatching",
+            "system/bandobj/GemTrackDir.cpp": "NonMatching",
             "system/bandobj/GemTrackResourceManager.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/InstrumentDifficultyDisplay.cpp": "NonMatching",
