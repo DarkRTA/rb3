@@ -199,6 +199,7 @@
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/StreakMeter.cpp": "NonMatching",
+            "system/bandobj/TrackPanelDir.cpp": "NonMatching",
             "system/bandobj/TrackPanelDirBase.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
