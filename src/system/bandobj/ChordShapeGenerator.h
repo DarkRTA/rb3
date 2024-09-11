@@ -22,7 +22,7 @@ public:
     ObjPtr<RndTransformable, ObjectDir> unk4c; // 0x4c
     int unk58; // 0x58
     std::vector<int> unk5c; // 0x5c
-    std::vector<int> unk64; // 0x64 - FIXME: should be a vector<bool>
+    std::vector<bool> unk64; // 0x64
     ObjPtr<RndTransformable, ObjectDir> unk6c; // 0x6c
     ObjPtr<RndTransformable, ObjectDir> unk78; // 0x78
     ObjPtr<RndTransformable, ObjectDir> unk84; // 0x84
