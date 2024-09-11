@@ -1,5 +1,10 @@
 #pragma once
 #include "bandobj/TrackPanelDirBase.h"
+#include "bandobj/VocalTrackDir.h"
+#include "bandobj/BandCrowdMeter.h"
+#include "bandobj/EndingBonus.h"
+#include "bandobj/GemTrackResourceManager.h"
+#include "rndobj/EventTrigger.h"
 
 class TrackPanelDir : public TrackPanelDirBase {
 public:
@@ -55,5 +60,18 @@ public:
     int unk248; // 0x248
     int unk24c; // 0x24c
     int unk250; // 0x250
-    // ObjPtr<VocalTrackDir>
+    int unk254; // 0x254
+    ObjPtr<VocalTrackDir, ObjectDir> unk258; // 0x258
+    ObjPtr<BandCrowdMeter, ObjectDir> unk264; // 0x264
+    ObjPtr<RndDir, ObjectDir> unk270; // 0x270
+    ObjPtr<EventTrigger, ObjectDir> unk27c; // 0x27c
+    ObjPtr<EndingBonus, ObjectDir> unk288; // 0x288
+    ObjPtr<RndDir, ObjectDir> unk294; // 0x294
+    ObjPtr<RndGroup, ObjectDir> unk2a0; // 0x2a0
+    bool unk2ac; // 0x2ac
+    bool unk2ad; // 0x2ad
+    bool unk2ae; // 0x2ae
+    ObjPtr<GemTrackResourceManager, ObjectDir> unk2b0; // 0x2b0
+    bool unk2bc; // 0x2bc
+    bool unk2bd; // 0x2bd
 };
