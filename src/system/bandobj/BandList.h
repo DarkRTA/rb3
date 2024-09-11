@@ -6,6 +6,11 @@
 class HighlightObject {
 public:
     HighlightObject(Hmx::Object*);
+
+    ObjPtr<RndTransformable, ObjectDir> unk0; // 0x0
+    float unkc; // 0xc
+    float unk10; // 0x10
+    float unk14; // 0x14
 };
 
 class BandList : public UIList {
