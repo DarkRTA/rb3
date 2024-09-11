@@ -40,6 +40,8 @@ enum DataToken {
 extern void yyrestart(FILE*);
 extern int yylex();
 
+extern FILE *yyin, *yyout;
+
 extern char *yytext;
 extern int yyleng;
 
