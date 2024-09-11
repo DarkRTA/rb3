@@ -16,54 +16,55 @@
 #define ECHO /* don't echo unmatched characters */
 %}
 
-IDENTIFIER [^\s\(\)\[\]\{\}]+
+SEPARATOR_CHARS [ \t\n\r\(\)\[\]\{\}]
+IDENTIFIER [^ \t\n\r\(\)\[\]\{\}]+
 
-INT_LITERAL [0-9]+
-HEX_LITERAL 0x[0-9]+
-DECIMAL_LITERAL \.[0-9]+
-FLOAT_LITERAL [0-9]+\.[0-9]+
-STRING_LITERAL "[^\n]"
-SYMBOL_LITERAL '{IDENTIFIER}'
+INT_LITERAL [+-]?[0-9]+
+HEX_LITERAL 0x[A-Fa-f0-9]+
+FLOAT_LITERAL [+-]?[0-9]*\.[0-9]*
+FLOAT_PRECISION {FLOAT_LITERAL}-?[Ee][0-9]+
+STRING_LITERAL ".*?"
+SYMBOL_LITERAL '[^\n]*?'
 
-%s state1
+%x state_comment
 
 %%
-_1                  { /* do nothing */ }
-\n                  { gDataLine++; }
-{STRING_LITERAL}    { return kDataTokenString; }
-{SYMBOL_LITERAL}    { return kDataTokenQuotedSymbol; }
-_5                  { BEGIN(state1); }
-_6                  { /* do nothing */ }
-_7                  { /* do nothing */ }
-\r\n                { gDataLine++; }
-_9                  { BEGIN(INITIAL); }
-\s                  { /* do nothing */ }
-kUnhandled          { return kDataTokenUnhandled; }
+\r                                                  { /* skip carriage returns */ }
+\n                                                  { gDataLine++; }
+{STRING_LITERAL}                                    { return kDataTokenString; }
+{SYMBOL_LITERAL}                                    { return kDataTokenQuotedSymbol; }
+\/\*\n                                              { BEGIN(state_comment); }
+_6                                                  { /* do nothing */ }
+_7                                                  { /* do nothing */ }
+_8                                                  { gDataLine++; }
+<state_comment>\*\/                                 { BEGIN(INITIAL); }
+\;.*\n                                              { /* comment */ }
+kUnhandled                                          { return kDataTokenUnhandled; }
 
-{HEX_LITERAL}       { return kDataTokenHex; }
-{INT_LITERAL}       { return kDataTokenInt; }
-{FLOAT_LITERAL}     { return kDataTokenFloat; }
-{DECIMAL_LITERAL}   { return kDataTokenFloat; }
+{HEX_LITERAL}                                       { return kDataTokenHex; }
+{INT_LITERAL}                                       { return kDataTokenInt; }
+{FLOAT_LITERAL}                                     { return kDataTokenFloat; }
+{FLOAT_PRECISION}                                   { return kDataTokenFloat; }
 
-_17                 { return kDataTokenIncludeOptional; }
-#include            { return kDataTokenInclude; }
-#merge              { return kDataTokenMerge; }
-#ifdef              { return kDataTokenIfdef; }
-#undef              { return kDataTokenUndef; }
-#ifndef             { return kDataTokenIfndef; }
-#else               { return kDataTokenElse; }
-#endif              { return kDataTokenEndif; }
-#define             { return kDataTokenDefine; }
-#autorun            { return kDataTokenAutorun; }
-#                   { DataFail("bad # directive"); }
+#include_opt                                        { return kDataTokenIncludeOptional; }
+#include                                            { return kDataTokenInclude; }
+#merge                                              { return kDataTokenMerge; }
+#ifdef                                              { return kDataTokenIfdef; }
+#undef                                              { return kDataTokenUndef; }
+#ifndef                                             { return kDataTokenIfndef; }
+#else                                               { return kDataTokenElse; }
+#endif                                              { return kDataTokenEndif; }
+#define                                             { return kDataTokenDefine; }
+#autorun                                            { return kDataTokenAutorun; }
+#{IDENTIFIER}                                       { DataFail("bad # directive"); }
 
-\${IDENTIFIER}      { return kDataTokenVar; }
-{IDENTIFIER}        { return kDataTokenSymbol; }
+\${IDENTIFIER}                                      { return kDataTokenVar; }
+{IDENTIFIER}                                        { return kDataTokenSymbol; }
 
-\(                  { return kDataTokenArrayOpen; }
-\)                  { return kDataTokenArrayClose; }
-\{                  { return kDataTokenCommandOpen; }
-\}                  { return kDataTokenCommandClose; }
-\[                  { return kDataTokenPropertyOpen; }
-\]                  { return kDataTokenPropertyClose; }
+\(                                                  { return kDataTokenArrayOpen; }
+\)                                                  { return kDataTokenArrayClose; }
+\{                                                  { return kDataTokenCommandOpen; }
+\}                                                  { return kDataTokenCommandClose; }
+\[                                                  { return kDataTokenPropertyOpen; }
+\]                                                  { return kDataTokenPropertyClose; }
 %%

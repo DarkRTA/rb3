@@ -492,6 +492,8 @@ bool ParseNode() {
                 }
             }
             else if(*c == '\n'){
+                // Newlines in strings must be accounted for manually,
+                // as the lexer won't run the action for it due to being part of the string literal
                 gDataLine++;
             }
 
