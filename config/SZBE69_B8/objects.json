@@ -21,6 +21,7 @@
             "band3/bandtrack/GemSmasher.cpp": "Matching",
             "band3/bandtrack/GraphicsUtl.cpp": "Matching",
 			"band3/bandtrack/Lyric.cpp": "NonMatching",
+			"band3/bandtrack/NowBar.cpp": "NonMatching",
             "band3/bandtrack/TrackConfig.cpp": "Matching",
 
             "band3/game/BandUser.cpp": "NonMatching",

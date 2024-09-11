@@ -18,11 +18,15 @@ void LyricPlate::SetShowing(bool show) {
 }
 
 float LyricPlate::CurrentStartX(float start) const {
-    // return start + mText->mWrapWidth;
+    return start + mText->mLocalXfm.v.x;
 }
 
 float LyricPlate::CurrentEndX(float end) const {
-    // return end + mText->mLocalXfm.v.x;
+    float order = end + mText->mOrder;
+
+    float pos = order + mText->mLocalXfm.v.x;
+
+    return pos;
 }
 
 void LyricPlate::CheckSync() {
@@ -87,11 +91,45 @@ void LyricPlate::EstimateLyricWidth(const Lyric *lyric) {
 
 void LyricPlate::HookUpParents(RndGroup *group, RndTransformable *trans) {
     group->AddObject(mText, 0);
-    trans->SetTransParent(mText, false);
+    trans->SetTransParent(mText->mParent, false);
 }
 
 bool LyricPlate::Empty() const {
     return mSyllables.empty();
+}
+
+void LyricPlate::UpdateStaticTiming(float time) {
+    MILO_ASSERT(mSyllables.size() != 0, 0xcf);
+
+    float f = 0;
+    float fArr = 0;
+    for (int i = 0; i < mSyllables.size(); i++) {
+        Lyric *lyric = mSyllables[i];
+
+        if (i == 0 || lyric->mDeployIdx != -1) {
+            f = lyric->mActiveMs - time;
+        } else if (lyric->mAfterMidPhraseShift) {
+            f = lyric->mActiveMs;
+        }
+
+        lyric->mHighlightMs = f;
+    }
+
+    for (int i = 0; i < mSyllables.size(); i++) {
+        Lyric *lyric = mSyllables[i];
+
+        float validMs;
+        if (lyric->mChunkEnd) {
+            fArr = lyric->mEndMs + 100;
+
+            if (fArr <= lyric->mInvalidateMs) {
+                validMs = fArr;
+            } else {
+                validMs = lyric->mInvalidateMs;
+            }
+        }
+        lyric->mInvalidateMs = validMs;
+    }
 }
 
 float LyricPlate::GetBeginMs() const {
@@ -105,10 +143,23 @@ float LyricPlate::GetBeginMs() const {
 float LyricPlate::GetLastLyricXBeforeMS(float ms) const {
     int size = mSyllables.size();
 
-    int i = 0;
-    int j = 0;
-    while (size != 0 && mSyllables[i]->mActiveMs <= ms) {
+    float last = 0;
+    Lyric *lyric;
+
+    for (int i = 0; i < size; i++) {
+        lyric = mSyllables[i];
+
+        if (lyric->mActiveMs > ms) {
+            last = ms;
+        }
+
+        float x = lyric->unk_0x48 + lyric->mXWidth;
+
+        if (last < x) {
+            last = x;
+        }
     }
+    return last;
 }
 
 Lyric::Lyric(const VocalNote *vocalNote, bool param2, String param3, bool param4)
