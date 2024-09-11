@@ -150,12 +150,14 @@
             "system/bandobj/BandCrowdMeter.cpp": "NonMatching",
             "system/bandobj/BandDirector.cpp": "NonMatching",
             "system/bandobj/BandFaceDeform.cpp": "NonMatching",
+            "system/bandobj/BandHeadShaper.cpp": "NonMatching",
             "system/bandobj/BandHighlight.cpp": "NonMatching",
             "system/bandobj/BandIKEffector.cpp": "NonMatching",
             "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandLeadMeter.cpp": "NonMatching",
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandPatchMesh.cpp": "NonMatching",
+            "system/bandobj/BandRetargetVignette.cpp": "NonMatching",
             "system/bandobj/BandScoreboard.cpp": "NonMatching",
             "system/bandobj/BandSong.cpp": "NonMatching",
             "system/bandobj/BandSongPref.cpp": "Matching",
@@ -164,6 +166,7 @@
             "system/bandobj/BandTrack.cpp": "NonMatching",
             "system/bandobj/BandWardrobe.cpp": "NonMatching",
             "system/bandobj/CharKeyHandMidi.cpp": "NonMatching",
+            "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": {
                 "status": "LinkIssues",
                 "comment": "bss meme"
