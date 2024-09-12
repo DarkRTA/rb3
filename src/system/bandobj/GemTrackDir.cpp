@@ -36,6 +36,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), unk484(1), unk488(-1), unk48c(-1),
 }
 
 GemTrackDir::~GemTrackDir(){
+    RELEASE(unk6e4);
     RELEASE(unk698);
 }
 #pragma pop

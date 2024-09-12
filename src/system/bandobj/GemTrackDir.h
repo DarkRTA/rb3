@@ -14,6 +14,7 @@
 #include "bandobj/ChordShapeGenerator.h"
 #include "beatmatch/RGState.h"
 #include "bandobj/FingerShape.h"
+#include "bandobj/ArpeggioShape.h"
 
 class GemTrackDir : public TrackDir, public BandTrack {
 public:
@@ -138,7 +139,7 @@ public:
     ObjPtr<ChordShapeGenerator, ObjectDir> unk6a8; // 0x6a8
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6b4; // 0x6b4
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6cc; // 0x6cc
-    int unk6e4; // 0x6e4
+    ArpeggioShapePool* unk6e4; // 0x6e4
     bool unk6e8; // 0x6e8
     bool unk6e9; // 0x6e9
     bool unk6ea; // 0x6ea
