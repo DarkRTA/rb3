@@ -16,34 +16,38 @@
 #define ECHO /* don't echo unmatched characters */
 %}
 
-SEPARATOR_CHARS [ \t\n\r\(\)\[\]\{\}]
-IDENTIFIER [^ \t\n\r\(\)\[\]\{\}]+
+IDENTIFIER          [^ \t\n\r\(\)\[\]\{\}]+
 
-INT_LITERAL [+-]?[0-9]+
-HEX_LITERAL 0x[A-Fa-f0-9]+
-FLOAT_LITERAL [+-]?[0-9]*\.[0-9]*
-FLOAT_PRECISION {FLOAT_LITERAL}-?[Ee][0-9]+
-STRING_LITERAL ".*?"
-SYMBOL_LITERAL '[^\n]*?'
+DIGIT               [0-9]
+HEX_DIGIT           [A-Fa-f0-9]
+SIGN                [+-]
 
-%x state_comment
+HEX_NUMBER          0x{HEX_DIGIT}+
+INTEGER             {SIGN}?{DIGIT}+
+FLOAT               {SIGN}?{DIGIT}*\.{DIGIT}*
+FLOAT_PRECISION     {SIGN}?{DIGIT}*\.{DIGIT}*[Ee]{SIGN}?{DIGIT}+
+
+STRING_LITERAL      \"[^\"]*\"
+SYMBOL_LITERAL      \'[^\']*\'
+
+%x BLOCK_COMMENT
 
 %%
 \r                                                  { /* skip carriage returns */ }
 \n                                                  { gDataLine++; }
 {STRING_LITERAL}                                    { return kDataTokenString; }
 {SYMBOL_LITERAL}                                    { return kDataTokenQuotedSymbol; }
-\/\*\n                                              { BEGIN(state_comment); }
-_6                                                  { /* do nothing */ }
-_7                                                  { /* do nothing */ }
-_8                                                  { gDataLine++; }
-<state_comment>\*\/                                 { BEGIN(INITIAL); }
-\;.*\n                                              { /* comment */ }
+\/\* /* BUG: /** won't start a block */             { BEGIN(BLOCK_COMMENT); }
+<BLOCK_COMMENT>[^\n\*]*                             { /* ignore text in block comments */ }
+<BLOCK_COMMENT>\*+                                  { /* ignore *s in block comments */ }
+<BLOCK_COMMENT>\n                                   { gDataLine++; }
+<BLOCK_COMMENT>\*\/                                 { BEGIN(INITIAL); }
+;.*\n                                               { /* comment */ }
 kUnhandled                                          { return kDataTokenUnhandled; }
 
-{HEX_LITERAL}                                       { return kDataTokenHex; }
-{INT_LITERAL}                                       { return kDataTokenInt; }
-{FLOAT_LITERAL}                                     { return kDataTokenFloat; }
+{HEX_NUMBER}                                        { return kDataTokenHex; }
+{INTEGER}                                           { return kDataTokenInt; }
+{FLOAT}                                             { return kDataTokenFloat; }
 {FLOAT_PRECISION}                                   { return kDataTokenFloat; }
 
 #include_opt                                        { return kDataTokenIncludeOptional; }
