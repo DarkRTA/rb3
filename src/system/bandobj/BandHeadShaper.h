@@ -11,6 +11,12 @@ public:
     BandHeadShaper();
     ~BandHeadShaper();
 
+    static int sNoseNum;
+    static int sMouthNum;
+    static int sEyeNum;
+    static int sShapeNum;
+    static int sChinNum;
+
     RndMesh* mDst; // 0x0
     ObjectDir* mHeadDir; // 0x4
     RndMeshAnim* mAnim; // 0x8

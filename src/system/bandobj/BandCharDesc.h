@@ -13,6 +13,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        static int SaveSize(int);
+
         int mTexture; // 0x8
         int mCategory; // 0xc
         String mMeshName; // 0x10
@@ -27,6 +29,8 @@ public:
         virtual ~OutfitPiece(){}
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
+        static int SaveSize(int);
 
         Symbol mName; // 0x8
         int mColor0; // 0xc
@@ -72,6 +76,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        static int SaveSize(int);
+
         OutfitPiece mEyebrows; // 0x8
         OutfitPiece mFaceHair; // 0x20
         OutfitPiece mHair; // 0x38
@@ -86,12 +92,14 @@ public:
         OutfitPiece mWrist; // 0x110
     };
 
-    class InstrumentOutfit {
+    class InstrumentOutfit : public FixedSizeSaveable {
     public:
         InstrumentOutfit();
         virtual ~InstrumentOutfit(){}
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
+        static int SaveSize(int);
 
         OutfitPiece mGuitar; // 0x8
         OutfitPiece mBass; // 0x20
@@ -119,6 +127,17 @@ public:
     virtual void AddOverlays(BandPatchMesh&);
     virtual void MiloReload(){}
 
+    void SetChanged(int);
+    void SetPrefab(Symbol);
+    void SetGender(Symbol);
+    void SetHeight(float);
+    void SetWeight(float);
+    void SetMuscle(float);
+    void SetSkinColor(int);
+
+    DataNode ListOutfits(Symbol);
+
+    static int SaveSize(int);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandCharDesc);
@@ -138,7 +157,6 @@ public:
     float mMuscle; // 0x220
     int unk224; // 0x224
     std::vector<Patch> mPatches; // 0x228
-    int unk230; // 0x230
 };
 
 class BandCharDescTest : public BandCharDesc {
