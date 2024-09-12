@@ -13,6 +13,7 @@
 #include "obj/Task.h"
 #include "bandobj/ChordShapeGenerator.h"
 #include "beatmatch/RGState.h"
+#include "bandobj/FingerShape.h"
 
 class GemTrackDir : public TrackDir, public BandTrack {
 public:
@@ -73,6 +74,10 @@ public:
     virtual void SetupSmasherPlate();
     virtual void ReleaseSmasherPlate();
 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     int unk484; // 0x484
     int unk488; // 0x488
     int unk48c; // 0x48c
@@ -127,7 +132,7 @@ public:
     std::vector<RndDir*> unk680; // 0x680
     std::vector<EventTrigger*> unk688; // 0x688
     std::vector<EventTrigger*> unk690; // 0x690
-    int unk698; // 0x698
+    FingerShape* unk698; // 0x698
     std::vector<float> unk69c; // 0x69c
     float unk6a4; // 0x6a4
     ObjPtr<ChordShapeGenerator, ObjectDir> unk6a8; // 0x6a8
