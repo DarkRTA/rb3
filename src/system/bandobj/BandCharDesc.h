@@ -137,6 +137,7 @@ public:
 
     DataNode ListOutfits(Symbol);
 
+    static ObjectDir* GetPrefabs();
     static int SaveSize(int);
     static void Init();
     static void Register(){

@@ -2,6 +2,7 @@
 #include "obj/Object.h"
 #include "obj/Dir.h"
 #include "char/FileMerger.h"
+#include "bandobj/BandCamShot.h"
 
 class TargetNames {
 public:
@@ -22,6 +23,27 @@ public:
 
     Symbol GetPlayMode();
     void SetVenueDir(ObjectDir*);
+    void StartVenueShot(BandCamShot*);
+    ObjectDir* GetCharacter(int) const;
+    void LoadPrefabPrefs();
+    void SyncInterestObjects();
+    void SetPlayMode(Symbol, BandCamShot*);
+    void SyncVignetteInterest(int);
+    void SyncEnableBlinks(int);
+    void ForceBlink(int);
+
+    DataNode OnFindTarget(DataArray*);
+    DataNode OnEnterVenue(DataArray*);
+    DataNode OnUnloadVenue(DataArray*);
+    DataNode OnEnterCloset(DataArray*);
+    DataNode OnEnterVignette(DataArray*);
+    DataNode OnSelectExtras(DataArray*);
+    DataNode OnExtraLoaded(DataArray*);
+    DataNode OnListVenueAnimGroups(DataArray*);
+    DataNode OnSortTargets(DataArray*);
+    DataNode OnGetMatchingDude(DataArray*);
+    DataNode OnGetCurrentInterests(DataArray*);
+    DataNode OnEnableDebugInterests(DataArray*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
