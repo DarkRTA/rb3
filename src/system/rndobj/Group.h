@@ -42,6 +42,7 @@ public:
     void AddObject(Hmx::Object*, Hmx::Object*);
     void ClearObjects();
     void SortDraws();
+    void AddObjectAtFront(Hmx::Object*);
     DataNode OnGetDraws(DataArray*);
     RndEnviron* GetEnv() const { return mEnv; }
     void SetEnv(RndEnviron* env){ mEnv = env; }

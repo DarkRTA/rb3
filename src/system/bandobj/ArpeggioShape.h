@@ -11,15 +11,20 @@ public:
     ArpeggioShape(RndGroup*, RndMesh*, RndText*, RndText*, RndMat*, RndMatAnim*);
     ~ArpeggioShape();
 
+    void HookupToParentGroup();
     void UnhookFromParentGroup();
+    void SetChordShape(RndMesh*);
+    void Reset();
+    void FadeOutChordShape();
+    void ShowChordShape(bool);
 
     RndTransformable* unk0; // 0x0
     RndGroup* mParentGroup; // 0x4
-    RndMesh* unk8; // 0x8
-    RndText* unkc; // 0xc
-    RndText* unk10; // 0x10
-    RndMat* unk14; // 0x14
-    RndMatAnim* unk18; // 0x18
+    RndMesh* mChordShapeMesh; // 0x8
+    RndText* mFretNumbersChord; // 0xc
+    RndText* mChordLabel; // 0x10
+    RndMat* mChordShapeMat; // 0x14
+    RndMatAnim* mFadeMatAnim; // 0x18
 };
 
 class ArpeggioShapePool {
