@@ -80,6 +80,37 @@ void ArpeggioShape::ShowChordShape(bool show){
     mFretNumbersChord->SetShowing(show);
 }
 
+void ArpeggioShape::SetChordLabel(const String& str, float f, bool b){
+    mChordLabel->SetText(str.c_str());
+    Vector3 v(mChordLabel->mLocalXfm.v);
+    v.x = f;
+    mChordLabel->SetLocalPos(v);
+    mChordLabel->SetShowing(str != "");
+    if(b){
+        RndText::Alignment a = mChordLabel->GetAlignment();
+        if(a != RndText::kBottomLeft) mChordLabel->SetAlignment(RndText::kBottomLeft);
+    }
+    else {
+        RndText::Alignment a = mChordLabel->GetAlignment();
+        if(a != RndText::kBottomRight) mChordLabel->SetAlignment(RndText::kBottomRight);
+    }
+}
+
+void ArpeggioShape::SetFretNumber(const String& str, const Vector3& vec){
+    mFretNumbersChord->SetText(str.c_str());
+    mFretNumbersChord->SetLocalPos(vec);
+    mFretNumbersChord->SetShowing(str != "");
+}
+
+void ArpeggioShape::SetYPos(float f){
+    Transform tf;
+    tf.Reset();
+    tf.v.y = f;
+    unk0->SetWorldXfm(tf);
+}
+
+float ArpeggioShape::GetYPos() const { return unk0->WorldXfm().v.y; }
+
 ArpeggioShapePool::ArpeggioShapePool(ObjectDir* dir, RndGroup* shapes, int i) : mChordShapeMesh(dir->Find<RndMesh>("chord_shape.mesh", true)),
     mFretNumbersChord(dir->Find<RndText>("fret_numbers_chord.txt", true)), mChordLabel(dir->Find<RndText>("chord_label.txt", true)), mShapesGroup(shapes),
     mChordShapeMat(dir->Find<RndMat>("chord_shape.mat", true)), mFadeMatAnim(dir->Find<RndMatAnim>("fade.mnm", true)), unk20(i), unk24(0) {

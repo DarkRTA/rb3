@@ -17,6 +17,10 @@ public:
     void Reset();
     void FadeOutChordShape();
     void ShowChordShape(bool);
+    void SetChordLabel(const String&, float, bool);
+    void SetFretNumber(const String&, const Vector3&);
+    void SetYPos(float);
+    float GetYPos() const;
 
     RndTransformable* unk0; // 0x0
     RndGroup* mParentGroup; // 0x4
