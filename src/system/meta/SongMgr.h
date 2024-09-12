@@ -8,7 +8,6 @@
 #include "utl/BufStream.h"
 #include <set>
 #include <vector>
-#include <hash_map>
 #include <map>
 
 class DataLoader;

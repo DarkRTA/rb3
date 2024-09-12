@@ -8,7 +8,7 @@ public:
     public:
     };
 
-    BandPatchMesh();
+    BandPatchMesh(Hmx::Object*);
 
     ObjVector<MeshPair> mMeshes; // 0x0
     bool mRenderTo; // 0xc

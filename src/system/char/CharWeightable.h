@@ -13,7 +13,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void SetWeight(float);
+    virtual void SetWeight(float w){ mWeight = w; }
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual ~CharWeightable(){}
 
@@ -22,9 +22,10 @@ public:
         mWeightOwner = o ? o : this;
     }
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
-
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    
     float mWeight; // 0x8
     ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner; // 0xc
 };

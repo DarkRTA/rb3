@@ -1,0 +1,22 @@
+#pragma once
+#include "char/CharBonesMeshes.h"
+#include "char/CharClip.h"
+#include "rndobj/Trans.h"
+#include "rndobj/Mesh.h"
+#include "rndobj/MeshAnim.h"
+#include <vector>
+
+class BandHeadShaper {
+public:
+    BandHeadShaper();
+    ~BandHeadShaper();
+
+    RndMesh* mDst; // 0x0
+    ObjectDir* mHeadDir; // 0x4
+    RndMeshAnim* mAnim; // 0x8
+    CharClip* mBase; // 0xc
+    CharBonesMeshes* mBones; // 0x10
+    std::vector<int>* mMapping; // 0x14
+    std::vector<RndTransformable*> unk18; // 0x18
+    bool mBonesOnly; // 0x20
+};
