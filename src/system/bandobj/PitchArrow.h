@@ -19,40 +19,49 @@ public:
     virtual void SyncObjects();
     virtual void Poll();
 
+    void SetArrowStyle(int);
+    void Reset(RndGroup*);
+    void SetPitched(bool);
+    void SetSpotlight(bool);
+    void SetDeploying(bool);
+
+    DataNode OnSyncColor(DataArray*);
+    DataNode OnSetupFx(DataArray*);
+
     bool unk18c; // 0x18c
-    float unk190; // 0x190
-    float unk194; // 0x194
-    float unk198; // 0x198
-    float unk19c; // 0x19c
+    float mScore; // 0x190
+    float mHarmonyFX; // 0x194
+    float mVolume; // 0x198
+    float mTilt; // 0x19c
     int unk1a0; // 0x1a0
-    float unk1a4; // 0x1a4
-    bool unk1a8; // 0x1a8
-    bool unk1a9; // 0x1a9
-    bool unk1aa; // 0x1aa
+    float mColorFade; // 0x1a4
+    bool mSpotlight; // 0x1a8
+    bool mDeploying; // 0x1a9
+    bool mPitched; // 0x1aa
     bool unk1ab; // 0x1ab
-    Symbol unk1ac; // 0x1ac
-    int unk1b0; // 0x1b0
-    ObjPtr<RndPropAnim, ObjectDir> unk1b4; // 0x1b4
-    ObjPtr<RndPropAnim, ObjectDir> unk1c0; // 0x1c0
-    ObjPtr<RndPropAnim, ObjectDir> unk1cc; // 0x1cc
-    ObjPtr<RndPropAnim, ObjectDir> unk1d8; // 0x1d8
-    ObjPtr<RndPropAnim, ObjectDir> unk1e4; // 0x1e4
-    ObjPtr<RndPropAnim, ObjectDir> unk1f0; // 0x1f0
-    ObjPtr<RndPropAnim, ObjectDir> unk1fc; // 0x1fc
-    ObjPtr<RndPropAnim, ObjectDir> unk208; // 0x208
-    ObjPtr<EventTrigger, ObjectDir> unk214; // 0x214
-    ObjPtr<EventTrigger, ObjectDir> unk220; // 0x220
-    ObjPtr<EventTrigger, ObjectDir> unk22c; // 0x22c
-    ObjPtr<EventTrigger, ObjectDir> unk238; // 0x238
-    ObjPtr<EventTrigger, ObjectDir> unk244; // 0x244
-    ObjPtr<EventTrigger, ObjectDir> unk250; // 0x250
-    ObjPtr<RndGroup, ObjectDir> unk25c; // 0x25c
-    ObjPtr<RndPropAnim, ObjectDir> unk268; // 0x268
-    ObjPtr<RndGroup, ObjectDir> unk274; // 0x274
+    Symbol mTestColor; // 0x1ac
+    int mArrowStyle; // 0x1b0
+    ObjPtr<RndPropAnim, ObjectDir> mScoreAnim; // 0x1b4
+    ObjPtr<RndPropAnim, ObjectDir> mHarmonyFXAnim; // 0x1c0
+    ObjPtr<RndPropAnim, ObjectDir> mVolumeAnim; // 0x1cc
+    ObjPtr<RndPropAnim, ObjectDir> mTiltAnim; // 0x1d8
+    ObjPtr<RndPropAnim, ObjectDir> mColorAnim; // 0x1e4
+    ObjPtr<RndPropAnim, ObjectDir> mColorFadeAnim; // 0x1f0
+    ObjPtr<RndPropAnim, ObjectDir> mSplitAnim; // 0x1fc
+    ObjPtr<RndPropAnim, ObjectDir> mArrowStyleAnim; // 0x208
+    ObjPtr<EventTrigger, ObjectDir> mSetPitchedTrig; // 0x214
+    ObjPtr<EventTrigger, ObjectDir> mSetUnpitchedTrig; // 0x220
+    ObjPtr<EventTrigger, ObjectDir> mSpotlightStartTrig; // 0x22c
+    ObjPtr<EventTrigger, ObjectDir> mSpotlightEndTrig; // 0x238
+    ObjPtr<EventTrigger, ObjectDir> mDeployStartTrig; // 0x244
+    ObjPtr<EventTrigger, ObjectDir> mDeployEndTrig; // 0x250
+    ObjPtr<RndGroup, ObjectDir> mGhostGrp; // 0x25c
+    ObjPtr<RndPropAnim, ObjectDir> mGhostFadeAnim; // 0x268
+    ObjPtr<RndGroup, ObjectDir> mArrowFXGrp; // 0x274
     bool unk280; // 0x280
-    float unk284; // 0x284
-    ObjPtr<RndPropAnim, ObjectDir> unk288; // 0x288
-    float unk294; // 0x294
-    float unk298; // 0x298
-    float unk29c; // 0x29c
+    float mSpinSpeed; // 0x284
+    ObjPtr<RndPropAnim, ObjectDir> mSpinAnim; // 0x288
+    float mSpinRestFrame; // 0x294
+    float mSpinBeginFrame; // 0x298
+    float mSpinEndFrame; // 0x29c
 };

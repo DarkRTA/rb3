@@ -19,19 +19,22 @@ public:
     virtual void Poll();
     virtual void Update();
 
+    void AnimateToValue(int, int);
+    void UpdateDisplay();
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     int unk10c; // 0x10c
-    float unk110; // 0x110
+    float mAnimPeriod; // 0x110
     float unk114; // 0x114
     int unk118; // 0x118
     int unk11c; // 0x11c
-    bool unk120; // 0x120
-    bool unk121; // 0x121
-    bool unk122; // 0x122
-    Symbol unk124; // 0x124
-    int unk128; // 0x128
-    int unk12c; // 0x12c
+    bool mShowText; // 0x120
+    bool mPercentageText; // 0x121
+    bool mHideDenominator; // 0x122
+    Symbol mWrapperText; // 0x124
+    int mCurrentValue; // 0x128
+    int mMaxValue; // 0x12c
 };

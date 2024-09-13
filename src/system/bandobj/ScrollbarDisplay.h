@@ -20,16 +20,26 @@ public:
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
+    BandList* GetList() const { return mScrollbarList.Ptr() ? mScrollbarList.Ptr() : 0; }
+    void SetList(BandList*);
+    void SetAlwaysShow(bool);
+    void SetListAttached(bool);
+    bool GetListAttached() const;
+    void SetListXOffset(float);
+    void SetListYOffset(float);
+    void SetHeight(float);
+    void SetMinThumbHeight(float);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<BandList, ObjectDir> unk10c; // 0x10c
-    float unk118; // 0x118
-    bool unk11c; // 0x11c
-    float unk120; // 0x120
-    float unk124; // 0x124
-    float unk128; // 0x128
+    ObjPtr<BandList, ObjectDir> mScrollbarList; // 0x10c
+    float mScrollbarHeight; // 0x118
+    bool mAlwaysShow; // 0x11c
+    float mListXOffset; // 0x120
+    float mListYOffset; // 0x124
+    float mMinThumbHeight; // 0x128
     int unk12c; // 0x12c
     int unk130; // 0x130
     int unk134; // 0x134

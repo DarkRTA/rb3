@@ -6,6 +6,12 @@
 
 class InstrumentDifficultyDisplay : public UIComponent {
 public:
+    enum InstrumentState {
+        kHidden,
+        kName,
+        kIcon
+    };
+
     InstrumentDifficultyDisplay();
     OBJ_CLASSNAME(InstrumentDifficultyDisplay);
     OBJ_SET_TYPE(InstrumentDifficultyDisplay);
@@ -19,6 +25,10 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void Update();
+
+    void SetValues(Symbol, int, int, bool);
+    void UpdateDisplay();
+    void SetInstrumentState(InstrumentState);
 
     static void Init();
     static void Register(){
@@ -35,10 +45,10 @@ public:
     int unk118; // 0x118
     int unk11c; // 0x11c
     BandLabel* unk120; // 0x120
-    int unk124; // 0x124
-    bool unk128; // 0x128
-    int unk12c; // 0x12c
-    int unk130; // 0x130
-    Symbol unk134; // 0x134
-    ObjPtr<UIColor, ObjectDir> unk138; // 0x138
+    InstrumentState mInstrumentState; // 0x124
+    bool mHasPart; // 0x128
+    int mDifficulty; // 0x12c
+    int mNumVocalParts; // 0x130
+    Symbol mInstrumentType; // 0x134
+    ObjPtr<UIColor, ObjectDir> mInstrumentColorOverride; // 0x138
 };

@@ -25,14 +25,16 @@ public:
     virtual void GrowBoundingBox(Box&) const;
     virtual void UpdateDisplay();
 
+    DataNode OnSetValues(const DataArray*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     BandLabel* unk110; // 0x110
     short unk114; // 0x114
-    int unk118; // 0x118
-    int unk11c; // 0x11c
-    bool unk120; // 0x120
-    ObjPtr<UIColor, ObjectDir> unk124; // 0x124
+    int mScore; // 0x118
+    int mRank; // 0x11c
+    bool mGlobally; // 0x120
+    ObjPtr<UIColor, ObjectDir> mTextColor; // 0x124
 };
