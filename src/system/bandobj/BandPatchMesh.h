@@ -29,3 +29,5 @@ public:
     ObjPtr<RndTransformable, ObjectDir> mSrc; // 0x10
     int mCategory; // 0x1c
 };
+
+bool PropSync(BandPatchMesh&, DataNode&, DataArray*, int, PropOp);
