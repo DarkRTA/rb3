@@ -26,7 +26,9 @@
 
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
+			"band3/game/HeldNote.cpp": "NonMatching",
             "band3/game/Metronome.cpp": "NonMatching",
+			"band3/game/MultiplayerAnalyzer.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/TrainerGemTab.cpp": "NonMatching",
