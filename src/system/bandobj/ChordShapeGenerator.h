@@ -15,22 +15,31 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    ObjPtr<RndMesh, ObjectDir> unk1c; // 0x1c
-    ObjPtr<RndMesh, ObjectDir> unk28; // 0x28
-    ObjPtr<RndTransformable, ObjectDir> unk34; // 0x34
-    ObjPtr<RndTransformable, ObjectDir> unk40; // 0x40
-    ObjPtr<RndTransformable, ObjectDir> unk4c; // 0x4c
-    int unk58; // 0x58
-    std::vector<int> unk5c; // 0x5c
+    DataNode OnGenerate(const DataArray*);
+    DataNode OnInvert(const DataArray*);
+    DataNode OnSetStringFret(const DataArray*);
+    DataNode OnGetStringTrans(const DataArray*);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    ObjPtr<RndMesh, ObjectDir> mFingerSrcMesh; // 0x1c
+    ObjPtr<RndMesh, ObjectDir> mChordSrcMesh; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mBaseXSection; // 0x34
+    ObjPtr<RndTransformable, ObjectDir> mContourXSection; // 0x40
+    ObjPtr<RndTransformable, ObjectDir> mBaseHeight; // 0x4c
+    int mNumSlots; // 0x58
+    std::vector<int> mStringFrets; // 0x5c
     std::vector<bool> unk64; // 0x64
-    ObjPtr<RndTransformable, ObjectDir> unk6c; // 0x6c
-    ObjPtr<RndTransformable, ObjectDir> unk78; // 0x78
-    ObjPtr<RndTransformable, ObjectDir> unk84; // 0x84
-    ObjPtr<RndTransformable, ObjectDir> unk90; // 0x90
-    ObjPtr<RndTransformable, ObjectDir> unk9c; // 0x9c
-    ObjPtr<RndTransformable, ObjectDir> unka8; // 0xa8
-    std::vector<float> unkb4; // 0xb4
-    std::vector<float> unkbc; // 0xbc
+    ObjPtr<RndTransformable, ObjectDir> mString0; // 0x6c
+    ObjPtr<RndTransformable, ObjectDir> mString1; // 0x78
+    ObjPtr<RndTransformable, ObjectDir> mString2; // 0x84
+    ObjPtr<RndTransformable, ObjectDir> mString3; // 0x90
+    ObjPtr<RndTransformable, ObjectDir> mString4; // 0x9c
+    ObjPtr<RndTransformable, ObjectDir> mString5; // 0xa8
+    std::vector<float> mFretHeights; // 0xb4
+    std::vector<float> mGradeDistances; // 0xbc
     int unkc4; // 0xc4
     float unkc8; // 0xc8
     float unkcc; // 0xcc
