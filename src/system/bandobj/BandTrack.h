@@ -94,7 +94,7 @@ public:
     bool mDisabled; // 0x8
     bool mSimulatedNet; // 0x9
     Symbol mInstrument; // 0xc
-    unsigned int unk10; // 0x10
+    int unk10; // 0x10
     int unk14; // 0x14
     bool unk18; // 0x18
     bool unk19; // 0x19
@@ -125,7 +125,7 @@ public:
     ObjPtr<Task, ObjectDir> unkd8; // 0xd8
     ObjPtr<Task, ObjectDir> unke4; // 0xe4
     ObjPtr<Task, ObjectDir> unkf0; // 0xf0
-    ObjPtr<RndGroup, ObjectDir> unkfc; // 0xfc
+    ObjPtr<RndGroup, ObjectDir> mBeatAnimsGrp; // 0xfc
     bool unk108; // 0x108
     bool unk109; // 0x109
     int unk10c; // 0x10c

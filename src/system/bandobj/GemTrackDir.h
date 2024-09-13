@@ -106,14 +106,14 @@ public:
     ObjPtr<RndMesh, ObjectDir> mSurfaceMesh; // 0x4c8
     ObjPtr<RndMat, ObjectDir> mSurfaceMat; // 0x4d4
     ObjPtr<RndEnviron, ObjectDir> mTrackEnv; // 0x4e0
-    ObjPtr<RndEnviron, ObjectDir> unk4ec; // 0x4ec
+    ObjPtr<RndEnviron, ObjectDir> mTrackMissGemsEnv; // 0x4ec
     ObjPtr<RndCam, ObjectDir> mGameCam; // 0x4f8
     ObjPtr<EventTrigger, ObjectDir> mPeakStateOnTrig; // 0x504
     ObjPtr<EventTrigger, ObjectDir> mPeakStateOffTrig; // 0x510
-    ObjPtr<EventTrigger, ObjectDir> unk51c; // 0x51c
+    ObjPtr<EventTrigger, ObjectDir> mPeakStopImmediateTrig; // 0x51c
     ObjPtr<EventTrigger, ObjectDir> mBassSuperStreakOnTrig; // 0x528
     ObjPtr<EventTrigger, ObjectDir> mBassSuperStreakOffTrig; // 0x534
-    ObjPtr<EventTrigger, ObjectDir> unk540; // 0x540
+    ObjPtr<EventTrigger, ObjectDir> mBassSSOffImmediateTrig; // 0x540
     ObjPtr<EventTrigger, ObjectDir> mKickDrummerTrig; // 0x54c
     ObjPtr<EventTrigger, ObjectDir> mKickDrummerResetTrig; // 0x558
     ObjPtr<EventTrigger, ObjectDir> mSpotlightPhraseSuccessTrig; // 0x564
@@ -121,8 +121,8 @@ public:
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mDrumMashAnims; // 0x578
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mFillLaneAnims; // 0x580
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRGMashAnims; // 0x588
-    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > unk590; // 0x590
-    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > unk598; // 0x598
+    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mDrumRollTrigs; // 0x590
+    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mTrillTrigs; // 0x598
     std::vector<ObjPtr<EventTrigger, ObjectDir> > mFillHitTrigs; // 0x5a0
     ObjPtr<EventTrigger, ObjectDir> mDrumFillResetTrig; // 0x5a8
     ObjPtr<RndPropAnim, ObjectDir> mDrumMash2ndPassActivateAnim; // 0x5b4
@@ -135,21 +135,21 @@ public:
     ObjPtr<Task, ObjectDir> unk60c; // 0x60c
     ObjPtr<Task, ObjectDir> unk618; // 0x618
     ObjPtr<Task, ObjectDir> unk624; // 0x624
-    ObjPtr<RndMesh, ObjectDir> unk630; // 0x630
-    ObjPtr<EventTrigger, ObjectDir> unk63c; // 0x63c
-    ObjPtr<EventTrigger, ObjectDir> unk648; // 0x648
+    ObjPtr<RndMesh, ObjectDir> mGemWhiteMesh; // 0x630
+    ObjPtr<EventTrigger, ObjectDir> mMissOutofRangeRightTrig; // 0x63c
+    ObjPtr<EventTrigger, ObjectDir> mMissOutofRangeLeftTrig; // 0x648
     ObjPtr<RndAnimatable, ObjectDir> unk654; // 0x654
-    ObjPtr<RndAnimatable, ObjectDir> unk660; // 0x660
-    ObjPtr<RndPropAnim, ObjectDir> unk66c; // 0x66c
+    ObjPtr<RndAnimatable, ObjectDir> mKeysShiftAnim; // 0x660
+    ObjPtr<RndPropAnim, ObjectDir> mKeysMashAnim; // 0x66c
     float unk678; // 0x678
     float unk67c; // 0x67c
     std::vector<RndDir*> unk680; // 0x680
     std::vector<EventTrigger*> unk688; // 0x688
     std::vector<EventTrigger*> unk690; // 0x690
-    FingerShape* unk698; // 0x698
+    FingerShape* mFingerShape; // 0x698
     std::vector<float> mFretPosOffsets; // 0x69c
     float mChordLabelPosOffset; // 0x6a4
-    ObjPtr<ChordShapeGenerator, ObjectDir> unk6a8; // 0x6a8
+    ObjPtr<ChordShapeGenerator, ObjectDir> mChordShapeGen; // 0x6a8
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6b4; // 0x6b4
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6cc; // 0x6cc
     ArpeggioShapePool* mArpShapePool; // 0x6e4

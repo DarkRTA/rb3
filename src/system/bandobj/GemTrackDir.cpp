@@ -4,12 +4,12 @@
 #pragma push
 #pragma dont_inline on
 GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTrackDirID(-1), mKickPassCounter(0), unk494(0), mStreakMeterOffset(2.25f), mStreakMeterTilt(0), mTrackPitch(0),
-    mEffectSelector(this, 0), mRotater(this, 0), mSurfaceTexture(this, 0), mSurfaceMesh(this, 0), mSurfaceMat(this, 0), mTrackEnv(this, 0), unk4ec(this, 0), mGameCam(this, 0),
-    mPeakStateOnTrig(this, 0), mPeakStateOffTrig(this, 0), unk51c(this, 0), mBassSuperStreakOnTrig(this, 0), mBassSuperStreakOffTrig(this, 0), unk540(this, 0), mKickDrummerTrig(this, 0),
+    mEffectSelector(this, 0), mRotater(this, 0), mSurfaceTexture(this, 0), mSurfaceMesh(this, 0), mSurfaceMat(this, 0), mTrackEnv(this, 0), mTrackMissGemsEnv(this, 0), mGameCam(this, 0),
+    mPeakStateOnTrig(this, 0), mPeakStateOffTrig(this, 0), mPeakStopImmediateTrig(this, 0), mBassSuperStreakOnTrig(this, 0), mBassSuperStreakOffTrig(this, 0), mBassSSOffImmediateTrig(this, 0), mKickDrummerTrig(this, 0),
     mKickDrummerResetTrig(this, 0), mSpotlightPhraseSuccessTrig(this, 0), mDrumFillResetTrig(this, 0), mDrumMash2ndPassActivateAnim(this, 0), mDrumMashHitAnimGrp(this, 0),
     mFillColorsGrp(this, 0), mLodAnim(this, 0), mSmasherPlate(this, 0), mGlowWidgets(this, kObjListNoNull), unk600(this, 0), unk60c(this, 0), unk618(this, 0),
-    unk624(this, 0), unk630(this, 0), unk63c(this, 0), unk648(this, 0), unk654(this, 0), unk660(this, 0), unk66c(this, 0), unk678(-1.0f), unk67c(-1.0f),
-    unk698(0), mChordLabelPosOffset(0), unk6a8(this, 0), mArpShapePool(0), unk6e8(0), mFakeFingerShape(0), mCycleFakeFingerShapes(0), mRandomShapeFrameCount(0x96) {
+    unk624(this, 0), mGemWhiteMesh(this, 0), mMissOutofRangeRightTrig(this, 0), mMissOutofRangeLeftTrig(this, 0), unk654(this, 0), mKeysShiftAnim(this, 0), mKeysMashAnim(this, 0), unk678(-1.0f), unk67c(-1.0f),
+    mFingerShape(0), mChordLabelPosOffset(0), mChordShapeGen(this, 0), mArpShapePool(0), unk6e8(0), mFakeFingerShape(0), mCycleFakeFingerShapes(0), mRandomShapeFrameCount(0x96) {
     ObjPtr<RndPropAnim, ObjectDir> propAnim(this, 0);
     ObjPtr<EventTrigger, ObjectDir> trig(this, 0);
     for(int i = 0; i < 6; i++){
@@ -17,8 +17,8 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
         mDrumMashAnims.push_back(propAnim);
         mFillLaneAnims.push_back(propAnim);
         mRGMashAnims.push_back(propAnim);
-        unk590.push_back(std::make_pair(trig, trig));
-        unk598.push_back(std::make_pair(trig, trig));
+        mDrumRollTrigs.push_back(std::make_pair(trig, trig));
+        mTrillTrigs.push_back(std::make_pair(trig, trig));
     }
     for(int i = 0; i < 3; i++){
         mFillHitTrigs.push_back(trig);
@@ -39,9 +39,76 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
 
 GemTrackDir::~GemTrackDir(){
     RELEASE(mArpShapePool);
-    RELEASE(unk698);
+    RELEASE(mFingerShape);
 }
 #pragma pop
+
+SAVE_OBJ(GemTrackDir, 0xBC)
+
+DECOMP_FORCEACTIVE(GemTrackDir, "ObjPtr_p.h", "f.Owner()", "")
+
+void GemTrackDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(0xC, 0);
+}
+
+void GemTrackDir::SyncFingerFeedback(){
+    RndDir* outlinedir = Find<RndDir>("chord_shape_outline", true);
+    if(!mFingerShape) mFingerShape = new FingerShape(outlinedir);
+}
+
+void GemTrackDir::SyncObjects(){
+    TrackDir::SyncObjects();
+    if(!mBeatAnimsGrp) mBeatAnimsGrp = Find<RndGroup>("beat_anims.grp", false);
+    if(!mPeakStopImmediateTrig) mPeakStopImmediateTrig = Find<EventTrigger>("peak_stop_immediate.trig", false);
+    if(!mBassSSOffImmediateTrig) mBassSSOffImmediateTrig = Find<EventTrigger>("BassSuperStreak_OFF_immediate.trig", false);
+    if(!mTrackMissGemsEnv) mTrackMissGemsEnv = Find<RndEnviron>("track_miss_gems.env", false);
+    if(!mGemWhiteMesh) mGemWhiteMesh = Find<RndMesh>("gem_white.mesh", false);
+    if(!mMissOutofRangeRightTrig) mMissOutofRangeRightTrig = Find<EventTrigger>("miss_outofrange_right.trig", false);
+    if(!mMissOutofRangeLeftTrig) mMissOutofRangeLeftTrig = Find<EventTrigger>("miss_outofrange_left.trig", false);
+    if(!mKeysMashAnim) mKeysMashAnim = Find<RndPropAnim>("keys_mash.anim", false);
+    if(!mUnisonIcon) mUnisonIcon = Find<UnisonIcon>("unison_icon", false);
+    if(!mDrumRollTrigs[1].first) mDrumRollTrigs[1].first = Find<EventTrigger>("drum_roll_start1.trig", false);
+    if(!mDrumRollTrigs[1].second) mDrumRollTrigs[1].second = Find<EventTrigger>("drum_roll_stop1.trig", false);
+    if(!mDrumRollTrigs[2].first) mDrumRollTrigs[2].first = Find<EventTrigger>("drum_roll_start2.trig", false);
+    if(!mDrumRollTrigs[2].second) mDrumRollTrigs[2].second = Find<EventTrigger>("drum_roll_stop2.trig", false);
+    if(!mDrumRollTrigs[3].first) mDrumRollTrigs[3].first = Find<EventTrigger>("drum_roll_start3.trig", false);
+    if(!mDrumRollTrigs[3].second) mDrumRollTrigs[3].second = Find<EventTrigger>("drum_roll_stop3.trig", false);
+    if(!mDrumRollTrigs[4].first) mDrumRollTrigs[4].first = Find<EventTrigger>("drum_roll_start4.trig", false);
+    if(!mDrumRollTrigs[4].second) mDrumRollTrigs[4].second = Find<EventTrigger>("drum_roll_stop4.trig", false);
+    if(!mTrillTrigs[0].first) mTrillTrigs[0].first = Find<EventTrigger>("trill_start0.trig", false);
+    if(!mTrillTrigs[0].second) mTrillTrigs[0].second = Find<EventTrigger>("trill_stop0.trig", false);
+    if(!mTrillTrigs[1].first) mTrillTrigs[1].first = Find<EventTrigger>("trill_start1.trig", false);
+    if(!mTrillTrigs[1].second) mTrillTrigs[1].second = Find<EventTrigger>("trill_stop1.trig", false);
+    if(!mTrillTrigs[2].first) mTrillTrigs[2].first = Find<EventTrigger>("trill_start2.trig", false);
+    if(!mTrillTrigs[2].second) mTrillTrigs[2].second = Find<EventTrigger>("trill_stop2.trig", false);
+    if(!mTrillTrigs[3].first) mTrillTrigs[3].first = Find<EventTrigger>("trill_start3.trig", false);
+    if(!mTrillTrigs[3].second) mTrillTrigs[3].second = Find<EventTrigger>("trill_stop3.trig", false);
+    if(!mTrillTrigs[4].first) mTrillTrigs[4].first = Find<EventTrigger>("trill_start4.trig", false);
+    if(!mTrillTrigs[4].second) mTrillTrigs[4].second = Find<EventTrigger>("trill_stop4.trig", false);
+    if(!mTrillTrigs[5].first) mTrillTrigs[5].first = Find<EventTrigger>("trill_start4.trig", false);
+    if(!mTrillTrigs[5].second) mTrillTrigs[5].second = Find<EventTrigger>("trill_stop4.trig", false);
+    if(!mKeysShiftAnim) mKeysShiftAnim = Find<RndAnimatable>("keys_shift.anim", false);
+    if(!mChordShapeGen) mChordShapeGen = Find<RndDir>("RG_chord_generator", true)->Find<ChordShapeGenerator>("ChordShapeGenerator01", true);
+    bool b1 = true;
+    if(unk10 != 6 && unk10 != 5) b1 = false;
+    if(!mFingerShape && b1){
+        SyncFingerFeedback();
+        RndDir* outlinedir = Find<RndDir>("chord_shape_outline", true);
+        RndGroup* outline = outlinedir->Find<RndGroup>("outline.grp", true);
+        RndGroup* smash = Find<RndGroup>("rg_smasher_glow.grp", true);
+        for(int i = 0; i < 6; i++){
+            RndMesh* mesh = outlinedir->Find<RndMesh>(MakeString("gem_smasher_glow_%d.mesh", i), true);
+            outline->RemoveObject(mesh);
+            smash->AddObject(mesh, 0);
+        }
+    }
+    if(!mArpShapePool && b1){
+        ObjectDir* arpdir = Find<ObjectDir>("arpeggio_source", true);
+        RndGroup* shapesgrp = Find<RndGroup>("arpeggio_shapes.grp", true);
+        mArpShapePool = new ArpeggioShapePool(arpdir, shapesgrp, 15);
+    }
+}
 
 #pragma push
 #pragma dont_inline on
