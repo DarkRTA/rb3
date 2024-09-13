@@ -40,20 +40,20 @@ public:
     virtual ObjectDir* ThisDir(){ MILO_ASSERT(0, 0x8A); return 0; }
     virtual ObjectDir* ThisDir() const; // fix ptr
     virtual int AsGemTrackDir();
-    virtual int AsVocalTrackDir();
+    virtual int AsVocalTrackDir(){ return 0; }
     virtual int AsRndDir();
     virtual void RefreshStreakMeter(int, int, int);
     virtual void RefreshOverdrive(float, bool);
-    virtual void RefreshCrowdRating(float, CrowdMeterState);
+    virtual void RefreshCrowdRating(float, CrowdMeterState){}
     virtual void StartPulseAnims(float);
     virtual void SetupInstrument();
     virtual void SetPerformanceMode(bool);
-    virtual void SetUsed(bool);
+    virtual void SetUsed(bool b){ mInUse = b; }
     virtual void SetInstrument(TrackInstrument);
     virtual void ResetEffectSelector();
     virtual void SetupSmasherPlate();
     virtual void ReleaseSmasherPlate();
-    virtual void TutorialReset();
+    virtual void TutorialReset(){}
     virtual ~BandTrack(){}
 
     void Init(Hmx::Object*);
