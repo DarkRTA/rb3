@@ -23,7 +23,7 @@ public:
     virtual void TrackReset(){}
     virtual void ResetSmashers(bool);
     virtual void Retract(bool);
-    virtual void Extend(bool);
+    virtual void Extend(bool){}
     virtual void SpotlightPhraseSuccess();
     virtual void SetStreak(int, int, int, bool);
     virtual void Deploy();
@@ -35,7 +35,7 @@ public:
     virtual void SuperStreak(bool, bool);
     virtual void PeakState(bool, bool);
     virtual void SetTambourine(bool);
-    virtual void SetPlayerLocal(float);
+    virtual void SetPlayerLocal(float){}
     virtual void SetHasTrackerFocus(bool);
     virtual ObjectDir* ThisDir(){ MILO_ASSERT(0, 0x8A); return 0; }
     virtual ObjectDir* ThisDir() const; // fix ptr
@@ -74,6 +74,18 @@ public:
     void GameWon();
     void GameOver();
     void SpotlightFail(bool);
+    void SyncInstrument();
+    void EnablePlayer();
+    void SetMultiplier(int);
+    void CodaFail(bool);
+    void CodaSuccess();
+    void PopupHelp(Symbol, bool);
+    void PlayerDisabled();
+    void PlayerSaved();
+    void FailedTask(bool, int);
+    bool HasNetPlayer() const;
+    bool HasLocalPlayer() const;
+    int GetPlayerDifficulty() const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;

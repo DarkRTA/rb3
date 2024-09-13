@@ -259,18 +259,66 @@ void BandTrack::FillReset(){
     if(trig) trig->Trigger();
 }
 
-// void __thiscall BandTrack::FillReset(BandTrack *this)
+BEGIN_PROPSYNCS(BandTrack)
+    SYNC_PROP_MODIFY(instrument, mInstrument, SyncInstrument())
+    SYNC_PROP(disabled, mDisabled)
+    SYNC_PROP(simulated_net, mSimulatedNet)
+    SYNC_PROP(player_intro, mPlayerIntro)
+    SYNC_PROP(star_power_meter, mStarPowerMeter)
+    SYNC_PROP(streak_meter, mStreakMeter)
+    SYNC_PROP(popup_object, mPopupObject)
+    SYNC_PROP(player_feedback, mPlayerFeedback)
+    SYNC_PROP(failed_feedback, mFailedFeedback)
+    SYNC_PROP(endgame_feedback, mEndgameFeedback)
+    SYNC_PROP(parent, mParent)
+    SYNC_PROP(retract_trig, mRetractTrig)
+    SYNC_PROP(reset_trig, mResetTrig)
+    SYNC_PROP(deploy_trig, mDeployTrig)
+    SYNC_PROP(stop_deploy_trig, mStopDeployTrig)
+    SYNC_PROP(intro_trig, mIntroTrig)
+    SYNC_PROP(in_use, mInUse)
+END_PROPSYNCS
 
-// {
-//   ObjectDir *this_00;
-//   undefined4 uVar1;
-//   int iVar2;
-  
-//   this_00 = (ObjectDir *)(**(code **)(*(int *)(this + 4) + 0x6c))();
-//   uVar1 = ObjectDir::FindObject(this_00,s_solo_reset.trig_80bf2e8d,false);
-//   iVar2 = __dynamic_cast(uVar1,0,&EventTrigger::__RTTI,&Hmx::Object::__RTTI,0);
-//   if (iVar2 != 0) {
-//     (**(code **)(*(int *)(iVar2 + 4) + 0x50))();
-//   }
-//   return;
-// }
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(BandTrack)
+    HANDLE_ACTION(disable_player, DisablePlayer(_msg->Int(2)))
+    HANDLE_ACTION(init, Init(_msg->Obj<Hmx::Object>(2)))
+    HANDLE_ACTION(reset, Reset())
+    HANDLE_ACTION(tut_reset, TutorialReset())
+    HANDLE_ACTION(setup_player_intro, SetupPlayerIntro())
+    HANDLE_ACTION(setup_crowd_meter, SetupCrowdMeter())
+    HANDLE_ACTION(track_reset, TrackReset())
+    HANDLE_ACTION(retract, Retract(false))
+    HANDLE_ACTION(immediate_retract, Retract(true))
+    HANDLE_ACTION(game_won, GameWon())
+    HANDLE_ACTION(game_over, GameOver())
+    HANDLE_ACTION(spotlight_fail, SpotlightFail(false))
+    HANDLE_ACTION(spotlight_fail_guilty, SpotlightFail(true))
+    HANDLE_ACTION(fill_reset, FillReset())
+    HANDLE_ACTION(set_streak, SetStreak(_msg->Int(2), _msg->Int(3), _msg->Int(4), false))
+    HANDLE_ACTION(enable_player, EnablePlayer())
+    HANDLE_ACTION(save_player, SavePlayer())
+    HANDLE_ACTION(super_streak, SuperStreak(_msg->Int(2), false))
+    HANDLE_ACTION(peak_state, PeakState(_msg->Int(2), false))
+    HANDLE_ACTION(deploy, Deploy())
+    HANDLE_ACTION(stop_deploy, StopDeploy())
+    HANDLE_ACTION(play_intro, PlayIntro())
+    HANDLE_ACTION(set_multiplier, SetMultiplier(_msg->Int(2)))
+    HANDLE_ACTION(enter_coda, EnterCoda())
+    HANDLE_ACTION(coda_blown, CodaFail(false))
+    HANDLE_ACTION(coda_fail, CodaFail(true))
+    HANDLE_ACTION(coda_success, CodaSuccess())
+    HANDLE_ACTION(popup_help, PopupHelp(_msg->Sym(2), _msg->Int(3)))
+    HANDLE_ACTION(player_disabled, PlayerDisabled())
+    HANDLE_ACTION(player_saved, PlayerSaved())
+    HANDLE_ACTION(failed_task, FailedTask(_msg->Int(2), _msg->Int(3)))
+    HANDLE_EXPR(has_net_player, HasNetPlayer())
+    HANDLE_EXPR(has_local_player, HasLocalPlayer())
+    HANDLE_EXPR(get_player_difficulty, GetPlayerDifficulty())
+    HANDLE_ACTION(set_player_local, SetPlayerLocal(_msg->Float(2)))
+    HANDLE_ACTION(set_tambourine, SetTambourine(_msg->Int(2)))
+    HANDLE_ACTION(setup_instrument, SetupInstrument())
+    HANDLE_CHECK(0x5A9)
+END_HANDLERS
+#pragma pop
