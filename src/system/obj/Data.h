@@ -325,4 +325,7 @@ public:
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
 
+const char* TypeToString(DataType);
+const char* DataToString(const DataNode&);
+
 #endif

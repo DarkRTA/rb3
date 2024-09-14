@@ -1,6 +1,9 @@
 #include "bandobj/VocalTrackDir.h"
 #include "bandobj/TrackInterface.h"
+#include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
+
+INIT_REVS(VocalTrackDir)
 
 VocalTrackDir::VocalTrackDir() : BandTrack(this), mHiddenPartAlpha(0.3f), unk2a4(1), unk2a5(1), mIsTop(1), unk2a7(0), mFeedbackStateLead(0), mFeedbackStateHarm1(0), mFeedbackStateHarm2(0),
     mVocalMics(this, 0), unk2f0(this, 0), mMinPitchRange(12.0f), mPitchDisplayMargin(3.0f), mArrowSmoothing(0.85f), mConfigurableObjects(this, kObjListNoNull), mVoxCfg(this, 0),
@@ -20,6 +23,176 @@ VocalTrackDir::VocalTrackDir() : BandTrack(this), mHiddenPartAlpha(0.3f), unk2a4
     unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
 
 }
+
+SAVE_OBJ(VocalTrackDir, 0x107)
+
+BEGIN_LOADS(VocalTrackDir)
+    PreLoad(bs);
+    PostLoad(bs);
+END_LOADS
+
+void VocalTrackDir::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(7, 0);
+    PushRev(packRevs(gAltRev, gRev), this);
+    RndDir::PreLoad(bs);
+}
+
+#pragma push
+#pragma dont_inline on
+void VocalTrackDir::PostLoad(BinStream& bs){
+    RndDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
+    if(!IsProxy()){
+        bool ba9, baa, bab, bac;
+        float f88;
+        int i8c;
+        if(gRev < 2){
+            MILO_NOTIFY_ONCE("VocalTrackDir class has changed significantly since this file was last saved.  Many parameters will need to be updated.");
+            Hmx::Color col;
+            std::vector<Hmx::Color> cols;
+            ObjPtr<Hmx::Object, ObjectDir> objectPtr(this, 0);
+            std::vector<float> floats;
+            bs >> i8c; bs >> i8c; bs >> f88; bs >> i8c;
+            bs >> mConfigurableObjects;
+            bs >> mLyricColorMap[5];
+            bs >> mLyricColorMap[6];
+            bs >> mLyricColorMap[7];
+            bs >> mLyricColorMap[0x15];
+            bs >> mLyricColorMap[0x16];
+            bs >> mLyricColorMap[0x17];
+            bs >> mLyricColorMap[0xC];
+            bs >> mLyricColorMap[0xD];
+            bs >> mLyricColorMap[0xE];
+            bs >> mLyricColorMap[0xF];
+            bs >> mLyricColorMap[0x1C];
+            bs >> mLyricColorMap[0x1D];
+            bs >> mLyricColorMap[0x1E];
+            bs >> mLyricColorMap[0x1F];
+            bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            bs >> col; bs >> col;
+            bs >> f88; bs >> f88;
+            if(gRev >= 1){ bs >> f88; bs >> f88; }
+            bs >> f88;
+            bs >> unk2f0;
+            bs >> ba9;
+            bs >> mMinPitchRange;
+            bs >> mArrowSmoothing;
+            bs >> f88; bs >> f88;
+            bs >> cols;
+            bs >> floats;
+            bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            bs >> mPhraseFeedbackTrig;
+            bs >> mSpotlightSparklesOnlyTrig;
+            bs >> mSpotlightPhraseSuccessTrig;
+            bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            if(Type() == vocal_harmony_prototype){
+                MILO_LOG("** Converting prototype to C (%d props)\n", mTypeProps.Size());
+                for(int i = 0; i < mTypeProps.Size(); i++){
+                    if(Property(mTypeProps.Key(i), true)->Type() == mTypeProps.Value(i).Type()){
+                        MILO_LOG("\tSetting property %s to %s\n", mTypeProps.Key(i).Str(), DataToString(mTypeProps.Value(i)));
+                        SetProperty(mTypeProps.Key(i), mTypeProps.Value(i));
+                    }
+                    else {
+                        MILO_LOG("\tMismatched types for property %s: %s v. %s\n", mTypeProps.Key(i).Str(),
+                            TypeToString(Property(mTypeProps.Key(i), true)->Type()), TypeToString(mTypeProps.Value(i).Type()));
+                    }
+                }
+                MILO_LOG("**\n\n");
+            }
+        }
+        else {
+            bs >> mConfigurableObjects;
+            bs >> mVoxCfg;
+            if(!TheLoadMgr.EditMode()) mVoxCfg = 0;
+            bs >> unk2f0;
+            bs >> mMinPitchRange;
+            bs >> mArrowSmoothing;
+            if(gRev < 3) bs >> f88;
+            if(gRev < 7) bs >> f88;
+            if(gRev < 3){
+                std::vector<Hmx::Color> cols;
+                ObjPtr<Hmx::Object, ObjectDir> objectPtr(this, 0);
+                bs >> cols;
+                bs >> objectPtr; bs >> objectPtr; bs >> objectPtr; bs >> objectPtr;
+            }
+            else if(gRev >= 6){
+                bs >> mTambourineSmasher;
+                bs >> mTambourineNowShowTrig;
+                bs >> mTambourineNowHideTrig;
+            }
+            bs >> mPhraseFeedbackTrig;
+            bs >> mSpotlightSparklesOnlyTrig;
+            bs >> mSpotlightPhraseSuccessTrig;
+            bs >> mLyricColorMap;
+            bs >> mLyricAlphaMap;
+            if(gRev < 5){
+                ObjPtr<StreakMeter, ObjectDir> streakPtr(this, 0);
+                bs >> streakPtr; bs >> streakPtr;
+            }
+            bs >> mPitchWindow;
+            bs >> mPitchWindowHeight;
+            bs >> mPitchWindowMesh;
+            bs >> mPitchWindowOverlay;
+            bs >> mLeadLyrics;
+            bs >> mLeadLyricHeight;
+            bs >> mLeadLyricMesh;
+            bs >> mHarmLyrics;
+            bs >> mHarmLyricHeight;
+            bs >> mHarmLyricMesh;
+            if(gRev < 3){
+                Symbol s;
+                bs >> s; bs >> s; bs >> s;
+                bs >> f88;
+                bs >> baa;
+            }
+            bs >> mLeftDecoMesh;
+            bs >> mRightDecoMesh;
+            bs >> mNowBarWidth;
+            if(gRev < 3) bs >> bab;
+            bs >> mNowBarMesh;
+            bs >> mRemoteVocals;
+            bs >> mTrackLeftX;
+            bs >> mTrackRightX;
+            bs >> mTrackBottomZ;
+            bs >> mTrackTopZ;
+            bs >> mPitchBottomZ;
+            bs >> mPitchTopZ;
+            bs >> mNowBarX;
+            bs >> mPitchGuides;
+            bs >> mTubeStyle;
+            bs >> mArrowStyle;
+            bs >> mFontStyle;
+            bs >> unk458;
+            bs >> unk464;
+            if(gRev >= 4){
+                bs >> unk470;
+                bs >> unk47c;
+            }
+            bs >> mLastMin;
+            bs >> mLastMax;
+            bs >> mMiddleCZPos;
+            bs >> mTonic;
+            if(gRev < 3){
+                ObjPtr<Hmx::Object, ObjectDir> objectPtr(this, 0);
+                bs >> objectPtr;
+                bs >> bac; bs >> bac;
+            }
+            bs >> mRangeScaleAnim;
+            bs >> mRangeOffsetAnim;
+            if(gRev >= 4){
+                bs >> mLeadDeployMat;
+                bs >> mHarmDeployMat;
+            }
+        }
+    }
+    LoadTrack(bs, IsProxy(), gLoadingProxyFromDisk, true);
+}
+#pragma pop
 
 void VocalTrackDir::SyncObjects(){
     RndDir::SyncObjects();
