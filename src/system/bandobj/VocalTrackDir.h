@@ -7,6 +7,10 @@
 
 class VocalTrackDir : public RndDir, public BandTrack {
 public:
+    enum HarmonyShowingState {
+
+    };
+
     VocalTrackDir();
     OBJ_CLASSNAME(VocalTrackDir)
     OBJ_SET_TYPE(VocalTrackDir)
@@ -24,11 +28,11 @@ public:
     virtual void PlayIntro();
     virtual void Deploy();
     virtual void SetPlayerLocal(float);
-    virtual ObjectDir* ThisDir();
-    virtual ObjectDir* ThisDir() const; // fix ptr
+    virtual ObjectDir* ThisDir(){}
+    virtual ObjectDir* ThisDir() const {}
     virtual void SpotlightPhraseSuccess();
-    virtual int AsVocalTrackDir();
-    virtual int AsRndDir();
+    virtual int AsVocalTrackDir(){}
+    virtual int AsRndDir(){ return AsVocalTrackDir(); }
     virtual void Reset();
     virtual void Retract(bool);
     virtual void Extend(bool);
@@ -36,6 +40,23 @@ public:
     virtual void SetPerformanceMode(bool);
     virtual void SetTambourine(bool);
     virtual void TutorialReset();
+
+    void SetConfiguration(Hmx::Object*, HarmonyShowingState);
+    void UpdateConfiguration();
+    void ShowPhraseFeedback(int, int, int, bool);
+    void SetStreakPct(float);
+    void SetEnableVocalsOptions(bool);
+    void ApplyFontStyle(Hmx::Object*);
+    void ApplyArrowStyle(Hmx::Object*);
+    void SetIsolatedPart(int);
+    int NumVocalParts();
+    void SetRange(float, float, int, bool);
+
+    DataNode DataForEachConfigObj(DataArray*);
+    DataNode OnGetDisplayMode(DataArray*);
+    DataNode OnSetDisplayMode(DataArray*);
+    DataNode OnSetLyricColor(const DataArray*);
+    DataNode OnIsolatePart(DataArray*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -49,8 +70,8 @@ public:
     int mFeedbackStateLead; // 0x2a8
     int mFeedbackStateHarm1; // 0x2ac
     int mFeedbackStateHarm2; // 0x2b0
-    std::map<int, Hmx::Color> unk2b4; // 0x2b4
-    std::map<int, float> unk2cc; // 0x2cc
+    std::map<int, Hmx::Color> mLyricColorMap; // 0x2b4
+    std::map<int, float> mLyricAlphaMap; // 0x2cc
     ObjPtr<RndDir, ObjectDir> unk2e4; // 0x2e4
     ObjPtr<RndDir, ObjectDir> unk2f0; // 0x2f0
     float mMinPitchRange; // 0x2fc
