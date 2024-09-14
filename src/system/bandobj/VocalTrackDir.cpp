@@ -1,6 +1,8 @@
 #include "bandobj/VocalTrackDir.h"
 #include "bandobj/TrackInterface.h"
 #include "obj/ObjVersion.h"
+#include "obj/DataFunc.h"
+#include "utl/ClassSymbols.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(VocalTrackDir)
@@ -127,6 +129,43 @@ void VocalTrackDir::PreLoad(BinStream& bs){
     ASSERT_REVS(7, 0);
     PushRev(packRevs(gAltRev, gRev), this);
     RndDir::PreLoad(bs);
+}
+
+const char* TypeToString(DataType ty){
+    switch(ty){
+        case kDataInt: return Int.Str();
+        case kDataFloat: return Float.Str();
+        case kDataVar: return Var.Str();
+        case kDataFunc: return Func.Str();
+        case kDataObject: return Object.Str();
+        case kDataSymbol: return Sym.Str();
+        case kDataUnhandled: return Unhandled.Str();
+        case kDataArray: return Array.Str();
+        case kDataCommand: return Command.Str();
+        case kDataString: return String.Str();
+        case kDataProperty: return Property.Str();
+        case kDataGlob: return Glob.Str();
+        default: return UNEXPECTED.Str();
+    }
+}
+
+const char* DataToString(const DataNode& node){
+    switch(node.Type()){
+        case kDataInt: return MakeString("%d", node.Int(0));
+        case kDataFloat: return MakeString("%f", node.Float(0));
+        case kDataVar: return MakeString("%s", DataVarName(node.Var(0)));
+        case kDataFunc: return MakeString("%s", DataFuncName(node.Func(0)));
+        case kDataObject:
+            if(node.NotNull()) return MakeString("%s", node.GetObj(0)->Name());
+            else return MakeString("<null>");
+        case kDataSymbol: return node.Sym(0).Str();
+        case kDataArray: return MakeString("<array>");
+        case kDataCommand: return MakeString("<command>");
+        case kDataString: return node.Str(0);
+        case kDataProperty: return MakeString("<property>");
+        case kDataGlob: return MakeString("<glob>");
+        default: return MakeString("unhandled");
+    }
 }
 
 #pragma push
@@ -328,7 +367,7 @@ void VocalTrackDir::SyncObjects(){
     if(!mTambourineNowShowTrig) mTambourineNowShowTrig = Find<EventTrigger>("tambourine_now_show.trig", false);
     if(!mTambourineNowHideTrig) mTambourineNowHideTrig = Find<EventTrigger>("tambourine_now_hide.trig", false);
     if(!mVocalMics) mVocalMics = Find<RndDir>("vocals_mics", false);
-    if(!mLeadPhraseFeedbackBottomLbl) mLeadPhraseFeedbackBottomLbl = Find<BandLabel>("lead_phrase_feedback_bottom.lbl", false);
+    if(!mLeadPhraseFeedbackBottomLbl) mLeadPhraseFeedbackBottomLbl = Find<class BandLabel>("lead_phrase_feedback_bottom.lbl", false);
     UpdateTubeStyle();
 }
 

@@ -1413,7 +1413,6 @@ extern Symbol unblock_mics;
 extern Symbol undies_dirty;
 extern Symbol undo;
 extern Symbol undo_handled_by;
-extern Symbol UNEXPECTED;
 extern Symbol unfocused_background_group;
 extern Symbol unhide;
 extern Symbol unhide_all;
