@@ -5,6 +5,7 @@
 #include "rndobj/Rnd.h"
 #include "utl/ClassSymbols.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(VocalTrackDir)
 
@@ -372,6 +373,194 @@ void VocalTrackDir::TrackReset(){
     std::floor(TheTaskMgr.Beat());
     TheTaskMgr.Beat();
     unk6c8 = true;
+}
+
+void VocalTrackDir::ResetSmashers(bool b){
+    mTambourineSmasher->HandleType(reset_msg);
+    if(b) mTambourineSmasher->HandleType(reset_particles_msg);
+}
+
+void VocalTrackDir::PlayIntro(){
+    if(!BandTrack::mParent || !BandTrack::mParent->FailedAtStart()){
+        mIntroTrig->Trigger();
+        mPitchArrow1->ClearParticles();
+        mPitchArrow2->ClearParticles();
+        mPitchArrow3->ClearParticles();
+    }
+    BandTrack::PlayIntro();
+    if(unk6e0){
+        EventTrigger* trig = Find<EventTrigger>("pitch_correction_on.trig", false);
+        if(trig) trig->Trigger();
+    }
+}
+
+void VocalTrackDir::Deploy(){
+    BandTrack::Deploy();
+    PopupHelp("deploy", false);
+}
+
+void VocalTrackDir::SetTambourine(bool b){
+    if(b) mTambourineNowShowTrig->Trigger();
+    else mTambourineNowHideTrig->Trigger();
+    mTambourineSmasher->HandleType(reset_msg);
+    mTambourineSmasher->HandleType(reset_particles_msg);
+}
+
+void VocalTrackDir::Tambourine(Symbol s){
+    mTambourineSmasher->Handle(Message(s), true);
+}
+
+void VocalTrackDir::TambourineNote(){
+    if(mPopupObject) mPopupObject->Handle(tambourine_note_msg, true);
+}
+
+void VocalTrackDir::SetVocalLineColors(VocalHUDColor* color){
+    if(mStreakMeter){
+        for(int i = 0; i < 3; i++) mStreakMeter->SetPartColor(i, color[i]);
+        if(color[0] != kVocalColorInvalid){
+            Find<RndPropAnim>("phoneme_color_lead.anim", true)->SetFrame(color[0], 1.0f);
+        }
+        if(color[1] != kVocalColorInvalid){
+            Find<RndPropAnim>("phoneme_color_harm1.anim", true)->SetFrame(color[1], 1.0f);
+        }
+        if(color[2] != kVocalColorInvalid){
+            Find<RndPropAnim>("phoneme_color_harm2.anim", true)->SetFrame(color[2], 1.0f);
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(VocalTrackDir, "slider.sld", "arrow_param.anim", "vocal_param.anim", "set_enabled")
+
+void VocalTrackDir::UpdateVocalMeters(bool b1, bool b2, bool b3, bool b4){
+    if(mStreakMeter){
+        mStreakMeter->SetPartActive(0, b1);
+        mStreakMeter->SetPartActive(1, b2);
+        mStreakMeter->SetPartActive(2, b3);
+        if(b4) mStreakMeter->ForceFadeInactiveParts();
+    }
+}
+
+Symbol GetRating(int i){
+    switch(i){
+        case 0: return vox_rating_0;
+        case 1: return vox_rating_1;
+        case 2: return vox_rating_2;
+        case 3: return vox_rating_3;
+        case 4: return vox_rating_4;
+        case 5: return vox_rating_5;
+        case 6: return vox_rating_6;
+        default: return "";
+    }
+}
+
+void VocalTrackDir::SetStreakPct(float f){
+    if(mStreakMeter) mStreakMeter->SetWipe(f);
+}
+
+void VocalTrackDir::SetEnableVocalsOptions(bool){}
+
+void VocalTrackDir::ShowPhraseFeedback(int i1, int i2, int i3, bool b){
+    int parts = mStreakMeter->NumActiveParts();
+    if(BandTrack::mParent) parts = Min(parts, BandTrack::mParent->NumSingers());
+    int i_sum = i1 == 4;
+    if(i2 == 4) i_sum++;
+    if(i3 == 4) i_sum++;
+    if(mLeadPhraseFeedbackBottomLbl){
+        if(parts > 3 && i_sum == parts)
+            mLeadPhraseFeedbackBottomLbl->SetTextToken(perfect_harmony);
+        else mLeadPhraseFeedbackBottomLbl->SetTextToken(GetRating(i1));
+    }
+    if(mStreakMeter) mStreakMeter->ShowPhraseFeedback(i1, b);
+    mPhraseFeedbackTrig->Trigger();
+}
+
+void VocalTrackDir::SpotlightPhraseSuccess(){
+    if(mStarPowerMeter){
+        if(BandTrack::mParent && BandTrack::mParent->IsDeployingOverdrive()){
+            mSpotlightSparklesOnlyTrig->Trigger();
+        }
+        else mSpotlightPhraseSuccessTrig->Trigger();
+    }
+    BandTrack::SpotlightPhraseSuccess();
+}
+
+void VocalTrackDir::ShowMicDisplay(bool b){
+    mVocalMics->SetShowing(b);
+}
+
+void VocalTrackDir::SetMicDisplayLabel(Symbol s){
+    mVocalMics->Find<class BandLabel>("label.lbl", true)->SetTextToken(s);
+}
+
+void VocalTrackDir::SetMissingMicsForDisplay(bool b1, bool b2, bool b3){
+    mVocalMics->Find<RndAnimatable>("arrow_configuration.anim", true)->SetFrame(b1 | b2 | b3, 1.0f);
+}
+
+void VocalTrackDir::CanChat(bool show){
+    Find<RndDir>("chat", true)->Find<EventTrigger>(show ? "show.trig" : "hide.trig", true)->Trigger();
+}
+
+void VocalTrackDir::SetupNetVocals(){
+    if(BandTrack::mParent){
+        BandTrack::mParent->Init();
+        BandTrack::mParent->SetVocalStyle(1);
+        UpdateConfiguration();
+    }
+}
+
+void VocalTrackDir::SetPlayerLocal(float f){
+    if(BandTrack::mParent && BandTrack::mParent->HasNetPlayer() || mSimulatedNet) SetupNetVocals();
+    else {
+        Find<RndEnviron>("track.env", true)->SetProperty(fade_max, DataNode(1));
+        if(mPlayerFeedback) mPlayerFeedback->Find<RndEnviron>("environ.env", true)->SetProperty(fade_max, DataNode(1));
+    }
+}
+
+DataNode VocalTrackDir::OnGetDisplayMode(DataArray* da){
+    if(BandTrack::mParent){
+        DataNode handled = BandTrack::mParent->Handle(da, false);
+        if(handled.Type() != kDataUnhandled) return DataNode(handled);
+    }
+    return DataNode("invalid");
+}
+
+void VocalTrackDir::RecalculateLyricZ(bool*, bool*){
+    
+}
+
+PitchArrow* VocalTrackDir::GetPitchArrow(int idx){
+    switch(idx){
+        case 0: return mPitchArrow1;
+        case 1: return mPitchArrow2;
+        case 2: return mPitchArrow3;
+        default: return 0;
+    }
+}
+
+void VocalTrackDir::Reset(){
+    SyncObjects();
+    BandTrack::Reset();
+    UpdateConfiguration();
+    if(mPitchArrow1) mPitchArrow1->Reset(mArrowFXDrawGrp);
+    if(mPitchArrow2) mPitchArrow2->Reset(mArrowFXDrawGrp);
+    if(mPitchArrow3) mPitchArrow3->Reset(mArrowFXDrawGrp);
+    RndGroup* tubesGrp = Find<RndGroup>("tubes_milo.grp", false);
+    if(tubesGrp) tubesGrp->SetShowing(false);
+    if(BandTrack::mParent){
+        BandTrack::mParent->RefreshPlayerHUD();
+        unk6e0 = BandTrack::mParent->ShowPitchCorrectionNotice();
+    }
+    CanChat(false);
+    SetTambourine(false);
+}
+
+void VocalTrackDir::Retract(bool b){
+    BandTrack::Retract(b);
+    if(b){
+        mPitchArrow1->ClearParticles();
+        mPitchArrow2->ClearParticles();
+        mPitchArrow3->ClearParticles();
+    }
 }
 
 void VocalTrackDir::SyncObjects(){

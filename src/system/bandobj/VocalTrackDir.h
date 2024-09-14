@@ -5,6 +5,8 @@
 #include "rndobj/Group.h"
 #include "rndobj/Text.h"
 
+enum VocalHUDColor;
+
 class VocalTrackDir : public RndDir, public BandTrack {
 public:
     enum HarmonyShowingState {
@@ -54,6 +56,16 @@ public:
     void UpdateTubeStyle();
     void ConfigPanels();
     PitchArrow* GetPitchArrow(int);
+    void Tambourine(Symbol);
+    void TambourineNote();
+    void SetVocalLineColors(VocalHUDColor*);
+    void UpdateVocalMeters(bool, bool, bool, bool);
+    void ShowMicDisplay(bool);
+    void SetMicDisplayLabel(Symbol);
+    void SetMissingMicsForDisplay(bool, bool, bool);
+    void CanChat(bool);
+    void RecalculateLyricZ(bool*, bool*);
+    void SetupNetVocals();
 
     DataNode DataForEachConfigObj(DataArray*);
     DataNode OnGetDisplayMode(DataArray*);
