@@ -3,9 +3,21 @@
 #include "rndobj/EventTrigger.h"
 #include "obj/Task.h"
 #include "bandobj/BandLabel.h"
+#include "bandobj/UnisonIcon.h"
 
 class EndingBonus : public RndDir {
 public:
+    class MiniIconData {
+    public:
+        MiniIconData(EndingBonus* b, UnisonIcon* u) : mIcon(b, u), mFailed(0), mSucceeded(0), unke(0), mUsed(0) {}
+
+        ObjPtr<UnisonIcon, ObjectDir> mIcon; // 0x0
+        bool mFailed; // 0xc
+        bool mSucceeded; // 0xd
+        bool unke; // 0xe
+        bool mUsed; // 0xf
+    };
+
     EndingBonus();
     OBJ_CLASSNAME(EndingBonus);
     OBJ_SET_TYPE(EndingBonus);
@@ -18,19 +30,32 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
 
-    bool unk18c; // 0x18c
+    void Start(bool);
+    void Success();
+    void CodaEnd();
+    void SetScore(int);
+    void UnisonSucceed();
+    void UnisonEnd();
+
+    DataNode OnReset(DataArray*);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    bool mSuppressUnisonDisplay; // 0x18c
     bool unk18d; // 0x18d
-    int unk190; // 0x190
-    bool unk194; // 0x194
+    int mScore; // 0x190
+    bool mSucceeded; // 0x194
     ObjPtr<Task, ObjectDir> unk198; // 0x198
     std::vector<int> unk1a4; // 0x1a4
-    std::vector<int> unk1ac; // 0x1ac
-    ObjPtr<BandLabel, ObjectDir> unk1b4; // 0x1b4
-    ObjPtr<EventTrigger, ObjectDir> unk1c0; // 0x1c0
-    ObjPtr<EventTrigger, ObjectDir> unk1cc; // 0x1cc
-    ObjPtr<EventTrigger, ObjectDir> unk1d8; // 0x1d8
-    ObjPtr<EventTrigger, ObjectDir> unk1e4; // 0x1e4
-    ObjPtr<EventTrigger, ObjectDir> unk1f0; // 0x1f0
-    ObjPtr<EventTrigger, ObjectDir> unk1fc; // 0x1fc
-    ObjPtr<EventTrigger, ObjectDir> unk208; // 0x208
+    std::vector<MiniIconData> mMiniIcons; // 0x1ac
+    ObjPtr<BandLabel, ObjectDir> mScoreLabel; // 0x1b4
+    ObjPtr<EventTrigger, ObjectDir> mUnisonStartTrig; // 0x1c0
+    ObjPtr<EventTrigger, ObjectDir> mUnisonEndTrig; // 0x1cc
+    ObjPtr<EventTrigger, ObjectDir> mUnisonSucceedTrig; // 0x1d8
+    ObjPtr<EventTrigger, ObjectDir> mStartTrig; // 0x1e4
+    ObjPtr<EventTrigger, ObjectDir> mEndTrig; // 0x1f0
+    ObjPtr<EventTrigger, ObjectDir> mSucceedTrig; // 0x1fc
+    ObjPtr<EventTrigger, ObjectDir> mResetTrig; // 0x208
 };

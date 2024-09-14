@@ -18,7 +18,9 @@ public:
     virtual void Enter();
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
-    virtual void UpdateDisplay();
+    virtual void UpdateDisplay(bool);
+
+    void SetValues(int, bool);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -26,5 +28,5 @@ public:
 
     int unk10c; // 0x10c
     int unk110; // 0x110
-    int unk114; // 0x114
+    int mScore; // 0x114
 };

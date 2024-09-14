@@ -16,11 +16,19 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void SetLabel(UILabel*);
+    void SetTopBone(RndMesh*);
+    void SetBottomBone(RndMesh*);
+
+    UILabel* GetLabel() const { return mDialogLabel.Ptr() ? mDialogLabel.Ptr() : 0; }
+    RndMesh* GetTopBone() const { return mTopBone.Ptr() ? mTopBone.Ptr() : 0; }
+    RndMesh* GetBottomBone() const { return mBottomBone.Ptr() ? mBottomBone.Ptr() : 0; }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<UILabel, ObjectDir> unk8; // 0x8
-    ObjPtr<RndMesh, ObjectDir> unk14; // 0x14
-    ObjPtr<RndMesh, ObjectDir> unk20; // 0x20
+    ObjPtr<UILabel, ObjectDir> mDialogLabel; // 0x8
+    ObjPtr<RndMesh, ObjectDir> mTopBone; // 0x14
+    ObjPtr<RndMesh, ObjectDir> mBottomBone; // 0x20
 };

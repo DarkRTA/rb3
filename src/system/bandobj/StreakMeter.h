@@ -14,14 +14,23 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~StreakMeter();
+    virtual ~StreakMeter(){}
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
     
     void Reset();
+    void SetMultiplier(int);
     void SetBandMultiplier(int);
     void EndOverdrive() const;
+    void BreakStreak(bool);
+    void Overdrive() const;
+    void SetWipe(float);
+    void SetPeakState();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     int mStreakMultiplier; // 0x18c
     int mBandMultiplier; // 0x190

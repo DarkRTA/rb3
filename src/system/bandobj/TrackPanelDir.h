@@ -29,7 +29,7 @@ public:
     virtual void Reset();
     virtual void ResetAll();
     virtual void PlayIntro();
-    virtual bool TracksExtended() const;
+    virtual bool TracksExtended() const { return mTracksExtended; }
     virtual void GameOver();
     virtual void HideScore();
     virtual void Coda();
@@ -45,8 +45,8 @@ public:
     virtual void UnisonStart(int);
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual int GetEndingBonus(); // ptr to EndingBonus*
-    virtual int GetCrowdMeter(); // ptr
+    virtual EndingBonus* GetEndingBonus(){ return mEndingBonus; }
+    virtual BandCrowdMeter* GetCrowdMeter(){ return mCrowdMeter; }
     virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol);
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
@@ -54,24 +54,31 @@ public:
     virtual void CleanUpChordMeshes();
     virtual void SetApplauseMeterScale(int, int);
     virtual void StartPulseAnims(float);
-    virtual int GetGemTrackResourceManager() const; // also a ptr
+    virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return mGemTrackRsrcMgr; }
+
+    void GameWon();
+    void GameLost();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     int unk244; // 0x244
-    int unk248; // 0x248
+    int mTestMultiplier; // 0x248
     int unk24c; // 0x24c
     int unk250; // 0x250
     int unk254; // 0x254
     ObjPtr<VocalTrackDir, ObjectDir> unk258; // 0x258
-    ObjPtr<BandCrowdMeter, ObjectDir> unk264; // 0x264
+    ObjPtr<BandCrowdMeter, ObjectDir> mCrowdMeter; // 0x264
     ObjPtr<RndDir, ObjectDir> unk270; // 0x270
     ObjPtr<EventTrigger, ObjectDir> unk27c; // 0x27c
-    ObjPtr<EndingBonus, ObjectDir> unk288; // 0x288
+    ObjPtr<EndingBonus, ObjectDir> mEndingBonus; // 0x288
     ObjPtr<RndDir, ObjectDir> unk294; // 0x294
     ObjPtr<RndGroup, ObjectDir> unk2a0; // 0x2a0
     bool unk2ac; // 0x2ac
     bool unk2ad; // 0x2ad
-    bool unk2ae; // 0x2ae
-    ObjPtr<GemTrackResourceManager, ObjectDir> unk2b0; // 0x2b0
-    bool unk2bc; // 0x2bc
-    bool unk2bd; // 0x2bd
+    bool mTracksExtended; // 0x2ae
+    ObjPtr<GemTrackResourceManager, ObjectDir> mGemTrackRsrcMgr; // 0x2b0
+    bool mVocals; // 0x2bc
+    bool mVocalsNet; // 0x2bd
 };

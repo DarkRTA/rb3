@@ -19,6 +19,9 @@ public:
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual UIColor* SlotColorOverride(int, int, class UIListWidget*, UIColor* c) const;
 
+    void UpdateColors();
+    void SetColors(ColorPalette*);
+
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandSwatch);
@@ -31,5 +34,5 @@ public:
     static ColorPalette* sDummyPalette;
 
     std::vector<int> unk1e8; // 0x1e8
-    ObjPtr<ColorPalette, ObjectDir> unk1f0; // 0x1f0
+    ObjPtr<ColorPalette, ObjectDir> mColorPalette; // 0x1f0
 };

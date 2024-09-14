@@ -19,10 +19,12 @@ public:
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
+    void SetChecked(bool);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     int unk10c; // 0x10c
-    bool unk110; // 0x110
+    bool mChecked; // 0x110
 };

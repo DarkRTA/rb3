@@ -21,21 +21,28 @@ public:
     virtual void Enter();
     virtual void SetName(const char*, ObjectDir*);
 
+    void RunTest();
+    void EndTest();
+
+    DataNode OnFingersUp(DataArray*);
+    DataNode OnFingersDown(DataArray*);
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjPtr<CharIKFingers, ObjectDir> unk28; // 0x28
-    ObjPtr<RndTransformable, ObjectDir> unk34; // 0x34
-    ObjPtr<RndTransformable, ObjectDir> unk40; // 0x40
-    std::vector<Vector3> unk4c;
-    std::vector<Vector3> unk54;
-    std::vector<int> unk5c;
-    int unk64;
-    int unk68;
-    std::vector<int> unk6c;
-    int unk74;
-    bool unk78;
-    ObjPtr<Character, ObjectDir> unk7c;
-    float unk88;
-    bool unk8c;
+    ObjPtr<CharIKFingers, ObjectDir> mIKObject; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mFirstSpot; // 0x34
+    ObjPtr<RndTransformable, ObjectDir> mSecondSpot; // 0x40
+    std::vector<Vector3> unk4c; // 0x4c
+    std::vector<Vector3> unk54; // 0x54
+    std::vector<int> unk5c; // 0x5c
+    int unk64; // 0x64
+    int unk68; // 0x68
+    std::vector<int> unk6c; // 0x6c
+    int unk74; // 0x74
+    bool unk78; // 0x78
+    ObjPtr<Character, ObjectDir> unk7c; // 0x7c
+    float unk88; // 0x88
+    bool mIsRightHand; // 0x8c
 };

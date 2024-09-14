@@ -23,7 +23,7 @@ public:
     virtual void TrackReset(){}
     virtual void ResetSmashers(bool);
     virtual void Retract(bool);
-    virtual void Extend(bool);
+    virtual void Extend(bool){}
     virtual void SpotlightPhraseSuccess();
     virtual void SetStreak(int, int, int, bool);
     virtual void Deploy();
@@ -35,25 +35,25 @@ public:
     virtual void SuperStreak(bool, bool);
     virtual void PeakState(bool, bool);
     virtual void SetTambourine(bool);
-    virtual void SetPlayerLocal(float);
+    virtual void SetPlayerLocal(float){}
     virtual void SetHasTrackerFocus(bool);
     virtual ObjectDir* ThisDir(){ MILO_ASSERT(0, 0x8A); return 0; }
     virtual ObjectDir* ThisDir() const; // fix ptr
-    virtual int AsGemTrackDir();
-    virtual int AsVocalTrackDir();
+    virtual int AsGemTrackDir(){ return 0; }
+    virtual int AsVocalTrackDir(){ return 0; }
     virtual int AsRndDir();
     virtual void RefreshStreakMeter(int, int, int);
     virtual void RefreshOverdrive(float, bool);
-    virtual void RefreshCrowdRating(float, CrowdMeterState);
+    virtual void RefreshCrowdRating(float, CrowdMeterState){}
     virtual void StartPulseAnims(float);
-    virtual void SetupInstrument();
+    virtual void SetupInstrument(){}
     virtual void SetPerformanceMode(bool);
-    virtual void SetUsed(bool);
+    virtual void SetUsed(bool b){ mInUse = b; }
     virtual void SetInstrument(TrackInstrument);
-    virtual void ResetEffectSelector();
-    virtual void SetupSmasherPlate();
-    virtual void ReleaseSmasherPlate();
-    virtual void TutorialReset();
+    virtual void ResetEffectSelector(){}
+    virtual void SetupSmasherPlate(){}
+    virtual void ReleaseSmasherPlate(){}
+    virtual void TutorialReset(){}
     virtual ~BandTrack(){}
 
     void Init(Hmx::Object*);
@@ -74,6 +74,18 @@ public:
     void GameWon();
     void GameOver();
     void SpotlightFail(bool);
+    void SyncInstrument();
+    void EnablePlayer();
+    void SetMultiplier(int);
+    void CodaFail(bool);
+    void CodaSuccess();
+    void PopupHelp(Symbol, bool);
+    void PlayerDisabled();
+    void PlayerSaved();
+    void FailedTask(bool, int);
+    bool HasNetPlayer() const;
+    bool HasLocalPlayer() const;
+    int GetPlayerDifficulty() const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -82,7 +94,7 @@ public:
     bool mDisabled; // 0x8
     bool mSimulatedNet; // 0x9
     Symbol mInstrument; // 0xc
-    unsigned int unk10; // 0x10
+    int unk10; // 0x10
     int unk14; // 0x14
     bool unk18; // 0x18
     bool unk19; // 0x19
@@ -113,7 +125,7 @@ public:
     ObjPtr<Task, ObjectDir> unkd8; // 0xd8
     ObjPtr<Task, ObjectDir> unke4; // 0xe4
     ObjPtr<Task, ObjectDir> unkf0; // 0xf0
-    ObjPtr<RndGroup, ObjectDir> unkfc; // 0xfc
+    ObjPtr<RndGroup, ObjectDir> mBeatAnimsGrp; // 0xfc
     bool unk108; // 0x108
     bool unk109; // 0x109
     int unk10c; // 0x10c

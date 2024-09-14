@@ -1,5 +1,6 @@
 #pragma once
 #include "ui/UIComponent.h"
+#include "ui/UIMessages.h"
 
 class BandHighlight : public UIComponent {
 public:
@@ -21,6 +22,11 @@ public:
     virtual void Exit();
     virtual void Poll();
     virtual void Update();
+
+    void OnRegisterFocus();
+    void OnUnregisterFocus();
+
+    DataNode OnMsg(const UIComponentFocusChangeMsg&);
 
     char filler[0x3c]; // 0x10c
     int unk148; // 0x148

@@ -9,6 +9,11 @@ class BandIKEffector : public RndHighlightable, public CharWeightable, public Ch
 public:
     class Constraint {
     public:
+        Constraint(Hmx::Object*);
+        Constraint(const Constraint&);
+
+        Constraint& operator=(const Constraint&);
+
         ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
         ObjPtr<RndTransformable, ObjectDir> mFinger; // 0xc
         float mWeight; // 0x18
@@ -28,10 +33,10 @@ public:
     virtual void Load(BinStream&);
     virtual void SetName(const char*, ObjectDir*);
 
-    ObjPtr<RndTransformable, ObjectDir> unk28; // 0x28
-    ObjPtr<RndTransformable, ObjectDir> unk34; // 0x34
-    ObjPtr<BandIKEffector, ObjectDir> unk40; // 0x40
-    ObjPtr<BandIKEffector, ObjectDir> unk4c; // 0x4c
-    ObjVector<Constraint> unk58; // 0x58
+    ObjPtr<RndTransformable, ObjectDir> mEffector; // 0x28
+    ObjPtr<RndTransformable, ObjectDir> mGround; // 0x34
+    ObjPtr<BandIKEffector, ObjectDir> mMore; // 0x40
+    ObjPtr<BandIKEffector, ObjectDir> mElbow; // 0x4c
+    ObjVector<Constraint> mConstraints; // 0x58
     ObjPtr<BandCharacter, ObjectDir> unk64; // 0x64
 };

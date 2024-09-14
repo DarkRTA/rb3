@@ -3,6 +3,9 @@
 
 class BandTrack;
 class TrackPanelInterface;
+class GemTrackResourceManager;
+class EndingBonus;
+class BandCrowdMeter;
 
 enum TrackInstrument {
     kInstGuitar = 0,
@@ -55,8 +58,8 @@ public:
     virtual void UnisonStart(int){}
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual int GetEndingBonus(); // ptr to EndingBonus*
-    virtual int GetCrowdMeter(); // ptr
+    virtual EndingBonus* GetEndingBonus();
+    virtual BandCrowdMeter* GetCrowdMeter(); // ptr
     virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol){}
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
@@ -65,7 +68,7 @@ public:
     virtual void SetApplauseMeterScale(int, int){}
     virtual void StartPulseAnims(float);
     virtual float GetPulseAnimStartDelay(bool) const;
-    virtual int GetGemTrackResourceManager() const; // also a ptr
+    virtual GemTrackResourceManager* GetGemTrackResourceManager() const;
 
     void SetShowing(bool);
     bool ModifierActive(Symbol);

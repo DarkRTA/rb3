@@ -10,6 +10,7 @@ public:
     class IconData {
     public:
         IconData(BandCrowdMeter*, CrowdMeterIcon*, RndGroup*);
+        ~IconData(){}
 
         ObjPtr<CrowdMeterIcon, ObjectDir> unk0; // 0x0
         ObjPtr<RndGroup, ObjectDir> unkc; // 0xc
@@ -35,32 +36,45 @@ public:
     virtual void Poll();
 
     bool Disabled() const;
+    void SetCrowd(float);
+    void SetIconVal(int, float);
+    void SetMaxed(bool);
+    float GetPeakValue();
+    void Reset();
+    void UpdateExcitement(bool);
+    void SetPlayerIconState(int, CrowdMeterState);
+    void Deploy(int);
+    void StopDeploy(int);
+    void EnablePlayer(int);
+    void DisablePlayer(int);
+    void ShowPeakArrow(bool);
+    void OnShowWorstCase();
     CrowdMeterIcon* PlayerIcon(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::vector<IconData> unk18c; // 0x18c
-    bool unk194; // 0x194
-    float unk198; // 0x198
-    bool unk19c; // 0x19c
-    std::vector<Hmx::Color> unk1a0; // 0x1a0
+    std::vector<IconData> mIcons; // 0x18c
+    bool mMaxed; // 0x194
+    float mPeakValue; // 0x198
+    bool mDisabled; // 0x19c
+    std::vector<Hmx::Color> mLevelColors; // 0x1a0
     int unk1a8; // 0x1a8
     int unk1ac; // 0x1ac
     ObjPtrList<RndGroup, ObjectDir> unk1b0; // 0x1b0
-    ObjPtr<EventTrigger, ObjectDir> unk1c0; // 0x1c0
-    ObjPtr<EventTrigger, ObjectDir> unk1cc; // 0x1cc
-    ObjPtr<EventTrigger, ObjectDir> unk1d8; // 0x1d8
-    ObjPtr<EventTrigger, ObjectDir> unk1e4; // 0x1e4
-    ObjPtr<EventTrigger, ObjectDir> unk1f0; // 0x1f0
-    ObjPtr<EventTrigger, ObjectDir> unk1fc; // 0x1fc
-    std::vector<ObjPtr<EventTrigger, ObjectDir> > unk208; // 0x208
-    ObjPtr<EventTrigger, ObjectDir> unk210; // 0x210
-    ObjPtr<EventTrigger, ObjectDir> unk21c; // 0x21c
-    ObjPtr<EventTrigger, ObjectDir> unk228; // 0x228
+    ObjPtr<EventTrigger, ObjectDir> mBandEnergyDeployTrig; // 0x1c0
+    ObjPtr<EventTrigger, ObjectDir> mBandEnergyStopTrig; // 0x1cc
+    ObjPtr<EventTrigger, ObjectDir> mDisabledStartTrig; // 0x1d8
+    ObjPtr<EventTrigger, ObjectDir> mDisabledStopTrig; // 0x1e4
+    ObjPtr<EventTrigger, ObjectDir> mShowPeakArrowTrig; // 0x1f0
+    ObjPtr<EventTrigger, ObjectDir> mHidePeakArrowTrig; // 0x1fc
+    std::vector<ObjPtr<EventTrigger, ObjectDir> > mExcitementTrigs; // 0x208
+    ObjPtr<EventTrigger, ObjectDir> mCanJoinTrig; // 0x210
+    ObjPtr<EventTrigger, ObjectDir> mCannotJoinTrig; // 0x21c
+    ObjPtr<EventTrigger, ObjectDir> mJoinInvalidTrig; // 0x228
     int unk234; // 0x234
-    ObjPtr<RndMatAnim, ObjectDir> unk238; // 0x238
-    float unk244; // 0x244
-    float unk248[5]; // 0x248
+    ObjPtr<RndMatAnim, ObjectDir> mCrowdMeterAnim; // 0x238
+    float mValue; // 0x244
+    float mIconValues[5]; // 0x248
 };

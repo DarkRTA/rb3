@@ -22,8 +22,8 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::list<String> unk8; // 0x8
-    Symbol unk10; // 0x10
-    Symbol unk14; // 0x14
-    ObjPtr<RndTransformable, ObjectDir> unk18; // 0x18
+    std::list<String> mEffectors; // 0x8
+    Symbol mPlayer; // 0x10
+    Symbol mBone; // 0x14
+    ObjPtr<RndTransformable, ObjectDir> mProp; // 0x18
 };

@@ -1,6 +1,8 @@
 #pragma once
 #include "ui/UIComponent.h"
 
+class MicManagerInterface;
+
 class MicInputArrow : public UIComponent {
 public:
     MicInputArrow();
@@ -17,8 +19,14 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void Update();
 
-    int unk10c; // 0x10c
-    int unk110; // 0x110
+    void SetMicMgr(MicManagerInterface*);
+    void SetMicConnected(bool, int);
+    void SetMicExtended(int);
+    void SetMicPreview(int);
+    void SetMicHidden(int);
+
+    int mArrowNum; // 0x10c
+    MicManagerInterface* mMicManagerInterface; // 0x110
     std::vector<char> unk114; // 0x114
     std::vector<bool> unk11c; // 0x11c
     std::vector<int> unk124; // 0x124

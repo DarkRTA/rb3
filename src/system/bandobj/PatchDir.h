@@ -2,10 +2,14 @@
 #include "meta/FixedSizeSaveable.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Tex.h"
+#include "world/ColorPalette.h"
 
 class PatchSticker {
 public:
     PatchSticker();
+    ~PatchSticker();
+
+    void Unload();
 
     String unk0;
     FilePath unkc;
@@ -27,12 +31,27 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
 
     void Reset();
-    static std::vector<Symbol> sCategoryNames;
+    void SetScale(float, float);
+    bool AllowColor();
+    void SetDefaultColor();
+    void SelectFX();
+    void FlipX();
+    void FlipY();
+    void ClearSticker();
 
-    Symbol unk1c; // 0x1c
-    int unk20; // 0x20
-    int unk24; // 0x24
+    static std::vector<Symbol> sCategoryNames;
+    static ColorPalette* sColorPalette;
+
+    Symbol mStickerCategory; // 0x1c
+    int mStickerIdx; // 0x20
+    int mColorIdx; // 0x24
     float unk28; // 0x28
+    int mPosX; // 0x2c
+    int mPosZ; // 0x30
+    int mRot; // 0x34
+    int mScaleX; // 0x38
+    int mScaleY; // 0x3c
+    int mDeformFrame; // 0x40
 };
 
 class PatchDir : public FixedSizeSaveable, public RndDir {
@@ -50,6 +69,8 @@ public:
     virtual void Poll();
 
     void LoadStickerData();
+    bool HasLayers() const;
+    void Clear();
 
     static int SaveSize(int);
 
@@ -60,6 +81,6 @@ public:
     std::vector<PatchLayer> unk194; // 0x194
     std::map<Symbol, std::vector<PatchSticker*> > unk19c; // 0x19c
     std::vector<int> unk1b4; // 0x1b4
-    RndTex* unk1bc; // 0x1bc
+    RndTex* mTex; // 0x1bc
     bool unk1c0; // 0x1c0
 };

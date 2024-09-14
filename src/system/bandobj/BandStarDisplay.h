@@ -16,11 +16,15 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void SyncObjects();
 
+    void SetNumStars(float, bool);
+    void SetStarType(Symbol, bool);
+    void Reset();
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    float unk18c; // 0x18c
+    float mNumStars; // 0x18c
     ObjVector<int> unk190; // 0x190
     ObjVector<int> unk19c; // 0x19c
     ObjVector<int> unk1a8; // 0x1a8
@@ -28,5 +32,5 @@ public:
     ObjPtr<RndAnimatable, ObjectDir> unk1c0; // 0x1c0
     ObjPtr<Sequence, ObjectDir> unk1cc; // 0x1cc
     ObjPtr<Sequence, ObjectDir> unk1d8; // 0x1d8
-    Symbol unk1e4; // 0x1e4
+    Symbol mStarType; // 0x1e4
 };

@@ -22,6 +22,8 @@ public:
     virtual void SetAlphaColor(float, UIColor*);
     virtual void GrowBoundingBox(Box&) const;
 
+    void SetNumPlayersDiff(int, int);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -30,8 +32,8 @@ public:
     int unk118; // 0x118
     int unk11c; // 0x11c
     std::vector<int> unk120; // 0x120
-    int unk128; // 0x128
-    int unk12c; // 0x12c
+    int mNumPlayers; // 0x128
+    int mDiff; // 0x12c
     float unk130; // 0x130
     float unk134; // 0x134
     float unk138; // 0x138

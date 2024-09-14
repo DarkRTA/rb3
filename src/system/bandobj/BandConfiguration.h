@@ -29,6 +29,11 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void SyncPlayMode();
+
+    DataNode OnStoreConfiguration(DataArray*);
+    DataNode OnReleaseConfiguration(DataArray*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
