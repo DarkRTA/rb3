@@ -3,20 +3,69 @@
 #include "utl/Symbols.h"
 
 VocalTrackDir::VocalTrackDir() : BandTrack(this), mHiddenPartAlpha(0.3f), unk2a4(1), unk2a5(1), mIsTop(1), unk2a7(0), mFeedbackStateLead(0), mFeedbackStateHarm1(0), mFeedbackStateHarm2(0),
-    unk2e4(this, 0), unk2f0(this, 0), mMinPitchRange(12.0f), mPitchDisplayMargin(3.0f), mArrowSmoothing(0.85f), mConfigurableObjects(this, kObjListNoNull), mVoxCfg(this, 0), unk324(this, 0),
-    unk330(this, 0), unk33c(this, 0), unk348(this, 0), mPhraseFeedbackTrig(this, 0), mSpotlightSparklesOnlyTrig(this, 0), mSpotlightPhraseSuccessTrig(this, 0), unk378(this, 0), unk384(this, 0),
-    unk390(this, 0), mPitchWindow(1), mPitchWindowHeight(2.5f), mPitchWindowMesh(this, 0), mPitchWindowOverlay(this, 0), mLeadLyrics(1), mLeadLyricHeight(0.4f),
-    mLeadLyricMesh(this, 0), mHarmLyrics(1), mHarmLyricHeight(0.4f), mHarmLyricMesh(this, 0), mLeftDecoMesh(this, 0), mRightDecoMesh(this, 0), mNowBarWidth(0.2f), mNowBarMesh(this, 0),
-    mRemote(0), mTrackLeft(-20.0f), mTrackRight(20.0f), mTrackBottom(0.0f), mTrackTop(10.0f), mPitchBottom(0.0f), mPitchTop(2.0f), mNowBar(-10.0f), unk42c(0), mPitchGuides("harmonic"),
+    mVocalMics(this, 0), unk2f0(this, 0), mMinPitchRange(12.0f), mPitchDisplayMargin(3.0f), mArrowSmoothing(0.85f), mConfigurableObjects(this, kObjListNoNull), mVoxCfg(this, 0),
+    mTambourineSmasher(this, 0), mTambourineNowShowTrig(this, 0), mTambourineNowHideTrig(this, 0), mLeadPhraseFeedbackBottomLbl(this, 0), mPhraseFeedbackTrig(this, 0),
+    mSpotlightSparklesOnlyTrig(this, 0), mSpotlightPhraseSuccessTrig(this, 0), mPitchArrow1(this, 0), mPitchArrow2(this, 0), mPitchArrow3(this, 0), mPitchWindow(1),
+    mPitchWindowHeight(2.5f), mPitchWindowMesh(this, 0), mPitchWindowOverlay(this, 0), mLeadLyrics(1), mLeadLyricHeight(0.4f), mLeadLyricMesh(this, 0), mHarmLyrics(1),
+    mHarmLyricHeight(0.4f), mHarmLyricMesh(this, 0), mLeftDecoMesh(this, 0), mRightDecoMesh(this, 0), mNowBarWidth(0.2f), mNowBarMesh(this, 0), mRemoteVocals(0),
+    mTrackLeftX(-20.0f), mTrackRightX(20.0f), mTrackBottomZ(0.0f), mTrackTopZ(10.0f), mPitchBottomZ(0.0f), mPitchTopZ(2.0f), mNowBarX(-10.0f), unk42c(0), mPitchGuides("harmonic"),
     mTubeStyle(this, 0), mArrowStyle(this, 0), mFontStyle(this, 0), unk458(this, 0), unk464(this, 0), unk470(this, 0), unk47c(this, 0), mLastMin(36.0f), mLastMax(84.0f), mMiddleCZPos(0),
-    mTonic(0x3c), mRangeScaleAnim(this, 0), mRangeOffsetAnim(this, 0), unk4b0(1), unk4b4(2), unk4b8(0), unk4bc(0), unk4c0(0), unk4c4(0), unk4c8(0), unk4cc(0), unk4d0(0), unk4d4(0),
-    unk4d8(this, 0), unk4e4(this, 0), unk4f0(this, 0), unk4fc(this, 0), unk508(this, 0), unk514(this, 0),
-    unk520(this, 0), unk52c(this, 0), unk538(this, 0), unk544(this, 0), unk550(this, 0), unk55c(this, 0), unk568(this, 0), unk574(this, 0), unk580(this, 0), unk58c(this, 0),
-    unk598(this, 0), unk5a4(this, 0), unk5b0(this, 0), unk5bc(this, 0), unk5c8(this, 0), unk5d4(this, 0), unk5e0(this, 0), unk5ec(this, 0), unk5f8(this, 0), unk604(this, 0),
-    unk610(this, 0), unk61c(this, 0), unk628(this, 0), unk634(this, 0), unk640(this, 0), unk64c(this, 0), unk658(this, 0), unk664(this, 0), unk670(this, 0), unk67c(this, 0),
-    unk688(this, 0), unk694(0), unk698(0), unk69c(0), unk6a0(0), mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), unk6bc(-1.0f), unk6c0(0.3f), unk6c4(-1), unk6c8(0), unk6cc(this, 0),
-    unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
+    mTonic(0x3c), mRangeScaleAnim(this, 0), mRangeOffsetAnim(this, 0), unk4b0(1), unk4b4(2), mLeftTrans(0), mRightTrans(0), mBottomTrans(0), mTopTrans(0),
+    mPitchBottomTrans(0), mPitchTopTrans(0), mPitchMidTrans(0), mNowTrans(0), mTubeRangeGrp(this, 0), mTubeSpotlightGrp(this, 0), mTubeBack0Grp(this, 0), mTubeBack1Grp(this, 0),
+    mTubeBack2Grp(this, 0), mTubeFront0Grp(this, 0), mTubeFront1Grp(this, 0), mTubeFront2Grp(this, 0), mTubeGlow0Grp(this, 0), mTubeGlow1Grp(this, 0), mTubeGlow2Grp(this, 0),
+    mTubePhoneme0Grp(this, 0), mTubePhoneme1Grp(this, 0), mTubePhoneme2Grp(this, 0), unk580(this, 0), unk58c(this, 0), unk598(this, 0), unk5a4(this, 0), unk5b0(this, 0), unk5bc(this, 0),
+    unk5c8(this, 0), unk5d4(this, 0), unk5e0(this, 0), unk5ec(this, 0), unk5f8(this, 0), unk604(this, 0), unk610(this, 0), mVocalsGrp(this, 0), mScroller(this, 0), mLeadLyricScroller(this, 0),
+    mHarmonyLyricScroller(this, 0), mBREGrp(this, 0), mLeadBREGrp(this, 0), mHarmonyBREGrp(this, 0), mPitchScrollGroup(this, 0), mLeadLyricScrollGroup(this, 0),
+    mHarmonyLyricScrollGroup(this, 0), unk694(0), unk698(0), unk69c(0), unk6a0(0), mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), unk6bc(-1.0f), unk6c0(0.3f),
+    unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
 
+}
+
+void VocalTrackDir::SyncObjects(){
+    RndDir::SyncObjects();
+    if(!mLeftTrans) mLeftTrans = Find<RndTransformable>("track_left.trans", false);
+    if(!mRightTrans) mRightTrans = Find<RndTransformable>("track_right.trans", false);
+    if(!mBottomTrans) mBottomTrans = Find<RndTransformable>("track_bottom.trans", false);
+    if(!mTopTrans) mTopTrans = Find<RndTransformable>("track_top.trans", false);
+    if(!mPitchBottomTrans) mPitchBottomTrans = Find<RndTransformable>("pitch_bottom.trans", false);
+    if(!mPitchTopTrans) mPitchTopTrans = Find<RndTransformable>("pitch_top.trans", false);
+    if(!mPitchMidTrans) mPitchMidTrans = Find<RndTransformable>("pitch_mid.trans", false);
+    if(!mNowTrans) mNowTrans = Find<RndTransformable>("now_bar.trans", false);
+    if(!mPitchArrow1) mPitchArrow1 = Find<PitchArrow>("pitch_arrow_1", false);
+    if(!mPitchArrow2) mPitchArrow2 = Find<PitchArrow>("pitch_arrow_2", false);
+    if(!mPitchArrow3) mPitchArrow3 = Find<PitchArrow>("pitch_arrow_3", false);
+    if(!mTubeRangeGrp) mTubeRangeGrp = Find<RndGroup>("tubes.grp", false);
+    if(!mTubeSpotlightGrp) mTubeSpotlightGrp = Find<RndGroup>("spotlight.grp", false);
+    if(!mTubeBack0Grp) mTubeBack0Grp = Find<RndGroup>("back0.grp", false);
+    if(!mTubeBack1Grp) mTubeBack1Grp = Find<RndGroup>("back1.grp", false);
+    if(!mTubeBack2Grp) mTubeBack2Grp = Find<RndGroup>("back2.grp", false);
+    if(!mTubeFront0Grp) mTubeFront0Grp = Find<RndGroup>("front0.grp", false);
+    if(!mTubeFront1Grp) mTubeFront1Grp = Find<RndGroup>("front1.grp", false);
+    if(!mTubeFront2Grp) mTubeFront2Grp = Find<RndGroup>("front2.grp", false);
+    if(!mTubeGlow0Grp) mTubeGlow0Grp = Find<RndGroup>("glow0.grp", false);
+    if(!mTubeGlow1Grp) mTubeGlow1Grp = Find<RndGroup>("glow1.grp", false);
+    if(!mTubeGlow2Grp) mTubeGlow2Grp = Find<RndGroup>("glow2.grp", false);
+    if(!mTubePhoneme0Grp) mTubePhoneme0Grp = Find<RndGroup>("phoneme0.grp", false);
+    if(!mTubePhoneme1Grp) mTubePhoneme1Grp = Find<RndGroup>("phoneme1.grp", false);
+    if(!mTubePhoneme2Grp) mTubePhoneme2Grp = Find<RndGroup>("phoneme2.grp", false);
+    if(!mVocalsGrp) mVocalsGrp = Find<RndGroup>("vocals.grp", false);
+    if(!mScroller) mScroller = Find<RndTransformable>("scroller.trans", false);
+    if(!mLeadLyricScroller) mLeadLyricScroller = Find<RndTransformable>("lead_lyric_scroller.trans", false);
+    if(!mHarmonyLyricScroller) mHarmonyLyricScroller = Find<RndTransformable>("harmony_lyric_scroller.trans", false);
+    if(!mBREGrp) mBREGrp = Find<RndGroup>("bre.grp", false);
+    if(!mLeadBREGrp) mLeadBREGrp = Find<RndGroup>("lead_bre.grp", false);
+    if(!mHarmonyBREGrp) mHarmonyBREGrp = Find<RndGroup>("harmony_bre.grp", false);
+    if(!mPitchScrollGroup) mPitchScrollGroup = Find<RndGroup>("pitch_scroll.grp", false);
+    if(!mLeadLyricScrollGroup) mLeadLyricScrollGroup = Find<RndGroup>("lead_lyric_scroll.grp", false);
+    if(!mHarmonyLyricScrollGroup) mHarmonyLyricScrollGroup = Find<RndGroup>("harmony_lyric_scroll.grp", false);
+    if(!mBeatAnimsGrp) mBeatAnimsGrp = Find<RndGroup>("beat_anims.grp", false);
+    if(!mArrowFXDrawGrp) mArrowFXDrawGrp = Find<RndGroup>("arrow_fx_draw.grp", false);
+    if(!mTambourineSmasher) mTambourineSmasher = Find<RndDir>("tambourine_smasher", false);
+    if(!mTambourineNowShowTrig) mTambourineNowShowTrig = Find<EventTrigger>("tambourine_now_show.trig", false);
+    if(!mTambourineNowHideTrig) mTambourineNowHideTrig = Find<EventTrigger>("tambourine_now_hide.trig", false);
+    if(!mVocalMics) mVocalMics = Find<RndDir>("vocals_mics", false);
+    if(!mLeadPhraseFeedbackBottomLbl) mLeadPhraseFeedbackBottomLbl = Find<BandLabel>("lead_phrase_feedback_bottom.lbl", false);
+    UpdateTubeStyle();
 }
 
 #pragma push
@@ -83,14 +132,14 @@ BEGIN_PROPSYNCS(VocalTrackDir)
     SYNC_PROP(right_deco_mesh, mRightDecoMesh)
     SYNC_PROP(now_bar_width, mNowBarWidth)
     SYNC_PROP(now_bar_mesh, mNowBarMesh)
-    SYNC_PROP(remote, mRemote)
-    SYNC_PROP(track_left, mTrackLeft)
-    SYNC_PROP(track_right, mTrackRight)
-    SYNC_PROP(track_bottom, mTrackBottom)
-    SYNC_PROP(track_top, mTrackTop)
-    SYNC_PROP(pitch_bottom, mPitchBottom)
-    SYNC_PROP(pitch_top, mPitchTop)
-    SYNC_PROP(now_bar, mNowBar)
+    SYNC_PROP(remote, mRemoteVocals)
+    SYNC_PROP(track_left, mTrackLeftX)
+    SYNC_PROP(track_right, mTrackRightX)
+    SYNC_PROP(track_bottom, mTrackBottomZ)
+    SYNC_PROP(track_top, mTrackTopZ)
+    SYNC_PROP(pitch_bottom, mPitchBottomZ)
+    SYNC_PROP(pitch_top, mPitchTopZ)
+    SYNC_PROP(now_bar, mNowBarX)
     SYNC_PROP(pitch_guides, mPitchGuides)
     SYNC_PROP(tube_style, mTubeStyle)
     SYNC_PROP(arrow_style, mArrowStyle)
