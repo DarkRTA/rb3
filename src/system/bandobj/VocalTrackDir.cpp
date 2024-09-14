@@ -2,6 +2,7 @@
 #include "bandobj/TrackInterface.h"
 #include "obj/ObjVersion.h"
 #include "obj/DataFunc.h"
+#include "rndobj/Rnd.h"
 #include "utl/ClassSymbols.h"
 #include "utl/Symbols.h"
 
@@ -323,6 +324,55 @@ void VocalTrackDir::PostLoad(BinStream& bs){
     LoadTrack(bs, IsProxy(), gLoadingProxyFromDisk, true);
 }
 #pragma pop
+
+void VocalTrackDir::SetConfiguration(Hmx::Object* o, HarmonyShowingState state){
+    if(o != mVoxCfg || state != unk4b4){
+        mVoxCfg = o;
+        unk4b4 = state;
+        mRemoteVocals = mVoxCfg->Property(remote, true)->Int(0);
+        unk4b0 = mVoxCfg->Property(align, true)->Sym(0) == top;
+        if(unk2a7 && mPlayerIntro){
+            mPlayerIntro->SetLocalPos(Find<RndTransformable>("h2h_player_intro_trans.grp", true)->mLocalXfm.v);
+        }
+        ConfigPanels();
+        if(BandTrack::mParent) BandTrack::mParent->RebuildVocalHUD();
+        SetRange(mLastMin, mLastMax, mTonic, true);
+    }
+}
+
+void VocalTrackDir::UpdateConfiguration(){
+    bool widescreen = TheRnd->GetAspect() == Rnd::kWidescreen;
+    bool b8 = false;
+    TrackInterface* parent = BandTrack::mParent;
+    if(parent && parent->HasNetPlayer()) b8 = true;
+    b8 |= mSimulatedNet;
+    Hmx::Object* voxobj = FindObject(MakeString("%s%s%s",
+        b8 ? "vocals_remote" : "vocals",
+        mIsTop ? "_top" : "_bottom",
+        widescreen ? "_wide" : ""), false);
+    bool b9 = false;
+    if(mHarmLyrics && BandTrack::mParent && BandTrack::mParent->UseVocalHarmony()) b9 = true;
+    SetConfiguration(voxobj, (HarmonyShowingState)!b9);
+}
+
+void VocalTrackDir::TrackReset(){
+    SyncObjects();
+    if(BandTrack::mParent){
+        if(unk458) unk458->SetText("");
+        if(unk464) unk464->SetText("");
+        if(unk470) unk470->SetText("");
+        if(unk47c) unk47c->SetText("");
+        for(int i = 0; i < 3; i++) GetPitchArrow(i)->Clear();
+    }
+    if(mPlayerFeedback){
+        mPlayerFeedback->Find<EventTrigger>("setup_vocal.trig", true)->Trigger();
+    }
+    ResetSmashers(true);
+    if(!BandTrack::mParent || !BandTrack::mParent->FailedAtStart()) EnablePlayer();
+    std::floor(TheTaskMgr.Beat());
+    TheTaskMgr.Beat();
+    unk6c8 = true;
+}
 
 void VocalTrackDir::SyncObjects(){
     RndDir::SyncObjects();

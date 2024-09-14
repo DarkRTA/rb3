@@ -52,6 +52,8 @@ public:
     int NumVocalParts();
     void SetRange(float, float, int, bool);
     void UpdateTubeStyle();
+    void ConfigPanels();
+    PitchArrow* GetPitchArrow(int);
 
     DataNode DataForEachConfigObj(DataArray*);
     DataNode OnGetDisplayMode(DataArray*);

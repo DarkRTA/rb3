@@ -24,6 +24,7 @@ public:
     void SetPitched(bool);
     void SetSpotlight(bool);
     void SetDeploying(bool);
+    void Clear();
 
     DataNode OnSyncColor(DataArray*);
     DataNode OnSetupFx(DataArray*);
