@@ -69,6 +69,7 @@
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/OvershellDir.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
+            "system/bandobj/StarDisplay.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
             "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 

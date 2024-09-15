@@ -974,6 +974,9 @@ rb3/chordshapegenerator.cpp:
 rb3/notetube.cpp:
 	.text       start:0x803FC0A8 end:0x803FC164
 
+system/bandobj/StarDisplay.cpp:
+	.text       start:0x8041D674 end:0x8041ED7C
+
 rb3/micinputarrow.cpp:
 	.text       start:0x80420108 end:0x804213CC
 	.ctors      start:0x807EFF98 end:0x807EFF9C
