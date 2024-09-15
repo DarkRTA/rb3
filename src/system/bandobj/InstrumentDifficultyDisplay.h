@@ -3,6 +3,7 @@
 #include "ui/UIComponent.h"
 #include "bandobj/BandLabel.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/PropAnim.h"
 
 class InstrumentDifficultyDisplay : public UIComponent {
 public:
@@ -39,11 +40,11 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    int unk10c; // 0x10c
+    RndPropAnim* mDifficultyAnim; // 0x10c
     RndMesh* unk110; // 0x110
-    int unk114; // 0x114
-    int unk118; // 0x118
-    int unk11c; // 0x11c
+    RndMat* mVocalPart1Mat; // 0x114
+    RndMat* mVocalPart2Mat; // 0x118
+    RndMat* mVocalPart3Mat; // 0x11c
     BandLabel* unk120; // 0x120
     InstrumentState mInstrumentState; // 0x124
     bool mHasPart; // 0x128
