@@ -20,11 +20,11 @@ VocalTrackDir::VocalTrackDir() : BandTrack(this), mHiddenPartAlpha(0.3f), unk2a4
     mLastMin(36.0f), mLastMax(84.0f), mMiddleCZPos(0), mTonic(0x3c), mRangeScaleAnim(this, 0), mRangeOffsetAnim(this, 0), unk4b0(1), unk4b4(2), mLeftTrans(0), mRightTrans(0),
     mBottomTrans(0), mTopTrans(0), mPitchBottomTrans(0), mPitchTopTrans(0), mPitchMidTrans(0), mNowTrans(0), mTubeRangeGrp(this, 0), mTubeSpotlightGrp(this, 0),
     mTubeBack0Grp(this, 0), mTubeBack1Grp(this, 0), mTubeBack2Grp(this, 0), mTubeFront0Grp(this, 0), mTubeFront1Grp(this, 0), mTubeFront2Grp(this, 0), mTubeGlow0Grp(this, 0),
-    mTubeGlow1Grp(this, 0), mTubeGlow2Grp(this, 0), mTubePhoneme0Grp(this, 0), mTubePhoneme1Grp(this, 0), mTubePhoneme2Grp(this, 0), unk580(this, 0), unk58c(this, 0),
-    unk598(this, 0), unk5a4(this, 0), unk5b0(this, 0), unk5bc(this, 0), unk5c8(this, 0), unk5d4(this, 0), unk5e0(this, 0), unk5ec(this, 0), unk5f8(this, 0), unk604(this, 0),
-    unk610(this, 0), mVocalsGrp(this, 0), mScroller(this, 0), mLeadLyricScroller(this, 0), mHarmonyLyricScroller(this, 0), mBREGrp(this, 0), mLeadBREGrp(this, 0),
+    mTubeGlow1Grp(this, 0), mTubeGlow2Grp(this, 0), mTubePhoneme0Grp(this, 0), mTubePhoneme1Grp(this, 0), mTubePhoneme2Grp(this, 0), mSpotlightMat(this, 0), mLeadBackMat(this, 0),
+    mHarm1BackMat(this, 0), mHarm2BackMat(this, 0), mLeadFrontMat(this, 0), mHarm1FrontMat(this, 0), mHarm2FrontMat(this, 0), mLeadGlowMat(this, 0), mHarm1GlowMat(this, 0), mHarm2GlowMat(this, 0), mLeadPhonemeMat(this, 0), mHarm1PhonemeMat(this, 0),
+    mHarm2PhonemeMat(this, 0), mVocalsGrp(this, 0), mScroller(this, 0), mLeadLyricScroller(this, 0), mHarmonyLyricScroller(this, 0), mBREGrp(this, 0), mLeadBREGrp(this, 0),
     mHarmonyBREGrp(this, 0), mPitchScrollGroup(this, 0), mLeadLyricScrollGroup(this, 0), mHarmonyLyricScrollGroup(this, 0), unk694(0), unk698(0), unk69c(0), unk6a0(0),
-    mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), unk6bc(-1.0f), unk6c0(0.3f), unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
+    mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), mGlowSize(-1.0f), mGlowAlpha(0.3f), unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
 
 }
 
@@ -99,19 +99,19 @@ BEGIN_COPYS(VocalTrackDir)
         COPY_MEMBER(mTubePhoneme0Grp)
         COPY_MEMBER(mTubePhoneme1Grp)
         COPY_MEMBER(mTubePhoneme2Grp)
-        COPY_MEMBER(unk580)
-        COPY_MEMBER(unk58c)
-        COPY_MEMBER(unk598)
-        COPY_MEMBER(unk5a4)
-        COPY_MEMBER(unk5b0)
-        COPY_MEMBER(unk5bc)
-        COPY_MEMBER(unk5c8)
-        COPY_MEMBER(unk5d4)
-        COPY_MEMBER(unk5e0)
-        COPY_MEMBER(unk5ec)
-        COPY_MEMBER(unk5f8)
-        COPY_MEMBER(unk604)
-        COPY_MEMBER(unk610)
+        COPY_MEMBER(mSpotlightMat)
+        COPY_MEMBER(mLeadBackMat)
+        COPY_MEMBER(mHarm1BackMat)
+        COPY_MEMBER(mHarm2BackMat)
+        COPY_MEMBER(mLeadFrontMat)
+        COPY_MEMBER(mHarm1FrontMat)
+        COPY_MEMBER(mHarm2FrontMat)
+        COPY_MEMBER(mLeadGlowMat)
+        COPY_MEMBER(mHarm1GlowMat)
+        COPY_MEMBER(mHarm2GlowMat)
+        COPY_MEMBER(mLeadPhonemeMat)
+        COPY_MEMBER(mHarm1PhonemeMat)
+        COPY_MEMBER(mHarm2PhonemeMat)
         COPY_MEMBER(mLeadDeployMat)
         COPY_MEMBER(mHarmDeployMat)
         CopyTrack(c);
@@ -708,6 +708,68 @@ void VocalTrackDir::ApplyFontStyle(Hmx::Object* o){
             mHarmPhonemeText->SetColor(c50);
         }
         else mHarmPhonemeText = mHarmText;
+    }
+}
+
+void VocalTrackDir::SetRange(float min, float max, int tonic, bool b){
+    if((b || min != mLastMin || max != mLastMax || tonic != mTonic) && min < max && mPitchWindowMesh && mRangeScaleAnim && mRangeOffsetAnim){
+        mLastMin = min;
+        mLastMax = max;
+    }
+}
+
+void VocalTrackDir::UpdateTubeStyle(){
+    if(mTubeStyle){
+        if(!mSpotlightMat) mSpotlightMat = Find<RndMat>("spotlight.mat", true);
+        if(!mLeadBackMat && mTubeStyle->Property(lead_back, true)->NotNull()){
+            mLeadBackMat = mTubeStyle->Property(lead_back, true)->Obj<RndMat>(0);
+        }
+        if(!mLeadFrontMat && mTubeStyle->Property(lead_front, true)->NotNull()){
+            mLeadFrontMat = mTubeStyle->Property(lead_front, true)->Obj<RndMat>(0);
+        }
+        if(!mLeadGlowMat && mTubeStyle->Property(lead_glow, true)->NotNull()){
+            mLeadGlowMat = mTubeStyle->Property(lead_glow, true)->Obj<RndMat>(0);
+        }
+        if(!mLeadPhonemeMat && mTubeStyle->Property(lead_phoneme, true)->NotNull()){
+            mLeadPhonemeMat = mTubeStyle->Property(lead_phoneme, true)->Obj<RndMat>(0);
+        }
+        if(!mHarm1BackMat && mTubeStyle->Property(harmony_1_back, true)->NotNull()){
+            mHarm1BackMat = mTubeStyle->Property(harmony_1_back, true)->Obj<RndMat>(0);
+        }
+        if(!mHarm1FrontMat && mTubeStyle->Property(harmony_1_front, true)->NotNull()){
+            mHarm1FrontMat = mTubeStyle->Property(harmony_1_front, true)->Obj<RndMat>(0);
+        }
+        if(!mHarm1GlowMat && mTubeStyle->Property(harmony_1_glow, true)->NotNull()){
+            mHarm1GlowMat = mTubeStyle->Property(harmony_1_glow, true)->Obj<RndMat>(0);
+        }
+        if(!mHarm1PhonemeMat && mTubeStyle->Property(harmony_1_phoneme, true)->NotNull()){
+            mHarm1PhonemeMat = mTubeStyle->Property(harmony_1_phoneme, true)->Obj<RndMat>(0);
+        }
+        if(mTubeStyle->Property(same_as_harmony_1, true)->Int(0)){
+            mHarm2BackMat = mHarm1BackMat;
+            mHarm2FrontMat = mHarm1FrontMat;
+            mHarm2GlowMat = mHarm1GlowMat;
+            mHarm2PhonemeMat = mHarm1PhonemeMat;
+        }
+        else {
+            if(!mHarm2BackMat && mTubeStyle->Property(harmony_2_back, true)->NotNull()){
+                mHarm2BackMat = mTubeStyle->Property(harmony_2_back, true)->Obj<RndMat>(0);
+            }
+            if(!mHarm2FrontMat && mTubeStyle->Property(harmony_2_front, true)->NotNull()){
+                mHarm2FrontMat = mTubeStyle->Property(harmony_2_front, true)->Obj<RndMat>(0);
+            }
+            if(!mHarm2GlowMat && mTubeStyle->Property(harmony_2_glow, true)->NotNull()){
+                mHarm2GlowMat = mTubeStyle->Property(harmony_2_glow, true)->Obj<RndMat>(0);
+            }
+            if(!mHarm2PhonemeMat && mTubeStyle->Property(harmony_2_phoneme, true)->NotNull()){
+                mHarm2PhonemeMat = mTubeStyle->Property(harmony_2_phoneme, true)->Obj<RndMat>(0);
+            }
+        }
+        mGlowSize = mTubeStyle->Property(glow_size, true)->Float(0);
+        mGlowAlpha = mTubeStyle->Property(glow_alpha, true)->Float(0);
+        if(mLeadGlowMat) mLeadGlowMat->SetAlpha(mGlowAlpha);
+        if(mHarm1GlowMat) mHarm1GlowMat->SetAlpha(mGlowAlpha);
+        if(mHarm2GlowMat) mHarm2GlowMat->SetAlpha(mGlowAlpha);
     }
 }
 
