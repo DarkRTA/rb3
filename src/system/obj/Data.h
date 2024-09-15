@@ -261,6 +261,7 @@ inline DataNode::~DataNode(){
 DataNode& DataVariable(Symbol);
 bool DataVarExists(Symbol);
 bool DataArrayDefined();
+const char* DataVarName(const DataNode*);
 
 // to properly generate DataArray::Node const vs non-const
 #define CONST_ARRAY(array) ((const DataArray*)(array))

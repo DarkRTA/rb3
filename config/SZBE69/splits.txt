@@ -990,8 +990,8 @@ rb3/overdrivemeter.cpp:
 rb3/gemtrackdir.cpp:
 	.text       start:0x80426FDC end:0x80430F2C
 
-rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80430F2C end:0x804431F4
+system/bandobj/VocalTrackDir.cpp:
+	.text       start:0x80431DC8 end:0x8043B9C0
 
 rb3/trackpaneldir.cpp:
 	.text       start:0x804431F4 end:0x80448CD0

@@ -5,6 +5,8 @@
 #include "rndobj/Group.h"
 #include "rndobj/Text.h"
 
+enum VocalHUDColor;
+
 class VocalTrackDir : public RndDir, public BandTrack {
 public:
     enum HarmonyShowingState {
@@ -52,6 +54,20 @@ public:
     int NumVocalParts();
     void SetRange(float, float, int, bool);
     void UpdateTubeStyle();
+    void ConfigPanels();
+    PitchArrow* GetPitchArrow(int);
+    void Tambourine(Symbol);
+    void TambourineNote();
+    void SetVocalLineColors(VocalHUDColor*);
+    void UpdateVocalMeters(bool, bool, bool, bool);
+    void ShowMicDisplay(bool);
+    void SetMicDisplayLabel(Symbol);
+    void SetMissingMicsForDisplay(bool, bool, bool);
+    void CanChat(bool);
+    void RecalculateLyricZ(bool*, bool*);
+    void SetupNetVocals();
+    void UpdatePartIsolation();
+    void SortArrowFx();
 
     DataNode DataForEachConfigObj(DataArray*);
     DataNode OnGetDisplayMode(DataArray*);
@@ -117,10 +133,10 @@ public:
     ObjPtr<Hmx::Object, ObjectDir> mTubeStyle; // 0x434
     ObjPtr<Hmx::Object, ObjectDir> mArrowStyle; // 0x440
     ObjPtr<Hmx::Object, ObjectDir> mFontStyle; // 0x44c
-    ObjPtr<RndText, ObjectDir> unk458; // 0x458
-    ObjPtr<RndText, ObjectDir> unk464; // 0x464
-    ObjPtr<RndText, ObjectDir> unk470; // 0x470
-    ObjPtr<RndText, ObjectDir> unk47c; // 0x47c
+    ObjPtr<RndText, ObjectDir> mLeadText; // 0x458
+    ObjPtr<RndText, ObjectDir> mHarmText; // 0x464
+    ObjPtr<RndText, ObjectDir> mLeadPhonemeText; // 0x470
+    ObjPtr<RndText, ObjectDir> mHarmPhonemeText; // 0x47c
     float mLastMin; // 0x488
     float mLastMax; // 0x48c
     float mMiddleCZPos; // 0x490
@@ -151,19 +167,19 @@ public:
     ObjPtr<RndGroup, ObjectDir> mTubePhoneme0Grp; // 0x55c
     ObjPtr<RndGroup, ObjectDir> mTubePhoneme1Grp; // 0x568
     ObjPtr<RndGroup, ObjectDir> mTubePhoneme2Grp; // 0x574
-    ObjPtr<RndMat, ObjectDir> unk580; // 0x580
-    ObjPtr<RndMat, ObjectDir> unk58c; // 0x58c
-    ObjPtr<RndMat, ObjectDir> unk598; // 0x598
-    ObjPtr<RndMat, ObjectDir> unk5a4; // 0x5a4
-    ObjPtr<RndMat, ObjectDir> unk5b0; // 0x5b0
-    ObjPtr<RndMat, ObjectDir> unk5bc; // 0x5bc
-    ObjPtr<RndMat, ObjectDir> unk5c8; // 0x5c8
-    ObjPtr<RndMat, ObjectDir> unk5d4; // 0x5d4
-    ObjPtr<RndMat, ObjectDir> unk5e0; // 0x5e0
-    ObjPtr<RndMat, ObjectDir> unk5ec; // 0x5ec
-    ObjPtr<RndMat, ObjectDir> unk5f8; // 0x5f8
-    ObjPtr<RndMat, ObjectDir> unk604; // 0x604
-    ObjPtr<RndMat, ObjectDir> unk610; // 0x610
+    ObjPtr<RndMat, ObjectDir> mSpotlightMat; // 0x580
+    ObjPtr<RndMat, ObjectDir> mLeadBackMat; // 0x58c
+    ObjPtr<RndMat, ObjectDir> mHarm1BackMat; // 0x598
+    ObjPtr<RndMat, ObjectDir> mHarm2BackMat; // 0x5a4
+    ObjPtr<RndMat, ObjectDir> mLeadFrontMat; // 0x5b0
+    ObjPtr<RndMat, ObjectDir> mHarm1FrontMat; // 0x5bc
+    ObjPtr<RndMat, ObjectDir> mHarm2FrontMat; // 0x5c8
+    ObjPtr<RndMat, ObjectDir> mLeadGlowMat; // 0x5d4
+    ObjPtr<RndMat, ObjectDir> mHarm1GlowMat; // 0x5e0
+    ObjPtr<RndMat, ObjectDir> mHarm2GlowMat; // 0x5ec
+    ObjPtr<RndMat, ObjectDir> mLeadPhonemeMat; // 0x5f8
+    ObjPtr<RndMat, ObjectDir> mHarm1PhonemeMat; // 0x604
+    ObjPtr<RndMat, ObjectDir> mHarm2PhonemeMat; // 0x610
     ObjPtr<RndGroup, ObjectDir> mVocalsGrp; // 0x61c
     ObjPtr<RndTransformable, ObjectDir> mScroller; // 0x628
     ObjPtr<RndTransformable, ObjectDir> mLeadLyricScroller; // 0x634
@@ -180,8 +196,8 @@ public:
     float unk6a0; // 0x6a0
     ObjPtr<RndMat, ObjectDir> mLeadDeployMat; // 0x6a4
     ObjPtr<RndMat, ObjectDir> mHarmDeployMat; // 0x6b0
-    float unk6bc; // 0x6bc
-    float unk6c0; // 0x6c0
+    float mGlowSize; // 0x6bc
+    float mGlowAlpha; // 0x6c0
     int unk6c4; // 0x6c4
     bool unk6c8; // 0x6c8
     ObjPtr<RndGroup, ObjectDir> mArrowFXDrawGrp; // 0x6cc

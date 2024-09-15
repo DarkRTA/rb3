@@ -111,6 +111,7 @@ public:
     void SetAltSizeAndZOffset(float, float);
     void SetAlignment(Alignment);
     void SetLeading(float);
+    void SetColor(const Hmx::Color32&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -128,14 +129,14 @@ public:
     RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    int mColor; // packed color? Hmx::Color32?
+    Hmx::Color32 mColor; // 0xe4
     bool unke8;
     bool unke9;
     float mZOffset;
     RndFont* unkf0;
     float mAltSize;
     float mAltItalicStrength;
-    int mAltColor;
+    Hmx::Color32 mAltColor;
     bool unk100;
     bool unk101;
     float mAltZOffset;

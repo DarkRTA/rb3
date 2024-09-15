@@ -76,5 +76,5 @@ public:
     virtual bool UseVocalHarmony(){ return true; }
     virtual void SetCanDeploy(bool){}
     virtual int GetNumVocalParts();
-    virtual int ShowPitchCorrectionNotice() const { return 0; }
+    virtual bool ShowPitchCorrectionNotice() const { return 0; }
 };

@@ -5,6 +5,17 @@
 #include "rndobj/TransAnim.h"
 #include "bandobj/BandLabel.h"
 
+enum VocalHUDColor {
+    kVocalColorGreen = 0,
+    kVocalColorYellow = 1,
+    kVocalColorOrange = 2,
+    kVocalColorBrown = 3,
+    kVocalColorPurple = 4,
+    kVocalColorBlue = 5,
+    kVocalColorWhite = 6,
+    kVocalColorInvalid = -1
+};
+
 class StreakMeter : public RndDir {
 public:
     StreakMeter();
@@ -27,6 +38,12 @@ public:
     void Overdrive() const;
     void SetWipe(float);
     void SetPeakState();
+    void SetPartColor(int, VocalHUDColor);
+    void SetPartActive(int, bool);
+    void ForceFadeInactiveParts();
+    int NumActiveParts() const;
+    void ShowPhraseFeedback(int, bool);
+    void SetIsolatedPart(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

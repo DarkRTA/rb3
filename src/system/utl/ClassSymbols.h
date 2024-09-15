@@ -69,6 +69,7 @@ extern Symbol Text;
 extern Symbol TextEntry;
 extern Symbol TrackTesting;
 extern Symbol UIPanel;
+extern Symbol UNEXPECTED;
 extern Symbol Unhandled;
 extern Symbol Var;
 extern Symbol WorldFx;
