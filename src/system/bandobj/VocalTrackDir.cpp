@@ -829,7 +829,8 @@ int VocalTrackDir::NumVocalParts(){
 void VocalTrackDir::TutorialReset(){
     Find<RndAnimatable>("freestyle_wave_show.anim", true)->SetFrame(0, 1.0f);
     Find<RndAnimatable>("spotlight_phrase_success.grp", true)->SetFrame(2000.0f, 1.0f);
-    Find<StreakMeter>("streak_meter_vox_top", true)->Find<RndAnimatable>("flash.anim", true)->SetFrame(11.0f, 1.0f);
-    Find<RndAnimatable>("star_power.panim", true)->SetFrame(10.0f, 1.0f);
-    Find<RndParticleSys>("star_power.part", true)->FreeAllParticles();
+    StreakMeter* meter = Find<StreakMeter>("streak_meter_vox_top", true);
+    meter->Find<RndAnimatable>("flash.anim", true)->SetFrame(11.0f, 1.0f);
+    meter->Find<RndAnimatable>("star_power.panim", true)->SetFrame(10.0f, 1.0f);
+    meter->Find<RndParticleSys>("star_power.part", true)->FreeAllParticles();
 }
