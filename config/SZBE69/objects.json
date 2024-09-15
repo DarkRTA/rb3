@@ -70,6 +70,7 @@
             "system/bandobj/OvershellDir.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
             "system/bandobj/UnisonIcon.cpp": "NonMatching",
+            "system/bandobj/VocalTrackDir.cpp": "NonMatching",
 
             "system/char/Character.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "NonMatching",
