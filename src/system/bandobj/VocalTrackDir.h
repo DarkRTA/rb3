@@ -133,10 +133,10 @@ public:
     ObjPtr<Hmx::Object, ObjectDir> mTubeStyle; // 0x434
     ObjPtr<Hmx::Object, ObjectDir> mArrowStyle; // 0x440
     ObjPtr<Hmx::Object, ObjectDir> mFontStyle; // 0x44c
-    ObjPtr<RndText, ObjectDir> unk458; // 0x458
-    ObjPtr<RndText, ObjectDir> unk464; // 0x464
-    ObjPtr<RndText, ObjectDir> unk470; // 0x470
-    ObjPtr<RndText, ObjectDir> unk47c; // 0x47c
+    ObjPtr<RndText, ObjectDir> mLeadText; // 0x458
+    ObjPtr<RndText, ObjectDir> mHarmText; // 0x464
+    ObjPtr<RndText, ObjectDir> mLeadPhonemeText; // 0x470
+    ObjPtr<RndText, ObjectDir> mHarmPhonemeText; // 0x47c
     float mLastMin; // 0x488
     float mLastMax; // 0x48c
     float mMiddleCZPos; // 0x490

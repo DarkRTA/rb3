@@ -16,15 +16,15 @@ VocalTrackDir::VocalTrackDir() : BandTrack(this), mHiddenPartAlpha(0.3f), unk2a4
     mPitchWindowHeight(2.5f), mPitchWindowMesh(this, 0), mPitchWindowOverlay(this, 0), mLeadLyrics(1), mLeadLyricHeight(0.4f), mLeadLyricMesh(this, 0), mHarmLyrics(1),
     mHarmLyricHeight(0.4f), mHarmLyricMesh(this, 0), mLeftDecoMesh(this, 0), mRightDecoMesh(this, 0), mNowBarWidth(0.2f), mNowBarMesh(this, 0), mRemoteVocals(0),
     mTrackLeftX(-20.0f), mTrackRightX(20.0f), mTrackBottomZ(0.0f), mTrackTopZ(10.0f), mPitchBottomZ(0.0f), mPitchTopZ(2.0f), mNowBarX(-10.0f), unk42c(0), mPitchGuides("harmonic"),
-    mTubeStyle(this, 0), mArrowStyle(this, 0), mFontStyle(this, 0), unk458(this, 0), unk464(this, 0), unk470(this, 0), unk47c(this, 0), mLastMin(36.0f), mLastMax(84.0f), mMiddleCZPos(0),
-    mTonic(0x3c), mRangeScaleAnim(this, 0), mRangeOffsetAnim(this, 0), unk4b0(1), unk4b4(2), mLeftTrans(0), mRightTrans(0), mBottomTrans(0), mTopTrans(0),
-    mPitchBottomTrans(0), mPitchTopTrans(0), mPitchMidTrans(0), mNowTrans(0), mTubeRangeGrp(this, 0), mTubeSpotlightGrp(this, 0), mTubeBack0Grp(this, 0), mTubeBack1Grp(this, 0),
-    mTubeBack2Grp(this, 0), mTubeFront0Grp(this, 0), mTubeFront1Grp(this, 0), mTubeFront2Grp(this, 0), mTubeGlow0Grp(this, 0), mTubeGlow1Grp(this, 0), mTubeGlow2Grp(this, 0),
-    mTubePhoneme0Grp(this, 0), mTubePhoneme1Grp(this, 0), mTubePhoneme2Grp(this, 0), unk580(this, 0), unk58c(this, 0), unk598(this, 0), unk5a4(this, 0), unk5b0(this, 0), unk5bc(this, 0),
-    unk5c8(this, 0), unk5d4(this, 0), unk5e0(this, 0), unk5ec(this, 0), unk5f8(this, 0), unk604(this, 0), unk610(this, 0), mVocalsGrp(this, 0), mScroller(this, 0), mLeadLyricScroller(this, 0),
-    mHarmonyLyricScroller(this, 0), mBREGrp(this, 0), mLeadBREGrp(this, 0), mHarmonyBREGrp(this, 0), mPitchScrollGroup(this, 0), mLeadLyricScrollGroup(this, 0),
-    mHarmonyLyricScrollGroup(this, 0), unk694(0), unk698(0), unk69c(0), unk6a0(0), mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), unk6bc(-1.0f), unk6c0(0.3f),
-    unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
+    mTubeStyle(this, 0), mArrowStyle(this, 0), mFontStyle(this, 0), mLeadText(this, 0), mHarmText(this, 0), mLeadPhonemeText(this, 0), mHarmPhonemeText(this, 0),
+    mLastMin(36.0f), mLastMax(84.0f), mMiddleCZPos(0), mTonic(0x3c), mRangeScaleAnim(this, 0), mRangeOffsetAnim(this, 0), unk4b0(1), unk4b4(2), mLeftTrans(0), mRightTrans(0),
+    mBottomTrans(0), mTopTrans(0), mPitchBottomTrans(0), mPitchTopTrans(0), mPitchMidTrans(0), mNowTrans(0), mTubeRangeGrp(this, 0), mTubeSpotlightGrp(this, 0),
+    mTubeBack0Grp(this, 0), mTubeBack1Grp(this, 0), mTubeBack2Grp(this, 0), mTubeFront0Grp(this, 0), mTubeFront1Grp(this, 0), mTubeFront2Grp(this, 0), mTubeGlow0Grp(this, 0),
+    mTubeGlow1Grp(this, 0), mTubeGlow2Grp(this, 0), mTubePhoneme0Grp(this, 0), mTubePhoneme1Grp(this, 0), mTubePhoneme2Grp(this, 0), unk580(this, 0), unk58c(this, 0),
+    unk598(this, 0), unk5a4(this, 0), unk5b0(this, 0), unk5bc(this, 0), unk5c8(this, 0), unk5d4(this, 0), unk5e0(this, 0), unk5ec(this, 0), unk5f8(this, 0), unk604(this, 0),
+    unk610(this, 0), mVocalsGrp(this, 0), mScroller(this, 0), mLeadLyricScroller(this, 0), mHarmonyLyricScroller(this, 0), mBREGrp(this, 0), mLeadBREGrp(this, 0),
+    mHarmonyBREGrp(this, 0), mPitchScrollGroup(this, 0), mLeadLyricScrollGroup(this, 0), mHarmonyLyricScrollGroup(this, 0), unk694(0), unk698(0), unk69c(0), unk6a0(0),
+    mLeadDeployMat(this, 0), mHarmDeployMat(this, 0), unk6bc(-1.0f), unk6c0(0.3f), unk6c4(-1), unk6c8(0), mArrowFXDrawGrp(this, 0), unk6d8(18.0f), unk6dc(48.0f), unk6e0(0) {
 
 }
 
@@ -75,10 +75,10 @@ BEGIN_COPYS(VocalTrackDir)
         COPY_MEMBER(mTubeStyle)
         COPY_MEMBER(mArrowStyle)
         COPY_MEMBER(mFontStyle)
-        COPY_MEMBER(unk458)
-        COPY_MEMBER(unk464)
-        COPY_MEMBER(unk470)
-        COPY_MEMBER(unk47c)
+        COPY_MEMBER(mLeadText)
+        COPY_MEMBER(mHarmText)
+        COPY_MEMBER(mLeadPhonemeText)
+        COPY_MEMBER(mHarmPhonemeText)
         COPY_MEMBER(mLastMin)
         COPY_MEMBER(mLastMax)
         COPY_MEMBER(mMiddleCZPos)
@@ -299,11 +299,11 @@ void VocalTrackDir::PostLoad(BinStream& bs){
             bs >> mTubeStyle;
             bs >> mArrowStyle;
             bs >> mFontStyle;
-            bs >> unk458;
-            bs >> unk464;
+            bs >> mLeadText;
+            bs >> mHarmText;
             if(gRev >= 4){
-                bs >> unk470;
-                bs >> unk47c;
+                bs >> mLeadPhonemeText;
+                bs >> mHarmPhonemeText;
             }
             bs >> mLastMin;
             bs >> mLastMax;
@@ -358,10 +358,10 @@ void VocalTrackDir::UpdateConfiguration(){
 void VocalTrackDir::TrackReset(){
     SyncObjects();
     if(BandTrack::mParent){
-        if(unk458) unk458->SetText("");
-        if(unk464) unk464->SetText("");
-        if(unk470) unk470->SetText("");
-        if(unk47c) unk47c->SetText("");
+        if(mLeadText) mLeadText->SetText("");
+        if(mHarmText) mHarmText->SetText("");
+        if(mLeadPhonemeText) mLeadPhonemeText->SetText("");
+        if(mHarmPhonemeText) mHarmPhonemeText->SetText("");
         for(int i = 0; i < 3; i++) GetPitchArrow(i)->Clear();
     }
     if(mPlayerFeedback){
@@ -636,6 +636,8 @@ void VocalTrackDir::ConfigPanels(){
     }
 }
 
+DECOMP_FORCEACTIVE(VocalTrackDir, "pitch_window_mat_config.anim", "massive pitch range in vocal HUD: [%.0f, %.0f], probably a bug", "spotlight.mat")
+
 void VocalTrackDir::ApplyArrowStyle(Hmx::Object* o){
     if(o && o->Type() == arrow_style){
         if(mPitchArrow1 && o->Property(arrow_A, true)->NotNull()){
@@ -662,50 +664,50 @@ void VocalTrackDir::ApplyFontStyle(Hmx::Object* o){
     Hmx::Color c40(1.0f, 1.0f, 1.0f, 1.0f);
     Hmx::Color c50(1.0f, 1.0f, 1.0f, 0.75f);
 
-    if(unk458){
-        unk458->SetShowing(false);
-        c20 = unk458->mColor;
+    if(mLeadText){
+        mLeadText->SetShowing(false);
+        c20 = mLeadText->mColor;
     }
-    if(unk464){
-        unk464->SetShowing(false);
-        c30 = unk464->mColor;
+    if(mHarmText){
+        mHarmText->SetShowing(false);
+        c30 = mHarmText->mColor;
     }
-    if(unk470){
-        unk470->SetShowing(false);
-        c40 = unk470->mColor;
+    if(mLeadPhonemeText){
+        mLeadPhonemeText->SetShowing(false);
+        c40 = mLeadPhonemeText->mColor;
     }
-    if(unk47c){
-        unk47c->SetShowing(false);
-        c50 = unk47c->mColor;
+    if(mHarmPhonemeText){
+        mHarmPhonemeText->SetShowing(false);
+        c50 = mHarmPhonemeText->mColor;
     }
 
     if(o && o->Type() == font_style){
         Hmx::Object* miloObj = ObjectDir::sMainDir->FindObject("milo", false);
         bool objexists = miloObj;
         if(o->Property(lead_text, true)->NotNull()){
-            unk458 = o->Property(lead_text, true)->Obj<RndText>(0);
-            unk458->SetShowing(objexists);
-            unk458->SetColor(c20);
+            mLeadText = o->Property(lead_text, true)->Obj<RndText>(0);
+            mLeadText->SetShowing(objexists);
+            mLeadText->SetColor(c20);
         }
-        else unk458 = 0;
+        else mLeadText = 0;
         if(o->Property(harmony_text, true)->NotNull()){
-            unk464 = o->Property(harmony_text, true)->Obj<RndText>(0);
-            unk464->SetShowing(objexists);
-            unk464->SetColor(c30);
+            mHarmText = o->Property(harmony_text, true)->Obj<RndText>(0);
+            mHarmText->SetShowing(objexists);
+            mHarmText->SetColor(c30);
         }
-        else unk464 = 0;
+        else mHarmText = 0;
         if(o->Property(lead_phoneme_text, true)->NotNull()){
-            unk470 = o->Property(lead_phoneme_text, true)->Obj<RndText>(0);
-            unk470->SetShowing(objexists);
-            unk470->SetColor(c40);
+            mLeadPhonemeText = o->Property(lead_phoneme_text, true)->Obj<RndText>(0);
+            mLeadPhonemeText->SetShowing(objexists);
+            mLeadPhonemeText->SetColor(c40);
         }
-        else unk470 = unk458;
+        else mLeadPhonemeText = mLeadText;
         if(o->Property(harmony_phoneme_text, true)->NotNull()){
-            unk47c = o->Property(harmony_phoneme_text, true)->Obj<RndText>(0);
-            unk47c->SetShowing(objexists);
-            unk47c->SetColor(c50);
+            mHarmPhonemeText = o->Property(harmony_phoneme_text, true)->Obj<RndText>(0);
+            mHarmPhonemeText->SetShowing(objexists);
+            mHarmPhonemeText->SetColor(c50);
         }
-        else unk47c = unk464;
+        else mHarmPhonemeText = mHarmText;
     }
 }
 
@@ -714,12 +716,12 @@ DataNode VocalTrackDir::OnSetLyricColor(const DataArray* da){
     Symbol sym(da->Sym(3));
     c20.Unpack(da->Int(2));
     if(sym == lead){
-        if(unk458) unk458->SetColor(Hmx::Color32(c20));
-        if(unk470) unk470->SetColor(Hmx::Color32(c20));
+        if(mLeadText) mLeadText->SetColor(Hmx::Color32(c20));
+        if(mLeadPhonemeText) mLeadPhonemeText->SetColor(Hmx::Color32(c20));
     }
     else if(sym == harmony){
-        if(unk464) unk464->SetColor(Hmx::Color32(c20));
-        if(unk47c) unk47c->SetColor(Hmx::Color32(c20));
+        if(mHarmText) mHarmText->SetColor(Hmx::Color32(c20));
+        if(mHarmPhonemeText) mHarmPhonemeText->SetColor(Hmx::Color32(c20));
     }
     return DataNode(0);
 }
