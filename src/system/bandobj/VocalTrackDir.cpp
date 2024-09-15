@@ -344,8 +344,7 @@ void VocalTrackDir::SetConfiguration(Hmx::Object* o, HarmonyShowingState state){
 void VocalTrackDir::UpdateConfiguration(){
     bool widescreen = TheRnd->GetAspect() == Rnd::kWidescreen;
     bool b8 = false;
-    TrackInterface* parent = BandTrack::mParent;
-    if(parent && parent->HasNetPlayer()) b8 = true;
+    if(BandTrack::mParent && BandTrack::mParent->HasNetPlayer()) b8 = true;
     b8 |= mSimulatedNet;
     Hmx::Object* voxobj = FindObject(MakeString("%s%s%s",
         b8 ? "vocals_remote" : "vocals",
@@ -493,7 +492,8 @@ void VocalTrackDir::SetMicDisplayLabel(Symbol s){
 }
 
 void VocalTrackDir::SetMissingMicsForDisplay(bool b1, bool b2, bool b3){
-    mVocalMics->Find<RndAnimatable>("arrow_configuration.anim", true)->SetFrame(b1 | b2 | b3, 1.0f);
+    bool big_b = b1 | b2 | b3;
+    mVocalMics->Find<RndAnimatable>("arrow_configuration.anim", true)->SetFrame(big_b, 1.0f);
 }
 
 void VocalTrackDir::CanChat(bool show){
@@ -610,6 +610,105 @@ void VocalTrackDir::SyncObjects(){
     UpdateTubeStyle();
 }
 
+void VocalTrackDir::ConfigPanels(){
+    if(mFontStyle) ApplyFontStyle(mFontStyle);
+    float f8 = 0;
+    if(mHarmLyrics && BandTrack::mParent){
+        if(BandTrack::mParent->UseVocalHarmony()) f8 += 1.0f;
+    }
+    if(mRemoteVocals || !mPitchWindow) f8 += 2.0f;
+    if(TheRnd->GetAspect() == Rnd::kWidescreen) f8 += 10.0f;
+    Find<RndAnimatable>("config.anim", true)->SetFrame(f8, 1.0f);
+
+    mTrackBottomZ = mBottomTrans->mLocalXfm.v.z;
+    mTrackTopZ = mTopTrans->mLocalXfm.v.z;
+    mNowBarX = mNowTrans->mLocalXfm.v.x;
+    mPitchBottomZ = mPitchBottomTrans->mLocalXfm.v.z;
+    mPitchTopZ = mPitchTopTrans->mLocalXfm.v.z;
+    mTrackRightX = mRightTrans->mLocalXfm.v.x;
+    mTrackLeftX = mLeftTrans->mLocalXfm.v.x;
+    RndTransformable* lyrictrans = Find<RndTransformable>("static_lyric_phrase_splitter.trans", false);
+    unk42c = lyrictrans ? lyrictrans->mLocalXfm.v.x : mTrackRightX;
+    if(ObjectDir::sMainDir->FindObject("milo", false)){
+        if(mPitchArrow1) mPitchArrow1->SetLocalPos(Vector3(0,0, mPitchTopZ * 3.0f + mPitchBottomZ * 0.25f));
+        if(mPitchArrow2) mPitchArrow2->SetLocalPos(Vector3(0,0, mPitchBottomZ + mPitchTopZ * 0.5f));
+        if(mPitchArrow3) mPitchArrow3->SetLocalPos(Vector3(0,0, mPitchBottomZ * 3.0f + mPitchTopZ * 0.25f));
+    }
+}
+
+void VocalTrackDir::ApplyArrowStyle(Hmx::Object* o){
+    if(o && o->Type() == arrow_style){
+        if(mPitchArrow1 && o->Property(arrow_A, true)->NotNull()){
+            FilePath fp(o->Property(arrow_A, true)->Str(0));
+            mPitchArrow1->SetProxyFile(fp, false);
+            mPitchArrow1->Reset(0);
+        }
+        if(mPitchArrow2 && o->Property(arrow_B, true)->NotNull()){
+            FilePath fp(o->Property(arrow_B, true)->Str(0));
+            mPitchArrow2->SetProxyFile(fp, false);
+            mPitchArrow2->Reset(0);
+        }
+        if(mPitchArrow3 && o->Property(arrow_C, true)->NotNull()){
+            FilePath fp(o->Property(arrow_C, true)->Str(0));
+            mPitchArrow3->SetProxyFile(fp, false);
+            mPitchArrow3->Reset(0);
+        }
+    }
+}
+
+void VocalTrackDir::ApplyFontStyle(Hmx::Object* o){
+    Hmx::Color c20(1.0f, 1.0f, 1.0f, 1.0f);
+    Hmx::Color c30(1.0f, 1.0f, 1.0f, 0.75f);
+    Hmx::Color c40(1.0f, 1.0f, 1.0f, 1.0f);
+    Hmx::Color c50(1.0f, 1.0f, 1.0f, 0.75f);
+
+    if(unk458){
+        unk458->SetShowing(false);
+        c20 = unk458->mColor;
+    }
+    if(unk464){
+        unk464->SetShowing(false);
+        c30 = unk464->mColor;
+    }
+    if(unk470){
+        unk470->SetShowing(false);
+        c40 = unk470->mColor;
+    }
+    if(unk47c){
+        unk47c->SetShowing(false);
+        c50 = unk47c->mColor;
+    }
+
+    if(o && o->Type() == font_style){
+        Hmx::Object* miloObj = ObjectDir::sMainDir->FindObject("milo", false);
+        bool objexists = miloObj;
+        if(o->Property(lead_text, true)->NotNull()){
+            unk458 = o->Property(lead_text, true)->Obj<RndText>(0);
+            unk458->SetShowing(objexists);
+            unk458->SetColor(c20);
+        }
+        else unk458 = 0;
+        if(o->Property(harmony_text, true)->NotNull()){
+            unk464 = o->Property(harmony_text, true)->Obj<RndText>(0);
+            unk464->SetShowing(objexists);
+            unk464->SetColor(c30);
+        }
+        else unk464 = 0;
+        if(o->Property(lead_phoneme_text, true)->NotNull()){
+            unk470 = o->Property(lead_phoneme_text, true)->Obj<RndText>(0);
+            unk470->SetShowing(objexists);
+            unk470->SetColor(c40);
+        }
+        else unk470 = unk458;
+        if(o->Property(harmony_phoneme_text, true)->NotNull()){
+            unk47c = o->Property(harmony_phoneme_text, true)->Obj<RndText>(0);
+            unk47c->SetShowing(objexists);
+            unk47c->SetColor(c50);
+        }
+        else unk47c = unk464;
+    }
+}
+
 DataNode VocalTrackDir::OnSetLyricColor(const DataArray* da){
     Hmx::Color c20(0,0,0,da->Float(4));
     Symbol sym(da->Sym(3));
@@ -618,7 +717,7 @@ DataNode VocalTrackDir::OnSetLyricColor(const DataArray* da){
         if(unk458) unk458->SetColor(Hmx::Color32(c20));
         if(unk470) unk470->SetColor(Hmx::Color32(c20));
     }
-    if(sym == harmony){
+    else if(sym == harmony){
         if(unk464) unk464->SetColor(Hmx::Color32(c20));
         if(unk47c) unk47c->SetColor(Hmx::Color32(c20));
     }

@@ -27,6 +27,8 @@ namespace Hmx {
         Color(int i) : alpha(1.0f) { Unpack(i); }
         Color(const Color32&);
 
+        Color& operator=(const Color32& c32);
+
         // copy ctor uses asm magic
         Color(const Color& color){
             typedef struct{
@@ -68,6 +70,13 @@ namespace Hmx {
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
+
+        void UnpackAlpha(int packed){
+            red = (packed & 255) / 255.0f;
+            green = ((packed >> 8) & 255) / 255.0f;
+            blue = ((packed >> 0x10) & 255) / 255.0f;
+            alpha = ((packed >> 0x18) & 255) / 255.0f;
+        }
     };
 
     class Color32 {
@@ -102,6 +111,12 @@ namespace Hmx {
         float fb() const { return b * 0.0039215688593685627f;}
         float fa() const { return a * 0.0039215688593685627f;}
     };
+
+    inline Color& Hmx::Color::operator=(const Color32& c32){
+        UnpackAlpha(c32.color);
+        return *this;
+    }
+
 }
 
 void MakeHSL(const Hmx::Color&, float&, float&, float&);

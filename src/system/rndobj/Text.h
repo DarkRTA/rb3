@@ -129,7 +129,7 @@ public:
     RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    int mColor; // packed color? Hmx::Color32?
+    Hmx::Color32 mColor; // 0xe4
     bool unke8;
     bool unke9;
     float mZOffset;
