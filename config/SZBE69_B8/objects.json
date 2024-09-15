@@ -170,7 +170,7 @@
             "system/bandobj/BandTrack.cpp": "NonMatching",
             "system/bandobj/BandWardrobe.cpp": "NonMatching",
             "system/bandobj/CharKeyHandMidi.cpp": "NonMatching",
-            "system/bandobj/CheckboxDisplay.cpp": "NonMatching",
+            "system/bandobj/CheckboxDisplay.cpp": "Matching",
             "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": {
                 "status": "LinkIssues",

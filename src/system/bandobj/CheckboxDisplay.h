@@ -21,10 +21,16 @@ public:
 
     void SetChecked(bool);
 
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(CheckboxDisplay);
+    }
+    NEW_OBJ(CheckboxDisplay);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    int unk10c; // 0x10c
+    RndMesh* mCheckMesh; // 0x10c
     bool mChecked; // 0x110
 };

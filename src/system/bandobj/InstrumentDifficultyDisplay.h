@@ -41,11 +41,11 @@ public:
     DELETE_OVERLOAD;
 
     RndPropAnim* mDifficultyAnim; // 0x10c
-    RndMesh* unk110; // 0x110
+    RndMesh* mVocalPartMesh; // 0x110
     RndMat* mVocalPart1Mat; // 0x114
     RndMat* mVocalPart2Mat; // 0x118
     RndMat* mVocalPart3Mat; // 0x11c
-    BandLabel* unk120; // 0x120
+    BandLabel* mInstrumentLabel; // 0x120
     InstrumentState mInstrumentState; // 0x124
     bool mHasPart; // 0x128
     int mDifficulty; // 0x12c

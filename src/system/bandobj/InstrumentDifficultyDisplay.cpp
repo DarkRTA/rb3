@@ -11,13 +11,13 @@ void InstrumentDifficultyDisplay::Init(){
 
 InstrumentDifficultyDisplay::InstrumentDifficultyDisplay() : mDifficultyAnim(0), mVocalPart1Mat(0), mVocalPart2Mat(0), mVocalPart3Mat(0), mInstrumentState(kName), mHasPart(1),
     mDifficulty(3), mNumVocalParts(0), mInstrumentType("band"), mInstrumentColorOverride(this, 0) {
-    unk120 = Hmx::Object::New<BandLabel>();
-    unk110 = Hmx::Object::New<RndMesh>();
+    mInstrumentLabel = Hmx::Object::New<BandLabel>();
+    mVocalPartMesh = Hmx::Object::New<RndMesh>();
 }
 
 InstrumentDifficultyDisplay::~InstrumentDifficultyDisplay(){
-    delete unk120;
-    delete unk110;
+    delete mInstrumentLabel;
+    delete mVocalPartMesh;
 }
 
 BEGIN_COPYS(InstrumentDifficultyDisplay)
@@ -64,22 +64,22 @@ void InstrumentDifficultyDisplay::PostLoad(BinStream& bs){
 }
 
 void InstrumentDifficultyDisplay::UpdateDisplay(){
-    unk110->SetShowing(false);
+    mVocalPartMesh->SetShowing(false);
     if(mInstrumentState == kName){
-        unk120->SetColorOverride(mInstrumentColorOverride);
-        if(unk120->TextToken() != mInstrumentType){
-            unk120->SetTextToken(mInstrumentType);
+        mInstrumentLabel->SetColorOverride(mInstrumentColorOverride);
+        if(mInstrumentLabel->TextToken() != mInstrumentType){
+            mInstrumentLabel->SetTextToken(mInstrumentType);
         }
     }
     else if(mInstrumentState == kIcon){
         Message msg(get_inst_icon);
         DataNode handled = HandleType(msg);
         if(handled.Type() == kDataString){
-            unk120->SetIcon(*handled.Str(0));
+            mInstrumentLabel->SetIcon(*handled.Str(0));
         }
         else MILO_WARN("InstrumentDifficultyDisplay::UpdateDisplay missing icon inst");
     }
-    unk120->SetShowing(true);
+    mInstrumentLabel->SetShowing(true);
 }
 
 void InstrumentDifficultyDisplay::DrawShowing(){
@@ -88,14 +88,14 @@ void InstrumentDifficultyDisplay::DrawShowing(){
     RndPropAnim* anim = mDifficultyAnim;
     anim->SetFrame(mHasPart ? mDifficulty : 7.0f, 1.0f);
     if(mInstrumentState != kHidden){
-        unk120->SetTransParent(this, false);
-        unk120->Draw();
+        mInstrumentLabel->SetTransParent(this, false);
+        mInstrumentLabel->Draw();
     }
     SetWorldXfm(WorldXfm());
     dir->SetWorldXfm(WorldXfm());
     dir->Draw();
-    unk110->SetTransParent(this, false);
-    unk110->Draw();
+    mVocalPartMesh->SetTransParent(this, false);
+    mVocalPartMesh->Draw();
 }
 
 DECOMP_FORCEACTIVE(InstrumentDifficultyDisplay, "set_song")
@@ -124,15 +124,15 @@ void InstrumentDifficultyDisplay::Update(){
     mVocalPart2Mat = dir->Find<RndMat>(typeDef->FindStr(vocal_part2_mat), true);
     mVocalPart3Mat = dir->Find<RndMat>(typeDef->FindStr(vocal_part3_mat), true);
     RndMesh* vocalpartmesh = dir->Find<RndMesh>(typeDef->FindStr(vocal_part_mesh), true);
-    unk110->Copy(vocalpartmesh, kCopyShallow);
+    mVocalPartMesh->Copy(vocalpartmesh, kCopyShallow);
     vocalpartmesh->SetShowing(false);
     BandLabel* instrLabel = dir->Find<BandLabel>(typeDef->FindStr(instrument_label), true);
     BandLabel* instrIcon = dir->Find<BandLabel>(typeDef->FindStr(instrument_icon), true);
     if(mInstrumentState == kName){
-        unk120->ResourceCopy(instrLabel);
+        mInstrumentLabel->ResourceCopy(instrLabel);
     }
     else if(mInstrumentState == kIcon){
-        unk120->ResourceCopy(instrIcon);
+        mInstrumentLabel->ResourceCopy(instrIcon);
     }
     instrLabel->SetShowing(false);
     instrIcon->SetShowing(false);
