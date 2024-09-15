@@ -199,7 +199,7 @@
             "system/bandobj/PatchRenderer.cpp": "NonMatching",
             "system/bandobj/PitchArrow.cpp": "NonMatching",
             "system/bandobj/PlayerDiffIcon.cpp": "NonMatching",
-            "system/bandobj/ReviewDisplay.cpp": "NonMatching",
+            "system/bandobj/ReviewDisplay.cpp": "Matching",
             "system/bandobj/ScoreDisplay.cpp": "NonMatching",
             "system/bandobj/ScrollbarDisplay.cpp": "NonMatching",
             "system/bandobj/SongSectionController.cpp": "NonMatching",
