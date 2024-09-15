@@ -525,7 +525,7 @@ DataNode VocalTrackDir::OnGetDisplayMode(DataArray* da){
 }
 
 void VocalTrackDir::RecalculateLyricZ(bool*, bool*){
-    
+
 }
 
 PitchArrow* VocalTrackDir::GetPitchArrow(int idx){
@@ -608,6 +608,58 @@ void VocalTrackDir::SyncObjects(){
     if(!mVocalMics) mVocalMics = Find<RndDir>("vocals_mics", false);
     if(!mLeadPhraseFeedbackBottomLbl) mLeadPhraseFeedbackBottomLbl = Find<class BandLabel>("lead_phrase_feedback_bottom.lbl", false);
     UpdateTubeStyle();
+}
+
+DataNode VocalTrackDir::OnSetLyricColor(const DataArray* da){
+    Hmx::Color c20(0,0,0,da->Float(4));
+    Symbol sym(da->Sym(3));
+    c20.Unpack(da->Int(2));
+    if(sym == lead){
+        if(unk458) unk458->SetColor(Hmx::Color32(c20));
+        if(unk470) unk470->SetColor(Hmx::Color32(c20));
+    }
+    if(sym == harmony){
+        if(unk464) unk464->SetColor(Hmx::Color32(c20));
+        if(unk47c) unk47c->SetColor(Hmx::Color32(c20));
+    }
+    return DataNode(0);
+}
+
+DataNode VocalTrackDir::OnSetDisplayMode(DataArray* da){
+    if(BandTrack::mParent){
+        DataNode handled = BandTrack::mParent->Handle(da, false);
+        if(handled.Type() != kDataUnhandled) return DataNode(handled);
+    }
+    return DataNode("invalid");
+}
+
+void VocalTrackDir::Extend(bool b){
+    Reset();
+    RndTransAnim* tnm = Find<RndTransAnim>("intro.tnm", false);
+    if(tnm){
+        if(b) tnm->SetFrame(tnm->EndFrame(), 1.0f);
+        else tnm->Animate(tnm->StartFrame(), tnm->EndFrame(), tnm->Units(), 0, 0);
+    }
+}
+
+void VocalTrackDir::RefreshCrowdRating(float f, CrowdMeterState state){
+    if(state == kCrowdMeterWarning){
+        unk1c = false;
+        SetCrowdRating(f, state);
+    }
+}
+
+void VocalTrackDir::SetPerformanceMode(bool b){
+    Find<RndGroup>("main.grp", true)->SetShowing(!b);
+    Find<RndGroup>("lyrics.grp", true)->SetShowing(!b);
+    Find<RndGroup>("lyrics_harmony.grp", true)->SetShowing(!b);
+    BandTrack::SetPerformanceMode(b);
+}
+
+void VocalTrackDir::SortArrowFx(){
+    if(mArrowFXDrawGrp && (PitchArrow::NeedSort(mPitchArrow1) || PitchArrow::NeedSort(mPitchArrow2) || PitchArrow::NeedSort(mPitchArrow3))){
+        mArrowFXDrawGrp->SortDraws();
+    }
 }
 
 #pragma push
@@ -728,3 +780,56 @@ BEGIN_HANDLERS(VocalTrackDir)
     HANDLE_CHECK(0x71C)
 END_HANDLERS
 #pragma pop
+
+DataNode VocalTrackDir::DataForEachConfigObj(DataArray* da){
+    DataNode* var = da->Var(2);
+    DataNode backup(*var);
+    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mConfigurableObjects.begin(); it != mConfigurableObjects.end(); ++it){
+        *var = DataNode(*it);
+        for(int i = 3; i < da->Size(); i++){
+            da->Command(i)->Execute();
+        }
+    }
+    *var = backup;
+    return DataNode(0);
+}
+
+DataNode VocalTrackDir::OnIsolatePart(DataArray* da){
+    int part = da->Int(2);
+    if(part + 1U > 3){
+        MILO_NOTIFY_ONCE("isolating invalid vocal part: %d", part);
+        return DataNode(0);
+    }
+    else {
+        SetIsolatedPart(part);
+        return DataNode(0);
+    }
+}
+
+void VocalTrackDir::SetIsolatedPart(int part){
+    if(unk6c4 != part){
+        unk6c4 = part;
+        unk6c8 = true;
+    }
+}
+
+void VocalTrackDir::UpdatePartIsolation(){
+    if(unk6c8){
+        if(BandTrack::mParent) BandTrack::mParent->RebuildVocalHUD();
+        if(mStreakMeter) mStreakMeter->SetIsolatedPart(unk6c4);
+        unk6c8 = false;
+    }
+}
+
+int VocalTrackDir::NumVocalParts(){
+    if(BandTrack::mParent) return BandTrack::mParent->GetNumVocalParts();
+    else return 0;
+}
+
+void VocalTrackDir::TutorialReset(){
+    Find<RndAnimatable>("freestyle_wave_show.anim", true)->SetFrame(0, 1.0f);
+    Find<RndAnimatable>("spotlight_phrase_success.grp", true)->SetFrame(2000.0f, 1.0f);
+    Find<StreakMeter>("streak_meter_vox_top", true)->Find<RndAnimatable>("flash.anim", true)->SetFrame(11.0f, 1.0f);
+    Find<RndAnimatable>("star_power.panim", true)->SetFrame(10.0f, 1.0f);
+    Find<RndParticleSys>("star_power.part", true)->FreeAllParticles();
+}

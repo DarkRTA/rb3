@@ -86,6 +86,7 @@ public:
     bool HasNetPlayer() const;
     bool HasLocalPlayer() const;
     int GetPlayerDifficulty() const;
+    void SetCrowdRating(float, CrowdMeterState);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

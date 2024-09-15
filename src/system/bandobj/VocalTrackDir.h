@@ -66,6 +66,8 @@ public:
     void CanChat(bool);
     void RecalculateLyricZ(bool*, bool*);
     void SetupNetVocals();
+    void UpdatePartIsolation();
+    void SortArrowFx();
 
     DataNode DataForEachConfigObj(DataArray*);
     DataNode OnGetDisplayMode(DataArray*);

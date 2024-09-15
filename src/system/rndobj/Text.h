@@ -111,6 +111,7 @@ public:
     void SetAltSizeAndZOffset(float, float);
     void SetAlignment(Alignment);
     void SetLeading(float);
+    void SetColor(const Hmx::Color32&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

@@ -43,6 +43,7 @@ public:
     void ForceFadeInactiveParts();
     int NumActiveParts() const;
     void ShowPhraseFeedback(int, bool);
+    void SetIsolatedPart(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

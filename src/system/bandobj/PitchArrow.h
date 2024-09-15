@@ -29,6 +29,8 @@ public:
 
     DataNode OnSyncColor(DataArray*);
     DataNode OnSetupFx(DataArray*);
+    
+    static bool NeedSort(PitchArrow*);
 
     bool unk18c; // 0x18c
     float mScore; // 0x190
