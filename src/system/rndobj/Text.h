@@ -136,7 +136,7 @@ public:
     RndFont* unkf0;
     float mAltSize;
     float mAltItalicStrength;
-    int mAltColor;
+    Hmx::Color32 mAltColor;
     bool unk100;
     bool unk101;
     float mAltZOffset;
