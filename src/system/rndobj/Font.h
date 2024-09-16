@@ -52,6 +52,7 @@ public:
     void UpdateChars();
     void BleedTest();
     int NonTransparentColumn(RndBitmap&, int, int, int, int);
+    RndMat* GetMat() const { return mMat; }
     bool HasChar(char c) const { // fak
 
     } 

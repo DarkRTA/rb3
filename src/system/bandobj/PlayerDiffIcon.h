@@ -1,6 +1,7 @@
 #pragma once
 #include "ui/UIComponent.h"
 #include "ui/UIListCustom.h"
+#include "bandobj/BandLabel.h"
 
 class PlayerDiffIcon : public UIComponent, public UIListCustomTemplate {
 public:
@@ -24,19 +25,22 @@ public:
 
     void SetNumPlayersDiff(int, int);
 
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(PlayerDiffIcon);
+    }
+    NEW_OBJ(PlayerDiffIcon);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::vector<int> unk110; // 0x110
-    int unk118; // 0x118
-    int unk11c; // 0x11c
-    std::vector<int> unk120; // 0x120
+    std::vector<RndMesh*> mPlayerMeshes; // 0x110
+    RndMat* mPlayerMat; // 0x118
+    RndMat* mNoPlayerMat; // 0x11c
+    std::vector<BandLabel*> mDiffLabels; // 0x120
     int mNumPlayers; // 0x128
     int mDiff; // 0x12c
-    float unk130; // 0x130
-    float unk134; // 0x134
-    float unk138; // 0x138
-    float unk13c; // 0x13c
-    float unk140; // 0x140
+    float mAlpha; // 0x130
+    Hmx::Color mColor; // 0x134
 };
