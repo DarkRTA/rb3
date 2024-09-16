@@ -31,7 +31,7 @@ public:
     virtual void SyncObjects();
     
     void Reset();
-    void SetMultiplier(int);
+    bool SetMultiplier(int);
     void SetBandMultiplier(int);
     void EndOverdrive() const;
     void BreakStreak(bool);
@@ -44,6 +44,12 @@ public:
     int NumActiveParts() const;
     void ShowPhraseFeedback(int, bool);
     void SetIsolatedPart(int);
+    void CombineMultipliers(bool);
+    void MultiplierChanged();
+    int GetMultiplierToShow() const;
+    void UpdateMultiplierText(int);
+    void SetPartPct(int, float, bool);
+    void SetNumParts(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -81,7 +87,9 @@ public:
     ObjPtr<RndPropAnim, ObjectDir> mNumPartsAnim; // 0x2b0
     ObjVector<ObjPtr<RndPartLauncher, ObjectDir> > mPartSparksLaunchers; // 0x2bc
     int unk2c8; // 0x2c8
-    int unk2cc; // 0x2cc
+    bool unk2cc; // 0x2cc
+    bool unk2cd; // 0x2cd
+    bool unk2ce; // 0x2ce
     int unk2d0; // 0x2d0
     int unk2d4; // 0x2d4
 };

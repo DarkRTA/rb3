@@ -16,7 +16,7 @@ MeterDisplay::MeterDisplay() : mMeterAnim(0), mAnimPeriod(0), unk114(0), unk118(
 }
 
 MeterDisplay::~MeterDisplay(){
-    
+    delete mMeterLabel;
 }
 
 BEGIN_COPYS(MeterDisplay)
