@@ -3,6 +3,7 @@
 #include "rndobj/EventTrigger.h"
 #include "rndobj/Group.h"
 #include "rndobj/PropAnim.h"
+#include "bandobj/StreakMeter.h"
 
 class PitchArrow : public RndDir {
 public:
@@ -26,18 +27,26 @@ public:
     void SetDeploying(bool);
     void Clear();
     void ClearParticles();
+    void SetTiltDegrees(float);
+    void SetFrameScore(float, VocalHUDColor, float);
+    void SetColor(VocalHUDColor);
+    void PollHelix();
+    void SetGhostFade(float);
 
     DataNode OnSyncColor(DataArray*);
     DataNode OnSetupFx(DataArray*);
     
     static bool NeedSort(PitchArrow*);
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     bool unk18c; // 0x18c
     float mScore; // 0x190
     float mHarmonyFX; // 0x194
     float mVolume; // 0x198
     float mTilt; // 0x19c
-    int unk1a0; // 0x1a0
+    VocalHUDColor mVocalHUDColor; // 0x1a0
     float mColorFade; // 0x1a4
     bool mSpotlight; // 0x1a8
     bool mDeploying; // 0x1a9
@@ -69,3 +78,5 @@ public:
     float mSpinBeginFrame; // 0x298
     float mSpinEndFrame; // 0x29c
 };
+
+VocalHUDColor GetVocalHUDColor(Symbol s);
