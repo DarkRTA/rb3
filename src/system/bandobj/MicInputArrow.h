@@ -1,5 +1,7 @@
 #pragma once
 #include "ui/UIComponent.h"
+#include "rndobj/EventTrigger.h"
+#include "rndobj/Anim.h"
 
 class MicManagerInterface;
 
@@ -25,18 +27,28 @@ public:
     void SetMicPreview(int);
     void SetMicHidden(int);
 
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(MicInputArrow);
+    }
+    NEW_OBJ(MicInputArrow);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
     int mArrowNum; // 0x10c
     MicManagerInterface* mMicManagerInterface; // 0x110
-    std::vector<char> unk114; // 0x114
-    std::vector<bool> unk11c; // 0x11c
-    std::vector<int> unk124; // 0x124
-    std::vector<int> unk12c; // 0x12c
-    std::vector<int> unk134; // 0x134
-    std::vector<int> unk13c; // 0x13c
-    std::vector<int> unk144; // 0x144
-    std::vector<int> unk14c; // 0x14c
+    std::vector<char> mConnectedFlags; // 0x114
+    std::vector<bool> mHiddenFlags; // 0x11c
+    std::vector<EventTrigger*> mConnectedTrigs; // 0x124
+    std::vector<EventTrigger*> mDisconnectedTrigs; // 0x12c
+    std::vector<EventTrigger*> mHiddenTrigs; // 0x134
+    std::vector<EventTrigger*> mPreviewTrigs; // 0x13c
+    std::vector<EventTrigger*> mExtendedTrigs; // 0x144
+    std::vector<RndAnimatable*> mLevelAnims; // 0x14c
     std::vector<int> unk154; // 0x154
-    float unk15c; // 0x15c
+    float mMicEnergyNormalizer; // 0x15c
     bool unk160; // 0x160
     float unk164[3]; // 0x164
 };

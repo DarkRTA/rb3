@@ -25,13 +25,22 @@ public:
     virtual void GrowBoundingBox(Box&) const;
     virtual void UpdateDisplay();
 
+    void SetValues(short, int, int, bool);
+    void SetColorOverride(UIColor*);
+
     DataNode OnSetValues(const DataArray*);
+
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(ScoreDisplay);
+    }
+    NEW_OBJ(ScoreDisplay);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    BandLabel* unk110; // 0x110
+    BandLabel* mCombinedLabel; // 0x110
     short unk114; // 0x114
     int mScore; // 0x118
     int mRank; // 0x11c
