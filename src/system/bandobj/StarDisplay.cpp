@@ -105,13 +105,15 @@ int StarDisplay::GetStarCountForSymbol(Symbol s) {
     return 0;
 }
 
+// this gets inlined, but "*" has to be part of the stringbase - fix this
 inline bool StarDisplay::HasStarIcon() const {
     return mIconOverride != gNullStr && strcmp(mIconOverride.Str(), "*") != 0;
 }
 
 char StarDisplay::GetStarIcon() const {
     char ret = '*';
-    if(HasStarIcon()){
+    bool hasstaricon = mIconOverride != gNullStr && strcmp(mIconOverride.Str(), "*") != 0;
+    if(hasstaricon){
         String str(mIconOverride);
         if(!str.empty()){
             ret = str[0];
