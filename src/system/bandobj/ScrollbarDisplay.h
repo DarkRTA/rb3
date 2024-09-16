@@ -39,6 +39,9 @@ public:
     void SetHeight(float);
     void SetMinThumbHeight(float);
     void UpdateThumbScaleAndPosition();
+    void UpdateSavedListInfo();
+    float GetListHeight() const;
+    void UpdateScrollbarHeightAndPosition();
 
     static void Init();
     static void Register(){
