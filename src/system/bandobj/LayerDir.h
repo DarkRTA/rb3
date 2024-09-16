@@ -13,7 +13,7 @@ public:
         ObjPtr<RndMat, ObjectDir> mMat; // 0xc
         bool mActive; // 0x18
         Hmx::Color mColor; // 0x1c
-        int mColorIdx; // 0x20
+        int mColorIdx; // 0x2c
         float mAlpha; // 0x30
         String mBitmap; // 0x34
         FilePath unk40; // 0x40
@@ -44,6 +44,13 @@ public:
 
     DataNode GetBitmapList(DataArray*);
     DataNode RandomizeColors(DataArray*);
+
+    static RndCam* sCam;
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(LayerDir);
+    }
+    NEW_OBJ(LayerDir);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
