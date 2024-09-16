@@ -1,9 +1,12 @@
 #include "bandobj/StreakMeter.h"
+#include "rndobj/MatAnim.h"
 #include "utl/Symbols.h"
+
+INIT_REVS(StreakMeter)
 
 StreakMeter::StreakMeter() : mStreakMultiplier(1), mBandMultiplier(1), mMaxMultiplier(4), mShowBandMult(0), mNewStreakTrig(this, 0), mEndStreakTrig(this, 0), mPeakStateTrig(this, 0),
     mBreakOverdriveTrig(this, 0), mMultiMeterAnim(this, 0), mMultiplierLabel(this, 0), mXLabel(this, 0), mMeterWipeAnim(this, 0), mStarDeployTrig(this, 0), mEndOverdriveTrig(this, 0),
-    mStarDeployStopTrig(this, 0), mStarDeployPauseTrig(this, 0), mResetTrig(this, 0), mHideMultiplierTrig(this, 0), unk248(this, 0), unk254(this, 0), unk260(0), mPartBarsGroup(this, 0),
+    mStarDeployStopTrig(this, 0), mStarDeployPauseTrig(this, 0), mResetTrig(this, 0), mHideMultiplierTrig(this, 0), mFlashTrig(this, 0), mFlashSparksTrig(this, 0), unk260(0), mPartBarsGroup(this, 0),
     mPartColorAnims(this), mPartFadeAnims(this), mPartWipeAnims(this), mPartWipeResidualAnims(this), mResidueFadeTrig(this, 0), mNumPartsAnim(this, 0), mPartSparksLaunchers(this),
     unk2c8(1), unk2d0(-1) {
 
@@ -50,6 +53,8 @@ void StreakMeter::SyncObjects(){
     RndDir::SyncObjects();
 }
 #pragma pop
+
+DECOMP_FORCEACTIVE(StreakMeter, "StreakMeter::StringToFrame used on unsupported string: %s")
 
 void StreakMeter::CombineMultipliers(bool b){
     if(b != mShowBandMult){
@@ -122,9 +127,7 @@ void StreakMeter::EndOverdrive() const {
 void StreakMeter::Reset(){
     mResetTrig->Trigger();
     SetWipe(0);
-    unk2cc = false;
-    unk2cd = false;
-    unk2ce = false;
+    for(int i = 0; i < 3; i++) unk2cc[i] = false;
     SetMultiplier(1);
     SetBandMultiplier(1);
     unk2d4 = 1;
@@ -150,15 +153,35 @@ void StreakMeter::SetNumParts(int num){
     unk2c8 = num;
 }
 
-// void __thiscall StreakMeter::SetNumParts(StreakMeter *this,int param_1)
+void StreakMeter::SetPartActive(int i, bool b){
+    if(!unk260) return;
+    if(unk2c8 <= 1) return;
+    if(i >= unk2c8) return;
+    if(i >= mPartFadeAnims.size()) return;
+    if(!mPartFadeAnims[i]) return;
+    unk270[i] = b;
+    if(unk2d0 != -1) b = b && unk2d0 == i;
+    if(!b && mPartFadeAnims[i]->GetFrame() > 0.1f) return;
+    mPartFadeAnims[i]->SetFrame(b ? 0.0f : 1.0f, 1.0f);
+}
 
-// {
-//   if (this[0x260] != (StreakMeter)0x0) {
-//     (**(code **)(*(int *)(*(int *)(this + 0x2b8) + 4) + 0x34))((double)param_1,0x3ff0000000000000) ;
-//   }
-//   *(int *)(this + 0x2c8) = param_1;
-//   return;
-// }
+void StreakMeter::SetIsolatedPart(int i){
+    unk2d0 = i;
+    for(int n = 0; n < 3; n++) SetPartActive(n, unk270[n]);
+}
+
+void StreakMeter::SetPartPct(int i, float f, bool b){
+    if(unk260 && i < mPartWipeAnims.size()){
+        RndPropAnim* anim = mPartWipeAnims[i];
+        if(anim) anim->SetFrame(f, 1.0f);
+    }
+    unk2cc[i] = b;
+}
+
+int StreakMeter::NumActiveParts() const {
+    if(mPartBarsGroup) return unk270[0] + unk270[1] + unk270[2];
+    else return 1;
+}
 
 BEGIN_HANDLERS(StreakMeter)
     HANDLE_ACTION(set_multiplier, SetMultiplier(_msg->Int(2)))
@@ -180,3 +203,65 @@ BEGIN_PROPSYNCS(StreakMeter)
     SYNC_PROP(show_band_mult, mShowBandMult)
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS
+
+SAVE_OBJ(StreakMeter, 0x193)
+
+void StreakMeter::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
+    ASSERT_REVS(3, 0);
+    bs >> mStreakMultiplier;
+    bs >> mBandMultiplier;
+    bs >> mMaxMultiplier;
+    if(!IsProxy()){
+        bs >> mNewStreakTrig;
+        bs >> mEndStreakTrig;
+        if(gRev < 3){
+            ObjPtr<EventTrigger, ObjectDir> trigPtr(this, 0);
+            bs >> trigPtr;
+        }
+        bs >> mMultiMeterAnim;
+        if(gRev >= 1) bs >> mMultiplierLabel;
+        else {
+            ObjPtr<RndText, ObjectDir> textPtr(this, 0);
+            bs >> textPtr;
+        }
+        if(gRev >= 2) bs >> mMeterWipeAnim;
+        else {
+            ObjPtr<RndMatAnim, ObjectDir> matPtr(this, 0);
+            bs >> matPtr;
+        }
+        bs >> mStarDeployTrig;
+        bs >> mEndOverdriveTrig;
+        bs >> mResetTrig;
+    }
+    RndDir::PreLoad(bs);
+}
+
+void StreakMeter::PostLoad(BinStream& bs){ RndDir::PostLoad(bs); }
+
+BEGIN_COPYS(StreakMeter)
+    COPY_SUPERCLASS(RndDir)
+    CREATE_COPY(StreakMeter)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mStreakMultiplier)
+        COPY_MEMBER(mBandMultiplier)
+        COPY_MEMBER(mMaxMultiplier)
+        COPY_MEMBER(mNewStreakTrig)
+        COPY_MEMBER(mEndStreakTrig)
+        COPY_MEMBER(mMultiMeterAnim)
+        COPY_MEMBER(mMultiplierLabel)
+        COPY_MEMBER(mMeterWipeAnim)
+        COPY_MEMBER(mStarDeployTrig)
+        COPY_MEMBER(mEndOverdriveTrig)
+        COPY_MEMBER(mResetTrig)
+    END_COPYING_MEMBERS
+END_COPYS
+
+void StreakMeter::SyncVoxPhraseTriggers(){
+    if(!mFlashTrig) mFlashTrig = Find<EventTrigger>("flash.trig", true);
+    if(!mFlashSparksTrig) mFlashSparksTrig = Find<EventTrigger>("flash_sparks.trig", true);
+}
+
+void StreakMeter::ForceFadeInactiveParts(){
+    if(mResidueFadeTrig) mResidueFadeTrig->Trigger();
+}

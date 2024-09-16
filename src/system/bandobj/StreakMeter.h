@@ -50,6 +50,7 @@ public:
     void UpdateMultiplierText(int);
     void SetPartPct(int, float, bool);
     void SetNumParts(int);
+    void SyncVoxPhraseTriggers();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -74,11 +75,11 @@ public:
     ObjPtr<EventTrigger, ObjectDir> mResetTrig; // 0x22c
     ObjPtr<EventTrigger, ObjectDir> mHideMultiplierTrig; // 0x238
     int unk244; // 0x244
-    ObjPtr<EventTrigger, ObjectDir> unk248; // 0x248
-    ObjPtr<EventTrigger, ObjectDir> unk254; // 0x254
+    ObjPtr<EventTrigger, ObjectDir> mFlashTrig; // 0x248
+    ObjPtr<EventTrigger, ObjectDir> mFlashSparksTrig; // 0x254
     bool unk260; // 0x260
     ObjPtr<RndGroup, ObjectDir> mPartBarsGroup; // 0x264
-    int unk270; // 0x270
+    bool unk270[3]; // 0x270
     ObjVector<ObjPtr<RndPropAnim, ObjectDir> > mPartColorAnims; // 0x274
     ObjVector<ObjPtr<RndPropAnim, ObjectDir> > mPartFadeAnims; // 0x280
     ObjVector<ObjPtr<RndPropAnim, ObjectDir> > mPartWipeAnims; // 0x28c
@@ -87,9 +88,7 @@ public:
     ObjPtr<RndPropAnim, ObjectDir> mNumPartsAnim; // 0x2b0
     ObjVector<ObjPtr<RndPartLauncher, ObjectDir> > mPartSparksLaunchers; // 0x2bc
     int unk2c8; // 0x2c8
-    bool unk2cc; // 0x2cc
-    bool unk2cd; // 0x2cd
-    bool unk2ce; // 0x2ce
+    bool unk2cc[3]; // 0x2cc
     int unk2d0; // 0x2d0
     int unk2d4; // 0x2d4
 };
