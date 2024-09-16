@@ -1,5 +1,6 @@
 #pragma once
 #include "ui/UIComponent.h"
+#include "bandobj/BandLabel.h"
 
 class MeterDisplay : public UIComponent {
 public:
@@ -21,16 +22,25 @@ public:
 
     void AnimateToValue(int, int);
     void UpdateDisplay();
+    void SetValues(int, int);
+    void SetShowText(bool);
+    void SetPercentageText(bool);
+
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(MeterDisplay);
+    }
+    NEW_OBJ(MeterDisplay);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    int unk10c; // 0x10c
+    RndAnimatable* mMeterAnim; // 0x10c
     float mAnimPeriod; // 0x110
     float unk114; // 0x114
     int unk118; // 0x118
-    int unk11c; // 0x11c
+    BandLabel* mMeterLabel; // 0x11c
     bool mShowText; // 0x120
     bool mPercentageText; // 0x121
     bool mHideDenominator; // 0x122
