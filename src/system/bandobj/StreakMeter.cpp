@@ -262,6 +262,34 @@ void StreakMeter::SyncVoxPhraseTriggers(){
     if(!mFlashSparksTrig) mFlashSparksTrig = Find<EventTrigger>("flash_sparks.trig", true);
 }
 
+void StreakMeter::ShowPhraseFeedback(int i, bool b){
+    SyncVoxPhraseTriggers();
+    if(i - 4U <= 2){
+        if(!b) mFlashSparksTrig->Trigger();
+    }
+    else if(i - 2U <= 1){
+        if(!b) mFlashTrig->Trigger();
+    }
+    SetWipe(0);
+    if(unk260 && unk2c8 > 1){
+        for(int n = 0; n < unk2c8; n++){
+            RndPropAnim* anim = mPartFadeAnims[n];
+            if(anim->GetFrame() > 0.9f){
+                anim->SetFrame(2.0f, 1.0f);
+                mPartWipeResidualAnims[n]->SetFrame(0, 1.0f);
+            }
+            else {
+                mPartWipeResidualAnims[n]->SetFrame(mPartWipeResidualAnims[n]->GetFrame(), 1.0f);
+            }
+            if(unk2cc[n]){
+                mPartSparksLaunchers[n]->LaunchParticles();
+                unk2cc[n] = false;
+            }
+        }
+        mResidueFadeTrig->Trigger();
+    }
+}
+
 void StreakMeter::ForceFadeInactiveParts(){
     if(mResidueFadeTrig) mResidueFadeTrig->Trigger();
 }
