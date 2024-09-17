@@ -23,6 +23,8 @@ public:
     void Unload();
     void FinishLoad();
     void MakeLoader();
+    void SetOnMat(RndMat*) const;
+    void SetIconOnMat(RndMat*) const;
     FileLoader* GetLoader() const { return mLoader; }
 
     String unk0; // 0x0

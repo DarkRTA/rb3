@@ -1,5 +1,6 @@
 #include "bandobj/PatchDir.h"
 #include "rndobj/Mat.h"
+#include "rndwii/Rnd.h"
 #include "ui/UI.h"
 #include "utl/Symbols.h"
 
@@ -11,6 +12,8 @@ RndGroup* PatchLayer::sGrpAnim;
 RndTransAnim* PatchLayer::sTransAnim;
 ColorPalette* PatchLayer::sColorPalette;
 INIT_REVS(PatchDir);
+
+float hackyScaleValue = 1.0f;
 
 BinStream& operator<<(BinStream& bs, const PatchDescriptor& d){
     bs << d.patchType;
@@ -56,6 +59,18 @@ void PatchSticker::Unload(){
     RELEASE(mLoader);
     RELEASE(mTex);
     RELEASE(unk30);
+}
+
+void PatchSticker::SetOnMat(RndMat* mat) const {
+    mat->SetDiffuseTex(mTex);
+    mat->SetAlpha(mTex ? 1.0f : 0.0f);
+    mat->SetBlend(kPreMultAlpha);
+}
+
+void PatchSticker::SetIconOnMat(RndMat* mat) const {
+    mat->SetDiffuseTex(unk30);
+    mat->SetAlpha(unk30 ? 1.0f : 0.0f);
+    mat->SetBlend(kPreMultAlpha);
 }
 
 void PatchLayer::Init(){
@@ -132,6 +147,16 @@ void PatchLayer::ClearSticker(){
     mStickerCategory = Symbol(0);
 }
 
+void PatchLayer::FlipX(){
+    SetScaleX(ScaleX() * -1.0f);
+    SetRotation(Modulo(360.0f - Rotation(), 360.0f));
+}
+
+void PatchLayer::FlipY(){
+    SetScaleX(ScaleX() * -1.0f);
+    SetRotation(Modulo(360.0f - (Rotation() - 90.0f) + 90.0f, 360.0f));
+}
+
 void PatchLayer::SetScale(float x, float y){
     SetScaleX(1.0f / x);
     SetScaleY(1.0f / y);
@@ -146,6 +171,46 @@ bool PatchLayer::AllowColor(){
     PatchSticker* sticker = GetSticker(false);
     MILO_ASSERT(sticker, 0x127);
     return sticker->unk24;
+}
+
+void PatchLayer::Draw(){
+    PatchSticker* sticker = GetSticker(TheLoadMgr.EditMode());
+    if(sticker){
+        sticker->SetOnMat(sMat);
+        sMat->SetColor(sColorPalette->GetColor(mColorIdx));
+        Transform tf50;
+        tf50.Reset();
+        tf50.v = Position();
+        Hmx::Matrix3 m78;
+        Vector3 vb4(0, Rotation() * DEG2RAD, 0);
+        MakeRotMatrix(vb4, tf50.m, true);
+        float scale = ScaleX();
+        hackyScaleValue = scale;
+        if(scale < 0){
+            scale = ScaleX();
+            scale = scale * -1.0f;
+        }
+        Vector3 vc0(sticker->unk18 * scale * 7.5f, 1.0f, sticker->unk1c * ScaleY() * 7.5f);
+        Scale(vc0, tf50.m, tf50.m);
+        Transform tfa8;
+        tfa8.Reset();
+        if(scale != ScaleX()){
+            Vector3 vcc(-1.0f, 1.0f, 1.0f);
+            Scale(vcc, tfa8.m, tfa8.m);
+            sMat->SetTexXfm(tfa8);
+        }
+        else sMat->SetTexXfm(tfa8);
+        float uisec = TheTaskMgr.UISeconds();
+        if(unk28 >= uisec) sTransAnim->SetFrame((unk28 - uisec) * 40.0f + 100.0f, 1.0f);
+        else sTransAnim->SetFrame(0, 1.0f);
+        float deform = DeformFrame();
+        if(deform != sGrpAnim->GetFrame()){
+            sGrpAnim->SetFrame(deform, 1.0f);
+        }
+        sResource->SetLocalXfm(tf50);
+        sResource->DrawShowing();
+        RndGxDrawDone();
+    }
 }
 
 BEGIN_HANDLERS(PatchLayer)
