@@ -23,6 +23,7 @@ public:
     void Unload();
     void FinishLoad();
     void MakeLoader();
+    FileLoader* GetLoader() const { return mLoader; }
 
     String unk0; // 0x0
     FilePath unkc; // 0xc
@@ -61,7 +62,11 @@ public:
     bool HasSticker() const;
     Vector3 Position() const;
     float DeformFrame() const;
+    float Rotation() const;
+    float ScaleX() const;
+    float ScaleY() const;
     PatchSticker* GetSticker(bool) const;
+    void Draw();
 
     static std::vector<Symbol> sCategoryNames;
     static ColorPalette* sColorPalette;
@@ -103,11 +108,22 @@ public:
 
     void LoadStickerData();
     bool HasLayers() const;
+    int NumLayers() const;
+    int NumLayersUsed() const;
+    bool IsLoadingStickers() const;
+    int NumStickersLoading() const;
     void Clear();
     void CacheRenderedTex(RndTex*, bool);
+    bool UsesSticker(const PatchSticker*) const;
+    PatchLayer& Layer(int);
+    int FindEmptyLayer();
     PatchSticker* GetSticker(Symbol, int, bool);
+    void LoadStickerTex(PatchSticker*, bool);
+    void UnloadStickerTex(PatchSticker*);
     void SaveRemote(BinStream&);
     void LoadRemote(BinStream&);
+    void SaveRemote(IntPacker&);
+    void LoadRemote(IntPacker&);
 
     static void Init();
     static void Terminate();
@@ -118,9 +134,9 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::vector<PatchLayer> unk194; // 0x194
-    std::map<Symbol, std::vector<PatchSticker*> > unk19c; // 0x19c
-    std::vector<int> unk1b4; // 0x1b4
+    std::vector<PatchLayer> mLayers; // 0x194
+    std::map<Symbol, std::vector<PatchSticker*> > mStickerMap; // 0x19c
+    std::vector<PatchSticker*> mStickersLoading; // 0x1b4
     RndTex* mTex; // 0x1bc
     bool unk1c0; // 0x1c0
 };

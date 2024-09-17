@@ -1,5 +1,6 @@
 #include "bandobj/PatchDir.h"
 #include "rndobj/Mat.h"
+#include "ui/UI.h"
 #include "utl/Symbols.h"
 
 std::vector<Symbol> PatchLayer::sCategoryNames;
@@ -9,7 +10,6 @@ RndMat* PatchLayer::sMat;
 RndGroup* PatchLayer::sGrpAnim;
 RndTransAnim* PatchLayer::sTransAnim;
 ColorPalette* PatchLayer::sColorPalette;
-
 INIT_REVS(PatchDir);
 
 BinStream& operator<<(BinStream& bs, const PatchDescriptor& d){
@@ -178,7 +178,7 @@ void PatchDir::Terminate(){ PatchLayer::Terminate(); }
 BEGIN_COPYS(PatchDir)
     CREATE_COPY(PatchDir)
     BEGIN_COPYING_MEMBERS
-        COPY_MEMBER(unk194)
+        COPY_MEMBER(mLayers)
         if(ty == kCopyDeep && c->HasLayers()){
             CacheRenderedTex(c->mTex, false);
         }
@@ -188,7 +188,7 @@ END_COPYS
 
 PatchDir::PatchDir() : unk1c0(0) {
     mSaveSizeMethod = &SaveSize;
-    unk194.resize(50);
+    mLayers.resize(50);
     mTex = Hmx::Object::New<RndTex>();
     mTex->SetMipMapK(666.0f);
     if(TheLoadMgr.EditMode()) LoadStickerData();
@@ -214,6 +214,37 @@ Vector3 PatchLayer::Position() const {
 void PatchLayer::SetPosition(const Vector3& v){
     mPosX = v.x;
     mPosZ = v.z;
+}
+
+float PatchLayer::Rotation() const { return (mRot * 360.0f) / 511.0f; }
+
+void PatchLayer::SetRotation(float r){
+    for(; r > 360.0f; r -= 360.0f);
+    for(; r < -360.0f; r += 360.0f);
+    MILO_ASSERT(r >= -360.0f, 0x302);
+    MILO_ASSERT(r <= 360.0f, 0x303);
+    if(r < 0) r += 360.0f;
+    mRot = r * 1.4194444f;
+}
+
+float PatchLayer::ScaleX() const {
+    return mScaleX * (1/1638.3f) - 5.0f;
+}
+
+void PatchLayer::SetScaleX(float scaleX){
+    MILO_ASSERT(scaleX >= -5.0f, 0x314);
+    MILO_ASSERT(scaleX <= 5.0f, 0x315);
+    mScaleX = (scaleX + 5.0f) * 1638.3f;
+}
+
+float PatchLayer::ScaleY() const {
+    return mScaleY * (1/1638.3f) - 5.0f;
+}
+
+void PatchLayer::SetScaleY(float scaleY){
+    MILO_ASSERT(scaleY >= -5.0f, 0x321);
+    MILO_ASSERT(scaleY <= 5.0f, 0x322);
+    mScaleY = (scaleY + 5.0f) * 1638.3f;
 }
 
 float PatchLayer::DeformFrame() const {
@@ -252,14 +283,132 @@ void PatchDir::Save(BinStream& bs){
 BEGIN_LOADS(PatchDir)
     LOAD_REVS(bs)
     ASSERT_REVS(5, 0)
-    if(gRev == 0) bs >> unk194;
+    if(gRev == 0) bs >> mLayers;
     else LoadRemote(bs);
 END_LOADS
+
+#define kPatchBufSize 0x830
+
+void PatchDir::SaveRemote(BinStream& bs){
+    char buf[0x830];
+    IntPacker packer(buf, 0x830);
+    packer.AddU(0, 0x10);
+    SaveRemote(packer);
+    unsigned int size = packer.mPos >> 3 & 0xFFFF;
+    if(packer.mPos & 7) size = size + 1 & 0xFFFF;
+    packer.SetPos(0);
+    packer.AddU(size, 0x10);
+    MILO_ASSERT(size < kPatchBufSize, 0x37B);
+    bs.Write(buf, size);
+}
+
+void PatchDir::LoadRemote(BinStream& bs){
+    gRev = 5;
+    char buf[2];
+    IntPacker packer(buf, 2);
+    int read;
+    if(gRev < 3){
+        bs.Read(buf, 1);
+        read = 1;
+    }
+    else {
+        bs.Read(buf, 2);
+        read = 2;
+    }
+    unsigned int size = packer.ExtractU(read << 3);
+    size &= 0xFFFF;
+    MILO_ASSERT(size < kPatchBufSize, 0x394);
+    char buf2[0x830];
+    IntPacker packer2(buf2, size);
+    bs.Read(buf2, size - read);
+    LoadRemote(packer2);
+}
+
+void PatchDir::SaveRemote(IntPacker& packer){
+    unsigned char size = mLayers.size();
+    packer.AddU(size, 8);
+    for(unsigned int i = 0; i < size; i++){
+        packer.AddBool(!mLayers[i].mStickerCategory.Null());
+        if(!mLayers[i].mStickerCategory.Null()){
+            mLayers[i].SavePacked(packer);
+        }
+    }
+}
+
+void PatchDir::DrawShowing(){
+    TheUI->unk34->Select();
+    for(std::vector<PatchLayer>::iterator it = mLayers.begin(); it != mLayers.end(); ++it){
+        (*it).Draw();
+    }
+}
+
+RndCam* PatchDir::CamOverride(){ return TheUI->unk34; }
+
+bool PatchDir::HasLayers() const {
+    for(std::vector<PatchLayer>::const_iterator it = mLayers.begin(); it != mLayers.end(); ++it){
+        if(!(*it).mStickerCategory.Null()) return true;
+    }
+    return false;
+}
+
+int PatchDir::NumLayers() const { return mLayers.size(); }
+
+int PatchDir::NumLayersUsed() const {
+    int count = 0;
+    for(std::vector<PatchLayer>::const_iterator it = mLayers.begin(); it != mLayers.end(); ++it){
+        if(!(*it).mStickerCategory.Null()) count++;
+    }
+    return count;
+}
+
+bool PatchDir::UsesSticker(const PatchSticker* sticker) const {
+    for(std::vector<PatchLayer>::const_iterator it = mLayers.begin(); it != mLayers.end(); ++it){
+        if((*it).GetSticker(false) == sticker) return true;
+    }
+    return false;
+}
+
+bool PatchDir::IsLoadingStickers() const { return mStickersLoading.size() > 0; }
+int PatchDir::NumStickersLoading() const { return mStickersLoading.size(); }
+PatchLayer& PatchDir::Layer(int idx){ return mLayers[idx]; }
+
+int PatchDir::FindEmptyLayer(){
+    int idx = 0;
+    for(std::vector<PatchLayer>::iterator it = mLayers.begin(); it != mLayers.end(); ++it){
+        if((*it).mStickerCategory.Null()){
+            return idx;
+        }
+        else idx++;
+    }
+    return -1;
+}
+
+void PatchDir::LoadStickerTex(PatchSticker* sticker, bool push){
+    if(!sticker->mTex && !sticker->mLoader){
+        sticker->MakeLoader();
+        MILO_ASSERT(sticker->GetLoader(), 0x4EE);
+        if(push) mStickersLoading.push_back(sticker);
+        else {
+            TheLoadMgr.PollUntilLoaded(sticker->mLoader, 0);
+            sticker->FinishLoad();
+        }
+    }
+}
+
+void PatchDir::UnloadStickerTex(PatchSticker* sticker){
+    if(UsesSticker(sticker)) return;
+    if(sticker->mLoader){
+        std::vector<PatchSticker*>::iterator it = std::find(mStickersLoading.begin(), mStickersLoading.end(), sticker);
+        MILO_ASSERT(it != mStickersLoading.end(), 0x504);
+        mStickersLoading.erase(it);
+    }
+    sticker->Unload();
+}
 
 BEGIN_HANDLERS(PatchDir)
     HANDLE_EXPR(has_layers, HasLayers())
     HANDLE_ACTION(clear, Clear())
-    HANDLE_EXPR(is_loading_stickers, !unk1b4.empty())
+    HANDLE_EXPR(is_loading_stickers, !mStickersLoading.empty())
     HANDLE_EXPR(get_tex, mTex)
     HANDLE_SUPERCLASS(RndDir)
     HANDLE_CHECK(0x544)
