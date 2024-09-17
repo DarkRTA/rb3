@@ -1,8 +1,18 @@
 #pragma once
 #include "meta/FixedSizeSaveable.h"
 #include "rndobj/Dir.h"
+#include "rndobj/Group.h"
 #include "rndobj/Tex.h"
+#include "rndobj/TransAnim.h"
 #include "world/ColorPalette.h"
+
+class PatchDir; // forward dec
+
+class PatchDescriptor {
+public:
+    int patchType; // 0x0 - enum Type, but we don't know the enum names for certain
+    int patchIndex; // 0x4
+};
 
 class PatchSticker {
 public:
@@ -10,16 +20,18 @@ public:
     ~PatchSticker();
 
     void Unload();
+    void FinishLoad();
+    void MakeLoader();
 
-    String unk0;
-    FilePath unkc;
-    float unk18;
-    float unk1c;
-    int unk20;
-    bool unk24;
-    int unk28;
-    int unk2c;
-    int unk30;
+    String unk0; // 0x0
+    FilePath unkc; // 0xc
+    float unk18; // 0x18
+    float unk1c; // 0x1c
+    int unk20; // 0x20
+    bool unk24; // 0x24
+    FileLoader* mLoader; // 0x28
+    RndTex* mTex; // 0x2c
+    RndTex* unk30; // 0x30
 };
 
 class PatchLayer : public Hmx::Object {
@@ -38,9 +50,25 @@ public:
     void FlipX();
     void FlipY();
     void ClearSticker();
+    void SetPosition(const Vector3&);
+    void SetRotation(float);
+    void SetScaleX(float);
+    void SetScaleY(float);
+    void SetDeformFrame(float);
+    bool HasSticker() const;
+    PatchSticker* GetSticker(bool) const;
 
     static std::vector<Symbol> sCategoryNames;
     static ColorPalette* sColorPalette;
+    static RndDir* sResource;
+    static RndTransAnim* sTransAnim;
+    static RndGroup* sGrpAnim;
+    static RndMat* sMat;
+    static PatchDir* sStickerOwner;
+
+    static void Init();
+    static void InitResources();
+    static void Terminate();
 
     Symbol mStickerCategory; // 0x1c
     int mStickerIdx; // 0x20
@@ -71,6 +99,7 @@ public:
     void LoadStickerData();
     bool HasLayers() const;
     void Clear();
+    PatchSticker* GetSticker(Symbol, int, bool);
 
     static int SaveSize(int);
 

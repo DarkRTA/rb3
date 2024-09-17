@@ -1,9 +1,29 @@
 #include "bandobj/PatchDir.h"
+#include "rndobj/Mat.h"
 #include "utl/Symbols.h"
 
 std::vector<Symbol> PatchLayer::sCategoryNames;
+PatchDir* PatchLayer::sStickerOwner;
+RndDir* PatchLayer::sResource;
+RndMat* PatchLayer::sMat;
+RndGroup* PatchLayer::sGrpAnim;
+RndTransAnim* PatchLayer::sTransAnim;
+ColorPalette* PatchLayer::sColorPalette;
 
-PatchSticker::PatchSticker() : unk18(1.0f), unk1c(1.0f), unk20(0), unk24(1), unk28(0), unk2c(0), unk30(0) {
+BinStream& operator<<(BinStream& bs, const PatchDescriptor& d){
+    bs << d.patchType;
+    bs << d.patchIndex;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, PatchDescriptor& d){
+    int i; bs >> i;
+    d.patchType = i;
+    bs >> d.patchIndex;
+    return bs;
+}
+
+PatchSticker::PatchSticker() : unk18(1.0f), unk1c(1.0f), unk20(0), unk24(1), mLoader(0), mTex(0), unk30(0) {
 
 }
 
@@ -11,8 +31,119 @@ PatchSticker::~PatchSticker(){
     Unload();
 }
 
+void PatchSticker::MakeLoader(){
+    MILO_ASSERT(!mLoader, 0x52);
+    mLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(unkc, kLoadFront));
+}
+
+void PatchSticker::FinishLoad(){
+    MILO_ASSERT(mLoader, 0x5B);
+    MILO_ASSERT(!mTex, 0x5C);
+    mTex = Hmx::Object::New<RndTex>();
+    unk30 = Hmx::Object::New<RndTex>();
+    RndBitmap bmap;
+    const char* buf = mLoader->GetBuffer(0);
+    RELEASE(mLoader);
+    if(buf){
+        RndBitmap other;
+        other.Create((void*)buf);
+    }
+}
+
+void PatchSticker::Unload(){
+    RELEASE(mLoader);
+    RELEASE(mTex);
+    RELEASE(unk30);
+}
+
+void PatchLayer::Init(){
+    DataArray* cfg = SystemConfig("art_maker", "stickers");
+    for(int i = 1; i < cfg->Size(); i++){
+        sCategoryNames.push_back(cfg->Array(i)->ForceSym(0));
+    }
+    InitResources();
+}
+
+void PatchLayer::InitResources(){
+    DataArray* cfg = SystemConfig();
+    DataArray* artMakerArr = cfg->FindArray("art_maker", false);
+    if(artMakerArr){
+        DataArray* patchLayerArr = artMakerArr->FindArray("patch_layer", false);
+        if(patchLayerArr){
+            sResource = dynamic_cast<RndDir*>(DirLoader::LoadObjects(FilePath(FileGetPath(patchLayerArr->File(), 0), patchLayerArr->Str(1)), 0, 0));
+            MILO_ASSERT(sResource, 0xBA);
+            sMat = sResource->Find<RndMat>("patch.mat", true);
+            sTransAnim = sResource->Find<RndTransAnim>("root.tnm", true);
+            sGrpAnim = sResource->Find<RndGroup>("warp.grp", true);
+            sColorPalette = sResource->Find<ColorPalette>("sticker.pal", true);
+        }
+    }
+}
+
+void PatchLayer::Terminate(){
+    RELEASE(sResource);
+    sMat = 0;
+}
+
 PatchLayer::PatchLayer() : mStickerCategory(gNullStr), mStickerIdx(0), unk28(0) {
     Reset();
+}
+
+BEGIN_COPYS(PatchLayer)
+    CREATE_COPY(PatchLayer)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mColorIdx)
+        COPY_MEMBER(mDeformFrame)
+        COPY_MEMBER(mPosX)
+        COPY_MEMBER(mPosZ)
+        COPY_MEMBER(mRot)
+        COPY_MEMBER(mScaleX)
+        COPY_MEMBER(mScaleY)
+        COPY_MEMBER(mStickerCategory)
+        COPY_MEMBER(mStickerIdx)
+    END_COPYING_MEMBERS
+END_COPYS
+
+void PatchLayer::Reset(){
+    mColorIdx = 0;
+    SetPosition(Vector3(0,0,0));
+    SetRotation(0);
+    SetScaleX(1.0f);
+    SetScaleY(1.0f);
+    SetDeformFrame(0);
+    unk28 = 0;
+}
+
+PatchSticker* PatchLayer::GetSticker(bool b) const {
+    if(mStickerCategory.Null()) return 0;
+    else return sStickerOwner->GetSticker(mStickerCategory, mStickerIdx, b);
+}
+
+bool PatchLayer::HasSticker() const { return !mStickerCategory.Null(); }
+
+void PatchLayer::SelectFX(){
+    unk28 = TheTaskMgr.UISeconds() + 0.5f;
+}
+
+void PatchLayer::ClearSticker(){
+    Reset();
+    mStickerCategory = Symbol(0);
+}
+
+void PatchLayer::SetScale(float x, float y){
+    SetScaleX(1.0f / x);
+    SetScaleY(1.0f / y);
+}
+
+void PatchLayer::SetDefaultColor(){
+    PatchSticker* sticker = GetSticker(false);
+    if(sticker) mColorIdx = sticker->unk20;
+}
+
+bool PatchLayer::AllowColor(){
+    PatchSticker* sticker = GetSticker(false);
+    MILO_ASSERT(sticker, 0x127);
+    return sticker->unk24;
 }
 
 BEGIN_HANDLERS(PatchLayer)
