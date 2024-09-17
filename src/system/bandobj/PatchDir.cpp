@@ -10,6 +10,8 @@ RndGroup* PatchLayer::sGrpAnim;
 RndTransAnim* PatchLayer::sTransAnim;
 ColorPalette* PatchLayer::sColorPalette;
 
+INIT_REVS(PatchDir);
+
 BinStream& operator<<(BinStream& bs, const PatchDescriptor& d){
     bs << d.patchType;
     bs << d.patchIndex;
@@ -166,6 +168,24 @@ BEGIN_PROPSYNCS(PatchLayer)
     SYNC_PROP(color_idx, mColorIdx)
 END_PROPSYNCS
 
+void PatchDir::Init(){
+    PatchLayer::Init();
+    TheDebug.AddExitCallback(Terminate);
+}
+
+void PatchDir::Terminate(){ PatchLayer::Terminate(); }
+
+BEGIN_COPYS(PatchDir)
+    CREATE_COPY(PatchDir)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(unk194)
+        if(ty == kCopyDeep && c->HasLayers()){
+            CacheRenderedTex(c->mTex, false);
+        }
+    END_COPYING_MEMBERS
+    unk1c0 = true;
+END_COPYS
+
 PatchDir::PatchDir() : unk1c0(0) {
     mSaveSizeMethod = &SaveSize;
     unk194.resize(50);
@@ -177,6 +197,64 @@ PatchDir::PatchDir() : unk1c0(0) {
 PatchDir::~PatchDir(){
 
 }
+
+void PatchDir::CacheRenderedTex(RndTex* tex, bool b){
+    MILO_ASSERT(tex->Width() > 0 && tex->Height() > 0, 0x1EF);
+    RndBitmap bmap;
+    tex->LockBitmap(bmap, true);
+    mTex->SetBitmap(bmap, 0, true);
+    tex->UnlockBitmap();
+    if(b) mTex->Compress(true);
+}
+
+Vector3 PatchLayer::Position() const {
+    return Vector3(mPosX, 0, mPosZ);
+}
+
+void PatchLayer::SetPosition(const Vector3& v){
+    mPosX = v.x;
+    mPosZ = v.z;
+}
+
+float PatchLayer::DeformFrame() const {
+    return mDeformFrame * (1 / 20.46f);
+}
+
+void PatchLayer::SetDeformFrame(float df){
+    MILO_ASSERT(df >= 0.0f, 0x32E);
+    MILO_ASSERT(df <= 50.0f, 0x32F);
+    mDeformFrame = df * 20.46f;
+}
+
+BinStream& operator>>(BinStream& bs, PatchLayer& layer){
+    MILO_ASSERT(PatchDir::GetCurrentRev() == 0, 0x337);
+    bs >> layer.mStickerCategory;
+    bs >> layer.mStickerIdx;
+    bs >> layer.mColorIdx;
+    Vector3 v; bs >> v;
+    layer.SetPosition(v);
+    float rot; bs >> rot;
+    layer.SetRotation(rot);
+    float x; bs >> x;
+    layer.SetScaleX(x);
+    float y; bs >> y;
+    layer.SetScaleY(y);
+    float frame; bs >> frame;
+    layer.SetDeformFrame(frame);
+    return bs;
+}
+
+void PatchDir::Save(BinStream& bs){
+    bs << 5;
+    SaveRemote(bs);
+}
+
+BEGIN_LOADS(PatchDir)
+    LOAD_REVS(bs)
+    ASSERT_REVS(5, 0)
+    if(gRev == 0) bs >> unk194;
+    else LoadRemote(bs);
+END_LOADS
 
 BEGIN_HANDLERS(PatchDir)
     HANDLE_EXPR(has_layers, HasLayers())

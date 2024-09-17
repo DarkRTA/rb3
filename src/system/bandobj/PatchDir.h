@@ -5,6 +5,7 @@
 #include "rndobj/Tex.h"
 #include "rndobj/TransAnim.h"
 #include "world/ColorPalette.h"
+#include "utl/IntPacker.h"
 
 class PatchDir; // forward dec
 
@@ -42,6 +43,8 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
 
+    void SavePacked(IntPacker&) const;
+
     void Reset();
     void SetScale(float, float);
     bool AllowColor();
@@ -56,6 +59,8 @@ public:
     void SetScaleY(float);
     void SetDeformFrame(float);
     bool HasSticker() const;
+    Vector3 Position() const;
+    float DeformFrame() const;
     PatchSticker* GetSticker(bool) const;
 
     static std::vector<Symbol> sCategoryNames;
@@ -99,9 +104,15 @@ public:
     void LoadStickerData();
     bool HasLayers() const;
     void Clear();
+    void CacheRenderedTex(RndTex*, bool);
     PatchSticker* GetSticker(Symbol, int, bool);
+    void SaveRemote(BinStream&);
+    void LoadRemote(BinStream&);
 
+    static void Init();
+    static void Terminate();
     static int SaveSize(int);
+    static int GetCurrentRev(){ return gRev; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
