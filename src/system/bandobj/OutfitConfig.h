@@ -3,6 +3,7 @@
 #include "rndobj/Mat.h"
 #include "rndobj/TexBlender.h"
 #include "bandobj/BandPatchMesh.h"
+#include "bandobj/BandCharDesc.h"
 #include "math/SHA1.h"
 #include "world/ColorPalette.h"
 
@@ -21,6 +22,8 @@ public:
         };
 
         Piercing(Hmx::Object*);
+        RndMesh* GetHeadMesh();
+        void Deform(SyncMeshCB*);
 
         ObjPtr<RndTransformable, ObjectDir> mPiercing; // 0x0
         Transform unkc; // 0xc
@@ -32,6 +35,11 @@ public:
     public:
         MatSwap(Hmx::Object*);
         void SyncTwoColor();
+        bool MatchesPatchCategory(int, ObjVector<BandPatchMesh>&);
+        void SwapResource();
+        void UnSwapResource();
+        void Compose(int*, ObjVector<BandPatchMesh>&, int);
+        bool Compress(BandCharDesc*);
 
         ObjPtr<RndMat, ObjectDir> mMat; // 0x0
         ObjPtr<RndMat, ObjectDir> mResourceMat; // 0xc
@@ -53,6 +61,8 @@ public:
             int mIndex; // 0x0
             int mCoeff; // 0x4
         };
+
+        void Apply(OutfitConfig*, SyncMeshCB*);
 
         String mMeshName; // 0x0
         String unkc; // 0xc
@@ -89,6 +99,17 @@ public:
     void CompressTextures();
     void Recompose();
     void Randomize();
+    void SetColors(const int*);
+
+    static RndMat* sMat;
+    static RndCam* sCam;
+    static BandCharDesc* sBandCharDesc;
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(OutfitConfig);
+    }
+    NEW_OBJ(OutfitConfig);
+    static void Terminate();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -96,8 +117,8 @@ public:
 
     int mColors[3]; // 0x20, 0x24, 0x28
     ObjVector<MatSwap> mMats; // 0x2c
-    int unk38;
-    int unk3c;
+    int unk38; // 0x38
+    int unk3c; // 0x3c
     std::vector<MeshAO> mMeshAO; // 0x40
     bool mComputeAO; // 0x48
     ObjVector<BandPatchMesh> mPatches; // 0x4c

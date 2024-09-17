@@ -11,7 +11,7 @@ BEGIN_CUSTOM_PROPSYNC(BandPatchMesh::MeshPair::PatchPair)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(BandPatchMesh::MeshPair)
-    SYNC_PROP(mesh, o.mMesh)
+    SYNC_PROP(mesh, o.mesh)
     SYNC_PROP(patches, o.mPatches)
 END_CUSTOM_PROPSYNC
 

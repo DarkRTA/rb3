@@ -160,4 +160,13 @@ public:
 BinStream& operator>>(BinStream&, RndMesh::Face&);
 TextStream& operator<<(TextStream&, RndMesh::Volume);
 
+class SyncMeshCB {
+public:
+    SyncMeshCB(){}
+    virtual ~SyncMeshCB(){}
+    virtual void SyncMesh(RndMesh*, int) = 0;
+    virtual bool HasMesh(RndMesh*) = 0;
+    virtual const std::vector<RndMesh::Vert>& GetVerts(RndMesh*) const = 0; // fix return type
+};
+
 #endif
