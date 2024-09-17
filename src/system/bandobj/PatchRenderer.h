@@ -22,10 +22,20 @@ public:
 
     static RndDir* sBlankPatch;
     static RndDir* sTestPatch;
+    static void Init();
+    static void InitResources();
+    static void Terminate();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(PatchRenderer);
+    }
+    NEW_OBJ(PatchRenderer);
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     ObjPtr<RndMat, ObjectDir> mBackMat; // 0x78
     ObjPtr<RndMat, ObjectDir> mOverlayMat; // 0x84
-    int unk90; // 0x90
+    RndEnviron* unk90; // 0x90
     Symbol mTestMode; // 0x94
     Symbol mPosition; // 0x98
 };
