@@ -272,6 +272,55 @@ void PatchDir::CacheRenderedTex(RndTex* tex, bool b){
     if(b) mTex->Compress(true);
 }
 
+void PatchLayer::SavePacked(IntPacker& packer) const {
+    int count = -1;
+    if(!mStickerCategory.Null()){
+        std::vector<Symbol>::iterator it = std::find(sCategoryNames.begin(), sCategoryNames.end(), mStickerCategory);
+        if(it != sCategoryNames.end()){
+            count = it - sCategoryNames.begin();
+        }
+    }
+    packer.AddS(count, 8);
+    packer.AddU(mStickerIdx, 6);
+    packer.AddU(mColorIdx, 6);
+    packer.AddS(mPosX, 9);
+    packer.AddS(mPosZ, 9);
+    packer.AddU(mRot, 9);
+    packer.AddU(mScaleX, 14);
+    packer.AddU(mScaleY, 14);
+    packer.AddU(mDeformFrame, 10);
+}
+
+void PatchLayer::LoadPacked(IntPacker& packer){
+    int count = PatchDir::gRev > 4 ? packer.ExtractS(8) : packer.ExtractS(6);
+    if(count < 0 || count >= sCategoryNames.size()){
+        mStickerCategory = gNullStr;
+    }
+    else mStickerCategory = sCategoryNames[count];
+    if(PatchDir::gRev <= 3) mStickerIdx = packer.ExtractU(5);
+    else mStickerIdx = packer.ExtractU(6);
+    mColorIdx = packer.ExtractU(6);
+    if(PatchDir::gRev == 1){
+        SetPosition(Vector3(packer.ExtractS(9), 0, packer.ExtractS(9)));
+        SetRotation((packer.ExtractU(9) * 360.0f) / 511.0f);
+        unsigned int x = packer.ExtractU(14);
+        unsigned int y = packer.ExtractU(14);
+        SetScaleX(x * (1/1638.3f));
+        SetScaleY(y * (1/1638.3f));
+        SetDeformFrame(packer.ExtractU(10) * (1 / 20.46f));
+    }
+    else {
+        mPosX = packer.ExtractS(9);
+        mPosZ = packer.ExtractS(9);
+        mRot = packer.ExtractU(9);
+        mScaleX = packer.ExtractU(14);
+        mScaleY = packer.ExtractU(14);
+        mDeformFrame = packer.ExtractU(10);
+    }
+}
+
+int PatchLayer::PackedBitCount(){ return 85; }
+
 Vector3 PatchLayer::Position() const {
     return Vector3(mPosX, 0, mPosZ);
 }
@@ -434,7 +483,7 @@ bool PatchDir::UsesSticker(const PatchSticker* sticker) const {
 }
 
 bool PatchDir::IsLoadingStickers() const { return mStickersLoading.size() > 0; }
-int PatchDir::NumStickersLoading() const { return mStickersLoading.size(); }
+int PatchDir::NumLoadingStickers() const { return mStickersLoading.size(); }
 PatchLayer& PatchDir::Layer(int idx){ return mLayers[idx]; }
 
 int PatchDir::FindEmptyLayer(){

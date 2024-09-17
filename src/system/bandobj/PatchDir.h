@@ -47,6 +47,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
 
     void SavePacked(IntPacker&) const;
+    void LoadPacked(IntPacker&);
 
     void Reset();
     void SetScale(float, float);
@@ -81,6 +82,7 @@ public:
     static void Init();
     static void InitResources();
     static void Terminate();
+    static int PackedBitCount();
 
     Symbol mStickerCategory; // 0x1c
     int mStickerIdx; // 0x20
@@ -113,7 +115,7 @@ public:
     int NumLayers() const;
     int NumLayersUsed() const;
     bool IsLoadingStickers() const;
-    int NumStickersLoading() const;
+    int NumLoadingStickers() const;
     void Clear();
     void CacheRenderedTex(RndTex*, bool);
     bool UsesSticker(const PatchSticker*) const;
