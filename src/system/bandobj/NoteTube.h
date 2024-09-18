@@ -16,7 +16,9 @@ public:
     float CurrentStartX(float) const;
     float CurrentEndX(float) const;
     String GetMatName();
+    void PollDeploy(float);
     void AllocateVerts(int, bool);
+    void AllocateFaces(int, bool);
     void SetParent(RndGroup* grp){ mParent = grp; }
     void SetBeginX(float x){ mBeginX = x; }
     void SetWidthX(float x){ mWidthX = x; }
@@ -49,6 +51,7 @@ public:
     void SetMeshVert(RndMesh::Vert&, float, float, float, float);
     void InitializePlate(TubePlate*, RndMat*, RndGroup*);
     void DrawToPlate(TubePlate*);
+    void LookupPitchedUVCoordinates(float&, float&, float&, float&, bool);
 
     bool mPitched; // 0x1c
     int mPart; // 0x20
