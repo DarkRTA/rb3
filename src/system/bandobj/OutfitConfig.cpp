@@ -218,7 +218,14 @@ BinStream& operator>>(BinStream& bs, OutfitConfig::Piercing::Piece& piece){
 BinStream& operator>>(BinStream& bs, OutfitConfig::Piercing& piercing){
     bs >> piercing.mPiercing;
     if(OutfitConfig::gRev < 0xD){
-
+        piercing.mPieces.resize(1);
+        OutfitConfig::Piercing::Piece& curPiece = piercing.mPieces[0];
+        int i, j;
+        bs >> i; bs >> j;
+        curPiece.mVert = -1;
+        if(OutfitConfig::gRev < 0xE){
+            Transform tf; bs >> tf;
+        }
     // ObjPtr<RndTransformable, ObjectDir> mPiercing; // 0x0
     //     Transform unkc; // 0xc
     //     bool mReskin; // 0x3c
@@ -388,6 +395,15 @@ BandCharDesc* OutfitConfig::FindBandCharDesc(){
     const char* str = strstr(Dir()->GetPathName(), "female");
     sBandCharDesc->SetGender(str ? "female" : "male");
     return sBandCharDesc;
+}
+
+void OutfitConfig::SetSkinTextures(){
+    Hmx::Object* obj = Dir()->Find<Hmx::Object>("torso_naked.mat", false);
+    if(obj){
+        SetSkinTextures(Dir(), Dir(), FindBandCharDesc());
+        OutfitConfig* cfg = Dir()->Find<OutfitConfig>("skin.cfg", false);
+        if(cfg) cfg->Recompose();
+    }
 }
 
 void OutfitConfig::Randomize(){

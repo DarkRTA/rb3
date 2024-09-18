@@ -104,6 +104,7 @@ public:
     BandCharDesc* FindBandCharDesc();
     void ApplyAO(SyncMeshCB*);
     int NumIndices(int) const;
+    void SetSkinTextures();
 
     static RndMat* sMat;
     static RndCam* sCam;
