@@ -67,6 +67,7 @@
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
+            "system/bandobj/OutfitConfig.cpp": "NonMatching",
             "system/bandobj/OvershellDir.cpp": "NonMatching",
             "system/bandobj/PatchDir.cpp": "NonMatching",
             "system/bandobj/ScrollbarDisplay.cpp": "NonMatching",

@@ -101,6 +101,9 @@ public:
     void RecomposePatches(int);
     void Randomize();
     void SetColors(const int*);
+    BandCharDesc* FindBandCharDesc();
+    void ApplyAO(SyncMeshCB*);
+    int NumIndices(int) const;
 
     static RndMat* sMat;
     static RndCam* sCam;

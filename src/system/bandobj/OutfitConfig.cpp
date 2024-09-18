@@ -1,4 +1,5 @@
 #include "bandobj/OutfitConfig.h"
+#include "math/Rand.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Dir.h"
 #include "utl/Symbols.h"
@@ -364,6 +365,51 @@ BEGIN_COPYS(OutfitConfig)
     END_COPYING_MEMBERS
 END_COPYS
 #pragma pop
+
+void OutfitConfig::PreSave(BinStream& bs){
+    for(ObjVector<MatSwap>::iterator it = mMats.begin(); it != mMats.end(); ++it){
+        it->UnSwapResource();
+    }
+    Recompose();
+}
+
+void OutfitConfig::PostSave(BinStream&){}
+void OutfitConfig::UpdatePreClearState(){
+    TheRnd->PreClearDrawAddOrRemove(this, true, false);
+}
+
+BandCharDesc* OutfitConfig::FindBandCharDesc(){
+    if(Dir()){
+        static Symbol sBandCharName("BandCharacter");
+        if(Dir()->ClassName() == sBandCharName){
+            
+        }
+    }
+    const char* str = strstr(Dir()->GetPathName(), "female");
+    sBandCharDesc->SetGender(str ? "female" : "male");
+    return sBandCharDesc;
+}
+
+void OutfitConfig::Randomize(){
+    for(int i = 0; i < 3; i++){
+        int num = NumIndices(i);
+        if(num != 0) mColors[i] = RandomInt(0, num);
+    }
+    Recompose();
+}
+
+void OutfitConfig::CompressTextures(){
+    if(unk3c != 2) unk3c = 1;
+}
+
+void OutfitConfig::ApplyAO(SyncMeshCB* mesh){
+    for(int i = 0; i < mMeshAO.size(); i++){
+        mMeshAO[i].Apply(this, mesh);
+    }
+    for(int i = 0; i < mPiercings.size(); i++){
+        mPiercings[i].Deform(mesh);
+    }
+}
 
 BEGIN_HANDLERS(OutfitConfig)
     HANDLE_ACTION(recompose, Recompose())
