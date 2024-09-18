@@ -63,6 +63,7 @@ public:
         VertVector& operator=(const VertVector&);
         Vert* begin();
         Vert* end();
+        unsigned short Capacity() const { return mCapacity; }
 
         Vert* mVerts;
         u32 mSize;
@@ -95,6 +96,9 @@ public:
     virtual void Print();
     virtual void OnSync(int);
 
+    RndMat* GetMat() const { return mMat; }
+    VertVector& Verts(){ return mOwner->mVerts; }
+    std::vector<Face>& Faces(){ return mOwner->mFaces; }
     const Vector3& VertPos(int idx) const {
         return mOwner->mVerts[idx]->pos;
     }

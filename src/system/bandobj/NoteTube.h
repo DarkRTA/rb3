@@ -12,14 +12,26 @@ public:
     void Bake();
     void Reset();
     void SetDeployTiming(float, float);
+    void SetShowing(bool);
+    float CurrentStartX(float) const;
+    float CurrentEndX(float) const;
+    String GetMatName();
+    void AllocateVerts(int, bool);
+    void SetParent(RndGroup* grp){ mParent = grp; }
+    void SetBeginX(float x){ mBeginX = x; }
+    void SetWidthX(float x){ mWidthX = x; }
 
     RndMesh* mMesh; // 0x0
     RndGroup* mParent; // 0x4
     int mAllocationCount; // 0x8
-    f32 unk_0xC, unk_0x10;
-    u8 unk_0x14;
-    f32 unk_0x18, unk_0x1C, unk_0x20;
-    u8 unk_0x24;
+    float mBeginX; // 0xc
+    float mWidthX; // 0x10
+    bool mBaked; // 0x14
+    float mActiveMs; // 0x18 
+    float mInvalidateMs; // 0x1c 
+    float mMatSize; // 0x20
+    bool mDeploy; // 0x24
+    int unk28; // 0x28
 };
 
 class NoteTube : public Hmx::Object {
@@ -32,15 +44,19 @@ public:
     void SetGlowLevel(int);
     int NumGlowLevels() const { return 4; }
     void BakePlates();
+    void CreateMeshes();
     void SetDeployTiming(float, float);
     void SetMeshVert(RndMesh::Vert&, float, float, float, float);
+    void InitializePlate(TubePlate*, RndMat*, RndGroup*);
+    void DrawToPlate(TubePlate*);
 
     bool mPitched; // 0x1c
     int mPart; // 0x20
     bool unk_0x24;
     int mGlowLevel; // 0x28 
     u8 unk_0x2C, unk_0x2D;
-    float unk_0x30, unk_0x34, unk_0x38;
+    float unk_0x30, unk_0x34;
+    float mEndX; // 0x38
     RndMat* mBackMat; // 0x3c
     RndMat* mFrontMat; // 0x40
     TubePlate* mBackPlate; // 0x44
@@ -49,7 +65,7 @@ public:
     RndGroup* mFrontParent; // 0x50
     float mXPos; // 0x54
     std::vector<Vector3> mPoints; // 0x58
-    float unk_0x60;
+    float mAlpha; // 0x60
 };
 
 #endif // BANDOBJ_NOTETUBE_H
