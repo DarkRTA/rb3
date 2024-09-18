@@ -17,12 +17,12 @@ public:
         std::vector<T1, T2>::resize(ul, T1(mOwner));
     }
 
-    void alloc_back(){
+    void push_back(){
         resize(size() + 1);
     }
 
     void push_back(const T1& t){
-        alloc_back();
+        push_back();
         T1* last = &back();
         *last = t;
     }
@@ -39,10 +39,9 @@ public:
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, ObjVector<T1, T2>& vec) {
     unsigned int length;
     bs >> length;
-    vec.resize(length); // TODO: implement the ObjVector::resize override
+    vec.resize(length);
 
     for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
-        // it->Load(bs);
         bs >> *it;
     }
 

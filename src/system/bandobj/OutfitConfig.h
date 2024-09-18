@@ -98,12 +98,14 @@ public:
     int NumColorOptions() const;
     void CompressTextures();
     void Recompose();
+    void RecomposePatches(int);
     void Randomize();
     void SetColors(const int*);
 
     static RndMat* sMat;
     static RndCam* sCam;
     static BandCharDesc* sBandCharDesc;
+    static void SetSkinTextures(ObjectDir*, ObjectDir*, BandCharDesc*);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(OutfitConfig);
@@ -129,4 +131,22 @@ public:
     ObjVector<Overlay> mOverlays; // 0x80
     ObjPtr<RndMat, ObjectDir> mBandLogo; // 0x8c
     CSHA1::Digest mDigest; // 0x98
+};
+
+class OldMatOption {
+public:
+    OldMatOption(Hmx::Object* o) : mMat(o, 0), mPrimaryPalette(o, 0), mSecondaryPalette(o, 0), mTexs(o) {}
+
+    ObjPtr<RndMat, ObjectDir> mMat; // 0x0
+    ObjPtr<ColorPalette, ObjectDir> mPrimaryPalette; // 0xc
+    ObjPtr<ColorPalette, ObjectDir> mSecondaryPalette; // 0x18
+    ObjVector<ObjPtr<RndTex, ObjectDir> > mTexs; // 0x24
+};
+
+class OldColorOption {
+public:
+    OldColorOption(Hmx::Object* o) : mColorIndex(0), mMatOptions(o) {}
+
+    int mColorIndex; // 0x0
+    ObjList<OldMatOption> mMatOptions; // 0x4
 };

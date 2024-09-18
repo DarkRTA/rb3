@@ -23,6 +23,7 @@ public:
     };
 
     BandPatchMesh(Hmx::Object*);
+    BandPatchMesh& operator=(const BandPatchMesh&);
 
     ObjVector<MeshPair> mMeshes; // 0x0
     bool mRenderTo; // 0xc
@@ -31,3 +32,5 @@ public:
 };
 
 bool PropSync(BandPatchMesh&, DataNode&, DataArray*, int, PropOp);
+
+BinStream& operator>>(BinStream& bs, BandPatchMesh& mesh);
