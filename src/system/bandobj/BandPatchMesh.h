@@ -16,13 +16,14 @@ public:
             ObjPtr<RndTex, ObjectDir> mTex; // 0xc
         };
 
-        MeshPair(Hmx::Object* o) : mMesh(o, 0), mPatches(o) {}
+        MeshPair(Hmx::Object* o) : mesh(o, 0), mPatches(o) {}
 
-        ObjPtr<RndMesh, ObjectDir> mMesh; // 0x0
+        ObjPtr<RndMesh, ObjectDir> mesh; // 0x0
         ObjVector<PatchPair> mPatches; // 0xc
     };
 
     BandPatchMesh(Hmx::Object*);
+    BandPatchMesh& operator=(const BandPatchMesh&);
 
     ObjVector<MeshPair> mMeshes; // 0x0
     bool mRenderTo; // 0xc
@@ -31,3 +32,5 @@ public:
 };
 
 bool PropSync(BandPatchMesh&, DataNode&, DataArray*, int, PropOp);
+
+BinStream& operator>>(BinStream& bs, BandPatchMesh& mesh);

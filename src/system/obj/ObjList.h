@@ -16,12 +16,12 @@ public:
         std::list<T>::resize(ul, T(mOwner));
     }
 
-    void alloc_back(){
+    void push_back(){
         resize(size() + 1);
     }
 
     void push_back(const T& t){
-        alloc_back();
+        push_back();
         T* last = &back();
         *last = t;
     }

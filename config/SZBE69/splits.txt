@@ -971,8 +971,12 @@ rb3/chordshapegenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
 
-rb3/notetube.cpp:
-	.text       start:0x803FC0A8 end:0x803FC164
+system/bandobj/OutfitConfig.cpp:
+	.text       start:0x803FD9E8 end:0x8040EB9C
+
+system/bandobj/PatchDir.cpp:
+	.text       start:0x8040EB9C end:0x8041419C
+	.ctors      start:0x807EFF94 end:0x807EFF98
 
 system/bandobj/ScrollbarDisplay.cpp:
 	.text       start:0x80419BC4 end:0x8041B308

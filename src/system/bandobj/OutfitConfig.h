@@ -3,6 +3,7 @@
 #include "rndobj/Mat.h"
 #include "rndobj/TexBlender.h"
 #include "bandobj/BandPatchMesh.h"
+#include "bandobj/BandCharDesc.h"
 #include "math/SHA1.h"
 #include "world/ColorPalette.h"
 
@@ -21,6 +22,8 @@ public:
         };
 
         Piercing(Hmx::Object*);
+        RndMesh* GetHeadMesh();
+        void Deform(SyncMeshCB*);
 
         ObjPtr<RndTransformable, ObjectDir> mPiercing; // 0x0
         Transform unkc; // 0xc
@@ -32,6 +35,11 @@ public:
     public:
         MatSwap(Hmx::Object*);
         void SyncTwoColor();
+        bool MatchesPatchCategory(int, ObjVector<BandPatchMesh>&);
+        void SwapResource();
+        void UnSwapResource();
+        void Compose(int*, ObjVector<BandPatchMesh>&, int);
+        bool Compress(BandCharDesc*);
 
         ObjPtr<RndMat, ObjectDir> mMat; // 0x0
         ObjPtr<RndMat, ObjectDir> mResourceMat; // 0xc
@@ -53,6 +61,8 @@ public:
             int mIndex; // 0x0
             int mCoeff; // 0x4
         };
+
+        void Apply(OutfitConfig*, SyncMeshCB*);
 
         String mMeshName; // 0x0
         String unkc; // 0xc
@@ -88,7 +98,24 @@ public:
     int NumColorOptions() const;
     void CompressTextures();
     void Recompose();
+    void RecomposePatches(int);
     void Randomize();
+    void SetColors(const int*);
+    BandCharDesc* FindBandCharDesc();
+    void ApplyAO(SyncMeshCB*);
+    int NumIndices(int) const;
+    void SetSkinTextures();
+
+    static RndMat* sMat;
+    static RndCam* sCam;
+    static BandCharDesc* sBandCharDesc;
+    static void SetSkinTextures(ObjectDir*, ObjectDir*, BandCharDesc*);
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(OutfitConfig);
+    }
+    NEW_OBJ(OutfitConfig);
+    static void Terminate();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -96,8 +123,8 @@ public:
 
     int mColors[3]; // 0x20, 0x24, 0x28
     ObjVector<MatSwap> mMats; // 0x2c
-    int unk38;
-    int unk3c;
+    int unk38; // 0x38
+    int unk3c; // 0x3c
     std::vector<MeshAO> mMeshAO; // 0x40
     bool mComputeAO; // 0x48
     ObjVector<BandPatchMesh> mPatches; // 0x4c
@@ -108,4 +135,22 @@ public:
     ObjVector<Overlay> mOverlays; // 0x80
     ObjPtr<RndMat, ObjectDir> mBandLogo; // 0x8c
     CSHA1::Digest mDigest; // 0x98
+};
+
+class OldMatOption {
+public:
+    OldMatOption(Hmx::Object* o) : mMat(o, 0), mPrimaryPalette(o, 0), mSecondaryPalette(o, 0), mTexs(o) {}
+
+    ObjPtr<RndMat, ObjectDir> mMat; // 0x0
+    ObjPtr<ColorPalette, ObjectDir> mPrimaryPalette; // 0xc
+    ObjPtr<ColorPalette, ObjectDir> mSecondaryPalette; // 0x18
+    ObjVector<ObjPtr<RndTex, ObjectDir> > mTexs; // 0x24
+};
+
+class OldColorOption {
+public:
+    OldColorOption(Hmx::Object* o) : mColorIndex(0), mMatOptions(o) {}
+
+    int mColorIndex; // 0x0
+    ObjList<OldMatOption> mMatOptions; // 0x4
 };

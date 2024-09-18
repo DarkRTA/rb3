@@ -41,6 +41,7 @@ public:
 
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);
 void RndGXEnd();
+void RndGxDrawDone();
 
 extern WiiRnd TheWiiRnd;
 extern int gSuppressPointTest;
