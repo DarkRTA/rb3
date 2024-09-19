@@ -1,5 +1,8 @@
 #include "bandobj/ChordShapeGenerator.h"
+#include "beatmatch/RGUtl.h"
 #include "utl/Symbols.h"
+
+INIT_REVS(ChordShapeGenerator);
 
 ChordShapeGenerator::ChordShapeGenerator() : mFingerSrcMesh(this, 0), mChordSrcMesh(this, 0), mBaseXSection(this, 0), mContourXSection(this, 0), mBaseHeight(this, 0),
     mNumSlots(6), mString0(this, 0), mString1(this, 0), mString2(this, 0), mString3(this, 0), mString4(this, 0), mString5(this, 0), unkc4(0), unkc8(-1.0f), unkcc(1.0f), unkd0(0.2f) {
@@ -11,6 +14,178 @@ ChordShapeGenerator::ChordShapeGenerator() : mFingerSrcMesh(this, 0), mChordSrcM
     for(int i = 0; i < 6; i++) mStringFrets[i] = -1;
     unk64.resize(6);
     for(int i = 0; i < 6; i++) unk64[i] = 1;
+}
+
+BEGIN_COPYS(ChordShapeGenerator)
+    CREATE_COPY(ChordShapeGenerator)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mChordSrcMesh)
+        COPY_MEMBER(mFingerSrcMesh)
+        COPY_MEMBER(mBaseXSection)
+        COPY_MEMBER(mContourXSection)
+        COPY_MEMBER(mBaseHeight)
+        COPY_MEMBER(mNumSlots)
+        COPY_MEMBER(mString0)
+        COPY_MEMBER(mString1)
+        COPY_MEMBER(mString2)
+        COPY_MEMBER(mString3)
+        COPY_MEMBER(mString4)
+        COPY_MEMBER(mString5)
+        COPY_MEMBER(mFretHeights)
+        COPY_MEMBER(mGradeDistances)
+    END_COPYING_MEMBERS
+END_COPYS
+
+SAVE_OBJ(ChordShapeGenerator, 0x43)
+
+#define kMaxFretHeights 6
+
+BEGIN_LOADS(ChordShapeGenerator)
+    LOAD_REVS(bs)
+    ASSERT_REVS(1, 0)
+    bs >> mChordSrcMesh;
+    if(gRev != 0) bs >> mFingerSrcMesh;
+    bs >> mBaseXSection;
+    bs >> mContourXSection;
+    bs >> mBaseHeight;
+    bs >> mNumSlots;
+    bs >> mStringFrets;
+    bs >> mString0;
+    bs >> mString1;
+    bs >> mString2;
+    bs >> mString3;
+    bs >> mString4;
+    bs >> mString5;
+    bs >> mFretHeights;
+    bs >> mGradeDistances;
+    MILO_ASSERT(mFretHeights.size() <= (kMaxFretHeights + 1), 0x70);
+    MILO_ASSERT(mGradeDistances.size() <= kMaxFretHeights, 0x71);
+    while(mFretHeights.size() < 7){
+        mFretHeights.push_back(mFretHeights.back());
+    }
+    while(mGradeDistances.size() < 6) mGradeDistances.push_back(0);
+END_LOADS
+
+RndMesh* NewCopyMesh(const RndMesh* mesh){
+    RndMesh* ret = Hmx::Object::New<RndMesh>();
+    ret->Copy(mesh, Hmx::Object::kCopyDeep);
+    return ret;
+}
+
+const Transform& ChordShapeGenerator::SlotXfm(int idx) const {
+    switch(idx){
+        case 0: return mString0->WorldXfm();
+        case 1: return mString1->WorldXfm();
+        case 2: return mString2->WorldXfm();
+        case 3: return mString3->WorldXfm();
+        case 4: return mString4->WorldXfm();
+        case 5: return mString5->WorldXfm();
+        default:
+            MILO_WARN("string index %d out of range", idx);
+            static Transform t;
+            return t;
+    }
+}
+
+bool ChordShapeGenerator::CheckParams() const {
+    bool missing = false;
+    if(!mChordSrcMesh){
+        MILO_WARN("%s is missing", "source chord mesh");
+        missing = true;
+    }
+    if(!mFingerSrcMesh){
+        MILO_WARN("%s is missing", "source finger mesh");
+        missing = true;
+    }
+    if(!mBaseXSection){
+        MILO_WARN("%s is missing", "base cross section transform");
+        missing = true;
+    }
+    if(!mContourXSection){
+        MILO_WARN("%s is missing", "contour cross section transform");
+        missing = true;
+    }
+    if(!mBaseHeight){
+        MILO_WARN("%s is missing", "base height transform");
+        missing = true;
+    }
+    if(!mString0){
+        MILO_WARN("%s is missing", "smasher 0");
+        missing = true;
+    }
+    if(!mString1){
+        MILO_WARN("%s is missing", "smasher 1");
+        missing = true;
+    }
+    if(!mString2){
+        MILO_WARN("%s is missing", "smasher 2");
+        missing = true;
+    }
+    if(!mString3){
+        MILO_WARN("%s is missing", "smasher 3");
+        missing = true;
+    }
+    if(!mString4){
+        MILO_WARN("%s is missing", "smasher 4");
+        missing = true;
+    }
+    if(!mString5){
+        MILO_WARN("%s is missing", "smasher 5");
+        missing = true;
+    }
+    return missing;
+}
+
+int shapesGenerated;
+int cycles;
+
+void ChordShapeGenerator::DumpChordGenData(){
+    if(shapesGenerated > 0){
+        MILO_LOG("Chord Shape Generator: built %d shapes in %.2f mS\n", shapesGenerated, Timer::CyclesToMs(cycles)); // probably the wrong timer func
+    }
+    shapesGenerated = 0;
+    cycles = 0;
+}
+
+RndMesh* ChordShapeGenerator::BuildChordMesh(unsigned int ui, int i){
+    RGUnpackChordShapeID(ui, mStringFrets, &unk64);
+    shapesGenerated++;
+    BuildChordMesh();
+}
+
+DataNode ChordShapeGenerator::OnGenerate(const DataArray* da){
+    RndMesh* mesh = BuildChordMesh();
+    NameMesh(mesh, false);
+    return DataNode(mesh);
+}
+
+DataNode ChordShapeGenerator::OnInvert(const DataArray* da){
+    RndMesh* mesh = da->Obj<RndMesh>(2);
+    if(mesh){
+        mesh = MakeInvertedMesh(mesh);
+        NameMesh(mesh, true);
+        return DataNode(mesh);
+    }
+    else return DataNode(0);
+}
+
+DataNode ChordShapeGenerator::OnSetStringFret(const DataArray* da){
+    int fret = da->Int(3);
+    mStringFrets[da->Int(2)] = fret;
+    return DataNode(fret);
+}
+
+DataNode ChordShapeGenerator::OnGetStringTrans(const DataArray* da){
+    int idx = da->Int(2);
+    switch(idx){
+        case 0: return DataNode(mString0);
+        case 1: return DataNode(mString1);
+        case 2: return DataNode(mString2);
+        case 3: return DataNode(mString3);
+        case 4: return DataNode(mString4);
+        case 5: return DataNode(mString5);
+        default: return DataNode(0);
+    }
 }
 
 BEGIN_HANDLERS(ChordShapeGenerator)

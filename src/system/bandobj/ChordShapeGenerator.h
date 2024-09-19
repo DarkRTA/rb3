@@ -15,6 +15,14 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    const Transform& SlotXfm(int) const;
+    bool CheckParams() const;
+    void DumpChordGenData();
+    void NameMesh(RndMesh*, bool);
+    RndMesh* BuildChordMesh(unsigned int, int);
+    RndMesh* BuildChordMesh();
+    RndMesh* MakeInvertedMesh(const RndMesh*);
+
     DataNode OnGenerate(const DataArray*);
     DataNode OnInvert(const DataArray*);
     DataNode OnSetStringFret(const DataArray*);
