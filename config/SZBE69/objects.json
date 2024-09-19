@@ -66,6 +66,7 @@
             "system/bandobj/BandDirector.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",
+            "system/bandobj/EndingBonus.cpp": "NonMatching",
             "system/bandobj/FingerShape.cpp": "NonMatching",
             "system/bandobj/InlineHelp.cpp": "NonMatching",
             "system/bandobj/NoteTube.cpp": "NonMatching",

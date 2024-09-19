@@ -2,7 +2,7 @@
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
-EndingBonus::EndingBonus() : mSuppressUnisonDisplay(0), unk18d(0), mScore(0), mSucceeded(0), unk198(this, 0), mScoreLabel(this, 0), mUnisonStartTrig(this, 0),
+EndingBonus::EndingBonus() : mSuppressUnisonDisplay(0), mInUnison(0), mScore(0), mSucceeded(0), mCodaEndTask(this, 0), mScoreLabel(this, 0), mUnisonStartTrig(this, 0),
     mUnisonEndTrig(this, 0), mUnisonSucceedTrig(this, 0), mStartTrig(this, 0), mEndTrig(this, 0), mSucceedTrig(this, 0), mResetTrig(this, 0) {
 
 }
@@ -32,7 +32,7 @@ void EndingBonus::Start(bool b){
     SetupEnding(b);
     mScore = 0;
     mScoreLabel->SetInt(0, false);
-    unk18d = false;
+    mInUnison = false;
 }
 
 void EndingBonus::MiniIconData::Reset(){
@@ -72,7 +72,7 @@ void EndingBonus::Reset(){
     for(int i = 0; i < mIconData.size(); i++){
         mIconData[i].Reset();
     }
-    unk18d = false;
+    mInUnison = false;
 }
 
 void EndingBonus::SetIconText(int slot_index, const char* cc){
@@ -97,25 +97,25 @@ void EndingBonus::PlayerFailure(int slot_index){
 }
 
 void EndingBonus::CodaEnd(){
-    unk198 = new MessageTask(this, coda_end_script_msg);
-    TheTaskMgr.Start(unk198, kTaskSeconds, 2.0f);
+    mCodaEndTask = new MessageTask(this, coda_end_script_msg);
+    TheTaskMgr.Start(mCodaEndTask, kTaskSeconds, 2.0f);
 }
 
 void EndingBonus::SetSuppressUnisonDisplay(bool b){ mSuppressUnisonDisplay = b; }
 
 void EndingBonus::UnisonStart(int i){
-    if(!unk18d){
+    if(!mInUnison){
         Reset();
         if(!mSuppressUnisonDisplay) mUnisonStartTrig->Trigger();
         SetupUnison(i);
-        unk18d = true;
+        mInUnison = true;
     }
 }
 
 void EndingBonus::UnisonEnd(){
-    if(unk18d){
+    if(mInUnison){
         if(!mSuppressUnisonDisplay) mUnisonEndTrig->Trigger();
-        unk18d = false;
+        mInUnison = false;
     }
 }
 
@@ -126,7 +126,7 @@ void EndingBonus::UnisonSucceed(){
             PlayerSuccess(i);
         }
     }
-    unk18d = false;
+    mInUnison = false;
 }
 
 void EndingBonus::SetScore(int score){
@@ -142,6 +142,23 @@ void EndingBonus::SetupEnding(bool b){
 
 void EndingBonus::SetupUnison(int i){
     SetIconOrder(i, false);
+}
+
+void EndingBonus::SetIconOrder(int num, bool b){
+    std::vector<int> nums;
+    for(int i = 0; i < mTrackOrder.size(); i++){
+        if(num & 1 << i){
+            MiniIconData& curdata = mIconData[i];
+            if(!curdata.mDisabled && mTrackOrder[i] != -1 && (b || mTrackOrder[i] != 3)){
+                nums.push_back(i);
+            }
+        }
+    }
+    for(int i = 0; i < nums.size(); i++){
+        int& curnum = nums[i];
+        mIconData[curnum].SetUsed(true);
+        mIconData[curnum].mIcon->SetLocalPos(Vector3(-((nums.size() - 1) * 0.5f - i) * 1.5f, 0, 0));
+    }
 }
 
 void EndingBonus::DisablePlayer(int slot_index){

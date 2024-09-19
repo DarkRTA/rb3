@@ -16,6 +16,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    float GetLabelHeight();
     void SetLabel(UILabel*);
     void SetTopBone(RndMesh*);
     void SetBottomBone(RndMesh*);
@@ -23,6 +24,12 @@ public:
     UILabel* GetLabel() const { return mDialogLabel.Ptr() ? mDialogLabel.Ptr() : 0; }
     RndMesh* GetTopBone() const { return mTopBone.Ptr() ? mTopBone.Ptr() : 0; }
     RndMesh* GetBottomBone() const { return mBottomBone.Ptr() ? mBottomBone.Ptr() : 0; }
+
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(DialogDisplay);
+    }
+    NEW_OBJ(DialogDisplay);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
