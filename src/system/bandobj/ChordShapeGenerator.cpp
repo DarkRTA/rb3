@@ -6,10 +6,10 @@ INIT_REVS(ChordShapeGenerator);
 
 ChordShapeGenerator::ChordShapeGenerator() : mFingerSrcMesh(this, 0), mChordSrcMesh(this, 0), mBaseXSection(this, 0), mContourXSection(this, 0), mBaseHeight(this, 0),
     mNumSlots(6), mString0(this, 0), mString1(this, 0), mString2(this, 0), mString3(this, 0), mString4(this, 0), mString5(this, 0), unkc4(0), unkc8(-1.0f), unkcc(1.0f), unkd0(0.2f) {
-    mFretHeights.resize(7);
+    mFretHeights.resize(6);
     for(int i = 0; i < 7; i++) mFretHeights[i] = 1.0f;
-    mGradeDistances.resize(7);
-    for(int i = 0; i < 7; i++) mGradeDistances[i] = 0.33f;
+    mGradeDistances.resize(6);
+    for(int i = 0; i < 6; i++) mGradeDistances[i] = 0.33f;
     mStringFrets.resize(6);
     for(int i = 0; i < 6; i++) mStringFrets[i] = -1;
     unk64.resize(6);
@@ -152,6 +152,104 @@ RndMesh* ChordShapeGenerator::BuildChordMesh(unsigned int ui, int i){
     shapesGenerated++;
     BuildChordMesh();
 }
+
+RndMesh* ChordShapeGenerator::MakeInvertedMesh(const RndMesh* mesh){
+    RndMesh* ret = NewCopyMesh(mesh);
+    for(int i = 0; i < (int)ret->Verts().size(); i++){
+        RndMesh::Vert& curvert = ret->Verts()[i];
+        curvert.pos.x = -curvert.pos.x;
+        curvert.norm.x = -curvert.norm.x;
+    }
+    for(int i = 0; i < ret->Faces().size(); i++){
+        RndMesh::Face& curface = ret->Faces()[i];
+        int temp = curface.idx1;
+        curface.idx1 = curface.idx2;
+        curface.idx2 = temp;
+    }
+    if(TheLoadMgr.EditMode()){
+        ret->Sync(0x3F);
+        ret->mOwner->unk_0xF0 = 0;
+    }
+    return ret;
+}
+
+int vertIt; // this type might be wrong
+
+#pragma push
+#pragma dont_inline on
+void ChordShapeGenerator::BuildContourCap(RndMesh* mesh, std::map<unsigned short, unsigned short>& connectingVerts, int iii,
+    const Transform& tf1, const Transform& tf2, Symbol sym, Hmx::Color32 col1, Hmx::Color32 col2){
+    MILO_ASSERT(connectingVerts.size(), 0x24B);
+    RndMesh::VertVector& verts = unkc4->Verts();
+    std::map<unsigned short, unsigned short> map150;
+    for(int i = 0; i < verts.size(); i++){
+        RndMesh::Vert& curvert = verts[i];
+        if(curvert.pos.x > unkc8 + 0.1f && curvert.pos.x < unkcc - 0.1f){
+            map150[i] = vertIt++;
+        }
+    }
+    bool isright = sym == right;
+    RndMesh::VertVector& meshverts = mesh->Verts();
+    if(vertIt > meshverts.size()){
+        unsigned int newsize = meshverts.size() * 2;
+        MILO_LOG("RG: too few verts for chord shape - increasing to %d", newsize);
+        meshverts.resize(newsize, true);
+    }
+    Transform tfd8;
+    Transform tf108;
+    Transform tf138;
+    InterpolateXfm(tf1, tf2, 0.33f, tfd8);
+    InterpolateXfm(tf1, tf2, 0.67f, tf108);
+    InterpolateXfm(tf1, tf2, 0.50f, tf138);
+    tf138.v = tfd8.v;
+    tf138.v += tf108.v;
+    tf138.v /= 2.0f;
+    float f6 = (unkc8 * 2.0f + unkcc) / 3.0f;
+    float f7 = (unkcc * 2.0f + unkc8) / 3.0f;
+    float f22 = (tf2.v.x - tf1.v.x) / (unkcc - unkc8);
+    float f23 = -f22;
+    float var29 = (unkc8 + unkcc) / 2.0f;
+    float var28 = mFretHeights[iii];
+    std::map<unsigned short, unsigned short>::iterator it = map150.begin();
+    std::map<unsigned short, unsigned short>::iterator itEnd = map150.end();
+    for(; it != itEnd; ++it){
+        RndMesh::Vert& curvert = meshverts[it->first];
+        curvert = verts[it->first];
+        if(isright){
+            if(curvert.pos.x < f6){
+                TransformVert(curvert, unkc8, f23, var28, tf2, Hmx::Color32(col2));
+            }
+            else if(curvert.pos.x < f7){
+                TransformVert(curvert, var29, f23, var28, tf138, Hmx::Color32(col2));
+            }
+            else {
+                TransformVert(curvert, unkcc, f23, var28, tf1, Hmx::Color32(col2));
+            }
+        }
+        else {
+            if(curvert.pos.x < f6){
+                TransformVert(curvert, unkc8, f22, var28, tf1, Hmx::Color32(col1));
+            }
+            else if(curvert.pos.x < f7){
+                TransformVert(curvert, var29, f22, var28, tf138, Hmx::Color32(col1));
+            }
+            else {
+                TransformVert(curvert, unkcc, f22, var28, tf2, Hmx::Color32(col1));
+            }
+        }
+    }
+    std::map<unsigned short, unsigned short> map168;
+    AddVertProfile(mesh, tf2, var29, isright ? sec2 : sec1, map168, Hmx::Color32(isright ? col2 : col1));
+    map150.insert(map168.begin(), map168.end());
+    map150.insert(map168.begin(), map168.end()); // fix
+    std::vector<RndMesh::Face>& faces = unkc4->Faces();
+    std::vector<RndMesh::Face>& meshfaces = mesh->Faces();
+    for(int i = 0; i < faces.size(); i++){
+        // idek
+    }
+    connectingVerts.swap(map168);
+}
+#pragma pop
 
 DataNode ChordShapeGenerator::OnGenerate(const DataArray* da){
     RndMesh* mesh = BuildChordMesh();

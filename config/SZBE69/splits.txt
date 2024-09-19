@@ -967,7 +967,7 @@ system/bandobj/BandCamShot.cpp:
 system/bandobj/BandDirector.cpp:
 	.text       start:0x803937F8 end:0x803A1E7C
 
-rb3/chordshapegenerator.cpp:
+system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
 

@@ -2,9 +2,17 @@
 #include "obj/Object.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
+#include <set>
 
 class ChordShapeGenerator : public Hmx::Object {
 public:
+    class CrossSec {
+    public:
+        std::vector<int> mEdges; // 0x0
+        std::set<unsigned short> mVerts; // 0x8
+        float mXOffset; // 0x??
+    };
+
     ChordShapeGenerator();
     virtual ~ChordShapeGenerator(){}
     OBJ_CLASSNAME(ChordShapeGenerator);
@@ -19,6 +27,10 @@ public:
     bool CheckParams() const;
     void DumpChordGenData();
     void NameMesh(RndMesh*, bool);
+    void InterpolateXfm(const Transform&, const Transform&, float, Transform&);
+    void TransformVert(RndMesh::Vert&, float, float, float, const Transform&, Hmx::Color32);
+    void AddVertProfile(RndMesh*, const Transform&, float, const CrossSec&, std::map<unsigned short, unsigned short>&, Hmx::Color32);
+    void BuildContourCap(RndMesh*, std::map<unsigned short, unsigned short>&, int, const Transform&, const Transform&, Symbol, Hmx::Color32, Hmx::Color32);
     RndMesh* BuildChordMesh(unsigned int, int);
     RndMesh* BuildChordMesh();
     RndMesh* MakeInvertedMesh(const RndMesh*);
@@ -48,10 +60,10 @@ public:
     ObjPtr<RndTransformable, ObjectDir> mString5; // 0xa8
     std::vector<float> mFretHeights; // 0xb4
     std::vector<float> mGradeDistances; // 0xbc
-    int unkc4; // 0xc4
+    RndMesh* unkc4; // 0xc4
     float unkc8; // 0xc8
     float unkcc; // 0xcc
     float unkd0; // 0xd0
-    std::map<unsigned short, unsigned short> unkd4; // 0xd4
-    std::map<unsigned short, unsigned short> unkf8; // 0xf8
+    CrossSec sec1; // 0xd4
+    CrossSec sec2; // 0xf8
 };

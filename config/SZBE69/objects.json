@@ -64,6 +64,7 @@
             "system/bandobj/BandButton.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandDirector.cpp": "NonMatching",
+            "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",
             "system/bandobj/EndingBonus.cpp": "NonMatching",

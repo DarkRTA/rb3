@@ -56,7 +56,7 @@ public:
         public:
         VertVector() { mVerts = NULL; mSize = 0; mCapacity = 0;}
         ~VertVector() { mCapacity = 0; resize(0, true); }
-        u32 size() const { return mSize; };
+        int size() const { return mSize; };
         void resize(int, bool);
         void reserve(int, bool);
         Vert& operator[](int i){ return mVerts[i]; }
