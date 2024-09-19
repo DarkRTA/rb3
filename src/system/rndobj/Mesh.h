@@ -40,7 +40,8 @@ public:
     };
 
     class Face {
-        public:
+    public:
+        Face() : idx0(0), idx1(0), idx2(0) {}
         u16 idx0, idx1, idx2;
     };
 
@@ -55,14 +56,16 @@ public:
         public:
         VertVector() { mVerts = NULL; mSize = 0; mCapacity = 0;}
         ~VertVector() { mCapacity = 0; resize(0, true); }
-        u32 size() const { return mSize; };
+        int size() const { return mSize; };
         void resize(int, bool);
         void reserve(int, bool);
-        Vert* operator[](int);
-        Vert* operator[](int) const;
+        Vert& operator[](int i){ return mVerts[i]; }
+        const Vert& operator[](int i) const { return mVerts[i]; }
         VertVector& operator=(const VertVector&);
         Vert* begin();
         Vert* end();
+        unsigned short capacity() const { return mCapacity; }
+        void clear(){ resize(0, true); }
 
         Vert* mVerts;
         u32 mSize;
@@ -95,8 +98,11 @@ public:
     virtual void Print();
     virtual void OnSync(int);
 
+    RndMat* GetMat() const { return mMat; }
+    VertVector& Verts(){ return mOwner->mVerts; }
+    std::vector<Face>& Faces(){ return mOwner->mFaces; }
     const Vector3& VertPos(int idx) const {
-        return mOwner->mVerts[idx]->pos;
+        return mOwner->mVerts[idx].pos;
     }
 
     // TODO: figure out what RndMesh's members do

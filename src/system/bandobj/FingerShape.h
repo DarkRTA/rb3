@@ -9,6 +9,11 @@ class FingerShape {
 public:
     FingerShape(RndDir*);
     ~FingerShape();
+    void Update(const RGState&, bool, bool);
+    void UpdateLeftyFlip(bool);
+    void Reset(bool);
+    void UpdateAnim(RndAnimatable*, float, bool);
+    void UpdateFretNumber(const RGState&, bool);
 
     std::vector<RndAnimatable*> mFretHeightAnims; // 0x0
     std::vector<RndAnimatable*> mContourHeightAnims; // 0x8
