@@ -45,6 +45,11 @@ public:
     Transform mOffset;
 };
 
+inline BinStream& operator>>(BinStream& bs, RndBone& bone){
+    bs >> bone.mBone >> bone.mOffset;
+    return bs;
+}
+
 class RndMesh : public RndDrawable, public RndTransformable {
 public:
     class Vert {
@@ -142,6 +147,7 @@ public:
     void SetBone(int, RndTransformable*, bool);
     void SetVolume(Volume);
     void SetKeepMeshData(bool);
+    void SetZeroWeightBones();
 
     bool KeepMeshData() const { return mKeepMeshData; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }
@@ -179,14 +185,14 @@ public:
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
-    std::vector<u8, u16> unk_0xD0; // ???
+    std::vector<unsigned char> unk_0xD0; // 0xd0 - mPatches?
     ObjOwnerPtr<RndMesh, class ObjectDir> mGeomOwner; // 0xD8
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0
     Volume mVolume; // 0xf4
     BSPNode* mBSPTree; // 0xf8
     RndMultiMesh* unk_0xFC; // ...why?
-    std::vector<STRIPERRESULT> unk_0x100; // maybe some struct that has a STRIPERRESULT?
+    std::vector<STRIPERRESULT> mStriperResults; // 0x100
     MotionBlurCache mMotionCache; // 0x108
     unsigned char* mCompressedVerts; // 0x114
     unsigned int mNumCompressedVerts; // 0x118

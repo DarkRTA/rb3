@@ -16,6 +16,7 @@
 INIT_REVS(RndMesh)
 
 PatchVerts gPatchVerts;
+int MESH_REV_SEP_COLOR = 0x25;
 
 int RndMesh::MaxBones() { return MAX_BONES; }
 bool RndMesh::IsSkinned() const { return mBones.size(); }
@@ -259,76 +260,123 @@ void RndMesh::PreLoad(BinStream& bs){
 #pragma push
 #pragma dont_inline on
 void RndMesh::PostLoad(BinStream& bs) {
-    // PostLoadVertices(bs);
-    // bs >> mFaces;
-    // if ((ushort)(gRev + 0xFFFB) <= 18) {
-    //     int i; u16 a,b;
-    //     for (bs >> i; i != 0; i--) {
-    //         bs >> a >> b;
-    //     }
-    // }
-    // if (gRev > 23) bs >> unk_0xD0;
-    // else {
-    //     if (gRev > 21) {
-    //         unk_0xD0.clear();
-    //         int i; 
-    //         for (bs >> i; i != 0; i--) {
-    //             int x; std::vector<u16> v; std::vector<uint> v2;
-    //             bs >> x >> v >> v2;
-    //             u8 y = x; unk_0xD0.push_back(y);
-    //         }
-    //     } else {
-    //         if (gRev > 16) bs >> unk_0xD0;
-    //     }
-    // }
-    // if (gRev > 28) {
-    //     bs >> mBones;
-    //     if (mBones.size() > MaxBones()) mBones.resize(MaxBones());
-    // } else {
-    //     if (gRev > 13) {
-    //         ObjPtr<RndTransformable, class ObjectDir> t(this, NULL);
-    //         bs >> t;
-    //         if ((RndTransformable*)t) {
-    //             mBones.resize(4);
-    //             if (gRev > 22) {
-    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = t;
-    //                 // bs >> mBones[1] >> mBones[2] >> mBones[3];
-    //                 // bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
-    //                 if (gRev < 25) { // incoming headache
-    //                     for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
-    //                         // it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
-    //                         //     it->why.GetX(), it->why.GetY(), it->why.GetZ());
-    //                     }
-    //                 }
-    //             } else {
-    //                 if (TransConstraint() == kParentWorld) 
-    //                     (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = TransParent(); 
-    //                 else (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = this;
-    //                 mBones[0].mOffset.Reset();
-    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[1] = t;
-    //                 bs >> mBones[2];
-    //                 bs >> mBones[1].mOffset >> mBones[2].mOffset;
-    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[3] = NULL;
-    //             }
-    //         }
-    //         mBones.clear();
-    //     }
-    // }
-    // RemoveInvalidBones();
-
-
-    // for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
-                            
-    // }
-    // if (gRev > 37) { bool b; bs >> b; mHasAOCalc = b;}
-    // if (gAltRev > 1) { bool b; bs >> b; mForceNoQuantize = b;}
-    // if (gAltRev > 3) { bool b; bs >> b;}
-    // Sync(191);
-    // if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
+    PostLoadVertices(bs);
+    bs >> mFaces;
+    if(gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 ||
+        gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 ||
+        gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23
+    ){
+        int count; unsigned short s1, s2;
+        bs >> count;
+        for(; count != 0; count--){
+            bs >> s1 >> s2;
+        }
+    }
+    if(gRev > 0x17) bs >> unk_0xD0;
+    else if(gRev > 0x15){
+        unk_0xD0.clear();
+        int count;
+        unsigned int ui;
+        bs >> count;
+        for(; count != 0; count--){
+            std::vector<unsigned short> usvec;
+            std::vector<unsigned int> uivec;
+            bs >> ui >> usvec >> uivec;
+            unk_0xD0.push_back(ui);
+        }
+    }
+    else if(gRev > 0x10) bs >> unk_0xD0;
+    
+    if(gRev > 0x1C){
+        bs >> mBones;
+        int max = MaxBones();
+        if(mBones.size() > max) mBones.resize(MaxBones());
+    }
+    else if(gRev > 0xD){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        bs >> tPtr;
+        if(tPtr){
+            mBones.resize(4);
+            if(gRev > 0x16){
+                mBones[0].mBone = tPtr;
+                bs >> mBones[1].mBone >> mBones[2].mBone >> mBones[3].mBone;
+                bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
+                if(gRev < 0x19){
+                    for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
+                        it->boneWeights.Set(((1.0f - it->boneWeights.GetX()) - it->boneWeights.GetY()) - it->boneWeights.GetZ(),
+                            it->boneWeights.GetX(), it->boneWeights.GetY(), it->boneWeights.GetZ());
+                    }
+                }
+            }
+            else {
+                if(TransConstraint() == RndTransformable::kParentWorld){
+                    mBones[0].mBone = TransParent();
+                }
+                else {
+                    mBones[0].mBone = this;
+                }
+                mBones[0].mOffset.Reset();
+                mBones[1].mBone = tPtr;
+                bs >> mBones[2].mBone >> mBones[1].mOffset >> mBones[2].mOffset;
+                mBones[3].mBone = 0;
+            }
+            for(int i = 0; i < 4; i++){
+                if(!mBones[i].mBone){
+                    mBones.resize(i);
+                    break;
+                }
+            }
+        }
+        else mBones.clear();
+    }
+    RemoveInvalidBones();
+    if(gAltRev > 5 && CacheStrips(bs)){
+        MemDoTempAllocations m(true, false);
+        MILO_ASSERT(mStriperResults.empty(), 0x5BA);
+        mStriperResults.resize(unk_0xD0.size());
+        for(std::vector<STRIPERRESULT>::iterator it = mStriperResults.begin(); it != mStriperResults.end(); ++it){
+            bs >> *it;
+        }
+    }
+    if(gRev != 0 && gRev < 4){
+        std::vector<std::vector<unsigned short> > usvec;
+        bs >> usvec;
+    }
+    if(gRev == 0){
+        bool bd4;
+        int ic0, ic4, ic8, icc;
+        bs >> bd4 >> ic0 >> ic4 >> ic8;
+        bs >> icc;
+    }
+    if(gRev == 0x12 && mGeomOwner == this) SetVolume(mVolume);
+    if(gRev < 0x1F) SetZeroWeightBones();
+    if(gRev > 0x23){
+        bool keep; bs >> keep;
+        mKeepMeshData = keep;
+    }
+    if(gRev < MESH_REV_SEP_COLOR && IsSkinned()){
+        for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
+            Hmx::Color32& col = it->color;
+            it->boneWeights.Set(col.fr(), col.fg(), col.fb(), col.fa());
+            col.Clear();
+        }
+    }
+    if(gRev > 0x25){
+        bool calc; bs >> calc;
+        mHasAOCalc = calc;
+    }
+    if(gAltRev > 1){
+        bool noquant; bs >> noquant;
+        mForceNoQuantize = noquant;
+    }
+    if(gAltRev > 3){
+        bool b; bs >> b;
+    }
+    Sync(0xBF);
+    if(gAltRev < 3 && NumBones() > 1){
+        MILO_WARN("--->Arvin/Diana: Skinned mesh needs to be re-exported: %s", PathName(this));
+    }
 }
-
-DECOMP_FORCEBLOCK(Mesh, (Hmx::Color32* c), { c->Clear(); c->fr(); c->fg(); c->fb(); c->fa(); })
-DECOMP_FORCEFUNC(Mesh, RndMesh, NumBones())
 #pragma pop
 
 BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
