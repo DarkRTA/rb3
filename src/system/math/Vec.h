@@ -126,8 +126,11 @@ inline BinStream& operator>>(BinStream& bs, Vector4& vec){
 
 class Vector4_16_01 {
 public:
-    //Vector4_16_01() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
-    u16 x, y, z, w;
+    Vector4_16_01(){}
+    Vector4_16_01(float f0, float f1, float f2, float f3) :
+        x(ScaleFloat01ToUShort(f0)), y(ScaleFloat01ToUShort(f1)),
+        z(ScaleFloat01ToUShort(f2)), w(ScaleFloat01ToUShort(f3)) {}
+    
     float GetX() const { return x / 65535.0f;}
     float GetY() const { return y / 65535.0f;}
     float GetZ() const { return z / 65535.0f;}
@@ -142,6 +145,8 @@ public:
         z = ScaleFloat01ToUShort(f2);
         w = ScaleFloat01ToUShort(f3);
     }
+
+    u16 x, y, z, w;
 };
 
 inline void Scale(const Vector3 &v1, float f, Vector3 &dst) {

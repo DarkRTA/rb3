@@ -18,8 +18,10 @@ INIT_REVS(RndMesh)
 PatchVerts gPatchVerts;
 int MESH_REV_SEP_COLOR = 0x25;
 
+DECOMP_FORCEACTIVE(Mesh, "%s: exceeds bone limit of %d", "BSP tree outside bounding box",
+    "Made BSP tree for \"%s\" (nodes:%d depth:%d)\n", "Couldn't make BSP tree for \"%s\"")
+
 int RndMesh::MaxBones() { return MAX_BONES; }
-bool RndMesh::IsSkinned() const { return !mBones.empty(); }
 
 RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
     Segment sega0;
@@ -119,7 +121,7 @@ void RndMesh::SetBone(int i, RndTransformable* t, bool b){
 }
 
 RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
-    mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), unk_0xFC(0), mCompressedVerts(0),
+    mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), mMultiMesh(0), mCompressedVerts(0),
     mNumCompressedVerts(0), mFileLoader(0) {
     mHasAOCalc = false;
     mKeepMeshData = false;
@@ -127,16 +129,55 @@ RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
     mForceNoQuantize = false;
 }
 
-RndMesh::~RndMesh() { 
-    delete mFileLoader; mFileLoader = NULL; 
-    delete mBSPTree; mBSPTree = NULL; 
-    delete unk_0xFC; unk_0xFC = NULL;
+RndMesh::~RndMesh() {
+    RELEASE(mFileLoader);
+    RELEASE(mBSPTree);
+    RELEASE(mMultiMesh);
     ClearCompressedVerts();
 }
 
-RndMesh::Vert::Vert() : pos(0,0,0), norm(0,1.0f,0), boneWeights(),
-    color(), uv(0,0) {
-    for(int i = 0; i < 4; i++) boneIndices[i] = 0;
+void RndMesh::VertVector::resize(int n, bool b){
+    unka = b;
+    if(mCapacity){
+        MILO_ASSERT(n <= mCapacity, 0x26A);
+        mNumVerts = n;
+    }
+    else {
+        if(n == 0){
+            RELEASE(mVerts);
+            mNumVerts = 0;
+        }
+        else if(n != mNumVerts){
+            Vert* oldverts = mVerts;
+            int oldvertcount = Min(n, mNumVerts);
+            {
+                MemDoTempAllocations m(true, false);
+                mVerts = new Vert[n];
+            }
+            mNumVerts = n;
+            Vert* newit = mVerts;
+            for(Vert* it = oldverts; it != &oldverts[oldvertcount]; ++it, ++newit){
+                *newit = *it;
+            }
+            delete oldverts;
+        }
+    }
+}
+
+void RndMesh::VertVector::reserve(int capacity, bool b){
+    MILO_ASSERT(capacity > mCapacity, 0x297);
+    MILO_ASSERT(capacity > mNumVerts, 0x298);
+    mCapacity = 0;
+    int num = mNumVerts;
+    if(capacity > 0xFFFFU) MILO_FAIL("RndMesh::reserve(): capacity %d overflows short!\n", capacity);
+    resize(capacity, b);
+    mCapacity = capacity;
+    mNumVerts = num;
+}
+
+RndMesh::VertVector& RndMesh::VertVector::operator=(const RndMesh::VertVector& c){
+    MILO_ASSERT(mCapacity == 0, 0x2E0);
+    MILO_ASSERT(c.mCapacity == 0, 0x2E1);
 }
 
 void RndMesh::PreLoadVertices(BinStream& bs) {
@@ -203,13 +244,13 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
 }
 
 RndMultiMesh* RndMesh::CreateMultiMesh() {
-    RndMesh* m = &(*mGeomOwner);
-    if (!m->unk_0xFC) {
-        m->unk_0xFC = Hmx::Object::New<RndMultiMesh>();
-        m->unk_0xFC->SetMesh(m);
+    RndMesh* owner = mGeomOwner;
+    if(!owner->mMultiMesh){
+        owner->mMultiMesh = Hmx::Object::New<RndMultiMesh>();
+        owner->mMultiMesh->SetMesh(owner);
     }
-    m->unk_0xFC->mInstances.resize(0);
-    return m->unk_0xFC;
+    owner->mMultiMesh->mInstances.resize(0);
+    return owner->mMultiMesh;
 }
 
 BinStream& operator>>(BinStream& bs, STRIPERRESULT& sr) {
@@ -228,6 +269,8 @@ bool RndMesh::CacheStrips(BinStream& bs) {
         && mVerts.size() != 0 && !(mMutable & 0x20)) ret = true;
     return ret;
 }
+
+DECOMP_FORCEACTIVE(Mesh, "0", "Endian.h", "block != NULL", "count >= 0")
 
 void RndMesh::CreateStrip(int i, int j, Striper& striper, STRIPERRESULT& sr, bool onesided) {
     STRIPERCREATE sc;
@@ -361,9 +404,9 @@ void RndMesh::PostLoad(BinStream& bs) {
             bs >> s1 >> s2;
         }
     }
-    if(gRev > 0x17) bs >> unk_0xD0;
+    if(gRev > 0x17) bs >> mPatches;
     else if(gRev > 0x15){
-        unk_0xD0.clear();
+        mPatches.clear();
         int count;
         unsigned int ui;
         bs >> count;
@@ -371,10 +414,10 @@ void RndMesh::PostLoad(BinStream& bs) {
             std::vector<unsigned short> usvec;
             std::vector<unsigned int> uivec;
             bs >> ui >> usvec >> uivec;
-            unk_0xD0.push_back(ui);
+            mPatches.push_back(ui);
         }
     }
-    else if(gRev > 0x10) bs >> unk_0xD0;
+    else if(gRev > 0x10) bs >> mPatches;
     
     if(gRev > 0x1C){
         bs >> mBones;
@@ -422,7 +465,7 @@ void RndMesh::PostLoad(BinStream& bs) {
     if(gAltRev > 5 && CacheStrips(bs)){
         MemDoTempAllocations m(true, false);
         MILO_ASSERT(mStriperResults.empty(), 0x5BA);
-        mStriperResults.resize(unk_0xD0.size());
+        mStriperResults.resize(mPatches.size());
         for(std::vector<STRIPERRESULT>::iterator it = mStriperResults.begin(); it != mStriperResults.end(); ++it){
             bs >> *it;
         }
@@ -477,31 +520,63 @@ void RndMesh::CopyGeometryFromOwner(){
 }
 
 BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
+    float f34, f38;
     bs >> v.pos;
-    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) { int a,b; bs >> a >> b; }
+    if (RndMesh::gRev != 10 && RndMesh::gRev < 23) { bs >> f34 >> f38; }
     bs >> v.norm;
-
-
-    if (RndMesh::gRev < 20) { int a,b; bs >> b >> a; }
-    if (RndMesh::gRev > 28) bs >> v.boneIndices[0] >> v.boneIndices[1] >> v.boneIndices[2] >> v.boneIndices[3];
-    if (RndMesh::gRev > 29) {
-        int a,b,c,d;
-        bs >> d >> c >> b >> a;
+    if(RndMesh::gRev < MESH_REV_SEP_COLOR) bs >> v.color;
+    else bs >> v.color;
+    bs >> v.uv;
+    if(MESH_REV_SEP_COLOR <= RndMesh::gRev){
+        Vector4 v4; bs >> v4;
+        v.boneWeights.Set(v4.x, v4.y, v4.z, v4.w);
+    }
+    if(RndMesh::gRev != 10 && RndMesh::gRev < 23){
+        v.boneWeights.Set((1.0f - f34) - f38, f34, f38, 0);
+    }
+    if(RndMesh::gRev < 0xB){
+        Vector2 v2; bs >> v2;
+    }
+    if(RndMesh::gRev > 0x1C){
+        bs >> v.boneIndices[0] >> v.boneIndices[1] >> v.boneIndices[2] >> v.boneIndices[3];
+    }
+    if(RndMesh::gRev > 0x1D){
+        Vector4 v4; bs >> v4;
     }
     return bs;
 }
 
 TextStream& operator<<(TextStream& ts, RndMesh::Volume v) {
-    if (v == RndMesh::kVolumeEmpty) ts << "kVolumeEmpty";
-    else if (v == RndMesh::kVolumeTriangles) ts << "kVolumeTriangles";
-    else if (v == RndMesh::kVolumeBSP) ts << "kVolumeBSP";
-    else if (v == RndMesh::kVolumeBox) ts << "kVolumeBox";
+    if (v == RndMesh::kVolumeEmpty) ts << "Empty";
+    else if (v == RndMesh::kVolumeTriangles) ts << "Triangles";
+    else if (v == RndMesh::kVolumeBSP) ts << "BSP";
+    else if (v == RndMesh::kVolumeBox) ts << "Box";
     return ts;
 }
+
+void RndMesh::Print(){
+    TextStream& t = TheDebug;
+    t << "   mat: " << mMat << "\n";
+    t << "   geomOwner: " << mGeomOwner << "\n";
+    t << "   mutable: " << mMutable << "\n";
+    t << "   volume: " << mVolume << "\n";
+    t << "   bones: TODO\n";
+    t << "   geometry: TODO\n";
+}
+
 #ifdef MILO_DEBUG
 int RndMesh::NumFaces() const { return mFaces.size(); }
 int RndMesh::NumVerts() const { return mVerts.size(); }
 #endif
+
+void RndMesh::Replace(Hmx::Object* from, Hmx::Object* to){
+    RndTransformable::Replace(from, to);
+    if(mGeomOwner == from){
+        RndMesh* meshto = dynamic_cast<RndMesh*>(to);
+        if(meshto) mGeomOwner = meshto->mGeomOwner;
+        else mGeomOwner = this;
+    }
+}
 
 BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
     bs >> f.idx0 >> f.idx1 >> f.idx2;

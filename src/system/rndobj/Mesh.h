@@ -54,7 +54,13 @@ class RndMesh : public RndDrawable, public RndTransformable {
 public:
     class Vert {
     public:
-        Vert();
+        Vert() : pos(0,0,0), norm(0,1,0), boneWeights(0,0,0,0), color(-1), uv(0,0) {
+            for(int i = 0; i < 4; i++) boneIndices[i] = 0;
+        }
+
+        NEW_OVERLOAD;
+        DELETE_OVERLOAD;
+
         Vector3 pos; // 0x0
         Vector3 norm; // 0xc
         Vector4_16_01 boneWeights; // 0x18 the hate format
@@ -92,9 +98,10 @@ public:
         unsigned short capacity() const { return mCapacity; }
         void clear(){ resize(0, true); }
 
-        Vert* mVerts;
-        int mNumVerts;
-        u16 mCapacity;
+        Vert* mVerts; // 0x0
+        int mNumVerts; // 0x4
+        unsigned short mCapacity; // 0x8
+        unsigned short unka; // 0xa
     };
 
     RndMesh();
@@ -134,7 +141,6 @@ public:
     RndMultiMesh* CreateMultiMesh();
     void CreateStrip(int, int, Striper&, STRIPERRESULT&, bool);
     int EstimatedSizeKb() const;
-    bool IsSkinned() const;
     int NumBones() const { return mBones.size(); }
     void PreLoadVertices(BinStream&);
     void PostLoadVertices(BinStream&);
@@ -161,6 +167,7 @@ public:
     const Vert& VertAt(int idx) const {
         return mGeomOwner->mVerts[idx];
     }
+    bool IsSkinned() const { return !mBones.empty(); }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
@@ -190,13 +197,13 @@ public:
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
-    std::vector<unsigned char> unk_0xD0; // 0xd0 - mPatches?
+    std::vector<unsigned char> mPatches; // 0xd0 - mPatches?
     ObjOwnerPtr<RndMesh, class ObjectDir> mGeomOwner; // 0xD8
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0
     Volume mVolume; // 0xf4
     BSPNode* mBSPTree; // 0xf8
-    RndMultiMesh* unk_0xFC; // ...why?
+    RndMultiMesh* mMultiMesh; // 0xfc
     std::vector<STRIPERRESULT> mStriperResults; // 0x100
     MotionBlurCache mMotionCache; // 0x108
     unsigned char* mCompressedVerts; // 0x114
