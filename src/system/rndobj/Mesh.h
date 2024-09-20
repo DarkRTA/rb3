@@ -188,16 +188,13 @@ public:
     RndMultiMesh* unk_0xFC; // ...why?
     std::vector<STRIPERRESULT> unk_0x100; // maybe some struct that has a STRIPERRESULT?
     MotionBlurCache mMotionCache; // 0x108
-    int* unk_0x114, unk_0x118;
-    FileLoader* unk_0x11C;
-    int unk120;
-    int unk124;
-    int unk128;
-    int unk12c;
-    int unk130;
-    int unk134;
+    unsigned char* mCompressedVerts; // 0x114
+    unsigned int mNumCompressedVerts; // 0x118
+    FileLoader* mFileLoader; // 0x11c
+    int mBoxLightColorsCached[6]; // 0x120 - apparently these are _GXColors instead of ints
 };
 
+BinStream& operator>>(BinStream&, RndMesh::Vert&);
 BinStream& operator>>(BinStream&, RndMesh::Face&);
 TextStream& operator<<(TextStream&, RndMesh::Volume);
 

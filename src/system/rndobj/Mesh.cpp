@@ -9,8 +9,8 @@
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
 #include "utl/BufStream.h"
+#include "utl/ChunkStream.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
 #include <vector>
 
 INIT_REVS(RndMesh)
@@ -29,8 +29,8 @@ void RndMesh::ScaleBones(float f) {
 }
 
 RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
-    mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), unk_0xFC(0), unk_0x114(0),
-    unk_0x118(0), unk_0x11C(0) {
+    mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), unk_0xFC(0), mCompressedVerts(0),
+    mNumCompressedVerts(0), mFileLoader(0) {
     mHasAOCalc = false;
     mKeepMeshData = false;
     unk9p2 = true;
@@ -38,7 +38,7 @@ RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
 }
 
 RndMesh::~RndMesh() { 
-    delete unk_0x11C; unk_0x11C = NULL; 
+    delete mFileLoader; mFileLoader = NULL; 
     delete mBSPTree; mBSPTree = NULL; 
     delete unk_0xFC; unk_0xFC = NULL;
     ClearCompressedVerts();
@@ -51,20 +51,65 @@ RndMesh::Vert::Vert() : pos(0,0,0), norm(0,1.0f,0), boneWeights(),
 
 void RndMesh::PreLoadVertices(BinStream& bs) {
     if (gAltRev > 4) {
-        unk_0x11C = new FileLoader("", "", kLoadFront, 0, true, true, &bs);
+        mFileLoader = new FileLoader("", "", kLoadFront, 0, true, true, &bs);
     }
 }
 
 void RndMesh::PostLoadVertices(BinStream& bs) {
     void* buf; int len;
-    if (unk_0x11C) {
-        buf = (void*)unk_0x11C->GetBuffer(NULL);
-        len = unk_0x11C->GetSize();
-        delete unk_0x11C;
-        unk_0x11C = NULL;
+    if (mFileLoader) {
+        buf = (void*)mFileLoader->GetBuffer(NULL);
+        len = mFileLoader->GetSize();
+        RELEASE(mFileLoader);
     }
     BufStream bfs(buf, len, true);
-    if (buf) bs = bfs;
+    if(buf) &bs = &bfs;
+    int compressedSize; bs >> compressedSize;
+    bool b58;
+    if(gRev > 0x22) bs >> b58;
+    else b58 = false;
+    int loadedCompressedSize = 0;
+    bool b4 = false;
+    int loadedVersion = 0;
+    if(b58){
+        bs >> loadedCompressedSize;
+        bs >> loadedVersion;
+        MILO_ASSERT(IsVertexCompressionSupported(TheLoadMgr.GetPlatform()), 0x331);
+        MILO_FAIL("Unsupported platform for vertex compression");
+        if(loadedCompressedSize == 0 && loadedVersion == 0) b4 = true;
+        if(!b4){
+            MILO_WARN("Loaded stale compressed vertex data, resave mesh file \"%s\"(loaded size = %d, current = %d; loaded ver = %d, current = %d",
+                bs.Name(), loadedCompressedSize, 0, loadedVersion, 0);
+        }
+    }
+    if(b58){
+        if(b4){
+            mNumCompressedVerts = compressedSize;
+            if(compressedSize != 0){
+                TheDebug.Fail(MakeString(kAssertStr, __FILE__, 0x369, "compressedSize > 0"));
+                mCompressedVerts = new unsigned char[mNumCompressedVerts];
+                ReadChunks(bs, mCompressedVerts, 0, 0);
+            }
+        }
+        else {
+            loadedCompressedSize *= compressedSize;
+            MILO_ASSERT(loadedCompressedSize> 0, 0x376);
+            bs.Seek(loadedCompressedSize, BinStream::kSeekCur);
+        }
+    }
+    else {
+        bool resizebool = !(mMutable & 0x1F) && !mKeepMeshData;
+        mVerts.resize(compressedSize, resizebool);
+        int i5 = 0;
+        for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
+            bs >> *it;
+            i5 += 1;
+            if((i5 & 0x1FF) == 0){
+                while(bs.Eof() == TempEof) Timer::Sleep(0);
+            }
+        }
+    }
+    if(buf) _MemFree(buf);
 }
 
 RndMultiMesh* RndMesh::CreateMultiMesh() {
@@ -153,14 +198,10 @@ void RndMesh::PreLoad(BinStream& bs){
     bs >> mGeomOwner;
     if(!mGeomOwner) mGeomOwner = this;
     if(gRev < 0x14 && mMat){
-        if(zmode != 0){
-            if(!mMat->GetZMode()){
-                goto lol;
-            }
+        if(zmode == 0 || mMat->GetZMode()){
+            mMat->SetZMode((ZMode)zmode);
         }
-        mMat->SetZMode((ZMode)zmode);
     }
-lol:
     if(gRev < 0xD){
         ObjOwnerPtr<RndMesh, ObjectDir> meshOwner(this, 0);
         bs >> meshOwner;
@@ -330,9 +371,9 @@ void RndMesh::Sync(int i) {
 }
 
 void RndMesh::ClearCompressedVerts() {
-    delete unk_0x114;
-    unk_0x114 = NULL;
-    unk_0x118 = 0;
+    delete mCompressedVerts;
+    mCompressedVerts = NULL;
+    mNumCompressedVerts = 0;
 }
 
 #pragma push

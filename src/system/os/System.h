@@ -31,6 +31,10 @@ enum Platform {
     kPlatformWii = 5,
 };
 
+inline bool IsVertexCompressionSupported(Platform p){
+    return p == kPlatformXBox || p == kPlatformPS3;
+}
+
 Symbol PlatformSymbol(Platform);
 bool PlatformLittleEndian(Platform);
 Platform ConsolePlatform();
